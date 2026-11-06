@@ -67,7 +67,8 @@
     "reduce some accidents but change drivers' jobs",
     "need no software to drive"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Every advance has a benefit for someone and a cost for someone else: fewer crashes, perhaps, and changed jobs for drivers."
   },
   {
    "id": "2-6.1-e2",
@@ -84,7 +85,8 @@
     "no change to any job at all",
     "cheaper food and the same jobs"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Automation changes jobs more than it erases them: fewer cashiers are needed, and new technicians keep the machines running."
   },
   {
    "id": "2-6.1-e3",
@@ -101,7 +103,8 @@
     "it is always wrong about the time",
     "it needs no battery at all"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "If the app always picks the route, you may stop learning your way around. That is a hidden cost of the time it saves."
   },
   {
    "id": "2-6.2-r1",
@@ -131,11 +134,12 @@
    "q": "Face unlock works badly for some skin tones. Most likely cause?",
    "choices": [
     "phones are too small to see a face",
-    "nobody uses face unlock any more",
+    "nobody uses face unlock anymore",
     "it is a cipher nobody can crack",
     "it was tested with a group that all looked alike"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Bias usually comes from who was missing in testing. A testing group that all looked alike cannot show where face unlock fails."
   },
   {
    "id": "2-6.2-e2",
@@ -152,7 +156,8 @@
     "biased, because a group is missing",
     "fine, vegetarians can vote next time"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A whole group was never asked, so the result speaks only for the rest. Missing a group makes data biased, however big the sample."
   },
   {
    "id": "2-6.2-e3",
@@ -169,7 +174,8 @@
     "more icons and fewer words",
     "a longer charging cable"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "High contrast was made for low vision, and everyone uses it in bright sun. Designing for the edges helps everyone."
   },
   {
    "id": "2-6.3-r1",
@@ -220,7 +226,8 @@
     "it is boring for other people",
     "it is illegal in every country"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Your name, school and route are the facts tricks start with. A stranger can use them to fool you or to find you."
   },
   {
    "id": "2-6.3-e2",
@@ -237,7 +244,8 @@
     "it shows who played and when",
     "nothing at all"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Public scores show your name and when you played. That tells strangers more about you than the score itself."
   },
   {
    "id": "2-6.3-e3",
@@ -254,7 +262,8 @@
     "a passphrase to unlock it",
     "attribution (credit as it asks)"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Reusing code means following its license, and most licenses ask for attribution: credit written the way the license says."
   }
  ]
 }

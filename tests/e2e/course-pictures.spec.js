@@ -11,6 +11,8 @@
 //   - a diagram never carries a cue on the picture at all (its cues are the caption strip under it);
 //   - a diagram's badge never sits on any of the diagram's text;
 //   - no edge of a diagram's focus box (or of its ring) crosses a text: every label is wholly inside or outside.
+// Every size runs twice: the tour's layout, and the still view a reduced-motion setting shows (every step's box and
+// badge at once), where in addition no two badges may stack.
 // The main e2e server reads CS Quest's decks from the test fixtures (BRB_COURSE_DIR), so this spec runs a server
 // of its own on the real decks (E2E_PORT + 7, its own data folder; or COURSE_PICTURES_URL, an already running
 // server with the admin account admin / admin-pass-123, e.g. a local dev server).
@@ -72,7 +74,8 @@ const TEXT_RECTS = recordedText();
 
 /** In the page: every problem of one figure's tour, as laid out now (all steps are laid out at once; the
  *  inactive ones are only transparent). `rects`: the picture's recorded text boxes, or null. */
-function figureProblems(fig, rects) {
+function figureProblems(fig, arg) {
+  const { rects, still } = arg;
   const out = [];
   const R = el => el.getBoundingClientRect();
   const hit = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 0.5 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0.5;
@@ -114,8 +117,11 @@ function figureProblems(fig, rects) {
     words = inFrame(words); lettering = inFrame(lettering);
   }
   const over = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  // The still view (reduced motion): every step's box and badge shows at once, so no two badges may stack.
+  const badges = [];
   fig.querySelectorAll('.gf-step').forEach((st, i) => {
     const n = `step ${i + 1}`;
+    if (still) { const bg = st.querySelector('.gf-badge'); if (shown(bg)) { const g = R(bg); for (const [j, h] of badges) if (hit(g, h)) out.push(`${n}: its badge stacks on step ${j + 1}'s badge`); badges.push([i, g]); } }
     const box = st.querySelector('.gf-box'), b = R(box);
     const ring0 = getComputedStyle(box, '::after');
     const o = Math.abs(parseFloat(ring0.top) || 0); // the ring's outer edge (its border is drawn inside the outset)
@@ -162,11 +168,12 @@ function figureProblems(fig, rects) {
 }
 
 const RUNS = [['cs-quest', '1b'], ['cs-quest', '2'], ['cyber-defenders', '1b'], ['cyber-defenders', '2'], ['number-quest', 'explorer']];
-for (const [W, H] of [[390, 844], [1280, 800]]) {
+// Each size twice: the tour's own layout, and the still view a reduced-motion setting shows (every box and badge at once).
+for (const [W, H, still] of [[390, 844, false], [1280, 800, false], [390, 844, true], [1280, 800, true]]) {
   for (const [course, band] of RUNS) {
-    test(`${course} ${band} at ${W}x${H}: tour words and boxes stay off what they point at`, async ({ browser }) => {
+    test(`${course} ${band} at ${W}x${H}${still ? ', reduced motion' : ''}: tour words and boxes stay off what they point at`, async ({ browser }) => {
       test.setTimeout(600_000);
-      const ctx = await browser.newContext({ baseURL: BASE, viewport: { width: W, height: H }, isMobile: W < 800, hasTouch: W < 800, locale: 'en-US' });
+      const ctx = await browser.newContext({ baseURL: BASE, viewport: { width: W, height: H }, isMobile: W < 800, hasTouch: W < 800, locale: 'en-US', reducedMotion: still ? 'reduce' : 'no-preference' });
       const page = await ctx.newPage();
       const errors = []; page.on('pageerror', e => errors.push(e.message));
       await page.goto('/login');
@@ -182,11 +189,13 @@ for (const [W, H] of [[390, 844], [1280, 800]]) {
           await page.locator(`#deck-dots .dot[data-i="${i - 1}"]`).click();
           await expect(page.locator(`#slide-${i}`)).toBeVisible();
           const fig = page.locator(`#slide-${i} .smedia.gf`).first();
+          // The still view is laid out again as the picture and fonts come in: let it settle before measuring.
+          if (still) await page.waitForTimeout(400);
           // A screenshot is laid out again once its picture is in and read (its text map: data-gf-ink).
           if (!(await fig.evaluate(f => f.classList.contains('vf')))) await expect(fig).toHaveAttribute('data-gf-ink', /[01]/);
           const src = await fig.evaluate(f => { const im = f.querySelector('.simg'); return im ? new URL(im.src).pathname : ''; });
           const rects = TEXT_RECTS[src.replace(/^\/img\//, '').replace(/\.webp$/, '')] || null;
-          for (const p of await fig.evaluate(figureProblems, rects)) problems.push(`${key} slide ${i}: ${p}`);
+          for (const p of await fig.evaluate(figureProblems, { rects, still })) problems.push(`${key} slide ${i}: ${p}`);
         }
       }
       await ctx.close();

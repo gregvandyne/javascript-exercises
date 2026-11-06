@@ -175,10 +175,10 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Desert Dash track, adding questions only, and it stays there. Win the race: when a column passes ten, say the trade out loud.",
+   "text": "Open Sum Racer. It opens on the Trading Post track, adding big numbers only, and it stays there. Every question needs a trade. Win the race: when a column passes ten, say the trade out loud.",
    "art": "trophy",
    "img": "nq/sum-racer/addition-track",
-   "alt": "Sum Racer on the Desert Dash track, adding: an addition question on screen, four answers to pick from, the race under way.",
+   "alt": "Sum Racer on the Trading Post track, adding: a big addition that needs a trade, four answers to pick from, the race under way.",
    "view": [
     50,
     10.5,
@@ -194,7 +194,7 @@
  ],
  "game": {
   "slug": "sum-racer",
-  "chapter": "Addition to 100",
-  "params": "level=3&mode=add&lock=1"
+  "chapter": "Adding big numbers",
+  "params": "level=10&mode=add&lock=1"
  }
 }

@@ -119,7 +119,7 @@
    "art": "people",
    "visual": {
     "type": "tiles",
-    "label": "One fact family: 5 x 9 = 45, 45 shared by 9 is 5, 45 shared by 5 is 9",
+    "label": "One fact family from 5 x 9 = 45",
     "values": [
      "5x9=45",
      "45/9=5",
@@ -158,7 +158,7 @@
    "art": "star",
    "visual": {
     "type": "tiles",
-    "label": "Doubling chains: 6 x 2, then double to 6 x 4, then double to 6 x 8",
+    "label": "Doubling chain: 6 x 2, 6 x 4, then 6 x 8",
     "values": [
      "6x2=12",
      "6x4=24",

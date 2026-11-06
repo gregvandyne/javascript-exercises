@@ -13,7 +13,7 @@
   },
   {
    "title": "Words for maybes",
-   "text": "Chance has its own words, and each one is a promise about the parts. Certain means every part, impossible means no part, and unlikely means a small share. This spinner gives red 1 part of 6.",
+   "text": "Chance has its own words, and each one is a promise about the parts. Certain means every part, an even chance means half, unlikely means a small share, and impossible means no part. This spinner gives red 1 part of 6.",
    "art": "grid",
    "visual": {
     "type": "fraction",
@@ -58,18 +58,18 @@
   },
   {
    "title": "Worked example: sorting the words",
-   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, half an even chance, one of 6 unlikely, none impossible.",
+   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, most red likely, one of 6 unlikely, none impossible.",
    "art": "dice",
    "kind": "example",
    "steps": [
     "All 6 parts red: certain",
-    "3 parts of 6 red: an even chance",
+    "5 parts of 6 red: likely",
     "1 part of 6 red: unlikely",
     "0 parts red: impossible"
    ],
    "visual": {
     "type": "tiles",
-    "label": "A strip of four chance-word tiles in order: certain, likely, unlikely, impossible",
+    "label": "Four chance words, most likely to least",
     "values": [
      "certain",
      "likely",
@@ -100,8 +100,13 @@
   },
   {
    "title": "The Jumble calls it impossible",
-   "text": "The Jumble watched the spinner miss red five times and called red impossible. Then it landed on the very next spin. Unlikely things happen; that is what unlikely means. Impossible is a promise the parts can actually keep.",
+   "text": "The Jumble watched the spinner miss red five times and called red impossible. Then it landed on the very next spin. Unlikely things happen; that is what unlikely means. Impossible means no part is red at all.",
    "art": "bug"
+  },
+  {
+   "title": "Stretch: build a likely spinner",
+   "text": "Stretch: design a spinner where landing on red is likely but not certain. How many of its 8 parts are red, and why not all 8? Stretch work is never in the check.",
+   "art": "star"
   },
   {
    "title": "Words to know",
@@ -128,22 +133,17 @@
    ]
   },
   {
-   "title": "Stretch: build a likely spinner",
-   "text": "Stretch: design a spinner where landing on red is likely but not certain. How many of its 8 parts are red, and why not all 8? Stretch work is never in the check.",
-   "art": "star"
-  },
-  {
    "title": "Your mission",
-   "text": "Open Would You Rather. It opens straight on the Numbers topic: play one whole run to its end card. Before each pick, say how sure you are: certain, likely, an even chance, unlikely or impossible. Then tally 20 real spins of any spinner and compare.",
+   "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on chance questions, with no picking first. Before each answer, count the parts: how many match, and how many in all? Then tally 20 real spins and compare.",
    "art": "trophy",
-   "img": "nq/would-you-rather/numbers",
-   "alt": "Would You Rather, the Numbers topic: a numbers choice on screen, two big cards to pick from, at the start of a run.",
+   "img": "nq/quest-race/chance-race",
+   "alt": "Quest Race on the island course: a chance question about a spinner on screen, four chance words to pick from, the runners below.",
    "kind": "mission",
    "view": [
-    6.5,
-    6,
-    87,
-    80
+    20,
+    54,
+    60,
+    44
    ]
   }
  ],
@@ -153,8 +153,8 @@
   "nq-explorer-7.3-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "numbers",
-  "params": "topic=numbers&lock=1"
+  "slug": "quest-race",
+  "chapter": "Practice Race",
+  "params": "mode=nq-7-3&lock=1"
  }
 }

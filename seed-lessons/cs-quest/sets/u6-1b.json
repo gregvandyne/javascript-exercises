@@ -60,14 +60,15 @@
    "topic": "Tech changes",
    "kind": "recall",
    "secs": 15,
-   "q": "GPS changed how people…",
+   "q": "Maps on a device changed how people…",
    "choices": [
     "cook their food",
     "brush their teeth",
     "spell words",
     "find their way"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Maps on a device show where you are and the way to go, so they changed how people find their way."
   },
   {
    "id": "1b-6.1-e2",
@@ -84,7 +85,8 @@
     "captions were added because viewers asked",
     "a new tablet costs more than an old one"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Viewers asked for captions, and makers added them: people changing technology. The other choices are things tech does by itself."
   },
   {
    "id": "1b-6.1-e3",
@@ -101,7 +103,8 @@
     "share one phone",
     "drive to each other"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A video call carries pictures and voices, so families far apart can see and talk to each other every day."
   },
   {
    "id": "1b-6.2-r1",
@@ -135,7 +138,8 @@
     "people who cannot hear and people in a noisy room",
     "only people who can already hear well"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Captions were made for people who cannot hear, and they also help anyone in a noisy room. A change for one helps many."
   },
   {
    "id": "1b-6.2-e2",
@@ -152,7 +156,8 @@
     "louder music and sounds",
     "a one-hand button layout"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A one-hand button layout lets a player with one hand free reach every button. Colors, levels and music do not help with that."
   },
   {
    "id": "1b-6.2-e3",
@@ -169,7 +174,8 @@
     "debugging the audit",
     "encrypting your ideas"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Other people see things you did not think of. Asking for their ideas is seeking other perspectives, and it is not cheating."
   },
   {
    "id": "1b-6.3-r1",
@@ -220,7 +226,8 @@
     "change one pixel so it counts as yours",
     "print it out and glue it in"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Finding a picture online does not mean you may use it. Check the badge or ask first, then write a credit line."
   },
   {
    "id": "1b-6.3-e2",
@@ -237,7 +244,8 @@
     "used only if you pay",
     "used freely"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Public domain means free for anyone to use. All rights reserved is the badge where you must ask first."
   },
   {
    "id": "1b-6.3-e3",
@@ -254,7 +262,8 @@
     "credit the friend whose level it was",
     "say you made it all alone"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A remix starts from someone else's work, so you keep the credit line that says whose level it was."
   }
  ]
 }

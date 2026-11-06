@@ -58,6 +58,9 @@ export const GAMES = {
   'munch-maze': { title: 'Munch Maze', role: 'narrator', spoken: /./ },
   'quest-race': { title: 'Quest Race', role: 'narrator', spoken: /./ },
   'question-battle': { title: 'Question Battle', role: 'narrator', spoken: /./ },
+  // Remi's Quiet Meadow: only the title, the setup card, the privacy note and the end lines may be spoken (the game says
+  // nothing while it listens to the room).
+  'remis-quiet-meadow': { title: "Remi's Quiet Meadow", role: 'friendly', spoken: /^(?:title|tag|setupH|privacy|calibHint|end)/ },
   'ring-rumble': { title: 'Ring Rumble', role: 'narrator', spoken: /./ },
   'shark-plank': { title: 'Shark Plank', role: 'deep', spoken: /./ },
   'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },

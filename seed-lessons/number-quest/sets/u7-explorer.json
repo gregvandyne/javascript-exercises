@@ -14,12 +14,12 @@
    "topic": "Bar graphs",
    "kind": "scenario",
    "secs": 20,
-   "q": "A bar graph shows lunches sold: Monday 12, Tuesday 20, Wednesday 16. How many more lunches were sold on Tuesday than on Monday?",
+   "q": "A bar graph shows lunches sold: Monday 9, Tuesday 21, Wednesday 16. How many more lunches were sold on Tuesday than on Monday?",
    "choices": [
-    "32",
-    "4",
-    "8",
-    "12"
+    "30",
+    "5",
+    "12",
+    "9"
    ],
    "answer": 2,
    "misconceptions": [
@@ -28,7 +28,7 @@
     "correct",
     "read Monday's bar instead of the difference"
    ],
-   "why": "How many more means compare: 20 - 12 = 8 more lunches on Tuesday."
+   "why": "How many more means compare: 21 - 9 = 12 more lunches on Tuesday."
   },
   {
    "id": "nq-explorer-7.1-e2",
@@ -62,21 +62,21 @@
    "topic": "Line plots",
    "kind": "scenario",
    "secs": 20,
-   "q": "Four ribbons measure 1/2, 1/2, 1/4 and 1/4 of a yard. Laid end to end, how long are they together?",
+   "q": "Three ribbons measure 1/2, 1/4 and 1/4 of a yard. Laid end to end, how long are they together?",
    "choices": [
-    "1 yard",
-    "2 yards",
     "3/4 of a yard",
-    "1 1/2 yards"
+    "1 1/4 yards",
+    "3/10 of a yard",
+    "1 yard"
    ],
    "answer": 3,
    "misconceptions": [
-    "dropped the two quarter pieces",
-    "rounded every piece up to a whole yard",
+    "dropped one of the quarter pieces",
+    "counted an extra quarter",
     "added the tops and the bottoms",
     "correct"
    ],
-   "why": "Add the like pieces: 1/2 + 1/2 = 1 yard, and 1/4 + 1/4 = 1/2 yard. Together that is 1 1/2 yards."
+   "why": "Add the like pieces first: 1/4 + 1/4 = 1/2 yard. Then 1/2 + 1/2 = 1 whole yard."
   },
   {
    "id": "nq-explorer-7.2-e1",
@@ -110,21 +110,21 @@
    "topic": "Reading a line plot",
    "kind": "scenario",
    "secs": 20,
-   "q": "Five pencils measure 6, 7, 6, 8 and 6 inches. On a line plot of these lengths, how many marks stand over the 6?",
+   "q": "Six crayons measure 3, 4, 4, 5, 4 and 3 inches. On a line plot of these lengths, how many marks stand over the 4?",
    "choices": [
-    "5",
+    "6",
     "2",
     "3",
-    "6"
+    "4"
    ],
    "answer": 2,
    "misconceptions": [
-    "counted every pencil, not just the 6-inch ones",
-    "counted the other lengths instead",
+    "counted every crayon, not just the 4-inch ones",
+    "counted the 3-inch crayons instead",
     "correct",
     "read the length as the count"
    ],
-   "why": "Count the pencils that measure 6 inches: the first, the third and the fifth. That is 3 marks over the 6."
+   "why": "Count the crayons that measure 4 inches: the second, the third and the fifth. That is 3 marks over the 4."
   },
   {
    "id": "nq-explorer-7.2-e3",
@@ -134,21 +134,21 @@
    "topic": "Survey questions",
    "kind": "scenario",
    "secs": 20,
-   "q": "A class wants to know how students get to school. Which is a good survey question?",
+   "q": "Your class will make a line plot of everyone's hand spans. What must happen to every hand first?",
    "choices": [
-    "Why do buses have wheels?",
-    "How do you get to school: walk, bus, car or bike?",
-    "What time does school start?",
-    "Do you like school?"
+    "Guess each one by looking",
+    "Measure each one the same way, from the very end",
+    "Measure only the biggest hand",
+    "Ask each friend for a number they like"
    ],
    "answer": 1,
    "misconceptions": [
-    "asked about buses, not about how people travel",
+    "guessed instead of measuring",
     "correct",
-    "asked a question with only one answer",
-    "asked about liking school, not getting there"
+    "left most of the data out",
+    "collected opinions, not measurements"
    ],
-   "why": "The question must match the job and offer choices to tally: walk, bus, car or bike."
+   "why": "A line plot of lengths needs real measurements, all taken the same way, or the marks land in the wrong places."
   },
   {
    "id": "nq-explorer-7.3-e1",
@@ -158,7 +158,7 @@
    "topic": "Chance words",
    "kind": "scenario",
    "secs": 20,
-   "q": "A spinner has 6 equal parts and only 1 part is red. Landing on red is...",
+   "q": "A spinner has 8 equal parts and only 1 part is blue. Landing on blue is...",
    "choices": [
     "Certain",
     "Impossible",
@@ -167,12 +167,12 @@
    ],
    "answer": 3,
    "misconceptions": [
-    "called it certain when only 1 part is red",
-    "called it impossible when red can land",
-    "called it an even chance when only 1 of 6 is red",
+    "called it certain when only 1 part is blue",
+    "called it impossible when blue can land",
+    "called it an even chance when only 1 of 8 is blue",
     "correct"
    ],
-   "why": "Only 1 of the 6 equal parts is red, so red can happen but probably will not: that is unlikely."
+   "why": "Only 1 of the 8 equal parts is blue, so blue can happen but probably will not: that is unlikely."
   },
   {
    "id": "nq-explorer-7.3-e2",
@@ -278,21 +278,21 @@
    "topic": "End times",
    "kind": "scenario",
    "secs": 20,
-   "q": "The Vault tour starts at 10:40 and lasts 35 minutes. When does it end?",
+   "q": "The Vault's last tour starts at 3:50 and lasts 25 minutes. When does it end?",
    "choices": [
-    "10:75",
-    "11:05",
-    "11:15",
-    "10:55"
+    "3:75",
+    "4:05",
+    "4:15",
+    "4:25"
    ],
    "answer": 2,
    "misconceptions": [
     "never traded 60 minutes for an hour",
     "stopped 10 minutes early",
     "correct",
-    "added only 15 of the 35 minutes"
+    "added 10 minutes too many"
    ],
-   "why": "Hop the line: 10:40 plus 20 minutes reaches 11:00, and 15 minutes more lands on 11:15."
+   "why": "Hop the line: 3:50 plus 10 minutes reaches 4:00, and 15 minutes more lands on 4:15."
   }
  ]
 }

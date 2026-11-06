@@ -46,8 +46,8 @@ test('every mission game reports completion: gameOver call sites in all four mis
 test('Sum Racer missions are locked to the taught skill in units.json and in every deck', () => {
   const want = {
     '1.2': 'level=9&lock=1',               // the Rounding Run: nothing but rounding questions
-    '2.1': 'level=3&mode=add&lock=1',      // Desert Dash, addition only
-    '2.2': 'level=3&mode=sub&lock=1',      // Desert Dash, subtraction only
+    '2.1': 'level=10&mode=add&lock=1',     // the Trading Post: big adds that need a trade
+    '2.2': 'level=10&mode=sub&lock=1',     // the Trading Post: big take-aways that need a trade
     '3.1': 'level=4&lock=1',               // 2, 5 and 10 times tables
     '3.2': 'level=6&lock=1',               // sharing (division)
     '3.3': 'level=7&lock=1',               // the mixed Grand Prix
@@ -82,7 +82,7 @@ test('the Rounding Run is real: track 9 generates only rounding questions, with 
   // The pure block declares with const/function, which do not attach to the vm global: name them out.
   vm.runInContext(`${pure}\n;globalThis.__sr = { CONFIG, makeRng, genQuestion, makeDeck, roundQ };`, ctx);
   const { CONFIG, makeRng, genQuestion, makeDeck } = ctx.__sr;
-  assert.equal(CONFIG.tracks.length, 9);
+  assert.equal(CONFIG.tracks.length, 10);
   assert.equal(CONFIG.tracks[8].id, 9);
   const rng = makeRng(42);
   for (let i = 0; i < 60; i++) {

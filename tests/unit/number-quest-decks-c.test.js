@@ -5,9 +5,9 @@
 // estimate, one words slide with four words, one flagged Stretch slide, the mission last), the quick check
 // is the step's own three bank items whose cat is one of the step's LOCKED primary codes (standards.json
 // explorerCodes) — with two honest exceptions: step 7.3 cites NO code (chance language has no CCSS home
-// before grade 6; its items are tagged 'enrichment', like the intro's 'framing'), and step 6.1 has no game
-// yet (Builder's Yard is a later phase; the spec's fallback is a classroom shape-hunt TALK and completion
-// on the check). Every distractor carries a misconception tag and every item a `why`, so a miss teaches.
+// before grade 6; its items are tagged 'enrichment', like the intro's 'framing'), and step 6.1 plays
+// Brain Board's Shape Hunt board (sides, square corners, quadrilaterals, families, turns) and keeps its
+// shape-hunt TALK for the room around the learner. Every distractor carries a misconception tag and every item a `why`, so a miss teaches.
 // Kid-safe text (US spelling, no brands, links, codes or framework names in anything a child reads), the
 // unit Jumble beats (5.3 misreads $2.05, 6.3 swaps a grid address, 7.3 calls a one-in-six chance
 // impossible) and the arc's resolution in the finale, and the media rule (Greg, 2026-11-05;
@@ -81,9 +81,9 @@ test('every deck matches the catalogue: key, title, topic, minutes, game', () =>
 
 test('the mission carriers are real: game step generators, Data Detective chapters, the Numbers bank', () => {
   const bb = fs.readFileSync(path.join(ROOT, 'seed-games/brain-board.html'), 'utf8');
-  for (const n of ['5.1', '5.3', '6.2', '6.3']) assert.ok(bb.includes(`NQ_STEP === 'explorer-${n}'`), `brain-board has a step generator for ${n}`);
+  for (const n of ['5.1', '5.3', '6.1', '6.2', '6.3']) assert.ok(bb.includes(`NQ_STEP === 'explorer-${n}'`), `brain-board has a step generator for ${n}`);
   const qr = fs.readFileSync(path.join(ROOT, 'seed-games/quest-race.html'), 'utf8');
-  for (const n of ['5.2', '7.4']) assert.ok(qr.includes(`NQ_STEP === 'explorer-${n}'`), `quest-race has a step generator for ${n}`);
+  for (const n of ['5.2', '7.3', '7.4']) assert.ok(qr.includes(`NQ_STEP === 'explorer-${n}'`), `quest-race has a step generator for ${n}`);
   const dd = fs.readFileSync(path.join(ROOT, 'seed-games/data-detective.html'), 'utf8');
   for (const n of ['7.1', '7.2']) {
     const spec = STEPS.find(s => s.n === n).game.explorer;
@@ -176,16 +176,16 @@ test('the quick check is the step own three items, tagged with a locked primary 
 
 test('hand-checked keys: the arithmetic in the checks is right', () => {
   const key = id => { const it = itemById.get(id); return it.choices[it.answer]; };
-  assert.equal(key('nq-explorer-5.1-e1'), '2,000 grams'); assert.equal(key('nq-explorer-5.1-e2'), '300 centimeters'); assert.equal(key('nq-explorer-5.1-e3'), '2 meters');
-  assert.equal(key('nq-explorer-5.2-e1'), '5:05'); assert.equal(key('nq-explorer-5.2-e2'), '1 hour 30 minutes'); assert.equal(key('nq-explorer-5.2-e3'), '10:00');
-  assert.equal(key('nq-explorer-5.3-e1'), '35 cents'); assert.equal(key('nq-explorer-5.3-e2'), '75 cents'); assert.equal(key('nq-explorer-5.3-e3'), '235 cents');
+  assert.equal(key('nq-explorer-5.1-e1'), '4,000 grams'); assert.equal(key('nq-explorer-5.1-e2'), '300 centimeters'); assert.equal(key('nq-explorer-5.1-e3'), '2 meters');
+  assert.equal(key('nq-explorer-5.2-e1'), '5:05'); assert.equal(key('nq-explorer-5.2-e2'), '1 hour 30 minutes'); assert.equal(key('nq-explorer-5.2-e3'), '9:15');
+  assert.equal(key('nq-explorer-5.3-e1'), '55 cents'); assert.equal(key('nq-explorer-5.3-e2'), '75 cents'); assert.equal(key('nq-explorer-5.3-e3'), '235 cents');
   assert.equal(key('nq-explorer-6.1-e1'), 'Triangle'); assert.equal(key('nq-explorer-6.1-e2'), 'One square corner'); assert.equal(key('nq-explorer-6.1-e3'), 'It has 4 sides and 4 square corners, like every rectangle');
   assert.equal(key('nq-explorer-6.2-e1'), '24 square meters'); assert.equal(key('nq-explorer-6.2-e2'), '20 inches'); assert.equal(key('nq-explorer-6.2-e3'), 'Perimeter 22 feet, area 24 square feet');
   assert.equal(key('nq-explorer-6.3-e1'), 'Parallel lines'); assert.equal(key('nq-explorer-6.3-e2'), 'A'); assert.equal(key('nq-explorer-6.3-e3'), '4 steps right, then 2 steps up');
-  assert.equal(key('nq-explorer-7.1-e1'), '8'); assert.equal(key('nq-explorer-7.1-e2'), '10'); assert.equal(key('nq-explorer-7.1-e3'), '1 1/2 yards');
-  assert.equal(key('nq-explorer-7.2-e1'), 'What is your favorite fruit: apple, banana, grape or pear?'); assert.equal(key('nq-explorer-7.2-e2'), '3'); assert.equal(key('nq-explorer-7.2-e3'), 'How do you get to school: walk, bus, car or bike?');
+  assert.equal(key('nq-explorer-7.1-e1'), '12'); assert.equal(key('nq-explorer-7.1-e2'), '10'); assert.equal(key('nq-explorer-7.1-e3'), '1 yard');
+  assert.equal(key('nq-explorer-7.2-e1'), 'What is your favorite fruit: apple, banana, grape or pear?'); assert.equal(key('nq-explorer-7.2-e2'), '3'); assert.equal(key('nq-explorer-7.2-e3'), 'Measure each one the same way, from the very end');
   assert.equal(key('nq-explorer-7.3-e1'), 'Unlikely'); assert.equal(key('nq-explorer-7.3-e2'), 'Certain'); assert.equal(key('nq-explorer-7.3-e3'), 'An even chance');
-  assert.equal(key('nq-explorer-7.4-e1'), '2,600 grams'); assert.equal(key('nq-explorer-7.4-e2'), '75 centimeters'); assert.equal(key('nq-explorer-7.4-e3'), '11:15');
+  assert.equal(key('nq-explorer-7.4-e1'), '2,600 grams'); assert.equal(key('nq-explorer-7.4-e2'), '75 centimeters'); assert.equal(key('nq-explorer-7.4-e3'), '4:15');
   // And the worked examples in the decks: 2 kg counted twice to 2,000 g, change 5 + 30 = 35 cents,
   // area 3 x 7 = 21, the treasure at (3, 2), 20 - 12 = 8, ribbons to 1 1/2, the sack at 3,400 grams.
   const all = decks.map(d => JSON.stringify(d.deck)).join(' ');

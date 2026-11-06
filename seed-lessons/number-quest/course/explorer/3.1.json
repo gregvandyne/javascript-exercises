@@ -81,7 +81,7 @@
    ],
    "visual": {
     "type": "array",
-    "label": "6 trays of 7 rolls drawn as an array: 6 rows of 7 is 42",
+    "label": "6 trays of 7 rolls: 6 rows of 7 is 42",
     "rows": 6,
     "cols": 7
    },

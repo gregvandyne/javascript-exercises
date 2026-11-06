@@ -64,7 +64,8 @@
     "it is drawn again by hand at the other end",
     "it is cut into packets that may take different roads"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A big photo is cut into small numbered packets, and each packet can take its own road through the routers to the other end."
   },
   {
    "id": "1b-4.1-e2",
@@ -81,7 +82,8 @@
     "uses the numbers to put them back in order",
     "prints them in the order they came"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Every packet carries a number. The receiving device reads the numbers and puts the packets back as 1, 2, 3."
   },
   {
    "id": "1b-4.1-e3",
@@ -93,12 +95,13 @@
    "secs": 20,
    "q": "A road in the network closes while a message is being sent. What happens?",
    "choices": [
-    "the message is lost for ever",
+    "the message is lost forever",
     "the packets take another road",
     "the internet stops",
     "the picture changes color"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The network has many roads. When one closes, the routers send the packets along another road, and the message still arrives."
   },
   {
    "id": "1b-4.2-r1",
@@ -132,7 +135,8 @@
     "your name and your birthday",
     "purple-river-bicycle-moon"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Four random words make a long passphrase that is hard to guess. A name, a birthday or password1 is easy to guess."
   },
   {
    "id": "1b-4.2-e2",
@@ -149,7 +153,8 @@
     "anyone who asks nicely enough",
     "a prize team that messages you online"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Your passphrase stays secret, even from your best friend. Only a parent or another trusted adult may know it."
   },
   {
    "id": "1b-4.2-e3",
@@ -166,7 +171,8 @@
     "because the law says you must",
     "so your friends can see them all"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A backup is a spare copy kept somewhere else. If the tablet breaks or gets lost, your photos are still safe."
   },
   {
    "id": "1b-4.3-r1",
@@ -200,7 +206,8 @@
     "send it to a friend",
     "reply with your address"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A prize you never tried to win and a request for your password are clues of a trick. Do not reply, and tell a trusted adult."
   },
   {
    "id": "1b-4.3-e2",
@@ -214,10 +221,11 @@
    "choices": [
     "it comes from your class page",
     "it has no pictures",
-    "it says hurry and asks for your password",
+    "it says hurry and asks for your passphrase",
     "it is short"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Hurry plus a request for your passphrase are two clues of a trick. A short message or one with no pictures can be perfectly safe."
   },
   {
    "id": "1b-4.3-e3",
@@ -234,7 +242,8 @@
     "it deletes the message",
     "it sends the message faster"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The wheel shifts every letter by the key. Only someone who knows the key can turn the letters back and read it."
   }
  ]
 }

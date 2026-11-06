@@ -17,7 +17,7 @@
    "art": "branch",
    "visual": {
     "type": "tiles",
-    "label": "Sharing in one strip: 29 plums, 4 friends, 7 each, 1 left over",
+    "label": "29 plums, 4 friends: 7 each, 1 left over",
     "values": [
      "29 plums",
      "4 friends",
@@ -59,7 +59,7 @@
    ],
    "visual": {
     "type": "array",
-    "label": "29 plums shared by 4 friends: 4 rows of 7, with 1 plum left over",
+    "label": "29 plums shared by 4: 4 rows of 7, 1 left over",
     "rows": 4,
     "cols": 7,
     "extra": 1,
@@ -97,19 +97,54 @@
    "art": "star",
    "visual": {
     "type": "bars",
-    "label": "Sharing 96 by 4 in chunks: 80 first, then 16, and each share is 24",
+    "label": "Sharing 96 by 4 in two chunks: 80 first, then 16, so each share is 24",
     "rows": [
      {
-      "label": "96 shared by 4, in two chunks: 80 first, then 16",
+      "label": "80 first: 20 for each of the 4",
       "parts": [
        {
-        "w": 0.83,
-        "label": "80: 20 each",
+        "w": 0.25,
+        "label": "20",
         "tone": 0
        },
        {
-        "w": 0.17,
-        "label": "16: 4 each",
+        "w": 0.25,
+        "label": "20",
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "label": "20",
+        "tone": 0
+       },
+       {
+        "w": 0.25,
+        "label": "20",
+        "tone": 0
+       }
+      ]
+     },
+     {
+      "label": "16 next: 4 more for each",
+      "parts": [
+       {
+        "w": 0.25,
+        "label": "4",
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "label": "4",
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "label": "4",
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "label": "4",
         "tone": 1
        }
       ]
@@ -118,21 +153,21 @@
    },
    "focus": [
     {
-     "cue": "Share 80 first: that is 20 for each of the 4.",
+     "cue": "Share 80 first: each of the 4 shares gets 20.",
      "box": [
-      5.6,
-      35.7,
-      73.9,
-      18.4
+      5,
+      12.3,
+      90.1,
+      27.6
      ]
     },
     {
-     "cue": "Then share 16: 4 more each. Each share is 24.",
+     "cue": "Then share 16: 4 more each. Each share is 20 + 4 = 24.",
      "box": [
-      78.6,
-      35.7,
-      15.9,
-      18.4
+      5,
+      42.5,
+      90.1,
+      27.6
      ]
     }
    ]

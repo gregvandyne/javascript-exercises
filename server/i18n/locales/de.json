@@ -2328,7 +2328,12 @@
       "again": "Noch mal versuchen",
       "passed": "Bestanden! {score} von {total} richtig.",
       "failed": "{score} von {total} richtig. Du brauchst {pass}. Versuch es noch mal!"
-    }
+    },
+  "loudness": {
+    "listening": "Hört zu",
+    "stop": "Stopp",
+    "tap": "Tippen, um zuzuhören"
+  }
   },
   "favorites": {
     "title": "Meine Favoriten",
@@ -3853,7 +3858,8 @@
       "dataDetective": "Sortiere, zeichne und bereinige Daten und triff nur Aussagen, die die Daten stützen.",
       "packetPost": "Schicke Pakete durchs Netz, wähle starke Passphrasen und erkenne Tricks im Netz.",
       "insideTheMachine": "Baue und repariere Computer: Bauteile, Ein- und Ausgaben, Bits und Pixel, Design für alle.",
-      "tugOfMath": "Matheaufgaben für jede Klasse von 1 bis 8, vom Plus im Zahlenraum bis 20 bis zu Gleichungen, als Tauziehen. Gegen den Computer oder zu zweit an einem Bildschirm."
+      "tugOfMath": "Matheaufgaben für jede Klasse von 1 bis 8, vom Plus im Zahlenraum bis 20 bis zu Gleichungen, als Tauziehen. Gegen den Computer oder zu zweit an einem Bildschirm.",
+      "remisQuietMeadow": "Eine Lärmampel für die Klasse: Bleibt leise, damit Remi, der Rote Panda, schlafen kann, und zählt gemeinsam die leise Zeit."
     },
     "hubs": {
       "math": {

@@ -2346,7 +2346,12 @@
       "nqLap": "🏅 Lap {lap} finished for this unit!",
       "guestSave": "You finished this step! Guests can play everything, but a finished step only counts with a free account. Make one now and we will count this finish — we kept it for you.",
       "guestSaveAction": "Make my free account"
-    }
+    },
+  "loudness": {
+    "listening": "Listening",
+    "stop": "Stop",
+    "tap": "Tap to start listening"
+  }
   },
   "favorites": {
     "title": "My favorites",
@@ -4070,7 +4075,7 @@
         "h": "Six games carry the course",
         "p": "Four are quiz, race and fluency engines the school may already know from the open library; the fifth, Fraction Factory, was built for this course and is where Tally makes her home. The Fairground borrows two more: Data Detective from CS Quest for its data cases, and Would You Rather, whose Numbers bank was written for the chance step.",
         "brainBoard": "A category quiz board, played solo as a practice board. In Number Quest it is the fluency mission for steps 1.1 and 2.3 and for the Measure Shop and Building Yard boards of Units 5 and 6 (measures, money, perimeter and area, lines and grids): the step's own deck and check teach the skill, and scoring 3,000 points on the board is what completes the mission, and the board saves as the student plays, so a lesson can span sittings.",
-        "sumRacer": "An arithmetic kart racer. Its Number Quest missions are locked to the taught skill: a Rounding Run track built for step 1.2, addition-only and subtraction-only races to 100 in Unit 2, and the 2, 5 and 10 tables, sharing and mixed Grand Prix tracks of Unit 3. The game opens on the step's track and stays there, so the win that completes the mission is a win at that skill.",
+        "sumRacer": "An arithmetic kart racer. Its Number Quest missions are locked to the taught skill: a Rounding Run track built for step 1.2, addition-only and subtraction-only Trading Post races with 3- and 4-digit trades in Unit 2, and the 2, 5 and 10 tables, sharing and mixed Grand Prix tracks of Unit 3. The game opens on the step's track and stays there, so the win that completes the mission is a win at that skill.",
         "questRace": "An island race, played solo as a practice race against three island racers. In Number Quest it carries steps 1.3 (patterns), 5.2 (timetables) and the finale 7.4, the Vault Run: the deck and check teach the skill, and finishing the whole race, all the way to the podium, is what completes it.",
         "dataDetective": "CS Quest's data cases, borrowed for the Fairground: sort a messy table, chart it, and spot the claim the data does not support. In Number Quest it carries steps 7.1 (Chart It) and 7.2 (My Data, the student's own class survey), with its cases untouched.",
         "wouldYouRather": "The dilemma game, played for judgement rather than right answers. Its Numbers topic, a bank of sure-thing-versus-chance dilemmas written for Number Quest step 7.3, asks the student to name how sure they are before each pick: certain, likely, an even chance, unlikely or impossible.",
@@ -4142,7 +4147,8 @@
       "dataDetective": "Sort, chart and clean data, then make claims the evidence supports.",
       "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
       "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
-      "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen."
+      "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen.",
+      "remisQuietMeadow": "A classroom noise meter: keep the room calm so Remi the red panda can nap, and count up the quiet time together."
     },
     "hubs": {
       "math": {
