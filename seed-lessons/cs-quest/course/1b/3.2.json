@@ -21,7 +21,7 @@
   },
   {
    "title": "Enough data?",
-   "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we can not tell yet.",
+   "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we cannot tell yet.",
    "art": "chart",
    "img": "csq/data-detective/claims-1b-small",
    "view": [
@@ -30,7 +30,7 @@
     54,
     89
    ],
-   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we can not tell yet."
+   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we cannot tell yet."
   },
   {
    "kind": "example",

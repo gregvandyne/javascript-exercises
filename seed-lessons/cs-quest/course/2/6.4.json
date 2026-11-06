@@ -63,19 +63,19 @@
    "words": [
     {
      "word": "algorithm",
-     "means": "A list of steps, in order, that solves a problem."
+     "means": "a list of steps, in order, that solves a problem"
     },
     {
      "word": "decompose",
-     "means": "To break a big problem into smaller parts you can solve."
+     "means": "to break a big problem into smaller parts you can solve"
     },
     {
      "word": "packet",
-     "means": "A small piece of a message, sent across a network with its address."
+     "means": "a small piece of a message, sent across a network with its address"
     },
     {
      "word": "debug",
-     "means": "To find and fix the mistake in code that almost works."
+     "means": "to find and fix the mistake in code that almost works"
     }
    ]
   },

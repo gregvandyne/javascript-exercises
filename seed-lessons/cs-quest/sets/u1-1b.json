@@ -201,7 +201,7 @@
    "topic": "Loops",
    "kind": "analyze",
    "secs": 20,
-   "q": "Bolt should move 4 squares, but it spins in place 4 times and stays put. What is the bug?",
+   "q": "Bolt should move 4 squares, but he spins in place 4 times and stays put. What is the bug?",
    "choices": [
     "the repeat is around the turn, not the move",
     "the loop count is too small",

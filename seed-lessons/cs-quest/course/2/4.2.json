@@ -54,7 +54,7 @@
   },
   {
    "title": "Strong passphrases",
-   "text": "Four random words beat a short word with a number added. Use a different one for each account, so one leak can not open everything.",
+   "text": "Four random words beat a short word with a number added. Use a different one for each account, so one leak cannot open everything.",
    "art": "key",
    "img": "csq/packet-post/locks-2-pass",
    "view": [

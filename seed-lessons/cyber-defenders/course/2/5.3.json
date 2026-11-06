@@ -9,68 +9,12 @@
   {
    "title": "Attention is the product",
    "text": "Free apps are not free to run. Your attention is the product being sold to advertisers, so every design choice argues for one more minute of it. The Magpie's flock sells the shiniest hooks of all.",
-   "art": "star",
-   "img": "csq/would-you-rather/tech-2-first",
-   "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "Video-call a relative far away, every day",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Visit them once a month instead",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
-   ]
+   "art": "star"
   },
   {
    "title": "The hook toolkit",
    "text": "Learn the toolkit by name: streaks that punish a day off, autoplay that starts the next video, endless scroll with no bottom, and notifications timed to pull you back.",
-   "art": "gears",
-   "img": "csq/would-you-rather/tech-2-second",
-   "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "A watch that counts your steps",
-     "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "A watch that reminds you to drink water",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
-     ]
-    }
-   ]
+   "art": "gears"
   },
   {
    "title": "A design problem, not willpower",
@@ -139,26 +83,7 @@
   {
    "title": "Your counter-toolkit",
    "text": "Run the audit on pretend screens only; no real device data is collected here. Choose your limits while you are calm, and let the settings hold them when you are not.",
-   "art": "lock",
-   "img": "csq/would-you-rather/tech-2-first",
-   "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "Run the audit on pretend screens like these",
-     "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
-     ]
-    }
-   ]
+   "art": "lock"
   },
   {
    "kind": "words",
@@ -187,27 +112,8 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "There is no game this time. Run the settings-audit challenge on the pretend screens with your teacher, and set one limit you chose yourself.",
-   "art": "trophy",
-   "img": "csq/would-you-rather/tech-2-second",
-   "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
-   "focus": [
-    {
-     "cue": "Audit settings on pretend screens",
-     "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
-     ]
-    }
-   ]
+   "text": "There is no game this time. Run the settings audit on pretend screens, alone or with a family member or classmate, and set one limit you chose yourself.",
+   "art": "trophy"
   }
  ],
  "check": [

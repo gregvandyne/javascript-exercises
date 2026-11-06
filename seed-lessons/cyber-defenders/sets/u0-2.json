@@ -11,18 +11,18 @@
    "lesson": "0.1",
    "use": "exit",
    "cat": "6-8.DC.THRT",
-   "topic": "Welcome back",
+   "topic": "The Magpie's flock",
    "kind": "recall",
    "secs": 15,
-   "q": "What has changed at the post office since the Explorer course?",
+   "q": "How does the Magpie make trouble at the post office now?",
    "choices": [
-    "The post office closed and Pim retired last spring",
-    "There is more post, and the tricks are bigger and better organized",
-    "The Magpie moved away and the post is fully safe now",
-    "Letters stopped arriving and Netville uses no post"
+    "It closed the post office, and Pim retired",
+    "A whole flock helps it copy real letters and fake the postmarks",
+    "It moved away, so the post is fully safe now",
+    "It only sends letters that carry its own name"
    ],
    "answer": 1,
-   "why": "The Pro course opens a year on: more post is moving, and the Magpie's tricks are bigger and organized."
+   "why": "The Magpie no longer works alone: its flock copies real letters and fakes the postmarks, so each fake looks almost right."
   },
   {
    "id": "cd-2-0.1-e2",

@@ -230,21 +230,21 @@
    "topic": "Conversions",
    "kind": "recall",
    "secs": 20,
-   "q": "How many meters are in 3 kilometers 400 meters?",
+   "q": "How many grams are in 2 kilograms 600 grams?",
    "choices": [
-    "340 meters",
-    "3,040 meters",
-    "3,400 meters",
-    "34,000 meters"
+    "260 grams",
+    "2,060 grams",
+    "2,600 grams",
+    "26,000 grams"
    ],
    "answer": 2,
    "misconceptions": [
-    "shrank the 400 meters to 40",
-    "put the 400 in the wrong place",
+    "shrank the 600 grams to 60",
+    "put the 600 in the wrong place",
     "correct",
     "added an extra zero"
    ],
-   "why": "3 kilometers is 3 x 1,000 = 3,000 meters, and 3,000 + 400 = 3,400 meters."
+   "why": "2 kilograms is 2 x 1,000 = 2,000 grams, and 2,000 + 600 = 2,600 grams."
   },
   {
    "id": "nq-explorer-7.4-e2",

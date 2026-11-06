@@ -76,31 +76,22 @@
    "title": "Their photo, their yes",
    "text": "A photo of someone else is their image, not your content. Posting it needs their yes, every time. The same respect covers their private facts, their location and their bad days.",
    "art": "people",
-   "img": "csq/would-you-rather/online-photo-2",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+   "img": "csq/trick-inbox/pressure-2-pr-4-all",
+   "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
    "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
+    0.0,
+    21.1,
+    87.5,
+    77.8
    ],
    "focus": [
     {
-     "cue": "Their photo, shared with the whole world",
+     "cue": "A dare to post a friend's silly photo, without their yes",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
-     ]
-    },
-    {
-     "cue": "Their photo, shared with ten friends",
-     "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      3.8,
+      56.4,
+      55.4,
+      7.1
      ]
     }
    ]

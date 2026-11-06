@@ -214,13 +214,16 @@ test('parity: every slide is pictured except the words slides, and guided focus 
     const where = `${band}-${step.n}`;
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
+      // A slide is pictured only when a capture shows what it teaches (2026-11-06 student pass: pictures whose
+      // tour talked about another screen were dropped, and those slides draw their topic art instead).
       if (s.kind === 'words') assert.equal(s.img, undefined, `${at}: words slides stay typographic, as in CS Quest`);
-      else assert.ok(s.img && s.alt, `${at}: a pictured slide (the Phase 1.5 captures landed)`);
+      else if (s.img) assert.ok(s.alt, `${at}: a pictured slide carries its alt`);
+      else assert.ok(ART.includes(s.art) && s.focus === undefined && s.view === undefined, `${at}: an unpictured slide draws its art, with no tour`);
       if (step.n === '0.1') {
         assert.equal(s.focus, undefined, `${at}: the intro carries no guided focus yet`);
       } else {
         assert.ok(s.img ? Array.isArray(s.focus) : true, `${at}: pictured slides carry guided focus`);
-        if (s.kind === 'mission') assert.equal((s.focus || []).length, 1, `${at}: a mission slide gets exactly one focus step`);
+        if (s.kind === 'mission' && s.img) assert.equal(s.focus.length, 1, `${at}: a pictured mission slide gets exactly one focus step`);
       }
     }
   }
@@ -288,7 +291,11 @@ test('course design: each unit plays the game that teaches it, and no step repea
   for (const band of BANDS) {
     const mods = STEPS.filter(s => s.game[band]).map(s => ({ n: s.n, unit: s.unit, ...s.game[band] }));
     for (const m of mods) {
-      if (m.unit <= 2) assert.equal(m.slug, 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
+      // Units 1-2 play Packet Post, except where a step's own skill is trained by one of the course's own games
+      // (2026-11-06: 1b-2.2's second lock and spare copy in Escape's Layers lock, 2-2.2's key-fishing letters in
+      // Trick Inbox), so no step reopens a chapter an earlier step already finished.
+      const OWN = { '1b-2.2': 'escape-the-post-office', '2-2.2': 'trick-inbox' };
+      if (m.unit <= 2) assert.equal(m.slug, OWN[`${band}-${m.n}`] || 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
       if (m.unit >= 4) assert.ok(['trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
     }
     const counts = mods.reduce((a, m) => ({ ...a, [m.slug]: (a[m.slug] || 0) + 1 }), {});
@@ -362,8 +369,8 @@ test('guided focus geometry: the reported slide and the shared road maps cover t
   // slightly higher and narrower, x 9.8-49.5, y 46.9-70.3. Every step that sends the eye to a
   // diagram must cover its own capture's diagram.
   const roadAt = [
-    [ '1b', '1.2', 0, 0, [11.1, 48.6, 50.2, 71.2] ], [ '1b', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
-    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ], [ '2', '1.2', 6, 0, [9.8, 46.9, 49.5, 70.3] ],
+    [ '1b', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
+    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ],
   ];
   for (const [band, n, si, fi, extent] of roadAt) {
     const s = deck(band, n).slides[si];

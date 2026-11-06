@@ -76,31 +76,22 @@
    "title": "Passed on without you",
    "text": "A copy you send to a friend can be forwarded to others without you knowing. Once a copy travels on, you cannot call it back.",
    "art": "people",
-   "img": "csq/packet-post/routes-1b-journey",
-   "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
+   "img": "csq/trick-inbox/mix-1b-mx-1-all",
+   "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
    "view": [
-    24.3,
-    21.0,
-    43.6,
-    38.8
+    0.0,
+    25.1,
+    78.5,
+    69.8
    ],
    "focus": [
     {
-     "cue": "Packet 2 waits at Hill Office, two hops done",
+     "cue": "Pass it to ten friends: each copy travels on without you",
      "box": [
-      27.3,
-      36.2,
-      5.4,
-      8.8
-     ]
-    },
-    {
-     "cue": "Packet 2 of 4: its number travels with it",
-     "box": [
-      54.1,
-      35.7,
-      10.8,
-      5.4
+      3.8,
+      56.4,
+      33.5,
+      7.1
      ]
     }
    ]
@@ -206,22 +197,22 @@
    "title": "Your mission",
    "text": "Play Many Roads in Packet Post for all 4 levels, tracing every message's journey. Name one thing you would never send, because copies cannot come back.",
    "art": "trophy",
-   "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
+   "img": "csq/packet-post/routes-1b-journey",
+   "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
    "view": [
-    7.0,
-    32.8,
-    47.9,
-    61.9
+    24.3,
+    21.0,
+    43.6,
+    38.8
    ],
    "focus": [
     {
-     "cue": "Play Many Roads: trace every copy's journey",
+     "cue": "Play Many Roads: follow each packet's journey, hop by hop",
      "box": [
-      10.0,
-      37.8,
-      41.9,
-      51.9
+      27.3,
+      36.2,
+      5.4,
+      8.8
      ]
     }
    ]

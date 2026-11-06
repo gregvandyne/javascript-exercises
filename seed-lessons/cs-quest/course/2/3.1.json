@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "Real data is messy",
-   "text": "People make typos, answer twice or write numbers that can not be true. Chart messy data and the chart tells the wrong story.",
+   "text": "People make typos, answer twice or write numbers that cannot be true. Chart messy data and the chart tells the wrong story.",
    "art": "magnifier",
    "img": "csq/data-detective/cleanup-2-key",
    "view": [
@@ -21,7 +21,7 @@
   },
   {
    "title": "Clean it first",
-   "text": "Fix typos, merge true repeats and remove values that can not be true. Never remove a row just because you do not like its answer.",
+   "text": "Fix typos, merge true repeats and remove values that cannot be true. Never remove a row just because you do not like its answer.",
    "art": "wrench",
    "img": "csq/data-detective/cleanup-2-edit",
    "view": [

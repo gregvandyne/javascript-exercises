@@ -9,35 +9,7 @@
   {
    "title": "Three rooms for data",
    "text": "Pim sorts data into three rooms. The van is data in transit, the vault is data at rest, and the reading desk is data in use, open while you work with it.",
-   "art": "box",
-   "img": "csq/packet-post/protocols-2-journey",
-   "alt": "The whole journey of a picture in five rule cards, waiting to be put in the right order.",
-   "view": [
-    37.7,
-    26.4,
-    53.6,
-    47.6
-   ],
-   "focus": [
-    {
-     "cue": "A picture's journey, in five rule cards",
-     "box": [
-      40.7,
-      42.9,
-      47.6,
-      20.0
-     ]
-    },
-    {
-     "cue": "Put them in the order they happen",
-     "box": [
-      40.7,
-      37.5,
-      47.6,
-      4.1
-     ]
-    }
-   ]
+   "art": "box"
   },
   {
    "kind": "example",
@@ -60,7 +32,7 @@
    ],
    "focus": [
     {
-     "cue": "In transit: the van on a sealed road",
+     "cue": "In transit: a message on the sealed road",
      "box": [
       22.3,
       60.2,
@@ -69,7 +41,7 @@
      ]
     },
     {
-     "cue": "Each room needs its own lock",
+     "cue": "Name and address inside: the padlock street keeps them sealed",
      "box": [
       54.0,
       26.5,
@@ -86,28 +58,19 @@
    "img": "csq/packet-post/locks-2-backup",
    "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
    "view": [
-    6.3,
-    37.2,
-    52.7,
-    46.8
+    39.0,
+    24.0,
+    52.0,
+    40.0
    ],
    "focus": [
     {
-     "cue": "A copy kept in another place",
+     "cue": "Keep a copy in another place: the cloud is someone else's place",
      "box": [
       40.6,
       52.0,
       15.4,
       8.2
-     ]
-    },
-    {
-     "cue": "The line runs from Pim's Post to Grandma's House",
-     "box": [
-      9.3,
-      62.9,
-      28.0,
-      6.3
      ]
     }
    ]
@@ -148,35 +111,7 @@
   {
    "title": "The Magpie watches all three",
    "text": "The Magpie does not care which room a secret is in. It watches the van, the vault and the desk, hunting shiny secrets, so a Defender checks every room's lock.",
-   "art": "mask",
-   "img": "csq/packet-post/routes-2-budget",
-   "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
-   "view": [
-    5.4,
-    20.5,
-    85.9,
-    76.4
-   ],
-   "focus": [
-    {
-     "cue": "The Magpie watches the roads between offices",
-     "box": [
-      8.4,
-      36.1,
-      45.5,
-      54.8
-     ]
-    },
-    {
-     "cue": "Every room and every road needs its check",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
-     ]
-    }
-   ]
+   "art": "mask"
   },
   {
    "kind": "words",

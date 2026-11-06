@@ -211,8 +211,8 @@
    ]
   },
   {
-   "title": "Both or one?",
-   "text": "A porch light turns on if it is dark AND someone is outside: AND needs both at the same moment. The pictured check is if NOT path ahead OR on paint, turn right. On paint reads the square under Bolt, so turning cannot change its answer: move first.",
+   "title": "Either one will do",
+   "text": "This check asks two questions at once: is there no path ahead, or is Bolt on paint? If either answer is yes, Bolt turns right, and the move comes first so the check reads the square Bolt just drove onto.",
    "art": "table",
    "img": "csq/robo-route/conditionals-2-or-not",
    "view": [

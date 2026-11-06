@@ -182,15 +182,15 @@
    "topic": "Level design",
    "kind": "apply",
    "secs": 20,
-   "q": "Your pair has 18 minutes: build, test, fix. What helps most?",
+   "q": "You have 18 minutes to build, test and fix a level. What helps most?",
    "choices": [
-    "set a time for each part and who does it",
+    "set a time for each part before you start",
     "build until the time runs out",
     "skip testing to save time",
-    "both do the same thing together"
+    "keep changing the plan as you go"
    ],
    "answer": 0,
-   "why": "A simple plan with times and jobs keeps build, test and fix all covered before the minutes run out."
+   "why": "A simple plan with a time for each part keeps build, test and fix all covered before the minutes run out."
   },
   {
    "id": "2-2.2-e3",

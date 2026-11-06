@@ -157,35 +157,7 @@
   {
    "title": "Café networks, Pro eyes",
    "text": "On a café network, sealed apps are fine, and anything unsealed is a postcard for strangers. Checking an address letter by letter beats trusting a padlock.",
-   "art": "globe",
-   "img": "csq/packet-post/routes-2-budget",
-   "alt": "A big town map with a hop budget: the birthday plan must cross in thirteen hops or fewer.",
-   "view": [
-    5.4,
-    29.5,
-    76.5,
-    68.0
-   ],
-   "focus": [
-    {
-     "cue": "A town full of roads you do not control",
-     "box": [
-      8.4,
-      36.1,
-      45.5,
-      54.8
-     ]
-    },
-    {
-     "cue": "The hop budget counts every road you take",
-     "box": [
-      66.2,
-      38.0,
-      12.7,
-      5.5
-     ]
-    }
-   ]
+   "art": "globe"
   },
   {
    "kind": "words",
@@ -214,24 +186,24 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road: the same levels you finished in step 1.1, so this step is already earned when the game opens. After each level, name one thing its padlock would certify, and one it would not.",
+   "text": "Open Packet Post at Spot the Trick and judge all 10 cards. When a card wears a trusted name, say what a padlock would certify, and what it never could.",
    "art": "trophy",
-   "img": "csq/packet-post/protocols-2-rules",
-   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
+   "img": "csq/packet-post/tricks-2-fake",
+   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
    "view": [
-    6.8,
-    38.3,
-    45.7,
-    40.6
+    6.0,
+    22.0,
+    50.0,
+    40.0
    ],
    "focus": [
     {
-     "cue": "Play Rules of the Road: name what a padlock covers",
+     "cue": "Play Spot the Trick: a padlock never proves the sender",
      "box": [
-      9.8,
-      46.9,
-      39.7,
-      23.4
+      8.1,
+      28.1,
+      45.2,
+      22.9
      ]
     }
    ]
@@ -244,7 +216,7 @@
  ],
  "game": {
   "slug": "packet-post",
-  "chapter": "protocols",
-  "params": "chapter=protocols&band=2&lock=1"
+  "chapter": "tricks",
+  "params": "chapter=tricks&band=2&lock=1"
  }
 }

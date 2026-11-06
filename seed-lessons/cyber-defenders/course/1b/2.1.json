@@ -10,31 +10,31 @@
    "title": "A key for your house",
    "text": "Your house key opens your front door, and only your front door. Pim says a good key is kept safe, never lent out, and never left lying around.",
    "art": "key",
-   "img": "csq/packet-post/locks-1b-protect",
-   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
+   "img": "csq/packet-post/locks-1b-habits",
+   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
    "view": [
     51.0,
-    20.9,
+    19.9,
     40.3,
     35.8
    ],
    "focus": [
     {
-     "cue": "Sort the habits: which ones protect the tablet?",
+     "cue": "If one key opens every door, losing it opens them all",
      "box": [
       54.0,
       26.5,
       34.3,
-      10.3
+      7.9
      ]
     },
     {
-     "cue": "Protects it, or risky? Every habit gets a tray",
+     "cue": "Safe habit or risky habit: how do you keep a key?",
      "box": [
       54.1,
-      44.6,
-      30.2,
-      6.6
+      42.4,
+      32.5,
+      6.7
      ]
     }
    ]

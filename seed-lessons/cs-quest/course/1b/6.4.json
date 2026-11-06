@@ -62,19 +62,19 @@
    "words": [
     {
      "word": "algorithm",
-     "means": "A list of steps, in order, that solves a problem."
+     "means": "a list of steps, in order, that solves a problem"
     },
     {
      "word": "packet",
-     "means": "A small piece of a message, sent across a network."
+     "means": "a small piece of a message, sent across a network"
     },
     {
      "word": "input",
-     "means": "What goes into a computer: a tap, a key, a sound."
+     "means": "what goes into a computer: a tap, a key, a sound"
     },
     {
      "word": "debug",
-     "means": "To find and fix a mistake in your code."
+     "means": "to find and fix a mistake in your code"
     }
    ]
   },

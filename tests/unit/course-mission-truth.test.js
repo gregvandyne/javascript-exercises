@@ -30,8 +30,9 @@ const CHAIN_PHRASE = {
   'cyber-defenders 2 2.3': 'check the 4 cards there',
 };
 // Steps whose game chapter was already required in full by an earlier step: the mission must say the
-// step is already earned instead of pretending there are unplayed levels.
-const HONEST_DUP = ['cyber-defenders 1b 2.2', 'cyber-defenders 2 1.2', 'cyber-defenders 2 2.2'];
+// step is already earned instead of pretending there are unplayed levels. None left: since the
+// 2026-11-06 student pass every step opens its own module (see the test below).
+const HONEST_DUP = [];
 
 function decks(course) {
   const out = [];
@@ -100,4 +101,15 @@ test('every quick-check item in the audited units carries a why, and a miss retu
     }
   }
   assert.equal(checked, 108, 'the audited units hold 108 deck-check items');
+});
+
+test('cyber defenders: no step reopens a Packet Post chapter an earlier step already required', () => {
+  for (const band of ['1b', '2']) {
+    const seen = new Map();
+    for (const { course, band: b, deck: d } of ALL) {
+      if (course !== 'cyber-defenders' || b !== band || !d.game || d.game.slug !== 'packet-post') continue;
+      assert.ok(!seen.has(d.game.chapter), `cyber-defenders ${band} ${d.n}: ${d.game.chapter} was already the module of step ${seen.get(d.game.chapter)}`);
+      seen.set(d.game.chapter, d.n);
+    }
+  }
 });
