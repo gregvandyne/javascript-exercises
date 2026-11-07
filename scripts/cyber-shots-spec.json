@@ -2010,5 +2010,35 @@
   "game": "packet-post",
   "level": 3,
   "state": "protocols-1b-sealed"
+ },
+ {
+  "actions": [],
+  "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "share or keep: sort each fact",
+  "game": "packet-post",
+  "level": 1,
+  "state": "locks-1b-sort-n1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 190
+  }
+ },
+ {
+  "actions": [],
+  "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "a good spare copy, kept elsewhere",
+  "game": "packet-post",
+  "level": 5,
+  "state": "locks-1b-backup-n1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 201
+  }
  }
 ]

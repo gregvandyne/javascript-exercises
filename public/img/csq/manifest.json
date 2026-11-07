@@ -3356,6 +3356,28 @@
    "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
    "capturedAt": "2026-11-07",
    "commit": "d1020df"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-backup-n1",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-backup-n1",
+   "concept": "a good spare copy, kept elsewhere",
+   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
+   "capturedAt": "2026-11-07",
+   "commit": "2700f45"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-sort-n1",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-sort-n1",
+   "concept": "share or keep: sort each fact",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
+   "capturedAt": "2026-11-07",
+   "commit": "2700f45"
   }
  ]
 }

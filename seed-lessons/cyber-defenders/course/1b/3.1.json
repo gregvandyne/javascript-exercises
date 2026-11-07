@@ -46,31 +46,25 @@
     "Keep private: a birthday",
     "Keep private: a photo in school uniform"
    ],
-   "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
-   "view": [
-    5,
-    9.5,
-    86.3,
-    64.6
-   ],
+   "img": "csq/packet-post/locks-1b-sort-n1",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
    "focus": [
     {
      "cue": "The first card to sort: where you live",
      "box": [
-      8,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      3,
+      94.3,
+      21.2
      ]
     },
     {
      "cue": "Share, or keep private? Every card gets a tray",
      "box": [
-      54.1,
-      44.5,
-      25.8,
-      6.6
+      2.9,
+      69.9,
+      63.6,
+      20.3
      ]
     }
    ]

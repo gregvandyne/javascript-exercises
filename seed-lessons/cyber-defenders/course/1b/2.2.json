@@ -83,31 +83,25 @@
    "title": "A spare copy, kept elsewhere",
    "text": "A backup is a spare copy of your things, kept somewhere else, like photos saved in another place. Your passphrase is different: it stays in your head, never in a copy.",
    "art": "box",
-   "img": "csq/packet-post/locks-1b-backup",
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
-   "view": [
-    5,
-    10.9,
-    86.3,
-    65.2
-   ],
+   "img": "csq/packet-post/locks-1b-backup-n1",
+   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
    "focus": [
     {
      "cue": "A copy in the family's online folder: a spare kept elsewhere",
      "box": [
-      8,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      6.3,
+      94.3,
+      21.2
      ]
     },
     {
      "cue": "A good spare copy, or not a spare copy?",
      "box": [
-      54.1,
-      44.6,
-      21.2,
-      14.4
+      2.9,
+      73.3,
+      57.4,
+      20.3
      ]
     }
    ]
