@@ -386,7 +386,7 @@ test('guided focus geometry: the reported slide and the shared road maps cover t
   // slightly higher and narrower, x 9.8-49.5, y 46.9-70.3. Every step that sends the eye to a
   // diagram must cover its own capture's diagram.
   const roadAt = [
-    [ '1b', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
+    [ '1b', '1.2', 6, 0, [9.8, 37.8, 51.2, 89.0] ], // protocols-1b-sealed: the padlock and open roads
     [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ],
   ];
   for (const [band, n, si, fi, extent] of roadAt) {

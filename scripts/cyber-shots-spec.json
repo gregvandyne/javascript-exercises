@@ -12,16 +12,6 @@
  },
  {
   "actions": [],
-  "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
-  "band": "1b",
-  "chapter": "protocols",
-  "concept": "say got it, the first round",
-  "game": "packet-post",
-  "level": 1,
-  "state": "protocols-1b-key"
- },
- {
-  "actions": [],
   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
   "band": "2",
   "chapter": "protocols",
@@ -2010,5 +2000,15 @@
   },
   "phase": "debrief",
   "state": "rules-1b-rb-5-debrief"
+ },
+ {
+  "actions": [],
+  "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "the padlock road keeps a secret sealed",
+  "game": "packet-post",
+  "level": 3,
+  "state": "protocols-1b-sealed"
  }
 ]

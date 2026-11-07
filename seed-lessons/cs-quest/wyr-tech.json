@@ -48,7 +48,7 @@
     { "id": "online-2", "a": "Share one photo with the whole world", "b": "Share ten photos with ten friends", "prompt": "Who else might see them later?", "csta": ["1B-NI-05", "2-IC-23"] },
     { "id": "online-3", "a": "A nickname online that nobody knows", "b": "Your real first name online", "prompt": "What does a stranger learn from a real name?", "csta": ["1B-NI-05", "2-IC-23"] },
     { "id": "online-4", "a": "An app that is free if it sees where you are", "b": "An app that costs a little and never knows", "prompt": "What are you paying with?", "csta": ["1B-NI-05", "2-IC-23"] },
-    { "id": "online-5", "a": "Ask a grown-up before every download", "b": "Never download anything", "prompt": "What is the middle path?", "csta": ["1B-NI-05"] },
+    { "id": "online-5", "a": "Ask a trusted adult before every download", "b": "Never download anything", "prompt": "What is the middle path?", "csta": ["1B-NI-05"] },
     { "id": "online-6", "a": "Write your passphrase on paper and hide it at home", "b": "Make one you can remember, nothing written down", "prompt": "Who may know your passphrase? Where is a written one safe?", "csta": ["1B-NI-05", "2-NI-05"] },
     { "id": "online-7", "a": "Photos only on your tablet, where nobody else sees them", "b": "Also keep a copy on a service someone else runs", "prompt": "What happens when the tablet breaks? Who else can see the copy?", "csta": ["1B-NI-05", "2-NI-05"] },
     { "id": "online-8", "a": "Use a picture someone else made and credit them", "b": "Draw your own, even if it is worse", "prompt": "What does credit do for the artist?", "csta": ["1B-IC-21", "1B-AP-14"] },

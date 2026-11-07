@@ -3345,6 +3345,17 @@
    "alt": "The debrief: that is the move! That breaks the game’s rules against you, and it is never your fault. Report and block, save it, and tell a trusted adult.",
    "capturedAt": "2026-11-07",
    "commit": "b23626e"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed",
+   "concept": "the padlock road keeps a secret sealed",
+   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
+   "capturedAt": "2026-11-07",
+   "commit": "d1020df"
   }
  ]
 }
