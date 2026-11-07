@@ -57,7 +57,6 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 const SHOTS = [
   // ---- 1.1 Sequences, Explorer (chapter sequences, levels seq-1..seq-6)
   { key: 'sequences-1b-key', chapter: 'sequences', band: '1b', level: 1 },
-  { key: 'sequences-1b-program-order', chapter: 'sequences', band: '1b', level: 1, program: 'move; move; move; move' },
   { key: 'sequences-1b-turn-then-move', chapter: 'sequences', band: '1b', level: 5, program: 'right; move; move; move; move; left; move; move; move' },
   { key: 'sequences-1b-turn-in-place', chapter: 'sequences', band: '1b', level: 2, program: 'move; move; move; move; left; move; move', steps: 5 },
   { key: 'sequences-1b-better-route', chapter: 'best-route', band: '1b', level: 1, route: 0 },
@@ -67,7 +66,6 @@ const SHOTS = [
   { key: 'sequences-2-plan-to-blocks', chapter: 'sequences', band: '2', level: 3, program: 'move; move; move; move; pick; move; left; move; move; move; move; move; pick; left; move; move; move; left; move; move; move' },
   { key: 'sequences-2-compare-routes', chapter: 'sequences', band: '2', level: 5 },
   // ---- 1.2 Loops, Explorer (loop-1..loop-7)
-  { key: 'loops-1b-five-moves', chapter: 'loops', band: '1b', level: 1, program: 'move; move; move; move; move' },
   { key: 'loops-1b-repeat-bracket', chapter: 'loops', band: '1b', level: 1, program: 'repeat 5 { move }' },
   { key: 'loops-1b-repeat-number', chapter: 'loops', band: '1b', level: 3, program: 'repeat 2 { move; move; pick }; move' },
   { key: 'loops-1b-turn-inside', chapter: 'loops', band: '1b', level: 1, program: 'repeat 5 { right }' },

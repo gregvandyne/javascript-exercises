@@ -53,31 +53,25 @@
    "title": "Steps in order",
    "text": "A list of steps in order is called an algorithm. When you join blocks together for Bolt, you write a program: the algorithm in blocks.",
    "art": "map",
-   "img": "csq/robo-route/sequences-1b-program-order",
-   "view": [
-    52.2,
-    33,
-    37.7,
-    67
-   ],
-   "alt": "Bolt's program tray holds four move blocks stacked in order, matching the four dotted squares between Bolt and the flag.",
+   "img": "csq/robo-route/sequences-1b-order-c",
+   "alt": "Bolt four squares from the flag, and the program beside the board: four move blocks joined in order, then Run.",
    "focus": [
     {
      "cue": "Four move blocks, joined in order: that is the program.",
      "box": [
-      53.4,
-      35.5,
-      8.4,
-      29.3
+      46.5,
+      43.5,
+      46,
+      10.5
      ]
     },
     {
      "cue": "Press Run: the blocks go first to last, walking Bolt to the flag.",
      "box": [
-      53,
-      90.5,
-      9.6,
-      7.7
+      41.5,
+      82,
+      14,
+      10
      ]
     }
    ]
@@ -229,7 +223,7 @@
     {
      "cue": "Route A: 7 blocks, and only one turn.",
      "box": [
-      64.0,
+      64,
       29.4,
       15.6,
       19.5
@@ -247,8 +241,8 @@
     {
      "cue": "Route A wins. Tap Use A to load it into your program.",
      "box": [
-      64.0,
-      22.0,
+      64,
+      22,
       10.7,
       7.7
      ]
@@ -287,7 +281,7 @@
    "img": "csq/robo-route/sequences-1b-key",
    "view": [
     51.4,
-    12.0,
+    12,
     33.3,
     24.7
    ],
