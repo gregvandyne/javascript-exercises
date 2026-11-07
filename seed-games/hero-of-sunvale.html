@@ -295,7 +295,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/art-biomes-2.js" integrity="sha384-vJGeWa5z97KHCs2TZpjtJ8wQfcy7hmahtujRLl1iMH4j09PJ7TCds6ZvgDVgD2yK" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-Ies7XNUhfNMsUGxzwEO4F5+Oj1RPfptTxZcdNRXp5AX7l2k4wOLpzUV3aQwxkISQ" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-fj8HwmKajGpUjSHACisAoZPleDyWB+oBkuyReFL2K8L/N7i7I8MwmZMWbW8xZDtY" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/live.js" integrity="sha384-20jXn5wIizwJ//YBQJUILmlALHi914BQlxzKBm3v5Z4lh5YOic+mHK2WiezyG4km" crossorigin="anonymous"></script>
 <script>
 /* KIT LOOK: the Oomba Kit's colours (by day and by night) and its font, as the CSS variables the sheet above uses, so
@@ -6206,12 +6206,17 @@ const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: 
 const TOON = B.style === 'cartoon';
 const TOON_KEEP = new Set([...KTOK.skin, ...Object.values(KHAIR)].map(c => String(c).toLowerCase()));
 const TOON_COL = new Map();
+// skin: the people's tones (and their face shade, x0.85) go to the nearest of the kit's eight skin tones, never to a hue
+const TOON_SKIN_IN = new Set([...KTOK.skin, '#8d5524', '#c68642', '#e0ac69', '#f5c99b', '#ffe0bd'].flatMap(c => [c, '#' + col(c).multiplyScalar(0.85).getHexString()]).map(c => c.toLowerCase()));
+const TOON_SKIN = [...KTOK.skin, ...KTOK.skin.map(c => '#' + col(c).multiplyScalar(0.85).getHexString())].map(c => col(c));
 /** A colour in the cartoon look: the nearest Ink palette colour (skin and hair tones are already the kit's). */
 function toonCol(c) {
   if (!TOON) return c;
   let h = typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c.toLowerCase() : '#' + new THREE.Color(c).getHexString();
   let v = TOON_COL.get(h); if (v) return v;
-  v = TOON_KEEP.has(h) ? h : B.palette(h); TOON_COL.set(h, v); return v;
+  if (TOON_SKIN_IN.has(h)) { const c = col(h); let best = TOON_SKIN[0], bd = 1e9; for (const k of TOON_SKIN) { const d = (k.r - c.r) ** 2 + (k.g - c.g) ** 2 + (k.b - c.b) ** 2; if (d < bd) { bd = d; best = k; } } v = '#' + best.getHexString(); }
+  else v = TOON_KEEP.has(h) ? h : B.palette(h);
+  TOON_COL.set(h, v); return v;
 }
 if (TOON) {
   for (const L of CONFIG.levels) { L.shadows = false; L.fogNear = Math.round(L.fogNear * 1.3); }   // contact blobs instead of shadow maps (cheaper, and the look); a clearer, less hazy distance
@@ -9080,6 +9085,10 @@ const STAGE_LOOK = {
   day: { top: SKY_COLORS.top, mid: SKY_COLORS.mid, horizon: SKY_COLORS.horizon, near: col('#9bdc6e'), far: col('#7cc657'), shade: 'rgba(30,60,30,' },
   night: { top: col('#2c447e'), mid: col('#6a80bb'), horizon: col('#efc8a2'), near: col('#7cb862'), far: col('#5e9a50'), shade: 'rgba(16,24,40,' },
 };
+if (TOON) {   // the maker's set in the cartoon look: the land's mint, a night sky from the kit's sky and grape
+  Object.assign(STAGE_LOOK.day, { near: TC.g3.clone(), far: TC.g1.clone(), shade: 'rgba(20,20,20,' });
+  Object.assign(STAGE_LOOK.night, { top: col(OK.color('sky', 3)), mid: col(OK.color('grape', 1)), horizon: col(OK.color('peach', 0)), near: TC.g1.clone(), far: TC.g2.clone(), shade: 'rgba(20,20,20,' });
+}
 const stageSets = {};
 let stageSet = null;
 const stageNight = () => document.documentElement.classList.contains('night');

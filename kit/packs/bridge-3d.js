@@ -104,7 +104,7 @@ export function define(K) {
     const U = { rim: { value: Col(bold ? NEON.cyan : CREAM) }, rimK: { value: bold ? 0.5 : cartoon ? 0.16 : 0.22 }, px: { value: new T.Vector2(0.002, 0.003) }, ink: { value: 2.5 }, near: { value: 12 },
       // cartoon: the key light in view space (the top-left of the screen, a little toward the viewer), the shade band's
       // colour (a multiplier: about the palette's shade step, a touch cool), the band's edge, and a tint for the mood
-      key: { value: new T.Vector3(-0.55, 0.72, 0.42).normalize() }, shade: { value: new T.Color().setRGB(0.56, 0.58, 0.72) }, edge: { value: 0.18 }, tint: { value: new T.Color(1, 1, 1) } };
+      key: { value: new T.Vector3(-0.5, 0.64, 0.58).normalize() }, shade: { value: new T.Color().setRGB(0.6, 0.57, 0.7) }, edge: { value: 0.12 }, tint: { value: new T.Color(1, 1, 1) } };
     B.light = { key: U.key.value, shade: U.shade.value, tint: U.tint.value };
     const own = [];   // what B made (dispose)
     const gradient = steps => { const t = new T.DataTexture(new Uint8Array(steps.map(v => Math.round(v * 255))), steps.length, 1, T.RedFormat); t.minFilter = t.magFilter = T.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true; own.push(t); return t; };
