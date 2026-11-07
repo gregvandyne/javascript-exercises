@@ -1,4 +1,4 @@
-// Packet Post (CS Quest unit 4) in the real sandboxed frame (the kit-pilots pattern): the pinned kit 1.1.4 tag and its
+// Packet Post (CS Quest unit 4) in the real sandboxed frame (the kit-pilots pattern): the pinned kit 1.1.5 tag and its
 // four packs, no CSP violations, the kit title screen with a Play button, a level played through __brbTest with the
 // score label in the gradebook grammar, the chapter map with the Daily Crew Challenge, and the wheel tool.
 import { test, expect } from '@playwright/test';
@@ -25,9 +25,9 @@ const T = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest[fn](...a), [
 test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solved through the hooks, the score label', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/art-animals.js', '/vendor/oomba-kit/1.1.4/packs/art-school.js', '/vendor/oomba-kit/1.1.4/packs/style-bold.js']);
+  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-props.js', '/vendor/oomba-kit/1.1.5/packs/art-animals.js', '/vendor/oomba-kit/1.1.5/packs/art-school.js', '/vendor/oomba-kit/1.1.5/packs/style-bold.js']);
   for (const x of tags.slice(0, 5)) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.4', 'art-animals,art-props,art-school,style-bold', 'function']);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.5', 'art-animals,art-props,art-school,style-bold', 'function']);
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   // a lesson-shaped start: Lock It, Explorer, level 1 (the learn card), then the solver, then the Case-closed card and the results card
   const s1 = await T(f, 'start', { chapter: 'locks', band: '1b', level: 1, seed: 2, lesson: true, lock: true });

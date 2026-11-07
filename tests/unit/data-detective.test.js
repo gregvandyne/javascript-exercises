@@ -33,7 +33,7 @@ const isOk = r => r === true || (r && r.ok);
 /** Run a script up to (not including) the claim; return the state. */
 function upToClaim(l, seed) { const st = E.newCase(l, seed); for (const a of l.sol) { if (a[0] === 'claim' || a[0] === 'pick') break; E.act(l, st, a); } return st; }
 
-test('data-detective: kit 1.1.4 byte-exact tags, the scanner passes, the metadata is right', () => {
+test('data-detective: kit 1.1.5 byte-exact tags, the scanner passes, the metadata is right', () => {
   assert.ok(HTML.startsWith('<title>Data Detective</title>'));
   assert.ok(HTML.includes(kitTag()), 'the exact kit tag');
   for (const p of ['art-props', 'dress', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `the exact ${p} pack tag`);

@@ -29,7 +29,7 @@ const CONTRACT = { packets: { '1b': 5, '2': 5 }, routes: { '1b': 4, '2': 6 }, pr
 const CHAPTER_CSTA = { packets: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, routes: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, protocols: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, locks: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] }, tricks: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] }, ciphers: { '1b': [], '2': ['2-NI-06'] } };
 const cstaFor = (l, band) => (band === '2' ? (l.csta2 || l.csta) : l.csta) || [];
 
-test('packet-post: the exact kit 1.1.4 tag and its four packs, the metadata, and a clean scan', () => {
+test('packet-post: the exact kit 1.1.5 tag and its four packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Packet Post</title>'));
   assert.ok(HTML.includes(kitTag()), 'the byte-exact kit tag');
   for (const p of ['art-props', 'art-animals', 'art-school', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `${p} pack tag`);

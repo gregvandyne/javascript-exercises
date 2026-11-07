@@ -27,9 +27,9 @@ const T = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest[fn](...a), [
 test('Data Detective runs on the kit: pinned tags, Dot on the title, a Sort & Group case closed in lesson mode, the label grammar, the keypad', async ({ page }) => {
   const { f, errors } = await open(page);
   const t = await tags(f);
-  expect(t.map(x => x[0]).filter(s => s.startsWith('/vendor/oomba-kit/'))).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/dress.js', '/vendor/oomba-kit/1.1.4/packs/style-bold.js']);
+  expect(t.map(x => x[0]).filter(s => s.startsWith('/vendor/oomba-kit/'))).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-props.js', '/vendor/oomba-kit/1.1.5/packs/dress.js', '/vendor/oomba-kit/1.1.5/packs/style-bold.js']);
   for (const x of t) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.4', 'art-props,dress,style-bold', 'function']);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.5', 'art-props,dress,style-bold', 'function']);
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   await T(f, 'skipAnimations');
   await T(f, 'start', { chapter: 'sort', band: '1b', level: 1, seed: 1, lesson: true });

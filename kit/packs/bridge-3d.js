@@ -13,6 +13,10 @@
 //   shadows, outline distance, prop count) and a 30 fps cap on low tier; reduced motion stops decorative motion;
 // - Bold (12-14): dusk light, deeper surfaces, hard cel steps, a neon rim, thinner Ink and 0.75x motion (the UI's Bold
 //   look is the style-bold pack's).
+// - Cartoon (kit 1.1.5, opt-in): the style sheet's cel look in real time: flat fills from the Ink palette (B.palette),
+//   one hard shade band from a light fixed at the top-left of the screen, a faint Cream rim, Ink outlines and no shadow
+//   maps (contact blobs instead). A game asks for it with style: 'cartoon', or lists it in styles: ['cartoon'] so the
+//   page's ?okStyle=cartoon picks it; the UI stays Playful.
 // THREE is passed in, never imported: the game loads three.js from /vendor/three/ with its import map as before.
 export const PACK = { name: 'bridge-3d' };
 export function define(K) {
@@ -41,11 +45,14 @@ export function define(K) {
     const rr = K.rand(o.seed || 9);   // phases and blinks (seeded, never Math.random)
     // ---- theme, style, time of day ----
     let look = null, biome = o.biome || 'meadow', style = o.style;
+    const asked = kit.query && kit.query.okStyle;
+    if (!style && asked && (o.styles || []).indexOf(asked) >= 0) style = asked;   // the page's choice, among the game's styles
+    const cartoon = style === 'cartoon'; if (cartoon) style = null;
     if (o.theme) {
-      if (kit.useTheme) { const sp = { look: o.theme }; kit.useTheme(sp); look = kit.theme.look; if (!o.biome) biome = sp.biome; if (!style && sp.style) style = sp.style; }
+      if (kit.useTheme) { const sp = { look: o.theme }; kit.useTheme(sp); look = kit.theme.look; if (!o.biome) biome = sp.biome; if (!style && !cartoon && sp.style) style = sp.style; }
       else kit.warn(`Oomba.three: theme '${o.theme.name || o.theme}' needs the dress pack: add its pinned tag right after the kit tag`);
     }
-    if (style || STYLE.name === 'bold') style = kit.setStyle(style || STYLE.name);
+    if (style || (STYLE.name === 'bold' && !cartoon)) style = kit.setStyle(style || STYLE.name);
     const bold = style === 'bold', BI = K.biomes[biome] || K.biomes.meadow;
     kit.theme.biome = biome;
     let tod = o.tod != null ? clamp(+o.tod || 0, 0, 1) : kit.theme.dark ? 1 : look ? look.tod || 0 : 0;
@@ -63,6 +70,17 @@ export function define(K) {
     }
     const color = (c, step) => (c && c.isColor ? c.clone() : Col(hex(c, step)));
     const neon = n => Col(NEON[n] || NEON[NEON_OF[n]] || NEON.cyan);
+    // palette(colour, k): the nearest Ink colour (OKLab; every hue's four steps, Ink and Cream), k = how far to move toward it
+    const lab = h => { const c = Col(h), l = Math.cbrt(0.4122 * c.r + 0.5363 * c.g + 0.0514 * c.b), mm = Math.cbrt(0.2119 * c.r + 0.6807 * c.g + 0.1074 * c.b), s = Math.cbrt(0.0883 * c.r + 0.2817 * c.g + 0.6300 * c.b);
+      return [0.2105 * l + 0.7936 * mm - 0.0041 * s, 1.978 * l - 2.4286 * mm + 0.4506 * s, 0.0259 * l + 0.7828 * mm - 0.8087 * s]; };
+    let INKS = null; const near = new Map();
+    function palette(c, k = 1) {
+      const h = hex(c), key = h + k; if (near.has(key)) return near.get(key);
+      if (!INKS) { INKS = [INK, CREAM]; for (const n in P) INKS.push(...P[n]); INKS = INKS.map(x => [x, lab(x)]); }
+      const q = lab(h); let best = INKS[0], bd = 1e9;
+      for (const e of INKS) { const d = (q[0] - e[1][0]) ** 2 * 1.4 + (q[1] - e[1][1]) ** 2 + (q[2] - e[1][2]) ** 2; if (d < bd) { bd = d; best = e; } }
+      const out = k >= 1 ? best[0] : m(h, best[0], k); near.set(key, out); return out;
+    }
     let i = 0; while (i < SKY.length - 2 && tod > SKY[i + 1][0]) i++;
     const A = SKY[i], Bk = SKY[i + 1], tt = sm(0, 1, (tod - A[0]) / (Bk[0] - A[0]));
     let top = m(A[1], Bk[1], tt), bottom = m(A[2], Bk[2], tt); const amb = A[3] + (Bk[3] - A[3]) * tt;
@@ -71,7 +89,7 @@ export function define(K) {
     const night = sm(0.55, 1, tod), deepen = c => (bold ? m(c, DEEP, 0.16) : c);
     const accent = (look && look.accent) || 'mint';
     const B = {
-      THREE: T, scene, camera, renderer, tier, dprCap, style: bold ? 'bold' : 'playful', tod, quality: tier === 'high' ? 2 : tier === 'mid' ? 1 : 0,
+      THREE: T, scene, camera, renderer, tier, dprCap, style: cartoon ? 'cartoon' : bold ? 'bold' : 'playful', cartoon, tod, quality: tier === 'high' ? 2 : tier === 'mid' ? 1 : 0,
       get reduced() { return !!kit.settings.reduced; }, get motion() { return motion(); },
       look: { name: look ? look.name : null, biome, tod, accent, music: look ? look.music : 'bright', bed: look ? look.bed : 'meadow', sky: [top, bottom], fog: bottom,
         ground: BI.ground.slice(), hills: BI.bands.map(b => b[0]), props: [],
@@ -83,11 +101,29 @@ export function define(K) {
     if (kit.input && kit.input.bindings && o.upJumps !== true) kit.input.map({ jump: (kit.input.bindings.jump || []).filter(b => b !== 'KeyW' && b !== 'ArrowUp') });
     { const A2 = kit.helperAtlas(); B.look.props = (look ? (kit.theme.names && kit.useTheme ? look.props : []) : []).filter(n => A2.defs.get(n)); }
     // ---- toon materials with a rim ----
-    const U = { rim: { value: Col(bold ? NEON.cyan : CREAM) }, rimK: { value: bold ? 0.5 : 0.22 }, px: { value: new T.Vector2(0.002, 0.003) }, ink: { value: 2.5 }, near: { value: 12 } };
+    const U = { rim: { value: Col(bold ? NEON.cyan : CREAM) }, rimK: { value: bold ? 0.5 : cartoon ? 0.16 : 0.22 }, px: { value: new T.Vector2(0.002, 0.003) }, ink: { value: 2.5 }, near: { value: 12 },
+      // cartoon: the key light in view space (the top-left of the screen, a little toward the viewer), the shade band's
+      // colour (a multiplier: about the palette's shade step, a touch cool), the band's edge, and a tint for the mood
+      key: { value: new T.Vector3(-0.55, 0.72, 0.42).normalize() }, shade: { value: new T.Color().setRGB(0.56, 0.58, 0.72) }, edge: { value: 0.04 }, tint: { value: new T.Color(1, 1, 1) } };
+    B.light = { key: U.key.value, shade: U.shade.value, tint: U.tint.value };
     const own = [];   // what B made (dispose)
     const gradient = steps => { const t = new T.DataTexture(new Uint8Array(steps.map(v => Math.round(v * 255))), steps.length, 1, T.RedFormat); t.minFilter = t.magFilter = T.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true; own.push(t); return t; };
-    const GRAD = gradient(bold ? [0.4, 1] : [0.56, 0.8, 1]);
+    const GRAD = gradient(bold || cartoon ? [0.4, 1] : [0.56, 0.8, 1]);
+    // cartoon: the colour is the fill (the palette's base), one hard band of the shade colour away from the key light (its
+    // edge anti-aliased over a pixel; soft: wider, for rolling land), a Cream rim on the lit side, then fog as usual
+    const CEL = `vec3 okV = normalize( normal ); float okNd = dot( okV, okKey ), okW = fwidth( okNd ) * 0.75 + okSoft;
+float okLit = smoothstep( okEdge - okW, okEdge + okW, okNd );
+outgoingLight = diffuseColor.rgb * mix( mix( vec3( 1.0 ), okShade, okDepth ), vec3( 1.0 ), okLit ) * okTint + totalEmissiveRadiance
+  + okRim * okRimK * ( 0.35 + 0.65 * okLit ) * smoothstep( 0.6, 0.95, 1.0 - clamp( dot( okV, normalize( vViewPosition ) ), 0.0, 1.0 ) );
+`;
     const rimify = mat => {
+      if (cartoon) {
+        mat.onBeforeCompile = s => {
+          Object.assign(s.uniforms, { okRim: U.rim, okRimK: mat.userData.rimK || U.rimK, okKey: U.key, okShade: U.shade, okEdge: U.edge, okTint: U.tint, okSoft: { value: mat.userData.soft || 0 }, okDepth: { value: mat.userData.depth == null ? 1 : mat.userData.depth } });
+          s.fragmentShader = 'uniform vec3 okRim, okKey, okShade, okTint;\nuniform float okRimK, okEdge, okSoft, okDepth;\n' + s.fragmentShader.replace('#include <opaque_fragment>', CEL + '#include <opaque_fragment>');
+        };
+        mat.customProgramCacheKey = () => 'okCel'; return mat;
+      }
       mat.onBeforeCompile = s => {
         s.uniforms.okRim = U.rim; s.uniforms.okRimK = mat.userData.rimK || U.rimK;
         s.fragmentShader = ' uniform vec3 okRim;\nuniform float okRimK;\n' + s.fragmentShader.replace('#include <opaque_fragment>', 'outgoingLight += okRim * okRimK * smoothstep(0.58, 0.95, 1.0 - clamp(dot(normal, normalize(vViewPosition)), 0.0, 1.0));\n#include <opaque_fragment>');
@@ -97,11 +133,12 @@ export function define(K) {
     const mats = new Map();
     function toon(c, opt = {}) {
       const base = c == null ? new T.Color(1, 1, 1) : color(c, opt.step), glow = opt.glow ? (opt.glow === true ? base : color(opt.glow)) : null;
-      const key = [base.getHexString(), glow ? glow.getHexString() : '', opt.vertexColors ? 1 : 0, opt.map ? opt.map.uuid : '', opt.opacity == null ? 1 : opt.opacity, opt.side || 0, opt.fog === false ? 0 : 1, opt.rim == null ? '' : opt.rim, opt.flat ? 1 : 0].join('|');
+      const key = [base.getHexString(), glow ? glow.getHexString() : '', opt.vertexColors ? 1 : 0, opt.map ? opt.map.uuid : '', opt.opacity == null ? 1 : opt.opacity, opt.side || 0, opt.fog === false ? 0 : 1, opt.rim == null ? '' : opt.rim, opt.flat ? 1 : 0, opt.soft || 0, opt.depth == null ? '' : opt.depth].join('|');
       if (mats.has(key)) return mats.get(key);
       const mat = new T.MeshToonMaterial({ color: base, gradientMap: GRAD, vertexColors: !!opt.vertexColors, map: opt.map || null, side: opt.side || T.FrontSide, fog: opt.fog !== false });
       if (opt.flat) mat.flatShading = true;   // faceted low-poly look (toon has no facet normals of its own)
       if (opt.rim != null) mat.userData.rimK = { value: U.rimK.value * opt.rim };   // the land gets less rim (none on the ground)
+      if (opt.soft) mat.userData.soft = opt.soft; if (opt.depth != null) mat.userData.depth = opt.depth;   // cartoon: a softer, lighter band (land)
       rimify(mat);
       if (glow) { mat.emissive = glow; mat.emissiveIntensity = opt.glowK || (bold ? 1.1 : 0.75); }
       if (opt.opacity != null && opt.opacity < 1) { mat.transparent = true; mat.opacity = opt.opacity; }
@@ -185,7 +222,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
       const size = opt.size || o.size || 30;
       scene.fog = new T.Fog(Col(B.look.fog), size * (bold ? 0.9 : 1.2) * (night > 0.5 ? 0.8 : 1), size * 3.6);
       if (!hemi.parent) scene.add(hemi, sun, sun.target);
-      if (opt.shadows !== false && tier !== 'low' && renderer) {
+      if (opt.shadows !== false && tier !== 'low' && renderer && !cartoon) {
         renderer.shadowMap.enabled = true; sun.castShadow = true; const s = tier === 'high' ? 1024 : 512; sun.shadow.mapSize.set(s, s);
         Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 18, bottom: -18, near: 1, far: 90 }); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03;
       }
@@ -415,7 +452,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
       for (const w of walkers) if (!w.opt.manual) w.update(dt);
       for (const f of follows) f.update(dt);
       const mo = motion();
-      if (renderer) { renderer.getSize(sz); if (sz.x && sz.y) { U.px.value.set(2 / sz.x, 2 / sz.y); U.ink.value = clamp(sz.y * 0.0055, 2.2, 5) * (bold ? 0.82 : 1); } }   // the kit's 2D line: about 5% of a character's height on screen
+      if (renderer) { renderer.getSize(sz); if (sz.x && sz.y) { U.px.value.set(2 / sz.x, 2 / sz.y); U.ink.value = clamp(sz.y * 0.0055, 2.2, 5) * (bold ? 0.82 : cartoon ? 1.08 : 1); } }   // the kit's 2D line: about 5% of a character's height on screen
       if (camera) { camera.getWorldPosition(camPos); right.setFromMatrixColumn(camera.matrixWorld, 0); }
       for (const g of cards) {
         const c = g.userData.okCard; if (!camera) break;
@@ -442,7 +479,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
     function applyPR(pr) { if (!renderer) return; renderer.setPixelRatio(pr); const c = renderer.domElement; if (c && c.clientWidth) renderer.setSize(c.clientWidth, c.clientHeight, false); }
     function setQuality(q) {
       B.quality = clamp(q, 0, 2);
-      if (renderer) { renderer.shadowMap.enabled = B.quality > 0 && tier !== 'low'; sun.castShadow = renderer.shadowMap.enabled; applyPR(Math.min(kit.win.devicePixelRatio || 1, dprCap * [0.75, 0.88, 1][B.quality])); }
+      if (renderer) { renderer.shadowMap.enabled = B.quality > 0 && tier !== 'low' && !cartoon; sun.castShadow = renderer.shadowMap.enabled; applyPR(Math.min(kit.win.devicePixelRatio || 1, dprCap * [0.75, 0.88, 1][B.quality])); }
       if (B.worldInfo) B.worldInfo.props.forEach((p, j) => { p.visible = B.quality > 0 || j % 2 === 0; });
       return B;
     }
@@ -663,7 +700,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
     }
     const toScreen = v => { const p = (v.isVector3 ? v.clone() : v.getWorldPosition(new T.Vector3())).project(camera), c = renderer.domElement; return { x: (p.x + 1) / 2 * c.clientWidth, y: (1 - p.y) / 2 * c.clientHeight, behind: p.z > 1 }; };
     function dispose() { for (const x of own) if (x && x.dispose) x.dispose(); if (renderer) renderer.setAnimationLoop(null); }
-    Object.assign(B, { toon, inkify, outline, bake, sky, world, prop, sprite, rig, spark, character: (spec, opt = {}) => (opt.as === 'sprite' ? sprite(spec, opt) : rig(spec, opt)), solid, groundAt: (x, z, y) => groundAt(x, z, y), walker, follow, update, run, fit, setQuality, toScreen, dispose });
+    Object.assign(B, { palette, toon, inkify, outline, bake, sky, world, prop, sprite, rig, spark, character: (spec, opt = {}) => (opt.as === 'sprite' ? sprite(spec, opt) : rig(spec, opt)), solid, groundAt: (x, z, y) => groundAt(x, z, y), walker, follow, update, run, fit, setQuality, toScreen, dispose });
     kit.three3d = B;
     return B;
   }

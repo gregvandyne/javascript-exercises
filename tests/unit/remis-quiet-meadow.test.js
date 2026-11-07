@@ -186,7 +186,7 @@ test('AI voices: registered, and only the calm lines are spoken (never while it 
 
 test('the scan passes, the kit is pinned, and the json describes the game in every language', () => {
   assert.equal(scanVersion(html).status, 'pass');
-  assert.ok(html.includes('<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-'), 'kit 1.1.4, pinned');
+  assert.ok(html.includes('<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-'), 'kit 1.1.5, pinned');
   assert.ok(!/packs\//.test(html), 'no packs');
   const j = JSON.parse(fs.readFileSync('seed-games/remis-quiet-meadow.json', 'utf8'));
   assert.equal(j.slug, 'remis-quiet-meadow'); assert.equal(j.title, "Remi's Quiet Meadow"); assert.equal(j.category, 'learning'); assert.equal(j.featured, true);
