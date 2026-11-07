@@ -6351,8 +6351,8 @@
     "nq": {
       "title": "Number Quest",
       "sub": "Math through the Numberworks · grades 3–5",
-      "about": "Walk the Numberworks street with Tally the cat: counting, joining and splitting, groups and shares, and fractions at the Bakery. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
-      "teachers": "Every step of Explorer Units 1–4 is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
+      "about": "Walk the Numberworks street in the town of Netville with Tally the cat: counting, joining and splitting, groups and shares, fractions at the Bakery, then measures, shapes, charts and chance. Each step is a short lesson, a quick check and then a game mission, and finishing earns Tally Marks and mastery laps.",
+      "teachers": "Every step of Explorer Units 1–7 and the Vault of Measures finale is mapped to the Common Core State Standards for Mathematics (CCSS-M), with the Mathematical Practice each step spotlights and a teacher note for every unit."
     },
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",
