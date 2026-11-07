@@ -40,29 +40,7 @@
   {
    "title": "Agreements protect users too",
    "text": "Agreements are not only the owner's shield. Terms also promise users things: notice before changes, a way to appeal, a route to complain. When rules are broken against you, the rulebook names who must act.",
-   "art": "people",
-   "img": "csq/would-you-rather/online-credit-1b-n1",
-   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
-   "focus": [
-    {
-     "cue": "Use someone's picture: the rules protect its maker",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or make your own: your work is protected too",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "kind": "words",

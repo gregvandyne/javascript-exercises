@@ -25,29 +25,7 @@
   {
    "title": "Delete is not erase",
    "text": "Deleting a post is asking nicely for it to go. Copies, screenshots and shares can keep it alive long after your own copy is gone.",
-   "art": "shield",
-   "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "focus": [
-    {
-     "cue": "Deleting asks nicely for a post to go",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Copies and screenshots can keep it alive",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "title": "Future readers",

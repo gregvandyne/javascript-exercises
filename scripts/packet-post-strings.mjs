@@ -39,13 +39,13 @@ export function collect(html = fs.readFileSync(GAME, 'utf8')) {
     if (l.learn) { prose.add(l.learn.title); prose.add(l.learn.text); }
     if (l.intro) prose.add(l.intro);
     for (const h of l.hints || []) prose.add(h);
-    if (l.check) { prose.add(l.check.q); for (const t of l.check.tiles) prose.add(t); }
+    if (l.check) { prose.add(l.check.q); for (const t of l.check.tiles) prose.add(t); if (l.check.why) prose.add(l.check.why); }
     for (const nd of l.nodes || []) if (nd.label) prose.add(nd.label);
     for (const t of l.tiles || []) prose.add(t.text);
     for (const r of l.rules || []) prose.add(r.text);
     for (const e of l.events || []) prose.add(e.text);
     for (const b of l.bins || []) prose.add(b.label);
-    for (const t of l.items || []) { prose.add(t.text); for (const k of ['info', 'benefit', 'risk']) if (t[k]) prose.add(t[k]); for (const r of t.reasons || []) prose.add(r); }
+    for (const t of l.items || []) { prose.add(t.text); for (const k of ['info', 'benefit', 'risk', 'why']) if (t[k]) prose.add(t[k]); for (const r of t.reasons || []) prose.add(r); }
     for (const w of l.words || []) prose.add(w.text);
     if (l.type === 'inbox') { for (const k of ['from', 'subject', 'body', 'button']) if (l[k]) prose.add(l[k]); for (const c of l.cues || []) prose.add(c.text); }
   }

@@ -63,7 +63,7 @@
     "thunder"
    ],
    "img": "csq/packet-post/locks-1b-pass-n",
-   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "Picked words land in your passphrase",
@@ -75,7 +75,7 @@
      ]
     },
     {
-     "cue": "The meter: a computer would need about centuries",
+     "cue": "The meter: guessing would take hundreds of years",
      "box": [
       8,
       83,
@@ -148,11 +148,17 @@
      "cue": "Open Lock It and build mailbox keys from word tiles",
      "box": [
       2.9,
-      51.2,
+      5,
       94.3,
-      48.8
+      18
      ]
     }
+   ],
+   "view": [
+    0,
+    0,
+    100,
+    74
    ]
   }
  ],

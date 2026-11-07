@@ -40,8 +40,13 @@ test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solve
   const snap = await T(f, 'solve');
   expect(snap.phase).toBe('done');
   await expect(f.locator('.ok-ask')).toBeVisible({ timeout: 8000 });   // the Case-closed card (the kit quiz card)
-  await f.locator('.ok-ask .ok-tile').first().click();
-  await expect(f.locator('.ok-dialog')).toBeVisible({ timeout: 8000 });   // how sure were you?
+  const right = await f.evaluate(() => [...document.querySelectorAll('.ok-ask .ok-tile')].findIndex(t => /home address/.test(t.textContent)));
+  const wrongPick = right === 0 ? 1 : 0;
+  await f.locator('.ok-ask .ok-tile').nth(wrongPick).click();
+  // a wrong pick: after the card shows the right answer, a card says why it is right, at the child's own pace
+  await expect(f.locator('.ok-dialog')).toContainText('A stranger could use your address to find you', { timeout: 8000 });
+  await f.locator('.ok-dialog .ok-btn').last().click();
+  await expect(f.locator('.ok-dialog')).toContainText('How sure were you?', { timeout: 8000 });
   await f.locator('.ok-dialog .ok-btn').last().click();
   await expect(f.locator('.ok-win')).toBeVisible({ timeout: 8000 });
   const s2 = await T(f, 'state');

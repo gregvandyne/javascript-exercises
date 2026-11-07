@@ -11,7 +11,7 @@
    "text": "At home you lock the door and keep the key safe. Online you do the same: lock it, keep the key, keep a spare copy.",
    "art": "lock",
    "img": "csq/packet-post/locks-1b-pass-n",
-   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "Your key: four word tiles",
@@ -23,7 +23,7 @@
      ]
     },
     {
-     "cue": "Long and random: centuries to guess",
+     "cue": "Long and random: hundreds of years to guess",
      "box": [
       9.1,
       81.2,
@@ -81,15 +81,15 @@
     "thunder"
    ],
    "img": "csq/packet-post/locks-1b-pass-n",
-   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "Four random words that do not belong together",
      "box": [
-      32,
-      34.2,
-      35.9,
-      13.3
+      4,
+      52,
+      92,
+      13
      ]
     },
     {
@@ -141,27 +141,27 @@
      "cue": "The only copy, on one tablet: not a spare",
      "box": [
       3,
-      0.5,
+      13,
       94,
-      8
+      12
      ]
     },
     {
      "cue": "Copies kept somewhere else: good spares",
      "box": [
       3,
-      9,
+      26,
       94,
-      45
+      38
      ]
     },
     {
      "cue": "An old copy never updated: not a spare either",
      "box": [
       3,
-      55,
+      63.5,
       94,
-      22
+      24
      ]
     }
    ]
@@ -192,7 +192,7 @@
    "text": "Open Packet Post at Lock It and finish all 6 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
    "art": "trophy",
    "img": "csq/packet-post/locks-1b-pass-n",
-   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "In the game your passphrase is your mailbox key",

@@ -9,35 +9,22 @@
   {
    "title": "Four messy nests",
    "text": "Behind the post office, Pim finds four messy nests built by the Magpie. Each nest holds a trick, and each trick has a motive.",
-   "art": "map",
-   "img": "csq/trick-inbox/mix-1b-mx-1-debrief",
-   "alt": "The debrief: the Magpie loves a chain, the trick does its own traveling. Behind this one: the forwarder.",
-   "focus": [
-    {
-     "cue": "Every trick has a motive behind it",
-     "box": [
-      6.4,
-      32.5,
-      87.1,
-      28.4
-     ]
-    }
-   ]
+   "art": "map"
   },
   {
    "title": "Keys and prizes",
    "text": "The key-hunter wants into your mailbox, so its letters beg for your key. The prize-faker wants you to tap and type, so it dangles a fake reward.",
    "art": "key",
-   "img": "csq/trick-inbox/mix-1b-mx-3-debrief",
-   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
+   "img": "csq/trick-inbox/mix-1b-mx-3-debrief-s",
+   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter, who wants into your mailbox.",
    "focus": [
     {
      "cue": "The key-hunter wants into your mailbox",
      "box": [
-      6.4,
-      32.4,
-      87.1,
-      28.4
+      8.4,
+      2.2,
+      83.1,
+      37.3
      ]
     }
    ]
@@ -46,16 +33,25 @@
    "title": "Reactions and shares",
    "text": "The giggler wants a reaction, so it sends teasing tricks to make you reply fast. The forwarder wants you to share its trick with all your friends.",
    "art": "people",
-   "img": "csq/trick-inbox/mix-1b-mx-4-debrief",
-   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
+   "img": "csq/trick-inbox/mix-1b-mx-4-all-s",
+   "alt": "A post from News Flash: school is closing forever, free candy for everyone on Monday, tell everyone you know! Every clue marked: it only wants a big reaction.",
    "focus": [
     {
-     "cue": "The giggler wants a big reaction",
+     "cue": "Huge news from a sender nobody knows",
      "box": [
-      6.4,
-      40.9,
-      87.1,
-      19.0
+      9.1,
+      3.3,
+      81.9,
+      12.4
+     ]
+    },
+    {
+     "cue": "Tell everyone: the giggler wants a big reaction",
+     "box": [
+      12,
+      76.8,
+      71.5,
+      17.8
      ]
     }
    ]
@@ -80,7 +76,7 @@
       7.1,
       59.2,
       61.7,
-      27.0
+      27
      ]
     },
     {
@@ -150,16 +146,16 @@
    "title": "Your mission",
    "text": "Open Trick Inbox at Magpie Mix and sort all 6 messages. Before you choose, name the motive: key-hunter, prize-faker, giggler or forwarder.",
    "art": "trophy",
-   "img": "csq/trick-inbox/mix-1b-mx-6-debrief",
-   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
+   "img": "csq/trick-inbox/mix-1b-mx-6-debrief-s",
+   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker, who wants you to tap and type.",
    "focus": [
     {
      "cue": "Play Magpie Mix: name the motive behind each",
      "box": [
-      6.4,
-      32.7,
-      87.1,
-      28.4
+      8.4,
+      49.7,
+      83.1,
+      49.8
      ]
     }
    ]

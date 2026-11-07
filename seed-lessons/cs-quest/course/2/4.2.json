@@ -99,7 +99,7 @@
    "text": "Four random words beat a short word with a number added. Use a different one for each account, so one leak cannot open everything.",
    "art": "key",
    "img": "csq/packet-post/locks-2-pass-n",
-   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A computer would need about centuries.",
+   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "Four random words",
@@ -111,7 +111,7 @@
      ]
     },
     {
-     "cue": "About centuries to guess",
+     "cue": "Hundreds of years to guess",
      "box": [
       9.1,
       81.2,
