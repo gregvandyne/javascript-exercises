@@ -582,6 +582,88 @@ def build_foes():
     return P
 
 
+def build_big():
+    """The bigger foes (phase 2, step 4), each part in its pivot's own frame like the game's rigs:
+    the Clank Knight (an empty suit of storybook armour, nobody inside: a round breastplate with a violet sash, round
+    pauldrons, a bucket helm with a dark visor slit and a plume; a sword arm, a shield arm, two greaved legs; the game's
+    glowing eyes sit in the visor), and Lord Snarlwick (a tall violet robe with a jagged hem and a high collar, a long pale
+    head keeping the game's face surface, a long pointed nose, a huge curly moustache, a horned gold crown, two arms, a
+    staff for the Gloom Gem). The Big Clank is the Clank scaled and tinted by the game."""
+    P = {}
+
+    def part(name):
+        P[name] = Builder('big_' + name); return P[name]
+    steel, steelD, steelL, violet, dark = hexc('#AAB8C8'), hexc('#6E7C8E'), hexc('#DDE6EE'), hexc('#9B6BE8'), hexc('#2B2220')
+    b = part('clank_0')   # the body from the ground: breastplate, belt, pauldrons, helm
+    b.add(tsph((0, 0.9, 0), (0.36, 0.36, 0.25), (14, 9)), steel, 'metal', 0, 'white', wonk=0.006)
+    b.add(tsph((0, 0.97, 0.06), (0.29, 0.28, 0.2), (12, 8)), steelL, 'metal', 0, 'white')
+    b.add(ttube((-0.2, 1.22, 0.24), (0.22, 0.6, 0.21), 0.05, 0.05, 6, 3), violet, 'cloth', 0, 'cloth')   # the sash
+    b.add(tlathe([(0.33, 0.56), (0.36, 0.58), (0.36, 0.64), (0.33, 0.66)], 14), steelD, 'metal', 0, 'white')
+    for s_ in (1, -1):
+        b.add(tsph((0.38 * s_, 1.42, 0), (0.2, 0.15, 0.22), (10, 7)), steel, 'metal', 0, 'white')
+    bm = tlathe([(0.0, 1.27), (0.24, 1.28), (0.26, 1.4), (0.25, 1.65), (0.22, 1.76), (0.0, 1.8)], 16)
+    b.add(bm, steel, 'metal', 0, 'white', wonk=0.004)
+    b.add(bbox_rounded((0.36, 0.06, 0.09), tv(0, 1.69, 0.235), 0.025, 2), dark, 'other', 0, 'boots')   # the visor slit
+    b.add(ttube((0, 1.8, 0.05), (0, 2.02, -0.15), 0.07, 0.12, 8, 3), violet, 'cloth', 0, 'cloth')   # the plume
+    b = part('clank_1')   # the sword arm, from the shoulder
+    b.add(ttube((0, -0.05, 0), (0, -0.5, 0), 0.1, 0.09, 8, 3), steel, 'metal', 0, 'white')
+    b.add(tsph((0, -0.58, 0), (0.12, 0.12, 0.12)), steelD, 'metal', 0, 'white')
+    b.add(bbox_rounded((0.32, 0.08, 0.07), tv(0, -0.62, 0.04), 0.03, 2), steelD, 'metal', 0, 'white')
+    blade = smooth(btube(tv(0, -0.59, 0.08), tv(0, -0.59, 1.0), 0.06, 0.04, 4, 3))
+    for v in blade.verts: v.co.x *= 0.35   # a flat blade
+    b.add(blade, steelL, 'metal', 0, 'white')
+    b.add(ttube((0, -0.62, -0.02), (0, -0.62, -0.24), 0.035, 0.035, 6, 2), hexc('#5C3A26'), 'wood', 0, 'boots')
+    b = part('clank_2')   # the shield arm: a round-cornered kite shield with the violet cross
+    b.add(ttube((0, -0.05, 0), (0, -0.5, 0), 0.1, 0.09, 8, 3), steel, 'metal', 0, 'white')
+    b.add(bbox_rounded((0.62, 0.08, 0.74), tv(-0.04, -0.86, 0.17), 0.12, 2), steelD, 'metal', 0, 'white')
+    b.add(bbox_rounded((0.12, 0.02, 0.52), tv(-0.04, -0.82, 0.215), 0.03, 1), violet, 'cloth', 0, 'cloth')
+    b.add(bbox_rounded((0.42, 0.02, 0.1), tv(-0.04, -0.66, 0.215), 0.03, 1), violet, 'cloth', 0, 'cloth')
+    b = part('clank_3')   # legs from the hips
+    for s_ in (1, -1):
+        b.add(ttube((0.16 * s_, -0.04, 0), (0.16 * s_, -0.5, 0), 0.12, 0.1, 8, 3), steel, 'metal', 0, 'white')
+        b.add(tsph((0.16 * s_, -0.58, 0.06), (0.13, 0.08, 0.19)), steelD, 'metal', 0, 'white')
+    # Lord Snarlwick: a robe (body), a head (head space: the game's face surface, centre y 0.4, radii 0.34, 0.44, 0.34),
+    # the crown (head space), and the arms (shoulders at +-0.42, 1.78); the right hand holds the staff
+    robe, robe2, skin, gold, stache = hexc('#6C44C0'), hexc('#9B6BE8'), hexc('#ECE2FB'), hexc('#FFD23F'), hexc('#C6A9F3')
+    b = part('snarl_body')
+    bm = tlathe([(0.0, 0.0), (0.66, 0.0), (0.62, 0.3), (0.5, 0.8), (0.38, 1.3), (0.33, 1.6), (0.18, 1.85), (0.0, 1.9)], 16)
+    for v in bm.verts:   # a jagged hem
+        if v.co.z < 0.05 and math.hypot(v.co.x, v.co.y) > 0.3: a = math.atan2(v.co.y, v.co.x); v.co.z += 0.08 * (1 + math.sin(a * 8))
+    b.add(bm, robe, 'cloth', 0, 'cloth', wonk=0.01)
+    b.add(tsph((0, 1.05, 0.05), (0.36, 0.4, 0.26), (12, 8)), robe2, 'cloth', 0, 'cloth')
+    b.add(tlathe([(0.37, 0.98), (0.385, 1.0), (0.38, 1.06), (0.36, 1.07)], 14, (0, 0, 0.05)), gold, 'metal', 0, 'white')
+    for i in range(3): b.add(tsph((0, 1.25 + i * 0.16, 0.28), (0.045, 0.045, 0.03)), gold, 'metal', 0, 'white')
+    for s_ in (1, -1):   # the high pointed collar
+        b.add(ttube((0.22 * s_, 1.62, -0.02), (0.38 * s_, 2.15, -0.1), 0.12, 0.02, 6, 3), robe, 'cloth', 0, 'cloth')
+    b.add(tsph((0, 0.95, -0.3), (0.56, 0.9, 0.12), (12, 8)), robe, 'cloth2', 0, 'cloth', wonk=0.015)   # the cape, behind
+    b = part('snarl_head')
+    b.add(tsph((0, 0.4, 0), (0.34, 0.44, 0.34), (16, 11)), skin, 'skin', 0, 'skin', wonk=0.004)
+    b.add(ttube((0, 0.38, 0.28), (0, 0.3, 0.62), 0.075, 0.012, 8, 3), hexc('#DCCBEE'), 'skin', 0, 'skin')   # the long nose
+    for s_ in (1, -1):
+        b.add(tsph((0.33 * s_, 0.42, 0), (0.06, 0.12, 0.08)), skin, 'skin', 0, 'skin')
+        # the huge curly moustache: a chain of soft lobes curling up at each end
+        for k, (x, y, z, r) in enumerate([(0.08, 0.24, 0.32, 0.12), (0.2, 0.24, 0.3, 0.12), (0.33, 0.28, 0.26, 0.1), (0.43, 0.36, 0.22, 0.08), (0.46, 0.46, 0.2, 0.06), (0.42, 0.52, 0.19, 0.045)]):
+            b.add(tsph((x * s_, y, z), (r * 1.15, r * 0.8, r * 0.9), (9, 6)), stache, 'hair', 0, 'hair')
+    b = part('snarl_crown')
+    b.add(tlathe([(0.28, 0.68), (0.31, 0.69), (0.31, 0.82), (0.28, 0.83)], 16), gold, 'metal', 0, 'white')
+    for s_ in (1, -1):   # curly horns
+        pts = [(0.26 * s_, 0.8, -0.02), (0.4 * s_, 0.98, -0.05), (0.52 * s_, 1.06, -0.1), (0.58 * s_, 1.0, -0.12)]
+        for a_, c_ in zip(pts, pts[1:]): b.add(ttube(a_, c_, 0.07 - pts.index(a_) * 0.015, 0.055 - pts.index(a_) * 0.015, 7, 2), gold, 'metal', 0, 'white')
+    for i in range(5):
+        a = i / 5 * 2 * math.pi; b.add(tsph((math.cos(a) * 0.31, 0.76, math.sin(a) * 0.31), (0.04, 0.04, 0.04), (6, 4)), hexc('#C6A9F3'), 'other', 0, 'white')
+    for side in ('L', 'R'):
+        b = part('snarl_arm' + side)
+        b.add(ttube((0, -0.05, 0), (0, -0.62, 0), 0.12, 0.11, 8, 3), robe2, 'cloth', 0, 'cloth')
+        b.add(tlathe([(0.02, 0.0), (0.2, 0.0), (0.2, 0.06), (0.1, 0.25)], 10, (0, -0.86, 0)), robe2, 'cloth', 0, 'cloth')   # the flared cuff
+        b.add(tsph((0, -0.84, 0), (0.1, 0.1, 0.1)), skin, 'skin', 0, 'skin')
+        if side == 'R':
+            b.add(ttube((0, -1.9, 0.12), (0, 0.5, 0.12), 0.05, 0.045, 7, 4, cap=False), hexc('#5C3A26'), 'wood', 0, 'boots')
+            b.add(tlathe([(0.0, 0.42), (0.13, 0.5), (0.15, 0.6), (0.0, 0.66)], 10, (0, 0, 0.12)), hexc('#5C3A26'), 'wood', 0, 'boots')
+            for i in range(3):
+                a = i / 3 * 2 * math.pi; b.add(ttube((math.cos(a) * 0.1, 0.55, 0.12 + math.sin(a) * 0.1), (math.cos(a) * 0.13, 0.82, 0.12 + math.sin(a) * 0.13), 0.025, 0.012, 5, 2), gold, 'metal', 0, 'white')
+    return P
+
+
 def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
@@ -719,7 +801,9 @@ def compact(ob, rig=None, bone_names=None):
     Bn = np.array([v[4] for v in verts], 'u1')
     I = np.array(idx, '<u2' if len(verts) < 65536 else '<u4')
     b64 = lambda a: base64.b64encode(a.tobytes()).decode()
-    return {'verts': len(verts), 'tris': len(idx) // 3, 'min': mn.round(5).tolist(), 'max': mx.round(5).tolist(), 'pos': b64(q), 'nrm': b64(N), 'uv': b64(U), 'col': b64(C), 'bone': b64(Bn), 'idx': b64(I)}
+    out = {'verts': len(verts), 'tris': len(idx) // 3, 'min': mn.round(5).tolist(), 'max': mx.round(5).tolist(), 'pos': b64(q), 'nrm': b64(N), 'uv': b64(U), 'col': b64(C), 'idx': b64(I)}
+    if Bn.any(): out['bone'] = b64(Bn)   # only skinned meshes carry bones (the pack stays small)
+    return out
 
 
 def conv_m(m):
@@ -868,7 +952,7 @@ def make_villager(out, renders):
     export_glb(os.path.join(out, 'villager.glb'), list(obs.values()))
     data = {'name': 'villager', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
     for n, o in obs.items():   # a lighter copy of each part: the crowd's far people and every Ink hull
-        if n != 'eyes' and data['meshes'][n]['tris'] > 200: data['meshes'][n]['lod1'] = lod(o, 0.4)
+        if n != 'eyes' and data['meshes'][n]['tris'] > 200: data['meshes'][n]['lod1'] = lod(o, 0.3)
     if renders:   # two people: short hair and a straw hat; a bun and an apron (tints painted on for the review)
         def tint(o, c):
             col = o.data.color_attributes.get('Col')
@@ -889,6 +973,8 @@ def make_foes(out, renders):
     obs = {n: b.mesh(mat) for n, b in P.items()}
     export_glb(os.path.join(out, 'foes.glb'), list(obs.values()))
     data = {'name': 'foes', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
+    for n, o in obs.items():
+        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(o, 0.3)
     if renders:   # a turntable per foe, assembled at its pivots (game space -> Blender), in a typical tint
         PIV = {'blobble': [(0, 0, 0)], 'grumblin': [(0, 0, 0), (0.3, 0.72, 0), (-0.3, 0.72, 0), (0, 0.3, 0)], 'puffcap': [(0, 0, 0), (0, 0.86, 0)],
                'boar': [(0, 0, 0), (0, 0.62, 0.55), (0, 0.62, 0.55), (0, 0.34, 0)], 'chief': [(0, 0, 0), (0.3, 0.72, 0), (-0.3, 0.72, 0), (0, 0.3, 0)]}
@@ -907,6 +993,26 @@ def make_foes(out, renders):
     return data
 
 
+def make_big(out, renders):
+    P = build_big(); tex = char_atlas((70, 52, 36)); mat = material('big_mat', to_bimg(tex, 'big_tex'))
+    obs = {n: b.mesh(mat) for n, b in P.items()}
+    export_glb(os.path.join(out, 'big.glb'), list(obs.values()))
+    data = {'name': 'big', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
+    for n, o in obs.items():
+        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(o, 0.3)
+    if renders:
+        PIV = {'clank': [('clank_0', (0, 0, 0)), ('clank_1', (0.42, 1.36, 0)), ('clank_2', (-0.42, 1.36, 0)), ('clank_3', (0, 0.62, 0))],
+               'snarlwick': [('snarl_body', (0, 0, 0)), ('snarl_head', (0, 1.9, 0)), ('snarl_crown', (0, 1.9, 0)), ('snarl_armL', (-0.42, 1.78, 0)), ('snarl_armR', (0.42, 1.78, 0))]}
+        for o in obs.values(): o.hide_render = True
+        for fn, pv in PIV.items():
+            show = []
+            for n, p in pv:
+                o = obs[n].copy(); o.data = obs[n].data.copy(); bpy.context.scene.collection.objects.link(o); o.hide_render = False; o.location = Vector(tv(*p)); show.append(o)
+            turntable(os.path.join(out, f'turn_{fn}.png'), show, 2.4 if fn == 'clank' else 3.2)
+            for o in show: bpy.data.objects.remove(o)
+    return data
+
+
 def make_prop(name, builders, tex, out, renders, height, texs=None):
     """texs: an optional texture per builder (the cottage's walls and roof); otherwise one texture for all."""
     texs = texs or [tex] * len(builders); obs = []
@@ -916,7 +1022,7 @@ def make_prop(name, builders, tex, out, renders, height, texs=None):
     key = lambda o: o.name.replace(name + '_', '') if o.name != name else 'body'
     data = {'name': name, 'meshes': {key(o): compact(o) for o in obs}}
     for o in obs:   # a lighter level of detail for the distance (props drawn many times over)
-        if data['meshes'][key(o)]['tris'] > 300: data['meshes'][key(o)]['lod1'] = lod(o, 0.35)
+        if data['meshes'][key(o)]['tris'] > 300: data['meshes'][key(o)]['lod1'] = lod(o, 0.3)
     url, nb = tex_url(texs[0], 80); data['tex'] = url
     for b_ob, t in zip(obs, texs):
         if t is not texs[0]: data['meshes'][b_ob.name.replace(name + '_', '')]['tex'] = tex_url(t, 80)[0]
@@ -936,7 +1042,8 @@ def main():
             ('barrel', lambda: make_prop('barrel', [build_barrel()], prop_tex('wood'), a.out, a.renders, 1.3)),
             ('fence', lambda: make_prop('fence', list(build_fence()), prop_tex('wood'), a.out, a.renders, 1.5)),
             ('villager', lambda: make_villager(a.out, a.renders)),
-            ('foes', lambda: make_foes(a.out, a.renders))]
+            ('foes', lambda: make_foes(a.out, a.renders)),
+            ('big', lambda: make_big(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()

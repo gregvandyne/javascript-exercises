@@ -13813,7 +13813,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-0fd6219a/breeze-models.js', integrity: 'sha384-I4ab1lp2tAut1w7x9bRj0p9nBMdg8I4O80U0CfiWx7uTYRAMqJPElu1r0cVlFZX2' };
+const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-cecda87c/breeze-models.js', integrity: 'sha384-oQMDi2Cz5b3CMAZnpzfiFeki8Vx9JdnHZ27AmV1iRn9LduwDaB12AohhHmeUd/A0' };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 function bzLoad() {
@@ -13825,7 +13825,7 @@ function bzLoad() {
 function bzArr(s, T) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new T(u.buffer); }
 /** A compact mesh -> BufferGeometry (position, normal, uv, colour, the part id per vertex, and rigid skinning). */
 function bzGeo(m, skinned) {
-  const n = m.verts, q = bzArr(m.pos, Int16Array), N = bzArr(m.nrm, Int8Array), U = bzArr(m.uv, Uint16Array), C = bzArr(m.col, Uint8Array), Bn = bzArr(m.bone, Uint8Array), I = bzArr(m.idx, n < 65536 ? Uint16Array : Uint32Array);
+  const n = m.verts, q = bzArr(m.pos, Int16Array), N = bzArr(m.nrm, Int8Array), U = bzArr(m.uv, Uint16Array), C = bzArr(m.col, Uint8Array), Bn = m.bone ? bzArr(m.bone, Uint8Array) : new Uint8Array(m.verts), I = bzArr(m.idx, n < 65536 ? Uint16Array : Uint32Array);
   const P = new Float32Array(n * 3), NN = new Float32Array(n * 3), UV = new Float32Array(n * 2), CC = new Float32Array(n * 3), part = new Uint8Array(n);
   for (let i = 0; i < n; i++) {
     for (let a = 0; a < 3; a++) { P[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32768) / 65535 * (m.max[a] - m.min[a]); NN[i * 3 + a] = N[i * 3 + a] / 127; }
@@ -13913,6 +13913,7 @@ function bzApply(d) {
   }
   if (d.villager) bzVillagers(d.villager);
   if (d.foes) bzFoes(d.foes);
+  if (d.big) bzBig(d.big);
   // props: one instanced mesh per model part, for every place in the world
   // geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry
   const inst = (geo, mat, list, place, tint) => {
@@ -13988,6 +13989,17 @@ function bzFoes(f) {
     const [rig, i] = k.split('_'), r = RIGS[rig], p = r && r.parts[+i]; if (!p || p.follow >= 0) continue;
     const g = bzGeo(m); bzSwap(p.mesh, g, m.lod1 ? bzGeo(m.lod1) : g); p.mesh.material = mat;
   }
+}
+/** The bigger foes (phase 2): the Clank's rig parts (the Big Clank is the same rig, scaled and tinted) and Lord
+ *  Snarlwick's robe, head, crown and arms (his face, gem, pyjamas and nightcap stay the game's). */
+function bzBig(f) {
+  const mat = breezeMat({ map: bzTex(f), rim: 0.3 }), g = k => bzGeo(f.meshes[k]), low = k => (f.meshes[k].lod1 ? bzGeo(f.meshes[k].lod1) : g(k));
+  const r = RIGS.clank; if (r) for (let i = 0; i < 4; i++) { const p = r.parts[i], k = 'clank_' + i; if (p && f.meshes[k] && p.follow < 0) { bzSwap(p.mesh, g(k), low(k)); p.mesh.material = mat; } }
+  const S = BOSS.S; if (!S) return;
+  const put = (mesh, k) => { if (!mesh || !f.meshes[k]) return; bzSwap(mesh, g(k), low(k)); mesh.material = mat; };
+  put(S.robe, 'snarl_body'); put(S.crown, 'snarl_crown');
+  put(S.head.children.find(c => c.isMesh && c !== S.crown && c !== S.cap && c.material !== MAT.face), 'snarl_head');
+  put(S.armL.children.find(c => c.isMesh), 'snarl_armL'); put(S.armR.children.find(c => c.isMesh && c !== S.gem), 'snarl_armR');
 }
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
 // Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.

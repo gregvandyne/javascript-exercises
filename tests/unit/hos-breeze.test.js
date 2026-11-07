@@ -16,7 +16,7 @@ const body = file && fs.readFileSync(file, 'utf8');
 const win = {}; if (body) new Function('window', body)(win);
 const A = win.__hosBreeze || {};
 // triangles allowed per asset (the full model; props also carry a lighter lod1)
-const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000 };
+const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000, big: 8000 };
 const len = b64 => Buffer.from(b64, 'base64').length;
 
 test('the game pins the pack by path and sha384, and it is small', () => {
@@ -40,7 +40,7 @@ test('every asset decodes, keeps to its triangle budget, has a painted texture a
     for (const [part, m] of Object.entries(a.meshes)) {
       for (const g of [m, m.lod1].filter(Boolean)) {
         assert.equal(len(g.pos), g.verts * 6, `${name}.${part} positions`); assert.equal(len(g.nrm), g.verts * 3); assert.equal(len(g.uv), g.verts * 4);
-        assert.equal(len(g.col), g.verts * 4); assert.equal(len(g.bone), g.verts); assert.equal(len(g.idx), g.tris * 3 * (g.verts < 65536 ? 2 : 4));
+        assert.equal(len(g.col), g.verts * 4); if (g.bone) assert.equal(len(g.bone), g.verts); assert.equal(len(g.idx), g.tris * 3 * (g.verts < 65536 ? 2 : 4));
       }
       if (m.lod1) assert.ok(m.lod1.tris < m.tris * 0.6, `${name}.${part} lod1 is lighter`);
       tris += m.tris;
@@ -57,6 +57,10 @@ test('the villager kit has every part the crowd and the named people use', () =>
 test('the foe parts: every rig part the game draws for the blobble, grumblin, chief, puffcap and boar', () => {
   const want = { blobble: 1, grumblin: 4, chief: 4, puffcap: 2, boar: 4 };
   for (const [rig, n] of Object.entries(want)) for (let i = 0; i < n; i++) assert.ok(A.foes.meshes[`${rig}_${i}`], `${rig}_${i}`);
+});
+
+test('the bigger foes: the Clank rig parts and Lord Snarlwick\'s robe, head, crown and arms', () => {
+  for (const k of ['clank_0', 'clank_1', 'clank_2', 'clank_3', 'snarl_body', 'snarl_head', 'snarl_crown', 'snarl_armL', 'snarl_armR']) assert.ok(A.big.meshes[k], k);
 });
 
 test('the characters are rigged, with clips for Granny (the hero is posed by the game)', () => {
