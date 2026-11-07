@@ -11,7 +11,7 @@
    "text": "Pim sorts a message that claims to be from the school office. The name on it looks right, but a claimed sender is a costume. That faking is called spoofing, and the real address tells the truth.",
    "art": "mask",
    "img": "csq/trick-inbox/senders-2-sd-3-all",
-   "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
+   "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
    "focus": [
     {
      "cue": "The name says Your Teacher",
@@ -45,13 +45,13 @@
     "Do not tap; verify another way"
    ],
    "img": "csq/trick-inbox/senders-2-sd-1-all-n2",
-   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "alt": "The letter's clues marked: the real address, a freemail box; your mailbox key; today; and the Renew key button, which goes somewhere else.",
    "focus": [
     {
      "cue": "The button says one name",
      "box": [
       10.0,
-      78.3,
+      76.8,
       54.2,
       13.5
      ]
@@ -60,7 +60,7 @@
      "cue": "The real address goes somewhere else",
      "box": [
       9.0,
-      7.5,
+      6.0,
       67.6,
       7.2
      ]
@@ -72,13 +72,13 @@
    "text": "Spear phishing uses the same trick recipe, but built for one person. It may use your name, your club or a recent post, then add a rush and a request.",
    "art": "people",
    "img": "csq/trick-inbox/pressure-2-pr-3-all",
-   "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
+   "alt": "A post from Fan Club, “Hello, skateboard star!”, with clues marked: things it knows about you, and your mailbox key.",
    "focus": [
     {
      "cue": "Built for one person, from their own posts",
      "box": [
       7.1,
-      27.6,
+      39.3,
       85.7,
       22.4
      ]
@@ -87,7 +87,7 @@
      "cue": "Then the request: your key",
      "box": [
       29.5,
-      50.0,
+      61.7,
       41.4,
       13.5
      ]
@@ -99,30 +99,24 @@
    "text": "An unexpected file is not opened, even if the message begs you to hurry. Verify first through a different door: ask the real sender in person, or tell a trusted adult.",
    "art": "envelope",
    "img": "csq/packet-post/tricks-2-parcel",
-   "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
-   "view": [
-    0.0,
-    0.0,
-    92.7,
-    80.7
-   ],
+   "alt": "A card from Parcel Service, marked unknown sender: “Your parcel is waiting.” Pay a small fee within two hours to get it back, with a Pay now button.",
    "focus": [
     {
      "cue": "An unexpected package, with a pay-now button",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      22.9
+      2.9,
+      1.1,
+      94.3,
+      83.9
      ]
     },
     {
      "cue": "Asks for money, two hours to act",
      "box": [
-      55.3,
-      40.9,
-      29.8,
-      15.7
+      6.4,
+      45.1,
+      87.1,
+      18.3
      ]
     }
    ]
@@ -132,15 +126,15 @@
    "text": "Reporting a phishing message is a Defender act. One report can warn the whole school and stop the same costume reaching your friends.",
    "art": "shield",
    "img": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
-   "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
+   "alt": "The debrief: the name says Post Office, but the real address is a freemail box and the button goes elsewhere. That mismatch is spoofing.",
    "focus": [
     {
      "cue": "Report it, and the faked sender is blocked",
      "box": [
-      6.4,
-      21.6,
-      87.1,
-      47.4
+      6.3,
+      11.8,
+      87.4,
+      46.3
      ]
     }
    ]
@@ -175,13 +169,13 @@
    "text": "Open Trick Inbox at Faked Senders and sort all 6 messages. For every message, check the real sender before you judge it.",
    "art": "trophy",
    "img": "csq/trick-inbox/senders-2-sd-1-new",
-   "alt": "Trick Inbox, Faked Senders: a letter from Post Office says your key expired. Its real address is a freemail box.",
+   "alt": "A new letter from Post Office, “Your mailbox key expired”, with its real address showing: a freemail box.",
    "focus": [
     {
      "cue": "Play Faked Senders: check the real address first",
      "box": [
       29.6,
-      46.0,
+      57.3,
       29.9,
       7.8
      ]

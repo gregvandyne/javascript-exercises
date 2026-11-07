@@ -51,13 +51,13 @@
    "text": "This morning the post sack held a surprise. Some letters were never written by the senders named on them. The culprit is the Magpie, the post office pest: it slips in fakes and collects shiny secrets. Shiny secrets are private facts and mailbox keys.",
    "art": "mask",
    "img": "csq/trick-inbox/letters-1b-lt-3-all",
-   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+   "alt": "A letter from Post Office Team, “Your mailbox will close”, with clues marked: your mailbox key, and today.",
    "focus": [
     {
      "cue": "Signed \"Post Office Team\", but they never wrote it",
      "box": [
       29.6,
-      15.1,
+      11.3,
       40.0,
       7.8
      ]
@@ -66,7 +66,7 @@
      "cue": "A shiny secret it wants: your mailbox key",
      "box": [
       12.5,
-      51.2,
+      47.3,
       41.4,
       13.5
      ]
@@ -254,15 +254,15 @@
    "text": "There is no game this time. Open the course map, find the six stamps, and say hello to each one. Your first stamp is waiting in the next unit.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-1b-new",
-   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "alt": "Spark Day: six trick locks. Lock 1, Sorting Gate, wants the Roadwise stamp: route the golden letter. Lock 2, Sealed Note, opens after it.",
    "focus": [
     {
      "cue": "Lock 1 waits for your first stamp: Roadwise",
      "box": [
       2.6,
-      31.0,
+      30.8,
       46.4,
-      52.2
+      65.5
      ]
     }
    ]

@@ -33,6 +33,11 @@ for (const band of ['1b', '2']) for (const f of fs.readdirSync(path.join(ROOT, '
   const deck = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cyber-defenders', 'course', band, f), 'utf8'));
   for (const s of deck.slides) if (s.img) usedByDecks.add(s.img);
 }
+// CS Quest's decks reuse a few Cyber captures (the wide Would You Rather credit card): those count as used too.
+for (const band of ['1b', '2']) for (const f of fs.readdirSync(path.join(ROOT, 'seed-lessons', 'cs-quest', 'course', band))) {
+  const deck = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons', 'cs-quest', 'course', band, f), 'utf8'));
+  for (const s of [...(deck.slides || []), ...(deck.slides_first_time || [])]) if (s.img) usedByDecks.add(s.img);
+}
 
 test('the spec: unique states, real chapters and levels, real online dilemmas', () => {
   assert.ok(spec.length >= 40, `${spec.length} shots in the table`);
@@ -75,7 +80,7 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
     assert.equal(entry.band, s.band, `${key}: manifest band matches the spec`);
     assert.ok(fs.existsSync(path.join(ROOT, 'public', 'img', `${key}.webp`)), `${key}.webp exists`);
     // No spare captures: a capture no slide uses is deleted with its spec entry (2026-11-06 tidy-up).
-    assert.ok(usedByDecks.has(key), `${key} is used by at least one Cyber Defenders slide`);
+    assert.ok(usedByDecks.has(key), `${key} is used by at least one course slide (Cyber Defenders, or CS Quest reusing it)`);
     if (s.compact) assert.ok(rects[key] && Object.keys(rects[key]).length >= 4, `${key}: its element boxes are recorded`);
   }
 });
@@ -88,12 +93,18 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
 //   - every line the step's box touches is shown whole;
 //   - the step's words read at 11 px or more, except where they cannot without reflowing the game: the box touches
 //     a line wider than an 11 px frame holds (WIDE), or a whole line next to it caps the zoom (CAPPED). Those are
-//     pinned below (no new ones). Trick Inbox and Escape are shot narrow (phone-width layout, a 16:9 slice); the
-//     holdouts are Escape screens whose parts do not fit one slice, Packet Post boards and Would You Rather cards.
+//     pinned below (no new ones). Trick Inbox, Escape, Would You Rather and Packet Post's panels are shot narrow
+//     (phone-width layout, a 16:9 slice). The 11 holdouts are all Packet Post:
+//       WIDE (4): the road maps (packets-1b-center, protocols-1b-key, routes-1b-journey, routes-2-sealed): the step is
+//         the map, whose stop labels the game sets small at every width;
+//       CAPPED (7): the cipher wheel (ciphers-1b-unknown, ciphers-1b-send: its ring letters are small at every
+//         width), the scramble and the wheel's count tool (ciphers-2-crack), which sit apart with the wheel between
+//         them, the bank letter's two badges (tricks-2-bank) and the router's sticker (locks-2-router), whose letter
+//         or message and tiles together are taller than a phone-width slice.
 const Z = await import('../../public/js/course-zoom.js');
 const ZOOM_DATA = (await import('../../public/js/course-zoom-data.js')).default;
 const FRAME_390 = 326;
-const SHORT = { WIDE: 25, CAPPED: 36 };
+const SHORT = { WIDE: 4, CAPPED: 7 };
 test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
   const short = { WIDE: 0, CAPPED: 0 }, problems = [];
@@ -134,4 +145,30 @@ test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever 
   assert.ok(n >= 250, `${n} toured steps checked`);
   assert.deepEqual(problems, [], 'no step reads under 5 px');
   assert.ok(short.WIDE <= SHORT.WIDE && short.CAPPED <= SHORT.CAPPED, `steps under 11 px: ${JSON.stringify(short)} (pinned ${JSON.stringify(SHORT)}): a new or wider box where a zoom cannot reach 11 px`);
+});
+
+// A narrow shot is a 16:9 slice of a phone-width page: its top and bottom edges fall between lines of text, never
+// through one. Checked from the capture's own records: no word, and no text-bearing element's ink (a box that holds
+// other boxes, like a card or a board, may run past the edge; a paragraph may too, when the edge falls between its
+// lines: its words say so), touches the slice's top or bottom edge.
+const SLICE_PARAGRAPHS = new Set(['cardp', 'say', 'body', 'li', 'dline']);
+const SLICE_CONTAINERS = new Set(['card', 'pptiles', 'ppitem', 'ppletter', 'ppevents', 'wyropt', 'debrief', 'bar', 'tiles', 'seq', 'grid', 'epcard', 'clues', 'actions', 'row', 'board', 'table', 'shield', 'practice', 'ppletter', 'lock', 'tile', 'trow']);
+test('narrow shots: the slice edges cut no line of text', () => {
+  const E = 0.15, cut = [];
+  let n = 0;
+  for (const s of spec) {
+    if (!s.narrow || s.narrow.top == null) continue;
+    const key = `csq/${s.game}/${s.state}`, r = rects[key];
+    assert.ok(r && Array.isArray(r['~words']), `${key}: the narrow capture recorded its words`);
+    n++;
+    const edge = (y, h) => (y <= E ? 'top' : y + h >= 100 - E ? 'bottom' : null);
+    for (const w of r['~words']) { const e = edge(w[1], w[3]); if (e) cut.push(`${key}: a word cut at the ${e} (top ${s.narrow.top})`); }
+    for (const [k, v] of Object.entries(r)) {
+      if (!k.endsWith('~ink') || !Array.isArray(v)) continue;
+      const stem = k.slice(0, -4).replace(/\d+$/, ''), e = edge(v[1], v[3]);
+      if (e && !SLICE_CONTAINERS.has(stem) && !SLICE_PARAGRAPHS.has(stem)) cut.push(`${key}: ${k.slice(0, -4)}'s text cut at the ${e} (top ${s.narrow.top})`);
+    }
+  }
+  assert.ok(n >= 90, `${n} narrow shots checked`);
+  assert.deepEqual([...new Set(cut)], [], 'move the slice (narrow.top in scripts/cyber-shots-spec.json) so its edges fall between lines');
 });

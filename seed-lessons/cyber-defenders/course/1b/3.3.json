@@ -11,30 +11,24 @@
    "text": "A drawing you make is yours, because you made it. Finding something online does not make it yours. The maker decides how their work may be used.",
    "art": "pencil",
    "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
    "focus": [
     {
      "cue": "Your drawing, shown to everyone online",
      "box": [
-      9.9,
-      38.5,
-      35.5,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Your drawing, kept to family only",
      "box": [
-      56.2,
-      41.0,
-      32.2,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -49,31 +43,25 @@
     "credit badge: use it and give credit",
     "public domain: free for anyone"
    ],
-   "img": "csq/would-you-rather/online-credit-1b",
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "img": "csq/would-you-rather/online-credit-1b-n1",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
    "focus": [
     {
      "cue": "Use a picture, credit its maker",
      "box": [
-      11.0,
-      38.5,
-      33.4,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or draw your own, even if it is worse",
      "box": [
-      56.1,
-      38.5,
-      32.4,
-      20.4
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -83,13 +71,13 @@
    "text": "Sharing a photo of someone else needs their yes, always. If a friend posts a photo of you that you do not like, ask them to take it down. If it stays up, tell a trusted adult, who can help report it.",
    "art": "people",
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
-   "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
+   "alt": "A group chat from The Cool Group with clues marked: post a silly photo of your friend, or leave the group; everyone will laugh.",
    "focus": [
     {
      "cue": "A dare to post a silly photo of a friend",
      "box": [
       7.1,
-      34.2,
+      32.0,
       85.7,
       22.4
      ]
@@ -98,7 +86,7 @@
      "cue": "Everyone will laugh, but the friend never said yes",
      "box": [
       7.1,
-      56.6,
+      54.4,
       46.8,
       13.5
      ]
@@ -110,7 +98,7 @@
    "text": "Some things stay private, always: your address, your school and your passphrase. Say your own rule out loud. These are mine to keep.",
    "art": "lock",
    "img": "csq/trick-inbox/chat-1b-ch-6-all",
-   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
+   "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
    "focus": [
     {
      "cue": "A quiz fishing for your street and birthday",
@@ -167,21 +155,15 @@
    "text": "Open Would You Rather at Online: share or keep. Then write the credit line for a game you might make. Last, name one thing you keep private.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-photo-1b",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
    "focus": [
     {
      "cue": "Play Online: judge each pair",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     }
    ]

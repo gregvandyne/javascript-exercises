@@ -117,21 +117,15 @@
    "text": "With end-to-end encryption, only the sender and receiver can read a message. Even the service carrying it cannot. It still cannot protect someone who is tricked into handing over the plain words.",
    "art": "envelope",
    "img": "csq/packet-post/ciphers-2-lockbox",
-   "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
-   "view": [
-    5.3,
-    17.3,
-    51.5,
-    45.8
-   ],
+   "alt": "Pim asks which ways to keep a secret are easy or hard to crack. The two-key lockbox: anyone can click it shut, but only the owner holds the opening key.",
    "focus": [
     {
      "cue": "The two-key lockbox: only the owner holds the opening key",
      "box": [
-      8.3,
-      25.6,
-      45.5,
-      15.2
+      2.9,
+      45.9,
+      94.3,
+      46.9
      ]
     }
    ]
@@ -199,13 +193,13 @@
    "text": "Open Escape the Post Office at Lock 2: Sealed Note. No first letter is given at Pro: turn the wheel one shift at a time until the note reads as real words. Count your turns, and say why a tiny key space falls to brute force.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/note-2",
-   "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
+   "alt": "The Magpie's sealed note reads IJQNAJW, a scramble to turn back shift by shift.",
    "focus": [
     {
      "cue": "Play Sealed Note: try shift after shift",
      "box": [
       57.8,
-      56.6,
+      84.8,
       26.2,
       12.7
      ]

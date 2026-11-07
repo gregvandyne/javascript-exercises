@@ -11,13 +11,13 @@
    "text": "Chatting in a game can feel like the playground, full of friends and jokes. But a screen hides who is really typing, so chat needs its own safety rules.",
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-2-new",
-   "alt": "Game chat from Mia from Class: great game, your tower was amazing, see you at school tomorrow.",
+   "alt": "A game chat from Mia from Class: “Great game! Your tower at the end was amazing. See you at school.”",
    "focus": [
     {
      "cue": "Game chat: friendly words after a game",
      "box": [
       5.7,
-      32.5,
+      30.7,
       74.6,
       22.4
      ]
@@ -29,24 +29,24 @@
    "text": "Safe chat is for people you know in real life: family, classmates and friends you have met face to face. A friendly stranger online is still a stranger.",
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-2-debrief",
-   "alt": "Mia's message, delivered: safe, because Mia is someone you know in real life and she asks for nothing.",
+   "alt": "Mia from Class: “Great game! Your tower at the end was amazing.” The debrief: that is the move, safe to deliver.",
    "focus": [
     {
      "cue": "From Mia, a classmate you know",
      "box": [
-      24.5,
-      8.8,
-      32.8,
-      7.0
+      26.2,
+      2.5,
+      35.0,
+      7.4
      ]
     },
     {
      "cue": "Safe: someone you know in real life",
      "box": [
-      5.7,
-      74.1,
-      88.5,
-      16.9
+      6.1,
+      72.3,
+      87.7,
+      27.1
      ]
     }
    ]
@@ -56,13 +56,13 @@
    "text": "A safe player never moves to a private chat because someone asks. That request is a warning sign, and so is any chat that must stay secret from trusted adults.",
    "art": "lock",
    "img": "csq/trick-inbox/chat-1b-ch-1-all",
-   "alt": "Game chat from a player nobody knows: keep our chat secret from your parents, and a plan to meet. Both clues found.",
+   "alt": "A game chat from CoolGamer99 with both clues marked: keep our chats from your parents, and a place to get together, the park gate.",
    "focus": [
     {
      "cue": "A chat that must stay secret from adults",
      "box": [
       7.1,
-      36.8,
+      39.0,
       82.2,
       13.5
      ]
@@ -71,7 +71,7 @@
      "cue": "A stranger who wants to meet",
      "box": [
       7.1,
-      50.4,
+      52.5,
       56.3,
       13.5
      ]
@@ -90,13 +90,13 @@
     "Leave the chat and tell a trusted adult"
    ],
    "img": "csq/trick-inbox/chat-1b-ch-4-all",
-   "alt": "Game chat from NewFriend: a rare game skin, free, if you keep it our secret and send your game key.",
+   "alt": "A game chat from NewFriend with clues marked: “I can send you a rare game skin, free” and “keep this our secret.”",
    "focus": [
     {
      "cue": "First a gift: a rare skin, free",
      "box": [
       7.1,
-      36.8,
+      39.0,
       79.0,
       13.5
      ]
@@ -105,7 +105,7 @@
      "cue": "Then a secret: keep this our secret",
      "box": [
       15.4,
-      50.4,
+      52.5,
       46.6,
       13.5
      ]
@@ -117,13 +117,13 @@
    "text": "You may leave any chat at any time, for any reason. Blocking someone who worries you is not rude. Blocking is a lock, and locks are what Defenders do.",
    "art": "shield",
    "img": "csq/trick-inbox/chat-1b-ch-4-decide",
-   "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
+   "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
    "focus": [
     {
      "cue": "Report and block is always allowed",
      "box": [
       51.0,
-      43.8,
+      24.8,
       46.2,
       20.3
      ]
@@ -160,15 +160,15 @@
    "text": "Open Trick Inbox at Chat Careful and sort all 6 chat messages. For each one, ask: do I know this person in real life?",
    "art": "trophy",
    "img": "csq/trick-inbox/chat-1b-ch-1-debrief",
-   "alt": "The stranger's chat, shown to Pim: chat is for people you know in real life, so show a trusted adult.",
+   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
    "focus": [
     {
      "cue": "Play Chat Careful: do you know them in real life?",
      "box": [
-      2.6,
-      8.7,
-      94.9,
-      83.9
+      2.8,
+      7.2,
+      94.4,
+      91.7
      ]
     }
    ]

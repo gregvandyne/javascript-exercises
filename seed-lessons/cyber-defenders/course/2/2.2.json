@@ -119,13 +119,13 @@
    "text": "Open Trick Inbox at Prize Letters and sort all 7 messages. When a letter fishes for your mailbox key, name the check that would still stop a thief: something you have, or something you are.",
    "art": "trophy",
    "img": "csq/trick-inbox/letters-1b-lt-3-all",
-   "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+   "alt": "A letter from Post Office Team, “Your mailbox will close”, with clues marked: your mailbox key, and today.",
    "focus": [
     {
      "cue": "Play Prize Letters: a letter fishing for your mailbox key",
      "box": [
       12.5,
-      51.2,
+      47.3,
       41.4,
       13.5
      ]

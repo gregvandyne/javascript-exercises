@@ -11,30 +11,24 @@
    "text": "Pim says some facts are me-facts. Your name, your school, where you live and your birthday are all me-facts. Together, they can point straight at you.",
    "art": "shield",
    "img": "csq/would-you-rather/online-name-1b",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
    "focus": [
     {
      "cue": "A nickname nobody can trace",
      "box": [
-      8.9,
-      38.5,
-      37.5,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     },
     {
      "cue": "Your real name, for all to see",
      "box": [
-      56.3,
-      41.0,
-      32.0,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -86,7 +80,7 @@
    "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
    "art": "magnifier",
    "img": "csq/trick-inbox/chat-1b-ch-6-all",
-   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
+   "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
    "focus": [
     {
      "cue": "Three small facts asked together: first pet, street, birthday",
@@ -104,13 +98,13 @@
    "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
    "art": "screen",
    "img": "csq/packet-post/tricks-1b-stranger-n1",
-   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
    "focus": [
     {
      "cue": "Someone from the game asks for your street",
      "box": [
       2.9,
-      2.5,
+      5.4,
       94.3,
       54.3
      ]
@@ -119,9 +113,9 @@
      "cue": "A real game never needs to know where you live",
      "box": [
       2.9,
-      74.1,
+      77.0,
       46.2,
-      24.6
+      23.0
      ]
     }
    ]

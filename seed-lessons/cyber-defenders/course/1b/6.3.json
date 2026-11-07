@@ -10,16 +10,16 @@
    "title": "A drill, like a fire drill",
    "text": "Defenders practice what to do when something online goes wrong, the way schools practice a fire drill. Calm, practiced moves beat panicked clever ones, every time.",
    "art": "shield",
-   "img": "csq/escape-the-post-office/moves-1b-n2",
-   "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
+   "img": "csq/escape-the-post-office/moves-1b",
+   "alt": "Five empty move slots, and the tiles to put in order: Carry on, Tell a trusted adult, Save it, Stop, Block or report it.",
    "focus": [
     {
      "cue": "The five moves, like a fire drill",
      "box": [
-      2.6,
-      8.9,
-      94.9,
-      71.9
+      2.8,
+      20.5,
+      94.4,
+      78.6
      ]
     }
    ]
@@ -29,24 +29,24 @@
    "text": "Move one is Stop: hands off, do not reply, and do not delete in a panic. Move two is Save it: keep the message or a picture of it, because it is proof of what happened.",
    "art": "envelope",
    "img": "csq/escape-the-post-office/moves-1b-two",
-   "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
+   "alt": "A message unkind to Sam is going around the class chat. Two moves placed: Stop, do not pass it on, then Save it, keep the message.",
    "focus": [
     {
      "cue": "Move one: Stop",
      "box": [
-      5.0,
-      13.4,
-      45.9,
-      11.0
+      4.8,
+      43.6,
+      48.2,
+      11.3
      ]
     },
     {
      "cue": "Move two: Save it",
      "box": [
-      5.0,
-      26.9,
-      52.2,
-      12.7
+      4.8,
+      57.4,
+      54.8,
+      12.9
      ]
     }
    ]
@@ -56,15 +56,15 @@
    "text": "Move three is Tell an adult: a trusted adult at home or at school. If the first adult does not act, tell another. Telling fast is protection, never shame, and never your fault.",
    "art": "people",
    "img": "csq/escape-the-post-office/moves-1b-four",
-   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+   "alt": "A message unkind to Sam is going around the class chat. Four moves placed: Stop, Save it, Tell a trusted adult, Block or report.",
    "focus": [
     {
      "cue": "Move three: Tell a trusted adult",
      "box": [
-      5.0,
-      40.4,
-      40.0,
-      11.0
+      4.8,
+      68.8,
+      41.9,
+      11.3
      ]
     }
    ]
@@ -74,13 +74,13 @@
    "text": "Move four is Block or report, using the buttons in the app, always with a trusted adult beside you in real life. Move five is Carry on: the worry is handed over, and you go back to your day.",
    "art": "lock",
    "img": "csq/trick-inbox/chat-1b-ch-4-decide",
-   "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
+   "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
    "focus": [
     {
      "cue": "Block or report: a button, pressed with an adult",
      "box": [
       51.0,
-      43.8,
+      24.8,
       46.2,
       20.3
      ]
@@ -135,15 +135,15 @@
    "text": "Open Trick Inbox and play the Boss Round. Before each message, say the five moves quietly, then choose your response.",
    "art": "trophy",
    "img": "csq/trick-inbox/boss-1b-c1",
-   "alt": "Trick Inbox, the Boss Round: a stranger's game chat waits in the inbox, one clue found in green and one still hiding.",
+   "alt": "A game chat from CoolGamer99 with two clues marked: keep our chats from your parents, and a place to get together, the park gate. Clues found: 1 of 2.",
    "focus": [
     {
      "cue": "Play the Boss Round: say the five moves first",
      "box": [
-      2.9,
-      5.8,
-      94.3,
-      87.9
+      2.6,
+      2.2,
+      94.8,
+      80.3
      ]
     }
    ]

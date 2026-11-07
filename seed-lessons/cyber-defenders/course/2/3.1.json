@@ -11,30 +11,24 @@
    "text": "Pim calls these facts PII: your full name, where you live, school, birthday, location, photos and voice. Each one points at one person: you.",
    "art": "people",
    "img": "csq/would-you-rather/online-name-2",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
    "focus": [
     {
      "cue": "A nickname that nobody can trace to you",
      "box": [
-      8.9,
-      38.5,
-      37.5,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     },
     {
      "cue": "Your real first name, out in the open",
      "box": [
-      56.3,
-      41.0,
-      32.0,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -44,30 +38,24 @@
    "text": "Sharing PII can buy real things: an account, a delivery at your door, or friends finding you. Posting your work can even bring kind, useful feedback.",
    "art": "globe",
    "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
    "focus": [
     {
      "cue": "Share your drawing with everyone: feedback, and risk",
      "box": [
-      9.9,
-      38.5,
-      35.5,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or show it only to your family",
      "box": [
-      56.2,
-      41.0,
-      32.2,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -77,13 +65,13 @@
    "text": "One fact alone is a small risk, but combined facts can map your whole day. The wider the audience that sees them, the more people can join the dots.",
    "art": "map",
    "img": "csq/trick-inbox/chat-2-ch-6-all",
-   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
+   "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
    "focus": [
     {
      "cue": "Three facts together: a first pet, a street, a birthday",
      "box": [
       7.1,
-      39.0,
+      39.2,
       85.7,
       22.4
      ]
@@ -102,7 +90,7 @@
     "those answers can unlock accounts"
    ],
    "img": "csq/trick-inbox/media-2-md-5-all",
-   "alt": "A Which Dragon Are You quiz asks for your first pet, your mother's first name and your birthday.",
+   "alt": "A post from Which Dragon Are You?, a fun quiz, with a clue marked: your first pet, your mother's first name and your birthday.",
    "focus": [
     {
      "cue": "A fun quiz asks for three facts",
@@ -129,30 +117,24 @@
    "text": "Some sharing can be undone: delete the post and ask the service to remove its copies. Some cannot, so tell a trusted adult fast, and in some places the law can help too.",
    "art": "shield",
    "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
    "focus": [
     {
      "cue": "Delete an old post you are embarrassed by",
      "box": [
-      11.9,
-      38.5,
-      31.6,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or leave it, and laugh it off",
      "box": [
-      61.1,
-      41.0,
-      22.4,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -187,21 +169,15 @@
    "text": "Open Would You Rather at Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-photo-2",
-   "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
    "focus": [
     {
      "cue": "Play Online: name the price in PII",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     }
    ]

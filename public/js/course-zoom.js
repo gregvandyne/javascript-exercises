@@ -128,7 +128,7 @@ function setBox(el, b) {
   el.style.setProperty('--bx', r2(b[0])); el.style.setProperty('--by', r2(b[1]));
 }
 
-export async function init({ figs, placeStep, reduced }) {
+export async function init({ figs, placeStep, relayout, reduced }) {
   const shots = figs.filter(f => !f.classList.contains('vf') && f.querySelector('.simg') && !f.querySelector('.gf-path'));
   if (!shots.length) return;
   const index = (await import('/js/course-zoom-data.js')).default;
@@ -140,6 +140,9 @@ export async function init({ figs, placeStep, reduced }) {
     let words;
     try { words = await (await fetch(`/img/zoom/${key}.json`)).json(); } catch (e) { continue; }
     setup(fig, img, font, words, placeStep, reduced);
+    // the words also keep course.js's badges off the game's lettering: lay the figure out again with them
+    fig.gfWords = words;
+    if (relayout) relayout(fig);
   }
 }
 

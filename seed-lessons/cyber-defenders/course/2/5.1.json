@@ -11,13 +11,13 @@
    "text": "Online-only friends can be real fun and real company. They are still a category of their own: people you have never met in real life do not get real-life-friend information.",
    "art": "people",
    "img": "csq/trick-inbox/chat-2-ch-4-all",
-   "alt": "Game chat from NewFriend: you seem nice, a rare game skin for free, just keep this our secret.",
+   "alt": "A game chat from NewFriend with clues marked: “I can send you a rare game skin, free” and “keep this our secret.”",
    "focus": [
     {
      "cue": "An online-only friend: kind words first",
      "box": [
       6.9,
-      26.5,
+      28.8,
       86.2,
       47.8
      ]
@@ -26,7 +26,7 @@
      "cue": "Then a secret to keep",
      "box": [
       15.4,
-      50.4,
+      52.7,
       46.6,
       13.5
      ]
@@ -38,13 +38,13 @@
    "text": "Group chats feel private because the door looks closed. It is not. One screenshot carries any message out of the chat and into the whole school, forever out of your control.",
    "art": "screen",
    "img": "csq/trick-inbox/chat-2-ch-7-all",
-   "alt": "Group chat: everyone is doing it, post the photo or you are out, and do not show any adult this chat.",
+   "alt": "A group chat with clues marked: “Everyone is doing it. Post the photo or you are out of the group” and “do not show any adult this chat.”",
    "focus": [
     {
      "cue": "A group chat feels private",
      "box": [
       27.4,
-      15.1,
+      13.1,
       30.5,
       7.8
      ]
@@ -53,7 +53,7 @@
      "cue": "Do not show any adult: a warning sign",
      "box": [
       15.5,
-      63.3,
+      61.2,
       69.5,
       13.5
      ]
@@ -65,13 +65,13 @@
    "text": "A photo of someone else is their image, not your content. Posting it needs their yes, every time. The same respect covers their private facts, their location and their bad days.",
    "art": "people",
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
-   "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
+   "alt": "A group chat from The Cool Group with clues marked: post a silly photo of your friend, or leave the group; everyone will laugh.",
    "focus": [
     {
      "cue": "A dare to post a friend's silly photo, without their yes",
      "box": [
       7.1,
-      34.2,
+      32.0,
       85.7,
       22.4
      ]
@@ -83,30 +83,24 @@
    "text": "Location sharing shows where you are while you are there. Check who can see it, and turn it off when nobody needs it. A live location is the most private fact a screen can carry.",
    "art": "map",
    "img": "csq/would-you-rather/online-location-1b",
-   "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: an app that is free if it sees where you are, or an app that costs a little and never knows?",
    "focus": [
     {
      "cue": "Free, if it sees where you are, live",
      "box": [
-      11.2,
-      38.5,
-      33.0,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Costs a little, and never knows",
      "box": [
-      55.0,
-      38.5,
-      34.6,
-      20.4
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -123,13 +117,13 @@
     "Tell a trusted adult if it continues"
    ],
    "img": "csq/trick-inbox/chat-2-ch-7-debrief",
-   "alt": "The group chat dare, reported: pressure dressed up as friendship, and leaving a chat like that is a strength.",
+   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
    "focus": [
     {
      "cue": "Pressure dressed up as friendship",
      "box": [
       6.4,
-      29.0,
+      17.9,
       87.1,
       47.4
      ]
@@ -141,13 +135,13 @@
    "text": "Pressure and dares have one clean answer: leaving is allowed, always. A friend who punishes you for leaving has told you what the friendship was worth to them.",
    "art": "shield",
    "img": "csq/trick-inbox/chat-2-ch-4-decide",
-   "alt": "NewFriend's chat with both clues found, and the four moves below: Deliver, Bin it, Show Pim, Report and block.",
+   "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
    "focus": [
     {
      "cue": "Leaving and blocking are always allowed",
      "box": [
       51.0,
-      43.8,
+      24.8,
       46.2,
       20.3
      ]
@@ -184,21 +178,15 @@
    "text": "Open Would You Rather at Online: share or keep. Judge each dilemma by consent, not by popularity.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
+   "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
    "focus": [
     {
      "cue": "Play Online: judge by consent, not popularity",
      "box": [
-      26.8,
-      22.3,
-      38.7,
-      61.2
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     }
    ]

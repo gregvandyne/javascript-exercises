@@ -151,15 +151,15 @@
    "text": "This morning, the post sack held a note written in a scramble. Only the Magpie can read it, and Pim wonders what shiny secret it is hiding.",
    "art": "mask",
    "img": "csq/escape-the-post-office/note-1b",
-   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
+   "alt": "The Magpie's sealed note reads RSHQ: a scramble. Below it, the Turn back button and the shift count.",
    "focus": [
     {
      "cue": "The Magpie's note: RSHQ, a scramble",
      "box": [
-      43.0,
-      32.5,
-      14.1,
-      11.6
+      42.7,
+      21.4,
+      14.7,
+      12.0
      ]
     }
    ]
@@ -194,13 +194,13 @@
    "text": "Open Escape the Post Office at Lock 2: Sealed Note. The Magpie sealed its note with a cipher wheel. Turn the wheel until the note reads as real words, then open the lock.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/note-1b-open",
-   "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
+   "alt": "The note's wheel at shift 3: Turn back, Turn forward, a green Open the lock button and Use a hint feather.",
    "focus": [
     {
      "cue": "Play Sealed Note: turn until the note reads",
      "box": [
       16.0,
-      27.8,
+      6.9,
       68.1,
       44.0
      ]

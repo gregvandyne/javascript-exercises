@@ -159,30 +159,24 @@
    "text": "Every network you do not control is part of the threat surface. This unit asks one question: what closes each hole? Sealing comes next, and copies after that.",
    "art": "globe",
    "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
-   "view": [
-    37.6,
-    26.6,
-    53.7,
-    60.5
-   ],
+   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
    "focus": [
     {
      "cue": "Three things go wrong on this road",
      "box": [
-      41.0,
-      35.3,
-      20.6,
-      16.5
+      2.9,
+      3.1,
+      94.3,
+      37.7
      ]
     },
     {
      "cue": "Pick the rules that catch every one",
      "box": [
-      40.6,
-      53.7,
-      47.7,
-      26.3
+      2.9,
+      44.2,
+      94.3,
+      52.5
      ]
     }
    ]

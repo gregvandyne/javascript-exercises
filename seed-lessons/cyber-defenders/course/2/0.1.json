@@ -51,13 +51,13 @@
    "text": "The Magpie no longer works alone. Its flock copies real letters, fakes the postmarks, and sends them out from fake accounts. Each fake looks almost right at first glance.",
    "art": "mask",
    "img": "csq/trick-inbox/senders-2-sd-1-all",
-   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
    "focus": [
     {
      "cue": "The name says Post Office",
      "box": [
       29.6,
-      35.5,
+      57.2,
       29.9,
       7.8
      ]
@@ -66,7 +66,7 @@
      "cue": "The real address is a fake account",
      "box": [
       7.8,
-      49.5,
+      71.2,
       70.0,
       11.2
      ]
@@ -86,30 +86,15 @@
     "the clue: the postmark date is wrong"
    ],
    "img": "csq/escape-the-post-office/pim-2",
-   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
-   "view": [
-    0.0,
-    36.0,
-    64.7,
-    64.0
-   ],
+   "alt": "Two Pim cards' clues: one has a hand-press postmark and owl-shaped prints; the other, the office stamp and small owl prints. Pick this card buttons.",
    "focus": [
-    {
-     "cue": "A real note, copied and signed Pim",
-     "box": [
-      3.4,
-      45.3,
-      27.9,
-      13.7
-     ]
-    },
     {
      "cue": "The clue: a faked postmark",
      "box": [
-      5.9,
-      60.3,
-      25.4,
-      13.3
+      10.0,
+      2.4,
+      36.0,
+      22.7
      ]
     }
    ]
@@ -143,30 +128,24 @@
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
    "art": "gears",
    "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
-   "view": [
-    37.6,
-    26.6,
-    53.7,
-    60.5
-   ],
+   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
    "focus": [
     {
      "cue": "Expect things to go wrong on the road",
      "box": [
-      41.0,
-      35.3,
-      20.6,
-      16.5
+      2.9,
+      3.1,
+      94.3,
+      37.7
      ]
     },
     {
      "cue": "Then pick the rules that catch every one",
      "box": [
-      40.6,
-      53.7,
-      47.7,
-      26.3
+      2.9,
+      44.2,
+      94.3,
+      52.5
      ]
     }
    ]
@@ -262,15 +241,15 @@
    "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-2-new",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "alt": "Lock 1, Sorting Gate, wants the Roadwise stamp: route the golden letter; the short road is not always open. Lock 2, Sealed Note, opens after it.",
    "focus": [
     {
      "cue": "Lock 1 waits for your first stamp: Roadwise",
      "box": [
-      2.6,
-      29.5,
-      46.4,
-      65.1
+      2.7,
+      7.2,
+      46.2,
+      92.1
      ]
     }
    ]
@@ -322,13 +301,13 @@
    "text": "The Magpie is the post office pest. It slips fake letters into the sacks to collect shiny secrets, and now a whole flock helps it copy real letters and fake the postmarks. Each fake looks almost right at first glance.",
    "art": "mask",
    "img": "csq/trick-inbox/senders-2-sd-1-all",
-   "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+   "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
    "focus": [
     {
      "cue": "The name says Post Office",
      "box": [
       29.6,
-      35.5,
+      57.2,
       29.9,
       7.8
      ]
@@ -337,7 +316,7 @@
      "cue": "The real address is a fake account",
      "box": [
       7.8,
-      49.5,
+      71.2,
       70.0,
       11.2
      ]
@@ -357,30 +336,15 @@
     "the clue: the postmark date is wrong"
    ],
    "img": "csq/escape-the-post-office/pim-2",
-   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
-   "view": [
-    0.0,
-    36.0,
-    64.7,
-    64.0
-   ],
+   "alt": "Two Pim cards' clues: one has a hand-press postmark and owl-shaped prints; the other, the office stamp and small owl prints. Pick this card buttons.",
    "focus": [
-    {
-     "cue": "A real note, copied and signed Pim",
-     "box": [
-      3.4,
-      45.3,
-      27.9,
-      13.7
-     ]
-    },
     {
      "cue": "The clue: a faked postmark",
      "box": [
-      5.9,
-      60.3,
-      25.4,
-      13.3
+      10.0,
+      2.4,
+      36.0,
+      22.7
      ]
     }
    ]
@@ -414,30 +378,24 @@
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
    "art": "gears",
    "img": "csq/packet-post/protocols-2-design",
-   "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
-   "view": [
-    37.6,
-    26.6,
-    53.7,
-    60.5
-   ],
+   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
    "focus": [
     {
      "cue": "Expect things to go wrong on the road",
      "box": [
-      41.0,
-      35.3,
-      20.6,
-      16.5
+      2.9,
+      3.1,
+      94.3,
+      37.7
      ]
     },
     {
      "cue": "Then pick the rules that catch every one",
      "box": [
-      40.6,
-      53.7,
-      47.7,
-      26.3
+      2.9,
+      44.2,
+      94.3,
+      52.5
      ]
     }
    ]
@@ -533,15 +491,15 @@
    "text": "There is no game this time. Every step is built the same way: story slides, then words, a quick check, and a mission. Open the course map and study the six stamps. Think about which stamp you want most.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-2-new",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+   "alt": "Lock 1, Sorting Gate, wants the Roadwise stamp: route the golden letter; the short road is not always open. Lock 2, Sealed Note, opens after it.",
    "focus": [
     {
      "cue": "Lock 1 waits for your first stamp: Roadwise",
      "box": [
-      2.6,
-      29.5,
-      46.4,
-      65.1
+      2.7,
+      7.2,
+      46.2,
+      92.1
      ]
     }
    ]
