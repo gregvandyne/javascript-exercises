@@ -32,7 +32,7 @@
      "cue": "Then each packet is numbered for its journey",
      "box": [
       54.1,
-      38.0,
+      38,
       25.5,
       12.3
      ]
@@ -45,17 +45,17 @@
    "text": "The receiver says got it for each packet. A missing number is asked for again, and extra copies are thrown away.",
    "art": "envelope",
    "steps": [
-    "sent: packets 1, 2, 3, 4",
-    "got it: 1, 2, 4",
-    "a gap: please send 3 again",
-    "got 3: the message is whole"
+    "sent: packets 1 to 5",
+    "got it: 1, 2 and 4",
+    "two gaps: please send 3 and 5 again",
+    "got 3 and 5: the message is whole"
    ],
    "img": "csq/packet-post/protocols-2-ack",
    "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap.",
    "view": [
-    50.0,
+    50,
     37.2,
-    40.0,
+    40,
     35.6
    ],
    "focus": [
@@ -65,7 +65,7 @@
       54.1,
       41.3,
       25.5,
-      9.0
+      9
      ]
     },
     {
@@ -74,7 +74,7 @@
       65.3,
       41.3,
       4.2,
-      9.0
+      9
      ]
     },
     {
@@ -91,35 +91,7 @@
   {
    "title": "Three things on an open road",
    "text": "Unsealed, a packet is a postcard on an open road. An interceptor can read it, copy it and keep the copy, or change its words before it travels on.",
-   "art": "mask",
-   "img": "csq/packet-post/routes-2-sealed",
-   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
-   "view": [
-    7.2,
-    19.6,
-    85.4,
-    75.6
-   ],
-   "focus": [
-    {
-     "cue": "On an open road, a packet can be read",
-     "box": [
-      10.2,
-      42.9,
-      41.6,
-      26.5
-     ]
-    },
-    {
-     "cue": "It can be copied, or changed, on its way",
-     "box": [
-      58.4,
-      26.5,
-      29.4,
-      12.9
-     ]
-    }
-   ]
+   "art": "mask"
   },
   {
    "title": "A count catches accidents",
@@ -129,8 +101,8 @@
    "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again.",
    "view": [
     50.2,
-    40.0,
-    40.0,
+    40,
+    40,
     40.9
    ],
    "focus": [
@@ -147,7 +119,7 @@
      "cue": "Count again at the far end: a match means whole",
      "box": [
       54.4,
-      70.0,
+      70,
       18.5,
       5.9
      ]

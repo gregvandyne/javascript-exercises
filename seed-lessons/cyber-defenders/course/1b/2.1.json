@@ -13,7 +13,7 @@
    "img": "csq/packet-post/locks-1b-habits",
    "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
    "view": [
-    51.0,
+    51,
     19.9,
     41.6,
     35.8
@@ -46,7 +46,7 @@
    "img": "csq/packet-post/locks-1b-key",
    "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
    "view": [
-    51.0,
+    51,
     21.5,
     40.4,
     39.5
@@ -55,7 +55,7 @@
     {
      "cue": "Build a mailbox key for Pim from four word tiles",
      "box": [
-      54.0,
+      54,
       26.5,
       34.3,
       10.3
@@ -64,8 +64,8 @@
     {
      "cue": "The word tiles to build it from",
      "box": [
-      54.0,
-      38.0,
+      54,
+      38,
       34.4,
       22.5
      ]
@@ -83,31 +83,25 @@
     "teapot",
     "giraffe"
    ],
-   "img": "csq/packet-post/locks-1b-built",
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
-   "view": [
-    5.0,
-    39.7,
-    51.2,
-    45.5
-   ],
+   "img": "csq/packet-post/locks-1b-pass-n",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
    "focus": [
     {
      "cue": "Picked words land in your passphrase",
      "box": [
-      8.2,
-      57.7,
-      44.8,
-      6.0
+      3,
+      50,
+      94,
+      17
      ]
     },
     {
-     "cue": "The meter fills: longer keys take longer to guess",
+     "cue": "The meter: a computer would need about centuries",
      "box": [
-      8.0,
-      64.9,
-      45.2,
-      2.3
+      8,
+      83,
+      84,
+      10
      ]
     }
    ]
@@ -119,7 +113,7 @@
    "img": "csq/packet-post/locks-1b-tell",
    "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
    "view": [
-    51.0,
+    51,
     21.5,
     40.3,
     42.5
@@ -128,7 +122,7 @@
     {
      "cue": "Only the adults who look after your account may know",
      "box": [
-      54.0,
+      54,
       26.5,
       34.3,
       10.3
@@ -174,24 +168,24 @@
    "title": "Your mission",
    "text": "Open Packet Post at Lock It and finish all 6 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-1b-key",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
-   "view": [
-    51.0,
-    33.0,
-    40.4,
-    42.4
-   ],
+   "img": "csq/packet-post/locks-1b-built",
+   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
    "focus": [
     {
      "cue": "Open Lock It and build mailbox keys from word tiles",
      "box": [
-      54.0,
-      38.0,
-      34.4,
-      32.4
+      8.2,
+      57.7,
+      44.8,
+      6
      ]
     }
+   ],
+   "view": [
+    5,
+    39.7,
+    51.2,
+    45.5
    ]
   }
  ],

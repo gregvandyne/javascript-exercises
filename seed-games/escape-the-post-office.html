@@ -367,6 +367,9 @@ const practiceLock = () => E.LOCKS.find(l => l.id === S.practice);
 let PIM = O.char(CONFIG.pim);
 
 const SET = ['                      ', '                      ', '                      ', '                      ', '                      ', '                      ', '  P   N               ', '######################', '######################'];
+/* A finished run wakes to its own win screen, never to the Pause menu: the page's win sheet takes the focus, the frame
+   blurs and the kit opens its pause screen; when the focus comes back (Keep playing), that pause closes again. */
+try { O.on('focus', () => { if (!S.reported) return; const r = document.querySelector('.ok-modal.ok-pause [data-ok-focus]'); if (r) r.click(); }); } catch (e) { /* an older kit */ }
 let game = O.game({
   api: 1, title: CONFIG.title, subtitle: tr('Six locks. Six stamps. One way out.'), biome: CONFIG.biome,
   controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,

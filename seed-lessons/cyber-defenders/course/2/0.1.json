@@ -17,31 +17,25 @@
    "title": "Not just a story",
    "text": "Netville is fiction, but the problem is real. Your games, group chats, photos and streams all move as data across real networks. Real attackers really do fake messages to steal accounts and secrets, and this course is practice for your real online life.",
    "art": "network",
-   "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
-   "view": [
-    8.1,
-    21.5,
-    86.3,
-    66.2
-   ],
+   "img": "csq/packet-post/protocols-2-trip-n",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "focus": [
     {
-     "cue": "Pim's Post to Grandma's House: data on the move",
+     "cue": "Five numbered packets on the move, two lost on the way",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      2.9,
+      0.4,
+      94.3,
+      31.7
      ]
     },
     {
-     "cue": "Every packet is numbered for its journey",
+     "cue": "Every packet is numbered for its slot",
      "box": [
-      54.1,
-      38.0,
-      25.5,
-      12.3
+      2.9,
+      35.6,
+      23.6,
+      10.6
      ]
     }
    ]
@@ -67,7 +61,7 @@
      "box": [
       7.8,
       71.2,
-      70.0,
+      70,
       11.2
      ]
     }
@@ -91,9 +85,9 @@
     {
      "cue": "The clue: a faked postmark",
      "box": [
-      10.0,
+      10,
       2.4,
-      36.0,
+      36,
       22.7
      ]
     }
@@ -126,29 +120,7 @@
   {
    "title": "Think in systems",
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
-   "art": "gears",
-   "img": "csq/packet-post/protocols-2-design",
-   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
-   "focus": [
-    {
-     "cue": "Expect things to go wrong on the road",
-     "box": [
-      2.9,
-      3.1,
-      94.3,
-      37.7
-     ]
-    },
-    {
-     "cue": "Then pick the rules that catch every one",
-     "box": [
-      2.9,
-      44.2,
-      94.3,
-      52.5
-     ]
-    }
-   ]
+   "art": "gears"
   },
   {
    "title": "Six stamps, real jobs",
@@ -209,27 +181,27 @@
     {
      "cue": "Roadwise guards packets; Keykeeper guards keys",
      "box": [
-      5.0,
+      5,
       5.5,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Private guards what you share; Trickspotter spots fakes",
      "box": [
-      5.0,
+      5,
       35.7,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Kind Screen keeps chats kind; Shield stacks layers",
      "box": [
-      5.0,
-      66.0,
-      90.0,
+      5,
+      66,
+      90,
       23.8
      ]
     }
@@ -267,31 +239,25 @@
    "title": "Not just a story",
    "text": "Netville is fiction, but the problem is real. Your games, group chats, photos and streams all move as data across real networks. Real attackers really do fake messages to steal accounts and secrets, and this course is practice for your real online life.",
    "art": "network",
-   "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
-   "view": [
-    8.1,
-    21.5,
-    86.3,
-    66.2
-   ],
+   "img": "csq/packet-post/protocols-2-trip-n",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "focus": [
     {
-     "cue": "Pim's Post to Grandma's House: data on the move",
+     "cue": "Five numbered packets on the move, two lost on the way",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      2.9,
+      0.4,
+      94.3,
+      31.7
      ]
     },
     {
-     "cue": "Every packet is numbered for its journey",
+     "cue": "Every packet is numbered for its slot",
      "box": [
-      54.1,
-      38.0,
-      25.5,
-      12.3
+      2.9,
+      35.6,
+      23.6,
+      10.6
      ]
     }
    ]
@@ -317,7 +283,7 @@
      "box": [
       7.8,
       71.2,
-      70.0,
+      70,
       11.2
      ]
     }
@@ -341,9 +307,9 @@
     {
      "cue": "The clue: a faked postmark",
      "box": [
-      10.0,
+      10,
       2.4,
-      36.0,
+      36,
       22.7
      ]
     }
@@ -376,29 +342,7 @@
   {
    "title": "Think in systems",
    "text": "Attacks on messages and accounts are a real industry, run for money and secrets. This course shows how attacks actually work, and it hands you the professional toolkit. A Cyber Defender trusts systems, not luck.",
-   "art": "gears",
-   "img": "csq/packet-post/protocols-2-design",
-   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
-   "focus": [
-    {
-     "cue": "Expect things to go wrong on the road",
-     "box": [
-      2.9,
-      3.1,
-      94.3,
-      37.7
-     ]
-    },
-    {
-     "cue": "Then pick the rules that catch every one",
-     "box": [
-      2.9,
-      44.2,
-      94.3,
-      52.5
-     ]
-    }
-   ]
+   "art": "gears"
   },
   {
    "title": "Six stamps, real jobs",
@@ -459,27 +403,27 @@
     {
      "cue": "Roadwise guards packets; Keykeeper guards keys",
      "box": [
-      5.0,
+      5,
       5.5,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Private guards what you share; Trickspotter spots fakes",
      "box": [
-      5.0,
+      5,
       35.7,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Kind Screen keeps chats kind; Shield stacks layers",
      "box": [
-      5.0,
-      66.0,
-      90.0,
+      5,
+      66,
+      90,
       23.8
      ]
     }

@@ -115,29 +115,7 @@
   {
    "title": "Fixing an overshare",
    "text": "Some sharing can be undone: delete the post and ask the service to remove its copies. Some cannot, so tell a trusted adult fast, and in some places the law can help too.",
-   "art": "shield",
-   "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "focus": [
-    {
-     "cue": "Delete an old post you are embarrassed by",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or leave it, and laugh it off",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "kind": "words",

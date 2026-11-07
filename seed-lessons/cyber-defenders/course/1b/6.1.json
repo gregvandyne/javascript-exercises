@@ -97,28 +97,6 @@
     "A passphrase only its owner knows",
     "Updates installed, not postponed",
     "A backup copy kept somewhere else"
-   ],
-   "img": "csq/escape-the-post-office/layers-1b",
-   "alt": "A trouble card: a snooper tries to peek inside a sealed note on its trip. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
-   "focus": [
-    {
-     "cue": "Padlock, key checker, patches, spare copies",
-     "box": [
-      2.6,
-      33.2,
-      94.9,
-      42.4
-     ]
-    },
-    {
-     "cue": "Check which trouble each layer stops",
-     "box": [
-      4.5,
-      6.7,
-      88.2,
-      19.9
-     ]
-    }
    ]
   },
   {
@@ -177,16 +155,16 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office at Lock 6: Layers and match all 4 trouble cards. For each one, name the layer that stops it.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/layers-1b-3",
-   "alt": "A trouble card: an old lock has a known hole that anyone can use. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
+   "img": "csq/escape-the-post-office/layers-1b-5",
+   "alt": "Lock 6: Layers, open! Every threat met its layer. No single lock did it alone. Skill trained: match each threat to the layer that stops it.",
    "focus": [
     {
-     "cue": "Play Layers: match each trouble to its layer",
+     "cue": "Play Layers: every threat meets its layer",
      "box": [
-      2.6,
-      16.6,
-      94.9,
-      64.0
+      6.2,
+      20.4,
+      85,
+      8.5
      ]
     }
    ]

@@ -92,31 +92,25 @@
    "title": "Different roads",
    "text": "Packets travel different roads through routers, which are other post offices along the way. If one road closes, a packet can take another road instead.",
    "art": "network",
-   "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
-   "view": [
-    7,
-    20.6,
-    84.3,
-    74.9
-   ],
+   "img": "csq/packet-post/routes-1b-roads-n",
+   "alt": "Many roads to the school: packets can go by Hill Office or River Office, and one road will close.",
    "focus": [
     {
      "cue": "Packets travel the roads from office to office",
      "box": [
-      10,
-      37.8,
-      41.9,
-      51.9
+      6,
+      16,
+      88,
+      84
      ]
     },
     {
-     "cue": "If a road closes, another road can carry them",
+     "cue": "Two roads lead on to The School: either can carry a packet",
      "box": [
-      54,
-      26.5,
-      34.3,
-      7.9
+      50,
+      16,
+      47,
+      84
      ]
     }
    ]
@@ -127,45 +121,39 @@
    "text": "Packets can arrive mixed up at the far end. Their numbers show the right order, so the far end can rebuild the whole photo.",
    "art": "envelope",
    "steps": [
-    "packet 3 arrives first",
-    "packet 1 arrives next",
-    "packet 2 arrives last",
-    "rebuild in order: 1, 2, 3"
+    "packets 1 and 2 are already in place",
+    "3, 4, 5 and 6 wait in the tray",
+    "tap each one in number order",
+    "the far end rebuilds the whole picture"
    ],
-   "img": "csq/packet-post/packets-1b-order",
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
-   "view": [
-    5.4,
-    30.4,
-    64,
-    65.5
-   ],
+   "img": "csq/packet-post/packets-1b-order-n",
+   "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
    "focus": [
     {
      "cue": "Packets can arrive mixed up at the far end",
      "box": [
-      8.4,
-      35.4,
-      45.5,
-      55.5
+      34.8,
+      53.5,
+      53.1,
+      18.6
      ]
     },
     {
      "cue": "Their numbers show the right order",
      "box": [
-      55.6,
-      42.6,
-      10.8,
-      12.8
+      34.8,
+      53.5,
+      12,
+      18.6
      ]
     },
     {
-     "cue": "The far end rebuilds the photo from the numbers",
+     "cue": "The far end rebuilds the picture from the numbers",
      "box": [
-      44.7,
-      59.2,
-      9.2,
-      8.4
+      2.6,
+      47,
+      30.6,
+      50
      ]
     }
    ]
@@ -174,31 +162,25 @@
    "title": "Hands that could peek",
    "text": "Every hand that carries a packet could peek inside it. That is why later steps teach seals and locks to keep messages private.",
    "art": "lock",
-   "img": "csq/packet-post/packets-1b-center",
-   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
-   "view": [
-    5.6,
-    27,
-    82.1,
-    67.7
-   ],
+   "img": "csq/packet-post/packets-1b-center-n",
+   "alt": "Break It Up, level 4: five packets for the zoo. Every road on the map meets at the Center Office before Zoo Gate.",
    "focus": [
     {
-     "cue": "Every road here meets at the center office",
+     "cue": "Every road here meets at the Center Office",
      "box": [
-      21.3,
-      59.3,
-      8,
-      8.6
+      27.3,
+      38.9,
+      19.6,
+      25.5
      ]
     },
     {
      "cue": "Many hands carry each packet on its way",
      "box": [
-      8.6,
-      37.8,
-      45.2,
-      51.9
+      3.1,
+      4.2,
+      93.8,
+      93
      ]
     }
    ]
@@ -232,22 +214,16 @@
    "title": "Your mission",
    "text": "Open Packet Post at Break It Up and finish all 5 levels, then play all 4 levels of Many Roads. Watch the number on every packet.",
    "art": "trophy",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
-   "view": [
-    7.6,
-    39.6,
-    45.6,
-    40.5
-   ],
+   "img": "csq/packet-post/packets-1b-trip-n",
+   "alt": "Grandma's apple picture, cut into 3 numbered packets: packet 2 is on its way down the road.",
    "focus": [
     {
      "cue": "Play Break It Up: watch the number on every packet",
      "box": [
-      10.6,
-      48.5,
-      39.6,
-      22.7
+      3,
+      36,
+      33,
+      43
      ]
     }
    ]

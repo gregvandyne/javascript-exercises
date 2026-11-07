@@ -21,7 +21,8 @@
     "It deletes your backup",
     "It changes your passphrase for you"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "An update patches holes that tricksters could climb through. It does not change your brightness, backups or passphrase."
   },
   {
    "id": "cd-1b-6.1-e2",
@@ -38,7 +39,8 @@
     "The loudest ringtone",
     "The newest game"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A broken tablet takes its own copies with it. Only a backup kept somewhere else still has your photos."
   },
   {
    "id": "cd-1b-6.1-e3",
@@ -55,7 +57,8 @@
     "If one layer slips, the second still guards you",
     "Strong locks are against the rules"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Layers back each other up: if one slips, the next still guards you. That is why two ordinary layers beat one lock."
   },
   {
    "id": "cd-1b-6.2-e1",
@@ -72,7 +75,8 @@
     "Nobody writes them down",
     "On the post office roof"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A game's rules for what may be posted are written in its agreement, which every player accepts when they join."
   },
   {
    "id": "cd-1b-6.2-e2",
@@ -89,7 +93,8 @@
     "Nothing at all",
     "The law, which says the drawing is yours"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "The law says the drawing is yours because you made it. A site cannot take it as its own."
   },
   {
    "id": "cd-1b-6.2-e3",
@@ -106,7 +111,8 @@
     "Fix it all by yourself",
     "Leave every game forever"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A rule broken against you is never yours to fix alone, and breaking rules back makes it worse. Tell a trusted adult."
   },
   {
    "id": "cd-1b-6.3-e1",
@@ -123,7 +129,8 @@
     "Stop, save it, tell an adult, block or report, carry on",
     "Open, read, answer, forward, close"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The five moves go stop, save it, tell an adult, block or report, carry on. The other lists spread the trouble or skip help."
   },
   {
    "id": "cd-1b-6.3-e2",
@@ -140,7 +147,8 @@
     "It sends the message back",
     "It does not help at all"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A saved message is proof a trusted adult can act on. Deleting it in a panic throws the proof away."
   },
   {
    "id": "cd-1b-6.3-e3",
@@ -157,7 +165,8 @@
     "Type it again to check",
     "Tell nobody and hope"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A key typed into a fake page must be changed fast. A trusted adult can help change it before anyone uses it."
   },
   {
    "id": "cd-1b-6.4-e1",
@@ -174,7 +183,8 @@
     "Building a longer passphrase",
     "Sorting Share and Keep Private"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Hurry plus a prize you never entered for are trick clues, trained in Unit 4. Routing, passphrases and sorting are other skills."
   },
   {
    "id": "cd-1b-6.4-e2",
@@ -191,7 +201,8 @@
     "Always trust the first message",
     "Ask the Magpie which is real"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Footprint clues decide it: what each message knows, and how it asks. Colors, order or the Magpie's word prove nothing."
   },
   {
    "id": "cd-1b-6.4-e3",
@@ -208,7 +219,8 @@
     "Unit 5, kind screens",
     "Unit 2, keys and secret codes"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Codes that only the key holder can read were trained in Unit 2, keys and secret codes."
   }
  ]
 }

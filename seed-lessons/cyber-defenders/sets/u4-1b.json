@@ -21,7 +21,8 @@
     "It uses words you can read",
     "It says hello at the start"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Every message arrives on a screen and uses words. The clues are the rush and a prize for a contest you never entered."
   },
   {
    "id": "cd-1b-4.1-e2",
@@ -38,7 +39,8 @@
     "It asks for your key, which real games never do",
     "It came during the day"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Real games and helpers never ask for your key. A short message or a mention of a mailbox is not a clue by itself."
   },
   {
    "id": "cd-1b-4.1-e3",
@@ -55,7 +57,8 @@
     "Share it with a friend",
     "Do not reply, do not tap, and show a trusted adult"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Replying, tapping or sharing gives the trick what it wants. Do not reply, do not tap, and show a trusted adult."
   },
   {
    "id": "cd-1b-4.2-e1",
@@ -65,14 +68,15 @@
    "topic": "Motives",
    "kind": "scenario",
    "secs": 15,
-   "q": "A trick promises a shiny prize if you tap and type your name. What is its motive?",
+   "q": "A trick promises a shiny prize if you just tap its button. Which motive is behind it?",
    "choices": [
-    "It wants into your mailbox",
-    "It wants you to tap and type",
-    "It wants a funny reaction",
-    "It wants you to share it onward"
+    "The key-hunter, who wants into your mailbox",
+    "The prize-faker, who dangles a reward to get your tap",
+    "The giggler, who wants a big reaction",
+    "The forwarder, who wants you to share it onward"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A shiny prize that only needs a tap is bait. That is the prize-faker, who dangles a reward to get your tap."
   },
   {
    "id": "cd-1b-4.2-e2",
@@ -89,7 +93,8 @@
     "Your mailbox closes forever",
     "The trickster forgets your name"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Silence starves two motives at once: the key-hunter never gets a key, and the giggler never gets a reaction."
   },
   {
    "id": "cd-1b-4.2-e3",
@@ -106,7 +111,8 @@
     "The forwarder, who wants you to share",
     "The giggler, who wants a reaction"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Teasing again and again, hoping you will answer back angrily, is fishing for a reaction. That is the giggler."
   },
   {
    "id": "cd-1b-4.3-e1",
@@ -123,7 +129,8 @@
     "A poster for a school play on Friday",
     "A poster asking you to return a lost scarf"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Free gems for the millionth visitor is too good to be true. Opening times, a school play and a lost scarf are ordinary news."
   },
   {
    "id": "cd-1b-4.3-e2",
@@ -140,7 +147,8 @@
     "Ask a trusted adult and check a trusted site",
     "Wait for the poster to change"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Big words and sharing do not make a claim true. A trusted adult and a trusted site can check it."
   },
   {
    "id": "cd-1b-4.3-e3",
@@ -157,7 +165,8 @@
     "Fake posts are too heavy to carry",
     "It passes the trick to friends, who may believe it and be fooled"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Sharing a fake carries the trick to friends who trust you, and they may be fooled. That is the harm in itself."
   }
  ]
 }

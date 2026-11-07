@@ -10,25 +10,25 @@
    "title": "A trail in the snow",
    "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
    "art": "map",
-   "img": "csq/escape-the-post-office/pim-1b",
-   "alt": "Two Pim cards' clues: both postmarked Netville, today. One has small owl prints and asks for help; one has big round prints and asks for your key.",
+   "img": "csq/escape-the-post-office/pim-1b-n2",
+   "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
    "focus": [
     {
-     "cue": "A trail of small owl prints: Pim's footprint",
+     "cue": "Every message leaves a trail of clues",
      "box": [
-      11.2,
-      19.5,
-      34.3,
-      25.4
+      2.9,
+      0.2,
+      94.3,
+      41.5
      ]
     },
     {
-     "cue": "The trail tells the story: Netville, today",
+     "cue": "Pim's own trail: help, asked for in the open",
      "box": [
-      11.2,
-      2.6,
-      34.3,
-      16.9
+      6.4,
+      62,
+      39,
+      36.6
      ]
     }
    ]
@@ -52,8 +52,8 @@
      "cue": "A post, a photo, a score, a comment: footprints",
      "box": [
       5.5,
-      32.0,
-      89.0,
+      32,
+      89,
       26.7
      ]
     }
@@ -157,7 +157,7 @@
      "box": [
       6.4,
       50.8,
-      39.0,
+      39,
       47.2
      ]
     }

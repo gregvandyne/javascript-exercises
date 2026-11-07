@@ -34,9 +34,9 @@
     {
      "cue": "Contain first: stop and disconnect",
      "box": [
-      5.0,
+      5,
       55.8,
-      90.0,
+      90,
       20.3
      ]
     }
@@ -52,9 +52,9 @@
     {
      "cue": "Preserve: save the evidence, delete nothing",
      "box": [
-      5.0,
-      25.0,
-      90.0,
+      5,
+      25,
+      90,
       20.3
      ]
     }
@@ -70,7 +70,7 @@
     {
      "cue": "Report and block, then recover",
      "box": [
-      5.0,
+      5,
       36.1,
       75.3,
       27.9
@@ -95,10 +95,10 @@
     {
      "cue": "A faked sender's button went somewhere else",
      "box": [
-      6.4,
-      20.3,
-      87.1,
-      47.4
+      6.3,
+      79.9,
+      87.4,
+      18.5
      ]
     }
    ]

@@ -135,6 +135,14 @@ const MOTIVES = {
   'giggler': 'the giggler, who wants a big reaction',
   'forwarder': 'the forwarder, who wants you to share the trick with everyone',
 };
+/** The same four, as Pro's threat actors (Cyber Defenders Pro 4.2: the scammer, the account thief, the vandal, the spy):
+ *  the Pro debrief names the actor and what it wants. A chain is the vandal's: it wants the trick spread as far as it goes. */
+const ACTORS = {
+  'key-hunter': 'the account thief, who wants into your account',
+  'prize-faker': 'the scammer, who wants your money or your tap',
+  'giggler': 'the vandal, who wants damage and a big reaction',
+  'forwarder': 'the vandal, who wants the trick spread as far as it goes',
+};
 /** The sets (the game's chapters). Explorer plays letters, chat, mix and the boss; Pro adds senders, pressure
  *  and media, and its boss round runs longer. The boss round's engine is the one Escape the Post Office's
  *  Lock 4 reuses (Explorer 6 messages, Pro 8, a faked sender among the Pro eight). */
@@ -472,7 +480,7 @@ function cleanParams(raw, sets) {
   out.present = ['chapter', 'band', 'mode'].some(k => k in out) || out.lock === 1;
   return out;
 }
-root.TrickInbox = { rng, seedOf, ACTIONS, ACTION_IDS, CLUES, MOTIVES, SETS, SET_BY_ID, MESSAGES, BY_ID, BOSS, cluesOf, round, judge, starsFor, label, LABEL_RE, cleanParams };
+root.TrickInbox = { rng, seedOf, ACTIONS, ACTION_IDS, CLUES, MOTIVES, ACTORS, SETS, SET_BY_ID, MESSAGES, BY_ID, BOSS, cluesOf, round, judge, starsFor, label, LABEL_RE, cleanParams };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script type="module">
@@ -708,7 +716,7 @@ function debriefEl() {
   d.appendChild($('b', '', j.best ? tr('That is the move!') : j.right ? tr('That works too.') : tr('Not this time — here is why.')));
   if (j.deliveredTrick) d.appendChild($('p', '', tr('Delivering a trick is the one move that costs a stamp-star. No shame — spotting it next time is the skill.')));
   d.appendChild($('p', '', msg.why));
-  if (msg.motive) d.appendChild($('p', '', tr('Behind this one: {motive}. The Magpie slipped it into the post.', { motive: tr(E.MOTIVES[msg.motive]) })));
+  if (msg.motive) d.appendChild($('p', '', tr('Behind this one: {motive}. The Magpie slipped it into the post.', { motive: tr((S.band === '2' ? E.ACTORS : E.MOTIVES)[msg.motive]) })));
   if (msg.link) d.appendChild($('p', '', tr('The button said {shown}, but it really went to {goes}.', { shown: msg.link.shown, goes: msg.link.goes })));
   if (j.missed.length) { const m = $('p', 'ti-missed', tr('Clues still hiding: ') + j.missed.map(c => tr(E.CLUES[c.kind]) + ' — “' + c.text + '”').join('; ')); d.appendChild(m); }
   else if (E.cluesOf(msg).length) d.appendChild($('p', '', tr('You found every clue. Sharp eyes!')));

@@ -1703,7 +1703,7 @@
    "band": "2",
    "state": "protocols-2-trip-n",
    "concept": "Messages in packets",
-   "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
   },
@@ -2770,7 +2770,7 @@
    "band": "2",
    "state": "chat-2-ch-1-debrief",
    "concept": "show Pim, the debrief",
-   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
+   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the account thief, who wants into your account.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -2792,7 +2792,7 @@
    "band": "2",
    "state": "chat-2-ch-3-debrief",
    "concept": "the bystander move",
-   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
+   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the vandal.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -2847,7 +2847,7 @@
    "band": "2",
    "state": "chat-2-ch-7-debrief",
    "concept": "pressure, the debrief",
-   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
+   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the vandal, who wants damage and a big reaction.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -3089,7 +3089,7 @@
    "band": "2",
    "state": "mix-2-mx-3-debrief",
    "concept": "the account thief",
-   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
+   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the account thief.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -3100,7 +3100,7 @@
    "band": "2",
    "state": "mix-2-mx-4-debrief",
    "concept": "the giggler",
-   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
+   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the vandal, who wants damage and a big reaction.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -3111,7 +3111,7 @@
    "band": "2",
    "state": "mix-2-mx-6-debrief",
    "concept": "the prize-faker",
-   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
+   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the scammer.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -3133,7 +3133,7 @@
    "band": "2",
    "state": "pressure-2-pr-1-debrief",
    "concept": "authority, the debrief",
-   "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the key-hunter, who wants into your mailbox.",
+   "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the account thief, who wants into your account.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -3166,7 +3166,7 @@
    "band": "2",
    "state": "pressure-2-pr-3-debrief",
    "concept": "the footprint, the debrief",
-   "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the key-hunter.",
+   "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the account thief.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
   },
@@ -3477,6 +3477,116 @@
    "alt": "Would you rather: a voice helper that knows everything, or one that never listens unless you press a button?",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-1b-5",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "1b",
+   "state": "layers-1b-5",
+   "concept": "every threat met its layer",
+   "alt": "Lock 6: Layers, open! Every threat met its layer. No single lock did it alone. Skill trained: match each threat to the layer that stops it.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2-4",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-4",
+   "concept": "a broken tablet, the only copy",
+   "alt": "Threat 4 of 6: a broken tablet takes the only copy of the class letters with it. Six layer tiles, from Padlock Gate to Long Passphrase.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-five",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-five",
+   "concept": "the drill, done",
+   "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Calm work. Skill trained: run the five moves in order.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-one",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-one",
+   "concept": "the first move: stop",
+   "alt": "Lock 5: Five Moves. The first move is placed: Stop, do not pass it on. The tiles left: Carry on, Tell a trusted adult, Save it, Block or report.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-three",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-three",
+   "concept": "three moves placed",
+   "alt": "Lock 5: Five Moves. Three moves placed: Stop, Save it, Tell a trusted adult. Two to go: Carry on, and Block or report it in the app.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/pim-1b-n2",
+   "game": "escape-the-post-office",
+   "chapter": "which-pim",
+   "band": "1b",
+   "state": "pim-1b-n2",
+   "concept": "two Pim cards, read from the top",
+   "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/packet-post/ciphers-1b-unknown-n",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "1b",
+   "state": "ciphers-1b-unknown-n",
+   "concept": "a secret word, shift unknown",
+   "alt": "Secret Messages: a secret word with an unknown shift. Secret message DAOWQF; your reading, DAOWQF, until the wheel turns.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/packet-post/packets-1b-center-n",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-center-n",
+   "concept": "every road meets at the center office",
+   "alt": "Break It Up, level 4: five packets for the zoo. Every road on the map meets at the Center Office before Zoo Gate.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed-n",
+   "concept": "the open road and the padlock road",
+   "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed-n2",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed-n2",
+   "concept": "a secret goes on the padlock road",
+   "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
   }
  ]
 }

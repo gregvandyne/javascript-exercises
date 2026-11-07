@@ -29,6 +29,9 @@
   .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
   @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } .pp-board.pp-board-mid { flex: 0 0 min(36%, 300px); } }
   @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
+  /* the got-it and dot-count levels draw one straight road (three places in a row): a short strip of map on a phone, so
+     the mail slots, the inbox and their buttons stay on screen */
+  @media (orientation: portrait) { .pp-board.pp-board-line { flex: 0 0 min(22%, 170px); } }
   @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small, .pp-board.pp-board-card { display: none; } .pp-cipher { font-size: 1.05em; letter-spacing: .08em; } .pp-board.pp-board-wheel { flex: 0 0 min(38%, 360px); } .pp-say p { max-height: 6.6em; overflow-y: auto; overscroll-behavior: contain; } .pp-pxrow { display: flex; gap: 10px; align-items: center; flex: none; } .pp-pxrow .pp-h { flex: 1; min-width: 0; } }   /* a phone upright: the rule and order tiles need the room; the letter, phrase and sort cards move into the panel */
   .pp-fillcard { display: flex; flex-direction: column; gap: 8px; flex: none; }
   .pp-fillcard.pp-center { align-items: center; }
@@ -39,7 +42,9 @@
   .pp-roads line.pp-sealed { stroke: var(--pp-sealed); }
   .pp-roads line.pp-closed { stroke-dasharray: 4 14; opacity: .55; }
   .pp-roads line.pp-lit { stroke: var(--pp-lit); }
-  .pp-node { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 1; }
+  .pp-node { position: absolute; width: 0; height: 0; pointer-events: none; }
+  /* a place name rides above the road buttons (z 2) and under the packets (z 4), so a road button never hides its letters ('thday House') */
+  .pp-node .pp-ico { z-index: 1; } .pp-node small { z-index: 3; }
   .pp-node .pp-ico { position: absolute; left: -23px; top: -23px; width: 46px; height: 46px; border-radius: 50%; background: var(--ok-card); border: 3px solid var(--ok-edge); display: grid; place-items: center; }
   .pp-node .pp-ico svg { width: 26px; height: 26px; }
   .pp-node.pp-house .pp-ico { background: var(--pp-house); }
@@ -57,7 +62,7 @@
   .pp-link.pp-closed { background: var(--pp-bad); }
   .pp-link.pp-sealedb { background: var(--pp-sealed); }
   .pp-link.pp-glow, .pp-tile.pp-glow, .pp-slotb.pp-glow { box-shadow: 0 0 0 6px var(--pp-lit), 0 3px 0 var(--ok-edge); }
-  .pp-pk { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 10px; border: 3px solid var(--ok-edge); background: var(--ok-card); display: grid; place-items: center; pointer-events: none; z-index: 3; }
+  .pp-pk { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 10px; border: 3px solid var(--ok-edge); background: var(--ok-card); display: grid; place-items: center; pointer-events: none; z-index: 4; }
   .pp-pk canvas, .pp-tile canvas, .pp-slot canvas { width: 30px; height: 30px; object-fit: contain; }
   .pp-pk b, .pp-tile b.pp-n { position: absolute; right: -8px; top: -10px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: var(--pp-num); color: var(--pp-ink); font-size: .8em; display: grid; place-items: center; border: 2px solid var(--ok-edge); line-height: 1; }
   .pp-say { display: flex; align-items: center; gap: 8px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 6px 10px; min-height: 52px; flex: none; }
@@ -953,7 +958,7 @@ const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
 
 /* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
 const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-a7ee1926', PACK_SRI = {"es":"sha384-GZrrJQgt0Ktcj0KhvP+mZCpOzVsTPlJriozkojVEc1QU/FbSBlpuMuoi34SeAg83","fr":"sha384-Y1DklMO/H0ZKyxpnHzuxFMM+3CDoDTQ82AuhhGn2LOtnxHLQa48efBqV1Ns93eIO","de":"sha384-egKJ6rjqZ0NLho9IKqjMn9QzLD72fPcSLYPubYprDgYcxhC/+M8XytaB6oohoRau","it":"sha384-A+6bofacOGvPjVhI2vtAqOAtAKVGHuTrE3diTXHN3dqhZ4h37pjhN4cb5kQrYldC","pt":"sha384-Mes7d/sWBesx00iUvGQsy2fxD3geTMal7+FZf/r7Mm1FF4Yf1iRsFdbMlusAYAem","nl":"sha384-sPVf0CJJWzXaiUW1G3FTuoQQn3ywo0H7XGNow8wCK+KrXYLVwYnXIc1nb//YzAM3","ru":"sha384-JIPalNcfeCp2n9I4J4TBptAPgUxJHn6XtJ+sqGs1pCVa4szOvgX9P58w1I9EegJg","ja":"sha384-WjBRKY5JinkIotzYUZLocP5qkd1aBRpBxuVIoGMvLqgO00Zu4W3XfiEZxEplJk1o","zh-Hant":"sha384-ws8MvOYZXtLAvY+itX7h3Oxqn2ut8XAS0RyPqwpHlILfLylCVaCfCTaqudcM/uVU","he":"sha384-Gkx0d7aLhGD66AHNylEFbeYvd8+vAv/zGI7B7bWGvIvWqlz5BiOW0Cdc1BMLMVNl","ar":"sha384-YeCPR94ZFtJX3L/as46Juz6XMztVspnkoTxHhOf7BQ4xzVMzvRobM7onh1+QswB/"};
+const PACK_VER = '1.0.0-357f9f1f', PACK_SRI = {"es":"sha384-pW5OvZTNY8vPTGRdW+se8p75UhWPgd8ddhuqQTQa8UtlC2Y582HcXupfAVLiyA8P","fr":"sha384-zZPqjwWyoxkQkh2JbG+qcUeSE0rw/4XZVv983UNyNFNPFLuIH/TMm5qqXCSRRxhB","de":"sha384-mGUjqOxRkfp2EAutZcwgvCMKR/H1QTmo5j0xieEQ9v5iTys6qQVzrqQj49T+T9Ed","it":"sha384-0dOEoQlVZt/2VSvEqZd3NPwAT+vmDdBnMndjcMDMltTMZ0QXxE14D3arj/bG20Bv","pt":"sha384-bJIiqFCxGdJ9Fruwn8+urjukKwuiKcLkz9zkswZYdLcI3IrUNks0zDrReSEP7EDY","nl":"sha384-OoKobCFPE4YNntDvi3RfXOD8fs9fHCvMm2e9Wj/njDbOLZWfXS0Y4/4Lmox+SZt7","ru":"sha384-ReV8xeR6iKGdKXLBt7QGjy3cNTf63E+uC15hkVKZ4O0SFdOcak+ik66EdDJZWzEp","ja":"sha384-znEplYE+hVZwuJcuiVWMqyYS4pkJUDfGnlqg6BiXMKYpTv9qjduMcG3PX5O6AwDW","zh-Hant":"sha384-SgsBqAb2TTf7nGqhnKwDwriAEe4MzLA6jj5oV9lDDrwEIFdSA4uNMm5zvua+cyrU","he":"sha384-VQjrGMuZXEaunH1zfg9PV29jUlp6TUuhnGprBJj5WphcpoQCXKyhv5JxzkcPAXSy","ar":"sha384-C+nIO8/JfZMqSD7KIqTlCifaO8MU63TXQCW5gOaO6cXQgG+mKvbjPaZOYeMAnS9I"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1293,7 +1298,7 @@ function renderLevel() {
   const lv = $('div', 'pp-pill'); lv.style.flex = '0 0 auto'; lv.appendChild($('span', '', S.daily ? tr(ch.title) : ch.noun === 'cards' ? tr('Card {n} of {total}', lvv) : tr('Level {n} of {total}', lvv))); bar.appendChild(lv);
   if (S.projector) { const p = $('div', 'pp-pill'); p.appendChild(iconEl('eye')); p.appendChild($('span', '', tr('Projector'))); bar.appendChild(p); }
   const main = $('div', 'pp-main'); pp.appendChild(main);
-  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid pp-board-card' : I.type === 'pass' || (I.type === 'cipher' && I.kind === 'keyed') ? ' pp-board-card' : I.type === 'cipher' ? ' pp-board-wheel' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
+  const board = $('div', 'pp-board' + (I.type === 'ack' || I.type === 'check' ? ' pp-board-line' : I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid pp-board-card' : I.type === 'pass' || (I.type === 'cipher' && I.kind === 'keyed') ? ' pp-board-card' : I.type === 'cipher' ? ' pp-board-wheel' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
   const panel = $('div', 'pp-panel'); main.appendChild(panel);
   Object.assign(UI, { board, panel, links: {}, nodes: {}, lines: {}, packets: {}, pk: null, say: null, revealed: Infinity });
   PIECES = I.n && MAP_TYPES.includes(I.type) ? pieces(I) : null;
@@ -1411,7 +1416,7 @@ function syncSort() {
 }
 
 /* ----- pass levels: the passphrase builder ----- */
-const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'many years', 'centuries'];
+const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'a hundred years', 'centuries'];
 function renderPassPanel() {
   const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
   const fill = cardHost(true); fill.style.width = '100%';
@@ -1542,7 +1547,13 @@ function pieces(I) {
   for (let k = 0; k < n; k++) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(pw)); c.height = Math.max(1, Math.ceil(ph)); try { c.getContext('2d').drawImage(src, (k % cols) * pw, Math.floor(k / cols) * ph, pw, ph, 0, 0, c.width, c.height); } catch (e) { /* empty piece */ } c.className = 'pp-piece'; c.style.width = Math.round(30 * pw / Math.max(pw, ph)) + 'px'; c.style.height = Math.round(30 * ph / Math.max(pw, ph)) + 'px'; out.push(c); }
   return { cols, rows, out, src };
 }
-function pieceEl(k) { return PIECES.out[k - 1].cloneNode(true); }
+/** A copy of piece k for the board, a tile or a slot. cloneNode copies a canvas element but never its pixels, so every
+ *  copy is painted again from the piece (the bug that left every packet a blank white square). */
+function pieceEl(k) {
+  const src = PIECES.out[k - 1], c = src.cloneNode(false);
+  try { c.getContext('2d').drawImage(src, 0, 0); } catch (e) { /* an empty piece */ }
+  return c;
+}
 function renderRoutePanel() {
   const run = S.run, I = run.inst, panel = UI.panel;
   const row = $('div', 'pp-row'); panel.appendChild(row);
@@ -1836,6 +1847,8 @@ async function solved(flow) {
   nextLevel();
 }
 function caseClosed(check) {
+  // a level's last 'Think again' toast must not sit over the check card (its timer can be held while a card is open)
+  const tt = document.querySelector('.ok-toast.on'); if (tt) tt.classList.remove('on');
   const tiles = check.tiles.map(t => tr(t));
   const who = window.innerHeight < 520 ? undefined : (S.pim || undefined);   // on a short screen the card stays centered without the asker
   const order = E.rng(E.seedOf((S.level ? S.level.id : '') + ':check:' + S.seed0 + ':' + S.attempt)).shuffle(tiles.map((_, k) => k));

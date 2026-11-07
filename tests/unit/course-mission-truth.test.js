@@ -83,7 +83,8 @@ test('chained Packet Post chapters are named in the mission with their true size
 test('every quick-check item in the audited units carries a why, and a miss returns it', () => {
   const audited = {
     'cs-quest': ['0.1', '1.1', '1.2', '1.3', '1.4', '1.5', '2.1', '2.2', '3.1', '3.2', '3.3'],
-    'cyber-defenders': ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3'],
+    // Cyber Defenders: every step since the 2026-11-07 pass (units 3-6 got their whys too)
+    'cyber-defenders': ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '6.4'],
   };
   let checked = 0;
   for (const { course, band, deck: d } of ALL) {
@@ -99,7 +100,7 @@ test('every quick-check item in the audited units carries a why, and a miss retu
       checked++;
     }
   }
-  assert.equal(checked, 108, 'the audited units hold 108 deck-check items');
+  assert.equal(checked, 186, 'the audited units hold 186 deck-check items');
 });
 
 // Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).

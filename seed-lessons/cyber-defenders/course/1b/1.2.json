@@ -10,31 +10,25 @@
    "title": "On Pim's counter",
    "text": "On Pim's counter sit a postcard and a sealed envelope. Anyone can read the postcard, but the envelope keeps its words hidden.",
    "art": "envelope",
-   "img": "csq/packet-post/locks-2-sealed",
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
-   "view": [
-    8,
-    24,
-    84,
-    72
-   ],
+   "img": "csq/packet-post/protocols-1b-sealed-n2",
+   "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
    "focus": [
     {
-     "cue": "The open street: anyone on it can read the post, like a postcard",
+     "cue": "The open road: a snoopy cat reads it, like a postcard",
      "box": [
-      18,
-      37.8,
-      23.4,
-      17.5
+      2.9,
+      1.6,
+      94.3,
+      39.8
      ]
     },
     {
-     "cue": "The padlock street is sealed, like an envelope",
+     "cue": "A secret birthday surprise travels in numbered packets",
      "box": [
-      15.2,
-      70.1,
-      30.9,
-      19.2
+      3.1,
+      45.8,
+      61,
+      15.3
      ]
     }
    ]
@@ -54,31 +48,25 @@
     "padlock showing: the trip is sealed",
     "not sure: stop and ask a trusted adult"
    ],
-   "img": "csq/packet-post/routes-2-sealed",
-   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
-   "view": [
-    25.9,
-    18.2,
-    66.7,
-    58.1
-   ],
+   "img": "csq/packet-post/protocols-1b-sealed-n",
+   "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
    "focus": [
     {
      "cue": "Sealed roads wear a padlock",
      "box": [
-      42.9,
-      64.5,
-      8.9,
-      3.5
+      25.8,
+      29,
+      11,
+      19.5
      ]
     },
     {
-     "cue": "Open roads have a snoopy cat who reads packets",
+     "cue": "The open road below has no padlock",
      "box": [
-      58.4,
-      26.5,
-      29.4,
-      12.9
+      25,
+      77,
+      49.5,
+      23
      ]
     }
    ]
