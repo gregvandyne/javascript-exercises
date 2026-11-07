@@ -13813,7 +13813,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-b4dde207/breeze-models.js', integrity: 'sha384-WJf2A3Z7CKbUJ/uAb83Kj2nfCM1oXxNxdrEXJtzSMQzkTynyd+Yn3aGXPw06ClDM' };
+const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-0fd6219a/breeze-models.js', integrity: 'sha384-I4ab1lp2tAut1w7x9bRj0p9nBMdg8I4O80U0CfiWx7uTYRAMqJPElu1r0cVlFZX2' };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 function bzLoad() {
@@ -13912,6 +13912,7 @@ function bzApply(d) {
     const mx = new THREE.AnimationMixer(Gm.mesh); Gm.mixer = mx; Gm.idle = mx.clipAction(Gm.clips.idle); Gm.talk = mx.clipAction(Gm.clips.talk); Gm.idle.play(); BZM.mixers.push(mx);
   }
   if (d.villager) bzVillagers(d.villager);
+  if (d.foes) bzFoes(d.foes);
   // props: one instanced mesh per model part, for every place in the world
   // geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry
   const inst = (geo, mat, list, place, tint) => {
@@ -13977,6 +13978,15 @@ function bzVillagers(v) {
     const hair = BZ_HAIR[L.hair]; if (hair && L.hat !== 'helmet') add(m.head, tinted(geo[hair], L.hairColor));
     if (L.beard || L.mustache) add(m.head, tinted(geo.beard, L.beard || L.mustache));
     const hat = BZ_HAT[L.hat]; if (hat) add(m.head, tinted(geo[hat], hat === 'helmet' ? '#ffffff' : L.hatColor || '#e9c46a'));
+  }
+}
+/** Foes (phase 2): each rig's body parts take the storybook model of that part (the same pivots, poses and per-foe tints;
+ *  the faces and eyes stay the game's, placed on the same surfaces). */
+function bzFoes(f) {
+  const mat = breezeMat({ map: bzTex(f), rim: 0.3 });
+  for (const [k, m] of Object.entries(f.meshes)) {
+    const [rig, i] = k.split('_'), r = RIGS[rig], p = r && r.parts[+i]; if (!p || p.follow >= 0) continue;
+    const g = bzGeo(m); bzSwap(p.mesh, g, m.lod1 ? bzGeo(m.lod1) : g); p.mesh.material = mat;
   }
 }
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */

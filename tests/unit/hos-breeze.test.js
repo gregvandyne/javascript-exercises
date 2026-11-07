@@ -16,7 +16,7 @@ const body = file && fs.readFileSync(file, 'utf8');
 const win = {}; if (body) new Function('window', body)(win);
 const A = win.__hosBreeze || {};
 // triangles allowed per asset (the full model; props also carry a lighter lod1)
-const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000 };
+const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000 };
 const len = b64 => Buffer.from(b64, 'base64').length;
 
 test('the game pins the pack by path and sha384, and it is small', () => {
@@ -52,6 +52,11 @@ test('every asset decodes, keeps to its triangle budget, has a painted texture a
 test('the villager kit has every part the crowd and the named people use', () => {
   for (const k of ['legs', 'body', 'arm', 'head', 'eyes', 'hair_short', 'hair_bun', 'hair_long', 'hair_curls', 'beard', 'hat_straw', 'hat_top', 'hat_hood', 'helmet', 'apron']) assert.ok(A.villager.meshes[k], k);
   for (const k of ['head', 'body', 'legs']) assert.ok(A.villager.meshes[k].lod1, `${k} has a lighter crowd copy`);
+});
+
+test('the foe parts: every rig part the game draws for the blobble, grumblin, chief, puffcap and boar', () => {
+  const want = { blobble: 1, grumblin: 4, chief: 4, puffcap: 2, boar: 4 };
+  for (const [rig, n] of Object.entries(want)) for (let i = 0; i < n; i++) assert.ok(A.foes.meshes[`${rig}_${i}`], `${rig}_${i}`);
 });
 
 test('the characters are rigged, with clips for Granny (the hero is posed by the game)', () => {

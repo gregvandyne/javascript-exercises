@@ -475,6 +475,113 @@ def build_villager():
     return P
 
 
+def tv(x, y, z):
+    """The game's (three.js, Y-up, front +z) coordinates in Blender's (Z-up, front -Y)."""
+    return (x, -z, y)
+
+
+def tsph(c, r, segs=(12, 8), rot=(0, 0, 0)):
+    """A smooth ellipsoid at a game-space centre with game-space radii (rx, ry, rz)."""
+    return smooth(bsphere(tv(*c), (r[0], r[2], r[1]), segs, rot))
+
+
+def ttube(a, b, r0, r1, segs=8, rings=3, cap=True):
+    return smooth(btube(tv(*a), tv(*b), r0, r1, segs, rings, cap))
+
+
+def tlathe(profile, segs, at=(0, 0, 0), turn=None):
+    """A surface of revolution about the game's up axis from [(r, y), ...], optionally turned (Blender Euler)."""
+    bm = smooth(blathe(profile, segs))
+    if turn: bmesh.ops.transform(bm, matrix=euler(turn), verts=bm.verts)
+    bmesh.ops.translate(bm, vec=Vector(tv(*at)), verts=bm.verts)
+    return bm
+
+
+def build_foes():
+    """The simple foes (phase 2, step 3), one mesh per rig part, each in its pivot's own frame (the game poses the parts and
+    tints the bodies per foe, e.g. green or pink jelly, brown or snowy boars): the Blobble (a wobbly jelly drop with a shine,
+    a stalk and a leaf), the Grumblin and Chief Bonkbelly (round little goblins: tunic, a big head with droopy pointy ears and
+    a saucepan or cooking-pot helmet, a club arm, an arm or a barrel-lid shield, stubby legs), the Puffcap (a grumpy
+    mushroom: a soft stem with feet, a big spotted cap) and the Bristleboar (a round body with a bristly mane, a head with
+    ears, a snout with tusks, four stubby legs). Faces and eyes stay the game's own (placed on these same surfaces)."""
+    P = {}; W = (1, 1, 1)
+
+    def part(name):
+        P[name] = Builder('foes_' + name); return P[name]
+    # Blobble: the dome keeps the game's face surface (centre y 0.42, radii 0.6, 0.46, 0.6)
+    b = part('blobble_0')
+    bm = tsph((0, 0.42, 0), (0.6, 0.46, 0.6), (18, 12))
+    for v in bm.verts:   # a jelly drop: a flatter, wider base and a little peak toward the stalk
+        if v.co.z < 0.22: v.co.z = 0.22 - (0.22 - v.co.z) * 0.6; v.co.x *= 1.04; v.co.y *= 1.04
+        if v.co.z > 0.72: v.co.z += (v.co.z - 0.72) * 0.45
+    b.add(bm, W, 'cloth', 0, 'skin', wonk=0.012)
+    b.add(tsph((0.2, 0.68, 0.3), (0.14, 0.09, 0.08)), (1, 1, 1), 'other', 0, 'white')   # the shine
+    b.add(ttube((0, 0.8, 0), (0.02, 1.0, -0.02), 0.04, 0.03, 6, 2), hexc('#8A5A3C'), 'wood', 0, 'boots')
+    b.add(tsph((0.14, 1.0, 0), (0.18, 0.04, 0.09), (10, 6), (0, -0.45, 0)), hexc('#1F9D63'), 'leaf', 0, 'cloth')
+    # Grumblin and the chief: the body from the feet; arms from the shoulders (+-0.3, 0.72); legs from the hips (0, 0.3)
+    Wt = W
+    for name, pot in (('grumblin', False), ('chief', True)):
+        b = part(name + '_0'); tunic = hexc('#C9713A') if not pot else hexc('#C8402F'); W = hexc('#8ED27A') if not pot else hexc('#6DB866')   # their own green skin (no tint)
+        b.add(tsph((0, 0.56, 0), (0.31, 0.31, 0.27), (14, 9)), tunic, 'cloth2', 0, 'cloth', wonk=0.01)
+        b.add(tlathe([(0.29, 0.42), (0.305, 0.43), (0.3, 0.48), (0.28, 0.49)], 14), hexc('#5C3A26'), 'belt', 0, 'boots')
+        b.add(tsph((0, 0.98, 0.02), (0.3, 0.27, 0.28), (16, 10)), W, 'skin', 0, 'skin', wonk=0.006)
+        for s_ in (1, -1):   # pointy, droopy ears
+            b.add(ttube((0.24 * s_, 1.0, 0), (0.47 * s_, 1.06, -0.04), 0.08, 0.015, 7, 3), W, 'skin', 0, 'skin')
+        if pot:
+            b.add(tlathe([(0.0, 1.4), (0.32, 1.38), (0.34, 1.12), (0.37, 1.1), (0.37, 1.13), (0.0, 1.15)], 16), hexc('#5E5A50'), 'metal', 0, 'white')
+            b.add(tsph((0, 1.44, 0), (0.07, 0.05, 0.07)), hexc('#8F8A7C'), 'metal', 0, 'white')
+        else:
+            b.add(tlathe([(0.0, 1.27), (0.28, 1.26), (0.3, 1.11), (0.32, 1.1), (0.32, 1.13), (0.0, 1.14)], 16), hexc('#C6C2B5'), 'metal', 0, 'white')
+            b.add(ttube((0, 1.18, -0.28), (0, 1.17, -0.62), 0.04, 0.035, 6, 2), hexc('#5C3A26'), 'wood', 0, 'boots')   # the saucepan handle
+        for arm in (1, 2):   # from the shoulder: a hanging arm and a round fist; arm 1 holds the club, the chief's arm 2 a shield
+            b = part(f'{name}_{arm}')
+            b.add(ttube((0, -0.02, 0), (0, -0.3, 0), 0.08, 0.065, 8, 3), W, 'skin', 0, 'skin')
+            b.add(tsph((0, -0.36, 0), (0.095, 0.09, 0.095)), W, 'skin', 0, 'skin')
+            if arm == 1:
+                L = 0.95 if pot else 0.68
+                b.add(ttube((0, -0.35, -0.05), (0, -0.33, L), 0.055 if pot else 0.04, 0.14 if pot else 0.1, 8, 4), hexc('#BF7A45'), 'wood', 0, 'boots')
+            elif pot:
+                b.add(tlathe([(0.0, -0.03), (0.34, -0.03), (0.36, 0.0), (0.34, 0.03), (0.0, 0.05)], 16, (-0.02, -0.3, 0.12), (math.pi / 2, 0, 0)), hexc('#BF957A'), 'wood', 0, 'boots')
+        b = part(f'{name}_3')
+        for s_ in (1, -1):
+            b.add(ttube((0.12 * s_, -0.02, 0), (0.12 * s_, -0.24, 0), 0.085, 0.075, 8, 3), hexc('#5C3A26'), 'cloth2', 0, 'cloth')
+            b.add(tsph((0.12 * s_, -0.3, 0.05), (0.1, 0.07, 0.14)), hexc('#2B2220'), 'boots', 0, 'boots')
+    W = Wt
+    # Puffcap: the stem from the ground, the cap from (0, 0.86)
+    b = part('puffcap_0')
+    b.add(tlathe([(0.0, 0.02), (0.3, 0.03), (0.31, 0.2), (0.28, 0.5), (0.25, 0.8), (0.2, 0.88), (0.0, 0.9)], 16), hexc('#FFEAD8'), 'cloth', 0, 'skin', wonk=0.01)
+    for s_ in (1, -1): b.add(tsph((0.13 * s_, 0.06, 0.08), (0.13, 0.08, 0.17)), hexc('#8A5A3C'), 'boots', 0, 'boots')
+    b = part('puffcap_1')
+    b.add(tlathe([(0.0, -0.08), (0.5, -0.07), (0.63, 0.02), (0.6, 0.18), (0.45, 0.33), (0.2, 0.41), (0.0, 0.42)], 18), hexc('#9B6BE8'), 'cloth', 0, 'cloth', wonk=0.015)
+    for i in range(7):   # soft round spots, raised a touch from the cap
+        if i < 6:
+            a = i / 6 * 2 * math.pi + 0.3; c = (math.cos(a) * 0.5, 0.25, math.sin(a) * 0.5)
+        else:
+            c = (0, 0.42, 0)
+        b.add(tsph(c, (0.11, 0.05, 0.11), (8, 5)), hexc('#FFE27A'), 'other', 0, 'white')
+    # Bristleboar: the body from the ground; the head and the snout from (0, 0.62, 0.55); legs from (0, 0.34, 0)
+    b = part('boar_0')
+    b.add(tsph((0, 0.62, -0.05), (0.47, 0.42, 0.72), (16, 10)), W, 'cloth', 0, 'hair', wonk=0.012)
+    for i in range(7):   # a bristly mane: soft tufts along the back
+        z = -0.5 + i * 0.16
+        b.add(ttube((0, 0.95 - abs(i - 3) * 0.03, z), (0, 1.2 - abs(i - 3) * 0.04, z - 0.08), 0.08, 0.01, 6, 2), hexc('#5E5A50'), 'hair', 0, 'hair')
+    b.add(ttube((0, 0.7, -0.74), (0, 0.55, -0.92), 0.04, 0.012, 6, 2), W, 'cloth', 0, 'hair')   # the tail
+    b = part('boar_1')
+    b.add(tsph((0, 0.04, 0.1), (0.31, 0.29, 0.31), (14, 9)), W, 'cloth', 0, 'hair', wonk=0.006)
+    for s_ in (1, -1): b.add(ttube((0.18 * s_, 0.25, 0.0), (0.26 * s_, 0.42, -0.08), 0.08, 0.02, 6, 3), W, 'cloth', 0, 'hair')   # ears
+    b = part('boar_2')
+    b.add(tlathe([(0.0, 0.0), (0.15, 0.01), (0.16, 0.08), (0.15, 0.15), (0.0, 0.16)], 12, (0, -0.03, 0.26), (math.pi / 2, 0, 0)), hexc('#FF9C8F'), 'skin', 0, 'skin')
+    for s_ in (1, -1):
+        b.add(tsph((0.05 * s_, -0.02, 0.43), (0.03, 0.035, 0.02)), hexc('#5C3A26'), 'other', 0, 'boots')
+        b.add(ttube((0.12 * s_, -0.08, 0.34), (0.16 * s_, 0.08, 0.46), 0.035, 0.008, 6, 3), hexc('#FFFDF2'), 'other', 0, 'white')   # tusks
+    b = part('boar_3')
+    for sx in (1, -1):
+        for sz in (1, -1):
+            b.add(ttube((0.24 * sx, -0.06, 0.38 * sz), (0.24 * sx, -0.44, 0.38 * sz), 0.085, 0.07, 8, 3), W, 'cloth', 0, 'hair')
+            b.add(tsph((0.24 * sx, -0.48, 0.38 * sz + 0.02), (0.09, 0.05, 0.1)), hexc('#2B2220'), 'boots', 0, 'boots')
+    return P
+
+
 def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
@@ -696,10 +803,12 @@ def turntable(path, objs, height, n=6, px=220):
         if o.pose:
             for pb in o.pose.bones: pb.rotation_euler = (0, 0, 0); pb.rotation_quaternion = (1, 0, 0, 0); pb.location = (0, 0, 0)
     sc.render.resolution_x = px; sc.render.resolution_y = int(px * 1.25); sc.render.film_transparent = True; sc.render.image_settings.file_format = 'PNG'
+    sc.eevee.taa_render_samples = 8   # flat toon colours need few samples (the review renders are slow otherwise)
     sc.view_settings.view_transform = 'Standard'
     if sc.world is None: sc.world = bpy.data.worlds.new('w')
     for o in objs:
         img = o.data.materials[0].node_tree.nodes['Image Texture'].image if o.data.materials and o.data.materials[0].node_tree.nodes.get('Image Texture') else None
+        if o.data.materials[0].name.startswith('toon_review'): continue
         o.data.materials[0] = toon_mat(img)
     sun = bpy.data.objects.new('sun', bpy.data.lights.new('sun', 'SUN')); sun.data.energy = 4; sc.collection.objects.link(sun)
     cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
@@ -715,6 +824,7 @@ def turntable(path, objs, height, n=6, px=220):
     strip = Image.new('RGBA', (px * n, int(px * 1.25)), (0, 0, 0, 0))
     for i, t in enumerate(tiles): strip.paste(t, (i * px, 0))
     strip.save(path)
+    bpy.data.objects.remove(sun); bpy.data.objects.remove(cam)
 
 
 # ------------------------------------------------------------------------------------------------------------ main
@@ -774,6 +884,29 @@ def make_villager(out, renders):
     return data
 
 
+def make_foes(out, renders):
+    P = build_foes(); tex = char_atlas((70, 52, 36)); mat = material('foes_mat', to_bimg(tex, 'foes_tex'))
+    obs = {n: b.mesh(mat) for n, b in P.items()}
+    export_glb(os.path.join(out, 'foes.glb'), list(obs.values()))
+    data = {'name': 'foes', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
+    if renders:   # a turntable per foe, assembled at its pivots (game space -> Blender), in a typical tint
+        PIV = {'blobble': [(0, 0, 0)], 'grumblin': [(0, 0, 0), (0.3, 0.72, 0), (-0.3, 0.72, 0), (0, 0.3, 0)], 'puffcap': [(0, 0, 0), (0, 0.86, 0)],
+               'boar': [(0, 0, 0), (0, 0.62, 0.55), (0, 0.62, 0.55), (0, 0.34, 0)], 'chief': [(0, 0, 0), (0.3, 0.72, 0), (-0.3, 0.72, 0), (0, 0.3, 0)]}
+        TINT = {'blobble': hexc('#7EE05A'), 'grumblin': (1, 1, 1), 'puffcap': (1, 1, 1), 'boar': hexc('#A8714A'), 'chief': (1, 1, 1)}
+        for o in obs.values(): o.hide_render = True
+        for fn, pv in PIV.items():
+            show = []
+            for i, p in enumerate(pv):
+                src = obs[f'{fn}_{i}']; o = src.copy(); o.data = src.data.copy(); bpy.context.scene.collection.objects.link(o); o.hide_render = False
+                o.location = Vector(tv(*p))
+                if not (fn == 'boar' and i == 2):
+                    for dd in o.data.color_attributes.get('Col').data: dd.color = (dd.color[0] * TINT[fn][0], dd.color[1] * TINT[fn][1], dd.color[2] * TINT[fn][2], dd.color[3])
+                show.append(o)
+            turntable(os.path.join(out, f'turn_{fn}.png'), show, 1.9 if fn != 'boar' else 1.6)
+            for o in show: bpy.data.objects.remove(o)
+    return data
+
+
 def make_prop(name, builders, tex, out, renders, height, texs=None):
     """texs: an optional texture per builder (the cottage's walls and roof); otherwise one texture for all."""
     texs = texs or [tex] * len(builders); obs = []
@@ -802,7 +935,8 @@ def main():
             ('tree', lambda: make_prop('tree', [build_tree()], prop_tex('tree'), a.out, a.renders, 5.6)),
             ('barrel', lambda: make_prop('barrel', [build_barrel()], prop_tex('wood'), a.out, a.renders, 1.3)),
             ('fence', lambda: make_prop('fence', list(build_fence()), prop_tex('wood'), a.out, a.renders, 1.5)),
-            ('villager', lambda: make_villager(a.out, a.renders))]
+            ('villager', lambda: make_villager(a.out, a.renders)),
+            ('foes', lambda: make_foes(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()
