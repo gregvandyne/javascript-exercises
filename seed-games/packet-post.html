@@ -1358,7 +1358,9 @@ function syncRoads(frozen) {
     ln.classList.toggle('pp-closed', closed); ln.classList.toggle('pp-lit', here);
     bt.className = 'pp-link' + (closed ? ' pp-closed' : here ? ' pp-ok' : l.sealed ? ' pp-sealedb' : '');
     bt.innerHTML = closed ? icon('cross') : l.sealed ? icon('lock') : here ? icon('next') : icon('move');
-    const other = I.nodes[l.a === s.at ? l.b : l.a];
+    // the road's far end: from where the packet stands, the other end; a road elsewhere on the map is named by the
+    // end it leads on to (its b end), so two roads never both read as the same office
+    const other = I.nodes[l.a === s.at ? l.b : l.b === s.at ? l.a : l.b];
     if (here && !l.sealed) bt.dataset.aim = l.a === s.at ? l.b : l.a; else delete bt.dataset.aim;
     bt.setAttribute('aria-label', closed ? tr('Road closed') : (l.sealed ? tr('Sealed road to {place}, {n} hops', { place: tr(other.label), n: l.cost }) : tr('Road to {place}', { place: tr(other.label) })));
     bt.disabled = s.phase !== 'play';

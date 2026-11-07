@@ -113,17 +113,6 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/claims-1b-hunch-n",
-   "game": "data-detective",
-   "chapter": "claims",
-   "band": "1b",
-   "state": "claims-1b-hunch-n",
-   "concept": "Enough data?",
-   "alt": "Two days of data and a big claim: it will be 20 cm tall by day 10. Supported, not supported, or can't tell yet?",
-   "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
-  },
-  {
    "key": "csq/data-detective/claims-1b-plant-n",
    "game": "data-detective",
    "chapter": "claims",
@@ -144,6 +133,17 @@
    "alt": "Days 1 to 5 grow 2 cm each, up to 10 cm, and the prediction slider for day 6 is set to 12 cm.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/data-detective/claims-1b-twodays-n",
+   "game": "data-detective",
+   "chapter": "claims",
+   "band": "1b",
+   "state": "claims-1b-twodays-n",
+   "concept": "Enough data?",
+   "alt": "A sunflower measured on only two days: 3 cm on day 1 and 5 cm on day 2, two short bars.",
+   "capturedAt": "2026-11-07",
+   "commit": "430455d"
   },
   {
    "key": "csq/data-detective/cleanup-2-mess-n",
@@ -2753,37 +2753,37 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/variables-2-key",
+   "key": "csq/robo-route/variables-2-key-c",
    "game": "robo-route",
    "chapter": "variables",
    "band": "2",
-   "state": "variables-2-key",
-   "concept": "Hold a value (the starter names it x)",
-   "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "variables-2-key-c",
+   "concept": "Programs need memory",
+   "alt": "A Pro variables level: the program keeps a number in a box named x, and changes x by 1 for every gem Bolt picks up.",
+   "capturedAt": "2026-11-07",
+   "commit": "430455d"
   },
   {
-   "key": "csq/robo-route/variables-2-names",
+   "key": "csq/robo-route/variables-2-names-c",
    "game": "robo-route",
    "chapter": "variables",
    "band": "2",
-   "state": "variables-2-names",
+   "state": "variables-2-names-c",
    "concept": "Names are for people",
-   "alt": "The same counting program with the box named count: set count to 0 and change count by 1 read like a sentence.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "The same program with a better name: set count to 0, then change count by 1 for every gem, seven times.",
+   "capturedAt": "2026-11-07",
+   "commit": "430455d"
   },
   {
-   "key": "csq/robo-route/variables-2-types",
+   "key": "csq/robo-route/variables-2-types-c",
    "game": "robo-route",
    "chapter": "variables",
    "band": "2",
-   "state": "variables-2-types",
-   "concept": "Kinds of values",
-   "alt": "A flag variable in the tray: set hasKey to Off at the start, and set hasKey to On inside the if block that picks the key up.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "variables-2-types-c",
+   "concept": "Boxes have types",
+   "alt": "A flag box: set hasKey to Off, and inside the loop, if there is something to pick up, pick it up and set hasKey to On.",
+   "capturedAt": "2026-11-07",
+   "commit": "430455d"
   },
   {
    "key": "csq/robo-route/variables-2-watch-value",
