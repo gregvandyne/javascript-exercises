@@ -51,7 +51,10 @@ export const ARCHETYPES = {
     // read (the page renders one button per object; tapping marks it counted, and no total is shown).
     // The objects live only in those tiles: the prompt carries no emoji row of its own, or the child
     // sees every shell twice (once after the words, once as tiles) and cannot tell which to count.
-    return { prompt: `Count the ${c}. How many are there?`, answer: n, manip: { kind: 'count-out', glyph, count: n },
+    // A data-strand count (gen.sort: K.MD.B, classify and count) says it is sorting: the child is counting one
+    // sorted pile, which is what the strand's "Data" means here.
+    const prompt = g.sort ? `Tally sorted the beach finds into piles. How many ${c} are in the ${c.replace(/s$/, '')} pile?` : `Count the ${c}. How many are there?`;
+    return { prompt, answer: n, manip: { kind: 'count-out', glyph, count: n },
       distractors: [{ value: n + 1, misconception: 'counted-one-too-many' }, { value: Math.max(0, n - 1), misconception: 'missed-one-object' }, { value: n + 2, misconception: 'double-counted' }] };
   },
   // Hands-on archetypes for the mid rungs (repair round 3): the bank's count-out/build items used to
@@ -302,7 +305,8 @@ export const ARCHETYPES = {
   },
   sortCount(rng, g, c) {
     const a = ri(rng, 2, 8), b = ri(rng, 2, 8), d = ri(rng, 1, 6), total = a + b + d;
-    return { prompt: `In a basket there are ${a} red balls, ${b} blue balls and ${d} green balls. How many balls are there in all?`, answer: total,
+    const balls = (n, colour) => `${n} ${colour} ${n === 1 ? 'ball' : 'balls'}`; // "1 green ball", never "1 green balls"
+    return { prompt: `In a basket there are ${balls(a, 'red')}, ${balls(b, 'blue')} and ${balls(d, 'green')}. How many balls are there in all?`, answer: total,
       distractors: [{ value: a + b, misconception: 'left-one-group-out' }, { value: total + 1, misconception: 'off-by-one' }, { value: Math.max(a, b, d), misconception: 'gave-the-biggest-group' }] };
   },
   meanCalc(rng, g, c) {
@@ -380,8 +384,18 @@ export function generateItem(template, seed) {
       return { ...d, value: v };
     });
   }
+  // A young child is never asked to type a word ("certain", "pentagon"), a fraction or a long number ("480"):
+  // those items are served as buttons, the key and its three tagged mistakes, and any "Answer like ..." line
+  // that only told a typist the format goes (it named the answer itself: "What is 1/4 + 2/4? Answer like 3/4.").
+  // Typed answers stay for short whole numbers (0-99), the hands-on counts among them.
+  const typedOk = typeof out.answer === 'number' && Number.isInteger(out.answer) && out.answer >= 0 && out.answer < 100;
+  if (template.responseType === 'pick' || !typedOk) { // buttons: a format line for a typist only gives the answer away
+    out.prompt = out.prompt.replace(/\s*Answer(?: like [^.?!]*| "[^"]*" or "[^"]*"|: [^.]*)\.$/, '');
+    // only real mistakes become buttons: a two-way question (even or odd) keeps its two answers, never a nudged "odd (other)"
+    out.distractors = out.distractors.filter((d, i, all) => !/ \(other\)$/.test(String(d.value)) && String(d.value) !== String(out.answer) && all.findIndex(x => String(x.value) === String(d.value)) === i);
+  }
   const spokenPrompt = out.prompt.replace(/[_]{2,}/g, 'blank');
-  if (template.responseType !== 'pick') {
+  if (template.responseType !== 'pick' && typedOk) {
     return { templateId: template.id, strand: template.strand, rung: template.rung, prompt: out.prompt, spokenPrompt,
       responseType: template.responseType, answer: out.answer, choices: null, answerIndex: null,
       ...(out.manip ? { manip: out.manip } : {}),
@@ -390,7 +404,8 @@ export function generateItem(template, seed) {
   const choices = [{ value: out.answer, misconception: null }, ...out.distractors];
   for (let i = choices.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [choices[i], choices[j]] = [choices[j], choices[i]]; }
   return { templateId: template.id, strand: template.strand, rung: template.rung, prompt: out.prompt, spokenPrompt,
-    responseType: 'pick', answer: out.answer, choices, answerIndex: choices.findIndex(ch => ch.misconception === null) };
+    responseType: 'pick', answer: out.answer, choices, answerIndex: choices.findIndex(ch => ch.misconception === null),
+    ...(template.responseType !== 'pick' ? { servedAsPick: true, distractorMisconceptions: out.distractors.map(d => d.misconception), ...(out.manip ? { manip: out.manip } : {}) } : {}) };
 }
 
 export function generateById(id, seed = 1) {

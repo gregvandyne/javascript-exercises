@@ -54,12 +54,21 @@ test('every template generates solvable items with correct, unique keys', () => 
       assert.ok(item.prompt && !item.prompt.includes('{'), `${t.id}:${seed} prompt`);
       assert.ok(item.answer !== undefined && item.answer !== '', `${t.id}:${seed} key`);
       if (t.responseType === 'pick') {
-        assert.equal(item.choices.length, 4, `${t.id}:${seed}`);
-        assert.equal(new Set(item.choices.map(c => String(c.value))).size, 4, `${t.id}:${seed} unique`);
+        // 4 choices; a two-way question (even or odd) has just its 2, never a nudged "odd (other)"
+        assert.ok(item.choices.length === 4 || (item.choices.length === 2 && /even or odd/.test(item.prompt)), `${t.id}:${seed}`);
+        assert.equal(new Set(item.choices.map(c => String(c.value))).size, item.choices.length, `${t.id}:${seed} unique`);
+        assert.ok(!item.choices.some(c => / \(other\)$/.test(String(c.value))), `${t.id}:${seed} no nudged filler`);
         assert.equal(item.choices[item.answerIndex].value, item.answer, `${t.id}:${seed} key position`);
         for (const c of item.choices) if (c.value !== item.answer) assert.ok(c.misconception, `${t.id}:${seed} distractor tag`);
+      } else if (item.servedAsPick) {
+        // a word, a fraction or a number of 100 or more is never typed: it is served as buttons
+        assert.ok(item.choices.length >= 2 && item.choices.length <= 4, `${t.id}:${seed} buttons`);
+        assert.equal(new Set(item.choices.map(c => String(c.value))).size, item.choices.length, `${t.id}:${seed} unique`);
+        assert.equal(item.choices[item.answerIndex].value, item.answer, `${t.id}:${seed} key position`);
+        assert.ok(!item.choices.some(c => / \(other\)$/.test(String(c.value))), `${t.id}:${seed} no nudged filler`);
       } else {
         assert.equal(item.distractorMisconceptions.length, 3, `${t.id}:${seed}`);
+        assert.ok(Number.isInteger(item.answer) && item.answer >= 0 && item.answer < 100, `${t.id}:${seed}: a typed answer is a short whole number (${item.answer})`);
       }
     }
   }
