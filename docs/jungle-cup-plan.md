@@ -183,14 +183,19 @@ Timed beats (Cappy's thanks, Zuzu's lift news) run on game time, never `setTimeo
 
 ## Mango Dash (the eighth sport)
 
-Pecca the peccary, captain of the Grunt Gang, guards the eighth Feather in the muddy clearing behind her arch
-(`ARCHES.dash` in `core/09-world.js`; the clearing, its props, Pecca's spot and the `clearing` test place are all
-placed relative to that entry, so moving the arch moves them). `sport-dash.js`: carry the mango 100 m up the field;
-Cappy runs by himself, the joystick / arrows steer (up = sprint, down = slow); Coco, Pip and Tapo run in formation and
-PASS (button / Space / A) throws the mango to the teammate with the arrow (the safest one). Pigs amble in, paw the mud
-while a dotted red line shows where they will charge, then charge whoever holds the mango; caught ends the run. Logs
-trip, mud slows; Pecca charges twice after 80 m. Stars: a win; under 64 s (70 s Easier); and 6+ dodges with at most
-2 trips. Everything that counted seven now counts `NSPORTS` (`JC.sportOrder.length`): the totem's sockets, the HUD
-Feather strip, the map rows, the lift, the finale lineup and the story panels. Saves from before Mango Dash load as
-they are (`sanitize` keeps any sport in `sportOrder`): a won Cup stays won, the lift waits for the eighth Feather,
-and Mango tells the news once (`flags.dashNews`; a new game hears about eight champions in the intro).
+Pecca the peccary, captain of the Grunt Gang, guards the eighth Feather (`ARCHES.dash` in `core/09-world.js`; the
+clearing, its props, Pecca's spot and the `clearing` test place are placed relative to that entry). `sport-dash.js`:
+carry the mango 280 m in four sections, each starting at a checkpoint with its own look, hazards and music:
+Muddy Clearing (logs, mud, puddles) -> Bamboo Grove (bamboo rows that funnel, thorns, ambushers) -> Riverbank (a narrow
+log bridge, boulders, rolling coconuts) -> Pecca's Stretch (everything denser, Pecca charges twice). Cappy runs by
+himself; the joystick / arrows steer (up = sprint). Coco, Pip and Tapo run open lines beside and behind; PASS (button /
+Space / A) throws to the teammate with the arrow (the safest), and a catch gives a short speed boost.
+The gang hunts whoever holds the mango: pigs, zig-zag piglets, big slow bruisers, ambushers hiding behind cover, and
+Pecca. Close in, a pig shows its tell ("!", pawing, a dotted line where it will lunge), then lunges along that line.
+A pass breaks a tell (the pig hunts the new carrier from scratch; no new lunge for 0.7 s after a catch); a lunge in
+flight is committed. A tackle is a cartoon tumble: one mango (life) lost, back to the last checkpoint; with none left
+the run ends. The gang keeps off the log bridge. Power-ups: a lightning bolt (5 s faster) and a fireball (10 s flame
+aura: pigs skid away and never come within its radius, no lunges); both stay with the mango when it is passed.
+Stars: a win; at most one tackle (two on Easier); no tackles and under 170 s (185 s Easier).
+Everything that counted seven counts `NSPORTS` (`JC.sportOrder.length`). Saves from before Mango Dash load as they
+are: a won Cup stays won, the lift waits for the eighth Feather, and Mango tells the news once (`flags.dashNews`).
