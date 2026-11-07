@@ -10,31 +10,25 @@
    "title": "Programs need memory",
    "text": "A variable is a named box that holds a value while the program runs. The program can read it and change it.",
    "art": "box",
-   "img": "csq/robo-route/variables-2-key",
-   "view": [
-    52.2,
-    26,
-    47,
-    41.8
-   ],
-   "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing.",
+   "img": "csq/robo-route/variables-2-key-c",
+   "alt": "A Pro variables level: the program keeps a number in a box named x, and changes x by 1 for every gem Bolt picks up.",
    "focus": [
     {
      "cue": "This program's box is named x. What does x hold? The name does not say.",
      "box": [
-      53.4,
-      36.3,
-      10,
-      7.7
+      42.5,
+      43.5,
+      16,
+      9
      ]
     },
     {
      "cue": "x goes up by 1 for every gem Bolt picks up.",
      "box": [
-      69.5,
-      43.5,
-      12.3,
-      7.7
+      68.5,
+      56,
+      18,
+      9
      ]
     }
    ]
@@ -43,31 +37,25 @@
    "title": "Names are for people",
    "text": "The computer is happy with x. The person reading your program is not. A name like count says exactly what the box holds.",
    "art": "pencil",
-   "img": "csq/robo-route/variables-2-names",
-   "view": [
-    52.2,
-    34.4,
-    36.1,
-    32.1
-   ],
-   "alt": "The same counting program with the box named count: set count to 0 and change count by 1 read like a sentence.",
+   "img": "csq/robo-route/variables-2-names-c",
+   "alt": "The same program with a better name: set count to 0, then change count by 1 for every gem, seven times.",
    "focus": [
     {
      "cue": "Same program, better name: count says what it holds.",
      "box": [
-      53.4,
       43,
-      12.7,
-      7.7
+      54.5,
+      18.5,
+      9.5
      ]
     },
     {
      "cue": "change count by 1 reads like a sentence.",
      "box": [
-      69.5,
-      50.2,
-      15,
-      7.7
+      68.5,
+      66.5,
+      22.5,
+      9.5
      ]
     }
    ]
@@ -76,40 +64,34 @@
    "title": "Boxes have types",
    "text": "A number box counts. A flag box (a Boolean) is on or off, like hasKey. A word box holds one word from a list, like color. Pick the type that fits.",
    "art": "table",
-   "img": "csq/robo-route/variables-2-types",
-   "view": [
-    52.2,
-    36,
-    47,
-    41.8
-   ],
-   "alt": "A flag variable in the tray: set hasKey to Off at the start, and set hasKey to On inside the if block that picks the key up.",
+   "img": "csq/robo-route/variables-2-types-c",
+   "alt": "A flag box: set hasKey to Off, and inside the loop, if there is something to pick up, pick it up and set hasKey to On.",
    "focus": [
     {
      "cue": "hasKey is a flag box: it starts Off.",
      "box": [
-      53.4,
-      43,
-      14.7,
-      7.7
-     ]
-    },
-    {
-     "cue": "Pick up the key, and the flag flips On.",
-     "box": [
-      63.4,
-      57.4,
-      14.5,
-      7.7
+      42.5,
+      55.5,
+      22.5,
+      10
      ]
     },
     {
      "cue": "The if asks first: is there something to pick up here?",
      "box": [
-      54.4,
-      50.2,
-      17.9,
-      7.7
+      44,
+      66.5,
+      27.5,
+      10.5
+     ]
+    },
+    {
+     "cue": "The flag box shows here: Off until Bolt picks up the key.",
+     "box": [
+      0.5,
+      91,
+      16,
+      7
      ]
     }
    ]
@@ -123,7 +105,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     34.5
    ],
    "alt": "Two rounds into repeat 6, the watch strip reads steps = 4: set steps to 6 started it, and each change steps by -1 brings it down.",
@@ -192,22 +174,16 @@
    "title": "Your mission",
    "text": "Open Robo Route at Variables and finish all 6 levels, so you meet the on/off flag. When the shelf offers names, pick the one a partner would understand.",
    "art": "trophy",
-   "img": "csq/robo-route/variables-2-key",
-   "view": [
-    52.2,
-    26,
-    47,
-    41.8
-   ],
-   "alt": "The starter program counts with a box named x: set x to 0, change x by 1. The value works, but the name says nothing.",
+   "img": "csq/robo-route/variables-2-key-c",
+   "alt": "A Pro variables level: the program keeps a number in a box named x, and changes x by 1 for every gem Bolt picks up.",
    "focus": [
     {
      "cue": "Your turn: pick names a partner would understand.",
      "box": [
-      53.4,
-      36.3,
-      10,
-      7.7
+      42.5,
+      43.5,
+      16,
+      9
      ]
     }
    ]

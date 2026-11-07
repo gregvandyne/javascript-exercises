@@ -74,21 +74,12 @@
    "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
    "focus": [
     {
-     "cue": "Too many parts: cost 19 of 12",
+     "cue": "Over on all three: cost 19 of 12, battery 7 of 5, size 8 of 6",
      "box": [
       1.5,
       76,
       38,
-      6
-     ]
-    },
-    {
-     "cue": "Battery 7 of 5 and size 8 of 6: over too",
-     "box": [
-      1.5,
-      82.5,
-      38,
-      13
+      19.5
      ]
     }
    ]

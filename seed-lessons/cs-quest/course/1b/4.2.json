@@ -86,10 +86,10 @@
     {
      "cue": "Four random words that do not belong together",
      "box": [
-      32,
-      34.2,
-      35.9,
-      13.3
+      4,
+      52,
+      92,
+      13
      ]
     },
     {
@@ -141,27 +141,27 @@
      "cue": "The only copy, on one tablet: not a spare",
      "box": [
       3,
-      0.5,
+      13,
       94,
-      8
+      12
      ]
     },
     {
      "cue": "Copies kept somewhere else: good spares",
      "box": [
       3,
-      9,
+      26,
       94,
-      45
+      38
      ]
     },
     {
      "cue": "An old copy never updated: not a spare either",
      "box": [
       3,
-      55,
+      63.5,
       94,
-      22
+      24
      ]
     }
    ]
