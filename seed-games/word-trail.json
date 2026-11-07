@@ -1,0 +1,60 @@
+{
+  "slug": "word-trail",
+  "title": "Word Trail",
+  "icon": "🦔",
+  "cover": "mint",
+  "category": "words",
+  "tags": "sight words,reading,learn to read,dolch,phonics,early reading,kindergarten,first grade,hedgehog,spelling,listening,words",
+  "description": "Walk the Word Trail with Bramble the hedgehog and learn to read the sight words! Hear a word and tap it, pick the sound that matches, finish a sentence, spell it with letter tiles, match pairs and race the clock. Short lessons, stars, a daily streak and a treasure chest at the end of every part of the trail. From the first words (a, the, see) to Grade 3.",
+  "orientation": "portrait",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Original sight-word game for ages about 4-8 (Duolingo-style mechanics, none of its branding: our own hedgehog, felt-and-paper look, words and sounds). The 220 Dolch words in five units (Pre-primer 40, Primer 52, Grade 1 41, Grade 2 46, Grade 3 41) on a winding trail: 43 lessons of about five new words, a review stone and a treasure chest per unit. A lesson introduces its new words (word, sound, example sentence), then 12 exercises: hear it/tap it, see it/say-pick (2-3 play buttons), fill the sentence, build it from letter tiles (with look-alike distractor letters), match pairs (sound to word) and a speed tap. Wrong answers show and read the right one and come back once at the end. XP, a daily streak, 5 gentle hearts (one back every 10 minutes or by practising; a lesson never stops mid-way), combos at 3/5/8, a 0-5 mastery box per word with spaced repetition by lessons played, and 'words you missed' first in later lessons and practice. Every word, sentence (and its with-a-blank version) and instruction is spoken with BRB.speak and registered in server/services/tts-lines.js (AI voices; the device's voice only as the fallback). Sprites: felt renders from Blender (tools/blender/word_trail.py) in the data pack public/vendor/data/word-trail/<version>/art.js (about 150 KB of WebP); the game plays without it. The content and screens are English (it teaches English reading). Saves in BRB.storage key 'word-trail-v1'; after each lesson BRB.gameOver({won:true, score: total XP}). Test hooks on window.__brbTest.",
+  "l10n": {
+    "pt": {
+      "description": "Caminhe pela Trilha das Palavras com Bramble, o ouriço, e aprenda a ler as palavras mais usadas do inglês! Ouça uma palavra e toque nela, escolha o som certo, complete a frase, monte a palavra com letras, junte pares e corra contra o relógio. Lições curtas, estrelas, uma sequência diária e um baú de tesouro no fim de cada parte da trilha.",
+      "tags": "palavras de alta frequência,leitura,aprender a ler,inglês,alfabetização,ouriço,ortografia,palavras"
+    },
+    "fr": {
+      "description": "Parcours le Sentier des mots avec Bramble le hérisson et apprends à lire les mots anglais les plus courants ! Écoute un mot et touche-le, choisis le bon son, complète la phrase, écris le mot avec des lettres, forme des paires et fais la course contre la montre. De petites leçons, des étoiles, une série quotidienne et un coffre au trésor au bout de chaque partie du sentier.",
+      "tags": "mots fréquents,lecture,apprendre à lire,anglais,hérisson,orthographe,mots"
+    },
+    "es": {
+      "description": "¡Recorre el Sendero de las palabras con Bramble, el erizo, y aprende a leer las palabras más usadas del inglés! Escucha una palabra y tócala, elige el sonido correcto, completa la frase, arma la palabra con letras, une parejas y gánale al reloj. Lecciones cortas, estrellas, una racha diaria y un cofre del tesoro al final de cada parte del sendero.",
+      "tags": "palabras frecuentes,lectura,aprender a leer,inglés,erizo,ortografía,palabras"
+    },
+    "de": {
+      "description": "Lauf mit Bramble, dem Igel, den Wörterpfad entlang und lerne die häufigsten englischen Wörter lesen! Hör ein Wort und tipp es an, wähl den passenden Klang, ergänze den Satz, bau das Wort aus Buchstaben, finde Paare und lauf gegen die Uhr. Kurze Lektionen, Sterne, eine Tagesserie und eine Schatzkiste am Ende jedes Wegstücks.",
+      "tags": "Sichtwörter,Lesen,lesen lernen,Englisch,Igel,Rechtschreibung,Wörter"
+    },
+    "he": {
+      "description": "צאו לשביל המילים עם ברמבל הקיפוד ולמדו לקרוא את המילים הנפוצות ביותר באנגלית! הקשיבו למילה והקישו עליה, בחרו את הצליל הנכון, השלימו משפט, בנו את המילה מאותיות, התאימו זוגות והתחרו בשעון. שיעורים קצרים, כוכבים, רצף יומי ותיבת אוצר בסוף כל חלק בשביל.",
+      "tags": "מילים נפוצות,קריאה,ללמוד לקרוא,אנגלית,קיפוד,איות,מילים"
+    },
+    "ja": {
+      "description": "ハリネズミのブランブルといっしょに「ことばのこみち」をあるいて、えいごでよくつかうことばをよめるようになろう！ ことばをきいてタッチ、おなじおとをえらぶ、ぶんをかんせい、もじをならべてことばをつくる、ペアあわせ、タイムレース。みじかいレッスン、ほし、まいにちのれんぞくきろく、そしてみちのさいごにはたからばこ！",
+      "tags": "サイトワード,よみかき,えいご,ハリネズミ,スペル,ことば"
+    },
+    "ar": {
+      "description": "امشِ في درب الكلمات مع برامبل القنفذ وتعلّم قراءة أكثر الكلمات الإنجليزية استخدامًا! استمع إلى كلمة واضغط عليها، واختر الصوت الصحيح، وأكمل الجملة، وركّب الكلمة من الحروف، وطابق الأزواج، وسابق الوقت. دروس قصيرة ونجوم وسلسلة يومية وصندوق كنز في نهاية كل جزء من الدرب.",
+      "tags": "كلمات شائعة,قراءة,تعلم القراءة,الإنجليزية,قنفذ,تهجئة,كلمات"
+    },
+    "ru": {
+      "description": "Пройди Тропинку слов вместе с ёжиком Брамблом и научись читать самые частые английские слова! Послушай слово и нажми на него, выбери нужный звук, допиши предложение, собери слово из букв, найди пары и успей до конца времени. Короткие уроки, звёзды, серия дней и сундук с сокровищем в конце каждой части тропинки.",
+      "tags": "частые слова,чтение,учимся читать,английский,ёжик,правописание,слова"
+    },
+    "it": {
+      "description": "Percorri il Sentiero delle parole con Bramble il riccio e impara a leggere le parole inglesi più usate! Ascolta una parola e toccala, scegli il suono giusto, completa la frase, componi la parola con le lettere, trova le coppie e batti il tempo. Lezioni brevi, stelle, una serie giornaliera e un forziere alla fine di ogni tratto del sentiero.",
+      "tags": "parole frequenti,lettura,imparare a leggere,inglese,riccio,ortografia,parole"
+    },
+    "zh-Hant": {
+      "description": "和刺蝟布蘭波一起走上單字小徑，學會讀最常用的英文字！聽一個字再點它、選出相同的聲音、完成句子、用字母拼出單字、配對，還有限時挑戰。短短的課程、星星、每日連續紀錄，每段小徑的盡頭還有寶箱！",
+      "tags": "常見字,閱讀,學認字,英文,刺蝟,拼字,單字"
+    },
+    "nl": {
+      "description": "Loop het Woordenpad met Bramble de egel en leer de meest gebruikte Engelse woorden lezen! Luister naar een woord en tik erop, kies het juiste geluid, maak de zin af, bouw het woord met letters, zoek paren en race tegen de klok. Korte lessen, sterren, een dagreeks en een schatkist aan het eind van elk stuk van het pad.",
+      "tags": "klankwoorden,lezen,leren lezen,Engels,egel,spelling,woorden"
+    }
+  }
+}

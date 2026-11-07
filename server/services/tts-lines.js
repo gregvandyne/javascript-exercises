@@ -75,6 +75,11 @@ export const GAMES = {
   // Doodle Hoot: the game's own lines; the secret words are never in its I18N block (and never spoken: a word read
   // aloud would tell the room the answer)
   'doodle-hoot': { title: 'Doodle Hoot', role: 'bright', spoken: /./ },
+  // Word Trail (a sight-word game): Bramble the hedgehog reads every word (w.*), each word's example sentence (s.*) and
+  // the same sentence with the word left out (c.*), the instructions and the praise, in the friendly voice (its VOICES
+  // block). The screens' labels (ui.*) are never read. Each word is a line of its own, matched whole (no joins), so the
+  // word list can never be strung into a sentence.
+  'word-trail': { title: 'Word Trail', role: 'friendly', spoken: /^(?!ui\.)/ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
  *  spoken lines the server knows. Every official game is listed (the coverage test in tests/unit/tts-coverage.test.js
