@@ -114,7 +114,9 @@ outlive the round; one reused state object (no allocation per frame); a "win by 
 
 `src/i18n/<area>.<locale>.js`, each exactly `I18N.<locale> = Object.assign(I18N.<locale> || {}, { 'key': 'text' });`
 (`I18N['en-GB']`, `I18N['zh-Hant']` for the hyphenated ones). Locales: en, en-GB, pt, fr, es, de, he, ja, ar, ru, it,
-zh-Hant, nl; English is complete, the others fall back to English key by key (the integration stage fills them).
+zh-Hant, nl. English is the source; every other language has the whole game in `src/i18n/all.<locale>.js` (en-GB
+adds nothing: the English is already British). A new English key falls back to English until it is added there.
+Long words in other languages are narrowed to fit buttons and rows (`text(..., { maxW })`).
 Keys: core `btn.*`, `res.*`, `settings.*`, `map.*`...; people `d.<who>.<line>` and `name.<who>`; a sport's intro card
 needs `sport.<id>.goal`, `sport.<id>.touch`, `sport.<id>.keys` (`sport.<id>` and `vs.<champ>` are in core);
 in-play words use a short prefix of your own (Paddle uses `pad.*`). `{name}` placeholders; `{ one, other }` plurals.
@@ -150,3 +152,12 @@ the vine lift (36, 16) to the north. Arches (stand here to play): paddle (26, 31
 mud slope; seed (12, 46) lagoon; kick (20, 50) pitch; frog (46, 51) lily pond; rapids (61, 38) east islet over the
 stepping stones (y 34) or the rope bridge (y 44); vine (46, 21) giant grove. Side quests: the ants' leaf, the elder's
 glasses, Zuzu's letter, Pip's three shells, Mango's mango (cosmetic rewards only, never blocking).
+
+## Story panels and the finale
+
+`core/13b-story.js` paints soft, painted-looking pictures in code (gradients, washes, brush dabs, paper grain), once
+per screen size. A text-box line with `panel: '<id>'` shows that picture above the box with a Skip button (Esc / B
+skips too): `JC.storyLines('intro')` (river, isle, dock: each launch, from Play or the first Continue) and
+`JC.storyLines('finale')` (lift, stage, cup), then Mango on the pixel Canopy Stage, the Cup raised, Cappy's thanks,
+the credits and free play. Bonus bandanas: gold for the Cup (worn at once), berry for the first three-star round.
+Timed beats (Cappy's thanks, Zuzu's lift news) run on game time, never `setTimeout`.
