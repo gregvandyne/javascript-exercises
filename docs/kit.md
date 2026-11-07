@@ -48,7 +48,8 @@
   default look is byte-for-byte the same and `KIT_PATCHES` maps 1.1.3 and 1.1.4 → 1.1.5 (1.1.4 is locked in
   `kit/SHIPPED.json`, its `live` pack unlocked as before). The play page passes `?style=cartoon` to the frame as
   `?okStyle=cartoon` (only names in `FRAME_STYLES`, routes/games.js; the live page too); only a game that offers the
-  style (`styles: ['cartoon']`, Hero of Sunvale) draws it. bridge-3d is 13.8 KB brotli (cap 14).
+  style (`styles: ['cartoon']`, Hero of Sunvale) draws it. bridge-3d is 13.9 KB brotli (cap 14). 1.1.5 also carries
+  every 1.1.4 pack, Sum Racer's `style-pixel` and `art-pixel` (with their fonts) included.
 - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
 >   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
 >   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the
@@ -628,13 +629,15 @@ pay nothing. `Oomba.three(THREE, { renderer, scene, camera, theme })` → a brid
   page's `?okStyle=cartoon`. Every toon material shares one program (`okCel`): the colour is the flat fill, one hard
   band of the shade colour (a cool multiplier, about the palette's shade step) away from a key light fixed at the
   top-left of the screen (view space, so it never swings with the camera; the edge is anti-aliased over a pixel),
-  a faint Cream rim on the lit side, then fog. `soft` and `depth` give rolling land a wider, lighter band. No shadow
-  maps on any tier (contact blobs are the look, and cheaper on phones); the Ink is 1.08× Playful's (about 4 px at
-  720p, thinner on small things as before). `B.palette(colour, k)` snaps a game's own colours to the nearest kit
+  a faint Cream rim on the lit side, then fog; the fills are a touch more saturated, and the shader has no scene-light
+  loops (the band comes from the key light alone), which pays for the rest on phones. `soft` and `depth` give rolling
+  land a wider, lighter band. No shadow maps on any tier (contact blobs are the look). The Ink is bold so it reads at
+  phone size: 0.68% of the view height (3.2-6.5 px, about 4.9 px at 720p) and full width out to 70 m (Playful thins
+  it from 12 m), so the far village keeps its line; far detail Ink still goes first on the low-end ladder. `B.palette(colour, k)` snaps a game's own colours to the nearest kit
   colour (OKLab, lightness weighted); `B.light.tint` lets the game tint the mood (Sunvale's gloom). Theme styles never
   override it; the UI stays Playful. Hero of Sunvale is the first game to offer it (`/play/hero-of-sunvale?style=cartoon`):
-  it snaps its colours, builds characters and props from rounded boxes, smooth-shades curves, uses soft blob
-  shadows and adds halos on its lamps (bloom on lamps only, one additive draw call).
+  it snaps its colours, builds characters and props from rounded boxes, smooth-shades curves, puts soft blobs
+  under people, trees and houses and adds halos on its lamps (bloom on lamps only, one additive draw call).
 - **Versioning.** `bridge-3d` was first added beside the locked 1.1.0 with `node scripts/build-kit.js --packs` (it builds
   only the packs the lock does not list, and checks the core and every locked pack byte for byte). Foundation step 3
   (1.1.0 had not shipped yet) rebuilt 1.1.0's core (`Oomba.avatar()`, and `bridge-3d` in `Oomba.pack()`'s pack names)

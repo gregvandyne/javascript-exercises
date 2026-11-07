@@ -194,7 +194,7 @@ building, wall, crate, platform, tree trunk and rock a solid with `B.solid(mesh)
   (the frame's `?okStyle=cartoon`) picks it; a game that offers nothing ignores the page. Toon materials become flat
   fills with one hard shade band from a light fixed at the top-left of the screen and a faint Cream rim (`B.toon(c,
   {soft, depth})`: a wider, lighter band for land), no shadow maps (`B.sky()` and the governor leave them off: use
-  contact blobs), the line a touch heavier. `B.style` is `'cartoon'` and `B.cartoon` true; `B.palette(colour, k)` →
+  contact blobs), bold Ink that keeps its width far away. `B.style` is `'cartoon'` and `B.cartoon` true; `B.palette(colour, k)` →
   the nearest Ink colour (`k` < 1 moves part of the way), for a game's own colours; `B.light.tint` (a three.js Color)
   tints every cartoon material for a mood. The UI stays Playful.
 - `B.world({size, seed, height(x, z), hilly, flat, ground, hills, props, propCount, clouds})` → `{group, heightAt(x, z),
