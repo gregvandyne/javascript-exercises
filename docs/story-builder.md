@@ -184,34 +184,57 @@ for.
 ## Production hosting
 
 **Chosen: Modal, serverless GPUs, one per scene.** The site (Render web service, unchanged apart from env vars) keeps
-the job table, the worker loop, the voice and the assembly; Modal renders. Nothing has been deployed: there is no
-Modal account yet, and no Render service was created or changed.
+the job table, the worker loop, the voice and the assembly; Modal renders. Nothing is deployed until the workflow below runs (the
+sandbox cannot reach Modal); no Render service was created or changed.
 
-### Modal: deploy steps
+### Deploy the GPU renderer: run the workflow
 
-1. Install the client and sign in (once, on the machine you deploy from):
-   `pip install modal` then `modal token new`.
-2. Make the shared secret (keep the value: the site needs the same one; never commit it):
-   `modal secret create story-renderer STORY_RENDER_TOKEN=$(openssl rand -hex 32)`
-3. Deploy from the repository root (the GPU type is read at deploy time; default L40S):
-   `STORY_GPU=L40S modal deploy services/story-renderer/modal_app.py`
-   (or `STORY_GPU=L4` / `STORY_GPU=A10G`). The first deploy builds the image (Blender 5.2 + ffmpeg, ~2 GB; a few
-   minutes); Modal prints the web URL, `https://<workspace>--oomba-story-renderer.modal.run`.
-4. Check it: `curl https://<workspace>--oomba-story-renderer.modal.run/health` → `{"ok":true,"busy":false,"engine":"modal-L40S"}`.
-5. On the site (Render dashboard → the web service → Environment), when the user is ready to open it:
-   - `STORY_RENDERER=modal`
-   - `STORY_RENDER_URL=https://<workspace>--oomba-story-renderer.modal.run`
-   - `STORY_RENDER_TOKEN=<the value from step 2>` (a secret env var)
-   - `STORY_RENDER_RATIO=4` (the wait the progress page promises)
-   - `STORY_DAILY_LIMIT=1` and `STORY_QUEUE_MAX=10` for the small group first
+Deploying is a GitHub Actions workflow, `.github/workflows/deploy-story-renderer.yml` ("Deploy story renderer
+(Modal)"). It checks the three secrets are there, stores the API password in Modal (secret `story-renderer`), runs
+`modal deploy services/story-renderer/modal_app.py` with the GPU you pick (L40S, L4 or A10G), checks `/health`, then
+renders one short scene at preview size through the token-protected API (`services/story-renderer/smoke_test.py`) and
+writes the endpoint URL, the wall time and the GPU render time into the run's summary. It never prints a secret.
+
+**Step by step, from a phone** (about 10 minutes; nothing here costs money until a story is made):
+
+1. **Make a Modal account and an API token.** Open **modal.com** → *Sign up* (GitHub sign-in is fine) → once in,
+   tap your profile picture or the menu → **Settings** → **API Tokens** → **New Token**. Modal shows two values: a
+   **Token ID** (starts `ak-`) and a **Token Secret** (starts `as-`). Keep that page open, or copy both somewhere
+   private: the secret is shown only once. (Modal asks for a payment card before GPUs can run; its free monthly credit
+   covers the first tests.)
+2. **Make up the renderer password.** Any long random password, at least 24 characters, letters and digits (a password
+   manager's "generate" button is ideal). Copy it: it goes in two places, GitHub (step 3) and Render (step 6).
+3. **Add three secrets on GitHub.** Open the repository on github.com → **Settings** (on a phone: the ⋯ menu or
+   "Desktop site" if the tab is hidden) → **Secrets and variables** → **Actions** → **New repository secret**, three
+   times:
+   - Name `MODAL_TOKEN_ID`, value: the Token ID from step 1
+   - Name `MODAL_TOKEN_SECRET`, value: the Token Secret from step 1
+   - Name `STORY_RENDER_TOKEN`, value: the password from step 2
+4. **Run the workflow.** In the repository → **Actions** → **Deploy story renderer (Modal)** → **Run workflow** →
+   branch `feature/story-builder` (or `main` once merged), GPU **L40S** → **Run workflow**. The first run takes
+   about 10–20 minutes (Modal builds the Blender image once; later runs are a few minutes).
+5. **Read the result.** Open the finished run: a green tick means deployed, healthy and one real render done. The
+   summary at the top shows the **endpoint URL** (`https://<workspace>--oomba-story-renderer.modal.run`) and the
+   measured times. A red cross says which step failed and why (a missing secret is named).
+6. **Point the site at it.** Render dashboard → the web service → **Environment** → add:
+   - `STORY_RENDERER` = `modal`
+   - `STORY_RENDER_URL` = the endpoint URL from step 5
+   - `STORY_RENDER_TOKEN` = the same password as step 2 (Render keeps it secret)
+   - `STORY_RENDER_RATIO` = `4` (the wait the progress page promises)
+   - `STORY_DAILY_LIMIT` = `1` and `STORY_QUEUE_MAX` = `10` for the small group first
    - the AI voice for the story's language (`TTS_ENABLED=1`, its key, the locale switched on at /admin/voices)
-   - last, `STORY_BUILDER=1`.
-6. The site's image now has ffmpeg and a CJK font (root `Dockerfile`): the next deploy carries them.
-7. Web instance size: assembling a 47 s story peaks between 512 MB and 768 MB (measured: killed at 512 MB, fine at
-   768 MB) on top of the site itself, so the web service needs **at least 1 GB, better 2 GB** (Render's current
-   `starter`, 512 MB, is too small; e.g. Render Standard, 2 GB). Measured assembly time: 82 s on 1 CPU, 155 s on 0.5 CPU.
+   - and last, when ready to open it, `STORY_BUILDER` = `1`. Save; Render redeploys the site.
 
-What can't be checked without an account (built to Modal's documented API, modal 1.6; the module imports and the web
+To change the GPU later, run the workflow again with another choice. To change the password, update it in both
+GitHub (secret) and Render (env var), then run the workflow again.
+
+Also:
+- The site's image now has ffmpeg and a CJK font (root `Dockerfile`): the next deploy carries them.
+- Web instance size: assembling a 47 s story peaks between 512 MB and 768 MB (measured: killed at 512 MB, fine at
+  768 MB) on top of the site itself, so the web service needs **at least 1 GB, better 2 GB** (Render's current
+  `starter`, 512 MB, is too small; e.g. Render Standard, 2 GB). Measured assembly time: 82 s on 1 CPU, 155 s on 0.5 CPU.
+
+What only the first real run can show (built to Modal's documented API, modal 1.6; the module imports and the web
 API runs locally): the image build, EEVEE through the NVIDIA EGL driver (if it doesn't start, the probe falls back to
 Cycles on the GPU, slower but fine), cold-start time, and the real per-frame GPU time.
 

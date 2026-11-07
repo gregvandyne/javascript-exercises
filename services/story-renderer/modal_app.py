@@ -207,6 +207,7 @@ class LocalBackend:
             def run(i=i, st=st, sid=s["id"]):
                 try:
                     data, info = render_scene_impl(spec, i, os.path.join(tmp, sid), lambda d, t: st.update(done=d), engine=self.jobs[job]["engine"])
+                    st["secs"] = {"render": info["seconds"], "engine": info["engine"], "gpu": "none (CPU)"}
                     st["clip"] = data
                 except Exception as e:  # noqa: BLE001 — reported to the caller
                     st["error"] = str(e)[:300]
@@ -221,7 +222,7 @@ class LocalBackend:
         err = next((v["error"] for v in sc if v["error"]), None)
         done = all(v["clip"] is not None for v in sc)
         return {"id": job, "status": "failed" if err else "done" if done else "running", "done": sum(v["done"] for v in sc),
-                "total": sum(v["total"] for v in sc), "engine": j["engine"], "clips": [k for k, v in j["scenes"].items() if v["clip"] is not None], "error": err}
+                "total": sum(v["total"] for v in sc), "engine": j["engine"], "sceneSeconds": {k: v.get("secs") for k, v in j["scenes"].items()}, "clips": [k for k, v in j["scenes"].items() if v["clip"] is not None], "error": err}
 
     def clip(self, job, scene):
         j = self.jobs.get(job)
@@ -272,6 +273,8 @@ if modal is not None:
         with tempfile.TemporaryDirectory() as tmp:
             data, info = render_scene_impl(spec, index, tmp, tick, engine=engine)
         progress[f"{job}:{sid}"] = info["frames"]
+        # seconds this GPU spent rendering and encoding the scene (after the container started): for the measurements
+        progress[f"{job}:{sid}:secs"] = {"render": info["seconds"], "engine": engine, "gpu": GPU}
         progress[f"{job}:engine"] = engine
         return data
 
@@ -309,7 +312,8 @@ if modal is not None:
             done = sum(min(progress.get(f"{job}:{sid}", 0), t) for sid, t in j["totals"].items())
             total = sum(j["totals"].values())
             st = "failed" if err else "done" if len(clips) == len(j["calls"]) else "running"
-            return {"id": job, "status": st, "done": total if st == "done" else done, "total": total,
+            scene_secs = {sid: progress.get(f"{job}:{sid}:secs") for sid in j["calls"]}
+            return {"id": job, "status": st, "done": total if st == "done" else done, "total": total, "sceneSeconds": scene_secs,
                     "engine": progress.get(f"{job}:engine", self.engine()), "clips": clips, "error": err}
 
         def clip(self, job, scene):
@@ -330,7 +334,7 @@ if modal is not None:
                     modal.FunctionCall.from_id(cid).cancel()
                 except Exception:  # noqa: BLE001
                     pass
-            for k in [f"{job}:job", f"{job}:engine", *[f"{job}:{s}" for s in j["calls"]]]:
+            for k in [f"{job}:job", f"{job}:engine", *[f"{job}:{s}" for s in j["calls"]], *[f"{job}:{s}:secs" for s in j["calls"]]]:
                 progress.pop(k, None)
 
     @app.function(image=image, secrets=[secret], timeout=120, min_containers=0)
