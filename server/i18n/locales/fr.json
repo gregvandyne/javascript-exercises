@@ -49,6 +49,7 @@
     "shortPasswordGrownup": "Votre mot de passe fait moins de {min} caractères. Merci d’<a href=\"{href}\">en choisir un plus long</a>."
   },
   "nav": {
+    "stories": "Histoires",
     "home": "Accueil",
     "search": "Recherche",
     "build": "Créer",
@@ -1641,6 +1642,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
+      "failed": "Quelque chose s’est mal passé. Réessaie.",
+      "copied": "Lien copié !",
+      "deleteConfirm": "Supprimer cette histoire ? C’est définitif."
+    },
     "app": {
       "wentWrong": "Quelque chose n’a pas marché. Réessaie, s’il te plaît.",
       "signedOut": "Ta session a été fermée. Reconnecte-toi, s’il te plaît.",
@@ -3859,7 +3866,8 @@
       "insideTheMachine": "Montez et réparez des ordinateurs : composants, entrées et sorties, bits et pixels, conception pour tous.",
       "tugOfMath": "Des questions de maths choisies pour chaque niveau de 1 à 8, des additions jusqu’à 20 aux équations, en partie de tir à la corde. Contre l’ordi ou un ami sur le même écran.",
       "doodleHoot": "Dessine un mot pour les autres ou devine le leur pendant qu’ils dessinent : écris-le, dis-le ou utilise des tuiles de lettres. Mots faciles, moyens ou difficiles en 13 langues, en direct avec la famille et les amis ou sur un seul appareil.",
-      "remisQuietMeadow": "Un sonomètre pour la classe : restez calmes pour que Remi, le panda roux, puisse dormir, et comptez ensemble le temps calme."
+      "remisQuietMeadow": "Un sonomètre pour la classe : restez calmes pour que Remi, le panda roux, puisse dormir, et comptez ensemble le temps calme.",
+      "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne."
     },
     "hubs": {
       "math": {
@@ -6080,5 +6088,76 @@
       "failed": "{score} bonnes réponses sur {total}. Regarde les bonnes réponses, puis réessaie."
     },
     "play": "Jouer : {game} · {chapter}"
+  },
+  "stories": {
+    "title": "Créateur d’histoires",
+    "h": "Créateur d’histoires du soir",
+    "sub": "Écris une idée et reçois une douce vidéo d’histoire du soir : un monde de feutre et de papier, une voix calme, une musique de boîte à musique et les mots à l’écran.",
+    "new": "Créer une nouvelle histoire",
+    "mine": "Mes histoires",
+    "empty": "Pas encore d’histoire. Crée ta première !",
+    "waitingH": "En attente de ton accord",
+    "waitingP": "Des histoires créées par des enfants dont vous vous occupez. Regardez-les, puis décidez si d’autres personnes peuvent les voir.",
+    "form": {
+      "idea": "Ton idée d’histoire",
+      "ideaHint": "Qui est dedans et que se passe-t-il ? Par exemple : une petite souris qui aide le gardien du phare à retrouver les étoiles perdues.",
+      "age": "C’est pour qui ?",
+      "ageAll": "Tout le monde",
+      "age35": "3 à 5 ans",
+      "age68": "6 à 8 ans",
+      "age912": "9 à 12 ans",
+      "length": "Quelle durée ?",
+      "seconds": "{n} secondes",
+      "make": "Créer mon histoire",
+      "left": "{count, plural, one {Tu peux encore créer # histoire aujourd’hui.} other {Tu peux encore créer # histoires aujourd’hui.}}",
+      "none": "Tu as créé toutes tes histoires pour aujourd’hui. Reviens demain !",
+      "safety": "Les histoires sont toujours douces et gentilles. Chaque idée et chaque histoire est vérifiée avant d’être créée.",
+      "needIdea": "Écris d’abord ton idée (quelques mots suffisent)."
+    },
+    "status": {
+      "queued": "En attente…",
+      "writing": "J’écris l’histoire…",
+      "voicing": "J’enregistre la voix…",
+      "rendering": "Je construis le monde en feutre et je filme chaque plan…",
+      "assembling": "J’ajoute la musique et les mots…",
+      "done": "Ton histoire est prête !",
+      "failed": "Oh non, l’histoire n’a pas pu être créée."
+    },
+    "progress": "Créer une vidéo prend du temps : environ {mins} minutes. Tu peux quitter cette page et revenir plus tard.",
+    "progressLabel": "Quelle part de l’histoire est prête",
+    "error": {
+      "aiOff": "L’auteur d’histoires se repose en ce moment. Réessaie plus tard.",
+      "refused": "Cette idée ne peut pas devenir une histoire ici. Essaie une autre idée, toute douce.",
+      "unsafe": "Nous n’avons pas pu faire une histoire assez douce avec cette idée. Essaie-en une autre.",
+      "invalid": "L’histoire n’est pas sortie comme il faut. Réessaie.",
+      "aiFailed": "L’auteur d’histoires n’a pas répondu. Réessaie.",
+      "voice": "La voix n’a pas pu être enregistrée. Réessaie.",
+      "render": "Les images n’ont pas pu être créées. Réessaie.",
+      "assemble": "La vidéo n’a pas pu être assemblée. Réessaie.",
+      "stalled": "L’histoire est restée bloquée. Réessaie.",
+      "other": "Quelque chose s’est mal passé. Réessaie."
+    },
+    "retry": "Réessayer",
+    "delete": "Supprimer",
+    "captions": "Mots",
+    "words": "Lire l’histoire",
+    "by": "D’après l’idée : {idea}",
+    "busy": "Beaucoup d’histoires sont en train d’être créées. Réessaie dans un petit moment.",
+    "share": {
+      "private": "Toi seul peux voir cette histoire.",
+      "pending": "En attente de l’accord d’un adulte ou de ton enseignant.",
+      "shared": "Toute personne qui a le lien peut regarder cette histoire.",
+      "privateShort": "Juste moi",
+      "pendingShort": "En attente",
+      "sharedShort": "Partagée",
+      "btnAdult": "Partager",
+      "btnKid": "Demander à partager",
+      "stop": "Arrêter de partager",
+      "copy": "Copier le lien",
+      "askNote": "Un adulte qui s’occupe de ton compte, ou ton enseignant, la regardera d’abord.",
+      "decideP": "Un enfant dont vous vous occupez a créé cette histoire et aimerait la partager. D’autres personnes peuvent-elles la regarder ?",
+      "approve": "Oui, la partager",
+      "decline": "Pas celle-ci"
+    }
   }
 }

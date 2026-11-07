@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
   "nav": {
+    "stories": "Stories",
     "home": "Home",
     "search": "Search",
     "build": "Build",
@@ -1642,6 +1643,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Write your idea first (a few words is enough).",
+      "failed": "Something went wrong. Please try again.",
+      "copied": "Link copied!",
+      "deleteConfirm": "Delete this story? This can't be undone."
+    },
     "app": {
       "wentWrong": "Something went wrong. Please try again.",
       "signedOut": "You were signed out. Please sign in again.",
@@ -4148,7 +4155,8 @@
       "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
       "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen.",
       "doodleHoot": "Draw a word for the others, or guess theirs as they draw: type it, say it, or use letter tiles. Easy, Medium or Tricky words in 13 languages, live with family and friends or on one device.",
-      "remisQuietMeadow": "A classroom noise meter: keep the room calm so Remi the red panda can nap, and count up the quiet time together."
+      "remisQuietMeadow": "A classroom noise meter: keep the room calm so Remi the red panda can nap, and count up the quiet time together.",
+      "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak."
     },
     "hubs": {
       "math": {
@@ -6463,5 +6471,76 @@
     "alreadyDone": "You have finished this one before. It still counts.",
     "ready": "Press play when the class is ready.",
     "episodeKicker": "Oomba Breathe & Bend, Episode {n}"
+  },
+  "stories": {
+    "title": "Story Builder",
+    "h": "Bedtime Story Builder",
+    "sub": "Type an idea and get a cozy bedtime story video: a felt-and-paper world, a calm voice, music-box music and the words on screen.",
+    "new": "Make a new story",
+    "mine": "My stories",
+    "empty": "No stories yet. Make your first one!",
+    "waitingH": "Waiting for your OK",
+    "waitingP": "Stories made by children you look after. Watch them, then decide if other people may see them.",
+    "form": {
+      "idea": "Your story idea",
+      "ideaHint": "Who is in it and what happens? For example: a little mouse who helps a lighthouse keeper find the lost stars.",
+      "age": "Who is it for?",
+      "ageAll": "Everyone",
+      "age35": "Ages 3 to 5",
+      "age68": "Ages 6 to 8",
+      "age912": "Ages 9 to 12",
+      "length": "How long?",
+      "seconds": "{n} seconds",
+      "make": "Make my story",
+      "left": "{count, plural, one {You can make # more story today.} other {You can make # more stories today.}}",
+      "none": "You've made all your stories for today. Come back tomorrow!",
+      "safety": "Stories are always gentle and kind. Every idea and every story is checked before it is made.",
+      "needIdea": "Write your idea first (a few words is enough)."
+    },
+    "status": {
+      "queued": "Waiting in line…",
+      "writing": "Writing the story…",
+      "voicing": "Recording the voice…",
+      "rendering": "Building the felt world and filming every shot…",
+      "assembling": "Adding the music and the words…",
+      "done": "Your story is ready!",
+      "failed": "Oh no, the story didn't get made."
+    },
+    "progress": "Making a video takes a while: about {mins} minutes. You can leave this page and come back later.",
+    "progressLabel": "How much of the story is made",
+    "error": {
+      "aiOff": "The story writer is resting right now. Please try again later.",
+      "refused": "That idea can't become a story here. Try a different, gentle idea.",
+      "unsafe": "We couldn't make a gentle enough story from that idea. Try a different one.",
+      "invalid": "The story didn't come out right. Please try again.",
+      "aiFailed": "The story writer didn't answer. Please try again.",
+      "voice": "The voice couldn't be recorded. Please try again.",
+      "render": "The pictures couldn't be made. Please try again.",
+      "assemble": "The video couldn't be put together. Please try again.",
+      "stalled": "The story got stuck. Please try again.",
+      "other": "Something went wrong. Please try again."
+    },
+    "retry": "Try again",
+    "delete": "Delete",
+    "captions": "Words",
+    "words": "Read the story",
+    "by": "From the idea: {idea}",
+    "busy": "Lots of stories are being made right now. Please try again in a little while.",
+    "share": {
+      "private": "Only you can see this story.",
+      "pending": "Waiting for a grown-up or your teacher to say OK.",
+      "shared": "Anyone with the link can watch this story.",
+      "privateShort": "Just me",
+      "pendingShort": "Waiting for OK",
+      "sharedShort": "Shared",
+      "btnAdult": "Share",
+      "btnKid": "Ask to share",
+      "stop": "Stop sharing",
+      "copy": "Copy link",
+      "askNote": "A grown-up who looks after your account, or your teacher, will watch it first.",
+      "decideP": "A child you look after made this story and would like to share it. May other people watch it?",
+      "approve": "Yes, share it",
+      "decline": "Not this one"
+    }
   }
 }

@@ -94,7 +94,7 @@ test('Hero of Sunvale speaks every line with the role the warm-up and the server
     'atlas-quest', 'atlas-quest-live', 'beat-lanes', 'brain-board', 'brick-drop', 'castle-clash', 'code-isle',
     'connect-four', 'escape-the-post-office', 'footy-tycoon', 'fraction-factory', 'gulp-city', 'happy-putt', 'loop-lab', 'munch-maze',
     'quest-race', 'question-battle', 'remis-quiet-meadow', 'ring-rumble', 'shark-plank', 'sum-racer', 'swish-flick', 'trick-inbox', 'tug-of-math',
-    'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live', 'doodle-hoot', 'jungle-cup']);
+    'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live', 'doodle-hoot', 'word-trail', 'jungle-cup']);
 });
 
 test('the CS Quest games use AI voices for their own language-pack lines only', () => {

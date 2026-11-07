@@ -36,7 +36,7 @@ import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
 export const router = Router();
 /** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
-export const FRAME_STYLES = Object.freeze(['cartoon']);
+export const FRAME_STYLES = Object.freeze(['cartoon', 'breeze']);
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 /** [key, label] pairs in the reader's language (English by default; the admin panel uses English). */
 export const reportReasons = (t = tEn) => REASON_KEYS.map(k => [k, t(`game.report.reasons.${k}`)]);

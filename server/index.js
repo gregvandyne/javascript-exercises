@@ -60,13 +60,23 @@ if (config.env === 'production' && !config.contactEmail) log('warn', 'CONTACT_EM
 // Parent-made child accounts are a legal gate, not a merge gate: on in production only after the owner signed off.
 if (config.env === 'production' && config.parentMadeChildren) log('warn', 'PARENT_MADE_CHILDREN=1: parent-made child accounts are on. The owner\'s sign-off must be recorded in docs/legal-review.md (item 30) first.');
 startRunner();
+// Story Builder (docs/story-builder.md): the worker loop runs here unless STORY_WORKER=external. Rendering a story on
+// this machine would take every core for an hour, so in production it belongs on the renderer service
+// (STORY_RENDERER=remote); a local render here only gets a warning, never a refusal (a one-machine setup may want it).
+let storyLoop = null;
+if (config.storyBuilder && config.storyWorker === 'inline') {
+  try {
+    if (config.env === 'production' && (process.env.STORY_RENDERER || 'local') !== 'remote') log('warn', 'STORY_BUILDER=1 with the local renderer: stories render on the web server. Set STORY_RENDERER=remote (docs/story-builder.md).');
+    storyLoop = (await import('./stories/loop.js')).startStoryLoop();
+  } catch (e) { log('error', 'story worker did not start', { error: e.message }); }
+}
 const stopJobs = startJobs();
 startSweeper();
 const shutdown = makeShutdown({
   server, graceMs: config.shutdownGraceMs, busy: busyCount, drain, handOff, log,
   // Open live mic sockets are closed first (their pages upload the clip instead), so they never hold server.close().
   // Live sessions are saved, and their devices told to come back (bye restart), before their sockets close.
-  stop: () => { drainLive(); classLive.drainLive(); stopJobs(); stopSweeper(); stopHostCheck(); },
+  stop: () => { drainLive(); classLive.drainLive(); if (storyLoop) storyLoop.stop(); stopJobs(); stopSweeper(); stopHostCheck(); },
   close: () => { closeBrowser(); db.close(); },
 });
 process.on('SIGTERM', () => shutdown('SIGTERM'));

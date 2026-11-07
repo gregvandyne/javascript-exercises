@@ -1,7 +1,7 @@
-"""Copied from server/stories/blender/feltkit.py on branch feature/style-sheet (commit cb48ff6, the style sheet the owner
-signed off), unchanged below this note, so other tools (tools/blender/pixel_racers.py, the Sum Racer pixel art) share one
-palette, one cel shade and one pixel post with the Story Builder. When that branch merges, keep one copy (this one or
-server/stories/blender/) and import it from the other place.
+"""The one felt-and-paper kit: the Story Builder renders with it (server/stories/blender/render_story.py imports it from
+here) and so do the other Blender tools (tools/blender/pixel_racers.py, the Sum Racer pixel art, through styles.py),
+so they share one palette, one cel shade and one pixel post. It came from feature/style-sheet (commit cb48ff6, the
+style sheet the owner signed off) and is the Story Builder's kit plus the style switch below (felt stays the default).
 
 Felt-and-paper kit for the Story Builder (docs/story-builder.md).
 

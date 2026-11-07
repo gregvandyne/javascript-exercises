@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "Het wachtwoord is korter dan {min} tekens. <a href=\"{href}\">Kies een langer wachtwoord</a>."
   },
   "nav": {
+    "stories": "Verhalen",
     "home": "Start",
     "search": "Zoeken",
     "build": "Bouwen",
@@ -1642,6 +1643,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
+      "failed": "Er ging iets mis. Probeer het opnieuw.",
+      "copied": "Link gekopieerd!",
+      "deleteConfirm": "Dit verhaal verwijderen? Dit kan niet ongedaan worden gemaakt."
+    },
     "app": {
       "wentWrong": "Er ging iets mis. Probeer het nog eens.",
       "signedOut": "Je bent uitgelogd. Log opnieuw in.",
@@ -3860,7 +3867,8 @@
       "insideTheMachine": "Bouw en repareer computers: onderdelen, invoer en uitvoer, bits en pixels, ontwerpen voor iedereen.",
       "tugOfMath": "Rekenvragen voor elke groep, van optellen tot 20 tot vergelijkingen, als touwtrekwedstrijd. Tegen de computer of met z’n tweeën op één scherm.",
       "doodleHoot": "Teken een woord voor de anderen of raad dat van hen terwijl ze tekenen: typ het, zeg het hardop of gebruik lettertegels. Makkelijke, gemiddelde of lastige woorden in 13 talen, live met familie en vrienden of op één apparaat.",
-      "remisQuietMeadow": "Een geluidsmeter voor de klas: houd het rustig zodat Remi de rode panda kan slapen, en tel samen de stille tijd."
+      "remisQuietMeadow": "Een geluidsmeter voor de klas: houd het rustig zodat Remi de rode panda kan slapen, en tel samen de stille tijd.",
+      "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks."
     },
     "hubs": {
       "math": {
@@ -6081,5 +6089,76 @@
       "failed": "{score} van de {total} goed. Bekijk de goede antwoorden en probeer het opnieuw."
     },
     "play": "Speel: {game} · {chapter}"
+  },
+  "stories": {
+    "title": "Verhalenmaker",
+    "h": "Slaapverhalenmaker",
+    "sub": "Typ een idee en krijg een knus slaapverhaal als video: een wereld van vilt en papier, een rustige stem, speeldoosmuziek en de woorden in beeld.",
+    "new": "Nieuw verhaal maken",
+    "mine": "Mijn verhalen",
+    "empty": "Nog geen verhalen. Maak je eerste!",
+    "waitingH": "Wacht op jouw OK",
+    "waitingP": "Verhalen van kinderen voor wie je zorgt. Bekijk ze en beslis dan of anderen ze mogen zien.",
+    "form": {
+      "idea": "Jouw verhaalidee",
+      "ideaHint": "Wie zit erin en wat gebeurt er? Bijvoorbeeld: een muisje dat de vuurtorenwachter helpt de verloren sterren te vinden.",
+      "age": "Voor wie is het?",
+      "ageAll": "Voor iedereen",
+      "age35": "3 tot 5 jaar",
+      "age68": "6 tot 8 jaar",
+      "age912": "9 tot 12 jaar",
+      "length": "Hoe lang?",
+      "seconds": "{n} seconden",
+      "make": "Maak mijn verhaal",
+      "left": "{count, plural, one {Je kunt vandaag nog # verhaal maken.} other {Je kunt vandaag nog # verhalen maken.}}",
+      "none": "Je hebt al je verhalen voor vandaag gemaakt. Kom morgen terug!",
+      "safety": "Verhalen zijn altijd zacht en lief. Elk idee en elk verhaal wordt gecontroleerd voordat het gemaakt wordt.",
+      "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg)."
+    },
+    "status": {
+      "queued": "Even wachten…",
+      "writing": "Het verhaal wordt geschreven…",
+      "voicing": "De stem wordt opgenomen…",
+      "rendering": "De viltwereld wordt gebouwd en elk shot gefilmd…",
+      "assembling": "De muziek en de woorden komen erbij…",
+      "done": "Je verhaal is klaar!",
+      "failed": "O nee, het verhaal is niet gemaakt."
+    },
+    "progress": "Een video maken duurt even: ongeveer {mins} minuten. Je kunt deze pagina verlaten en later terugkomen.",
+    "progressLabel": "Hoeveel van het verhaal klaar is",
+    "error": {
+      "aiOff": "De verhalenschrijver rust nu even uit. Probeer het later nog eens.",
+      "refused": "Van dat idee kan hier geen verhaal worden. Probeer een ander, lief idee.",
+      "unsafe": "We konden van dat idee geen lief genoeg verhaal maken. Probeer een ander.",
+      "invalid": "Het verhaal is niet goed gelukt. Probeer het opnieuw.",
+      "aiFailed": "De verhalenschrijver gaf geen antwoord. Probeer het opnieuw.",
+      "voice": "De stem kon niet worden opgenomen. Probeer het opnieuw.",
+      "render": "De beelden konden niet worden gemaakt. Probeer het opnieuw.",
+      "assemble": "De video kon niet in elkaar worden gezet. Probeer het opnieuw.",
+      "stalled": "Het verhaal bleef hangen. Probeer het opnieuw.",
+      "other": "Er ging iets mis. Probeer het opnieuw."
+    },
+    "retry": "Opnieuw proberen",
+    "delete": "Verwijderen",
+    "captions": "Woorden",
+    "words": "Lees het verhaal",
+    "by": "Naar het idee: {idea}",
+    "busy": "Er worden nu heel veel verhalen gemaakt. Probeer het zo meteen nog eens.",
+    "share": {
+      "private": "Alleen jij kunt dit verhaal zien.",
+      "pending": "Wacht tot een volwassene of je leraar OK zegt.",
+      "shared": "Iedereen met de link kan dit verhaal bekijken.",
+      "privateShort": "Alleen ik",
+      "pendingShort": "Wacht op OK",
+      "sharedShort": "Gedeeld",
+      "btnAdult": "Delen",
+      "btnKid": "Vragen om te delen",
+      "stop": "Stoppen met delen",
+      "copy": "Link kopiëren",
+      "askNote": "Een volwassene die op je account let, of je leraar, bekijkt het eerst.",
+      "decideP": "Een kind voor wie je zorgt heeft dit verhaal gemaakt en wil het graag delen. Mogen anderen het bekijken?",
+      "approve": "Ja, delen",
+      "decline": "Deze niet"
+    }
   }
 }

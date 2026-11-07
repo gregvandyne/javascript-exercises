@@ -75,6 +75,11 @@ export const GAMES = {
   // Doodle Hoot: the game's own lines; the secret words are never in its I18N block (and never spoken: a word read
   // aloud would tell the room the answer)
   'doodle-hoot': { title: 'Doodle Hoot', role: 'bright', spoken: /./ },
+  // Word Trail (a sight-word game): Bramble the hedgehog reads every word (w.*), each word's example sentence (s.*) and
+  // the same sentence with the word left out (c.*), the instructions and the praise, in the friendly voice (its VOICES
+  // block). The screens' labels (ui.*) are never read. Each word is a line of its own, matched whole (no joins), so the
+  // word list can never be strung into a sentence.
+  'word-trail': { title: 'Word Trail', role: 'friendly', spoken: /^(?!ui\.)/ },
   // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
   'jungle-cup': { title: 'Jungle Cup', role: 'narrator', spoken: /^(?:d\.[a-z]+\.[a-z0-9]+|story\.\d+|end\.\d+|sign\.[a-z]+|lift\.(?:open|locked))$/ },
 };

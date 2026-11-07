@@ -68,9 +68,11 @@ const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api
   /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections
 // (the friend-code APIs; services/friends.js keeps adults and kids apart). Chat, /friends and /u/ stay closed.
-const GROWNUP_BUILDER_GET = [/^\/build$/, /^\/studio\/[^/]+$/, /^\/api\/studio\/[^/]+(\/(live|uploads\/[^/]+))?$/, /^\/family\/connections$/, /^\/api\/friends$/];
+const GROWNUP_BUILDER_GET = [/^\/stories(\/new|\/[^/]+(\/(video\.mp4|poster\.jpg|captions\.vtt))?)?$/, /^\/api\/stories\/[^/]+$/, /^\/build$/, /^\/studio\/[^/]+$/, /^\/api\/studio\/[^/]+(\/(live|uploads\/[^/]+))?$/, /^\/family\/connections$/, /^\/api\/friends$/];
 const GROWNUP_BUILDER_POST = [/^\/api\/studio\/new$/, /^\/api\/studio\/[^/]+\/(chat|meta|delete|restore|save|publish|update|visibility|transcribe|uploads)$/,
-  /^\/api\/friends\/add$/, /^\/api\/friends\/[^/]+\/(accept|decline|cancel|remove)$/];
+  /^\/api\/friends\/add$/, /^\/api\/friends\/[^/]+\/(accept|decline|cancel|remove)$/,
+  // Story Builder (routes/stories.js): grown-ups make stories, and say yes or no to their children's.
+  /^\/api\/stories(\/[^/]+\/(share|unshare|approve|decline|retry|delete))?$/];
 const GROWNUP_BUILDER_DELETE = [/^\/api\/studio\/[^/]+\/uploads\/[^/]+$/];
 /** May a grown-up account use this method and path? */
 export function grownupMay(method, path) {

@@ -2611,3 +2611,42 @@ as **Doodle Hoot** (slug `doodle-hoot`, live mode `doodle`), hosted by Pip, the 
   once a player a turn, normal speed points, the drawer's usual share, marked "said it out loud" in the list); pass and play has the same button, with the word covered while the
   others watch. The mobile pass: a word never breaks inside (type shrinks to fit), one column of word cards on a narrow
   phone, and the guess box stays above the on-screen keyboard. Details: docs/doodle-hoot-plan.md §15.
+
+## Word Trail (7 Nov 2026)
+
+The owner asked for an official sight-word game for ages about 4-8 with Duolingo's mechanics (not its branding), to
+replace a member's game (`/play/my-new-game-9`). Built as **Word Trail** (slug `word-trail`), guided by Bramble, our own
+hedgehog, in the felt-and-paper look of the Story Builder's felt kit (the owner's style call, over the storybook
+"breeze" look).
+
+- **Content.** The 220 Dolch words in five units (Pre-primer 40, Primer 52, Grade 1 41, Grade 2 46, Grade 3 41) on a
+  winding trail: 43 lessons of 4-6 new words, then a review stone and a treasure chest per unit. Each word has a short
+  example sentence of our own, with the word exactly once, and the same sentence with the word left out (`c.*`).
+- **Lessons.** New words first (the word, its sound, the sentence), then 12 exercises: hear it/tap it (4 cards),
+  see it/say-pick (3 play buttons), fill the sentence (3 cards), build it (letter tiles plus look-alike letters: b/d,
+  m/n…), match pairs (sound to word) and a speed tap (a 14 s bar, no heart lost on time-up). Wrong choices are look-alikes
+  from the words met so far; never two that sound alike (to/too/two, for/four, right/write…); in fill the sentence they
+  are a kind of word that cannot fit the sentence (a word class per word). A wrong answer shows and reads the right one
+  and comes back once at the end of the lesson. All of it is the game's pure `WTCore` block, unit-tested with node:vm.
+- **Mechanics.** XP (10 a lesson + 1 a first-try right answer + combo and no-mistake bonuses), a daily streak (local
+  days), 5 hearts that only stop a *new* lesson (never one in progress), one back every 10 minutes or by practising,
+  combos at 3/5/8, a mastery box 0-5 per word (Leitner, spaced by lessons played: 0, 1, 2, 4, 7, 12), missed words first
+  in later lessons and in practice, and "My words" with each word's stars. Saved in `BRB.storage` (`word-trail-v1`);
+  after each lesson and treasure, `BRB.gameOver({won: true, score: total XP})`.
+- **AI voices.** Registered in `tts-lines.GAMES` like every official game: every line of its I18N block except the
+  screen labels (`ui.*`) is read, in Bramble's friendly role (its VOICES block): 692 lines, about 9,000 characters in
+  English. Each word is a line of its own and matched whole (no joins), so the word list can never be strung into a
+  sentence. The game only ever speaks its own keys (unit-tested). New audio is limited per person per minute, so the
+  game fetches ahead only the new words of a lesson; **warm Word Trail's lines at /admin/voices** once English is on, so
+  every line plays from the cache.
+- **Language.** The words, sentences and Bramble's lines are English: the game teaches English reading. The screens'
+  few labels are English too (a translated label next to English words would mix two languages for a 5-year-old, and
+  the kit's translations don't cover our labels); the catalogue text is in all 13 languages.
+- **Art.** `tools/blender/word_trail.py` builds Bramble (four poses: idle, cheer, think, sad-but-kind) and the props
+  (chest, signpost, trees, bush, flowers, trail stones) with the felt kit's materials in soft warm daylight and renders
+  them as 2D sprites, plus grey felt and paper swatches; `tools/blender/word_trail_pack.py` makes the WebP data pack
+  (`public/vendor/data/word-trail/<version>/art.js`, about 140 KB of WebP). The backgrounds, cards, buttons, bar and
+  hearts are CSS and SVG cut-outs with those textures multiplied in and stitched edges; the words themselves are plain
+  dark Andika on light paper, never textured. Original designs only: no owl, nothing of Duolingo's look, copy or sounds.
+- **The member game it replaces** is not hidden automatically: `scripts/seed.js` REPLACED matches a game by its
+  owner's name and title, and this one needs the owner's say-so (and the maker's username) first.

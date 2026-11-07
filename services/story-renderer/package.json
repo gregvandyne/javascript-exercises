@@ -1,0 +1,7 @@
+{
+  "name": "oomba-story-renderer",
+  "private": true,
+  "type": "module",
+  "description": "The Story Builder renderer service (docs/story-builder.md). No dependencies: Node built-ins, Blender (bpy) and ffmpeg.",
+  "scripts": { "start": "node services/story-renderer/server.js" }
+}

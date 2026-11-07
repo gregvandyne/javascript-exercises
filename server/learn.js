@@ -31,6 +31,8 @@ export const LEARNING = {
   'inside-the-machine': { key: 'insideTheMachine', teaches: ['Computer parts', 'Hardware and software', 'Troubleshooting', 'Bits and pixels', 'Designing for everyone'], level: 'Grades 3-8' },
   // Doodle Hoot: draw a word, or guess one (typed, out loud, or with letter tiles); Easy, Medium or Tricky words in 13 languages.
   'doodle-hoot': { key: 'doodleHoot', teaches: ['Spelling', 'Vocabulary', 'Drawing', 'Languages'], level: 'Grades 1-8' },
+  // Word Trail: the 220 Dolch sight words (Pre-primer to Grade 3) in short lessons on a trail, every word read aloud.
+  'word-trail': { key: 'wordTrail', teaches: ['Sight words', 'Early reading', 'Listening', 'Spelling'], level: 'Grades K-3' },
 };
 /** The grade band of some launch games, for the visible "Grades 1–5" line: { from, to } ('K' or a number), or null. */
 export function gradeBand(slugs) {
@@ -48,7 +50,7 @@ export const isLearningGame = slug => !!LEARNING[slug] && !LEARNING[slug].fun;
 /** The subject pages, in menu order. path: /learn/<slug>; key: locale key under learn.hubs.*; games: launch-game slugs. */
 export const HUBS = [
   { slug: 'math-games', key: 'math', emoji: '➗', games: ['sum-racer', 'tug-of-math'], extra: 'tracks' },
-  { slug: 'word-games', key: 'words', emoji: '🔤', games: ['shark-plank', 'word-hunt', 'word-peek', 'doodle-hoot'] },
+  { slug: 'word-games', key: 'words', emoji: '🔤', games: ['word-trail', 'shark-plank', 'word-hunt', 'word-peek', 'doodle-hoot'] },
   { slug: 'strategy-games', key: 'strategy', emoji: '♟️', games: ['castle-clash', 'connect-four', 'brick-drop'] },
   { slug: 'music-games', key: 'music', emoji: '🎵', games: ['loop-lab', 'beat-lanes'] },
   // The four CS Quest games; the page also points teachers at the program (/teachers/cs-quest).
@@ -58,7 +60,7 @@ export const HUBS = [
 ];
 export const hubBySlug = slug => HUBS.find(h => h.slug === slug) || null;
 /** The teacher page's "Play to learn" cards, in order. */
-export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow', 'doodle-hoot'];
+export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow', 'doodle-hoot', 'word-trail'];
 /** Questions on each page (learn.hubs.<key>.faq.q<n> / a<n>, teachers.faq.q<n> / a<n>). */
 export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainBreaks: 2, makeAGame: 7 };
 /** Subject pages with an "At home" paragraph for parents (learn.hubs.<key>.home). */

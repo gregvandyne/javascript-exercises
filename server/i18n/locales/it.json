@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "La password ha meno di {min} caratteri. È meglio <a href=\"{href}\">sceglierne una più lunga</a>."
   },
   "nav": {
+    "stories": "Storie",
     "home": "Home",
     "search": "Cerca",
     "build": "Crea",
@@ -1642,6 +1643,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Prima scrivi la tua idea (bastano poche parole).",
+      "failed": "Qualcosa è andato storto. Riprova.",
+      "copied": "Link copiato!",
+      "deleteConfirm": "Eliminare questa storia? Non si può annullare."
+    },
     "app": {
       "wentWrong": "Qualcosa è andato storto. Riprova.",
       "signedOut": "La tua sessione è stata chiusa. Accedi di nuovo.",
@@ -3860,7 +3867,8 @@
       "insideTheMachine": "Monta e ripara computer: componenti, input e output, bit e pixel, design per tutti.",
       "tugOfMath": "Domande di matematica scelte per ogni classe dalla 1 alla 8, dalle addizioni entro il 20 alle equazioni, in un tiro alla fune. Contro il computer o un amico sullo stesso schermo.",
       "doodleHoot": "Disegna una parola per gli altri o indovina la loro mentre disegnano: scrivila, dilla a voce o usa le tessere delle lettere. Parole facili, medie o difficili in 13 lingue, dal vivo con famiglia e amici o su un dispositivo.",
-      "remisQuietMeadow": "Un misuratore di rumore per la classe: restate calmi così Remi, il panda rosso, può dormire, e contate insieme il tempo di silenzio."
+      "remisQuietMeadow": "Un misuratore di rumore per la classe: restate calmi così Remi, il panda rosso, può dormire, e contate insieme il tempo di silenzio.",
+      "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera."
     },
     "hubs": {
       "math": {
@@ -6081,5 +6089,76 @@
       "failed": "{score} giuste su {total}. Guarda le risposte giuste e riprova."
     },
     "play": "Gioca: {game} · {chapter}"
+  },
+  "stories": {
+    "title": "Crea storie",
+    "h": "Crea storie della buonanotte",
+    "sub": "Scrivi un’idea e ricevi un tenero video con una storia della buonanotte: un mondo di feltro e carta, una voce calma, la musica di un carillon e le parole sullo schermo.",
+    "new": "Crea una nuova storia",
+    "mine": "Le mie storie",
+    "empty": "Ancora nessuna storia. Crea la tua prima!",
+    "waitingH": "In attesa del tuo OK",
+    "waitingP": "Storie create da bambini di cui ti occupi. Guardale, poi decidi se altre persone possono vederle.",
+    "form": {
+      "idea": "La tua idea per la storia",
+      "ideaHint": "Chi c’è e che cosa succede? Per esempio: un topolino che aiuta il guardiano del faro a ritrovare le stelle perdute.",
+      "age": "Per chi è?",
+      "ageAll": "Per tutti",
+      "age35": "Da 3 a 5 anni",
+      "age68": "Da 6 a 8 anni",
+      "age912": "Da 9 a 12 anni",
+      "length": "Quanto dura?",
+      "seconds": "{n} secondi",
+      "make": "Crea la mia storia",
+      "left": "{count, plural, one {Oggi puoi creare ancora # storia.} other {Oggi puoi creare ancora # storie.}}",
+      "none": "Hai creato tutte le tue storie per oggi. Torna domani!",
+      "safety": "Le storie sono sempre dolci e gentili. Ogni idea e ogni storia viene controllata prima di essere creata.",
+      "needIdea": "Prima scrivi la tua idea (bastano poche parole)."
+    },
+    "status": {
+      "queued": "In attesa…",
+      "writing": "Sto scrivendo la storia…",
+      "voicing": "Sto registrando la voce…",
+      "rendering": "Sto costruendo il mondo di feltro e filmando ogni scena…",
+      "assembling": "Sto aggiungendo la musica e le parole…",
+      "done": "La tua storia è pronta!",
+      "failed": "Oh no, la storia non è stata creata."
+    },
+    "progress": "Creare un video richiede un po’ di tempo: circa {mins} minuti. Puoi lasciare questa pagina e tornare più tardi.",
+    "progressLabel": "Quanta parte della storia è pronta",
+    "error": {
+      "aiOff": "Lo scrittore di storie si sta riposando. Riprova più tardi.",
+      "refused": "Quell’idea non può diventare una storia qui. Prova un’altra idea, dolce.",
+      "unsafe": "Non siamo riusciti a fare una storia abbastanza dolce con quell’idea. Provane un’altra.",
+      "invalid": "La storia non è venuta bene. Riprova.",
+      "aiFailed": "Lo scrittore di storie non ha risposto. Riprova.",
+      "voice": "Non è stato possibile registrare la voce. Riprova.",
+      "render": "Non è stato possibile creare le immagini. Riprova.",
+      "assemble": "Non è stato possibile montare il video. Riprova.",
+      "stalled": "La storia si è bloccata. Riprova.",
+      "other": "Qualcosa è andato storto. Riprova."
+    },
+    "retry": "Riprova",
+    "delete": "Elimina",
+    "captions": "Parole",
+    "words": "Leggi la storia",
+    "by": "Dall’idea: {idea}",
+    "busy": "In questo momento si stanno creando tante storie. Riprova tra poco.",
+    "share": {
+      "private": "Solo tu puoi vedere questa storia.",
+      "pending": "In attesa che un adulto o il tuo insegnante dica OK.",
+      "shared": "Chiunque abbia il link può guardare questa storia.",
+      "privateShort": "Solo io",
+      "pendingShort": "In attesa di OK",
+      "sharedShort": "Condivisa",
+      "btnAdult": "Condividi",
+      "btnKid": "Chiedi di condividere",
+      "stop": "Smetti di condividere",
+      "copy": "Copia link",
+      "askNote": "Un adulto che si occupa del tuo account, o il tuo insegnante, la guarderà prima.",
+      "decideP": "Un bambino di cui ti occupi ha creato questa storia e vorrebbe condividerla. Altre persone possono guardarla?",
+      "approve": "Sì, condividila",
+      "decline": "Questa no"
+    }
   }
 }

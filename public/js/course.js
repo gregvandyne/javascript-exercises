@@ -161,7 +161,9 @@ function gfBadgesVf(fig) {
   const frame = fig.querySelector('.sframe');
   // The still view keeps badges off the frame's rounded corners (they would be clipped): an inset frame.
   const fr = reduced ? grow(rectOf(frame), -8) : rectOf(frame);
-  const texts = [...fig.querySelectorAll('.vf-svg text')].map(t => grow(rectOf(t), 1));
+  // A badge is a number in a circle: parked right beside a number it reads as one ("score 3" + badge 2 = "32"), so
+  // a label holding a digit keeps a wider berth (6 px) than a word (1 px).
+  const texts = [...fig.querySelectorAll('.vf-svg text')].map(t => grow(rectOf(t), /\d/.test(t.textContent) ? 6 : 1));
   const placed = [];
   for (const box of fig.querySelectorAll('.gf-box')) {
     const badge = box.querySelector('.gf-badge');

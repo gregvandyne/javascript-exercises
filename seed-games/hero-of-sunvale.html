@@ -6204,6 +6204,17 @@ const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: 
    ("chunky") boxes and smooth-shaded spheres, shadow maps give way to soft contact blobs, the sky and water take the
    kit's sky ramp, clouds get Ink, and lamps get a soft additive halo (bloom on lamps only). Without it nothing changes. */
 const TOON = B.style === 'cartoon';
+/* Breeze (?style=breeze, a mockup): a bright storybook cel look of our own. Two soft-edged toon bands (warm sun, cool
+   blue-violet shade) from the one sun, with hard cel cast shadows near the player (a small Basic shadow map); no Ink on
+   the land, buildings or props, thin colour-tinted lines on characters only; bigger round heads and eyes; a painted
+   sky with flat swirl clouds, drifting wind lines and blue distance haze; saturated greens with patches; deep blue
+   water with white foam; soft glow on lamps. Low-end ladder: shadows go first, then wind lines and grass tufts. */
+const BREEZE = !TOON && (() => { try { return new URLSearchParams(location.search).get('okStyle') === 'breeze'; } catch (e) { return false; } })();
+/** Smooth, rounded shapes (rounded boxes, round cylinders, smooth normals): the cartoon and breeze looks. */
+const ROUND = TOON || BREEZE;
+/** Cartoon: the outline weight. The bridge's cartoon line is bold so it reads far away; this keeps it about 3-5 px on a
+ *  phone (characters ~4 px, buildings a little less, small props less again, see inkSized). */
+const TOON_INK = TOON ? 0.78 : 1;
 const TOON_KEEP = new Set([...KTOK.skin, ...Object.values(KHAIR)].map(c => String(c).toLowerCase()));
 const TOON_COL = new Map();
 // skin: the people's tones (and their face shade, x0.85) go to the nearest of the kit's eight skin tones, never to a hue
@@ -6227,6 +6238,18 @@ if (TOON) {
   SKY_COLORS.gloomTop.set(OK.color('grape', 3)); SKY_COLORS.gloomHorizon.set(OK.color('grape', 1));
   scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
 }
+if (BREEZE) {
+  // hard cel shadows from the one sun, near the player only (a small Basic map: no filtering) on the top level; below it,
+  // hard-edged cel shadow shapes under people and foes, stretched away from the sun (the low-end ladder: shadows go first). A lower, warmer sun for longer storybook shadows.
+  CONFIG.levels.forEach((L, i) => { L.shadows = i <= 0; L.fogNear = Math.round(L.fogNear * 1.15); });
+  renderer.shadowMap.type = THREE.BasicShadowMap; sun.shadow.mapSize.set(1024, 1024);
+  Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16 }); sun.shadow.camera.updateProjectionMatrix();
+  sun.shadow.bias = -0.002; sun.shadow.normalBias = 0.05;
+  SUN_OFFSET.set(28, 19, 20); sun.color.set('#fff2d6');
+  // a painted sky: deep blue overhead to a pale blue by the horizon; blue haze in the distance
+  SKY_COLORS.top.set('#1f6fd8'); SKY_COLORS.mid.set('#5aaef0'); SKY_COLORS.horizon.set('#cfeaff');
+  scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
+}
 /** A soft round blot (white in the middle, clear at the edge): cartoon contact shadows and lamp halos. */
 function softDisc() {
   const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -6234,18 +6257,46 @@ function softDisc() {
   g.fillStyle = gr; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 /** A shared vertex-coloured toon material (rim: the rim light's strength; flat: keep the low-poly facets). */
-function inkMat(rim, flat) { const m = B.toon(null, { vertexColors: true, rim }); if (flat) { m.flatShading = true; m.needsUpdate = true; } return m; }
+function inkMat(rim, flat) { if (BREEZE) return breezeMat({ rim: rim > 1 ? 0.35 : 0 }); const m = B.toon(null, { vertexColors: true, rim }); if (flat) { m.flatShading = true; m.needsUpdate = true; } return m; }
+/* Breeze materials: three's toon lighting with a soft two-step ramp, so the sun's light (and its shadow) is 0 or 1 with a
+   short soft edge; then the colour is graded: the lit side warm, the shade side a cool blue-violet, never grey; fills a
+   touch more saturated; a warm rim on characters. One program for all of them. */
+const BZ = { sun: { value: new THREE.Color().setRGB(1.06, 1.0, 0.86) }, shade: { value: new THREE.Color().setRGB(0.54, 0.55, 0.86) },
+  sunK: { value: 2.5 }, tint: { value: new THREE.Color(1, 1, 1) }, rim: { value: new THREE.Color().setRGB(1.0, 0.95, 0.8) } };
+const BZ_RAMP = (() => { const t = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255]), 12, 1, THREE.RedFormat); t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true; return t; })();
+function breezeMat(o) {
+  o = o || {};
+  const m = new THREE.MeshToonMaterial({ vertexColors: o.vertexColors !== false, gradientMap: BZ_RAMP, color: o.color || 0xffffff, fog: o.fog !== false, map: o.map || null });
+  const rimK = { value: o.rim || 0 }, sat = { value: o.sat || 1.18 };
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { bzSun: BZ.sun, bzShade: BZ.shade, bzSunK: BZ.sunK, bzTint: BZ.tint, bzRim: BZ.rim, bzRimK: rimK, bzSat: sat });
+    sh.fragmentShader = ' uniform vec3 bzSun, bzShade, bzTint, bzRim;\nuniform float bzSunK, bzRimK, bzSat;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `
+      float bzL = dot( reflectedLight.directDiffuse, vec3( 0.3333 ) ) * 3.14159265 / max( dot( diffuseColor.rgb, vec3( 0.3333 ) ), 1e-3 ) / bzSunK;
+      float bzB = clamp( bzL, 0.0, 1.0 );
+      vec3 bzA = max( vec3( 0.0 ), mix( vec3( dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) ) ), diffuseColor.rgb, bzSat ) );
+      vec3 bzN = normalize( normal );
+      outgoingLight = bzA * mix( bzShade, bzSun, bzB ) * bzTint + totalEmissiveRadiance
+        + bzRim * bzRimK * smoothstep( 0.62, 0.95, 1.0 - clamp( dot( bzN, normalize( vViewPosition ) ), 0.0, 1.0 ) );
+      #include <opaque_fragment>`);
+    // tintMask: the instance colour reaches only the vertices marked bzTintK = 1 (a flower's petals, not its stem)
+    if (o.tintMask) sh.vertexShader = 'attribute float bzTintK;\n' + sh.vertexShader.replace('#include <color_vertex>', `#include <color_vertex>
+      #ifdef USE_INSTANCING_COLOR
+        vColor.xyz = color.xyz * mix( vec3( 1.0 ), instanceColor.xyz, bzTintK );
+      #endif`);
+  };
+  m.customProgramCacheKey = () => (o.tintMask ? 'bzToonMask' : 'bzToon'); return m;
+}
 /** Materials shared by everything (few shader programs, few state changes): the kit's toon (cel) materials with a rim
  *  (faceted ones keep their facets), so the world has the Oomba Ink look. */
 const MAT = {
   // cartoon: the land is smooth-shaded with a softer, lighter band (rolling hills, not a checkerboard of facets)
-  terrain: TOON ? B.toon(null, { vertexColors: true, rim: 0.25, soft: 0.1, depth: 0.6 }) : inkMat(0.35, true),
+  terrain: TOON ? B.toon(null, { vertexColors: true, rim: 0.25, soft: 0.1, depth: 0.6 }) : BREEZE ? breezeMat({ sat: 1.05 }) : inkMat(0.35, true),
   lit: inkMat(1, false),
-  litFlat: TOON ? inkMat(0.9, false) : inkMat(0.9, true),   // cartoon: rocks, cabbages and crowns shade round (creased normals)
+  litFlat: ROUND ? inkMat(0.9, false) : inkMat(0.9, true),   // cartoon: rocks, cabbages and crowns shade round (creased normals)
   glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
   char: inkMat(1.25, false),
   groundBlob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }) : null,
-  blob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.45, depthWrite: false })
+  blob: BREEZE ? new THREE.MeshBasicMaterial({ color: '#203a86', transparent: true, opacity: 0.4, depthWrite: false }) : TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.45, depthWrite: false })
     : new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
   // the hero's eyes, nose, cheeks and smile: flat colour, no light, so they stay crisp (lit, the whites went mint at the rim)
   face: new THREE.MeshBasicMaterial({ vertexColors: true }),
@@ -6266,8 +6317,12 @@ function inkWorld() {
   const list = [];
   scene.traverse(o => { if (o.isMesh && !o.userData.okInk && !o.userData.noInk && (o.material === MAT.lit || o.material === MAT.litFlat || o.material === MAT.char) && !(hero.rig && isUnder(o, hero.rig.root))) list.push(o); });
   for (const o of list) {
+    if (BREEZE && o.material !== MAT.char) continue;   // breeze: no Ink on the land, buildings or props; people and foes only
+    if (BREEZE) { B.outline(o, { important: true, width: 0.5 }); o.traverse(c => { if (c.userData.okInk) c.material = inkPushed(inkTinted(c.material)); }); continue; }
     const scatter = SCATTER.list.some(k => k.mesh === o), detail = scatter || (!o.isInstancedMesh && o.material !== MAT.char);
-    B.outline(o, scatter ? { width: 0.85 } : { important: true, width: o.material === MAT.char ? 1 : 0.9 });
+    B.outline(o, scatter ? { width: 0.85 * TOON_INK } : { important: true, width: (o.material === MAT.char ? 1 : 0.9) * TOON_INK });
+    // cartoon: a landmark's small parts (barrels, crates, posts, window boxes) take a thinner line (Kit's okS, see inkSized)
+    if (TOON && o.material !== MAT.char && o.geometry && o.geometry.attributes.okS) o.traverse(c => { if (c.userData.okInk) c.material = inkSized(c.material); });
     // people, foes and crowds are many touching parts, like the hero: their hulls sit a little further back (see inkPushed)
     if (o.material === MAT.char) o.traverse(c => { if (c.userData.okInk) c.material = inkPushed(c.material); });
     if (detail) inkLayer(o, INK_DETAIL);
@@ -6278,7 +6333,7 @@ function inkWorld() {
     let inks = 0, heroInks = 0; scene.traverse(o => { if (o.userData.okInk) { inks++; if (hero.rig && isUnder(o, hero.rig.root)) heroInks++; } });
     return { version: OK.version, toon: [MAT.terrain.type, MAT.lit.type, MAT.char.type], inks, heroInks, quality: B.quality, detailInk: camera.layers.isEnabled(INK_DETAIL), title: !!(HOS_TITLE && HOS_TITLE.open), theme: B.look.name,
       // the art style (?style=cartoon): the bridge's style, its shader, shadow maps, rounded boxes, the lamp halos
-      style: B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, ground: '#' + TC.g1.getHexString() };
+      style: BREEZE ? 'breeze' : B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, models: BZM.state, world: BZM.world, windOn: !!(WIND.mesh && WIND.mesh.visible), ground: '#' + TC.g1.getHexString() };
   } });
 }
 function isUnder(o, root) { for (let p = o; p; p = p.parent) if (p === root) return true; return false; }
@@ -6288,14 +6343,30 @@ function heroInk() {
   const old = []; r.root.traverse(o => { if (o.userData.okInk) old.push(o); });
   for (const o of old) o.parent.remove(o);
   // the hero maker's close-up gets a finer line (the kit's line is sized for a character a few metres away)
-  B.outline(r.root, { important: true, width: hero.onStage ? 0.7 : 1 });
-  r.root.traverse(o => { if (o.userData.okInk) { o.material = inkPushed(o.material); if (hero.onStage) o.layers.enable(STAGE); } });
+  B.outline(r.root, { important: true, width: (hero.onStage ? 0.7 : 1) * TOON_INK * (BREEZE ? 0.5 : 1) });
+  r.root.traverse(o => { if (o.userData.okInk) { o.material = inkPushed(BREEZE ? inkTinted(o.material) : o.material); if (hero.onStage) o.layers.enable(STAGE); } });
 }
 /** The kit's Ink hull, drawn a few centimetres further back. The hero is many parts that touch (sleeve and cuff, ears
  *  and head, belt and shirt); right at those seams the hull and the next part's skin had the same depth and fought,
  *  which drew dashed and stippled lines all over the body. Pushed back (10 cm), a seam's hull hides behind the part in front,
  *  while the outline round the hero (the sky or ground is far behind it) is untouched. */
-const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map();
+const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map(), INK_SIZED = new Map(), INK_TINTED = new Map();
+/** Breeze: a character's line is a dark version of each part's own colour (the hull takes the vertex and instance
+ *  colours, darkened), never black. */
+function inkTinted(base) {
+  let m = INK_TINTED.get(base); if (m) return m;
+  m = base.clone(); m.vertexColors = true; m.color.setRGB(0.28, 0.22, 0.34); m.fog = true;
+  m.onBeforeCompile = base.onBeforeCompile; m.customProgramCacheKey = () => 'okInkTinted';
+  INK_TINTED.set(base, m); return m;
+}
+/** Cartoon: the kit's Ink hull with a per-vertex width (okS, written by Kit: 1 on big parts, less on small props), so a
+ *  barrel or crate in the foreground does not carry a heavier line than the people beside it. */
+function inkSized(base) {
+  let m = INK_SIZED.get(base); if (m) return m;
+  m = base.clone();
+  m.onBeforeCompile = (sh, r) => { if (base.onBeforeCompile) base.onBeforeCompile(sh, r); sh.vertexShader = 'attribute float okS;\n' + sh.vertexShader.replace(/okW\s*\*\s*okG/, 'okW * okS * okG'); };
+  m.customProgramCacheKey = () => 'okInkSized'; INK_SIZED.set(base, m); return m;
+}
 function inkPushed(base) {
   if (!base || base.userData.okPushed) return base;
   let m = INK_PUSHED.get(base); if (m) return m;
@@ -6989,9 +7060,13 @@ const TC = {
   stone: col('#d8d0bf'), stone2: col('#c4bba8'), dark: col('#76698a'), dark2: col('#655a78'), wheat: col('#f0cd58'), crop: col('#69bd47'),
   soil: col('#a8743f'), gloom: col('#6e6380'), tile: col('#b9b0c4'), tile2: col('#8f84a0'),
 };
+if (BREEZE) {   // storybook land: saturated greens (lighter and darker patches), warm paths and sand
+  for (const [k, v] of Object.entries({ g1: '#46ad3d', g2: '#348f3a', g3: '#7cc94a', forest: '#2f8a3c', forest2: '#267838', dirt: '#dcae6c', dirt2: '#c9975c', sand: '#f7e3a8',
+    wet: '#d6bd84', rock: '#a9aab8', rock2: '#8c8ea0', snow: '#ffffff', wheat: '#ffd65c', crop: '#72d24c', soil: '#b98048' })) TC[k].set(v);
+}
 if (TOON) {   // the land in Ink colours: mint meadows, cocoa paths, peach sand, stone and snow, grape gloom
   const k = (h, i) => col(OK.color(h, i)), mx = (a, b, t) => k(a[0], a[1]).lerp(k(b[0], b[1]), t);
-  Object.assign(TC, { g1: k('mint', 2), g2: mx(['mint', 2], ['mint', 3], 0.22), g3: mx(['mint', 2], ['mint', 1], 0.45), forest: mx(['mint', 2], ['mint', 3], 0.5), forest2: mx(['mint', 2], ['mint', 3], 0.7),
+  Object.assign(TC, { g1: k('mint', 2), g2: mx(['mint', 2], ['mint', 3], 0.3), g3: mx(['mint', 2], ['mint', 1], 0.55), forest: mx(['mint', 2], ['mint', 3], 0.5), forest2: mx(['mint', 2], ['mint', 3], 0.7),
     dirt: k('cocoa', 1), dirt2: mx(['cocoa', 1], ['cocoa', 2], 0.25), sand: mx(['peach', 0], ['spark', 0], 0.5), wet: mx(['cocoa', 0], ['cocoa', 1], 0.6), bed: k('stone', 1),
     rock: k('stone', 1), rock2: mx(['stone', 1], ['stone', 2], 0.55), snow: k('snow', 1), stone: k('stone', 0), stone2: mx(['stone', 0], ['stone', 1], 0.6),
     dark: mx(['grape', 3], ['stone', 3], 0.5), dark2: mx(['grape', 3], ['stone', 3], 0.75), wheat: mx(['spark', 1], ['peach', 1], 0.45), crop: mx(['mint', 1], ['mint', 2], 0.4),
@@ -7019,7 +7094,8 @@ function terrainColor(x, z, h, i, j, c) {
   const hx = HF[j * GV + Math.min(GV - 1, i + 1)] - HF[j * GV + Math.max(0, i - 1)], hz = HF[Math.min(GV - 1, j + 1) * GV + i] - HF[Math.max(0, j - 1) * GV + i];
   const slope = Math.sqrt(hx * hx + hz * hz) / (2 * CELL);
   const n = vnoise(x / 9, z / 9), n2 = vnoise(x / 31 + 7, z / 31 + 3);
-  c.copy(TC.g1).lerp(TC.g2, n * 0.8).lerp(TC.g3, Math.max(0, n2 - 0.55) * 1.6);
+  if (ROUND) c.copy(TC.g1).lerp(TC.g2, smooth(0.5, 0.58, n)).lerp(TC.g3, smooth(0.46, 0.54, n2));   // cartoon: soft-edged patches in two more greens
+  else c.copy(TC.g1).lerp(TC.g2, n * 0.8).lerp(TC.g3, Math.max(0, n2 - 0.55) * 1.6);
   const fm = forestMask(x, z); if (fm > 0) c.lerp(n > 0.5 ? TC.forest : TC.forest2, clamp(fm * 1.2, 0, 0.85));
   // Sunny Farm fields: rotated patches of wheat, crops and soil.
   const df = hyp(x - 160, z - 240);
@@ -7076,6 +7152,17 @@ function buildTerrainChunks() {
 }
 function waveTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
+  if (BREEZE) {   // deep blue water with flat white foam shapes (scalloped blobs and curls), its own random numbers
+    const g = c.getContext('2d'), r = makeRng(77); g.fillStyle = '#1b66d2'; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = 'rgba(70,150,240,.9)'; for (let i = 0; i < 6; i++) { g.beginPath(); g.ellipse(r() * 128, r() * 128, 18 + r() * 14, 5 + r() * 4, 0, 0, 7); g.fill(); }
+    g.fillStyle = '#ffffff'; g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.lineCap = 'round';
+    for (let i = 0; i < 7; i++) {
+      const x = r() * 128, y = r() * 128, w = 8 + r() * 10;
+      for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(x + k * w * 0.55, y - (k === 1 ? 2 : 0), w * 0.34, 0, 7); g.fill(); }
+      g.beginPath(); g.arc(x + w * 1.6, y - 4, 4, Math.PI * 0.2, Math.PI * 1.8); g.stroke();
+    }
+    return canvasTexture(c, true);
+  }
   const g = c.getContext('2d'); g.fillStyle = TOON ? OK.color('sky', 2) : '#4ab4f0'; g.fillRect(0, 0, 128, 128);
   g.strokeStyle = TOON ? OK.color('sky', 0) : 'rgba(200,240,255,.55)'; g.lineWidth = 2.5; g.lineCap = 'round';
   for (let i = 0; i < 14; i++) {
@@ -7084,10 +7171,47 @@ function waveTexture() {
   }
   return canvasTexture(c, true);
 }
+/** Breeze: flat white foam shapes along both banks of the river (a scalloped strip where water meets sand), one mesh,
+ *  drifting gently with the current. */
+function buildFoam() {
+  // a broken band of dashes with a wavy edge, little curls at their ends and bubbles off the water side (it tiles: every
+  // shape is drawn again one width over)
+  const c = document.createElement('canvas'); c.width = 512; c.height = 64; const g = c.getContext('2d'), r = makeRng(9);
+  g.fillStyle = g.strokeStyle = '#ffffff'; g.lineCap = 'round';
+  const shapes = [];
+  for (let x = 0; x < 512;) { const L = 34 + r() * 56; shapes.push({ x, L, w: 9 + r() * 4, y: 24 + r() * 4, curl: r() < 0.75 ? (r() < 0.5 ? -1 : 1) : 0, b: [r(), r(), r(), r()] }); x += L + 12 + r() * 26; }
+  for (const off of [0, -512, 512]) for (const sh of shapes) {
+    const x0 = sh.x + off; g.lineWidth = sh.w; g.beginPath();
+    for (let t = 0; t <= 1.0001; t += 0.1) { const xx = x0 + sh.L * t, yy = sh.y + Math.sin(xx / 15) * 2.5 - Math.sin(t * Math.PI) * 2; t ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+    g.stroke();
+    if (sh.curl) {   // a little curl rolling up off the end of the dash
+      const cx = sh.curl > 0 ? x0 + sh.L + 3 : x0 - 3, cy = sh.y + 9; g.lineWidth = 5; g.beginPath();
+      for (let t = 0; t <= 1.0001; t += 0.08) { const a = Math.PI * 0.5 + t * Math.PI * 1.7 * sh.curl, rr = 10 * (1 - t * 0.55); g.lineTo(cx + Math.cos(a) * rr * -sh.curl, cy + Math.sin(a) * rr); }
+      g.stroke();
+    }
+    for (let i = 0; i < 2; i++) { g.beginPath(); g.arc(x0 + sh.b[i * 2] * sh.L, 40 + sh.b[i * 2 + 1] * 16, 2.2 + sh.b[i] * 2.8, 0, Math.PI * 2); g.fill(); }
+  }
+  const t = canvasTexture(c, true);
+  const pos = [], uv = [], idx = []; let n = 0;
+  for (const side of [-1, 1]) {
+    let along = 0, px = -366, pz = riverZ(-366); const base = n;
+    for (let x = -366; x <= 366.01; x += 4) {
+      const z = riverZ(x), z2 = riverZ(x + 0.5), tl = hyp(0.5, z2 - z), nx = -(z2 - z) / tl * side, nz = 0.5 / tl * side;
+      along += hyp(x - px, z - pz); px = x; pz = z;
+      const d0 = RIVER_HW - 3.4, d1 = RIVER_HW + 0.5;   // breeze: the band near the shore, curls and bubbles out on the water
+      pos.push(x + nx * d0, 0.06, z + nz * d0, x + nx * d1, 0.06, z + nz * d1); uv.push(along / 16, 0, along / 16, 1);
+      if (n > base) { const a = (n - 1) * 2; if (side > 0) idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); else idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      n++;
+    }
+  }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.setIndex(idx);
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, opacity: 0.9, side: THREE.DoubleSide })); m.renderOrder = 2; scene.add(m);
+  return { mesh: m, tex: t };
+}
 function buildWater() {
   const tex = waveTexture();
   // cartoon: flat water in the kit's sky colours (no light on it)
-  const mat = TOON ? new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.92 }) : new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.86, color: 0xffffff });
+  const mat = TOON || BREEZE ? new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: BREEZE ? 0.95 : 0.92 }) : new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.86, color: 0xffffff });
   const pos = [], uv = [], idx = [];
   let along = 0, px = -366, pz = riverZ(-366), n = 0;
   for (let x = -366; x <= 366.01; x += 4) {
@@ -7105,9 +7229,10 @@ function buildWater() {
   pool.position.set(POOL.x, POOL.y, POOL.z); pool.renderOrder = 1; scene.add(pool);
   // The waterfall: a scrolling sheet over the cliff behind the pool.
   const fallTex = waveTexture(); fallTex.repeat.set(1, 1.5);
-  const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), TOON ? new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, opacity: 0.95 }) : new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
+  const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), TOON || BREEZE ? new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, opacity: 0.95 }) : new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
   fall.position.set(POOL.x - 3, POOL.y + 3.6, POOL.z - 7.3); scene.add(fall);
   WORLD.water = { tex, fallTex, river, pool, fall };
+  if (BREEZE) WORLD.water.foam = buildFoam();
 }
 // Sky: a gradient dome that follows the camera (no fog on it), drifting clouds, and the gloom tint near the fortress.
 function buildSky() {
@@ -7132,6 +7257,20 @@ function buildSky() {
     clouds.setMatrixAt(i, m.compose(pp, q, s));
   }
   if (TOON) B.outline(clouds, { important: true, width: 1.1, color: OK.color('ink') });   // a coloured hull has no fog: the line stays crisp far away
+  if (BREEZE) {   // flat, puffy painted clouds with swirl motifs: cards on a ring round the camera, one draw call
+    clouds.visible = false;
+    const cc = document.createElement('canvas'); cc.width = 256; cc.height = 128; const x = cc.getContext('2d');
+    const puff = () => { x.beginPath(); for (const [px, py, pr] of [[52, 84, 30], [92, 64, 40], [140, 56, 46], [186, 70, 36], [218, 88, 24], [30, 98, 18]]) { x.moveTo(px + pr, py); x.arc(px, py, pr, 0, Math.PI * 2); } x.rect(14, 84, 228, 26); };
+    x.fillStyle = '#ffffff'; puff(); x.fill();
+    x.save(); puff(); x.clip(); x.fillStyle = '#d6e6ff'; x.fillRect(0, 92, 256, 40); x.restore();
+    x.strokeStyle = '#bcd5fb'; x.lineWidth = 4; x.lineCap = 'round';
+    for (const [sx, sy, sr] of [[96, 66, 14], [150, 58, 17], [190, 76, 11]]) { x.beginPath(); for (let t = 0; t <= 1.0001; t += 0.04) { const a = t * Math.PI * 3.2, rr = sr * (1 - t * 0.85); x.lineTo(sx + Math.cos(a) * rr, sy + Math.sin(a) * rr); } x.stroke(); }
+    const ct = new THREE.CanvasTexture(cc); ct.colorSpace = THREE.SRGBColorSpace;
+    const cards = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 0.5), new THREE.MeshBasicMaterial({ map: ct, transparent: true, depthWrite: false, fog: false }), 13);
+    const o = new THREE.Object3D(), cr = makeRng(41);
+    for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2 + cr() * 0.3, r = 150 + cr() * 25, sc = 34 + cr() * 26; o.position.set(Math.cos(a) * r, 52 + cr() * 26, Math.sin(a) * r); o.lookAt(0, o.position.y, 0); o.scale.set(sc, sc, 1); o.updateMatrix(); cards.setMatrixAt(i, o.matrix); }
+    cards.frustumCulled = false; cards.renderOrder = -9; group.add(cards);
+  }
   WORLD.sky = { dome, clouds: group };
 }
 /** Fog-free silhouettes of the fortress spire and the castle tower, drawn when the real ones are past the far plane. */
@@ -7158,7 +7297,10 @@ const PRIM = {};
 function prim(key) {
   if (PRIM[key]) return PRIM[key];
   let g;
-  const [kind, a, b] = key.split(':');
+  let [kind, a, b] = key.split(':');
+  // cartoon: round props read as round (barrels, logs, posts, wells, spires): at least 16 sides, with smooth normals
+  // below (creaseNormals); 3- and 4-sided ones are meant to be spikes, pyramids and square posts
+  if (ROUND && (kind === 'cyl' || kind === 'cone') && +a >= 5 && +a < 16) a = '16';
   if (kind === 'box') g = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
   else if (kind === 'cyl') g = new THREE.CylinderGeometry(+b, 1, 1, +a).translate(0, 0.5, 0);
   else if (kind === 'cone') g = new THREE.ConeGeometry(1, 1, +a).translate(0, 0.5, 0);
@@ -7173,14 +7315,14 @@ function prim(key) {
   else if (kind === 'rbox') {
     // cartoon: a chunky rounded box (a sphere pushed out to a box: flat-ish faces, round edges and corners), unit size
     // with its bottom at 0 like 'box'; its normals are the sphere's, so the cel band rolls softly over it
-    g = new THREE.SphereGeometry(1, 8, 4); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
+    g = new THREE.SphereGeometry(1, +a || 8, +b || 4); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), sg = v => (Math.abs(v) < 1e-6 ? 0 : Math.sign(v)); p.setXYZ(i, sg(x) * c + x * r, sg(y) * c + y * r + 0.5, sg(z) * c + z * r); }
     g = g.toNonIndexed(); const n = g.attributes.position.clone(); for (let i = 0; i < n.count; i++) { V1.set(n.getX(i), n.getY(i) - 0.5, n.getZ(i)); V2.set(Math.sign(V1.x) * c, Math.sign(V1.y) * c, Math.sign(V1.z) * c); V1.sub(V2).normalize(); n.setXYZ(i, V1.x, V1.y, V1.z); }
     g.setAttribute('normal', n); return (PRIM[key] = g);
   }
   if (g.index) g = g.toNonIndexed();
   g.computeVertexNormals();
-  if (TOON && kind !== 'box' && kind !== 'prism') creaseNormals(g, 50);
+  if (ROUND && kind !== 'box' && kind !== 'prism') creaseNormals(g, 50);
   return (PRIM[key] = g);
 }
 /** Cartoon: smooth the normals of faces that meet at less than `deg` degrees (round things shade as round, a cylinder's
@@ -7197,16 +7339,19 @@ function creaseNormals(g, deg) {
   g.setAttribute('normal', new THREE.BufferAttribute(out, 3));
 }
 /** The box characters and props are built from: chunky rounded ones in the cartoon look. */
-const CBOX = () => prim(TOON ? 'rbox' : 'box');
+// (the hero is seen closest, so its rounding has more steps: its Ink hull follows a smooth curve, not a chamfer)
+const CBOX = fine => prim(ROUND ? (fine ? 'rbox:12:6' : 'rbox') : 'box');
+/** Cartoon: a part's Ink weight from its size (small props get a thinner line; walls, roofs and towers the full one). */
+const inkScale = (sx, sy, sz) => { const m = Math.max(Math.abs(sx), Math.abs(sy), Math.abs(sz)); return m < 0.8 ? 0.62 : m < 1.6 ? 0.78 : 1; };
 class Kit {
-  constructor() { this.b = { lit: { p: [], n: [], c: [] }, glow: { p: [], n: [], c: [] } }; this.tris = 0; }
+  constructor() { this.b = { lit: { p: [], n: [], c: [], s: [] }, glow: { p: [], n: [], c: [], s: [] } }; this.tris = 0; }
   /** Add geometry g transformed by position/rotation/scale with one colour. */
   add(g, x, y, z, sx, sy, sz, rx, ry, rz, color, glow) {
     const B = glow ? this.b.glow : this.b.lit, pa = g.attributes.position, na = g.attributes.normal;
     E1.set(rx || 0, ry || 0, rz || 0); Q1.setFromEuler(E1); V1.set(x, y, z); V2.set(sx, sy, sz); M4.compose(V1, Q1, V2);
     NM3.getNormalMatrix(M4); C1.set(toonCol(color));
     for (let i = 0; i < pa.count; i++) {
-      V3.fromBufferAttribute(pa, i).applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z);
+      V3.fromBufferAttribute(pa, i).applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z); if (TOON) B.s.push(inkScale(sx, sy, sz));
       V4.fromBufferAttribute(na, i).applyMatrix3(NM3).normalize(); B.n.push(V4.x, V4.y, V4.z);
       B.c.push(C1.r, C1.g, C1.b);
     }
@@ -7226,7 +7371,7 @@ class Kit {
     return this;
   }
   cone(x, y, z, r, h, color, seg, opt) { this.add(prim(`cone:${seg || 8}`), x, y, z, r, h, r, 0, opt && opt.ry || 0, 0, color, opt && opt.glow); return this; }
-  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${TOON && !detail && r < 0.6 ? 1 : detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
+  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${ROUND && !detail && r < 0.6 ? 1 : detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
   /** Gable roof: ridge along local x, apex at y + h. */
   prism(x, y, z, sx, h, sz, color, ry) { this.add(prim('prism'), x, y, z, sx, h, sz, 0, ry || 0, 0, color); return this; }
   /** A box between two points (a beam, rail or plank). */
@@ -7237,7 +7382,7 @@ class Kit {
     const g = prim('box'), B = opt && opt.glow ? this.b.glow : this.b.lit, pa = g.attributes.position, na = g.attributes.normal;
     NM3.getNormalMatrix(M4); C1.set(toonCol(color));
     for (let i = 0; i < pa.count; i++) {
-      V3.fromBufferAttribute(pa, i); V3.y -= 0.5; V3.applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z);
+      V3.fromBufferAttribute(pa, i); V3.y -= 0.5; V3.applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z); if (TOON) B.s.push(inkScale(len, hgt, w));
       V4.fromBufferAttribute(na, i).applyMatrix3(NM3).normalize(); B.n.push(V4.x, V4.y, V4.z); B.c.push(C1.r, C1.g, C1.b);
     }
     this.tris += 12;
@@ -7248,6 +7393,7 @@ class Kit {
     const B = this.b[which]; if (!B.p.length) return null;
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(B.p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(B.n, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(B.c, 3));
+    if (B.s.length === B.p.length / 3) g.setAttribute('okS', new THREE.Float32BufferAttribute(B.s, 1));
     g.computeBoundingSphere(); return g;
   }
   /** Build the meshes into the scene. Returns { lit, glow, x, z, r, tris } and registers it for distance culling. */
@@ -7367,7 +7513,35 @@ const POINTS = {};      // named places (teleports, NPC spots, collectible spots
 const SPOTS = {};       // collectible spots for builder 2 (Sun Gems etc.): { x, y, z } with y = standing height + 1.2
 const spot = (id, x, z, yTop) => { SPOTS[id] = { x, y: (yTop !== undefined ? yTop : gy(x, z)) + 1.2, z }; };
 
+/** Breeze: the storybook models stand in for these props; their places (and colliders) are kept here (see BZM). */
+const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [], barn: [], mill: [], tower: [], wall: [], crate: [], lantern: [], land: [], block: [], board: [], fwall: [] };
+/* Breeze: building shells (the barn, the windmill tower, the castle's towers and walls) go in their own Kit, so the
+   storybook model can take their place once the world pack arrives (the shell stands in until then); colliders,
+   stairs, decks and every other part stay in the zone's Kit. */
+const BZ_SHELL_KITS = {}, BZ_SHELLS = [];
+const shellKit = (name, k) => (BREEZE ? BZ_SHELL_KITS[name] || (BZ_SHELL_KITS[name] = new Kit()) : k);
+/* Breeze: the landmarks (the gatehouse, keep, fortress towers, camp, bridge, Riverbend's lighthouse, boats and nets, the
+   signs and the cart) draw their stand-in in the 'land' shell and record where their storybook model goes (bzLand); a
+   slab kit records its boxes (merlons, steps, planks, the fortress's walls) for the storybook block, board or wall. */
+const landKit = k => shellKit('land', k);
+function bzLand(m, x, y, z, ry, o) { if (BREEZE) BZ_PROPS.land.push(Object.assign({ m, x, y, z, ry: ry || 0 }, o)); }
+class SlabKit extends Kit {
+  constructor(kind) { super(); this.kind = kind; }
+  box(x, y, z, sx, sy, sz, color, ry, opt) { super.box(x, y, z, sx, sy, sz, color, ry, opt); if (!(opt && opt.glow)) BZ_PROPS[this.kind].push({ x, y, z, sx, sy, sz, ry: ry || 0, color }); return this; }
+}
+const slabKit = (kind, k) => (BREEZE ? BZ_SHELL_KITS['slab:' + kind] || (BZ_SHELL_KITS['slab:' + kind] = new SlabKit(kind)) : k);
+function shellBuild(name, x, z, r) { const k = BZ_SHELL_KITS[name]; if (!k) return; delete BZ_SHELL_KITS[name]; const o = k.build('shell:' + name, x, z, r); o.shell = name; BZ_SHELLS.push(o); }
 function cottage(k, x, z, ry, o) {
+  if (BREEZE && o && o.flat) { const w = o.w || 6, d = o.d || 5, h = o.h || 3.2; bzLand('shop', x, gy(x, z) - 0.15, z, ry, { s: [w / 6, h / 3.2, d / 5], tints: { plaster: o.wall || PAL.wall, roof: o.roof || PAL.roofR } }); cottageGeo(landKit(k), x, z, ry, o); return; }
+  if (BREEZE) {
+    o = o || {}; const w = o.w || 6, d = o.d || 5, h = o.h || 3.2, rh = o.rh || 2.2, y = gy(x, z) - 0.15;
+    addBox(x, z, w / 2, d / 2, ry, y, o.flat ? y + h + 0.25 : y + h + rh, { stand: !!o.flat });
+    BZ_PROPS.cottage.push({ x, y, z, ry, w, d, h, rh, roof: o.roof || PAL.roofR, wall: o.wall || PAL.wall, k, o });
+    return;
+  }
+  cottageGeo(k, x, z, ry, o);
+}
+function cottageGeo(k, x, z, ry, o) {
   o = o || {};
   const w = o.w || 6, d = o.d || 5, h = o.h || 3.2, rh = o.rh || 2.2, y = gy(x, z) - 0.15;
   if (TOON) GROUND_BLOBS.push(x, gy(x, z) + 0.06, z, w * 0.62 + 0.9, d * 0.62 + 0.9, ry);
@@ -7397,13 +7571,14 @@ function fenceLine(k, pts, o) {
     const [ax, az] = pts[i], [bx, bz] = pts[i + 1], len = hyp(bx - ax, bz - az), n = Math.max(1, Math.round(len / step));
     for (let j = 0; j <= n; j++) {
       if (j === n && i < pts.length - 2) continue;
-      const x = ax + (bx - ax) * j / n, z = az + (bz - az) * j / n; k.box(x, gy(x, z) - 0.2, z, 0.2, hgt + 0.3, 0.2, color);
+      const x = ax + (bx - ax) * j / n, z = az + (bz - az) * j / n;
+      if (BREEZE) BZ_PROPS.post.push({ x, y: gy(x, z) - 0.2, z, h: hgt + 0.3, ry: Math.atan2(-(bz - az), bx - ax), color }); else k.box(x, gy(x, z) - 0.2, z, 0.2, hgt + 0.3, 0.2, color);
     }
     for (let j = 0; j < n; j++) {
       const x0 = ax + (bx - ax) * j / n, z0 = az + (bz - az) * j / n, x1 = ax + (bx - ax) * (j + 1) / n, z1 = az + (bz - az) * (j + 1) / n;
       const y0 = gy(x0, z0), y1 = gy(x1, z1);
-      k.beam(x0, y0 + hgt * 0.45, z0, x1, y1 + hgt * 0.45, z1, 0.09, 0.14, color);
-      k.beam(x0, y0 + hgt * 0.9, z0, x1, y1 + hgt * 0.9, z1, 0.09, 0.14, color);
+      if (BREEZE) BZ_PROPS.rail.push({ x0, y0, z0, x1, y1, z1, h: hgt, color });
+      else { k.beam(x0, y0 + hgt * 0.45, z0, x1, y1 + hgt * 0.45, z1, 0.09, 0.14, color); k.beam(x0, y0 + hgt * 0.9, z0, x1, y1 + hgt * 0.9, z1, 0.09, 0.14, color); }
       if (o.col !== false) addBox((x0 + x1) / 2, (z0 + z1) / 2, hyp(x1 - x0, z1 - z0) / 2 + 0.05, 0.12, Math.atan2(-(z1 - z0), x1 - x0), Math.min(y0, y1) - 0.5, Math.max(y0, y1) + hgt);
     }
   }
@@ -7452,15 +7627,15 @@ function haystack(k, x, z) {
   k.cyl(x, y - 0.1, z, 1.3, 1.35, 1.2, PAL.hay, 9); k.sphere(x, y + 1.05, z, 1.3, PAL.hayD, 1, 0.32);
   addCircle(x, z, 1.3, y, y + 1.4, { bounce: CONFIG.hero.bounceHay, kind: 'hay' });
 }
-function crate(k, x, y, z, s, ry, color) { k.box(x, y, z, s, s, s, color || PAL.woodL, ry || 0, { col: true }); k.box(x, y + s * 0.42, z, s + 0.04, s * 0.16, s + 0.04, PAL.woodD, ry || 0); }
-function barrel(k, x, z, y) { y = y === undefined ? gy(x, z) : y; k.cyl(x, y, z, 0.48, 0.48, 1.1, PAL.wood, 8, { col: true }); k.cyl(x, y + 0.25, z, 0.5, 0.5, 0.1, PAL.metal, 8); k.cyl(x, y + 0.8, z, 0.5, 0.5, 0.1, PAL.metal, 8); }
+function crate(k, x, y, z, s, ry, color) { if (BREEZE) { BZ_PROPS.crate.push({ x, y, z, s, ry: ry || 0 }); k = shellKit('props', k); } k.box(x, y, z, s, s, s, color || PAL.woodL, ry || 0, { col: true }); k.box(x, y + s * 0.42, z, s + 0.04, s * 0.16, s + 0.04, PAL.woodD, ry || 0); }
+function barrel(k, x, z, y) { y = y === undefined ? gy(x, z) : y; if (BREEZE) { addCircle(x, z, 0.48, y, y + 1.1); BZ_PROPS.barrel.push({ x, y, z, ry: (x * 7.3 + z) % 6.28 }); return; } k.cyl(x, y, z, 0.48, 0.48, 1.1, PAL.wood, 8, { col: true }); k.cyl(x, y + 0.25, z, 0.5, 0.5, 0.1, PAL.metal, 8); k.cyl(x, y + 0.8, z, 0.5, 0.5, 0.1, PAL.metal, 8); }
 function banner(k, x, y, z, ry, color, hgt) {
   hgt = hgt || 4; k.cyl(x, y, z, 0.09, 0.09, hgt, PAL.woodD, 5); const p = lp(x, z, ry, 0.55, 0); k.box(p[0], y + hgt - 1.7, p[1], 1.0, 1.5, 0.05, color, ry);
 }
 /** Cartoon: a lamp's glow (bloom on lamps only): soft additive halos, all of them one draw call (see haloFrame). */
 const HALOS = [], GROUND_BLOBS = [];   // cartoon: lamp halos; soft blobs under the houses
-function halo(x, y, z, size, color) { if (TOON) HALOS.push(x, y, z, size, color); }
-function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); k.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); k.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
+function halo(x, y, z, size, color) { if (TOON || BREEZE) HALOS.push(x, y, z, size, color); }
+function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); const ks = shellKit('props', k); if (BREEZE) BZ_PROPS.lantern.push({ x, y, z }); ks.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); ks.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
 /** A horizontal log centred on (x, z), turned by ry (length along local x), resting on y. */
 function log(k, x, y, z, ry, len, r, color) { k.add(prim('cyl:8:1.000'), x + len / 2 * Math.cos(ry), y + r, z - len / 2 * Math.sin(ry), r, len, r, 0, ry, Math.PI / 2, color); }
 function pine(k, x, z, s, y) {
@@ -7508,10 +7683,10 @@ function buildMeadowbrook() {
     for (let j = 1; j < 10; j++) { const t = j / 10, sag = Math.sin(t * Math.PI) * 0.8, x = lerp(x0, x1, t), z = lerp(z0, z1, t), y = lerp(y0, y1, t) - sag; k.cone(x, y - 0.55, z, 0.32, 0.55, flagC[(i + j) % 6], 3, { ry: Math.atan2(x1 - x0, z1 - z0) }); }
   }
   // benches, barrels, flower patches, a cart
-  for (const [x, z, r] of [[-4, 324, 0.3], [6, 324, -0.3], [9, 306, 1.2]]) { const y = gy(x, z); k.box(x, y + 0.45, z, 1.8, 0.12, 0.5, PAL.woodL, r, { col: true, top: y + 0.6 }); k.box(x, y, z, 1.6, 0.45, 0.3, PAL.woodD, r); }
+  for (const [x, z, r] of [[-4, 324, 0.3], [6, 324, -0.3], [9, 306, 1.2]]) { const y = gy(x, z), bk = slabKit('board', k); bk.box(x, y + 0.45, z, 1.8, 0.12, 0.5, PAL.woodL, r, { col: true, top: y + 0.6 }); bk.box(x, y, z, 1.6, 0.45, 0.3, PAL.woodD, r); }
   barrel(k, -10, 330); barrel(k, -9, 331.2); barrel(k, 28, 320);
-  const cy0 = gy(-20, 305); k.box(-20, cy0 + 0.5, 305, 2.6, 0.7, 1.5, PAL.wood, 0.4, { col: true });
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const wp = lp(-20, 305, 0.4, sx * 0.9, sz * 0.8); k.add(prim('torus:10:0.3'), wp[0], cy0 + 0.5, wp[1], 0.45, 0.45, 0.45, 0, 0.4, 0, PAL.woodD); }
+  const cy0 = gy(-20, 305), kc = landKit(k); bzLand('cart', -20, cy0, 305, 0.4); kc.box(-20, cy0 + 0.5, 305, 2.6, 0.7, 1.5, PAL.wood, 0.4, { col: true });
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const wp = lp(-20, 305, 0.4, sx * 0.9, sz * 0.8); kc.add(prim('torus:10:0.3'), wp[0], cy0 + 0.5, wp[1], 0.45, 0.45, 0.45, 0, 0.4, 0, PAL.woodD); }
   // Training yard ring (opening toward the square)
   const ty = POINTS.trainingYard; for (const run of ringPts(ty[0], ty[1], 6.2, 14, -0.9, 0.5)) fenceLine(k, run, { h: 0.9 });
   // Sunflower Tower: a 30 m stem with 16 leaf platforms spiralling up (every 4th is a bouncy bud) and a flower on top.
@@ -7539,15 +7714,16 @@ function buildFarm() {
   const k = new Kit();
   POINTS.farm = [130, 236, Math.PI / 2 + 0.25]; POINTS.tilly = [150, 220]; POINTS.pen = [165, 205]; POINTS.cabbages = [175, 235]; POINTS.windmill = [205, 265];
   // Red barn (doors face the road end), flat roof deck you can reach: haystack -> shed roof -> hay bales -> barn roof
-  const bx = 158, bz = 216, by = gy(bx, bz) - 0.1, br = -Math.PI / 2;
+  const bx = 158, bz = 216, by = gy(bx, bz) - 0.1, br = -Math.PI / 2, kb = shellKit('barn', k);
   k.box(bx, by - 0.6, bz, 14.4, 0.8, 10.4, PAL.stoneD, br);
-  k.box(bx, by, bz, 14, 7, 10, '#c0392b', br, { col: true, top: by + 7.3 });
-  k.box(bx, by + 7, bz, 14.6, 0.3, 10.6, '#7d2a22', br);
-  k.box(bx, by + 7.3, bz, 2.2, 1.6, 2.2, PAL.white, br); k.cone(bx, by + 8.9, bz, 1.9, 1.6, '#7d2a22', 4, { ry: Math.PI / 4 });
-  const dpos = lp(bx, bz, br, 0, 5.04); k.box(dpos[0], by, dpos[1], 4.4, 4.6, 0.12, '#a3301f', br);
-  for (const s of [-1, 1]) { const a = lp(bx, bz, br, -2.1 * s, 5.12), b = lp(bx, bz, br, 2.1 * s, 5.12); k.beam(a[0], by + 0.2, a[1], b[0], by + 4.4, b[1], 0.1, 0.22, PAL.white); }
-  const fr = lp(bx, bz, br, 0, 5.1); k.box(fr[0], by + 4.6, fr[1], 4.8, 0.25, 0.14, PAL.white, br);
-  for (const s of [-1, 1]) { const wpos = lp(bx, bz, br, s * 4.6, 5.04); k.box(wpos[0], by + 4.8, wpos[1], 1.2, 1.2, 0.1, PAL.win, br); }
+  kb.box(bx, by, bz, 14, 7, 10, '#c0392b', br, { col: true, top: by + 7.3 });
+  kb.box(bx, by + 7, bz, 14.6, 0.3, 10.6, '#7d2a22', br);
+  kb.box(bx, by + 7.3, bz, 2.2, 1.6, 2.2, PAL.white, br); kb.cone(bx, by + 8.9, bz, 1.9, 1.6, '#7d2a22', 4, { ry: Math.PI / 4 });
+  const dpos = lp(bx, bz, br, 0, 5.04); kb.box(dpos[0], by, dpos[1], 4.4, 4.6, 0.12, '#a3301f', br);
+  for (const s of [-1, 1]) { const a = lp(bx, bz, br, -2.1 * s, 5.12), b = lp(bx, bz, br, 2.1 * s, 5.12); kb.beam(a[0], by + 0.2, a[1], b[0], by + 4.4, b[1], 0.1, 0.22, PAL.white); }
+  const fr = lp(bx, bz, br, 0, 5.1); kb.box(fr[0], by + 4.6, fr[1], 4.8, 0.25, 0.14, PAL.white, br);
+  for (const s of [-1, 1]) { const wpos = lp(bx, bz, br, s * 4.6, 5.04); kb.box(wpos[0], by + 4.8, wpos[1], 1.2, 1.2, 0.1, PAL.win, br); }
+  if (BREEZE) { BZ_PROPS.barn.push({ x: bx, y: by, z: bz, ry: br }); shellBuild('barn', bx, bz, 10); }
   const sy = gy(bx, 209), shedTop = by + 3.6;
   k.box(bx - 1, sy - 0.2, 209, 8, shedTop - sy + 0.2, 4, '#b5462f', 0, { col: true });
   k.box(bx - 1, shedTop - 0.2, 209, 8.4, 0.25, 4.4, '#7d2a22', 0);
@@ -7557,13 +7733,14 @@ function buildFarm() {
   // Tilly's farmhouse
   cottage(k, 128, 211, faceTo(128, 211, 138, 226), { w: 7, d: 6, h: 3.4, roof: PAL.roofR });
   // Windmill: stone tower, balcony reached by outside stairs, turning blades (separate mesh)
-  const [wx, wz] = POINTS.windmill, wy = gy(wx, wz);
-  k.cyl(wx, wy - 0.3, wz, 2.4, 3.4, 12.3, PAL.stoneL, 10, { col: true, stand: false });
-  k.cone(wx, wy + 12, wz, 3.2, 4.2, PAL.roofR, 10);
+  const [wx, wz] = POINTS.windmill, wy = gy(wx, wz), km = shellKit('mill', k);
+  km.cyl(wx, wy - 0.3, wz, 2.4, 3.4, 12.3, PAL.stoneL, 10, { col: true, stand: false });
+  km.cone(wx, wy + 12, wz, 3.2, 4.2, PAL.roofR, 10);
   k.cyl(wx, wy + 6, wz, 4.7, 4.7, 0.3, PAL.wood, 14); addCircle(wx, wz, 4.7, wy + 6, wy + 6.3);
   for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; if (Math.abs(wrapA(a - 2.3)) < 0.4) continue; k.box(wx + Math.cos(a) * 4.55, wy + 6.3, wz + Math.sin(a) * 4.55, 0.12, 0.9, 0.12, PAL.woodD); }
   spiralStairs(k, wx, wz, 5.6, wy, wy + 6.3, 15, -0.2, 2.5, PAL.wood, { depth: 1.3, landing: 1.3 });
-  const door = lp(wx, wz, 0, 0, 3.25); k.box(door[0], wy, door[1], 1.2, 2.1, 0.15, PAL.door);
+  const door = lp(wx, wz, 0, 0, 3.25); km.box(door[0], wy, door[1], 1.2, 2.1, 0.15, PAL.door);
+  if (BREEZE) { BZ_PROPS.mill.push({ x: wx, y: wy - 0.3, z: wz }); shellBuild('mill', wx, wz, 8); }
   spot('farmWindmill', wx - 3.2, wz - 2.2, wy + 6.3);
   const blades = new Kit();
   blades.cyl(0, -0.4, 0, 0.45, 0.45, 0.8, PAL.woodD, 8);
@@ -7643,8 +7820,9 @@ function buildCamp() {
   const gapA = Math.atan2(6, 24);
   for (let i = 0; i < 118; i++) {
     const a = i / 118 * Math.PI * 2; if (Math.abs(wrapA(a - gapA)) < 0.2) continue;
-    const r = 21 + (i % 2) * 0.25, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r, y = gy(x, z), h = 2.9 + (i % 3) * 0.3;
-    k.cyl(x, y - 0.3, z, 0.34, 0.38, h, i % 2 ? '#8a5a34' : '#7a4e2c', 6); k.cone(x, y - 0.3 + h, z, 0.36, 0.6, '#c79a62', 6);
+    const r = 21 + (i % 2) * 0.25, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r, y = gy(x, z), h = 2.9 + (i % 3) * 0.3, kl = landKit(k);
+    bzLand('stake', x, y - 0.3, z, a * 3.7, { s: [1, (h + 0.3) / 3.3, 1], tint: i % 2 ? '#ffffff' : '#e2d6c8' });
+    kl.cyl(x, y - 0.3, z, 0.34, 0.38, h, i % 2 ? '#8a5a34' : '#7a4e2c', 6); kl.cone(x, y - 0.3 + h, z, 0.36, 0.6, '#c79a62', 6);
   }
   for (const run of ringPts(cx, cz, 21.1, 48, gapA, 0.2)) for (let i = 0; i < run.length - 1; i++) {
     const [x0, z0] = run[i], [x1, z1] = run[i + 1]; addBox((x0 + x1) / 2, (z0 + z1) / 2, hyp(x1 - x0, z1 - z0) / 2 + 0.2, 0.45, Math.atan2(-(z1 - z0), x1 - x0), cy - 2, cy + 3.4, { stand: false });
@@ -7652,11 +7830,11 @@ function buildCamp() {
   // gate posts with pot lids
   for (const s of [-1, 1]) { const a = gapA + s * 0.22, x = cx + Math.cos(a) * 21.3, z = cz + Math.sin(a) * 21.3, y = gy(x, z); k.cyl(x, y, z, 0.45, 0.5, 4.4, '#6e4a2c', 7, { col: true }); k.cyl(x + 0.5, y + 3.6, z, 0.65, 0.65, 0.12, PAL.metal, 10, { ry: 0 }); }
   const tents = [[-234, 50, '#8d6e4f'], [-230, 74, '#6f8f4f'], [-209, 44, '#9a5a4a'], [-240, 63, '#7d6b8f']];
-  for (const [x, z, c] of tents) { const y = gy(x, z), fr = faceTo(x, z, cx, cz), dp = lp(x, z, fr, 0, 2.0); k.cone(x, y - 0.1, z, 2.6, 3.4, c, 6, { ry: 0.3 }); k.box(dp[0], y, dp[1], 0.9, 1.4, 0.3, '#3b2a1e', fr); addCircle(x, z, 2.0, y, y + 2.6, { stand: false }); }
+  for (const [x, z, c] of tents) { const y = gy(x, z), fr = faceTo(x, z, cx, cz), dp = lp(x, z, fr, 0, 2.0), kl = landKit(k); bzLand('tent', x, y - 0.1, z, fr, { tint: '#' + col(c).lerp(WHITE_T, 0.3).getHexString() }); kl.cone(x, y - 0.1, z, 2.6, 3.4, c, 6, { ry: 0.3 }); kl.box(dp[0], y, dp[1], 0.9, 1.4, 0.3, '#3b2a1e', fr); addCircle(x, z, 2.0, y, y + 2.6, { stand: false }); }
   // The chief's big tent: a flat top reached by crates (camp tent top)
-  const bx = -224, bz = 44, by = gy(bx, bz);
-  k.cyl(bx, by - 0.1, bz, 1.0, 3.2, 4.1, '#a0522d', 7); k.cyl(bx, by + 4.0, bz, 1.05, 1.05, 0.15, '#6e4a2c', 7);
-  for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; k.box(bx + Math.cos(a) * 2.2, by + 1.2, bz + Math.sin(a) * 2.2, 0.5, 0.9, 0.06, i % 2 ? '#e0c060' : '#5a8f4f', -a + Math.PI / 2); }
+  const bx = -224, bz = 44, by = gy(bx, bz), kt = landKit(k); bzLand('chieftent', bx, by - 0.1, bz, 0);
+  kt.cyl(bx, by - 0.1, bz, 1.0, 3.2, 4.1, '#a0522d', 7); kt.cyl(bx, by + 4.0, bz, 1.05, 1.05, 0.15, '#6e4a2c', 7);
+  for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; kt.box(bx + Math.cos(a) * 2.2, by + 1.2, bz + Math.sin(a) * 2.2, 0.5, 0.9, 0.06, i % 2 ? '#e0c060' : '#5a8f4f', -a + Math.PI / 2); }
   addCircle(bx, bz, 2.4, by, by + 3.0, { stand: false }); addCircle(bx, bz, 1.1, by + 3.0, by + 4.15);
   crate(k, bx + 3.8, by, bz + 1.0, 1.2, 0.2); crate(k, bx + 4.6, by, bz - 0.4, 1.2, -0.2); crate(k, bx + 4.6, by + 1.2, bz - 0.4, 1.2, 0.1); crate(k, bx + 4.2, by, bz - 1.9, 1.2, 0.4); crate(k, bx + 4.2, by + 1.2, bz - 1.9, 1.2, 0.0); crate(k, bx + 4.2, by + 2.4, bz - 1.9, 1.2, 0.2);
   spot('campTent', bx, bz, by + 4.15);
@@ -7696,7 +7874,7 @@ function buildGlade() {
 
 /* ---- The Old Stone Bridge (0, -60): arches, parapets; the middle is broken until Hazel fixes it ---- */
 function buildBridge() {
-  const k = new Kit(), top = 4, w = 6.4;
+  const k0 = new Kit(), k = landKit(k0), top = 4, w = 6.4; bzLand('bridge', 0, 0, -60, 0);
   POINTS.bridge = [0, -41, Math.PI]; POINTS.bridgeS = [0, -36]; POINTS.bridgeN = [0, -86]; POINTS.bridgeMid = [0, -60];
   // deck halves (south z -38..-52, north z -68..-82) with broken, jagged ends
   k.box(0, top - 0.8, -45, w, 0.8, 14, PAL.stone, 0, { col: true }); k.box(0, top - 0.8, -75, w, 0.8, 14, PAL.stone, 0, { col: true });
@@ -7725,10 +7903,11 @@ function buildBridge() {
   const fixRails = [addBox(-3.0, -60, 0.2, 8.2, 0, top, top + 0.9, { enabled: false }), addBox(3.0, -60, 0.2, 8.2, 0, top, top + 0.9, { enabled: false })];
   WORLD.dyn.bridgeFix = { mesh: fixMesh, cols: [fixCol, ...fixRails] };
   // stepping stones to a little islet (a Sun Gem spot)
-  for (const [x, z, r] of [[-179, -51.2, 0.85]]) { k.cyl(x, -1.5, z, r, r * 1.1, 2.1, PAL.stoneD, 7, { col: true }); }
-  k.cyl(-180.5, -2, -54.6, 2.0, 2.3, 2.8, PAL.stone, 9, { col: true }); k.sphere(-180.5, 0.8, -54.6, 1.3, '#5ab846', 0, 0.35);
+  for (const [x, z, r] of [[-179, -51.2, 0.85]]) { k0.cyl(x, -1.5, z, r, r * 1.1, 2.1, PAL.stoneD, 7, { col: true }); }
+  k0.cyl(-180.5, -2, -54.6, 2.0, 2.3, 2.8, PAL.stone, 9, { col: true }); k0.sphere(-180.5, 0.8, -54.6, 1.3, '#5ab846', 0, 0.35);
   POINTS.islet = { x: -180.5, y: 0.8, z: -54.6 }; spot('islet', -180.5, -54.6, 0.8);
-  return k.build('bridge', 0, -60, 30);
+  if (BREEZE) k0.build('islet', -180, -54, 10);
+  return (BREEZE ? new Kit() : k).build('bridge', 0, -60, 30);
 }
 
 /* ---- Riverbend Village (190, -150): fishing huts, docks, a boat, Maple's shop (flat roof), lighthouse hut ---- */
@@ -7742,33 +7921,34 @@ function buildRiverbend() {
   // Maple's shop: striped awning, flat roof reachable with crates
   const sx = 205, sz = -166, sy = gy(sx, sz), sr = faceTo(sx, sz, cx, cz);
   cottage(k, sx, sz, sr, { w: 6.5, d: 5, h: 3.4, flat: true, roof: PAL.roofO });
-  for (let i = 0; i < 6; i++) { const p = lp(sx, sz, sr, -2.7 + i * 1.08, 3.2); k.box(p[0], sy + 2.75, p[1], 1.08, 0.18, 1.6, i % 2 ? '#ffffff' : '#ff6f61', sr); }
+  { const ap = lp(sx, sz, sr, 0, 3.2); bzLand('awning', ap[0], sy + 2.75, ap[1], sr); }
+  for (let i = 0; i < 6; i++) { const p = lp(sx, sz, sr, -2.7 + i * 1.08, 3.2); landKit(k).box(p[0], sy + 2.75, p[1], 1.08, 0.18, 1.6, i % 2 ? '#ffffff' : '#ff6f61', sr); }
   const c1 = lp(sx, sz, sr, 3.9, 1.0), c2 = lp(sx, sz, sr, 4.1, -0.6); crate(k, c1[0], sy, c1[1], 1.2, sr); crate(k, c2[0], sy, c2[1], 1.2, sr); crate(k, c2[0], sy + 1.2, c2[1], 1.2, sr + 0.2);
   spot('rbShop', sx, sz, sy + 3.65);
   // Docks over the water and a little pier with a boat
   const dockTop = 2.0;
   for (const [x, z0, z1, w] of [[175, -110, -95, 3], [152, -107, -97.5, 2.4]]) {
-    const n = Math.round((z0 - z1) / 1.1); for (let i = 0; i < n; i++) k.box(x, dockTop - 0.25, z0 - 0.55 - i * 1.1, w, 0.25, 1.0, i % 2 ? '#b98a55' : '#a87a48');
+    const n = Math.round((z0 - z1) / 1.1); for (let i = 0; i < n; i++) slabKit('board', k).box(x, dockTop - 0.25, z0 - 0.55 - i * 1.1, w, 0.25, 1.0, i % 2 ? '#b98a55' : '#a87a48');
     addBox(x, (z0 + z1) / 2, w / 2, (z0 - z1) / 2, 0, dockTop - 0.6, dockTop);
     for (let i = 0; i <= 2; i++) for (const s of [-1, 1]) k.cyl(x + s * (w / 2 - 0.1), -2.5, lerp(z0, z1, i / 2), 0.16, 0.18, dockTop + 2.7, PAL.woodD, 5);
   }
-  const bx = 148.9, bz = -102.2;
-  k.box(bx, -0.3, bz, 2.4, 1.0, 5, '#a0522d', 0, { col: true, top: 0.75 }); k.prism(bx, -0.3, bz + 3.2, 2.4, 1.0, 1.6, '#a0522d', Math.PI / 2);
-  k.box(bx, 0.55, bz, 2.0, 0.2, 4.4, '#d9b27c'); k.cyl(bx, 0.7, bz + 0.6, 0.08, 0.08, 3.4, PAL.woodD, 5); k.box(bx + 0.02, 2.2, bz + 0.6, 0.04, 1.8, 1.4, '#f6efe2');
+  const bx = 148.9, bz = -102.2, kb = landKit(k); bzLand('boat', bx, -0.3, bz, 0);
+  kb.box(bx, -0.3, bz, 2.4, 1.0, 5, '#a0522d', 0, { col: true, top: 0.75 }); kb.prism(bx, -0.3, bz + 3.2, 2.4, 1.0, 1.6, '#a0522d', Math.PI / 2);
+  kb.box(bx, 0.55, bz, 2.0, 0.2, 4.4, '#d9b27c'); kb.cyl(bx, 0.7, bz + 0.6, 0.08, 0.08, 3.4, PAL.woodD, 5); kb.box(bx + 0.02, 2.2, bz + 0.6, 0.04, 1.8, 1.4, '#f6efe2');
   POINTS.boat = { x: bx, y: 0.75, z: bz }; spot('rbBoat', bx, bz - 1.5, 0.75);
-  for (const [x, z, r] of [[196, -104, 0.4], [160, -113, -0.6]]) { const y = gy(x, z); k.box(x, y, z, 1.6, 0.6, 3.6, i2c(x), r); }
+  for (const [x, z, r] of [[196, -104, 0.4], [160, -113, -0.6]]) { const y = gy(x, z); bzLand('skiff', x, y, z, r, { tint: i2c(x) }); landKit(k).box(x, y, z, 1.6, 0.6, 3.6, i2c(x), r); }
   // Lighthouse hut: striped tower with a lamp; stairs spiral up to a flat top
-  const lx = 214, lz = -110, ly = gy(lx, lz);
-  for (let i = 0; i < 4; i++) k.cyl(lx, ly + i * 1.5, lz, 2.0, 2.05, 1.5, i % 2 ? PAL.white : '#e5484d', 10);
+  const lx = 214, lz = -110, ly = gy(lx, lz), kh = landKit(k); bzLand('lighthouse', lx, ly, lz, 0);
+  for (let i = 0; i < 4; i++) kh.cyl(lx, ly + i * 1.5, lz, 2.0, 2.05, 1.5, i % 2 ? PAL.white : '#e5484d', 10);
   addCircle(lx, lz, 2.05, ly, ly + 6, { stand: false });
-  k.cyl(lx, ly + 6, lz, 2.4, 2.4, 0.3, PAL.stoneD, 10); addCircle(lx, lz, 2.4, ly + 6, ly + 6.3);
-  k.cyl(lx, ly + 6.3, lz, 0.7, 0.7, 1.0, PAL.glowY, 8, { glow: true }); halo(lx, ly + 6.8, lz, 5, PAL.glowY); k.cone(lx, ly + 7.3, lz, 0.9, 0.8, '#e5484d', 8);
-  spiralStairs(k, lx, lz, 3.3, ly, ly + 6.3, 15, Math.PI * 0.6, Math.PI * 1.7, PAL.woodL, { depth: 1.2, landing: 1.0 });
+  kh.cyl(lx, ly + 6, lz, 2.4, 2.4, 0.3, PAL.stoneD, 10); addCircle(lx, lz, 2.4, ly + 6, ly + 6.3);
+  k.cyl(lx, ly + 6.3, lz, 0.7, 0.7, 1.0, PAL.glowY, 8, { glow: true }); halo(lx, ly + 6.8, lz, 5, PAL.glowY); kh.cone(lx, ly + 7.3, lz, 0.9, 0.8, '#e5484d', 8);
+  spiralStairs(slabKit('board', k), lx, lz, 3.3, ly, ly + 6.3, 15, Math.PI * 0.6, Math.PI * 1.7, PAL.woodL, { depth: 1.2, landing: 1.0 });
   spot('rbLight', lx + 1.4, lz, ly + 6.3);
   // nets, barrels, lanterns round the square
   for (const [x, z] of [[184, -140], [198, -142], [182, -160]]) lantern(k, x, z);
   barrel(k, 168, -116); barrel(k, 169.2, -117); barrel(k, 179, -114);
-  for (const [x, z, r] of [[160, -118, 0.2], [196, -112, -0.3]]) { const y = gy(x, z); k.box(x, y + 0.9, z, 3, 1.6, 0.06, '#d8cfae', r); k.cyl(x - 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); k.cyl(x + 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); }
+  for (const [x, z, r] of [[160, -118, 0.2], [196, -112, -0.3]]) { const y = gy(x, z), kn = landKit(k); bzLand('netrack', x, y, z, r); kn.box(x, y + 0.9, z, 3, 1.6, 0.06, '#d8cfae', r); kn.cyl(x - 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); kn.cyl(x + 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); }
   return k.build('riverbend', 190, -140, 55);
 }
 function i2c(x) { return ['#4f7fd9', '#e8913a', '#2fa39a'][Math.abs(x | 0) % 3]; }
@@ -7777,10 +7957,11 @@ function i2c(x) { return ['#4f7fd9', '#e8913a', '#2fa39a'][Math.abs(x | 0) % 3];
 function buildCastle() {
   const k = new Kit(), y0 = 9, wallTop = 17, X0 = -200, X1 = -100, Z0 = -228, Z1 = -118, T = 3;
   POINTS.castle = [-150, -150, Math.PI]; POINTS.castleGate = [-150, -100, Math.PI]; POINTS.oakley = [-150, -125]; POINTS.queen = [-150, -215]; POINTS.courtyard = [-150, -185];
-  const wallC = '#cfc7b6', wallD = '#b3aa98', walk = '#a8a090';
+  const wallC = '#cfc7b6', wallD = '#b3aa98', walk = '#a8a090', ks = shellKit('castle', k);
   const wall = (x0, z0, x1, z1) => {
     const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, len = hyp(x1 - x0, z1 - z0), ry = Math.atan2(-(z1 - z0), x1 - x0);
-    k.add(prim('box'), cx, y0 - 1, cz, len, wallTop - y0 + 1, T, 0, ry, 0, wallC); k.add(prim('box'), cx, wallTop - 0.05, cz, len, 0.1, T - 0.3, 0, ry, 0, walk);
+    ks.add(prim('box'), cx, y0 - 1, cz, len, wallTop - y0 + 1, T, 0, ry, 0, wallC); ks.add(prim('box'), cx, wallTop - 0.05, cz, len, 0.1, T - 0.3, 0, ry, 0, walk);
+    if (BREEZE) BZ_PROPS.wall.push({ cx, cz, len, ry, y: y0 - 1, h: wallTop - y0 + 1, T });
     addBox(cx, cz, len / 2, T / 2, ry, y0 - 2, wallTop);
     // merlons on the outer edge, and a low walk-on parapet
     const n = Math.floor(len / 2.2), nx = Math.sin(ry), nz = Math.cos(ry);
@@ -7788,50 +7969,54 @@ function buildCastle() {
   };
   const merlons = (x0, z0, x1, z1, ox, oz) => {
     const len = hyp(x1 - x0, z1 - z0), n = Math.floor(len / 2.2), ry = Math.atan2(-(z1 - z0), x1 - x0);
-    for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = lerp(x0, x1, t) + ox, z = lerp(z0, z1, t) + oz; k.add(prim('box'), x, wallTop, z, 1.1, 0.9, 0.5, 0, ry, 0, wallD); }
+    for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = lerp(x0, x1, t) + ox, z = lerp(z0, z1, t) + oz; slabKit('block', k).box(x, wallTop, z, 1.1, 0.9, 0.5, wallD, ry); }
     addBox((x0 + x1) / 2 + ox, (z0 + z1) / 2 + oz, len / 2, 0.3, ry, wallTop, wallTop + 0.9);
   };
   wall(X0 + 6, Z1, -154, Z1); wall(-146, Z1, X1 - 6, Z1); wall(X0 + 6, Z0, X1 - 6, Z0); wall(X0, Z1 - 6, X0, Z0 + 6); wall(X1, Z1 - 6, X1, Z0 + 6);
   merlons(X0 + 6, Z1, -160, Z1, 0, 1.25); merlons(-140, Z1, X1 - 6, Z1, 0, 1.25); merlons(X0 + 6, Z0, X1 - 6, Z0, 0, -1.25); merlons(X0, Z1 - 6, X0, Z0 + 6, -1.25, 0); merlons(X1, Z1 - 6, X1, Z0 + 6, 1.25, 0);
   // gatehouse with an arch you can walk over
-  for (const s of [-1, 1]) { const gx = -150 + s * 7; k.box(gx, y0 - 1, -117, 6, 13, 10, wallC, 0, { col: true, top: y0 + 12 }); k.box(gx, y0 + 12, -117, 6.4, 0.3, 10.4, wallD, 0); for (let i = 0; i < 3; i++) k.box(gx - 2.2 + i * 2.2, y0 + 12.3, -112.2, 1, 0.9, 0.5, wallD); }
-  k.box(-150, y0 + 6, -118, 8.2, wallTop - y0 - 6, T + 1, wallC, 0, { col: true }); k.box(-150, wallTop - 0.05, -118, 8, 0.1, T - 0.3, walk);
-  for (let i = 0; i < 7; i++) k.box(-153.3 + i * 1.1, y0 + 5.0, -116.8, 0.14, 1.2, 0.14, '#4a4a52');
-  k.box(-150, y0 + 6.2, -115.9, 8.2, 0.4, 0.3, wallD);
+  const kg = landKit(k); bzLand('gatehouse', -150, 0, -117, 0);
+  for (const s of [-1, 1]) { const gx = -150 + s * 7; kg.box(gx, y0 - 1, -117, 6, 13, 10, wallC, 0, { col: true, top: y0 + 12 }); kg.box(gx, y0 + 12, -117, 6.4, 0.3, 10.4, wallD, 0); for (let i = 0; i < 3; i++) kg.box(gx - 2.2 + i * 2.2, y0 + 12.3, -112.2, 1, 0.9, 0.5, wallD); }
+  kg.box(-150, y0 + 6, -118, 8.2, wallTop - y0 - 6, T + 1, wallC, 0, { col: true }); kg.box(-150, wallTop - 0.05, -118, 8, 0.1, T - 0.3, walk);
+  for (let i = 0; i < 7; i++) kg.box(-153.3 + i * 1.1, y0 + 5.0, -116.8, 0.14, 1.2, 0.14, '#4a4a52');
+  kg.box(-150, y0 + 6.2, -115.9, 8.2, 0.4, 0.3, wallD);
   // banners on the gatehouse
-  for (const s of [-1, 1]) { k.box(-150 + s * 7, y0 + 4, -111.9, 2.2, 6, 0.08, PAL.blue); k.sphere(-150 + s * 7, y0 + 8.2, -111.85, 0.6, PAL.gold, 0, 1, 0.2); }
+  for (const s of [-1, 1]) { kg.box(-150 + s * 7, y0 + 4, -111.9, 2.2, 6, 0.08, PAL.blue); kg.sphere(-150 + s * 7, y0 + 8.2, -111.85, 0.6, PAL.gold, 0, 1, 0.2); }
   // four corner towers; the north-east one is tall with stairs spiralling round it
   const towers = [[X0, Z1, 18.2], [X1, Z1, 18.2], [X0, Z0, 18.2], [X1, Z0, 29]];
   towers.forEach(([x, z, h], i) => {
-    k.cyl(x, y0 - 1, z, 6, 6.3, h - y0 + 1, wallC, 14, { col: true, top: h }); k.cyl(x, h - 0.05, z, 5.7, 5.7, 0.1, walk, 14);
+    ks.cyl(x, y0 - 1, z, 6, 6.3, h - y0 + 1, wallC, 14, { col: true, top: h }); ks.cyl(x, h - 0.05, z, 5.7, 5.7, 0.1, walk, 14);
+    if (BREEZE) BZ_PROPS.tower.push({ x, y: y0 - 1, z, h: h - y0 + 1 });
     const open = [Math.atan2(0, x === X0 ? 1 : -1), Math.atan2(z === Z1 ? -1 : 1, 0)]; if (i === 3) open.push(Math.PI * 0.5 - Math.PI * 1.95);
     for (let j = 0; j < 12; j++) {
       const a = j / 12 * Math.PI * 2 + Math.PI / 12; if (open.some(o => Math.abs(wrapA(a - o)) < 0.45)) continue;
-      k.box(x + Math.cos(a) * 5.6, h, z + Math.sin(a) * 5.6, 1.4, 0.9, 0.6, wallD, -a + Math.PI / 2); addBox(x + Math.cos(a) * 5.75, z + Math.sin(a) * 5.75, 1.6, 0.3, -a + Math.PI / 2, h, h + 0.9);
+      slabKit('block', k).box(x + Math.cos(a) * 5.6, h, z + Math.sin(a) * 5.6, 1.4, 0.9, 0.6, wallD, -a + Math.PI / 2); addBox(x + Math.cos(a) * 5.75, z + Math.sin(a) * 5.75, 1.6, 0.3, -a + Math.PI / 2, h, h + 0.9);
     }
     k.cyl(x, h, z, 0.1, 0.1, 6, '#6b6b72', 5); k.box(x + 1.4, h + 4.3, z, 2.6, 1.6, 0.08, PAL.gold);
     for (let j = 0; j < 4; j++) { const a = j / 4 * Math.PI * 2 + 0.6; k.box(x + Math.cos(a) * 6.25, y0 + 6 + (i % 2) * 2, z + Math.sin(a) * 6.25, 0.9, 1.4, 0.2, '#3b3f55', -a + Math.PI / 2); }
     spot('castleT' + (i + 1), x, z, h);
   });
-  spiralStairs(k, X1, Z0, 7.6, wallTop, 29, 28, Math.PI * 0.5, -Math.PI * 1.95, wallC, { depth: 1.6, landing: 1.2, support: false });
+  spiralStairs(slabKit('block', k), X1, Z0, 7.6, wallTop, 29, 28, Math.PI * 0.5, -Math.PI * 1.95, wallC, { depth: 1.6, landing: 1.2, support: false });
   POINTS.tallTower = { x: X1, y: 29, z: Z0 };
   // stairs from the courtyard up to the wall walk (inside the south wall, west of the gate)
-  straightStairs(k, -158, -120.75, -Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
-  straightStairs(k, -142, -120.75, Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
+  straightStairs(slabKit('block', k), -158, -120.75, -Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
+  straightStairs(slabKit('block', k), -142, -120.75, Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
   // keep: an open hall against the north wall, roof you can stand on, two little towers, throne on a dais
   const kz0 = Z0 + 1.5, kz1 = -204;
-  for (const s of [-1, 1]) k.box(-150 + s * 17, y0 - 0.5, (kz0 + kz1) / 2, 2, 14.5, kz1 - kz0, wallC, 0, { col: true });
-  k.box(-150, y0 + 9, (kz0 + kz1) / 2 - 1, 36, 1, kz1 - kz0 + 2, wallD, 0, { col: true, stand: false, top: y0 + 13 }); k.prism(-150, y0 + 10, (kz0 + kz1) / 2 - 1, 36.5, 3.2, kz1 - kz0 + 2.5, PAL.roofB, 0);
-  for (let i = 0; i < 5; i++) { const x = -162 + i * 6; k.cyl(x, y0, kz1 + 0.3, 0.6, 0.7, 9, PAL.stoneL, 8, { col: true, stand: false }); }
-  for (const s of [-1, 1]) { k.cyl(-150 + s * 17, y0, kz1, 2.8, 3, 18, wallC, 10, { col: true, stand: false }); k.cone(-150 + s * 17, y0 + 18, kz1, 3.4, 5, PAL.roofB, 10); }
+  const kk = landKit(k); bzLand('keep', -150, 0, -172, 0);
+  for (const s of [-1, 1]) kk.box(-150 + s * 17, y0 - 0.5, (kz0 + kz1) / 2, 2, 14.5, kz1 - kz0, wallC, 0, { col: true });
+  kk.box(-150, y0 + 9, (kz0 + kz1) / 2 - 1, 36, 1, kz1 - kz0 + 2, wallD, 0, { col: true, stand: false, top: y0 + 13 }); kk.prism(-150, y0 + 10, (kz0 + kz1) / 2 - 1, 36.5, 3.2, kz1 - kz0 + 2.5, PAL.roofB, 0);
+  for (let i = 0; i < 5; i++) { const x = -162 + i * 6; kk.cyl(x, y0, kz1 + 0.3, 0.6, 0.7, 9, PAL.stoneL, 8, { col: true, stand: false }); }
+  for (const s of [-1, 1]) { kk.cyl(-150 + s * 17, y0, kz1, 2.8, 3, 18, wallC, 10, { col: true, stand: false }); kk.cone(-150 + s * 17, y0 + 18, kz1, 3.4, 5, PAL.roofB, 10); }
   k.box(-150, y0, -220, 8, 0.6, 5, PAL.stoneL, 0, { col: true }); k.box(-150, y0, -212, 2.6, 0.05, 16, '#b23a48');
   k.box(-150, y0 + 0.6, -221.5, 1.8, 0.8, 1.4, '#b23a48', 0, { col: true }); k.box(-150, y0 + 0.6, -222.3, 1.8, 3.2, 0.3, PAL.gold); k.sphere(-150, y0 + 3.9, -222.3, 0.35, PAL.gold, 0);
   for (const s of [-1, 1]) for (const z of [-224, -214]) k.box(-150 + s * 15.9, y0 + 3, z, 0.08, 5, 2, PAL.blue);
   // stables and barracks along the inner walls (flat roofs)
-  k.box(-193, y0, -160, 8, 4, 20, '#a87a48', 0, { col: true }); k.box(-193, y0 + 4, -160, 8.6, 0.3, 20.6, PAL.roofR, 0, { col: true });
-  k.box(-107, y0, -170, 8, 4.5, 24, '#d9cfbb', 0, { col: true }); k.box(-107, y0 + 4.5, -170, 8.6, 0.3, 24.6, PAL.roofB, 0, { col: true });
+  kk.box(-193, y0, -160, 8, 4, 20, '#a87a48', 0, { col: true }); kk.box(-193, y0 + 4, -160, 8.6, 0.3, 20.6, PAL.roofR, 0, { col: true });
+  kk.box(-107, y0, -170, 8, 4.5, 24, '#d9cfbb', 0, { col: true }); kk.box(-107, y0 + 4.5, -170, 8.6, 0.3, 24.6, PAL.roofB, 0, { col: true });
   for (const [x, z] of [[-160, -140], [-140, -140], [-170, -200], [-130, -200]]) lantern(k, x, z, y0);
   barrel(k, -188, -132, y0); barrel(k, -186.8, -131.4, y0); crate(k, -112, y0, -136, 1.2, 0.2); crate(k, -113.3, y0, -137.2, 1.2, -0.3);
+  shellBuild('castle', -150, -172, 85);
   return k.build('castle', -150, -172, 85);
 }
 
@@ -7850,7 +8035,7 @@ function buildPass() {
       if (pts.length > 1) fenceLine(k, pts, { h: 1.1, color: '#8a6440' });
     }
   }
-  for (const [x, z, r] of [[24, -210, 0.3], [70, -236, -0.6], [10, -258, 2.2]]) { const y = gy(x, z); k.cyl(x, y, z, 0.12, 0.14, 2.2, PAL.woodD, 5, { col: true }); k.box(x, y + 1.7, z, 1.4, 0.4, 0.1, PAL.woodL, r); }
+  for (const [x, z, r] of [[24, -210, 0.3], [70, -236, -0.6], [10, -258, 2.2]]) { const y = gy(x, z), ks = landKit(k); bzLand('sign', x, y, z, r); ks.cyl(x, y, z, 0.12, 0.14, 2.2, PAL.woodD, 5, { col: true }); ks.box(x, y + 1.7, z, 1.4, 0.4, 0.1, PAL.woodL, r); }
   for (const [x, z, s] of [[30, -226, 1.2], [8, -248, 1.0], [74, -262, 1.3], [40, -276, 1.1]]) k.sphere(x, gy(x, z) + 0.3, z, s, PAL.stoneD, 0, 0.7);
   spot('pass1', 72, -236); spot('pass2', 6, -262); spot('pass3', 64, -284); spot('pass4', 30, -292.5);
   return k.build('pass', 35, -255, 70);
@@ -7863,8 +8048,9 @@ function buildFortress() {
   POINTS.arenaCentre = [0, -355]; POINTS.cage = { x: 0, y: Y + 25, z: -386 }; POINTS.northWall = { x: 0, y: Y + 14, z: -384 };
   POINTS.crystals = [[-38, -318], [38, -318], [0, -322]]; POINTS.pillars = [];
   // The Gloom Gate (at the pass top), its doors and the drawbridge are separate meshes (they move)
-  for (const s of [-1, 1]) { k.box(s * 7.5, Y - 1, -294, 5, 15, 5, dark, 0, { col: true, stand: false }); k.cone(s * 7.5, Y + 14, -294, 3.6, 4, mid, 4, { ry: Math.PI / 4 }); k.sphere(s * 7.5, Y + 18.4, -294, 0.6, PAL.glowP, 0, 1, 1, { glow: true }); }
-  k.box(0, Y + 8.5, -294, 10.2, 5.5, 3, dark, 0, { col: true }); for (let i = 0; i < 5; i++) k.box(-4 + i * 2, Y + 14, -294, 1, 0.9, 3, mid);
+  for (const s of [-1, 1]) { bzLand('fgate', s * 7.5, Y - 1, -294, 0); landKit(k).box(s * 7.5, Y - 1, -294, 5, 15, 5, dark, 0, { col: true, stand: false }); landKit(k).cone(s * 7.5, Y + 14, -294, 3.6, 4, mid, 4, { ry: Math.PI / 4 }); k.sphere(s * 7.5, Y + 18.4, -294, 0.6, PAL.glowP, 0, 1, 1, { glow: true }); }
+  const wk = slabKit('fwall', k), bk = slabKit('block', k);
+  wk.box(0, Y + 8.5, -294, 10.2, 5.5, 3, dark, 0, { col: true }); for (let i = 0; i < 5; i++) bk.box(-4 + i * 2, Y + 14, -294, 1, 0.9, 3, mid);
   k.box(0, Y + 10.5, -292.45, 2.2, 2.2, 0.1, PAL.glowP, Math.PI / 4, { glow: true });
   for (const s of [-1, 1]) k.box(s * 7.5, Y + 3, -291.45, 1.8, 6, 0.08, PAL.purple);
   const gate = new Kit();
@@ -7886,12 +8072,12 @@ function buildFortress() {
   for (const s of [-1, 1]) addBox(s * 41.7, -295.0, 38.3, 0.3, 0, Y - 3, Y + 6, { kind: 'rail' });
   for (const s of [-1, 1]) { k.cyl(s * 3.6, Y - 0.2, -296.2, 0.25, 0.25, 3, '#3b2a1e', 6); k.cyl(s * 3.6, Y - 0.2, -310.4, 0.3, 0.3, 9, '#3b2a1e', 6); }
   // Fortress walls: south (archway), sides, north; corner towers with glowing windows
-  const W = (x, z, sx, sz, h) => k.box(x, Y - 2, z, sx, h + 2, sz, dark, 0, { col: true });
-  W(-33, -311, 54, 3, 14); W(33, -311, 54, 3, 14); k.box(0, Y + 9, -311, 12, 5, 3, dark, 0, { col: true });
-  for (let i = 0; i < 26; i++) { const x = -58 + i * 4.6; k.box(x, Y + 14, -312.2, 1.6, 1.2, 0.8, mid); }
+  const W = (x, z, sx, sz, h) => wk.box(x, Y - 2, z, sx, h + 2, sz, dark, 0, { col: true });
+  W(-33, -311, 54, 3, 14); W(33, -311, 54, 3, 14); wk.box(0, Y + 9, -311, 12, 5, 3, dark, 0, { col: true });
+  for (let i = 0; i < 26; i++) { const x = -58 + i * 4.6; bk.box(x, Y + 14, -312.2, 1.6, 1.2, 0.8, mid); }
   W(-62, -351, 3, 80, 14); W(62, -351, 3, 80, 14); W(0, -392, 127, 3, 14);
   for (const [x, z] of [[-62, -311], [62, -311], [-62, -392], [62, -392]]) {
-    k.cyl(x, Y - 2, z, 5, 5.4, 24, mid, 10, { col: true, stand: false }); k.cone(x, Y + 22, z, 6, 9, dark, 10);
+    bzLand('ftower', x, Y - 2, z, 0); landKit(k).cyl(x, Y - 2, z, 5, 5.4, 24, mid, 10, { col: true, stand: false }); landKit(k).cone(x, Y + 22, z, 6, 9, dark, 10);
     for (let j = 0; j < 3; j++) { const a = j * 2.1 + 0.4; k.box(x + Math.cos(a) * 5.1, Y + 9 + j * 4, z + Math.sin(a) * 5.1, 0.9, 1.5, 0.2, PAL.glowP, -a + Math.PI / 2, { glow: true }); }
   }
   for (let i = 0; i < 6; i++) { const x = -50 + i * 20; if (Math.abs(x) < 8) continue; k.box(x, Y + 4, -309.4, 2.4, 8, 0.1, PAL.purple); k.box(x, Y + 8.6, -309.35, 1, 1, 0.1, PAL.glowP, Math.PI / 4, { glow: true }); }
@@ -7901,34 +8087,34 @@ function buildFortress() {
   for (const [x, z] of [[-20, -314], [20, -314], [-50, -324], [50, -324]]) { k.cyl(x, Y, z, 0.5, 0.35, 1.4, mid, 6, { col: true }); k.cone(x, Y + 1.4, z, 0.6, 1.0, PAL.glowP, 6, { glow: true }); }
   spot('fortW', -46, -322, Y); spot('fortE', 46, -322, Y);
   // keep steps up to the arena door, the door itself is separate (it opens in M10)
-  for (let i = 0; i < 3; i++) k.box(0, Y - 0.3, -321.6 - i * 0.9, 12, 0.3 + 0.4 * (i + 1), 0.95, light, 0, { col: true });
-  k.box(0, Y - 0.3, -326, 12, 1.5, 3.2, light, 0, { col: true });
-  for (let i = 0; i < 3; i++) k.box(0, Y - 0.3, -328.9 + 0 - i * 0.9, 9, 1.1 - 0.4 * i, 0.95, light, 0, { col: true });
+  for (let i = 0; i < 3; i++) bk.box(0, Y - 0.3, -321.6 - i * 0.9, 12, 0.3 + 0.4 * (i + 1), 0.95, light, 0, { col: true });
+  bk.box(0, Y - 0.3, -326, 12, 1.5, 3.2, light, 0, { col: true });
+  for (let i = 0; i < 3; i++) bk.box(0, Y - 0.3, -328.9 + 0 - i * 0.9, 9, 1.1 - 0.4 * i, 0.95, light, 0, { col: true });
   // Throne Courtyard: tiled floor (terrain), rim wall with a door gap, four pillars, the north tower
   const AX = 0, AZ = -355, R = 28;
   for (let i = 0; i < 40; i++) {
     const a0 = i / 40 * Math.PI * 2, a1 = (i + 1) / 40 * Math.PI * 2, am = (a0 + a1) / 2;
     if (Math.abs(wrapA(am - Math.PI / 2)) < 0.16) continue;
     const x = AX + Math.cos(am) * (R + 0.8), z = AZ + Math.sin(am) * (R + 0.8), len = 2 * (R + 0.8) * Math.sin(Math.PI / 40) + 0.1;
-    k.box(x, Y - 1, z, len, 5, 1.6, mid, -am + Math.PI / 2, { col: true });
-    if (i % 2) k.box(x, Y + 4, z, len * 0.5, 0.8, 1.6, light, -am + Math.PI / 2);
+    wk.box(x, Y - 1, z, len, 5, 1.6, mid, -am + Math.PI / 2, { col: true });
+    if (i % 2) bk.box(x, Y + 4, z, len * 0.5, 0.8, 1.6, light, -am + Math.PI / 2);
   }
-  for (const s of [-1, 1]) { k.box(s * 4.6, Y - 1, -327.3, 1.6, 9, 2.2, dark, 0, { col: true }); k.sphere(s * 4.6, Y + 8.6, -327.3, 0.55, PAL.glowP, 0, 1, 1, { glow: true, halo: true }); }
-  k.box(0, Y + 7, -327.3, 10.8, 1.2, 2.2, dark, 0, { col: true });
+  for (const s of [-1, 1]) { wk.box(s * 4.6, Y - 1, -327.3, 1.6, 9, 2.2, dark, 0, { col: true }); k.sphere(s * 4.6, Y + 8.6, -327.3, 0.55, PAL.glowP, 0, 1, 1, { glow: true, halo: true }); }
+  wk.box(0, Y + 7, -327.3, 10.8, 1.2, 2.2, dark, 0, { col: true });
   const door = new Kit(); for (const s of [-1, 1]) { door.box(s * 1.9, 0, 0, 3.7, 7, 0.5, '#2b2236'); door.box(s * 1.9, 3.2, 0.28, 2.4, 0.3, 0.06, '#4b3b5e'); door.box(s * 1.0, 3.6, 0.3, 0.4, 0.4, 0.05, PAL.glowP, 0.7, { glow: true }); }
   const doorG = new THREE.Group(); doorG.add(new THREE.Mesh(door.geometry('lit'), MAT.lit), new THREE.Mesh(door.geometry('glow'), MAT.glow)); doorG.position.set(0, Y - 0.3 + 1.2, -327.4); scene.add(doorG);
   const doorCol = addBox(0, -327.4, 3.8, 0.5, 0, Y - 1, Y + 8);
   WORLD.dyn.arenaDoor = { group: doorG, col: doorCol, k: 0 };
   for (let i = 0; i < 4; i++) {
     const a = Math.PI / 4 + i * Math.PI / 2, x = AX + Math.cos(a) * 16, z = AZ + Math.sin(a) * 16; POINTS.pillars.push([x, z]);
-    k.cyl(x, Y - 0.2, z, 1.5, 1.6, 8.2, light, 10, { col: true }); k.box(x, Y + 8, z, 3.8, 0.8, 3.8, mid, a); k.box(x, Y - 0.2, z, 3.8, 0.6, 3.8, mid, a);
+    bzLand('fpillar', x, Y - 0.2, z, a); landKit(k).cyl(x, Y - 0.2, z, 1.5, 1.6, 8.2, light, 10, { col: true }); landKit(k).box(x, Y + 8, z, 3.8, 0.8, 3.8, mid, a); landKit(k).box(x, Y - 0.2, z, 3.8, 0.6, 3.8, mid, a);
     k.sphere(x, Y + 9.2, z, 0.5, PAL.glowP, 0, 1, 1, { glow: true, halo: true });
   }
   const NX = 0, NZ = -386;
-  k.cyl(NX, Y - 2, NZ, 6, 6.8, 38, mid, 12, { col: true, stand: false }); k.cone(NX, Y + 36, NZ, 7.4, 18, dark, 12); k.sphere(NX, Y + 54.5, NZ, 1.6, PAL.glowP, 1, 1, 1, { glow: true, halo: true });
+  bzLand('fspire', NX, Y - 2, NZ, 0); landKit(k).cyl(NX, Y - 2, NZ, 6, 6.8, 38, mid, 12, { col: true, stand: false }); landKit(k).cone(NX, Y + 36, NZ, 7.4, 18, dark, 12); k.sphere(NX, Y + 54.5, NZ, 1.6, PAL.glowP, 1, 1, 1, { glow: true, halo: true });
   for (let j = 0; j < 4; j++) k.box(NX + (j - 1.5) * 2.2, Y + 18 + (j % 2) * 4, NZ + 6.1, 0.9, 1.8, 0.2, PAL.glowP, 0, { glow: true });
-  k.box(NX, Y + 26, NZ + 6.2, 6, 0.6, 3, dark); k.beam(NX, Y + 26.3, NZ + 7.4, NX, Y + 30, NZ + 6.5, 0.4, 0.4, dark);
-  for (let i = 0; i < 8; i++) k.box(-35 + i * 10, Y + 13.2, -390.4, 1.6, 1.2, 0.8, mid);
+  landKit(k).box(NX, Y + 26, NZ + 6.2, 6, 0.6, 3, dark); landKit(k).beam(NX, Y + 26.3, NZ + 7.4, NX, Y + 30, NZ + 6.5, 0.4, 0.4, dark);
+  for (let i = 0; i < 8; i++) bk.box(-35 + i * 10, Y + 13.2, -390.4, 1.6, 1.2, 0.8, mid);
   return k.build('fortress', 0, -340, 95);
 }
 
@@ -7971,7 +8157,7 @@ function buildWaystones() {
 /* ---- Small things all over: crossroads signposts ---- */
 function buildMisc() {
   const k = new Kit();
-  for (const [x, z] of [[4, 154], [4, -111], [6, 4]]) { const y = gy(x, z); k.cyl(x, y, z, 0.12, 0.14, 2.6, PAL.woodD, 5, { col: true }); k.box(x, y + 2.0, z, 1.6, 0.42, 0.1, PAL.woodL, 0.6); k.box(x, y + 1.5, z, 1.5, 0.4, 0.1, PAL.woodL, -0.7); k.box(x, y + 1.0, z, 1.4, 0.38, 0.1, PAL.woodL, 1.9); }
+  for (const [x, z] of [[4, 154], [4, -111], [6, 4]]) { const y = gy(x, z), ks = landKit(k); bzLand('signpost', x, y, z, 0); ks.cyl(x, y, z, 0.12, 0.14, 2.6, PAL.woodD, 5, { col: true }); ks.box(x, y + 2.0, z, 1.6, 0.42, 0.1, PAL.woodL, 0.6); ks.box(x, y + 1.5, z, 1.5, 0.4, 0.1, PAL.woodL, -0.7); ks.box(x, y + 1.0, z, 1.4, 0.38, 0.1, PAL.woodL, 1.9); }
   return k.build('misc', 0, 0, 0, { always: true });
 }
 
@@ -7987,7 +8173,7 @@ WORLD.setArenaDoor = k => { const d = WORLD.dyn.arenaDoor; if (!d) return; d.k =
 // InstancedMesh buffers (typed-array writes, no allocation) and count is set. One draw call per kind.
 // Builders can add kinds (e.g. breakable crates): SCATTER.addKind(name, geometry, cap, opts); SCATTER.add(name, x, y, z,
 // ry, s, sy, hex); after S.ready call SCATTER.pack(name). SCATTER.hide(name, i) / show(name, i) toggle one instance.
-const SC_CELL = 50, SC_N = 16, SC_F = 10, TREE_BLOB = { tree: 2.1, pine: 1.9 };
+const SC_CELL = 50, SC_N = 16, SC_F = 10, TREE_BLOB = { tree: 2.1, pine: 1.9 }, WHITE_T = new THREE.Color(1, 1, 1);
 const SCATTER = {
   kinds: {}, list: [], ready: false, lastX: 1e9, lastZ: 1e9,
   addKind(name, geo, cap, opts) {
@@ -8002,9 +8188,10 @@ const SCATTER = {
     this.kinds[name] = k; this.list.push(k); return k;
   },
   add(name, x, y, z, ry, s, sy, hex) {
-    const k = this.kinds[name]; C2.set(toonCol(hex));
+    const k = this.kinds[name]; C2.set(toonCol(hex)); if (BREEZE && name === 'tree') C2.lerp(WHITE_T, 0.7);   // breeze: the model's painted greens, gently varied
     k.raw.push(x, y, z, ry, s, sy || 1, C2.r, C2.g, C2.b, wrnd());
-    if (TOON && TREE_BLOB[name] && this.kinds.tblob) this.add('tblob', x, y + 0.08, z, 0, s * TREE_BLOB[name], 1, '#ffffff');   // cartoon: a contact blob under it
+    if (TOON && TREE_BLOB[name] && this.kinds.tblob) this.add('tblob', x, y + 0.08, z, 0, s * TREE_BLOB[name], 1, '#ffffff');
+    if (BREEZE && TREE_BLOB[name] && this.kinds.tblob) { const r = s * TREE_BLOB[name], a = Math.atan2(-SUN_OFFSET.z, -SUN_OFFSET.x); this.add('tblob', x + Math.cos(a) * r * 0.9, y + 0.08, z + Math.sin(a) * r * 0.9, -a, r, 1, '#ffffff'); }   // breeze: a cel shadow shape, away from the sun   // cartoon: a contact blob under it
   },
   pack(name) {
     const k = this.kinds[name], raw = k.raw, n = raw.length / SC_F, cellOf = new Int32Array(n), counts = new Int32Array(SC_N * SC_N + 1);
@@ -8095,12 +8282,13 @@ function mergedGeo(parts) {
   for (const [g, x, y, z, sx, sy, sz, c, rz] of parts) k.add(g, x, y, z, sx, sy, sz, 0, 0, rz || 0, c);
   return k.geometry('lit');
 }
-function openCone(seg) { const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 65); return g; }
-function openCyl(seg, top) { const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 75); return g; }
+function openCone(seg) { if (ROUND && seg >= 5) seg = 10; const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (ROUND) creaseNormals(g, 65); return g; }
+function openCyl(seg, top) { if (ROUND && seg >= 5) seg = 9; const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (ROUND) creaseNormals(g, 75); return g; }
 function buildScatterKinds() {
   const trunk = openCyl(5, 0.75), ico = prim('sph:0'), cone6 = openCone(6), cone3 = openCone(3), octa = (() => { const g = new THREE.OctahedronGeometry(1, 0).toNonIndexed(); g.computeVertexNormals(); return g; })();
   // cartoon: round, smooth-shaded crowns and bushes (one clean shade band), soft contact blobs under them
-  const soft = TOON ? MAT.lit : undefined;
+  const soft = ROUND ? MAT.lit : undefined;
+  if (BREEZE) SCATTER.addKind('tblob', new THREE.CircleGeometry(1, 16).scale(1.45, 1, 1).rotateX(-Math.PI / 2), 2600, { material: new THREE.MeshBasicMaterial({ color: '#203a86', transparent: true, opacity: 0.32, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }), receive: false, fade: true, crown: 1.05, hs: 0.48, radius: 0.5 });
   if (TOON) SCATTER.addKind('tblob', new THREE.CircleGeometry(1, 12).rotateX(-Math.PI / 2), 2600, { material: MAT.groundBlob, receive: false, fade: true, crown: 1.05, hs: 0.48, radius: 0.55 });   // fades with its tree
   SCATTER.addKind('tree', mergedGeo([[trunk, 0, -0.3, 0, 0.28, 2.1, 0.28, '#8a5a34'], [ico, 0, 2.6, 0, 1.75, 1.6, 1.75, '#ffffff'], [ico, 0.55, 3.55, 0.3, 1.15, 1.05, 1.15, '#f0fff0']]), 1100, { fade: true, crown: 2.2, material: soft });
   SCATTER.addKind('pine', mergedGeo([[trunk, 0, -0.3, 0, 0.24, 1.6, 0.24, '#7a4e2c'], [cone6, 0, 1.0, 0, 1.55, 2.3, 1.55, '#ffffff'], [cone6, 0, 2.3, 0, 1.2, 2.0, 1.2, '#f2fff2'], [cone6, 0, 3.4, 0, 0.82, 1.7, 0.82, '#e8ffe8']]), 900, { material: soft, fade: true, crown: 1.8 });
@@ -8210,7 +8398,7 @@ const TIER = id => (id ? id.split('.')[1] : null);   // 'armor.iron.head' -> 'ir
 function geoFrom(parts) { const k = new Kit(); for (const p of parts) k.add(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7] || 0, p[8] || 0, p[9] || 0, p[10], p[11]); return k; }
 function kitGeo(k, which) { return k.geometry(which || 'lit'); }
 function buildGearGeometries() {
-  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), c8 = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4');
+  const box = CBOX(true), s1 = prim('sph:1'), s2 = prim('sph:2'), c8 = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4');
   // Helmets (around the head centre at y = 0.34 in head-group space)
   HEROGEO.head.leather = kitGeo(geoFrom([[s2, 0, 0.42, -0.01, 0.4, 0.3, 0.41, 0, 0, 0, '#8b5a2b'], [box, 0, 0.3, 0.02, 0.84, 0.06, 0.84, 0, 0, 0, '#6e4422'], [box, 0.28, 0.6, -0.08, 0.04, 0.42, 0.12, 0.3, 0, -0.5, '#ff5c5c']]));
   HEROGEO.head.iron = kitGeo(geoFrom([[s2, 0, 0.4, 0, 0.415, 0.36, 0.42, 0, 0, 0, '#c9d1dc'], [c8, 0, 0.26, 0, 0.43, 0.07, 0.43, 0, 0, 0, '#9aa4b2'], [box, 0, 0.66, -0.06, 0.07, 0.28, 0.42, 0, 0, 0, '#3e7bfa'], [box, 0, 0.42, 0.37, 0.09, 0.3, 0.06, 0, 0, 0, '#9aa4b2']]));
@@ -8250,7 +8438,7 @@ function buildGearGeometries() {
 }
 /** Look-dependent geometry: head (skin, face, hair), torso (outfit), arms (sleeves + hands), legs (per boots tier). */
 function buildLookGeometries(look) {
-  const box = CBOX(), cone = prim('cone:6');
+  const box = CBOX(true), cone = prim('cone:6');
   const skin = LOOKS.skin[look.skin] || LOOKS.skin[1], hairC = LOOKS.hairColor[look.hairColor] || LOOKS.hairColor[1], fit = LOOKS.outfit[look.outfit] || LOOKS.outfit[1];
   const dark = '#' + col(fit).multiplyScalar(0.62).getHexString(), skinD = '#' + col(skin).multiplyScalar(0.85).getHexString();
   const out = {};
@@ -8400,12 +8588,14 @@ function buildHeroModel() {
   for (const s of [-1, 1]) { ek.add(s1, s * 0.12, 0, 0, 0.075, 0.095, 0.04, 0, 0, 0, '#ffffff'); ek.add(s1, s * 0.12, -0.01, 0.03, 0.05, 0.065, 0.025, 0, 0, 0, '#2b1b0e'); ek.add(s1, s * 0.12 + 0.02, 0.02, 0.05, 0.018, 0.018, 0.01, 0, 0, 0, '#ffffff'); }
   const eyeM = mk(ek.geometry('lit'), MAT.face); eyeM.castShadow = false; eyeM.userData.noInk = true; eyes.add(eyeM);
   scene.add(root);
+  if (BREEZE) { head.scale.setScalar(1.32); head.position.y = 0.27; eyes.scale.set(1.25, 1.4, 1); torsoM.scale.set(0.9, 0.95, 0.92); }   // storybook: a big round head, big eyes, a smaller body
   hero.rig = { root, body, legL, legR, legLM, legRM, torso, torsoM, badgeM, chest, cape, capeM, armL, armR, armLM, armRM, hand, sword, swordGlow, shield, shieldGlow, head, headM, faceM, hair, helmet, hat, eyes };
 }
 const EMPTY_GEO = new THREE.BufferGeometry();
 /** Rebuild the look-dependent parts (New game / Continue / hero maker). */
 function applyLook(look) {
   const r = hero.rig; if (!r) return;
+  if (BZM.hero) bzHeroLook(look);
   const old = r.lookGeo; const g = buildLookGeometries(look); r.lookGeo = g;
   r.headM.geometry = g.head; r.faceM.geometry = g.face; r.hair.geometry = g.hair; r.torsoM.geometry = g.torso; r.badgeM.geometry = g.badge; r.armLM.geometry = g.arm; r.armRM.geometry = g.arm; r.capeM.geometry = g.cape;
   if (old) for (const k of Object.keys(old)) old[k].dispose();
@@ -8482,6 +8672,10 @@ const BLOBS = {
   begin() { this.n = 0; },
   add(x, y, z, r) {
     if (!this.mesh || this.n >= 64 || renderer.shadowMap.enabled) return;
+    if (BREEZE) {   // breeze without a shadow map (phones): a hard-edged cel shadow, stretched away from the sun
+      const sx = -SUN_OFFSET.x, sz = -SUN_OFFSET.z, l = Math.hypot(sx, sz) || 1; V1.set(x + sx / l * r * 0.55, y + 0.04, z + sz / l * r * 0.55); Q1.setFromAxisAngle(UP, Math.atan2(-sz, sx)); V2.set(r * 1.6, 1, r * 1.05);
+      M4.compose(V1, Q1, V2).toArray(this.mesh.instanceMatrix.array, this.n * 16); this.n++; return;
+    }
     const a = this.mesh.instanceMatrix.array, m = this.n * 16;
     a[m] = r; a[m + 1] = 0; a[m + 2] = 0; a[m + 3] = 0; a[m + 4] = 0; a[m + 5] = 1; a[m + 6] = 0; a[m + 7] = 0; a[m + 8] = 0; a[m + 9] = 0; a[m + 10] = r; a[m + 11] = 0; a[m + 12] = x; a[m + 13] = y + 0.04; a[m + 14] = z; a[m + 15] = 1;
     this.n++;
@@ -11228,6 +11422,7 @@ function personKits(o) {
   // a hood is a shell behind the face (its opening frames the face; its band used to cross the eyes like a mask)
   if (hat === 'hood') { H.add(s2, 0, 0.47, -0.1, 0.44, 0.39, 0.42, 0, 0, 0, hcol); for (let i = -1; i <= 1; i++) H.add(s1, i * 0.11, 0.545 - Math.abs(i) * 0.02, 0.255, 0.1, 0.055, 0.08, 0, 0, i * -0.35, hc); H.add(cone, 0, 0.55, -0.42, 0.14, 0.35, 0.14, -2.1, 0, 0, hcol); }
   if (o.clip) { for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; H.add(s1, 0.32 + Math.cos(a) * 0.07, 0.55 + Math.sin(a) * 0.07, 0.05, 0.05, 0.05, 0.03, 0, 0, 0, '#ffd23f'); } H.add(s1, 0.32, 0.55, 0.07, 0.045, 0.045, 0.03, 0, 0, 0, '#7a4a24'); }
+  if (BREEZE) for (const k of [K.head, K.face]) for (const b of [k.b.lit, k.b.glow]) for (let i = 0; i < b.p.length; i++) b.p[i] *= 1.3;   // breeze: a bigger round head (from the neck)
   return K;
 }
 /** Make the meshes of a person from personKits: { root, body, head, armL, armR, legL, legR }. */
@@ -12400,7 +12595,7 @@ function buildBossWorld() {
   BOSS.iStaff = INTERACT.add({ id: 'bossStaff', x: 0, z: 0, y: AY, r: 3, label: 'btn.use', icon: '✨', when: () => BOSS.active && BOSS.sw.mode === 'dazed', use: () => bossFinale() });
   INTERACT.add({ id: 'cage', x: CAGE.x, z: CAGE.z, y: AY, r: 3.2, label: 'btn.open', icon: '🔓', when: () => questActive('m11', 1) && CAGE.k >= 1, use: () => endingStart() });
   // the rematch stone (after the story) by the courtyard door
-  const rk = new Kit(); rk.box(7.5, AY - 0.3, -337, 1.4, 2.4, 0.9, PAL.stone, 0.3, { col: true, stand: false }); rk.box(7.5, AY + 1.0, -336.5, 0.6, 0.6, 0.1, PAL.glowP, 0.3, { glow: true }); rk.box(7.5, AY + 2.05, -337, 1.6, 0.25, 1.1, PAL.stoneD, 0.3);
+  const rk = new Kit(), rs = slabKit('block', rk); rs.box(7.5, AY - 0.3, -337, 1.4, 2.4, 0.9, PAL.stone, 0.3, { col: true, stand: false }); rk.box(7.5, AY + 1.0, -336.5, 0.6, 0.6, 0.1, PAL.glowP, 0.3, { glow: true }); rs.box(7.5, AY + 2.05, -337, 1.6, 0.25, 1.1, PAL.stoneD, 0.3);
   rk.build('rematch', 7.5, -337, 6);
   INTERACT.add({ id: 'rematch', x: 7.5, z: -335.6, y: AY, r: 2.6, label: 'btn.use', icon: '⚔️', when: () => G.flags.ended && !BOSS.active && !CUT.on, use: () => UI.confirm(t('rematch'), '😈', () => bossBegin(true)) });
   INTERACT.add({ id: 'npc:snarlwick', x: 0, z: 0, r: 2.6, label: 'btn.talk', icon: '💬', when: () => !BOSS.active && BOSS.sw && BOSS.sw.mode === 'pj' && !CUT.on, use: () => npcSay('snarlwick', ['d.snarl.idle']) });
@@ -13352,7 +13547,7 @@ Object.assign(TEST_EXT, {
     if (CUT.on) CUT.skip(); bossBegin(false); if (CUT.on) CUT.skip();
     return TEST_EXT.boss();
   },
-  boss() { const c = BOSS.cd, s = BOSS.sw; return { active: BOSS.active, done: BOSS.done, phase: BOSS.phase, crystals: BOSS.crystals, collarHits: BOSS.cHits, bolts: BOSS.bolts, bonks: BOSS.bonks, snarlHits: BOSS.swHits, cinder: { mode: c.mode, x: +c.x.toFixed(1), y: +c.y.toFixed(1), z: +c.z.toFixed(1), color: +c.color.toFixed(2) }, snarlwick: { mode: s.mode, x: +s.x.toFixed(1), z: +s.z.toFixed(1), visible: s.vis > 0.5 }, projectiles: BP.filter(p => p.on).map(p => ({ kind: p.kind, ret: p.ret, x: +p.x.toFixed(1), z: +p.z.toFixed(1) })), wave: BOSS.wave ? +BOSS.wave.r.toFixed(1) : null, helped: BOSS.enc.helped, kos: BOSS.enc.kos }; },
+  boss() { const c = BOSS.cd, s = BOSS.sw; return { active: BOSS.active, done: BOSS.done, phase: BOSS.phase, crystals: BOSS.crystals, collarHits: BOSS.cHits, bolts: BOSS.bolts, bonks: BOSS.bonks, snarlHits: BOSS.swHits, cinder: { mode: c.mode, x: +c.x.toFixed(1), y: +c.y.toFixed(1), z: +c.z.toFixed(1), color: +c.color.toFixed(2) }, snarlwick: { mode: s.mode, x: +s.x.toFixed(1), z: +s.z.toFixed(1), yaw: +s.yaw.toFixed(2), visible: s.vis > 0.5 }, projectiles: BP.filter(p => p.on).map(p => ({ kind: p.kind, ret: p.ret, x: +p.x.toFixed(1), z: +p.z.toFixed(1) })), wave: BOSS.wave ? +BOSS.wave.r.toFixed(1) : null, helped: BOSS.enc.helped, kos: BOSS.enc.kos }; },
   /** Force the current open window: Cinder dizzy (phase 1), panting (phase 2), Snarlwick dizzy (phase 3). */
   bossOpen() {
     if (!BOSS.active) return null; const c = BOSS.cd, s = BOSS.sw; bpClear();
@@ -13499,6 +13694,49 @@ function makerRender() {
   } catch (e) { A.need = false; renderer.setRenderTarget(null); renderer.render(scene, camera); }
 }
 const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8'), TOON_GLOOM = new THREE.Color(OK.color('grape', 1)), TOON_DUSK = new THREE.Color(OK.color('sky', 1));
+/** Breeze: soft white wind lines that drift and curl across the scene now and then (one ribbon mesh, rebuilt on the
+ *  processor each frame: 6 lines x 28 segments). Off with reduced motion and on the two lowest picture levels. */
+const WIND = { mesh: null, lines: [], seg: 28, rng: makeRng(5), dir: new THREE.Vector3(1, 0, 0.35).normalize() };
+const WV = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+function windPoint(L, u, out) {
+  const d = WIND.dir, len = 7 * L.len;
+  out.set(L.x + d.x * u * len - d.z * Math.sin(u * 5 + L.ph) * 0.45, L.y + Math.sin(u * 3.3 + L.ph) * 0.35, L.z + d.z * u * len + d.x * Math.sin(u * 5 + L.ph) * 0.45);
+  if (u > 0.66) { const k = (u - 0.66) / 0.34, a = k * Math.PI * 1.9, rr = 1.0 * (1 - k * 0.4); out.x += d.x * (Math.sin(a) * rr - k * 0.6); out.z += d.z * (Math.sin(a) * rr - k * 0.6); out.y += (1 - Math.cos(a)) * rr; }
+  return out;
+}
+function windFrame(dt) {
+  const on = !calm() && S.quality <= 1;
+  if (!WIND.mesh) {
+    const n = 12, seg = WIND.seg, vc = n * (seg + 1) * 2, idx = [];
+    for (let l = 0; l < n; l++) for (let i = 0; i < seg; i++) { const a = (l * (seg + 1) + i) * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vc * 3), 3)); g.setAttribute('bzA', new THREE.BufferAttribute(new Float32Array(vc), 1)); g.setIndex(idx);
+    const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      vertexShader: 'attribute float bzA; varying float vA; void main() { vA = bzA; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'varying float vA; void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, vA * 0.9); }' });
+    WIND.mesh = new THREE.Mesh(g, mat); WIND.mesh.frustumCulled = false; WIND.mesh.renderOrder = 4; scene.add(WIND.mesh);
+    for (let l = 0; l < n; l++) WIND.lines.push({ age: 99, life: 3.2 + WIND.rng() * 1.6, x: 0, y: 0, z: 0, ph: 0, len: 1 });
+  }
+  WIND.mesh.visible = on; if (!on) return;
+  const pos = WIND.mesh.geometry.attributes.position, al = WIND.mesh.geometry.attributes.bzA, seg = WIND.seg, r = WIND.rng;
+  camera.getWorldDirection(WV[3]);
+  const fx = camera.position.x + WV[3].x * 11, fz = camera.position.z + WV[3].z * 11;   // gusts in view, ahead of the camera
+  WIND.lines.forEach((L, l) => {
+    L.age += dt;
+    if (L.age > L.life) {   // a new gust somewhere round the player, upwind
+      const side = r() < 0.5 ? -1 : 1, lat = side * (6 + r() * 7), fwd = 4 + r() * 12;   // to one side of the view, never across its middle
+      L.x = camera.position.x + WV[3].x * fwd - WV[3].z * lat - WIND.dir.x * 3; L.z = camera.position.z + WV[3].z * fwd + WV[3].x * lat - WIND.dir.z * 3;
+      L.y = heightAt(L.x, L.z) + 2.6 + r() * 3; L.ph = r() * 6; L.len = 0.7 + r() * 0.6; L.age = L.age > 50 ? -r() * 1.5 : -r() * 0.3; L.life = 2.4 + r() * 1.2;
+    }
+    const k = Math.max(0, L.age) / L.life, head = Math.min(1, k * 1.5), tail = Math.max(0, head - 0.5), fade = Math.sin(Math.PI * Math.min(1, k)) * (L.age > 0 ? 1 : 0);
+    for (let i = 0; i <= seg; i++) {
+      const u = tail + (head - tail) * i / seg, p = windPoint(L, u, WV[0]), q = windPoint(L, Math.min(1, u + 0.01), WV[1]);
+      WV[2].subVectors(q, p).cross(WV[3]).normalize().multiplyScalar(0.045 * Math.sin(Math.PI * i / seg) + 0.008);
+      const v = (l * (seg + 1) + i) * 2; pos.setXYZ(v, p.x + WV[2].x, p.y + WV[2].y, p.z + WV[2].z); pos.setXYZ(v + 1, p.x - WV[2].x, p.y - WV[2].y, p.z - WV[2].z);
+      const a = fade * Math.min(1, Math.sin(Math.PI * i / seg) * 2.5); al.setX(v, a); al.setX(v + 1, a);
+    }
+  });
+  pos.needsUpdate = true; al.needsUpdate = true;
+}
 /** Cartoon: the lamps' halos (made once, the first frame after the world is built): brighter in the gloom. */
 function haloFrame(gl) {
   if (!WORLD.halos && HALOS.length) {
@@ -13534,9 +13772,10 @@ function worldFrame(dt, now) {
   scene.fog.color.copy(SKY_COLORS.horizon).lerp(SKY_COLORS.gloomHorizon, gl); scene.background.copy(scene.fog.color);
   dome.material.color.copy(WHITE).lerp(DOME_GLOOM, gl * 0.85);
   hemi.color.copy(SKY_COLORS.hemiSky).lerp(SKY_COLORS.gloomHemi, gl); sun.intensity = 2.5 - gl * 0.5; hemi.intensity = 1.65 + gl * 0.1;
+  if (BREEZE) { BZ.sunK.value = sun.intensity * (sun.color.r + sun.color.g + sun.color.b) / 3; BZ.tint.value.copy(WHITE).lerp(TOON_GLOOM, gl * 0.45); haloFrame(gl); windFrame(dt, now); bzFrame(dt); }
   if (TOON) { B.light.tint.copy(WHITE).lerp(TOON_GLOOM, gl * 0.5); if (hero.onStage && hero.stageNight) B.light.tint.multiply(TOON_DUSK); haloFrame(gl); }
   // moving bits
-  const w = WORLD.water; if (L.water) { w.tex.offset.y -= dt * 0.035; w.tex.offset.x += dt * 0.01; } w.fallTex.offset.y += dt * (L.water ? 0.55 : 0);
+  const w = WORLD.water; if (L.water) { w.tex.offset.y -= dt * 0.035; w.tex.offset.x += dt * 0.01; if (w.foam && !cm) w.foam.tex.offset.x += dt * 0.04; } w.fallTex.offset.y += dt * (L.water ? 0.55 : 0);
   if (WORLD.dyn.blades) WORLD.dyn.blades.rotation.z += dt * (cm ? 0.25 : 0.6);
   if (WORLD.dyn.flame && !cm) { const f = WORLD.dyn.flame; f.scale.set(1 + Math.sin(now * 0.0047) * 0.06, 1 + Math.sin(now * 0.0061) * 0.1, 1 + Math.cos(now * 0.0053) * 0.06); }
   const runes = WORLD.runes, ts = now / 1000;
@@ -13638,6 +13877,327 @@ function onBuilt() {
   GAME.emit('ready');
   showTitle();
   if (window.__hosStartWanted) { const o = window.__hosStartWanted; window.__hosStartWanted = null; TEST.start(o); }
+}
+
+/* ==== 14b. BREEZE MODELS: the storybook models (phase 1 slice, ?style=breeze only) ====
+   Made in Blender (tools/blender/storybook.py: hand-shaped meshes, small painted textures, an armature with clips) and
+   shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
+   time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
+   colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
+const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-73c33a6c/breeze-start.js', integrity: 'sha384-vFAwuW+h0fCUIj5zGMeSD/cJ1v8qPeg3tfNt56eQKAzUau6ou3cC5E3BxNHNAsrR' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-73c33a6c/breeze-world.js', integrity: 'sha384-aDOeqnidgV0oXJ8n4sZ8Vip4OI0x0dSe65Ybo3IGImObIpIQWWvVCVRJK2bpNwaD' } };
+const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
+const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
+/** Load one pack (start: before play; world: in the background once play starts). Resolves with the assets it added. */
+function bzLoad(name) {
+  return new Promise(res => {
+    const P = BZ_PACKS[name], sc = document.createElement('script'); sc.src = P.src; sc.integrity = P.integrity; sc.crossOrigin = 'anonymous';
+    const before = new Set(Object.keys(window.__hosBreeze || {}));
+    sc.onload = () => res((window.__hosBreezeLoaded || []).includes(name) ? window.__hosBreeze : null); sc.onerror = () => res(null); document.head.appendChild(sc);
+  });
+}
+function bzArr(s, T) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new T(u.buffer); }
+/** A compact mesh -> BufferGeometry (position, normal, uv, colour, the part id per vertex, and rigid skinning). */
+function bzGeo(m, skinned) {
+  const R = m.uvr || 4, n = m.verts, q = bzArr(m.pos, Int16Array), N = bzArr(m.nrm, Int8Array), U = bzArr(m.uv, Uint16Array), C = bzArr(m.col, Uint8Array), Bn = m.bone ? bzArr(m.bone, Uint8Array) : new Uint8Array(m.verts), I = bzArr(m.idx, n < 65536 ? Uint16Array : Uint32Array);
+  const P = new Float32Array(n * 3), NN = new Float32Array(n * 3), UV = new Float32Array(n * 2), CC = new Float32Array(n * 3), part = new Uint8Array(n);
+  for (let i = 0; i < n; i++) {
+    for (let a = 0; a < 3; a++) P[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32768) / 65535 * (m.max[a] - m.min[a]);
+    { let x = N[i * 2] / 127, y = N[i * 2 + 1] / 127; const z = 1 - Math.abs(x) - Math.abs(y); if (z < 0) { const ox = x; x = (1 - Math.abs(y)) * Math.sign(ox || 1); y = (1 - Math.abs(ox)) * Math.sign(y || 1); } const l = Math.hypot(x, y, z) || 1; NN[i * 3] = x / l; NN[i * 3 + 1] = y / l; NN[i * 3 + 2] = z / l; }   // octahedral normals (two bytes)
+    UV[i * 2] = U[i * 2] / 65535 * 2 * R - R; UV[i * 2 + 1] = U[i * 2 + 1] / 65535 * 2 * R - R;
+    C1.setRGB(C[i * 4] / 255, C[i * 4 + 1] / 255, C[i * 4 + 2] / 255, THREE.SRGBColorSpace); CC[i * 3] = C1.r; CC[i * 3 + 1] = C1.g; CC[i * 3 + 2] = C1.b; part[i] = Math.round(C[i * 4 + 3] / 255 * 16);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('normal', new THREE.BufferAttribute(NN, 3)); g.setAttribute('uv', new THREE.BufferAttribute(UV, 2)); g.setAttribute('color', new THREE.BufferAttribute(CC, 3));
+  if (skinned) {
+    const si = new Uint16Array(n * 4), sw = new Float32Array(n * 4); for (let i = 0; i < n; i++) { si[i * 4] = Bn[i]; sw[i * 4] = 1; }
+    g.setAttribute('skinIndex', new THREE.BufferAttribute(si, 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
+  }
+  g.setIndex(new THREE.BufferAttribute(I, 1)); g.computeBoundingSphere(); g.userData.part = part; g.userData.base = CC.slice();
+  return g;
+}
+function bzTex(d, repeat) {
+  const t = new THREE.TextureLoader().load(d.tex); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  if (repeat) t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+/** A rigged character: a SkinnedMesh with its bones (rest pose from the pack), its clips, and a thin colour-tinted line. */
+function bzCharacter(d, rim) {
+  const bones = d.bones.map(b => { const o = new THREE.Bone(); o.name = b.name.replace('.', '_'); o.position.fromArray(b.t); o.quaternion.fromArray(b.r); return o; });
+  d.bones.forEach((b, i) => { if (b.parent >= 0) bones[b.parent].add(bones[i]); });
+  const geo = bzGeo(d.meshes.body, true), mat = breezeMat({ map: bzTex(d), rim });
+  const mesh = new THREE.SkinnedMesh(geo, mat); mesh.add(bones[0]); mesh.updateMatrixWorld(true); mesh.bind(new THREE.Skeleton(bones));
+  mesh.castShadow = true; mesh.frustumCulled = false; mesh.userData.noInk = true;
+  // the line: the kit's Ink hull, tinted, pushed along the skinned normal (so it follows the bones)
+  const probe = new THREE.Mesh(new THREE.BoxGeometry(), MAT.char); B.outline(probe, { important: true, width: 0.5 });
+  const base = probe.children[0].material, hm = inkTinted(base).clone();
+  hm.onBeforeCompile = (sh, r) => { base.onBeforeCompile(sh, r); sh.vertexShader = sh.vertexShader.replace('vec3 okn = okN;', 'vec3 okn = objectNormal;'); };
+  hm.customProgramCacheKey = () => 'bzInkSkin'; hm.vertexColors = true;
+  const hull = new THREE.SkinnedMesh(geo, hm); hull.bind(mesh.skeleton, mesh.bindMatrix); hull.userData.noInk = true; hull.frustumCulled = false; mesh.add(hull);
+  // rest pose: each bone's local rotation, its world rotation and its parent's (so a pose given in the rig's own axes,
+  // like the game's hero pivots, can be applied whatever way the bone points)
+  const rest = {}; mesh.updateMatrixWorld(true);
+  for (const b of bones) { const w = new THREE.Quaternion(); b.getWorldQuaternion(w); const pw = new THREE.Quaternion(); if (b.parent && b.parent.isBone) b.parent.getWorldQuaternion(pw); rest[b.name] = { q: b.quaternion.clone(), p: b.position.clone(), w, pw, pwi: pw.clone().invert(), b }; }
+  const clips = {};
+  for (const [name, c] of Object.entries(d.clips || {})) {
+    const tracks = c.tracks.map(t => (t.r ? new THREE.QuaternionKeyframeTrack(`${bones[t.bone].name}.quaternion`, c.times, t.r) : new THREE.VectorKeyframeTrack(`${bones[t.bone].name}.position`, c.times, t.t)));
+    clips[name] = new THREE.AnimationClip(name, c.dur, tracks);
+  }
+  const root = new THREE.Group(); root.add(mesh);
+  return { root, mesh, hull, bones, rest, clips, geo };
+}
+/** The hero's look on the model: skin, hair and clothes recoloured per vertex (the painted detail stays). */
+function bzHeroLook(look) {
+  const g = BZM.hero.geo, col = g.attributes.color, part = g.userData.part, base = g.userData.base;
+  const skin = new THREE.Color(LOOKS.skin[look.skin] || LOOKS.skin[1]), hair = new THREE.Color(LOOKS.hairColor[look.hairColor] || LOOKS.hairColor[1]);
+  const fit = new THREE.Color(LOOKS.outfit[look.outfit] || LOOKS.outfit[1]), dark = fit.clone().multiplyScalar(0.62);
+  for (let i = 0; i < part.length; i++) {
+    const c = part[i] === PART.skin ? skin : part[i] === PART.hair ? hair : part[i] === PART.cloth ? fit : part[i] === PART.cloth2 ? dark : null;
+    if (c) col.setXYZ(i, c.r, c.g, c.b); else col.setXYZ(i, base[i * 3], base[i * 3 + 1], base[i * 3 + 2]);
+  }
+  col.needsUpdate = true;
+}
+const BZ_Q = new THREE.Quaternion(), BZ_E = new THREE.Euler();
+/** Each frame: the hero model's bones follow the game's own hero pose (walk, run, every attack, drink, hurt...). The
+ *  game's right side is the model's +x side (its arm_L and leg_L). */
+function bzHeroFrame() {
+  const H = BZM.hero, r = hero.rig; if (!H || !r) return;
+  // local = parentRest^-1 * R * parentRest * localRest: R turns the bone about the rig's own axes, as the game's pivots do
+  const set = (bone, rot) => { const R = H.rest[bone]; BZ_Q.setFromEuler(BZ_E.set(rot.x, rot.y, rot.z)); R.b.quaternion.copy(R.pwi).multiply(BZ_Q).multiply(R.pw).multiply(R.q); };
+  set('hips', r.body.rotation); H.rest.hips.b.position.copy(H.rest.hips.p); H.rest.hips.b.position.y += r.body.position.y - 0.9;
+  set('chest', r.torso.rotation); set('head', r.head.rotation);
+  set('arm_L', r.armR.rotation); set('arm_R', r.armL.rotation); set('leg_L', r.legR.rotation); set('leg_R', r.legL.rotation);
+}
+function bzApply(d) {
+  if (!d) { BZM.state = 'failed'; bzFallback(); return; }
+  BZM.data = d;
+  // the hero: the model under the hero's root, the procedural body hidden; the sword and shield ride the model's arms
+  const r = hero.rig, H = bzCharacter(d.hero, 0.35); BZM.hero = H; r.root.add(H.root); r.body.visible = false;
+  // holders in the rig's own axes at a bone (the inverse of its world rest rotation), for the game's own gear meshes
+  const handAt = (bone, obj, x, y, z) => { const a = new THREE.Object3D(); a.quaternion.copy(H.rest[bone].w).invert(); H.rest[bone].b.add(a); a.add(obj); obj.position.set(x, y, z); };
+  handAt('arm_L', r.hand, 0.05, -0.37, 0.02);
+  const shieldHolder = new THREE.Group(); handAt('arm_R', shieldHolder, 0.02, 0.08, 0); shieldHolder.scale.setScalar(0.85); shieldHolder.add(r.shield, r.shieldGlow);
+  // helmets and hats sit on the model's head (the game still picks which one shows); the model's hair hides under a helmet
+  const hatHolder = new THREE.Group(); handAt('head', hatHolder, 0, 0.14, -0.02); hatHolder.scale.setScalar(1.04); hatHolder.add(r.helmet, r.hat); H.hatHolder = hatHolder;
+  bzHeroLook(G.look || defaultLook());
+  // Granny Fern: her model in her place, idle (and talk while she talks)
+  const n = NPCS.granny;
+  if (n) {
+    const Gm = bzCharacter(d.granny, 0.3); BZM.granny = Gm; n.m.body.visible = false; n.m.root.add(Gm.root);
+    const mx = new THREE.AnimationMixer(Gm.mesh); Gm.mixer = mx; Gm.idle = mx.clipAction(Gm.clips.idle); Gm.talk = mx.clipAction(Gm.clips.talk); Gm.idle.play(); BZM.mixers.push(mx);
+  }
+  if (d.villager) bzVillagers(d.villager);
+  if (d.foes) bzFoes(d.foes);   // the start pack's part of it: the Blobble
+  // props: one instanced mesh per model part, for every place in the world
+  const inst = bzInst;
+  const cot = d.cottage, cmat = breezeMat({ map: bzTex(cot, true) });
+  const cplace = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(p.w / 6, p.h / 3.2, p.d / 5); };
+  inst(cot.meshes.walls, cmat, BZ_PROPS.cottage, cplace, p => p.wall);   // each house its own warm wall colour
+  inst(cot.meshes.roof, breezeMat({ map: bzTex(cot.meshes.roof.tex ? cot.meshes.roof : cot, true) }), BZ_PROPS.cottage, cplace, p => '#' + C2.set(p.roof).lerp(WHITE_T, 0.08).getHexString());
+  const bar = d.barrel;
+  inst(bar.meshes.body, breezeMat({ map: bzTex(bar, true) }), BZ_PROPS.barrel, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(0.95); }, null, -45);
+  const fe = d.fence, fmat = breezeMat({ map: bzTex(fe, true) });
+  inst(fe.meshes.post, fmat, BZ_PROPS.post, (p, o) => { o.position.set(p.x, p.y + 0.2, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(1, p.h / 1.4, 1); }, null, -45);
+  inst(fe.meshes.rail, fmat, BZ_PROPS.rail, (p, o) => { o.position.set(p.x0, p.y0, p.z0); o.rotation.set(0, Math.atan2(-(p.z1 - p.z0), p.x1 - p.x0), Math.atan2(p.y1 - p.y0, hyp(p.x1 - p.x0, p.z1 - p.z0))); o.scale.set(hyp(p.x1 - p.x0, p.z1 - p.z0), p.h / 1.1, 1); }, null, -45);
+  // the scattered trees: the model in place of the procedural tree (the same instances, tints and fading)
+  const tk = SCATTER.kinds.tree;
+  if (tk) { const tb = d.tree.meshes.body, tg = bzGeo(tb.lod1 && BZ_TREE_LIGHT ? tb.lod1 : tb); tg.scale(0.82, 0.82, 0.82); tk.mesh.geometry = tg; tk.mesh.material = breezeMat({ map: bzTex(d.tree, true), sat: 1.1 }); }
+  // cel shadow shapes under the houses (phones; hidden while the real shadow map is on)
+  const a = Math.atan2(-SUN_OFFSET.z, -SUN_OFFSET.x), shape = new THREE.Shape(), w = 1, h = 1, rr = 0.25;
+  shape.moveTo(-w + rr, -h); shape.lineTo(w - rr, -h); shape.quadraticCurveTo(w, -h, w, -h + rr); shape.lineTo(w, h - rr); shape.quadraticCurveTo(w, h, w - rr, h);
+  shape.lineTo(-w + rr, h); shape.quadraticCurveTo(-w, h, -w, h - rr); shape.lineTo(-w, -h + rr); shape.quadraticCurveTo(-w, -h, -w + rr, -h);
+  const fpMat = new THREE.MeshBasicMaterial({ color: '#203a86', transparent: true, opacity: 0.32, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+  const fp = inst(new THREE.ShapeGeometry(shape, 3).rotateX(-Math.PI / 2), fpMat, BZ_PROPS.cottage, (p, o) => {
+    const off = (p.h + p.rh) * 0.55; o.position.set(p.x + Math.cos(a) * off, gy(p.x, p.z) + 0.07, p.z + Math.sin(a) * off); o.rotation.set(0, p.ry, 0); o.scale.set(p.w / 2 + 0.6 + off * 0.5, 1, p.d / 2 + 0.6 + off * 0.5);
+  });
+  if (fp) { fp.castShadow = fp.receiveShadow = false; fp.renderOrder = 2; BZM.footprints = fp; }
+  BZM.state = 'ready';
+}
+/** A mesh (and its Ink hull, when it has one) takes a model geometry: the hull pushes along the model's smooth normals. */
+function bzSwap(mesh, geo, hullGeo) {
+  const h = hullGeo || geo; if (!h.attributes.okN) h.setAttribute('okN', h.attributes.normal.clone());
+  mesh.geometry = geo; for (const c of mesh.children) if (c.userData.okInk) c.geometry = h;
+}
+/** Villagers (phase 2): the crowd's instanced parts become the storybook villager's parts (the same pivots and tints), and
+ *  the named people are dressed from the same parts in their own colours, hair, hats, beards and aprons. */
+const BZ_HAIR = { short: 'hair_short', buzz: 'hair_short', bun: 'hair_bun', long: 'hair_long', braids: 'hair_long', curly: 'hair_curls', curls: 'hair_curls' };
+const BZ_HAT = { straw: 'hat_straw', top: 'hat_top', hood: 'hat_hood', helmet: 'helmet', rain: 'hat_hood' };
+function bzVillagers(v) {
+  const tex = bzTex(v), mat = breezeMat({ map: tex, rim: 0.3 }), eyes = new THREE.MeshBasicMaterial({ map: tex, vertexColors: true });
+  const geo = {}, low = {}; for (const [k, m] of Object.entries(v.meshes)) { geo[k] = bzGeo(m); low[k] = m.lod1 ? bzGeo(m.lod1) : geo[k]; }
+  // the crowd (up to 18 people at once): the lighter parts, which read the same at a few metres; their lines too
+  const P = CROWD.parts, put = (i, g, m) => { if (!P[i]) return; const k = Object.keys(geo).find(n => geo[n] === g); bzSwap(P[i].mesh, low[k] || g, low[k] || g); P[i].mesh.material = m || mat; };
+  put(0, geo.legs); put(1, geo.body); put(2, geo.arm); put(3, geo.head); put(4, geo.hair_short); put(5, geo.hair_bun); put(6, geo.hat_straw); put(7, geo.eyes, eyes); put(8, geo.eyes, eyes); put(9, geo.helmet);
+  for (const i of [7, 8]) if (P[i]) for (const c of P[i].mesh.children) if (c.userData.okInk) c.visible = false;
+  // the named people (Granny has her own model)
+  for (const n of NPC_LIST) {
+    if (n.id === 'granny') continue;
+    const L = n.d.look || {}, m = n.m, tinted = (g, c) => { const me = new THREE.Mesh(g, breezeMat({ map: tex, rim: 0.3, color: new THREE.Color(c || '#ffffff') })); me.castShadow = true; return me; };
+    for (const g of [m.body, m.head, m.armL, m.armR, m.legL, m.legR]) if (g) for (const c of g.children) if (c.isMesh) c.visible = false;
+    const shirt = L.dress || L.tabard || L.overalls || L.shirt, add = (grp, me) => { me.userData.bz = true; grp.add(me); B.outline(me, { important: true, width: 0.5 }); me.traverse(c => { if (c.userData.okInk) c.material = inkPushed(inkTinted(c.material)); }); return me; };
+    add(m.body, tinted(geo.legs, L.dress || L.pants || shirt)); add(m.body, tinted(geo.body, shirt));
+    if (L.apron) add(m.body, tinted(geo.apron, L.apron));
+    for (const [arm, sx] of [[m.armL, -1], [m.armR, 1]]) { const a = add(arm, tinted(geo.arm, L.skin)); a.position.x = 0; }
+    add(m.head, tinted(geo.head, L.skin)); const e = new THREE.Mesh(geo.eyes, eyes); e.userData.noInk = true; m.head.add(e);
+    const hair = BZ_HAIR[L.hair]; if (hair && L.hat !== 'helmet') add(m.head, tinted(geo[hair], L.hairColor));
+    if (L.beard || L.mustache) add(m.head, tinted(geo.beard, L.beard || L.mustache));
+    const hat = BZ_HAT[L.hat]; if (hat) add(m.head, tinted(geo[hat], hat === 'helmet' ? '#ffffff' : L.hatColor || '#e9c46a'));
+  }
+}
+/** Foes (phase 2): each rig's body parts take the storybook model of that part (the same pivots, poses and per-foe tints;
+ *  the faces and eyes stay the game's, placed on the same surfaces). */
+function bzFoes(f) {
+  const mat = breezeMat({ map: bzTex(f), rim: 0.3 });
+  for (const [k, m] of Object.entries(f.meshes)) {
+    const [rig, i] = k.split('_'), r = RIGS[rig], p = r && r.parts[+i]; if (!p || p.follow >= 0) continue;
+    const g = bzGeo(m); bzSwap(p.mesh, g, m.lod1 ? bzGeo(m.lod1) : g); p.mesh.material = mat;
+  }
+}
+/** The bigger foes (phase 2): the Clank's rig parts (the Big Clank is the same rig, scaled and tinted) and Lord
+ *  Snarlwick's robe, head, crown and arms (his face, gem, pyjamas and nightcap stay the game's). */
+function bzBig(f) {
+  const mat = breezeMat({ map: bzTex(f), rim: 0.3 }), g = k => bzGeo(f.meshes[k]), low = k => (f.meshes[k].lod1 ? bzGeo(f.meshes[k].lod1) : g(k));
+  const r = RIGS.clank; if (r) for (let i = 0; i < 4; i++) { const p = r.parts[i], k = 'clank_' + i; if (p && f.meshes[k] && p.follow < 0) { bzSwap(p.mesh, g(k), low(k)); p.mesh.material = mat; } }
+  const S = BOSS.S; if (!S) return;
+  const put = (mesh, k) => { if (!mesh || !f.meshes[k]) return; bzSwap(mesh, g(k), low(k)); mesh.material = mat; };
+  put(S.robe, 'snarl_body'); put(S.crown, 'snarl_crown');
+  put(S.head.children.find(c => c.isMesh && c !== S.crown && c !== S.cap && c.material !== MAT.face), 'snarl_head');
+  put(S.armL.children.find(c => c.isMesh), 'snarl_armL'); put(S.armR.children.find(c => c.isMesh && c !== S.gem), 'snarl_armR');
+}
+/** Cinder (phase 2): each part takes the storybook dragon's mesh; its two colour sets (spellbound, freed) feed the game's
+ *  own palette blend, so she still turns from plum to orange as the story goes. */
+function bzCinder(c) {
+  const M = BOSS.M; if (!M) return;
+  const mat = breezeMat({ map: bzTex(c), rim: 0.25 });
+  for (const [name, m] of Object.entries(c.meshes)) {
+    const pr = M.parts[name]; if (!pr) continue;
+    const g = bzGeo(m), C2 = bzArr(m.col2, Uint8Array), cb = new Float32Array(m.verts * 3);
+    for (let i = 0; i < m.verts; i++) { C1.setRGB(C2[i * 4] / 255, C2[i * 4 + 1] / 255, C2[i * 4 + 2] / 255, THREE.SRGBColorSpace); cb[i * 3] = C1.r; cb[i * 3 + 1] = C1.g; cb[i * 3 + 2] = C1.b; }
+    bzSwap(pr.m, g); pr.m.material = mat; pr.ca = Float32Array.from(g.attributes.color.array); pr.cb = cb;
+    if (/^wing/.test(name)) for (const h of pr.m.children) if (h.userData.okInk) h.visible = false;   // no line round the thin wing webbing (it read as a black bar)
+  }
+  M.k = -1;   // recolour on the next frame
+}
+/** geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry: one instanced mesh per
+ *  level of detail for every place in the list, drawn near the camera only (bzCull). */
+function bzInst(geo, mat, list, place, tint, R) {
+    if (!list.length) return null;
+    const near = geo.isBufferGeometry ? geo : bzGeo(geo), far = !geo.isBufferGeometry && geo.lod1 ? bzGeo(geo.lod1) : null, o = new THREE.Object3D();
+    const places = list.map(p => { place(p, o); o.updateMatrix(); return { x: o.position.x, z: o.position.z, mat: o.matrix.clone(), col: new THREE.Color(tint ? tint(p) : '#ffffff') }; });
+    const make = (g, lodN) => {
+      const m = new THREE.InstancedMesh(g, mat, list.length); m.userData.places = places; m.userData.lod = lodN; m.userData.R = R || 0;
+      m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
+      m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.userData.noInk = true; scene.add(m); BZM.props.push(m); bzCull(m, true); return m;
+    };
+    const m = make(near, far ? 0 : -1); if (far) make(far, 1); return m;
+}
+/** Buildings (phase 2): the barn, the windmill tower, the castle's towers and walls take their storybook models; the
+ *  game's shells (their own Kit) are hidden once they are in place. */
+function bzBuildings(b) {
+  const stone = breezeMat({ map: bzTex(b, true) }), planks = breezeMat({ map: bzTex(b.meshes.barn.tex ? b.meshes.barn : b, true) });
+  const at = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry || 0, 0); o.scale.set(1, 1, 1); };
+  bzInst(b.meshes.barn, planks, BZ_PROPS.barn, at, null, 15);
+  bzInst(b.meshes.mill, stone, BZ_PROPS.mill, at, null, 15);
+  bzInst(b.meshes.tower, stone, BZ_PROPS.tower, (p, o) => { at(p, o); o.scale.set(1, p.h, 1); }, null, 15);
+  const segs = [];
+  for (const w of BZ_PROPS.wall) { const n = Math.max(1, Math.round(w.len / 4)), dx = Math.cos(w.ry), dz = -Math.sin(w.ry); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n - 0.5; segs.push({ x: w.cx + dx * t * w.len, y: w.y, z: w.cz + dz * t * w.len, ry: w.ry, sx: w.len / n / 4, h: w.h, sz: w.T / 3 }); } }
+  bzInst(b.meshes.wall, stone, segs, (p, o) => { at(p, o); o.scale.set(p.sx * 1.002, p.h, p.sz); }, null, 10);
+  // the fortress's walls, arch blocks and courtyard rim: the same wall, in plum stone, cut into about 4 x 8 m pieces
+  bzInst(b.meshes.wall, stone, bzSegs(BZ_PROPS.fwall, 4, 8), (p, o) => { at(p, o); o.scale.set(p.sx / 4 * 1.002, p.sy, p.sz / 3); }, p => p.color, 10);
+  bzHideShells(n => n === 'castle' || n === 'barn' || n === 'mill' || n === 'slab:fwall');
+}
+/** Hides the procedural stand-ins (shells) whose names pass the test, once their models are in place. */
+function bzHideShells(test) { for (const o of BZ_SHELLS) { if (!test(o.shell)) continue; if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); } }
+/** Slab boxes cut into pieces about L long (along their longer side) and H tall, so a unit model's texture keeps its scale. */
+function bzSegs(list, L, H) {
+  const out = [];
+  for (const p of list) {
+    let sx = p.sx, sz = p.sz, ry = p.ry; if (sz > sx) { sx = p.sz; sz = p.sx; ry += Math.PI / 2; }
+    const n = Math.max(1, Math.round(sx / L)), m = Math.max(1, Math.round(p.sy / H)), dx = Math.cos(ry), dz = -Math.sin(ry);
+    for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const t = ((i + 0.5) / n - 0.5) * sx; out.push({ x: p.x + dx * t, y: p.y + j * p.sy / m, z: p.z + dz * t, ry, sx: sx / n, sy: p.sy / m, sz, color: p.color }); }
+  }
+  return out;
+}
+/** The landmarks (polish round): each model at its places (one instanced mesh per model part and texture), the soft
+ *  stone blocks and wooden boards in place of the slab boxes; their stand-ins hidden. */
+const BZ_LAND_R = { stake: -70, tent: -90, chieftent: -90, skiff: -60, netrack: -50, signpost: -60, sign: -60, cart: -60, awning: -80, boat: -90 };
+function bzLandmarks(d) {
+  const mats = {}, mat = tx => mats[tx] || (mats[tx] = breezeMat({ map: bzTex({ tex: d.texs[tx] }, true) }));
+  const by = {}; for (const p of BZ_PROPS.land) (by[p.m] = by[p.m] || []).push(p);
+  const place = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); if (p.s) o.scale.set(p.s[0], p.s[1], p.s[2]); else o.scale.set(1, 1, 1); };
+  for (const [key, m] of Object.entries(d.meshes)) {
+    const [name, tx] = key.split('.'), list = by[name]; if (!list || name === 'block' || name === 'board') continue;
+    bzInst(bzGeo(m), mat(tx), list, place, p => (p.tints && p.tints[tx]) || p.tint || '#ffffff', BZ_LAND_R[name] || 20);
+  }
+  const slab = (list, L, H, sx, sz) => bzSegs(list, L, H);
+  const sp = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(p.sx, p.sy, p.sz); };
+  if (d.meshes['block.stone']) bzInst(bzGeo(d.meshes['block.stone']), mat('stone'), slab(BZ_PROPS.block, 2, 2), sp, p => '#' + C2.set(p.color).lerp(WHITE_T, 0.12).getHexString(), -160);
+  if (d.meshes['board.wood']) bzInst(bzGeo(d.meshes['board.wood']), mat('wood'), slab(BZ_PROPS.board, 4, 2), sp, p => p.color, -70);
+  bzHideShells(n => n === 'land' || n === 'slab:block' || n === 'slab:board');
+}
+/** Nature and small props (phase 2): the scattered pines, bushes, rocks, grass and flowers take the storybook meshes (the
+ *  same instances, tints and fading); crates and lantern posts are placed as models (the game's shells hidden); the chests
+ *  take the round-lidded chest. */
+function bzNature(n) {
+  const M = n.meshes, mat = breezeMat({ map: bzTex(n), sat: 1.08 }), flat = breezeMat({ sat: 1.08 });   // scattered things: no texture (they are small, and many)
+  for (const k of ['pine', 'bush', 'rock', 'grass', 'flower']) {
+    const sk = SCATTER.kinds[k]; if (!sk || !M[k]) continue;
+    const g = M[k].lod1 ? bzGeo(M[k].lod1) : bzGeo(M[k]); bzSwap(sk.mesh, g); sk.mesh.material = flat;   // the light version: hundreds are drawn
+    if (k === 'flower') {   // only the petals take the flower's tint (the stem stays green, the middle yellow)
+      const part = g.userData.part, tk = new Float32Array(part.length); for (let i = 0; i < part.length; i++) tk[i] = part[i] === 9 ? 1 : 0;
+      g.setAttribute('bzTintK', new THREE.BufferAttribute(tk, 1)); sk.mesh.material = breezeMat({ sat: 1.08, tintMask: true });
+    }
+  }
+  bzInst(M.crate, mat, BZ_PROPS.crate, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(p.s); }, null, -45);
+  bzInst(M.lantern, mat, BZ_PROPS.lantern, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, 0, 0); o.scale.setScalar(1); }, null, -60);
+  if (CHEST.base) { CHEST.base.geometry = bzGeo(M.chest_base); CHEST.base.material = mat; CHEST.lid.geometry = bzGeo(M.chest_lid); CHEST.lid.material = mat; }
+  for (const o of BZ_SHELLS) if (o.shell === 'props') { if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); }
+}
+/** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
+// Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.
+const BZ_LOD = 24, BZ_TREE_LIGHT = true;   // the scattered trees use the light tree (hundreds are drawn)
+function bzCull(m, force) {
+  const cx = camera.position.x, cz = camera.position.z, R = m.userData.R > 0 ? camera.far + m.userData.R : m.userData.R < 0 ? -m.userData.R : Math.min(camera.far, 80), L = m.userData.lod; let n = 0;
+  for (const p of m.userData.places) {
+    const d = hyp(p.x - cx, p.z - cz);
+    if (!force && (d > R || (L === 0 && d > BZ_LOD) || (L === 1 && d <= BZ_LOD))) continue;
+    m.setMatrixAt(n, p.mat); m.setColorAt(n, p.col); n++;
+  }
+  m.count = n; m.instanceMatrix.needsUpdate = true; m.instanceColor.needsUpdate = true;
+}
+/** No pack (offline, an old browser): build the procedural props after all. */
+function bzFallback() {
+  const kits = new Map(), kitOf = k => { if (!kits.has(k)) kits.set(k, new Kit()); return kits.get(k); };
+  for (const p of BZ_PROPS.cottage) cottageGeo(kitOf(p.k), p.x, p.z, p.ry, p.o);
+  const k = new Kit();
+  for (const p of BZ_PROPS.barrel) { k.cyl(p.x, p.y, p.z, 0.48, 0.48, 1.1, PAL.wood, 8); k.cyl(p.x, p.y + 0.25, p.z, 0.5, 0.5, 0.1, PAL.metal, 8); k.cyl(p.x, p.y + 0.8, p.z, 0.5, 0.5, 0.1, PAL.metal, 8); }
+  for (const p of BZ_PROPS.post) k.box(p.x, p.y, p.z, 0.2, p.h, 0.2, p.color);
+  for (const p of BZ_PROPS.rail) { k.beam(p.x0, p.y0 + p.h * 0.45, p.z0, p.x1, p.y1 + p.h * 0.45, p.z1, 0.09, 0.14, p.color); k.beam(p.x0, p.y0 + p.h * 0.9, p.z0, p.x1, p.y1 + p.h * 0.9, p.z1, 0.09, 0.14, p.color); }
+  kits.set('misc', k); let i = 0; for (const kk of kits.values()) kk.build('bzFallback' + i++, 0, 0, 1e4, { always: true });
+}
+/** Per frame (breeze): the hero model follows the hero's pose, Granny's clips play, the footprints only without the map. */
+function bzFrame(dt) {
+  if (BZM.state !== 'ready') return;
+  bzHeroFrame();
+  const Gm = BZM.granny;
+  if (Gm) { const talking = UI.dialog.open && UI.dialog.npc === 'granny'; if (talking !== Gm.talking) { Gm.talking = talking; (talking ? Gm.talk : Gm.idle).reset().fadeIn(0.25).play(); (talking ? Gm.idle : Gm.talk).fadeOut(0.25); } }
+  for (const mx of BZM.mixers) mx.update(calm() ? dt * 0.5 : dt);
+  if ((BZM.cullT = (BZM.cullT || 0) - dt) <= 0) { BZM.cullT = 0.5; for (const m of BZM.props) bzCull(m); }
+  if (BZM.footprints) BZM.footprints.visible = !renderer.shadowMap.enabled;
+}
+/** The world pack, once play has started: each model replaces its procedural stand-in as it arrives. */
+function bzWorld(d) {
+  if (!d) { BZM.world = 'failed'; return; }
+  if (d.foes) bzFoes(d.foes);
+  if (d.big) bzBig(d.big);
+  if (d.cinder) bzCinder(d.cinder);
+  if (d.buildings) bzBuildings(d.buildings);
+  if (d.nature) bzNature(d.nature);
+  if (d.landmarks) bzLandmarks(d.landmarks);
+  BZM.world = 'ready';
+}
+if (BREEZE) {
+  const start = bzLoad('start'); BZM.world = 'waiting';
+  GAME.on('ready', () => { for (const n of Object.keys(BZ_SHELL_KITS)) shellBuild(n, 0, 0, 1e4); start.then(d => { bzApply(d); if (BZM.state === 'ready') { BZM.world = 'loading'; setTimeout(() => bzLoad('world').then(bzWorld), 400); } }); });
 }
 
 /* ==== 15. window.__brbTest: deterministic hooks for automated checks ==== */
@@ -13772,7 +14332,7 @@ if (LIVE && LIVE.active) {
     const legL = limb(0.32, 0.7, 0.32, 'stone', -0.18, 0.7), legR = limb(0.32, 0.7, 0.32, 'stone', 0.18, 0.7);
     box(inner, 0.8, 0.75, 0.45, shirt, 0, 1.08, 0); box(inner, 0.62, 0.6, 0.6, skin, 0, 1.75, 0); box(inner, 0.66, 0.2, 0.64, hair, 0, 2.08, -0.02);
     const armL = limb(0.2, 0.62, 0.22, shirt, -0.52, 1.41), armR = limb(0.2, 0.62, 0.22, shirt, 0.52, 1.41);
-    B.bake(inner); B.outline(inner, { important: true });
+    B.bake(inner); B.outline(inner, { important: true, width: TOON_INK });
     const st = { ph: 0, act: null, until: 0, t0: 0 };
     g.speed = 0; g.air = false;
     g.play = (name, ms) => { st.act = name; st.t0 = performance.now(); st.until = st.t0 + (ms || 1200); };
