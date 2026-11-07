@@ -133,7 +133,7 @@ kit's tag** (`kitPackTag(name)` on the server; any other form fails the scanner)
 - `style-pixel` + `art-pixel` (1.1.4, opt-in, a pilot in Sum Racer): the pixel style. `Oomba.style('pixel')` before
   the stage turns it on; without `style-pixel` it is the Ink look (`'playful'`), so a game always falls back. The UI
   gets square boxes with stepped corners and hard Ink lips, the pixel font (Pixelify Sans for words, the kit's pixel
-  digits for numbers) and no ligatures. `Oomba.pixel` (once `Oomba.pixel.ready` resolves, `Oomba.pixel.on` is true):
+  digits for numbers and the digit-like letters Z z G B) and no ligatures. `Oomba.pixel` (once `Oomba.pixel.ready` resolves, `Oomba.pixel.on` is true):
   `Oomba.pixel.art` (the atlas: `frames`, `palette`, `scenes`, `tile`), `Oomba.pixel.image`, `Oomba.pixel.frame(name)`,
   `Oomba.pixel.draw(g, name, x, y, k, {flip, anchor})` (nearest neighbour, k pixels per art pixel),
   `Oomba.pixel.scale(cssPx, artPx)`, `Oomba.pixel.sky(g, w, h, stops)` (a dithered gradient),

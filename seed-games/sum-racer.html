@@ -409,7 +409,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 <script src="/vendor/oomba-kit/1.1.4/packs/art-school.js" integrity="sha384-VQndRmNEoGnNDs6VhEBvG5GpzW0Iwl5NJYE8VU2j403u8b7qeI44NX89zuTbzM21" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.4/packs/art-biomes.js" integrity="sha384-7EqxxnUHM57jidVwIEmkW2+6tInN7yNz5FL4U425SDba9aG6E0pxZ4WCVUpMkutY" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.4/packs/dress.js" integrity="sha384-lGMyixBO/dQI5mVlIYp2m9rQk1Qiejkp7f7tcNxKKlSew+i0VKx3Soojbns6sDRo" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/style-pixel.js" integrity="sha384-NvKfBNNgA3cr+NpIpmALKbJcs4v3ZGi35I/dsEqGR/rFYIKbni0KkKEl9t/qXmzS" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.4/packs/style-pixel.js" integrity="sha384-fBJ32lTPK+Jwlg93zG6G79gHmMBcU7jzn/ldxQuLzeJ0RioA0E6+tzQQY/Zn1+rB" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.4/packs/art-pixel.js" integrity="sha384-2L8rNpOnIE9/cVPo3DifyOOHwNa4BQ240EuKLaaARjuQwsSpb+wPme1qeHBAsGLE" crossorigin="anonymous"></script>
 <script>
 /* @@PURE-BEGIN: CONFIG + maths + race model. No DOM in here (the Node tests run this block on its own). */
@@ -1931,7 +1931,7 @@ const pxMod = (a, n) => ((a % n) + n) % n;
 /** The view's pixel buffer: its integer scale (device px per art px), size in art px and the css -> art factor. */
 function pxPrepare(v) {
   const m = v.m, dpr = v.dpr || 1, A = PXA();
-  const kd = Math.max(1, Math.round(m.kartW * dpr / (v.kind === 'title' ? 54 : 60)));
+  const kd = Math.max(1, Math.min(v.pxKdMax || 99, Math.round(m.kartW * dpr / (v.kind === 'title' ? 54 : 60))));
   const NW = Math.ceil(m.w * dpr / kd), NH = Math.ceil(m.h * dpr / kd);
   let P = v.pxb;
   if (!P || P.kd !== kd || P.NW !== NW || P.NH !== NH || P.scene !== v.scene || P.night !== v.night) {
@@ -2297,6 +2297,7 @@ function pxRaceView(v, dt, time) {
   pxBlit(v, P); pxFlushTexts(v, P);
 }
 function pxDemo(v, race, cam, dt, time) {
+  v.pxKdMax = 0;   // the podium's cap (below) is for the results only
   const P = pxPrepare(v);
   pxScene(v, P, cam);
   emitKartParts(v, race, dt); stepParts(v, dt); pxParts(v, P, cam, false);
@@ -2323,13 +2324,18 @@ function pxPodium(dt, time) {
   const R = S.results, card = $('resultScreen').querySelector('.ok-card'), wide = innerWidth / innerHeight >= 1.25;
   const r = card ? card.getBoundingClientRect() : { left: innerWidth, top: innerHeight };
   pxPod.t += dt;
-  const P = pxPrepare(v), g = P.g, m = v.m, f = P.f;
+  const m = v.m, A = PXA(), [FW, FH] = A.kart, bw = FW + 4, unit = Math.max(8, Math.round(FW * 0.28));
+  // the free part of the screen (beside the card on wide screens, above it on tall ones), in css px
+  const fx0 = 0, fx1 = wide ? Math.max(m.w * 0.4, r.left - 16) : m.w, fy1 = wide ? m.roadTop + m.laneH : Math.max(m.h * 0.22, r.top - 6);
+  // the whole podium (three steps and the fourth kart beside them, 4.2 karts wide; the top step and its kart about
+  // 3 units + a kart tall) must fit that part: the pixel scale shrinks until it does, so no kart is ever behind the card
+  const dpr = v.dpr || 1, needW = bw * 4.3 + 8, needH = unit * 3 + FH + 10;
+  v.pxKdMax = Math.max(1, Math.floor(Math.min((fx1 - fx0) * dpr / needW, (fy1 - m.hud - 8) * dpr / needH)));
+  const P = pxPrepare(v), g = P.g, f = P.f;
   pxScene(v, P, 30);
-  // the free part of the screen (beside the card on wide screens, above it on tall ones)
-  const fx0 = 0, fx1 = wide ? Math.max(m.w * 0.4, r.left - 16) : m.w, fy1 = wide ? m.roadTop : Math.min(m.roadTop, Math.max(m.h * 0.3, r.top - 8));
-  const cx = Math.round((fx0 + fx1) / 2 * f), base = Math.round(Math.min(m.roadTop + m.laneH * 1.2, fy1 + m.laneH * 0.6) * f);
-  const A = PXA(), [FW] = A.kart, bw = FW + 4, steps = [[0, 3, '#FFD23F', '#C99A00'], [-1, 2, '#4FA8F0', '#2F6FC8'], [1, 1, '#FFC89E', '#C9713A']];
-  const unit = Math.max(8, Math.round(FW * 0.28));
+  // the group runs from the fourth kart (-2.65 karts) to the third step (+1.5): centred in the free width
+  const cx = Math.round(((fx0 + fx1) / 2) * f + 0.575 * bw), base = Math.round(Math.min(m.roadTop + m.laneH * 1.2, fy1 - 4) * f);
+  const steps = [[0, 3, '#FFD23F', '#C99A00'], [-1, 2, '#4FA8F0', '#2F6FC8'], [1, 1, '#FFC89E', '#C9713A']];
   for (const [col, n, fill, lip] of steps) {
     const x = cx + col * bw - bw / 2, top = base - n * unit;
     pxBox(g, Math.round(x), top, bw, n * unit + 2, fill, lip);

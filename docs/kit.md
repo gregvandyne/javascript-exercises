@@ -639,7 +639,7 @@ a fixed palette with an ordered (Bayer) dither on gradients, scaled up nearest-n
   or older loads exactly what it did, and no new kit version (or seed re-pin) was needed.
 - **style-pixel** (3 KB br): the UI skin under `.ok-pixel` (square boxes with stepped corners via `clip-path`, hard Ink
   lips, no title gradients or glows, no ligatures), the fonts (Pixelify Sans, SIL OFL, Latin/Latin-ext/Cyrillic, and
-  **Oomba Pixel Digits**, the kit's own 6 x 7 digits and maths signs, because Pixelify's 5 reads as S; other scripts
+  **Oomba Pixel Digits**, the kit's own 6 x 7 digits and maths signs, because Pixelify's 5 reads as S, plus its own Z, z, G and B, which Pixelify draws almost like 2, 6 and 8; other scripts
   keep the kit font), loaded with `FontFace` only when the style is on, and `Oomba.pixel` (kit-api.md): integer scale,
   nearest-neighbour sprites, a dithered sky, a palette snap with the Ink edge for anything drawn at run time (a
   player's own avatar), a night grade inside the palette.

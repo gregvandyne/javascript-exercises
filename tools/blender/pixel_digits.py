@@ -1,10 +1,10 @@
-"""Oomba Pixel Digits: the digits and maths signs of the kit's pixel style, hand-pixelled on a 6 x 7 grid.
+"""Oomba Pixel Digits: the digits, maths signs and digit-like letters of the kit's pixel style, on a 6 x 7 grid.
 
     python3 tools/blender/pixel_digits.py [--out public/fonts/oomba-pixel-digits.woff2]   (needs fontTools + brotli)
 
 Pixelify Sans (the pixel style's text font) draws 5 almost like S and 2 almost like Z, which is no good for a maths game
 for 6-9 year olds. This face has only 0-9 and the signs a question shows (+ - minus times divide = ? , . / and a
-space), each drawn for one job: to be read at a glance. Vertical strokes are two pixels wide (bold, like Pixelify at 700),
+space), plus the letters Pixelify draws almost like digits (Z z G B), each drawn for one job: to be read at a glance. Vertical strokes are two pixels wide (bold, like Pixelify at 700),
 the 5 has a flat top and a square corner, the 4 is open, the 1 has a foot, the 7 a straight stem. style-pixel puts it in
 front of Pixelify with a unicode-range of just these characters, so words keep Pixelify and numbers use these.
 """
@@ -37,6 +37,12 @@ GLYPHS = {
     ',': ['......', '......', '......', '......', '......', '..##..', '.##...'],
     '.': ['......', '......', '......', '......', '......', '......', '..##..'],
     '/': ['....##', '....##', '...##.', '..##..', '.##...', '##....', '##....'],
+    # letters Pixelify draws almost like digits (Z/2, G/6, B/8): square corners and straight strokes, so "Zoom!",
+    # "Galaxy" and "Bolt" never read as "2oom!", "6alaxy", "8olt"
+    'Z': ['######', '....##', '...##.', '..##..', '.##...', '##....', '######'],
+    'z': ['......', '......', '######', '...##.', '..##..', '.##...', '######'],
+    'G': ['.#####', '##....', '##....', '##.###', '##..##', '##..##', '.#####'],
+    'B': ['#####.', '##..##', '##..##', '#####.', '##..##', '##..##', '#####.'],
 }
 NAMES = {'+': 'plus', '-': 'hyphen', '−': 'minus', '×': 'multiply', '÷': 'divide', '=': 'equal', '?': 'question',
          ',': 'comma', '.': 'period', '/': 'slash', ' ': 'space'}
