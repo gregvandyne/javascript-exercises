@@ -32,7 +32,7 @@ export function renderSpec(script, tl, { id, quality = 'full', outDir }) {
   const q = QUALITY[quality] || QUALITY.full;
   const base = seedOf(id);
   return {
-    ...q, out_dir: outDir,
+    ...q, key: String(id), out_dir: outDir,
     scenes: script.scenes.map((s, i) => ({
       id: `s${i + 1}`, set: s.set, time: s.time, props: s.props, characters: s.characters, camera: s.camera,
       frames: Math.ceil(tl.scenes[i].dur * q.fps) + q.step, seed: (base + i * 7919) % 100000, focus: s.characters[0] ? s.characters[0].kind : null,
@@ -96,7 +96,10 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   onStage('assembling');
   onProgress(stageProgress('assembling', 0.1));
   const out = path.join(workDir, 'story.mp4');
-  await assemble({ tl, framesDir: spec.out_dir, sceneIds: spec.scenes.map(s => s.id), fps: q.fps, step: q.step, width: q.width, height: q.height, music, clips, ass, out, xfade: T.xfade, posterAt: titleAt[0] + 1.4 });
+  const sceneClips = spec.scenes.map(s => (r.clips && r.clips[s.id]) || path.join(spec.out_dir, `${s.id}.mp4`));
+  await assemble({ tl, sceneClips, fps: q.fps, width: q.width, height: q.height, music, clips, ass, out, xfade: T.xfade, posterAt: titleAt[0] + 1.4 });
+  // the clips were only needed to build the video
+  fs.rmSync(spec.out_dir, { recursive: true, force: true });
   onProgress(1);
   const meta = {
     total: tl.total, scenes: tl.scenes, lines: tl.lines.map(l => ({ scene: l.scene, start: l.start, end: l.end })),

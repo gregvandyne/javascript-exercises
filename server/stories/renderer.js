@@ -11,6 +11,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { encodeClip } from './clip.js';
+import { RemoteRenderer } from './remote-renderer.js';
 
 export const SCRIPT = path.join(path.dirname(fileURLToPath(import.meta.url)), 'blender', 'render_story.py');
 
@@ -74,8 +76,10 @@ export class LocalBlenderRenderer {
     return this._probed;
   }
 
-  /** Render every scene of the spec. onProgress({ done, total, scene, sec }) after each frame. */
-  async render(spec, { onProgress = null, signal = null } = {}) {
+  /** Render every scene of the spec. onProgress({ done, total, scene, sec }) after each frame. Each finished scene
+   *  becomes <out_dir>/<scene id>.mp4 (clip.js) and its frames are removed (keepFrames: keep them, for previews).
+   *  -> { engine, frames, seconds, frameSeconds, clips: { [scene id]: file } } */
+  async render(spec, { onProgress = null, signal = null, keepFrames = false } = {}) {
     const { engine } = await this.probe();
     const full = { ...spec, engine };
     fs.mkdirSync(full.out_dir, { recursive: true });
@@ -87,6 +91,7 @@ export class LocalBlenderRenderer {
     let done = 0, secs = 0;
     const t0 = Date.now();
     const queue = full.scenes.map((s, i) => i);
+    const clips = {};
     const worker = async () => {
       while (queue.length) {
         const i = queue.shift();
@@ -96,16 +101,22 @@ export class LocalBlenderRenderer {
             if (m.frame) { done++; secs += m.sec || 0; onProgress && onProgress({ done, total, scene: m.scene, sec: m.sec }); }
           },
         });
+        if (full.only_frames) continue;
+        const id = full.scenes[i].id, dir = path.join(full.out_dir, id);
+        clips[id] = await encodeClip(dir, path.join(full.out_dir, `${id}.mp4`), { fps: full.fps || 24, step });
+        if (!keepFrames) fs.rmSync(dir, { recursive: true, force: true });
       }
     };
     await Promise.all(Array.from({ length: Math.min(this.procs, queue.length) }, worker));
-    return { engine, frames: done, seconds: (Date.now() - t0) / 1000, frameSeconds: secs };
+    return { engine, frames: done, seconds: (Date.now() - t0) / 1000, frameSeconds: secs, clips };
   }
 }
 
-/** The renderer the worker uses: STORY_RENDERER ('local', the default and only one so far). */
+/** The renderer the worker uses: STORY_RENDERER 'local' (Blender on this machine, the default) or 'remote' (the
+ *  story renderer service at STORY_RENDER_URL, services/story-renderer/). */
 export function createRenderer(opts = {}) {
   const kind = process.env.STORY_RENDERER || 'local';
-  if (kind !== 'local') throw new Error(`STORY_RENDERER=${kind} is not available (only "local")`);
+  if (kind === 'remote') return new RemoteRenderer(opts);
+  if (kind !== 'local') throw new Error(`STORY_RENDERER=${kind} is not available ("local" or "remote")`);
   return new LocalBlenderRenderer(opts);
 }

@@ -1,5 +1,6 @@
-// Story Builder: put it together with ffmpeg (docs/story-builder.md). Each scene's frames (rendered "on twos" when
-// step is 2: held for two frames) become a clip of exactly its timeline length; the clips crossfade into each other;
+// Story Builder: put it together with ffmpeg (docs/story-builder.md). Each scene's clip from the renderer (rendered
+// "on twos" when step is 2: 12 fps, each frame held for two) is brought to the video's rate and cut to exactly its
+// timeline length; the clips crossfade into each other;
 // the words are burned in from the ASS file (libass); the music bed (already ducked) and the narration clips, each
 // placed at its line's start, are mixed. Out: an H.264 + AAC MP4 (faststart, so it plays while it downloads) and a
 // poster JPEG taken while the title is on screen.
@@ -13,11 +14,10 @@ import { run } from '../services/story-voice.js';
 export const FONTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'fonts');
 
 /** The ffmpeg arguments (exported for tests). */
-export function ffmpegArgs({ tl, framesDir, sceneIds, fps, step, width, height, music, clips, ass, out, fontsDir = FONTS_DIR, xfade }) {
+export function ffmpegArgs({ tl, sceneClips, fps, width, height, music, clips, ass, out, fontsDir = FONTS_DIR, xfade }) {
   const args = ['-v', 'error', '-y'];
-  const inFps = fps / step;
-  sceneIds.forEach(id => args.push('-framerate', String(inFps), '-i', path.join(framesDir, id, 'f_%05d.png')));
-  const nS = sceneIds.length;
+  sceneClips.forEach(f => args.push('-i', f));
+  const nS = sceneClips.length;
   args.push('-i', music);
   clips.forEach(c => args.push('-i', c.file));
   const f = [];
@@ -39,7 +39,7 @@ export function ffmpegArgs({ tl, framesDir, sceneIds, fps, step, width, height, 
   });
   f.push(...parts);
   f.push(`[m]${clips.map((c, k) => `[n${k}]`).join('')}amix=inputs=${clips.length + 1}:normalize=0:dropout_transition=0,atrim=duration=${tl.total.toFixed(3)},alimiter=limit=0.95[aout]`);
-  args.push('-filter_complex', f.join(';'), '-map', '[vout]', '-map', '[aout]',
+  args.push('-filter_complex', f.join(';'), '-map', '[vout]', '-map', '[aout]', '-threads', String(+process.env.STORY_FFMPEG_THREADS || 2),
     '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', String(fps),
     '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', '-t', tl.total.toFixed(3), out);
   return args;
@@ -48,7 +48,7 @@ export function ffmpegArgs({ tl, framesDir, sceneIds, fps, step, width, height, 
 /** -> { video, poster } */
 export async function assemble(o) {
   const args = ffmpegArgs(o);
-  await run('ffmpeg', args, { timeout: 30 * 60e3 });
+  await run(process.env.STORY_NICE === '0' ? 'ffmpeg' : 'nice', process.env.STORY_NICE === '0' ? args : ['-n', '10', 'ffmpeg', ...args], { timeout: 30 * 60e3 });
   const poster = path.join(path.dirname(o.out), 'poster.jpg');
   const at = Math.min(o.tl.total - 0.1, o.posterAt != null ? o.posterAt : 1.8);
   await run('ffmpeg', ['-v', 'error', '-y', '-ss', at.toFixed(2), '-i', o.out, '-frames:v', '1', '-q:v', '3', poster]);

@@ -263,15 +263,16 @@ test('render spec and ffmpeg graph follow the timeline', () => {
     assert.equal(s.set, script.scenes[i].set);
   });
   assert.deepEqual(renderSpec(script, tl, { id: 'abc', outDir: '/x' }).scenes.map(s => s.seed), spec.scenes.map(s => s.seed), 'seeds come from the story id');
-  const args = ffmpegArgs({ tl, framesDir: '/f', sceneIds: spec.scenes.map(s => s.id), fps: 24, step: 2, width: 1280, height: 720, music: '/m.wav', clips: tl.lines.map((l, i) => ({ file: `/v${i}.wav`, start: l.start })), ass: '/c.ass', out: '/o.mp4', xfade: C.T.xfade });
+  const args = ffmpegArgs({ tl, sceneClips: spec.scenes.map(s => `/r/${s.id}.mp4`), fps: 24, width: 1280, height: 720, music: '/m.wav', clips: tl.lines.map((l, i) => ({ file: `/v${i}.wav`, start: l.start })), ass: '/c.ass', out: '/o.mp4', xfade: C.T.xfade });
   const graph = args[args.indexOf('-filter_complex') + 1];
   assert.equal((graph.match(/xfade=/g) || []).length, 4);
   assert.match(graph, new RegExp(`offset=${tl.scenes[1].start.toFixed(3)}`));
   assert.match(graph, new RegExp(`adelay=${Math.round(tl.lines[2].start * 1000)}\\|`));
   assert.match(graph, /amix=inputs=6:normalize=0/);
   assert.ok(args.includes('libx264') && args.includes('aac') && args.includes('+faststart'));
-  assert.equal(args.filter(a => a === '-framerate').length, 5);
-  assert.equal(args[args.indexOf('-framerate') + 1], '12', 'frames rendered on twos are read at 12 fps');
+  assert.deepEqual(args.filter((a, i) => args[i - 1] === '-i').slice(0, 5), spec.scenes.map(s => `/r/${s.id}.mp4`), 'one clip per scene');
+  assert.match(graph, /\[0:v\]fps=24,trim=duration=/, 'clips rendered on twos are brought to 24 fps');
+  assert.equal(spec.key, 'abc', 'the render job carries the story id');
   assert.ok(QUALITY.test.width < QUALITY.full.width);
 });
 

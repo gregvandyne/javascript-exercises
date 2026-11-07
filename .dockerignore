@@ -11,3 +11,4 @@ docs
 **/secrets.env
 **/session-secret*.txt
 **/oomba-data-*.tgz
+**/__pycache__
