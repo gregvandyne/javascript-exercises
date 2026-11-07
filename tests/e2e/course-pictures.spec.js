@@ -11,6 +11,8 @@
 //   - a diagram never carries a cue on the picture at all (its cues are the caption strip under it);
 //   - a diagram's badge never sits on any of the diagram's text;
 //   - no edge of a diagram's focus box (or of its ring) crosses a text: every label is wholly inside or outside.
+//   - while each tour step plays, its words are wholly on screen (inside the viewport and the figure; a chip inside
+//     the picture) and at least 200 px wide, or their whole one-line width: never a sliver past the picture's edge.
 // Every size runs twice: the tour's layout, and the still view a reduced-motion setting shows (every step's box and
 // badge at once), where in addition no two badges may stack.
 // The main e2e server reads CS Quest's decks from the test fixtures (BRB_COURSE_DIR), so this spec runs a server
@@ -168,6 +170,30 @@ function figureProblems(fig, arg) {
   return out;
 }
 
+/** In the page: the words of one tour step as the child sees them while the step plays (data-gf-step), wherever
+ *  they are — the chip on the picture, the caption strip under it, or (the still view) the cue list — must be on
+ *  screen: wholly inside the viewport and the figure (a chip inside the picture's frame), and never squeezed: at
+ *  least CUE_MIN px wide, or the words' whole one-line width when that is less. A chip pushed past the picture's
+ *  edge once showed the ring and badge with a 73-110 px sliver of words beyond the frame. */
+const CUE_MIN = 200;
+function cueProblem(fig, { s, min }) {
+  const R = e => e.getBoundingClientRect();
+  const shown = e => e && getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden' && +getComputedStyle(e).opacity > 0 && R(e).width > 0;
+  const chip = fig.querySelector(`.gf-step[data-i="${s}"] .gf-cue`), cell = fig.querySelector(`.gf-sc[data-i="${s}"]`), li = fig.querySelectorAll('.gf-cues li')[s];
+  const el = [chip, cell, li].find(shown);
+  if (!el) return 'its words are nowhere on screen';
+  const r = R(el), f = R(fig), fr = R(fig.querySelector('.sframe'));
+  const c = el.cloneNode(true);
+  c.style.cssText = 'position:fixed;left:0;top:0;display:flex;width:auto;max-width:none;white-space:nowrap;visibility:hidden';
+  document.body.append(c);
+  const one = c.getBoundingClientRect().width; c.remove();
+  const box = el === chip ? fr : f, where = el === chip ? 'chip' : el === cell ? 'caption strip' : 'cue list';
+  if (r.left < Math.max(0, box.left) - 1 || r.right > Math.min(innerWidth, box.right) + 1) return `the ${where} runs off the ${el === chip ? 'picture' : 'figure'} (${Math.round(r.left)}..${Math.round(r.right)} px of ${Math.round(box.left)}..${Math.round(Math.min(innerWidth, box.right))})`;
+  if (el === chip && (r.top < fr.top - 1 || r.bottom > fr.bottom + 1)) return 'the chip runs off the picture';
+  if (r.width < Math.min(min, one - 2)) return `the ${where} is squeezed to ${Math.round(r.width)} px (its words need ${Math.round(Math.min(min, one))})`;
+  return null;
+}
+
 const RUNS = [['cs-quest', '1b'], ['cs-quest', '2'], ['cyber-defenders', '1b'], ['cyber-defenders', '2'], ['number-quest', 'explorer']];
 // Each size twice: the tour's own layout, and the still view a reduced-motion setting shows (every box and badge at once).
 for (const [W, H, still] of [[390, 844, false], [1280, 800, false], [390, 844, true], [1280, 800, true]]) {
@@ -216,6 +242,23 @@ for (const [W, H, still] of [[390, 844, false], [1280, 800, false], [390, 844, t
             if (z.px < 5) problems.push(`${key} slide ${i} zoomed step ${s + 1}: the words read at ${z.px.toFixed(1)} px`);
           }
           if (zoomed.length && !still) { await fig.evaluate(f => f.removeAttribute('data-gfz-pin')); await page.waitForTimeout(300); }
+          // Each tour step played as the child sees it: its words fully on screen and readable (cueProblem).
+          const nSteps = await fig.locator('.gf-step').count();
+          for (let s = 0; s < nSteps; s++) {
+            if (!(await page.evaluate(() => !!window.__cueProblem))) await page.evaluate(`window.__cueProblem = ${cueProblem.toString()}`);
+            const p = await fig.evaluate(async (f, a) => {
+              // the tour's own timers may move the step on (or end the tour): hold it at this one until it has
+              // shown for a moment unchanged, then measure at once
+              for (let k = 0; k < 8; k++) {
+                f.setAttribute('data-gf-step', String(a.s));
+                await new Promise(r => setTimeout(r, 450));
+                if (f.getAttribute('data-gf-step') === String(a.s)) return window.__cueProblem(f, a);
+              }
+              return 'the tour never held the step';
+            }, { s, min: CUE_MIN });
+            if (p) problems.push(`${key} slide ${i} step ${s + 1}: ${p}`);
+          }
+          await fig.evaluate(f => f.removeAttribute('data-gf-step'));
         }
       }
       await ctx.close();
