@@ -219,14 +219,8 @@
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Money board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Count every change answer up from the price before you pick a tile.",
    "art": "trophy",
    "img": "nq/brain-board/money-board",
-   "alt": "Brain Board in play: the Money board, categories Coin values, Make the price, Change back, Add the prices and Dollars and cents, a coin values question open.",
-   "kind": "mission",
-   "view": [
-    8.5,
-    26.5,
-    83,
-    41.5
-   ]
+   "alt": "Brain Board's Money board on a phone: a Coin values question for 100 points, four answers to pick from.",
+   "kind": "mission"
   }
  ],
  "check": [

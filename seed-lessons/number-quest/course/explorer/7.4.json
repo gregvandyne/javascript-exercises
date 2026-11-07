@@ -191,14 +191,8 @@
    "text": "Open Quest Race and finish the Vault Run: one whole Practice Race, all the way to the podium. It opens straight on eight questions, one lock for each of the seven workshops and then the Honest Wheel. Name each lock's workshop before you answer it.",
    "art": "trophy",
    "img": "nq/quest-race/vault-run",
-   "alt": "Quest Race on the island course: a Vault Run lock question on screen, four answers to pick from, the runners on the track below.",
-   "kind": "mission",
-   "view": [
-    20,
-    54,
-    60,
-    44
-   ]
+   "alt": "Quest Race on a phone: the Vault Run's first lock, a place value question, and four answers to pick from, the race track just above.",
+   "kind": "mission"
   }
  ],
  "check": [

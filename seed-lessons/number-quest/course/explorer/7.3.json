@@ -137,14 +137,8 @@
    "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on chance questions, with no picking first. Before each answer, count the parts: how many match, and how many in all? Then tally 20 real spins and compare.",
    "art": "trophy",
    "img": "nq/quest-race/chance-race",
-   "alt": "Quest Race on the island course: a chance question about a spinner on screen, four chance words to pick from, the runners below.",
-   "kind": "mission",
-   "view": [
-    20,
-    54,
-    60,
-    44
-   ]
+   "alt": "Quest Race on a phone: a spinner chance question and four chance words to pick from, the race track just above.",
+   "kind": "mission"
   }
  ],
  "check": [

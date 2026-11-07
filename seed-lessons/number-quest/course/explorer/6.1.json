@@ -165,13 +165,7 @@
    "art": "trophy",
    "kind": "mission",
    "img": "nq/brain-board/shapes-board",
-   "alt": "Brain Board in play: the Shape Hunt board, categories Count the sides, Square corners, Quadrilateral?, Families and Turns, a question open.",
-   "view": [
-    8.5,
-    26.5,
-    83,
-    41.5
-   ]
+   "alt": "Brain Board's Shape Hunt board on a phone: a Count the sides question for 100 points, four answers to pick from."
   }
  ],
  "check": [

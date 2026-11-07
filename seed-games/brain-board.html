@@ -711,7 +711,7 @@ window.SoloBank = (function () {
       var names = ['Maya', 'Sam', 'Leo', 'Ana', 'Ben'], things = [['ribbons', 'sold'], ['stickers', 'gave away'], ['cans', 'recycled'], ['books', 'lent out'], ['seeds', 'planted']];
       for (i = 0; i < 5; i++) { // Draw the story: whole and one part given, find the other part.
         a = ri(180, 480); b = ri(60, a - 60); var th = things[i % things.length];
-        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. Draw the bar: whole ' + a + ', part ' + b + ', part ?. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
+        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. On the bar, the whole is ' + a + ' and one part is ' + b + '. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
       }
       for (i = 0; i < 5; i++) { // Joining stories: two parts make the whole.
         a = ri(120, 390); b = ri(40, 290);
