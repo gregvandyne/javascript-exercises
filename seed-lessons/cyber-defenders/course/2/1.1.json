@@ -53,7 +53,7 @@
    "img": "csq/packet-post/protocols-2-ack",
    "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap.",
    "view": [
-    53.8,
+    50.0,
     37.2,
     40.0,
     35.6

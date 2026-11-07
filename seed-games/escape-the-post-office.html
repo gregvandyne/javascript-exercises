@@ -74,6 +74,8 @@
   @media (max-height: 520px) { .ep-say canvas { width: 32px; height: 32px; } .ep-say p { font-size: .85em; } }
   /* a phone upright: no small print (a lock's label, a card's lines, a move tile read at the body size) */
   @media (max-width: 520px) and (min-height: 521px) { .ep-say p, .ep-card p, .ep-lock small, .ep-seq span, .ep-tbl, .ep-tile { font-size: 1em; } .ep-node small { font-size: .85em; } }
+  /* ... and a narrow one: a lock's words at that size need the whole row, or its tile stands too tall */
+  @media (max-width: 400px) and (min-height: 521px) { .ep-grid { grid-template-columns: minmax(0, 1fr); } }
   /* Landscape phones: the room starts under the kit's HUD row instead of a tall empty sky, like Trick Inbox. */
   @media (orientation: landscape) and (max-height: 520px) { .ep { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .ep-main { gap: 6px; } .ep-say { min-height: 44px; padding: 4px 8px; } .ep-board { height: min(52vh, 320px); } }
 </style>

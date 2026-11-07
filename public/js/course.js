@@ -407,8 +407,10 @@ function gfBadgeSpots(fig, box, badge, map) {
     const bx = rectOf(st.querySelector('.gf-box'));
     taken.push(grow({ left: bx.left + sp[0], top: bx.top + sp[1], right: bx.left + sp[0] + d, bottom: bx.top + sp[1] + d }, 2));
   }
-  // ... nor on or beside another step's box: a number there reads as that box's (two stacked clue lines)
-  if (reduced && me) for (const st of fig.querySelectorAll('.gf-step')) if (st !== me) { const r = rectOf(st.querySelector('.gf-box')); taken.push({ left: r.left - o - d, top: r.top, right: r.right + o + d, bottom: r.bottom }); }
+  // ... and, of spots clear of the same text, it prefers one not on or beside another step's box: a number
+  // there reads as that box's (two stacked clue lines)
+  const others = [];
+  if (reduced && me) for (const st of fig.querySelectorAll('.gf-step')) if (st !== me) { const r = rectOf(st.querySelector('.gf-box')); others.push({ left: r.left - o - d, top: r.top, right: r.right + o + d, bottom: r.bottom }); }
   let out = [];
   const all = [];
   spots.forEach((p, k) => {
@@ -417,13 +419,14 @@ function gfBadgeSpots(fig, box, badge, map) {
       if (r.left < fr.left + 1 || r.top < fr.top + 1 || r.right > fr.right - 1 || r.bottom > fr.bottom - 1) return;
       if ((k < inner && area(r, ring)) || (zoom && area(r, zoom))) return;
     }
-    const c = { p, k, tx: gfTextShare(fig, r, map, 1), rel: p || [d0.left - b.left, d0.top - b.top] };
+    const c = { p, k, tx: gfTextShare(fig, r, map, 1), rel: p || [d0.left - b.left, d0.top - b.top], by: others.some(t => area(r, t)) ? 1 : 0 };
     all.push(c);
     if (!taken.some(t => area(r, t))) out.push(c);
   });
   if (!out.length) out = all;
   out.sort((a, c) => a.tx - c.tx || a.k - c.k);
-  return out.filter(c => c.tx <= out[0].tx + 0.005);
+  const best = out.filter(c => c.tx <= out[0].tx + 0.005);
+  return [...best.filter(c => !c.by), ...best.filter(c => c.by)];
 }
 const gfSpotOf = new WeakMap();
 function gfSetBadge(badge, spot) {
