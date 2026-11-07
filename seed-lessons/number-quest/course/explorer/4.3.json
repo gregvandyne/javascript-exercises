@@ -149,7 +149,38 @@
   {
    "title": "The Jumble adds the bottoms",
    "text": "The Jumble added 1/2 + 1/4 and wrote 2/6. It counted the pieces and the cuts. A mistake is a clue: the bottom number names the piece size, and sizes do not add.",
-   "art": "bug"
+   "art": "bug",
+   "visual": {
+    "type": "fix",
+    "label": "The Jumble added the bottoms and wrote 2/6; make the sizes match first, and 1/2 + 1/4 is 3/4",
+    "badName": "The Jumble wrote",
+    "wrong": "1/2 + 1/4 = 2/6",
+    "steps": [
+     "1/2 = 2/4",
+     "2/4 + 1/4 = 3/4"
+    ],
+    "right": "1/2 + 1/4 = 3/4"
+   },
+   "focus": [
+    {
+     "cue": "The Jumble added the bottoms too and wrote 2/6.",
+     "box": [
+      11,
+      21.3,
+      82,
+      25.8
+     ]
+    },
+    {
+     "cue": "Fix it: cut halves into fourths. 2/4 and 1/4 make 3/4.",
+     "box": [
+      11,
+      54.2,
+      82,
+      41.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: Mixed numbers",
@@ -219,9 +250,10 @@
    "view": [
     0,
     0,
-    66.39,
+    73.64,
     100
-   ]
+   ],
+   "whole": true
   }
  ],
  "check": [

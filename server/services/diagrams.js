@@ -1,7 +1,7 @@
 // The drawn diagram types that views/nq-diagrams.js draws (grid, squares, lines, chart, table), cleaned the way
 // services/courses.js cleanSlide cleans the older types: strictly shaped per type, every string capped, every
 // number checked; anything malformed returns null and the slide drops the whole visual (fromDeck reports it).
-export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder']);
+export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder', 'fix']);
 export const LINE_KINDS = Object.freeze(['parallel', 'perpendicular', 'crossing']);
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
@@ -80,6 +80,14 @@ export function cleanDiagram(v, label) {
   if (v.type === 'ladder') {
     if (!Array.isArray(v.words) || v.words.length < 2 || v.words.length > 5 || !v.words.every(w => str(w, 14))) return null;
     return { type: 'ladder', label, words: v.words.map(w => str(w, 14)), ...(str(v.up, 14) ? { up: str(v.up, 14) } : {}), ...(str(v.down, 14) ? { down: str(v.down, 14) } : {}) };
+  }
+  if (v.type === 'fix') {
+    // a Jumble beat: the wrong answer, the trick's steps (1-2 lines, so the two cards fit the frame), the right answer; the card names are optional
+    // every line whole (a cut equation would teach something false): over 18 characters, the diagram is dropped
+    const line = t => !!txt(t, 18) && String(t).trim().length <= 18;
+    if (!line(v.wrong) || !line(v.right) || !Array.isArray(v.steps) || v.steps.length < 1 || v.steps.length > 2 || !v.steps.every(line)) return null;
+    return { type: 'fix', label, wrong: txt(v.wrong, 18), steps: v.steps.map(t => txt(t, 18)), right: txt(v.right, 18),
+      ...(str(v.badName, 18) ? { badName: str(v.badName, 18) } : {}), ...(str(v.goodName, 18) ? { goodName: str(v.goodName, 18) } : {}), ...(str(v.wrongNote, 18) ? { wrongNote: str(v.wrongNote, 18) } : {}) };
   }
   return null;
 }

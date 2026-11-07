@@ -100,7 +100,38 @@
   {
    "title": "The Jumble calls it impossible",
    "text": "The Jumble watched the spinner miss red five times and called red impossible. Then it landed on the very next spin. Unlikely things happen; that is what unlikely means. Impossible means no part is red at all.",
-   "art": "bug"
+   "art": "bug",
+   "visual": {
+    "type": "fix",
+    "label": "The Jumble called red impossible; 1 part of 6 is red, so red is unlikely",
+    "badName": "The Jumble said",
+    "wrong": "Red: impossible",
+    "steps": [
+     "1 part of 6 is red",
+     "so red can land"
+    ],
+    "right": "Red: unlikely"
+   },
+   "focus": [
+    {
+     "cue": "The Jumble called red impossible after five misses.",
+     "box": [
+      11,
+      21.3,
+      82,
+      25.8
+     ]
+    },
+    {
+     "cue": "Fix it: 1 part of 6 is red, so red is unlikely, not impossible.",
+     "box": [
+      11,
+      54.2,
+      82,
+      41.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: build a likely spinner",

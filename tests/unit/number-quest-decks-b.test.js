@@ -5,7 +5,8 @@
 // Stretch slide, the mission last), the quick check is the step's own three bank items whose cat is one
 // of the step's LOCKED primary codes (standards.json explorerCodes), every distractor carries a
 // misconception tag, kid-safe text (US spelling, no brands, links, codes or framework names in anything
-// a child reads), the unit Jumble beats (3.3 races itself, 4.3 adds the bottoms too), and the media
+// a child reads), the unit Jumble beats (3.3 guesses 7 × 8 and the doubling trick fixes it; 4.3 adds the bottoms too; each drawn
+// as a `fix` diagram, the concrete mistake struck through, then the trick), and the media
 // rule (Greg, 2026-11-05; docs/decisions.md): drawn diagrams teach, real pictures carry missions and
 // story — the pictorial step on a TEACHING slide is a DRAWN diagram (slide.visual) with guided focus
 // (slide.focus) over it; the MISSION slide carries a real screenshot of the assigned game in its
@@ -164,14 +165,30 @@ test('hand-checked keys: the arithmetic in the checks is right', () => {
   for (const frag of ['6 × 7 = 42 rolls in all', '29 shared by 4 is 7 remainder 1', 'so 9 × 7 = 63', 'the third mark is 3/4', 'so 3/4 is greater than 5/8', '2/4 + 1/4 = 3/4', 'wrote 2/6']) assert.ok(all.includes(frag), `worked example present: ${frag}`);
 });
 
-test("the unit Jumble beats land in 3.3 (races itself) and 4.3 (adds the bottoms), the spec's flagship fraction mistake", () => {
+test("the unit Jumble beats land in 3.3 (guesses 7 × 8) and 4.3 (adds the bottoms), each a concrete mistake the lesson's own trick fixes", () => {
   for (const { step, deck: d } of decks) {
     const text = d.slides.map(s => `${s.title} ${s.text} ${(s.steps || []).join(' ')}`).join(' ');
     if (['3.3', '4.3'].includes(step.n)) assert.match(text, /Jumble/, `explorer-${step.n}: a Jumble beat`);
   }
+  // 3.3 (owner, 2026-11-07: the old "races itself" beat was "very random"): the Jumble says 54 for 7 x 8, and
+  // the kid fixes it with the deck's doubling trick, 7 x 4 = 28 doubled to 56, drawn as a fix diagram with cues.
+  const d33 = decks.find(d => d.step.n === '3.3').deck;
+  const j33 = d33.slides.find(s => /Jumble/.test(s.title));
+  assert.equal(j33.title, 'The Jumble guesses 7 × 8');
+  assert.match(j33.text, /54 for 7 × 8/, '3.3: the concrete mistake');
+  assert.match(j33.text, /7 × 4 = 28, and double 28 is 56/, "3.3: fixed with the lesson's doubling trick");
+  assert.equal(j33.visual.type, 'fix');
+  assert.equal(j33.visual.wrong, '7 × 8 = 54');
+  assert.deepEqual(j33.visual.steps, ['7 × 4 = 28', '28 + 28 = 56']);
+  assert.equal(j33.visual.right, '7 × 8 = 56');
+  assert.equal(j33.focus.length, 2, '3.3: one cue on the mistake, one on the fix');
+  assert.match(j33.focus[0].cue, /54/); assert.match(j33.focus[1].cue, /double 28 is 56/);
+  assert.ok(!/memoriz/i.test(JSON.stringify(j33)), '3.3: no vague "memorizing every fact" beat');
   const d43 = decks.find(d => d.step.n === '4.3').deck;
   const jumble = d43.slides.map(s => `${s.title} ${s.text}`).join(' ');
   assert.match(jumble, /adds the bottoms|added the bottoms|bottom number names the piece size/, '4.3: the mistake is named and fixed');
+  const j43 = d43.slides.find(s => /Jumble/.test(s.title));
+  assert.equal(j43.visual.type, 'fix'); assert.equal(j43.visual.wrong, '1/2 + 1/4 = 2/6'); assert.equal(j43.visual.right, '1/2 + 1/4 = 3/4');
 });
 
 test('kid-safe text: no links, brands, framework names or codes in decks or items; US spelling', () => {
@@ -191,7 +208,7 @@ test('kid-safe text: no links, brands, framework names or codes in decks or item
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {
-  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'swap', 'split', 'ladder'];
+  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'swap', 'split', 'ladder', 'fix'];
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     const drawn = d.slides.filter(s => s.visual);
