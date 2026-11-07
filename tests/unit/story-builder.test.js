@@ -249,7 +249,8 @@ test('captions: WebVTT for the player and ASS to burn in, timed alike', () => {
   assert.match(ass, /PlayResX: 1280\nPlayResY: 720/);
   assert.match(ass, /Dialogue: 0,0:00:03\.20,0:00:05\.75,Words,,0,0,0,,\{\\fad\(180,180\)\\blur0\.4\}Pip looked up\\Nat the <stars>/);
   assert.match(ass, /Title,,0,0,0,,\{\\fad\(500,600\)\\blur0\.6\}Pip and the Stars/, 'no override braces from the text');
-  assert.match(ass, /Dialogue: 1,0:01:00\.00,0:01:03\.50,Title/);
+  assert.match(ass, /Dialogue: 1,0:01:00\.00,0:01:03\.50,End,/, 'the end card is in the bottom band');
+  assert.match(ass, /Style: End,[^\n]*,3,[\d.]+,0,2,/, 'on the panel, bottom centre');
   assert.match(C.toAss([], { width: 640, height: 360 }), /Style: Words,Bricolage Grotesque 96pt ExtraBold,22,.*,3,4\.5,0,2,26,26,10,1\n/, 'the words scale with the picture, on a panel in the bottom band');
 });
 

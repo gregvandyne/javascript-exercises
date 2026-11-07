@@ -113,6 +113,7 @@ ScaledBorderAndShadow: yes
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Words,${font},${size},&H00E6F6FF,&H00FFFFFF,&H3C4A2214,&HFF000000,-1,0,0,0,100,100,0.5,0,3,${(9 * k).toFixed(1)},0,2,${margin},${margin},${band},1
 Style: Title,${font},${tsize},&H00C8F0FF,&H00FFFFFF,&H00502A1E,&H96200F0A,-1,0,0,0,100,100,1,0,1,${(4.5 * k).toFixed(1)},${(3 * k).toFixed(1)},5,${margin},${margin},${margin},1
+Style: End,${font},${Math.round(60 * k)},&H00C8F0FF,&H00FFFFFF,&H3C4A2214,&HFF000000,-1,0,0,0,100,100,1,0,3,${(12 * k).toFixed(1)},0,2,${margin},${margin},${band},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -120,7 +121,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   const ev = [];
   if (title) ev.push(`Dialogue: 1,${assTime(titleAt[0])},${assTime(titleAt[1])},Title,,0,0,0,,{\\fad(500,600)\\blur0.6}${assText(title)}`);
   for (const c of cueList) ev.push(`Dialogue: 0,${assTime(c.start)},${assTime(c.end)},Words,,0,0,0,,{\\fad(180,180)\\blur0.4}${assText(c.text)}`);
-  if (endText && endAt) ev.push(`Dialogue: 1,${assTime(endAt[0])},${assTime(endAt[1])},Title,,0,0,0,,{\\fad(600,900)\\blur0.6}${assText(endText)}`);
+  // The end card sits in the caption band too (never across the characters' faces in the last shot).
+  if (endText && endAt) ev.push(`Dialogue: 1,${assTime(endAt[0])},${assTime(endAt[1])},End,,0,0,0,,{\\fad(600,900)\\blur0.6}${assText(endText)}`);
   return head + ev.join('\n') + '\n';
 }
 
