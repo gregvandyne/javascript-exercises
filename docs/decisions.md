@@ -2650,3 +2650,41 @@ hedgehog, in the felt-and-paper look of the Story Builder's felt kit (the owner'
   dark Andika on light paper, never textured. Original designs only: no owl, nothing of Duolingo's look, copy or sounds.
 - **The member game it replaces** is not hidden automatically: `scripts/seed.js` REPLACED matches a game by its
   owner's name and title, and this one needs the owner's say-so (and the maker's username) first.
+
+## Story Builder: choices, and changing a story afterwards (7 Nov 2026)
+
+The owner asked for richer input (the kind of story, the voice, the music, the feeling) and a way to tweak a story
+once it is made (docs/story-builder.md "Choices" and "Changing a story").
+
+- **Choices are closed lists** (`services/story-options.js`): style (bedtime, adventure, funny, rhyming, fable with a
+  lesson, mystery), tone (cozy, exciting, silly, heartfelt, brave), narrator (the language's own narrator, or one of six
+  site voices with kid names: coral, sage, nova, shimmer, fable, onyx) and music (six moods, one of them "no music").
+  Anything not on a list falls back to the default, so only the two optional short texts (who is in it, a lesson) and a
+  rewrite note are free text; they go through the same screening as the idea and reach Claude as data in their own tags.
+  The safety rules in the writer's prompt are the same for every style; "mystery" and "adventure" are explicitly never
+  scary or dangerous. The world is still the felt kit: the prompt maps people, pets and places onto the kit's animals
+  and sets, and the form says so ("everyone becomes a felt animal friend").
+- **Music stays code-composed.** Five moods besides silence, each with its own metre, tempo, harmony and instruments
+  (music-box tines; marimba + pluck + woodblock; horns + ostinato + timpani in a minor key; bells over a pad in Lydian;
+  a piano). A unit test checks they differ on several measures, not just that the bytes differ. The CPU renderer
+  service accepts the mood too.
+- **Voice samples** are one fixed line per language (`stories.voiceSample`), synthesised once per voice and pinned in
+  the TTS cache (at most 13 × 7 lines, ever), rate-limited per person, and offered only while the AI voice is on for the
+  page's language. Kids never choose the sample text.
+- **Changing a story never breaks the one that plays.** A change is a sub-job on the finished row (`remake_status`),
+  so the story stays `done` and shared while the new version is built in `<story>/next`; its files are moved over the
+  old ones only when it is complete, and a failure leaves the old video untouched (the owner can try again or keep the
+  old one). File URLs carry `?v=<version>` so no one sees a cached old file.
+- **Don't pay for the GPU twice.** Every rendered scene clip is kept under a key of its pictures (set, time, props,
+  characters, camera, seed, render size) — not its length, which follows the narration. A new voice, new music or new
+  words render nothing; a clip a little short for its new length is slowed (up to 1.5×) and then holds its last frame.
+  A rewrite renders only the scenes whose pictures changed. Clips no version uses are removed. Costs about one more
+  copy of the scenes on disk per story (smaller than the video at the scenes' 12 fps). The CPU renderer service
+  (`STORY_RENDERER=remote`) builds whole videos and returns no clips, so there a change re-renders everything; Modal and
+  local keep clips. Stories made before this have no clips: their first change renders once.
+- **Limits.** Quick changes (words, voice, music): `STORY_REMAKE_LIMIT` a day (4; grown-ups and staff 8). A rewrite
+  calls Claude, so it counts like a new story against `STORY_DAILY_LIMIT`, needs the AI budget, and waits in the same
+  queue (`STORY_QUEUE_MAX` counts changes too). One change at a time per story. Changes are logged in `story_edits`,
+  which survives deleting the story (deleting doesn't refund a rewrite) and goes with the account.
+- **Sharing.** A kid's shared or waiting story goes back to "waiting for OK" when a new version replaces it: the
+  grown-up approved the old words. A grown-up's shared story stays shared. Only the owner can change a story.

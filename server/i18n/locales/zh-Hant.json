@@ -1646,7 +1646,9 @@
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
       "failed": "出了點問題。請再試一次。",
       "copied": "連結已複製！",
-      "deleteConfirm": "要刪除這個故事嗎？刪除後無法復原。"
+      "deleteConfirm": "要刪除這個故事嗎？刪除後無法復原。",
+      "needNote": "寫下要改什麼，或選另一種故事或感覺。",
+      "sampleOff": "這個聲音現在不能播放。"
     },
     "app": {
       "wentWrong": "出了點問題。請再試一次。",
@@ -6112,7 +6114,19 @@
       "left": "{count, plural, other {今天還可以做 # 個故事。}}",
       "none": "你今天的故事都做完了。明天再來吧！",
       "safety": "故事總是溫柔又友善。每個點子和每個故事在製作前都會先檢查。",
-      "needIdea": "先寫下你的點子（幾個字就夠了）。"
+      "needIdea": "先寫下你的點子（幾個字就夠了）。",
+      "kitHint": "故事裡的每個人都會變成毛氈動物朋友：老鼠、狐狸、貓頭鷹或小兔子。",
+      "styleH": "什麼樣的故事？",
+      "toneH": "要有什麼感覺？",
+      "voiceH": "誰來讀？",
+      "voiceAi": "這些是 AI 聲音。點 ▶ 就可以聽聽看。",
+      "listen": "聽聽{name}",
+      "musicH": "背景音樂",
+      "more": "更多選擇（可以跳過）",
+      "charsLabel": "故事裡有誰？",
+      "charsHint": "例如：我的貓咪露娜和一隻友善的狐狸。他們會變成毛氈動物。",
+      "lessonLabel": "要學到什麼？",
+      "lessonHint": "例如：分享讓大家都開心。"
     },
     "status": {
       "queued": "排隊中…",
@@ -6158,6 +6172,81 @@
       "decideP": "你照顧的孩子做了這個故事，想要分享。可以讓其他人觀看嗎？",
       "approve": "可以，分享",
       "decline": "這個先不要"
+    },
+    "options": "故事的選擇",
+    "voiceSample": "從前從前，在一個小小的毛氈村莊裡，有一隻想睡覺的貓頭鷹抬頭看著天空，數著星星。",
+    "style": {
+      "bedtime": "睡前故事",
+      "adventure": "冒險",
+      "funny": "好笑",
+      "rhyming": "押韻",
+      "fable": "有道理的寓言",
+      "mystery": "解謎"
+    },
+    "tone": {
+      "cozy": "溫馨",
+      "exciting": "刺激",
+      "silly": "搞笑",
+      "heartfelt": "感人",
+      "brave": "勇敢"
+    },
+    "voice": {
+      "auto": "我們的說書人",
+      "coral": "溫暖親切",
+      "sage": "溫柔有智慧",
+      "nova": "開心的朋友",
+      "shimmer": "明亮閃亮",
+      "fable": "故事書的聲音",
+      "onyx": "低沉平靜"
+    },
+    "music": {
+      "lullaby": "音樂盒",
+      "playful": "活潑",
+      "adventure": "冒險",
+      "magical": "魔法閃閃",
+      "piano": "溫柔鋼琴",
+      "none": "不要音樂"
+    },
+    "set": {
+      "lighthouse": "燈塔",
+      "village": "村莊",
+      "forest": "森林",
+      "meadow": "草原",
+      "sky": "天空"
+    },
+    "time": {
+      "night": "晚上",
+      "dusk": "傍晚",
+      "dawn": "日出",
+      "day": "白天"
+    },
+    "edit": {
+      "btn": "修改故事",
+      "h": "改改你的故事",
+      "back": "回到故事",
+      "wordsH": "改字",
+      "wordsP": "任何一句都可以修正或改掉。圖畫不會變。",
+      "titleLabel": "標題",
+      "scene": "第 {n} 幕",
+      "line": "第 {n} 句",
+      "remakeP": "新的字、新的聲音或新的音樂都很快：圖畫會留著。",
+      "remakesLeft": "{count, plural, other {今天還可以做 # 次快速修改。}}",
+      "remakeNone": "今天的快速修改都用完了。明天再來吧！",
+      "remake": "做新的影片",
+      "rewriteH": "請它重寫",
+      "rewriteP": "告訴寫故事的人要改什麼。重寫會算成你今天的一個新故事。",
+      "noteLabel": "要改什麼？",
+      "noteHint": "例如：讓它更好笑，或在最後加一場野餐。",
+      "rewrite": "重寫我的故事",
+      "nothing": "先改點什麼吧：字、聲音或音樂。",
+      "needNote": "寫下要改什麼，或選另一種故事或感覺。",
+      "unsafe": "這些字不能放進這裡的故事。試試更溫和的字。",
+      "invalid": "故事變得太長了。試試短一點的句子。",
+      "busy": "新版本已經在做了。",
+      "working": "正在做新版本… 在它做好之前，舊影片會一直留在這裡。",
+      "failed": "新版本沒有成功，所以你的故事保持原樣。",
+      "keepOld": "留著舊的",
+      "asksAgain": "修改之後，要再請大人或老師說好，別人才能看。"
     }
   }
 }

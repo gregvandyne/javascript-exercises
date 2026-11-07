@@ -1,4 +1,4 @@
-/* Story Builder (/stories): the idea form, the progress page, the player, the story cards. Night-sky blues to match
+/* Story Builder (/stories): the idea form and its choices, the progress page, the player, the edit page, the story cards. Night-sky blues to match
    the felt-and-paper videos; colours come from the site tokens where they exist, so light and dark themes both work. */
 .sb-hero { text-align: center; padding: 1.2rem 0 .6rem; }
 .sb-hero h1 { margin-bottom: .3rem; }
@@ -31,3 +31,45 @@
 .sb-bar span { display: block; height: 100%; background: linear-gradient(90deg, #ffd75e, #ffb347); border-radius: 999px; transition: width .8s ease; }
 .sb-share .row { margin-top: .4rem; }
 @media (prefers-reduced-motion: reduce) { .sb-moon { animation: none; } .sb-bar span { transition: none; } }
+
+/* The choices (kind of story, feeling, voice, music): big tappable cards, an emoji over a short label. The radio
+   inside is visually hidden but keeps the keyboard and the screen reader; the picked card takes the site's "current"
+   colours, like the chips. */
+.sb-kit { font-size: .92rem; color: var(--text-2); }
+.sb-choices { border: 0; margin: 0 0 18px; padding: 0; min-width: 0; }
+.sb-choices legend { font-weight: 800; font-size: 1.05rem; margin-bottom: 8px; padding: 0; }
+.sb-chips { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+.sb-choice { position: relative; display: flex; min-width: 0; }
+.sb-choice label { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 84px;
+  padding: 10px 6px; border-radius: var(--r-sm); border: 2px solid var(--line); background: var(--card); color: var(--text); cursor: pointer;
+  text-align: center; font-weight: 700; line-height: 1.2; overflow-wrap: break-word; hyphens: auto; }
+.sb-choice label:hover { border-color: var(--accent-line); }
+.sb-emo { font-size: 1.9rem; line-height: 1; }
+.sb-lbl { font-size: .95rem; }
+.sb-choice input:checked + label { background: var(--current); border-color: var(--current); color: var(--on-current); }
+.sb-choice input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* Narrators: a wider card with a ▶ to hear a short sample (the button sits in the card's corner). */
+#sb-voice .sb-chips, #sb-edit-voice .sb-chips { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.sb-choice:has(.sb-play) label { flex-direction: row; justify-content: flex-start; gap: 10px; min-height: 64px; padding-inline: 12px 54px; text-align: start; }
+.sb-play { position: absolute; inset-inline-end: 8px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid var(--line); background: var(--card-2); color: var(--text); font: 700 .95rem var(--font); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.sb-play:hover { border-color: var(--accent-line); }
+.sb-play:disabled { opacity: .6; cursor: progress; }
+.sb-play.playing { background: var(--accent); border-color: var(--accent-line); color: var(--on-accent); }
+.sb-ai { margin-top: -10px; }
+.sb-more { margin: 4px 0 16px; }
+.sb-more > summary { cursor: pointer; font-weight: 800; padding: 10px 0; min-height: 44px; }
+.sb-more[open] > summary { margin-bottom: 8px; }
+
+/* The story's choices on its page. */
+.sb-pills { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: .6rem 0 1rem; }
+.sb-pills li { padding: 4px 12px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line); font-size: .9rem; font-weight: 600; overflow-wrap: anywhere; }
+
+/* The edit page and a change being made. */
+.sb-scene { border-top: 2px dashed var(--line); padding-top: .7rem; margin-top: .4rem; }
+.sb-scene h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; font-size: 1.05rem; margin: 0 0 .5rem; }
+.sb-scene .field { margin-bottom: 10px; }
+.sb-line { min-height: 64px; font-size: 1.05rem; }
+.sb-form h2 { margin-top: 0; }
+.sb-remake { margin: 1rem 0; }
+.sb-remake .sb-bar { background: var(--line); margin: .6rem 0 .2rem; max-width: none; }
