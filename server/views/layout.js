@@ -66,6 +66,7 @@ export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatfor
  *   platform admin          Home · Search · Build · Friends · Schools · (Plans) · Me   (unchanged)
  *   student                 Home · Classes · Build · Friends · (Plans) · Me         (top: the same without Me)
  *   kid                     Home · Search · Build · Friends · (Plans) · Me          (unchanged)
+ * With STORY_BUILDER=1 every signed-in shell also has Stories (🌙, /stories) after Build (or after Games).
  * Everyone signed in also has the search field (or, below 360px, the round 🔎 button) in the top bar.
  */
 export function shellFor(u, req) {
@@ -73,28 +74,30 @@ export function shellFor(u, req) {
   const [home, search, build, friends] = NAV;
   const games = ['games', '/', '🎮'];
   const me = ['me', '/me', '🙂'];
+  // The Story Builder (routes/stories.js) for everyone signed in, only while STORY_BUILDER is on.
+  const stories = config.storyBuilder ? [['stories', '/stories', '🌙']] : [];
   if (signedOut(u)) {
     return { role: 'out', tabs: [home, search, build, ['grownups', '/parents', '👪'], ...plans, ['signin', '/login', '🙂']],
       top: [home, build, ...plans, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
   }
   if (isGrownup(u)) {
-    const top = [['family', '/family', '👪'], build, games, ...plans];
+    const top = [['family', '/family', '👪'], build, ...stories, games, ...plans];
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
     const admin = adminSchools(u).length > 0;
-    const top = [['classes', '/teach', '🏫'], games, ...(admin ? [['school', '/school', '🏛️']] : []), ...plans];
+    const top = [['classes', '/teach', '🏫'], games, ...stories, ...(admin ? [['school', '/school', '🏛️']] : []), ...plans];
     return { role: admin ? 'schoolAdmin' : 'teacher', tabs: [...top, me], top, meHref: '/me' };
   }
   if (isPlatformAdmin(u)) {
-    const top = [home, search, build, friends, ['schools', '/admin/schools', '🏫'], ...plans];
+    const top = [home, search, build, ...stories, friends, ['schools', '/admin/schools', '🏫'], ...plans];
     return { role: 'admin', tabs: [...top, me], top, meHref: '/me' };
   }
   if (inAnySchool(u)) {
-    const top = [home, ['classes', '/classes', '🏫'], build, friends, ...plans];
+    const top = [home, ['classes', '/classes', '🏫'], build, ...stories, friends, ...plans];
     return { role: 'student', tabs: [...top, me], top, meHref: '/me' };
   }
-  const top = [home, search, build, friends, ...plans];
+  const top = [home, search, build, ...stories, friends, ...plans];
   return { role: 'kid', tabs: [...top, me], top, meHref: '/me' };
 }
 /** The tab a page's `active` makes current in this shell: the game pages (home, search) are Games where there is no Home

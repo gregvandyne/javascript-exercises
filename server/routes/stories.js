@@ -58,7 +58,7 @@ router.get('/stories', requireBuilder, (req, res) => {
     ${mine.length ? html`<div class="sb-grid">${mine.map(s => card(req, s))}</div>`
     : html`<div class="empty"><span class="emo" aria-hidden="true">🌙</span><h3>${t('stories.empty')}</h3></div>`}
   </section>`;
-  page(req, res, { title: t('stories.title'), body, head: CSS, description: t('stories.sub') });
+  page(req, res, { active: 'stories', title: t('stories.title'), body, head: CSS, description: t('stories.sub') });
 });
 
 router.get('/stories/new', requireBuilder, (req, res) => {
@@ -83,7 +83,7 @@ router.get('/stories/new', requireBuilder, (req, res) => {
       <button class="btn btn-primary btn-big" type="submit" id="sb-go"${left ? '' : raw(' disabled')}>✨ ${t('stories.form.make')}</button>
     </form>
   </div>`;
-  page(req, res, { title: t('stories.new'), body, head: CSS, scripts: ['/js/stories.js'], back: '/stories', backLabel: t('stories.mine') });
+  page(req, res, { active: 'stories', title: t('stories.new'), body, head: CSS, scripts: ['/js/stories.js'], back: '/stories', backLabel: t('stories.mine') });
 });
 
 /** The story, if this person may see it here (the owner, an approver, the admin, anyone once shared). */
@@ -138,7 +138,7 @@ router.get('/stories/:id', (req, res) => {
     ${shareBox}
     ${jsonData('page-data', { id: s.id, status: s.status, labels: Object.fromEntries(Object.entries(STATUS_KEYS).map(([k, key]) => [k, t(key)])) })}
   </div>`;
-  page(req, res, { title, body, head: CSS, scripts: ['/js/stories.js'], back: u ? '/stories' : null, backLabel: u ? t('stories.mine') : null });
+  page(req, res, { active: 'stories', title, body, head: CSS, scripts: ['/js/stories.js'], back: u ? '/stories' : null, backLabel: u ? t('stories.mine') : null });
 });
 
 const FILES = { 'video.mp4': ['story.mp4', 'video/mp4'], 'poster.jpg': ['poster.jpg', 'image/jpeg'], 'captions.vtt': ['captions.vtt', 'text/vtt; charset=utf-8'] };

@@ -49,6 +49,7 @@
     "shortPasswordGrownup": "パスワードが{min}文字より短くなっています。<a href=\"{href}\">より長いパスワードに変更</a>してください。"
   },
   "nav": {
+    "stories": "おはなし",
     "home": "ホーム",
     "search": "さがす",
     "build": "つくる",

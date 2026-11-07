@@ -250,7 +250,7 @@ test('captions: WebVTT for the player and ASS to burn in, timed alike', () => {
   assert.match(ass, /Dialogue: 0,0:00:03\.20,0:00:05\.75,Words,,0,0,0,,\{\\fad\(180,180\)\\blur0\.4\}Pip looked up\\Nat the <stars>/);
   assert.match(ass, /Title,,0,0,0,,\{\\fad\(500,600\)\\blur0\.6\}Pip and the Stars/, 'no override braces from the text');
   assert.match(ass, /Dialogue: 1,0:01:00\.00,0:01:03\.50,Title/);
-  assert.match(C.toAss([], { width: 640, height: 360 }), /Style: Words,Bricolage Grotesque 96pt ExtraBold,26,/, 'the words scale with the picture');
+  assert.match(C.toAss([], { width: 640, height: 360 }), /Style: Words,Bricolage Grotesque 96pt ExtraBold,22,.*,3,4\.5,0,2,26,26,10,1\n/, 'the words scale with the picture, on a panel in the bottom band');
 });
 
 test('render spec and ffmpeg graph follow the timeline', () => {
@@ -437,7 +437,10 @@ test('pages: off by default; on, the form, the queue, the progress page, the pla
     config.storyBuilder = false;
     assert.equal((await call(base, cookie, '/stories')).status, 404);
     assert.equal((await call(base, cookie, '/api/stories', { method: 'POST', body: { idea: 'a fox' } })).status, 404);
+    assert.doesNotMatch((await call(base, cookie, '/search')).text, /href="\/stories"/, 'no menu link while it is off');
     config.storyBuilder = true;
+    assert.match((await call(base, cookie, '/search')).text, /<a class="navlink" href="\/stories"[^>]*><span class="emo" aria-hidden="true">🌙<\/span>Stories/, 'the menu links it while it is on');
+    assert.doesNotMatch((await call(base, null, '/search')).text, /href="\/stories"/, 'not for people who are signed out');
     assert.equal((await call(base, null, '/stories/new')).status, 302, 'signed out: sign in first');
     const form = await call(base, cookie, '/stories/new');
     assert.equal(form.status, 200);

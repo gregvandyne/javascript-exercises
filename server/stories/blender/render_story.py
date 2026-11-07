@@ -23,6 +23,8 @@ import bpy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import feltkit as K  # noqa: E402
 
+# How far from the middle a character may start a scene (the frame is ~4.3 wide each side where they stand).
+EDGE = 3.0
 PLACES = {'far_left': -3.3, 'left': -1.8, 'center': 0.0, 'right': 1.8, 'far_right': 3.3}
 
 TIMES = {
@@ -178,8 +180,8 @@ def set_lighthouse(tod, rng, props):
     sky_layers(tod, rng, moon_at=(-6.5, 20, 6.4), props=props)
     K.sea(14, 0.9, 70, rows=6)
     K.hills(17, 0.4, 70, 1.6, ['#2f4f8a', '#3a5c96'], 0.9, 'farhills', waves=2.5)
-    K.rocks(4.6, 8.8, 0.2, 3.0, rng)
-    K.lighthouse(4.6, 9.0, 0.35, h=3.1, beam=True)
+    K.rocks(4.9, 11.8, 0.2, 3.0, rng)
+    K.lighthouse(4.9, 12.0, 0.35, h=2.9, beam=True)
     K.ground(-7.0, 0.0, 60, 10.0, '#c7a77a' if tod['stars'] == 0 else '#2f3b6a', rng, tufts=('#3f5f86', '#4a6b8f'), pebbles=('#5b6085', '#6b7095'))
     if 'boat' in props:
         K.boat(-6.0, 9.0, 0.35)
@@ -262,12 +264,13 @@ def camera(move, frames, fps, focus_obj, lens=45):
     co = bpy.data.objects.new('cam', cam)
     K.link(co)
     bpy.context.scene.camera = co
-    base = dict(x=0.0, y=-10.5, z=1.9, rx=89.5, rz=0.0)
+    # eye level with the felt animals, pitched down a touch: they stand above the caption band at the bottom
+    base = dict(x=0.0, y=-10.5, z=1.45, rx=89.0, rz=0.0)
     a, b = dict(base), dict(base)
     if move == 'slow_push':
-        b.update(y=-7.6, z=1.6)
+        b.update(y=-7.8, z=1.3)
     elif move == 'pull_back':
-        a.update(y=-7.6, z=1.6)
+        a.update(y=-7.8, z=1.3)
     elif move == 'pan_left':
         a.update(x=1.8)
         b.update(x=-1.8)
@@ -276,11 +279,9 @@ def camera(move, frames, fps, focus_obj, lens=45):
         b.update(x=1.8)
     elif move == 'tilt_up':
         # a crane up and back while the camera tilts: the sky opens up and the characters' faces stay in the shot
-        a.update(rx=87.0)
-        b.update(rx=91.5, z=2.4, y=-11.6)
+        b.update(rx=92.5, z=2.2, y=-11.4)
     elif move == 'tilt_down':
-        a.update(rx=91.5, z=2.4, y=-11.6)
-        b.update(rx=87.0)
+        a.update(rx=92.5, z=2.2, y=-11.4)
     else:  # 'drift' / 'static': a slow float
         b.update(x=0.35, y=-10.0)
     dur = frames / fps
@@ -323,10 +324,12 @@ def build_scene(spec, sc_spec):
         x1 = PLACES.get(c.get('place'), [-1.4, 1.4, 0.0][i % 3])
         action = c.get('action') or 'idle'
         x0 = x1
+        # Walkers start inside the picture (a short stroll in, never popping in at the frame's edge): at most
+        # EDGE from the middle, where the frame is about 4.3 wide on each side.
         if action in ('walk', 'walk_in', 'hold_star'):
-            x0 = x1 - 3.5 if x1 <= 0 else x1 + 3.5
-            if action == 'hold_star':
-                x0 = x1 - 1.5 if x1 <= 0 else x1 + 1.5
+            dist = 1.2 if action == 'hold_star' else 2.0
+            x0 = x1 - dist if x1 <= 0 else x1 + dist
+            x0 = max(-EDGE, min(EDGE, x0))
         elif action == 'walk_out':
             x0, x1 = x1, x1 + (4.0 if x1 >= 0 else -4.0)
         elif action == 'fly':

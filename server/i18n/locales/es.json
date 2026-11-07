@@ -49,6 +49,7 @@
     "shortPasswordGrownup": "Su contraseña tiene menos de {min} caracteres. Por favor, <a href=\"{href}\">elija una más larga</a>."
   },
   "nav": {
+    "stories": "Cuentos",
     "home": "Inicio",
     "search": "Buscar",
     "build": "Crear",

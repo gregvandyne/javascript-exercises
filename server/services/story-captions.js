@@ -99,7 +99,9 @@ const assText = s => String(s).replace(/\\/g, '＼').replace(/[{}]/g, '').replac
 /** opts: { width, height, font, title, titleAt: [start, end], endText, endAt: [start, end], rtl } */
 export function toAss(cueList, { width = 1280, height = 720, font = 'Bricolage Grotesque 96pt ExtraBold', title = '', titleAt = [0.4, 2.8], endText = '', endAt = null } = {}) {
   const k = height / 720;
-  const size = Math.round(52 * k), tsize = Math.round(84 * k), margin = Math.round(52 * k);
+  // The words sit in a band at the very bottom, on a soft night-blue panel (BorderStyle 3: a box behind each row,
+  // the outline width is its padding), below where the characters stand (render_story.py frames them above it).
+  const size = Math.round(44 * k), tsize = Math.round(84 * k), margin = Math.round(52 * k), band = Math.round(20 * k);
   const head = `[Script Info]
 ScriptType: v4.00+
 PlayResX: ${width}
@@ -109,7 +111,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Words,${font},${size},&H00E6F6FF,&H00FFFFFF,&H00502A1E,&H96200F0A,-1,0,0,0,100,100,0.5,0,1,${(3.2 * k).toFixed(1)},${(2.2 * k).toFixed(1)},2,${margin},${margin},${margin},1
+Style: Words,${font},${size},&H00E6F6FF,&H00FFFFFF,&H3C4A2214,&HFF000000,-1,0,0,0,100,100,0.5,0,3,${(9 * k).toFixed(1)},0,2,${margin},${margin},${band},1
 Style: Title,${font},${tsize},&H00C8F0FF,&H00FFFFFF,&H00502A1E,&H96200F0A,-1,0,0,0,100,100,1,0,1,${(4.5 * k).toFixed(1)},${(3 * k).toFixed(1)},5,${margin},${margin},${margin},1
 
 [Events]

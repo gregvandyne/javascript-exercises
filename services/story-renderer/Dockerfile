@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # The Story Builder renderer service (docs/story-builder.md "Hosting"): Blender 5.2 as a Python module (bpy), headless
 # EEVEE through Mesa's software EGL (llvmpipe: no GPU needed), ffmpeg for the scene clips, and a small Node server.
 # Build from the repository root:  docker build -f services/story-renderer/Dockerfile -t story-renderer .
@@ -22,7 +23,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libssl3t64 libffi8 libsqlite3-0 libbz2-1.0 liblzma5 zlib1g libexpat1 libncursesw6 libreadline8t64 libuuid1 \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=python /usr/local/ /usr/local/
-RUN ldconfig && python3 --version && pip install bpy==5.2.3 && python3 -c "import bpy; print('bpy', bpy.app.version_string)"
+# (An optional build secret "pip_ca" adds a CA for networks that inspect TLS; production builds don't pass one.)
+RUN --mount=type=secret,id=pip_ca,required=false ldconfig && python3 --version \
+    && if [ -s /run/secrets/pip_ca ]; then export PIP_CERT=/run/secrets/pip_ca; fi \
+    && pip install bpy==5.2.3 && python3 -c "import bpy; print('bpy', bpy.app.version_string)"
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
 WORKDIR /app
 # Only what the renderer needs: the Blender kit and render script, the shared Node renderer code, the service.

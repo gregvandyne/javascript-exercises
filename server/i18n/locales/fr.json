@@ -49,6 +49,7 @@
     "shortPasswordGrownup": "Votre mot de passe fait moins de {min} caractères. Merci d’<a href=\"{href}\">en choisir un plus long</a>."
   },
   "nav": {
+    "stories": "Histoires",
     "home": "Accueil",
     "search": "Recherche",
     "build": "Créer",

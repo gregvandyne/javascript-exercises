@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "הסיסמה שלכם קצרה מ-{min} תווים. נא <a href=\"{href}\">לבחור סיסמה ארוכה יותר</a>."
   },
   "nav": {
+    "stories": "סיפורים",
     "home": "בית",
     "search": "חיפוש",
     "build": "בנייה",

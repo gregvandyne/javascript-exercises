@@ -49,6 +49,7 @@
     "shortPasswordGrownup": "密碼少於 {min} 個字元。請<a href=\"{href}\">改用較長的密碼</a>。"
   },
   "nav": {
+    "stories": "故事",
     "home": "首頁",
     "search": "搜尋",
     "build": "製作",

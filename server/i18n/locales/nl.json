@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "Het wachtwoord is korter dan {min} tekens. <a href=\"{href}\">Kies een langer wachtwoord</a>."
   },
   "nav": {
+    "stories": "Verhalen",
     "home": "Start",
     "search": "Zoeken",
     "build": "Bouwen",

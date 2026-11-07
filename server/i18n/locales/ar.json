@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "كلمة المرور أقصر من {min} حرفًا. يُرجى <a href=\"{href}\">اختيار كلمة مرور أطول</a>."
   },
   "nav": {
+    "stories": "قصص",
     "home": "الرئيسية",
     "search": "بحث",
     "build": "اصنع",

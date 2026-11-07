@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
   "nav": {
+    "stories": "Stories",
     "home": "Home",
     "search": "Search",
     "build": "Build",
