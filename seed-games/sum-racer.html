@@ -1998,7 +1998,7 @@ function pxScene(v, P, cam) {
     for (let x = -pxMod(Math.round(camN * par), tw); x < P.NW; x += tw) g.drawImage(t, x, rt - t.height);
   }
   const road = A.scenes[v.scene].road, laneH = m.laneH * f, kh = Math.max(2, Math.round(laneH * 0.16)), kp = Math.max(6, Math.round(laneH * 0.9));
-  const asphalt = T.night ? PXK.nearest(hex2(road[0]).map(c => c * 0.6)) : road[0];
+  const asphalt = T.night ? PXK.nearest(hex2(road[0]).map((c, i) => c * 0.5 + [14, 42, 46][i] * 0.5)) : road[0];   // toward the night sky, not brown
   g.fillStyle = asphalt; g.fillRect(0, rt, P.NW, rb - rt);
   // a little grit on the asphalt, moving with the road
   g.fillStyle = PXK.nearest(hex2(asphalt).map(c => Math.min(255, c + 22)));
