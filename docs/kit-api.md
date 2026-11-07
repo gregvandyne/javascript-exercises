@@ -179,6 +179,13 @@ building, wall, crate, platform, tree trunk and rock a solid with `B.solid(mesh)
 - `Oomba.three(THREE, {renderer, scene, camera, theme, style, tod, size, governor})` → `B`. `theme` is a theme name or
   recolour (Themes, above); `style: 'bold'` (12-14) or the theme's; `tod` 0 (noon) … 1 (night): the theme's by default,
   night on a dark site, dusk or later in Bold; `governor: false` when the game runs its own quality ladder.
+- Cartoon (kit 1.1.5, opt-in): `style: 'cartoon'`, or `styles: ['cartoon']` to offer it so the page's `?style=cartoon`
+  (the frame's `?okStyle=cartoon`) picks it; a game that offers nothing ignores the page. Toon materials become flat
+  fills with one hard shade band from a light fixed at the top-left of the screen and a faint Cream rim (`B.toon(c,
+  {soft, depth})`: a wider, lighter band for land), no shadow maps (`B.sky()` and the governor leave them off: use
+  contact blobs), the line a touch heavier. `B.style` is `'cartoon'` and `B.cartoon` true; `B.palette(colour, k)` →
+  the nearest Ink colour (`k` < 1 moves part of the way), for a game's own colours; `B.light.tint` (a three.js Color)
+  tints every cartoon material for a mood. The UI stays Playful.
 - `B.world({size, seed, height(x, z), hilly, flat, ground, hills, props, propCount, clouds})` → `{group, heightAt(x, z),
   props, size, sun, hemi}`. `B.sky({size, shadows})` alone sets the sky, fog and lights for a game with its own land;
   `B.look.land` → `{grass, grassDark, rock, sand}` colours for it, `B.look` also has `name biome tod accent music bed props`.

@@ -43,7 +43,13 @@
 >   14). Same API plus additions, so `KIT_PATCHES` maps 1.1.0 and 1.1.1 → 1.1.2 (every saved game gets the key fix);
 >   the official games and the live lobby moved with `scripts/kit-upgrade-seeds.js`. The Builder's 3D rules send maps
 >   to the walker (docs/kit-api.md, "Walking around a 3D map").
-> - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
+> - **1.1.5 (the 3D bridge's opt-in cartoon style):** the `bridge-3d` pack gains `style: 'cartoon'` (§6.6): the approved
+  style sheet's cartoon look in real time. The core only learns the `okStyle` query key; nothing else changes, so the
+  default look is byte-for-byte the same and `KIT_PATCHES` maps 1.1.3 and 1.1.4 → 1.1.5 (1.1.4 is locked in
+  `kit/SHIPPED.json`, its `live` pack unlocked as before). The play page passes `?style=cartoon` to the frame as
+  `?okStyle=cartoon` (only names in `FRAME_STYLES`, routes/games.js; the live page too); only a game that offers the
+  style (`styles: ['cartoon']`, Hero of Sunvale) draws it. bridge-3d is 13.8 KB brotli (cap 14).
+- **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
 >   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
 >   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the
 >   pack hook `Oomba.__pk` (`kit_debug`); `snapshot.js` and `scripts/covers.js` serve kit files from
@@ -617,6 +623,18 @@ pay nothing. `Oomba.three(THREE, { renderer, scene, camera, theme })` → a brid
   floating rocks, `B.update(dt)` in its loop; its own quality ladder stays (`governor: false`). About 46 draw calls.
 - **Preview:** `/kit?scene=three&th=castle&style=bold&view=cast` (`kit/demo/three.html`): a small spark hunt with a
   quiz, or `view=cast` (rigs in front of their 2D twins).
+- **Cartoon (kit 1.1.5, opt-in).** The style sheet's cartoon look ("Oomba Ink" as a Blender render: kit palette, one
+  hard cel shade, Ink outline, contact shadow) in real time. `style: 'cartoon'`, or `styles: ['cartoon']` plus the
+  page's `?okStyle=cartoon`. Every toon material shares one program (`okCel`): the colour is the flat fill, one hard
+  band of the shade colour (a cool multiplier, about the palette's shade step) away from a key light fixed at the
+  top-left of the screen (view space, so it never swings with the camera; the edge is anti-aliased over a pixel),
+  a faint Cream rim on the lit side, then fog. `soft` and `depth` give rolling land a wider, lighter band. No shadow
+  maps on any tier (contact blobs are the look, and cheaper on phones); the Ink is 1.08× Playful's (about 4 px at
+  720p, thinner on small things as before). `B.palette(colour, k)` snaps a game's own colours to the nearest kit
+  colour (OKLab, lightness weighted); `B.light.tint` lets the game tint the mood (Sunvale's gloom). Theme styles never
+  override it; the UI stays Playful. Hero of Sunvale is the first game to offer it (`/play/hero-of-sunvale?style=cartoon`):
+  it snaps its colours, builds characters and props from rounded boxes, smooth-shades curves, uses soft blob
+  shadows and adds halos on its lamps (bloom on lamps only, one additive draw call).
 - **Versioning.** `bridge-3d` was first added beside the locked 1.1.0 with `node scripts/build-kit.js --packs` (it builds
   only the packs the lock does not list, and checks the core and every locked pack byte for byte). Foundation step 3
   (1.1.0 had not shipped yet) rebuilt 1.1.0's core (`Oomba.avatar()`, and `bridge-3d` in `Oomba.pack()`'s pack names)
