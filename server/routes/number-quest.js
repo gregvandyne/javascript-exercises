@@ -182,7 +182,6 @@ router.get('/teachers/number-quest', (req, res) => {
     { slug: 'quest-race', key: 'questRace', emoji: '🏝️', title: 'Quest Race' },
     { slug: 'fraction-factory', key: 'fractionFactory', emoji: '🧁', title: 'Fraction Factory' },
     { slug: 'data-detective', key: 'dataDetective', emoji: '🔎', title: 'Data Detective' },
-    { slug: 'would-you-rather', key: 'wouldYouRather', emoji: '🤔', title: 'Would You Rather' },
   ].map(c => ({ ...c, live: launchGame(c.slug) }));
   const unitItem = u => html`<li class="panel"><b lang="en" dir="ltr">${u.n === 0 ? u.title : `${t('cs.unit.n', { n: u.n })} · ${u.title}`}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {}).explorer || s.n}</li>`)}</ol></li>`;
