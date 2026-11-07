@@ -41,7 +41,7 @@ test('Guess Pip\'s doodles by typing: the setup card, Pip draws, a wrong and a c
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 390, height: 844 });
   const { f, errors } = await open(page);
-  await f.locator('.ok-title-screen .ok-hot').click();
+  await expect(f.locator('.ok-title-screen')).toHaveCount(0);   // no title screen: the setup card's Start is the only one
   await expect(f.locator('.dhs-card')).toBeVisible();
   await radio(f, 'mode', 'pass').click();
   await expect(f.locator('.dhs fieldset[data-k="n"]')).toBeVisible();
@@ -92,7 +92,7 @@ test('Guess Pip\'s doodles with letter tiles (the easier choice): tiles spell th
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 390, height: 844 });
   const { f, errors } = await open(page);
-  await f.locator('.ok-title-screen .ok-hot').click();
+  await expect(f.locator('.ok-title-screen')).toHaveCount(0);   // no title screen: the setup card's Start is the only one
   await radio(f, 'mode', 'practice').click(); await radio(f, 'lvl', 1).click(); await radio(f, 'guess', 'tiles').click();
   await f.locator('#dhStart').click();
   for (let k = 0; k < 8; k++) {
