@@ -50,6 +50,7 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   fs.mkdirSync(workDir, { recursive: true });
   const stop = () => { if (signal && signal.aborted) throw Object.assign(new Error('stopped'), { code: 'stopped' }); };
   // 1. voice
+  const tStart = Date.now();
   onStage('voicing');
   const voiceDir = path.join(workDir, 'voice');
   fs.mkdirSync(voiceDir, { recursive: true });
@@ -104,6 +105,8 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
     onPhase: ph => { if (ph === 'assembling') onStage('assembling'); },
   });
   const renderSec = (Date.now() - t0) / 1000;
+  const voiceSec = (t0 - tStart) / 1000;
+  const t1 = Date.now();
   if (remote) {
     onStage('assembling');
     musicInfo = r.music || null;
@@ -123,7 +126,9 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
     total: tl.total, scenes: tl.scenes, lines: tl.lines.map(l => ({ scene: l.scene, start: l.start, end: l.end })),
     voice: used, music: musicInfo,
     render: { renderer: renderer.name, engine: r.engine, frames: r.frames, seconds: Math.round(renderSec), quality, width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
-      secPerVideoSec: Math.round((renderSec / tl.total) * 10) / 10, secPerFrame: r.frames ? Math.round((r.frameSeconds / r.frames) * 100) / 100 : null },
+      secPerVideoSec: Math.round((renderSec / tl.total) * 10) / 10, secPerFrame: r.frames && r.frameSeconds ? Math.round((r.frameSeconds / r.frames) * 100) / 100 : null,
+      sceneSeconds: r.sceneSeconds || undefined },
+    stageSeconds: { voiceAndWords: Math.round(voiceSec * 10) / 10, render: Math.round(renderSec * 10) / 10, assemble: Math.round(((Date.now() - t1) / 1000) * 10) / 10 },
   };
   fs.writeFileSync(path.join(workDir, 'meta.json'), JSON.stringify(meta, null, 1));
   return { video: out, poster: path.join(workDir, 'poster.jpg'), vtt, meta };

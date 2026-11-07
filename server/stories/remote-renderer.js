@@ -123,7 +123,7 @@ export class RemoteRenderer {
         clips[s.id] = file;
       }
       stop();
-      return { engine: st.engine, frames: st.done, seconds: (Date.now() - t0) / 1000, frameSeconds: st.frameSeconds || 0, clips };
+      return { engine: st.engine, frames: st.done, seconds: (Date.now() - t0) / 1000, frameSeconds: st.frameSeconds || 0, clips, sceneSeconds: st.sceneSeconds || null };
     } catch (e) {
       stop();
       throw e;
