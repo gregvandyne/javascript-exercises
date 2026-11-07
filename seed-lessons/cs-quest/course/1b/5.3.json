@@ -10,27 +10,46 @@
    "title": "On or off",
    "text": "Inside a computer, everything is kept as tiny switches that are on or off. Each switch is called a bit.",
    "art": "bits",
-   "img": "csq/inside-the-machine/bits-1b-key",
-   "view": [
-    0.8,
-    45,
-    44.5,
-    38.5
-   ],
-   "alt": "Five bit switches, all off, with their cards: 16, 8, 4, 2 and 1. One switch on adds its card."
+   "img": "csq/inside-the-machine/bits-1b-five-n",
+   "alt": "Five switches worth 16, 8, 4, 2 and 1: the 4 and the 1 are on, and the total reads 5.",
+   "focus": [
+    {
+     "cue": "Each switch is a bit: on or off",
+     "box": [
+      3,
+      46,
+      94,
+      18
+     ]
+    }
+   ]
   },
   {
    "title": "Counting with bits",
    "text": "Counting with bits is called binary. Five switches worth 16, 8, 4, 2 and 1 can make any number from 0 to 31.",
    "art": "bits",
-   "img": "csq/inside-the-machine/bits-1b-pick",
-   "view": [
-    0.8,
-    42,
-    44.5,
-    40
-   ],
-   "alt": "A reading round: some switches are already on, and the question is what number their cards add up to."
+   "img": "csq/inside-the-machine/bits-1b-pick-n",
+   "alt": "Read the cards: 16 off, 8 off, 4 on, 2 on, 1 off. Which number do the switches make: 6, 42 or 2?",
+   "focus": [
+    {
+     "cue": "Switches worth 16, 8, 4, 2 and 1",
+     "box": [
+      9,
+      59,
+      36,
+      25
+     ]
+    },
+    {
+     "cue": "4 and 2 are on: which number?",
+     "box": [
+      11.4,
+      31.7,
+      77.3,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -44,40 +63,91 @@
     "2: off",
     "1: on"
    ],
-   "img": "csq/inside-the-machine/bits-1b-five",
-   "view": [
-    0.8,
-    45,
-    44.5,
-    38.5
-   ],
-   "alt": "The 4 card and the 1 card are switched on: 4 and 1 make 5, the number this round asked for."
+   "img": "csq/inside-the-machine/bits-1b-five-n",
+   "alt": "Five switches worth 16, 8, 4, 2 and 1: the 4 and the 1 are on, and the total reads 5.",
+   "focus": [
+    {
+     "cue": "The 4 switch: on",
+     "box": [
+      41.5,
+      46,
+      14,
+      18
+     ]
+    },
+    {
+     "cue": "The 1 switch: on",
+     "box": [
+      78.5,
+      46,
+      19,
+      18
+     ]
+    },
+    {
+     "cue": "4 + 1 = 5",
+     "box": [
+      45.9,
+      76.5,
+      8.3,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "Pictures are dots",
    "text": "A picture on a screen is made of tiny dots called pixels. The software tells the screen which pixels to light, and in which color.",
    "art": "pixel",
-   "img": "csq/inside-the-machine/bits-1b-pixels",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The pixel grid: a picture drawn one dot at a time, each cell lit or dark like a bit."
+   "img": "csq/inside-the-machine/bits-1b-pixels-n",
+   "alt": "A picture as a grid of pixels: rows 1 to 3 are copied, dark where the row says 1, light where it says 0.",
+   "focus": [
+    {
+     "cue": "A picture is a grid of dots: pixels",
+     "box": [
+      23.5,
+      1,
+      55,
+      97
+     ]
+    },
+    {
+     "cue": "Dark where the row says 1, light where it says 0",
+     "box": [
+      23.5,
+      1,
+      55,
+      20
+     ]
+    }
+   ]
   },
   {
    "title": "Where does a photo live?",
    "text": "The screen only shows a photo. The photo is kept in storage as bits, so it is still there when the tablet is off. Tap it: the touch sensor feels it, the processor gets the bits from storage, the screen lights the pixels.",
    "art": "chip",
-   "img": "csq/inside-the-machine/bits-1b-photo",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The photo question: where is a photo when the tablet is off? The answer the game teaches is storage, as bits."
+   "img": "csq/inside-the-machine/bits-1b-photo-n",
+   "alt": "You take a photo and switch the tablet off. Where is the photo? In storage, kept as bits; gone forever; on the dark screen.",
+   "focus": [
+    {
+     "cue": "The tablet is off: where is the photo?",
+     "box": [
+      3.8,
+      8.7,
+      62.6,
+      12.9
+     ]
+    },
+    {
+     "cue": "In storage, kept as bits",
+     "box": [
+      27.6,
+      80.2,
+      45.2,
+      13.7
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -120,14 +190,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Bits & Pixels and finish all 5 levels. Flip the switches to make each number or letter.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/bits-1b-key",
-   "view": [
-    0.8,
-    45,
-    44.5,
-    38.5
-   ],
-   "alt": "Five bit switches, all off, with their cards: 16, 8, 4, 2 and 1. One switch on adds its card."
+   "img": "csq/inside-the-machine/bits-1b-five-n",
+   "alt": "Five switches worth 16, 8, 4, 2 and 1: the 4 and the 1 are on, and the total reads 5.",
+   "focus": [
+    {
+     "cue": "Flip the switches",
+     "box": [
+      3,
+      46,
+      94,
+      18
+     ]
+    },
+    {
+     "cue": "to make each number",
+     "box": [
+      45.9,
+      76.5,
+      8.3,
+      13.3
+     ]
+    }
+   ]
   }
  ],
  "check": [

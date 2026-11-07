@@ -10,27 +10,55 @@
    "title": "Fixers do not guess",
    "text": "When something breaks, good fixers follow a flowchart: a chain of yes/no questions, cheapest check first.",
    "art": "wrench",
-   "img": "csq/inside-the-machine/fixit-2-key",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."
+   "img": "csq/inside-the-machine/fixit-2-start-n",
+   "alt": "No internet on the laptop: before touching anything, build a flowchart of yes/no questions, cheapest first.",
+   "focus": [
+    {
+     "cue": "The ticket: no internet on the laptop",
+     "box": [
+      24.8,
+      4.1,
+      52,
+      13.3
+     ]
+    },
+    {
+     "cue": "Build a flowchart first",
+     "box": [
+      14.6,
+      41.9,
+      77.9,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "One change at a time",
    "text": "Change three things and it works? Now you do not know which change fixed it. Change one thing, then test again.",
    "art": "gears",
-   "img": "csq/inside-the-machine/fixit-2-flow",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A second Pro ticket: the flowchart way means one change, one test, and knowing what fixed it."
+   "img": "csq/inside-the-machine/fixit-2-flow-n",
+   "alt": "The printer prints nothing: the flowchart is built cheapest first: is it on, is there paper, is the job stuck, the right printer?",
+   "focus": [
+    {
+     "cue": "One question at a time, cheapest first",
+     "box": [
+      15.6,
+      66.9,
+      58.4,
+      28.5
+     ]
+    },
+    {
+     "cue": "Each step checks one thing",
+     "box": [
+      65.5,
+      66.9,
+      27.5,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -38,33 +66,61 @@
    "text": "Cheap, quick checks come before slow, expensive ones.",
    "art": "screen",
    "steps": [
-    "is it on?",
-    "is it plugged in?",
-    "is there paper?",
-    "restart it",
-    "swap the cable"
+    "is it on? (1 min)",
+    "is there paper? (1 min)",
+    "is the job stuck? (2 min)",
+    "restart it (4 min)",
+    "swap the cable (3 min)"
    ],
-   "img": "csq/inside-the-machine/fixit-2-third",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A third Pro ticket at the desk: its story hides the clue, and the cheap checks come before the slow ones."
+   "img": "csq/inside-the-machine/fixit-2-flow-n",
+   "alt": "The printer prints nothing: the flowchart is built cheapest first: is it on, is there paper, is the job stuck, the right printer?",
+   "focus": [
+    {
+     "cue": "The printer prints nothing",
+     "box": [
+      24.8,
+      2,
+      53.5,
+      13.3
+     ]
+    },
+    {
+     "cue": "Cheapest questions at the top",
+     "box": [
+      15.6,
+      66.9,
+      58.4,
+      28.5
+     ]
+    }
+   ]
   },
   {
    "title": "The swap test",
    "text": "Swap a part for one you know works. If the problem moves with the part, you found the fault. One laptop prints and another does not? Look at the one that fails.",
    "art": "magnifier",
-   "img": "csq/inside-the-machine/fixit-2-swap",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A later Pro ticket: the kind where swapping in a known-good part tells you where the fault lives."
+   "img": "csq/inside-the-machine/fixit-2-swap-n",
+   "alt": "The headset microphone is silent: build the flowchart, and if it is still broken, swap a part.",
+   "focus": [
+    {
+     "cue": "First the flowchart of quick questions",
+     "box": [
+      14.6,
+      2.6,
+      77.9,
+      12.4
+     ]
+    },
+    {
+     "cue": "Still broken? Swap a part",
+     "box": [
+      30.9,
+      46.7,
+      44.1,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -95,14 +151,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Fix-It Desk and solve all 7 tickets. Build the flowchart first, with the cheapest check at the top.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/fixit-2-key",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first."
+   "img": "csq/inside-the-machine/fixit-2-start-n",
+   "alt": "No internet on the laptop: before touching anything, build a flowchart of yes/no questions, cheapest first.",
+   "focus": [
+    {
+     "cue": "Build the flowchart first",
+     "box": [
+      14.6,
+      41.9,
+      77.9,
+      12.4
+     ]
+    },
+    {
+     "cue": "Cheapest check at the top",
+     "box": [
+      24.8,
+      4.1,
+      52,
+      13.3
+     ]
+    }
+   ]
   }
  ],
  "check": [

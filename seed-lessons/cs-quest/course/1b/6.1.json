@@ -8,29 +8,57 @@
  "slides": [
   {
    "title": "What is technology?",
-   "text": "Technology is anything people invent to solve a problem. A pencil, a bike and a tablet are all technology.",
+   "text": "Technology is anything people invent to solve a problem. A tablet is technology. So are paper and a pencil.",
    "art": "lightbulb",
-   "img": "csq/would-you-rather/tech-1b-first",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides."
+   "img": "csq/would-you-rather/tech-1b-paper-n",
+   "alt": "Would you rather: every lesson on a tablet, or every lesson on paper?",
+   "focus": [
+    {
+     "cue": "A tablet is technology",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "So is paper",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "title": "Tech changes how we live",
    "text": "The telephone let people talk from far away. Video calls let families see each other every day. Maps on a device changed how people find their way.",
    "art": "globe",
-   "img": "csq/would-you-rather/tech-1b-second",
-   "view": [
-    52.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A second technology dilemma: a new choice about how an invention changes the way people live."
+   "img": "csq/would-you-rather/tech-1b-call-n",
+   "alt": "Would you rather: video-call a relative far away every day, or visit them once a month?",
+   "focus": [
+    {
+     "cue": "Video calls: see family far away every day",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Before that: visit, or a phone call",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -45,16 +73,30 @@
   },
   {
    "title": "People change tech too",
-   "text": "People change technology right back. Captions were added to videos because viewers asked for them.",
+   "text": "People change technology right back. Captions were added to videos because viewers asked for them. Designers still add changes like that when someone struggles.",
    "art": "people",
-   "img": "csq/inside-the-machine/design-1b-audit",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
+   "img": "csq/inside-the-machine/design-1b-change-n",
+   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
+   "focus": [
+    {
+     "cue": "Changes designers can make for Ana",
+     "box": [
+      6.1,
+      33.6,
+      44.3,
+      15
+     ]
+    },
+    {
+     "cue": "Captions for sounds: a change people asked for",
+     "box": [
+      67.4,
+      53,
+      29.6,
+      18.3
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -81,14 +123,28 @@
    "title": "Your mission",
    "text": "Pick one invention you use every day. Think of one way it changed how people live, and one thing it made harder. Then talk about it.",
    "art": "trophy",
-   "img": "csq/would-you-rather/tech-1b-first",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides."
+   "img": "csq/would-you-rather/tech-1b-map-n",
+   "alt": "Would you rather: a map app that picks your route, or a paper map and your own choices?",
+   "focus": [
+    {
+     "cue": "One invention you use: a map app",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "What did it change? What got harder?",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -10,27 +10,55 @@
    "title": "Public or private?",
    "text": "Public gets you seen and found. Private keeps you safe. A good choice names the tradeoff.",
    "art": "globe",
-   "img": "csq/would-you-rather/online-2-first",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "img": "csq/would-you-rather/online-photo-2",
+   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
+   "focus": [
+    {
+     "cue": "Public: seen and found by everyone",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Private: safe with people you know",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "title": "Tricks start with public facts",
    "text": "Most tricks start with facts that are already public: a name, a school, a daily route. Fooling people into giving away more is social engineering.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-fake",
-   "view": [
-    6.5,
-    25.5,
-    48,
-    28
-   ],
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "img": "csq/packet-post/tricks-2-fake-n",
+   "alt": "A card that says it is from Your bank, but carries an unknown sender badge: the name is faked.",
+   "focus": [
+    {
+     "cue": "A trick borrows a name you trust",
+     "box": [
+      24.4,
+      33.4,
+      19.9,
+      11.6
+     ]
+    },
+    {
+     "cue": "But who really sent it?",
+     "box": [
+      53.9,
+      33.4,
+      31.4,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -42,14 +70,28 @@
     "benefit: you get feedback",
     "risk: a school logo in the photo shows where you are"
    ],
-   "img": "csq/would-you-rather/online-2-second",
-   "view": [
-    52.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant."
+   "img": "csq/would-you-rather/online-drawing-1b",
+   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
+   "focus": [
+    {
+     "cue": "Public: people enjoy it, you get feedback",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Private: no one learns where you are",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "title": "Build on others' work",
@@ -58,24 +100,58 @@
    "img": "csq/robo-route/functions-2-notes-credit",
    "view": [
     52.2,
-    41,
-    41,
-    55
+    40.5,
+    47,
+    41.8
    ],
-   "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal."
+   "alt": "Three My Blocks carry plain-language notes: Sweep picks up the gems, Drop drives down the side, Home drives to the goal.",
+   "focus": [
+    {
+     "cue": "Reused blocks carry notes: what each one does",
+     "box": [
+      53.4,
+      43,
+      23.6,
+      7.7
+     ]
+    },
+    {
+     "cue": "Credit what you reuse, the way its license asks",
+     "box": [
+      53.4,
+      57.4,
+      23.7,
+      22.2
+     ]
+    }
+   ]
   },
   {
    "title": "Your footprint",
    "text": "Everything you post adds to your digital footprint. Before you post, ask: what could someone do with this?",
    "art": "map",
-   "img": "csq/packet-post/locks-2-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+   "img": "csq/packet-post/locks-2-post-n",
+   "alt": "Share or Shield: where you live. Good side: friends could send you a card. Risk: a stranger could turn up at your door.",
+   "focus": [
+    {
+     "cue": "Before you post: what could someone do with it?",
+     "box": [
+      5,
+      38.9,
+      46,
+      14.1
+     ]
+    },
+    {
+     "cue": "Name the risk",
+     "box": [
+      5,
+      60.5,
+      76.2,
+      12
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -106,14 +182,28 @@
    "title": "Your mission",
    "text": "Write the credit line for a game that reuses a template, some art and a free sound. Then name one thing you keep private online and the tradeoff of keeping it private.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-2-first",
-   "view": [
-    52.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff."
+   "img": "csq/would-you-rather/online-credit-1b-n1",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+   "focus": [
+    {
+     "cue": "Reuse art: write the credit line",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Or make your own",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

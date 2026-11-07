@@ -10,14 +10,28 @@
    "title": "Two halves of security",
    "text": "Physical security protects the machine: a locked door, a cable lock. Digital security protects the data: a passphrase, two-step sign-in, a firewall.",
    "art": "shield",
-   "img": "csq/packet-post/locks-2-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+   "img": "csq/packet-post/locks-2-sort-n",
+   "alt": "Physical or digital: a cable lock and a privacy screen are physical; encryption and a virus scanner are digital.",
+   "focus": [
+    {
+     "cue": "Physical: a cable lock, a privacy screen",
+     "box": [
+      6,
+      72.4,
+      56.9,
+      26.9
+     ]
+    },
+    {
+     "cue": "Next to sort: a camera at the entrance",
+     "box": [
+      5,
+      46.9,
+      59,
+      14.1
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -30,53 +44,118 @@
     "firewall: digital",
     "two-step sign-in: digital"
    ],
-   "img": "csq/packet-post/locks-2-sort",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls."
+   "img": "csq/packet-post/locks-2-sort-n",
+   "alt": "Physical or digital: a cable lock and a privacy screen are physical; encryption and a virus scanner are digital.",
+   "focus": [
+    {
+     "cue": "Sort each measure: what does it protect?",
+     "box": [
+      14.1,
+      2,
+      73.2,
+      12
+     ]
+    },
+    {
+     "cue": "A cable lock protects the machine: physical",
+     "box": [
+      6,
+      72.4,
+      46.2,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "The padlock",
    "text": "HTTPS shows as a padlock. Your details travel in a sealed envelope instead of an open postcard. It seals the trip; it does not make the shop honest.",
    "art": "lock",
-   "img": "csq/packet-post/locks-2-sealed",
-   "view": [
-    6.5,
-    30,
-    48,
-    62
-   ],
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey."
+   "img": "csq/packet-post/locks-2-sealed-n",
+   "alt": "The shop order rides the padlock street: sealed roads wear padlocks, while the open street is shorter but read by a snoopy cat.",
+   "focus": [
+    {
+     "cue": "Padlock roads: the trip is sealed",
+     "box": [
+      17,
+      49,
+      62,
+      26
+     ]
+    },
+    {
+     "cue": "The order rides from Pim's Post to the shop",
+     "box": [
+      3,
+      14,
+      94,
+      62
+     ]
+    }
+   ]
   },
   {
    "title": "Strong passphrases",
    "text": "Four random words beat a short word with a number added. Use a different one for each account, so one leak cannot open everything.",
    "art": "key",
-   "img": "csq/packet-post/locks-2-pass",
-   "view": [
-    54.5,
-    25,
-    45,
-    62
-   ],
-   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key."
+   "img": "csq/packet-post/locks-2-pass-n",
+   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A computer would need about centuries.",
+   "focus": [
+    {
+     "cue": "Four random words",
+     "box": [
+      32,
+      34.2,
+      35.9,
+      13.3
+     ]
+    },
+    {
+     "cue": "About centuries to guess",
+     "box": [
+      9.1,
+      81.2,
+      81.8,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "Think before you post",
    "text": "Making something public has a benefit and a risk. Posting where you will be helps friends find you, and it tells strangers too.",
    "art": "globe",
-   "img": "csq/packet-post/locks-2-post",
-   "view": [
-    6.5,
-    25.5,
-    48,
-    28
-   ],
-   "alt": "The last Lock It sort in Pro: judging what is safe to do, the habit of naming a risk before you act."
+   "img": "csq/packet-post/locks-2-post-n",
+   "alt": "Share or Shield: where you live. Good side: friends could send you a card. Risk: a stranger could turn up at your door.",
+   "focus": [
+    {
+     "cue": "Where you live, made public?",
+     "box": [
+      5,
+      38.9,
+      46,
+      14.1
+     ]
+    },
+    {
+     "cue": "Benefit: friends could send a card",
+     "box": [
+      5,
+      50.8,
+      73.6,
+      12
+     ]
+    },
+    {
+     "cue": "Risk: a stranger could turn up",
+     "box": [
+      5,
+      60.5,
+      76.2,
+      12
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -107,14 +186,28 @@
    "title": "Your mission",
    "text": "Open Packet Post at Lock It and finish all 7 levels. In the game your passphrase is called your mailbox key. For each choice, name the benefit and the risk.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-2-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Lock It in Pro opens with the sharing sort: security starts with knowing what must be protected."
+   "img": "csq/packet-post/locks-2-sort-n",
+   "alt": "Physical or digital: a cable lock and a privacy screen are physical; encryption and a virus scanner are digital.",
+   "focus": [
+    {
+     "cue": "Sort all twelve",
+     "box": [
+      14.1,
+      2,
+      73.2,
+      12
+     ]
+    },
+    {
+     "cue": "Name what each one protects",
+     "box": [
+      5,
+      46.9,
+      59,
+      14.1
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -439,17 +439,6 @@
  },
  {
   "actions": [],
-  "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "credit a picture, or draw your own",
-  "dilemma": "online-8",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-credit-1b"
- },
- {
-  "actions": [],
   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
   "band": "1b",
   "chapter": "online",
@@ -656,7 +645,7 @@
   "narrow": {
    "width": 450,
    "height": 1000,
-   "top": 426.0
+   "top": 426
   }
  },
  {
@@ -738,7 +727,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 251.0
+   "top": 251
   }
  },
  {
@@ -793,7 +782,7 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 249.0
+   "top": 249
   }
  },
  {
@@ -875,7 +864,7 @@
   "narrow": {
    "width": 430,
    "height": 1000,
-   "top": 430.0
+   "top": 430
   }
  },
  {
@@ -1194,7 +1183,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 451.0
+   "top": 451
   }
  },
  {
@@ -1290,7 +1279,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 451.0
+   "top": 451
   }
  },
  {
@@ -1434,7 +1423,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 242.0
+   "top": 242
   }
  },
  {
@@ -1498,7 +1487,7 @@
   "narrow": {
    "width": 430,
    "height": 1000,
-   "top": 339.0
+   "top": 339
   }
  },
  {
@@ -1801,7 +1790,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 168.0
+   "top": 168
   }
  },
  {

@@ -13,11 +13,22 @@
    "img": "csq/robo-route/debug-1b-key",
    "view": [
     52.2,
-    18.0,
-    43.0,
+    18,
+    43,
     30.6
    ],
-   "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
+   "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray.",
+   "focus": [
+    {
+     "cue": "This program does not work yet: it has a bug",
+     "box": [
+      53.5,
+      30.5,
+      40,
+      13
+     ]
+    }
+   ]
   },
   {
    "title": "Expected and actual",
@@ -30,7 +41,27 @@
     48.6,
     82.5
    ],
-   "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised."
+   "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised.",
+   "focus": [
+    {
+     "cue": "Expected: Bolt reaches the flag",
+     "box": [
+      26.5,
+      49,
+      6.5,
+      12
+     ]
+    },
+    {
+     "cue": "Actual: Bolt stopped here",
+     "box": [
+      5.5,
+      49.5,
+      6.5,
+      11.5
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -47,11 +78,31 @@
    "img": "csq/robo-route/debug-1b-step",
    "view": [
     52.2,
-    18.0,
-    43.0,
+    18,
+    43,
     30.6
    ],
-   "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square."
+   "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square.",
+   "focus": [
+    {
+     "cue": "Step lights one block at a time: this one",
+     "box": [
+      53.3,
+      30.6,
+      4.8,
+      6.6
+     ]
+    },
+    {
+     "cue": "Watch each block until the first surprise",
+     "box": [
+      53.5,
+      30.5,
+      40,
+      13
+     ]
+    }
+   ]
   },
   {
    "title": "One too many",
@@ -88,7 +139,27 @@
     46.6,
     33.6
    ],
-   "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested."
+   "alt": "The fixed program sits in the tray: the wrong turn left has become turn right, ready to run again and be tested.",
+   "focus": [
+    {
+     "cue": "The one changed block: turn right",
+     "box": [
+      70.3,
+      33.2,
+      9.4,
+      7
+     ]
+    },
+    {
+     "cue": "Now run it again to test it",
+     "box": [
+      53.5,
+      33,
+      41,
+      13
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -122,11 +193,22 @@
    "img": "csq/robo-route/debug-1b-key",
    "view": [
     52.2,
-    18.0,
-    43.0,
+    18,
+    43,
     30.6
    ],
-   "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray."
+   "alt": "The Debug Lab opens a program that does not work: Bolt waits at the start while the broken program fills the tray.",
+   "focus": [
+    {
+     "cue": "Fix it with as few changes as you can",
+     "box": [
+      53.5,
+      30.5,
+      40,
+      13
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -398,11 +398,11 @@
   "alt": "Two days of data and a big claim: it will be 20 cm tall by day 10. Supported, not supported, or can't tell yet?",
   "concept": "Enough data?",
   "narrow": {
-   "width": 420,
+   "width": 460,
    "height": 740,
    "at": {
-    "text": "Supported",
-    "pad": 60
+    "text": "It will be 20",
+    "pad": 10
    }
   }
  },
@@ -871,10 +871,7 @@
   "narrow": {
    "width": 500,
    "height": 740,
-   "at": {
-    "text": "Finished",
-    "pad": 250
-   }
+   "top": 50
   }
  },
  {
@@ -1131,7 +1128,7 @@
   "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
   "concept": "Back in order",
   "narrow": {
-   "width": 420,
+   "width": 460,
    "height": 740,
    "at": {
     "text": "All packets are here",
@@ -1150,7 +1147,7 @@
     "acts": 3
    }
   ],
-  "alt": "Sorting the mail: home address and mailbox key are Keep, a favorite book is Share; next up, a joke you made up.",
+  "alt": "Sorting the mail: where you live and your mailbox key are Keep, a favorite book is Share. Next up: a joke you made up.",
   "concept": "Private or fine to share?",
   "narrow": {
    "width": 420,
@@ -1454,7 +1451,7 @@
     "acts": 2
    }
   ],
-  "alt": "Share or Shield: your home address. Good side: friends could send you a card. Risk: a stranger could turn up at your door.",
+  "alt": "Share or Shield: where you live. Good side: friends could send you a card. Risk: a stranger could turn up at your door.",
   "concept": "Think before you post",
   "narrow": {
    "width": 420,
@@ -1606,11 +1603,11 @@
   "alt": "Sorting cards into Hardware, what you can touch, and Software, the instructions. Five cards are sorted so far.",
   "concept": "Hardware and software",
   "narrow": {
-   "width": 480,
+   "width": 440,
    "height": 740,
    "at": {
-    "text": "cards to go",
-    "pad": 100
+    "sel": ".im-face",
+    "pad": 30
    }
   }
  },
@@ -1659,7 +1656,7 @@
   "alt": "Ticket: it will not turn on. Hold the power button: still a black screen. Each check shows how many minutes it takes.",
   "concept": "It is not working!",
   "narrow": {
-   "width": 480,
+   "width": 440,
    "height": 740,
    "at": {
     "text": "It will not turn on",
@@ -1852,7 +1849,7 @@
   "alt": "You take a photo and switch the tablet off. Where is the photo? In storage, kept as bits; gone forever; on the dark screen.",
   "concept": "Where does a photo live?",
   "narrow": {
-   "width": 480,
+   "width": 440,
    "height": 740,
    "at": {
     "text": "You take a photo",
@@ -1933,11 +1930,11 @@
   "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
   "concept": "Tradeoffs",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 740,
    "at": {
-    "text": "Something that feels each step",
-    "pad": 10
+    "text": "Cost",
+    "pad": 12
    }
   }
  },
@@ -2003,7 +2000,7 @@
    "width": 420,
    "height": 740,
    "at": {
-    "text": "The headset microphone",
+    "text": "The desk is waiting",
     "pad": 10
    }
   }
@@ -2127,10 +2124,10 @@
   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana: which moment is she struggling?",
   "concept": "Made for everyone",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 740,
    "at": {
-    "text": "Ana",
+    "text": "Watch Ana",
     "pad": 10
    }
   }
@@ -2149,7 +2146,7 @@
   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
   "concept": "Every switch is for someone",
   "narrow": {
-   "width": 420,
+   "width": 520,
    "height": 740,
    "at": {
     "text": "Bigger text",
@@ -2167,11 +2164,11 @@
   "alt": "Sol is six and cannot read yet. A box of words pops up: Save your game? Yes or No. Sol taps anywhere and loses.",
   "concept": "Ask for ideas",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 740,
    "at": {
-    "text": "Sol",
-    "pad": 10
+    "text": "A box of words",
+    "pad": 95
    }
   }
  },
@@ -2189,7 +2186,7 @@
   "alt": "Ren plays in bright sun: changes to pick from include stronger contrast, outlines and a sun mode.",
   "concept": "Edges help everyone",
   "narrow": {
-   "width": 480,
+   "width": 440,
    "height": 740,
    "at": {
     "text": "Pick two changes",
@@ -2207,11 +2204,11 @@
   "alt": "Tao tries face unlock. The makers only tested it on faces like their own, and it does not recognize Tao.",
   "concept": "Bias",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 740,
    "at": {
-    "text": "Tao",
-    "pad": 10
+    "text": "It does not recognize",
+    "pad": 170
    }
   }
  },
@@ -2229,7 +2226,7 @@
   "alt": "Fixes for Tao: test with people of many ages, skin tones and faces, and always offer a passcode as another way in.",
   "concept": "Who was missing?",
   "narrow": {
-   "width": 480,
+   "width": 440,
    "height": 740,
    "at": {
     "text": "Pick two changes",
@@ -2247,10 +2244,10 @@
   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana and tap the moment she struggles.",
   "concept": "Design for real people",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 740,
    "at": {
-    "text": "Ana",
+    "text": "Watch Ana",
     "pad": 10
    }
   }

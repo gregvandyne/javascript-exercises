@@ -99,7 +99,27 @@
     48.6,
     82.5
    ],
-   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time."
+   "alt": "Bolt on a longer open board with the flag far to the right: too many squares to cross one careless step at a time.",
+   "focus": [
+    {
+     "cue": "Bolt waits at the start",
+     "box": [
+      5.6,
+      56.5,
+      5.6,
+      10
+     ]
+    },
+    {
+     "cue": "His first road ends at the flag",
+     "box": [
+      40.8,
+      56,
+      5.4,
+      10.5
+     ]
+    }
+   ]
   }
  ],
  "check": [

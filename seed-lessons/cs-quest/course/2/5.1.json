@@ -10,40 +10,82 @@
    "title": "What makes a gadget",
    "text": "A gadget has sensors and inputs that collect data, a processor, outputs, maybe storage and a connection, and power.",
    "art": "lightbulb",
-   "img": "csq/inside-the-machine/gadget-2-step",
-   "view": [
-    45.3,
-    25,
-    54,
-    72
-   ],
-   "alt": "A Noise meter brief: it must hear the room, show the loudness, send a log to the laptop and run on wall power."
+   "img": "csq/inside-the-machine/gadget-2-brief-n",
+   "alt": "The step counter brief: small, cheap, lasts all day. A motion sensor and a processor are in; the needs list ticks them off.",
+   "focus": [
+    {
+     "cue": "The brief: what the gadget must do",
+     "box": [
+      24.8,
+      1.2,
+      28.3,
+      13.3
+     ]
+    },
+    {
+     "cue": "The needs: sensor, output, power, processor",
+     "box": [
+      25.3,
+      53.8,
+      54.7,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "Sensors",
    "text": "A sensor measures the world: light, motion, sound, moisture. A plant waterer needs a moisture sensor to know when the soil is dry.",
    "art": "chip",
-   "img": "csq/inside-the-machine/gadget-2-sensors",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    44
-   ],
-   "alt": "A second gadget brief: choosing parts starts with the sensor that measures what the gadget must notice."
+   "img": "csq/inside-the-machine/gadget-2-sensors-n",
+   "alt": "The plant waterer brief: it needs something that feels dry soil. The moisture sensor is in, and the need is ticked.",
+   "focus": [
+    {
+     "cue": "A plant waterer needs to feel dry soil",
+     "box": [
+      24.8,
+      4.6,
+      29.6,
+      13.3
+     ]
+    },
+    {
+     "cue": "So a moisture sensor goes in",
+     "box": [
+      27.2,
+      49.8,
+      50.8,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "Tradeoffs",
    "text": "Every part costs money, battery and space. Wireless lets a gadget move freely but uses more battery than a cable. That is a tradeoff.",
    "art": "battery",
-   "img": "csq/inside-the-machine/gadget-2-trade",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    44
-   ],
-   "alt": "A third brief with tighter limits: every part added moves the cost, battery and size meters."
+   "img": "csq/inside-the-machine/gadget-2-trade-n",
+   "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
+   "focus": [
+    {
+     "cue": "Too many parts: cost 19 of 12",
+     "box": [
+      84.9,
+      16,
+      11.3,
+      12.1
+     ]
+    },
+    {
+     "cue": "Battery 7 of 5 and size 8 of 6: over too",
+     "box": [
+      87.3,
+      27.3,
+      8.9,
+      23.4
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -53,31 +95,59 @@
    "steps": [
     "motion sensor",
     "processor",
-    "small screen",
-    "coin battery",
-    "no cable"
+    "a buzzer to tell the walker",
+    "small battery",
+    "no wireless"
    ],
-   "img": "csq/inside-the-machine/gadget-2-key",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    44
-   ],
-   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters."
+   "img": "csq/inside-the-machine/gadget-2-brief-n",
+   "alt": "The step counter brief: small, cheap, lasts all day. A motion sensor and a processor are in; the needs list ticks them off.",
+   "focus": [
+    {
+     "cue": "Small, cheap, lasts all day",
+     "box": [
+      24.8,
+      1.2,
+      28.3,
+      13.3
+     ]
+    },
+    {
+     "cue": "Motion sensor and processor: in",
+     "box": [
+      25.3,
+      53.8,
+      54.7,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "Users decide what is next",
    "text": "A gadget is finished when people can use it. Read what users say, and make that your next improvement.",
    "art": "people",
-   "img": "csq/inside-the-machine/gadget-2-trade",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    44
-   ],
-   "alt": "A third brief with tighter limits: every part added moves the cost, battery and size meters."
+   "img": "csq/inside-the-machine/gadget-2-trade-n",
+   "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
+   "focus": [
+    {
+     "cue": "Over budget: users would feel it",
+     "box": [
+      84.9,
+      16,
+      11.3,
+      34.7
+     ]
+    },
+    {
+     "cue": "Pick only what the brief needs",
+     "box": [
+      34.4,
+      2.2,
+      36.1,
+      11.3
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -108,14 +178,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Design a Gadget and complete all 5 briefs. Watch the cost, battery and size meters as you add each part.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/gadget-2-key",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    44
-   ],
-   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters."
+   "img": "csq/inside-the-machine/gadget-2-brief-n",
+   "alt": "The step counter brief: small, cheap, lasts all day. A motion sensor and a processor are in; the needs list ticks them off.",
+   "focus": [
+    {
+     "cue": "Read the brief",
+     "box": [
+      24.8,
+      1.2,
+      28.3,
+      13.3
+     ]
+    },
+    {
+     "cue": "Watch the cost, battery and size meters",
+     "box": [
+      25.3,
+      53.8,
+      54.7,
+      11.6
+     ]
+    }
+   ]
   }
  ],
  "check": [

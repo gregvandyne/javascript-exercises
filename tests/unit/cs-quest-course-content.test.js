@@ -249,7 +249,9 @@ test('the csq picture manifest is well formed: complete entries, files on disk, 
 // guided focus only), and the two course-only steps match extras.json.
 const CHAR_IDS = ['bolt', 'dot', 'pim', 'gizmo'];
 const SCENES = ['dim', 'drain', 'team', 'map', 'handoff', 'relight', 'celebrate', 'finale'];
-const BEAT_LIT = { '1.5': 1, '2.2': 1, '3.3': 2, '4.3': 3, '5.3': 4 };
+// Bolt's piece lights when Robo Route is done (2.2, after the Bug Hunters and the Level Maker), not at 1.5: one world, one
+// piece. The Spark itself comes back once, in the finale (6.4), after Gizmo's piece is the fourth one lit at 5.3.
+const BEAT_LIT = { '1.5': 0, '2.2': 1, '3.3': 2, '4.3': 3, '5.3': 4 };
 function checkStory(st, at) {
   assert.ok(st && typeof st === 'object' && !Array.isArray(st), `${at}: a story object`);
   for (const k of Object.keys(st)) assert.ok(['scene', 'lit', 'chars', 'out', 'in', 'fly'].includes(k), `${at}: unexpected story field ${k}`);

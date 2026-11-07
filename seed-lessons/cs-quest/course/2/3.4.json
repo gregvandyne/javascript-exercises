@@ -15,49 +15,91 @@
  "n": "3.4",
  "slides": [
   {
-   "alt": "One Grade Asked: a fairness case about who a survey asked, and who it never reached.",
-   "art": "people",
-   "img": "csq/data-detective/fair-2-questions",
-   "view": [
-    0.8,
-    9,
-    54,
-    55
-   ],
+   "title": "Fair questions, unfair tests",
    "text": "Step 3.3 taught fair questions. But a fair question can still get an unfair answer if the test only reaches one kind of person.",
-   "title": "Fair questions, unfair tests"
+   "art": "people",
+   "img": "csq/data-detective/fair-2-onegrade-n",
+   "alt": "The recess app testers grouped by grade: one single bar, Grade 3. No other grade tried the app.",
+   "focus": [
+    {
+     "cue": "Grouped by grade: one bar only",
+     "box": [
+      43,
+      11.7,
+      14,
+      27
+     ]
+    },
+    {
+     "cue": "Every tester was in Grade 3",
+     "box": [
+      43.4,
+      89.7,
+      13.2,
+      10
+     ]
+    }
+   ]
   },
   {
-   "alt": "Who Is Missing? The fairness case that asks which people a sample left out before trusting its answer.",
-   "art": "magnifier",
-   "img": "csq/data-detective/fair-2-sample",
-   "view": [
-    0.8,
-    9,
-    54,
-    66
-   ],
+   "title": "Who is missing?",
    "text": "A sample leaves people out when it only reaches one grade, one lunch line or one kind of voice. The data then speaks for that group, not for everyone.",
-   "title": "Who is missing?"
+   "art": "magnifier",
+   "img": "csq/data-detective/fair-2-missing-n",
+   "alt": "The lunch vote sorted by Voted: every No is a veggie eater. The screen stood in the meat line.",
+   "focus": [
+    {
+     "cue": "Sorted by Voted: the No rows",
+     "box": [
+      35.4,
+      0.8,
+      16.1,
+      81.6
+     ]
+    },
+    {
+     "cue": "All veggie eaters: they were never asked",
+     "box": [
+      35.4,
+      19,
+      15.2,
+      12.4
+     ]
+    }
+   ]
   },
   {
-   "alt": "A third survey question in My Data: the case for comparing classes by percent instead of raw counts.",
-   "art": "table",
-   "img": "csq/data-detective/mydata-2-percent",
-   "view": [
-    55,
-    8,
-    45,
-    58
-   ],
    "kind": "example",
+   "title": "Compare percents, not counts",
+   "text": "A voice helper worked for 9 of 10 deep voices and 3 of 6 high voices. The counts say 9 against 3. Percents tell the fair story.",
+   "art": "table",
    "steps": [
     "deep voices: 9 of 10 worked = 90%",
     "high voices: 3 of 6 worked = 50%",
     "the helper works far better for deep voices"
    ],
-   "text": "A voice helper worked for 9 of 10 deep voices and 3 of 6 high voices. The counts say 9 against 3. Percents tell the fair story.",
-   "title": "Compare percents, not counts"
+   "img": "csq/data-detective/fair-2-voice-n",
+   "alt": "The voice helper: worked for 9 of 10 deep voices (90%) and 3 of 6 high voices (50%).",
+   "focus": [
+    {
+     "cue": "Deep voices: 9 of 10 worked, 90%",
+     "box": [
+      5.3,
+      27.6,
+      23.2,
+      11.7
+     ]
+    },
+    {
+     "cue": "High voices: 3 of 6 worked, 50%",
+     "box": [
+      5.3,
+      43.2,
+      22.2,
+      11.7
+     ]
+    }
+   ]
   },
   {
    "art": "people",
@@ -102,18 +144,32 @@
    "title": "Dot's piece lights up"
   },
   {
-   "alt": "One Grade Asked: a fairness case about who a survey asked, and who it never reached.",
-   "art": "trophy",
-   "img": "csq/data-detective/fair-2-questions",
-   "view": [
-    0.8,
-    9,
-    54,
-    55
-   ],
    "kind": "mission",
+   "title": "Your mission",
    "text": "Open Data Detective at Fair Data and solve all 4 cases. In each case, judge whether the test was fair: spot who was left out, and say who should be asked next.",
-   "title": "Your mission"
+   "art": "trophy",
+   "img": "csq/data-detective/fair-2-onegrade-n",
+   "alt": "The recess app testers grouped by grade: one single bar, Grade 3. No other grade tried the app.",
+   "focus": [
+    {
+     "cue": "Who tested it? Group and see",
+     "box": [
+      43,
+      11.7,
+      14,
+      27
+     ]
+    },
+    {
+     "cue": "Say who should be asked next",
+     "box": [
+      43.4,
+      89.7,
+      13.2,
+      10
+     ]
+    }
+   ]
   }
  ],
  "title": "Was the test fair?",
