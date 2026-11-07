@@ -290,8 +290,9 @@ function gfMapShare(fig, cr, map, level) {
   }
   return a / all;
 }
-/** A chip may cover this much of the picture's lettering (a stray stroke of a word under its edge). */
-const TEXT_MAX = 0.03;
+/** A chip may cover only a trace of the picture's lettering (an anti-aliased stroke at its edge): a chip that would sit on
+ *  words goes to the caption strip instead (2026-11-07 r4: chips covered lines in 0.1, 3.1 and 6.4 at 3%). */
+const TEXT_MAX = 0.005;
 
 // --- screenshots: the cue chip clear of the ring, the badge, the zoom button and the picture's text
 // Each step's chip is measured against its ring (the box plus its outset), its badge and the zoom button,

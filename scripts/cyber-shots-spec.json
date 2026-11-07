@@ -690,20 +690,6 @@
   }
  },
  {
-  "acts": 5,
-  "alt": "A threat card: a one-word key is guessed in an afternoon. The layer tiles: encryption, two-step sign-in, updates, backups and more.",
-  "band": "2",
-  "chapter": "layers",
-  "concept": "a guessed key",
-  "game": "escape-the-post-office",
-  "state": "layers-2-6",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 266
-  }
- },
- {
   "alt": "Five empty move slots, and the tiles to put in order: Carry on, Tell a trusted adult, Save it, Stop, Block or report it.",
   "band": "1b",
   "chapter": "five-moves",
@@ -2027,19 +2013,6 @@
   }
  },
  {
-  "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
-  "band": "1b",
-  "chapter": "which-pim",
-  "concept": "two Pim cards, read from the top",
-  "game": "escape-the-post-office",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 161.5
-  },
-  "state": "pim-1b-n2"
- },
- {
   "acts": 1,
   "alt": "Lock 5: Five Moves. The first move is placed: Stop, do not pass it on. The tiles left: Carry on, Tell a trusted adult, Save it, Block or report.",
   "band": "1b",
@@ -2111,21 +2084,6 @@
  },
  {
   "actions": [],
-  "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
-  "band": "1b",
-  "chapter": "protocols",
-  "concept": "the open road and the padlock road",
-  "game": "packet-post",
-  "level": 3,
-  "state": "protocols-1b-sealed-n",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 165
-  }
- },
- {
-  "actions": [],
   "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
   "band": "1b",
   "chapter": "protocols",
@@ -2168,5 +2126,275 @@
    "height": 1000,
    "top": 450.4
   }
+ },
+ {
+  "actions": [],
+  "alt": "Lock It, safe habit or risky habit: a habit card waits to be sorted, and Pim asks how you keep a key.",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "safe or risky key habits",
+  "game": "packet-post",
+  "level": 6,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 106
+  },
+  "state": "locks-1b-habits-n"
+ },
+ {
+  "actions": [],
+  "alt": "Lock It: build a mailbox key for Pim from four word tiles, and watch the meter.",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "build a key from word tiles",
+  "game": "packet-post",
+  "level": 2,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 67.5
+  },
+  "state": "locks-1b-key-n"
+ },
+ {
+  "actions": [],
+  "alt": "Lock It, who may know your key: a card waits for its tray, Okay to tell or Keep it to yourself.",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "who may know your key",
+  "game": "packet-post",
+  "level": 4,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 99
+  },
+  "state": "locks-1b-tell-n"
+ },
+ {
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Three random words in the passphrase so far. The meter says a computer would need about a hundred years.",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "three words: a hundred years",
+  "game": "packet-post",
+  "level": 2,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 220
+  },
+  "state": "locks-1b-built-n"
+ },
+ {
+  "actions": [],
+  "alt": "Break It Up: packet 1 of 3, an apple's first piece, waits at Pim's Post with its number, ready to ride to Grandma's House.",
+  "band": "1b",
+  "chapter": "packets",
+  "concept": "a numbered packet ready to travel",
+  "game": "packet-post",
+  "level": 1,
+  "narrow": {
+   "width": 420,
+   "height": 700,
+   "top": 108
+  },
+  "state": "packets-1b-start-n"
+ },
+ {
+  "actions": [],
+  "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+  "band": "1b",
+  "chapter": "ciphers",
+  "concept": "turn the wheel back",
+  "game": "packet-post",
+  "level": 1,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 132.5
+  },
+  "state": "ciphers-1b-wheel-n2"
+ },
+ {
+  "actions": [],
+  "alt": "Rules of the Road, Pro: five numbered packets wait at Pim's Post for the road through Mill Office to Grandma's House.",
+  "band": "2",
+  "chapter": "protocols",
+  "concept": "numbered packets at the first stop",
+  "game": "packet-post",
+  "level": 1,
+  "narrow": {
+   "width": 420,
+   "height": 700,
+   "top": 127.5
+  },
+  "state": "protocols-2-key-n"
+ },
+ {
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "The sharing sort: some cards already in their trays, Share or Keep, and the next card waiting.",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "cards sorted into trays",
+  "game": "packet-post",
+  "level": 1,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 100
+  },
+  "state": "locks-1b-sort-n2"
+ },
+ {
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "The spare-copy sort: two copies sorted, the next card waiting: a good spare copy, or not a spare copy?",
+  "band": "1b",
+  "chapter": "locks",
+  "concept": "spare copies sorted",
+  "game": "packet-post",
+  "level": 5,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 46
+  },
+  "state": "locks-1b-backup-n2"
+ },
+ {
+  "alt": "A letter from Account Team, Check your account, with clues marked: your mailbox key, and before Friday.",
+  "band": "1b",
+  "chapter": "mix",
+  "concept": "an official-looking name",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "mx-3",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 224.8
+  },
+  "phase": "hunt",
+  "state": "mix-1b-mx-3-all"
+ },
+ {
+  "alt": "A letter from A Friend of a Friend, Pass it on!, with clues marked: send this letter to ten friends, before midnight.",
+  "band": "1b",
+  "chapter": "letters",
+  "concept": "a chain letter",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "lt-6",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 231.8
+  },
+  "phase": "hunt",
+  "state": "letters-1b-lt-6-all"
+ },
+ {
+  "alt": "A post from Gem Swap Club with clues marked: swap mailbox keys with us, 500 free gems, and everyone in your class already did.",
+  "band": "1b",
+  "chapter": "keys",
+  "concept": "too good to be true",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "kk-6",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 250.2
+  },
+  "phase": "hunt",
+  "state": "keys-1b-kk-6-all"
+ },
+ {
+  "alt": "The moves for JokerJay's mean message: Deliver, Bin it, Show Pim, Report & block.",
+  "band": "1b",
+  "chapter": "chat",
+  "concept": "report and block a mean message",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "ch-3",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 315.5
+  },
+  "phase": "decide",
+  "state": "chat-1b-ch-3-decide"
+ },
+ {
+  "alt": "A letter from Bank of Netville, Confirm it is you, with its real address and the clue marked: your mailbox key and your birthday.",
+  "band": "2",
+  "chapter": "senders",
+  "concept": "a faked bank asks for your key",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "sd-6",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 231.8
+  },
+  "phase": "hunt",
+  "state": "senders-2-sd-6-all"
+ },
+ {
+  "acts": 1,
+  "alt": "The Sorting Gate: the golden letter has left the Post Office on an open road, heading for the Sorting Room door.",
+  "band": "1b",
+  "chapter": "sorting-gate",
+  "concept": "the letter on its way",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 420,
+   "height": 600,
+   "top": 253
+  },
+  "state": "gate-1b-hop"
+ },
+ {
+  "alt": "The Defender shield: all six locks open, each with its stamp and the skill it trained.",
+  "band": "2",
+  "chapter": "escape",
+  "concept": "the completion shield",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 168.5
+  },
+  "shield": true,
+  "state": "shield-2"
+ },
+ {
+  "actions": [],
+  "alt": "Explorer padlock level: the padlock road climbs over Hill Office to Birthday House; the open road runs below past River Office.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "the open road and the padlock road",
+  "game": "packet-post",
+  "level": 3,
+  "narrow": {
+   "width": 420,
+   "height": 620,
+   "top": 108
+  },
+  "state": "protocols-1b-sealed-n"
  }
 ]

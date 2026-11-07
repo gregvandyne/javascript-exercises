@@ -46,25 +46,25 @@
     "Keep private: a birthday",
     "Keep private: a photo in school uniform"
    ],
-   "img": "csq/packet-post/locks-1b-sort-n1",
-   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
+   "img": "csq/packet-post/locks-1b-sort-n2",
+   "alt": "The sharing sort: some cards already in their trays, Share or Keep, and the next card waiting.",
    "focus": [
     {
-     "cue": "The first card to sort: where you live",
+     "cue": "Pim sorts what is fine to share and what stays private",
      "box": [
       2.9,
-      3,
+      5.9,
       94.3,
-      21.2
+      31.7
      ]
     },
     {
-     "cue": "Share, or keep private? Every card gets a tray",
+     "cue": "A joke you made up: fine to share",
      "box": [
       2.9,
-      69.9,
-      63.6,
-      20.3
+      41.1,
+      94.3,
+      21.2
      ]
     }
    ]

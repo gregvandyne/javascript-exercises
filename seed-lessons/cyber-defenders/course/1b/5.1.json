@@ -36,7 +36,7 @@
      "box": [
       26.2,
       2.5,
-      35.0,
+      35,
       7.4
      ]
     },
@@ -62,7 +62,7 @@
      "cue": "A chat that must stay secret from adults",
      "box": [
       7.1,
-      39.0,
+      39,
       82.2,
       13.5
      ]
@@ -84,8 +84,8 @@
    "text": "A new player in your game chat is very friendly, then asks two things. A Defender reads the signs before answering.",
    "art": "magnifier",
    "steps": [
-    "They ask which school you go to",
-    "They ask you to move to a private chat",
+    "A gift from a stranger: a rare skin, free",
+    "Then a secret: keep this our secret",
     "Both are warning signs",
     "Leave the chat and tell a trusted adult"
    ],
@@ -96,8 +96,8 @@
      "cue": "First a gift: a rare skin, free",
      "box": [
       7.1,
-      39.0,
-      79.0,
+      39,
+      79,
       13.5
      ]
     },
@@ -122,7 +122,7 @@
     {
      "cue": "Report and block is always allowed",
      "box": [
-      51.0,
+      51,
       24.8,
       46.2,
       20.3

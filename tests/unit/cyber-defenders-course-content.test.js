@@ -338,11 +338,17 @@ test('pictures: no picture repeats within a step, and none repeats across neighb
   }
 });
 
-test('pictures: at most two uses of the same picture per band', () => {
+test('pictures: every picture belongs to one slide of one step in a band (no repeats anywhere)', () => {
+  // 2026-11-07 r4: a child meets each picture once in the whole course band. A Pro intro's first-time slides are the
+  // same step told another way, so they may share that step's pictures, but no other step's.
   for (const band of BANDS) {
-    const uses = new Map();
-    for (const { deck: d } of decks.filter(x => x.band === band)) for (const s of d.slides) if (s.img) uses.set(s.img, (uses.get(s.img) || 0) + 1);
-    for (const [img, n] of uses) assert.ok(n <= 2, `${band}: ${img} is used ${n} times`);
+    const owner = new Map();
+    for (const { deck: d } of decks.filter(x => x.band === band)) {
+      const mine = new Set();
+      for (const s of d.slides) if (s.img) { assert.ok(!mine.has(s.img), `${band}-${d.n}: ${s.img} twice in the step`); mine.add(s.img); }
+      for (const s of d.slides_first_time || []) if (s.img) mine.add(s.img);
+      for (const img of mine) { assert.ok(!owner.has(img), `${band}: ${img} is used by ${owner.get(img)} and ${d.n}`); owner.set(img, d.n); }
+    }
   }
 });
 

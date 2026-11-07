@@ -45,37 +45,31 @@
    "text": "A cipher wheel shifts every letter by the same number. Shift by 3, and A becomes D, so a plain word turns into a secret one.",
    "art": "cipher",
    "steps": [
-    "plain word: CAT",
-    "shift C by 3: F",
-    "shift A by 3: D",
-    "shift T by 3: W",
-    "secret word: FDW"
+    "secret word: DSSOH",
+    "turn the wheel back by 3",
+    "D turns back to A, S to P",
+    "O turns back to L, H to E",
+    "plain word: APPLE"
    ],
-   "img": "csq/packet-post/ciphers-1b-wheel",
-   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
-   "view": [
-    12.4,
-    23.5,
-    78.9,
-    70.1
-   ],
+   "img": "csq/packet-post/ciphers-1b-wheel-n2",
+   "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
    "focus": [
     {
      "cue": "Turn the inner wheel until the reading makes sense",
      "box": [
-      15.4,
-      31.3,
-      30.5,
-      54.5
+      20,
+      2,
+      60,
+      96
      ]
     },
     {
-     "cue": "The secret message, and the reading under it",
+     "cue": "Each outer letter sits over its secret letter",
      "box": [
-      54,
-      38,
-      34.3,
-      17.9
+      33,
+      20,
+      34,
+      60
      ]
     }
    ]

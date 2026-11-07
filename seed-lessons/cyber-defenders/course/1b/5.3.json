@@ -9,20 +9,7 @@
   {
    "title": "Pim roosts at dusk",
    "text": "Pim delivers post all day, over every road in Netville. But at dusk Pim roosts, because every creature has an off-duty time, even post owls.",
-   "art": "star",
-   "img": "csq/chars/pim",
-   "alt": "Pim the owl: a round brown owl with big eyes, a cream belly and a tiny backpack.",
-   "focus": [
-    {
-     "cue": "Pim the owl, off duty at dusk",
-     "box": [
-      8.0,
-      2.0,
-      81.0,
-      94.0
-     ]
-    }
-   ]
+   "art": "star"
   },
   {
    "title": "Your body sends signs",
@@ -32,35 +19,7 @@
   {
    "title": "Choose the stop before you start",
    "text": "The Defender trick is simple: choose your stopping point before you start playing. A stop you chose early is much easier to keep than one you invent mid-game.",
-   "art": "shield",
-   "img": "csq/packet-post/home",
-   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
-   "view": [
-    35.0,
-    38.7,
-    44.8,
-    61.3
-   ],
-   "focus": [
-    {
-     "cue": "Choose the stop before you press play",
-     "box": [
-      39.4,
-      46.7,
-      20.5,
-      12.1
-     ]
-    },
-    {
-     "cue": "Pim, at the post office, done for the day",
-     "box": [
-      61.3,
-      71.3,
-      15.5,
-      24.0
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "kind": "example",

@@ -49,24 +49,24 @@
     "not sure: stop and ask a trusted adult"
    ],
    "img": "csq/packet-post/protocols-1b-sealed-n",
-   "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
+   "alt": "Explorer padlock level: the padlock road climbs over Hill Office to Birthday House; the open road runs below past River Office.",
    "focus": [
     {
      "cue": "Sealed roads wear a padlock",
      "box": [
-      25.8,
-      29,
-      11,
-      19.5
+      26,
+      29.5,
+      8.6,
+      15.3
      ]
     },
     {
      "cue": "The open road below has no padlock",
      "box": [
-      25,
-      77,
-      49.5,
-      23
+      17,
+      57,
+      53,
+      42
      ]
     }
    ]
@@ -75,25 +75,25 @@
    "title": "What a seal cannot promise",
    "text": "A sealed envelope proves the trip is private. It does not prove the sender is kind, so still think before you trust a message.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-card-n1",
-   "alt": "A card from “Your bank”, marked unknown sender: “Your account is locked.”",
+   "img": "csq/trick-inbox/mix-1b-mx-3-all",
+   "alt": "A letter from Account Team, Check your account, with clues marked: your mailbox key, and before Friday.",
    "focus": [
     {
-     "cue": "This message wears a bank's name",
+     "cue": "This message wears an official name",
      "box": [
-      17.7,
-      36.4,
-      28.1,
-      11
+      29.6,
+      13.5,
+      35.4,
+      7.8
      ]
     },
     {
-     "cue": "A seal on the trip says nothing about the sender",
+     "cue": "It still asks for your key: a seal cannot stop that",
      "box": [
-      47.2,
-      36.4,
-      39.6,
-      11
+      12.5,
+      49.6,
+      41.4,
+      13.5
      ]
     }
    ]

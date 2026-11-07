@@ -102,29 +102,7 @@
   {
    "title": "Two weak layers can win",
    "text": "No single layer is perfect, and that is fine. Two ordinary layers together can beat one strong one, because a trick that slips past the first still meets the second.",
-   "art": "shield",
-   "img": "csq/escape-the-post-office/layers-1b-2",
-   "alt": "A trouble card: a guesser tries key after key on a mailbox. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
-   "focus": [
-    {
-     "cue": "A guesser tries key after key",
-     "box": [
-      5.2,
-      6.7,
-      83.4,
-      12.9
-     ]
-    },
-    {
-     "cue": "A second layer, the key checker, still stands",
-     "box": [
-      53.3,
-      29.1,
-      36.7,
-      20.5
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "kind": "words",

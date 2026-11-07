@@ -10,31 +10,25 @@
    "title": "The road, in one minute",
    "text": "Fast recap, because this band moves quickly. Messages travel as numbered packets, routers pass them hop by hop, and a protocol is the shared rules every stop follows.",
    "art": "network",
-   "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
-   "view": [
-    8.1,
-    21.5,
-    86.3,
-    66.2
-   ],
+   "img": "csq/packet-post/protocols-2-key-n",
+   "alt": "Rules of the Road, Pro: five numbered packets wait at Pim's Post for the road through Mill Office to Grandma's House.",
    "focus": [
     {
      "cue": "Pim's Post to Grandma's House, through Mill Office",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      3,
+      2,
+      94,
+      46
      ]
     },
     {
-     "cue": "Then each packet is numbered for its journey",
+     "cue": "Five numbered packets: two lost on the way",
      "box": [
-      54.1,
-      38,
-      25.5,
-      12.3
+      2.9,
+      52.5,
+      94.3,
+      31.7
      ]
     }
    ]

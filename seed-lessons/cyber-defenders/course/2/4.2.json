@@ -45,7 +45,7 @@
   {
    "kind": "example",
    "title": "Name the want, pick the guard",
-   "text": "A fake message signed Post Office asks for your mailbox key. Work out who is behind it before you act.",
+   "text": "A fake message signed Bank of Netville asks for your mailbox key and birthday. Work out who is behind it before you act.",
    "art": "magnifier",
    "steps": [
     "Sender name looks official",
@@ -54,25 +54,25 @@
     "Want: a way into accounts",
     "Guard: do not reply; report it"
    ],
-   "img": "csq/trick-inbox/senders-2-sd-1-all",
-   "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
+   "img": "csq/trick-inbox/senders-2-sd-6-all",
+   "alt": "A letter from Bank of Netville, Confirm it is you, with its real address and the clue marked: your mailbox key and your birthday.",
    "focus": [
     {
-     "cue": "A fake Post Office message asks for your key",
+     "cue": "The name says Bank of Netville",
      "box": [
-      7.1,
-      70,
-      85.7,
-      13.5
+      29.6,
+      10.6,
+      38.2,
+      7.8
      ]
     },
     {
      "cue": "Who sent it? Check the real address",
      "box": [
-      29.6,
-      57.2,
-      29.9,
-      7.8
+      6.9,
+      23.4,
+      86.2,
+      7.2
      ]
     }
    ]
@@ -80,47 +80,12 @@
   {
    "title": "Permission is the whole difference",
    "text": "Testing a network's locks can be ethical or malicious, and permission is the whole difference. With permission it is defense work. Without it, it is breaking in, whatever the reason given.",
-   "art": "key",
-   "img": "csq/escape-the-post-office/layers-2-6",
-   "alt": "A threat card: a one-word key is guessed in an afternoon. The layer tiles: encryption, two-step sign-in, updates, backups and more.",
-   "focus": [
-    {
-     "cue": "A one-word key, guessed in an afternoon",
-     "box": [
-      5.2,
-      0.5,
-      85,
-      12.9
-     ]
-    },
-    {
-     "cue": "With permission, testing this layer is defense work",
-     "box": [
-      53.3,
-      78.8,
-      34.3,
-      20.5
-     ]
-    }
-   ]
+   "art": "key"
   },
   {
    "title": "Not like the films",
    "text": "Films dress hacking up as instant magic, which is a costume too. Real defense is slow, careful and lawful, and it is a real job people are paid to do well.",
-   "art": "screen",
-   "img": "csq/escape-the-post-office/layers-2",
-   "alt": "A threat card: an interceptor reads a note while it travels. Six layer tiles, from Padlock Gate (encryption) to Long Passphrase (strong key).",
-   "focus": [
-    {
-     "cue": "Real defense: one careful layer at a time",
-     "box": [
-      2.8,
-      23.1,
-      94.4,
-      76.1
-     ]
-    }
-   ]
+   "art": "screen"
   },
   {
    "kind": "words",
