@@ -1646,7 +1646,9 @@
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
       "failed": "Algo salió mal. Inténtalo de nuevo.",
       "copied": "¡Enlace copiado!",
-      "deleteConfirm": "¿Borrar este cuento? No se puede deshacer."
+      "deleteConfirm": "¿Borrar este cuento? No se puede deshacer.",
+      "needNote": "Escribe qué debe cambiar, o elige otro tipo de cuento u otra sensación.",
+      "sampleOff": "Esa voz no puede sonar ahora."
     },
     "app": {
       "wentWrong": "Algo salió mal. Inténtalo de nuevo, por favor.",
@@ -6112,7 +6114,19 @@
       "left": "{count, plural, one {Hoy puedes crear # cuento más.} other {Hoy puedes crear # cuentos más.}}",
       "none": "Ya has creado todos tus cuentos de hoy. ¡Vuelve mañana!",
       "safety": "Los cuentos siempre son tiernos y amables. Cada idea y cada cuento se revisa antes de crearse.",
-      "needIdea": "Primero escribe tu idea (bastan unas palabras)."
+      "needIdea": "Primero escribe tu idea (bastan unas palabras).",
+      "kitHint": "Las personas de tu cuento se convierten en niños y adultos de fieltro, los animales en animales de fieltro, y puede pasar casi en cualquier lugar: un campo de fútbol, un aula, la playa, un castillo, bajo el mar o en la Luna.",
+      "styleH": "¿Qué tipo de cuento?",
+      "toneH": "¿Cómo debe sentirse?",
+      "voiceH": "¿Quién lo lee?",
+      "voiceAi": "Las voces son voces de IA. Toca ▶ para escuchar una.",
+      "listen": "Escuchar {name}",
+      "musicH": "Música de fondo",
+      "more": "Más opciones (puedes saltarlas)",
+      "charsLabel": "¿Quién sale en el cuento?",
+      "charsHint": "Por ejemplo: mi gata Luna y un zorro amable. Se convierten en animales de fieltro.",
+      "lessonLabel": "¿Una lección que aprender?",
+      "lessonHint": "Por ejemplo: compartir hace felices a todos."
     },
     "status": {
       "queued": "Esperando turno…",
@@ -6158,6 +6172,81 @@
       "decideP": "Un niño a tu cargo creó este cuento y le gustaría compartirlo. ¿Pueden verlo otras personas?",
       "approve": "Sí, compartirlo",
       "decline": "Este no"
+    },
+    "options": "Opciones del cuento",
+    "voiceSample": "Había una vez, en un pueblito de fieltro, un búho dormilón que miró al cielo y contó las estrellas.",
+    "style": {
+      "bedtime": "Para dormir",
+      "adventure": "Aventura",
+      "funny": "Divertido",
+      "rhyming": "Con rimas",
+      "fable": "Fábula con lección",
+      "mystery": "Misterio"
+    },
+    "tone": {
+      "cozy": "Acogedor",
+      "exciting": "Emocionante",
+      "silly": "Gracioso",
+      "heartfelt": "Tierno",
+      "brave": "Valiente"
+    },
+    "voice": {
+      "auto": "Nuestra cuentacuentos",
+      "coral": "Cálida y amable",
+      "sage": "Suave y sabia",
+      "nova": "Amiga alegre",
+      "shimmer": "Brillante y chispeante",
+      "fable": "Voz de libro",
+      "onyx": "Grave y tranquila"
+    },
+    "music": {
+      "lullaby": "Caja de música",
+      "playful": "Juguetona",
+      "adventure": "Aventura",
+      "magical": "Destellos mágicos",
+      "piano": "Piano suave",
+      "none": "Sin música"
+    },
+    "set": {
+      "lighthouse": "Faro",
+      "village": "Pueblo",
+      "forest": "Bosque",
+      "meadow": "Prado",
+      "sky": "Cielo"
+    },
+    "time": {
+      "night": "Noche",
+      "dusk": "Atardecer",
+      "dawn": "Amanecer",
+      "day": "Día"
+    },
+    "edit": {
+      "btn": "Editar cuento",
+      "h": "Cambia tu cuento",
+      "back": "Volver al cuento",
+      "wordsH": "Cambiar las palabras",
+      "wordsP": "Arregla o cambia cualquier frase. Las imágenes se quedan igual.",
+      "titleLabel": "Título",
+      "scene": "Escena {n}",
+      "line": "Frase {n}",
+      "remakeP": "Palabras nuevas, una voz nueva o música nueva son rápidas: las imágenes se guardan.",
+      "remakesLeft": "{count, plural, one {Hoy puedes hacer # cambio rápido más.} other {Hoy puedes hacer # cambios rápidos más.}}",
+      "remakeNone": "Ya usaste todos tus cambios rápidos de hoy. ¡Vuelve mañana!",
+      "remake": "Hacer el vídeo nuevo",
+      "rewriteH": "Pedir que lo reescriban",
+      "rewriteP": "Dile al escritor de cuentos qué cambiar. Reescribir cuenta como uno de tus cuentos nuevos de hoy.",
+      "noteLabel": "¿Qué debe cambiar?",
+      "noteHint": "Por ejemplo: hazlo más divertido, o añade un pícnic al final.",
+      "rewrite": "Reescribir mi cuento",
+      "nothing": "Primero cambia algo: las palabras, la voz o la música.",
+      "needNote": "Escribe qué debe cambiar, o elige otro tipo de cuento u otra sensación.",
+      "unsafe": "Esas palabras no pueden ir en un cuento aquí. Prueba con palabras más amables.",
+      "invalid": "El cuento quedó demasiado largo. Prueba con frases más cortas.",
+      "busy": "Ya se está haciendo una versión nueva.",
+      "working": "Haciendo la versión nueva… El vídeo anterior se queda aquí hasta que esté lista.",
+      "failed": "La versión nueva no salió bien, así que tu cuento se queda como estaba.",
+      "keepOld": "Quedarme con el anterior",
+      "asksAgain": "Después de un cambio, un adulto o tu maestro tendrá que decir que sí otra vez antes de que otros puedan verlo."
     }
   }
 }

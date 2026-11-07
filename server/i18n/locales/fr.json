@@ -1646,7 +1646,9 @@
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
       "failed": "Quelque chose s’est mal passé. Réessaie.",
       "copied": "Lien copié !",
-      "deleteConfirm": "Supprimer cette histoire ? C’est définitif."
+      "deleteConfirm": "Supprimer cette histoire ? C’est définitif.",
+      "needNote": "Écris ce qui doit changer, ou choisis un autre genre d’histoire ou une autre ambiance.",
+      "sampleOff": "Cette voix ne peut pas jouer pour le moment."
     },
     "app": {
       "wentWrong": "Quelque chose n’a pas marché. Réessaie, s’il te plaît.",
@@ -6112,7 +6114,19 @@
       "left": "{count, plural, one {Tu peux encore créer # histoire aujourd’hui.} other {Tu peux encore créer # histoires aujourd’hui.}}",
       "none": "Tu as créé toutes tes histoires pour aujourd’hui. Reviens demain !",
       "safety": "Les histoires sont toujours douces et gentilles. Chaque idée et chaque histoire est vérifiée avant d’être créée.",
-      "needIdea": "Écris d’abord ton idée (quelques mots suffisent)."
+      "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
+      "kitHint": "Les personnes de ton histoire deviennent des enfants et des adultes en feutre, les animaux des animaux en feutre, et elle peut se passer presque partout : un terrain de foot, une classe, la plage, un château, sous la mer ou sur la Lune.",
+      "styleH": "Quel genre d’histoire ?",
+      "toneH": "Quelle ambiance ?",
+      "voiceH": "Qui la lit ?",
+      "voiceAi": "Ce sont des voix d’IA. Touche ▶ pour en écouter une.",
+      "listen": "Écouter {name}",
+      "musicH": "Musique de fond",
+      "more": "Plus de choix (tu peux passer)",
+      "charsLabel": "Qui est dans l’histoire ?",
+      "charsHint": "Par exemple : ma chatte Luna et un gentil renard. Ils deviennent des animaux en feutre.",
+      "lessonLabel": "Une leçon à apprendre ?",
+      "lessonHint": "Par exemple : partager rend tout le monde heureux."
     },
     "status": {
       "queued": "En attente…",
@@ -6158,6 +6172,81 @@
       "decideP": "Un enfant dont vous vous occupez a créé cette histoire et aimerait la partager. D’autres personnes peuvent-elles la regarder ?",
       "approve": "Oui, la partager",
       "decline": "Pas celle-ci"
+    },
+    "options": "Choix de l’histoire",
+    "voiceSample": "Il était une fois, dans un petit village en feutre, une chouette ensommeillée qui leva les yeux et compta les étoiles.",
+    "style": {
+      "bedtime": "Pour dormir",
+      "adventure": "Aventure",
+      "funny": "Drôle",
+      "rhyming": "En rimes",
+      "fable": "Fable avec une leçon",
+      "mystery": "Mystère"
+    },
+    "tone": {
+      "cozy": "Douillette",
+      "exciting": "Palpitante",
+      "silly": "Rigolote",
+      "heartfelt": "Tendre",
+      "brave": "Courageuse"
+    },
+    "voice": {
+      "auto": "Notre conteuse",
+      "coral": "Chaleureuse et gentille",
+      "sage": "Douce et sage",
+      "nova": "Amie joyeuse",
+      "shimmer": "Pétillante",
+      "fable": "Voix de livre",
+      "onyx": "Grave et calme"
+    },
+    "music": {
+      "lullaby": "Boîte à musique",
+      "playful": "Joyeuse",
+      "adventure": "Aventure",
+      "magical": "Étincelles magiques",
+      "piano": "Piano doux",
+      "none": "Sans musique"
+    },
+    "set": {
+      "lighthouse": "Phare",
+      "village": "Village",
+      "forest": "Forêt",
+      "meadow": "Prairie",
+      "sky": "Ciel"
+    },
+    "time": {
+      "night": "Nuit",
+      "dusk": "Soir",
+      "dawn": "Lever du soleil",
+      "day": "Jour"
+    },
+    "edit": {
+      "btn": "Modifier l’histoire",
+      "h": "Change ton histoire",
+      "back": "Retour à l’histoire",
+      "wordsH": "Changer les mots",
+      "wordsP": "Corrige ou change n’importe quelle phrase. Les images restent les mêmes.",
+      "titleLabel": "Titre",
+      "scene": "Scène {n}",
+      "line": "Phrase {n}",
+      "remakeP": "De nouveaux mots, une nouvelle voix ou une nouvelle musique, c’est rapide : les images sont gardées.",
+      "remakesLeft": "{count, plural, one {Tu peux encore faire # changement rapide aujourd’hui.} other {Tu peux encore faire # changements rapides aujourd’hui.}}",
+      "remakeNone": "Tu as utilisé tous tes changements rapides pour aujourd’hui. Reviens demain !",
+      "remake": "Faire la nouvelle vidéo",
+      "rewriteH": "Demander une réécriture",
+      "rewriteP": "Dis à l’auteur des histoires ce qu’il faut changer. Une réécriture compte comme une de tes nouvelles histoires du jour.",
+      "noteLabel": "Qu’est-ce qui doit changer ?",
+      "noteHint": "Par exemple : rends-la plus drôle, ou ajoute un pique-nique à la fin.",
+      "rewrite": "Réécrire mon histoire",
+      "nothing": "Change d’abord quelque chose : les mots, la voix ou la musique.",
+      "needNote": "Écris ce qui doit changer, ou choisis un autre genre d’histoire ou une autre ambiance.",
+      "unsafe": "Ces mots ne peuvent pas aller dans une histoire ici. Essaie des mots plus gentils.",
+      "invalid": "L’histoire est devenue trop longue. Essaie des phrases plus courtes.",
+      "busy": "Une nouvelle version est déjà en train d’être faite.",
+      "working": "On fait la nouvelle version… L’ancienne vidéo reste ici jusqu’à ce qu’elle soit prête.",
+      "failed": "La nouvelle version n’a pas marché, alors ton histoire reste comme avant.",
+      "keepOld": "Garder l’ancienne",
+      "asksAgain": "Après un changement, un adulte ou ton enseignant devra redire OK avant que d’autres puissent la regarder."
     }
   }
 }

@@ -1647,7 +1647,9 @@
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
       "failed": "Er ging iets mis. Probeer het opnieuw.",
       "copied": "Link gekopieerd!",
-      "deleteConfirm": "Dit verhaal verwijderen? Dit kan niet ongedaan worden gemaakt."
+      "deleteConfirm": "Dit verhaal verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "needNote": "Schrijf wat er anders moet, of kies een ander soort verhaal of gevoel.",
+      "sampleOff": "Die stem kan nu niet spelen."
     },
     "app": {
       "wentWrong": "Er ging iets mis. Probeer het nog eens.",
@@ -6113,7 +6115,19 @@
       "left": "{count, plural, one {Je kunt vandaag nog # verhaal maken.} other {Je kunt vandaag nog # verhalen maken.}}",
       "none": "Je hebt al je verhalen voor vandaag gemaakt. Kom morgen terug!",
       "safety": "Verhalen zijn altijd zacht en lief. Elk idee en elk verhaal wordt gecontroleerd voordat het gemaakt wordt.",
-      "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg)."
+      "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
+      "kitHint": "Mensen in je verhaal worden vilten kinderen en volwassenen, dieren worden vilten dieren, en het kan bijna overal gebeuren: op een voetbalveld, in de klas, op het strand, in een kasteel, onder de zee of op de maan.",
+      "styleH": "Wat voor verhaal?",
+      "toneH": "Hoe moet het voelen?",
+      "voiceH": "Wie leest het voor?",
+      "voiceAi": "De stemmen zijn AI-stemmen. Tik op ▶ om er een te horen.",
+      "listen": "Luister naar {name}",
+      "musicH": "Achtergrondmuziek",
+      "more": "Meer keuzes (mag je overslaan)",
+      "charsLabel": "Wie zit erin?",
+      "charsHint": "Bijvoorbeeld: mijn kat Luna en een lieve vos. Ze worden vilten dieren.",
+      "lessonLabel": "Iets om van te leren?",
+      "lessonHint": "Bijvoorbeeld: delen maakt iedereen blij."
     },
     "status": {
       "queued": "Even wachten…",
@@ -6159,6 +6173,81 @@
       "decideP": "Een kind voor wie je zorgt heeft dit verhaal gemaakt en wil het graag delen. Mogen anderen het bekijken?",
       "approve": "Ja, delen",
       "decline": "Deze niet"
+    },
+    "options": "Keuzes voor het verhaal",
+    "voiceSample": "Er was eens, in een klein vilten dorpje, een slaperige uil die omhoog keek en de sterren telde.",
+    "style": {
+      "bedtime": "Slaapverhaal",
+      "adventure": "Avontuur",
+      "funny": "Grappig",
+      "rhyming": "Op rijm",
+      "fable": "Fabel met een les",
+      "mystery": "Mysterie"
+    },
+    "tone": {
+      "cozy": "Knus",
+      "exciting": "Spannend",
+      "silly": "Gek",
+      "heartfelt": "Lief",
+      "brave": "Dapper"
+    },
+    "voice": {
+      "auto": "Onze verteller",
+      "coral": "Warm en lief",
+      "sage": "Zacht en wijs",
+      "nova": "Vrolijke vriendin",
+      "shimmer": "Helder en sprankelend",
+      "fable": "Voorleesstem",
+      "onyx": "Diep en rustig"
+    },
+    "music": {
+      "lullaby": "Speeldoos",
+      "playful": "Speels",
+      "adventure": "Avontuur",
+      "magical": "Toverglitters",
+      "piano": "Zachte piano",
+      "none": "Geen muziek"
+    },
+    "set": {
+      "lighthouse": "Vuurtoren",
+      "village": "Dorp",
+      "forest": "Bos",
+      "meadow": "Weide",
+      "sky": "Lucht"
+    },
+    "time": {
+      "night": "Nacht",
+      "dusk": "Avond",
+      "dawn": "Zonsopgang",
+      "day": "Dag"
+    },
+    "edit": {
+      "btn": "Verhaal aanpassen",
+      "h": "Pas je verhaal aan",
+      "back": "Terug naar het verhaal",
+      "wordsH": "De woorden aanpassen",
+      "wordsP": "Verbeter of verander elke zin. De plaatjes blijven hetzelfde.",
+      "titleLabel": "Titel",
+      "scene": "Scène {n}",
+      "line": "Zin {n}",
+      "remakeP": "Nieuwe woorden, een nieuwe stem of nieuwe muziek gaan snel: de plaatjes blijven.",
+      "remakesLeft": "{count, plural, one {Je kunt vandaag nog # snelle wijziging doen.} other {Je kunt vandaag nog # snelle wijzigingen doen.}}",
+      "remakeNone": "Je hebt al je snelle wijzigingen voor vandaag gebruikt. Kom morgen terug!",
+      "remake": "Maak de nieuwe video",
+      "rewriteH": "Vraag om het opnieuw te schrijven",
+      "rewriteP": "Vertel de verhalenschrijver wat er anders moet. Opnieuw schrijven telt als een van je nieuwe verhalen van vandaag.",
+      "noteLabel": "Wat moet er anders?",
+      "noteHint": "Bijvoorbeeld: maak het grappiger, of eindig met een picknick.",
+      "rewrite": "Schrijf mijn verhaal opnieuw",
+      "nothing": "Verander eerst iets: de woorden, de stem of de muziek.",
+      "needNote": "Schrijf wat er anders moet, of kies een ander soort verhaal of gevoel.",
+      "unsafe": "Die woorden kunnen hier niet in een verhaal. Probeer liefere woorden.",
+      "invalid": "Het verhaal is te lang geworden. Probeer kortere zinnen.",
+      "busy": "Er wordt al een nieuwe versie gemaakt.",
+      "working": "De nieuwe versie wordt gemaakt… De oude video blijft hier tot hij klaar is.",
+      "failed": "De nieuwe versie is niet gelukt, dus je verhaal blijft zoals het was.",
+      "keepOld": "De oude houden",
+      "asksAgain": "Na een wijziging moet een volwassene of je leraar opnieuw OK zeggen voordat anderen het kunnen bekijken."
     }
   }
 }
