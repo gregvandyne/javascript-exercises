@@ -64,27 +64,27 @@
      "cue": "Public domain: anyone may use it",
      "box": [
       5,
-      34.5,
+      48,
       90,
-      14
+      13.5
      ]
     },
     {
      "cue": "Creative commons: use it and say who made it",
      "box": [
       5,
-      48.2,
+      61.5,
       90,
-      14
+      13.5
      ]
     },
     {
      "cue": "All rights reserved: ask first",
      "box": [
       5,
-      61.8,
+      75,
       90,
-      14
+      13.5
      ]
     }
    ]
