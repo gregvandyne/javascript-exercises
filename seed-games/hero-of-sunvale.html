@@ -295,7 +295,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/art-biomes-2.js" integrity="sha384-vJGeWa5z97KHCs2TZpjtJ8wQfcy7hmahtujRLl1iMH4j09PJ7TCds6ZvgDVgD2yK" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-iafdPf+/SSBG9S71G3+WmQqh3ASP59tUXubm6GE36NYIaG2oYwD9qDNSVlnf009l" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-Ies7XNUhfNMsUGxzwEO4F5+Oj1RPfptTxZcdNRXp5AX7l2k4wOLpzUV3aQwxkISQ" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/live.js" integrity="sha384-20jXn5wIizwJ//YBQJUILmlALHi914BQlxzKBm3v5Z4lh5YOic+mHK2WiezyG4km" crossorigin="anonymous"></script>
 <script>
 /* KIT LOOK: the Oomba Kit's colours (by day and by night) and its font, as the CSS variables the sheet above uses, so
@@ -6196,18 +6196,50 @@ const SUN_OFFSET = new THREE.Vector3(18, 40, 14);
    inverted hull, the same line weight at any distance). The kingdom keeps its own sky, light, land and quality ladder
    (governor: false); the theme is the kit's castle look (its accent and mood). */
 const OK = window.Oomba;
-const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: false });
+const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: false, styles: ['cartoon'] });
+/* Cartoon (kit 1.1.5, opt-in: /play/hero-of-sunvale?style=cartoon, the kit's okStyle): the style sheet's look in real
+   time, with the same world and rules. The bridge's toon materials become flat Ink-palette fills with one hard shade
+   band from a light fixed at the top-left of the screen and a faint Cream rim; here every colour the world is built
+   from snaps to the Ink palette (skin and hair keep the kit's own tones), characters and props are built from rounded
+   ("chunky") boxes and smooth-shaded spheres, shadow maps give way to soft contact blobs, the sky and water take the
+   kit's sky ramp, clouds get Ink, and lamps get a soft additive halo (bloom on lamps only). Without it nothing changes. */
+const TOON = B.style === 'cartoon';
+const TOON_KEEP = new Set([...KTOK.skin, ...Object.values(KHAIR)].map(c => String(c).toLowerCase()));
+const TOON_COL = new Map();
+/** A colour in the cartoon look: the nearest Ink palette colour (skin and hair tones are already the kit's). */
+function toonCol(c) {
+  if (!TOON) return c;
+  let h = typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c.toLowerCase() : '#' + new THREE.Color(c).getHexString();
+  let v = TOON_COL.get(h); if (v) return v;
+  v = TOON_KEEP.has(h) ? h : B.palette(h); TOON_COL.set(h, v); return v;
+}
+if (TOON) {
+  for (const L of CONFIG.levels) { L.shadows = false; L.fogNear = Math.round(L.fogNear * 1.3); }   // contact blobs instead of shadow maps (cheaper, and the look); a clearer, less hazy distance
+  renderer.shadowMap.enabled = false; sun.castShadow = false;
+  // the sky ramp of the kit (sky tint at the horizon to sky base overhead); the gloom in grape
+  SKY_COLORS.top.set(OK.color('sky', 2)); SKY_COLORS.mid.set(OK.color('sky', 1)); SKY_COLORS.horizon.set(OK.color('sky', 0)).lerp(SKY_COLORS.mid, 0.35);
+  SKY_COLORS.gloomTop.set(OK.color('grape', 3)); SKY_COLORS.gloomHorizon.set(OK.color('grape', 1));
+  scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
+}
+/** A soft round blot (white in the middle, clear at the edge): cartoon contact shadows and lamp halos. */
+function softDisc() {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.55, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
 /** A shared vertex-coloured toon material (rim: the rim light's strength; flat: keep the low-poly facets). */
 function inkMat(rim, flat) { const m = B.toon(null, { vertexColors: true, rim }); if (flat) { m.flatShading = true; m.needsUpdate = true; } return m; }
 /** Materials shared by everything (few shader programs, few state changes): the kit's toon (cel) materials with a rim
  *  (faceted ones keep their facets), so the world has the Oomba Ink look. */
 const MAT = {
-  terrain: inkMat(0.35, true),
+  // cartoon: the land is smooth-shaded with a softer, lighter band (rolling hills, not a checkerboard of facets)
+  terrain: TOON ? B.toon(null, { vertexColors: true, rim: 0.25, soft: 0.1, depth: 0.6 }) : inkMat(0.35, true),
   lit: inkMat(1, false),
-  litFlat: inkMat(0.9, true),
+  litFlat: TOON ? inkMat(0.9, false) : inkMat(0.9, true),   // cartoon: rocks, cabbages and crowns shade round (creased normals)
   glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
   char: inkMat(1.25, false),
-  blob: new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
+  blob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.45, depthWrite: false })
+    : new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
   // the hero's eyes, nose, cheeks and smile: flat colour, no light, so they stay crisp (lit, the whites went mint at the rim)
   face: new THREE.MeshBasicMaterial({ vertexColors: true }),
   // the hero's hair: no rim light (on the smooth cap the rim read as a smeared gloss across the top)
@@ -6948,6 +6980,14 @@ const TC = {
   stone: col('#d8d0bf'), stone2: col('#c4bba8'), dark: col('#76698a'), dark2: col('#655a78'), wheat: col('#f0cd58'), crop: col('#69bd47'),
   soil: col('#a8743f'), gloom: col('#6e6380'), tile: col('#b9b0c4'), tile2: col('#8f84a0'),
 };
+if (TOON) {   // the land in Ink colours: mint meadows, cocoa paths, peach sand, stone and snow, grape gloom
+  const k = (h, i) => col(OK.color(h, i)), mx = (a, b, t) => k(a[0], a[1]).lerp(k(b[0], b[1]), t);
+  Object.assign(TC, { g1: k('mint', 2), g2: mx(['mint', 2], ['mint', 3], 0.22), g3: mx(['mint', 2], ['mint', 1], 0.45), forest: mx(['mint', 2], ['mint', 3], 0.5), forest2: mx(['mint', 2], ['mint', 3], 0.7),
+    dirt: k('cocoa', 1), dirt2: mx(['cocoa', 1], ['cocoa', 2], 0.25), sand: mx(['peach', 0], ['spark', 0], 0.5), wet: mx(['cocoa', 0], ['cocoa', 1], 0.6), bed: k('stone', 1),
+    rock: k('stone', 1), rock2: mx(['stone', 1], ['stone', 2], 0.55), snow: k('snow', 1), stone: k('stone', 0), stone2: mx(['stone', 0], ['stone', 1], 0.6),
+    dark: mx(['grape', 3], ['stone', 3], 0.5), dark2: mx(['grape', 3], ['stone', 3], 0.75), wheat: mx(['spark', 1], ['peach', 1], 0.45), crop: mx(['mint', 1], ['mint', 2], 0.4),
+    soil: k('cocoa', 2), gloom: mx(['grape', 2], ['stone', 2], 0.5), tile: k('grape', 0), tile2: mx(['grape', 1], ['stone', 1], 0.5) });
+}
 function* bakeTerrain(progress) {
   prepWorldData();
   for (let j = 0; j < GV; j++) {
@@ -7027,8 +7067,8 @@ function buildTerrainChunks() {
 }
 function waveTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
-  const g = c.getContext('2d'); g.fillStyle = '#4ab4f0'; g.fillRect(0, 0, 128, 128);
-  g.strokeStyle = 'rgba(200,240,255,.55)'; g.lineWidth = 2.5; g.lineCap = 'round';
+  const g = c.getContext('2d'); g.fillStyle = TOON ? OK.color('sky', 2) : '#4ab4f0'; g.fillRect(0, 0, 128, 128);
+  g.strokeStyle = TOON ? OK.color('sky', 0) : 'rgba(200,240,255,.55)'; g.lineWidth = 2.5; g.lineCap = 'round';
   for (let i = 0; i < 14; i++) {
     const x = wrnd() * 128, y = wrnd() * 128, w = 14 + wrnd() * 22;
     g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + w / 2, y - 4, x + w, y); g.stroke();
@@ -7037,7 +7077,8 @@ function waveTexture() {
 }
 function buildWater() {
   const tex = waveTexture();
-  const mat = new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.86, color: 0xffffff });
+  // cartoon: flat water in the kit's sky colours (no light on it)
+  const mat = TOON ? new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.92 }) : new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.86, color: 0xffffff });
   const pos = [], uv = [], idx = [];
   let along = 0, px = -366, pz = riverZ(-366), n = 0;
   for (let x = -366; x <= 366.01; x += 4) {
@@ -7055,7 +7096,7 @@ function buildWater() {
   pool.position.set(POOL.x, POOL.y, POOL.z); pool.renderOrder = 1; scene.add(pool);
   // The waterfall: a scrolling sheet over the cliff behind the pool.
   const fallTex = waveTexture(); fallTex.repeat.set(1, 1.5);
-  const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
+  const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), TOON ? new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, opacity: 0.95 }) : new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
   fall.position.set(POOL.x - 3, POOL.y + 3.6, POOL.z - 7.3); scene.add(fall);
   WORLD.water = { tex, fallTex, river, pool, fall };
 }
@@ -7070,8 +7111,9 @@ function buildSky() {
   g.setAttribute('color', new THREE.BufferAttribute(cl, 3));
   const dome = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false }));
   dome.frustumCulled = false; dome.renderOrder = -10; scene.add(dome);
-  const puffs = 44, cloudMat = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x8e9cb2, flatShading: true, fog: false });
-  const clouds = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), cloudMat, puffs);
+  // cartoon: round Cream puffs with the cel band and Ink, like the style sheet's
+  const puffs = 44, cloudMat = TOON ? B.toon(OK.color('cream'), { fog: false, rim: 0, depth: 0.45 }) : new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x8e9cb2, flatShading: true, fog: false });
+  const clouds = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, TOON ? 2 : 1), cloudMat, puffs);
   const group = new THREE.Group(); group.add(clouds); scene.add(group); clouds.frustumCulled = false;
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), pp = new THREE.Vector3();
   for (let i = 0; i < puffs; i++) {
@@ -7080,6 +7122,7 @@ function buildSky() {
     const sc = (k === 1 || k === 2 ? 8 : 6) + wrnd() * 2; s.set(sc * 1.3, sc * 0.7, sc);
     clouds.setMatrixAt(i, m.compose(pp, q, s));
   }
+  if (TOON) B.outline(clouds, { important: true, width: 1.1, color: OK.color('ink') });   // a coloured hull has no fog: the line stays crisp far away
   WORLD.sky = { dome, clouds: group };
 }
 /** Fog-free silhouettes of the fortress spire and the castle tower, drawn when the real ones are past the far plane. */
@@ -7118,17 +7161,41 @@ function prim(key) {
     const out = []; for (const t of tri) out.push(v[t * 3], v[t * 3 + 1], v[t * 3 + 2]);
     g.setAttribute('position', new THREE.Float32BufferAttribute(out, 3));
   } else if (kind === 'torus') g = new THREE.TorusGeometry(1, +b, 5, +a);
+  else if (kind === 'rbox') {
+    // cartoon: a chunky rounded box (a sphere pushed out to a box: flat-ish faces, round edges and corners), unit size
+    // with its bottom at 0 like 'box'; its normals are the sphere's, so the cel band rolls softly over it
+    g = new THREE.SphereGeometry(1, 8, 6); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
+    for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), sg = v => (Math.abs(v) < 1e-6 ? 0 : Math.sign(v)); p.setXYZ(i, sg(x) * c + x * r, sg(y) * c + y * r + 0.5, sg(z) * c + z * r); }
+    g = g.toNonIndexed(); const n = g.attributes.position.clone(); for (let i = 0; i < n.count; i++) { V1.set(n.getX(i), n.getY(i) - 0.5, n.getZ(i)); V2.set(Math.sign(V1.x) * c, Math.sign(V1.y) * c, Math.sign(V1.z) * c); V1.sub(V2).normalize(); n.setXYZ(i, V1.x, V1.y, V1.z); }
+    g.setAttribute('normal', n); return (PRIM[key] = g);
+  }
   if (g.index) g = g.toNonIndexed();
   g.computeVertexNormals();
+  if (TOON && kind !== 'box' && kind !== 'prism') creaseNormals(g, 50);
   return (PRIM[key] = g);
 }
+/** Cartoon: smooth the normals of faces that meet at less than `deg` degrees (round things shade as round, a cylinder's
+ *  rim and a cone's base stay sharp), so the one hard cel band is a clean curve instead of a patchwork of facets. */
+function creaseNormals(g, deg) {
+  const p = g.attributes.position, n = g.attributes.normal, cos = Math.cos(deg * DEG), at = new Map(), key = i => `${Math.round(p.getX(i) * 1e4)},${Math.round(p.getY(i) * 1e4)},${Math.round(p.getZ(i) * 1e4)}`;
+  for (let i = 0; i < p.count; i++) { const k = key(i); (at.get(k) || at.set(k, []).get(k)).push(i); }
+  const out = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) {
+    let x = 0, y = 0, z = 0; const nx = n.getX(i), ny = n.getY(i), nz = n.getZ(i);
+    for (const j of at.get(key(i))) { const jx = n.getX(j), jy = n.getY(j), jz = n.getZ(j); if (nx * jx + ny * jy + nz * jz >= cos) { x += jx; y += jy; z += jz; } }
+    const l = Math.hypot(x, y, z) || 1; out[i * 3] = x / l; out[i * 3 + 1] = y / l; out[i * 3 + 2] = z / l;
+  }
+  g.setAttribute('normal', new THREE.BufferAttribute(out, 3));
+}
+/** The box characters and props are built from: chunky rounded ones in the cartoon look. */
+const CBOX = () => prim(TOON ? 'rbox' : 'box');
 class Kit {
   constructor() { this.b = { lit: { p: [], n: [], c: [] }, glow: { p: [], n: [], c: [] } }; this.tris = 0; }
   /** Add geometry g transformed by position/rotation/scale with one colour. */
   add(g, x, y, z, sx, sy, sz, rx, ry, rz, color, glow) {
     const B = glow ? this.b.glow : this.b.lit, pa = g.attributes.position, na = g.attributes.normal;
     E1.set(rx || 0, ry || 0, rz || 0); Q1.setFromEuler(E1); V1.set(x, y, z); V2.set(sx, sy, sz); M4.compose(V1, Q1, V2);
-    NM3.getNormalMatrix(M4); C1.set(color);
+    NM3.getNormalMatrix(M4); C1.set(toonCol(color));
     for (let i = 0; i < pa.count; i++) {
       V3.fromBufferAttribute(pa, i).applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z);
       V4.fromBufferAttribute(na, i).applyMatrix3(NM3).normalize(); B.n.push(V4.x, V4.y, V4.z);
@@ -7150,7 +7217,7 @@ class Kit {
     return this;
   }
   cone(x, y, z, r, h, color, seg, opt) { this.add(prim(`cone:${seg || 8}`), x, y, z, r, h, r, 0, opt && opt.ry || 0, 0, color, opt && opt.glow); return this; }
-  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); return this; }
+  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
   /** Gable roof: ridge along local x, apex at y + h. */
   prism(x, y, z, sx, h, sz, color, ry) { this.add(prim('prism'), x, y, z, sx, h, sz, 0, ry || 0, 0, color); return this; }
   /** A box between two points (a beam, rail or plank). */
@@ -7159,7 +7226,7 @@ class Kit {
     const ry = Math.atan2(-dz, dx), rz = Math.atan2(dy, hyp(dx, dz));
     E1.set(0, ry, rz, 'YZX'); Q1.setFromEuler(E1); V1.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); V2.set(len, hgt, w); M4.compose(V1, Q1, V2);
     const g = prim('box'), B = opt && opt.glow ? this.b.glow : this.b.lit, pa = g.attributes.position, na = g.attributes.normal;
-    NM3.getNormalMatrix(M4); C1.set(color);
+    NM3.getNormalMatrix(M4); C1.set(toonCol(color));
     for (let i = 0; i < pa.count; i++) {
       V3.fromBufferAttribute(pa, i); V3.y -= 0.5; V3.applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z);
       V4.fromBufferAttribute(na, i).applyMatrix3(NM3).normalize(); B.n.push(V4.x, V4.y, V4.z); B.c.push(C1.r, C1.g, C1.b);
@@ -7276,6 +7343,13 @@ const PAL = {
   red: '#c8372d', gold: '#ffc83d', goldD: '#d99a1c', blue: '#3e6fd8', green: '#4caf50', leaf: '#5fb84a', leafD: '#3f8f3c', hay: '#f0c75a', hayD: '#d9a93a',
   purple: '#7b4bb8', plumD: '#4a3b60', plumM: '#5f4d7a', plumL: '#8070a0', glowP: '#d39cff', glowO: '#ffb347', glowY: '#fff1a0', snow: '#f4f8ff', metal: '#9aa4b2',
 };
+// cartoon: the gloom's plum stone has no near twin in the Ink palette (the nearest are brown or a loud violet), so it is
+// a grape and stone mix, step for step; everything else snaps to its nearest kit colour (toonCol)
+if (TOON) {
+  const mixK = (a, b, t) => '#' + col(OK.color(a[0], a[1])).lerp(col(OK.color(b[0], b[1])), t).getHexString();
+  for (const [h, v] of [[PAL.plumD, mixK(['grape', 3], ['stone', 3], 0.55)], [PAL.plumM, mixK(['grape', 2], ['stone', 3], 0.5)], [PAL.plumL, mixK(['grape', 1], ['stone', 2], 0.45)],
+    ['#2b2236', mixK(['grape', 3], ['stone', 3], 0.2)], ['#4b3b5e', mixK(['grape', 3], ['stone', 3], 0.5)], ['#6f6790', mixK(['grape', 2], ['stone', 2], 0.55)], ['#76698a', mixK(['grape', 2], ['stone', 2], 0.6)]]) TOON_COL.set(h, v);
+}
 const gy = (x, z) => heightAt(x, z);
 /** Local (lx, lz) around (x, z) turned by ry -> world [x, z]. A model's front is its local +z. (Build time only.) */
 function lp(x, z, ry, lx, lz) { const c = Math.cos(ry), s = Math.sin(ry); return [x + lx * c + lz * s, z - lx * s + lz * c]; }
@@ -7373,7 +7447,10 @@ function barrel(k, x, z, y) { y = y === undefined ? gy(x, z) : y; k.cyl(x, y, z,
 function banner(k, x, y, z, ry, color, hgt) {
   hgt = hgt || 4; k.cyl(x, y, z, 0.09, 0.09, hgt, PAL.woodD, 5); const p = lp(x, z, ry, 0.55, 0); k.box(p[0], y + hgt - 1.7, p[1], 1.0, 1.5, 0.05, color, ry);
 }
-function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; k.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); k.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
+/** Cartoon: a lamp's glow (bloom on lamps only): soft additive halos, all of them one draw call (see haloFrame). */
+const HALOS = [];
+function halo(x, y, z, size, color) { if (TOON) HALOS.push(x, y, z, size, color); }
+function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); k.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); k.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
 /** A horizontal log centred on (x, z), turned by ry (length along local x), resting on y. */
 function log(k, x, y, z, ry, len, r, color) { k.add(prim('cyl:8:1.000'), x + len / 2 * Math.cos(ry), y + r, z - len / 2 * Math.sin(ry), r, len, r, 0, ry, Math.PI / 2, color); }
 function pine(k, x, z, s, y) {
@@ -7675,7 +7752,7 @@ function buildRiverbend() {
   for (let i = 0; i < 4; i++) k.cyl(lx, ly + i * 1.5, lz, 2.0, 2.05, 1.5, i % 2 ? PAL.white : '#e5484d', 10);
   addCircle(lx, lz, 2.05, ly, ly + 6, { stand: false });
   k.cyl(lx, ly + 6, lz, 2.4, 2.4, 0.3, PAL.stoneD, 10); addCircle(lx, lz, 2.4, ly + 6, ly + 6.3);
-  k.cyl(lx, ly + 6.3, lz, 0.7, 0.7, 1.0, PAL.glowY, 8, { glow: true }); k.cone(lx, ly + 7.3, lz, 0.9, 0.8, '#e5484d', 8);
+  k.cyl(lx, ly + 6.3, lz, 0.7, 0.7, 1.0, PAL.glowY, 8, { glow: true }); halo(lx, ly + 6.8, lz, 5, PAL.glowY); k.cone(lx, ly + 7.3, lz, 0.9, 0.8, '#e5484d', 8);
   spiralStairs(k, lx, lz, 3.3, ly, ly + 6.3, 15, Math.PI * 0.6, Math.PI * 1.7, PAL.woodL, { depth: 1.2, landing: 1.0 });
   spot('rbLight', lx + 1.4, lz, ly + 6.3);
   // nets, barrels, lanterns round the square
@@ -7826,7 +7903,7 @@ function buildFortress() {
     k.box(x, Y - 1, z, len, 5, 1.6, mid, -am + Math.PI / 2, { col: true });
     if (i % 2) k.box(x, Y + 4, z, len * 0.5, 0.8, 1.6, light, -am + Math.PI / 2);
   }
-  for (const s of [-1, 1]) { k.box(s * 4.6, Y - 1, -327.3, 1.6, 9, 2.2, dark, 0, { col: true }); k.sphere(s * 4.6, Y + 8.6, -327.3, 0.55, PAL.glowP, 0, 1, 1, { glow: true }); }
+  for (const s of [-1, 1]) { k.box(s * 4.6, Y - 1, -327.3, 1.6, 9, 2.2, dark, 0, { col: true }); k.sphere(s * 4.6, Y + 8.6, -327.3, 0.55, PAL.glowP, 0, 1, 1, { glow: true, halo: true }); }
   k.box(0, Y + 7, -327.3, 10.8, 1.2, 2.2, dark, 0, { col: true });
   const door = new Kit(); for (const s of [-1, 1]) { door.box(s * 1.9, 0, 0, 3.7, 7, 0.5, '#2b2236'); door.box(s * 1.9, 3.2, 0.28, 2.4, 0.3, 0.06, '#4b3b5e'); door.box(s * 1.0, 3.6, 0.3, 0.4, 0.4, 0.05, PAL.glowP, 0.7, { glow: true }); }
   const doorG = new THREE.Group(); doorG.add(new THREE.Mesh(door.geometry('lit'), MAT.lit), new THREE.Mesh(door.geometry('glow'), MAT.glow)); doorG.position.set(0, Y - 0.3 + 1.2, -327.4); scene.add(doorG);
@@ -7835,10 +7912,10 @@ function buildFortress() {
   for (let i = 0; i < 4; i++) {
     const a = Math.PI / 4 + i * Math.PI / 2, x = AX + Math.cos(a) * 16, z = AZ + Math.sin(a) * 16; POINTS.pillars.push([x, z]);
     k.cyl(x, Y - 0.2, z, 1.5, 1.6, 8.2, light, 10, { col: true }); k.box(x, Y + 8, z, 3.8, 0.8, 3.8, mid, a); k.box(x, Y - 0.2, z, 3.8, 0.6, 3.8, mid, a);
-    k.sphere(x, Y + 9.2, z, 0.5, PAL.glowP, 0, 1, 1, { glow: true });
+    k.sphere(x, Y + 9.2, z, 0.5, PAL.glowP, 0, 1, 1, { glow: true, halo: true });
   }
   const NX = 0, NZ = -386;
-  k.cyl(NX, Y - 2, NZ, 6, 6.8, 38, mid, 12, { col: true, stand: false }); k.cone(NX, Y + 36, NZ, 7.4, 18, dark, 12); k.sphere(NX, Y + 54.5, NZ, 1.6, PAL.glowP, 1, 1, 1, { glow: true });
+  k.cyl(NX, Y - 2, NZ, 6, 6.8, 38, mid, 12, { col: true, stand: false }); k.cone(NX, Y + 36, NZ, 7.4, 18, dark, 12); k.sphere(NX, Y + 54.5, NZ, 1.6, PAL.glowP, 1, 1, 1, { glow: true, halo: true });
   for (let j = 0; j < 4; j++) k.box(NX + (j - 1.5) * 2.2, Y + 18 + (j % 2) * 4, NZ + 6.1, 0.9, 1.8, 0.2, PAL.glowP, 0, { glow: true });
   k.box(NX, Y + 26, NZ + 6.2, 6, 0.6, 3, dark); k.beam(NX, Y + 26.3, NZ + 7.4, NX, Y + 30, NZ + 6.5, 0.4, 0.4, dark);
   for (let i = 0; i < 8; i++) k.box(-35 + i * 10, Y + 13.2, -390.4, 1.6, 1.2, 0.8, mid);
@@ -7915,7 +7992,7 @@ const SCATTER = {
     this.kinds[name] = k; this.list.push(k); return k;
   },
   add(name, x, y, z, ry, s, sy, hex) {
-    const k = this.kinds[name]; C2.set(hex);
+    const k = this.kinds[name]; C2.set(toonCol(hex));
     k.raw.push(x, y, z, ry, s, sy || 1, C2.r, C2.g, C2.b, wrnd());
   },
   pack(name) {
@@ -8007,13 +8084,15 @@ function mergedGeo(parts) {
   for (const [g, x, y, z, sx, sy, sz, c, rz] of parts) k.add(g, x, y, z, sx, sy, sz, 0, 0, rz || 0, c);
   return k.geometry('lit');
 }
-function openCone(seg) { const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); return g; }
-function openCyl(seg, top) { const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); return g; }
+function openCone(seg) { const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 65); return g; }
+function openCyl(seg, top) { const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 75); return g; }
 function buildScatterKinds() {
   const trunk = openCyl(5, 0.75), ico = prim('sph:0'), cone6 = openCone(6), cone3 = openCone(3), octa = (() => { const g = new THREE.OctahedronGeometry(1, 0).toNonIndexed(); g.computeVertexNormals(); return g; })();
-  SCATTER.addKind('tree', mergedGeo([[trunk, 0, -0.3, 0, 0.28, 2.1, 0.28, '#8a5a34'], [ico, 0, 2.6, 0, 1.75, 1.6, 1.75, '#ffffff'], [ico, 0.55, 3.55, 0.3, 1.15, 1.05, 1.15, '#f0fff0']]), 1100, { fade: true, crown: 2.2 });
-  SCATTER.addKind('pine', mergedGeo([[trunk, 0, -0.3, 0, 0.24, 1.6, 0.24, '#7a4e2c'], [cone6, 0, 1.0, 0, 1.55, 2.3, 1.55, '#ffffff'], [cone6, 0, 2.3, 0, 1.2, 2.0, 1.2, '#f2fff2'], [cone6, 0, 3.4, 0, 0.82, 1.7, 0.82, '#e8ffe8']]), 900, { fade: true, crown: 1.8 });
-  SCATTER.addKind('bush', mergedGeo([[ico, 0, 0.45, 0, 1.0, 0.75, 1.0, '#ffffff'], [ico, 0.6, 0.35, 0.2, 0.6, 0.5, 0.6, '#f4fff0']]), 700);
+  // cartoon: round, smooth-shaded crowns and bushes (one clean shade band), the rocks keep their facets
+  const soft = TOON ? MAT.lit : undefined;
+  SCATTER.addKind('tree', mergedGeo([[trunk, 0, -0.3, 0, 0.28, 2.1, 0.28, '#8a5a34'], [ico, 0, 2.6, 0, 1.75, 1.6, 1.75, '#ffffff'], [ico, 0.55, 3.55, 0.3, 1.15, 1.05, 1.15, '#f0fff0']]), 1100, { fade: true, crown: 2.2, material: soft });
+  SCATTER.addKind('pine', mergedGeo([[trunk, 0, -0.3, 0, 0.24, 1.6, 0.24, '#7a4e2c'], [cone6, 0, 1.0, 0, 1.55, 2.3, 1.55, '#ffffff'], [cone6, 0, 2.3, 0, 1.2, 2.0, 1.2, '#f2fff2'], [cone6, 0, 3.4, 0, 0.82, 1.7, 0.82, '#e8ffe8']]), 900, { material: soft, fade: true, crown: 1.8 });
+  SCATTER.addKind('bush', mergedGeo([[ico, 0, 0.45, 0, 1.0, 0.75, 1.0, '#ffffff'], [ico, 0.6, 0.35, 0.2, 0.6, 0.5, 0.6, '#f4fff0']]), 700, { material: soft });
   SCATTER.addKind('rock', mergedGeo([[ico, 0, 0.3, 0, 1, 0.75, 0.9, '#ffffff']]), 450);
   SCATTER.addKind('grass', mergedGeo([[cone3, 0, 0, 0, 0.09, 0.55, 0.09, '#ffffff'], [cone3, 0.12, 0, 0.06, 0.08, 0.42, 0.08, '#f4fff0'], [cone3, -0.1, 0, 0.08, 0.08, 0.48, 0.08, '#eaffea']]), 2600, { radius: 70, density: 'grass', receive: false });
   SCATTER.addKind('flower', mergedGeo([[cone3, 0, 0, 0, 0.03, 0.3, 0.03, '#7fdc6a'], [octa, 0, 0.34, 0, 0.11, 0.08, 0.11, '#ffffff']]), 1500, { radius: 90, density: 'flowers', receive: false, capMul: false });
@@ -8039,7 +8118,7 @@ function nearCollider(x, z, pad) {
   for (let i = 0; i < cs.length; i++) if (insideXZ(cs[i], x, z, pad)) return true;
   return false;
 }
-const TREE_TINTS = ['#6ccf55', '#4fb848', '#89d65a', '#3fa045', '#5cc25a'], AUTUMN = ['#ffb347', '#f2c94c', '#ff8a5b'], PINE_TINTS = ['#3f8f4a', '#357f42', '#4a9b50'];
+const TREE_TINTS = ['#6ccf55', '#4fb848', '#89d65a', '#3fa045', '#5cc25a'].map(toonCol), AUTUMN = ['#ffb347', '#f2c94c', '#ff8a5b'].map(toonCol), PINE_TINTS = ['#3f8f4a', '#357f42', '#4a9b50'].map(toonCol);
 function* placeScatter(progress) {
   // Trees, pines, bushes, rocks on a jittered 5.5 m grid
   const G1 = 5.5, n1 = Math.ceil(744 / G1);
@@ -8119,7 +8198,7 @@ const TIER = id => (id ? id.split('.')[1] : null);   // 'armor.iron.head' -> 'ir
 function geoFrom(parts) { const k = new Kit(); for (const p of parts) k.add(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7] || 0, p[8] || 0, p[9] || 0, p[10], p[11]); return k; }
 function kitGeo(k, which) { return k.geometry(which || 'lit'); }
 function buildGearGeometries() {
-  const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), c8 = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4');
+  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), c8 = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4');
   // Helmets (around the head centre at y = 0.34 in head-group space)
   HEROGEO.head.leather = kitGeo(geoFrom([[s2, 0, 0.42, -0.01, 0.4, 0.3, 0.41, 0, 0, 0, '#8b5a2b'], [box, 0, 0.3, 0.02, 0.84, 0.06, 0.84, 0, 0, 0, '#6e4422'], [box, 0.28, 0.6, -0.08, 0.04, 0.42, 0.12, 0.3, 0, -0.5, '#ff5c5c']]));
   HEROGEO.head.iron = kitGeo(geoFrom([[s2, 0, 0.4, 0, 0.415, 0.36, 0.42, 0, 0, 0, '#c9d1dc'], [c8, 0, 0.26, 0, 0.43, 0.07, 0.43, 0, 0, 0, '#9aa4b2'], [box, 0, 0.66, -0.06, 0.07, 0.28, 0.42, 0, 0, 0, '#3e7bfa'], [box, 0, 0.42, 0.37, 0.09, 0.3, 0.06, 0, 0, 0, '#9aa4b2']]));
@@ -8159,7 +8238,7 @@ function buildGearGeometries() {
 }
 /** Look-dependent geometry: head (skin, face, hair), torso (outfit), arms (sleeves + hands), legs (per boots tier). */
 function buildLookGeometries(look) {
-  const box = prim('box'), cone = prim('cone:6');
+  const box = CBOX(), cone = prim('cone:6');
   const skin = LOOKS.skin[look.skin] || LOOKS.skin[1], hairC = LOOKS.hairColor[look.hairColor] || LOOKS.hairColor[1], fit = LOOKS.outfit[look.outfit] || LOOKS.outfit[1];
   const dark = '#' + col(fit).multiplyScalar(0.62).getHexString(), skinD = '#' + col(skin).multiplyScalar(0.85).getHexString();
   const out = {};
@@ -9495,7 +9574,7 @@ function makeRig(name, defs, cap, eye) {
 const EYES = { mesh: null, n: 0 };
 function geoK(parts) { const k = new Kit(); for (const p of parts) k.add(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7] || 0, p[8] || 0, p[9] || 0, p[10]); return k.geometry('lit'); }
 function buildFoeRigs() {
-  const box = prim('box'), s0 = prim('sph:0'), s1 = prim('sph:1'), c6 = prim('cyl:6:1.000'), c8 = prim('cyl:8:1.000'), c12 = prim('cyl:12:1.000'), cone4 = prim('cone:4'), cone5 = prim('cone:5'), cone6 = prim('cone:6');
+  const box = CBOX(), s0 = prim('sph:0'), s1 = prim('sph:1'), c6 = prim('cyl:6:1.000'), c8 = prim('cyl:8:1.000'), c12 = prim('cyl:12:1.000'), cone4 = prim('cone:4'), cone5 = prim('cone:5'), cone6 = prim('cone:6');
   const PI2 = Math.PI / 2;
   // faces (flat colour, no Ink; see makeRig): a thin frown while spellbound, a thin smile once freed, on each body's skin
   const moods = (surf, f, sm, extra, follow) => [{ face: true, follow: follow || 0, when: 'spell', geo: geoK((extra || []).concat([[smileOn(surf, ...f), 0, 0, 0, 1, 1, 1, 0, 0, 0, '#2b1b0e']])) },
@@ -10226,7 +10305,7 @@ const DUMMY = {
   mesh: null, list: [],
   init() {
     const pts = POINTS.dummies || []; if (!pts.length) return;
-    const k = new Kit(), box = prim('box');
+    const k = new Kit(), box = CBOX();
     k.add(prim('cyl:6:1.000'), 0, 0, 0, 0.08, 1.0, 0.08, 0, 0, 0, '#7a4e2c'); k.add(prim('cyl:9:0.900'), 0, 0.62, 0, 0.3, 0.75, 0.3, 0, 0, 0, '#e8c872');
     k.add(prim('cyl:9:1.000'), 0, 0.85, 0, 0.31, 0.05, 0.31, 0, 0, 0, '#a07a3a'); k.add(prim('cyl:9:1.000'), 0, 1.15, 0, 0.29, 0.05, 0.29, 0, 0, 0, '#a07a3a');
     k.add(prim('sph:1'), 0, 1.62, 0, 0.24, 0.24, 0.24, 0, 0, 0, '#f0d27a'); k.add(box, -0.6, 1.2, 0, 1.2, 0.08, 0.08, 0, 0, 0, '#7a4e2c');
@@ -10268,7 +10347,7 @@ function dummyDone(i) { if (!questActive('m1', 1)) return false; const q = QP();
 const BRK = {
   list: [], meshes: {}, dirty: true, visT: 0, rng: makeRng(CONFIG.seed + 31),
   init() {
-    const box = prim('box'), k1 = new Kit(), k2 = new Kit(), k3 = new Kit();
+    const box = CBOX(), k1 = new Kit(), k2 = new Kit(), k3 = new Kit();
     k1.add(box, 0, 0, 0, 0.9, 0.9, 0.9, 0, 0, 0, '#c89a62'); k1.add(box, 0, 0.38, 0, 0.94, 0.14, 0.94, 0, 0, 0, '#8a5a34'); k1.add(box, 0, 0.0, 0, 0.94, 0.08, 0.94, 0, 0, 0, '#8a5a34'); k1.add(box, 0, 0.82, 0, 0.94, 0.08, 0.94, 0, 0, 0, '#8a5a34');
     k2.add(prim('cyl:10:1.000'), 0, 0, 0, 0.42, 1.0, 0.42, 0, 0, 0, '#a5703f'); k2.add(prim('cyl:10:1.000'), 0, 0.2, 0, 0.44, 0.08, 0.44, 0, 0, 0, '#8a93a0'); k2.add(prim('cyl:10:1.000'), 0, 0.72, 0, 0.44, 0.08, 0.44, 0, 0, 0, '#8a93a0'); k2.add(prim('cyl:10:1.000'), 0, 1.0, 0, 0.36, 0.03, 0.36, 0, 0, 0, '#7a4e2c');
     k3.add(prim('sph:1'), 0, 0.38, 0, 0.38, 0.36, 0.38, 0, 0, 0, '#d9824a'); k3.add(prim('cyl:8:1.300'), 0, 0.62, 0, 0.16, 0.2, 0.16, 0, 0, 0, '#d9824a'); k3.add(prim('cyl:10:1.000'), 0, 0.8, 0, 0.23, 0.05, 0.23, 0, 0, 0, '#b8643a'); k3.add(prim('cyl:12:1.000'), 0, 0.36, 0, 0.385, 0.06, 0.385, 0, 0, 0, '#ffe08a');
@@ -10535,7 +10614,7 @@ function campFoeDown(c) {
 const CHEST = {
   list: [], base: null, lid: null, beam: null,
   init() {
-    const box = prim('box'), kb = new Kit(), kl = new Kit();
+    const box = CBOX(), kb = new Kit(), kl = new Kit();
     kb.add(box, 0, 0, 0, 0.95, 0.56, 0.66, 0, 0, 0, '#9a6a3f'); kb.add(box, 0, 0.1, 0, 0.98, 0.07, 0.69, 0, 0, 0, '#ffc83d'); kb.add(box, -0.36, 0, 0, 0.09, 0.57, 0.69, 0, 0, 0, '#d99a1c'); kb.add(box, 0.36, 0, 0, 0.09, 0.57, 0.69, 0, 0, 0, '#d99a1c');
     kb.add(box, 0, 0.3, 0.335, 0.16, 0.2, 0.04, 0, 0, 0, '#ffd84a'); kb.add(box, 0, 0.5, 0, 0.88, 0.04, 0.58, 0, 0, 0, '#ffe58a');
     kl.add(prim('cyl:12:1.000'), -0.475, 0, 0.33, 0.2, 0.95, 0.33, 0, 0, -Math.PI / 2, '#a5703f'); kl.add(prim('cyl:12:1.000'), -0.4, 0, 0.33, 0.215, 0.09, 0.345, 0, 0, -Math.PI / 2, '#d99a1c'); kl.add(prim('cyl:12:1.000'), 0.31, 0, 0.33, 0.215, 0.09, 0.345, 0, 0, -Math.PI / 2, '#d99a1c');
@@ -11052,7 +11131,7 @@ const PV = new THREE.Vector3(), PV2 = new THREE.Vector3(), PQ = new THREE.Quater
 
 /** Build the Kits of one person. o: { skin, shirt, pants, shoe, hair, hairColor, dress, belly, hat, hatColor, beard, mustache, glasses, apron, overalls, cape, shawl, hood, toolbelt, plank, tabard, sleeve, clip, walker } */
 function personKits(o) {
-  const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4'), tor = prim('torus:10:0.3');
+  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4'), tor = prim('torus:10:0.3');
   const skin = o.skin || '#f5c99b', shirt = o.shirt || '#3e7bfa', pants = o.pants || '#4a3020', shoe = o.shoe || '#3b2a1e', hc = o.hairColor || '#5a3a1e';
   const bw = o.belly || 1, tw = 0.6 * bw, td = 0.36 * bw, skinD = '#' + col(skin).multiplyScalar(0.85).getHexString();
   const legs = o.walker && !o.dress;
@@ -11234,7 +11313,7 @@ function peopleFrame(dt, now) {
 /** Name tags over the nearest people (DOM, pooled) and "!" / "?" markers over whoever the quest needs. */
 const MARK = { ex: null, qu: null };
 function buildMarkers() {
-  const box = prim('box'), s1 = prim('sph:1');
+  const box = CBOX(), s1 = prim('sph:1');
   const ek = new Kit(); ek.add(box, -0.11, 0.35, -0.11, 0.22, 0.72, 0.22, 0, 0, 0, '#ffd23f', true); ek.add(s1, 0, 0.12, 0, 0.14, 0.14, 0.14, 0, 0, 0, '#ffd23f', true);
   const qk = new Kit(); qk.add(prim('torus:12:0.32'), 0, 0.82, 0, 0.26, 0.26, 0.26, 0, 0, 0, '#7fd8ff', true); qk.add(box, -0.08, 0.38, -0.08, 0.16, 0.28, 0.16, 0, 0, 0, '#7fd8ff', true); qk.add(s1, 0, 0.12, 0, 0.13, 0.13, 0.13, 0, 0, 0, '#7fd8ff', true);
   const mk = g => { const m = new THREE.InstancedMesh(g, MAT.glow, 4); m.frustumCulled = false; m.count = 0; m.visible = false; m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(m); return m; };
@@ -11279,7 +11358,7 @@ function crowdFace(mouth) {
   return f;
 }
 function buildCrowd() {
-  const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), W = '#ffffff', D = '#3b2a1e';
+  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), W = '#ffffff', D = '#3b2a1e';
   const g = parts => geoFrom(parts).geometry('lit');
   const defs = [
     { geo: g([[box, -0.14, 0.08, 0, 0.22, 0.49, 0.24, 0, 0, 0, W], [box, 0.14, 0.08, 0, 0.22, 0.49, 0.24, 0, 0, 0, W], [box, -0.14, 0, 0.04, 0.25, 0.14, 0.32, 0, 0, 0, D], [box, 0.14, 0, 0.04, 0.25, 0.14, 0.32, 0, 0, 0, D]]), shadow: true },
@@ -11374,7 +11453,7 @@ function crowdFrame(dt, now) {
 const SHEEP = { list: [], fol: [], body: null, head: null, trail: [], trailX: 0, trailZ: 0 };
 const SHEEP_LOST = [[210, 290], [95, 180], [230, 160], [60, 270], [-30, 200]];
 function buildSheep() {
-  const s1 = prim('sph:1'), box = prim('box'), W = '#ffffff';
+  const s1 = prim('sph:1'), box = CBOX(), W = '#ffffff';
   const bk = new Kit();
   for (const [x, y, z, r] of [[0, 0.62, 0, 0.42], [0.2, 0.68, 0.22, 0.27], [-0.2, 0.68, 0.22, 0.27], [0.2, 0.68, -0.22, 0.27], [-0.2, 0.68, -0.22, 0.27], [0, 0.88, 0.05, 0.3], [0, 0.6, -0.36, 0.25], [0, 0.6, 0.34, 0.25]]) bk.add(s1, x, y, z, r, r * 0.9, r, 0, 0, 0, W);
   for (const [x, z] of [[0.18, 0.22], [-0.18, 0.22], [0.18, -0.22], [-0.18, -0.22]]) bk.add(box, x, 0, z, 0.1, 0.4, 0.1, 0, 0, 0, '#3b3340');
@@ -12161,7 +12240,7 @@ const CINDER_PAL = {
 };
 /** Cinder's Kits for one palette (front = +z, origin on the ground under her middle). */
 function cinderKits(P) {
-  const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cylT = prim('cyl:10:0.550'), cone = prim('cone:8'), cone4 = prim('cone:4');
+  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cylT = prim('cyl:10:0.550'), cone = prim('cone:8'), cone4 = prim('cone:4');
   const K = { body: new Kit(), neck: new Kit(), head: new Kit(), jaw: new Kit(), wingL: new Kit(), wingR: new Kit(), tail1: new Kit(), tail2: new Kit() };
   const B = K.body;
   B.add(s2, 0, 2.7, 0, 1.55, 1.45, 2.3, 0, 0, 0, P.body); B.add(s2, 0, 2.25, 0.35, 1.2, 1.05, 1.95, 0, 0, 0, P.belly);
@@ -12231,7 +12310,7 @@ const SNARL_EYES = [-1, 1].map(s => { const head = lift => ellZ(0, 0.4, 0, 0.34,
   return [discOn(head(0.006), s * 0.12, 0.5, 0.068, 0.064, 24), discOn(head(0.011), s * 0.12, 0.496, 0.038, 0.042, 24)]; });
 /** Lord Snarlwick: tall, jagged violet cape, curly horn-crown, monocle, an enormous purple mustache, a staff with the Gloom Gem. */
 function buildSnarlwick() {
-  const box = prim('box'), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4'), tor = prim('torus:10:0.3');
+  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), cyl = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4'), tor = prim('torus:10:0.3');
   const skin = '#e3d3f2', robe = '#3b2160', robe2 = '#5b2d8a', gold = '#ffc83d', stache = '#8a3fd1';
   const body = new Kit(), head = new Kit(), face = new Kit(), armL = new Kit(), armR = new Kit(), crown = new Kit(), pj = new Kit(), cap = new Kit();
   body.add(cone, 0, 0, 0, 0.66, 1.7, 0.6, 0, 0, 0, robe); for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; body.add(cone4, Math.cos(a) * 0.6, 0.05, Math.sin(a) * 0.55, 0.12, 0.3, 0.06, Math.PI, -a, 0, '#2b174a'); }
@@ -13403,7 +13482,19 @@ function makerRender() {
     renderer.render(A.scene, A.cam);
   } catch (e) { A.need = false; renderer.setRenderTarget(null); renderer.render(scene, camera); }
 }
-const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8');
+const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8'), TOON_GLOOM = new THREE.Color(OK.color('grape', 1)), TOON_DUSK = new THREE.Color(OK.color('sky', 1));
+/** Cartoon: the lamps' halos (made once, the first frame after the world is built): brighter in the gloom. */
+function haloFrame(gl) {
+  if (!WORLD.halos && HALOS.length) {
+    const n = HALOS.length / 5, pos = new Float32Array(n * 3), cl = new Float32Array(n * 3), sz = new Float32Array(n);
+    for (let i = 0; i < n; i++) { pos.set(HALOS.slice(i * 5, i * 5 + 3), i * 3); sz[i] = HALOS[i * 5 + 3]; C1.set(HALOS[i * 5 + 4]); cl[i * 3] = C1.r; cl[i * 3 + 1] = C1.g; cl[i * 3 + 2] = C1.b; }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(cl, 3)); g.setAttribute('size', new THREE.BufferAttribute(sz, 1));
+    const mat = new THREE.PointsMaterial({ map: softDisc(), vertexColors: true, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false, size: 1, sizeAttenuation: true });
+    mat.onBeforeCompile = sh => { sh.vertexShader = 'attribute float size;\n' + sh.vertexShader.replace('gl_PointSize = size;', 'gl_PointSize = size * 1.0;').replace('uniform float size;', ''); };
+    const pts = new THREE.Points(g, mat); pts.frustumCulled = false; pts.renderOrder = 3; scene.add(pts); WORLD.halos = pts;
+  }
+  if (WORLD.halos) WORLD.halos.material.opacity = 0.32 + 0.4 * gl;
+}
 function worldFrame(dt, now) {
   const cx = camera.position.x, cz = camera.position.z, far = camera.far, cm = calm(), L = LV();
   for (let i = 0; i < WORLD.chunks.length; i++) { const c = WORLD.chunks[i]; c.visible = hyp(c.userData.cx - cx, c.userData.cz - cz) < far + 72; }
@@ -13422,6 +13513,7 @@ function worldFrame(dt, now) {
   scene.fog.color.copy(SKY_COLORS.horizon).lerp(SKY_COLORS.gloomHorizon, gl); scene.background.copy(scene.fog.color);
   dome.material.color.copy(WHITE).lerp(DOME_GLOOM, gl * 0.85);
   hemi.color.copy(SKY_COLORS.hemiSky).lerp(SKY_COLORS.gloomHemi, gl); sun.intensity = 2.5 - gl * 0.5; hemi.intensity = 1.65 + gl * 0.1;
+  if (TOON) { B.light.tint.copy(WHITE).lerp(TOON_GLOOM, gl * 0.5); if (hero.onStage && hero.stageNight) B.light.tint.multiply(TOON_DUSK); haloFrame(gl); }
   // moving bits
   const w = WORLD.water; if (L.water) { w.tex.offset.y -= dt * 0.035; w.tex.offset.x += dt * 0.01; } w.fallTex.offset.y += dt * (L.water ? 0.55 : 0);
   if (WORLD.dyn.blades) WORLD.dyn.blades.rotation.z += dt * (cm ? 0.25 : 0.6);
