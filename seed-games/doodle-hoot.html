@@ -121,8 +121,11 @@ html.dh-live .ok-row{display:none!important}
 .dh-sheet .dh-who-btns span{max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dh-sheet .dh-btn{flex:none;align-self:center;min-width:140px}
 /* pass and play: the drawer's word stays covered while the others watch ("My word" shows it for a moment) */
-.dh-word.peek>span{filter:blur(10px)}
-.dh-word.peek.show>span{filter:none}
+.dh-word.peek>span{position:relative;visibility:hidden}
+.dh-word.peek>span::after{content:'';visibility:visible;position:absolute;inset:18% 0;border-radius:10px;background:var(--ok-edge);opacity:.28}
+.dh-word.peek.show>span{visibility:visible}
+.dh-word.peek.show>span::after{content:none}
+.dh-word.peek>button[aria-pressed="true"]{background:var(--ok-edge);color:var(--ok-card)}
 .dh-guess.ok .dh-slot{background:var(--goodTint);border-style:solid}
 .dh-guess.no .dh-slots{animation:dhShake .35s ease}
 .dh-preview{margin:0;text-align:center;font-size:24px;font-weight:800;min-height:1.3em}
@@ -194,6 +197,7 @@ html.dh-live .ok-row{display:none!important}
 .dhs{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--ok-scrim)}
 .dhs-card{width:min(96vw,560px);max-height:96vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:24px;background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);box-shadow:0 6px 0 var(--ok-edge)}
 .dhs-card h2{margin:0;text-align:center;font-size:26px;font-weight:900}
+.dhs-card .dhs-sub{margin:-6px 0 2px;text-align:center;font-weight:800;color:var(--ok-text-2,var(--ok-text));opacity:.85}
 .dhs-card fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .dhs-card legend{font-weight:800;margin-bottom:4px}
 .dhs-card .opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -1987,7 +1991,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   var game = null, M = null, setupApi = null, fast = false;
   var SET = ['                    ', '                    ', '                    ', '                    ', '                    ', '   P          o     ', '####################', '####################'];
   if (!LIVE) game = O.game({
-    api: 1, title: t('title'), subtitle: t('tag'), theme: 'meadow', titleHue: 'spark',
+    api: 1, title: false, theme: 'meadow', titleHue: 'spark',   // no title screen: the setup card (with the name) is the one Start
     controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 0,
     level: O.level.grid(SET, { o: { kind: 'npc', species: 'owl', wear: ['scarf'], tag: 'pip', size: 1.6, flip: true } }),
     intro: function () { return setupCard(); },
@@ -2002,7 +2006,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       setupOpen = true;
       var wrap = el('div', 'dhs'); wrap.dir = O.dir || 'ltr';
       var card = el('div', 'dhs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'dhsH'); wrap.appendChild(card);
-      var h = el('h2', '', t('setup')); h.id = 'dhsH'; card.appendChild(h);
+      var h = el('h2', '', t('title')); h.id = 'dhsH'; card.appendChild(h); card.appendChild(el('p', 'dhs-sub', t('setup')));
       var groups = [];
       function group(key, label, opts, get, set) {
         var fs = el('fieldset'); fs.dataset.k = key; fs.appendChild(el('legend', '', label));
@@ -2159,12 +2163,16 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.panel([el('h2', '', t('pickWord')), cards(ch.map(function (x) { return x.w; }), ch.map(function (x) { return x.e; }), function (i) { drawTurn(ch[i]); }), el('p', '', t('notLetters'))]);
       M.cards = true; void p;
     }
-    /* The drawer draws while the others watch and call out their guesses: the word stays covered ("My word" shows it
-       for a moment); "Someone said it!" and who ends the turn. Done (or the clock) passes the device to the guessers. */
+    /* The drawer draws while the others watch and call out their guesses: the word stays covered ("My word" shows and
+       hides it); "Someone said it!" and who ends the turn. Done (or the clock) passes the device to the guessers. */
     function drawTurn(word) {
       M.used[word.id] = 1; M.word = word; M.ph = 'draw';
       U.panel(null);
-      var peek = btn('dh-btn', t('showWord'), 'eye', function () { U.word.classList.add('show'); clearTimeout(M.peekT); M.peekT = setTimeout(function () { U.word.classList.remove('show'); }, 2500); });
+      // a switch: tap to show, tap again to cover (it covers itself after 5 s too). A plain cover, not a blur: a blur is
+      // slow to redraw on phones.
+      var peek = btn('dh-btn', t('showWord'), 'eye', function () { showWord(!U.word.classList.contains('show')); });
+      function showWord(on) { U.word.classList.toggle('show', on); peek.setAttribute('aria-pressed', String(on)); clearTimeout(M.peekT); if (on) M.peekT = setTimeout(function () { showWord(false); }, 5000); }
+      peek.setAttribute('aria-pressed', 'false');
       U.word.hidden = false; U.word.textContent = ''; U.word.className = 'dh-word peek'; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, WLANG))); U.word.appendChild(peek);
       fit(U.word, 13);
       U.side.textContent = ''; U.side.appendChild(tools.el);
