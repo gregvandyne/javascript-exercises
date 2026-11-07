@@ -1,16 +1,19 @@
 // ======================================================================================================
-// OVERWORLD: Cappy walks Delta Isle tile by tile (a short step animation), talks to people, picks things up, and
-// steps into an arch to play its sport. Touch: the D-pad (bottom left) and A (bottom right); keys: arrows / WASD and
-// Space; the map button opens the map (fast travel, settings, controls).
+// OVERWORLD: Cappy walks Delta Isle freely (analog: a light push walks slowly, a full push trots; he slides along
+// walls and round corners), talks to people, picks things up, and plays a sport from its arch. Arches, people, signs and
+// the lift answer from a generous distance, so one approach is always enough. Touch: the floating joystick (left)
+// and A (bottom right); keys: arrows / WASD and Space; gamepad: left stick and A. The map button opens the map.
 // ======================================================================================================
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const P = { x: 36, y: 62, px: 0, py: 0, fx: 0, fy: 0, dir: 'up', moving: false, t: 0, step: 0.15, walk: 0, bump: 0, hop: 0 };
+const P = { x: 36, y: 62, px: 0, py: 0, fpx: 0, fpy: 0, fx: 0, fy: 0, dir: 'up', moving: false, t: 0, step: 0.15, walk: 0, bump: 0, hop: 0, dist: 0, slide: 0 };
 JC.player = P;
 const CAM = { x: 0, y: 0 };
-const OW = { name: 'world', time: 0, water: 0, prompt: null, promptT: 0, celebrate: null, steps: 0, padPtr: -1, padDir: '', aPtr: -1, wantArch: '' };
+const OW = { name: 'world', time: 0, water: 0, prompt: null, promptT: 0, celebrate: null, steps: 0, aPtr: -1, wantArch: '', glide: 0 };
+// what Cappy can talk to or use right now (found each step, no allocation)
+const TARGET = { kind: '', ref: null, tx: 0, ty: 0, d: 0 };
 JC.overworld = OW;
 JC.refreshCappy = function () { const c = SAVE.data.cos; buildCappy('cappy', BANDANAS[c.bandana] || BANDANAS.green); };
-function placePlayer(x, y, d) { P.x = x; P.y = y; P.px = x * TS; P.py = y * TS; P.dir = d || P.dir; P.moving = false; P.t = 0; }
+function placePlayer(x, y, d) { P.x = x; P.y = y; P.fpx = x * TS; P.fpy = y * TS; P.px = P.fpx; P.py = P.fpy; P.dir = d || P.dir; P.moving = false; P.t = 0; P.glideT = 0; OW.prompt = ''; }
 JC.placePlayer = placePlayer;
 OW.enter = function (opts) {
   JC.audioWant = 'island';
@@ -30,58 +33,121 @@ OW.enter = function (opts) {
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
 function signAt(x, y) { for (const s of WORLD.signs) if (s.x === x && s.y === y) return s; return null; }
-function archHere() { for (const id in ARCHES) { const a = ARCHES[id]; if (a.x === P.x && a.y === P.y) return id; } return ''; }
+/* ---------- free movement with collision (Cappy's feet are a small box inside his 16 x 16 tile) ---------- */
+const FOOT_L = 3, FOOT_R = 12, FOOT_T = 9, FOOT_B = 15, WALK_SPEED = 96;
+function feetHit(px, py) {
+  const x0 = Math.floor((px + FOOT_L) / TS), x1 = Math.floor((px + FOOT_R) / TS), y0 = Math.floor((py + FOOT_T) / TS), y1 = Math.floor((py + FOOT_B) / TS);
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (WORLD.isSolid(x, y)) return true;
+  return false;
+}
+/** Feet centre in world pixels. */
+const feetX = () => P.fpx + 8, feetY = () => P.fpy + 12;
+/** Move along one axis; when blocked, slip round a corner by up to 7 px (so a near miss of a gap or a bridge still goes in). */
+function moveAxis(dx, dy) {
+  if (!dx && !dy) return false;
+  const stuck = feetHit(P.fpx, P.fpy); // started inside something (an old save): let him walk out
+  if (stuck || !feetHit(P.fpx + dx, P.fpy + dy)) { P.fpx += dx; P.fpy += dy; return true; }
+  for (let k = 1; k <= 7; k++) for (let sgn = -1; sgn <= 1; sgn += 2) {
+    const ox = dy ? sgn * k : 0, oy = dx ? sgn * k : 0;
+    if (!feetHit(P.fpx + ox, P.fpy + oy) && !feetHit(P.fpx + ox + dx, P.fpy + oy + dy)) {
+      const st = Math.min(Math.abs(dx || dy), 1) * sgn; P.fpx += dy ? st : 0; P.fpy += dx ? st : 0; P.slide = 0.1; return true;
+    }
+  }
+  return false;
+}
+/** One frame of walking with the analog axis (0..1 push): returns how far he went. */
+function walkStep(ax, ay, mag, dt) {
+  if (!mag) return 0;
+  const speed = WALK_SPEED * (0.32 + 0.68 * mag), len = Math.hypot(ax, ay) || 1;
+  const vx = ax / len * speed * dt, vy = ay / len * speed * dt;
+  const x0 = P.fpx, y0 = P.fpy;
+  // small sub-steps so nothing is skipped, x and y apart so he slides along walls
+  const n = Math.max(1, Math.ceil(Math.max(Math.abs(vx), Math.abs(vy)) / 1.5));
+  for (let i = 0; i < n; i++) { moveAxis(vx / n, 0); moveAxis(0, vy / n); }
+  // facing: the way the stick points most
+  P.dir = Math.abs(ax) > Math.abs(ay) * 1.15 ? (ax > 0 ? 'right' : 'left') : (ay > 0 ? 'down' : 'up');
+  return Math.hypot(P.fpx - x0, P.fpy - y0);
+}
+function updateTile() {
+  const tx = Math.floor(feetX() / TS), ty = Math.floor(feetY() / TS);
+  if (tx !== P.x || ty !== P.y) {
+    P.x = tx; P.y = ty; OW.steps++;
+    SAVE.data.pos.x = tx; SAVE.data.pos.y = ty; SAVE.data.pos.d = P.dir; SAVE.soon();
+  }
+}
+function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
+function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
+function signAt(x, y) { for (const s of WORLD.signs) if (s.x === x && s.y === y) return s; return null; }
+/* ---------- arches: a generous zone round each one (any side, any speed), kept a little longer once shown ---------- */
+const ARCH_IN = 24, ARCH_OUT = 32;
+function archDist(a) { return Math.hypot(feetX() - (a.x * TS + 8), feetY() - (a.y * TS + 8)); }
+function archNear() {
+  if (OW.prompt && ARCHES[OW.prompt] && archDist(ARCHES[OW.prompt]) <= ARCH_OUT) return OW.prompt;
+  let best = '', bd = ARCH_IN;
+  for (const id in ARCHES) { const d = archDist(ARCHES[id]); if (d <= bd) { bd = d; best = id; } }
+  return best;
+}
+function archHere() { return archNear(); }
+/* ---------- who or what Cappy can talk to / use: the nearest within reach, in front of him or right beside him ---------- */
+const REACH = 27, BESIDE = 18;
+function consider(kind, ref, tx, ty) {
+  const cx = tx * TS + 8, cy = ty * TS + 8, vx = cx - feetX(), vy = cy - feetY(), d = Math.hypot(vx, vy);
+  if (d > REACH || d >= TARGET.d) return;
+  const [fx, fy] = DIRS[P.dir];
+  if (d > BESIDE && (vx * fx + vy * fy) / (d || 1) < 0.35) return; // further away: only in front
+  TARGET.kind = kind; TARGET.ref = ref; TARGET.tx = tx; TARGET.ty = ty; TARGET.d = d;
+}
+function findTarget() {
+  TARGET.kind = ''; TARGET.ref = null; TARGET.d = 1e9;
+  for (const n of WORLD.npcs) consider('npc', n, n.x, n.y);
+  for (const s of WORLD.signs) consider('sign', s, s.x, s.y);
+  consider('lift', null, WORLD.lift.x, WORLD.lift.y);
+  for (const it of WORLD.items) if (JC.questVisible(it)) consider('item', it, it.x, it.y);
+  return TARGET.kind ? TARGET : null;
+}
+/** Kept for the tests (and keys tapped one at a time): one whole tile in a direction, if it is free. */
 function tryStep(dir) {
   P.dir = dir;
   const nx = P.x + DIRS[dir][0], ny = P.y + DIRS[dir][1];
   const it = itemAt(nx, ny); if (it) { pickItem(it); }
   if (WORLD.isSolid(nx, ny)) { if (P.bump <= 0) { AUDIO.sfx('bonk'); P.bump = 0.35; } return false; }
-  P.moving = true; P.t = 0; P.fx = P.x; P.fy = P.y; P.x = nx; P.y = ny; P.walk++;
-  OW.steps++;
+  P.fpx = nx * TS; P.fpy = ny * TS; P.walk++; P.dist += TS;
+  updateTile();
   if ((P.walk & 1) === 0) AUDIO.sfx('step');
-  SAVE.data.pos.x = nx; SAVE.data.pos.y = ny; SAVE.data.pos.d = dir; SAVE.soon();
   return true;
 }
 JC.tryStep = tryStep;
-/** Act on what Cappy faces: talk, read, ride the lift, or play the sport whose arch he stands in. */
+/** Act: play the sport whose arch is near, or talk / read / ride the lift / pick up what is in reach. */
 function act() {
   if (TB.open) { TB.advance(); return; }
-  const arch = archHere(); if (arch) { JC.playSport(arch); return; }
-  const fx = P.x + DIRS[P.dir][0], fy = P.y + DIRS[P.dir][1];
-  const n = npcAt(fx, fy);
-  if (n) {
+  const arch = archNear(), tg = findTarget();
+  // someone right in front and closer than the arch's middle gets the talk; otherwise the arch always wins
+  if (arch && !(tg && tg.kind === 'npc' && tg.d < 20 && tg.d < archDist(ARCHES[arch]))) { JC.playSport(arch); return; }
+  if (!tg) return;
+  if (tg.kind === 'npc') {
+    const n = tg.ref, vx = n.x * TS + 8 - feetX(), vy = n.y * TS + 8 - feetY();
     // face each other
+    P.dir = Math.abs(vx) > Math.abs(vy) ? (vx > 0 ? 'right' : 'left') : (vy > 0 ? 'down' : 'up');
     n.face = P.dir === 'up' ? 'down' : P.dir === 'down' ? 'up' : P.dir === 'left' ? 'right' : 'left';
     const lines = talkLines(n);
     if (lines.length) JC.say(lines, () => { SAVE.write(); if (n.id === 'coco') SAVE.data.flags.metCoco = 1; });
     return;
   }
-  const s = signAt(fx, fy); if (s) { JC.say([{ who: 'sign', key: s.key }]); return; }
-  if (fx === WORLD.lift.x && fy === WORLD.lift.y) {
+  if (tg.kind === 'sign') { JC.say([{ who: 'sign', key: tg.ref.key }]); return; }
+  if (tg.kind === 'lift') {
     const f = SAVE.featherCount();
     if (f >= 7) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
     else JC.say([{ who: 'lift', key: 'lift.locked', vars: { n: f } }]);
     return;
   }
-  const it = itemAt(fx, fy); if (it) pickItem(it);
+  if (tg.kind === 'item') pickItem(tg.ref);
 }
 JC.act = act;
-/* ---------- touch controls (virtual pixels) ---------- */
-const PAD = { cx: 0, cy: 0, r: 0, ax: 0, ay: 0, ar: 0 };
+/* ---------- touch controls (virtual pixels): the floating joystick and A ---------- */
+const PAD = { ax: 0, ay: 0, ar: 0 };
 function layoutPad() {
-  PAD.r = Math.max(26, Math.round(VIEW.tap * 1.25)); PAD.ar = Math.max(17, Math.round(VIEW.tap * 0.75));
-  PAD.cx = PAD.r + 10; PAD.cy = VIEW.H - PAD.r - 10;
+  PAD.ar = Math.max(17, Math.round(VIEW.tap * 0.75));
   PAD.ax = VIEW.W - PAD.ar - 14; PAD.ay = VIEW.H - PAD.ar - 16;
-}
-function padDirAt(x, y) {
-  const dx = x - PAD.cx, dy = y - PAD.cy;
-  if (dx * dx + dy * dy < 16) return '';
-  return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-}
-function setPadDir(d) {
-  if (OW.padDir === d) return;
-  if (OW.padDir) INPUT.touchKey(OW.padDir, false);
-  OW.padDir = d; if (d) INPUT.touchKey(d, true);
 }
 OW.onInput = function (e) {
   if (STORY.input(e)) return;
@@ -92,45 +158,52 @@ OW.onInput = function (e) {
   if (e.type === 'down') {
     const hit = UI.hitAt(e.x, e.y);
     if (hit) { UI.menuInput(e); OW.btnDown = hit; return; }
-    if (touch && Math.hypot(e.x - PAD.cx, e.y - PAD.cy) < PAD.r * 1.5) { OW.padPtr = e.id; setPadDir(padDirAt(e.x, e.y)); return; }
     if (touch && Math.hypot(e.x - PAD.ax, e.y - PAD.ay) < PAD.ar * 1.5) { OW.aPtr = e.id; act(); return; }
+    if (touch && STICK.down(e)) return;
   } else if (e.type === 'move') {
-    if (e.id === OW.padPtr) setPadDir(padDirAt(e.x, e.y));
+    STICK.move(e);
   } else if (e.type === 'up') {
-    if (e.id === OW.padPtr) { OW.padPtr = -1; setPadDir(''); }
+    STICK.up(e);
     if (e.id === OW.aPtr) OW.aPtr = -1;
   } else if (e.type === 'tap') {
     const hit = UI.hitAt(e.x, e.y);
     if (hit === 'map') { AUDIO.sfx('select'); JC.go('map'); }
-    else if (hit === 'prompt') act();
+    else if (hit === 'prompt' && OW.prompt) JC.playSport(OW.prompt);
   }
 };
-OW.leave = function () { OW.padPtr = -1; setPadDir(''); INPUT.releaseTouch(); };
+OW.leave = function () { OW.aPtr = -1; INPUT.releaseTouch(); };
 OW.update = function (dt) {
   OW.time += dt; OW.water += dt;
   if (P.bump > 0) P.bump -= dt;
   TB.update(dt); STORY.update(dt);
   for (const n of WORLD.npcs) n.t += dt;
-  if (P.moving) {
-    P.t += dt / P.step;
-    if (P.t >= 1) { P.moving = false; P.t = 0; }
+  if (P.slide > 0) P.slide -= dt;
+  // walk with the analog axis (stick, keys or pad)
+  const ax = INPUT.axis;
+  let went = 0;
+  if (!TB.open && !JC.fading() && !STORY.showing()) went = walkStep(ax.x, ax.y, ax.mag, dt);
+  if (went > 0.01) {
+    const before = (P.dist / TS) | 0; P.dist += went;
+    if (((P.dist / TS) | 0) !== before) { P.walk++; if ((P.walk & 1) === 0) AUDIO.sfx('step'); }
+    P.moving = true; P.glideT = 0.12;
+  } else {
+    if (ax.mag > 0.5 && !TB.open && P.bump <= 0 && !JC.fading()) { AUDIO.sfx('bonk'); P.bump = 0.6; }
+    if (P.glideT > 0) P.glideT -= dt; else P.moving = false;
   }
-  if (!P.moving && !TB.open && !JC.fading()) {
-    const dx = INPUT.dirX(), dy = INPUT.dirY();
-    if (dx || dy) tryStep(dx ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
-  }
-  const k = P.moving ? easeOut(P.t) : 1;
-  P.px = Math.round(lerp(P.moving ? P.fx * TS : P.x * TS, P.x * TS, k));
-  P.py = Math.round(lerp(P.moving ? P.fy * TS : P.y * TS, P.y * TS, k));
-  P.hop = P.moving ? Math.round(Math.sin(P.t * Math.PI) * 2) : 0;
+  P.t = (P.dist % TS) / TS;
+  updateTile();
+  // a quest item underfoot is picked up
+  if (went > 0.01) { const it = itemAt(P.x, P.y); if (it) pickItem(it); }
+  P.px = Math.round(P.fpx); P.py = Math.round(P.fpy);
+  P.hop = P.moving ? Math.round(Math.abs(Math.sin(P.t * Math.PI)) * 2) : 0;
+  findTarget();
   // the camera follows (integer pixels)
   const tx = clamp(P.px + 8 - VIEW.W / 2, 0, MW * TS - VIEW.W), ty = clamp(P.py + 8 - VIEW.H / 2 - 10, 0, MH * TS - VIEW.H);
   if (OW.camSnap) { CAM.x = tx; CAM.y = ty; OW.camSnap = false; }
   CAM.x += (tx - CAM.x) * Math.min(1, dt * 10); CAM.y += (ty - CAM.y) * Math.min(1, dt * 10);
   if (Math.abs(tx - CAM.x) < 0.5) CAM.x = tx; if (Math.abs(ty - CAM.y) < 0.5) CAM.y = ty;
   // the arch prompt
-  const arch = archHere();
-  OW.prompt = arch && !P.moving ? arch : '';
+  OW.prompt = TB.open ? '' : archNear();
   if (OW.celebrate) { OW.celebrate.t += dt; if (OW.celebrate.t > 4) OW.celebrate = null; }
   if (OW.later && OW.time >= OW.laterT && !TB.open) { const l = OW.later; OW.later = null; JC.say(l); }
 };
@@ -251,9 +324,9 @@ OW.draw = function (g) {
   g.drawImage(WORLD.over, cx, cy, sw, sh, 0, 0, sw, sh);
   drawTotemSockets(g, cx, cy);
   // the "talk" hint above someone Cappy faces
-  if (!TB.open && !P.moving) {
-    const fx = P.x + DIRS[P.dir][0], fy = P.y + DIRS[P.dir][1];
-    if (npcAt(fx, fy) || signAt(fx, fy) || (fx === WORLD.lift.x && fy === WORLD.lift.y)) {
+  if (!TB.open && TARGET.kind && TARGET.kind !== 'item' && !OW.prompt) {
+    const fx = TARGET.tx, fy = TARGET.ty;
+    {
       const bx = fx * TS + 8 - cx, by = fy * TS - 14 - cy + (((OW.time * 2) | 0) % 2);
       box(g, bx - 6, by - 6, 13, 11, PAL.white, PAL.ink); rect(g, bx - 1, by + 4, 3, 2, PAL.white); rect(g, bx - 1, by + 6, 1, 1, PAL.ink);
       rect(g, bx - 3, by - 1, 2, 2, PAL.ink); rect(g, bx, by - 1, 2, 2, PAL.ink); rect(g, bx + 3, by - 1, 2, 2, PAL.ink);
@@ -284,21 +357,8 @@ OW.drawHud = function (g) {
   }
   // touch controls
   if (INPUT.showTouch() && !TB.open) {
+    STICK.draw(g, true);
     g.globalAlpha = 0.85;
-    disc(g, PAD.cx, PAD.cy + 2, PAD.r, 'rgba(0,0,0,0.25)');
-    disc(g, PAD.cx, PAD.cy, PAD.r, PAL.ink); disc(g, PAD.cx, PAD.cy, PAD.r - 2, '#3b3150');
-    const arm = Math.round(PAD.r * 0.42), len = PAD.r - 4;
-    for (const d of ['up', 'down', 'left', 'right']) {
-      const on = OW.padDir === d, [dx, dy] = DIRS[d];
-      const bx = PAD.cx + dx * (len - arm) - arm / 2 * (dx ? 1 : 1), by = PAD.cy + dy * (len - arm) - arm / 2;
-      rect(g, Math.round(PAD.cx + (dx ? (dx > 0 ? 0 : -len) : -arm / 2)), Math.round(PAD.cy + (dy ? (dy > 0 ? 0 : -len) : -arm / 2)), dx ? len : arm, dy ? len : arm, on ? '#ffd24a' : '#6e6488');
-      void bx; void by;
-    }
-    disc(g, PAD.cx, PAD.cy, Math.round(arm * 0.6), '#4a4060');
-    for (const d of ['up', 'down', 'left', 'right']) { // arrows
-      const [dx, dy] = DIRS[d], ax = PAD.cx + dx * (len - 6), ay = PAD.cy + dy * (len - 6);
-      for (let i = 0; i < 4; i++) { if (dx) rect(g, ax - dx * i, ay - i, 1, i * 2 + 1, PAL.white); else rect(g, ax - i, ay - dy * i, i * 2 + 1, 1, PAL.white); }
-    }
     const aOn = OW.aPtr >= 0 || INPUT.held.a;
     disc(g, PAD.ax, PAD.ay + 2, PAD.ar, 'rgba(0,0,0,0.3)');
     disc(g, PAD.ax, PAD.ay + (aOn ? 1 : 0), PAD.ar, PAL.ink); disc(g, PAD.ax, PAD.ay + (aOn ? 1 : 0), PAD.ar - 2, aOn ? '#ffb030' : '#ff8b3d');

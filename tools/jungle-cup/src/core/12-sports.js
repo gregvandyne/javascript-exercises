@@ -31,6 +31,10 @@ function makeCtx(id) {
     markWarm() { SAVE.data.warm[id] = true; SAVE.write(); ctx.warmedUp = true; },
     say(lines, done) { JC.say(lines, done); },
     held: INPUT.held,
+    /** The analog axis { x, y, mag } (-1..1, y down): the touch joystick, the gamepad stick or the keys. */
+    axis: INPUT.axis,
+    /** The touch joystick (a sport opts in with stick: true, or stick: (x, y) => true where a thumb may start it). */
+    stick: STICK,
     hud: HUD,
     ui: UI,
   };
@@ -138,6 +142,12 @@ RUN.onInput = function (e) {
   if (e.type === 'down' && UI.hitAt(e.x, e.y) === 'pause') { RUN.pause(); return; }
   if (e.type === 'press' && (e.key === 'b' || e.key === 'pause')) { RUN.pause(); return; }
   if (e.type === 'tap' && UI.hitAt(e.x, e.y) === 'pause') return;
+  // a sport that opted in gets the floating joystick (touch): its own touch never reaches the sport
+  if (RUN.sport.stick && INPUT.showTouch() && (ph === 'play' || ph === 'count')) {
+    const sk = RUN.sport.stick;
+    if (e.type === 'down') { if ((typeof sk !== 'function' || sk(e.x, e.y, RUN.ctx)) && STICK.down(e, typeof sk === 'function')) return; }
+    else if ((e.type === 'move' || e.type === 'up') && e.id === STICK.id) { STICK.input(e); return; }
+  }
   if (ph === 'play') { try { if (RUN.sport.onInput) RUN.sport.onInput(e, RUN.ctx); } catch (er) { console.error(er); } }
 };
 RUN.leaveResults = function () {
@@ -238,6 +248,7 @@ RUN.draw = function (g) {
   UI.drawFx(g);
   if (RUN.phase === 'play' || RUN.phase === 'count' || RUN.phase === 'outro') {
     UI.iconButton(g, 'pause', Math.max(14, VIEW.tap / 2 + 4), Math.max(14, VIEW.tap / 2 + 4), UI.icons.pause, { col: '#5b3a24' });
+    if (sp.stick && INPUT.showTouch() && RUN.phase !== 'outro') STICK.draw(g, true);
   }
   if (RUN.phase === 'count' && RUN.count > 0.6) {
     const n = Math.ceil(RUN.count - 0.6), f = (RUN.count - 0.6) % 1;

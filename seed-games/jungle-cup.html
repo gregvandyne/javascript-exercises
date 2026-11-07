@@ -3072,7 +3072,13 @@ AUDIO.songs.finale = { bpm: 104, steps: 64, leadWave: 'square', harmWave: 'trian
 //   { type: 'down' | 'move' | 'up', id, x, y, sx, sy (where it started), dx, dy, device: 'touch' }  (virtual pixels)
 //   { type: 'tap', x, y }   a short touch or click that did not move
 //   { type: 'swipe', dir: 'left'|'right'|'up'|'down', x, y, dx, dy, speed }   a quick flick (>= 18 CSS px)
-// Held state: JC.input.held.left ... .a .b (keys, gamepad and the on-screen D-pad together), JC.input.dirX()/dirY().
+// Held state: JC.input.held.left ... .a .b (keys, gamepad and the touch joystick together), JC.input.dirX()/dirY().
+// Analog: JC.input.axis = { x, y, mag } (-1..1, y down; mag 0..1) from the touch joystick, the gamepad's left stick
+//   (dead zone 0.2) or the keys (diagonals normalised). Sports get it as ctx.axis. The joystick also holds
+//   left/right/up/down (past 0.45 along that side), so 'press' / 'release' events and held keep working.
+// Touch joystick (like Hero of Sunvale's): it floats to where the thumb lands in the left part of the screen, the knob
+//   follows up to the base's edge (analog, dead zone 0.15), it follows its own touch so A works at the same time, and
+//   it springs back on release. A faint one rests bottom left as a hint.
 // Keys: arrows / WASD move, Space / Enter / Z = A (action), Esc / Backspace / X = B (back), P = pause.
 // Gamepad: left stick or d-pad, button 0 = A, 1 = B, 9 (start) = pause.
 // ======================================================================================================
@@ -3107,7 +3113,7 @@ INPUT.touchKey = function (key, on) {
   INPUT.touchHeld[key] = on; refreshHeld();
   emit({ type: on ? 'press' : 'release', key, device: 'touch' });
 };
-INPUT.releaseTouch = function () { for (const k in INPUT.touchHeld) if (INPUT.touchHeld[k]) INPUT.touchKey(k, false); };
+INPUT.releaseTouch = function () { STICK.id = -1; STICK.x = 0; STICK.y = 0; STICK.mag = 0; for (const k in INPUT.touchHeld) if (INPUT.touchHeld[k]) INPUT.touchKey(k, false); };
 window.addEventListener('keydown', ev => {
   const k = KEYMAP[ev.code] || (ev.key === ' ' ? 'a' : null);
   if (!k) return;
@@ -3167,12 +3173,106 @@ INPUT.poll = function () {
   for (let i = 0; i < list.length; i++) if (list[i] && list[i].connected) { gp = list[i]; break; }
   if (!gp) return;
   const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0, b = gp.buttons, on = i => !!(b[i] && b[i].pressed);
+  // the left stick, analog (a dead zone, then rescaled so a light push still moves slowly)
+  const m = Math.hypot(ax, ay);
+  if (m > PAD_DEAD) { const k = Math.min(1, (m - PAD_DEAD) / (1 - PAD_DEAD)) / m; PADAXIS.x = ax * k; PADAXIS.y = ay * k; PADAXIS.mag = Math.min(1, (m - PAD_DEAD) / (1 - PAD_DEAD)); INPUT.device = 'pad'; }
+  else { PADAXIS.x = 0; PADAXIS.y = 0; PADAXIS.mag = 0; }
   PADNOW.left = ax < -0.5 || on(14); PADNOW.right = ax > 0.5 || on(15); PADNOW.up = ay < -0.5 || on(12); PADNOW.down = ay > 0.5 || on(13);
   PADNOW.a = on(0); PADNOW.b = on(1); PADNOW.pause = on(9);
   for (let i = 0; i < PADKEYS.length; i++) {
     const k = PADKEYS[i];
     if (PADNOW[k] !== INPUT.padHeld[k]) { INPUT.padHeld[k] = PADNOW[k]; refreshHeld(); INPUT.device = 'pad'; emit({ type: PADNOW[k] ? 'press' : 'release', key: k, device: 'pad' }); }
   }
+};
+
+/* ---------- the analog axis (ctx.axis) ---------- */
+const AXIS = { x: 0, y: 0, mag: 0 };
+const PADAXIS = { x: 0, y: 0, mag: 0 };
+const PAD_DEAD = 0.2, STICK_DEAD = 0.15, STICK_HOLD = 0.45;
+INPUT.axis = AXIS;
+/** Work out the axis for this step: the touch stick, else the gamepad stick, else the keys (and the pad's d-pad). */
+INPUT.updateAxis = function () {
+  if (STICK.id >= 0 && STICK.mag > 0) { AXIS.x = STICK.x; AXIS.y = STICK.y; AXIS.mag = STICK.mag; return AXIS; }
+  if (PADAXIS.mag > 0) { AXIS.x = PADAXIS.x; AXIS.y = PADAXIS.y; AXIS.mag = PADAXIS.mag; return AXIS; }
+  const h = INPUT.held;
+  let x = (h.right ? 1 : 0) - (h.left ? 1 : 0), y = (h.down ? 1 : 0) - (h.up ? 1 : 0);
+  if (x && y) { x *= Math.SQRT1_2; y *= Math.SQRT1_2; }
+  AXIS.x = x; AXIS.y = y; AXIS.mag = x || y ? 1 : 0;
+  return AXIS;
+};
+/* ---------- the touch joystick ---------- */
+const STICK = { id: -1, bx: 0, by: 0, kx: 0, ky: 0, x: 0, y: 0, mag: 0, R: 30, baseR: 38, knobR: 17, restX: 0, restY: 0, gen: -1, zoneTop: 0, zoneRight: 0 };
+INPUT.stick = STICK;
+/** Sizes from CSS pixels, as in Hero of Sunvale (base 132, knob 60, the knob travels 52), a touch smaller for a pixel screen. */
+STICK.layout = function () {
+  if (STICK.gen === VIEW.gen) return;
+  STICK.gen = VIEW.gen;
+  const k = VIEW.dpr / VIEW.S; // virtual pixels per CSS pixel
+  STICK.R = Math.max(18, Math.round(50 * k)); STICK.baseR = Math.max(24, Math.round(62 * k)); STICK.knobR = Math.max(11, Math.round(27 * k));
+  STICK.restX = STICK.baseR + Math.round(16 * k); STICK.restY = VIEW.H - STICK.baseR - Math.round(18 * k);
+  // where a thumb can start the stick: the left part of the screen, below the top bar of buttons
+  STICK.zoneRight = VIEW.W * (VIEW.portrait ? 0.55 : 0.45); STICK.zoneTop = Math.max(VIEW.tap + 10, VIEW.H * 0.3);
+};
+STICK.inZone = function (x, y) { STICK.layout(); return x < STICK.zoneRight && y > STICK.zoneTop; };
+/** A touch went down: take it if the stick is free and it is in the zone (or forced). Returns true if taken. */
+STICK.down = function (e, force) {
+  if (STICK.id >= 0 || (!force && !STICK.inZone(e.x, e.y))) return false;
+  STICK.layout();
+  STICK.id = e.id;
+  // the base appears under the thumb, kept fully on screen
+  STICK.bx = clamp(e.x, STICK.baseR + 2, VIEW.W - STICK.baseR - 2); STICK.by = clamp(e.y, STICK.baseR + 2, VIEW.H - STICK.baseR - 2);
+  STICK.kx = STICK.bx; STICK.ky = STICK.by; STICK.x = 0; STICK.y = 0; STICK.mag = 0;
+  return true;
+};
+STICK.move = function (e) {
+  if (e.id !== STICK.id) return false;
+  let dx = (e.x - STICK.bx) / STICK.R, dy = (e.y - STICK.by) / STICK.R; const d = Math.hypot(dx, dy);
+  if (d > 1) { dx /= d; dy /= d; }
+  const m = Math.min(1, d);
+  STICK.kx = STICK.bx + dx * STICK.R; STICK.ky = STICK.by + dy * STICK.R;
+  if (m > STICK_DEAD) { STICK.mag = (m - STICK_DEAD) / (1 - STICK_DEAD); STICK.x = dx / Math.max(1e-6, m) * STICK.mag; STICK.y = dy / Math.max(1e-6, m) * STICK.mag; }
+  else { STICK.mag = 0; STICK.x = 0; STICK.y = 0; }
+  STICK.holdKeys();
+  return true;
+};
+STICK.up = function (e) { if (e.id !== STICK.id) return false; STICK.release(); return true; };
+STICK.release = function () {
+  STICK.id = -1; STICK.x = 0; STICK.y = 0; STICK.mag = 0; STICK.holdKeys();
+};
+/** The stick also holds the four directions (past 0.45 that way), for sports that listen to press / release. */
+STICK.holdKeys = function () {
+  const on = STICK.mag > 0;
+  const want = (k, v) => { if (INPUT.touchHeld[k] !== v) INPUT.touchKey(k, v); };
+  want('left', on && STICK.x < -STICK_HOLD); want('right', on && STICK.x > STICK_HOLD);
+  want('up', on && STICK.y < -STICK_HOLD); want('down', on && STICK.y > STICK_HOLD);
+};
+/** Route a pointer event to the stick (down in its zone, its own move / up). Returns true if the stick used it. */
+STICK.input = function (e) {
+  if (e.type === 'down') return STICK.down(e);
+  if (e.type === 'move') return STICK.move(e);
+  if (e.type === 'up') return STICK.up(e);
+  return false;
+};
+/** Draw the stick: where the thumb is, or a faint resting hint bottom left. Chunky pixel rings, a knob with a shine. */
+STICK.draw = function (g, hint) {
+  STICK.layout();
+  const live = STICK.id >= 0;
+  if (!live && !hint) return;
+  const bx = Math.round(live ? STICK.bx : STICK.restX), by = Math.round(live ? STICK.by : STICK.restY);
+  const kx = Math.round(live ? STICK.kx : bx), ky = Math.round(live ? STICK.ky : by);
+  const R = STICK.baseR, r = STICK.knobR;
+  g.globalAlpha = live ? 0.9 : 0.5;
+  disc(g, bx, by + 2, R, 'rgba(0,0,0,0.28)');
+  disc(g, bx, by, R, PAL.ink); disc(g, bx, by, R - 2, 'rgba(59,49,80,0.82)'); disc(g, bx, by, R - 5, 'rgba(78,66,104,0.7)');
+  // four little notches so it reads as a stick, not a button
+  const n = R - 4;
+  rect(g, bx - 1, by - n, 3, 3, '#8a80a8'); rect(g, bx - 1, by + n - 3, 3, 3, '#8a80a8'); rect(g, bx - n, by - 1, 3, 3, '#8a80a8'); rect(g, bx + n - 3, by - 1, 3, 3, '#8a80a8');
+  if (live && STICK.mag > 0) { g.globalAlpha = 0.35 * STICK.mag; disc(g, Math.round((bx + kx) / 2), Math.round((by + ky) / 2), Math.round(r * 0.7), '#7ee07a'); g.globalAlpha = 0.9; }
+  disc(g, kx, ky + 2, r, 'rgba(0,0,0,0.35)');
+  disc(g, kx, ky, r, PAL.ink); disc(g, kx, ky, r - 2, live ? '#45c34e' : '#3d9a2e');
+  disc(g, kx, ky + 1, Math.max(3, r - 6), live ? '#3aa843' : '#348a2a');
+  disc(g, kx - Math.round(r * 0.3), ky - Math.round(r * 0.3), Math.max(2, Math.round(r * 0.32)), '#a8f0a0');
+  g.globalAlpha = 1;
 };
 
 /* ---- core/05-sprites.js ---- */
@@ -4510,18 +4610,21 @@ JC.questVisible = it => qState(it.quest) === 'active' && !SAVE.data.flags['got_'
 
 /* ---- core/11-overworld.js ---- */
 // ======================================================================================================
-// OVERWORLD: Cappy walks Delta Isle tile by tile (a short step animation), talks to people, picks things up, and
-// steps into an arch to play its sport. Touch: the D-pad (bottom left) and A (bottom right); keys: arrows / WASD and
-// Space; the map button opens the map (fast travel, settings, controls).
+// OVERWORLD: Cappy walks Delta Isle freely (analog: a light push walks slowly, a full push trots; he slides along
+// walls and round corners), talks to people, picks things up, and plays a sport from its arch. Arches, people, signs and
+// the lift answer from a generous distance, so one approach is always enough. Touch: the floating joystick (left)
+// and A (bottom right); keys: arrows / WASD and Space; gamepad: left stick and A. The map button opens the map.
 // ======================================================================================================
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const P = { x: 36, y: 62, px: 0, py: 0, fx: 0, fy: 0, dir: 'up', moving: false, t: 0, step: 0.15, walk: 0, bump: 0, hop: 0 };
+const P = { x: 36, y: 62, px: 0, py: 0, fpx: 0, fpy: 0, fx: 0, fy: 0, dir: 'up', moving: false, t: 0, step: 0.15, walk: 0, bump: 0, hop: 0, dist: 0, slide: 0 };
 JC.player = P;
 const CAM = { x: 0, y: 0 };
-const OW = { name: 'world', time: 0, water: 0, prompt: null, promptT: 0, celebrate: null, steps: 0, padPtr: -1, padDir: '', aPtr: -1, wantArch: '' };
+const OW = { name: 'world', time: 0, water: 0, prompt: null, promptT: 0, celebrate: null, steps: 0, aPtr: -1, wantArch: '', glide: 0 };
+// what Cappy can talk to or use right now (found each step, no allocation)
+const TARGET = { kind: '', ref: null, tx: 0, ty: 0, d: 0 };
 JC.overworld = OW;
 JC.refreshCappy = function () { const c = SAVE.data.cos; buildCappy('cappy', BANDANAS[c.bandana] || BANDANAS.green); };
-function placePlayer(x, y, d) { P.x = x; P.y = y; P.px = x * TS; P.py = y * TS; P.dir = d || P.dir; P.moving = false; P.t = 0; }
+function placePlayer(x, y, d) { P.x = x; P.y = y; P.fpx = x * TS; P.fpy = y * TS; P.px = P.fpx; P.py = P.fpy; P.dir = d || P.dir; P.moving = false; P.t = 0; P.glideT = 0; OW.prompt = ''; }
 JC.placePlayer = placePlayer;
 OW.enter = function (opts) {
   JC.audioWant = 'island';
@@ -4541,58 +4644,121 @@ OW.enter = function (opts) {
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
 function signAt(x, y) { for (const s of WORLD.signs) if (s.x === x && s.y === y) return s; return null; }
-function archHere() { for (const id in ARCHES) { const a = ARCHES[id]; if (a.x === P.x && a.y === P.y) return id; } return ''; }
+/* ---------- free movement with collision (Cappy's feet are a small box inside his 16 x 16 tile) ---------- */
+const FOOT_L = 3, FOOT_R = 12, FOOT_T = 9, FOOT_B = 15, WALK_SPEED = 96;
+function feetHit(px, py) {
+  const x0 = Math.floor((px + FOOT_L) / TS), x1 = Math.floor((px + FOOT_R) / TS), y0 = Math.floor((py + FOOT_T) / TS), y1 = Math.floor((py + FOOT_B) / TS);
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (WORLD.isSolid(x, y)) return true;
+  return false;
+}
+/** Feet centre in world pixels. */
+const feetX = () => P.fpx + 8, feetY = () => P.fpy + 12;
+/** Move along one axis; when blocked, slip round a corner by up to 7 px (so a near miss of a gap or a bridge still goes in). */
+function moveAxis(dx, dy) {
+  if (!dx && !dy) return false;
+  const stuck = feetHit(P.fpx, P.fpy); // started inside something (an old save): let him walk out
+  if (stuck || !feetHit(P.fpx + dx, P.fpy + dy)) { P.fpx += dx; P.fpy += dy; return true; }
+  for (let k = 1; k <= 7; k++) for (let sgn = -1; sgn <= 1; sgn += 2) {
+    const ox = dy ? sgn * k : 0, oy = dx ? sgn * k : 0;
+    if (!feetHit(P.fpx + ox, P.fpy + oy) && !feetHit(P.fpx + ox + dx, P.fpy + oy + dy)) {
+      const st = Math.min(Math.abs(dx || dy), 1) * sgn; P.fpx += dy ? st : 0; P.fpy += dx ? st : 0; P.slide = 0.1; return true;
+    }
+  }
+  return false;
+}
+/** One frame of walking with the analog axis (0..1 push): returns how far he went. */
+function walkStep(ax, ay, mag, dt) {
+  if (!mag) return 0;
+  const speed = WALK_SPEED * (0.32 + 0.68 * mag), len = Math.hypot(ax, ay) || 1;
+  const vx = ax / len * speed * dt, vy = ay / len * speed * dt;
+  const x0 = P.fpx, y0 = P.fpy;
+  // small sub-steps so nothing is skipped, x and y apart so he slides along walls
+  const n = Math.max(1, Math.ceil(Math.max(Math.abs(vx), Math.abs(vy)) / 1.5));
+  for (let i = 0; i < n; i++) { moveAxis(vx / n, 0); moveAxis(0, vy / n); }
+  // facing: the way the stick points most
+  P.dir = Math.abs(ax) > Math.abs(ay) * 1.15 ? (ax > 0 ? 'right' : 'left') : (ay > 0 ? 'down' : 'up');
+  return Math.hypot(P.fpx - x0, P.fpy - y0);
+}
+function updateTile() {
+  const tx = Math.floor(feetX() / TS), ty = Math.floor(feetY() / TS);
+  if (tx !== P.x || ty !== P.y) {
+    P.x = tx; P.y = ty; OW.steps++;
+    SAVE.data.pos.x = tx; SAVE.data.pos.y = ty; SAVE.data.pos.d = P.dir; SAVE.soon();
+  }
+}
+function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
+function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
+function signAt(x, y) { for (const s of WORLD.signs) if (s.x === x && s.y === y) return s; return null; }
+/* ---------- arches: a generous zone round each one (any side, any speed), kept a little longer once shown ---------- */
+const ARCH_IN = 24, ARCH_OUT = 32;
+function archDist(a) { return Math.hypot(feetX() - (a.x * TS + 8), feetY() - (a.y * TS + 8)); }
+function archNear() {
+  if (OW.prompt && ARCHES[OW.prompt] && archDist(ARCHES[OW.prompt]) <= ARCH_OUT) return OW.prompt;
+  let best = '', bd = ARCH_IN;
+  for (const id in ARCHES) { const d = archDist(ARCHES[id]); if (d <= bd) { bd = d; best = id; } }
+  return best;
+}
+function archHere() { return archNear(); }
+/* ---------- who or what Cappy can talk to / use: the nearest within reach, in front of him or right beside him ---------- */
+const REACH = 27, BESIDE = 18;
+function consider(kind, ref, tx, ty) {
+  const cx = tx * TS + 8, cy = ty * TS + 8, vx = cx - feetX(), vy = cy - feetY(), d = Math.hypot(vx, vy);
+  if (d > REACH || d >= TARGET.d) return;
+  const [fx, fy] = DIRS[P.dir];
+  if (d > BESIDE && (vx * fx + vy * fy) / (d || 1) < 0.35) return; // further away: only in front
+  TARGET.kind = kind; TARGET.ref = ref; TARGET.tx = tx; TARGET.ty = ty; TARGET.d = d;
+}
+function findTarget() {
+  TARGET.kind = ''; TARGET.ref = null; TARGET.d = 1e9;
+  for (const n of WORLD.npcs) consider('npc', n, n.x, n.y);
+  for (const s of WORLD.signs) consider('sign', s, s.x, s.y);
+  consider('lift', null, WORLD.lift.x, WORLD.lift.y);
+  for (const it of WORLD.items) if (JC.questVisible(it)) consider('item', it, it.x, it.y);
+  return TARGET.kind ? TARGET : null;
+}
+/** Kept for the tests (and keys tapped one at a time): one whole tile in a direction, if it is free. */
 function tryStep(dir) {
   P.dir = dir;
   const nx = P.x + DIRS[dir][0], ny = P.y + DIRS[dir][1];
   const it = itemAt(nx, ny); if (it) { pickItem(it); }
   if (WORLD.isSolid(nx, ny)) { if (P.bump <= 0) { AUDIO.sfx('bonk'); P.bump = 0.35; } return false; }
-  P.moving = true; P.t = 0; P.fx = P.x; P.fy = P.y; P.x = nx; P.y = ny; P.walk++;
-  OW.steps++;
+  P.fpx = nx * TS; P.fpy = ny * TS; P.walk++; P.dist += TS;
+  updateTile();
   if ((P.walk & 1) === 0) AUDIO.sfx('step');
-  SAVE.data.pos.x = nx; SAVE.data.pos.y = ny; SAVE.data.pos.d = dir; SAVE.soon();
   return true;
 }
 JC.tryStep = tryStep;
-/** Act on what Cappy faces: talk, read, ride the lift, or play the sport whose arch he stands in. */
+/** Act: play the sport whose arch is near, or talk / read / ride the lift / pick up what is in reach. */
 function act() {
   if (TB.open) { TB.advance(); return; }
-  const arch = archHere(); if (arch) { JC.playSport(arch); return; }
-  const fx = P.x + DIRS[P.dir][0], fy = P.y + DIRS[P.dir][1];
-  const n = npcAt(fx, fy);
-  if (n) {
+  const arch = archNear(), tg = findTarget();
+  // someone right in front and closer than the arch's middle gets the talk; otherwise the arch always wins
+  if (arch && !(tg && tg.kind === 'npc' && tg.d < 20 && tg.d < archDist(ARCHES[arch]))) { JC.playSport(arch); return; }
+  if (!tg) return;
+  if (tg.kind === 'npc') {
+    const n = tg.ref, vx = n.x * TS + 8 - feetX(), vy = n.y * TS + 8 - feetY();
     // face each other
+    P.dir = Math.abs(vx) > Math.abs(vy) ? (vx > 0 ? 'right' : 'left') : (vy > 0 ? 'down' : 'up');
     n.face = P.dir === 'up' ? 'down' : P.dir === 'down' ? 'up' : P.dir === 'left' ? 'right' : 'left';
     const lines = talkLines(n);
     if (lines.length) JC.say(lines, () => { SAVE.write(); if (n.id === 'coco') SAVE.data.flags.metCoco = 1; });
     return;
   }
-  const s = signAt(fx, fy); if (s) { JC.say([{ who: 'sign', key: s.key }]); return; }
-  if (fx === WORLD.lift.x && fy === WORLD.lift.y) {
+  if (tg.kind === 'sign') { JC.say([{ who: 'sign', key: tg.ref.key }]); return; }
+  if (tg.kind === 'lift') {
     const f = SAVE.featherCount();
     if (f >= 7) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
     else JC.say([{ who: 'lift', key: 'lift.locked', vars: { n: f } }]);
     return;
   }
-  const it = itemAt(fx, fy); if (it) pickItem(it);
+  if (tg.kind === 'item') pickItem(tg.ref);
 }
 JC.act = act;
-/* ---------- touch controls (virtual pixels) ---------- */
-const PAD = { cx: 0, cy: 0, r: 0, ax: 0, ay: 0, ar: 0 };
+/* ---------- touch controls (virtual pixels): the floating joystick and A ---------- */
+const PAD = { ax: 0, ay: 0, ar: 0 };
 function layoutPad() {
-  PAD.r = Math.max(26, Math.round(VIEW.tap * 1.25)); PAD.ar = Math.max(17, Math.round(VIEW.tap * 0.75));
-  PAD.cx = PAD.r + 10; PAD.cy = VIEW.H - PAD.r - 10;
+  PAD.ar = Math.max(17, Math.round(VIEW.tap * 0.75));
   PAD.ax = VIEW.W - PAD.ar - 14; PAD.ay = VIEW.H - PAD.ar - 16;
-}
-function padDirAt(x, y) {
-  const dx = x - PAD.cx, dy = y - PAD.cy;
-  if (dx * dx + dy * dy < 16) return '';
-  return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-}
-function setPadDir(d) {
-  if (OW.padDir === d) return;
-  if (OW.padDir) INPUT.touchKey(OW.padDir, false);
-  OW.padDir = d; if (d) INPUT.touchKey(d, true);
 }
 OW.onInput = function (e) {
   if (STORY.input(e)) return;
@@ -4603,45 +4769,52 @@ OW.onInput = function (e) {
   if (e.type === 'down') {
     const hit = UI.hitAt(e.x, e.y);
     if (hit) { UI.menuInput(e); OW.btnDown = hit; return; }
-    if (touch && Math.hypot(e.x - PAD.cx, e.y - PAD.cy) < PAD.r * 1.5) { OW.padPtr = e.id; setPadDir(padDirAt(e.x, e.y)); return; }
     if (touch && Math.hypot(e.x - PAD.ax, e.y - PAD.ay) < PAD.ar * 1.5) { OW.aPtr = e.id; act(); return; }
+    if (touch && STICK.down(e)) return;
   } else if (e.type === 'move') {
-    if (e.id === OW.padPtr) setPadDir(padDirAt(e.x, e.y));
+    STICK.move(e);
   } else if (e.type === 'up') {
-    if (e.id === OW.padPtr) { OW.padPtr = -1; setPadDir(''); }
+    STICK.up(e);
     if (e.id === OW.aPtr) OW.aPtr = -1;
   } else if (e.type === 'tap') {
     const hit = UI.hitAt(e.x, e.y);
     if (hit === 'map') { AUDIO.sfx('select'); JC.go('map'); }
-    else if (hit === 'prompt') act();
+    else if (hit === 'prompt' && OW.prompt) JC.playSport(OW.prompt);
   }
 };
-OW.leave = function () { OW.padPtr = -1; setPadDir(''); INPUT.releaseTouch(); };
+OW.leave = function () { OW.aPtr = -1; INPUT.releaseTouch(); };
 OW.update = function (dt) {
   OW.time += dt; OW.water += dt;
   if (P.bump > 0) P.bump -= dt;
   TB.update(dt); STORY.update(dt);
   for (const n of WORLD.npcs) n.t += dt;
-  if (P.moving) {
-    P.t += dt / P.step;
-    if (P.t >= 1) { P.moving = false; P.t = 0; }
+  if (P.slide > 0) P.slide -= dt;
+  // walk with the analog axis (stick, keys or pad)
+  const ax = INPUT.axis;
+  let went = 0;
+  if (!TB.open && !JC.fading() && !STORY.showing()) went = walkStep(ax.x, ax.y, ax.mag, dt);
+  if (went > 0.01) {
+    const before = (P.dist / TS) | 0; P.dist += went;
+    if (((P.dist / TS) | 0) !== before) { P.walk++; if ((P.walk & 1) === 0) AUDIO.sfx('step'); }
+    P.moving = true; P.glideT = 0.12;
+  } else {
+    if (ax.mag > 0.5 && !TB.open && P.bump <= 0 && !JC.fading()) { AUDIO.sfx('bonk'); P.bump = 0.6; }
+    if (P.glideT > 0) P.glideT -= dt; else P.moving = false;
   }
-  if (!P.moving && !TB.open && !JC.fading()) {
-    const dx = INPUT.dirX(), dy = INPUT.dirY();
-    if (dx || dy) tryStep(dx ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
-  }
-  const k = P.moving ? easeOut(P.t) : 1;
-  P.px = Math.round(lerp(P.moving ? P.fx * TS : P.x * TS, P.x * TS, k));
-  P.py = Math.round(lerp(P.moving ? P.fy * TS : P.y * TS, P.y * TS, k));
-  P.hop = P.moving ? Math.round(Math.sin(P.t * Math.PI) * 2) : 0;
+  P.t = (P.dist % TS) / TS;
+  updateTile();
+  // a quest item underfoot is picked up
+  if (went > 0.01) { const it = itemAt(P.x, P.y); if (it) pickItem(it); }
+  P.px = Math.round(P.fpx); P.py = Math.round(P.fpy);
+  P.hop = P.moving ? Math.round(Math.abs(Math.sin(P.t * Math.PI)) * 2) : 0;
+  findTarget();
   // the camera follows (integer pixels)
   const tx = clamp(P.px + 8 - VIEW.W / 2, 0, MW * TS - VIEW.W), ty = clamp(P.py + 8 - VIEW.H / 2 - 10, 0, MH * TS - VIEW.H);
   if (OW.camSnap) { CAM.x = tx; CAM.y = ty; OW.camSnap = false; }
   CAM.x += (tx - CAM.x) * Math.min(1, dt * 10); CAM.y += (ty - CAM.y) * Math.min(1, dt * 10);
   if (Math.abs(tx - CAM.x) < 0.5) CAM.x = tx; if (Math.abs(ty - CAM.y) < 0.5) CAM.y = ty;
   // the arch prompt
-  const arch = archHere();
-  OW.prompt = arch && !P.moving ? arch : '';
+  OW.prompt = TB.open ? '' : archNear();
   if (OW.celebrate) { OW.celebrate.t += dt; if (OW.celebrate.t > 4) OW.celebrate = null; }
   if (OW.later && OW.time >= OW.laterT && !TB.open) { const l = OW.later; OW.later = null; JC.say(l); }
 };
@@ -4762,9 +4935,9 @@ OW.draw = function (g) {
   g.drawImage(WORLD.over, cx, cy, sw, sh, 0, 0, sw, sh);
   drawTotemSockets(g, cx, cy);
   // the "talk" hint above someone Cappy faces
-  if (!TB.open && !P.moving) {
-    const fx = P.x + DIRS[P.dir][0], fy = P.y + DIRS[P.dir][1];
-    if (npcAt(fx, fy) || signAt(fx, fy) || (fx === WORLD.lift.x && fy === WORLD.lift.y)) {
+  if (!TB.open && TARGET.kind && TARGET.kind !== 'item' && !OW.prompt) {
+    const fx = TARGET.tx, fy = TARGET.ty;
+    {
       const bx = fx * TS + 8 - cx, by = fy * TS - 14 - cy + (((OW.time * 2) | 0) % 2);
       box(g, bx - 6, by - 6, 13, 11, PAL.white, PAL.ink); rect(g, bx - 1, by + 4, 3, 2, PAL.white); rect(g, bx - 1, by + 6, 1, 1, PAL.ink);
       rect(g, bx - 3, by - 1, 2, 2, PAL.ink); rect(g, bx, by - 1, 2, 2, PAL.ink); rect(g, bx + 3, by - 1, 2, 2, PAL.ink);
@@ -4795,21 +4968,8 @@ OW.drawHud = function (g) {
   }
   // touch controls
   if (INPUT.showTouch() && !TB.open) {
+    STICK.draw(g, true);
     g.globalAlpha = 0.85;
-    disc(g, PAD.cx, PAD.cy + 2, PAD.r, 'rgba(0,0,0,0.25)');
-    disc(g, PAD.cx, PAD.cy, PAD.r, PAL.ink); disc(g, PAD.cx, PAD.cy, PAD.r - 2, '#3b3150');
-    const arm = Math.round(PAD.r * 0.42), len = PAD.r - 4;
-    for (const d of ['up', 'down', 'left', 'right']) {
-      const on = OW.padDir === d, [dx, dy] = DIRS[d];
-      const bx = PAD.cx + dx * (len - arm) - arm / 2 * (dx ? 1 : 1), by = PAD.cy + dy * (len - arm) - arm / 2;
-      rect(g, Math.round(PAD.cx + (dx ? (dx > 0 ? 0 : -len) : -arm / 2)), Math.round(PAD.cy + (dy ? (dy > 0 ? 0 : -len) : -arm / 2)), dx ? len : arm, dy ? len : arm, on ? '#ffd24a' : '#6e6488');
-      void bx; void by;
-    }
-    disc(g, PAD.cx, PAD.cy, Math.round(arm * 0.6), '#4a4060');
-    for (const d of ['up', 'down', 'left', 'right']) { // arrows
-      const [dx, dy] = DIRS[d], ax = PAD.cx + dx * (len - 6), ay = PAD.cy + dy * (len - 6);
-      for (let i = 0; i < 4; i++) { if (dx) rect(g, ax - dx * i, ay - i, 1, i * 2 + 1, PAL.white); else rect(g, ax - i, ay - dy * i, i * 2 + 1, 1, PAL.white); }
-    }
     const aOn = OW.aPtr >= 0 || INPUT.held.a;
     disc(g, PAD.ax, PAD.ay + 2, PAD.ar, 'rgba(0,0,0,0.3)');
     disc(g, PAD.ax, PAD.ay + (aOn ? 1 : 0), PAD.ar, PAL.ink); disc(g, PAD.ax, PAD.ay + (aOn ? 1 : 0), PAD.ar - 2, aOn ? '#ffb030' : '#ff8b3d');
@@ -4854,6 +5014,10 @@ function makeCtx(id) {
     markWarm() { SAVE.data.warm[id] = true; SAVE.write(); ctx.warmedUp = true; },
     say(lines, done) { JC.say(lines, done); },
     held: INPUT.held,
+    /** The analog axis { x, y, mag } (-1..1, y down): the touch joystick, the gamepad stick or the keys. */
+    axis: INPUT.axis,
+    /** The touch joystick (a sport opts in with stick: true, or stick: (x, y) => true where a thumb may start it). */
+    stick: STICK,
     hud: HUD,
     ui: UI,
   };
@@ -4961,6 +5125,12 @@ RUN.onInput = function (e) {
   if (e.type === 'down' && UI.hitAt(e.x, e.y) === 'pause') { RUN.pause(); return; }
   if (e.type === 'press' && (e.key === 'b' || e.key === 'pause')) { RUN.pause(); return; }
   if (e.type === 'tap' && UI.hitAt(e.x, e.y) === 'pause') return;
+  // a sport that opted in gets the floating joystick (touch): its own touch never reaches the sport
+  if (RUN.sport.stick && INPUT.showTouch() && (ph === 'play' || ph === 'count')) {
+    const sk = RUN.sport.stick;
+    if (e.type === 'down') { if ((typeof sk !== 'function' || sk(e.x, e.y, RUN.ctx)) && STICK.down(e, typeof sk === 'function')) return; }
+    else if ((e.type === 'move' || e.type === 'up') && e.id === STICK.id) { STICK.input(e); return; }
+  }
   if (ph === 'play') { try { if (RUN.sport.onInput) RUN.sport.onInput(e, RUN.ctx); } catch (er) { console.error(er); } }
 };
 RUN.leaveResults = function () {
@@ -5061,6 +5231,7 @@ RUN.draw = function (g) {
   UI.drawFx(g);
   if (RUN.phase === 'play' || RUN.phase === 'count' || RUN.phase === 'outro') {
     UI.iconButton(g, 'pause', Math.max(14, VIEW.tap / 2 + 4), Math.max(14, VIEW.tap / 2 + 4), UI.icons.pause, { col: '#5b3a24' });
+    if (sp.stick && INPUT.showTouch() && RUN.phase !== 'outro') STICK.draw(g, true);
   }
   if (RUN.phase === 'count' && RUN.count > 0.6) {
     const n = Math.ceil(RUN.count - 0.6), f = (RUN.count - 0.6) % 1;
@@ -5865,6 +6036,7 @@ const LOOP = { last: 0, acc: 0, speed: 1, frames: 0, fps: 60, fpsT: 0, fpsN: 0, 
 JC.loop = LOOP;
 function step(dt) {
   INPUT.poll();
+  INPUT.updateAxis();
   UI.update(dt);
   if (FADE.dir) {
     FADE.t += dt * 4;
@@ -5920,7 +6092,8 @@ function jcState() {
   const d = SAVE.data;
   return {
     screen: sceneName(), ready: WORLD.ready, fading: JC.fading(), tab: MAP.tab,
-    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
+    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving, px: Math.round(P.fpx * 10) / 10, py: Math.round(P.fpy * 10) / 10 }, target: TARGET.kind ? { kind: TARGET.kind, x: TARGET.tx, y: TARGET.ty } : null,
+    axis: { x: INPUT.axis.x, y: INPUT.axis.y, mag: INPUT.axis.mag }, stick: { on: STICK.id >= 0, mag: STICK.mag, x: STICK.bx, y: STICK.by, restX: STICK.restX, restY: STICK.restY, R: STICK.R }, aBtn: { x: PAD.ax, y: PAD.ay, r: PAD.ar }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
     sport: JC.scene === RUN ? { id: RUN.id, phase: RUN.phase, result: RUN.result, newFeather: RUN.newFeather, state: RUN.sport && RUN.sport.testState ? RUN.sport.testState(RUN.ctx) : null } : null,
     feathers: SAVE.featherCount(), feathersBy: Object.assign({}, d.feathers), best: Object.assign({}, d.best), stars: Object.assign({}, d.stars),
     quests: Object.assign({}, d.quests), cos: JSON.parse(JSON.stringify(d.cos)), settings: Object.assign({}, d.settings), cup: d.cup,

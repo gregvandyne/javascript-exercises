@@ -85,10 +85,28 @@ this sport), `warmedUp` and `markWarm()` (for a once-only warm-up), `best`, `col
 `t` (seconds played this round), `rng` (seeded random), `sfx(name)`, `music(id)`, `say(lines, done)` (a text box; play
 pauses while it is open), `held` (JC.input.held: left right up down a b), `hud` (= JC.hud), `ui` (= JC.ui), `finish(res)`.
 
+**Analog movement: `ctx.axis`** = `{ x, y, mag }` (the same object every step; read it in `update`, don't keep a copy).
+`x` and `y` run -1..1 (y is down the screen), `mag` 0..1 is how hard it is pushed (0 = not moving). It comes from the
+touch joystick while a thumb is on it, else the gamepad's left stick (dead zone 0.2, rescaled so a light push moves
+slowly), else the arrow keys / WASD / the pad's d-pad (1 along an axis, diagonals normalised to length 1). Move with
+`speed * mag` along `(x, y) / |(x, y)|` for analog feel. The joystick also holds `left/right/up/down` once it is
+pushed past 0.45 that way, so `press` / `release` events and `ctx.held` keep working for sports that steer in steps.
+
+**The touch joystick: `stick: true`** in `JC.register({...})` gives a sport the floating joystick (like Hero of
+Sunvale's): a thumb landing in the left part of the screen (left 55% in portrait, 45% in landscape, below the top
+button row) starts it there, the knob follows up to the base's edge (dead zone 0.15), release springs it back, and a
+faint one rests bottom left as a hint. It follows its own touch id, so the sport's other touches (an A button on the
+right) work at the same time; the stick's own `down/move/up` events never reach the sport. For a different start
+area pass a function: `stick: (x, y, ctx) => x < ctx.W * 0.5` (that also lets it start anywhere the function allows).
+`ctx.stick` is the stick itself (`ctx.stick.id >= 0` while held; `STICK.draw(g, true)` is drawn by the core above
+the sport). The island uses the same stick: Cappy walks freely and analog, slides along walls and slips round corners
+(up to 7 px), and arches (24 px round each, kept to 32 px once the prompt shows), people, signs and the lift
+(27 px in front, 18 px all round) answer from a generous distance, so one approach is always enough.
+
 **Input events** (`e.type`): `press` / `release` with `e.key` in `left right up down a b pause` (keys, gamepad);
 `down` / `move` / `up` with `e.id, x, y, sx, sy, dx, dy` in virtual pixels (touch or mouse); `tap` (`x, y`); `swipe`
 (`dir`, `dx, dy`, `speed`). Keyboard: arrows/WASD, Space/Enter/Z = a, Esc/Backspace/X = b. Gamepad: stick/d-pad,
-button 0 = a, 1 = b, 9 = pause. Touch-first: every sport must be fully playable with taps/drags/swipes alone, and
+button 0 = a, 1 = b, 9 = pause (the left stick is also `ctx.axis`). Touch-first: every sport must be fully playable with taps/drags/swipes alone, and
 with keys alone. Draw your own touch buttons with `JC.ui.button(g, id, x, y, w, h, label)` (at least `ctx.tap` big)
 and check them with `JC.ui.hitAt(e.x, e.y)`.
 

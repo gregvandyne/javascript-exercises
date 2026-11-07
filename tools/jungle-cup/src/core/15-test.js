@@ -8,7 +8,8 @@ function jcState() {
   const d = SAVE.data;
   return {
     screen: sceneName(), ready: WORLD.ready, fading: JC.fading(), tab: MAP.tab,
-    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
+    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving, px: Math.round(P.fpx * 10) / 10, py: Math.round(P.fpy * 10) / 10 }, target: TARGET.kind ? { kind: TARGET.kind, x: TARGET.tx, y: TARGET.ty } : null,
+    axis: { x: INPUT.axis.x, y: INPUT.axis.y, mag: INPUT.axis.mag }, stick: { on: STICK.id >= 0, mag: STICK.mag, x: STICK.bx, y: STICK.by, restX: STICK.restX, restY: STICK.restY, R: STICK.R }, aBtn: { x: PAD.ax, y: PAD.ay, r: PAD.ar }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
     sport: JC.scene === RUN ? { id: RUN.id, phase: RUN.phase, result: RUN.result, newFeather: RUN.newFeather, state: RUN.sport && RUN.sport.testState ? RUN.sport.testState(RUN.ctx) : null } : null,
     feathers: SAVE.featherCount(), feathersBy: Object.assign({}, d.feathers), best: Object.assign({}, d.best), stars: Object.assign({}, d.stars),
     quests: Object.assign({}, d.quests), cos: JSON.parse(JSON.stringify(d.cos)), settings: Object.assign({}, d.settings), cup: d.cup,
