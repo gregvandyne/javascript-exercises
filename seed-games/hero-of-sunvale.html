@@ -6269,7 +6269,9 @@ function inkWorld() {
   // a test hook: what the kit gives this game (the bridge's materials and Ink, the kit title)
   Object.assign(TEST_EXT, { kitLook: () => {
     let inks = 0, heroInks = 0; scene.traverse(o => { if (o.userData.okInk) { inks++; if (hero.rig && isUnder(o, hero.rig.root)) heroInks++; } });
-    return { version: OK.version, toon: [MAT.terrain.type, MAT.lit.type, MAT.char.type], inks, heroInks, quality: B.quality, detailInk: camera.layers.isEnabled(INK_DETAIL), title: !!(HOS_TITLE && HOS_TITLE.open), theme: B.look.name };
+    return { version: OK.version, toon: [MAT.terrain.type, MAT.lit.type, MAT.char.type], inks, heroInks, quality: B.quality, detailInk: camera.layers.isEnabled(INK_DETAIL), title: !!(HOS_TITLE && HOS_TITLE.open), theme: B.look.name,
+      // the art style (?style=cartoon): the bridge's style, its shader, shadow maps, rounded boxes, the lamp halos
+      style: B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, ground: '#' + TC.g1.getHexString() };
   } });
 }
 function isUnder(o, root) { for (let p = o; p; p = p.parent) if (p === root) return true; return false; }
