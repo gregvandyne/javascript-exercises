@@ -3378,6 +3378,17 @@
    "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
    "capturedAt": "2026-11-07",
    "commit": "2700f45"
+  },
+  {
+   "key": "csq/packet-post/packets-1b-learn-n1",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-learn-n1",
+   "concept": "too big for one envelope: cut into packets",
+   "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
+   "capturedAt": "2026-11-07",
+   "commit": "95753ad"
   }
  ]
 }

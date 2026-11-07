@@ -13,8 +13,8 @@
    "img": "csq/packet-post/ciphers-1b-send",
    "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
    "view": [
-    51.0,
-    27.0,
+    51,
+    27,
     40.3,
     41.9
    ],
@@ -34,7 +34,7 @@
       55.3,
       49.3,
       25.2,
-      14.0
+      14
      ]
     }
    ]
@@ -72,8 +72,8 @@
     {
      "cue": "The secret message, and the reading under it",
      "box": [
-      54.0,
-      38.0,
+      54,
+      38,
       34.3,
       17.9
      ]
@@ -88,8 +88,8 @@
    "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
    "view": [
     9.7,
-    20.0,
-    83.0,
+    20,
+    83,
     73.3
    ],
    "focus": [
@@ -116,35 +116,7 @@
   {
    "title": "Codes are for privacy",
    "text": "Secret codes are for keeping messages private, not for being sneaky. Never use a code to hide an unkind message about someone else.",
-   "art": "shield",
-   "img": "csq/packet-post/ciphers-1b-send",
-   "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
-   "view": [
-    9.7,
-    19.6,
-    83.0,
-    74.0
-   ],
-   "focus": [
-    {
-     "cue": "First the plain message, out in the open",
-     "box": [
-      55.4,
-      36.7,
-      12.4,
-      9.2
-     ]
-    },
-    {
-     "cue": "The wheel scrambles it before it travels",
-     "box": [
-      15.4,
-      31.3,
-      30.5,
-      54.5
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "title": "A scrambled note",
@@ -159,7 +131,7 @@
       42.7,
       21.4,
       14.7,
-      12.0
+      12
      ]
     }
    ]
@@ -199,10 +171,10 @@
     {
      "cue": "Play Sealed Note: turn until the note reads",
      "box": [
-      16.0,
+      16,
       6.9,
       68.1,
-      44.0
+      44
      ]
     }
    ]

@@ -2040,5 +2040,21 @@
    "height": 1000,
    "top": 201
   }
+ },
+ {
+  "actions": [],
+  "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
+  "band": "1b",
+  "cards": "open",
+  "chapter": "packets",
+  "concept": "too big for one envelope: cut into packets",
+  "game": "packet-post",
+  "level": 1,
+  "state": "packets-1b-learn-n1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 418
+  }
  }
 ]

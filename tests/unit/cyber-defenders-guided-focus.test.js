@@ -62,8 +62,8 @@ test('every pictured slide in units 1-6 carries focus; every box is a non-degene
       });
     });
   }
-  assert.equal(slides, 198, 'pictured focus slides across both bands');
-  assert.equal(steps, 313, 'focus steps across both bands');
+  assert.equal(slides, 196, 'pictured focus slides across both bands');
+  assert.equal(steps, 310, 'focus steps across both bands');
 });
 
 // Greg's reported slide: band 1b, deck 1.1, slide 0 "Pim sorts the post" (img packets-1b-key).
@@ -110,8 +110,8 @@ const REGISTRY = [
   ['1b', '0.1', 7, 0, [2.6, 30.8, 49.0, 96.3], [2.6, 30.8, 46.4, 65.5]],
   ['1b', '1.1', 0, 0, [11.1, 61.4, 15.0, 69.2], [11.1, 61.4, 3.9, 7.8]],
   ['1b', '1.1', 0, 1, [10.6, 48.5, 50.2, 71.2], [10.6, 48.5, 39.6, 22.7]],
-  ['1b', '1.1', 1, 0, [10.0, 37.8, 51.9, 89.7], [10.0, 37.8, 41.9, 51.9]],
-  ['1b', '1.1', 1, 1, [54.1, 35.7, 64.9, 41.1], [54.1, 35.7, 10.8, 5.4]],
+  ['1b', '1.1', 1, 0, [39.5, 2.6, 60.0, 40.1], [39.5, 2.6, 20.5, 37.5]],
+  ['1b', '1.1', 1, 1, [10.8, 49.0, 89.2, 96.0], [10.8, 49.0, 78.4, 47.0]],
   ['1b', '1.1', 2, 0, [10.0, 37.8, 51.9, 89.7], [10.0, 37.8, 41.9, 51.9]],
   ['1b', '1.1', 2, 1, [54.0, 26.5, 88.3, 34.4], [54.0, 26.5, 34.3, 7.9]],
   ['1b', '1.1', 3, 0, [8.4, 35.4, 53.9, 90.9], [8.4, 35.4, 45.5, 55.5]],
@@ -122,7 +122,6 @@ const REGISTRY = [
   ['1b', '1.1', 6, 0, [10.6, 48.5, 50.2, 71.2], [10.6, 48.5, 39.6, 22.7]],
   ['1b', '1.2', 0, 0, [18.0, 37.8, 41.4, 55.3], [18.0, 37.8, 23.4, 17.5]],
   ['1b', '1.2', 0, 1, [15.2, 70.1, 46.1, 89.3], [15.2, 70.1, 30.9, 19.2]],
-  ['1b', '1.2', 1, 0, [55.3, 26.4, 88.2, 39.3], [55.3, 26.4, 32.9, 12.9]],
   ['1b', '1.2', 2, 0, [42.9, 64.5, 51.8, 68.0], [42.9, 64.5, 8.9, 3.5]],
   ['1b', '1.2', 2, 1, [58.4, 26.5, 87.8, 39.4], [58.4, 26.5, 29.4, 12.9]],
   ['1b', '1.2', 3, 0, [17.7, 36.4, 45.8, 47.4], [17.7, 36.4, 28.1, 11.0]],
@@ -162,8 +161,6 @@ const REGISTRY = [
   ['1b', '2.3', 1, 1, [54.0, 38.0, 88.3, 55.9], [54.0, 38.0, 34.3, 17.9]],
   ['1b', '2.3', 2, 0, [58.4, 26.5, 87.0, 36.8], [58.4, 26.5, 28.6, 10.3]],
   ['1b', '2.3', 2, 1, [15.4, 31.3, 45.9, 85.8], [15.4, 31.3, 30.5, 54.5]],
-  ['1b', '2.3', 3, 0, [55.4, 36.7, 67.8, 45.9], [55.4, 36.7, 12.4, 9.2]],
-  ['1b', '2.3', 3, 1, [15.4, 31.3, 45.9, 85.8], [15.4, 31.3, 30.5, 54.5]],
   ['1b', '2.3', 4, 0, [42.7, 21.4, 57.4, 33.4], [42.7, 21.4, 14.7, 12.0]],
   ['1b', '2.3', 6, 0, [16.0, 6.9, 84.1, 50.9], [16.0, 6.9, 68.1, 44.0]],
   ['1b', '3.1', 0, 0, [7.1, 46.6, 92.8, 69.0], [7.1, 46.6, 85.7, 22.4]],
@@ -430,8 +427,8 @@ const REGISTRY = [
   ['2', '6.4', 4, 1, [2.9, 55.7, 58.8, 76.0], [2.9, 55.7, 55.9, 20.3]],
   ['2', '6.4', 6, 0, [2.7, 45.9, 97.2, 99.4], [2.7, 45.9, 94.5, 53.5]],
 ];
-test('every authored box matches its measured element bounds within 0.6%/side (329-step registry)', () => {
-  assert.equal(REGISTRY.length, 329);
+test('every authored box matches its measured element bounds within 0.6%/side (326-step registry)', () => {
+  assert.equal(REGISTRY.length, 326);
   const seen = new Set();
   for (const [band, n, si, fi, measured, box] of REGISTRY) {
     const f = deck(band, n).slides[si].focus[fi];
@@ -453,7 +450,7 @@ test('every authored box matches its measured element bounds within 0.6%/side (3
   for (const { band, n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.img && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${band}/${n}/${si}/${fi}`), `${band}/${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 329);
+  assert.equal(total, 326);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

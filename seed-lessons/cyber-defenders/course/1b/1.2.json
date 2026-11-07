@@ -42,26 +42,7 @@
   {
    "title": "Open like a postcard",
    "text": "An open network is like a postcard. Anyone nearby could read what travels on it, so it is not a place for private things.",
-   "art": "network",
-   "img": "csq/packet-post/locks-2-sealed",
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
-   "view": [
-    52,
-    22,
-    40,
-    32
-   ],
-   "focus": [
-    {
-     "cue": "Pim: the snoopy cat reads everything on the open street",
-     "box": [
-      55.3,
-      26.4,
-      32.9,
-      12.9
-     ]
-    }
-   ]
+   "art": "network"
   },
   {
    "kind": "example",
