@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CS Quest "Meet" pictures: each world's guide (the story sprite, public/img/csq/chars/<id>.webp, extracted from its
+"""CS Quest "Meet" pictures (and Bolt's thank-you in the finale): each world's guide (the story sprite, public/img/csq/chars/<id>.webp, extracted from its
 own game by scripts/csq-sprites.js) standing in a scene cut from that world's own capture, so a "Meet Dot / Pim /
 Gizmo" slide shows the character it introduces. The scene is the game's capture, softened, behind a cream card.
 
@@ -13,6 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(ROOT, 'public', 'img', 'csq')
 # id -> the capture its scene comes from, the disc colour (the character's piece colour, server/views/courses.js)
 MEET = {
+    'bolt': ('robo-route/sequences-1b-key.webp', '#4FA8F0'),
     'dot': ('data-detective/sort-1b-grouped-n.webp', '#F2994A'),
     'pim': ('packet-post/routes-1b-roads-n.webp', '#FFD23F'),
     'gizmo': ('inside-the-machine/bits-1b-five-n.webp', '#8FC1F5'),

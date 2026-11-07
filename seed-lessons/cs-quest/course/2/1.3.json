@@ -76,7 +76,7 @@
    "view": [
     51.8,
     40.4,
-    30.0,
+    30,
     46.4
    ],
    "alt": "The Pro event program: a when block for picking up a gem, over a repeat loop whose if block picks up gems Bolt stands on.",
@@ -151,9 +151,9 @@
    "img": "csq/robo-route/conditionals-2-any-maze",
    "view": [
     0,
-    17.5,
-    48.6,
-    82.5
+    12.5,
+    54.5,
+    87.5
    ],
    "alt": "The short sense-and-steer program beside the maze: repeat until goal, if path ahead move, else turn right.",
    "steps": [
@@ -218,7 +218,7 @@
    "view": [
     54.2,
     50.4,
-    30.0,
+    30,
     24.5
    ],
    "alt": "The check reads if NOT path ahead OR on paint, turn right: one block asking two questions at once.",
@@ -284,9 +284,9 @@
    "img": "csq/robo-route/conditionals-2-key",
    "view": [
     0,
-    17.5,
-    48.6,
-    82.5
+    12.5,
+    54.5,
+    87.5
    ],
    "alt": "A big walled maze with Bolt penned in one corner and the flag far away: no fixed route can be written for this.",
    "focus": [
