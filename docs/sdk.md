@@ -49,7 +49,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.user` | `{ displayName, avatar, isGuest, lang, dir, character }`. No other identity is ever given to a game. `lang` and `dir` are explained in [Languages](#languages). `character` is the Oomba character the player designed on their Me page (a frozen parts spec from the kit's lists: `species body skin hair mood outfit colors wear bold`, never a picture), or `null` (guests, or not designed yet); kit games read it with `Oomba.avatar()`. |
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
-| `BRB.params` | Lesson parameters, when a lesson step opened the game at a place: a frozen `{ chapter, band, mode, level, lock }` (any of them may be missing), `{}` otherwise. See [Lesson parameters](#lesson-parameters). |
+| `BRB.params` | Lesson parameters, when a lesson step opened the game at a place: a frozen `{ chapter, band, mode, level, lock, style }` (any of them may be missing), `{}` otherwise. See [Lesson parameters](#lesson-parameters). |
 | `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games; other games keep their own colours. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |
 | `BRB.storage.get(key)` | Per-player, per-game cloud save. Synchronous read. Values are JSON-decoded when possible. |
 | `BRB.storage.set(key, value)` / `remove(key)` | Writes are debounced and sent to the server. Max ~450 KB per game per player. |
@@ -214,14 +214,14 @@ A teacher's lesson step can open a game at a chapter, for a grade band, in a mod
 lessons do; `lesson_steps.options`). The step's Play link carries them as a query string the teacher can read:
 
 ```
-/play/<slug>?chapter=<id>&band=<1b|2>&mode=<id>&level=<n>&lock=<0|1>
+/play/<slug>?chapter=<id>&band=<1b|2>&mode=<id>&level=<n>&lock=<0|1>&style=<ink|pixel>
 ```
 
-Only those five keys exist. Values are `[a-z0-9-]{1,16}`; `band` is `1b` (grades 3-5) or `2` (grades 6-8); `level` 1-30;
-`lock` 0 or 1. Unknown keys and bad values are dropped before anything reaches the game: the play page signs what is left
-into the frame token (`o = "chapter.band.mode.level.lock"`, empty parts allowed, at most 40 characters), `/frame` copies it
+Only those six keys exist. Values are `[a-z0-9-]{1,16}`; `band` is `1b` (grades 3-5) or `2` (grades 6-8); `level` 1-30;
+`lock` 0 or 1; `style` `ink` or `pixel` (the art style, for an Oomba Kit game that has the pixel style: Sum Racer opens in pixel art with `?style=pixel`, see [kit.md](kit.md) "Pixel style"). Unknown keys and bad values are dropped before anything reaches the game: the play page signs what is left
+into the frame token (`o = "chapter.band.mode.level.lock"`, plus `.style` only when a style is given, empty parts allowed, at most 40 characters), `/frame` copies it
 into `__BRB_INIT__.params`, and the SDK exposes it as **`BRB.params`**: a frozen object with the keys that were given
-(`chapter`, `band`, `mode` as strings; `level` and `lock` as numbers), or `{}`. Nothing else from the URL ever reaches a game.
+(`chapter`, `band`, `mode`, `style` as strings; `level` and `lock` as numbers), or `{}`. Nothing else from the URL ever reaches a game.
 
 ```js
 const P = (window.BRB && BRB.params) || {};     // works in older frames too

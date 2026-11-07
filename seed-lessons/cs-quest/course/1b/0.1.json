@@ -18,6 +18,26 @@
     62
    ],
    "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
+   "focus": [
+    {
+     "cue": "Houses are small computers, roads are wires",
+     "box": [
+      9,
+      46,
+      42,
+      26
+     ]
+    },
+    {
+     "cue": "A message on its way from house to house",
+     "box": [
+      9.5,
+      58,
+      6.5,
+      10
+     ]
+    }
+   ],
    "story": {
     "scene": "dim",
     "lit": 0,
@@ -87,7 +107,7 @@
   },
   {
    "title": "Follow the map",
-   "text": "This map is your journey. Each world you finish lights one piece of the Spark. Light all four, and Netville shines again.",
+   "text": "This map is your journey. Each world you finish lights one piece of the Spark. Light all four, put them together at the end, and Netville shines again.",
    "art": "map",
    "story": {
     "scene": "map",
@@ -107,7 +127,27 @@
     48.6,
     82.5
    ],
-   "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray."
+   "alt": "Bolt the robot at the start of a short dotted path, with the goal flag four squares ahead and an empty program tray.",
+   "focus": [
+    {
+     "cue": "This is Bolt, at the start of his first road",
+     "box": [
+      5.5,
+      49,
+      6.5,
+      11.5
+     ]
+    },
+    {
+     "cue": "His first goal: the flag",
+     "box": [
+      33,
+      49,
+      5,
+      11.5
+     ]
+    }
+   ]
   }
  ],
  "check": [

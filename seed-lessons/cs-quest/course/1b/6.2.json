@@ -10,40 +10,82 @@
    "title": "Made for everyone",
    "text": "People see, hear, read and move in different ways. A good game works for all of them.",
    "art": "people",
-   "img": "csq/inside-the-machine/design-1b-key",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched."
+   "img": "csq/inside-the-machine/design-1b-watch-n",
+   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana: which moment is she struggling?",
+   "focus": [
+    {
+     "cue": "Ana: the menu is tiny gray text",
+     "box": [
+      7.5,
+      76,
+      66.3,
+      20.6
+     ]
+    },
+    {
+     "cue": "Watch where she struggles",
+     "box": [
+      4.3,
+      17.8,
+      82.3,
+      12.9
+     ]
+    }
+   ]
   },
   {
    "title": "Every switch is for someone",
    "text": "Open a game's settings: captions, read-aloud, text size, contrast. Each switch was made for someone.",
    "art": "screen",
-   "img": "csq/inside-the-machine/design-1b-audit",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
+   "img": "csq/inside-the-machine/design-1b-change-n",
+   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
+   "focus": [
+    {
+     "cue": "Bigger text: for people who find it hard to see",
+     "box": [
+      6.1,
+      33.6,
+      44.3,
+      15
+     ]
+    },
+    {
+     "cue": "Captions: for people who cannot hear",
+     "box": [
+      67.4,
+      53,
+      29.6,
+      18.3
+     ]
+    },
+    {
+     "cue": "Read the menu aloud: for new readers",
+     "box": [
+      36.7,
+      75.7,
+      55,
+      18.3
+     ]
+    }
+   ]
   },
   {
    "title": "Help one, help many",
    "text": "Captions were made for people who cannot hear. They also help anyone in a noisy room. A change for one person usually helps many.",
    "art": "star",
-   "img": "csq/inside-the-machine/design-1b-second",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A second Design Lab user: a change made for one person usually turns out to help many more."
+   "img": "csq/inside-the-machine/design-1b-change-n",
+   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
+   "focus": [
+    {
+     "cue": "Captions: made for people who cannot hear, and they help in a noisy room",
+     "box": [
+      67.4,
+      53,
+      29.6,
+      18.3
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -55,27 +97,55 @@
     "big text: hard to see, bright sun",
     "one-hand buttons: one hand free"
    ],
-   "img": "csq/inside-the-machine/design-1b-second",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A second Design Lab user: a change made for one person usually turns out to help many more."
+   "img": "csq/inside-the-machine/design-1b-change-n",
+   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
+   "focus": [
+    {
+     "cue": "Bigger text: hard to see, bright sun",
+     "box": [
+      6.1,
+      33.6,
+      44.3,
+      15
+     ]
+    },
+    {
+     "cue": "Captions: cannot hear, noisy room",
+     "box": [
+      67.4,
+      53,
+      29.6,
+      18.3
+     ]
+    }
+   ]
   },
   {
    "title": "Ask for ideas",
    "text": "Ask someone else what they would change. Other people's ideas, called perspectives, spot things you did not think of.",
    "art": "lightbulb",
-   "img": "csq/inside-the-machine/design-1b-audit",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps."
+   "img": "csq/inside-the-machine/design-1b-sol-n",
+   "alt": "Sol is six and cannot read yet. A box of words pops up: Save your game? Yes or No. Sol taps anywhere and loses.",
+   "focus": [
+    {
+     "cue": "Sol cannot read, and a box of words pops up",
+     "box": [
+      7.5,
+      33.1,
+      83.6,
+      20.7
+     ]
+    },
+    {
+     "cue": "So Sol taps anywhere and loses. What would you change?",
+     "box": [
+      7.5,
+      62.5,
+      83.5,
+      12.9
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -106,14 +176,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve all three briefs. Watch where the user struggles.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/design-1b-key",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched."
+   "img": "csq/inside-the-machine/design-1b-watch-n",
+   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana: which moment is she struggling?",
+   "focus": [
+    {
+     "cue": "Watch where the user struggles",
+     "box": [
+      4.3,
+      17.8,
+      82.3,
+      12.9
+     ]
+    },
+    {
+     "cue": "Then pick the changes that fix it",
+     "box": [
+      7.5,
+      76,
+      66.3,
+      20.6
+     ]
+    }
+   ]
   }
  ],
  "check": [

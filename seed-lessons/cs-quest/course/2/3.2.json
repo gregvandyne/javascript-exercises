@@ -10,62 +10,118 @@
    "title": "Rules that predict",
    "text": "A model is a rule that predicts what will happen, like: distance = 2 × height. A simulation runs the rule so you can check it.",
    "art": "chart",
-   "say": "A model is a rule that predicts what will happen, like: distance is 2 times the height. A simulation runs the rule so you can check it.",
-   "img": "csq/data-detective/models-2-key",
-   "view": [
-    55,
-    9,
-    45,
-    60
+   "img": "csq/data-detective/models-2-rule-n",
+   "alt": "The ramp model set to distance = 2 × height: the Model column predicts 20, 40, 60, 80, 100 before any trial runs.",
+   "focus": [
+    {
+     "cue": "The model: distance = 2 × height",
+     "box": [
+      4.1,
+      66.4,
+      41.1,
+      12.4
+     ]
+    },
+    {
+     "cue": "Height 50: the model predicts 100",
+     "box": [
+      3,
+      33.8,
+      94,
+      13.2
+     ]
+    }
    ],
-   "alt": "The Ramp Rule case: a rule that predicts how far a car rolls, with the ramp and the trials waiting."
+   "say": "A model is a rule that predicts what will happen, like: distance is 2 times the height. A simulation runs the rule so you can check it."
   },
   {
    "title": "Predict, compare, refine",
    "text": "Predict with the model. Run real trials. Compare. If they disagree, change the model, not the data, and test again.",
    "art": "gears",
-   "img": "csq/data-detective/models-2-ramp",
-   "view": [
-    0.8,
-    9,
-    54,
-    48
-   ],
-   "alt": "The ramp trials ran farther than the first rule predicted, so the rule was raised and run again: the error shrinks."
+   "img": "csq/data-detective/models-2-fit-n",
+   "alt": "Refined to distance = 2 × height and run again: the trials sit close to the model, and Dot says the model fits.",
+   "focus": [
+    {
+     "cue": "Refined rule: 2 × height",
+     "box": [
+      4.1,
+      1.4,
+      41.1,
+      12.4
+     ]
+    },
+    {
+     "cue": "Compared with real trials: the model fits",
+     "box": [
+      4.3,
+      52.8,
+      82.8,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
    "title": "The ramp",
-   "text": "Every trial went farther than predicted, so the rule is too low. Raise it, run again, and the error gets smaller.",
+   "text": "With distance = 1 × height, every trial went farther than predicted, so the rule is too low. Raise it, run again, and the error gets smaller.",
    "art": "chart",
    "steps": [
-    "rule: distance = 2 × height",
-    "predict: 20 cm",
-    "trials: 27, 25, 26, 28, 24",
-    "change the rule",
-    "test again"
+    "rule: distance = 1 × height",
+    "predict: 10, 20, 30, 40, 50 cm",
+    "trials: every one goes farther",
+    "raise the rule to 2",
+    "test again: the error shrinks"
    ],
-   "img": "csq/data-detective/models-2-run",
-   "view": [
-    0.8,
-    9,
-    54,
-    48
-   ],
-   "alt": "The model has run: predicted distances sit beside the real trials, so the rule can be compared and refined."
+   "img": "csq/data-detective/models-2-low-n",
+   "alt": "With distance = 1 × height every real trial goes farther than the model: each row is off by a lot.",
+   "focus": [
+    {
+     "cue": "The model: 10, 20, 30, 40, 50",
+     "box": [
+      38.8,
+      0.8,
+      14.5,
+      12.4
+     ]
+    },
+    {
+     "cue": "The real trials go much farther",
+     "box": [
+      59.3,
+      0.8,
+      11,
+      12.4
+     ]
+    },
+    {
+     "cue": "Off by a lot on every row",
+     "box": [
+      75.3,
+      0.8,
+      14.3,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "One trial is not proof",
    "text": "One lucky trial proves nothing. Compare the model with many results. To balance a game, test 20 runs, not one.",
    "art": "magnifier",
-   "img": "csq/data-detective/models-2-trials",
-   "view": [
-    0.8,
-    9,
-    54,
-    48
-   ],
-   "alt": "Bounce Back: another model case with its own trials, because one lucky trial never proves a rule."
+   "img": "csq/data-detective/models-2-balance-n",
+   "alt": "Game balance: 20 test runs at one jump power, each a tick or a cross, counted as finished or fell.",
+   "focus": [
+    {
+     "cue": "20 runs, not one: 14 finished, 6 fell",
+     "box": [
+      20.2,
+      63.4,
+      56.1,
+      10.4
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -96,14 +152,28 @@
    "title": "Your mission",
    "text": "Open Data Detective at Model Makers and solve all 5 cases. Watch the error number: your job is to make it smaller.",
    "art": "trophy",
-   "img": "csq/data-detective/models-2-key",
-   "view": [
-    55,
-    9,
-    45,
-    60
-   ],
-   "alt": "The Ramp Rule case: a rule that predicts how far a car rolls, with the ramp and the trials waiting."
+   "img": "csq/data-detective/models-2-rule-n",
+   "alt": "The ramp model set to distance = 2 × height: the Model column predicts 20, 40, 60, 80, 100 before any trial runs.",
+   "focus": [
+    {
+     "cue": "Set the rule, then run the trials",
+     "box": [
+      4.1,
+      66.4,
+      41.1,
+      12.4
+     ]
+    },
+    {
+     "cue": "Make the error smaller each time",
+     "box": [
+      66.8,
+      65.9,
+      25.1,
+      13.3
+     ]
+    }
+   ]
   }
  ],
  "check": [

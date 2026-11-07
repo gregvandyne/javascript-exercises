@@ -36,6 +36,8 @@ test('docs/kit-api.md (what a model reads) names exactly what exists', async () 
   assert.equal(typeof O.three, 'function');
   const livePack = await import('../../kit/packs/live.js'); O.__pk({ name: 'live', version: O.version }, livePack.define);
   assert.equal(typeof O.live, 'object');
+  for (const n of ['style-pixel', 'art-pixel']) { const m = await import(`../../kit/packs/${n}.js`); O.__pk({ name: n, version: O.version }, m.define); }
+  assert.equal(typeof O.pixel, 'object');
   const named = new Set([...doc.matchAll(/\bOomba\.([a-zA-Z]+(?:\.[a-zA-Z]+)*)/g)].map(m => m[1]));
   const at = p => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), O);
   for (const p of named) assert.notEqual(at(p), undefined, `docs/kit-api.md names Oomba.${p}, which does not exist`);

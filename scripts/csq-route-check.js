@@ -17,6 +17,8 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+// The Level Maker shots of scripts/csq-shots-spec.json (a board the student paints, no program on it).
+const MAKER_SHOTS = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'csq-shots-spec.json'), 'utf8')).filter(x => x.game === 'robo-route').map(x => `csq/robo-route/${x.state}`));
 const COURSE = path.join(ROOT, 'seed-lessons', 'cs-quest', 'course');
 
 // Paths that end somewhere other than the goal, by slide (band-step sN fK): the cell the cue names.
@@ -116,6 +118,7 @@ export function checkRoutes() {
 
   for (const { id, slide: s } of loadDecks()) {
     if (!s.img || !s.img.startsWith('csq/robo-route/')) continue;
+    if (MAKER_SHOTS.has(s.img)) continue;   // Level Maker pictures carry no program to replay (tests/unit/csq-shots.test.js)
     const g = geo[s.img];
     if (!g) { err(id, `${s.img} has no recorded geometry (run the capture scripts with --geometry)`); continue; }
     const v = s.view;

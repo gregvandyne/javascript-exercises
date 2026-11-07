@@ -10,27 +10,55 @@
    "title": "Meet Gizmo",
    "text": "Gizmo the mouse fixes gadgets in a little workshop. Gizmo knows that every device is a team of parts.",
    "art": "wrench",
-   "img": "csq/inside-the-machine/parts-1b-key",
-   "view": [
-    0.8,
-    42,
-    44.5,
-    40
-   ],
-   "alt": "Gizmo opens the tablet: its parts are laid out as a team, and the first job asks which part does it."
+   "img": "csq/chars/meet-gizmo",
+   "alt": "Gizmo the mouse, the Inside the Machine guide, in round glasses, standing in front of softened switches from the game.",
+   "focus": [
+    {
+     "cue": "This is Gizmo the mouse, who fixes gadgets",
+     "box": [
+      33.8,
+      15.3,
+      32.4,
+      75
+     ]
+    }
+   ]
   },
   {
    "title": "Every part has a job",
    "text": "Inputs take things in, like the touch sensor and camera. Outputs give things out, like the screen. The processor thinks, storage remembers and the battery powers it all.",
    "art": "chip",
-   "img": "csq/inside-the-machine/parts-1b-jobs",
-   "view": [
-    0.8,
-    42,
-    44.5,
-    40
-   ],
-   "alt": "Inside the machine: the cutaway view where the processor, storage and battery do their jobs together."
+   "img": "csq/inside-the-machine/parts-1b-jobs-n",
+   "alt": "Which part takes the photo? Screen, microphone, speaker, battery, touch sensor or camera: every part has its own job.",
+   "focus": [
+    {
+     "cue": "Which part takes the photo?",
+     "box": [
+      21,
+      0.8,
+      57.9,
+      13.3
+     ]
+    },
+    {
+     "cue": "An input: the camera takes the picture in",
+     "box": [
+      66,
+      56,
+      27,
+      42
+     ]
+    },
+    {
+     "cue": "An output: the screen gives the picture out",
+     "box": [
+      5,
+      14,
+      27,
+      38
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -42,42 +70,102 @@
     "touch sensor",
     "processor",
     "the app",
-    "screen"
+    "camera and screen"
    ],
-   "img": "csq/inside-the-machine/parts-1b-tap",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    42
-   ],
-   "alt": "The controller pad wiring round: parts are joined in the order a signal travels from input to output."
+   "img": "csq/inside-the-machine/hwsw-1b-tap-n",
+   "alt": "A Tap Travels: your finger taps, the touch sensor feels it, the processor works it out, the camera app says take a photo.",
+   "focus": [
+    {
+     "cue": "Your finger taps; the touch sensor feels it",
+     "box": [
+      27.3,
+      26.6,
+      43.7,
+      28.5
+     ]
+    },
+    {
+     "cue": "The processor works it out",
+     "box": [
+      25.4,
+      60.4,
+      47.4,
+      11.6
+     ]
+    },
+    {
+     "cue": "The app says: take a photo",
+     "box": [
+      12.6,
+      77.4,
+      60.6,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "Hardware and software",
    "text": "Hardware is what you can touch, like the screen. Software is the instructions, like an app. You see an app on the screen, but the app is software.",
    "art": "gears",
-   "img": "csq/inside-the-machine/hwsw-1b-sort",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The hardware and software sort: cards for screens and apps wait to be split into touchable and instructions."
+   "img": "csq/inside-the-machine/hwsw-1b-sort-n",
+   "alt": "Sorting cards into Hardware, what you can touch, and Software, the instructions. Five cards are sorted so far.",
+   "focus": [
+    {
+     "cue": "A card to sort: a drawing app. Can you touch it?",
+     "box": [
+      40.6,
+      19.6,
+      32.5,
+      13.3
+     ]
+    },
+    {
+     "cue": "5 sorted, 7 cards to go",
+     "box": [
+      38,
+      45.7,
+      23.9,
+      11.7
+     ]
+    },
+    {
+     "cue": "Hardware you can touch, or software: instructions",
+     "box": [
+      4.3,
+      67.9,
+      77.9,
+      21.4
+     ]
+    }
+   ]
   },
   {
    "title": "Every task needs both",
    "text": "A photo needs the camera (hardware) and the camera app (software). And no part works without power from the battery.",
    "art": "battery",
-   "img": "csq/inside-the-machine/hwsw-1b-both",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "An ordering round: the steps of one task laid out, where hardware and software take turns doing the work."
+   "img": "csq/inside-the-machine/hwsw-1b-tap-n",
+   "alt": "A Tap Travels: your finger taps, the touch sensor feels it, the processor works it out, the camera app says take a photo.",
+   "focus": [
+    {
+     "cue": "Software: the camera app",
+     "box": [
+      12.6,
+      77.4,
+      60.6,
+      11.6
+     ]
+    },
+    {
+     "cue": "Hardware: the touch sensor, and the camera next",
+     "box": [
+      27.3,
+      43.5,
+      43.7,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -108,14 +196,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Parts & Jobs and finish all 6 levels. Tap the part that does each job, then sort hardware from software.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/parts-1b-key",
-   "view": [
-    0.8,
-    42,
-    44.5,
-    40
-   ],
-   "alt": "Gizmo opens the tablet: its parts are laid out as a team, and the first job asks which part does it."
+   "img": "csq/inside-the-machine/parts-1b-jobs-n",
+   "alt": "Which part takes the photo? Screen, microphone, speaker, battery, touch sensor or camera: every part has its own job.",
+   "focus": [
+    {
+     "cue": "Tap the part that does the job",
+     "box": [
+      21,
+      0.8,
+      57.9,
+      13.3
+     ]
+    },
+    {
+     "cue": "Six parts, six jobs",
+     "box": [
+      11.5,
+      39.2,
+      77.6,
+      56.7
+     ]
+    }
+   ]
   }
  ],
  "check": [

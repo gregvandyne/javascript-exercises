@@ -349,17 +349,6 @@
  },
  {
   "actions": [],
-  "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "credit a picture, or draw your own",
-  "dilemma": "online-8",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-credit-1b"
- },
- {
-  "actions": [],
   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
   "band": "1b",
   "chapter": "online",

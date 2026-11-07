@@ -1,11 +1,11 @@
 // Tally's Sorting Game — the child's page script. Talks only to the placement JSON APIs: it never sees
 // an answer key, a rung, a score or a timer (there is nothing here to show one with). Low-rung and
-// Launchpad items are audio-first: the platform read-aloud (public/js/tts.js) speaks the question, and
-// the Listen button replays it. Tally reacts to each answer — a cheer when it lands, a kind word and
+// Every question has a Listen button, and the platform read-aloud (public/js/tts.js) speaks the
+// question only when it is tapped: nothing reads on its own, on load or after an answer. Tally reacts to each answer — a cheer when it lands, a kind word and
 // the trying praised when it does not — and a paw trail fills as the game goes, so a child can feel
 // how much longer there is. Hands-on items render as things to touch: count-out objects that mark
 // themselves counted when tapped, and builds shown as a filled ten-frame with loose counters.
-import { readAloud } from '/js/tts.js';
+import { readAloud, stopReading } from '/js/tts.js';
 
 const $ = id => document.getElementById(id);
 const post = async (url, body) => {
@@ -52,15 +52,21 @@ function show(id) { for (const s of ['nq-doors', 'nq-game', 'nq-result']) $(s).h
 /** The AI voice reads the item (routes/tts.js, ctx 'placement'): the page sends only the run id — the
  *  server regenerates the item it dealt this run and reads that, in Tally's voice. The text rides along
  *  solely as readAloud's device-voice fallback (used when AI voices are off for English, or the audio
- *  does not come); public/js/tts.js strips emoji from it there, as the server does for the AI read. */
+ *  does not come); public/js/tts.js strips emoji from it there, as the server does for the AI read.
+ *  `n` numbers the item within this page's run. The server ignores it, but tts.js caches audio (and
+ *  joins in-flight requests) by the request body: with the body only { ctx, runId }, every question in
+ *  a run shared one cache key, so after question 1 the voice replayed question 1's audio forever
+ *  (iPhone report, 2026-11-07). Each item now has its own key. */
 const ttsLangs = () => (document.querySelector('.nq')?.dataset.ttsLangs || '').split(',').filter(Boolean);
+let itemNo = 0;
 function speak(item) {
   try {
     const langs = ttsLangs();
     readAloud({ text: item.spokenPrompt || item.prompt, lang: 'en',
-      ai: runId && langs.length ? { body: { ctx: 'placement', runId }, langs } : null });
+      ai: runId && langs.length ? { body: { ctx: 'placement', runId, n: itemNo }, langs } : null });
   } catch { /* the words are on screen too */ }
 }
+const hush = () => { try { stopReading(); } catch { /* nothing playing */ } };
 
 /** The hands-on part of an item: count-out objects to tap as you count (each tap marks one counted —
  *  no running total is ever shown, counting is the child's job), or a build's ten-frame and counters. */
@@ -105,14 +111,19 @@ function renderManip(item) {
 }
 
 function renderItem(cur, reaction) {
+  // A new question silences the old one at once: audio still playing (or still on its way) belongs to
+  // the question that just left the screen.
+  hush();
   current = cur;
   if (!cur) return;
+  itemNo += 1;
   tallySays(reaction || nextEffort());
   $('nq-feedback').textContent = '';
   $('nq-prompt').textContent = cur.item.prompt;
   $('nq-strand').textContent = cur.strandLabel ? `Now showing Tally: ${cur.strandLabel}` : '';
   if (cur.progress && cur.progress.total) $('nq-trail-fill').style.width = `${Math.round(100 * Math.min(cur.progress.served, cur.progress.total) / cur.progress.total)}%`;
-  $('nq-listen').hidden = !cur.audioFirst;
+  // Listen on every question (not only the audio-first ones): any child may want a question read.
+  $('nq-listen').hidden = false;
   renderManip(cur.item);
   const choices = $('nq-choices'); choices.innerHTML = '';
   $('nq-answer-row').hidden = !!cur.item.choices;
@@ -124,7 +135,7 @@ function renderItem(cur, reaction) {
       choices.appendChild(b);
     });
   } else { $('nq-answer').value = ''; $('nq-answer').focus(); }
-  if (cur.audioFirst) speak(cur.item);
+  // No auto-read: the question is spoken only when the child taps Listen.
 }
 $('nq-listen').addEventListener('click', () => current && speak(current.item));
 $('nq-answer-go').addEventListener('click', () => answer({ value: $('nq-answer').value }));
@@ -147,6 +158,7 @@ async function startGame() {
   runId = data.runId; show('nq-game'); renderItem(data.current);
 }
 function showResult(result) {
+  hush();
   show('nq-result');
   runId = result.runId || runId;
   if (result.disabled) { $('nq-result-h').textContent = 'No game today'; $('nq-result-workshop').textContent = 'Your teacher or parent has set your start point.'; return; }

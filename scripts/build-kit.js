@@ -20,7 +20,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'kit/src');
 const PACKS_DIR = path.join(ROOT, 'kit/packs');
 /** Brotli caps in bytes: the core (spec: 95 KB) and each pack. */
-export const SIZE_CAPS = { core: 96 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, 'art-biomes-2': 10 * 1024, 'art-props': 10 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024, 'bridge-3d': 14 * 1024, live: 10 * 1024 };
+export const SIZE_CAPS = { core: 96 * 1024, 'art-animals': 12 * 1024, 'art-school': 12 * 1024, 'art-biomes': 8 * 1024, 'art-biomes-2': 10 * 1024, 'art-props': 10 * 1024, dress: 10 * 1024, 'style-bold': 10 * 1024, 'bridge-3d': 14 * 1024, live: 10 * 1024, 'style-pixel': 10 * 1024,
+  // the pixel style's art: one atlas of sprites and track tiles (an indexed PNG inside the script, ~20 KB of it)
+  'art-pixel': 24 * 1024 };
 const IMPORT_RE = /^import\s*\{([^}]*)\}\s*from\s*'\.\/([\w-]+)\.js';\s*$/;
 
 export async function bundle() {
@@ -143,7 +145,7 @@ export const gzip = buf => zlib.gzipSync(buf, { level: 9 }).length;
 /** Write manifest.json (sha384 of every file) and KIT_VERSIONS / KIT_PACKS in server/services/kit.js for a version. */
 function writeIndex(dir, VERSION) {
   const files = {};
-  for (const f of ['oomba-kit.js', ...packNames().map(n => `packs/${n}.js`), 'fonts/bricolage-latin.woff2', 'fonts/bricolage-latin-ext.woff2', 'fonts/OFL.txt', 'LICENSE']) files[f] = sri(fs.readFileSync(path.join(dir, f)));
+  for (const f of ['oomba-kit.js', ...packNames().map(n => `packs/${n}.js`), 'fonts/bricolage-latin.woff2', 'fonts/bricolage-latin-ext.woff2', 'fonts/OFL.txt', ...PIXEL_FONTS.map(([, to]) => to).filter(f => fs.existsSync(path.join(dir, f))), 'LICENSE']) files[f] = sri(fs.readFileSync(path.join(dir, f)));
   fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify({ version: VERSION, api: 1, files, packs: packNames() }, null, 2) + '\n');
   // KIT_VERSIONS and KIT_PACKS in server/services/kit.js: add this version, or update it with --replace.
   const svc = path.join(ROOT, 'server/services/kit.js');
@@ -158,6 +160,17 @@ function writeIndex(dir, VERSION) {
     if (pre.test(s)) s = s.replace(pre, pl); else s = s.replace(/(export const KIT_PACKS = Object\.freeze\(\{\n)/, `$1${pl}\n`);
     fs.writeFileSync(svc, s);
   }
+}
+// The pixel style's font (style-pixel loads it with FontFace from next to the kit, only when a game turns the style on):
+// Pixelify Sans, SIL OFL 1.1, and the kit's Oomba Pixel Digits. Added to a version with the style-pixel pack (--packs adds them to a locked version: new
+// files only, nothing it shipped changes).
+const PIXEL_FONTS = [['pixelify-sans-latin.woff2', 'fonts/pixelify-latin.woff2'], ['pixelify-sans-latin-ext.woff2', 'fonts/pixelify-latin-ext.woff2'],
+  ['pixelify-sans-cyrillic.woff2', 'fonts/pixelify-cyrillic.woff2'], ['pixelify-sans-OFL.txt', 'fonts/OFL-pixelify.txt'],
+  ['oomba-pixel-digits.woff2', 'fonts/oomba-pixel-digits.woff2']];   // the kit's own pixel digits (tools/blender/pixel_digits.py)
+function copyPixelFonts(dir) {
+  if (!packNames().includes('style-pixel')) return;
+  fs.mkdirSync(path.join(dir, 'fonts'), { recursive: true });
+  for (const [from, to] of PIXEL_FONTS) fs.copyFileSync(path.join(ROOT, 'public/fonts', from), path.join(dir, to));
 }
 async function buildPack(name, VERSION) {
   const p = await minify(bundlePack(name, VERSION));
@@ -186,6 +199,7 @@ async function main() {
       const buf = await buildPack(name, VERSION); fs.writeFileSync(file, buf); rows.push([name, buf]);
     }
     for (const n of Object.keys(locked)) if (!packNames().includes(n)) { console.error(`kit ${VERSION} shipped pack ${n}, which kit/packs no longer has`); process.exit(1); }
+    copyPixelFonts(dir);
     writeIndex(dir, VERSION);
     console.log(`oomba-kit ${VERSION}: packs added or rebuilt (the core and ${Object.keys(locked).length} locked packs untouched)`);
     report(rows);
@@ -203,6 +217,7 @@ async function main() {
   fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin.woff2'));
   fs.copyFileSync(path.join(F, 'bricolage-grotesque-latin-ext-opsz-normal.woff2'), path.join(dir, 'fonts/bricolage-latin-ext.woff2'));
   fs.copyFileSync(path.join(F, 'bricolage-grotesque-OFL.txt'), path.join(dir, 'fonts/OFL.txt'));
+  copyPixelFonts(dir);
   fs.writeFileSync(path.join(dir, 'LICENSE'), `Oomba Kit ${VERSION}\nCopyright (c) Oomba Academy. All rights reserved.\nGames on Oomba Academy may load this file from this path. It may not be copied elsewhere.\n\nfonts/: Bricolage Grotesque, licensed under the SIL Open Font License 1.1 (fonts/OFL.txt).\n`);
   // the art packs
   const rows = [['core', out]];

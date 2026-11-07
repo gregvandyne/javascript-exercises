@@ -1029,20 +1029,21 @@
 
   function deepFreeze(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreeze(o[k]); }); Object.freeze(o); } return o; }
   // Lesson parameters (docs/sdk.md "Lesson parameters"): a lesson step may open the game at a chapter, for a band, in a
-  // mode, at a level, locked or not. Only those five keys, values [a-z0-9-]{1,16}; band '1b' or '2'; level 1-30 and
-  // lock 0 or 1 as numbers. Anything else is dropped, so a game reads (window.BRB && BRB.params) || {} and nothing more.
+  // mode, at a level, locked or not, in an art style. Only those six keys, values [a-z0-9-]{1,16}; band '1b' or '2'; level 1-30 and
+  // lock 0 or 1 as numbers; style 'ink' or 'pixel'. Anything else is dropped, so a game reads (window.BRB && BRB.params) || {} and nothing more.
   function cleanParams(p) {
     var out = {};
     if (!p || typeof p !== 'object') return out;
     var str = function (v) { if (typeof v === 'number' && isFinite(v)) v = String(v); return typeof v === 'string' && /^[a-z0-9-]{1,16}$/.test(v) ? v : null; };
     // Own properties only: nothing arrives through a prototype (the server sends a plain object; this is belt and braces).
     var own = function (k) { return Object.prototype.hasOwnProperty.call(p, k) ? p[k] : undefined; };
-    var chapter = str(own('chapter')), band = str(own('band')), mode = str(own('mode')), level = str(own('level')), lock = str(own('lock'));
+    var chapter = str(own('chapter')), band = str(own('band')), mode = str(own('mode')), level = str(own('level')), lock = str(own('lock')), style = str(own('style'));
     if (chapter) out.chapter = chapter;
     if (band === '1b' || band === '2') out.band = band;
     if (mode) out.mode = mode;
     if (level && /^[0-9]{1,2}$/.test(level) && +level >= 1 && +level <= 30) out.level = +level;
     if (lock === '0' || lock === '1') out.lock = +lock;
+    if (style === 'ink' || style === 'pixel') out.style = style;   // the art style (an Oomba Kit game with a pixel look)
     return out;
   } /* end cleanParams */
   var BRB = {

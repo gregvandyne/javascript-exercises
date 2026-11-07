@@ -10,27 +10,64 @@
    "title": "It is not working!",
    "text": "Every device stops working sometimes. Do not panic. Good fixers have a plan.",
    "art": "wrench",
-   "img": "csq/inside-the-machine/fixit-1b-key",
-   "view": [
-    0.8,
-    42,
-    44.5,
-    40
-   ],
-   "alt": "The Fix-It Desk opens its first ticket: a broken gadget, its story, and the fix options with their minutes."
+   "img": "csq/inside-the-machine/fixit-1b-ticket-n",
+   "alt": "Ticket: it will not turn on. Hold the power button: still a black screen. Each check shows how many minutes it takes.",
+   "focus": [
+    {
+     "cue": "The ticket: it will not turn on",
+     "box": [
+      23.6,
+      28.9,
+      34.6,
+      12.9
+     ]
+    },
+    {
+     "cue": "One check done: still a black screen",
+     "box": [
+      13.8,
+      65.7,
+      36.8,
+      12.1
+     ]
+    },
+    {
+     "cue": "Each check costs minutes",
+     "box": [
+      18.3,
+      81.5,
+      69.8,
+      12.1
+     ]
+    }
+   ]
   },
   {
    "title": "Quick checks first",
    "text": "Try the quick, easy checks first: is it on, is it plugged in, is it muted? Restarting takes longer, so it comes later.",
    "art": "lightbulb",
-   "img": "csq/inside-the-machine/fixit-1b-checks",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A second ticket waits at the desk: the quick, cheap checks are the ones a good fixer tries first."
+   "img": "csq/inside-the-machine/fixit-1b-quick-n",
+   "alt": "No wireless connection: quick checks like airplane mode take 1 minute, restarting the network box takes 5.",
+   "focus": [
+    {
+     "cue": "Quick: is wireless on? 1 minute",
+     "box": [
+      53,
+      27.7,
+      37.1,
+      29.4
+     ]
+    },
+    {
+     "cue": "Slow: restart the network box, 5 minutes",
+     "box": [
+      8,
+      63.9,
+      37.1,
+      35.8
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -44,27 +81,55 @@
     "restart",
     "ask for help"
    ],
-   "img": "csq/inside-the-machine/fixit-1b-nosound",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "The No Sound ticket: the headphones fix is under way, with plugged in and volume checked on the list."
+   "img": "csq/inside-the-machine/fixit-1b-nosound-n",
+   "alt": "No sound in the headphones: two quick checks done, volume up and plugged in all the way. Next on the list: is it muted?",
+   "focus": [
+    {
+     "cue": "2 minutes used: two checks done",
+     "box": [
+      16.3,
+      1.6,
+      74,
+      12.4
+     ]
+    },
+    {
+     "cue": "Next quick check: is mute off?",
+     "box": [
+      53,
+      36,
+      37.1,
+      21.3
+     ]
+    }
+   ]
   },
   {
    "title": "Small clues",
    "text": "Your passphrase fails, but you know it? Check caps lock. An app is frozen? Close the app and open it again.",
    "art": "magnifier",
-   "img": "csq/inside-the-machine/fixit-1b-clue",
-   "view": [
-    45.3,
-    25,
-    54,
-    48
-   ],
-   "alt": "A fourth ticket with a small clue in its story: reading the clue closely points straight at the fix."
+   "img": "csq/inside-the-machine/fixit-1b-caps-n",
+   "alt": "The password does not work, even though you know it. The first check on the list: is caps lock on?",
+   "focus": [
+    {
+     "cue": "Quick checks cost 1 minute",
+     "box": [
+      16.2,
+      30.8,
+      74.2,
+      12.4
+     ]
+    },
+    {
+     "cue": "Small clue, quick check: caps lock",
+     "box": [
+      8,
+      66.9,
+      37.1,
+      21.3
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -95,14 +160,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Fix-It Desk and solve all 7 tickets. Before you tap, ask: which check is quick and most likely?",
    "art": "trophy",
-   "img": "csq/inside-the-machine/fixit-1b-key",
-   "view": [
-    0.8,
-    42,
-    44.5,
-    40
-   ],
-   "alt": "The Fix-It Desk opens its first ticket: a broken gadget, its story, and the fix options with their minutes."
+   "img": "csq/inside-the-machine/fixit-1b-ticket-n",
+   "alt": "Ticket: it will not turn on. Hold the power button: still a black screen. Each check shows how many minutes it takes.",
+   "focus": [
+    {
+     "cue": "Read the ticket",
+     "box": [
+      23.6,
+      28.9,
+      34.6,
+      12.9
+     ]
+    },
+    {
+     "cue": "Quick and likely checks first",
+     "box": [
+      18.3,
+      81.5,
+      69.8,
+      12.1
+     ]
+    }
+   ]
   }
  ],
  "check": [
