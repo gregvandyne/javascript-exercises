@@ -249,54 +249,6 @@
  },
  {
   "actions": [],
-  "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-  "band": "2",
-  "chapter": "online",
-  "concept": "nickname or real first name",
-  "dilemma": "online-3",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-name-2",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "delete an old post, or leave it",
-  "dilemma": "online-10",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-delete-1b",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-  "band": "2",
-  "chapter": "online",
-  "concept": "delete an old post, or leave it",
-  "dilemma": "online-10",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-delete-2",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
   "band": "1b",
   "chapter": "online",
@@ -953,22 +905,6 @@
   }
  },
  {
-  "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
-  "band": "1b",
-  "chapter": "chat",
-  "concept": "show Pim, the debrief",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "ch-1",
-  "phase": "debrief",
-  "state": "chat-1b-ch-1-debrief",
-  "narrow": {
-   "width": 430,
-   "height": 1000,
-   "top": 436.1
-  }
- },
- {
   "alt": "Mia from Class: “Great game! Your tower at the end was amazing.” The debrief: that is the move, safe to deliver.",
   "band": "1b",
   "chapter": "chat",
@@ -1414,38 +1350,6 @@
   }
  },
  {
-  "alt": "The debrief: the Magpie loves a chain, the trick does its own traveling. Behind this one: the forwarder.",
-  "band": "1b",
-  "chapter": "mix",
-  "concept": "the forwarder",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "mx-1",
-  "phase": "debrief",
-  "state": "mix-1b-mx-1-debrief",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 473
-  }
- },
- {
-  "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
-  "band": "1b",
-  "chapter": "mix",
-  "concept": "the key-hunter",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "mx-3",
-  "phase": "debrief",
-  "state": "mix-1b-mx-3-debrief",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 494
-  }
- },
- {
   "alt": "A post from News Flash, “School is closing forever!”, with clues marked: free candy for everyone on Monday, and tell everyone you know.",
   "band": "1b",
   "chapter": "mix",
@@ -1462,22 +1366,6 @@
   }
  },
  {
-  "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
-  "band": "1b",
-  "chapter": "mix",
-  "concept": "the giggler",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "mx-4",
-  "phase": "debrief",
-  "state": "mix-1b-mx-4-debrief",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 489
-  }
- },
- {
   "alt": "A letter from Prize Team, “Visitor number 1000!”, with clues marked: visitor number 1000, and your free games console.",
   "band": "1b",
   "chapter": "mix",
@@ -1491,22 +1379,6 @@
    "width": 420,
    "height": 1000,
    "top": 177.7
-  }
- },
- {
-  "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
-  "band": "1b",
-  "chapter": "mix",
-  "concept": "the prize-faker",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "mx-6",
-  "phase": "debrief",
-  "state": "mix-1b-mx-6-debrief",
-  "narrow": {
-   "width": 420,
-   "height": 1000,
-   "top": 501
   }
  },
  {
@@ -1958,16 +1830,6 @@
  },
  {
   "actions": [],
-  "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
-  "band": "1b",
-  "chapter": "protocols",
-  "concept": "the padlock road keeps a secret sealed",
-  "game": "packet-post",
-  "level": 3,
-  "state": "protocols-1b-sealed"
- },
- {
-  "actions": [],
   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
   "band": "1b",
   "chapter": "locks",
@@ -2175,7 +2037,7 @@
  {
   "actions": [
    {
-    "acts": 3
+    "acts": 4
    }
   ],
   "alt": "Three random words in the passphrase so far. The meter says a computer would need about a hundred years.",
@@ -2207,8 +2069,12 @@
   "state": "packets-1b-start-n"
  },
  {
-  "actions": [],
-  "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+  "actions": [
+   {
+    "acts": 1
+   }
+  ],
+  "alt": "The cipher wheel turned back by 3: the secret message DSSOH now reads APPLE.",
   "band": "1b",
   "chapter": "ciphers",
   "concept": "turn the wheel back",
@@ -2220,21 +2086,6 @@
    "top": 132.5
   },
   "state": "ciphers-1b-wheel-n2"
- },
- {
-  "actions": [],
-  "alt": "Rules of the Road, Pro: five numbered packets wait at Pim's Post for the road through Mill Office to Grandma's House.",
-  "band": "2",
-  "chapter": "protocols",
-  "concept": "numbered packets at the first stop",
-  "game": "packet-post",
-  "level": 1,
-  "narrow": {
-   "width": 420,
-   "height": 700,
-   "top": 127.5
-  },
-  "state": "protocols-2-key-n"
  },
  {
   "actions": [
@@ -2396,5 +2247,156 @@
    "top": 108
   },
   "state": "protocols-1b-sealed-n"
+ },
+ {
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "Break It Up: packet 1 of the apple picture has left Pim's Post and rides the road towards Mill Office and Grandma's House.",
+  "band": "1b",
+  "chapter": "packets",
+  "concept": "a numbered packet on its way",
+  "game": "packet-post",
+  "level": 1,
+  "narrow": {
+   "width": 420,
+   "height": 700,
+   "top": 108
+  },
+  "state": "packets-1b-hop-n"
+ },
+ {
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "Rules of the Road: the secret birthday packets take the padlock roads over the hill, away from the snoopy cat on the open road.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "secrets ride the padlock road",
+  "game": "packet-post",
+  "level": 3,
+  "narrow": {
+   "width": 420,
+   "height": 620,
+   "top": 108
+  },
+  "state": "protocols-1b-sealed-n3"
+ },
+ {
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Many Roads, Pro: numbered cookie packets hop from office to office across Netville towards the school.",
+  "band": "2",
+  "chapter": "routes",
+  "concept": "packets hop office to office",
+  "game": "packet-post",
+  "level": 1,
+  "narrow": {
+   "width": 420,
+   "height": 700,
+   "top": 108
+  },
+  "state": "routes-2-hop-n"
+ },
+ {
+  "actions": [],
+  "alt": "Rules of the Road, Pro: a slow got it made the sender resend, so extra copies wait in the inbox while one packet is still missing.",
+  "band": "2",
+  "chapter": "protocols",
+  "concept": "why a packet is resent",
+  "game": "packet-post",
+  "level": 2,
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "at": {
+    "sel": ".pp-board",
+    "pad": 6
+   }
+  },
+  "state": "protocols-2-twice-n"
+ },
+ {
+  "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter, who wants into your mailbox.",
+  "band": "1b",
+  "chapter": "mix",
+  "concept": "the key-hunter",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "mx-3",
+  "phase": "debrief",
+  "narrow": {
+   "width": 320,
+   "height": 900,
+   "at": {
+    "text": "Behind this one",
+    "pad": 8
+   }
+  },
+  "state": "mix-1b-mx-3-debrief-s"
+ },
+ {
+  "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker, who wants you to tap and type.",
+  "band": "1b",
+  "chapter": "mix",
+  "concept": "the prize-faker",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "mx-6",
+  "phase": "debrief",
+  "narrow": {
+   "width": 320,
+   "height": 900,
+   "at": {
+    "text": "You did not enter",
+    "pad": 8
+   }
+  },
+  "state": "mix-1b-mx-6-debrief-s"
+ },
+ {
+  "alt": "The debrief: chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
+  "band": "1b",
+  "chapter": "chat",
+  "concept": "show Pim, the debrief",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "ch-1",
+  "phase": "debrief",
+  "narrow": {
+   "width": 320,
+   "height": 900,
+   "at": {
+    "text": "Chat is for",
+    "pad": 8
+   }
+  },
+  "state": "chat-1b-ch-1-debrief-s"
+ },
+ {
+  "alt": "A post from News Flash: school is closing forever, free candy for everyone on Monday, tell everyone you know! Every clue marked: it only wants a big reaction.",
+  "band": "1b",
+  "chapter": "mix",
+  "concept": "the giggler",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "mx-4",
+  "phase": "hunt",
+  "narrow": {
+   "width": 320,
+   "height": 900,
+   "at": {
+    "text": "School is closing",
+    "pad": 8
+   }
+  },
+  "state": "mix-1b-mx-4-all-s"
  }
 ]

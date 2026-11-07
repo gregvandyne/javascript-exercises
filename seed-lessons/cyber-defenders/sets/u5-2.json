@@ -130,7 +130,7 @@
     "Ciphers and checksums"
    ],
    "answer": 0,
-   "why": "The next video starting by itself is autoplay, and the red badge is a notification. Both are hooks that hold attention."
+   "why": "Neither one waits for you to choose: the next video starts on its own and the badge pulls you back. Apps add them to keep you watching longer."
   },
   {
    "id": "cd-2-5.3-e2",

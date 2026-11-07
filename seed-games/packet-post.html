@@ -16,6 +16,8 @@
   .pp-pill svg { width: 22px; height: 22px; flex: none; }
   .pp-pill.pp-wrap span { white-space: normal; line-height: 1.15; }
   .ok-toast { top: calc(72px + env(safe-area-inset-top)); max-width: calc(100vw - 32px); }
+  /* the end card's score is the sparks count: say it in words ("2 sparks"), not as a bare number under the sparks */
+  .ok-sparks + .ok-score, .pp-sparks-n + .ok-score { display: none !important; } .pp-sparks-n { text-align: center; font-weight: 800; font-size: 1.15em; margin: 4px 0 8px; }
   .pp-ic { display: inline-flex; flex: none; }
   .pp-main { display: flex; flex: 1; min-height: 0; width: min(100%, 1100px); gap: 10px; }
   .pp-board { position: relative; flex: none; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 22px; overflow: hidden; box-shadow: 0 5px 0 var(--ok-edge); }
@@ -238,7 +240,7 @@ function instance(level, seed) {
   } else if (I.type === 'sort') {
     // share or keep, physical or digital, public or private: every item has its bin and maybe a reason tile
     I.bins = level.bins.map(b => ({ id: b.id, label: b.label, icon: b.icon || null }));
-    I.items = level.items.map(t => ({ id: t.id, text: t.text, bin: t.bin, info: t.info || null, benefit: t.benefit || null, risk: t.risk || null, reasons: t.reasons ? t.reasons.slice() : null, answer: t.answer == null ? null : t.answer }));
+    I.items = level.items.map(t => ({ id: t.id, text: t.text, bin: t.bin, info: t.info || null, benefit: t.benefit || null, risk: t.risk || null, reasons: t.reasons ? t.reasons.slice() : null, answer: t.answer == null ? null : t.answer, why: t.why || null }));
     I.shown = rnd ? r.shuffle(I.items.map(t => t.id)) : I.items.map(t => t.id);
   } else if (I.type === 'pass') {
     // the passphrase builder: word tiles, some of them weak (things about you, or too common)
@@ -682,155 +684,155 @@ const LEVELS = [
     learn: { title: 'Break it up', text: 'A picture is too big to send in one go. The network cuts it into small numbered packets. Each packet rides its own road, and the numbers put the picture back together at the other end.', pic: 'apple' },
     intro: 'Grandma wants a picture of an apple. Send each packet down the road, then rebuild the picture by number.',
     hints: ['Where is the packet right now, and which road leaves from there?', 'The glowing road leads out of the office where the packet is waiting.', 'Tap the glowing road. When all the pieces have arrived, tap them in order: 1, then 2, then 3.'],
-    check: { q: 'What does the network do with a big picture before sending it?', tiles: ['Cuts it into numbered packets', 'Sends it in one giant piece', 'Prints it on paper first'], answer: 0 } },
+    check: { q: 'What does the network do with a big picture before sending it?', tiles: ['Cuts it into numbered packets', 'Sends it in one giant piece', 'Prints it on paper first'], answer: 0, why: 'A big picture is too much for one trip. Small numbered pieces travel easily and fit back together.' } },
   { id: 'pk-2', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 3, par: 6, random: true, nodes: FORK('The School'), links: FORK_LINKS, from: 'S', to: 'D', sol: 'auto',
     intro: 'Two roads lead to the school. Any open road is fine for a packet.',
     hints: ['Does every packet have to take the same road?', 'Both glowing roads reach the school in two hops.', 'Tap either glowing road for each packet, then rebuild the picture by number.'],
-    check: { q: 'Can two packets of one picture take different roads?', tiles: ['Yes, any open road works', 'No, they must stay together', 'Only the first packet may'], answer: 0 } },
+    check: { q: 'Can two packets of one picture take different roads?', tiles: ['Yes, any open road works', 'No, they must stay together', 'Only the first packet may'], answer: 0, why: 'Every packet carries its number, so the house can sort them whichever road they took.' } },
   { id: 'pk-3', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 4, par: 8, picture: 'melon', nodes: DETOUR('Birthday House'), links: DETOUR_LINKS, from: 'S', to: 'D', sol: 'auto',
     intro: 'Four packets for the birthday house. One road is short and one is a long detour.',
     hints: ['Which way reaches the house in the fewest hops?', 'The road over the hill is only two hops. The river way is three.', 'Tap the hill road, then the road into the house. Do that for every packet.'],
-    check: { q: 'Which road gets a packet there fastest?', tiles: ['The shortest open one', 'The longest one', 'The one with the most offices'], answer: 0 } },
+    check: { q: 'Which road gets a packet there fastest?', tiles: ['The shortest open one', 'The longest one', 'The one with the most offices'], answer: 0, why: 'Fewer roads means fewer stops on the way, so the packet gets there sooner.' } },
   { id: 'pk-4', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 5, par: 15, random: true, nodes: DIAMOND('Zoo Gate'), links: DIAMOND_LINKS, from: 'S', to: 'D', sol: 'auto',
     intro: 'Five packets for the zoo. Every road here meets at the center office.',
     hints: ['Where do all the roads meet before the zoo?', 'Both first roads lead to the center office, and from there one road goes on.', 'Tap a glowing road, then the road to the center office, then the road to the zoo. Repeat for each packet.'],
-    check: { q: 'How does the house know the order of the pieces?', tiles: ['By the number on each packet', 'By how the road looks', 'By which piece looks nicest'], answer: 0 } },
+    check: { q: 'How does the house know the order of the pieces?', tiles: ['By the number on each packet', 'By how the road looks', 'By which piece looks nicest'], answer: 0, why: 'Packets can arrive in any order. The number tells the house where each piece goes.' } },
   { id: 'pk-5', ch: 'packets', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 6, par: 18, random: true, nodes: TOWN("Grandma's House"), links: TOWN_LINKS, from: 'S', to: 'D', sol: 'auto',
     intro: 'Six packets across the whole town. Three hops is the fewest for each one.',
     hints: ['How many hops does the shortest way take?', 'The glowing roads are on a three hop way. Side roads between offices only add hops.', 'Tap the glowing road three times in a row for each packet, then place the six pieces by number.'],
-    check: { q: 'A picture arrives as six packets. What happens at the house?', tiles: ['The pieces are put back in number order', 'Only the first piece is kept', 'The picture is sent back'], answer: 0 } },
+    check: { q: 'A picture arrives as six packets. What happens at the house?', tiles: ['The pieces are put back in number order', 'Only the first piece is kept', 'The picture is sent back'], answer: 0, why: 'Each piece knows its place from its number, so the picture comes back whole.' } },
 
   // ---- Chapter 2: Many Roads (a road closes, a busy office is slow, packets arrive mixed up, hop budgets, sealed roads)
   { id: 'rt-1', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 4, par: 8, picture: 'cookie', nodes: FORK('The School'), links: FORK_LINKS, closes: [{ link: 'A-D', after: 2 }], from: 'S', to: 'D', sol: 'auto',
     learn: { title: 'Many roads', text: 'Netville has many roads between its post offices. If one road is closed or busy, a packet simply takes another one. Packets can arrive in any order, so the numbers matter.', pic: 'globe' },
     intro: 'Cookies for the school! Watch the roads: one of them is about to close.',
     hints: ['A road has closed. Is there another way to the school?', 'The river road is still open and it is just as short.', 'Tap the road to the river office, then the road into the school.'],
-    check: { q: 'A road closes while you are sending. What do you do?', tiles: ['Send the next packets another way', 'Stop sending forever', 'Throw the packets away'], answer: 0 } },
+    check: { q: 'A road closes while you are sending. What do you do?', tiles: ['Send the next packets another way', 'Stop sending forever', 'Throw the packets away'], answer: 0, why: 'The network has other roads. The packets go round the closed one and still arrive.' } },
   { id: 'rt-2', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 4, par: 8, random: true, nodes: FORK('Birthday House'), links: FORK_LINKS, busyAny: ['A', 'B'], from: 'S', to: 'D', sol: 'auto',
     intro: 'One office is very busy today. Packets that pass it arrive late, so they may come in a mixed up order.',
     hints: ['Why did a later packet arrive before an earlier one?', 'The busy office (with the clock) holds packets a while. The numbers still tell you the order.', 'Tap the pieces by number, not by the order they arrived: 1, 2, 3, 4.'],
-    check: { q: 'Packet 3 arrives before packet 2. What now?', tiles: ['Wait, then place them in number order', 'Use packet 3 as number 2', 'Send the whole picture again'], answer: 0 } },
+    check: { q: 'Packet 3 arrives before packet 2. What now?', tiles: ['Wait, then place them in number order', 'Use packet 3 as number 2', 'Send the whole picture again'], answer: 0, why: 'Packets on different roads can overtake each other. Their numbers put them right again.' } },
   { id: 'rt-3', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 5, par: 16, picture: 'tower', nodes: TOWN('Zoo Gate'), links: TOWN_LINKS, closes: [{ link: 'A-C', after: 2 }, { link: 'E-D', after: 4 }], from: 'S', to: 'D', sol: 'auto',
     intro: 'Roadworks all over town. Two roads will close while you send. Keep finding a way.',
     hints: ['When a road closes, which other roads still reach the zoo?', 'Follow the glowing roads: they always show an open way, even if it is one hop longer.', 'Tap the glowing road each time. The last packet needs four hops instead of three.'],
-    check: { q: 'Why does Netville have more than one road between offices?', tiles: ['So packets still arrive when a road closes', 'Because roads are cheap', 'To confuse the packets'], answer: 0 } },
+    check: { q: 'Why does Netville have more than one road between offices?', tiles: ['So packets still arrive when a road closes', 'Because roads are cheap', 'To confuse the packets'], answer: 0, why: 'If one road closes, packets can go round it. With only one road, everything would stop.' } },
   { id: 'rt-4', ch: 'routes', bands: BOTH, csta: NI, csta2: NI2, type: 'route', n: 6, par: 18, random: true, nodes: TOWN('The School'), links: TOWN_LINKS, busyAny: ['C', 'E'], closesAny: [{ link: 'A-C', after: 3 }, { link: 'B-E', after: 3 }], from: 'S', to: 'D', sol: 'auto',
     intro: 'A busy office and a road that closes. Six packets, three hops each, back in order at the end.',
     hints: ['Which packets will arrive late, and does that change their numbers?', 'The busy office slows packets down. A closed road means another road. The numbers never change.', 'Take the glowing roads, then place the pieces 1 to 6 by their numbers.'],
-    check: { q: 'What keeps a picture correct when its packets take different roads and arrive mixed up?', tiles: ['The numbers on the packets', 'Luck', 'Sending very slowly'], answer: 0 } },
+    check: { q: 'What keeps a picture correct when its packets take different roads and arrive mixed up?', tiles: ['The numbers on the packets', 'Luck', 'Sending very slowly'], answer: 0, why: 'Whatever road a piece took, its number says where it belongs in the picture.' } },
   { id: 'rt-5', ch: 'routes', bands: ['2'], csta: NI2, type: 'route', n: 4, par: 12, budget: 13, picture: 'ufo', nodes: TOWN('Birthday House'), links: TOWN_LINKS, closes: [{ link: 'A-C', after: 2 }], from: 'S', to: 'D', sol: 'auto',
     intro: 'Hop budget! You may use thirteen hops in all. Four packets, three hops each, and a road that closes.',
     hints: ['How many hops can each packet spend if the budget is thirteen for four packets?', 'Three hops each uses twelve. Only one spare hop. The glowing roads never waste one.', 'After the hill road closes, go by the river office and the mill office: still three hops.'],
-    check: { q: 'Your hop budget is small. Which way do you pick?', tiles: ['The way with the fewest hops', 'The way with the most offices', 'Any way, hops are free'], answer: 0 } },
+    check: { q: 'Your hop budget is small. Which way do you pick?', tiles: ['The way with the fewest hops', 'The way with the most offices', 'Any way, hops are free'], answer: 0, why: 'Every hop uses up part of your budget. Fewer hops leave enough for every packet.' } },
   { id: 'rt-6', ch: 'routes', bands: ['2'], csta: NI2, type: 'route', n: 3, par: 12, secret: true, picture: 'schoolbag', nodes: FORK('Birthday House'), links: [['S', 'A', { sealed: true }], ['A', 'D', { sealed: true }], ['S', 'B'], ['B', 'D']], from: 'S', to: 'D', sol: 'auto',
     intro: 'This picture is a secret birthday plan. Open roads have a snoopy cat who reads every packet. Sealed roads cost two hops but nobody can peek.',
     hints: ['Who can read a packet on an open road?', 'The roads with the lock are sealed. They cost more hops, but the snoopy cat sees nothing.', 'Tap the sealed road over the hill, then the sealed road into the house, for every packet.'],
-    check: { q: 'Why send a secret on a sealed road even if it costs more?', tiles: ['Nobody on the way can read it', 'It is faster', 'Sealed roads always arrive first'], answer: 0 } },
+    check: { q: 'Why send a secret on a sealed road even if it costs more?', tiles: ['Nobody on the way can read it', 'It is faster', 'Sealed roads always arrive first'], answer: 0, why: 'On an open road anyone can peek. A sealed road keeps the secret hidden all the way.' } },
 
   // ---- Chapter 3: Rules of the Road (say got it, ask again, throw away copies, count the dots, the handshake, rule sets)
   { id: 'pr-1', ch: 'protocols', bands: ['1b'], csta: NI, type: 'ack', n: 3, par: 4, picture: 'cupcake', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [1, 3], sol: 'auto',
     learn: { title: 'Say got it', text: 'Post offices follow shared rules. When a packet arrives, the house says got it. When a packet is missing, the house asks for that number again. That way nothing stays lost.', pic: 'book' },
     intro: 'Three packets were sent, but the mail van hit a bump. Say got it for each packet that arrived, and ask again for the one that did not.',
     hints: ['Which packet number is missing from the board?', 'Slot 2 is empty. Packets 1 and 3 are waiting for a got it.', 'Tap packet 1, then Say got it. Tap slot 2, then Send again. Say got it for 2 and 3.'],
-    check: { q: 'Packet 2 never arrives. What does the house send back?', tiles: ['Please send packet 2 again', 'Nothing, it just waits', 'The whole picture'], answer: 0 } },
+    check: { q: 'Packet 2 never arrives. What does the house send back?', tiles: ['Please send packet 2 again', 'Nothing, it just waits', 'The whole picture'], answer: 0, why: 'The house can see which number is missing, so it asks for just that one packet again.' } },
   { id: 'pr-2', ch: 'protocols', bands: ['1b'], csta: NI, type: 'ack', n: 4, par: 6, picture: 'melon', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [1, 3, 3, 4], sol: 'auto',
     intro: 'Four packets this time. One got lost and one arrived twice! Extra copies go in the bin.',
     hints: ['Can a picture use two copies of the same piece?', 'Packet 3 came twice. Say got it once, then throw the extra copy away. Slot 2 is empty.', 'Say got it for 1, 3 and 4. Throw away the second 3. Send again for 2, then say got it.'],
-    check: { q: 'Packet 3 arrives twice. What do you do with the extra copy?', tiles: ['Throw the copy away', 'Use it as packet 2', 'Keep both in the picture'], answer: 0 } },
+    check: { q: 'Packet 3 arrives twice. What do you do with the extra copy?', tiles: ['Throw the copy away', 'Use it as packet 2', 'Keep both in the picture'], answer: 0, why: 'The house already has packet 3. Keeping both would put that piece in the picture twice.' } },
   // Explorer's sealed road: the padlock rule (Cyber Defenders 1.2, "Sealed or open?")
   { id: 'pr-9', ch: 'protocols', bands: ['1b'], csta: NI, type: 'route', n: 3, par: 12, secret: true, picture: 'cupcake', nodes: FORK('Birthday House'), links: [['S', 'A', { sealed: true }], ['A', 'D', { sealed: true }], ['S', 'B'], ['B', 'D']], from: 'S', to: 'D', sol: 'auto',
     intro: 'This picture is a secret birthday surprise. On the open road a snoopy cat reads every packet, like a postcard. The padlock road is sealed like an envelope.',
     hints: ['Who can read a packet on the open road?', 'Roads with a padlock are sealed. Nobody on the way can read what rides on them.', 'Tap the padlock road over the hill, then the padlock road into the house, for every packet.'],
-    check: { q: 'Why does a secret ride on the padlock road?', tiles: ['It is sealed, so nobody on the way can read it', 'It is the shortest road', 'The snoopy cat likes it'], answer: 0 } },
+    check: { q: 'Why does a secret ride on the padlock road?', tiles: ['It is sealed, so nobody on the way can read it', 'It is the shortest road', 'The snoopy cat likes it'], answer: 0, why: 'Anyone on an open road can read what passes by. The padlock road scrambles it for them.' } },
   { id: 'pr-3', ch: 'protocols', bands: ['2'], csta: NI2, type: 'ack', n: 5, par: 7, picture: 'cookie', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [1, 2, 4], sol: 'auto',
     learn: { title: 'Rules of the road', text: 'A protocol is a set of rules computers agree on before they talk: number every packet, say got it when one arrives, ask again for a missing one, throw away extra copies. Every post office in Netville follows them.', pic: 'book' },
     intro: 'Five packets, two lost on the way. Acknowledge what arrived and ask again for the rest.',
     hints: ['Which numbers never reached the house?', 'Slots 3 and 5 are empty. The sender will only resend what you ask for.', 'Say got it for 1, 2 and 4. Tap slot 3 and slot 5 and Send again, then say got it for both.'],
-    check: { q: 'What is a protocol?', tiles: ['Shared rules computers follow to talk', 'A kind of cable', 'A very fast packet'], answer: 0 } },
+    check: { q: 'What is a protocol?', tiles: ['Shared rules computers follow to talk', 'A kind of cable', 'A very fast packet'], answer: 0, why: 'Computers understand each other only when they all follow the same rules, like players in a game.' } },
   { id: 'pr-4', ch: 'protocols', bands: ['2'], csta: NI2, type: 'ack', n: 5, par: 8, picture: 'grapes', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', arrive: [2, 1, 3, 3, 5, 1], sol: 'auto',
     intro: 'A slow got it makes a sender resend too early. Now there are extra copies and one packet is still missing.',
     hints: ['Why can the same packet arrive twice?', 'Packets 1 and 3 each came twice: one got it each, the copies go in the bin. Slot 4 is empty.', 'Say got it for 2, 1, 3 and 5. Throw away the extra 3 and the extra 1. Send again for 4, then say got it.'],
-    check: { q: 'Why can a packet arrive twice?', tiles: ['The sender sent it again because the got-it note was slow', 'The road copied it', 'Every packet is always sent twice'], answer: 0 } },
+    check: { q: 'Why can a packet arrive twice?', tiles: ['The sender sent it again because the got-it note was slow', 'The road copied it', 'Every packet is always sent twice'], answer: 0, why: 'The sender could not tell the packet had arrived, so it played safe and sent it again.' } },
   { id: 'pr-5', ch: 'protocols', bands: ['2'], csta: NI2, type: 'check', n: 5, par: 3, damage: 2, random: true, picture: 'banana', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D', sol: 'auto',
     intro: 'Every packet carries a dot count. Count the dots on each one: if the count does not match, the packet was damaged and must be sent again.',
     hints: ['Does the number of dots match what the label says on every packet?', 'Two packets have a label that does not match their dots.', 'Tap each packet whose dots do not match its label, then tap Check the mail.'],
-    check: { q: 'What does counting the dots tell the house?', tiles: ['Whether a packet was damaged on the way', 'How old the packet is', 'Which road it took'], answer: 0 } },
+    check: { q: 'What does counting the dots tell the house?', tiles: ['Whether a packet was damaged on the way', 'How old the packet is', 'Which road it took'], answer: 0, why: 'If the number of dots does not match the count on the packet, something got damaged on the way.' } },
   { id: 'pr-6', ch: 'protocols', bands: ['2'], csta: NI2, type: 'order', par: 3, picture: 'globe', nodes: [LINE[0], LINE[2]], links: [['S', 'D']], from: 'S', to: 'D',
     tiles: [{ id: 'hello', text: 'Hello, are you there?' }, { id: 'ready', text: 'Yes! I am ready to receive.' }, { id: 'go', text: 'Great, sending now.' }], order: ['hello', 'ready', 'go'], sol: ['hello', 'ready', 'go'],
     intro: 'Before a big send, two computers shake hands in three steps. Put the steps in order.',
     hints: ['What would you say first if you wanted to know someone is listening?', 'First ask if anyone is there. Then the answer. Then the sending starts.', 'Tap Hello, then Yes, then Great, sending now.'],
-    check: { q: 'Why do two computers say hello before sending?', tiles: ['To check both are ready', 'To be polite', 'To pick the shortest road'], answer: 0 } },
+    check: { q: 'Why do two computers say hello before sending?', tiles: ['To check both are ready', 'To be polite', 'To pick the shortest road'], answer: 0, why: 'Sending to a computer that is not listening wastes every packet. Hello first makes sure someone is there.' } },
   { id: 'pr-7', ch: 'protocols', bands: ['2'], csta: NI2, type: 'rules', par: 5, budget: 4, picture: 'tower', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D',
     events: [{ text: 'Packet 3 never arrives.', needs: ['number', 'ack', 'resend'] }, { text: 'Packet 2 arrives twice.', needs: ['number', 'discard'] }, { text: 'The packets arrive mixed up.', needs: ['number'] }],
     rules: [{ id: 'number', text: 'Number every packet' }, { id: 'ack', text: 'Say got it for each packet' }, { id: 'resend', text: 'Ask again for a missing packet' }, { id: 'discard', text: 'Throw away extra copies' }, { id: 'twice', text: 'Send everything twice, just in case' }, { id: 'wait', text: 'Wait quietly and hope' }, { id: 'loud', text: 'Send the packets as loud as possible' }],
     needed: ['number', 'ack', 'resend', 'discard'], sol: ['number', 'ack', 'resend', 'discard'],
     intro: 'Design the rule set. Three things go wrong on this road. Pick at most four rules that catch all of them.',
     hints: ['Which rule tells the house that a packet is missing in the first place?', 'Numbers show the gap, got it tells the sender, ask again fills it, and copies need the bin.', 'Pick Number, Say got it, Ask again and Throw away copies. Then try the rules.'],
-    check: { q: 'A good rule set is…', tiles: ['Just the rules the problems need', 'As many rules as possible', 'No rules at all'], answer: 0 } },
+    check: { q: 'A good rule set is…', tiles: ['Just the rules the problems need', 'As many rules as possible', 'No rules at all'], answer: 0, why: 'Every extra rule costs time. The best set fixes each problem and nothing more.' } },
   { id: 'pr-8', ch: 'protocols', bands: ['2'], csta: NI2, type: 'order', par: 5, picture: 'apple', nodes: LINE, links: [['S', 'A'], ['A', 'D']], from: 'S', to: 'D',
     tiles: [{ id: 'cut', text: 'Cut the picture into numbered packets' }, { id: 'road', text: 'Pick a road for each packet' }, { id: 'send', text: 'Send the packets on their way' }, { id: 'ack', text: 'Say got it, or ask again for a missing one' }, { id: 'rebuild', text: 'Put the packets back in number order' }],
     order: ['cut', 'road', 'send', 'ack', 'rebuild'], sol: ['cut', 'road', 'send', 'ack', 'rebuild'],
     intro: 'The whole journey of a picture, in five rule cards. Put them in the order they happen.',
     hints: ['What has to happen before a packet can pick a road?', 'Cutting comes first and rebuilding comes last. Roads before sending, got it after.', 'Tap Cut, Pick a road, Send, Say got it, Put back in order.'],
-    check: { q: 'What happens last?', tiles: ['The packets go back in number order', 'The picture is cut up', 'A road is picked'], answer: 0 } },
+    check: { q: 'What happens last?', tiles: ['The packets go back in number order', 'The picture is cut up', 'A road is picked'], answer: 0, why: 'The house can only rebuild the picture once all the pieces are there.' } },
   // ---- Chapter 4: Lock It (what to share and what to keep, the passphrase builder, the device, the spare copy, physical and digital measures, Share or Shield)
   { id: 'lk-1', ch: 'locks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'sort', par: 8, random: true, bins: [{ id: 'share', label: 'Share', icon: 'speak' }, { id: 'keep', label: 'Keep', icon: 'lock' }],
-    items: [{ id: 'animal', text: 'Your favorite animal', bin: 'share' }, { id: 'addr', text: 'Your home address', bin: 'keep' }, { id: 'draw', text: 'A drawing of your pet', bin: 'share' }, { id: 'key', text: 'Your mailbox key', bin: 'keep' },
-      { id: 'school', text: 'The name of your school', bin: 'keep' }, { id: 'book', text: 'Your favorite book', bin: 'share' }, { id: 'bday', text: 'Your birthday', bin: 'keep' }, { id: 'joke', text: 'A joke you made up', bin: 'share' }], sol: 'auto',
+    items: [{ id: 'animal', text: 'Your favorite animal', bin: 'share', why: 'Your favorite animal cannot help anyone find you.' }, { id: 'addr', text: 'Your home address', bin: 'keep', why: 'Your address tells a stranger where you live.' }, { id: 'draw', text: 'A drawing of your pet', bin: 'share', why: 'A drawing shows your art, not where you are.' }, { id: 'key', text: 'Your mailbox key', bin: 'keep', why: 'Anyone with your key can open your mailbox.' },
+      { id: 'school', text: 'The name of your school', bin: 'keep', why: 'Your school tells a stranger where to find you every day.' }, { id: 'book', text: 'Your favorite book', bin: 'share', why: 'A favorite book is fun to talk about and shows nobody where you are.' }, { id: 'bday', text: 'Your birthday', bin: 'keep', why: 'Your birthday is used to check who you are, so a stranger could pretend to be you.' }, { id: 'joke', text: 'A joke you made up', bin: 'share', why: 'A joke is made to be shared, and it gives nothing away.' }], sol: 'auto',
     learn: { title: 'Lock it up', text: 'Some things about you are private: where you live, your birthday, your mailbox key. Share the fun things, keep the private things, and protect your stuff online the way you protect it at home: lock it, keep the key, keep a spare copy.', pic: 'shield' },
     intro: 'Pim is sorting the mail. Which things are fine to share with the whole town, and which stay private?',
     hints: ['Could a stranger use this to find you or get into your things?', 'Where you live, when you were born and your key all help a stranger. A joke or a favorite animal helps nobody.', 'Tap Keep for the address, the key, the school and the birthday. Everything else is Share.'],
-    check: { q: 'Which of these is private?', tiles: ['Your home address', 'Your favorite animal', 'A joke you made up'], answer: 0 } },
+    check: { q: 'Which of these is private?', tiles: ['Your home address', 'Your favorite animal', 'A joke you made up'], answer: 0, why: 'A stranger could use your address to find you. A joke or a favorite animal leads nobody to you.' } },
   { id: 'lk-2', ch: 'locks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'pass', par: 5, need: 4,
     words: [{ id: 'purple', text: "purple" }, { id: 'volcano', text: "volcano" }, { id: 'teapot', text: "teapot" }, { id: 'giraffe', text: "giraffe" }, { id: 'bicycle', text: "bicycle" }, { id: 'thunder', text: "thunder" }, { id: 'bday', text: 'my birthday', weak: true }, { id: 'pet', text: "my pet's name", weak: true }], sol: 'auto',
     intro: 'Build a mailbox key for Pim from four word tiles. Watch the meter: it shows how long a guessing computer would need.',
     hints: ['Which tiles could a stranger guess just by knowing you?', 'A birthday or a pet name is easy to look up. Four random words with many letters push the meter to centuries.', 'Pick purple, volcano, giraffe and bicycle, then tap Lock it in.'],
-    check: { q: 'What makes a passphrase strong and easy to remember?', tiles: ['Several random words with many letters', 'Your birthday written backwards', 'The word key'], answer: 0 } },
+    check: { q: 'What makes a passphrase strong and easy to remember?', tiles: ['Several random words with many letters', 'Your birthday written backwards', 'The word key'], answer: 0, why: 'A computer guesses short words fast. Random words take it ages, and a funny scene is easy to remember.' } },
   { id: 'lk-3', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'safe', label: 'Protects it', icon: 'check' }, { id: 'risky', label: 'Risky', icon: 'cross' }],
-    items: [{ id: 'lock', text: 'A screen lock on the tablet', bin: 'safe' }, { id: 'update', text: 'Installing updates when they appear', bin: 'safe' }, { id: 'park', text: 'Leaving it unlocked on a park bench', bin: 'risky' },
-      { id: 'logout', text: 'Signing out on a shared computer', bin: 'safe' }, { id: 'lend', text: 'Lending your mailbox key to a friend', bin: 'risky' }, { id: 'popup', text: 'Tapping every pop-up prize', bin: 'risky' }], sol: 'auto',
+    items: [{ id: 'lock', text: 'A screen lock on the tablet', bin: 'safe', why: 'A screen lock keeps out anyone who picks the tablet up.' }, { id: 'update', text: 'Installing updates when they appear', bin: 'safe', why: 'Updates fix holes that tricksters know how to use.' }, { id: 'park', text: 'Leaving it unlocked on a park bench', bin: 'risky', why: 'Anyone walking by could pick it up and open everything.' },
+      { id: 'logout', text: 'Signing out on a shared computer', bin: 'safe', why: 'Signing out stops the next person from using your account.' }, { id: 'lend', text: 'Lending your mailbox key to a friend', bin: 'risky', why: 'With your key, your friend can open your mailbox as you.' }, { id: 'popup', text: 'Tapping every pop-up prize', bin: 'risky', why: 'Prize pop-ups are often tricks that put bad programs on the tablet.' }], sol: 'auto',
     intro: 'A tablet holds your messages and pictures. Sort the habits: which ones protect it, and which ones put it at risk?',
     hints: ['If the tablet was left alone for a minute, what would keep a stranger out?', 'A lock, an update and signing out keep others out. Lending the key or leaving it open lets them in.', 'Tap Protects it for the lock, the updates and signing out. The other three are Risky.'],
-    check: { q: 'Which habit protects a tablet?', tiles: ['A screen lock', 'Leaving it unlocked on a bench', 'Tapping every pop-up'], answer: 0 } },
+    check: { q: 'Which habit protects a tablet?', tiles: ['A screen lock', 'Leaving it unlocked on a bench', 'Tapping every pop-up'], answer: 0, why: 'A screen lock keeps anyone who picks up the tablet out of your messages and pictures.' } },
   { id: 'lk-4', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'ok', label: 'Okay to tell', icon: 'check' }, { id: 'no', label: 'Keep it to yourself', icon: 'lock' }],
-    items: [{ id: 'home', text: 'A trusted adult at home who looks after your account', bin: 'ok' }, { id: 'friend', text: 'Your best friend, just this once', bin: 'no' }, { id: 'popup', text: 'A pop-up that promises free coins for it', bin: 'no' },
-      { id: 'chat', text: 'A stranger in game chat who says they are a helper', bin: 'no' }, { id: 'teacher', text: 'A teacher setting up the class tablets with you', bin: 'ok' }, { id: 'knows', text: 'Someone who already knows your birthday', bin: 'no' }], sol: 'auto',
+    items: [{ id: 'home', text: 'A trusted adult at home who looks after your account', bin: 'ok', why: 'This adult helps look after your account, so they may know the key.' }, { id: 'friend', text: 'Your best friend, just this once', bin: 'no', why: 'Even a good friend could let it slip, and then anyone could get in.' }, { id: 'popup', text: 'A pop-up that promises free coins for it', bin: 'no', why: 'A real prize never needs your key. The pop-up only wants to get in.' },
+      { id: 'chat', text: 'A stranger in game chat who says they are a helper', bin: 'no', why: 'Real helpers never ask for your key. Anyone can say they are a helper.' }, { id: 'teacher', text: 'A teacher setting up the class tablets with you', bin: 'ok', why: 'Your teacher is setting up the tablets with you to keep your account safe.' }, { id: 'knows', text: 'Someone who already knows your birthday', bin: 'no', why: 'Knowing your birthday does not make someone trusted. Your key stays with you.' }], sol: 'auto',
     intro: 'Who may know your mailbox key? Only the trusted adults who look after your account. Sort who gets to hear it.',
     hints: ['Who looks after your account, and who just wants to get in?', 'A trusted adult at home and a teacher setting things up look after you. Friends, strangers and pop-ups do not need your key.', 'Tap Okay to tell for the trusted adult at home and the teacher. Everyone else: Keep it to yourself.'],
-    check: { q: 'A friend asks for your mailbox key, just this once. What do you do?', tiles: ['Keep it to yourself', 'Tell them quietly', 'Write it on the board'], answer: 0 } },
+    check: { q: 'A friend asks for your mailbox key, just this once. What do you do?', tiles: ['Keep it to yourself', 'Tell them quietly', 'Write it on the board'], answer: 0, why: 'Anyone with your key can open your mailbox as you. Even a good friend could let it slip.' } },
   { id: 'lk-5', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'good', label: 'A good spare copy', icon: 'check' }, { id: 'bad', label: 'Not a spare copy', icon: 'cross' }],
-    items: [{ id: 'drive', text: 'A second copy on a drive at home', bin: 'good' }, { id: 'only', text: 'The only copy, on one tablet', bin: 'bad' }, { id: 'cloud', text: "A copy in the family's online folder", bin: 'good' },
-      { id: 'print', text: 'A printout of your best photo in a drawer', bin: 'good' }, { id: 'same', text: 'The same file saved twice in the same folder', bin: 'bad' }, { id: 'old', text: 'A copy from last year that was never updated', bin: 'bad' }], sol: 'auto',
+    items: [{ id: 'drive', text: 'A second copy on a drive at home', bin: 'good', why: 'It lives in another place, so it survives if the tablet breaks.' }, { id: 'only', text: 'The only copy, on one tablet', bin: 'bad', why: 'If that one tablet breaks, the work is gone. There is no spare.' }, { id: 'cloud', text: "A copy in the family's online folder", bin: 'good', why: 'It is kept away from the tablet, so a broken tablet does not take it.' },
+      { id: 'print', text: 'A printout of your best photo in a drawer', bin: 'good', why: 'A paper copy in a drawer is safe even if every screen breaks.' }, { id: 'same', text: 'The same file saved twice in the same folder', bin: 'bad', why: 'Both files sit on the same tablet, so they would be lost together.' }, { id: 'old', text: 'A copy from last year that was never updated', bin: 'bad', why: 'It is missing everything from this year, so it cannot save your newest work.' }], sol: 'auto',
     intro: 'A spare key lives somewhere safe, and so should a spare copy of your work. If the tablet breaks, which copies would save the day?',
     hints: ['If this tablet fell in the pond, would the copy survive?', 'A spare copy lives somewhere else and stays up to date. Two files in one folder sink together.', 'Tap A good spare copy for the drive, the online folder and the printout. The rest are not spare copies.'],
-    check: { q: 'Where should a spare copy (a backup) live?', tiles: ['Somewhere else, kept up to date', 'In the same folder as the original', 'Nowhere, copies are a waste'], answer: 0 } },
+    check: { q: 'Where should a spare copy (a backup) live?', tiles: ['Somewhere else, kept up to date', 'In the same folder as the original', 'Nowhere, copies are a waste'], answer: 0, why: 'If the tablet breaks or gets lost, a copy in another place is still safe, with your newest work.' } },
   { id: 'lk-6', ch: 'locks', bands: ['1b'], csta: NI5, type: 'sort', par: 6, random: true, bins: [{ id: 'safe', label: 'Safe habit', icon: 'check' }, { id: 'risky', label: 'Risky habit', icon: 'cross' }],
-    items: [{ id: 'different', text: 'One key for the mail, a different one for games', bin: 'safe' }, { id: 'same', text: 'The same key everywhere', bin: 'risky' }, { id: 'words', text: 'A key made of four random words', bin: 'safe' },
-      { id: 'pet', text: "Your pet's name as the key", bin: 'risky' }, { id: 'change', text: 'Changing the key when a site leaks it', bin: 'safe' }, { id: 'asks', text: 'Telling the key to whoever asks nicely', bin: 'risky' }], sol: 'auto',
+    items: [{ id: 'different', text: 'One key for the mail, a different one for games', bin: 'safe', why: 'If one key leaks, only one door opens. The others stay locked.' }, { id: 'same', text: 'The same key everywhere', bin: 'risky', why: 'If it leaks once, every door that uses it is open.' }, { id: 'words', text: 'A key made of four random words', bin: 'safe', why: 'Four random words take a guessing computer a very long time.' },
+      { id: 'pet', text: "Your pet's name as the key", bin: 'risky', why: 'Your pet\'s name is easy for others to find out and guess.' }, { id: 'change', text: 'Changing the key when a site leaks it', bin: 'safe', why: 'A new key makes the leaked one useless.' }, { id: 'asks', text: 'Telling the key to whoever asks nicely', bin: 'risky', why: 'Asking nicely is a favorite trick. Your key stays with you.' }], sol: 'auto',
     intro: 'If one key opens every door, losing it opens them all. Sort the habits: safe or risky?',
     hints: ['If one game leaked your key, what else would open?', 'Different keys keep a leak small. A pet name or the same key everywhere makes one leak a disaster.', 'Tap Safe habit for different keys, four random words and changing a leaked key. The other three are Risky.'],
-    check: { q: 'Why is one key for everything risky?', tiles: ['One leak opens every account', 'It is hard to remember', 'Keys wear out'], answer: 0 } },
+    check: { q: 'Why is one key for everything risky?', tiles: ['One leak opens every account', 'It is hard to remember', 'Keys wear out'], answer: 0, why: 'If a site leaks that one key, a stranger can try it on every other account you have.' } },
   { id: 'lk-7', ch: 'locks', bands: ['2'], csta: NI5B, type: 'sort', par: 12, random: true, bins: [{ id: 'physical', label: 'Physical', icon: 'home' }, { id: 'digital', label: 'Digital', icon: 'key' }],
-    items: [{ id: 'door', text: 'A lock on the server room door', bin: 'physical' }, { id: 'badge', text: 'A badge to get into the office', bin: 'physical' }, { id: 'safe', text: 'A safe for the backup drives', bin: 'physical' }, { id: 'camera', text: 'A camera at the entrance', bin: 'physical' },
-      { id: 'cable', text: 'A cable lock on the laptop', bin: 'physical' }, { id: 'screen', text: 'A privacy screen on the monitor', bin: 'physical' }, { id: 'key', text: 'A strong mailbox key', bin: 'digital' }, { id: 'twostep', text: 'Two-step sign-in', bin: 'digital' },
-      { id: 'firewall', text: 'A firewall', bin: 'digital' }, { id: 'updates', text: 'Updates for the apps', bin: 'digital' }, { id: 'sealed', text: 'Sealed envelopes (encryption)', bin: 'digital' }, { id: 'scanner', text: 'A virus scanner', bin: 'digital' }], sol: 'auto',
+    items: [{ id: 'door', text: 'A lock on the server room door', bin: 'physical', why: 'A door lock is a thing you can touch.' }, { id: 'badge', text: 'A badge to get into the office', bin: 'physical', why: 'A badge is a card you hold in your hand.' }, { id: 'safe', text: 'A safe for the backup drives', bin: 'physical', why: 'A safe is a heavy box you can touch.' }, { id: 'camera', text: 'A camera at the entrance', bin: 'physical', why: 'A camera is a device fixed to the wall.' },
+      { id: 'cable', text: 'A cable lock on the laptop', bin: 'physical', why: 'A cable lock is a metal cable you can hold.' }, { id: 'screen', text: 'A privacy screen on the monitor', bin: 'physical', why: 'A privacy screen is a sheet fixed over the monitor.' }, { id: 'key', text: 'A strong mailbox key', bin: 'digital', why: 'A mailbox key is typed in, so it lives in the computer.' }, { id: 'twostep', text: 'Two-step sign-in', bin: 'digital', why: 'Two-step sign-in happens on the screen, inside the computer.' },
+      { id: 'firewall', text: 'A firewall', bin: 'digital', why: 'A firewall is a program that watches what comes in.' }, { id: 'updates', text: 'Updates for the apps', bin: 'digital', why: 'Updates are new instructions that run inside the apps.' }, { id: 'sealed', text: 'Sealed envelopes (encryption)', bin: 'digital', why: 'Encryption scrambles the letters inside the computer.' }, { id: 'scanner', text: 'A virus scanner', bin: 'digital', why: 'A virus scanner is a program that checks your files.' }], sol: 'auto',
     intro: 'Netville Post protects its mail two ways: with physical measures you can touch, and digital measures that live in the computers. Sort all twelve.',
     hints: ['Could you bump into this measure with your elbow?', 'Doors, badges, safes, cameras, cable locks and privacy screens are things. Mailbox keys, two-step sign-in, firewalls, updates, encryption and virus scanners run on the computer.', 'Tap Physical for the six things you can touch and Digital for the six that run on the computer.'],
-    check: { q: 'Which is a digital security measure?', tiles: ['A firewall', 'A lock on the door', 'A camera at the entrance'], answer: 0 } },
+    check: { q: 'Which is a digital security measure?', tiles: ['A firewall', 'A lock on the door', 'A camera at the entrance'], answer: 0, why: 'A firewall is a program that runs on the computer. Doors and cameras are things you can touch.' } },
   { id: 'lk-8', ch: 'locks', bands: ['2'], csta: NI5B, type: 'route', n: 3, par: 18, secret: true, picture: 'schoolbag', nodes: DETOUR('The Shop'), links: [['S', 'A'], ['A', 'D'], ['S', 'B', { sealed: true }], ['B', 'C', { sealed: true }], ['C', 'D', { sealed: true }]], from: 'S', to: 'D', sol: 'auto',
     intro: 'Your order for the shop has your name and your home address inside. The open street is shorter, but the snoopy cat reads everything on it. The padlock street is sealed.',
     hints: ['Which street has the padlock, and what does the cat see there?', 'Sealed streets cost more hops but hide every letter. The open street over the hill is where the cat waits.', 'Tap the sealed road by the river, then the sealed road to the bridge, then the sealed road into the shop, for every packet.'],
-    check: { q: 'A shop page shows a padlock. What does that mean?', tiles: ['The envelopes to the shop are sealed, so nobody on the way can read them', 'The shop is closed', 'The page is slow'], answer: 0 } },
+    check: { q: 'A shop page shows a padlock. What does that mean?', tiles: ['The envelopes to the shop are sealed, so nobody on the way can read them', 'The shop is closed', 'The page is slow'], answer: 0, why: 'The padlock means the envelopes are sealed. Anyone on the road sees only scrambled letters.' } },
   { id: 'lk-9', ch: 'locks', bands: ['2'], csta: NI5B, type: 'pass', par: 5, need: 4,
     words: [{ id: 'granite', text: 'granite' }, { id: 'kettle', text: 'kettle' }, { id: 'meadow', text: 'meadow' }, { id: 'walrus', text: 'walrus' }, { id: 'trumpet', text: 'trumpet' }, { id: 'comet', text: 'comet' }, { id: 'sticker', text: 'the word on the router sticker', weak: true }, { id: 'street', text: 'our street name', weak: true }], sol: 'auto',
     intro: 'The home router still has the key printed on its sticker, and anyone who visits can read it. Build it a new one from four word tiles.',
     hints: ['Which tiles can a visitor read off the router or the street sign?', 'The sticker word and the street name are known to every visitor. Random words with many letters are not.', 'Pick granite, kettle, meadow and trumpet, then tap Lock it in.'],
-    check: { q: 'Why change the key printed on the router sticker?', tiles: ['Anyone who sees the sticker can get in', 'Stickers fall off', 'Printed keys are too long'], answer: 0 } },
+    check: { q: 'Why change the key printed on the router sticker?', tiles: ['Anyone who sees the sticker can get in', 'Stickers fall off', 'Printed keys are too long'], answer: 0, why: 'Every visitor can read the sticker. A key that anyone can read keeps nobody out.' } },
   { id: 'lk-10', ch: 'locks', bands: ['2'], csta: NI5B, type: 'order', par: 4, picture: 'book', nodes: [LINE[0], LINE[2]], links: [['S', 'D']], from: 'S', to: 'D',
     tiles: [{ id: 'copy', text: 'Make a second copy' }, { id: 'place', text: 'Keep it in another place' }, { id: 'check', text: 'Check that the copy opens' }, { id: 'update', text: 'Update the copy when the file changes' }], order: ['copy', 'place', 'check', 'update'], sol: ['copy', 'place', 'check', 'update'], starter: ['update', 'copy', 'place', 'check'],
     intro: 'The backup rule in four steps. A copy that lives next to the original, or that nobody ever checked, is no protection at all. Put the steps in order.',
     hints: ['What has to exist before you can store it somewhere else?', 'First the copy, then its own place, then a check that it works, then keep it fresh.', 'Tap Make a second copy, Keep it in another place, Check that the copy opens, Update the copy.'],
-    check: { q: 'Why keep the copy in another place?', tiles: ['One flood or one theft cannot take both', 'It looks tidier', 'A copy on the same laptop is just as safe'], answer: 0 } },
+    check: { q: 'Why keep the copy in another place?', tiles: ['One flood or one theft cannot take both', 'It looks tidier', 'A copy on the same laptop is just as safe'], answer: 0, why: 'A fire, a flood or a thief in one place cannot reach a copy that lives somewhere else.' } },
   { id: 'lk-11', ch: 'locks', bands: ['2'], csta: IC23, type: 'sort', par: 12, random: true, bins: [{ id: 'public', label: 'Public', icon: 'speak' }, { id: 'private', label: 'Private', icon: 'lock' }],
     items: [
       { id: 'name', text: 'Your first name on a class project', bin: 'public', benefit: 'Classmates know whose work it is', risk: 'Very little: a first name alone is not much', reasons: ['Many people share it, and it is not enough to find you', 'Nobody may ever know your name', 'It opens your mailbox'], answer: 0 },
@@ -841,7 +843,7 @@ const LEVELS = [
       { id: 'game', text: 'Your favorite game', bin: 'public', benefit: 'You find people who like it too', risk: 'Almost none', reasons: ['It says what you like, not who or where you are', 'Games are secret', 'It unlocks your tablet'], answer: 0 }], sol: 'auto',
     intro: 'Share or Shield. Six facts about you, each with a good side and a risk. Decide public or private, then pick the reason.',
     hints: ['Weigh the good side against the risk: could a stranger use this fact to find you or get into your things?', 'A name, a drawing and a favorite game say what you like. An address, a key and empty-house dates say where and how to reach you.', 'Public: the first name, the photo, the game. Private: the address, the key, the dates away. Then pick the first reason that explains the risk.'],
-    check: { q: 'What makes a fact private rather than public?', tiles: ['It could help a stranger find you or get into your things', 'It is embarrassing', 'It is a number'], answer: 0 } },
+    check: { q: 'What makes a fact private rather than public?', tiles: ['It could help a stranger find you or get into your things', 'It is embarrassing', 'It is a number'], answer: 0, why: 'Facts like your address or your key lead a stranger to you or into your things. A favorite game does not.' } },
 
   // ---- Chapter 5: Spot the Trick (an inbox of pretend messages: find the cues, then safe, trick or ask a trusted adult)
   { id: 'tk-1', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Prize Team', badge: 'odd', subject: 'You won a tablet!', body: 'Congratulations! You are our lucky winner. Reply with your mailbox key in the next ten minutes to claim your prize.', button: 'Claim now', verdict: 'trick', starter: 'safe',
@@ -849,79 +851,79 @@ const LEVELS = [
     learn: { title: 'Spot the trick', text: 'Some messages are tricks. They rush you, promise prizes, ask for your mailbox key, or come from a sender you do not know. Tap every cue you can find, then decide: safe, trick, or ask a trusted adult.', pic: 'magnifier' },
     intro: "A message just landed in Pim's inbox. Tap every cue that smells like a trick, then decide what it is.",
     hints: ['Who sent this, and what do they want from you?', 'Look at the clock, the key and the prize. Real prizes never need your key.', 'Tap Hurry, Asks for the mailbox key and the prize cue, then tap Trick.'],
-    check: { q: 'A message offers a prize if you reply with your mailbox key. What is it?', tiles: ['A trick: nobody real asks for your key', 'A lucky day', 'A normal delivery note'], answer: 0 } },
+    check: { q: 'A message offers a prize if you reply with your mailbox key. What is it?', tiles: ['A trick: nobody real asks for your key', 'A lucky day', 'A normal delivery note'], answer: 0, why: 'Your key is only for you and your trusted adults. A real prize never needs it, so asking for it is the trick.' } },
   { id: 'tk-2', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Your bank', badge: 'odd', subject: 'Your account is locked', body: 'We noticed a problem. Send us your mailbox key today or your account will be closed.', button: 'Unlock', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'threat', text: 'Threatens to close your account', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'sender', text: 'Unknown sender badge', trick: true }, { id: 'today', text: 'Mentions today', trick: false }], sol: 'auto',
     intro: 'This one sounds scary. Scary is a trick too: it wants you to act before you think.',
     hints: ['Would a real bank ever ask for your key in a message?', 'A threat, a key request and an unknown badge: three cues on one card.', 'Tap the threat, the key cue and the badge cue, then tap Trick or Ask a trusted adult.'],
-    check: { q: 'A message threatens to close your account unless you send your key. What do you do?', tiles: ['Treat it as a trick and ask a trusted adult', 'Send the key quickly', 'Reply to argue'], answer: 0 } },
+    check: { q: 'A message threatens to close your account unless you send your key. What do you do?', tiles: ['Treat it as a trick and ask a trusted adult', 'Send the key quickly', 'Reply to argue'], answer: 0, why: 'Real companies do not threaten you. The scare is there to rush you; a trusted adult can check calmly.' } },
   { id: 'tk-3', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 1, from: 'Your teacher', badge: 'known', subject: 'Field trip on Friday', body: 'Bring a packed lunch and a raincoat. The bus leaves at nine. See you there!', verdict: 'safe', starter: 'trick',
     cues: [{ id: 'lunch', text: 'Mentions lunch', trick: false }, { id: 'known', text: 'Known sender badge', trick: false }, { id: 'bus', text: 'Says what time the bus leaves', trick: false }], sol: 'auto',
     intro: 'Not every message is a trick. Read this one carefully before you decide.',
     hints: ['Does it rush you, promise anything, or ask for anything private?', 'A known sender, no hurry, no key, nothing to tap. Those are not trick cues.', 'Leave the cues alone and tap Safe.'],
-    check: { q: 'What tells you a message is probably safe?', tiles: ['A known sender and nothing asked of you', 'A big prize', 'A countdown clock'], answer: 0 } },
+    check: { q: 'What tells you a message is probably safe?', tiles: ['A known sender and nothing asked of you', 'A big prize', 'A countdown clock'], answer: 0, why: 'Tricks always want something from you. A sender you know who asks for nothing gives no reason to worry.' } },
   { id: 'tk-4', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 4, from: 'Game Shop', badge: 'odd', subject: 'Free coins today only!', body: 'Tap the button to get a thousand free coins. Hurry, the offer ends in one hour!', button: 'Get coins', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'free', text: 'Free coins for nothing', trick: true }, { id: 'hurry', text: 'Hurry, one hour', trick: true }, { id: 'button', text: 'A button that wants a tap right now', trick: true }, { id: 'coins', text: 'Talks about coins', trick: false }], sol: 'auto',
     intro: 'Free coins! Before you tap anything, find the cues.',
     hints: ['Why would a shop give coins away for one tap?', 'Something for nothing, a clock, and a shiny button are the classic three.', 'Tap Free coins, Hurry and the button cue, then tap Trick.'],
-    check: { q: 'A shiny button promises free coins if you tap it right now. Why is that a cue?', tiles: ['Tricks rush you so you do not think', 'Buttons are always safe', 'Coins are free online'], answer: 0 } },
+    check: { q: 'A shiny button promises free coins if you tap it right now. Why is that a cue?', tiles: ['Tricks rush you so you do not think', 'Buttons are always safe', 'Coins are free online'], answer: 0, why: 'Hurry stops you from checking. A real offer would still be there tomorrow.' } },
   { id: 'tk-5', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', accept: ['ask'], par: 4, from: 'A new friend', badge: 'odd', subject: 'Meet me after school', body: 'I saw you in the game. Tell me your street and I will come over with a gift.', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'where', text: 'Asks where you live', trick: true }, { id: 'stranger', text: 'Someone you have never met', trick: true }, { id: 'gift', text: 'Offers a gift', trick: true }, { id: 'game', text: 'Mentions the game', trick: false }], sol: 'auto',
     intro: 'A stranger from the game wants to visit. This is one to show a trusted adult.',
     hints: ['Have you ever met this person? What do they want to know?', 'A stranger, a question about where you live, and a gift to make it sound nice.', 'Tap the three cues, then tap Ask a trusted adult.'],
-    check: { q: 'Someone you met in a game asks for your street. What do you do?', tiles: ['Do not answer and tell a trusted adult', 'Give the street but not the number', 'Invite them over'], answer: 0 } },
+    check: { q: 'Someone you met in a game asks for your street. What do you do?', tiles: ['Do not answer and tell a trusted adult', 'Give the street but not the number', 'Invite them over'], answer: 0, why: 'Your street tells a stranger where to find you. A trusted adult can help you deal with it.' } },
   { id: 'tk-6', ch: 'tricks', bands: BOTH, csta: NI5, csta2: NI5B, type: 'inbox', par: 1, from: 'The library', badge: 'known', subject: 'Your book is due', body: 'The dinosaur book is due back on Monday. Bring it to the desk any time this week.', verdict: 'safe', starter: 'trick',
     cues: [{ id: 'due', text: 'Says a book is due', trick: false }, { id: 'known', text: 'Known sender badge', trick: false }, { id: 'calm', text: 'No rush and nothing to tap', trick: false }], sol: 'auto',
     intro: 'Last card of the day. Look carefully: is anything here a trick cue?',
     hints: ['Does it ask for anything, or rush you?', 'Known sender, a normal reminder, no button. Nothing to flag.', 'Tap Safe without flagging any cue.'],
-    check: { q: 'The library reminds you a book is due, with no button and no hurry. What is it?', tiles: ['Safe: a normal reminder', 'A trick', 'A prize'], answer: 0 } },
+    check: { q: 'The library reminds you a book is due, with no button and no hurry. What is it?', tiles: ['Safe: a normal reminder', 'A trick', 'A prize'], answer: 0, why: 'It asks for nothing and does not rush you. It only tells you something you need to know.' } },
   { id: 'tk-7', ch: 'tricks', bands: ['2'], csta: NI5B, type: 'inbox', par: 4, from: 'Your bank', badge: 'odd', subject: 'Confirm your details', body: 'For your safety, confirm your mailbox key and birthday using the button below.', button: 'Confirm', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'spoof', text: 'Says the bank, but the badge says unknown sender', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'safety', text: 'Pretends it is for your safety', trick: true }, { id: 'polite', text: 'Is polite', trick: false }], sol: 'auto',
     intro: 'A sender can write any name on an envelope. The badge shows whether the post office really knows them.',
     hints: ['Does the name on the envelope match what the post office knows about the sender?', 'The name says bank, the badge says unknown. That mismatch is called a spoofed sender.', 'Tap the badge cue, the key cue and the safety cue, then tap Trick.'],
-    check: { q: 'A message says it is from your bank, but the sender badge says unknown. What is going on?', tiles: ['The sender name is faked (spoofed)', 'The bank moved', 'Badges are random'], answer: 0 } },
+    check: { q: 'A message says it is from your bank, but the sender badge says unknown. What is going on?', tiles: ['The sender name is faked (spoofed)', 'The bank moved', 'Badges are random'], answer: 0, why: 'Anyone can type a bank\'s name. The badge shows where the message really came from.' } },
   { id: 'tk-8', ch: 'tricks', bands: ['2'], csta: NI5B, type: 'inbox', par: 4, from: 'Parcel Service', badge: 'odd', subject: 'Your parcel is waiting', body: 'We could not deliver your parcel. Pay a small fee within two hours to get it back.', button: 'Pay now', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'fee', text: 'Asks for money', trick: true }, { id: 'hurry', text: 'Two hours to act', trick: true }, { id: 'noorder', text: 'A parcel you never ordered', trick: true }, { id: 'parcel', text: 'Mentions a parcel', trick: false }], sol: 'auto',
     intro: 'Did you order anything? A parcel you never ordered is a favorite trick.',
     hints: ['Were you expecting a parcel at all?', 'Money, a two hour clock, and a parcel out of nowhere.', 'Tap Asks for money, Two hours and the parcel cue, then tap Trick.'],
-    check: { q: 'A note asks for a small fee within two hours for a parcel you never ordered. What is it?', tiles: ['A trick: money plus hurry plus surprise', 'A normal delivery', 'A gift'], answer: 0 } },
+    check: { q: 'A note asks for a small fee within two hours for a parcel you never ordered. What is it?', tiles: ['A trick: money plus hurry plus surprise', 'A normal delivery', 'A gift'], answer: 0, why: 'You never ordered it, they want money, and they rush you: three warning signs at once.' } },
   { id: 'tk-9', ch: 'tricks', bands: ['2'], csta: IC23, type: 'inbox', par: 4, from: 'Fan Club', badge: 'odd', subject: 'Hello, skateboard star!', body: 'We saw your profile: you love skateboards, your dog is called Biscuit and you turn twelve next week. Reply with your mailbox key to get a birthday prize!', button: 'Get prize', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'profile', text: 'Knows things from your public profile', trick: true }, { id: 'key', text: 'Asks for the mailbox key', trick: true }, { id: 'prize', text: 'A prize out of nowhere', trick: true }, { id: 'dog', text: 'Mentions your dog', trick: false }], sol: 'auto',
     intro: 'They know your dog and your birthday. Where did that come from? Anything on a public profile is a gift to a trickster.',
     hints: ['What did they already know about you, and where could they have read it?', 'Everything they know sits on a public profile. Knowing it does not make them a friend.', 'Tap the profile cue, the key cue and the prize cue, then tap Trick.'],
-    check: { q: 'A stranger knows your dog and your birthday from your public profile. Does that make them trustworthy?', tiles: ['No: anyone can read a public profile', 'Yes, they must be a friend', 'Only if they are polite'], answer: 0 } },
+    check: { q: 'A stranger knows your dog and your birthday from your public profile. Does that make them trustworthy?', tiles: ['No: anyone can read a public profile', 'Yes, they must be a friend', 'Only if they are polite'], answer: 0, why: 'Knowing facts about you does not make someone a friend. Anyone can read a public profile.' } },
   { id: 'tk-10', ch: 'tricks', bands: ['2'], csta: IC23, type: 'inbox', par: 4, from: 'Fun Quiz', badge: 'odd', subject: 'Which dragon are you?', body: 'Answer three quick questions to find out: your first pet, the street you grew up on, and your birthday. Then share your result with everyone!', button: 'Start quiz', verdict: 'trick', starter: 'safe',
     cues: [{ id: 'secrets', text: 'Asks the very things used to reset a mailbox key', trick: true }, { id: 'share', text: 'Wants you to post it for everyone', trick: true }, { id: 'fun', text: 'Dressed up as a fun quiz', trick: true }, { id: 'dragon', text: 'Mentions dragons', trick: false }], sol: 'auto',
     intro: 'A quiz that only wants three little facts. Those three facts are the ones that reset a mailbox key.',
     hints: ['What do a first pet, a street and a birthday have in common?', 'Those are the questions a site asks to reset your key. A quiz that collects them collects keys.', 'Tap the three cues, then tap Trick.'],
-    check: { q: 'Why is a quiz that asks for your first pet and birthday a trick?', tiles: ['Those answers reset mailbox keys', 'Quizzes are boring', 'Those answers are not secrets, so it is fine'], answer: 0 } },
+    check: { q: 'Why is a quiz that asks for your first pet and birthday a trick?', tiles: ['Those answers reset mailbox keys', 'Quizzes are boring', 'Those answers are not secrets, so it is fine'], answer: 0, why: 'Many sites use those same questions to reset a key. Your answers would help a trickster get in.' } },
 
   // ---- Chapter 6: Secret Messages (the key wheel, encoding, an unknown shift, the key card, hidden pixels, cracking by counting E, the two-key lockbox)
   { id: 'ci-1', ch: 'ciphers', bands: BOTH, csta: [], csta2: NI6, type: 'cipher', par: 2, kind: 'caesar', mode: 'decode', plain: 'APPLE', shift: 3, sol: 'auto', starter: 5,
     learn: { title: 'Secret messages', text: 'A cipher scrambles a message so only someone with the key can read it. The key wheel shifts every letter along the alphabet. Turn it back by the same amount and the message comes back.', pic: 'letterblock' },
     intro: 'Grandma sent a secret word with a shift of three. Turn the inner wheel until the reading makes sense, then tap That\'s it!',
     hints: ['The message was shifted by three. Where should the wheel point?', 'Watch the reading under the message: it changes with every turn.', 'Turn to shift 3. The reading says APPLE.'],
-    check: { q: 'What does the key wheel do to a message?', tiles: ['Shifts every letter by the same amount', 'Deletes the vowels', 'Makes the letters bigger'], answer: 0 } },
+    check: { q: 'What does the key wheel do to a message?', tiles: ['Shifts every letter by the same amount', 'Deletes the vowels', 'Makes the letters bigger'], answer: 0, why: 'Every letter moves the same number of steps, so turning the wheel back that many undoes it.' } },
   { id: 'ci-2', ch: 'ciphers', bands: BOTH, csta: [], csta2: NI6, type: 'cipher', par: 1, kind: 'caesar', mode: 'encode', plain: 'OAK TREE', shift: 5, sol: 'auto',
     intro: 'Now you send one. Shift OAK TREE by five and pick the scrambled message that matches.',
     hints: ['Where does O land when every letter moves five steps forward?', 'O becomes T, A becomes F. Check the first two letters of each reading.', 'Pick the reading that starts with TF.'],
-    check: { q: 'To send a secret with a shift of five, what do you do to each letter?', tiles: ['Move it five steps forward', 'Double it', 'Swap it with the next word'], answer: 0 } },
+    check: { q: 'To send a secret with a shift of five, what do you do to each letter?', tiles: ['Move it five steps forward', 'Double it', 'Swap it with the next word'], answer: 0, why: 'To hide it, each letter moves five steps forward. Your friend turns back five to read it.' } },
   { id: 'ci-3', ch: 'ciphers', bands: BOTH, csta: [], csta2: NI6, type: 'cipher', par: 2, kind: 'caesar', mode: 'decode', random: true, plains: ['RIVER', 'TOWER', 'GARDEN', 'ROCKET', 'PENGUIN', 'LANTERN', 'BRIDGE', 'PICNIC'], sol: 'auto',
     intro: 'A secret word with an unknown shift. Turn the wheel one step at a time until a real word appears.',
     hints: ['Does the reading look like a real word yet?', 'Only one shift turns it into a word. Keep going one step at a time and read every time.', 'Keep turning until the reading is a word from Netville: a river, a tower, a garden, a rocket.'],
-    check: { q: 'You do not know the shift. How can you still read the message?', tiles: ['Try every shift until a real word appears', 'Give up', 'Read it backwards'], answer: 0 } },
+    check: { q: 'You do not know the shift. How can you still read the message?', tiles: ['Try every shift until a real word appears', 'Give up', 'Read it backwards'], answer: 0, why: 'There are only 25 shifts. Try them one by one: only one turns the message into a real word.' } },
   { id: 'ci-4', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'cipher', par: 1, kind: 'keyed', mode: 'decode', plain: 'TOWER', key: 'QWERTYUIOPASDFGHJKLZXCVBNM', choices: ['RIVER', 'TOWER', 'TIGER'], answer: 1, sol: 'auto',
     intro: 'A key card swaps every letter for a partner, with no pattern to guess. Use the card to read the message, then pick the word it says.',
     hints: ['Which plain letter does the card swap for the first letter of the message?', 'Find each secret letter in the green row and read the plain letter above it.', 'The card turns the message into TOWER.'],
-    check: { q: 'Why is a key card harder to crack than a shift?', tiles: ['There are far more key cards than shifts to try', 'It is made of thicker paper', 'It uses more vowels'], answer: 0 } },
+    check: { q: 'Why is a key card harder to crack than a shift?', tiles: ['There are far more key cards than shifts to try', 'It is made of thicker paper', 'It uses more vowels'], answer: 0, why: 'A shift has only 25 ways to try. A scrambled alphabet has so many that nobody could try them all.' } },
   { id: 'ci-5', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'pixel', par: 40, w: 6, h: 6, mode: 'hide', random: true, target: [0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], sol: 'auto',
     intro: 'Hide a heart inside an ordinary picture. Every pixel is a number; make its last bit match the heart: odd for a dot, even for blank. The picture will look the same.',
     hints: ['Which pixels need a dot, and which number is odd?', 'A pixel with a dot is odd. Compare each pixel with the small heart.', 'Tap every pixel whose dot does not match the heart, then tap Check the picture.'],
-    check: { q: 'Changing the last bit of a pixel hides a message because…', tiles: ['The picture looks the same to the eye', 'Pixels disappear', 'The picture gets brighter'], answer: 0 } },
+    check: { q: 'Changing the last bit of a pixel hides a message because…', tiles: ['The picture looks the same to the eye', 'Pixels disappear', 'The picture gets brighter'], answer: 0, why: 'The tiniest change to a color is too small for eyes to see, so nobody knows a message is there.' } },
   { id: 'ci-6', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'cipher', par: 3, kind: 'caesar', mode: 'crack', random: true, plains: ['THE BEES SEE THE TREES NEAR THE LAKE', 'WE MEET AT THREE BY THE GREEN GATE', 'SEVEN GEESE SLEEP BESIDE THE WHEEL'], sol: 'auto',
     intro: 'No key this time. In English the most common letter is usually E. Count the letters, find the most common one, and turn the wheel so it becomes E.',
     hints: ['Which letter appears most often in the secret message?', 'Tap Count the letters. The top letter is probably a shifted E.', 'Turn the wheel until the most common letter reads as E, then tap That\'s it!'],
-    check: { q: 'How can you crack a shift without the key?', tiles: ['Count the letters: the most common one is probably E', 'Ask the sender nicely', 'Shake the wheel'], answer: 0 } },
+    check: { q: 'How can you crack a shift without the key?', tiles: ['Count the letters: the most common one is probably E', 'Ask the sender nicely', 'Shake the wheel'], answer: 0, why: 'E is the most common letter in English, so the letter that shows up most was probably an E.' } },
   { id: 'ci-7', ch: 'ciphers', bands: ['2'], csta: NI6, type: 'sort', par: 8, bins: [{ id: 'easy', label: 'Easy to crack', icon: 'unlock' }, { id: 'hard', label: 'Hard to crack', icon: 'lock' }],
     items: [
       { id: 'shift', text: 'A shift of three on the key wheel', bin: 'easy', info: 'Every letter moves three steps along the alphabet.', reasons: ['There are only twenty-five shifts to try', 'Nobody knows about wheels', 'Three is a big number'], answer: 0 },
@@ -930,7 +932,7 @@ const LEVELS = [
       { id: 'pixels', text: 'A message hidden in picture pixels, once the trick is known', bin: 'easy', info: 'The picture looks normal, but the last bits spell it out.', reasons: ['Hiding is not locking: anyone who knows where to look can read it', 'Pictures are always secret', 'Pixels cannot hold letters'], answer: 0 }], sol: 'auto',
     intro: 'Four ways to keep a secret. Which are easy to crack and which are hard, and why? The two-key lockbox is how real sealed roads work.',
     hints: ['How many tries would a computer need for each one?', 'Twenty-five shifts is nothing for a computer. A scrambled card or a key that never travels is another story.', 'Easy: the shift and the hidden pixels. Hard: the key card and the lockbox. Then pick the first reason each time.'],
-    check: { q: 'In the two-key lockbox, who can open the box?', tiles: ['Only the owner, with the key that never travels', 'Anyone who finds the box', 'The post office'], answer: 0 } },
+    check: { q: 'In the two-key lockbox, who can open the box?', tiles: ['Only the owner, with the key that never travels', 'Anyone who finds the box', 'The post office'], answer: 0, why: 'Anyone can lock the box, but only the owner\'s own key opens it, and that key never leaves home.' } },
 ];
 /** The cipher word list: every plaintext, key and reading a player can see, screened at build time by shifting each one by all 25 keys against the profanity lists of every language. */
 const WORDS = [...new Set(LEVELS.filter(l => l.type === 'cipher').flatMap(l => [l.plain, ...(l.plains || []), l.key, ...(l.choices || [])]).filter(Boolean))];
@@ -960,7 +962,7 @@ const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
 
 /* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
 const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-357f9f1f', PACK_SRI = {"es":"sha384-pW5OvZTNY8vPTGRdW+se8p75UhWPgd8ddhuqQTQa8UtlC2Y582HcXupfAVLiyA8P","fr":"sha384-zZPqjwWyoxkQkh2JbG+qcUeSE0rw/4XZVv983UNyNFNPFLuIH/TMm5qqXCSRRxhB","de":"sha384-mGUjqOxRkfp2EAutZcwgvCMKR/H1QTmo5j0xieEQ9v5iTys6qQVzrqQj49T+T9Ed","it":"sha384-0dOEoQlVZt/2VSvEqZd3NPwAT+vmDdBnMndjcMDMltTMZ0QXxE14D3arj/bG20Bv","pt":"sha384-bJIiqFCxGdJ9Fruwn8+urjukKwuiKcLkz9zkswZYdLcI3IrUNks0zDrReSEP7EDY","nl":"sha384-OoKobCFPE4YNntDvi3RfXOD8fs9fHCvMm2e9Wj/njDbOLZWfXS0Y4/4Lmox+SZt7","ru":"sha384-ReV8xeR6iKGdKXLBt7QGjy3cNTf63E+uC15hkVKZ4O0SFdOcak+ik66EdDJZWzEp","ja":"sha384-znEplYE+hVZwuJcuiVWMqyYS4pkJUDfGnlqg6BiXMKYpTv9qjduMcG3PX5O6AwDW","zh-Hant":"sha384-SgsBqAb2TTf7nGqhnKwDwriAEe4MzLA6jj5oV9lDDrwEIFdSA4uNMm5zvua+cyrU","he":"sha384-VQjrGMuZXEaunH1zfg9PV29jUlp6TUuhnGprBJj5WphcpoQCXKyhv5JxzkcPAXSy","ar":"sha384-C+nIO8/JfZMqSD7KIqTlCifaO8MU63TXQCW5gOaO6cXQgG+mKvbjPaZOYeMAnS9I"};
+const PACK_VER = '1.0.0-ca9f7063', PACK_SRI = {"es":"sha384-iWFMb1+4LUnR+yauK/aVX5Tc+tCYcz0IYN04WXpZGJXKcwN9jbqEasi5jpMokcTy","fr":"sha384-ynEhRdgPCjj9g5kYBaByJfGBpBMWQmT1VXi5pP//D64jFtAXczdeRu9OdmVXNmXt","de":"sha384-13d6SgGB9S0JsAP4ea4KGChcgRd9Mn7Ugy88ftIoXM7C5diPgso8tLqyhdTcMvF8","it":"sha384-L1ogu6qYZEsjlGbMaR48Wu7lxYc93F5cZt+D9+EQ2NcgYN8WM2NbJRfBRdlzBAcE","pt":"sha384-E6cGnu6RKZvv/8SsumNVwoYiVMbOw/3Wvf3e74bgSojgr47sAospaKlWKO96iArI","nl":"sha384-1PU99zpHDUQ5CmO25fnkNpAypKS//t+Dl2btrPMOY2bNi/V2AViW4TSoTvBSXCiQ","ru":"sha384-0YN6RrtiSNRWRYZtNawQb4RahV2sm03hAa14+EoctlflLPXCkNGn6Kukiwq+dqg7","ja":"sha384-fiBYLfgdTGMm+H5/Z5GM9NhuqkerHktn9gtwx4tduhighwwyuIp32lxvdA6m35+Z","zh-Hant":"sha384-9vFomqDRsglLl9OXQ/tnexNf+lLhCSNwA/yWrez23dREUH7AQkcHQzuC0kB7b27L","he":"sha384-/1LwLBh+Aq35Gn0LuuwYBnI3cnNdrsuF3xxe0uzG4jDL6GoVCKirobV41vWuJCgQ","ar":"sha384-27d9SQCTQ7evNMcfNhX9HcXvC6t7G6ADLXFYKYSfmQ0kNo2lpEM3wj5UEjnrDLH0"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1009,7 +1011,22 @@ const icon = (name, o) => O.icon(name, o);
 const iconEl = name => { const e = $('span', 'pp-ic'); e.innerHTML = icon(name); e.setAttribute('aria-hidden', 'true'); return e; };
 const btn = (label, o) => O.ui.button(label, o);
 const announce = t => O.ui.announce(t);
-const toast = (t, o) => O.ui.toast(t, o);
+const toast = (t, o) => { O.ui.toast(t, o); placeToast(); };
+/** The toast drops to the first band, from its usual place down, with no words or buttons of the game in it: at the
+ *  top it would sit on the quest and level chips and on Pim's line. Nothing clear: it stays where it was. */
+function placeToast() {
+  const el = document.querySelector('.ok-toast'); if (!el) return;
+  el.style.top = '';
+  const w = el.offsetWidth, h = el.offsetHeight, H = window.innerHeight, x0 = (window.innerWidth - w) / 2, x1 = x0 + w;
+  if (!w || !h) return;
+  const boxes = [], keep = b => { if (b.width && b.height && b.bottom > 0 && b.top < H && b.right > x0 && b.left < x1) boxes.push(b); };
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.nodeValue.trim() && n.parentElement && !n.parentElement.closest('.ok-toast, .ok-live, .ok-caption, [hidden]') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT) });
+  const rg = document.createRange();
+  for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (getComputedStyle(n.parentElement).visibility === 'hidden') continue; rg.selectNodeContents(n); for (const b of rg.getClientRects()) keep(b); }
+  for (const b of document.querySelectorAll('button')) if (!b.closest('.ok-toast') && getComputedStyle(b).visibility !== 'hidden') keep(b.getBoundingClientRect());
+  const base = parseFloat(getComputedStyle(el).top) || 72;
+  for (let y = base; y + h <= H - 8; y += 6) if (!boxes.some(b => b.top < y + h + 4 && b.bottom > y - 4)) { if (y !== base) el.style.top = y + 'px'; return; }
+}
 /** Clear the last toast at once (a right move after a wrong one: the old hint must not sit over the next item). */
 const clearToast = () => { const tt = document.querySelector('.ok-toast.on'); if (tt) tt.classList.remove('on'); };
 const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
@@ -1422,7 +1439,7 @@ function syncSort() {
 }
 
 /* ----- pass levels: the passphrase builder ----- */
-const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'a hundred years', 'centuries'];
+const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'about a hundred years', 'hundreds of years'];
 function renderPassPanel() {
   const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
   const fill = cardHost(true); fill.style.width = '100%';
@@ -1441,7 +1458,7 @@ function syncPass() {
   UI.phrase.innerHTML = ''; for (const id of s.chosen) { const sp = $('span'); sp.textContent = tr(I.words.find(w => w.id === id).text); UI.phrase.appendChild(sp); }
   if (!s.chosen.length) UI.phrase.appendChild($('span', 'pp-lesson-note', tr('Pick {n} words', { n: I.need })));
   UI.meter.className = 'pp-meter pp-t' + st.tier; UI.meter.firstChild.style.width = ((st.tier + 1) / 5 * 100) + '%'; UI.meter.setAttribute('aria-valuenow', String(st.tier));
-  UI.meterText.textContent = st.weak ? tr('A word about you makes it easy to guess') : st.count ? tr('A computer would need about {time}', { time: tr(GUESS_TIME[st.tier]) }) : tr('Words nobody could guess about you, the more letters the better');
+  UI.meterText.textContent = st.weak ? tr('A word about you makes it easy to guess') : st.count ? tr('Guessing would take {time}', { time: tr(GUESS_TIME[st.tier]) }) : tr('Words nobody could guess about you, the more letters the better');
   for (const id in UI.tiles) pressed(UI.tiles[id], s.chosen.includes(id));
 }
 
@@ -1742,7 +1759,7 @@ async function doAction(a) {
       else if (r.done) syncRules(r.caught);
     }
     else if (run.type === 'sort') {
-      if (r.wrong) { sfx('wrong', { volume: 0.5 }); toast(a.t === 'bin' ? (run.inst.hints && run.inst.hints[1] ? tr(run.inst.hints[1]) : tr('Think again: where does that belong?')) : tr('Not that reason. Think about what could go wrong.'), { ms: 3200 }); const el = a.t === 'bin' ? UI.binRow.querySelector(`[data-bin="${a.bin}"]`) : UI.whyBox.querySelector(`[data-why="${a.k}"]`); if (el) O.juice.shake(0.3, el); }
+      if (r.wrong) { sfx('wrong', { volume: 0.5 }); toast(a.t === 'bin' ? binWhy(run.item(a.id)) || (run.inst.hints && run.inst.hints[1] ? tr(run.inst.hints[1]) : tr('Think again: where does that belong?')) : tr('Not that reason. Think about what could go wrong.'), { ms: 3200 }); const el = a.t === 'bin' ? UI.binRow.querySelector(`[data-bin="${a.bin}"]`) : UI.whyBox.querySelector(`[data-why="${a.k}"]`); if (el) O.juice.shake(0.3, el); }
       else { clearToast(); sfx('correct', { volume: 0.6 }); syncSort(); }
     } else if (run.type === 'pass') {
       if (r.full) toast(tr('{n} words is enough. Tap a word to swap it.', { n: run.inst.need }));
@@ -1822,6 +1839,19 @@ function learnCard(learn) {
 }
 
 /* ---------- solved: stars, the Case-closed card in lesson mode, the results card, the next level ---------- */
+/** Under the end card's sparks, their count in words ("3 sparks"), in place of the kit's bare score number. */
+function sparksSaid(p, n) {
+  let tries = 0;
+  const put = () => {
+    const row = [...document.querySelectorAll('.ok-sparks')].pop();
+    if (!row) { if (tries++ < 30) O.wait(16).then(put); return; }
+    if (row.nextElementSibling && row.nextElementSibling.classList.contains('pp-sparks-n')) return;
+    // the kit already names the count for screen readers ("2 sparks", plural-aware in every language): show those words
+    const t = $('div', 'pp-sparks-n'); t.textContent = row.getAttribute('aria-label') || String(n); t.setAttribute('aria-hidden', 'true'); row.after(t);
+  };
+  put();
+  return p;
+}
 async function solved(flow) {
   const run = S.run, level = S.level, stars = run.stars(!S.tier3);
   pimSay(tr('Delivered!'), { speak: false }); sfx('win'); O.juice.confetti();
@@ -1829,7 +1859,7 @@ async function solved(flow) {
   if (S.daily) {
     const d = S.daily, best = SAVE.daily && SAVE.daily.day === d.day && SAVE.daily.band === S.band ? SAVE.daily.stars : 0;
     SAVE.daily = { day: d.day, band: S.band, stars: Math.max(best, stars) }; save();
-    const v = await O.ui.win({ stars, score: stars, best, hero: window.innerHeight < 520 ? false : PIM, title: tr('Daily Crew Challenge'), next: true });
+    const v = await sparksSaid(O.ui.win({ stars, score: stars, best, hero: window.innerHeight < 520 ? false : PIM, title: tr('Daily Crew Challenge'), next: true }), stars);
     if (flow !== S.flow) return;
     if (v === 'again') return startDaily(d.day);
     S.daily = null; return showMap();
@@ -1847,18 +1877,23 @@ async function solved(flow) {
     conf = await confidence(); if (flow !== S.flow) return;
   }
   report(level, stars, check, conf, false);
-  const v = await O.ui.win({ stars, score: stars, best: null, hero: window.innerHeight < 520 ? false : PIM, title: tr('Delivered!'), next: true });
+  const v = await sparksSaid(O.ui.win({ stars, score: stars, best: null, hero: window.innerHeight < 520 ? false : PIM, title: tr('Delivered!'), next: true }), stars);
   if (flow !== S.flow) return;
   if (v === 'again') return startLevel(S.chapter, S.levelIx, { noLearn: true });
   nextLevel();
 }
-function caseClosed(check) {
+/** Why a card belongs in its bin, for a wrong drop: its own why, else the right reason it carries (Share or Shield cards). */
+function binWhy(t) { if (!t) return ''; const w = t.why || (t.reasons && t.answer != null ? t.reasons[t.answer] : null); return w ? tr(w) : ''; }
+async function caseClosed(check) {
   // a level's last 'Think again' toast must not sit over the check card (its timer can be held while a card is open)
   clearToast();
   const tiles = check.tiles.map(t => tr(t));
   const who = window.innerHeight < 520 ? undefined : (S.pim || undefined);   // on a short screen the card stays centered without the asker
   const order = E.rng(E.seedOf((S.level ? S.level.id : '') + ':check:' + S.seed0 + ':' + S.attempt)).shuffle(tiles.map((_, k) => k));
-  return O.ui.ask({ q: tr(check.q), choices: order.map(k => tiles[k]), index: order.indexOf(check.answer), tries: 1, who }).catch(() => false);
+  const ok = await O.ui.ask({ q: tr(check.q), choices: order.map(k => tiles[k]), index: order.indexOf(check.answer), tries: 1, who }).catch(() => false);
+  // a wrong pick: the card has shown the right answer; now say why it is right, at the child's own pace
+  if (!ok && check.why) await O.ui.dialog({ title: tiles[check.answer], text: tr(check.why), portrait: PIM, buttons: [{ label: tr('Got it'), kind: 'go', value: 1, icon: 'next' }] }).catch(() => null);
+  return ok;
 }
 function confidence() {
   return O.ui.dialog({ title: tr('How sure were you?'), portrait: PIM, buttons: [{ label: tr('Not sure'), kind: 'quiet', value: 1 }, { label: tr('Fairly sure'), kind: 'quiet', value: 2 }, { label: tr('Very sure'), kind: 'go', value: 3 }] }).then(v => (v == null ? 2 : v));

@@ -52,7 +52,7 @@
     "plain word: APPLE"
    ],
    "img": "csq/packet-post/ciphers-1b-wheel-n2",
-   "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+   "alt": "The cipher wheel turned back by 3: the secret message DSSOH now reads APPLE.",
    "focus": [
     {
      "cue": "Turn the inner wheel until the reading makes sense",

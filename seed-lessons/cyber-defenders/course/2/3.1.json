@@ -9,29 +9,7 @@
   {
    "title": "Facts that point at you",
    "text": "Pim calls these facts PII: your full name, where you live, school, birthday, location, photos and voice. Each one points at one person: you.",
-   "art": "people",
-   "img": "csq/would-you-rather/online-name-2",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-   "focus": [
-    {
-     "cue": "A nickname that nobody can trace to you",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Your real first name, out in the open",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "title": "Sharing buys real things",

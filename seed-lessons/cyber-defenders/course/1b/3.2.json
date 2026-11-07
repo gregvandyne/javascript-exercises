@@ -47,28 +47,6 @@
     "online post: stays put",
     "screenshot: copies it",
     "copied print: travels far"
-   ],
-   "img": "csq/would-you-rather/online-delete-1b",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "focus": [
-    {
-     "cue": "Delete an old post you are embarrassed by",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or leave it, and laugh it off",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
    ]
   },
   {

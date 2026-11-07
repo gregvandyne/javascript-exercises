@@ -132,24 +132,18 @@
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road and play its 3 levels. Say when each packet arrives, and resend the lost ones. Then send a secret on the padlock road.",
    "art": "trophy",
-   "img": "csq/packet-post/protocols-1b-sealed",
-   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
+   "img": "csq/packet-post/protocols-1b-sealed-n3",
+   "alt": "Rules of the Road: the secret birthday packets take the padlock roads over the hill, away from the snoopy cat on the open road.",
    "focus": [
     {
      "cue": "Play Rules of the Road: secrets take the padlock road",
      "box": [
-      9.4,
-      37.4,
-      42.4,
-      52
+      24,
+      9,
+      49,
+      49
      ]
     }
-   ],
-   "view": [
-    5,
-    25.5,
-    50,
-    74
    ]
   }
  ],

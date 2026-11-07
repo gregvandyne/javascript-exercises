@@ -398,17 +398,18 @@ test('guided focus geometry: the reported slide and the shared road maps cover t
   const covers = (box, [x0, y0, x1, y1]) => box[0] <= x0 && box[1] <= y0 && box[0] + box[2] >= x1 && box[1] + box[3] >= y1;
   const deck = (band, n) => decks.find(d => d.band === band && d.step.n === n).deck;
   const gregs = deck('1b', '1.1').slides[0];
-  assert.equal(gregs.img, 'csq/packet-post/packets-1b-key');
-  assert.ok(covers(gregs.focus[0].box, [11.1, 61.4, 15.0, 69.2]), `the packet at Pim's Post sits inside step 1's box: ${gregs.focus[0].box}`);
-  assert.ok(covers(gregs.focus[1].box, [10.6, 48.5, 50.2, 71.2]), `the whole route sits inside step 2's box: ${gregs.focus[1].box}`);
-  for (const [px, py] of gregs.focus[1].path || []) assert.ok(px >= 9 && px <= 53 && py >= 43 && py <= 72, `step 2's path stays on the route: ${px},${py}`);
-  // The Rules of the Road diagram incl. labels, per capture (perfection-pass measurements): the
-  // protocols-*-key diagram spans x 11.1-50.2, y 48.6-71.2; the protocols-2-rules diagram sits
-  // slightly higher and narrower, x 9.8-49.5, y 46.9-70.3. Every step that sends the eye to a
-  // diagram must cover its own capture's diagram.
+  // r5 (2026-11-07): the slide shows the phone-width capture packets-1b-hop-n (the wide one's labels read at about
+  // 5 px on a phone): the packet and its label at Pim's Post span x 8.5-20.5, y 52-80; the route with its labels
+  // spans x 7-93, y 31-81.
+  assert.equal(gregs.img, 'csq/packet-post/packets-1b-hop-n');
+  assert.ok(covers(gregs.focus[0].box, [8.5, 52, 20.5, 80]), `the packet at Pim's Post sits inside step 1's box: ${gregs.focus[0].box}`);
+  assert.ok(covers(gregs.focus[1].box, [7, 31, 93, 81]), `the whole route sits inside step 2's box: ${gregs.focus[1].box}`);
+  for (const [px, py] of gregs.focus[1].path || []) assert.ok(px >= 7 && px <= 93 && py >= 31 && py <= 81, `step 2's path stays on the route: ${px},${py}`);
+  // A Rules of the Road map incl. labels, per capture: every step that sends the eye to a road must cover it.
+  // r5: the 1.2 mission shows the phone-width protocols-1b-sealed-n3, whose padlock road over the hill spans
+  // x 25-94, y 10-58 (the Pro 1.1 mission now rings Pim's line about resending, not a map).
   const roadAt = [
-    [ '1b', '1.2', 6, 0, [9.8, 37.8, 51.2, 89.0] ], // protocols-1b-sealed: the padlock and open roads
-    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ],
+    [ '1b', '1.2', 6, 0, [25, 10, 72, 57] ],
   ];
   for (const [band, n, si, fi, extent] of roadAt) {
     const s = deck(band, n).slides[si];
