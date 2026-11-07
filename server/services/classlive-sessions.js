@@ -44,6 +44,7 @@ import * as D from './classlive-dash.js';
 import * as B from './classlive-board.js';
 import * as TG from './classlive-tug.js';
 import * as TUG from '../live/tug.js';
+import * as DG from './classlive-doodle.js';
 import { getUser } from '../auth.js';
 import { audit } from '../db.js';
 import * as L from './lessons.js';
@@ -53,7 +54,7 @@ import * as POLLS from './polls.js';
 import { POLL_SLUG } from '../live/wyr.js';
 import { countryName } from '../live/atlas.js';
 
-export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3,
+export const hooks = { now: () => Date.now(), log, tickMs: 100, sweepMs: 30e3, loadingMs: 20e3, countdownMs: 3000, holdMs: 60e3, hostGoneMs: 10 * 60e3, unwatchedMs: 12e3, idleLobbyMs: 30 * 60e3, keepEndedMs: 10 * 60e3, lingerMs: 120e3,
   // part 4: the host's grace before the longest-standing co-host takes over; another controller's toggle within
   // conflictMs of the last change is refused (no flapping); invites last inviteMs
   handoffMs: (config.liveHandoffSecs || 120) * 1000, conflictMs: 1000, inviteMs: 15 * 60e3 };
@@ -267,6 +268,8 @@ export function createSession(host, opts = {}) {
   // A team setup carried in (the landing's teams row, play again) and a plan (a rematch, a saved class run).
   // Tug of Math Live: always Blue Whales against Red Foxes by average (a plan still places a class's players).
   if (mode === 'tug') { TG.init(s, opts.starter); T.fromSetup(s, TUG.TEAMS, opts.plan || null); }
+  // Doodle Hoot Live: turns, one drawer at a time; no teams.
+  else if (mode === 'doodle') DG.init(s, opts.starter);
   else if (teamsOn() && opts.teams && opts.teams.on !== false) T.fromSetup(s, opts.teams, opts.plan || null);
   sessions.set(s.id, s); byCode.set(s.code, s.id); hostOpen.set(host.id, s.id);
   startTimers();
@@ -372,7 +375,7 @@ export function join(s, user, { asGuest = false, useMine = false, lang = 'en' } 
     no, nonce: crypto.randomBytes(12).toString('base64url'), userId: u ? u.id : null, kind: ok.kind, nick,
     name: s.nameMode === 'accounts' && u ? String(u.display_name || u.username).slice(0, 40) : '',
     avatar: own || N.randomAvatar(), ownAvatar: !!own, team: 0, lang,
-    score: 0, bonus: 0, scoredBy: s.quiz || s.tug ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
+    score: 0, bonus: 0, scoredBy: s.quiz || s.tug || s.doodle ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
     pos: null, lastMoveAt: 0, lastJumpAt: 0, conn: null, everConnected: false, leftAt: t, rtt: 0, ready: false, late: s.phase !== 'lobby', view: '3d',
     buckets: null, acc: null,
   };
@@ -450,6 +453,7 @@ export function kick(s, no) {
   if (!seat) return false;
   s.banned.add(seat.nonce);
   if (seat.userId) s.banned.add(seat.userId);
+  seat.removed = true;
   if (seat.conn) { sendTo(seat.conn, { t: 'bye', why: 'removed' }); closeConn(seat.conn, 4403); seat.conn = null; }
   freeSeat(s, seat, { keepSummary: true });
   hooks.log('info', 'live seat removed', { sid: s.id, seat: no });
@@ -474,6 +478,8 @@ function freeSeat(s, seat, { keepSummary = true } = {}) {
   toDash(s, D.dpMsg(s));
   checkBarrier(s);
   if (open(s)) Q.maybeAllAnswered(s, io);
+  // Doodle Hoot Live: a drawer who left ends their turn (the page is wiped everywhere)
+  if (open(s) && s.doodle) DG.left(s, io, seat);
 }
 
 // ---------------------------------------------------------------- connections
@@ -565,7 +571,7 @@ export function attachSeat(s, seat, conn) {
 export function detachSeat(s, seat, conn) {
   if (!seat || seat.conn !== conn) return;
   seat.conn = null; seat.leftAt = now(); seat.ready = false;
-  if (open(s)) { broadcastSeat(s, 'pu', seat); toDash(s, D.dpMsg(s)); checkBarrier(s); Q.maybeAllAnswered(s, io); }
+  if (open(s)) { broadcastSeat(s, 'pu', seat); toDash(s, D.dpMsg(s)); checkBarrier(s); Q.maybeAllAnswered(s, io); if (s.doodle) DG.dropped(s, io, seat); }
 }
 /**
  * The projector connected (view 'projector'), or a controller's dashboard (view 'dash': attachDash). userId: the
@@ -673,7 +679,7 @@ function ctlPart(s, w, view = 'projector') {
 export const sendCh = s => { if (s.cohostEver && cohostOn()) toCtl(s, chMsg(s)); };
 /** Key actions and co-host events kept for the run (live_run_log, only runs that had a co-host); next and say are
  *  routine and not kept. */
-const LOGGED = new Set(['start', 'pause', 'resume', 'skip', 'end', 'kick', 'lock', 'unlock', 'eyes', 'time', 'bonus', 'rename', 'acc', 'teams', 'settings',
+const LOGGED = new Set(['start', 'pause', 'resume', 'skip', 'clear', 'end', 'kick', 'lock', 'unlock', 'eyes', 'time', 'bonus', 'rename', 'acc', 'teams', 'settings',
   'invited', 'cancelled', 'joined', 'declined', 'left', 'removed', 'host', 'away', 'back']);
 const LIFECYCLE = new Set(['invited', 'cancelled', 'joined', 'declined', 'left', 'removed', 'host', 'away', 'back']);
 export const LOG_MAX = 500;
@@ -816,7 +822,7 @@ export function controllerFor(s, tok, u) {
 }
 
 // The way the quiz module talks to devices (no import cycle).
-const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s),
+const io = { broadcast, toSeat, toHost, toHosts, toDash, toPlayers, sendTo, toProjector: (s, msg) => toProjector(s, msg), teamScores: s => teamScores(s), now, setPhase: (s, phase, extra) => setPhase(s, phase, extra), end: (s, why) => endSession(s.id, why), raceList: s => raceList(s), boardChanged: s => boardChanged(s),
   leaderboard: s => leaderboard(s), publish: (s, patch) => publish(s, patch), projectorState: (s, patch) => projectorState(s, patch), voted: (s, c, answers) => wyrVoted(s, c, answers), countryName };
 
 /** Platform-made shared state (Atlas Quest Live's flag and region, Would You Rather Live's all-time split): merged into
@@ -910,7 +916,7 @@ function play(s) {
   // Brain Board: the picked tile's question; with nothing picked (the first countdown), the board.
   if (s.board) { const i = B.opening(s); if (i >= 0) Q.ask(s, io, i); else { setPhase(s, 'between'); publishBoard(s); } }
   else if (s.quiz) Q.ask(s, io, s.qz ? s.qz.i + 1 : 0);
-  else { setPhase(s, 'playing', { at: now() }); if (s.tug) TG.start(s, io); }
+  else { setPhase(s, 'playing', { at: now() }); if (s.tug) TG.start(s, io); if (s.doodle) DG.start(s, io); }
   // Eyes up while the game moved into play (raised in the lobby, loading, the countdown or between questions): the
   // round opens paused, so no clock runs behind the cover; lowering eyes (or Resume) starts it.
   if (s.eyes && s.phase === 'playing') { pauseNow(s); s.eyesPaused = true; }
@@ -919,6 +925,7 @@ function pauseNow(s) {
   s.pausedAt = now(); s.eyesPaused = false;
   if (s.quiz) Q.pause(s);
   if (s.tug) TG.pause(s, io);
+  if (s.doodle) DG.pause(s, io);
   setPhase(s, 'paused');
 }
 
@@ -1034,6 +1041,8 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
   switch (a) {
     case 'start': {
       if (s.phase !== 'lobby') return false;
+      // Doodle Hoot Live needs someone to guess: two players at least
+      if (s.doodle && !DG.canStart(s)) { nak(s, who, 'start', 'wait'); return false; }
       s.startedAt = now();
       // The settings shape the questions now; every seat still without a team gets one; what the host started with
       // becomes their remembered defaults (the next /live landing is filled in with it).
@@ -1051,7 +1060,7 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       return true;
     }
     case 'pause': {
-      if (s.phase !== 'playing' || (s.tug && s.tug.done)) return false;
+      if (s.phase !== 'playing' || (s.tug && s.tug.done) || (s.doodle && s.doodle.done)) return false;
       pauseNow(s);
       return true;
     }
@@ -1066,9 +1075,12 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       s.at += shift;
       setPhase(s, 'playing');
       if (s.tug) TG.resume(s, io);
+      if (s.doodle) DG.resume(s, io);
       return true;
     }
     case 'next': case 'skip': {
+      // Doodle Hoot Live: Skip ends the turn (at: the turn number, so a double tap never skips two); no Next.
+      if (s.doodle) return a === 'skip' && s.phase === 'playing' && DG.skip(s, io, at);
       // Tug of Math Live runs on its own clock: there is nothing to move on to.
       if (at !== s.seq || s.tug) return false;
       if (s.quiz) {
@@ -1089,7 +1101,15 @@ function doAction(s, a, { n = null, at = null, ...m } = {}, who = null) {
       broadcast(s, { t: 'lk', locked: s.settings.locked }, { players: false });
       return true;
     }
-    case 'kick': return kick(s, n);
+    case 'kick': {
+      if (!kick(s, n)) return false;
+      // Doodle Hoot Live: a removed guest could join again at once under a new nickname and draw again, so a Remove also
+      // locks the room (the host sees it locked and can let people in again). Not by address: a family shares one.
+      if (s.doodle && !s.settings.locked) { s.settings.locked = true; s.settings.autoLock = false; broadcast(s, { t: 'lk', locked: true }, { players: false }); }
+      return true;
+    }
+    // Doodle Hoot Live: the host wipes the drawing on every screen
+    case 'clear': return !!s.doodle && (s.phase === 'playing' || s.phase === 'paused') && DG.hostClear(s, io);
     case 'end': endSession(s.id, 'ended'); return true;
     case 'eyes': return eyes(s, !!m.on);
     case 'say': {
@@ -1176,6 +1196,8 @@ export function teamAction(s, m, actor = null) {
   if (!open(s) || !teamsOn()) return false;
   // Tug of Math Live: always two teams by average; the host may balance, shuffle, move and lock, nothing else.
   if (s.tug && !TG.teamActionOk(m)) return false;
+  // Doodle Hoot Live: no teams
+  if (s.doodle) return false;
   const lobby = s.phase === 'lobby';
   const ts = s.teams;
   let ok = false, extra = null;
@@ -1221,9 +1243,13 @@ export function ready(s, seat, view) {
   checkBarrier(s);
   // Tug of Math Live: a frame that loads during the match (a late joiner, a reload) gets its question.
   if (s.tug && (s.phase === 'playing' || s.phase === 'paused')) TG.sendQuestion(s, io, seat);
+  // Doodle Hoot Live: the same for its turn (the drawer's word or a guesser's tray) and the page so far.
+  if (s.doodle && (s.phase === 'playing' || s.phase === 'paused')) DG.resync(s, io, seat);
 }
 /** The host's frame said it is ready, with the game's live settings (Oomba.live.ready(opts)). */
 export function hostReady(s, cfg) {
+  // Doodle Hoot Live: a projector frame that loads mid-game gets the page so far
+  if (s.doodle && (s.phase === 'playing' || s.phase === 'paused')) DG.hostReady(s, io);
   if (!cfg) return;
   if (cfg.presence) s.cfg.presence = cfg.presence;
   for (const k of ['lobby', 'quiz', 'hostView', 'maxScorePerSec', 'teams']) if (cfg[k] !== undefined) s.cfg[k] = cfg[k];
@@ -1258,6 +1284,8 @@ export function emote(s, seat, e) {
 export function event(s, from, m) {
   // Tug of Math Live: a player's answer (or "my question again") goes to the server only, never to anyone else.
   if (s.tug) { if (from && ['playing', 'paused'].includes(s.phase)) TG.fromPlayer(s, io, from, m); return; }
+  // Doodle Hoot Live: strokes, picks, guesses and hides go to the server, which relays only what it has checked.
+  if (s.doodle) { if (from && ['playing', 'paused'].includes(s.phase)) DG.fromPlayer(s, io, from, m); return; }
   if (!['lobby', 'loading', 'countdown', 'playing', 'between'].includes(s.phase)) return;
   // Brain Board: a tile pick (the projector's game, or the player whose turn it is), and the host's "players pick" switch.
   if (s.board && m.k === 'pick' && m.d && typeof m.d === 'object') { boardPick(s, m.d.c, m.d.r, from ? from.no : 0); return; }
@@ -1284,7 +1312,7 @@ export function event(s, from, m) {
 /** A score the game reported. It can only rise as fast as the game's maxScorePerSec allows. */
 export function score(s, seat, n) {
   // Quiz modes and Tug of Math Live are scored by the server alone: a score a device reports is ignored.
-  if (s.quiz || s.tug || !['playing', 'between', 'paused'].includes(s.phase)) return;
+  if (s.quiz || s.tug || s.doodle || !['playing', 'between', 'paused'].includes(s.phase)) return;
   // Only time spent playing counts: the lobby, loading, countdown, pauses and the gaps between rounds bank nothing
   // (lastScoreAt is reset when play starts and shifted over a pause; after play stops, time is counted up to then).
   const t = s.phase === 'playing' ? now() : Math.max(seat.lastScoreAt, Math.min(now(), s.playEndAt || 0));
@@ -1296,7 +1324,7 @@ export function score(s, seat, n) {
 }
 /** An item result the game reported (once per item). */
 export function item(s, seat, i, ok) {
-  if (s.quiz || s.tug || !['playing', 'between', 'paused'].includes(s.phase) || seat.items.has(i)) return;
+  if (s.quiz || s.tug || s.doodle || !['playing', 'between', 'paused'].includes(s.phase) || seat.items.has(i)) return;
   seat.items.set(i, ok); seat.answered++; if (ok) seat.correct++;
   s.dpDirty = true;
   const st = s.itemStats.get(i) || { right: 0, answered: 0 };
@@ -1343,6 +1371,8 @@ export function endSession(sid, why = 'ended') {
   const liveTier = (id, was) => (s.cohostEver && cohostOn() ? A.controlTier(s, getUser(id)) : was);
   s.endCtl = new Map([[s.host.userId, liveTier(s.host.userId, s.host.tier) || s.host.tier], ...[...s.cohosts.values()].map(c => [c.userId, liveTier(c.userId, c.tier)]).filter(([, t]) => t)]);
   s.invites.clear();
+  // Doodle Hoot Live: the drawing, the word and the tray go now, before anything is kept
+  if (s.doodle) DG.wipe(s);
   let summary = null;
   try { summary = R.summary(s); s.summary = summary; if (s.startedAt) R.save(s, summary); } catch (e) { hooks.log('error', 'live results not saved', { sid: s.id, error: e.message }); }
   if (s.startedAt && T.isOn(s) && !s.tug) { try { T.saveClassTeams(s); } catch (e) { hooks.log('error', 'live class teams not saved', { sid: s.id, error: e.message }); } }
@@ -1396,7 +1426,7 @@ export function rematch(old, host, { shuffle = false } = {}) {
   const snap = old.again;
   const teams = T.setupOf(old);
   const r = createSession(host, {
-    mode: old.mode, gameId: old.gameId, ...(old.tug ? { starter: old.tug.id } : {}),
+    mode: old.mode, gameId: old.gameId, ...(old.tug ? { starter: old.tug.id } : {}), ...(old.doodle ? { starter: old.doodle.id } : {}),
     // Would You Rather Live and Atlas Quest Live: the platform's own questions as they were (votes, map codes).
     ...(old.allItems && (old.mode === 'wyr' || old.mode === 'atlas') ? { trusted: old.allItems.map(it => ({ ...it, secs: it.own || it.secs })) }
       : old.allItems ? { items: old.allItems.map(it => ({ q: it.q, choices: it.choices, answer: it.answer, secs: it.own || it.secs })) } : {}),
@@ -1418,7 +1448,7 @@ export function rematch(old, host, { shuffle = false } = {}) {
     const nseat = {
       no: ++ns.seatSeq, nonce: crypto.randomBytes(12).toString('base64url'), userId: u ? u.id : null, kind: chk.kind, nick: ns.nicksUsed.has(nick) ? N.pickNick(ns.nicksUsed) : nick,
       name: ns.nameMode === 'accounts' && u ? String(u.display_name || u.username).slice(0, 40) : '', avatar, ownAvatar: seat.ownAvatar, team: 0, lang: seat.lang,
-      score: 0, bonus: 0, scoredBy: ns.quiz || ns.tug ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
+      score: 0, bonus: 0, scoredBy: ns.quiz || ns.tug || ns.doodle ? 'server' : 'game', correct: 0, answered: 0, streak: 0, wrongRun: 0, missRun: 0, items: new Map(), lastScoreAt: t,
       pos: null, lastMoveAt: 0, lastJumpAt: 0, conn: null, everConnected: false, leftAt: t, rtt: 0, ready: false, late: false, view: '3d', buckets: null, acc: null,
     };
     ns.nicksUsed.add(nseat.nick);
@@ -1474,9 +1504,26 @@ export function tick() {
       }
     }
     if (s.tug && (s.phase === 'playing' || s.phase === 'paused')) TG.tick(s, io);
+    if (s.doodle && (s.phase === 'playing' || s.phase === 'paused')) { DG.tick(s, io); watchDoodle(s); }
     if (s.scoresDirty && tickNo % 20 === 0) leaderboard(s);
     if (s.dpDirty && tickNo % 10 === 0 && dashes(s).some(d => d.tier === 'full')) { s.dpDirty = false; toDash(s, D.dpMsg(s)); }
   }
+}
+/**
+ * Doodle Hoot Live: drawings go out only while a grown-up has the host's page (the projector, which shows every drawing
+ * live) open. A dashboard alone doesn't show the drawing, so it doesn't count. With no host page for unwatchedMs the
+ * game pauses itself (strokes and guesses stop); it goes on by itself when the page is back, unless the host paused it.
+ */
+function watchDoodle(s) {
+  const t = now();
+  if (s.host.conn) {
+    s.ddAway = 0;
+    if (s.ddAutoPaused && s.phase === 'paused') { s.ddAutoPaused = false; doAction(s, 'resume'); }
+    return;
+  }
+  if (s.phase !== 'playing') { if (s.phase !== 'paused') s.ddAutoPaused = false; return; }
+  if (!s.ddAway) s.ddAway = t;
+  if (t - s.ddAway >= hooks.unwatchedMs && !s.doodle.done) { s.ddAutoPaused = doAction(s, 'pause') === true || s.phase === 'paused'; }
 }
 /** The top ten to the hosts; players get the top ten, the top five or nothing (the host's leaderboard setting) and
  *  their own rank (none when the leaderboard is off). Then the team scores. score = score + bonus. */

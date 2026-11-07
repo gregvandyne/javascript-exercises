@@ -4148,6 +4148,7 @@
       "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
       "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
       "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen.",
+      "doodleHoot": "Draw a word for the others, or spell theirs with letter tiles. Easy, Medium or Tricky words in 13 languages, live with family and friends or on one device.",
       "remisQuietMeadow": "A classroom noise meter: keep the room calm so Remi the red panda can nap, and count up the quiet time together."
     },
     "hubs": {
@@ -4387,7 +4388,8 @@
           "loopLab": "Tap squares to make a beat and hear it loop right away. No need to read music.",
           "beatLanes": "Tap in time to songs they know, starting with Twinkle Twinkle.",
           "munchMaze": "A maze chase with an Easy mode: plan a route and collect every dot.",
-          "tugOfMath": "Pick grade 2 or 3: adding, taking away and times tables, with the computer on Easy until they win it."
+          "tugOfMath": "Pick grade 2 or 3: adding, taking away and times tables, with the computer on Easy until they win it.",
+          "doodleHoot": "Picture words and letter tiles: spelling practice that feels like a party game."
         },
         "faq": {
           "q2": "Are the games too hard for an 8 year old?",
@@ -4417,7 +4419,8 @@
           "loopLab": "Old enough to plan a whole song: chain beats together and clear the 10 music challenges.",
           "heroOfSunvale": "Bigger than a quick game: missions to read and follow, and a 3D kingdom to explore at their own pace.",
           "swishFlick": "A quick break with a bit of physics: the direction of the flick aims the ball and its speed sets how far it flies.",
-          "tugOfMath": "Grades 4 and 5 bring bigger times and order of operations; two players can tug on one tablet or smartboard."
+          "tugOfMath": "Grades 4 and 5 bring bigger times and order of operations; two players can tug on one tablet or smartboard.",
+          "doodleHoot": "Tricky words and two-word answers, and a race to spell them first."
         },
         "faq": {
           "q2": "Are the games too easy for a 10 year old?",
@@ -4863,6 +4866,13 @@
       "locked": "Room locked",
       "autoLock": "The room locks when the game starts.",
       "end": "End game",
+      "skipTurn": "Skip turn",
+      "clear": "Clear drawing",
+      "clearConfirm": "Clear the drawing on every screen?",
+      "copyLink": "Copy join link",
+      "copied": "Link copied. Send it to your players.",
+      "playToo": "Play too",
+      "hidCount": "Players hiding this drawing: {count}",
       "endConfirm": "End the game for everyone?",
       "remove": "Remove",
       "removeConfirm": "Remove this player from the game?",
@@ -4926,7 +4936,9 @@
       "atlas": "Atlas Quest (Live)",
       "atlasText": "Everyone taps the country on their own world map: find it, its flag, its capital or what it is famous for. Close guesses still score a little.",
       "tug": "Tug of Math (Live)",
-      "tugText": "The class splits into two teams. Everyone answers math questions for their grade on their own keypad, and every right answer pulls the rope."
+      "tugText": "The class splits into two teams. Everyone answers math questions for their grade on their own keypad, and every right answer pulls the rope.",
+      "doodle": "Doodle Hoot (Live)",
+      "doodleText": "One player draws, everyone else spells the word with letter tiles. For family or friends anywhere, each on their own device."
     },
     "starter": {
       "title": {
@@ -5175,6 +5187,7 @@
         "cat": "The category in question {n} is not allowed."
       },
       "noMissed": "Everyone got every question right, so there is nothing to play again.",
+      "needTwo": "Two players are needed to start.",
       "tugTeams": "Tug of Math needs two teams, and teams are switched off on this site.",
       "teamsOff": "This game had no teams.",
       "againGone": "The players have left. Start a new game instead.",
@@ -5625,6 +5638,7 @@
         "resume": "{name} resumed the game",
         "next": "{name} moved on",
         "skip": "{name} skipped the question",
+        "clear": "{name} cleared the drawing",
         "lock": "{name} locked the room",
         "unlock": "{name} unlocked the room",
         "kick": "{name} removed {player}",
@@ -5717,6 +5731,20 @@
       "of": "of",
       "hint": "Players are split into two even teams for you. Each player gets their own questions, so nobody can copy, and a smaller team pulls just as hard.",
       "teamsAuto": "Two teams, made for you: Blue Whales and Red Foxes. You can balance, shuffle or move players."
+    },
+    "doodleUi": {
+      "legend": "Doodle Hoot (Live)",
+      "lang": "Word language",
+      "level": "Words",
+      "levels": "Easy|Medium|Tricky",
+      "like": "Words like:",
+      "rounds": "Rounds",
+      "roundsList": "1 round (everyone draws once)|2 rounds|3 rounds",
+      "secs": "Drawing time",
+      "secsN": "{n} seconds",
+      "hint": "Everyone takes a turn to draw. Players join with the code on their own device, wherever they are. Nobody types: guesses are letter tiles, and there is no chat.",
+      "bigRoom": "A big group? One round is plenty: everyone still draws once.",
+      "play": "Practice or play on one device"
     },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
@@ -5842,6 +5870,10 @@
       "wyr": {
         "h": "Would You Rather? (Live)",
         "p": "The class votes on fun dilemmas and sees how it splits, and how everyone on Oomba chose. No right answers and no points: a ready-made conversation starter."
+      },
+      "doodle": {
+        "h": "Doodle Hoot (Live)",
+        "p": "One player draws, the others spell the word with letter tiles: spelling and vocabulary in 13 languages. Best for small groups (up to 16); you can clear a drawing or skip a turn at any time."
       },
       "tug": {
         "h": "Tug of Math (Live)",

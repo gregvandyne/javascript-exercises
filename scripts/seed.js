@@ -20,7 +20,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEMO_SLUG = 'magic-cups-demo-school';
 // The launch games, imported in this order. The home-page hero is the featured game marked "hero": true in its JSON
 // (featured=2), else the most played featured game.
-export const SEED_GAMES = ['hero-of-sunvale', 'shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather', 'gulp-city', 'would-you-rather-live', 'atlas-quest-live', 'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'remis-quiet-meadow'];
+export const SEED_GAMES = ['hero-of-sunvale', 'shark-plank', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'castle-clash', 'brick-drop', 'word-hunt', 'sum-racer', 'munch-maze', 'word-peek', 'swish-flick', 'loop-lab', 'beat-lanes', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather', 'gulp-city', 'would-you-rather-live', 'atlas-quest-live', 'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'remis-quiet-meadow', 'doodle-hoot'];
 // Member games the owner asked to take down because an official game replaces them (once each, by key; the game is
 // hidden, never deleted, so it can be brought back by clearing hidden_reason): Dinosaur's "Would You Rather" (Nov 2026,
 // replaced by the official Would You Rather).

@@ -2542,3 +2542,57 @@ too noisy. Plan and evidence: `docs/remi-quiet-meadow-plan.md`.
   (the lease waits up to a minute for it, the game hears no numbers meanwhile), which needs a check on a real iPad, as
   does the wake-up sound on real speakers (softened: triangle voice, low filter Q, an out-breath).
 
+## Doodle Hoot (6 Nov 2026)
+
+The owner asked for "a family Pictionary game that users can play with one another … even in different places". Built
+as **Doodle Hoot** (slug `doodle-hoot`, live mode `doodle`), hosted by Pip, the kit's owl. Plan: docs/doodle-hoot-plan.md.
+
+- **The name is original.** Never "Pictionary" (a Mattel trademark) or another product's name; we know of no game, app or
+  toy called Doodle Hoot (the draw-and-guess names we avoid are listed in the plan). A trademark search is still to do
+  before launch; the fallback is "Squiggle Owl".
+- **Who joins: anyone with the code** (the owner's choice): an open room, like the other live games. Each player joins
+  at /join on their own device, from anywhere, with a generated nickname. The host page gets **Copy join link** (the
+  code stays after `#`, so never in a server log; a phone shares it instead) and **Play too** (a grown-up who wants to
+  draw and guess takes a seat like everyone else). These two buttons are on every live mode's host page.
+- **Who hosts: unchanged.** `canHost` already lets grown-up accounts host, with no billing check; kids, students,
+  guests and banned accounts never host, and open rooms have no co-hosts. What billing controls is *making* a grown-up
+  account (families on: billing on and public, or the preview cookie). So while billing is off, only existing
+  grown-ups, teachers, school staff and the admin can host; teachers always can. Pinned by
+  tests/unit/live-doodle.test.js ("a grown-up with billing off").
+- **Guessing: letter tiles** (the owner's choice), never typed text. The server builds one tray per turn (the word's
+  letters plus decoys, never a letter of the word; an Easy tray never puts a letter next to its accent twin) and checks
+  every guess as tray positions. Hints remove two decoys, then lock letters in, never more than half the word.
+- **13 languages of words**, about 160 picture-able things over Easy, Medium and Tricky, in one reviewed list inside the
+  game file (one source of truth: the game, the server and the tests read the same block). Each word is checked against
+  all 13 rude-word lists, its own script and length limits (tests/unit/doodle-words.test.js). Japanese uses kana (as
+  children write them), Traditional Chinese characters, Arabic and Hebrew run right to left (Arabic shows the letters
+  joined under the slots). Native review of ja and zh-Hant is recommended before marketing in those languages.
+- **Drawings are memory only.** The server relays checked strokes and keeps the page only for a late joiner or a reload;
+  it is wiped at the end of every turn and of the session, and never stored, logged, analysed or sent to any AI (a
+  static test checks the room's code imports none of that).
+- **Turns, so 16 players at most.** "Every mode holds a full class" stays the rule, with one written exception,
+  `A.TURN_MODES` (`doodle`): 30 turns of 80 s would be 40 minutes a round. A team mode for classes (one drawer a team) is
+  a follow-up.
+- **Safety tools:** the host's Clear drawing (every screen), Skip turn (by turn number, so a double tap skips one),
+  Remove (a removed drawer's turn ends and the page goes) and Pause; each player's **Hide drawing** (just for them; when
+  at least half the guessers, and at least 2, hide it, the drawing goes and the turn is skipped); the usual Report.
+  Drawers are told "Draw pictures, not letters".
+- **On its own:** "Guess Pip's doodles" (Pip draws 8 of his own 40 doodles stroke by stroke; Easy or Medium) and pass
+  and play for 2-6 on one device (nothing leaves the device; nothing is submitted for a shared screen).
+- **After the reviews (6 Nov 2026):**
+  - *Japanese and Traditional Chinese words are held back* (`DOODLE.LANGS`, the game's `WORD_LANGS`): they have no
+    native review yet, and the rude-word lists for those scripts are short, so a tray there can't be checked as well.
+    Those pages play with English words until a native speaker has reviewed both lists; the words stay in the game.
+  - *A grown-up must be watching.* Drawings go out only while the host's page (which shows every drawing live) is open:
+    12 s without it, the game pauses itself, and it goes on when the page is back. A dashboard alone doesn't count (it
+    shows no drawing). This replaces "the room ends 10 minutes after the host leaves" as the protection for drawings.
+  - *Remove locks the room*, so a removed guest can't come straight back under a new nickname. Not a ban by address:
+    a family on one home network shares it, and a sibling would be locked out.
+  - *Every tray is checked anywhere in its run of tiles*: the server adds the game's hashed copy of the site's lists to
+    `profanityMatch` (which looks at word starts); on its own the game uses the hashed copy (no rude word is written in
+    the game file; `scripts/doodle-bad.mjs` writes it and a unit test keeps it in step with the lists).
+  - *Short words are no anagram puzzle*: an answer of 4 tiles or fewer gets 4 decoys at least, and wrong guesses a turn
+    are 3 for 3 tiles or fewer, 5 for 4-5 (else 12).
+  - *A blip never ends a game*: a reloading seat (8 s) is still in the game for the turn order, "everyone got it" and the
+    hide vote; a seat that joined but never connected stops counting after 8 s.
+

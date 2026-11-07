@@ -55,6 +55,8 @@ function onMessage(m) {
       break;
     }
     case 'eyes': eyesOn = !!m.on; drawActs(); break;
+    // Doodle Hoot Live: Skip turn carries the turn number (shared state dd.tn)
+    case 'st': if (m.d && m.d.dd && typeof m.d.dd.tn === 'number') ddTn = m.d.dd.tn; break;
     case 'cf': settings = { ...settings, ...m.d }; fillSettings(); break;
     case 'res': setTimeout(() => { location.href = D.results; }, 1500); break;
     default: break;
@@ -62,6 +64,7 @@ function onMessage(m) {
 }
 function welcome(m) {
   phase = m.phase; seq = m.seq; locked = !!m.locked; eyesOn = !!m.eyes; mode = m.mode || mode;
+  if (m.state && m.state.dd) ddTn = m.state.dd.tn || 0;
   players.clear(); for (const P of m.players || []) { const p = playerOf(P); players.set(p.seat, p); }
   progress.clear(); for (const r of m.dp || []) progress.set(r[0], r);
   support.clear(); for (const r of m.sup || []) support.set(r[0], r);
@@ -104,7 +107,8 @@ function cohostOff() {
 }
 
 // ---- the top bar: the controls shown by phase ----
-const SHOW = { lobby: ['start', 'eyes', 'lock', 'unlock', 'end'], loading: ['eyes', 'end'], countdown: ['eyes', 'end'], playing: ['pause', 'next', 'skip', 'eyes', 'end'], paused: ['resume', 'eyes', 'end'], between: ['next', 'eyes', 'end'], ended: [] };
+let ddTn = 0;
+const SHOW = { lobby: ['start', 'eyes', 'lock', 'unlock', 'end'], loading: ['eyes', 'end'], countdown: ['eyes', 'end'], playing: ['pause', 'next', 'skip', 'clear', 'eyes', 'end'], paused: ['resume', 'clear', 'eyes', 'end'], between: ['next', 'eyes', 'end'], ended: [] };
 function onPhase(m) {
   phase = m.phase; if (m.seq) seq = m.seq;
   $('lv-dash-phase').textContent = (TX.phases || {})[phase] || '';
@@ -129,8 +133,9 @@ document.querySelector('.lv-dash-acts').addEventListener('click', e => {
   const t = e.target.closest('[data-lv-time]'); if (t) { sock.send('h', { a: 'time', s: +t.dataset.lvTime }); return; }
   const b = e.target.closest('[data-lv-act]'); if (!b || b.hidden) return;
   const a = b.dataset.lvAct;
-  if (a === 'end' && !confirm(b.dataset.confirm)) return;
+  if ((a === 'end' || a === 'clear') && !confirm(b.dataset.confirm)) return;
   if (a === 'eyes') { sock.send('h', { a: 'eyes', on: !eyesOn }); return; }
+  if (a === 'skip' && mode === 'doodle') { sock.send('h', { a, at: ddTn }); return; }
   // a co-host's end says it is sure (the server ignores it otherwise)
   sock.send('h', { a, ...(a === 'next' || a === 'skip' ? { at: seq } : {}), ...(a === 'end' && CTL.role !== 'host' ? { sure: 1 } : {}) });
 });
