@@ -2,18 +2,21 @@
 // shape of SCHEMA, using only pieces from the felt-and-paper KIT (server/stories/blender/), and validateScript() is the
 // gate every script passes before anything is voiced or rendered: structure, the kit's names, lengths, and the
 // kid-safe text checks (textfilter + the Builder's word rules) on every word that will be spoken or shown.
+import fs from 'node:fs';
 import { hasProfanity, personalInfo } from './textfilter.js';
 import { prefilter, mockClassify } from '../builder/screen.js';
 
-/** What the Blender kit can build. Keep in step with server/stories/blender/render_story.py and tools/blender/feltkit.py. */
+/** What the Blender kit can build: the one catalog (server/stories/blender/catalog.json), which the Python kit must
+ *  match exactly (render_story.py --kit; tests/unit/story-builder.test.js). */
+export const CATALOG = JSON.parse(fs.readFileSync(new URL('../stories/blender/catalog.json', import.meta.url), 'utf8'));
 export const KIT = {
-  sets: ['lighthouse', 'village', 'forest', 'meadow', 'sky'],
-  times: ['night', 'dusk', 'dawn', 'day'],
-  props: ['boat', 'lantern', 'fireflies'],
-  characters: ['mouse', 'fox', 'owl', 'bunny'],
-  actions: ['idle', 'walk', 'walk_out', 'hop', 'wave', 'look_up', 'sleep', 'fly', 'hold_star'],
-  places: ['far_left', 'left', 'center', 'right', 'far_right'],
-  cameras: ['drift', 'slow_push', 'pull_back', 'pan_left', 'pan_right', 'tilt_up', 'tilt_down'],
+  sets: Object.keys(CATALOG.sets),
+  times: Object.keys(CATALOG.times),
+  props: Object.keys(CATALOG.props),
+  characters: Object.keys(CATALOG.characters),
+  actions: Object.keys(CATALOG.actions),
+  places: CATALOG.places,
+  cameras: Object.keys(CATALOG.cameras),
 };
 export const AGE_BANDS = ['3-5', '6-8', '9-12', 'all'];
 export const LENGTHS = [45, 60, 90];
@@ -23,6 +26,69 @@ export const WORDS_PER_SEC = 2.2;
 
 const str = (extra = {}) => ({ type: 'string', ...extra });
 const en = list => ({ type: 'string', enum: list });
+
+// ---- the cast: people with a look, and what a character carries (all optional on a character entry)
+/** People kinds (a look applies to them), the look's choices, what can be carried, and who can fly. */
+export const PEOPLE = KIT.characters.filter(k => CATALOG.characters[k].type === 'person');
+export const LOOK = Object.fromEntries(Object.entries(CATALOG.look).map(([k, v]) => [k, Array.isArray(v) ? v : Object.keys(v)]));
+export const HOLDS = KIT.props.filter(p => CATALOG.props[p].hold);
+export const FLYERS = KIT.characters.filter(k => CATALOG.characters[k].flies);
+export const FLYING_OUTFITS = ['superhero', 'astronaut'];
+const LOOK_FIELDS = ['hair_color', 'skin', 'hair', 'shirt', 'outfit', 'glasses', 'age'];
+const CAST_PROPS = {
+  who: str({ description: 'The character\'s name in the story (the same in every scene), e.g. "Banks".' }),
+  look: {
+    type: 'object', additionalProperties: false, required: LOOK_FIELDS,
+    description: 'Only for kid, grownup and grandparent: how they look (the same in every scene; the outfit may change).',
+    properties: { ...Object.fromEntries(Object.entries(LOOK).map(([k, v]) => [k, en(v)])), glasses: { type: 'boolean' } },
+  },
+  holds: { ...en(HOLDS), description: 'Something the character carries.' },
+};
+
+/** Check one character's optional cast fields (who, look, holds) into `out`; a look carries over from earlier scenes
+ *  by `who`, so a person looks the same all the way through. */
+function castFields(cc, out, at, errors, looks) {
+  const who = tidy(cc.who).replace(/[^\p{L}\p{N} '-]/gu, '').slice(0, 24);
+  if (who) out.who = who;
+  if (PEOPLE.includes(out.kind)) {
+    let look = null;
+    if (cc.look && typeof cc.look === 'object') {
+      look = {};
+      for (const f of LOOK_FIELDS) {
+        const v = cc.look[f];
+        if (f === 'glasses') { if (v !== undefined) look.glasses = v === true; continue; }
+        if (v === undefined) continue;
+        if (LOOK[f].includes(v)) look[f] = v;
+        else errors.push(`${at}.look.${f}: "${String(v).slice(0, 30)}" is not one of ${LOOK[f].join(', ')}`);
+      }
+    }
+    const key = who ? `${out.kind}:${who.toLowerCase()}` : null;
+    if (key && looks.has(key)) look = { ...looks.get(key), ...(look || {}) };
+    if (look) { out.look = look; if (key) looks.set(key, look); }
+  }
+  if (cc.holds !== undefined && cc.holds !== null && cc.holds !== '') {
+    if (HOLDS.includes(cc.holds)) out.holds = cc.holds;
+    else errors.push(`${at}.holds: "${String(cc.holds).slice(0, 30)}" is not one of ${HOLDS.join(', ')}`);
+  }
+  // only some can fly: everyone else jumps for joy instead
+  if (out.action === 'fly' && !FLYERS.includes(out.kind) && !(out.look && FLYING_OUTFITS.includes(out.look.outfit))) out.action = 'jump';
+  return out;
+}
+
+/** The kit, in a few lines, for the writer's prompt (server/services/story-writer.js). */
+export function kitPrompt() {
+  const list = obj => Object.entries(obj).map(([k, v]) => `${k} (${typeof v === 'string' ? v : v.about})`).join('; ');
+  const animals = KIT.characters.filter(k => !PEOPLE.includes(k));
+  return [
+    `- set: ${list(CATALOG.sets)}`,
+    `- time: ${list(CATALOG.times)}`,
+    `- props (optional extras, a few a scene): ${KIT.props.join(', ')}`,
+    `- characters (0 to 3 per scene, each in a different place): animals: ${animals.join(', ')}; people: ${PEOPLE.map(k => `${k} (${CATALOG.characters[k].about})`).join(', ')}; place: ${KIT.places.join(', ')}`,
+    `- action: ${list(CATALOG.actions)}`,
+    `- camera: ${list(CATALOG.cameras)}`,
+    `People and animals: when the idea is about children or grown-ups (a team, a family, a class), tell it with kid, grownup and grandparent characters; when it is about animals, use the animals. Give every character a "who" (their name in the story, the same in every scene). Give every person a "look" that fits the idea and stays the same all the way through (only the outfit may change, e.g. pyjamas at bedtime): hair_color ${LOOK.hair_color.join('/')}; skin ${LOOK.skin.join('/')}; hair ${LOOK.hair.join('/')}; shirt ${LOOK.shirt.join('/')} (teammates share one colour); outfit: ${list(CATALOG.look.outfit)}; glasses true/false; age small/big. "holds" (optional): something the character carries: ${HOLDS.join(', ')}. A daytime adventure (a match, a school day, a trip) can use day or dusk for its busy scenes.`,
+  ].join('\n');
+}
 export const SCHEMA = {
   type: 'object', additionalProperties: false, required: ['title', 'scenes'],
   properties: {
@@ -35,7 +101,7 @@ export const SCHEMA = {
           set: en(KIT.sets), time: en(KIT.times), camera: en(KIT.cameras),
           props: { type: 'array', items: en(KIT.props) },
           characters: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['kind', 'action', 'place'], properties: {
-            kind: en(KIT.characters), action: en(KIT.actions), place: en(KIT.places) } } },
+            kind: en(KIT.characters), action: en(KIT.actions), place: en(KIT.places), ...CAST_PROPS } } },
           lines: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['say', 'show'], properties: {
             say: str({ description: 'One narration sentence or two, read aloud.' }),
             show: str({ description: 'The words shown on screen while it is read: the same words, or a shorter version of them.' }),
@@ -80,6 +146,7 @@ export function validateScript(input, { seconds = null } = {}) {
   const scenesIn = Array.isArray(d.scenes) ? d.scenes : [];
   if (scenesIn.length < LIMITS.scenesMin) errors.push(`scenes: need at least ${LIMITS.scenesMin}`);
   if (scenesIn.length > LIMITS.scenesMax) errors.push(`scenes: at most ${LIMITS.scenesMax}`);
+  const looks = new Map(); // who -> look: a person looks the same in every scene
   const scenes = scenesIn.slice(0, LIMITS.scenesMax).map((s, i) => {
     const at = `scenes[${i}]`;
     const sc = s && typeof s === 'object' ? s : {};
@@ -97,7 +164,7 @@ export function validateScript(input, { seconds = null } = {}) {
     out.characters = chars.slice(0, LIMITS.charsMax).map((c, k) => {
       const cc = c && typeof c === 'object' ? c : {};
       const one = (f, list, fb) => { if (list.includes(cc[f])) return cc[f]; errors.push(`${at}.characters[${k}].${f}: not one of ${list.join(', ')}`); return fb; };
-      return { kind: one('kind', KIT.characters, 'mouse'), action: one('action', KIT.actions, 'idle'), place: one('place', KIT.places, 'center') };
+      return castFields(cc, { kind: one('kind', KIT.characters, 'mouse'), action: one('action', KIT.actions, 'idle'), place: one('place', KIT.places, 'center') }, `${at}.characters[${k}]`, errors, looks);
     });
     // Two characters in one place would stand inside each other: move the later one to a free place.
     const used = new Set();

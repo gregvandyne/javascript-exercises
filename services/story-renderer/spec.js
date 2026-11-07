@@ -6,6 +6,7 @@ export const MAX_BODY = 24 * 1024 * 1024;
 export const LIMITS = { width: 1920, height: 1080, fps: 30, step: 6, samples: 32, scenes: 10, sceneSeconds: 120, chars: 3, props: 6, onlyFrames: 12 };
 const NAME = /^[a-z][a-z0-9_]{0,23}$/;
 const ID = /^[A-Za-z0-9_-]{1,16}$/;
+const LOOK_FIELDS = ['hair_color', 'skin', 'hair', 'shirt', 'outfit', 'glasses', 'age'];
 
 /** -> { ok, spec, problems } */
 export function checkSpec(input) {
@@ -43,7 +44,18 @@ export function checkSpec(input) {
       props: props.slice(0, LIMITS.props).map(p => name(p, 'props')),
       characters: chars.slice(0, LIMITS.chars).map(c => {
         const cc = c && typeof c === 'object' ? c : {};
-        return { kind: name(cc.kind, 'kind'), action: name(cc.action, 'action'), place: name(cc.place, 'place') };
+        const out = { kind: name(cc.kind, 'kind'), action: name(cc.action, 'action'), place: name(cc.place, 'place') };
+        // the cast fields (story-script.js): a name for the seed, a person's look, what they carry
+        if (typeof cc.who === 'string') out.who = cc.who.replace(/[^\p{L}\p{N} '-]/gu, '').slice(0, 24);
+        if (cc.holds != null) out.holds = name(cc.holds, 'holds');
+        if (cc.look && typeof cc.look === 'object' && !Array.isArray(cc.look)) {
+          out.look = {};
+          for (const f of LOOK_FIELDS) {
+            if (cc.look[f] === undefined) continue;
+            out.look[f] = f === 'glasses' ? cc.look[f] === true : name(cc.look[f], `look.${f}`);
+          }
+        }
+        return out;
       }),
       frames: int(o.frames, 1, LIMITS.fps * LIMITS.sceneSeconds, `${at}.frames`),
       seed: int(o.seed ?? 1, 0, 1e9, `${at}.seed`),

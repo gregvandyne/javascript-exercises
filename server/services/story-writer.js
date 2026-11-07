@@ -12,7 +12,7 @@ import { screenInput, modelClassify } from '../builder/screen.js';
 import * as aiBudget from './ai-budget.js';
 import { config } from '../config.js';
 import { localeInfo, tEn } from '../i18n/index.js';
-import { SCHEMA, KIT, validateScript, LIMITS, WORDS_PER_SEC } from './story-script.js';
+import { SCHEMA, validateScript, LIMITS, WORDS_PER_SEC, kitPrompt } from './story-script.js';
 
 const LANGS = { en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian Portuguese', fr: 'French', es: 'Spanish', de: 'German', he: 'Hebrew', ja: 'Japanese', ar: 'Arabic', ru: 'Russian', it: 'Italian', 'zh-Hant': 'Traditional Chinese', nl: 'Dutch' };
 const AGES = { '3-5': 'ages 3 to 5: very short, simple sentences, lots of repetition', '6-8': 'ages 6 to 8: simple sentences, a few new words', '9-12': 'ages 9 to 12: richer words, still gentle', all: 'the whole family, ages 4 and up' };
@@ -25,12 +25,8 @@ export const SYSTEM = (lang, ageBand, seconds) => `You write gentle bedtime stor
 Write in ${lang}, for ${AGES[ageBand] || AGES.all}. The story must be about ${seconds} seconds long when read slowly: about ${Math.round(seconds * WORDS_PER_SEC * 0.85)} spoken words in total, in ${seconds <= 45 ? '3 or 4' : seconds <= 60 ? '4 or 5' : '5 to 7'} scenes with 1 to 3 lines each.
 Bedtime rules: warm, kind and calm; a small, cosy problem that gets solved with kindness, curiosity or teamwork; it ends sleepy and safe ("goodnight"). Nothing scary, sad, violent or mean; no villains, no danger, no injuries, no real people, no brands or characters from films, books or games, no links, no personal details. If the idea asks for any of that, keep only the gentle part of it.
 Build every scene ONLY from this kit (the renderer cannot draw anything else, so never describe things it can't show as if they were on screen):
-- set: ${KIT.sets.join(', ')} (lighthouse = a striped lighthouse by the sea with a warm light beam; village = little houses with glowing windows; forest = felt trees, fireflies at night; meadow = hills, flowers and a big tree; sky = up among paper clouds and hanging stars)
-- time: ${KIT.times.join(', ')} (night shows the moon and stars hanging on strings)
-- props (optional extras): ${KIT.props.join(', ')}
-- characters (0 to 3 per scene, each in a different place): ${KIT.characters.join(', ')}; action: ${KIT.actions.join(', ')} (hold_star = carrying a little glowing star); place: ${KIT.places.join(', ')}
-- camera: ${KIT.cameras.join(', ')} (drift = a slow float; slow_push = moving in for a close, cosy moment; tilt_up = looking up to the sky)
-Give the main character a simple name and keep each character the same animal all the way through. Mostly night or dusk; the last scene is night and someone sleeps.
+${kitPrompt()}
+Give the main character a simple name and keep each character the same kind (the same animal, or the same person) all the way through. Mostly night or dusk; the last scene is night and someone sleeps.
 Each line: "say" is what the narrator reads (one or two short sentences, at most ${LIMITS.line} characters); "show" is the words on screen while it is read: the same words, or a shorter version (at most ${LIMITS.words} characters).
 "title": a short, lovely title (at most ${LIMITS.title} characters).`;
 

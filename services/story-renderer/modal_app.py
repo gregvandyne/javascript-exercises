@@ -37,6 +37,9 @@ GPU = os.environ.get("STORY_GPU", "L40S")
 if GPU not in ("L4", "L40S", "A10G", "A100", "H100"):
     raise SystemExit(f"STORY_GPU must be L4, L40S or A10G (got {GPU})")
 MAX_SCENES = 10
+# the Python kit render_story.py imports (tests/unit/story-modal.test.js checks this list covers every felt_*.py)
+KIT_FILES = ("feltkit.py", "styles.py", "felt_people.py", "felt_animals.py", "felt_actions.py", "felt_props.py",
+             "felt_sets.py", "felt_stage.py")
 
 
 # ---------------------------------------------------------------- the scene work (no Modal needed)
@@ -254,11 +257,11 @@ if modal is not None:
         .run_commands("mkdir -p /usr/share/glvnd/egl_vendor.d && echo '{\"file_format_version\":\"1.0.0\",\"ICD\":{\"library_path\":\"libEGL_nvidia.so.0\"}}' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json")
         .env({"NVIDIA_DRIVER_CAPABILITIES": "all", "STORY_CYCLES_DEVICE": "GPU"})
         .add_local_dir(str(BLENDER_DIR_LOCAL), "/app/blender", ignore=["__pycache__"])
-        # the shared kit (tools/blender), beside render_story.py where it looks last
-        .add_local_file(str(KIT_DIR_LOCAL / "feltkit.py"), "/app/blender/feltkit.py")
-        .add_local_file(str(KIT_DIR_LOCAL / "styles.py"), "/app/blender/styles.py")
         .add_local_file(__file__, "/app/modal_app.py")
     )
+    # the shared kit (tools/blender: feltkit, styles and the felt_* modules), beside render_story.py where it looks last
+    for _f in KIT_FILES:
+        image = image.add_local_file(str(KIT_DIR_LOCAL / _f), f"/app/blender/{_f}")
     progress = modal.Dict.from_name("story-renderer-progress", create_if_missing=True)
     secret = modal.Secret.from_name("story-renderer")   # STORY_RENDER_TOKEN
 

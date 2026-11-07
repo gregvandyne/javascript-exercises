@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const { config } = await import('../../server/config.js');
@@ -23,6 +24,7 @@ const { renderSpec, QUALITY } = await import('../../server/stories/pipeline.js')
 const { ffmpegArgs } = await import('../../server/stories/assemble.js');
 const { createApp } = await import('../../server/app.js');
 
+const hasBpy = () => { try { execFileSync(process.env.STORY_PYTHON || 'python3', ['-c', 'import bpy'], { stdio: 'ignore', timeout: 60000 }); return true; } catch { return false; } };
 const sample = () => JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/story-samples/lost-stars.json'), 'utf8'));
 
 // ---------------------------------------------------------------- script schema and validation
@@ -39,32 +41,72 @@ test('script: the sample story passes, and the schema offers exactly the kit', (
   assert.deepEqual(sc.characters.items.properties.action.enum, S.KIT.actions);
 });
 
-test('script: the kit the writer may use is the kit Blender can build', () => {
-  const py = fs.readFileSync(path.join(ROOT, 'server/stories/blender/render_story.py'), 'utf8');
-  const kit = fs.readFileSync(path.join(ROOT, 'tools/blender/feltkit.py'), 'utf8');
-  const sets = py.match(/SETS = \{([^}]*)\}/)[1].match(/'(\w+)'/g).map(s => s.slice(1, -1));
-  assert.deepEqual(sets.sort(), [...S.KIT.sets].sort());
+// The kit the writer may use (server/stories/blender/catalog.json) is the kit Blender can build: the Python kit's own
+// registries, asked through `render_story.py --kit` when Blender's Python module is here, and always (without bpy) by
+// name in the Python sources.
+const KIT_PY = ['server/stories/blender/render_story.py', ...['feltkit', 'felt_people', 'felt_animals', 'felt_actions', 'felt_props', 'felt_sets', 'felt_stage'].map(f => `tools/blender/${f}.py`)];
+test('script: the kit the writer may use is the kit Blender can build (by name in the Python kit)', () => {
+  const py = KIT_PY.map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
+  const named = n => py.includes(`'${n}'`);
+  for (const [what, list] of Object.entries({ ...S.KIT, ...S.LOOK, holds: S.HOLDS })) {
+    for (const n of list) if (n !== 'glasses') assert.ok(named(n), `the Python kit names the ${what} "${n}"`);
+  }
   const times = Object.keys(Object.fromEntries([...py.matchAll(/^ {4}'(\w+)': dict\(/gm)].map(m => [m[1], 1])));
   assert.deepEqual(times.sort(), [...S.KIT.times].sort());
-  const chars = kit.match(/CHARACTERS = \{([^}]*)\}/)[1].match(/'(\w+)'/g).map(s => s.slice(1, -1));
-  assert.deepEqual(chars.sort(), [...S.KIT.characters].sort());
-  const places = py.match(/PLACES = \{([^}]*)\}/)[1].match(/'(\w+)'/g).map(s => s.slice(1, -1));
-  assert.deepEqual(places.sort(), [...S.KIT.places].sort());
-  for (const a of S.KIT.actions.filter(a => a !== 'idle')) assert.ok(kit.includes(`'${a}'`), `feltkit animates ${a}`);
-  for (const c of S.KIT.cameras.filter(c => c !== 'drift')) assert.ok(py.includes(`'${c}'`), `render_story moves the camera: ${c}`);
-  for (const p of S.KIT.props) assert.ok(py.includes(`'${p}'`), `render_story builds the prop ${p}`);
+});
+
+test('script: the kit the writer may use is exactly the kit Blender can build (render_story.py --kit)', { skip: !hasBpy() && 'no bpy here' }, () => {
+  const out = execFileSync(process.env.STORY_PYTHON || 'python3', [path.join(ROOT, 'server/stories/blender/render_story.py'), '--kit'], { encoding: 'utf8', timeout: 60000 });
+  const py = JSON.parse(out.trim().split('\n').pop());
+  const same = (a, b, what) => assert.deepEqual([...a].sort(), [...b].sort(), what);
+  for (const k of ['sets', 'times', 'places', 'characters', 'actions', 'props', 'cameras']) same(py[k], S.KIT[k], k);
+  same(py.holds, S.HOLDS, 'holds');
+  same(py.flyers, S.FLYERS, 'flyers');
+  same(py.people, S.PEOPLE, 'people');
+  same(py.flying_outfits, S.FLYING_OUTFITS, 'flying outfits');
+  for (const [k, v] of Object.entries(S.LOOK)) same(py.look[k], v, `look.${k}`);
+});
+
+test('script: people have a look that stays the same, things to hold, and only flyers fly', () => {
+  const look = { hair_color: 'blonde', skin: 'fair', hair: 'short', shirt: 'blue', outfit: 'sports_kit', glasses: false, age: 'big' };
+  const d = sample();
+  d.scenes[0].characters = [{ kind: 'kid', who: 'Banks', action: 'kick', place: 'left', look }, { kind: 'kid', who: 'Rev', action: 'fly', place: 'right', look: { ...look, hair: 'curly', age: 'small' }, holds: 'trophy' }];
+  d.scenes[1].characters = [{ kind: 'kid', who: 'Banks', action: 'cheer', place: 'left' }, { kind: 'kid', who: 'Rev', action: 'fly', place: 'right', look: { ...look, hair: 'curly', age: 'small', outfit: 'superhero' } }];
+  d.scenes[2].characters = [{ kind: 'owl', who: 'Hoot', action: 'fly', place: 'center', look }];
+  let v = S.validateScript(d);
+  assert.ok(v.ok, v.errors.join('; '));
+  const [a, b] = v.script.scenes[0].characters;
+  assert.deepEqual(a.look, look);
+  assert.equal(b.holds, 'trophy');
+  assert.equal(b.action, 'jump', 'a kid in a football kit cannot fly: a happy jump instead');
+  assert.deepEqual(v.script.scenes[1].characters[0].look, look, 'Banks looks the same in the next scene');
+  assert.equal(v.script.scenes[1].characters[1].action, 'fly', 'a superhero can fly');
+  assert.equal(v.script.scenes[2].characters[0].look, undefined, 'animals have no look');
+  assert.equal(v.script.scenes[2].characters[0].action, 'fly');
+  d.scenes[0].characters[0].look = { ...look, hair_color: 'green' };
+  d.scenes[0].characters[1].holds = 'sword';
+  v = S.validateScript(d);
+  assert.ok(v.errors.some(e => /characters\[0\]\.look\.hair_color: "green"/.test(e)));
+  assert.ok(v.errors.some(e => /characters\[1\]\.holds: "sword"/.test(e)));
+  // the schema offers the look and the things to hold; the writer is told about people
+  const item = S.SCHEMA.properties.scenes.items.properties.characters.items;
+  assert.deepEqual(item.required, ['kind', 'action', 'place']);
+  assert.deepEqual(item.properties.look.properties.hair_color.enum, S.LOOK.hair_color);
+  assert.deepEqual(item.properties.holds.enum, S.HOLDS);
+  assert.match(S.kitPrompt(), /people: kid/);
+  assert.match(S.kitPrompt(), /soccer_field \(/);
 });
 
 test('script: wrong names, empty and long lines, too many scenes are errors; small things are fixed', () => {
   const d = sample();
-  d.scenes[0].set = 'castle';
-  d.scenes[1].props = ['boat', 'boat', 'dragon'];
+  d.scenes[0].set = 'volcano_base';
+  d.scenes[1].props = ['boat', 'boat', 'laser'];
   d.scenes[2].lines = [];
   d.scenes[3].lines[0].say = 'x'.repeat(S.LIMITS.line + 5);
   let v = S.validateScript(d);
   assert.equal(v.ok, false);
-  assert.ok(v.errors.some(e => /scenes\[0\]\.set: "castle"/.test(e)));
-  assert.ok(v.errors.some(e => /scenes\[1\]\.props: "dragon"/.test(e)));
+  assert.ok(v.errors.some(e => /scenes\[0\]\.set: "volcano_base"/.test(e)));
+  assert.ok(v.errors.some(e => /scenes\[1\]\.props: "laser"/.test(e)));
   assert.ok(v.errors.some(e => /scenes\[2\]\.lines: at least one/.test(e)));
   assert.ok(v.errors.some(e => /scenes\[3\]\.lines\[0\]\.say: longer/.test(e)));
   assert.deepEqual(v.script.scenes[1].props, ['boat'], 'duplicates and unknown props are dropped');
@@ -107,16 +149,17 @@ test('script: length is checked against what was asked for', () => {
 const reply = obj => ({ stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify(obj) }] });
 test('writer: one retry with the problems listed, then a checked script', async () => {
   const calls = [];
-  const bad = sample(); bad.scenes[0].set = 'castle';
+  const bad = sample(); bad.scenes[0].set = 'volcano_base';
   W.hooks.create = async ({ system, messages }) => { calls.push({ system, messages: messages.map(m => m.content) }); return reply(calls.length === 1 ? bad : sample()); };
   try {
     const r = await W.writeStory({ idea: 'a mouse and the lost stars', seconds: 45, locale: 'fr' });
     assert.ok(r.ok, JSON.stringify(r));
     assert.equal(r.attempts, 2);
     assert.match(calls[0].system, /Write in French/);
-    assert.match(calls[0].system, /lighthouse, village, forest, meadow, sky/);
+    assert.match(calls[0].system, /lighthouse \(a striped lighthouse/);
+    assert.match(calls[0].system, /kid, grownup and grandparent/);
     assert.match(calls[0].messages[0], /<idea>\na mouse and the lost stars\n<\/idea>/);
-    assert.match(calls[1].messages[2], /castle/, 'the second try is told what was wrong');
+    assert.match(calls[1].messages[2], /volcano_base/, 'the second try is told what was wrong');
   } finally { W.hooks.create = null; }
 });
 

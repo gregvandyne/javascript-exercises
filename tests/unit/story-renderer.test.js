@@ -84,6 +84,12 @@ test('renderer service: bad and oversized specs are refused before anything runs
   assert.ok(!checkSpec({ ...spec(), scenes: [] }).ok);
   assert.ok(!checkSpec({ ...spec(), scenes: Array.from({ length: 11 }, (_, i) => ({ ...spec().scenes[0], id: `s${i}` })) }).ok);
   assert.ok(!checkSpec({ ...spec(), scenes: [spec().scenes[0], spec().scenes[0]] }).ok, 'scene ids are unique');
+  // a person's look, a name and what they hold get through; anything odd in them does not
+  const cast = { kind: 'kid', action: 'kick', place: 'left', who: 'Banks<script>', holds: 'trophy', look: { hair_color: 'blonde', glasses: 'yes', outfit: 'sports_kit', extra: 'x' } };
+  const okc = checkSpec({ ...spec(), scenes: [{ ...spec().scenes[0], characters: [cast] }] });
+  assert.ok(okc.ok, okc.problems.join('; '));
+  assert.deepEqual(okc.spec.scenes[0].characters[0], { kind: 'kid', action: 'kick', place: 'left', who: 'Banksscript', holds: 'trophy', look: { hair_color: 'blonde', glasses: false, outfit: 'sports_kit' } });
+  assert.ok(!checkSpec({ ...spec(), scenes: [{ ...spec().scenes[0], characters: [{ ...cast, look: { hair: '../x' } }] }] }).ok);
 });
 
 test('renderer service: one job at a time, progress, clips, delete cleans up; the same story again replaces itself', async () => {
