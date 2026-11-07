@@ -14038,6 +14038,7 @@ function bzCinder(c) {
     const g = bzGeo(m), C2 = bzArr(m.col2, Uint8Array), cb = new Float32Array(m.verts * 3);
     for (let i = 0; i < m.verts; i++) { C1.setRGB(C2[i * 4] / 255, C2[i * 4 + 1] / 255, C2[i * 4 + 2] / 255, THREE.SRGBColorSpace); cb[i * 3] = C1.r; cb[i * 3 + 1] = C1.g; cb[i * 3 + 2] = C1.b; }
     bzSwap(pr.m, g); pr.m.material = mat; pr.ca = Float32Array.from(g.attributes.color.array); pr.cb = cb;
+    if (/^wing/.test(name)) for (const h of pr.m.children) if (h.userData.okInk) h.visible = false;   // no line round the thin wing webbing (it read as a black bar)
   }
   M.k = -1;   // recolour on the next frame
 }
