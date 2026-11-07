@@ -1067,7 +1067,7 @@
     "acts": 4
    }
   ],
-  "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+  "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
   "concept": "Build a passphrase",
   "narrow": {
    "width": 420,
@@ -1283,7 +1283,7 @@
     "acts": 4
    }
   ],
-  "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A computer would need about centuries.",
+  "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
   "concept": "Strong passphrases",
   "narrow": {
    "width": 420,

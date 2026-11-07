@@ -38,7 +38,19 @@ export async function api(url, { method = 'GET', body, signal, background = fals
 export function toast(msg, { bad = false, ms = 2800 } = {}) {
   const box = document.getElementById('toasts'); if (!box) return;
   const t = document.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.textContent = msg; box.appendChild(t);
+  liftToasts();
   setTimeout(() => t.remove(), ms);
+}
+/** While a sheet is open the toast stack sits just above it, never on the sheet's sentence or buttons (a "New best"
+ *  toast landed on the guest win sheet's text); when the last sheet closes the stack goes back where it was. */
+function liftToasts() {
+  const box = document.getElementById('toasts'); if (!box) return;
+  const sh = [...document.querySelectorAll('.sheet-bg .sheet')].pop();
+  if (sh) {
+    if (box.dataset.sheetLift == null) box.dataset.sheetLift = box.style.bottom;
+    const top = sh.getBoundingClientRect().top;
+    box.style.bottom = Math.round(Math.min(window.innerHeight - 64, window.innerHeight - top + 8)) + 'px';
+  } else if (box.dataset.sheetLift != null) { box.style.bottom = box.dataset.sheetLift; delete box.dataset.sheetLift; }
 }
 /** Modal sheet. content: HTML string (escape user text yourself!). Returns { el, close }. */
 export function sheet({ title, content, onClose } = {}) {
@@ -46,7 +58,8 @@ export function sheet({ title, content, onClose } = {}) {
   const bg = document.createElement('div'); bg.className = 'sheet-bg';
   bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><button class="iconbtn close" type="button" aria-label="${esc(t('js.app.close'))}"><span class="emo">✖️</span></button><h2 id="sheet-title">${esc(title)}</h2><div class="sheet-body">${content}</div></div>`;
   document.body.appendChild(bg);
-  const close = () => { bg.remove(); document.removeEventListener('keydown', onKey); if (prev && prev.focus) prev.focus(); onClose && onClose(); };
+  requestAnimationFrame(liftToasts); setTimeout(liftToasts, 300);   // after the sheet's slide-up
+  const close = () => { bg.remove(); liftToasts(); document.removeEventListener('keydown', onKey); if (prev && prev.focus) prev.focus(); onClose && onClose(); };
   const onKey = e => { if (e.key === 'Escape') close(); if (e.key === 'Tab') trap(e); };
   const trap = e => { const f = $$('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])', bg).filter(x => !x.disabled && x.offsetParent !== null); if (!f.length) return; const first = f[0], last = f[f.length - 1]; if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } };
   bg.addEventListener('click', e => { if (e.target === bg) close(); });

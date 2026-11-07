@@ -10,52 +10,46 @@
    "title": "Pim sorts the post",
    "text": "Pim the owl sorts the morning post at the Netville post office. Every message must reach the right house, safe and whole.",
    "art": "envelope",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
-   "view": [
-    7.6,
-    39.6,
-    45.6,
-    40.5
-   ],
+   "img": "csq/packet-post/packets-1b-hop-n",
+   "alt": "Break It Up: packet 1 of the apple picture has left Pim's Post and rides the road towards Mill Office and Grandma's House.",
    "focus": [
     {
-     "cue": "A photo waits at Pim's Post, ready to travel",
+     "cue": "Packet 2 waits its turn at Pim's Post",
      "box": [
-      11.1,
-      61.4,
-      3.9,
-      7.8
+      7,
+      50,
+      17,
+      32
      ]
     },
     {
-     "cue": "Its trip: across the roads to Grandma's House",
+     "cue": "Its trip: through Mill Office to Grandma's House",
      "box": [
-      10.6,
-      48.5,
-      39.6,
-      22.7
+      6,
+      30,
+      88,
+      52
      ],
      "path": [
       [
-       13,
-       65.6
+       14.5,
+       63.5
       ],
       [
-       21.8,
-       59
+       29.5,
+       53
       ],
       [
-       30.7,
-       51.6
+       44.5,
+       41.5
       ],
       [
-       39.5,
-       59
+       68,
+       52.5
       ],
       [
-       48.4,
-       66
+       86,
+       65
       ]
      ]
     }
@@ -175,12 +169,12 @@
      ]
     },
     {
-     "cue": "Many hands carry each packet on its way",
+     "cue": "Every office and router on the way handles the packet",
      "box": [
-      3.1,
-      4.2,
-      93.8,
-      93
+      44,
+      4,
+      28,
+      42
      ]
     }
    ]

@@ -1307,7 +1307,7 @@
    "band": "1b",
    "state": "ciphers-1b-wheel-n2",
    "concept": "turn the wheel back",
-   "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+   "alt": "The cipher wheel turned back by 3: the secret message DSSOH now reads APPLE.",
    "capturedAt": "2026-11-07",
    "commit": "aa57a7f"
   },
@@ -1483,7 +1483,7 @@
    "band": "1b",
    "state": "locks-1b-pass-n",
    "concept": "Build a passphrase",
-   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
   },
@@ -1604,7 +1604,7 @@
    "band": "2",
    "state": "locks-2-pass-n",
    "concept": "Strong passphrases",
-   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A computer would need about centuries.",
+   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
   },
@@ -1697,6 +1697,17 @@
    "commit": "99934df"
   },
   {
+   "key": "csq/packet-post/packets-1b-hop-n",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-hop-n",
+   "concept": "a numbered packet on its way",
+   "alt": "Break It Up: packet 1 of the apple picture has left Pim's Post and rides the road towards Mill Office and Grandma's House.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
+  },
+  {
    "key": "csq/packet-post/packets-1b-key",
    "game": "packet-post",
    "chapter": "packets",
@@ -1752,17 +1763,6 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/packet-post/protocols-1b-sealed",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "1b",
-   "state": "protocols-1b-sealed",
-   "concept": "the padlock road keeps a secret sealed",
-   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
-   "capturedAt": "2026-11-07",
-   "commit": "d1020df"
-  },
-  {
    "key": "csq/packet-post/protocols-1b-sealed-n",
    "game": "packet-post",
    "chapter": "protocols",
@@ -1783,6 +1783,17 @@
    "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
    "capturedAt": "2026-11-07",
    "commit": "99934df"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed-n3",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed-n3",
+   "concept": "secrets ride the padlock road",
+   "alt": "Rules of the Road: the secret birthday packets take the padlock roads over the hill, away from the snoopy cat on the open road.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/packet-post/protocols-2-ack",
@@ -1840,17 +1851,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/protocols-2-key-n",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "2",
-   "state": "protocols-2-key-n",
-   "concept": "numbered packets at the first stop",
-   "alt": "Rules of the Road, Pro: five numbered packets wait at Pim's Post for the road through Mill Office to Grandma's House.",
-   "capturedAt": "2026-11-07",
-   "commit": "aa57a7f"
-  },
-  {
    "key": "csq/packet-post/protocols-2-rules",
    "game": "packet-post",
    "chapter": "protocols",
@@ -1871,6 +1871,17 @@
    "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/protocols-2-twice-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "2",
+   "state": "protocols-2-twice-n",
+   "concept": "why a packet is resent",
+   "alt": "Rules of the Road, Pro: a slow got it made the sender resend, so extra copies wait in the inbox while one packet is still missing.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/packet-post/routes-1b-journey",
@@ -1904,6 +1915,17 @@
    "alt": "Hop budget: thirteen hops for four packets. Packet 2 of 4 is on the road, and the counter reads Hops: 3 of 13.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/routes-2-hop-n",
+   "game": "packet-post",
+   "chapter": "routes",
+   "band": "2",
+   "state": "routes-2-hop-n",
+   "concept": "packets hop office to office",
+   "alt": "Many Roads, Pro: numbered cookie packets hop from office to office across Netville towards the school.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/packet-post/routes-2-sealed",
@@ -2852,15 +2874,15 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/chat-1b-ch-1-debrief",
+   "key": "csq/trick-inbox/chat-1b-ch-1-debrief-s",
    "game": "trick-inbox",
    "chapter": "chat",
    "band": "1b",
-   "state": "chat-1b-ch-1-debrief",
+   "state": "chat-1b-ch-1-debrief-s",
    "concept": "show Pim, the debrief",
-   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
+   "alt": "The debrief: chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/trick-inbox/chat-1b-ch-2-debrief",
@@ -3226,17 +3248,6 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/mix-1b-mx-1-debrief",
-   "game": "trick-inbox",
-   "chapter": "mix",
-   "band": "1b",
-   "state": "mix-1b-mx-1-debrief",
-   "concept": "the forwarder",
-   "alt": "The debrief: the Magpie loves a chain, the trick does its own traveling. Behind this one: the forwarder.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
    "key": "csq/trick-inbox/mix-1b-mx-3-all",
    "game": "trick-inbox",
    "chapter": "mix",
@@ -3248,15 +3259,15 @@
    "commit": "aa57a7f"
   },
   {
-   "key": "csq/trick-inbox/mix-1b-mx-3-debrief",
+   "key": "csq/trick-inbox/mix-1b-mx-3-debrief-s",
    "game": "trick-inbox",
    "chapter": "mix",
    "band": "1b",
-   "state": "mix-1b-mx-3-debrief",
+   "state": "mix-1b-mx-3-debrief-s",
    "concept": "the key-hunter",
-   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
+   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter, who wants into your mailbox.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/trick-inbox/mix-1b-mx-4-all",
@@ -3270,15 +3281,15 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/mix-1b-mx-4-debrief",
+   "key": "csq/trick-inbox/mix-1b-mx-4-all-s",
    "game": "trick-inbox",
    "chapter": "mix",
    "band": "1b",
-   "state": "mix-1b-mx-4-debrief",
+   "state": "mix-1b-mx-4-all-s",
    "concept": "the giggler",
-   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
+   "alt": "A post from News Flash: school is closing forever, free candy for everyone on Monday, tell everyone you know! Every clue marked: it only wants a big reaction.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/trick-inbox/mix-1b-mx-6-all",
@@ -3292,15 +3303,15 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/mix-1b-mx-6-debrief",
+   "key": "csq/trick-inbox/mix-1b-mx-6-debrief-s",
    "game": "trick-inbox",
    "chapter": "mix",
    "band": "1b",
-   "state": "mix-1b-mx-6-debrief",
+   "state": "mix-1b-mx-6-debrief-s",
    "concept": "the prize-faker",
-   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
+   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker, who wants you to tap and type.",
+   "capturedAt": "2026-11-07",
+   "commit": "95d4db3"
   },
   {
    "key": "csq/trick-inbox/mix-2-mx-3-debrief",
@@ -3567,28 +3578,6 @@
    "commit": "850c2ab"
   },
   {
-   "key": "csq/would-you-rather/online-delete-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-delete-1b",
-   "concept": "delete an old post, or leave it",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-delete-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-delete-2",
-   "concept": "delete an old post, or leave it",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/would-you-rather/online-drawing-1b",
    "game": "would-you-rather",
    "chapter": "online",
@@ -3607,17 +3596,6 @@
    "state": "online-location-1b",
    "concept": "a free game that sees where you are",
    "alt": "Would you rather: an app that is free if it sees where you are, or an app that costs a little and never knows?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-name-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-name-2",
-   "concept": "nickname or real first name",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
   },

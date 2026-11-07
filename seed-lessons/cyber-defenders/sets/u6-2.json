@@ -184,7 +184,7 @@
     "An endless scroll"
    ],
    "answer": 1,
-   "why": "A second, different proof of who you are before a lock opens is two-step sign-in."
+   "why": "A stolen passphrase is only one proof. Asking for a second, different one means a thief who has the first still cannot get in."
   },
   {
    "id": "cd-2-6.4-e2",
