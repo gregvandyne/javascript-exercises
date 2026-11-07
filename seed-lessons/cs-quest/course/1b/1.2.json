@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "The same block again?",
-   "text": "Bolt has to go 5 squares in a straight line. You could use move, move, move, move, move. That is a lot of the same block!",
+   "text": "Bolt has to go 5 squares in a straight line. Without a loop, that takes one move block for each square: move, move, move, move, move. That is a lot of the same block!",
    "art": "robot",
    "img": "csq/robo-route/loops-1b-five-moves",
    "view": [
@@ -39,7 +39,7 @@
      ]
     },
     {
-     "cue": "The floor numbers count them: 1, 2, 3, 4, 5. That is five move blocks.",
+     "cue": "The floor numbers count the squares: 1 to 5. One move block each.",
      "box": [
       12.4,
       49.4,
@@ -132,7 +132,7 @@
   },
   {
    "title": "What the number means",
-   "text": "The number says how many times the whole inside runs. Repeat 2 with move, move, pick up inside runs all three blocks twice: 4 moves and 2 pick-ups.",
+   "text": "The number says how many times the whole inside runs. Look at repeat 2 with move, move and pick up inside it: all three blocks run twice. That makes 4 moves and 2 pick-ups.",
    "art": "star",
    "img": "csq/robo-route/loops-1b-repeat-number",
    "view": [
