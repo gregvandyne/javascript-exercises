@@ -55,9 +55,12 @@ async function poll() {
   try { const s = await api('/api/admin/tts/warm'); show(s); if (s.running) timer = setTimeout(poll, 2000); } catch { timer = setTimeout(poll, 5000); }
 }
 go && go.addEventListener('click', async () => {
-  try { show(await api('/api/admin/tts/warm', { method: 'POST', body: { games: ['hero-of-sunvale'], locales: data.onLocales.length ? data.onLocales : data.allowed } })); poll(); }
+  try { show(await api('/api/admin/tts/warm', { method: 'POST', body: { games: [data.warmGame || 'hero-of-sunvale'], locales: data.onLocales.length ? data.onLocales : data.allowed } })); poll(); }
   catch (ex) { toast(ex.message, { bad: true }); }
 });
+// Picking another game reloads the page with its line count and cost.
+const pick = $('#tv-warm-game');
+pick && pick.addEventListener('change', () => { location.href = `/admin/voices?warm=${encodeURIComponent(pick.value)}#tv-warm`; });
 stop && stop.addEventListener('click', async () => { try { show(await api('/api/admin/tts/warm/stop', { method: 'POST', body: {} })); } catch (ex) { toast(ex.message, { bad: true }); } });
 show(data.warm);
 if (data.warm.running) poll();
