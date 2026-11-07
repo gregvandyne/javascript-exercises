@@ -101,10 +101,10 @@ export function define(K) {
     if (kit.input && kit.input.bindings && o.upJumps !== true) kit.input.map({ jump: (kit.input.bindings.jump || []).filter(b => b !== 'KeyW' && b !== 'ArrowUp') });
     { const A2 = kit.helperAtlas(); B.look.props = (look ? (kit.theme.names && kit.useTheme ? look.props : []) : []).filter(n => A2.defs.get(n)); }
     // ---- toon materials with a rim ----
-    const U = { rim: { value: Col(bold ? NEON.cyan : CREAM) }, rimK: { value: bold ? 0.5 : cartoon ? 0.16 : 0.22 }, px: { value: new T.Vector2(0.002, 0.003) }, ink: { value: 2.5 }, near: { value: 12 },
+    const U = { rim: { value: Col(bold ? NEON.cyan : CREAM) }, rimK: { value: bold ? 0.5 : cartoon ? 0.16 : 0.22 }, px: { value: new T.Vector2(0.002, 0.003) }, ink: { value: 2.5 }, near: { value: cartoon ? 70 : 12 },
       // cartoon: the key light in view space (the top-left of the screen, a little toward the viewer), the shade band's
       // colour (a multiplier: about the palette's shade step, a touch cool), the band's edge, and a tint for the mood
-      key: { value: new T.Vector3(-0.5, 0.64, 0.58).normalize() }, shade: { value: new T.Color().setRGB(0.6, 0.57, 0.7) }, edge: { value: 0.12 }, tint: { value: new T.Color(1, 1, 1) } };
+      key: { value: new T.Vector3(-0.62, 0.5, 0.6).normalize() }, shade: { value: new T.Color().setRGB(0.5, 0.47, 0.62) }, edge: { value: 0.3 }, tint: { value: new T.Color(1, 1, 1) } };
     B.light = { key: U.key.value, shade: U.shade.value, tint: U.tint.value };
     const own = [];   // what B made (dispose)
     const gradient = steps => { const t = new T.DataTexture(new Uint8Array(steps.map(v => Math.round(v * 255))), steps.length, 1, T.RedFormat); t.minFilter = t.magFilter = T.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true; own.push(t); return t; };
@@ -113,7 +113,8 @@ export function define(K) {
     // edge anti-aliased over a pixel; soft: wider, for rolling land), a Cream rim on the lit side, then fog as usual
     const CEL = `vec3 okV = normalize( normal ); float okNd = dot( okV, okKey ), okW = fwidth( okNd ) * 0.75 + okSoft;
 float okLit = smoothstep( okEdge - okW, okEdge + okW, okNd );
-outgoingLight = diffuseColor.rgb * mix( mix( vec3( 1.0 ), okShade, okDepth ), vec3( 1.0 ), okLit ) * okTint + totalEmissiveRadiance
+vec3 okF = max( vec3( 0.0 ), mix( vec3( dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) ) ), diffuseColor.rgb, 1.15 ) );
+outgoingLight = okF * mix( mix( vec3( 1.0 ), okShade, okDepth ), vec3( 1.0 ), okLit ) * okTint + totalEmissiveRadiance
   + okRim * okRimK * ( 0.35 + 0.65 * okLit ) * smoothstep( 0.6, 0.95, 1.0 - clamp( dot( okV, normalize( vViewPosition ) ), 0.0, 1.0 ) );
 `;
     const rimify = mat => {
@@ -122,6 +123,7 @@ outgoingLight = diffuseColor.rgb * mix( mix( vec3( 1.0 ), okShade, okDepth ), ve
           Object.assign(s.uniforms, { okRim: U.rim, okRimK: mat.userData.rimK || U.rimK, okKey: U.key, okShade: U.shade, okEdge: U.edge, okTint: U.tint, okSoft: { value: mat.userData.soft || 0 }, okDepth: { value: mat.userData.depth == null ? 1 : mat.userData.depth } });
           s.fragmentShader = ' uniform vec3 okRim, okKey, okShade, okTint;\nuniform float okRimK, okEdge, okSoft, okDepth;\n' + s.fragmentShader.replace('#include <opaque_fragment>', CEL + '#include <opaque_fragment>');
         };
+        mat.lights = false;   // the band comes from the screen's key light alone: no scene light loops (cheaper on phones)
         mat.customProgramCacheKey = () => 'okCel'; return mat;
       }
       mat.onBeforeCompile = s => {
@@ -379,7 +381,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
     // ---- terrain, hills, props, clouds or stars ----
     function world(opt = {}) {
       const size = opt.size || o.size || 30, seed = opt.seed || 7, rnd = K.rand(seed), grp = new T.Group(); grp.name = 'oomba-world';
-      sky({ size, shadows: opt.shadows }); U.near.value = size * 0.45;
+      sky({ size, shadows: opt.shadows }); U.near.value = size * (cartoon ? 2 : 0.45);
       const amp = opt.flat ? 0 : (opt.hilly == null ? 1 : opt.hilly) * size * 0.035, ph = rnd() * 6;
       const heightAt = opt.height || ((x, z) => { const r = Math.hypot(x, z) / size; return amp * (Math.sin(x * 0.16 + ph) * Math.cos(z * 0.14 - ph) + 0.5 * Math.sin(x * 0.31 + z * 0.23)) * sm(0.12, 0.45, r) + sm(0.8, 1.6, r) * size * 0.06; });
       // the land is the biome's near band (its grass, sand or snow); the play area in the middle is its ground top
@@ -452,7 +454,7 @@ if ( okl > 1e-5 ) gl_Position.xy += okc.xy / okl * okW * okG * clamp( okD / gl_P
       for (const w of walkers) if (!w.opt.manual) w.update(dt);
       for (const f of follows) f.update(dt);
       const mo = motion();
-      if (renderer) { renderer.getSize(sz); if (sz.x && sz.y) { U.px.value.set(2 / sz.x, 2 / sz.y); U.ink.value = clamp(sz.y * 0.0055, 2.2, 5) * (bold ? 0.82 : cartoon ? 1.08 : 1); } }   // the kit's 2D line: about 5% of a character's height on screen
+      if (renderer) { renderer.getSize(sz); if (sz.x && sz.y) { U.px.value.set(2 / sz.x, 2 / sz.y); U.ink.value = cartoon ? clamp(sz.y * 0.0068, 3.2, 6.5) : clamp(sz.y * 0.0055, 2.2, 5) * (bold ? 0.82 : 1); } }   // the kit's 2D line: about 5% of a character's height on screen
       if (camera) { camera.getWorldPosition(camPos); right.setFromMatrixColumn(camera.matrixWorld, 0); }
       for (const g of cards) {
         const c = g.userData.okCard; if (!camera) break;

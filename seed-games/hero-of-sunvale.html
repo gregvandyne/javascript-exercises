@@ -295,7 +295,7 @@ body.cut .hud,body.cut .tbtns,body.cut .keyhint,body.cut .toasts,body.cut .badge
 <script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/art-biomes-2.js" integrity="sha384-vJGeWa5z97KHCs2TZpjtJ8wQfcy7hmahtujRLl1iMH4j09PJ7TCds6ZvgDVgD2yK" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-fj8HwmKajGpUjSHACisAoZPleDyWB+oBkuyReFL2K8L/N7i7I8MwmZMWbW8xZDtY" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-XKfp/1O4hRKW/A1E8IFWReXitSVIqaqyMvucFAiyK3Of+uT6VzNvDXAVKBFa7fNa" crossorigin="anonymous"></script>
 <script src="/vendor/oomba-kit/1.1.5/packs/live.js" integrity="sha384-20jXn5wIizwJ//YBQJUILmlALHi914BQlxzKBm3v5Z4lh5YOic+mHK2WiezyG4km" crossorigin="anonymous"></script>
 <script>
 /* KIT LOOK: the Oomba Kit's colours (by day and by night) and its font, as the CSS variables the sheet above uses, so
@@ -6219,10 +6219,11 @@ function toonCol(c) {
   TOON_COL.set(h, v); return v;
 }
 if (TOON) {
-  for (const L of CONFIG.levels) { L.shadows = false; L.fogNear = Math.round(L.fogNear * 1.3); }   // contact blobs instead of shadow maps (cheaper, and the look); a clearer, less hazy distance
+  for (const L of CONFIG.levels) { L.shadows = false; L.fogNear = Math.round(L.fogNear * 1.7); L.fogFar = Math.round(L.fogFar * 1.1); }   // contact blobs instead of shadow maps (cheaper, and the look); a clearer, less hazy distance
   renderer.shadowMap.enabled = false; sun.castShadow = false;
   // the sky ramp of the kit (sky tint at the horizon to sky base overhead); the gloom in grape
-  SKY_COLORS.top.set(OK.color('sky', 2)); SKY_COLORS.mid.set(OK.color('sky', 1)); SKY_COLORS.horizon.set(OK.color('sky', 0)).lerp(SKY_COLORS.mid, 0.35);
+  // the kit's day sky: sky base overhead to a pale sky at the horizon (no haze tint: the cartoon distance stays clear)
+  SKY_COLORS.top.set(OK.color('sky', 2)); SKY_COLORS.mid.set(OK.color('sky', 1)); SKY_COLORS.horizon.set(OK.color('sky', 0)).lerp(SKY_COLORS.mid, 0.5);
   SKY_COLORS.gloomTop.set(OK.color('grape', 3)); SKY_COLORS.gloomHorizon.set(OK.color('grape', 1));
   scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
 }
@@ -6243,6 +6244,7 @@ const MAT = {
   litFlat: TOON ? inkMat(0.9, false) : inkMat(0.9, true),   // cartoon: rocks, cabbages and crowns shade round (creased normals)
   glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
   char: inkMat(1.25, false),
+  groundBlob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }) : null,
   blob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.45, depthWrite: false })
     : new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
   // the hero's eyes, nose, cheeks and smile: flat colour, no light, so they stay crisp (lit, the whites went mint at the rim)
@@ -7120,7 +7122,7 @@ function buildSky() {
   dome.frustumCulled = false; dome.renderOrder = -10; scene.add(dome);
   // cartoon: round Cream puffs with the cel band and Ink, like the style sheet's
   const puffs = 44, cloudMat = TOON ? B.toon(OK.color('cream'), { fog: false, rim: 0, depth: 0.45 }) : new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0x8e9cb2, flatShading: true, fog: false });
-  const clouds = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, TOON ? 2 : 1), cloudMat, puffs);
+  const clouds = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), cloudMat, puffs);
   const group = new THREE.Group(); group.add(clouds); scene.add(group); clouds.frustumCulled = false;
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), pp = new THREE.Vector3();
   for (let i = 0; i < puffs; i++) {
@@ -7171,7 +7173,7 @@ function prim(key) {
   else if (kind === 'rbox') {
     // cartoon: a chunky rounded box (a sphere pushed out to a box: flat-ish faces, round edges and corners), unit size
     // with its bottom at 0 like 'box'; its normals are the sphere's, so the cel band rolls softly over it
-    g = new THREE.SphereGeometry(1, 8, 6); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
+    g = new THREE.SphereGeometry(1, 8, 4); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), sg = v => (Math.abs(v) < 1e-6 ? 0 : Math.sign(v)); p.setXYZ(i, sg(x) * c + x * r, sg(y) * c + y * r + 0.5, sg(z) * c + z * r); }
     g = g.toNonIndexed(); const n = g.attributes.position.clone(); for (let i = 0; i < n.count; i++) { V1.set(n.getX(i), n.getY(i) - 0.5, n.getZ(i)); V2.set(Math.sign(V1.x) * c, Math.sign(V1.y) * c, Math.sign(V1.z) * c); V1.sub(V2).normalize(); n.setXYZ(i, V1.x, V1.y, V1.z); }
     g.setAttribute('normal', n); return (PRIM[key] = g);
@@ -7224,7 +7226,7 @@ class Kit {
     return this;
   }
   cone(x, y, z, r, h, color, seg, opt) { this.add(prim(`cone:${seg || 8}`), x, y, z, r, h, r, 0, opt && opt.ry || 0, 0, color, opt && opt.glow); return this; }
-  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
+  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${TOON && !detail && r < 0.6 ? 1 : detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
   /** Gable roof: ridge along local x, apex at y + h. */
   prism(x, y, z, sx, h, sz, color, ry) { this.add(prim('prism'), x, y, z, sx, h, sz, 0, ry || 0, 0, color); return this; }
   /** A box between two points (a beam, rail or plank). */
@@ -7368,6 +7370,7 @@ const spot = (id, x, z, yTop) => { SPOTS[id] = { x, y: (yTop !== undefined ? yTo
 function cottage(k, x, z, ry, o) {
   o = o || {};
   const w = o.w || 6, d = o.d || 5, h = o.h || 3.2, rh = o.rh || 2.2, y = gy(x, z) - 0.15;
+  if (TOON) GROUND_BLOBS.push(x, gy(x, z) + 0.06, z, w * 0.62 + 0.9, d * 0.62 + 0.9, ry);
   k.box(x, y - 0.8, z, w + 0.4, 1, d + 0.4, PAL.stoneD, ry);
   k.box(x, y, z, w, h, d, o.wall || PAL.wall, ry, { col: true, stand: !!o.flat, top: o.flat ? y + h + 0.25 : y + h + rh });
   if (o.flat) { k.box(x, y + h, z, w + 0.5, 0.25, d + 0.5, o.roof || PAL.roofR, ry); }
@@ -7455,7 +7458,7 @@ function banner(k, x, y, z, ry, color, hgt) {
   hgt = hgt || 4; k.cyl(x, y, z, 0.09, 0.09, hgt, PAL.woodD, 5); const p = lp(x, z, ry, 0.55, 0); k.box(p[0], y + hgt - 1.7, p[1], 1.0, 1.5, 0.05, color, ry);
 }
 /** Cartoon: a lamp's glow (bloom on lamps only): soft additive halos, all of them one draw call (see haloFrame). */
-const HALOS = [];
+const HALOS = [], GROUND_BLOBS = [];   // cartoon: lamp halos; soft blobs under the houses
 function halo(x, y, z, size, color) { if (TOON) HALOS.push(x, y, z, size, color); }
 function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); k.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); k.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
 /** A horizontal log centred on (x, z), turned by ry (length along local x), resting on y. */
@@ -7984,7 +7987,7 @@ WORLD.setArenaDoor = k => { const d = WORLD.dyn.arenaDoor; if (!d) return; d.k =
 // InstancedMesh buffers (typed-array writes, no allocation) and count is set. One draw call per kind.
 // Builders can add kinds (e.g. breakable crates): SCATTER.addKind(name, geometry, cap, opts); SCATTER.add(name, x, y, z,
 // ry, s, sy, hex); after S.ready call SCATTER.pack(name). SCATTER.hide(name, i) / show(name, i) toggle one instance.
-const SC_CELL = 50, SC_N = 16, SC_F = 10;
+const SC_CELL = 50, SC_N = 16, SC_F = 10, TREE_BLOB = { tree: 2.1, pine: 1.9 };
 const SCATTER = {
   kinds: {}, list: [], ready: false, lastX: 1e9, lastZ: 1e9,
   addKind(name, geo, cap, opts) {
@@ -7995,12 +7998,13 @@ const SCATTER = {
     mesh.castShadow = !!opts.shadow; mesh.receiveShadow = opts.receive !== false;
     scene.add(mesh);
     const k = { name, mesh, cap, raw: [], data: null, n: 0, cellStart: null, hidden: null, radius: opts.radius || 1, density: opts.density || null, capMul: opts.capMul !== false,
-      fade: !!opts.fade, slotOf: new Int32Array(cap), fadeK: new Float32Array(cap).fill(1), crown: opts.crown || 2.2 };
+      fade: !!opts.fade, slotOf: new Int32Array(cap), fadeK: new Float32Array(cap).fill(1), crown: opts.crown || 2.2, hs: opts.hs || 1 };
     this.kinds[name] = k; this.list.push(k); return k;
   },
   add(name, x, y, z, ry, s, sy, hex) {
     const k = this.kinds[name]; C2.set(toonCol(hex));
     k.raw.push(x, y, z, ry, s, sy || 1, C2.r, C2.g, C2.b, wrnd());
+    if (TOON && TREE_BLOB[name] && this.kinds.tblob) this.add('tblob', x, y + 0.08, z, 0, s * TREE_BLOB[name], 1, '#ffffff');   // cartoon: a contact blob under it
   },
   pack(name) {
     const k = this.kinds[name], raw = k.raw, n = raw.length / SC_F, cellOf = new Int32Array(n), counts = new Int32Array(SC_N * SC_N + 1);
@@ -8064,7 +8068,7 @@ const SCATTER = {
           // half is caught too (one point at mid-height missed it and the canopy covered a face)
           const rr = k.crown * d[o + 4];
           for (const hk of [1.4, 2.6, 3.8]) {
-            const py = d[o + 1] + d[o + 4] * hk;
+            const py = d[o + 1] + d[o + 4] * hk * k.hs;
             let t = ((px - ax) * sx + (py - ay) * sy + (pz - az) * sz) / (L2 || 1); t = t < 0 ? 0 : t > 1 ? 1 : t;
             const qx = ax + sx * t - px, qy = ay + sy * t - py, qz = az + sz * t - pz;
             if (qx * qx + qy * qy + qz * qz < rr * rr && t < 0.94) { want = 0.12; break; }
@@ -8095,8 +8099,9 @@ function openCone(seg) { const g = new THREE.ConeGeometry(1, 1, seg, 1, true).tr
 function openCyl(seg, top) { const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 75); return g; }
 function buildScatterKinds() {
   const trunk = openCyl(5, 0.75), ico = prim('sph:0'), cone6 = openCone(6), cone3 = openCone(3), octa = (() => { const g = new THREE.OctahedronGeometry(1, 0).toNonIndexed(); g.computeVertexNormals(); return g; })();
-  // cartoon: round, smooth-shaded crowns and bushes (one clean shade band), the rocks keep their facets
+  // cartoon: round, smooth-shaded crowns and bushes (one clean shade band), soft contact blobs under them
   const soft = TOON ? MAT.lit : undefined;
+  if (TOON) SCATTER.addKind('tblob', new THREE.CircleGeometry(1, 12).rotateX(-Math.PI / 2), 2600, { material: MAT.groundBlob, receive: false, fade: true, crown: 1.05, hs: 0.48, radius: 0.55 });   // fades with its tree
   SCATTER.addKind('tree', mergedGeo([[trunk, 0, -0.3, 0, 0.28, 2.1, 0.28, '#8a5a34'], [ico, 0, 2.6, 0, 1.75, 1.6, 1.75, '#ffffff'], [ico, 0.55, 3.55, 0.3, 1.15, 1.05, 1.15, '#f0fff0']]), 1100, { fade: true, crown: 2.2, material: soft });
   SCATTER.addKind('pine', mergedGeo([[trunk, 0, -0.3, 0, 0.24, 1.6, 0.24, '#7a4e2c'], [cone6, 0, 1.0, 0, 1.55, 2.3, 1.55, '#ffffff'], [cone6, 0, 2.3, 0, 1.2, 2.0, 1.2, '#f2fff2'], [cone6, 0, 3.4, 0, 0.82, 1.7, 0.82, '#e8ffe8']]), 900, { material: soft, fade: true, crown: 1.8 });
   SCATTER.addKind('bush', mergedGeo([[ico, 0, 0.45, 0, 1.0, 0.75, 1.0, '#ffffff'], [ico, 0.6, 0.35, 0.2, 0.6, 0.5, 0.6, '#f4fff0']]), 700, { material: soft });
@@ -13505,6 +13510,11 @@ function haloFrame(gl) {
     const pts = new THREE.Points(g, mat); pts.frustumCulled = false; pts.renderOrder = 3; scene.add(pts); WORLD.halos = pts;
   }
   if (WORLD.halos) WORLD.halos.material.opacity = 0.32 + 0.4 * gl;
+  if (!WORLD.gblobs && GROUND_BLOBS.length) {   // one draw call for every house's blob
+    const n = GROUND_BLOBS.length / 6, m = new THREE.InstancedMesh(new THREE.CircleGeometry(1, 24).rotateX(-Math.PI / 2), MAT.groundBlob, n);
+    for (let i = 0; i < n; i++) { const b = GROUND_BLOBS.slice(i * 6, i * 6 + 6); V1.set(b[0], b[1], b[2]); Q1.setFromAxisAngle(UP, b[5]); V2.set(b[3], 1, b[4]); m.setMatrixAt(i, M4.compose(V1, Q1, V2)); }
+    m.frustumCulled = false; scene.add(m); WORLD.gblobs = m;
+  }
 }
 function worldFrame(dt, now) {
   const cx = camera.position.x, cz = camera.position.z, far = camera.far, cm = calm(), L = LV();

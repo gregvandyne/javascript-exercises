@@ -244,7 +244,7 @@ test('cartoon (kit 1.1.5): opt-in only; one hard cel band from a screen-fixed ke
   assert.equal(mk({ style: 'cartoon', theme: 'cyber' }).style, 'cartoon', 'a Bold theme does not override it');
   const m = C.toon('mint'); assert.ok(m.isMeshToonMaterial); assert.equal(m.customProgramCacheKey(), 'okCel'); assert.equal(C.toon('coral').customProgramCacheKey(), 'okCel', 'one program');
   const sh = { uniforms: {}, fragmentShader: 'void main() {\n#include <opaque_fragment>\n}', vertexShader: '' }; m.onBeforeCompile(sh);
-  assert.match(sh.fragmentShader, /okLit = smoothstep\( okEdge - okW, okEdge \+ okW, okNd \)[\s\S]*outgoingLight = diffuseColor\.rgb \* mix\([\s\S]*#include <opaque_fragment>/, 'the colour is the fill, one band of shade');
+  assert.match(sh.fragmentShader, /okLit = smoothstep\( okEdge - okW, okEdge \+ okW, okNd \)[\s\S]*vec3 okF = [\s\S]*outgoingLight = okF \* mix\([\s\S]*#include <opaque_fragment>/, 'the colour is the fill, one band of shade');
   for (const u of ['okKey', 'okShade', 'okEdge', 'okTint', 'okRim', 'okRimK', 'okSoft', 'okDepth']) assert.ok(sh.uniforms[u], u);
   assert.ok(sh.uniforms.okRim.value.equals(new THREE.Color('#FFFDF2')) && sh.uniforms.okRimK.value > 0 && sh.uniforms.okRimK.value < 0.2, 'a faint Cream rim');
   assert.ok(sh.uniforms.okKey.value.x < 0 && sh.uniforms.okKey.value.y > 0, 'the key light is at the top-left of the screen (view space)');
