@@ -214,8 +214,9 @@ writes the endpoint URL, the wall time and the GPU render time into the run's su
    branch `feature/story-builder` (or `main` once merged), GPU **L40S** → **Run workflow**. The first run takes
    about 10–20 minutes (Modal builds the Blender image once; later runs are a few minutes).
 5. **Read the result.** Open the finished run: a green tick means deployed, healthy and one real render done. The
-   summary at the top shows the **endpoint URL** (`https://<workspace>--oomba-story-renderer.modal.run`) and the
-   measured times. A red cross says which step failed and why (a missing secret is named).
+   summary at the top shows the **endpoint URL** and the measured times. Copy the URL exactly as shown: Modal may put
+   a region in it, e.g. `https://<workspace>--oomba-story-renderer.us-east.modal.run` (the live one is
+   `https://gregvandyne--oomba-story-renderer.us-east.modal.run`, L40S). A red cross says which step failed and why (a missing secret is named).
 6. **Point the site at it.** Render dashboard → the web service → **Environment** → add:
    - `STORY_RENDERER` = `modal`
    - `STORY_RENDER_URL` = the endpoint URL from step 5
