@@ -45,7 +45,7 @@
   {
    "kind": "example",
    "title": "Name the want, pick the guard",
-   "text": "A fake message from the school office asks for account details. Work out who is behind it before you act.",
+   "text": "A fake message signed Post Office asks for your mailbox key. Work out who is behind it before you act.",
    "art": "magnifier",
    "steps": [
     "Sender name looks official",

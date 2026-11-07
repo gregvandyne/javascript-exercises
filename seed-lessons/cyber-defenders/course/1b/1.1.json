@@ -121,10 +121,10 @@
    "text": "Packets can arrive mixed up at the far end. Their numbers show the right order, so the far end can rebuild the whole photo.",
    "art": "envelope",
    "steps": [
-    "packet 3 arrives first",
-    "packet 1 arrives next",
-    "packet 2 arrives last",
-    "rebuild in order: 1, 2, 3"
+    "packets 1 and 2 are already in place",
+    "3, 4, 5 and 6 wait in the tray",
+    "tap each one in number order",
+    "the far end rebuilds the whole picture"
    ],
    "img": "csq/packet-post/packets-1b-order-n",
    "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
