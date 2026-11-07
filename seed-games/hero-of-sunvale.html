@@ -7166,6 +7166,30 @@ function waveTexture() {
   }
   return canvasTexture(c, true);
 }
+/** Breeze: flat white foam shapes along both banks of the river (a scalloped strip where water meets sand), one mesh,
+ *  drifting gently with the current. */
+function buildFoam() {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 32; const g = c.getContext('2d'), r = makeRng(9);
+  g.fillStyle = '#ffffff';
+  for (let x = -10; x < 270; x += 14 + r() * 10) { const w = 10 + r() * 12; g.beginPath(); g.ellipse(x, 18, w, 6 + r() * 4, 0, 0, Math.PI * 2); g.fill(); }
+  g.fillRect(0, 22, 256, 10);
+  const t = canvasTexture(c, true);
+  const pos = [], uv = [], idx = []; let n = 0;
+  for (const side of [-1, 1]) {
+    let along = 0, px = -366, pz = riverZ(-366); const base = n;
+    for (let x = -366; x <= 366.01; x += 4) {
+      const z = riverZ(x), z2 = riverZ(x + 0.5), tl = hyp(0.5, z2 - z), nx = -(z2 - z) / tl * side, nz = 0.5 / tl * side;
+      along += hyp(x - px, z - pz); px = x; pz = z;
+      const d0 = RIVER_HW - 1.6, d1 = RIVER_HW + 0.5;
+      pos.push(x + nx * d0, 0.06, z + nz * d0, x + nx * d1, 0.06, z + nz * d1); uv.push(along / 8, 0, along / 8, 1);
+      if (n > base) { const a = (n - 1) * 2; if (side > 0) idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); else idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+      n++;
+    }
+  }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); geo.setIndex(idx);
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, opacity: 0.9, side: THREE.DoubleSide })); m.renderOrder = 2; scene.add(m);
+  return { mesh: m, tex: t };
+}
 function buildWater() {
   const tex = waveTexture();
   // cartoon: flat water in the kit's sky colours (no light on it)
@@ -7190,6 +7214,7 @@ function buildWater() {
   const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), TOON || BREEZE ? new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, opacity: 0.95 }) : new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
   fall.position.set(POOL.x - 3, POOL.y + 3.6, POOL.z - 7.3); scene.add(fall);
   WORLD.water = { tex, fallTex, river, pool, fall };
+  if (BREEZE) WORLD.water.foam = buildFoam();
 }
 // Sky: a gradient dome that follows the camera (no fog on it), drifting clouds, and the gloom tint near the fortress.
 function buildSky() {
@@ -7471,7 +7496,7 @@ const SPOTS = {};       // collectible spots for builder 2 (Sun Gems etc.): { x,
 const spot = (id, x, z, yTop) => { SPOTS[id] = { x, y: (yTop !== undefined ? yTop : gy(x, z)) + 1.2, z }; };
 
 /** Breeze: the storybook models stand in for these props; their places (and colliders) are kept here (see BZM). */
-const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [], barn: [], mill: [], tower: [], wall: [] };
+const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [], barn: [], mill: [], tower: [], wall: [], crate: [], lantern: [] };
 /* Breeze: building shells (the barn, the windmill tower, the castle's towers and walls) go in their own Kit, so the
    storybook model can take their place once the world pack arrives (the shell stands in until then); colliders,
    stairs, decks and every other part stay in the zone's Kit. */
@@ -7573,7 +7598,7 @@ function haystack(k, x, z) {
   k.cyl(x, y - 0.1, z, 1.3, 1.35, 1.2, PAL.hay, 9); k.sphere(x, y + 1.05, z, 1.3, PAL.hayD, 1, 0.32);
   addCircle(x, z, 1.3, y, y + 1.4, { bounce: CONFIG.hero.bounceHay, kind: 'hay' });
 }
-function crate(k, x, y, z, s, ry, color) { k.box(x, y, z, s, s, s, color || PAL.woodL, ry || 0, { col: true }); k.box(x, y + s * 0.42, z, s + 0.04, s * 0.16, s + 0.04, PAL.woodD, ry || 0); }
+function crate(k, x, y, z, s, ry, color) { if (BREEZE) { BZ_PROPS.crate.push({ x, y, z, s, ry: ry || 0 }); k = shellKit('props', k); } k.box(x, y, z, s, s, s, color || PAL.woodL, ry || 0, { col: true }); k.box(x, y + s * 0.42, z, s + 0.04, s * 0.16, s + 0.04, PAL.woodD, ry || 0); }
 function barrel(k, x, z, y) { y = y === undefined ? gy(x, z) : y; if (BREEZE) { addCircle(x, z, 0.48, y, y + 1.1); BZ_PROPS.barrel.push({ x, y, z, ry: (x * 7.3 + z) % 6.28 }); return; } k.cyl(x, y, z, 0.48, 0.48, 1.1, PAL.wood, 8, { col: true }); k.cyl(x, y + 0.25, z, 0.5, 0.5, 0.1, PAL.metal, 8); k.cyl(x, y + 0.8, z, 0.5, 0.5, 0.1, PAL.metal, 8); }
 function banner(k, x, y, z, ry, color, hgt) {
   hgt = hgt || 4; k.cyl(x, y, z, 0.09, 0.09, hgt, PAL.woodD, 5); const p = lp(x, z, ry, 0.55, 0); k.box(p[0], y + hgt - 1.7, p[1], 1.0, 1.5, 0.05, color, ry);
@@ -7581,7 +7606,7 @@ function banner(k, x, y, z, ry, color, hgt) {
 /** Cartoon: a lamp's glow (bloom on lamps only): soft additive halos, all of them one draw call (see haloFrame). */
 const HALOS = [], GROUND_BLOBS = [];   // cartoon: lamp halos; soft blobs under the houses
 function halo(x, y, z, size, color) { if (TOON || BREEZE) HALOS.push(x, y, z, size, color); }
-function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); k.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); k.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
+function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); const ks = shellKit('props', k); if (BREEZE) BZ_PROPS.lantern.push({ x, y, z }); ks.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); ks.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
 /** A horizontal log centred on (x, z), turned by ry (length along local x), resting on y. */
 function log(k, x, y, z, ry, len, r, color) { k.add(prim('cyl:8:1.000'), x + len / 2 * Math.cos(ry), y + r, z - len / 2 * Math.sin(ry), r, len, r, 0, ry, Math.PI / 2, color); }
 function pine(k, x, z, s, y) {
@@ -13715,7 +13740,7 @@ function worldFrame(dt, now) {
   if (BREEZE) { BZ.sunK.value = sun.intensity * (sun.color.r + sun.color.g + sun.color.b) / 3; BZ.tint.value.copy(WHITE).lerp(TOON_GLOOM, gl * 0.45); haloFrame(gl); windFrame(dt, now); bzFrame(dt); }
   if (TOON) { B.light.tint.copy(WHITE).lerp(TOON_GLOOM, gl * 0.5); if (hero.onStage && hero.stageNight) B.light.tint.multiply(TOON_DUSK); haloFrame(gl); }
   // moving bits
-  const w = WORLD.water; if (L.water) { w.tex.offset.y -= dt * 0.035; w.tex.offset.x += dt * 0.01; } w.fallTex.offset.y += dt * (L.water ? 0.55 : 0);
+  const w = WORLD.water; if (L.water) { w.tex.offset.y -= dt * 0.035; w.tex.offset.x += dt * 0.01; if (w.foam && !cm) w.foam.tex.offset.x += dt * 0.04; } w.fallTex.offset.y += dt * (L.water ? 0.55 : 0);
   if (WORLD.dyn.blades) WORLD.dyn.blades.rotation.z += dt * (cm ? 0.25 : 0.6);
   if (WORLD.dyn.flame && !cm) { const f = WORLD.dyn.flame; f.scale.set(1 + Math.sin(now * 0.0047) * 0.06, 1 + Math.sin(now * 0.0061) * 0.1, 1 + Math.cos(now * 0.0053) * 0.06); }
   const runes = WORLD.runes, ts = now / 1000;
@@ -13824,7 +13849,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-6d613215/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-6d613215/breeze-world.js', integrity: 'sha384-UUKJXe1+W2G9tdvBlr2ZIi7N0P/HDuRHvo8UEcRP3HbQ1B3WLz8KxChhHxztxtln' } };
+const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-af9e2636/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-af9e2636/breeze-world.js', integrity: 'sha384-/1L0D00MACdI+hwtN7YmUoJq8IkeD4nXHI5l/HjIjdxLlpbR4p3J8PzezTJl/2yC' } };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 /** Load one pack (start: before play; world: in the background once play starts). Resolves with the assets it added. */
@@ -13940,7 +13965,7 @@ function bzApply(d) {
   inst(fe.meshes.rail, fmat, BZ_PROPS.rail, (p, o) => { o.position.set(p.x0, p.y0, p.z0); o.rotation.set(0, Math.atan2(-(p.z1 - p.z0), p.x1 - p.x0), Math.atan2(p.y1 - p.y0, hyp(p.x1 - p.x0, p.z1 - p.z0))); o.scale.set(hyp(p.x1 - p.x0, p.z1 - p.z0), p.h / 1.1, 1); }, null, -45);
   // the scattered trees: the model in place of the procedural tree (the same instances, tints and fading)
   const tk = SCATTER.kinds.tree;
-  if (tk) { const tg = bzGeo(d.tree.meshes.body); tg.scale(0.82, 0.82, 0.82); tk.mesh.geometry = tg; tk.mesh.material = breezeMat({ map: bzTex(d.tree, true), sat: 1.1 }); }
+  if (tk) { const tb = d.tree.meshes.body, tg = bzGeo(tb.lod1 && BZ_TREE_LIGHT ? tb.lod1 : tb); tg.scale(0.82, 0.82, 0.82); tk.mesh.geometry = tg; tk.mesh.material = breezeMat({ map: bzTex(d.tree, true), sat: 1.1 }); }
   // cel shadow shapes under the houses (phones; hidden while the real shadow map is on)
   const a = Math.atan2(-SUN_OFFSET.z, -SUN_OFFSET.x), shape = new THREE.Shape(), w = 1, h = 1, rr = 0.25;
   shape.moveTo(-w + rr, -h); shape.lineTo(w - rr, -h); shape.quadraticCurveTo(w, -h, w, -h + rr); shape.lineTo(w, h - rr); shape.quadraticCurveTo(w, h, w - rr, h);
@@ -14040,11 +14065,25 @@ function bzBuildings(b) {
   const segs = [];
   for (const w of BZ_PROPS.wall) { const n = Math.max(1, Math.round(w.len / 4)), dx = Math.cos(w.ry), dz = -Math.sin(w.ry); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n - 0.5; segs.push({ x: w.cx + dx * t * w.len, y: w.y, z: w.cz + dz * t * w.len, ry: w.ry, sx: w.len / n / 4, h: w.h, sz: w.T / 3 }); } }
   bzInst(b.meshes.wall, stone, segs, (p, o) => { at(p, o); o.scale.set(p.sx * 1.002, p.h, p.sz); }, null, 10);
-  for (const o of BZ_SHELLS) { if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); }
+  for (const o of BZ_SHELLS) { if (o.shell === 'props') continue; if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); }
+}
+/** Nature and small props (phase 2): the scattered pines, bushes, rocks, grass and flowers take the storybook meshes (the
+ *  same instances, tints and fading); crates and lantern posts are placed as models (the game's shells hidden); the chests
+ *  take the round-lidded chest. */
+function bzNature(n) {
+  const M = n.meshes, mat = breezeMat({ map: bzTex(n), sat: 1.08 }), flat = breezeMat({ sat: 1.08 });   // scattered things: no texture (they are small, and many)
+  for (const k of ['pine', 'bush', 'rock', 'grass', 'flower']) {
+    const sk = SCATTER.kinds[k]; if (!sk || !M[k]) continue;
+    const g = M[k].lod1 ? bzGeo(M[k].lod1) : bzGeo(M[k]); bzSwap(sk.mesh, g); sk.mesh.material = flat;   // the light version: hundreds are drawn
+  }
+  bzInst(M.crate, mat, BZ_PROPS.crate, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(p.s); }, null, -45);
+  bzInst(M.lantern, mat, BZ_PROPS.lantern, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, 0, 0); o.scale.setScalar(1); }, null, -60);
+  if (CHEST.base) { CHEST.base.geometry = bzGeo(M.chest_base); CHEST.base.material = mat; CHEST.lid.geometry = bzGeo(M.chest_lid); CHEST.lid.material = mat; }
+  for (const o of BZ_SHELLS) if (o.shell === 'props') { if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); }
 }
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
 // Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.
-const BZ_LOD = 24;
+const BZ_LOD = 24, BZ_TREE_LIGHT = true;   // the scattered trees use the light tree (hundreds are drawn)
 function bzCull(m, force) {
   const cx = camera.position.x, cz = camera.position.z, R = m.userData.R > 0 ? camera.far + m.userData.R : m.userData.R < 0 ? -m.userData.R : Math.min(camera.far, 80), L = m.userData.lod; let n = 0;
   for (const p of m.userData.places) {
@@ -14081,11 +14120,12 @@ function bzWorld(d) {
   if (d.big) bzBig(d.big);
   if (d.cinder) bzCinder(d.cinder);
   if (d.buildings) bzBuildings(d.buildings);
+  if (d.nature) bzNature(d.nature);
   BZM.world = 'ready';
 }
 if (BREEZE) {
   const start = bzLoad('start'); BZM.world = 'waiting';
-  GAME.on('ready', () => { start.then(d => { bzApply(d); if (BZM.state === 'ready') { BZM.world = 'loading'; setTimeout(() => bzLoad('world').then(bzWorld), 400); } }); });
+  GAME.on('ready', () => { shellBuild('props', 0, 0, 1e4); start.then(d => { bzApply(d); if (BZM.state === 'ready') { BZM.world = 'loading'; setTimeout(() => bzLoad('world').then(bzWorld), 400); } }); });
 }
 
 /* ==== 15. window.__brbTest: deterministic hooks for automated checks ==== */

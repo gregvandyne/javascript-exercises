@@ -17,7 +17,7 @@ const win = {}; for (const p of Object.values(PACKS)) new Function('window', p.b
 const A = win.__hosBreeze || {};
 const zlib = await import('node:zlib');
 // triangles allowed per asset (the full model; props also carry a lighter lod1)
-const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000, big: 8000, cinder: 7000, buildings: 3000 };
+const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000, big: 8000, cinder: 7000, buildings: 3000, nature: 3500 };
 const len = b64 => Buffer.from(b64, 'base64').length;
 
 test('the game pins two packs by path and sha384: start (before play) under 500 KB, all under 2 MB and 800 KB brotli', () => {
@@ -77,6 +77,11 @@ test('Cinder: every part the game poses, each with its freed colours vertex for 
 test('buildings: the barn, the windmill tower, a castle tower and a wall stretch (the game\'s shells stand in until they load)', () => {
   for (const k of ['barn', 'mill', 'tower', 'wall']) assert.ok(A.buildings.meshes[k], k);
   assert.match(HTML, /const shellKit = /); assert.match(HTML, /shellBuild\('barn'/); assert.match(HTML, /shellBuild\('castle'/);
+});
+
+test('nature and small props: the scattered kinds, crates, lantern posts and the chest', () => {
+  for (const k of ['pine', 'bush', 'rock', 'grass', 'flower', 'crate', 'lantern', 'chest_base', 'chest_lid']) assert.ok(A.nature.meshes[k], k);
+  assert.match(HTML, /function buildFoam\(\)/); assert.match(HTML, /if \(BREEZE\) WORLD\.water\.foam = buildFoam\(\);/);
 });
 
 test('the characters are rigged, with clips for Granny (the hero is posed by the game)', () => {

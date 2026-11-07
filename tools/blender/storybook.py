@@ -821,6 +821,88 @@ def build_buildings():
     return P
 
 
+def build_nature():
+    """Nature and small props (phase 2, step 7), each in the game's own unit frame for that thing (so the game's
+    placements, scales and per-instance tints apply unchanged):
+      pine: a storybook pine, three soft drooping tiers with scalloped hems over a short trunk (white: tinted per tree)
+      bush: a round cluster of leafy blobs; rock: a rounded boulder with a flat base; grass: a tuft of curved blades;
+      flower: a stem and leaf with five round petals (white: tinted) round a yellow middle
+      crate: a plank crate with a cross brace (1 m, origin at its foot); lantern: a curved post with a bracket and cap (the
+      game's glowing glass stays); chest_base and chest_lid: a round-lidded treasure chest with gold bands and a lock."""
+    P = {}; W = (1, 1, 1)
+
+    def part(n):
+        P[n] = Builder('nat_' + n); return P[n]
+    b = part('pine')
+    b.add(ttube((0, -0.3, 0), (0, 1.4, 0), 0.26, 0.2, 5, 2, cap=False), hexc('#8A5A3C'), 'wood', 0, 'boots')
+    for i, (y0, r, h) in enumerate([(1.0, 1.6, 2.3), (2.3, 1.25, 2.0), (3.4, 0.86, 1.75)]):   # (light: hundreds of pines are drawn)
+        prof = [(0.0, y0 - 0.05), (r, y0 + 0.12), (r * 0.5, y0 + h * 0.55), (0.0, y0 + h)]
+        bm = tlathe(prof, 8)
+        for v in bm.verts:   # a scalloped, drooping hem
+            rr = math.hypot(v.co.x, v.co.y)
+            if rr > r * 0.85: a = math.atan2(v.co.y, v.co.x); v.co.z -= 0.14 * (1 + math.cos(a * 4 + 0.4)) * 0.5
+        b.add(bm, (1 - i * 0.04, 1, 1 - i * 0.04), 'leaf', 0, 'cloth', wonk=0.03)
+    b = part('bush')
+    for c, r in (((0, 0.45, 0), (1.0, 0.72, 1.0)), ((0.55, 0.38, 0.25), (0.6, 0.5, 0.6)), ((-0.45, 0.35, -0.2), (0.55, 0.45, 0.55)), ((0.1, 0.8, -0.1), (0.55, 0.42, 0.55))):
+        bm = tsph(c, r, (10, 7))
+        for v in bm.verts:
+            n = (v.co - Vector(tv(*c))).normalized(); v.co += n * 0.05 * math.sin(n.x * 7 + n.y * 5) * math.sin(n.z * 6)
+        b.add(bm, W, 'leaf', 0, 'cloth')
+    b = part('rock')
+    bm = tsph((0, 0.3, 0), (1.0, 0.75, 0.9), (10, 7))
+    for v in bm.verts:
+        if v.co.z < 0.05: v.co.z = 0.05 - (0.05 - v.co.z) * 0.3
+        v.co.x *= 1 + 0.08 * math.sin(v.co.y * 3 + v.co.z * 2); v.co.y *= 1 + 0.08 * math.sin(v.co.x * 3)
+    b.add(bm, W, 'other', 0, 'boots', wonk=0.03)
+    b = part('grass')   # three curved blades, each a thin tapered ribbon (both faces): a few triangles, drawn thousands of times
+    for i in range(3):
+        a = i / 3 * 2 * math.pi + 0.4; lean = 0.13 + 0.04 * i; h = 0.42 + 0.08 * i; ca, sa = math.cos(a), math.sin(a)
+        bm = bmesh.new(); px, pz = -sa, ca
+        rows = [(0.0, 0.04), (0.55, 0.028), (1.0, 0.0)]
+        vs = []
+        for t, w in rows:
+            cx, cy, cz = ca * lean * t * t, h * t, sa * lean * t * t
+            vs.append((bm.verts.new(tv(cx - px * w, cy, cz - pz * w)), bm.verts.new(tv(cx + px * w, cy, cz + pz * w))))
+        bm.faces.new([vs[0][0], vs[0][1], vs[1][1], vs[1][0]]); bm.faces.new([vs[1][0], vs[1][1], vs[2][1]])
+        back = bm.copy(); bmesh.ops.reverse_faces(back, faces=back.faces[:])
+        b.add(smooth(bm), W, 'leaf', 0, 'cloth'); b.add(smooth(back), W, 'leaf', 0, 'cloth')
+    b = part('flower')   # a stem, a round flat flower (tinted) and a yellow middle
+    b.add(ttube((0, 0, 0), (0.02, 0.3, 0), 0.018, 0.014, 3, 2, cap=False), hexc('#66C792'), 'leaf', 0, 'cloth')
+    b.add(tlathe([(0.0, 0.31), (0.11, 0.32), (0.12, 0.34), (0.0, 0.35)], 8, (0.02, 0, 0)), W, 'other', 0, 'white')
+    b.add(tsph((0.02, 0.355, 0), (0.04, 0.025, 0.04), (5, 3)), hexc('#FFD23F'), 'metal', 0, 'white')
+    b = part('crate')
+    b.add(bbox_rounded((1, 1, 1), tv(0, 0.5, 0), 0.08, 1), hexc('#C89A62'), 'wood', 0, 'boots')
+    for s_ in (1, -1):
+        for ax in ('x', 'z'):   # a cross brace on two faces and edge battens
+            o = 0.52 * s_
+            p0, p1 = ((-0.4, 0.1, o), (0.4, 0.9, o)) if ax == 'x' else ((o, 0.1, -0.4), (o, 0.9, 0.4))
+            b.add(ttube(p0, p1, 0.045, 0.045, 4, 2), hexc('#8A5A3C'), 'wood', 0, 'boots')
+    b.add(bbox_rounded((1.04, 1.04, 0.14), tv(0, 0.92, 0), 0.04, 1), hexc('#8A5A3C'), 'wood', 0, 'boots')
+    b.add(bbox_rounded((1.04, 1.04, 0.14), tv(0, 0.08, 0), 0.04, 1), hexc('#8A5A3C'), 'wood', 0, 'boots')
+    b = part('lantern')   # the post from the ground to the glass (the glass at 2.3-2.75 stays the game's), a cap over it
+    pts = [(0, 0, 0), (0.02, 1.2, 0), (-0.02, 2.0, 0), (0, 2.3, 0)]
+    for i, (a, c) in enumerate(zip(pts, pts[1:])): b.add(ttube(a, c, 0.11 - i * 0.02, 0.09 - i * 0.02, 7, 2), hexc('#5C3A26'), 'wood', 0, 'boots')
+    b.add(tsph((0, 0.06, 0), (0.18, 0.08, 0.18), (8, 4)), hexc('#5C3A26'), 'wood', 0, 'boots')
+    b.add(tlathe([(0.0, 2.74), (0.32, 2.74), (0.18, 2.94), (0.03, 3.0), (0.0, 3.0)], 8), hexc('#5C3A26'), 'wood', 0, 'boots')
+    b.add(tsph((0, 3.04, 0), (0.05, 0.05, 0.05), (6, 4)), hexc('#C99A00'), 'metal', 0, 'white')
+    b = part('chest_base')   # 0.95 x 0.56 x 0.66, origin at its foot
+    b.add(bbox_rounded((0.95, 0.66, 0.56), tv(0, 0.28, 0), 0.07, 2), hexc('#A8713F'), 'wood', 0, 'boots')
+    for x in (-0.36, 0.36): b.add(bbox_rounded((0.1, 0.7, 0.58), tv(x, 0.29, 0), 0.03, 1), hexc('#E0A92A'), 'metal', 0, 'white')
+    b.add(bbox_rounded((0.18, 0.06, 0.22), tv(0, 0.4, 0.34), 0.03, 1), hexc('#FFD23F'), 'metal', 0, 'white')
+    b = part('chest_lid')    # in the lid's frame: a rounded lid along x, centre (0, 0, 0.33) as the game's
+    lid = tsph((0, 0, 0.33), (0.5, 0.22, 0.35), (12, 8))
+    for v in lid.verts:
+        if v.co.z < 0: v.co.z = 0
+    b.add(lid, hexc('#B47A44'), 'wood', 0, 'boots')
+    for x in (-0.36, 0.36):
+        bnd = tsph((x, 0, 0.33), (0.055, 0.235, 0.365), (8, 6))
+        for v in bnd.verts:
+            if v.co.z < 0: v.co.z = 0
+        b.add(bnd, hexc('#E0A92A'), 'metal', 0, 'white')
+    b.add(bbox_rounded((0.14, 0.06, 0.16), tv(0, -0.02, 0.67), 0.03, 1), hexc('#FFD23F'), 'metal', 0, 'white')
+    return P
+
+
 def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
@@ -1230,6 +1312,26 @@ def make_buildings(out, renders):
     return data
 
 
+def make_nature(out, renders):
+    P = build_nature(); tex = foe_atlas(); wood = prop_tex('wood')
+    obs = {n: b.mesh(material(f'nat_mat_{n}', to_bimg(tex, f'nat_tex_{n}'))) for n, b in P.items()}
+    export_glb(os.path.join(out, 'nature.glb'), list(obs.values()))
+    data = {'name': 'nature', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 78)[0]}
+    if data['meshes']['bush']['tris'] > 300: data['meshes']['bush']['lod1'] = lod(obs['bush'], 0.3)
+    if renders:
+        TINT = {'pine': hexc('#3F8F4A'), 'bush': hexc('#5CC25A'), 'rock': hexc('#A7AEB6'), 'grass': hexc('#7CC94A'), 'flower': hexc('#FF7EB6')}
+        for n, o in obs.items():
+            if n in TINT:
+                for dd in o.data.color_attributes.get('Col').data: dd.color = (dd.color[0] * TINT[n][0], dd.color[1] * TINT[n][1], dd.color[2] * TINT[n][2], dd.color[3])
+        groups = [('pine', ['pine'], 5.8), ('bush_rock', ['bush', 'rock'], 1.6), ('grass_flower', ['grass', 'flower'], 0.6), ('crate_chest', ['crate', 'chest_base', 'chest_lid'], 1.3), ('lantern', ['lantern'], 3.2)]
+        for g, names, h in groups:
+            for o in obs.values(): o.hide_render = o.name.replace('nat_', '') not in names
+            off = {'bush': (-1.1, 0, 0), 'rock': (1.3, 0, 0), 'grass': (-0.25, 0, 0), 'flower': (0.25, 0, 0), 'crate': (-0.9, 0, 0), 'chest_base': (0.7, 0, 0), 'chest_lid': (0.7, 0.56, -0.33)}
+            for n in names: obs[n].location = Vector(tv(*off.get(n, (0, 0, 0))))
+            turntable(os.path.join(out, f'turn_{g}.png'), [obs[n] for n in names], h)
+    return data
+
+
 def make_prop(name, builders, tex, out, renders, height, texs=None):
     """texs: an optional texture per builder (the cottage's walls and roof); otherwise one texture for all."""
     texs = texs or [tex] * len(builders); obs = []
@@ -1262,7 +1364,8 @@ def main():
             ('foes', lambda: make_foes(a.out, a.renders)),
             ('big', lambda: make_big(a.out, a.renders)),
             ('cinder', lambda: make_cinder(a.out, a.renders)),
-            ('buildings', lambda: make_buildings(a.out, a.renders))]
+            ('buildings', lambda: make_buildings(a.out, a.renders)),
+            ('nature', lambda: make_nature(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()
