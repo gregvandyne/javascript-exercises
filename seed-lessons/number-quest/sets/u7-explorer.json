@@ -254,21 +254,21 @@
    "topic": "Measure problems",
    "kind": "scenario",
    "secs": 20,
-   "q": "A rope 3 meters long is cut into 4 equal pieces. How long is each piece?",
+   "q": "A ribbon is 2 meters long. You cut off 50 centimeters. How many centimeters of ribbon are left?",
    "choices": [
-    "34 centimeters",
-    "1 meter",
-    "25 centimeters",
-    "75 centimeters"
+    "48 centimeters",
+    "150 centimeters",
+    "250 centimeters",
+    "50 centimeters"
    ],
-   "answer": 3,
+   "answer": 1,
    "misconceptions": [
-    "glued the numbers together instead of sharing",
-    "cut the rope into 3 pieces, not 4",
-    "shared out only 1 meter of the 3",
-    "correct"
+    "took 2 from 50 without renaming the meters",
+    "correct",
+    "added the piece instead of taking it away",
+    "gave the piece that was cut off"
    ],
-   "why": "Share 3 meters into 4 equal pieces: each is 3/4 of a meter, and 3/4 of 100 centimeters is 75 centimeters."
+   "why": "Rename first: 2 meters is 200 centimeters. Then take away the 50 centimeters cut off: 200 - 50 = 150 centimeters."
   },
   {
    "id": "nq-explorer-7.4-e3",

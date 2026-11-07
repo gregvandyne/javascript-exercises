@@ -27,30 +27,19 @@
     "The sack is 3,400 grams"
    ],
    "visual": {
-    "type": "bars",
+    "type": "split",
     "label": "A bar model of a sack of 3 kilograms 400 grams: one bar in kilograms, and under it the same sack as 3,000 grams plus 400 grams",
-    "rows": [
+    "whole": "3 kg 400 g",
+    "parts": [
      {
-      "label": "The Heavy Sack in kilograms",
-      "parts": [
-       {
-        "w": 1,
-        "label": "3 kg 400 g"
-       }
-      ]
+      "w": 0.882,
+      "label": "3,000 g",
+      "tone": 0
      },
      {
-      "label": "The same sack in grams",
-      "parts": [
-       {
-        "w": 0.882,
-        "label": "3,000 g"
-       },
-       {
-        "w": 0.118,
-        "label": "400 g"
-       }
-      ]
+      "w": 0.118,
+      "label": "400 g",
+      "tone": 1
      }
     ]
    },
@@ -59,27 +48,27 @@
      "cue": "One sack, two names: 3 kilograms 400 grams.",
      "box": [
       5,
-      12.3,
-      90.1,
-      27.6
+      12.6,
+      90,
+      19.2
      ]
     },
     {
      "cue": "The kilograms become 3,000 grams.",
      "box": [
-      5.6,
-      51.7,
-      78.5,
-      18.4
+      5,
+      37.5,
+      79.6,
+      19.2
      ]
     },
     {
      "cue": "The extra 400 grams ride at the end.",
      "box": [
-      83.2,
-      51.7,
-      11.3,
-      18.4
+      81.2,
+      37.5,
+      13.8,
+      32.9
      ]
     }
    ]

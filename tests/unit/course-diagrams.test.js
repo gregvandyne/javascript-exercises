@@ -6,6 +6,7 @@
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { cleanDiagram, DIAGRAM_TYPES } from '../../server/services/diagrams.js';
 import { diagramSvg, diagramExtent } from '../../server/views/nq-diagrams.js';
 import * as C from '../../server/services/courses.js';
@@ -19,6 +20,9 @@ const GOOD = {
   letters: { type: 'letters', items: [{ ch: 'A', fold: true, name: 'halves match' }, { ch: 'H', fold: true, name: 'halves match' }, { ch: 'F', name: 'no fold fits' }] },
   spinner: { type: 'spinner', parts: 6, shaded: 1, left: '6 equal parts', right: '1 red part' },
   build: { type: 'build', digits: ['3', '5', '2'] },
+  swap: { type: 'swap', before: ['2', '1'], after: ['1', '2'], mark: [0, 1] },
+  split: { type: 'split', whole: '3 kg 400 g', parts: [{ w: 0.882, label: '3,000 g' }, { w: 0.118, label: '400 g' }] },
+  ladder: { type: 'ladder', words: ['certain', 'likely', 'even chance', 'unlikely', 'impossible'] },
 };
 const texts = svg => [...svg.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)" font-size="([\d.]+)"[^>]*>([^<]*)<\/text>/g)].map(m => ({ x: +m[1], y: +m[2], size: +m[3], s: m[4] }));
 
@@ -105,4 +109,25 @@ test('letters, spinner and build draw what they name (fix round A4)', () => {
   assert.deepEqual(ts.filter(t => t.y > 40).map(t => t.s), ['3', '5', '2'], 'joined: 3, 5, 2 reads 352');
   assert.ok(top[1] - top[0] > bottom[1] - bottom[0], 'the cards are apart on top and joined below');
   assert.match(build, /<rect x="[\d.]+" y="33" width="36"/, 'one joined card holds all three digits');
+});
+
+test('swap, split and ladder (fix round A6) draw every word at 13 px or more on a phone (4.0 units and up)', () => {
+  for (const t of ['swap', 'split', 'ladder']) {
+    for (const x of texts(diagramSvg(cleanDiagram(GOOD[t], 'L')))) if (!/^\d$/.test(x.s) || t !== 'swap') assert.ok(x.size >= 4, `${t}: "${x.s}" at ${x.size}`);
+  }
+  const split = diagramSvg(cleanDiagram(GOOD.split, 'L')), parts = [...split.matchAll(/<rect x="([\d.]+)" y="22" width="([\d.]+)"/g)].map(m => +m[2]);
+  assert.ok(Math.abs(parts[0] / (parts[0] + parts[1]) - 0.882) < 0.01, 'parts to scale');
+  const narrow = texts(split).find(x => x.s === '400 g');
+  assert.ok(narrow.x <= 94 && narrow.size >= 4, 'a narrow part keeps a phone-sized name, inside the frame');
+  assert.deepEqual(texts(diagramSvg(cleanDiagram(GOOD.ladder, 'L'))).filter(x => x.size === 4.2).map(x => x.s), GOOD.ladder.words, 'most likely at the top');
+  assert.equal(cleanDiagram({ type: 'split', parts: [{ w: 0.5, label: 'a' }, { w: 0.2, label: 'b' }] }, 'L'), null, 'parts make the whole');
+  assert.equal(cleanDiagram({ type: 'swap', before: ['2', '1'], after: ['1', '2'], mark: [5] }, 'L'), null);
+});
+
+test('a bar model marked big keeps the flag through the course engine', async () => {
+  const C = await import('../../server/services/courses.js');
+  assert.ok(C.VISUAL_TYPES.includes('ladder') && C.VISUAL_TYPES.includes('split') && C.VISUAL_TYPES.includes('swap'));
+  const views = fs.readFileSync(new URL('../../server/views/courses.js', import.meta.url), 'utf8');
+  assert.match(views, /const BIG_ROW = 4\.1, BIG_PART = 4\.1, BIG_HALF = 4\.0;/);
+  assert.match(fs.readFileSync(new URL('../../server/services/courses.js', import.meta.url), 'utf8'), /\.\.\.\(v\.big \? \{ big: true \} : \{\}\)/);
 });

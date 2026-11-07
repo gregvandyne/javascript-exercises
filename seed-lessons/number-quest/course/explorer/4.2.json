@@ -24,25 +24,26 @@
       "cuts": 4,
       "shaded": 2
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "Half a cake: 1 of 2 equal parts.",
      "box": [
       5,
-      12.3,
-      90.1,
-      27.6
+      11.8,
+      90,
+      28.1
      ]
     },
     {
      "cue": "Cut each part in two: 2 of 4 parts. The share has not moved.",
      "box": [
       5,
-      42.5,
-      90.1,
-      27.6
+      42.0,
+      90,
+      28.1
      ]
     }
    ]
@@ -70,25 +71,26 @@
       "cuts": 8,
       "shaded": 4
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "Cut every piece in two: 1/2 becomes 2/4.",
      "box": [
       5,
-      33.6,
-      90.1,
-      27.6
+      33.1,
+      90,
+      28.1
      ]
     },
     {
      "cue": "Cut in two again: 4/8. The pieces shrink, the share stays.",
      "box": [
       5,
-      63.9,
-      90.1,
-      27.5
+      63.3,
+      90,
+      28.1
      ]
     }
    ]
@@ -119,25 +121,26 @@
       "cuts": 8,
       "shaded": 6
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "5/8 sits one eighth past the halfway line.",
      "box": [
       5,
-      8.1,
-      90.1,
-      31.8
+      6.8,
+      90,
+      33.0
      ]
     },
     {
      "cue": "3/4 is 6/8: one eighth more, so 3/4 is greater.",
      "box": [
       5,
-      42.5,
-      90.1,
-      27.6
+      42.0,
+      90,
+      28.0
      ]
     }
    ]
@@ -191,25 +194,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "Half of a tiny cake: a small whole, so a small piece.",
      "box": [
       5,
-      12.3,
-      31.9,
-      27.6
+      11.8,
+      35.1,
+      28.1
      ]
     },
     {
      "cue": "A fourth of a huge cake: the bigger piece, from the bigger whole.",
      "box": [
       5,
-      42.5,
-      90.1,
-      27.6
+      42.0,
+      90,
+      28.1
      ]
     }
    ]
@@ -232,25 +236,26 @@
       "cuts": 9,
       "shaded": 6
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "2/3: two of three equal parts.",
      "box": [
       5,
-      12.3,
-      90.1,
-      27.6
+      11.8,
+      90,
+      28.1
      ]
     },
     {
      "cue": "Cut each third into 3: 6/9. Same share, three times the pieces.",
      "box": [
       5,
-      42.5,
-      90.1,
-      27.6
+      42.0,
+      90,
+      28.1
      ]
     }
    ]

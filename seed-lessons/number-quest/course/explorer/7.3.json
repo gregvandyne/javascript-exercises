@@ -55,21 +55,23 @@
   },
   {
    "title": "Worked example: sorting the words",
-   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, most red likely, one of 6 unlikely, none impossible.",
+   "text": "Rough first: the words should spread out, because the stalls are all different. Sort five stalls by their red parts: all red is certain, most red likely, half red an even chance, one of 6 unlikely, none impossible.",
    "art": "dice",
    "kind": "example",
    "steps": [
     "All 6 parts red: certain",
     "5 parts of 6 red: likely",
+    "3 parts of 6 red: an even chance",
     "1 part of 6 red: unlikely",
     "0 parts red: impossible"
    ],
    "visual": {
-    "type": "tiles",
-    "label": "Four chance words, most likely to least",
-    "values": [
+    "type": "ladder",
+    "label": "Five chance words, most likely to least: certain, likely, even chance, unlikely, impossible",
+    "words": [
      "certain",
      "likely",
+     "even chance",
      "unlikely",
      "impossible"
     ]
@@ -78,19 +80,19 @@
     {
      "cue": "Certain: it happens every single time.",
      "box": [
-      5,
-      30.4,
-      22.6,
-      29.9
+      33,
+      9.1,
+      46,
+      16.0
      ]
     },
     {
      "cue": "Unlikely: it can happen, but it probably will not.",
      "box": [
-      50,
-      30.4,
-      22.6,
-      29.9
+      33,
+      57.1,
+      46,
+      16.0
      ]
     }
    ]

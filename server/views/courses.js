@@ -368,6 +368,10 @@ const gfCues = s => html`<figcaption class="gf-cues"><ol>${s.focus.map(st => htm
  *  focus boxes land on the part they name; the frame then shows only the drawing's content band (visualFit).
  *  Tones cycle the brand palette. */
 const VF_TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
+/** A bar or fraction diagram marked `big` (Number Quest's bar models, fix round A6) draws every word at phone size:
+ *  4.1 units is about 13 px on a 390 px phone, where the standard row label (3.7) reads at 12 and a part label in a
+ *  narrow part (down to 2.4) at 8. Its decks keep its part labels short enough to fit their parts at that size. */
+const BIG_ROW = 4.1, BIG_PART = 4.1, BIG_HALF = 4.0;
 /** The one drawn caption a diagram carries (tiles and array visuals) is centred over the frame, so
  *  at the standard 3.8 units a long caption overflows the 100-wide frame and clips at both edges —
  *  measured on the rendered slides: a 69-character caption renders 120 units wide. The fit size
@@ -391,7 +395,7 @@ function visualExtent(v) {
   }
   if (v.type === 'bars' || v.type === 'fraction') {
     const n = v.rows.length, yOff = n === 1 ? 13 : n === 2 ? 5 : 0;
-    return [v.half ? tTop(3.4 + yOff, 3.2) : tTop(8 + yOff - 1.8, 3.7), 8 + yOff + (n - 1) * 17 + 8.5];
+    return [v.half ? tTop(3.4 + yOff, v.big ? BIG_HALF : 3.2) : tTop(8 + yOff - 1.8, v.big ? BIG_ROW : 3.7), 8 + yOff + (n - 1) * 17 + 8.5];
   }
   if (v.type === 'array') {
     const a = v.label ? tTop(6.5, labelFs(v.label)) : 10 + 17 / v.rows - 2.3;
@@ -490,12 +494,12 @@ function visualSvg(v, f) {
         const w = p.w * 88;
         const fill = p.unknown ? '#FFFFFF' : p.tone === -1 || p.tone == null && v.type === 'fraction' ? '#FFFFFF' : VF_TONES[(p.tone || 0) % VF_TONES.length];
         parts += raw(`<rect x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="8.5" fill="${fill}" stroke="${ink}" stroke-width="0.6"${p.unknown ? ' stroke-dasharray="1.6 1.2"' : ''}/>`)
-          + (p.label ? tx(x + w / 2, y + 5.9, p.label, Math.min(3.6, Math.max(2.4, w / Math.max(3, String(p.label).length) * 1.5))) : '')
+          + (p.label ? tx(x + w / 2, y + (v.big ? 6.1 : 5.9), p.label, v.big ? BIG_PART : Math.min(3.6, Math.max(2.4, w / Math.max(3, String(p.label).length) * 1.5))) : '')
           + (p.unknown ? tx(x + w / 2, y + 5.9, '?', 4.4, 'middle', 800, leaf) : '');
         x += w;
       }
-      return tx(6, y - 1.8, r.label, 3.7, 'start', 700) + parts;
-    }).join('') + (v.half ? raw(`<line x1="50" y1="${(4 + yOff).toFixed(1)}" x2="50" y2="${(8 + yOff + rows.length * 17 - 6).toFixed(1)}" stroke="${leaf}" stroke-width="0.7" stroke-dasharray="2 1.6"/>`) + tx(50, (3.4 + yOff).toFixed(1), 'halfway', 3.2, 'middle', 700, leaf) : '');
+      return tx(6, y - 1.8, r.label, v.big ? BIG_ROW : 3.7, 'start', 700) + parts;
+    }).join('') + (v.half ? raw(`<line x1="50" y1="${(4 + yOff).toFixed(1)}" x2="50" y2="${(8 + yOff + rows.length * 17 - 6).toFixed(1)}" stroke="${leaf}" stroke-width="0.7" stroke-dasharray="2 1.6"/>`) + tx(50, (3.4 + yOff).toFixed(1), 'halfway', v.big ? BIG_HALF : 3.2, 'middle', 700, leaf) : '');
   } else if (v.type === 'array') {
     const R = v.rows, C = v.cols;
     let dots = '';
