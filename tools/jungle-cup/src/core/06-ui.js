@@ -76,11 +76,13 @@ UI.button = function (g, id, x, y, w, h, label, opts) {
     else if (lw + 22 <= w) { o.icon(g, x + 4 + 6, cy); tx = x + 14 + (w - 14) / 2; room = w - 22; }
   }
   if (!label) return;
-  const opt = BTN_TEXT; opt.col = o.tcol || PAL.white; opt.scale = sc;
-  if (lw <= room || h < 26) { text(g, label, tx, cy - 6 * sc, opt); return; }
+  const opt = BTN_TEXT; opt.col = o.tcol || PAL.white; opt.scale = sc; opt.maxW = 0;
+  if (lw <= room) { text(g, label, tx, cy - 6 * sc, opt); return; }
+  if (h < 26 || wrap(label, w - 6, sc).length > 2) { if (o.icon && lw + 22 > w) { tx = x + w / 2; room = w - 6; } opt.maxW = room; text(g, label, tx, cy - 6 * sc, opt); return; }
   // too long for one line: two lines
   const lines = wrap(label, w - 6, sc);
   const n = Math.min(2, lines.length), top = cy - (n * 10) / 2 - 1;
+  opt.maxW = w - 4;
   for (let i = 0; i < n; i++) text(g, lines[i], x + w / 2, top + i * 10, opt);
 };
 const BTN_TEXT = { align: 'center', col: '#fff', edge: '#1b1325', scale: 1 };

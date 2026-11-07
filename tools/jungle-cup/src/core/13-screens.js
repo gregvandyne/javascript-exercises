@@ -99,7 +99,7 @@ function newGame() {
 function continueGame() {
   SAVE.load(); JC.refreshCappy();
   const p = SAVE.data.pos; const [x, y] = WORLD.isSolid(p.x, p.y) ? nearestFree(p.x, p.y) : [p.x, p.y];
-  JC.go('world', { at: [x, y, p.d] });
+  JC.go('world', { at: [x, y, p.d], story: true });
 }
 JC.newGame = newGame; JC.continueGame = continueGame;
 TITLE.draw = function (g) {
@@ -231,8 +231,9 @@ function drawMapTab(g) {
     box(g, lx, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
     rect(g, lx + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
     const ic = iconSprite(id); spr(g, ic, lx + 8, y + ((rh - ic.h) >> 1));
-    text(g, t('sport.' + id), lx + 16, y + ((rh - 12) >> 1), { col: PAL.ink, edge: null });
     const best = played ? fmt(SAVE.data.best[id] || 0) : '???';
+    ROWTEXT.maxW = w - 16 - 34 - textW(best) - 4;
+    text(g, t('sport.' + id), lx + 16, y + ((rh - 12) >> 1), ROWTEXT);
     const st = SAVE.data.stars[id] || 0;
     for (let s = 0; s < 3; s++) disc(g, lx + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
     text(g, best, lx + w - 32, y + ((rh - 12) >> 1), { col: '#5e3820', edge: null, align: 'right' });
@@ -243,9 +244,11 @@ function drawMapTab(g) {
   UI.button(g, 'controls', area.x + bw + 4, by, bw, bh, t('btn.controls'), { col: PAL.w2 });
   UI.button(g, 'style', area.x + (bw + 4) * 2, by, bw, bh, t('btn.style'), { col: '#c04aa8' });
 }
+const ROWTEXT = { col: PAL.ink, edge: null, maxW: 0 };
 function toggleRow(g, id, x, y, w, h, labelKey, value) {
-  text(g, t(labelKey), x + 2, y + ((h - 12) >> 1), { col: PAL.ink, edge: null });
   const bw = Math.min(110, w * 0.45);
+  ROWTEXT.maxW = w - bw - 6;
+  text(g, t(labelKey), x + 2, y + ((h - 12) >> 1), ROWTEXT);
   UI.button(g, id, x + w - bw, y, bw, h, value, { col: '#3d8a3a' });
 }
 function drawSettings(g) {
@@ -299,15 +302,17 @@ MAP.draw = function (g) {
 const FIN = { name: 'finale', t: 0, step: 0, raised: false };
 FIN.enter = function () {
   FIN.t = 0; FIN.raised = false; JC.audioWant = 'finale';
-  setTimeout(() => JC.say([{ who: 'story', key: 'end.1' }, { who: 'jada', key: 'end.2' }, { who: 'elder', key: 'end.3' }, { who: 'mango', key: 'end.4' }], () => {
+  // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
+  JC.say(JC.storyLines('finale').concat([{ who: 'mango', key: 'end.4' }]), () => {
     FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3);
-    SAVE.data.cup = true; SAVE.write(); BRBX.gameOver(true, SAVE.cupPoints());
+    SAVE.data.cup = true; JC.grantBandana('gold', true, true); SAVE.write(); BRBX.gameOver(true, SAVE.cupPoints());
     setTimeout(() => { if (JC.scene === FIN) JC.say([{ who: 'cappy', key: 'end.5' }], () => JC.go('credits')); }, 2600);
-  }), 900);
+  });
 };
-FIN.update = function (dt) { FIN.t += dt; TB.update(dt); if (FIN.raised && ((FIN.t * 4) | 0) % 6 === 0) UI.particle(Math.random() * VIEW.W, -4, 0, 20, CONFETTI[(Math.random() * 7) | 0], 3, 2, 20); };
-FIN.onInput = function (e) { TB.input(e); };
+FIN.update = function (dt) { FIN.t += dt; TB.update(dt); STORY.update(dt); if (FIN.raised && ((FIN.t * 4) | 0) % 6 === 0) UI.particle(Math.random() * VIEW.W, -4, 0, 20, CONFETTI[(Math.random() * 7) | 0], 3, 2, 20); };
+FIN.onInput = function (e) { if (!STORY.input(e)) TB.input(e); };
 FIN.draw = function (g) {
+  if (STORY.showing()) { STORY.draw(g); TB.draw(g); return; }
   const W = VIEW.W, H = VIEW.H;
   const bands = ['#5a3488', '#8a3c94', '#c2488e', '#ef6a7a', '#ff8c5e', '#ffb05a'];
   for (let i = 0; i < bands.length; i++) rect(g, 0, Math.round(H * 0.6 * i / bands.length), W, Math.ceil(H * 0.6 / bands.length) + 1, bands[i]);

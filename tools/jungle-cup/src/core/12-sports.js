@@ -72,6 +72,7 @@ function finishRound() {
   RUN.newFeather = res.won && !d.feathers[id];
   if (res.won) d.feathers[id] = true;
   if (RUN.newFeather && SAVE.featherCount() === 7) d.flags.allFeathers = 1;
+  if (res.stars === 3) JC.grantBandana('berry', false);   // the first three-star round: a berry bandana
   SAVE.write();
   BRBX.gameOver(res.won, SAVE.cupPoints());
   RUN.phase = 'results'; RUN.cardT = 0; RUN.starsShown = 0;
@@ -150,15 +151,16 @@ JC.portrait = portrait;
 function drawIntro(g) {
   const sp = RUN.sport, id = RUN.id, col = SPORT_COLOURS[id];
   dimBackdrop(g, col);
-  const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230;
-  const h = Math.min(VIEW.H - 12, compact ? 186 : 222), x = Math.round((VIEW.W - w) / 2), y = Math.round((VIEW.H - h) / 2);
+  const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230, ps = compact ? 40 : 52, bh0 = Math.max(22, VIEW.tap);
+  // tall enough for the words (longer in some languages), never taller than the screen
+  const cw = w - 14, need = ps + 6 + 4 + 4 + 18 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + wrap(t('sport.' + id + '.touch'), cw - 14).length + wrap(t('sport.' + id + '.keys'), cw - 14).length);
+  const h = Math.min(VIEW.H - 12, Math.max(compact ? 186 : 222, need)), x = Math.round((VIEW.W - w) / 2), y = Math.round((VIEW.H - h) / 2);
   const c = UI.card(g, x, y, w, h);
-  const ps = compact ? 40 : 52;
   portrait(g, ARCHES[id].champ, c.x + 2, c.y + 2, ps, shade(col, 0.55));
   const tx = c.x + ps + 8, tw = c.w - ps - 10;
   const title = t('sport.' + id), big = textW(title, 2) <= tw ? 2 : 1;
-  text(g, title, tx, c.y + 2, { col: col, edge: PAL.ink, scale: big });
-  text(g, t('vs.' + ARCHES[id].champ), tx, c.y + 4 + 12 * big, { col: PAL.ink, edge: null });
+  text(g, title, tx, c.y + 2, { col: col, edge: PAL.ink, scale: big, maxW: tw });
+  text(g, t('vs.' + ARCHES[id].champ), tx, c.y + 4 + 12 * big, { col: PAL.ink, edge: null, maxW: tw });
   let yy = c.y + ps + 6;
   yy += textBlock(g, t('sport.' + id + '.goal'), c.x + 2, yy, c.w - 4, { col: '#3b2416', edge: null }) + 4;
   const touchFirst = INPUT.showTouch();

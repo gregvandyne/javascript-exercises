@@ -120,15 +120,16 @@ function textBitmap(str, col, edge, scale) {
   TEXTCACHE.set(key, b);
   return b;
 }
-/** Draw one line of text. opts: { col, edge (outline colour), align: 'left'|'center'|'right', scale }. y is the top of the line box. Returns the width. */
+/** Draw one line of text. opts: { col, edge (outline colour), align: 'left'|'center'|'right', scale, maxW }. y is the top of
+ *  the line box. With maxW, a line that is too wide (a long word in another language) is narrowed to fit. Returns the width. */
 function text(g, str, x, y, opts) {
   str = String(str); if (!str) return 0;
   const o = opts || NOOPT, scale = o.scale || 1, b = textBitmap(str, o.col || PAL.white, o.edge === undefined ? PAL.ink : o.edge, scale);
-  const pad = (o.edge === null || o.edge === false) ? 0 : scale;
+  const pad = (o.edge === null || o.edge === false) ? 0 : scale, w = o.maxW > 0 && b.w > o.maxW ? o.maxW : b.w;
   let left = x - pad;
-  if (o.align === 'center') left = x - b.w / 2; else if (o.align === 'right') left = x - b.w + pad;
-  g.drawImage(b.c, Math.round(left), Math.round(y - pad), b.w, b.h);
-  return b.w;
+  if (o.align === 'center') left = x - w / 2; else if (o.align === 'right') left = x - w + pad;
+  g.drawImage(b.c, Math.round(left), Math.round(y - pad), w, b.h);
+  return w;
 }
 const NOOPT = {};
 /** Split text into lines that fit maxW (spaces, or any character for scripts without spaces). Cached. */
@@ -156,7 +157,8 @@ function wrap(str, maxW, scale) {
 }
 /** Draw wrapped text; returns the height used. */
 function textBlock(g, str, x, y, maxW, opts) {
-  const o = opts || NOOPT, lines = wrap(str, maxW, o.scale || 1), lh = (o.lineH || LINE_H) * (o.scale || 1);
+  let o = opts || NOOPT;
+  const lines = wrap(str, maxW, o.scale || 1), lh = (o.lineH || LINE_H) * (o.scale || 1);
   const center = o.align === 'center', rtl = RTL && !center;
   if (rtl && !o._rtl) { o = Object.assign({}, o, { align: 'right', _rtl: true }); }
   for (let i = 0; i < lines.length; i++) text(g, lines[i], center ? x + maxW / 2 : rtl ? x + maxW : x, y + i * lh, o);

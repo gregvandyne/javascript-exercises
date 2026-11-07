@@ -18,7 +18,9 @@ OW.enter = function (opts) {
   OW.celebrate = opts && opts.celebrate ? { id: opts.celebrate, t: 0 } : null;
   if (OW.celebrate) { AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H / 3, 60); UI.banner(t('feather.won'), SPORT_COLOURS[OW.celebrate.id], 2.4); }
   OW.camSnap = true;
-  if (opts && opts.intro) JC.say([{ who: 'story', key: 'story.1' }, { who: 'story', key: 'story.2' }, { who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }]);
+  // the raft-arrival panels open each launch (skippable); a new game then has the cousins' hello
+  if (opts && opts.intro) { JC.introSeen = true; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
+  else if (opts && opts.story && !JC.introSeen) { JC.introSeen = true; JC.say(JC.storyLines('intro')); }
 };
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
@@ -77,6 +79,7 @@ function setPadDir(d) {
   OW.padDir = d; if (d) INPUT.touchKey(d, true);
 }
 OW.onInput = function (e) {
+  if (STORY.input(e)) return;
   if (TB.input(e)) { if (e.type === 'down') UI.menuInput(e); return; }
   if (e.type === 'press' && e.key === 'a') { act(); return; }
   if (e.type === 'press' && (e.key === 'b' || e.key === 'pause')) { JC.go('map'); return; }
@@ -101,7 +104,7 @@ OW.leave = function () { OW.padPtr = -1; setPadDir(''); INPUT.releaseTouch(); };
 OW.update = function (dt) {
   OW.time += dt; OW.water += dt;
   if (P.bump > 0) P.bump -= dt;
-  TB.update(dt);
+  TB.update(dt); STORY.update(dt);
   for (const n of WORLD.npcs) n.t += dt;
   if (P.moving) {
     P.t += dt / P.step;
@@ -208,6 +211,7 @@ function drawTotemSockets(g, ox, oy) {
   }
 }
 OW.draw = function (g) {
+  if (STORY.showing()) { STORY.draw(g); TB.draw(g); return; }
   const cx = Math.round(CAM.x), cy = Math.round(CAM.y);
   const frame = ((OW.water * 2) | 0) % 2;
   g.fillStyle = '#1f62a0'; g.fillRect(0, 0, VIEW.W, VIEW.H);
