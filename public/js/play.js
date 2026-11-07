@@ -306,3 +306,15 @@ $('#p-voices') && $('#p-voices').addEventListener('click', () => {
     $('#p-voices').setAttribute('aria-pressed', String(r.value === 'ai'));
   });
 });
+
+// A game's text box (Doodle Hoot's guess box): with an on-screen keyboard up, the stage fits what is still visible.
+// Android shrinks the page itself (interactive-widget=resizes-content); iOS keeps it full height and slides it.
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const fitKeyboard = () => {
+    document.body.classList.toggle('kb-up', vv.height < window.innerHeight * 0.8);
+    document.documentElement.style.setProperty('--vvh', `${Math.round(vv.height)}px`);
+    document.documentElement.style.setProperty('--vvt', `${Math.round(vv.offsetTop)}px`);
+  };
+  vv.addEventListener('resize', fitKeyboard); vv.addEventListener('scroll', fitKeyboard);
+}

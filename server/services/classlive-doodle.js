@@ -1,7 +1,10 @@
 // Doodle Hoot Live (the built-in mode 'doodle'; server/live/doodle.js has the rules, docs/live-protocol.md
 // "Doodle Hoot Live"). The server owns every turn: who draws, the words (three to pick from, sent to the drawer alone),
-// the tray of letter tiles each guesser spells with, every guess (checked here: a guess is tray positions, never text),
-// the hints, the clock and the points. Drawings are relayed live and kept in this process's memory only, for replay to
+// every guess, the hints, the clock and the points. Guessing is open for the whole drawing. A guess is typed (the
+// default: the text comes as code points, is compared here and forgotten at once, never kept, logged or passed on) or,
+// when the host chose letter tiles, tray positions; or the drawer (or the host) says who guessed it out loud ('aw').
+// The drawer and the host's page see the last few guesses: a word of the game's own reviewed list (as its word id),
+// or only "something else"; a close guess is told to that guesser alone, and nobody else ever sees a guess. Drawings are relayed live and kept in this process's memory only, for replay to
 // a late joiner or a reloaded page; they are wiped at the end of every turn and of the session, and never stored,
 // logged, analysed or sent to any AI (tests/unit/live-doodle.test.js checks this module imports none of that).
 //
@@ -12,7 +15,8 @@
 //   every other device and the projector, never back to the drawer and never to a dashboard.
 // - Shared state dd: numbers and tokens, plus the word only once it is revealed.
 // - Private events (f 0, to one seat): ch (the three words), wd (the word: the drawer, or a guesser who solved it),
-//   tray, hn / hd (hints), gr (a guess's result), full (the page is full), cv (a canvas replay, in chunks).
+//   tray (the turn's shape: the tiles, or none when typing), hn / hd (hints), gr (a guess's result), full (the page is
+//   full), cv (a canvas replay, in chunks); fd (guesses so far: to the drawer and the projector only).
 import crypto from 'node:crypto';
 import * as DD from '../live/doodle.js';
 import { doodle } from '../live/doodle-core.js';
@@ -20,7 +24,7 @@ import { profanityMatch } from './textfilter.js';
 
 /** Tests shorten the waits. drawMs: a fixed drawing time instead of the room's seconds; reloadMs: a seat still counts
  *  as in the game this long after its connection drops (a reload), so the game doesn't stop to wait for it. */
-export const hooks = { pickMs: DD.PICK_MS, revealMs: DD.REVEAL_MS, holdMs: DD.HOLD_MS, graceMs: DD.DROP_GRACE_MS, waitMs: DD.WAIT_MAX_MS, gapMs: DD.GUESS_GAP_MS, drawMs: 0, reloadMs: 8000, replayMs: DD.REPLAY_GAP_MS };
+export const hooks = { pickMs: DD.PICK_MS, revealMs: DD.REVEAL_MS, holdMs: DD.HOLD_MS, graceMs: DD.DROP_GRACE_MS, waitMs: DD.WAIT_MAX_MS, gapMs: DD.GUESS_GAP_MS, typeGapMs: DD.TYPE_GAP_MS, awardGapMs: DD.AWARD_GAP_MS, drawMs: 0, reloadMs: 8000, replayMs: DD.REPLAY_GAP_MS };
 /** A connection with more than this waiting stops getting strokes; it gets the whole canvas again once it drains. */
 export const MAX_BUFFERED = 64 * 1024;
 const C = () => doodle().DoodleCore;
@@ -30,6 +34,9 @@ const W = () => doodle().DoodleWords;
 /** Decoy pools for the languages that take theirs from the word list, worked out once per language. */
 const pools = new Map();
 const poolFor = lang => { if (!pools.has(lang)) pools.set(lang, C().wordPool(W(), lang)); return pools.get(lang); };
+/** Each language's whole list (every level), made comparable: the only words a guess can be passed on as. */
+const lists = new Map();
+const listFor = lang => { if (!lists.has(lang)) lists.set(lang, C().index(W(), lang)); return lists.get(lang); };
 const int = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
 const plain = (d, keys) => !!d && typeof d === 'object' && !Array.isArray(d) && Object.keys(d).every(k => keys.includes(k));
 // (a seat that never connected counts only for reloadMs after it joined, from its leftAt: join calls alone never fill
@@ -40,11 +47,11 @@ const here = (seat, now) => !!seat && (!!seat.conn || (!!seat.leftAt && now - se
 export function init(s, id) {
   const p = DD.parseId(id) || DD.parseId(DD.DEFAULT_ID);
   s.doodle = {
-    id: DD.makeId(p), lang: p.lang, lvl: p.lvl, rds: p.rounds, secs: p.secs, dir: C().dir(p.lang),
+    id: DD.makeId(p), lang: p.lang, lvl: p.lvl, rds: p.rounds, secs: p.secs, dir: C().dir(p.lang), tiles: !!p.tiles,
     rd: 0, tn: 0, ph: 'lobby', order: [], oi: -1, dr: 0, used: new Set(), cats: [],
     choices: null, word: null, tray: null, decoys: [], removed: new Set(), plan: [], hints: [], step: 0, trayTo: new Set(),
     endAt: 0, left: 0, running: false, drawMs: 0, waitFrom: 0, waitWas: null, waitLeft: 0,
-    got: [], pts: new Map(), guess: new Map(), hid: new Set(),
+    got: [], pts: new Map(), guess: new Map(), hid: new Set(), ans: null, feed: [], awAt: 0,
     canvas: [], points: 0, last: null, maxId: -1, rate: [], full: false, dropAt: 0, stale: new Set(), staleHost: false, drops: 0,
     rv: null, top: null, doneAt: 0, dirty: false, sentAt: 0, done: false, replays: new Map(),
   };
@@ -58,7 +65,7 @@ export function publicState(s, now) {
   const x = s.doodle;
   const left = Math.max(0, Math.round(x.running && x.ph !== 'wait' ? x.endAt - now : x.ph === 'wait' ? x.waitLeft : x.left));
   return {
-    lang: x.lang, lvl: x.lvl, rds: x.rds, rd: x.rd, tn: x.tn, ph: x.ph, dr: x.dr, secs: x.secs, dir: x.dir,
+    lang: x.lang, lvl: x.lvl, rds: x.rds, rd: x.rd, tn: x.tn, ph: x.ph, dr: x.dr, secs: x.secs, dir: x.dir, tl: x.tiles ? 1 : 0,
     run: x.running && x.ph !== 'wait' ? 1 : 0, end: x.running && x.ph !== 'wait' ? x.endAt : 0, left,
     g: x.word && (x.ph === 'draw' || x.ph === 'reveal' || (x.ph === 'wait' && x.waitWas === 'draw')) ? x.word.groups.slice() : null,
     hint: x.hints.length, got: x.got.slice(), order: x.order.slice(),
@@ -139,7 +146,7 @@ function sendChoices(s, io, now) {
 }
 function wipeTurn(x) {
   x.choices = null; x.word = null; x.tray = null; x.decoys = []; x.removed = new Set(); x.plan = []; x.hints = []; x.step = 0; x.trayTo = new Set();
-  x.got = []; x.pts = new Map(); x.guess = new Map(); x.hid = new Set();
+  x.got = []; x.pts = new Map(); x.guess = new Map(); x.hid = new Set(); x.ans = null; x.feed = []; x.awAt = 0;
   x.canvas = []; x.points = 0; x.last = null; x.maxId = -1; x.rate = []; x.full = false; x.dropAt = 0; x.stale = new Set(); x.staleHost = false;
 }
 
@@ -155,11 +162,16 @@ function beginDraw(s, io, i) {
   if (!c) return false;
   x.used.add(c.id); x.cats = [c.cat, ...x.cats].slice(0, 2);
   const P = core.parts(c.w, x.lang);
-  // (profanityMatch looks at word starts; core.rude, the same lists hashed, looks anywhere in the run of tiles)
-  const built = core.buildTray(c.w, x.lang, x.lvl, core.rng(crypto.randomInt(2 ** 32)), { pool: poolFor(x.lang), bad: text => !!profanityMatch(text) || core.rude(text) });
   // (copied out of the game's vm context into plain arrays)
   x.word = { id: c.id, w: c.w, e: c.e, g: [...P.g], groups: [...P.groups] };
-  x.tray = [...built.tray]; x.decoys = [...built.decoys]; x.plan = [...core.hintPlan(P.g.length, core.rng(crypto.randomInt(2 ** 32)))];
+  if (x.tiles) {
+    // (profanityMatch looks at word starts; core.rude, the same lists hashed, looks anywhere in the run of tiles)
+    const built = core.buildTray(c.w, x.lang, x.lvl, core.rng(crypto.randomInt(2 ** 32)), { pool: poolFor(x.lang), bad: text => !!profanityMatch(text) || core.rude(text) });
+    x.tray = [...built.tray]; x.decoys = [...built.decoys];
+  } else { x.tray = []; x.decoys = []; }
+  // what a typed guess may be: the word, and in English its other spelling
+  x.ans = [...core.answers(W(), x.lang, c.id)];
+  x.plan = [...core.hintPlan(P.g.length, core.rng(crypto.randomInt(2 ** 32)))];
   x.choices = null; x.ph = 'draw';
   x.drawMs = hooks.drawMs || x.secs * 1000; x.endAt = now + x.drawMs; x.left = x.drawMs;
   toSeat(s, io, x.dr, 'wd', { n: x.tn, w: c.w, e: c.e, s0: 0 });
@@ -167,12 +179,14 @@ function beginDraw(s, io, i) {
   send(s, io, now);
   return true;
 }
-/** A guesser's tray (with the hints so far): when the drawing starts, and again on a reload or a late join. */
+/** A guesser's turn (the word's shape, the tiles when the host chose them, the hints so far): when the drawing starts,
+ *  and again on a reload or a late join. A typed turn has no tiles (t: [], ty: 1) and its hints are letters. */
 function sendTray(s, io, seat) {
   const x = s.doodle;
   if (!x.tray || seat.no === x.dr) return false;
   x.trayTo.add(seat.no);
-  return toSeat(s, io, seat.no, 'tray', { v: 1, n: x.tn, t: x.tray.slice(), g: x.word.groups.slice(), dir: x.dir, rm: [...x.removed], hn: x.hints.map(h => [h.i, h.t]), ok: x.got.includes(seat.no) });
+  const base = { v: 1, n: x.tn, t: x.tray.slice(), g: x.word.groups.slice(), dir: x.dir, ok: x.got.includes(seat.no) };
+  return toSeat(s, io, seat.no, 'tray', x.tiles ? { ...base, rm: [...x.removed], hn: x.hints.map(h => [h.i, h.t]) } : { ...base, ty: 1, hn: x.hints.map(h => [h.i, h.l]) });
 }
 
 /** The end of a turn: why 'time' | 'all' (everyone guessed) | 'skip' (the host) | 'gone' (the drawer left) | 'hid'
@@ -290,6 +304,8 @@ function hints(s, io, now) {
     x.step++;
     if (h.min && x.word.g.length < h.min) continue;
     if (h.k === 'decoys') {
+      // (typing has no tiles: only the letter hints)
+      if (!x.tiles) continue;
       const gone = x.decoys.filter(i => !x.removed.has(i)).slice(0, h.n);
       if (!gone.length) continue;
       for (const i of gone) x.removed.add(i);
@@ -297,6 +313,13 @@ function hints(s, io, now) {
     } else {
       const slot = x.plan.find(i => !x.hints.some(q => q.i === i));
       if (slot === undefined) continue;
+      if (!x.tiles) {
+        const l = x.word.g[slot];
+        x.hints.push({ i: slot, t: -1, l });
+        for (const no of x.trayTo) if (no !== x.dr) toSeat(s, io, no, 'hn', { n: x.tn, i: slot, l });
+        x.dirty = true;
+        continue;
+      }
       const usedT = new Set(x.hints.map(q => q.t));
       const t = x.tray.findIndex((g, i) => g === x.word.g[slot] && !usedT.has(i) && !x.decoys.includes(i));
       if (t < 0) continue;
@@ -308,7 +331,7 @@ function hints(s, io, now) {
 }
 
 // ---------------------------------------------------------------- what players send
-/** A player's game event (never relayed as it is): pk, ln, un, cl, gs, hide or need. -> true when it did something. */
+/** A player's game event (never relayed as it is): pk, ln, un, cl, gs, aw, hide or need. -> true when it did something. */
 export function fromPlayer(s, io, seat, m) {
   const x = s.doodle;
   if (!x || !seat) return false;
@@ -319,9 +342,16 @@ export function fromPlayer(s, io, seat, m) {
     case 'un': return undo(s, io, seat, m.d);
     case 'cl': return drawerClear(s, io, seat, m.d);
     case 'gs': return guess(s, io, seat, m.d);
+    case 'aw': return award(s, io, m.d, seat);
     case 'hide': return hide(s, io, seat, m.d);
     default: return false;
   }
+}
+/** The host's page's game event: aw (who guessed it out loud). -> bool */
+export function fromHost(s, io, m) {
+  const x = s.doodle;
+  if (!x || !m) return false;
+  return m.k === 'aw' ? award(s, io, m.d, null) : false;
 }
 const drop = x => { x.drops++; return false; };
 const drawing = (s, seat) => { const x = s.doodle; return s.phase === 'playing' && x.ph === 'draw' && x.running && !!seat && seat.no === x.dr; };
@@ -438,32 +468,83 @@ export function sendCanvas(s, io, seat) {
   return chunks.length;
 }
 
-/** A guess: tray positions in slot order. Only an unsolved guesser who has the tray, while drawing, at most one every
- *  GUESS_GAP_MS and GUESS_MAX wrong ones a turn. The result goes to that player alone. */
+/** A guess, while drawing, from an unsolved guesser who has the turn: typed (code points: { n, c }) or, when the host
+ *  chose letter tiles, tray positions in slot order ({ n, t }). The result goes to that player alone (gr). */
 export function guess(s, io, seat, d) {
-  const x = s.doodle, now = io.now();
+  const x = s.doodle;
   if (s.phase !== 'playing' || x.ph !== 'draw' || !x.running || seat.no === x.dr || !x.trayTo.has(seat.no) || x.got.includes(seat.no)) return drop(x);
+  return x.tiles ? tileGuess(s, io, seat, d) : typedGuess(s, io, seat, d);
+}
+/** Tiles: at most one every GUESS_GAP_MS and guessMax() wrong ones a turn (a short word can't be found by trying every
+ *  order). */
+function tileGuess(s, io, seat, d) {
+  const x = s.doodle, now = io.now();
   if (!plain(d, ['n', 't']) || d.n !== x.tn || !Array.isArray(d.t) || d.t.length !== x.word.g.length) return drop(x);
   const g = x.guess.get(seat.no) || { wrong: 0, at: 0 };
   const most = DD.guessMax(x.word.g.length);
   if (now - g.at < hooks.gapMs || g.wrong >= most) return drop(x);
   g.at = now; x.guess.set(seat.no, g);
   const locks = {}; for (const h of x.hints) locks[h.i] = h.t;
-  const ok = C().check(x.tray, x.word.g, d.t, locks);
-  if (!ok) {
-    g.wrong++;
-    toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: false, left: most - g.wrong });
-    return true;
-  }
+  if (C().check(x.tray, x.word.g, d.t, locks)) return solved(s, io, seat, now, false);
+  g.wrong++;
+  toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: false, left: most - g.wrong });
+  return true;
+}
+/** A typed guess: 1-40 code points (no control characters), at most one every TYPE_GAP_MS and TYPE_MAX wrong ones a
+ *  turn. The text is compared here (DoodleCore.judge) and forgotten: it is never kept, logged or passed on. The drawer
+ *  and the projector hear of a wrong guess only as a word id of the game's own list, or as "something else", or as
+ *  "close" (no text); a close guess is told to that guesser alone ("So close!"). */
+function typedGuess(s, io, seat, d) {
+  const x = s.doodle, now = io.now();
+  if (!plain(d, ['n', 'c']) || d.n !== x.tn || !Array.isArray(d.c) || d.c.length < 1 || d.c.length > C().MAX_TYPED) return drop(x);
+  if (!d.c.every(v => int(v, 32, 0x10FFFF) && !(v >= 0x7F && v <= 0x9F) && !(v >= 0xD800 && v <= 0xDFFF))) return drop(x);
+  const g = x.guess.get(seat.no) || { wrong: 0, at: 0 };
+  if (now - g.at < hooks.typeGapMs || g.wrong >= DD.TYPE_MAX) return drop(x);
+  g.at = now; x.guess.set(seat.no, g);
+  const r = C().judge(String.fromCodePoint(...d.c), x.ans, x.lang, listFor(x.lang));
+  if (!r) return drop(x);
+  if (r.k === 'ok') return solved(s, io, seat, now, false);
+  g.wrong++;
+  toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: false, left: DD.TYPE_MAX - g.wrong, ...(r.k === 'close' ? { c: 1 } : {}) });
+  // (only a word id of the reviewed list ever goes on, never what was typed)
+  feed(s, io, r.k === 'word' && typeof r.id === 'string' ? [seat.no, 'w', r.id] : [seat.no, r.k === 'close' ? 'c' : 'x']);
+  return true;
+}
+/** Who guessed it out loud ({ n, s: their seat }): the drawer, or the host's page (who = null), while drawing; a
+ *  player here who has the turn and hasn't got it yet (so once a turn each), at most one award every AWARD_GAP_MS.
+ *  It counts as their right guess (the same points by speed; the drawer's share as usual). */
+export function award(s, io, d, who) {
+  const x = s.doodle, now = io.now();
+  if (s.phase !== 'playing' || x.ph !== 'draw' || !x.running || (who && who.no !== x.dr)) return drop(x);
+  if (!plain(d, ['n', 's']) || d.n !== x.tn || !int(d.s, 1, 100000)) return drop(x);
+  const seat = s.seats.get(d.s);
+  if (!seat || seat.no === x.dr || !here(seat, now) || !x.trayTo.has(seat.no) || x.got.includes(seat.no)) return drop(x);
+  if (now - x.awAt < hooks.awardGapMs) return drop(x);
+  x.awAt = now;
+  return solved(s, io, seat, now, true);
+}
+/** A guesser got it (typed, tiles or out loud): points by speed and order, less the hints; the word to them alone. */
+function solved(s, io, seat, now, aloud) {
+  const x = s.doodle;
   const p = C().guessPoints(Math.max(0, x.endAt - now), x.drawMs, x.got.length, x.hints.length);
   x.got.push(seat.no); x.pts.set(seat.no, p);
   seat.score += p; seat.correct++; s.scoresDirty = true; s.lastActive = now;
-  toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: true, p });
+  toSeat(s, io, seat.no, 'gr', { n: x.tn, ok: true, p, ...(aloud ? { a: 1 } : {}) });
   toSeat(s, io, seat.no, 'wd', { n: x.tn, w: x.word.w, e: x.word.e });
+  feed(s, io, [seat.no, 'ok']);
   send(s, io, now);
   if (io.leaderboard) io.leaderboard(s);
   if (allSolved(s, now)) endTurn(s, io, 'all');
   return true;
+}
+/** One more line of the turn's guesses list (its last FEED_MAX): [seat, 'w', word id] a word of the list, [seat, 'x']
+ *  something else, [seat, 'c'] close, [seat, 'ok'] got it. To the drawer and the projector only, never to a guesser. */
+function feed(s, io, e) {
+  const x = s.doodle;
+  x.feed.push(e); if (x.feed.length > DD.FEED_MAX) x.feed.shift();
+  const d = { n: x.tn, l: [e] };
+  toSeat(s, io, x.dr, 'fd', d);
+  io.toProjector(s, { t: 'ev', f: 0, k: 'fd', d });
 }
 /** Has every guesser here now guessed it? */
 function allSolved(s, now) {
@@ -514,7 +595,7 @@ export function resync(s, io, seat) {
   const ph = x.ph === 'wait' ? x.waitWas : x.ph;
   if (ph === 'pick' && seat.no === x.dr) sendChoices(s, io, now);
   if (ph === 'draw' && x.word) {
-    if (seat.no === x.dr) toSeat(s, io, seat.no, 'wd', { n: x.tn, w: x.word.w, e: x.word.e, s0: x.maxId + 1 });
+    if (seat.no === x.dr) { toSeat(s, io, seat.no, 'wd', { n: x.tn, w: x.word.w, e: x.word.e, s0: x.maxId + 1 }); toSeat(s, io, seat.no, 'fd', { n: x.tn, l: x.feed.slice(), r: 1 }); }
     else { sendTray(s, io, seat); if (x.got.includes(seat.no)) toSeat(s, io, seat.no, 'wd', { n: x.tn, w: x.word.w, e: x.word.e }); }
   }
   if (ph === 'draw' || ph === 'reveal') {
@@ -530,6 +611,7 @@ export function hostReady(s, io) {
   if (!x || !x.rd || x.done) return;
   x.staleHost = false;
   if (x.ph === 'draw' || x.ph === 'reveal' || x.ph === 'wait') sendCanvas(s, io, null);
+  if (x.feed.length) io.toProjector(s, { t: 'ev', f: 0, k: 'fd', d: { n: x.tn, l: x.feed.slice(), r: 1 } });
 }
 /** A seat's connection dropped: nothing changes at once (a drawer has DROP_GRACE_MS to come back). */
 export function dropped(s, io, seat) {

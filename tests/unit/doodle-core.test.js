@@ -3,6 +3,7 @@
 // Easy, never in answer order, never a rude word), the guess check, hints, points, and the stroke steps.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { doodle, source } from '../../server/live/doodle-core.js';
 
 const { DoodleCore: C, DoodleWords: D } = doodle();
@@ -140,4 +141,72 @@ test('render draws on any 2D context without the DOM', () => {
   C.render(ctx, [{ s: 0, c: 3, w: 2, e: 0, pts: [10, 10, 100, 100] }, { s: 1, c: 0, w: 0, e: 1, pts: [5, 5] }], 0.5);
   assert.ok(calls.some(c => c[0] === 'fillRect'));
   assert.ok(calls.some(c => c[0] === 'lineTo')); assert.ok(calls.some(c => c[0] === 'arc'), 'a dot');
+});
+
+// ---------------------------------------------------------------- typed guesses (judge)
+const LANGS = ['en', 'en-GB', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'ru', 'ar', 'he'];
+const judge = (text, id, lang) => { const r = C.judge(text, C.answers(D, lang, id), lang, C.index(D, lang)); return r && JSON.parse(JSON.stringify(r)); };
+
+test('typed guesses: the answer however it is typed (capitals, accents, spaces, hyphens, an article, a plural)', () => {
+  for (const t of ['cat', 'CAT', ' Cat ', 'the cat', 'a cat', 'cats', 'ＣＡＴ']) assert.deepEqual(judge(t, 'cat', 'en'), { k: 'ok' }, t);
+  for (const t of ['fire truck', 'firetruck', 'Fire-Truck', 'fire engine', 'FIRE ENGINES']) assert.deepEqual(judge(t, 'firetruck', 'en'), { k: 'ok' }, `${t}: either English spelling, in either room`);
+  assert.deepEqual(judge('fire truck', 'firetruck', 'en-GB'), { k: 'ok' });
+  assert.deepEqual(judge('bubble', 'bubbles', 'en'), { k: 'ok' }, 'the answer is plural, the guess is not');
+  assert.deepEqual(judge('butterflies', 'cat', 'en').k, 'other');
+  // accents may be left out; German umlauts as plain vowels or as ae/oe/ue; ß as ss; ё as е
+  assert.deepEqual(judge('pajaro', 'bird', 'es'), { k: 'ok' }); assert.deepEqual(judge('el pájaro', 'bird', 'es'), { k: 'ok' });
+  assert.deepEqual(judge('Gateau', 'cake', 'fr'), { k: 'ok' }); assert.deepEqual(judge('le gâteau', 'cake', 'fr'), { k: 'ok' });
+  for (const t of ['Schildkröte', 'schildkrote', 'SCHILDKROETE', 'die Schildkröten']) assert.deepEqual(judge(t, 'turtle', 'de'), { k: 'ok' }, t);
+  assert.deepEqual(judge('КОСТЕР', 'campfire', 'ru'), { k: 'ok' }, 'ё typed as е');
+  // Arabic without its marks and with any alef; Hebrew with or without niqqud
+  assert.deepEqual(judge('قطه', 'cat', 'ar'), { k: 'ok' }); assert.deepEqual(judge('قِطَّة', 'cat', 'ar'), { k: 'ok' });
+  assert.deepEqual(judge('חָתוּל', 'cat', 'he'), { k: 'ok' });
+  // NFD and NFC are the same word
+  assert.deepEqual(judge('café'.normalize('NFD'), 'cat', 'fr').k, 'other');
+  assert.deepEqual(judge('pájaro', 'bird', 'es'), { k: 'ok' });
+});
+
+test('typed guesses: close (a letter off, two letters swapped) is told apart from the answer and from other words', () => {
+  assert.deepEqual(judge('sunflwer', 'sunflower', 'en'), { k: 'close' });
+  assert.deepEqual(judge('sunflowre', 'sunflower', 'en'), { k: 'close' }, 'two letters swapped');
+  assert.deepEqual(judge('snuflowr', 'sunflower', 'en'), { k: 'close' }, 'a long word may be two off');
+  assert.deepEqual(judge('hosre', 'horse', 'en'), { k: 'close' });
+  assert.deepEqual(judge('cta', 'cat', 'en'), { k: 'close' }, 'a short word: only two letters swapped');
+  assert.deepEqual(judge('cot', 'cat', 'en').k, 'other', 'a short word a letter off is not "close" (it would give it away)');
+  assert.deepEqual(judge('dog', 'cat', 'en'), { k: 'word', id: 'dog' });
+  assert.deepEqual(judge('the dogs', 'cat', 'en'), { k: 'word', id: 'dog' });
+  assert.deepEqual(judge('perro', 'cat', 'es'), { k: 'word', id: 'dog' });
+  assert.deepEqual(judge('dog', 'cat', 'es').k, 'other', 'another language’s word is not on the list');
+  assert.equal(judge('', 'cat', 'en'), null); assert.equal(judge('  !!! ', 'cat', 'en'), null);
+  assert.equal(judge('a'.repeat(C.MAX_TYPED + 1), 'cat', 'en'), null, 'too long');
+});
+
+test('typed guesses: only words of the reviewed list can ever be passed on (never a rude word, a sentence or contact details)', async () => {
+  const { loadBlocklists, BLOCK, rot13 } = await import('../../server/services/textfilter.js');
+  void loadBlocklists;
+  const lists = fs.readdirSync('server/i18n/blocklists').filter(f => f.endsWith('.txt'))
+    .flatMap(f => fs.readFileSync(`server/i18n/blocklists/${f}`, 'utf8').split(/\r?\n/)).map(l => l.trim()).filter(l => l && !l.startsWith('#') && !l.startsWith('!'))
+    .map(l => rot13(l.replace(/^=/, '')));
+  assert.ok(lists.length > 500, `${lists.length} entries`);
+  const sentences = ['you are stupid', 'my number is 0791 234 5678', 'add me on snap', 'www.example.com', 'what is your address', 'cat dog', 'i like turtles'];
+  for (const lang of LANGS) {
+    const idx = C.index(D, lang), ans = C.answers(D, lang, 'cat');
+    for (const t of [...BLOCK, ...lists, ...sentences]) {
+      const r = C.judge(t, ans, lang, idx);
+      assert.ok(!r || r.k !== 'word', `${lang}: "${t}" would be passed on as ${r && r.id}`);
+    }
+    // what can be passed on is a word id of the list, and every one is a word of the list in that language
+    const ids = new Set(D.rows.map(r => r[0]));
+    for (const id of Object.values(idx)) assert.ok(ids.has(id), id);
+    for (const x of C.words(D, lang, 0)) assert.ok(['ok', 'word', 'close'].includes(C.judge(x.w, ans, lang, idx).k), `${lang}: ${x.w}`);
+  }
+});
+
+test('typed guesses: plain() keeps letters and digits only, in every script', () => {
+  assert.equal(C.plain("  L'Étoile  ", 'fr'), 'etoile');
+  assert.equal(C.plain('Straße', 'de'), 'strasse'); assert.equal(C.plain('Bär', 'de'), 'baer');
+  assert.equal(C.plain('Ёлка!', 'ru'), 'елка');
+  assert.equal(C.plain('אִמָּא', 'he'), 'אמא');
+  assert.equal(C.plain('ice-cream', 'en'), 'icecream'); assert.equal(C.plain('ice cream', 'en'), 'icecream');
+  assert.equal(C.plain('ねこ', 'ja'), 'ねこ');
 });

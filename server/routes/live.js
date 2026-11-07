@@ -234,7 +234,7 @@ const tugPicker = req => {
   return { grades: TUG.GRADES, lens: TUG.LENS, samples, names: Object.fromEntries(TUG.GRADES.map(g => [g, names[g - 1] || String(g)])) };
 };
 /** Doodle Hoot Live's options on the landing: the word language (each named in its own language), the level with
- *  three sample words, the rounds and the drawing time. */
+ *  three sample words, the rounds, the drawing time and how players guess (typing, or letter tiles). */
 const LANG_NAMES = { en: 'English (US)', 'en-GB': 'English (UK)', es: 'Español', fr: 'Français', de: 'Deutsch', it: 'Italiano', pt: 'Português', nl: 'Nederlands', ru: 'Русский', ja: '日本語', 'zh-Hant': '繁體中文', ar: 'العربية', he: 'עברית' };
 const doodlePicker = req => {
   const names = req.t('live.doodleUi.levels').split('|');
@@ -275,10 +275,10 @@ function sessionOpts(b, req) {
     o.starter = b.starter && TUG.parseId(String(b.starter)) ? String(b.starter) : TUG.makeId({ grade: +b.tugGrade || 3, len: b.tugLen === undefined || b.tugLen === '' ? 90 : +b.tugLen });
     delete o.setId; delete o.items;
   }
-  // Doodle Hoot Live: the word language, level, rounds and drawing time (the landing's fields, or a starter id).
+  // Doodle Hoot Live: the word language, level, rounds, drawing time and guessing (the landing's fields, or a starter id).
   if (o.mode === 'doodle') {
     o.starter = b.starter && DOO.parseId(String(b.starter)) ? String(b.starter)
-      : DOO.makeId({ lang: DOO.LANGS.includes(String(b.doodleLang)) ? String(b.doodleLang) : DOO.langFor(req.locale), lvl: +b.doodleLevel || 1, rounds: +b.doodleRounds || 2, secs: +b.doodleSecs || 80 });
+      : DOO.makeId({ lang: DOO.LANGS.includes(String(b.doodleLang)) ? String(b.doodleLang) : DOO.langFor(req.locale), lvl: +b.doodleLevel || 1, rounds: +b.doodleRounds || 2, secs: +b.doodleSecs || 80, tiles: String(b.doodleTiles) === '1' });
     delete o.setId; delete o.items;
   }
   // Game settings: a JSON object, or the landing form's flat fields (classlive-settings checks every value).
@@ -526,7 +526,8 @@ router.get('/live/play/:sid', on, (req, res) => {
   const s = LS.get(req.params.sid);
   const open = !!s && s.phase !== 'ended';
   noStore(res);
-  page(req, res, { title: s ? s.title : req.t('live.play.title'), bare: true, bodyClass: 'lv-body lv-player-page', head: '<link rel="stylesheet" href="/css/live.css">',
+  // (keyboard: Doodle Hoot Live's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
+  page(req, res, { title: s ? s.title : req.t('live.play.title'), bare: true, keyboard: !!(s && s.doodle), bodyClass: 'lv-body lv-player-page', head: '<link rel="stylesheet" href="/css/live.css">',
     body: V.playBody(req, { sid: s ? s.id : String(req.params.sid).slice(0, 40), title: s ? s.title : req.t('live.play.title'), nicks: nicksFor(req.locale), open }), scripts: ['/js/live-play.js'] }, open ? 200 : 404);
 });
 
@@ -569,6 +570,9 @@ router.get('/live/frame/:token', on, (req, res) => {
     deviceText: { title: tl('play.device.title'), text: tl('play.device.text'), lostTitle: tl('play.device.lostTitle'), lostText: tl('play.device.lostText'), retry: tl('play.device.retry') },
     live: {
       v: 1, role: host ? 'host' : 'player', seat: host ? 0 : seat.no, frame: tok.f, nameMode: s.nameMode, mode: s.mode, nicks,
+      // Doodle Hoot Live with typed guesses: the frame's one guess box (data-live-guess) may be typed in. What is typed
+      // goes to the server only, as code points, is compared there and forgotten (services/classlive-doodle.js).
+      ...(!host && s.doodle && !s.doodle.tiles ? { guess: 1 } : {}),
       view: req.query.view === '2d' ? '2d' : '3d',
       me: host ? null : { seat: seat.no, name, avatar: seat.avatar, team: seat.team },
       // Team presets with their names in the frame's language (the pack keeps no copy). Never anyone's support.

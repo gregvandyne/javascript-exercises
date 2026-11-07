@@ -55,6 +55,15 @@
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar .btn { min-block-size: 36px; padding-block: 2px; }
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play .lv-stage { min-block-size: 0; }
 }
+/* Doodle Hoot Live on a phone on its side with the keyboard up (very little height): the page's bar steps aside */
+@media (orientation: landscape) and (max-height: 300px) {
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > :is(.lv-bar, .lv-emotes, .lv-phase) { display: none; }
+}
+/* Doodle Hoot Live with the on-screen keyboard up (public/js/live-play.js): the page fits the part still visible, the
+   game gets it all */
+body.lv-kb .lv-play { position: fixed; inset-inline: 0; inset-block-start: var(--lv-vvt, 0px); block-size: var(--lv-vvh, 100dvh); min-block-size: 0; overflow: hidden; gap: 4px; padding-block: 2px; }
+body.lv-kb .lv-play > :is(.lv-emotes, .lv-phase) { display: none; }
+body.lv-kb .lv-play .lv-stage { min-block-size: 0; }
 .lv-count { font-weight: 800; font-size: 1.2rem; }
 .lv-stage { position: relative; inline-size: 100%; min-block-size: 50vh; border-radius: 16px; overflow: hidden; background: #bfe8ff; }
 .lv-stage iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
