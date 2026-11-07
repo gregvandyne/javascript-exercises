@@ -106,15 +106,16 @@
    ]
   },
   {
-   "title": "Dot is waiting",
-   "text": "Every piece you light makes the Spark warmer. The next world belongs to Dot the fox, who follows clues the way you follow code. She is already sniffing at the door.",
+   "title": "Bolt's piece lights up",
+   "text": "Bolt's piece of the Spark lights up: the first of four. His roads run, his bugs are fixed and his levels are built. The next world belongs to Dot the fox, who follows clues the way you follow code.",
    "art": "magnifier",
    "story": {
     "scene": "handoff",
     "lit": 1,
     "chars": [],
     "out": "bolt",
-    "in": "dot"
+    "in": "dot",
+    "fly": "bolt"
    }
   },
   {

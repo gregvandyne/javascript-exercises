@@ -87,7 +87,7 @@
   },
   {
    "title": "Follow the map",
-   "text": "This map is your journey. Each world you finish lights one piece of the Spark. Light all four, and Netville shines again.",
+   "text": "This map is your journey. Each world you finish lights one piece of the Spark. Light all four, put them together at the end, and Netville shines again.",
    "art": "map",
    "story": {
     "scene": "map",
