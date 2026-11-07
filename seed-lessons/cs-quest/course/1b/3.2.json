@@ -8,29 +8,57 @@
  "slides": [
   {
    "title": "Is it true?",
-   "text": "A claim is something you say is true, like: the plant grows every day. Evidence is the data that backs it up.",
+   "text": "A claim is something you say is true, like: the plant grows about 2 cm a day. Evidence is the data that backs it up.",
    "art": "magnifier",
-   "img": "csq/data-detective/claims-1b-key",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."
+   "img": "csq/data-detective/claims-1b-plant-n",
+   "alt": "The bean plant measured each day: 2, 4, 6, 8, 10 cm. Dot asks: is this claim supported by the chart?",
+   "focus": [
+    {
+     "cue": "The evidence: the plant measured each day",
+     "box": [
+      25,
+      46.1,
+      14,
+      27
+     ]
+    },
+    {
+     "cue": "Day 5: 10 cm, about 2 cm more each day",
+     "box": [
+      79.2,
+      11.7,
+      14,
+      27
+     ]
+    }
+   ]
   },
   {
    "title": "Enough data?",
    "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we cannot tell yet.",
    "art": "chart",
-   "img": "csq/data-detective/claims-1b-small",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we cannot tell yet."
+   "img": "csq/data-detective/claims-1b-hunch-n",
+   "alt": "Two days of data and a big claim: it will be 20 cm tall by day 10. Supported, not supported, or can't tell yet?",
+   "focus": [
+    {
+     "cue": "Only two days of data: is it enough?",
+     "box": [
+      18.9,
+      4.6,
+      21.2,
+      11.7
+     ]
+    },
+    {
+     "cue": "The honest answer: can’t tell yet",
+     "box": [
+      18.9,
+      50.9,
+      24.1,
+      11.7
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -45,27 +73,55 @@
     "day 5: 10 cm",
     "day 6: ?"
    ],
-   "img": "csq/data-detective/claims-1b-plant",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "Predict Day 6: the plant chart climbs the same amount every day, so the next bar can be predicted from the pattern."
+   "img": "csq/data-detective/claims-1b-predict-n",
+   "alt": "Days 1 to 5 grow 2 cm each, up to 10 cm, and the prediction slider for day 6 is set to 12 cm.",
+   "focus": [
+    {
+     "cue": "My prediction for day 6",
+     "box": [
+      4.1,
+      40.1,
+      47,
+      12.4
+     ]
+    },
+    {
+     "cue": "Days 1 to 5 grew 2 cm a day, so: 12 cm",
+     "box": [
+      41.8,
+      76.1,
+      16.5,
+      14.1
+     ]
+    }
+   ]
   },
   {
    "title": "Say only what it shows",
-   "text": "If Saturday has the tallest bar in a chart of park visitors, the chart supports: most visitors came on Saturday. It does not say why.",
+   "text": "Bikes were counted every morning. Thursday has the tallest bar, so the claim that Friday is the busiest day is not supported. And the chart never says why: it only shows how many.",
    "art": "star",
-   "img": "csq/data-detective/claims-1b-card",
-   "view": [
-    26,
-    23,
-    48,
-    54
-   ],
-   "alt": "The claim card beside the plant chart: each claim must match what the bars actually show, nothing more."
+   "img": "csq/data-detective/claims-1b-bikes-n",
+   "alt": "Bikes counted each morning: Thursday's bar is tallest at 15. Dot says the chart goes against the claim that Friday is busiest.",
+   "focus": [
+    {
+     "cue": "Thursday: the tallest bar, 15 bikes",
+     "box": [
+      60.7,
+      11.7,
+      14.8,
+      27
+     ]
+    },
+    {
+     "cue": "Friday: 13, not the most",
+     "box": [
+      79.1,
+      12.2,
+      14,
+      27
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -92,14 +148,28 @@
    "title": "Your mission",
    "text": "Open Data Detective at Clues & Claims and solve all 6 cases. Before you pin a claim, ask: does the chart really show it, or can we not tell yet?",
    "art": "trophy",
-   "img": "csq/data-detective/claims-1b-key",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it."
+   "img": "csq/data-detective/claims-1b-plant-n",
+   "alt": "The bean plant measured each day: 2, 4, 6, 8, 10 cm. Dot asks: is this claim supported by the chart?",
+   "focus": [
+    {
+     "cue": "Read the chart before you pin",
+     "box": [
+      43.1,
+      31.8,
+      14,
+      27
+     ]
+    },
+    {
+     "cue": "Does it really show the claim?",
+     "box": [
+      79.2,
+      11.7,
+      14,
+      27
+     ]
+    }
+   ]
   }
  ],
  "check": [

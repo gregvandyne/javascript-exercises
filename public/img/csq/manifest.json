@@ -36,6 +36,39 @@
    "commit": "csq-story"
   },
   {
+   "key": "csq/chars/meet-dot",
+   "game": "data-detective",
+   "chapter": "characters",
+   "band": "both",
+   "state": "meet-dot",
+   "concept": "Meet Dot: the world guide, from its own game (scripts/csq-meet.py)",
+   "alt": "Dot the fox, the Data Detective guide, in her round glasses, standing in front of a softened chart from her game.",
+   "capturedAt": "2026-11-07",
+   "commit": "csq-a2"
+  },
+  {
+   "key": "csq/chars/meet-gizmo",
+   "game": "inside-the-machine",
+   "chapter": "characters",
+   "band": "both",
+   "state": "meet-gizmo",
+   "concept": "Meet Gizmo: the world guide, from its own game (scripts/csq-meet.py)",
+   "alt": "Gizmo the mouse, the Inside the Machine guide, in round glasses, standing in front of softened switches from the game.",
+   "capturedAt": "2026-11-07",
+   "commit": "csq-a2"
+  },
+  {
+   "key": "csq/chars/meet-pim",
+   "game": "packet-post",
+   "chapter": "characters",
+   "band": "both",
+   "state": "meet-pim",
+   "concept": "Meet Pim: the world guide, from its own game (scripts/csq-meet.py)",
+   "alt": "Pim the owl, the Packet Post guide, standing in front of a softened road map from the post office game.",
+   "capturedAt": "2026-11-07",
+   "commit": "csq-a2"
+  },
+  {
    "key": "csq/chars/pim",
    "game": "packet-post",
    "chapter": "characters",
@@ -58,290 +91,312 @@
    "commit": "number-quest"
   },
   {
-   "key": "csq/data-detective/claims-1b-card",
+   "key": "csq/data-detective/claims-1b-bikes-n",
    "game": "data-detective",
    "chapter": "claims",
    "band": "1b",
-   "state": "claims-1b-card",
-   "concept": "Say only what it shows: a chart does not say why",
-   "alt": "The claim card beside the plant chart: each claim must match what the bars actually show, nothing more.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "claims-1b-bikes-n",
+   "concept": "Say only what it shows",
+   "alt": "Bikes counted each morning: Thursday's bar is tallest at 15. Dot says the chart goes against the claim that Friday is busiest.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/claims-1b-key",
+   "key": "csq/data-detective/claims-1b-hunch-n",
    "game": "data-detective",
    "chapter": "claims",
    "band": "1b",
-   "state": "claims-1b-key",
-   "concept": "Is it true? A claim is backed up by evidence",
-   "alt": "The Plant Race case: a chart of a growing plant, and claim cards waiting to be judged against it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "claims-1b-hunch-n",
+   "concept": "Enough data?",
+   "alt": "Two days of data and a big claim: it will be 20 cm tall by day 10. Supported, not supported, or can't tell yet?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/claims-1b-plant",
+   "key": "csq/data-detective/claims-1b-plant-n",
    "game": "data-detective",
    "chapter": "claims",
    "band": "1b",
-   "state": "claims-1b-plant",
-   "concept": "Predict the plant: it grows 2 cm every day",
-   "alt": "Predict Day 6: the plant chart climbs the same amount every day, so the next bar can be predicted from the pattern.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "claims-1b-plant-n",
+   "concept": "Is it true? A claim and its evidence",
+   "alt": "The bean plant measured each day: 2, 4, 6, 8, 10 cm. Dot asks: is this claim supported by the chart?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/claims-1b-small",
+   "key": "csq/data-detective/claims-1b-predict-n",
    "game": "data-detective",
    "chapter": "claims",
    "band": "1b",
-   "state": "claims-1b-small",
-   "concept": "Enough data? Two bars are a hunch, not a case",
-   "alt": "The Two Points case: a chart with almost no data in it, where the honest answer is that we cannot tell yet.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "claims-1b-predict-n",
+   "concept": "Predict the plant",
+   "alt": "Days 1 to 5 grow 2 cm each, up to 10 cm, and the prediction slider for day 6 is set to 12 cm.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/cleanup-2-edit",
+   "key": "csq/data-detective/cleanup-2-mess-n",
    "game": "data-detective",
    "chapter": "cleanup",
    "band": "2",
-   "state": "cleanup-2-edit",
-   "concept": "Clean it first: fix typos, merge repeats, remove impossible values",
-   "alt": "Double Trouble: a second messy case, where the same student answered twice and one row must go.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "cleanup-2-mess-n",
+   "concept": "Clean it first",
+   "alt": "Sports sign-ups with every kind of mess: soccer in lower case, Jo twice, Tenis misspelled, and an age of 120.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/cleanup-2-key",
+   "key": "csq/data-detective/cleanup-2-messy-n",
    "game": "data-detective",
    "chapter": "cleanup",
    "band": "2",
-   "state": "cleanup-2-key",
-   "concept": "Real data is messy: typos, repeats and impossible numbers",
-   "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "cleanup-2-messy-n",
+   "concept": "Real data is messy",
+   "alt": "Twelve kids typed their pet: Cat, dog, Fish, Dog, d0g, Cat, Dog. Three of the dogs are spelled wrong.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/cleanup-2-percent",
+   "key": "csq/data-detective/cleanup-2-share-n",
    "game": "data-detective",
    "chapter": "cleanup",
    "band": "2",
-   "state": "cleanup-2-percent",
-   "concept": "Compare by percent: part divided by whole, times 100",
-   "alt": "Tidy, Then Compare: two cleaned sets side by side, the case where comparing fairly means comparing percents.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "cleanup-2-share-n",
+   "concept": "Compare by percent",
+   "alt": "Walkers by class with percent on: Class A 10 of 20 is 50%, Class B 12 of 30 is 40%.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/cleanup-2-pets",
+   "key": "csq/data-detective/cleanup-2-split-n",
    "game": "data-detective",
    "chapter": "cleanup",
    "band": "2",
-   "state": "cleanup-2-pets",
-   "concept": "Pet survey clean-up: three spellings of dog split one bar into three",
-   "alt": "The cleaned pet chart: the three misspelled dogs are fixed to one spelling, and the Dog bar counts all seven.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "cleanup-2-split-n",
+   "concept": "Pet survey clean-up",
+   "alt": "Grouped before cleaning: Dog 4, but dog, d0g and Dgo each get a short bar of their own.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/fair-2-questions",
+   "key": "csq/data-detective/fair-2-missing-n",
    "game": "data-detective",
    "chapter": "fair",
    "band": "2",
-   "state": "fair-2-questions",
-   "concept": "Fix the question: let every answer feel equally welcome",
-   "alt": "One Grade Asked: a fairness case about who a survey asked, and who it never reached.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fair-2-missing-n",
+   "concept": "Who is missing from the sample?",
+   "alt": "The lunch vote sorted by Voted: every No is a veggie eater. The screen stood in the meat line.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/fair-2-sample",
+   "key": "csq/data-detective/fair-2-onegrade-n",
    "game": "data-detective",
    "chapter": "fair",
    "band": "2",
-   "state": "fair-2-sample",
-   "concept": "A bigger, fairer sample: more answers from more kinds of people",
-   "alt": "Who Is Missing? The fairness case that asks which people a sample left out before trusting its answer.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fair-2-onegrade-n",
+   "concept": "Fair questions, unfair tests",
+   "alt": "The recess app testers grouped by grade: one single bar, Grade 3. No other grade tried the app.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/models-2-key",
+   "key": "csq/data-detective/fair-2-voice-n",
+   "game": "data-detective",
+   "chapter": "fair",
+   "band": "2",
+   "state": "fair-2-voice-n",
+   "concept": "Compare percents, not counts",
+   "alt": "The voice helper: worked for 9 of 10 deep voices (90%) and 3 of 6 high voices (50%).",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/data-detective/models-2-balance-n",
    "game": "data-detective",
    "chapter": "models",
    "band": "2",
-   "state": "models-2-key",
-   "concept": "Rules that predict: a model is a rule, a simulation runs it",
-   "alt": "The Ramp Rule case: a rule that predicts how far a car rolls, with the ramp and the trials waiting.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "models-2-balance-n",
+   "concept": "One trial is not proof",
+   "alt": "Game balance: 20 test runs at one jump power, each a tick or a cross, counted as finished or fell.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/models-2-ramp",
+   "key": "csq/data-detective/models-2-fit-n",
    "game": "data-detective",
    "chapter": "models",
    "band": "2",
-   "state": "models-2-ramp",
-   "concept": "The ramp: every trial went farther than predicted, so refine the rule",
-   "alt": "The ramp trials ran farther than the first rule predicted, so the rule was raised and run again: the error shrinks.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "models-2-fit-n",
+   "concept": "Predict, compare, refine",
+   "alt": "Refined to distance = 2 × height and run again: the trials sit close to the model, and Dot says the model fits.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/models-2-run",
+   "key": "csq/data-detective/models-2-low-n",
    "game": "data-detective",
    "chapter": "models",
    "band": "2",
-   "state": "models-2-run",
-   "concept": "Predict, compare, refine: change the model, not the data",
-   "alt": "The model has run: predicted distances sit beside the real trials, so the rule can be compared and refined.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "models-2-low-n",
+   "concept": "The ramp: the rule is too low",
+   "alt": "With distance = 1 × height every real trial goes farther than the model: each row is off by a lot.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/models-2-trials",
+   "key": "csq/data-detective/models-2-rule-n",
    "game": "data-detective",
    "chapter": "models",
    "band": "2",
-   "state": "models-2-trials",
-   "concept": "One trial is not proof: compare the model with many results",
-   "alt": "Bounce Back: another model case with its own trials, because one lucky trial never proves a rule.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "models-2-rule-n",
+   "concept": "Rules that predict",
+   "alt": "The ramp model set to distance = 2 × height: the Model column predicts 20, 40, 60, 80, 100 before any trial runs.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-1b-chart",
+   "key": "csq/data-detective/mydata-1b-chart-n",
    "game": "data-detective",
    "chapter": "my-data",
    "band": "1b",
-   "state": "mydata-1b-chart",
-   "concept": "From tally to chart: one bar per answer, the tallest jumps out",
-   "alt": "The survey tallies turned into a bar chart: one bar per pet, and the dog bar towers over the rest.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "mydata-1b-chart-n",
+   "concept": "From tally to chart",
+   "alt": "The same tally as a bar chart: Dog 12 towers over Cat 3, Fish 4 and None 2.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-1b-key",
+   "key": "csq/data-detective/mydata-1b-claims-n",
    "game": "data-detective",
    "chapter": "my-data",
    "band": "1b",
-   "state": "mydata-1b-key",
-   "concept": "Data from real people: today the data comes from people around you",
-   "alt": "My Data opens a class survey: one question, and answer rows waiting for the class to fill them in.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "mydata-1b-claims-n",
+   "concept": "Fair claims",
+   "alt": "The claim card for the pet chart: most kids picked Dog; fewest picked Bird; more than half picked Dog; Dog and Fish tied.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-1b-second",
+   "key": "csq/data-detective/mydata-1b-showme-n",
    "game": "data-detective",
    "chapter": "my-data",
    "band": "1b",
-   "state": "mydata-1b-second",
-   "concept": "Ask someone else: another pair of eyes may see what you missed",
-   "alt": "A second survey question waits in My Data: fresh answers to collect before anyone pins a claim about them.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "mydata-1b-showme-n",
+   "concept": "Ask someone else",
+   "alt": "A claim is pinned, and Dot asks for proof: now show me, tap the bar that proves it.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-1b-tally",
+   "key": "csq/data-detective/mydata-1b-start-n",
    "game": "data-detective",
    "chapter": "my-data",
    "band": "1b",
-   "state": "mydata-1b-tally",
-   "concept": "Tally marks: each answer gets one mark, counted in fives",
-   "alt": "Tallying the survey: answers are counted with the steppers, each one adding to its row of the class data.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "mydata-1b-start-n",
+   "concept": "Data from real people",
+   "alt": "The class survey begins: one stepper per answer, Dog 3 and Cat 2 so far, and Dot explains how to tally, chart and claim.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-2-key",
+   "key": "csq/data-detective/mydata-1b-tally-n",
    "game": "data-detective",
    "chapter": "my-data",
-   "band": "2",
-   "state": "mydata-2-key",
-   "concept": "Fair questions first: answers can only be fair if questions are fair",
-   "alt": "My Data in Pro: a survey question and its answer rows, where fairness starts with how the question is asked.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "band": "1b",
+   "state": "mydata-1b-tally-n",
+   "concept": "One mark per answer",
+   "alt": "The survey tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2. One mark for every answer.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-2-percent",
-   "game": "data-detective",
-   "chapter": "my-data",
-   "band": "2",
-   "state": "mydata-2-percent",
-   "concept": "Compare by percent: compare 72% with 50%, not 18 with 20",
-   "alt": "A third survey question in My Data: the case for comparing classes by percent instead of raw counts.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/data-detective/mydata-2-second",
+   "key": "csq/data-detective/mydata-2-compare-n",
    "game": "data-detective",
    "chapter": "my-data",
    "band": "2",
-   "state": "mydata-2-second",
-   "concept": "Leading questions: a question that pushes builds in bias",
-   "alt": "A second Pro survey question: its wording matters, because a pushing question bends the data before counting.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "mydata-2-compare-n",
+   "concept": "Compare by percent",
+   "alt": "Favorite colors in percent: ours next to another class. Blue is 50% here and 33% there.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/sort-1b-claim",
+   "key": "csq/data-detective/mydata-2-fair-n",
+   "game": "data-detective",
+   "chapter": "my-data",
+   "band": "2",
+   "state": "mydata-2-fair-n",
+   "concept": "Fair questions first",
+   "alt": "One plain survey question, Pets at home, tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/data-detective/mydata-2-own-n",
+   "game": "data-detective",
+   "chapter": "my-data",
+   "band": "2",
+   "state": "mydata-2-own-n",
+   "concept": "Leading questions",
+   "alt": "Pick a question: pets, colors, fruit, sport, how we get to school, or our own question.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/data-detective/sort-1b-dot-n",
    "game": "data-detective",
    "chapter": "sort",
    "band": "1b",
-   "state": "sort-1b-claim",
-   "concept": "Show me first: pin a claim only when the view on screen shows it",
-   "alt": "With the grouped chart showing the evidence, the claim card opens: Dot will only pin a claim the view proves.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "sort-1b-dot-n",
+   "concept": "Meet Dot",
+   "alt": "Dot the fox stands in the woods and asks the first case's question: who was last in the hall?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/sort-1b-grouped",
+   "key": "csq/data-detective/sort-1b-grouped-n",
    "game": "data-detective",
    "chapter": "sort",
    "band": "1b",
-   "state": "sort-1b-grouped",
-   "concept": "Sort or group: grouping puts the same kind together and counts them",
-   "alt": "The pet case grouped: one bar per kind of pet, counted, so the most common pet jumps out of the chart.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "sort-1b-grouped-n",
+   "concept": "Sort or group",
+   "alt": "The pet case grouped by pet: one bar per kind, counted. Dog 4, Cat 2, Fish 2.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/sort-1b-key",
+   "key": "csq/data-detective/sort-1b-pin-n",
    "game": "data-detective",
    "chapter": "sort",
    "band": "1b",
-   "state": "sort-1b-key",
-   "concept": "Meet Dot: a detective solves cases with facts, not guesses",
-   "alt": "Dot opens the first case: a table of who, where and when facts in rows and columns, and the question: who was last in the hall?",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "sort-1b-pin-n",
+   "concept": "Show me first",
+   "alt": "The grouped bars answer the question, so Dot says: that view answers it, pin your claim. The Pin a claim button lights up.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/sort-1b-rows",
+   "key": "csq/data-detective/sort-1b-rows-n",
    "game": "data-detective",
    "chapter": "sort",
    "band": "1b",
-   "state": "sort-1b-rows",
-   "concept": "Data is facts in rows: a table holds facts in rows and columns",
-   "alt": "Another case table: every row is one tower of blocks, every column one kind of fact about it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "sort-1b-rows-n",
+   "concept": "Data is facts in rows",
+   "alt": "Tower Trouble as a table: every row is one team's tower, every column one kind of fact: team, blocks, color.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/sort-1b-sorted",
+   "key": "csq/data-detective/sort-1b-sorted-n",
    "game": "data-detective",
    "chapter": "sort",
    "band": "1b",
-   "state": "sort-1b-sorted",
-   "concept": "Who was in the lunchroom last? Sort by the column the question asks about",
-   "alt": "The case sorted by time: the Hall rows now run in time order, so the last Hall row answers the question.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "sort-1b-sorted-n",
+   "concept": "Who was in the hall last?",
+   "alt": "The hall case sorted by time: Eli, Fay, Kai, Gus, Ida, Jo. The last Hall row is Gus at 3:10.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/escape-the-post-office/door-1b-five",
@@ -564,17 +619,6 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/escape-the-post-office/layers-2-2-n2",
-   "game": "escape-the-post-office",
-   "chapter": "layers",
-   "band": "2",
-   "state": "layers-2-2-n2",
-   "concept": "a stolen key",
-   "alt": "Layer tiles: Padlock Gate (encryption), Key Checker (two-step sign-in), Patch Crew (updates), Copy Vault (backups).",
-   "capturedAt": "2026-11-06",
-   "commit": "ddca4eb"
-  },
-  {
    "key": "csq/escape-the-post-office/layers-2-2",
    "game": "escape-the-post-office",
    "chapter": "layers",
@@ -584,6 +628,17 @@
    "alt": "A threat card: a stolen key is tried on the mailbox from a new device. Below it, Padlock Gate and Key Checker (two-step sign-in).",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/layers-2-2-n2",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-2-n2",
+   "concept": "a stolen key",
+   "alt": "Layer tiles: Padlock Gate (encryption), Key Checker (two-step sign-in), Patch Crew (updates), Copy Vault (backups).",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/escape-the-post-office/layers-2-3",
@@ -663,17 +718,6 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/escape-the-post-office/moves-2-one-n2",
-   "game": "escape-the-post-office",
-   "chapter": "five-moves",
-   "band": "2",
-   "state": "moves-2-one-n2",
-   "concept": "contain first",
-   "alt": "The first move placed: stop and disconnect. Five slots wait, and below them the tiles: change the key, tell a trusted adult, save the evidence.",
-   "capturedAt": "2026-11-06",
-   "commit": "850c2ab"
-  },
-  {
    "key": "csq/escape-the-post-office/moves-2-done",
    "game": "escape-the-post-office",
    "chapter": "five-moves",
@@ -705,6 +749,17 @@
    "alt": "A classmate's mailbox has been broken into. The first move placed: stop and disconnect, pass nothing on. Five slots wait.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-2-one-n2",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "2",
+   "state": "moves-2-one-n2",
+   "concept": "contain first",
+   "alt": "The first move placed: stop and disconnect. Five slots wait, and below them the tiles: change the key, tell a trusted adult, save the evidence.",
+   "capturedAt": "2026-11-06",
+   "commit": "850c2ab"
   },
   {
    "key": "csq/escape-the-post-office/moves-2-three",
@@ -806,367 +861,301 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/inside-the-machine/bits-1b-five",
+   "key": "csq/inside-the-machine/bits-1b-five-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "1b",
-   "state": "bits-1b-five",
-   "concept": "Make the number 5: turn on the switches that add up to 5",
-   "alt": "The 4 card and the 1 card are switched on: 4 and 1 make 5, the number this round asked for.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-1b-five-n",
+   "concept": "Make the number 5",
+   "alt": "Five switches worth 16, 8, 4, 2 and 1: the 4 and the 1 are on, and the total reads 5.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-1b-key",
+   "key": "csq/inside-the-machine/bits-1b-photo-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "1b",
-   "state": "bits-1b-key",
-   "concept": "On or off: everything inside is tiny switches, called bits",
-   "alt": "Five bit switches, all off, with their cards: 16, 8, 4, 2 and 1. One switch on adds its card.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-1b-photo-n",
+   "concept": "Where does a photo live?",
+   "alt": "You take a photo and switch the tablet off. Where is the photo? In storage, kept as bits; gone forever; on the dark screen.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-1b-photo",
+   "key": "csq/inside-the-machine/bits-1b-pick-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "1b",
-   "state": "bits-1b-photo",
-   "concept": "Where does a photo live? In storage, as bits, even when off",
-   "alt": "The photo question: where is a photo when the tablet is off? The answer the game teaches is storage, as bits.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-1b-pick-n",
+   "concept": "Counting with bits",
+   "alt": "Read the cards: 16 off, 8 off, 4 on, 2 on, 1 off. Which number do the switches make: 6, 42 or 2?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-1b-pick",
+   "key": "csq/inside-the-machine/bits-1b-pixels-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "1b",
-   "state": "bits-1b-pick",
-   "concept": "Counting with bits: read the cards whose switch is on",
-   "alt": "A reading round: some switches are already on, and the question is what number their cards add up to.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-1b-pixels-n",
+   "concept": "Pictures are dots",
+   "alt": "A picture as a grid of pixels: rows 1 to 3 are copied, dark where the row says 1, light where it says 0.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-1b-pixels",
-   "game": "inside-the-machine",
-   "chapter": "bits",
-   "band": "1b",
-   "state": "bits-1b-pixels",
-   "concept": "Pictures are dots: a picture is tiny dots called pixels",
-   "alt": "The pixel grid: a picture drawn one dot at a time, each cell lit or dark like a bit.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/inside-the-machine/bits-2-byte",
+   "key": "csq/inside-the-machine/bits-2-21-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "2",
-   "state": "bits-2-byte",
-   "concept": "More bits, more values: eight bits, a byte, show 256 grays",
-   "alt": "Eight switches in a row: a full byte, worth 0 to 255. Only the 128 switch is on, making the middle gray.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-2-21-n",
+   "concept": "Binary place values",
+   "alt": "Five bits worth 16, 8, 4, 2 and 1: 16, 4 and 1 are on, so the bits read 10101 and the total is 21.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-2-codes",
+   "key": "csq/inside-the-machine/bits-2-byte-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "2",
-   "state": "bits-2-codes",
-   "concept": "One thing, many codes: 21 in decimal is 10101 in binary",
-   "alt": "The switches read 16, 4 and 1 switched on: the number 21 written in bits instead of decimal.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-2-byte-n",
+   "concept": "More bits, more values",
+   "alt": "Eight bits make a byte, worth 128 down to 1. The 128 bit alone is on: a middle gray, 128.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-2-key",
+   "key": "csq/inside-the-machine/bits-2-rgb-n",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "2",
-   "state": "bits-2-key",
-   "concept": "Everything is numbers: letters and colors are bits too",
-   "alt": "Pro bits opens with five switches and a bigger ask: make 21, where every place is worth double the last.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "bits-2-rgb-n",
+   "concept": "One thing, many codes: a color as three numbers",
+   "alt": "Match the swatch: the target is 220, 90, 40, an orange. Red 220, green 100, blue 40 already looks the same.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-2-rgb",
-   "game": "inside-the-machine",
-   "chapter": "bits",
-   "band": "2",
-   "state": "bits-2-rgb",
-   "concept": "Binary place values: each place is worth double the one to its right",
-   "alt": "The color round: a swatch to match with three numbers, because a pixel mixes red, green and blue light.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/inside-the-machine/design-1b-audit",
+   "key": "csq/inside-the-machine/design-1b-change-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "1b",
-   "state": "design-1b-audit",
-   "concept": "Every switch is for someone: captions, read-aloud, text size, contrast",
-   "alt": "The audit round: a real game is checked setting by setting — captions, text size, contrast — for who each helps.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-1b-change-n",
+   "concept": "Every switch is for someone",
+   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/design-1b-key",
+   "key": "csq/inside-the-machine/design-1b-sol-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "1b",
-   "state": "design-1b-key",
-   "concept": "Made for everyone: a good game works for people who differ",
-   "alt": "Design Lab opens with a user to design for: their needs come first, before any setting is touched.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-1b-sol-n",
+   "concept": "Ask for ideas",
+   "alt": "Sol is six and cannot read yet. A box of words pops up: Save your game? Yes or No. Sol taps anywhere and loses.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/design-1b-second",
+   "key": "csq/inside-the-machine/design-1b-watch-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "1b",
-   "state": "design-1b-second",
-   "concept": "Help one, help many: captions help in a noisy room too",
-   "alt": "A second Design Lab user: a change made for one person usually turns out to help many more.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-1b-watch-n",
+   "concept": "Made for everyone",
+   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana: which moment is she struggling?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/design-2-bias",
+   "key": "csq/inside-the-machine/design-2-ana-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "2",
-   "state": "design-2-bias",
-   "concept": "Bias: tech works worse for some when testers were all alike",
-   "alt": "A Pro brief about bias: when a product fails some people, the testing group is the first place to look.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-2-ana-n",
+   "concept": "Design for real people",
+   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana and tap the moment she struggles.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/design-2-edges",
+   "key": "csq/inside-the-machine/design-2-ren-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "2",
-   "state": "design-2-edges",
-   "concept": "Edges help everyone: contrast for low vision helps in bright sun too",
-   "alt": "A Pro brief about designing at the edges: a mode made for low vision is the mode everyone uses in sun.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-2-ren-n",
+   "concept": "Edges help everyone",
+   "alt": "Ren plays in bright sun: changes to pick from include stronger contrast, outlines and a sun mode.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/design-2-key",
+   "key": "csq/inside-the-machine/design-2-tao-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "2",
-   "state": "design-2-key",
-   "concept": "Design for real people: start with how real people use a thing",
-   "alt": "Design Lab in Pro opens with a real user and their words: design starts from what people actually say.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-2-tao-n",
+   "concept": "Bias",
+   "alt": "Tao tries face unlock. The makers only tested it on faces like their own, and it does not recognize Tao.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/design-2-missing",
+   "key": "csq/inside-the-machine/design-2-taofix-n",
    "game": "inside-the-machine",
    "chapter": "design-lab",
    "band": "2",
-   "state": "design-2-missing",
-   "concept": "Who was missing? Find the gap in the testing group, then widen it",
-   "alt": "The last Pro brief: find who was missing from the testers, then widen the group until nobody is.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "design-2-taofix-n",
+   "concept": "Who was missing?",
+   "alt": "Fixes for Tao: test with people of many ages, skin tones and faces, and always offer a passcode as another way in.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-1b-checks",
+   "key": "csq/inside-the-machine/fixit-1b-caps-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "1b",
-   "state": "fixit-1b-checks",
-   "concept": "Quick checks first: on, plugged in, muted — restart comes later",
-   "alt": "A second ticket waits at the desk: the quick, cheap checks are the ones a good fixer tries first.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-1b-caps-n",
+   "concept": "Small clues",
+   "alt": "The password does not work, even though you know it. The first check on the list: is caps lock on?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-1b-clue",
+   "key": "csq/inside-the-machine/fixit-1b-nosound-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "1b",
-   "state": "fixit-1b-clue",
-   "concept": "Small clues: caps lock, a frozen app — the clue points at the fix",
-   "alt": "A fourth ticket with a small clue in its story: reading the clue closely points straight at the fix.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-1b-nosound-n",
+   "concept": "No sound",
+   "alt": "No sound in the headphones: two quick checks done, volume up and plugged in all the way. Next on the list: is it muted?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-1b-key",
+   "key": "csq/inside-the-machine/fixit-1b-quick-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "1b",
-   "state": "fixit-1b-key",
-   "concept": "It is not working! Good fixers have a plan, not a panic",
-   "alt": "The Fix-It Desk opens its first ticket: a broken gadget, its story, and the fix options with their minutes.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-1b-quick-n",
+   "concept": "Quick checks first",
+   "alt": "No wireless connection: quick checks like airplane mode take 1 minute, restarting the network box takes 5.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-1b-nosound",
+   "key": "csq/inside-the-machine/fixit-1b-ticket-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "1b",
-   "state": "fixit-1b-nosound",
-   "concept": "No sound: troubleshooting is a checklist, not a guess",
-   "alt": "The No Sound ticket: the headphones fix is under way, with plugged in and volume checked on the list.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-1b-ticket-n",
+   "concept": "It is not working!",
+   "alt": "Ticket: it will not turn on. Hold the power button: still a black screen. Each check shows how many minutes it takes.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-2-flow",
+   "key": "csq/inside-the-machine/fixit-2-flow-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "2",
-   "state": "fixit-2-flow",
-   "concept": "One change at a time: change one thing, then test again",
-   "alt": "A second Pro ticket: the flowchart way means one change, one test, and knowing what fixed it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-2-flow-n",
+   "concept": "The printer prints nothing",
+   "alt": "The printer prints nothing: the flowchart is built cheapest first: is it on, is there paper, is the job stuck, the right printer?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-2-key",
+   "key": "csq/inside-the-machine/fixit-2-start-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "2",
-   "state": "fixit-2-key",
-   "concept": "Fixers do not guess: a flowchart of yes/no questions, cheapest first",
-   "alt": "The Pro Fix-It Desk opens a flow ticket: the fix is a chain of yes and no questions, cheapest first.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-2-start-n",
+   "concept": "Fixers do not guess",
+   "alt": "No internet on the laptop: before touching anything, build a flowchart of yes/no questions, cheapest first.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-2-swap",
+   "key": "csq/inside-the-machine/fixit-2-swap-n",
    "game": "inside-the-machine",
    "chapter": "fixit",
    "band": "2",
-   "state": "fixit-2-swap",
-   "concept": "The swap test: swap in a part you know works and watch the problem",
-   "alt": "A later Pro ticket: the kind where swapping in a known-good part tells you where the fault lives.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "fixit-2-swap-n",
+   "concept": "The swap test",
+   "alt": "The headset microphone is silent: build the flowchart, and if it is still broken, swap a part.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/fixit-2-third",
-   "game": "inside-the-machine",
-   "chapter": "fixit",
-   "band": "2",
-   "state": "fixit-2-third",
-   "concept": "The printer prints nothing: cheap checks before slow, expensive ones",
-   "alt": "A third Pro ticket at the desk: its story hides the clue, and the cheap checks come before the slow ones.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/inside-the-machine/gadget-2-key",
+   "key": "csq/inside-the-machine/gadget-2-brief-n",
    "game": "inside-the-machine",
    "chapter": "gadget",
    "band": "2",
-   "state": "gadget-2-key",
-   "concept": "A step counter: small, cheap, lasts all day — pick only what it needs",
-   "alt": "The Step counter brief: a shoe clip that counts steps, small, cheap and lasting all day, with cost, battery and size meters.",
-   "capturedAt": "2026-11-06",
-   "commit": "2f3e745"
+   "state": "gadget-2-brief-n",
+   "concept": "What makes a gadget",
+   "alt": "The step counter brief: small, cheap, lasts all day. A motion sensor and a processor are in; the needs list ticks them off.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/gadget-2-sensors",
+   "key": "csq/inside-the-machine/gadget-2-sensors-n",
    "game": "inside-the-machine",
    "chapter": "gadget",
    "band": "2",
-   "state": "gadget-2-sensors",
-   "concept": "Sensors: a sensor measures the world — light, motion, sound",
-   "alt": "A second gadget brief: choosing parts starts with the sensor that measures what the gadget must notice.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "gadget-2-sensors-n",
+   "concept": "Sensors",
+   "alt": "The plant waterer brief: it needs something that feels dry soil. The moisture sensor is in, and the need is ticked.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/gadget-2-step",
+   "key": "csq/inside-the-machine/gadget-2-trade-c",
    "game": "inside-the-machine",
    "chapter": "gadget",
    "band": "2",
-   "state": "gadget-2-step",
-   "concept": "What makes a gadget: sensors, a processor, outputs, a connection and power",
-   "alt": "A Noise meter brief: it must hear the room, show the loudness, send a log to the laptop and run on wall power.",
-   "capturedAt": "2026-11-06",
-   "commit": "2f3e745"
+   "state": "gadget-2-trade-c",
+   "concept": "Tradeoffs",
+   "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
+   "capturedAt": "2026-11-07",
+   "commit": "e78ab0e"
   },
   {
-   "key": "csq/inside-the-machine/gadget-2-trade",
-   "game": "inside-the-machine",
-   "chapter": "gadget",
-   "band": "2",
-   "state": "gadget-2-trade",
-   "concept": "Tradeoffs: every part costs money, battery and space",
-   "alt": "A third brief with tighter limits: every part added moves the cost, battery and size meters.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/inside-the-machine/hwsw-1b-both",
+   "key": "csq/inside-the-machine/hwsw-1b-sort-n",
    "game": "inside-the-machine",
    "chapter": "hw-sw",
    "band": "1b",
-   "state": "hwsw-1b-both",
-   "concept": "Every task needs both: a photo needs the camera and the camera app",
-   "alt": "An ordering round: the steps of one task laid out, where hardware and software take turns doing the work.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "hwsw-1b-sort-n",
+   "concept": "Hardware and software",
+   "alt": "Sorting cards into Hardware, what you can touch, and Software, the instructions. Five cards are sorted so far.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/hwsw-1b-sort",
+   "key": "csq/inside-the-machine/hwsw-1b-tap-n",
    "game": "inside-the-machine",
    "chapter": "hw-sw",
    "band": "1b",
-   "state": "hwsw-1b-sort",
-   "concept": "Hardware and software: hardware you can touch, software is instructions",
-   "alt": "The hardware and software sort: cards for screens and apps wait to be split into touchable and instructions.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "hwsw-1b-tap-n",
+   "concept": "A tap travels",
+   "alt": "A Tap Travels: your finger taps, the touch sensor feels it, the processor works it out, the camera app says take a photo.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/parts-1b-jobs",
+   "key": "csq/inside-the-machine/parts-1b-jobs-n",
    "game": "inside-the-machine",
    "chapter": "parts",
    "band": "1b",
-   "state": "parts-1b-jobs",
-   "concept": "Every part has a job: inputs, outputs, processor, storage, battery",
-   "alt": "Inside the machine: the cutaway view where the processor, storage and battery do their jobs together.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/inside-the-machine/parts-1b-key",
-   "game": "inside-the-machine",
-   "chapter": "parts",
-   "band": "1b",
-   "state": "parts-1b-key",
-   "concept": "Meet Gizmo: every device is a team of parts",
-   "alt": "Gizmo opens the tablet: its parts are laid out as a team, and the first job asks which part does it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/inside-the-machine/parts-1b-tap",
-   "game": "inside-the-machine",
-   "chapter": "parts",
-   "band": "1b",
-   "state": "parts-1b-tap",
-   "concept": "A tap travels: finger, touch sensor, processor, the app, screen",
-   "alt": "The controller pad wiring round: parts are joined in the order a signal travels from input to output.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "parts-1b-jobs-n",
+   "concept": "Every part has a job",
+   "alt": "Which part takes the photo? Screen, microphone, speaker, battery, touch sensor or camera: every part has its own job.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/ciphers-1b-send",
@@ -1202,6 +1191,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/ciphers-1b-wheel-n",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "1b",
+   "state": "ciphers-1b-wheel-n",
+   "concept": "Secret codes for fun",
+   "alt": "The cipher wheel on shift 3: the secret message DSSOH reads APPLE.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/ciphers-2-brute",
    "game": "packet-post",
    "chapter": "ciphers",
@@ -1213,6 +1213,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/ciphers-2-brute-n",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "2",
+   "state": "ciphers-2-brute-n",
+   "concept": "Brute force",
+   "alt": "An unknown shift: turn the wheel one step at a time until DAOWQF turns into a real word.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/ciphers-2-crack",
    "game": "packet-post",
    "chapter": "ciphers",
@@ -1222,28 +1233,6 @@
    "alt": "Crack it by counting: a scrambled message, the Caesar wheel, and a button that counts how often letters appear.",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/ciphers-2-stego",
-   "game": "packet-post",
-   "chapter": "ciphers",
-   "band": "2",
-   "state": "ciphers-2-stego",
-   "concept": "Hiding is not scrambling: steganography hides a message in a picture's pixels",
-   "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
-  },
-  {
-   "key": "csq/packet-post/ciphers-2-key",
-   "game": "packet-post",
-   "chapter": "ciphers",
-   "band": "2",
-   "state": "ciphers-2-key",
-   "concept": "Scramble it: encryption makes a message unreadable without the key",
-   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
   },
   {
    "key": "csq/packet-post/ciphers-2-lockbox",
@@ -1268,6 +1257,39 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/ciphers-2-shift-n",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "2",
+   "state": "ciphers-2-shift-n",
+   "concept": "A shift of 3",
+   "alt": "The shift cipher wheel turned to 3: DSSOH reads APPLE.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/ciphers-2-stego",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "2",
+   "state": "ciphers-2-stego",
+   "concept": "Hiding is not scrambling: steganography hides a message in a picture's pixels",
+   "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same.",
+   "capturedAt": "2026-11-06",
+   "commit": "csq-content-fix"
+  },
+  {
+   "key": "csq/packet-post/ciphers-2-stego-n",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "2",
+   "state": "ciphers-2-stego-n",
+   "concept": "Hiding is not scrambling",
+   "alt": "Hide a heart inside an ordinary picture: every pixel is a number, and its last bit, odd or even, carries the secret.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/home",
    "game": "packet-post",
    "chapter": "title",
@@ -1279,15 +1301,15 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/locks-1b-backup",
+   "key": "csq/packet-post/locks-1b-backup-n1",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-backup",
-   "concept": "Keep a spare copy: a backup kept somewhere else",
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-1b-backup-n1",
+   "concept": "a good spare copy, kept elsewhere",
+   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
+   "capturedAt": "2026-11-07",
+   "commit": "2700f45"
   },
   {
    "key": "csq/packet-post/locks-1b-built",
@@ -1323,6 +1345,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/locks-1b-pass-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-pass-n",
+   "concept": "Build a passphrase",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/locks-1b-protect",
    "game": "packet-post",
    "chapter": "locks",
@@ -1334,15 +1367,37 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/locks-1b-sort",
+   "key": "csq/packet-post/locks-1b-sort-n",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-sort",
-   "concept": "Private or fine to share? Some things stay private",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-1b-sort-n",
+   "concept": "Private or fine to share?",
+   "alt": "Sorting the mail: where you live and your mailbox key are Keep, a favorite book is Share. Next up: a joke you made up.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-sort-n1",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-sort-n1",
+   "concept": "share or keep: sort each fact",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
+   "capturedAt": "2026-11-07",
+   "commit": "2700f45"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-spare-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-spare-n",
+   "concept": "Keep a spare copy",
+   "alt": "Spare copies: a copy in the family's online folder and a printout in a drawer are good; the only copy on one tablet is not.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/locks-1b-tell",
@@ -1354,6 +1409,17 @@
    "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-who-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-who-n",
+   "concept": "Who may know it?",
+   "alt": "Who may know your mailbox key? A trusted adult at home: okay to tell. Your best friend: keep it to yourself.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/locks-2-backup",
@@ -1389,15 +1455,26 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/locks-2-post",
+   "key": "csq/packet-post/locks-2-pass-n",
    "game": "packet-post",
    "chapter": "locks",
    "band": "2",
-   "state": "locks-2-post",
-   "concept": "Think before you post: making something public has a benefit and a risk",
-   "alt": "The last Lock It sort in Pro: judging what is safe to do, the habit of naming a risk before you act.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-2-pass-n",
+   "concept": "Strong passphrases",
+   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A computer would need about centuries.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/locks-2-post-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "2",
+   "state": "locks-2-post-n",
+   "concept": "Think before you post",
+   "alt": "Share or Shield: where you live. Good side: friends could send you a card. Risk: a stranger could turn up at your door.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/locks-2-router",
@@ -1422,6 +1499,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/locks-2-sealed-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "2",
+   "state": "locks-2-sealed-n",
+   "concept": "The padlock",
+   "alt": "The shop order rides the padlock street: sealed roads wear padlocks, while the open street is shorter but read by a snoopy cat.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/locks-2-sort",
    "game": "packet-post",
    "chapter": "locks",
@@ -1431,6 +1519,17 @@
    "alt": "Physical or Digital: the sort whose bins are the machine and the data, from locked doors to firewalls.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/locks-2-sort-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "2",
+   "state": "locks-2-sort-n",
+   "concept": "Two halves of security",
+   "alt": "Physical or digital: a cable lock and a privacy screen are physical; encryption and a virus scanner are digital.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/packets-1b-center",
@@ -1455,6 +1554,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/packets-1b-learn-n1",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-learn-n1",
+   "concept": "too big for one envelope: cut into packets",
+   "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
+   "capturedAt": "2026-11-07",
+   "commit": "95753ad"
+  },
+  {
    "key": "csq/packet-post/packets-1b-order",
    "game": "packet-post",
    "chapter": "packets",
@@ -1466,26 +1576,37 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/packets-1b-split",
+   "key": "csq/packet-post/packets-1b-order-n",
    "game": "packet-post",
    "chapter": "packets",
    "band": "1b",
-   "state": "packets-1b-split",
-   "concept": "Too big to send: the network cuts a message into numbered packets",
-   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "packets-1b-order-n",
+   "concept": "Back in order",
+   "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/packet-post/protocols-1b-key",
+   "key": "csq/packet-post/packets-1b-trip-n",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-trip-n",
+   "concept": "Too big to send: numbered packets",
+   "alt": "Grandma's apple picture, cut into 3 numbered packets: packet 2 is on its way down the road.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed",
    "game": "packet-post",
    "chapter": "protocols",
    "band": "1b",
-   "state": "protocols-1b-key",
-   "concept": "say got it, the first round",
-   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
+   "state": "protocols-1b-sealed",
+   "concept": "the padlock road keeps a secret sealed",
+   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
+   "capturedAt": "2026-11-07",
+   "commit": "d1020df"
   },
   {
    "key": "csq/packet-post/protocols-2-ack",
@@ -1499,6 +1620,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/protocols-2-ack-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "2",
+   "state": "protocols-2-ack-n",
+   "concept": "Say got it",
+   "alt": "Got 1, 2, 3 and 4: four mail slots are ticked, and packet 5, asked for again, is in the inbox.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/protocols-2-check",
    "game": "packet-post",
    "chapter": "protocols",
@@ -1508,6 +1640,17 @@
    "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/protocols-2-check-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "2",
+   "state": "protocols-2-check-n",
+   "concept": "Damaged on the way? The checksum",
+   "alt": "Every packet carries a dot count. Count the dots: a packet whose dots do not match what it says was damaged.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/protocols-2-design",
@@ -1543,6 +1686,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/protocols-2-trip-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "2",
+   "state": "protocols-2-trip-n",
+   "concept": "Messages in packets",
+   "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
    "key": "csq/packet-post/routes-1b-journey",
    "game": "packet-post",
    "chapter": "routes",
@@ -1565,15 +1719,26 @@
    "commit": "2f3e745"
   },
   {
-   "key": "csq/packet-post/routes-2-hops",
+   "key": "csq/packet-post/routes-1b-roads-n",
+   "game": "packet-post",
+   "chapter": "routes",
+   "band": "1b",
+   "state": "routes-1b-roads-n",
+   "concept": "Many roads",
+   "alt": "Many roads to the school: packets can go by Hill Office or River Office, and one road will close.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/routes-2-budget-n",
    "game": "packet-post",
    "chapter": "routes",
    "band": "2",
-   "state": "routes-2-hops",
-   "concept": "Hops: each jump between routers is one hop, inside a hop budget",
-   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "routes-2-budget-n",
+   "concept": "Hops and a hop budget",
+   "alt": "Hop budget: thirteen hops for four packets. Packet 2 of 4 is on the road, and the counter reads Hops: 3 of 13.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/routes-2-sealed",
@@ -1587,15 +1752,26 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/tricks-1b-card",
+   "key": "csq/packet-post/tricks-1b-act-n",
    "game": "packet-post",
    "chapter": "tricks",
    "band": "1b",
-   "state": "tricks-1b-card",
-   "concept": "Trick or safe? A threat, a rush and a key request",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
-   "capturedAt": "2026-11-06",
-   "commit": "2f3e745"
+   "state": "tricks-1b-act-n",
+   "concept": "What to do",
+   "alt": "Cues found on the bank card: threatens to close, asks for the key, unknown sender. Then: Safe, Trick or Ask a trusted adult.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/tricks-1b-bank-n",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-bank-n",
+   "concept": "Trick or safe?",
+   "alt": "A card from \"Your bank\", unknown sender: your account is locked, send your mailbox key today. Two cues are already found.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/tricks-1b-card-n1",
@@ -1609,17 +1785,6 @@
    "commit": "ddca4eb"
   },
   {
-   "key": "csq/packet-post/tricks-1b-clues",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "1b",
-   "state": "tricks-1b-clues",
-   "concept": "Clues of a trick: hurry, a prize, a request for your passphrase",
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
    "key": "csq/packet-post/tricks-1b-clues-n1",
    "game": "packet-post",
    "chapter": "tricks",
@@ -1631,15 +1796,15 @@
    "commit": "ddca4eb"
   },
   {
-   "key": "csq/packet-post/tricks-1b-key",
+   "key": "csq/packet-post/tricks-1b-coins-n1",
    "game": "packet-post",
    "chapter": "tricks",
    "band": "1b",
-   "state": "tricks-1b-key",
-   "concept": "Some messages are tricks: they want you to hurry or give things away",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "tricks-1b-coins-n1",
+   "concept": "the free coins card",
+   "alt": "Cues to tap: a button that wants a tap right now; talks about coins. Then three choices: Safe, Trick, Ask a trusted adult.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/packet-post/tricks-1b-key-n1",
@@ -1664,15 +1829,15 @@
    "commit": "ddca4eb"
   },
   {
-   "key": "csq/packet-post/tricks-1b-next",
+   "key": "csq/packet-post/tricks-1b-stranger-n1",
    "game": "packet-post",
    "chapter": "tricks",
    "band": "1b",
-   "state": "tricks-1b-next",
-   "concept": "What to do: do not reply, do not tap, tell a trusted adult",
-   "alt": "Card 3 of 6 is safe: a field trip note from your teacher, a known sender who asks for nothing.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "tricks-1b-stranger-n1",
+   "concept": "a stranger asks for your street",
+   "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
    "key": "csq/packet-post/tricks-2-bank",
@@ -1695,6 +1860,17 @@
    "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
    "capturedAt": "2026-11-04",
    "commit": "2f3e745"
+  },
+  {
+   "key": "csq/packet-post/tricks-2-fake-n",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "2",
+   "state": "tricks-2-fake-n",
+   "concept": "Faked senders",
+   "alt": "A card that says it is from Your bank, but carries an unknown sender badge: the name is faked.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/packet-post/tricks-2-parcel",
@@ -2115,92 +2291,114 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/maker-1b-built",
+   "key": "csq/robo-route/maker-1b-built-c",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "1b",
-   "state": "maker-1b-built",
+   "state": "maker-1b-built-c",
    "concept": "The maker loop: Check proves a level can be solved and shows its par",
-   "alt": "A level built in the maker: Bolt, a gem, a key, a door and the goal on the board, and Check says it can be solved: par 17.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "A built level with a gem, a key, a door and the goal, and Check says it can be solved: par 17.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-1b-key",
+   "key": "csq/robo-route/maker-1b-key-c",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "1b",
-   "state": "maker-1b-key",
+   "state": "maker-1b-key-c",
    "concept": "Be the game designer: plan, build, test, fix, explain",
-   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "Level Maker task 1: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-1b-task",
+   "key": "csq/robo-route/maker-1b-plan-c",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "1b",
-   "state": "maker-1b-task",
+   "state": "maker-1b-plan-c",
    "concept": "Plan it first: start, goal and one tricky part",
-   "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "A level built from a plan: Bolt starts top left, the goal is bottom right, and a pond of water is the one tricky part.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-1b-test",
+   "key": "csq/robo-route/maker-1b-test-w",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "1b",
-   "state": "maker-1b-test",
+   "state": "maker-1b-test-w",
    "concept": "The designer stays quiet: a tester plays while the designer watches",
-   "alt": "The built level handed to a tester: the tester builds a program and Bolt drives it, while the maker watches without helping.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "A friend tests the level: the tester builds a program and Bolt drives it, while the maker watches.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-2-built",
+   "key": "csq/robo-route/maker-1b-water-c",
+   "game": "robo-route",
+   "chapter": "level-maker",
+   "band": "1b",
+   "state": "maker-1b-water-c",
+   "concept": "Explain your choice: the key behind the water",
+   "alt": "The key sits behind a strip of water, so Bolt must plan a path around it before the door opens. Check: solvable.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/robo-route/maker-2-built-c",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "2",
-   "state": "maker-2-built",
+   "state": "maker-2-built-c",
    "concept": "Iterate: plan, build, Check, test, change, test again",
-   "alt": "A Pro maker level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "A Pro level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-2-feedback",
+   "key": "csq/robo-route/maker-2-feedback-w",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "2",
-   "state": "maker-2-feedback",
-   "concept": "Feedback is information: it shows where a player got stuck",
+   "state": "maker-2-feedback-w",
+   "concept": "Feedback is information",
    "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-2-key",
+   "key": "csq/robo-route/maker-2-key-c",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "2",
-   "state": "maker-2-key",
+   "state": "maker-2-key-c",
    "concept": "Design for someone else: plan, build, test, improve, document",
-   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-2-task",
+   "key": "csq/robo-route/maker-2-note-c",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "2",
-   "state": "maker-2-task",
-   "concept": "Keep a timeline: split the work and set times",
-   "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "maker-2-note-c",
+   "concept": "Write the level note",
+   "alt": "A level worth a note: three gems on the way to the door, a key to fetch first, and Check says it can be solved.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/robo-route/maker-2-task-c",
+   "game": "robo-route",
+   "chapter": "level-maker",
+   "band": "2",
+   "state": "maker-2-task-c",
+   "concept": "Keep a timeline: the tasks are checkpoints",
+   "alt": "Task 2 of 3: too easy, par is 1. Move the goal or add walls until par is at least 10, and keep it solvable.",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   },
   {
    "key": "csq/robo-route/sequences-1b-better-route",
@@ -2388,6 +2586,61 @@
    "alt": "Two rounds into repeat 6, the watch strip reads steps = 4: set steps to 6 started it, and each change steps by -1 brings it down.",
    "capturedAt": "2026-11-06",
    "commit": "csq-content-fix"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-1-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-1-all",
+   "concept": "a dare to post a friend’s photo",
+   "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-2-new",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-2-new",
+   "concept": "asking first, with credit",
+   "alt": "A letter from Ava from Class: “Can I put your owl drawing on our class poster? I will write your name under it. Is that okay with you?”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-3-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-3-all",
+   "concept": "passing off someone’s picture",
+   "alt": "A post from Free Art Page with both clues marked: “Copy any picture from this page and say you drew it.” and “Nobody ever checks!”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-4-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-4-all",
+   "concept": "a photo posted without your yes",
+   "alt": "A game chat from Max with both clues marked: “I posted that photo of you with spaghetti on your face.” and “I will not take it down.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-6-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-6-all",
+   "concept": "a contest that skips your friends’ yes",
+   "alt": "A post from Video Star Contest with both clues marked: “for the whole world to see” and “No need to ask them first!”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
   },
   {
    "key": "csq/trick-inbox/boss-1b-c1",
@@ -2586,6 +2839,28 @@
    "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/keys-1b-kk-1-all",
+   "game": "trick-inbox",
+   "chapter": "keys",
+   "band": "1b",
+   "state": "keys-1b-kk-1-all",
+   "concept": "a best friend asks for your key",
+   "alt": "A game chat from Your Best Friend with both clues marked: “Can I have your mailbox key?” and “I promise I will never tell anyone.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/keys-1b-kk-4-all",
+   "game": "trick-inbox",
+   "chapter": "keys",
+   "band": "1b",
+   "state": "keys-1b-kk-4-all",
+   "concept": "a found tablet and a stranger",
+   "alt": "A game chat from Someone at the Park with both clues marked: “I found a tablet on the bench with your sticker on it!” and “Tell me its unlock code”.",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
   },
   {
    "key": "csq/trick-inbox/letters-1b-lt-1-all",
@@ -2907,380 +3182,6 @@
    "commit": "4866608"
   },
   {
-   "key": "csq/trick-inbox/senders-2-sd-1-all",
-   "game": "trick-inbox",
-   "chapter": "senders",
-   "band": "2",
-   "state": "senders-2-sd-1-all",
-   "concept": "a faked sender, every clue found",
-   "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
-   "key": "csq/trick-inbox/senders-2-sd-1-all-n2",
-   "game": "trick-inbox",
-   "chapter": "senders",
-   "band": "2",
-   "state": "senders-2-sd-1-all-n2",
-   "concept": "a faked sender, every clue found",
-   "alt": "The letter's clues marked: the real address, a freemail box; your mailbox key; today; and the Renew key button, which goes somewhere else.",
-   "capturedAt": "2026-11-06",
-   "commit": "ddca4eb"
-  },
-  {
-   "key": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
-   "game": "trick-inbox",
-   "chapter": "senders",
-   "band": "2",
-   "state": "senders-2-sd-1-debrief-n1",
-   "concept": "spoofing, the debrief",
-   "alt": "The debrief: the name says Post Office, but the real address is a freemail box and the button goes elsewhere. That mismatch is spoofing.",
-   "capturedAt": "2026-11-06",
-   "commit": "ddca4eb"
-  },
-  {
-   "key": "csq/trick-inbox/senders-2-sd-1-new",
-   "game": "trick-inbox",
-   "chapter": "senders",
-   "band": "2",
-   "state": "senders-2-sd-1-new",
-   "concept": "a faked sender, before the hunt",
-   "alt": "A new letter from Post Office, “Your mailbox key expired”, with its real address showing: a freemail box.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
-   "key": "csq/trick-inbox/senders-2-sd-3-all",
-   "game": "trick-inbox",
-   "chapter": "senders",
-   "band": "2",
-   "state": "senders-2-sd-3-all",
-   "concept": "a teacher in costume",
-   "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
-   "capturedAt": "2026-11-06",
-   "commit": "4866608"
-  },
-  {
-   "key": "csq/would-you-rather/online-1b-first",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-1b-first",
-   "concept": "Write a credit line / share or keep: weigh both sides before sharing",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/would-you-rather/online-2-first",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-2-first",
-   "concept": "Public or private? Public gets you seen, private keeps you safe",
-   "alt": "An online dilemma in Pro: make it public and be found, or keep it private and stay safe — a real tradeoff.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/would-you-rather/online-2-second",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-2-second",
-   "concept": "Post your art? Benefit: feedback. Risk: a logo shows where you are",
-   "alt": "A second online dilemma: posting your work brings feedback, and can also show more than you meant.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/would-you-rather/online-cloud-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-cloud-2",
-   "concept": "photos on your tablet, or a copy elsewhere",
-   "alt": "Would you rather: photos only on your tablet, where nobody else sees them, or also a copy on a service someone else runs?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-comments-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-comments-2",
-   "concept": "a page anyone can comment on",
-   "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-credit-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-credit-1b",
-   "concept": "credit a picture, or draw your own",
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-credit-1b-n1",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-credit-1b-n1",
-   "concept": "credit a picture, or draw your own",
-   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
-   "capturedAt": "2026-11-06",
-   "commit": "850c2ab"
-  },
-  {
-   "key": "csq/would-you-rather/online-delete-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-delete-1b",
-   "concept": "delete an old post, or leave it",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-delete-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-delete-2",
-   "concept": "delete an old post, or leave it",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-download-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-download-1b",
-   "concept": "ask before every download",
-   "alt": "Would you rather: ask before every download, or never download anything?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-drawing-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-drawing-1b",
-   "concept": "a drawing for everyone, or family only",
-   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-location-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-location-1b",
-   "concept": "a free game that sees where you are",
-   "alt": "Would you rather: an app that is free if it sees where you are, or an app that costs a little and never knows?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-name-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-name-1b",
-   "concept": "nickname or real first name",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-name-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-name-2",
-   "concept": "nickname or real first name",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-photo-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-photo-1b",
-   "concept": "one photo for the world, or ten for friends",
-   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-photo-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-photo-2",
-   "concept": "one photo for the world, or ten for friends",
-   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/tech-1b-first",
-   "game": "would-you-rather",
-   "chapter": "tech",
-   "band": "1b",
-   "state": "tech-1b-first",
-   "concept": "What is technology? Anything people invent to solve a problem",
-   "alt": "A Would You Rather technology dilemma: two inventions to choose between, and reasons to weigh on both sides.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/would-you-rather/tech-1b-second",
-   "game": "would-you-rather",
-   "chapter": "tech",
-   "band": "1b",
-   "state": "tech-1b-second",
-   "concept": "Tech changes how we live: every invention changes something else",
-   "alt": "A second technology dilemma: a new choice about how an invention changes the way people live.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/would-you-rather/tech-2-first",
-   "game": "would-you-rather",
-   "chapter": "tech",
-   "band": "2",
-   "state": "tech-2-first",
-   "concept": "Tradeoffs everywhere: a benefit for someone, a cost for someone else",
-   "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/would-you-rather/tech-2-second",
-   "game": "would-you-rather",
-   "chapter": "tech",
-   "band": "2",
-   "state": "tech-2-second",
-   "concept": "Automation: a machine does a task people used to do",
-   "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
-   "key": "csq/packet-post/tricks-1b-stranger-n1",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "1b",
-   "state": "tricks-1b-stranger-n1",
-   "concept": "a stranger asks for your street",
-   "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
-   "capturedAt": "2026-11-06",
-   "commit": "ddca4eb"
-  },
-  {
-   "key": "csq/packet-post/tricks-1b-coins-n1",
-   "game": "packet-post",
-   "chapter": "tricks",
-   "band": "1b",
-   "state": "tricks-1b-coins-n1",
-   "concept": "the free coins card",
-   "alt": "Cues to tap: a button that wants a tap right now; talks about coins. Then three choices: Safe, Trick, Ask a trusted adult.",
-   "capturedAt": "2026-11-06",
-   "commit": "ddca4eb"
-  },
-  {
-   "key": "csq/trick-inbox/ask-first-1b-af-1-all",
-   "game": "trick-inbox",
-   "chapter": "ask-first",
-   "band": "1b",
-   "state": "ask-first-1b-af-1-all",
-   "concept": "a dare to post a friend’s photo",
-   "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
-   "key": "csq/trick-inbox/ask-first-1b-af-2-new",
-   "game": "trick-inbox",
-   "chapter": "ask-first",
-   "band": "1b",
-   "state": "ask-first-1b-af-2-new",
-   "concept": "asking first, with credit",
-   "alt": "A letter from Ava from Class: “Can I put your owl drawing on our class poster? I will write your name under it. Is that okay with you?”",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
-   "key": "csq/trick-inbox/ask-first-1b-af-3-all",
-   "game": "trick-inbox",
-   "chapter": "ask-first",
-   "band": "1b",
-   "state": "ask-first-1b-af-3-all",
-   "concept": "passing off someone’s picture",
-   "alt": "A post from Free Art Page with both clues marked: “Copy any picture from this page and say you drew it.” and “Nobody ever checks!”",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
-   "key": "csq/trick-inbox/ask-first-1b-af-4-all",
-   "game": "trick-inbox",
-   "chapter": "ask-first",
-   "band": "1b",
-   "state": "ask-first-1b-af-4-all",
-   "concept": "a photo posted without your yes",
-   "alt": "A game chat from Max with both clues marked: “I posted that photo of you with spaghetti on your face.” and “I will not take it down.”",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
-   "key": "csq/trick-inbox/ask-first-1b-af-6-all",
-   "game": "trick-inbox",
-   "chapter": "ask-first",
-   "band": "1b",
-   "state": "ask-first-1b-af-6-all",
-   "concept": "a contest that skips your friends’ yes",
-   "alt": "A post from Video Star Contest with both clues marked: “for the whole world to see” and “No need to ask them first!”",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
-   "key": "csq/trick-inbox/keys-1b-kk-1-all",
-   "game": "trick-inbox",
-   "chapter": "keys",
-   "band": "1b",
-   "state": "keys-1b-kk-1-all",
-   "concept": "a best friend asks for your key",
-   "alt": "A game chat from Your Best Friend with both clues marked: “Can I have your mailbox key?” and “I promise I will never tell anyone.”",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
-   "key": "csq/trick-inbox/keys-1b-kk-4-all",
-   "game": "trick-inbox",
-   "chapter": "keys",
-   "band": "1b",
-   "state": "keys-1b-kk-4-all",
-   "concept": "a found tablet and a stranger",
-   "alt": "A game chat from Someone at the Park with both clues marked: “I found a tablet on the bench with your sticker on it!” and “Tell me its unlock code”.",
-   "capturedAt": "2026-11-07",
-   "commit": "b23626e"
-  },
-  {
    "key": "csq/trick-inbox/private-1b-pf-1-all",
    "game": "trick-inbox",
    "chapter": "private",
@@ -3347,48 +3248,224 @@
    "commit": "b23626e"
   },
   {
-   "key": "csq/packet-post/protocols-1b-sealed",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "1b",
-   "state": "protocols-1b-sealed",
-   "concept": "the padlock road keeps a secret sealed",
-   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
-   "capturedAt": "2026-11-07",
-   "commit": "d1020df"
+   "key": "csq/trick-inbox/senders-2-sd-1-all",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-all",
+   "concept": "a faked sender, every clue found",
+   "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
   },
   {
-   "key": "csq/packet-post/locks-1b-backup-n1",
-   "game": "packet-post",
-   "chapter": "locks",
-   "band": "1b",
-   "state": "locks-1b-backup-n1",
-   "concept": "a good spare copy, kept elsewhere",
-   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
-   "capturedAt": "2026-11-07",
-   "commit": "2700f45"
+   "key": "csq/trick-inbox/senders-2-sd-1-all-n2",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-all-n2",
+   "concept": "a faked sender, every clue found",
+   "alt": "The letter's clues marked: the real address, a freemail box; your mailbox key; today; and the Renew key button, which goes somewhere else.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
-   "key": "csq/packet-post/locks-1b-sort-n1",
-   "game": "packet-post",
-   "chapter": "locks",
-   "band": "1b",
-   "state": "locks-1b-sort-n1",
-   "concept": "share or keep: sort each fact",
-   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
-   "capturedAt": "2026-11-07",
-   "commit": "2700f45"
+   "key": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-debrief-n1",
+   "concept": "spoofing, the debrief",
+   "alt": "The debrief: the name says Post Office, but the real address is a freemail box and the button goes elsewhere. That mismatch is spoofing.",
+   "capturedAt": "2026-11-06",
+   "commit": "ddca4eb"
   },
   {
-   "key": "csq/packet-post/packets-1b-learn-n1",
-   "game": "packet-post",
-   "chapter": "packets",
+   "key": "csq/trick-inbox/senders-2-sd-1-new",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-1-new",
+   "concept": "a faked sender, before the hunt",
+   "alt": "A new letter from Post Office, “Your mailbox key expired”, with its real address showing: a freemail box.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-3-all",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-3-all",
+   "concept": "a teacher in costume",
+   "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
+   "capturedAt": "2026-11-06",
+   "commit": "4866608"
+  },
+  {
+   "key": "csq/would-you-rather/online-cloud-2",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "2",
+   "state": "online-cloud-2",
+   "concept": "photos on your tablet, or a copy elsewhere",
+   "alt": "Would you rather: photos only on your tablet, where nobody else sees them, or also a copy on a service someone else runs?",
+   "capturedAt": "2026-11-04",
+   "commit": "8516310"
+  },
+  {
+   "key": "csq/would-you-rather/online-credit-1b-n1",
+   "game": "would-you-rather",
+   "chapter": "online",
    "band": "1b",
-   "state": "packets-1b-learn-n1",
-   "concept": "too big for one envelope: cut into packets",
-   "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
+   "state": "online-credit-1b-n1",
+   "concept": "credit a picture, or draw your own",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+   "capturedAt": "2026-11-06",
+   "commit": "850c2ab"
+  },
+  {
+   "key": "csq/would-you-rather/online-delete-1b",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "1b",
+   "state": "online-delete-1b",
+   "concept": "delete an old post, or leave it",
+   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
+   "capturedAt": "2026-11-04",
+   "commit": "8516310"
+  },
+  {
+   "key": "csq/would-you-rather/online-delete-2",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "2",
+   "state": "online-delete-2",
+   "concept": "delete an old post, or leave it",
+   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
+   "capturedAt": "2026-11-04",
+   "commit": "8516310"
+  },
+  {
+   "key": "csq/would-you-rather/online-drawing-1b",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "1b",
+   "state": "online-drawing-1b",
+   "concept": "a drawing for everyone, or family only",
+   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
+   "capturedAt": "2026-11-04",
+   "commit": "8516310"
+  },
+  {
+   "key": "csq/would-you-rather/online-location-1b",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "1b",
+   "state": "online-location-1b",
+   "concept": "a free game that sees where you are",
+   "alt": "Would you rather: an app that is free if it sees where you are, or an app that costs a little and never knows?",
+   "capturedAt": "2026-11-04",
+   "commit": "8516310"
+  },
+  {
+   "key": "csq/would-you-rather/online-name-2",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "2",
+   "state": "online-name-2",
+   "concept": "nickname or real first name",
+   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
+   "capturedAt": "2026-11-04",
+   "commit": "8516310"
+  },
+  {
+   "key": "csq/would-you-rather/online-public-2-n",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "2",
+   "state": "online-public-2-n",
+   "concept": "Public or private?",
+   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
    "capturedAt": "2026-11-07",
-   "commit": "95753ad"
+   "commit": "69a392a"
+  },
+  {
+   "key": "csq/would-you-rather/tech-1b-call-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "1b",
+   "state": "tech-1b-call-n",
+   "concept": "Tech changes how we live: video calls",
+   "alt": "Would you rather: video-call a relative far away every day, or visit them once a month?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/would-you-rather/tech-1b-map-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "1b",
+   "state": "tech-1b-map-n",
+   "concept": "One invention you use every day",
+   "alt": "Would you rather: a map app that picks your route, or a paper map and your own choices?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/would-you-rather/tech-1b-paper-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "1b",
+   "state": "tech-1b-paper-n",
+   "concept": "What is technology? A tablet and paper",
+   "alt": "Would you rather: every lesson on a tablet, or every lesson on paper?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/would-you-rather/tech-2-ads-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "2",
+   "state": "tech-2-ads-n",
+   "concept": "Tradeoffs everywhere",
+   "alt": "Would you rather: a game that is free but shows ads, or a game you pay for once with no ads?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/would-you-rather/tech-2-jobs-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "2",
+   "state": "tech-2-jobs-n",
+   "concept": "Automation changes jobs",
+   "alt": "Would you rather have a job building robots, or a job fixing robots?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/would-you-rather/tech-2-map-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "2",
+   "state": "tech-2-map-n",
+   "concept": "Hidden costs",
+   "alt": "Would you rather: a map app that picks your route, or a paper map and your own choices?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/would-you-rather/tech-2-voice-n",
+   "game": "would-you-rather",
+   "chapter": "tech",
+   "band": "2",
+   "state": "tech-2-voice-n",
+   "concept": "A benefit and a privacy cost",
+   "alt": "Would you rather: a voice helper that knows everything, or one that never listens unless you press a button?",
+   "capturedAt": "2026-11-07",
+   "commit": "38a0b7d"
   }
  ]
 }

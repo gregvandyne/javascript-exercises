@@ -215,7 +215,7 @@
   },
   {
    "title": "Pick the better route",
-   "text": "Both routes reach the flag. Route A takes 7 blocks with one turn; Route B takes 8 blocks with two turns, one more chance to go wrong. The better route is shorter, safer or easier to get right, and safe comes first: a long dry route beats a short wet one.",
+   "text": "Both routes reach the flag. Route A takes 7 blocks with one turn; Route B takes 8 blocks with two turns, one more chance to go wrong. The better route is shorter, safer or easier to get right. Safe comes first: if a short route crossed water, the longer dry route would win.",
    "art": "star",
    "img": "csq/robo-route/sequences-1b-better-route",
    "view": [

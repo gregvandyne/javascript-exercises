@@ -10,27 +10,64 @@
    "title": "Some messages are tricks",
    "text": "Some messages look friendly and exciting, but they are tricks. They want you to hurry, or to give away something private.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-1b-key",
-   "view": [
-    6.5,
-    25.5,
-    48,
-    28
-   ],
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "img": "csq/packet-post/tricks-1b-key-n1",
+   "alt": "A prize card from Prize Team, marked unknown sender: “You won a tablet!”",
+   "focus": [
+    {
+     "cue": "Big, exciting words: You won a tablet!",
+     "box": [
+      2.9,
+      12,
+      60,
+      10
+     ]
+    },
+    {
+     "cue": "It wants your mailbox key, fast",
+     "box": [
+      2.9,
+      22,
+      85,
+      22
+     ]
+    }
+   ]
   },
   {
    "title": "Clues of a trick",
    "text": "Look for clues. It says hurry, or it promises a prize you never tried to win. It asks for your passphrase. It comes from someone you do not know.",
    "art": "magnifier",
-   "img": "csq/packet-post/tricks-1b-clues",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find."
+   "img": "csq/packet-post/tricks-1b-clues-n1",
+   "alt": "The prize card's cues: hurry, only ten minutes; asks for the mailbox key; a prize you never entered; says congratulations. Then the three choices.",
+   "focus": [
+    {
+     "cue": "Hurry: only ten minutes",
+     "box": [
+      2.9,
+      17.1,
+      46.2,
+      24.6
+     ]
+    },
+    {
+     "cue": "It asks for your key",
+     "box": [
+      51,
+      17.1,
+      46.2,
+      24.6
+     ]
+    },
+    {
+     "cue": "A prize you never tried to win",
+     "box": [
+      2.9,
+      45.1,
+      46.2,
+      24.6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -42,40 +79,91 @@
     "Do it today!",
     "Send your mailbox key"
    ],
-   "img": "csq/packet-post/tricks-1b-card",
-   "view": [
-    6.5,
-    25.5,
-    48,
-    28
-   ],
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?"
+   "img": "csq/packet-post/tricks-1b-bank-n",
+   "alt": "A card from \"Your bank\", unknown sender: your account is locked, send your mailbox key today. Two cues are already found.",
+   "focus": [
+    {
+     "cue": "A scary threat: your account is locked",
+     "box": [
+      5,
+      45.2,
+      46.5,
+      13.3
+     ]
+    },
+    {
+     "cue": "A rush and a request: your key, today",
+     "box": [
+      5,
+      57.1,
+      83.9,
+      21.5
+     ]
+    },
+    {
+     "cue": "An unknown sender",
+     "box": [
+      53.9,
+      33.4,
+      31.4,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "What to do",
    "text": "Real companies never ask for your passphrase. Do not reply or tap, and tell a trusted adult. A trick that fishes for secrets is called phishing.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-next",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Card 3 of 6 is safe: a field trip note from your teacher, a known sender who asks for nothing."
+   "img": "csq/packet-post/tricks-1b-act-n",
+   "alt": "Cues found on the bank card: threatens to close, asks for the key, unknown sender. Then: Safe, Trick or Ask a trusted adult.",
+   "focus": [
+    {
+     "cue": "The cues are found",
+     "box": [
+      3.8,
+      2,
+      55,
+      13.3
+     ]
+    },
+    {
+     "cue": "Not sure? Ask a trusted adult",
+     "box": [
+      64.2,
+      72.6,
+      29.9,
+      21.4
+     ]
+    }
+   ]
   },
   {
    "title": "Secret codes for fun",
    "text": "A cipher wheel turns letters into a secret code. Shift each letter by 3 and A becomes D. Only someone who knows the key can read it.",
    "art": "cipher",
-   "img": "csq/packet-post/ciphers-1b-wheel",
-   "view": [
-    7,
-    28,
-    47,
-    68
-   ],
-   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
+   "img": "csq/packet-post/ciphers-1b-wheel-n",
+   "alt": "The cipher wheel on shift 3: the secret message DSSOH reads APPLE.",
+   "focus": [
+    {
+     "cue": "The wheel shifts every letter by 3",
+     "box": [
+      40.6,
+      8,
+      18.7,
+      15
+     ]
+    },
+    {
+     "cue": "DSSOH, read with the key, is APPLE",
+     "box": [
+      5,
+      86.2,
+      22.3,
+      13.5
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -103,7 +191,7 @@
   },
   {
    "title": "Pim's piece lights up",
-   "text": "Three pieces lit. Pim bows, and the Spark is nearly whole. One world is left: Gizmo the mouse is waiting inside the machine, where everything is very, very small.",
+   "text": "Three pieces lit. Pim bows, and the Spark glows brighter still. One world is left: Gizmo the mouse is waiting inside the machine, where everything is very, very small.",
    "art": "envelope",
    "story": {
     "scene": "handoff",
@@ -119,14 +207,28 @@
    "title": "Your mission",
    "text": "Open Packet Post at Spot the Trick and check all 6 cards. Tap every clue you find, then choose. After that, the game sends you to Secret Messages: crack the 2 messages there with the key wheel.",
    "art": "trophy",
-   "img": "csq/packet-post/tricks-1b-key",
-   "view": [
-    6.5,
-    25.5,
-    48,
-    28
-   ],
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text."
+   "img": "csq/packet-post/tricks-1b-key-n1",
+   "alt": "A prize card from Prize Team, marked unknown sender: “You won a tablet!”",
+   "focus": [
+    {
+     "cue": "Tap every clue you find",
+     "box": [
+      2.9,
+      3.3,
+      94.3,
+      79.5
+     ]
+    },
+    {
+     "cue": "Then choose",
+     "box": [
+      2.9,
+      85,
+      50,
+      12
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -10,40 +10,82 @@
    "title": "Meet Pim",
    "text": "Pim the owl runs the post office in Netville. Pim's job is to get every message to the right house.",
    "art": "envelope",
-   "img": "csq/packet-post/packets-1b-key",
-   "view": [
-    6.5,
-    30,
-    48,
-    62
-   ],
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+   "img": "csq/chars/meet-pim",
+   "alt": "Pim the owl, the Packet Post guide, standing in front of a softened road map from the post office game.",
+   "focus": [
+    {
+     "cue": "This is Pim the owl, who runs the post office",
+     "box": [
+      29.8,
+      15.3,
+      40.4,
+      75
+     ]
+    }
+   ]
   },
   {
    "title": "Too big to send",
    "text": "A picture is too big to send in one piece. The network cuts it into small pieces called packets and gives each one a number.",
    "art": "pixel",
-   "img": "csq/packet-post/packets-1b-split",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office."
+   "img": "csq/packet-post/packets-1b-trip-n",
+   "alt": "Grandma's apple picture, cut into 3 numbered packets: packet 2 is on its way down the road.",
+   "focus": [
+    {
+     "cue": "Grandma's picture, sent in numbered packets",
+     "box": [
+      14.1,
+      2,
+      80.2,
+      28.1
+     ]
+    },
+    {
+     "cue": "Packet 2 of 3 is on the road",
+     "box": [
+      5.5,
+      37.6,
+      26.8,
+      12.4
+     ]
+    },
+    {
+     "cue": "The tray waits for pieces 1, 2 and 3, in order",
+     "box": [
+      3,
+      54,
+      33,
+      25
+     ]
+    }
+   ]
   },
   {
    "title": "Many roads",
    "text": "Each packet can take a different road through many post offices, called routers. If a road closes, a packet just takes another one.",
    "art": "network",
-   "img": "csq/packet-post/routes-1b-roads",
-   "view": [
-    6.5,
-    30,
-    48,
-    62
-   ],
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
+   "img": "csq/packet-post/routes-1b-roads-n",
+   "alt": "Many roads to the school: packets can go by Hill Office or River Office, and one road will close.",
+   "focus": [
+    {
+     "cue": "Packet 2 takes the road by Hill Office",
+     "box": [
+      5,
+      14,
+      90,
+      42
+     ]
+    },
+    {
+     "cue": "Another road runs below: if one closes, use it",
+     "box": [
+      5,
+      56,
+      90,
+      42
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -51,19 +93,42 @@
    "text": "Packets can arrive mixed up. The numbers tell the other end how to put the picture back together.",
    "art": "envelope",
    "steps": [
-    "arrives: 3",
-    "arrives: 1",
-    "arrives: 2",
-    "put back: 1, 2, 3"
+    "packets arrive mixed up",
+    "put back 1, then 2",
+    "then 3, 4, 5, 6",
+    "the picture is whole"
    ],
-   "img": "csq/packet-post/packets-1b-order",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
+   "img": "csq/packet-post/packets-1b-order-n",
+   "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
+   "focus": [
+    {
+     "cue": "All packets are here, mixed up",
+     "box": [
+      12.7,
+      1.7,
+      76.4,
+      18.7
+     ]
+    },
+    {
+     "cue": "3, 4, 5, 6 wait to be tapped in order",
+     "box": [
+      32,
+      41,
+      52,
+      26
+     ]
+    },
+    {
+     "cue": "The picture rebuilds in the tray",
+     "box": [
+      2,
+      37,
+      29,
+      37
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -94,14 +159,28 @@
    "title": "Your mission",
    "text": "Open Packet Post at Break It Up and finish all 5 levels, then play all 4 levels of Many Roads. Watch the number on every packet.",
    "art": "trophy",
-   "img": "csq/packet-post/packets-1b-key",
-   "view": [
-    6.5,
-    30,
-    48,
-    62
-   ],
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
+   "img": "csq/packet-post/packets-1b-trip-n",
+   "alt": "Grandma's apple picture, cut into 3 numbered packets: packet 2 is on its way down the road.",
+   "focus": [
+    {
+     "cue": "Watch the number on every packet",
+     "box": [
+      5.5,
+      37.6,
+      26.8,
+      12.4
+     ]
+    },
+    {
+     "cue": "The numbered tray rebuilds the picture",
+     "box": [
+      3,
+      54,
+      33,
+      25
+     ]
+    }
+   ]
   }
  ],
  "check": [

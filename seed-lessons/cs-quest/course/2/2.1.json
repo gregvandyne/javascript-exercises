@@ -17,7 +17,27 @@
     48.6,
     82.5
    ],
-   "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one."
+   "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one.",
+   "focus": [
+    {
+     "cue": "Three test boards, each with a known right answer",
+     "box": [
+      0.6,
+      20,
+      13.6,
+      5.4
+     ]
+    },
+    {
+     "cue": "Test 1: run the program on this board",
+     "box": [
+      7.4,
+      26,
+      38.5,
+      70
+     ]
+    }
+   ]
   },
   {
    "title": "One board can hide a bug",
@@ -63,7 +83,27 @@
     48.6,
     82.5
    ],
-   "alt": "A later Debug Lab board with an unusual layout: goals and walls sit where a program that assumes too much will fail."
+   "alt": "A later Debug Lab board with an unusual layout: goals and walls sit where a program that assumes too much will fail.",
+   "focus": [
+    {
+     "cue": "More test boards try unusual inputs",
+     "box": [
+      0.6,
+      20,
+      13.6,
+      5.4
+     ]
+    },
+    {
+     "cue": "This board: gems down a path that bends",
+     "box": [
+      7.4,
+      31,
+      18,
+      63
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -142,7 +182,18 @@
     48.6,
     82.5
    ],
-   "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one."
+   "alt": "A Pro Debug Lab board with its test tabs above it: one program must pass every board, not just this one.",
+   "focus": [
+    {
+     "cue": "After every change, run all the test boards",
+     "box": [
+      0.6,
+      20,
+      13.6,
+      5.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -10,14 +10,28 @@
    "title": "Who made it?",
    "text": "A picture, a song or a game level belongs to the person who made it. Finding it online does not mean you may use it.",
    "art": "pencil",
-   "img": "csq/would-you-rather/online-credit-1b",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?"
+   "img": "csq/would-you-rather/online-credit-1b-n1",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+   "focus": [
+    {
+     "cue": "Use someone's picture: say who made it",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Or draw your own",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "title": "Read the badge",
@@ -34,27 +48,55 @@
     "song: public domain",
     "level idea: remix of my cousin's level"
    ],
-   "img": "csq/would-you-rather/online-credit-1b",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?"
+   "img": "csq/would-you-rather/online-credit-1b-n1",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+   "focus": [
+    {
+     "cue": "Credit says what it is and who made it",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Your own drawing: credit yourself",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "title": "Keep private things private",
    "text": "Your games can be shared. Where you live, your school and your passphrase stay private.",
    "art": "lock",
-   "img": "csq/packet-post/locks-1b-sort",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
+   "img": "csq/packet-post/locks-1b-sort-n",
+   "alt": "Sorting the mail: where you live and your mailbox key are Keep, a favorite book is Share. Next up: a joke you made up.",
+   "focus": [
+    {
+     "cue": "Private: where you live and your mailbox key",
+     "box": [
+      6,
+      69.9,
+      35.6,
+      26.9
+     ]
+    },
+    {
+     "cue": "A joke you made up: fine to share",
+     "box": [
+      5,
+      44.4,
+      46.3,
+      14.1
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -85,14 +127,28 @@
    "title": "Your mission",
    "text": "Write the credit line for a game you might make: who made the art, and whose idea it was. Then name one thing you keep private online.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-1b-first",
-   "view": [
-    52.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
+   "img": "csq/would-you-rather/online-credit-1b-n1",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+   "focus": [
+    {
+     "cue": "Who made the art? Credit them",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Or make it yourself",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

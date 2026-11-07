@@ -10,27 +10,85 @@
    "title": "Be the game designer",
    "text": "Today you build a level for someone else to play. Real games are made this way: plan, build, test, fix and explain.",
    "art": "pencil",
-   "img": "csq/robo-route/maker-1b-key",
+   "img": "csq/robo-route/maker-1b-key-c",
    "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
+    40.5,
+    10.5,
+    59.5,
+    37.5
    ],
-   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board."
+   "alt": "Level Maker task 1: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
+   "focus": [
+    {
+     "cue": "Each maker task says what to build",
+     "box": [
+      40.6,
+      14,
+      58.2,
+      12.8
+     ]
+    },
+    {
+     "cue": "Paint squares with the floor and wall tools",
+     "box": [
+      46.5,
+      26.9,
+      19,
+      8.6
+     ]
+    },
+    {
+     "cue": "Check proves the level can be solved",
+     "box": [
+      47.5,
+      38.5,
+      8.6,
+      8.6
+     ]
+    }
+   ]
   },
   {
    "title": "Plan it first",
-   "text": "Sketch your level on paper first. Where does Bolt start? Where is the goal? What is the one tricky part?",
+   "text": "Sketch your level on paper first: where Bolt starts, where the goal is, and the one tricky part. Then build it from your sketch.",
    "art": "map",
-   "img": "csq/robo-route/maker-1b-task",
+   "img": "csq/robo-route/maker-1b-plan-c",
    "view": [
-    51,
-    9.4,
-    49,
-    43.6
+    0,
+    13,
+    41,
+    86
    ],
-   "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted."
+   "alt": "A level built from a plan: Bolt starts top left, the goal is bottom right, and a pond of water is the one tricky part.",
+   "focus": [
+    {
+     "cue": "Where Bolt starts",
+     "box": [
+      7.5,
+      31.5,
+      7,
+      9
+     ]
+    },
+    {
+     "cue": "Where the goal is",
+     "box": [
+      28.5,
+      70,
+      6,
+      10
+     ]
+    },
+    {
+     "cue": "The one tricky part: a pond to get around",
+     "box": [
+      16.5,
+      40.5,
+      13,
+      21
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -45,40 +103,109 @@
     "fix one thing",
     "explain"
    ],
-   "img": "csq/robo-route/maker-1b-built",
+   "img": "csq/robo-route/maker-1b-built-c",
    "view": [
     0,
-    17.5,
-    48.6,
-    82.5
+    13,
+    41,
+    86
    ],
-   "alt": "A level built in the maker: Bolt, a gem, a key, a door and the goal on the board, and Check says it can be solved: par 17."
+   "alt": "A built level with a gem, a key, a door and the goal, and Check says it can be solved: par 17.",
+   "focus": [
+    {
+     "cue": "Check: solvable, and the par is 17 blocks",
+     "box": [
+      4.1,
+      90.7,
+      17,
+      8.4
+     ]
+    },
+    {
+     "cue": "A gem, a key, a door and the goal: all reachable",
+     "box": [
+      1,
+      14.5,
+      38.5,
+      75
+     ]
+    }
+   ]
   },
   {
    "title": "The designer stays quiet",
    "text": "While your tester plays, do not help. Watch quietly and take notes. A tester who gets help is not really testing the level.",
    "art": "people",
-   "img": "csq/robo-route/maker-1b-test",
+   "img": "csq/robo-route/maker-1b-test-w",
    "view": [
     0,
-    17.5,
-    48.6,
-    82.5
+    8,
+    49,
+    92
    ],
-   "alt": "The built level handed to a tester: the tester builds a program and Bolt drives it, while the maker watches without helping."
+   "alt": "A friend tests the level: the tester builds a program and Bolt drives it, while the maker watches.",
+   "focus": [
+    {
+     "cue": "A friend tests your level",
+     "box": [
+      0.3,
+      7.8,
+      16.2,
+      6.9
+     ]
+    },
+    {
+     "cue": "Bolt drives the tester's program. You only watch",
+     "box": [
+      16.8,
+      55,
+      6.5,
+      13.5
+     ]
+    }
+   ]
   },
   {
    "title": "Explain your choice",
    "text": "Say why you made one choice. For example: I put the key behind the water so you have to plan a path.",
    "art": "lightbulb",
-   "img": "csq/robo-route/maker-1b-task",
+   "img": "csq/robo-route/maker-1b-water-c",
    "view": [
-    51,
-    9.4,
-    49,
-    43.6
+    0,
+    13,
+    41,
+    86
    ],
-   "alt": "A second maker task brief on the canvas: each task says what the level must contain before a single square is painted."
+   "alt": "The key sits behind a strip of water, so Bolt must plan a path around it before the door opens. Check: solvable.",
+   "focus": [
+    {
+     "cue": "The key sits behind the water",
+     "box": [
+      28,
+      31,
+      6.5,
+      9
+     ]
+    },
+    {
+     "cue": "So Bolt has to plan a path around it",
+     "box": [
+      21.5,
+      31,
+      7.5,
+      21
+     ]
+    },
+    {
+     "cue": "Only then does the door open",
+     "box": [
+      27.5,
+      59.5,
+      7,
+      12
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -105,15 +232,16 @@
    ]
   },
   {
-   "title": "Dot is waiting",
-   "text": "Every piece you light makes the Spark warmer. The next world belongs to Dot the fox, who follows clues the way you follow code. She is already sniffing at the door.",
+   "title": "Bolt's piece lights up",
+   "text": "Bolt's piece of the Spark lights up: the first of four. His roads run, his bugs are fixed and his levels are built. The next world belongs to Dot the fox, who follows clues the way you follow code.",
    "art": "magnifier",
    "story": {
     "scene": "handoff",
     "lit": 1,
     "chars": [],
     "out": "bolt",
-    "in": "dot"
+    "in": "dot",
+    "fly": "bolt"
    }
   },
   {
@@ -121,14 +249,34 @@
    "title": "Your mission",
    "text": "Open Robo Route at Level Maker and do the three maker tasks to finish this step. Then, as a stretch, build your own level from your plan, let a friend or someone at home test it, and fix one thing.",
    "art": "trophy",
-   "img": "csq/robo-route/maker-1b-key",
+   "img": "csq/robo-route/maker-1b-key-c",
    "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
+    40.5,
+    10.5,
+    59.5,
+    37.5
    ],
-   "alt": "The Level Maker's first task: the goal is walled in, and the floor and wall tools wait beside the board."
+   "alt": "Level Maker task 1: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
+   "focus": [
+    {
+     "cue": "Read each maker task",
+     "box": [
+      40.6,
+      14,
+      58.2,
+      12.8
+     ]
+    },
+    {
+     "cue": "Build, then press Check",
+     "box": [
+      47.5,
+      38.5,
+      8.6,
+      8.6
+     ]
+    }
+   ]
   }
  ],
  "check": [

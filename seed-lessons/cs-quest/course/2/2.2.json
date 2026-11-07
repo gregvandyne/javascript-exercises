@@ -10,40 +10,109 @@
    "title": "Design for someone else",
    "text": "Today you are the designer. Real teams plan, build, test with someone else, improve the work and document it.",
    "art": "pencil",
-   "img": "csq/robo-route/maker-2-key",
+   "img": "csq/robo-route/maker-2-key-c",
    "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
+    40.5,
+    10.5,
+    59.5,
+    37.5
    ],
-   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board."
+   "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
+   "focus": [
+    {
+     "cue": "Task 1 of 3: open the walls so Bolt can reach the goal",
+     "box": [
+      40.6,
+      14,
+      55.4,
+      12.8
+     ]
+    },
+    {
+     "cue": "Check proves it can be solved",
+     "box": [
+      47.5,
+      38.5,
+      8.6,
+      8.6
+     ]
+    }
+   ]
   },
   {
    "title": "Keep a timeline",
-   "text": "Split the work and set times: build by minute 6, test by 12, fix by 18. Write who does each part.",
+   "text": "Split the work and set times: build by minute 6, test by 12, fix by 18. Write who does each part. The game's three maker tasks are your first checkpoints.",
    "art": "chart",
-   "img": "csq/robo-route/maker-2-task",
+   "img": "csq/robo-route/maker-2-task-c",
    "view": [
-    51,
-    9.4,
-    49,
-    43.6
+    40.5,
+    10.5,
+    59.5,
+    37.5
    ],
-   "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when."
+   "alt": "Task 2 of 3: too easy, par is 1. Move the goal or add walls until par is at least 10, and keep it solvable.",
+   "focus": [
+    {
+     "cue": "Task 2 of 3: make par at least 10",
+     "box": [
+      40.6,
+      14,
+      55.9,
+      12.8
+     ]
+    },
+    {
+     "cue": "Checkpoint: press Check when it is done",
+     "box": [
+      47.5,
+      38.5,
+      8.6,
+      8.6
+     ]
+    }
+   ]
   },
   {
    "title": "Feedback is information",
    "text": "Feedback is not a grade. It shows where a player got stuck. A level is done when that feedback changed something and you tested it again.",
    "art": "people",
-   "img": "csq/robo-route/maker-2-feedback",
+   "img": "csq/robo-route/maker-2-feedback-w",
    "view": [
-    28.5,
-    12,
-    43,
-    76.4
+    30,
+    14,
+    32.8,
+    72.8
    ],
-   "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type."
+   "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
+   "focus": [
+    {
+     "cue": "One fun thing the tester noticed",
+     "box": [
+      44.4,
+      20.8,
+      11.2,
+      7
+     ]
+    },
+    {
+     "cue": "One thing that confused them",
+     "box": [
+      42.4,
+      42.3,
+      15.2,
+      7
+     ]
+    },
+    {
+     "cue": "Change one thing, then Check again",
+     "box": [
+      39.2,
+      65.4,
+      23.8,
+      9.6
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -59,27 +128,67 @@
     "test again",
     "write the note (on paper)"
    ],
-   "img": "csq/robo-route/maker-2-built",
+   "img": "csq/robo-route/maker-2-built-c",
    "view": [
     0,
-    17.5,
-    48.6,
-    82.5
+    13,
+    41,
+    86
    ],
-   "alt": "A Pro maker level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23."
+   "alt": "A Pro level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23.",
+   "focus": [
+    {
+     "cue": "Check: solvable, par 23",
+     "box": [
+      4.1,
+      90.7,
+      17.8,
+      8.4
+     ]
+    },
+    {
+     "cue": "Test it with someone, then change and test again",
+     "box": [
+      1,
+      14.5,
+      38.5,
+      75
+     ]
+    }
+   ]
   },
   {
    "title": "Write the level note",
    "text": "A good note helps the next person play or remix it, like: Level 2: count the gems before the door. The game saves your level and its code, so write the note on paper with the code at the top. Remixed levels keep their based-on stamp.",
    "art": "envelope",
-   "img": "csq/robo-route/maker-2-task",
+   "img": "csq/robo-route/maker-2-note-c",
    "view": [
-    51,
-    9.4,
-    49,
-    43.6
+    0,
+    13,
+    41,
+    86
    ],
-   "alt": "A second Pro maker task: the brief sets what to build, the way a team plan sets who does each part and by when."
+   "alt": "A level worth a note: three gems on the way to the door, a key to fetch first, and Check says it can be solved.",
+   "focus": [
+    {
+     "cue": "The note names the tricky part: three gems",
+     "box": [
+      15.5,
+      30.5,
+      19,
+      17
+     ]
+    },
+    {
+     "cue": "And the key that opens the door",
+     "box": [
+      6,
+      47.5,
+      29,
+      18
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -106,15 +215,16 @@
    ]
   },
   {
-   "title": "Dot is waiting",
-   "text": "Every piece you light makes the Spark warmer. The next world belongs to Dot the fox, who follows clues the way you follow code. She is already sniffing at the door.",
+   "title": "Bolt's piece lights up",
+   "text": "Bolt's piece of the Spark lights up: the first of four. His roads run, his bugs are fixed and his levels are built. The next world belongs to Dot the fox, who follows clues the way you follow code.",
    "art": "magnifier",
    "story": {
     "scene": "handoff",
     "lit": 1,
     "chars": [],
     "out": "bolt",
-    "in": "dot"
+    "in": "dot",
+    "fly": "bolt"
    }
   },
   {
@@ -122,14 +232,34 @@
    "title": "Your mission",
    "text": "Open Robo Route at Level Maker and do the three maker tasks to finish this step. Then, as a stretch, build your own level from a plan, let someone test it in silence, and change one thing. Write its level note on paper, with the level code at the top.",
    "art": "trophy",
-   "img": "csq/robo-route/maker-2-key",
+   "img": "csq/robo-route/maker-2-key-c",
    "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
+    40.5,
+    10.5,
+    59.5,
+    37.5
    ],
-   "alt": "The Pro Level Maker's first task: the goal is walled in, and the tools to open the walls wait beside the board."
+   "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
+   "focus": [
+    {
+     "cue": "Three maker tasks, one after another",
+     "box": [
+      40.6,
+      14,
+      55.4,
+      12.8
+     ]
+    },
+    {
+     "cue": "Build, then Check",
+     "box": [
+      47.5,
+      38.5,
+      8.6,
+      8.6
+     ]
+    }
+   ]
   }
  ],
  "check": [

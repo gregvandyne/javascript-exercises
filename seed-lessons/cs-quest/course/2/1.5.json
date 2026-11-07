@@ -243,15 +243,14 @@
    ]
   },
   {
-   "title": "Bolt's piece lights up",
-   "text": "Bolt's piece of the Spark is lit — the first of four. His roads are only the start: next comes the Bug Hunters trail, where Bolt learns to hunt for mistakes.",
+   "title": "Bolt's piece is warming up",
+   "text": "Bolt's roads are running again, and his piece of the Spark is starting to glow. It is not lit yet: first Bolt needs you on the Bug Hunters trail and in the Level Maker.",
    "art": "robot",
    "story": {
     "scene": "handoff",
-    "lit": 1,
+    "lit": 0,
     "chars": [],
-    "out": "bolt",
-    "fly": "bolt"
+    "out": "bolt"
    }
   },
   {
