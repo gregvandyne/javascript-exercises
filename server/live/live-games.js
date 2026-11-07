@@ -12,6 +12,9 @@ export const LIVE_GAMES = {
   // one game for both: hosted live for a class, or played here against the computer or two on one screen (play: the
   // second button says so, not "Practice solo")
   'tug-of-math': { mode: 'tug', solo: 'tug-of-math', play: true },
+  // a family's draw-and-guess game: hosted live for players anywhere, or practised alone and passed round one device
+  // (playKey: the second button's own words)
+  'doodle-hoot': { mode: 'doodle', solo: 'doodle-hoot', play: true, playKey: 'live.doodleUi.play' },
 };
 /** The live entry for an official launch game, or null. */
 export const liveGameOf = g => (g && g.source === 'seed' && Object.hasOwn(LIVE_GAMES, g.slug) ? LIVE_GAMES[g.slug] : null);

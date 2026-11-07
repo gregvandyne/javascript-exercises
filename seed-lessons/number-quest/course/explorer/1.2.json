@@ -231,12 +231,12 @@
    "text": "Open Sum Racer. It opens on the Rounding Run track, a track of nothing but rounding questions, and it stays there. Win the race: say each number out loud, rounded, before your kart moves.",
    "art": "trophy",
    "img": "nq/sum-racer/rounding-run",
-   "alt": "Sum Racer on the Rounding Run track: a rounding question on screen, four answers to pick from, the karts just off the start line, lap 1 of 3.",
+   "alt": "Sum Racer's Rounding Run on a phone: question 2, round a number to the nearest ten or hundred, four answers to pick from.",
    "view": [
-    50,
-    10.5,
-    49.5,
-    83
+    0,
+    0,
+    54.14,
+    100
    ]
   }
  ],

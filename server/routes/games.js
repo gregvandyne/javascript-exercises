@@ -167,7 +167,7 @@ function livePanel(req, g, entry) {
       <input class="input lv-code-input" id="lpjc" name="code" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" dir="ltr" placeholder="123 4567" required>
       <button class="btn btn-primary btn-big" type="submit" id="lpjoin">🎟️ ${t('live.entry.joinGo')}</button>
     </form>
-    <div class="row actions">${host}<a class="btn" href="/play/${entry.solo}" id="playbtn">▶ ${t(entry.play ? 'live.entry.play' : 'live.entry.solo')}</a></div>
+    <div class="row actions">${host}<a class="btn" href="/play/${entry.solo}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a></div>
   </section>`;
 }
 

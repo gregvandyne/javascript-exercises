@@ -11,21 +11,15 @@
    "text": "Some tricks are not accidents. Behind each one is a threat actor: a person or group trying to get something they should not have.",
    "art": "mask",
    "img": "csq/trick-inbox/mix-2-mx-3-debrief",
-   "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
+   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
    "focus": [
     {
      "cue": "Behind each trick: someone who wants something",
      "box": [
-      3.4,
-      84.1,
-      93.3,
-      5.0
+      6.4,
+      32.4,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -35,30 +29,15 @@
    "text": "Meet the gallery in plain words: the scammer wants money, the account thief wants in, the vandal wants damage, and the spy wants secrets. None of them is glamorous. Each is simply trying to take what is not theirs.",
    "art": "people",
    "img": "csq/trick-inbox/mix-2-mx-6-debrief",
-   "alt": "The visitor 1000 prize, binned: the debrief names the prize-faker, who wants you to tap and type.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
+   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
    "focus": [
-    {
-     "cue": "A prize that costs a tap: the scammer's want",
-     "box": [
-      11.5,
-      33.7,
-      61.1,
-      7.1
-     ]
-    },
     {
      "cue": "The debrief names the actor",
      "box": [
-      3.4,
-      79.1,
-      93.3,
-      10.0
+      6.4,
+      32.7,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -76,30 +55,24 @@
     "Guard: do not reply; report it"
    ],
    "img": "csq/trick-inbox/senders-2-sd-3-all",
-   "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
+   "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
    "focus": [
     {
      "cue": "A fake school message asks for account details",
      "box": [
-      3.8,
-      67.4,
-      46.0,
-      7.1
+      7.1,
+      67.9,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "Who sent it? Check the real address",
      "box": [
-      3.6,
-      49.6,
-      92.8,
-      3.8
+      5.7,
+      21.8,
+      63.4,
+      11.2
      ]
     }
    ]
@@ -109,30 +82,24 @@
    "text": "Testing a network's locks can be ethical or malicious, and permission is the whole difference. With permission it is defense work. Without it, it is breaking in, whatever the reason given.",
    "art": "key",
    "img": "csq/escape-the-post-office/layers-2-6",
-   "alt": "Threat 6 of 6: a one-word key is guessed in an afternoon. The Long Passphrase layer stops it.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "A threat card: a one-word key is guessed in an afternoon. The layer tiles: encryption, two-step sign-in, updates, backups and more.",
    "focus": [
     {
      "cue": "A one-word key, guessed in an afternoon",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      5.2,
+      0.5,
+      85.0,
+      12.9
      ]
     },
     {
      "cue": "With permission, testing this layer is defense work",
      "box": [
-      26.0,
-      69.3,
-      23.5,
-      12.9
+      53.3,
+      78.8,
+      34.3,
+      20.5
      ]
     }
    ]
@@ -142,21 +109,15 @@
    "text": "Films dress hacking up as instant magic, which is a costume too. Real defense is slow, careful and lawful, and it is a real job people are paid to do well.",
    "art": "screen",
    "img": "csq/escape-the-post-office/layers-2",
-   "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "A threat card: an interceptor reads a note while it travels. Six layer tiles, from Padlock Gate (encryption) to Long Passphrase (strong key).",
    "focus": [
     {
      "cue": "Real defense: one careful layer at a time",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      27.5
+      2.8,
+      23.1,
+      94.4,
+      76.1
      ]
     }
    ]
@@ -191,21 +152,15 @@
    "text": "Open Trick Inbox at Magpie Mix and sort all 6 messages. Name the actor behind each trick and what it wants.",
    "art": "trophy",
    "img": "csq/trick-inbox/mix-2-mx-4-debrief",
-   "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction and a crowd.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
+   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
    "focus": [
     {
      "cue": "Play Magpie Mix: name the actor behind each",
      "box": [
-      3.4,
-      84.1,
-      93.3,
-      5.0
+      6.4,
+      40.9,
+      87.1,
+      19.0
      ]
     }
    ]

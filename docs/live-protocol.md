@@ -376,3 +376,66 @@ landing's teams row are ignored. Refused with `tugTeams` while `LIVE_TEAMS` is o
   `scoredBy: 'server'`. No team bonus in this mode (`bonus {k}` is refused; a seat's bonus stays the seat's and is not
   banked to its team), and the results rank the teams by `win` (the winner 1st, a draw both 1st), so the podium always
   agrees with the rope. The run's settings keep `tug: '<starter id>'` for play again.
+
+### Doodle Hoot Live (`doodle`)
+
+A built-in **game** mode played in turns (`A.GAME_MODES`, `A.TURN_MODES`; `server/live/doodle.js`,
+`server/services/classlive-doodle.js`; the rules and the reviewed word list are the game's own, read from
+`seed-games/doodle-hoot.html` by `server/live/doodle-core.js`). `POST /api/live/sessions` with `pick: 'mode:doodle'`
+takes `doodleLang` (one of `DOODLE.LANGS`: the locales but Japanese and Traditional Chinese, whose words wait for a
+native speaker's review; those pages get English), `doodleLevel` (1-3), `doodleRounds` (1-3) and `doodleSecs` (60, 80, 100), or
+`starter: 'doodle:<lang>:<level>:<rounds>:<secs>'`; sets, items and teams are ignored (no teams in this mode: `tm` is
+refused). At most 16 players (`CAPACITY.doodle`). `h start` with fewer than 2 seats is refused (`nak { a: 'start', why:
+'wait' }`; the host page disables Start and says why).
+
+- **Turns.** After the countdown the phase is `playing` for the whole game; the game's own sub-phase is in shared state.
+  Each round every player draws once, in join order (a late joiner is added to the round in progress). A turn is
+  `pick` (15 s) → `draw` (the room's seconds) → `reveal` (5 s). Fewer than 2 players here: `wait` (the clock stops; at
+  most 3 minutes, then the end). "Here" is a connected seat, or one whose connection dropped less than 8 s ago (a
+  reload); a seat that joined and never connected counts only for its first 8 s. The next drawer is anyone here (a
+  reloading drawer gets the pick's 15 s grace); with fewer than 2 here when a reveal ends, the game waits instead of
+  moving on. After the last turn: `done` (6 s, the podium; removed players are never on it), then `ph ended` and the
+  results. **Nobody watching:** with no projector (the host's page) connected for 12 s while `playing`, the server
+  pauses the game itself (`ph paused`; a dashboard alone doesn't count: it never gets strokes), and resumes it when the
+  projector is back, unless an adult paused it meanwhile.
+- **Shared state `dd`** (every device and the projector, and in `wel.state`): `{ lang, lvl, rds, rd, tn, ph:
+  'pick'|'draw'|'reveal'|'wait'|'done', dr: drawer seat, secs, dir: 'ltr'|'rtl', run: 0|1, end: server ms, left: ms,
+  g: [letters per word] | null, hint: letter hints shown, got: [seats that guessed it], order: [seats], rv: { w, e, pts:
+  [[seat, points]], why: 'time'|'all'|'skip'|'gone'|'hid' } | null, top: [[seat, score] × 3] | null }`. The word is in it
+  only in the reveal (`rv.w`). Sent on each change.
+- **Player → server** (always `to: 'host'`, intercepted by the server; never relayed as sent):
+  | kind | data | who / when |
+  |---|---|---|
+  | `pk` | `{ n, i }` (turn, choice 0-2) | the drawer, during `pick` |
+  | `ln` | `{ s, c, w, e, p }`: stroke id 0-4095 (a new id starts a stroke, at most 17 above the last; the same id continues it), colour 0-11, size 0-3, eraser 0/1, `p`: 2-60 whole numbers; a new stroke starts with an absolute point (0-1000, 0-750), then steps of at most ±127 | the drawer, during `draw`, while the clock runs |
+  | `un` | `{ n, s }` (the last stroke's id) | the drawer |
+  | `cl` | `{ n }` | the drawer |
+  | `gs` | `{ n, t: [tray positions in slot order] }` | a guesser who has the tray and hasn't got it, at most one every 1.2 s; wrong ones a turn: 3 for an answer of 3 tiles or fewer, 5 for 4-5, else 12 (`guessMax`). A hint slot takes any tile with its letter |
+  | `hide` | `{ n }` | any player but the drawer, once a turn |
+  | `need` | `null` | a frame asking for its part of the turn and the page again: once per connection and turn every 2.5 s (a new connection always gets one); a connection already behind gets the page once it has caught up |
+- **Strokes.** Checked for their keys, ranges, ids, steps and the caps (600 strokes and 8,000 points on the page at once,
+  so the drawer's own `cl` frees them; ids 0-4095 a turn; 400 points a second over 2 s); points past the edge are clamped. Past a cap the drawer is told once: `ev { f: 0, k: 'full', d: { n } }`.
+  A stroke that passes is kept **in memory only** and relayed once as `ev { f: <drawer>, k: 'ln', d: { s, c, w, e, a:
+  [absolute points], k?: 1 (a continuation) } }` to every other seat and the projector, never back to the drawer, never
+  to a dashboard. `un` and `cl` are relayed the same way (`f: <drawer>`). A connection more than 64 KB behind stops
+  getting strokes and gets the whole page once it has caught up.
+- **Private events** (`ev { f: 0, ... }` to one seat; `ch` and `tray` carry `v: 1`, this version of their shape): `ch { v, n, w: [3 words], e: [3 emoji], ms }` (the drawer, during
+  pick); `wd { n, w, e, s0? }` (the drawer's word and the next stroke id after a reload; a guesser's once they guessed
+  it); `tray { v, n, t: [tiles], g: [letters per word], dir, rm: [decoy positions gone], hn: [[slot, position]], ok }` (each
+  guesser; the same tray for everyone); `hd { n, t: [positions] }` (two decoys go, at 40 % of the time); `hn { n, i: slot,
+  t: position }` (a letter locks into its slot at 55 %, 75 % and, for 8 letters or more, 85 %; never more than half the
+  word); `gr { n, ok, p?, left? }` (a guess's result, to that player only); `cv { n, k, of, l: [[s, c, w, e, x, y, ...]] }`
+  (the page so far, in chunks of at most 12 KB; `k: 0` clears first), on `rdy`, `need` or the projector's `rdy`.
+- **To the hosts:** `ev { f: 0, k: 'hid', d: { n, k } }`: how many players hid this turn's drawing. When at least half the
+  guessers here (and at least 2 of them, counting only those still here) hide it, the page is wiped everywhere and the turn ends (`rv.why: 'hid'`, no drawer
+  points).
+- **Host actions:** `h { a: 'clear' }` (new, appended to `HOST_ACTIONS`; no fields): the page is wiped on every screen,
+  the drawer's too (`ev { f: 0, k: 'cl', d: { n } }`), also in a wait that began during a reveal. `h { a: 'skip', at:
+  dd.tn }` ends the turn and wipes the page at once (in the reveal: the next turn); a stale `at` does nothing. `next` is
+  refused. `kick` of the drawer ends the turn and wipes the page; any `kick` also locks the room (`lk { locked: true }`
+  to the hosts) so the removed player can't join again under a new nickname; the host can unlock.
+  Pause and eyes up stop the turn's clock; strokes and guesses are dropped while paused.
+- **Points** (server only; `sc`/`it` from devices are ignored; `scoredBy: 'server'`): a guesser 50-100 by the time left,
+  +20 for the first right guess and +10 for the second, −10 for each letter hint shown, never below 30; the drawer
+  `round(120 × guessed / guessers here)` (0 for a skipped or hidden turn). The run's settings keep `doodle: '<starter
+  id>'` for play again; nothing of a drawing or a word is kept anywhere.

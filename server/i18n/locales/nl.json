@@ -3865,6 +3865,7 @@
       "packetPost": "Stuur pakketjes door een netwerk, kies sterke wachtzinnen en herken trucs online.",
       "insideTheMachine": "Bouw en repareer computers: onderdelen, invoer en uitvoer, bits en pixels, ontwerpen voor iedereen.",
       "tugOfMath": "Rekenvragen voor elke groep, van optellen tot 20 tot vergelijkingen, als touwtrekwedstrijd. Tegen de computer of met z’n tweeën op één scherm.",
+      "doodleHoot": "Teken een woord voor de anderen of leg het hunne met lettertegels. Makkelijke, gemiddelde of lastige woorden in 13 talen, live met familie en vrienden of op één apparaat.",
       "remisQuietMeadow": "Een geluidsmeter voor de klas: houd het rustig zodat Remi de rode panda kan slapen, en tel samen de stille tijd."
     },
     "hubs": {
@@ -4085,7 +4086,8 @@
           "loopLab": "Tik op vakjes om een beat te maken en hoor hem meteen herhalen. Noten lezen is niet nodig.",
           "beatLanes": "Tikken op de maat van liedjes die ze kennen, te beginnen met Twinkel, twinkel, kleine ster.",
           "munchMaze": "Een achtervolging in een doolhof met een makkelijke modus: een route plannen en alle bolletjes verzamelen.",
-          "tugOfMath": "Kies groep 4 of 5: plussen, minnen en tafels, met de computer op Makkelijk tot ze winnen."
+          "tugOfMath": "Kies groep 4 of 5: plussen, minnen en tafels, met de computer op Makkelijk tot ze winnen.",
+          "doodleHoot": "Plaatjeswoorden en lettertegels: spelling oefenen als een feestspel."
         },
         "faq": {
           "q2": "Zijn de spelletjes te moeilijk voor een kind van 8?",
@@ -4115,7 +4117,8 @@
           "loopLab": "Oud genoeg om een heel liedje te plannen: beats aan elkaar plakken en de 10 muziekuitdagingen halen.",
           "heroOfSunvale": "Groter dan een snel spelletje: missies om te lezen en te volgen, en een 3D-koninkrijk om op hun eigen tempo te verkennen.",
           "swishFlick": "Een snelle pauze met een beetje natuurkunde: de richting van de veeg bepaalt waar je mikt en de snelheid hoe ver de bal vliegt.",
-          "tugOfMath": "Groep 6 en 7 brengen grotere keersommen en de volgorde van bewerkingen; met z’n tweeën op een tablet of digibord."
+          "tugOfMath": "Groep 6 en 7 brengen grotere keersommen en de volgorde van bewerkingen; met z’n tweeën op een tablet of digibord.",
+          "doodleHoot": "Lastige woorden, antwoorden van twee woorden en een race om ze als eerste te leggen."
         },
         "faq": {
           "q2": "Zijn de spelletjes te makkelijk voor een kind van 10?",
@@ -4561,6 +4564,13 @@
       "locked": "Ruimte op slot",
       "autoLock": "De ruimte gaat op slot als het spel begint.",
       "end": "Spel beëindigen",
+      "skipTurn": "Beurt overslaan",
+      "clear": "Tekening wissen",
+      "clearConfirm": "De tekening op alle schermen wissen?",
+      "copyLink": "Link om mee te doen kopiëren",
+      "copied": "Link gekopieerd. Stuur hem naar je spelers.",
+      "playToo": "Zelf meespelen",
+      "hidCount": "Spelers die deze tekening verbergen: {count}",
       "endConfirm": "Het spel voor iedereen beëindigen?",
       "remove": "Verwijderen",
       "removeConfirm": "Deze speler uit het spel halen?",
@@ -4624,7 +4634,9 @@
       "atlas": "Atlas Quest (Live)",
       "atlasText": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land zelf, de vlag, de hoofdstad of waar het beroemd om is. Er net naast levert ook een beetje op.",
       "tug": "Tug of Math (Live)",
-      "tugText": "De klas wordt verdeeld in twee teams. Iedereen beantwoordt rekenvragen voor zijn groep op een eigen toetsenblok, en elk goed antwoord trekt aan het touw."
+      "tugText": "De klas wordt verdeeld in twee teams. Iedereen beantwoordt rekenvragen voor zijn groep op een eigen toetsenblok, en elk goed antwoord trekt aan het touw.",
+      "doodle": "Doodle Hoot (Live)",
+      "doodleText": "Eén speler tekent, de anderen leggen het woord met lettertegels. Voor familie of vrienden, waar ze ook zijn, ieder op een eigen apparaat."
     },
     "starter": {
       "title": {
@@ -4873,6 +4885,7 @@
         "cat": "De categorie bij vraag {n} is niet toegestaan."
       },
       "noMissed": "Iedereen had alles goed, dus er is niets om nog eens te spelen.",
+      "needTwo": "Er zijn twee spelers nodig om te beginnen.",
       "tugTeams": "Tug of Math heeft twee teams nodig, en teams staan uit op deze site.",
       "teamsOff": "Dit spel had geen teams.",
       "againGone": "De spelers zijn weg. Start liever een nieuw spel.",
@@ -5323,6 +5336,7 @@
         "resume": "{name} heeft het spel hervat",
         "next": "{name} ging verder",
         "skip": "{name} heeft de vraag overgeslagen",
+        "clear": "{name} heeft de tekening gewist",
         "lock": "{name} heeft de ruimte op slot gedaan",
         "unlock": "{name} heeft de ruimte geopend",
         "kick": "{name} heeft {player} verwijderd",
@@ -5415,6 +5429,20 @@
       "of": "van",
       "hint": "De spelers worden voor je verdeeld in twee gelijke teams. Iedereen krijgt eigen vragen, dus niemand kan spieken, en een kleiner team trekt net zo hard.",
       "teamsAuto": "Twee teams, voor je gemaakt: Blauwe Walvissen en Rode Vossen. Je kunt teams gelijk maken, husselen of spelers verplaatsen."
+    },
+    "doodleUi": {
+      "legend": "Doodle Hoot (Live)",
+      "lang": "Taal van de woorden",
+      "level": "Woorden",
+      "levels": "Makkelijk|Gemiddeld|Lastig",
+      "like": "Woorden zoals:",
+      "rounds": "Rondes",
+      "roundsList": "1 ronde (iedereen tekent één keer)|2 rondes|3 rondes",
+      "secs": "Tijd om te tekenen",
+      "secsN": "{n} seconden",
+      "hint": "Iedereen tekent om de beurt. Spelers doen mee met de code op hun eigen apparaat, waar ze ook zijn. Niemand typt: raden gaat met lettertegels en er is geen chat.",
+      "bigRoom": "Een grote groep? Eén ronde is genoeg: iedereen tekent één keer.",
+      "play": "Oefenen of spelen op één apparaat"
     },
     "atlasUi": {
       "legend": "Atlas Quest (Live)",
@@ -5540,6 +5568,10 @@
       "wyr": {
         "h": "Wat heb je liever? (Live)",
         "p": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden en geen punten: een kant-en-klaar gespreksonderwerp."
+      },
+      "doodle": {
+        "h": "Doodle Hoot (Live)",
+        "p": "Eén speler tekent, de anderen leggen het woord met lettertegels: spelling en woordenschat in 13 talen. Het best voor kleine groepen (tot 16); je kunt altijd een tekening wissen of een beurt overslaan."
       },
       "tug": {
         "h": "Tug of Math (Live)",

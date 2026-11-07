@@ -80,40 +80,81 @@
    "steps": [
     "One row holds 7 squares",
     "The garden has 3 rows",
-    "Area = 3 x 7 = 21 square units",
+    "Area = 3 × 7 = 21 square units",
     "The fence would be 7 + 3 + 7 + 3 = 20 units"
    ],
    "visual": {
-    "type": "array",
-    "label": "One dot per unit square: 3 rows of 7 is 21",
-    "rows": 3,
-    "cols": 7
+    "type": "squares",
+    "label": "The garden tiled with unit squares: 3 rows of 7 is 21",
+    "shapes": [
+     {
+      "rows": 3,
+      "cols": 7
+     }
+    ]
    },
    "focus": [
     {
-     "cue": "One row holds 7 squares.",
+     "cue": "One row holds 7 unit squares.",
      "box": [
-      16.1,
-      22.6,
-      67.9,
-      10.6
+      27.5,
+      16.2,
+      51.0,
+      24.5
      ]
     },
     {
-     "cue": "Three rows of 7: 3 x 7 = 21 squares cover the garden.",
+     "cue": "Three rows of 7: 3 × 7 = 21 squares cover the garden.",
      "box": [
-      16.1,
-      22.6,
-      67.9,
-      50.8
+      23.7,
+      16.2,
+      54.8,
+      49.4
      ]
     }
    ]
   },
   {
    "title": "Same fence, new shape",
-   "text": "Two gardens can share one fence and hold different carpets. A long thin garden and a square garden can both take 20 meters of fence. The square one always holds more carpet. Test it on grid paper.",
-   "art": "pixel"
+   "text": "Two gardens can share one fence and hold different carpets. An 8 by 2 garden and a 5 by 5 garden both take 20 meters of fence. The long thin one holds 16 squares, the square one 25. Test it on grid paper.",
+   "art": "pixel",
+   "visual": {
+    "type": "squares",
+    "fence": true,
+    "label": "Two gardens, each with 20 meters of fence",
+    "shapes": [
+     {
+      "rows": 2,
+      "cols": 8,
+      "name": "8 by 2: 16 squares"
+     },
+     {
+      "rows": 5,
+      "cols": 5,
+      "name": "5 by 5: 25 squares"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Long and thin: 8 + 2 + 8 + 2 = 20 meters of fence, 16 squares inside.",
+     "box": [
+      10.2,
+      43.3,
+      46.4,
+      40.6
+     ]
+    },
+    {
+     "cue": "Square: 5 + 5 + 5 + 5 = 20 meters too, but 25 squares inside.",
+     "box": [
+      60.8,
+      16.2,
+      34.7,
+      67.7
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: the biggest carpet",
@@ -149,14 +190,8 @@
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Around & Inside board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Ask of every tile: is this the fence, or is this the carpet?",
    "art": "trophy",
    "img": "nq/brain-board/around-inside-board",
-   "alt": "Brain Board in play: the Around & Inside board, categories Fence it, Carpet it, Count the squares, Missing side and Same fence, a fence question open.",
-   "kind": "mission",
-   "view": [
-    8.5,
-    26.5,
-    83,
-    41.5
-   ]
+   "alt": "Brain Board's Around & Inside board on a phone: a Fence it question for 100 points, four answers to pick from.",
+   "kind": "mission"
   }
  ],
  "check": [

@@ -467,6 +467,32 @@ sends to players (shared state, host events), are written by adults and pass the
 checks (contact words, handles and links included). In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
 read-only and contenteditable is off, also for elements added later (docs/sdk.md "Live messages").
 
+**Doodle Hoot Live (drawings).** The one live game where a player makes something free-form: a drawing. Strokes are
+numbers only, checked on the server (the drawer only, while drawing; keys, ranges, steps, at most 600 strokes and 8,000
+points on the page at once, stroke ids 0-4095 a turn, 400 points a second) and relayed from the server's memory; the page
+exists only for a late joiner or a reload (at most one replay per connection every 2.5 s, and never on top of a slow
+connection's backlog) and is wiped at the end of every turn and of the session. Drawings are never stored (no database,
+file, saved run, report or log line), never in shared state, never screenshotted and never sent to any AI
+(`services/classlive-doodle.js` imports none of that; a static test checks it). Guesses are tray positions, never text;
+the words come only from the reviewed list in the game, and a word reaches only the drawer, and a guesser once they have
+spelled it, until the reveal. Every tray is checked against the site's rude-word lists anywhere in its run of tiles (the
+server in Oomba Live; on its own, the game checks a hash of the same lists, so no rude word is written in the game).
+Japanese and Traditional Chinese words are not offered until a native speaker has reviewed them (those pages play with
+English words). **Watching:** drawings go out only while a grown-up has the host's page open (it shows every drawing
+live); a dashboard alone doesn't show the drawing, so it doesn't count. With no host page for 12 s the game pauses
+itself and goes on when the page is back. The host can clear the drawing on every screen, skip the turn (the drawing is
+wiped at once, never shown in the reveal), remove a player (the room locks, so they can't come straight back under a new
+nickname; a removed player is never on the podium; not by address, since a family shares one) or pause; each player can
+hide a drawing for themselves, and when at least half the guessers here (and at least 2) hide it, it goes and the turn is
+skipped. Report works as everywhere, but a report says only which session and reason: no turn, drawer or drawing is
+kept, so it can't be reviewed afterwards. **The honest limit:** nothing automatic can stop a child drawing letters,
+numbers, contact details or something rude, because we promised not to store or analyse drawings. The protections are
+an adult host who watches the drawings live on the host's page, Clear, Skip and Remove, each viewer's Hide and the hide
+vote, Report, nicknames only, open rooms locked at the start (the host can let late joiners in) and after a Remove, 16
+players at most, codes that die with the session, drawings that vanish at the end of each turn, and the drawer's
+reminder "Draw pictures, not letters". Hosts are grown-ups, teachers or school staff only (docs/decisions.md "Doodle
+Hoot").
+
 **Codes.** 7 digits, unique among open sessions, never reused within 24 hours, dead when the session ends (at most
 3 hours; `LIVE_HOURS` can only shorten it). Wrong guesses are limited per IPv4 address or IPv6 /64 (100 per 10
 minutes), and for IPv6 also per /48 (200) and /32 (600), so holding a whole prefix buys no more guesses; all tries too

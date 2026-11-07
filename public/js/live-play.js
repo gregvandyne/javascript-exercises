@@ -89,6 +89,7 @@ function onMessage(m) {
 }
 
 function welcome(m) {
+  if (m.mode) document.body.dataset.lvMode = m.mode;
   wel = m; phase = m.phase; seq = m.seq; cfg = m.cfg || {}; mySeat = m.seat;
   players.clear(); for (const P of m.players || []) players.set(P[0], playerOf(P));
   me = m.me;
@@ -130,6 +131,7 @@ function loadFrame(kind, token) {
 
 async function onPhase(m, first = false) {
   phase = m.phase; if (m.seq) seq = m.seq;
+  document.body.dataset.lvPhase = phase;
   clearInterval(countdownTimer);
   if (phase === 'countdown') {
     const tick = () => { const left = Math.ceil((m.at - sock.serverNow()) / 1000); says(left > 0 ? `${D.phases.countdown} ${left}` : ''); if (left <= 0) clearInterval(countdownTimer); };

@@ -11,30 +11,24 @@
    "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
    "art": "map",
    "img": "csq/escape-the-post-office/pim-1b",
-   "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
-   "view": [
-    0.0,
-    46.1,
-    52.0,
-    46.2
-   ],
+   "alt": "Two Pim cards' clues: both postmarked Netville, today. One has small owl prints and asks for help; one has big round prints and asks for your key.",
    "focus": [
     {
      "cue": "A trail of small owl prints: Pim's footprint",
      "box": [
-      5.9,
-      64.8,
-      25.4,
-      13.3
+      11.2,
+      19.5,
+      34.3,
+      25.4
      ]
     },
     {
      "cue": "The trail tells the story: Netville, today",
      "box": [
-      5.9,
-      60.3,
-      25.4,
-      4.4
+      11.2,
+      2.6,
+      34.3,
+      16.9
      ]
     }
    ]
@@ -42,7 +36,28 @@
   {
    "title": "Posts leave footprints",
    "text": "Online, your posts, photos, scores and comments are footprints. Each one shows a small piece of where you have been. Together, they make a trail.",
-   "art": "screen"
+   "art": "screen",
+   "visual": {
+    "type": "tiles",
+    "label": "Each one is a footprint. Together, they make a trail.",
+    "values": [
+     "a post",
+     "a photo",
+     "a score",
+     "a comment"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A post, a photo, a score, a comment: footprints",
+     "box": [
+      5.5,
+      32.0,
+      89.0,
+      26.7
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -56,30 +71,24 @@
     "copied print: travels far"
    ],
    "img": "csq/would-you-rather/online-delete-1b",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
+   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
    "focus": [
     {
      "cue": "Delete an old post you are embarrassed by",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or leave it, and laugh it off",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -89,30 +98,24 @@
    "text": "Friends follow footprints, but strangers can follow them too. The Magpie loves a clear trail, because it points to shiny secrets. Before you post, picture the whole trail.",
    "art": "people",
    "img": "csq/escape-the-post-office/pim-1b",
-   "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
-   "view": [
-    0.0,
-    40.5,
-    66.9,
-    59.5
-   ],
+   "alt": "Two Pim cards' clues: both postmarked Netville, today. One has small owl prints and asks for help; one has big round prints and asks for your key.",
    "focus": [
     {
      "cue": "This trail is not an owl's: big round prints",
      "box": [
-      38.5,
-      64.8,
-      25.4,
-      8.9
+      59.3,
+      19.5,
+      34.3,
+      25.4
      ]
     },
     {
      "cue": "And it fishes for a shiny secret",
      "box": [
-      38.5,
-      73.7,
-      25.4,
-      8.9
+      59.3,
+      44.9,
+      34.3,
+      25.4
      ]
     }
    ]
@@ -147,21 +150,15 @@
    "text": "Open Escape the Post Office at Lock 3: Which Pim? Three cards say they are from Pim. Read each trail of footprints and postmarks, then pick the real Pim.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/pim-1b-pick",
-   "alt": "The real Pim is picked: a Netville postmark, owl footprints, and a request for help in the open.",
-   "view": [
-    0.0,
-    26.9,
-    52.0,
-    73.1
-   ],
+   "alt": "Three messages say they are from Pim; only one really is. Two cards: one asks for sorting help after lunch, one asks for your mailbox key.",
    "focus": [
     {
      "cue": "Play Which Pim?: read every trail, then pick",
      "box": [
-      1.5,
-      36.9,
-      31.7,
-      63.1
+      6.4,
+      50.8,
+      39.0,
+      47.2
      ]
     }
    ]

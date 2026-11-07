@@ -47,18 +47,18 @@
    "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
    "view": [
     20.6,
-    32.7,
-    40.0,
-    40.3
+    26.4,
+    67.2,
+    49.1
    ],
    "focus": [
     {
      "cue": "The padlock certifies the trip is sealed",
      "box": [
-      28.9,
-      37.7,
-      23.4,
-      30.3
+      42.9,
+      64.5,
+      8.9,
+      3.5
      ]
     },
     {
@@ -82,6 +82,62 @@
     "the site controls its name: covered",
     "the site is honest: not covered",
     "what it sells is safe: not covered"
+   ],
+   "visual": {
+    "type": "bars",
+    "label": "What a padlock covers, and what it never covers",
+    "rows": [
+     {
+      "label": "Covered by the padlock",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "trip is scrambled",
+        "tone": 0
+       },
+       {
+        "w": 0.5,
+        "label": "site controls name",
+        "tone": 0
+       }
+      ]
+     },
+     {
+      "label": "Never covered",
+      "parts": [
+       {
+        "w": 0.5,
+        "label": "site is honest",
+        "tone": 3
+       },
+       {
+        "w": 0.5,
+        "label": "sells safe things",
+        "tone": 3
+       }
+      ]
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Covered: a scrambled trip, a site that controls its name",
+     "box": [
+      5.0,
+      14.4,
+      90.0,
+      23.8
+     ]
+    },
+    {
+     "cue": "Never covered: honesty, or safe things to buy",
+     "box": [
+      5.0,
+      44.6,
+      90.0,
+      23.8
+     ]
+    }
    ]
   },
   {
@@ -93,7 +149,7 @@
    "view": [
     4.2,
     13.7,
-    40.0,
+    45.0,
     35.6
    ],
    "focus": [
@@ -109,9 +165,9 @@
     {
      "cue": "The badge says the sender is unknown",
      "box": [
-      22.7,
+      24.3,
       29.8,
-      12.7,
+      11.1,
       3.4
      ]
     }
@@ -155,9 +211,9 @@
    "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means.",
    "view": [
     6.0,
-    22.0,
+    24.3,
     50.0,
-    40.0
+    37.7
    ],
    "focus": [
     {

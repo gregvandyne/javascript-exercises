@@ -11,30 +11,24 @@
    "text": "One afternoon a mean message lands in the class game chat, mocking a player's drawing. It is only a few words, but everyone who reads it feels smaller.",
    "art": "screen",
    "img": "csq/trick-inbox/chat-1b-ch-3-all",
-   "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
-   "view": [
-    0.0,
-    15.1,
-    95.5,
-    84.9
-   ],
+   "alt": "A game chat from JokerJay with clues marked: “Everyone laugh at Pip, he plays like a baby!” and “Share this so the whole school sees.”",
    "focus": [
     {
      "cue": "A mean message mocks a player",
      "box": [
-      3.8,
-      56.4,
-      47.3,
-      7.1
+      7.1,
+      34.3,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "And it wants the whole school to see",
      "box": [
-      51.8,
-      56.4,
-      40.7,
-      7.1
+      7.1,
+      56.7,
+      77.5,
+      13.5
      ]
     }
    ]
@@ -44,21 +38,15 @@
    "text": "Kind words help more than you think. A kind word to the player who was mocked tells them the chat is not all against them, and it costs you nothing.",
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
-   "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
+   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
    "focus": [
     {
      "cue": "A kind word to Pip helps more than any reply",
      "box": [
-      3.4,
-      67.7,
-      93.3,
-      14.9
+      6.4,
+      17.9,
+      87.1,
+      47.4
      ]
     }
    ]
@@ -68,30 +56,15 @@
    "text": "An upstander stands up for the person, kindly and safely. Never join in, never laugh along, and never forward a mean message. Forwarding spreads the hurt to new screens.",
    "art": "shield",
    "img": "csq/escape-the-post-office/moves-1b",
-   "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Five empty move slots, and the tiles to put in order: Carry on, Tell a trusted adult, Save it, Stop, Block or report it.",
    "focus": [
-    {
-     "cue": "An unkind message is being passed along",
-     "box": [
-      3.4,
-      40.7,
-      93.3,
-      9.1
-     ]
-    },
     {
      "cue": "Never forward it: stop, do not pass it on",
      "box": [
-      75.0,
-      66.0,
-      23.5,
-      12.9
+      53.2,
+      49.5,
+      37.4,
+      20.1
      ]
     }
    ]
@@ -108,30 +81,24 @@
     "Tell a trusted adult what happened"
    ],
    "img": "csq/would-you-rather/online-delete-1b",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
+   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
    "focus": [
     {
      "cue": "Delete the message if you can",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or leave it standing for all to see",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -141,30 +108,24 @@
    "text": "The move that always works: save the message, then tell a trusted adult. Saving it means the adult can see exactly what was said, and telling is never telling tales.",
    "art": "envelope",
    "img": "csq/escape-the-post-office/moves-1b-two",
-   "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
-   "view": [
-    0.0,
-    36.2,
-    68.9,
-    61.2
-   ],
+   "alt": "A message unkind to Sam is going around the class chat. Two moves placed: Stop, do not pass it on, then Save it, keep the message.",
    "focus": [
     {
      "cue": "Stop, then save it: keep the message",
      "box": [
-      2.6,
-      56.0,
-      52.3,
-      6.7
+      4.8,
+      43.6,
+      54.8,
+      26.7
      ]
     },
     {
      "cue": "Then tell a trusted adult",
      "box": [
-      34.2,
-      66.0,
-      31.7,
-      11.6
+      50.9,
+      78.0,
+      46.4,
+      22.0
      ]
     }
    ]
@@ -199,21 +160,15 @@
    "text": "Open Escape the Post Office at Lock 5: Five Moves. A mean message is going around the class chat: put the five moves in order. You can play it alone, or with a family member or classmate.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/moves-1b-four",
-   "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "A message unkind to Sam is going around the class chat. Four moves placed: Stop, Save it, Tell a trusted adult, Block or report.",
    "focus": [
     {
      "cue": "Play Five Moves: put the moves in order",
      "box": [
-      1.5,
-      54.0,
-      97.0,
-      17.8
+      2.7,
+      37.7,
+      94.5,
+      61.4
      ]
     }
    ]

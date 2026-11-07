@@ -11,30 +11,24 @@
    "text": "Pim says some facts are me-facts. Your name, your school, where you live and your birthday are all me-facts. Together, they can point straight at you.",
    "art": "shield",
    "img": "csq/would-you-rather/online-name-1b",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
+   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
    "focus": [
     {
      "cue": "A nickname nobody can trace",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     },
     {
      "cue": "Your real name, for all to see",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -56,9 +50,9 @@
    "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
    "view": [
     5.0,
-    4.9,
-    77.9,
-    69.2
+    9.5,
+    86.3,
+    64.6
    ],
    "focus": [
     {
@@ -86,21 +80,15 @@
    "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
    "art": "magnifier",
    "img": "csq/trick-inbox/chat-1b-ch-6-all",
-   "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
-   "view": [
-    0.0,
-    34.1,
-    70.2,
-    62.4
-   ],
+   "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
    "focus": [
     {
      "cue": "Three small facts asked together: first pet, street, birthday",
      "box": [
-      3.8,
-      61.8,
-      63.4,
-      7.1
+      7.1,
+      44.9,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -109,31 +97,25 @@
    "title": "Games do not need me-facts",
    "text": "Some games and sites ask for me-facts before you can play. A real game never needs your address to let you play. If a game asks, stop and tell a trusted adult.",
    "art": "screen",
-   "img": "csq/packet-post/tricks-1b-stranger",
-   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
-   "view": [
-    6.0,
-    24.0,
-    68.0,
-    50.0
-   ],
+   "img": "csq/packet-post/tricks-1b-stranger-n1",
+   "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
    "focus": [
     {
      "cue": "Someone from the game asks for your street",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      17.7
+      2.9,
+      5.4,
+      94.3,
+      54.3
      ]
     },
     {
      "cue": "A real game never needs to know where you live",
      "box": [
-      55.3,
-      40.4,
-      16.0,
-      7.5
+      2.9,
+      77.0,
+      46.2,
+      23.0
      ]
     }
    ]

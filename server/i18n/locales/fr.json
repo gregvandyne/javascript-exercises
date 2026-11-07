@@ -3864,6 +3864,7 @@
       "packetPost": "Envoyez des paquets sur un réseau, choisissez des phrases de passe solides et repérez les pièges en ligne.",
       "insideTheMachine": "Montez et réparez des ordinateurs : composants, entrées et sorties, bits et pixels, conception pour tous.",
       "tugOfMath": "Des questions de maths choisies pour chaque niveau de 1 à 8, des additions jusqu’à 20 aux équations, en partie de tir à la corde. Contre l’ordi ou un ami sur le même écran.",
+      "doodleHoot": "Dessine un mot pour les autres ou épelle le leur avec des tuiles de lettres. Mots faciles, moyens ou difficiles en 13 langues, en direct avec la famille et les amis ou sur un seul appareil.",
       "remisQuietMeadow": "Un sonomètre pour la classe : restez calmes pour que Remi, le panda roux, puisse dormir, et comptez ensemble le temps calme."
     },
     "hubs": {
@@ -4084,7 +4085,8 @@
           "loopLab": "On touche des cases pour créer un rythme et on l’entend tourner en boucle tout de suite. Pas besoin de savoir lire la musique.",
           "beatLanes": "Taper en rythme sur des chansons connues, en commençant par Ah ! vous dirai-je, maman.",
           "munchMaze": "Une course-poursuite dans un labyrinthe avec un mode Facile : prévoir un trajet et manger toutes les pastilles.",
-          "tugOfMath": "Choisis le niveau 2 ou 3 : additions, soustractions et tables de multiplication, avec l’ordi en Facile jusqu’à la victoire."
+          "tugOfMath": "Choisis le niveau 2 ou 3 : additions, soustractions et tables de multiplication, avec l’ordi en Facile jusqu’à la victoire.",
+          "doodleHoot": "Des mots en images et des tuiles de lettres : l’orthographe comme un jeu de fête."
         },
         "faq": {
           "q2": "Les jeux sont-ils trop difficiles pour un enfant de 8 ans ?",
@@ -4114,7 +4116,8 @@
           "loopLab": "Assez grands pour imaginer une chanson entière : enchaîner des rythmes et réussir les 10 défis musicaux.",
           "heroOfSunvale": "Plus qu’un jeu rapide : des missions à lire et à suivre, et un royaume en 3D à explorer à leur rythme.",
           "swishFlick": "Une pause rapide avec un peu de physique : la direction du geste vise et sa vitesse décide jusqu’où la balle vole.",
-          "tugOfMath": "Les niveaux 4 et 5 ajoutent de plus grandes multiplications et les priorités opératoires ; on peut jouer à deux sur une tablette ou un tableau interactif."
+          "tugOfMath": "Les niveaux 4 et 5 ajoutent de plus grandes multiplications et les priorités opératoires ; on peut jouer à deux sur une tablette ou un tableau interactif.",
+          "doodleHoot": "Des mots difficiles, des réponses en deux mots et une course pour les épeler en premier."
         },
         "faq": {
           "q2": "Les jeux sont-ils trop faciles pour un enfant de 10 ans ?",
@@ -4560,6 +4563,13 @@
       "locked": "Salle fermée",
       "autoLock": "La salle se ferme quand la partie commence.",
       "end": "Terminer la partie",
+      "skipTurn": "Passer le tour",
+      "clear": "Effacer le dessin",
+      "clearConfirm": "Effacer le dessin sur tous les écrans ?",
+      "copyLink": "Copier le lien",
+      "copied": "Lien copié. Envoie-le à tes joueurs.",
+      "playToo": "Jouer aussi",
+      "hidCount": "Joueurs qui masquent ce dessin : {count}",
       "endConfirm": "Terminer la partie pour tout le monde ?",
       "remove": "Retirer",
       "removeConfirm": "Retirer ce joueur de la partie ?",
@@ -4623,7 +4633,9 @@
       "atlas": "Atlas Quest (En direct)",
       "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi.",
       "tug": "Tug of Math (En direct)",
-      "tugText": "La classe se partage en deux équipes. Chacun répond à des questions de maths de son niveau sur son propre pavé, et chaque bonne réponse tire la corde."
+      "tugText": "La classe se partage en deux équipes. Chacun répond à des questions de maths de son niveau sur son propre pavé, et chaque bonne réponse tire la corde.",
+      "doodle": "Doodle Hoot (En direct)",
+      "doodleText": "Un joueur dessine, les autres épellent le mot avec des tuiles de lettres. Pour la famille ou les amis, où qu’ils soient, chacun sur son appareil."
     },
     "starter": {
       "title": {
@@ -4872,6 +4884,7 @@
         "cat": "La catégorie de la question {n} n’est pas autorisée."
       },
       "noMissed": "Tout le monde a tout juste : il n'y a rien à rejouer.",
+      "needTwo": "Il faut deux joueurs pour commencer.",
       "tugTeams": "Tug of Math a besoin de deux équipes, et les équipes sont désactivées sur ce site.",
       "teamsOff": "Ce jeu n'avait pas d'équipes.",
       "againGone": "Les joueurs sont partis. Lancez plutôt un nouveau jeu.",
@@ -5322,6 +5335,7 @@
         "resume": "{name} a repris le jeu",
         "next": "{name} est passé à la suite",
         "skip": "{name} a sauté la question",
+        "clear": "{name} a effacé le dessin",
         "lock": "{name} a verrouillé la salle",
         "unlock": "{name} a ouvert la salle",
         "kick": "{name} a retiré {player}",
@@ -5414,6 +5428,20 @@
       "of": "de",
       "hint": "Les joueurs sont répartis pour toi en deux équipes égales. Chacun a ses propres questions, donc personne ne copie, et une équipe plus petite tire aussi fort.",
       "teamsAuto": "Deux équipes faites pour toi : les Baleines Bleues et les Renards Rouges. Tu peux équilibrer, mélanger ou déplacer des joueurs."
+    },
+    "doodleUi": {
+      "legend": "Doodle Hoot (En direct)",
+      "lang": "Langue des mots",
+      "level": "Mots",
+      "levels": "Faciles|Moyens|Difficiles",
+      "like": "Des mots comme :",
+      "rounds": "Manches",
+      "roundsList": "1 manche (chacun dessine une fois)|2 manches|3 manches",
+      "secs": "Temps pour dessiner",
+      "secsN": "{n} secondes",
+      "hint": "Chacun dessine à son tour. Les joueurs rejoignent avec le code sur leur propre appareil, où qu’ils soient. Personne n’écrit : on devine avec des tuiles de lettres, et il n’y a pas de chat.",
+      "bigRoom": "Un grand groupe ? Une manche suffit : chacun dessine une fois.",
+      "play": "S’entraîner ou jouer sur un appareil"
     },
     "atlasUi": {
       "legend": "Atlas Quest (En direct)",
@@ -5539,6 +5567,10 @@
       "wyr": {
         "h": "Tu préfères ? (En direct)",
         "p": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse ni de points : une discussion toute prête."
+      },
+      "doodle": {
+        "h": "Doodle Hoot (En direct)",
+        "p": "Un joueur dessine, les autres épellent le mot avec des tuiles de lettres : orthographe et vocabulaire en 13 langues. Idéal pour les petits groupes (jusqu’à 16) ; tu peux effacer un dessin ou passer un tour à tout moment."
       },
       "tug": {
         "h": "Tug of Math (En direct)",

@@ -285,12 +285,12 @@
    "text": "Open Fraction Factory at Re-Slice, then serve the orders. Re-slice a share before you decide if two orders match.",
    "art": "trophy",
    "img": "nq/fraction-factory/re-slice",
-   "alt": "Fraction Factory, Re-Slice: the order says one half but the tray only fits fourths, each half re-sliced into two, parts on the tray.",
+   "alt": "Fraction Factory, Re-Slice, on a phone: the order 1/2 re-sliced into 4 parts, and the cake cut in quarters with 2/4 on the tray.",
    "view": [
-    28,
-    37,
-    44,
-    62
+    0,
+    0,
+    46.44,
+    100
    ]
   }
  ],

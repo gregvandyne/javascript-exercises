@@ -10,31 +10,16 @@
    "title": "Spark Day trouble",
    "text": "It is Spark Day in Netville, and the sorting room should be full of festival post. Instead, the Magpie has locked the door with six trick locks and pocketed the keys.",
    "art": "mask",
-   "img": "csq/escape-the-post-office/door-1b-new",
-   "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "img": "csq/escape-the-post-office/door-1b-new-n2",
+   "alt": "Escape the Post Office begins: 0 of 6 locks open. Spark Day! The Magpie locked the sorting room with six trick locks and kept the real post inside.",
    "focus": [
     {
      "cue": "Spark Day: the Magpie locked the real post inside",
      "box": [
-      1.5,
-      26.7,
-      97.0,
-      10.7
-     ]
-    },
-    {
-     "cue": "Six trick locks on the sorting room door",
-     "box": [
-      1.5,
-      38.7,
-      97.0,
-      54.2
+      2.8,
+      69.0,
+      94.4,
+      31.0
      ]
     }
    ]
@@ -44,30 +29,15 @@
    "text": "Pim lays your six Defender stamps on the door, one from every unit. The stamp proves you trained the skill. Each lock now tests it, one lock per unit.",
    "art": "star",
    "img": "csq/escape-the-post-office/door-1b-two",
-   "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Lock open! Lock 1, Sorting Gate, and Lock 2, Sealed Note, are open: their Roadwise and Keykeeper stamps did the work.",
    "focus": [
-    {
-     "cue": "Each lock names the stamp that opens it",
-     "box": [
-      67.0,
-      37.8,
-      31.5,
-      34.5
-     ]
-    },
     {
      "cue": "Locks open one by one, in stamp order",
      "box": [
-      1.5,
-      37.8,
-      64.3,
-      34.5
+      5.2,
+      50.2,
+      41.2,
+      49.0
      ]
     }
    ]
@@ -77,30 +47,24 @@
    "text": "The first locks ask for your earliest skills. Route the golden letter, wheel the secret code, and pick the real message from footprint clues.",
    "art": "map",
    "img": "csq/escape-the-post-office/gate-1b",
-   "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
-   "view": [
-    0.0,
-    17.9,
-    92.4,
-    82.1
-   ],
+   "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads lead past the Market and the Library to the Sorting Room.",
    "focus": [
     {
      "cue": "Route the golden letter to the Sorting Room",
      "box": [
-      10.5,
-      54.9,
-      78.9,
-      16.3
+      9.2,
+      18.8,
+      85.7,
+      41.3
      ]
     },
     {
      "cue": "More than one road leads there",
      "box": [
-      24.9,
-      51.6,
-      6.0,
-      24.6
+      22.9,
+      18.0,
+      11.4,
+      56.9
      ]
     }
    ]
@@ -118,31 +82,25 @@
     "Five Moves: the drill, from Unit 5",
     "Layers: stacking guards, from Unit 6"
    ],
-   "img": "csq/escape-the-post-office/note-1b",
-   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "img": "csq/escape-the-post-office/note-1b-n2",
+   "alt": "The Magpie's sealed note reads RSHQ, a scramble, with the Turn back and Turn forward buttons to try each shift.",
    "focus": [
     {
      "cue": "The Sealed Note: a code from Unit 2",
      "box": [
-      1.5,
-      36.9,
-      97.0,
-      21.5
+      4.5,
+      1.8,
+      52.2,
+      30.7
      ]
     },
     {
      "cue": "Turn the wheel until it reads as words",
      "box": [
-      1.5,
-      72.6,
-      97.0,
-      10.7
+      2.6,
+      56.7,
+      94.9,
+      39.3
      ]
     }
    ]
@@ -152,30 +110,24 @@
    "text": "Here is the fair promise of the sorting room: there is no fail and no timer. A wrong try only wobbles a lock, and three hint feathers are yours to spend, counted honestly on your shield.",
    "art": "shield",
    "img": "csq/escape-the-post-office/inbox-1b-wrong",
-   "alt": "A wrong try on Lock 4 only wobbles it: Pim shows the missed clue, and the lock waits for another try.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "A wrong try: Pim shows the missed clue, a prize you never tried to win plus a rush. The moves wait below to try again.",
    "focus": [
     {
      "cue": "A wrong try only wobbles the lock",
      "box": [
-      1.5,
-      66.4,
-      97.0,
-      15.9
+      4.8,
+      0.0,
+      89.7,
+      29.0
      ]
     },
     {
      "cue": "Try again: the lock waits for you",
      "box": [
-      1.5,
-      83.7,
-      97.0,
-      11.6
+      2.7,
+      36.7,
+      94.7,
+      44.2
      ]
     }
    ]
@@ -210,21 +162,15 @@
    "text": "Open Escape the Post Office and play the full escape. Open all six locks, earn your Defender shield, and set the town's real post free.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-1b-five",
-   "alt": "Five of the six locks are open in green. Only Lock 6, Layers, still guards the sorting room door.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Lock open! Lock 1, Sorting Gate (Unit 1 stamp: Roadwise), and Lock 2, Sealed Note (Unit 2 stamp: Keykeeper), both open.",
    "focus": [
     {
-     "cue": "Open all six locks and earn your shield",
+     "cue": "Open each lock in turn to earn your shield",
      "box": [
-      1.5,
-      37.8,
-      97.0,
-      50.4
+      2.7,
+      45.9,
+      94.5,
+      53.5
      ]
     }
    ]

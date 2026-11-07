@@ -215,12 +215,12 @@
    "text": "Open Fraction Factory at Recipe Math, then serve the orders. Re-slice until the pieces match before you add any two shares.",
    "art": "trophy",
    "img": "nq/fraction-factory/recipe-math",
-   "alt": "Fraction Factory, Recipe Math: the recipe order adds two fractions of a cake, shown as fraction bars over the whole cake, on one tray.",
+   "alt": "Fraction Factory, Recipe Math, on a phone: the order 1/4 + 2/4, shown as two bars of fourths, 1 part and 2 parts filled.",
    "view": [
-    28,
-    37,
-    44,
-    62
+    0,
+    0,
+    66.39,
+    100
    ]
   }
  ],

@@ -59,9 +59,9 @@
    "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
    "view": [
     39.0,
-    24.0,
-    52.0,
-    40.0
+    19.6,
+    53.6,
+    44.4
    ],
    "focus": [
     {
@@ -80,30 +80,24 @@
    "text": "Many devices send photos to the cloud by themselves. Choosing what belongs in which vault is a Cyber Defender decision, not a default to leave switched on.",
    "art": "screen",
    "img": "csq/would-you-rather/online-cloud-2",
-   "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
+   "alt": "Would you rather: photos only on your tablet, where nobody else sees them, or also a copy on a service someone else runs?",
    "focus": [
     {
      "cue": "Photos only on your tablet",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or a copy on a service someone else runs",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -143,21 +137,15 @@
    "text": "Open Escape the Post Office at Lock 1: Sorting Gate and route the golden letter to the sorting room door. That trip is data in transit. Then name the lock each room needs: the van, the vault and the reading desk.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/gate-2",
-   "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
-   "view": [
-    0.0,
-    37.5,
-    52.0,
-    52.0
-   ],
+   "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads run past the Market and the School to the Sorting Room.",
    "focus": [
     {
      "cue": "Play Sorting Gate: the letter is data in transit",
      "box": [
-      20.5,
-      49.9,
-      6.0,
-      25.9
+      18.8,
+      24.5,
+      11.4,
+      60.2
      ]
     }
    ]

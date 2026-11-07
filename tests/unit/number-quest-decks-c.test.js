@@ -189,7 +189,7 @@ test('hand-checked keys: the arithmetic in the checks is right', () => {
   // And the worked examples in the decks: 2 kg counted twice to 2,000 g, change 5 + 30 = 35 cents,
   // area 3 x 7 = 21, the treasure at (3, 2), 20 - 12 = 8, ribbons to 1 1/2, the sack at 3,400 grams.
   const all = decks.map(d => JSON.stringify(d.deck)).join(' ');
-  for (const frag of ['2 kilograms = 1,000 + 1,000 grams', 'Change = 5 + 30 = 35 cents', 'Area = 3 x 7 = 21 square units', 'The treasure sits at (3, 2)', '20 - 12 = 8', 'In all: 1 1/2 yards', 'The sack is 3,400 grams']) assert.ok(all.includes(frag), `worked example present: ${frag}`);
+  for (const frag of ['2 kilograms = 1,000 + 1,000 grams', 'Change = 5 + 30 = 35 cents', 'Area = 3 × 7 = 21 square units', 'The treasure sits at (3, 2)', '20 - 12 = 8', 'In all: 1 1/2 yards', 'The sack is 3,400 grams']) assert.ok(all.includes(frag), `worked example present: ${frag}`);
 });
 
 test('the unit Jumble beats land in the last step of each unit (5.3, 6.3, 7.3), and the arc resolves in the Vault', () => {
@@ -245,7 +245,7 @@ test('visual strings respect the deck loader caps (server/services/courses.js cl
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {
-  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes'];
+  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table'];
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     const drawn = d.slides.filter(s => s.visual);
@@ -263,12 +263,12 @@ test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with 
   }
   const vis = n => decks.find(d => d.step.n === n).deck.slides.filter(s => s.visual).map(s => s.visual.type);
   assert.ok(vis('5.1').includes('numberline') && vis('5.1').includes('bars'), '5.1 draws the meter stick AND the conversion bar');
-  assert.ok(vis('5.2').filter(t => t === 'numberline').length === 2, '5.2 draws time on the line twice (concept and bus)');
-  assert.ok(vis('5.3').filter(t => t === 'bars').length === 2, '5.3 draws the dollar bar AND the change bar');
+  assert.ok(vis('5.2').filter(t => t === 'numberline').length === 2 && vis('5.2').includes('table'), '5.2 draws time on the line twice (concept and bus) AND the timetable it reads');
+  assert.ok(vis('5.3').filter(t => t === 'bars').length === 2 && vis('5.3').includes('table'), '5.3 draws the dollar bar AND the change bar, and every coin the board counts');
   assert.ok(vis('6.1').filter(t => t === 'shapes').length === 2, '6.1 draws the shapes it sorts AND the square beside the rectangle (real drawn shapes, corners marked)');
-  assert.ok(vis('6.2').includes('bars') && vis('6.2').includes('array'), '6.2 draws the fence bar AND the carpet array');
-  assert.ok(vis('6.3').includes('bars') && vis('6.3').includes('array'), '6.3 draws the fold AND the grid');
-  assert.ok(vis('7.1').includes('bars') && vis('7.1').includes('numberline'), '7.1 draws the bar graph AND the line plot');
+  assert.ok(vis('6.2').includes('bars') && vis('6.2').filter(t => t === 'squares').length === 2, '6.2 draws the fence bar AND the carpet tiled in unit squares, and two shapes with one fence');
+  assert.ok(vis('6.3').includes('lines') && vis('6.3').includes('bars') && vis('6.3').includes('grid'), '6.3 draws parallel and perpendicular lines, the fold AND a grid with axes from (0, 0)');
+  assert.ok(vis('7.1').includes('chart') && vis('7.1').includes('numberline'), '7.1 draws the bar graph (with its scale) AND the line plot');
   assert.ok(vis('7.2').includes('bars') && vis('7.2').includes('numberline'), '7.2 draws the survey chart AND the line plot');
   assert.ok(vis('7.3').includes('fraction') && vis('7.3').includes('tiles'), '7.3 draws the spinner bar AND the chance words');
   assert.ok(vis('7.4').includes('bars') && vis('7.4').includes('numberline'), '7.4 draws the Heavy Sack AND the tour line');

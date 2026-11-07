@@ -25,7 +25,7 @@ const pics = portraits(D.kit);
 const nm = n => nameOf(D.nicks || [], n);
 const SHOW = {
   lobby: ['start', 'lock', 'unlock', 'end'], loading: ['end'], countdown: ['end'],
-  playing: ['pause', 'next', 'skip', 'end'], paused: ['resume', 'end'], between: ['next', 'end'], ended: [],
+  playing: ['pause', 'next', 'skip', 'clear', 'end'], paused: ['resume', 'clear', 'end'], between: ['next', 'end'], ended: [],
 };
 const ALWAYS = new Set(['eyes', 'settings', 'sound', 'dash', 'cohosts']);
 const CTL = D.ctl || { role: 'host', tier: 'full' }, TC = D.cohost || null;
@@ -56,6 +56,8 @@ function onMessage(m) {
     case 'ph': onPhase(m); break;
     case 'lk': setLocked(m.locked); return;
     case 'rp': { const r = $('lv-reports'); if (r) r.hidden = false; return; }
+    case 'st': if (m.d && m.d.dd) doodleState(m.d.dd); break;
+    case 'ev': if (m.k === 'hid' && m.d) hidCount(m.d); break;
     case 'res': podiumHold(); return;
     case 'bye':
       if (TC && (m.why === 'projectorBusy' || (m.why === 'replaced' && CTL.role === 'cohost'))) { busy(m.why === 'replaced' ? TC.projBack : TC.projBusy); return; }
@@ -96,6 +98,7 @@ function welcome(m) {
   readLang = m.lang || readLang;
   question = m.quiz && m.quiz.q ? { i: m.quiz.q.i, q: m.quiz.q.q, choices: m.quiz.q.choices || [] } : null;
   for (const p of players.values()) drawPlayer(p);
+  if (m.state && m.state.dd) doodleState(m.state.dd);
   count(); setLocked(m.locked); setEyes(!!m.eyes);
   if (!frame || !frame.el) {
     const kind = m.lobbyFrame && phase === 'lobby' ? 'lobby' : 'game';
@@ -148,6 +151,21 @@ function count() {
   const n = [...players.values()].length;
   const el = $('lv-count'); if (el) el.textContent = fill(D.text.count, { count: n, max });
   const empty = $('lv-empty'); if (empty) empty.hidden = n > 0;
+  // Doodle Hoot Live needs two players before it can start
+  if (D.mode === 'doodle') { const st = document.querySelector('#lv-controls [data-lv-act="start"]'); if (st) st.disabled = n < 2; const two = $('lv-need-two'); if (two) two.hidden = n >= 2 || phase !== 'lobby'; }
+}
+// ---- Doodle Hoot Live: Skip turn carries the turn number; how many viewers hid this turn's drawing ----
+let dd = null;
+function doodleState(d) {
+  const was = dd ? dd.tn : 0;
+  dd = { ...(dd || {}), ...d };
+  if (dd.tn !== was) { const h = $('lv-hid'); if (h) h.hidden = true; }
+  // the final podium: nothing left to pause, skip or clear
+  const c = $('lv-controls'); if (c) c.classList.toggle('lv-dd-done', dd.ph === 'done');
+}
+function hidCount(d) {
+  const h = $('lv-hid'); if (!h || !dd || d.n !== dd.tn) return;
+  h.textContent = fill(D.text.hidCount, { count: d.k }); h.hidden = false;
 }
 const presetOf = k => { const t = teams.list.find(x => x.k === k); return t ? presets[t.p] : null; };
 function drawPlayer(p) {
@@ -178,6 +196,7 @@ function drawPlayer(p) {
 // ---- controls ----
 function act(a, extra = {}) {
   if (a === 'end' && !confirm(document.querySelector('[data-lv-act="end"]').dataset.confirm)) return;
+  if (a === 'clear' && !confirm(document.querySelector('[data-lv-act="clear"]').dataset.confirm)) return;
   if (a === 'eyes') { sock.send('h', { a: 'eyes', on: !eyesOn }); return; }
   if (a === 'settings') { const d = $('lv-settings'); fillSettings(); if (d && d.showModal) d.showModal(); return; }
   if (a === 'sound') { sock.send('cf', { d: { sound: settings.sound === false } }); return; }
@@ -186,6 +205,7 @@ function act(a, extra = {}) {
   const msg = { a, ...extra };
   if (a === 'end' && CTL.role !== 'host') msg.sure = 1;   // a co-host's end says it is sure
   if (a === 'next' || a === 'skip') msg.at = seq;
+  if (a === 'skip' && D.mode === 'doodle') msg.at = dd ? dd.tn : 0;
   sock.send('h', msg);
 }
 $('lv-controls').addEventListener('click', e => {
@@ -205,6 +225,15 @@ addEventListener('keydown', e => {
   const k = /^Key[A-Z]$/.test(e.code || '') ? e.code.slice(3) : String(e.key || '').toUpperCase();
   const b = [...document.querySelectorAll('[data-lv-act]')].find(x => !x.hidden && x.getAttribute('aria-keyshortcuts') === k);
   if (b) { e.preventDefault(); act(b.dataset.lvAct); }
+});
+// Copy join link (the code stays in the address's #, never in a query or a server log); a phone shares it instead.
+$('lv-copy-link') && $('lv-copy-link').addEventListener('click', async () => {
+  const url = $('lv-copy-link').dataset.url;
+  try {
+    if (navigator.share && matchMedia('(pointer: coarse)').matches) await navigator.share({ title: D.title, url });
+    else await navigator.clipboard.writeText(url);
+    flash($('lv-copied'), D.text.copied, 3000);
+  } catch { /* cancelled or not allowed: the link is on the button's data */ }
 });
 $('lv-hide-code').addEventListener('click', () => {
   const box = $('lv-joinbox'), b = $('lv-hide-code'), hide = !box.classList.contains('is-hidden');

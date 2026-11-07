@@ -642,12 +642,14 @@ window.SoloBank = (function () {
      tiles together max out at 2,900), so both routes, many easy tiles or fewer hard ones, genuinely reach
      it. The reasoning is recorded in docs/decisions.md. */
   var NQ_GOAL = 3000;
+  var nqPads = 0;
   function nqShuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function nqItem(q, ans, wrong, cat) {
     var all = [String(ans)];
     wrong.map(String).forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
     all = nqShuffle(all.slice(0, 4));
     while (all.length < 4) { // a filtered distractor left a gap: pad with a near miss on the same pattern
+      nqPads++; // (a safety net only: tests/unit/number-quest-board-choices.test.js holds every board at zero pads)
       var pad = /^[\d,]+$/.test(String(ans)) ? nqFmt(Number(String(ans).replace(/,/g, '')) + all.length * 10) : String(ans) + ' ' + all.length;
       if (all.indexOf(pad) < 0) all.push(pad); else all.push(pad + '0');
     }
@@ -664,15 +666,21 @@ window.SoloBank = (function () {
         do { pickDigit(i < 3 ? [0, 0, 0] : [0, 0, 0, 0]); pos = ri(0, digs.length - 1); }
         while (digs.filter(function (d) { return d === digs[pos]; }).length > 1);
         var place = Math.pow(10, digs.length - 1 - pos), val = digs[pos] * place;
+        // Every wrong choice is the same digit in another place (9, 90, 900, 9,000): the place-value slip
+        // itself, never a filler number and never a padded one.
         out.push(nqItem('In ' + nqFmt(num) + ', what is the value of the ' + digs[pos] + '?', nqFmt(val),
-          [nqFmt(digs[pos]), nqFmt(val * 10), nqFmt(Math.max(1, val / 10))], 'Digit value'));
+          [1, 10, 100, 1000].filter(function (p) { return p !== place; }).map(function (p) { return nqFmt(digs[pos] * p); }), 'Digit value'));
       }
       for (i = 0; i < 5; i++) { // Expanded form: the number written out as its place values.
-        pickDigit([0, 0, 0, 0]); var parts = digs.map(function (d, k) { return d * Math.pow(10, 3 - k); }).filter(function (v) { return v > 0; });
-        var good = parts.map(nqFmt).join(' + '), swapped = parts.slice().reverse().map(nqFmt).join(' + ');
-        var dropped = parts.slice(0, -1).map(nqFmt).join(' + ') + ' + ' + nqFmt(parts[parts.length - 1] + 1);
-        var off = parts.slice(); off[off.length - 1] += 10;
-        out.push(nqItem('Which shows ' + nqFmt(num) + ' in expanded form?', good, [swapped, dropped, off.map(nqFmt).join(' + ')], 'Expanded form'));
+        // Every wrong choice adds up to a DIFFERENT number (the parts in another order would still be right):
+        // the digits written as faces, one part a place too low, and two places' digits traded.
+        do pickDigit([0, 0, 0, 0]); while (digs[1] === digs[2]);
+        var parts = digs.map(function (d, k) { return d * Math.pow(10, 3 - k); });
+        var faces = digs.join(' + ');
+        var slip = parts.slice(); slip[1] = parts[1] / 10;
+        var traded = parts.slice(); traded[1] = digs[2] * 100; traded[2] = digs[1] * 10;
+        out.push(nqItem('Which shows ' + nqFmt(num) + ' in expanded form?', parts.map(nqFmt).join(' + '),
+          [faces, slip.map(nqFmt).join(' + '), traded.map(nqFmt).join(' + ')], 'Expanded form'));
       }
       for (i = 0; i < 5; i++) { // Bigger number: compare numbers that share most digits.
         a = pickDigit([0, 0, 0]); var set = {}; set[num] = 1;
@@ -688,8 +696,14 @@ window.SoloBank = (function () {
           places.filter(function (p) { return p !== want; }).map(function (p) { return nqFmt(mk(p)); }), 'Where it sits'));
       }
       for (i = 0; i < 5; i++) { // Round it: the unit's rounding skill, on the place-value board.
-        var unit = i % 2 ? 100 : 10; num = ri(21, 989); var ans = Math.round(num / unit) * unit;
-        out.push(nqItem('Round ' + nqFmt(num) + ' to the nearest ' + (unit === 10 ? 'ten' : 'hundred') + '.', ans, [ans - unit, ans + unit, num], 'Round it'));
+        // Three-digit numbers that need rounding; the wrong choices are the other neighbour (rounded the
+        // wrong way), rounding to the wrong place, and the next jump on, never a negative or the number itself.
+        var unit = i % 2 ? 100 : 10;
+        do num = ri(112, 988); while (num % 10 === 0 || num % 100 === 50 || (unit === 100 && Math.round(num / 10) * 10 === Math.round(num / 100) * 100));
+        var ans = Math.round(num / unit) * unit, lo = Math.floor(num / unit) * unit, other = lo === ans ? lo + unit : lo;
+        var wrongPlace = unit === 10 ? Math.round(num / 100) * 100 : Math.round(num / 10) * 10;
+        var rWrong = [other, wrongPlace, ans > other ? ans + unit : ans - unit, ans + 2 * unit].filter(function (w) { return w >= 0 && w !== ans; });
+        out.push(nqItem('Round ' + nqFmt(num) + ' to the nearest ' + (unit === 10 ? 'ten' : 'hundred') + '.', ans, rWrong, 'Round it'));
       }
       return out;
     }
@@ -697,7 +711,7 @@ window.SoloBank = (function () {
       var names = ['Maya', 'Sam', 'Leo', 'Ana', 'Ben'], things = [['ribbons', 'sold'], ['stickers', 'gave away'], ['cans', 'recycled'], ['books', 'lent out'], ['seeds', 'planted']];
       for (i = 0; i < 5; i++) { // Draw the story: whole and one part given, find the other part.
         a = ri(180, 480); b = ri(60, a - 60); var th = things[i % things.length];
-        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. Draw the bar: whole ' + a + ', part ' + b + ', part ?. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
+        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. On the bar, the whole is ' + a + ' and one part is ' + b + '. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
       }
       for (i = 0; i < 5; i++) { // Joining stories: two parts make the whole.
         a = ri(120, 390); b = ri(40, 290);
@@ -729,10 +743,19 @@ window.SoloBank = (function () {
         out.push(nqItem('How many grams are in ' + a + ' kilograms?', nqFmt(a * 1000),
           [nqFmt(a * 100), nqFmt(a * 1000 - 100), nqFmt(a * 1000 + 1000)], 'Kilograms'));
       }
-      for (i = 0; i < 5; i++) { // Liters: the same renaming for poured measures.
-        a = ri(2, 9);
-        out.push(nqItem('A jug holds ' + a + ' liters. How many milliliters is that?', nqFmt(a * 1000),
-          [nqFmt(a * 100), nqFmt(a * 10), nqFmt(a * 1000 + 100)], 'Liters'));
+      for (i = 0; i < 5; i++) { // Count the units: measuring is counting (the lesson's footprints of 10 cm,
+        // its meter stick marked 0 to 100, and its rule that smaller units need a bigger count).
+        if (i < 3) {
+          a = ri(3, 9);
+          out.push(nqItem('Each footprint is 10 centimeters long. How long is a trail of ' + a + ' footprints in a row?', (a * 10) + ' centimeters',
+            [a + ' centimeters', (a * 100) + ' centimeters', ((a + 1) * 10) + ' centimeters'], 'Count the units'));
+        } else if (i === 3) {
+          out.push(nqItem('A meter stick is marked from 0 to 100 centimeters. Where is half a meter?', 'At the 50 mark',
+            ['At the 5 mark', 'At the 25 mark', 'At the 100 mark'], 'Count the units'));
+        } else {
+          out.push(nqItem('A ribbon is measured in meters, then in centimeters. Which count is bigger?', 'The centimeters count',
+            ['The meters count', 'The two counts are the same', 'You cannot tell'], 'Count the units'));
+        }
       }
       for (i = 0; i < 5; i++) { // Add the measure: two lengths, one unit, joined.
         a = ri(24, 88); b = ri(15, 96);
@@ -761,9 +784,9 @@ window.SoloBank = (function () {
           [(tot + 10) + ' cents', (tot - 5) + ' cents', (tot + 25) + ' cents'], 'Make the price'));
       }
       for (i = 0; i < 5; i++) { // Change back: the gap between the price and 100.
-        a = ri(35, 92);
+        do a = ri(35, 92); while (a === 50); // at 50 the price and the change would be the same choice
         out.push(nqItem('A toy costs ' + a + ' cents. You pay with 100 cents. How much change do you get?', (100 - a) + ' cents',
-          [(100 - a + 10) + ' cents', (100 - a - 10 > 0 ? 100 - a - 10 : 100 - a + 20) + ' cents', a + ' cents'], 'Change back'));
+          [(100 - a + 10) + ' cents', (100 - a - 10 > 0 ? 100 - a - 10 : 100 - a + 20) + ' cents', a + ' cents', (100 + a) + ' cents'], 'Change back'));
       }
       for (i = 0; i < 5; i++) { // Add the prices: two costs, one total.
         a = ri(22, 68); b = ri(15, 58);
@@ -784,7 +807,7 @@ window.SoloBank = (function () {
         a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
         if (a * b === 2 * (a + b)) b += 1; // area would equal the fence: the signature distractor must not be the key
         out.push(nqItem('A garden is ' + a + ' by ' + b + ' meters. How many meters of fence go around it?', 2 * (a + b),
-          [a * b, a + b, 2 * (a + b) + 2], 'Fence it'));
+          [a * b, a + b, 2 * a + b], 'Fence it')); // the carpet, half the fence, one side missed
       }
       for (i = 0; i < 5; i++) { // Carpet it: the covering squares.
         a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
@@ -795,12 +818,12 @@ window.SoloBank = (function () {
       for (i = 0; i < 5; i++) { // Count the squares: rows of squares, multiplied.
         a = ri(3, 8); b = ri(3, 9);
         out.push(nqItem('A garden has ' + a + ' rows of ' + b + ' square tiles. What is its area in square tiles?', a * b,
-          [a + b, a * b - b, a * b + 10], 'Count the squares'));
+          [a + b === a * b - b ? 2 * (a + b) : a + b, a * b - b, a * b + 10], 'Count the squares'));
       }
       for (i = 0; i < 5; i++) { // Missing side: the fence total and one side name the other.
         a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
         out.push(nqItem('A rectangle\u2019s perimeter is ' + (2 * (a + b)) + '. One side is ' + a + '. How long is the side next to it?', b,
-          [2 * b, a + b, a], 'Missing side'));
+          [2 * b === a ? 2 * (a + b) - a : 2 * b, a + b, a], 'Missing side'));
       }
       for (i = 0; i < 5; i++) { // Same fence: with one fence, the square holds the most carpet.
         var s = [4, 5, 6, 4, 5][i], per = 4 * s;

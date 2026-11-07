@@ -9,7 +9,7 @@
 export const V = 1;
 export const EMOTES = ['wave', 'cheer', 'jump', 'dance', 'clap', 'heart'];
 export const ANIM = ['idle', 'walk', 'run', 'jump', 'cheer', 'hurt', 'wave', 'dance'];
-export const HOST_ACTIONS = ['start', 'pause', 'resume', 'next', 'skip', 'lock', 'unlock', 'kick', 'end', 'eyes', 'say', 'time', 'bonus', 'rename', 'acc'];
+export const HOST_ACTIONS = ['start', 'pause', 'resume', 'next', 'skip', 'lock', 'unlock', 'kick', 'end', 'eyes', 'say', 'time', 'bonus', 'rename', 'acc', 'clear'];
 /** Fixed teacher messages (live.say.<id>): sent as an index, shown in each device's own language. Never free text. */
 export const SAY = ['twoMinutes', 'oneMinute', 'lastQuestion', 'lastRound', 'eyesOnMe', 'greatTeamwork', 'greatEffort', 'beKind', 'getReady', 'almostDone'];
 /** Bonus reasons (live.bonus.reason.<id>): all positive, always +100. */

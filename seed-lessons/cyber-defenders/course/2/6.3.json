@@ -11,21 +11,15 @@
    "text": "When an incident lands, professionals do not improvise. They run a drill with four moves: contain, preserve, report, recover. Your hand-sized version of it starts now.",
    "art": "shield",
    "img": "csq/escape-the-post-office/moves-2",
-   "alt": "Lock 5 at Pro: someone has a classmate's mailbox key, and a second message pressures you. Six drill tiles wait.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "The move tiles for Lock 5: change the key from a clean device, tell a trusted adult fast, carry on with a log, save the evidence, and more.",
    "focus": [
     {
      "cue": "The drill in order: six tiles",
      "box": [
-      1.5,
-      66.0,
-      97.0,
-      34.0
+      2.8,
+      2.6,
+      94.4,
+      95.1
      ]
     }
    ]
@@ -35,21 +29,15 @@
    "text": "Contain means stop the bleeding first. Leave the fake page, and change the key from a clean device you trust, not from the screen that may have tricked you.",
    "art": "lock",
    "img": "csq/escape-the-post-office/moves-2-one",
-   "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
-   "view": [
-    0.0,
-    33.5,
-    58.2,
-    51.7
-   ],
+   "alt": "A classmate's mailbox has been broken into. The first move placed: stop and disconnect, pass nothing on. Five slots wait.",
    "focus": [
     {
      "cue": "Contain first: stop and disconnect",
      "box": [
-      2.6,
-      56.0,
-      52.6,
-      6.7
+      5.0,
+      55.8,
+      90.0,
+      20.3
      ]
     }
    ]
@@ -59,21 +47,15 @@
    "text": "Preserve means keep the proof: screenshots, the message, the time it arrived. Do not delete in embarrassment. Evidence is what lets adults and platforms act, and speed beats embarrassment, twice over.",
    "art": "envelope",
    "img": "csq/escape-the-post-office/moves-2-three",
-   "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
-   "view": [
-    0.0,
-    39.3,
-    61.0,
-    54.2
-   ],
+   "alt": "Three moves placed: stop and disconnect, save the evidence (delete nothing), tell a trusted adult. The rest wait as tiles below.",
    "focus": [
     {
      "cue": "Preserve: save the evidence, delete nothing",
      "box": [
-      2.6,
-      63.1,
-      55.4,
-      6.7
+      5.0,
+      25.0,
+      90.0,
+      20.3
      ]
     }
    ]
@@ -83,21 +65,15 @@
    "text": "Report to a trusted adult, your school and the platform. Then recover: a fresh passphrase on the hit account, and everywhere it was reused. That is the separate-keys lesson from Unit 2, paying off.",
    "art": "people",
    "img": "csq/escape-the-post-office/moves-2-five",
-   "alt": "Five drill moves in order, up to change the key from a clean device. Only the one-line log is left.",
-   "view": [
-    0.0,
-    33.4,
-    74.9,
-    66.6
-   ],
+   "alt": "Moves placed in order: tell a trusted adult fast, report and block, change the key from a clean device. One slot is left to fill.",
    "focus": [
     {
      "cue": "Report and block, then recover",
      "box": [
-      2.6,
-      70.2,
-      69.3,
-      6.7
+      5.0,
+      36.1,
+      75.3,
+      27.9
      ]
     }
    ]
@@ -113,22 +89,16 @@
     "Report: trusted adult, school, platform",
     "Recover: new passphrase everywhere it was reused"
    ],
-   "img": "csq/trick-inbox/senders-2-sd-1-debrief",
-   "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
+   "img": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
+   "alt": "The debrief: the name says Post Office, but the real address is a freemail box and the button goes elsewhere. That mismatch is spoofing.",
    "focus": [
     {
      "cue": "A faked sender's button went somewhere else",
      "box": [
-      3.4,
-      42.2,
-      93.3,
-      46.8
+      6.4,
+      20.3,
+      87.1,
+      47.4
      ]
     }
    ]
@@ -138,21 +108,15 @@
    "text": "Afterwards, Defenders write one line: what happened, what the drill caught, what changes. Incidents are tuition. The log is how the next Defender pays less for the same lesson.",
    "art": "pencil",
    "img": "csq/escape-the-post-office/moves-2-done",
-   "alt": "Lock 5 open: the drill ran in order, start to finish. Calm work, and the skill it trained.",
-   "view": [
-    0.0,
-    8.3,
-    52.0,
-    46.2
-   ],
+   "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Skill trained: run the five moves in order when something goes wrong.",
    "focus": [
     {
      "cue": "Lock open: calm work, start to finish",
      "box": [
-      3.6,
-      28.7,
-      37.5,
-      5.5
+      6.9,
+      48.6,
+      71.5,
+      10.6
      ]
     }
    ]
@@ -186,22 +150,16 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office at Lock 5: Five Moves and run the whole drill in order: contain, preserve, report, recover.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/moves-2-one",
-   "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "img": "csq/escape-the-post-office/moves-2-one-n2",
+   "alt": "The first move placed: stop and disconnect. Five slots wait, and below them the tiles: change the key, tell a trusted adult, save the evidence.",
    "focus": [
     {
      "cue": "Play Five Moves: contain, preserve, report, recover",
      "box": [
-      1.5,
-      54.0,
-      97.0,
-      46.0
+      2.7,
+      24.7,
+      94.6,
+      75.3
      ]
     }
    ]

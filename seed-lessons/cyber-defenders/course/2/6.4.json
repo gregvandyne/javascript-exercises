@@ -10,31 +10,16 @@
    "title": "Spark Day, every channel at once",
    "text": "Spark Day, and the Magpie flock strikes on every channel at once: fake letters in the sacks, a prize poster on the door, and a postmark faked to look like Pim's own.",
    "art": "mask",
-   "img": "csq/escape-the-post-office/door-2-new",
-   "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "img": "csq/escape-the-post-office/door-2-new-n2",
+   "alt": "Escape the Post Office begins: 0 of 6 locks open. Spark Day! The Magpie locked the sorting room with six trick locks and kept the real post inside.",
    "focus": [
     {
      "cue": "Spark Day: every channel at once",
      "box": [
-      1.5,
-      26.7,
-      97.0,
-      10.7
-     ]
-    },
-    {
-     "cue": "The same six locks, cut harder",
-     "box": [
-      1.5,
-      38.7,
-      97.0,
-      57.9
+      2.8,
+      69.0,
+      94.4,
+      31.0
      ]
     }
    ]
@@ -44,30 +29,24 @@
    "text": "The sorting room is locked with the same six trick locks, cut harder this year. Inside the locks wait a spoofed sender, a pressure play, and a Trick Inbox round of eight items.",
    "art": "key",
    "img": "csq/escape-the-post-office/inbox-2-5",
-   "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
-   "view": [
-    0.0,
-    7.7,
-    100.0,
-    90.2
-   ],
+   "alt": "Inside Lock 4: a key check from “Post Office”. The sender name says Post Office, but the postmark is a hand stamp.",
    "focus": [
     {
      "cue": "Inside a lock: a spoofed sender",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      26.8
+      5.1,
+      39.3,
+      88.8,
+      60.7
      ]
     },
     {
      "cue": "Eight messages to judge",
      "box": [
-      1.5,
-      36.0,
-      18.0,
-      5.6
+      2.8,
+      21.5,
+      33.4,
+      10.3
      ]
     }
    ]
@@ -77,30 +56,15 @@
    "text": "Pim, locked out beside you, lays out your six stamps. Each stamp proves a trained skill, and each lock tests exactly that skill. Nothing in the room is new. All of it is combined.",
    "art": "star",
    "img": "csq/escape-the-post-office/door-2-two",
-   "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Lock open! Lock 1, Sorting Gate, and Lock 2, Sealed Note, are open: their Roadwise and Keykeeper stamps did the work.",
    "focus": [
-    {
-     "cue": "Each lock names the stamp that opens it",
-     "box": [
-      67.0,
-      37.8,
-      31.5,
-      34.5
-     ]
-    },
     {
      "cue": "Two locks open: the first two skills",
      "box": [
-      1.5,
-      37.8,
-      64.3,
-      34.5
+      5.2,
+      50.2,
+      41.2,
+      49.0
      ]
     }
    ]
@@ -117,21 +81,15 @@
     "Layers matching: Unit 6"
    ],
    "img": "csq/escape-the-post-office/door-2-five",
-   "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Lock open! Lock 1, Sorting Gate (Unit 1 stamp: Roadwise), and Lock 2, Sealed Note (Unit 2 stamp: Keykeeper), both open.",
    "focus": [
     {
-     "cue": "Six locks, six units: match each one",
+     "cue": "Each lock names its unit's stamp",
      "box": [
-      1.5,
-      37.8,
-      97.0,
-      50.4
+      2.7,
+      45.9,
+      94.5,
+      53.5
      ]
     }
    ]
@@ -141,30 +99,24 @@
    "text": "The room keeps its fair rules: no fail state, and the parade clock changes only the celebration, never the outcome. Hint feathers you spend are printed honestly on your shield.",
    "art": "shield",
    "img": "csq/escape-the-post-office/inbox-2",
-   "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Lock 4's moves: Deliver it, Bin it, Show Pim, Report and block. Below them, the hint feather button.",
    "focus": [
     {
      "cue": "No fail state: try, wobble, try again",
      "box": [
-      1.5,
-      66.4,
-      97.0,
-      11.6
+      2.9,
+      4.1,
+      94.3,
+      47.4
      ]
     },
     {
      "cue": "Hint feathers are counted honestly",
      "box": [
-      1.5,
-      79.3,
-      29.4,
-      10.7
+      2.9,
+      55.7,
+      55.9,
+      20.3
      ]
     }
    ]
@@ -199,21 +151,15 @@
    "text": "Open Escape the Post Office and play the full escape. Open all six locks, earn your Defender shield, and share the debrief page with a trusted adult or your class.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/door-2-five",
-   "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
+   "alt": "Lock open! Lock 1, Sorting Gate (Unit 1 stamp: Roadwise), and Lock 2, Sealed Note (Unit 2 stamp: Keykeeper), both open.",
    "focus": [
     {
-     "cue": "Open all six locks, then share the debrief",
+     "cue": "Open each lock in turn, then share the debrief",
      "box": [
-      1.5,
-      37.8,
-      97.0,
-      50.4
+      2.7,
+      45.9,
+      94.5,
+      53.5
      ]
     }
    ]
