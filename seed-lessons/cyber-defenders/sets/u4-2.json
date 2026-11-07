@@ -21,7 +21,8 @@
     "The time the message arrived",
     "The spelling in the subject line"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Anyone can type a friendly name like School Office. The name is the costume; the real address shows who sent it."
   },
   {
    "id": "cd-2-4.1-e2",
@@ -38,7 +39,8 @@
     "The real address the link leads to",
     "How many people shared it"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Link words and colors can say anything. Only the real address behind them shows where the link goes."
   },
   {
    "id": "cd-2-4.1-e3",
@@ -55,7 +57,8 @@
     "Forward it to friends so they can check it",
     "Do not open it; check with the real sender another way and tell a trusted adult"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "An unexpected file with a rush is a classic trap. Do not open it; check with the real sender another way."
   },
   {
    "id": "cd-2-4.2-e1",
@@ -72,7 +75,8 @@
     "The scammer, who wants money",
     "The account thief, who wants in"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Fake prizes that end with a payment want money. That is the scammer, not the spy, the vandal or the account thief."
   },
   {
    "id": "cd-2-4.2-e2",
@@ -89,7 +93,8 @@
     "Using faster tools",
     "Knowing more secrets"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Ethical testing is about permission. Tools, timing and know-how are the same for both people; only one was allowed."
   },
   {
    "id": "cd-2-4.2-e3",
@@ -106,7 +111,8 @@
     "Opening every attachment to check it",
     "Turning off every lock to save time"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "An account thief wants to get in. Strong, separate passphrases and a second proof step are the locks made for that."
   },
   {
    "id": "cd-2-4.3-e1",
@@ -123,7 +129,8 @@
     "A scam that wants your tap",
     "A fine, ordinary post"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "It wants a tap on its link within ten minutes: a scam. A hoax wants belief, and rage-bait wants your reaction."
   },
   {
    "id": "cd-2-4.3-e2",
@@ -140,7 +147,8 @@
     "Judge it by how real the picture looks",
     "Count how many friends have shared it"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Speed, a realistic picture and many shares prove nothing. A second trusted source saying the same thing is the first check."
   },
   {
    "id": "cd-2-4.3-e3",
@@ -157,7 +165,8 @@
     "Sharing makes the picture clearer",
     "Sharing carries the fake to everyone who trusts you"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A fake spreads through people who trust each other. Each share carries it further, which is exactly what the trickster wants."
   }
  ]
 }

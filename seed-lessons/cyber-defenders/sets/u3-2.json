@@ -21,7 +21,8 @@
     "Share your birthday only if the badge is rare",
     "Ask a friend to share their facts instead"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Price the trade: a badge is a small benefit, while a school name and birthday point at you for good. Keep the facts."
   },
   {
    "id": "cd-2-3.1-e2",
@@ -38,7 +39,8 @@
     "Harvesting facts that can point at you or help unlock accounts",
     "Checking that you are old enough to play"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Pet names, birth months and streets are common answers to account security questions. The quiz is harvesting them."
   },
   {
    "id": "cd-2-3.1-e3",
@@ -55,7 +57,8 @@
     "Nothing at all can be done, so there is no point trying",
     "Posting lots more will bury it forever"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Deleting is worth doing, and a trusted adult can help, but copies or screenshots may already exist. Nothing erases every copy."
   },
   {
    "id": "cd-2-3.2-e1",
@@ -72,7 +75,8 @@
     "The service did, by collecting data about you",
     "Nobody: scores and places leave no trail"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "You did not post it and no friend tagged you: the service collected it. Data a service gathers is part of your footprint too."
   },
   {
    "id": "cd-2-3.2-e2",
@@ -89,7 +93,8 @@
     "Only a trusted adult is allowed to press delete",
     "Deleting only works on posts with pictures"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Your delete removes your copy only. Screenshots, shares and saved copies can live on after it is gone."
   },
   {
    "id": "cd-2-3.2-e3",
@@ -106,7 +111,8 @@
     "As proof that someone else used your account",
     "It cannot: old posts vanish after a year"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Old posts do not vanish and are not read as jokes. A school would read it as part of your reputation."
   },
   {
    "id": "cd-2-3.3-e1",
@@ -123,7 +129,8 @@
     "No levers: it sounds like a normal message",
     "Research and a recipe"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "It claims to be your coach (authority) and says hurry (urgency). Those two levers are there to stop you from checking."
   },
   {
    "id": "cd-2-3.3-e2",
@@ -140,7 +147,8 @@
     "Pure guessing: nobody could ever know all three",
     "A trusted adult who handed them over"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Tricksters gather facts people already shared in public, like posts and profiles. They rarely need to break anything open."
   },
   {
    "id": "cd-2-3.3-e3",
@@ -157,7 +165,8 @@
     "Verify through a different channel, like asking the person in real life",
     "Send half the fact and see what happens"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The trick only works inside its own message. Checking another way, like asking the person face to face, breaks it."
   }
  ]
 }

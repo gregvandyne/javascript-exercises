@@ -21,7 +21,8 @@
     "The update history",
     "The account's profile photo"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The phished passphrase is already gone. Two-step sign-in asks for a second proof that the fake page never got."
   },
   {
    "id": "cd-2-6.1-e2",
@@ -38,7 +39,8 @@
     "A threat is a kind of update",
     "A vulnerability only exists on paper"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "They are different: a vulnerability is a flaw, and a threat is who or what might use that flaw."
   },
   {
    "id": "cd-2-6.1-e3",
@@ -55,7 +57,8 @@
     "A passphrase written on a sticker for safety",
     "Backups only, with no sign-in at all"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Defense in depth stacks layers: updates, a unique passphrase, two-step sign-in and a backup. One layer alone is not depth."
   },
   {
    "id": "cd-2-6.2-e1",
@@ -72,7 +75,8 @@
     "Integrity: the information did not stay correct",
     "None; editing is harmless"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The note was changed on the way, so the information is no longer correct. That is integrity, not secrecy or reachability."
   },
   {
    "id": "cd-2-6.2-e2",
@@ -89,7 +93,8 @@
     "The app company enforces both",
     "Nobody enforces either"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Each layer has its own enforcer: the school enforces its policy, and the legal system enforces the law."
   },
   {
    "id": "cd-2-6.2-e3",
@@ -106,7 +111,8 @@
     "The logo at the top",
     "The list of office addresses"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "An appeal route protects users when their content is removed. Logos, addresses and long words do no job for the user."
   },
   {
    "id": "cd-2-6.3-e1",
@@ -123,7 +129,8 @@
     "Report, delete, contain, forget",
     "Contain, delete, hope, recover"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "First contain the damage, then preserve evidence, then report, then recover. Recovering first can destroy the proof."
   },
   {
    "id": "cd-2-6.3-e2",
@@ -140,7 +147,8 @@
     "Deletion is a report by itself",
     "Preserving is only for teachers"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Adults and platforms act on evidence. Deleting in embarrassment destroys the proof they would need."
   },
   {
    "id": "cd-2-6.3-e3",
@@ -157,7 +165,8 @@
     "First contain from a clean device, last recover with new passphrases everywhere the old one was reused",
     "First delete everything, last say nothing"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Contain first, from a clean device, so the thief is shut out. Recover last, with new passphrases wherever the old one was used."
   },
   {
    "id": "cd-2-6.4-e1",
@@ -174,7 +183,8 @@
     "A reused passphrase",
     "An endless scroll"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A second, different proof of who you are before a lock opens is two-step sign-in."
   },
   {
    "id": "cd-2-6.4-e2",
@@ -191,7 +201,8 @@
     "Rage-bait wanting shares",
     "Spoofing: a claimed sender in costume"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A friendly name over a stranger's address, begging for your key, is spoofing: a claimed sender in costume."
   },
   {
    "id": "cd-2-6.4-e3",
@@ -208,7 +219,8 @@
     "The message with the festival poster",
     "Neither; postmarks never matter"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Length and posters prove nothing. What matters is what each sender could only know if the footprint and facts line up."
   }
  ]
 }

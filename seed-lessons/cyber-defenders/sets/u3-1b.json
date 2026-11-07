@@ -21,7 +21,8 @@
     "Your school name",
     "Your birthday"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A favorite animal says what you like, not who or where you are. Your home, school and birthday are me-facts that point at you."
   },
   {
    "id": "cd-1b-3.1-e2",
@@ -38,7 +39,8 @@
     "Either tray, because one photo says very little",
     "The Keep Private tray, because it can point to the child's school"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A school uniform shows which school the child goes to. That is a me-fact, so the card goes in the Keep Private tray, smile or not."
   },
   {
    "id": "cd-1b-3.1-e3",
@@ -55,7 +57,8 @@
     "Games never allow groups of three facts",
     "Only teachers may ever know three facts"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "One small fact is hard to use, but name, school and street together point straight at one child. That is why me-facts stay private."
   },
   {
    "id": "cd-1b-3.2-e1",
@@ -72,7 +75,8 @@
     "Watching snow fall outside",
     "Drawing on paper and keeping it in a drawer"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A footprint is something left online that others can see. Thinking, watching snow and drawing on paper never go online."
   },
   {
    "id": "cd-1b-3.2-e2",
@@ -89,7 +93,8 @@
     "Online posts stay, and screenshots can copy them",
     "Only owls can follow an online trail"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Snow melts, but an online post can stay, and anyone can screenshot it. The copies can last even after you delete yours."
   },
   {
    "id": "cd-1b-3.2-e3",
@@ -106,7 +111,8 @@
     "A year turns every photo into a secret",
     "New posts erase all the older posts"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "People change, and a post can be copied before you change your mind. Photos do not fade or vanish on their own."
   },
   {
    "id": "cd-1b-3.3-e1",
@@ -123,7 +129,8 @@
     "The park's yes, because it happened there",
     "Any classmate's yes will do"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A photo of your friend shows them, so it needs their yes. Taking the photo, or where it was taken, does not decide it."
   },
   {
    "id": "cd-1b-3.3-e2",
@@ -140,7 +147,8 @@
     "It says who made the work, so makers can be found",
     "It turns any work into public domain work"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A credit line names the maker, so people know who made it. It never makes the work yours or free for everyone."
   },
   {
    "id": "cd-1b-3.3-e3",
@@ -157,7 +165,8 @@
     "Never speak to your friend again",
     "Share the photo with even more people"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Asking kindly first gives your friend a chance to fix it. Being unkind back, or sharing it wider, only makes it worse."
   }
  ]
 }
