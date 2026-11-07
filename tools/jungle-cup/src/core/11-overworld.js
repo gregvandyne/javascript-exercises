@@ -136,7 +136,7 @@ function act() {
   if (tg.kind === 'sign') { JC.say([{ who: 'sign', key: tg.ref.key }]); return; }
   if (tg.kind === 'lift') {
     const f = SAVE.featherCount();
-    if (f >= 7) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
+    if (f >= NSPORTS) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
     else JC.say([{ who: 'lift', key: 'lift.locked', vars: { n: f } }]);
     return;
   }
@@ -268,7 +268,7 @@ function drawRaft(g, x, y) {
   if (fl === 'leaf') { rect(g, x + 19, y - 14, 3, 3, '#ffd23f'); } else rect(g, x + 18, y - 13, 5, 1, '#e04848');
 }
 function drawLift(g, x, y) {
-  const open = SAVE.featherCount() >= 7;
+  const open = SAVE.featherCount() >= NSPORTS;
   // the vines up the trunk
   for (const dx of [2, 13]) for (let i = 0; i < 40; i++) rect(g, x + dx + Math.round(Math.sin((i + OW.time * (open ? 6 : 0)) / 4)), y - 40 + i, 1, 1, i % 5 ? '#2a7a30' : '#8ee070');
   rect(g, x - 1, y + 4, 18, 9, OUT); rect(g, x, y + 5, 16, 6, '#b07a44'); rect(g, x, y + 5, 16, 1, '#e0b070'); rect(g, x, y + 10, 16, 1, '#5e3820');
@@ -280,7 +280,7 @@ function drawLift(g, x, y) {
 }
 function drawTotemSockets(g, ox, oy) {
   const sk = totemSockets();
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < NSPORTS; i++) {
     const id = JC.sportOrder[i], s = sk[i], x = s.x - ox, y = s.y - oy;
     const lit = SAVE.data.feathers[id], fresh = OW.celebrate && OW.celebrate.id === id;
     if (fresh && OW.celebrate.t < 1.5) {
@@ -338,8 +338,8 @@ OW.draw = function (g) {
 };
 OW.drawHud = function (g) {
   layoutPad();
-  // the seven Feathers, top left
-  const n = 7, sw = 11, x0 = 6, y0 = 6;
+  // the Feathers, top left
+  const n = NSPORTS, sw = 11, x0 = 6, y0 = 6;
   box(g, x0 - 2, y0 - 2, n * sw + 4, 18, 'rgba(27,19,37,0.72)', PAL.ink);
   for (let i = 0; i < n; i++) {
     const id = JC.sportOrder[i], on = SAVE.data.feathers[id];

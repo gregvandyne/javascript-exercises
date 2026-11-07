@@ -2,7 +2,7 @@
 // TEST HOOKS: window.__brbTest (the platform's autotest reads state()) and window.__brbTest.jc for our own tests.
 // Harmless in production: they only do what a player could do, faster.
 // ======================================================================================================
-const PLACES = { dock: [36, 61, 'up'], village: [36, 40, 'up'], totem: [36, 39, 'up'], kapok: [36, 17, 'up'], lift: [36, 17, 'up'], lagoon: [16, 47, 'left'], islet: [60, 40, 'up'] };
+const PLACES = { dock: [36, 61, 'up'], village: [36, 40, 'up'], totem: [36, 39, 'up'], kapok: [36, 17, 'up'], lift: [36, 17, 'up'], lagoon: [16, 47, 'left'], islet: [60, 40, 'up'], clearing: [ARCHES.dash.x, ARCHES.dash.y + 2, 'up'] };
 function sceneName() { return JC.scene ? JC.scene.name : 'loading'; }
 function jcState() {
   const d = SAVE.data;

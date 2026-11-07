@@ -76,7 +76,7 @@ function finishRound() {
   d.plays[id] = (d.plays[id] || 0) + 1;
   RUN.newFeather = res.won && !d.feathers[id];
   if (res.won) d.feathers[id] = true;
-  if (RUN.newFeather && SAVE.featherCount() === 7) d.flags.allFeathers = 1;
+  if (RUN.newFeather && SAVE.featherCount() === NSPORTS) d.flags.allFeathers = 1;
   if (res.stars === 3) JC.grantBandana('berry', false);   // the first three-star round: a berry bandana
   SAVE.write();
   // the platform hears about the round when the player leaves this card (Retry, Back, or leaving the sport), so the
@@ -153,8 +153,8 @@ RUN.onInput = function (e) {
 RUN.leaveResults = function () {
   AUDIO.sfx('back');
   const a = ARCHES[RUN.id];
-  // the seventh Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
-  const news = RUN.newFeather && SAVE.featherCount() === 7 ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
+  // the last Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
+  const news = RUN.newFeather && SAVE.featherCount() === NSPORTS ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
   JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '', later: news, laterT: 3.2 });
 };
 /* ---------- drawing ---------- */

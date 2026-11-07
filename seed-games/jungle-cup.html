@@ -17,7 +17,7 @@ const I18N = {};
 /* ---- i18n/core.en.js ---- */
 // Jungle Cup: the core's words (English, the source). Keys: docs/jungle-cup-plan.md "Words".
 I18N.en = Object.assign(I18N.en || {}, {
-  tagline: 'Seven champions. Seven Feathers. One Cup!',
+  tagline: 'Eight champions. Eight Feathers. One Cup!',
   'confirm.new': 'Start a brand new game? Your Feathers, stars and bests will be cleared.',
   go: 'GO!', paused: 'Paused', on: 'On', off: 'Off', none: 'None',
   'btn.play': 'Play', 'btn.continue': 'Continue', 'btn.newGame': 'New game', 'btn.back': 'Back', 'btn.resume': 'Keep playing',
@@ -28,7 +28,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'res.won': 'You won!', 'res.lost': 'So close!', 'res.wonSub': 'What a match!', 'res.lostSub': 'Have another go!',
   'res.score': 'Score', 'res.best': 'Best', 'res.newBest': 'New best!', 'res.feather': 'You won the {sport} Feather!',
   'hud.secs': '{n}s', 'hud.score': 'Score', 'hud.vsA': '{n}', 'hud.vsB': '{n}',
-  'map.title': 'Delta Isle', 'map.feathers': '{n}/7 Feathers',
+  'map.title': 'Delta Isle', 'map.feathers': '{n}/8 Feathers',
   'settings.title': 'Settings', 'settings.sound': 'Sound', 'settings.font': 'Text style', 'settings.pixel': 'Pixel', 'settings.clear': 'Clear',
   'settings.easy': 'Easier champions', 'settings.easyHelp': 'Easier champions play a little slower and miss a little more. Turn it on any time.',
   'controls.title': 'Controls', 'controls.touch': 'Touch', 'controls.keys': 'Keyboard', 'controls.pad': 'Gamepad',
@@ -42,20 +42,20 @@ I18N.en = Object.assign(I18N.en || {}, {
   'quest.reward.bandana': 'New bandana!', 'quest.reward.hat': 'New hat!', 'quest.reward.flag': 'New raft flag!',
   'quest.found': 'Shell {n} of {total}!', 'quest.got.leaf': 'You found the big leaf!', 'quest.got.specs': 'You found the glasses!',
   'quest.got.mango': 'You picked a ripe mango!', 'quest.got.letter': 'Letter delivered!',
-  'lift.locked': 'The vine lift is tied shut. It opens when the Cup Totem holds all seven Feathers. Feathers so far: {n} of 7.',
-  'lift.open': 'The vines are humming! Hold on tight: up to the Canopy Stage!', 'lift.n': '{n}/7',
+  'lift.locked': 'The vine lift is tied shut. It opens when the Cup Totem holds all eight Feathers. Feathers so far: {n} of 8.',
+  'lift.open': 'The vines are humming! Hold on tight: up to the Canopy Stage!', 'lift.n': '{n}/8',
   'sign.welcome': 'Welcome to Delta Isle! Home of the Jungle Cup. Village straight ahead.',
   'sign.village': 'Mossy Village. Sports all around the island: look for the flower arches!',
   'sign.kapok': 'The Great Kapok. The vine lift goes up to the Canopy Stage.',
   'sport.paddle': 'Paddle Smash', 'sport.vine': 'Vine Climb', 'sport.seed': 'Seed Shot', 'sport.rapids': 'Rapids Run',
-  'sport.frog': 'Frog Chorus', 'sport.kick': 'Banana Kick', 'sport.leaf': 'Leaf Slide',
+  'sport.frog': 'Frog Chorus', 'sport.kick': 'Banana Kick', 'sport.leaf': 'Leaf Slide', 'sport.dash': 'Mango Dash',
   'vs.jada': 'vs Jada the jaguar', 'vs.sloane': 'vs Sloane the sloth', 'vs.tico': 'vs Tico the toucan', 'vs.otters': 'vs the Otter Twins',
-  'vs.rana': 'vs Rana the frog', 'vs.mico': 'vs Mico the howler monkey', 'vs.kiki': 'vs Kiki the kinkajou',
+  'vs.rana': 'vs Rana the frog', 'vs.mico': 'vs Mico the howler monkey', 'vs.kiki': 'vs Kiki the kinkajou', 'vs.pecca': 'vs Pecca the peccary',
   'name.cappy': 'Cappy', 'name.mango': 'Mango', 'name.coco': 'Coco', 'name.pip': 'Pip', 'name.tapir': 'Tapo', 'name.ants': 'The Snip family',
   'name.elder': 'Elder Shellby', 'name.zuzu': 'Zuzu', 'name.jada': 'Jada', 'name.sloane': 'Sloane', 'name.tico': 'Tico', 'name.otters': 'Otter Twins',
-  'name.rana': 'Rana', 'name.mico': 'Mico', 'name.kiki': 'Kiki', 'name.marm': 'Marmosets', 'name.story': '', 'name.sign': '', 'name.lift': '',
+  'name.rana': 'Rana', 'name.mico': 'Mico', 'name.kiki': 'Kiki', 'name.pecca': 'Pecca', 'name.marm': 'Marmosets', 'name.story': '', 'name.sign': '', 'name.lift': '',
   'story.1': 'Cappy the capybara floated down the river on a little raft, all the way to Delta Isle.',
-  'story.2': 'Every year the island holds the Jungle Cup. Seven champions. Seven sports. Can Cappy win them all?',
+  'story.2': 'Every year the island holds the Jungle Cup. Eight champions. Eight sports. Can Cappy win them all?',
   'story.3': 'Bump! The raft reached the dock, and cousins Coco and Pip were already waving.',
   'btn.skip': 'Skip',
   'd.coco.hi': 'Cousin Cappy! You made it! Welcome to Delta Isle!',
@@ -67,9 +67,9 @@ I18N.en = Object.assign(I18N.en || {}, {
   'd.pip.qthanks': 'All three! Thank you! Here, take my sunset bandana. It will look great on you.',
   'd.pip.after': 'Sunset bandana suits you, cousin!',
   'd.mango.intro1': 'Squawk! You must be Cappy! I am Mango, the island guide.',
-  'd.mango.intro2': 'Seven champions live on Delta Isle, and each one guards a sport.',
+  'd.mango.intro2': 'Eight champions live on Delta Isle, and each one guards a sport.',
   'd.mango.intro3': 'Beat a champion and you win their Feather. Each Feather is a different color!',
-  'd.mango.intro4': 'Take your Feathers to the Cup Totem in Mossy Village. Fill all seven sockets...',
+  'd.mango.intro4': 'Take your Feathers to the Cup Totem in Mossy Village. Fill all eight sockets...',
   'd.mango.intro5': '...and the vine lift up the Great Kapok will open. The Jungle Cup waits at the top! Try Jada at the canopy court first. Go west from the village!',
   'd.mango.hint0': 'Jada plays Paddle Smash at the canopy court, west of the village. Look for the orange arch!',
   'd.mango.hint1': 'One Feather already! There are flower arches all over the island. Open the map to find them.',
@@ -79,7 +79,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'd.mango.qask2': 'Could you bring me one? I will give you something nice!',
   'd.mango.qwait': 'The mango tree is by the hills, north west. Mmm, mango...',
   'd.mango.qthanks': 'MANGO! My favorite! Here, an explorer hat for a true explorer.',
-  'd.mango.allf': 'All seven Feathers! The vine lift at the Great Kapok is open. Go, go, go!',
+  'd.mango.allf': 'All eight Feathers! The vine lift at the Great Kapok is open. Go, go, go!',
   'd.mango.after': 'Jungle Cup champion! You can still play any sport to beat your best scores.',
   'd.mango.free': 'Free play! Every sport is open, and that golden bandana is yours. Try for three stars everywhere!',
   'd.tapir.hello': 'Hello, I am Tapo. My stall has no things to buy, only tips. Tips are free!',
@@ -98,20 +98,20 @@ I18N.en = Object.assign(I18N.en || {}, {
   'd.ants.qthanks': 'Our roof! Thank you, big friend. Here is a sky blue bandana we wove ourselves!',
   'd.ants.after': 'Snip, snip! We are building a bigger roof now.',
   'd.elder.totem1': 'Ah, young one. This is the Cup Totem. It has stood here longer than my shell.',
-  'd.elder.totem2': 'It has seven sockets. Each one is waiting for a champion\'s Feather.',
-  'd.elder.totem3': 'When all seven glow, the vine lift wakes up. Then the Canopy Stage holds the Jungle Cup.',
+  'd.elder.totem2': 'It has eight sockets. Each one is waiting for a champion\'s Feather.',
+  'd.elder.totem3': 'When all eight glow, the vine lift wakes up. Then the Canopy Stage holds the Jungle Cup.',
   'd.elder.qask1': 'Hmm, where did I put my glasses? I was napping by the lagoon...',
   'd.elder.qask2': 'Would you look for them, young one? Near the sand, south of the lagoon.',
   'd.elder.qwait': 'My glasses should be on the sand by the lagoon. Everything looks so blurry!',
   'd.elder.qthanks': 'My glasses! Now I can see you! Take this straw hat. It keeps the sun off.',
-  'd.elder.count': 'The totem holds {n} of 7 Feathers. Patience, and practice.',
-  'd.elder.allf': 'All seven Feathers glow! In all my years, I have rarely seen it. Go up, champion.',
+  'd.elder.count': 'The totem holds {n} of 8 Feathers. Patience, and practice.',
+  'd.elder.allf': 'All eight Feathers glow! In all my years, I have rarely seen it. Go up, champion.',
   'd.zuzu.qask1': 'Bzzz! I am Zuzu, the fastest messenger on the island!',
   'd.zuzu.qask2': 'But my wings are tired. Can you take this letter to Tapo at his stall in the village?',
   'd.zuzu.qwait': 'Tapo\'s stall has a blue and white roof, in Mossy Village. Bzzz!',
   'd.zuzu.thanks': 'Bzzz! You delivered it! Here, a leaf flag for your raft. It flaps nicely!',
   'd.zuzu.after': 'Bzzz! I heard Jada is a very fast paddler!',
-  'd.zuzu.liftopen': 'Bzzz! BIG NEWS! All seven Feathers! The vine lift at the Great Kapok is open!',
+  'd.zuzu.liftopen': 'Bzzz! BIG NEWS! All eight Feathers! The vine lift at the Great Kapok is open!',
   'd.marm.hi': 'Eek eek! We are Jada\'s little helpers. We love a quick rally!',
   'd.jada.pre': 'Ready for Paddle Smash? Watch the ball, swing at the right time, and pounce!',
   'd.jada.won': 'You beat me fair and square. Rematch any time!',
@@ -134,26 +134,31 @@ I18N.en = Object.assign(I18N.en || {}, {
   'd.kiki.pre': 'Leaf Slide! Jump the ramps, do tricks, and land straight!',
   'd.kiki.won': 'Those tricks were amazing!',
   'd.kiki.soon': 'The mud slope is still too dry. Come back after the rain!',
+  'd.pecca.pre': 'Oink! I am Pecca, captain of the Grunt Gang. Carry that mango past my gang, if you can!',
+  'd.pecca.won': 'Oink oink! Nobody has ever got past my gang. Here is my Feather, champ!',
+  'd.pecca.soon': 'Oink! My gang is still rolling in the mud. Come back soon!',
+  'd.mango.dash1': 'Squawk! Big news! A new champion has come to Delta Isle: Pecca and her Grunt Gang!',
+  'd.mango.dash2': 'They play Mango Dash in the muddy clearing, north of the stepping stones. The totem has grown an eighth socket!',
   'end.1': 'The vine lift carried Cappy up, up, up, through the leaves to the Canopy Stage.',
-  'end.2': 'All seven champions were waiting. "You earned this, Cappy!"',
+  'end.2': 'All eight champions were waiting. "You earned this, Cappy!"',
   'end.3': 'This is the Jungle Cup, woven from golden leaves. It belongs to the champion of Delta Isle.',
   'end.4': 'Raise it high, Cappy! Squawk!',
   'end.cup': 'Jungle Cup champion!',
   'end.5': 'Thank you, everyone! Same time next year?',
   'credits.1': 'Jungle Cup',
   'credits.2': 'Starring Cappy the capybara',
-  'credits.3': 'with Jada, Sloane, Tico, the Otter Twins, Rana, Mico and Kiki',
+  'credits.3': 'with Jada, Sloane, Tico, the Otter Twins, Rana, Mico, Kiki and Pecca',
   'credits.4': 'and Mango, Coco, Pip, Tapo, the Snip family, Elder Shellby and Zuzu',
   'credits.5': 'Made by the Oomba Academy team',
   'credits.6': 'Pixels, music and sounds made in code',
   'credits.7': 'Thank you for playing!',
-  'credits.8': 'Every sport stays open. Can you get three stars on all seven?',
+  'credits.8': 'Every sport stays open. Can you get three stars on all eight?',
 });
 
 /* ---- i18n/all.ar.js ---- */
-// Jungle Cup in Arabic: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Arabic: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.ar = Object.assign(I18N.ar || {}, {
-  "tagline": "سبعة أبطال. سبع ريشات. كأس واحدة!",
+  "tagline": "ثمانية أبطال. ثماني ريشات. كأس واحدة!",
   "confirm.new": "هل تريد بدء لعبة جديدة تمامًا؟ ستُمحى ريشاتك ونجومك وأفضل نتائجك.",
   "go": "انطلق!", "paused": "إيقاف مؤقت", "on": "تشغيل", "off": "إيقاف", "none": "لا شيء",
   "btn.play": "العب", "btn.continue": "تابع", "btn.newGame": "لعبة جديدة", "btn.back": "رجوع", "btn.resume": "تابع اللعب",
@@ -164,7 +169,7 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "res.won": "فزت!", "res.lost": "قريب جدًا!", "res.wonSub": "يا لها من مباراة!", "res.lostSub": "حاول مرة أخرى!",
   "res.score": "النقاط", "res.best": "الأفضل", "res.newBest": "رقم قياسي جديد!", "res.feather": "ربحت ريشة {sport}!",
   "hud.secs": "{n} ث", "hud.score": "النقاط",
-  "map.title": "جزيرة الدلتا", "map.feathers": "الريشات {n}/7",
+  "map.title": "جزيرة الدلتا", "map.feathers": "الريشات {n}/8",
   "settings.title": "الإعدادات", "settings.sound": "الصوت", "settings.font": "نمط الخط", "settings.pixel": "بكسل", "settings.clear": "واضح",
   "settings.easy": "أبطال أسهل", "settings.easyHelp": "الأبطال الأسهل يلعبون أبطأ قليلًا ويخطئون أكثر قليلًا. شغّلها متى شئت.",
   "controls.title": "التحكم", "controls.touch": "اللمس", "controls.keys": "لوحة المفاتيح", "controls.pad": "يد التحكم",
@@ -178,7 +183,7 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "quest.reward.bandana": "عصابة جديدة!", "quest.reward.hat": "قبعة جديدة!", "quest.reward.flag": "علم جديد للطوف!",
   "quest.found": "صدفة {n} من {total}!", "quest.got.leaf": "وجدت الورقة الكبيرة!", "quest.got.specs": "وجدت النظارة!",
   "quest.got.mango": "قطفت مانجو ناضجة!", "quest.got.letter": "وصلت الرسالة!",
-  "lift.locked": "مصعد الكروم مربوط. يُفتح عندما يحمل طوطم الكأس الريشات السبع. الريشات حتى الآن: {n} من 7.",
+  "lift.locked": "مصعد الكروم مربوط. يُفتح عندما يحمل طوطم الكأس الريشات الثماني. الريشات حتى الآن: {n} من 8.",
   "lift.open": "الكروم تطنّ! تمسّك جيدًا: إلى منصة قمم الأشجار!",
   "sign.welcome": "أهلًا بك في جزيرة الدلتا! موطن كأس الأدغال. القرية أمامك مباشرة.",
   "sign.village": "قرية الطحلب. الرياضات في كل أنحاء الجزيرة: ابحث عن أقواس الزهور!",
@@ -192,7 +197,7 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "name.rana": "رانا", "name.mico": "ميكو", "name.kiki": "كيكي", "name.marm": "قرود المارموسيت",
   "rap.ripple": "ريبل", "rap.splash": "سبلاش",
   "story.1": "طفا كابي الكابيبارا على طوف صغير عبر النهر، حتى وصل إلى جزيرة الدلتا.",
-  "story.2": "كل عام تقيم الجزيرة كأس الأدغال. سبعة أبطال. سبع رياضات. هل يستطيع كابي الفوز بها كلها؟",
+  "story.2": "كل عام تقيم الجزيرة كأس الأدغال. ثمانية أبطال. ثماني رياضات. هل يستطيع كابي الفوز بها كلها؟",
   "story.3": "بوم! وصل الطوف إلى الرصيف، وكان ابنا عمه كوكو وبيب يلوّحان له.",
   "d.coco.hi": "ابن عمي كابي! لقد وصلت! أهلًا بك في جزيرة الدلتا!",
   "d.coco.again": "طوطم الكأس في وسط القرية. كل ريشة تربحها تضيئه!",
@@ -203,9 +208,9 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "d.pip.qthanks": "الثلاث كلها! شكرًا! خذ عصابتي بلون الغروب. ستبدو رائعة عليك.",
   "d.pip.after": "عصابة الغروب تليق بك يا ابن عمي!",
   "d.mango.intro1": "كراا! لا بد أنك كابي! أنا مانجو، مرشدة الجزيرة.",
-  "d.mango.intro2": "يعيش سبعة أبطال في جزيرة الدلتا، وكل واحد يحرس رياضة.",
+  "d.mango.intro2": "يعيش ثمانية أبطال في جزيرة الدلتا، وكل واحد يحرس رياضة.",
   "d.mango.intro3": "اهزم بطلًا واربح ريشته. لكل ريشة لون مختلف!",
-  "d.mango.intro4": "خذ ريشاتك إلى طوطم الكأس في قرية الطحلب. املأ الفتحات السبع...",
+  "d.mango.intro4": "خذ ريشاتك إلى طوطم الكأس في قرية الطحلب. املأ الفتحات الثماني...",
   "d.mango.intro5": "...وسيُفتح مصعد الكروم عند شجرة الكابوك العظيمة. كأس الأدغال تنتظرك في الأعلى! جرّب جادا أولًا في ملعب القمم. اذهب غرب القرية!",
   "d.mango.hint0": "جادا تلعب ضربة المضرب في ملعب القمم، غرب القرية. ابحث عن القوس البرتقالي!",
   "d.mango.hint1": "ريشة واحدة بالفعل! أقواس الزهور في كل أنحاء الجزيرة. افتح الخريطة لتجدها.",
@@ -215,7 +220,7 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "d.mango.qask2": "هل تحضر لي واحدة؟ سأعطيك شيئًا جميلًا!",
   "d.mango.qwait": "شجرة المانجو قرب التلال، في الشمال الغربي. ممم، مانجو...",
   "d.mango.qthanks": "مانجو! المفضلة عندي! خذ قبعة المستكشف هذه لمستكشف حقيقي.",
-  "d.mango.allf": "الريشات السبع! مصعد الكروم عند شجرة الكابوك العظيمة مفتوح. هيا، هيا!",
+  "d.mango.allf": "الريشات الثماني! مصعد الكروم عند شجرة الكابوك العظيمة مفتوح. هيا، هيا!",
   "d.mango.after": "بطل كأس الأدغال! ما زال بإمكانك لعب أي رياضة لتحسين أرقامك.",
   "d.mango.free": "لعب حر! كل الرياضات مفتوحة، وتلك العصابة الذهبية لك. حاول الحصول على ثلاث نجوم في كل مكان!",
   "d.tapir.hello": "مرحبًا، أنا تابو. كشكي لا يبيع شيئًا، فيه نصائح فقط. والنصائح مجانية!",
@@ -234,20 +239,20 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "d.ants.qthanks": "سقفنا! شكرًا يا صديقنا الكبير. هذه عصابة زرقاء سماوية نسجناها بأنفسنا!",
   "d.ants.after": "قص، قص! نحن نبني سقفًا أكبر الآن.",
   "d.elder.totem1": "آه، أيها الصغير. هذا طوطم الكأس. إنه هنا منذ زمن أطول من صدفتي.",
-  "d.elder.totem2": "فيه سبع فتحات. كل واحدة تنتظر ريشة بطل.",
-  "d.elder.totem3": "عندما تتوهج السبع كلها، يستيقظ مصعد الكروم. وعندها تكون كأس الأدغال على منصة قمم الأشجار.",
+  "d.elder.totem2": "فيه ثماني فتحات. كل واحدة تنتظر ريشة بطل.",
+  "d.elder.totem3": "عندما تتوهج الثماني كلها، يستيقظ مصعد الكروم. وعندها تكون كأس الأدغال على منصة قمم الأشجار.",
   "d.elder.qask1": "همم، أين وضعت نظارتي؟ كنت أغفو قرب البحيرة...",
   "d.elder.qask2": "هل تبحث عنها أيها الصغير؟ قرب الرمل، جنوب البحيرة.",
   "d.elder.qwait": "يجب أن تكون نظارتي على الرمل قرب البحيرة. كل شيء ضبابي جدًا!",
   "d.elder.qthanks": "نظارتي! الآن أراك! خذ قبعة القش هذه. إنها تحميك من الشمس.",
-  "d.elder.count": "يحمل الطوطم {n} من 7 ريشات. صبرًا، وتدرّب.",
-  "d.elder.allf": "الريشات السبع تتوهج! في كل سنواتي نادرًا ما رأيت ذلك. اصعد أيها البطل.",
+  "d.elder.count": "يحمل الطوطم {n} من 8 ريشات. صبرًا، وتدرّب.",
+  "d.elder.allf": "الريشات الثماني تتوهج! في كل سنواتي نادرًا ما رأيت ذلك. اصعد أيها البطل.",
   "d.zuzu.qask1": "بززز! أنا زوزو، أسرع ساعية بريد في الجزيرة!",
   "d.zuzu.qask2": "لكن جناحيّ متعبان. هل تأخذ هذه الرسالة إلى تابو في كشكه بالقرية؟",
   "d.zuzu.qwait": "كشك تابو سقفه أزرق وأبيض، في قرية الطحلب. بززز!",
   "d.zuzu.thanks": "بززز! لقد أوصلتها! خذ علم الورقة هذا لطوفك. إنه يرفرف بجمال!",
   "d.zuzu.after": "بززز! سمعت أن جادا سريعة جدًا بالمضرب!",
-  "d.zuzu.liftopen": "بززز! خبر كبير! الريشات السبع! مصعد الكروم عند شجرة الكابوك العظيمة مفتوح!",
+  "d.zuzu.liftopen": "بززز! خبر كبير! الريشات الثماني! مصعد الكروم عند شجرة الكابوك العظيمة مفتوح!",
   "d.marm.hi": "إيك إيك! نحن مساعدو جادا الصغار. نحب التبادلات السريعة!",
   "d.jada.pre": "مستعد لضربة المضرب؟ راقب الكرة، اضرب في الوقت المناسب، واقفز!",
   "d.jada.won": "هزمتني بعدل. مباراة ثأر في أي وقت!",
@@ -272,19 +277,19 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "d.kiki.soon": "منحدر الطين ما زال جافًا جدًا. عد بعد المطر!",
   "d.jada.ready": "إحماء جيد! الآن دوري. أول من يصل إلى 7. أرني وثبتك!",
   "end.1": "حمل مصعد الكروم كابي إلى الأعلى، الأعلى، الأعلى، عبر الأوراق إلى منصة قمم الأشجار.",
-  "end.2": "كان الأبطال السبعة ينتظرون. «لقد استحققتها يا كابي!»",
+  "end.2": "كان الأبطال الثمانية ينتظرون. «لقد استحققتها يا كابي!»",
   "end.3": "هذه كأس الأدغال، منسوجة من أوراق ذهبية. إنها لبطل جزيرة الدلتا.",
   "end.4": "ارفعها عاليًا يا كابي! كراا!",
   "end.cup": "بطل كأس الأدغال!",
   "end.5": "شكرًا للجميع! نلتقي العام القادم؟",
   "credits.1": "كأس الأدغال",
   "credits.2": "بطولة كابي الكابيبارا",
-  "credits.3": "مع جادا وسلون وتيكو وتوأم القضاعة ورانا وميكو وكيكي",
+  "credits.3": "مع جادا وسلون وتيكو وتوأم القضاعة ورانا وميكو وكيكي وبيكا",
   "credits.4": "ومانجو وكوكو وبيب وتابو وعائلة سنيب والحكيم شيلبي وزوزو",
   "credits.5": "من صنع فريق Oomba Academy",
   "credits.6": "البكسلات والموسيقى والأصوات مصنوعة بالبرمجة",
   "credits.7": "شكرًا لأنك لعبت!",
-  "credits.8": "كل الرياضات تبقى مفتوحة. هل تحصل على ثلاث نجوم في السبع كلها؟",
+  "credits.8": "كل الرياضات تبقى مفتوحة. هل تحصل على ثلاث نجوم في الثماني كلها؟",
   "sport.frog.goal": "رانا تعزف إيقاعًا على طبولها الثلاثة من الأوراق. استمع، ثم أعد عزفه في الوقت المناسب! اجمع نقاطًا أكثر من رانا قبل نهاية الأغنية.",
   "sport.frog.touch": "اللمس: انقر الطبل المنخفض (أزرق، نقطة واحدة) والمتوسط (أخضر، نقطتان) والعالي (وردي، 3 نقاط).",
   "sport.frog.keys": "المفاتيح: اليسار للمنخفض، الأسفل (أو المسافة) للمتوسط، اليمين للعالي.",
@@ -352,12 +357,35 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "vc.bonk": "بونك!", "vc.buzz": "بززز!", "vc.top": "قمة الشجرة!", "vc.sloaneTop": "سلون وصلت أولًا",
   "vc.hintTouch": "انقر عندما تصبح الحلقة خضراء!", "vc.hintKeys": "اضغط المسافة عندما تصبح الحلقة خضراء!",
   "vc.hintStartTouch": "انقر عندما تتأرجح الكرمة فوقك", "vc.hintStartKeys": "اضغط المسافة عندما تتأرجح الكرمة فوقك",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "سباق المانجو",
+  "vs.pecca": "ضد بيكا البيكاري",
+  "name.pecca": "بيكا",
+  "d.pecca.pre": "أوينك! أنا بيكا، قائدة عصابة الشخير. احمل تلك المانجو وتجاوز عصابتي، إن استطعت!",
+  "d.pecca.won": "أوينك أوينك! لم يتجاوز أحد عصابتي من قبل. هذه ريشتي أيها البطل!",
+  "d.pecca.soon": "أوينك! عصابتي ما زالت تتمرغ في الطين. عد قريبًا!",
+  "d.mango.dash1": "كوااك! خبر كبير! وصلت بطلة جديدة إلى جزيرة الدلتا: بيكا وعصابة الشخير!",
+  "d.mango.dash2": "يلعبون سباق المانجو في الساحة الموحلة، شمال حجارة العبور. صار في الطوطم فتحة ثامنة!",
+  "sport.dash.goal": "احمل المانجو 100 م حتى السلة! عصابة الشخير التابعة لبيكا تندفع نحو من يحملها. تفادَها، أو مرّرها إلى زميلك الذي فوقه السهم.",
+  "sport.dash.touch": "اللمس: عصا التحكم (يسارًا) للتوجيه؛ ادفعها لأعلى للإسراع. اضغط تمرير (يمينًا) لرمي المانجو.",
+  "sport.dash.keys": "الأزرار: يسار / يمين للتوجيه، أعلى للإسراع، أسفل للإبطاء. المسافة للتمرير.",
+  "md.metres": "{n} م من 100",
+  "md.mark": "{n} م",
+  "md.pass": "تمرير",
+  "md.dodge": "تفاديته!",
+  "md.trip": "آه، جذع شجرة!",
+  "md.caughtIt": "أمسكتها!",
+  "md.pecca": "بيكا قادمة!",
+  "md.caught": "أخذت عصابة الشخير المانجو!",
+  "md.caughtPecca": "أخذت بيكا المانجو!",
+  "md.hintTouch": "وجّه بعصا التحكم. يحفر خنزير في الطين ويُظهر خط أحمر أين سيركض: تفادَه، أو اضغط تمرير!",
+  "md.hintKeys": "الأسهم للتوجيه (أعلى للإسراع). يحفر خنزير في الطين ويُظهر خط أحمر أين سيركض: تفادَه، أو اضغط المسافة للتمرير!",
 });
 
 /* ---- i18n/all.de.js ---- */
-// Jungle Cup in German: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in German: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.de = Object.assign(I18N.de || {}, {
-  "tagline": "Sieben Champions. Sieben Federn. Ein Pokal!",
+  "tagline": "Acht Champions. Acht Federn. Ein Pokal!",
   "confirm.new": "Ein ganz neues Spiel starten? Deine Federn, Sterne und Rekorde werden gelöscht.",
   "go": "LOS!", "paused": "Pause", "on": "An", "off": "Aus", "none": "Keins",
   "btn.play": "Spielen", "btn.continue": "Weiter", "btn.newGame": "Neues Spiel", "btn.back": "Zurück", "btn.resume": "Weiterspielen",
@@ -368,7 +396,7 @@ I18N.de = Object.assign(I18N.de || {}, {
   "res.won": "Gewonnen!", "res.lost": "Knapp!", "res.wonSub": "Was für ein Spiel!", "res.lostSub": "Versuch es nochmal!",
   "res.score": "Punkte", "res.best": "Rekord", "res.newBest": "Neuer Rekord!", "res.feather": "Du hast die {sport}-Feder gewonnen!",
   "hud.secs": "{n} s", "hud.score": "Punkte",
-  "map.title": "Delta-Insel", "map.feathers": "{n}/7 Federn",
+  "map.title": "Delta-Insel", "map.feathers": "{n}/8 Federn",
   "settings.title": "Einstellungen", "settings.sound": "Ton", "settings.font": "Schrift", "settings.pixel": "Pixel", "settings.clear": "Klar",
   "settings.easy": "Leichtere Champions", "settings.easyHelp": "Leichtere Champions spielen etwas langsamer und verfehlen etwas öfter. Du kannst es jederzeit einschalten.",
   "controls.title": "Steuerung", "controls.touch": "Touch", "controls.keys": "Tastatur", "controls.pad": "Gamepad",
@@ -382,7 +410,7 @@ I18N.de = Object.assign(I18N.de || {}, {
   "quest.reward.bandana": "Neues Halstuch!", "quest.reward.hat": "Neuer Hut!", "quest.reward.flag": "Neue Floßflagge!",
   "quest.found": "Muschel {n} von {total}!", "quest.got.leaf": "Du hast das große Blatt gefunden!", "quest.got.specs": "Du hast die Brille gefunden!",
   "quest.got.mango": "Du hast eine reife Mango gepflückt!", "quest.got.letter": "Brief zugestellt!",
-  "lift.locked": "Der Lianenaufzug ist festgebunden. Er öffnet sich, wenn der Pokal-Totem alle sieben Federn hat. Federn bisher: {n} von 7.",
+  "lift.locked": "Der Lianenaufzug ist festgebunden. Er öffnet sich, wenn der Pokal-Totem alle acht Federn hat. Federn bisher: {n} von 8.",
   "lift.open": "Die Lianen summen! Gut festhalten: hinauf zur Baumkronen-Bühne!",
   "sign.welcome": "Willkommen auf der Delta-Insel! Heimat des Dschungel-Pokals. Das Dorf ist geradeaus.",
   "sign.village": "Mooswald-Dorf. Überall auf der Insel gibt es Sport: Such die Blumenbögen!",
@@ -393,7 +421,7 @@ I18N.de = Object.assign(I18N.de || {}, {
   "vs.rana": "gegen Rana, den Frosch", "vs.mico": "gegen Mico, den Brüllaffen", "vs.kiki": "gegen Kiki, den Wickelbären",
   "name.ants": "Familie Snip", "name.elder": "Ältester Shellby", "name.otters": "Otter-Zwillinge", "name.marm": "Krallenäffchen",
   "story.1": "Cappy, das Wasserschwein, trieb auf einem kleinen Floß den Fluss hinunter, bis zur Delta-Insel.",
-  "story.2": "Jedes Jahr veranstaltet die Insel den Dschungel-Pokal. Sieben Champions. Sieben Sportarten. Kann Cappy alle gewinnen?",
+  "story.2": "Jedes Jahr veranstaltet die Insel den Dschungel-Pokal. Acht Champions. Acht Sportarten. Kann Cappy alle gewinnen?",
   "story.3": "Rums! Das Floß erreichte den Steg, und Cousine Coco und Cousin Pip winkten schon.",
   "d.coco.hi": "Cousin Cappy! Du bist da! Willkommen auf der Delta-Insel!",
   "d.coco.again": "Der Pokal-Totem steht mitten im Dorf. Jede Feder, die du gewinnst, lässt ihn leuchten!",
@@ -404,9 +432,9 @@ I18N.de = Object.assign(I18N.de || {}, {
   "d.pip.qthanks": "Alle drei! Danke! Hier, nimm mein Abendrot-Halstuch. Es steht dir bestimmt super.",
   "d.pip.after": "Das Abendrot-Halstuch steht dir, Cousin!",
   "d.mango.intro1": "Krah! Du musst Cappy sein! Ich bin Mango, die Inselführerin.",
-  "d.mango.intro2": "Auf der Delta-Insel leben sieben Champions, und jeder hütet eine Sportart.",
+  "d.mango.intro2": "Auf der Delta-Insel leben acht Champions, und jeder hütet eine Sportart.",
   "d.mango.intro3": "Besiege einen Champion und du gewinnst seine Feder. Jede Feder hat eine andere Farbe!",
-  "d.mango.intro4": "Bring deine Federn zum Pokal-Totem im Mooswald-Dorf. Füll alle sieben Fassungen...",
+  "d.mango.intro4": "Bring deine Federn zum Pokal-Totem im Mooswald-Dorf. Füll alle acht Fassungen...",
   "d.mango.intro5": "...dann öffnet sich der Lianenaufzug am Großen Kapokbaum. Oben wartet der Dschungel-Pokal! Versuch es zuerst bei Jada am Baumkronen-Platz. Geh westlich vom Dorf!",
   "d.mango.hint0": "Jada spielt Schläger-Schmetter am Baumkronen-Platz, westlich vom Dorf. Such den orangen Bogen!",
   "d.mango.hint1": "Schon eine Feder! Überall auf der Insel gibt es Blumenbögen. Öffne die Karte, um sie zu finden.",
@@ -416,7 +444,7 @@ I18N.de = Object.assign(I18N.de || {}, {
   "d.mango.qask2": "Bringst du mir eine? Dann schenke ich dir etwas Schönes!",
   "d.mango.qwait": "Der Mangobaum steht bei den Hügeln, im Nordwesten. Mmm, Mango...",
   "d.mango.qthanks": "MANGO! Meine Lieblingsfrucht! Hier, ein Forscherhut für einen echten Forscher.",
-  "d.mango.allf": "Alle sieben Federn! Der Lianenaufzug am Großen Kapokbaum ist offen. Los, los, los!",
+  "d.mango.allf": "Alle acht Federn! Der Lianenaufzug am Großen Kapokbaum ist offen. Los, los, los!",
   "d.mango.after": "Dschungel-Pokal-Champion! Du kannst jede Sportart weiterspielen, um deine Rekorde zu schlagen.",
   "d.mango.free": "Freies Spiel! Alle Sportarten sind offen, und das goldene Halstuch gehört dir. Hol dir überall drei Sterne!",
   "d.tapir.hello": "Hallo, ich bin Tapo. An meinem Stand gibt es nichts zu kaufen, nur Tipps. Tipps sind gratis!",
@@ -435,20 +463,20 @@ I18N.de = Object.assign(I18N.de || {}, {
   "d.ants.qthanks": "Unser Dach! Danke, großer Freund. Hier ist ein himmelblaues Halstuch, selbst gewebt!",
   "d.ants.after": "Schnipp, schnipp! Jetzt bauen wir ein größeres Dach.",
   "d.elder.totem1": "Ah, junger Freund. Das ist der Pokal-Totem. Er steht hier schon länger als mein Panzer.",
-  "d.elder.totem2": "Er hat sieben Fassungen. Jede wartet auf die Feder eines Champions.",
-  "d.elder.totem3": "Wenn alle sieben leuchten, erwacht der Lianenaufzug. Dann wartet auf der Baumkronen-Bühne der Dschungel-Pokal.",
+  "d.elder.totem2": "Er hat acht Fassungen. Jede wartet auf die Feder eines Champions.",
+  "d.elder.totem3": "Wenn alle acht leuchten, erwacht der Lianenaufzug. Dann wartet auf der Baumkronen-Bühne der Dschungel-Pokal.",
   "d.elder.qask1": "Hmm, wo habe ich nur meine Brille hingelegt? Ich habe an der Lagune ein Nickerchen gemacht...",
   "d.elder.qask2": "Suchst du sie für mich, junger Freund? Am Sand, südlich der Lagune.",
   "d.elder.qwait": "Meine Brille müsste im Sand bei der Lagune liegen. Alles ist so verschwommen!",
   "d.elder.qthanks": "Meine Brille! Jetzt sehe ich dich! Nimm diesen Strohhut. Er schützt vor der Sonne.",
-  "d.elder.count": "Der Totem hat {n} von 7 Federn. Geduld und Übung.",
-  "d.elder.allf": "Alle sieben Federn leuchten! In all meinen Jahren habe ich das selten gesehen. Geh hinauf, Champion.",
+  "d.elder.count": "Der Totem hat {n} von 8 Federn. Geduld und Übung.",
+  "d.elder.allf": "Alle acht Federn leuchten! In all meinen Jahren habe ich das selten gesehen. Geh hinauf, Champion.",
   "d.zuzu.qask1": "Bzzz! Ich bin Zuzu, die schnellste Botin der Insel!",
   "d.zuzu.qask2": "Aber meine Flügel sind müde. Bringst du diesen Brief zu Tapo an seinen Stand im Dorf?",
   "d.zuzu.qwait": "Tapos Stand hat ein blau-weißes Dach, im Mooswald-Dorf. Bzzz!",
   "d.zuzu.thanks": "Bzzz! Du hast ihn zugestellt! Hier, eine Blattflagge für dein Floß. Sie flattert schön!",
   "d.zuzu.after": "Bzzz! Ich habe gehört, Jada ist super schnell am Schläger!",
-  "d.zuzu.liftopen": "Bzzz! GROSSE NEUIGKEIT! Alle sieben Federn! Der Lianenaufzug am Großen Kapokbaum ist offen!",
+  "d.zuzu.liftopen": "Bzzz! GROSSE NEUIGKEIT! Alle acht Federn! Der Lianenaufzug am Großen Kapokbaum ist offen!",
   "d.marm.hi": "Iek iek! Wir sind Jadas kleine Helfer. Wir lieben schnelle Ballwechsel!",
   "d.jada.pre": "Bereit für Schläger-Schmetter? Achte auf den Ball, schlag im richtigen Moment und spring!",
   "d.jada.won": "Du hast mich fair besiegt. Revanche jederzeit!",
@@ -473,19 +501,19 @@ I18N.de = Object.assign(I18N.de || {}, {
   "d.kiki.soon": "Der Matschhang ist noch zu trocken. Komm nach dem Regen wieder!",
   "d.jada.ready": "Gutes Aufwärmen! Jetzt bin ich dran. Wer zuerst 7 hat. Zeig mir deinen Sprung!",
   "end.1": "Der Lianenaufzug trug Cappy hinauf, hinauf, hinauf, durch die Blätter bis zur Baumkronen-Bühne.",
-  "end.2": "Alle sieben Champions warteten schon. „Den hast du dir verdient, Cappy!“",
+  "end.2": "Alle acht Champions warteten schon. „Den hast du dir verdient, Cappy!“",
   "end.3": "Das ist der Dschungel-Pokal, aus goldenen Blättern geflochten. Er gehört dem Champion der Delta-Insel.",
   "end.4": "Heb ihn hoch, Cappy! Krah!",
   "end.cup": "Dschungel-Pokal-Champion!",
   "end.5": "Danke an alle! Nächstes Jahr wieder?",
   "credits.1": "Der Dschungel-Pokal",
   "credits.2": "Mit Cappy, dem Wasserschwein",
-  "credits.3": "und Jada, Sloane, Tico, den Otter-Zwillingen, Rana, Mico und Kiki",
+  "credits.3": "und Jada, Sloane, Tico, den Otter-Zwillingen, Rana, Mico, Kiki und Pecca",
   "credits.4": "sowie Mango, Coco, Pip, Tapo, Familie Snip, dem Ältesten Shellby und Zuzu",
   "credits.5": "Gemacht vom Team von Oomba Academy",
   "credits.6": "Pixel, Musik und Geräusche aus Code",
   "credits.7": "Danke fürs Spielen!",
-  "credits.8": "Alle Sportarten bleiben offen. Schaffst du drei Sterne in allen sieben?",
+  "credits.8": "Alle Sportarten bleiben offen. Schaffst du drei Sterne in allen acht?",
   "sport.frog.goal": "Rana spielt einen Rhythmus auf ihren drei Blatttrommeln. Hör zu und spiel ihn dann im Takt nach! Hol bis zum Ende des Lieds mehr Punkte als Rana.",
   "sport.frog.touch": "Touch: Tippe auf die tiefe (blau, 1 Punkt), die mittlere (grün, 2 Punkte) und die hohe (rosa, 3 Punkte) Trommel.",
   "sport.frog.keys": "Tasten: Links für tief, Runter (oder Leertaste) für mittel, Rechts für hoch.",
@@ -551,6 +579,29 @@ I18N.de = Object.assign(I18N.de || {}, {
   "vc.bonk": "Bonk!", "vc.buzz": "Bzzz!", "vc.top": "Ganz oben im Baum!", "vc.sloaneTop": "Sloane war zuerst oben",
   "vc.hintTouch": "Tippe, wenn der Ring grün wird!", "vc.hintKeys": "Drück die Leertaste, wenn der Ring grün wird!",
   "vc.hintStartTouch": "Tippe, wenn die Liane über dich schwingt", "vc.hintStartKeys": "Drück die Leertaste, wenn die Liane über dich schwingt",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Mango-Sprint",
+  "vs.pecca": "gegen Pecca das Pekari",
+  "name.pecca": "Pecca",
+  "d.pecca.pre": "Oink! Ich bin Pecca, Kapitänin der Grunz-Bande. Trag die Mango an meiner Bande vorbei, wenn du kannst!",
+  "d.pecca.won": "Oink oink! An meiner Bande ist noch nie jemand vorbeigekommen. Hier ist meine Feder, Champion!",
+  "d.pecca.soon": "Oink! Meine Bande wälzt sich noch im Schlamm. Komm bald wieder!",
+  "d.mango.dash1": "Krah! Große Neuigkeit! Ein neuer Champion ist auf die Delta-Insel gekommen: Pecca und ihre Grunz-Bande!",
+  "d.mango.dash2": "Sie spielen Mango-Sprint auf der Schlammlichtung, nördlich der Trittsteine. Der Totem hat eine achte Fassung bekommen!",
+  "sport.dash.goal": "Trag die Mango 100 m bis zum Korb! Peccas Grunz-Bande stürmt auf den los, der sie hat. Weich aus oder pass zu dem Mitspieler mit dem Pfeil.",
+  "sport.dash.touch": "Touch: Der Joystick (links) lenkt, nach oben schieben zum Sprinten. Tippe auf PASS (rechts), um die Mango zu werfen.",
+  "sport.dash.keys": "Tasten: Links / Rechts zum Lenken, Hoch zum Sprinten, Runter zum Bremsen. Leertaste zum Passen.",
+  "md.metres": "{n} m von 100",
+  "md.mark": "{n} m",
+  "md.pass": "PASS",
+  "md.dodge": "Ausgewichen!",
+  "md.trip": "Autsch, ein Baumstamm!",
+  "md.caughtIt": "Gefangen!",
+  "md.pecca": "Pecca kommt!",
+  "md.caught": "Die Grunz-Bande hat die Mango!",
+  "md.caughtPecca": "Pecca hat die Mango!",
+  "md.hintTouch": "Lenk mit dem Joystick. Ein Schwein scharrt im Schlamm und eine rote Linie zeigt, wohin es rennt: weich aus oder tippe auf PASS!",
+  "md.hintKeys": "Pfeiltasten zum Lenken (Hoch zum Sprinten). Ein Schwein scharrt im Schlamm und eine rote Linie zeigt, wohin es rennt: weich aus oder drück die Leertaste zum Passen!",
 });
 
 /* ---- i18n/all.en-GB.js ---- */
@@ -562,9 +613,9 @@ I18N['en-GB'] = Object.assign(I18N['en-GB'] || {}, {
 });
 
 /* ---- i18n/all.es.js ---- */
-// Jungle Cup in Spanish: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Spanish: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.es = Object.assign(I18N.es || {}, {
-  "tagline": "Siete campeones. Siete Plumas. ¡Una Copa!",
+  "tagline": "Ocho campeones. Ocho Plumas. ¡Una Copa!",
   "confirm.new": "¿Empezar una partida nueva? Se borrarán tus Plumas, estrellas y récords.",
   "go": "¡YA!", "paused": "Pausa", "on": "Sí", "off": "No", "none": "Nada",
   "btn.play": "Jugar", "btn.continue": "Continuar", "btn.newGame": "Partida nueva", "btn.back": "Atrás", "btn.resume": "Seguir jugando",
@@ -575,7 +626,7 @@ I18N.es = Object.assign(I18N.es || {}, {
   "res.won": "¡Has ganado!", "res.lost": "¡Casi!", "res.wonSub": "¡Qué partido!", "res.lostSub": "¡Inténtalo otra vez!",
   "res.score": "Puntos", "res.best": "Récord", "res.newBest": "¡Nuevo récord!", "res.feather": "¡Has ganado la Pluma de {sport}!",
   "hud.secs": "{n} s", "hud.score": "Puntos",
-  "map.title": "Isla Delta", "map.feathers": "{n}/7 Plumas",
+  "map.title": "Isla Delta", "map.feathers": "{n}/8 Plumas",
   "settings.title": "Ajustes", "settings.sound": "Sonido", "settings.font": "Letra", "settings.pixel": "Píxel", "settings.clear": "Clara",
   "settings.easy": "Campeones más fáciles", "settings.easyHelp": "Los campeones más fáciles van un poco más despacio y fallan un poco más. Actívalo cuando quieras.",
   "controls.title": "Controles", "controls.touch": "Táctil", "controls.keys": "Teclado", "controls.pad": "Mando",
@@ -589,7 +640,7 @@ I18N.es = Object.assign(I18N.es || {}, {
   "quest.reward.bandana": "¡Pañuelo nuevo!", "quest.reward.hat": "¡Sombrero nuevo!", "quest.reward.flag": "¡Bandera nueva!",
   "quest.found": "¡Concha {n} de {total}!", "quest.got.leaf": "¡Encontraste la hoja grande!", "quest.got.specs": "¡Encontraste las gafas!",
   "quest.got.mango": "¡Cogiste un mango maduro!", "quest.got.letter": "¡Carta entregada!",
-  "lift.locked": "El ascensor de lianas está atado. Se abre cuando el Tótem de la Copa tenga las siete Plumas. Plumas hasta ahora: {n} de 7.",
+  "lift.locked": "El ascensor de lianas está atado. Se abre cuando el Tótem de la Copa tenga las ocho Plumas. Plumas hasta ahora: {n} de 8.",
   "lift.open": "¡Las lianas zumban! ¡Agárrate fuerte: arriba, al Escenario de la Copa!",
   "sign.welcome": "¡Bienvenido a Isla Delta! Hogar de la Copa de la Selva. El pueblo está todo recto.",
   "sign.village": "Pueblo Musgoso. Hay deportes por toda la isla: ¡busca los arcos de flores!",
@@ -600,7 +651,7 @@ I18N.es = Object.assign(I18N.es || {}, {
   "vs.rana": "contra Rana la rana", "vs.mico": "contra Mico el mono aullador", "vs.kiki": "contra Kiki la kinkajú",
   "name.ants": "La familia Snip", "name.elder": "Anciano Shellby", "name.otters": "Nutrias Gemelas", "name.marm": "Titíes",
   "story.1": "Cappy el capibara bajó por el río en una balsita, hasta llegar a Isla Delta.",
-  "story.2": "Cada año la isla celebra la Copa de la Selva. Siete campeones. Siete deportes. ¿Podrá Cappy ganarlos todos?",
+  "story.2": "Cada año la isla celebra la Copa de la Selva. Ocho campeones. Ocho deportes. ¿Podrá Cappy ganarlos todos?",
   "story.3": "¡Pum! La balsa llegó al muelle, y los primos Coco y Pip ya estaban saludando.",
   "d.coco.hi": "¡Primo Cappy! ¡Has llegado! ¡Bienvenido a Isla Delta!",
   "d.coco.again": "El Tótem de la Copa está en el centro del pueblo. ¡Cada Pluma que ganes lo ilumina!",
@@ -611,9 +662,9 @@ I18N.es = Object.assign(I18N.es || {}, {
   "d.pip.qthanks": "¡Las tres! ¡Gracias! Toma mi pañuelo de atardecer. Te quedará genial.",
   "d.pip.after": "¡El pañuelo de atardecer te queda muy bien, primo!",
   "d.mango.intro1": "¡Crac! ¡Tú debes de ser Cappy! Soy Mango, la guía de la isla.",
-  "d.mango.intro2": "En Isla Delta viven siete campeones, y cada uno defiende un deporte.",
+  "d.mango.intro2": "En Isla Delta viven ocho campeones, y cada uno defiende un deporte.",
   "d.mango.intro3": "Gana a un campeón y conseguirás su Pluma. ¡Cada Pluma es de un color distinto!",
-  "d.mango.intro4": "Lleva tus Plumas al Tótem de la Copa en Pueblo Musgoso. Llena los siete huecos...",
+  "d.mango.intro4": "Lleva tus Plumas al Tótem de la Copa en Pueblo Musgoso. Llena los ocho huecos...",
   "d.mango.intro5": "...y se abrirá el ascensor de lianas de la Gran Ceiba. ¡La Copa de la Selva te espera arriba! Prueba primero con Jada en la pista del dosel. ¡Ve al oeste del pueblo!",
   "d.mango.hint0": "Jada juega a Pala Feroz en la pista del dosel, al oeste del pueblo. ¡Busca el arco naranja!",
   "d.mango.hint1": "¡Ya tienes una Pluma! Hay arcos de flores por toda la isla. Abre el mapa para encontrarlos.",
@@ -623,7 +674,7 @@ I18N.es = Object.assign(I18N.es || {}, {
   "d.mango.qask2": "¿Me traes uno? ¡Te daré algo bonito!",
   "d.mango.qwait": "El árbol de mangos está junto a las colinas, al noroeste. Mmm, mango...",
   "d.mango.qthanks": "¡MANGO! ¡Mi favorito! Toma, un sombrero de explorador para un explorador de verdad.",
-  "d.mango.allf": "¡Las siete Plumas! El ascensor de lianas de la Gran Ceiba está abierto. ¡Corre, corre!",
+  "d.mango.allf": "¡Las ocho Plumas! El ascensor de lianas de la Gran Ceiba está abierto. ¡Corre, corre!",
   "d.mango.after": "¡Campeón de la Copa de la Selva! Puedes seguir jugando a cualquier deporte para batir tus récords.",
   "d.mango.free": "¡Juego libre! Todos los deportes están abiertos, y ese pañuelo dorado es tuyo. ¡Intenta conseguir tres estrellas en todos!",
   "d.tapir.hello": "Hola, soy Tapo. En mi puesto no se compra nada, solo hay consejos. ¡Los consejos son gratis!",
@@ -642,20 +693,20 @@ I18N.es = Object.assign(I18N.es || {}, {
   "d.ants.qthanks": "¡Nuestro tejado! Gracias, gran amigo. ¡Toma un pañuelo azul cielo que tejimos nosotras!",
   "d.ants.after": "¡Chas, chas! Ahora estamos haciendo un tejado más grande.",
   "d.elder.totem1": "Ah, jovencito. Este es el Tótem de la Copa. Lleva aquí más tiempo que mi caparazón.",
-  "d.elder.totem2": "Tiene siete huecos. Cada uno espera la Pluma de un campeón.",
-  "d.elder.totem3": "Cuando brillen los siete, el ascensor de lianas despertará. Y en el Escenario de la Copa estará la Copa de la Selva.",
+  "d.elder.totem2": "Tiene ocho huecos. Cada uno espera la Pluma de un campeón.",
+  "d.elder.totem3": "Cuando brillen los ocho, el ascensor de lianas despertará. Y en el Escenario de la Copa estará la Copa de la Selva.",
   "d.elder.qask1": "Mmm, ¿dónde dejé mis gafas? Estaba echando la siesta junto a la laguna...",
   "d.elder.qask2": "¿Las buscarías, jovencito? Cerca de la arena, al sur de la laguna.",
   "d.elder.qwait": "Mis gafas deberían estar en la arena junto a la laguna. ¡Lo veo todo borroso!",
   "d.elder.qthanks": "¡Mis gafas! ¡Ya te veo! Toma este sombrero de paja. Te protege del sol.",
-  "d.elder.count": "El tótem tiene {n} de 7 Plumas. Paciencia, y práctica.",
-  "d.elder.allf": "¡Brillan las siete Plumas! En todos mis años, casi nunca lo he visto. Sube, campeón.",
+  "d.elder.count": "El tótem tiene {n} de 8 Plumas. Paciencia, y práctica.",
+  "d.elder.allf": "¡Brillan las ocho Plumas! En todos mis años, casi nunca lo he visto. Sube, campeón.",
   "d.zuzu.qask1": "¡Bzzz! ¡Soy Zuzu, la mensajera más rápida de la isla!",
   "d.zuzu.qask2": "Pero tengo las alas cansadas. ¿Llevas esta carta a Tapo, a su puesto del pueblo?",
   "d.zuzu.qwait": "El puesto de Tapo tiene el techo azul y blanco, en Pueblo Musgoso. ¡Bzzz!",
   "d.zuzu.thanks": "¡Bzzz! ¡La entregaste! Toma, una bandera de hoja para tu balsa. ¡Ondea muy bien!",
   "d.zuzu.after": "¡Bzzz! ¡He oído que Jada es rapidísima con la pala!",
-  "d.zuzu.liftopen": "¡Bzzz! ¡GRAN NOTICIA! ¡Las siete Plumas! ¡El ascensor de lianas de la Gran Ceiba está abierto!",
+  "d.zuzu.liftopen": "¡Bzzz! ¡GRAN NOTICIA! ¡Las ocho Plumas! ¡El ascensor de lianas de la Gran Ceiba está abierto!",
   "d.marm.hi": "¡Iii, iii! Somos los ayudantes de Jada. ¡Nos encantan los peloteos rápidos!",
   "d.jada.pre": "¿Listo para Pala Feroz? Mira la pelota, golpea en el momento justo, ¡y salta!",
   "d.jada.won": "Me has ganado limpiamente. ¡La revancha cuando quieras!",
@@ -680,19 +731,19 @@ I18N.es = Object.assign(I18N.es || {}, {
   "d.kiki.soon": "La cuesta de barro está demasiado seca. ¡Vuelve después de la lluvia!",
   "d.jada.ready": "¡Buen calentamiento! Ahora me toca a mí. El primero que llegue a 7. ¡Enséñame tu salto!",
   "end.1": "El ascensor de lianas subió a Cappy arriba, arriba, arriba, entre las hojas hasta el Escenario de la Copa.",
-  "end.2": "Los siete campeones le esperaban. «¡Te lo has ganado, Cappy!»",
+  "end.2": "Los ocho campeones le esperaban. «¡Te lo has ganado, Cappy!»",
   "end.3": "Esta es la Copa de la Selva, tejida con hojas doradas. Es para el campeón de Isla Delta.",
   "end.4": "¡Levántala bien alto, Cappy! ¡Crac!",
   "end.cup": "¡Campeón de la Copa de la Selva!",
   "end.5": "¡Gracias a todos! ¿Nos vemos el año que viene?",
   "credits.1": "La Copa de la Selva",
   "credits.2": "Protagonizado por Cappy el capibara",
-  "credits.3": "con Jada, Sloane, Tico, las Nutrias Gemelas, Rana, Mico y Kiki",
+  "credits.3": "con Jada, Sloane, Tico, las Nutrias Gemelas, Rana, Mico, Kiki y Pecca",
   "credits.4": "y Mango, Coco, Pip, Tapo, la familia Snip, el Anciano Shellby y Zuzu",
   "credits.5": "Hecho por el equipo de Oomba Academy",
   "credits.6": "Píxeles, música y sonidos hechos con código",
   "credits.7": "¡Gracias por jugar!",
-  "credits.8": "Todos los deportes siguen abiertos. ¿Consigues tres estrellas en los siete?",
+  "credits.8": "Todos los deportes siguen abiertos. ¿Consigues tres estrellas en los ocho?",
   "sport.frog.goal": "Rana toca un ritmo en sus tres tambores de hoja. ¡Escucha y luego tócalo a tiempo! Consigue más puntos que Rana antes de que acabe la canción.",
   "sport.frog.touch": "Táctil: toca el tambor grave (azul, 1 punto), el medio (verde, 2 puntos) y el agudo (rosa, 3 puntos).",
   "sport.frog.keys": "Teclas: Izquierda para el grave, Abajo (o Espacio) para el medio, Derecha para el agudo.",
@@ -758,12 +809,35 @@ I18N.es = Object.assign(I18N.es || {}, {
   "vc.bonk": "¡Bonc!", "vc.buzz": "¡Bzzz!", "vc.top": "¡En la copa del árbol!", "vc.sloaneTop": "Sloane llegó primero",
   "vc.hintTouch": "¡Toca cuando el aro se ponga verde!", "vc.hintKeys": "¡Pulsa Espacio cuando el aro se ponga verde!",
   "vc.hintStartTouch": "Toca cuando la liana pase por encima de ti", "vc.hintStartKeys": "Pulsa Espacio cuando la liana pase por encima de ti",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Carrera del Mango",
+  "vs.pecca": "contra Pecca la pecarí",
+  "name.pecca": "Pecca",
+  "d.pecca.pre": "¡Oink! Soy Pecca, capitana de la Banda Gruñona. ¡Lleva ese mango más allá de mi banda, si puedes!",
+  "d.pecca.won": "¡Oink oink! Nadie había pasado nunca a mi banda. ¡Aquí tienes mi Pluma, campeón!",
+  "d.pecca.soon": "¡Oink! Mi banda todavía se está revolcando en el barro. ¡Vuelve pronto!",
+  "d.mango.dash1": "¡Cuac! ¡Gran noticia! Ha llegado una nueva campeona a Isla Delta: ¡Pecca y su Banda Gruñona!",
+  "d.mango.dash2": "Juegan a la Carrera del Mango en el claro de barro, al norte de las piedras del río. ¡Al tótem le ha salido un octavo hueco!",
+  "sport.dash.goal": "¡Lleva el mango 100 m hasta la cesta! La Banda Gruñona de Pecca embiste a quien lo tenga. Esquívalos o pásaselo al compañero de la flecha.",
+  "sport.dash.touch": "Táctil: el joystick (izquierda) dirige; empuja hacia arriba para esprintar. Toca PASE (derecha) para lanzar el mango.",
+  "sport.dash.keys": "Teclas: Izquierda / Derecha para dirigir, Arriba para esprintar, Abajo para frenar. Espacio para pasar.",
+  "md.metres": "{n} m de 100",
+  "md.mark": "{n} m",
+  "md.pass": "PASE",
+  "md.dodge": "¡Esquivado!",
+  "md.trip": "¡Ay, un tronco!",
+  "md.caughtIt": "¡Atrapado!",
+  "md.pecca": "¡Viene Pecca!",
+  "md.caught": "¡La Banda Gruñona tiene el mango!",
+  "md.caughtPecca": "¡Pecca tiene el mango!",
+  "md.hintTouch": "Dirige con el joystick. Un pecarí escarba en el barro y una línea roja muestra por dónde correrá: ¡esquívalo o toca PASE!",
+  "md.hintKeys": "Flechas para dirigir (Arriba para esprintar). Un pecarí escarba en el barro y una línea roja muestra por dónde correrá: ¡esquívalo o pulsa Espacio para pasar!",
 });
 
 /* ---- i18n/all.fr.js ---- */
-// Jungle Cup in French: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in French: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.fr = Object.assign(I18N.fr || {}, {
-  "tagline": "Sept champions. Sept Plumes. Une Coupe !",
+  "tagline": "Huit champions. Huit Plumes. Une Coupe !",
   "confirm.new": "Commencer une toute nouvelle partie ? Tes Plumes, étoiles et records seront effacés.",
   "go": "PARTEZ !", "paused": "Pause", "on": "Oui", "off": "Non", "none": "Aucun",
   "btn.play": "Jouer", "btn.continue": "Continuer", "btn.newGame": "Nouvelle partie", "btn.back": "Retour", "btn.resume": "Continuer à jouer",
@@ -774,7 +848,7 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "res.won": "Tu as gagné !", "res.lost": "Presque !", "res.wonSub": "Quel match !", "res.lostSub": "Essaie encore !",
   "res.score": "Score", "res.best": "Record", "res.newBest": "Nouveau record !", "res.feather": "Tu as gagné la Plume de {sport} !",
   "hud.secs": "{n} s", "hud.score": "Score",
-  "map.title": "Île Delta", "map.feathers": "{n}/7 Plumes",
+  "map.title": "Île Delta", "map.feathers": "{n}/8 Plumes",
   "settings.title": "Réglages", "settings.sound": "Son", "settings.font": "Police", "settings.pixel": "Pixel", "settings.clear": "Lisible",
   "settings.easy": "Champions plus faciles", "settings.easyHelp": "Les champions plus faciles jouent un peu plus lentement et ratent un peu plus. Active-le quand tu veux.",
   "controls.title": "Commandes", "controls.touch": "Tactile", "controls.keys": "Clavier", "controls.pad": "Manette",
@@ -788,7 +862,7 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "quest.reward.bandana": "Nouveau bandana !", "quest.reward.hat": "Nouveau chapeau !", "quest.reward.flag": "Nouveau drapeau !",
   "quest.found": "Coquillage {n} sur {total} !", "quest.got.leaf": "Tu as trouvé la grande feuille !", "quest.got.specs": "Tu as trouvé les lunettes !",
   "quest.got.mango": "Tu as cueilli une mangue bien mûre !", "quest.got.letter": "Lettre livrée !",
-  "lift.locked": "L'ascenseur de lianes est attaché. Il s'ouvre quand le Totem de la Coupe a les sept Plumes. Plumes pour l'instant : {n} sur 7.",
+  "lift.locked": "L'ascenseur de lianes est attaché. Il s'ouvre quand le Totem de la Coupe a les huit Plumes. Plumes pour l'instant : {n} sur 8.",
   "lift.open": "Les lianes vibrent ! Accroche-toi bien : direction la Scène de la Canopée !",
   "sign.welcome": "Bienvenue sur l'île Delta ! Le pays de la Coupe de la Jungle. Le village est tout droit.",
   "sign.village": "Village Moussu. Il y a des sports partout sur l'île : cherche les arches fleuries !",
@@ -799,7 +873,7 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "vs.rana": "contre Rana la grenouille", "vs.mico": "contre Mico le singe hurleur", "vs.kiki": "contre Kiki le kinkajou",
   "name.ants": "La famille Snip", "name.elder": "Sage Shellby", "name.otters": "Jumelles Loutres", "name.marm": "Ouistitis",
   "story.1": "Cappy le capybara a descendu la rivière sur un petit radeau, jusqu'à l'île Delta.",
-  "story.2": "Chaque année, l'île organise la Coupe de la Jungle. Sept champions. Sept sports. Cappy pourra-t-il tous les gagner ?",
+  "story.2": "Chaque année, l'île organise la Coupe de la Jungle. Huit champions. Huit sports. Cappy pourra-t-il tous les gagner ?",
   "story.3": "Boum ! Le radeau a touché le ponton, et les cousins Coco et Pip faisaient déjà coucou.",
   "d.coco.hi": "Cousin Cappy ! Tu es là ! Bienvenue sur l'île Delta !",
   "d.coco.again": "Le Totem de la Coupe est au milieu du village. Chaque Plume que tu gagnes l'illumine !",
@@ -810,9 +884,9 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "d.pip.qthanks": "Les trois ! Merci ! Tiens, prends mon bandana coucher de soleil. Il t'ira super bien.",
   "d.pip.after": "Le bandana coucher de soleil te va bien, cousin !",
   "d.mango.intro1": "Croâ ! Tu dois être Cappy ! Moi, c'est Mango, la guide de l'île.",
-  "d.mango.intro2": "Sept champions vivent sur l'île Delta, et chacun garde un sport.",
+  "d.mango.intro2": "Huit champions vivent sur l'île Delta, et chacun garde un sport.",
   "d.mango.intro3": "Bats un champion et tu gagnes sa Plume. Chaque Plume a une couleur différente !",
-  "d.mango.intro4": "Apporte tes Plumes au Totem de la Coupe, dans le Village Moussu. Remplis les sept encoches...",
+  "d.mango.intro4": "Apporte tes Plumes au Totem de la Coupe, dans le Village Moussu. Remplis les huit encoches...",
   "d.mango.intro5": "...et l'ascenseur de lianes du Grand Kapokier s'ouvrira. La Coupe de la Jungle t'attend en haut ! Essaie d'abord Jada au court de la canopée. Va à l'ouest du village !",
   "d.mango.hint0": "Jada joue au Smash Raquette au court de la canopée, à l'ouest du village. Cherche l'arche orange !",
   "d.mango.hint1": "Déjà une Plume ! Il y a des arches fleuries partout sur l'île. Ouvre la carte pour les trouver.",
@@ -822,7 +896,7 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "d.mango.qask2": "Tu m'en rapportes une ? Je te donnerai un joli cadeau !",
   "d.mango.qwait": "Le manguier est près des collines, au nord-ouest. Miam, la mangue...",
   "d.mango.qthanks": "MANGUE ! Ma préférée ! Tiens, un chapeau d'explorateur pour un vrai explorateur.",
-  "d.mango.allf": "Les sept Plumes ! L'ascenseur de lianes du Grand Kapokier est ouvert. Vas-y, vas-y !",
+  "d.mango.allf": "Les huit Plumes ! L'ascenseur de lianes du Grand Kapokier est ouvert. Vas-y, vas-y !",
   "d.mango.after": "Champion de la Coupe de la Jungle ! Tu peux toujours jouer à tous les sports pour battre tes records.",
   "d.mango.free": "Jeu libre ! Tous les sports sont ouverts, et ce bandana doré est à toi. Essaie d'avoir trois étoiles partout !",
   "d.tapir.hello": "Bonjour, je suis Tapo. Mon étal ne vend rien, il n'y a que des astuces. Les astuces sont gratuites !",
@@ -841,20 +915,20 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "d.ants.qthanks": "Notre toit ! Merci, grand ami. Voici un bandana bleu ciel que nous avons tissé nous-mêmes !",
   "d.ants.after": "Snip, snip ! On construit un toit plus grand maintenant.",
   "d.elder.totem1": "Ah, jeune ami. Voici le Totem de la Coupe. Il est là depuis plus longtemps que ma carapace.",
-  "d.elder.totem2": "Il a sept encoches. Chacune attend la Plume d'un champion.",
-  "d.elder.totem3": "Quand les sept brilleront, l'ascenseur de lianes se réveillera. Alors la Scène de la Canopée offrira la Coupe de la Jungle.",
+  "d.elder.totem2": "Il a huit encoches. Chacune attend la Plume d'un champion.",
+  "d.elder.totem3": "Quand les huit brilleront, l'ascenseur de lianes se réveillera. Alors la Scène de la Canopée offrira la Coupe de la Jungle.",
   "d.elder.qask1": "Hum, où ai-je mis mes lunettes ? Je faisais la sieste près du lagon...",
   "d.elder.qask2": "Tu veux bien les chercher, jeune ami ? Près du sable, au sud du lagon.",
   "d.elder.qwait": "Mes lunettes doivent être sur le sable près du lagon. Tout est si flou !",
   "d.elder.qthanks": "Mes lunettes ! Maintenant je te vois ! Prends ce chapeau de paille. Il protège du soleil.",
-  "d.elder.count": "Le totem a {n} Plumes sur 7. De la patience, et de l'entraînement.",
-  "d.elder.allf": "Les sept Plumes brillent ! En toutes mes années, je l'ai rarement vu. Monte, champion.",
+  "d.elder.count": "Le totem a {n} Plumes sur 8. De la patience, et de l'entraînement.",
+  "d.elder.allf": "Les huit Plumes brillent ! En toutes mes années, je l'ai rarement vu. Monte, champion.",
   "d.zuzu.qask1": "Bzzz ! Je suis Zuzu, la messagère la plus rapide de l'île !",
   "d.zuzu.qask2": "Mais mes ailes sont fatiguées. Tu peux apporter cette lettre à Tapo, à son étal du village ?",
   "d.zuzu.qwait": "L'étal de Tapo a un toit bleu et blanc, dans le Village Moussu. Bzzz !",
   "d.zuzu.thanks": "Bzzz ! Tu l'as livrée ! Tiens, un drapeau feuille pour ton radeau. Il flotte joliment !",
   "d.zuzu.after": "Bzzz ! Il paraît que Jada est super rapide à la raquette !",
-  "d.zuzu.liftopen": "Bzzz ! GRANDE NOUVELLE ! Les sept Plumes ! L'ascenseur de lianes du Grand Kapokier est ouvert !",
+  "d.zuzu.liftopen": "Bzzz ! GRANDE NOUVELLE ! Les huit Plumes ! L'ascenseur de lianes du Grand Kapokier est ouvert !",
   "d.marm.hi": "Iiik iiik ! On est les petits assistants de Jada. On adore les échanges rapides !",
   "d.jada.pre": "Prêt pour le Smash Raquette ? Regarde la balle, frappe au bon moment, et bondis !",
   "d.jada.won": "Tu m'as battue à la loyale. Revanche quand tu veux !",
@@ -879,14 +953,14 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "d.kiki.soon": "La pente de boue est encore trop sèche. Reviens après la pluie !",
   "d.jada.ready": "Bel échauffement ! Maintenant, c'est mon tour. Le premier à 7. Montre-moi ton bond !",
   "end.1": "L'ascenseur de lianes a emmené Cappy tout là-haut, à travers les feuilles, jusqu'à la Scène de la Canopée.",
-  "end.2": "Les sept champions l'attendaient. « Tu l'as bien méritée, Cappy ! »",
+  "end.2": "Les huit champions l'attendaient. « Tu l'as bien méritée, Cappy ! »",
   "end.3": "Voici la Coupe de la Jungle, tressée de feuilles dorées. Elle revient au champion de l'île Delta.",
   "end.4": "Lève-la bien haut, Cappy ! Croâ !",
   "end.cup": "Champion de la Coupe de la Jungle !",
   "end.5": "Merci à tous ! À l'année prochaine ?",
   "credits.1": "La Coupe de la Jungle",
   "credits.2": "Avec Cappy le capybara",
-  "credits.3": "et Jada, Sloane, Tico, les Jumelles Loutres, Rana, Mico et Kiki",
+  "credits.3": "et Jada, Sloane, Tico, les Jumelles Loutres, Rana, Mico, Kiki et Pecca",
   "credits.4": "et Mango, Coco, Pip, Tapo, la famille Snip, le Sage Shellby et Zuzu",
   "credits.5": "Créé par l'équipe d'Oomba Academy",
   "credits.6": "Pixels, musique et sons créés en code",
@@ -957,12 +1031,35 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "vc.bonk": "Bong !", "vc.buzz": "Bzzz !", "vc.top": "En haut de l'arbre !", "vc.sloaneTop": "Sloane est arrivée en premier",
   "vc.hintTouch": "Touche quand l'anneau devient vert !", "vc.hintKeys": "Appuie sur Espace quand l'anneau devient vert !",
   "vc.hintStartTouch": "Touche quand la liane passe au-dessus de toi", "vc.hintStartKeys": "Appuie sur Espace quand la liane passe au-dessus de toi",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Course à la Mangue",
+  "vs.pecca": "contre Pecca le pécari",
+  "name.pecca": "Pecca",
+  "d.pecca.pre": "Groin ! Je suis Pecca, capitaine de la Bande des Grogneurs. Passe ma bande avec cette mangue, si tu peux !",
+  "d.pecca.won": "Groin groin ! Personne n'avait jamais passé ma bande. Voici ma Plume, champion !",
+  "d.pecca.soon": "Groin ! Ma bande se roule encore dans la boue. Reviens bientôt !",
+  "d.mango.dash1": "Crôa ! Grande nouvelle ! Une nouvelle championne est arrivée sur l'île Delta : Pecca et sa Bande des Grogneurs !",
+  "d.mango.dash2": "Elles jouent à la Course à la Mangue dans la clairière boueuse, au nord des pierres du gué. Le totem a une huitième encoche !",
+  "sport.dash.goal": "Porte la mangue sur 100 m jusqu'au panier ! La Bande des Grogneurs de Pecca fonce sur celui qui l'a. Esquive-les, ou passe-la au coéquipier avec la flèche.",
+  "sport.dash.touch": "Tactile : le joystick (à gauche) dirige ; pousse vers le haut pour sprinter. Touche PASSE (à droite) pour lancer la mangue.",
+  "sport.dash.keys": "Touches : Gauche / Droite pour diriger, Haut pour sprinter, Bas pour ralentir. Espace pour passer.",
+  "md.metres": "{n} m sur 100",
+  "md.mark": "{n} m",
+  "md.pass": "PASSE",
+  "md.dodge": "Esquivé !",
+  "md.trip": "Aïe, un tronc !",
+  "md.caughtIt": "Attrapée !",
+  "md.pecca": "Pecca arrive !",
+  "md.caught": "La Bande des Grogneurs a la mangue !",
+  "md.caughtPecca": "Pecca a la mangue !",
+  "md.hintTouch": "Dirige avec le joystick. Un pécari gratte la boue et une ligne rouge montre où il va courir : esquive-le, ou touche PASSE !",
+  "md.hintKeys": "Flèches pour diriger (Haut pour sprinter). Un pécari gratte la boue et une ligne rouge montre où il va courir : esquive-le, ou appuie sur Espace pour passer !",
 });
 
 /* ---- i18n/all.he.js ---- */
-// Jungle Cup in Hebrew: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Hebrew: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.he = Object.assign(I18N.he || {}, {
-  "tagline": "שבעה אלופים. שבע נוצות. גביע אחד!",
+  "tagline": "שמונה אלופים. שמונה נוצות. גביע אחד!",
   "confirm.new": "להתחיל משחק חדש לגמרי? הנוצות, הכוכבים והשיאים שלך יימחקו.",
   "go": "צא!", "paused": "השהיה", "on": "פועל", "off": "כבוי", "none": "אין",
   "btn.play": "שחק", "btn.continue": "המשך", "btn.newGame": "משחק חדש", "btn.back": "חזרה", "btn.resume": "להמשיך לשחק",
@@ -973,7 +1070,7 @@ I18N.he = Object.assign(I18N.he || {}, {
   "res.won": "ניצחת!", "res.lost": "כמעט!", "res.wonSub": "איזה משחק!", "res.lostSub": "נסה שוב!",
   "res.score": "ניקוד", "res.best": "שיא", "res.newBest": "שיא חדש!", "res.feather": "זכית בנוצת {sport}!",
   "hud.secs": "{n} שנ׳", "hud.score": "ניקוד",
-  "map.title": "אי הדלתא", "map.feathers": "נוצות {n}/7",
+  "map.title": "אי הדלתא", "map.feathers": "נוצות {n}/8",
   "settings.title": "הגדרות", "settings.sound": "צליל", "settings.font": "סגנון טקסט", "settings.pixel": "פיקסלים", "settings.clear": "ברור",
   "settings.easy": "אלופים קלים יותר", "settings.easyHelp": "אלופים קלים יותר משחקים קצת לאט יותר ומחטיאים קצת יותר. אפשר להפעיל מתי שרוצים.",
   "controls.title": "שליטה", "controls.touch": "מגע", "controls.keys": "מקלדת", "controls.pad": "שלט משחק",
@@ -987,7 +1084,7 @@ I18N.he = Object.assign(I18N.he || {}, {
   "quest.reward.bandana": "בנדנה חדשה!", "quest.reward.hat": "כובע חדש!", "quest.reward.flag": "דגל רפסודה חדש!",
   "quest.found": "צדף {n} מתוך {total}!", "quest.got.leaf": "מצאת את העלה הגדול!", "quest.got.specs": "מצאת את המשקפיים!",
   "quest.got.mango": "קטפת מנגו בשל!", "quest.got.letter": "המכתב נמסר!",
-  "lift.locked": "מעלית הגפנים קשורה. היא תיפתח כשבטוטם הגביע יהיו כל שבע הנוצות. נוצות עד עכשיו: {n} מתוך 7.",
+  "lift.locked": "מעלית הגפנים קשורה. היא תיפתח כשבטוטם הגביע יהיו כל שמונה הנוצות. נוצות עד עכשיו: {n} מתוך 8.",
   "lift.open": "הגפנים מזמזמות! תחזיק חזק: למעלה, אל במת הצמרות!",
   "sign.welcome": "ברוכים הבאים לאי הדלתא! הבית של גביע הג׳ונגל. הכפר ישר קדימה.",
   "sign.village": "כפר הטחב. יש ספורט בכל האי: חפשו את קשתות הפרחים!",
@@ -1001,7 +1098,7 @@ I18N.he = Object.assign(I18N.he || {}, {
   "name.rana": "ראנה", "name.mico": "מיקו", "name.kiki": "קיקי", "name.marm": "המרמוסטים",
   "rap.ripple": "אדווה", "rap.splash": "שפריץ",
   "story.1": "קאפי הקפיברה צף במורד הנהר על רפסודה קטנה, עד לאי הדלתא.",
-  "story.2": "בכל שנה האי עורך את גביע הג׳ונגל. שבעה אלופים. שבעה ענפי ספורט. האם קאפי ינצח בכולם?",
+  "story.2": "בכל שנה האי עורך את גביע הג׳ונגל. שמונה אלופים. שמונה ענפי ספורט. האם קאפי ינצח בכולם?",
   "story.3": "בום! הרפסודה הגיעה למזח, ובני הדודים קוקו ופיפ כבר נופפו לשלום.",
   "d.coco.hi": "בן הדוד קאפי! הגעת! ברוך הבא לאי הדלתא!",
   "d.coco.again": "טוטם הגביע נמצא באמצע הכפר. כל נוצה שאתה זוכה בה מדליקה אותו!",
@@ -1012,9 +1109,9 @@ I18N.he = Object.assign(I18N.he || {}, {
   "d.pip.qthanks": "כל השלושה! תודה! קח את בנדנת השקיעה שלי. היא תיראה עליך נהדר.",
   "d.pip.after": "בנדנת השקיעה מתאימה לך, בן דוד!",
   "d.mango.intro1": "קראא! אתה בטח קאפי! אני מנגו, המדריכה של האי.",
-  "d.mango.intro2": "באי הדלתא גרים שבעה אלופים, וכל אחד שומר על ענף ספורט.",
+  "d.mango.intro2": "באי הדלתא גרים שמונה אלופים, וכל אחד שומר על ענף ספורט.",
   "d.mango.intro3": "נצח אלוף ותזכה בנוצה שלו. לכל נוצה צבע אחר!",
-  "d.mango.intro4": "הבא את הנוצות לטוטם הגביע בכפר הטחב. מלא את כל שבעת השקעים...",
+  "d.mango.intro4": "הבא את הנוצות לטוטם הגביע בכפר הטחב. מלא את כל שמונת השקעים...",
   "d.mango.intro5": "...ומעלית הגפנים ליד עץ הקפוק הגדול תיפתח. גביע הג׳ונגל מחכה למעלה! קודם נסה את ג׳יידה במגרש הצמרות. לך מערבה מהכפר!",
   "d.mango.hint0": "ג׳יידה משחקת מכת מחבט במגרש הצמרות, מערבית לכפר. חפש את הקשת הכתומה!",
   "d.mango.hint1": "כבר נוצה אחת! יש קשתות פרחים בכל האי. פתח את המפה כדי למצוא אותן.",
@@ -1024,7 +1121,7 @@ I18N.he = Object.assign(I18N.he || {}, {
   "d.mango.qask2": "תביא לי אחד? אתן לך משהו יפה!",
   "d.mango.qwait": "עץ המנגו ליד הגבעות, בצפון־מערב. ממ, מנגו...",
   "d.mango.qthanks": "מנגו! האהוב עליי! הנה כובע חוקרים לחוקר אמיתי.",
-  "d.mango.allf": "כל שבע הנוצות! מעלית הגפנים ליד עץ הקפוק הגדול פתוחה. קדימה, קדימה!",
+  "d.mango.allf": "כל שמונה הנוצות! מעלית הגפנים ליד עץ הקפוק הגדול פתוחה. קדימה, קדימה!",
   "d.mango.after": "אלוף גביע הג׳ונגל! אפשר עדיין לשחק בכל ענף כדי לשבור את השיאים שלך.",
   "d.mango.free": "משחק חופשי! כל ענפי הספורט פתוחים, והבנדנה המוזהבת שלך. נסה להשיג שלושה כוכבים בכולם!",
   "d.tapir.hello": "שלום, אני טאפו. בדוכן שלי לא קונים כלום, יש רק טיפים. טיפים בחינם!",
@@ -1043,20 +1140,20 @@ I18N.he = Object.assign(I18N.he || {}, {
   "d.ants.qthanks": "הגג שלנו! תודה, חבר גדול. הנה בנדנת תכלת שארגנו בעצמנו!",
   "d.ants.after": "גזור, גזור! עכשיו אנחנו בונות גג גדול יותר.",
   "d.elder.totem1": "אה, צעיר. זה טוטם הגביע. הוא עומד כאן יותר זמן מהשריון שלי.",
-  "d.elder.totem2": "יש בו שבעה שקעים. כל אחד מחכה לנוצה של אלוף.",
-  "d.elder.totem3": "כשכל השבעה יזהרו, מעלית הגפנים תתעורר. ואז על במת הצמרות יחכה גביע הג׳ונגל.",
+  "d.elder.totem2": "יש בו שמונה שקעים. כל אחד מחכה לנוצה של אלוף.",
+  "d.elder.totem3": "כשכל השמונה יזהרו, מעלית הגפנים תתעורר. ואז על במת הצמרות יחכה גביע הג׳ונגל.",
   "d.elder.qask1": "הממ, איפה שמתי את המשקפיים? נמנמתי ליד הלגונה...",
   "d.elder.qask2": "תחפש אותם, צעיר? ליד החול, דרומית ללגונה.",
   "d.elder.qwait": "המשקפיים שלי צריכים להיות על החול ליד הלגונה. הכול כל כך מטושטש!",
   "d.elder.qthanks": "המשקפיים שלי! עכשיו אני רואה אותך! קח את כובע הקש הזה. הוא מגן מהשמש.",
-  "d.elder.count": "בטוטם יש {n} מתוך 7 נוצות. סבלנות, ואימון.",
-  "d.elder.allf": "כל שבע הנוצות זוהרות! בכל שנותיי כמעט לא ראיתי את זה. עלה, אלוף.",
+  "d.elder.count": "בטוטם יש {n} מתוך 8 נוצות. סבלנות, ואימון.",
+  "d.elder.allf": "כל שמונה הנוצות זוהרות! בכל שנותיי כמעט לא ראיתי את זה. עלה, אלוף.",
   "d.zuzu.qask1": "בזזז! אני זוזו, השליחה הכי מהירה באי!",
   "d.zuzu.qask2": "אבל הכנפיים שלי עייפות. תיקח את המכתב הזה לטאפו, לדוכן שלו בכפר?",
   "d.zuzu.qwait": "לדוכן של טאפו יש גג כחול־לבן, בכפר הטחב. בזזז!",
   "d.zuzu.thanks": "בזזז! מסרת אותו! הנה דגל עלה לרפסודה שלך. הוא מתנופף יפה!",
   "d.zuzu.after": "בזזז! שמעתי שג׳יידה מהירה מאוד עם המחבט!",
-  "d.zuzu.liftopen": "בזזז! חדשות גדולות! כל שבע הנוצות! מעלית הגפנים ליד עץ הקפוק הגדול פתוחה!",
+  "d.zuzu.liftopen": "בזזז! חדשות גדולות! כל שמונה הנוצות! מעלית הגפנים ליד עץ הקפוק הגדול פתוחה!",
   "d.marm.hi": "איק איק! אנחנו העוזרים הקטנים של ג׳יידה. אנחנו אוהבים חילופי כדור מהירים!",
   "d.jada.pre": "מוכן למכת מחבט? תסתכל על הכדור, תכה בזמן הנכון, ותזנק!",
   "d.jada.won": "ניצחת אותי ביושר. משחק חוזר מתי שתרצה!",
@@ -1081,19 +1178,19 @@ I18N.he = Object.assign(I18N.he || {}, {
   "d.kiki.soon": "מדרון הבוץ עוד יבש מדי. חזור אחרי הגשם!",
   "d.jada.ready": "חימום יפה! עכשיו תורי. הראשון ל־7. תראה לי את הזינוק שלך!",
   "end.1": "מעלית הגפנים נשאה את קאפי למעלה, למעלה, למעלה, דרך העלים אל במת הצמרות.",
-  "end.2": "כל שבעת האלופים חיכו. ״הרווחת את זה, קאפי!״",
+  "end.2": "כל שמונת האלופים חיכו. ״הרווחת את זה, קאפי!״",
   "end.3": "זה גביע הג׳ונגל, ארוג מעלים מוזהבים. הוא שייך לאלוף אי הדלתא.",
   "end.4": "הרם אותו גבוה, קאפי! קראא!",
   "end.cup": "אלוף גביע הג׳ונגל!",
   "end.5": "תודה לכולם! נתראה בשנה הבאה?",
   "credits.1": "גביע הג׳ונגל",
   "credits.2": "בכיכובו של קאפי הקפיברה",
-  "credits.3": "עם ג׳יידה, סלואן, טיקו, תאומות הלוטרה, ראנה, מיקו וקיקי",
+  "credits.3": "עם ג׳יידה, סלואן, טיקו, תאומות הלוטרה, ראנה, מיקו, קיקי ופקה",
   "credits.4": "ומנגו, קוקו, פיפ, טאפו, משפחת סניפ, הזקן שלבי וזוזו",
   "credits.5": "נוצר על ידי הצוות של Oomba Academy",
   "credits.6": "פיקסלים, מוזיקה וצלילים שנוצרו בקוד",
   "credits.7": "תודה ששיחקת!",
-  "credits.8": "כל ענפי הספורט נשארים פתוחים. תשיג שלושה כוכבים בכל השבעה?",
+  "credits.8": "כל ענפי הספורט נשארים פתוחים. תשיג שלושה כוכבים בכל השמונה?",
   "sport.frog.goal": "ראנה מנגנת קצב על שלושת תופי העלים שלה. תקשיב, ואז נגן אותו בחזרה בזמן! צבור יותר נקודות מראנה עד סוף השיר.",
   "sport.frog.touch": "מגע: הקש על התוף הנמוך (כחול, נקודה 1), האמצעי (ירוק, 2 נקודות) והגבוה (ורוד, 3 נקודות).",
   "sport.frog.keys": "מקשים: שמאלה לנמוך, למטה (או רווח) לאמצעי, ימינה לגבוה.",
@@ -1161,12 +1258,35 @@ I18N.he = Object.assign(I18N.he || {}, {
   "vc.bonk": "בונק!", "vc.buzz": "בזזז!", "vc.top": "בצמרת העץ!", "vc.sloaneTop": "סלואן הגיעה ראשונה",
   "vc.hintTouch": "הקש כשהטבעת נהיית ירוקה!", "vc.hintKeys": "לחץ רווח כשהטבעת נהיית ירוקה!",
   "vc.hintStartTouch": "הקש כשהגפן מתנדנדת מעליך", "vc.hintStartKeys": "לחץ רווח כשהגפן מתנדנדת מעליך",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "ספרינט המנגו",
+  "vs.pecca": "נגד פקה הפקארי",
+  "name.pecca": "פקה",
+  "d.pecca.pre": "אוינק! אני פקה, הקפטנית של כנופיית הנחרנים. תעביר את המנגו מעבר לכנופיה שלי, אם אתה יכול!",
+  "d.pecca.won": "אוינק אוינק! אף אחד עוד לא עבר את הכנופיה שלי. הנה הנוצה שלי, אלוף!",
+  "d.pecca.soon": "אוינק! הכנופיה שלי עוד מתגלגלת בבוץ. חזור בקרוב!",
+  "d.mango.dash1": "קווק! חדשות גדולות! אלופה חדשה הגיעה לאי הדלתא: פקה וכנופיית הנחרנים!",
+  "d.mango.dash2": "הן משחקות ספרינט המנגו בקרחת הבוץ, צפונית לאבני המעבר. לטוטם צמח שקע שמיני!",
+  "sport.dash.goal": "העבר את המנגו 100 מ׳ עד הסל! כנופיית הנחרנים של פקה מסתערת על מי שמחזיק בו. התחמק, או מסור לחבר הקבוצה עם החץ.",
+  "sport.dash.touch": "מגע: הג׳ויסטיק (משמאל) מכוון; דחוף למעלה כדי לרוץ מהר. הקש מסירה (מימין) כדי לזרוק את המנגו.",
+  "sport.dash.keys": "מקשים: שמאלה / ימינה לכיוון, למעלה לריצה מהירה, למטה להאטה. רווח למסירה.",
+  "md.metres": "{n} מ׳ מתוך 100",
+  "md.mark": "{n} מ׳",
+  "md.pass": "מסירה",
+  "md.dodge": "התחמקת!",
+  "md.trip": "אוי, בול עץ!",
+  "md.caughtIt": "תפסת!",
+  "md.pecca": "פקה מגיעה!",
+  "md.caught": "כנופיית הנחרנים לקחה את המנגו!",
+  "md.caughtPecca": "פקה לקחה את המנגו!",
+  "md.hintTouch": "כוון עם הג׳ויסטיק. חזיר חופר בבוץ וקו אדום מראה לאן הוא ירוץ: התחמק, או הקש מסירה!",
+  "md.hintKeys": "חיצים לכיוון (למעלה לריצה מהירה). חזיר חופר בבוץ וקו אדום מראה לאן הוא ירוץ: התחמק, או לחץ רווח למסירה!",
 });
 
 /* ---- i18n/all.it.js ---- */
-// Jungle Cup in Italian: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Italian: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.it = Object.assign(I18N.it || {}, {
-  "tagline": "Sette campioni. Sette Piume. Una Coppa!",
+  "tagline": "Otto campioni. Otto Piume. Una Coppa!",
   "confirm.new": "Iniziare una partita tutta nuova? Piume, stelle e record verranno cancellati.",
   "go": "VIA!", "paused": "Pausa", "on": "Sì", "off": "No", "none": "Nessuno",
   "btn.play": "Gioca", "btn.continue": "Continua", "btn.newGame": "Nuova partita", "btn.back": "Indietro", "btn.resume": "Continua a giocare",
@@ -1177,7 +1297,7 @@ I18N.it = Object.assign(I18N.it || {}, {
   "res.won": "Hai vinto!", "res.lost": "C'eri quasi!", "res.wonSub": "Che partita!", "res.lostSub": "Riprova!",
   "res.score": "Punti", "res.best": "Record", "res.newBest": "Nuovo record!", "res.feather": "Hai vinto la Piuma di {sport}!",
   "hud.secs": "{n} s", "hud.score": "Punti",
-  "map.title": "Isola Delta", "map.feathers": "{n}/7 Piume",
+  "map.title": "Isola Delta", "map.feathers": "{n}/8 Piume",
   "settings.title": "Impostazioni", "settings.sound": "Suono", "settings.font": "Scrittura", "settings.pixel": "Pixel", "settings.clear": "Chiara",
   "settings.easy": "Campioni più facili", "settings.easyHelp": "I campioni più facili giocano un po' più piano e sbagliano un po' di più. Attivalo quando vuoi.",
   "controls.title": "Comandi", "controls.touch": "Touch", "controls.keys": "Tastiera", "controls.pad": "Controller",
@@ -1191,7 +1311,7 @@ I18N.it = Object.assign(I18N.it || {}, {
   "quest.reward.bandana": "Nuova bandana!", "quest.reward.hat": "Nuovo cappello!", "quest.reward.flag": "Nuova bandiera!",
   "quest.found": "Conchiglia {n} di {total}!", "quest.got.leaf": "Hai trovato la foglia grande!", "quest.got.specs": "Hai trovato gli occhiali!",
   "quest.got.mango": "Hai raccolto un mango maturo!", "quest.got.letter": "Lettera consegnata!",
-  "lift.locked": "L'ascensore di liane è legato. Si apre quando il Totem della Coppa ha tutte e sette le Piume. Piume finora: {n} su 7.",
+  "lift.locked": "L'ascensore di liane è legato. Si apre quando il Totem della Coppa ha tutte e otto le Piume. Piume finora: {n} su 8.",
   "lift.open": "Le liane vibrano! Tieniti forte: su fino al Palco della Chioma!",
   "sign.welcome": "Benvenuto sull'Isola Delta! La casa della Coppa della Giungla. Il villaggio è dritto davanti.",
   "sign.village": "Villaggio Muschioso. Ci sono sport in tutta l'isola: cerca gli archi fioriti!",
@@ -1202,7 +1322,7 @@ I18N.it = Object.assign(I18N.it || {}, {
   "vs.rana": "contro Rana la rana", "vs.mico": "contro Mico la scimmia urlatrice", "vs.kiki": "contro Kiki il kinkajù",
   "name.ants": "La famiglia Snip", "name.elder": "Saggio Shellby", "name.otters": "Lontre Gemelle", "name.marm": "Uistitì",
   "story.1": "Cappy il capibara scese lungo il fiume su una piccola zattera, fino all'Isola Delta.",
-  "story.2": "Ogni anno l'isola ospita la Coppa della Giungla. Sette campioni. Sette sport. Riuscirà Cappy a vincerli tutti?",
+  "story.2": "Ogni anno l'isola ospita la Coppa della Giungla. Otto campioni. Otto sport. Riuscirà Cappy a vincerli tutti?",
   "story.3": "Bum! La zattera arrivò al pontile, e i cugini Coco e Pip lo stavano già salutando.",
   "d.coco.hi": "Cugino Cappy! Ce l'hai fatta! Benvenuto sull'Isola Delta!",
   "d.coco.again": "Il Totem della Coppa è in mezzo al villaggio. Ogni Piuma che vinci lo illumina!",
@@ -1213,9 +1333,9 @@ I18N.it = Object.assign(I18N.it || {}, {
   "d.pip.qthanks": "Tutte e tre! Grazie! Tieni la mia bandana tramonto. Ti starà benissimo.",
   "d.pip.after": "La bandana tramonto ti sta bene, cugino!",
   "d.mango.intro1": "Craa! Tu devi essere Cappy! Io sono Mango, la guida dell'isola.",
-  "d.mango.intro2": "Sull'Isola Delta vivono sette campioni, e ognuno custodisce uno sport.",
+  "d.mango.intro2": "Sull'Isola Delta vivono otto campioni, e ognuno custodisce uno sport.",
   "d.mango.intro3": "Batti un campione e vinci la sua Piuma. Ogni Piuma ha un colore diverso!",
-  "d.mango.intro4": "Porta le tue Piume al Totem della Coppa nel Villaggio Muschioso. Riempi tutti e sette gli incavi...",
+  "d.mango.intro4": "Porta le tue Piume al Totem della Coppa nel Villaggio Muschioso. Riempi tutti e otto gli incavi...",
   "d.mango.intro5": "...e si aprirà l'ascensore di liane del Grande Kapok. In cima ti aspetta la Coppa della Giungla! Prova prima con Jada al campo della chioma. Vai a ovest del villaggio!",
   "d.mango.hint0": "Jada gioca a Racchetta Smash al campo della chioma, a ovest del villaggio. Cerca l'arco arancione!",
   "d.mango.hint1": "Già una Piuma! Ci sono archi fioriti in tutta l'isola. Apri la mappa per trovarli.",
@@ -1225,7 +1345,7 @@ I18N.it = Object.assign(I18N.it || {}, {
   "d.mango.qask2": "Me ne porti uno? Ti darò una cosa bella!",
   "d.mango.qwait": "L'albero di mango è vicino alle colline, a nord-ovest. Mmm, mango...",
   "d.mango.qthanks": "MANGO! Il mio preferito! Tieni, un cappello da esploratore per un vero esploratore.",
-  "d.mango.allf": "Tutte e sette le Piume! L'ascensore di liane del Grande Kapok è aperto. Vai, vai, vai!",
+  "d.mango.allf": "Tutte e otto le Piume! L'ascensore di liane del Grande Kapok è aperto. Vai, vai, vai!",
   "d.mango.after": "Campione della Coppa della Giungla! Puoi ancora giocare a ogni sport per battere i tuoi record.",
   "d.mango.free": "Gioco libero! Tutti gli sport sono aperti, e quella bandana dorata è tua. Prova a prendere tre stelle ovunque!",
   "d.tapir.hello": "Ciao, sono Tapo. Alla mia bancarella non si compra niente, ci sono solo consigli. I consigli sono gratis!",
@@ -1244,20 +1364,20 @@ I18N.it = Object.assign(I18N.it || {}, {
   "d.ants.qthanks": "Il nostro tetto! Grazie, grande amico. Ecco una bandana azzurro cielo tessuta da noi!",
   "d.ants.after": "Snip, snip! Ora stiamo costruendo un tetto più grande.",
   "d.elder.totem1": "Ah, giovane amico. Questo è il Totem della Coppa. È qui da più tempo del mio guscio.",
-  "d.elder.totem2": "Ha sette incavi. Ognuno aspetta la Piuma di un campione.",
-  "d.elder.totem3": "Quando tutti e sette brilleranno, l'ascensore di liane si sveglierà. E sul Palco della Chioma ci sarà la Coppa della Giungla.",
+  "d.elder.totem2": "Ha otto incavi. Ognuno aspetta la Piuma di un campione.",
+  "d.elder.totem3": "Quando tutti e otto brilleranno, l'ascensore di liane si sveglierà. E sul Palco della Chioma ci sarà la Coppa della Giungla.",
   "d.elder.qask1": "Mmm, dove ho messo gli occhiali? Stavo facendo un pisolino vicino alla laguna...",
   "d.elder.qask2": "Me li cerchi, giovane amico? Vicino alla sabbia, a sud della laguna.",
   "d.elder.qwait": "I miei occhiali dovrebbero essere sulla sabbia vicino alla laguna. Vedo tutto sfocato!",
   "d.elder.qthanks": "I miei occhiali! Adesso ti vedo! Prendi questo cappello di paglia. Ripara dal sole.",
-  "d.elder.count": "Il totem ha {n} Piume su 7. Pazienza, e allenamento.",
-  "d.elder.allf": "Brillano tutte e sette le Piume! In tutti i miei anni, l'ho visto raramente. Sali, campione.",
+  "d.elder.count": "Il totem ha {n} Piume su 8. Pazienza, e allenamento.",
+  "d.elder.allf": "Brillano tutte e otto le Piume! In tutti i miei anni, l'ho visto raramente. Sali, campione.",
   "d.zuzu.qask1": "Bzzz! Sono Zuzu, la messaggera più veloce dell'isola!",
   "d.zuzu.qask2": "Ma ho le ali stanche. Porteresti questa lettera a Tapo, alla sua bancarella nel villaggio?",
   "d.zuzu.qwait": "La bancarella di Tapo ha il tetto blu e bianco, nel Villaggio Muschioso. Bzzz!",
   "d.zuzu.thanks": "Bzzz! L'hai consegnata! Tieni, una bandiera a foglia per la tua zattera. Sventola benissimo!",
   "d.zuzu.after": "Bzzz! Ho sentito che Jada è velocissima con la racchetta!",
-  "d.zuzu.liftopen": "Bzzz! GRANDE NOTIZIA! Tutte e sette le Piume! L'ascensore di liane del Grande Kapok è aperto!",
+  "d.zuzu.liftopen": "Bzzz! GRANDE NOTIZIA! Tutte e otto le Piume! L'ascensore di liane del Grande Kapok è aperto!",
   "d.marm.hi": "Iiik iiik! Siamo i piccoli aiutanti di Jada. Adoriamo gli scambi veloci!",
   "d.jada.pre": "Pronto per Racchetta Smash? Guarda la pallina, colpisci al momento giusto e balza!",
   "d.jada.won": "Mi hai battuta lealmente. Rivincita quando vuoi!",
@@ -1282,19 +1402,19 @@ I18N.it = Object.assign(I18N.it || {}, {
   "d.kiki.soon": "Il pendio di fango è ancora troppo secco. Torna dopo la pioggia!",
   "d.jada.ready": "Bel riscaldamento! Ora tocca a me. Chi arriva prima a 7. Fammi vedere il tuo balzo!",
   "end.1": "L'ascensore di liane portò Cappy su, su, su, tra le foglie fino al Palco della Chioma.",
-  "end.2": "Tutti e sette i campioni lo aspettavano. «Te la sei meritata, Cappy!»",
+  "end.2": "Tutti e otto i campioni lo aspettavano. «Te la sei meritata, Cappy!»",
   "end.3": "Questa è la Coppa della Giungla, intrecciata con foglie d'oro. Appartiene al campione dell'Isola Delta.",
   "end.4": "Alzala in alto, Cappy! Craa!",
   "end.cup": "Campione della Coppa della Giungla!",
   "end.5": "Grazie a tutti! Ci vediamo l'anno prossimo?",
   "credits.1": "La Coppa della Giungla",
   "credits.2": "Con Cappy il capibara",
-  "credits.3": "e Jada, Sloane, Tico, le Lontre Gemelle, Rana, Mico e Kiki",
+  "credits.3": "e Jada, Sloane, Tico, le Lontre Gemelle, Rana, Mico, Kiki e Pecca",
   "credits.4": "e Mango, Coco, Pip, Tapo, la famiglia Snip, il Saggio Shellby e Zuzu",
   "credits.5": "Creato dal team di Oomba Academy",
   "credits.6": "Pixel, musica e suoni creati con il codice",
   "credits.7": "Grazie per aver giocato!",
-  "credits.8": "Tutti gli sport restano aperti. Riesci a prendere tre stelle in tutti e sette?",
+  "credits.8": "Tutti gli sport restano aperti. Riesci a prendere tre stelle in tutti e otto?",
   "sport.frog.goal": "Rana suona un ritmo sui suoi tre tamburi di foglia. Ascolta, poi risuonalo a tempo! Fai più punti di Rana entro la fine della canzone.",
   "sport.frog.touch": "Touch: tocca il tamburo basso (blu, 1 punto), quello medio (verde, 2 punti) e quello alto (rosa, 3 punti).",
   "sport.frog.keys": "Tasti: Sinistra per il basso, Giù (o Spazio) per il medio, Destra per l'alto.",
@@ -1360,12 +1480,35 @@ I18N.it = Object.assign(I18N.it || {}, {
   "vc.bonk": "Bonk!", "vc.buzz": "Bzzz!", "vc.top": "In cima all'albero!", "vc.sloaneTop": "Sloane è arrivata prima",
   "vc.hintTouch": "Tocca quando l'anello diventa verde!", "vc.hintKeys": "Premi Spazio quando l'anello diventa verde!",
   "vc.hintStartTouch": "Tocca quando la liana oscilla sopra di te", "vc.hintStartKeys": "Premi Spazio quando la liana oscilla sopra di te",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Corsa al Mango",
+  "vs.pecca": "contro Pecca il pecari",
+  "name.pecca": "Pecca",
+  "d.pecca.pre": "Oink! Sono Pecca, capitana della Banda Grugnona. Porta quel mango oltre la mia banda, se ci riesci!",
+  "d.pecca.won": "Oink oink! Nessuno aveva mai superato la mia banda. Ecco la mia Piuma, campione!",
+  "d.pecca.soon": "Oink! La mia banda si sta ancora rotolando nel fango. Torna presto!",
+  "d.mango.dash1": "Squawk! Grande notizia! È arrivata una nuova campionessa sull'Isola Delta: Pecca e la sua Banda Grugnona!",
+  "d.mango.dash2": "Giocano alla Corsa al Mango nella radura fangosa, a nord delle pietre del guado. Al totem è spuntato un ottavo incavo!",
+  "sport.dash.goal": "Porta il mango per 100 m fino al cesto! La Banda Grugnona di Pecca carica chi ce l'ha. Schivali, o passalo al compagno con la freccia.",
+  "sport.dash.touch": "Touch: il joystick (a sinistra) sterza; spingi in su per scattare. Tocca PASSA (a destra) per lanciare il mango.",
+  "sport.dash.keys": "Tasti: Sinistra / Destra per sterzare, Su per scattare, Giù per rallentare. Spazio per passare.",
+  "md.metres": "{n} m su 100",
+  "md.mark": "{n} m",
+  "md.pass": "PASSA",
+  "md.dodge": "Schivato!",
+  "md.trip": "Ahi, un tronco!",
+  "md.caughtIt": "Preso!",
+  "md.pecca": "Arriva Pecca!",
+  "md.caught": "La Banda Grugnona ha il mango!",
+  "md.caughtPecca": "Pecca ha il mango!",
+  "md.hintTouch": "Sterza con il joystick. Un pecari raspa il fango e una linea rossa mostra dove correrà: schivalo, o tocca PASSA!",
+  "md.hintKeys": "Frecce per sterzare (Su per scattare). Un pecari raspa il fango e una linea rossa mostra dove correrà: schivalo, o premi Spazio per passare!",
 });
 
 /* ---- i18n/all.ja.js ---- */
-// Jungle Cup in Japanese: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Japanese: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.ja = Object.assign(I18N.ja || {}, {
-  "tagline": "7人のチャンピオン。7まいのハネ。カップはひとつ！",
+  "tagline": "8人のチャンピオン。8まいのハネ。カップはひとつ！",
   "confirm.new": "あたらしいゲームをはじめる？ハネ、ほし、ベストきろくがきえるよ。",
   "go": "スタート！", "paused": "ポーズ", "on": "オン", "off": "オフ", "none": "なし",
   "btn.play": "あそぶ", "btn.continue": "つづきから", "btn.newGame": "はじめから", "btn.back": "もどる", "btn.resume": "あそびつづける",
@@ -1376,7 +1519,7 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "res.won": "かった！", "res.lost": "おしい！", "res.wonSub": "すごいしあい！", "res.lostSub": "もういちどやってみよう！",
   "res.score": "スコア", "res.best": "ベスト", "res.newBest": "ベストきろく！", "res.feather": "{sport}のハネをゲット！",
   "hud.secs": "{n}びょう", "hud.score": "スコア",
-  "map.title": "デルタじま", "map.feathers": "ハネ {n}/7",
+  "map.title": "デルタじま", "map.feathers": "ハネ {n}/8",
   "settings.title": "せってい", "settings.sound": "サウンド", "settings.font": "もじ", "settings.pixel": "ドット", "settings.clear": "よみやすい",
   "settings.easy": "やさしいチャンピオン", "settings.easyHelp": "やさしいチャンピオンは、すこしゆっくりで、すこしミスがおおくなるよ。いつでもオンにできるよ。",
   "controls.title": "そうさ", "controls.touch": "タッチ", "controls.keys": "キーボード", "controls.pad": "ゲームパッド",
@@ -1390,7 +1533,7 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "quest.reward.bandana": "あたらしいバンダナ！", "quest.reward.hat": "あたらしいぼうし！", "quest.reward.flag": "あたらしいはた！",
   "quest.found": "かいがら {n}/{total}！", "quest.got.leaf": "おおきなはっぱをみつけた！", "quest.got.specs": "めがねをみつけた！",
   "quest.got.mango": "じゅくしたマンゴーをとった！", "quest.got.letter": "てがみをとどけた！",
-  "lift.locked": "ツルのリフトはしばられている。カップのトーテムに7まいのハネがそろうとひらくよ。いまのハネ：{n}/7。",
+  "lift.locked": "ツルのリフトはしばられている。カップのトーテムに8まいのハネがそろうとひらくよ。いまのハネ：{n}/8。",
   "lift.open": "ツルがうなっている！しっかりつかまって：こずえのステージへ！",
   "sign.welcome": "デルタじまへようこそ！ジャングルカップのしま。むらはまっすぐ。",
   "sign.village": "コケのむら。スポーツはしまじゅうにあるよ：はなのアーチをさがそう！",
@@ -1404,7 +1547,7 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "name.rana": "ラナ", "name.mico": "ミコ", "name.kiki": "キキ", "name.marm": "マーモセットたち",
   "rap.ripple": "リップル", "rap.splash": "スプラッシュ",
   "story.1": "カピバラのキャピーは、ちいさないかだでかわをくだり、デルタじままでやってきた。",
-  "story.2": "まいとし、しまではジャングルカップがひらかれる。7人のチャンピオン。7つのスポーツ。キャピーはぜんぶかてるかな？",
+  "story.2": "まいとし、しまではジャングルカップがひらかれる。8人のチャンピオン。8つのスポーツ。キャピーはぜんぶかてるかな？",
   "story.3": "ドン！いかだがさんばしについた。いとこのココとピップがもう手をふっている。",
   "d.coco.hi": "キャピー！きたんだね！デルタじまへようこそ！",
   "d.coco.again": "カップのトーテムはむらのまんなかにあるよ。ハネをかつたびにひかるんだ！",
@@ -1415,9 +1558,9 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "d.pip.qthanks": "3つとも！ありがとう！ゆうやけのバンダナをあげる。きっとにあうよ。",
   "d.pip.after": "ゆうやけのバンダナ、にあってるよ！",
   "d.mango.intro1": "ギャッ！きみがキャピーだね！わたしはマンゴー、しまのガイドよ。",
-  "d.mango.intro2": "デルタじまには7人のチャンピオンがいて、それぞれスポーツをまもっているの。",
+  "d.mango.intro2": "デルタじまには8人のチャンピオンがいて、それぞれスポーツをまもっているの。",
   "d.mango.intro3": "チャンピオンにかつと、そのハネがもらえるよ。ハネはみんなちがういろ！",
-  "d.mango.intro4": "ハネはコケのむらのカップのトーテムへもっていってね。7つのあなをうめると…",
+  "d.mango.intro4": "ハネはコケのむらのカップのトーテムへもっていってね。8つのあなをうめると…",
   "d.mango.intro5": "…カポックのツルのリフトがひらくの。うえでジャングルカップがまってる！まずはこずえのコートでジェイダにちょうせんしてね。むらのにしだよ！",
   "d.mango.hint0": "ジェイダはむらのにしのこずえのコートでパドルスマッシュをしてるよ。オレンジのアーチをさがして！",
   "d.mango.hint1": "もうハネ1まい！はなのアーチはしまじゅうにあるよ。マップをひらいてさがそう。",
@@ -1427,7 +1570,7 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "d.mango.qask2": "ひとつもってきてくれる？いいものあげるよ！",
   "d.mango.qwait": "マンゴーのきはおかのそば、ほくせいだよ。ああ、マンゴー…",
   "d.mango.qthanks": "マンゴー！だいすき！ほんもののたんけんかに、たんけんぼうしをどうぞ。",
-  "d.mango.allf": "ハネが7まい！カポックのツルのリフトがひらいたよ。いけいけ！",
+  "d.mango.allf": "ハネが8まい！カポックのツルのリフトがひらいたよ。いけいけ！",
   "d.mango.after": "ジャングルカップのチャンピオン！どのスポーツでもベストきろくをめざせるよ。",
   "d.mango.free": "じゆうプレイ！スポーツはぜんぶひらいてるし、きんのバンダナはきみのもの。ぜんぶでほし3つをめざそう！",
   "d.tapir.hello": "こんにちは、タポです。ぼくのおみせはなにもうってないよ。あるのはヒントだけ。ヒントはただ！",
@@ -1446,20 +1589,20 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "d.ants.qthanks": "やねだ！ありがとう、おおきなおともだち。わたしたちがおったそらいろのバンダナをどうぞ！",
   "d.ants.after": "チョキチョキ！いまはもっとおおきなやねをつくってるよ。",
   "d.elder.totem1": "おお、わかいの。これがカップのトーテムじゃ。わしのこうらより、ながくここにたっておる。",
-  "d.elder.totem2": "あなは7つ。それぞれチャンピオンのハネをまっておる。",
-  "d.elder.totem3": "7つがすべてひかると、ツルのリフトがめをさます。そしてこずえのステージにジャングルカップがあらわれるのじゃ。",
+  "d.elder.totem2": "あなは8つ。それぞれチャンピオンのハネをまっておる。",
+  "d.elder.totem3": "8つがすべてひかると、ツルのリフトがめをさます。そしてこずえのステージにジャングルカップがあらわれるのじゃ。",
   "d.elder.qask1": "ふむ、めがねをどこにおいたかのう？ラグーンのそばでひるねをしておったが…",
   "d.elder.qask2": "さがしてくれるかの？ラグーンのみなみ、すなのあたりじゃ。",
   "d.elder.qwait": "めがねはラグーンのそばのすなのうえにあるはずじゃ。なにもかもぼやけておる！",
   "d.elder.qthanks": "わしのめがね！これでおまえがみえる！このむぎわらぼうしをあげよう。ひよけになるぞ。",
-  "d.elder.count": "トーテムのハネは{n}/7。あせらず、れんしゅうじゃ。",
-  "d.elder.allf": "7まいのハネがひかっておる！ながくいきてきたが、めったにみられぬ。のぼるのじゃ、チャンピオン。",
+  "d.elder.count": "トーテムのハネは{n}/8。あせらず、れんしゅうじゃ。",
+  "d.elder.allf": "8まいのハネがひかっておる！ながくいきてきたが、めったにみられぬ。のぼるのじゃ、チャンピオン。",
   "d.zuzu.qask1": "ブーン！わたしはズズ、しまでいちばんはやいはいたつやさん！",
   "d.zuzu.qask2": "でもはねがつかれちゃった。このてがみを、むらのタポのおみせまでとどけてくれる？",
   "d.zuzu.qwait": "タポのおみせは、コケのむらのあおとしろのやねだよ。ブーン！",
   "d.zuzu.thanks": "ブーン！とどけてくれたね！いかだにはっぱのはたをどうぞ。よくはためくよ！",
   "d.zuzu.after": "ブーン！ジェイダはパドルがすっごくはやいらしいよ！",
-  "d.zuzu.liftopen": "ブーン！ビッグニュース！ハネが7まい！カポックのツルのリフトがひらいたよ！",
+  "d.zuzu.liftopen": "ブーン！ビッグニュース！ハネが8まい！カポックのツルのリフトがひらいたよ！",
   "d.marm.hi": "キーキー！ぼくたちジェイダのおてつだい。はやいラリーがだいすき！",
   "d.jada.pre": "パドルスマッシュのじゅんびはいい？ボールをよくみて、タイミングよくうって、とびかかれ！",
   "d.jada.won": "せいせいどうどうとまけたわ。リベンジはいつでも！",
@@ -1484,19 +1627,19 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "d.kiki.soon": "どろのさかがまだかわきすぎ。あめのあとにきてね！",
   "d.jada.ready": "いいウォームアップ！こんどはわたしのばん。さきに7てん。きみのジャンプをみせて！",
   "end.1": "ツルのリフトはキャピーをのせて、うえへ、うえへ、はっぱをぬけてこずえのステージへ。",
-  "end.2": "7人のチャンピオンがまっていた。「よくがんばったね、キャピー！」",
+  "end.2": "8人のチャンピオンがまっていた。「よくがんばったね、キャピー！」",
   "end.3": "これがジャングルカップ。きんいろのはっぱであんだカップじゃ。デルタじまのチャンピオンのものじゃよ。",
   "end.4": "たかくかかげて、キャピー！ギャッ！",
   "end.cup": "ジャングルカップ チャンピオン！",
   "end.5": "みんなありがとう！またらいねん？",
   "credits.1": "ジャングルカップ",
   "credits.2": "しゅえん カピバラのキャピー",
-  "credits.3": "ジェイダ、スローン、ティコ、カワウソのふたご、ラナ、ミコ、キキ",
+  "credits.3": "ジェイダ、スローン、ティコ、カワウソのふたご、ラナ、ミコ、キキ、ペッカ",
   "credits.4": "マンゴー、ココ、ピップ、タポ、スニップいっか、シェルビーじいさん、ズズ",
   "credits.5": "つくったひと：Oomba Academyのチーム",
   "credits.6": "ドット、おんがく、こうかおんはコードでつくったよ",
   "credits.7": "あそんでくれてありがとう！",
-  "credits.8": "スポーツはぜんぶあそべるよ。7つともほし3つとれるかな？",
+  "credits.8": "スポーツはぜんぶあそべるよ。8つともほし3つとれるかな？",
   "sport.frog.goal": "ラナが3つのはっぱだいこでリズムをたたくよ。きいて、タイミングよくまねしよう！うたがおわるまでにラナよりたくさんとくてんしよう。",
   "sport.frog.touch": "タッチ：ひくい（あお・てん1）、まんなか（みどり・てん2）、たかい（ピンク・てん3）たいこをタップ。",
   "sport.frog.keys": "キー：ひだりでひくい、した（かスペース）でまんなか、みぎでたかい。",
@@ -1563,12 +1706,35 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "vc.bonk": "ゴツン！", "vc.buzz": "ブーン！", "vc.top": "きのてっぺん！", "vc.sloaneTop": "スローンがさきについた",
   "vc.hintTouch": "わがみどりになったらタップ！", "vc.hintKeys": "わがみどりになったらスペース！",
   "vc.hintStartTouch": "ツルがうえにきたらタップ", "vc.hintStartKeys": "ツルがうえにきたらスペース",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "マンゴーダッシュ",
+  "vs.pecca": "VS ペッカ（ペッカリー）",
+  "name.pecca": "ペッカ",
+  "d.pecca.pre": "ブヒ！あたしはペッカ、ブーブーだんのキャプテン。あたしのなかまをかわして、マンゴーをはこんでみな！",
+  "d.pecca.won": "ブヒブヒ！あたしのなかまをかわしたのは、きみがはじめて。あたしのハネをどうぞ、チャンピオン！",
+  "d.pecca.soon": "ブヒ！なかまはまだどろんこあそびちゅう。またきてね！",
+  "d.mango.dash1": "ガァ！ビッグニュース！デルタじまにあたらしいチャンピオンがきたよ。ペッカとブーブーだん！",
+  "d.mango.dash2": "とびいしのきたにある、どろんこのひろばでマンゴーダッシュをしているの。トーテムに8つめのあながふえたよ！",
+  "sport.dash.goal": "マンゴーを100mさきのかごまではこぼう！ペッカのブーブーだんはマンゴーをもっているこにとっしんしてくる。よけるか、やじるしのなかまにパスしよう。",
+  "sport.dash.touch": "タッチ：ひだりのジョイスティックでうごく。うえにたおすとダッシュ。みぎのパスでマンゴーをなげる。",
+  "sport.dash.keys": "キー：ひだり／みぎでうごく、うえでダッシュ、したでゆっくり。スペースでパス。",
+  "md.metres": "{n}m／100m",
+  "md.mark": "{n}m",
+  "md.pass": "パス",
+  "md.dodge": "よけた！",
+  "md.trip": "いたっ、まるた！",
+  "md.caughtIt": "キャッチ！",
+  "md.pecca": "ペッカがくるよ！",
+  "md.caught": "ブーブーだんにマンゴーをとられた！",
+  "md.caughtPecca": "ペッカにマンゴーをとられた！",
+  "md.hintTouch": "ジョイスティックでうごこう。ブタがどろをけって、あかいせんがはしるみちをおしえてくれる。よけるか、パスをタップ！",
+  "md.hintKeys": "やじるしキーでうごこう（うえでダッシュ）。ブタがどろをけって、あかいせんがはしるみちをおしえてくれる。よけるか、スペースでパス！",
 });
 
 /* ---- i18n/all.nl.js ---- */
-// Jungle Cup in Dutch: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Dutch: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.nl = Object.assign(I18N.nl || {}, {
-  "tagline": "Zeven kampioenen. Zeven Veren. Eén Beker!",
+  "tagline": "Acht kampioenen. Acht Veren. Eén Beker!",
   "confirm.new": "Een gloednieuw spel beginnen? Je Veren, sterren en records worden gewist.",
   "go": "GO!", "paused": "Pauze", "on": "Aan", "off": "Uit", "none": "Geen",
   "btn.play": "Spelen", "btn.continue": "Verder", "btn.newGame": "Nieuw spel", "btn.back": "Terug", "btn.resume": "Verder spelen",
@@ -1579,7 +1745,7 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "res.won": "Gewonnen!", "res.lost": "Bijna!", "res.wonSub": "Wat een wedstrijd!", "res.lostSub": "Probeer het nog eens!",
   "res.score": "Score", "res.best": "Record", "res.newBest": "Nieuw record!", "res.feather": "Je hebt de {sport}-Veer gewonnen!",
   "hud.secs": "{n} s", "hud.score": "Score",
-  "map.title": "Delta-eiland", "map.feathers": "{n}/7 Veren",
+  "map.title": "Delta-eiland", "map.feathers": "{n}/8 Veren",
   "settings.title": "Instellingen", "settings.sound": "Geluid", "settings.font": "Letters", "settings.pixel": "Pixel", "settings.clear": "Duidelijk",
   "settings.easy": "Makkelijkere kampioenen", "settings.easyHelp": "Makkelijkere kampioenen spelen iets langzamer en missen iets vaker. Zet het aan wanneer je wilt.",
   "controls.title": "Besturing", "controls.touch": "Aanraken", "controls.keys": "Toetsenbord", "controls.pad": "Controller",
@@ -1593,7 +1759,7 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "quest.reward.bandana": "Nieuwe bandana!", "quest.reward.hat": "Nieuwe hoed!", "quest.reward.flag": "Nieuwe vlotvlag!",
   "quest.found": "Schelp {n} van {total}!", "quest.got.leaf": "Je hebt het grote blad gevonden!", "quest.got.specs": "Je hebt de bril gevonden!",
   "quest.got.mango": "Je hebt een rijpe mango geplukt!", "quest.got.letter": "Brief bezorgd!",
-  "lift.locked": "De lianenlift is vastgebonden. Hij gaat open als de Bekertotem alle zeven Veren heeft. Veren tot nu toe: {n} van 7.",
+  "lift.locked": "De lianenlift is vastgebonden. Hij gaat open als de Bekertotem alle acht Veren heeft. Veren tot nu toe: {n} van 8.",
   "lift.open": "De lianen zoemen! Goed vasthouden: omhoog naar het Boomkroonpodium!",
   "sign.welcome": "Welkom op het Delta-eiland! Thuis van de Junglebeker. Het dorp is recht vooruit.",
   "sign.village": "Mosdorp. Overal op het eiland zijn sporten: zoek de bloemenbogen!",
@@ -1604,7 +1770,7 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "vs.rana": "tegen Rana de kikker", "vs.mico": "tegen Mico de brulaap", "vs.kiki": "tegen Kiki de rolstaartbeer",
   "name.ants": "Familie Snip", "name.elder": "Oude Shellby", "name.otters": "Ottertweeling", "name.marm": "Penseelaapjes",
   "story.1": "Cappy de capibara dreef op een klein vlot de rivier af, helemaal naar het Delta-eiland.",
-  "story.2": "Elk jaar houdt het eiland de Junglebeker. Zeven kampioenen. Zeven sporten. Kan Cappy ze allemaal winnen?",
+  "story.2": "Elk jaar houdt het eiland de Junglebeker. Acht kampioenen. Acht sporten. Kan Cappy ze allemaal winnen?",
   "story.3": "Boem! Het vlot bereikte de steiger, en neefje Coco en nichtje Pip stonden al te zwaaien.",
   "d.coco.hi": "Neef Cappy! Je bent er! Welkom op het Delta-eiland!",
   "d.coco.again": "De Bekertotem staat midden in het dorp. Elke Veer die je wint laat hem oplichten!",
@@ -1615,9 +1781,9 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "d.pip.qthanks": "Alle drie! Dank je! Hier, neem mijn zonsondergang-bandana. Die staat je vast super.",
   "d.pip.after": "De zonsondergang-bandana staat je goed, neef!",
   "d.mango.intro1": "Kraa! Jij moet Cappy zijn! Ik ben Mango, de gids van het eiland.",
-  "d.mango.intro2": "Op het Delta-eiland wonen zeven kampioenen, en elk van hen bewaakt een sport.",
+  "d.mango.intro2": "Op het Delta-eiland wonen acht kampioenen, en elk van hen bewaakt een sport.",
   "d.mango.intro3": "Versla een kampioen en je wint hun Veer. Elke Veer heeft een andere kleur!",
-  "d.mango.intro4": "Breng je Veren naar de Bekertotem in Mosdorp. Vul alle zeven gaten...",
+  "d.mango.intro4": "Breng je Veren naar de Bekertotem in Mosdorp. Vul alle acht gaten...",
   "d.mango.intro5": "...dan gaat de lianenlift bij de Grote Kapokboom open. Bovenaan wacht de Junglebeker! Probeer eerst Jada bij het boomkroonveld. Ga ten westen van het dorp!",
   "d.mango.hint0": "Jada speelt Batje Smash bij het boomkroonveld, ten westen van het dorp. Zoek de oranje boog!",
   "d.mango.hint1": "Al één Veer! Er zijn bloemenbogen over het hele eiland. Open de kaart om ze te vinden.",
@@ -1627,7 +1793,7 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "d.mango.qask2": "Breng je er eentje voor me? Dan krijg je iets moois!",
   "d.mango.qwait": "De mangoboom staat bij de heuvels, in het noordwesten. Mmm, mango...",
   "d.mango.qthanks": "MANGO! Mijn lievelingsfruit! Hier, een ontdekkingshoed voor een echte ontdekker.",
-  "d.mango.allf": "Alle zeven Veren! De lianenlift bij de Grote Kapokboom is open. Ga, ga, ga!",
+  "d.mango.allf": "Alle acht Veren! De lianenlift bij de Grote Kapokboom is open. Ga, ga, ga!",
   "d.mango.after": "Junglebeker-kampioen! Je kunt elke sport blijven spelen om je records te verbeteren.",
   "d.mango.free": "Vrij spel! Alle sporten zijn open, en die gouden bandana is van jou. Probeer overal drie sterren te halen!",
   "d.tapir.hello": "Hallo, ik ben Tapo. Bij mijn kraam kun je niets kopen, er zijn alleen tips. Tips zijn gratis!",
@@ -1646,20 +1812,20 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "d.ants.qthanks": "Ons dak! Dank je, grote vriend. Hier is een hemelsblauwe bandana die we zelf hebben geweven!",
   "d.ants.after": "Knip, knip! We bouwen nu een groter dak.",
   "d.elder.totem1": "Ah, jonge vriend. Dit is de Bekertotem. Hij staat hier al langer dan mijn schild.",
-  "d.elder.totem2": "Hij heeft zeven gaten. Elk wacht op de Veer van een kampioen.",
-  "d.elder.totem3": "Als alle zeven gloeien, wordt de lianenlift wakker. Dan staat de Junglebeker klaar op het Boomkroonpodium.",
+  "d.elder.totem2": "Hij heeft acht gaten. Elk wacht op de Veer van een kampioen.",
+  "d.elder.totem3": "Als alle acht gloeien, wordt de lianenlift wakker. Dan staat de Junglebeker klaar op het Boomkroonpodium.",
   "d.elder.qask1": "Hmm, waar heb ik mijn bril gelaten? Ik deed een dutje bij de lagune...",
   "d.elder.qask2": "Wil je hem zoeken, jonge vriend? Bij het zand, ten zuiden van de lagune.",
   "d.elder.qwait": "Mijn bril ligt vast op het zand bij de lagune. Alles is zo wazig!",
   "d.elder.qthanks": "Mijn bril! Nu zie ik je! Neem deze strohoed. Die houdt de zon tegen.",
-  "d.elder.count": "De totem heeft {n} van de 7 Veren. Geduld, en oefenen.",
-  "d.elder.allf": "Alle zeven Veren gloeien! In al mijn jaren heb ik dat zelden gezien. Ga omhoog, kampioen.",
+  "d.elder.count": "De totem heeft {n} van de 8 Veren. Geduld, en oefenen.",
+  "d.elder.allf": "Alle acht Veren gloeien! In al mijn jaren heb ik dat zelden gezien. Ga omhoog, kampioen.",
   "d.zuzu.qask1": "Bzzz! Ik ben Zuzu, de snelste boodschapper van het eiland!",
   "d.zuzu.qask2": "Maar mijn vleugels zijn moe. Breng jij deze brief naar Tapo bij zijn kraam in het dorp?",
   "d.zuzu.qwait": "Tapo's kraam heeft een blauw-wit dak, in Mosdorp. Bzzz!",
   "d.zuzu.thanks": "Bzzz! Je hebt hem bezorgd! Hier, een bladvlag voor je vlot. Die wappert zo mooi!",
   "d.zuzu.after": "Bzzz! Ik hoorde dat Jada heel snel is met het batje!",
-  "d.zuzu.liftopen": "Bzzz! GROOT NIEUWS! Alle zeven Veren! De lianenlift bij de Grote Kapokboom is open!",
+  "d.zuzu.liftopen": "Bzzz! GROOT NIEUWS! Alle acht Veren! De lianenlift bij de Grote Kapokboom is open!",
   "d.marm.hi": "Iek iek! Wij zijn Jada's kleine helpers. We houden van snelle rally's!",
   "d.jada.pre": "Klaar voor Batje Smash? Let op de bal, sla op het juiste moment en spring!",
   "d.jada.won": "Je hebt me eerlijk verslagen. Revanche wanneer je wilt!",
@@ -1684,19 +1850,19 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "d.kiki.soon": "De modderhelling is nog te droog. Kom terug na de regen!",
   "d.jada.ready": "Mooie opwarming! Nu ben ik aan de beurt. Wie het eerst 7 heeft. Laat je sprong maar zien!",
   "end.1": "De lianenlift droeg Cappy omhoog, omhoog, omhoog, door de bladeren naar het Boomkroonpodium.",
-  "end.2": "Alle zeven kampioenen stonden te wachten. „Die heb je verdiend, Cappy!”",
+  "end.2": "Alle acht kampioenen stonden te wachten. „Die heb je verdiend, Cappy!”",
   "end.3": "Dit is de Junglebeker, gevlochten van gouden bladeren. Hij is voor de kampioen van het Delta-eiland.",
   "end.4": "Hou hem hoog, Cappy! Kraa!",
   "end.cup": "Junglebeker-kampioen!",
   "end.5": "Bedankt allemaal! Volgend jaar weer?",
   "credits.1": "De Junglebeker",
   "credits.2": "Met in de hoofdrol Cappy de capibara",
-  "credits.3": "met Jada, Sloane, Tico, de Ottertweeling, Rana, Mico en Kiki",
+  "credits.3": "met Jada, Sloane, Tico, de Ottertweeling, Rana, Mico, Kiki en Pecca",
   "credits.4": "en Mango, Coco, Pip, Tapo, familie Snip, de Oude Shellby en Zuzu",
   "credits.5": "Gemaakt door het team van Oomba Academy",
   "credits.6": "Pixels, muziek en geluiden gemaakt met code",
   "credits.7": "Bedankt voor het spelen!",
-  "credits.8": "Alle sporten blijven open. Haal jij drie sterren bij alle zeven?",
+  "credits.8": "Alle sporten blijven open. Haal jij drie sterren bij alle acht?",
   "sport.frog.goal": "Rana speelt een ritme op haar drie bladtrommels. Luister, en speel het dan in de maat na! Scoor meer dan Rana voordat het liedje afloopt.",
   "sport.frog.touch": "Aanraken: tik op de lage (blauw, 1 stip), de middelste (groen, 2 stippen) en de hoge (roze, 3 stippen) trommel.",
   "sport.frog.keys": "Toetsen: Links voor laag, Omlaag (of Spatie) voor midden, Rechts voor hoog.",
@@ -1762,12 +1928,35 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "vc.bonk": "Bonk!", "vc.buzz": "Bzzz!", "vc.top": "Boven in de boom!", "vc.sloaneTop": "Sloane was er eerst",
   "vc.hintTouch": "Tik als de ring groen wordt!", "vc.hintKeys": "Druk op Spatie als de ring groen wordt!",
   "vc.hintStartTouch": "Tik als de liaan boven je zwaait", "vc.hintStartKeys": "Druk op Spatie als de liaan boven je zwaait",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Mangosprint",
+  "vs.pecca": "tegen Pecca de pekari",
+  "name.pecca": "Pecca",
+  "d.pecca.pre": "Oink! Ik ben Pecca, aanvoerder van de Knorbende. Breng die mango langs mijn bende, als je durft!",
+  "d.pecca.won": "Oink oink! Niemand kwam ooit langs mijn bende. Hier is mijn Veer, kampioen!",
+  "d.pecca.soon": "Oink! Mijn bende rolt nog door de modder. Kom snel terug!",
+  "d.mango.dash1": "Kraa! Groot nieuws! Er is een nieuwe kampioen op het Delta-eiland: Pecca en haar Knorbende!",
+  "d.mango.dash2": "Ze spelen Mangosprint op de modderige open plek, ten noorden van de stapstenen. De totem heeft een achtste gat gekregen!",
+  "sport.dash.goal": "Breng de mango 100 m naar de mand! Pecca's Knorbende stormt af op wie hem heeft. Ontwijk ze, of geef hem door aan de teamgenoot met de pijl.",
+  "sport.dash.touch": "Touch: de joystick (links) stuurt; duw omhoog om te sprinten. Tik op PASS (rechts) om de mango te gooien.",
+  "sport.dash.keys": "Toetsen: Links / Rechts om te sturen, Omhoog om te sprinten, Omlaag om af te remmen. Spatie om te passen.",
+  "md.metres": "{n} m van 100",
+  "md.mark": "{n} m",
+  "md.pass": "PASS",
+  "md.dodge": "Ontweken!",
+  "md.trip": "Au, een boomstam!",
+  "md.caughtIt": "Gevangen!",
+  "md.pecca": "Daar komt Pecca!",
+  "md.caught": "De Knorbende heeft de mango!",
+  "md.caughtPecca": "Pecca heeft de mango!",
+  "md.hintTouch": "Stuur met de joystick. Een varken krabt in de modder en een rode lijn laat zien waar het heen rent: ontwijk het, of tik op PASS!",
+  "md.hintKeys": "Pijltjes om te sturen (Omhoog om te sprinten). Een varken krabt in de modder en een rode lijn laat zien waar het heen rent: ontwijk het, of druk op Spatie om te passen!",
 });
 
 /* ---- i18n/all.pt.js ---- */
-// Jungle Cup in Portuguese: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Portuguese: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.pt = Object.assign(I18N.pt || {}, {
-  "tagline": "Sete campeões. Sete Penas. Uma Taça!",
+  "tagline": "Oito campeões. Oito Penas. Uma Taça!",
   "confirm.new": "Começar um jogo novinho? Suas Penas, estrelas e recordes serão apagados.",
   "go": "JÁ!", "paused": "Pausa", "on": "Sim", "off": "Não", "none": "Nenhum",
   "btn.play": "Jogar", "btn.continue": "Continuar", "btn.newGame": "Novo jogo", "btn.back": "Voltar", "btn.resume": "Continuar jogando",
@@ -1778,7 +1967,7 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "res.won": "Você venceu!", "res.lost": "Quase!", "res.wonSub": "Que partida!", "res.lostSub": "Tente de novo!",
   "res.score": "Pontos", "res.best": "Recorde", "res.newBest": "Novo recorde!", "res.feather": "Você ganhou a Pena de {sport}!",
   "hud.secs": "{n} s", "hud.score": "Pontos",
-  "map.title": "Ilha Delta", "map.feathers": "{n}/7 Penas",
+  "map.title": "Ilha Delta", "map.feathers": "{n}/8 Penas",
   "settings.title": "Ajustes", "settings.sound": "Som", "settings.font": "Letra", "settings.pixel": "Pixel", "settings.clear": "Clara",
   "settings.easy": "Campeões mais fáceis", "settings.easyHelp": "Campeões mais fáceis jogam um pouco mais devagar e erram um pouco mais. Ligue quando quiser.",
   "controls.title": "Controles", "controls.touch": "Toque", "controls.keys": "Teclado", "controls.pad": "Controle",
@@ -1792,7 +1981,7 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "quest.reward.bandana": "Bandana nova!", "quest.reward.hat": "Chapéu novo!", "quest.reward.flag": "Bandeira nova!",
   "quest.found": "Concha {n} de {total}!", "quest.got.leaf": "Você achou a folha grande!", "quest.got.specs": "Você achou os óculos!",
   "quest.got.mango": "Você colheu uma manga madura!", "quest.got.letter": "Carta entregue!",
-  "lift.locked": "O elevador de cipós está amarrado. Ele abre quando o Totem da Taça tiver as sete Penas. Penas até agora: {n} de 7.",
+  "lift.locked": "O elevador de cipós está amarrado. Ele abre quando o Totem da Taça tiver as oito Penas. Penas até agora: {n} de 8.",
   "lift.open": "Os cipós estão zumbindo! Segure firme: para cima, até o Palco da Copa das Árvores!",
   "sign.welcome": "Bem-vindo à Ilha Delta! Casa da Taça da Selva. A vila fica bem em frente.",
   "sign.village": "Vila do Musgo. Tem esportes pela ilha toda: procure os arcos de flores!",
@@ -1803,7 +1992,7 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "vs.rana": "contra Rana, a rã", "vs.mico": "contra Mico, o bugio", "vs.kiki": "contra Kiki, o jupará",
   "name.ants": "A família Snip", "name.elder": "Sábio Shellby", "name.otters": "Lontras Gêmeas", "name.marm": "Saguis",
   "story.1": "Cappy, a capivara, desceu o rio numa jangadinha, até chegar à Ilha Delta.",
-  "story.2": "Todo ano a ilha faz a Taça da Selva. Sete campeões. Sete esportes. Será que Cappy vence todos?",
+  "story.2": "Todo ano a ilha faz a Taça da Selva. Oito campeões. Oito esportes. Será que Cappy vence todos?",
   "story.3": "Tum! A jangada chegou ao cais, e os primos Coco e Pip já estavam acenando.",
   "d.coco.hi": "Primo Cappy! Você chegou! Bem-vindo à Ilha Delta!",
   "d.coco.again": "O Totem da Taça fica no meio da vila. Cada Pena que você ganha acende ele!",
@@ -1814,9 +2003,9 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "d.pip.qthanks": "As três! Obrigado! Tome, fique com minha bandana pôr do sol. Vai ficar ótima em você.",
   "d.pip.after": "A bandana pôr do sol combina com você, primo!",
   "d.mango.intro1": "Crá! Você deve ser o Cappy! Eu sou a Mango, a guia da ilha.",
-  "d.mango.intro2": "Sete campeões moram na Ilha Delta, e cada um cuida de um esporte.",
+  "d.mango.intro2": "Oito campeões moram na Ilha Delta, e cada um cuida de um esporte.",
   "d.mango.intro3": "Vença um campeão e ganhe a Pena dele. Cada Pena tem uma cor diferente!",
-  "d.mango.intro4": "Leve suas Penas ao Totem da Taça, na Vila do Musgo. Encha os sete encaixes...",
+  "d.mango.intro4": "Leve suas Penas ao Totem da Taça, na Vila do Musgo. Encha os oito encaixes...",
   "d.mango.intro5": "...e o elevador de cipós da Grande Sumaúma vai abrir. A Taça da Selva espera lá no alto! Tente primeiro a Jada na quadra da copa. Vá para o oeste da vila!",
   "d.mango.hint0": "A Jada joga Raquete Feroz na quadra da copa, a oeste da vila. Procure o arco laranja!",
   "d.mango.hint1": "Já tem uma Pena! Há arcos de flores pela ilha toda. Abra o mapa para achar.",
@@ -1826,7 +2015,7 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "d.mango.qask2": "Você me traz uma? Eu te dou uma coisa legal!",
   "d.mango.qwait": "A mangueira fica perto dos morros, a noroeste. Hum, manga...",
   "d.mango.qthanks": "MANGA! Minha favorita! Tome, um chapéu de explorador para um verdadeiro explorador.",
-  "d.mango.allf": "As sete Penas! O elevador de cipós da Grande Sumaúma está aberto. Vai, vai, vai!",
+  "d.mango.allf": "As oito Penas! O elevador de cipós da Grande Sumaúma está aberto. Vai, vai, vai!",
   "d.mango.after": "Campeão da Taça da Selva! Você ainda pode jogar qualquer esporte para bater seus recordes.",
   "d.mango.free": "Jogo livre! Todos os esportes estão abertos, e aquela bandana dourada é sua. Tente três estrelas em todos!",
   "d.tapir.hello": "Olá, eu sou o Tapo. Na minha barraca não se compra nada, só tem dicas. Dicas são de graça!",
@@ -1845,20 +2034,20 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "d.ants.qthanks": "Nosso telhado! Obrigada, grande amigo. Tome uma bandana azul-céu que nós mesmas tecemos!",
   "d.ants.after": "Tec, tec! Agora estamos fazendo um telhado maior.",
   "d.elder.totem1": "Ah, jovem. Este é o Totem da Taça. Ele está aqui há mais tempo que o meu casco.",
-  "d.elder.totem2": "Ele tem sete encaixes. Cada um espera a Pena de um campeão.",
-  "d.elder.totem3": "Quando os sete brilharem, o elevador de cipós vai acordar. E no Palco da Copa das Árvores estará a Taça da Selva.",
+  "d.elder.totem2": "Ele tem oito encaixes. Cada um espera a Pena de um campeão.",
+  "d.elder.totem3": "Quando os oito brilharem, o elevador de cipós vai acordar. E no Palco da Copa das Árvores estará a Taça da Selva.",
   "d.elder.qask1": "Hum, onde deixei meus óculos? Eu estava cochilando perto da lagoa...",
   "d.elder.qask2": "Você procura para mim, jovem? Perto da areia, ao sul da lagoa.",
   "d.elder.qwait": "Meus óculos devem estar na areia perto da lagoa. Está tudo embaçado!",
   "d.elder.qthanks": "Meus óculos! Agora eu te vejo! Fique com este chapéu de palha. Ele protege do sol.",
-  "d.elder.count": "O totem tem {n} de 7 Penas. Paciência, e treino.",
-  "d.elder.allf": "As sete Penas brilham! Em todos os meus anos, quase nunca vi isso. Suba, campeão.",
+  "d.elder.count": "O totem tem {n} de 8 Penas. Paciência, e treino.",
+  "d.elder.allf": "As oito Penas brilham! Em todos os meus anos, quase nunca vi isso. Suba, campeão.",
   "d.zuzu.qask1": "Bzzz! Eu sou a Zuzu, a mensageira mais rápida da ilha!",
   "d.zuzu.qask2": "Mas minhas asas estão cansadas. Você leva esta carta para o Tapo, na barraca dele na vila?",
   "d.zuzu.qwait": "A barraca do Tapo tem o teto azul e branco, na Vila do Musgo. Bzzz!",
   "d.zuzu.thanks": "Bzzz! Você entregou! Tome, uma bandeira de folha para sua jangada. Ela tremula bonito!",
   "d.zuzu.after": "Bzzz! Ouvi dizer que a Jada é rapidíssima na raquete!",
-  "d.zuzu.liftopen": "Bzzz! NOTÍCIA BOA! As sete Penas! O elevador de cipós da Grande Sumaúma está aberto!",
+  "d.zuzu.liftopen": "Bzzz! NOTÍCIA BOA! As oito Penas! O elevador de cipós da Grande Sumaúma está aberto!",
   "d.marm.hi": "Iiic iiic! Somos os ajudantes da Jada. Adoramos trocas de bola rápidas!",
   "d.jada.pre": "Pronto para a Raquete Feroz? Olhe a bola, bata na hora certa e dê o bote!",
   "d.jada.won": "Você me venceu de forma justa. Revanche quando quiser!",
@@ -1883,19 +2072,19 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "d.kiki.soon": "A ladeira de lama ainda está seca demais. Volte depois da chuva!",
   "d.jada.ready": "Bom aquecimento! Agora é a minha vez. Quem fizer 7 primeiro. Mostre seu bote!",
   "end.1": "O elevador de cipós levou Cappy para cima, para cima, para cima, por entre as folhas até o Palco da Copa das Árvores.",
-  "end.2": "Os sete campeões estavam esperando. “Você mereceu, Cappy!”",
+  "end.2": "Os oito campeões estavam esperando. “Você mereceu, Cappy!”",
   "end.3": "Esta é a Taça da Selva, trançada com folhas douradas. Ela é do campeão da Ilha Delta.",
   "end.4": "Levante bem alto, Cappy! Crá!",
   "end.cup": "Campeão da Taça da Selva!",
   "end.5": "Obrigado a todos! Até o ano que vem?",
   "credits.1": "A Taça da Selva",
   "credits.2": "Estrelando Cappy, a capivara",
-  "credits.3": "com Jada, Sloane, Tico, as Lontras Gêmeas, Rana, Mico e Kiki",
+  "credits.3": "com Jada, Sloane, Tico, as Lontras Gêmeas, Rana, Mico, Kiki e Pecca",
   "credits.4": "e Mango, Coco, Pip, Tapo, a família Snip, o Sábio Shellby e Zuzu",
   "credits.5": "Feito pela equipe da Oomba Academy",
   "credits.6": "Pixels, música e sons feitos com código",
   "credits.7": "Obrigado por jogar!",
-  "credits.8": "Todos os esportes continuam abertos. Consegue três estrelas nos sete?",
+  "credits.8": "Todos os esportes continuam abertos. Consegue três estrelas nos oito?",
   "sport.frog.goal": "Rana toca um ritmo nos seus três tambores de folha. Escute e depois toque no tempo certo! Faça mais pontos que Rana até o fim da música.",
   "sport.frog.touch": "Toque: toque no tambor grave (azul, 1 ponto), no médio (verde, 2 pontos) e no agudo (rosa, 3 pontos).",
   "sport.frog.keys": "Teclas: Esquerda para o grave, Baixo (ou Espaço) para o médio, Direita para o agudo.",
@@ -1961,12 +2150,35 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "vc.bonk": "Bonc!", "vc.buzz": "Bzzz!", "vc.top": "No topo da árvore!", "vc.sloaneTop": "A Sloane chegou primeiro",
   "vc.hintTouch": "Toque quando o anel ficar verde!", "vc.hintKeys": "Aperte Espaço quando o anel ficar verde!",
   "vc.hintStartTouch": "Toque quando o cipó passar por cima de você", "vc.hintStartKeys": "Aperte Espaço quando o cipó passar por cima de você",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Corrida da Manga",
+  "vs.pecca": "contra Pecca, a cateto",
+  "name.pecca": "Pecca",
+  "d.pecca.pre": "Óinc! Eu sou a Pecca, capitã da Gangue do Ronco. Leve essa manga além da minha gangue, se conseguir!",
+  "d.pecca.won": "Óinc óinc! Ninguém nunca tinha passado pela minha gangue. Aqui está minha Pena, campeão!",
+  "d.pecca.soon": "Óinc! Minha gangue ainda está rolando na lama. Volte logo!",
+  "d.mango.dash1": "Cuá! Notícia boa! Uma nova campeã chegou à Ilha Delta: a Pecca e a Gangue do Ronco!",
+  "d.mango.dash2": "Elas jogam a Corrida da Manga na clareira de lama, ao norte das pedras do rio. O totem ganhou um oitavo encaixe!",
+  "sport.dash.goal": "Leve a manga 100 m até o cesto! A Gangue do Ronco da Pecca avança em quem estiver com ela. Desvie, ou passe para o colega com a seta.",
+  "sport.dash.touch": "Toque: o joystick (esquerda) guia; empurre para cima para correr mais. Toque em PASSE (direita) para jogar a manga.",
+  "sport.dash.keys": "Teclas: Esquerda / Direita para guiar, Cima para correr mais, Baixo para frear. Espaço para passar.",
+  "md.metres": "{n} m de 100",
+  "md.mark": "{n} m",
+  "md.pass": "PASSE",
+  "md.dodge": "Desviou!",
+  "md.trip": "Ai, um tronco!",
+  "md.caughtIt": "Pegou!",
+  "md.pecca": "Lá vem a Pecca!",
+  "md.caught": "A Gangue do Ronco pegou a manga!",
+  "md.caughtPecca": "A Pecca pegou a manga!",
+  "md.hintTouch": "Guie com o joystick. Um cateto cava a lama e uma linha vermelha mostra para onde ele vai correr: desvie, ou toque em PASSE!",
+  "md.hintKeys": "Setas para guiar (Cima para correr mais). Um cateto cava a lama e uma linha vermelha mostra para onde ele vai correr: desvie, ou aperte Espaço para passar!",
 });
 
 /* ---- i18n/all.ru.js ---- */
-// Jungle Cup in Russian: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Russian: every word of the game (core and the eight sports). Names of characters stay names.
 I18N.ru = Object.assign(I18N.ru || {}, {
-  "tagline": "Семь чемпионов. Семь Перьев. Один Кубок!",
+  "tagline": "Восемь чемпионов. Восемь Перьев. Один Кубок!",
   "confirm.new": "Начать совсем новую игру? Твои Перья, звёзды и рекорды сотрутся.",
   "go": "ВПЕРЁД!", "paused": "Пауза", "on": "Вкл", "off": "Выкл", "none": "Нет",
   "btn.play": "Играть", "btn.continue": "Продолжить", "btn.newGame": "Новая игра", "btn.back": "Назад", "btn.resume": "Играть дальше",
@@ -1977,7 +2189,7 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "res.won": "Победа!", "res.lost": "Почти!", "res.wonSub": "Вот это матч!", "res.lostSub": "Попробуй ещё!",
   "res.score": "Очки", "res.best": "Рекорд", "res.newBest": "Новый рекорд!", "res.feather": "Ты получил Перо: {sport}!",
   "hud.secs": "{n} с", "hud.score": "Очки",
-  "map.title": "Остров Дельта", "map.feathers": "Перья: {n}/7",
+  "map.title": "Остров Дельта", "map.feathers": "Перья: {n}/8",
   "settings.title": "Настройки", "settings.sound": "Звук", "settings.font": "Шрифт", "settings.pixel": "Пиксельный", "settings.clear": "Чёткий",
   "settings.easy": "Чемпионы полегче", "settings.easyHelp": "Чемпионы полегче играют чуть медленнее и чаще ошибаются. Включай, когда захочешь.",
   "controls.title": "Управление", "controls.touch": "Касание", "controls.keys": "Клавиатура", "controls.pad": "Геймпад",
@@ -1991,7 +2203,7 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "quest.reward.bandana": "Новая бандана!", "quest.reward.hat": "Новая шляпа!", "quest.reward.flag": "Новый флаг!",
   "quest.found": "Ракушка {n} из {total}!", "quest.got.leaf": "Ты нашёл большой лист!", "quest.got.specs": "Ты нашёл очки!",
   "quest.got.mango": "Ты сорвал спелое манго!", "quest.got.letter": "Письмо доставлено!",
-  "lift.locked": "Лифт из лиан привязан. Он откроется, когда в Тотеме Кубка будут все семь Перьев. Перьев пока: {n} из 7.",
+  "lift.locked": "Лифт из лиан привязан. Он откроется, когда в Тотеме Кубка будут все восемь Перьев. Перьев пока: {n} из 8.",
   "lift.open": "Лианы гудят! Держись крепче: наверх, на Сцену в кронах!",
   "sign.welcome": "Добро пожаловать на остров Дельта! Здесь проходит Кубок Джунглей. Деревня прямо впереди.",
   "sign.village": "Моховая деревня. Спорт есть по всему острову: ищи арки из цветов!",
@@ -2005,7 +2217,7 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "name.rana": "Рана", "name.mico": "Мико", "name.kiki": "Кики", "name.marm": "Игрунки",
   "rap.ripple": "Рябь", "rap.splash": "Плюх",
   "story.1": "Капибара Каппи плыл по реке на маленьком плоту до самого острова Дельта.",
-  "story.2": "Каждый год на острове проходит Кубок Джунглей. Семь чемпионов. Семь видов спорта. Сможет ли Каппи победить всех?",
+  "story.2": "Каждый год на острове проходит Кубок Джунглей. Восемь чемпионов. Восемь видов спорта. Сможет ли Каппи победить всех?",
   "story.3": "Бум! Плот причалил к пристани, а двоюродные брат и сестра Коко и Пип уже махали ему.",
   "d.coco.hi": "Братец Каппи! Ты приплыл! Добро пожаловать на остров Дельта!",
   "d.coco.again": "Тотем Кубка стоит в центре деревни. Каждое Перо, которое ты выиграешь, зажигает его!",
@@ -2016,9 +2228,9 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "d.pip.qthanks": "Все три! Спасибо! Вот, возьми мою закатную бандану. Тебе очень пойдёт.",
   "d.pip.after": "Закатная бандана тебе к лицу, братец!",
   "d.mango.intro1": "Кра! Ты, должно быть, Каппи! Я Манго, проводница по острову.",
-  "d.mango.intro2": "На острове Дельта живут семь чемпионов, и каждый хранит свой вид спорта.",
+  "d.mango.intro2": "На острове Дельта живут восемь чемпионов, и каждый хранит свой вид спорта.",
   "d.mango.intro3": "Победи чемпиона и получи его Перо. Все Перья разного цвета!",
-  "d.mango.intro4": "Неси Перья к Тотему Кубка в Моховой деревне. Заполни все семь гнёзд...",
+  "d.mango.intro4": "Неси Перья к Тотему Кубка в Моховой деревне. Заполни все восемь гнёзд...",
   "d.mango.intro5": "...и откроется лифт из лиан у Великого капока. Наверху ждёт Кубок Джунглей! Сначала сыграй с Джадой на корте под кронами. Иди на запад от деревни!",
   "d.mango.hint0": "Джада играет в Ракеточный удар на корте под кронами, к западу от деревни. Ищи оранжевую арку!",
   "d.mango.hint1": "Уже одно Перо! Арки из цветов есть по всему острову. Открой карту, чтобы их найти.",
@@ -2028,7 +2240,7 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "d.mango.qask2": "Принесёшь мне одно? Я подарю тебе что-то хорошее!",
   "d.mango.qwait": "Манговое дерево у холмов, на северо-западе. Ммм, манго...",
   "d.mango.qthanks": "МАНГО! Моё любимое! Вот шляпа исследователя для настоящего исследователя.",
-  "d.mango.allf": "Все семь Перьев! Лифт из лиан у Великого капока открыт. Вперёд, вперёд!",
+  "d.mango.allf": "Все восемь Перьев! Лифт из лиан у Великого капока открыт. Вперёд, вперёд!",
   "d.mango.after": "Чемпион Кубка Джунглей! Ты можешь играть в любой вид спорта и бить свои рекорды.",
   "d.mango.free": "Свободная игра! Все виды спорта открыты, а золотая бандана теперь твоя. Попробуй везде получить три звезды!",
   "d.tapir.hello": "Привет, я Тапо. В моей лавке ничего не продаётся, только советы. Советы бесплатно!",
@@ -2047,20 +2259,20 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "d.ants.qthanks": "Наша крыша! Спасибо, большой друг. Вот небесно-голубая бандана, мы сами её сплели!",
   "d.ants.after": "Чик-чик! Теперь мы строим крышу побольше.",
   "d.elder.totem1": "А, юный друг. Это Тотем Кубка. Он стоит здесь дольше, чем мой панцирь.",
-  "d.elder.totem2": "В нём семь гнёзд. Каждое ждёт Перо чемпиона.",
-  "d.elder.totem3": "Когда засветятся все семь, лифт из лиан проснётся. И тогда на Сцене в кронах будет ждать Кубок Джунглей.",
+  "d.elder.totem2": "В нём восемь гнёзд. Каждое ждёт Перо чемпиона.",
+  "d.elder.totem3": "Когда засветятся все восемь, лифт из лиан проснётся. И тогда на Сцене в кронах будет ждать Кубок Джунглей.",
   "d.elder.qask1": "Хм, куда же я дел очки? Я дремал у лагуны...",
   "d.elder.qask2": "Поищешь их, юный друг? На песке, к югу от лагуны.",
   "d.elder.qwait": "Мои очки должны быть на песке у лагуны. Всё так расплывается!",
   "d.elder.qthanks": "Мои очки! Теперь я тебя вижу! Возьми эту соломенную шляпу. Она защищает от солнца.",
-  "d.elder.count": "В тотеме {n} из 7 Перьев. Терпение и тренировки.",
-  "d.elder.allf": "Все семь Перьев сияют! За все мои годы я редко такое видел. Поднимайся, чемпион.",
+  "d.elder.count": "В тотеме {n} из 8 Перьев. Терпение и тренировки.",
+  "d.elder.allf": "Все восемь Перьев сияют! За все мои годы я редко такое видел. Поднимайся, чемпион.",
   "d.zuzu.qask1": "Жжж! Я Зузу, самая быстрая почтальонша острова!",
   "d.zuzu.qask2": "Но мои крылышки устали. Отнесёшь это письмо Тапо в его лавку в деревне?",
   "d.zuzu.qwait": "У лавки Тапо сине-белая крыша, в Моховой деревне. Жжж!",
   "d.zuzu.thanks": "Жжж! Ты доставил его! Вот флаг-листок для твоего плота. Он красиво развевается!",
   "d.zuzu.after": "Жжж! Говорят, Джада очень быстро играет ракеткой!",
-  "d.zuzu.liftopen": "Жжж! БОЛЬШАЯ НОВОСТЬ! Все семь Перьев! Лифт из лиан у Великого капока открыт!",
+  "d.zuzu.liftopen": "Жжж! БОЛЬШАЯ НОВОСТЬ! Все восемь Перьев! Лифт из лиан у Великого капока открыт!",
   "d.marm.hi": "Иии-иии! Мы маленькие помощники Джады. Мы обожаем быстрые розыгрыши!",
   "d.jada.pre": "Готов к Ракеточному удару? Следи за мячом, бей вовремя и прыгай!",
   "d.jada.won": "Ты честно меня победил. Реванш в любое время!",
@@ -2085,19 +2297,19 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "d.kiki.soon": "Грязевой склон ещё слишком сухой. Приходи после дождя!",
   "d.jada.ready": "Хорошая разминка! Теперь моя очередь. До 7 очков. Покажи свой прыжок!",
   "end.1": "Лифт из лиан поднял Каппи вверх, вверх, вверх сквозь листья на Сцену в кронах.",
-  "end.2": "Все семь чемпионов ждали его. «Ты это заслужил, Каппи!»",
+  "end.2": "Все восемь чемпионов ждали его. «Ты это заслужил, Каппи!»",
   "end.3": "Это Кубок Джунглей, сплетённый из золотых листьев. Он принадлежит чемпиону острова Дельта.",
   "end.4": "Подними его высоко, Каппи! Кра!",
   "end.cup": "Чемпион Кубка Джунглей!",
   "end.5": "Спасибо всем! Увидимся в следующем году?",
   "credits.1": "Кубок Джунглей",
   "credits.2": "В главной роли капибара Каппи",
-  "credits.3": "а также Джада, Слоан, Тико, Близняшки-выдры, Рана, Мико и Кики",
+  "credits.3": "а также Джада, Слоан, Тико, Близняшки-выдры, Рана, Мико, Кики и Пекка",
   "credits.4": "и Манго, Коко, Пип, Тапо, семья Снип, Старейшина Шеллби и Зузу",
   "credits.5": "Сделано командой Oomba Academy",
   "credits.6": "Пиксели, музыка и звуки созданы кодом",
   "credits.7": "Спасибо за игру!",
-  "credits.8": "Все виды спорта остаются открытыми. Получишь три звезды во всех семи?",
+  "credits.8": "Все виды спорта остаются открытыми. Получишь три звезды во всех восьми?",
   "sport.frog.goal": "Рана играет ритм на трёх барабанах из листьев. Послушай и повтори его в такт! Набери больше очков, чем Рана, до конца песни.",
   "sport.frog.touch": "Касание: нажимай низкий (синий, 1 точка), средний (зелёный, 2 точки) и высокий (розовый, 3 точки) барабаны.",
   "sport.frog.keys": "Клавиши: Влево — низкий, Вниз (или Пробел) — средний, Вправо — высокий.",
@@ -2165,12 +2377,35 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "vc.bonk": "Бум!", "vc.buzz": "Жжж!", "vc.top": "На верхушке!", "vc.sloaneTop": "Слоан добралась первой",
   "vc.hintTouch": "Нажми, когда кольцо станет зелёным!", "vc.hintKeys": "Жми Пробел, когда кольцо станет зелёным!",
   "vc.hintStartTouch": "Нажми, когда лиана качнётся над тобой", "vc.hintStartKeys": "Жми Пробел, когда лиана качнётся над тобой",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "Манговый забег",
+  "vs.pecca": "против пекари Пекки",
+  "name.pecca": "Пекка",
+  "d.pecca.pre": "Хрю! Я Пекка, капитан Хрюкающей банды. Пронеси манго мимо моей банды, если сможешь!",
+  "d.pecca.won": "Хрю-хрю! Мимо моей банды ещё никто не прорывался. Вот моё Перо, чемпион!",
+  "d.pecca.soon": "Хрю! Моя банда ещё валяется в грязи. Приходи скорее!",
+  "d.mango.dash1": "Кра! Большая новость! На остров Дельта прибыла новая чемпионка: Пекка и её Хрюкающая банда!",
+  "d.mango.dash2": "Они играют в Манговый забег на грязной поляне, к северу от камней через реку. У тотема появилось восьмое гнездо!",
+  "sport.dash.goal": "Пронеси манго 100 м до корзины! Хрюкающая банда Пекки бросается на того, у кого манго. Уворачивайся или пасуй товарищу со стрелкой.",
+  "sport.dash.touch": "Касание: джойстик (слева) управляет, вверх — ускориться. Нажми ПАС (справа), чтобы бросить манго.",
+  "sport.dash.keys": "Клавиши: Влево / Вправо — рулить, Вверх — ускориться, Вниз — притормозить. Пробел — пас.",
+  "md.metres": "{n} м из 100",
+  "md.mark": "{n} м",
+  "md.pass": "ПАС",
+  "md.dodge": "Увернулся!",
+  "md.trip": "Ой, бревно!",
+  "md.caughtIt": "Поймал!",
+  "md.pecca": "Идёт Пекка!",
+  "md.caught": "Хрюкающая банда забрала манго!",
+  "md.caughtPecca": "Пекка забрала манго!",
+  "md.hintTouch": "Рули джойстиком. Пекари роет копытом грязь, а красная линия показывает, куда он побежит: увернись или нажми ПАС!",
+  "md.hintKeys": "Стрелки — рулить (Вверх — ускориться). Пекари роет копытом грязь, а красная линия показывает, куда он побежит: увернись или нажми Пробел для паса!",
 });
 
 /* ---- i18n/all.zh-Hant.js ---- */
-// Jungle Cup in Traditional Chinese: every word of the game (core and the seven sports). Names of characters stay names.
+// Jungle Cup in Traditional Chinese: every word of the game (core and the eight sports). Names of characters stay names.
 I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
-  "tagline": "七位冠軍。七根羽毛。一座獎盃！",
+  "tagline": "八位冠軍。八根羽毛。一座獎盃！",
   "confirm.new": "要開始全新的遊戲嗎？你的羽毛、星星和最佳紀錄都會清除。",
   "go": "開始！", "paused": "暫停", "on": "開", "off": "關", "none": "無",
   "btn.play": "開始玩", "btn.continue": "繼續", "btn.newGame": "新遊戲", "btn.back": "返回", "btn.resume": "繼續玩",
@@ -2181,7 +2416,7 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "res.won": "你贏了！", "res.lost": "差一點！", "res.wonSub": "好精彩的比賽！", "res.lostSub": "再試一次！",
   "res.score": "分數", "res.best": "最佳", "res.newBest": "新紀錄！", "res.feather": "你贏得了{sport}的羽毛！",
   "hud.secs": "{n} 秒", "hud.score": "分數",
-  "map.title": "三角洲島", "map.feathers": "羽毛 {n}/7",
+  "map.title": "三角洲島", "map.feathers": "羽毛 {n}/8",
   "settings.title": "設定", "settings.sound": "聲音", "settings.font": "文字", "settings.pixel": "像素", "settings.clear": "清楚",
   "settings.easy": "簡單一點的冠軍", "settings.easyHelp": "簡單一點的冠軍動作會慢一些，也比較常失誤。隨時都可以打開。",
   "controls.title": "操作", "controls.touch": "觸控", "controls.keys": "鍵盤", "controls.pad": "手把",
@@ -2195,7 +2430,7 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "quest.reward.bandana": "新頭巾！", "quest.reward.hat": "新帽子！", "quest.reward.flag": "新旗子！",
   "quest.found": "貝殼 {n}/{total}！", "quest.got.leaf": "你找到大葉子了！", "quest.got.specs": "你找到眼鏡了！",
   "quest.got.mango": "你摘到一顆熟芒果！", "quest.got.letter": "信送到了！",
-  "lift.locked": "藤蔓升降梯被綁住了。等獎盃圖騰集滿七根羽毛就會打開。目前的羽毛：{n}/7。",
+  "lift.locked": "藤蔓升降梯被綁住了。等獎盃圖騰集滿八根羽毛就會打開。目前的羽毛：{n}/8。",
   "lift.open": "藤蔓在嗡嗡作響！抓緊了：上去樹冠舞台！",
   "sign.welcome": "歡迎來到三角洲島！叢林盃的故鄉。村子就在前面。",
   "sign.village": "青苔村。島上到處都有運動：找找花朵拱門！",
@@ -2209,7 +2444,7 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "name.rana": "拉娜", "name.mico": "米可", "name.kiki": "琪琪", "name.marm": "狨猴們",
   "rap.ripple": "漣漪", "rap.splash": "水花",
   "story.1": "水豚卡皮乘著小木筏順著河流漂下，一路來到三角洲島。",
-  "story.2": "每年島上都會舉辦叢林盃。七位冠軍。七種運動。卡皮能全部贏下來嗎？",
+  "story.2": "每年島上都會舉辦叢林盃。八位冠軍。八種運動。卡皮能全部贏下來嗎？",
   "story.3": "咚！木筏靠上了碼頭，表哥可可和表妹皮普早就在揮手了。",
   "d.coco.hi": "卡皮表弟！你來了！歡迎來到三角洲島！",
   "d.coco.again": "獎盃圖騰在村子正中央。你每贏一根羽毛，它就會亮起來！",
@@ -2220,9 +2455,9 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "d.pip.qthanks": "三個都找到了！謝謝你！這條夕陽頭巾送你，你戴一定很好看。",
   "d.pip.after": "夕陽頭巾很適合你喔！",
   "d.mango.intro1": "嘎！你一定是卡皮！我是芒果，島上的導遊。",
-  "d.mango.intro2": "三角洲島上住著七位冠軍，每位都守護著一種運動。",
+  "d.mango.intro2": "三角洲島上住著八位冠軍，每位都守護著一種運動。",
   "d.mango.intro3": "打敗冠軍就能贏得他的羽毛。每根羽毛的顏色都不一樣！",
-  "d.mango.intro4": "把羽毛帶到青苔村的獎盃圖騰。把七個插槽都填滿……",
+  "d.mango.intro4": "把羽毛帶到青苔村的獎盃圖騰。把八個插槽都填滿……",
   "d.mango.intro5": "……巨大木棉樹的藤蔓升降梯就會打開。叢林盃在上面等你！先去樹冠球場挑戰潔達吧。往村子西邊走！",
   "d.mango.hint0": "潔達在村子西邊的樹冠球場打球拍猛擊。找找橘色的拱門！",
   "d.mango.hint1": "已經有一根羽毛了！島上到處都有花朵拱門。打開地圖就能找到。",
@@ -2232,7 +2467,7 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "d.mango.qask2": "可以幫我帶一顆來嗎？我會送你好東西！",
   "d.mango.qwait": "芒果樹在山丘旁邊，西北方。嗯，芒果……",
   "d.mango.qthanks": "芒果！我的最愛！這頂探險帽送給真正的探險家。",
-  "d.mango.allf": "七根羽毛！巨大木棉樹的藤蔓升降梯打開了。快去，快去！",
+  "d.mango.allf": "八根羽毛！巨大木棉樹的藤蔓升降梯打開了。快去，快去！",
   "d.mango.after": "叢林盃冠軍！你還是可以玩任何運動，刷新你的紀錄。",
   "d.mango.free": "自由遊玩！所有運動都開放了，那條金色頭巾也是你的。每一項都挑戰三顆星吧！",
   "d.tapir.hello": "你好，我是塔波。我的小攤什麼都不賣，只有小提示。提示是免費的！",
@@ -2251,20 +2486,20 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "d.ants.qthanks": "我們的屋頂！謝謝你，大朋友。這條天空藍頭巾是我們自己織的！",
   "d.ants.after": "喀嚓喀嚓！我們現在要蓋更大的屋頂。",
   "d.elder.totem1": "啊，年輕人。這就是獎盃圖騰。它在這裡的時間比我的殼還要久。",
-  "d.elder.totem2": "它有七個插槽。每個都在等一位冠軍的羽毛。",
-  "d.elder.totem3": "當七個都亮起來，藤蔓升降梯就會醒來。叢林盃就在樹冠舞台上等著。",
+  "d.elder.totem2": "它有八個插槽。每個都在等一位冠軍的羽毛。",
+  "d.elder.totem3": "當八個都亮起來，藤蔓升降梯就會醒來。叢林盃就在樹冠舞台上等著。",
   "d.elder.qask1": "嗯，我把眼鏡放到哪裡去了？我剛剛在潟湖邊打盹……",
   "d.elder.qask2": "年輕人，你能幫我找找嗎？在潟湖南邊的沙灘附近。",
   "d.elder.qwait": "我的眼鏡應該在潟湖邊的沙灘上。什麼都看不清楚！",
   "d.elder.qthanks": "我的眼鏡！現在看得到你了！這頂草帽送你，可以遮太陽。",
-  "d.elder.count": "圖騰上有 {n}/7 根羽毛。要有耐心，多多練習。",
-  "d.elder.allf": "七根羽毛都在發光！我活了這麼多年，很少見到。上去吧，冠軍。",
+  "d.elder.count": "圖騰上有 {n}/8 根羽毛。要有耐心，多多練習。",
+  "d.elder.allf": "八根羽毛都在發光！我活了這麼多年，很少見到。上去吧，冠軍。",
   "d.zuzu.qask1": "嗡嗡！我是祖祖，島上最快的信差！",
   "d.zuzu.qask2": "可是我的翅膀好累。你能把這封信送到村子裡塔波的小攤嗎？",
   "d.zuzu.qwait": "塔波的小攤在青苔村，屋頂是藍白色的。嗡嗡！",
   "d.zuzu.thanks": "嗡嗡！你送到了！這面葉子旗送你的木筏，飄起來很好看！",
   "d.zuzu.after": "嗡嗡！聽說潔達揮拍超級快！",
-  "d.zuzu.liftopen": "嗡嗡！大消息！七根羽毛到齊了！巨大木棉樹的藤蔓升降梯打開了！",
+  "d.zuzu.liftopen": "嗡嗡！大消息！八根羽毛到齊了！巨大木棉樹的藤蔓升降梯打開了！",
   "d.marm.hi": "吱吱！我們是潔達的小幫手。我們最愛快速對打！",
   "d.jada.pre": "準備好玩球拍猛擊了嗎？看好球，抓準時機揮拍，然後撲上去！",
   "d.jada.won": "你光明正大地打敗我了。隨時歡迎再比一場！",
@@ -2289,19 +2524,19 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "d.kiki.soon": "泥巴坡還太乾。下過雨再來吧！",
   "d.jada.ready": "暖身得不錯！現在換我了。先拿 7 分的贏。讓我看看你的撲擊！",
   "end.1": "藤蔓升降梯載著卡皮往上、往上、再往上，穿過樹葉來到樹冠舞台。",
-  "end.2": "七位冠軍都在等他。「這是你應得的，卡皮！」",
+  "end.2": "八位冠軍都在等他。「這是你應得的，卡皮！」",
   "end.3": "這就是叢林盃，用金色的葉子編成。它屬於三角洲島的冠軍。",
   "end.4": "把它舉高高，卡皮！嘎！",
   "end.cup": "叢林盃冠軍！",
   "end.5": "謝謝大家！明年再見？",
   "credits.1": "叢林盃",
   "credits.2": "主演：水豚卡皮",
-  "credits.3": "還有潔達、絲隆、提可、水獺雙胞胎、拉娜、米可和琪琪",
+  "credits.3": "還有潔達、絲隆、提可、水獺雙胞胎、拉娜、米可、琪琪和佩卡",
   "credits.4": "以及芒果、可可、皮普、塔波、史尼普一家、雪比長老和祖祖",
   "credits.5": "由 Oomba Academy 團隊製作",
   "credits.6": "像素、音樂和音效都是用程式做的",
   "credits.7": "謝謝你來玩！",
-  "credits.8": "所有運動都還開放著。你能七項都拿到三顆星嗎？",
+  "credits.8": "所有運動都還開放著。你能八項都拿到三顆星嗎？",
   "sport.frog.goal": "拉娜會在三個葉子鼓上打出節奏。先聽，再跟著節拍打出來！在歌曲結束前比拉娜得到更多分數。",
   "sport.frog.touch": "觸控：點低音鼓（藍色，1 點）、中音鼓（綠色，2 點）和高音鼓（粉紅色，3 點）。",
   "sport.frog.keys": "按鍵：左鍵是低音，下鍵（或空白鍵）是中音，右鍵是高音。",
@@ -2369,6 +2604,42 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "vc.bonk": "咚！", "vc.buzz": "嗡嗡！", "vc.top": "到樹頂了！", "vc.sloaneTop": "絲隆先到了",
   "vc.hintTouch": "圓圈變綠時點一下！", "vc.hintKeys": "圓圈變綠時按空白鍵！",
   "vc.hintStartTouch": "藤蔓盪到你上方時點一下", "vc.hintStartKeys": "藤蔓盪到你上方時按空白鍵",
+  // Mango Dash (the eighth sport) and Pecca
+  "sport.dash": "芒果衝刺",
+  "vs.pecca": "對手：西貒佩卡",
+  "name.pecca": "佩卡",
+  "d.pecca.pre": "齁！我是佩卡，呼嚕幫的隊長。有本事就帶著芒果衝過我的幫手們吧！",
+  "d.pecca.won": "齁齁！從來沒有人衝過我的幫手們。冠軍，這是我的羽毛！",
+  "d.pecca.soon": "齁！我的幫手們還在泥巴裡打滾。快回來玩吧！",
+  "d.mango.dash1": "嘎！大消息！三角洲島來了一位新冠軍：佩卡和她的呼嚕幫！",
+  "d.mango.dash2": "她們在踏腳石北邊的泥巴空地玩芒果衝刺。圖騰長出第八個插槽了！",
+  "sport.dash.goal": "把芒果帶到100公尺外的籃子！佩卡的呼嚕幫會衝向拿著芒果的人。閃開牠們，或傳給有箭頭的隊友。",
+  "sport.dash.touch": "觸控：左邊的搖桿控制方向，往上推可以衝刺。點右邊的「傳球」把芒果丟出去。",
+  "sport.dash.keys": "按鍵：左／右控制方向，上衝刺，下放慢。空白鍵傳球。",
+  "md.metres": "{n} 公尺／100",
+  "md.mark": "{n} 公尺",
+  "md.pass": "傳球",
+  "md.dodge": "閃開了！",
+  "md.trip": "哎呀，木頭！",
+  "md.caughtIt": "接到了！",
+  "md.pecca": "佩卡來了！",
+  "md.caught": "呼嚕幫搶到芒果了！",
+  "md.caughtPecca": "佩卡搶到芒果了！",
+  "md.hintTouch": "用搖桿控制方向。豬用蹄子刨泥巴時，紅線會告訴你牠要衝去哪裡：閃開，或點「傳球」！",
+  "md.hintKeys": "用方向鍵控制（上是衝刺）。豬用蹄子刨泥巴時，紅線會告訴你牠要衝去哪裡：閃開，或按空白鍵傳球！",
+});
+
+/* ---- i18n/dash.en.js ---- */
+// Mango Dash's words (English). Keys: sport.dash.* for the intro card, md.* while playing.
+I18N.en = Object.assign(I18N.en || {}, {
+  'sport.dash.goal': 'Carry the mango 100 m to the basket! Pecca\'s Grunt Gang charges whoever holds it. Dodge them, or pass to the teammate with the arrow.',
+  'sport.dash.touch': 'Touch: the joystick (left) steers; push up to sprint. Tap PASS (right) to throw the mango.',
+  'sport.dash.keys': 'Keys: Left / Right to steer, Up to sprint, Down to slow down. Space to pass.',
+  'md.metres': '{n} m of 100', 'md.mark': '{n} m', 'md.pass': 'PASS',
+  'md.dodge': 'Dodged!', 'md.trip': 'Oof, a log!', 'md.caughtIt': 'Got it!', 'md.pecca': 'Pecca is coming!',
+  'md.caught': 'The Grunt Gang got the mango!', 'md.caughtPecca': 'Pecca got the mango!',
+  'md.hintTouch': 'Steer with the joystick. A pig paws the mud and a red line shows where it will run: dodge it, or tap PASS!',
+  'md.hintKeys': 'Arrows to steer (Up to sprint). A pig paws the mud and a red line shows where it will run: dodge it, or press Space to pass!',
 });
 
 /* ---- i18n/frog.en.js ---- */
@@ -2486,7 +2757,7 @@ I18N.en = Object.assign(I18N.en || {}, {
 // prefix, else VOICE_ROLES[speaker] for d.<speaker>.*, else VOICE_ROLES.story. Only the game's own words are read.
 const VOICE_ROLES = { story: 'narrator', mango: 'bright', coco: 'friendly', pip: 'friendly', tapir: 'deep', ants: 'friendly',
   elder: 'wise', zuzu: 'bright', jada: 'deep', sloane: 'wise', tico: 'bright', otters: 'friendly', rana: 'bright', mico: 'grumpy',
-  kiki: 'friendly', lift: 'narrator', sign: 'narrator' };
+  kiki: 'friendly', pecca: 'grumpy', lift: 'narrator', sign: 'narrator' };
 const VOICE_KEY_ROLES = { 'end.': 'narrator', 'story.': 'narrator' };
 // ==== VOICES END ====
 
@@ -2497,7 +2768,10 @@ const VOICE_KEY_ROLES = { 'end.': 'narrator', 'story.': 'narrator' };
 // JUNGLE CUP core: the shared namespace, words (t), numbers and small helpers.
 // Everything the sports may use hangs off JC (see docs/jungle-cup-plan.md "Sport module interface").
 // ======================================================================================================
-const JC = { sports: {}, sportOrder: ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'], version: 1 };
+const JC = { sports: {}, sportOrder: ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'], version: 1 };
+/** How many sports (and Feathers, and totem sockets) there are. */
+const NSPORTS = JC.sportOrder.length;
+JC.nSports = NSPORTS;
 window.JC = JC;
 
 /* ---------- words ---------- */
@@ -2618,7 +2892,7 @@ const PAL = {
 };
 JC.pal = PAL;
 // Each sport's champion colour (its Feather, its arch flowers, its bars).
-const SPORT_COLOURS = { paddle: '#ff9b2e', vine: '#6ad34a', seed: '#ff5a5a', rapids: '#3fb7ff', frog: '#b06cff', kick: '#ffd23f', leaf: '#ff6fb5' };
+const SPORT_COLOURS = { paddle: '#ff9b2e', vine: '#6ad34a', seed: '#ff5a5a', rapids: '#3fb7ff', frog: '#b06cff', kick: '#ffd23f', leaf: '#ff6fb5', dash: '#1fc8a8' };
 JC.sportColours = SPORT_COLOURS;
 
 /* ---------- colour helpers ---------- */
@@ -3615,6 +3889,25 @@ sprite('kiki', [
   'oKo.okkkkkko.oKo',
   '.o..oKKooKKo..o.ooo',
   '.....oo..oo..oKKKo'], KIKI_PAL);
+// Pecca the peccary, captain of the Grunt Gang (Mango Dash): bristly mane, a pale collar, a teal captain's headband.
+const PECCA_PAL = { o: OUT, p: '#6e5c54', P: '#4a3c36', m: '#2e2420', c: '#efe4d0', s: '#d49a8c', S: '#a86a5c', k: '#120e14', w: '#ffffff', t: '#1fc8a8', T: '#138a74' };
+sprite('pecca', [
+  '.....o.o.o......',
+  '....omomomo.....',
+  '..oo.ommmo.oo...',
+  '.opPottttttoPpo.',
+  '.oPptTTTTTTtpPo.',
+  '..oppppppppppo..',
+  '.oppwkppppwkppo.',
+  '.oppkkppppkkppo.',
+  '.opppossssoppo..',
+  '..oposSssSsopo..',
+  '...oossssssoo...',
+  '..occccccccccoo.',
+  '.oPpcppppppcpPo.',
+  'oPPoppppppppoPPo',
+  '.oo.oPPooPPo.oo.',
+  '.....oo..oo.....'], PECCA_PAL);
 // Marmosets (the warm-up pair): tiny, 12 x 12.
 const MARM_PAL = { o: OUT, g: '#9a948a', G: '#6a645a', w: '#f4f0e8', k: '#120e14', f: '#e0c8a8', y: '#ffd24a' };
 sprite('marmoset', [
@@ -3869,7 +4162,7 @@ UI.drawFx = function (g) {
 // With AI voices on for the player's language (BRB.aiVoice) and sound on, each line is also read aloud.
 // ======================================================================================================
 const SPEAKERS = { cappy: 'cappy_down', mango: 'mango', coco: 'coco_down', pip: 'pip_down', tapir: 'tapir', ants: 'ant', elder: 'elder', zuzu: 'zuzu',
-  jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', marm: 'marmoset', sign: '', lift: '' };
+  jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', pecca: 'pecca', marm: 'marmoset', sign: '', lift: '' };
 JC.speakers = SPEAKERS;
 const TB = { lines: null, i: 0, shown: 0, full: '', done: null, open: false, t: 0, spoke: false };
 JC.textbox = TB;
@@ -3996,6 +4289,8 @@ SAVE.set = function (obj) { SAVE.data = sanitize(obj); SAVE.apply(); SAVE.write(
 SAVE.apply = function () { TEXT.clear = SAVE.data.settings.font === 'clear'; TEXTCACHE.clear(); WRAPS.clear(); };
 SAVE.featherCount = () => JC.sportOrder.reduce((n, id) => n + (SAVE.data.feathers[id] ? 1 : 0), 0);
 SAVE.starCount = () => JC.sportOrder.reduce((n, id) => n + (SAVE.data.stars[id] || 0), 0);
+/** All the Feathers (the lift opens). A save from before Mango Dash keeps its Cup, but the lift waits for the 8th. */
+SAVE.allFeathers = () => SAVE.featherCount() >= NSPORTS;
 /** The score shown on the platform's leaderboard: 100 per star, 250 per Feather, 500 for the Cup. */
 SAVE.cupPoints = () => SAVE.starCount() * 100 + SAVE.featherCount() * 250 + (SAVE.data.cup ? 500 : 0);
 JC.easy = () => !!SAVE.data.settings.easy;
@@ -4026,6 +4321,7 @@ JC.hash = hash;
 const ARCHES = {
   paddle: { x: 26, y: 31, champ: 'jada' }, leaf: { x: 16, y: 22, champ: 'kiki' }, seed: { x: 12, y: 46, champ: 'tico' },
   kick: { x: 20, y: 50, champ: 'mico' }, frog: { x: 46, y: 51, champ: 'rana' }, rapids: { x: 61, y: 38, champ: 'otters' }, vine: { x: 46, y: 21, champ: 'sloane' },
+  dash: { x: 59, y: 31, champ: 'pecca' },
 };
 function paint(x0, y0, x1, y1, k) { for (let y = Math.max(0, y0); y <= Math.min(MH - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(MW - 1, x1); x++) WORLD.tiles[idx(x, y)] = k; }
 function paintIf(x, y, k, onlyLand) { if (!inMap(x, y)) return; const c = WORLD.tiles[idx(x, y)]; if (onlyLand && isWater(c)) return; WORLD.tiles[idx(x, y)] = k; }
@@ -4081,6 +4377,10 @@ function buildLayout() {
   ellipse(46, 56, 4.2, 3.2, T_SAND, true); ellipse(46, 56.3, 3.2, 2.3, T_WATER); paintIf(45, 56, T_LILY); paintIf(47, 57, T_LILY); // the lily pond (frog)
   for (let y = 7; y <= 18; y++) for (let x = 40; x <= 50; x++) if (tileAt(x, y) === T_GRASS) WORLD.tiles[idx(x, y)] = T_DARK; // the giant grove floor
   for (let y = 26; y <= 30; y++) for (let x = 21; x <= 31; x++) if (tileAt(x, y) === T_GRASS) WORLD.tiles[idx(x, y)] = T_DARK;
+  // the muddy clearing (dash) behind its arch: trampled dirt with mud puddles, a path down to the road
+  const da = ARCHES.dash;
+  ellipse(da.x + 0.2, da.y - 5.5, 3.4, 4.6, T_PATH, true); road([[da.x, da.y + 3], [da.x, da.y - 1]], T_PATH);
+  for (const [dx, dy] of [[-2, -8], [2, -4], [1, -9]]) paintIf(da.x + dx, da.y + dy, T_MUD, true);
   // flower meadows
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (tileAt(x, y) === T_GRASS && hash(x, y, 3) < 0.07 + 0.08 * (Math.sin(x / 4) * Math.cos(y / 5) > 0.5 ? 1 : 0)) WORLD.tiles[idx(x, y)] = T_FLOWER;
 }
@@ -4114,6 +4414,7 @@ function buildObjects() {
   for (const [x, y] of [[43, 53], [44, 52], [48, 52], [49, 53]]) addObj({ k: 'log', x, y });
   addObj({ k: 'drums', x: 46, y: 53 }); keep(41, 49, 51, 60);
   addObj({ k: 'sled', x: 18, y: 21 }); keep(13, 20, 19, 25);
+  { const a = ARCHES.dash; for (const [dx, dy] of [[-2, -5], [2, -7]]) addObj({ k: 'log', x: a.x + dx, y: a.y + dy }); addObj({ k: 'mangoes', x: a.x, y: a.y - 10 }); keep(a.x - 4, a.y - 12, a.x + 4, a.y + 2); }
   for (const [x, y] of [[42, 12], [48, 10], [44, 17], [49, 16]]) { addObj({ k: 'giant', x, y }); keep(x - 1, y - 3, x + 1, y + 1); }
   keep(43, 19, 49, 23);
   // keep the roads clear
@@ -4300,9 +4601,9 @@ function drawTotemBase(g, px, py) {
 function drawTotemTop(gt, px, py) {
   const cx = px + 8, base = py + 15;
   rect(gt, cx - 7, base - 58, 14, 25, OUT); rect(gt, cx - 6, base - 57, 12, 24, '#a8703e'); rect(gt, cx - 6, base - 57, 3, 24, '#c48a4c');
-  // a fan of seven carved leaves (each Feather socket sits on one) and a carved sun on top of the pole
+  // a fan of carved leaves, one per champion (each Feather socket sits on one), and a carved sun on top of the pole
   const so = totemSockets();
-  for (let pass = 0; pass < 2; pass++) for (let i = 0; i < 7; i++) {
+  for (let pass = 0; pass < 2; pass++) for (let i = 0; i < NSPORTS; i++) {
     const s = so[i], x0 = cx, y0 = base - 46, n = 10;
     for (let k = 0; k <= n; k++) {
       const x = Math.round(x0 + (s.x - x0) * k / n), y = Math.round(y0 + (s.y + 2 - y0) * k / n);
@@ -4312,11 +4613,14 @@ function drawTotemTop(gt, px, py) {
   }
   disc(gt, cx, base - 48, 6, OUT); disc(gt, cx, base - 48, 5, '#ffc544'); disc(gt, cx, base - 48, 3, '#d39a22'); rect(gt, cx - 1, base - 49, 2, 2, '#fff3a8');
 }
-/** Where the totem's seven sockets are (pixels, in map space). */
+/** Where the totem's sockets are (pixels, in map space): a fan, one per sport, the middle ones highest. */
+const SOCKETS = [];
 function totemSockets() {
-  const px = WORLD.totem.x * TS, py = WORLD.totem.y * TS, cx = px + 8, base = py + 15, out = [];
-  for (let i = 0; i < 7; i++) { const a = (i - 3) / 3; out.push({ x: Math.round(cx + a * 25), y: Math.round(base - 58 + Math.abs(a) * 8 + (i === 3 ? -4 : 0)) }); }
-  return out;
+  const px = WORLD.totem.x * TS, py = WORLD.totem.y * TS, cx = px + 8, base = py + 15, n = NSPORTS, mid = (n - 1) / 2;
+  if (SOCKETS.length === n && SOCKETS.px === px) return SOCKETS;
+  SOCKETS.length = 0; SOCKETS.px = px;
+  for (let i = 0; i < n; i++) { const a = (i - mid) / mid; SOCKETS.push({ x: Math.round(cx + a * 28), y: Math.round(base - 60 + a * a * 10 + Math.abs(a) * 2) }); }
+  return SOCKETS;
 }
 WORLD.sockets = totemSockets;
 const SPORT_ICONS = {
@@ -4327,10 +4631,11 @@ const SPORT_ICONS = {
   frog: ['.ooo.', 'owwwo', 'obbbo', 'obbbo', '.ooo.'],
   kick: ['.ooo.', 'owkwo', 'okwko', 'owkwo', '.ooo.'],
   leaf: ['...oo', '..ogo', '.ogoo', 'ogoo.', 'oo...'],
+  dash: ['...g.', '.oog.', 'oyyyo', 'oyywo', 'oyyyo', '.ooo.'],
 };
 function iconSprite(id) {
   const k = 'icon_' + id; if (SPRITES[k]) return SPRITES[k];
-  return sprite(k, SPORT_ICONS[id], { o: OUT, r: SPORT_COLOURS[id], g: '#6ad34a', w: '#fff8e8', b: '#8a5a33', k: OUT });
+  return sprite(k, SPORT_ICONS[id], { o: OUT, r: SPORT_COLOURS[id], g: '#6ad34a', w: '#fff8e8', b: '#8a5a33', k: OUT, y: '#ff9b2e' });
 }
 JC.iconSprite = iconSprite;
 function drawArch(g, gt, px, py, o) {
@@ -4381,6 +4686,8 @@ function drawMisc(g, gt, o, px, py) {
       rect(g, px + 14, py + 2, 2, 8, '#7a4a26'); rect(g, px + 12, py + 1, 6, 3, OUT); break;
     }
     case 'log': shadowOval(g, px + 8, py + 13, 8, 2); rect(g, px + 1, py + 6, 14, 8, OUT); rect(g, px + 2, py + 7, 12, 6, '#8a5a33'); rect(g, px + 2, py + 7, 12, 1, '#b07a44'); disc(g, px + 3, py + 10, 2, '#c99a6a'); break;
+    case 'mangoes': shadowOval(g, px + 8, py + 14, 8, 2); rect(g, px + 1, py + 6, 14, 9, OUT); rect(g, px + 2, py + 7, 12, 7, '#a8703e'); for (let i = 0; i < 3; i++) rect(g, px + 3, py + 8 + i * 2, 10, 1, '#7a4a26');
+      for (const [dx, dy] of [[4, 4], [8, 3], [12, 4], [6, 1], [10, 1]]) { disc(g, px + dx, py + dy + 1, 3, OUT); disc(g, px + dx, py + dy + 1, 2, '#ff9b2e'); rect(g, px + dx - 1, py + dy, 1, 1, '#ffd24a'); } rect(g, px + 8, py - 2, 2, 2, '#3d9a2e'); break;
     case 'drums': for (const [dx, c, r] of [[-14, '#2f8a3f', 6], [0, '#6ad34a', 7], [14, '#a8e870', 5]]) { const cx = px + 8 + dx; rect(g, cx - r, py + 2, r * 2, 12, OUT); rect(g, cx - r + 1, py + 3, r * 2 - 2, 10, '#8a5a33'); oval(g, cx, py + 3, r, 2, OUT); oval(g, cx, py + 3, r - 1, 1, c); for (let i = 0; i < 3; i++) rect(g, cx - r + 2 + i * 4, py + 6, 1, 7, '#5e3820'); } break;
     case 'sled': rect(g, px + 1, py + 6, 15, 7, OUT); rect(g, px + 2, py + 7, 13, 5, '#56b84a'); rect(g, px + 3, py + 7, 11, 1, '#8ee070'); rect(g, px + 8, py + 6, 1, 7, '#2a7a30'); break;
     case 'giant': {
@@ -4485,8 +4792,8 @@ const NPC_DEFS = [
   { id: 'marm', x: 22, y: 32, spr: 'marmoset', many: 2 },
 ];
 // a champion stands beside each arch
-const CHAMP_SPOT = { paddle: [28, 32], leaf: [18, 23], seed: [10, 47], kick: [22, 49], frog: [48, 52], rapids: [63, 39], vine: [48, 22] };
-const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki' };
+const CHAMP_SPOT = { paddle: [28, 32], leaf: [18, 23], seed: [10, 47], kick: [22, 49], frog: [48, 52], rapids: [63, 39], vine: [48, 22], dash: [61, 32] };
+const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', pecca: 'pecca' };
 function nearestFree(x, y) {
   if (!WORLD.isSolid(x, y)) return [x, y];
   for (let r = 1; r < 6; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!WORLD.isSolid(x + dx, y + dy)) return [x + dx, y + dy];
@@ -4528,12 +4835,14 @@ function talkLines(n) {
   const f = SAVE.featherCount();
   switch (n.id) {
     case 'mango': {
-      if (!SAVE.data.flags.metMango) { SAVE.data.flags.metMango = 1; return L('mango', 'intro1', 'intro2', 'intro3', 'intro4', 'intro5'); }
+      if (!SAVE.data.flags.metMango) { SAVE.data.flags.metMango = 1; SAVE.data.flags.dashNews = 1; return L('mango', 'intro1', 'intro2', 'intro3', 'intro4', 'intro5'); }
+      // a save from before Mango Dash: the news of the eighth champion first
+      if (!SAVE.data.flags.dashNews) { SAVE.data.flags.dashNews = 1; return L('mango', 'dash1', 'dash2'); }
       const q = qState('mango');
       if (q === 'got') { giveReward('mango'); return L('mango', 'qthanks'); }
       if (!q && f >= 1) { SAVE.data.quests.mango = 'active'; return L('mango', 'qask1', 'qask2'); }
       if (q === 'active') return L('mango', 'qwait');
-      if (f >= 7) return L('mango', SAVE.data.cup ? 'after' : 'allf');
+      if (f >= NSPORTS) return L('mango', SAVE.data.cup ? 'after' : 'allf');
       return L('mango', 'hint' + Math.min(3, f));
     }
     case 'coco': return L('coco', SAVE.data.flags.metCoco ? 'again' : 'hi');
@@ -4562,13 +4871,13 @@ function talkLines(n) {
       if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
-      return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
+      return [{ who: 'elder', key: f >= NSPORTS ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
     }
     case 'zuzu': {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
+      return L('zuzu', f >= NSPORTS && !SAVE.data.cup ? 'liftopen' : 'after');
     }
     case 'marm': return L('marm', 'hi');
     default: {
@@ -4586,7 +4895,7 @@ JC.talkLines = talkLines;
 function hasNews(n) {
   const f = SAVE.featherCount(), fl = SAVE.data.flags;
   switch (n.id) {
-    case 'mango': { const q = qState('mango'); return !fl.metMango || q === 'got' || (!q && f >= 1); }
+    case 'mango': { const q = qState('mango'); return !fl.metMango || !fl.dashNews || q === 'got' || (!q && f >= 1); }
     case 'elder': { const q = qState('specs'); return !fl.metElder || !q || q === 'got'; }
     case 'pip': { const q = qState('shells'); return !q || (q === 'active' && questItemsGot('shells') >= questItemsTotal('shells')); }
     case 'ants': { const q = qState('leaf'); return !q || q === 'got'; }
@@ -4747,7 +5056,7 @@ function act() {
   if (tg.kind === 'sign') { JC.say([{ who: 'sign', key: tg.ref.key }]); return; }
   if (tg.kind === 'lift') {
     const f = SAVE.featherCount();
-    if (f >= 7) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
+    if (f >= NSPORTS) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
     else JC.say([{ who: 'lift', key: 'lift.locked', vars: { n: f } }]);
     return;
   }
@@ -4879,7 +5188,7 @@ function drawRaft(g, x, y) {
   if (fl === 'leaf') { rect(g, x + 19, y - 14, 3, 3, '#ffd23f'); } else rect(g, x + 18, y - 13, 5, 1, '#e04848');
 }
 function drawLift(g, x, y) {
-  const open = SAVE.featherCount() >= 7;
+  const open = SAVE.featherCount() >= NSPORTS;
   // the vines up the trunk
   for (const dx of [2, 13]) for (let i = 0; i < 40; i++) rect(g, x + dx + Math.round(Math.sin((i + OW.time * (open ? 6 : 0)) / 4)), y - 40 + i, 1, 1, i % 5 ? '#2a7a30' : '#8ee070');
   rect(g, x - 1, y + 4, 18, 9, OUT); rect(g, x, y + 5, 16, 6, '#b07a44'); rect(g, x, y + 5, 16, 1, '#e0b070'); rect(g, x, y + 10, 16, 1, '#5e3820');
@@ -4891,7 +5200,7 @@ function drawLift(g, x, y) {
 }
 function drawTotemSockets(g, ox, oy) {
   const sk = totemSockets();
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < NSPORTS; i++) {
     const id = JC.sportOrder[i], s = sk[i], x = s.x - ox, y = s.y - oy;
     const lit = SAVE.data.feathers[id], fresh = OW.celebrate && OW.celebrate.id === id;
     if (fresh && OW.celebrate.t < 1.5) {
@@ -4949,8 +5258,8 @@ OW.draw = function (g) {
 };
 OW.drawHud = function (g) {
   layoutPad();
-  // the seven Feathers, top left
-  const n = 7, sw = 11, x0 = 6, y0 = 6;
+  // the Feathers, top left
+  const n = NSPORTS, sw = 11, x0 = 6, y0 = 6;
   box(g, x0 - 2, y0 - 2, n * sw + 4, 18, 'rgba(27,19,37,0.72)', PAL.ink);
   for (let i = 0; i < n; i++) {
     const id = JC.sportOrder[i], on = SAVE.data.feathers[id];
@@ -5059,7 +5368,7 @@ function finishRound() {
   d.plays[id] = (d.plays[id] || 0) + 1;
   RUN.newFeather = res.won && !d.feathers[id];
   if (res.won) d.feathers[id] = true;
-  if (RUN.newFeather && SAVE.featherCount() === 7) d.flags.allFeathers = 1;
+  if (RUN.newFeather && SAVE.featherCount() === NSPORTS) d.flags.allFeathers = 1;
   if (res.stars === 3) JC.grantBandana('berry', false);   // the first three-star round: a berry bandana
   SAVE.write();
   // the platform hears about the round when the player leaves this card (Retry, Back, or leaving the sport), so the
@@ -5136,8 +5445,8 @@ RUN.onInput = function (e) {
 RUN.leaveResults = function () {
   AUDIO.sfx('back');
   const a = ARCHES[RUN.id];
-  // the seventh Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
-  const news = RUN.newFeather && SAVE.featherCount() === 7 ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
+  // the last Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
+  const news = RUN.newFeather && SAVE.featherCount() === NSPORTS ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
   JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '', later: news, laterT: 3.2 });
 };
 /* ---------- drawing ---------- */
@@ -5502,8 +5811,8 @@ function panelFrame(g, titleKey) {
   return { x: c.x, y: c.y + r * 2 + 2, w: c.w, h: c.h - r * 2 - 2 };
 }
 function drawFeatherRow(g, x, y) {
-  for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
-  text(g, label('map.feathers', SAVE.featherCount()), x + 82, y, ROWTEXT2);
+  for (let i = 0; i < NSPORTS; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
+  text(g, label('map.feathers', SAVE.featherCount()), x + NSPORTS * 11 + 5, y, ROWTEXT2);
 }
 const ROWTEXT2 = { col: PAL.ink, edge: null };
 const BESTTEXT = { col: '#5e3820', edge: null, align: 'right' };
@@ -5514,7 +5823,7 @@ function drawMapTab(g) {
   const land = area.w > area.h * 1.15;
   const rh = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap), GAP = 3;
   const listH = area.h - bh - 6;                  // room above the buttons
-  const rowsH = cols => Math.ceil(7 / cols) * (rh + GAP);
+  const rowsH = cols => Math.ceil(NSPORTS / cols) * (rh + GAP);
   // pick the first layout that fits: [minimap?, columns]
   let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0;
   const tries = land ? [[1, 1], [1, 2], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
@@ -5546,8 +5855,8 @@ function drawMapTab(g) {
   const lx = withMap && land ? area.x + area.w - listW : area.x;
   let ly = withMap && !land ? my + mh + 4 : area.y;
   drawFeatherRow(g, lx, ly); ly += 15;
-  const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(7 / cols);
-  for (let i = 0; i < 7; i++) {
+  const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(NSPORTS / cols);
+  for (let i = 0; i < NSPORTS; i++) {
     const id = JC.sportOrder[i], col = (i / perCol) | 0, row = i % perCol;
     const x = lx + col * (cw + 4), y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
     UI.addHit('go:' + id, x, y, w, rh);
@@ -5625,6 +5934,8 @@ MAP.draw = function (g) {
 
 /* ---------- the Canopy Stage finale and the credits ---------- */
 const FIN = { name: 'finale', t: 0, step: 0, raised: false };
+// every champion, in sport order (one per Feather)
+const FIN_CHAMPS = JC.sportOrder.map(id => ARCHES[id].champ);
 FIN.enter = function () {
   FIN.t = 0; FIN.raised = false; FIN.thanked = false; JC.audioWant = 'finale';
   // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
@@ -5650,13 +5961,12 @@ FIN.draw = function (g) {
   rect(g, 0, sy, W, H - sy, '#5e3820'); for (let x = 0; x < W; x += 10) rect(g, x, sy, 9, 3, '#8a5a33'); rect(g, 0, sy, W, 1, OUT);
   for (let y = sy + 6; y < H; y += 6) rect(g, 0, y, W, 1, '#4a2c18');
   // champions in a row (in their colours)
-  const champs = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
-  // three on Cappy's left, four on his right (the Otter Twins stand together in one slot)
-  const gap = Math.max(18, Math.min(28, (W / 2 - 34) / 3));
-  champs.forEach((c, i) => {
-    const s = SPRITES[CHAMP_SPR[c]], x = Math.round(i < 3 ? W / 2 - 8 - 24 - (2 - i) * gap : W / 2 - 8 + 24 + (i - 3) * gap), y = sy - 16 + ((((FIN.t * 2) | 0) + i) % 2);
+  // four on Cappy's left, four on his right (the Otter Twins stand together in one slot)
+  const half = FIN_CHAMPS.length / 2, gap = Math.max(16, Math.min(28, (W / 2 - 34) / half));
+  FIN_CHAMPS.forEach((c, i) => {
+    const s = SPRITES[CHAMP_SPR[c]], x = Math.round(i < half ? W / 2 - 8 - 24 - (half - 1 - i) * gap : W / 2 - 8 + 24 + (i - half) * gap), y = sy - 16 + ((((FIN.t * 2) | 0) + i) % 2);
     shadow(g, x + 8, sy, 6);
-    if (c === 'otters') { spr(g, s, x - 4, y + 1, true); spr(g, s, x + 4, y, true); } else spr(g, s, x, y, i > 3);
+    if (c === 'otters') { spr(g, s, x - 4, y + 1, true); spr(g, s, x + 4, y, true); } else spr(g, s, x, y, i >= half);
     spr(g, featherSprite(SPORT_COLOURS[JC.sportOrder[i]]), x + 12, y - 6);
   });
   // Cappy and the Jungle Cup
@@ -5805,12 +6115,24 @@ function pRaft(p, x, y, w, flagCol) {
 const CHAMP_LOOK = {
   jada: { col: '#f0a040', spot: '#6a3a10' }, sloane: { col: '#9a8a70', mask: '#4a3a2a' }, tico: { col: '#2a2430', beak: '#ff9b2e' },
   otters: { col: '#7a4a2a' }, rana: { col: '#5a8aff', spot: '#1a1a40' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
+  pecca: { col: '#6e5c54' },
 };
 function pCritter(p, id, x, y, s) {
   const L = CHAMP_LOOK[id], c = L.col, d = shade(c, -0.35), l = shade(c, 0.3);
   p.blob(x, y + 12 * s, 11 * s, 2.5 * s, '#000', 0.2);
   if (id === 'otters') { for (const ox of [-6, 6]) { p.blob(x + ox * s, y + 2 * s, 5 * s, 10 * s, c); p.blob(x + ox * s, y - 9 * s, 5 * s, 4.5 * s, c); p.blob(x + ox * s, y - 7 * s, 3 * s, 2 * s, l); p.blob(x + ox * s - 1.5 * s, y - 10 * s, 0.8 * s, 0.8 * s, '#111'); p.blob(x + ox * s + 1.5 * s, y - 10 * s, 0.8 * s, 0.8 * s, '#111'); } return; }
   if (id === 'rana') { p.blob(x, y + 4 * s, 10 * s, 7 * s, c); p.blob(x, y - 3 * s, 8 * s, 5 * s, c); for (const ox of [-4, 4]) { p.blob(x + ox * s, y - 7 * s, 2.6 * s, 2.6 * s, c); p.blob(x + ox * s, y - 7 * s, 1.4 * s, 1.4 * s, '#111'); } for (let i = 0; i < 5; i++) p.blob(x + (p.r() - 0.5) * 14 * s, y + (p.r() - 0.2) * 8 * s, 1.3 * s, 1.1 * s, L.spot); p.blob(x - 9 * s, y + 9 * s, 4 * s, 1.6 * s, d); p.blob(x + 9 * s, y + 9 * s, 4 * s, 1.6 * s, d); return; }
+  if (id === 'pecca') {
+    // a round bristly peccary: pale collar, pink snout, teal captain's headband
+    p.blob(x, y + 3 * s, 10 * s, 9 * s, c); p.blob(x, y - 7 * s, 8 * s, 6.5 * s, c);
+    for (let i = 0; i < 5; i++) p.blob(x - 4 * s + i * 2 * s, y - 14 * s, 1.2 * s, 2.6 * s, d, 0.95);
+    p.blob(x, y - 1 * s, 9.5 * s, 1.8 * s, '#efe4d0', 0.95);
+    p.blob(x, y - 11 * s, 7.5 * s, 1.5 * s, '#1fc8a8', 0.95);
+    p.blob(x, y - 4 * s, 4 * s, 2.6 * s, '#d49a8c'); p.blob(x - 1.4 * s, y - 4 * s, 0.7 * s, 0.7 * s, '#5a2a2a'); p.blob(x + 1.4 * s, y - 4 * s, 0.7 * s, 0.7 * s, '#5a2a2a');
+    p.blob(x - 3 * s, y - 8 * s, 1 * s, 1 * s, '#111'); p.blob(x + 3 * s, y - 8 * s, 1 * s, 1 * s, '#111');
+    p.blob(x - 7 * s, y - 12 * s, 2 * s, 2 * s, d); p.blob(x + 7 * s, y - 12 * s, 2 * s, 2 * s, d);
+    return;
+  }
   if (id === 'tico') { p.blob(x, y + 2 * s, 7 * s, 10 * s, c); p.blob(x, y + 4 * s, 4 * s, 5 * s, '#fff2c0', 0.9); p.blob(x, y - 9 * s, 6 * s, 5.5 * s, c); p.poly([x + 3 * s, y - 11 * s, x + 17 * s, y - 8 * s, x + 3 * s, y - 5 * s], L.beak); p.blob(x + 1 * s, y - 10 * s, 1 * s, 1 * s, '#fff'); return; }
   if (L.tail) p.curve(x - 6 * s, y + 6 * s, x - 18 * s, y + 4 * s, x - 14 * s, y - 8 * s, d, 2.4 * s);
   p.blob(x, y + 2 * s, 8 * s, 10 * s, c);
@@ -5845,7 +6167,7 @@ function pCup(p, x, y, s) {
   p.blob(x, y - 16 * s, 16 * s, 3.4 * s, '#8a5a12'); p.blob(x, y - 16.5 * s, 14.5 * s, 2.4 * s, '#b8801c');
   for (let i = 0; i < 7; i++) p.leaf(x - 14 * s + i * 4.6 * s, y - 1 * s + (i % 2) * 3 * s, 9 * s, -1.2 + i * 0.4, i % 2 ? '#ffd24a' : '#f0b830', 0.95);
   p.curve(x - 15 * s, y - 12 * s, x - 26 * s, y - 6 * s, x - 13 * s, y + 2 * s, '#c8901e', 3 * s); p.curve(x + 15 * s, y - 12 * s, x + 26 * s, y - 6 * s, x + 13 * s, y + 2 * s, '#c8901e', 3 * s);
-  for (let i = 0; i < 7; i++) p.blob(x - 12 * s + i * 4 * s, y - 20 * s - (i % 2) * 2 * s, 1.4 * s, 2.6 * s, SPORT_COLOURS[JC.sportOrder[i]], 0.95, (i - 3) * 0.15);
+  for (let i = 0; i < NSPORTS; i++) p.blob(x - 14 * s + i * 4 * s, y - 20 * s - (i % 2) * 2 * s, 1.4 * s, 2.6 * s, SPORT_COLOURS[JC.sportOrder[i]], 0.95, (i - (NSPORTS - 1) / 2) * 0.15);
 }
 /* ---------- the panels (logical width 320, height LH between 180 and 320; ground near the bottom) ---------- */
 const PANELS = {
@@ -5877,7 +6199,7 @@ const PANELS = {
     p.wash(LW * 0.5, hz - 6, LW * 0.42, 22, '#5a9a5a', 26, 0.45);
     p.wash(LW * 0.5, hz - 2, LW * 0.5, 12, '#3f7a44', 22, 0.5);
     pKapok(p, LW * 0.56, hz - 6, LH * 0.34, '#8a6a48');
-    for (let i = 0; i < 7; i++) { const ax = LW * (0.2 + i * 0.1), ay = hz - 4 + (i % 2) * 3; p.curve(ax - 4, ay, ax, ay - 8, ax + 4, ay, '#8a5a30', 1.4); p.blob(ax, ay - 7, 2.2, 1.6, SPORT_COLOURS[JC.sportOrder[i]], 0.95); }
+    for (let i = 0; i < NSPORTS; i++) { const ax = LW * (0.17 + i * 0.095), ay = hz - 4 + (i % 2) * 3; p.curve(ax - 4, ay, ax, ay - 8, ax + 4, ay, '#8a5a30', 1.4); p.blob(ax, ay - 7, 2.2, 1.6, SPORT_COLOURS[JC.sportOrder[i]], 0.95); }
     for (let i = 0; i < 6; i++) { const hx = LW * (0.38 + i * 0.05); p.poly([hx - 6, hz - 4, hx, hz - 12, hx + 6, hz - 4], '#c9a050', 0.9); }
     const w = p.g.createLinearGradient(0, hz, 0, LH); w.addColorStop(0, '#7ac8d0'); w.addColorStop(1, '#2a7aa0');
     p.g.fillStyle = w; p.g.fillRect(0, hz + 2, LW, LH - hz);
@@ -5939,10 +6261,9 @@ const PANELS = {
     p.poly([0, sy, LW, sy, LW, LH, 0, LH], '#8a5a30');
     for (let i = 0; i < 16; i++) p.stroke([i * 22, sy, i * 22 - 8, LH], '#6a4020', 1, 0.6);
     p.blob(LW / 2, sy, LW / 2, 1.4, '#e0b070', 0.7);
-    const ids = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
-    for (let i = 0; i < 7; i++) {
-      const cx = LW * (0.08 + i * 0.14), cy = sy - 12 - (i % 2) * 3, s = 1.15;
-      pCritter(p, ids[i], cx, cy, s);
+    for (let i = 0; i < NSPORTS; i++) {
+      const cx = LW * (0.065 + i * 0.124), cy = sy - 12 - (i % 2) * 3, s = 1.1;
+      pCritter(p, ARCHES[JC.sportOrder[i]].champ, cx, cy, s);
       p.leaf(cx + 7 * s, cy - 18 * s, 12, -1.2, SPORT_COLOURS[JC.sportOrder[i]], 0.95);
     }
     pCapy(p, LW * 0.5, sy + (LH - sy) * 0.45, 1.6, { hat: SAVE.data.cos.hat, arm: true, wave: true });
@@ -6086,7 +6407,7 @@ JC.start = function () {
 // TEST HOOKS: window.__brbTest (the platform's autotest reads state()) and window.__brbTest.jc for our own tests.
 // Harmless in production: they only do what a player could do, faster.
 // ======================================================================================================
-const PLACES = { dock: [36, 61, 'up'], village: [36, 40, 'up'], totem: [36, 39, 'up'], kapok: [36, 17, 'up'], lift: [36, 17, 'up'], lagoon: [16, 47, 'left'], islet: [60, 40, 'up'] };
+const PLACES = { dock: [36, 61, 'up'], village: [36, 40, 'up'], totem: [36, 39, 'up'], kapok: [36, 17, 'up'], lift: [36, 17, 'up'], lagoon: [16, 47, 'left'], islet: [60, 40, 'up'], clearing: [ARCHES.dash.x, ARCHES.dash.y + 2, 'up'] };
 function sceneName() { return JC.scene ? JC.scene.name : 'loading'; }
 function jcState() {
   const d = SAVE.data;
@@ -6171,6 +6492,490 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   start() { if (sceneName() === 'title') { if (SAVE.exists()) continueGame(); else newGame(); } return window.__brbTest.state(); },
   jc: JCT,
 });
+
+/* ---- sport-dash.js ---- */
+// ======================================================================================================
+// MANGO DASH vs Pecca the peccary and her Grunt Gang: carry the mango 100 m up the muddy clearing.
+//   Cappy runs up the screen by himself; steer with the joystick / arrows (push up to sprint, down to slow).
+//   Coco, Pip and Tapo run alongside. Tap PASS (or Space / A) to throw the mango to the teammate with the arrow:
+//   the gang charges whoever holds the mango. Each charge is shown first (the pig paws the mud, a red line points
+//   where it will run), so you can dodge it or pass. Logs trip you, mud slows you. Caught = the run ends (try again
+//   at once). Near the end, Pecca herself charges twice. Reach the mango basket at 100 m to win her Feather.
+// World units: x across the field (-FW/2 .. FW/2), d up the field in pixels (PPM pixels per metre).
+// ======================================================================================================
+(function () {
+  const FW = 150, PPM = 26, END = 100 * PPM, BASE = 38, LAT = 66, MAXP = 8, MAXO = 28, NT = 4;
+  const D = JC.draw;
+  const S = {
+    over: false, won: false, t: 0, score: 0, dodges: 0, passes: 0, stumbles: 0, carrier: 0, passT: 9, marked: -1,
+    ball: { fly: false, t: 0, dur: 0.36, from: 0, to: 0, x: 0, d: 0, x0: 0, d0: 0 },
+    team: [], pigs: [], obs: [], nPig: 0, nextPig: 0, genD: 0, boss: 0, camD: 0, z: 1, ox: 0, baseY: 0,
+    hint: 1, auto: false, skill: 'good', botT: 0, botX: 0, botY: 0, botPass: false, bg: null, bgGen: -1, overT: 0, endMsg: '',
+    mudT: 0, best: 0, marks: [], drawList: [], fwd: 0, catcher: -1, flash: 0,
+  };
+  const SLOTS = [{ x: 0, d: 0 }, { x: -40, d: -18 }, { x: 40, d: -18 }, { x: 0, d: -38 }];
+  const WHO = ['cappy', 'coco', 'pip', 'tapir'];
+  for (let i = 0; i < NT; i++) S.team.push({ who: WHO[i], x: 0, d: 0, slot: i, down: 0, hop: 0, run: 0, vd: 0 });
+  for (let i = 0; i < MAXP; i++) S.pigs.push({ on: false, x: 0, d: 0, st: '', t: 0, dx: 0, dd: 0, sp: 0, boss: false, aimX: 0, aimD: 0, passed: false, off: 0 });
+  for (let i = 0; i < MAXO; i++) S.obs.push({ on: false, kind: '', x: 0, d: 0, w: 0, h: 0, hit: false });
+  for (let i = 0; i < NT + MAXP; i++) S.drawList.push(null);
+  const HINT = { align: 'center', col: '#fff8e8' }, MARK = { align: 'center', col: '#fff8e8', edge: '#3b2416' }, BANG = { align: 'center', col: '#ff5a5a', edge: '#24150f' };
+  const PASS_OPT = { align: 'center', col: '#fff8e8', edge: '#24150f' }, WHITE = { col: '#fff8e8' };
+  const TUNE = {
+    normal: { wind: 0.85, gap: 150, sp: 106, r: 8, i0: 3.6, i1: 2.1, pairAt: 55, pair: 0.3, lead0: 0, lead1: 0.24, mud: 0.55, stum: 0.5, bossSp: 124, bossWind: 0.7 },
+    easy: { wind: 1.2, gap: 175, sp: 88, r: 6.5, i0: 4.6, i1: 2.9, pairAt: 75, pair: 0.15, lead0: 0, lead1: 0.1, mud: 0.7, stum: 0.3, bossSp: 102, bossWind: 1.0 },
+  };
+  const tune = ctx => (ctx.easy ? TUNE.easy : TUNE.normal);
+  const metres = d => clamp(Math.floor(d / PPM), 0, 100);
+  const car = () => S.team[S.carrier];
+
+  /* ---------- sprites (the gang, Tapo from behind) ---------- */
+  const PIG_PAL = { o: OUT, p: '#8a6a5a', P: '#5e463c', m: '#2e2420', w: '#ffffff', k: '#120e14', s: '#e0a898', K: '#7a3a3a', c: '#efe4d0' };
+  const PIG_TOP = ['...o.o.o.o....', '..omomomomo...', '.oPpppppppPo..', 'oPpwkpppwkpPo.', 'oppkkpppkkppo.', '.oppossssoppo.', '..opsKssKspo..', '..oocccccccoo.', '.oPppppppppPo.', 'oPPoppppppoPPo'];
+  JC.sprite('md_pig', PIG_TOP.concat(['.oo.oPooPo.oo.', '....oo..oo....']), PIG_PAL);
+  JC.sprite('md_pig2', PIG_TOP.concat(['.oo.oPo.oPo.oo', '...oo....oo...']), PIG_PAL);
+  JC.sprite('md_tapir', ['................', '..oo........oo..', '.oddo......oddo.', '.odDooooooooDdo.', '..oddddddddddo..', '.oddddddddddddo.', '.oddddddddddddo.', '..oddddddddddo..',
+    '..oWWWWWWWWWWo..', '.oWWaaaaaaaaWWo.', '.oWaaaaaaaaaaWo.', '.oDaaaaaaaaaaDo.', '.oDdaaaaaaaadDo.', '..oDaaaaaaaaDo..', '...oddo..oddo...', '...ooo....ooo...'],
+  { o: OUT, d: '#4a4658', D: '#2e2b3a', W: '#ece6d8', a: '#6fb6e8' });
+  JC.sprite('md_mango', ['..oGo.', '.ooooo', 'oyyrro', 'oyrrro', 'oyyrro', '.oooo.'], { o: OUT, y: '#ffd24a', r: '#ff8a2a', G: '#3d9a2e' });
+  const SPR = { cappy: 'cappy_up', coco: 'coco_up', pip: 'pip_up', tapir: 'md_tapir' };
+  const SPRW = { cappy: 'cappy_up_w', coco: 'coco_up_w', pip: 'pip_up_w', tapir: 'md_tapir' };
+
+  /* ---------- the field: obstacles made ahead as Cappy runs ---------- */
+  function addOb(kind, x, d, w, h) { for (const o of S.obs) if (!o.on) { o.on = true; o.kind = kind; o.x = x; o.d = d; o.w = w; o.h = h; o.hit = false; return o; } return null; }
+  function genAhead(ctx) {
+    const R = ctx.rng;
+    while (S.genD < Math.min(END - 3 * PPM, car().d + 700)) {
+      const r = R(), x = (R() - 0.5) * (FW - 50);
+      if (S.genD > 8 * PPM) {
+        if (r < 0.36) addOb('log', x, S.genD, 26 + R() * 24, 8);
+        else if (r < 0.62) addOb('mud', x, S.genD, 34 + R() * 22, 18 + R() * 6);
+        else if (r < 0.72 && S.genD > 40 * PPM) { addOb('log', -FW / 2 + 20 + R() * 20, S.genD, 30, 8); addOb('mud', FW / 2 - 26 - R() * 16, S.genD + 30, 36, 18); }
+      }
+      S.genD += 64 + R() * 40;
+    }
+    for (const o of S.obs) if (o.on && o.d < car().d - 300) o.on = false;
+  }
+  function inMud(x, d) { for (const o of S.obs) if (o.on && o.kind === 'mud') { const a = (x - o.x) / (o.w / 2), b = (d - o.d) / (o.h / 2); if (a * a + b * b < 1) return true; } return false; }
+
+  /* ---------- the Grunt Gang ---------- */
+  function spawnPig(ctx, boss) {
+    let p = null; for (const q of S.pigs) if (!q.on) { p = q; break; } if (!p) return;
+    const c = car(), R = ctx.rng, ahead = (S.baseY - 10) / S.z;
+    p.on = true; p.boss = !!boss; p.st = 'trot'; p.t = 0; p.passed = false; p.off = 0;
+    p.d = c.d + ahead + 12; p.x = clamp(c.x + (R() - 0.5) * 110, -FW / 2 + 10, FW / 2 - 10);
+    p.dx = 0; p.dd = -1; p.sp = 0;
+    ctx.sfx('oink');
+  }
+  function lockAim(ctx, p) {
+    // aim where the mango is (a little ahead of it later in the run); the line shows during the paw-scrape
+    const T = tune(ctx), c = S.ball.fly ? S.team[S.ball.to] : car(), m = metres(c.d) / 100, lead = lerp(T.lead0, T.lead1, m) + (p.boss ? 0.15 : 0);
+    p.aimX = c.x + c.run * lead * 40; p.aimD = c.d + BASE * lead;
+    const dx = p.aimX - p.x, dd = p.aimD - p.d, L = Math.max(1, Math.hypot(dx, dd));
+    p.dx = dx / L; p.dd = dd / L;
+  }
+  function updatePigs(dt, ctx) {
+    const T = tune(ctx), c = car();
+    for (const p of S.pigs) {
+      if (!p.on) continue;
+      p.t += dt;
+      const target = S.ball.fly ? S.team[S.ball.to] : c;
+      if (p.st === 'trot') {
+        // amble down toward the mango's lane until close enough, then scrape and charge
+        p.d -= 20 * dt; p.x += clamp(target.x - p.x, -1, 1) * 22 * dt;
+        if (p.d - target.d < (p.boss ? T.gap + 20 : T.gap) || p.t > 4) { p.st = 'wind'; p.t = 0; lockAim(ctx, p); ctx.sfx('oink'); }
+      } else if (p.st === 'wind') {
+        if (p.t < 0.5) lockAim(ctx, p);
+        if (p.t > (p.boss ? T.bossWind : T.wind)) { p.st = 'charge'; p.t = 0; p.sp = p.boss ? T.bossSp : T.sp; ctx.sfx('whoosh'); }
+      } else if (p.st === 'charge') {
+        p.x += p.dx * p.sp * dt; p.d += p.dd * p.sp * dt;
+        if (!p.passed && p.d < target.d - 4) {
+          p.passed = true;
+          if (!S.over && Math.abs(p.x - target.x) < 26) { S.dodges++; S.score += 30; UI.float(S.sx(target.x), S.sy(target.d) - 22, t('md.dodge'), '#8ee070'); }
+        }
+        if (p.t > 2.2 || p.d < target.d - 70 || Math.abs(p.x) > FW / 2 + 20) { p.st = 'skid'; p.t = 0; }
+      } else if (p.st === 'skid') {
+        p.x += p.dx * p.sp * dt * Math.max(0, 1 - p.t * 2); p.d += p.dd * p.sp * dt * Math.max(0, 1 - p.t * 2);
+        if (p.t > 1) { p.st = 'off'; p.t = 0; p.off = p.x < 0 ? -1 : 1; }
+      } else if (p.st === 'off') {
+        p.x += p.off * 60 * dt;
+        if (Math.abs(p.x) > FW / 2 + 40 || p.d < c.d - 260) p.on = false;
+      }
+      if (p.st === 'charge' && !S.over) {
+        const R = p.boss ? T.r + 2 : T.r;
+        for (let i = 0; i < NT; i++) {
+          const m = S.team[i];
+          if (Math.abs(m.x - p.x) > R + 4 || Math.abs(m.d - p.d) > R + 4) continue;
+          if (Math.hypot(m.x - p.x, m.d - p.d) > R + 4) continue;
+          if (S.ball.fly && i === S.ball.to) continue;     // the catcher ducks
+          if (i === S.carrier && !S.ball.fly) { caught(ctx, p); break; }
+          if (i !== S.carrier && !m.down) { m.down = 1.1; ctx.sfx('bonk'); UI.burst(S.sx(m.x), S.sy(m.d) - 6, 6, '#c99a6a', 40); }
+        }
+      }
+    }
+  }
+  function caught(ctx, p) {
+    S.over = true; S.won = false; S.overT = 0; S.endMsg = p.boss ? 'md.caughtPecca' : 'md.caught';
+    ctx.sfx('bonk'); ctx.sfx('lose');
+    UI.burst(S.sx(car().x), S.sy(car().d) - 8, 14, '#ff9b2e', 70);
+    if (!BRBX.reduced()) S.flash = 0.25;
+    p.st = 'skid'; p.t = 0.6;
+    const m = metres(car().d);
+    S.score += m * 10;
+    ctx.finish({ score: S.score, stars: 0, won: false, frac: 0.3 * m / 100, stats: { metres: m, dodges: S.dodges, passes: S.passes } });
+  }
+
+  /* ---------- the team: running, passing, the formation ---------- */
+  function pickMarked() {
+    let best = -1, bestV = -1;
+    for (let i = 0; i < NT; i++) {
+      if (i === S.carrier) continue;
+      const m = S.team[i];
+      if (m.down > 0 || Math.abs(m.x - car().x) > 120 || m.d < car().d - 80) continue;
+      let safe = 200;
+      for (const p of S.pigs) if (p.on && (p.st === 'wind' || p.st === 'charge' || p.st === 'trot')) safe = Math.min(safe, Math.hypot(m.x - p.x, m.d - p.d));
+      const v = safe + (m.d - car().d) * 0.3;
+      if (v > bestV) { bestV = v; best = i; }
+    }
+    // sticky: keep the arrow where it is unless another teammate is clearly safer (no flicker)
+    if (S.marked >= 0 && S.marked !== best && S.team[S.marked].down <= 0 && S.marked !== S.carrier) {
+      const m = S.team[S.marked]; let safe = 200;
+      for (const p of S.pigs) if (p.on && (p.st === 'wind' || p.st === 'charge' || p.st === 'trot')) safe = Math.min(safe, Math.hypot(m.x - p.x, m.d - p.d));
+      if (safe + (m.d - car().d) * 0.3 > bestV - 15) return;
+    }
+    S.marked = best;
+  }
+  function pass(ctx) {
+    if (S.over || S.ball.fly || S.passT < 0.45 || S.marked < 0) return;
+    const b = S.ball, c = car();
+    b.fly = true; b.t = 0; b.from = S.carrier; b.to = S.marked; b.x0 = c.x; b.d0 = c.d;
+    S.passT = 0; S.passes++; if (S.passes <= 20) S.score += 20;
+    S.hint = Math.max(0, S.hint - 0.4);
+    ctx.sfx('toss');
+  }
+  function catchBall(ctx) {
+    const b = S.ball, old = S.carrier, nu = b.to, os = S.team[old].slot;
+    b.fly = false;
+    S.team[old].slot = S.team[nu].slot; S.team[nu].slot = os;
+    S.carrier = nu; S.marked = -1;
+    ctx.sfx('catch');
+    UI.float(S.sx(S.team[nu].x), S.sy(S.team[nu].d) - 22, t('md.caughtIt'), '#ffd24a');
+  }
+  function steer(ctx) {
+    // the analog axis, or the play-bot's
+    if (S.auto) { S.ax = S.botX; S.ay = S.botY; } else { S.ax = ctx.axis.mag > 0 ? ctx.axis.x : 0; S.ay = ctx.axis.mag > 0 ? ctx.axis.y : 0; }
+  }
+  function updateTeam(dt, ctx) {
+    const T = tune(ctx), c = car();
+    steer(ctx);
+    // the carrier: always running; up = sprint, down = slow; mud and logs slow him
+    let fwd = BASE * clamp(1 - S.ay * 0.25, 0.62, 1.25);
+    const mud = inMud(c.x, c.d);
+    if (mud) { fwd *= T.mud; S.mudT += dt; if (((S.t * 8) | 0) % 2 && ctx.rng() < 0.3) UI.particle(S.sx(c.x), S.sy(c.d), (ctx.rng() - 0.5) * 30, -20, '#7a4a2a', 0.4, 2, 80); }
+    if (c.down > 0) fwd *= 0.25;
+    S.fwd = fwd;
+    c.run = S.ax;
+    c.x = clamp(c.x + S.ax * LAT * (mud ? 0.75 : 1) * dt, -FW / 2 + 8, FW / 2 - 8); c.d += fwd * dt; c.vd = fwd;
+    if (c.down > 0) c.down -= dt;
+    for (const o of S.obs) {
+      if (!o.on || o.kind !== 'log' || o.hit) continue;
+      if (Math.abs(c.d - o.d) < 5 && Math.abs(c.x - o.x) < o.w / 2 + 3) {
+        o.hit = true; c.down = T.stum; S.stumbles++; ctx.sfx('bonk');
+        UI.float(S.sx(c.x), S.sy(c.d) - 20, t('md.trip'), '#ffb3d6'); UI.burst(S.sx(c.x), S.sy(c.d), 6, '#8a5a33', 40);
+      }
+    }
+    // the others keep their places beside and behind the mango
+    for (let i = 0; i < NT; i++) {
+      if (i === S.carrier) continue;
+      const m = S.team[i], sl = SLOTS[m.slot];
+      if (m.down > 0) { m.down -= dt; continue; }
+      const tx = clamp(c.x + sl.x, -FW / 2 + 8, FW / 2 - 8), td = c.d + sl.d;
+      m.run = clamp((tx - m.x) / 20, -1, 1);
+      m.x += clamp(tx - m.x, -80 * dt, 80 * dt);
+      m.vd = clamp(fwd + (td - m.d) * 2.2, 0, BASE * 2.2); m.d += m.vd * dt;
+      // teammates hop the logs (only Cappy's runner trips)
+      if (m.hop > 0) m.hop -= dt;
+      else for (const o of S.obs) if (o.on && o.kind === 'log' && Math.abs(m.d - o.d) < 6 && Math.abs(m.x - o.x) < o.w / 2 + 3) { m.hop = 0.35; break; }
+    }
+    if (c.hop > 0) c.hop -= dt;
+  }
+  function updateBall(dt, ctx) {
+    const b = S.ball; if (!b.fly) return;
+    b.t += dt;
+    const r = S.team[b.to], k = clamp(b.t / b.dur, 0, 1);
+    b.x = lerp(b.x0, r.x, k); b.d = lerp(b.d0, r.d, k);
+    if (k >= 1) catchBall(ctx);
+  }
+
+  /* ---------- the play-bot (test.auto): looks ahead, dodges charges, passes when it can't, skirts logs and mud ---------- */
+  const SKILL = { good: { react: 0.12, noise: 0, passUse: 1 }, decent: { react: 0.28, noise: 0.25, passUse: 0.8 }, sloppy: { react: 0.45, noise: 0.5, passUse: 0.5 } };
+  const ADV = { x: 0, y: 0, pass: false };
+  function bot(dt, ctx) {
+    S.botT -= dt; if (S.botT > 0) return;
+    const K = SKILL[S.skill] || SKILL.good; S.botT = K.react;
+    think(ctx, K.noise);
+    S.botX = ADV.x; S.botY = ADV.y;
+    if (ADV.pass && ctx.rng() < K.passUse) pass(ctx);
+  }
+  /** What the bot would do now: ADV = { x, y (the stick), pass }. */
+  function think(ctx, noise) {
+    const c = car(), R = ctx.rng;
+    let want = 0, danger = 0, wantPass = false;
+    for (const p of S.pigs) {
+      if (!p.on || (p.st !== 'charge' && p.st !== 'wind')) continue;
+      if (p.d < c.d - 4) continue;
+      // where the pig's line crosses Cappy's row, and how soon
+      const dd = p.d - c.d, tHit = p.st === 'charge' ? dd / Math.max(1, -p.dd * p.sp + S.fwd) : 0.6 + dd / 200;
+      const px = p.x + p.dx * (p.st === 'charge' ? p.sp : 110) * tHit, gap = c.x - px;
+      if (Math.abs(gap) < 24 && tHit < 1.6) {
+        const dir = Math.abs(gap) < 2 ? (c.x > 0 ? -1 : 1) : Math.sign(gap);
+        const room = dir > 0 ? FW / 2 - 8 - c.x : c.x + FW / 2 - 8;
+        if (room < 18) want = -dir; else want = dir;
+        danger = Math.max(danger, 1 - tHit / 1.6);
+        if (tHit < 0.55 && (Math.abs(gap) < 12 || room < 18)) wantPass = true;
+      }
+    }
+    if (!danger) {
+      // steer round logs and mud just ahead, else drift back to the middle
+      for (const o of S.obs) {
+        if (!o.on || o.d < c.d || o.d > c.d + 70 || (o.kind === 'log' && o.hit)) continue;
+        if (Math.abs(c.x - o.x) < o.w / 2 + 10) { want = c.x >= o.x ? (o.x + o.w / 2 + 12 > FW / 2 - 8 ? -1 : 1) : (o.x - o.w / 2 - 12 < -FW / 2 + 8 ? 1 : -1); break; }
+      }
+      if (!want && Math.abs(c.x) > 30) want = -Math.sign(c.x) * 0.5;
+    }
+    ADV.x = clamp(want + (R() - 0.5) * noise, -1, 1); ADV.y = danger > 0.6 ? 0 : -1; ADV.pass = wantPass;
+    return ADV;
+  }
+
+  /* ---------- update ---------- */
+  function update(dt, ctx) {
+    S.t += dt; S.passT += dt; if (S.flash > 0) S.flash -= dt;
+    if (S.hint > 0 && S.t > 8) S.hint -= dt * 0.25;
+    if (S.over) { S.overT += dt; updatePigs(dt, ctx); return; }
+    const T = tune(ctx), c = car();
+    if (S.auto) bot(dt, ctx);
+    updateTeam(dt, ctx);
+    updateBall(dt, ctx);
+    genAhead(ctx);
+    // the gang: more often further up the field, sometimes two at once; Pecca twice near the end
+    S.nextPig -= dt;
+    const m = metres(c.d);
+    if (m >= 6 && m < 96 && S.nextPig <= 0) {
+      spawnPig(ctx, false);
+      if (m >= T.pairAt && ctx.rng() < T.pair) spawnPig(ctx, false);
+      S.nextPig = lerp(T.i0, T.i1, m / 100) * (0.85 + ctx.rng() * 0.3);
+    }
+    if ((S.boss === 0 && m >= 80) || (S.boss === 1 && m >= 90)) { S.boss++; spawnPig(ctx, true); if (S.boss === 1) { UI.banner(t('md.pecca'), '#1fc8a8', 1.4); ctx.sfx('oink'); } }
+    updatePigs(dt, ctx);
+    if (S.over) return;
+    pickMarked();
+    // the camera follows the mango, easing after a pass
+    const follow = S.ball.fly ? S.ball.d : c.d;
+    S.camD += (follow - S.camD) * Math.min(1, dt * 6);
+    if (c.d >= END) win(ctx);
+  }
+  function win(ctx) {
+    S.over = true; S.won = true; S.overT = 0;
+    const T = ctx.easy ? 70 : 64, secs = S.t;
+    const stars = 1 + (secs <= T ? 1 : 0) + (secs <= T && S.dodges >= 6 && S.stumbles <= 2 ? 1 : 0);
+    S.score += 1000 + 500 + Math.max(0, Math.round((90 - secs) * 8));
+    ctx.sfx('cheer'); UI.confetti(ctx.W / 2, ctx.H * 0.3, 40);
+    ctx.finish({ score: S.score, stars, won: true, frac: stars / 3, stats: { metres: 100, secs: Math.round(secs), dodges: S.dodges, passes: S.passes, trips: S.stumbles } });
+  }
+
+  /* ---------- drawing ---------- */
+  function layout(ctx) {
+    const W = ctx.W, H = ctx.H;
+    S.z = Math.max(1, Math.min(3, Math.floor(Math.min((W - 16) / FW, H / 230))));
+    S.ox = Math.round(W / 2); S.baseY = Math.round(H * (H > W ? 0.72 : 0.76));
+  }
+  S.sx = x => Math.round(S.ox + x * S.z);
+  S.sy = d => Math.round(S.baseY - (d - S.camD) * S.z);
+  const PAT = 96;
+  function buildBg(ctx) {
+    const W = ctx.W, z = S.z, c = JC.canvas2(W, PAT * z), g = c.getContext('2d');
+    const fx0 = S.sx(-FW / 2), fx1 = S.sx(FW / 2);
+    // jungle at both sides
+    g.fillStyle = '#245a32'; g.fillRect(0, 0, W, PAT * z);
+    for (let i = 0; i < 26; i++) { const x = (JC.hash(i, 3, 1) * W) | 0, y = (JC.hash(i, 4, 1) * PAT * z) | 0; D.disc(g, x, y, (6 + JC.hash(i, 5, 1) * 8) * z, i % 3 ? '#2f7a3c' : '#3d8a44'); }
+    for (let i = 0; i < 14; i++) { const x = (JC.hash(i, 6, 2) * W) | 0, y = (JC.hash(i, 7, 2) * PAT * z) | 0; g.fillStyle = '#ff6fb5'; g.fillRect(x, y, z, z); g.fillStyle = '#ffd23f'; g.fillRect(x + 3 * z, y + 2 * z, z, z); }
+    // the trampled mud field
+    g.fillStyle = '#9a6a3e'; g.fillRect(fx0, 0, fx1 - fx0, PAT * z);
+    for (let i = 0; i < 40; i++) { const x = fx0 + JC.hash(i, 8, 3) * (fx1 - fx0), y = JC.hash(i, 9, 3) * PAT * z; g.fillStyle = i % 2 ? '#8a5a33' : '#b07a48'; g.fillRect(x | 0, y | 0, (2 + (i % 3)) * z, z); }
+    for (let i = 0; i < 8; i++) { const y = JC.hash(i, 10, 4) * PAT * z; g.fillStyle = '#7a4a2a'; g.fillRect(fx0 + JC.hash(i, 11, 4) * (fx1 - fx0) | 0, y | 0, 6 * z, z); }
+    // grass edges
+    g.fillStyle = '#3d8a3a'; g.fillRect(fx0 - 3 * z, 0, 3 * z, PAT * z); g.fillRect(fx1, 0, 3 * z, PAT * z);
+    for (let y = 0; y < PAT * z; y += 4 * z) { g.fillStyle = '#56b84a'; g.fillRect(fx0 - z, y, 2 * z, 2 * z); g.fillRect(fx1, y + 2 * z, 2 * z, 2 * z); }
+    S.bg = c; S.bgGen = VIEW.gen; S.bgZ = z; S.bgW = W;
+  }
+  function drawLog(g, o) {
+    const x0 = S.sx(o.x - o.w / 2), x1 = S.sx(o.x + o.w / 2), y = S.sy(o.d), z = S.z, h = 7 * z;
+    if (o.hit) { g.globalAlpha = 0.6; }
+    D.shadow(g, (x0 + x1) / 2, y + h / 2 + z, (x1 - x0) / 2);
+    D.rect(g, x0, y - h / 2, x1 - x0, h, OUT); D.rect(g, x0 + z, y - h / 2 + z, x1 - x0 - 2 * z, h - 2 * z, '#8a5a33');
+    D.rect(g, x0 + z, y - h / 2 + z, x1 - x0 - 2 * z, z, '#b07a44'); for (let x = x0 + 6 * z; x < x1 - 4 * z; x += 9 * z) D.rect(g, x, y - z, 3 * z, z, '#5e3820');
+    D.disc(g, x1 - 2 * z, y, 3 * z, OUT); D.disc(g, x1 - 2 * z, y, 2 * z, '#c99a6a');
+    g.globalAlpha = 1;
+  }
+  function drawMud(g, o) {
+    const x = S.sx(o.x), y = S.sy(o.d), z = S.z;
+    D.oval(g, x, y, o.w / 2 * z + z, o.h / 2 * z + z, '#5e3820'); D.oval(g, x, y, o.w / 2 * z, o.h / 2 * z, '#6e4224');
+    D.oval(g, x - o.w / 6 * z, y - o.h / 6 * z, o.w / 5 * z, o.h / 6 * z, '#87532e');
+    const bub = ((S.t * 2 + o.x) | 0) % 3;
+    D.disc(g, x + (bub - 1) * 6 * z, y + z, z + 1, '#a8703e');
+  }
+  function drawMarks(g, ctx) {
+    // a chalk line every 10 m with its number at the side, the mango basket at 100 m
+    const z = S.z, fx0 = S.sx(-FW / 2), fx1 = S.sx(FW / 2);
+    for (let i = 1; i <= 10; i++) {
+      const y = S.sy(i * 10 * PPM); if (y < -20 || y > ctx.H + 10) continue;
+      if (i === 10) {
+        for (let x = fx0; x < fx1; x += 8 * z) D.rect(g, x, y - z, 4 * z, 2 * z, '#fff8e8');
+        for (let k = 0; k < 4; k++) { const bx = S.sx(-36 + k * 24); D.rect(g, bx - 7 * z, y - 12 * z, 14 * z, 9 * z, OUT); D.rect(g, bx - 6 * z, y - 11 * z, 12 * z, 7 * z, '#a8703e'); D.disc(g, bx - 2 * z, y - 12 * z, 3 * z, '#ff9b2e'); D.disc(g, bx + 3 * z, y - 13 * z, 3 * z, '#ffb030'); }
+      } else for (let x = fx0 + 2 * z; x < fx1; x += 10 * z) D.rect(g, x, y, 5 * z, z, 'rgba(255,248,232,0.55)');
+      text(g, S.marks[i], fx1 + 12 * z > ctx.W - 4 ? fx1 - 14 * z : fx1 + 12 * z, y - 6, MARK);
+    }
+  }
+  function drawMember(g, i, ctx) {
+    const m = S.team[i], z = S.z, x = S.sx(m.x), y = S.sy(m.d), isC = i === S.carrier && !S.ball.fly;
+    const hop = m.hop > 0 ? Math.round(Math.sin((0.35 - m.hop) / 0.35 * Math.PI) * 6 * z) : 0;
+    const walk = ((S.t * 8 + i) | 0) % 2, s = SPRITES[walk && !S.over ? SPRW[m.who] : SPR[m.who]];
+    if (isC) { g.globalAlpha = 0.5; D.oval(g, x, y + z, 10 * z, 4 * z, '#ffd24a'); g.globalAlpha = 1; }
+    if (i === S.marked && !S.over && !S.ball.fly) { g.globalAlpha = 0.45; D.oval(g, x, y + z, 9 * z, 3 * z, '#1fc8a8'); g.globalAlpha = 1; }
+    D.shadow(g, x, y + z, 6 * z);
+    if (m.down > 0 || (isC && S.over && !S.won)) {
+      // tumbled over: sideways, with dizzy stars
+      JC.sprK(g, s, x - 8 * z, y - 10 * z, z, (i % 2) === 1);
+      for (let k = 0; k < 3; k++) { const a = S.t * 6 + k * 2.1; D.rect(g, x + Math.cos(a) * 7 * z, y - 14 * z + Math.sin(a) * 2 * z, z + 1, z + 1, '#ffd24a'); }
+    } else JC.sprK(g, s, x - 8 * z, y - 15 * z - hop, z);
+    if (isC) JC.sprK(g, SPRITES.md_mango, x - 3 * z, y - 19 * z - hop, z);
+    if (i === S.marked && !S.over && !S.ball.fly) {
+      const ay = y - 24 * z - hop - (((S.t * 4) | 0) % 2) * z;
+      D.rect(g, x - 3 * z, ay, 7 * z, 2 * z, OUT); D.rect(g, x - 2 * z, ay + 2 * z, 5 * z, z, '#1fc8a8'); D.rect(g, x - z, ay + 3 * z, 3 * z, z, '#1fc8a8'); D.rect(g, x, ay + 4 * z, z, z, '#1fc8a8');
+      D.rect(g, x - 2 * z, ay + z, 5 * z, z, '#7ff0dc');
+    }
+  }
+  function drawPig(g, p, ctx) {
+    const z = S.z, k = p.boss ? z * 2 : z, x = S.sx(p.x), y = S.sy(p.d);
+    if (y < -40 || y > ctx.H + 40) return;
+    if (p.st === 'wind') {
+      // the telegraph: a dotted red line to where it will charge, dust from its hooves, a "!"
+      const L = 200; for (let s = 10; s < L; s += 9) { const lx = S.sx(p.x + p.dx * s), ly = S.sy(p.d + p.dd * s); g.globalAlpha = 0.55 * (1 - s / L); D.rect(g, lx - z, ly - z, 2 * z, 2 * z, '#ff5a5a'); }
+      g.globalAlpha = 1;
+      if (((p.t * 10) | 0) % 2) UI.particle(x + (Math.random() - 0.5) * 8 * k, y, (Math.random() - 0.5) * 30, -15, '#c99a6a', 0.35, 1, 40);
+      text(g, '!', x, y - (p.boss ? 40 : 26) * z, BANG);
+    }
+    if (p.st === 'charge' && !BRBX.reduced()) for (let s = 1; s <= 3; s++) { g.globalAlpha = 0.25 / s; D.rect(g, x - 5 * k - p.dx * s * 6 * z, y - 6 * k - p.dd * -s * 6 * z, 10 * k, 2 * z, '#fff8e8'); g.globalAlpha = 1; }
+    D.shadow(g, x, y + z, (p.boss ? 9 : 6) * z);
+    const fr = (p.st === 'charge' || p.st === 'off') && ((S.t * 12) | 0) % 2;
+    const sp = p.boss ? SPRITES.pecca : SPRITES[fr ? 'md_pig2' : 'md_pig'];
+    const dizzy = p.st === 'skid' && p.t > 0.4;
+    JC.sprK(g, sp, x - (sp.w * k) / 2, y - sp.h * k + z - (p.st === 'wind' && ((p.t * 8) | 0) % 2 ? z : 0), k, p.dx > 0.3);
+    if (dizzy) for (let s = 0; s < 3; s++) { const a = S.t * 5 + s * 2.1; D.rect(g, x + Math.cos(a) * 6 * k, y - sp.h * k - 2 * z + Math.sin(a) * 2 * z, z + 1, z + 1, '#ffd24a'); }
+  }
+  function sortDraw() {
+    // characters far up the field are drawn first (insertion sort in place: nothing new per frame)
+    let n = 0;
+    for (let i = 0; i < NT; i++) S.drawList[n++] = S.team[i];
+    for (const p of S.pigs) if (p.on) S.drawList[n++] = p;
+    for (let i = 1; i < n; i++) { const a = S.drawList[i]; let j = i - 1; while (j >= 0 && S.drawList[j].d < a.d) { S.drawList[j + 1] = S.drawList[j]; j--; } S.drawList[j + 1] = a; }
+    return n;
+  }
+  function draw(g, ctx) {
+    layout(ctx);
+    if (S.bgGen !== VIEW.gen || S.bgZ !== S.z || S.bgW !== ctx.W || !S.bg) buildBg(ctx);
+    // the field pattern scrolls with the camera; the first tile starts above the top edge (no unpainted strip)
+    const z = S.z, ph = PAT * z, y0 = ((((S.baseY + S.camD * z) % ph) + ph) % ph) - ph;
+    for (let y = y0; y < ctx.H; y += ph) g.drawImage(S.bg, 0, Math.round(y));
+    drawMarks(g, ctx);
+    for (const o of S.obs) if (o.on && o.kind === 'mud') { const y = S.sy(o.d); if (y > -30 && y < ctx.H + 30) drawMud(g, o); }
+    for (const o of S.obs) if (o.on && o.kind === 'log') { const y = S.sy(o.d); if (y > -30 && y < ctx.H + 30) drawLog(g, o); }
+    const n = sortDraw();
+    for (let i = 0; i < n; i++) { const e = S.drawList[i]; if (e.who) drawMember(g, S.team.indexOf(e), ctx); else drawPig(g, e, ctx); }
+    // the mango in the air
+    const b = S.ball;
+    if (b.fly) {
+      const k = clamp(b.t / b.dur, 0, 1), hgt = Math.sin(k * Math.PI) * 18 * z, x = S.sx(b.x), y = S.sy(b.d);
+      D.shadow(g, x, y, 3 * z); JC.sprK(g, SPRITES.md_mango, x - 3 * z, y - 12 * z - hgt, z);
+    }
+    if (S.flash > 0) { g.globalAlpha = S.flash; D.rect(g, 0, 0, ctx.W, ctx.H, '#fff8e8'); g.globalAlpha = 1; }
+    drawHud(g, ctx);
+  }
+  function drawHud(g, ctx) {
+    const l = HUD.left(), w = Math.min(150, ctx.W - l - 80), m = metres(S.ball.fly ? S.team[S.ball.to].d : car().d);
+    D.box(g, l, 4, w, 24, 'rgba(27,19,37,0.82)', PAL.ink);
+    text(g, label('md.metres', m), l + 4, 5, WHITE);
+    UI.bar(g, l + 4, 18, w - 8, 6, m / 100, '#1fc8a8');
+    HUD.score(g, S.score + m * 10);
+    // the PASS button (bottom right)
+    const r = Math.max(22, Math.round(ctx.tap * 0.85)), bx = ctx.W - r - 10, by = ctx.H - r - 12, ok = S.marked >= 0 && !S.ball.fly && !S.over;
+    UI.addHit('mdpass', bx - r, by - r, r * 2, r * 2);
+    D.disc(g, bx, by + 2, r, PAL.ink); D.disc(g, bx, by, r, PAL.ink); D.disc(g, bx, by, r - 2, ok ? '#1fc8a8' : '#5c7a74'); D.disc(g, bx - r / 4, by - r / 4, r / 3, ok ? '#7ff0dc' : '#7a948e');
+    JC.sprK(g, SPRITES.md_mango, bx - 6, by - 14, 2);
+    text(g, t('md.pass'), bx, by + 2, PASS_OPT);
+    if (S.hint > 0.05 && !S.over) {
+      g.globalAlpha = clamp(S.hint * 2, 0, 1);
+      textBlock(g, t(ctx.touch ? 'md.hintTouch' : 'md.hintKeys'), 6, 34, ctx.W - 12, HINT);
+      g.globalAlpha = 1;
+    }
+  }
+
+  AUDIO.addSfx('oink', (tt, b) => { const P = AUDIO.prims; P.tone(b, 'square', 190, tt, 0.12, 0.2, 120); P.tone(b, 'square', 150, tt + 0.1, 0.1, 0.16, 100); P.noise(b, tt, 0.08, 0.12, 'lowpass', 700); });
+  AUDIO.addSfx('toss', (tt, b) => { const P = AUDIO.prims; P.tone(b, 'triangle', 420, tt, 0.18, 0.2, 880); P.noise(b, tt, 0.12, 0.08, 'highpass', 2500); });
+  AUDIO.addSfx('catch', (tt, b) => { const P = AUDIO.prims; P.tone(b, 'square', 660, tt, 0.05, 0.18, 0); P.tone(b, 'square', 990, tt + 0.05, 0.08, 0.16, 0); });
+  // an original bouncy jungle march for Mango Dash
+  AUDIO.songs.dash = { bpm: 132, steps: 32, leadWave: 'square', harmWave: 'triangle', swing: 0.1,
+    lead: 'G4 . B4 D5 . B4 G4 . A4 . C5 E5 . C5 A4 . B4 . D5 G5 . D5 B4 . C5 . A4 F#4 . . . .',
+    harm: 'D4 . . . D4 . . . E4 . . . E4 . . . D4 . . . D4 . . . C4 . . . D4 . . .',
+    bass: 'G2 . D3 . G2 . D3 . A2 . E3 . A2 . E3 . G2 . D3 . G2 . D3 . C3 . G2 . D3 . A2 .',
+    drums: 'k.h.s.h.k.hks.h.k.h.s.h.k.hkst.u' };
+
+  JC.register({
+    id: 'dash',
+    champion: 'pecca',
+    music: 'dash',
+    stick: (x, y, ctx) => x < ctx.W * 0.6 && UI.hitAt(x, y) !== 'mdpass',
+    start(ctx) {
+      S.over = false; S.won = false; S.t = 0; S.score = 0; S.dodges = 0; S.passes = 0; S.stumbles = 0; S.passT = 9; S.marked = -1; S.carrier = 0;
+      S.ball.fly = false; S.nextPig = 2.5; S.genD = 0; S.boss = 0; S.camD = 0; S.mudT = 0; S.overT = 0; S.flash = 0; S.botT = 0; S.botX = 0; S.botY = 0; S.auto = false;
+      S.hint = ctx.firstTime ? 1.6 : 0.6;
+      for (let i = 0; i < NT; i++) { const m = S.team[i]; m.slot = i; m.x = SLOTS[i].x; m.d = SLOTS[i].d + 40; m.down = 0; m.hop = 0; m.run = 0; }
+      for (const p of S.pigs) p.on = false;
+      for (const o of S.obs) o.on = false;
+      S.camD = S.team[0].d;
+      S.marks.length = 0; for (let i = 0; i <= 10; i++) S.marks.push(t('md.mark', { n: i * 10 }));
+      layout(ctx); genAhead(ctx);
+    },
+    update,
+    draw,
+    onInput(e, ctx) {
+      if (e.type === 'press' && e.key === 'a') pass(ctx);
+      else if (e.type === 'down' && UI.hitAt(e.x, e.y) === 'mdpass') pass(ctx);
+    },
+    outro(dt, ctx) {
+      S.t += dt; S.overT += dt;
+      updatePigs(dt, ctx);
+      if (S.won) for (const m of S.team) if (m.hop <= 0) m.hop = 0.35; else m.hop -= dt;
+    },
+    testState() {
+      const c = car();
+      let pigs = 0, charging = 0, logs = 0, muds = 0; for (const p of S.pigs) if (p.on) { pigs++; if (p.st === 'charge') charging++; }
+      for (const o of S.obs) if (o.on) { if (o.kind === 'log') logs++; else muds++; }
+      return { metres: metres(c.d), x: Math.round(c.x), carrier: WHO[S.carrier], marked: S.marked >= 0 ? WHO[S.marked] : '', flying: S.ball.fly, over: S.over, won: S.won,
+        dodges: S.dodges, passes: S.passes, trips: S.stumbles, pigs, charging, boss: S.boss, logs, muds, t: Math.round(S.t * 10) / 10, score: S.score, auto: S.auto, skill: S.skill };
+    },
+    test: {
+      auto(ctx, on, skill) { S.auto = !!on; S.skill = skill || 'good'; return S.auto; },
+      /** The bot's advice without acting on it (a test turns it into real joystick drags and PASS taps). */
+      advice(ctx) { const a = think(ctx, 0); return { x: a.x, y: a.y, pass: a.pass, marked: S.marked, phase: S.over ? 'over' : 'play' }; },
+      /** Where the PASS button is (virtual pixels). */
+      passBtn(ctx) { const r = Math.max(22, Math.round(ctx.tap * 0.85)); return { x: ctx.W - r - 10, y: ctx.H - r - 12, r }; },
+      /** Teleport the run near the end (tests of the finish and Pecca's charge). */
+      jump(ctx, m) { const dd = clamp(m, 0, 99) * PPM - car().d; for (const tm of S.team) tm.d += dd; S.camD += dd; S.genD = Math.max(S.genD, car().d); for (const p of S.pigs) p.on = false; return metres(car().d); },
+    },
+    cheat(won) { return won ? { score: 2600, stars: 2, won: true, frac: 0.67 } : { score: 420, stars: 0, won: false, frac: 0.12 }; },
+  });
+})();
 
 /* ---- sport-frog.js ---- */
 // ======================================================================================================

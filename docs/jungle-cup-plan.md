@@ -1,7 +1,7 @@
 # Jungle Cup: plan, architecture and the sport module interface
 
 Jungle Cup is an official seed game (`seed-games/jungle-cup.html` + `jungle-cup.json`): Cappy the capybara rafts to
-Delta Isle, beats seven rainforest champions at seven sports, lights the Cup Totem with their Feathers and rides the
+Delta Isle, beats eight rainforest champions at eight sports, lights the Cup Totem with their Feathers and rides the
 vine lift up the Great Kapok to win the Jungle Cup. It is an original design: its own name, cast, island, story, UI and
 structure. Later stages must keep it that way (no names, characters, places, layouts or logos from other games).
 
@@ -50,14 +50,14 @@ settings, controls, style, finale, credits), `14-main.js` (scenes, loop), `15-te
 
 ## Sport module interface
 
-A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf`, wrapped in its own
+A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf dash`, wrapped in its own
 `(function () { ... })();` and ending with `JC.register({...})`. Paddle Smash (`sport-paddle.js`) is the reference.
 
 ```js
 (function () {
   const S = { /* all state here, allocated once */ };
   JC.register({
-    id: 'vine',                 // required, one of the seven ids
+    id: 'vine',                 // required, one of the eight ids
     champion: 'sloane',         // the champion's speaker id (portrait + name.<id>); the arch already knows it
     music: 'vine',              // a song id in JC.audio.songs (add your own: JC.audio.songs.vine = {...}); default 'paddle'
     start(ctx) {},              // a new round: reset S. Called before the 3-2-1 (draw() runs during the countdown)
@@ -180,3 +180,17 @@ skips too): `JC.storyLines('intro')` (river, isle, dock: each launch, from Play 
 `JC.storyLines('finale')` (lift, stage, cup), then Mango on the pixel Canopy Stage, the Cup raised, Cappy's thanks,
 the credits and free play. Bonus bandanas: gold for the Cup (worn at once), berry for the first three-star round.
 Timed beats (Cappy's thanks, Zuzu's lift news) run on game time, never `setTimeout`.
+
+## Mango Dash (the eighth sport)
+
+Pecca the peccary, captain of the Grunt Gang, guards the eighth Feather in the muddy clearing behind her arch
+(`ARCHES.dash` in `core/09-world.js`; the clearing, its props, Pecca's spot and the `clearing` test place are all
+placed relative to that entry, so moving the arch moves them). `sport-dash.js`: carry the mango 100 m up the field;
+Cappy runs by himself, the joystick / arrows steer (up = sprint, down = slow); Coco, Pip and Tapo run in formation and
+PASS (button / Space / A) throws the mango to the teammate with the arrow (the safest one). Pigs amble in, paw the mud
+while a dotted red line shows where they will charge, then charge whoever holds the mango; caught ends the run. Logs
+trip, mud slows; Pecca charges twice after 80 m. Stars: a win; under 64 s (70 s Easier); and 6+ dodges with at most
+2 trips. Everything that counted seven now counts `NSPORTS` (`JC.sportOrder.length`): the totem's sockets, the HUD
+Feather strip, the map rows, the lift, the finale lineup and the story panels. Saves from before Mango Dash load as
+they are (`sanitize` keeps any sport in `sportOrder`): a won Cup stays won, the lift waits for the eighth Feather,
+and Mango tells the news once (`flags.dashNews`; a new game hears about eight champions in the intro).

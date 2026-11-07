@@ -23,6 +23,7 @@ JC.hash = hash;
 const ARCHES = {
   paddle: { x: 26, y: 31, champ: 'jada' }, leaf: { x: 16, y: 22, champ: 'kiki' }, seed: { x: 12, y: 46, champ: 'tico' },
   kick: { x: 20, y: 50, champ: 'mico' }, frog: { x: 46, y: 51, champ: 'rana' }, rapids: { x: 61, y: 38, champ: 'otters' }, vine: { x: 46, y: 21, champ: 'sloane' },
+  dash: { x: 59, y: 31, champ: 'pecca' },
 };
 function paint(x0, y0, x1, y1, k) { for (let y = Math.max(0, y0); y <= Math.min(MH - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(MW - 1, x1); x++) WORLD.tiles[idx(x, y)] = k; }
 function paintIf(x, y, k, onlyLand) { if (!inMap(x, y)) return; const c = WORLD.tiles[idx(x, y)]; if (onlyLand && isWater(c)) return; WORLD.tiles[idx(x, y)] = k; }
@@ -78,6 +79,10 @@ function buildLayout() {
   ellipse(46, 56, 4.2, 3.2, T_SAND, true); ellipse(46, 56.3, 3.2, 2.3, T_WATER); paintIf(45, 56, T_LILY); paintIf(47, 57, T_LILY); // the lily pond (frog)
   for (let y = 7; y <= 18; y++) for (let x = 40; x <= 50; x++) if (tileAt(x, y) === T_GRASS) WORLD.tiles[idx(x, y)] = T_DARK; // the giant grove floor
   for (let y = 26; y <= 30; y++) for (let x = 21; x <= 31; x++) if (tileAt(x, y) === T_GRASS) WORLD.tiles[idx(x, y)] = T_DARK;
+  // the muddy clearing (dash) behind its arch: trampled dirt with mud puddles, a path down to the road
+  const da = ARCHES.dash;
+  ellipse(da.x + 0.2, da.y - 5.5, 3.4, 4.6, T_PATH, true); road([[da.x, da.y + 3], [da.x, da.y - 1]], T_PATH);
+  for (const [dx, dy] of [[-2, -8], [2, -4], [1, -9]]) paintIf(da.x + dx, da.y + dy, T_MUD, true);
   // flower meadows
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) if (tileAt(x, y) === T_GRASS && hash(x, y, 3) < 0.07 + 0.08 * (Math.sin(x / 4) * Math.cos(y / 5) > 0.5 ? 1 : 0)) WORLD.tiles[idx(x, y)] = T_FLOWER;
 }
@@ -111,6 +116,7 @@ function buildObjects() {
   for (const [x, y] of [[43, 53], [44, 52], [48, 52], [49, 53]]) addObj({ k: 'log', x, y });
   addObj({ k: 'drums', x: 46, y: 53 }); keep(41, 49, 51, 60);
   addObj({ k: 'sled', x: 18, y: 21 }); keep(13, 20, 19, 25);
+  { const a = ARCHES.dash; for (const [dx, dy] of [[-2, -5], [2, -7]]) addObj({ k: 'log', x: a.x + dx, y: a.y + dy }); addObj({ k: 'mangoes', x: a.x, y: a.y - 10 }); keep(a.x - 4, a.y - 12, a.x + 4, a.y + 2); }
   for (const [x, y] of [[42, 12], [48, 10], [44, 17], [49, 16]]) { addObj({ k: 'giant', x, y }); keep(x - 1, y - 3, x + 1, y + 1); }
   keep(43, 19, 49, 23);
   // keep the roads clear
@@ -297,9 +303,9 @@ function drawTotemBase(g, px, py) {
 function drawTotemTop(gt, px, py) {
   const cx = px + 8, base = py + 15;
   rect(gt, cx - 7, base - 58, 14, 25, OUT); rect(gt, cx - 6, base - 57, 12, 24, '#a8703e'); rect(gt, cx - 6, base - 57, 3, 24, '#c48a4c');
-  // a fan of seven carved leaves (each Feather socket sits on one) and a carved sun on top of the pole
+  // a fan of carved leaves, one per champion (each Feather socket sits on one), and a carved sun on top of the pole
   const so = totemSockets();
-  for (let pass = 0; pass < 2; pass++) for (let i = 0; i < 7; i++) {
+  for (let pass = 0; pass < 2; pass++) for (let i = 0; i < NSPORTS; i++) {
     const s = so[i], x0 = cx, y0 = base - 46, n = 10;
     for (let k = 0; k <= n; k++) {
       const x = Math.round(x0 + (s.x - x0) * k / n), y = Math.round(y0 + (s.y + 2 - y0) * k / n);
@@ -309,11 +315,14 @@ function drawTotemTop(gt, px, py) {
   }
   disc(gt, cx, base - 48, 6, OUT); disc(gt, cx, base - 48, 5, '#ffc544'); disc(gt, cx, base - 48, 3, '#d39a22'); rect(gt, cx - 1, base - 49, 2, 2, '#fff3a8');
 }
-/** Where the totem's seven sockets are (pixels, in map space). */
+/** Where the totem's sockets are (pixels, in map space): a fan, one per sport, the middle ones highest. */
+const SOCKETS = [];
 function totemSockets() {
-  const px = WORLD.totem.x * TS, py = WORLD.totem.y * TS, cx = px + 8, base = py + 15, out = [];
-  for (let i = 0; i < 7; i++) { const a = (i - 3) / 3; out.push({ x: Math.round(cx + a * 25), y: Math.round(base - 58 + Math.abs(a) * 8 + (i === 3 ? -4 : 0)) }); }
-  return out;
+  const px = WORLD.totem.x * TS, py = WORLD.totem.y * TS, cx = px + 8, base = py + 15, n = NSPORTS, mid = (n - 1) / 2;
+  if (SOCKETS.length === n && SOCKETS.px === px) return SOCKETS;
+  SOCKETS.length = 0; SOCKETS.px = px;
+  for (let i = 0; i < n; i++) { const a = (i - mid) / mid; SOCKETS.push({ x: Math.round(cx + a * 28), y: Math.round(base - 60 + a * a * 10 + Math.abs(a) * 2) }); }
+  return SOCKETS;
 }
 WORLD.sockets = totemSockets;
 const SPORT_ICONS = {
@@ -324,10 +333,11 @@ const SPORT_ICONS = {
   frog: ['.ooo.', 'owwwo', 'obbbo', 'obbbo', '.ooo.'],
   kick: ['.ooo.', 'owkwo', 'okwko', 'owkwo', '.ooo.'],
   leaf: ['...oo', '..ogo', '.ogoo', 'ogoo.', 'oo...'],
+  dash: ['...g.', '.oog.', 'oyyyo', 'oyywo', 'oyyyo', '.ooo.'],
 };
 function iconSprite(id) {
   const k = 'icon_' + id; if (SPRITES[k]) return SPRITES[k];
-  return sprite(k, SPORT_ICONS[id], { o: OUT, r: SPORT_COLOURS[id], g: '#6ad34a', w: '#fff8e8', b: '#8a5a33', k: OUT });
+  return sprite(k, SPORT_ICONS[id], { o: OUT, r: SPORT_COLOURS[id], g: '#6ad34a', w: '#fff8e8', b: '#8a5a33', k: OUT, y: '#ff9b2e' });
 }
 JC.iconSprite = iconSprite;
 function drawArch(g, gt, px, py, o) {
@@ -378,6 +388,8 @@ function drawMisc(g, gt, o, px, py) {
       rect(g, px + 14, py + 2, 2, 8, '#7a4a26'); rect(g, px + 12, py + 1, 6, 3, OUT); break;
     }
     case 'log': shadowOval(g, px + 8, py + 13, 8, 2); rect(g, px + 1, py + 6, 14, 8, OUT); rect(g, px + 2, py + 7, 12, 6, '#8a5a33'); rect(g, px + 2, py + 7, 12, 1, '#b07a44'); disc(g, px + 3, py + 10, 2, '#c99a6a'); break;
+    case 'mangoes': shadowOval(g, px + 8, py + 14, 8, 2); rect(g, px + 1, py + 6, 14, 9, OUT); rect(g, px + 2, py + 7, 12, 7, '#a8703e'); for (let i = 0; i < 3; i++) rect(g, px + 3, py + 8 + i * 2, 10, 1, '#7a4a26');
+      for (const [dx, dy] of [[4, 4], [8, 3], [12, 4], [6, 1], [10, 1]]) { disc(g, px + dx, py + dy + 1, 3, OUT); disc(g, px + dx, py + dy + 1, 2, '#ff9b2e'); rect(g, px + dx - 1, py + dy, 1, 1, '#ffd24a'); } rect(g, px + 8, py - 2, 2, 2, '#3d9a2e'); break;
     case 'drums': for (const [dx, c, r] of [[-14, '#2f8a3f', 6], [0, '#6ad34a', 7], [14, '#a8e870', 5]]) { const cx = px + 8 + dx; rect(g, cx - r, py + 2, r * 2, 12, OUT); rect(g, cx - r + 1, py + 3, r * 2 - 2, 10, '#8a5a33'); oval(g, cx, py + 3, r, 2, OUT); oval(g, cx, py + 3, r - 1, 1, c); for (let i = 0; i < 3; i++) rect(g, cx - r + 2 + i * 4, py + 6, 1, 7, '#5e3820'); } break;
     case 'sled': rect(g, px + 1, py + 6, 15, 7, OUT); rect(g, px + 2, py + 7, 13, 5, '#56b84a'); rect(g, px + 3, py + 7, 11, 1, '#8ee070'); rect(g, px + 8, py + 6, 1, 7, '#2a7a30'); break;
     case 'giant': {

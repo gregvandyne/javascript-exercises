@@ -55,7 +55,7 @@ const PAL = {
 };
 JC.pal = PAL;
 // Each sport's champion colour (its Feather, its arch flowers, its bars).
-const SPORT_COLOURS = { paddle: '#ff9b2e', vine: '#6ad34a', seed: '#ff5a5a', rapids: '#3fb7ff', frog: '#b06cff', kick: '#ffd23f', leaf: '#ff6fb5' };
+const SPORT_COLOURS = { paddle: '#ff9b2e', vine: '#6ad34a', seed: '#ff5a5a', rapids: '#3fb7ff', frog: '#b06cff', kick: '#ffd23f', leaf: '#ff6fb5', dash: '#1fc8a8' };
 JC.sportColours = SPORT_COLOURS;
 
 /* ---------- colour helpers ---------- */

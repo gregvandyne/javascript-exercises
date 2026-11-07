@@ -197,8 +197,8 @@ function panelFrame(g, titleKey) {
   return { x: c.x, y: c.y + r * 2 + 2, w: c.w, h: c.h - r * 2 - 2 };
 }
 function drawFeatherRow(g, x, y) {
-  for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
-  text(g, label('map.feathers', SAVE.featherCount()), x + 82, y, ROWTEXT2);
+  for (let i = 0; i < NSPORTS; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
+  text(g, label('map.feathers', SAVE.featherCount()), x + NSPORTS * 11 + 5, y, ROWTEXT2);
 }
 const ROWTEXT2 = { col: PAL.ink, edge: null };
 const BESTTEXT = { col: '#5e3820', edge: null, align: 'right' };
@@ -209,7 +209,7 @@ function drawMapTab(g) {
   const land = area.w > area.h * 1.15;
   const rh = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap), GAP = 3;
   const listH = area.h - bh - 6;                  // room above the buttons
-  const rowsH = cols => Math.ceil(7 / cols) * (rh + GAP);
+  const rowsH = cols => Math.ceil(NSPORTS / cols) * (rh + GAP);
   // pick the first layout that fits: [minimap?, columns]
   let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0;
   const tries = land ? [[1, 1], [1, 2], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
@@ -241,8 +241,8 @@ function drawMapTab(g) {
   const lx = withMap && land ? area.x + area.w - listW : area.x;
   let ly = withMap && !land ? my + mh + 4 : area.y;
   drawFeatherRow(g, lx, ly); ly += 15;
-  const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(7 / cols);
-  for (let i = 0; i < 7; i++) {
+  const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(NSPORTS / cols);
+  for (let i = 0; i < NSPORTS; i++) {
     const id = JC.sportOrder[i], col = (i / perCol) | 0, row = i % perCol;
     const x = lx + col * (cw + 4), y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
     UI.addHit('go:' + id, x, y, w, rh);
@@ -320,6 +320,8 @@ MAP.draw = function (g) {
 
 /* ---------- the Canopy Stage finale and the credits ---------- */
 const FIN = { name: 'finale', t: 0, step: 0, raised: false };
+// every champion, in sport order (one per Feather)
+const FIN_CHAMPS = JC.sportOrder.map(id => ARCHES[id].champ);
 FIN.enter = function () {
   FIN.t = 0; FIN.raised = false; FIN.thanked = false; JC.audioWant = 'finale';
   // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
@@ -345,13 +347,12 @@ FIN.draw = function (g) {
   rect(g, 0, sy, W, H - sy, '#5e3820'); for (let x = 0; x < W; x += 10) rect(g, x, sy, 9, 3, '#8a5a33'); rect(g, 0, sy, W, 1, OUT);
   for (let y = sy + 6; y < H; y += 6) rect(g, 0, y, W, 1, '#4a2c18');
   // champions in a row (in their colours)
-  const champs = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
-  // three on Cappy's left, four on his right (the Otter Twins stand together in one slot)
-  const gap = Math.max(18, Math.min(28, (W / 2 - 34) / 3));
-  champs.forEach((c, i) => {
-    const s = SPRITES[CHAMP_SPR[c]], x = Math.round(i < 3 ? W / 2 - 8 - 24 - (2 - i) * gap : W / 2 - 8 + 24 + (i - 3) * gap), y = sy - 16 + ((((FIN.t * 2) | 0) + i) % 2);
+  // four on Cappy's left, four on his right (the Otter Twins stand together in one slot)
+  const half = FIN_CHAMPS.length / 2, gap = Math.max(16, Math.min(28, (W / 2 - 34) / half));
+  FIN_CHAMPS.forEach((c, i) => {
+    const s = SPRITES[CHAMP_SPR[c]], x = Math.round(i < half ? W / 2 - 8 - 24 - (half - 1 - i) * gap : W / 2 - 8 + 24 + (i - half) * gap), y = sy - 16 + ((((FIN.t * 2) | 0) + i) % 2);
     shadow(g, x + 8, sy, 6);
-    if (c === 'otters') { spr(g, s, x - 4, y + 1, true); spr(g, s, x + 4, y, true); } else spr(g, s, x, y, i > 3);
+    if (c === 'otters') { spr(g, s, x - 4, y + 1, true); spr(g, s, x + 4, y, true); } else spr(g, s, x, y, i >= half);
     spr(g, featherSprite(SPORT_COLOURS[JC.sportOrder[i]]), x + 12, y - 6);
   });
   // Cappy and the Jungle Cup

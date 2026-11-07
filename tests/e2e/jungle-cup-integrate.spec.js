@@ -1,5 +1,5 @@
 // Jungle Cup, the whole game put together: the painted raft-arrival panels at each launch (Skip, and Continue shows
-// them once per launch), a full run of all seven Feathers (the totem, the map, the vine lift), the finale (painted
+// them once per launch), a full run of all eight Feathers (the totem, the map, the vine lift), the finale (painted
 // panels, the Cup raised on the Canopy Stage, credits, free play), the bonus bandanas, every site language, and the
 // score sent to the platform. With JC_INTEGRATE_SHOTS=<dir> it also takes the pictures of every screen at 390 x 844
 // and 1366 x 768 in the light and dark site themes, each with the layout check.
@@ -12,7 +12,7 @@ import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const J = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest.jc[fn](...a), [fn, a]);
 const state = f => J(f, 'state');
-const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'];
+const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'];
 async function open(page, size = { width: 390, height: 844 }) {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -25,7 +25,7 @@ async function open(page, size = { width: 390, height: 844 }) {
   return { f, errors };
 }
 
-test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the finale, credits and free play', async ({ page }) => {
+test('Jungle Cup: raft-arrival panels (Skip), eight Feathers, the vine lift, the finale, credits and free play', async ({ page }) => {
   test.setTimeout(180_000);
   const { f, errors } = await open(page);
   await J(f, 'tap', 'play');
@@ -42,16 +42,16 @@ test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the
   s = await state(f);
   expect([s.panel, s.text && s.text.key]).toEqual(['', 'd.coco.hi']);
   await J(f, 'skipText');
-  // win all seven: each Feather lights a totem socket, the map shows it, the lift opens
+  // win all eight: each Feather lights a totem socket, the map shows it, the lift opens
   for (const id of SPORTS) {
     s = await J(f, 'win', id);
     expect(s.sport.newFeather).toBe(true);
   }
   s = await state(f);
-  expect(s.feathers).toBe(7);
+  expect(s.feathers).toBe(SPORTS.length);
   for (const id of SPORTS) expect(s.stars[id]).toBeGreaterThanOrEqual(1);
   await J(f, 'go', 'map'); await J(f, 'step', 100);
-  expect((await J(f, 'buttons')).filter(b => b.id.startsWith('go:')).length).toBe(7);
+  expect((await J(f, 'buttons')).filter(b => b.id.startsWith('go:')).length).toBe(SPORTS.length);
   await J(f, 'go', 'lift'); await J(f, 'step', 400);
   await J(f, 'talk');
   expect((await state(f)).text.key).toBe('lift.open');
@@ -66,7 +66,7 @@ test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the
   await J(f, 'next'); await J(f, 'step', 3000);
   s = await state(f);
   expect([s.cup, s.cos.bandana, s.cos.own.includes('gold'), s.text.key]).toEqual([true, 'gold', true, 'end.5']);
-  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1)).toEqual({ won: true, score: s.stars && Object.values(s.stars).reduce((a, b) => a + b, 0) * 100 + 7 * 250 + 500 });
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1)).toEqual({ won: true, score: s.stars && Object.values(s.stars).reduce((a, b) => a + b, 0) * 100 + SPORTS.length * 250 + 500 });
   await J(f, 'next'); await J(f, 'step', 800);
   expect((await state(f)).screen).toBe('credits');
   await J(f, 'step', 2000);

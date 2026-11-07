@@ -17,8 +17,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const SRC = path.join(ROOT, 'tools/jungle-cup/src');
 const html = fs.readFileSync(OUT, 'utf8');
 const LOCALES = ['en', 'en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl'];
-const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'];
-const CHAMPS = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
+const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'];
+const CHAMPS = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki', 'pecca'];
 const i18n = () => {
   const a = html.indexOf('// ==== I18N START ===='), b = html.indexOf('// ==== I18N END ====');
   return vm.runInNewContext(html.slice(a, b) + '\n;I18N', Object.create(null), { timeout: 2000 });
