@@ -7,7 +7,10 @@
 //   lines   pairs of lines side by side: parallel (with matching arrow marks), perpendicular (with the square
 //           corner marked), or just crossing (6.3);
 //   chart   a bar chart with a numbered scale and gridlines, each bar named under it and counted on top (7.1);
-//   table   a small table, a timetable, with one row picked out (5.2).
+//   table   a small table, a timetable, with one row picked out (5.2);
+//   letters big letters in panels, each with its fold line dashed down the middle where it has one (6.3);
+//   spinner a real spinner: a circle cut into equal parts, some shaded red, with its pointer (7.3);
+//   build   digit cards apart, then joined into the number they build (1.1).
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
 // Every text size is 3.4 units or more: about 12 px on a 390 px phone.
@@ -160,8 +163,66 @@ function tableSvg(v) {
 }
 const tableExtent = v => { const g = tableGeo(v); return [v.label ? tTop(6.5, capFs(v.label)) : g.top, g.bottom]; };
 
-const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg };
-const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent };
+// ---------------------------------------------------------------------------------------------- letters
+/** Panels of big letters across 6-94 (band y 8-38), each named under it at y 45; `fold` draws its line of
+ *  symmetry dashed straight down the middle. */
+function lettersSvg(v) {
+  const n = v.items.length, cw = 88 / n;
+  return v.items.map((it, i) => {
+    const cx = 6 + cw * (i + 0.5);
+    let s = `<rect x="${r2(6 + cw * i + 1.5)}" y="8" width="${r2(cw - 3)}" height="30" rx="1.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.5"/>`;
+    s += tx(cx, 32.5, it.ch, 24, 'middle', 800, it.fold ? INK : '#8A8577');
+    if (it.fold) s += `<line x1="${r2(cx)}" y1="10" x2="${r2(cx)}" y2="36" stroke="${LEAF}" stroke-width="0.8" stroke-dasharray="2 1.4"/>`;
+    return s + tx(cx, 45, it.name, Math.min(3.8, (cw - 4) / (String(it.name).length * 0.56)), 'middle', 800, it.fold ? LEAF : INK);
+  }).join('');
+}
+const lettersExtent = () => [8, tBot(45, 3.8)];
+
+// ---------------------------------------------------------------------------------------------- spinner
+const SPIN = { cx: 50, cy: 25, r: 16.5 };
+/** One part of the spinner (part k of n, clockwise from the top) as an SVG path. */
+const sector = (k, n) => {
+  const a0 = -Math.PI / 2 + k * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n, { cx, cy, r } = SPIN;
+  return `M${cx} ${cy} L${r2(cx + r * Math.cos(a0))} ${r2(cy + r * Math.sin(a0))} A${r} ${r} 0 ${n === 1 ? 1 : 0} 1 ${r2(cx + r * Math.cos(a1))} ${r2(cy + r * Math.sin(a1))} Z`;
+};
+function spinnerSvg(v) {
+  const { cx, cy, r } = SPIN;
+  let s = '';
+  for (let k = 0; k < v.parts; k++) s += `<path d="${sector(k, v.parts)}" fill="${k < v.shaded ? '#E9465C' : '#FFFFFF'}" stroke="${INK}" stroke-width="0.6" stroke-linejoin="round"/>`;
+  // the pointer, resting in a white part (a picture of the spinner, not of a spin's result)
+  const ap = -Math.PI / 2 + (v.shaded + 0.5 + Math.floor((v.parts - v.shaded) / 2)) * 2 * Math.PI / v.parts;
+  s += `<line x1="${cx}" y1="${cy}" x2="${r2(cx + r * 0.72 * Math.cos(ap))}" y2="${r2(cy + r * 0.72 * Math.sin(ap))}" stroke="${INK}" stroke-width="1.2" stroke-linecap="round"/>`
+    + head(cx + r * 0.78 * Math.cos(ap), cy + r * 0.78 * Math.sin(ap), Math.cos(ap), Math.sin(ap), INK, 2.4)
+    + `<circle cx="${cx}" cy="${cy}" r="1.6" fill="#FFD23F" stroke="${INK}" stroke-width="0.6"/>`;
+  if (v.left) s += tx(cx - r - 4, cy + 1.3, v.left, 3.8, 'end', 800);
+  if (v.right) s += tx(cx + r + 4, cy + 1.3, v.right, 3.8, 'start', 800, '#C2431F');
+  return s;
+}
+const spinnerExtent = () => [SPIN.cy - SPIN.r, SPIN.cy + SPIN.r];
+
+// ---------------------------------------------------------------------------------------------- build
+/** Digit cards apart on top (y 8-22), an arrow, then the same digits joined into one number (y 32-48). */
+function buildSvg(v) {
+  const n = v.digits.length, w = 12, gap = 7, top0 = 50 - (n * w + (n - 1) * gap) / 2, bot0 = 50 - (n * w) / 2;
+  let s = '';
+  v.digits.forEach((d, i) => {
+    const x = top0 + i * (w + gap);
+    s += `<rect x="${r2(x)}" y="8" width="${w}" height="14" rx="1.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.7"/>` + tx(x + w / 2, 18.6, d, 9);
+  });
+  s += `<line x1="50" y1="24.5" x2="50" y2="29" stroke="${LEAF}" stroke-width="1"/>` + head(50, 31, 0, 1, LEAF, 2);
+  s += `<rect x="${r2(bot0)}" y="33" width="${n * w}" height="14" rx="1.8" fill="${TONES[0]}" stroke="${INK}" stroke-width="0.8"/>`;
+  v.digits.forEach((d, i) => {
+    const x = bot0 + i * w;
+    if (i) s += `<line x1="${r2(x)}" y1="33" x2="${r2(x)}" y2="47" stroke="${INK}" stroke-width="0.3" stroke-opacity="0.35"/>`;
+    s += tx(x + w / 2, 43.6, d, 9);
+  });
+  if (v.number) s += tx(bot0 + n * w + 3, 42.2, '= ' + v.number, 4.2, 'start', 800, LEAF);
+  return s;
+}
+const buildExtent = () => [8, 47];
+
+const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg };
+const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent };
 /** The SVG body of one of these diagrams (a string of SVG elements in the 100 x 56.25 space). */
 export const diagramSvg = v => SVG[v.type](v);
 /** Where it sits top to bottom: [a, b] in the 100 x 56.25 space. */
