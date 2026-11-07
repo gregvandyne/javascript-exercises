@@ -1,0 +1,30 @@
+{
+  "title": "Pip and the Lost Stars",
+  "scenes": [
+    {
+      "set": "lighthouse", "time": "night", "props": ["boat"], "camera": "slow_push",
+      "characters": [{ "kind": "mouse", "action": "walk", "place": "left" }],
+      "lines": [{ "say": "By the sea stood a striped lighthouse, where a little mouse called Pip helped wise old Owl.", "show": "By the sea stood a striped lighthouse, where a little mouse called Pip helped wise old Owl." }]
+    },
+    {
+      "set": "village", "time": "night", "props": [], "camera": "tilt_up",
+      "characters": [{ "kind": "mouse", "action": "look_up", "place": "left" }, { "kind": "owl", "action": "look_up", "place": "right" }],
+      "lines": [{ "say": "One night, Owl gasped. \"Three little stars have fallen from the sky!\"", "show": "One night, Owl gasped. \"Three little stars have fallen from the sky!\"" }]
+    },
+    {
+      "set": "forest", "time": "night", "props": ["fireflies"], "camera": "drift",
+      "characters": [{ "kind": "mouse", "action": "hold_star", "place": "center" }],
+      "lines": [{ "say": "Pip tiptoed into the sleepy forest. Under a fern, a star was twinkling.", "show": "Pip tiptoed into the sleepy forest. Under a fern, a star was twinkling." }]
+    },
+    {
+      "set": "sky", "time": "night", "props": [], "camera": "pan_right",
+      "characters": [{ "kind": "mouse", "action": "hold_star", "place": "left" }, { "kind": "fox", "action": "wave", "place": "right" }],
+      "lines": [{ "say": "Fox found the other two, and together they hung every star back on its silver string.", "show": "Fox found the other two, and together they hung every star back on its silver string." }]
+    },
+    {
+      "set": "lighthouse", "time": "night", "props": [], "camera": "pull_back",
+      "characters": [{ "kind": "mouse", "action": "sleep", "place": "left" }, { "kind": "owl", "action": "idle", "place": "center" }],
+      "lines": [{ "say": "The sky sparkled again. \"Thank you, Pip,\" whispered Owl. Goodnight, little mouse.", "show": "\"Thank you, Pip,\" whispered Owl. Goodnight, little mouse." }]
+    }
+  ]
+}

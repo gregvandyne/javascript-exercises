@@ -1,0 +1,33 @@
+/* Story Builder (/stories): the idea form, the progress page, the player, the story cards. Night-sky blues to match
+   the felt-and-paper videos; colours come from the site tokens where they exist, so light and dark themes both work. */
+.sb-hero { text-align: center; padding: 1.2rem 0 .6rem; }
+.sb-hero h1 { margin-bottom: .3rem; }
+.sb-hero .row { justify-content: center; margin-top: 1rem; }
+.sb-wrap { max-width: 900px; margin: 0 auto; }
+.sb-form textarea.input { min-height: 120px; font-size: 1.1rem; }
+.sb-opts { align-items: flex-start; }
+.sb-opts .field { flex: 1 1 200px; }
+
+.sb-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.sb-card { display: flex; flex-direction: column; border-radius: var(--r); overflow: hidden; background: var(--card-2); box-shadow: inset 0 0 0 2px var(--line); color: var(--text); text-decoration: none; }
+.sb-card:hover { text-decoration: none; box-shadow: inset 0 0 0 2px var(--accent-line, var(--accent)); }
+.sb-thumb { display: block; aspect-ratio: 16 / 9; background: linear-gradient(#0b1238, #4166c4); }
+.sb-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sb-thumb-wait { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem; }
+.sb-card-body { display: flex; flex-direction: column; gap: 4px; padding: .7rem .9rem .9rem; }
+
+.sb-player { border-radius: var(--r); overflow: hidden; background: #0b1238; box-shadow: var(--shadow); margin: 1rem 0; }
+.sb-player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #0b1238; }
+.sb-words p { margin: .4rem 0; font-size: 1.1rem; }
+.sb-words summary { cursor: pointer; font-weight: 700; }
+
+.sb-progress { text-align: center; margin: 1rem 0; background: linear-gradient(#0b1238, #2a4590); color: #fff6dc; }
+.sb-progress h2 { color: #fff6dc; }
+.sb-progress .muted { color: #cfd8f5; }
+.sb-big { font-size: 3.4rem; margin: .2rem 0; line-height: 1; }
+.sb-moon { animation: sb-bob 3.6s ease-in-out infinite; }
+@keyframes sb-bob { 50% { transform: translateY(-8px) rotate(-6deg); } }
+.sb-bar { height: 16px; border-radius: 999px; background: rgba(255, 255, 255, .18); overflow: hidden; margin: 1rem auto; max-width: 520px; }
+.sb-bar span { display: block; height: 100%; background: linear-gradient(90deg, #ffd75e, #ffb347); border-radius: 999px; transition: width .8s ease; }
+.sb-share .row { margin-top: .4rem; }
+@media (prefers-reduced-motion: reduce) { .sb-moon { animation: none; } .sb-bar span { transition: none; } }

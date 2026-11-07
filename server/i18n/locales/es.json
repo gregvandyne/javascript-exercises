@@ -49,6 +49,7 @@
     "shortPasswordGrownup": "Su contraseña tiene menos de {min} caracteres. Por favor, <a href=\"{href}\">elija una más larga</a>."
   },
   "nav": {
+    "stories": "Cuentos",
     "home": "Inicio",
     "search": "Buscar",
     "build": "Crear",
@@ -1641,6 +1642,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Primero escribe tu idea (bastan unas palabras).",
+      "failed": "Algo salió mal. Inténtalo de nuevo.",
+      "copied": "¡Enlace copiado!",
+      "deleteConfirm": "¿Borrar este cuento? No se puede deshacer."
+    },
     "app": {
       "wentWrong": "Algo salió mal. Inténtalo de nuevo, por favor.",
       "signedOut": "Se cerró tu sesión. Vuelve a entrar, por favor.",
@@ -6080,5 +6087,76 @@
       "failed": "{score} de {total} bien. Mira las respuestas correctas y vuelve a intentarlo."
     },
     "play": "Jugar: {game} · {chapter}"
+  },
+  "stories": {
+    "title": "Creador de cuentos",
+    "h": "Creador de cuentos para dormir",
+    "sub": "Escribe una idea y recibe un acogedor vídeo de cuento para dormir: un mundo de fieltro y papel, una voz tranquila, música de cajita de música y las palabras en pantalla.",
+    "new": "Crear un cuento nuevo",
+    "mine": "Mis cuentos",
+    "empty": "Aún no hay cuentos. ¡Crea el primero!",
+    "waitingH": "Esperando tu visto bueno",
+    "waitingP": "Cuentos creados por niños a tu cargo. Míralos y decide si otras personas pueden verlos.",
+    "form": {
+      "idea": "Tu idea para el cuento",
+      "ideaHint": "¿Quién sale y qué pasa? Por ejemplo: un ratoncito que ayuda al guardián del faro a encontrar las estrellas perdidas.",
+      "age": "¿Para quién es?",
+      "ageAll": "Para todos",
+      "age35": "De 3 a 5 años",
+      "age68": "De 6 a 8 años",
+      "age912": "De 9 a 12 años",
+      "length": "¿Cuánto dura?",
+      "seconds": "{n} segundos",
+      "make": "Crear mi cuento",
+      "left": "{count, plural, one {Hoy puedes crear # cuento más.} other {Hoy puedes crear # cuentos más.}}",
+      "none": "Ya has creado todos tus cuentos de hoy. ¡Vuelve mañana!",
+      "safety": "Los cuentos siempre son tiernos y amables. Cada idea y cada cuento se revisa antes de crearse.",
+      "needIdea": "Primero escribe tu idea (bastan unas palabras)."
+    },
+    "status": {
+      "queued": "Esperando turno…",
+      "writing": "Escribiendo el cuento…",
+      "voicing": "Grabando la voz…",
+      "rendering": "Construyendo el mundo de fieltro y filmando cada plano…",
+      "assembling": "Añadiendo la música y las palabras…",
+      "done": "¡Tu cuento está listo!",
+      "failed": "¡Oh, no! El cuento no se pudo crear."
+    },
+    "progress": "Crear un vídeo lleva un rato: unos {mins} minutos. Puedes salir de esta página y volver más tarde.",
+    "progressLabel": "Cuánto del cuento está hecho",
+    "error": {
+      "aiOff": "El escritor de cuentos está descansando ahora. Inténtalo más tarde.",
+      "refused": "Esa idea no puede ser un cuento aquí. Prueba con otra idea tierna.",
+      "unsafe": "No pudimos hacer un cuento lo bastante tierno con esa idea. Prueba con otra.",
+      "invalid": "El cuento no salió bien. Inténtalo de nuevo.",
+      "aiFailed": "El escritor de cuentos no respondió. Inténtalo de nuevo.",
+      "voice": "No se pudo grabar la voz. Inténtalo de nuevo.",
+      "render": "No se pudieron crear las imágenes. Inténtalo de nuevo.",
+      "assemble": "No se pudo montar el vídeo. Inténtalo de nuevo.",
+      "stalled": "El cuento se quedó atascado. Inténtalo de nuevo.",
+      "other": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "retry": "Intentar de nuevo",
+    "delete": "Borrar",
+    "captions": "Palabras",
+    "words": "Leer el cuento",
+    "by": "A partir de la idea: {idea}",
+    "busy": "Se están creando muchos cuentos ahora mismo. Inténtalo dentro de un ratito.",
+    "share": {
+      "private": "Solo tú puedes ver este cuento.",
+      "pending": "Esperando a que un adulto o tu profe diga que sí.",
+      "shared": "Cualquiera con el enlace puede ver este cuento.",
+      "privateShort": "Solo yo",
+      "pendingShort": "Esperando el sí",
+      "sharedShort": "Compartido",
+      "btnAdult": "Compartir",
+      "btnKid": "Pedir compartir",
+      "stop": "Dejar de compartir",
+      "copy": "Copiar enlace",
+      "askNote": "Un adulto que cuida tu cuenta, o tu profe, lo verá primero.",
+      "decideP": "Un niño a tu cargo creó este cuento y le gustaría compartirlo. ¿Pueden verlo otras personas?",
+      "approve": "Sí, compartirlo",
+      "decline": "Este no"
+    }
   }
 }

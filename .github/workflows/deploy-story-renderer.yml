@@ -1,0 +1,92 @@
+# Deploy the Story Builder's GPU renderer to Modal, check it, and measure one real render (docs/story-builder.md).
+# Run it by hand: Actions → "Deploy story renderer (Modal)" → Run workflow. It needs three repository secrets:
+#   MODAL_TOKEN_ID, MODAL_TOKEN_SECRET  (a Modal API token: modal.com → Settings → API Tokens)
+#   STORY_RENDER_TOKEN                  (a long random password you make up; the same value goes on the site)
+name: Deploy story renderer (Modal)
+
+on:
+  workflow_dispatch:
+    inputs:
+      gpu:
+        description: GPU type for the scene renders
+        type: choice
+        options: [L40S, L4, A10G]
+        default: L40S
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-story-renderer
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+      STORY_RENDER_TOKEN: ${{ secrets.STORY_RENDER_TOKEN }}
+      STORY_GPU: ${{ inputs.gpu }}
+    steps:
+      - name: Check the secrets are set
+        run: |
+          missing=0
+          for name in MODAL_TOKEN_ID MODAL_TOKEN_SECRET STORY_RENDER_TOKEN; do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing secret::$name is not set. Add it under Settings → Secrets and variables → Actions → New repository secret (docs/story-builder.md, 'Deploy the GPU renderer')."
+              missing=1
+            fi
+          done
+          if [ -n "$STORY_RENDER_TOKEN" ] && [ ${#STORY_RENDER_TOKEN} -lt 24 ]; then
+            echo "::error title=STORY_RENDER_TOKEN too short::Make it at least 24 characters (a long random password)."
+            missing=1
+          fi
+          exit $missing
+
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the Modal client
+        run: python -m pip install --disable-pip-version-check "modal==1.6.3"
+
+      - name: Store the API password in Modal (secret "story-renderer")
+        # The value comes from the environment and is never echoed (GitHub also masks it in the log).
+        run: modal secret create story-renderer STORY_RENDER_TOKEN="$STORY_RENDER_TOKEN" --force > /dev/null
+
+      - name: Deploy (GPU ${{ inputs.gpu }})
+        id: deploy
+        run: |
+          modal deploy services/story-renderer/modal_app.py 2>&1 | tee deploy.log
+          url=$(grep -oE 'https://[A-Za-z0-9.-]+\.modal\.run' deploy.log | head -n 1)
+          if [ -z "$url" ]; then echo "::error title=No URL::modal deploy did not print a web endpoint URL (see the log above)."; exit 1; fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Story renderer deployed"
+            echo ""
+            echo "- GPU: **${STORY_GPU}**"
+            echo "- Endpoint (set this as **STORY_RENDER_URL** on the site): \`$url\`"
+            echo "- On the site also set **STORY_RENDERER=modal** and **STORY_RENDER_TOKEN** (the same value as the GitHub secret)."
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Health check
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          for i in $(seq 1 30); do
+            body=$(curl -fsS --max-time 60 "$URL/health" || true)
+            if echo "$body" | grep -q '"ok":true'; then echo "healthy: $body"; echo "- Health: \`$body\`" >> "$GITHUB_STEP_SUMMARY"; exit 0; fi
+            sleep 10
+          done
+          echo "::error title=Health check failed::$URL/health did not answer ok. Last answer: ${body:-none}"
+          exit 1
+
+      - name: One real render (one short scene, preview quality)
+        env:
+          STORY_RENDER_URL: ${{ steps.deploy.outputs.url }}
+        run: python services/story-renderer/smoke_test.py --summary "$GITHUB_STEP_SUMMARY"

@@ -50,6 +50,7 @@
     "shortPasswordGrownup": "A senha tem menos de {min} caracteres. Por favor, <a href=\"{href}\">escolha uma senha mais longa</a>."
   },
   "nav": {
+    "stories": "Histórias",
     "home": "Início",
     "search": "Buscar",
     "build": "Criar",
@@ -1642,6 +1643,12 @@
     }
   },
   "js": {
+    "stories": {
+      "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
+      "failed": "Algo deu errado. Tente de novo.",
+      "copied": "Link copiado!",
+      "deleteConfirm": "Apagar esta história? Não dá para desfazer."
+    },
     "app": {
       "wentWrong": "Algo deu errado. Tente de novo.",
       "signedOut": "Sua sessão foi encerrada. Entre de novo, por favor.",
@@ -6082,5 +6089,76 @@
       "failed": "{score} de {total} certas. Veja as respostas certas e tente de novo."
     },
     "play": "Jogar: {game} · {chapter}"
+  },
+  "stories": {
+    "title": "Criador de Histórias",
+    "h": "Criador de Histórias para Dormir",
+    "sub": "Escreva uma ideia e ganhe um vídeo aconchegante de história para dormir: um mundo de feltro e papel, uma voz calma, música de caixinha de música e as palavras na tela.",
+    "new": "Criar uma nova história",
+    "mine": "Minhas histórias",
+    "empty": "Nenhuma história ainda. Crie a sua primeira!",
+    "waitingH": "Esperando o seu OK",
+    "waitingP": "Histórias feitas por crianças que você acompanha. Assista e depois decida se outras pessoas podem ver.",
+    "form": {
+      "idea": "Sua ideia de história",
+      "ideaHint": "Quem está nela e o que acontece? Por exemplo: um ratinho que ajuda o faroleiro a encontrar as estrelas perdidas.",
+      "age": "Para quem é?",
+      "ageAll": "Todo mundo",
+      "age35": "3 a 5 anos",
+      "age68": "6 a 8 anos",
+      "age912": "9 a 12 anos",
+      "length": "Que duração?",
+      "seconds": "{n} segundos",
+      "make": "Criar minha história",
+      "left": "{count, plural, one {Você pode criar mais # história hoje.} other {Você pode criar mais # histórias hoje.}}",
+      "none": "Você já criou todas as suas histórias de hoje. Volte amanhã!",
+      "safety": "As histórias são sempre gentis e carinhosas. Cada ideia e cada história é verificada antes de ser criada.",
+      "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam)."
+    },
+    "status": {
+      "queued": "Esperando na fila…",
+      "writing": "Escrevendo a história…",
+      "voicing": "Gravando a voz…",
+      "rendering": "Construindo o mundo de feltro e filmando cada cena…",
+      "assembling": "Colocando a música e as palavras…",
+      "done": "Sua história está pronta!",
+      "failed": "Ah, não! A história não foi criada."
+    },
+    "progress": "Fazer um vídeo leva um tempinho: uns {mins} minutos. Você pode sair desta página e voltar depois.",
+    "progressLabel": "Quanto da história já está pronto",
+    "error": {
+      "aiOff": "O escritor de histórias está descansando agora. Tente de novo mais tarde.",
+      "refused": "Essa ideia não pode virar história aqui. Tente uma ideia diferente e gentil.",
+      "unsafe": "Não conseguimos fazer uma história gentil o bastante com essa ideia. Tente outra.",
+      "invalid": "A história não saiu certa. Tente de novo.",
+      "aiFailed": "O escritor de histórias não respondeu. Tente de novo.",
+      "voice": "Não deu para gravar a voz. Tente de novo.",
+      "render": "Não deu para fazer as imagens. Tente de novo.",
+      "assemble": "Não deu para montar o vídeo. Tente de novo.",
+      "stalled": "A história travou. Tente de novo.",
+      "other": "Algo deu errado. Tente de novo."
+    },
+    "retry": "Tentar de novo",
+    "delete": "Apagar",
+    "captions": "Palavras",
+    "words": "Ler a história",
+    "by": "Da ideia: {idea}",
+    "busy": "Muitas histórias estão sendo feitas agora. Tente de novo daqui a pouco.",
+    "share": {
+      "private": "Só você pode ver esta história.",
+      "pending": "Esperando um adulto ou seu professor dizer OK.",
+      "shared": "Qualquer pessoa com o link pode assistir a esta história.",
+      "privateShort": "Só eu",
+      "pendingShort": "Esperando OK",
+      "sharedShort": "Compartilhada",
+      "btnAdult": "Compartilhar",
+      "btnKid": "Pedir para compartilhar",
+      "stop": "Parar de compartilhar",
+      "copy": "Copiar link",
+      "askNote": "Um adulto que cuida da sua conta, ou seu professor, vai assistir primeiro.",
+      "decideP": "Uma criança que você acompanha fez esta história e quer compartilhá-la. Outras pessoas podem assistir?",
+      "approve": "Sim, compartilhar",
+      "decline": "Esta não"
+    }
   }
 }

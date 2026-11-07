@@ -566,6 +566,20 @@ export const MIGRATIONS = [
   // (services/move.js). Guests store nothing.
   ['0052_brain_breaks', `CREATE TABLE IF NOT EXISTS move_completions (user_id TEXT NOT NULL, episode TEXT NOT NULL,
     completed_at INTEGER NOT NULL, PRIMARY KEY(user_id, episode));`],
+  // Story Builder (docs/story-builder.md; services/story-jobs.js): one row per story video and its job. status walks
+  // queued -> writing -> voicing -> rendering -> assembling -> done (or failed); progress is 0..1 for the page's bar;
+  // script is the checked story JSON; meta the timings and render numbers. share: private | pending (a kid asked, a
+  // linked grown-up or their teacher must say yes) | shared (anyone with the link). worker/heartbeat_at: which worker
+  // runs it and when it last said so (a job whose worker stopped is put back in the queue). Removed with the account.
+  ['0053_stories', `CREATE TABLE IF NOT EXISTS stories (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, idea TEXT NOT NULL,
+      age_band TEXT NOT NULL DEFAULT 'all', seconds INTEGER NOT NULL DEFAULT 60, locale TEXT NOT NULL DEFAULT 'en',
+      status TEXT NOT NULL DEFAULT 'queued', progress REAL NOT NULL DEFAULT 0, error TEXT NOT NULL DEFAULT '',
+      title TEXT NOT NULL DEFAULT '', script TEXT NOT NULL DEFAULT '', meta TEXT NOT NULL DEFAULT '{}',
+      share TEXT NOT NULL DEFAULT 'private', approved_by TEXT, approved_at INTEGER, attempts INTEGER NOT NULL DEFAULT 0,
+      worker TEXT NOT NULL DEFAULT '', heartbeat_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+      started_at INTEGER, finished_at INTEGER);
+    CREATE INDEX IF NOT EXISTS stories_owner ON stories(owner_id, created_at);
+    CREATE INDEX IF NOT EXISTS stories_status ON stories(status, created_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
