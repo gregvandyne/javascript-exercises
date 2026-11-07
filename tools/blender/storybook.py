@@ -142,6 +142,18 @@ def prop_tex(kind):
         A.paste(L.filter(ImageFilter.GaussianBlur(0.8)), (0, 0))
         A.paste(painted(256, 96, (240, 236, 232), 22, 30, dirn='v', grad=0.1), (0, 160))   # bark
         return A
+    if kind == 'stone':     # rounded stone blocks in soft mortar (castle walls and towers, the windmill)
+        T = Image.new('RGB', (256, 256), (205, 205, 210)); d = ImageDraw.Draw(T); rr = random.Random(5)
+        for row in range(8):
+            y = row * 32; off = 0 if row % 2 else 24
+            for col in range(-1, 6):
+                x = col * 48 + off; c = 236 + rr.randint(-10, 8)
+                d.rounded_rectangle((x + 3, y + 3, x + 45, y + 29), radius=9, fill=(c, c, c - 2), outline=(190, 190, 198), width=2)
+        return T.filter(ImageFilter.GaussianBlur(0.8))
+    if kind == 'planks':    # vertical boards with a soft gap (the barn)
+        T = painted(256, 256, (246, 242, 238), 33, 40, dirn='v', grad=0.06, blot=0.07); d = ImageDraw.Draw(T)
+        for x in range(0, 256, 32): d.line([(x, 0), (x, 256)], fill=(200, 196, 192), width=3)
+        return T.filter(ImageFilter.GaussianBlur(0.6))
     # wood (barrel, fence): grain
     A = painted(256, 256, (244, 240, 236), 31, 70, dirn='v', grad=0.08, blot=0.08)
     return A
@@ -762,6 +774,53 @@ def build_cinder(pal):
     return parts
 
 
+def build_buildings():
+    """Buildings (phase 2, step 6), as the game places them (each mesh's origin where the game's own shell stood):
+      barn: the red barn's shell, 14 x 7 x 10 (x, y, z in the game's local frame before its turn), with a flat walkable
+        roof deck at 7.3, white trim, an X-braced door and loft windows, a cupola (white plaster, all tinted by nothing:
+        coloured here); the shed, the hay and the haystack stay the game's
+      mill: the windmill's tapered round tower (r 3.4 at the foot, 2.4 at 12.3 m) and its pointed red roof, a round door
+      tower: a castle tower, radius 6.15 and 1 m tall (the game scales it to each tower's height), a stone band and a
+        walk-on top; its merlons, windows, flag and stairs stay the game's
+      wall: a 4 m stretch of castle wall, 1 m tall and 3 m thick (the game repeats and scales it along each wall)
+    Stone parts take the stone-block texture, the barn the plank texture (the game picks by mesh)."""
+    P = {}
+
+    def part(n):
+        P[n] = Builder('bld_' + n); return P[n]
+    red, redD, white, stone, stoneD, roofR = hexc('#D9483B'), hexc('#8E2A22'), hexc('#FFFDF2'), hexc('#EEECE5'), hexc('#C6C2B5'), hexc('#E0533F')
+    b = part('barn')
+    bm = bbox_rounded((14, 10, 7), tv(0, 3.5, 0), 0.35, 2)
+    for v in bm.verts: v.co.x *= 1 + 0.015 * math.sin(v.co.z * 0.9)   # a little storybook bow in the walls
+    b.add(bm, red, 'wood', 0, tile=(0.5, 0.0, 1.0))
+    b.add(bbox_rounded((14.7, 10.7, 0.35), tv(0, 7.15, 0), 0.15, 2), redD, 'wood', 0, tile=(0.5, 0.0, 1.0))   # the roof deck
+    b.add(bbox_rounded((14.9, 10.9, 0.18), tv(0, 6.9, 0), 0.08, 1), white, 'other', 0, tile=(0.5, 0.0, 1.0))   # eaves trim
+    for sx in (-1, 1):
+        for sz in (-1, 1): b.add(bbox_rounded((0.4, 0.4, 7.0), tv(sx * 6.95, 3.5, sz * 4.95), 0.15, 1), white, 'other', 0, tile=(0.5, 0, 1.0))   # corner boards
+    b.add(bbox_rounded((4.6, 0.25, 4.7), tv(0, 2.35, 5.05), 0.14, 2), redD, 'wood', 0, tile=(0.5, 0.0, 1.0))   # the door
+    for s_ in (1, -1):
+        b.add(ttube((-2.05 * s_, 0.25, 5.2), (2.05 * s_, 4.45, 5.2), 0.11, 0.11, 6, 2), white, 'other', 0, tile=(0.5, 0, 1.0))   # the X brace
+        b.add(bbox_rounded((1.3, 0.2, 1.3), tv(s_ * 4.6, 5.3, 5.05), 0.1, 1), white, 'other', 0, tile=(0.5, 0, 1.0))
+        b.add(bbox_rounded((1.0, 0.1, 1.0), tv(s_ * 4.6, 5.3, 5.12), 0.08, 1), hexc('#93CBF6'), 'glass', 0, tile=(0.5, 0, 1.0))
+    b.add(bbox_rounded((4.9, 0.25, 0.3), tv(0, 4.75, 5.12), 0.1, 1), white, 'other', 0, tile=(0.5, 0, 1.0))
+    b.add(bbox_rounded((2.2, 2.2, 1.6), tv(0, 8.1, 0), 0.15, 2), white, 'wall', 0, tile=(0.5, 0, 1.0))   # the cupola
+    cup = smooth(blathe([(1.75, 0.0), (1.2, 0.6), (0.3, 1.45), (0.0, 1.55)], 4))
+    bmesh.ops.transform(cup, matrix=Matrix.Translation(tv(0, 8.85, 0)) @ euler((0, 0, math.pi / 4)), verts=cup.verts); b.add(cup, redD, 'roof', 0, tile=(0.5, 0, 1.0))
+    b = part('mill')
+    b.add(tlathe([(0.0, 0.0), (3.45, 0.0), (3.25, 3.0), (2.85, 8.0), (2.45, 12.3), (0.0, 12.35)], 16), stone, 'other', 0, 'white', wonk=0.04)
+    b.add(tlathe([(2.5, 12.2), (3.4, 12.15), (3.3, 12.6), (2.1, 14.4), (1.0, 15.6), (0.25, 16.2), (0.0, 16.25)], 16), roofR, 'roof', 0, 'white', wonk=0.03)
+    b.add(bbox_rounded((1.4, 0.35, 2.3), tv(0, 1.15, 3.3), 0.25, 2), hexc('#8A5A3C'), 'wood', 0, 'white')
+    for i in range(3):
+        a = i * 2.1 + 0.6; r = 3.0 - i * 0.12
+        b.add(bbox_rounded((0.8, 0.25, 1.0), tv(math.sin(a) * r, 3.5 + i * 3.2, math.cos(a) * r), 0.12, 1, (0, 0, -a)), hexc('#5C3A26'), 'glass', 0, 'white')
+    b = part('tower')   # radius 6.15, 1 m tall: the game scales y to each tower
+    b.add(tlathe([(0.0, 0.0), (6.3, 0.0), (6.2, 0.15), (6.1, 0.92), (6.25, 0.95), (6.25, 1.0), (0.0, 1.0)], 20), stone, 'other', 0, 'white')
+    b = part('wall')    # a 4 m stretch: x from -2 to 2, y 0..1, z -1.5..1.5
+    bm = bbox_rounded((4.0, 3.0, 1.0), tv(0, 0.5, 0), 0.18, 1)
+    b.add(bm, stone, 'other', 0, 'white')
+    return P
+
+
 def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
@@ -1142,6 +1201,35 @@ def make_cinder(out, renders):
     return data
 
 
+def make_buildings(out, renders):
+    P = build_buildings(); stone = prop_tex('stone'); planks = prop_tex('planks')
+    # box-projected UVs in world metres for the stone parts (the tower and wall are scaled by the game: their UVs follow)
+    for n in ('mill', 'tower', 'wall'):
+        B = P[n]
+        for f in B.bm.faces:
+            nrm = f.normal
+            for l in f.loops:
+                p = l.vert.co
+                if n == 'tower':   # round: u around, v up (scaled to about 1 block per metre once the game stretches it)
+                    u = (math.atan2(p.y, p.x) / (2 * math.pi) + 0.5) * 12; v = p.z * 4
+                elif abs(nrm.z) > 0.7: u, v = p.x * 0.25, p.y * 0.25
+                elif abs(nrm.x) > abs(nrm.y): u, v = p.y * 0.25, p.z * 0.25 * (1 if n == 'mill' else 4)
+                else: u, v = p.x * 0.25, p.z * 0.25 * (1 if n == 'mill' else 4)
+                l[B.uv].uv = (u, v)
+    obs = {}
+    for n, b in P.items(): obs[n] = b.mesh(material(f'bld_mat_{n}', to_bimg(planks if n == 'barn' else stone, f'bld_tex_{n}')))
+    export_glb(os.path.join(out, 'buildings.glb'), list(obs.values()))
+    data = {'name': 'buildings', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(stone, 78)[0]}
+    data['meshes']['barn']['tex'] = tex_url(planks, 78)[0]
+    for n in ('barn', 'mill'):
+        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(obs[n], 0.22)
+    if renders:
+        for n, o in obs.items():
+            for q in obs.values(): q.hide_render = q is not o
+            turntable(os.path.join(out, f'turn_{n}.png'), [o], {'barn': 11, 'mill': 17, 'tower': 3, 'wall': 4}[n])
+    return data
+
+
 def make_prop(name, builders, tex, out, renders, height, texs=None):
     """texs: an optional texture per builder (the cottage's walls and roof); otherwise one texture for all."""
     texs = texs or [tex] * len(builders); obs = []
@@ -1173,7 +1261,8 @@ def main():
             ('villager', lambda: make_villager(a.out, a.renders)),
             ('foes', lambda: make_foes(a.out, a.renders)),
             ('big', lambda: make_big(a.out, a.renders)),
-            ('cinder', lambda: make_cinder(a.out, a.renders))]
+            ('cinder', lambda: make_cinder(a.out, a.renders)),
+            ('buildings', lambda: make_buildings(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()

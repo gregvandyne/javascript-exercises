@@ -7471,7 +7471,13 @@ const SPOTS = {};       // collectible spots for builder 2 (Sun Gems etc.): { x,
 const spot = (id, x, z, yTop) => { SPOTS[id] = { x, y: (yTop !== undefined ? yTop : gy(x, z)) + 1.2, z }; };
 
 /** Breeze: the storybook models stand in for these props; their places (and colliders) are kept here (see BZM). */
-const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [] };
+const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [], barn: [], mill: [], tower: [], wall: [] };
+/* Breeze: building shells (the barn, the windmill tower, the castle's towers and walls) go in their own Kit, so the
+   storybook model can take their place once the world pack arrives (the shell stands in until then); colliders,
+   stairs, decks and every other part stay in the zone's Kit. */
+const BZ_SHELL_KITS = {}, BZ_SHELLS = [];
+const shellKit = (name, k) => (BREEZE ? BZ_SHELL_KITS[name] || (BZ_SHELL_KITS[name] = new Kit()) : k);
+function shellBuild(name, x, z, r) { const k = BZ_SHELL_KITS[name]; if (!k) return; delete BZ_SHELL_KITS[name]; const o = k.build('shell:' + name, x, z, r); o.shell = name; BZ_SHELLS.push(o); }
 function cottage(k, x, z, ry, o) {
   if (BREEZE) {
     o = o || {}; const w = o.w || 6, d = o.d || 5, h = o.h || 3.2, rh = o.rh || 2.2, y = gy(x, z) - 0.15;
@@ -7654,15 +7660,16 @@ function buildFarm() {
   const k = new Kit();
   POINTS.farm = [130, 236, Math.PI / 2 + 0.25]; POINTS.tilly = [150, 220]; POINTS.pen = [165, 205]; POINTS.cabbages = [175, 235]; POINTS.windmill = [205, 265];
   // Red barn (doors face the road end), flat roof deck you can reach: haystack -> shed roof -> hay bales -> barn roof
-  const bx = 158, bz = 216, by = gy(bx, bz) - 0.1, br = -Math.PI / 2;
+  const bx = 158, bz = 216, by = gy(bx, bz) - 0.1, br = -Math.PI / 2, kb = shellKit('barn', k);
   k.box(bx, by - 0.6, bz, 14.4, 0.8, 10.4, PAL.stoneD, br);
-  k.box(bx, by, bz, 14, 7, 10, '#c0392b', br, { col: true, top: by + 7.3 });
-  k.box(bx, by + 7, bz, 14.6, 0.3, 10.6, '#7d2a22', br);
-  k.box(bx, by + 7.3, bz, 2.2, 1.6, 2.2, PAL.white, br); k.cone(bx, by + 8.9, bz, 1.9, 1.6, '#7d2a22', 4, { ry: Math.PI / 4 });
-  const dpos = lp(bx, bz, br, 0, 5.04); k.box(dpos[0], by, dpos[1], 4.4, 4.6, 0.12, '#a3301f', br);
-  for (const s of [-1, 1]) { const a = lp(bx, bz, br, -2.1 * s, 5.12), b = lp(bx, bz, br, 2.1 * s, 5.12); k.beam(a[0], by + 0.2, a[1], b[0], by + 4.4, b[1], 0.1, 0.22, PAL.white); }
-  const fr = lp(bx, bz, br, 0, 5.1); k.box(fr[0], by + 4.6, fr[1], 4.8, 0.25, 0.14, PAL.white, br);
-  for (const s of [-1, 1]) { const wpos = lp(bx, bz, br, s * 4.6, 5.04); k.box(wpos[0], by + 4.8, wpos[1], 1.2, 1.2, 0.1, PAL.win, br); }
+  kb.box(bx, by, bz, 14, 7, 10, '#c0392b', br, { col: true, top: by + 7.3 });
+  kb.box(bx, by + 7, bz, 14.6, 0.3, 10.6, '#7d2a22', br);
+  kb.box(bx, by + 7.3, bz, 2.2, 1.6, 2.2, PAL.white, br); kb.cone(bx, by + 8.9, bz, 1.9, 1.6, '#7d2a22', 4, { ry: Math.PI / 4 });
+  const dpos = lp(bx, bz, br, 0, 5.04); kb.box(dpos[0], by, dpos[1], 4.4, 4.6, 0.12, '#a3301f', br);
+  for (const s of [-1, 1]) { const a = lp(bx, bz, br, -2.1 * s, 5.12), b = lp(bx, bz, br, 2.1 * s, 5.12); kb.beam(a[0], by + 0.2, a[1], b[0], by + 4.4, b[1], 0.1, 0.22, PAL.white); }
+  const fr = lp(bx, bz, br, 0, 5.1); kb.box(fr[0], by + 4.6, fr[1], 4.8, 0.25, 0.14, PAL.white, br);
+  for (const s of [-1, 1]) { const wpos = lp(bx, bz, br, s * 4.6, 5.04); kb.box(wpos[0], by + 4.8, wpos[1], 1.2, 1.2, 0.1, PAL.win, br); }
+  if (BREEZE) { BZ_PROPS.barn.push({ x: bx, y: by, z: bz, ry: br }); shellBuild('barn', bx, bz, 10); }
   const sy = gy(bx, 209), shedTop = by + 3.6;
   k.box(bx - 1, sy - 0.2, 209, 8, shedTop - sy + 0.2, 4, '#b5462f', 0, { col: true });
   k.box(bx - 1, shedTop - 0.2, 209, 8.4, 0.25, 4.4, '#7d2a22', 0);
@@ -7672,13 +7679,14 @@ function buildFarm() {
   // Tilly's farmhouse
   cottage(k, 128, 211, faceTo(128, 211, 138, 226), { w: 7, d: 6, h: 3.4, roof: PAL.roofR });
   // Windmill: stone tower, balcony reached by outside stairs, turning blades (separate mesh)
-  const [wx, wz] = POINTS.windmill, wy = gy(wx, wz);
-  k.cyl(wx, wy - 0.3, wz, 2.4, 3.4, 12.3, PAL.stoneL, 10, { col: true, stand: false });
-  k.cone(wx, wy + 12, wz, 3.2, 4.2, PAL.roofR, 10);
+  const [wx, wz] = POINTS.windmill, wy = gy(wx, wz), km = shellKit('mill', k);
+  km.cyl(wx, wy - 0.3, wz, 2.4, 3.4, 12.3, PAL.stoneL, 10, { col: true, stand: false });
+  km.cone(wx, wy + 12, wz, 3.2, 4.2, PAL.roofR, 10);
   k.cyl(wx, wy + 6, wz, 4.7, 4.7, 0.3, PAL.wood, 14); addCircle(wx, wz, 4.7, wy + 6, wy + 6.3);
   for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; if (Math.abs(wrapA(a - 2.3)) < 0.4) continue; k.box(wx + Math.cos(a) * 4.55, wy + 6.3, wz + Math.sin(a) * 4.55, 0.12, 0.9, 0.12, PAL.woodD); }
   spiralStairs(k, wx, wz, 5.6, wy, wy + 6.3, 15, -0.2, 2.5, PAL.wood, { depth: 1.3, landing: 1.3 });
-  const door = lp(wx, wz, 0, 0, 3.25); k.box(door[0], wy, door[1], 1.2, 2.1, 0.15, PAL.door);
+  const door = lp(wx, wz, 0, 0, 3.25); km.box(door[0], wy, door[1], 1.2, 2.1, 0.15, PAL.door);
+  if (BREEZE) { BZ_PROPS.mill.push({ x: wx, y: wy - 0.3, z: wz }); shellBuild('mill', wx, wz, 8); }
   spot('farmWindmill', wx - 3.2, wz - 2.2, wy + 6.3);
   const blades = new Kit();
   blades.cyl(0, -0.4, 0, 0.45, 0.45, 0.8, PAL.woodD, 8);
@@ -7892,10 +7900,11 @@ function i2c(x) { return ['#4f7fd9', '#e8913a', '#2fa39a'][Math.abs(x | 0) % 3];
 function buildCastle() {
   const k = new Kit(), y0 = 9, wallTop = 17, X0 = -200, X1 = -100, Z0 = -228, Z1 = -118, T = 3;
   POINTS.castle = [-150, -150, Math.PI]; POINTS.castleGate = [-150, -100, Math.PI]; POINTS.oakley = [-150, -125]; POINTS.queen = [-150, -215]; POINTS.courtyard = [-150, -185];
-  const wallC = '#cfc7b6', wallD = '#b3aa98', walk = '#a8a090';
+  const wallC = '#cfc7b6', wallD = '#b3aa98', walk = '#a8a090', ks = shellKit('castle', k);
   const wall = (x0, z0, x1, z1) => {
     const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, len = hyp(x1 - x0, z1 - z0), ry = Math.atan2(-(z1 - z0), x1 - x0);
-    k.add(prim('box'), cx, y0 - 1, cz, len, wallTop - y0 + 1, T, 0, ry, 0, wallC); k.add(prim('box'), cx, wallTop - 0.05, cz, len, 0.1, T - 0.3, 0, ry, 0, walk);
+    ks.add(prim('box'), cx, y0 - 1, cz, len, wallTop - y0 + 1, T, 0, ry, 0, wallC); ks.add(prim('box'), cx, wallTop - 0.05, cz, len, 0.1, T - 0.3, 0, ry, 0, walk);
+    if (BREEZE) BZ_PROPS.wall.push({ cx, cz, len, ry, y: y0 - 1, h: wallTop - y0 + 1, T });
     addBox(cx, cz, len / 2, T / 2, ry, y0 - 2, wallTop);
     // merlons on the outer edge, and a low walk-on parapet
     const n = Math.floor(len / 2.2), nx = Math.sin(ry), nz = Math.cos(ry);
@@ -7918,7 +7927,8 @@ function buildCastle() {
   // four corner towers; the north-east one is tall with stairs spiralling round it
   const towers = [[X0, Z1, 18.2], [X1, Z1, 18.2], [X0, Z0, 18.2], [X1, Z0, 29]];
   towers.forEach(([x, z, h], i) => {
-    k.cyl(x, y0 - 1, z, 6, 6.3, h - y0 + 1, wallC, 14, { col: true, top: h }); k.cyl(x, h - 0.05, z, 5.7, 5.7, 0.1, walk, 14);
+    ks.cyl(x, y0 - 1, z, 6, 6.3, h - y0 + 1, wallC, 14, { col: true, top: h }); ks.cyl(x, h - 0.05, z, 5.7, 5.7, 0.1, walk, 14);
+    if (BREEZE) BZ_PROPS.tower.push({ x, y: y0 - 1, z, h: h - y0 + 1 });
     const open = [Math.atan2(0, x === X0 ? 1 : -1), Math.atan2(z === Z1 ? -1 : 1, 0)]; if (i === 3) open.push(Math.PI * 0.5 - Math.PI * 1.95);
     for (let j = 0; j < 12; j++) {
       const a = j / 12 * Math.PI * 2 + Math.PI / 12; if (open.some(o => Math.abs(wrapA(a - o)) < 0.45)) continue;
@@ -7947,6 +7957,7 @@ function buildCastle() {
   k.box(-107, y0, -170, 8, 4.5, 24, '#d9cfbb', 0, { col: true }); k.box(-107, y0 + 4.5, -170, 8.6, 0.3, 24.6, PAL.roofB, 0, { col: true });
   for (const [x, z] of [[-160, -140], [-140, -140], [-170, -200], [-130, -200]]) lantern(k, x, z, y0);
   barrel(k, -188, -132, y0); barrel(k, -186.8, -131.4, y0); crate(k, -112, y0, -136, 1.2, 0.2); crate(k, -113.3, y0, -137.2, 1.2, -0.3);
+  shellBuild('castle', -150, -172, 85);
   return k.build('castle', -150, -172, 85);
 }
 
@@ -13813,7 +13824,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-e777805b/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-e777805b/breeze-world.js', integrity: 'sha384-PUy0Jqhx2OYUGH/PgF+4jSxvzuT6kl4E+sTYRrhigIX2LIt6PkHGKi8cleMq4hcr' } };
+const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-6d613215/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-6d613215/breeze-world.js', integrity: 'sha384-UUKJXe1+W2G9tdvBlr2ZIi7N0P/HDuRHvo8UEcRP3HbQ1B3WLz8KxChhHxztxtln' } };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 /** Load one pack (start: before play; world: in the background once play starts). Resolves with the assets it added. */
@@ -13917,27 +13928,16 @@ function bzApply(d) {
   if (d.villager) bzVillagers(d.villager);
   if (d.foes) bzFoes(d.foes);   // the start pack's part of it: the Blobble
   // props: one instanced mesh per model part, for every place in the world
-  // geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry
-  const inst = (geo, mat, list, place, tint) => {
-    if (!list.length) return null;
-    const near = geo.isBufferGeometry ? geo : bzGeo(geo), far = !geo.isBufferGeometry && geo.lod1 ? bzGeo(geo.lod1) : null, o = new THREE.Object3D();
-    const places = list.map(p => { place(p, o); o.updateMatrix(); return { x: o.position.x, z: o.position.z, mat: o.matrix.clone(), col: new THREE.Color(tint ? tint(p) : '#ffffff') }; });
-    const make = (g, lodN) => {
-      const m = new THREE.InstancedMesh(g, mat, list.length); m.userData.places = places; m.userData.lod = lodN;
-      m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
-      m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.userData.noInk = true; scene.add(m); BZM.props.push(m); bzCull(m, true); return m;
-    };
-    const m = make(near, far ? 0 : -1); if (far) make(far, 1); return m;
-  };
+  const inst = bzInst;
   const cot = d.cottage, cmat = breezeMat({ map: bzTex(cot, true) });
   const cplace = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(p.w / 6, p.h / 3.2, p.d / 5); };
   inst(cot.meshes.walls, cmat, BZ_PROPS.cottage, cplace, p => p.wall);   // each house its own warm wall colour
   inst(cot.meshes.roof, breezeMat({ map: bzTex(cot.meshes.roof.tex ? cot.meshes.roof : cot, true) }), BZ_PROPS.cottage, cplace, p => '#' + C2.set(p.roof).lerp(WHITE_T, 0.08).getHexString());
   const bar = d.barrel;
-  inst(bar.meshes.body, breezeMat({ map: bzTex(bar, true) }), BZ_PROPS.barrel, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(0.95); });
+  inst(bar.meshes.body, breezeMat({ map: bzTex(bar, true) }), BZ_PROPS.barrel, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(0.95); }, null, -45);
   const fe = d.fence, fmat = breezeMat({ map: bzTex(fe, true) });
-  inst(fe.meshes.post, fmat, BZ_PROPS.post, (p, o) => { o.position.set(p.x, p.y + 0.2, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(1, p.h / 1.4, 1); });
-  inst(fe.meshes.rail, fmat, BZ_PROPS.rail, (p, o) => { o.position.set(p.x0, p.y0, p.z0); o.rotation.set(0, Math.atan2(-(p.z1 - p.z0), p.x1 - p.x0), Math.atan2(p.y1 - p.y0, hyp(p.x1 - p.x0, p.z1 - p.z0))); o.scale.set(hyp(p.x1 - p.x0, p.z1 - p.z0), p.h / 1.1, 1); });
+  inst(fe.meshes.post, fmat, BZ_PROPS.post, (p, o) => { o.position.set(p.x, p.y + 0.2, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(1, p.h / 1.4, 1); }, null, -45);
+  inst(fe.meshes.rail, fmat, BZ_PROPS.rail, (p, o) => { o.position.set(p.x0, p.y0, p.z0); o.rotation.set(0, Math.atan2(-(p.z1 - p.z0), p.x1 - p.x0), Math.atan2(p.y1 - p.y0, hyp(p.x1 - p.x0, p.z1 - p.z0))); o.scale.set(hyp(p.x1 - p.x0, p.z1 - p.z0), p.h / 1.1, 1); }, null, -45);
   // the scattered trees: the model in place of the procedural tree (the same instances, tints and fading)
   const tk = SCATTER.kinds.tree;
   if (tk) { const tg = bzGeo(d.tree.meshes.body); tg.scale(0.82, 0.82, 0.82); tk.mesh.geometry = tg; tk.mesh.material = breezeMat({ map: bzTex(d.tree, true), sat: 1.1 }); }
@@ -14016,11 +14016,37 @@ function bzCinder(c) {
   }
   M.k = -1;   // recolour on the next frame
 }
+/** geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry: one instanced mesh per
+ *  level of detail for every place in the list, drawn near the camera only (bzCull). */
+function bzInst(geo, mat, list, place, tint, R) {
+    if (!list.length) return null;
+    const near = geo.isBufferGeometry ? geo : bzGeo(geo), far = !geo.isBufferGeometry && geo.lod1 ? bzGeo(geo.lod1) : null, o = new THREE.Object3D();
+    const places = list.map(p => { place(p, o); o.updateMatrix(); return { x: o.position.x, z: o.position.z, mat: o.matrix.clone(), col: new THREE.Color(tint ? tint(p) : '#ffffff') }; });
+    const make = (g, lodN) => {
+      const m = new THREE.InstancedMesh(g, mat, list.length); m.userData.places = places; m.userData.lod = lodN; m.userData.R = R || 0;
+      m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
+      m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.userData.noInk = true; scene.add(m); BZM.props.push(m); bzCull(m, true); return m;
+    };
+    const m = make(near, far ? 0 : -1); if (far) make(far, 1); return m;
+}
+/** Buildings (phase 2): the barn, the windmill tower, the castle's towers and walls take their storybook models; the
+ *  game's shells (their own Kit) are hidden once they are in place. */
+function bzBuildings(b) {
+  const stone = breezeMat({ map: bzTex(b, true) }), planks = breezeMat({ map: bzTex(b.meshes.barn.tex ? b.meshes.barn : b, true) });
+  const at = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry || 0, 0); o.scale.set(1, 1, 1); };
+  bzInst(b.meshes.barn, planks, BZ_PROPS.barn, at, null, 15);
+  bzInst(b.meshes.mill, stone, BZ_PROPS.mill, at, null, 15);
+  bzInst(b.meshes.tower, stone, BZ_PROPS.tower, (p, o) => { at(p, o); o.scale.set(1, p.h, 1); }, null, 15);
+  const segs = [];
+  for (const w of BZ_PROPS.wall) { const n = Math.max(1, Math.round(w.len / 4)), dx = Math.cos(w.ry), dz = -Math.sin(w.ry); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n - 0.5; segs.push({ x: w.cx + dx * t * w.len, y: w.y, z: w.cz + dz * t * w.len, ry: w.ry, sx: w.len / n / 4, h: w.h, sz: w.T / 3 }); } }
+  bzInst(b.meshes.wall, stone, segs, (p, o) => { at(p, o); o.scale.set(p.sx * 1.002, p.h, p.sz); }, null, 10);
+  for (const o of BZ_SHELLS) { if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); }
+}
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
 // Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.
-const BZ_LOD = 32;
+const BZ_LOD = 24;
 function bzCull(m, force) {
-  const cx = camera.position.x, cz = camera.position.z, R = Math.min(camera.far, 80), L = m.userData.lod; let n = 0;
+  const cx = camera.position.x, cz = camera.position.z, R = m.userData.R > 0 ? camera.far + m.userData.R : m.userData.R < 0 ? -m.userData.R : Math.min(camera.far, 80), L = m.userData.lod; let n = 0;
   for (const p of m.userData.places) {
     const d = hyp(p.x - cx, p.z - cz);
     if (!force && (d > R || (L === 0 && d > BZ_LOD) || (L === 1 && d <= BZ_LOD))) continue;
@@ -14054,6 +14080,7 @@ function bzWorld(d) {
   if (d.foes) bzFoes(d.foes);
   if (d.big) bzBig(d.big);
   if (d.cinder) bzCinder(d.cinder);
+  if (d.buildings) bzBuildings(d.buildings);
   BZM.world = 'ready';
 }
 if (BREEZE) {
