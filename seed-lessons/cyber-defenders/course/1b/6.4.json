@@ -17,9 +17,9 @@
      "cue": "Spark Day: the Magpie locked the real post inside",
      "box": [
       2.8,
-      69.0,
+      69,
       94.4,
-      31.0
+      31
      ]
     }
    ]
@@ -37,7 +37,7 @@
       5.2,
       50.2,
       41.2,
-      49.0
+      49
      ]
     }
    ]
@@ -46,25 +46,25 @@
    "title": "Roads, codes and clues",
    "text": "The first locks ask for your earliest skills. Route the golden letter, wheel the secret code, and pick the real message from footprint clues.",
    "art": "map",
-   "img": "csq/escape-the-post-office/gate-1b",
-   "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads lead past the Market and the Library to the Sorting Room.",
+   "img": "csq/escape-the-post-office/gate-1b-hop",
+   "alt": "The Sorting Gate: the golden letter has left the Post Office on an open road, heading for the Sorting Room door.",
    "focus": [
     {
      "cue": "Route the golden letter to the Sorting Room",
      "box": [
-      9.2,
-      18.8,
-      85.7,
-      41.3
+      70.1,
+      39.8,
+      24.8,
+      28.3
      ]
     },
     {
      "cue": "More than one road leads there",
      "box": [
       22.9,
-      18.0,
-      11.4,
-      56.9
+      41.8,
+      45.3,
+      32.7
      ]
     }
    ]
@@ -116,9 +116,9 @@
      "cue": "A wrong try only wobbles the lock",
      "box": [
       4.8,
-      0.0,
+      0,
       89.7,
-      29.0
+      29
      ]
     },
     {

@@ -79,28 +79,6 @@
     "Say sorry, and mean it",
     "Delete the message if you can",
     "Tell a trusted adult what happened"
-   ],
-   "img": "csq/would-you-rather/online-delete-1b",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "focus": [
-    {
-     "cue": "Delete the message if you can",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or leave it standing for all to see",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
    ]
   },
   {
@@ -123,9 +101,9 @@
      "cue": "Then tell a trusted adult",
      "box": [
       50.9,
-      78.0,
+      78,
       46.4,
-      22.0
+      22
      ]
     }
    ]

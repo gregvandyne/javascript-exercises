@@ -70,29 +70,7 @@
   {
    "title": "Aimed at one person",
    "text": "Spear phishing uses the same trick recipe, but built for one person. It may use your name, your club or a recent post, then add a rush and a request.",
-   "art": "people",
-   "img": "csq/trick-inbox/pressure-2-pr-3-all",
-   "alt": "A post from Fan Club, “Hello, skateboard star!”, with clues marked: things it knows about you, and your mailbox key.",
-   "focus": [
-    {
-     "cue": "Built for one person, from their own posts",
-     "box": [
-      7.1,
-      39.3,
-      85.7,
-      22.4
-     ]
-    },
-    {
-     "cue": "Then the request: your key",
-     "box": [
-      29.5,
-      61.7,
-      41.4,
-      13.5
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "title": "The attachment rule",

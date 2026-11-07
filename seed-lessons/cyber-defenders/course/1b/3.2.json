@@ -9,29 +9,7 @@
   {
    "title": "A trail in the snow",
    "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
-   "art": "map",
-   "img": "csq/escape-the-post-office/pim-1b-n2",
-   "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
-   "focus": [
-    {
-     "cue": "Every message leaves a trail of clues",
-     "box": [
-      2.9,
-      0.2,
-      94.3,
-      41.5
-     ]
-    },
-    {
-     "cue": "Pim's own trail: help, asked for in the open",
-     "box": [
-      6.4,
-      62,
-      39,
-      36.6
-     ]
-    }
-   ]
+   "art": "map"
   },
   {
    "title": "Posts leave footprints",

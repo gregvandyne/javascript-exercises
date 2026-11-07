@@ -3573,7 +3573,7 @@
    "band": "1b",
    "state": "protocols-1b-sealed-n",
    "concept": "the open road and the padlock road",
-   "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
+   "alt": "Explorer padlock level: the padlock road climbs over Hill Office to Birthday House; the open road runs below past River Office.",
    "capturedAt": "2026-11-07",
    "commit": "99934df"
   },
@@ -3587,6 +3587,182 @@
    "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
    "capturedAt": "2026-11-07",
    "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/gate-1b-hop",
+   "game": "escape-the-post-office",
+   "chapter": "sorting-gate",
+   "band": "1b",
+   "state": "gate-1b-hop",
+   "concept": "the letter on its way",
+   "alt": "The Sorting Gate: the golden letter has left the Post Office on an open road, heading for the Sorting Room door.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/escape-the-post-office/shield-2",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "2",
+   "state": "shield-2",
+   "concept": "the completion shield",
+   "alt": "The Defender shield: all six locks open, each with its stamp and the skill it trained.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/ciphers-1b-wheel-n2",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "1b",
+   "state": "ciphers-1b-wheel-n2",
+   "concept": "turn the wheel back",
+   "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-backup-n2",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-backup-n2",
+   "concept": "spare copies sorted",
+   "alt": "The spare-copy sort: two copies sorted, the next card waiting: a good spare copy, or not a spare copy?",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-built-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-built-n",
+   "concept": "three words: a hundred years",
+   "alt": "Three random words in the passphrase so far. The meter says a computer would need about a hundred years.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-habits-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-habits-n",
+   "concept": "safe or risky key habits",
+   "alt": "Lock It, safe habit or risky habit: a habit card waits to be sorted, and Pim asks how you keep a key.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-key-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-key-n",
+   "concept": "build a key from word tiles",
+   "alt": "Lock It: build a mailbox key for Pim from four word tiles, and watch the meter.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-sort-n2",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-sort-n2",
+   "concept": "cards sorted into trays",
+   "alt": "The sharing sort: some cards already in their trays, Share or Keep, and the next card waiting.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-tell-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-tell-n",
+   "concept": "who may know your key",
+   "alt": "Lock It, who may know your key: a card waits for its tray, Okay to tell or Keep it to yourself.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/packets-1b-start-n",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-start-n",
+   "concept": "a numbered packet ready to travel",
+   "alt": "Break It Up: packet 1 of 3, an apple's first piece, waits at Pim's Post with its number, ready to ride to Grandma's House.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/protocols-2-key-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "2",
+   "state": "protocols-2-key-n",
+   "concept": "numbered packets at the first stop",
+   "alt": "Rules of the Road, Pro: five numbered packets wait at Pim's Post for the road through Mill Office to Grandma's House.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/trick-inbox/chat-1b-ch-3-decide",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-3-decide",
+   "concept": "report and block a mean message",
+   "alt": "The moves for JokerJay's mean message: Deliver, Bin it, Show Pim, Report & block.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/trick-inbox/keys-1b-kk-6-all",
+   "game": "trick-inbox",
+   "chapter": "keys",
+   "band": "1b",
+   "state": "keys-1b-kk-6-all",
+   "concept": "too good to be true",
+   "alt": "A post from Gem Swap Club with clues marked: swap mailbox keys with us, 500 free gems, and everyone in your class already did.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-6-all",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-6-all",
+   "concept": "a chain letter",
+   "alt": "A letter from A Friend of a Friend, Pass it on!, with clues marked: send this letter to ten friends, before midnight.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-3-all",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-3-all",
+   "concept": "an official-looking name",
+   "alt": "A letter from Account Team, Check your account, with clues marked: your mailbox key, and before Friday.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/trick-inbox/senders-2-sd-6-all",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-6-all",
+   "concept": "a faked bank asks for your key",
+   "alt": "A letter from Bank of Netville, Confirm it is you, with its real address and the clue marked: your mailbox key and your birthday.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   }
  ]
 }

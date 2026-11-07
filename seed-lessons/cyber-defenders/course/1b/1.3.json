@@ -43,25 +43,25 @@
    "title": "Copies kept safe",
    "text": "The cloud is someone else's very big post office that keeps copies safe for you. A backup there saves your photos when a tablet breaks.",
    "art": "box",
-   "img": "csq/packet-post/locks-1b-backup-n1",
-   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
+   "img": "csq/packet-post/locks-1b-backup-n2",
+   "alt": "The spare-copy sort: two copies sorted, the next card waiting: a good spare copy, or not a spare copy?",
    "focus": [
     {
-     "cue": "A copy in the family's online folder: kept somewhere else",
+     "cue": "A spare copy keeps your work safe when a tablet breaks",
      "box": [
       2.9,
-      6.3,
+      28.8,
       94.3,
-      21.2
+      39.8
      ]
     },
     {
-     "cue": "A good spare copy? It survives a broken tablet",
+     "cue": "The only copy, on one tablet: not a spare at all",
      "box": [
       2.9,
-      73.3,
-      57.4,
-      20.3
+      72,
+      94.3,
+      21.2
      ]
     }
    ]
@@ -70,15 +70,24 @@
    "title": "Passed on without you",
    "text": "A copy you send to a friend can be forwarded to others without you knowing. Once a copy travels on, you cannot call it back.",
    "art": "people",
-   "img": "csq/trick-inbox/mix-1b-mx-1-all",
-   "alt": "A letter from Lucky Letters, “The shiny chain”, with clues marked: pass this letter to ten friends; a shiny surprise will find you; tonight.",
+   "img": "csq/trick-inbox/letters-1b-lt-6-all",
+   "alt": "A letter from A Friend of a Friend, Pass it on!, with clues marked: send this letter to ten friends, before midnight.",
    "focus": [
     {
      "cue": "Pass it to ten friends: each copy travels on without you",
      "box": [
       7.1,
-      36.2,
-      63.9,
+      36.3,
+      64.6,
+      13.5
+     ]
+    },
+    {
+     "cue": "Before midnight: a rush to make you pass it on",
+     "box": [
+      7.1,
+      49.8,
+      39.5,
       13.5
      ]
     }
@@ -120,29 +129,7 @@
   {
    "title": "The Magpie's nest",
    "text": "Pim warns that the Magpie keeps a copy of every shiny secret it finds. In its nest, those copies stay pinned up, forever.",
-   "art": "mask",
-   "img": "csq/packet-post/tricks-1b-stranger-n1",
-   "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
-   "focus": [
-    {
-     "cue": "A stranger's card, fishing for a shiny secret",
-     "box": [
-      2.9,
-      5.4,
-      94.3,
-      54.3
-     ]
-    },
-    {
-     "cue": "It asks where you live: a fact to keep private",
-     "box": [
-      6.4,
-      24.5,
-      87.1,
-      29.7
-     ]
-    }
-   ]
+   "art": "mask"
   },
   {
    "kind": "words",

@@ -22,7 +22,7 @@
     "my best friend's name, because it feels personal"
    ],
    "answer": 1,
-   "why": "Length beats cleverness. Four random words are far harder to guess than a short name or a birthday."
+   "why": "A guessing computer tries short words and birthdays first, and a word with numbers stuck on is only a little longer. Every extra random word multiplies the guesses it needs."
   },
   {
    "id": "cd-1b-2.1-e2",
@@ -40,7 +40,7 @@
     "Anyone online who asks for it nicely"
    ],
    "answer": 2,
-   "why": "A passphrase is private. Only you, and a trusted adult who helps you, should know it."
+   "why": "Your passphrase is what proves the mailbox is yours. Anyone who knows it can open it as you, so only you and the adult who helps look after your account may know it."
   },
   {
    "id": "cd-1b-2.1-e3",
@@ -58,7 +58,7 @@
     "Share it just once, then forget about it"
    ],
    "answer": 0,
-   "why": "Playing as you means being you online. The answer stays no, even for a best friend."
+   "why": "With your passphrase, your friend could say things as you, and you could not prove it was not you. A real friend can play with their own account."
   },
   {
    "id": "cd-1b-2.2-e1",
