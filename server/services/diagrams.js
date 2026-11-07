@@ -1,7 +1,7 @@
 // The drawn diagram types that views/nq-diagrams.js draws (grid, squares, lines, chart, table), cleaned the way
 // services/courses.js cleanSlide cleans the older types: strictly shaped per type, every string capped, every
 // number checked; anything malformed returns null and the slide drops the whole visual (fromDeck reports it).
-export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally']);
+export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally', 'swap', 'split', 'ladder']);
 export const LINE_KINDS = Object.freeze(['parallel', 'perpendicular', 'crossing']);
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
@@ -64,6 +64,22 @@ export function cleanDiagram(v, label) {
     if (!Array.isArray(v.rows) || v.rows.length < 2 || v.rows.length > 4) return null;
     if (!v.rows.every(r => r && str(r.label, 10) && int(r.n, 0, 15))) return null;
     return { type: 'tally', label, rows: v.rows.map(r => ({ label: str(r.label, 10), n: r.n })) };
+  }
+  if (v.type === 'swap') {
+    const ok = a => Array.isArray(a) && a.length >= 2 && a.length <= 4 && a.every(t => txt(t, 3));
+    if (!ok(v.before) || !ok(v.after) || !Array.isArray(v.mark) || v.mark.length < 1 || !v.mark.every(i => int(i, 0, v.before.length - 1))) return null;
+    return { type: 'swap', label, before: v.before.map(t => txt(t, 3)), after: v.after.map(t => txt(t, 3)), mark: [...new Set(v.mark)],
+      ...(str(v.badName, 14) ? { badName: str(v.badName, 14) } : {}), ...(str(v.goodName, 16) ? { goodName: str(v.goodName, 16) } : {}) };
+  }
+  if (v.type === 'split') {
+    if (!Array.isArray(v.parts) || v.parts.length < 2 || v.parts.length > 3) return null;
+    if (!v.parts.every(p => p && typeof p.w === 'number' && p.w > 0 && p.w <= 1 && txt(p.label, 14) && (p.tone == null || int(p.tone, 0, 3)))) return null;
+    if (Math.abs(v.parts.reduce((a, p) => a + p.w, 0) - 1) > 0.02) return null;
+    return { type: 'split', label, ...(str(v.whole, 16) ? { whole: str(v.whole, 16) } : {}), parts: v.parts.map(p => ({ w: p.w, label: txt(p.label, 14), ...(p.tone != null ? { tone: p.tone } : {}) })) };
+  }
+  if (v.type === 'ladder') {
+    if (!Array.isArray(v.words) || v.words.length < 2 || v.words.length > 5 || !v.words.every(w => str(w, 14))) return null;
+    return { type: 'ladder', label, words: v.words.map(w => str(w, 14)), ...(str(v.up, 14) ? { up: str(v.up, 14) } : {}), ...(str(v.down, 14) ? { down: str(v.down, 14) } : {}) };
   }
   return null;
 }

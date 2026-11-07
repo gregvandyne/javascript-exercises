@@ -826,7 +826,8 @@ window.SoloBank = (function () {
     a = rnd.int(10, 30); d = [3, 7, 8][rnd.int(0, 2)];
     mk('Pattern: ' + [a, a + d, a + 2 * d].join(', ') + ', ... Keep the add-' + d + ' promise. What comes next?', a + 3 * d, [a + 3 * d + 1, a + 4 * d, a + 2 * d + 1]);
     a = rnd.int(2, 9);
-    mk('Pattern: ' + [a, a + 2, a + 7, a + 9, a + 14].join(', ') + ', ... The steps take turns: +2, +5, +2, +5. What comes next?', a + 16, [a + 19, a + 15, a + 21]);
+    d = [3, 4, 6][rnd.int(0, 2)];
+    mk('Pattern rule: start at ' + a + ' and add ' + d + ' each time. What is the 5th number?', a + 4 * d, [a + 5 * d, a + 3 * d, a + 4 * d + 1]);
     a = rnd.int(3, 9);
     mk('Trays of ' + a + ' skip-count: ' + [a, a * 2, a * 3].join(', ') + ', ... What comes next?', a * 4, [a * 4 + 1, a * 5, a * 3 + a - 1]);
     a = rnd.int(4, 15); d = [5, 6, 9][rnd.int(0, 2)];
@@ -940,7 +941,7 @@ window.SoloBank = (function () {
     mkS('LOCK 4 · A cake is cut into ' + c + ' equal parts. You take ' + a + ' of them. What fraction of the cake did you take?', a + '/' + c, [c + '/' + a, '1/' + c, a + '/' + (c + a)]);
     // Lock 5 (Unit 5, the heavy sack): a conversion.
     a = rnd.int(2, 7);
-    mkS('LOCK 5 · A sack is marked ' + a + ' kilograms. How many grams is that?', fmt(a * 1000) + ' grams', [fmt(a * 100) + ' grams', fmt(a * 1000 - 100) + ' grams', fmt(a * 1000 + 1000) + ' grams']);
+    mkS('LOCK 5 · A sack is marked ' + a + ' kilograms. How many grams is that?', fmt(a * 1000) + ' grams', [fmt(a * 100) + ' grams', fmt(a * 10) + ' grams', fmt(a) + ' grams']); // 100 or 10 in a kilogram, or not converted
     // Lock 6 (Unit 6, fence the garden): the perimeter.
     a = rnd.int(4, 9); b = rnd.int(3, 8); if (b === a) b += 1;
     mkS('LOCK 6 · A garden is ' + a + ' by ' + b + ' meters. How many meters of fence go around it?', 2 * (a + b), [a * b, a + b, 2 * (a + b) + 4]);
