@@ -1527,8 +1527,8 @@ def build_landmarks():
     return P
 
 
-LAND_TURNS = {'gatehouse': 26, 'keep': 40, 'ftower': 36, 'fgate': 22, 'fspire': 60, 'fpillar': 10, 'stake': 4, 'tent': 4.5, 'chieftent': 5,
-              'bridge': 14, 'lighthouse': 9, 'shop': 5, 'awning': 3.5, 'boat': 5, 'skiff': 2, 'netrack': 3.2, 'signpost': 3.2, 'sign': 2.8, 'cart': 2.6}
+LAND_TURNS = {'gatehouse': 26, 'keep': 70, 'ftower': 36, 'fgate': 22, 'fspire': 60, 'fpillar': 10, 'stake': 4, 'tent': 4.5, 'chieftent': 5,
+              'bridge': 34, 'lighthouse': 9, 'shop': 8, 'awning': 6, 'boat': 6, 'skiff': 3.5, 'netrack': 3.2, 'signpost': 3.2, 'sign': 2.8, 'cart': 2.6}
 
 
 def make_landmarks(out, renders):
