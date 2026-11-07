@@ -2267,9 +2267,11 @@ function pxPops(v, P, race, cam, dt) {
   const k = race.karts[p.k], a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1; if (a <= 0) return;
   const step = REDUCED ? 1 : p.t < 0.08 ? 0.7 : p.t < 0.16 ? 1.15 : 1;   // pops in steps, as pixel art does
   const big = Math.max(26, Math.min(60, m.kartW * 0.4, m.h * 0.15)) * step;
-  const x = Math.max(m.w * 0.12, Math.min(m.w * 0.88, sx(v, cam, k.dist) + m.kartW * 0.2 - (REDUCED ? 0 : Math.max(0, p.t - 0.76) * m.w * 0.5)));
+  // the word stays whole on screen: shrunk to fit, then kept half its (measured) width from each edge
+  const size = Math.min(big, fitFont(v.g, p.text, big, m.w - 24, 700)), half = v.g.measureText(p.text).width / 2 + 10;
+  const x = Math.max(half, Math.min(m.w - half, sx(v, cam, k.dist) + m.kartW * 0.2 - (REDUCED ? 0 : Math.max(0, p.t - 0.76) * m.w * 0.5)));
   const y = Math.max(m.hud + big * 0.7, laneY(v, k.lane) - m.kartW * 0.95);
-  pxText(P, p.text, x, y, big, p.role ? C(p.role, 'light') : '#FFE27A', { max: m.w - 24, alpha: a });
+  pxText(P, p.text, x, y, size, p.role ? C(p.role, 'light') : '#FFE27A', { max: m.w - 24, alpha: a });
 }
 function pxFinish(v, P, place) {
   const g = P.g, m = v.m, f = P.f, size = Math.max(22, Math.min(54, m.h * 0.14)), y = m.hud + (m.roadTop - m.hud) * 0.5;
@@ -2327,14 +2329,16 @@ function pxPodium(dt, time) {
   const m = v.m, A = PXA(), [FW, FH] = A.kart, bw = FW + 4, unit = Math.max(8, Math.round(FW * 0.28));
   // the free part of the screen (beside the card on wide screens, above it on tall ones), in css px
   const fx0 = 0, fx1 = wide ? Math.max(m.w * 0.4, r.left - 16) : m.w, fy1 = wide ? m.roadTop + m.laneH : Math.max(m.h * 0.22, r.top - 6);
-  // the whole podium (three steps and the fourth kart beside them, 4.2 karts wide; the top step and its kart about
+  // the whole podium (three steps and the fourth kart beside them, 4.15 karts wide; the top step and its kart about
   // 3 units + a kart tall) must fit that part: the pixel scale shrinks until it does, so no kart is ever behind the card
-  const dpr = v.dpr || 1, needW = bw * 4.3 + 8, needH = unit * 3 + FH + 10;
+  // wide screens park fourth place on the road in front of the steps (room below; the group is 3.6 karts wide), tall
+  // ones beside them (the card is below)
+  const dpr = v.dpr || 1, needW = bw * (wide ? 3.6 : 4.15) + 4, needH = unit * 3 + FH + 10 + (wide ? 24 : 0);
   v.pxKdMax = Math.max(1, Math.floor(Math.min((fx1 - fx0) * dpr / needW, (fy1 - m.hud - 8) * dpr / needH)));
   const P = pxPrepare(v), g = P.g, f = P.f;
   pxScene(v, P, 30);
   // the group runs from the fourth kart (-2.65 karts) to the third step (+1.5): centred in the free width
-  const cx = Math.round(((fx0 + fx1) / 2) * f + 0.575 * bw), base = Math.round(Math.min(m.roadTop + m.laneH * 1.2, fy1 - 4) * f);
+  const cx = Math.round(((fx0 + fx1) / 2) * f + (wide ? 0.275 : 0.575) * bw), base = Math.round(Math.min(m.roadTop + m.laneH * 1.2, fy1 - 4) * f);
   const steps = [[0, 3, '#FFD23F', '#C99A00'], [-1, 2, '#4FA8F0', '#2F6FC8'], [1, 1, '#FFC89E', '#C9713A']];
   for (const [col, n, fill, lip] of steps) {
     const x = cx + col * bw - bw / 2, top = base - n * unit;
@@ -2343,7 +2347,7 @@ function pxPodium(dt, time) {
     { const d = makeCanvas(3, 5); pxDigits(d.getContext('2d'), String(4 - n), 0, 0, P_INK); g.drawImage(d, Math.round(x + bw / 2 - 3), top + Math.round(n * unit / 2) - 5, 6, 10); }
   }
   R.standings.forEach((ki, i) => {
-    const info = S.infos[ki], [col, n] = i < 3 ? steps[i] : [-2.15, 0], hop = !REDUCED && i === 0 && Math.sin(pxPod.t * 6) > 0.5 ? 2 : 0;
+    const info = S.infos[ki], [col, n] = i < 3 ? steps[i] : wide ? [-1.55, -1.4] : [-2.15, 0], hop = !REDUCED && i === 0 && Math.sin(pxPod.t * 6) > 0.5 ? 2 : 0;
     pxKart(P, info, (cx + col * bw) / f, (base - n * unit - hop) / f, i === 0 ? 'cheer' : 'idle');
   });
   // confetti: pixel squares in the kit colours (none with reduced motion)
