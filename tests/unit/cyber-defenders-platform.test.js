@@ -187,7 +187,7 @@ test('guided focus renders on a Cyber Defenders unit 1 step page (shared rendere
   assert.equal(page.status, 200);
   assert.match(page.text, /<figure class="smedia gf(?: crop)?" style="--ar:[\d.]+;--fhr:[\d.]+" data-gf>/, 'a guided-focus figure');
   assert.match(page.text, /<div class="gf-layer" aria-hidden="true">/, 'the overlay layer');
-  assert.ok(page.text.includes('A photo waits at Pim&#39;s Post, ready to travel') || page.text.includes("A photo waits at Pim's Post, ready to travel"), 'the first cue is on the page');
+  assert.ok(page.text.includes('Packet 2 waits its turn at Pim&#39;s Post') || page.text.includes("Packet 2 waits its turn at Pim's Post"), 'the first cue is on the page');
   assert.match(page.text, /<button class="gf-replay" type="button" hidden>/, 'the replay button');
 });
 

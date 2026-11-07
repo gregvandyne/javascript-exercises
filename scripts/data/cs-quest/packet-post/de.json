@@ -50,7 +50,7 @@
   "Lock it in": "Festlegen",
   "Pick {n} words": "Wähle {n} Wörter",
   "A word about you makes it easy to guess": "Ein Wort über dich macht sie leicht zu erraten",
-  "A guessing computer would need {time}": "Ein Rate-Computer bräuchte {time}",
+  "Guessing would take {time}": "Raten würde {time} dauern",
   "Words nobody could guess about you, the more letters the better": "Wörter, die niemand über dich erraten könnte; je mehr Buchstaben, desto besser",
   "From:": "Von:",
   "unknown sender": "unbekannter Absender",

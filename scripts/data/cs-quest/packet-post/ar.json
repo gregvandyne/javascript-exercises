@@ -50,7 +50,7 @@
   "Lock it in": "تثبيت",
   "Pick {n} words": "اختر {n} كلمات",
   "A word about you makes it easy to guess": "كلمة عنك تجعلها سهلة التخمين",
-  "A guessing computer would need {time}": "سيحتاج حاسوب يخمّن إلى {time}",
+  "Guessing would take {time}": "سيستغرق تخمينها {time}",
   "Words nobody could guess about you, the more letters the better": "كلمات لا يستطيع أحد تخمينها عنك؛ وكلما زادت الحروف كان أفضل",
   "From:": "من:",
   "unknown sender": "مرسل مجهول",

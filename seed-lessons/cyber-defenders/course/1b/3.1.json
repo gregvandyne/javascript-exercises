@@ -39,12 +39,10 @@
    "text": "Pim sorts her postcards into two trays. Fun facts go in the Share tray. Me-facts go in the Keep Private tray.",
    "art": "table",
    "steps": [
-    "Share: a favorite animal",
-    "Share: a joke you invented",
     "Keep private: where you live",
-    "Keep private: a school name",
-    "Keep private: a birthday",
-    "Keep private: a photo in school uniform"
+    "Keep private: your mailbox key",
+    "Next card: a joke you made up",
+    "Share it: a joke points nobody to you"
    ],
    "img": "csq/packet-post/locks-1b-sort-n2",
    "alt": "The sharing sort: some cards already in their trays, Share or Keep, and the next card waiting.",

@@ -50,7 +50,7 @@
   "Lock it in": "決定",
   "Pick {n} words": "{n} 個の言葉を選ぼう",
   "A word about you makes it easy to guess": "自分に関係する言葉は当てられやすい",
-  "A guessing computer would need {time}": "当てずっぽうのコンピューターなら{time}かかる",
+  "Guessing would take {time}": "当てるには{time}かかる",
   "Words nobody could guess about you, the more letters the better": "だれにも当てられない言葉を。文字が多いほど強い",
   "From:": "差出人：",
   "unknown sender": "知らない差出人",

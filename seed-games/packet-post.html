@@ -962,7 +962,7 @@ const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
 
 /* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
 const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-b133b83e', PACK_SRI = {"es":"sha384-B/frVDs/+zP/w4eQ77/F/EIBQ0Xlc/XnsTOv6OgxOKkfeD9E9xkrYXr/sHqTiMIX","fr":"sha384-GAp+iVhYvuHQPwANKeS4MjA2DUoH+Vk6oMT8aUUo2sLtsnQwOE/3ygz4M+eZ3vOE","de":"sha384-DQrl8XTJDkCe7IYjG4riLIvLvjx1B6r0ZG0LrQRzjs3eWTNEBLqfmBdSoMvn0u8u","it":"sha384-B++XRblbj/d125PN744BtOfvMAeppWbpEEMzM1tlY4S9RniKuSgGQOwbuQ3MGywU","pt":"sha384-/yCPUp/owsVkw4Eq+3ZG2pErTzUgNV6K69JJdkZ7Fi4gFmTi1R9ay6QWXgkag4a3","nl":"sha384-vXLa7GQhKZLdi2Etf9kKy/dUGhS9D5c2FIpNvwVT/Ij02ct1RdRKuLzI0JCJ2NIf","ru":"sha384-2d4hsNd8tGFA5MORrNMMlRk7035McXdlva4XY1UWt1i9n1AD8+v4rTG/jIfgi/hx","ja":"sha384-UtrRlokZGJ4oJbcanXAF/hgZ6PRA6JN/Hf4Ubhv9RsqjvFhwGx7H50RU9BGOcltA","zh-Hant":"sha384-ockMwQ/25sr5BOnq9A4g7K5Ti7kMyfRujjJ6Tt/8j93Q3V5Lepng2Z9ZizuLmKiF","he":"sha384-j7wjpM0ssps7ZbEJsXD+0M65RHGTB3BMbQxDAfVPRQaAvWBE+g6x7YBzRmGnDgC+","ar":"sha384-DT+WD1go9FfzqqXeZwYaG/xKP37b5NVFOP+riveQph1OZiHoMDzzPpZW8uMWXsmR"};
+const PACK_VER = '1.0.0-ca9f7063', PACK_SRI = {"es":"sha384-iWFMb1+4LUnR+yauK/aVX5Tc+tCYcz0IYN04WXpZGJXKcwN9jbqEasi5jpMokcTy","fr":"sha384-ynEhRdgPCjj9g5kYBaByJfGBpBMWQmT1VXi5pP//D64jFtAXczdeRu9OdmVXNmXt","de":"sha384-13d6SgGB9S0JsAP4ea4KGChcgRd9Mn7Ugy88ftIoXM7C5diPgso8tLqyhdTcMvF8","it":"sha384-L1ogu6qYZEsjlGbMaR48Wu7lxYc93F5cZt+D9+EQ2NcgYN8WM2NbJRfBRdlzBAcE","pt":"sha384-E6cGnu6RKZvv/8SsumNVwoYiVMbOw/3Wvf3e74bgSojgr47sAospaKlWKO96iArI","nl":"sha384-1PU99zpHDUQ5CmO25fnkNpAypKS//t+Dl2btrPMOY2bNi/V2AViW4TSoTvBSXCiQ","ru":"sha384-0YN6RrtiSNRWRYZtNawQb4RahV2sm03hAa14+EoctlflLPXCkNGn6Kukiwq+dqg7","ja":"sha384-fiBYLfgdTGMm+H5/Z5GM9NhuqkerHktn9gtwx4tduhighwwyuIp32lxvdA6m35+Z","zh-Hant":"sha384-9vFomqDRsglLl9OXQ/tnexNf+lLhCSNwA/yWrez23dREUH7AQkcHQzuC0kB7b27L","he":"sha384-/1LwLBh+Aq35Gn0LuuwYBnI3cnNdrsuF3xxe0uzG4jDL6GoVCKirobV41vWuJCgQ","ar":"sha384-27d9SQCTQ7evNMcfNhX9HcXvC6t7G6ADLXFYKYSfmQ0kNo2lpEM3wj5UEjnrDLH0"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1456,7 +1456,7 @@ function syncPass() {
   UI.phrase.innerHTML = ''; for (const id of s.chosen) { const sp = $('span'); sp.textContent = tr(I.words.find(w => w.id === id).text); UI.phrase.appendChild(sp); }
   if (!s.chosen.length) UI.phrase.appendChild($('span', 'pp-lesson-note', tr('Pick {n} words', { n: I.need })));
   UI.meter.className = 'pp-meter pp-t' + st.tier; UI.meter.firstChild.style.width = ((st.tier + 1) / 5 * 100) + '%'; UI.meter.setAttribute('aria-valuenow', String(st.tier));
-  UI.meterText.textContent = st.weak ? tr('A word about you makes it easy to guess') : st.count ? tr('A guessing computer would need {time}', { time: tr(GUESS_TIME[st.tier]) }) : tr('Words nobody could guess about you, the more letters the better');
+  UI.meterText.textContent = st.weak ? tr('A word about you makes it easy to guess') : st.count ? tr('Guessing would take {time}', { time: tr(GUESS_TIME[st.tier]) }) : tr('Words nobody could guess about you, the more letters the better');
   for (const id in UI.tiles) pressed(UI.tiles[id], s.chosen.includes(id));
 }
 
