@@ -14,27 +14,27 @@
    "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
    "view": [
     51.0,
-    30.8,
+    27.0,
     40.3,
-    38.1
+    41.9
    ],
    "focus": [
     {
      "cue": "The message to send, in plain words anyone could read",
      "box": [
-      54.0,
-      35.8,
-      34.3,
-      10.5
+      55.4,
+      36.7,
+      12.4,
+      9.2
      ]
     },
     {
      "cue": "The same message, scrambled three ways",
      "box": [
-      54.0,
-      48.7,
-      34.3,
-      15.2
+      55.3,
+      49.3,
+      25.2,
+      14.0
      ]
     }
    ]
@@ -87,18 +87,18 @@
    "img": "csq/packet-post/ciphers-1b-unknown",
    "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
    "view": [
-    12.4,
-    21.1,
-    78.9,
-    70.1
+    9.7,
+    20.0,
+    83.0,
+    73.3
    ],
    "focus": [
     {
      "cue": "A secret word with an unknown shift: turn one step at a time",
      "box": [
-      54.0,
+      58.4,
       26.5,
-      34.3,
+      28.6,
       10.3
      ]
     },
@@ -120,19 +120,19 @@
    "img": "csq/packet-post/ciphers-1b-send",
    "alt": "A note to send: OAK TREE, readable by anyone. Three scrambled readings wait below; only one uses the shift of 5.",
    "view": [
-    12.4,
-    23.5,
-    78.9,
-    70.1
+    9.7,
+    19.6,
+    83.0,
+    74.0
    ],
    "focus": [
     {
      "cue": "First the plain message, out in the open",
      "box": [
-      54.0,
-      35.8,
-      34.3,
-      10.5
+      55.4,
+      36.7,
+      12.4,
+      9.2
      ]
     },
     {
@@ -150,31 +150,16 @@
    "title": "A scrambled note",
    "text": "This morning, the post sack held a note written in a scramble. Only the Magpie can read it, and Pim wonders what shiny secret it is hiding.",
    "art": "mask",
-   "img": "csq/packet-post/ciphers-1b-unknown",
-   "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
-   "view": [
-    51.0,
-    21.5,
-    40.3,
-    39.4
-   ],
+   "img": "csq/escape-the-post-office/note-1b",
+   "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
    "focus": [
     {
-     "cue": "A note written in a scramble: DAOWQF",
+     "cue": "The Magpie's note: RSHQ, a scramble",
      "box": [
-      54.0,
-      38.0,
-      34.3,
-      17.9
-     ]
-    },
-    {
-     "cue": "Nobody knows its shift yet",
-     "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      43.0,
+      32.5,
+      14.1,
+      11.6
      ]
     }
    ]
@@ -206,24 +191,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Secret Messages and crack the wheel levels. Use the key on the wheel to turn scrambled letters back into words.",
+   "text": "Open Escape the Post Office at Lock 2: Sealed Note. The Magpie sealed its note with a cipher wheel. Turn the wheel until the note reads as real words, then open the lock.",
    "art": "trophy",
-   "img": "csq/packet-post/ciphers-1b-wheel",
-   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
-   "view": [
-    8.0,
-    26.3,
-    45.4,
-    64.5
-   ],
+   "img": "csq/escape-the-post-office/note-1b-open",
+   "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
    "focus": [
     {
-     "cue": "Crack the wheel levels in Secret Messages",
+     "cue": "Play Sealed Note: turn until the note reads",
      "box": [
-      15.4,
-      31.3,
-      30.5,
-      54.5
+      16.0,
+      27.8,
+      68.1,
+      44.0
      ]
     }
    ]
@@ -235,8 +214,8 @@
   "cd-1b-2.3-e3"
  ],
  "game": {
-  "slug": "packet-post",
-  "chapter": "ciphers",
-  "params": "chapter=ciphers&band=1b&lock=1"
+  "slug": "escape-the-post-office",
+  "chapter": "sealed-note",
+  "params": "chapter=sealed-note&band=1b&lock=1"
  }
 }

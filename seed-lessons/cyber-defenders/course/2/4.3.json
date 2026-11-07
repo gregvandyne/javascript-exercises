@@ -12,29 +12,23 @@
    "art": "mask",
    "img": "csq/trick-inbox/media-2-md-1-all",
    "alt": "Trick Inbox, Fake or Fact?: a news flash says school closes forever with free candy for a year. Share before they delete this!",
-   "view": [
-    0.0,
-    21.4,
-    88.4,
-    78.6
-   ],
    "focus": [
     {
      "cue": "A hoax wants your belief",
      "box": [
-      40.7,
-      56.4,
-      44.7,
-      7.1
+      7.1,
+      38.1,
+      85.1,
+      13.5
      ]
     },
     {
      "cue": "And it begs for your share",
      "box": [
-      3.8,
-      63.5,
-      34.3,
-      7.1
+      8.9,
+      51.7,
+      65.2,
+      13.5
      ]
     }
    ]
@@ -45,29 +39,23 @@
    "art": "star",
    "img": "csq/trick-inbox/media-2-md-2-all",
    "alt": "A Prize Ad says tap to claim your free phone, but only the first fifty people get one.",
-   "view": [
-    0.0,
-    21.9,
-    70.4,
-    62.6
-   ],
    "focus": [
     {
      "cue": "An ad dressed up as a prize",
      "box": [
-      14.2,
-      42.9,
-      13.2,
-      4.1
+      27.1,
+      32.5,
+      25.1,
+      7.8
      ]
     },
     {
      "cue": "Who benefits if you tap?",
      "box": [
-      15.9,
-      56.4,
-      51.5,
-      7.1
+      7.1,
+      71.8,
+      56.5,
+      13.5
      ]
     }
    ]
@@ -78,29 +66,23 @@
    "art": "magnifier",
    "img": "csq/trick-inbox/media-2-md-3-all",
    "alt": "A video clip shows the mayor singing in a fountain, but his mouth moves after the words end.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "A clip that looks real",
      "box": [
-      3.6,
-      49.6,
-      92.8,
-      5.0
+      5.7,
+      17.5,
+      64.5,
+      13.3
      ]
     },
     {
      "cue": "The clue is in the details",
      "box": [
-      3.8,
-      61.8,
-      42.0,
-      7.1
+      7.1,
+      53.1,
+      80.0,
+      13.5
      ]
     }
    ]
@@ -111,20 +93,14 @@
    "art": "shield",
    "img": "csq/trick-inbox/media-2-md-1-debrief",
    "alt": "The school closing post, binned: real news does not beg to be shared, so check big stories first.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Stop: real news does not beg to be shared",
      "box": [
-      3.4,
-      72.8,
-      93.3,
-      10.0
+      6.4,
+      28.8,
+      87.1,
+      37.9
      ]
     }
    ]
@@ -142,20 +118,14 @@
    ],
    "img": "csq/trick-inbox/media-2-md-3-debrief",
    "alt": "The fountain video, shown to Pim: some videos are made by computers to look real. Check a real news page first.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Show Pim, and check a real news page",
      "box": [
-      3.4,
-      72.7,
-      93.3,
-      10.0
+      6.4,
+      27.1,
+      87.1,
+      37.9
      ]
     }
    ]
@@ -191,20 +161,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/media-2-md-4-new",
    "alt": "Netville News: the library opens its new reading room on Saturday. Ordinary news, no prizes and no panic.",
-   "view": [
-    0.0,
-    9.5,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "Play Fake or Fact?: stop, check, then decide",
      "box": [
-      1.5,
-      38.7,
-      97.0,
-      31.9
+      2.9,
+      7.1,
+      94.3,
+      71.2
      ]
     }
    ]

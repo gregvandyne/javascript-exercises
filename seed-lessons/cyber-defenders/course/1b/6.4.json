@@ -10,31 +10,16 @@
    "title": "Spark Day trouble",
    "text": "It is Spark Day in Netville, and the sorting room should be full of festival post. Instead, the Magpie has locked the door with six trick locks and pocketed the keys.",
    "art": "mask",
-   "img": "csq/escape-the-post-office/door-1b-new",
+   "img": "csq/escape-the-post-office/door-1b-new-n2",
    "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "Spark Day: the Magpie locked the real post inside",
      "box": [
-      1.5,
-      26.7,
-      97.0,
-      10.7
-     ]
-    },
-    {
-     "cue": "Six trick locks on the sorting room door",
-     "box": [
-      1.5,
-      38.7,
-      97.0,
-      54.2
+      2.9,
+      61.8,
+      94.3,
+      31.7
      ]
     }
    ]
@@ -45,29 +30,23 @@
    "art": "star",
    "img": "csq/escape-the-post-office/door-1b-two",
    "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "Each lock names the stamp that opens it",
      "box": [
-      67.0,
-      37.8,
-      31.5,
-      34.5
+      4.5,
+      40.4,
+      42.4,
+      59.3
      ]
     },
     {
      "cue": "Locks open one by one, in stamp order",
      "box": [
-      1.5,
-      37.8,
-      64.3,
-      34.5
+      4.5,
+      0.3,
+      42.4,
+      27.1
      ]
     }
    ]
@@ -78,29 +57,23 @@
    "art": "map",
    "img": "csq/escape-the-post-office/gate-1b",
    "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
-   "view": [
-    0.0,
-    17.9,
-    92.4,
-    82.1
-   ],
    "focus": [
     {
      "cue": "Route the golden letter to the Sorting Room",
      "box": [
-      10.5,
-      54.9,
-      78.9,
-      16.3
+      9.2,
+      19.7,
+      84.1,
+      40.1
      ]
     },
     {
      "cue": "More than one road leads there",
      "box": [
-      24.9,
-      51.6,
-      6.0,
-      24.6
+      22.9,
+      18.9,
+      11.4,
+      56.8
      ]
     }
    ]
@@ -118,31 +91,25 @@
     "Five Moves: the drill, from Unit 5",
     "Layers: stacking guards, from Unit 6"
    ],
-   "img": "csq/escape-the-post-office/note-1b",
+   "img": "csq/escape-the-post-office/note-1b-n2",
    "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "The Sealed Note: a code from Unit 2",
      "box": [
-      1.5,
-      36.9,
-      97.0,
-      21.5
+      4.5,
+      2.2,
+      51.9,
+      29.9
      ]
     },
     {
      "cue": "Turn the wheel until it reads as words",
      "box": [
-      1.5,
-      72.6,
-      97.0,
-      10.7
+      2.6,
+      56.3,
+      94.9,
+      39.3
      ]
     }
    ]
@@ -153,29 +120,23 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/inbox-1b-wrong",
    "alt": "A wrong try on Lock 4 only wobbles it: Pim shows the missed clue, and the lock waits for another try.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "A wrong try only wobbles the lock",
      "box": [
-      1.5,
-      66.4,
-      97.0,
-      15.9
+      5.2,
+      5.4,
+      83.1,
+      31.3
      ]
     },
     {
      "cue": "Try again: the lock waits for you",
      "box": [
-      1.5,
-      83.7,
-      97.0,
-      11.6
+      2.9,
+      45.1,
+      94.3,
+      47.4
      ]
     }
    ]
@@ -213,9 +174,9 @@
    "alt": "Five of the six locks are open in green. Only Lock 6, Layers, still guards the sorting room door.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {

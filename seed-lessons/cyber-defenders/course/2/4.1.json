@@ -12,29 +12,23 @@
    "art": "mask",
    "img": "csq/trick-inbox/senders-2-sd-3-all",
    "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
-   "view": [
-    0.0,
-    4.0,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "The name says Your Teacher",
      "box": [
-      15.5,
-      42.9,
-      17.5,
-      4.1
+      29.6,
+      10.9,
+      33.4,
+      7.8
      ]
     },
     {
      "cue": "The real address tells the truth",
      "box": [
-      3.6,
-      49.6,
-      92.8,
-      3.8
+      5.7,
+      21.8,
+      63.4,
+      11.2
      ]
     }
    ]
@@ -50,31 +44,25 @@
     "The two do not match",
     "Do not tap; verify another way"
    ],
-   "img": "csq/trick-inbox/senders-2-sd-1-all",
+   "img": "csq/trick-inbox/senders-2-sd-1-all-n2",
    "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "The button says one name",
      "box": [
-      3.6,
-      74.2,
-      92.8,
-      10.7
+      10.0,
+      78.3,
+      54.2,
+      13.5
      ]
     },
     {
      "cue": "The real address goes somewhere else",
      "box": [
-      3.8,
-      49.6,
-      92.5,
-      7.1
+      9.0,
+      7.5,
+      67.6,
+      7.2
      ]
     }
    ]
@@ -85,29 +73,23 @@
    "art": "people",
    "img": "csq/trick-inbox/pressure-2-pr-3-all",
    "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
-   "view": [
-    0.0,
-    20.0,
-    90.0,
-    80.0
-   ],
    "focus": [
     {
      "cue": "Built for one person, from their own posts",
      "box": [
-      3.8,
-      61.8,
-      83.2,
-      7.1
+      7.1,
+      27.6,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "Then the request: your key",
      "box": [
-      8.5,
-      68.9,
-      21.8,
-      7.1
+      29.5,
+      50.0,
+      41.4,
+      13.5
      ]
     }
    ]
@@ -119,10 +101,10 @@
    "img": "csq/packet-post/tricks-2-parcel",
    "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
    "view": [
-    5.0,
-    3.9,
-    86.4,
-    76.8
+    0.0,
+    0.0,
+    92.7,
+    80.7
    ],
    "focus": [
     {
@@ -137,10 +119,10 @@
     {
      "cue": "Asks for money, two hours to act",
      "box": [
-      54.0,
-      40.2,
-      34.4,
-      16.5
+      55.3,
+      40.9,
+      29.8,
+      15.7
      ]
     }
    ]
@@ -149,22 +131,16 @@
    "title": "Reporting protects everyone",
    "text": "Reporting a phishing message is a Defender act. One report can warn the whole school and stop the same costume reaching your friends.",
    "art": "shield",
-   "img": "csq/trick-inbox/senders-2-sd-1-debrief",
+   "img": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
    "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "Report it, and the faked sender is blocked",
      "box": [
-      3.4,
-      66.4,
-      93.3,
-      10.0
+      6.4,
+      21.6,
+      87.1,
+      47.4
      ]
     }
    ]
@@ -200,20 +176,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/senders-2-sd-1-new",
    "alt": "Trick Inbox, Faked Senders: a letter from Post Office says your key expired. Its real address is a freemail box.",
-   "view": [
-    0.0,
-    5.7,
-    99.3,
-    88.3
-   ],
    "focus": [
     {
      "cue": "Play Faked Senders: check the real address first",
      "box": [
-      3.8,
-      42.9,
-      92.5,
-      13.8
+      29.6,
+      46.0,
+      29.9,
+      7.8
      ]
     }
    ]

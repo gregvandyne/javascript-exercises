@@ -12,20 +12,14 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/moves-2",
    "alt": "Lock 5 at Pro: someone has a classmate's mailbox key, and a second message pressures you. Six drill tiles wait.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "The drill in order: six tiles",
      "box": [
-      1.5,
-      66.0,
-      97.0,
-      34.0
+      2.6,
+      6.5,
+      94.9,
+      87.0
      ]
     }
    ]
@@ -34,22 +28,16 @@
    "title": "Contain the damage",
    "text": "Contain means stop the bleeding first. Leave the fake page, and change the key from a clean device you trust, not from the screen that may have tricked you.",
    "art": "lock",
-   "img": "csq/escape-the-post-office/moves-2-one",
+   "img": "csq/escape-the-post-office/moves-2-one-n1",
    "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
-   "view": [
-    0.0,
-    33.5,
-    58.2,
-    51.7
-   ],
    "focus": [
     {
      "cue": "Contain first: stop and disconnect",
      "box": [
-      2.6,
-      56.0,
-      52.6,
-      6.7
+      5.0,
+      55.1,
+      90.0,
+      18.6
      ]
     }
    ]
@@ -60,20 +48,14 @@
    "art": "envelope",
    "img": "csq/escape-the-post-office/moves-2-three",
    "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
-   "view": [
-    0.0,
-    39.3,
-    61.0,
-    54.2
-   ],
    "focus": [
     {
      "cue": "Preserve: save the evidence, delete nothing",
      "box": [
-      2.6,
-      63.1,
-      55.4,
-      6.7
+      5.0,
+      28.4,
+      90.0,
+      18.6
      ]
     }
    ]
@@ -84,20 +66,14 @@
    "art": "people",
    "img": "csq/escape-the-post-office/moves-2-five",
    "alt": "Five drill moves in order, up to change the key from a clean device. Only the one-line log is left.",
-   "view": [
-    0.0,
-    33.4,
-    74.9,
-    66.6
-   ],
    "focus": [
     {
      "cue": "Report and block, then recover",
      "box": [
-      2.6,
-      70.2,
-      69.3,
-      6.7
+      5.0,
+      36.9,
+      68.4,
+      26.2
      ]
     }
    ]
@@ -117,9 +93,9 @@
    "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
    "view": [
     0.0,
-    11.4,
+    0.0,
     99.7,
-    88.6
+    100.0
    ],
    "focus": [
     {
@@ -139,20 +115,14 @@
    "art": "pencil",
    "img": "csq/escape-the-post-office/moves-2-done",
    "alt": "Lock 5 open: the drill ran in order, start to finish. Calm work, and the skill it trained.",
-   "view": [
-    0.0,
-    8.3,
-    52.0,
-    46.2
-   ],
    "focus": [
     {
      "cue": "Lock open: calm work, start to finish",
      "box": [
-      3.6,
-      28.7,
-      37.5,
-      5.5
+      6.9,
+      48.7,
+      71.5,
+      10.6
      ]
     }
    ]
@@ -190,9 +160,9 @@
    "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
    "view": [
     0.0,
-    9.8,
+    0.0,
     100.0,
-    90.2
+    100.0
    ],
    "focus": [
     {

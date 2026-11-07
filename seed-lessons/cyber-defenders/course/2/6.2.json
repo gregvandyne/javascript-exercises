@@ -17,20 +17,14 @@
    "art": "envelope",
    "img": "csq/escape-the-post-office/note-2",
    "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
-   "view": [
-    0.0,
-    2.5,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "A sealed note keeps its words secret",
      "box": [
-      1.5,
-      36.9,
-      97.0,
-      21.5
+      5.2,
+      11.1,
+      55.0,
+      33.0
      ]
     }
    ]
@@ -43,9 +37,9 @@
    "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {
@@ -83,27 +77,27 @@
    "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Use someone's picture: the rules protect its maker",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.0,
+      38.5,
+      33.4,
+      20.4
      ]
     },
     {
      "cue": "Or make your own: your work is protected too",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.1,
+      38.5,
+      32.4,
+      20.4
      ]
     }
    ]
@@ -141,9 +135,9 @@
    "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {

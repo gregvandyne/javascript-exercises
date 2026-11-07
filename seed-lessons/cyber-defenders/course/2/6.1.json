@@ -12,29 +12,23 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/layers-2",
    "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "One threat: an interceptor reads a note",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      4.5,
+      3.7,
+      76.1,
+      11.9
      ]
     },
     {
      "cue": "Stack layers, so one failure is not the story",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      27.5
+      2.6,
+      22.3,
+      94.9,
+      69.6
      ]
     }
    ]
@@ -45,20 +39,14 @@
    "art": "lock",
    "img": "csq/escape-the-post-office/layers-2-5",
    "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "The personal stack: updates, key, two-step, backups",
      "box": [
-      26.0,
-      54.7,
-      72.5,
-      27.5
+      2.6,
+      23.1,
+      94.9,
+      69.5
      ]
     }
    ]
@@ -69,29 +57,23 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/layers-2-2",
    "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "A stolen key, tried from a new device",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      5.2,
+      21.3,
+      83.7,
+      21.8
      ]
     },
     {
      "cue": "It meets the second step and stops",
      "box": [
-      26.0,
-      54.7,
-      23.5,
-      12.9
+      53.3,
+      52.6,
+      36.7,
+      20.5
      ]
     }
    ]
@@ -102,29 +84,23 @@
    "art": "wrench",
    "img": "csq/escape-the-post-office/layers-2-3",
    "alt": "Threat 3 of 6: a known hole in old software lets a trick letter slip in. The Patch Crew closes it.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "A known hole in old software",
      "box": [
-      1.5,
-      42.9,
-      97.0,
-      10.4
+      4.5,
+      6.7,
+      89.0,
+      19.9
      ]
     },
     {
      "cue": "Updates close it: the Patch Crew",
      "box": [
-      50.5,
-      54.7,
-      23.5,
-      12.9
+      2.6,
+      58.2,
+      46.6,
+      19.7
      ]
     }
    ]
@@ -140,31 +116,16 @@
     "Photos exist nowhere else: backup layer missing",
     "Updates postponed for months: patch layer missing"
    ],
-   "img": "csq/escape-the-post-office/layers-2-2",
+   "img": "csq/escape-the-post-office/layers-2-2-n2",
    "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
-    {
-     "cue": "One account, one threat at a time",
-     "box": [
-      1.5,
-      36.0,
-      15.5,
-      5.6
-     ]
-    },
     {
      "cue": "Which layer is missing?",
      "box": [
-      1.5,
-      54.7,
-      97.0,
-      27.5
+      2.6,
+      7.9,
+      94.9,
+      69.6
      ]
     }
    ]
@@ -205,20 +166,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/layers-2-5",
    "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "Play Layers: match each threat to its layer",
      "box": [
+      2.6,
       1.5,
-      42.9,
-      97.0,
-      39.3
+      94.9,
+      91.2
      ]
     }
    ]

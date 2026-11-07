@@ -75,7 +75,7 @@ const TEXT_RECTS = recordedText();
 /** In the page: every problem of one figure's tour, as laid out now (all steps are laid out at once; the
  *  inactive ones are only transparent). `rects`: the picture's recorded text boxes, or null. */
 function figureProblems(fig, arg) {
-  const { rects, still } = arg;
+  const { rects, still, only } = arg;
   const out = [];
   const R = el => el.getBoundingClientRect();
   const hit = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 0.5 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0.5;
@@ -120,6 +120,7 @@ function figureProblems(fig, arg) {
   // The still view (reduced motion): every step's box and badge shows at once, so no two badges may stack.
   const badges = [];
   fig.querySelectorAll('.gf-step').forEach((st, i) => {
+    if (only != null && i !== only) return; // a zoomed step (zoom-to-cue): only its own box is laid out on this zoom
     const n = `step ${i + 1}`;
     if (still) { const bg = st.querySelector('.gf-badge'); if (shown(bg)) { const g = R(bg); for (const [j, h] of badges) if (hit(g, h)) out.push(`${n}: its badge stacks on step ${j + 1}'s badge`); badges.push([i, g]); } }
     const box = st.querySelector('.gf-box'), b = R(box);
@@ -195,7 +196,26 @@ for (const [W, H, still] of [[390, 844, false], [1280, 800, false], [390, 844, t
           if (!(await fig.evaluate(f => f.classList.contains('vf')))) await expect(fig).toHaveAttribute('data-gf-ink', /[01]/);
           const src = await fig.evaluate(f => { const im = f.querySelector('.simg'); return im ? new URL(im.src).pathname : ''; });
           const rects = TEXT_RECTS[src.replace(/^\/img\//, '').replace(/\.webp$/, '')] || null;
+          // A zooming picture (zoom-to-cue) is checked at rest first: pin it there whatever its tour is doing.
+          if (await fig.evaluate(f => !!f.gfz)) { await fig.evaluate(f => f.setAttribute('data-gfz-pin', 'rest')); await page.waitForTimeout(150); }
           for (const p of await fig.evaluate(figureProblems, { rects, still })) problems.push(`${key} slide ${i}: ${p}`);
+          // Zoom-to-cue (public/js/course-zoom.js): a picture whose game words read under 11 px at rest zooms to each
+          // step. Each zoomed step is checked as shown: its own chip, badge and ring by the same rules, the zoom holds
+          // the step's box, and no line of the game's text is cut at the frame's edge (the zoom's own record).
+          const zoomed = await fig.evaluate(f => (f.gfz && !f.matches('.vf') ? f.gfz.zooms.map((z, s) => (z ? s : -1)).filter(s => s >= 0) : []));
+          for (const s of still ? [] : zoomed) {
+            await fig.evaluate((f, s) => { f.setAttribute('data-gfz-pin', String(s)); }, s);
+            await page.waitForTimeout(1100);
+            for (const p of await fig.evaluate(figureProblems, { rects, still, only: s })) problems.push(`${key} slide ${i} zoomed step ${s + 1}: ${p}`);
+            const z = await fig.evaluate((f, s) => {
+              const fr = f.querySelector('.sframe').getBoundingClientRect(), b = f.querySelectorAll('.gf-box')[s].getBoundingClientRect(), zz = f.gfz.zooms[s];
+              return { cut: zz.cut.length, inside: b.left >= fr.left - 1 && b.right <= fr.right + 1 && b.top >= fr.top - 1 && b.bottom <= fr.bottom + 1, px: zz.px };
+            }, s);
+            if (z.cut) problems.push(`${key} slide ${i} zoomed step ${s + 1}: the zoom cuts ${z.cut} line(s) of text`);
+            if (!z.inside) problems.push(`${key} slide ${i} zoomed step ${s + 1}: the step's box leaves the zoomed frame`);
+            if (z.px < 5) problems.push(`${key} slide ${i} zoomed step ${s + 1}: the words read at ${z.px.toFixed(1)} px`);
+          }
+          if (zoomed.length && !still) { await fig.evaluate(f => f.removeAttribute('data-gfz-pin')); await page.waitForTimeout(300); }
         }
       }
       await ctx.close();

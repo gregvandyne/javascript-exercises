@@ -22,20 +22,14 @@
    "art": "shield",
    "img": "csq/trick-inbox/pressure-2-pr-2-all",
    "alt": "A System letter says your account will be deleted in one hour unless you send your key right now.",
-   "view": [
-    0.0,
-    36.8,
-    52.0,
-    46.2
-   ],
    "focus": [
     {
      "cue": "A countdown built to keep you tapping",
      "box": [
-      3.8,
-      56.4,
-      44.5,
-      7.1
+      7.1,
+      34.6,
+      84.8,
+      13.5
      ]
     }
    ]
@@ -53,29 +47,23 @@
    ],
    "img": "csq/trick-inbox/pressure-2-pr-6-all",
    "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
-   "view": [
-    0.0,
-    29.0,
-    69.7,
-    62.0
-   ],
    "focus": [
     {
      "cue": "A hook: only two left",
      "box": [
-      3.8,
-      56.4,
-      17.3,
-      7.1
+      7.1,
+      36.3,
+      33.0,
+      13.5
      ]
     },
     {
      "cue": "Another hook: a countdown",
      "box": [
-      34.4,
-      56.4,
-      32.3,
-      7.1
+      7.1,
+      49.9,
+      61.5,
+      13.5
      ]
     }
    ]

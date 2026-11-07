@@ -78,25 +78,25 @@
    "view": [
     25.9,
     18.2,
-    65.4,
+    66.7,
     58.1
    ],
    "focus": [
     {
      "cue": "Sealed roads wear a padlock",
      "box": [
-      28.9,
-      37.7,
-      23.4,
-      30.3
+      42.9,
+      64.5,
+      8.9,
+      3.5
      ]
     },
     {
      "cue": "Open roads have a snoopy cat who reads packets",
      "box": [
-      54.0,
+      58.4,
       26.5,
-      34.3,
+      29.4,
       12.9
      ]
     }
@@ -106,31 +106,25 @@
    "title": "What a seal cannot promise",
    "text": "A sealed envelope proves the trip is private. It does not prove the sender is kind, so still think before you trust a message.",
    "art": "shield",
-   "img": "csq/packet-post/tricks-1b-card",
+   "img": "csq/packet-post/tricks-1b-card-n1",
    "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
-   "view": [
-    4.2,
-    13.7,
-    40.0,
-    35.6
-   ],
    "focus": [
     {
      "cue": "This message wears a bank's name",
      "box": [
-      13.0,
-      29.8,
-      9.1,
-      3.4
+      17.7,
+      36.4,
+      28.1,
+      11.0
      ]
     },
     {
      "cue": "A seal on the trip says nothing about the sender",
      "box": [
-      22.7,
-      29.8,
-      12.7,
-      3.4
+      47.2,
+      36.4,
+      39.6,
+      11.0
      ]
     }
    ]

@@ -12,29 +12,23 @@
    "art": "people",
    "img": "csq/trick-inbox/chat-2-ch-4-all",
    "alt": "Game chat from NewFriend: you seem nice, a rare game skin for free, just keep this our secret.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "An online-only friend: kind words first",
      "box": [
-      3.6,
-      56.4,
-      92.8,
-      12.5
+      6.9,
+      26.5,
+      86.2,
+      47.8
      ]
     },
     {
      "cue": "Then a secret to keep",
      "box": [
-      65.3,
-      56.4,
-      24.5,
-      7.1
+      15.4,
+      50.4,
+      46.6,
+      13.5
      ]
     }
    ]
@@ -45,29 +39,23 @@
    "art": "screen",
    "img": "csq/trick-inbox/chat-2-ch-7-all",
    "alt": "Group chat: everyone is doing it, post the photo or you are out, and do not show any adult this chat.",
-   "view": [
-    0.0,
-    33.6,
-    52.0,
-    46.2
-   ],
    "focus": [
     {
      "cue": "A group chat feels private",
      "box": [
-      14.4,
-      42.9,
-      16.0,
-      4.1
+      27.4,
+      15.1,
+      30.5,
+      7.8
      ]
     },
     {
      "cue": "Do not show any adult: a warning sign",
      "box": [
-      3.8,
-      63.5,
-      36.5,
-      7.1
+      15.5,
+      63.3,
+      69.5,
+      13.5
      ]
     }
    ]
@@ -78,20 +66,14 @@
    "art": "people",
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
-   "view": [
-    0.0,
-    21.1,
-    87.5,
-    77.8
-   ],
    "focus": [
     {
      "cue": "A dare to post a friend's silly photo, without their yes",
      "box": [
-      3.8,
-      56.4,
-      55.4,
-      7.1
+      7.1,
+      34.2,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -104,27 +86,27 @@
    "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Free, if it sees where you are, live",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.2,
+      38.5,
+      33.0,
+      20.4
      ]
     },
     {
      "cue": "Costs a little, and never knows",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      55.0,
+      38.5,
+      34.6,
+      20.4
      ]
     }
    ]
@@ -142,29 +124,14 @@
    ],
    "img": "csq/trick-inbox/chat-2-ch-7-debrief",
    "alt": "The group chat dare, reported: pressure dressed up as friendship, and leaving a chat like that is a strength.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
-    {
-     "cue": "A dare: post it or you are out",
-     "box": [
-      3.8,
-      45.1,
-      67.5,
-      7.1
-     ]
-    },
     {
      "cue": "Pressure dressed up as friendship",
      "box": [
-      3.4,
-      72.8,
-      93.3,
-      10.0
+      6.4,
+      29.0,
+      87.1,
+      47.4
      ]
     }
    ]
@@ -175,20 +142,14 @@
    "art": "shield",
    "img": "csq/trick-inbox/chat-2-ch-4-decide",
    "alt": "NewFriend's chat with both clues found, and the four moves below: Deliver, Bin it, Show Pim, Report and block.",
-   "view": [
-    48.0,
-    53.8,
-    52.0,
-    46.2
-   ],
    "focus": [
     {
      "cue": "Leaving and blocking are always allowed",
      "box": [
-      75.0,
-      73.6,
-      23.5,
-      10.7
+      51.0,
+      43.8,
+      46.2,
+      20.3
      ]
     }
    ]
@@ -234,10 +195,10 @@
     {
      "cue": "Play Online: judge by consent, not popularity",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      26.8,
+      22.3,
+      38.7,
+      61.2
      ]
     }
    ]

@@ -12,29 +12,23 @@
    "art": "star",
    "img": "csq/trick-inbox/letters-1b-lt-5-all",
    "alt": "A Game Shop letter offers a thousand free coins, but the offer ends in one hour. Both clues are found.",
-   "view": [
-    0.0,
-    18.3,
-    91.9,
-    81.7
-   ],
    "focus": [
     {
      "cue": "A thousand free coins for everyone",
      "box": [
-      24.6,
-      56.4,
-      26.2,
-      7.1
+      7.1,
+      44.5,
+      50.0,
+      13.5
      ]
     },
     {
      "cue": "Too good, and it rushes you",
      "box": [
-      58.5,
-      56.4,
-      30.4,
-      7.1
+      7.1,
+      58.0,
+      58.0,
+      13.5
      ]
     }
    ]
@@ -45,29 +39,23 @@
    "art": "trophy",
    "img": "csq/trick-inbox/mix-1b-mx-6-all",
    "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
-   "view": [
-    0.0,
-    26.4,
-    75.6,
-    67.2
-   ],
    "focus": [
     {
      "cue": "You are visitor number 1000!",
      "box": [
-      11.5,
-      56.4,
-      24.6,
-      7.1
+      21.9,
+      40.9,
+      46.9,
+      13.5
      ]
     },
     {
      "cue": "A free prize for a contest you never entered",
      "box": [
-      43.4,
-      56.4,
-      29.2,
-      7.1
+      7.1,
+      54.4,
+      55.7,
+      13.5
      ]
     }
    ]
@@ -78,29 +66,23 @@
    "art": "magnifier",
    "img": "csq/trick-inbox/mix-1b-mx-4-all",
    "alt": "A post from News Flash says school is closing forever with free candy for everyone, and begs you to tell everyone.",
-   "view": [
-    0.0,
-    9.0,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "A huge claim from a sender nobody knows",
      "box": [
-      3.6,
-      42.9,
-      92.8,
-      11.7
+      6.9,
+      15.1,
+      86.2,
+      22.4
      ]
     },
     {
      "cue": "Check it with a second source first",
      "box": [
-      42.0,
-      56.4,
-      53.2,
-      7.1
+      7.1,
+      51.2,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -118,29 +100,23 @@
    ],
    "img": "csq/escape-the-post-office/inbox-1b-2",
    "alt": "Lock 4, message 2 of 6: a Prize Parrot says you won a shiny prize you never tried to win. Tap fast!",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "A prize you never tried to win, and a rush",
      "box": [
-      3.4,
-      56.8,
-      93.3,
-      4.6
+      5.2,
+      20.2,
+      83.5,
+      20.3
      ]
     },
     {
      "cue": "Pause, then make a calm choice",
      "box": [
-      1.5,
-      65.6,
-      97.0,
-      11.6
+      2.9,
+      48.9,
+      94.3,
+      47.4
      ]
     }
    ]
@@ -151,20 +127,14 @@
    "art": "mask",
    "img": "csq/trick-inbox/letters-1b-lt-5-debrief",
    "alt": "The free coins letter, binned: Pim explains it was too good to be true, from the prize-faker.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "The coins were bait from the prize-faker",
      "box": [
-      3.4,
-      79.0,
-      93.3,
-      10.0
+      6.4,
+      32.7,
+      87.1,
+      28.4
      ]
     }
    ]
@@ -202,9 +172,9 @@
    "alt": "Lock 4, Trick Inbox: the first of six messages, a library book, with four moves to choose from.",
    "view": [
     0.0,
-    9.8,
+    3.7,
     100.0,
-    90.2
+    96.3
    ],
    "focus": [
     {

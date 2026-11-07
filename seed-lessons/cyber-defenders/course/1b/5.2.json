@@ -12,29 +12,23 @@
    "art": "screen",
    "img": "csq/trick-inbox/chat-1b-ch-3-all",
    "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
-   "view": [
-    0.0,
-    15.1,
-    95.5,
-    84.9
-   ],
    "focus": [
     {
      "cue": "A mean message mocks a player",
      "box": [
-      3.8,
-      56.4,
-      47.3,
-      7.1
+      7.1,
+      32.0,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "And it wants the whole school to see",
      "box": [
-      51.8,
-      56.4,
-      40.7,
-      7.1
+      7.1,
+      54.4,
+      77.5,
+      13.5
      ]
     }
    ]
@@ -45,20 +39,14 @@
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
    "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "A kind word to Pip helps more than any reply",
      "box": [
-      3.4,
-      67.7,
-      93.3,
-      14.9
+      6.4,
+      29.0,
+      87.1,
+      47.4
      ]
     }
    ]
@@ -69,29 +57,23 @@
    "art": "shield",
    "img": "csq/escape-the-post-office/moves-1b",
    "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "An unkind message is being passed along",
      "box": [
-      3.4,
-      40.7,
-      93.3,
-      9.1
+      5.7,
+      1.9,
+      88.5,
+      23.3
      ]
     },
     {
      "cue": "Never forward it: stop, do not pass it on",
      "box": [
-      75.0,
-      66.0,
-      23.5,
-      12.9
+      52.8,
+      86.0,
+      39.5,
+      11.2
      ]
     }
    ]
@@ -111,27 +93,27 @@
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Delete the message if you can",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.9,
+      38.5,
+      31.6,
+      20.4
      ]
     },
     {
      "cue": "Or leave it standing for all to see",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      61.1,
+      41.0,
+      22.4,
+      15.3
      ]
     }
    ]
@@ -142,29 +124,23 @@
    "art": "envelope",
    "img": "csq/escape-the-post-office/moves-1b-two",
    "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
-   "view": [
-    0.0,
-    36.2,
-    68.9,
-    61.2
-   ],
    "focus": [
     {
      "cue": "Stop, then save it: keep the message",
      "box": [
-      2.6,
-      56.0,
-      52.3,
-      6.7
+      5.0,
+      13.4,
+      52.2,
+      26.2
      ]
     },
     {
      "cue": "Then tell a trusted adult",
      "box": [
-      34.2,
-      66.0,
-      31.7,
-      11.6
+      51.0,
+      47.6,
+      46.2,
+      24.6
      ]
     }
    ]
@@ -200,20 +176,14 @@
    "art": "trophy",
    "img": "csq/escape-the-post-office/moves-1b-four",
    "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "Play Five Moves: put the moves in order",
      "box": [
-      1.5,
-      54.0,
-      97.0,
-      17.8
+      2.9,
+      9.5,
+      94.3,
+      61.0
      ]
     }
    ]

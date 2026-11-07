@@ -14,27 +14,27 @@
    "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Your drawing, shown to everyone online",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      9.9,
+      38.5,
+      35.5,
+      20.4
      ]
     },
     {
      "cue": "Your drawing, kept to family only",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.2,
+      41.0,
+      32.2,
+      15.3
      ]
     }
    ]
@@ -53,27 +53,27 @@
    "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Use a picture, credit its maker",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.0,
+      38.5,
+      33.4,
+      20.4
      ]
     },
     {
      "cue": "Or draw your own, even if it is worse",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      56.1,
+      38.5,
+      32.4,
+      20.4
      ]
     }
    ]
@@ -84,29 +84,23 @@
    "art": "people",
    "img": "csq/trick-inbox/pressure-2-pr-4-all",
    "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
-   "view": [
-    0.0,
-    21.1,
-    87.5,
-    77.8
-   ],
    "focus": [
     {
      "cue": "A dare to post a silly photo of a friend",
      "box": [
-      3.8,
-      56.4,
-      55.4,
-      7.1
+      7.1,
+      34.2,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "Everyone will laugh, but the friend never said yes",
      "box": [
-      59.9,
-      56.4,
-      24.6,
-      7.1
+      7.1,
+      56.6,
+      46.8,
+      13.5
      ]
     }
    ]
@@ -117,29 +111,23 @@
    "art": "lock",
    "img": "csq/trick-inbox/chat-1b-ch-6-all",
    "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "A quiz fishing for your street and birthday",
      "box": [
-      3.8,
-      61.8,
-      63.4,
-      7.1
+      7.1,
+      44.9,
+      85.7,
+      22.4
      ]
     },
     {
      "cue": "These stay private: mine to keep",
      "box": [
-      1.5,
-      38.7,
-      97.0,
-      48.7
+      6.9,
+      7.1,
+      85.9,
+      73.7
      ]
     }
    ]
@@ -182,9 +170,9 @@
    "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {

@@ -9,7 +9,8 @@
 // used more than twice per band; a screenshot with focus carries a view (the phone crop) that holds every box; every slide but the words
 // slides is pictured from the shared manifest — CS Quest shots reused where the state matches, plus Cyber's own
 // captures (scripts/cyber-shots-spec.json) — always with the manifest's alt, and guided focus covers every
-// pictured slide in units 1-6 with CS Quest's schema (the intro carries none yet); kid-safe text (the real game
+// pictured slide in units 1-6 with CS Quest's schema (the intro's screenshots carry a phone crop and a tour too); a slide
+// no capture fits may draw a diagram (`visual`, the engine's drawn types) instead of its topic art; kid-safe text (the real game
 // scanner and the free-text filter over every string, no links, handles, long digit runs, brands, framework names,
 // standard codes or the program name); US spelling; the Magpie beat in the intro and in each unit's last step;
 // teacher notes on the intro and units 1-4.
@@ -22,6 +23,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const NARROW = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'cyber-shots-spec.json'), 'utf8')).filter(x => x.narrow).map(x => `csq/${x.game}/${x.state}`));
 const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
 const CS = path.join(ROOT, 'seed-lessons/cs-quest');
 const { scanVersion } = await import('../../server/services/scanner.js');
@@ -141,7 +143,7 @@ test('5-8 slides: one worked example with chips, one words slide with four words
     const titles = new Set();
     for (const [i, s] of d.slides.entries()) {
       const at = `${where} slide ${i + 1}`;
-      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'view', 'focus'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'view', 'focus'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'view', 'focus'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'view', 'focus'] }[s.kind || 'text'];
+      const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'alt', 'view', 'visual', 'focus'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'alt', 'view', 'visual', 'focus'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'alt', 'view', 'focus'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'alt', 'view', 'focus'] }[s.kind || 'text'];
       for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
@@ -166,12 +168,14 @@ test('5-8 slides: one worked example with chips, one words slide with four words
           const [x, y, w, h] = f.box;
           assert.ok(x >= vx - 0.05 && y >= vy - 0.05 && x + w <= vx + vw + 0.05 && y + h <= vy + vh + 0.05, `${at}: focus "${f.cue}" sits inside the view`);
         }
-      } else if (s.img && !s.img.startsWith('csq/chars/') && s.focus) {
+      } else if (s.img && !s.img.startsWith('csq/chars/') && s.focus && !NARROW.has(s.img)) {
+        // A narrow shot (the game laid out at phone width, a 16:9 slice of it) is legible whole: no crop needed.
         assert.fail(`${at}: a screenshot with focus carries a view, so the part it names is legible on a phone`);
       }
       if (s.focus != null) {
         // Guided focus: animation steps over the slide's picture, same schema as CS Quest's (cleanSlide's rules).
-        assert.ok(s.img, `${at}: focus needs the slide's img`);
+        assert.ok(s.img || s.visual, `${at}: focus needs the slide's img or drawn visual`);
+        assert.ok(!(s.img && s.visual), `${at}: a picture or a diagram, not both`);
         assert.ok(Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4, `${at}: 1-4 focus steps`);
         for (const [fi, f] of s.focus.entries()) {
           const fat = `${at} focus ${fi + 1}`;
@@ -218,13 +222,12 @@ test('parity: every slide is pictured except the words slides, and guided focus 
       // tour talked about another screen were dropped, and those slides draw their topic art instead).
       if (s.kind === 'words') assert.equal(s.img, undefined, `${at}: words slides stay typographic, as in CS Quest`);
       else if (s.img) assert.ok(s.alt, `${at}: a pictured slide carries its alt`);
+      else if (s.visual) assert.ok(ART.includes(s.art) && Array.isArray(s.focus) && s.view === undefined, `${at}: a drawn diagram keeps its art fallback and carries a tour`);
       else assert.ok(ART.includes(s.art) && s.focus === undefined && s.view === undefined, `${at}: an unpictured slide draws its art, with no tour`);
-      if (step.n === '0.1') {
-        assert.equal(s.focus, undefined, `${at}: the intro carries no guided focus yet`);
-      } else {
-        assert.ok(s.img ? Array.isArray(s.focus) : true, `${at}: pictured slides carry guided focus`);
-        if (s.kind === 'mission' && s.img) assert.equal(s.focus.length, 1, `${at}: a pictured mission slide gets exactly one focus step`);
-      }
+      // Every screenshot carries guided focus, the intro's too (2026-11-06: its pictures are cropped for phones and
+      // toured); only a character portrait (csq/chars/) stands alone.
+      if (s.img && !s.img.startsWith('csq/chars/')) assert.ok(Array.isArray(s.focus), `${at}: pictured slides carry guided focus`);
+      if (s.kind === 'mission' && s.img) assert.equal(s.focus.length, 1, `${at}: a pictured mission slide gets exactly one focus step`);
     }
   }
 });
@@ -293,18 +296,30 @@ test('course design: each unit plays the game that teaches it, and no step repea
     for (const m of mods) {
       // Units 1-2 play Packet Post, except where a step's own skill is trained by one of the course's own games,
       // so no step reopens a chapter (or a chained chapter) an earlier step already required: 1.3's journey in
-      // Escape's Lock 1: Sorting Gate (Packet Post's Many Roads is already chained from 1.1), 1b-2.2's key-only
-      // note in Lock 2: Sealed Note (Layers is 6.1's), 2-2.2's key-fishing letters in Trick Inbox, and 2-2.3's
-      // brute-force wheel in Lock 2: Sealed Note (Secret Messages chains into Spot the Trick, 2-1.2's module).
-      const OWN = { '1b-1.3': 'escape-the-post-office', '1b-2.2': 'escape-the-post-office', '2-1.3': 'escape-the-post-office', '2-2.2': 'trick-inbox', '2-2.3': 'escape-the-post-office' };
+      // Escape's Lock 1: Sorting Gate (Packet Post's Many Roads is already chained from 1.1), the key-fishing letters
+      // of Trick Inbox's Prize Letters at 2.2 (who may have your key), and the Magpie's note in Escape's Lock 2:
+      // Sealed Note at 2.3 (Pro: Secret Messages chains into Spot the Trick, 2-1.2's module). Explorer's unit 2 so
+      // plays three different mechanics in a row (key tiles, an inbox, the cipher wheel), never two wheels back to back.
+      const OWN = { '1b-1.3': 'escape-the-post-office', '1b-2.2': 'trick-inbox', '1b-2.3': 'escape-the-post-office', '2-1.3': 'escape-the-post-office', '2-2.2': 'trick-inbox', '2-2.3': 'escape-the-post-office' };
       if (m.unit <= 2) assert.equal(m.slug, OWN[`${band}-${m.n}`] || 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
-      if (m.unit >= 4) assert.ok(['trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
+      // Units 4-6 play the course's own games; the one exception is Explorer 4.1 "Spot the trick", which plays Packet
+      // Post's own Spot the Trick cards (Prize Letters moved to 2.2), chained into the 3 Secret Messages puzzles.
+      const OWN46 = { '1b-4.1': 'packet-post' };
+      if (m.unit >= 4) assert.ok([OWN46[`${band}-${m.n}`], 'trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
     }
     const counts = mods.reduce((a, m) => ({ ...a, [m.slug]: (a[m.slug] || 0) + 1 }), {});
     assert.ok((counts['trick-inbox'] || 0) + (counts['escape-the-post-office'] || 0) >= 8, `${band}: the course's own games carry at least 8 modules (${JSON.stringify(counts)})`);
     assert.ok((counts['packet-post'] || 0) <= 6, `${band}: Packet Post only for units 1-2`);
     const key = n => { const m = mods.find(x => x.n === n); return m ? `${m.slug}?${m.params}` : null; };
     assert.equal(new Set(['4.3', '5.1', '5.2'].map(key)).size, 3, `${band}: steps 4.3, 5.1 and 5.2 open three different modules`);
+    // Neighbors play different modules, and never two cipher-wheel games back to back (Packet Post's Secret Messages
+    // and Escape's Lock 2: Sealed Note are the same mechanic).
+    const wheel = m => (m.slug === 'packet-post' && m.chapter === 'ciphers') || m.chapter === 'sealed-note';
+    for (let i = 1; i < mods.length; i++) {
+      const a = mods[i - 1], b = mods[i];
+      assert.notEqual(key(a.n), key(b.n), `${band}: ${a.n} and ${b.n} open the same module`);
+      assert.ok(!(wheel(a) && wheel(b)), `${band}: ${a.n} and ${b.n} are both cipher-wheel games`);
+    }
   }
 });
 

@@ -12,20 +12,14 @@
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-2-new",
    "alt": "Game chat from Mia from Class: great game, your tower was amazing, see you at school tomorrow.",
-   "view": [
-    0.0,
-    11.6,
-    99.4,
-    88.4
-   ],
    "focus": [
     {
      "cue": "Game chat: friendly words after a game",
      "box": [
-      3.6,
-      56.4,
-      92.8,
-      5.4
+      5.7,
+      32.5,
+      74.6,
+      22.4
      ]
     }
    ]
@@ -36,29 +30,23 @@
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-2-debrief",
    "alt": "Mia's message, delivered: safe, because Mia is someone you know in real life and she asks for nothing.",
-   "view": [
-    0.0,
-    11.4,
-    99.7,
-    88.6
-   ],
    "focus": [
     {
      "cue": "From Mia, a classmate you know",
      "box": [
-      14.4,
-      42.9,
-      19.3,
-      4.1
+      24.5,
+      8.8,
+      32.8,
+      7.0
      ]
     },
     {
      "cue": "Safe: someone you know in real life",
      "box": [
-      3.4,
-      75.4,
-      93.3,
-      10.0
+      5.7,
+      74.1,
+      88.5,
+      16.9
      ]
     }
    ]
@@ -69,29 +57,23 @@
    "art": "lock",
    "img": "csq/trick-inbox/chat-1b-ch-1-all",
    "alt": "Game chat from a player nobody knows: keep our chat secret from your parents, and a plan to meet. Both clues found.",
-   "view": [
-    0.0,
-    31.8,
-    71.4,
-    63.5
-   ],
    "focus": [
     {
      "cue": "A chat that must stay secret from adults",
      "box": [
-      25.2,
-      56.4,
-      43.2,
-      7.1
+      7.1,
+      36.8,
+      82.2,
+      13.5
      ]
     },
     {
      "cue": "A stranger who wants to meet",
      "box": [
-      3.8,
-      63.5,
-      29.6,
-      7.1
+      7.1,
+      50.4,
+      56.3,
+      13.5
      ]
     }
    ]
@@ -109,29 +91,23 @@
    ],
    "img": "csq/trick-inbox/chat-1b-ch-4-all",
    "alt": "Game chat from NewFriend: a rare game skin, free, if you keep it our secret and send your game key.",
-   "view": [
-    0.0,
-    17.5,
-    92.8,
-    82.5
-   ],
    "focus": [
     {
      "cue": "First a gift: a rare skin, free",
      "box": [
-      18.7,
-      56.4,
-      41.5,
-      7.1
+      7.1,
+      36.8,
+      79.0,
+      13.5
      ]
     },
     {
      "cue": "Then a secret: keep this our secret",
      "box": [
-      65.3,
-      56.4,
-      24.5,
-      7.1
+      15.4,
+      50.4,
+      46.6,
+      13.5
      ]
     }
    ]
@@ -142,20 +118,14 @@
    "art": "shield",
    "img": "csq/trick-inbox/chat-1b-ch-4-decide",
    "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
-   "view": [
-    48.0,
-    53.8,
-    52.0,
-    46.2
-   ],
    "focus": [
     {
      "cue": "Report and block is always allowed",
      "box": [
-      75.0,
-      73.6,
-      23.5,
-      10.7
+      51.0,
+      43.8,
+      46.2,
+      20.3
      ]
     }
    ]
@@ -191,20 +161,14 @@
    "art": "trophy",
    "img": "csq/trick-inbox/chat-1b-ch-1-debrief",
    "alt": "The stranger's chat, shown to Pim: chat is for people you know in real life, so show a trusted adult.",
-   "view": [
-    0.0,
-    9.8,
-    100.0,
-    90.2
-   ],
    "focus": [
     {
      "cue": "Play Chat Careful: do you know them in real life?",
      "box": [
-      1.5,
-      64.0,
-      97.0,
-      34.3
+      2.6,
+      8.7,
+      94.9,
+      83.9
      ]
     }
    ]

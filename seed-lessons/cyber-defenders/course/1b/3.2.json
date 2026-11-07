@@ -12,29 +12,23 @@
    "art": "map",
    "img": "csq/escape-the-post-office/pim-1b",
    "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
-   "view": [
-    0.0,
-    46.1,
-    52.0,
-    46.2
-   ],
    "focus": [
     {
      "cue": "A trail of small owl prints: Pim's footprint",
      "box": [
-      5.9,
-      64.8,
-      25.4,
-      13.3
+      11.2,
+      19.1,
+      34.3,
+      25.4
      ]
     },
     {
      "cue": "The trail tells the story: Netville, today",
      "box": [
-      5.9,
-      60.3,
-      25.4,
-      4.4
+      11.2,
+      2.1,
+      34.3,
+      16.9
      ]
     }
    ]
@@ -42,7 +36,28 @@
   {
    "title": "Posts leave footprints",
    "text": "Online, your posts, photos, scores and comments are footprints. Each one shows a small piece of where you have been. Together, they make a trail.",
-   "art": "screen"
+   "art": "screen",
+   "visual": {
+    "type": "tiles",
+    "label": "Each one is a footprint. Together, they make a trail.",
+    "values": [
+     "a post",
+     "a photo",
+     "a score",
+     "a comment"
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A post, a photo, a score, a comment: footprints",
+     "box": [
+      5.5,
+      32.0,
+      89.0,
+      26.7
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -59,27 +74,27 @@
    "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Delete an old post you are embarrassed by",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      11.9,
+      38.5,
+      31.6,
+      20.4
      ]
     },
     {
      "cue": "Or leave it, and laugh it off",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      61.1,
+      41.0,
+      22.4,
+      15.3
      ]
     }
    ]
@@ -90,29 +105,23 @@
    "art": "people",
    "img": "csq/escape-the-post-office/pim-1b",
    "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
-   "view": [
-    0.0,
-    40.5,
-    66.9,
-    59.5
-   ],
    "focus": [
     {
      "cue": "This trail is not an owl's: big round prints",
      "box": [
-      38.5,
-      64.8,
-      25.4,
-      8.9
+      59.3,
+      19.1,
+      34.3,
+      25.4
      ]
     },
     {
      "cue": "And it fishes for a shiny secret",
      "box": [
-      38.5,
-      73.7,
-      25.4,
-      8.9
+      59.3,
+      44.5,
+      34.3,
+      25.4
      ]
     }
    ]
@@ -150,9 +159,9 @@
    "alt": "The real Pim is picked: a Netville postmark, owl footprints, and a request for help in the open.",
    "view": [
     0.0,
-    26.9,
-    52.0,
-    73.1
+    25.2,
+    97.3,
+    74.8
    ],
    "focus": [
     {

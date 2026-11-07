@@ -59,9 +59,9 @@
    "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
    "view": [
     39.0,
-    24.0,
-    52.0,
-    40.0
+    19.6,
+    53.6,
+    44.4
    ],
    "focus": [
     {
@@ -83,27 +83,27 @@
    "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
    "view": [
     4.2,
-    9.7,
+    8.5,
     91.6,
-    81.4
+    82.6
    ],
    "focus": [
     {
      "cue": "Photos only on your tablet",
      "box": [
-      7.2,
-      17.1,
-      40.9,
-      66.6
+      9.7,
+      38.5,
+      36.0,
+      20.4
      ]
     },
     {
      "cue": "Or a copy on a service someone else runs",
      "box": [
-      51.9,
-      17.1,
-      40.9,
-      66.6
+      54.6,
+      38.5,
+      35.4,
+      20.4
      ]
     }
    ]
@@ -142,22 +142,16 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office at Lock 1: Sorting Gate and route the golden letter to the sorting room door. That trip is data in transit. Then name the lock each room needs: the van, the vault and the reading desk.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/gate-2",
+   "img": "csq/escape-the-post-office/gate-2-n1",
    "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
-   "view": [
-    0.0,
-    37.5,
-    52.0,
-    52.0
-   ],
    "focus": [
     {
      "cue": "Play Sorting Gate: the letter is data in transit",
      "box": [
-      20.5,
-      49.9,
-      6.0,
-      25.9
+      18.8,
+      19.8,
+      11.4,
+      60.2
      ]
     }
    ]
