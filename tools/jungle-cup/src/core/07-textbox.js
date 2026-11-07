@@ -5,7 +5,7 @@
 // With AI voices on for the player's language (BRB.aiVoice) and sound on, each line is also read aloud.
 // ======================================================================================================
 const SPEAKERS = { cappy: 'cappy_down', mango: 'mango', coco: 'coco_down', pip: 'pip_down', tapir: 'tapir', ants: 'ant', elder: 'elder', zuzu: 'zuzu',
-  jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', marm: 'marmoset', sign: '', lift: '' };
+  jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', pecca: 'pecca', marm: 'marmoset', sign: '', lift: '' };
 JC.speakers = SPEAKERS;
 const TB = { lines: null, i: 0, shown: 0, full: '', done: null, open: false, t: 0, spoke: false };
 JC.textbox = TB;

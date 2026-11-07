@@ -1,7 +1,7 @@
 // Jungle Cup's analog joystick and the arches, with real input only (touch drags through CDP, the keyboard, a
 // simulated gamepad): the stick floats to the thumb and walks Cappy analog (a half push is slower than a full one),
 // he stops on release, A works while the stick is held, the keys and a gamepad stick walk him too, and every one of
-// the seven arches opens its sport on the FIRST approach from more than one side.
+// the eight arches opens its sport on the FIRST approach from more than one side.
 // Run alone: E2E_PORT=5011 npx playwright test tests/e2e/jungle-cup-stick.spec.js
 import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
@@ -11,7 +11,7 @@ import { gameFrame, ownIp } from './helpers.js';
 const SHOTS = process.env.JC_STICK_SHOTS || '';
 const J = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest.jc[fn](...a), [fn, a]);
 const state = f => J(f, 'state');
-const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'];
+const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'];
 
 async function open(page, size) {
   const errors = [];

@@ -337,6 +337,25 @@ sprite('kiki', [
   'oKo.okkkkkko.oKo',
   '.o..oKKooKKo..o.ooo',
   '.....oo..oo..oKKKo'], KIKI_PAL);
+// Pecca the peccary, captain of the Grunt Gang (Mango Dash): bristly mane, a pale collar, a teal captain's headband.
+const PECCA_PAL = { o: OUT, p: '#6e5c54', P: '#4a3c36', m: '#2e2420', c: '#efe4d0', s: '#d49a8c', S: '#a86a5c', k: '#120e14', w: '#ffffff', t: '#1fc8a8', T: '#138a74' };
+sprite('pecca', [
+  '.....o.o.o......',
+  '....omomomo.....',
+  '..oo.ommmo.oo...',
+  '.opPottttttoPpo.',
+  '.oPptTTTTTTtpPo.',
+  '..oppppppppppo..',
+  '.oppwkppppwkppo.',
+  '.oppkkppppkkppo.',
+  '.opppossssoppo..',
+  '..oposSssSsopo..',
+  '...oossssssoo...',
+  '..occccccccccoo.',
+  '.oPpcppppppcpPo.',
+  'oPPoppppppppoPPo',
+  '.oo.oPPooPPo.oo.',
+  '.....oo..oo.....'], PECCA_PAL);
 // Marmosets (the warm-up pair): tiny, 12 x 12.
 const MARM_PAL = { o: OUT, g: '#9a948a', G: '#6a645a', w: '#f4f0e8', k: '#120e14', f: '#e0c8a8', y: '#ffd24a' };
 sprite('marmoset', [

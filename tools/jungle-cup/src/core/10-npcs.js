@@ -24,8 +24,8 @@ const NPC_DEFS = [
   { id: 'marm', x: 22, y: 32, spr: 'marmoset', many: 2 },
 ];
 // a champion stands beside each arch
-const CHAMP_SPOT = { paddle: [28, 32], leaf: [18, 23], seed: [10, 47], kick: [22, 49], frog: [48, 52], rapids: [63, 39], vine: [48, 22] };
-const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki' };
+const CHAMP_SPOT = { paddle: [28, 32], leaf: [18, 23], seed: [10, 47], kick: [22, 49], frog: [48, 52], rapids: [63, 39], vine: [48, 22], dash: [61, 32] };
+const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', pecca: 'pecca' };
 function nearestFree(x, y) {
   if (!WORLD.isSolid(x, y)) return [x, y];
   for (let r = 1; r < 6; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!WORLD.isSolid(x + dx, y + dy)) return [x + dx, y + dy];
@@ -67,12 +67,14 @@ function talkLines(n) {
   const f = SAVE.featherCount();
   switch (n.id) {
     case 'mango': {
-      if (!SAVE.data.flags.metMango) { SAVE.data.flags.metMango = 1; return L('mango', 'intro1', 'intro2', 'intro3', 'intro4', 'intro5'); }
+      if (!SAVE.data.flags.metMango) { SAVE.data.flags.metMango = 1; SAVE.data.flags.dashNews = 1; return L('mango', 'intro1', 'intro2', 'intro3', 'intro4', 'intro5'); }
+      // a save from before Mango Dash: the news of the eighth champion first
+      if (!SAVE.data.flags.dashNews) { SAVE.data.flags.dashNews = 1; return L('mango', 'dash1', 'dash2'); }
       const q = qState('mango');
       if (q === 'got') { giveReward('mango'); return L('mango', 'qthanks'); }
       if (!q && f >= 1) { SAVE.data.quests.mango = 'active'; return L('mango', 'qask1', 'qask2'); }
       if (q === 'active') return L('mango', 'qwait');
-      if (f >= 7) return L('mango', SAVE.data.cup ? 'after' : 'allf');
+      if (f >= NSPORTS) return L('mango', SAVE.data.cup ? 'after' : 'allf');
       return L('mango', 'hint' + Math.min(3, f));
     }
     case 'coco': return L('coco', SAVE.data.flags.metCoco ? 'again' : 'hi');
@@ -101,13 +103,13 @@ function talkLines(n) {
       if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
-      return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
+      return [{ who: 'elder', key: f >= NSPORTS ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
     }
     case 'zuzu': {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
+      return L('zuzu', f >= NSPORTS && !SAVE.data.cup ? 'liftopen' : 'after');
     }
     case 'marm': return L('marm', 'hi');
     default: {
@@ -125,7 +127,7 @@ JC.talkLines = talkLines;
 function hasNews(n) {
   const f = SAVE.featherCount(), fl = SAVE.data.flags;
   switch (n.id) {
-    case 'mango': { const q = qState('mango'); return !fl.metMango || q === 'got' || (!q && f >= 1); }
+    case 'mango': { const q = qState('mango'); return !fl.metMango || !fl.dashNews || q === 'got' || (!q && f >= 1); }
     case 'elder': { const q = qState('specs'); return !fl.metElder || !q || q === 'got'; }
     case 'pip': { const q = qState('shells'); return !q || (q === 'active' && questItemsGot('shells') >= questItemsTotal('shells')); }
     case 'ants': { const q = qState('leaf'); return !q || q === 'got'; }

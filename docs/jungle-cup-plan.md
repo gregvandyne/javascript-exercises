@@ -1,7 +1,7 @@
 # Jungle Cup: plan, architecture and the sport module interface
 
 Jungle Cup is an official seed game (`seed-games/jungle-cup.html` + `jungle-cup.json`): Cappy the capybara rafts to
-Delta Isle, beats seven rainforest champions at seven sports, lights the Cup Totem with their Feathers and rides the
+Delta Isle, beats eight rainforest champions at eight sports, lights the Cup Totem with their Feathers and rides the
 vine lift up the Great Kapok to win the Jungle Cup. It is an original design: its own name, cast, island, story, UI and
 structure. Later stages must keep it that way (no names, characters, places, layouts or logos from other games).
 
@@ -50,7 +50,7 @@ settings, controls, style, finale, credits), `14-main.js` (scenes, loop), `15-te
 
 ## Sport module interface
 
-A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf`, wrapped in its own
+A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf dash`, wrapped in its own
 `(function () { ... })();` and ending with `JC.register({...})`. Paddle Smash (`sport-paddle.js`) is the reference.
 
 Paddle Smash is table tennis seen from above (a 3/4 view): the table runs up the screen on a phone (Cappy at the bottom)
@@ -65,7 +65,7 @@ play-bot of a given skill for the balance check (`tests/e2e/jungle-cup-paddle.sp
 (function () {
   const S = { /* all state here, allocated once */ };
   JC.register({
-    id: 'vine',                 // required, one of the seven ids
+    id: 'vine',                 // required, one of the eight ids
     champion: 'sloane',         // the champion's speaker id (portrait + name.<id>); the arch already knows it
     music: 'vine',              // a song id in JC.audio.songs (add your own: JC.audio.songs.vine = {...}); default 'paddle'
     start(ctx) {},              // a new round: reset S. Called before the 3-2-1 (draw() runs during the countdown)
@@ -193,3 +193,22 @@ skips too): `JC.storyLines('intro')` (river, isle, dock: each launch, from Play 
 `JC.storyLines('finale')` (lift, stage, cup), then Mango on the pixel Canopy Stage, the Cup raised, Cappy's thanks,
 the credits and free play. Bonus bandanas: gold for the Cup (worn at once), berry for the first three-star round.
 Timed beats (Cappy's thanks, Zuzu's lift news) run on game time, never `setTimeout`.
+
+## Mango Dash (the eighth sport)
+
+Pecca the peccary, captain of the Grunt Gang, guards the eighth Feather (`ARCHES.dash` in `core/09-world.js`; the
+clearing, its props, Pecca's spot and the `clearing` test place are placed relative to that entry). `sport-dash.js`:
+carry the mango 280 m in four sections, each starting at a checkpoint with its own look, hazards and music:
+Muddy Clearing (logs, mud, puddles) -> Bamboo Grove (bamboo rows that funnel, thorns, ambushers) -> Riverbank (a narrow
+log bridge, boulders, rolling coconuts) -> Pecca's Stretch (everything denser, Pecca charges twice). Cappy runs by
+himself; the joystick / arrows steer (up = sprint). Coco, Pip and Tapo run open lines beside and behind; PASS (button /
+Space / A) throws to the teammate with the arrow (the safest), and a catch gives a short speed boost.
+The gang hunts whoever holds the mango: pigs, zig-zag piglets, big slow bruisers, ambushers hiding behind cover, and
+Pecca. Close in, a pig shows its tell ("!", pawing, a dotted line where it will lunge), then lunges along that line.
+A pass breaks a tell (the pig hunts the new carrier from scratch; no new lunge for 0.7 s after a catch); a lunge in
+flight is committed. A tackle is a cartoon tumble: one mango (life) lost, back to the last checkpoint; with none left
+the run ends. The gang keeps off the log bridge. Power-ups: a lightning bolt (5 s faster) and a fireball (10 s flame
+aura: pigs skid away and never come within its radius, no lunges); both stay with the mango when it is passed.
+Stars: a win; at most one tackle (two on Easier); no tackles and under 170 s (185 s Easier).
+Everything that counted seven counts `NSPORTS` (`JC.sportOrder.length`). Saves from before Mango Dash load as they
+are: a won Cup stays won, the lift waits for the eighth Feather, and Mango tells the news once (`flags.dashNews`).

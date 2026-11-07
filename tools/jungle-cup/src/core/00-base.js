@@ -2,7 +2,10 @@
 // JUNGLE CUP core: the shared namespace, words (t), numbers and small helpers.
 // Everything the sports may use hangs off JC (see docs/jungle-cup-plan.md "Sport module interface").
 // ======================================================================================================
-const JC = { sports: {}, sportOrder: ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'], version: 1 };
+const JC = { sports: {}, sportOrder: ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'], version: 1 };
+/** How many sports (and Feathers, and totem sockets) there are. */
+const NSPORTS = JC.sportOrder.length;
+JC.nSports = NSPORTS;
 window.JC = JC;
 
 /* ---------- words ---------- */

@@ -44,6 +44,8 @@ SAVE.set = function (obj) { SAVE.data = sanitize(obj); SAVE.apply(); SAVE.write(
 SAVE.apply = function () { TEXT.clear = SAVE.data.settings.font === 'clear'; TEXTCACHE.clear(); WRAPS.clear(); };
 SAVE.featherCount = () => JC.sportOrder.reduce((n, id) => n + (SAVE.data.feathers[id] ? 1 : 0), 0);
 SAVE.starCount = () => JC.sportOrder.reduce((n, id) => n + (SAVE.data.stars[id] || 0), 0);
+/** All the Feathers (the lift opens). A save from before Mango Dash keeps its Cup, but the lift waits for the 8th. */
+SAVE.allFeathers = () => SAVE.featherCount() >= NSPORTS;
 /** The score shown on the platform's leaderboard: 100 per star, 250 per Feather, 500 for the Cup. */
 SAVE.cupPoints = () => SAVE.starCount() * 100 + SAVE.featherCount() * 250 + (SAVE.data.cup ? 500 : 0);
 JC.easy = () => !!SAVE.data.settings.easy;
