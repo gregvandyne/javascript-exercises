@@ -1,7 +1,7 @@
 // The drawn diagram types that views/nq-diagrams.js draws (grid, squares, lines, chart, table), cleaned the way
 // services/courses.js cleanSlide cleans the older types: strictly shaped per type, every string capped, every
 // number checked; anything malformed returns null and the slide drops the whole visual (fromDeck reports it).
-export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table']);
+export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build']);
 export const LINE_KINDS = Object.freeze(['parallel', 'perpendicular', 'crossing']);
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
@@ -45,6 +45,19 @@ export function cleanDiagram(v, label) {
     if (!v.rows.every(r => Array.isArray(r) && r.length === v.head.length && r.every(c => txt(c, 10)))) return null;
     if (v.mark != null && !int(v.mark, 0, v.rows.length - 1)) return null;
     return { type: 'table', label, head: v.head.map(h => txt(h, 10)), rows: v.rows.map(r => r.map(c => txt(c, 10))), ...(v.mark != null ? { mark: v.mark } : {}) };
+  }
+  if (v.type === 'letters') {
+    if (!Array.isArray(v.items) || v.items.length < 2 || v.items.length > 4) return null;
+    if (!v.items.every(it => it && /^[A-Z]$/.test(it.ch) && str(it.name, 14))) return null;
+    return { type: 'letters', label, items: v.items.map(it => ({ ch: it.ch, name: str(it.name, 14), ...(it.fold ? { fold: true } : {}) })) };
+  }
+  if (v.type === 'spinner') {
+    if (!int(v.parts, 2, 12) || !int(v.shaded, 0, v.parts)) return null;
+    return { type: 'spinner', label, parts: v.parts, shaded: v.shaded, ...(str(v.left, 16) ? { left: str(v.left, 16) } : {}), ...(str(v.right, 16) ? { right: str(v.right, 16) } : {}) };
+  }
+  if (v.type === 'build') {
+    if (!Array.isArray(v.digits) || v.digits.length < 2 || v.digits.length > 5 || !v.digits.every(d => /^\d$/.test(d))) return null;
+    return { type: 'build', label, digits: [...v.digits], ...(str(v.number, 8) ? { number: str(v.number, 8) } : {}) };
   }
   return null;
 }

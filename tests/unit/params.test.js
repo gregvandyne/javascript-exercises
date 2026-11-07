@@ -111,3 +111,24 @@ test('/play signs the allow-listed params into the token; /frame copies them int
   const bad = await tokenOf('?band=9&level=99&lock=7&chapter=has%20space');
   assert.equal(readToken(bad).o, undefined);
 });
+
+test('style (the Oomba Kit art style): ink or pixel only, a sixth token part only when given, and the SDK passes it', async () => {
+  assert.deepEqual(PP.parseParams('style=pixel'), { style: 'pixel' });
+  assert.deepEqual(PP.parseParams('style=PIXEL&level=3&lock=1&mode=add'), { mode: 'add', level: 3, lock: 1, style: 'pixel' });
+  assert.deepEqual(PP.parseParams('style=neon'), {}, 'unknown styles are dropped');
+  assert.equal(PP.packParams({ level: 3, lock: 1 }), '...3.1', 'no style: the five-part token it always was');
+  assert.equal(PP.packParams({ style: 'pixel' }), '.....pixel');
+  assert.equal(PP.packParams({ level: 10, mode: 'add', lock: 1, style: 'pixel' }), '..add.10.1.pixel');
+  assert.deepEqual(PP.unpackParams('..add.10.1.pixel'), { mode: 'add', level: 10, lock: 1, style: 'pixel' });
+  assert.deepEqual(PP.unpackParams('..add.10.1'), { mode: 'add', level: 10, lock: 1 }, 'tokens signed before the style key still read');
+  const long = { chapter: 'a'.repeat(16), band: '1b', mode: 'b'.repeat(16), level: 30, lock: 1, style: 'pixel' };
+  assert.ok(PP.packParams(long).length <= PP.MAX_PACKED);
+  assert.equal(PP.cleanOptions('level=9&lock=1&style=pixel'), 'level=9&lock=1&style=pixel');
+  assert.deepEqual(cleanParams({ style: 'pixel', level: 2 }), { level: 2, style: 'pixel' });
+  assert.deepEqual(cleanParams({ style: 'neon' }), {});
+  const g = liveGame('Style param test'), cookie = cookieFor(owner.id);
+  const page = await (await fetch(`${base}/play/${g.slug}?level=10&mode=add&lock=1&style=pixel`, { headers: { cookie } })).text();
+  const tok = page.match(/\/frame\/([A-Za-z0-9_.\-]+)/)[1];
+  const frame = await (await fetch(`${base}/frame/${tok}`, { headers: { cookie } })).text();
+  assert.deepEqual(JSON.parse(frame.match(/window\.__BRB_INIT__=(\{.*?\});<\/script>/)[1]).params, { mode: 'add', level: 10, lock: 1, style: 'pixel' });
+});

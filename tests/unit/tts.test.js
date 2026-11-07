@@ -166,18 +166,17 @@ test('spoken text never includes emoji: spokenText strips pictographs, and a sta
 });
 
 test('the real star-counting placement item is spoken as its words only', async () => {
-  // The exact item Greg heard read wrong: the counting template deals a prompt whose counting row is
-  // star emoji — and, as generated, even its spokenPrompt carries the row. The speak path (plan) is
-  // what keeps the pictures out of the voice, for the spoken wording and the printed prompt alike.
+  // The exact item Greg heard read wrong: the counting template used to deal a prompt whose counting
+  // row was star emoji. The stars now live only in the tappable tiles (manip), so the prompt and its
+  // spoken wording are words alone; the speak path (plan) still strips any picture that slips in.
   const { TEMPLATES, generateItem } = await import('../../seed-lessons/number-quest/placement/generator.js');
   const counting = TEMPLATES.find(t => t.id === 'nq-place-num-K_0-2');
   assert.ok(counting, 'the counting template exists');
-  let full = null;
-  for (let s = 1; s <= 24 && !full; s++) { const f = generateItem(counting, `tts-star-${s}`); if (f.prompt.includes('⭐')) full = f; }
-  assert.ok(full, 'the counting template deals a star row');
-  assert.ok(full.spokenPrompt.includes('⭐'), 'as generated, the spoken wording carries the star row too');
+  const full = generateItem(counting, 'tts-star-1');
+  assert.equal(full.manip && full.manip.glyph, '⭐', 'the stars are dealt as tiles');
+  assert.ok(!full.prompt.includes('⭐') && !full.spokenPrompt.includes('⭐'), 'no star row in the words');
   assert.equal(tts.plan({ text: full.spokenPrompt, locale: 'en', role: 'friendly' }).text, 'Count the stars. How many are there?');
-  assert.equal(tts.plan({ text: full.prompt, locale: 'en', role: 'friendly' }).text, 'Count the stars. How many are there?');
+  assert.equal(tts.plan({ text: `${full.prompt} ⭐⭐⭐`, locale: 'en', role: 'friendly' }).text, 'Count the stars. How many are there?');
 });
 
 test('cache key: stable, and changes with every part that changes the sound', () => {

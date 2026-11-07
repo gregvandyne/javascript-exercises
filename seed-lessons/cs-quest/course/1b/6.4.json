@@ -24,7 +24,20 @@
   {
    "title": "Bolt says thanks",
    "text": "Bolt spins his antenna. You taught my roads to run again, he says. Every loop and every careful turn — that was you.",
-   "art": "robot"
+   "art": "robot",
+   "img": "csq/chars/meet-bolt",
+   "alt": "Bolt the robot, the Robo Route guide, with his visor and antenna light, standing in front of a softened board from his game.",
+   "focus": [
+    {
+     "cue": "Bolt, whose roads you taught to run again",
+     "box": [
+      29.4,
+      15.3,
+      41.2,
+      75
+     ]
+    }
+   ]
   },
   {
    "title": "Dot, Pim and Gizmo",

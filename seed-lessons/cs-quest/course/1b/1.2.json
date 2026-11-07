@@ -10,41 +10,25 @@
    "title": "The same block again?",
    "text": "Bolt has to go 5 squares in a straight line. Without a loop, that takes one move block for each square: move, move, move, move, move. That is a lot of the same block!",
    "art": "robot",
-   "img": "csq/robo-route/loops-1b-five-moves",
-   "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
-   ],
-   "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room.",
+   "img": "csq/robo-route/loops-1b-five-c",
+   "alt": "Bolt and the flag five squares apart in a straight row, and five move blocks in the program, one for each square.",
    "focus": [
     {
      "cue": "Five squares in a straight line to the flag.",
      "box": [
-      5.7,
-      49.4,
-      41.2,
-      12.7
-     ],
-     "path": [
-      [
-       9.4,
-       55.7
-      ],
-      [
-       43,
-       55.7
-      ]
+      1.5,
+      49,
+      37.5,
+      12
      ]
     },
     {
-     "cue": "The floor numbers count the squares: 1 to 5. One move block each.",
+     "cue": "Five move blocks, one for each square.",
      "box": [
-      12.4,
-      49.4,
-      34.4,
-      12.7
+      41.5,
+      44,
+      50,
+      20
      ]
     }
    ]
@@ -57,7 +41,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     20.1
    ],
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
@@ -138,8 +122,8 @@
    "view": [
     51.8,
     32.9,
-    30.0,
-    49.0
+    30,
+    49
    ],
    "alt": "A repeat 2 times bracket holds move, move, pick up, and one more move follows it: Bolt drives five squares and picks up both gems.",
    "focus": [
@@ -180,7 +164,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     20.1
    ],
    "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere.",
@@ -238,7 +222,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     20.1
    ],
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",

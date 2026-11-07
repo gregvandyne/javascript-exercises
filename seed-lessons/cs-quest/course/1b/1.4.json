@@ -65,9 +65,9 @@
    "img": "csq/robo-route/variables-1b-named-box",
    "view": [
     52.2,
-    41.6,
     38,
-    24
+    38,
+    27.6
    ],
    "alt": "The program names its box: set count to 0, then repeat 5 times move, pick up, and change count by 1, beside the gem column.",
    "focus": [
@@ -108,7 +108,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     34.5
    ],
    "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down.",

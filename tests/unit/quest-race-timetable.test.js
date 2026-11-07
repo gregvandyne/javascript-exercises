@@ -76,12 +76,12 @@ test('Quest Race 5.2: an arrival on the hour offers the no-trade mistake as prev
   assert.ok(onHour > 10, 'arrivals on the hour were generated');
 });
 
-test('Quest Race 5.2: the minutes-to-hours swap never says "0 minutes"', () => {
+test('Quest Race 5.2: every question hops forward, as the lesson teaches (no start found backwards, no hours swap)', () => {
   const gen = lift('nqTimetableItems');
   for (let seed = 1; seed <= 500; seed++) {
     for (const it of gen(rand(seed))) {
-      if (!/in hours and minutes/.test(it.q)) continue;
-      for (const c of it.choices) assert.ok(!/\b0 minutes/.test(c), `seed ${seed}: "${c}"`);
+      assert.doesNotMatch(it.q, /did it start|in hours and minutes/, `seed ${seed}: "${it.q}"`);
+      for (const c of it.choices) assert.ok(!/\bhours?\b/.test(c), `seed ${seed}: "${c}"`);
     }
   }
 });
