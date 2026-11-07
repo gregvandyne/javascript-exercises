@@ -6204,6 +6204,9 @@ const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: 
    ("chunky") boxes and smooth-shaded spheres, shadow maps give way to soft contact blobs, the sky and water take the
    kit's sky ramp, clouds get Ink, and lamps get a soft additive halo (bloom on lamps only). Without it nothing changes. */
 const TOON = B.style === 'cartoon';
+/** Cartoon: the outline weight. The bridge's cartoon line is bold so it reads far away; this keeps it about 3-5 px on a
+ *  phone (characters ~4 px, buildings a little less, small props less again, see inkSized). */
+const TOON_INK = TOON ? 0.78 : 1;
 const TOON_KEEP = new Set([...KTOK.skin, ...Object.values(KHAIR)].map(c => String(c).toLowerCase()));
 const TOON_COL = new Map();
 // skin: the people's tones (and their face shade, x0.85) go to the nearest of the kit's eight skin tones, never to a hue
@@ -6267,7 +6270,9 @@ function inkWorld() {
   scene.traverse(o => { if (o.isMesh && !o.userData.okInk && !o.userData.noInk && (o.material === MAT.lit || o.material === MAT.litFlat || o.material === MAT.char) && !(hero.rig && isUnder(o, hero.rig.root))) list.push(o); });
   for (const o of list) {
     const scatter = SCATTER.list.some(k => k.mesh === o), detail = scatter || (!o.isInstancedMesh && o.material !== MAT.char);
-    B.outline(o, scatter ? { width: 0.85 } : { important: true, width: o.material === MAT.char ? 1 : 0.9 });
+    B.outline(o, scatter ? { width: 0.85 * TOON_INK } : { important: true, width: (o.material === MAT.char ? 1 : 0.9) * TOON_INK });
+    // cartoon: a landmark's small parts (barrels, crates, posts, window boxes) take a thinner line (Kit's okS, see inkSized)
+    if (TOON && o.material !== MAT.char && o.geometry && o.geometry.attributes.okS) o.traverse(c => { if (c.userData.okInk) c.material = inkSized(c.material); });
     // people, foes and crowds are many touching parts, like the hero: their hulls sit a little further back (see inkPushed)
     if (o.material === MAT.char) o.traverse(c => { if (c.userData.okInk) c.material = inkPushed(c.material); });
     if (detail) inkLayer(o, INK_DETAIL);
@@ -6288,14 +6293,22 @@ function heroInk() {
   const old = []; r.root.traverse(o => { if (o.userData.okInk) old.push(o); });
   for (const o of old) o.parent.remove(o);
   // the hero maker's close-up gets a finer line (the kit's line is sized for a character a few metres away)
-  B.outline(r.root, { important: true, width: hero.onStage ? 0.7 : 1 });
+  B.outline(r.root, { important: true, width: (hero.onStage ? 0.7 : 1) * TOON_INK });
   r.root.traverse(o => { if (o.userData.okInk) { o.material = inkPushed(o.material); if (hero.onStage) o.layers.enable(STAGE); } });
 }
 /** The kit's Ink hull, drawn a few centimetres further back. The hero is many parts that touch (sleeve and cuff, ears
  *  and head, belt and shirt); right at those seams the hull and the next part's skin had the same depth and fought,
  *  which drew dashed and stippled lines all over the body. Pushed back (10 cm), a seam's hull hides behind the part in front,
  *  while the outline round the hero (the sky or ground is far behind it) is untouched. */
-const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map();
+const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map(), INK_SIZED = new Map();
+/** Cartoon: the kit's Ink hull with a per-vertex width (okS, written by Kit: 1 on big parts, less on small props), so a
+ *  barrel or crate in the foreground does not carry a heavier line than the people beside it. */
+function inkSized(base) {
+  let m = INK_SIZED.get(base); if (m) return m;
+  m = base.clone();
+  m.onBeforeCompile = (sh, r) => { if (base.onBeforeCompile) base.onBeforeCompile(sh, r); sh.vertexShader = 'attribute float okS;\n' + sh.vertexShader.replace(/okW\s*\*\s*okG/, 'okW * okS * okG'); };
+  m.customProgramCacheKey = () => 'okInkSized'; INK_SIZED.set(base, m); return m;
+}
 function inkPushed(base) {
   if (!base || base.userData.okPushed) return base;
   let m = INK_PUSHED.get(base); if (m) return m;
@@ -6991,7 +7004,7 @@ const TC = {
 };
 if (TOON) {   // the land in Ink colours: mint meadows, cocoa paths, peach sand, stone and snow, grape gloom
   const k = (h, i) => col(OK.color(h, i)), mx = (a, b, t) => k(a[0], a[1]).lerp(k(b[0], b[1]), t);
-  Object.assign(TC, { g1: k('mint', 2), g2: mx(['mint', 2], ['mint', 3], 0.22), g3: mx(['mint', 2], ['mint', 1], 0.45), forest: mx(['mint', 2], ['mint', 3], 0.5), forest2: mx(['mint', 2], ['mint', 3], 0.7),
+  Object.assign(TC, { g1: k('mint', 2), g2: mx(['mint', 2], ['mint', 3], 0.3), g3: mx(['mint', 2], ['mint', 1], 0.55), forest: mx(['mint', 2], ['mint', 3], 0.5), forest2: mx(['mint', 2], ['mint', 3], 0.7),
     dirt: k('cocoa', 1), dirt2: mx(['cocoa', 1], ['cocoa', 2], 0.25), sand: mx(['peach', 0], ['spark', 0], 0.5), wet: mx(['cocoa', 0], ['cocoa', 1], 0.6), bed: k('stone', 1),
     rock: k('stone', 1), rock2: mx(['stone', 1], ['stone', 2], 0.55), snow: k('snow', 1), stone: k('stone', 0), stone2: mx(['stone', 0], ['stone', 1], 0.6),
     dark: mx(['grape', 3], ['stone', 3], 0.5), dark2: mx(['grape', 3], ['stone', 3], 0.75), wheat: mx(['spark', 1], ['peach', 1], 0.45), crop: mx(['mint', 1], ['mint', 2], 0.4),
@@ -7019,7 +7032,8 @@ function terrainColor(x, z, h, i, j, c) {
   const hx = HF[j * GV + Math.min(GV - 1, i + 1)] - HF[j * GV + Math.max(0, i - 1)], hz = HF[Math.min(GV - 1, j + 1) * GV + i] - HF[Math.max(0, j - 1) * GV + i];
   const slope = Math.sqrt(hx * hx + hz * hz) / (2 * CELL);
   const n = vnoise(x / 9, z / 9), n2 = vnoise(x / 31 + 7, z / 31 + 3);
-  c.copy(TC.g1).lerp(TC.g2, n * 0.8).lerp(TC.g3, Math.max(0, n2 - 0.55) * 1.6);
+  if (TOON) c.copy(TC.g1).lerp(TC.g2, smooth(0.56, 0.66, n)).lerp(TC.g3, smooth(0.5, 0.6, n2));   // cartoon: soft-edged patches in two more greens
+  else c.copy(TC.g1).lerp(TC.g2, n * 0.8).lerp(TC.g3, Math.max(0, n2 - 0.55) * 1.6);
   const fm = forestMask(x, z); if (fm > 0) c.lerp(n > 0.5 ? TC.forest : TC.forest2, clamp(fm * 1.2, 0, 0.85));
   // Sunny Farm fields: rotated patches of wheat, crops and soil.
   const df = hyp(x - 160, z - 240);
@@ -7158,7 +7172,10 @@ const PRIM = {};
 function prim(key) {
   if (PRIM[key]) return PRIM[key];
   let g;
-  const [kind, a, b] = key.split(':');
+  let [kind, a, b] = key.split(':');
+  // cartoon: round props read as round (barrels, logs, posts, wells, spires): at least 16 sides, with smooth normals
+  // below (creaseNormals); 3- and 4-sided ones are meant to be spikes, pyramids and square posts
+  if (TOON && (kind === 'cyl' || kind === 'cone') && +a >= 5 && +a < 16) a = '16';
   if (kind === 'box') g = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
   else if (kind === 'cyl') g = new THREE.CylinderGeometry(+b, 1, 1, +a).translate(0, 0.5, 0);
   else if (kind === 'cone') g = new THREE.ConeGeometry(1, 1, +a).translate(0, 0.5, 0);
@@ -7173,7 +7190,7 @@ function prim(key) {
   else if (kind === 'rbox') {
     // cartoon: a chunky rounded box (a sphere pushed out to a box: flat-ish faces, round edges and corners), unit size
     // with its bottom at 0 like 'box'; its normals are the sphere's, so the cel band rolls softly over it
-    g = new THREE.SphereGeometry(1, 8, 4); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
+    g = new THREE.SphereGeometry(1, +a || 8, +b || 4); const p = g.attributes.position, r = 0.2, c = 0.5 - r;
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i), z = p.getZ(i), sg = v => (Math.abs(v) < 1e-6 ? 0 : Math.sign(v)); p.setXYZ(i, sg(x) * c + x * r, sg(y) * c + y * r + 0.5, sg(z) * c + z * r); }
     g = g.toNonIndexed(); const n = g.attributes.position.clone(); for (let i = 0; i < n.count; i++) { V1.set(n.getX(i), n.getY(i) - 0.5, n.getZ(i)); V2.set(Math.sign(V1.x) * c, Math.sign(V1.y) * c, Math.sign(V1.z) * c); V1.sub(V2).normalize(); n.setXYZ(i, V1.x, V1.y, V1.z); }
     g.setAttribute('normal', n); return (PRIM[key] = g);
@@ -7197,16 +7214,19 @@ function creaseNormals(g, deg) {
   g.setAttribute('normal', new THREE.BufferAttribute(out, 3));
 }
 /** The box characters and props are built from: chunky rounded ones in the cartoon look. */
-const CBOX = () => prim(TOON ? 'rbox' : 'box');
+// (the hero is seen closest, so its rounding has more steps: its Ink hull follows a smooth curve, not a chamfer)
+const CBOX = fine => prim(TOON ? (fine ? 'rbox:12:6' : 'rbox') : 'box');
+/** Cartoon: a part's Ink weight from its size (small props get a thinner line; walls, roofs and towers the full one). */
+const inkScale = (sx, sy, sz) => { const m = Math.max(Math.abs(sx), Math.abs(sy), Math.abs(sz)); return m < 0.8 ? 0.62 : m < 1.6 ? 0.78 : 1; };
 class Kit {
-  constructor() { this.b = { lit: { p: [], n: [], c: [] }, glow: { p: [], n: [], c: [] } }; this.tris = 0; }
+  constructor() { this.b = { lit: { p: [], n: [], c: [], s: [] }, glow: { p: [], n: [], c: [], s: [] } }; this.tris = 0; }
   /** Add geometry g transformed by position/rotation/scale with one colour. */
   add(g, x, y, z, sx, sy, sz, rx, ry, rz, color, glow) {
     const B = glow ? this.b.glow : this.b.lit, pa = g.attributes.position, na = g.attributes.normal;
     E1.set(rx || 0, ry || 0, rz || 0); Q1.setFromEuler(E1); V1.set(x, y, z); V2.set(sx, sy, sz); M4.compose(V1, Q1, V2);
     NM3.getNormalMatrix(M4); C1.set(toonCol(color));
     for (let i = 0; i < pa.count; i++) {
-      V3.fromBufferAttribute(pa, i).applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z);
+      V3.fromBufferAttribute(pa, i).applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z); if (TOON) B.s.push(inkScale(sx, sy, sz));
       V4.fromBufferAttribute(na, i).applyMatrix3(NM3).normalize(); B.n.push(V4.x, V4.y, V4.z);
       B.c.push(C1.r, C1.g, C1.b);
     }
@@ -7237,7 +7257,7 @@ class Kit {
     const g = prim('box'), B = opt && opt.glow ? this.b.glow : this.b.lit, pa = g.attributes.position, na = g.attributes.normal;
     NM3.getNormalMatrix(M4); C1.set(toonCol(color));
     for (let i = 0; i < pa.count; i++) {
-      V3.fromBufferAttribute(pa, i); V3.y -= 0.5; V3.applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z);
+      V3.fromBufferAttribute(pa, i); V3.y -= 0.5; V3.applyMatrix4(M4); B.p.push(V3.x, V3.y, V3.z); if (TOON) B.s.push(inkScale(len, hgt, w));
       V4.fromBufferAttribute(na, i).applyMatrix3(NM3).normalize(); B.n.push(V4.x, V4.y, V4.z); B.c.push(C1.r, C1.g, C1.b);
     }
     this.tris += 12;
@@ -7248,6 +7268,7 @@ class Kit {
     const B = this.b[which]; if (!B.p.length) return null;
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(B.p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(B.n, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(B.c, 3));
+    if (B.s.length === B.p.length / 3) g.setAttribute('okS', new THREE.Float32BufferAttribute(B.s, 1));
     g.computeBoundingSphere(); return g;
   }
   /** Build the meshes into the scene. Returns { lit, glow, x, z, r, tris } and registers it for distance culling. */
@@ -8095,8 +8116,8 @@ function mergedGeo(parts) {
   for (const [g, x, y, z, sx, sy, sz, c, rz] of parts) k.add(g, x, y, z, sx, sy, sz, 0, 0, rz || 0, c);
   return k.geometry('lit');
 }
-function openCone(seg) { const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 65); return g; }
-function openCyl(seg, top) { const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 75); return g; }
+function openCone(seg) { if (TOON && seg >= 5) seg = 10; const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 65); return g; }
+function openCyl(seg, top) { if (TOON && seg >= 5) seg = 9; const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 75); return g; }
 function buildScatterKinds() {
   const trunk = openCyl(5, 0.75), ico = prim('sph:0'), cone6 = openCone(6), cone3 = openCone(3), octa = (() => { const g = new THREE.OctahedronGeometry(1, 0).toNonIndexed(); g.computeVertexNormals(); return g; })();
   // cartoon: round, smooth-shaded crowns and bushes (one clean shade band), soft contact blobs under them
@@ -8210,7 +8231,7 @@ const TIER = id => (id ? id.split('.')[1] : null);   // 'armor.iron.head' -> 'ir
 function geoFrom(parts) { const k = new Kit(); for (const p of parts) k.add(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7] || 0, p[8] || 0, p[9] || 0, p[10], p[11]); return k; }
 function kitGeo(k, which) { return k.geometry(which || 'lit'); }
 function buildGearGeometries() {
-  const box = CBOX(), s1 = prim('sph:1'), s2 = prim('sph:2'), c8 = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4');
+  const box = CBOX(true), s1 = prim('sph:1'), s2 = prim('sph:2'), c8 = prim('cyl:10:1.000'), cone = prim('cone:8'), cone4 = prim('cone:4');
   // Helmets (around the head centre at y = 0.34 in head-group space)
   HEROGEO.head.leather = kitGeo(geoFrom([[s2, 0, 0.42, -0.01, 0.4, 0.3, 0.41, 0, 0, 0, '#8b5a2b'], [box, 0, 0.3, 0.02, 0.84, 0.06, 0.84, 0, 0, 0, '#6e4422'], [box, 0.28, 0.6, -0.08, 0.04, 0.42, 0.12, 0.3, 0, -0.5, '#ff5c5c']]));
   HEROGEO.head.iron = kitGeo(geoFrom([[s2, 0, 0.4, 0, 0.415, 0.36, 0.42, 0, 0, 0, '#c9d1dc'], [c8, 0, 0.26, 0, 0.43, 0.07, 0.43, 0, 0, 0, '#9aa4b2'], [box, 0, 0.66, -0.06, 0.07, 0.28, 0.42, 0, 0, 0, '#3e7bfa'], [box, 0, 0.42, 0.37, 0.09, 0.3, 0.06, 0, 0, 0, '#9aa4b2']]));
@@ -8250,7 +8271,7 @@ function buildGearGeometries() {
 }
 /** Look-dependent geometry: head (skin, face, hair), torso (outfit), arms (sleeves + hands), legs (per boots tier). */
 function buildLookGeometries(look) {
-  const box = CBOX(), cone = prim('cone:6');
+  const box = CBOX(true), cone = prim('cone:6');
   const skin = LOOKS.skin[look.skin] || LOOKS.skin[1], hairC = LOOKS.hairColor[look.hairColor] || LOOKS.hairColor[1], fit = LOOKS.outfit[look.outfit] || LOOKS.outfit[1];
   const dark = '#' + col(fit).multiplyScalar(0.62).getHexString(), skinD = '#' + col(skin).multiplyScalar(0.85).getHexString();
   const out = {};
@@ -13772,7 +13793,7 @@ if (LIVE && LIVE.active) {
     const legL = limb(0.32, 0.7, 0.32, 'stone', -0.18, 0.7), legR = limb(0.32, 0.7, 0.32, 'stone', 0.18, 0.7);
     box(inner, 0.8, 0.75, 0.45, shirt, 0, 1.08, 0); box(inner, 0.62, 0.6, 0.6, skin, 0, 1.75, 0); box(inner, 0.66, 0.2, 0.64, hair, 0, 2.08, -0.02);
     const armL = limb(0.2, 0.62, 0.22, shirt, -0.52, 1.41), armR = limb(0.2, 0.62, 0.22, shirt, 0.52, 1.41);
-    B.bake(inner); B.outline(inner, { important: true });
+    B.bake(inner); B.outline(inner, { important: true, width: TOON_INK });
     const st = { ph: 0, act: null, until: 0, t0: 0 };
     g.speed = 0; g.air = false;
     g.play = (name, ms) => { st.act = name; st.t0 = performance.now(); st.until = st.t0 + (ms || 1200); };
