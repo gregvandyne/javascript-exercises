@@ -257,7 +257,7 @@ def bed(length=1.5, name='bed', quilt=('#7fb2e5', '#f2c94c', '#ec8db0', '#9bd3a8
     hb.location = (-L / 2, 0.45, 0.05)
     prim('sphere', 'pillow', (-L / 2 + 0.22, 0.05, 0.5), (0.16, 0.28, 0.08), mat=F('#ffffff'), parent=root, segs=14)
     # a patchwork quilt, square by square, folded back at the top
-    qx0, qx1 = -L / 2 + 0.45, L / 2 - 0.02
+    qx0, qx1 = -L / 2 + 0.72, L / 2 - 0.02
     n = 4
     for i in range(n):
         for j in range(2):
@@ -354,7 +354,7 @@ def _digit(parent, n, x, z, h, mat):
 
 def p_scoreboard(x, y, z, rng, ctx):
     if not ctx.get('indoor'):  # outdoors it stands well back, above the crowd, not in front of the story
-        x, y = (-7.6 if x <= 0 else 7.6), y + 5.5
+        x, y = (-6.3 if x <= 0 else 6.3), y + 5.5
     root = _root('scoreboard', x, y, z)
     for sx in (-1, 1):
         prim('cyl', 'post', (sx * 1.1, 0.1, 1.0), (0.07, 0.07, 1.0), mat=F('#6b6f8a'), parent=root, segs=10)

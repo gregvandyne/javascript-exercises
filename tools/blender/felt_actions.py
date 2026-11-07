@@ -209,7 +209,7 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
         bike = P.bike(0.95 if ch.person and ch.kind != 'kid' else 0.8)
         extra['bike'] = bike
     if action == 'sleep_in_bed':
-        bed = P.bed(max(1.2, h + 0.35))
+        bed = P.bed(h + 0.35)
         bed.location = (x0, y0 + 0.05, z0)
         extra['bed'] = bed
     ball = ctx.get('ball')
@@ -221,7 +221,8 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
         root.rotation_euler.z = -rider_of.root.rotation_euler.z * 0.0
     if action == 'sleep_in_bed':
         root.rotation_euler = (0, -math.pi / 2, 0)
-        root.location = (x0 + h / 2 - 0.05, y0 + 0.02, z0 + 0.5 + 0.14)
+        # the head on the pillow (felt_props.bed: the pillow at the left end, the quilt from 0.72 in)
+        root.location = (x0 + h / 2 - 0.16, y0 + 0.02, z0 + 0.5 + 0.14)
 
     walk_like = action in ('walk', 'walk_in', 'walk_out', 'hold_star')
 

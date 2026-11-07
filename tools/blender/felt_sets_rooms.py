@@ -12,7 +12,7 @@ import felt_props as P
 F = K.felt
 prim = K.prim
 box = P.box
-WALL_Y = 6.0
+WALL_Y = 4.6
 
 
 def _sky_window(x, z, w, h, tod, rng, name='window', curtains='#e9a9b7', frame='#f4f1ea'):
@@ -47,7 +47,7 @@ def _sky_window(x, z, w, h, tod, rng, name='window', curtains='#e9a9b7', frame='
     # daylight through the window
     if tod['stars'] == 0:
         l = K.bpy.data.lights.new(f'{name}_light', 'AREA')
-        l.energy = 500
+        l.energy = 220
         l.size = max(w, h)
         l.color = (1.0, 0.96, 0.88)
         lo = K.bpy.data.objects.new(f'{name}_light', l)
@@ -97,19 +97,19 @@ def room(tod, rng, wall='#f6e3c4', pattern='stripes', accent='#efd2a8', floor='w
         _sky_window(*window, tod, rng)
     if lamp and lit:
         for sx in (-3.5, 3.5):
-            prim('cyl', 'lamp_cord', (sx, 3.5, 6.2), (0.012, 0.012, 1.4), mat=F('#3a3346'), segs=4)
-            prim('cone', 'lamp_shade', (sx, 3.5, 4.7), (1, 1, 0.22), mat=F('#f2c94c', emit=0.8, emit_color='#ffd27a'), segs=16, r1=0.42, r2=0.14)
-            prim('sphere', 'lamp_bulb', (sx, 3.5, 4.5), (0.12, 0.12, 0.12), mat=K.glow('#fff1c2', 6.0), segs=10)
+            prim('cyl', 'lamp_cord', (sx, 2.8, 6.2), (0.012, 0.012, 1.4), mat=F('#3a3346'), segs=4)
+            prim('cone', 'lamp_shade', (sx, 2.8, 4.7), (1, 1, 0.22), mat=F('#f2c94c', emit=0.8, emit_color='#ffd27a'), segs=16, r1=0.42, r2=0.14)
+            prim('sphere', 'lamp_bulb', (sx, 2.8, 4.5), (0.12, 0.12, 0.12), mat=K.glow('#fff1c2', 6.0), segs=10)
             l = K.bpy.data.lights.new('room_lamp', 'POINT')
             l.energy = 700
             l.color = (1.0, 0.82, 0.6)
             l.shadow_soft_size = 0.6
             lo = K.bpy.data.objects.new('room_lamp', l)
             K.link(lo)
-            lo.location = (sx, 2.5, 4.2)
+            lo.location = (sx, 1.8, 4.2)
     else:
         l = K.bpy.data.lights.new('room_fill', 'AREA')
-        l.energy = 900
+        l.energy = 380 if tod['stars'] == 0 else 700
         l.size = 10
         l.color = (1.0, 0.95, 0.88)
         lo = K.bpy.data.objects.new('room_fill', l)
@@ -200,8 +200,8 @@ def set_classroom(tod, rng, props):
     clock(3.1, 4.3)
     # desks and chairs, in rows behind the children
     b = P.Batch('desks')
-    for row, y in enumerate((2.6, 4.2)):
-        for x in (-4.6, -2.3, 2.3, 4.6):
+    for row, y in enumerate((2.4, 3.4)):
+        for x in ((-4.6, -2.3, 2.3, 4.6) if row == 0 else (-5.6, 5.6)):
             desk(b, x + (row * 0.3), y, legs=cols[(row * 2 + int(x)) % 5])
             chair(b, x + (row * 0.3), y + 0.55, col=cols[(row + int(x) + 2) % 5])
     b.done()
@@ -214,8 +214,8 @@ def set_classroom(tod, rng, props):
 def set_bedroom(tod, rng, props):
     h = room(tod, rng, wall='#dfe8f6', pattern='stars', accent='#f6e7a8', floor='wood', floor_col=('#d6b07c', '#c99f6a'), window=(-3.4, 2.8, 2.0, 2.0), lamp=False)
     bed = P.bed(2.0)
-    bed.location = (2.8, 3.6, 0)
-    rug(-0.3, 1.6, 2.4, 1.0, ('#9bc3e8', '#f6e7a8', '#ec8db0'))
+    bed.location = (3.0, 3.0, 0)
+    rug(-0.3, 1.5, 2.4, 1.0, ('#9bc3e8', '#f6e7a8', '#ec8db0'))
     # a toy shelf, a night light, a star mobile
     b = P.Batch('toyshelf')
     for z in (0.5, 1.2):
@@ -227,16 +227,16 @@ def set_bedroom(tod, rng, props):
     t = P.teddy(1.0)
     t.location = (-5.8, WALL_Y - 0.35, 1.24)
     lit = tod['stars'] > 0
-    box('nightstand', (5.0, 3.9, 0.3), (0.6, 0.5, 0.6), F('#f4f1ea'), None, 0.04)
-    prim('sphere', 'nightlight', (5.0, 3.9, 0.82), (0.2, 0.2, 0.22), mat=K.glow('#ffd27a', 4.0) if lit else F('#f6e7a8'), segs=16)
+    box('nightstand', (5.0, 3.6, 0.3), (0.6, 0.5, 0.6), F('#f4f1ea'), None, 0.04)
+    prim('sphere', 'nightlight', (5.0, 3.6, 0.82), (0.2, 0.2, 0.22), mat=K.glow('#ffd27a', 4.0) if lit else F('#f6e7a8'), segs=16)
     if lit:
         l = K.bpy.data.lights.new('nightlight', 'POINT')
         l.energy = 260
         l.color = (1.0, 0.8, 0.55)
         lo = K.bpy.data.objects.new('nightlight', l)
         K.link(lo)
-        lo.location = (4.6, 3.2, 1.2)
-    mob = K.empty('mobile', (-0.5, 3.0, 5.2))
+        lo.location = (4.6, 2.8, 1.2)
+    mob = K.empty('mobile', (-0.5, 2.6, 4.4))
     for k in range(5):
         a = k * 2 * math.pi / 5
         s = K.outline_obj('mobile_star', K.star_pts(0.18, 0.085), 0.04, F('#f2c94c', emit=0.6 if lit else 0.1, emit_color='#ffcf4d'), bevel=0.01)
@@ -250,7 +250,7 @@ def set_bedroom(tod, rng, props):
         l.color = (0.7, 0.78, 1.0)
         lo = K.bpy.data.objects.new('moonbeam', l)
         K.link(lo)
-        lo.location = (-3.4, 5.4, 2.8)
+        lo.location = (-3.4, 4.0, 2.8)
         lo.rotation_euler = (-1.9, 0, 0)
     h['used'] = ['bed']
     h['bed'] = bed  # the stage takes it away when someone in the story sleeps in their own bed
@@ -282,10 +282,10 @@ def set_kitchen(tod, rng, props):
         prim('torus', 'pan_hook', (sx, WALL_Y - 0.15, 2.3), (0.04, 0.04, 0.04), (math.pi / 2, 0, 0), mat=F('#3a3346'), segs=8)
         prim('cyl', 'pan', (sx, WALL_Y - 0.12, 2.0), (0.2, 0.2, 0.02), (math.pi / 2, 0, 0), mat=F(c), segs=18)
     # a table in the middle-back with a fruit bowl
-    P.p_fruit(3.6, 3.0, 0, rng, {})
+    P.p_fruit(3.6, 2.6, 0, rng, {})
     b = P.Batch('kchairs')
-    chair(b, 2.9, 3.6, col='#d9473f')
-    chair(b, 4.3, 3.6, col='#4f9d5d')
+    chair(b, 2.9, 3.2, col='#d9473f')
+    chair(b, 4.3, 3.2, col='#4f9d5d')
     b.done()
     h['used'] = ['fruit']
     return h
@@ -295,34 +295,36 @@ def set_library(tod, rng, props):
     h = room(tod, rng, wall='#efe0c8', pattern='stripes', accent='#e6d3b4', floor='carpet', floor_col=('#b4584a',), window=(0.0, 3.4, 1.6, 1.6))
     for x in (-6.2, -3.9, 3.9, 6.2):
         bookshelf(x, WALL_Y - 0.3, 2.1, 3.6, rng, wood='#8a5a35')
-    rug(0, 1.8, 2.6, 1.1, ('#3f74c9', '#f2c94c', '#3f74c9'))
+    rug(0, 1.6, 2.6, 1.1, ('#3f74c9', '#f2c94c', '#3f74c9'))
     # a reading armchair and a lamp
-    a = K.empty('armchair', (-1.9, 3.8, 0))
+    a = K.empty('armchair', (-3.2, 3.2, 0))
     chair_col = F('#4f9d5d')
     box('arm_seat', (0, 0, 0.35), (1.1, 0.8, 0.35), chair_col, a, 0.12)
     box('arm_back', (0, 0.35, 0.85), (1.1, 0.2, 0.9), chair_col, a, 0.1)
     for sx in (-1, 1):
         box('arm_rest', (sx * 0.55, 0, 0.6), (0.22, 0.8, 0.35), chair_col, a, 0.08)
-    P.book_closed().location = (-1.8, 3.6, 0.72)
+    P.book_closed().location = (-3.1, 3.0, 0.72)
     lit = tod['stars'] > 0
-    prim('cyl', 'floor_lamp', (1.6, 4.4, 0.9), (0.03, 0.03, 0.9), mat=F('#3a3346'), segs=6)
-    prim('cone', 'floor_lamp_shade', (1.6, 4.4, 1.9), (1, 1, 0.2), mat=F('#f2c94c', emit=1.0 if lit else 0.0, emit_color='#ffd27a'), segs=16, r1=0.35, r2=0.18)
+    prim('cyl', 'floor_lamp', (2.6, 3.6, 0.9), (0.03, 0.03, 0.9), mat=F('#3a3346'), segs=6)
+    prim('cone', 'floor_lamp_shade', (2.6, 3.6, 1.9), (1, 1, 0.2), mat=F('#f2c94c', emit=1.0 if lit else 0.0, emit_color='#ffd27a'), segs=16, r1=0.35, r2=0.18)
     return h
 
 
 def set_hospital(tod, rng, props):
-    h = room(tod, rng, wall='#e3f2ec', pattern='dots', accent='#cfe8de', floor='tiles', floor_col=('#f4f1ea', '#cfe0f0'), window=(-3.6, 3.0, 2.0, 1.8))
+    h = room(tod, rng, wall='#e3f2ec', pattern='dots', accent='#cfe8de', floor='tiles', floor_col=('#d6e6e0', '#a9c6d8'), window=(-3.6, 3.0, 2.0, 1.8))
     # a doctor's bed with rails, a curtain on a rail, a cabinet with a heart, a height chart
     b = P.Batch('hosp')
-    b.add('cube', (2.6, 3.6, 0.55), (1.0, 0.45, 0.08), mat=F('#f4f1ea'))
-    b.add('cube', (2.6, 3.6, 0.68), (0.95, 0.42, 0.06), mat=F('#9bd3c8'))
+    bx, by = 3.0, 2.8
+    b.add('cube', (bx, by, 0.55), (1.0, 0.45, 0.08), mat=F('#f4f1ea'))
+    b.add('cube', (bx, by, 0.68), (0.95, 0.42, 0.06), mat=F('#9bd3c8'))
     for sx in (-1, 1):
-        b.add('cube', (2.6 + sx * 0.95, 3.6, 0.6), (0.04, 0.45, 0.35), mat=F('#c9ccd4'))
+        b.add('cube', (bx + sx * 0.95, by, 0.6), (0.04, 0.45, 0.35), mat=F('#c9ccd4'))
         for sy in (-1, 1):
-            b.add('cyl', (2.6 + sx * 0.85, 3.6 + sy * 0.35, 0.27), (0.03, 0.03, 0.27), mat=F('#c9ccd4'), segs=6)
-    b.add('sphere', (1.95, 3.6, 0.8), (0.2, 0.33, 0.08), mat=F('#ffffff'), segs=12)
+            b.add('cyl', (bx + sx * 0.85, by + sy * 0.35, 0.27), (0.03, 0.03, 0.27), mat=F('#c9ccd4'), segs=6)
+    b.add('sphere', (bx - 0.65, by, 0.8), (0.2, 0.33, 0.08), mat=F('#ffffff'), segs=12)
     b.add('cyl', (0, WALL_Y - 1.4, 3.6), (0.02, 0.02, 6.0), (0, math.pi / 2, 0), mat=F('#c9ccd4'), segs=6)
     b.add('cube', (5.6, WALL_Y - 0.4, 0.8), (0.7, 0.35, 0.8), mat=F('#f4f1ea'))
+    b.add('cube', (-4.8, WALL_Y - 0.3, 1.5), (0.9, 0.04, 0.6), mat=F('#fbfbf6'))
     b.done()
     cur = K.outline_obj('curtain', [(0, 0), (1.6, 0), (1.7, -0.6), (1.5, -1.3), (1.75, -2.2), (1.6, -3.0), (0, -3.0)], 0.04, F('#9bc3e8'), bevel=0.015)
     cur.location = (4.9, WALL_Y - 1.42, 3.6)
@@ -337,11 +339,10 @@ def set_hospital(tod, rng, props):
 def set_party_room(tod, rng, props):
     h = room(tod, rng, wall='#fbe7ef', pattern='dots', accent='#f6c6d7', floor='wood', floor_col=('#e3c08c', '#d6b07c'), window=(-4.6, 2.9, 1.8, 1.8))
     P.p_flags(0, WALL_Y - 0.4, 0, rng, {})
-    for x, y in ((-6.5, 4.6), (6.4, 4.4)):
+    for x, y in ((-5.0, 3.4), (4.8, 3.2)):
         P.p_balloons(x, y, 0, rng, {})
-    P.p_presents(5.2, 3.6, 0, rng, {})
-    if 'cake' not in props:
-        P.p_cake(-2.6, 3.8, 0, rng, {'night': tod['stars'] > 0.5})
+    P.p_presents(3.4, 2.6, 0, rng, {})
+    P.p_cake(-2.8, 3.0, 0, rng, {'night': tod['stars'] > 0.5})
     # paper streamers swaying from the top
     cols = ['#f2c94c', '#3f74c9', '#4f9d5d', '#d9473f']
     for k in range(9):
@@ -398,13 +399,13 @@ def set_bakery(tod, rng, props):
     h = room(tod, rng, wall='#fbefe0', pattern='stripes', accent='#f6d6c8', floor='tiles', floor_col=('#f4f1ea', '#8a5a35'), window=(5.0, 3.0, 2.0, 1.8))
     # the counter with a glass-fronted case of cakes, shelves of bread, a chalk menu board
     b = P.Batch('bakery')
-    b.add('cube', (-1.5, 3.4, 0.55), (3.0, 0.5, 0.55), mat=F('#c27a52'))
-    b.add('cube', (-1.5, 3.4, 1.12), (3.05, 0.55, 0.04), mat=F('#f4f1ea'))
-    b.add('cube', (-1.5, 3.1, 0.6), (2.9, 0.02, 0.4), mat=K.paper('#e9f4fb', emit=0.5 if tod['stars'] > 0 else 0.2))
+    b.add('cube', (-1.5, 3.0, 0.55), (3.0, 0.5, 0.55), mat=F('#c27a52'))
+    b.add('cube', (-1.5, 3.0, 1.12), (3.05, 0.55, 0.04), mat=F('#f4f1ea'))
+    b.add('cube', (-1.5, 2.7, 0.6), (2.9, 0.02, 0.4), mat=K.paper('#e9f4fb', emit=0.5 if tod['stars'] > 0 else 0.2))
     for k in range(6):
         x = -4.0 + k * 1.0
-        b.add('cyl', (x, 3.3, 0.38), (0.25, 0.25, 0.1), mat=F(['#f4b6c8', '#fbe28a', '#c98a5a'][k % 3]), segs=16)
-        b.add('torus', (x, 3.3, 0.48), (0.25, 0.25, 0.08), mat=F('#fdf3f7'), segs=16)
+        b.add('cyl', (x, 2.9, 0.38), (0.25, 0.25, 0.1), mat=F(['#f4b6c8', '#fbe28a', '#c98a5a'][k % 3]), segs=16)
+        b.add('torus', (x, 2.9, 0.48), (0.25, 0.25, 0.08), mat=F('#fdf3f7'), segs=16)
     for z in (1.8, 2.6, 3.4):
         b.add('cube', (-5.0, WALL_Y - 0.3, z), (1.3, 0.25, 0.04), mat=F('#a27a45'))
         for k in range(5):
@@ -418,7 +419,7 @@ def set_bakery(tod, rng, props):
     # a striped awning over the counter
     aw = P.Batch('awning')
     for k in range(10):
-        aw.add('cube', (-4.1 + k * 0.6, 3.0, 2.6), (0.3, 0.5, 0.04), (0.35, 0, 0), mat=F(('#d9473f', '#ffffff')[k % 2]))
+        aw.add('cube', (-4.1 + k * 0.6, 2.7, 2.6), (0.3, 0.5, 0.04), (0.35, 0, 0), mat=F(('#d9473f', '#ffffff')[k % 2]))
     aw.done()
     return h
 

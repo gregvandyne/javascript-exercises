@@ -336,10 +336,10 @@ def set_swimming_pool(tod, rng, props):
     for k in range(-30, 31):
         tb.add('cube', (k * 0.45, 3.15, 0.03), (0.21, 0.15, 0.04), mat=F(('#ffffff', '#3f74c9')[k % 2]))
     tb.done()
-    water = F(dn(tod, '#4fb0e6', '#24507e', '#3d8fc4'), sheen=1.0, fuzz=0.4, emit=0.15 if lit else 0.0, emit_color='#7fd0ff')
+    water = K.paper(dn(tod, '#3fa6e6', '#24507e', '#3d8fc4'), emit=0.45 if not lit else 0.3)
     rows = P.Batch('pool_water')
     for k in range(8):
-        rows.add('cube', (0, 3.6 + k * 0.9, -0.08), (16, 0.46, 0.06), mat=water)
+        rows.add('cube', (0, 3.6 + k * 0.9, -0.02 + (k % 2) * 0.012), (16, 0.46, 0.04), mat=water)
     rows.done()
     for k in range(4):
         lane = P.Batch(f'lane{k}')
@@ -352,6 +352,11 @@ def set_swimming_pool(tod, rng, props):
         rip.add('cube', (rng.uniform(-7, 7), rng.uniform(3.8, 10), 0.0), (rng.uniform(0.2, 0.5), 0.03, 0.006), mat=K.paper('#e8f8ff', emit=0.4))
     ro = rip.done()
     K.anim(lambda t, f: setattr(ro.location, 'x', math.sin(t * 0.6) * 0.2))
+    far = P.Batch('pool_far_edge')
+    for k in range(-30, 31):
+        far.add('cube', (k * 0.45, 10.9, 0.12), (0.21, 0.2, 0.16), mat=F(('#ffffff', '#3f74c9')[k % 2]))
+    far.add('cube', (0, 11.6, 0.6), (16, 0.15, 0.6), mat=F(dn(tod, '#f4f1ea', '#8a8aa0')))
+    far.done()
     lad = K.empty('pool_ladder', (3.6, 3.3, 0))
     for sx in (-0.3, 0.3):
         prim('torus', 'ladder_rail', (sx, 0.15, 0.35), (0.3, 0.3, 0.3), (0, math.pi / 2, 0), mat=F('#c9ccd4'), parent=lad, segs=16, minor=0.1)
@@ -506,9 +511,9 @@ def set_beach(tod, rng, props):
     sb.add('cube', (6.0, 2.0, 0.05), (0.45, 0.35, 0.05), mat=F('#3f74c9'))
     sb.done()
     # palm trees
-    for k, (x, y, lean) in enumerate(((-7.0, 3.4, 0.25), (8.0, 4.0, -0.3))):
+    for k, (x, y, lean) in enumerate(((-5.4, 3.0, 0.25), (5.8, 3.6, -0.3))):
         palm(f'palm{k}', x, y, 3.4, lean, dn(tod, '#4f9d5d', '#2b6b52'), rng)
-    P.p_umbrella(-4.6, 2.2, 0, rng, {})
+    P.p_umbrella(-3.8, 2.0, 0, rng, {})
     return {'night': S.night_of(tod), 'water': True, 'used': ['umbrella']}
 
 
@@ -699,10 +704,10 @@ def set_space(tod, rng, props):
     P.p_rocket(4.6, 5.2, 0, rng, {})
     flag = K.empty('moon_flag', (-3.8, 3.6, 0))
     prim('cyl', 'flagpole', (0, 0, 0.9), (0.025, 0.025, 0.9), mat=F('#c9ccd4'), parent=flag, segs=6)
-    fl = K.outline_obj('flag', [(0, 0), (0.7, 0), (0.7, -0.45), (0, -0.45)], 0.02, F('#d9473f'), bevel=0.006)
+    fl = K.outline_obj('flag', [(0, 0), (0.7, 0), (0.7, -0.45), (0, -0.45)], 0.02, F('#8459b8'), bevel=0.006)
     fl.parent = flag
     fl.location = (0.02, 0, 1.75)
-    st = K.outline_obj('flag_star', K.star_pts(0.14, 0.06), 0.03, F('#f2c94c'), bevel=0.005)
+    st = K.outline_obj('flag_star', K.star_pts(0.14, 0.06), 0.03, F('#ffffff'), bevel=0.005)
     st.parent = flag
     st.location = (0.36, -0.01, 1.52)
     S.lamp('earthshine', (-3, -2, 6), 900, (0.75, 0.82, 1.0), 4.0)
@@ -866,7 +871,7 @@ def set_dinosaur_valley(tod, rng, props):
         y = rng.uniform(1.5, 6)
         fern = K.empty('fern', (x, y, 0))
         for j in range(6):
-            fr = K.outline_obj('frond', [(0, 0)] + [(0.08 * math.sin(i), i * 0.12) for i in range(1, 9)] + [(0, 1.1)] + [(-0.08 * math.sin(i), i * 0.12) for i in range(8, 0, -1)], 0.02, F(rng.choice(greens)), bevel=0.005)
+            fr = K.outline_obj('frond', [(0, 0)] + [(0.08 * math.sin(i), i * 0.12) for i in range(1, 9)] + [(0, 1.1)] + [(-0.08 * math.sin(i), i * 0.12) for i in range(8, 0, -1)], 0.05, F(rng.choice(greens), sheen=0.2), bevel=0.01)
             fr.parent = fern
             fr.rotation_euler = (0, -1.0 + j * 0.4, 0)
     nest = K.empty('nest', (-2.6, 3.4, 0))
