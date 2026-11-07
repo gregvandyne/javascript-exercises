@@ -3858,7 +3858,7 @@
       "packetPost": "Envoyez des paquets sur un réseau, choisissez des phrases de passe solides et repérez les pièges en ligne.",
       "insideTheMachine": "Montez et réparez des ordinateurs : composants, entrées et sorties, bits et pixels, conception pour tous.",
       "tugOfMath": "Des questions de maths choisies pour chaque niveau de 1 à 8, des additions jusqu’à 20 aux équations, en partie de tir à la corde. Contre l’ordi ou un ami sur le même écran.",
-      "doodleHoot": "Dessine un mot pour les autres ou épelle le leur avec des tuiles de lettres. Mots faciles, moyens ou difficiles en 13 langues, en direct avec la famille et les amis ou sur un seul appareil.",
+      "doodleHoot": "Dessine un mot pour les autres ou devine le leur pendant qu’ils dessinent : écris-le, dis-le ou utilise des tuiles de lettres. Mots faciles, moyens ou difficiles en 13 langues, en direct avec la famille et les amis ou sur un seul appareil.",
       "remisQuietMeadow": "Un sonomètre pour la classe : restez calmes pour que Remi, le panda roux, puisse dormir, et comptez ensemble le temps calme."
     },
     "hubs": {
@@ -4080,7 +4080,7 @@
           "beatLanes": "Taper en rythme sur des chansons connues, en commençant par Ah ! vous dirai-je, maman.",
           "munchMaze": "Une course-poursuite dans un labyrinthe avec un mode Facile : prévoir un trajet et manger toutes les pastilles.",
           "tugOfMath": "Choisis le niveau 2 ou 3 : additions, soustractions et tables de multiplication, avec l’ordi en Facile jusqu’à la victoire.",
-          "doodleHoot": "Des mots en images et des tuiles de lettres : l’orthographe comme un jeu de fête."
+          "doodleHoot": "Des mots en images à deviner et à écrire : l’orthographe comme un jeu de fête."
         },
         "faq": {
           "q2": "Les jeux sont-ils trop difficiles pour un enfant de 8 ans ?",
@@ -4629,7 +4629,7 @@
       "tug": "Tug of Math (En direct)",
       "tugText": "La classe se partage en deux équipes. Chacun répond à des questions de maths de son niveau sur son propre pavé, et chaque bonne réponse tire la corde.",
       "doodle": "Doodle Hoot (En direct)",
-      "doodleText": "Un joueur dessine, les autres épellent le mot avec des tuiles de lettres. Pour la famille ou les amis, où qu’ils soient, chacun sur son appareil."
+      "doodleText": "Un joueur dessine pendant que les autres devinent : en écrivant, à voix haute ou avec des tuiles de lettres. Pour la famille ou les amis, où qu’ils soient, chacun sur son appareil."
     },
     "starter": {
       "title": {
@@ -5433,7 +5433,10 @@
       "roundsList": "1 manche (chacun dessine une fois)|2 manches|3 manches",
       "secs": "Temps pour dessiner",
       "secsN": "{n} secondes",
-      "hint": "Chacun dessine à son tour. Les joueurs rejoignent avec le code sur leur propre appareil, où qu’ils soient. Personne n’écrit : on devine avec des tuiles de lettres, et il n’y a pas de chat.",
+      "hint": "Chacun dessine à son tour pendant que les autres devinent. Les joueurs rejoignent avec le code sur leur propre appareil, où qu’ils soient. Ce qu’on écrit ne va qu’au jeu : le dessinateur ne voit une réponse que si c’est un des mots du jeu, et il n’y a pas de chat.",
+      "guess": "Comment on devine",
+      "guessType": "En écrivant au clavier",
+      "guessTiles": "Tuiles de lettres (plus facile)",
       "bigRoom": "Un grand groupe ? Une manche suffit : chacun dessine une fois.",
       "play": "S’entraîner ou jouer sur un appareil"
     },
@@ -5564,7 +5567,7 @@
       },
       "doodle": {
         "h": "Doodle Hoot (En direct)",
-        "p": "Un joueur dessine, les autres épellent le mot avec des tuiles de lettres : orthographe et vocabulaire en 13 langues. Idéal pour les petits groupes (jusqu’à 16) ; tu peux effacer un dessin ou passer un tour à tout moment."
+        "p": "Un joueur dessine pendant que les autres devinent, à l’écrit ou à voix haute (ou avec des tuiles de lettres pour les plus jeunes) : orthographe et vocabulaire en 13 langues. Idéal pour les petits groupes (jusqu’à 16) ; tu peux effacer un dessin ou passer un tour à tout moment."
       },
       "tug": {
         "h": "Tug of Math (En direct)",

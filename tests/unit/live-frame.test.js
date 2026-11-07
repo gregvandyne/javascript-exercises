@@ -134,3 +134,27 @@ test('a host frame may send to one team or one seat; the targets reach the page 
   assert.deepEqual(P, [{ k: 'hint', d: 1, tm: 2, t: 'ev' }, { k: 'hint', d: 2, to: 5, t: 'ev' }]);
   await ctx.close();
 });
+
+test('Doodle Hoot Live with typed guesses: its one guess box can be typed in; nothing else, and nowhere else', { skip, timeout: 60_000 }, async () => {
+  const BOX = `<title>Guess</title><body><input id="g" type="text" data-live-guess><input id="t" type="text"><textarea id="ta"></textarea><script>
+  window.__R = {};
+  setTimeout(function () {
+    var R = window.__R;
+    R.guess = document.getElementById('g').readOnly; R.other = document.getElementById('t').readOnly; R.ta = document.getElementById('ta').readOnly;
+    var late = document.createElement('input'); late.type = 'text'; late.setAttribute('data-live-guess', ''); document.body.appendChild(late);
+    var area = document.createElement('textarea'); area.setAttribute('data-live-guess', ''); document.body.appendChild(area);
+    setTimeout(function () { R.late = late.readOnly; R.area = area.readOnly; }, 50);
+  }, 60);
+  </script></body>`;
+  const on = await run({ ...LIVE, mode: 'doodle', guess: 1 }, BOX);
+  const R = await on.frame.evaluate(() => window.__R);
+  assert.equal(R.guess, false, 'the guess box can be typed in'); assert.equal(R.late, false);
+  assert.equal(R.other, true, 'any other text box cannot'); assert.equal(R.ta, true); assert.equal(R.area, true, 'only an input, never a textarea');
+  await on.ctx.close();
+  // the same box in another mode, in a tiles room (no guess flag), or on the host's page: read-only
+  for (const live of [{ ...LIVE, mode: 'game', guess: 1 }, { ...LIVE, mode: 'doodle' }, { ...LIVE, mode: 'doodle', guess: 1, role: 'host' }]) {
+    const off = await run(live, BOX);
+    assert.equal((await off.frame.evaluate(() => window.__R)).guess, true, JSON.stringify(live));
+    await off.ctx.close();
+  }
+});
