@@ -164,13 +164,14 @@ function tableSvg(v) {
 const tableExtent = v => { const g = tableGeo(v); return [v.label ? tTop(6.5, capFs(v.label)) : g.top, g.bottom]; };
 
 // ---------------------------------------------------------------------------------------------- letters
-/** Panels of big letters across 6-94 (band y 8-38), each named under it at y 45; `fold` draws its line of
+/** Panels of big letters across 9-91 (band y 8-38), each named under it at y 45; `fold` draws its line of
  *  symmetry dashed straight down the middle. */
 function lettersSvg(v) {
-  const n = v.items.length, cw = 88 / n;
+  // across 9-91, not 6-94: a step's badge can sit outside the first and last panels without leaving the frame
+  const n = v.items.length, cw = 82 / n;
   return v.items.map((it, i) => {
-    const cx = 6 + cw * (i + 0.5);
-    let s = `<rect x="${r2(6 + cw * i + 1.5)}" y="8" width="${r2(cw - 3)}" height="30" rx="1.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.5"/>`;
+    const cx = 9 + cw * (i + 0.5);
+    let s = `<rect x="${r2(9 + cw * i + 1.5)}" y="8" width="${r2(cw - 3)}" height="30" rx="1.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.5"/>`;
     s += tx(cx, 32.5, it.ch, 24, 'middle', 800, it.fold ? INK : '#8A8577');
     if (it.fold) s += `<line x1="${r2(cx)}" y1="10" x2="${r2(cx)}" y2="36" stroke="${LEAF}" stroke-width="0.8" stroke-dasharray="2 1.4"/>`;
     return s + tx(cx, 45, it.name, Math.min(3.8, (cw - 4) / (String(it.name).length * 0.56)), 'middle', 800, it.fold ? LEAF : INK);

@@ -78,7 +78,7 @@
      },
      {
       "ch": "F",
-      "name": "no fold works"
+      "name": "no fold fits"
      }
     ]
    },
@@ -86,27 +86,27 @@
     {
      "cue": "Fold A down the dashed line: one half lands exactly on the other.",
      "box": [
-      6.5,
+      9.5,
       12.6,
-      28.3,
+      26.3,
       70.6
      ]
     },
     {
      "cue": "H folds the same way. The fold line is its line of symmetry.",
      "box": [
-      35.8,
+      36.8,
       12.6,
-      28.3,
+      26.3,
       70.6
      ]
     },
     {
      "cue": "No fold makes the two halves of F match.",
      "box": [
-      65.2,
+      64.2,
       12.6,
-      28.3,
+      26.3,
       70.6
      ]
     }
