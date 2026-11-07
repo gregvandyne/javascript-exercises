@@ -92,9 +92,6 @@ const SHOTS = [
   { key: 'variables-1b-set-change', chapter: 'variables', band: '1b', level: 3, program: 'set steps 4; repeat 4 { change steps -1; move }; move', steps: 5 },
   { key: 'variables-1b-counting-gems', chapter: 'variables', band: '1b', level: 1, program: 'set count 0; repeat 5 { move; pick; change count 1 }; right; move; move', steps: 7 },
   // ---- 1.4 Variables, Pro (var-1 pro, var-2, var-3 pro, var-4p..var-6p)
-  { key: 'variables-2-key', chapter: 'variables', band: '2', level: 6 },
-  { key: 'variables-2-names', chapter: 'variables', band: '2', level: 1, program: 'set count 0; repeat 7 { move; pick; change count 1 }; right; move; move' },
-  { key: 'variables-2-types', chapter: 'variables', band: '2', level: 4, program: 'set hasKey off; repeat until goal { if pickup { pick; set hasKey on }; if path { move } else { right } }', steps: 10 },
   { key: 'variables-2-watch-value', chapter: 'variables', band: '2', level: 3, program: 'set steps 6; repeat 6 { change steps -1; move }; move', steps: 5 },
   // ---- 1.5 Functions, Explorer (fn-1..fn-6; starters load on their own where a shot has no program)
   { key: 'functions-1b-key', chapter: 'functions', band: '1b', level: 1, clear: true },

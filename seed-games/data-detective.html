@@ -1786,7 +1786,7 @@ function doAct(a) {
     if (r && r.why === 'show-me') { sfx('wrong'); dotSay(showMeText()); return; }
     if (r && r.why === 'pick') { sfx('select'); claimCard(); return; }
     if (r && r.why === 'tie') { sfx('select'); dotSay(tr('It is a tie. Count a few more answers, or pin the tie.')); return; }
-    if (r && r.ok) { if (st.solved) { solved(); return; } sfx('correct'); renderCase(); dotSay(level.tally ? tr('Good claim! Now show me: tap the bar or row that proves it.') : tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
+    if (r && r.ok) { if (st.solved) { solved(); return; } sfx('correct'); renderCase(); showProof(level, st); dotSay(level.tally ? tr('Good claim! Now show me: tap the bar or row that proves it.') : tr('Good claim! Now show me: tap the evidence that proves it.')); return; }
     if (!r || r.why !== 'wrong') return;
     // A wrong claim rules its tile out for good: the tile's words ARE the claim, and they stay wrong.
     // A prediction tile is different: its truth is the slider's current value, which the student can
@@ -1806,6 +1806,18 @@ function doAct(a) {
   }
   const okNow = E.evidence(level, st);
   if (okNow && !S.claimsOpen && st.picked == null) dotSay(tr('That view answers it. Pin your claim!'));
+}
+/** After a good claim Dot asks for the proving row: a cut table scrolls the first one into view, so the answer row
+ *  (Gus at 3:10) is never hidden under the "more rows below" strip while the child is asked to tap it. */
+function showProof(level, st) {
+  try {
+    const keys = E.proofKeys ? E.proofKeys(level, st) : proofKeys(level, st);
+    const rowKey = (keys || []).find(k => /^r\d+$/.test(k)); if (!rowKey) return;
+    const tbl = document.querySelector('#view .tbl'), row = tbl && tbl.querySelector(`tbody tr[data-row="${rowKey}"]`); if (!row) return;
+    const wr = tbl.getBoundingClientRect(), b = row.getBoundingClientRect(), head = (tbl.querySelector('thead') || {}).offsetHeight || 0, sign = tbl.querySelector('.tbl-more:not([hidden])');
+    const low = wr.bottom - (sign ? sign.offsetHeight : 0);
+    if (b.bottom > low) tbl.scrollTop += b.bottom - low + 4; else if (b.top < wr.top + head) tbl.scrollTop -= wr.top + head - b.top + 4;
+  } catch (e) { /* the table stays where it was */ }
 }
 function solved() {
   const level = S.level, st = S.cs, n = E.stars(level, st);

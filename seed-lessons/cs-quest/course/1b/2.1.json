@@ -150,19 +150,19 @@
     {
      "cue": "The one changed block: turn right",
      "box": [
-      70.3,
-      33.2,
-      9.4,
-      7
+      76.6,
+      35.6,
+      10.4,
+      7.4
      ]
     },
     {
      "cue": "Now run it again to test it",
      "box": [
       53.5,
-      33,
+      35.3,
       41,
-      13
+      15
      ]
     }
    ]

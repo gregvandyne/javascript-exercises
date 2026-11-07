@@ -37,25 +37,25 @@
    "title": "Enough data?",
    "text": "Two bars are a hunch, not a case. When there is too little data, the honest answer is: we cannot tell yet.",
    "art": "chart",
-   "img": "csq/data-detective/claims-1b-hunch-n",
-   "alt": "Two days of data and a big claim: it will be 20 cm tall by day 10. Supported, not supported, or can't tell yet?",
+   "img": "csq/data-detective/claims-1b-twodays-n",
+   "alt": "A sunflower measured on only two days: 3 cm on day 1 and 5 cm on day 2, two short bars.",
    "focus": [
     {
-     "cue": "Only two days of data: is it enough?",
+     "cue": "Only two days of data: day 1 is 3 cm",
      "box": [
-      18.9,
-      4.6,
-      21.2,
-      11.7
+      18,
+      34,
+      16,
+      30
      ]
     },
     {
-     "cue": "The honest answer: can’t tell yet",
+     "cue": "Day 2 is 5 cm. Too little to predict day 10",
      "box": [
-      18.9,
-      50.9,
-      24.1,
-      11.7
+      64,
+      15,
+      18,
+      30
      ]
     }
    ]
