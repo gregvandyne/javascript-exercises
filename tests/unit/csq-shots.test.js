@@ -56,8 +56,9 @@ const ZOOM_DATA = (await import('../../public/js/course-zoom-data.js')).default;
 const FRAME_390 = 326;
 // Toured steps that cannot reach 11 px without reflowing the game: Packet Post's road maps (4.1 Many Roads, Pro 4.2
 // the padlock roads, Pro 4.3 the pixel grid), whose stop labels and pixel numbers the game sets small at every width
-// (Cyber Defenders pins the same maps as WIDE).
-const SHORT = 5;
+// (Cyber Defenders pins the same maps as WIDE), and Pro 2.2's tester card, whose long yellow "Change one thing" pill
+// sits between rows of the dimmed maker panel that a zoom may not cut.
+const SHORT = 6;
 test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
   const short = [];

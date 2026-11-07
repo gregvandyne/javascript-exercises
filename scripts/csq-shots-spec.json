@@ -1,17 +1,6 @@
 [
  {
   "game": "robo-route",
-  "state": "maker-1b-key-c",
-  "chapter": "level-maker",
-  "band": "1b",
-  "level": 1,
-  "actions": [],
-  "alt": "Level Maker task 1: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
-  "concept": "Be the game designer: plan, build, test, fix, explain",
-  "compact": true
- },
- {
-  "game": "robo-route",
   "state": "maker-1b-plan-c",
   "chapter": "level-maker",
   "band": "1b",
@@ -134,28 +123,6 @@
  },
  {
   "game": "robo-route",
-  "state": "maker-2-key-c",
-  "chapter": "level-maker",
-  "band": "2",
-  "level": 1,
-  "actions": [],
-  "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
-  "concept": "Design for someone else: plan, build, test, improve, document",
-  "compact": true
- },
- {
-  "game": "robo-route",
-  "state": "maker-2-task-c",
-  "chapter": "level-maker",
-  "band": "2",
-  "level": 2,
-  "actions": [],
-  "alt": "Task 2 of 3: too easy, par is 1. Move the goal or add walls until par is at least 10, and keep it solvable.",
-  "concept": "Keep a timeline: the tasks are checkpoints",
-  "compact": true
- },
- {
-  "game": "robo-route",
   "state": "maker-2-built-c",
   "chapter": "level-maker",
   "band": "2",
@@ -186,7 +153,7 @@
  },
  {
   "game": "robo-route",
-  "state": "maker-2-feedback-w",
+  "state": "maker-2-feedback-n",
   "chapter": "level-maker",
   "band": "2",
   "level": 2,
@@ -223,7 +190,15 @@
    }
   ],
   "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
-  "concept": "Feedback is information"
+  "concept": "Feedback is information",
+  "narrow": {
+   "width": 700,
+   "height": 900,
+   "at": {
+    "text": "One fun thing",
+    "pad": 14
+   }
+  }
  },
  {
   "game": "robo-route",
@@ -1746,77 +1721,6 @@
  },
  {
   "game": "inside-the-machine",
-  "state": "bits-1b-pixels-n",
-  "chapter": "bits",
-  "band": "1b",
-  "level": 3,
-  "actions": [
-   {
-    "clicks": [
-     [
-      ".im-px",
-      1
-     ],
-     [
-      ".im-px",
-      3
-     ],
-     [
-      ".im-px",
-      5
-     ],
-     [
-      ".im-px",
-      6
-     ],
-     [
-      ".im-px",
-      7
-     ],
-     [
-      ".im-px",
-      8
-     ],
-     [
-      ".im-px",
-      9
-     ],
-     [
-      ".im-px",
-      10
-     ],
-     [
-      ".im-px",
-      11
-     ],
-     [
-      ".im-px",
-      12
-     ],
-     [
-      ".im-px",
-      13
-     ],
-     [
-      ".im-px",
-      14
-     ]
-    ]
-   }
-  ],
-  "alt": "A picture as a grid of pixels: rows 1 to 3 are copied, dark where the row says 1, light where it says 0.",
-  "concept": "Pictures are dots",
-  "narrow": {
-   "width": 420,
-   "height": 740,
-   "at": {
-    "sel": ".im-px",
-    "pad": 10
-   }
-  }
- },
- {
-  "game": "inside-the-machine",
   "state": "bits-1b-photo-n",
   "chapter": "bits",
   "band": "1b",
@@ -2356,5 +2260,153 @@
    "height": 520,
    "top": 103.5
   }
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-1b-task1-n",
+  "chapter": "level-maker",
+  "band": "1b",
+  "level": 1,
+  "actions": [],
+  "alt": "Level Maker task 1 of 3: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
+  "concept": "Be the game designer",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "The goal is walled in",
+    "pad": 12
+   }
+  }
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-task1-n",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 1,
+  "actions": [],
+  "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
+  "concept": "Design for someone else",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "The goal is walled in",
+    "pad": 12
+   }
+  }
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-task2-n",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 2,
+  "actions": [],
+  "alt": "Task 2 of 3: too easy, par is 1. Move the goal or add walls until par is at least 10, and keep it solvable.",
+  "concept": "Keep a timeline",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Too easy",
+    "pad": 12
+   }
+  }
+ },
+ {
+  "game": "robo-route",
+  "state": "loops-1b-five-c",
+  "chapter": "loops",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "program": "move; move; move; move; move"
+   }
+  ],
+  "alt": "Bolt and the flag five squares apart in a straight row, and five move blocks in the program, one for each square.",
+  "concept": "The same block again?",
+  "compact": true
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-1b-pixels-c",
+  "chapter": "bits",
+  "band": "1b",
+  "level": 3,
+  "actions": [
+   {
+    "clicks": [
+     [
+      ".im-px",
+      1
+     ],
+     [
+      ".im-px",
+      3
+     ],
+     [
+      ".im-px",
+      5
+     ],
+     [
+      ".im-px",
+      6
+     ],
+     [
+      ".im-px",
+      7
+     ],
+     [
+      ".im-px",
+      8
+     ],
+     [
+      ".im-px",
+      9
+     ],
+     [
+      ".im-px",
+      10
+     ],
+     [
+      ".im-px",
+      11
+     ],
+     [
+      ".im-px",
+      12
+     ],
+     [
+      ".im-px",
+      13
+     ],
+     [
+      ".im-px",
+      14
+     ]
+    ]
+   }
+  ],
+  "alt": "A 5 by 5 pixel grid with rows 1 to 3 copied, beside the row codes: Row 1: 01010, Row 2: 11111, Row 3: 11111 and so on.",
+  "concept": "Pictures are dots",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "sequences-1b-order-c",
+  "chapter": "sequences",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "program": "move; move; move; move"
+   }
+  ],
+  "alt": "Bolt four squares from the flag, and the program beside the board: four move blocks joined in order, then Run.",
+  "concept": "Steps in order",
+  "compact": true
  }
 ]

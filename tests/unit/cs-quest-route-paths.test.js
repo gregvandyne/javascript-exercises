@@ -26,7 +26,7 @@ test('cs-quest: every screenshot slide has a legible view crop that holds its fo
   const near = (id, d) => byId.get(id.replace(/s(\d+)$/, (m, n) => `s${+n + d}`));
   for (const { id, slide: s } of all) {
     if (!s.img) continue;
-    if ((NARROW.has(s.img) || s.img.startsWith('csq/chars/')) && !s.view) continue;   // a guide's portrait: the whole picture
+    if ((NARROW.has(s.img) || COMPACT.has(s.img) || s.img.startsWith('csq/chars/')) && !s.view) continue;   // a portrait, or a phone-size or compact capture shown whole
     // One wide picture split across two slides in a row (two side-by-side panels): each slide shows one whole
     // panel, so its crop may be narrower (down to 22%: about 1.3x on a phone, 1.6x on a laptop).
     const split = [near(id, -1), near(id, 1)].some(o => o && o.img === s.img && o.view && s.view && String(o.view) !== String(s.view));
