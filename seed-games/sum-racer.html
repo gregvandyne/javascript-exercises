@@ -273,8 +273,10 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
    pixel skin: square boxes with stepped corners (clip-path, one --u pixel), hard Ink lips instead of soft shadows, no
    gradients, the pixel font (words: Pixelify Sans; numbers: the kit's pixel digits, so 5 never reads as S). Sizes,
    layout and touch targets are the Ink look's. ---------- */
-.sr-pixel .sr,.sr-pixel .ok-title-screen{--u:3px;--cut:polygon(0 var(--u),var(--u) var(--u),var(--u) 0,calc(100% - var(--u)) 0,calc(100% - var(--u)) var(--u),100% var(--u),100% calc(100% - var(--u) + var(--lip,0px)),calc(100% - var(--u)) calc(100% - var(--u) + var(--lip,0px)),calc(100% - var(--u)) calc(100% + var(--lip,0px)),var(--u) calc(100% + var(--lip,0px)),var(--u) calc(100% - var(--u) + var(--lip,0px)),0 calc(100% - var(--u) + var(--lip,0px)))}
-.sr-pixel .sr canvas{image-rendering:pixelated}
+.sr-pixel .sr,.sr-pixel .ok-title-screen{--u:var(--sr-u,3px);--cut:polygon(0 var(--u),var(--u) var(--u),var(--u) 0,calc(100% - var(--u)) 0,calc(100% - var(--u)) var(--u),100% var(--u),100% calc(100% - var(--u) + var(--lip,0px)),calc(100% - var(--u)) calc(100% - var(--u) + var(--lip,0px)),calc(100% - var(--u)) calc(100% + var(--lip,0px)),var(--u) calc(100% + var(--lip,0px)),var(--u) calc(100% - var(--u) + var(--lip,0px)),0 calc(100% - var(--u) + var(--lip,0px)))}
+.sr-pixel .sr canvas{image-rendering:crisp-edges;image-rendering:pixelated}
+/* the pixel fonts unsmoothed where the platform allows it (macOS); sizes snap to their pixel grid in the script */
+.sr-pixel .ok-ui{-webkit-font-smoothing:none;-moz-osx-font-smoothing:auto;font-smooth:never}
 .sr-pixel .sr .qline,.sr-pixel .sr .qbox,.sr-pixel .sr .ans,.sr-pixel .sr .key,.sr-pixel .sr .chip,.sr-pixel .sr .tcard,.sr-pixel .sr .seg,.sr-pixel .sr-tcard,
 .sr-pixel .sr .pickHint,.sr-pixel .sr .resStats,.sr-pixel .sr .resRow,.sr-pixel .sr .tables button,.sr-pixel .signs span,.sr-pixel .sr .tnum,.sr-pixel .sr .tbadge,.sr-pixel .sr .mk{border-radius:0!important;clip-path:var(--cut)}
 .sr-pixel .sr .qpanel{background:#2B1F5C;border-top-width:var(--u)}
@@ -1600,7 +1602,56 @@ function makeView(canvas, kind) {
     amb: [], emit: [0, 0, 0, 0], pops: [] };
 }
 /** Fit the view's canvas to its box with the kit (Oomba.fit: device pixels, capped), in CSS px. */
+/* ---------- Pixel style: canvases in device pixels (Ink keeps Oomba.fit, capped at 2x, as before) ----------
+   A pixel canvas's buffer is its box in DEVICE pixels (no cap: an iPhone is 3x), its CSS size is exactly that over the
+   device pixel ratio, and it is moved onto the device-pixel grid, so one buffer pixel is one screen pixel and every art
+   pixel (a whole number of them) stays square and hard-edged. Resizes, rotation, fullscreen and zoom come back here. */
+const pxDpr = () => Math.min(4, window.devicePixelRatio || 1);
+/** Browsers lay out in 1/64 CSS px: a canvas size or position that is not a whole number of device pixels AND of those
+ *  units gets resampled by a hair. The step (device px) that is both: 1 at 1x/2x/4x, 3 at 3x, 21 at 2.625x... */
+function pxStep(dpr) { for (let m = 1; m <= 4096; m++) { const dev = m * dpr / 64; if (Math.abs(dev - Math.round(dev)) < 1e-6) return Math.round(dev); } return 1; }
+function pxFit(v) {
+  if (v.fit && v.fit.off) v.fit.off();
+  const cv = v.cv, box = cv.parentElement, r = box.getBoundingClientRect(), dpr = pxDpr(), st = pxStep(dpr);
+  // the box's top-left on that grid, and a size that covers the box (overflow is clipped by the box)
+  const L = Math.round(r.left * dpr / st) * st, T = Math.round(r.top * dpr / st) * st;
+  const pw = Math.max(st, Math.ceil((r.right * dpr - L) / st) * st), ph = Math.max(st, Math.ceil((r.bottom * dpr - T) / st) * st);
+  if (cv.width !== pw) cv.width = pw;
+  if (cv.height !== ph) cv.height = ph;
+  Object.assign(cv.style, { width: pw / dpr + 'px', height: ph / dpr + 'px', left: (L / dpr - r.left) + 'px', top: (T / dpr - r.top) + 'px', right: 'auto', bottom: 'auto' });
+  v.fit = { off() {}, px: true };
+  const w = pw / dpr, h = ph / dpr, changed = w !== v.w || h !== v.h || dpr !== v.dpr || v.night !== NIGHT();
+  v.w = w; v.h = h; v.dpr = dpr; v.night = NIGHT();
+  if (changed) { v.m = metrics(w, h, v.kind); v.tiles = null; v.pxb = null; }
+  v.g.imageSmoothingEnabled = false;   // a resize resets the context
+  return changed;
+}
+/** A track card's canvas: the same, at its card's width (21:9), each time the picker is drawn. */
+function pxSizeThumb(v) {
+  const cv = v.cv; cv.style.width = ''; cv.style.height = ''; cv.style.position = ''; cv.style.left = '';
+  const r = cv.getBoundingClientRect(), dpr = pxDpr(), st = pxStep(dpr), L = Math.round(r.left * dpr / st) * st;
+  const pw = Math.max(st, Math.floor((r.right * dpr - L) / st) * st), ph = Math.max(st, Math.round(pw * 9 / 21 / st) * st);
+  cv.width = pw; cv.height = ph;
+  Object.assign(cv.style, { width: pw / dpr + 'px', height: ph / dpr + 'px', position: 'relative', left: (L / dpr - r.left) + 'px' });
+  v.w = pw / dpr; v.h = ph / dpr; v.dpr = dpr; v.m = metrics(v.w, v.h, v.kind); v.tiles = null; v.pxb = null;
+  v.g.imageSmoothingEnabled = false;
+}
+/** The pixel UI's unit (--u, the kit's --px) as whole device pixels, and the font grid step (--sr-fu). */
+function pxUnits() {
+  const dpr = pxDpr(), u = Math.max(1, Math.round(3 * dpr)) / dpr, root = document.documentElement;
+  root.style.setProperty('--sr-u', u + 'px');
+  const ui = Oomba.ui.root(); if (ui) ui.style.setProperty('--px', u + 'px');
+}
+/** The pixel fonts are drawn on a grid of 92 units to the 1000-unit em (Oomba Pixel Digits exactly; Pixelify Sans close
+ *  to it): a font size that makes one grid pixel a whole number of device pixels keeps their edges hard. */
+const pxFontPx = size => { const step = 1000 / 92 / pxDpr(); return Math.max(step, Math.round(size / step) * step); };
+function pxSnapFonts() {
+  for (const el of document.querySelectorAll('.sr .ans, .sr .key, .sr .qlabel, .sr .chip, .sr .bar .tname b')) {
+    el.style.fontSize = ''; el.style.fontSize = pxFontPx(parseFloat(getComputedStyle(el).fontSize) || 16) + 'px';
+  }
+}
 function fitView(v) {
+  if (PIX()) return pxFit(v);
   if (v.fit) v.fit.off();
   v.fit = Oomba.fit(v.cv, { size: [100, 100], fit: 'expand', dprCap: 2 });
   const k = v.fit.scale / v.fit.dpr, w = Math.round(v.fit.vw * k), h = Math.round(v.fit.vh * k);
@@ -1966,19 +2017,55 @@ function pxBox(g, x, y, w, h, fill, lip) {
 }
 /** Text over the pixels, drawn after the scale-up at screen resolution (css px): the pixel font with an Ink edge. */
 function pxText(P, text, x, y, size, color, o = {}) { P.texts.push({ text, x, y, size, color, o }); }
+/* Words over the pixels, drawn the pixel-art way: each label is rendered once at the pixel fonts' own grid (one canvas
+   pixel per design pixel, 1000/92 px type), its alpha cut hard (no anti-aliased fringe), the Ink edge added as a one
+   design-pixel ring (and a two-pixel drop), and the bitmap scaled up by a whole number of device pixels onto a device
+   pixel. Scripts the pixel fonts do not have (Japanese, Hebrew, Arabic...) keep ordinary text at a grid size. */
+const PX_GRID = 1000 / 92, PX_LATIN = /^[\u0020-\u024F\u0400-\u04FF\u2010-\u205E\u2190-\u21FF\u2212\u00D7\u00F7]*$/;
+const pxLabels = new Map();
+function pxLabel(text, color, edge) {
+  const key = text + '|' + color + '|' + edge + '|' + FONTSTACK; let L = pxLabels.get(key); if (L) return L;
+  const meas = makeCanvas(1, 1).getContext('2d'); meas.font = font(PX_GRID, 700);
+  const tw = Math.ceil(meas.measureText(text).width), W = tw + 6, H = Math.ceil(PX_GRID * 1.7) + 4, base = Math.round(PX_GRID * 1.15) + 2;
+  const c = makeCanvas(W, H), g = c.getContext('2d'); g.font = font(PX_GRID, 700); g.fillStyle = '#000'; g.textBaseline = 'alphabetic'; g.fillText(text, 3, base);
+  const src = g.getImageData(0, 0, W, H).data, on = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) on[i] = src[i * 4 + 3] >= 110 ? 1 : 0;
+  const out = g.createImageData(W, H), d = out.data, fill = hex2(color), ink = hex2(P_INK);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x; let col = null;
+    if (on[i]) col = fill;
+    else if (edge) { for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1], [0, -2], [-1, -2], [1, -2]]) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && on[yy * W + xx]) { col = ink; break; } } }
+    if (col) { d[i * 4] = col[0]; d[i * 4 + 1] = col[1]; d[i * 4 + 2] = col[2]; d[i * 4 + 3] = 255; }
+  }
+  g.putImageData(out, 0, 0);
+  L = { c, w: tw + 2, base, x0: 2 }; pxLabels.set(key, L);
+  if (pxLabels.size > 160) pxLabels.delete(pxLabels.keys().next().value);
+  return L;
+}
 function pxFlushTexts(v, P) {
-  const g = v.g, u = Math.max(1, Math.round(P.kd / (v.dpr || 1) * 0.75 * 2) / 2);
+  const g = v.g, d = v.dpr || 1, at = n => Math.round(n * d) / d;
   for (const T of P.texts) {
-    textDir(g, T.o.words !== false); g.globalAlpha = T.o.alpha == null ? 1 : T.o.alpha;
-    let size = Math.round(T.size); g.font = font(size, 700);
-    if (T.o.max) { while (size > 9 && g.measureText(T.text).width > T.o.max) { size--; g.font = font(size, 700); } }
-    g.textAlign = T.o.align || 'center'; g.textBaseline = 'middle';
-    const e = Math.max(u, Math.round(size / 11));
-    if (T.o.edge !== false) {
-      g.fillStyle = P_INK;
-      for (const [dx, dy] of [[-e, 0], [e, 0], [0, -e], [0, e], [-e, -e], [e, -e], [-e, e], [e, e], [0, e * 2], [-e, e * 2], [e, e * 2]]) g.fillText(T.text, T.x + dx, T.y + dy);
+    g.globalAlpha = T.o.alpha == null ? 1 : T.o.alpha;
+    const edge = T.o.edge !== false, al = T.o.align || 'center';
+    if (PX_LATIN.test(T.text) && /^#[0-9a-f]{6}$/i.test(T.color)) {
+      const L = pxLabel(T.text, T.color, edge);
+      // device pixels per design pixel: the size asked for, rounded down, and smaller still until it fits its room
+      let n = Math.max(1, Math.floor(T.size / PX_GRID * d));
+      while (n > 1 && T.o.max && L.w * n / d > T.o.max) n--;
+      const wd = L.w * n, x = Math.round((al === 'center' ? T.x * d - wd / 2 : al === 'right' || al === 'end' ? T.x * d - wd : T.x * d)) - L.x0 * n;
+      const y = Math.round(T.y * d - (L.base - 3.5) * n);   // the caps' middle row on the given y
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = false;
+      g.drawImage(L.c, x, y, L.c.width * n, L.c.height * n); g.restore();
+    } else {
+      textDir(g, T.o.words !== false);
+      let size = pxFontPx(T.size); if (size > T.size + 0.01) size -= PX_GRID / d; g.font = font(size, 700);
+      if (T.o.max) { while (size > PX_GRID / d * 2 && g.measureText(T.text).width > T.o.max) { size -= PX_GRID / d; g.font = font(size, 700); } }
+      const w = g.measureText(T.text).width, x = at(al === 'center' ? T.x - w / 2 : al === 'right' || al === 'end' ? T.x - w : T.x), y = at(T.y + size * 0.32);
+      g.textAlign = 'left'; g.textBaseline = 'alphabetic';   // 'left' is the left edge in either direction
+      const e = Math.max(1, Math.round(size * 0.092 * d)) / d;
+      if (edge) { g.fillStyle = P_INK; for (const [dx, dy] of [[-e, 0], [e, 0], [0, -e], [0, e], [-e, -e], [e, -e], [-e, e], [e, e], [0, e * 2], [-e, e * 2], [e, e * 2]]) g.fillText(T.text, x + dx, y + dy); }
+      g.fillStyle = T.color; g.fillText(T.text, x, y);
     }
-    g.fillStyle = T.color; g.fillText(T.text, T.x, T.y);
     g.globalAlpha = 1;
   }
   P.texts.length = 0;
@@ -1998,7 +2085,8 @@ function pxScene(v, P, cam) {
     for (let x = -pxMod(Math.round(camN * par), tw); x < P.NW; x += tw) g.drawImage(t, x, rt - t.height);
   }
   const road = A.scenes[v.scene].road, laneH = m.laneH * f, kh = Math.max(2, Math.round(laneH * 0.16)), kp = Math.max(6, Math.round(laneH * 0.9));
-  const asphalt = T.night ? PXK.nearest(hex2(road[0]).map((c, i) => c * 0.5 + [14, 42, 46][i] * 0.5)) : road[0];   // toward the night sky, not brown
+  const asphalt = T.night ? PXK.nearest(hex2(road[0]).map((c, i) => c * 0.5 + [14, 42, 46][i] * 0.5)) : road[0];
+  P.shadow = PXK.nearest(hex2(asphalt).map(c => c * 0.62));   // toward the night sky, not brown
   g.fillStyle = asphalt; g.fillRect(0, rt, P.NW, rb - rt);
   // a little grit on the asphalt, moving with the road
   g.fillStyle = PXK.nearest(hex2(asphalt).map(c => Math.min(255, c + 22)));
@@ -2123,7 +2211,8 @@ function pxKart(P, info, x, y, frame, o = {}) {
   const g = P.g, A = PXA(), [FW, FH] = A.kart, X = Math.round(x * P.f) - FW / 2 + 4, Y = Math.round(y * P.f) - A.ground + (o.dy || 0);
   const k = pxKartKey(info), f = frame === 'cheer' && !k ? 'idle' : frame;
   // a soft shadow under the wheels
-  g.fillStyle = 'rgba(20,20,20,.28)'; g.fillRect(X + 6, Y + A.ground - 1, FW - 12, 2); g.fillRect(X + 10, Y + A.ground + 1, FW - 20, 1);
+  // a shadow under the wheels in a darker palette colour of the road (solid: a see-through shadow blends colours)
+  g.fillStyle = P.shadow || P_INK; g.fillRect(X + 6, Y + A.ground - 1, FW - 12, 2); g.fillRect(X + 10, Y + A.ground + 1, FW - 20, 1);
   if (o.flame) PXK.draw(g, 'fx_flame_' + o.flame % 2, X - 9 - (o.flame % 2) * 2, Y + A.ground - 21, 1);
   if (k) PXK.draw(g, `kart_${k}_${f}`, X, Y, 1);
   else {
@@ -2257,25 +2346,25 @@ function pxCountdown(v, P) {
 }
 function pxSpeedLines(v, P, k, time) {
   if (REDUCED || k.boost < 12) return;
-  const g = P.g, m = v.m, top = m.hud * P.f; g.fillStyle = 'rgba(255,253,242,.55)';
+  const g = P.g, m = v.m, top = m.hud * P.f; g.fillStyle = PXK.nearest(hex2(P.tiles.sc.road[0]).map(c => c + (255 - c) * 0.45));
   for (let i = 0; i < 7; i++) { const y = Math.round(top + ((i * 97) % 100) / 100 * (P.NH - top)), len = Math.round(P.NW * (0.15 + (i % 3) * 0.08)), x = P.NW - Math.round((time * 900 * P.f + i * 211) % (P.NW + len)); g.fillRect(x, y, len, 1); }
 }
 function pxPops(v, P, race, cam, dt) {
   const m = v.m;
   for (let i = v.pops.length - 1; i >= 0; i--) { v.pops[i].t += dt; if (v.pops[i].t > 1.3) v.pops.splice(i, 1); }
   const p = v.pops[v.pops.length - 1]; if (!p) return;
-  const k = race.karts[p.k], a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1; if (a <= 0) return;
+  const k = race.karts[p.k], a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1; if (a < 0.5) return;   // gone in one step: a fade would blend colours
   const step = REDUCED ? 1 : p.t < 0.08 ? 0.7 : p.t < 0.16 ? 1.15 : 1;   // pops in steps, as pixel art does
   const big = Math.max(26, Math.min(60, m.kartW * 0.4, m.h * 0.15)) * step;
   // the word stays whole on screen: shrunk to fit, then kept half its (measured) width from each edge
   const size = Math.min(big, fitFont(v.g, p.text, big, m.w - 24, 700)), half = v.g.measureText(p.text).width / 2 + 10;
   const x = Math.max(half, Math.min(m.w - half, sx(v, cam, k.dist) + m.kartW * 0.2 - (REDUCED ? 0 : Math.max(0, p.t - 0.76) * m.w * 0.5)));
   const y = Math.max(m.hud + big * 0.7, laneY(v, k.lane) - m.kartW * 0.95);
-  pxText(P, p.text, x, y, size, p.role ? C(p.role, 'light') : '#FFE27A', { max: m.w - 24, alpha: a });
+  pxText(P, p.text, x, y, size, p.role ? C(p.role, 'light') : '#FFE27A', { max: m.w - 24 });
 }
 function pxFinish(v, P, place) {
   const g = P.g, m = v.m, f = P.f, size = Math.max(22, Math.min(54, m.h * 0.14)), y = m.hud + (m.roadTop - m.hud) * 0.5;
-  g.fillStyle = 'rgba(20,20,20,.6)'; g.fillRect(0, Math.round((y - size) * f), P.NW, Math.round(size * 2 * f));
+  g.fillStyle = P_INK; g.fillRect(0, Math.round((y - size) * f), P.NW, Math.round(size * 2 * f));
   pxText(P, place === 1 ? t('won_banner') : t('fin_place', { place: placeName(place) }), m.w / 2, y, size, place === 1 ? '#FFD23F' : P_CREAM, { max: m.w - 24 });
 }
 function pxRaceView(v, dt, time) {
@@ -2304,7 +2393,7 @@ function pxDemo(v, race, cam, dt, time) {
   pxScene(v, P, cam);
   emitKartParts(v, race, dt); stepParts(v, dt); pxParts(v, P, cam, false);
   const lead = race.karts.reduce((a, k) => (k.dist > a.dist ? k : a), race.karts[0]);
-  if (!REDUCED) { const g = P.g, x = pxX(P, sx(v, cam, lead.dist)) - 34, y = Math.round(laneY(v, lead.lane) * P.f); g.fillStyle = 'rgba(255,253,242,.8)'; for (let i = 0; i < 4; i++) { const len = 14 + (i * 7) % 12, sh = Math.floor((time * 5 + i * 0.37) % 1 * 8); g.fillRect(x - len - sh, y - 8 - i * 6, len, 1); } }
+  if (!REDUCED) { const g = P.g, x = pxX(P, sx(v, cam, lead.dist)) - 34, y = Math.round(laneY(v, lead.lane) * P.f); g.fillStyle = P_CREAM; for (let i = 0; i < 4; i++) { const len = 14 + (i * 7) % 12, sh = Math.floor((time * 5 + i * 0.37) % 1 * 8); g.fillRect(x - len - sh, y - 8 - i * 6, len, 1); } }
   pxDrawKarts(v, P, race, demo.infos, cam, time, demo.order);
   pxAmbient(v, P, dt, time, 20);
   pxBlit(v, P); pxFlushTexts(v, P);
@@ -2589,6 +2678,7 @@ function fitMain(qm) {
   if (w0 > avail) { size = Math.max(17, Math.floor(size * avail / w0)); qm.style.fontSize = size + 'px'; }
   while (range.getBoundingClientRect().width > avail && size > 17) { size -= 0.5; qm.style.fontSize = size + 'px'; }
   if (range.getBoundingClientRect().width > avail) qm.classList.add('wrap');
+  if (PIX()) { const f = parseFloat(getComputedStyle(qm).fontSize) || size; let px = pxFontPx(f); if (px > f + 0.01) px -= 1000 / 92 / pxDpr(); qm.style.fontSize = Math.max(1000 / 92 / pxDpr(), px) + 'px'; }
 }
 function setLabel(ui, text, icon) { ui.qlabel.textContent = text; if (icon) ui.qlabel.insertAdjacentHTML('afterbegin', Oomba.icon(icon)); }
 function renderPanel(p) {
@@ -2721,8 +2811,9 @@ function showPicker() {
 function drawThumbs() {
   document.querySelectorAll('.tcard').forEach(b => {
     const id = +b.dataset.track, cv = b.querySelector('canvas'), w = Math.max(150, Math.round(cv.clientWidth || 180)), h = Math.round(w * 9 / 21);
-    const v = makeView(cv, 'thumb'); v.scene = sceneOf(id); v.night = NIGHT(); sizeView(v, w, h);
-    if (PIX()) { pxThumb(v, id); return; }
+    const v = makeView(cv, 'thumb'); v.scene = sceneOf(id); v.night = NIGHT();
+    if (PIX()) { pxSizeThumb(v); pxThumb(v, id); return; }
+    sizeView(v, w, h);
     buildTiles(v);
     v.g.setTransform(v.dpr, 0, 0, v.dpr, 0, 0); drawScene(v, 40 + id * 17);
     const fake = (lane, dist) => ({ lane, dist, v: 0, wobble: 0, boost: 0, finished: false });
@@ -2801,7 +2892,10 @@ function showResults() {
       const r = document.createElement('div'); r.className = 'resRow';
       const info = S.infos[S.race.karts.indexOf(S.P[i].kart)], hs = headSprite(info, 40, DPR()), c = document.createElement('canvas');
       c.width = hs.c.width; c.height = hs.c.height; c.setAttribute('aria-hidden', 'true');
-      if (PIX()) { c.width = c.height = 20; pxBadge(c.getContext('2d'), info, 0, 0, 20); } else c.getContext('2d').drawImage(hs.c, 0, 0);
+      if (PIX()) {
+        const st = pxStep(pxDpr()), k = Math.max(1, Math.floor(40 * pxDpr() / 20 / st) * st || st), b = makeCanvas(20, 20), bg = b.getContext('2d'); bg.imageSmoothingEnabled = false; pxBadge(bg, info, 0, 0, 20);
+        c.width = c.height = 20 * k; c.style.width = c.style.height = 20 * k / pxDpr() + 'px'; const cg = c.getContext('2d'); cg.imageSmoothingEnabled = false; cg.drawImage(b, 0, 0, 20 * k, 20 * k);
+      } else c.getContext('2d').drawImage(hs.c, 0, 0);
       const b = document.createElement('b'), s = document.createElement('span'); b.textContent = ordinal(p.place);
       s.textContent = t('row_line', { i: i + 1, n: p.correct, acc: PCT.format(p.acc / 100) }) + (p.fastest != null ? ' · ' + t('secs', { s: NF1.format(p.fastest) }) : '');
       r.append(c, b, s); rows.append(r);
@@ -2856,18 +2950,20 @@ function drawDemo(dt, time) {
 function layoutViews() {
   VIEWS.forEach(v => { const box = v.cv.parentElement; if (box.offsetParent === null) return; fitView(v); });
   if (!$('titleCanvas').hidden) fitView(demo.view);
+  if (PIX()) { pxUnits(); pxSnapFonts(); if (S.screen === 'pick') drawThumbs(); }
   if (S.screen === 'results') framePodium();
 }
 if (window.ResizeObserver) { const ro = new ResizeObserver(layoutViews); VIEWS.forEach(v => ro.observe(v.cv.parentElement)); }
 window.addEventListener('resize', layoutViews);
+{ const watchDpr = () => { try { const q = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`); q.addEventListener('change', () => { layoutViews(); watchDpr(); }, { once: true }); } catch (e) { /* older browsers: resize covers it */ } }; watchDpr(); }
 Oomba.theme.on('change', () => { thumbsDrawn = false; layoutViews(); });
 if (PXK) PXK.ready.then(ok => {
   if (!ok) return;
-  document.documentElement.classList.add('sr-pixel');
+  document.documentElement.classList.add('sr-pixel'); pxUnits();
   thumbsDrawn = false; VIEWS.concat(demo.view).forEach(v => { v.tiles = null; v.pxb = null; });
   if (S.screen === 'pick') drawThumbs();
   if (S.screen === 'results') buildPodium();
-  const again = () => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONTSTACK; if (S.screen === 'pick') drawThumbs(); layoutViews(); };
+  const again = () => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONTSTACK; pxLabels.clear(); if (S.screen === 'pick') drawThumbs(); layoutViews(); };
   again(); try { document.fonts.load(`700 20px '${PXK.font}'`).then(again, () => {}); } catch (e) { /* the kit font stays */ }
 });
 Oomba.fonts.ready.then(() => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONTSTACK; spriteCache.clear(); VIEWS.concat(demo.view).forEach(v => { v.tiles = null; }); });
