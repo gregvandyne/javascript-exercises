@@ -214,12 +214,12 @@
    "text": "Open Sum Racer. It opens on the Jungle Jam track, every times table up to 12 × 12, and it stays there. Win the race: picture the trays of groups before you answer each fact, and skip-count when a fact is new.",
    "art": "trophy",
    "img": "nq/sum-racer/all-tables-track",
-   "alt": "Sum Racer on the Jungle Jam track, all times tables to 12: a multiplication question on screen, four answers to pick from, the race under way.",
+   "alt": "Sum Racer's Jungle Jam track on a phone: question 2, a times table fact, four answers to pick from.",
    "view": [
-    50,
-    10.5,
-    49.5,
-    83
+    0,
+    0,
+    54.14,
+    100
    ]
   }
  ],

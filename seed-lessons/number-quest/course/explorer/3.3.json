@@ -216,12 +216,12 @@
    "text": "Open Sum Racer. It opens on the Galaxy Grand Prix track, a mix of everything, and it stays there. Win the race against your own best, and name the trick behind each hard fact.",
    "art": "trophy",
    "img": "nq/sum-racer/grand-prix",
-   "alt": "Sum Racer on the Galaxy Grand Prix track: a mixed question on screen, four answers to pick from, the race under way.",
+   "alt": "Sum Racer's Galaxy Grand Prix on a phone: question 2, a mixed question, four answers to pick from.",
    "view": [
-    50,
-    10.5,
-    49.5,
-    83
+    0,
+    0,
+    54.14,
+    100
    ]
   }
  ],
