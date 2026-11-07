@@ -467,49 +467,6 @@
  },
  {
   "game": "data-detective",
-  "state": "mydata-1b-tally-n",
-  "chapter": "my-data",
-  "band": "1b",
-  "level": 1,
-  "actions": [
-   {
-    "acts": [
-     [
-      "tally",
-      "Dog",
-      12
-     ],
-     [
-      "tally",
-      "Cat",
-      3
-     ],
-     [
-      "tally",
-      "Fish",
-      4
-     ],
-     [
-      "tally",
-      "None",
-      2
-     ]
-    ]
-   }
-  ],
-  "alt": "The survey tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2. One mark for every answer.",
-  "concept": "One mark per answer",
-  "narrow": {
-   "width": 420,
-   "height": 740,
-   "at": {
-    "text": "Pets at home",
-    "pad": 10
-   }
-  }
- },
- {
-  "game": "data-detective",
   "state": "mydata-1b-chart-n",
   "chapter": "my-data",
   "band": "1b",
@@ -1162,50 +1119,6 @@
    "at": {
     "text": "Who may know",
     "pad": 10
-   }
-  }
- },
- {
-  "game": "packet-post",
-  "state": "locks-1b-spare-n",
-  "chapter": "locks",
-  "band": "1b",
-  "level": 5,
-  "actions": [
-   {
-    "acts": 2
-   }
-  ],
-  "alt": "Spare copies: a copy in the family's online folder and a printout in a drawer are good; the only copy on one tablet is not.",
-  "concept": "Keep a spare copy",
-  "narrow": {
-   "width": 420,
-   "height": 740,
-   "at": {
-    "text": "A spare key",
-    "pad": 10
-   }
-  }
- },
- {
-  "game": "packet-post",
-  "state": "ciphers-1b-wheel-n",
-  "chapter": "ciphers",
-  "band": "1b",
-  "level": 1,
-  "actions": [
-   {
-    "acts": 1
-   }
-  ],
-  "alt": "The cipher wheel on shift 3: the secret message DSSOH reads APPLE.",
-  "concept": "Secret codes for fun",
-  "narrow": {
-   "width": 420,
-   "height": 740,
-   "at": {
-    "text": "Grandma sent",
-    "pad": 95
    }
   }
  },
@@ -2407,6 +2320,149 @@
   ],
   "alt": "Bolt four squares from the flag, and the program beside the board: four move blocks joined in order, then Run.",
   "concept": "Steps in order",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "debug-1b-split-c",
+  "chapter": "debug",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "steps": 4
+   }
+  ],
+  "alt": "The broken program stepped to its turn left block: Bolt climbed three squares and now faces the wall, away from the flag.",
+  "concept": "Expected and actual",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "debug-1b-repeat6-c",
+  "chapter": "debug",
+  "band": "1b",
+  "level": 2,
+  "actions": [],
+  "alt": "Debug Lab level 2: the flag is five squares from Bolt, but the program says repeat 6 times, move.",
+  "concept": "One too many",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "variables-1b-door-c",
+  "chapter": "variables",
+  "band": "1b",
+  "level": 2,
+  "actions": [],
+  "alt": "Three gems lie on the way to a door that opens at count = 3, and the program sets count to 0 before the loop.",
+  "concept": "Bolt needs to remember",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "functions-1b-stairs-w",
+  "chapter": "functions",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "program": "proc Stair { move; pick; right; move; left }; call Stair; call Stair; call Stair"
+   }
+  ],
+  "alt": "My Block Stair is made once at the top of the program, and three call Stair blocks below it climb all three stairs.",
+  "concept": "Climb three stairs"
+ },
+ {
+  "game": "packet-post",
+  "state": "ciphers-1b-wheel-c",
+  "chapter": "ciphers",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 1
+   }
+  ],
+  "alt": "The cipher wheel turned to shift 3: the secret message DSSOH now reads APPLE.",
+  "concept": "Secret codes for fun",
+  "compact": true
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-1b-spare2-n",
+  "chapter": "locks",
+  "band": "1b",
+  "level": 5,
+  "actions": [
+   {
+    "acts": 4
+   }
+  ],
+  "alt": "Sorted so far: the only copy on one tablet is not a spare; a family online folder, a printout and last year's copy are good spares.",
+  "concept": "Keep a spare copy",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "The only copy, on one tablet",
+    "pad": 8
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "tricks-1b-choose-n",
+  "chapter": "tricks",
+  "band": "1b",
+  "level": 1,
+  "actions": [],
+  "alt": "The prize card's cues to tap: hurry, asks for the mailbox key, a prize you never entered, says congratulations. Then Safe, Trick or Ask.",
+  "concept": "Your mission: spot the trick",
+  "narrow": {
+   "width": 420,
+   "height": 1100,
+   "at": {
+    "text": "Tap every cue you can find",
+    "pad": 8
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "gadget-2-users-c",
+  "chapter": "gadget",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "tap": "motion"
+   },
+   {
+    "tap": "buzzer"
+   },
+   {
+    "tap": "smallbatt"
+   },
+   {
+    "tap": "cpu"
+   },
+   {
+    "click": {
+     "text": "Build it"
+    }
+   },
+   {
+    "click": {
+     "text": "Skip"
+    }
+   },
+   {
+    "tap": "tinyscreen"
+   }
+  ],
+  "alt": "Three walkers tried the step counter: they could not see the count, it fell off, the battery ran flat. Pick two improvements.",
+  "concept": "Users decide what is next",
   "compact": true
  }
 ]

@@ -10,50 +10,34 @@
    "title": "Bolt needs to remember",
    "text": "Some doors open only when Bolt has picked up every gem on the way. How does a program remember how many it has? It uses a variable.",
    "art": "robot",
-   "img": "csq/robo-route/variables-1b-key",
-   "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
-   ],
-   "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
+   "img": "csq/robo-route/variables-1b-door-c",
+   "alt": "Three gems lie on the way to a door that opens at count = 3, and the program sets count to 0 before the loop.",
    "focus": [
     {
      "cue": "The door's counter: count = 3. Three gems open it.",
      "box": [
-      0,
-      93.9,
-      11.6,
+      0.8,
+      94,
+      17.5,
       5.7
      ]
     },
     {
      "cue": "Three gems, then the door, then the flag.",
      "box": [
-      7,
-      58.9,
-      38.5,
-      11.9
-     ],
-     "path": [
-      [
-       10.5,
-       64.9
-      ],
-      [
-       41.9,
-       64.9
-      ]
+      8,
+      57,
+      29,
+      11
      ]
     },
     {
      "cue": "The door stays shut until count reaches 3.",
      "box": [
-      32.1,
-      58.9,
-      7.1,
-      11.9
+      25.5,
+      57,
+      5.5,
+      11
      ]
     }
    ]

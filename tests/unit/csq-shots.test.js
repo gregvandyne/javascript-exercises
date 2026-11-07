@@ -57,8 +57,10 @@ const FRAME_390 = 326;
 // Toured steps that cannot reach 11 px without reflowing the game: Packet Post's road maps (4.1 Many Roads, Pro 4.2
 // the padlock roads, Pro 4.3 the pixel grid), whose stop labels and pixel numbers the game sets small at every width
 // (Cyber Defenders pins the same maps as WIDE), and Pro 2.2's tester card, whose long yellow "Change one thing" pill
-// sits between rows of the dimmed maker panel that a zoom may not cut.
-const SHORT = 6;
+// sits between rows of the dimmed maker panel that a zoom may not cut; Explorer 4.3's cipher wheel, whose ring letters
+// the game sets small at every width (Cyber pins the same wheel as CAPPED); and Pro 5.1's improvement tiles, whose
+// two-line labels sit edge to edge in a compact capture.
+const SHORT = 8;
 test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
   const short = [];

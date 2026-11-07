@@ -14,7 +14,7 @@
    "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
    "focus": [
     {
-     "cue": "Task 1 of 3: open the walls so Bolt can reach the goal",
+     "cue": "The task: open the walls so Bolt can reach the goal",
      "box": [
       2.6,
       2.9,

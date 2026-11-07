@@ -98,7 +98,9 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
       const at = `${where} slide ${i + 1}`;
       const allowed = { text: ['title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'], example: ['kind', 'title', 'text', 'art', 'steps', 'say', 'img', 'view', 'alt', 'focus', 'story'], words: ['kind', 'title', 'text', 'art', 'words', 'say', 'img', 'view', 'alt', 'focus', 'story'], mission: ['kind', 'title', 'text', 'art', 'say', 'img', 'view', 'alt', 'focus', 'story'] }[s.kind || 'text'];
       if (s.view !== undefined) assert.ok(s.img && Array.isArray(s.view) && s.view.length === 4 && s.view.every(n => typeof n === 'number'), `${at}: view is [x, y, w, h] in % of its img`);
-      for (const k of Object.keys(s)) assert.ok(allowed.includes(k), `${at}: unexpected field ${k}`);
+      // a slide may draw its picture instead (a tally, a table of license badges): `visual`, never with an img
+      if (s.visual !== undefined) assert.ok(!s.img && ['tally', 'table'].includes(s.visual.type), `${at}: a drawn visual (tally or table) in place of a picture`);
+      for (const k of Object.keys(s)) assert.ok(allowed.includes(k) || k === 'visual', `${at}: unexpected field ${k}`);
       assert.ok(typeof s.title === 'string' && s.title.length >= 3 && s.title.length <= 48, `${at}: title 3..48 chars: ${s.title}`);
       assert.ok(!titles.has(s.title.toLowerCase()), `${at}: slide titles differ inside a deck`); titles.add(s.title.toLowerCase());
       assert.ok(typeof s.text === 'string' && s.text.length >= 8 && s.text.length <= 280, `${at}: text 8..280 chars (${s.text.length})`);
@@ -114,7 +116,7 @@ test('5-7 slides: one worked example with chips, one words slide with 2-4 words,
       if (s.focus != null) {
         // Guided focus: animation steps over the slide's picture. Only on a pictured slide; the geometry is in
         // % of the 16:9 frame and must stay inside it, matching what cleanSlide() keeps.
-        assert.ok(s.img, `${at}: focus needs the slide's img`);
+        assert.ok(s.img || s.visual, `${at}: focus needs the slide's img or drawn visual`);
         assert.ok(Array.isArray(s.focus) && s.focus.length >= 1 && s.focus.length <= 4, `${at}: 1-4 focus steps`);
         for (const [fi, f] of s.focus.entries()) {
           const fat = `${at} focus ${fi + 1}`;

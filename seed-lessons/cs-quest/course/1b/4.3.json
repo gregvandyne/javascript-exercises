@@ -142,25 +142,25 @@
    "title": "Secret codes for fun",
    "text": "A cipher wheel turns letters into a secret code. Shift each letter by 3 and A becomes D. Only someone who knows the key can read it.",
    "art": "cipher",
-   "img": "csq/packet-post/ciphers-1b-wheel-n",
-   "alt": "The cipher wheel on shift 3: the secret message DSSOH reads APPLE.",
+   "img": "csq/packet-post/ciphers-1b-wheel-c",
+   "alt": "The cipher wheel turned to shift 3: the secret message DSSOH now reads APPLE.",
    "focus": [
     {
-     "cue": "The wheel shifts every letter by 3",
+     "cue": "Shift 3: the wheel moves every letter 3 places",
      "box": [
-      40.6,
-      8,
-      18.7,
-      15
+      12,
+      86,
+      33,
+      13.5
      ]
     },
     {
      "cue": "DSSOH, read with the key, is APPLE",
      "box": [
-      5,
-      86.2,
-      22.3,
-      13.5
+      57,
+      15,
+      33,
+      25
      ]
     }
    ]
@@ -207,25 +207,25 @@
    "title": "Your mission",
    "text": "Open Packet Post at Spot the Trick and check all 6 cards. Tap every clue you find, then choose. After that, the game sends you to Secret Messages: crack the 2 messages there with the key wheel.",
    "art": "trophy",
-   "img": "csq/packet-post/tricks-1b-key-n1",
-   "alt": "A prize card from Prize Team, marked unknown sender: “You won a tablet!”",
+   "img": "csq/packet-post/tricks-1b-choose-n",
+   "alt": "The prize card's cues to tap: hurry, asks for the mailbox key, a prize you never entered, says congratulations. Then Safe, Trick or Ask.",
    "focus": [
     {
      "cue": "Tap every clue you find",
      "box": [
-      2.9,
-      3.3,
-      94.3,
-      79.5
+      3,
+      17,
+      94,
+      52
      ]
     },
     {
-     "cue": "Then choose",
+     "cue": "Then choose: safe, trick or ask",
      "box": [
-      2.9,
-      85,
-      50,
-      12
+      3,
+      72,
+      94,
+      21
      ]
     }
    ]

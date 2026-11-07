@@ -27,10 +27,10 @@ for cid, (scene, color) in MEET.items():
     d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=color)
     d.ellipse([cx - r + 18, cy - r + 18, cx + r - 18, cy + r - 18], fill='#FFFDF2')
     sp = Image.open(os.path.join(IMG, 'chars', f'{cid}.webp')).convert('RGBA')
-    sh = 540
+    sh = 400 if cid == 'bolt' else 540   # Bolt is as wide as he is tall: smaller, so his arms stay inside the disc
     sw = round(sp.width * sh / sp.height)
     sp = sp.resize((sw, sh), Image.LANCZOS)
-    x, y = cx - sw // 2, cy - sh // 2 + 10
+    x, y = cx - sw // 2, cy - sh // 2 + (0 if cid == 'bolt' else 10)
     bg.paste(sp, (x, y), sp)
     out = os.path.join(IMG, 'chars', f'meet-{cid}.webp')
     bg.save(out, 'WEBP', quality=80)

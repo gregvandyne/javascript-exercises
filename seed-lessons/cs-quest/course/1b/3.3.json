@@ -37,34 +37,54 @@
    "title": "One mark per answer",
    "text": "A survey asks people one question. Each answer gets one mark: on paper a tally mark, counted in fives, four lines then one across. In the game, one tap on plus.",
    "art": "pencil",
-   "img": "csq/data-detective/mydata-1b-tally-n",
-   "alt": "The survey tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2. One mark for every answer.",
+   "visual": {
+    "type": "tally",
+    "label": "Pets at home, tallied: Dog 12, Cat 3, Fish 4, None 2",
+    "rows": [
+     {
+      "label": "Dog",
+      "n": 12
+     },
+     {
+      "label": "Cat",
+      "n": 3
+     },
+     {
+      "label": "Fish",
+      "n": 4
+     },
+     {
+      "label": "None",
+      "n": 2
+     }
+    ]
+   },
    "focus": [
     {
-     "cue": "The question: pets at home",
+     "cue": "Dog: 12 answers, 12 marks",
      "box": [
-      7.9,
-      14.3,
-      27.3,
-      12.4
+      5,
+      23.5,
+      90,
+      16
      ]
     },
     {
-     "cue": "Dog: 12 answers, one mark each",
+     "cue": "Every fifth mark goes across a group of four",
      "box": [
-      6,
-      32.5,
-      63.5,
-      12.4
+      28,
+      23.5,
+      10,
+      16
      ]
     },
     {
-     "cue": "Every pet gets its own count",
+     "cue": "Fish: 4 marks, so 4 answers",
      "box": [
-      6,
-      49.7,
-      10.6,
-      29.3
+      5,
+      57,
+      90,
+      16
      ]
     }
    ]
