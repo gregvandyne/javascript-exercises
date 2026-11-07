@@ -3,20 +3,32 @@
 //   The canoe paddles forward by itself. Steer between 3 lanes (Left / Right, swipes, the arrow buttons, or a tap
 //   left or right of the canoe). Jump (Up / Space / swipe up) over floating logs, duck (Down / swipe down) under low
 //   branches, steer round rocks and crocodile snouts (harmless bonks that only slow you), and grab bubble boosts.
-//   Four canoes race 900 m: Cappy, the Otter Twins (Ripple and Splash) and the marmoset crew. Finish first to win.
+//   Four canoes race 1,350 m through four stretches of river: Lazy Bend, Croc Creek, Beaver Woods and Waterfall Run.
+//   Further down come whirlpools (steer round: they spin you and slow you), beaver dams with one gap, curtains of
+//   hanging vines (duck), small waterfalls (jump them for a big drop and a burst of speed), rolling logs that drift
+//   across the lanes (jump or steer clear), and fast channels: a lane of quick water that pays to stay in.
+//   Cappy, the Otter Twins (Ripple and Splash) and the marmoset crew race. Finish first to win.
 // River units: d = metres down the river (0 = start), lanes 0 1 2. The camera follows Cappy's canoe.
 // ======================================================================================================
 (function () {
-  const LEN = 900, V0 = 14, VBOOST = 7, BOOST_T = 1.6, JUMP_T = 0.62, DUCK_T = 0.75, MAXOB = 200;
-  const LOG = 1, BRANCH = 2, ROCK = 3, CROC = 4, BUBBLE = 5;
+  const LEN = 1350, V0 = 14, VBOOST = 7, BOOST_T = 1.6, JUMP_T = 0.62, DUCK_T = 0.75, MAXOB = 340, VCHAN = 5;
+  const LOG = 1, BRANCH = 2, ROCK = 3, CROC = 4, BUBBLE = 5, WHIRL = 6, DAM = 7, VINE = 8, FALL = 9, ROLL = 10, CHAN = 11;
+  const KIND_NAMES = ['', 'log', 'branch', 'rock', 'croc', 'bubble', 'whirl', 'dam', 'vine', 'fall', 'roll', 'chan'];
+  // the four stretches of river: where each starts, and its banks and water
+  const SEC_D = [0, 320, 680, 1020];
+  const SEC_BANK = [['#3d9a3a', '#2a7438'], ['#4f8a3a', '#3a6a2e'], ['#2f7a40', '#22603a'], ['#6a8a5a', '#55704a']];
+  const SEC_MUD = ['#c79a5a', '#8a6a3a', '#9a6a3a', '#a8a090'];
+  const SEC_WATER = [['#2373ad', '#2a7fbb', '#2f8cc6', '#3496cf'], ['#2a6f8a', '#30798f', '#3a8a9a', '#4092a0'], ['#1f6a9a', '#2576a6', '#2b84b4', '#318ec0'], ['#2580c0', '#2c8cca', '#3a9ad6', '#44a4de']];
+  const secOf = d => d >= SEC_D[3] ? 3 : d >= SEC_D[2] ? 2 : d >= SEC_D[1] ? 1 : 0;
   const S = {
     d: 0, prevD: 0, lane: 1, lx: 1, v: V0, slow: 1, boostT: 0, jumpT: 0, jumpCD: 0, duckT: 0, inv: 0, shake: 0, bonks: 0, boosts: 0,
     raceT: 0, place: 1, done: false, finT: 0, auto: false, oi: 0, strokeT: 0, time: 0, hintT: 0, tipLog: false, tipBranch: false, tipRock: false,
-    obs: [], nObs: 0, rivals: [], ctx: null,
+    sec: 0, tips: 0, spins: 0, drops: 0, fastT: 0, chanOn: false,
+    obs: [], nObs: 0, rivals: [], ctx: null, chans: [], nChan: 0,
     // layout (virtual px)
     laneW: 32, half: 56, amp: 20, ppm: 3, py: 300, ctrlH: 0, Z: 1, mid: 160, camY: 0,
   };
-  for (let i = 0; i < MAXOB; i++) S.obs.push({ d: 0, kind: 0, lanes: 0, hit: 0, ph: 0, taken: false });
+  for (let i = 0; i < MAXOB; i++) S.obs.push({ d: 0, kind: 0, lanes: 0, hit: 0, ph: 0, taken: false, len: 0 });
 
   /* ---------- art (built once) ---------- */
   function canoeRows() {
@@ -98,6 +110,16 @@
     'oggggggggggnggno',
     '.oGGGGGGGGGGGGo.',
     '..oooooooooooo..'], CROC_PAL);
+  sprite('rap_beaver', [
+    '..o....o..',
+    '.obo..obo.',
+    '.obbbbbbo.',
+    'obkbbbbkbo',
+    'obbbnnbbbo',
+    '.obbwwbbo.',
+    '.oBbbbbBo.',
+    'oBBbbbbBBo',
+    '.oooooooo.'], { o: OUT, b: '#9a6a3f', B: '#6a4426', k: '#120e14', n: '#3a2414', w: '#fff8e8' });
   sprite('rap_bubble', [
     '...ooooo...',
     '..owwbbbo..',
@@ -125,6 +147,10 @@
   const FLOWERS = plant(12, 10, g => { disc(g, 6, 6, 4, PAL.g2); rect(g, 3, 3, 2, 2, PAL.p3); rect(g, 8, 5, 2, 2, PAL.r4); rect(g, 5, 7, 2, 2, PAL.p4); rect(g, 4, 4, 1, 1, PAL.r5); });
   const REEDS = plant(10, 12, g => { for (let i = 0; i < 4; i++) { rect(g, 1 + i * 2, 3 + (i % 2) * 2, 1, 9, PAL.g3); rect(g, 1 + i * 2, 1 + (i % 2) * 2, 1, 3, '#8a5a33'); } });
   const DECOR = [TREE, PALM, BUSH, FLOWERS, REEDS, BUSH, TREE];
+  // a mossy boulder and a dead tree for the later stretches
+  const STONE = plant(16, 12, g => { disc(g, 8, 7, 6, '#6a645a'); disc(g, 7, 6, 4, '#8a8478'); rect(g, 5, 3, 3, 1, '#c8c2b4'); rect(g, 9, 9, 4, 1, '#4a4640'); rect(g, 4, 4, 4, 2, PAL.g2); });
+  const SNAG = plant(18, 18, g => { line(g, 9, 17, 9, 4, '#5e3a20'); line(g, 10, 17, 10, 5, '#3a2414'); line(g, 9, 8, 3, 3, '#5e3a20'); line(g, 10, 10, 16, 5, '#5e3a20'); disc(g, 3, 3, 2, PAL.g1); disc(g, 16, 5, 2, PAL.g1); });
+  const SEC_DECOR = [DECOR, [REEDS, BUSH, REEDS, TREE, FLOWERS, PALM], [TREE, TREE, SNAG, BUSH, TREE, PALM], [STONE, PALM, STONE, BUSH, FLOWERS, SNAG]];
 
   /* ---------- sounds (our own, added to the shared bank) ---------- */
   AUDIO.addSfx('rapJump', (t, b) => { const P = AUDIO.prims; P.tone(b, 'square', 330, t, 0.16, 0.18, 760, 0.002, 0.06, 0.4); P.noise(b, t, 0.12, 0.12, 'bandpass', 1200, 1, 3000); });
@@ -140,7 +166,10 @@
 
   /* ---------- the course ---------- */
   let NO = 0;
-  function addOb(d, kind, lanes) { if (NO >= MAXOB) return; const o = S.obs[NO++]; o.d = d; o.kind = kind; o.lanes = lanes; o.hit = 0; o.ph = (d * 7.31) % 6.28; o.taken = false; }
+  function addOb(d, kind, lanes, len) { if (NO >= MAXOB) return; const o = S.obs[NO++]; o.d = d; o.kind = kind; o.lanes = lanes; o.hit = 0; o.ph = (d * 7.31) % 6.28; o.taken = false; o.len = len || 0; }
+  /** A rolling log drifts from lane to lane: where it is (0..2, a fraction while moving) at a given time. */
+  const rollPos = (o, tm) => 1 + Math.sin(tm * 0.9 + o.ph) * 1.05;
+  const rollLane = (o, tm) => clamp(Math.round(rollPos(o, tm)), 0, 2);
   function buildCourse(rng) {
     NO = 0;
     // a short lesson first: a bubble, a rock, a log (jump), a branch (duck), a crocodile
@@ -149,36 +178,72 @@
     addOb(125, LOG, 7);
     addOb(165, BRANCH, 7);
     addOb(205, CROC, 3); addOb(211, BUBBLE, 4);
-    let d = 240, last = '';
+    // each stretch brings in its own new hazard with a gentle first one (and a tip), then mixes it with the rest
+    addOb(SEC_D[1] + 20, WHIRL, 2); addOb(SEC_D[1] + 26, BUBBLE, 1);
+    addOb(SEC_D[2] + 20, DAM, 6); addOb(SEC_D[2] + 50, ROLL, 0);
+    addOb(SEC_D[3] + 20, FALL, 7);
+    const MIX = [
+      // rock1 rock2 log branch croc bubbles whirl dam vine fall roll chan
+      [22, 20, 15, 14, 15, 14, 0, 0, 0, 0, 0, 0],
+      [16, 14, 10, 8, 16, 12, 14, 0, 4, 0, 0, 6],
+      [12, 10, 8, 6, 10, 12, 8, 12, 10, 0, 12, 6],
+      [10, 10, 8, 4, 8, 12, 8, 8, 8, 14, 10, 6]];
+    const NAMES = ['rock1', 'rock2', 'log', 'branch', 'croc', 'bubbles', 'whirl', 'dam', 'vine', 'fall', 'roll', 'chan'];
+    let d = 240, last = '', chanEnd = -1, chanLane = -1, hadChan = false, hadVine = false;
     while (d < LEN - 35) {
-      const late = d / LEN;
-      const r = rng();
-      let kind = r < 0.22 ? 'rock1' : r < 0.42 ? 'rock2' : r < 0.57 ? 'log' : r < 0.71 ? 'branch' : r < 0.86 ? 'croc' : 'bubbles';
-      if (kind === last && (kind === 'log' || kind === 'branch')) kind = 'rock2';
+      const late = d / LEN, sec = secOf(d), w = MIX[sec];
+      // skip the stretch where a new hazard is taught
+      if (sec > 0 && d >= SEC_D[sec] - 6 && d < SEC_D[sec] + (sec === 2 ? 64 : 34)) { d = SEC_D[sec] + (sec === 2 ? 64 : 34); continue; }
+      let tot = 0; for (let i = 0; i < w.length; i++) tot += w[i];
+      let r = rng() * tot, ki = 0; while (r >= w[ki]) { r -= w[ki]; ki++; }
+      let kind = NAMES[ki];
+      if (kind === last && kind !== 'rock1' && kind !== 'bubbles') kind = 'rock2';
+      // every river has fast water near the end of Lazy Bend and a vine curtain in Croc Creek
+      if (!hadChan && d >= 262) kind = 'chan';
+      if (!hadVine && sec === 1 && d >= SEC_D[1] + 110) kind = 'vine';
+      if (kind === 'chan') hadChan = true; if (kind === 'vine') hadVine = true;
+      if (kind === 'chan' && d < chanEnd + 40) { kind = 'bubbles'; }
+      // inside a fast channel, only things that leave its lane open (or that you jump/duck)
+      const inChan = d < chanEnd;
+      if (inChan && (kind === 'dam' || kind === 'rock2' || kind === 'roll' || kind === 'whirl')) kind = 'rock1';
       last = kind;
-      const free = (rng() * 3) | 0, other = (free + 1 + ((rng() * 2) | 0)) % 3;
+      let free = (rng() * 3) | 0; if (inChan) free = chanLane;
+      const other = (free + 1 + ((rng() * 2) | 0)) % 3;
       if (kind === 'rock1') { addOb(d, ROCK, 1 << other); if (rng() < 0.5) addOb(d, BUBBLE, 1 << free); }
-      else if (kind === 'rock2') { addOb(d, ROCK, 7 & ~(1 << free)); if (rng() < 0.45) addOb(d, BUBBLE, 1 << free); }
-      else if (kind === 'log') { addOb(d, LOG, 7); if (rng() < 0.35) addOb(d + 8, BUBBLE, 1 << free); }
+      else if (kind === 'rock2') { addOb(d, ROCK, 7 & ~(1 << free)); if (rng() < 0.5) addOb(d, BUBBLE, 1 << free); }
+      else if (kind === 'log') { addOb(d, LOG, 7); if (rng() < 0.4) addOb(d + 8, BUBBLE, 1 << free); }
       else if (kind === 'branch') addOb(d, BRANCH, 7);
+      else if (kind === 'vine') { addOb(d, VINE, 7); if (rng() < 0.4) addOb(d + 7, BUBBLE, 1 << free); }
       else if (kind === 'croc') { addOb(d, CROC, rng() < 0.5 ? 1 << other : 7 & ~(1 << free)); }
+      else if (kind === 'whirl') { addOb(d, WHIRL, 1 << other); if (rng() < 0.5) addOb(d + 2, BUBBLE, 1 << free); }
+      else if (kind === 'dam') { addOb(d, DAM, 7 & ~(1 << free)); addOb(d + 6, BUBBLE, 1 << free); }
+      else if (kind === 'fall') { addOb(d, FALL, 7); }
+      else if (kind === 'roll') { addOb(d, ROLL, 0); }
+      else if (kind === 'chan') { chanLane = free; chanEnd = d + 46; addOb(d, CHAN, 1 << free, 46); for (let i = 0; i < 2; i++) addOb(d + 14 + i * 16, BUBBLE, 1 << free); }
       else { for (let i = 0; i < 3; i++) addOb(d + i * 6, BUBBLE, 1 << free); }
-      d += 22 + rng() * 12 - late * 5;
+      d += 21 + rng() * 11 - late * 5;
     }
     // sort by distance (insertion sort: small, once per round)
     for (let i = 1; i < NO; i++) { const o = S.obs[i]; let j = i - 1; while (j >= 0 && S.obs[j].d > o.d) { S.obs[j + 1] = S.obs[j]; j--; } S.obs[j + 1] = o; }
     S.nObs = NO;
+    S.nChan = 0; for (let i = 0; i < NO; i++) if (S.obs[i].kind === CHAN) { S.chans[S.nChan++] = S.obs[i]; }
   }
 
   /* ---------- racers ---------- */
   function mkRival(id, nameKey, rider, canoe, lane, base, easyBase, err, bit) {
     return { id, nameKey, rider, canoe, lane, lx: lane, d: 0, prevD: 0, v: V0, slow: 1, boostT: 0, jumpT: 0, duckT: 0, bonkT: 0, inv: 0,
-      base, easyBase, err, oi: 0, finT: 0, bit, ph: 0, strokeT: 0 };
+      base, easyBase, err, oi: 0, finT: 0, bit, ph: 0, strokeT: 0, spinT: 0 };
   }
-  S.rivals.push(mkRival('ripple', 'rap.ripple', 'rap_ripple', 'rap_canoe_ripple', 0, 14.6, 13.1, 0.05, 2));
-  S.rivals.push(mkRival('splash', 'rap.splash', 'rap_splash', 'rap_canoe_splash', 2, 14.1, 12.8, 0.08, 4));
-  S.rivals.push(mkRival('marm', 'name.marm', 'rap_marm', 'rap_canoe_marm', 1, 13.3, 12.4, 0.16, 8));
-  const laneBlocked = (o, l) => (o.kind === ROCK || o.kind === CROC) && (o.lanes & (1 << l));
+  S.rivals.push(mkRival('ripple', 'rap.ripple', 'rap_ripple', 'rap_canoe_ripple', 0, 15.1, 14.2, 0.05, 2));
+  S.rivals.push(mkRival('splash', 'rap.splash', 'rap_splash', 'rap_canoe_splash', 2, 14.9, 13.9, 0.08, 4));
+  S.rivals.push(mkRival('marm', 'name.marm', 'rap_marm', 'rap_canoe_marm', 1, 14.0, 13.0, 0.16, 8));
+  const laneBlocked = (o, l) => (o.kind === ROCK || o.kind === CROC || o.kind === WHIRL || o.kind === DAM) && (o.lanes & (1 << l));
+  /** Is this spot in a fast channel's lane? (Channels are few: a short scan back from the racer.) */
+  function inChannel(d, lane) {
+    for (let i = 0; i < S.nChan; i++) { const o = S.chans[i]; if (d >= o.d && d < o.d + o.len && (o.lanes & (1 << lane))) return true; }
+    return false;
+  }
+  const isJump = k => k === LOG || k === FALL || k === ROLL, isDuck = k => k === BRANCH || k === VINE;
   /** A rival picks a lane free of rocks and crocodiles a little ahead (and away from Cappy's canoe). */
   function rivalSteer(r) {
     for (let i = r.oi; i < S.nObs; i++) {
@@ -188,7 +253,7 @@
         let best = r.lane, bestCost = 99;
         for (let l = 0; l < 3; l++) {
           if (laneBlocked(o, l)) continue;
-          const cost = Math.abs(l - r.lane) + (Math.abs(S.d - r.d) < 8 && S.lane === l ? 2 : 0);
+          const cost = Math.abs(l - r.lane) + (Math.abs(S.d - r.d) < 8 && S.lane === l ? 2 : 0) - (inChannel(o.d, l) ? 0.6 : 0);
           if (cost < bestCost) { bestCost = cost; best = l; }
         }
         r.lane = best;
@@ -207,11 +272,25 @@
       youBurst(0, 8, PAL.w5, 50);
     }
   }
+  /** A whirlpool spins the canoe round: slower than a bonk, but not as bad. */
+  function spin(who, isYou, ctx) {
+    who.slow = 0.45; who.inv = 0.8; who.spinT = 0.8;
+    if (isYou) { S.spins++; S.shake = 0.15; ctx.sfx('splash'); youFloat(-22, t('rap.spin'), '#c8f6ff'); youBurst(0, 8, '#c8f6ff', 40); }
+  }
   /** Resolve the obstacles a racer's bow has just passed. */
   function pass(r, isYou, ctx) {
     while (r.oi < S.nObs && S.obs[r.oi].d <= r.d) {
       const o = S.obs[r.oi++], l = Math.round(r.lx);
-      if (!(o.lanes & (1 << l))) continue;
+      if (o.kind === CHAN) continue;
+      // a rolling log is in one lane at a time: whichever it has drifted to now
+      if (o.kind === ROLL) { if (rollLane(o, S.time) !== l) continue; }
+      else if (!(o.lanes & (1 << l))) continue;
+      if (o.kind === FALL && r.jumpT > 0) {
+        // jumping a waterfall: a big drop and a burst of speed
+        r.boostT = Math.max(r.boostT, BOOST_T * 0.6);
+        if (isYou) { S.drops++; ctx.sfx('rapBoost'); youFloat(-30, t('rap.bigDrop'), PAL.r4); youBurst(4, 12, PAL.w5, 70); }
+        continue;
+      }
       if (o.kind === BUBBLE) {
         if (isYou && !o.taken) {
           o.taken = true; S.boosts++; S.boostT = BOOST_T; ctx.sfx('rapBoost');
@@ -221,8 +300,9 @@
         continue;
       }
       if (r.inv > 0) continue;
-      if (o.kind === LOG && r.jumpT > 0) { if (isYou) { youFloat(-30, t('rap.nice'), PAL.r4); } continue; }
-      if (o.kind === BRANCH && r.duckT > 0) { if (isYou) { youFloat(-30, t('rap.nice'), PAL.r4); } continue; }
+      if (isJump(o.kind) && r.jumpT > 0) { if (isYou) { youFloat(-30, t('rap.nice'), PAL.r4); } continue; }
+      if (isDuck(o.kind) && r.duckT > 0) { if (isYou) { youFloat(-30, t('rap.nice'), PAL.r4); } continue; }
+      if (o.kind === WHIRL) { spin(r, isYou, ctx); continue; }
       bonk(r, isYou, ctx);
     }
   }
@@ -237,20 +317,20 @@
       o.hit |= r.bit;
       const slip = S.rand() < r.err * (ctx.easy ? 1.6 : 1);
       if (slip) continue;
-      if (o.kind === LOG) r.jumpT = JUMP_T;
-      else if (o.kind === BRANCH) r.duckT = DUCK_T;
+      if (o.kind === LOG || o.kind === FALL || (o.kind === ROLL && rollLane(o, S.time + (o.d - r.d) / Math.max(1, r.v)) === r.lane)) r.jumpT = JUMP_T;
+      else if (isDuck(o.kind)) r.duckT = DUCK_T;
       else if (o.kind === BUBBLE && (o.lanes & (1 << r.lane)) && S.rand() < 0.5) r.boostT = BOOST_T * 0.8;
     }
     const k = 1 - Math.exp(-dt * 10);
     r.lx += (r.lane - r.lx) * k;
-    if (r.jumpT > 0) r.jumpT -= dt; if (r.duckT > 0) r.duckT -= dt; if (r.boostT > 0) r.boostT -= dt; if (r.inv > 0) r.inv -= dt;
+    if (r.jumpT > 0) r.jumpT -= dt; if (r.duckT > 0) r.duckT -= dt; if (r.boostT > 0) r.boostT -= dt; if (r.inv > 0) r.inv -= dt; if (r.spinT > 0) r.spinT -= dt;
     r.slow = Math.min(1, r.slow + dt * 0.55);
     // its own pace, a gentle wobble, and a soft rubber band so the pack stays in sight
     let base = (ctx.easy ? r.easyBase : r.base) * (1 + 0.04 * Math.sin(S.time * 0.7 + r.ph));
     const gap = r.d - S.d;
     if (gap > 55) base *= 0.93; else if (gap < -60) base *= 1.05;
     if (r.finT) base *= 0.5;
-    r.v = (base + (r.boostT > 0 ? VBOOST * 0.8 : 0)) * r.slow;
+    r.v = (base + (r.boostT > 0 ? VBOOST * 0.8 : 0) + (inChannel(r.d, r.lane) ? VCHAN * 0.8 : 0)) * r.slow;
     r.d += r.v * dt;
     pass(r, false, ctx);
     if (!r.finT && r.d >= LEN) r.finT = S.raceT;
@@ -274,19 +354,23 @@
   }
   /** The autopilot used by the tests (and only them): steer for free lanes and bubbles, jump logs, duck branches. */
   function autopilot() {
-    let want = S.lane, logAhead = 99, branchAhead = 99, first = null;
+    let want = S.lane, logAhead = 99, branchAhead = 99, first = null, blocked = 0;
     for (let i = S.oi; i < S.nObs; i++) {
       const o = S.obs[i], ahead = o.d - S.d; if (ahead > 26) break;
       // a less-than-perfect bot (skill < 1) simply does not notice some things (for balance checks)
       if (!(o.hit & 16)) { o.hit |= 16; if (S.rand() > S.autoSkill) o.hit |= 32; }
       if (o.hit & 32) continue;
-      if (o.kind === LOG && ahead < logAhead) logAhead = ahead;
-      if (o.kind === BRANCH && ahead < branchAhead) branchAhead = ahead;
+      if ((o.kind === LOG || o.kind === FALL) && ahead < logAhead) logAhead = ahead;
+      if (o.kind === ROLL && ahead < logAhead && rollLane(o, S.time + ahead / Math.max(1, S.v)) === S.lane) logAhead = ahead;
+      if (isDuck(o.kind) && ahead < branchAhead) branchAhead = ahead;
       if (ahead < 2) continue;
+      // fast water or a bubble pulls it over only into a lane nothing nearer blocks
+      if (o.kind === CHAN && ahead < 12 && want === S.lane) { for (let l = 0; l < 3; l++) if ((o.lanes & (1 << l)) && !(blocked & (1 << l))) want = l; continue; }
+      if (o.kind === ROCK || o.kind === CROC || o.kind === WHIRL || o.kind === DAM) blocked |= o.lanes;
       // a farther rock may only move Cappy to a lane that is also free at the nearer one
       if (laneBlocked(o, want)) { for (let l = 0; l < 3; l++) if (!laneBlocked(o, l) && !(first && first !== o && laneBlocked(first, l))) { want = l; if (Math.abs(l - S.lane) <= 1) break; } }
-      if (!first && (o.kind === ROCK || o.kind === CROC)) first = o;
-      else if (o.kind === BUBBLE && ahead < 16 && !o.taken && want === S.lane) { for (let l = 0; l < 3; l++) if (o.lanes & (1 << l)) want = l; }
+      if (!first && (o.kind === ROCK || o.kind === CROC || o.kind === WHIRL || o.kind === DAM)) first = o;
+      else if (o.kind === BUBBLE && ahead < 16 && !o.taken && want === S.lane) { for (let l = 0; l < 3; l++) if ((o.lanes & (1 << l)) && !(blocked & (1 << l)) && Math.abs(l - S.lane) <= 1) want = l; }
     }
     if (want !== S.lane) steer(sign(want - S.lane), S.ctx);
     if (logAhead < 3.2) jump(S.ctx);
@@ -299,12 +383,16 @@
     if (S.auto && !S.done) autopilot();
     S.prevD = S.d;
     if (S.jumpT > 0) { S.jumpT -= dt; if (S.jumpT <= 0) { ctx.sfx('splash'); youBurst(0, 6, PAL.w5, 40); } }
-    if (S.jumpCD > 0) S.jumpCD -= dt; if (S.duckT > 0) S.duckT -= dt; if (S.boostT > 0) S.boostT -= dt; if (S.inv > 0) S.inv -= dt; if (S.shake > 0) S.shake -= dt;
+    if (S.jumpCD > 0) S.jumpCD -= dt; if (S.duckT > 0) S.duckT -= dt; if (S.boostT > 0) S.boostT -= dt; if (S.inv > 0) S.inv -= dt; if (S.shake > 0) S.shake -= dt; if (S.spinT > 0) S.spinT -= dt;
     if (S.hintT > 0) S.hintT -= dt;
     S.slow = Math.min(1, S.slow + dt * 0.5);
     const k = 1 - Math.exp(-dt * 14);
     S.lx += (S.lane - S.lx) * k;
-    S.v = S.done ? Math.max(0, S.v - dt * 9) : (V0 + (S.boostT > 0 ? VBOOST : 0)) * S.slow;
+    // fast water: staying in a channel's lane carries you along quicker
+    const chan = !S.done && inChannel(S.d, Math.round(S.lx));
+    if (chan && !S.chanOn) { youFloat(-26, t('rap.fast'), '#a8ecff'); ctx.sfx('rapBoost'); }
+    S.chanOn = chan; if (chan) S.fastT += dt;
+    S.v = S.done ? Math.max(0, S.v - dt * 9) : (V0 + (S.boostT > 0 ? VBOOST : 0) + (chan ? VCHAN : 0)) * S.slow;
     S.d += S.v * dt;
     if (!S.done) pass(S, true, ctx);
     S.strokeT += dt * (S.boostT > 0 ? 1.5 : 1);
@@ -314,24 +402,29 @@
     let place = 1;
     for (let i = 0; i < S.rivals.length; i++) { const r = S.rivals[i]; if (r.finT ? r.finT <= S.raceT : r.d > S.d) place++; }
     if (!S.done) S.place = place;
+    // a new stretch of river: its name
+    const sec = secOf(S.d);
+    if (sec !== S.sec && !S.done) { S.sec = sec; UI.banner(t('rap.sec' + sec), PAL.w4, 1.4); ctx.sfx('tock'); }
     // the tips the first time each hazard comes along
     for (let i = S.oi; i < S.nObs && i < S.oi + 6; i++) {
       const o = S.obs[i], ahead = o.d - S.d; if (ahead > 34) break;
       if (o.kind === LOG && !S.tipLog && ahead < 30) { S.tipLog = true; UI.banner(t(ctx.touch ? 'rap.tipJumpTouch' : 'rap.tipJumpKeys'), PAL.r4, 1.6); }
       if (o.kind === BRANCH && !S.tipBranch && ahead < 30) { S.tipBranch = true; UI.banner(t(ctx.touch ? 'rap.tipDuckTouch' : 'rap.tipDuckKeys'), PAL.r4, 1.6); }
       if (o.kind === ROCK && !S.tipRock && ahead < 30) { S.tipRock = true; UI.banner(t('rap.tipSteer'), PAL.r4, 1.4); }
+      const bit = o.kind === WHIRL ? 1 : o.kind === DAM ? 2 : o.kind === FALL ? 4 : o.kind === ROLL ? 8 : o.kind === CHAN ? 16 : o.kind === VINE ? 32 : 0;
+      if (bit && !(S.tips & bit) && ahead < 28) { S.tips |= bit; UI.banner(t('rap.tip' + KIND_NAMES[o.kind]), PAL.r4, 1.6); }
     }
     if (!S.done && S.d >= LEN) finishRace(ctx);
   }
   function finishRace(ctx) {
     S.done = true; S.finT = S.raceT;
     const won = S.place === 1;
-    const stars = won ? 1 + (S.bonks <= 3 ? 1 : 0) + (S.bonks <= 1 ? 1 : 0) : 0;
+    const stars = won ? 1 + (S.bonks <= 4 ? 1 : 0) + (S.bonks <= 2 ? 1 : 0) : 0;
     const placePts = S.place === 1 ? 1500 : S.place === 2 ? 800 : S.place === 3 ? 400 : 200;
-    const score = placePts + S.boosts * 50 + Math.max(0, 10 - S.bonks) * 40 + Math.max(0, Math.round((80 - S.finT) * 20));
+    const score = placePts + S.boosts * 50 + S.drops * 60 + Math.max(0, 12 - S.bonks) * 40 + Math.max(0, Math.round((115 - S.finT) * 20));
     if (won) { UI.confetti(ctx.W / 2, (S.py - 40) * S.Z, 40); ctx.sfx('cheer'); }
     UI.banner(t(won ? 'rap.first' : 'rap.finished', { n: S.place }), won ? PAL.r4 : PAL.w4, 1.2);
-    ctx.finish({ score, stars, won, frac: won ? stars / 3 : (4 - S.place) / 4 * 0.3, stats: { place: S.place, time: Math.round(S.finT * 10) / 10, bonks: S.bonks, boosts: S.boosts } });
+    ctx.finish({ score, stars, won, frac: won ? stars / 3 : (4 - S.place) / 4 * 0.3, stats: { place: S.place, time: Math.round(S.finT * 10) / 10, bonks: S.bonks, boosts: S.boosts, drops: S.drops, spins: S.spins } });
   }
 
   /* ---------- drawing ---------- */
@@ -364,16 +457,16 @@
       g.fillStyle = PAL.g2; g.fillRect(0, 0, W, H);
       for (let y = 0; y < H; y += 2) {
         const d = D_MAX - y / S.ppm, cx = S.cx(d), L = Math.round(cx - half), R = Math.round(cx + half);
-        // bank: grass stripes, a darker band, then mud and sand
-        const band = ((d / 4) | 0) & 1;
-        g.fillStyle = band ? PAL.g2 : '#2a7438'; g.fillRect(0, y, L - 12, 2); g.fillRect(R + 12, y, W - R - 12, 2);
+        // bank: grass stripes, a darker band, then mud and sand (each stretch of river has its own colours)
+        const band = ((d / 4) | 0) & 1, sc = secOf(Math.max(0, d)), BK = SEC_BANK[sc], WT = SEC_WATER[sc];
+        g.fillStyle = band ? BK[0] : BK[1]; g.fillRect(0, y, L - 12, 2); g.fillRect(R + 12, y, W - R - 12, 2);
         g.fillStyle = PAL.g1; g.fillRect(L - 12, y, 6, 2); g.fillRect(R + 6, y, 6, 2);
-        g.fillStyle = PAL.b3; g.fillRect(L - 6, y, 4, 2); g.fillRect(R + 2, y, 4, 2);
+        g.fillStyle = SEC_MUD[sc]; g.fillRect(L - 6, y, 4, 2); g.fillRect(R + 2, y, 4, 2);
         g.fillStyle = PAL.b4; g.fillRect(L - 2, y, 2, 2); g.fillRect(R, y, 2, 2);
         // water: bands that shift between the two frames (the current), a lighter middle
         const flow = (((d + f * 1.5) / 3) | 0) & 1;
-        g.fillStyle = flow ? '#2373ad' : '#2a7fbb'; g.fillRect(L, y, R - L, 2);
-        g.fillStyle = flow ? '#2f8cc6' : '#3496cf'; g.fillRect(L + 8, y, R - L - 16, 2);
+        g.fillStyle = flow ? WT[0] : WT[1]; g.fillRect(L, y, R - L, 2);
+        g.fillStyle = flow ? WT[2] : WT[3]; g.fillRect(L + 8, y, R - L - 16, 2);
         // foam at the shore, lane marks
         g.fillStyle = PAL.w5; if ((((d * 3) | 0) + f) % 3 === 0) { g.fillRect(L, y, 2, 2); g.fillRect(R - 2, y, 2, 2); }
         if ((y >> 1) % 5 === 0) { g.fillStyle = 'rgba(200,246,255,0.16)'; g.fillRect(Math.round(cx - S.laneW / 2), y, 1, 2); g.fillRect(Math.round(cx + S.laneW / 2), y, 1, 2); }
@@ -382,7 +475,7 @@
       for (let i = Math.floor(D_MIN / 7); i <= Math.ceil(D_MAX / 7); i++) {
         for (let side = 0; side < 2; side++) {
           const h = JC.hash(i, side, 17); if (h < 0.18) continue;
-          const pl = DECOR[(h * 977 | 0) % DECOR.length], d = i * 7 + h * 5, cx = S.cx(d), y = Math.round((D_MAX - d) * S.ppm) - (pl.h >> 1);
+          const d = i * 7 + h * 5, sc = secOf(Math.max(0, d)), set = SEC_DECOR[sc], pl = set[(h * 977 | 0) % set.length], cx = S.cx(d), y = Math.round((D_MAX - d) * S.ppm) - (pl.h >> 1);
           const off = 14 + ((h * 131) % 1) * Math.max(4, S.mid - S.half - 30);
           const x = side ? Math.round(cx + S.half + off) : Math.round(cx - S.half - off - pl.w);
           if (x > W || x + pl.w < 0) continue;
@@ -446,6 +539,50 @@
         if (o.kind === ROCK) spr(g, SPRITES.rap_rock, x - 7, y - 5);
         else { const blink = ((tm + o.ph) % 3) < 0.18; const bob = Math.round(Math.sin(tm * 2.4 + o.ph + l)); spr(g, blink ? SPRITES.rap_croc2 : SPRITES.rap_croc, x - 8, y - 4 + bob); }
       }
+    } else if (o.kind === WHIRL) {
+      for (let l = 0; l < 3; l++) {
+        if (!(o.lanes & (1 << l))) continue;
+        const x = Math.round(laneX(o.d, l)), a0 = tm * 5 + o.ph;
+        oval(g, x, y, 11, 5, '#1a5a8a'); oval(g, x, y, 8, 4, '#174f7a'); oval(g, x, y, 4, 2, '#0e2a4f');
+        // the spinning streaks
+        for (let i = 0; i < 6; i++) { const a = a0 + i * 1.047, rr = 4 + (i % 3) * 3; rect(g, Math.round(x + Math.cos(a) * rr), Math.round(y + Math.sin(a) * rr * 0.45), 2, 1, i % 2 ? PAL.w5 : '#a8ecff'); }
+      }
+    } else if (o.kind === DAM) {
+      // a beaver dam of sticks across the river, with one gap of open water
+      for (let l = 0; l < 3; l++) {
+        const x = Math.round(laneX(o.d, l)), hw = Math.round(S.laneW / 2);
+        if (!(o.lanes & (1 << l))) { if (((tm * 4 + l) | 0) % 2) { rect(g, x - 3, y - 6, 1, 4, PAL.w5); rect(g, x + 3, y - 4, 1, 4, PAL.w5); } continue; }
+        rect(g, x - hw, y - 3, hw * 2, 8, OUT); rect(g, x - hw + 1, y - 2, hw * 2 - 2, 6, '#7a5030');
+        for (let i = 0; i < 5; i++) { const sx = x - hw + 2 + ((i * 7 + l * 3) % (hw * 2 - 6)); line(g, sx, y - 5 + (i % 2), sx + 6, y + 3 - (i % 2), i % 2 ? '#a8743e' : '#5e3a20'); }
+        rect(g, x - hw + 1, y - 2, hw * 2 - 2, 1, '#a8743e'); rect(g, x - hw + 2, y + 5, hw * 2 - 4, 1, PAL.w5);
+        // sticks poking up out of the dam
+        for (let i = 0; i < 3; i++) { const sx = x - hw + 4 + i * Math.round((hw * 2 - 8) / 2); line(g, sx, y - 3, sx + (i % 2 ? 2 : -2), y - 9, '#5e3a20'); }
+      }
+      // the beaver who built it, on the first piece, keeping an eye on things
+      for (let l = 0; l < 3; l++) if (o.lanes & (1 << l)) { const bx = Math.round(laneX(o.d, l)) - 5, bb = ((tm * 2 + o.ph) | 0) % 2; spr(g, SPRITES.rap_beaver, bx, y - 13 + bb); break; }
+    } else if (o.kind === FALL) {
+      // a little waterfall: a lip of rock with white water spilling over (the river drops towards the top)
+      // the water curls over the lip (bottom), pours down the face (white streaks) into deeper, darker water beyond
+      const c = S.cx(o.d), L = Math.round(c - S.half), R = Math.round(c + S.half), sp = (tm * 14) | 0;
+      rect(g, L, y - 22, R - L, 10, '#1a5f94'); rect(g, L, y - 22, R - L, 2, '#14507e');
+      for (let x = L; x < R; x += 2) {
+        const k = (x * 7 + sp) % 9, top = y - 12 - (k % 3);
+        rect(g, x, top, 2, 12 + (k % 3), k < 3 ? PAL.white : k < 6 ? '#e8fbff' : '#a8dcf4');
+      }
+      // spray where it lands, and the smooth curl at the lip
+      for (let x = L + 1; x < R - 1; x += 3) { const k = (x + sp) % 4; rect(g, x, y - 15 - k, 1, 1, PAL.white); if (k === 0) rect(g, x + 1, y - 17 - (sp % 3), 1, 1, '#e8fbff'); }
+      rect(g, L, y, R - L, 2, '#a8ecff'); rect(g, L, y + 2, R - L, 1, '#5ab8e0');
+      for (let x = L + 3; x < R - 3; x += 6) rect(g, x, y + 4 + (((tm * 6 + x) | 0) % 2), 3, 1, PAL.w5);
+      spr(g, SPRITES.rap_rock, L - 10, y - 10); spr(g, SPRITES.rap_rock, R - 4, y - 10);
+    } else if (o.kind === ROLL) {
+      // a short log rolling across the lanes (it turns as it goes)
+      const x = Math.round(laneX(o.d, rollPos(o, tm))), hw = Math.round(S.laneW / 2) - 2, roll = ((tm * 10 + o.ph) | 0) % 3;
+      rect(g, x - hw + 2, y + 4, hw * 2, 3, 'rgba(14,42,79,0.45)');
+      box(g, x - hw, y - 4, hw * 2, 9, '#8a5a33', OUT);
+      for (let i = 0; i < 3; i++) rect(g, x - hw + 3 + ((i * 6 + roll * 2) % (hw * 2 - 6)), y - 3, 2, 7, '#5e3a20');
+      logEnd(g, x - hw, y); logEnd(g, x + hw - 7, y);
+      const dir = Math.cos(tm * 0.9 + o.ph) >= 0 ? 1 : -1;
+      if (((tm * 6) | 0) % 2) { rect(g, x - dir * (hw + 3), y - 1, 2, 1, PAL.w5); rect(g, x - dir * (hw + 5), y + 2, 2, 1, PAL.w5); }
     } else if (o.kind === BUBBLE) {
       if (o.taken) return;
       for (let l = 0; l < 3; l++) {
@@ -471,9 +608,39 @@
       if (i % 3 === 0) { rect(g, x + 3, y - 4 + sway, 3, 3, PAL.p3); rect(g, x + 4, y - 3 + sway, 1, 1, PAL.r5); }
     }
   }
-  function drawCanoe(g, x, y, canoe, rider, jumpT, duckT, strokeT, boosting, isYou, inv) {
+  /** A fast channel: a lane of quicker, lighter water with arrows running downstream. */
+  function drawChannel(g, o) {
+    let lane = 0; while (!(o.lanes & (1 << lane))) lane++;
+    const tm = S.time, step = 8;
+    for (let dd = o.d; dd < o.d + o.len; dd += 1.5) {
+      const y = Math.round(yOf(dd)); if (y < -4 || y > VW.H + 4) continue;
+      const x = Math.round(laneX(dd, lane)), hw = Math.round(S.laneW / 2) - 3;
+      g.globalAlpha = 0.28; rect(g, x - hw, y, hw * 2, Math.ceil(1.5 * S.ppm), '#a8ecff'); g.globalAlpha = 1;
+    }
+    for (let dd = o.d + 4 + ((tm * 10) % step); dd < o.d + o.len - 2; dd += step) {
+      const y = Math.round(yOf(dd)); if (y < -6 || y > VW.H + 6) continue;
+      const x = Math.round(laneX(dd, lane));
+      for (let i = 0; i < 4; i++) { rect(g, x - 4 + i, y + i, 1, 1, PAL.white); rect(g, x + 4 - i, y + i, 1, 1, PAL.white); }
+    }
+  }
+  /** A curtain of hanging vines across the river (duck under it). */
+  function drawVines(g, o) {
+    const y = Math.round(yOf(o.d)); if (y < -24 || y > VW.H + 24) return;
+    const c = S.cx(o.d), L = Math.round(c - S.half - 16), R = Math.round(c + S.half + 16), sway = Math.sin(S.time * 1.8 + o.ph);
+    g.globalAlpha = 0.3; rect(g, L + 10, y + 8, R - L - 20, 3, '#0e2a4f'); g.globalAlpha = 1;
+    rect(g, L, y - 6, R - L, 3, OUT); rect(g, L, y - 5, R - L, 1, '#3a6a2e');
+    for (let x = L + 4, i = 0; x < R - 2; x += 6, i++) {
+      const len = 7 + (i * 5) % 6, dx = Math.round(sway * (1 + (i % 3)));
+      line(g, x, y - 4, x + dx, y - 4 + len, i % 2 ? PAL.g1 : '#2f7a40');
+      if (i % 2 === 0) { rect(g, x + dx - 1, y - 4 + len, 3, 2, PAL.g3); }
+      if (i % 5 === 2) { rect(g, x + dx, y - 1 + (len >> 1), 2, 2, PAL.p3); }
+    }
+  }
+  function drawCanoe(g, x, y, canoe, rider, jumpT, duckT, strokeT, boosting, isYou, inv, spinT) {
     const h = jumpT > 0 ? Math.round(Math.sin(Math.PI * (1 - jumpT / JUMP_T)) * 12) : 0;
     x = Math.round(x); y = Math.round(y);
+    // spinning in a whirlpool: a wobble side to side and a ring of foam
+    if (spinT > 0) { if (!BRBX.reduced()) x += Math.round(Math.sin(spinT * 30) * 3); g.globalAlpha = 0.5; oval(g, x + 1, y + 14, 12, 6, '#c8f6ff'); g.globalAlpha = 1; }
     // wake
     const wl = boosting ? 14 : 8;
     for (let i = 2; i < wl; i += 2) { g.fillStyle = i < 6 ? PAL.white : 'rgba(255,255,255,0.5)'; g.fillRect(x - 5 - (i >> 1), y + 24 + i, 2, 1); g.fillRect(x + 4 + (i >> 1), y + 24 + i, 2, 1); }
@@ -555,28 +722,30 @@
     drawBanner(g, LEN, 'rap.finish', '#c8641a', ctx);
     // water-level things, far to near
     const dFar = S.d + S.py / S.ppm + 10, dNear = S.d - (VW.H - S.py) / S.ppm - 10;
-    for (let i = S.nObs - 1; i >= 0; i--) { const o = S.obs[i]; if (o.d > dFar || o.d < dNear || o.kind === BRANCH) continue; drawOb(g, o, ctx); }
+    for (let i = 0; i < S.nChan; i++) { const o = S.chans[i]; if (o.d > dFar || o.d + o.len < dNear) continue; drawChannel(g, o); }
+    for (let i = S.nObs - 1; i >= 0; i--) { const o = S.obs[i]; if (o.d > dFar || o.d < dNear || o.kind === BRANCH || o.kind === VINE || o.kind === CHAN) continue; drawOb(g, o, ctx); }
     // canoes, far to near (rivals sorted on the fly: just three)
     for (let pass2 = 0; pass2 < 4; pass2++) {
       // draw the rivals ahead of Cappy first, then Cappy, then the ones behind
       if (pass2 < 3) {
         const r = S.rivals[pass2]; if (r.d <= S.d) continue;
         const y = yOf(r.d); if (y < -40 || y > VW.H + 10) continue;
-        drawCanoe(g, laneX(r.d, r.lx), y, r.canoe, r.rider, r.jumpT, r.duckT, r.strokeT, r.boostT > 0, false, r.inv);
+        drawCanoe(g, laneX(r.d, r.lx), y, r.canoe, r.rider, r.jumpT, r.duckT, r.strokeT, r.boostT > 0, false, r.inv, r.spinT);
       } else {
-        drawCanoe(g, laneX(S.d, S.lx), S.py, 'rap_canoe_cappy', 'cappy_up', S.jumpT, S.duckT, S.strokeT, S.boostT > 0, true, S.inv);
+        drawCanoe(g, laneX(S.d, S.lx), S.py, 'rap_canoe_cappy', 'cappy_up', S.jumpT, S.duckT, S.strokeT, S.boostT > 0 || S.chanOn, true, S.inv, S.spinT);
         const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat];
         if (hat && S.duckT <= 0) { const h = S.jumpT > 0 ? Math.round(Math.sin(Math.PI * (1 - S.jumpT / JUMP_T)) * 12) : 0; spr(g, hat, laneX(S.d, S.lx) - (hat.w >> 1), S.py + 4 - h); }
       }
     }
-    for (let i = 0; i < 3; i++) { const r = S.rivals[i]; if (r.d > S.d) continue; const y = yOf(r.d); if (y > VW.H + 10) continue; drawCanoe(g, laneX(r.d, r.lx), y, r.canoe, r.rider, r.jumpT, r.duckT, r.strokeT, r.boostT > 0, false, r.inv); }
+    for (let i = 0; i < 3; i++) { const r = S.rivals[i]; if (r.d > S.d) continue; const y = yOf(r.d); if (y > VW.H + 10) continue; drawCanoe(g, laneX(r.d, r.lx), y, r.canoe, r.rider, r.jumpT, r.duckT, r.strokeT, r.boostT > 0, false, r.inv, r.spinT); }
     // overhead branches last
-    for (let i = S.nObs - 1; i >= 0; i--) { const o = S.obs[i]; if (o.kind !== BRANCH || o.d > dFar || o.d < dNear) continue; drawBranch(g, o, ctx); }
+    for (let i = S.nObs - 1; i >= 0; i--) { const o = S.obs[i]; if (!isDuck(o.kind) || o.d > dFar || o.d < dNear) continue; if (o.kind === VINE) drawVines(g, o); else drawBranch(g, o, ctx); }
     // the approach warnings for logs and branches right ahead of Cappy
     for (let i = S.oi; i < S.nObs; i++) {
       const o = S.obs[i], ahead = o.d - S.d; if (ahead > 16) break;
-      if ((o.kind === LOG && S.jumpT <= 0) || (o.kind === BRANCH && S.duckT <= 0)) {
-        if (((S.time * 8) | 0) % 2) { const x = laneX(S.d, S.lx), yy = S.py - 16; (o.kind === LOG ? ARROW.jump : ARROW.duck)(g, x, yy); }
+      const needJump = o.kind === LOG || o.kind === FALL || (o.kind === ROLL && rollLane(o, S.time + ahead / Math.max(1, S.v)) === S.lane);
+      if ((needJump && S.jumpT <= 0) || (isDuck(o.kind) && S.duckT <= 0)) {
+        if (((S.time * 8) | 0) % 2) { const x = laneX(S.d, S.lx), yy = S.py - 16; (needJump ? ARROW.jump : ARROW.duck)(g, x, yy); }
         break;
       }
     }
@@ -633,9 +802,10 @@
       S.d = 0; S.prevD = 0; S.lane = 1; S.lx = 1; S.v = V0; S.slow = 1; S.boostT = 0; S.jumpT = 0; S.jumpCD = 0; S.duckT = 0; S.inv = 0; S.shake = 0;
       S.bonks = 0; S.boosts = 0; S.raceT = 0; S.place = 1; S.done = false; S.finT = 0; S.auto = false; S.autoSkill = 1; S.oi = 0; S.strokeT = 0; S.lastStroke = 0; S.time = 0;
       S.tipLog = false; S.tipBranch = false; S.tipRock = false; S.usedSteer = false; S.usedJump = false; S.usedDuck = false;
+      S.sec = 0; S.tips = 0; S.spins = 0; S.drops = 0; S.fastT = 0; S.chanOn = false; S.spinT = 0;
       const starts = [[0, -3], [2, -3], [0, -12]];
       for (let i = 0; i < S.rivals.length; i++) {
-        const r = S.rivals[i]; r.lane = starts[i][0]; r.lx = r.lane; r.d = starts[i][1]; r.prevD = r.d; r.v = V0; r.slow = 1; r.boostT = 0; r.jumpT = 0; r.duckT = 0; r.inv = 0;
+        const r = S.rivals[i]; r.lane = starts[i][0]; r.lx = r.lane; r.d = starts[i][1]; r.prevD = r.d; r.v = V0; r.slow = 1; r.boostT = 0; r.jumpT = 0; r.duckT = 0; r.inv = 0; r.spinT = 0;
         r.oi = 0; r.finT = 0; r.ph = i * 2.1 + ctx.rng() * 3; r.strokeT = i * 0.3;
         for (let j = 0; j < S.nObs; j++) S.obs[j].hit &= ~r.bit;
       }
@@ -646,13 +816,17 @@
     outro(dt, ctx) { update(dt, ctx); },
     testState() {
       const ahead = [];
-      for (let i = S.oi; i < S.nObs && ahead.length < 4; i++) { const o = S.obs[i]; if (o.d - S.d > 40) break; ahead.push({ kind: ['', 'log', 'branch', 'rock', 'croc', 'bubble'][o.kind], lanes: o.lanes, ahead: Math.round((o.d - S.d) * 10) / 10 }); }
+      for (let i = S.oi; i < S.nObs && ahead.length < 4; i++) { const o = S.obs[i]; if (o.d - S.d > 40) break; ahead.push({ kind: KIND_NAMES[o.kind], lanes: o.kind === ROLL ? 1 << rollLane(o, S.time) : o.lanes, ahead: Math.round((o.d - S.d) * 10) / 10 }); }
+      const kinds = {}; for (let i = 0; i < S.nObs; i++) { const k = KIND_NAMES[S.obs[i].kind]; kinds[k] = (kinds[k] || 0) + 1; }
       return { d: Math.round(S.d * 10) / 10, lane: S.lane, lx: Math.round(S.lx * 100) / 100, v: Math.round(S.v * 10) / 10, place: S.place, bonks: S.bonks, boosts: S.boosts,
         raceT: Math.round(S.raceT * 100) / 100, done: S.done, jumping: S.jumpT > 0, ducking: S.duckT > 0, auto: S.auto, len: LEN, obstacles: S.nObs,
+        kinds, section: S.sec, spins: S.spins, drops: S.drops, fast: Math.round(S.fastT * 10) / 10, inChannel: S.chanOn,
         rivals: S.rivals.map(r => ({ id: r.id, d: Math.round(r.d), lane: r.lane, finT: Math.round(r.finT * 10) / 10 })), ahead };
     },
     test: {
       auto(ctx, on, skill) { S.auto = !!on; S.autoSkill = skill === undefined ? 1 : +skill; return S.auto; },
+      /** Jump ahead to a distance (a test seeing a later stretch without racing all of it); the rivals come along. */
+      skipTo(ctx, d) { const dd = d - S.d; S.d = d; S.prevD = d; while (S.oi < S.nObs && S.obs[S.oi].d <= d) S.oi++; for (const r of S.rivals) { r.d += dd; r.prevD = r.d; while (r.oi < S.nObs && S.obs[r.oi].d <= r.d) r.oi++; } S.sec = secOf(d); return true; },
     },
     cheat(won) {
       S.place = won ? 1 : 3; S.bonks = won ? 1 : 6; S.done = true;

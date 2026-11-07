@@ -1,6 +1,10 @@
 // ======================================================================================================
 // SEED SHOT vs Tico the toucan: a slingshot target range on the lagoon. 60 seconds, head to head.
-//   Fruit rides on lily pads drifting across the lagoon in three rows: near (50 points), mid (75), far (100).
+//   Fruit rides on lily pads drifting across the lagoon in four rows: near (50 points), mid (75), far (100) and the
+//   star fruit right out at the back (150). Now and then a golden fruit floats by (double points), some fruit bobs
+//   under the water and pops back up (it can't be hit while it is under), and a flock of swallows skims across one
+//   row: a seed that lands under them is snapped up as a snack (no points). A frog hops between the empty pads and
+//   fish jump in the lagoon (just for fun: nothing ever aims at them).
 //   Touch: put a finger down anywhere, pull back (down = farther, sideways = aim) and let go to fire a seed.
 //   Keys: Left / Right move the aim ring, Up / Down pick the row, Space fires.
 //   Seeds take a moment to land, so aim a little ahead of a drifting fruit. Hits in a row add a combo bonus.
@@ -9,20 +13,29 @@
 // from the view size each frame.
 // ======================================================================================================
 (function () {
-  const TIME = 60, ROWS = 3, PER_ROW = 10, SPACING = 110, POINTS = [100, 75, 50], FLIGHT = [0.62, 0.5, 0.38], RELOAD = 0.42;
+  const TIME = 60, ROWS = 4, PER_ROW = 14, SPACING = 88, POINTS = [150, 100, 75, 50], FLIGHT = [0.72, 0.62, 0.5, 0.38], RELOAD = 0.42;
+  // golden fruit (double points), divers (bob under and pop back up) and the swallows: how often and how long
+  const TICO_P = 0.72, TICO_P_EASY = 0.66, TICO_A = 2.0, TICO_B = 1.3, TICO_A_EASY = 2.4, TICO_B_EASY = 1.7;
+  const GOLD_P = 0.08, DIVE_P = 0.2, DIVE_C = 3.4, FLOCK_W = 34, FLOCK_V = 62;
   // a seed that splashes takes longer to reload, and at most two of yours fly at once: firing without aiming never pays
   const MISS_RELOAD = 1.2, MAX_FLYING = 2;
   const S = {
     time: 0, you: 0, tico: 0, hits: 0, shots: 0, streak: 0, bestStreak: 0, over: false, won: false, finishT: 0,
     aimX: 0, aimRow: 1, aimOn: true, drag: false, dragId: -1, sx: 0, sy: 0, pullX: 0, pullY: 0, reload: 0, auto: false, autoT: 0, sigma: 0,
     ticoT: 2, ticoFlap: 0, cappyRecoil: 0, hint: 1, ctx: null,
-    k: 1, bgK: 0, rowY: [0, 0, 0], kr: [1, 1, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0], rowDir: [1, -1, 1], nPer: 4, wrap: 450, lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
-    fruit: [], seeds: [], rips: [], bg: null, bgGen: -1, pads: null, padsGen: -1,
+    k: 1, bgK: 0, rowY: [0, 0, 0, 0], kr: [1, 1, 2, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0, 0], rowDir: [-1, 1, -1, 1], nPer: 4, wrap: 450, lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
+    fruit: [], seeds: [], rips: [], bg: null, bgGen: -1, pads: null, padsGen: -1, golds: 0, snacks: 0,
+    // the swallows (one flock at a time), the frog on the empty pads, a jumping fish
+    flock: { on: false, warn: 0, x: 0, dir: 1, row: 1, next: 9, t: 0 },
+    frog: { f: null, to: null, hop: 0, next: 2, sx: 0, sy: 0, hidden: true },
+    fish: { on: false, x: 0, y: 0, t: 0, dir: 1, next: 2 },
+    botRowK: [0.55, 0.75, 0.9, 1],   // a human-like test bot goes for the nearer rows more often
   };
-  for (let r = 0; r < ROWS; r++) for (let i = 0; i < PER_ROW; i++) S.fruit.push({ row: r, i, x: 0, on: true, use: true, gone: 0, pop: 0, bob: 0, kind: 0 });
+  for (let r = 0; r < ROWS; r++) for (let i = 0; i < PER_ROW; i++) S.fruit.push({ row: r, i, x: 0, on: true, use: true, gone: 0, pop: 0, bob: 0, kind: 0, dv: 0, under: false });
   for (let i = 0; i < 8; i++) S.seeds.push({ on: false, who: 0, x0: 0, y0: 0, x1: 0, y1: 0, t: 0, T: 0.5, row: 0, target: null, hit: false });
-  for (let i = 0; i < 12; i++) S.rips.push({ on: false, x: 0, y: 0, t: 0, big: false });
-  const HIT_R = [10, 12, 14], BASE_K = [1, 2, 2];   // BASE_K: the fruit scale the lily pads are sized for
+  for (let i = 0; i < 20; i++) S.rips.push({ on: false, x: 0, y: 0, t: 0, big: false });
+  const HIT_R = [9, 10, 12, 14], BASE_K = [1, 1, 2, 2];   // BASE_K: the fruit scale the lily pads are sized for
+  const FLOCK_DX = [-26, -13, 0, 13, 26], FLOCK_DY = [4, -3, 1, -4, 3];   // the five swallows of a flock
   /** How close a seed must land to a fruit's centre: the same on every screen (a short landscape lagoon draws the fruit
    *  smaller, but it is not harder to hit), a little more with Easier champions. */
   const hitR = (ctx, r) => HIT_R[r] + (ctx.easy ? 3 : 0);
@@ -60,9 +73,23 @@
     { o: OUT, y: '#ffd24a', r: '#ff8a2a', G: '#3d9a2e' });
   sprite('ss_berry', ['....oGo..', '..ooGGoo.', '.opPoopPo', 'oPPPopPPo', 'opPoPPPo.', 'oPPopPoPo', '.oooPPPo.', '...ooo...'],
     { o: OUT, p: '#d08af0', P: '#7a3ab0', G: '#3d9a2e' });
+  // the star fruit, right at the back (small: it is far away)
+  sprite('ss_star', ['...o...', '..oyo..', 'ooyYyoo', 'oyYYYyo', '.oyYyo.', 'oyo.oyo', 'oo...oo'], { o: OUT, y: '#ffe36a', Y: '#f0b42a' });
+  // a golden fruit (any row): shiny, worth double
+  sprite('ss_golden', ['...oGo...', '..ooGoo..', '.owyyyyo.', 'owwyyyyYo', 'owyyyyyYo', 'oyyyyyYYo', 'oyyyyYYYo', '.oYYYYYo.', '..ooooo..'],
+    { o: '#6a4a10', G: '#3d9a2e', w: '#fffbe0', y: '#ffd84a', Y: '#e8a020' });
   sprite('ss_seed', ['.oo.', 'obBo', 'oBBo', '.oo.'], { o: OUT, b: '#e8bd7c', B: '#9a6234' });
-  const FRUIT = ['ss_berry', 'ss_mango', 'ss_papaya'];
+  // lagoon swallows (two wing frames), the pad frog (sitting and hopping) and a little silver fish
+  const SWL = { o: OUT, b: '#2f5fa8', B: '#1f3f78', w: '#f4f8ff', r: '#ff8a5a' };
+  sprite('ss_swallow1', ['o.......o', 'bo.....ob', '.bbo.obb.', '..bbwbb..', '...owro..', '....o....'], SWL);
+  sprite('ss_swallow2', ['.........', '.........', '...owo...', 'obbbwbbbo', '.o.owro.o', '....o....'], SWL);
+  const FRG = { o: OUT, g: '#5ec84a', G: '#3a9a34', w: '#ffffff', k: '#120e14', y: '#d8f08a' };
+  sprite('ss_frog', ['.oo..oo.', 'owkoowko', 'oggggggo', 'oGyyyyGo', 'oGgggggo', '.oo..oo.'], FRG);
+  sprite('ss_frogHop', ['.oo..oo.', 'owkoowko', 'oggggggo', 'oGyyyyGo', 'oG.oo.Go', 'oo....oo'], FRG);
+  sprite('ss_fish', ['..oo...', '.owwoo.', 'owkwwwo', '.owwoo.', '..oo...'], { o: '#3a5a7a', w: '#d8eef8', k: '#120e14' });
+  const FRUIT = ['ss_star', 'ss_berry', 'ss_mango', 'ss_papaya'];
   const T_L = { col: PAL.white, align: 'left' }, T_R = { col: PAL.white, align: 'right' }, T_VAL = { col: PAL.r4, align: 'left' };
+  const GOLDLBL = { align: 'center', col: '#ffd84a' }, WARNLBL = { align: 'center', col: '#fff3a8' };
   const HINT = { align: 'center', col: '#fff8e8' }, ROWLBL = { align: 'left', col: '#fff8e8' }, STREAK = { align: 'center', col: '#ffb030' }, T_TIME = { align: 'center', col: PAL.white };
 
   /* ---------- layout ---------- */
@@ -76,8 +103,8 @@
     S.lagTop = Math.max(60, Math.round(H * 0.24));
     S.lagBot = H - Math.max(46, Math.round(H * 0.13));
     const L = S.lagBot - S.lagTop;
-    S.rowY[0] = Math.round(S.lagTop + L * 0.2); S.rowY[1] = Math.round(S.lagTop + L * 0.5); S.rowY[2] = Math.round(S.lagTop + L * 0.82);
-    const big = L > 150; S.kr[0] = big ? 2 : 1; S.kr[1] = 2; S.kr[2] = big ? 3 : 2; S.padsGen = -1;
+    S.rowY[0] = Math.round(S.lagTop + L * 0.11); S.rowY[1] = Math.round(S.lagTop + L * 0.36); S.rowY[2] = Math.round(S.lagTop + L * 0.62); S.rowY[3] = Math.round(S.lagTop + L * 0.88);
+    const big = L > 150; S.kr[0] = big ? 2 : 1; S.kr[1] = big ? 2 : 1; S.kr[2] = 2; S.kr[3] = big ? 3 : 2; S.padsGen = -1;
     S.slX = Math.round(W * 0.42); S.slY = H - 10;
     S.tcX = W - 24; S.tcY = H - 12;
     if (first) S.aimX = S.slX;
@@ -86,14 +113,30 @@
     S.nPer = clamp(Math.ceil((W + 60) / SPACING), 3, PER_ROW); S.wrap = S.nPer * SPACING;
     for (const f of S.fruit) {
       f.use = f.i < S.nPer;
-      f.x = ((f.i + (f.row % 2) * 0.5) / S.nPer) * S.wrap - 30;
+      f.x = ((f.i + (f.row % 2) * 0.5 + (f.row > 1 ? 0.25 : 0)) / S.nPer) * S.wrap - 30;
       if (!f.use) { f.on = false; f.gone = 1e9; } else if (f.gone > 1e8) { f.on = true; f.gone = 0; }
     }
   }
   const wrapW = () => S.wrap;
 
   /* ---------- play ---------- */
-  function rowSpeed(ctx, r) { const k = 1 + 0.25 * (S.time / TIME); return [33, 25, 18][r] * (ctx.easy ? 0.72 : 1) * k; }
+  const ROW_V = [38, 33, 25, 18];
+  function rowSpeed(ctx, r) { const k = 1 + 0.25 * (S.time / TIME); return ROW_V[r] * (ctx.easy ? 0.72 : 1) * k; }
+  /** A diver's phase in its cycle T seconds from now: up for most of it, then it sinks, stays under, and pops back up. */
+  const divePh = (f, T) => (f.dv + T) % DIVE_C;
+  /** Can a fruit be hit T seconds from now? (A diver can't while it is under the water.) */
+  const hittableAt = (f, T) => f.kind !== 2 || divePh(f, T) < 2.35 || divePh(f, T) > 3.2;
+  /** Will the swallows be over this spot of this row T seconds from now? */
+  function flockAt(row, x, T) {
+    const fl = S.flock; if (!fl.on || fl.row !== row) return false;
+    return Math.abs(fl.x + fl.dir * FLOCK_V * T - x) < FLOCK_W;
+  }
+  /** A fruit that comes back (or starts) is sometimes golden, sometimes a diver. */
+  function newKind(f, ctx) {
+    const r = ctx.rng();
+    f.kind = r < GOLD_P ? 1 : r < GOLD_P + DIVE_P && f.row > 0 ? 2 : 0;
+    f.dv = ctx.rng() * 2; f.under = false;
+  }
   function fruitX(f, dt) { let x = f.x + S.rowDir[f.row] * S.rowSpd[f.row] * dt; const w = wrapW(); x = ((x + 30) % w + w) % w - 30; return x; }
   function fire(ctx, who, x1, row, target) {
     let sd = null; for (const s of S.seeds) if (!s.on) { sd = s; break; }
@@ -115,24 +158,36 @@
     let hit = null;
     if (sd.who === 0) {
       let bd = 1e9;
-      for (const f of S.fruit) if (f.row === r && f.on) { const d = Math.abs(f.x - sd.x1); if (d <= R && d < bd) { bd = d; hit = f; } }
-    } else if (sd.target && sd.target.on && sd.hit) hit = sd.target;
+      for (const f of S.fruit) if (f.row === r && f.on && !f.under) { const d = Math.abs(f.x - sd.x1); if (d <= R && d < bd) { bd = d; hit = f; } }
+    } else if (sd.target && sd.target.on && !sd.target.under && sd.hit) hit = sd.target;
+    // the swallows snap up a seed that comes down under them (no points, no splash)
+    if (flockAt(r, sd.x1, 0)) {
+      S.snacks++; ctx.sfx('ssChirp');
+      UI.float(sd.x1 * S.k, (S.rowY[r] - 26) * S.k, t('ss.snack'), '#c8e0ff', S.k);
+      if (sd.who === 0) S.streak = 0;
+      return;
+    }
+    // a seed that splashes down by the frog sends it hopping off to another pad
+    const fr = S.frog; if (fr.f && !fr.hop && fr.f.row === r && Math.abs(fr.f.x - sd.x1) < 16) fr.next = 0;
     if (hit) {
-      hit.on = false; hit.gone = 1.4 + Math.random() * 0.6; hit.pop = 0.5;
-      const col = r === 0 ? '#c07ae0' : r === 1 ? '#ff8a2a' : '#ff7a3a';
+      const gold = hit.kind === 1, pts = POINTS[r] * (gold ? 2 : 1);
+      hit.on = false; hit.gone = 1.1 + Math.random() * 0.6; hit.pop = 0.5;
+      const col = gold ? '#ffd84a' : r === 0 ? '#ffe36a' : r === 1 ? '#c07ae0' : r === 2 ? '#ff8a2a' : '#ff7a3a';
+      if (gold) { UI.burst(hit.x * S.k, (S.rowY[r] - 6) * S.k, 14, '#fff3a8', 80); ctx.sfx('ssGold'); }
       UI.burst(hit.x * S.k, (S.rowY[r] - 6) * S.k, 10, col, 60); ctx.sfx('pop');
       if (sd.who === 0) {
         S.hits++; S.streak++; S.bestStreak = Math.max(S.bestStreak, S.streak);
         const bonus = S.streak >= 2 ? Math.min(25, (S.streak - 1) * 5) : 0;
-        S.you += POINTS[r] + bonus;
-        UI.float(hit.x * S.k, (S.rowY[r] - 22) * S.k, label('ss.plus' + r, POINTS[r] + bonus), bonus ? '#ffd24a' : '#8ee070', S.k);
+        S.you += pts + bonus; if (gold) S.golds++;
+        UI.float(hit.x * S.k, (S.rowY[r] - 22) * S.k, label('ss.plus' + r, pts + bonus), bonus || gold ? '#ffd24a' : '#8ee070', S.k);
+        if (gold) UI.float(hit.x * S.k, (S.rowY[r] - 46) * S.k, t('ss.golden'), '#ffd84a', S.k);
         if (S.streak >= 3) UI.float(hit.x * S.k, (S.rowY[r] - 34) * S.k, label('ss.combo', S.streak), '#ffb030', S.k);
       } else {
-        S.tico += POINTS[r];
-        UI.float(hit.x * S.k, (S.rowY[r] - 22) * S.k, label('ss.tico' + r, POINTS[r]), '#ffb3d6', S.k);
+        S.tico += pts;
+        UI.float(hit.x * S.k, (S.rowY[r] - 22) * S.k, label('ss.tico' + r, pts), '#ffb3d6', S.k);
       }
     } else {
-      ripple(sd.x1, S.rowY[r], r === 2);
+      ripple(sd.x1, S.rowY[r], r === 3);
       ctx.sfx('splash');
       if (sd.who === 0) { S.streak = 0; S.reload = Math.max(S.reload, MISS_RELOAD); }
     }
@@ -141,22 +196,63 @@
   /** Tico's turn: he picks a fruit, leads it, and lands it most of the time; faster as the clock runs down. */
   function ticoShoot(ctx) {
     const rr = ctx.rng();
-    let row = rr < 0.2 ? 0 : rr < 0.55 ? 1 : 2, f = null;
+    let row = rr < 0.1 ? 0 : rr < 0.32 ? 1 : rr < 0.64 ? 2 : 3, f = null;
     // his row first, then the others: on a narrow screen there are fewer fruit in view, and Tico must not lose turns
     for (let n = 0; n < ROWS && !f; n++, row = (row + 1) % ROWS) {
       const k0 = (ctx.rng() * S.nPer) | 0;
       for (let k = 0; k < S.nPer && !f; k++) {
-        const c = S.fruit[row * PER_ROW + (k0 + k) % S.nPer], lx = fruitX(c, FLIGHT[row] + 0.08);
-        if (c.on && lx > 16 && lx < S.W - 16 && Math.abs(lx - c.x) < 40) f = c;
+        const c = S.fruit[row * PER_ROW + (k0 + k) % S.nPer], T = FLIGHT[row] + 0.08, lx = fruitX(c, T);
+        if (c.on && lx > 16 && lx < S.W - 16 && Math.abs(lx - c.x) < 40 && hittableAt(c, T) && !flockAt(row, lx, T)) f = c;
       }
       if (f) break;
     }
     if (!f) return false;
     const T = FLIGHT[row] + 0.08, lead = fruitX(f, T);
-    const p = ctx.easy ? 0.5 : 0.62, hit = ctx.rng() < p;
+    const p = ctx.easy ? TICO_P_EASY : TICO_P, hit = ctx.rng() < p;
     const sd = fire(ctx, 1, hit ? lead : lead + (ctx.rng() < 0.5 ? -1 : 1) * (hitR(ctx, row) + 6 + ctx.rng() * 8), row, f);
     if (sd) { sd.hit = hit; S.ticoFlap = 0.35; }
     return true;
+  }
+  /** The swallows, the frog and the fish: they come and go on their own. */
+  function lagoonLife(dt, ctx) {
+    const fl = S.flock;
+    if (fl.on) {
+      fl.x += fl.dir * FLOCK_V * dt; fl.t += dt;
+      if (fl.x < -50 || fl.x > S.W + 50) { fl.on = false; fl.next = (ctx.easy ? 13 : 9) + ctx.rng() * 5; }
+    } else if (fl.warn > 0) {
+      fl.warn -= dt;
+      if (fl.warn <= 0) { fl.on = true; fl.t = 0; fl.x = fl.dir > 0 ? -45 : S.W + 45; ctx.sfx('ssChirp'); }
+    } else if (!S.over) {
+      fl.next -= dt;
+      // a second's warning at the edge they will come from, then they skim across one row (never the very first one)
+      if (fl.next <= 0) { fl.dir = ctx.rng() < 0.5 ? 1 : -1; fl.row = 1 + ((ctx.rng() * 3) | 0); fl.warn = 1.1; }
+    }
+    const fr = S.frog;
+    if (fr.hop > 0) {
+      fr.hop -= dt;
+      if (fr.hop <= 0) { fr.hop = 0; fr.f = fr.to; fr.to = null; if (fr.f) { ripple(fr.f.x, S.rowY[fr.f.row], false); fr.next = 2.5 + ctx.rng() * 3; } else { fr.hidden = true; fr.next = 2 + ctx.rng() * 3; } }
+    } else {
+      // the pad it is on drifts off the edge: it slips under and comes back later
+      if (fr.f && (fr.f.x < 6 || fr.f.x > S.W - 6 || fr.f.on)) { fr.f = null; fr.hidden = true; fr.next = 2 + ctx.rng() * 2; }
+      fr.next -= dt;
+      if (fr.next <= 0) {
+        let best = null, bd = 1e9;
+        const fx = fr.f ? fr.f.x : S.W * (0.25 + ctx.rng() * 0.5), frow = fr.f ? fr.f.row : 2;
+        for (const f of S.fruit) {
+          if (f.on || !f.use || f === fr.f || f.row < 2 || f.x < 20 || f.x > S.W - 20) continue;
+          const d = Math.abs(f.x - fx) + Math.abs(f.row - frow) * 30 + ctx.rng() * 20;
+          if (d < bd && d < 110) { bd = d; best = f; }
+        }
+        if (best) {
+          fr.sx = fr.f ? fr.f.x : best.x + (ctx.rng() < 0.5 ? -20 : 20); fr.sy = fr.f ? S.rowY[fr.f.row] : S.rowY[best.row] + 4;
+          if (fr.hidden) ripple(fr.sx, fr.sy, false);
+          fr.to = best; fr.hop = 0.55; fr.hidden = false; fr.f = null; ctx.sfx('frogCroak');
+        } else fr.next = 0.8;
+      }
+    }
+    const fi = S.fish;
+    if (fi.on) { fi.t += dt; if (fi.t > 0.7) { fi.on = false; ripple(fi.x + fi.dir * 14, fi.y, false); fi.next = 1.5 + ctx.rng() * 3; } }
+    else { fi.next -= dt; if (fi.next <= 0) { fi.on = true; fi.t = 0; fi.dir = ctx.rng() < 0.5 ? 1 : -1; fi.x = 20 + ctx.rng() * (S.W - 40); fi.y = S.rowY[(ctx.rng() * ROWS) | 0] + 10; ripple(fi.x, fi.y, false); } }
   }
   function update(dt, ctx) {
     S.ctx = ctx; layout(ctx);
@@ -172,10 +268,16 @@
     // the fruit drifts (and comes back after it is hit)
     for (let r = 0; r < ROWS; r++) S.rowSpd[r] = rowSpeed(ctx, r);
     for (const f of S.fruit) {
-      f.x = fruitX(f, dt); f.bob += dt;
+      f.x = fruitX(f, dt); f.bob += dt; f.dv += dt;
       if (f.pop > 0) f.pop -= dt;
-      if (!f.on && f.use) { f.gone -= dt; if (f.gone <= 0 && (f.x < -10 || f.x > S.W + 10 || f.gone < -2)) { f.on = true; f.pop = 0; } }
+      if (f.kind === 2) {
+        const was = f.under; f.under = !hittableAt(f, 0);
+        if (f.on && was !== f.under && f.x > 0 && f.x < S.W) ripple(f.x, S.rowY[f.row], f.row === 3);
+      } else f.under = false;
+      // a fruit comes back on its pad (off screen, or after a while), unless the frog is sitting there
+      if (!f.on && f.use && S.frog.f !== f && S.frog.to !== f) { f.gone -= dt; if (f.gone <= 0 && (f.x < -10 || f.x > S.W + 10 || f.gone < -1.5)) { f.on = true; f.pop = 0; newKind(f, ctx); if (f.x > 0 && f.x < S.W) ripple(f.x, S.rowY[f.row], false); } }
     }
+    lagoonLife(dt, ctx);
     for (const sd of S.seeds) if (sd.on) { sd.t += dt; if (sd.t >= sd.T) { sd.on = false; land(ctx, sd); } }
     for (const p of S.rips) if (p.on) { p.t += dt; if (p.t > 0.8) p.on = false; }
     // Tico: steady at first, quicker near the end
@@ -183,7 +285,7 @@
     if (S.ticoT <= 0 && !S.over) {
       // nothing in view: he looks again in a moment instead of waiting a whole turn
       if (!ticoShoot(ctx)) S.ticoT = 0.3;
-      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.5, b = ctx.easy ? 2.6 : 1.6; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3); }
+      else { const k = S.time / TIME, a = ctx.easy ? TICO_A_EASY : TICO_A, b = ctx.easy ? TICO_B_EASY : TICO_B; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3); }
     }
     if (S.auto) bot(dt, ctx);
     if (!S.over && S.time >= TIME) {
@@ -196,7 +298,7 @@
   function end(ctx) {
     S.finishWait = 0;
     S.won = S.you > S.tico;
-    const stars = S.won ? 1 + (S.you >= 1700 ? 1 : 0) + (S.you >= 2300 ? 1 : 0) : 0;
+    const stars = S.won ? 1 + (S.you >= 2300 ? 1 : 0) + (S.you >= 3000 ? 1 : 0) : 0;
     const frac = S.won ? [0.34, 0.67, 1][stars - 1] : clamp(S.you / Math.max(1, S.tico), 0, 1) * 0.32;
     UI.banner(t(S.won ? 'ss.youWin' : 'ss.ticoWins'), S.won ? PAL.r4 : '#ffb3d6', 1.2);
     ctx.sfx(S.won ? 'cheer' : 'miss');
@@ -209,31 +311,36 @@
     let best = null, bv = -1;
     for (const f of S.fruit) {
       if (!f.on) continue;
-      const lx = fruitX(f, FLIGHT[f.row]);
+      const T = FLIGHT[f.row], lx = fruitX(f, T);
       if (lx < 12 || lx > S.W - 12) continue;
-      const v = POINTS[f.row] - Math.abs(lx - S.aimX) * 0.1;
+      // a careful bot also checks the fruit will be up and the swallows away when its seed lands; a human-like one
+      // (sigma) only sees what is happening now
+      if (S.sigma ? f.under || flockAt(f.row, f.x, 0) : !hittableAt(f, T) || flockAt(f.row, lx, T)) continue;
+      const v = POINTS[f.row] * (f.kind === 1 ? 2 : 1) * (S.sigma ? S.botRowK[f.row] : 1) - Math.abs(lx - S.aimX) * 0.1;
       if (v > bv) { bv = v; best = f; }
     }
     if (!best) return;
     // a careful bot leads exactly; a human-like one (sigma) leads about half as much and wobbles by up to sigma px
     const lead = fruitX(best, FLIGHT[best.row]), now = best.x;
-    S.aimRow = best.row; S.aimX = clamp(S.sigma ? lerp(now, lead, 0.6) + (Math.random() * 2 - 1) * S.sigma : lead, 10, S.W - 10);
+    // a human-like bot wobbles more the farther the row is (sigma px at the near row, up to twice that at the back)
+    const wob = S.sigma * (1 + (ROWS - 1 - best.row) * 0.33);
+    S.aimRow = best.row; S.aimX = clamp(S.sigma ? lerp(now, lead, 0.6) + (Math.random() * 2 - 1) * wob : lead, 10, S.W - 10);
     shoot(ctx); S.autoT = S.sigma ? 1.5 : 0.9;
   }
 
   /* ---------- input: pull back and let go (touch / mouse), or keys ---------- */
   function pullAim() {
     // sideways pull aims the other way; pulling down picks a farther row
-    const px = S.sx - S.pullX, py = S.pullY - S.sy, step = Math.max(12, Math.min(26, (S.H - S.lagBot) * 0.5));
+    const px = S.sx - S.pullX, py = S.pullY - S.sy, step = Math.max(11, Math.min(22, (S.H - S.lagBot) * 0.42));
     S.aimX = clamp(S.slX + px * 2.4, 10, S.W - 10);
     S.aimOn = py >= 6;
-    S.aimRow = py < 6 + step ? 2 : py < 6 + step * 2 ? 1 : 0;
+    S.aimRow = py < 6 + step ? 3 : py < 6 + step * 2 ? 2 : py < 6 + step * 3 ? 1 : 0;
   }
   function onInput(e, ctx) {
     if (e.type === 'press') {
       if (e.key === 'a') shoot(ctx);
       else if (e.key === 'up') { S.aimRow = Math.max(0, S.aimRow - 1); S.aimOn = true; ctx.sfx('blip'); }
-      else if (e.key === 'down') { S.aimRow = Math.min(2, S.aimRow + 1); S.aimOn = true; ctx.sfx('blip'); }
+      else if (e.key === 'down') { S.aimRow = Math.min(ROWS - 1, S.aimRow + 1); S.aimOn = true; ctx.sfx('blip'); }
     } else if (e.type === 'down') {
       S.drag = true; S.dragId = e.id; S.sx = e.x / S.k; S.sy = e.y / S.k; S.pullX = S.sx; S.pullY = S.sy; S.aimOn = false;
     } else if (e.type === 'move' && S.drag && e.id === S.dragId) {
@@ -273,7 +380,7 @@
   function buildPads() {
     // a lily pad per row (smaller with distance), with the notch and a highlight
     S.pads = [];
-    const sz = [[8, 2], [12, 3], [15, 4]];
+    const sz = [[7, 2], [8, 2], [12, 3], [15, 4]];
     for (let r = 0; r < ROWS; r++) {
       const kp = S.kr[r] / BASE_K[r], rx = Math.round(sz[r][0] * kp), ry = Math.round(sz[r][1] * kp), c = JC.canvas2(rx * 2 + 3, ry * 2 + 3), g = c.getContext('2d');
       JC.draw.oval(g, rx + 1, ry + 1, rx + 1, ry + 1, '#123524'); JC.draw.oval(g, rx + 1, ry + 1, rx, ry, '#3d9a2e'); JC.draw.oval(g, rx, ry, rx - 2, Math.max(1, ry - 1), '#6ad34a');
@@ -315,6 +422,51 @@
     rect(g, px - 2, py - 1, 5, 3, '#5e3a20');
     if (S.reload <= 0) spr(g, SPRITES.ss_seed, px - 2, py - 3);
   }
+  /** A diver: up on its pad, then sinking (pad and fruit dip under), a ring of bubbles while it is under, and a pop up. */
+  function drawDiver(g, f, x, y, bob, pad, sp, k) {
+    const ph = divePh(f, 0), D = JC.draw;
+    // how far under (0 = up, 1 = all the way under)
+    const u = ph < 2.35 ? 0 : ph < 2.6 ? (ph - 2.35) / 0.25 : ph < 3.1 ? 1 : ph < 3.2 ? 1 - (ph - 3.1) / 0.1 : 0;
+    const shake = ph > 2.0 && ph < 2.35 ? (((S.time * 30) | 0) % 2) : 0;   // a little wobble just before it dives
+    if (u < 1) {
+      g.globalAlpha = 1 - u * 0.7; g.drawImage(pad.c, x - (pad.w >> 1), y - (pad.h >> 1) + bob); g.globalAlpha = 1;
+      const hv = Math.max(1, Math.round(sp.h * (1 - u)));
+      g.drawImage(sp.c, 0, 0, sp.w, hv, x - ((sp.w * k) >> 1) + shake, y - hv * k + 1 + bob, sp.w * k, hv * k);
+    } else {
+      // bubbles where it went down
+      for (let i = 0; i < 3; i++) { const by = y - 1 - (((S.time * 8 + i * 3) | 0) % 6), bx = x - 4 + i * 4; rect(g, bx, by, 1, 1, '#c8f6ff'); }
+      g.globalAlpha = 0.45; D.oval(g, x, y, 6, 2, '#c8f6ff'); g.globalAlpha = 1;
+    }
+  }
+  function drawFrog(g) {
+    const fr = S.frog; if (fr.hidden) return;
+    if (fr.hop > 0 && fr.to) {
+      const u = 1 - fr.hop / 0.55, tx = fr.to.x, ty = S.rowY[fr.to.row];
+      const x = Math.round(lerp(fr.sx, tx, u)), y = Math.round(lerp(fr.sy, ty, u) - Math.sin(u * Math.PI) * 18);
+      g.globalAlpha = 0.3; JC.draw.oval(g, Math.round(lerp(fr.sx, tx, u)), Math.round(lerp(fr.sy, ty, u)) + 1, 3, 1, '#000'); g.globalAlpha = 1;
+      spr(g, SPRITES.ss_frogHop, x - 4, y - 7, tx < fr.sx);
+    } else if (fr.f) {
+      const f = fr.f, x = Math.round(f.x), y = S.rowY[f.row] + Math.round(Math.sin(f.bob * 2.4 + f.i) * 0.8);
+      const blink = ((S.time + f.i) % 4) < 0.15 ? 1 : 0;
+      spr(g, SPRITES.ss_frog, x - 4, y - 6 + blink);
+    }
+  }
+  function drawFlock(g) {
+    const fl = S.flock;
+    if (fl.warn > 0 && !S.over) {
+      // a flapping swallow and a "!" at the edge they are coming from, on their row
+      const y = S.rowY[fl.row] - 18, x = fl.dir > 0 ? 10 : S.W - 10;
+      if (((fl.warn * 8) | 0) % 2) { sprK(g, SPRITES.ss_swallow1, x - 9, y - 4, 2, fl.dir < 0); text(g, '!', x + (fl.dir > 0 ? 13 : -13), y - 6, WARNLBL); }
+    }
+    if (!fl.on) return;
+    const y0 = S.rowY[fl.row] - 14, fr = ((fl.t * 10) | 0) % 2;
+    // their shadow on the water: the strip where a seed would be snapped up
+    g.globalAlpha = 0.18; rect(g, Math.round(fl.x - FLOCK_W), S.rowY[fl.row] - 1, FLOCK_W * 2, 3, '#0e2a4f'); g.globalAlpha = 1;
+    for (let i = 0; i < FLOCK_DX.length; i++) {
+      const x = Math.round(fl.x + FLOCK_DX[i] * fl.dir), y = Math.round(y0 + FLOCK_DY[i] + Math.sin(fl.t * 9 + i) * 1.5);
+      sprK(g, (fr + i) % 2 ? SPRITES.ss_swallow1 : SPRITES.ss_swallow2, x - 9, y - 4, 2, fl.dir < 0);
+    }
+  }
   function draw(g, ctx) {
     S.ctx = ctx; layout(ctx);
     if (S.bgGen !== VIEW.gen || !S.bg || S.bgK !== S.k || S.bg.width !== S.W) { buildBg(ctx); S.bgK = S.k; }
@@ -334,8 +486,15 @@
       for (const f of S.fruit) {
         if (f.row !== r || !f.use) continue;
         const x = Math.round(f.x), bob = Math.round(Math.sin(f.bob * 2.4 + f.i) * 0.8);
+        if (f.on && f.kind === 2) { drawDiver(g, f, x, y, bob, pad, sp, k); continue; }
         g.drawImage(pad.c, x - (pad.w >> 1), y - (pad.h >> 1) + bob);
-        if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
+        if (f.on && f.kind === 1) {
+          // golden: a soft glow, the shiny fruit and a twinkle
+          const gs = SPRITES.ss_golden, gk = r < 2 ? 1 : 2, gl = 0.25 + 0.15 * Math.sin(S.time * 6 + f.i);
+          g.globalAlpha = gl; D.disc(g, x, y - ((gs.h * gk) >> 1), 6 + gk * 3, '#fff3a8'); g.globalAlpha = 1;
+          sprK(g, gs, x - ((gs.w * gk) >> 1), y - gs.h * gk + 1 + bob, gk);
+          if (((S.time * 3 + f.i) | 0) % 3 === 0) spr(g, SPRITES.sparkle, x + 3 + gk * 2, y - gs.h * gk - 3);
+        } else if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
         else if (f.pop > 0) { const kk = f.pop / 0.5; g.globalAlpha = kk; spr(g, SPRITES.sparkle, x - 2, y - 14 - (1 - kk) * 14); g.globalAlpha = 1; }
       }
       // row value tag at the left edge
@@ -348,7 +507,10 @@
       // a dotted arc from the slingshot to the ring
       if (S.drag) { for (let i = 1; i < 10; i++) { const k = i / 10, ax = lerp(S.slX, x, k), ay = lerp(S.slY - 40, y, k) - Math.sin(k * Math.PI) * 26; rect(g, ax, ay, 1, 1, '#fff8e8'); } }
     }
+    drawFrog(g);
+    if (S.fish.on) { const fi = S.fish, u = fi.t / 0.7, fx = Math.round(fi.x + fi.dir * u * 14), fy = Math.round(fi.y - Math.sin(u * Math.PI) * 12); spr(g, SPRITES.ss_fish, fx - 3, fy - 2, fi.dir < 0); }
     for (const p of S.rips) if (p.on) { const rr = 2 + p.t * (p.big ? 18 : 12); g.globalAlpha = 1 - p.t / 0.8; D.oval(g, p.x, p.y, Math.round(rr), Math.max(1, Math.round(rr * 0.35)), '#c8f6ff'); D.oval(g, p.x, p.y, Math.max(0, Math.round(rr) - 1), Math.max(0, Math.round(rr * 0.35) - 1), '#3398b4'); g.globalAlpha = 1; }
+    drawFlock(g);
     // Tico on his post, Cappy at the slingshot
     const tf = S.ticoFlap > 0 ? 'ss_tico2' : 'ss_tico1', tb = S.ticoFlap > 0 ? 0 : (((S.time * 2) | 0) % 2);
     sprK(g, SPRITES[tf], S.tcX - 16, S.tcY - 18 - 36 + tb, 2, true);
@@ -375,6 +537,8 @@
   }
 
   /* ---------- sound ---------- */
+  AUDIO.addSfx('ssChirp', (tt, b) => { const P = AUDIO.prims; P.tone(b, 'square', 1800, tt, 0.05, 0.08, 2600); P.tone(b, 'square', 2100, tt + 0.07, 0.05, 0.07, 2900); P.tone(b, 'square', 1700, tt + 0.15, 0.05, 0.06, 2400); });
+  AUDIO.addSfx('ssGold', (tt, b) => { const P = AUDIO.prims; P.tone(b, 'square', 988, tt, 0.07, 0.15); P.tone(b, 'square', 1319, tt + 0.07, 0.16, 0.15); P.tone(b, 'triangle', 1976, tt + 0.07, 0.2, 0.08); });
   AUDIO.addSfx('pop', (tt, b) => { const P = AUDIO.prims; P.tone(b, 'square', 520, tt, 0.06, 0.18, 1040); P.tone(b, 'square', 1040, tt + 0.05, 0.08, 0.14, 1560); P.noise(b, tt, 0.06, 0.15, 'highpass', 3000); });
   AUDIO.songs.seed = { bpm: 124, steps: 32, leadWave: 'square', harmWave: 'triangle', swing: 0.14,
     lead: 'C5 . E5 G5 . E5 C5 . D5 . F5 A5 . F5 D5 . E5 . G5 C6 . G5 E5 . D5 . B4 G4 . . . .',
@@ -389,9 +553,11 @@
     start(ctx) {
       S.ctx = ctx; S.W = 0; layout(ctx);
       S.time = 0; S.you = 0; S.tico = 0; S.hits = 0; S.shots = 0; S.streak = 0; S.bestStreak = 0; S.over = false; S.won = false; S.finishWait = 0;
-      S.aimX = S.slX; S.aimRow = 1; S.aimOn = true; S.drag = false; S.reload = 0; S.auto = false; S.autoT = 0; S.sigma = 0;
+      S.aimX = S.slX; S.aimRow = 2; S.aimOn = true; S.drag = false; S.reload = 0; S.auto = false; S.autoT = 0; S.sigma = 0; S.golds = 0; S.snacks = 0;
+      S.flock.on = false; S.flock.warn = 0; S.flock.next = ctx.easy ? 12 : 8; S.fish.on = false; S.fish.next = 1.5;
+      S.frog.f = null; S.frog.to = null; S.frog.hop = 0; S.frog.hidden = true; S.frog.next = 3;
       S.ticoT = ctx.easy ? 3.2 : 2.4; S.ticoFlap = 0; S.cappyRecoil = 0; S.hint = ctx.firstTime ? 1.8 : 0.8;
-      for (const f of S.fruit) { f.on = f.use; f.gone = f.use ? 0 : 1e9; f.pop = 0; f.bob = Math.random() * 3; }
+      for (const f of S.fruit) { f.on = f.use; f.gone = f.use ? 0 : 1e9; f.pop = 0; f.bob = Math.random() * 3; newKind(f, ctx); if (f.kind === 1 && f.row === 3) f.kind = 0; }
       for (const s of S.seeds) s.on = false;
       for (const p of S.rips) p.on = false;
     },
@@ -401,13 +567,20 @@
     outro(dt, ctx) { for (const sd of S.seeds) if (sd.on) { sd.t += dt; if (sd.t >= sd.T) sd.on = false; } for (const p of S.rips) if (p.on) { p.t += dt; if (p.t > 0.8) p.on = false; } },
     testState() {
       return { k: S.k, you: S.you, tico: S.tico, time: Math.round(S.time * 100) / 100, hits: S.hits, shots: S.shots, streak: S.streak, aimX: Math.round(S.aimX), aimRow: S.aimRow,
-        aimOn: S.aimOn, drag: S.drag, reload: S.reload > 0, over: S.over, won: S.won, auto: S.auto, slX: S.slX, slY: S.slY, rowY: S.rowY.slice(),
-        fruit: S.fruit.filter(f => f.on).map(f => ({ row: f.row, x: Math.round(f.x) })), seeds: S.seeds.filter(s => s.on).length };
+        aimOn: S.aimOn, drag: S.drag, reload: S.reload > 0, over: S.over, won: S.won, auto: S.auto, slX: S.slX, slY: S.slY, rowY: S.rowY.slice(), rows: ROWS,
+        fruit: S.fruit.filter(f => f.on).map(f => ({ row: f.row, x: Math.round(f.x), kind: ['plain', 'golden', 'diver'][f.kind], under: f.under })), seeds: S.seeds.filter(s => s.on).length,
+        golds: S.golds, snacks: S.snacks, flock: S.flock.on ? { row: S.flock.row, x: Math.round(S.flock.x) } : null, flockWarn: S.flock.warn > 0,
+        frog: S.frog.hidden ? null : { hopping: S.frog.hop > 0 }, fish: S.fish.on };
     },
     test: {
       auto(ctx, on, sigma) { S.auto = !!on; S.sigma = +sigma || 0; S.autoT = 0; return S.auto; },
+      /** Bring the swallows now (on a row), or a golden fruit into view: so a test sees them without waiting. */
+      flock(ctx, row) { const fl = S.flock; fl.on = false; fl.dir = 1; fl.row = row === undefined ? 2 : row; fl.warn = 0.05; fl.next = 99; return true; },
+      /** Make the fruit that lead(row) aims at golden. */
+      golden(ctx, row) { let best = null, bx = 0; for (const f of S.fruit) if (f.on && f.row === row && hittableAt(f, FLIGHT[row])) { const x = fruitX(f, FLIGHT[row]); if (x > 20 && x < S.W - 20 && (!best || Math.abs(x - S.slX) < Math.abs(bx - S.slX))) { best = f; bx = x; } } if (best) { best.kind = 1; best.under = false; } return !!best; },
+      lifeOff(ctx) { S.flock.next = 999; S.flock.on = false; S.flock.warn = 0; for (const f of S.fruit) if (f.kind === 2) f.kind = 0; return true; },
       /** Where a fruit in a row will be after its seed's flight time (to aim like a careful player). */
-      lead(ctx, row) { let best = null; for (const f of S.fruit) if (f.on && f.row === row) { const x = fruitX(f, FLIGHT[row]); if (x > 20 && x < S.W - 20 && (!best || Math.abs(x - S.slX) < Math.abs(best - S.slX))) best = x; } return best === null ? null : Math.round(best); },
+      lead(ctx, row) { let best = null; for (const f of S.fruit) if (f.on && f.row === row && hittableAt(f, FLIGHT[row])) { const x = fruitX(f, FLIGHT[row]); if (x > 20 && x < S.W - 20 && (!best || Math.abs(x - S.slX) < Math.abs(best - S.slX))) best = x; } return best === null ? null : Math.round(best); },
       ticoOff(ctx) { S.ticoT = 999; return true; },
     },
     cheat(won) { S.you = won ? 1500 : 400; S.tico = won ? 900 : 1100; S.over = true; S.won = won; return { score: S.you, stars: won ? 2 : 0, won, frac: won ? 0.67 : 0.12 }; },

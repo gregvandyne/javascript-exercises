@@ -1,0 +1,20 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N.de = Object.assign(I18N.de || {}, {
+  "sport.seed.goal": "Triff das schwimmende Obst vor Tico! Nahes Obst gibt 50, dann 75, 100 und 150 für die Sternfrucht ganz hinten. Goldenes Obst zählt doppelt. Pass auf Obst auf, das abtaucht, und auf die Schwalben! Hol in 60 Sekunden mehr Punkte als Tico.",
+  "ss.golden": "Golden!",
+  "ss.snack": "Schwalben-Snack!",
+  "sport.rapids.goal": "Fahr mit den Otter-Zwillingen 1.350 m den Fluss hinunter um die Wette! Spring über Baumstämme und kleine Wasserfälle, duck dich unter Ästen und Ranken, weich Felsen, Strudeln und Biberdämmen aus und nutz das schnelle Wasser. Komm als Erster an!",
+  "rap.sec0": "Faule Biegung",
+  "rap.sec1": "Krokodilbach",
+  "rap.sec2": "Biberwald",
+  "rap.sec3": "Wasserfall-Strecke",
+  "rap.tipwhirl": "Strudel! Lenk drumherum",
+  "rap.tipdam": "Biberdamm! Finde die Lücke",
+  "rap.tipfall": "Wasserfall! Spring für einen Riesensprung",
+  "rap.tiproll": "Rollender Stamm! Spring oder weich aus",
+  "rap.tipchan": "Schnelles Wasser! Bleib bei den Pfeilen",
+  "rap.tipvine": "Ranken! Duck dich drunter",
+  "rap.spin": "Wirbel!",
+  "rap.bigDrop": "Riesensprung!",
+  "rap.fast": "Schnelles Wasser!",
+});

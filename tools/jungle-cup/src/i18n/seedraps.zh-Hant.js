@@ -1,0 +1,21 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
+  "sport.seed.goal": "搶在提可之前打中漂浮的水果！近的值 50 分，再來是 75、100，最後面的楊桃值 150 分。金色水果分數加倍。小心會潛下水的水果和燕子！60 秒內得分比提可高。",
+  "ss.golden": "金色！",
+  "ss.snack": "燕子點心！",
+  "sport.rapids.goal": "跟水獺雙胞胎比賽順流而下 1350 公尺！跳過木頭和小瀑布，從樹枝和藤蔓下鑽過，繞開石頭、漩渦和河狸水壩，還要搭上急流。第一個衝線！",
+  "rap.sec0": "慵懶河彎",
+  "rap.sec1": "鱷魚溪",
+  "rap.sec2": "河狸樹林",
+  "rap.sec3": "瀑布水道",
+  "rap.tipwhirl": "漩渦！繞過去",
+  "rap.tipdam": "河狸水壩！找到缺口",
+  "rap.tipfall": "瀑布！跳起來大飛躍",
+  "rap.tiproll": "滾動的木頭！跳過或閃開",
+  "rap.tipchan": "急流！待在箭頭裡",
+  "rap.tipvine": "藤蔓！低頭鑽過",
+  "rap.spin": "轉圈！",
+  "rap.bigDrop": "大飛躍！",
+  "rap.fast": "急流！",
+  "ss.tico3": "提可 +{n}",
+});
