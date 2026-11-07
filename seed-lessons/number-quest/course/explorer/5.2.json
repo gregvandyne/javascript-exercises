@@ -8,7 +8,7 @@
  "slides": [
   {
    "title": "The timetable wall",
-   "text": "The Measure Shop keeps every bus, train and lesson on one big timetable wall. Tally's rule is painted over it: a time tells where, but a duration tells how long.",
+   "text": "The Measure Shop keeps every bus, train and lesson on one big timetable wall. Tally's rule is painted over it: a time tells when, but a duration tells how long.",
    "art": "clock"
   },
   {
@@ -159,8 +159,68 @@
   },
   {
    "title": "Reading a timetable",
-   "text": "A timetable is a chart of starts. Find the row for your bus, then hop forward by its ride time. The wall's hardest rows cross an hour, and the hop handles them the same way.",
-   "art": "table"
+   "text": "A timetable is a chart of starts. Find the row for your bus, then hop forward by its ride time. Bus C leaves at 10:50 and rides 15 minutes: 10 minutes reach 11:00, and 5 more land on 11:05.",
+   "art": "table",
+   "visual": {
+    "type": "table",
+    "label": "The bus timetable",
+    "head": [
+     "Bus",
+     "Leaves",
+     "Ride",
+     "Arrives"
+    ],
+    "rows": [
+     [
+      "A",
+      "9:10",
+      "20 min",
+      "9:30"
+     ],
+     [
+      "B",
+      "9:45",
+      "25 min",
+      "10:10"
+     ],
+     [
+      "C",
+      "10:50",
+      "15 min",
+      "11:05"
+     ]
+    ],
+    "mark": 2
+   },
+   "focus": [
+    {
+     "cue": "Find your row: Bus C leaves at 10:50.",
+     "box": [
+      5,
+      60.3,
+      46,
+      16.7
+     ]
+    },
+    {
+     "cue": "Its ride takes 15 minutes.",
+     "box": [
+      49,
+      60.3,
+      24,
+      16.7
+     ]
+    },
+    {
+     "cue": "10:50, hop 10 to 11:00, then 5 more: it arrives at 11:05.",
+     "box": [
+      71,
+      60.3,
+      24,
+      16.7
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: the long film",

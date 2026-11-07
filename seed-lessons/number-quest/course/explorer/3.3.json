@@ -12,16 +12,16 @@
    "art": "lightbulb",
    "visual": {
     "type": "tiles",
-    "label": "Doubling tricks: 7 x 2, 7 x 4, 7 x 8",
+    "label": "Doubling tricks: 7 × 2, 7 × 4, 7 × 8",
     "values": [
-     "7x2=14",
-     "7x4=28",
-     "7x8=56"
+     "7×2=14",
+     "7×4=28",
+     "7×8=56"
     ]
    },
    "focus": [
     {
-     "cue": "Start from a fact you know: 7 x 2 = 14.",
+     "cue": "Start from a fact you know: 7 × 2 = 14.",
      "box": [
       5,
       30.4,
@@ -30,7 +30,7 @@
      ]
     },
     {
-     "cue": "Double and double again: 7 x 8 = 56.",
+     "cue": "Double and double again: 7 × 8 = 56.",
      "box": [
       65,
       30.4,
@@ -43,20 +43,20 @@
   {
    "kind": "example",
    "title": "Rough first, then build",
-   "text": "Rough first: 9 x 7 is a bit under 70. Build it from the easy fact 9 x 5.",
+   "text": "Rough first: 9 × 7 is a bit under 70. Build it from the easy fact 9 × 5.",
    "art": "lightbulb",
    "steps": [
-    "9 x 5 = 45, the easy part",
-    "9 x 2 = 18, the rest of the 7",
+    "9 × 5 = 45, the easy part",
+    "9 × 2 = 18, the rest of the 7",
     "45 + 18 = 63",
-    "so 9 x 7 = 63"
+    "so 9 × 7 = 63"
    ],
    "visual": {
     "type": "bars",
-    "label": "Building 9 x 7 from 9 x 5: 45 plus 18 makes 63",
+    "label": "Building 9 × 7 from 9 × 5: 45 plus 18 makes 63",
     "rows": [
      {
-      "label": "The easy part: 9 x 5 = 45",
+      "label": "The easy part: 9 × 5 = 45",
       "parts": [
        {
         "w": 0.7142857142857143,
@@ -66,7 +66,7 @@
       ]
      },
      {
-      "label": "The rest of the 7: 9 x 2 = 18",
+      "label": "The rest of the 7: 9 × 2 = 18",
       "parts": [
        {
         "w": 0.2857142857142857,
@@ -94,7 +94,7 @@
    },
    "focus": [
     {
-     "cue": "Start with a fact you know: 9 x 5 = 45.",
+     "cue": "Start with a fact you know: 9 × 5 = 45.",
      "box": [
       5,
       3.4,
@@ -103,7 +103,7 @@
      ]
     },
     {
-     "cue": "Add the rest: 45 + 18 = 63, so 9 x 7 = 63.",
+     "cue": "Add the rest: 45 + 18 = 63, so 9 × 7 = 63.",
      "box": [
       5,
       63.9,
@@ -115,20 +115,20 @@
   },
   {
    "title": "Facts travel in families",
-   "text": "Multiplication and division are one family. If 5 x 9 = 45, then 45 shared by 9 is 5, and 45 shared by 5 is 9.",
+   "text": "Multiplication and division are one family. If 5 × 9 = 45, then 45 shared by 9 is 5, and 45 shared by 5 is 9.",
    "art": "people",
    "visual": {
     "type": "tiles",
-    "label": "One fact family from 5 x 9 = 45",
+    "label": "One fact family from 5 × 9 = 45",
     "values": [
-     "5x9=45",
-     "45/9=5",
-     "45/5=9"
+     "5×9=45",
+     "45÷9=5",
+     "45÷5=9"
     ]
    },
    "focus": [
     {
-     "cue": "One family of facts: 5 x 9 = 45.",
+     "cue": "One family of facts: 5 × 9 = 45.",
      "box": [
       5,
       30.4,
@@ -149,25 +149,25 @@
   },
   {
    "title": "The Jumble races itself",
-   "text": "The Jumble tried to race by memorizing every fact alone. It mixed up 7 x 8 for a week, until it learned the trick: double 7 x 4.",
+   "text": "The Jumble tried to race by memorizing every fact alone. It mixed up 7 × 8 for a week, until it learned the trick: double 7 × 4.",
    "art": "bug"
   },
   {
    "title": "Stretch: Doubling chains",
-   "text": "Doubling is a ladder. 6 x 8 is double 6 x 4, and 6 x 4 is double 6 x 2. Climb down to a fact you know, then climb back up.",
+   "text": "Doubling is a ladder. 6 × 8 is double 6 × 4, and 6 × 4 is double 6 × 2. Climb down to a fact you know, then climb back up.",
    "art": "star",
    "visual": {
     "type": "tiles",
-    "label": "Doubling chain: 6 x 2, 6 x 4, then 6 x 8",
+    "label": "Doubling chain: 6 × 2, 6 × 4, then 6 × 8",
     "values": [
-     "6x2=12",
-     "6x4=24",
-     "6x8=48"
+     "6×2=12",
+     "6×4=24",
+     "6×8=48"
     ]
    },
    "focus": [
     {
-     "cue": "Climb down to a fact you know: 6 x 2 = 12.",
+     "cue": "Climb down to a fact you know: 6 × 2 = 12.",
      "box": [
       5,
       30.4,
@@ -176,7 +176,7 @@
      ]
     },
     {
-     "cue": "Climb back up: double 24 and 6 x 8 = 48.",
+     "cue": "Climb back up: double 24 and 6 × 8 = 48.",
      "box": [
       65,
       30.4,

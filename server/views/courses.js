@@ -5,6 +5,7 @@ import { html, raw, jsonData } from './html.js';
 import { coverArt } from './components.js';
 import { current } from '../i18n/index.js';
 import * as C from '../services/courses.js';
+import { DIAGRAM_TYPES, diagramSvg, diagramExtent } from './nq-diagrams.js';
 
 const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', emoji: '🚀' }, explorer: { key: 'explorer', emoji: '🧭' } };
 export const bandName = (t, band) => t(`courses.band.${BAND_INFO[band].key}`);
@@ -384,6 +385,7 @@ function visualExtent(v) {
     return [v.label ? tTop(10, labelFs(v.label)) : shapes ? 14 : 18, shapes ? 44 : v.bad != null ? tBot(40, 3.4) : 33];
   }
   if (v.type === 'shapes') return [9, tBot(48, shapeNameFs(v))];
+  if (DIAGRAM_TYPES.has(v.type)) return diagramExtent(v); // grid, squares, lines, chart, table: views/nq-diagrams.js
   return [0, 56.25];
 }
 /** The diagram's content band [y0, y1] in the 100 x 56.25 space: the drawing with a margin, grown to hold
@@ -522,6 +524,7 @@ function visualSvg(v, f) {
     }).join('') + (v.label ? tx(50, 10, v.label, labelFs(v.label), 'middle', 700) : '');
   }
   else if (v.type === 'shapes') body = shapesBody(v, tx, ink);
+  else if (DIAGRAM_TYPES.has(v.type)) body = raw(diagramSvg(v));
   return raw(`<svg class="vf-svg" viewBox="0 ${f.y0} 100 ${f.fh}" role="img" aria-label="${String(v.label || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
 }
 /** A shapes diagram's one name size: the longest name sets it (one text size per row). */

@@ -9,7 +9,54 @@
   {
    "title": "Lines that never meet",
    "text": "The yard paints two kinds of lines on every plan. Parallel lines run side by side and never meet, like rails. Perpendicular lines cross at a square corner, like the corner of a door.",
-   "art": "map"
+   "art": "map",
+   "visual": {
+    "type": "lines",
+    "label": "Two parallel lines, two perpendicular lines meeting at a square corner, and two lines that just cross",
+    "items": [
+     {
+      "kind": "parallel",
+      "name": "parallel"
+     },
+     {
+      "kind": "perpendicular",
+      "name": "perpendicular"
+     },
+     {
+      "kind": "crossing",
+      "name": "just crossing"
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Parallel: side by side, the same distance apart, never meeting.",
+     "box": [
+      6.5,
+      12.6,
+      28.3,
+      70.6
+     ]
+    },
+    {
+     "cue": "Perpendicular: they cross at a square corner, like a door.",
+     "box": [
+      35.8,
+      12.6,
+      28.3,
+      70.6
+     ]
+    },
+    {
+     "cue": "These cross, but not at a square corner: neither kind.",
+     "box": [
+      65.2,
+      12.6,
+      28.3,
+      70.6
+     ]
+    }
+   ]
   },
   {
    "title": "Symmetry is a fold",
@@ -67,37 +114,52 @@
   },
   {
    "title": "Worked example: the treasure grid",
-   "text": "Rough first: the first number is probably the sideways walk, because addresses are read left to right. The treasure sits at (3, 2). Walk 3 steps right, then climb 2 steps up, in that order.",
+   "text": "Rough first: the first number is probably the sideways walk, because addresses are read left to right. Every walk starts at (0, 0), the corner. The treasure sits at (3, 2): walk 3 steps right, then climb 2 steps up.",
    "art": "map",
    "kind": "example",
    "steps": [
+    "Start at (0, 0), the corner",
     "First number: 3 steps right",
     "Second number: 2 steps up",
     "The treasure sits at (3, 2)"
    ],
    "visual": {
-    "type": "array",
-    "label": "Grid address (3, 2): 3 right, then 2 up",
+    "type": "grid",
+    "label": "A grid with numbered axes from (0, 0): the walk to (3, 2) goes 3 right along the bottom, then 2 up",
+    "cols": 5,
     "rows": 4,
-    "cols": 5
+    "point": {
+     "x": 3,
+     "y": 2
+    },
+    "walk": true
    },
    "focus": [
     {
-     "cue": "First number 3: walk right to the third column.",
+     "cue": "Every walk starts at (0, 0), where the two number lines meet.",
      "box": [
-      47,
-      20.1,
-      6.1,
-      55.9
+      18.3,
+      81.8,
+      13.8,
+      15.7
      ]
     },
     {
-     "cue": "Second number 2: climb up to the second row. The treasure sits here.",
+     "cue": "First number 3: walk 3 steps right along the bottom.",
      "box": [
-      47,
-      50.3,
-      6.1,
-      10.5
+      29,
+      74.5,
+      27.1,
+      22.9
+     ]
+    },
+    {
+     "cue": "Second number 2: climb 2 steps up. The treasure sits at (3, 2).",
+     "box": [
+      51.1,
+      44.3,
+      16.0,
+      32.4
      ]
     }
    ]

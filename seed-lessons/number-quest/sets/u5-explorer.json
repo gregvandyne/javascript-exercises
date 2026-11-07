@@ -28,7 +28,7 @@
     "used 10 grams in a kilogram, not 1,000",
     "changed the unit's name but not the number"
    ],
-   "why": "One kilogram is 1,000 grams, so 4 kilograms is 4 x 1,000 = 4,000 grams. A bigger count goes with the smaller unit."
+   "why": "One kilogram is 1,000 grams, so 4 kilograms is 4 × 1,000 = 4,000 grams. A bigger count goes with the smaller unit."
   },
   {
    "id": "nq-explorer-5.1-e2",
@@ -52,7 +52,7 @@
     "added one zero too many",
     "glued the numbers together instead of multiplying"
    ],
-   "why": "One meter is 100 centimeters, so 3 meters is 3 x 100 = 300 centimeters."
+   "why": "One meter is 100 centimeters, so 3 meters is 3 × 100 = 300 centimeters."
   },
   {
    "id": "nq-explorer-5.1-e3",
