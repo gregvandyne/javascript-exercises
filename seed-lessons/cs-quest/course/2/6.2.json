@@ -101,21 +101,21 @@
    "alt": "Fixes for Tao: test with people of many ages, skin tones and faces, and always offer a passcode as another way in.",
    "focus": [
     {
-     "cue": "A passcode: another way in for Tao",
+     "cue": "Widen the testing group: many ages, skin tones, faces",
      "box": [
-      52.7,
-      46.5,
-      30,
+      7.5,
+      35.6,
+      36.3,
       28.4
      ]
     },
     {
-     "cue": "Faster music would not fix the cause",
+     "cue": "A whole-day lockout would only punish Tao more",
      "box": [
-      7.5,
-      54.2,
-      29.6,
-      12.9
+      52.7,
+      8.8,
+      39.9,
+      20.6
      ]
     }
    ]

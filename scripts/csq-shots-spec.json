@@ -2196,10 +2196,10 @@
   "concept": "Who was missing?",
   "narrow": {
    "width": 440,
-   "height": 740,
+   "height": 1100,
    "at": {
-    "text": "Pick two changes",
-    "pad": 10
+    "text": "Test it with people",
+    "pad": 130
    }
   }
  },
