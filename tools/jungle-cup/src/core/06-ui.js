@@ -143,10 +143,12 @@ UI.starBar = function (g, x, y, w, frac, marks, stars) {
   }
 };
 /* Floating score text (a pool: no new objects while playing). */
-const FLOATS = []; for (let i = 0; i < 24; i++) FLOATS.push({ on: false, x: 0, y: 0, vy: 0, life: 0, str: '', col: '', scale: 1 });
+const FLOATS = []; for (let i = 0; i < 24; i++) FLOATS.push({ on: false, x: 0, y: 0, vy: 0, life: 0, str: '', col: '', scale: 1, w: 0 });
+const FOPT = { align: 'center', col: '', scale: 1 }, BOPT = { align: 'center', col: '', scale: 1 };
 UI.float = function (x, y, str, col, scale) {
   let f = FLOATS[0]; for (let i = 0; i < FLOATS.length; i++) if (!FLOATS[i].on) { f = FLOATS[i]; break; }
   f.on = true; f.x = x; f.y = y; f.vy = -26; f.life = 1; f.str = str; f.col = col || PAL.white; f.scale = scale || 1;
+  f.w = textW(str, f.scale) + 2;   // measured once, so the float can be kept inside the screen
 };
 /* Particles: confetti, sparks, splashes. */
 const PARTS = []; for (let i = 0; i < 240; i++) PARTS.push({ on: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, col: '', s: 1, grav: 0 });
@@ -174,7 +176,12 @@ UI.update = function (dt) {
 };
 UI.drawFx = function (g) {
   for (let i = 0; i < PARTS.length; i++) { const p = PARTS[i]; if (!p.on) continue; g.fillStyle = p.col; g.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s); }
-  for (let i = 0; i < FLOATS.length; i++) { const f = FLOATS[i]; if (!f.on) continue; g.globalAlpha = clamp(f.life * 2, 0, 1); text(g, f.str, f.x, f.y, { align: 'center', col: f.col, scale: f.scale }); g.globalAlpha = 1; }
+  for (let i = 0; i < FLOATS.length; i++) {
+    const f = FLOATS[i]; if (!f.on) continue;
+    // never past the screen's edges (4 px in)
+    const hw = f.w / 2, x = hw * 2 > VIEW.W - 8 ? VIEW.W / 2 : clamp(f.x, 4 + hw, VIEW.W - 4 - hw);
+    g.globalAlpha = clamp(f.life * 2, 0, 1); FOPT.col = f.col; FOPT.scale = f.scale; text(g, f.str, x, f.y, FOPT); g.globalAlpha = 1;
+  }
   if (UI.bannerT > 0 && UI.bannerStr) {
     const k = 1 - UI.bannerT / UI.bannerMax, sc = VIEW.W < 260 ? 2 : 3;
     const pop = k < 0.15 ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * 0.38);
@@ -182,7 +189,8 @@ UI.drawFx = function (g) {
     rect(g, 0, cy - 4, VIEW.W, 12 * sc + 6, 'rgba(27,19,37,0.55)');
     const w = textW(UI.bannerStr, sc);
     const s2 = w > VIEW.W - 12 ? Math.max(1, sc - 1) : sc;
-    text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, { align: 'center', col: UI.bannerCol, scale: s2 });
+    BOPT.col = UI.bannerCol; BOPT.scale = s2;
+    text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, BOPT);
     g.globalAlpha = 1;
   }
 };

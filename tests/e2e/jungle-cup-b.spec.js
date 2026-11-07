@@ -99,7 +99,7 @@ test('Rapids Run: intro, buttons / keys / swipes steer, jump and duck; a race wo
   expect(s.newFeather).toBe(true);
   s = await state(f);
   expect([s.feathersBy.rapids, s.stars.rapids >= 1, s.best.rapids > 0]).toEqual([true, true, true]);
-  expect((await f.evaluate(() => window.__go)).at(-1).won).toBe(true);
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(true);
   await shoot(page, 'rapids-results-won');
   // Try again: the autopilot (test hook) wins too
   await J(f, 'step', 600); await J(f, 'tap', 'retry'); await J(f, 'step', 3800);
@@ -161,7 +161,7 @@ test('Frog Chorus: intro, drums played by keys and taps in time; a song won by p
   s = await state(f);
   expect([s.feathersBy.frog, s.stars.frog >= 2, s.best.frog > 0]).toEqual([true, true, true]);
   expect(s.sounds).toEqual(expect.arrayContaining(['drumLow', 'drumMid', 'drumHigh']));
-  expect((await f.evaluate(() => window.__go)).at(-1).won).toBe(true);
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(true);
   await shoot(page, 'frog-results-won');
   // the test bot (hook) wins too; idling loses (every note a miss) and costs nothing
   await J(f, 'step', 600); await J(f, 'tap', 'retry'); await J(f, 'step', 3800);

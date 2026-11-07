@@ -9,19 +9,27 @@ const VIEW = { S: 2, W: 320, H: 240, dpr: 1, cssW: 320, cssH: 240, tap: 24, port
 JC.view = VIEW; JC.canvas = CV; JC.g = G;
 
 function resize() {
-  const dpr = Math.min(3, Math.max(1, window.devicePixelRatio || 1));
-  const cssW = Math.max(200, window.innerWidth || 320), cssH = Math.max(200, window.innerHeight || 240);
-  const bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
+  const dpr0 = Math.min(3, Math.max(1, window.devicePixelRatio || 1));
+  // the canvas fills the screen minus the notch / rounded-corner safe areas (see the shell's CSS)
+  const cssW = Math.max(200, CV.clientWidth || window.innerWidth || 320), cssH = Math.max(200, CV.clientHeight || window.innerHeight || 240);
+  let dpr = dpr0, bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
   const short = Math.min(bw, bh);
   // the short side ends up about 240 virtual pixels (never under 1x)
   const S = Math.max(1, Math.round(short / 240));
+  // a small 1x screen (a short laptop window, split screen): fewer canvas pixels, stretched by the browser (still
+  // nearest-pixel, never blurred), so the words are not tiny 7 px text
+  if (S === 1 && short > 280) {
+    const f = Math.min(1.6, short / 240);
+    dpr = dpr0 / f; bw = Math.round(cssW * dpr); bh = Math.round(cssH * dpr);
+  }
   if (CV.width !== bw) CV.width = bw;
   if (CV.height !== bh) CV.height = bh;
-  VIEW.S = S; VIEW.dpr = dpr; VIEW.cssW = cssW; VIEW.cssH = cssH;
+  // dpr: canvas pixels per CSS pixel (pointer positions and touch sizes use it)
+  VIEW.S = S; VIEW.dpr = bw / cssW; VIEW.cssW = cssW; VIEW.cssH = cssH;
   VIEW.W = Math.ceil(bw / S); VIEW.H = Math.ceil(bh / S);
   VIEW.portrait = VIEW.H > VIEW.W;
   // a touch target of 46 CSS pixels, in virtual pixels
-  VIEW.tap = Math.ceil(46 * dpr / S);
+  VIEW.tap = Math.ceil(46 * VIEW.dpr / S);
   VIEW.gen++;
   G.imageSmoothingEnabled = false;
   TEXTCACHE.clear();

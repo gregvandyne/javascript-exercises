@@ -9,13 +9,14 @@
 (function () {
   const TABLE = 54, NET_H = 9, FLOOR = -46, HIT_X = 64, STAND_X = 79, DEAD_X = 108, GRAV = 430;
   const S = {
-    stage: 'match', you: 0, them: 0, target: 7, serve: 'you', serveN: 0, phase: 'serve', phaseT: 0, rally: 0, maxRally: 0, perfects: 0,
+    stage: 'match', you: 0, them: 0, target: 7, serve: 'you', serveN: 0, phase: 'serve', phaseT: 0, rally: 0, maxRally: 0, perfects: 0, whiffs: 0,
     pounce: 0, pounceReady: false, swingT: 9, swingQ: '', themSwingT: 9, speed: 115,
-    ball: { x: 0, h: 0, vx: 0, vh: 0, dir: 1, live: false, bounced: 0, pounce: false, smash: false, decided: false, willReturn: true, fromX: 0 },
+    ball: { x: 0, h: 0, vx: 0, vh: 0, dir: 1, live: false, bounced: 0, pounce: false, smash: false, decided: false, whiffed: false, willReturn: true, fromX: 0 },
     trail: [], hitsYou: 0, lastQ: 0, auto: false, pointTo: '', k: 1, ox: 0, oy: 0, bg: null, bgGen: -1, bgK: 0, hint: 1, msg: '', jumpYou: 0, jumpThem: 0, diveThem: 0, diveYou: 0,
   };
   for (let i = 0; i < 6; i++) S.trail.push({ x: 0, h: 0 });
-  const HINT = { align: 'center', col: '#fff8e8' };
+  const HINT = { align: 'center', col: '#fff8e8' }, WARM = { align: 'center', col: PAL.r4 };
+  const VA = { name: '', score: 0, of: 7, col: '#45c34e' }, VB = { name: '', score: 0, of: 7, col: '#ff9b2e' };
   const zoneHalf = ctx => (ctx.easy ? 38 : 26) + (S.stage === 'warm' ? 6 : 0);
   function baseSpeed(ctx) { return S.stage === 'warm' ? 85 : ctx.easy ? 96 : 112; }
   function maxSpeed(ctx) { return S.stage === 'warm' ? 125 : ctx.easy ? 170 : 205; }
@@ -23,7 +24,7 @@
   function launch(x0, h0, xb, vx) {
     const b = S.ball, T = Math.abs(xb - x0) / Math.abs(vx);
     b.x = x0; b.h = h0; b.vx = vx; b.dir = vx > 0 ? 1 : -1; b.vh = (GRAV * T * T / 2 - h0) / T;
-    b.live = true; b.bounced = 0; b.decided = false; b.fromX = x0;
+    b.live = true; b.bounced = 0; b.decided = false; b.whiffed = false; b.fromX = x0;
     for (const p of S.trail) { p.x = x0; p.h = h0; }
   }
   function point(ctx, who) {
@@ -60,9 +61,17 @@
     ctx.sfx('whoosh');
     if (S.phase === 'serve' && S.serve === 'you') { S.hint = Math.max(0, S.hint - 0.5); serveFrom('you', ctx, 0.7); return; }
     const b = S.ball;
-    if (S.phase !== 'rally' || !b.live || b.dir > 0) return;
+    if (S.phase !== 'rally' || !b.live || b.dir > 0 || b.whiffed) return;
     const Z = zoneHalf(ctx), d = b.x - (-HIT_X);
-    if (Math.abs(d) > Z) { if (d > Z && d < Z * 2.2) UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0'); return; }
+    if (d > Z) {
+      // swung too early: the paddle has gone by, this ball is lost (so tapping over and over never wins points).
+      // Easier champions forgive a swing that is only a little early.
+      if (ctx.easy && d < Z * 1.6) return;
+      b.whiffed = true; S.whiffs++;
+      UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0');
+      return;
+    }
+    if (d < -Z) return;
     hitYou(ctx, d / Z);
   }
   function hitYou(ctx, s) {   // s: -1 (late) .. 1 (early)
@@ -127,9 +136,10 @@
           } else {
             S.phase = 'over';
             const margin = S.you - S.them, won = w === 'you';
-            const stars = won ? 1 + (margin >= 3 ? 1 : 0) + (margin >= 5 || (margin >= 3 && S.perfects >= 10) ? 1 : 0) : 0;
+            // stars ask for good timing too, not only a big margin: 2 = a clear win or plenty of Perfects, 3 = both
+            const stars = won ? 1 + (margin >= 3 || S.perfects >= 6 ? 1 : 0) + (margin >= 3 && S.perfects >= 8 ? 1 : 0) : 0;
             const score = S.you * 100 + S.perfects * 20 + S.maxRally * 15 + (won ? 500 + margin * 50 : 0);
-            ctx.finish({ score, stars, won, frac: won ? stars / 3 : (S.you / S.target) * 0.3, stats: { you: S.you, them: S.them, perfects: S.perfects } });
+            ctx.finish({ score, stars, won, frac: won ? stars / 3 : (S.you / S.target) * 0.3, stats: { you: S.you, them: S.them, perfects: S.perfects, early: S.whiffs } });
           }
         } else nextServe();
       }
@@ -162,9 +172,13 @@
   /* ---------- drawing ---------- */
   function layout(ctx) {
     const W = ctx.W, H = ctx.H;
-    S.k = Math.max(1, Math.floor(Math.min(W / 200, (H - 70) / 130)));
+    // whole virtual pixels in a wide view; in a tall (phone) view the width decides, so the court may also use a
+    // fraction of a virtual pixel that is still a whole number of screen pixels (crisp), and sits higher up
+    const tall = H > W * 1.2, fit = Math.min(W / (tall ? 190 : 200), (H - 70) / 130);
+    S.k = tall ? Math.max(1, Math.floor(fit * VIEW.S) / VIEW.S) : Math.max(1, Math.floor(fit));
     // the floor sits low, leaving room under it for the Pounce meter and the hint
     S.ox = Math.round(W / 2); S.oy = Math.round(H - 58 + FLOOR * S.k);
+    if (tall) S.oy = Math.min(S.oy, Math.round(H * 0.64 + FLOOR * S.k));
     if (S.oy - 72 * S.k < 34) S.oy = 34 + 72 * S.k;
   }
   S.sx = x => S.ox + x * S.k;
@@ -261,10 +275,11 @@
     }
     // HUD: the score panels, the Pounce meter, the hint
     const champ = S.stage === 'warm' ? t('name.marm') : t('name.jada');
-    HUD.versus(g, { name: t('name.cappy'), score: S.you, of: S.target, col: '#45c34e' }, { name: champ, score: S.them, of: S.target, col: '#ff9b2e' });
+    VA.name = t('name.cappy'); VA.score = S.you; VA.of = S.target; VB.name = champ; VB.score = S.them; VB.of = S.target;
+    HUD.versus(g, VA, VB);
     const mw = Math.min(110, ctx.W - 20), my = Math.min(ctx.H - 26, S.sy(FLOOR) + 6);
     HUD.meter(g, 8, my, mw, t(S.pounceReady ? 'pad.pounceReady' : 'pad.pounceMeter'), S.pounceReady ? 1 : S.pounce, '#ff9b2e', S.pounceReady);
-    if (S.stage === 'warm' && S.phase !== 'over') text(g, t('pad.warm'), ctx.W / 2, 32, { align: 'center', col: PAL.r4 });
+    if (S.stage === 'warm' && S.phase !== 'over') text(g, t('pad.warm'), ctx.W / 2, 32, WARM);
     if (S.hint > 0.05 && (S.phase === 'serve' || S.phase === 'rally')) {
       const hk = S.phase === 'serve' && S.serve === 'you' ? (ctx.touch ? 'pad.hintServeTouch' : 'pad.hintServeKeys') : (ctx.touch ? 'pad.hintTouch' : 'pad.hintKeys');
       g.globalAlpha = clamp(S.hint * 2, 0, 1); textBlock(g, t(hk), 6, my + 22, ctx.W - 12, HINT); g.globalAlpha = 1;
@@ -275,7 +290,7 @@
     champion: 'jada',
     music: 'paddle',
     start(ctx) {
-      S.ctx = ctx; S.perfects = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
+      S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
       S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.diveThem = 0; S.diveYou = 0; S.lastQ = 0;
       startStage(ctx, ctx.warmedUp ? 'match' : 'warm');
       if (!ctx.warmedUp) UI.banner(t('pad.warmBanner'), PAL.r4, 1.6);

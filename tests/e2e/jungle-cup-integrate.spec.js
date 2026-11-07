@@ -66,7 +66,7 @@ test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the
   await J(f, 'next'); await J(f, 'step', 3000);
   s = await state(f);
   expect([s.cup, s.cos.bandana, s.cos.own.includes('gold'), s.text.key]).toEqual([true, 'gold', true, 'end.5']);
-  expect((await f.evaluate(() => window.__go)).at(-1)).toEqual({ won: true, score: s.stars && Object.values(s.stars).reduce((a, b) => a + b, 0) * 100 + 7 * 250 + 500 });
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1)).toEqual({ won: true, score: s.stars && Object.values(s.stars).reduce((a, b) => a + b, 0) * 100 + 7 * 250 + 500 });
   await J(f, 'next'); await J(f, 'step', 800);
   expect((await state(f)).screen).toBe('credits');
   await J(f, 'step', 2000);

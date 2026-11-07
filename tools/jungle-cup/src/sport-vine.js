@@ -137,7 +137,8 @@
     const n = S.T[S.cur + 1]; if (!n) return;
     const r = R(ctx) + (S.state === 'stand' ? 2 : 0);
     const dx = n.kind === 'branch' ? 0 : nextX(S.time) - cappyX(S.time), ad = Math.abs(dx);
-    if (ad > r * 2.4) { if (S.waitMsg <= 0) { fl(sxOf(S.x), syOf(S.y) - 34, t('vc.wait'), '#ffe9a0'); S.waitMsg = 0.7; } return; }
+    // standing on the ground or a branch, nothing is lost by waiting: a jump only goes when the vine is in reach
+    if (ad > (S.state === 'stand' ? r : r * 2.4)) { if (S.waitMsg <= 0) { fl(sxOf(S.x), syOf(S.y) - 34, t('vc.wait'), '#ffe9a0'); S.waitMsg = 0.7; } return; }
     S.hint = Math.max(0, S.hint - 0.25);
     S.leapX0 = cappyX(S.time); S.leapY0 = S.y; S.leapFrom = S.cur; S.leapT = 0; S.leapOk = ad <= r; S.state = 'leap';
     ctx.sfx('whoosh');

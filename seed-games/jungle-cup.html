@@ -2,7 +2,11 @@
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #10261c; }
   body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overscroll-behavior: none; }
-  #jc { position: fixed; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; image-rendering: crisp-edges; outline: none; }
+  /* the game keeps clear of notches and rounded corners (the safe areas are 0 everywhere else) */
+  #jc { position: fixed; top: env(safe-area-inset-top, 0px); left: env(safe-area-inset-left, 0px);
+    width: calc(100% - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+    height: calc(100% - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    display: block; image-rendering: pixelated; image-rendering: crisp-edges; outline: none; }
 </style>
 <canvas id="jc" tabindex="0" aria-label="Jungle Cup"></canvas>
 <script>
@@ -64,7 +68,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'd.pip.after': 'Sunset bandana suits you, cousin!',
   'd.mango.intro1': 'Squawk! You must be Cappy! I am Mango, the island guide.',
   'd.mango.intro2': 'Seven champions live on Delta Isle, and each one guards a sport.',
-  'd.mango.intro3': 'Beat a champion and you win their Feather. Each Feather is a different colour!',
+  'd.mango.intro3': 'Beat a champion and you win their Feather. Each Feather is a different color!',
   'd.mango.intro4': 'Take your Feathers to the Cup Totem in Mossy Village. Fill all seven sockets...',
   'd.mango.intro5': '...and the vine lift up the Great Kapok will open. The Jungle Cup waits at the top! Try Jada at the canopy court first. Go west from the village!',
   'd.mango.hint0': 'Jada plays Paddle Smash at the canopy court, west of the village. Look for the orange arch!',
@@ -74,7 +78,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'd.mango.qask1': 'Squawk... I am SO hungry. The best mangoes grow at the foot of the hills.',
   'd.mango.qask2': 'Could you bring me one? I will give you something nice!',
   'd.mango.qwait': 'The mango tree is by the hills, north west. Mmm, mango...',
-  'd.mango.qthanks': 'MANGO! My favourite! Here, an explorer hat for a true explorer.',
+  'd.mango.qthanks': 'MANGO! My favorite! Here, an explorer hat for a true explorer.',
   'd.mango.allf': 'All seven Feathers! The vine lift at the Great Kapok is open. Go, go, go!',
   'd.mango.after': 'Jungle Cup champion! You can still play any sport to beat your best scores.',
   'd.mango.free': 'Free play! Every sport is open, and that golden bandana is yours. Try for three stars everywhere!',
@@ -550,9 +554,11 @@ I18N.de = Object.assign(I18N.de || {}, {
 });
 
 /* ---- i18n/all.en-GB.js ---- */
-// Jungle Cup in British English: the English words are already written in British spelling (colour, favourite), so
-// en-GB adds nothing of its own and every line falls back to English.
+// Jungle Cup in British English: the English lines use US spelling (like the site's en.json); en-GB has only the
+// lines that are spelled differently, and every other line falls back to English.
 I18N['en-GB'] = Object.assign(I18N['en-GB'] || {}, {
+  'd.mango.intro3': 'Beat a champion and you win their Feather. Each Feather is a different colour!',
+  'd.mango.qthanks': 'MANGO! My favourite! Here, an explorer hat for a true explorer.',
 });
 
 /* ---- i18n/all.es.js ---- */
@@ -2540,6 +2546,7 @@ JC.math = { clamp, lerp, easeOut, easeOutBack, sign, rng };
 JC.rng = rng;
 
 /* ---------- platform (BRB) ---------- */
+const RM = { q: null };
 const BRBX = {
   ok: () => typeof window.BRB === 'object' && !!window.BRB,
   muted() { try { return !!(window.BRB && BRB.sfx && BRB.sfx.muted); } catch (e) { return false; } },
@@ -2548,7 +2555,8 @@ const BRBX = {
   set(k, v) { try { if (window.BRB && BRB.storage) { BRB.storage.set(k, v); return true; } } catch (e) { /* ignore */ } return false; },
   remove(k) { try { if (window.BRB && BRB.storage) BRB.storage.remove(k); } catch (e) { /* ignore */ } },
   gameOver(won, score) { try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: !!won, score: Math.max(0, Math.round(score)) }); } catch (e) { /* ignore */ } },
-  reduced() { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } },
+  /** The reduced-motion setting (the media query is made once; reading .matches each frame is cheap). */
+  reduced() { try { if (!RM.q) RM.q = matchMedia('(prefers-reduced-motion: reduce)'); return RM.q.matches; } catch (e) { return false; } },
 };
 JC.brb = BRBX;
 
@@ -2564,19 +2572,27 @@ const VIEW = { S: 2, W: 320, H: 240, dpr: 1, cssW: 320, cssH: 240, tap: 24, port
 JC.view = VIEW; JC.canvas = CV; JC.g = G;
 
 function resize() {
-  const dpr = Math.min(3, Math.max(1, window.devicePixelRatio || 1));
-  const cssW = Math.max(200, window.innerWidth || 320), cssH = Math.max(200, window.innerHeight || 240);
-  const bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
+  const dpr0 = Math.min(3, Math.max(1, window.devicePixelRatio || 1));
+  // the canvas fills the screen minus the notch / rounded-corner safe areas (see the shell's CSS)
+  const cssW = Math.max(200, CV.clientWidth || window.innerWidth || 320), cssH = Math.max(200, CV.clientHeight || window.innerHeight || 240);
+  let dpr = dpr0, bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
   const short = Math.min(bw, bh);
   // the short side ends up about 240 virtual pixels (never under 1x)
   const S = Math.max(1, Math.round(short / 240));
+  // a small 1x screen (a short laptop window, split screen): fewer canvas pixels, stretched by the browser (still
+  // nearest-pixel, never blurred), so the words are not tiny 7 px text
+  if (S === 1 && short > 280) {
+    const f = Math.min(1.6, short / 240);
+    dpr = dpr0 / f; bw = Math.round(cssW * dpr); bh = Math.round(cssH * dpr);
+  }
   if (CV.width !== bw) CV.width = bw;
   if (CV.height !== bh) CV.height = bh;
-  VIEW.S = S; VIEW.dpr = dpr; VIEW.cssW = cssW; VIEW.cssH = cssH;
+  // dpr: canvas pixels per CSS pixel (pointer positions and touch sizes use it)
+  VIEW.S = S; VIEW.dpr = bw / cssW; VIEW.cssW = cssW; VIEW.cssH = cssH;
   VIEW.W = Math.ceil(bw / S); VIEW.H = Math.ceil(bh / S);
   VIEW.portrait = VIEW.H > VIEW.W;
   // a touch target of 46 CSS pixels, in virtual pixels
-  VIEW.tap = Math.ceil(46 * dpr / S);
+  VIEW.tap = Math.ceil(46 * VIEW.dpr / S);
   VIEW.gen++;
   G.imageSmoothingEnabled = false;
   TEXTCACHE.clear();
@@ -2763,11 +2779,14 @@ function drawMarks(x, unit, ox, oy, k) {
     stack += d.length;
   }
 }
-/* Text bitmaps: key -> { c, w, h } at device resolution. */
-const TEXTCACHE = new Map();
+/* Text bitmaps at device resolution: str -> col -> edge -> [scale] -> { c, w, h }. Nested maps, so finding a drawn
+   line needs no new key string each frame. Cleared on resize and when the text style (Pixel / Clear) changes. */
+const TEXTCACHE = { m: new Map(), size: 0, clear() { this.m.clear(); this.size = 0; } };
 function textBitmap(str, col, edge, scale) {
-  const key = (TEXT.clear ? 'C' : 'P') + scale + col + (edge || '') + '|' + str;
-  let b = TEXTCACHE.get(key); if (b) return b;
+  let m1 = TEXTCACHE.m.get(str); if (!m1) { m1 = new Map(); TEXTCACHE.m.set(str, m1); }
+  let m2 = m1.get(col); if (!m2) { m2 = new Map(); m1.set(col, m2); }
+  const ek = edge || ''; let arr = m2.get(ek); if (!arr) { arr = []; m2.set(ek, arr); }
+  let b = arr[scale]; if (b) return b;
   const S = VIEW.S, pad = edge ? 1 : 0;
   if (usesPixel(str)) {
     const u = pixelUnits(str), w = textW(str, 1), k = S * scale;
@@ -2788,8 +2807,8 @@ function textBitmap(str, col, edge, scale) {
     x.fillStyle = col; x.fillText(str, tx, ty);
     b = { c, w: w + 2 + pad * 2, h: h + pad * 2 };
   }
-  if (TEXTCACHE.size > 600) TEXTCACHE.clear();
-  TEXTCACHE.set(key, b);
+  if (TEXTCACHE.size > 600) { TEXTCACHE.clear(); m1 = new Map(); TEXTCACHE.m.set(str, m1); m2 = new Map(); m1.set(col, m2); arr = []; m2.set(ek, arr); }
+  arr[scale] = b; TEXTCACHE.size++;
   return b;
 }
 /** Draw one line of text. opts: { col, edge (outline colour), align: 'left'|'center'|'right', scale, maxW }. y is the top of
@@ -2832,7 +2851,13 @@ function textBlock(g, str, x, y, maxW, opts) {
   let o = opts || NOOPT;
   const lines = wrap(str, maxW, o.scale || 1), lh = (o.lineH || LINE_H) * (o.scale || 1);
   const center = o.align === 'center', rtl = RTL && !center;
-  if (rtl && !o._rtl) { o = Object.assign({}, o, { align: 'right', _rtl: true }); }
+  if (rtl && !o._rtl) {
+    // right-to-left: a right-aligned twin of the options, made once per options object (kept in step with it)
+    let r = o._rtlo;
+    if (!r) { r = Object.assign({}, o, { align: 'right', _rtl: true }); o._rtlo = r; }
+    else { r.col = o.col; r.edge = o.edge; r.scale = o.scale; r.maxW = o.maxW; r.lineH = o.lineH; }
+    o = r;
+  }
   for (let i = 0; i < lines.length; i++) text(g, lines[i], center ? x + maxW / 2 : rtl ? x + maxW : x, y + i * lh, o);
   return lines.length * lh;
 }
@@ -2989,6 +3014,12 @@ AUDIO.music = function (id, force) {
 };
 AUDIO.songTime = function () { return this.ctx && this.song ? this.ctx.currentTime - this.t0 : -1; };
 AUDIO.stepLen = function () { return this.song ? 60 / this.song.bpm / 4 : 0.125; };
+/** One note of a song part (lead, harmony, bass) at step i, held while the part says '-'. */
+function playPart(bus, arr, i, t, sp, wave, vol) {
+  if (!arr) return; const n = arr[i % arr.length]; if (!n || n === '.' || n === '-') return;
+  let len = 1; while (arr[(i + len) % arr.length] === '-' && len < 16) len++;
+  tone(bus, wave, noteFreq(n), t, sp * len * 0.92, vol, 0, 0.004, 0.09, 0.55);
+}
 AUDIO.tick = function () {
   AUDIO.timer = 0;
   const ctx = AUDIO.ctx, s = AUDIO.song; if (!ctx || !s) return;
@@ -2997,14 +3028,12 @@ AUDIO.tick = function () {
     if (AUDIO.nextT < ctx.currentTime - 0.5) { AUDIO.nextT = ctx.currentTime + 0.05; }
     while (AUDIO.nextT < ctx.currentTime + 0.15) {
       const i = AUDIO.step % steps, t = AUDIO.nextT + (s.swing && (i & 1) ? sp * s.swing : 0);
-      const bus = AUDIO.musicBus;
-      const play = (arr, wave, vol, oct) => {
-        if (!arr) return; const n = arr[i % arr.length]; if (!n || n === '.' || n === '-') return;
-        let len = 1; while (arr[(i + len) % arr.length] === '-' && len < 16) len++;
-        tone(bus, wave, noteFreq(n) * (oct || 1), t, sp * len * 0.92, vol, 0, 0.004, 0.09, 0.55);
-      };
-      play(p.lead, s.leadWave || 'square', 0.13); play(p.harm, s.harmWave || 'square', 0.06); play(p.bass, 'triangle', 0.32);
-      if (p.drums) { const d = p.drums[i % p.drums.length]; if (d !== '.') drum(bus, d, t, 0.55); }
+      // muted: the song keeps its place but makes no notes (no oscillators for a silent bus)
+      if (!AUDIO.muted) {
+        const bus = AUDIO.musicBus;
+        playPart(bus, p.lead, i, t, sp, s.leadWave || 'square', 0.13); playPart(bus, p.harm, i, t, sp, s.harmWave || 'square', 0.06); playPart(bus, p.bass, i, t, sp, 'triangle', 0.32);
+        if (p.drums) { const d = p.drums[i % p.drums.length]; if (d !== '.') drum(bus, d, t, 0.55); }
+      }
       AUDIO.nextT += sp; AUDIO.step++;
     }
   }
@@ -3680,10 +3709,12 @@ UI.starBar = function (g, x, y, w, frac, marks, stars) {
   }
 };
 /* Floating score text (a pool: no new objects while playing). */
-const FLOATS = []; for (let i = 0; i < 24; i++) FLOATS.push({ on: false, x: 0, y: 0, vy: 0, life: 0, str: '', col: '', scale: 1 });
+const FLOATS = []; for (let i = 0; i < 24; i++) FLOATS.push({ on: false, x: 0, y: 0, vy: 0, life: 0, str: '', col: '', scale: 1, w: 0 });
+const FOPT = { align: 'center', col: '', scale: 1 }, BOPT = { align: 'center', col: '', scale: 1 };
 UI.float = function (x, y, str, col, scale) {
   let f = FLOATS[0]; for (let i = 0; i < FLOATS.length; i++) if (!FLOATS[i].on) { f = FLOATS[i]; break; }
   f.on = true; f.x = x; f.y = y; f.vy = -26; f.life = 1; f.str = str; f.col = col || PAL.white; f.scale = scale || 1;
+  f.w = textW(str, f.scale) + 2;   // measured once, so the float can be kept inside the screen
 };
 /* Particles: confetti, sparks, splashes. */
 const PARTS = []; for (let i = 0; i < 240; i++) PARTS.push({ on: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, col: '', s: 1, grav: 0 });
@@ -3711,7 +3742,12 @@ UI.update = function (dt) {
 };
 UI.drawFx = function (g) {
   for (let i = 0; i < PARTS.length; i++) { const p = PARTS[i]; if (!p.on) continue; g.fillStyle = p.col; g.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s); }
-  for (let i = 0; i < FLOATS.length; i++) { const f = FLOATS[i]; if (!f.on) continue; g.globalAlpha = clamp(f.life * 2, 0, 1); text(g, f.str, f.x, f.y, { align: 'center', col: f.col, scale: f.scale }); g.globalAlpha = 1; }
+  for (let i = 0; i < FLOATS.length; i++) {
+    const f = FLOATS[i]; if (!f.on) continue;
+    // never past the screen's edges (4 px in)
+    const hw = f.w / 2, x = hw * 2 > VIEW.W - 8 ? VIEW.W / 2 : clamp(f.x, 4 + hw, VIEW.W - 4 - hw);
+    g.globalAlpha = clamp(f.life * 2, 0, 1); FOPT.col = f.col; FOPT.scale = f.scale; text(g, f.str, x, f.y, FOPT); g.globalAlpha = 1;
+  }
   if (UI.bannerT > 0 && UI.bannerStr) {
     const k = 1 - UI.bannerT / UI.bannerMax, sc = VIEW.W < 260 ? 2 : 3;
     const pop = k < 0.15 ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * 0.38);
@@ -3719,7 +3755,8 @@ UI.drawFx = function (g) {
     rect(g, 0, cy - 4, VIEW.W, 12 * sc + 6, 'rgba(27,19,37,0.55)');
     const w = textW(UI.bannerStr, sc);
     const s2 = w > VIEW.W - 12 ? Math.max(1, sc - 1) : sc;
-    text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, { align: 'center', col: UI.bannerCol, scale: s2 });
+    BOPT.col = UI.bannerCol; BOPT.scale = s2;
+    text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, BOPT);
     g.globalAlpha = 1;
   }
 };
@@ -4163,11 +4200,17 @@ function drawTotemBase(g, px, py) {
 function drawTotemTop(gt, px, py) {
   const cx = px + 8, base = py + 15;
   rect(gt, cx - 7, base - 58, 14, 25, OUT); rect(gt, cx - 6, base - 57, 12, 24, '#a8703e'); rect(gt, cx - 6, base - 57, 3, 24, '#c48a4c');
-  // the bird head and its wings (the seven sockets sit along the wings)
-  for (let i = 0; i < 24; i++) { const w = 4 + i; rect(gt, cx - w - 6, base - 52 + (i >> 2), w, 1, OUT); rect(gt, cx + 6, base - 52 + (i >> 2), w, 1, OUT); }
-  for (let i = 0; i < 22; i++) { const w = 3 + i; rect(gt, cx - w - 6, base - 51 + (i >> 2), w, 1, i % 6 < 3 ? '#c48a4c' : '#a8703e'); rect(gt, cx + 6, base - 51 + (i >> 2), w, 1, i % 6 < 3 ? '#c48a4c' : '#a8703e'); }
-  rect(gt, cx - 4, base - 54, 3, 3, '#fff8e8'); rect(gt, cx + 1, base - 54, 3, 3, '#fff8e8'); rect(gt, cx - 3, base - 53, 1, 1, OUT); rect(gt, cx + 2, base - 53, 1, 1, OUT);
-  rect(gt, cx - 2, base - 50, 4, 5, '#ffc544'); rect(gt, cx - 1, base - 46, 2, 2, '#d39a22');
+  // a fan of seven carved leaves (each Feather socket sits on one) and a carved sun on top of the pole
+  const so = totemSockets();
+  for (let pass = 0; pass < 2; pass++) for (let i = 0; i < 7; i++) {
+    const s = so[i], x0 = cx, y0 = base - 46, n = 10;
+    for (let k = 0; k <= n; k++) {
+      const x = Math.round(x0 + (s.x - x0) * k / n), y = Math.round(y0 + (s.y + 2 - y0) * k / n);
+      if (pass === 0) rect(gt, x - 1, y - 1, 3, 3, OUT); else rect(gt, x, y, 1, 1, '#c48a4c');
+    }
+    if (pass === 0) oval(gt, s.x, s.y + 1, 5, 4, OUT); else { oval(gt, s.x, s.y + 1, 4, 3, '#a8703e'); rect(gt, s.x - 2, s.y + 1, 4, 1, '#7a4a26'); }
+  }
+  disc(gt, cx, base - 48, 6, OUT); disc(gt, cx, base - 48, 5, '#ffc544'); disc(gt, cx, base - 48, 3, '#d39a22'); rect(gt, cx - 1, base - 49, 2, 2, '#fff3a8');
 }
 /** Where the totem's seven sockets are (pixels, in map space). */
 function totemSockets() {
@@ -4199,12 +4242,21 @@ function drawArch(g, gt, px, py, o) {
     for (let j = 0; j < 5; j++) { rect(g, sx + (j % 2 ? 9 : 0), py - 18 + j * 7, 3, 3, col); rect(g, sx + (j % 2 ? 10 : 1), py - 17 + j * 7, 1, 1, '#fff8e8'); }
     for (let j = 0; j < 6; j++) rect(g, sx + (j % 2 ? 1 : 10), py - 20 + j * 6, 1, 3, '#3d9a2e');
   }
-  // the beam (over layer) with flowers and the sport's plaque
-  rect(gt, x0, py - 34, 48, 13, OUT); rect(gt, x0 + 1, py - 33, 46, 11, '#8a5a33'); rect(gt, x0 + 1, py - 33, 46, 3, '#b07a44');
-  rect(gt, x0 - 3, py - 36, 54, 4, OUT); rect(gt, x0 - 2, py - 35, 52, 2, '#6e4325');
-  for (let i = 0; i < 9; i++) { const fx = x0 + 2 + i * 5 + (i % 2), fy = py - 23 + (i % 2); rect(gt, fx, fy, 3, 3, col); rect(gt, fx + 1, fy + 1, 1, 1, '#fff8e8'); rect(gt, fx - 1, fy + 2, 2, 1, '#3d9a2e'); }
-  disc(gt, px + 8, py - 29, 8, OUT); disc(gt, px + 8, py - 29, 7, '#fff0c8'); disc(gt, px + 8, py - 29, 6, shade(col, 0.55));
-  const ic = iconSprite(o.id); spr(gt, ic, px + 8 - (ic.w >> 1), py - 29 - (ic.h >> 1));
+  // the top (over layer): a round arch of twisted vines between the posts, woven with flowers, and the sport's
+  // plaque hanging under it on two vine strings
+  const cx = px + 8, cy = py - 20, rx = 16, ry = 15;
+  for (let pass = 0; pass < 3; pass++) {
+    for (let i = 0; i <= 24; i++) {
+      const a = Math.PI * i / 24, x = Math.round(cx + Math.cos(a) * rx), y = Math.round(cy - Math.sin(a) * ry);
+      if (pass === 0) rect(gt, x - 4, y - 4, 8, 8, OUT);
+      else if (pass === 1) { rect(gt, x - 3, y - 3, 6, 6, i % 2 ? '#7a4a26' : '#8a5a33'); rect(gt, x - 3, y - 3, 6, 1, '#b07a44'); }
+      else if (i % 3 === 0) { rect(gt, x - 3 + (i % 2), y - 1, 2, 2, '#3d9a2e'); rect(gt, x + 1, y - 3, 2, 2, '#56b84a'); }
+    }
+  }
+  for (let i = 1; i < 8; i++) { const a = Math.PI * i / 8, fx = Math.round(cx + Math.cos(a) * rx) - 1, fy = Math.round(cy - Math.sin(a) * ry) - 1; rect(gt, fx, fy, 3, 3, col); rect(gt, fx + 1, fy + 1, 1, 1, '#fff8e8'); }
+  rect(gt, cx - 5, cy - ry + 3, 1, 4, '#3d9a2e'); rect(gt, cx + 5, cy - ry + 3, 1, 4, '#3d9a2e');
+  disc(gt, cx, py - 25, 8, OUT); disc(gt, cx, py - 25, 7, '#fff0c8'); disc(gt, cx, py - 25, 6, shade(col, 0.55));
+  const ic = iconSprite(o.id); spr(gt, ic, cx - (ic.w >> 1), py - 25 - (ic.h >> 1));
 }
 function drawMisc(g, gt, o, px, py) {
   switch (o.k) {
@@ -4406,7 +4458,8 @@ function talkLines(n) {
     case 'elder': {
       const q = qState('specs');
       if (q === 'got') { giveReward('specs'); return L('elder', 'qthanks'); }
-      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; return L('elder', 'totem1', 'totem2', 'totem3'); }
+      // the first talk: the totem's story, then straight on to her lost spectacles (so nobody misses the quest)
+      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
       return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
@@ -4415,7 +4468,7 @@ function talkLines(n) {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 ? 'liftopen' : 'after');
+      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
     }
     case 'marm': return L('marm', 'hi');
     default: {
@@ -4429,6 +4482,20 @@ function talkLines(n) {
   }
 }
 JC.talkLines = talkLines;
+/** Does this NPC have something new (a quest to offer, a reward to give)? A "!" bubble shows over them. */
+function hasNews(n) {
+  const f = SAVE.featherCount(), fl = SAVE.data.flags;
+  switch (n.id) {
+    case 'mango': { const q = qState('mango'); return !fl.metMango || q === 'got' || (!q && f >= 1); }
+    case 'elder': { const q = qState('specs'); return !fl.metElder || !q || q === 'got'; }
+    case 'pip': { const q = qState('shells'); return !q || (q === 'active' && questItemsGot('shells') >= questItemsTotal('shells')); }
+    case 'ants': { const q = qState('leaf'); return !q || q === 'got'; }
+    case 'zuzu': return !qState('letter');
+    case 'tapir': return qState('letter') === 'active';
+    default: return false;
+  }
+}
+JC.hasNews = hasNews;
 /** Picking up a quest item where Cappy stands (or in front of him). */
 function pickItem(it) {
   SAVE.data.flags['got_' + it.quest + it.i] = 1;
@@ -4462,11 +4529,14 @@ OW.enter = function (opts) {
   OW.celebrate = opts && opts.celebrate ? { id: opts.celebrate, t: 0 } : null;
   if (OW.celebrate) { AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H / 3, 60); UI.banner(t('feather.won'), SPORT_COLOURS[OW.celebrate.id], 2.4); }
   OW.camSnap = true;
-  // the raft-arrival panels open each launch (skippable); a new game then has the cousins' hello
-  if (opts && opts.intro) { JC.introSeen = true; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
-  else if (opts && opts.story && !JC.introSeen) { JC.introSeen = true; JC.say(JC.storyLines('intro')); }
+  // the raft-arrival panels open a new game (skippable), then the cousins say hello; Continue shows them once if missed
+  if (opts && opts.intro) { JC.introSeen = true; SAVE.data.flags.storySeen = 1; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
+  // Continue: the panels only for a player who has not seen them yet (once is enough)
+  else if (opts && opts.story && !JC.introSeen && !SAVE.data.flags.storySeen) { JC.introSeen = true; SAVE.data.flags.storySeen = 1; JC.say(JC.storyLines('intro')); }
   else if (opts && opts.say) JC.say(opts.say);
-  OW.later = opts && opts.later ? opts.later : null; OW.laterT = OW.time + ((opts && opts.laterT) || 0);
+  // news for later (Zuzu with the lift news) waits on the island's own clock, so it survives a trip to the map or a sport
+  if (opts && opts.later) { OW.later = opts.later; OW.laterT = OW.time + (opts.laterT || 0); }
+  else if (opts && (opts.intro || opts.reset)) OW.later = null;
 };
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
@@ -4591,7 +4661,17 @@ function drawCappy(g, x, y, dir, walk, hop) {
   if (c.hat) { const h = SPRITES['hat_' + c.hat]; if (h) spr(g, h, x + 1 + (d === 'right' ? (flip ? -2 : 2) : 0), y - 2 - hop, flip); }
 }
 JC.drawCappy = drawCappy;
+/** A small speech bubble with "!" over someone who has news (drawn as pixels, no text). */
+function newsBubble(g, x, y, t) {
+  const by = y - 13 + (((t * 3) | 0) % 2);
+  rect(g, x + 4, by, 9, 9, PAL.ink); rect(g, x + 5, by + 1, 7, 7, PAL.white); rect(g, x + 7, by + 9, 3, 2, PAL.ink); rect(g, x + 8, by + 8, 1, 2, PAL.white);
+  rect(g, x + 8, by + 2, 1, 3, PAL.r1); rect(g, x + 8, by + 6, 1, 1, PAL.r1);
+}
 function drawNpc(g, n, x, y) {
+  if (!TB.open && ((n.newsT = (n.newsT || 0) + 1) % 30 === 1 ? (n.news = hasNews(n)) : n.news)) newsBubble(g, x, y, n.t);
+  drawNpcBody(g, n, x, y);
+}
+function drawNpcBody(g, n, x, y) {
   const s = SPRITES[n.spr]; if (!s) return;
   const bob = ((n.t * 2) | 0) % 2;
   const flip = n.face === 'left';
@@ -4795,13 +4875,14 @@ RUN.enter = function (opts) {
 };
 /** (Re)start the round: the sport's start(), then the countdown. */
 RUN.begin = function () {
+  sendReport();
   RUN.ctx = makeCtx(RUN.id); RUN.result = null; RUN.t = 0; RUN.count = 3.6; RUN.phase = 'count'; RUN.lastBeep = 4;
   UI.clearFx();
   try { RUN.sport.start(RUN.ctx); } catch (e) { console.error(e); }
   const song = RUN.sport.music || 'paddle';
   AUDIO.music(song); JC.audioWant = song;
 };
-RUN.leave = function () { INPUT.releaseTouch(); if (RUN.sport && RUN.sport.stop) { try { RUN.sport.stop(RUN.ctx); } catch (e) { console.error(e); } } };
+RUN.leave = function () { sendReport(); INPUT.releaseTouch(); if (RUN.sport && RUN.sport.stop) { try { RUN.sport.stop(RUN.ctx); } catch (e) { console.error(e); } } };
 RUN.back = function () { AUDIO.sfx('back'); const a = ARCHES[RUN.id]; JC.go('world', { at: [a.x, a.y + 1, 'down'] }); };
 function finishRound() {
   const res = RUN.result || { score: 0, stars: 0, won: false };
@@ -4817,7 +4898,9 @@ function finishRound() {
   if (RUN.newFeather && SAVE.featherCount() === 7) d.flags.allFeathers = 1;
   if (res.stars === 3) JC.grantBandana('berry', false);   // the first three-star round: a berry bandana
   SAVE.write();
-  BRBX.gameOver(res.won, SAVE.cupPoints());
+  // the platform hears about the round when the player leaves this card (Retry, Back, or leaving the sport), so the
+  // site's "New best" message never lands on the card's buttons
+  RUN.report = { won: res.won, pts: SAVE.cupPoints() };
   RUN.phase = 'results'; RUN.cardT = 0; RUN.starsShown = 0;
   AUDIO.music(''); JC.audioWant = '';
   AUDIO.sfx(res.won ? 'win' : 'lose');
@@ -4825,6 +4908,9 @@ function finishRound() {
   UI.setFocus(res.won ? 'back' : 'retry');
 }
 RUN.finishNow = finishRound;
+RUN.report = null;
+function sendReport() { const r = RUN.report; if (!r) return; RUN.report = null; BRBX.gameOver(r.won, r.pts); }
+RUN.sendReport = sendReport;
 RUN.update = function (dt) {
   RUN.t += dt; RUN.cardT += dt;
   TB.update(dt);
@@ -4846,7 +4932,10 @@ RUN.update = function (dt) {
     if (RUN.starsShown < want && RUN.cardT > 0.6 + RUN.starsShown * 0.35) { RUN.starsShown++; AUDIO.sfx('star'); }
   }
 };
-RUN.pause = function () { if (RUN.phase === 'play' || RUN.phase === 'count') { RUN.paused = RUN.phase; RUN.phase = 'paused'; AUDIO.sfx('select'); UI.setFocus('resume'); INPUT.releaseTouch(); } };
+RUN.pause = function () { if (JC.scene === RUN && (RUN.phase === 'play' || RUN.phase === 'count')) { RUN.paused = RUN.phase; RUN.phase = 'paused'; AUDIO.sfx('select'); UI.setFocus('resume'); INPUT.releaseTouch(); } };
+// leaving the tab or the window (or clicking the site around the game) pauses a round: no playing on without the keys
+document.addEventListener('visibilitychange', () => { if (document.hidden) RUN.pause(); });
+window.addEventListener('blur', () => RUN.pause());
 RUN.onInput = function (e) {
   if (TB.input(e)) return;
   const ph = RUN.phase;
@@ -4897,7 +4986,7 @@ function drawIntro(g) {
   dimBackdrop(g, col);
   const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230, ps = compact ? 40 : 52, bh0 = Math.max(22, VIEW.tap);
   // tall enough for the words (longer in some languages), never taller than the screen
-  const cw = w - 14, need = ps + 6 + 4 + 4 + 18 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + wrap(t('sport.' + id + '.touch'), cw - 14).length + wrap(t('sport.' + id + '.keys'), cw - 14).length);
+  const cw = w - 14, need = ps + 6 + 4 + 4 + 18 + 6 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + wrap(t('sport.' + id + '.touch'), cw - 14).length + wrap(t('sport.' + id + '.keys'), cw - 14).length);
   const h = Math.min(VIEW.H - 12, Math.max(compact ? 186 : 222, need)), x = Math.round((VIEW.W - w) / 2), y = Math.round((VIEW.H - h) / 2);
   const c = UI.card(g, x, y, w, h);
   portrait(g, ARCHES[id].champ, c.x + 2, c.y + 2, ps, shade(col, 0.55));
@@ -4986,6 +5075,16 @@ RUN.draw = function (g) {
 };
 
 /* ---------- HUD helpers for sports ---------- */
+// the names in the score panels, cut to fit once per name and width (not every frame)
+const FIT = [{ src: '', w: 0, out: '' }, { src: '', w: 0, out: '' }];
+function fitName(i, src, maxW) {
+  const f = FIT[i]; if (f.src === src && f.w === maxW && f.clear === TEXT.clear) return f.out;
+  let name = src; while (name.length > 3 && textW(name) > maxW) name = name.slice(0, -1);
+  f.src = src; f.w = maxW; f.clear = TEXT.clear; f.out = name; return name;
+}
+const VS_NAME = [{ col: PAL.white, align: 'left' }, { col: PAL.white, align: 'right' }];
+const VS_SC = [{ col: PAL.r4, align: 'left' }, { col: PAL.r4, align: 'right' }];
+const HUD_OPT = { white: { col: PAL.white }, timer: { align: 'center', col: PAL.white }, grey: { align: 'center', col: PAL.grey }, val: { align: 'center', col: PAL.r4 } };
 const HUD = {
   /** The left edge a sport's HUD starts at (right of the pause button). */
   left: () => Math.max(28, VIEW.tap + 10),
@@ -4996,10 +5095,11 @@ const HUD = {
       const s = i ? b : a, x = i ? VIEW.W - 6 - w : l;
       box(g, x, y, w, 26, 'rgba(27,19,37,0.82)', PAL.ink);
       // the name on top (cut to fit), the score and its bar below
-      let name = s.name; while (name.length > 3 && textW(name) > w - 8) name = name.slice(0, -1);
-      text(g, name, i ? x + w - 4 : x + 4, y + 1, { col: PAL.white, align: i ? 'right' : 'left' });
+      const name = fitName(i, s.name, w - 8);
+      text(g, name, i ? x + w - 4 : x + 4, y + 1, VS_NAME[i]);
       const sc = s.of ? label(i ? 'hud.vsB' : 'hud.vsA', s.score) : String(s.score), sw = textW(sc);
-      text(g, sc, i ? x + w - 4 : x + 4, y + 13, { col: s.col || PAL.r4, align: i ? 'right' : 'left' });
+      const so = VS_SC[i]; so.col = s.col || PAL.r4;
+      text(g, sc, i ? x + w - 4 : x + 4, y + 13, so);
       const bx = i ? x + 4 : x + sw + 8, bw = w - sw - 12;
       if (bw > 10) UI.bar(g, bx, y + 15, bw, 7, s.of ? s.score / s.of : 0, s.col || PAL.r4, s.of);
     }
@@ -5008,22 +5108,23 @@ const HUD = {
   meter(g, x, y, w, labelStr, frac, col, glow) {
     if (glow) { g.globalAlpha = 0.5 + 0.5 * Math.sin(RUN.t * 10); rect(g, x - 2, y - 2, w + 4, 22, col); g.globalAlpha = 1; }
     box(g, x, y, w, 18, 'rgba(27,19,37,0.82)', PAL.ink);
-    text(g, labelStr, x + 3, y, { col: PAL.white });
+    text(g, labelStr, x + 3, y, HUD_OPT.white);
     UI.bar(g, x + 3, y + 11, w - 6, 5, frac, col);
   },
   /** Time left, top centre: seconds and a draining bar. */
   timer(g, secs, frac) {
     const w = 64, x = Math.round((VIEW.W - w) / 2), y = 32;
     box(g, x, y, w, 20, 'rgba(27,19,37,0.82)', PAL.ink);
-    text(g, label('hud.secs', Math.max(0, Math.ceil(secs))), x + w / 2, y + 1, { align: 'center', col: secs < 10 ? PAL.r3 : PAL.white });
+    HUD_OPT.timer.col = secs < 10 ? PAL.r3 : PAL.white;
+    text(g, label('hud.secs', Math.max(0, Math.ceil(secs))), x + w / 2, y + 1, HUD_OPT.timer);
     UI.bar(g, x + 3, y + 13, w - 6, 5, frac, secs < 10 ? PAL.r2 : PAL.w3);
   },
   /** A score box, top right. */
   score(g, value, labelKey) {
     const s = fmt(value), w = Math.max(56, textW(s) + 12), x = VIEW.W - w - 6, y = 4;
     box(g, x, y, w, 24, 'rgba(27,19,37,0.82)', PAL.ink);
-    text(g, t(labelKey || 'hud.score'), x + w / 2, y + 1, { align: 'center', col: PAL.grey });
-    text(g, s, x + w / 2, y + 12, { align: 'center', col: PAL.r4 });
+    text(g, t(labelKey || 'hud.score'), x + w / 2, y + 1, HUD_OPT.grey);
+    text(g, s, x + w / 2, y + 12, HUD_OPT.val);
   },
   /** A short message in the middle (Perfect! Good! Miss). */
   pop(x, y, key, col) { UI.float(x, y, t(key), col || PAL.r4); },
@@ -5190,7 +5291,7 @@ function buildMini() {
   g.fillStyle = '#1d5e3a'; disc(g, 36 * 2 + 1, 10 * 2, 9, '#1d5e3a');
   MAP.mini = c;
 }
-MAP.enter = function (opts) { MAP.tab = (opts && opts.tab) || 'map'; MAP.from = (opts && opts.from) || 'world'; if (!MAP.mini) buildMini(); UI.setFocus('close'); };
+MAP.enter = function (opts) { UI.clearFx(); MAP.tab = (opts && opts.tab) || 'map'; MAP.from = (opts && opts.from) || 'world'; if (!MAP.mini) buildMini(); UI.setFocus('close'); };
 MAP.update = function (dt) { MAP.t += dt; };
 function closeMap() { AUDIO.sfx('back'); JC.go('world'); }
 MAP.onInput = function (e) {
@@ -5229,47 +5330,66 @@ function panelFrame(g, titleKey) {
   UI.iconButton(g, 'close', c.x + c.w - r, c.y + r - 2, UI.icons.close, { col: '#b4302f' });
   return { x: c.x, y: c.y + r * 2 + 2, w: c.w, h: c.h - r * 2 - 2 };
 }
+function drawFeatherRow(g, x, y) {
+  for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
+  text(g, label('map.feathers', SAVE.featherCount()), x + 82, y, ROWTEXT2);
+}
+const ROWTEXT2 = { col: PAL.ink, edge: null };
+const BESTTEXT = { col: '#5e3820', edge: null, align: 'right' };
+/** The map tab: the minimap, the Feathers and a row per sport. The rows never get smaller than a finger: when the
+ *  screen is short they go into two or three columns, and on a very short screen the minimap steps aside. */
 function drawMapTab(g) {
   const area = panelFrame(g, 'map.title');
   const land = area.w > area.h * 1.15;
-  const rowH = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap);
-  // the minimap
-  let mx, my, mw, mh;
-  const listW = land ? Math.min(250, area.w * 0.55) : area.w;
-  const mapMaxW = land ? area.w - listW - 6 : area.w, mapMaxH = land ? area.h - bh - 6 : Math.max(60, area.h - rowH * 7 - 18 - bh - 10);
-  const sc = Math.max(0.5, Math.min(mapMaxW / (MW * 2), mapMaxH / (MH * 2)));
-  const k = sc >= 1 ? Math.floor(sc) : sc;
-  mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
-  mx = area.x + Math.round((mapMaxW - mw) / 2); my = area.y;
-  box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
-  g.drawImage(MAP.mini, mx, my, mw, mh);
-  const mk = mw / MW;
-  for (const id of JC.sportOrder) { const a = ARCHES[id]; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
-  disc(g, mx + 36 * mk + mk / 2, my + 37 * mk, 2, '#a8703e');
-  if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
-  // the Feathers
-  let fy = my + mh + 4;
-  const fx0 = land ? area.x + listW + 6 : area.x;
-  if (!land) { for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), area.x + 2 + i * 11, fy); else rect(g, area.x + 4 + i * 11, fy + 3, 3, 6, '#b8a888'); } text(g, label('map.feathers', SAVE.featherCount()), area.x + 82, fy, { col: PAL.ink, edge: null }); fy += 14; }
-  // the sport rows
-  const lx = land ? area.x + mapMaxW + 6 : area.x, ly0 = land ? area.y : fy;
-  if (land) { for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), lx + 2 + i * 11, ly0); else rect(g, lx + 4 + i * 11, ly0 + 3, 3, 6, '#b8a888'); } }
-  const rows0 = land ? ly0 + 14 : ly0;
-  const avail = area.y + area.h - bh - 4 - rows0;
-  const rh = Math.min(rowH, Math.max(16, Math.floor(avail / 7) - 2));
+  const rh = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap), GAP = 3;
+  const listH = area.h - bh - 6;                  // room above the buttons
+  const rowsH = cols => Math.ceil(7 / cols) * (rh + GAP);
+  // pick the first layout that fits: [minimap?, columns]
+  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0;
+  const tries = land ? [[1, 1], [1, 2], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
+  for (let i = 0; i < tries.length; i++) {
+    const m = !!tries[i][0], c = tries[i][1];
+    if (land && m) {
+      const lw = Math.min(c === 1 ? 250 : 330, area.w * (c === 1 ? 0.55 : 0.66));
+      const mw = area.w - lw - 6, fit = rowsH(c) + 14 <= listH;
+      if (fit && mw >= 90) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; break; }
+    } else if (m) {
+      const mh = listH - 16 - rowsH(c) - 4;
+      if (mh >= 56) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; break; }
+    } else if (rowsH(c) + 16 <= listH || i === tries.length - 1) { withMap = false; cols = c; listW = area.w; break; }
+  }
+  let mx = area.x, my = area.y, mw = 0, mh = 0;
+  if (withMap) {
+    const sc = Math.max(0.5, Math.min(mapW / (MW * 2), mapH / (MH * 2)));
+    const k = sc >= 1 ? Math.floor(sc) : sc;
+    mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
+    mx = area.x + Math.round((mapW - mw) / 2); my = area.y;
+    box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
+    g.drawImage(MAP.mini, mx, my, mw, mh);
+    const mk = mw / MW;
+    for (const id of JC.sportOrder) { const a = ARCHES[id]; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
+    disc(g, mx + 36 * mk + mk / 2, my + 37 * mk, 2, '#a8703e');
+    if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
+  }
+  // the Feathers, then the rows
+  const lx = withMap && land ? area.x + area.w - listW : area.x;
+  let ly = withMap && !land ? my + mh + 4 : area.y;
+  drawFeatherRow(g, lx, ly); ly += 15;
+  const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(7 / cols);
   for (let i = 0; i < 7; i++) {
-    const id = JC.sportOrder[i], y = rows0 + i * (rh + 2), played = SAVE.data.plays[id], w = land ? listW : area.w;
-    UI.addHit('go:' + id, lx, y, w, rh);
+    const id = JC.sportOrder[i], col = (i / perCol) | 0, row = i % perCol;
+    const x = lx + col * (cw + 4), y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
+    UI.addHit('go:' + id, x, y, w, rh);
     const focused = UI.showFocus && UI.focusedId() === 'go:' + id;
-    box(g, lx, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
-    rect(g, lx + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
-    const ic = iconSprite(id); spr(g, ic, lx + 8, y + ((rh - ic.h) >> 1));
+    box(g, x, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
+    rect(g, x + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
+    const ic = iconSprite(id); spr(g, ic, x + 8, y + ((rh - ic.h) >> 1));
     const best = played ? fmt(SAVE.data.best[id] || 0) : '???';
     ROWTEXT.maxW = w - 16 - 34 - textW(best) - 4;
-    text(g, t('sport.' + id), lx + 16, y + ((rh - 12) >> 1), ROWTEXT);
+    text(g, t('sport.' + id), x + 16, y + ((rh - 12) >> 1), ROWTEXT);
     const st = SAVE.data.stars[id] || 0;
-    for (let s = 0; s < 3; s++) disc(g, lx + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
-    text(g, best, lx + w - 32, y + ((rh - 12) >> 1), { col: '#5e3820', edge: null, align: 'right' });
+    for (let s = 0; s < 3; s++) disc(g, x + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
+    text(g, best, x + w - 32, y + ((rh - 12) >> 1), BESTTEXT);
   }
   // buttons
   const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3);
@@ -5300,12 +5420,13 @@ function drawConfirm(g) {
   UI.button(g, 'no', area.x, y, bw, bh, t('btn.no'), { col: '#3fae4a' });
   UI.button(g, 'yes', area.x + area.w - bw, y, bw, bh, t('btn.yesNew'), { col: PAL.r2 });
 }
+const CTRL_HEAD = { col: '#2f8a3f', edge: null }, CTRL_HEAD_R = { col: '#2f8a3f', edge: null, align: 'right' }, CTRL_BODY = { col: PAL.ink, edge: null };
 function drawControls(g) {
   const area = panelFrame(g, 'controls.title');
   let y = area.y;
   for (const k of ['touch', 'keys', 'pad']) {
-    text(g, t('controls.' + k), area.x + 2, y, { col: '#2f8a3f', edge: null }); y += 12;
-    y += textBlock(g, t('controls.' + k + '.body'), area.x + 6, y, area.w - 8, { col: PAL.ink, edge: null }) + 6;
+    text(g, t('controls.' + k), RTL ? area.x + area.w - 2 : area.x + 2, y, RTL ? CTRL_HEAD_R : CTRL_HEAD); y += 12;
+    y += textBlock(g, t('controls.' + k + '.body'), area.x + 6, y, area.w - 8, CTRL_BODY) + 6;
   }
 }
 function drawStyle(g) {
@@ -5377,6 +5498,9 @@ FIN.draw = function (g) {
   TB.draw(g);
 };
 const CRED = { name: 'credits', t: 0 };
+const CRED_LINES = ['credits.1', 'credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
+const CRED_TEXT = { col: PAL.white, align: 'center' };
+const CRED_BTN = { col: '#3fae4a', icon: UI.icons.play };
 CRED.enter = function () { CRED.t = 0; JC.audioWant = 'finale'; UI.setFocus('done'); };
 CRED.update = function (dt) { CRED.t += dt; };
 CRED.onInput = function (e) {
@@ -5387,15 +5511,19 @@ CRED.draw = function (g) {
   const W = VIEW.W, H = VIEW.H;
   g.fillStyle = '#1a1030'; g.fillRect(0, 0, W, H);
   for (let i = 0; i < 40; i++) rect(g, (i * 97) % W, (i * 61 + CRED.t * 4) % H, 1, 1, i % 3 ? '#fff3a8' : '#8ee070');
-  const lines = ['credits.1', 'credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
-  let y = H - CRED.t * 22;
-  const stop = 20; if (y < stop) y = stop;
+  const bh = Math.max(22, VIEW.tap), bw = Math.min(200, W - 40), btnY = H - bh - 8;
+  // the credits roll in the space above the button (never behind it)
+  g.save(); g.beginPath(); g.rect(0, 0, W, btnY - 6); g.clip();
   if (LOGO.gen !== VIEW.gen) buildLogo();
+  // it rolls up until the last line is in view (or the logo reaches the top, when it all fits)
+  let total = LOGO.h + 8; for (let i = 0; i < CRED_LINES.length; i++) total += wrap(t(CRED_LINES[i]), W - 20).length * LINE_H + 8;
+  let y = H - CRED.t * 22;
+  const stop = Math.min(20, btnY - 6 - total); if (y < stop) y = stop;
   g.drawImage(LOGO.c, Math.round((W - LOGO.w) / 2), Math.round(y));
   y += LOGO.h + 8;
-  for (const k of lines) { y += textBlock(g, t(k), 10, y, W - 20, { col: PAL.white, align: 'center' }) + 8; }
-  const bh = Math.max(22, VIEW.tap), bw = Math.min(200, W - 40);
-  UI.button(g, 'done', Math.round((W - bw) / 2), H - bh - 8, bw, bh, t('btn.freePlay'), { col: '#3fae4a', icon: UI.icons.play });
+  for (let i = 0; i < CRED_LINES.length; i++) y += textBlock(g, t(CRED_LINES[i]), 10, y, W - 20, CRED_TEXT) + 8;
+  g.restore();
+  UI.button(g, 'done', Math.round((W - bw) / 2), btnY, bw, bh, t('btn.freePlay'), CRED_BTN);
 };
 
 /* ---- core/13b-story.js ---- */
@@ -5675,18 +5803,19 @@ function storyFrame() {
   f.w = w; f.h = h; f.x = Math.round((VIEW.W - w) / 2); f.y = Math.round(top + (availH - h) / 2);
   return f;
 }
+/** A painted panel at the frame's size (painted once, then kept until the view changes). */
+function panelFor(pid, f) { if (!STORY.cache[pid]) STORY.cache[pid] = paintPanel(pid, f.w, f.h); return STORY.cache[pid]; }
 STORY.draw = function (g) {
   const id = STORY.line(); if (!id) return;
   if (STORY.gen !== VIEW.gen) { STORY.cache = {}; STORY.gen = VIEW.gen; }
   const f = storyFrame();
   g.fillStyle = '#1a1226'; g.fillRect(0, 0, VIEW.W, VIEW.H);
   for (let i = 0; i < 24; i++) rect(g, (i * 97 + 13) % VIEW.W, (i * 61 + 7) % VIEW.H, 1, 1, '#3a2a50');
-  const get = pid => { if (!STORY.cache[pid]) STORY.cache[pid] = paintPanel(pid, f.w, f.h); return STORY.cache[pid]; };
   // a soft cream mat round the picture
   rect(g, f.x - 4, f.y - 4, f.w + 8, f.h + 8, '#120c1c'); rect(g, f.x - 3, f.y - 3, f.w + 6, f.h + 6, '#f4e4bc'); rect(g, f.x - 1, f.y - 1, f.w + 2, f.h + 2, '#c8b088');
-  if (STORY.prev && STORY.fade < 1) g.drawImage(get(STORY.prev), f.x, f.y, f.w, f.h);
+  if (STORY.prev && STORY.fade < 1) g.drawImage(panelFor(STORY.prev, f), f.x, f.y, f.w, f.h);
   g.globalAlpha = STORY.prev ? easeOut(STORY.fade) : 1;
-  g.drawImage(get(id), f.x, f.y, f.w, f.h);
+  g.drawImage(panelFor(id, f), f.x, f.y, f.w, f.h);
   g.globalAlpha = 1;
   // Skip, top right
   const bh = Math.max(20, VIEW.tap), lbl = t('btn.skip'), bw = Math.max(bh * 1.6, textW(lbl) + 28);
@@ -5825,6 +5954,8 @@ const JCT = {
   /** play(id): straight to the countdown; play(id, { intro: true }) shows the intro card first. */
   play(id, o) { if (!JC.sports[id]) return null; JC.go('sport', { id, phase: o && o.intro ? 'intro' : 'count' }, true); return jcState(); },
   win(id) { return finishSport(id || RUN.id, true); },
+  /** What leaving the Results card does first: send the round to the platform (BRB.gameOver). */
+  report() { RUN.sendReport(); return true; },
   lose(id) { return finishSport(id || RUN.id, false); },
   setSave(obj) { SAVE.set(Object.assign({ started: true }, obj || {})); JC.refreshCappy(); return jcState(); },
   save() { return JSON.parse(JSON.stringify(SAVE.data)); },
@@ -5891,7 +6022,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   ];
   const S = {
     time: 0, nextStep: 0, nN: 0, open: 0, passed: 0, pts: 0, score: 0, combo: 0, maxCombo: 0, perfects: 0, goods: 0, misses: 0, wrong: 0,
-    target: 0.6, perfW: 0.075, goodW: 0.16, done: false, auto: false, ctx: null, rana: 0,
+    target: 0.65, lat: 0, perfW: 0.075, goodW: 0.16, done: false, auto: false, ctx: null, rana: 0,
     hitT: [9, 9, 9], hitQ: [0, 0, 0], ranaT: [9, 9, 9], lastRanaDrum: 1, cappyT: 9, cappyDrum: 1, roundFlash: 0, roundDone: -1,
     notes: [], first: new Int16Array(ROUNDS), count: new Int8Array(ROUNDS), call: new Int8Array(TOTAL_BARS * 16 + 32),
     bg: null, bgGen: -1, bgKey: 0, L: { rx: 0, ry: 0, rw: 0, rh: 0, zy: 0, zh: 0, dy: 0, dh: 0, dw: 0, dx: 0, gap: 0, k: 1 },
@@ -6026,7 +6157,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.done) return;
     ctx.sfx(DRUM_SFX[d]);
     S.hitT[d] = 0; S.cappyT = 0; S.cappyDrum = d;
-    const tm = S.time;
+    // judged against when the sound reached the ear: the speakers' (or headphones') delay is taken off
+    const tm = S.time - S.lat;
     let best = -1, bestDt = 9, other = false;
     for (let i = S.open; i < S.nN; i++) {
       const nt = S.notes[i]; if (nt.t - tm > S.goodW) break;
@@ -6036,7 +6168,13 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (dt < bestDt) { bestDt = dt; best = i; }
     }
     if (best >= 0) { const q = bestDt <= S.perfW ? 1 : 2; S.hitQ[d] = q; judge(S.notes[best], q, ctx); }
-    else if (other) { S.wrong++; S.combo = 0; S.hitQ[d] = 3; ctx.sfx('frogWrong'); const L = S.L; UI.float(L.dx + d * (L.dw + L.gap) + L.dw / 2, L.dy - 4, t('frog.wrong'), '#ffb3d6'); }
+    else if (other || phaseAt(tm) === 2) {
+      // the wrong drum, or an extra beat in your answer bar: it counts like a miss and costs a point
+      // (so drumming on everything all the time never beats Rana)
+      S.wrong++; S.combo = 0; S.hitQ[d] = 3; S.pts = Math.max(0, S.pts - 1); S.score = Math.max(0, S.score - 40);
+      ctx.sfx('frogWrong');
+      if (other) { const L = S.L; UI.float(L.dx + d * (L.dw + L.gap) + L.dw / 2, L.dy - 4, t('frog.wrong'), '#ffb3d6'); }
+    }
     else S.hitQ[d] = 0;
   }
   function update(dt, ctx) {
@@ -6048,7 +6186,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     const ac = AUDIO.ctx, live = ac && ac.state === 'running';
     while (S.nextStep * ST < tm + 0.09) {
       const when = S.nextStep * ST - tm;
-      if (live && when > -0.03 && !S.done) playStep(S.nextStep, Math.max(0, when));
+      if (live && !AUDIO.muted && when > -0.03 && !S.done) playStep(S.nextStep, Math.max(0, when));
       S.nextStep++;
     }
     // Rana's drums light up as she plays them
@@ -6063,7 +6201,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       const nt = S.notes[i]; if (nt.t - S.jitter > tm) break;
       if (nt.j || nt.bot === 2) continue;
       if (nt.bot === 0) { nt.bot = S.rand() < S.skip ? 2 : 1; nt.bo = (S.rand() * 2 - 1) * S.jitter; if (nt.bot === 2) continue; }
-      if (tm >= nt.t + nt.bo) { nt.bot = 2; hit(nt.drum, ctx); }
+      if (tm >= nt.t + nt.bo + S.lat) { nt.bot = 2; hit(nt.drum, ctx); }
     }
     // notes whose window has closed are misses; Rana scores for every note that goes by
     while (S.open < S.nN) {
@@ -6332,7 +6470,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       S.time = 0; S.nextStep = 0; S.open = 0; S.passed = 0; S.pts = 0; S.score = 0; S.combo = 0; S.maxCombo = 0; S.perfects = 0; S.goods = 0; S.misses = 0; S.wrong = 0;
       S.done = false; S.auto = false; S.jitter = 0; S.skip = 0; S.rand = ctx.rng; S.rana = 0; S.roundFlash = 0; S.roundDone = -1;
       for (let i = 0; i < 3; i++) { S.hitT[i] = 9; S.ranaT[i] = 9; S.hitQ[i] = 0; }
-      S.target = ctx.easy ? 0.42 : 0.56; S.perfW = ctx.easy ? 0.1 : 0.075; S.goodW = ctx.easy ? 0.22 : 0.16;
+      S.target = ctx.easy ? 0.45 : 0.65;
+      // the output delay of the speakers or headphones (Bluetooth can be 0.2 s), at most 0.25 s
+      S.lat = 0; try { const ac = AUDIO.ctx; if (ac) S.lat = clamp((ac.outputLatency || 0) || (ac.baseLatency || 0), 0, 0.25); } catch (e) { S.lat = 0; } S.perfW = ctx.easy ? 0.1 : 0.075; S.goodW = ctx.easy ? 0.22 : 0.16;
       buildChart(ctx);
     },
     update,
@@ -6953,7 +7093,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     layout(ctx);
     buildCappySprites();
     if (!S.bgShoot || S.bgGen !== VIEW.gen || S.bgW !== ctx.W || S.bgH !== ctx.H || S.bgK !== S.K) buildBgs(ctx);
-    const sh = S.shake > 0 ? Math.round(Math.sin(S.shake * 60) * 2) : 0;
+    const sh = S.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.shake * 60) * 2) : 0;
     if (sh) { g.save(); g.translate(sh, 0); }
     if (S.side === 'shoot') drawShoot(g, ctx); else drawKeep(g, ctx);
     if (sh) g.restore();
@@ -7188,7 +7328,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     }
     ctx.sfx('lsLand'); UI.burst(sx(S.x), sy(S.y), 6, '#9a6234', 40);
     if (S.nTr > 0) {
-      const pts = Math.round(S.pend * S.nTr + 25);
+      // a clean landing banks the tricks plus a landing bonus (so one good trick per ramp keeps up with Kiki)
+      const pts = Math.round(S.pend * S.nTr + 50);
       S.score += pts; S.combos++; S.bestCombo = Math.max(S.bestCombo, S.nTr);
       UI.float(sx(S.x), sy(S.y) - 40, '+' + pts, S.nTr > 1 ? '#ffd24a' : '#8ee070', S.nTr > 2 ? 2 : 1);
       if (S.nTr > 1) { ctx.sfx('star'); S.flash = 0.25; }
@@ -7243,7 +7384,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (S.kNextLip < S.nR && x0 <= S.ramps[S.kNextLip] && S.kx > S.ramps[S.kNextLip]) {
         const k = S.kNextLip++;
         S.kvy = S.kvx * -(S.rampH[k] * 1.7) / (S.rampBig[k] ? 84 : 64) - POP_V; S.kair = true; S.kairT = 0;
-        S.kTrickQ = Math.round((ctx.easy ? 125 : 195) + S.r() * (ctx.easy ? 55 : 70) + (S.rampBig[k] ? 40 : 0));
+        S.kTrickQ = Math.round((ctx.easy ? 95 : 150) + S.r() * (ctx.easy ? 40 : 50) + (S.rampBig[k] ? (ctx.easy ? 15 : 30) : 0));
       }
       if (S.kNextLog < S.nL && S.kx + 26 > S.logs[S.kNextLog]) { S.kNextLog++; S.kvy = -HOP_V - 10; S.kair = true; S.kairT = 0; S.kTrickQ = 30; }
     } else {
@@ -7478,7 +7619,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     else JC.draw.shadow(g, sx(S.x), gy, 10 * S.A);
     const tt = S.trick ? S.trickT / S.trickDur : 0;
     drawRider(g, sx(S.x), sy(S.y), 'ls_leaf', 'cappy', S.trick, tt, S.crash > 0.3 ? S.crash : 0);
-    if (S.flash > 0) { g.globalAlpha = S.flash * 1.2; rect(g, 0, 0, W, H, '#fff8e8'); g.globalAlpha = 1; }
+    if (S.flash > 0 && !BRBX.reduced()) { g.globalAlpha = S.flash * 1.2; rect(g, 0, 0, W, H, '#fff8e8'); g.globalAlpha = 1; }
     // HUD: the two scores, the clock, the combo in the air
     VA.name = t('name.cappy'); VA.score = Math.round(S.score); VB.name = t('name.kiki'); VB.score = Math.round(S.kScore);
     HUD.versus(g, VA, VB);
@@ -7501,10 +7642,11 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       UI.button(g, 'lgrab', x, y, tw, bh, t('ls.grab'), B_G);
     }
     if (!S.over && (S.hint > 0.05) && S.time < 30) {
-      const str = t(ctx.touch ? 'ls.hintTouch' : 'ls.hintKeys'), h = JC.font.wrap(str, W - 12, 1).length * 12;
-      const by = (ctx.touch ? H - Math.max(24, ctx.tap) - 12 : H - 3) - h;
+      // sized from the lines as drawn (outlined text is a pixel taller than LINE_H), clear of the buttons and the edge
+      const str = t(ctx.touch ? 'ls.hintTouch' : 'ls.hintKeys'), n = JC.font.wrap(str, W - 12, 1).length, h = n * JC.font.LINE_H + 2;
+      const by = (ctx.touch ? H - Math.max(24, ctx.tap) - 6 - 6 : H - 6) - h;
       g.globalAlpha = clamp(S.hint * 2, 0, 1);
-      rect(g, 0, by - 3, W, h + 4, 'rgba(27,19,37,0.6)'); textBlock(g, str, 6, by, W - 12, HINT);
+      rect(g, 0, by - 3, W, h + 5, 'rgba(27,19,37,0.6)'); textBlock(g, str, 6, by, W - 12, HINT);
       g.globalAlpha = 1;
     }
   }
@@ -7561,13 +7703,14 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 (function () {
   const TABLE = 54, NET_H = 9, FLOOR = -46, HIT_X = 64, STAND_X = 79, DEAD_X = 108, GRAV = 430;
   const S = {
-    stage: 'match', you: 0, them: 0, target: 7, serve: 'you', serveN: 0, phase: 'serve', phaseT: 0, rally: 0, maxRally: 0, perfects: 0,
+    stage: 'match', you: 0, them: 0, target: 7, serve: 'you', serveN: 0, phase: 'serve', phaseT: 0, rally: 0, maxRally: 0, perfects: 0, whiffs: 0,
     pounce: 0, pounceReady: false, swingT: 9, swingQ: '', themSwingT: 9, speed: 115,
-    ball: { x: 0, h: 0, vx: 0, vh: 0, dir: 1, live: false, bounced: 0, pounce: false, smash: false, decided: false, willReturn: true, fromX: 0 },
+    ball: { x: 0, h: 0, vx: 0, vh: 0, dir: 1, live: false, bounced: 0, pounce: false, smash: false, decided: false, whiffed: false, willReturn: true, fromX: 0 },
     trail: [], hitsYou: 0, lastQ: 0, auto: false, pointTo: '', k: 1, ox: 0, oy: 0, bg: null, bgGen: -1, bgK: 0, hint: 1, msg: '', jumpYou: 0, jumpThem: 0, diveThem: 0, diveYou: 0,
   };
   for (let i = 0; i < 6; i++) S.trail.push({ x: 0, h: 0 });
-  const HINT = { align: 'center', col: '#fff8e8' };
+  const HINT = { align: 'center', col: '#fff8e8' }, WARM = { align: 'center', col: PAL.r4 };
+  const VA = { name: '', score: 0, of: 7, col: '#45c34e' }, VB = { name: '', score: 0, of: 7, col: '#ff9b2e' };
   const zoneHalf = ctx => (ctx.easy ? 38 : 26) + (S.stage === 'warm' ? 6 : 0);
   function baseSpeed(ctx) { return S.stage === 'warm' ? 85 : ctx.easy ? 96 : 112; }
   function maxSpeed(ctx) { return S.stage === 'warm' ? 125 : ctx.easy ? 170 : 205; }
@@ -7575,7 +7718,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   function launch(x0, h0, xb, vx) {
     const b = S.ball, T = Math.abs(xb - x0) / Math.abs(vx);
     b.x = x0; b.h = h0; b.vx = vx; b.dir = vx > 0 ? 1 : -1; b.vh = (GRAV * T * T / 2 - h0) / T;
-    b.live = true; b.bounced = 0; b.decided = false; b.fromX = x0;
+    b.live = true; b.bounced = 0; b.decided = false; b.whiffed = false; b.fromX = x0;
     for (const p of S.trail) { p.x = x0; p.h = h0; }
   }
   function point(ctx, who) {
@@ -7612,9 +7755,17 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     ctx.sfx('whoosh');
     if (S.phase === 'serve' && S.serve === 'you') { S.hint = Math.max(0, S.hint - 0.5); serveFrom('you', ctx, 0.7); return; }
     const b = S.ball;
-    if (S.phase !== 'rally' || !b.live || b.dir > 0) return;
+    if (S.phase !== 'rally' || !b.live || b.dir > 0 || b.whiffed) return;
     const Z = zoneHalf(ctx), d = b.x - (-HIT_X);
-    if (Math.abs(d) > Z) { if (d > Z && d < Z * 2.2) UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0'); return; }
+    if (d > Z) {
+      // swung too early: the paddle has gone by, this ball is lost (so tapping over and over never wins points).
+      // Easier champions forgive a swing that is only a little early.
+      if (ctx.easy && d < Z * 1.6) return;
+      b.whiffed = true; S.whiffs++;
+      UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0');
+      return;
+    }
+    if (d < -Z) return;
     hitYou(ctx, d / Z);
   }
   function hitYou(ctx, s) {   // s: -1 (late) .. 1 (early)
@@ -7679,9 +7830,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
           } else {
             S.phase = 'over';
             const margin = S.you - S.them, won = w === 'you';
-            const stars = won ? 1 + (margin >= 3 ? 1 : 0) + (margin >= 5 || (margin >= 3 && S.perfects >= 10) ? 1 : 0) : 0;
+            // stars ask for good timing too, not only a big margin: 2 = a clear win or plenty of Perfects, 3 = both
+            const stars = won ? 1 + (margin >= 3 || S.perfects >= 6 ? 1 : 0) + (margin >= 3 && S.perfects >= 8 ? 1 : 0) : 0;
             const score = S.you * 100 + S.perfects * 20 + S.maxRally * 15 + (won ? 500 + margin * 50 : 0);
-            ctx.finish({ score, stars, won, frac: won ? stars / 3 : (S.you / S.target) * 0.3, stats: { you: S.you, them: S.them, perfects: S.perfects } });
+            ctx.finish({ score, stars, won, frac: won ? stars / 3 : (S.you / S.target) * 0.3, stats: { you: S.you, them: S.them, perfects: S.perfects, early: S.whiffs } });
           }
         } else nextServe();
       }
@@ -7714,9 +7866,13 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   /* ---------- drawing ---------- */
   function layout(ctx) {
     const W = ctx.W, H = ctx.H;
-    S.k = Math.max(1, Math.floor(Math.min(W / 200, (H - 70) / 130)));
+    // whole virtual pixels in a wide view; in a tall (phone) view the width decides, so the court may also use a
+    // fraction of a virtual pixel that is still a whole number of screen pixels (crisp), and sits higher up
+    const tall = H > W * 1.2, fit = Math.min(W / (tall ? 190 : 200), (H - 70) / 130);
+    S.k = tall ? Math.max(1, Math.floor(fit * VIEW.S) / VIEW.S) : Math.max(1, Math.floor(fit));
     // the floor sits low, leaving room under it for the Pounce meter and the hint
     S.ox = Math.round(W / 2); S.oy = Math.round(H - 58 + FLOOR * S.k);
+    if (tall) S.oy = Math.min(S.oy, Math.round(H * 0.64 + FLOOR * S.k));
     if (S.oy - 72 * S.k < 34) S.oy = 34 + 72 * S.k;
   }
   S.sx = x => S.ox + x * S.k;
@@ -7813,10 +7969,11 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     }
     // HUD: the score panels, the Pounce meter, the hint
     const champ = S.stage === 'warm' ? t('name.marm') : t('name.jada');
-    HUD.versus(g, { name: t('name.cappy'), score: S.you, of: S.target, col: '#45c34e' }, { name: champ, score: S.them, of: S.target, col: '#ff9b2e' });
+    VA.name = t('name.cappy'); VA.score = S.you; VA.of = S.target; VB.name = champ; VB.score = S.them; VB.of = S.target;
+    HUD.versus(g, VA, VB);
     const mw = Math.min(110, ctx.W - 20), my = Math.min(ctx.H - 26, S.sy(FLOOR) + 6);
     HUD.meter(g, 8, my, mw, t(S.pounceReady ? 'pad.pounceReady' : 'pad.pounceMeter'), S.pounceReady ? 1 : S.pounce, '#ff9b2e', S.pounceReady);
-    if (S.stage === 'warm' && S.phase !== 'over') text(g, t('pad.warm'), ctx.W / 2, 32, { align: 'center', col: PAL.r4 });
+    if (S.stage === 'warm' && S.phase !== 'over') text(g, t('pad.warm'), ctx.W / 2, 32, WARM);
     if (S.hint > 0.05 && (S.phase === 'serve' || S.phase === 'rally')) {
       const hk = S.phase === 'serve' && S.serve === 'you' ? (ctx.touch ? 'pad.hintServeTouch' : 'pad.hintServeKeys') : (ctx.touch ? 'pad.hintTouch' : 'pad.hintKeys');
       g.globalAlpha = clamp(S.hint * 2, 0, 1); textBlock(g, t(hk), 6, my + 22, ctx.W - 12, HINT); g.globalAlpha = 1;
@@ -7827,7 +7984,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     champion: 'jada',
     music: 'paddle',
     start(ctx) {
-      S.ctx = ctx; S.perfects = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
+      S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
       S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.diveThem = 0; S.diveYou = 0; S.lastQ = 0;
       startStage(ctx, ctx.warmedUp ? 'match' : 'warm');
       if (!ctx.warmedUp) UI.banner(t('pad.warmBanner'), PAL.r4, 1.6);
@@ -8203,6 +8360,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     S.amp = clamp(Math.floor(VW.W / 2 - S.half - 18), 0, 44);
     S.ppm = VW.H < 300 ? 2.5 : 3.4;
     S.py = Math.round(VW.H - S.ctrlH / S.Z - (VW.H < 300 ? 30 : 46));
+    // a wide, short view: Cappy's canoe a little higher, so there is room under it and he still sees what is coming
+    if (VW.W > VW.H) S.py = Math.min(S.py, Math.round(VW.H * 0.7));
   }
   // The river and its banks are painted once per layout into two tall strips (two water frames for the current),
   // covering the whole course; each frame draws one slice of a strip plus a few moving streaks.
@@ -8395,7 +8554,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   }
   function draw(g, ctx) {
     layout(ctx);
-    const shake = S.shake > 0 ? Math.round(Math.sin(S.time * 70) * 2) : 0;
+    const shake = S.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.time * 70) * 2) : 0;
     S.camY = Math.round(S.d * S.ppm);
     g.save();
     if (S.Z > 1) g.scale(S.Z, S.Z);
@@ -8428,6 +8587,20 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if ((o.kind === LOG && S.jumpT <= 0) || (o.kind === BRANCH && S.duckT <= 0)) {
         if (((S.time * 8) | 0) % 2) { const x = laneX(S.d, S.lx), yy = S.py - 16; (o.kind === LOG ? ARROW.jump : ARROW.duck)(g, x, yy); }
         break;
+      }
+    }
+    // rivals out of sight ahead: their face at the top edge in their lane, with an arrow, so the race is always visible
+    const topY = Math.round(40 / S.Z);
+    for (let i = 0; i < 3; i++) {
+      const r = S.rivals[i]; if (r.finT && r.d > LEN + 40) continue;
+      const y = yOf(r.d), botY = Math.round(VW.H - S.ctrlH / S.Z - 12);
+      if (y < topY) {
+        const x = Math.round(laneX(S.d + S.py / S.ppm, r.lx)), sp = SPRITES[r.rider];
+        ARROW.jump(g, x, topY - 2);
+        if (sp) spr(g, sp, x - (sp.w >> 1), topY + 4);
+      } else if (y > VW.H + 4) {
+        // behind, out of sight: a small arrow at the bottom edge in their lane
+        ARROW.duck(g, Math.round(laneX(S.d, r.lx)), botY);
       }
     }
     g.restore();
@@ -8509,20 +8682,23 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 // from the view size each frame.
 // ======================================================================================================
 (function () {
-  const TIME = 60, ROWS = 3, PER_ROW = 4, POINTS = [100, 75, 50], FLIGHT = [0.62, 0.5, 0.38], RELOAD = 0.42;
+  const TIME = 60, ROWS = 3, PER_ROW = 10, SPACING = 110, POINTS = [100, 75, 50], FLIGHT = [0.62, 0.5, 0.38], RELOAD = 0.42;
+  // a seed that splashes takes longer to reload, and at most two of yours fly at once: firing without aiming never pays
+  const MISS_RELOAD = 1.2, MAX_FLYING = 2;
   const S = {
     time: 0, you: 0, tico: 0, hits: 0, shots: 0, streak: 0, bestStreak: 0, over: false, won: false, finishT: 0,
     aimX: 0, aimRow: 1, aimOn: true, drag: false, dragId: -1, sx: 0, sy: 0, pullX: 0, pullY: 0, reload: 0, auto: false, autoT: 0, sigma: 0,
     ticoT: 2, ticoFlap: 0, cappyRecoil: 0, hint: 1, ctx: null,
-    k: 1, bgK: 0, rowY: [0, 0, 0], kr: [1, 1, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0], rowDir: [1, -1, 1], lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
+    k: 1, bgK: 0, rowY: [0, 0, 0], kr: [1, 1, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0], rowDir: [1, -1, 1], nPer: 4, wrap: 450, lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
     fruit: [], seeds: [], rips: [], bg: null, bgGen: -1, pads: null, padsGen: -1,
   };
-  for (let r = 0; r < ROWS; r++) for (let i = 0; i < PER_ROW; i++) S.fruit.push({ row: r, i, x: 0, on: true, gone: 0, pop: 0, bob: 0, kind: 0 });
+  for (let r = 0; r < ROWS; r++) for (let i = 0; i < PER_ROW; i++) S.fruit.push({ row: r, i, x: 0, on: true, use: true, gone: 0, pop: 0, bob: 0, kind: 0 });
   for (let i = 0; i < 8; i++) S.seeds.push({ on: false, who: 0, x0: 0, y0: 0, x1: 0, y1: 0, t: 0, T: 0.5, row: 0, target: null, hit: false });
   for (let i = 0; i < 12; i++) S.rips.push({ on: false, x: 0, y: 0, t: 0, big: false });
-  const HIT_R = [7, 10, 12], BASE_K = [1, 2, 2];
-  /** How close a seed must land to a fruit's centre (bigger when the fruit is drawn bigger, and with Easier champions). */
-  const hitR = (ctx, r) => Math.round(HIT_R[r] * (1 + (S.kr[r] / BASE_K[r] - 1) * 0.5)) + (ctx.easy ? 3 : 0);
+  const HIT_R = [10, 12, 14], BASE_K = [1, 2, 2];   // BASE_K: the fruit scale the lily pads are sized for
+  /** How close a seed must land to a fruit's centre: the same on every screen (a short landscape lagoon draws the fruit
+   *  smaller, but it is not harder to hit), a little more with Easier champions. */
+  const hitR = (ctx, r) => HIT_R[r] + (ctx.easy ? 3 : 0);
 
   /* ---------- sprites ---------- */
   function grid(w, h) { const g = []; for (let y = 0; y < h; y++) { const r = []; for (let x = 0; x < w; x++) r.push('.'); g.push(r); } return g; }
@@ -8578,10 +8754,16 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     S.slX = Math.round(W * 0.42); S.slY = H - 10;
     S.tcX = W - 24; S.tcY = H - 12;
     if (first) S.aimX = S.slX;
-    // spread the fruit across the row (wrapping round the edges)
-    for (const f of S.fruit) f.x = ((f.i + (f.row % 2) * 0.5) / PER_ROW) * (W + 60) - 30;
+    // spread the fruit across the row (wrapping round the edges), always the same distance apart, so a wide screen has
+    // more fruit but never more crowded rows (the game is as hard on a phone as on a laptop)
+    S.nPer = clamp(Math.ceil((W + 60) / SPACING), 3, PER_ROW); S.wrap = S.nPer * SPACING;
+    for (const f of S.fruit) {
+      f.use = f.i < S.nPer;
+      f.x = ((f.i + (f.row % 2) * 0.5) / S.nPer) * S.wrap - 30;
+      if (!f.use) { f.on = false; f.gone = 1e9; } else if (f.gone > 1e8) { f.on = true; f.gone = 0; }
+    }
   }
-  const wrapW = () => S.W + 60;
+  const wrapW = () => S.wrap;
 
   /* ---------- play ---------- */
   function rowSpeed(ctx, r) { const k = 1 + 0.25 * (S.time / TIME); return [33, 25, 18][r] * (ctx.easy ? 0.72 : 1) * k; }
@@ -8596,6 +8778,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   }
   function shoot(ctx) {
     if (S.over || S.reload > 0) return;
+    let flying = 0; for (const sd of S.seeds) if (sd.on && sd.who === 0) flying++;
+    if (flying >= MAX_FLYING) return;
     if (!fire(ctx, 0, S.aimX, S.aimRow, null)) return;
     S.reload = RELOAD; S.shots++; S.cappyRecoil = 0.25; S.hint = Math.max(0, S.hint - 0.35);
   }
@@ -8623,20 +8807,29 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     } else {
       ripple(sd.x1, S.rowY[r], r === 2);
       ctx.sfx('splash');
-      if (sd.who === 0) { S.streak = 0; }
+      if (sd.who === 0) { S.streak = 0; S.reload = Math.max(S.reload, MISS_RELOAD); }
     }
   }
   function ripple(x, y, big) { for (const p of S.rips) if (!p.on) { p.on = true; p.x = x; p.y = y; p.t = 0; p.big = big; UI.burst(x * S.k, (y - 2) * S.k, 5, '#c8f6ff', 40); return; } }
   /** Tico's turn: he picks a fruit, leads it, and lands it most of the time; faster as the clock runs down. */
   function ticoShoot(ctx) {
-    const rr = ctx.rng(), row = rr < 0.2 ? 0 : rr < 0.55 ? 1 : 2;
-    let f = null;
-    for (let k = 0; k < PER_ROW * 2 && !f; k++) { const c = S.fruit[row * PER_ROW + ((ctx.rng() * PER_ROW) | 0)]; if (c.on && c.x > 20 && c.x < S.W - 40) f = c; }
-    if (!f) return;
+    const rr = ctx.rng();
+    let row = rr < 0.2 ? 0 : rr < 0.55 ? 1 : 2, f = null;
+    // his row first, then the others: on a narrow screen there are fewer fruit in view, and Tico must not lose turns
+    for (let n = 0; n < ROWS && !f; n++, row = (row + 1) % ROWS) {
+      const k0 = (ctx.rng() * S.nPer) | 0;
+      for (let k = 0; k < S.nPer && !f; k++) {
+        const c = S.fruit[row * PER_ROW + (k0 + k) % S.nPer], lx = fruitX(c, FLIGHT[row] + 0.08);
+        if (c.on && lx > 16 && lx < S.W - 16 && Math.abs(lx - c.x) < 40) f = c;
+      }
+      if (f) break;
+    }
+    if (!f) return false;
     const T = FLIGHT[row] + 0.08, lead = fruitX(f, T);
-    const p = ctx.easy ? 0.5 : 0.6, hit = ctx.rng() < p;
+    const p = ctx.easy ? 0.5 : 0.62, hit = ctx.rng() < p;
     const sd = fire(ctx, 1, hit ? lead : lead + (ctx.rng() < 0.5 ? -1 : 1) * (hitR(ctx, row) + 6 + ctx.rng() * 8), row, f);
     if (sd) { sd.hit = hit; S.ticoFlap = 0.35; }
+    return true;
   }
   function update(dt, ctx) {
     S.ctx = ctx; layout(ctx);
@@ -8654,16 +8847,16 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     for (const f of S.fruit) {
       f.x = fruitX(f, dt); f.bob += dt;
       if (f.pop > 0) f.pop -= dt;
-      if (!f.on) { f.gone -= dt; if (f.gone <= 0 && (f.x < -10 || f.x > S.W + 10 || f.gone < -2)) { f.on = true; f.pop = 0; } }
+      if (!f.on && f.use) { f.gone -= dt; if (f.gone <= 0 && (f.x < -10 || f.x > S.W + 10 || f.gone < -2)) { f.on = true; f.pop = 0; } }
     }
     for (const sd of S.seeds) if (sd.on) { sd.t += dt; if (sd.t >= sd.T) { sd.on = false; land(ctx, sd); } }
     for (const p of S.rips) if (p.on) { p.t += dt; if (p.t > 0.8) p.on = false; }
     // Tico: steady at first, quicker near the end
     S.ticoT -= dt;
     if (S.ticoT <= 0 && !S.over) {
-      ticoShoot(ctx);
-      const k = S.time / TIME, a = ctx.easy ? 3.8 : 3.0, b = ctx.easy ? 2.6 : 1.9;
-      S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3);
+      // nothing in view: he looks again in a moment instead of waiting a whole turn
+      if (!ticoShoot(ctx)) S.ticoT = 0.3;
+      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.5, b = ctx.easy ? 2.6 : 1.6; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3); }
     }
     if (S.auto) bot(dt, ctx);
     if (!S.over && S.time >= TIME) {
@@ -8676,7 +8869,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   function end(ctx) {
     S.finishWait = 0;
     S.won = S.you > S.tico;
-    const stars = S.won ? 1 + (S.you >= 1300 ? 1 : 0) + (S.you >= 1800 ? 1 : 0) : 0;
+    const stars = S.won ? 1 + (S.you >= 1700 ? 1 : 0) + (S.you >= 2300 ? 1 : 0) : 0;
     const frac = S.won ? [0.34, 0.67, 1][stars - 1] : clamp(S.you / Math.max(1, S.tico), 0, 1) * 0.32;
     UI.banner(t(S.won ? 'ss.youWin' : 'ss.ticoWins'), S.won ? PAL.r4 : '#ffb3d6', 1.2);
     ctx.sfx(S.won ? 'cheer' : 'miss');
@@ -8812,7 +9005,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     for (let r = 0; r < ROWS; r++) {
       const y = S.rowY[r], pad = S.pads[r], sp = SPRITES[FRUIT[r]], k = S.kr[r];
       for (const f of S.fruit) {
-        if (f.row !== r) continue;
+        if (f.row !== r || !f.use) continue;
         const x = Math.round(f.x), bob = Math.round(Math.sin(f.bob * 2.4 + f.i) * 0.8);
         g.drawImage(pad.c, x - (pad.w >> 1), y - (pad.h >> 1) + bob);
         if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
@@ -8871,7 +9064,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       S.time = 0; S.you = 0; S.tico = 0; S.hits = 0; S.shots = 0; S.streak = 0; S.bestStreak = 0; S.over = false; S.won = false; S.finishWait = 0;
       S.aimX = S.slX; S.aimRow = 1; S.aimOn = true; S.drag = false; S.reload = 0; S.auto = false; S.autoT = 0; S.sigma = 0;
       S.ticoT = ctx.easy ? 3.2 : 2.4; S.ticoFlap = 0; S.cappyRecoil = 0; S.hint = ctx.firstTime ? 1.8 : 0.8;
-      for (const f of S.fruit) { f.on = true; f.gone = 0; f.pop = 0; f.bob = Math.random() * 3; }
+      for (const f of S.fruit) { f.on = f.use; f.gone = f.use ? 0 : 1e9; f.pop = 0; f.bob = Math.random() * 3; }
       for (const s of S.seeds) s.on = false;
       for (const p of S.rips) p.on = false;
     },
@@ -9034,7 +9227,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     const n = S.T[S.cur + 1]; if (!n) return;
     const r = R(ctx) + (S.state === 'stand' ? 2 : 0);
     const dx = n.kind === 'branch' ? 0 : nextX(S.time) - cappyX(S.time), ad = Math.abs(dx);
-    if (ad > r * 2.4) { if (S.waitMsg <= 0) { fl(sxOf(S.x), syOf(S.y) - 34, t('vc.wait'), '#ffe9a0'); S.waitMsg = 0.7; } return; }
+    // standing on the ground or a branch, nothing is lost by waiting: a jump only goes when the vine is in reach
+    if (ad > (S.state === 'stand' ? r : r * 2.4)) { if (S.waitMsg <= 0) { fl(sxOf(S.x), syOf(S.y) - 34, t('vc.wait'), '#ffe9a0'); S.waitMsg = 0.7; } return; }
     S.hint = Math.max(0, S.hint - 0.25);
     S.leapX0 = cappyX(S.time); S.leapY0 = S.y; S.leapFrom = S.cur; S.leapT = 0; S.leapOk = ad <= r; S.state = 'leap';
     ctx.sfx('whoosh');

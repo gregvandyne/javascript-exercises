@@ -74,7 +74,7 @@ test('Vine Climb: the bot wins the race (Feather + stars), standing still loses 
   s = await state(f);
   expect([s.feathersBy.vine, s.stars.vine >= 2, s.best.vine > 0]).toEqual([true, true, true]);
   expect(s.sounds).toEqual(expect.arrayContaining(['grab', 'whoosh', 'win']));
-  const go = await f.evaluate(() => window.__go);
+  const go = await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; });
   expect(go.at(-1)).toEqual({ won: true, score: 100 * s.stars.vine + 250 });
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/e2e-vine-won.png` });
   // lose: Try again and stand still; Sloane never stops and reaches the top first
@@ -83,7 +83,7 @@ test('Vine Climb: the bot wins the race (Feather + stars), standing still loses 
   expect((await sport(f)).state).toBe('stand');
   s = await playUntilResults(f, 90);
   expect([s.phase, s.result.won, s.result.stars, s.state.sloane, s.state.best]).toEqual(['results', false, 0, 60, 0]);
-  expect((await f.evaluate(() => window.__go)).at(-1).won).toBe(false);
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(false);
   s = await state(f);
   expect([s.feathers, s.feathersBy.vine]).toEqual([1, true]);    // losing never takes the Feather away
   // real keys: press Space on the keyboard whenever the ring is green (no hazards, so only timing counts)
@@ -131,7 +131,7 @@ test('Seed Shot: the bot outscores Tico, not shooting loses, a real mouse pull-b
   s = await state(f);
   expect([s.feathersBy.seed, s.best.seed > 0]).toEqual([true, true]);
   expect(s.sounds).toEqual(expect.arrayContaining(['twang', 'win']));
-  expect((await f.evaluate(() => window.__go)).at(-1)).toEqual({ won: true, score: 100 * s.stars.seed + 250 });
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1)).toEqual({ won: true, score: 100 * s.stars.seed + 250 });
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/e2e-seed-won.png` });
   // lose: never shoot
   await J(f, 'step', 600);

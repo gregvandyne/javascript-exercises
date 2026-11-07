@@ -52,13 +52,14 @@ RUN.enter = function (opts) {
 };
 /** (Re)start the round: the sport's start(), then the countdown. */
 RUN.begin = function () {
+  sendReport();
   RUN.ctx = makeCtx(RUN.id); RUN.result = null; RUN.t = 0; RUN.count = 3.6; RUN.phase = 'count'; RUN.lastBeep = 4;
   UI.clearFx();
   try { RUN.sport.start(RUN.ctx); } catch (e) { console.error(e); }
   const song = RUN.sport.music || 'paddle';
   AUDIO.music(song); JC.audioWant = song;
 };
-RUN.leave = function () { INPUT.releaseTouch(); if (RUN.sport && RUN.sport.stop) { try { RUN.sport.stop(RUN.ctx); } catch (e) { console.error(e); } } };
+RUN.leave = function () { sendReport(); INPUT.releaseTouch(); if (RUN.sport && RUN.sport.stop) { try { RUN.sport.stop(RUN.ctx); } catch (e) { console.error(e); } } };
 RUN.back = function () { AUDIO.sfx('back'); const a = ARCHES[RUN.id]; JC.go('world', { at: [a.x, a.y + 1, 'down'] }); };
 function finishRound() {
   const res = RUN.result || { score: 0, stars: 0, won: false };
@@ -74,7 +75,9 @@ function finishRound() {
   if (RUN.newFeather && SAVE.featherCount() === 7) d.flags.allFeathers = 1;
   if (res.stars === 3) JC.grantBandana('berry', false);   // the first three-star round: a berry bandana
   SAVE.write();
-  BRBX.gameOver(res.won, SAVE.cupPoints());
+  // the platform hears about the round when the player leaves this card (Retry, Back, or leaving the sport), so the
+  // site's "New best" message never lands on the card's buttons
+  RUN.report = { won: res.won, pts: SAVE.cupPoints() };
   RUN.phase = 'results'; RUN.cardT = 0; RUN.starsShown = 0;
   AUDIO.music(''); JC.audioWant = '';
   AUDIO.sfx(res.won ? 'win' : 'lose');
@@ -82,6 +85,9 @@ function finishRound() {
   UI.setFocus(res.won ? 'back' : 'retry');
 }
 RUN.finishNow = finishRound;
+RUN.report = null;
+function sendReport() { const r = RUN.report; if (!r) return; RUN.report = null; BRBX.gameOver(r.won, r.pts); }
+RUN.sendReport = sendReport;
 RUN.update = function (dt) {
   RUN.t += dt; RUN.cardT += dt;
   TB.update(dt);
@@ -103,7 +109,10 @@ RUN.update = function (dt) {
     if (RUN.starsShown < want && RUN.cardT > 0.6 + RUN.starsShown * 0.35) { RUN.starsShown++; AUDIO.sfx('star'); }
   }
 };
-RUN.pause = function () { if (RUN.phase === 'play' || RUN.phase === 'count') { RUN.paused = RUN.phase; RUN.phase = 'paused'; AUDIO.sfx('select'); UI.setFocus('resume'); INPUT.releaseTouch(); } };
+RUN.pause = function () { if (JC.scene === RUN && (RUN.phase === 'play' || RUN.phase === 'count')) { RUN.paused = RUN.phase; RUN.phase = 'paused'; AUDIO.sfx('select'); UI.setFocus('resume'); INPUT.releaseTouch(); } };
+// leaving the tab or the window (or clicking the site around the game) pauses a round: no playing on without the keys
+document.addEventListener('visibilitychange', () => { if (document.hidden) RUN.pause(); });
+window.addEventListener('blur', () => RUN.pause());
 RUN.onInput = function (e) {
   if (TB.input(e)) return;
   const ph = RUN.phase;
@@ -154,7 +163,7 @@ function drawIntro(g) {
   dimBackdrop(g, col);
   const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230, ps = compact ? 40 : 52, bh0 = Math.max(22, VIEW.tap);
   // tall enough for the words (longer in some languages), never taller than the screen
-  const cw = w - 14, need = ps + 6 + 4 + 4 + 18 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + wrap(t('sport.' + id + '.touch'), cw - 14).length + wrap(t('sport.' + id + '.keys'), cw - 14).length);
+  const cw = w - 14, need = ps + 6 + 4 + 4 + 18 + 6 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + wrap(t('sport.' + id + '.touch'), cw - 14).length + wrap(t('sport.' + id + '.keys'), cw - 14).length);
   const h = Math.min(VIEW.H - 12, Math.max(compact ? 186 : 222, need)), x = Math.round((VIEW.W - w) / 2), y = Math.round((VIEW.H - h) / 2);
   const c = UI.card(g, x, y, w, h);
   portrait(g, ARCHES[id].champ, c.x + 2, c.y + 2, ps, shade(col, 0.55));
@@ -243,6 +252,16 @@ RUN.draw = function (g) {
 };
 
 /* ---------- HUD helpers for sports ---------- */
+// the names in the score panels, cut to fit once per name and width (not every frame)
+const FIT = [{ src: '', w: 0, out: '' }, { src: '', w: 0, out: '' }];
+function fitName(i, src, maxW) {
+  const f = FIT[i]; if (f.src === src && f.w === maxW && f.clear === TEXT.clear) return f.out;
+  let name = src; while (name.length > 3 && textW(name) > maxW) name = name.slice(0, -1);
+  f.src = src; f.w = maxW; f.clear = TEXT.clear; f.out = name; return name;
+}
+const VS_NAME = [{ col: PAL.white, align: 'left' }, { col: PAL.white, align: 'right' }];
+const VS_SC = [{ col: PAL.r4, align: 'left' }, { col: PAL.r4, align: 'right' }];
+const HUD_OPT = { white: { col: PAL.white }, timer: { align: 'center', col: PAL.white }, grey: { align: 'center', col: PAL.grey }, val: { align: 'center', col: PAL.r4 } };
 const HUD = {
   /** The left edge a sport's HUD starts at (right of the pause button). */
   left: () => Math.max(28, VIEW.tap + 10),
@@ -253,10 +272,11 @@ const HUD = {
       const s = i ? b : a, x = i ? VIEW.W - 6 - w : l;
       box(g, x, y, w, 26, 'rgba(27,19,37,0.82)', PAL.ink);
       // the name on top (cut to fit), the score and its bar below
-      let name = s.name; while (name.length > 3 && textW(name) > w - 8) name = name.slice(0, -1);
-      text(g, name, i ? x + w - 4 : x + 4, y + 1, { col: PAL.white, align: i ? 'right' : 'left' });
+      const name = fitName(i, s.name, w - 8);
+      text(g, name, i ? x + w - 4 : x + 4, y + 1, VS_NAME[i]);
       const sc = s.of ? label(i ? 'hud.vsB' : 'hud.vsA', s.score) : String(s.score), sw = textW(sc);
-      text(g, sc, i ? x + w - 4 : x + 4, y + 13, { col: s.col || PAL.r4, align: i ? 'right' : 'left' });
+      const so = VS_SC[i]; so.col = s.col || PAL.r4;
+      text(g, sc, i ? x + w - 4 : x + 4, y + 13, so);
       const bx = i ? x + 4 : x + sw + 8, bw = w - sw - 12;
       if (bw > 10) UI.bar(g, bx, y + 15, bw, 7, s.of ? s.score / s.of : 0, s.col || PAL.r4, s.of);
     }
@@ -265,22 +285,23 @@ const HUD = {
   meter(g, x, y, w, labelStr, frac, col, glow) {
     if (glow) { g.globalAlpha = 0.5 + 0.5 * Math.sin(RUN.t * 10); rect(g, x - 2, y - 2, w + 4, 22, col); g.globalAlpha = 1; }
     box(g, x, y, w, 18, 'rgba(27,19,37,0.82)', PAL.ink);
-    text(g, labelStr, x + 3, y, { col: PAL.white });
+    text(g, labelStr, x + 3, y, HUD_OPT.white);
     UI.bar(g, x + 3, y + 11, w - 6, 5, frac, col);
   },
   /** Time left, top centre: seconds and a draining bar. */
   timer(g, secs, frac) {
     const w = 64, x = Math.round((VIEW.W - w) / 2), y = 32;
     box(g, x, y, w, 20, 'rgba(27,19,37,0.82)', PAL.ink);
-    text(g, label('hud.secs', Math.max(0, Math.ceil(secs))), x + w / 2, y + 1, { align: 'center', col: secs < 10 ? PAL.r3 : PAL.white });
+    HUD_OPT.timer.col = secs < 10 ? PAL.r3 : PAL.white;
+    text(g, label('hud.secs', Math.max(0, Math.ceil(secs))), x + w / 2, y + 1, HUD_OPT.timer);
     UI.bar(g, x + 3, y + 13, w - 6, 5, frac, secs < 10 ? PAL.r2 : PAL.w3);
   },
   /** A score box, top right. */
   score(g, value, labelKey) {
     const s = fmt(value), w = Math.max(56, textW(s) + 12), x = VIEW.W - w - 6, y = 4;
     box(g, x, y, w, 24, 'rgba(27,19,37,0.82)', PAL.ink);
-    text(g, t(labelKey || 'hud.score'), x + w / 2, y + 1, { align: 'center', col: PAL.grey });
-    text(g, s, x + w / 2, y + 12, { align: 'center', col: PAL.r4 });
+    text(g, t(labelKey || 'hud.score'), x + w / 2, y + 1, HUD_OPT.grey);
+    text(g, s, x + w / 2, y + 12, HUD_OPT.val);
   },
   /** A short message in the middle (Perfect! Good! Miss). */
   pop(x, y, key, col) { UI.float(x, y, t(key), col || PAL.r4); },

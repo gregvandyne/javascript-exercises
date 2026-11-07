@@ -21,7 +21,7 @@
   ];
   const S = {
     time: 0, nextStep: 0, nN: 0, open: 0, passed: 0, pts: 0, score: 0, combo: 0, maxCombo: 0, perfects: 0, goods: 0, misses: 0, wrong: 0,
-    target: 0.6, perfW: 0.075, goodW: 0.16, done: false, auto: false, ctx: null, rana: 0,
+    target: 0.65, lat: 0, perfW: 0.075, goodW: 0.16, done: false, auto: false, ctx: null, rana: 0,
     hitT: [9, 9, 9], hitQ: [0, 0, 0], ranaT: [9, 9, 9], lastRanaDrum: 1, cappyT: 9, cappyDrum: 1, roundFlash: 0, roundDone: -1,
     notes: [], first: new Int16Array(ROUNDS), count: new Int8Array(ROUNDS), call: new Int8Array(TOTAL_BARS * 16 + 32),
     bg: null, bgGen: -1, bgKey: 0, L: { rx: 0, ry: 0, rw: 0, rh: 0, zy: 0, zh: 0, dy: 0, dh: 0, dw: 0, dx: 0, gap: 0, k: 1 },
@@ -156,7 +156,8 @@
     if (S.done) return;
     ctx.sfx(DRUM_SFX[d]);
     S.hitT[d] = 0; S.cappyT = 0; S.cappyDrum = d;
-    const tm = S.time;
+    // judged against when the sound reached the ear: the speakers' (or headphones') delay is taken off
+    const tm = S.time - S.lat;
     let best = -1, bestDt = 9, other = false;
     for (let i = S.open; i < S.nN; i++) {
       const nt = S.notes[i]; if (nt.t - tm > S.goodW) break;
@@ -166,7 +167,13 @@
       if (dt < bestDt) { bestDt = dt; best = i; }
     }
     if (best >= 0) { const q = bestDt <= S.perfW ? 1 : 2; S.hitQ[d] = q; judge(S.notes[best], q, ctx); }
-    else if (other) { S.wrong++; S.combo = 0; S.hitQ[d] = 3; ctx.sfx('frogWrong'); const L = S.L; UI.float(L.dx + d * (L.dw + L.gap) + L.dw / 2, L.dy - 4, t('frog.wrong'), '#ffb3d6'); }
+    else if (other || phaseAt(tm) === 2) {
+      // the wrong drum, or an extra beat in your answer bar: it counts like a miss and costs a point
+      // (so drumming on everything all the time never beats Rana)
+      S.wrong++; S.combo = 0; S.hitQ[d] = 3; S.pts = Math.max(0, S.pts - 1); S.score = Math.max(0, S.score - 40);
+      ctx.sfx('frogWrong');
+      if (other) { const L = S.L; UI.float(L.dx + d * (L.dw + L.gap) + L.dw / 2, L.dy - 4, t('frog.wrong'), '#ffb3d6'); }
+    }
     else S.hitQ[d] = 0;
   }
   function update(dt, ctx) {
@@ -178,7 +185,7 @@
     const ac = AUDIO.ctx, live = ac && ac.state === 'running';
     while (S.nextStep * ST < tm + 0.09) {
       const when = S.nextStep * ST - tm;
-      if (live && when > -0.03 && !S.done) playStep(S.nextStep, Math.max(0, when));
+      if (live && !AUDIO.muted && when > -0.03 && !S.done) playStep(S.nextStep, Math.max(0, when));
       S.nextStep++;
     }
     // Rana's drums light up as she plays them
@@ -193,7 +200,7 @@
       const nt = S.notes[i]; if (nt.t - S.jitter > tm) break;
       if (nt.j || nt.bot === 2) continue;
       if (nt.bot === 0) { nt.bot = S.rand() < S.skip ? 2 : 1; nt.bo = (S.rand() * 2 - 1) * S.jitter; if (nt.bot === 2) continue; }
-      if (tm >= nt.t + nt.bo) { nt.bot = 2; hit(nt.drum, ctx); }
+      if (tm >= nt.t + nt.bo + S.lat) { nt.bot = 2; hit(nt.drum, ctx); }
     }
     // notes whose window has closed are misses; Rana scores for every note that goes by
     while (S.open < S.nN) {
@@ -462,7 +469,9 @@
       S.time = 0; S.nextStep = 0; S.open = 0; S.passed = 0; S.pts = 0; S.score = 0; S.combo = 0; S.maxCombo = 0; S.perfects = 0; S.goods = 0; S.misses = 0; S.wrong = 0;
       S.done = false; S.auto = false; S.jitter = 0; S.skip = 0; S.rand = ctx.rng; S.rana = 0; S.roundFlash = 0; S.roundDone = -1;
       for (let i = 0; i < 3; i++) { S.hitT[i] = 9; S.ranaT[i] = 9; S.hitQ[i] = 0; }
-      S.target = ctx.easy ? 0.42 : 0.56; S.perfW = ctx.easy ? 0.1 : 0.075; S.goodW = ctx.easy ? 0.22 : 0.16;
+      S.target = ctx.easy ? 0.45 : 0.65;
+      // the output delay of the speakers or headphones (Bluetooth can be 0.2 s), at most 0.25 s
+      S.lat = 0; try { const ac = AUDIO.ctx; if (ac) S.lat = clamp((ac.outputLatency || 0) || (ac.baseLatency || 0), 0, 0.25); } catch (e) { S.lat = 0; } S.perfW = ctx.easy ? 0.1 : 0.075; S.goodW = ctx.easy ? 0.22 : 0.16;
       buildChart(ctx);
     },
     update,

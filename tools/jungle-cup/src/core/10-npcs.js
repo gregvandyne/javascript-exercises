@@ -97,7 +97,8 @@ function talkLines(n) {
     case 'elder': {
       const q = qState('specs');
       if (q === 'got') { giveReward('specs'); return L('elder', 'qthanks'); }
-      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; return L('elder', 'totem1', 'totem2', 'totem3'); }
+      // the first talk: the totem's story, then straight on to her lost spectacles (so nobody misses the quest)
+      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
       return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
@@ -106,7 +107,7 @@ function talkLines(n) {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 ? 'liftopen' : 'after');
+      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
     }
     case 'marm': return L('marm', 'hi');
     default: {
@@ -120,6 +121,20 @@ function talkLines(n) {
   }
 }
 JC.talkLines = talkLines;
+/** Does this NPC have something new (a quest to offer, a reward to give)? A "!" bubble shows over them. */
+function hasNews(n) {
+  const f = SAVE.featherCount(), fl = SAVE.data.flags;
+  switch (n.id) {
+    case 'mango': { const q = qState('mango'); return !fl.metMango || q === 'got' || (!q && f >= 1); }
+    case 'elder': { const q = qState('specs'); return !fl.metElder || !q || q === 'got'; }
+    case 'pip': { const q = qState('shells'); return !q || (q === 'active' && questItemsGot('shells') >= questItemsTotal('shells')); }
+    case 'ants': { const q = qState('leaf'); return !q || q === 'got'; }
+    case 'zuzu': return !qState('letter');
+    case 'tapir': return qState('letter') === 'active';
+    default: return false;
+  }
+}
+JC.hasNews = hasNews;
 /** Picking up a quest item where Cappy stands (or in front of him). */
 function pickItem(it) {
   SAVE.data.flags['got_' + it.quest + it.i] = 1;

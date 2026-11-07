@@ -9,20 +9,23 @@
 // from the view size each frame.
 // ======================================================================================================
 (function () {
-  const TIME = 60, ROWS = 3, PER_ROW = 4, POINTS = [100, 75, 50], FLIGHT = [0.62, 0.5, 0.38], RELOAD = 0.42;
+  const TIME = 60, ROWS = 3, PER_ROW = 10, SPACING = 110, POINTS = [100, 75, 50], FLIGHT = [0.62, 0.5, 0.38], RELOAD = 0.42;
+  // a seed that splashes takes longer to reload, and at most two of yours fly at once: firing without aiming never pays
+  const MISS_RELOAD = 1.2, MAX_FLYING = 2;
   const S = {
     time: 0, you: 0, tico: 0, hits: 0, shots: 0, streak: 0, bestStreak: 0, over: false, won: false, finishT: 0,
     aimX: 0, aimRow: 1, aimOn: true, drag: false, dragId: -1, sx: 0, sy: 0, pullX: 0, pullY: 0, reload: 0, auto: false, autoT: 0, sigma: 0,
     ticoT: 2, ticoFlap: 0, cappyRecoil: 0, hint: 1, ctx: null,
-    k: 1, bgK: 0, rowY: [0, 0, 0], kr: [1, 1, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0], rowDir: [1, -1, 1], lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
+    k: 1, bgK: 0, rowY: [0, 0, 0], kr: [1, 1, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0], rowDir: [1, -1, 1], nPer: 4, wrap: 450, lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
     fruit: [], seeds: [], rips: [], bg: null, bgGen: -1, pads: null, padsGen: -1,
   };
-  for (let r = 0; r < ROWS; r++) for (let i = 0; i < PER_ROW; i++) S.fruit.push({ row: r, i, x: 0, on: true, gone: 0, pop: 0, bob: 0, kind: 0 });
+  for (let r = 0; r < ROWS; r++) for (let i = 0; i < PER_ROW; i++) S.fruit.push({ row: r, i, x: 0, on: true, use: true, gone: 0, pop: 0, bob: 0, kind: 0 });
   for (let i = 0; i < 8; i++) S.seeds.push({ on: false, who: 0, x0: 0, y0: 0, x1: 0, y1: 0, t: 0, T: 0.5, row: 0, target: null, hit: false });
   for (let i = 0; i < 12; i++) S.rips.push({ on: false, x: 0, y: 0, t: 0, big: false });
-  const HIT_R = [7, 10, 12], BASE_K = [1, 2, 2];
-  /** How close a seed must land to a fruit's centre (bigger when the fruit is drawn bigger, and with Easier champions). */
-  const hitR = (ctx, r) => Math.round(HIT_R[r] * (1 + (S.kr[r] / BASE_K[r] - 1) * 0.5)) + (ctx.easy ? 3 : 0);
+  const HIT_R = [10, 12, 14], BASE_K = [1, 2, 2];   // BASE_K: the fruit scale the lily pads are sized for
+  /** How close a seed must land to a fruit's centre: the same on every screen (a short landscape lagoon draws the fruit
+   *  smaller, but it is not harder to hit), a little more with Easier champions. */
+  const hitR = (ctx, r) => HIT_R[r] + (ctx.easy ? 3 : 0);
 
   /* ---------- sprites ---------- */
   function grid(w, h) { const g = []; for (let y = 0; y < h; y++) { const r = []; for (let x = 0; x < w; x++) r.push('.'); g.push(r); } return g; }
@@ -78,10 +81,16 @@
     S.slX = Math.round(W * 0.42); S.slY = H - 10;
     S.tcX = W - 24; S.tcY = H - 12;
     if (first) S.aimX = S.slX;
-    // spread the fruit across the row (wrapping round the edges)
-    for (const f of S.fruit) f.x = ((f.i + (f.row % 2) * 0.5) / PER_ROW) * (W + 60) - 30;
+    // spread the fruit across the row (wrapping round the edges), always the same distance apart, so a wide screen has
+    // more fruit but never more crowded rows (the game is as hard on a phone as on a laptop)
+    S.nPer = clamp(Math.ceil((W + 60) / SPACING), 3, PER_ROW); S.wrap = S.nPer * SPACING;
+    for (const f of S.fruit) {
+      f.use = f.i < S.nPer;
+      f.x = ((f.i + (f.row % 2) * 0.5) / S.nPer) * S.wrap - 30;
+      if (!f.use) { f.on = false; f.gone = 1e9; } else if (f.gone > 1e8) { f.on = true; f.gone = 0; }
+    }
   }
-  const wrapW = () => S.W + 60;
+  const wrapW = () => S.wrap;
 
   /* ---------- play ---------- */
   function rowSpeed(ctx, r) { const k = 1 + 0.25 * (S.time / TIME); return [33, 25, 18][r] * (ctx.easy ? 0.72 : 1) * k; }
@@ -96,6 +105,8 @@
   }
   function shoot(ctx) {
     if (S.over || S.reload > 0) return;
+    let flying = 0; for (const sd of S.seeds) if (sd.on && sd.who === 0) flying++;
+    if (flying >= MAX_FLYING) return;
     if (!fire(ctx, 0, S.aimX, S.aimRow, null)) return;
     S.reload = RELOAD; S.shots++; S.cappyRecoil = 0.25; S.hint = Math.max(0, S.hint - 0.35);
   }
@@ -123,20 +134,29 @@
     } else {
       ripple(sd.x1, S.rowY[r], r === 2);
       ctx.sfx('splash');
-      if (sd.who === 0) { S.streak = 0; }
+      if (sd.who === 0) { S.streak = 0; S.reload = Math.max(S.reload, MISS_RELOAD); }
     }
   }
   function ripple(x, y, big) { for (const p of S.rips) if (!p.on) { p.on = true; p.x = x; p.y = y; p.t = 0; p.big = big; UI.burst(x * S.k, (y - 2) * S.k, 5, '#c8f6ff', 40); return; } }
   /** Tico's turn: he picks a fruit, leads it, and lands it most of the time; faster as the clock runs down. */
   function ticoShoot(ctx) {
-    const rr = ctx.rng(), row = rr < 0.2 ? 0 : rr < 0.55 ? 1 : 2;
-    let f = null;
-    for (let k = 0; k < PER_ROW * 2 && !f; k++) { const c = S.fruit[row * PER_ROW + ((ctx.rng() * PER_ROW) | 0)]; if (c.on && c.x > 20 && c.x < S.W - 40) f = c; }
-    if (!f) return;
+    const rr = ctx.rng();
+    let row = rr < 0.2 ? 0 : rr < 0.55 ? 1 : 2, f = null;
+    // his row first, then the others: on a narrow screen there are fewer fruit in view, and Tico must not lose turns
+    for (let n = 0; n < ROWS && !f; n++, row = (row + 1) % ROWS) {
+      const k0 = (ctx.rng() * S.nPer) | 0;
+      for (let k = 0; k < S.nPer && !f; k++) {
+        const c = S.fruit[row * PER_ROW + (k0 + k) % S.nPer], lx = fruitX(c, FLIGHT[row] + 0.08);
+        if (c.on && lx > 16 && lx < S.W - 16 && Math.abs(lx - c.x) < 40) f = c;
+      }
+      if (f) break;
+    }
+    if (!f) return false;
     const T = FLIGHT[row] + 0.08, lead = fruitX(f, T);
-    const p = ctx.easy ? 0.5 : 0.6, hit = ctx.rng() < p;
+    const p = ctx.easy ? 0.5 : 0.62, hit = ctx.rng() < p;
     const sd = fire(ctx, 1, hit ? lead : lead + (ctx.rng() < 0.5 ? -1 : 1) * (hitR(ctx, row) + 6 + ctx.rng() * 8), row, f);
     if (sd) { sd.hit = hit; S.ticoFlap = 0.35; }
+    return true;
   }
   function update(dt, ctx) {
     S.ctx = ctx; layout(ctx);
@@ -154,16 +174,16 @@
     for (const f of S.fruit) {
       f.x = fruitX(f, dt); f.bob += dt;
       if (f.pop > 0) f.pop -= dt;
-      if (!f.on) { f.gone -= dt; if (f.gone <= 0 && (f.x < -10 || f.x > S.W + 10 || f.gone < -2)) { f.on = true; f.pop = 0; } }
+      if (!f.on && f.use) { f.gone -= dt; if (f.gone <= 0 && (f.x < -10 || f.x > S.W + 10 || f.gone < -2)) { f.on = true; f.pop = 0; } }
     }
     for (const sd of S.seeds) if (sd.on) { sd.t += dt; if (sd.t >= sd.T) { sd.on = false; land(ctx, sd); } }
     for (const p of S.rips) if (p.on) { p.t += dt; if (p.t > 0.8) p.on = false; }
     // Tico: steady at first, quicker near the end
     S.ticoT -= dt;
     if (S.ticoT <= 0 && !S.over) {
-      ticoShoot(ctx);
-      const k = S.time / TIME, a = ctx.easy ? 3.8 : 3.0, b = ctx.easy ? 2.6 : 1.9;
-      S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3);
+      // nothing in view: he looks again in a moment instead of waiting a whole turn
+      if (!ticoShoot(ctx)) S.ticoT = 0.3;
+      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.5, b = ctx.easy ? 2.6 : 1.6; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3); }
     }
     if (S.auto) bot(dt, ctx);
     if (!S.over && S.time >= TIME) {
@@ -176,7 +196,7 @@
   function end(ctx) {
     S.finishWait = 0;
     S.won = S.you > S.tico;
-    const stars = S.won ? 1 + (S.you >= 1300 ? 1 : 0) + (S.you >= 1800 ? 1 : 0) : 0;
+    const stars = S.won ? 1 + (S.you >= 1700 ? 1 : 0) + (S.you >= 2300 ? 1 : 0) : 0;
     const frac = S.won ? [0.34, 0.67, 1][stars - 1] : clamp(S.you / Math.max(1, S.tico), 0, 1) * 0.32;
     UI.banner(t(S.won ? 'ss.youWin' : 'ss.ticoWins'), S.won ? PAL.r4 : '#ffb3d6', 1.2);
     ctx.sfx(S.won ? 'cheer' : 'miss');
@@ -312,7 +332,7 @@
     for (let r = 0; r < ROWS; r++) {
       const y = S.rowY[r], pad = S.pads[r], sp = SPRITES[FRUIT[r]], k = S.kr[r];
       for (const f of S.fruit) {
-        if (f.row !== r) continue;
+        if (f.row !== r || !f.use) continue;
         const x = Math.round(f.x), bob = Math.round(Math.sin(f.bob * 2.4 + f.i) * 0.8);
         g.drawImage(pad.c, x - (pad.w >> 1), y - (pad.h >> 1) + bob);
         if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
@@ -371,7 +391,7 @@
       S.time = 0; S.you = 0; S.tico = 0; S.hits = 0; S.shots = 0; S.streak = 0; S.bestStreak = 0; S.over = false; S.won = false; S.finishWait = 0;
       S.aimX = S.slX; S.aimRow = 1; S.aimOn = true; S.drag = false; S.reload = 0; S.auto = false; S.autoT = 0; S.sigma = 0;
       S.ticoT = ctx.easy ? 3.2 : 2.4; S.ticoFlap = 0; S.cappyRecoil = 0; S.hint = ctx.firstTime ? 1.8 : 0.8;
-      for (const f of S.fruit) { f.on = true; f.gone = 0; f.pop = 0; f.bob = Math.random() * 3; }
+      for (const f of S.fruit) { f.on = f.use; f.gone = f.use ? 0 : 1e9; f.pop = 0; f.bob = Math.random() * 3; }
       for (const s of S.seeds) s.on = false;
       for (const p of S.rips) p.on = false;
     },

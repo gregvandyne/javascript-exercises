@@ -351,6 +351,8 @@
     S.amp = clamp(Math.floor(VW.W / 2 - S.half - 18), 0, 44);
     S.ppm = VW.H < 300 ? 2.5 : 3.4;
     S.py = Math.round(VW.H - S.ctrlH / S.Z - (VW.H < 300 ? 30 : 46));
+    // a wide, short view: Cappy's canoe a little higher, so there is room under it and he still sees what is coming
+    if (VW.W > VW.H) S.py = Math.min(S.py, Math.round(VW.H * 0.7));
   }
   // The river and its banks are painted once per layout into two tall strips (two water frames for the current),
   // covering the whole course; each frame draws one slice of a strip plus a few moving streaks.
@@ -543,7 +545,7 @@
   }
   function draw(g, ctx) {
     layout(ctx);
-    const shake = S.shake > 0 ? Math.round(Math.sin(S.time * 70) * 2) : 0;
+    const shake = S.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.time * 70) * 2) : 0;
     S.camY = Math.round(S.d * S.ppm);
     g.save();
     if (S.Z > 1) g.scale(S.Z, S.Z);
@@ -576,6 +578,20 @@
       if ((o.kind === LOG && S.jumpT <= 0) || (o.kind === BRANCH && S.duckT <= 0)) {
         if (((S.time * 8) | 0) % 2) { const x = laneX(S.d, S.lx), yy = S.py - 16; (o.kind === LOG ? ARROW.jump : ARROW.duck)(g, x, yy); }
         break;
+      }
+    }
+    // rivals out of sight ahead: their face at the top edge in their lane, with an arrow, so the race is always visible
+    const topY = Math.round(40 / S.Z);
+    for (let i = 0; i < 3; i++) {
+      const r = S.rivals[i]; if (r.finT && r.d > LEN + 40) continue;
+      const y = yOf(r.d), botY = Math.round(VW.H - S.ctrlH / S.Z - 12);
+      if (y < topY) {
+        const x = Math.round(laneX(S.d + S.py / S.ppm, r.lx)), sp = SPRITES[r.rider];
+        ARROW.jump(g, x, topY - 2);
+        if (sp) spr(g, sp, x - (sp.w >> 1), topY + 4);
+      } else if (y > VW.H + 4) {
+        // behind, out of sight: a small arrow at the bottom edge in their lane
+        ARROW.duck(g, Math.round(laneX(S.d, r.lx)), botY);
       }
     }
     g.restore();

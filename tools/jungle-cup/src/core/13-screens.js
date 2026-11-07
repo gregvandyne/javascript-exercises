@@ -157,7 +157,7 @@ function buildMini() {
   g.fillStyle = '#1d5e3a'; disc(g, 36 * 2 + 1, 10 * 2, 9, '#1d5e3a');
   MAP.mini = c;
 }
-MAP.enter = function (opts) { MAP.tab = (opts && opts.tab) || 'map'; MAP.from = (opts && opts.from) || 'world'; if (!MAP.mini) buildMini(); UI.setFocus('close'); };
+MAP.enter = function (opts) { UI.clearFx(); MAP.tab = (opts && opts.tab) || 'map'; MAP.from = (opts && opts.from) || 'world'; if (!MAP.mini) buildMini(); UI.setFocus('close'); };
 MAP.update = function (dt) { MAP.t += dt; };
 function closeMap() { AUDIO.sfx('back'); JC.go('world'); }
 MAP.onInput = function (e) {
@@ -196,47 +196,66 @@ function panelFrame(g, titleKey) {
   UI.iconButton(g, 'close', c.x + c.w - r, c.y + r - 2, UI.icons.close, { col: '#b4302f' });
   return { x: c.x, y: c.y + r * 2 + 2, w: c.w, h: c.h - r * 2 - 2 };
 }
+function drawFeatherRow(g, x, y) {
+  for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
+  text(g, label('map.feathers', SAVE.featherCount()), x + 82, y, ROWTEXT2);
+}
+const ROWTEXT2 = { col: PAL.ink, edge: null };
+const BESTTEXT = { col: '#5e3820', edge: null, align: 'right' };
+/** The map tab: the minimap, the Feathers and a row per sport. The rows never get smaller than a finger: when the
+ *  screen is short they go into two or three columns, and on a very short screen the minimap steps aside. */
 function drawMapTab(g) {
   const area = panelFrame(g, 'map.title');
   const land = area.w > area.h * 1.15;
-  const rowH = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap);
-  // the minimap
-  let mx, my, mw, mh;
-  const listW = land ? Math.min(250, area.w * 0.55) : area.w;
-  const mapMaxW = land ? area.w - listW - 6 : area.w, mapMaxH = land ? area.h - bh - 6 : Math.max(60, area.h - rowH * 7 - 18 - bh - 10);
-  const sc = Math.max(0.5, Math.min(mapMaxW / (MW * 2), mapMaxH / (MH * 2)));
-  const k = sc >= 1 ? Math.floor(sc) : sc;
-  mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
-  mx = area.x + Math.round((mapMaxW - mw) / 2); my = area.y;
-  box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
-  g.drawImage(MAP.mini, mx, my, mw, mh);
-  const mk = mw / MW;
-  for (const id of JC.sportOrder) { const a = ARCHES[id]; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
-  disc(g, mx + 36 * mk + mk / 2, my + 37 * mk, 2, '#a8703e');
-  if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
-  // the Feathers
-  let fy = my + mh + 4;
-  const fx0 = land ? area.x + listW + 6 : area.x;
-  if (!land) { for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), area.x + 2 + i * 11, fy); else rect(g, area.x + 4 + i * 11, fy + 3, 3, 6, '#b8a888'); } text(g, label('map.feathers', SAVE.featherCount()), area.x + 82, fy, { col: PAL.ink, edge: null }); fy += 14; }
-  // the sport rows
-  const lx = land ? area.x + mapMaxW + 6 : area.x, ly0 = land ? area.y : fy;
-  if (land) { for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), lx + 2 + i * 11, ly0); else rect(g, lx + 4 + i * 11, ly0 + 3, 3, 6, '#b8a888'); } }
-  const rows0 = land ? ly0 + 14 : ly0;
-  const avail = area.y + area.h - bh - 4 - rows0;
-  const rh = Math.min(rowH, Math.max(16, Math.floor(avail / 7) - 2));
+  const rh = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap), GAP = 3;
+  const listH = area.h - bh - 6;                  // room above the buttons
+  const rowsH = cols => Math.ceil(7 / cols) * (rh + GAP);
+  // pick the first layout that fits: [minimap?, columns]
+  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0;
+  const tries = land ? [[1, 1], [1, 2], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
+  for (let i = 0; i < tries.length; i++) {
+    const m = !!tries[i][0], c = tries[i][1];
+    if (land && m) {
+      const lw = Math.min(c === 1 ? 250 : 330, area.w * (c === 1 ? 0.55 : 0.66));
+      const mw = area.w - lw - 6, fit = rowsH(c) + 14 <= listH;
+      if (fit && mw >= 90) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; break; }
+    } else if (m) {
+      const mh = listH - 16 - rowsH(c) - 4;
+      if (mh >= 56) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; break; }
+    } else if (rowsH(c) + 16 <= listH || i === tries.length - 1) { withMap = false; cols = c; listW = area.w; break; }
+  }
+  let mx = area.x, my = area.y, mw = 0, mh = 0;
+  if (withMap) {
+    const sc = Math.max(0.5, Math.min(mapW / (MW * 2), mapH / (MH * 2)));
+    const k = sc >= 1 ? Math.floor(sc) : sc;
+    mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
+    mx = area.x + Math.round((mapW - mw) / 2); my = area.y;
+    box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
+    g.drawImage(MAP.mini, mx, my, mw, mh);
+    const mk = mw / MW;
+    for (const id of JC.sportOrder) { const a = ARCHES[id]; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
+    disc(g, mx + 36 * mk + mk / 2, my + 37 * mk, 2, '#a8703e');
+    if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
+  }
+  // the Feathers, then the rows
+  const lx = withMap && land ? area.x + area.w - listW : area.x;
+  let ly = withMap && !land ? my + mh + 4 : area.y;
+  drawFeatherRow(g, lx, ly); ly += 15;
+  const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(7 / cols);
   for (let i = 0; i < 7; i++) {
-    const id = JC.sportOrder[i], y = rows0 + i * (rh + 2), played = SAVE.data.plays[id], w = land ? listW : area.w;
-    UI.addHit('go:' + id, lx, y, w, rh);
+    const id = JC.sportOrder[i], col = (i / perCol) | 0, row = i % perCol;
+    const x = lx + col * (cw + 4), y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
+    UI.addHit('go:' + id, x, y, w, rh);
     const focused = UI.showFocus && UI.focusedId() === 'go:' + id;
-    box(g, lx, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
-    rect(g, lx + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
-    const ic = iconSprite(id); spr(g, ic, lx + 8, y + ((rh - ic.h) >> 1));
+    box(g, x, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
+    rect(g, x + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
+    const ic = iconSprite(id); spr(g, ic, x + 8, y + ((rh - ic.h) >> 1));
     const best = played ? fmt(SAVE.data.best[id] || 0) : '???';
     ROWTEXT.maxW = w - 16 - 34 - textW(best) - 4;
-    text(g, t('sport.' + id), lx + 16, y + ((rh - 12) >> 1), ROWTEXT);
+    text(g, t('sport.' + id), x + 16, y + ((rh - 12) >> 1), ROWTEXT);
     const st = SAVE.data.stars[id] || 0;
-    for (let s = 0; s < 3; s++) disc(g, lx + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
-    text(g, best, lx + w - 32, y + ((rh - 12) >> 1), { col: '#5e3820', edge: null, align: 'right' });
+    for (let s = 0; s < 3; s++) disc(g, x + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
+    text(g, best, x + w - 32, y + ((rh - 12) >> 1), BESTTEXT);
   }
   // buttons
   const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3);
@@ -267,12 +286,13 @@ function drawConfirm(g) {
   UI.button(g, 'no', area.x, y, bw, bh, t('btn.no'), { col: '#3fae4a' });
   UI.button(g, 'yes', area.x + area.w - bw, y, bw, bh, t('btn.yesNew'), { col: PAL.r2 });
 }
+const CTRL_HEAD = { col: '#2f8a3f', edge: null }, CTRL_HEAD_R = { col: '#2f8a3f', edge: null, align: 'right' }, CTRL_BODY = { col: PAL.ink, edge: null };
 function drawControls(g) {
   const area = panelFrame(g, 'controls.title');
   let y = area.y;
   for (const k of ['touch', 'keys', 'pad']) {
-    text(g, t('controls.' + k), area.x + 2, y, { col: '#2f8a3f', edge: null }); y += 12;
-    y += textBlock(g, t('controls.' + k + '.body'), area.x + 6, y, area.w - 8, { col: PAL.ink, edge: null }) + 6;
+    text(g, t('controls.' + k), RTL ? area.x + area.w - 2 : area.x + 2, y, RTL ? CTRL_HEAD_R : CTRL_HEAD); y += 12;
+    y += textBlock(g, t('controls.' + k + '.body'), area.x + 6, y, area.w - 8, CTRL_BODY) + 6;
   }
 }
 function drawStyle(g) {
@@ -344,6 +364,9 @@ FIN.draw = function (g) {
   TB.draw(g);
 };
 const CRED = { name: 'credits', t: 0 };
+const CRED_LINES = ['credits.1', 'credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
+const CRED_TEXT = { col: PAL.white, align: 'center' };
+const CRED_BTN = { col: '#3fae4a', icon: UI.icons.play };
 CRED.enter = function () { CRED.t = 0; JC.audioWant = 'finale'; UI.setFocus('done'); };
 CRED.update = function (dt) { CRED.t += dt; };
 CRED.onInput = function (e) {
@@ -354,13 +377,17 @@ CRED.draw = function (g) {
   const W = VIEW.W, H = VIEW.H;
   g.fillStyle = '#1a1030'; g.fillRect(0, 0, W, H);
   for (let i = 0; i < 40; i++) rect(g, (i * 97) % W, (i * 61 + CRED.t * 4) % H, 1, 1, i % 3 ? '#fff3a8' : '#8ee070');
-  const lines = ['credits.1', 'credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
-  let y = H - CRED.t * 22;
-  const stop = 20; if (y < stop) y = stop;
+  const bh = Math.max(22, VIEW.tap), bw = Math.min(200, W - 40), btnY = H - bh - 8;
+  // the credits roll in the space above the button (never behind it)
+  g.save(); g.beginPath(); g.rect(0, 0, W, btnY - 6); g.clip();
   if (LOGO.gen !== VIEW.gen) buildLogo();
+  // it rolls up until the last line is in view (or the logo reaches the top, when it all fits)
+  let total = LOGO.h + 8; for (let i = 0; i < CRED_LINES.length; i++) total += wrap(t(CRED_LINES[i]), W - 20).length * LINE_H + 8;
+  let y = H - CRED.t * 22;
+  const stop = Math.min(20, btnY - 6 - total); if (y < stop) y = stop;
   g.drawImage(LOGO.c, Math.round((W - LOGO.w) / 2), Math.round(y));
   y += LOGO.h + 8;
-  for (const k of lines) { y += textBlock(g, t(k), 10, y, W - 20, { col: PAL.white, align: 'center' }) + 8; }
-  const bh = Math.max(22, VIEW.tap), bw = Math.min(200, W - 40);
-  UI.button(g, 'done', Math.round((W - bw) / 2), H - bh - 8, bw, bh, t('btn.freePlay'), { col: '#3fae4a', icon: UI.icons.play });
+  for (let i = 0; i < CRED_LINES.length; i++) y += textBlock(g, t(CRED_LINES[i]), 10, y, W - 20, CRED_TEXT) + 8;
+  g.restore();
+  UI.button(g, 'done', Math.round((W - bw) / 2), btnY, bw, bh, t('btn.freePlay'), CRED_BTN);
 };

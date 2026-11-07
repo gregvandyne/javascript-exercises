@@ -274,18 +274,19 @@ function storyFrame() {
   f.w = w; f.h = h; f.x = Math.round((VIEW.W - w) / 2); f.y = Math.round(top + (availH - h) / 2);
   return f;
 }
+/** A painted panel at the frame's size (painted once, then kept until the view changes). */
+function panelFor(pid, f) { if (!STORY.cache[pid]) STORY.cache[pid] = paintPanel(pid, f.w, f.h); return STORY.cache[pid]; }
 STORY.draw = function (g) {
   const id = STORY.line(); if (!id) return;
   if (STORY.gen !== VIEW.gen) { STORY.cache = {}; STORY.gen = VIEW.gen; }
   const f = storyFrame();
   g.fillStyle = '#1a1226'; g.fillRect(0, 0, VIEW.W, VIEW.H);
   for (let i = 0; i < 24; i++) rect(g, (i * 97 + 13) % VIEW.W, (i * 61 + 7) % VIEW.H, 1, 1, '#3a2a50');
-  const get = pid => { if (!STORY.cache[pid]) STORY.cache[pid] = paintPanel(pid, f.w, f.h); return STORY.cache[pid]; };
   // a soft cream mat round the picture
   rect(g, f.x - 4, f.y - 4, f.w + 8, f.h + 8, '#120c1c'); rect(g, f.x - 3, f.y - 3, f.w + 6, f.h + 6, '#f4e4bc'); rect(g, f.x - 1, f.y - 1, f.w + 2, f.h + 2, '#c8b088');
-  if (STORY.prev && STORY.fade < 1) g.drawImage(get(STORY.prev), f.x, f.y, f.w, f.h);
+  if (STORY.prev && STORY.fade < 1) g.drawImage(panelFor(STORY.prev, f), f.x, f.y, f.w, f.h);
   g.globalAlpha = STORY.prev ? easeOut(STORY.fade) : 1;
-  g.drawImage(get(id), f.x, f.y, f.w, f.h);
+  g.drawImage(panelFor(id, f), f.x, f.y, f.w, f.h);
   g.globalAlpha = 1;
   // Skip, top right
   const bh = Math.max(20, VIEW.tap), lbl = t('btn.skip'), bw = Math.max(bh * 1.6, textW(lbl) + 28);

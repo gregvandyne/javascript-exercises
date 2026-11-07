@@ -133,7 +133,7 @@ test('Banana Kick: intro, a mouse drag and keys shoot, buttons / keys / swipes d
   await shoot(page, 'kick-results-won');
   s = await state(f);
   expect([s.feathersBy.kick, s.stars.kick >= 1, s.best.kick > 0]).toEqual([true, true, true]);
-  expect((await f.evaluate(() => window.__go)).at(-1).won).toBe(true);
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(true);
   // the bot (test hook) wins too
   await J(f, 'step', 600); await J(f, 'tap', 'retry'); await J(f, 'sport', 'seed', 5); await J(f, 'step', 3800);
   await J(f, 'sport', 'auto', true);
@@ -230,7 +230,7 @@ test('Leaf Slide: intro, keys / buttons / swipes / taps jump and trick; a slide 
   await shoot(page, 'leaf-results-won');
   s = await state(f);
   expect([s.feathersBy.leaf, s.stars.leaf >= 1, s.best.leaf > 0]).toEqual([true, true, true]);
-  expect((await f.evaluate(() => window.__go)).at(-1).won).toBe(true);
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(true);
   // the bot wins too
   await J(f, 'step', 600); await J(f, 'tap', 'retry'); await J(f, 'step', 3800);
   await J(f, 'sport', 'auto', true);

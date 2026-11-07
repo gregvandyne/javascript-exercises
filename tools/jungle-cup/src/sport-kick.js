@@ -589,7 +589,7 @@
     layout(ctx);
     buildCappySprites();
     if (!S.bgShoot || S.bgGen !== VIEW.gen || S.bgW !== ctx.W || S.bgH !== ctx.H || S.bgK !== S.K) buildBgs(ctx);
-    const sh = S.shake > 0 ? Math.round(Math.sin(S.shake * 60) * 2) : 0;
+    const sh = S.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.shake * 60) * 2) : 0;
     if (sh) { g.save(); g.translate(sh, 0); }
     if (S.side === 'shoot') drawShoot(g, ctx); else drawKeep(g, ctx);
     if (sh) g.restore();

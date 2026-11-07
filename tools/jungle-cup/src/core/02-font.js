@@ -91,11 +91,14 @@ function drawMarks(x, unit, ox, oy, k) {
     stack += d.length;
   }
 }
-/* Text bitmaps: key -> { c, w, h } at device resolution. */
-const TEXTCACHE = new Map();
+/* Text bitmaps at device resolution: str -> col -> edge -> [scale] -> { c, w, h }. Nested maps, so finding a drawn
+   line needs no new key string each frame. Cleared on resize and when the text style (Pixel / Clear) changes. */
+const TEXTCACHE = { m: new Map(), size: 0, clear() { this.m.clear(); this.size = 0; } };
 function textBitmap(str, col, edge, scale) {
-  const key = (TEXT.clear ? 'C' : 'P') + scale + col + (edge || '') + '|' + str;
-  let b = TEXTCACHE.get(key); if (b) return b;
+  let m1 = TEXTCACHE.m.get(str); if (!m1) { m1 = new Map(); TEXTCACHE.m.set(str, m1); }
+  let m2 = m1.get(col); if (!m2) { m2 = new Map(); m1.set(col, m2); }
+  const ek = edge || ''; let arr = m2.get(ek); if (!arr) { arr = []; m2.set(ek, arr); }
+  let b = arr[scale]; if (b) return b;
   const S = VIEW.S, pad = edge ? 1 : 0;
   if (usesPixel(str)) {
     const u = pixelUnits(str), w = textW(str, 1), k = S * scale;
@@ -116,8 +119,8 @@ function textBitmap(str, col, edge, scale) {
     x.fillStyle = col; x.fillText(str, tx, ty);
     b = { c, w: w + 2 + pad * 2, h: h + pad * 2 };
   }
-  if (TEXTCACHE.size > 600) TEXTCACHE.clear();
-  TEXTCACHE.set(key, b);
+  if (TEXTCACHE.size > 600) { TEXTCACHE.clear(); m1 = new Map(); TEXTCACHE.m.set(str, m1); m2 = new Map(); m1.set(col, m2); arr = []; m2.set(ek, arr); }
+  arr[scale] = b; TEXTCACHE.size++;
   return b;
 }
 /** Draw one line of text. opts: { col, edge (outline colour), align: 'left'|'center'|'right', scale, maxW }. y is the top of
@@ -160,7 +163,13 @@ function textBlock(g, str, x, y, maxW, opts) {
   let o = opts || NOOPT;
   const lines = wrap(str, maxW, o.scale || 1), lh = (o.lineH || LINE_H) * (o.scale || 1);
   const center = o.align === 'center', rtl = RTL && !center;
-  if (rtl && !o._rtl) { o = Object.assign({}, o, { align: 'right', _rtl: true }); }
+  if (rtl && !o._rtl) {
+    // right-to-left: a right-aligned twin of the options, made once per options object (kept in step with it)
+    let r = o._rtlo;
+    if (!r) { r = Object.assign({}, o, { align: 'right', _rtl: true }); o._rtlo = r; }
+    else { r.col = o.col; r.edge = o.edge; r.scale = o.scale; r.maxW = o.maxW; r.lineH = o.lineH; }
+    o = r;
+  }
   for (let i = 0; i < lines.length; i++) text(g, lines[i], center ? x + maxW / 2 : rtl ? x + maxW : x, y + i * lh, o);
   return lines.length * lh;
 }

@@ -18,11 +18,14 @@ OW.enter = function (opts) {
   OW.celebrate = opts && opts.celebrate ? { id: opts.celebrate, t: 0 } : null;
   if (OW.celebrate) { AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H / 3, 60); UI.banner(t('feather.won'), SPORT_COLOURS[OW.celebrate.id], 2.4); }
   OW.camSnap = true;
-  // the raft-arrival panels open each launch (skippable); a new game then has the cousins' hello
-  if (opts && opts.intro) { JC.introSeen = true; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
-  else if (opts && opts.story && !JC.introSeen) { JC.introSeen = true; JC.say(JC.storyLines('intro')); }
+  // the raft-arrival panels open a new game (skippable), then the cousins say hello; Continue shows them once if missed
+  if (opts && opts.intro) { JC.introSeen = true; SAVE.data.flags.storySeen = 1; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
+  // Continue: the panels only for a player who has not seen them yet (once is enough)
+  else if (opts && opts.story && !JC.introSeen && !SAVE.data.flags.storySeen) { JC.introSeen = true; SAVE.data.flags.storySeen = 1; JC.say(JC.storyLines('intro')); }
   else if (opts && opts.say) JC.say(opts.say);
-  OW.later = opts && opts.later ? opts.later : null; OW.laterT = OW.time + ((opts && opts.laterT) || 0);
+  // news for later (Zuzu with the lift news) waits on the island's own clock, so it survives a trip to the map or a sport
+  if (opts && opts.later) { OW.later = opts.later; OW.laterT = OW.time + (opts.laterT || 0); }
+  else if (opts && (opts.intro || opts.reset)) OW.later = null;
 };
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
@@ -147,7 +150,17 @@ function drawCappy(g, x, y, dir, walk, hop) {
   if (c.hat) { const h = SPRITES['hat_' + c.hat]; if (h) spr(g, h, x + 1 + (d === 'right' ? (flip ? -2 : 2) : 0), y - 2 - hop, flip); }
 }
 JC.drawCappy = drawCappy;
+/** A small speech bubble with "!" over someone who has news (drawn as pixels, no text). */
+function newsBubble(g, x, y, t) {
+  const by = y - 13 + (((t * 3) | 0) % 2);
+  rect(g, x + 4, by, 9, 9, PAL.ink); rect(g, x + 5, by + 1, 7, 7, PAL.white); rect(g, x + 7, by + 9, 3, 2, PAL.ink); rect(g, x + 8, by + 8, 1, 2, PAL.white);
+  rect(g, x + 8, by + 2, 1, 3, PAL.r1); rect(g, x + 8, by + 6, 1, 1, PAL.r1);
+}
 function drawNpc(g, n, x, y) {
+  if (!TB.open && ((n.newsT = (n.newsT || 0) + 1) % 30 === 1 ? (n.news = hasNews(n)) : n.news)) newsBubble(g, x, y, n.t);
+  drawNpcBody(g, n, x, y);
+}
+function drawNpcBody(g, n, x, y) {
   const s = SPRITES[n.spr]; if (!s) return;
   const bob = ((n.t * 2) | 0) % 2;
   const flip = n.face === 'left';

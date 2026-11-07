@@ -160,7 +160,8 @@
     }
     ctx.sfx('lsLand'); UI.burst(sx(S.x), sy(S.y), 6, '#9a6234', 40);
     if (S.nTr > 0) {
-      const pts = Math.round(S.pend * S.nTr + 25);
+      // a clean landing banks the tricks plus a landing bonus (so one good trick per ramp keeps up with Kiki)
+      const pts = Math.round(S.pend * S.nTr + 50);
       S.score += pts; S.combos++; S.bestCombo = Math.max(S.bestCombo, S.nTr);
       UI.float(sx(S.x), sy(S.y) - 40, '+' + pts, S.nTr > 1 ? '#ffd24a' : '#8ee070', S.nTr > 2 ? 2 : 1);
       if (S.nTr > 1) { ctx.sfx('star'); S.flash = 0.25; }
@@ -215,7 +216,7 @@
       if (S.kNextLip < S.nR && x0 <= S.ramps[S.kNextLip] && S.kx > S.ramps[S.kNextLip]) {
         const k = S.kNextLip++;
         S.kvy = S.kvx * -(S.rampH[k] * 1.7) / (S.rampBig[k] ? 84 : 64) - POP_V; S.kair = true; S.kairT = 0;
-        S.kTrickQ = Math.round((ctx.easy ? 125 : 195) + S.r() * (ctx.easy ? 55 : 70) + (S.rampBig[k] ? 40 : 0));
+        S.kTrickQ = Math.round((ctx.easy ? 95 : 150) + S.r() * (ctx.easy ? 40 : 50) + (S.rampBig[k] ? (ctx.easy ? 15 : 30) : 0));
       }
       if (S.kNextLog < S.nL && S.kx + 26 > S.logs[S.kNextLog]) { S.kNextLog++; S.kvy = -HOP_V - 10; S.kair = true; S.kairT = 0; S.kTrickQ = 30; }
     } else {
@@ -450,7 +451,7 @@
     else JC.draw.shadow(g, sx(S.x), gy, 10 * S.A);
     const tt = S.trick ? S.trickT / S.trickDur : 0;
     drawRider(g, sx(S.x), sy(S.y), 'ls_leaf', 'cappy', S.trick, tt, S.crash > 0.3 ? S.crash : 0);
-    if (S.flash > 0) { g.globalAlpha = S.flash * 1.2; rect(g, 0, 0, W, H, '#fff8e8'); g.globalAlpha = 1; }
+    if (S.flash > 0 && !BRBX.reduced()) { g.globalAlpha = S.flash * 1.2; rect(g, 0, 0, W, H, '#fff8e8'); g.globalAlpha = 1; }
     // HUD: the two scores, the clock, the combo in the air
     VA.name = t('name.cappy'); VA.score = Math.round(S.score); VB.name = t('name.kiki'); VB.score = Math.round(S.kScore);
     HUD.versus(g, VA, VB);
@@ -473,10 +474,11 @@
       UI.button(g, 'lgrab', x, y, tw, bh, t('ls.grab'), B_G);
     }
     if (!S.over && (S.hint > 0.05) && S.time < 30) {
-      const str = t(ctx.touch ? 'ls.hintTouch' : 'ls.hintKeys'), h = JC.font.wrap(str, W - 12, 1).length * 12;
-      const by = (ctx.touch ? H - Math.max(24, ctx.tap) - 12 : H - 3) - h;
+      // sized from the lines as drawn (outlined text is a pixel taller than LINE_H), clear of the buttons and the edge
+      const str = t(ctx.touch ? 'ls.hintTouch' : 'ls.hintKeys'), n = JC.font.wrap(str, W - 12, 1).length, h = n * JC.font.LINE_H + 2;
+      const by = (ctx.touch ? H - Math.max(24, ctx.tap) - 6 - 6 : H - 6) - h;
       g.globalAlpha = clamp(S.hint * 2, 0, 1);
-      rect(g, 0, by - 3, W, h + 4, 'rgba(27,19,37,0.6)'); textBlock(g, str, 6, by, W - 12, HINT);
+      rect(g, 0, by - 3, W, h + 5, 'rgba(27,19,37,0.6)'); textBlock(g, str, 6, by, W - 12, HINT);
       g.globalAlpha = 1;
     }
   }

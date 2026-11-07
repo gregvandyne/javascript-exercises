@@ -71,7 +71,10 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   s = await state(f);
   expect([s.feathers, s.feathersBy.paddle, s.stars.paddle >= 1, s.best.paddle > 0]).toEqual([1, true, true, true]);
   expect(s.sounds).toEqual(expect.arrayContaining(['tick', 'tock', 'win']));
-  const go = await f.evaluate(() => window.__go);
+  // the platform hears about the round when the player leaves the Results card (the site's "New best" message never
+  // covers its buttons), not while the card is up
+  expect(await f.evaluate(() => window.__go.length)).toBe(0);
+  const go = await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; });
   expect(go.at(-1)).toEqual({ won: true, score: 100 * s.stars.paddle + 250 });
   // back to the island: the celebration, the lit socket
   await J(f, 'step', 600);
@@ -83,7 +86,7 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   expect((await state(f)).sport.state.stage).toBe('match');
   s = await playUntilResults(f, 300);
   expect([s.phase, s.result.won, s.result.stars, s.state.them >= 7]).toEqual(['results', false, 0, true]);
-  expect((await f.evaluate(() => window.__go)).at(-1).won).toBe(false);
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(false);
   // losing is never punished: the Feather and the best stay, retry is one tap
   s = await state(f);
   expect([s.feathers, s.best.paddle > 0]).toEqual([1, true]);

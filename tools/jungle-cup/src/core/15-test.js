@@ -43,6 +43,8 @@ const JCT = {
   /** play(id): straight to the countdown; play(id, { intro: true }) shows the intro card first. */
   play(id, o) { if (!JC.sports[id]) return null; JC.go('sport', { id, phase: o && o.intro ? 'intro' : 'count' }, true); return jcState(); },
   win(id) { return finishSport(id || RUN.id, true); },
+  /** What leaving the Results card does first: send the round to the platform (BRB.gameOver). */
+  report() { RUN.sendReport(); return true; },
   lose(id) { return finishSport(id || RUN.id, false); },
   setSave(obj) { SAVE.set(Object.assign({ started: true }, obj || {})); JC.refreshCappy(); return jcState(); },
   save() { return JSON.parse(JSON.stringify(SAVE.data)); },

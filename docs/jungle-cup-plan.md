@@ -114,8 +114,9 @@ outlive the round; one reused state object (no allocation per frame); a "win by 
 
 `src/i18n/<area>.<locale>.js`, each exactly `I18N.<locale> = Object.assign(I18N.<locale> || {}, { 'key': 'text' });`
 (`I18N['en-GB']`, `I18N['zh-Hant']` for the hyphenated ones). Locales: en, en-GB, pt, fr, es, de, he, ja, ar, ru, it,
-zh-Hant, nl. English is the source; every other language has the whole game in `src/i18n/all.<locale>.js` (en-GB
-adds nothing: the English is already British). A new English key falls back to English until it is added there.
+zh-Hant, nl. English is the source, in US spelling like the site's `en.json`; every other language has the whole game
+in `src/i18n/all.<locale>.js` (en-GB holds only the lines spelled differently, such as "colour" and "favourite").
+A new English key falls back to English until it is added there.
 Long words in other languages are narrowed to fit buttons and rows (`text(..., { maxW })`).
 Keys: core `btn.*`, `res.*`, `settings.*`, `map.*`...; people `d.<who>.<line>` and `name.<who>`; a sport's intro card
 needs `sport.<id>.goal`, `sport.<id>.touch`, `sport.<id>.keys` (`sport.<id>` and `vs.<champ>` are in core);

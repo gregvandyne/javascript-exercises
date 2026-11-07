@@ -297,11 +297,17 @@ function drawTotemBase(g, px, py) {
 function drawTotemTop(gt, px, py) {
   const cx = px + 8, base = py + 15;
   rect(gt, cx - 7, base - 58, 14, 25, OUT); rect(gt, cx - 6, base - 57, 12, 24, '#a8703e'); rect(gt, cx - 6, base - 57, 3, 24, '#c48a4c');
-  // the bird head and its wings (the seven sockets sit along the wings)
-  for (let i = 0; i < 24; i++) { const w = 4 + i; rect(gt, cx - w - 6, base - 52 + (i >> 2), w, 1, OUT); rect(gt, cx + 6, base - 52 + (i >> 2), w, 1, OUT); }
-  for (let i = 0; i < 22; i++) { const w = 3 + i; rect(gt, cx - w - 6, base - 51 + (i >> 2), w, 1, i % 6 < 3 ? '#c48a4c' : '#a8703e'); rect(gt, cx + 6, base - 51 + (i >> 2), w, 1, i % 6 < 3 ? '#c48a4c' : '#a8703e'); }
-  rect(gt, cx - 4, base - 54, 3, 3, '#fff8e8'); rect(gt, cx + 1, base - 54, 3, 3, '#fff8e8'); rect(gt, cx - 3, base - 53, 1, 1, OUT); rect(gt, cx + 2, base - 53, 1, 1, OUT);
-  rect(gt, cx - 2, base - 50, 4, 5, '#ffc544'); rect(gt, cx - 1, base - 46, 2, 2, '#d39a22');
+  // a fan of seven carved leaves (each Feather socket sits on one) and a carved sun on top of the pole
+  const so = totemSockets();
+  for (let pass = 0; pass < 2; pass++) for (let i = 0; i < 7; i++) {
+    const s = so[i], x0 = cx, y0 = base - 46, n = 10;
+    for (let k = 0; k <= n; k++) {
+      const x = Math.round(x0 + (s.x - x0) * k / n), y = Math.round(y0 + (s.y + 2 - y0) * k / n);
+      if (pass === 0) rect(gt, x - 1, y - 1, 3, 3, OUT); else rect(gt, x, y, 1, 1, '#c48a4c');
+    }
+    if (pass === 0) oval(gt, s.x, s.y + 1, 5, 4, OUT); else { oval(gt, s.x, s.y + 1, 4, 3, '#a8703e'); rect(gt, s.x - 2, s.y + 1, 4, 1, '#7a4a26'); }
+  }
+  disc(gt, cx, base - 48, 6, OUT); disc(gt, cx, base - 48, 5, '#ffc544'); disc(gt, cx, base - 48, 3, '#d39a22'); rect(gt, cx - 1, base - 49, 2, 2, '#fff3a8');
 }
 /** Where the totem's seven sockets are (pixels, in map space). */
 function totemSockets() {
@@ -333,12 +339,21 @@ function drawArch(g, gt, px, py, o) {
     for (let j = 0; j < 5; j++) { rect(g, sx + (j % 2 ? 9 : 0), py - 18 + j * 7, 3, 3, col); rect(g, sx + (j % 2 ? 10 : 1), py - 17 + j * 7, 1, 1, '#fff8e8'); }
     for (let j = 0; j < 6; j++) rect(g, sx + (j % 2 ? 1 : 10), py - 20 + j * 6, 1, 3, '#3d9a2e');
   }
-  // the beam (over layer) with flowers and the sport's plaque
-  rect(gt, x0, py - 34, 48, 13, OUT); rect(gt, x0 + 1, py - 33, 46, 11, '#8a5a33'); rect(gt, x0 + 1, py - 33, 46, 3, '#b07a44');
-  rect(gt, x0 - 3, py - 36, 54, 4, OUT); rect(gt, x0 - 2, py - 35, 52, 2, '#6e4325');
-  for (let i = 0; i < 9; i++) { const fx = x0 + 2 + i * 5 + (i % 2), fy = py - 23 + (i % 2); rect(gt, fx, fy, 3, 3, col); rect(gt, fx + 1, fy + 1, 1, 1, '#fff8e8'); rect(gt, fx - 1, fy + 2, 2, 1, '#3d9a2e'); }
-  disc(gt, px + 8, py - 29, 8, OUT); disc(gt, px + 8, py - 29, 7, '#fff0c8'); disc(gt, px + 8, py - 29, 6, shade(col, 0.55));
-  const ic = iconSprite(o.id); spr(gt, ic, px + 8 - (ic.w >> 1), py - 29 - (ic.h >> 1));
+  // the top (over layer): a round arch of twisted vines between the posts, woven with flowers, and the sport's
+  // plaque hanging under it on two vine strings
+  const cx = px + 8, cy = py - 20, rx = 16, ry = 15;
+  for (let pass = 0; pass < 3; pass++) {
+    for (let i = 0; i <= 24; i++) {
+      const a = Math.PI * i / 24, x = Math.round(cx + Math.cos(a) * rx), y = Math.round(cy - Math.sin(a) * ry);
+      if (pass === 0) rect(gt, x - 4, y - 4, 8, 8, OUT);
+      else if (pass === 1) { rect(gt, x - 3, y - 3, 6, 6, i % 2 ? '#7a4a26' : '#8a5a33'); rect(gt, x - 3, y - 3, 6, 1, '#b07a44'); }
+      else if (i % 3 === 0) { rect(gt, x - 3 + (i % 2), y - 1, 2, 2, '#3d9a2e'); rect(gt, x + 1, y - 3, 2, 2, '#56b84a'); }
+    }
+  }
+  for (let i = 1; i < 8; i++) { const a = Math.PI * i / 8, fx = Math.round(cx + Math.cos(a) * rx) - 1, fy = Math.round(cy - Math.sin(a) * ry) - 1; rect(gt, fx, fy, 3, 3, col); rect(gt, fx + 1, fy + 1, 1, 1, '#fff8e8'); }
+  rect(gt, cx - 5, cy - ry + 3, 1, 4, '#3d9a2e'); rect(gt, cx + 5, cy - ry + 3, 1, 4, '#3d9a2e');
+  disc(gt, cx, py - 25, 8, OUT); disc(gt, cx, py - 25, 7, '#fff0c8'); disc(gt, cx, py - 25, 6, shade(col, 0.55));
+  const ic = iconSprite(o.id); spr(gt, ic, cx - (ic.w >> 1), py - 25 - (ic.h >> 1));
 }
 function drawMisc(g, gt, o, px, py) {
   switch (o.k) {

@@ -148,6 +148,12 @@ AUDIO.music = function (id, force) {
 };
 AUDIO.songTime = function () { return this.ctx && this.song ? this.ctx.currentTime - this.t0 : -1; };
 AUDIO.stepLen = function () { return this.song ? 60 / this.song.bpm / 4 : 0.125; };
+/** One note of a song part (lead, harmony, bass) at step i, held while the part says '-'. */
+function playPart(bus, arr, i, t, sp, wave, vol) {
+  if (!arr) return; const n = arr[i % arr.length]; if (!n || n === '.' || n === '-') return;
+  let len = 1; while (arr[(i + len) % arr.length] === '-' && len < 16) len++;
+  tone(bus, wave, noteFreq(n), t, sp * len * 0.92, vol, 0, 0.004, 0.09, 0.55);
+}
 AUDIO.tick = function () {
   AUDIO.timer = 0;
   const ctx = AUDIO.ctx, s = AUDIO.song; if (!ctx || !s) return;
@@ -156,14 +162,12 @@ AUDIO.tick = function () {
     if (AUDIO.nextT < ctx.currentTime - 0.5) { AUDIO.nextT = ctx.currentTime + 0.05; }
     while (AUDIO.nextT < ctx.currentTime + 0.15) {
       const i = AUDIO.step % steps, t = AUDIO.nextT + (s.swing && (i & 1) ? sp * s.swing : 0);
-      const bus = AUDIO.musicBus;
-      const play = (arr, wave, vol, oct) => {
-        if (!arr) return; const n = arr[i % arr.length]; if (!n || n === '.' || n === '-') return;
-        let len = 1; while (arr[(i + len) % arr.length] === '-' && len < 16) len++;
-        tone(bus, wave, noteFreq(n) * (oct || 1), t, sp * len * 0.92, vol, 0, 0.004, 0.09, 0.55);
-      };
-      play(p.lead, s.leadWave || 'square', 0.13); play(p.harm, s.harmWave || 'square', 0.06); play(p.bass, 'triangle', 0.32);
-      if (p.drums) { const d = p.drums[i % p.drums.length]; if (d !== '.') drum(bus, d, t, 0.55); }
+      // muted: the song keeps its place but makes no notes (no oscillators for a silent bus)
+      if (!AUDIO.muted) {
+        const bus = AUDIO.musicBus;
+        playPart(bus, p.lead, i, t, sp, s.leadWave || 'square', 0.13); playPart(bus, p.harm, i, t, sp, s.harmWave || 'square', 0.06); playPart(bus, p.bass, i, t, sp, 'triangle', 0.32);
+        if (p.drums) { const d = p.drums[i % p.drums.length]; if (d !== '.') drum(bus, d, t, 0.55); }
+      }
       AUDIO.nextT += sp; AUDIO.step++;
     }
   }

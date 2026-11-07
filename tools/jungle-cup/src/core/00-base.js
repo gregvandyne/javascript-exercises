@@ -51,6 +51,7 @@ JC.math = { clamp, lerp, easeOut, easeOutBack, sign, rng };
 JC.rng = rng;
 
 /* ---------- platform (BRB) ---------- */
+const RM = { q: null };
 const BRBX = {
   ok: () => typeof window.BRB === 'object' && !!window.BRB,
   muted() { try { return !!(window.BRB && BRB.sfx && BRB.sfx.muted); } catch (e) { return false; } },
@@ -59,6 +60,7 @@ const BRBX = {
   set(k, v) { try { if (window.BRB && BRB.storage) { BRB.storage.set(k, v); return true; } } catch (e) { /* ignore */ } return false; },
   remove(k) { try { if (window.BRB && BRB.storage) BRB.storage.remove(k); } catch (e) { /* ignore */ } },
   gameOver(won, score) { try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: !!won, score: Math.max(0, Math.round(score)) }); } catch (e) { /* ignore */ } },
-  reduced() { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } },
+  /** The reduced-motion setting (the media query is made once; reading .matches each frame is cheap). */
+  reduced() { try { if (!RM.q) RM.q = matchMedia('(prefers-reduced-motion: reduce)'); return RM.q.matches; } catch (e) { return false; } },
 };
 JC.brb = BRBX;
