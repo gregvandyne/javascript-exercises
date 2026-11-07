@@ -106,8 +106,8 @@ REG = {'cloth': (0, 0, 0.5, 0.25), 'skin': (0, 0.25, 0.5, 0.5), 'hair': (0, 0.5,
 
 def prop_tex(kind):
     """512/256 px painted detail for the props (repeat-wrapped): plaster, roof tiles, wood grain, leaves, bark."""
-    if kind == 'cottage':   # plaster (the walls mesh)
-        return painted(256, 256, (248, 246, 240), 11, 8, grad=0.04, blot=0.08)
+    if kind == 'cottage':   # plaster (the walls mesh): clean, warm, a few soft trowel marks
+        return painted(256, 256, (252, 250, 245), 11, 5, stroke_col=(236, 230, 220), grad=0.02, blot=0.035)
     if kind == 'roof':      # roof tiles: rows of soft scallops
         T = Image.new('RGB', (256, 256), (238, 238, 238)); d = ImageDraw.Draw(T)
         for row in range(-1, 12):
@@ -395,12 +395,13 @@ def build_granny():
         B.add(decal((0.115 * s, -0.29, 1.12), 0.15, 0.19, 0.36 * s, 0.08), (1, 1, 1), 'eye', 3, 'eye', 'decal')
         B.add(decal((0.19 * s, -0.25, 1.03), 0.08, 0.05, 0.6 * s, 0.1), skin, 'skin', 3, 'blush', 'decal')
         # glasses: a thin gold ring round each eye (a torus, so the eye shows through) and the bridge
-        bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=False, segments=18, radius1=0.085, radius2=0.085, depth=0.012)
-        ring = bmesh.new(); bmesh.ops.create_circle(ring, segments=18, radius=0.09); bm.free()
-        tor = smooth(blathe([(0.085, -0.007), (0.097, -0.007), (0.097, 0.007), (0.085, 0.007)], 18, caps=False))
-        bmesh.ops.transform(tor, matrix=Matrix.Translation((0.115 * s, -0.31, 1.12)) @ euler((math.pi / 2, 0, 0.3 * s)), verts=tor.verts); ring.free()
-        B.add(tor, hexc('#C99A00'), 'metal', 3, 'white')
-    B.add(btube((-0.03, -0.32, 1.13), (0.03, -0.32, 1.13), 0.008, 0.008, 6, 2, cap=False), hexc('#C99A00'), 'metal', 3, 'white')
+        # (a pair that reads as glasses from every side: two thin rounded frames flush with the face, a bridge, and arms
+        # running back to the ears)
+        tor = smooth(blathe([(0.088, -0.006), (0.098, -0.006), (0.098, 0.006), (0.088, 0.006)], 18, caps=False))
+        bmesh.ops.transform(tor, matrix=Matrix.Translation((0.115 * s, -0.297, 1.12)) @ euler((math.pi / 2 + 0.08, 0, 0.36 * s)) @ Matrix.Diagonal((1.08, 1, 0.92, 1)), verts=tor.verts)
+        B.add(tor, hexc('#5C3A26'), 'metal', 3, 'white')
+        B.add(btube((0.205 * s, -0.27, 1.14), (0.29 * s, -0.02, 1.15), 0.007, 0.007, 5, 2, cap=False), hexc('#5C3A26'), 'metal', 3, 'white')
+    B.add(btube((-0.03, -0.317, 1.135), (0.03, -0.317, 1.135), 0.007, 0.007, 5, 2, cap=False), hexc('#5C3A26'), 'metal', 3, 'white')
     B.add(decal((0, -0.288, 0.99), 0.11, 0.07, 0, 0.25), skin, 'skin', 3, 'mouth', 'decal')
     return B
 
@@ -409,7 +410,7 @@ def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
     walls = Builder('cottage_walls'); roof = Builder('cottage_roof')
-    plaster, stone, wood, glass, door = hexc('#FFF4E2'), hexc('#C6C2B5'), hexc('#8A5A3C'), hexc('#93CBF6'), hexc('#BF6A3C')
+    plaster, stone, wood, glass, door = (1.0, 1.0, 1.0), hexc('#C6C2B5'), hexc('#8A5A3C'), hexc('#93CBF6'), hexc('#BF6A3C')
     T = (0.5, 0.0, 1.0)   # tile: 0.5 per metre over the whole (repeat-wrapped) texture
     bm = bbox_rounded((W, D, H), (0, 0, H / 2), 0.22, 1)
     for v in bm.verts:   # a little storybook wonk: the top leans, the middle bulges
@@ -613,9 +614,10 @@ def toon_mat(img):
 def turntable(path, objs, height, n=6, px=220):
     """A strip of n views round the model (EEVEE, the toon review look, one warm sun) for the review sheet."""
     sc = bpy.context.scene; sc.render.engine = 'BLENDER_EEVEE'
-    for o in sc.objects:   # the rest pose (no clip playing)
-        if o.animation_data:
-            for t in o.animation_data.nla_tracks: t.mute = True
+    for o in sc.objects:   # the rest pose (no clip playing; the clips are in the .glb already)
+        if o.animation_data: o.animation_data_clear()
+        if o.pose:
+            for pb in o.pose.bones: pb.rotation_euler = (0, 0, 0); pb.rotation_quaternion = (1, 0, 0, 0); pb.location = (0, 0, 0)
     sc.render.resolution_x = px; sc.render.resolution_y = int(px * 1.25); sc.render.film_transparent = True; sc.render.image_settings.file_format = 'PNG'
     sc.view_settings.view_transform = 'Standard'
     if sc.world is None: sc.world = bpy.data.worlds.new('w')

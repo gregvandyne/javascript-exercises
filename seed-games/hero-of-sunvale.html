@@ -6245,7 +6245,7 @@ if (BREEZE) {
   renderer.shadowMap.type = THREE.BasicShadowMap; sun.shadow.mapSize.set(1024, 1024);
   Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16 }); sun.shadow.camera.updateProjectionMatrix();
   sun.shadow.bias = -0.002; sun.shadow.normalBias = 0.05;
-  SUN_OFFSET.set(32, 15, 10); sun.color.set('#fff2d6');
+  SUN_OFFSET.set(28, 19, 20); sun.color.set('#fff2d6');
   // a painted sky: deep blue overhead to a pale blue by the horizon; blue haze in the distance
   SKY_COLORS.top.set('#1f6fd8'); SKY_COLORS.mid.set('#5aaef0'); SKY_COLORS.horizon.set('#cfeaff');
   scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
@@ -6261,7 +6261,7 @@ function inkMat(rim, flat) { if (BREEZE) return breezeMat({ rim: rim > 1 ? 0.35 
 /* Breeze materials: three's toon lighting with a soft two-step ramp, so the sun's light (and its shadow) is 0 or 1 with a
    short soft edge; then the colour is graded: the lit side warm, the shade side a cool blue-violet, never grey; fills a
    touch more saturated; a warm rim on characters. One program for all of them. */
-const BZ = { sun: { value: new THREE.Color().setRGB(1.06, 1.0, 0.86) }, shade: { value: new THREE.Color().setRGB(0.42, 0.45, 0.82) },
+const BZ = { sun: { value: new THREE.Color().setRGB(1.06, 1.0, 0.86) }, shade: { value: new THREE.Color().setRGB(0.54, 0.55, 0.86) },
   sunK: { value: 2.5 }, tint: { value: new THREE.Color(1, 1, 1) }, rim: { value: new THREE.Color().setRGB(1.0, 0.95, 0.8) } };
 const BZ_RAMP = (() => { const t = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255]), 12, 1, THREE.RedFormat); t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true; return t; })();
 function breezeMat(o) {
@@ -13628,7 +13628,7 @@ const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8'),
 const WIND = { mesh: null, lines: [], seg: 28, rng: makeRng(5), dir: new THREE.Vector3(1, 0, 0.35).normalize() };
 const WV = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
 function windPoint(L, u, out) {
-  const d = WIND.dir, len = 13 * L.len;
+  const d = WIND.dir, len = 7 * L.len;
   out.set(L.x + d.x * u * len - d.z * Math.sin(u * 5 + L.ph) * 0.45, L.y + Math.sin(u * 3.3 + L.ph) * 0.35, L.z + d.z * u * len + d.x * Math.sin(u * 5 + L.ph) * 0.45);
   if (u > 0.66) { const k = (u - 0.66) / 0.34, a = k * Math.PI * 1.9, rr = 1.0 * (1 - k * 0.4); out.x += d.x * (Math.sin(a) * rr - k * 0.6); out.z += d.z * (Math.sin(a) * rr - k * 0.6); out.y += (1 - Math.cos(a)) * rr; }
   return out;
@@ -13652,13 +13652,14 @@ function windFrame(dt) {
   WIND.lines.forEach((L, l) => {
     L.age += dt;
     if (L.age > L.life) {   // a new gust somewhere round the player, upwind
-      const a = r() * Math.PI * 2, d = r() * 8; L.x = fx + Math.cos(a) * d - WIND.dir.x * 6; L.z = fz + Math.sin(a) * d - WIND.dir.z * 6;
-      L.y = heightAt(L.x, L.z) + 1.4 + r() * 3; L.ph = r() * 6; L.len = 0.7 + r() * 0.6; L.age = L.age > 50 ? -r() * 1.5 : -r() * 0.3; L.life = 2.4 + r() * 1.2;
+      const side = r() < 0.5 ? -1 : 1, lat = side * (6 + r() * 7), fwd = 4 + r() * 12;   // to one side of the view, never across its middle
+      L.x = camera.position.x + WV[3].x * fwd - WV[3].z * lat - WIND.dir.x * 3; L.z = camera.position.z + WV[3].z * fwd + WV[3].x * lat - WIND.dir.z * 3;
+      L.y = heightAt(L.x, L.z) + 2.6 + r() * 3; L.ph = r() * 6; L.len = 0.7 + r() * 0.6; L.age = L.age > 50 ? -r() * 1.5 : -r() * 0.3; L.life = 2.4 + r() * 1.2;
     }
     const k = Math.max(0, L.age) / L.life, head = Math.min(1, k * 1.5), tail = Math.max(0, head - 0.5), fade = Math.sin(Math.PI * Math.min(1, k)) * (L.age > 0 ? 1 : 0);
     for (let i = 0; i <= seg; i++) {
       const u = tail + (head - tail) * i / seg, p = windPoint(L, u, WV[0]), q = windPoint(L, Math.min(1, u + 0.01), WV[1]);
-      WV[2].subVectors(q, p).cross(WV[3]).normalize().multiplyScalar(0.11 * Math.sin(Math.PI * i / seg) + 0.02);
+      WV[2].subVectors(q, p).cross(WV[3]).normalize().multiplyScalar(0.045 * Math.sin(Math.PI * i / seg) + 0.008);
       const v = (l * (seg + 1) + i) * 2; pos.setXYZ(v, p.x + WV[2].x, p.y + WV[2].y, p.z + WV[2].z); pos.setXYZ(v + 1, p.x - WV[2].x, p.y - WV[2].y, p.z - WV[2].z);
       const a = fade * Math.min(1, Math.sin(Math.PI * i / seg) * 2.5); al.setX(v, a); al.setX(v + 1, a);
     }
@@ -13812,7 +13813,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-bf079945/breeze-models.js', integrity: 'sha384-WbzV/APKTThVoNzEZYCFC93VwV0Erb1c6fUksnr2NoNdDdp83S+R9Dis2CXf+I/X' };
+const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-1fa5022c/breeze-models.js', integrity: 'sha384-GjfmkyIuapReImCPqzNtBub+h2czRMX5vQcxBDcZGDs3uWjESFlOm5maD+RR670k' };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 function bzLoad() {
@@ -13858,7 +13859,10 @@ function bzCharacter(d, rim) {
   hm.onBeforeCompile = (sh, r) => { base.onBeforeCompile(sh, r); sh.vertexShader = sh.vertexShader.replace('vec3 okn = okN;', 'vec3 okn = objectNormal;'); };
   hm.customProgramCacheKey = () => 'bzInkSkin'; hm.vertexColors = true;
   const hull = new THREE.SkinnedMesh(geo, hm); hull.bind(mesh.skeleton, mesh.bindMatrix); hull.userData.noInk = true; hull.frustumCulled = false; mesh.add(hull);
-  const rest = {}; for (const b of bones) rest[b.name] = { q: b.quaternion.clone(), p: b.position.clone(), b };
+  // rest pose: each bone's local rotation, its world rotation and its parent's (so a pose given in the rig's own axes,
+  // like the game's hero pivots, can be applied whatever way the bone points)
+  const rest = {}; mesh.updateMatrixWorld(true);
+  for (const b of bones) { const w = new THREE.Quaternion(); b.getWorldQuaternion(w); const pw = new THREE.Quaternion(); if (b.parent && b.parent.isBone) b.parent.getWorldQuaternion(pw); rest[b.name] = { q: b.quaternion.clone(), p: b.position.clone(), w, pw, pwi: pw.clone().invert(), b }; }
   const clips = {};
   for (const [name, c] of Object.entries(d.clips || {})) {
     const tracks = c.tracks.map(t => (t.r ? new THREE.QuaternionKeyframeTrack(`${bones[t.bone].name}.quaternion`, c.times, t.r) : new THREE.VectorKeyframeTrack(`${bones[t.bone].name}.position`, c.times, t.t)));
@@ -13883,7 +13887,8 @@ const BZ_Q = new THREE.Quaternion(), BZ_E = new THREE.Euler();
  *  game's right side is the model's +x side (its arm_L and leg_L). */
 function bzHeroFrame() {
   const H = BZM.hero, r = hero.rig; if (!H || !r) return;
-  const set = (bone, rot) => { const R = H.rest[bone]; BZ_Q.setFromEuler(BZ_E.set(rot.x, rot.y, rot.z)); R.b.quaternion.copy(BZ_Q).multiply(R.q); };
+  // local = parentRest^-1 * R * parentRest * localRest: R turns the bone about the rig's own axes, as the game's pivots do
+  const set = (bone, rot) => { const R = H.rest[bone]; BZ_Q.setFromEuler(BZ_E.set(rot.x, rot.y, rot.z)); R.b.quaternion.copy(R.pwi).multiply(BZ_Q).multiply(R.pw).multiply(R.q); };
   set('hips', r.body.rotation); H.rest.hips.b.position.copy(H.rest.hips.p); H.rest.hips.b.position.y += r.body.position.y - 0.9;
   set('chest', r.torso.rotation); set('head', r.head.rotation);
   set('arm_L', r.armR.rotation); set('arm_R', r.armL.rotation); set('leg_L', r.legR.rotation); set('leg_R', r.legL.rotation);
@@ -13893,9 +13898,12 @@ function bzApply(d) {
   BZM.data = d;
   // the hero: the model under the hero's root, the procedural body hidden; the sword and shield ride the model's arms
   const r = hero.rig, H = bzCharacter(d.hero, 0.35); BZM.hero = H; r.root.add(H.root); r.body.visible = false;
-  const handAt = (bone, obj, x, y, z) => { const a = new THREE.Object3D(); a.quaternion.copy(H.rest[bone].q).invert(); H.rest[bone].b.add(a); a.add(obj); obj.position.set(x, y, z); };
-  handAt('arm_L', r.hand, 0.06, -0.34, 0.02);
-  const shieldHolder = new THREE.Group(); handAt('arm_R', shieldHolder, -0.04, 0.06, 0); shieldHolder.add(r.shield, r.shieldGlow);
+  // holders in the rig's own axes at a bone (the inverse of its world rest rotation), for the game's own gear meshes
+  const handAt = (bone, obj, x, y, z) => { const a = new THREE.Object3D(); a.quaternion.copy(H.rest[bone].w).invert(); H.rest[bone].b.add(a); a.add(obj); obj.position.set(x, y, z); };
+  handAt('arm_L', r.hand, 0.05, -0.37, 0.02);
+  const shieldHolder = new THREE.Group(); handAt('arm_R', shieldHolder, 0.02, 0.08, 0); shieldHolder.scale.setScalar(0.85); shieldHolder.add(r.shield, r.shieldGlow);
+  // helmets and hats sit on the model's head (the game still picks which one shows); the model's hair hides under a helmet
+  const hatHolder = new THREE.Group(); handAt('head', hatHolder, 0, 0.14, -0.02); hatHolder.scale.setScalar(1.04); hatHolder.add(r.helmet, r.hat); H.hatHolder = hatHolder;
   bzHeroLook(G.look || defaultLook());
   // Granny Fern: her model in her place, idle (and talk while she talks)
   const n = NPCS.granny;
@@ -13913,7 +13921,7 @@ function bzApply(d) {
   };
   const cot = d.cottage, cmat = breezeMat({ map: bzTex(cot, true) });
   const cplace = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(p.w / 6, p.h / 3.2, p.d / 5); };
-  inst(bzGeo(cot.meshes.walls), cmat, BZ_PROPS.cottage, cplace);
+  inst(bzGeo(cot.meshes.walls), cmat, BZ_PROPS.cottage, cplace, p => p.wall);   // each house its own warm wall colour
   inst(bzGeo(cot.meshes.roof), breezeMat({ map: bzTex(cot.meshes.roof.tex ? cot.meshes.roof : cot, true) }), BZ_PROPS.cottage, cplace, p => '#' + C2.set(p.roof).lerp(WHITE_T, 0.08).getHexString());
   const bar = d.barrel;
   inst(bzGeo(bar.meshes.body), breezeMat({ map: bzTex(bar, true) }), BZ_PROPS.barrel, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(0.95); });
