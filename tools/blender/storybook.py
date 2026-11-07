@@ -679,6 +679,89 @@ def build_big():
     return P
 
 
+CINDER_PAL = {'spell': {'body': '#7d55b8', 'belly': '#b9a3e0', 'horn': '#3f2a5e', 'wing': '#5b3d8a', 'claw': '#2b1d40'},
+              'free': {'body': '#ff6a3d', 'belly': '#ffe3b0', 'horn': '#ffd27f', 'wing': '#ffb36b', 'claw': '#fff1d6'}}
+
+
+def wing_fan(s_, P):
+    """A dragon wing in the shoulder's frame (game space): a round arm bone out along x, three finger bones sweeping
+    back, and a soft membrane between them with a scalloped trailing edge (both faces, so it shows from below too)."""
+    B = Builder('tmp'); bones = []
+    tip = (s_ * 4.4, -0.1, -0.2)
+    bones.append(ttube((0, -0.12, -0.12), tip, 0.2, 0.09, 8, 4))
+    fingers = []
+    for f in range(3):
+        root = (s_ * (1.5 + f * 1.45), -0.1, -0.12); L = 2.6 - f * 0.3; a = 0.15 + f * 0.12
+        end = (root[0] + s_ * math.sin(a) * L * 0.35, -0.12, root[2] - L); fingers.append((root, end))
+        bones.append(ttube(root, end, 0.08, 0.04, 6, 3))
+    # the membrane: shoulder, along the arm, then each finger tip, with a sag between tips
+    pts = [(s_ * 0.3, -0.12, -0.1)] + [fingers[0][0], fingers[0][1]]
+    for f in range(1, 3):
+        a, b = fingers[f - 1][1], fingers[f][1]; m = ((a[0] + b[0]) / 2, -0.12, (a[2] + b[2]) / 2 + 0.55)
+        pts += [m, b]
+    pts += [tip]
+    mem = bmesh.new(); vs = [mem.verts.new(tv(*q)) for q in pts]; c = mem.verts.new(tv(s_ * 2.6, -0.1, -1.0))
+    for i in range(len(vs)):
+        j = (i + 1) % len(vs); f = mem.faces.new([c, vs[i], vs[j]] if s_ > 0 else [c, vs[j], vs[i]]); f.smooth = True
+    back = mem.copy(); bmesh.ops.reverse_faces(back, faces=back.faces[:])
+    for v in back.verts: v.co.z -= 0.012
+    return bones, mem, back
+
+
+def build_cinder(pal):
+    """Cinder (phase 2, step 5): a chunky, friendly storybook dragon in the given palette, one mesh per part in its pivot's
+    frame like the game's: a round body with a big soft belly, stubby legs with round toes and claws, soft spikes down the
+    back; a curving neck with the Gloom Collar; a big round head (the game's eyes sit on it) with a round snout, cheek frills
+    and curly horns; a jaw; two wings (arm, fingers, a scalloped membrane); a tapering tail in two segments with a spade."""
+    P = {k: hexc(v) for k, v in CINDER_PAL[pal].items()}; parts = {}
+
+    def part(n):
+        parts[n] = Builder(f'cinder_{pal}_{n}'); return parts[n]
+    b = part('body')
+    b.add(tsph((0, 2.7, 0), (1.55, 1.45, 2.3), (18, 12)), P['body'], 'cloth', 0, 'skin', wonk=0.02)
+    b.add(tsph((0, 2.25, 0.35), (1.25, 1.1, 1.95), (16, 10)), P['belly'], 'cloth2', 0, 'cloth', wonk=0.015)
+    for i in range(6):   # soft rounded spikes down the back
+        z = 1.5 - i * 0.7; y = 3.9 + math.sin(i / 5 * math.pi) * 0.25
+        b.add(ttube((0, y, z), (0, y + 0.55, z - 0.25), 0.3, 0.05, 7, 3), P['horn'], 'other', 0, 'white')
+    for x, z, r in ((0.95, 1.25, 0.46), (-0.95, 1.25, 0.46), (1.05, -1.25, 0.56), (-1.05, -1.25, 0.56)):
+        b.add(ttube((x, 2.2, z), (x, 0.35, z), r * 1.15, r, 8, 3), P['body'], 'cloth', 0, 'skin')
+        b.add(tsph((x, 0.3, z + 0.12), (r * 1.2, 0.34, r * 1.35), (10, 6)), P['body'], 'cloth', 0, 'skin')
+        for c in (-1, 0, 1): b.add(tsph((x + c * r * 0.5, 0.18, z + r * 1.25), (0.1, 0.1, 0.16), (6, 4)), P['claw'], 'other', 0, 'white')
+    b = part('neck')   # pivot (0, 3.3, 1.8)
+    pts = [(0, -0.3, -0.05), (0, 0.5, 0.35), (0, 1.15, 0.85), (0, 1.75, 1.3)]
+    for i, (a, c) in enumerate(zip(pts, pts[1:])): b.add(ttube(a, c, 0.78 - i * 0.1, 0.68 - i * 0.1, 10, 3), P['body'], 'cloth', 0, 'skin')
+    for i in range(4): b.add(tsph((0, 0.2 + i * 0.42, 0.4 + i * 0.27), (0.48, 0.24, 0.3), (8, 5), (0.62, 0, 0)), P['belly'], 'cloth2', 0, 'cloth')
+    tor = smooth(blathe([(0.74, -0.12), (0.98, -0.12), (0.98, 0.12), (0.74, 0.12)], 18, caps=False))
+    bmesh.ops.transform(tor, matrix=Matrix.Translation(tv(0, 0.25, 0.18)) @ euler((0.62, 0, 0)), verts=tor.verts); b.add(tor, hexc('#3a2350'), 'metal', 0, 'white')
+    b = part('head')   # pivot at the top of the neck; the head keeps the game's eye surface (centre (0, 0.25, 0.1))
+    b.add(tsph((0, 0.25, 0.1), (0.95, 0.85, 1.05), (18, 12)), P['body'], 'cloth', 0, 'skin', wonk=0.01)
+    b.add(tsph((0, 0.05, 0.95), (0.72, 0.5, 0.85), (14, 9)), P['body'], 'cloth', 0, 'skin')
+    b.add(tsph((0, -0.12, 1.05), (0.58, 0.28, 0.75), (12, 8)), P['belly'], 'cloth2', 0, 'cloth')
+    for s_ in (1, -1):
+        b.add(tsph((s_ * 0.25, 0.2, 1.76), (0.07, 0.05, 0.04), (6, 4)), P['belly'], 'other', 0, 'white')
+        hp = [(s_ * 0.42, 0.8, -0.25), (s_ * 0.6, 1.35, -0.55), (s_ * 0.55, 1.6, -0.95), (s_ * 0.38, 1.55, -1.15)]   # a curly horn
+        for i, (a, c) in enumerate(zip(hp, hp[1:])): b.add(ttube(a, c, 0.17 - i * 0.045, 0.13 - i * 0.045, 8, 2), P['horn'], 'other', 0, 'white')
+        for i in range(3): b.add(ttube((s_ * 0.85, 0.15 + i * 0.22, -0.15 - i * 0.12), (s_ * 1.25, 0.3 + i * 0.25, -0.35 - i * 0.12), 0.1, 0.02, 6, 2), P['wing'], 'other', 0, 'white')   # cheek frills
+        b.add(bbox_rounded((0.3, 0.13, 0.08), tv(s_ * 0.34, 0.76, 0.84), 0.035, 2, (0, 0, s_ * 0.25)), hexc('#2b1d40'), 'hair', 0, 'boots')   # brows
+    b = part('jaw')
+    b.add(tsph((0, -0.06, 0.62), (0.62, 0.22, 0.78), (12, 7)), P['belly'], 'cloth2', 0, 'cloth')
+    for s_ in (1, -1): b.add(ttube((s_ * 0.26, 0.0, 1.2), (s_ * 0.26, 0.2, 1.24), 0.05, 0.01, 5, 2), (1, 1, 1), 'other', 0, 'white')
+    for side, s_ in (('wingL', -1), ('wingR', 1)):
+        b = part(side); bones, mem, back = wing_fan(s_, P)
+        for bm in bones: b.add(bm, P['horn'], 'other', 0, 'white')
+        b.add(mem, P['wing'], 'cloth', 0, 'cloth'); b.add(back, P['wing'], 'cloth', 0, 'cloth')
+    b = part('tail1')
+    b.add(ttube((0, 0, 0.2), (0, -0.3, -2.8), 0.75, 0.42, 10, 4), P['body'], 'cloth', 0, 'skin')
+    b.add(ttube((0, 0.55, -1.0), (0, 0.95, -1.35), 0.2, 0.04, 6, 2), P['horn'], 'other', 0, 'white')
+    b = part('tail2')
+    b.add(ttube((0, 0, 0.15), (0, 0, -2.5), 0.42, 0.15, 8, 4), P['body'], 'cloth', 0, 'skin')
+    sp = tsph((0, 0, -2.75), (0.5, 0.12, 0.55), (10, 6))
+    for v in sp.verts:   # a spade: pointed at the back
+        if v.co.y > 2.75: v.co.y += (v.co.y - 2.75) * 0.9
+    b.add(sp, P['horn'], 'other', 0, 'white')
+    return parts
+
+
 def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
@@ -1032,6 +1115,33 @@ def make_big(out, renders):
     return data
 
 
+def make_cinder(out, renders):
+    """Cinder in both palettes (the same meshes): the spellbound one with a second colour set for the freed one."""
+    tex = foe_atlas(); A = build_cinder('spell'); Bf = build_cinder('free')
+    obA = {n: b.mesh(material('cinder_mat_a', to_bimg(tex, 'cinder_tex_a'))) for n, b in A.items()}
+    obB = {n: b.mesh(material('cinder_mat_b', to_bimg(tex, 'cinder_tex_b'))) for n, b in Bf.items()}
+    export_glb(os.path.join(out, 'cinder.glb'), list(obA.values()))
+    meshes = {}
+    for n in obA:
+        ma, mb = compact(obA[n]), compact(obB[n])
+        assert ma['verts'] == mb['verts'], n
+        ma['col2'] = mb['col']   # the freed palette, vertex for vertex
+        meshes[n] = ma
+    data = {'name': 'cinder', 'meshes': meshes, 'tex': tex_url(tex, 80)[0]}
+    if renders:
+        PIV = {'body': (0, 0, 0), 'neck': (0, 3.3, 1.8), 'head': (0, 3.3 + 1.75, 1.8 + 1.35), 'jaw': (0, 3.3 + 1.75 - 0.05, 1.8 + 1.35 + 0.25), 'wingL': (-1.1, 3.6, 0.5), 'wingR': (1.1, 3.6, 0.5),
+               'tail1': (0, 2.5, -2.0), 'tail2': (0, 2.5 - 0.32, -2.0 - 2.7)}
+        for pal, obs in (('spell', obA), ('free', obB)):
+            show = []
+            for n, o in obs.items():
+                o.location = Vector(tv(*PIV[n])); show.append(o)
+            others = obB if pal == 'spell' else obA
+            for o in others.values(): o.hide_render = True
+            for o in obs.values(): o.hide_render = False
+            turntable(os.path.join(out, f'turn_cinder_{pal}.png'), show, 8.5)
+    return data
+
+
 def make_prop(name, builders, tex, out, renders, height, texs=None):
     """texs: an optional texture per builder (the cottage's walls and roof); otherwise one texture for all."""
     texs = texs or [tex] * len(builders); obs = []
@@ -1062,7 +1172,8 @@ def main():
             ('fence', lambda: make_prop('fence', list(build_fence()), prop_tex('wood'), a.out, a.renders, 1.5)),
             ('villager', lambda: make_villager(a.out, a.renders)),
             ('foes', lambda: make_foes(a.out, a.renders)),
-            ('big', lambda: make_big(a.out, a.renders))]
+            ('big', lambda: make_big(a.out, a.renders)),
+            ('cinder', lambda: make_cinder(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()

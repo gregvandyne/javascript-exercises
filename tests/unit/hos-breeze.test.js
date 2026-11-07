@@ -17,7 +17,7 @@ const win = {}; for (const p of Object.values(PACKS)) new Function('window', p.b
 const A = win.__hosBreeze || {};
 const zlib = await import('node:zlib');
 // triangles allowed per asset (the full model; props also carry a lighter lod1)
-const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000, big: 8000 };
+const BUDGET = { hero: 6000, granny: 6000, cottage: 2500, tree: 700, barrel: 600, fence: 300, villager: 9000, foes: 10000, big: 8000, cinder: 7000 };
 const len = b64 => Buffer.from(b64, 'base64').length;
 
 test('the game pins two packs by path and sha384: start (before play) under 500 KB, all under 2 MB and 800 KB brotli', () => {
@@ -68,6 +68,10 @@ test('the foe parts: every rig part the game draws for the blobble, grumblin, ch
 
 test('the bigger foes: the Clank rig parts and Lord Snarlwick\'s robe, head, crown and arms', () => {
   for (const k of ['clank_0', 'clank_1', 'clank_2', 'clank_3', 'snarl_body', 'snarl_head', 'snarl_crown', 'snarl_armL', 'snarl_armR']) assert.ok(A.big.meshes[k], k);
+});
+
+test('Cinder: every part the game poses, each with its freed colours vertex for vertex', () => {
+  for (const k of ['body', 'neck', 'head', 'jaw', 'wingL', 'wingR', 'tail1', 'tail2']) { const m = A.cinder.meshes[k]; assert.ok(m, k); assert.equal(len(m.col2), m.verts * 4, `${k} col2`); }
 });
 
 test('the characters are rigged, with clips for Granny (the hero is posed by the game)', () => {

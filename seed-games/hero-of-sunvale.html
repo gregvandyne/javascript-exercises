@@ -13813,7 +13813,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-828739d5/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-828739d5/breeze-world.js', integrity: 'sha384-3zGskgKpLw2fEWPjtPNQvF/BftceTKbKwGovsfs2+0QEde4bNbzIFgeihcxo4Cal' } };
+const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-e777805b/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-e777805b/breeze-world.js', integrity: 'sha384-PUy0Jqhx2OYUGH/PgF+4jSxvzuT6kl4E+sTYRrhigIX2LIt6PkHGKi8cleMq4hcr' } };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 /** Load one pack (start: before play; world: in the background once play starts). Resolves with the assets it added. */
@@ -14003,6 +14003,19 @@ function bzBig(f) {
   put(S.head.children.find(c => c.isMesh && c !== S.crown && c !== S.cap && c.material !== MAT.face), 'snarl_head');
   put(S.armL.children.find(c => c.isMesh), 'snarl_armL'); put(S.armR.children.find(c => c.isMesh && c !== S.gem), 'snarl_armR');
 }
+/** Cinder (phase 2): each part takes the storybook dragon's mesh; its two colour sets (spellbound, freed) feed the game's
+ *  own palette blend, so she still turns from plum to orange as the story goes. */
+function bzCinder(c) {
+  const M = BOSS.M; if (!M) return;
+  const mat = breezeMat({ map: bzTex(c), rim: 0.25 });
+  for (const [name, m] of Object.entries(c.meshes)) {
+    const pr = M.parts[name]; if (!pr) continue;
+    const g = bzGeo(m), C2 = bzArr(m.col2, Uint8Array), cb = new Float32Array(m.verts * 3);
+    for (let i = 0; i < m.verts; i++) { C1.setRGB(C2[i * 4] / 255, C2[i * 4 + 1] / 255, C2[i * 4 + 2] / 255, THREE.SRGBColorSpace); cb[i * 3] = C1.r; cb[i * 3 + 1] = C1.g; cb[i * 3 + 2] = C1.b; }
+    bzSwap(pr.m, g); pr.m.material = mat; pr.ca = Float32Array.from(g.attributes.color.array); pr.cb = cb;
+  }
+  M.k = -1;   // recolour on the next frame
+}
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
 // Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.
 const BZ_LOD = 32;
@@ -14040,6 +14053,7 @@ function bzWorld(d) {
   if (!d) { BZM.world = 'failed'; return; }
   if (d.foes) bzFoes(d.foes);
   if (d.big) bzBig(d.big);
+  if (d.cinder) bzCinder(d.cinder);
   BZM.world = 'ready';
 }
 if (BREEZE) {
