@@ -274,7 +274,7 @@
   }
   /** The autopilot used by the tests (and only them): steer for free lanes and bubbles, jump logs, duck branches. */
   function autopilot() {
-    let want = S.lane, logAhead = 99, branchAhead = 99;
+    let want = S.lane, logAhead = 99, branchAhead = 99, first = null;
     for (let i = S.oi; i < S.nObs; i++) {
       const o = S.obs[i], ahead = o.d - S.d; if (ahead > 26) break;
       // a less-than-perfect bot (skill < 1) simply does not notice some things (for balance checks)
@@ -283,7 +283,9 @@
       if (o.kind === LOG && ahead < logAhead) logAhead = ahead;
       if (o.kind === BRANCH && ahead < branchAhead) branchAhead = ahead;
       if (ahead < 2) continue;
-      if (laneBlocked(o, want)) { for (let l = 0; l < 3; l++) if (!laneBlocked(o, l)) { want = l; if (Math.abs(l - S.lane) <= 1) break; } }
+      // a farther rock may only move Cappy to a lane that is also free at the nearer one
+      if (laneBlocked(o, want)) { for (let l = 0; l < 3; l++) if (!laneBlocked(o, l) && !(first && first !== o && laneBlocked(first, l))) { want = l; if (Math.abs(l - S.lane) <= 1) break; } }
+      if (!first && (o.kind === ROCK || o.kind === CROC)) first = o;
       else if (o.kind === BUBBLE && ahead < 16 && !o.taken && want === S.lane) { for (let l = 0; l < 3; l++) if (o.lanes & (1 << l)) want = l; }
     }
     if (want !== S.lane) steer(sign(want - S.lane), S.ctx);

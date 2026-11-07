@@ -4465,6 +4465,8 @@ OW.enter = function (opts) {
   // the raft-arrival panels open each launch (skippable); a new game then has the cousins' hello
   if (opts && opts.intro) { JC.introSeen = true; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
   else if (opts && opts.story && !JC.introSeen) { JC.introSeen = true; JC.say(JC.storyLines('intro')); }
+  else if (opts && opts.say) JC.say(opts.say);
+  OW.later = opts && opts.later ? opts.later : null; OW.laterT = OW.time + ((opts && opts.laterT) || 0);
 };
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
@@ -4571,6 +4573,7 @@ OW.update = function (dt) {
   const arch = archHere();
   OW.prompt = arch && !P.moving ? arch : '';
   if (OW.celebrate) { OW.celebrate.t += dt; if (OW.celebrate.t > 4) OW.celebrate = null; }
+  if (OW.later && OW.time >= OW.laterT && !TB.open) { const l = OW.later; OW.later = null; JC.say(l); }
 };
 /* ---------- drawing ---------- */
 const DRAWLIST = []; for (let i = 0; i < 64; i++) DRAWLIST.push({ y: 0, kind: 0, ref: null, x: 0 });
@@ -4874,8 +4877,9 @@ RUN.onInput = function (e) {
 RUN.leaveResults = function () {
   AUDIO.sfx('back');
   const a = ARCHES[RUN.id];
-  JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '' });
-  if (RUN.newFeather && SAVE.featherCount() === 7) setTimeout(() => { if (JC.scene === OW) JC.say([{ who: 'zuzu', key: 'd.zuzu.liftopen' }]); }, 3200);
+  // the seventh Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
+  const news = RUN.newFeather && SAVE.featherCount() === 7 ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
+  JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '', later: news, laterT: 3.2 });
 };
 /* ---------- drawing ---------- */
 function portrait(g, who, x, y, size, bg) {
@@ -5330,15 +5334,17 @@ MAP.draw = function (g) {
 /* ---------- the Canopy Stage finale and the credits ---------- */
 const FIN = { name: 'finale', t: 0, step: 0, raised: false };
 FIN.enter = function () {
-  FIN.t = 0; FIN.raised = false; JC.audioWant = 'finale';
+  FIN.t = 0; FIN.raised = false; FIN.thanked = false; JC.audioWant = 'finale';
   // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
   JC.say(JC.storyLines('finale').concat([{ who: 'mango', key: 'end.4' }]), () => {
     FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3);
     SAVE.data.cup = true; JC.grantBandana('gold', true, true); SAVE.write(); BRBX.gameOver(true, SAVE.cupPoints());
-    setTimeout(() => { if (JC.scene === FIN) JC.say([{ who: 'cappy', key: 'end.5' }], () => JC.go('credits')); }, 2600);
   });
 };
-FIN.update = function (dt) { FIN.t += dt; TB.update(dt); STORY.update(dt); if (FIN.raised && ((FIN.t * 4) | 0) % 6 === 0) UI.particle(Math.random() * VIEW.W, -4, 0, 20, CONFETTI[(Math.random() * 7) | 0], 3, 2, 20); };
+FIN.update = function (dt) {
+  FIN.t += dt; TB.update(dt); STORY.update(dt);
+  // a moment with the Cup held high, then Cappy's thanks and the credits (game time, so pausing and tests stay in step)
+  if (FIN.raised && !FIN.thanked && FIN.t - FIN.raiseT > 2.6) { FIN.thanked = true; JC.say([{ who: 'cappy', key: 'end.5' }], () => JC.go('credits')); } if (FIN.raised && ((FIN.t * 4) | 0) % 6 === 0) UI.particle(Math.random() * VIEW.W, -4, 0, 20, CONFETTI[(Math.random() * 7) | 0], 3, 2, 20); };
 FIN.onInput = function (e) { if (!STORY.input(e)) TB.input(e); };
 FIN.draw = function (g) {
   if (STORY.showing()) { STORY.draw(g); TB.draw(g); return; }
@@ -5375,7 +5381,7 @@ CRED.enter = function () { CRED.t = 0; JC.audioWant = 'finale'; UI.setFocus('don
 CRED.update = function (dt) { CRED.t += dt; };
 CRED.onInput = function (e) {
   const id = UI.menuInput(e);
-  if (id === 'done' || (e.type === 'press' && e.key === 'b')) { AUDIO.sfx('select'); JC.go('world', { at: [WORLD.lift.x, WORLD.lift.y + 1, 'down'] }); setTimeout(() => JC.say([{ who: 'mango', key: 'd.mango.free' }]), 600); }
+  if (id === 'done' || (e.type === 'press' && e.key === 'b')) { AUDIO.sfx('select'); JC.go('world', { at: [WORLD.lift.x, WORLD.lift.y + 1, 'down'], say: [{ who: 'mango', key: 'd.mango.free' }] }); }
 };
 CRED.draw = function (g) {
   const W = VIEW.W, H = VIEW.H;
@@ -5784,7 +5790,7 @@ function jcState() {
   const d = SAVE.data;
   return {
     screen: sceneName(), ready: WORLD.ready, fading: JC.fading(), tab: MAP.tab,
-    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null,
+    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
     sport: JC.scene === RUN ? { id: RUN.id, phase: RUN.phase, result: RUN.result, newFeather: RUN.newFeather, state: RUN.sport && RUN.sport.testState ? RUN.sport.testState(RUN.ctx) : null } : null,
     feathers: SAVE.featherCount(), feathersBy: Object.assign({}, d.feathers), best: Object.assign({}, d.best), stars: Object.assign({}, d.stars),
     quests: Object.assign({}, d.quests), cos: JSON.parse(JSON.stringify(d.cos)), settings: Object.assign({}, d.settings), cup: d.cup,
@@ -5843,6 +5849,8 @@ const JCT = {
   walk(dir, n) { for (let i = 0; i < (n || 1); i++) { if (!tryStep(dir)) break; runSteps(170); } return jcState(); },
   talk() { act(); return jcState(); },
   skipText() { TB.skipAll(); return jcState(); },
+  /** Finish the line being typed and go on to the next one (what a tap does). */
+  next() { if (TB.open) { TB.shown = TB.full.length; TB.advance(); } return jcState(); },
   /** The buttons drawn last frame, in CSS pixels: [{ id, x, y, w, h }]. */
   buttons() { const k = VIEW.S / VIEW.dpr, out = []; for (let i = 0; i < UI.prevN; i++) { const h = UI.prev[i]; out.push({ id: h.id, x: h.x * k, y: h.y * k, w: h.w * k, h: h.h * k }); } return out; },
   /** The current sport's own hooks (sport.test), e.g. jc.sport('auto', true). */
@@ -8118,7 +8126,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   }
   /** The autopilot used by the tests (and only them): steer for free lanes and bubbles, jump logs, duck branches. */
   function autopilot() {
-    let want = S.lane, logAhead = 99, branchAhead = 99;
+    let want = S.lane, logAhead = 99, branchAhead = 99, first = null;
     for (let i = S.oi; i < S.nObs; i++) {
       const o = S.obs[i], ahead = o.d - S.d; if (ahead > 26) break;
       // a less-than-perfect bot (skill < 1) simply does not notice some things (for balance checks)
@@ -8127,7 +8135,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (o.kind === LOG && ahead < logAhead) logAhead = ahead;
       if (o.kind === BRANCH && ahead < branchAhead) branchAhead = ahead;
       if (ahead < 2) continue;
-      if (laneBlocked(o, want)) { for (let l = 0; l < 3; l++) if (!laneBlocked(o, l)) { want = l; if (Math.abs(l - S.lane) <= 1) break; } }
+      // a farther rock may only move Cappy to a lane that is also free at the nearer one
+      if (laneBlocked(o, want)) { for (let l = 0; l < 3; l++) if (!laneBlocked(o, l) && !(first && first !== o && laneBlocked(first, l))) { want = l; if (Math.abs(l - S.lane) <= 1) break; } }
+      if (!first && (o.kind === ROCK || o.kind === CROC)) first = o;
       else if (o.kind === BUBBLE && ahead < 16 && !o.taken && want === S.lane) { for (let l = 0; l < 3; l++) if (o.lanes & (1 << l)) want = l; }
     }
     if (want !== S.lane) steer(sign(want - S.lane), S.ctx);

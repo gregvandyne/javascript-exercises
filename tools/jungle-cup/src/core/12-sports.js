@@ -134,8 +134,9 @@ RUN.onInput = function (e) {
 RUN.leaveResults = function () {
   AUDIO.sfx('back');
   const a = ARCHES[RUN.id];
-  JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '' });
-  if (RUN.newFeather && SAVE.featherCount() === 7) setTimeout(() => { if (JC.scene === OW) JC.say([{ who: 'zuzu', key: 'd.zuzu.liftopen' }]); }, 3200);
+  // the seventh Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
+  const news = RUN.newFeather && SAVE.featherCount() === 7 ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
+  JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '', later: news, laterT: 3.2 });
 };
 /* ---------- drawing ---------- */
 function portrait(g, who, x, y, size, bg) {

@@ -8,7 +8,7 @@ function jcState() {
   const d = SAVE.data;
   return {
     screen: sceneName(), ready: WORLD.ready, fading: JC.fading(), tab: MAP.tab,
-    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null,
+    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
     sport: JC.scene === RUN ? { id: RUN.id, phase: RUN.phase, result: RUN.result, newFeather: RUN.newFeather, state: RUN.sport && RUN.sport.testState ? RUN.sport.testState(RUN.ctx) : null } : null,
     feathers: SAVE.featherCount(), feathersBy: Object.assign({}, d.feathers), best: Object.assign({}, d.best), stars: Object.assign({}, d.stars),
     quests: Object.assign({}, d.quests), cos: JSON.parse(JSON.stringify(d.cos)), settings: Object.assign({}, d.settings), cup: d.cup,
@@ -67,6 +67,8 @@ const JCT = {
   walk(dir, n) { for (let i = 0; i < (n || 1); i++) { if (!tryStep(dir)) break; runSteps(170); } return jcState(); },
   talk() { act(); return jcState(); },
   skipText() { TB.skipAll(); return jcState(); },
+  /** Finish the line being typed and go on to the next one (what a tap does). */
+  next() { if (TB.open) { TB.shown = TB.full.length; TB.advance(); } return jcState(); },
   /** The buttons drawn last frame, in CSS pixels: [{ id, x, y, w, h }]. */
   buttons() { const k = VIEW.S / VIEW.dpr, out = []; for (let i = 0; i < UI.prevN; i++) { const h = UI.prev[i]; out.push({ id: h.id, x: h.x * k, y: h.y * k, w: h.w * k, h: h.h * k }); } return out; },
   /** The current sport's own hooks (sport.test), e.g. jc.sport('auto', true). */

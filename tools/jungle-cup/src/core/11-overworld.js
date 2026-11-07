@@ -21,6 +21,8 @@ OW.enter = function (opts) {
   // the raft-arrival panels open each launch (skippable); a new game then has the cousins' hello
   if (opts && opts.intro) { JC.introSeen = true; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
   else if (opts && opts.story && !JC.introSeen) { JC.introSeen = true; JC.say(JC.storyLines('intro')); }
+  else if (opts && opts.say) JC.say(opts.say);
+  OW.later = opts && opts.later ? opts.later : null; OW.laterT = OW.time + ((opts && opts.laterT) || 0);
 };
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
@@ -127,6 +129,7 @@ OW.update = function (dt) {
   const arch = archHere();
   OW.prompt = arch && !P.moving ? arch : '';
   if (OW.celebrate) { OW.celebrate.t += dt; if (OW.celebrate.t > 4) OW.celebrate = null; }
+  if (OW.later && OW.time >= OW.laterT && !TB.open) { const l = OW.later; OW.later = null; JC.say(l); }
 };
 /* ---------- drawing ---------- */
 const DRAWLIST = []; for (let i = 0; i < 64; i++) DRAWLIST.push({ y: 0, kind: 0, ref: null, x: 0 });

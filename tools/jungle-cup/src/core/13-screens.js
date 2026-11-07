@@ -301,15 +301,17 @@ MAP.draw = function (g) {
 /* ---------- the Canopy Stage finale and the credits ---------- */
 const FIN = { name: 'finale', t: 0, step: 0, raised: false };
 FIN.enter = function () {
-  FIN.t = 0; FIN.raised = false; JC.audioWant = 'finale';
+  FIN.t = 0; FIN.raised = false; FIN.thanked = false; JC.audioWant = 'finale';
   // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
   JC.say(JC.storyLines('finale').concat([{ who: 'mango', key: 'end.4' }]), () => {
     FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3);
     SAVE.data.cup = true; JC.grantBandana('gold', true, true); SAVE.write(); BRBX.gameOver(true, SAVE.cupPoints());
-    setTimeout(() => { if (JC.scene === FIN) JC.say([{ who: 'cappy', key: 'end.5' }], () => JC.go('credits')); }, 2600);
   });
 };
-FIN.update = function (dt) { FIN.t += dt; TB.update(dt); STORY.update(dt); if (FIN.raised && ((FIN.t * 4) | 0) % 6 === 0) UI.particle(Math.random() * VIEW.W, -4, 0, 20, CONFETTI[(Math.random() * 7) | 0], 3, 2, 20); };
+FIN.update = function (dt) {
+  FIN.t += dt; TB.update(dt); STORY.update(dt);
+  // a moment with the Cup held high, then Cappy's thanks and the credits (game time, so pausing and tests stay in step)
+  if (FIN.raised && !FIN.thanked && FIN.t - FIN.raiseT > 2.6) { FIN.thanked = true; JC.say([{ who: 'cappy', key: 'end.5' }], () => JC.go('credits')); } if (FIN.raised && ((FIN.t * 4) | 0) % 6 === 0) UI.particle(Math.random() * VIEW.W, -4, 0, 20, CONFETTI[(Math.random() * 7) | 0], 3, 2, 20); };
 FIN.onInput = function (e) { if (!STORY.input(e)) TB.input(e); };
 FIN.draw = function (g) {
   if (STORY.showing()) { STORY.draw(g); TB.draw(g); return; }
@@ -346,7 +348,7 @@ CRED.enter = function () { CRED.t = 0; JC.audioWant = 'finale'; UI.setFocus('don
 CRED.update = function (dt) { CRED.t += dt; };
 CRED.onInput = function (e) {
   const id = UI.menuInput(e);
-  if (id === 'done' || (e.type === 'press' && e.key === 'b')) { AUDIO.sfx('select'); JC.go('world', { at: [WORLD.lift.x, WORLD.lift.y + 1, 'down'] }); setTimeout(() => JC.say([{ who: 'mango', key: 'd.mango.free' }]), 600); }
+  if (id === 'done' || (e.type === 'press' && e.key === 'b')) { AUDIO.sfx('select'); JC.go('world', { at: [WORLD.lift.x, WORLD.lift.y + 1, 'down'], say: [{ who: 'mango', key: 'd.mango.free' }] }); }
 };
 CRED.draw = function (g) {
   const W = VIEW.W, H = VIEW.H;
