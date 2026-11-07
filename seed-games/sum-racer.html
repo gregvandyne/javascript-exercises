@@ -576,8 +576,10 @@ function genQuestion(track, rng, ctx) {
     case 9: {
       // The Rounding Run: every question is a rounding question — to the nearest ten or the nearest
       // hundred — so a win here is a win at rounding and nothing else.
+      // Never a number that is already round ("Round 600 to the nearest ten" has nothing to round).
       const place = rng() < 0.5 ? 10 : 100;
-      return roundQ(place === 10 ? R(15, 995) : R(105, 9950), place);
+      let n; do n = place === 10 ? R(15, 995) : R(105, 9950); while (n % place === 0);
+      return roundQ(n, place);
     }
     case 8: default: {
       const tables = (ctx.tables && ctx.tables.length) ? ctx.tables : CONFIG.practiceTables;
@@ -587,8 +589,9 @@ function genQuestion(track, rng, ctx) {
   }
 }
 
-/** Is a wrong option believable? Close to the answer (within 4 for small answers, else within 10 or half the answer). */
-function plausible(v, a) { return Number.isInteger(v) && v >= 0 && v !== a && Math.abs(v - a) <= (a <= 10 ? 4 : Math.max(10, Math.round(a * 0.5))); }
+/** Is a wrong option believable? Close to the answer (within 4 for small answers, else within 10 or half the answer),
+ *  and never 0 unless the answer itself is 0 (no one shares 16 by 8 and gets nothing). */
+function plausible(v, a) { return Number.isInteger(v) && v >= (a === 0 ? 0 : 1) && v !== a && Math.abs(v - a) <= (a <= 10 ? 4 : Math.max(10, Math.round(a * 0.5))); }
 
 /** Four different options, exactly one right. Wrong options are the mistakes kids really make:
     one or two off, forgetting to carry/borrow (10 off), the neighbouring times fact, the other operation. */
@@ -599,7 +602,8 @@ function makeChoices(q, rng) {
     // The mistakes a rounder really makes: the other friendly number (rounded the wrong way), the
     // number itself (did not round), and one place out either side.
     const down = Math.floor(q.x / q.y) * q.y;
-    near.push(a === down ? down + q.y : down, q.x, a + q.y, a - q.y);
+    const other = q.y === 10 ? 100 : 10; // rounded to the wrong place
+    near.push(a === down ? down + q.y : down, q.x, a + q.y, a - q.y, Math.round(q.x / other) * other, a + 2 * q.y);
   } else if (q.op === '+' || q.op === '-') {
     near.push(a + 1, a - 1, a + 2, a - 2);
     if (a >= 10 && Math.max(q.x, q.y) >= 10) two(a + 10, a - 10);                 // carry / borrow slip
@@ -615,7 +619,10 @@ function makeChoices(q, rng) {
     smart.push(q.y);                                                               // the number it was shared by
   }
   const picked = [];
-  const take = list => { for (const v of shuffled(list, rng)) { if (picked.length >= 3) return; if (plausible(v, a) && !picked.includes(v)) picked.push(v); } };
+  // A rounding question's wrong answers are the rounder's own slips (the other neighbour, not rounding, a place out),
+  // however far apart they sit: 100 and 200 are both believable for "Round 149 to the nearest hundred".
+  const ok = v => (q.op === 'round' ? Number.isInteger(v) && v > 0 && v !== a : plausible(v, a));
+  const take = list => { for (const v of shuffled(list, rng)) { if (picked.length >= 3) return; if (ok(v) && !picked.includes(v)) picked.push(v); } };
   // Mostly the clever mistakes, plus one or two near misses so the right answer is not the "middle" one.
   take(smart.slice(0, rng() < 0.5 ? 1 : 2)); take(near); take(smart);
   for (let k = 3; picked.length < 3; k++) { if (plausible(a + k, a) && !picked.includes(a + k)) picked.push(a + k); else if (plausible(a - k, a) && !picked.includes(a - k)) picked.push(a - k); if (k > 40) break; }
@@ -2903,7 +2910,7 @@ function showResults() {
     stats.append(chip(t('c_p1pts', { n: R.points }), 'star', 'star'));
   }
   const missed = R.per[0].missed.concat(two ? R.per[1].missed : []).filter((m, i, a) => a.findIndex(o => o.key === m.key) === i).slice(0, 3);
-  $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + m.answer)).join(t('list_sep')) }) : t('noMistakes');
+  $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + qNum(m.answer))).join(t('list_sep')) }) : t('noMistakes');
   const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) { mu.innerHTML = Oomba.icon('next'); mu.append(t('moveUp', { n: CONFIG.moveUpAfterWins, track: trackName(S.track + 1) })); }
   const hasNext = !LESSON.track && S.track < 7; $('nextBtn').hidden = !hasNext;
   const nextFirst = R.moveUp || R.place === 1;
