@@ -10,25 +10,16 @@
    "title": "Meet Dot",
    "text": "Dot the fox is a data detective. Dot solves cases with facts, not guesses.",
    "art": "magnifier",
-   "img": "csq/data-detective/sort-1b-dot-n",
-   "alt": "Dot the fox stands in the woods and asks the first case's question: who was last in the hall?",
+   "img": "csq/chars/meet-dot",
+   "alt": "Dot the fox, the Data Detective guide, in her round glasses, standing in front of a softened chart from her game.",
    "focus": [
     {
-     "cue": "This is Dot the fox, a data detective",
+     "cue": "This is Dot the fox. She solves cases with facts",
      "box": [
-      12.5,
-      14,
-      11,
-      23
-     ]
-    },
-    {
-     "cue": "Dot asks one question per case",
-     "box": [
-      21.7,
-      71.9,
-      47.9,
-      12.4
+      36.8,
+      15.3,
+      26.4,
+      75
      ]
     }
    ]

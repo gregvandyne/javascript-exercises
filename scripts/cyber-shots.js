@@ -255,6 +255,7 @@ async function runGame(browser, slug, list) {
             else if (a.tap != null) { T.tap(a.tap); await wait(350); }
             else if (a.answer) { T.answer(a.answer); await wait(400); }
             else if (a.next) { T.next(); await wait(400); }
+            else if (a.cover) { await T.cover(); await wait(600); }   // the game's own cover state (its character on stage)
             else if (a.click) { const b = [...document.querySelectorAll(a.click.sel || 'button')].filter(x => !a.click.text || (x.getAttribute('aria-label') || x.textContent || '').trim().includes(a.click.text))[a.click.i || 0]; if (b) b.click(); await wait(350); }
             // clicks: [[selector, index], ...], each a real click on the game's own control (the frame forbids eval)
             else if (a.clicks) { for (const [sel, i] of a.clicks) { const b = document.querySelectorAll(sel)[i]; if (b) b.click(); await wait(120); } await wait(250); }

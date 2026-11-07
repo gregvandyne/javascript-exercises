@@ -1060,18 +1060,6 @@
  },
  {
   "game": "packet-post",
-  "state": "title-c",
-  "chapter": "title",
-  "band": "1b",
-  "level": 0,
-  "actions": [],
-  "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
-  "concept": "Meet Pim",
-  "compact": true,
-  "title": true
- },
- {
-  "game": "packet-post",
   "state": "packets-1b-trip-n",
   "chapter": "packets",
   "band": "1b",
@@ -1545,18 +1533,6 @@
     "pad": 10
    }
   }
- },
- {
-  "game": "inside-the-machine",
-  "state": "title-c",
-  "chapter": "title",
-  "band": "1b",
-  "level": 0,
-  "actions": [],
-  "alt": "Inside the Machine's title screen: Gizmo the mouse. Parts, fixes, bits and gadgets with Gizmo.",
-  "concept": "Meet Gizmo",
-  "compact": true,
-  "title": true
  },
  {
   "game": "inside-the-machine",

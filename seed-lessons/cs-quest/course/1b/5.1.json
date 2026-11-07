@@ -10,25 +10,16 @@
    "title": "Meet Gizmo",
    "text": "Gizmo the mouse fixes gadgets in a little workshop. Gizmo knows that every device is a team of parts.",
    "art": "wrench",
-   "img": "csq/inside-the-machine/title-c",
-   "alt": "Inside the Machine's title screen: Gizmo the mouse. Parts, fixes, bits and gadgets with Gizmo.",
+   "img": "csq/chars/meet-gizmo",
+   "alt": "Gizmo the mouse, the Inside the Machine guide, in round glasses, standing in front of softened switches from the game.",
    "focus": [
     {
-     "cue": "This is Gizmo the mouse",
+     "cue": "This is Gizmo the mouse, who fixes gadgets",
      "box": [
-      5,
-      56,
-      13,
-      38
-     ]
-    },
-    {
-     "cue": "Parts, fixes, bits and gadgets with Gizmo",
-     "box": [
-      29.3,
-      37,
-      41.4,
-      8.6
+      33.8,
+      15.3,
+      32.4,
+      75
      ]
     }
    ]

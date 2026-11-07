@@ -10,25 +10,16 @@
    "title": "Meet Pim",
    "text": "Pim the owl runs the post office in Netville. Pim's job is to get every message to the right house.",
    "art": "envelope",
-   "img": "csq/packet-post/title-c",
-   "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+   "img": "csq/chars/meet-pim",
+   "alt": "Pim the owl, the Packet Post guide, standing in front of a softened road map from the post office game.",
    "focus": [
     {
-     "cue": "This is Pim the owl",
+     "cue": "This is Pim the owl, who runs the post office",
      "box": [
-      62,
-      68,
-      14,
-      29
-     ]
-    },
-    {
-     "cue": "Pim's job: deliver every packet",
-     "box": [
-      29.4,
-      38.8,
-      41.2,
-      8.6
+      29.8,
+      15.3,
+      40.4,
+      75
      ]
     }
    ]
