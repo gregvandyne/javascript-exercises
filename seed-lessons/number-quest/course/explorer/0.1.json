@@ -77,16 +77,17 @@
    "text": "Somewhere behind the shutters, something giggles. A tile clatters. When Tally looks, two number tiles have swapped places. That is the Jumble, heard before it is ever seen.",
    "art": "mask",
    "visual": {
-    "type": "tiles",
+    "type": "swap",
     "label": "Two tiles swapped, 2 then 1, and swapped back, 1 then 2",
-    "values": [
+    "before": [
      "2",
-     "1",
-     "→",
+     "1"
+    ],
+    "after": [
      "1",
      "2"
     ],
-    "bad": [
+    "mark": [
      0,
      1
     ]
@@ -95,19 +96,19 @@
     {
      "cue": "These two tiles have swapped places: the 2 and the 1.",
      "box": [
-      4.7,
-      30.4,
-      36.6,
-      43.9
+      16,
+      23.3,
+      28,
+      43.6
      ]
     },
     {
      "cue": "Swap them back and the tiles count 1, 2 in order again.",
      "box": [
-      59,
-      30.4,
-      36,
-      29.9
+      55.2,
+      23.3,
+      29.5,
+      43.6
      ]
     }
    ]

@@ -44,25 +44,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "The long bar is the whole story in one picture.",
      "box": [
       5,
-      12.3,
+      11.8,
       90,
-      27.5
+      28.1
      ]
     },
     {
      "cue": "Shorter bars under it are the parts. The unknown part gets a question mark.",
      "box": [
       5,
-      42.5,
+      42.0,
       90,
-      27.5
+      28.0
      ]
     }
    ]
@@ -97,25 +98,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "One part is known: 147 ribbons sold.",
      "box": [
-      5.6,
+      5,
       35.7,
-      34.4,
-      18.4
+      35.5,
+      18.3
      ]
     },
     {
      "cue": "The other part is the question: how many are left?",
      "box": [
-      39.1,
+      38.5,
       35.7,
-      55.4,
-      18.4
+      56.5,
+      18.3
      ]
     }
    ]
@@ -144,7 +146,7 @@
       ]
      },
      {
-      "label": "The story's bar: a whole with a gap to find",
+      "label": "The story's bar: a gap to find",
       "parts": [
        {
         "w": 0.7,
@@ -158,25 +160,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "The Jumble's bar joins two parts: it added.",
      "box": [
       5,
-      12.3,
-      90.1,
-      27.6
+      11.8,
+      90,
+      28.1
      ]
     },
     {
      "cue": "The story asked for a difference: the gap is the unknown part.",
      "box": [
-      67.1,
+      66.6,
       51.7,
-      27.4,
-      18.4
+      28.4,
+      18.3
      ]
     }
    ]
@@ -209,25 +212,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "275 points she has, and 90 more today: two known parts.",
      "box": [
-      5.6,
+      5,
       35.7,
-      65.1,
-      18.4
+      66.2,
+      18.3
      ]
     },
     {
      "cue": "What is left of the 500 is still to earn: 135 points.",
      "box": [
-      69.8,
+      69.2,
       35.7,
-      24.7,
-      18.4
+      25.8,
+      18.3
      ]
     }
    ]
