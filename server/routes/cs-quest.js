@@ -22,6 +22,7 @@ import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { el, lp, faqBlock, launchGame } from './teachers.js';
 import { zoneNote } from './lessons.js';
 import * as V from '../views/cs-quest.js';
+import { crewArt } from '../views/components.js';
 import { printBody, sheetBody, projectorBody } from '../views/cs-quest-sheets.js';
 import * as STD from '../services/standards.js';
 import { classBody as standardsBody, classCsv as standardsCsv, reportBody as standardsReport } from '../views/cs-quest-standards.js';
@@ -341,7 +342,7 @@ router.get('/teachers/cs-quest', (req, res) => {
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${k}.promise.h`, {}, ' id="promise-h"')}
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6, 7, 8].map(n => el(t, 'li', `${k}.promise.li${n}`))}</ul></section>
   <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${k}.crew.h`, {}, ' id="crew-h"')}${el(t, 'p', `${k}.crew.p`)}
-    <ul class="csq-crew">${crew.map(c => html`<li class="panel"><span class="csq-crew-e" aria-hidden="true">${V.GAME_EMOJI[c.slug]}</span><h3 lang="en" dir="ltr">${c.game ? c.game.title : c.slug}</h3>
+    <ul class="csq-crew">${crew.map(c => html`<li class="panel">${crewArt(c.slug, V.GAME_EMOJI[c.slug])}<h3 lang="en" dir="ltr">${c.game ? c.game.title : c.slug}</h3>
       ${el(t, 'p', `${k}.crew.${c.slug.replace(/-(\w)/g, (m, ch) => ch.toUpperCase())}`, {}, ' class="small"')}
       <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${k}.crew.try`)}</a>` : html`<span class="chip-s">${el(t, 'span', `${k}.crew.soon`)}</span>`}</div></li>`)}</ul></section>
   <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${k}.units.h`, {}, ' id="units-h"')}${el(t, 'p', `${k}.units.p`)}
