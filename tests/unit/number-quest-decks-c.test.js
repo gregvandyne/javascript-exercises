@@ -245,7 +245,7 @@ test('visual strings respect the deck loader caps (server/services/courses.js cl
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {
-  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table'];
+  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build'];
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     const drawn = d.slides.filter(s => s.visual);
@@ -267,9 +267,9 @@ test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with 
   assert.ok(vis('5.3').filter(t => t === 'bars').length === 2 && vis('5.3').includes('table'), '5.3 draws the dollar bar AND the change bar, and every coin the board counts');
   assert.ok(vis('6.1').filter(t => t === 'shapes').length === 2, '6.1 draws the shapes it sorts AND the square beside the rectangle (real drawn shapes, corners marked)');
   assert.ok(vis('6.2').includes('bars') && vis('6.2').filter(t => t === 'squares').length === 2, '6.2 draws the fence bar AND the carpet tiled in unit squares, and two shapes with one fence');
-  assert.ok(vis('6.3').includes('lines') && vis('6.3').includes('bars') && vis('6.3').includes('grid'), '6.3 draws parallel and perpendicular lines, the fold AND a grid with axes from (0, 0)');
+  assert.ok(vis('6.3').includes('lines') && vis('6.3').includes('letters') && vis('6.3').includes('grid'), '6.3 draws parallel and perpendicular lines, letters with their fold lines AND a grid with axes from (0, 0)');
   assert.ok(vis('7.1').includes('chart') && vis('7.1').includes('numberline'), '7.1 draws the bar graph (with its scale) AND the line plot');
   assert.ok(vis('7.2').includes('bars') && vis('7.2').includes('numberline'), '7.2 draws the survey chart AND the line plot');
-  assert.ok(vis('7.3').includes('fraction') && vis('7.3').includes('tiles'), '7.3 draws the spinner bar AND the chance words');
+  assert.ok(vis('7.3').includes('spinner') && vis('7.3').includes('tiles'), '7.3 draws a real spinner AND the chance words');
   assert.ok(vis('7.4').includes('bars') && vis('7.4').includes('numberline'), '7.4 draws the Heavy Sack AND the tour line');
 });

@@ -60,54 +60,54 @@
   },
   {
    "title": "Symmetry is a fold",
-   "text": "A shape has symmetry when a fold makes its two halves land exactly on each other. The fold line is the line of symmetry. This bar folds on its dashed line, and the halves match.",
+   "text": "A shape has symmetry when a fold makes its two halves land exactly on each other. The fold line is the line of symmetry. Fold A or H down its dashed line and the halves match. No fold does that for F.",
    "art": "grid",
    "visual": {
-    "type": "bars",
-    "label": "A bar split into two equal halves with a dashed fold line down the middle, marked halfway",
-    "rows": [
+    "type": "letters",
+    "label": "The letters A and H, each with a dashed fold line down the middle, and the letter F, which no fold can match",
+    "items": [
      {
-      "label": "Matching halves",
-      "parts": [
-       {
-        "w": 0.5,
-        "label": "half"
-       },
-       {
-        "w": 0.5,
-        "label": "half"
-       }
-      ]
+      "ch": "A",
+      "fold": true,
+      "name": "halves match"
+     },
+     {
+      "ch": "H",
+      "fold": true,
+      "name": "halves match"
+     },
+     {
+      "ch": "F",
+      "name": "no fold fits"
      }
-    ],
-    "half": true
+    ]
    },
    "focus": [
     {
-     "cue": "Fold on the dashed line: this half lands exactly on the other.",
+     "cue": "Fold A down the dashed line: one half lands exactly on the other.",
      "box": [
-      5.6,
-      35.7,
-      44.9,
-      18.4
+      9.5,
+      12.6,
+      26.3,
+      70.6
      ]
     },
     {
-     "cue": "The fold line is the line of symmetry.",
+     "cue": "H folds the same way. The fold line is its line of symmetry.",
      "box": [
-      42.7,
-      22.4,
-      14.7,
-      36.1
+      36.8,
+      12.6,
+      26.3,
+      70.6
      ]
     },
     {
-     "cue": "The matching half: same size, same shape, flipped.",
+     "cue": "No fold makes the two halves of F match.",
      "box": [
-      49.6,
-      35.7,
-      44.9,
-      18.4
+      64.2,
+      12.6,
+      26.3,
+      70.6
      ]
     }
    ]

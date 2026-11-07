@@ -36,6 +36,17 @@
    "commit": "csq-story"
   },
   {
+   "key": "csq/chars/meet-bolt",
+   "game": "robo-route",
+   "chapter": "characters",
+   "band": "both",
+   "state": "meet-bolt",
+   "concept": "Bolt says thanks: the Robo Route guide, from his own game (scripts/csq-meet.py)",
+   "alt": "Bolt the robot, the Robo Route guide, with his visor and antenna light, standing in front of a softened board from his game.",
+   "capturedAt": "2026-11-07",
+   "commit": "csq-a3"
+  },
+  {
    "key": "csq/chars/meet-dot",
    "game": "data-detective",
    "chapter": "characters",
@@ -894,15 +905,15 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/bits-1b-pixels-n",
+   "key": "csq/inside-the-machine/bits-1b-pixels-c",
    "game": "inside-the-machine",
    "chapter": "bits",
    "band": "1b",
-   "state": "bits-1b-pixels-n",
+   "state": "bits-1b-pixels-c",
    "concept": "Pictures are dots",
-   "alt": "A picture as a grid of pixels: rows 1 to 3 are copied, dark where the row says 1, light where it says 0.",
+   "alt": "A 5 by 5 pixel grid with rows 1 to 3 copied, beside the row codes: Row 1: 01010, Row 2: 11111, Row 3: 11111 and so on.",
    "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
+   "commit": "f67c663"
   },
   {
    "key": "csq/inside-the-machine/bits-2-21-n",
@@ -2203,15 +2214,15 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/loops-1b-five-moves",
+   "key": "csq/robo-route/loops-1b-five-c",
    "game": "robo-route",
    "chapter": "loops",
    "band": "1b",
-   "state": "loops-1b-five-moves",
-   "concept": "Loops save work",
-   "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "loops-1b-five-c",
+   "concept": "The same block again?",
+   "alt": "Bolt and the flag five squares apart in a straight row, and five move blocks in the program, one for each square.",
+   "capturedAt": "2026-11-07",
+   "commit": "f67c663"
   },
   {
    "key": "csq/robo-route/loops-1b-repeat-bracket",
@@ -2302,17 +2313,6 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-1b-key-c",
-   "game": "robo-route",
-   "chapter": "level-maker",
-   "band": "1b",
-   "state": "maker-1b-key-c",
-   "concept": "Be the game designer: plan, build, test, fix, explain",
-   "alt": "Level Maker task 1: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
-   "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
-  },
-  {
    "key": "csq/robo-route/maker-1b-plan-c",
    "game": "robo-route",
    "chapter": "level-maker",
@@ -2322,6 +2322,17 @@
    "alt": "A level built from a plan: Bolt starts top left, the goal is bottom right, and a pond of water is the one tricky part.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/robo-route/maker-1b-task1-n",
+   "game": "robo-route",
+   "chapter": "level-maker",
+   "band": "1b",
+   "state": "maker-1b-task1-n",
+   "concept": "Be the game designer",
+   "alt": "Level Maker task 1 of 3: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
+   "capturedAt": "2026-11-07",
+   "commit": "f67c663"
   },
   {
    "key": "csq/robo-route/maker-1b-test-w",
@@ -2357,26 +2368,15 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-2-feedback-w",
+   "key": "csq/robo-route/maker-2-feedback-n",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "2",
-   "state": "maker-2-feedback-w",
+   "state": "maker-2-feedback-n",
    "concept": "Feedback is information",
    "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
    "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
-  },
-  {
-   "key": "csq/robo-route/maker-2-key-c",
-   "game": "robo-route",
-   "chapter": "level-maker",
-   "band": "2",
-   "state": "maker-2-key-c",
-   "concept": "Design for someone else: plan, build, test, improve, document",
-   "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
-   "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
+   "commit": "f67c663"
   },
   {
    "key": "csq/robo-route/maker-2-note-c",
@@ -2390,15 +2390,26 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/robo-route/maker-2-task-c",
+   "key": "csq/robo-route/maker-2-task1-n",
    "game": "robo-route",
    "chapter": "level-maker",
    "band": "2",
-   "state": "maker-2-task-c",
-   "concept": "Keep a timeline: the tasks are checkpoints",
+   "state": "maker-2-task1-n",
+   "concept": "Design for someone else",
+   "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
+   "capturedAt": "2026-11-07",
+   "commit": "f67c663"
+  },
+  {
+   "key": "csq/robo-route/maker-2-task2-n",
+   "game": "robo-route",
+   "chapter": "level-maker",
+   "band": "2",
+   "state": "maker-2-task2-n",
+   "concept": "Keep a timeline",
    "alt": "Task 2 of 3: too easy, par is 1. Move the goal or add walls until par is at least 10, and keep it solvable.",
    "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
+   "commit": "f67c663"
   },
   {
    "key": "csq/robo-route/sequences-1b-better-route",
@@ -2423,15 +2434,15 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/sequences-1b-program-order",
+   "key": "csq/robo-route/sequences-1b-order-c",
    "game": "robo-route",
    "chapter": "sequences",
    "band": "1b",
-   "state": "sequences-1b-program-order",
-   "concept": "Steps run in order, first to last",
-   "alt": "Bolt's program tray holds four move blocks stacked in order, matching the four dotted squares between Bolt and the flag.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "sequences-1b-order-c",
+   "concept": "Steps in order",
+   "alt": "Bolt four squares from the flag, and the program beside the board: four move blocks joined in order, then Run.",
+   "capturedAt": "2026-11-07",
+   "commit": "f67c663"
   },
   {
    "key": "csq/robo-route/sequences-1b-turn-in-place",

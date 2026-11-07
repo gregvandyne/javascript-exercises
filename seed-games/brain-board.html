@@ -702,7 +702,7 @@ window.SoloBank = (function () {
         do num = ri(112, 988); while (num % 10 === 0 || num % 100 === 50 || (unit === 100 && Math.round(num / 10) * 10 === Math.round(num / 100) * 100));
         var ans = Math.round(num / unit) * unit, lo = Math.floor(num / unit) * unit, other = lo === ans ? lo + unit : lo;
         var wrongPlace = unit === 10 ? Math.round(num / 100) * 100 : Math.round(num / 10) * 10;
-        var rWrong = [other, wrongPlace, ans > other ? ans + unit : ans - unit, ans + 2 * unit].filter(function (w) { return w >= 0 && w !== ans; });
+        var rWrong = [other, wrongPlace, ans > other ? ans + unit : ans - unit, ans + 2 * unit].filter(function (w) { return w > 0 && w !== ans; });
         out.push(nqItem('Round ' + nqFmt(num) + ' to the nearest ' + (unit === 10 ? 'ten' : 'hundred') + '.', ans, rWrong, 'Round it'));
       }
       return out;
@@ -736,12 +736,12 @@ window.SoloBank = (function () {
       for (i = 0; i < 5; i++) { // Centimeters: meters renamed in centimeters.
         a = ri(2, 9);
         out.push(nqItem('A ribbon is ' + a + ' meters long. How many centimeters is that?', nqFmt(a * 100),
-          [nqFmt(a * 10), nqFmt(a * 1000), nqFmt(a * 100 + 10)], 'Centimeters'));
+          [nqFmt(a * 10), nqFmt(a * 1000), nqFmt(a)], 'Centimeters')); // 10 in a meter, 1,000 in a meter, not converted
       }
       for (i = 0; i < 5; i++) { // Kilograms: the shop's heavy unit, renamed in grams.
         a = ri(2, 8);
         out.push(nqItem('How many grams are in ' + a + ' kilograms?', nqFmt(a * 1000),
-          [nqFmt(a * 100), nqFmt(a * 1000 - 100), nqFmt(a * 1000 + 1000)], 'Kilograms'));
+          [nqFmt(a * 100), nqFmt(a * 10), nqFmt(a)], 'Kilograms')); // 100 or 10 in a kilogram, not converted
       }
       for (i = 0; i < 5; i++) { // Count the units: measuring is counting (the lesson's footprints of 10 cm,
         // its meter stick marked 0 to 100, and its rule that smaller units need a bigger count).
@@ -771,6 +771,7 @@ window.SoloBank = (function () {
     }
     if (NQ_STEP === 'explorer-5.3') { // Coins and change (Unit 5.3): a dollar is a whole of 100 cents,
       // coins are its parts, and change is the gap counted up from the price.
+      var nqC = function (n) { return n + (n === 1 ? ' cent' : ' cents'); };
       var coinQs = [[1, 25], [2, 50], [3, 75], [4, 100], [5, 125]];
       for (i = 0; i < 5; i++) { // Coin values: quarters counted in cents.
         var qn = coinQs[i][0];
@@ -779,7 +780,10 @@ window.SoloBank = (function () {
       }
       for (i = 0; i < 5; i++) { // Make the price: count a handful of coins.
         var cq = ri(1, 3), cd = ri(0, 2), cn = ri(0, 2), cp = ri(0, 4), tot = cq * 25 + cd * 10 + cn * 5 + cp;
-        var handful = cq + (cq === 1 ? ' quarter, ' : ' quarters, ') + cd + (cd === 1 ? ' dime' : ' dimes') + ' and ' + cn + (cn === 1 ? ' nickel' : ' nickels') + (cp ? ' and ' + cp + (cp === 1 ? ' penny' : ' pennies') : '');
+        // only the coins you hold, joined the way you say them: "2 quarters, 1 dime and 3 pennies"
+        var coins = [[cq, 'quarter', 'quarters'], [cd, 'dime', 'dimes'], [cn, 'nickel', 'nickels'], [cp, 'penny', 'pennies']]
+          .filter(function (c) { return c[0] > 0; }).map(function (c) { return c[0] + ' ' + (c[0] === 1 ? c[1] : c[2]); });
+        var handful = coins.length > 1 ? coins.slice(0, -1).join(', ') + ' and ' + coins[coins.length - 1] : coins[0];
         out.push(nqItem('You hold ' + handful + '. How many cents do you hold?', tot + ' cents',
           [(tot + 10) + ' cents', (tot - 5) + ' cents', (tot + 25) + ' cents'], 'Make the price'));
       }
@@ -791,7 +795,7 @@ window.SoloBank = (function () {
       for (i = 0; i < 5; i++) { // Add the prices: two costs, one total.
         a = ri(22, 68); b = ri(15, 58);
         out.push(nqItem('A pen costs ' + a + ' cents and a book costs ' + b + ' cents. How much do they cost together?', (a + b) + ' cents',
-          [(a + b + 10) + ' cents', (a + b - 10) + ' cents', Math.abs(a - b) + ' cents'], 'Add the prices'));
+          [nqC(a + b + 10), nqC(a + b - 10), nqC(Math.abs(a - b) >= 5 ? Math.abs(a - b) : a + b + 20)], 'Add the prices'));
       }
       for (i = 0; i < 5; i++) { // Dollars and cents: the zero holds the tens place (the Jumble's error).
         var dol = ri(2, 6), cents = [35, 5, 65, 25, 85][i], full = dol * 100 + cents;
@@ -799,6 +803,7 @@ window.SoloBank = (function () {
         out.push(nqItem('How many cents is $' + dol + '.' + (cents < 10 ? '0' : '') + cents + '?', full + ' cents',
           [dropped + ' cents', (full + 100) + ' cents', (full - 10) + ' cents'], 'Dollars and cents'));
       }
+      out.forEach(function (it) { it.choices = it.choices.map(function (c) { return c === '1 cents' ? '1 cent' : c; }); }); // one cent, never "1 cents"
       return out;
     }
     if (NQ_STEP === 'explorer-6.2') { // Around and inside (Unit 6.2): perimeter is the fence (add the
@@ -820,11 +825,15 @@ window.SoloBank = (function () {
         out.push(nqItem('A garden has ' + a + ' rows of ' + b + ' square tiles. What is its area in square tiles?', a * b,
           [a + b === a * b - b ? 2 * (a + b) : a + b, a * b - b, a * b + 10], 'Count the squares'));
       }
-      for (i = 0; i < 5; i++) { // Missing side: the fence total and one side name the other.
-        a = ri(3, 9); b = ri(2, 8); if (b === a) b += 1;
-        out.push(nqItem('A rectangle\u2019s perimeter is ' + (2 * (a + b)) + '. One side is ' + a + '. How long is the side next to it?', b,
-          [2 * b === a ? 2 * (a + b) - a : 2 * b, a + b, a], 'Missing side'));
-      }
+      var jobs = [ // Fence or carpet? The lesson's question, asked of real jobs: around the edge, or covering inside.
+        ['You put a fence all the way around a garden. Which do you need to know?', 'The perimeter'],
+        ['You cover a floor with carpet squares. Which do you need to know?', 'The area'],
+        ['You glue ribbon around the edge of a card. Which do you need to know?', 'The perimeter'],
+        ['You paint the whole top of a table. Which do you need to know?', 'The area'],
+        ['You walk once around the edge of a field. Which tells how far you walked?', 'The perimeter'],
+      ];
+      for (i = 0; i < 5; i++) out.push(nqItem(jobs[i][0], jobs[i][1],
+        [jobs[i][1] === 'The area' ? 'The perimeter' : 'The area', 'The number of corners', 'The number of sides'], 'Fence or carpet?'));
       for (i = 0; i < 5; i++) { // Same fence: with one fence, the square holds the most carpet.
         var s = [4, 5, 6, 4, 5][i], per = 4 * s;
         out.push(nqItem('Which rectangle with perimeter ' + per + ' has the biggest area?', s + ' by ' + s,
@@ -833,79 +842,78 @@ window.SoloBank = (function () {
       return out;
     }
     if (NQ_STEP === 'explorer-6.3') { // Lines, symmetry, grids (Unit 6.3): lines by how they sit, symmetry
-      // as a fold, and grid addresses read right first, then up (the Jumble's swap is the trap).
+      // as a fold, and grid addresses read right first, then up (the Jumble's swap is the trap). Only what the
+      // lesson teaches: no rays, no turns, no shape families (those belong to 6.1).
       var lineQs = [
         ['Which pair of lines never meets, no matter how far it runs?', 'Parallel lines', ['Perpendicular lines', 'Crossing lines', 'Curved lines']],
         ['Which pair of lines crosses at a square corner?', 'Perpendicular lines', ['Parallel lines', 'Side-by-side lines', 'Curved lines']],
-        ['Two rails on a straight track run side by side and never meet. They are...', 'Parallel lines', ['Perpendicular lines', 'Rays', 'Circles']],
-        ['The corner of a door is where two edges meet at a square corner. They are...', 'Perpendicular lines', ['Parallel lines', 'Long lines', 'Wavy lines']],
-        ['Which of these is a part of a line with one end and one arrow?', 'A ray', ['A segment with two ends', 'A circle', 'A fold line']],
+        ['Two rails on a straight track run side by side and never meet. They are...', 'Parallel lines', ['Perpendicular lines', 'Crossing lines', 'Curved lines']],
+        ['The corner of a door is where two edges meet at a square corner. They are...', 'Perpendicular lines', ['Parallel lines', 'Crossing lines', 'Curved lines']],
+        ['Two lines cross, but not at a square corner. Are they perpendicular?', 'No, they just cross', ['Yes, all crossing lines are', 'Yes, they are parallel', 'No, they are parallel']],
       ];
       for (i = 0; i < 5; i++) out.push(nqItem(lineQs[i][0], lineQs[i][1], lineQs[i][2], 'Parallel or not'));
-      var goodLetters = ['A', 'H', 'O', 'D', 'M'], badLetters = [['F', 'G', 'J'], ['L', 'P', 'R'], ['S', 'F', 'Z'], ['G', 'N', 'J'], ['P', 'S', 'L']];
-      for (i = 0; i < 5; i++) { // Fold it: one letter of five folds exactly in half.
+      var goodLetters = ['A', 'H', 'O', 'T', 'M'], badLetters = [['F', 'G', 'J'], ['L', 'P', 'R'], ['S', 'F', 'Z'], ['G', 'N', 'J'], ['P', 'S', 'L']];
+      for (i = 0; i < 5; i++) { // Fold it: one letter of four folds exactly in half.
         out.push(nqItem('Which letter folds exactly in half, both sides matching?', goodLetters[i], badLetters[i], 'Fold it'));
       }
+      var foldQs = [
+        ['A fold makes two halves land exactly on each other. The fold line is called...', 'The line of symmetry', ['The perimeter', 'The axis', 'The square corner']],
+        ['A bar is folded on its halfway line. What do its two halves do?', 'Land exactly on each other', ['Cross at a square corner', 'Run side by side forever', 'Stay different sizes']],
+        ['Which word means a fold where both halves match?', 'Symmetry', ['Perimeter', 'Parallel', 'Area']],
+        ['The letter A folds down its middle. Where is its line of symmetry?', 'Straight down the middle', ['Across the bottom', 'Along one slanted side', 'It has none']],
+        ['The two halves of a fold match exactly. They are the same size and...', 'The same shape, flipped', ['Different shapes', 'Twice as big', 'Half as tall']],
+      ];
+      for (i = 0; i < 5; i++) out.push(nqItem(foldQs[i][0], foldQs[i][1], foldQs[i][2], 'Lines of symmetry'));
       for (i = 0; i < 5; i++) { // Grid addresses: first number right, second number up.
         a = ri(2, 6); b = ri(2, 5); if (b === a) b += 1;
         out.push(nqItem('Which point is ' + a + ' steps right and ' + b + ' steps up from (0, 0)?', '(' + a + ', ' + b + ')',
           ['(' + b + ', ' + a + ')', '(' + a + ', ' + a + ')', '(' + b + ', ' + b + ')'], 'Grid addresses'));
       }
-      var turnQs = [
-        ['A square corner is what kind of turn?', 'A quarter turn', ['A half turn', 'A full turn', 'No turn at all']],
-        ['You face the door and make two quarter turns. What turn is that in all?', 'A half turn', ['A quarter turn', 'A full turn', 'Three turns']],
-        ['Four quarter turns, one after another, make...', 'A full turn', ['A half turn', 'A quarter turn', 'No turn at all']],
-        ['You face the door. Which turn makes you face the opposite wall?', 'A half turn', ['A quarter turn', 'A full turn', 'A tiny turn']],
-        ['An angle is measured as a...', 'Turn', ['Length', 'Weight', 'Count']],
-      ];
-      for (i = 0; i < 5; i++) out.push(nqItem(turnQs[i][0], turnQs[i][1], turnQs[i][2], 'Turns'));
-      var famQs = [
-        ['A square is always a kind of...', 'Rectangle', ['Circle', 'Triangle', 'Pentagon']],
-        ['Squares, rectangles and rhombuses all belong to which family?', 'Quadrilaterals', ['Triangles', 'Circles', 'Pentagons']],
-        ['Which shape is NOT a quadrilateral?', 'Pentagon', ['Rhombus', 'Square', 'Rectangle']],
-        ['A shape has 4 sides and 4 square corners, and its sides are not all equal. It is a...', 'Rectangle', ['Triangle', 'Circle', 'Hexagon']],
-        ['Why is a square a kind of rectangle?', 'It has 4 sides and 4 square corners', ['It is bigger', 'It has the nicest name', 'It has 3 sides']],
-      ];
-      for (i = 0; i < 5; i++) out.push(nqItem(famQs[i][0], famQs[i][1], famQs[i][2], 'Shape families'));
+      for (i = 0; i < 5; i++) { // The swap trap: the card's address, walked in the right order.
+        a = ri(2, 6); b = ri(1, 5); if (b === a) b += 1;
+        out.push(nqItem('The card says (' + a + ', ' + b + '). Starting at (0, 0), how do you walk there?', a + ' right, then ' + b + ' up',
+          [b + ' right, then ' + a + ' up', a + ' up, then ' + b + ' right', (a + b) + ' right, then 0 up'], 'Swap trap'));
+      }
       return out;
     }
     if (NQ_STEP === 'explorer-6.1') { // Shape hunt (Unit 6.1): shapes are sorted by properties you can test
-      // (sides, square corners), a square is a kind of rectangle, and an angle is an amount of turn.
-      var sideShapes = [['triangle', 3], ['square', 4], ['pentagon', 5], ['hexagon', 6], ['octagon', 8]];
+      // (sides, square corners), a square is a kind of rectangle, and an angle is an amount of turn. Only the
+      // shapes the lesson draws (triangle, square, rectangle, pentagon, hexagon) and only the turn it teaches.
+      var sideShapes = [['a triangle', 3], ['a square', 4], ['a pentagon', 5], ['a hexagon', 6], ['a rectangle', 4]];
       for (i = 0; i < 5; i++) { // Count the sides: the property that sorts shapes first.
         a = sideShapes[i][1];
-        out.push(nqItem('How many straight sides does a ' + sideShapes[i][0] + ' have?', a, [a - 1, a + 1, a + 2], 'Count the sides'));
+        out.push(nqItem('How many straight sides does ' + sideShapes[i][0] + ' have?', a, [a - 1, a + 1, a + 2], 'Count the sides'));
       }
       var cornerQs = [
         ['How many square corners does a rectangle have?', '4', ['2', '3', '0']],
         ['How many square corners does a square have?', '4', ['2', '1', '0']],
-        ['Which shape always has 4 square corners?', 'Rectangle', ['Rhombus', 'Trapezoid', 'Hexagon']],
-        ['A rhombus that is not a square has how many square corners?', '0', ['4', '2', '1']],
-        ['Which shape can have exactly one square corner?', 'Triangle', ['Square', 'Rectangle', 'Circle']],
+        ['Which shape always has 4 square corners?', 'Rectangle', ['Triangle', 'Pentagon', 'Hexagon']],
+        ['Which shape has 4 sides and 4 square corners?', 'Square', ['Triangle', 'Pentagon', 'Hexagon']],
+        ['How many corners does a triangle have?', '3', ['4', '2', '5']],
       ];
       for (i = 0; i < 5; i++) out.push(nqItem(cornerQs[i][0], cornerQs[i][1], cornerQs[i][2], 'Square corners'));
       var quadQs = [
-        ['Which shape is a quadrilateral?', 'Trapezoid', ['Triangle', 'Pentagon', 'Hexagon']],
-        ['Which shape is NOT a quadrilateral?', 'Hexagon', ['Square', 'Rhombus', 'Rectangle']],
+        ['Which shape is a quadrilateral?', 'Square', ['Triangle', 'Pentagon', 'Hexagon']],
+        ['Which of these has exactly 4 straight sides?', 'Rectangle', ['Triangle', 'Pentagon', 'Hexagon']],
         ['Every quadrilateral has...', '4 straight sides', ['4 square corners', '4 equal sides', '3 corners']],
-        ['A shape has 4 straight sides and no square corners. Is it a quadrilateral?', 'Yes, it has 4 sides', ['No, it needs square corners', 'No, it needs equal sides', 'Only if it is big']],
-        ['A rhombus belongs to which family?', 'Quadrilaterals', ['Triangles', 'Pentagons', 'Circles']],
+        ['Is a triangle a quadrilateral?', 'No, it has only 3 sides', ['Yes, it has 3 sides', 'Yes, every shape is', 'No, it is too small']],
+        ['Is a hexagon a quadrilateral?', 'No, it has 6 sides', ['Yes, it has 6 sides', 'Yes, it has corners', 'No, it is too big']],
       ];
       for (i = 0; i < 5; i++) out.push(nqItem(quadQs[i][0], quadQs[i][1], quadQs[i][2], 'Quadrilateral?'));
       var famHunt = [
-        ['A square is always a kind of...', 'Rectangle', ['Triangle', 'Pentagon', 'Circle']],
+        ['A square is always a kind of...', 'Rectangle', ['Triangle', 'Pentagon', 'Hexagon']],
         ['A rectangle with 4 equal sides is a...', 'Square', ['Triangle', 'Pentagon', 'Hexagon']],
         ['Is every rectangle a square?', 'No, its sides need not be equal', ['Yes, always', 'Yes, if it is big', 'No, it has 5 sides']],
-        ['A square is also a kind of rhombus, because...', 'its 4 sides are equal', ['it is small', 'it has 3 corners', 'it is round']],
+        ['Which two shapes have the same 4 square corners?', 'A square and a rectangle', ['A triangle and a square', 'A pentagon and a hexagon', 'A triangle and a hexagon']],
         ['Why is a square a kind of rectangle?', 'It has 4 sides and 4 square corners', ['It is bigger', 'It has the nicest name', 'It has 3 sides']],
       ];
       for (i = 0; i < 5; i++) out.push(nqItem(famHunt[i][0], famHunt[i][1], famHunt[i][2], 'Families'));
       var turnHunt = [
         ['A square corner is what kind of turn?', 'A quarter turn', ['A half turn', 'A full turn', 'No turn at all']],
         ['You face the door and make a quarter turn. Now you face...', 'A side wall', ['The door again', 'The opposite wall', 'The ceiling']],
-        ['Two quarter turns, one after the other, make...', 'A half turn', ['A full turn', 'A quarter turn', 'No turn at all']],
-        ['Four quarter turns, one after the other, make...', 'A full turn', ['A half turn', 'A quarter turn', 'Two turns']],
         ['An angle measures...', 'How much something turns', ['How long a side is', 'How heavy a shape is', 'How many sides there are']],
+        ['Each corner of a rectangle is...', 'A quarter turn', ['A half turn', 'A full turn', 'No turn at all']],
+        ['Which shape has a quarter turn at every corner?', 'Square', ['Triangle', 'Pentagon', 'Hexagon']],
       ];
       for (i = 0; i < 5; i++) out.push(nqItem(turnHunt[i][0], turnHunt[i][1], turnHunt[i][2], 'Turns'));
       return out;

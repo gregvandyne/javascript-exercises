@@ -55,8 +55,11 @@ test('KIT_RULES: generated from docs/kit-api.md and the kit, up to date, and the
 test('KIT_RULES ends the cached system prompt, with the pinned kit and pack tags and every art name', () => {
   assert.ok(SYSTEM_PROMPT.endsWith(KIT_RULES));
   assert.ok(KIT_RULES.includes(kitTag()), 'the exact kit tag');
-  // every pack with art or looks is in the KIT RULES; the live pack's tag is in the LIVE RULES (sent only for live class games)
-  for (const p of kitPacks()) if (p !== 'live') assert.ok(KIT_RULES.includes(kitPackTag(p)), `the exact ${p} tag`);
+  // every pack with art or looks is in the KIT RULES; the live pack's tag is in the LIVE RULES (sent only for live class
+  // games); the pixel style (style-pixel, art-pixel) is a hand-built pilot in Sum Racer that the Builder does not offer yet
+  const PILOT = ['style-pixel', 'art-pixel'];
+  for (const p of kitPacks()) if (p !== 'live' && !PILOT.includes(p)) assert.ok(KIT_RULES.includes(kitPackTag(p)), `the exact ${p} tag`);
+  for (const p of PILOT) assert.ok(!KIT_RULES.includes(`/packs/${p}.js`), `${p} is not in the Builder's rules (a pilot)`);
   assert.ok(!KIT_RULES.includes(kitPackTag('live')) && LIVE_RULES.includes(kitPackTag('live')), 'the live tag is in the LIVE RULES only');
   assert.doesNotMatch(KIT_RULES, /\{\{(KIT_TAG|PACK_TAG)/, 'no placeholders left');
   assert.doesNotMatch(SYSTEM_PROMPT, /\$\{/);

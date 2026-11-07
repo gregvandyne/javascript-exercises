@@ -15,13 +15,25 @@
 .nq-doors .btn { width: 100%; }
 .nq-tally { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .nq-tally-img { height: 64px; width: auto; flex: none; }
-.nq-tally-says { margin: 0; font-size: 1.1rem; }
+.nq-tally-says { margin: 0; font-size: 1.1rem; flex: 1 1 auto; min-width: 0; }
+.nq-tally #nq-listen { flex: none; }
 .nq-item { margin-top: 14px; }
 .nq-prompt { font-size: 1.35rem; line-height: 1.45; }
 .nq-choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
 .nq-choice { min-height: 56px; height: auto; font-size: 1.2rem; white-space: normal; overflow-wrap: anywhere; line-height: 1.25; padding: 10px 12px; }
 .nq-answer-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.nq-answer { min-height: 52px; font-size: 1.25rem; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line, #ccc); max-width: 200px; }
+.nq-answer-row { align-items: center; }
+/* The answer box is the site's own input (.input: card-2 ground, text colour, edge border, muted
+ * placeholder) in both themes — never the browser's bare dark-mode field, which on an iPhone was a
+ * black slab with only the yellow focus ring showing (2026-11-07). The caret is the text colour. */
+.nq-answer.input { width: 200px; max-width: 100%; min-height: 52px; font-size: 1.25rem; padding: 8px 14px; border-radius: 12px; caret-color: var(--text); }
+.nq-answer.input:focus { border-color: var(--focus); outline: none; }
+.nq-answer.input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* "Stop and start playing" always stands clear of the question panel above it, whatever the item
+ * type (choices, tiles, typed answer) and width: its own block with a fixed gap, never a bare <p>
+ * whose margin could collapse into the panel (the iPhone screenshot showed it touching). */
+.nq-stop-row { margin: 20px 0 8px; }
+.nq-item { margin-bottom: 0; }
 .nq-feedback { min-height: 1.4em; }
 /* Tally always sits on a Cream disc (her brand ground), so she reads as her orange self on light and
    dark themes and on a phone in bright light — never as a dark shape against a dark panel. */

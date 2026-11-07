@@ -6,26 +6,35 @@
     "packs/art-animals.js": "sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE",
     "packs/art-biomes.js": "sha384-GZIPG24spJUT/m+y7cL2hnMJsfaCw1Re0HwZIS/n9qKpP2PBC6QA9NMl/HZllS5c",
     "packs/art-biomes-2.js": "sha384-vJGeWa5z97KHCs2TZpjtJ8wQfcy7hmahtujRLl1iMH4j09PJ7TCds6ZvgDVgD2yK",
+    "packs/art-pixel.js": "sha384-U8DO/3C9FAhd6nEhZa2vejLv81hHwZMjwDn18z7MMIctLDnn2iyyu8d3xiySdNVa",
     "packs/art-props.js": "sha384-313YTtGuc9OuNirXhcAwWuNAozOpYv7J0aA689cyD+RnwN6wDLPIbgXK6jhPsQfD",
     "packs/art-school.js": "sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp",
     "packs/bridge-3d.js": "sha384-fj8HwmKajGpUjSHACisAoZPleDyWB+oBkuyReFL2K8L/N7i7I8MwmZMWbW8xZDtY",
     "packs/dress.js": "sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m",
     "packs/live.js": "sha384-20jXn5wIizwJ//YBQJUILmlALHi914BQlxzKBm3v5Z4lh5YOic+mHK2WiezyG4km",
     "packs/style-bold.js": "sha384-Hf1XPJGmd/jqSL2OQ5zX8FnGjLZPrFI7HWmKei+PZGnSFeP+m2M2NQo1E5G3l0cS",
+    "packs/style-pixel.js": "sha384-gmGUKQplvoPe9/p5mv33fxwfMp5Zj3hIBBoH1kFECaq6OnyMQe9AuSv4FrEtiz5Q",
     "fonts/bricolage-latin.woff2": "sha384-X/jaeJ4W5GX6njFPEfUBZdJHzn5fubPkE+9LDSLSmoJRUtrBMlRU1+5BAHszUiNB",
     "fonts/bricolage-latin-ext.woff2": "sha384-Ot7IlVGIs2pRGgA5YgE5tJccM1wkGm5cs2e1qkPHXBwCUMF/C0NVXdFYEsrbfv9x",
     "fonts/OFL.txt": "sha384-JA+iC+Ed3rNRZpoSVhqXkEYWz/2PvbVwINTmNcnUvukL6sqylA/l3Z7FoBpydUJd",
+    "fonts/pixelify-latin.woff2": "sha384-9LgS1jXlTrqp4y5z8NOeD9oWkJ/9/0oiq2nYylpN+8fyTLqwFzCEEIMbu3tAD2QV",
+    "fonts/pixelify-latin-ext.woff2": "sha384-qJgt6IdtfjRQL/J+E17QDBHKi7u4d7QqPRycybXxzI1rVZWrHEvuJ2RMfUpECuAC",
+    "fonts/pixelify-cyrillic.woff2": "sha384-imLxBn2EY6K/vol243I+8TTL28We5QtGshWEe05nNd7s3c56FKUvXTHkIVjiSgvn",
+    "fonts/OFL-pixelify.txt": "sha384-v3t+wd9dOEgOCrZWFQ8KVleCALDsUy1lO0Na7rVuQCFuo6jCv5tPsTJEHKhBccbD",
+    "fonts/oomba-pixel-digits.woff2": "sha384-gYAomhRR1gmvJuxJoBzmnFDKkWR4JvW4rQOir/9032bYZHuJvlXKnQ/zNhjkrW4s",
     "LICENSE": "sha384-up6+7qNea7xZhQXcbE0GF35AKwmwyN5CXBpIoTPfwhpgXhcB2qAXWJAVC2SZsbK0"
   },
   "packs": [
     "art-animals",
     "art-biomes",
     "art-biomes-2",
+    "art-pixel",
     "art-props",
     "art-school",
     "bridge-3d",
     "dress",
     "live",
-    "style-bold"
+    "style-bold",
+    "style-pixel"
   ]
 }

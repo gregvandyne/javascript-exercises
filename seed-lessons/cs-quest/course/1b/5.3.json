@@ -99,25 +99,25 @@
    "title": "Pictures are dots",
    "text": "A picture on a screen is made of tiny dots called pixels. The software tells the screen which pixels to light, and in which color.",
    "art": "pixel",
-   "img": "csq/inside-the-machine/bits-1b-pixels-n",
-   "alt": "A picture as a grid of pixels: rows 1 to 3 are copied, dark where the row says 1, light where it says 0.",
+   "img": "csq/inside-the-machine/bits-1b-pixels-c",
+   "alt": "A 5 by 5 pixel grid with rows 1 to 3 copied, beside the row codes: Row 1: 01010, Row 2: 11111, Row 3: 11111 and so on.",
    "focus": [
     {
      "cue": "A picture is a grid of dots: pixels",
      "box": [
-      23.5,
-      1,
-      55,
-      97
+      7,
+      30,
+      28,
+      26
      ]
     },
     {
-     "cue": "Dark where the row says 1, light where it says 0",
+     "cue": "Row 1 says 01010: light, dark, light, dark, light",
      "box": [
-      23.5,
-      1,
-      55,
-      20
+      42,
+      24,
+      28,
+      9
      ]
     }
    ]

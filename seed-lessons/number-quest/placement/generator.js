@@ -49,7 +49,9 @@ export const ARCHETYPES = {
     const glyph = glyphs[c] || '⭐';
     // manip: the objects as tappable counters, so a count-out item is counted with fingers, not just
     // read (the page renders one button per object; tapping marks it counted, and no total is shown).
-    return { prompt: `Count the ${c}. How many are there? ${glyph.repeat(n)}`, answer: n, manip: { kind: 'count-out', glyph, count: n },
+    // The objects live only in those tiles: the prompt carries no emoji row of its own, or the child
+    // sees every shell twice (once after the words, once as tiles) and cannot tell which to count.
+    return { prompt: `Count the ${c}. How many are there?`, answer: n, manip: { kind: 'count-out', glyph, count: n },
       distractors: [{ value: n + 1, misconception: 'counted-one-too-many' }, { value: Math.max(0, n - 1), misconception: 'missed-one-object' }, { value: n + 2, misconception: 'double-counted' }] };
   },
   // Hands-on archetypes for the mid rungs (repair round 3): the bank's count-out/build items used to

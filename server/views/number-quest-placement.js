@@ -16,7 +16,8 @@ const GRADES = [['K', 'Kindergarten'], ['1', 'Grade 1'], ['2', 'Grade 2'], ['3',
 /** The game page: three stages (doors → questions → result) swapped by public/js/number-quest-placement.js.
  *  Everything the script needs arrives through the JSON APIs; the page itself holds no item and no answer.
  *  `ttsLangs` is the site's AI-voice locales switched on now (services/tts.js onLocales): the script asks
- *  /api/tts for the current item by run id only when English is among them (routes/tts.js, ctx 'placement'). */
+ *  /api/tts for the current item by run id only when English is among them (routes/tts.js, ctx 'placement').
+ *  Nothing is read until the child taps Listen, which every question shows. */
 export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
   return html`<div class="nq" lang="en" data-tts-langs="${esc(ttsLangs.join(','))}">
   <section class="nq-stage" id="nq-doors">
@@ -51,12 +52,12 @@ export function sortingGamePage({ placement, ttsLangs = [] } = {}) {
       <div class="nq-choices" id="nq-choices"></div>
       <div class="nq-answer-row" id="nq-answer-row" hidden>
         <label class="sr-only" for="nq-answer">Your answer</label>
-        <input id="nq-answer" class="nq-answer" inputmode="decimal" autocomplete="off">
+        <input id="nq-answer" class="input nq-answer" inputmode="decimal" autocomplete="off" placeholder="Type it here">
         <button type="button" class="btn btn-primary" id="nq-answer-go">That's my answer</button>
       </div>
       <p class="nq-feedback" id="nq-feedback" role="status"></p>
     </div>
-    <p><button type="button" class="btn" id="nq-stop">Stop and start playing</button></p>
+    <div class="nq-stop-row"><button type="button" class="btn" id="nq-stop">Stop and start playing</button></div>
   </section>
 
   <section class="nq-stage" id="nq-result" hidden>
