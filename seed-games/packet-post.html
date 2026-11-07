@@ -29,6 +29,9 @@
   .pp-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 8px; flex: none; }
   @media (orientation: portrait) { .pp-board.pp-board-small { flex: 0 0 min(24%, 150px); } .pp-board.pp-board-mid { flex: 0 0 min(36%, 300px); } }
   @media (orientation: landscape) { .pp-board.pp-board-small { width: 38%; } }
+  /* the got-it and dot-count levels draw one straight road (three places in a row): a short strip of map on a phone, so
+     the mail slots, the inbox and their buttons stay on screen */
+  @media (orientation: portrait) { .pp-board.pp-board-line { flex: 0 0 min(22%, 170px); } }
   @media (orientation: portrait) and (max-width: 520px) { .pp-board.pp-board-small, .pp-board.pp-board-card { display: none; } .pp-cipher { font-size: 1.05em; letter-spacing: .08em; } .pp-board.pp-board-wheel { flex: 0 0 min(38%, 360px); } .pp-say p { max-height: 6.6em; overflow-y: auto; overscroll-behavior: contain; } .pp-pxrow { display: flex; gap: 10px; align-items: center; flex: none; } .pp-pxrow .pp-h { flex: 1; min-width: 0; } }   /* a phone upright: the rule and order tiles need the room; the letter, phrase and sort cards move into the panel */
   .pp-fillcard { display: flex; flex-direction: column; gap: 8px; flex: none; }
   .pp-fillcard.pp-center { align-items: center; }
@@ -39,7 +42,9 @@
   .pp-roads line.pp-sealed { stroke: var(--pp-sealed); }
   .pp-roads line.pp-closed { stroke-dasharray: 4 14; opacity: .55; }
   .pp-roads line.pp-lit { stroke: var(--pp-lit); }
-  .pp-node { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 1; }
+  .pp-node { position: absolute; width: 0; height: 0; pointer-events: none; }
+  /* a place name rides above the road buttons (z 2) and under the packets (z 4), so a road button never hides its letters ('thday House') */
+  .pp-node .pp-ico { z-index: 1; } .pp-node small { z-index: 3; }
   .pp-node .pp-ico { position: absolute; left: -23px; top: -23px; width: 46px; height: 46px; border-radius: 50%; background: var(--ok-card); border: 3px solid var(--ok-edge); display: grid; place-items: center; }
   .pp-node .pp-ico svg { width: 26px; height: 26px; }
   .pp-node.pp-house .pp-ico { background: var(--pp-house); }
@@ -57,7 +62,7 @@
   .pp-link.pp-closed { background: var(--pp-bad); }
   .pp-link.pp-sealedb { background: var(--pp-sealed); }
   .pp-link.pp-glow, .pp-tile.pp-glow, .pp-slotb.pp-glow { box-shadow: 0 0 0 6px var(--pp-lit), 0 3px 0 var(--ok-edge); }
-  .pp-pk { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 10px; border: 3px solid var(--ok-edge); background: var(--ok-card); display: grid; place-items: center; pointer-events: none; z-index: 3; }
+  .pp-pk { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 10px; border: 3px solid var(--ok-edge); background: var(--ok-card); display: grid; place-items: center; pointer-events: none; z-index: 4; }
   .pp-pk canvas, .pp-tile canvas, .pp-slot canvas { width: 30px; height: 30px; object-fit: contain; }
   .pp-pk b, .pp-tile b.pp-n { position: absolute; right: -8px; top: -10px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: var(--pp-num); color: var(--pp-ink); font-size: .8em; display: grid; place-items: center; border: 2px solid var(--ok-edge); line-height: 1; }
   .pp-say { display: flex; align-items: center; gap: 8px; background: var(--ok-card); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 6px 10px; min-height: 52px; flex: none; }
@@ -1293,7 +1298,7 @@ function renderLevel() {
   const lv = $('div', 'pp-pill'); lv.style.flex = '0 0 auto'; lv.appendChild($('span', '', S.daily ? tr(ch.title) : ch.noun === 'cards' ? tr('Card {n} of {total}', lvv) : tr('Level {n} of {total}', lvv))); bar.appendChild(lv);
   if (S.projector) { const p = $('div', 'pp-pill'); p.appendChild(iconEl('eye')); p.appendChild($('span', '', tr('Projector'))); bar.appendChild(p); }
   const main = $('div', 'pp-main'); pp.appendChild(main);
-  const board = $('div', 'pp-board' + (I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid pp-board-card' : I.type === 'pass' || (I.type === 'cipher' && I.kind === 'keyed') ? ' pp-board-card' : I.type === 'cipher' ? ' pp-board-wheel' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
+  const board = $('div', 'pp-board' + (I.type === 'ack' || I.type === 'check' ? ' pp-board-line' : I.type === 'order' || I.type === 'rules' ? ' pp-board-small' : I.type === 'inbox' || I.type === 'sort' ? ' pp-board-mid pp-board-card' : I.type === 'pass' || (I.type === 'cipher' && I.kind === 'keyed') ? ' pp-board-card' : I.type === 'cipher' ? ' pp-board-wheel' : '')); if (MAP_TYPES.includes(I.type)) board.setAttribute('aria-label', tr('Netville map')); main.appendChild(board);
   const panel = $('div', 'pp-panel'); main.appendChild(panel);
   Object.assign(UI, { board, panel, links: {}, nodes: {}, lines: {}, packets: {}, pk: null, say: null, revealed: Infinity });
   PIECES = I.n && MAP_TYPES.includes(I.type) ? pieces(I) : null;
