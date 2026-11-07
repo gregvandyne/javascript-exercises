@@ -80,6 +80,8 @@ export const GAMES = {
   // block). The screens' labels (ui.*) are never read. Each word is a line of its own, matched whole (no joins), so the
   // word list can never be strung into a sentence.
   'word-trail': { title: 'Word Trail', role: 'friendly', spoken: /^(?!ui\.)/ },
+  // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
+  'jungle-cup': { title: 'Jungle Cup', role: 'narrator', spoken: /^(?:d\.[a-z]+\.[a-z0-9]+|story\.\d+|end\.\d+|sign\.[a-z]+|lift\.(?:open|locked))$/ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
  *  spoken lines the server knows. Every official game is listed (the coverage test in tests/unit/tts-coverage.test.js

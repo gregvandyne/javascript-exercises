@@ -29,7 +29,8 @@
     "kit-rules": "node scripts/build-kit-rules.js",
     "layout:live": "node scripts/live-layout-audit.js",
     "layout:games": "node scripts/games-fit-audit.js",
-    "focus:sheet": "node scripts/focus-sheet.js"
+    "focus:sheet": "node scripts/focus-sheet.js",
+    "build:jungle": "node tools/jungle-cup/build.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.1.0",
