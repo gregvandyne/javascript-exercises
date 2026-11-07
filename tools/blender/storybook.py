@@ -509,10 +509,18 @@ def build_fence():
 
 
 # ------------------------------------------------------------------------------------------------------------ export
+def lod(ob, ratio):
+    """A lighter copy of a mesh for the distance (Blender's Decimate, collapse), as a compact mesh."""
+    mod = ob.modifiers.new('lod', 'DECIMATE'); mod.ratio = ratio; mod.use_collapse_triangulate = True
+    dg = bpy.context.evaluated_depsgraph_get(); me = bpy.data.meshes.new_from_object(ob.evaluated_get(dg)); ob.modifiers.remove(mod)
+    tmp = bpy.data.objects.new(ob.name + '_lod', me); out = compact(tmp); bpy.data.objects.remove(tmp); bpy.data.meshes.remove(me)
+    return out
+
+
 def compact(ob, rig=None, bone_names=None):
     """The mesh in the game's compact form: indexed triangles, quantised position (int16 over its bounds), normal (int8),
     uv (uint16 over [-4, 4]), colour + part (uint8 rgba), bone (uint8)."""
-    dg = bpy.context.evaluated_depsgraph_get(); me = ob.data
+    me = ob.data
     me.calc_loop_triangles()
     uvl = me.uv_layers.active.data; col = me.color_attributes.get('Col').data; bl = me.attributes.get('bone')
     verts, idx, key2i = [], [], {}
@@ -680,7 +688,10 @@ def make_prop(name, builders, tex, out, renders, height, texs=None):
     for i, (b, t) in enumerate(zip(builders, texs)):
         obs.append(b.mesh(material(f'{name}_mat{i}', to_bimg(t, f'{name}_tex{i}'))))
     export_glb(os.path.join(out, name + '.glb'), obs)
-    data = {'name': name, 'meshes': {b_ob.name.replace(name + '_', '') if b_ob.name != name else 'body': compact(b_ob) for b_ob in obs}}
+    key = lambda o: o.name.replace(name + '_', '') if o.name != name else 'body'
+    data = {'name': name, 'meshes': {key(o): compact(o) for o in obs}}
+    for o in obs:   # a lighter level of detail for the distance (props drawn many times over)
+        if data['meshes'][key(o)]['tris'] > 300: data['meshes'][key(o)]['lod1'] = lod(o, 0.35)
     url, nb = tex_url(texs[0], 80); data['tex'] = url
     for b_ob, t in zip(obs, texs):
         if t is not texs[0]: data['meshes'][b_ob.name.replace(name + '_', '')]['tex'] = tex_url(t, 80)[0]

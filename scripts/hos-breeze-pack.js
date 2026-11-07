@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dir = process.argv[2];
 if (!dir) { console.error('usage: node scripts/hos-breeze-pack.js DIR'); process.exit(1); }
-const NAMES = ['hero', 'granny', 'cottage', 'tree', 'barrel', 'fence'];
+const NAMES = fs.readdirSync(dir).filter(f => f.endsWith('.json')).map(f => f.replace(/\.json$/, '')).sort();   // every asset storybook.py wrote
 const out = {};
 for (const n of NAMES) {
   const d = JSON.parse(fs.readFileSync(path.join(dir, n + '.json'), 'utf8'));

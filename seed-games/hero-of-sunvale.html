@@ -13813,7 +13813,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-1fa5022c/breeze-models.js', integrity: 'sha384-GjfmkyIuapReImCPqzNtBub+h2czRMX5vQcxBDcZGDs3uWjESFlOm5maD+RR670k' };
+const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-e0c2218a/breeze-models.js', integrity: 'sha384-gvpS3tq3pg+96q4PoJqakYlyG44cTHI0t5WavkCbiXMkYWjt9g07ro3TCvGZseh9' };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 function bzLoad() {
@@ -13912,22 +13912,27 @@ function bzApply(d) {
     const mx = new THREE.AnimationMixer(Gm.mesh); Gm.mixer = mx; Gm.idle = mx.clipAction(Gm.clips.idle); Gm.talk = mx.clipAction(Gm.clips.talk); Gm.idle.play(); BZM.mixers.push(mx);
   }
   // props: one instanced mesh per model part, for every place in the world
+  // geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry
   const inst = (geo, mat, list, place, tint) => {
     if (!list.length) return null;
-    const m = new THREE.InstancedMesh(geo, mat, list.length), o = new THREE.Object3D();
-    m.userData.places = list.map(p => { place(p, o); o.updateMatrix(); return { x: o.position.x, z: o.position.z, mat: o.matrix.clone(), col: new THREE.Color(tint ? tint(p) : '#ffffff') }; });
-    m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
-    m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.userData.noInk = true; scene.add(m); BZM.props.push(m); bzCull(m, true); return m;
+    const near = geo.isBufferGeometry ? geo : bzGeo(geo), far = !geo.isBufferGeometry && geo.lod1 ? bzGeo(geo.lod1) : null, o = new THREE.Object3D();
+    const places = list.map(p => { place(p, o); o.updateMatrix(); return { x: o.position.x, z: o.position.z, mat: o.matrix.clone(), col: new THREE.Color(tint ? tint(p) : '#ffffff') }; });
+    const make = (g, lodN) => {
+      const m = new THREE.InstancedMesh(g, mat, list.length); m.userData.places = places; m.userData.lod = lodN;
+      m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
+      m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; m.userData.noInk = true; scene.add(m); BZM.props.push(m); bzCull(m, true); return m;
+    };
+    const m = make(near, far ? 0 : -1); if (far) make(far, 1); return m;
   };
   const cot = d.cottage, cmat = breezeMat({ map: bzTex(cot, true) });
   const cplace = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(p.w / 6, p.h / 3.2, p.d / 5); };
-  inst(bzGeo(cot.meshes.walls), cmat, BZ_PROPS.cottage, cplace, p => p.wall);   // each house its own warm wall colour
-  inst(bzGeo(cot.meshes.roof), breezeMat({ map: bzTex(cot.meshes.roof.tex ? cot.meshes.roof : cot, true) }), BZ_PROPS.cottage, cplace, p => '#' + C2.set(p.roof).lerp(WHITE_T, 0.08).getHexString());
+  inst(cot.meshes.walls, cmat, BZ_PROPS.cottage, cplace, p => p.wall);   // each house its own warm wall colour
+  inst(cot.meshes.roof, breezeMat({ map: bzTex(cot.meshes.roof.tex ? cot.meshes.roof : cot, true) }), BZ_PROPS.cottage, cplace, p => '#' + C2.set(p.roof).lerp(WHITE_T, 0.08).getHexString());
   const bar = d.barrel;
-  inst(bzGeo(bar.meshes.body), breezeMat({ map: bzTex(bar, true) }), BZ_PROPS.barrel, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(0.95); });
+  inst(bar.meshes.body, breezeMat({ map: bzTex(bar, true) }), BZ_PROPS.barrel, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(0.95); });
   const fe = d.fence, fmat = breezeMat({ map: bzTex(fe, true) });
-  inst(bzGeo(fe.meshes.post), fmat, BZ_PROPS.post, (p, o) => { o.position.set(p.x, p.y + 0.2, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(1, p.h / 1.4, 1); });
-  inst(bzGeo(fe.meshes.rail), fmat, BZ_PROPS.rail, (p, o) => { o.position.set(p.x0, p.y0, p.z0); o.rotation.set(0, Math.atan2(-(p.z1 - p.z0), p.x1 - p.x0), Math.atan2(p.y1 - p.y0, hyp(p.x1 - p.x0, p.z1 - p.z0))); o.scale.set(hyp(p.x1 - p.x0, p.z1 - p.z0), p.h / 1.1, 1); });
+  inst(fe.meshes.post, fmat, BZ_PROPS.post, (p, o) => { o.position.set(p.x, p.y + 0.2, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(1, p.h / 1.4, 1); });
+  inst(fe.meshes.rail, fmat, BZ_PROPS.rail, (p, o) => { o.position.set(p.x0, p.y0, p.z0); o.rotation.set(0, Math.atan2(-(p.z1 - p.z0), p.x1 - p.x0), Math.atan2(p.y1 - p.y0, hyp(p.x1 - p.x0, p.z1 - p.z0))); o.scale.set(hyp(p.x1 - p.x0, p.z1 - p.z0), p.h / 1.1, 1); });
   // the scattered trees: the model in place of the procedural tree (the same instances, tints and fading)
   const tk = SCATTER.kinds.tree;
   if (tk) { const tg = bzGeo(d.tree.meshes.body); tg.scale(0.82, 0.82, 0.82); tk.mesh.geometry = tg; tk.mesh.material = breezeMat({ map: bzTex(d.tree, true), sat: 1.1 }); }
@@ -13943,9 +13948,15 @@ function bzApply(d) {
   BZM.state = 'ready';
 }
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
+// Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.
+const BZ_LOD = 32;
 function bzCull(m, force) {
-  const cx = camera.position.x, cz = camera.position.z, R = Math.min(camera.far, 80); let n = 0;
-  for (const p of m.userData.places) { if (!force && hyp(p.x - cx, p.z - cz) > R) continue; m.setMatrixAt(n, p.mat); m.setColorAt(n, p.col); n++; }
+  const cx = camera.position.x, cz = camera.position.z, R = Math.min(camera.far, 80), L = m.userData.lod; let n = 0;
+  for (const p of m.userData.places) {
+    const d = hyp(p.x - cx, p.z - cz);
+    if (!force && (d > R || (L === 0 && d > BZ_LOD) || (L === 1 && d <= BZ_LOD))) continue;
+    m.setMatrixAt(n, p.mat); m.setColorAt(n, p.col); n++;
+  }
   m.count = n; m.instanceMatrix.needsUpdate = true; m.instanceColor.needsUpdate = true;
 }
 /** No pack (offline, an old browser): build the procedural props after all. */
