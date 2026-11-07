@@ -84,6 +84,24 @@ test('nature and small props: the scattered kinds, crates, lantern posts and the
   assert.match(HTML, /function buildFoam\(\)/); assert.match(HTML, /if \(BREEZE\) WORLD\.water\.foam = buildFoam\(\);/);
 });
 
+test('landmarks: every model the game places, split by texture, each mesh decoding within its wider uv range', () => {
+  const L = A.landmarks; assert.ok(L, 'landmarks');
+  for (const [k, v] of Object.entries(L.texs)) { assert.match(v, /^data:image\/jpeg;base64,/, k); assert.ok(len(v.split(',')[1]) < 40000, `${k} texture is small`); }
+  let tris = 0;
+  for (const [key, m] of Object.entries(L.meshes)) {
+    const tx = key.split('.')[1]; assert.equal(m.tx, tx, key); assert.ok(L.texs[tx], `${key} texture`);
+    assert.equal(len(m.pos), m.verts * 6, key); assert.equal(len(m.uv), m.verts * 4, key); assert.equal(len(m.idx), m.tris * 3 * (m.verts < 65536 ? 2 : 4), key);
+    tris += m.tris;
+  }
+  assert.ok(tris <= 24000, `landmarks: ${tris} triangles`);
+  const names = new Set(Object.keys(L.meshes).map(k => k.split('.')[0]));
+  for (const m of ['gatehouse', 'keep', 'block', 'board', 'ftower', 'fgate', 'fspire', 'fpillar', 'stake', 'tent', 'chieftent', 'bridge', 'lighthouse', 'shop', 'awning', 'boat', 'skiff', 'netrack', 'signpost', 'sign', 'cart']) {
+    assert.ok(names.has(m), m);
+    if (m !== 'block' && m !== 'board') assert.match(HTML, new RegExp(`bzLand\\('${m}'`), `the game places ${m}`);
+  }
+  assert.match(HTML, /class SlabKit extends Kit/); assert.match(HTML, /function bzLandmarks\(d\)/);
+});
+
 test('the characters are rigged, with clips for Granny (the hero is posed by the game)', () => {
   for (const n of ['hero', 'granny']) {
     const b = A[n].bones.map(x => x.name);

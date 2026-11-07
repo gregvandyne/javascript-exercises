@@ -175,6 +175,9 @@ class Builder:
         c = center or sum((v.co for v in bm2.verts), Vector()) / max(1, len(bm2.verts))
         mn = Vector([min(v.co[i] for v in bm2.verts) for i in range(3)]); mx = Vector([max(v.co[i] for v in bm2.verts) for i in range(3)])
         u0, v0, u1, v1 = REG.get(region, REG['cloth']) if tile is None else (0, 0, 1, 1)
+        bm2.normal_update()
+        if tile is not None and len(tile) > 3:
+            reps = max(1, round(2 * math.pi * max(0.2, max(math.hypot(v.co.x - c.x, v.co.y - c.y) for v in bm2.verts)) * tile[0]))
         vmap = {}
         for v in bm2.verts:
             nv = self.bm.verts.new(v.co); nv[self.bone] = bone; vmap[v] = nv
@@ -186,10 +189,20 @@ class Builder:
             except ValueError:
                 continue
             nf.smooth = f.smooth
+            if tile is not None and len(tile) > 3:
+                angs = [math.atan2(v.co.y - c.y, v.co.x - c.x) for v in f.verts]; fwrap = max(angs) - min(angs) > math.pi
             for l, l2 in zip(nf.loops, f.loops):
                 p = l2.vert.co
-                if tile is not None:   # box projection in world units (repeat-wrapped prop textures): tile = (scale, v offset, v span)
-                    n = f.normal; s, vo, vs = tile
+                if tile is not None and len(tile) > 3:   # round parts: u around (whole repeats: no seam), v up, in world units
+                    s = tile[0]; n = f.normal
+                    if abs(n.z) > 0.8: u, vv = p.x * s, p.y * s
+                    else:
+                        a = math.atan2(p.y - c.y, p.x - c.x) / (2 * math.pi)
+                        if fwrap and a < 0: a += 1
+                        u, vv = a * reps, p.z * s
+                    l[self.uv].uv = (u, vv)
+                elif tile is not None:   # box projection in world units (repeat-wrapped prop textures): tile = (scale, v offset, v span)
+                    n = f.normal; s, vo, vs = tile[:3]
                     if abs(n.z) > max(abs(n.x), abs(n.y)): u, vv = p.x * s, p.y * s
                     elif abs(n.x) > abs(n.y): u, vv = p.y * s, p.z * s
                     else: u, vv = p.x * s, p.z * s
@@ -619,17 +632,19 @@ def build_big():
 
     def part(name):
         P[name] = Builder('big_' + name); return P[name]
-    steel, steelD, steelL, violet, dark = hexc('#8A9BB2'), hexc('#4E5A6C'), hexc('#D4DEEA'), hexc('#9B6BE8'), hexc('#2B2220')
+    steel, steelD, steelL, violet, dark = hexc('#5F7398'), hexc('#2C3550'), hexc('#9FB3D2'), hexc('#9B6BE8'), hexc('#2B2220')   # rich blued steel, deep shade
     b = part('clank_0')   # the body from the ground: breastplate, belt, pauldrons, helm
     b.add(tsph((0, 0.9, 0), (0.36, 0.36, 0.25), (14, 9)), steel, 'metal', 0, 'white', wonk=0.006)
-    b.add(tsph((0, 0.97, 0.06), (0.29, 0.28, 0.2), (12, 8)), steelL, 'metal', 0, 'white')
+    b.add(tsph((0, 0.97, 0.06), (0.29, 0.28, 0.2), (12, 8)), hexc('#7F94B8'), 'metal', 0, 'white')
     b.add(ttube((-0.2, 1.22, 0.24), (0.22, 0.6, 0.21), 0.05, 0.05, 6, 3), violet, 'cloth', 0, 'cloth')   # the sash
-    b.add(tlathe([(0.33, 0.56), (0.36, 0.58), (0.36, 0.64), (0.33, 0.66)], 14), hexc('#C99A00'), 'metal', 0, 'white')   # a gold belt
+    b.add(tlathe([(0.33, 0.55), (0.375, 0.57), (0.375, 0.65), (0.33, 0.67)], 14), hexc('#FFB000'), 'metal', 0, 'white')   # a bold gold belt
     for s_ in (1, -1):
         b.add(tsph((0.38 * s_, 1.42, 0), (0.2, 0.15, 0.22), (10, 7)), steelL, 'metal', 0, 'white')
-        b.add(tsph((0.38 * s_, 1.48, 0), (0.06, 0.04, 0.06), (6, 4)), hexc('#FFD23F'), 'metal', 0, 'white')   # gold rivets
+        b.add(tsph((0.38 * s_, 1.5, 0), (0.08, 0.05, 0.08), (6, 4)), hexc('#FFB800'), 'metal', 0, 'white')   # gold rivets
+        b.add(tlathe([(0.17, -0.01), (0.2, 0.0), (0.2, 0.03), (0.17, 0.04)], 12, (0.38 * s_, 1.33, 0)), hexc('#FFB000'), 'metal', 0, 'white')   # gold pauldron rims
     bm = tlathe([(0.0, 1.27), (0.24, 1.28), (0.26, 1.4), (0.25, 1.65), (0.22, 1.76), (0.0, 1.8)], 16)
     b.add(bm, steel, 'metal', 0, 'white', wonk=0.004)
+    b.add(tlathe([(0.235, 1.26), (0.275, 1.28), (0.275, 1.34), (0.24, 1.36)], 14), hexc('#FFB000'), 'metal', 0, 'white')   # a gold gorget band
     b.add(bbox_rounded((0.36, 0.06, 0.09), tv(0, 1.69, 0.235), 0.025, 2), dark, 'other', 0, 'boots')   # the visor slit
     b.add(ttube((0, 1.8, 0.05), (0, 2.02, -0.15), 0.07, 0.12, 8, 3), violet, 'cloth', 0, 'cloth')   # the plume
     b = part('clank_1')   # the sword arm, from the shoulder
@@ -643,6 +658,7 @@ def build_big():
     b = part('clank_2')   # the shield arm: a round-cornered kite shield with the violet cross
     b.add(ttube((0, -0.05, 0), (0, -0.5, 0), 0.1, 0.09, 8, 3), steel, 'metal', 0, 'white')
     b.add(bbox_rounded((0.62, 0.08, 0.74), tv(-0.04, -0.86, 0.17), 0.12, 2), steelD, 'metal', 0, 'white')
+    b.add(bbox_rounded((0.7, 0.06, 0.82), tv(-0.04, -0.86, 0.15), 0.14, 2), hexc('#FFB000'), 'metal', 0, 'white')   # the shield's gold rim
     b.add(bbox_rounded((0.12, 0.02, 0.52), tv(-0.04, -0.82, 0.215), 0.03, 1), violet, 'cloth', 0, 'cloth')
     b.add(bbox_rounded((0.42, 0.02, 0.1), tv(-0.04, -0.66, 0.215), 0.03, 1), violet, 'cloth', 0, 'cloth')
     b = part('clank_3')   # legs from the hips
@@ -981,6 +997,52 @@ def build_tree():
     return B
 
 
+def build_tree_light():
+    """The light tree (the scattered trees: hundreds are drawn): one round crown and a smaller top blob, a five-sided
+    trunk, about the decimated tree's triangle count; its normals point out from the crown's middle (canopy_normals), so
+    it shades as one soft round mass instead of facets."""
+    B = Builder('tree_light'); bark, leaf = hexc('#8A5A3C'), hexc('#7CC94A')
+    B.add(smooth(btube((0, 0, -0.1), (0.1, 0, 2.6), 0.3, 0.16, 5, 2, cap=False)), bark, 'wood', 0, tile=(0.9, 0.0, 0.0))
+    for loc, rad in (((0.05, 0, 3.6), (1.7, 1.6, 1.55)),):   # one round crown: an icosphere (an even, round outline)
+        bm = bmesh.new(); bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
+        bmesh.ops.transform(bm, matrix=Matrix.Translation(loc) @ Matrix.Diagonal((rad[0], rad[1], rad[2], 1)), verts=bm.verts); smooth(bm)
+        for v in bm.verts:
+            n = (v.co - Vector(loc)).normalized(); v.co += n * 0.08 * math.sin(n.x * 5 + n.y * 4) * math.sin(n.z * 5 + n.x * 2)
+        B.add(bm, leaf, 'leaf', 0, tile=(0.0, 0.0, 1.0))
+    for f in B.bm.faces:
+        for l in f.loops:
+            if abs(l[B.col][3] - PARTS['leaf'] / 16.0) < 1e-4:
+                p = l.vert.co; l[B.uv].uv = (0.5 + math.atan2(p.y, p.x) / (2 * math.pi) * 2, 1 - (0.02 + 0.6 * (1 - min(1, max(0, (p.z - 2.0) / 3.2)))))
+    return B
+
+
+def canopy_normals(ob, centre, radii, k):
+    """Leaf vertices' normals turned toward the crown's own round normal (k = 1: all the way): one soft mass."""
+    me = ob.data; col = me.color_attributes.get('Col').data; leafA = PARTS['leaf'] / 16.0
+    leafv = set()
+    for l in me.loops:
+        if abs(col[l.index].color[3] - leafA) < 1e-3: leafv.add(l.vertex_index)
+    out = []
+    for v in me.vertices:
+        n = Vector(v.normal)
+        if v.index in leafv:
+            d = Vector(((v.co.x - centre[0]) / radii[0] ** 2, (v.co.y - centre[1]) / radii[1] ** 2, (v.co.z - centre[2]) / radii[2] ** 2)).normalized()
+            n = (n * (1 - k) + d * k).normalized()
+        out.append(n)
+    me.normals_split_custom_set_from_vertices(out)
+
+
+def make_tree(out, renders):
+    tex = prop_tex('tree'); full = build_tree(); light = build_tree_light()
+    data = make_prop('tree', [full], tex, out, renders, 5.6)
+    ob = bpy.data.objects['tree']; canopy_normals(ob, (0.1, 0, 3.55), (1.9, 1.8, 1.6), 0.55); data['meshes']['body'] = compact(ob)
+    lo = light.mesh(material('tree_light_mat', to_bimg(tex, 'tree_light_tex'))); canopy_normals(lo, (0.1, 0, 3.6), (1.75, 1.6, 1.55), 0.85)
+    data['meshes']['body']['lod1'] = compact(lo)
+    if renders:
+        ob.hide_render = True; turntable(os.path.join(out, 'turn_tree_light.png'), [lo], 5.6); ob.hide_render = False
+    return data
+
+
 def build_barrel():
     B = Builder('barrel'); wood, metal = hexc('#BF7A45'), hexc('#5E5A50')
     prof = [(0.36, 0.0), (0.42, 0.18), (0.46, 0.45), (0.47, 0.6), (0.46, 0.75), (0.42, 1.02), (0.36, 1.2)]
@@ -1005,16 +1067,512 @@ def build_fence():
     return post, rail
 
 
+# ------------------------------------------------------------------------------------------------------------ landmarks
+def land_tex(kind):
+    """Textures the landmarks add: tent canvas (a soft weave, stitched seams, a few patches) and fishing net."""
+    if kind == 'canvas':
+        T = painted(256, 256, (248, 244, 236), 41, 30, stroke_col=(226, 220, 210), dirn='v', grad=0.05, blot=0.06); d = ImageDraw.Draw(T, 'RGBA')
+        for x in range(0, 256, 4): d.line([(x, 0), (x, 256)], fill=(0, 0, 0, 9))
+        for y in range(0, 256, 4): d.line([(0, y), (256, y)], fill=(0, 0, 0, 7))
+        for x in (2, 130):
+            for y in range(0, 256, 10): d.line([(x, y), (x, y + 5)], fill=(150, 140, 125, 150), width=2)
+        rr = random.Random(9)
+        for _ in range(3):
+            x, y = rr.randint(20, 200), rr.randint(20, 200); d.rounded_rectangle((x, y, x + 34, y + 28), 4, fill=(234, 226, 212, 255), outline=(176, 166, 146, 200), width=2)
+        return T.filter(ImageFilter.GaussianBlur(0.5))
+    if kind == 'net':
+        T = painted(128, 128, (240, 238, 230), 43, 0, grad=0.04, blot=0.05); d = ImageDraw.Draw(T)
+        for i in range(-128, 256, 16):
+            d.line([(i, 0), (i + 128, 128)], fill=(118, 108, 92), width=2); d.line([(i + 128, 0), (i, 128)], fill=(118, 108, 92), width=2)
+        return T.filter(ImageFilter.GaussianBlur(0.6))
+    if kind == 'plaster':
+        return prop_tex('cottage')
+    return prop_tex(kind)
+
+
+def L_box(b, x, y, z, sx, sy, sz, col, part='other', s=0.25, ry=0.0, bev=0.15, segs=1, wonk=0.0):
+    """A soft-cornered box in the game's frame: (x, y, z) the middle of its foot; sizes along the game's x, up, z; turned ry."""
+    if min(sx, sy, sz) < 0.3:   # thin parts: a plain box (the pack stays small)
+        bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0); bmesh.ops.scale(bm, vec=Vector((sx, sz, sy)), verts=bm.verts)
+    else:
+        bm = bbox_rounded((sx, sz, sy), (0, 0, 0), min(bev, 0.42 * min(sx, sy, sz)), segs)
+    bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(x, y + sy / 2, z)) @ euler((0, 0, ry)), verts=bm.verts)
+    b.add(bm, col, part, 0, tile=(s, 0, 1), wonk=wonk)
+
+
+def L_cyl(b, x, y, z, rt, rb, h, col, part='other', s=0.25, segs=10, bev=0.1, rot=0.0, wonk=0.0):
+    """A round column with softly rounded rims (thin ones plain), foot at (x, y, z)."""
+    e = min(bev, 0.3 * min(rt, rb, h))
+    prof = [(0, 0), (rb - e, 0), (rb, e), (rt, h - e), (rt - e, h), (0, h)] if e > 0.03 else [(0, 0), (rb, 0), (rt, h), (0, h)]
+    bm = smooth(blathe(prof, segs))
+    bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(x, y, z)) @ euler((0, 0, rot)), verts=bm.verts)
+    b.add(bm, col, part, 0, tile=(s, 0, 1, 'cyl'), wonk=wonk)
+
+
+def L_roof(b, x, y, z, r, h, col, part='roof', s=0.35, segs=16, rot=0.0, lip=0.18):
+    """A storybook cone roof: a flared, slightly concave curve with a thick soft lip at the eaves."""
+    prof = [(0, 0), (r * 0.9, 0), (r * 1.02, -lip * 0.5), (r * 1.04, lip * 0.4), (r * 0.66, h * 0.3), (r * 0.36, h * 0.62), (r * 0.12, h * 0.9), (0, h)]
+    bm = smooth(blathe(prof, segs))
+    bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(x, y, z)) @ euler((0, 0, rot)), verts=bm.verts)
+    b.add(bm, col, part, 0, tile=(s, 0, 1, 'cyl'))
+
+
+def L_ball(b, x, y, z, r, col, part='metal', s=1.0, segs=(10, 6)):
+    b.add(smooth(bsphere(tv(x, y, z), (r, r, r), segs)), col, part, 0, tile=(s, 0, 1))
+
+
+def L_tube(b, a, c, r, col, part='wood', s=1.0, segs=6):
+    b.add(ttube(a, c, r, r, segs, 2), col, part, 0, tile=(s, 0, 1))
+
+
+def L_poly(b, pts, x0, x1, col, part='other', s=0.25):
+    """A slab from a polygon in the game's (z, y) plane, from x0 to x1 (the bridge's spandrels)."""
+    bm = bmesh.new(); A = [bm.verts.new(tv(x0, y, z)) for z, y in pts]; B = [bm.verts.new(tv(x1, y, z)) for z, y in pts]
+    bm.faces.new(A); bm.faces.new(B[::-1])
+    for i in range(len(pts)):
+        j = (i + 1) % len(pts); bm.faces.new([A[j], A[i], B[i], B[j]])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    b.add(bm, col, part, 0, tile=(s, 0, 1))
+
+
+def L_hull(b, L0, L1, w, depth, rim, col, part='wood', s=0.5, flip=False, deck=None, deck_col=None):
+    """A rowboat hull along the game's z (stern L0 .. bow L1): U sections, the bow drawn to a point and lifted; open on
+    top with a soft inner lip; deck: a floor at that height. flip: upside down (a boat drawn up on the shore)."""
+    bm = bmesh.new(); rows_o, rows_i = [], []; n = 9
+    for k in range(12):
+        t = k / 11; z = L0 + (L1 - L0) * t
+        ww = w * (1 - max(0, (t - 0.62) / 0.38) ** 1.6 * 0.97) * (0.9 + 0.1 * math.sin(min(1, t / 0.3) * math.pi / 2))
+        lift = 0.35 * max(0, (t - 0.6) / 0.4) ** 2 + 0.12 * max(0, (0.12 - t) / 0.12)
+        ro, ri = [], []
+        for i in range(n):
+            a = -math.pi / 2 + math.pi * i / (n - 1)
+            x, y = ww * math.sin(a), rim + lift - (depth - lift * 0.8) * math.cos(a)
+            ro.append((x, y, z)); ri.append((x * max(0, ww - 0.1) / max(ww, 1e-3), (deck if deck is not None else rim - depth * 0.6) * (1 - abs(math.sin(a)) ** 8) + (rim + lift) * abs(math.sin(a)) ** 8, z))
+        rows_o.append(ro); rows_i.append(ri)
+    if flip:
+        rows_o = [[(p[0], rim - p[1], p[2]) for p in r] for r in rows_o]
+    V = [[bm.verts.new(tv(*p)) for p in r] for r in rows_o]
+    for r0, r1 in zip(V, V[1:]):
+        for i in range(n - 1): bm.faces.new([r0[i], r1[i], r1[i + 1], r0[i + 1]] if not flip else [r0[i + 1], r1[i + 1], r1[i], r0[i]])
+    if not flip:   # the inner wall and floor, and the transom
+        W = [[bm.verts.new(tv(*p)) for p in r] for r in rows_i]
+        for r0, r1 in zip(W, W[1:]):
+            for i in range(n - 1): bm.faces.new([r0[i + 1], r1[i + 1], r1[i], r0[i]])
+        for k in range(len(V) - 1):   # the lip: outer rim to inner rim on both sides
+            for i in (0, n - 1):
+                q = [V[k][i], V[k + 1][i], W[k + 1][i], W[k][i]]
+                bm.faces.new(q if i == n - 1 else q[::-1])
+        tr = V[0] + W[0][::-1]
+        try: bm.faces.new(tr[::-1])
+        except ValueError: pass
+    else:
+        try: bm.faces.new(V[0][::-1])
+        except ValueError: pass
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    smooth(bm); b.add(bm, col, part, 0, tile=(s, 0, 1))
+
+
+def build_landmarks():
+    """The rest of the world's buildings in the storybook kit (polish round). Each mesh is drawn in the game's frame
+    about its anchor (the place the game gives it), split by texture as '<model>.<texture>':
+      gatehouse  the castle gate (anchor -150, 0, -117; heights are the game's): two blocks 6 x 13 x 10 with walk-on tops at
+                 21, the arch (a walk-on bridge 15..17) with a voussoir ring, the raised portcullis, two banners
+      keep       the castle keep, stables and barracks (anchor -150, 0, -172): the hall's side walls, the roof deck at 18..19,
+                 a tiled gable roof, columns, two round towers with cone roofs; the stables' and barracks' walls and roofs
+      block      a unit soft stone block (merlons, steps; the game scales it), stone texture, tinted by the game
+      board      a unit soft board (dock planks, wooden stairs), wood texture, tinted by the game
+      ftower     a fortress corner tower (foot at Y - 2): r 5.4 -> 5, 24 tall, a cone roof r 6, 9 tall
+      fgate      a Gloom Gate tower (foot at Y - 1): 5 x 15 x 5, a four-sided cap 4 tall
+      fspire     the north tower (foot at Y - 2): r 6.8 -> 6, 38 tall, a balcony at 28, a cone r 7.4, 18 tall
+      fpillar    a courtyard pillar (foot at Y - 0.2): r 1.6, 8.2 tall, square base and cap 3.8 wide
+      stake      a palisade stake 3 m tall with a sharpened top (the game scales it)
+      tent       a round camp tent r 2.6, 3.4 tall, the door at +z; chieftent the chief's drum tent (walk-on top at 4.25)
+      bridge     the old stone bridge (anchor 0, 0, -60): two decks at 3.2..4, parapets, piers, abutments, arches (the
+                 middle one broken), spandrels
+      lighthouse Riverbend's striped tower (6 m), the gallery at 6..6.3 with a rail, the lamp roof; shop: a flat-roofed
+                 cottage (unit like the cottage: 6 x 3.2 x 5, its roof deck at 3.2..3.45); awning: the shop's striped
+                 awning; boat, skiff (upturned on the shore); netrack (two posts and a hanging net)
+      signpost   a crossroads post with three arrow boards; sign: a post with one; cart: the village hay cart"""
+    P = {}
+
+    def part(n):
+        if n not in P: P[n] = Builder('lm_' + n)
+        return P[n]
+    H = hexc
+    stone, stoneD, stoneL, walk = H('#E9E3D6'), H('#C9C0AE'), H('#F4F0E6'), H('#BDB3A1')
+    # ---- gatehouse
+    g = part('gatehouse.stone'); gc = part('gatehouse.canvas')
+    for s_ in (-1, 1):
+        gx = s_ * 7
+        L_box(g, gx, 8.0, 0, 6, 13, 10, stone, 'wall', 0.25, bev=0.3, wonk=0.02)
+        L_box(g, gx, 8.0, 0, 6.5, 1.3, 10.5, stoneD, 'wall', 0.25, bev=0.3)
+        L_box(g, gx, 20.9, 0, 6.5, 0.4, 10.5, stoneD, 'wall', 0.25, bev=0.15)
+        for zz in (4.85, -4.85):
+            for i in range(3): L_box(g, gx - 2.2 + i * 2.2, 21.3, zz, 1.2, 1.0, 0.6, stoneD, 'wall', 0.5, bev=0.18)
+        for zz in (5.05, -5.05):   # arrow slits
+            L_box(g, gx, 14.2, zz, 0.55, 1.8, 0.2, H('#3B3F55'), 'glass', 1.0, bev=0.1)
+    L_box(g, 0, 15.0, -1, 8.2, 2.0, 4, stone, 'wall', 0.25, bev=0.2)
+    L_box(g, 0, 16.9, -1, 8.4, 0.25, 4.2, stoneD, 'wall', 0.25, bev=0.1)
+    for zz in (0.75, -2.75):   # the voussoir ring under the arch, front and back
+        n = 7
+        for i in range(n):
+            a = math.pi * (i + 0.5) / n; r = 4.25
+            x, y = -math.cos(a) * r, 11.0 + math.sin(a) * r
+            bm = bbox_rounded((1.2, 0.62, 0.8), (0, 0, 0), 0.12, 1)
+            bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(x, y, zz)) @ euler((0, -(math.pi / 2 - a), 0)), verts=bm.verts)
+            g.add(bm, stoneL if i % 2 else stoneD, 'wall', 0, tile=(0.5, 0, 1))
+    for i in range(7):   # the raised portcullis: bars with points, a cross bar
+        x = -3.3 + i * 1.1
+        L_cyl(g, x, 13.6, 1.25, 0.08, 0.08, 1.6, H('#4A4A52'), 'metal', 1.0, 6, 0.02)
+        L_cyl(g, x, 13.35, 1.25, 0.0, 0.11, 0.3, H('#4A4A52'), 'metal', 1.0, 6, 0.0)
+    L_box(g, 0, 14.4, 1.25, 7.4, 0.16, 0.16, H('#4A4A52'), 'metal', 1.0, bev=0.05)
+    for s_ in (-1, 1):   # banners: a rod, a swallowtail cloth with a gold sun
+        bx = s_ * 7
+        L_tube(g, (bx - 1.3, 19.2, 5.25), (bx + 1.3, 19.2, 5.25), 0.07, H('#6E4A2C'))
+        for e in (-1.3, 1.3): L_ball(g, bx + e, 19.2, 5.25, 0.14, H('#FFC83D'))
+        bm = bmesh.new(); cols = 5; rows = 8; vs = []
+        for j in range(rows + 1):
+            t = j / rows; row = []
+            for i in range(cols + 1):
+                u = i / cols; x = bx - 1.1 + 2.2 * u; y = 19.1 - 6.0 * t
+                if j == rows: y += 0.9 * (1 - abs(u - 0.5) * 2)   # the swallowtail notch
+                row.append(bm.verts.new(tv(x, y, 5.2 + 0.08 * math.sin(t * 5 + u * 3))))
+            vs.append(row)
+        for j in range(rows):
+            for i in range(cols): bm.faces.new([vs[j][i], vs[j + 1][i], vs[j + 1][i + 1], vs[j][i + 1]])
+        bm2 = bm.copy(); bmesh.ops.reverse_faces(bm2, faces=bm2.faces[:]); bmesh.ops.translate(bm2, vec=Vector((0, 0.03, 0)), verts=bm2.verts)
+        gc.add(smooth(bm), H('#3E6FD8'), 'cloth', 0, tile=(0.5, 0, 1)); gc.add(smooth(bm2), H('#2F58B8'), 'cloth', 0, tile=(0.5, 0, 1))
+        sun = smooth(blathe([(0, 0), (0.62, 0), (0.62, 0.06), (0, 0.06)], 14)); bmesh.ops.transform(sun, matrix=Matrix.Translation(tv(bx, 16.4, 5.33)) @ euler((math.pi / 2, 0, 0)), verts=sun.verts)
+        gc.add(sun, H('#FFC83D'), 'metal', 0, tile=(0.5, 0, 1))
+    # ---- keep, stables, barracks
+    k = part('keep.stone'); kr = part('keep.roof'); kp = part('keep.planks'); kpl = part('keep.plaster')
+    zc, zl = -43.25, 22.5
+    for s_ in (-1, 1):
+        L_box(k, s_ * 17, 8.5, zc, 2, 14.5, zl, stone, 'wall', 0.25, bev=0.25)
+        L_box(k, s_ * 17, 22.8, zc, 2.4, 0.4, zl + 0.4, stoneD, 'wall', 0.25, bev=0.15)
+    L_box(k, 0, 18.0, -44.25, 36, 1.0, 24.5, stoneD, 'wall', 0.25, bev=0.2)
+    ang = math.atan2(3.2, 12.5); Ls = math.hypot(3.2, 12.9)
+    for s_ in (-1, 1):   # the tiled gable roof: two thick slabs, a sag, a ridge roll
+        bm = bbox_rounded((36.6, Ls, 0.5), (0, 0, 0), 0.2, 2)
+        for v in bm.verts: v.co.z -= 0.2 * math.cos(v.co.x / 36.6 * math.pi) ** 2 * (0.5 - 0.5 * math.cos(v.co.y / Ls * math.pi))
+        bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(0, 19 + 1.6 - 0.05, -44.25 + s_ * 6.3)) @ euler((s_ * ang, 0, 0)), verts=bm.verts)
+        kr.add(bm, H('#5A88E0'), 'roof', 0, tile=(0.2, 0, 1))
+    L_tube(kr, (-18.4, 22.35, -44.25), (18.4, 22.35, -44.25), 0.3, H('#3F6CC8'), 'roof', 0.4, 10)
+    for zz in (-31.6, -56.9):   # gable ends
+        bm = bmesh.new(); vv = [bm.verts.new(tv(x, y, zz)) for x, y in ((-17.9, 19.0), (17.9, 19.0), (0, 22.0))]; bm.faces.new(vv if zz > -40 else vv[::-1])
+        k.add(bm, stone, 'wall', 0, tile=(0.25, 0, 1))
+    for i in range(5):
+        x = -12 + i * 6
+        L_cyl(k, x, 9, -31.7, 0.58, 0.68, 9, stoneL, 'wall', 0.4, 10)
+        L_box(k, x, 9, -31.7, 1.7, 0.45, 1.7, stoneD, 'wall', 0.5, bev=0.12); L_box(k, x, 17.55, -31.7, 1.7, 0.45, 1.7, stoneD, 'wall', 0.5, bev=0.12)
+    for s_ in (-1, 1):
+        L_cyl(k, s_ * 17, 9, -32, 2.8, 3.05, 18, stone, 'wall', 0.25, 18)
+        L_cyl(k, s_ * 17, 26.4, -32, 3.25, 3.0, 0.7, stoneD, 'wall', 0.25, 18)
+        L_roof(kr, s_ * 17, 27, -32, 3.5, 5.6, H('#5A88E0'), 'roof', 0.4, 18)
+        L_ball(k, s_ * 17, 32.7, -32, 0.3, H('#FFC83D'))
+        for j in range(3):
+            a = j * 2.1 + 1.2
+            L_box(k, s_ * 17 + math.cos(a) * 2.95, 13 + j * 4, -32 + math.sin(a) * 2.95, 0.5, 1.4, 0.25, H('#3B3F55'), 'glass', 1.0, ry=-a + math.pi / 2, bev=0.1)
+    # stables (planks, a red roof) and barracks (plaster, a blue roof); flat walk-on roofs
+    sx0, sz0 = -43, 12
+    L_box(kp, sx0, 9, sz0, 8, 4, 20, H('#B98652'), 'wood', 0.5, bev=0.18)
+    L_box(kr, sx0, 13, sz0, 8.8, 0.32, 20.8, H('#E0533F'), 'roof', 0.4, bev=0.12)
+    for i in range(4):   # stall doors and posts on the courtyard side
+        zz = sz0 - 7.5 + i * 5
+        L_box(kp, sx0 + 4.02, 9, zz, 0.15, 2.6, 2.4, H('#6E4A2C'), 'wood', 1.0, bev=0.06)
+        L_box(kp, sx0 + 4.1, 10.2, zz, 0.12, 0.18, 2.6, H('#F4EBDA'), 'wood', 1.0, bev=0.04)
+    for zz in (sz0 - 10, sz0 + 10):
+        for xx in (sx0 - 4, sx0 + 4): L_box(kp, xx, 9, zz, 0.36, 4.0, 0.36, H('#8A5A3C'), 'wood', 1.0, bev=0.1)
+    bx0, bz0 = 43, 2
+    L_box(kpl, bx0, 9, bz0, 8, 4.5, 24, H('#ECE3D0'), 'wall', 0.5, bev=0.2)
+    L_box(kr, bx0, 13.5, bz0, 8.8, 0.32, 24.8, H('#5A88E0'), 'roof', 0.4, bev=0.12)
+    L_box(kpl, bx0, 9, bz0, 8.3, 0.7, 24.3, stoneD, 'wall', 0.5, bev=0.15)
+    for i in range(5):
+        zz = bz0 - 9.6 + i * 4.8
+        L_box(kpl, bx0 - 4.02, 11.0, zz, 0.12, 1.1, 1.0, H('#93CBF6'), 'glass', 1.0, bev=0.06)
+        L_box(kpl, bx0 - 4.06, 10.85, zz, 0.16, 0.14, 1.3, H('#8A5A3C'), 'wood', 1.0, bev=0.04)
+    L_box(kpl, bx0 - 4.03, 9, bz0, 0.14, 2.6, 1.6, H('#8A5A3C'), 'wood', 1.0, bev=0.08)
+    # ---- unit blocks
+    L_box(part('block.stone'), 0, 0, 0, 1, 1, 1, (1, 1, 1), 'wall', 0.5, bev=0.1, segs=2)
+    L_box(part('board.wood'), 0, 0, 0, 1, 1, 1, (1, 1, 1), 'wood', 1.0, bev=0.1, segs=2)
+    # ---- fortress (plum stone; the glowing windows, orbs and braziers stay the game's)
+    plum, plumD, plumL, slate = H('#6C5A8E'), H('#4E3F68'), H('#8A7AAE'), H('#3A2E52')
+    f = part('ftower.stone'); fr = part('ftower.roof')
+    L_cyl(f, 0, 0, 0, 5.0, 5.4, 24, plum, 'wall', 0.25, 20)
+    L_cyl(f, 0, 0, 0, 5.75, 5.9, 2.2, plumD, 'wall', 0.25, 20)
+    L_cyl(f, 0, 22.4, 0, 5.75, 5.2, 1.8, plumD, 'wall', 0.25, 20)
+    L_roof(fr, 0, 24, 0, 6.1, 9.6, slate, 'roof', 0.3, 20)
+    L_ball(fr, 0, 33.5, 0, 0.4, H('#D39CFF'))
+    f = part('fgate.stone')
+    L_box(f, 0, 0, 0, 5, 15, 5, plumD, 'wall', 0.25, bev=0.3)
+    L_box(f, 0, 0, 0, 5.6, 1.6, 5.6, slate, 'wall', 0.25, bev=0.25)
+    L_box(f, 0, 14.0, 0, 5.7, 0.9, 5.7, plum, 'wall', 0.25, bev=0.2)
+    L_roof(part('fgate.roof'), 0, 14.9, 0, 3.9, 4.6, plum, 'roof', 0.3, 4, rot=math.pi / 4, lip=0.1)
+    f = part('fspire.stone'); fr = part('fspire.roof')
+    L_cyl(f, 0, 0, 0, 6.0, 6.8, 38, plum, 'wall', 0.18, 16)
+    L_cyl(f, 0, 0, 0, 7.2, 7.4, 2.4, plumD, 'wall', 0.25, 16)
+    for hh in (13, 25):
+        L_cyl(f, 0, hh, 0, 6.65, 6.55, 0.7, plumD, 'wall', 0.25, 16)
+    L_cyl(f, 0, 36.4, 0, 7.0, 6.3, 1.8, plumD, 'wall', 0.25, 16)
+    L_roof(fr, 0, 38, 0, 7.6, 18.5, slate, 'roof', 0.22, 16)
+    L_box(f, 0, 28, 6.2, 6, 0.6, 3, plumD, 'wall', 0.4, bev=0.15)
+    for i in range(5): L_box(f, -2.6 + i * 1.3, 28.6, 7.5, 0.3, 0.8, 0.3, plumL, 'wall', 0.5, bev=0.08)
+    L_box(f, 0, 29.35, 7.5, 6.0, 0.22, 0.4, plumL, 'wall', 0.5, bev=0.08)
+    f = part('fpillar.stone')
+    L_cyl(f, 0, 0, 0, 1.45, 1.6, 8.4, plumL, 'wall', 0.4, 16)
+    L_box(f, 0, 0, 0, 3.8, 0.6, 3.8, plum, 'wall', 0.4, bev=0.18); L_box(f, 0, 8.2, 0, 3.8, 0.8, 3.8, plum, 'wall', 0.4, bev=0.18)
+    L_cyl(f, 0, 0.6, 0, 1.75, 1.85, 0.35, plumD, 'wall', 0.4, 16); L_cyl(f, 0, 7.85, 0, 1.85, 1.6, 0.35, plumD, 'wall', 0.4, 16)
+    # ---- camp: stakes, tents, the chief's tent
+    st = part('stake.wood')
+    L_cyl(st, 0, 0, 0, 0.33, 0.37, 3.0, H('#B98050'), 'wood', 1.2, 8, 0.05, wonk=0.01)
+    st.add(smooth(blathe([(0.33, 0), (0.2, 0.32), (0.05, 0.6), (0, 0.66)], 8, (0, 0, 3.0))), H('#E2BC86'), 'wood', 0, tile=(1.2, 0, 1, 'cyl'))
+    L_cyl(st, 0, 2.15, 0, 0.385, 0.385, 0.22, H('#D9C7A0'), 'cloth', 2.0, 8, 0.05)
+    t = part('tent.canvas'); tw = part('tent.wood')
+    prof = [(0, 0), (2.7, 0), (2.75, 0.12), (2.0, 0.75), (1.25, 1.6), (0.6, 2.5), (0.15, 3.25), (0, 3.4)]
+    bm = smooth(blathe(prof, 24))
+    for v in bm.verts:   # six panels bulge between their seams
+        a = math.atan2(v.co.y, v.co.x); r = math.hypot(v.co.x, v.co.y)
+        if r > 1e-3: f_ = 1 + 0.04 * abs(math.sin(3 * a)) * (1 - v.co.z / 3.4); v.co.x *= f_; v.co.y *= f_
+    t.add(bm, (1, 1, 1), 'cloth', 0, tile=(0.6, 0, 1, 'cyl'))
+    t.add(smooth(blathe([(2.62, 0.05), (2.8, 0.1), (2.82, 0.5), (2.35, 0.62)], 24, caps=False)), (0.8, 0.8, 0.8), 'cloth', 0, tile=(0.6, 0, 1, 'cyl'))   # a darker hem
+    bm = bmesh.new(); vv = [bm.verts.new(tv(x, y, z)) for x, y, z in ((-0.75, 0.02, 2.48), (0.75, 0.02, 2.48), (0, 1.75, 1.15))]; bm.faces.new(vv[::-1])
+    bmesh.ops.translate(bm, vec=Vector((0, -0.12, 0)), verts=bm.verts); tw.add(bm, H('#3B2A1E'), 'other', 0, tile=(1, 0, 1))   # the door
+    for s_ in (-1, 1):   # the tied-back flaps
+        L_tube(t, (s_ * 0.85, 0.1, 2.55), (s_ * 0.25, 1.7, 1.3), 0.13, (0.85, 0.85, 0.85), 'cloth', 0.6)
+    L_tube(tw, (0, 3.2, 0), (0, 3.9, 0), 0.07, H('#6E4A2C'))
+    pen = bmesh.new(); vv = [pen.verts.new(tv(x, y, 0)) for x, y in ((0, 3.85), (0.75, 3.7), (0, 3.5))]; pen.faces.new(vv); pen2 = pen.copy(); bmesh.ops.reverse_faces(pen2, faces=pen2.faces[:])
+    tw.add(pen, H('#FFC83D'), 'cloth', 0, tile=(1, 0, 1)); tw.add(pen2, H('#FFC83D'), 'cloth', 0, tile=(1, 0, 1))
+    for a in (0.6, 2.2, 3.9, 5.2):
+        L_tube(tw, (math.cos(a) * 2.75, 0.4, math.sin(a) * 2.75), (math.cos(a) * 3.2, 0.0, math.sin(a) * 3.2), 0.05, H('#8A5A3C'))
+    c = part('chieftent.canvas'); cw = part('chieftent.wood')
+    c.add(smooth(blathe([(0, 0), (3.25, 0), (3.3, 0.15), (2.7, 1.0), (2.05, 2.0), (1.45, 3.1), (1.05, 4.0), (0, 4.0)], 24)), H('#C2603A'), 'cloth', 0, tile=(0.6, 0, 1, 'cyl'))
+    for z0, col_ in ((0.55, H('#FFC83D')), (2.55, H('#5A9F4F'))):   # painted bands
+        r0 = 3.25 - z0 * 0.555; r1 = 3.25 - (z0 + 0.35) * 0.555
+        c.add(smooth(blathe([(r0 - 0.02, z0), (r0 + 0.05, z0 + 0.03), (r1 + 0.05, z0 + 0.32), (r1 - 0.02, z0 + 0.35)], 24, caps=False)), col_, 'cloth', 0, tile=(0.6, 0, 1, 'cyl'))
+    L_cyl(cw, 0, 3.95, 0, 1.25, 1.2, 0.3, H('#7A5032'), 'wood', 1.0, 16, 0.08)
+    for i in range(7):   # hanging panels
+        a = i / 7 * 2 * math.pi; x, z = math.cos(a) * 2.32, math.sin(a) * 2.32
+        bm = bbox_rounded((0.55, 0.06, 0.95), (0, 0, 0), 0.025, 1)
+        for v in bm.verts:
+            if v.co.z < -0.4: v.co.z -= 0.18 * (1 - abs(v.co.x) / 0.28)
+        bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(x, 1.6, z)) @ euler((0.0, 0, -a + math.pi / 2)) @ euler((0.5, 0, 0)), verts=bm.verts)
+        cw.add(bm, H('#FFC83D') if i % 2 else H('#5A9F4F'), 'cloth', 0, tile=(1, 0, 1))
+    # ---- the bridge
+    br = part('bridge.stone')
+    for zz in (15, -15):
+        L_box(br, 0, 3.2, zz, 6.4, 0.8, 14, stone, 'wall', 0.25, bev=0.15)
+        L_box(br, 0, 3.0, zz, 6.6, 0.3, 14.1, stoneD, 'wall', 0.25, bev=0.1)
+        for s_ in (-1, 1):
+            L_box(br, s_ * 3.0, 4.0, zz, 0.45, 0.72, 14, stoneL, 'wall', 0.4, bev=0.12)
+            L_box(br, s_ * 3.0, 4.7, zz, 0.62, 0.22, 14.1, stoneD, 'wall', 0.4, bev=0.09)
+    for x, z, s_ in ((-1.8, 7.4, 1.2), (1.4, 7.6, 0.9), (-0.6, -7.5, 1.0), (2.0, -7.7, 1.3)):
+        L_box(br, x, 3.0, z, s_ * 1.6, 0.75, s_, stoneD, 'wall', 0.5, ry=s_, bev=0.2, wonk=0.05)
+    for zz in (8, -8):
+        L_box(br, 0, -3.2, zz, 7, 7.2, 3, stoneD, 'wall', 0.25, bev=0.2)
+        for s_ in (-1, 1): L_cyl(br, s_ * 3.6, -3.2, zz, 1.05, 1.15, 6.6, stoneD, 'wall', 0.25, 4, 0.1, rot=math.pi / 4)
+    L_box(br, 0, -3.2, 0, 7, 2.6, 3, stoneD, 'wall', 0.25, bev=0.2)
+    for zz in (22, -22): L_box(br, 0, -1, zz, 8, 4.2, 4, stoneD, 'wall', 0.25, bev=0.25)
+    for z0, z1, broken in ((20, 8, False), (8, -8, True), (-8, -20, False)):
+        zm, r = (z0 + z1) / 2, abs(z1 - z0) / 2; yc = 3.2 - r; n = 8
+        for i in range(n):
+            a0, a1 = i / n * math.pi, (i + 1) / n * math.pi
+            if broken and 3 <= i <= 4: continue
+            ri, ro = r - 0.45, r + 0.45
+            pts = [(zm - math.cos(a0) * ri, yc + math.sin(a0) * ri), (zm - math.cos(a1) * ri, yc + math.sin(a1) * ri), (zm - math.cos(a1) * ro, yc + math.sin(a1) * ro), (zm - math.cos(a0) * ro, yc + math.sin(a0) * ro)]
+            for s_ in (-1, 1):
+                L_poly(br, pts, s_ * 2.45, s_ * 3.35, stoneL if i % 2 else stone, 'wall', 0.5)
+                top = 3.2   # spandrel: from the arch's back up to the deck
+                sp = [(zm - math.cos(a0) * ro, yc + math.sin(a0) * ro), (zm - math.cos(a1) * ro, yc + math.sin(a1) * ro), (zm - math.cos(a1) * ro, top), (zm - math.cos(a0) * ro, top)]
+                if min(p[1] for p in sp[:2]) < top - 0.05: L_poly(br, sp, s_ * 2.55, s_ * 3.25, stone, 'wall', 0.25)
+    # ---- Riverbend
+    lh = part('lighthouse.plaster'); lr = part('lighthouse.roof')
+    for i in range(4):
+        L_cyl(lh, 0, i * 1.5, 0, 2.0 - i * 0.04 - 0.04, 2.06 - i * 0.04, 1.5, (1, 1, 1) if i % 2 else H('#E5484D'), 'wall', 0.5, 14, 0.0)
+    L_cyl(lh, 0, 0, 0, 2.2, 2.25, 0.5, stoneD, 'wall', 0.5, 14, 0.1)
+    L_cyl(lh, 0, 6.0, 0, 2.45, 2.3, 0.3, stoneD, 'wall', 0.5, 14, 0.08)
+    gap = math.pi * 1.7
+    for j in range(10):   # the gallery rail (open where the stairs arrive)
+        a = j / 10 * 2 * math.pi
+        if abs((a - gap + math.pi) % (2 * math.pi) - math.pi) < 0.45: continue
+        L_cyl(lh, math.cos(a) * 2.3, 6.3, math.sin(a) * 2.3, 0.05, 0.05, 0.8, (1, 1, 1), 'wood', 1.0, 4, 0.0)
+    for j in range(4):
+        a = j / 4 * 2 * math.pi + math.pi / 4
+        L_cyl(lh, math.cos(a) * 0.78, 6.3, math.sin(a) * 0.78, 0.06, 0.06, 1.05, (1, 1, 1), 'wood', 1.0, 4, 0.0)
+    L_roof(lr, 0, 7.3, 0, 1.15, 1.0, H('#E5484D'), 'roof', 0.8, 16, lip=0.08)
+    L_ball(lr, 0, 8.35, 0, 0.16, H('#FFC83D'))
+    sh = part('shop.plaster'); sr = part('shop.roof')
+    W, D, Hh = 6.0, 5.0, 3.2
+    L_box(sh, 0, 0, 0, W, Hh, D, (1, 1, 1), 'wall', 0.5, bev=0.22, segs=1)
+    L_box(sh, 0, -0.2, 0, W + 0.35, 0.6, D + 0.35, stoneD, 'other', 0.5, bev=0.18, segs=1)
+    for sx_ in (-1, 1):
+        for sz_ in (-1, 1): L_box(sh, sx_ * (W / 2 - 0.05), 0, sz_ * (D / 2 - 0.05), 0.3, Hh + 0.1, 0.3, H('#8A5A3C'), 'wood', 1.0, bev=0.1, segs=1)
+    L_box(sh, 0, 0, D / 2 + 0.05, 1.15, 2.0, 0.18, H('#BF6A3C'), 'wood', 1.0, bev=0.12, segs=3)
+    for sx_ in (-1, 1):
+        L_box(sh, sx_ * 1.85, 1.25, D / 2 + 0.03, 1.05, 1.0, 0.14, H('#8A5A3C'), 'wood', 1.0, bev=0.1, segs=1)
+        L_box(sh, sx_ * 1.85, 1.36, D / 2 + 0.08, 0.8, 0.78, 0.1, H('#93CBF6'), 'glass', 1.0, bev=0.06, segs=1)
+    L_box(sr, 0, Hh, 0, W + 0.5, 0.25, D + 0.5, (1, 1, 1), 'roof', 0.45, bev=0.1)
+    for (x0, z0, x1, z1) in ((-1, 1, 1, 1), (-1, -1, 1, -1), (-1, -1, -1, 1), (1, -1, 1, 1)):   # a low lip round the deck
+        a_ = tv((W / 2 + 0.2) * x0, Hh + 0.3, (D / 2 + 0.2) * z0); b_ = tv((W / 2 + 0.2) * x1, Hh + 0.3, (D / 2 + 0.2) * z1)
+        sr.add(smooth(btube(a_, b_, 0.11, 0.11, 8, 2)), (0.85, 0.85, 0.85), 'roof', 0, tile=(0.45, 0, 1))
+    aw = part('awning.canvas')   # anchor: the awning's middle, 2.75 up; 6.5 wide, its back at -0.8
+    nx, nz = 12, 3
+    bm = bmesh.new(); vs = []
+    for j in range(nz + 1):
+        row = []
+        for i in range(nx + 1):
+            x = -3.25 + 6.5 * i / nx; z = -0.8 + 1.7 * j / nz; y = 0.35 - 0.45 * j / nz - 0.06 * math.sin(i / nx * math.pi * 6) ** 2 * (j / nz)
+            row.append(bm.verts.new(tv(x, y, z)))
+        vs.append(row)
+    for j in range(nz):
+        for i in range(nx):
+            bm.faces.new([vs[j][i], vs[j][i + 1], vs[j + 1][i + 1], vs[j + 1][i]])
+    bmesh.ops.solidify(bm, geom=bm.faces[:], thickness=0.08)
+    red_, white_ = H('#FF6F61'), (1, 1, 1)
+    # split stripes by x: colour each face by its column
+    stripes = {0: bmesh.new(), 1: bmesh.new()}
+    bm.verts.ensure_lookup_table()
+    for fc in bm.faces:
+        cx_ = sum(v.co.x for v in fc.verts) / len(fc.verts); col_i = int((cx_ + 3.25) / (6.5 / 6)) % 2
+        tb = stripes[col_i]; nv = [tb.verts.new(v.co) for v in fc.verts]; tb.faces.new(nv)
+    bm.free()
+    aw.add(smooth(stripes[0]), white_, 'cloth', 0, tile=(0.5, 0, 1)); aw.add(smooth(stripes[1]), red_, 'cloth', 0, tile=(0.5, 0, 1))
+    for i in range(6):   # scallops along the front
+        x = -3.25 + 6.5 * (i + 0.5) / 6
+        bm = bmesh.new(); cvs = [bm.verts.new(tv(x, -0.12, 0.92))]
+        for q in range(7):
+            a = math.pi * q / 6; cvs.append(bm.verts.new(tv(x - math.cos(a) * 0.54, -0.12 - math.sin(a) * 0.32, 0.92)))
+        for q in range(1, 7): bm.faces.new([cvs[0], cvs[q], cvs[q + 1]])
+        bm2 = bm.copy(); bmesh.ops.reverse_faces(bm2, faces=bm2.faces[:])
+        aw.add(smooth(bm), red_ if i % 2 else white_, 'cloth', 0, tile=(0.5, 0, 1)); aw.add(smooth(bm2), red_ if i % 2 else white_, 'cloth', 0, tile=(0.5, 0, 1))
+    for s_ in (-1, 1): L_tube(aw, (s_ * 3.1, -2.75, 0.85), (s_ * 3.1, -0.05, 0.85), 0.06, H('#8A5A3C'), 'wood', 1.0)
+    bt = part('boat.wood'); bc = part('boat.canvas')   # anchor (bx, -0.3, bz): deck at 0.75 (local 1.05)
+    L_hull(bt, -2.6, 4.1, 1.25, 1.25, 1.18, H('#3E8FC8'), 'wood', 0.6, deck=1.02)
+    L_box(bt, 0, 0.95, 0, 2.0, 0.1, 4.6, H('#D9B27C'), 'wood', 1.0, bev=0.04)
+    for zz in (-1.4, 1.6): L_box(bt, 0, 1.15, zz, 2.2, 0.12, 0.45, H('#C08850'), 'wood', 1.0, bev=0.04)
+    L_cyl(bt, 0, 1.0, 0.6, 0.08, 0.1, 3.5, H('#6E4A2C'), 'wood', 1.0, 8, 0.02)
+    L_tube(bt, (0, 2.25, 0.6), (0, 2.25, -0.95), 0.05, H('#6E4A2C'))
+    bm = bmesh.new(); vs = []
+    for j in range(5):
+        row = []
+        for i in range(5):
+            u, v = i / 4, j / 4; row.append(bm.verts.new(tv(0.03 + 0.12 * math.sin(u * math.pi) * (1 - v * 0.5), 2.3 + 1.9 * v, 0.55 - 1.45 * u * (1 - v * 0.55))))
+        vs.append(row)
+    for j in range(4):
+        for i in range(4): bm.faces.new([vs[j][i], vs[j][i + 1], vs[j + 1][i + 1], vs[j + 1][i]])
+    bm2 = bm.copy(); bmesh.ops.reverse_faces(bm2, faces=bm2.faces[:])
+    bc.add(smooth(bm), H('#FFF6E6'), 'cloth', 0, tile=(0.7, 0, 1)); bc.add(smooth(bm2), H('#FFF6E6'), 'cloth', 0, tile=(0.7, 0, 1))
+    for s_ in (-1, 1): L_tube(bt, (s_ * 0.9, 1.25, -1.6), (s_ * 0.6, 1.25, 2.2), 0.05, H('#C89A62'))   # oars
+    sk = part('skiff.wood')   # upturned on the shore: 1.6 x 0.6 x 3.6
+    L_hull(sk, -1.8, 1.8, 0.8, 0.6, 0.6, (1, 1, 1), 'wood', 0.6, flip=True)
+    L_box(sk, 0, 0.55, 0, 0.12, 0.12, 3.2, H('#8A5A3C'), 'wood', 1.0, bev=0.04)
+    nr = part('netrack.wood'); nn = part('netrack.net')
+    for s_ in (-1, 1): L_cyl(nr, s_ * 1.5, 0, 0, 0.08, 0.1, 2.6, H('#6E4A2C'), 'wood', 1.0, 8, 0.02)
+    L_tube(nr, (-1.65, 2.45, 0), (1.65, 2.45, 0), 0.06, H('#8A5A3C'))
+    bm = bmesh.new(); vs = []
+    for j in range(5):
+        row = []
+        for i in range(9):
+            u, v = i / 8, j / 4; row.append(bm.verts.new(tv(-1.45 + 2.9 * u, 2.4 - 1.5 * v - 0.25 * math.sin(u * math.pi) * v, 0.05 * math.sin(u * 9 + v * 4))))
+        vs.append(row)
+    for j in range(4):
+        for i in range(8): bm.faces.new([vs[j][i], vs[j + 1][i], vs[j + 1][i + 1], vs[j][i + 1]])
+    bm2 = bm.copy(); bmesh.ops.reverse_faces(bm2, faces=bm2.faces[:])
+    nn.add(smooth(bm), H('#E8DFC6'), 'cloth', 0, tile=(1.0, 0, 1)); nn.add(smooth(bm2), H('#E8DFC6'), 'cloth', 0, tile=(1.0, 0, 1))
+    for i in range(5): L_ball(nr, -1.2 + i * 0.6, 0.85 - 0.25 * math.sin((i + 0.5) / 5 * math.pi) + 0.1, 0.02, 0.1, H('#FF9F43'), 'other')
+    # ---- signs and the cart
+    def arrow(b, y, ry, L=1.6, hgt=0.42, col=H('#D9AE74')):
+        bm = bmesh.new(); o = [(-L / 2, -hgt / 2), (L / 2 - 0.3, -hgt / 2), (L / 2, 0), (L / 2 - 0.3, hgt / 2), (-L / 2, hgt / 2)]
+        A = [bm.verts.new((x, -0.05, yy)) for x, yy in o]; B = [bm.verts.new((x, 0.05, yy)) for x, yy in o]
+        bm.faces.new(A[::-1]); bm.faces.new(B)
+        for i in range(5):
+            j = (i + 1) % 5; bm.faces.new([A[i], A[j], B[j], B[i]])
+        bmesh.ops.bevel(bm, geom=bm.edges[:], offset=0.03, segments=1, affect='EDGES')
+        bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(0, y, 0)) @ euler((0, 0, ry)), verts=bm.verts)
+        b.add(bm, col, 'wood', 0, tile=(1.0, 0, 1))
+        for e in (-L / 2 + 0.2, L / 2 - 0.45):
+            bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=True, segments=6, radius1=0.035, radius2=0.035, depth=0.03)
+            bmesh.ops.transform(bm, matrix=Matrix.Translation(tv(0, y, 0)) @ euler((0, 0, ry)) @ Matrix.Translation((e, -0.06, 0)) @ euler((math.pi / 2, 0, 0)), verts=bm.verts)
+            b.add(bm, H('#5E5A50'), 'metal', 0, tile=(1.0, 0, 1))
+    sp = part('signpost.wood')
+    L_cyl(sp, 0, 0, 0, 0.12, 0.15, 2.6, H('#8A5A3C'), 'wood', 1.2, 8, 0.04)
+    sp.add(smooth(blathe([(0.16, 0), (0.17, 0.08), (0.05, 0.22), (0, 0.24)], 8, tv(0, 2.6, 0))), H('#6E4A2C'), 'wood', 0, tile=(1.0, 0, 1, 'cyl'))
+    for y, r_ in ((2.0, 0.6), (1.5, -0.7), (1.0, 1.9)): arrow(sp, y, r_)
+    sg = part('sign.wood')
+    L_cyl(sg, 0, 0, 0, 0.11, 0.14, 2.2, H('#8A5A3C'), 'wood', 1.2, 8, 0.04)
+    sg.add(smooth(blathe([(0.15, 0), (0.16, 0.08), (0.05, 0.2), (0, 0.22)], 8, tv(0, 2.2, 0))), H('#6E4A2C'), 'wood', 0, tile=(1.0, 0, 1, 'cyl'))
+    arrow(sg, 1.7, 0.0, 1.4, 0.4)
+    ct = part('cart.wood'); ch = part('cart.canvas')   # foot at the ground; bed 2.6 x 0.7 x 1.5 at 0.5..1.2, wheels r 0.45
+    L_box(ct, 0, 0.55, 0, 2.6, 0.18, 1.5, H('#C08850'), 'wood', 1.0, bev=0.06)
+    for s_ in (-1, 1):
+        L_box(ct, 0, 0.7, s_ * 0.72, 2.6, 0.45, 0.1, H('#B07A48'), 'wood', 1.0, bev=0.04)
+        L_box(ct, s_ * 1.27, 0.7, 0, 0.1, 0.45, 1.5, H('#B07A48'), 'wood', 1.0, bev=0.04)
+    for zz in (-0.45, 0.45): L_tube(ct, (-1.2, 0.62, zz), (-2.6, 0.45, zz * 1.1), 0.055, H('#8A5A3C'))
+    L_tube(ct, (-2.6, 0.45, -0.5), (-2.6, 0.45, 0.5), 0.05, H('#8A5A3C'))
+    for sx_ in (-1, 1):
+        for sz_ in (-1, 1):
+            wx, wz = sx_ * 0.9, sz_ * 0.82
+            rim = smooth(blathe([(0.42, -0.06), (0.48, -0.05), (0.48, 0.05), (0.42, 0.06)], 12, caps=False))
+            bmesh.ops.transform(rim, matrix=Matrix.Translation(tv(wx, 0.47, wz)) @ euler((math.pi / 2, 0, 0)), verts=rim.verts)
+            ct.add(rim, H('#6E4A2C'), 'wood', 0, tile=(1.0, 0, 1))
+            hub = smooth(blathe([(0, -0.09), (0.09, -0.09), (0.1, 0.09), (0, 0.09)], 8)); bmesh.ops.transform(hub, matrix=Matrix.Translation(tv(wx, 0.47, wz)) @ euler((math.pi / 2, 0, 0)), verts=hub.verts)
+            ct.add(hub, H('#5E5A50'), 'metal', 0, tile=(1.0, 0, 1))
+            for q in range(2):
+                a = q / 2 * math.pi + 0.4
+                sp_ = bmesh.new(); bmesh.ops.create_cube(sp_, size=1.0); bmesh.ops.scale(sp_, vec=Vector((0.84, 0.05, 0.06)), verts=sp_.verts)
+                bmesh.ops.transform(sp_, matrix=Matrix.Translation(tv(wx, 0.47, wz)) @ euler((math.pi / 2, 0, 0)) @ euler((0, a, 0)), verts=sp_.verts); ct.add(sp_, H('#8A5A3C'), 'wood', 0, tile=(1.0, 0, 1))
+    hay = smooth(bsphere(tv(0.1, 1.05, 0), (1.2, 0.68, 0.45), (12, 6)))
+    for v in hay.verts: v.co.z += 0.06 * math.sin(v.co.x * 5 + v.co.y * 3)
+    ch.add(hay, H('#F0C75A'), 'leaf', 0, tile=(1.0, 0, 1))
+    ch.add(smooth(bsphere(tv(0.85, 1.25, -0.25), (0.32, 0.3, 0.42), (8, 5))), H('#E8DCC0'), 'cloth', 0, tile=(1.0, 0, 1))
+    return P
+
+
+LAND_TURNS = {'gatehouse': 26, 'keep': 40, 'ftower': 36, 'fgate': 22, 'fspire': 60, 'fpillar': 10, 'stake': 4, 'tent': 4.5, 'chieftent': 5,
+              'bridge': 14, 'lighthouse': 9, 'shop': 5, 'awning': 3.5, 'boat': 5, 'skiff': 2, 'netrack': 3.2, 'signpost': 3.2, 'sign': 2.8, 'cart': 2.6}
+
+
+def make_landmarks(out, renders):
+    P = build_landmarks()
+    texs = {k: land_tex(k) for k in ('stone', 'wood', 'planks', 'roof', 'canvas', 'net', 'plaster')}
+    obs = {}
+    for n, b in P.items():
+        tx = n.split('.')[1]
+        ob = b.mesh(material(f'lm_mat_{n}', to_bimg(texs[tx], f'lm_tex_{n}')))
+        # face-area weighted normals: big flat faces shade flat, the soft bevels carry the curve
+        mod = ob.modifiers.new('wn', 'WEIGHTED_NORMAL'); mod.weight = 100; mod.keep_sharp = True
+        dg = bpy.context.evaluated_depsgraph_get(); me = bpy.data.meshes.new_from_object(ob.evaluated_get(dg), preserve_all_data_layers=True, depsgraph=dg)
+        ob.modifiers.remove(mod); old = ob.data; ob.data = me; bpy.data.meshes.remove(old)
+        obs[n] = ob
+    export_glb(os.path.join(out, 'landmarks.glb'), list(obs.values()))
+    used = sorted({n.split('.')[1] for n in P})
+    data = {'name': 'landmarks', 'texs': {k: tex_url(texs[k], 78)[0] for k in used}, 'meshes': {}}
+    for n, o in obs.items():
+        m = compact(o, uvr=16); m['tx'] = n.split('.')[1]
+        data['meshes'][n] = m
+    if renders:
+        for base in sorted({n.split('.')[0] for n in P}):
+            parts = [o for n, o in obs.items() if n.split('.')[0] == base]
+            for q in obs.values(): q.hide_render = q not in parts
+            lo = Vector((min(min((o.matrix_world @ Vector(c)).x for c in o.bound_box) for o in parts), min(min((o.matrix_world @ Vector(c)).y for c in o.bound_box) for o in parts), 0))
+            hi = Vector((max(max((o.matrix_world @ Vector(c)).x for c in o.bound_box) for o in parts), max(max((o.matrix_world @ Vector(c)).y for c in o.bound_box) for o in parts), 0))
+            z0 = min(min((o.matrix_world @ Vector(c)).z for c in o.bound_box) for o in parts)
+            mid = (lo + hi) / 2
+            for o in parts: o.location = Vector((-mid.x, -mid.y, -z0))
+            turntable(os.path.join(out, f'turn_lm_{base}.png'), parts, LAND_TURNS.get(base, 6), n=4, px=260)
+            for o in parts: o.location = Vector((0, 0, 0))
+    return data
+
+
 # ------------------------------------------------------------------------------------------------------------ export
-def lod(ob, ratio):
+def lod(ob, ratio, uvr=4):
     """A lighter copy of a mesh for the distance (Blender's Decimate, collapse), as a compact mesh."""
     mod = ob.modifiers.new('lod', 'DECIMATE'); mod.ratio = ratio; mod.use_collapse_triangulate = True
     dg = bpy.context.evaluated_depsgraph_get(); me = bpy.data.meshes.new_from_object(ob.evaluated_get(dg)); ob.modifiers.remove(mod)
-    tmp = bpy.data.objects.new(ob.name + '_lod', me); out = compact(tmp); bpy.data.objects.remove(tmp); bpy.data.meshes.remove(me)
+    tmp = bpy.data.objects.new(ob.name + '_lod', me); out = compact(tmp, uvr=uvr); bpy.data.objects.remove(tmp); bpy.data.meshes.remove(me)
     return out
 
 
-def compact(ob, rig=None, bone_names=None):
+def compact(ob, rig=None, bone_names=None, uvr=4):
     """The mesh in the game's compact form: indexed triangles, quantised position (int16 over its bounds), normal (int8),
     uv (uint16 over [-4, 4]), colour + part (uint8 rgba), bone (uint8)."""
     me = ob.data
@@ -1039,12 +1597,13 @@ def compact(ob, rig=None, bone_names=None):
     ox, oy = n3[:, 0].copy(), n3[:, 1].copy(); neg = n3[:, 2] < 0
     ox[neg], oy[neg] = (1 - np.abs(n3[neg, 1])) * np.sign(n3[neg, 0] + 1e-9), (1 - np.abs(n3[neg, 0])) * np.sign(n3[neg, 1] + 1e-9)
     N = np.round(np.clip(np.stack([ox, oy], 1), -1, 1) * 127).astype('<i1')
-    U = np.round(np.clip((np.array([v[2] for v in verts], 'float32') + 4) / 8, 0, 1) * 65535).astype('<u2')
+    U = np.round(np.clip((np.array([v[2] for v in verts], 'float32') + uvr) / (2 * uvr), 0, 1) * 65535).astype('<u2')
     C = np.round(np.clip(np.array([v[3] for v in verts], 'float32'), 0, 1) * 255).astype('u1')
     Bn = np.array([v[4] for v in verts], 'u1')
     I = np.array(idx, '<u2' if len(verts) < 65536 else '<u4')
     b64 = lambda a: base64.b64encode(a.tobytes()).decode()
     out = {'verts': len(verts), 'tris': len(idx) // 3, 'min': mn.round(5).tolist(), 'max': mx.round(5).tolist(), 'pos': b64(q), 'nrm': b64(N), 'uv': b64(U), 'col': b64(C), 'idx': b64(I)}
+    if uvr != 4: out['uvr'] = uvr   # a wider uv range (the big landmarks, in world metres)
     if Bn.any(): out['bone'] = b64(Bn)   # only skinned meshes carry bones (the pack stays small)
     return out
 
@@ -1357,7 +1916,7 @@ def main():
     jobs = [('hero', lambda: make_char('hero', build_hero(), char_atlas((80, 56, 34)), a.out, a.renders)),
             ('granny', lambda: make_char('granny', build_granny(), char_atlas((96, 120, 70)), a.out, a.renders)),
             ('cottage', lambda: make_prop('cottage', list(build_cottage()), prop_tex('cottage'), a.out, a.renders, 8.5, [prop_tex('cottage'), prop_tex('roof')])),
-            ('tree', lambda: make_prop('tree', [build_tree()], prop_tex('tree'), a.out, a.renders, 5.6)),
+            ('tree', lambda: make_tree(a.out, a.renders)),
             ('barrel', lambda: make_prop('barrel', [build_barrel()], prop_tex('wood'), a.out, a.renders, 1.3)),
             ('fence', lambda: make_prop('fence', list(build_fence()), prop_tex('wood'), a.out, a.renders, 1.5)),
             ('villager', lambda: make_villager(a.out, a.renders)),
@@ -1365,7 +1924,8 @@ def main():
             ('big', lambda: make_big(a.out, a.renders)),
             ('cinder', lambda: make_cinder(a.out, a.renders)),
             ('buildings', lambda: make_buildings(a.out, a.renders)),
-            ('nature', lambda: make_nature(a.out, a.renders))]
+            ('nature', lambda: make_nature(a.out, a.renders)),
+            ('landmarks', lambda: make_landmarks(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()

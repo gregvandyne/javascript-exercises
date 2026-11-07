@@ -6278,8 +6278,13 @@ function breezeMat(o) {
       outgoingLight = bzA * mix( bzShade, bzSun, bzB ) * bzTint + totalEmissiveRadiance
         + bzRim * bzRimK * smoothstep( 0.62, 0.95, 1.0 - clamp( dot( bzN, normalize( vViewPosition ) ), 0.0, 1.0 ) );
       #include <opaque_fragment>`);
+    // tintMask: the instance colour reaches only the vertices marked bzTintK = 1 (a flower's petals, not its stem)
+    if (o.tintMask) sh.vertexShader = 'attribute float bzTintK;\n' + sh.vertexShader.replace('#include <color_vertex>', `#include <color_vertex>
+      #ifdef USE_INSTANCING_COLOR
+        vColor.xyz = color.xyz * mix( vec3( 1.0 ), instanceColor.xyz, bzTintK );
+      #endif`);
   };
-  m.customProgramCacheKey = () => 'bzToon'; return m;
+  m.customProgramCacheKey = () => (o.tintMask ? 'bzToonMask' : 'bzToon'); return m;
 }
 /** Materials shared by everything (few shader programs, few state changes): the kit's toon (cel) materials with a rim
  *  (faceted ones keep their facets), so the world has the Oomba Ink look. */
@@ -7169,10 +7174,23 @@ function waveTexture() {
 /** Breeze: flat white foam shapes along both banks of the river (a scalloped strip where water meets sand), one mesh,
  *  drifting gently with the current. */
 function buildFoam() {
-  const c = document.createElement('canvas'); c.width = 256; c.height = 32; const g = c.getContext('2d'), r = makeRng(9);
-  g.fillStyle = '#ffffff';
-  for (let x = -10; x < 270; x += 14 + r() * 10) { const w = 10 + r() * 12; g.beginPath(); g.ellipse(x, 18, w, 6 + r() * 4, 0, 0, Math.PI * 2); g.fill(); }
-  g.fillRect(0, 22, 256, 10);
+  // a broken band of dashes with a wavy edge, little curls at their ends and bubbles off the water side (it tiles: every
+  // shape is drawn again one width over)
+  const c = document.createElement('canvas'); c.width = 512; c.height = 64; const g = c.getContext('2d'), r = makeRng(9);
+  g.fillStyle = g.strokeStyle = '#ffffff'; g.lineCap = 'round';
+  const shapes = [];
+  for (let x = 0; x < 512;) { const L = 34 + r() * 56; shapes.push({ x, L, w: 7 + r() * 4, y: 46 + r() * 4, curl: r() < 0.75 ? (r() < 0.5 ? -1 : 1) : 0, b: [r(), r(), r(), r()] }); x += L + 12 + r() * 26; }
+  for (const off of [0, -512, 512]) for (const sh of shapes) {
+    const x0 = sh.x + off; g.lineWidth = sh.w; g.beginPath();
+    for (let t = 0; t <= 1.0001; t += 0.1) { const xx = x0 + sh.L * t, yy = sh.y + Math.sin(xx / 15) * 2.5 - Math.sin(t * Math.PI) * 2; t ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+    g.stroke();
+    if (sh.curl) {   // a little curl rolling up off the end of the dash
+      const cx = sh.curl > 0 ? x0 + sh.L + 1 : x0 - 1, cy = sh.y - 8; g.lineWidth = 3.5; g.beginPath();
+      for (let t = 0; t <= 1.0001; t += 0.08) { const a = Math.PI * 0.5 + t * Math.PI * 1.7 * sh.curl, rr = 7 * (1 - t * 0.55); g.lineTo(cx + Math.cos(a) * rr * -sh.curl, cy + Math.sin(a) * rr); }
+      g.stroke();
+    }
+    for (let i = 0; i < 2; i++) { g.beginPath(); g.arc(x0 + sh.b[i * 2] * sh.L, 18 + sh.b[i * 2 + 1] * 14, 1.8 + sh.b[i] * 2.2, 0, Math.PI * 2); g.fill(); }
+  }
   const t = canvasTexture(c, true);
   const pos = [], uv = [], idx = []; let n = 0;
   for (const side of [-1, 1]) {
@@ -7181,7 +7199,7 @@ function buildFoam() {
       const z = riverZ(x), z2 = riverZ(x + 0.5), tl = hyp(0.5, z2 - z), nx = -(z2 - z) / tl * side, nz = 0.5 / tl * side;
       along += hyp(x - px, z - pz); px = x; pz = z;
       const d0 = RIVER_HW - 1.6, d1 = RIVER_HW + 0.5;
-      pos.push(x + nx * d0, 0.06, z + nz * d0, x + nx * d1, 0.06, z + nz * d1); uv.push(along / 8, 0, along / 8, 1);
+      pos.push(x + nx * d0, 0.06, z + nz * d0, x + nx * d1, 0.06, z + nz * d1); uv.push(along / 16, 0, along / 16, 1);
       if (n > base) { const a = (n - 1) * 2; if (side > 0) idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); else idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
       n++;
     }
@@ -7496,14 +7514,25 @@ const SPOTS = {};       // collectible spots for builder 2 (Sun Gems etc.): { x,
 const spot = (id, x, z, yTop) => { SPOTS[id] = { x, y: (yTop !== undefined ? yTop : gy(x, z)) + 1.2, z }; };
 
 /** Breeze: the storybook models stand in for these props; their places (and colliders) are kept here (see BZM). */
-const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [], barn: [], mill: [], tower: [], wall: [], crate: [], lantern: [] };
+const BZ_PROPS = { cottage: [], barrel: [], post: [], rail: [], barn: [], mill: [], tower: [], wall: [], crate: [], lantern: [], land: [], block: [], board: [], fwall: [] };
 /* Breeze: building shells (the barn, the windmill tower, the castle's towers and walls) go in their own Kit, so the
    storybook model can take their place once the world pack arrives (the shell stands in until then); colliders,
    stairs, decks and every other part stay in the zone's Kit. */
 const BZ_SHELL_KITS = {}, BZ_SHELLS = [];
 const shellKit = (name, k) => (BREEZE ? BZ_SHELL_KITS[name] || (BZ_SHELL_KITS[name] = new Kit()) : k);
+/* Breeze: the landmarks (the gatehouse, keep, fortress towers, camp, bridge, Riverbend's lighthouse, boats and nets, the
+   signs and the cart) draw their stand-in in the 'land' shell and record where their storybook model goes (bzLand); a
+   slab kit records its boxes (merlons, steps, planks, the fortress's walls) for the storybook block, board or wall. */
+const landKit = k => shellKit('land', k);
+function bzLand(m, x, y, z, ry, o) { if (BREEZE) BZ_PROPS.land.push(Object.assign({ m, x, y, z, ry: ry || 0 }, o)); }
+class SlabKit extends Kit {
+  constructor(kind) { super(); this.kind = kind; }
+  box(x, y, z, sx, sy, sz, color, ry, opt) { super.box(x, y, z, sx, sy, sz, color, ry, opt); if (!(opt && opt.glow)) BZ_PROPS[this.kind].push({ x, y, z, sx, sy, sz, ry: ry || 0, color }); return this; }
+}
+const slabKit = (kind, k) => (BREEZE ? BZ_SHELL_KITS['slab:' + kind] || (BZ_SHELL_KITS['slab:' + kind] = new SlabKit(kind)) : k);
 function shellBuild(name, x, z, r) { const k = BZ_SHELL_KITS[name]; if (!k) return; delete BZ_SHELL_KITS[name]; const o = k.build('shell:' + name, x, z, r); o.shell = name; BZ_SHELLS.push(o); }
 function cottage(k, x, z, ry, o) {
+  if (BREEZE && o && o.flat) { const w = o.w || 6, d = o.d || 5, h = o.h || 3.2; bzLand('shop', x, gy(x, z) - 0.15, z, ry, { s: [w / 6, h / 3.2, d / 5], tints: { plaster: o.wall || PAL.wall, roof: o.roof || PAL.roofR } }); cottageGeo(landKit(k), x, z, ry, o); return; }
   if (BREEZE) {
     o = o || {}; const w = o.w || 6, d = o.d || 5, h = o.h || 3.2, rh = o.rh || 2.2, y = gy(x, z) - 0.15;
     addBox(x, z, w / 2, d / 2, ry, y, o.flat ? y + h + 0.25 : y + h + rh, { stand: !!o.flat });
@@ -7654,10 +7683,10 @@ function buildMeadowbrook() {
     for (let j = 1; j < 10; j++) { const t = j / 10, sag = Math.sin(t * Math.PI) * 0.8, x = lerp(x0, x1, t), z = lerp(z0, z1, t), y = lerp(y0, y1, t) - sag; k.cone(x, y - 0.55, z, 0.32, 0.55, flagC[(i + j) % 6], 3, { ry: Math.atan2(x1 - x0, z1 - z0) }); }
   }
   // benches, barrels, flower patches, a cart
-  for (const [x, z, r] of [[-4, 324, 0.3], [6, 324, -0.3], [9, 306, 1.2]]) { const y = gy(x, z); k.box(x, y + 0.45, z, 1.8, 0.12, 0.5, PAL.woodL, r, { col: true, top: y + 0.6 }); k.box(x, y, z, 1.6, 0.45, 0.3, PAL.woodD, r); }
+  for (const [x, z, r] of [[-4, 324, 0.3], [6, 324, -0.3], [9, 306, 1.2]]) { const y = gy(x, z), bk = slabKit('board', k); bk.box(x, y + 0.45, z, 1.8, 0.12, 0.5, PAL.woodL, r, { col: true, top: y + 0.6 }); bk.box(x, y, z, 1.6, 0.45, 0.3, PAL.woodD, r); }
   barrel(k, -10, 330); barrel(k, -9, 331.2); barrel(k, 28, 320);
-  const cy0 = gy(-20, 305); k.box(-20, cy0 + 0.5, 305, 2.6, 0.7, 1.5, PAL.wood, 0.4, { col: true });
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const wp = lp(-20, 305, 0.4, sx * 0.9, sz * 0.8); k.add(prim('torus:10:0.3'), wp[0], cy0 + 0.5, wp[1], 0.45, 0.45, 0.45, 0, 0.4, 0, PAL.woodD); }
+  const cy0 = gy(-20, 305), kc = landKit(k); bzLand('cart', -20, cy0, 305, 0.4); kc.box(-20, cy0 + 0.5, 305, 2.6, 0.7, 1.5, PAL.wood, 0.4, { col: true });
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const wp = lp(-20, 305, 0.4, sx * 0.9, sz * 0.8); kc.add(prim('torus:10:0.3'), wp[0], cy0 + 0.5, wp[1], 0.45, 0.45, 0.45, 0, 0.4, 0, PAL.woodD); }
   // Training yard ring (opening toward the square)
   const ty = POINTS.trainingYard; for (const run of ringPts(ty[0], ty[1], 6.2, 14, -0.9, 0.5)) fenceLine(k, run, { h: 0.9 });
   // Sunflower Tower: a 30 m stem with 16 leaf platforms spiralling up (every 4th is a bouncy bud) and a flower on top.
@@ -7791,8 +7820,9 @@ function buildCamp() {
   const gapA = Math.atan2(6, 24);
   for (let i = 0; i < 118; i++) {
     const a = i / 118 * Math.PI * 2; if (Math.abs(wrapA(a - gapA)) < 0.2) continue;
-    const r = 21 + (i % 2) * 0.25, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r, y = gy(x, z), h = 2.9 + (i % 3) * 0.3;
-    k.cyl(x, y - 0.3, z, 0.34, 0.38, h, i % 2 ? '#8a5a34' : '#7a4e2c', 6); k.cone(x, y - 0.3 + h, z, 0.36, 0.6, '#c79a62', 6);
+    const r = 21 + (i % 2) * 0.25, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r, y = gy(x, z), h = 2.9 + (i % 3) * 0.3, kl = landKit(k);
+    bzLand('stake', x, y - 0.3, z, a * 3.7, { s: [1, (h + 0.3) / 3.3, 1], tint: i % 2 ? '#ffffff' : '#e2d6c8' });
+    kl.cyl(x, y - 0.3, z, 0.34, 0.38, h, i % 2 ? '#8a5a34' : '#7a4e2c', 6); kl.cone(x, y - 0.3 + h, z, 0.36, 0.6, '#c79a62', 6);
   }
   for (const run of ringPts(cx, cz, 21.1, 48, gapA, 0.2)) for (let i = 0; i < run.length - 1; i++) {
     const [x0, z0] = run[i], [x1, z1] = run[i + 1]; addBox((x0 + x1) / 2, (z0 + z1) / 2, hyp(x1 - x0, z1 - z0) / 2 + 0.2, 0.45, Math.atan2(-(z1 - z0), x1 - x0), cy - 2, cy + 3.4, { stand: false });
@@ -7800,11 +7830,11 @@ function buildCamp() {
   // gate posts with pot lids
   for (const s of [-1, 1]) { const a = gapA + s * 0.22, x = cx + Math.cos(a) * 21.3, z = cz + Math.sin(a) * 21.3, y = gy(x, z); k.cyl(x, y, z, 0.45, 0.5, 4.4, '#6e4a2c', 7, { col: true }); k.cyl(x + 0.5, y + 3.6, z, 0.65, 0.65, 0.12, PAL.metal, 10, { ry: 0 }); }
   const tents = [[-234, 50, '#8d6e4f'], [-230, 74, '#6f8f4f'], [-209, 44, '#9a5a4a'], [-240, 63, '#7d6b8f']];
-  for (const [x, z, c] of tents) { const y = gy(x, z), fr = faceTo(x, z, cx, cz), dp = lp(x, z, fr, 0, 2.0); k.cone(x, y - 0.1, z, 2.6, 3.4, c, 6, { ry: 0.3 }); k.box(dp[0], y, dp[1], 0.9, 1.4, 0.3, '#3b2a1e', fr); addCircle(x, z, 2.0, y, y + 2.6, { stand: false }); }
+  for (const [x, z, c] of tents) { const y = gy(x, z), fr = faceTo(x, z, cx, cz), dp = lp(x, z, fr, 0, 2.0), kl = landKit(k); bzLand('tent', x, y - 0.1, z, fr, { tint: '#' + col(c).lerp(WHITE_T, 0.3).getHexString() }); kl.cone(x, y - 0.1, z, 2.6, 3.4, c, 6, { ry: 0.3 }); kl.box(dp[0], y, dp[1], 0.9, 1.4, 0.3, '#3b2a1e', fr); addCircle(x, z, 2.0, y, y + 2.6, { stand: false }); }
   // The chief's big tent: a flat top reached by crates (camp tent top)
-  const bx = -224, bz = 44, by = gy(bx, bz);
-  k.cyl(bx, by - 0.1, bz, 1.0, 3.2, 4.1, '#a0522d', 7); k.cyl(bx, by + 4.0, bz, 1.05, 1.05, 0.15, '#6e4a2c', 7);
-  for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; k.box(bx + Math.cos(a) * 2.2, by + 1.2, bz + Math.sin(a) * 2.2, 0.5, 0.9, 0.06, i % 2 ? '#e0c060' : '#5a8f4f', -a + Math.PI / 2); }
+  const bx = -224, bz = 44, by = gy(bx, bz), kt = landKit(k); bzLand('chieftent', bx, by - 0.1, bz, 0);
+  kt.cyl(bx, by - 0.1, bz, 1.0, 3.2, 4.1, '#a0522d', 7); kt.cyl(bx, by + 4.0, bz, 1.05, 1.05, 0.15, '#6e4a2c', 7);
+  for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; kt.box(bx + Math.cos(a) * 2.2, by + 1.2, bz + Math.sin(a) * 2.2, 0.5, 0.9, 0.06, i % 2 ? '#e0c060' : '#5a8f4f', -a + Math.PI / 2); }
   addCircle(bx, bz, 2.4, by, by + 3.0, { stand: false }); addCircle(bx, bz, 1.1, by + 3.0, by + 4.15);
   crate(k, bx + 3.8, by, bz + 1.0, 1.2, 0.2); crate(k, bx + 4.6, by, bz - 0.4, 1.2, -0.2); crate(k, bx + 4.6, by + 1.2, bz - 0.4, 1.2, 0.1); crate(k, bx + 4.2, by, bz - 1.9, 1.2, 0.4); crate(k, bx + 4.2, by + 1.2, bz - 1.9, 1.2, 0.0); crate(k, bx + 4.2, by + 2.4, bz - 1.9, 1.2, 0.2);
   spot('campTent', bx, bz, by + 4.15);
@@ -7844,7 +7874,7 @@ function buildGlade() {
 
 /* ---- The Old Stone Bridge (0, -60): arches, parapets; the middle is broken until Hazel fixes it ---- */
 function buildBridge() {
-  const k = new Kit(), top = 4, w = 6.4;
+  const k0 = new Kit(), k = landKit(k0), top = 4, w = 6.4; bzLand('bridge', 0, 0, -60, 0);
   POINTS.bridge = [0, -41, Math.PI]; POINTS.bridgeS = [0, -36]; POINTS.bridgeN = [0, -86]; POINTS.bridgeMid = [0, -60];
   // deck halves (south z -38..-52, north z -68..-82) with broken, jagged ends
   k.box(0, top - 0.8, -45, w, 0.8, 14, PAL.stone, 0, { col: true }); k.box(0, top - 0.8, -75, w, 0.8, 14, PAL.stone, 0, { col: true });
@@ -7873,10 +7903,11 @@ function buildBridge() {
   const fixRails = [addBox(-3.0, -60, 0.2, 8.2, 0, top, top + 0.9, { enabled: false }), addBox(3.0, -60, 0.2, 8.2, 0, top, top + 0.9, { enabled: false })];
   WORLD.dyn.bridgeFix = { mesh: fixMesh, cols: [fixCol, ...fixRails] };
   // stepping stones to a little islet (a Sun Gem spot)
-  for (const [x, z, r] of [[-179, -51.2, 0.85]]) { k.cyl(x, -1.5, z, r, r * 1.1, 2.1, PAL.stoneD, 7, { col: true }); }
-  k.cyl(-180.5, -2, -54.6, 2.0, 2.3, 2.8, PAL.stone, 9, { col: true }); k.sphere(-180.5, 0.8, -54.6, 1.3, '#5ab846', 0, 0.35);
+  for (const [x, z, r] of [[-179, -51.2, 0.85]]) { k0.cyl(x, -1.5, z, r, r * 1.1, 2.1, PAL.stoneD, 7, { col: true }); }
+  k0.cyl(-180.5, -2, -54.6, 2.0, 2.3, 2.8, PAL.stone, 9, { col: true }); k0.sphere(-180.5, 0.8, -54.6, 1.3, '#5ab846', 0, 0.35);
   POINTS.islet = { x: -180.5, y: 0.8, z: -54.6 }; spot('islet', -180.5, -54.6, 0.8);
-  return k.build('bridge', 0, -60, 30);
+  if (BREEZE) k0.build('islet', -180, -54, 10);
+  return (BREEZE ? new Kit() : k).build('bridge', 0, -60, 30);
 }
 
 /* ---- Riverbend Village (190, -150): fishing huts, docks, a boat, Maple's shop (flat roof), lighthouse hut ---- */
@@ -7890,33 +7921,34 @@ function buildRiverbend() {
   // Maple's shop: striped awning, flat roof reachable with crates
   const sx = 205, sz = -166, sy = gy(sx, sz), sr = faceTo(sx, sz, cx, cz);
   cottage(k, sx, sz, sr, { w: 6.5, d: 5, h: 3.4, flat: true, roof: PAL.roofO });
-  for (let i = 0; i < 6; i++) { const p = lp(sx, sz, sr, -2.7 + i * 1.08, 3.2); k.box(p[0], sy + 2.75, p[1], 1.08, 0.18, 1.6, i % 2 ? '#ffffff' : '#ff6f61', sr); }
+  { const ap = lp(sx, sz, sr, 0, 3.2); bzLand('awning', ap[0], sy + 2.75, ap[1], sr); }
+  for (let i = 0; i < 6; i++) { const p = lp(sx, sz, sr, -2.7 + i * 1.08, 3.2); landKit(k).box(p[0], sy + 2.75, p[1], 1.08, 0.18, 1.6, i % 2 ? '#ffffff' : '#ff6f61', sr); }
   const c1 = lp(sx, sz, sr, 3.9, 1.0), c2 = lp(sx, sz, sr, 4.1, -0.6); crate(k, c1[0], sy, c1[1], 1.2, sr); crate(k, c2[0], sy, c2[1], 1.2, sr); crate(k, c2[0], sy + 1.2, c2[1], 1.2, sr + 0.2);
   spot('rbShop', sx, sz, sy + 3.65);
   // Docks over the water and a little pier with a boat
   const dockTop = 2.0;
   for (const [x, z0, z1, w] of [[175, -110, -95, 3], [152, -107, -97.5, 2.4]]) {
-    const n = Math.round((z0 - z1) / 1.1); for (let i = 0; i < n; i++) k.box(x, dockTop - 0.25, z0 - 0.55 - i * 1.1, w, 0.25, 1.0, i % 2 ? '#b98a55' : '#a87a48');
+    const n = Math.round((z0 - z1) / 1.1); for (let i = 0; i < n; i++) slabKit('board', k).box(x, dockTop - 0.25, z0 - 0.55 - i * 1.1, w, 0.25, 1.0, i % 2 ? '#b98a55' : '#a87a48');
     addBox(x, (z0 + z1) / 2, w / 2, (z0 - z1) / 2, 0, dockTop - 0.6, dockTop);
     for (let i = 0; i <= 2; i++) for (const s of [-1, 1]) k.cyl(x + s * (w / 2 - 0.1), -2.5, lerp(z0, z1, i / 2), 0.16, 0.18, dockTop + 2.7, PAL.woodD, 5);
   }
-  const bx = 148.9, bz = -102.2;
-  k.box(bx, -0.3, bz, 2.4, 1.0, 5, '#a0522d', 0, { col: true, top: 0.75 }); k.prism(bx, -0.3, bz + 3.2, 2.4, 1.0, 1.6, '#a0522d', Math.PI / 2);
-  k.box(bx, 0.55, bz, 2.0, 0.2, 4.4, '#d9b27c'); k.cyl(bx, 0.7, bz + 0.6, 0.08, 0.08, 3.4, PAL.woodD, 5); k.box(bx + 0.02, 2.2, bz + 0.6, 0.04, 1.8, 1.4, '#f6efe2');
+  const bx = 148.9, bz = -102.2, kb = landKit(k); bzLand('boat', bx, -0.3, bz, 0);
+  kb.box(bx, -0.3, bz, 2.4, 1.0, 5, '#a0522d', 0, { col: true, top: 0.75 }); kb.prism(bx, -0.3, bz + 3.2, 2.4, 1.0, 1.6, '#a0522d', Math.PI / 2);
+  kb.box(bx, 0.55, bz, 2.0, 0.2, 4.4, '#d9b27c'); kb.cyl(bx, 0.7, bz + 0.6, 0.08, 0.08, 3.4, PAL.woodD, 5); kb.box(bx + 0.02, 2.2, bz + 0.6, 0.04, 1.8, 1.4, '#f6efe2');
   POINTS.boat = { x: bx, y: 0.75, z: bz }; spot('rbBoat', bx, bz - 1.5, 0.75);
-  for (const [x, z, r] of [[196, -104, 0.4], [160, -113, -0.6]]) { const y = gy(x, z); k.box(x, y, z, 1.6, 0.6, 3.6, i2c(x), r); }
+  for (const [x, z, r] of [[196, -104, 0.4], [160, -113, -0.6]]) { const y = gy(x, z); bzLand('skiff', x, y, z, r, { tint: i2c(x) }); landKit(k).box(x, y, z, 1.6, 0.6, 3.6, i2c(x), r); }
   // Lighthouse hut: striped tower with a lamp; stairs spiral up to a flat top
-  const lx = 214, lz = -110, ly = gy(lx, lz);
-  for (let i = 0; i < 4; i++) k.cyl(lx, ly + i * 1.5, lz, 2.0, 2.05, 1.5, i % 2 ? PAL.white : '#e5484d', 10);
+  const lx = 214, lz = -110, ly = gy(lx, lz), kh = landKit(k); bzLand('lighthouse', lx, ly, lz, 0);
+  for (let i = 0; i < 4; i++) kh.cyl(lx, ly + i * 1.5, lz, 2.0, 2.05, 1.5, i % 2 ? PAL.white : '#e5484d', 10);
   addCircle(lx, lz, 2.05, ly, ly + 6, { stand: false });
-  k.cyl(lx, ly + 6, lz, 2.4, 2.4, 0.3, PAL.stoneD, 10); addCircle(lx, lz, 2.4, ly + 6, ly + 6.3);
-  k.cyl(lx, ly + 6.3, lz, 0.7, 0.7, 1.0, PAL.glowY, 8, { glow: true }); halo(lx, ly + 6.8, lz, 5, PAL.glowY); k.cone(lx, ly + 7.3, lz, 0.9, 0.8, '#e5484d', 8);
-  spiralStairs(k, lx, lz, 3.3, ly, ly + 6.3, 15, Math.PI * 0.6, Math.PI * 1.7, PAL.woodL, { depth: 1.2, landing: 1.0 });
+  kh.cyl(lx, ly + 6, lz, 2.4, 2.4, 0.3, PAL.stoneD, 10); addCircle(lx, lz, 2.4, ly + 6, ly + 6.3);
+  k.cyl(lx, ly + 6.3, lz, 0.7, 0.7, 1.0, PAL.glowY, 8, { glow: true }); halo(lx, ly + 6.8, lz, 5, PAL.glowY); kh.cone(lx, ly + 7.3, lz, 0.9, 0.8, '#e5484d', 8);
+  spiralStairs(slabKit('board', k), lx, lz, 3.3, ly, ly + 6.3, 15, Math.PI * 0.6, Math.PI * 1.7, PAL.woodL, { depth: 1.2, landing: 1.0 });
   spot('rbLight', lx + 1.4, lz, ly + 6.3);
   // nets, barrels, lanterns round the square
   for (const [x, z] of [[184, -140], [198, -142], [182, -160]]) lantern(k, x, z);
   barrel(k, 168, -116); barrel(k, 169.2, -117); barrel(k, 179, -114);
-  for (const [x, z, r] of [[160, -118, 0.2], [196, -112, -0.3]]) { const y = gy(x, z); k.box(x, y + 0.9, z, 3, 1.6, 0.06, '#d8cfae', r); k.cyl(x - 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); k.cyl(x + 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); }
+  for (const [x, z, r] of [[160, -118, 0.2], [196, -112, -0.3]]) { const y = gy(x, z), kn = landKit(k); bzLand('netrack', x, y, z, r); kn.box(x, y + 0.9, z, 3, 1.6, 0.06, '#d8cfae', r); kn.cyl(x - 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); kn.cyl(x + 1.5, y, z, 0.07, 0.07, 2.6, PAL.woodD, 4); }
   return k.build('riverbend', 190, -140, 55);
 }
 function i2c(x) { return ['#4f7fd9', '#e8913a', '#2fa39a'][Math.abs(x | 0) % 3]; }
@@ -7937,18 +7969,19 @@ function buildCastle() {
   };
   const merlons = (x0, z0, x1, z1, ox, oz) => {
     const len = hyp(x1 - x0, z1 - z0), n = Math.floor(len / 2.2), ry = Math.atan2(-(z1 - z0), x1 - x0);
-    for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = lerp(x0, x1, t) + ox, z = lerp(z0, z1, t) + oz; k.add(prim('box'), x, wallTop, z, 1.1, 0.9, 0.5, 0, ry, 0, wallD); }
+    for (let i = 0; i < n; i++) { const t = (i + 0.5) / n, x = lerp(x0, x1, t) + ox, z = lerp(z0, z1, t) + oz; slabKit('block', k).box(x, wallTop, z, 1.1, 0.9, 0.5, wallD, ry); }
     addBox((x0 + x1) / 2 + ox, (z0 + z1) / 2 + oz, len / 2, 0.3, ry, wallTop, wallTop + 0.9);
   };
   wall(X0 + 6, Z1, -154, Z1); wall(-146, Z1, X1 - 6, Z1); wall(X0 + 6, Z0, X1 - 6, Z0); wall(X0, Z1 - 6, X0, Z0 + 6); wall(X1, Z1 - 6, X1, Z0 + 6);
   merlons(X0 + 6, Z1, -160, Z1, 0, 1.25); merlons(-140, Z1, X1 - 6, Z1, 0, 1.25); merlons(X0 + 6, Z0, X1 - 6, Z0, 0, -1.25); merlons(X0, Z1 - 6, X0, Z0 + 6, -1.25, 0); merlons(X1, Z1 - 6, X1, Z0 + 6, 1.25, 0);
   // gatehouse with an arch you can walk over
-  for (const s of [-1, 1]) { const gx = -150 + s * 7; k.box(gx, y0 - 1, -117, 6, 13, 10, wallC, 0, { col: true, top: y0 + 12 }); k.box(gx, y0 + 12, -117, 6.4, 0.3, 10.4, wallD, 0); for (let i = 0; i < 3; i++) k.box(gx - 2.2 + i * 2.2, y0 + 12.3, -112.2, 1, 0.9, 0.5, wallD); }
-  k.box(-150, y0 + 6, -118, 8.2, wallTop - y0 - 6, T + 1, wallC, 0, { col: true }); k.box(-150, wallTop - 0.05, -118, 8, 0.1, T - 0.3, walk);
-  for (let i = 0; i < 7; i++) k.box(-153.3 + i * 1.1, y0 + 5.0, -116.8, 0.14, 1.2, 0.14, '#4a4a52');
-  k.box(-150, y0 + 6.2, -115.9, 8.2, 0.4, 0.3, wallD);
+  const kg = landKit(k); bzLand('gatehouse', -150, 0, -117, 0);
+  for (const s of [-1, 1]) { const gx = -150 + s * 7; kg.box(gx, y0 - 1, -117, 6, 13, 10, wallC, 0, { col: true, top: y0 + 12 }); kg.box(gx, y0 + 12, -117, 6.4, 0.3, 10.4, wallD, 0); for (let i = 0; i < 3; i++) kg.box(gx - 2.2 + i * 2.2, y0 + 12.3, -112.2, 1, 0.9, 0.5, wallD); }
+  kg.box(-150, y0 + 6, -118, 8.2, wallTop - y0 - 6, T + 1, wallC, 0, { col: true }); kg.box(-150, wallTop - 0.05, -118, 8, 0.1, T - 0.3, walk);
+  for (let i = 0; i < 7; i++) kg.box(-153.3 + i * 1.1, y0 + 5.0, -116.8, 0.14, 1.2, 0.14, '#4a4a52');
+  kg.box(-150, y0 + 6.2, -115.9, 8.2, 0.4, 0.3, wallD);
   // banners on the gatehouse
-  for (const s of [-1, 1]) { k.box(-150 + s * 7, y0 + 4, -111.9, 2.2, 6, 0.08, PAL.blue); k.sphere(-150 + s * 7, y0 + 8.2, -111.85, 0.6, PAL.gold, 0, 1, 0.2); }
+  for (const s of [-1, 1]) { kg.box(-150 + s * 7, y0 + 4, -111.9, 2.2, 6, 0.08, PAL.blue); kg.sphere(-150 + s * 7, y0 + 8.2, -111.85, 0.6, PAL.gold, 0, 1, 0.2); }
   // four corner towers; the north-east one is tall with stairs spiralling round it
   const towers = [[X0, Z1, 18.2], [X1, Z1, 18.2], [X0, Z0, 18.2], [X1, Z0, 29]];
   towers.forEach(([x, z, h], i) => {
@@ -7957,29 +7990,30 @@ function buildCastle() {
     const open = [Math.atan2(0, x === X0 ? 1 : -1), Math.atan2(z === Z1 ? -1 : 1, 0)]; if (i === 3) open.push(Math.PI * 0.5 - Math.PI * 1.95);
     for (let j = 0; j < 12; j++) {
       const a = j / 12 * Math.PI * 2 + Math.PI / 12; if (open.some(o => Math.abs(wrapA(a - o)) < 0.45)) continue;
-      k.box(x + Math.cos(a) * 5.6, h, z + Math.sin(a) * 5.6, 1.4, 0.9, 0.6, wallD, -a + Math.PI / 2); addBox(x + Math.cos(a) * 5.75, z + Math.sin(a) * 5.75, 1.6, 0.3, -a + Math.PI / 2, h, h + 0.9);
+      slabKit('block', k).box(x + Math.cos(a) * 5.6, h, z + Math.sin(a) * 5.6, 1.4, 0.9, 0.6, wallD, -a + Math.PI / 2); addBox(x + Math.cos(a) * 5.75, z + Math.sin(a) * 5.75, 1.6, 0.3, -a + Math.PI / 2, h, h + 0.9);
     }
     k.cyl(x, h, z, 0.1, 0.1, 6, '#6b6b72', 5); k.box(x + 1.4, h + 4.3, z, 2.6, 1.6, 0.08, PAL.gold);
     for (let j = 0; j < 4; j++) { const a = j / 4 * Math.PI * 2 + 0.6; k.box(x + Math.cos(a) * 6.25, y0 + 6 + (i % 2) * 2, z + Math.sin(a) * 6.25, 0.9, 1.4, 0.2, '#3b3f55', -a + Math.PI / 2); }
     spot('castleT' + (i + 1), x, z, h);
   });
-  spiralStairs(k, X1, Z0, 7.6, wallTop, 29, 28, Math.PI * 0.5, -Math.PI * 1.95, wallC, { depth: 1.6, landing: 1.2, support: false });
+  spiralStairs(slabKit('block', k), X1, Z0, 7.6, wallTop, 29, 28, Math.PI * 0.5, -Math.PI * 1.95, wallC, { depth: 1.6, landing: 1.2, support: false });
   POINTS.tallTower = { x: X1, y: 29, z: Z0 };
   // stairs from the courtyard up to the wall walk (inside the south wall, west of the gate)
-  straightStairs(k, -158, -120.75, -Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
-  straightStairs(k, -142, -120.75, Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
+  straightStairs(slabKit('block', k), -158, -120.75, -Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
+  straightStairs(slabKit('block', k), -142, -120.75, Math.PI / 2, y0, wallTop, 2.5, wallD, 1.0);
   // keep: an open hall against the north wall, roof you can stand on, two little towers, throne on a dais
   const kz0 = Z0 + 1.5, kz1 = -204;
-  for (const s of [-1, 1]) k.box(-150 + s * 17, y0 - 0.5, (kz0 + kz1) / 2, 2, 14.5, kz1 - kz0, wallC, 0, { col: true });
-  k.box(-150, y0 + 9, (kz0 + kz1) / 2 - 1, 36, 1, kz1 - kz0 + 2, wallD, 0, { col: true, stand: false, top: y0 + 13 }); k.prism(-150, y0 + 10, (kz0 + kz1) / 2 - 1, 36.5, 3.2, kz1 - kz0 + 2.5, PAL.roofB, 0);
-  for (let i = 0; i < 5; i++) { const x = -162 + i * 6; k.cyl(x, y0, kz1 + 0.3, 0.6, 0.7, 9, PAL.stoneL, 8, { col: true, stand: false }); }
-  for (const s of [-1, 1]) { k.cyl(-150 + s * 17, y0, kz1, 2.8, 3, 18, wallC, 10, { col: true, stand: false }); k.cone(-150 + s * 17, y0 + 18, kz1, 3.4, 5, PAL.roofB, 10); }
+  const kk = landKit(k); bzLand('keep', -150, 0, -172, 0);
+  for (const s of [-1, 1]) kk.box(-150 + s * 17, y0 - 0.5, (kz0 + kz1) / 2, 2, 14.5, kz1 - kz0, wallC, 0, { col: true });
+  kk.box(-150, y0 + 9, (kz0 + kz1) / 2 - 1, 36, 1, kz1 - kz0 + 2, wallD, 0, { col: true, stand: false, top: y0 + 13 }); kk.prism(-150, y0 + 10, (kz0 + kz1) / 2 - 1, 36.5, 3.2, kz1 - kz0 + 2.5, PAL.roofB, 0);
+  for (let i = 0; i < 5; i++) { const x = -162 + i * 6; kk.cyl(x, y0, kz1 + 0.3, 0.6, 0.7, 9, PAL.stoneL, 8, { col: true, stand: false }); }
+  for (const s of [-1, 1]) { kk.cyl(-150 + s * 17, y0, kz1, 2.8, 3, 18, wallC, 10, { col: true, stand: false }); kk.cone(-150 + s * 17, y0 + 18, kz1, 3.4, 5, PAL.roofB, 10); }
   k.box(-150, y0, -220, 8, 0.6, 5, PAL.stoneL, 0, { col: true }); k.box(-150, y0, -212, 2.6, 0.05, 16, '#b23a48');
   k.box(-150, y0 + 0.6, -221.5, 1.8, 0.8, 1.4, '#b23a48', 0, { col: true }); k.box(-150, y0 + 0.6, -222.3, 1.8, 3.2, 0.3, PAL.gold); k.sphere(-150, y0 + 3.9, -222.3, 0.35, PAL.gold, 0);
   for (const s of [-1, 1]) for (const z of [-224, -214]) k.box(-150 + s * 15.9, y0 + 3, z, 0.08, 5, 2, PAL.blue);
   // stables and barracks along the inner walls (flat roofs)
-  k.box(-193, y0, -160, 8, 4, 20, '#a87a48', 0, { col: true }); k.box(-193, y0 + 4, -160, 8.6, 0.3, 20.6, PAL.roofR, 0, { col: true });
-  k.box(-107, y0, -170, 8, 4.5, 24, '#d9cfbb', 0, { col: true }); k.box(-107, y0 + 4.5, -170, 8.6, 0.3, 24.6, PAL.roofB, 0, { col: true });
+  kk.box(-193, y0, -160, 8, 4, 20, '#a87a48', 0, { col: true }); kk.box(-193, y0 + 4, -160, 8.6, 0.3, 20.6, PAL.roofR, 0, { col: true });
+  kk.box(-107, y0, -170, 8, 4.5, 24, '#d9cfbb', 0, { col: true }); kk.box(-107, y0 + 4.5, -170, 8.6, 0.3, 24.6, PAL.roofB, 0, { col: true });
   for (const [x, z] of [[-160, -140], [-140, -140], [-170, -200], [-130, -200]]) lantern(k, x, z, y0);
   barrel(k, -188, -132, y0); barrel(k, -186.8, -131.4, y0); crate(k, -112, y0, -136, 1.2, 0.2); crate(k, -113.3, y0, -137.2, 1.2, -0.3);
   shellBuild('castle', -150, -172, 85);
@@ -8001,7 +8035,7 @@ function buildPass() {
       if (pts.length > 1) fenceLine(k, pts, { h: 1.1, color: '#8a6440' });
     }
   }
-  for (const [x, z, r] of [[24, -210, 0.3], [70, -236, -0.6], [10, -258, 2.2]]) { const y = gy(x, z); k.cyl(x, y, z, 0.12, 0.14, 2.2, PAL.woodD, 5, { col: true }); k.box(x, y + 1.7, z, 1.4, 0.4, 0.1, PAL.woodL, r); }
+  for (const [x, z, r] of [[24, -210, 0.3], [70, -236, -0.6], [10, -258, 2.2]]) { const y = gy(x, z), ks = landKit(k); bzLand('sign', x, y, z, r); ks.cyl(x, y, z, 0.12, 0.14, 2.2, PAL.woodD, 5, { col: true }); ks.box(x, y + 1.7, z, 1.4, 0.4, 0.1, PAL.woodL, r); }
   for (const [x, z, s] of [[30, -226, 1.2], [8, -248, 1.0], [74, -262, 1.3], [40, -276, 1.1]]) k.sphere(x, gy(x, z) + 0.3, z, s, PAL.stoneD, 0, 0.7);
   spot('pass1', 72, -236); spot('pass2', 6, -262); spot('pass3', 64, -284); spot('pass4', 30, -292.5);
   return k.build('pass', 35, -255, 70);
@@ -8014,8 +8048,9 @@ function buildFortress() {
   POINTS.arenaCentre = [0, -355]; POINTS.cage = { x: 0, y: Y + 25, z: -386 }; POINTS.northWall = { x: 0, y: Y + 14, z: -384 };
   POINTS.crystals = [[-38, -318], [38, -318], [0, -322]]; POINTS.pillars = [];
   // The Gloom Gate (at the pass top), its doors and the drawbridge are separate meshes (they move)
-  for (const s of [-1, 1]) { k.box(s * 7.5, Y - 1, -294, 5, 15, 5, dark, 0, { col: true, stand: false }); k.cone(s * 7.5, Y + 14, -294, 3.6, 4, mid, 4, { ry: Math.PI / 4 }); k.sphere(s * 7.5, Y + 18.4, -294, 0.6, PAL.glowP, 0, 1, 1, { glow: true }); }
-  k.box(0, Y + 8.5, -294, 10.2, 5.5, 3, dark, 0, { col: true }); for (let i = 0; i < 5; i++) k.box(-4 + i * 2, Y + 14, -294, 1, 0.9, 3, mid);
+  for (const s of [-1, 1]) { bzLand('fgate', s * 7.5, Y - 1, -294, 0); landKit(k).box(s * 7.5, Y - 1, -294, 5, 15, 5, dark, 0, { col: true, stand: false }); landKit(k).cone(s * 7.5, Y + 14, -294, 3.6, 4, mid, 4, { ry: Math.PI / 4 }); k.sphere(s * 7.5, Y + 18.4, -294, 0.6, PAL.glowP, 0, 1, 1, { glow: true }); }
+  const wk = slabKit('fwall', k), bk = slabKit('block', k);
+  wk.box(0, Y + 8.5, -294, 10.2, 5.5, 3, dark, 0, { col: true }); for (let i = 0; i < 5; i++) bk.box(-4 + i * 2, Y + 14, -294, 1, 0.9, 3, mid);
   k.box(0, Y + 10.5, -292.45, 2.2, 2.2, 0.1, PAL.glowP, Math.PI / 4, { glow: true });
   for (const s of [-1, 1]) k.box(s * 7.5, Y + 3, -291.45, 1.8, 6, 0.08, PAL.purple);
   const gate = new Kit();
@@ -8037,12 +8072,12 @@ function buildFortress() {
   for (const s of [-1, 1]) addBox(s * 41.7, -295.0, 38.3, 0.3, 0, Y - 3, Y + 6, { kind: 'rail' });
   for (const s of [-1, 1]) { k.cyl(s * 3.6, Y - 0.2, -296.2, 0.25, 0.25, 3, '#3b2a1e', 6); k.cyl(s * 3.6, Y - 0.2, -310.4, 0.3, 0.3, 9, '#3b2a1e', 6); }
   // Fortress walls: south (archway), sides, north; corner towers with glowing windows
-  const W = (x, z, sx, sz, h) => k.box(x, Y - 2, z, sx, h + 2, sz, dark, 0, { col: true });
-  W(-33, -311, 54, 3, 14); W(33, -311, 54, 3, 14); k.box(0, Y + 9, -311, 12, 5, 3, dark, 0, { col: true });
-  for (let i = 0; i < 26; i++) { const x = -58 + i * 4.6; k.box(x, Y + 14, -312.2, 1.6, 1.2, 0.8, mid); }
+  const W = (x, z, sx, sz, h) => wk.box(x, Y - 2, z, sx, h + 2, sz, dark, 0, { col: true });
+  W(-33, -311, 54, 3, 14); W(33, -311, 54, 3, 14); wk.box(0, Y + 9, -311, 12, 5, 3, dark, 0, { col: true });
+  for (let i = 0; i < 26; i++) { const x = -58 + i * 4.6; bk.box(x, Y + 14, -312.2, 1.6, 1.2, 0.8, mid); }
   W(-62, -351, 3, 80, 14); W(62, -351, 3, 80, 14); W(0, -392, 127, 3, 14);
   for (const [x, z] of [[-62, -311], [62, -311], [-62, -392], [62, -392]]) {
-    k.cyl(x, Y - 2, z, 5, 5.4, 24, mid, 10, { col: true, stand: false }); k.cone(x, Y + 22, z, 6, 9, dark, 10);
+    bzLand('ftower', x, Y - 2, z, 0); landKit(k).cyl(x, Y - 2, z, 5, 5.4, 24, mid, 10, { col: true, stand: false }); landKit(k).cone(x, Y + 22, z, 6, 9, dark, 10);
     for (let j = 0; j < 3; j++) { const a = j * 2.1 + 0.4; k.box(x + Math.cos(a) * 5.1, Y + 9 + j * 4, z + Math.sin(a) * 5.1, 0.9, 1.5, 0.2, PAL.glowP, -a + Math.PI / 2, { glow: true }); }
   }
   for (let i = 0; i < 6; i++) { const x = -50 + i * 20; if (Math.abs(x) < 8) continue; k.box(x, Y + 4, -309.4, 2.4, 8, 0.1, PAL.purple); k.box(x, Y + 8.6, -309.35, 1, 1, 0.1, PAL.glowP, Math.PI / 4, { glow: true }); }
@@ -8052,34 +8087,34 @@ function buildFortress() {
   for (const [x, z] of [[-20, -314], [20, -314], [-50, -324], [50, -324]]) { k.cyl(x, Y, z, 0.5, 0.35, 1.4, mid, 6, { col: true }); k.cone(x, Y + 1.4, z, 0.6, 1.0, PAL.glowP, 6, { glow: true }); }
   spot('fortW', -46, -322, Y); spot('fortE', 46, -322, Y);
   // keep steps up to the arena door, the door itself is separate (it opens in M10)
-  for (let i = 0; i < 3; i++) k.box(0, Y - 0.3, -321.6 - i * 0.9, 12, 0.3 + 0.4 * (i + 1), 0.95, light, 0, { col: true });
-  k.box(0, Y - 0.3, -326, 12, 1.5, 3.2, light, 0, { col: true });
-  for (let i = 0; i < 3; i++) k.box(0, Y - 0.3, -328.9 + 0 - i * 0.9, 9, 1.1 - 0.4 * i, 0.95, light, 0, { col: true });
+  for (let i = 0; i < 3; i++) bk.box(0, Y - 0.3, -321.6 - i * 0.9, 12, 0.3 + 0.4 * (i + 1), 0.95, light, 0, { col: true });
+  bk.box(0, Y - 0.3, -326, 12, 1.5, 3.2, light, 0, { col: true });
+  for (let i = 0; i < 3; i++) bk.box(0, Y - 0.3, -328.9 + 0 - i * 0.9, 9, 1.1 - 0.4 * i, 0.95, light, 0, { col: true });
   // Throne Courtyard: tiled floor (terrain), rim wall with a door gap, four pillars, the north tower
   const AX = 0, AZ = -355, R = 28;
   for (let i = 0; i < 40; i++) {
     const a0 = i / 40 * Math.PI * 2, a1 = (i + 1) / 40 * Math.PI * 2, am = (a0 + a1) / 2;
     if (Math.abs(wrapA(am - Math.PI / 2)) < 0.16) continue;
     const x = AX + Math.cos(am) * (R + 0.8), z = AZ + Math.sin(am) * (R + 0.8), len = 2 * (R + 0.8) * Math.sin(Math.PI / 40) + 0.1;
-    k.box(x, Y - 1, z, len, 5, 1.6, mid, -am + Math.PI / 2, { col: true });
-    if (i % 2) k.box(x, Y + 4, z, len * 0.5, 0.8, 1.6, light, -am + Math.PI / 2);
+    wk.box(x, Y - 1, z, len, 5, 1.6, mid, -am + Math.PI / 2, { col: true });
+    if (i % 2) bk.box(x, Y + 4, z, len * 0.5, 0.8, 1.6, light, -am + Math.PI / 2);
   }
-  for (const s of [-1, 1]) { k.box(s * 4.6, Y - 1, -327.3, 1.6, 9, 2.2, dark, 0, { col: true }); k.sphere(s * 4.6, Y + 8.6, -327.3, 0.55, PAL.glowP, 0, 1, 1, { glow: true, halo: true }); }
-  k.box(0, Y + 7, -327.3, 10.8, 1.2, 2.2, dark, 0, { col: true });
+  for (const s of [-1, 1]) { wk.box(s * 4.6, Y - 1, -327.3, 1.6, 9, 2.2, dark, 0, { col: true }); k.sphere(s * 4.6, Y + 8.6, -327.3, 0.55, PAL.glowP, 0, 1, 1, { glow: true, halo: true }); }
+  wk.box(0, Y + 7, -327.3, 10.8, 1.2, 2.2, dark, 0, { col: true });
   const door = new Kit(); for (const s of [-1, 1]) { door.box(s * 1.9, 0, 0, 3.7, 7, 0.5, '#2b2236'); door.box(s * 1.9, 3.2, 0.28, 2.4, 0.3, 0.06, '#4b3b5e'); door.box(s * 1.0, 3.6, 0.3, 0.4, 0.4, 0.05, PAL.glowP, 0.7, { glow: true }); }
   const doorG = new THREE.Group(); doorG.add(new THREE.Mesh(door.geometry('lit'), MAT.lit), new THREE.Mesh(door.geometry('glow'), MAT.glow)); doorG.position.set(0, Y - 0.3 + 1.2, -327.4); scene.add(doorG);
   const doorCol = addBox(0, -327.4, 3.8, 0.5, 0, Y - 1, Y + 8);
   WORLD.dyn.arenaDoor = { group: doorG, col: doorCol, k: 0 };
   for (let i = 0; i < 4; i++) {
     const a = Math.PI / 4 + i * Math.PI / 2, x = AX + Math.cos(a) * 16, z = AZ + Math.sin(a) * 16; POINTS.pillars.push([x, z]);
-    k.cyl(x, Y - 0.2, z, 1.5, 1.6, 8.2, light, 10, { col: true }); k.box(x, Y + 8, z, 3.8, 0.8, 3.8, mid, a); k.box(x, Y - 0.2, z, 3.8, 0.6, 3.8, mid, a);
+    bzLand('fpillar', x, Y - 0.2, z, a); landKit(k).cyl(x, Y - 0.2, z, 1.5, 1.6, 8.2, light, 10, { col: true }); landKit(k).box(x, Y + 8, z, 3.8, 0.8, 3.8, mid, a); landKit(k).box(x, Y - 0.2, z, 3.8, 0.6, 3.8, mid, a);
     k.sphere(x, Y + 9.2, z, 0.5, PAL.glowP, 0, 1, 1, { glow: true, halo: true });
   }
   const NX = 0, NZ = -386;
-  k.cyl(NX, Y - 2, NZ, 6, 6.8, 38, mid, 12, { col: true, stand: false }); k.cone(NX, Y + 36, NZ, 7.4, 18, dark, 12); k.sphere(NX, Y + 54.5, NZ, 1.6, PAL.glowP, 1, 1, 1, { glow: true, halo: true });
+  bzLand('fspire', NX, Y - 2, NZ, 0); landKit(k).cyl(NX, Y - 2, NZ, 6, 6.8, 38, mid, 12, { col: true, stand: false }); landKit(k).cone(NX, Y + 36, NZ, 7.4, 18, dark, 12); k.sphere(NX, Y + 54.5, NZ, 1.6, PAL.glowP, 1, 1, 1, { glow: true, halo: true });
   for (let j = 0; j < 4; j++) k.box(NX + (j - 1.5) * 2.2, Y + 18 + (j % 2) * 4, NZ + 6.1, 0.9, 1.8, 0.2, PAL.glowP, 0, { glow: true });
-  k.box(NX, Y + 26, NZ + 6.2, 6, 0.6, 3, dark); k.beam(NX, Y + 26.3, NZ + 7.4, NX, Y + 30, NZ + 6.5, 0.4, 0.4, dark);
-  for (let i = 0; i < 8; i++) k.box(-35 + i * 10, Y + 13.2, -390.4, 1.6, 1.2, 0.8, mid);
+  landKit(k).box(NX, Y + 26, NZ + 6.2, 6, 0.6, 3, dark); landKit(k).beam(NX, Y + 26.3, NZ + 7.4, NX, Y + 30, NZ + 6.5, 0.4, 0.4, dark);
+  for (let i = 0; i < 8; i++) bk.box(-35 + i * 10, Y + 13.2, -390.4, 1.6, 1.2, 0.8, mid);
   return k.build('fortress', 0, -340, 95);
 }
 
@@ -8122,7 +8157,7 @@ function buildWaystones() {
 /* ---- Small things all over: crossroads signposts ---- */
 function buildMisc() {
   const k = new Kit();
-  for (const [x, z] of [[4, 154], [4, -111], [6, 4]]) { const y = gy(x, z); k.cyl(x, y, z, 0.12, 0.14, 2.6, PAL.woodD, 5, { col: true }); k.box(x, y + 2.0, z, 1.6, 0.42, 0.1, PAL.woodL, 0.6); k.box(x, y + 1.5, z, 1.5, 0.4, 0.1, PAL.woodL, -0.7); k.box(x, y + 1.0, z, 1.4, 0.38, 0.1, PAL.woodL, 1.9); }
+  for (const [x, z] of [[4, 154], [4, -111], [6, 4]]) { const y = gy(x, z), ks = landKit(k); bzLand('signpost', x, y, z, 0); ks.cyl(x, y, z, 0.12, 0.14, 2.6, PAL.woodD, 5, { col: true }); ks.box(x, y + 2.0, z, 1.6, 0.42, 0.1, PAL.woodL, 0.6); ks.box(x, y + 1.5, z, 1.5, 0.4, 0.1, PAL.woodL, -0.7); ks.box(x, y + 1.0, z, 1.4, 0.38, 0.1, PAL.woodL, 1.9); }
   return k.build('misc', 0, 0, 0, { always: true });
 }
 
@@ -12560,7 +12595,7 @@ function buildBossWorld() {
   BOSS.iStaff = INTERACT.add({ id: 'bossStaff', x: 0, z: 0, y: AY, r: 3, label: 'btn.use', icon: '✨', when: () => BOSS.active && BOSS.sw.mode === 'dazed', use: () => bossFinale() });
   INTERACT.add({ id: 'cage', x: CAGE.x, z: CAGE.z, y: AY, r: 3.2, label: 'btn.open', icon: '🔓', when: () => questActive('m11', 1) && CAGE.k >= 1, use: () => endingStart() });
   // the rematch stone (after the story) by the courtyard door
-  const rk = new Kit(); rk.box(7.5, AY - 0.3, -337, 1.4, 2.4, 0.9, PAL.stone, 0.3, { col: true, stand: false }); rk.box(7.5, AY + 1.0, -336.5, 0.6, 0.6, 0.1, PAL.glowP, 0.3, { glow: true }); rk.box(7.5, AY + 2.05, -337, 1.6, 0.25, 1.1, PAL.stoneD, 0.3);
+  const rk = new Kit(), rs = slabKit('block', rk); rs.box(7.5, AY - 0.3, -337, 1.4, 2.4, 0.9, PAL.stone, 0.3, { col: true, stand: false }); rk.box(7.5, AY + 1.0, -336.5, 0.6, 0.6, 0.1, PAL.glowP, 0.3, { glow: true }); rs.box(7.5, AY + 2.05, -337, 1.6, 0.25, 1.1, PAL.stoneD, 0.3);
   rk.build('rematch', 7.5, -337, 6);
   INTERACT.add({ id: 'rematch', x: 7.5, z: -335.6, y: AY, r: 2.6, label: 'btn.use', icon: '⚔️', when: () => G.flags.ended && !BOSS.active && !CUT.on, use: () => UI.confirm(t('rematch'), '😈', () => bossBegin(true)) });
   INTERACT.add({ id: 'npc:snarlwick', x: 0, z: 0, r: 2.6, label: 'btn.talk', icon: '💬', when: () => !BOSS.active && BOSS.sw && BOSS.sw.mode === 'pj' && !CUT.on, use: () => npcSay('snarlwick', ['d.snarl.idle']) });
@@ -13512,7 +13547,7 @@ Object.assign(TEST_EXT, {
     if (CUT.on) CUT.skip(); bossBegin(false); if (CUT.on) CUT.skip();
     return TEST_EXT.boss();
   },
-  boss() { const c = BOSS.cd, s = BOSS.sw; return { active: BOSS.active, done: BOSS.done, phase: BOSS.phase, crystals: BOSS.crystals, collarHits: BOSS.cHits, bolts: BOSS.bolts, bonks: BOSS.bonks, snarlHits: BOSS.swHits, cinder: { mode: c.mode, x: +c.x.toFixed(1), y: +c.y.toFixed(1), z: +c.z.toFixed(1), color: +c.color.toFixed(2) }, snarlwick: { mode: s.mode, x: +s.x.toFixed(1), z: +s.z.toFixed(1), visible: s.vis > 0.5 }, projectiles: BP.filter(p => p.on).map(p => ({ kind: p.kind, ret: p.ret, x: +p.x.toFixed(1), z: +p.z.toFixed(1) })), wave: BOSS.wave ? +BOSS.wave.r.toFixed(1) : null, helped: BOSS.enc.helped, kos: BOSS.enc.kos }; },
+  boss() { const c = BOSS.cd, s = BOSS.sw; return { active: BOSS.active, done: BOSS.done, phase: BOSS.phase, crystals: BOSS.crystals, collarHits: BOSS.cHits, bolts: BOSS.bolts, bonks: BOSS.bonks, snarlHits: BOSS.swHits, cinder: { mode: c.mode, x: +c.x.toFixed(1), y: +c.y.toFixed(1), z: +c.z.toFixed(1), color: +c.color.toFixed(2) }, snarlwick: { mode: s.mode, x: +s.x.toFixed(1), z: +s.z.toFixed(1), yaw: +s.yaw.toFixed(2), visible: s.vis > 0.5 }, projectiles: BP.filter(p => p.on).map(p => ({ kind: p.kind, ret: p.ret, x: +p.x.toFixed(1), z: +p.z.toFixed(1) })), wave: BOSS.wave ? +BOSS.wave.r.toFixed(1) : null, helped: BOSS.enc.helped, kos: BOSS.enc.kos }; },
   /** Force the current open window: Cinder dizzy (phase 1), panting (phase 2), Snarlwick dizzy (phase 3). */
   bossOpen() {
     if (!BOSS.active) return null; const c = BOSS.cd, s = BOSS.sw; bpClear();
@@ -13849,7 +13884,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-af9e2636/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-af9e2636/breeze-world.js', integrity: 'sha384-/1L0D00MACdI+hwtN7YmUoJq8IkeD4nXHI5l/HjIjdxLlpbR4p3J8PzezTJl/2yC' } };
+const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-73c33a6c/breeze-start.js', integrity: 'sha384-vFAwuW+h0fCUIj5zGMeSD/cJ1v8qPeg3tfNt56eQKAzUau6ou3cC5E3BxNHNAsrR' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-73c33a6c/breeze-world.js', integrity: 'sha384-aDOeqnidgV0oXJ8n4sZ8Vip4OI0x0dSe65Ybo3IGImObIpIQWWvVCVRJK2bpNwaD' } };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 /** Load one pack (start: before play; world: in the background once play starts). Resolves with the assets it added. */
@@ -13863,12 +13898,12 @@ function bzLoad(name) {
 function bzArr(s, T) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new T(u.buffer); }
 /** A compact mesh -> BufferGeometry (position, normal, uv, colour, the part id per vertex, and rigid skinning). */
 function bzGeo(m, skinned) {
-  const n = m.verts, q = bzArr(m.pos, Int16Array), N = bzArr(m.nrm, Int8Array), U = bzArr(m.uv, Uint16Array), C = bzArr(m.col, Uint8Array), Bn = m.bone ? bzArr(m.bone, Uint8Array) : new Uint8Array(m.verts), I = bzArr(m.idx, n < 65536 ? Uint16Array : Uint32Array);
+  const R = m.uvr || 4, n = m.verts, q = bzArr(m.pos, Int16Array), N = bzArr(m.nrm, Int8Array), U = bzArr(m.uv, Uint16Array), C = bzArr(m.col, Uint8Array), Bn = m.bone ? bzArr(m.bone, Uint8Array) : new Uint8Array(m.verts), I = bzArr(m.idx, n < 65536 ? Uint16Array : Uint32Array);
   const P = new Float32Array(n * 3), NN = new Float32Array(n * 3), UV = new Float32Array(n * 2), CC = new Float32Array(n * 3), part = new Uint8Array(n);
   for (let i = 0; i < n; i++) {
     for (let a = 0; a < 3; a++) P[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32768) / 65535 * (m.max[a] - m.min[a]);
     { let x = N[i * 2] / 127, y = N[i * 2 + 1] / 127; const z = 1 - Math.abs(x) - Math.abs(y); if (z < 0) { const ox = x; x = (1 - Math.abs(y)) * Math.sign(ox || 1); y = (1 - Math.abs(ox)) * Math.sign(y || 1); } const l = Math.hypot(x, y, z) || 1; NN[i * 3] = x / l; NN[i * 3 + 1] = y / l; NN[i * 3 + 2] = z / l; }   // octahedral normals (two bytes)
-    UV[i * 2] = U[i * 2] / 65535 * 8 - 4; UV[i * 2 + 1] = U[i * 2 + 1] / 65535 * 8 - 4;
+    UV[i * 2] = U[i * 2] / 65535 * 2 * R - R; UV[i * 2 + 1] = U[i * 2 + 1] / 65535 * 2 * R - R;
     C1.setRGB(C[i * 4] / 255, C[i * 4 + 1] / 255, C[i * 4 + 2] / 255, THREE.SRGBColorSpace); CC[i * 3] = C1.r; CC[i * 3 + 1] = C1.g; CC[i * 3 + 2] = C1.b; part[i] = Math.round(C[i * 4 + 3] / 255 * 16);
   }
   const g = new THREE.BufferGeometry();
@@ -14066,7 +14101,38 @@ function bzBuildings(b) {
   const segs = [];
   for (const w of BZ_PROPS.wall) { const n = Math.max(1, Math.round(w.len / 4)), dx = Math.cos(w.ry), dz = -Math.sin(w.ry); for (let i = 0; i < n; i++) { const t = (i + 0.5) / n - 0.5; segs.push({ x: w.cx + dx * t * w.len, y: w.y, z: w.cz + dz * t * w.len, ry: w.ry, sx: w.len / n / 4, h: w.h, sz: w.T / 3 }); } }
   bzInst(b.meshes.wall, stone, segs, (p, o) => { at(p, o); o.scale.set(p.sx * 1.002, p.h, p.sz); }, null, 10);
-  for (const o of BZ_SHELLS) { if (o.shell === 'props') continue; if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); }
+  // the fortress's walls, arch blocks and courtyard rim: the same wall, in plum stone, cut into about 4 x 8 m pieces
+  bzInst(b.meshes.wall, stone, bzSegs(BZ_PROPS.fwall, 4, 8), (p, o) => { at(p, o); o.scale.set(p.sx / 4 * 1.002, p.sy, p.sz / 3); }, p => p.color, 10);
+  bzHideShells(n => n === 'castle' || n === 'barn' || n === 'mill' || n === 'slab:fwall');
+}
+/** Hides the procedural stand-ins (shells) whose names pass the test, once their models are in place. */
+function bzHideShells(test) { for (const o of BZ_SHELLS) { if (!test(o.shell)) continue; if (o.lit) o.lit.visible = false; if (o.glow) o.glow.visible = false; const i = WORLD.kits.indexOf(o); if (i >= 0) WORLD.kits.splice(i, 1); } }
+/** Slab boxes cut into pieces about L long (along their longer side) and H tall, so a unit model's texture keeps its scale. */
+function bzSegs(list, L, H) {
+  const out = [];
+  for (const p of list) {
+    let sx = p.sx, sz = p.sz, ry = p.ry; if (sz > sx) { sx = p.sz; sz = p.sx; ry += Math.PI / 2; }
+    const n = Math.max(1, Math.round(sx / L)), m = Math.max(1, Math.round(p.sy / H)), dx = Math.cos(ry), dz = -Math.sin(ry);
+    for (let i = 0; i < n; i++) for (let j = 0; j < m; j++) { const t = ((i + 0.5) / n - 0.5) * sx; out.push({ x: p.x + dx * t, y: p.y + j * p.sy / m, z: p.z + dz * t, ry, sx: sx / n, sy: p.sy / m, sz, color: p.color }); }
+  }
+  return out;
+}
+/** The landmarks (polish round): each model at its places (one instanced mesh per model part and texture), the soft
+ *  stone blocks and wooden boards in place of the slab boxes; their stand-ins hidden. */
+const BZ_LAND_R = { stake: -70, tent: -90, chieftent: -90, skiff: -60, netrack: -50, signpost: -60, sign: -60, cart: -60, awning: -80, boat: -90 };
+function bzLandmarks(d) {
+  const mats = {}, mat = tx => mats[tx] || (mats[tx] = breezeMat({ map: bzTex({ tex: d.texs[tx] }, true) }));
+  const by = {}; for (const p of BZ_PROPS.land) (by[p.m] = by[p.m] || []).push(p);
+  const place = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); if (p.s) o.scale.set(p.s[0], p.s[1], p.s[2]); else o.scale.set(1, 1, 1); };
+  for (const [key, m] of Object.entries(d.meshes)) {
+    const [name, tx] = key.split('.'), list = by[name]; if (!list || name === 'block' || name === 'board') continue;
+    bzInst(bzGeo(m), mat(tx), list, place, p => (p.tints && p.tints[tx]) || p.tint || '#ffffff', BZ_LAND_R[name] || 20);
+  }
+  const slab = (list, L, H, sx, sz) => bzSegs(list, L, H);
+  const sp = (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.set(p.sx, p.sy, p.sz); };
+  if (d.meshes['block.stone']) bzInst(bzGeo(d.meshes['block.stone']), mat('stone'), slab(BZ_PROPS.block, 2, 2), sp, p => '#' + C2.set(p.color).lerp(WHITE_T, 0.12).getHexString(), -160);
+  if (d.meshes['board.wood']) bzInst(bzGeo(d.meshes['board.wood']), mat('wood'), slab(BZ_PROPS.board, 4, 2), sp, p => p.color, -70);
+  bzHideShells(n => n === 'land' || n === 'slab:block' || n === 'slab:board');
 }
 /** Nature and small props (phase 2): the scattered pines, bushes, rocks, grass and flowers take the storybook meshes (the
  *  same instances, tints and fading); crates and lantern posts are placed as models (the game's shells hidden); the chests
@@ -14076,6 +14142,10 @@ function bzNature(n) {
   for (const k of ['pine', 'bush', 'rock', 'grass', 'flower']) {
     const sk = SCATTER.kinds[k]; if (!sk || !M[k]) continue;
     const g = M[k].lod1 ? bzGeo(M[k].lod1) : bzGeo(M[k]); bzSwap(sk.mesh, g); sk.mesh.material = flat;   // the light version: hundreds are drawn
+    if (k === 'flower') {   // only the petals take the flower's tint (the stem stays green, the middle yellow)
+      const part = g.userData.part, tk = new Float32Array(part.length); for (let i = 0; i < part.length; i++) tk[i] = part[i] === 9 ? 1 : 0;
+      g.setAttribute('bzTintK', new THREE.BufferAttribute(tk, 1)); sk.mesh.material = breezeMat({ sat: 1.08, tintMask: true });
+    }
   }
   bzInst(M.crate, mat, BZ_PROPS.crate, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, p.ry, 0); o.scale.setScalar(p.s); }, null, -45);
   bzInst(M.lantern, mat, BZ_PROPS.lantern, (p, o) => { o.position.set(p.x, p.y, p.z); o.rotation.set(0, 0, 0); o.scale.setScalar(1); }, null, -60);
@@ -14122,11 +14192,12 @@ function bzWorld(d) {
   if (d.cinder) bzCinder(d.cinder);
   if (d.buildings) bzBuildings(d.buildings);
   if (d.nature) bzNature(d.nature);
+  if (d.landmarks) bzLandmarks(d.landmarks);
   BZM.world = 'ready';
 }
 if (BREEZE) {
   const start = bzLoad('start'); BZM.world = 'waiting';
-  GAME.on('ready', () => { shellBuild('props', 0, 0, 1e4); start.then(d => { bzApply(d); if (BZM.state === 'ready') { BZM.world = 'loading'; setTimeout(() => bzLoad('world').then(bzWorld), 400); } }); });
+  GAME.on('ready', () => { for (const n of Object.keys(BZ_SHELL_KITS)) shellBuild(n, 0, 0, 1e4); start.then(d => { bzApply(d); if (BZM.state === 'ready') { BZM.world = 'loading'; setTimeout(() => bzLoad('world').then(bzWorld), 400); } }); });
 }
 
 /* ==== 15. window.__brbTest: deterministic hooks for automated checks ==== */
