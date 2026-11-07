@@ -179,7 +179,7 @@ test('hand-checked keys: the arithmetic in the checks is right', () => {
   assert.equal(key('nq-explorer-5.1-e1'), '4,000 grams'); assert.equal(key('nq-explorer-5.1-e2'), '300 centimeters'); assert.equal(key('nq-explorer-5.1-e3'), '2 meters');
   assert.equal(key('nq-explorer-5.2-e1'), '5:05'); assert.equal(key('nq-explorer-5.2-e2'), '1 hour 30 minutes'); assert.equal(key('nq-explorer-5.2-e3'), '9:15');
   assert.equal(key('nq-explorer-5.3-e1'), '55 cents'); assert.equal(key('nq-explorer-5.3-e2'), '75 cents'); assert.equal(key('nq-explorer-5.3-e3'), '235 cents');
-  assert.equal(key('nq-explorer-6.1-e1'), 'Triangle'); assert.equal(key('nq-explorer-6.1-e2'), 'One square corner'); assert.equal(key('nq-explorer-6.1-e3'), 'It has 4 sides and 4 square corners, like every rectangle');
+  assert.equal(key('nq-explorer-6.1-e1'), 'Rectangle'); assert.equal(key('nq-explorer-6.1-e2'), 'One square corner'); assert.equal(key('nq-explorer-6.1-e3'), 'It has 4 sides and 4 square corners, like every rectangle');
   assert.equal(key('nq-explorer-6.2-e1'), '24 square meters'); assert.equal(key('nq-explorer-6.2-e2'), '20 inches'); assert.equal(key('nq-explorer-6.2-e3'), 'Perimeter 22 feet, area 24 square feet');
   assert.equal(key('nq-explorer-6.3-e1'), 'Parallel lines'); assert.equal(key('nq-explorer-6.3-e2'), 'A'); assert.equal(key('nq-explorer-6.3-e3'), '4 steps right, then 2 steps up');
   assert.equal(key('nq-explorer-7.1-e1'), '12'); assert.equal(key('nq-explorer-7.1-e2'), '10'); assert.equal(key('nq-explorer-7.1-e3'), '1 yard');

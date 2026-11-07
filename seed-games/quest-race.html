@@ -902,7 +902,7 @@ window.SoloBank = (function () {
   }
   // ---- Number Quest lesson race, step 7.4 (the Vault of Measures): the sequenced mixed mission that
   // stands in for the Vault game until it ships - eight questions, one lock per workshop in street
-  // order (place, join, groups, shares, measures, shapes, charts) and the Honest Wheel to close.
+  // order (place, join, groups, shares, measures, shapes, charts) and a last chance lock (a spinner) to close.
   function nqVaultItems(rnd) {
     var out = [];
     var mkS = function (q, ans, wrong) {
@@ -947,8 +947,8 @@ window.SoloBank = (function () {
     // Lock 7 (Unit 7, charts that answer): how many more.
     a = rnd.int(11, 19); b = rnd.int(4, a - 4); if (a === 2 * b) b += 1; // a = 2b would make the b distractor equal the key
     mkS('LOCK 7 · A chart shows ' + a + ' rides on Saturday and ' + b + ' on Sunday. How many more rides on Saturday?', a - b, [a + b, a - b + 2, b]);
-    // The Honest Wheel (Unit 7.3): chance words, honestly named.
-    mkS('THE HONEST WHEEL · A spinner has 6 equal parts and 1 part is red. Landing on red is...', 'Unlikely', ['Certain', 'Impossible', 'An even chance']);
+    // The last lock (Unit 7.3): chance words, honestly named, on a spinner.
+    mkS('LAST LOCK · A spinner has 6 equal parts and 1 part is red. Landing on red is...', 'Unlikely', ['Certain', 'Impossible', 'An even chance']);
     return out;
   }
   // Playing alone: choose the questions first (subject, level, how many), then race.
