@@ -21,7 +21,7 @@ export function define(K) {
   const base = kit.setStyle;
   const font = () => {
     const r = kit.ui.root; if (!r) return;
-    const cur = r.style.getPropertyValue('--ok-font');
+    const cur = (r.style.getPropertyValue && r.style.getPropertyValue('--ok-font')) || '';
     if (S.on && cur.indexOf(FONT) < 0) r.style.setProperty('--ok-font', `'${DIGITS}','${FONT}',` + cur);
   };
   const sync = kit.ui.sync.bind(kit.ui);
@@ -55,8 +55,10 @@ export function define(K) {
 .ok-ui.ok-pixel .ok-title-word{rotate:0deg!important;animation:ok-fade 200ms ease-out both}
 .ok-ui.ok-pixel .ok-title-word i{background:none;color:${P.spark[1]};-webkit-text-fill-color:${P.spark[1]}}
 .ok-ui.ok-pixel .ok-title-word:nth-child(even) i{color:${P.coral[1]};-webkit-text-fill-color:${P.coral[1]}}
-.ok-ui.ok-pixel .ok-title-word::before{-webkit-text-stroke-width:.16em}
-.ok-ui.ok-pixel .ok-title-word::after{transform:translate(0,.09em);filter:none}
+.ok-ui.ok-pixel .ok-title-word::before{-webkit-text-stroke-width:.09em;transform:translate(0,.07em)}
+.ok-ui.ok-pixel .ok-title-word::after{display:none}
+.ok-ui.ok-pixel .ok-title-block::before,.ok-ui.ok-pixel .ok-cta::before{display:none}
+.ok-ui.ok-pixel{font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0}
 .ok-ui.ok-pixel .ok-h1,.ok-ui.ok-pixel .ok-h2{font-weight:700;letter-spacing:.01em}
 .ok-ui.ok-pixel .ok-scrim{-webkit-backdrop-filter:none;backdrop-filter:none}
 .ok-ui.ok-pixel .ok-switch{border-radius:0!important}.ok-ui.ok-pixel .ok-switch::after,.ok-ui.ok-pixel .ok-switch::before{border-radius:0!important}`;
@@ -124,6 +126,7 @@ export function define(K) {
   const ready = new Promise(res => S.wait.push(res));
   const take = A => {
     S.art = A; S.pal = null; S.lut.clear(); S.nightLut = null;
+    if (!win.Image) return;   // no images here (a test's fake window): the art is known, nothing is drawn
     const img = new win.Image();
     img.onload = () => { S.img = img; for (const f of S.wait.splice(0)) f(true); };
     img.onerror = () => { kit.warn('style-pixel: the art atlas did not decode'); for (const f of S.wait.splice(0)) f(false); };
