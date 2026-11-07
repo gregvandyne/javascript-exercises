@@ -79,7 +79,7 @@ test('Jungle Cup: raft-arrival panels (Skip), eight Feathers, the vine lift, the
 test('Jungle Cup: Continue shows the panels once per launch; a first three-star round gives the berry bandana', async ({ page }) => {
   test.setTimeout(90_000);
   const { f, errors } = await open(page);
-  await J(f, 'setSave', { pos: { x: 36, y: 40, d: 'up' } });
+  await J(f, 'setSave', { pos: { x: 50, y: 66, d: 'up' } });
   await J(f, 'go', 'title'); await J(f, 'step', 100);
   await J(f, 'tap', 'continue');
   await expect.poll(async () => (await state(f)).screen).toBe('world');
@@ -128,7 +128,7 @@ test.describe('pictures', () => {
       await J(f, 'go', 'village'); await J(f, 'step', 600); await shot('03-overworld');
       await J(f, 'win', 'paddle'); await J(f, 'win', 'vine'); await J(f, 'win', 'seed');
       await J(f, 'go', 'paddle'); await J(f, 'step', 300); await shot('04-arch');
-      await f.evaluate(() => { window.JC.go('world', { at: [36, 40, 'up'], celebrate: 'frog' }, true); });
+      await f.evaluate(() => { window.JC.go('world', { at: [50, 66, 'up'], celebrate: 'frog' }, true); });
       await f.evaluate(() => { const s = window.JC.save.data; s.feathers.frog = true; });
       await J(f, 'step', 1200); await shot('05-totem');
       await J(f, 'go', 'map'); await J(f, 'step', 300); await shot('06-map');

@@ -150,15 +150,35 @@ TITLE.draw = function (g) {
 const MAP = { name: 'map', tab: 'map', mini: null, t: 0 };
 function buildMini() {
   const c = canvas(MW * 2, MH * 2), g = c.getContext('2d');
-  const COL = ['#1f62a0', '#3393cc', '#e8cd8a', '#4fa83f', '#5cb845', '#c99a5e', '#a8703e', '#8a93a0', '#a8703e', '#7a4a2a', '#4fb84a', '#66c24c', '#c97c4c', '#3f8a32', '#2f7034', '#7fd4ee'];
+  const COL = ['#1f62a0', '#3393cc', '#e8cd8a', '#4fa83f', '#5cb845', '#c99a5e', '#a8703e', '#8a93a0', '#a8703e', '#7a4a2a', '#4fb84a', '#66c24c', '#c97c4c', '#3f8a32', '#2f7034', '#7fd4ee',
+    '#8a7a68', '#a8703e', '#24160d', '#c48a4c', '#7d7064', '#3a3046', '#86562f', '#3fa844', '#7fd0f8', '#5fb447', '#8a5a33'];
   for (let y = 0; y < MH; y++) for (let x = 0; x < MW; x++) { g.fillStyle = COL[tileAt(x, y)] || '#000'; g.fillRect(x * 2, y * 2, 2, 2); }
   for (const o of WORLD.objects) if (o.k === 'tree' || o.k === 'palm' || o.k === 'giant') { g.fillStyle = o.k === 'giant' ? '#1d5e3a' : '#236e2c'; g.fillRect(o.x * 2, o.y * 2 - 1, 2, 2); }
   for (const o of WORLD.objects) if (o.k === 'hut') { g.fillStyle = '#c9a050'; g.fillRect(o.x * 2 - 2, o.y * 2 - 2, 6, 3); }
-  g.fillStyle = '#1d5e3a'; disc(g, 36 * 2 + 1, 10 * 2, 9, '#1d5e3a');
+  disc(g, WORLD.lift.x * 2 + 1, (WORLD.lift.y - 6) * 2, 9, '#1d5e3a');
   MAP.mini = c;
 }
 MAP.enter = function (opts) { UI.clearFx(); MAP.tab = (opts && opts.tab) || 'map'; MAP.from = (opts && opts.from) || 'world'; if (!MAP.mini) buildMini(); UI.setFocus('close'); };
-MAP.update = function (dt) { MAP.t += dt; };
+MAP.update = function (dt) { MAP.t += dt; if (MAP.msgT > 0) MAP.msgT -= dt; };
+/** Fast travel: the village and the dock always; a sport once Cappy has walked to its arch. */
+const visited = id => !!SAVE.data.flags['v_' + id];
+function travelTo(id) {
+  if (id === 'village') { JC.go('world', { at: [WORLD.village.x, WORLD.village.y, 'up'] }); return; }
+  if (id === 'dock') { JC.go('world', { at: [WORLD.dock.x, WORLD.dock.y - 3, 'up'] }); return; }
+  const a = ARCHES[id]; if (!a) return;
+  if (!visited(id)) { MAP.msg = t('map.walk'); MAP.msgT = 2.6; AUDIO.sfx('miss'); return; }
+  // fast travel lands right in the arch, so its "play" prompt shows at once
+  JC.go('world', { at: [a.x, a.y, 'up'] });
+}
+/** A tap on the minimap: the nearest place Cappy can travel to (the village, the dock, or a visited arch). */
+function miniTap(e) {
+  const m = MAP.miniRect; if (!m || !e || e.x === undefined) { travelTo('village'); return; }
+  const tx = (e.x - m.x) / m.k, ty = (e.y - m.y) / m.k;
+  let best = 'village', bd = Math.hypot(tx - WORLD.village.x, ty - WORLD.village.y);
+  const dd = Math.hypot(tx - WORLD.dock.x, ty - WORLD.dock.y); if (dd < bd) { bd = dd; best = 'dock'; }
+  for (const id of JC.sportOrder) if (visited(id)) { const a = ARCHES[id], d = Math.hypot(tx - a.x, ty - a.y); if (d < bd) { bd = d; best = id; } }
+  travelTo(best);
+}
 function closeMap() { AUDIO.sfx('back'); JC.go('world'); }
 MAP.onInput = function (e) {
   const id = UI.menuInput(e);
@@ -166,8 +186,8 @@ MAP.onInput = function (e) {
   if (!id) return;
   AUDIO.sfx('select');
   if (id === 'close') { if (MAP.tab === 'map') closeMap(); else { MAP.tab = MAP.tab === 'confirm' ? 'settings' : 'map'; UI.setFocus('close'); } return; }
-  // fast travel lands right in the arch, so its "play" prompt shows at once
-  if (id.startsWith('go:')) { const sp = id.slice(3), a = ARCHES[sp]; JC.go('world', { at: [a.x, a.y, 'up'] }); return; }
+  if (id === 'mini') { miniTap(e); return; }
+  if (id.startsWith('go:')) { travelTo(id.slice(3)); return; }
   if (id === 'settings' || id === 'controls' || id === 'style') { MAP.tab = id; UI.setFocus('close'); return; }
   if (id === 'sound') { BRBX.mute(!BRBX.muted()); AUDIO.sync(); return; }
   if (id === 'font') { SAVE.data.settings.font = SAVE.data.settings.font === 'clear' ? 'pixel' : 'clear'; SAVE.apply(); SAVE.write(); return; }
@@ -258,8 +278,18 @@ function drawMapTab(g) {
     box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
     g.drawImage(MAP.mini, mx, my, mw, mh);
     const mk = mw / MW;
-    for (const id of JC.sportOrder) { const a = ARCHES[id]; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
-    disc(g, mx + 36 * mk + mk / 2, my + 37 * mk, 2, '#a8703e');
+    // the parts of the island not walked to yet are under cloud
+    const cw = 8 * mk;
+    g.fillStyle = 'rgba(232,240,248,0.82)';
+    for (let cy = 0; cy < TRAVEL.DCH; cy++) for (let cx = 0; cx < TRAVEL.DCW; cx++) {
+      if (TRAVEL.discovered(cx, cy)) continue;
+      const x0 = Math.floor(mx + cx * cw), y0 = Math.floor(my + cy * cw), x1 = Math.min(mx + mw, Math.ceil(mx + (cx + 1) * cw)), y1 = Math.min(my + mh, Math.ceil(my + (cy + 1) * cw));
+      if (x1 > x0 && y1 > y0) g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    }
+    for (const id of JC.sportOrder) { const a = ARCHES[id]; if (!visited(id) && !TRAVEL.discovered(a.x >> 3, a.y >> 3)) continue; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
+    disc(g, mx + WORLD.totem.x * mk + mk / 2, my + WORLD.totem.y * mk, 2, '#a8703e');
+    MAP.miniRect = { x: mx, y: my, k: mk };
+    UI.addHit('mini', mx, my, mw, mh);
     if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
   }
   // the Feathers, then the rows
@@ -280,6 +310,7 @@ function drawMapTab(g) {
     rect(g, X(1, 4), y + 1, 4, rh - 2, SPORT_COLOURS[id]);
     const ic = iconSprite(id); spr(g, ic, X(8, ic.w), y + ((rh - ic.h) >> 1));
     const best = played ? fmt(SAVE.data.best[id] || 0) : '???', name = t('sport.' + id);
+    if (!visited(id)) { g.globalAlpha = 0.55; }
     const one = oneLine(w), two = !one && twoLine(w);
     ROWTEXT.maxW = one || two ? 0 : w - 16 - 34 - textW(best) - 4; ROWTEXT.align = RTL ? 'right' : 'left';
     const ny = two ? y + 2 : y + ((rh - 12) >> 1), sy = two ? y + rh - 13 : ny;
@@ -289,7 +320,10 @@ function drawMapTab(g) {
     for (let s = 0; s < 3; s++) disc(g, XR(26 - s * 8), sy + 6, 2, s < st ? '#ffb020' : '#b8a888');
     BESTTEXT.align = RTL ? 'left' : 'right';
     text(g, best, XR(32), sy, BESTTEXT);
+    g.globalAlpha = 1;
   }
+  // "walk there first" when a sport not yet visited is tapped
+  if (MAP.msgT > 0) { const s = MAP.msg, w = Math.min(area.w - 8, textW(s) + 16), x = area.x + Math.round((area.w - w) / 2), y = area.y + area.h - bh - 26; box(g, x, y, w, 20, PAL.ink, PAL.ink); text(g, s, x + w / 2, y + 4, { col: PAL.white, align: 'center', maxW: w - 8 }); }
   // buttons (right to left in Arabic and Hebrew)
   const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3), bx = i => (RTL ? area.x + (bw + 4) * (2 - i) : area.x + (bw + 4) * i);
   UI.button(g, 'settings', bx(0), by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });
@@ -352,7 +386,7 @@ function drawStyle(g) {
   const rx = RTL ? area.x : area.x + 16 * k + 18, rw = area.w - 16 * k - 18;
   let y = area.y;
   const bandName = t('band.' + c.bandana), hatName = c.hat ? t('hat.' + c.hat) : t('none'), flagName = c.flag ? t('flag.' + c.flag) : t('none');
-  const vals = Object.keys(BANDANAS).map(b => t('band.' + b)).concat([t('none'), t('hat.straw'), t('hat.explorer'), t('flag.leaf')]);
+  const vals = Object.keys(BANDANAS).map(b => t('band.' + b)).concat([t('none'), t('hat.straw'), t('hat.explorer'), t('hat.acorn'), t('flag.leaf')]);
   toggleRow(g, 'bandana', rx, y, rw, bh, 'style.bandana', bandName, vals); y += bh + 6;
   toggleRow(g, 'hat', rx, y, rw, bh, 'style.hat', hatName, vals); y += bh + 6;
   toggleRow(g, 'flag', rx, y, rw, bh, 'style.flag', flagName, vals); y += bh + 6;

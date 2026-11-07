@@ -5,7 +5,7 @@
 // and A (bottom right); keys: arrows / WASD and Space; gamepad: left stick and A. The map button opens the map.
 // ======================================================================================================
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const P = { x: 36, y: 62, px: 0, py: 0, fpx: 0, fpy: 0, fx: 0, fy: 0, dir: 'up', moving: false, t: 0, step: 0.15, walk: 0, bump: 0, hop: 0, dist: 0, slide: 0 };
+const P = { x: 50, y: 92, px: 0, py: 0, fpx: 0, fpy: 0, fx: 0, fy: 0, dir: 'up', moving: false, t: 0, step: 0.15, walk: 0, bump: 0, hop: 0, dist: 0, slide: 0 };
 JC.player = P;
 const CAM = { x: 0, y: 0 };
 const OW = { name: 'world', time: 0, water: 0, prompt: null, promptT: 0, celebrate: null, steps: 0, aPtr: -1, wantArch: '', glide: 0 };
@@ -17,10 +17,14 @@ function placePlayer(x, y, d) { P.x = x; P.y = y; P.fpx = x * TS; P.fpy = y * TS
 JC.placePlayer = placePlayer;
 OW.enter = function (opts) {
   JC.audioWant = 'island';
+  if (!TRAVEL.built) { buildTravel(); TRAVEL.built = true; }
+  applyShortcuts();
+  TRAVEL.ride = null;
   if (opts && opts.at) placePlayer(opts.at[0], opts.at[1], opts.at[2]);
   OW.celebrate = opts && opts.celebrate ? { id: opts.celebrate, t: 0 } : null;
   if (OW.celebrate) { AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H / 3, 60); UI.banner(t('feather.won'), SPORT_COLOURS[OW.celebrate.id], 2.4); }
   OW.camSnap = true;
+  TRAVEL.discoverAt(P.x, P.y);
   // the raft-arrival panels open a new game (skippable), then the cousins say hello; Continue shows them once if missed
   if (opts && opts.intro) { JC.introSeen = true; SAVE.data.flags.storySeen = 1; JC.say(JC.storyLines('intro').concat([{ who: 'coco', key: 'd.coco.hi' }, { who: 'pip', key: 'd.pip.hi0' }])); }
   // Continue: the panels only for a player who has not seen them yet (once is enough)
@@ -58,14 +62,17 @@ function moveAxis(dx, dy) {
 /** One frame of walking with the analog axis (0..1 push): returns how far he went. */
 function walkStep(ax, ay, mag, dt) {
   if (!mag) return 0;
-  const speed = WALK_SPEED * (0.32 + 0.68 * mag), len = Math.hypot(ax, ay) || 1;
+  // on a ladder only up and down count (Cappy keeps to the ladder's middle)
+  P.climb = TRAVEL.onLadder();
+  if (P.climb) { TRAVEL.ladderAxis(dt); ax = 0; if (Math.abs(ay) < 0.2) return 0; }
+  const speed = WALK_SPEED * (0.32 + 0.68 * mag) * TRAVEL.speedK(), len = Math.hypot(ax, ay) || 1;
   const vx = ax / len * speed * dt, vy = ay / len * speed * dt;
   const x0 = P.fpx, y0 = P.fpy;
   // small sub-steps so nothing is skipped, x and y apart so he slides along walls
   const n = Math.max(1, Math.ceil(Math.max(Math.abs(vx), Math.abs(vy)) / 1.5));
   for (let i = 0; i < n; i++) { moveAxis(vx / n, 0); moveAxis(0, vy / n); }
-  // facing: the way the stick points most
-  P.dir = Math.abs(ax) > Math.abs(ay) * 1.15 ? (ax > 0 ? 'right' : 'left') : (ay > 0 ? 'down' : 'up');
+  // facing: the way the stick points most (on a ladder Cappy always faces it)
+  P.dir = P.climb ? 'up' : Math.abs(ax) > Math.abs(ay) * 1.15 ? (ax > 0 ? 'right' : 'left') : (ay > 0 ? 'down' : 'up');
   return Math.hypot(P.fpx - x0, P.fpy - y0);
 }
 function updateTile() {
@@ -123,9 +130,12 @@ JC.tryStep = tryStep;
 /** Act: play the sport whose arch is near, or talk / read / ride the lift / pick up what is in reach. */
 function act() {
   if (TB.open) { TB.advance(); return; }
+  if (TRAVEL.ride) return;
   const arch = archNear(), tg = findTarget();
   // someone right in front and closer than the arch's middle gets the talk; otherwise the arch always wins
   if (arch && !(tg && tg.kind === 'npc' && tg.d < 20 && tg.d < archDist(ARCHES[arch]))) { JC.playSport(arch); return; }
+  // a ride or a shortcut right here (the swing, the zipline, the ferry, the ladder to kick, the log to push)
+  if (TRAVEL.near && !(tg && tg.kind === 'npc' && tg.d < 20)) { TRAVEL.act(); return; }
   if (!tg) return;
   if (tg.kind === 'npc') {
     const n = tg.ref, vx = n.x * TS + 8 - feetX(), vy = n.y * TS + 8 - feetY();
@@ -172,6 +182,7 @@ OW.onInput = function (e) {
     const hit = UI.hitAt(e.x, e.y);
     if (hit === 'map') { AUDIO.sfx('select'); JC.go('map'); }
     else if (hit === 'prompt' && OW.prompt) JC.playSport(OW.prompt);
+    else if (hit === 'trav' && TRAVEL.near) TRAVEL.act();
   }
 };
 OW.leave = function () { OW.aPtr = -1; INPUT.releaseTouch(); };
@@ -184,13 +195,14 @@ OW.update = function (dt) {
   // walk with the analog axis (stick, keys or pad)
   const ax = INPUT.axis;
   let went = 0;
-  if (!TB.open && !JC.fading() && !STORY.showing()) went = walkStep(ax.x, ax.y, ax.mag, dt);
+  const riding = TRAVEL.updateRide(dt);
+  if (!riding && !TB.open && !JC.fading() && !STORY.showing()) went = walkStep(ax.x, ax.y, ax.mag, dt);
   if (went > 0.01) {
     const before = (P.dist / TS) | 0; P.dist += went;
     if (((P.dist / TS) | 0) !== before) { P.walk++; if ((P.walk & 1) === 0) AUDIO.sfx('step'); }
     P.moving = true; P.glideT = 0.12;
   } else {
-    if (ax.mag > 0.5 && !TB.open && P.bump <= 0 && !JC.fading()) { AUDIO.sfx('bonk'); P.bump = 0.6; }
+    if (ax.mag > 0.5 && !riding && !P.climb && !TB.open && P.bump <= 0 && !JC.fading()) { AUDIO.sfx('bonk'); P.bump = 0.6; }
     if (P.glideT > 0) P.glideT -= dt; else P.moving = false;
   }
   P.t = (P.dist % TS) / TS;
@@ -198,15 +210,21 @@ OW.update = function (dt) {
   // a quest item underfoot is picked up
   if (went > 0.01) { const it = itemAt(P.x, P.y); if (it) pickItem(it); }
   P.px = Math.round(P.fpx); P.py = Math.round(P.fpy);
-  P.hop = P.moving ? Math.round(Math.abs(Math.sin(P.t * Math.PI)) * 2) : 0;
+  P.hop = P.moving && !P.climb ? Math.round(Math.abs(Math.sin(P.t * Math.PI)) * 2) : 0;
+  TRAVEL.update(dt);
   findTarget();
+  TRAVEL.find();
   // the camera follows (integer pixels)
   const tx = clamp(P.px + 8 - VIEW.W / 2, 0, MW * TS - VIEW.W), ty = clamp(P.py + 8 - VIEW.H / 2 - 10, 0, MH * TS - VIEW.H);
   if (OW.camSnap) { CAM.x = tx; CAM.y = ty; OW.camSnap = false; }
   CAM.x += (tx - CAM.x) * Math.min(1, dt * 10); CAM.y += (ty - CAM.y) * Math.min(1, dt * 10);
   if (Math.abs(tx - CAM.x) < 0.5) CAM.x = tx; if (Math.abs(ty - CAM.y) < 0.5) CAM.y = ty;
-  // the arch prompt
-  OW.prompt = TB.open ? '' : archNear();
+  // the arch prompt (and the arch counts as visited: the map can bring Cappy back here)
+  OW.prompt = TB.open || riding ? '' : archNear();
+  if (OW.prompt && !SAVE.data.flags['v_' + OW.prompt]) { SAVE.data.flags['v_' + OW.prompt] = 1; SAVE.soon(); }
+  // the rope bridge sways a little under Cappy (the camera too, unless motion is reduced)
+  OW.sway = TRAVEL.feetTile() === WORLD.T.ROPE ? Math.sin(OW.time * 4.5) : 0;
+  WORLD.warm(CAM.x, CAM.y, VIEW.W, VIEW.H);
   if (OW.celebrate) { OW.celebrate.t += dt; if (OW.celebrate.t > 4) OW.celebrate = null; }
   if (OW.later && OW.time >= OW.laterT && !TB.open) { const l = OW.later; OW.later = null; JC.say(l); }
 };
@@ -293,13 +311,19 @@ function drawTotemSockets(g, ox, oy) {
     } else disc(g, x, y, 2, '#3b2416');
   }
 }
+/** The island's chunks under the view: the ground (frame 0 or 1 for the water) or the over layer. */
+function drawChunks(g, cx, cy, frame, over) {
+  const CH = WORLD.CH, x0 = Math.max(0, Math.floor(cx / CH)), y0 = Math.max(0, Math.floor(cy / CH));
+  const x1 = Math.min(Math.ceil(MW * TS / CH) - 1, Math.floor((cx + VIEW.W - 1) / CH)), y1 = Math.min(Math.ceil(MH * TS / CH) - 1, Math.floor((cy + VIEW.H - 1) / CH));
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const c = WORLD.chunk(x, y); g.drawImage(over ? c.ov : frame ? c.g1 : c.g0, x * CH - cx, y * CH - cy); }
+}
 OW.draw = function (g) {
   if (STORY.showing()) { STORY.draw(g); TB.draw(g); return; }
-  const cx = Math.round(CAM.x), cy = Math.round(CAM.y);
+  const cx = Math.round(CAM.x), cy = Math.round(CAM.y) + (OW.sway && !BRBX.reduced() ? Math.round(OW.sway) : 0);
   const frame = ((OW.water * 2) | 0) % 2;
   g.fillStyle = '#1f62a0'; g.fillRect(0, 0, VIEW.W, VIEW.H);
-  const sw = Math.min(VIEW.W, MW * TS - cx), sh = Math.min(VIEW.H, MH * TS - cy);
-  g.drawImage(WORLD.ground[frame], cx, cy, sw, sh, 0, 0, sw, sh);
+  drawChunks(g, cx, cy, frame, false);
+  TRAVEL.drawLow(g, cx, cy, VIEW.W, VIEW.H);
   // live things: raft, lift, quest items, NPCs, Cappy (sorted by y)
   DRAWN = 0;
   const vx0 = cx - 32, vy0 = cy - 32, vx1 = cx + VIEW.W + 32, vy1 = cy + VIEW.H + 48;
@@ -307,18 +331,32 @@ OW.draw = function (g) {
   for (const it of WORLD.items) { if (!JC.questVisible(it)) continue; const x = it.x * TS, y = it.y * TS; if (x > vx0 && x < vx1 && y > vy0 && y < vy1) queue(2, it, x, y); }
   queue(0, null, P.px, P.py);
   sortQueue();
-  drawRaft(g, 38 * TS + 6 - cx, 65 * TS + 2 - cy);
+  drawRaft(g, WORLD.dockRaft.x * TS + 6 - cx, WORLD.dockRaft.y * TS + 2 - cy);
   drawLift(g, WORLD.lift.x * TS - cx, WORLD.lift.y * TS - cy);
   for (let i = 0; i < DRAWN; i++) {
     const d = DRAWLIST[i], x = d.x - cx, y = d.y - cy;
-    if (d.kind === 0) drawCappy(g, x, y, P.dir, P.moving && P.t < 0.6, P.hop);
+    if (d.kind === 0) {
+      if (TRAVEL.ride) { if (TRAVEL.ride.kind !== 'zip') TRAVEL.drawRider(g, cx, cy); }
+      else {
+        const ft = TRAVEL.feetTile(), pad = ft === WORLD.T.PAD, sx = OW.sway ? Math.round(OW.sway * 1.5) : 0;
+        if (pad) { const r = 6 + (((OW.time * 3) | 0) % 3); g.globalAlpha = 0.5; oval(g, x + 8, y + 14, r, 2, '#d8f6ff'); g.globalAlpha = 1; }
+        // climbing: his back to us, left and right paws in turn
+        if (P.climb) spr(g, SPRITES[`cappy_up${P.moving ? '_w' : ''}`], x, y, P.moving && ((P.dist / 8) | 0) % 2 === 1);
+        else drawCappy(g, x + sx, y + (pad ? Math.round(Math.sin(OW.time * 4)) : 0), P.dir, P.moving && P.t < 0.6, P.hop);
+      }
+    }
     else if (d.kind === 1) drawNpc(g, d.ref, x, y);
     else { const s = SPRITES[d.ref.spr], b = Math.round(Math.sin(OW.time * 4) * 1); shadow(g, x + 8, y + 14, 4); spr(g, s, x + ((16 - s.w) >> 1), y + 6 - (s.h >> 1) + b); if (((OW.time * 3) | 0) % 3 === 0) spr(g, SPRITES.sparkle, x + 10, y); }
   }
-  g.drawImage(WORLD.over, cx, cy, sw, sh, 0, 0, sw, sh);
+  TRAVEL.drawFalls(g, cx, cy, VIEW.W, VIEW.H);
+  drawChunks(g, cx, cy, frame, true);
+  TRAVEL.drawLines(g, cx, cy);
+  if (TRAVEL.ride && TRAVEL.ride.kind === 'zip') TRAVEL.drawRider(g, cx, cy);
   drawTotemSockets(g, cx, cy);
+  TRAVEL.drawHigh(g, cx, cy, VIEW.W, VIEW.H);
+  TRAVEL.drawDark(g, cx, cy, VIEW.W, VIEW.H);
   // the "talk" hint above someone Cappy faces
-  if (!TB.open && TARGET.kind && TARGET.kind !== 'item' && !OW.prompt) {
+  if (!TB.open && TARGET.kind && TARGET.kind !== 'item' && !OW.prompt && !TRAVEL.near && !TRAVEL.ride) {
     const fx = TARGET.tx, fy = TARGET.ty;
     {
       const bx = fx * TS + 8 - cx, by = fy * TS - 14 - cy + (((OW.time * 2) | 0) % 2);
@@ -362,8 +400,15 @@ OW.drawHud = function (g) {
     const w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(long ? 28 : 22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
     UI.button(g, 'prompt', x, y, w, h, msg, { col: SPORT_COLOURS[sp], tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
   }
+  // a ride or a shortcut right here: the same big button (tap it, or A / Space)
+  if (!OW.prompt && TRAVEL.near && !TB.open && !TRAVEL.ride) {
+    const msg = TRAVEL.label(), w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
+    UI.button(g, 'trav', x, y, w, h, msg, { col: '#3d8a3a', tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
+  }
+  // golden acorns found (once the first one is)
+  { const got = TRAVEL.acornsGot(); if (got > 0) { const s = label('acorn.n', got, TRAVEL.acornN), w = textW(s) + 18; box(g, x0 - 2, y0 + 18, w, 15, 'rgba(27,19,37,0.72)', PAL.ink); spr(g, SPRITES.acorn, x0 + 1, y0 + 21); text(g, s, x0 + 10, y0 + 19, { col: '#ffd23f' }); } }
   // touch controls
-  if (INPUT.showTouch() && !TB.open) {
+  if (INPUT.showTouch() && !TB.open && !TRAVEL.ride) {
     STICK.draw(g, true);
     g.globalAlpha = 0.85;
     const aOn = OW.aPtr >= 0 || INPUT.held.a;

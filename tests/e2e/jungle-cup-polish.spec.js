@@ -19,7 +19,7 @@ async function open(page, size = { width: 390, height: 844 }) {
 test('a long line gets a next page instead of losing its end (Mango\'s 5th line at phone width)', async ({ page }) => {
   const f = await open(page);
   await J(f, 'newGame'); await J(f, 'manual', true); await J(f, 'step', 800); await J(f, 'skipText');
-  await f.evaluate(() => { JC.placePlayer(38, 57, 'up'); });
+  await f.evaluate(() => { JC.placePlayer(52, 85, 'up'); });
   await J(f, 'talk'); for (let i = 0; i < 4; i++) await J(f, 'next');
   expect((await J(f, 'state')).text.key).toBe('d.mango.intro5');
   const pages = await f.evaluate(() => JC.textbox.pages());

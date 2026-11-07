@@ -177,13 +177,43 @@ Score to the platform: `BRB.gameOver({ won, score })` after every round, score =
 `talk()`, `skipText()`, `buttons()` (CSS px), `sport()` (testState) / `sport(name, ...args)` (sport.test hooks),
 `perf()`, `world()`, `sheet(on)` (every sprite on screen, for looking at the art).
 
-## The island (tiles, 72 x 68)
+## The island (tiles, 112 x 100)
+Delta Isle grew (map v2) so that getting from one sport to the next is a small adventure. `core/09-world.js` lays it
+out (`ARCHES`, `ROUTES`); `core/11b-travel.js` runs the ways round. The intended flow: the dock (south) → the boardwalk
+→ Mossy Village (the Cup Totem) → the sports spread round the island.
 
-Dock and raft (36, 64); boardwalk north to Mossy Village (totem at 36, 37; elder, tapir's stall, huts); Great Kapok and
-the vine lift (36, 16) to the north. Arches (stand here to play): paddle (26, 31) canopy court; leaf (16, 22) hills and
-mud slope; seed (12, 46) lagoon; kick (20, 50) pitch; frog (46, 51) lily pond; rapids (61, 38) east islet over the
-stepping stones (y 34) or the rope bridge (y 44); vine (46, 21) giant grove. Side quests: the ants' leaf, the elder's
-glasses, Zuzu's letter, Pip's three shells, Mango's mango (cosmetic rewards only, never blocking).
+| Area | Sport | The way there |
+|---|---|---|
+| Canopy court, west of the village | Paddle Smash | a short path (the first sport) |
+| Tico's islet in the lagoon (west) | Seed Shot | the rope bridge over the gorge (it sways), then stepping stones and bobbing lily pads |
+| The pitch (south-west) | Banana Kick | over the rope bridge, south |
+| The hills (north-west) | Leaf Slide | the vine swing over the ravine (A at the edge; both ways) |
+| The giant grove on the high cliffs (north-east) | Vine Climb | the long ladder up the cliff face (stick up / down; stop anywhere); the zipline is the quick way down |
+| The muddy clearing (east) | Mango Dash | the mud trail below the cliffs (splashy, a little slower) |
+| The east bank, across the river | Rapids Run | the river ferry (a raft on a rope; both ways) |
+| Rana's grotto (south-east) | Frog Chorus | the glowing Mushroom Cave through the ridge, out behind the waterfall |
+| The Great Kapok (north) | the finale | the Kapok road; the vine lift opens with all eight Feathers |
+
+- **Shortcuts** (open once you get there, kept in the save): kick the rolled-up ladder down from the cliff top above
+  the Kapok road (`flags.scLadder`), and push the log over the gorge by the pitch (`flags.scLog`), a quick way back to
+  the boardwalk. `WORLD.applyShortcuts()` changes the tiles and redraws only the chunks round them.
+- **Golden acorns**: 16 along the ways round (`flags.ac0`..`ac15`); a counter shows under the Feathers once the first is
+  found; all 16 give the acorn-cap hat.
+- **Fast travel**: the map's rows (and a tap on the minimap) go only to places Cappy has walked to: a sport counts once
+  its arch prompt has shown (`flags.v_<id>`); the village and the dock always. Unvisited rows are dimmed and say "walk
+  there first". The minimap clouds over the parts not seen yet (`flags.disc`, 8 x 8-tile cells).
+- **Signposts** at the junctions point the way with the sports' icons (no reading needed) and say it when read.
+- **Friendly animals**: butterflies, a beach turtle, jumping fish, fireflies in the cave (just life, no talking).
+- **Nothing traps or hurts**: rides always end on solid ground; no falls; if Cappy is ever inside something solid
+  (an old save, a changed map) he is put back on open ground within a second.
+- **Drawing**: the island is drawn in 256 x 256 chunks on demand (ground in two frames for the water, plus the "over"
+  layer), at most 30 kept; one missing chunk near the view is drawn per frame, so there is never one giant canvas.
+- **Reduced motion**: no camera bob on the rope bridge, no acorn bob, no butterfly flapping, a slower waterfall.
+- **Old saves** (`flags.mapv` < 2): the position was on the old map, so Continue starts in Mossy Village; sports already
+  played count as visited; everything else (Feathers, bests, quests, styles) is kept.
+- **Tests**: `tests/e2e/jungle-cup-island.spec.js` walks a fresh save from the dock to all eight arches with real
+  joystick drags along these routes (and a keyboard run with both shortcuts and the zipline); `jc.routes()` gives the
+  map's routes, ferry landings, acorns and test places.
 
 ## Story panels and the finale
 

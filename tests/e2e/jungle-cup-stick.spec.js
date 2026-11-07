@@ -47,7 +47,7 @@ test.describe('touch', () => {
     const cdp = await page.context().newCDPSession(page);
     const toPage = await mapper(page, f);
     // the open village square
-    await J(f, 'go', [36, 42, 'up']);
+    await J(f, 'go', [17, 46, 'up']);
     await page.waitForTimeout(300);
     let s = await state(f);
     expect(s.stick.on).toBe(false);
@@ -89,7 +89,7 @@ test.describe('touch', () => {
     a = await state(f); await page.waitForTimeout(400); b = await state(f);
     expect([b.stick.on, b.axis.mag, b.pos.px, b.pos.py]).toEqual([false, 0, a.pos.px, a.pos.py]);
     // stick + A together: hold the stick, walking into Jada's arch from below, and press A with a second finger
-    await J(f, 'go', [26, 35, 'up']);
+    await J(f, 'go', [40, 60, 'up']);
     await page.waitForTimeout(200);
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [pt(p0)] });
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [pt(toPage(start.x, start.y - R))] });
@@ -178,7 +178,7 @@ test.describe('touch', () => {
       test.skip(!SHOTS, 'pictures only with JC_STICK_SHOTS');
       const { f } = await open(page, size);
       await newGame(f);
-      await J(f, 'go', [36, 42, 'up']);
+      await J(f, 'go', [17, 46, 'up']);
       // a touch somewhere first so the game knows it is a touch screen (the resting stick hint shows)
       const cdp = await page.context().newCDPSession(page);
       const toPage = await mapper(page, f);
@@ -196,7 +196,7 @@ test('Jungle Cup: keys and a gamepad stick walk Cappy smoothly; the pad is analo
   test.setTimeout(120_000);
   const { f, errors } = await open(page, { width: 1366, height: 768 });
   await newGame(f);
-  await J(f, 'go', [36, 42, 'up']);
+  await J(f, 'go', [17, 46, 'up']);
   await page.waitForTimeout(300);
   await f.locator('#jc').focus();
   // keys: right for 0.6 s
@@ -212,7 +212,7 @@ test('Jungle Cup: keys and a gamepad stick walk Cappy smoothly; the pad is analo
   b = await state(f);
   expect(b.pos.px).toBeLessThan(a.pos.px - 10); expect(b.pos.py).toBeLessThan(a.pos.py - 10);
   // A key at an arch: Space opens the sport on the first press
-  await J(f, 'go', [26, 34, 'up']);
+  await J(f, 'go', [40, 59, 'up']);
   await page.waitForTimeout(200);
   await page.keyboard.down('ArrowUp');
   await expect.poll(async () => (await state(f)).prompt, { timeout: 6000 }).toBe('paddle');
@@ -220,7 +220,7 @@ test('Jungle Cup: keys and a gamepad stick walk Cappy smoothly; the pad is analo
   await page.keyboard.press('Space');
   await expect.poll(async () => { const t = await state(f); return t.sport && t.sport.id; }, { timeout: 4000 }).toBe('paddle');
   // a gamepad: a light push walks slowly, a full push faster
-  await J(f, 'go', [36, 42, 'up']);
+  await J(f, 'go', [17, 46, 'up']);
   await page.waitForTimeout(300);
   await f.evaluate(() => {
     const pad = { connected: true, id: 'test pad', index: 0, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })) };
@@ -288,7 +288,7 @@ for (const size of [{ width: 1366, height: 768 }]) {
     test.skip(!SHOTS, 'pictures only with JC_STICK_SHOTS');
     const { f } = await open(page, size);
     await newGame(f);
-    await J(f, 'go', [36, 42, 'up']);
+    await J(f, 'go', [17, 46, 'up']);
     await page.waitForTimeout(400);
     fs.mkdirSync(SHOTS, { recursive: true });
     await page.screenshot({ path: path.join(SHOTS, `island-${size.width}x${size.height}.png`) });

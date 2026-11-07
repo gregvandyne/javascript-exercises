@@ -1,0 +1,27 @@
+// The bigger Delta Isle: signposts, the ways round (rides and shortcuts), golden acorns, fast travel, and the lines that
+// tell where things now are (these replace older lines that pointed to the old map).
+I18N.en = Object.assign(I18N.en || {}, {
+  "sign.west": "West: the canopy court, then the rope bridge over the gorge to the lagoon, the pitch and the hills.",
+  "sign.north": "North: the Great Kapok. North-east: the high cliffs. Climb the ladder to the giant grove!",
+  "sign.east": "East: the glowing cave leads to the frogs' grotto. North-east, below the cliffs: the mud trail and the river ferry.",
+  "sign.junction": "North: the vine swing to the hills. West: the stepping stones to the islet. South: the pitch.",
+  "sign.cave": "Mushroom Cave. It glows inside! Follow it through to the waterfall.",
+  "sign.ferry": "River Ferry. Hop on the raft to cross to the east bank and the canoes.",
+  "sign.cliff": "Up the ladder to the giant grove. Coming back down? Take the zipline!",
+  "trav.swing": "Swing across!",
+  "trav.zip": "Zip down!",
+  "trav.ferry": "Ride the ferry",
+  "trav.kick": "Kick the ladder down",
+  "trav.push": "Push the log over",
+  "trav.shortcut": "Shortcut open!",
+  "acorn.got": "Golden acorn! {n} of {total}",
+  "acorn.all": "All the golden acorns! Acorn hat unlocked!",
+  "acorn.n": "{n}/16",
+  "map.walk": "Walk there first, then you can travel back!",
+  "hat.acorn": "Acorn hat",
+  "d.mango.hint2": "Great going! Follow the mud trail below the cliffs. The river ferry takes you to the east bank.",
+  "d.ants.qask2": "We saw it blow over the river, to the east bank. Could you bring it back?",
+  "d.ants.qwait": "Our leaf is on the east bank. Take the river ferry, past the mud trail!",
+  "d.mango.dash2": "They play Mango Dash in the muddy clearing. Follow the mud trail below the cliffs, east of the village. The totem has grown an eighth socket!",
+  "d.tapir.tip4": "Tip: once you have walked to a sport, tap it on the map to go straight back there.",
+});

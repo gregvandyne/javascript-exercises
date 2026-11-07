@@ -4,27 +4,27 @@
 // ======================================================================================================
 const QUESTS = {
   // id: who gives it, the item to find (or the person to bring it to), the reward (a cosmetic)
-  leaf: { giver: 'ants', item: 'leaf', at: [58, 29], reward: { bandana: 'sky' } },
-  specs: { giver: 'elder', item: 'specs', at: [7, 45], reward: { hat: 'straw' } },
+  leaf: { giver: 'ants', item: 'leaf', at: [100, 40], reward: { bandana: 'sky' } },
+  specs: { giver: 'elder', item: 'specs', at: [14, 67], reward: { hat: 'straw' } },
   letter: { giver: 'zuzu', item: 'letter', to: 'tapir', reward: { flag: 'leaf' } },
-  shells: { giver: 'pip', item: 'shell', at: [[63, 50], [8, 31], [44, 62]], reward: { bandana: 'sunset' } },
-  mango: { giver: 'mango', item: 'mangofruit', at: [24, 21], reward: { hat: 'explorer' } },
+  shells: { giver: 'pip', item: 'shell', at: [[60, 92], [8, 72], [101, 66]], reward: { bandana: 'sunset' } },
+  mango: { giver: 'mango', item: 'mangofruit', at: [24, 33], reward: { hat: 'explorer' } },
 };
 JC.quests = QUESTS;
 const BANDANAS = { green: '#45c34e', sky: '#3fb7ff', sunset: '#ff8b3d', gold: '#ffd23f', berry: '#c04aa8' };
 JC.bandanas = BANDANAS;
 const NPC_DEFS = [
-  { id: 'mango', x: 38, y: 56, spr: 'mango', bob: true },
-  { id: 'coco', x: 35, y: 61, spr: 'coco_down' },
-  { id: 'pip', x: 37, y: 61, spr: 'pip_down' },
-  { id: 'tapir', x: 41, y: 44, spr: 'tapir' },
-  { id: 'ants', x: 30, y: 47, spr: 'ant', many: 3 },
-  { id: 'elder', x: 34, y: 37, spr: 'elder' },
-  { id: 'zuzu', x: 38, y: 21, spr: 'zuzu', fly: true },
-  { id: 'marm', x: 22, y: 32, spr: 'marmoset', many: 2 },
+  { id: 'mango', x: 52, y: 84, spr: 'mango', bob: true },
+  { id: 'coco', x: 48, y: 90, spr: 'coco_down' },
+  { id: 'pip', x: 53, y: 90, spr: 'pip_down' },
+  { id: 'tapir', x: 55, y: 69, spr: 'tapir' },
+  { id: 'ants', x: 44, y: 72, spr: 'ant', many: 3 },
+  { id: 'elder', x: 48, y: 63, spr: 'elder' },
+  { id: 'zuzu', x: 52, y: 26, spr: 'zuzu', fly: true },
+  { id: 'marm', x: 36, y: 57, spr: 'marmoset', many: 2 },
 ];
 // a champion stands beside each arch
-const CHAMP_SPOT = { paddle: [28, 32], leaf: [18, 23], seed: [10, 47], kick: [22, 49], frog: [48, 52], rapids: [63, 39], vine: [48, 22], dash: [61, 32] };
+const CHAMP_SPOT = {}; for (const id in ARCHES) { const a = ARCHES[id], o = { seed: [-3, 1], kick: [2, -1], leaf: [2, 1] }[id] || [2, 1]; CHAMP_SPOT[id] = [a.x + o[0], a.y + o[1]]; }
 const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', pecca: 'pecca' };
 function nearestFree(x, y) {
   if (!WORLD.isSolid(x, y)) return [x, y];
