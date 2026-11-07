@@ -43,6 +43,11 @@ test('one green ball, not "1 green balls"; the data strand’s shell count is a 
     if (/\b1 green ball\b/.test(p)) singular++;
   }
   assert.ok(singular > 0, 'the singular was exercised');
+  for (const t of BANK.templates) for (let seed = 1; seed <= 30; seed++) {
+    const p2 = generateItem(t, seed).prompt;
+    assert.doesNotMatch(p2, /\ba [aeiou]/i, `${t.id}: "${p2}"`);
+    assert.doesNotMatch(p2, /\b1 (hours|minutes|balls|apples|marbles)\b/, `${t.id}: "${p2}"`);
+  }
   for (const t of BANK.templates.filter(t => t.strand === 'data-chance' && t.archetype === 'count')) {
     assert.match(generateItem(t, 2).prompt, /sorted the beach finds into piles/, `${t.id}: a data count says it is sorting`);
   }

@@ -284,7 +284,7 @@ export const ARCHETYPES = {
   },
   elapsed(rng, g, c) {
     const start = ri(rng, 1, 10), dur = ri(rng, 1, 4);
-    return { prompt: `A film starts at ${start} o'clock and lasts ${dur} hours. At what o'clock does it end? Give just the hour number.`, answer: start + dur > 12 ? start + dur - 12 : start + dur,
+    return { prompt: `A film starts at ${start} o'clock and lasts ${dur} ${dur === 1 ? 'hour' : 'hours'}. At what o'clock does it end? Give just the hour number.`, answer: start + dur > 12 ? start + dur - 12 : start + dur,
       distractors: [{ value: start, misconception: 'gave-the-start-time' }, { value: dur, misconception: 'gave-the-length' }, { value: (start + dur + 1 > 12 ? start + dur + 1 - 12 : start + dur + 1), misconception: 'counted-the-start-hour' }] };
   },
   money(rng, g, c) {
@@ -340,7 +340,7 @@ export const ARCHETYPES = {
   sides(rng, g, c) {
     const shapes = [['triangle', 3], ['square', 4], ['rectangle', 4], ['pentagon', 5], ['hexagon', 6], ['octagon', 8]];
     const [name, n] = pickOne(rng, shapes.filter(([, s]) => s >= (g.minSides || 3)));
-    return { prompt: `How many sides does a ${name} have?`, answer: n,
+    return { prompt: `How many sides does ${/^[aeiou]/.test(name) ? 'an' : 'a'} ${name} have?`, answer: n,
       distractors: [{ value: n + 1, misconception: 'counted-a-corner-twice' }, { value: n - 1, misconception: 'missed-a-side' }, { value: n + 2, misconception: 'guessed' }] };
   },
   shapeName(rng, g, c) {
@@ -353,7 +353,7 @@ export const ARCHETYPES = {
   symmetry(rng, g, c) {
     const shapes = [['square', 4], ['rectangle', 2], ['equilateral triangle', 3], ['regular hexagon', 6]];
     const [name, n] = pickOne(rng, shapes);
-    return { prompt: `How many lines of symmetry does a ${name} have?`, answer: n,
+    return { prompt: `How many lines of symmetry does ${/^[aeiou]/.test(name) ? 'an' : 'a'} ${name} have?`, answer: n,
       distractors: [{ value: n + 1, misconception: 'counted-a-diagonal-that-does-not-fold' }, { value: Math.max(0, n - 1), misconception: 'missed-a-fold-line' }, { value: n * 2, misconception: 'doubled-the-count' }] };
   },
   mixedOps(rng, g, c) {
