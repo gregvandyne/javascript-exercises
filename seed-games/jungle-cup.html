@@ -26,6 +26,20 @@ I18N.en = Object.assign(I18N.en || {}, {
   'arch.tap': 'Tap to play {sport}', 'arch.key': 'Space to play {sport}',
   'feather.won': 'Feather won!',
   'res.won': 'You won!', 'res.lost': 'So close!', 'res.wonSub': 'What a match!', 'res.lostSub': 'Have another go!',
+  'res.lostBig': 'Good try!',
+  'res.wonSub.paddle': 'What a rally!',
+  'res.wonSub.vine': 'What a climb!',
+  'res.wonSub.seed': 'What a shot!',
+  'res.wonSub.rapids': 'What a race!',
+  'res.wonSub.frog': 'What a song!',
+  'res.wonSub.kick': 'What a kick!',
+  'res.wonSub.leaf': 'What a ride!',
+  'res.cup': 'Cup points',
+  'res.bandana': 'You got the {name} bandana! Wear it in Style.',
+  'intro.pad': 'Gamepad: button A works like Space, and Start pauses.',
+  'd.elder.totemfull': 'And look: all seven sockets glow now! The vine lift at the Great Kapok is awake.',
+  'd.zuzu.next': 'Bzzz! Have you played {sport} yet? Its champion is waiting for you!',
+  'd.zuzu.done': 'Bzzz! The Jungle Cup champion! Can you get three stars on every sport?',
   'res.score': 'Score', 'res.best': 'Best', 'res.newBest': 'New best!', 'res.feather': 'You won the {sport} Feather!',
   'hud.secs': '{n}s', 'hud.score': 'Score', 'hud.vsA': '{n}', 'hud.vsB': '{n}',
   'map.title': 'Delta Isle', 'map.feathers': '{n}/7 Feathers',
@@ -315,8 +329,8 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "ls.jump": "اقفز", "ls.spin": "دوران", "ls.flip": "شقلبة", "ls.grab": "إمساك",
   "ls.pop": "هوب!", "ls.hop": "قفزة! +30", "ls.bonk": "بونك!", "ls.low": "منخفض جدًا!", "ls.wipeout": "سقطة!",
   "ls.youWin": "تفوّقت على كيكي!", "ls.kikiWins": "كيكي تفوز هذه المرة",
-  "ls.hintTouch": "انقر على منحدر لتقفز! في الهواء، اسحب أو اضغط حركة. انزل وليس هناك حركة جارية.",
-  "ls.hintKeys": "المسافة على منحدر لتقفز! في الهواء: يسار / يمين دوران، الأعلى شقلبة، الأسفل إمساك. انزل وليس هناك حركة جارية.",
+  "ls.hintTouch": "انقر على منحدر لتقفز! في الهواء، اسحب أو اضغط حركة. أنهِ حركتك قبل أن تهبط!",
+  "ls.hintKeys": "المسافة على منحدر لتقفز! في الهواء: يسار / يمين دوران، الأعلى شقلبة، الأسفل إمساك. أنهِ حركتك قبل أن تهبط!",
   "sport.paddle.goal": "أعد الكرة لتهزم جادا! أول من يصل إلى 7 نقاط بفارق نقطتين يفوز (عند 10-10، النقطة التالية تفوز).",
   "sport.paddle.touch": "اللمس: انقر في أي مكان لتضرب عندما تصل الكرة إلى منطقتك المضيئة.",
   "sport.paddle.keys": "المفاتيح: المسافة للضرب. اضرب مبكرًا لكرة قصيرة، ومتأخرًا لكرة طويلة.",
@@ -352,6 +366,21 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "vc.bonk": "بونك!", "vc.buzz": "بززز!", "vc.top": "قمة الشجرة!", "vc.sloaneTop": "سلون وصلت أولًا",
   "vc.hintTouch": "انقر عندما تصبح الحلقة خضراء!", "vc.hintKeys": "اضغط المسافة عندما تصبح الحلقة خضراء!",
   "vc.hintStartTouch": "انقر عندما تتأرجح الكرمة فوقك", "vc.hintStartKeys": "اضغط المسافة عندما تتأرجح الكرمة فوقك",
+  "res.lostBig": "محاولة جيدة!",
+  "res.wonSub.paddle": "يا لها من ضربات!",
+  "res.wonSub.vine": "يا له من تسلق!",
+  "res.wonSub.seed": "يا لها من رمية!",
+  "res.wonSub.rapids": "يا له من سباق!",
+  "res.wonSub.frog": "يا لها من أغنية!",
+  "res.wonSub.kick": "يا لها من ركلة!",
+  "res.wonSub.leaf": "يا له من انزلاق!",
+  "res.cup": "نقاط الكأس",
+  "res.bandana": "حصلت على عصابة {name}! ارتدها من قسم الأناقة.",
+  "intro.pad": "يد التحكم: الزر A مثل المسافة، وزر Start يوقف اللعب.",
+  "d.elder.totemfull": "وانظر: الفتحات السبع كلها تتوهج الآن! مصعد الكروم عند شجرة الكابوك العظيمة استيقظ.",
+  "d.zuzu.next": "بززز! هل لعبت {sport} بعد؟ بطلها ينتظرك!",
+  "d.zuzu.done": "بززز! بطل كأس الغابة! هل تستطيع جمع ثلاث نجوم في كل رياضة؟",
+  "pad.warmCard": "أولًا، إحماء سريع ضد قردَين صغيرين: أول من يصل إلى 3.",
 });
 
 /* ---- i18n/all.de.js ---- */
@@ -495,10 +524,10 @@ I18N.de = Object.assign(I18N.de || {}, {
   "frog.roundClean": "Tolle Runde!", "frog.roundPerfect": "Perfekte Runde!",
   "frog.hintTouch": "Schau auf die obere Leiste: Wenn die Kreise aufleuchten, tippe im Takt auf dieselben Trommeln.",
   "frog.hintKeys": "Schau auf die obere Leiste: Wenn die Kreise aufleuchten, drück im Takt dieselben Trommeln.",
-  "sport.kick.goal": "Elfmeterschießen! Fünf Schüsse für jeden, dann Sudden Death. Schieß mehr Tore als Mico, um zu gewinnen.",
+  "sport.kick.goal": "Elfmeterschießen! Fünf Schüsse für jeden, dann ein Entscheidungsschießen. Schieß mehr Tore als Mico, um zu gewinnen.",
   "sport.kick.touch": "Touch: Zieh Richtung Tor und lass los, um zu schießen (länger ziehen = fester). Im Tor tippst du auf eine Seite, um zu hechten.",
   "sport.kick.keys": "Tasten: Links / Rechts zum Zielen, Leertaste für die Kraft, nochmal Leertaste zum Schießen. Im Tor: Links / Rechts zum Hechten, Runter zum Stehenbleiben.",
-  "bk.round": "Schuss {n} von 5", "bk.suddenShort": "Sudden Death!", "bk.sudden": "Sudden Death!",
+  "bk.round": "Schuss {n} von 5", "bk.suddenShort": "Entscheidung!", "bk.sudden": "Wer jetzt trifft, gewinnt!",
   "bk.youShoot": "Du schießt", "bk.youKeep": "Du bist im Tor",
   "bk.goal": "TOR!", "bk.topCorner": "In den Winkel!", "bk.saved": "Mico hält!", "bk.post": "An den Pfosten!", "bk.wide": "Daneben!", "bk.over": "Drüber!",
   "bk.youSaved": "Super gehalten!", "bk.micoScores": "Mico trifft", "bk.micoMissed": "Mico hat verschossen!", "bk.sawYou": "Mico hat gesehen, wie du dich bewegst!",
@@ -516,8 +545,8 @@ I18N.de = Object.assign(I18N.de || {}, {
   "ls.jump": "Springen", "ls.spin": "Dreh", "ls.flip": "Salto", "ls.grab": "Griff",
   "ls.pop": "Hopp!", "ls.hop": "Hüpfer! +30", "ls.bonk": "Bonk!", "ls.low": "Zu niedrig!", "ls.wipeout": "Sturz!",
   "ls.youWin": "Du hast Kiki geschlagen!", "ls.kikiWins": "Diesmal gewinnt Kiki",
-  "ls.hintTouch": "Tippe auf einer Rampe zum Abspringen! In der Luft wischen oder einen Trick drücken. Lande ohne laufenden Trick.",
-  "ls.hintKeys": "Leertaste auf einer Rampe zum Abspringen! In der Luft: Links / Rechts Dreh, Hoch Salto, Runter Griff. Lande ohne laufenden Trick.",
+  "ls.hintTouch": "Tippe auf einer Rampe zum Abspringen! In der Luft wischen oder einen Trick drücken. Beende deinen Trick vor der Landung!",
+  "ls.hintKeys": "Leertaste auf einer Rampe zum Abspringen! In der Luft: Links / Rechts Dreh, Hoch Salto, Runter Griff. Beende deinen Trick vor der Landung!",
   "sport.paddle.goal": "Spiel den Ball zurück und besiege Jada! Wer zuerst 7 Punkte hat, gewinnt, mit 2 Punkten Vorsprung (bei 10:10 gewinnt der nächste Punkt).",
   "sport.paddle.touch": "Touch: Tippe irgendwo, um zu schlagen, wenn der Ball in deine leuchtende Zone kommt.",
   "sport.paddle.keys": "Tasten: Leertaste zum Schlagen. Früh schlagen für einen kurzen Ball, spät für einen langen.",
@@ -551,6 +580,21 @@ I18N.de = Object.assign(I18N.de || {}, {
   "vc.bonk": "Bonk!", "vc.buzz": "Bzzz!", "vc.top": "Ganz oben im Baum!", "vc.sloaneTop": "Sloane war zuerst oben",
   "vc.hintTouch": "Tippe, wenn der Ring grün wird!", "vc.hintKeys": "Drück die Leertaste, wenn der Ring grün wird!",
   "vc.hintStartTouch": "Tippe, wenn die Liane über dich schwingt", "vc.hintStartKeys": "Drück die Leertaste, wenn die Liane über dich schwingt",
+  "res.lostBig": "Guter Versuch!",
+  "res.wonSub.paddle": "Was für ein Ballwechsel!",
+  "res.wonSub.vine": "Was für ein Aufstieg!",
+  "res.wonSub.seed": "Was für ein Schuss!",
+  "res.wonSub.rapids": "Was für ein Rennen!",
+  "res.wonSub.frog": "Was für ein Lied!",
+  "res.wonSub.kick": "Was für ein Schuss!",
+  "res.wonSub.leaf": "Was für eine Fahrt!",
+  "res.cup": "Pokalpunkte",
+  "res.bandana": "Du hast das Halstuch „{name}“! Zieh es unter Stil an.",
+  "intro.pad": "Gamepad: Taste A wie die Leertaste, Start pausiert.",
+  "d.elder.totemfull": "Und sieh nur: Alle sieben Mulden leuchten jetzt! Der Lianenaufzug am Großen Kapokbaum ist wach.",
+  "d.zuzu.next": "Bzzz! Hast du schon {sport} gespielt? Der Champion dort wartet auf dich!",
+  "d.zuzu.done": "Bzzz! Der Dschungel-Pokal-Champion! Schaffst du drei Sterne bei jedem Sport?",
+  "pad.warmCard": "Zuerst ein kurzes Aufwärmen gegen zwei Krallenäffchen: Wer zuerst 3 hat.",
 });
 
 /* ---- i18n/all.en-GB.js ---- */
@@ -723,8 +767,8 @@ I18N.es = Object.assign(I18N.es || {}, {
   "ls.jump": "Saltar", "ls.spin": "Giro", "ls.flip": "Voltereta", "ls.grab": "Agarre",
   "ls.pop": "¡Hop!", "ls.hop": "¡Saltito! +30", "ls.bonk": "¡Bonc!", "ls.low": "¡Muy bajo!", "ls.wipeout": "¡Caída!",
   "ls.youWin": "¡Has ganado a Kiki!", "ls.kikiWins": "Esta vez gana Kiki",
-  "ls.hintTouch": "¡Toca en una rampa para saltar! En el aire, desliza o pulsa un truco. Aterriza sin ningún truco a medias.",
-  "ls.hintKeys": "¡Espacio en una rampa para saltar! En el aire: Izquierda / Derecha Giro, Arriba Voltereta, Abajo Agarre. Aterriza sin ningún truco a medias.",
+  "ls.hintTouch": "¡Toca en una rampa para saltar! En el aire, desliza o pulsa un truco. ¡Termina tu truco antes de aterrizar!",
+  "ls.hintKeys": "¡Espacio en una rampa para saltar! En el aire: Izquierda / Derecha Giro, Arriba Voltereta, Abajo Agarre. ¡Termina tu truco antes de aterrizar!",
   "sport.paddle.goal": "¡Devuelve la pelota para ganar a Jada! Gana quien llegue primero a 7 puntos con 2 de ventaja (con 10-10, el siguiente punto gana).",
   "sport.paddle.touch": "Táctil: toca en cualquier sitio para golpear cuando la pelota llegue a tu zona brillante.",
   "sport.paddle.keys": "Teclas: Espacio para golpear. Golpea pronto para un tiro corto, tarde para uno largo.",
@@ -758,6 +802,21 @@ I18N.es = Object.assign(I18N.es || {}, {
   "vc.bonk": "¡Bonc!", "vc.buzz": "¡Bzzz!", "vc.top": "¡En la copa del árbol!", "vc.sloaneTop": "Sloane llegó primero",
   "vc.hintTouch": "¡Toca cuando el aro se ponga verde!", "vc.hintKeys": "¡Pulsa Espacio cuando el aro se ponga verde!",
   "vc.hintStartTouch": "Toca cuando la liana pase por encima de ti", "vc.hintStartKeys": "Pulsa Espacio cuando la liana pase por encima de ti",
+  "res.lostBig": "¡Buen intento!",
+  "res.wonSub.paddle": "¡Qué peloteo!",
+  "res.wonSub.vine": "¡Qué escalada!",
+  "res.wonSub.seed": "¡Qué puntería!",
+  "res.wonSub.rapids": "¡Qué carrera!",
+  "res.wonSub.frog": "¡Qué canción!",
+  "res.wonSub.kick": "¡Qué chute!",
+  "res.wonSub.leaf": "¡Qué bajada!",
+  "res.cup": "Puntos de Copa",
+  "res.bandana": "¡Tienes el pañuelo {name}! Póntelo en Estilo.",
+  "intro.pad": "Mando: el botón A hace lo mismo que Espacio y Start pausa.",
+  "d.elder.totemfull": "¡Y mira: los siete huecos brillan ya! El ascensor de lianas de la Gran Ceiba está despierto.",
+  "d.zuzu.next": "¡Bzzz! ¿Ya has jugado a {sport}? ¡Su campeón te está esperando!",
+  "d.zuzu.done": "¡Bzzz! ¡El campeón de la Copa de la Selva! ¿Consigues tres estrellas en cada deporte?",
+  "pad.warmCard": "Primero, un calentamiento rápido contra dos titís: el primero en llegar a 3.",
 });
 
 /* ---- i18n/all.fr.js ---- */
@@ -917,13 +976,13 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "bk.hintKeepTouch": "Regarde les yeux et la queue de Mico : ils montrent où il va tirer. Touche ce côté pour plonger !",
   "bk.hintKeepKeys": "Regarde les yeux et la queue de Mico : ils montrent où il va tirer. Gauche / Droite pour plonger, Bas pour rester.",
   "sport.leaf.goal": "Glisse dans la boue sur une feuille géante pendant 90 secondes. Saute sur les tremplins, fais des figures en l'air et atterris droit. Bats le score de Kiki !",
-  "sport.leaf.touch": "Tactile : touche pour sauter (touche sur un tremplin pour un grand saut). En l'air, glisse ou appuie sur Vrille, Salto ou Grab.",
-  "sport.leaf.keys": "Touches : Espace pour sauter. En l'air : Gauche / Droite pour Vrille, Haut pour Salto, Bas pour Grab.",
-  "ls.jump": "Sauter", "ls.spin": "Vrille", "ls.flip": "Salto", "ls.grab": "Grab",
+  "sport.leaf.touch": "Tactile : touche pour sauter (touche sur un tremplin pour un grand saut). En l'air, glisse ou appuie sur Vrille, Salto ou Saisie.",
+  "sport.leaf.keys": "Touches : Espace pour sauter. En l'air : Gauche / Droite pour Vrille, Haut pour Salto, Bas pour Saisie.",
+  "ls.jump": "Sauter", "ls.spin": "Vrille", "ls.flip": "Salto", "ls.grab": "Saisie",
   "ls.pop": "Hop !", "ls.hop": "Petit saut ! +30", "ls.bonk": "Bong !", "ls.low": "Trop bas !", "ls.wipeout": "Chute !",
   "ls.youWin": "Tu as battu Kiki !", "ls.kikiWins": "Kiki gagne cette fois",
-  "ls.hintTouch": "Touche sur un tremplin pour sauter ! En l'air, glisse ou appuie sur une figure. Atterris sans figure en cours.",
-  "ls.hintKeys": "Espace sur un tremplin pour sauter ! En l'air : Gauche / Droite Vrille, Haut Salto, Bas Grab. Atterris sans figure en cours.",
+  "ls.hintTouch": "Touche sur un tremplin pour sauter ! En l'air, glisse ou appuie sur une figure. Finis ta figure avant d'atterrir !",
+  "ls.hintKeys": "Espace sur un tremplin pour sauter ! En l'air : Gauche / Droite Vrille, Haut Salto, Bas Saisie. Finis ta figure avant d'atterrir !",
   "sport.paddle.goal": "Renvoie la balle pour battre Jada ! Le premier à 7 points gagne, avec 2 points d'avance (à 10-10, le point suivant gagne).",
   "sport.paddle.touch": "Tactile : touche n'importe où pour frapper quand la balle arrive dans ta zone lumineuse.",
   "sport.paddle.keys": "Touches : Espace pour frapper. Frappe tôt pour un coup court, tard pour un coup long.",
@@ -957,6 +1016,21 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "vc.bonk": "Bong !", "vc.buzz": "Bzzz !", "vc.top": "En haut de l'arbre !", "vc.sloaneTop": "Sloane est arrivée en premier",
   "vc.hintTouch": "Touche quand l'anneau devient vert !", "vc.hintKeys": "Appuie sur Espace quand l'anneau devient vert !",
   "vc.hintStartTouch": "Touche quand la liane passe au-dessus de toi", "vc.hintStartKeys": "Appuie sur Espace quand la liane passe au-dessus de toi",
+  "res.lostBig": "Bien essayé !",
+  "res.wonSub.paddle": "Quel échange !",
+  "res.wonSub.vine": "Quelle grimpée !",
+  "res.wonSub.seed": "Quel tir !",
+  "res.wonSub.rapids": "Quelle course !",
+  "res.wonSub.frog": "Quelle chanson !",
+  "res.wonSub.kick": "Quel tir !",
+  "res.wonSub.leaf": "Quelle descente !",
+  "res.cup": "Points de Coupe",
+  "res.bandana": "Tu as le bandana {name} ! Mets-le dans Style.",
+  "intro.pad": "Manette : le bouton A fait comme Espace, Start met en pause.",
+  "d.elder.totemfull": "Et regarde : les sept creux brillent maintenant ! L'ascenseur de lianes du Grand Kapokier est réveillé.",
+  "d.zuzu.next": "Bzzz ! Tu as déjà joué à {sport} ? Son champion t'attend !",
+  "d.zuzu.done": "Bzzz ! Le champion de la Coupe de la Jungle ! Tu peux avoir trois étoiles partout ?",
+  "pad.warmCard": "D'abord, un petit échauffement contre deux ouistitis : le premier à 3.",
 });
 
 /* ---- i18n/all.he.js ---- */
@@ -1124,8 +1198,8 @@ I18N.he = Object.assign(I18N.he || {}, {
   "ls.jump": "קפוץ", "ls.spin": "סיבוב", "ls.flip": "סלטה", "ls.grab": "תפיסה",
   "ls.pop": "הופ!", "ls.hop": "קפיצונת! +30", "ls.bonk": "בונק!", "ls.low": "נמוך מדי!", "ls.wipeout": "נפילה!",
   "ls.youWin": "ניצחת את קיקי!", "ls.kikiWins": "הפעם קיקי ניצחה",
-  "ls.hintTouch": "הקש על רמפה כדי לקפוץ! באוויר, החלק או לחץ על תרגיל. נחת בלי תרגיל באמצע.",
-  "ls.hintKeys": "רווח על רמפה כדי לקפוץ! באוויר: שמאלה / ימינה סיבוב, למעלה סלטה, למטה תפיסה. נחת בלי תרגיל באמצע.",
+  "ls.hintTouch": "הקש על רמפה כדי לקפוץ! באוויר, החלק או לחץ על תרגיל. סיים את התרגיל לפני שאתה נוחת!",
+  "ls.hintKeys": "רווח על רמפה כדי לקפוץ! באוויר: שמאלה / ימינה סיבוב, למעלה סלטה, למטה תפיסה. סיים את התרגיל לפני שאתה נוחת!",
   "sport.paddle.goal": "החזר את הכדור כדי לנצח את ג׳יידה! הראשון ל־7 נקודות מנצח, עם הפרש של 2 (ב־10:10 הנקודה הבאה מנצחת).",
   "sport.paddle.touch": "מגע: הקש בכל מקום כדי להכות כשהכדור מגיע לאזור הזוהר שלך.",
   "sport.paddle.keys": "מקשים: רווח להכות. הכה מוקדם לכדור קצר, מאוחר לכדור ארוך.",
@@ -1161,6 +1235,21 @@ I18N.he = Object.assign(I18N.he || {}, {
   "vc.bonk": "בונק!", "vc.buzz": "בזזז!", "vc.top": "בצמרת העץ!", "vc.sloaneTop": "סלואן הגיעה ראשונה",
   "vc.hintTouch": "הקש כשהטבעת נהיית ירוקה!", "vc.hintKeys": "לחץ רווח כשהטבעת נהיית ירוקה!",
   "vc.hintStartTouch": "הקש כשהגפן מתנדנדת מעליך", "vc.hintStartKeys": "לחץ רווח כשהגפן מתנדנדת מעליך",
+  "res.lostBig": "ניסיון יפה!",
+  "res.wonSub.paddle": "איזה ראלי!",
+  "res.wonSub.vine": "איזה טיפוס!",
+  "res.wonSub.seed": "איזו קליעה!",
+  "res.wonSub.rapids": "איזה מרוץ!",
+  "res.wonSub.frog": "איזה שיר!",
+  "res.wonSub.kick": "איזו בעיטה!",
+  "res.wonSub.leaf": "איזו גלישה!",
+  "res.cup": "נקודות גביע",
+  "res.bandana": "קיבלת את המטפחת {name}! לבש אותה בסגנון.",
+  "intro.pad": "שלט: כפתור A פועל כמו רווח, ו-Start עוצר.",
+  "d.elder.totemfull": "ותראה: כל שבעת השקעים זוהרים עכשיו! מעלית הגפנים ליד הקפוק הגדול התעוררה.",
+  "d.zuzu.next": "בזזז! כבר שיחקת {sport}? האלוף שם מחכה לך!",
+  "d.zuzu.done": "בזזז! אלוף גביע הג׳ונגל! תצליח להשיג שלושה כוכבים בכל ענף?",
+  "pad.warmCard": "קודם חימום קצר מול שני קופי מרמוסט: הראשון ל-3.",
 });
 
 /* ---- i18n/all.it.js ---- */
@@ -1325,8 +1414,8 @@ I18N.it = Object.assign(I18N.it || {}, {
   "ls.jump": "Salta", "ls.spin": "Giro", "ls.flip": "Capriola", "ls.grab": "Presa",
   "ls.pop": "Hop!", "ls.hop": "Saltello! +30", "ls.bonk": "Bonk!", "ls.low": "Troppo basso!", "ls.wipeout": "Caduta!",
   "ls.youWin": "Hai battuto Kiki!", "ls.kikiWins": "Questa volta vince Kiki",
-  "ls.hintTouch": "Tocca su una rampa per saltare! In aria, scorri o premi un'acrobazia. Atterra senza acrobazie in corso.",
-  "ls.hintKeys": "Spazio su una rampa per saltare! In aria: Sinistra / Destra Giro, Su Capriola, Giù Presa. Atterra senza acrobazie in corso.",
+  "ls.hintTouch": "Tocca su una rampa per saltare! In aria, scorri o premi un'acrobazia. Finisci l'acrobazia prima di atterrare!",
+  "ls.hintKeys": "Spazio su una rampa per saltare! In aria: Sinistra / Destra Giro, Su Capriola, Giù Presa. Finisci l'acrobazia prima di atterrare!",
   "sport.paddle.goal": "Rimanda la pallina e batti Jada! Vince chi arriva prima a 7 punti con 2 di vantaggio (sul 10-10 vince il punto successivo).",
   "sport.paddle.touch": "Touch: tocca ovunque per colpire quando la pallina arriva nella tua zona luminosa.",
   "sport.paddle.keys": "Tasti: Spazio per colpire. Colpisci presto per un tiro corto, tardi per uno lungo.",
@@ -1360,6 +1449,21 @@ I18N.it = Object.assign(I18N.it || {}, {
   "vc.bonk": "Bonk!", "vc.buzz": "Bzzz!", "vc.top": "In cima all'albero!", "vc.sloaneTop": "Sloane è arrivata prima",
   "vc.hintTouch": "Tocca quando l'anello diventa verde!", "vc.hintKeys": "Premi Spazio quando l'anello diventa verde!",
   "vc.hintStartTouch": "Tocca quando la liana oscilla sopra di te", "vc.hintStartKeys": "Premi Spazio quando la liana oscilla sopra di te",
+  "res.lostBig": "Bel tentativo!",
+  "res.wonSub.paddle": "Che scambio!",
+  "res.wonSub.vine": "Che scalata!",
+  "res.wonSub.seed": "Che mira!",
+  "res.wonSub.rapids": "Che corsa!",
+  "res.wonSub.frog": "Che canzone!",
+  "res.wonSub.kick": "Che tiro!",
+  "res.wonSub.leaf": "Che discesa!",
+  "res.cup": "Punti Coppa",
+  "res.bandana": "Hai la bandana {name}! Indossala in Stile.",
+  "intro.pad": "Gamepad: il tasto A fa come Spazio, Start mette in pausa.",
+  "d.elder.totemfull": "E guarda: tutte e sette le nicchie brillano! L'ascensore di liane del Grande Kapok è sveglio.",
+  "d.zuzu.next": "Bzzz! Hai già giocato a {sport}? Il suo campione ti aspetta!",
+  "d.zuzu.done": "Bzzz! Il campione della Coppa della Giungla! Riesci a fare tre stelle in ogni sport?",
+  "pad.warmCard": "Prima, un breve riscaldamento contro due uistitì: vince chi arriva a 3.",
 });
 
 /* ---- i18n/all.ja.js ---- */
@@ -1563,6 +1667,21 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "vc.bonk": "ゴツン！", "vc.buzz": "ブーン！", "vc.top": "きのてっぺん！", "vc.sloaneTop": "スローンがさきについた",
   "vc.hintTouch": "わがみどりになったらタップ！", "vc.hintKeys": "わがみどりになったらスペース！",
   "vc.hintStartTouch": "ツルがうえにきたらタップ", "vc.hintStartKeys": "ツルがうえにきたらスペース",
+  "res.lostBig": "ナイスチャレンジ！",
+  "res.wonSub.paddle": "すごいラリー！",
+  "res.wonSub.vine": "すごいのぼり！",
+  "res.wonSub.seed": "すごいシュート！",
+  "res.wonSub.rapids": "すごいレース！",
+  "res.wonSub.frog": "すごいうた！",
+  "res.wonSub.kick": "すごいキック！",
+  "res.wonSub.leaf": "すごいすべり！",
+  "res.cup": "カップポイント",
+  "res.bandana": "{name}のバンダナをゲット！スタイルでつけてね。",
+  "intro.pad": "ゲームパッド：Aボタンはスペースとおなじ、Startでひとやすみ。",
+  "d.elder.totemfull": "ほら、7つのあなが ぜんぶ ひかっておる！ おおきなカポックのツタのリフトが めをさましたぞ。",
+  "d.zuzu.next": "ブーン！{sport}はもうやった？チャンピオンがまってるよ！",
+  "d.zuzu.done": "ブーン！ジャングルカップのチャンピオン！ぜんぶのスポーツで星3つ、とれるかな？",
+  "pad.warmCard": "まずは マーモセット2ひきと かるくウォームアップ：さきに3てん。",
 });
 
 /* ---- i18n/all.nl.js ---- */
@@ -1709,9 +1828,9 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "sport.kick.goal": "Strafschoppen! Vijf schoten per speler, daarna sudden death. Scoor meer dan Mico om te winnen.",
   "sport.kick.touch": "Aanraken: sleep naar het doel en laat los om te schieten (langer slepen is harder). Sta je in het doel, tik dan op een kant om te duiken.",
   "sport.kick.keys": "Toetsen: Links / Rechts om te mikken, Spatie voor de kracht, nog eens Spatie om te schieten. In het doel: Links / Rechts om te duiken, Omlaag om te blijven staan.",
-  "bk.round": "Schot {n} van 5", "bk.suddenShort": "Sudden death!", "bk.sudden": "Sudden death!",
+  "bk.round": "Schot {n} van 5", "bk.suddenShort": "Beslissing!", "bk.sudden": "Wie nu scoort, wint!",
   "bk.youShoot": "Jij schiet", "bk.youKeep": "Jij keept",
-  "bk.goal": "GOAL!", "bk.topCorner": "In de kruising!", "bk.saved": "Gestopt door Mico!", "bk.post": "Tegen de paal!", "bk.wide": "Naast!", "bk.over": "Over de lat!",
+  "bk.goal": "DOELPUNT!", "bk.topCorner": "In de kruising!", "bk.saved": "Gestopt door Mico!", "bk.post": "Tegen de paal!", "bk.wide": "Naast!", "bk.over": "Over de lat!",
   "bk.youSaved": "Mooie redding!", "bk.micoScores": "Mico scoort", "bk.micoMissed": "Mico mist!", "bk.sawYou": "Mico zag je bewegen!",
   "bk.crafty": "Mico wordt sluw!", "bk.youWin": "Jij wint de strafschoppen!", "bk.micoWins": "Deze keer wint Mico",
   "bk.tooSlow": "Een zachtje...", "bk.dragHint": "Sleep omhoog naar het doel!",
@@ -1727,8 +1846,8 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "ls.jump": "Spring", "ls.spin": "Draai", "ls.flip": "Salto", "ls.grab": "Grijp",
   "ls.pop": "Hop!", "ls.hop": "Huppel! +30", "ls.bonk": "Bonk!", "ls.low": "Te laag!", "ls.wipeout": "Onderuit!",
   "ls.youWin": "Je hebt Kiki verslagen!", "ls.kikiWins": "Deze keer wint Kiki",
-  "ls.hintTouch": "Tik op een schans om te springen! In de lucht veeg je of druk je op een truc. Land zonder truc bezig.",
-  "ls.hintKeys": "Spatie op een schans om te springen! In de lucht: Links / Rechts Draai, Omhoog Salto, Omlaag Grijp. Land zonder truc bezig.",
+  "ls.hintTouch": "Tik op een schans om te springen! In de lucht veeg je of druk je op een truc. Maak je truc af voordat je landt!",
+  "ls.hintKeys": "Spatie op een schans om te springen! In de lucht: Links / Rechts Draai, Omhoog Salto, Omlaag Grijp. Maak je truc af voordat je landt!",
   "sport.paddle.goal": "Sla de bal terug en versla Jada! Wie het eerst 7 punten heeft wint, met 2 punten voorsprong (bij 10-10 wint het volgende punt).",
   "sport.paddle.touch": "Aanraken: tik ergens om te slaan als de bal in je gloeiende zone komt.",
   "sport.paddle.keys": "Toetsen: Spatie om te slaan. Sla vroeg voor een korte bal, laat voor een lange.",
@@ -1762,6 +1881,21 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "vc.bonk": "Bonk!", "vc.buzz": "Bzzz!", "vc.top": "Boven in de boom!", "vc.sloaneTop": "Sloane was er eerst",
   "vc.hintTouch": "Tik als de ring groen wordt!", "vc.hintKeys": "Druk op Spatie als de ring groen wordt!",
   "vc.hintStartTouch": "Tik als de liaan boven je zwaait", "vc.hintStartKeys": "Druk op Spatie als de liaan boven je zwaait",
+  "res.lostBig": "Goed geprobeerd!",
+  "res.wonSub.paddle": "Wat een rally!",
+  "res.wonSub.vine": "Wat een klim!",
+  "res.wonSub.seed": "Wat een schot!",
+  "res.wonSub.rapids": "Wat een race!",
+  "res.wonSub.frog": "Wat een lied!",
+  "res.wonSub.kick": "Wat een schot!",
+  "res.wonSub.leaf": "Wat een rit!",
+  "res.cup": "Bekerpunten",
+  "res.bandana": "Je hebt de bandana {name}! Draag hem bij Stijl.",
+  "intro.pad": "Gamepad: knop A doet hetzelfde als Spatie, Start pauzeert.",
+  "d.elder.totemfull": "En kijk: alle zeven gaten gloeien nu! De lianenlift bij de Grote Kapokboom is wakker.",
+  "d.zuzu.next": "Bzzz! Heb je {sport} al gespeeld? De kampioen daar wacht op je!",
+  "d.zuzu.done": "Bzzz! De kampioen van de Junglebeker! Haal jij drie sterren bij elke sport?",
+  "pad.warmCard": "Eerst een korte opwarming tegen twee zijdeaapjes: wie het eerst 3 heeft.",
 });
 
 /* ---- i18n/all.pt.js ---- */
@@ -1926,8 +2060,8 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "ls.jump": "Pular", "ls.spin": "Giro", "ls.flip": "Mortal", "ls.grab": "Pegada",
   "ls.pop": "Hop!", "ls.hop": "Pulinho! +30", "ls.bonk": "Bonc!", "ls.low": "Baixo demais!", "ls.wipeout": "Tombo!",
   "ls.youWin": "Você venceu o Kiki!", "ls.kikiWins": "Desta vez o Kiki venceu",
-  "ls.hintTouch": "Toque numa rampa para pular! No ar, deslize ou aperte uma manobra. Aterrisse sem manobra pela metade.",
-  "ls.hintKeys": "Espaço numa rampa para pular! No ar: Esquerda / Direita Giro, Cima Mortal, Baixo Pegada. Aterrisse sem manobra pela metade.",
+  "ls.hintTouch": "Toque numa rampa para pular! No ar, deslize ou aperte uma manobra. Termine a manobra antes de aterrissar!",
+  "ls.hintKeys": "Espaço numa rampa para pular! No ar: Esquerda / Direita Giro, Cima Mortal, Baixo Pegada. Termine a manobra antes de aterrissar!",
   "sport.paddle.goal": "Devolva a bola para vencer a Jada! Ganha quem fizer 7 pontos primeiro, com 2 de vantagem (no 10 a 10, o próximo ponto vence).",
   "sport.paddle.touch": "Toque: toque em qualquer lugar para bater quando a bola chegar na sua zona brilhante.",
   "sport.paddle.keys": "Teclas: Espaço para bater. Bata cedo para uma bola curta, tarde para uma longa.",
@@ -1961,6 +2095,21 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "vc.bonk": "Bonc!", "vc.buzz": "Bzzz!", "vc.top": "No topo da árvore!", "vc.sloaneTop": "A Sloane chegou primeiro",
   "vc.hintTouch": "Toque quando o anel ficar verde!", "vc.hintKeys": "Aperte Espaço quando o anel ficar verde!",
   "vc.hintStartTouch": "Toque quando o cipó passar por cima de você", "vc.hintStartKeys": "Aperte Espaço quando o cipó passar por cima de você",
+  "res.lostBig": "Boa tentativa!",
+  "res.wonSub.paddle": "Que troca de bola!",
+  "res.wonSub.vine": "Que escalada!",
+  "res.wonSub.seed": "Que pontaria!",
+  "res.wonSub.rapids": "Que corrida!",
+  "res.wonSub.frog": "Que canção!",
+  "res.wonSub.kick": "Que chute!",
+  "res.wonSub.leaf": "Que descida!",
+  "res.cup": "Pontos da Copa",
+  "res.bandana": "Você ganhou a bandana {name}! Use em Estilo.",
+  "intro.pad": "Controle: o botão A funciona como Espaço, e Start pausa.",
+  "d.elder.totemfull": "E veja: os sete encaixes brilham agora! O elevador de cipós da Grande Sumaúma acordou.",
+  "d.zuzu.next": "Bzzz! Você já jogou {sport}? O campeão de lá está esperando por você!",
+  "d.zuzu.done": "Bzzz! O campeão da Copa da Selva! Consegue três estrelas em cada esporte?",
+  "pad.warmCard": "Primeiro, um aquecimento rápido contra dois saguis: quem fizer 3 primeiro.",
 });
 
 /* ---- i18n/all.ru.js ---- */
@@ -2128,8 +2277,8 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "ls.jump": "Прыжок", "ls.spin": "Вращение", "ls.flip": "Сальто", "ls.grab": "Захват",
   "ls.pop": "Оп!", "ls.hop": "Прыжок! +30", "ls.bonk": "Бум!", "ls.low": "Слишком низко!", "ls.wipeout": "Падение!",
   "ls.youWin": "Ты обогнал Кики!", "ls.kikiWins": "На этот раз победила Кики",
-  "ls.hintTouch": "Нажми на трамплине, чтобы прыгнуть! В воздухе проведи или нажми трюк. Приземляйся, когда трюк закончен.",
-  "ls.hintKeys": "Пробел на трамплине — прыжок! В воздухе: Влево / Вправо Вращение, Вверх Сальто, Вниз Захват. Приземляйся, когда трюк закончен.",
+  "ls.hintTouch": "Нажми на трамплине, чтобы прыгнуть! В воздухе проведи или нажми трюк. Закончи трюк до приземления!",
+  "ls.hintKeys": "Пробел на трамплине — прыжок! В воздухе: Влево / Вправо Вращение, Вверх Сальто, Вниз Захват. Закончи трюк до приземления!",
   "sport.paddle.goal": "Отбивай мяч и победи Джаду! Побеждает тот, кто первым наберёт 7 очков с отрывом в 2 очка (при 10:10 выигрывает следующее очко).",
   "sport.paddle.touch": "Касание: нажми в любом месте, чтобы ударить, когда мяч в твоей светящейся зоне.",
   "sport.paddle.keys": "Клавиши: Пробел — удар. Рано — короткий мяч, поздно — длинный.",
@@ -2165,6 +2314,21 @@ I18N.ru = Object.assign(I18N.ru || {}, {
   "vc.bonk": "Бум!", "vc.buzz": "Жжж!", "vc.top": "На верхушке!", "vc.sloaneTop": "Слоан добралась первой",
   "vc.hintTouch": "Нажми, когда кольцо станет зелёным!", "vc.hintKeys": "Жми Пробел, когда кольцо станет зелёным!",
   "vc.hintStartTouch": "Нажми, когда лиана качнётся над тобой", "vc.hintStartKeys": "Жми Пробел, когда лиана качнётся над тобой",
+  "res.lostBig": "Хорошая попытка!",
+  "res.wonSub.paddle": "Вот это розыгрыш!",
+  "res.wonSub.vine": "Вот это подъём!",
+  "res.wonSub.seed": "Вот это меткость!",
+  "res.wonSub.rapids": "Вот это гонка!",
+  "res.wonSub.frog": "Вот это песня!",
+  "res.wonSub.kick": "Вот это удар!",
+  "res.wonSub.leaf": "Вот это спуск!",
+  "res.cup": "Очки Кубка",
+  "res.bandana": "У тебя бандана «{name}»! Надень её в разделе «Стиль».",
+  "intro.pad": "Геймпад: кнопка A — как Пробел, Start — пауза.",
+  "d.elder.totemfull": "Смотри: все семь гнёзд уже светятся! Лиановый лифт у Великой сейбы проснулся.",
+  "d.zuzu.next": "Бжжж! Ты уже играл в «{sport}»? Там тебя ждёт чемпион!",
+  "d.zuzu.done": "Бжжж! Чемпион Кубка джунглей! Сможешь собрать три звезды в каждом виде?",
+  "pad.warmCard": "Сначала короткая разминка против двух игрунок: до 3 очков.",
 });
 
 /* ---- i18n/all.zh-Hant.js ---- */
@@ -2369,6 +2533,21 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "vc.bonk": "咚！", "vc.buzz": "嗡嗡！", "vc.top": "到樹頂了！", "vc.sloaneTop": "絲隆先到了",
   "vc.hintTouch": "圓圈變綠時點一下！", "vc.hintKeys": "圓圈變綠時按空白鍵！",
   "vc.hintStartTouch": "藤蔓盪到你上方時點一下", "vc.hintStartKeys": "藤蔓盪到你上方時按空白鍵",
+  "res.lostBig": "試得好！",
+  "res.wonSub.paddle": "好精彩的對打！",
+  "res.wonSub.vine": "好厲害的攀爬！",
+  "res.wonSub.seed": "好準的射擊！",
+  "res.wonSub.rapids": "好精彩的比賽！",
+  "res.wonSub.frog": "好好聽的歌！",
+  "res.wonSub.kick": "好漂亮的一腳！",
+  "res.wonSub.leaf": "好精彩的滑行！",
+  "res.cup": "盃賽點數",
+  "res.bandana": "你得到了{name}頭巾！到「造型」戴上它。",
+  "intro.pad": "手把：A 鍵和空白鍵一樣，Start 鍵暫停。",
+  "d.elder.totemfull": "你看：七個凹槽現在全都亮了！大木棉樹的藤蔓升降梯醒過來了。",
+  "d.zuzu.next": "嗡嗡！你玩過{sport}了嗎？那裡的冠軍在等你喔！",
+  "d.zuzu.done": "嗡嗡！叢林盃冠軍！你能在每項運動都拿到三顆星嗎？",
+  "pad.warmCard": "先和兩隻狨猴做個快速暖身：先拿 3 分的贏。",
 });
 
 /* ---- i18n/frog.en.js ---- */
@@ -2416,8 +2595,8 @@ I18N.en = Object.assign(I18N.en || {}, {
   'ls.pop': 'Pop!', 'ls.hop': 'Hop! +30', 'ls.bonk': 'Bonk!', 'ls.low': 'Too low!', 'ls.wipeout': 'Wipeout!',
   'ls.mult': 'x{n}', 'ls.pend': '{n}',
   'ls.youWin': 'You beat Kiki!', 'ls.kikiWins': 'Kiki wins this time',
-  'ls.hintTouch': 'Tap on a ramp to pop! In the air, swipe or press a trick. Land with no trick going.',
-  'ls.hintKeys': 'Space on a ramp to pop! In the air: Left / Right Spin, Up Flip, Down Grab. Land with no trick going.',
+  'ls.hintTouch': 'Tap on a ramp to pop! In the air, swipe or press a trick. Finish your trick before you land!',
+  'ls.hintKeys': 'Space on a ramp to pop! In the air: Left / Right Spin, Up Flip, Down Grab. Finish your trick before you land!',
 });
 
 /* ---- i18n/paddle.en.js ---- */
@@ -2429,6 +2608,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'pad.perfect': 'Perfect!', 'pad.good': 'Good!', 'pad.ok': 'OK', 'pad.early': 'Too early!', 'pad.miss': 'Miss!', 'pad.smash': 'Smash!',
   'pad.pounce': 'POUNCE!', 'pad.pounceMeter': 'Pounce', 'pad.pounceReady': 'Pounce ready!',
   'pad.point': 'Your point!', 'pad.pointJada': 'Point to Jada', 'pad.pointMarm': 'Point to the marmosets',
+  'pad.warmCard': 'First, a quick warm-up against two marmosets: first to 3.',
   'pad.warm': 'Warm-up: first to 3', 'pad.warmBanner': 'Warm-up!', 'pad.warmDone': 'Warm-up done!',
   'pad.hintTouch': 'Tap when the ball is in the glow!', 'pad.hintKeys': 'Press Space when the ball is in the glow!',
   'pad.hintServeTouch': 'Tap to serve', 'pad.hintServeKeys': 'Space to serve',
@@ -2577,12 +2757,15 @@ function resize() {
   const cssW = Math.max(200, CV.clientWidth || window.innerWidth || 320), cssH = Math.max(200, CV.clientHeight || window.innerHeight || 240);
   let dpr = dpr0, bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
   const short = Math.min(bw, bh);
-  // the short side ends up about 240 virtual pixels (never under 1x)
-  const S = Math.max(1, Math.round(short / 240));
-  // a small 1x screen (a short laptop window, split screen): fewer canvas pixels, stretched by the browser (still
-  // nearest-pixel, never blurred), so the words are not tiny 7 px text
-  if (S === 1 && short > 280) {
-    const f = Math.min(1.6, short / 240);
+  // the short side ends up about 240 virtual pixels; on a small screen (a phone on its side, a short window) fewer,
+  // down to 200, so one virtual pixel is at least about 1.6 CSS pixels and the words stay big enough to read
+  const want = Math.round(clamp(Math.min(cssW, cssH) / 1.6, 200, 240));
+  let S = Math.max(1, Math.round(short / want));
+  while (S > 1 && short / S < 180) S--;
+  // too many rows at a whole scale (a 1x screen): fewer canvas pixels, stretched by the browser (still nearest-pixel,
+  // never blurred), so the words are not tiny 7 px text
+  if (short / S > want * 1.15) {
+    const f = short / S / want;
     dpr = dpr0 / f; bw = Math.round(cssW * dpr); bh = Math.round(cssH * dpr);
   }
   if (CV.width !== bw) CV.width = bw;
@@ -2720,6 +2903,7 @@ const GLYPHS = {
   161: [16, 0, 16, 16, 16, 16, 16], 191: [4, 0, 4, 8, 16, 17, 14], 215: [0, 17, 10, 4, 10, 17, 0], 176: [8, 20, 8, 0, 0, 0, 0],
   9829: [0, 10, 31, 31, 14, 4, 0], 9733: [4, 4, 31, 14, 14, 27, 0], 8594: [0, 4, 2, 31, 2, 4, 0], 8592: [0, 4, 8, 31, 8, 4, 0],
   8593: [4, 14, 21, 4, 4, 4, 0], 8595: [4, 4, 4, 21, 14, 4, 0], 183: [0, 0, 0, 16, 0, 0, 0],
+  186: [8, 20, 8, 0, 28, 0, 0], 170: [24, 8, 24, 0, 28, 0, 0],
 };
 // Keys over 31 are character codes (so the table holds no quoted text).
 for (const k of Object.keys(GLYPHS)) if (+k > 31) { GLYPHS[String.fromCharCode(+k)] = GLYPHS[k]; delete GLYPHS[k]; }
@@ -2789,7 +2973,8 @@ function textBitmap(str, col, edge, scale) {
   let b = arr[scale]; if (b) return b;
   const S = VIEW.S, pad = edge ? 1 : 0;
   if (usesPixel(str)) {
-    const u = pixelUnits(str), w = textW(str, 1), k = S * scale;
+    // whole device pixels per font pixel, so a scale like 1.5 stays crisp (it rounds to the nearest whole size)
+    const u = pixelUnits(str), w = textW(str, 1), k = Math.max(1, Math.round(S * scale));
     const c = canvas((w + pad * 2) * k, (LINE_H + pad * 2) * k), x = c.getContext('2d');
     const paint = (dx, dy, fill) => {
       x.fillStyle = fill; let ox = pad + dx;
@@ -2797,7 +2982,7 @@ function textBitmap(str, col, edge, scale) {
     };
     if (edge) { for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) paint(dx, dy, edge); }
     paint(0, 0, col);
-    b = { c, w: (w + pad * 2) * scale, h: (LINE_H + pad * 2) * scale };
+    b = { c, w: (w + pad * 2) * k / S, h: (LINE_H + pad * 2) * k / S };
   } else {
     const w = textW(str, scale), h = LINE_H * scale;
     const c = canvas((w + 2 + pad * 2) * S, (h + pad * 2) * S), x = c.getContext('2d');
@@ -2823,21 +3008,33 @@ function text(g, str, x, y, opts) {
   return w;
 }
 const NOOPT = {};
-/** Split text into lines that fit maxW (spaces, or any character for scripts without spaces). Cached. */
+/** Split text into lines that fit maxW (at spaces, and between any two characters of Chinese and Japanese). Cached.
+ *  Closing marks (。、！) never start a line (the character before them moves down with them), and in French the space
+ *  before ! ? : ; and inside « » does not break (a lone "!" at the start of a line). */
 const WRAPS = new Map();
+const CJK_CH = '\u2E80-\u9FFF\u3000-\u30FF\uF900-\uFAFF\uFF00-\uFFEF';
+const WRAP_TOKEN = new RegExp(`[^\\S\\u00a0\\u202f]+|[${CJK_CH}]|(?:[^\\s${CJK_CH}]|[\\u00a0\\u202f])+`, 'g');
+const NO_LINE_START = /^[、。，．・：；？！ー）」』】〕〉》｝…‥ぁぃぅぇぉっゃゅょァィゥェォッャュョ!?.,:;)\]}%»]/;
+const FR_SPACES = /^fr\b/.test(LANG);
+const isSpace = w => /^[^\S\u00a0\u202f]+$/.test(w);
 function wrap(str, maxW, scale) {
   scale = scale || 1;
   const key = (TEXT.clear ? 'C' : 'P') + maxW + '|' + scale + '|' + str;
   let lines = WRAPS.get(key); if (lines) return lines;
   lines = [];
-  for (const para of String(str).split('\n')) {
-    const words = /\s/.test(para) ? para.split(/(\s+)/) : Array.from(para);
+  for (let para of String(str).split('\n')) {
+    if (FR_SPACES) para = para.replace(/ ([!?:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+    const words = para.match(WRAP_TOKEN) || [];
     let cur = '';
     for (const w of words) {
       const next = cur + w;
       if (!cur || textW(next.trim(), scale) <= maxW) { cur = next; continue; }
+      if (isSpace(w)) { lines.push(cur.trim()); cur = ''; continue; }
+      // a closing mark may not start the line: the character before it comes along
+      let carry = '';
+      if (NO_LINE_START.test(w) && !/\s$/.test(cur)) { const ch = Array.from(cur); if (ch.length > 1) { carry = ch.pop(); cur = ch.join(''); } }
       if (cur.trim()) lines.push(cur.trim());
-      cur = /^\s+$/.test(w) ? '' : w;
+      cur = carry + w;
       while (textW(cur, scale) > maxW && cur.length > 1) { let n = cur.length - 1; while (n > 1 && textW(cur.slice(0, n), scale) > maxW) n--; lines.push(cur.slice(0, n)); cur = cur.slice(n); }
     }
     if (cur.trim() || !lines.length) lines.push(cur.trim());
@@ -3712,6 +3909,8 @@ UI.starBar = function (g, x, y, w, frac, marks, stars) {
 const FLOATS = []; for (let i = 0; i < 24; i++) FLOATS.push({ on: false, x: 0, y: 0, vy: 0, life: 0, str: '', col: '', scale: 1, w: 0 });
 const FOPT = { align: 'center', col: '', scale: 1 }, BOPT = { align: 'center', col: '', scale: 1 };
 UI.float = function (x, y, str, col, scale) {
+  // a newer word on the same spot pushes the older ones up, so "Perfect!" and "Good!" never sit on top of each other
+  for (let i = 0; i < FLOATS.length; i++) { const o = FLOATS[i]; if (o.on && Math.abs(o.x - x) < 50 && o.y > y - 12 && o.y < y + 12) o.y = y - 12; }
   let f = FLOATS[0]; for (let i = 0; i < FLOATS.length; i++) if (!FLOATS[i].on) { f = FLOATS[i]; break; }
   f.on = true; f.x = x; f.y = y; f.vy = -26; f.life = 1; f.str = str; f.col = col || PAL.white; f.scale = scale || 1;
   f.w = textW(str, f.scale) + 2;   // measured once, so the float can be kept inside the screen
@@ -3732,8 +3931,9 @@ UI.burst = function (x, y, n, col, speed) {
 };
 UI.clearFx = function () { for (const p of PARTS) p.on = false; for (const f of FLOATS) f.on = false; UI.bannerT = 0; };
 /* A big banner across the middle ("GO!", "Feather won!"). */
-UI.bannerStr = ''; UI.bannerT = 0; UI.bannerCol = PAL.r4; UI.bannerMax = 1;
-UI.banner = function (str, col, secs) { UI.bannerStr = str; UI.bannerCol = col || PAL.r4; UI.bannerT = UI.bannerMax = secs || 1.4; };
+UI.bannerStr = ''; UI.bannerT = 0; UI.bannerCol = PAL.r4; UI.bannerMax = 1; UI.bannerY = 0.38;
+/** A banner: the words, their colour, how long, and how far down the screen (0-1, 0.38 by default). */
+UI.banner = function (str, col, secs, y) { UI.bannerStr = str; UI.bannerCol = col || PAL.r4; UI.bannerT = UI.bannerMax = secs || 1.4; UI.bannerY = y || 0.38; };
 UI.update = function (dt) {
   if (UI.pressT > 0) UI.pressT -= dt;
   for (let i = 0; i < FLOATS.length; i++) { const f = FLOATS[i]; if (!f.on) continue; f.y += f.vy * dt; f.vy *= 0.94; f.life -= dt * 0.9; if (f.life <= 0) f.on = false; }
@@ -3750,11 +3950,12 @@ UI.drawFx = function (g) {
   }
   if (UI.bannerT > 0 && UI.bannerStr) {
     const k = 1 - UI.bannerT / UI.bannerMax, sc = VIEW.W < 260 ? 2 : 3;
-    const pop = k < 0.15 ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * 0.38);
+    // it slides in from the right (still, with reduced motion)
+    const pop = k < 0.15 && !BRBX.reduced() ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * UI.bannerY);
     g.globalAlpha = UI.bannerT < 0.25 ? UI.bannerT / 0.25 : 1;
     rect(g, 0, cy - 4, VIEW.W, 12 * sc + 6, 'rgba(27,19,37,0.55)');
     const w = textW(UI.bannerStr, sc);
-    const s2 = w > VIEW.W - 12 ? Math.max(1, sc - 1) : sc;
+    const s2 = w <= VIEW.W - 12 ? sc : textW(UI.bannerStr, sc - 0.5) <= VIEW.W - 12 ? sc - 0.5 : Math.max(1, sc - 1);
     BOPT.col = UI.bannerCol; BOPT.scale = s2;
     text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, BOPT);
     g.globalAlpha = 1;
@@ -3771,7 +3972,7 @@ UI.drawFx = function (g) {
 const SPEAKERS = { cappy: 'cappy_down', mango: 'mango', coco: 'coco_down', pip: 'pip_down', tapir: 'tapir', ants: 'ant', elder: 'elder', zuzu: 'zuzu',
   jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', marm: 'marmoset', sign: '', lift: '' };
 JC.speakers = SPEAKERS;
-const TB = { lines: null, i: 0, shown: 0, full: '', done: null, open: false, t: 0, spoke: false };
+const TB = { lines: null, i: 0, pg: 0, shown: 0, full: '', done: null, open: false, t: 0, spoke: false };
 JC.textbox = TB;
 function voiceRole(key, who) {
   const k = String(key || ''); let best = '';
@@ -3780,31 +3981,56 @@ function voiceRole(key, who) {
 }
 function voiceOn() { try { return !BRBX.muted() && typeof BRB.aiVoice === 'function' && BRB.aiVoice(LANG); } catch (e) { return false; } }
 TB.start = function (lines, done) {
-  TB.lines = lines; TB.i = 0; TB.done = done || null; TB.open = true; TB.t = 0;
+  TB.lines = lines; TB.i = 0; TB.done = done || null; TB.open = true; TB.t = 0; TB.pg = 0;
   if (voiceOn()) { try { lines.forEach(l => BRB.prefetchSpeech([t(l.key, l.vars)], { lang: LANG, voice: voiceRole(l.key, l.who) })); } catch (e) { /* older SDK */ } }
   TB.load();
 };
 TB.load = function () {
-  const l = TB.lines[TB.i]; TB.full = t(l.key, l.vars); TB.shown = 0; TB.t = 0;
+  const l = TB.lines[TB.i]; TB.full = t(l.key, l.vars); TB.shown = 0; TB.t = 0; TB.pg = 0;
   TB.spoke = false;
   if (voiceOn()) { try { TB.spoke = !!BRB.speak(TB.full, { lang: LANG, voice: voiceRole(l.key, l.who) }); } catch (e) { TB.spoke = false; } }
 };
 TB.stop = function () { if (TB.spoke) { try { BRB.stopSpeaking(); } catch (e) { /* ignore */ } TB.spoke = false; } };
+/* The box's place and the line cut into pages of 4 rows (a long line, or a long language, gets a next page: tap to
+   read on). Typing counts the characters actually drawn, so nothing is lost where a line breaks (CJK breaks between
+   characters, with no space eaten). Cached per line, width and text style. */
+const TB_ROWS = 4, TBL = { key: '', x: 0, y: 0, w: 0, h: 0, tx: 0, tw: 0, px: 0, pages: [[]], lens: [0] };
+function tbLayout() {
+  const l = TB.lines[TB.i], sp = SPEAKERS[l.who] ? SPRITES[SPEAKERS[l.who]] : null;
+  const w = Math.min(VIEW.W - 8, 380), h = 64, x = Math.round((VIEW.W - w) / 2), y = VIEW.H - h - 8;
+  const pw = sp ? 36 : 0, ix = x + 7, iw = w - 14;
+  const tw = sp ? iw - pw - 7 : iw - 4, tx = sp ? (RTL ? ix + 2 : ix + pw + 5) : ix + 2;
+  const key = TB.full + '|' + tw + '|' + TEXT.clear + '|' + VIEW.gen;
+  TBL.x = x; TBL.y = y; TBL.w = w; TBL.h = h; TBL.tx = tx; TBL.tw = tw; TBL.px = RTL ? ix + iw - pw : ix;
+  if (TBL.key !== key) {
+    const all = wrap(TB.full, tw); TBL.pages = []; TBL.lens = [];
+    for (let i = 0; i < all.length; i += TB_ROWS) { const pg = all.slice(i, i + TB_ROWS); TBL.pages.push(pg); TBL.lens.push(pg.reduce((n, ln) => n + ln.length, 0)); }
+    if (!TBL.pages.length) { TBL.pages.push(['']); TBL.lens.push(0); }
+    TBL.key = key;
+  }
+  return TBL;
+}
+TB.pages = () => (TB.open ? tbLayout().pages.length : 0);
+const pageLen = () => { const L = tbLayout(); return L.lens[Math.min(TB.pg, L.lens.length - 1)]; };
 TB.advance = function () {
   if (!TB.open) return;
-  if (TB.shown < TB.full.length) { TB.shown = TB.full.length; return; }
+  if (TB.shown < pageLen()) { TB.shown = pageLen(); return; }
   AUDIO.sfx('blip');
+  if (TB.pg < tbLayout().pages.length - 1) { TB.pg++; TB.shown = 0; return; }   // the next page of the same line
   TB.i++;
   if (TB.i >= TB.lines.length) { TB.stop(); TB.open = false; const d = TB.done; TB.done = null; TB.lines = null; if (d) d(); return; }
   TB.load();
 };
-TB.skipAll = function () { while (TB.open) { TB.shown = TB.full.length; TB.advance(); } };
+/** Finish the line being typed (every page of it) and go on to the next line. */
+TB.nextLine = function () { if (!TB.open) return; TB.pg = tbLayout().pages.length - 1; TB.shown = pageLen(); TB.advance(); };
+TB.skipAll = function () { let n = 0; while (TB.open && n++ < 500) TB.nextLine(); };
 TB.update = function (dt) {
   if (!TB.open) return;
   TB.t += dt;
-  if (TB.shown < TB.full.length) {
+  const len = pageLen();
+  if (TB.shown < len) {
     const before = TB.shown | 0;
-    TB.shown = Math.min(TB.full.length, TB.shown + dt * 45);
+    TB.shown = Math.min(len, TB.shown + dt * 45);
     if (!TB.spoke && (TB.shown | 0) !== before && (before % 3) === 0) AUDIO.sfx('blip');
   }
 };
@@ -3814,36 +4040,35 @@ TB.input = function (e) {
   if ((e.type === 'press' && (e.key === 'a' || e.key === 'b')) || e.type === 'tap') { if (e.key !== 'b') TB.advance(); return true; }
   return e.type === 'down' || e.type === 'up' || e.type === 'press' || e.type === 'release' || e.type === 'swipe' || e.type === 'move';
 };
+const TB_TEXT = { col: PAL.ink, edge: null, align: 'left' }, TB_NAME = { col: PAL.white };
 TB.draw = function (g) {
   if (!TB.open) return;
   const l = TB.lines[TB.i], who = l.who, sp = SPEAKERS[who] ? SPRITES[SPEAKERS[who]] : null;
-  const w = Math.min(VIEW.W - 8, 380), x = Math.round((VIEW.W - w) / 2), h = 58, y = VIEW.H - h - 4;
+  const L = tbLayout(), x = L.x, y = L.y, w = L.w, h = L.h;
   const inner = UI.card(g, x, y, w, h);
-  let tx = inner.x + 2, tw = inner.w - 4;
   if (sp) {
-    const pw = 36; box(g, inner.x, inner.y + 1, pw, pw, '#cde8a8', PAL.ink);
-    rect(g, inner.x + 1, inner.y + 2 + pw - 10, pw - 2, 8, '#a8d27a');
-    const k = sp.w > 18 ? 1 : 2; sprK(g, sp, inner.x + ((pw - sp.w * k) >> 1), inner.y + 1 + pw - 2 - sp.h * k, k);
-    tx = inner.x + pw + 5; tw = inner.w - pw - 7;
+    // the speaker's portrait (on the right in Arabic and Hebrew)
+    const pw = 36, px = L.px; box(g, px, inner.y + 1, pw, pw, '#cde8a8', PAL.ink);
+    rect(g, px + 1, inner.y + 2 + pw - 10, pw - 2, 8, '#a8d27a');
+    const k = sp.w > 18 ? 1 : 2; sprK(g, sp, px + ((pw - sp.w * k) >> 1), inner.y + 1 + pw - 2 - sp.h * k, k, RTL);
   }
   const name = t('name.' + who);
   if (name && name !== 'name.' + who) {
-    const nw = textW(name) + 10;
-    box(g, x + 10, y - 9, nw, 13, '#3d8a3a', PAL.ink); rect(g, x + 11, y - 8, nw - 2, 1, '#6ad34a');
-    text(g, name, x + 15, y - 8, { col: PAL.white });
+    const nw = textW(name) + 10, nx = RTL ? x + w - 10 - nw : x + 10;
+    box(g, nx, y - 9, nw, 13, '#3d8a3a', PAL.ink); rect(g, nx + 1, y - 8, nw - 2, 1, '#6ad34a');
+    text(g, name, nx + 5, y - 8, TB_NAME);
   }
-  const shown = TB.full.slice(0, TB.shown | 0);
-  const lines = wrap(TB.full, tw);
-  let used = 0;
-  for (let i = 0; i < lines.length && i < 4; i++) {
-    const ln = lines[i], left = shown.length - used;
-    if (left <= 0) break;
-    const part = left >= ln.length ? ln : ln.slice(0, left);
-    text(g, part, RTL ? tx + tw : tx, inner.y + 1 + i * 11, { col: PAL.ink, edge: null, align: RTL ? 'right' : 'left' });
-    used += ln.length + 1;
+  const page = L.pages[Math.min(TB.pg, L.pages.length - 1)];
+  TB_TEXT.align = RTL ? 'right' : 'left';
+  let left = TB.shown | 0;
+  for (let i = 0; i < page.length && left > 0; i++) {
+    const ln = page[i], part = left >= ln.length ? ln : ln.slice(0, left);
+    text(g, part, RTL ? L.tx + L.tw : L.tx, inner.y + 1 + i * 11, TB_TEXT);
+    left -= ln.length;
   }
-  if (TB.shown >= TB.full.length && ((TB.t * 2) | 0) % 2 === 0) {
-    const ax = x + w - 14, ay = y + h - 13;
+  // the blinking "next" arrow, in its own space under the last row (on the left in Arabic and Hebrew)
+  if (TB.shown >= pageLen() && ((TB.t * 2) | 0) % 2 === 0) {
+    const ax = RTL ? x + 10 : x + w - 17, ay = y + h - 12;
     rect(g, ax, ay, 7, 1, PAL.r2); rect(g, ax + 1, ay + 1, 5, 1, PAL.r2); rect(g, ax + 2, ay + 2, 3, 1, PAL.r2); rect(g, ax + 3, ay + 3, 1, 1, PAL.r2);
   }
 };
@@ -4459,7 +4684,8 @@ function talkLines(n) {
       const q = qState('specs');
       if (q === 'got') { giveReward('specs'); return L('elder', 'qthanks'); }
       // the first talk: the totem's story, then straight on to her lost spectacles (so nobody misses the quest)
-      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
+      // (with all seven Feathers already won, she says so instead of telling of the empty sockets)
+      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1').concat(f >= 7 ? L('elder', 'totemfull') : L('elder', 'totem2', 'totem3'), q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
       return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
@@ -4468,7 +4694,10 @@ function talkLines(n) {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
+      if (f >= 7) return L('zuzu', SAVE.data.cup ? 'done' : 'liftopen');
+      // news about the next champion still to beat (Jada first)
+      const next = JC.sportOrder.find(id => !SAVE.data.feathers[id]);
+      return next === 'paddle' ? L('zuzu', 'after') : [{ who: 'zuzu', key: 'd.zuzu.next', vars: { sport: t('sport.' + next) } }];
     }
     case 'marm': return L('marm', 'hi');
     default: {
@@ -4721,15 +4950,6 @@ function drawTotemSockets(g, ox, oy) {
   for (let i = 0; i < 7; i++) {
     const id = JC.sportOrder[i], s = sk[i], x = s.x - ox, y = s.y - oy;
     const lit = SAVE.data.feathers[id], fresh = OW.celebrate && OW.celebrate.id === id;
-    if (fresh && OW.celebrate.t < 1.5) {
-      // the new feather flies into its socket
-      const k = easeOut(clamp(OW.celebrate.t / 1.5, 0, 1));
-      const fx = lerp(VIEW.W / 2, x, k), fy = lerp(VIEW.H / 2, y - 8, k);
-      spr(g, featherSprite(SPORT_COLOURS[id]), fx - 3, fy - 5);
-      if (((OW.celebrate.t * 20) | 0) % 3 === 0) UI.particle(fx + ox - CAM.x, fy, (Math.random() - 0.5) * 30, -10, SPORT_COLOURS[id], 0.5, 1, 20);
-      disc(g, x, y, 3, OUT); disc(g, x, y, 2, '#3b2416');
-      continue;
-    }
     disc(g, x, y, 3, OUT);
     if (lit) {
       if (fresh) { const r = 4 + Math.round(Math.sin(OW.celebrate.t * 8) * 1.5); g.globalAlpha = 0.5; disc(g, x, y - 4, r + 3, SPORT_COLOURS[id]); g.globalAlpha = 1; }
@@ -4779,10 +4999,21 @@ OW.drawHud = function (g) {
   // the seven Feathers, top left
   const n = 7, sw = 11, x0 = 6, y0 = 6;
   box(g, x0 - 2, y0 - 2, n * sw + 4, 18, 'rgba(27,19,37,0.72)', PAL.ink);
+  const cel = OW.celebrate, flying = cel && cel.t < 1.5;
   for (let i = 0; i < n; i++) {
-    const id = JC.sportOrder[i], on = SAVE.data.feathers[id];
-    if (on) spr(g, featherSprite(SPORT_COLOURS[id]), x0 + i * sw + 2, y0 + 1);
-    else spr(g, featherSprite('#4a4060'), x0 + i * sw + 2, y0 + 1);
+    const id = JC.sportOrder[i], on = SAVE.data.feathers[id] && !(flying && cel.id === id), hx = x0 + i * sw + 2;
+    if (on) {
+      // the new Feather's place glows a moment after it lands
+      if (cel && cel.id === id) { g.globalAlpha = 0.6 * (1 - (cel.t - 1.5) / 2.5); disc(g, hx + 3, y0 + 6, 7, SPORT_COLOURS[id]); g.globalAlpha = 1; }
+      spr(g, featherSprite(SPORT_COLOURS[id]), hx, y0 + 1);
+    } else spr(g, featherSprite('#4a4060'), hx, y0 + 1);
+  }
+  // a new Feather flies from the middle of the screen into its place in the bar (the totem in the village lights too)
+  if (flying) {
+    const i = JC.sportOrder.indexOf(cel.id), k = easeOut(clamp(cel.t / 1.5, 0, 1));
+    const tx = x0 + i * sw + 2, fx = lerp(VIEW.W / 2, tx, k), fy = lerp(VIEW.H / 2, y0 + 1, k) - Math.sin(k * Math.PI) * 30;
+    sprK(g, featherSprite(SPORT_COLOURS[cel.id]), fx - 3 * (2 - k), fy - 5 * (2 - k), k < 0.6 ? 2 : 1);
+    if (((cel.t * 20) | 0) % 3 === 0) UI.particle(fx, fy, (Math.random() - 0.5) * 30, -10, SPORT_COLOURS[cel.id], 0.5, 1, 20);
   }
   // map button, top right
   UI.iconButton(g, 'map', VIEW.W - Math.max(14, VIEW.tap / 2 + 4), Math.max(14, VIEW.tap / 2 + 4), UI.icons.map, { col: '#3d8a3a' });
@@ -4790,8 +5021,10 @@ OW.drawHud = function (g) {
   if (OW.prompt && !TB.open) {
     const sp = OW.prompt, name = t('sport.' + sp);
     const msg = INPUT.showTouch() ? t('arch.tap', { sport: name }) : t('arch.key', { sport: name });
-    const w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
-    UI.button(g, 'prompt', x, y, w, h, msg, { col: SPORT_COLOURS[sp], tcol: PAL.white, icon: UI.icons.play, glow: ((OW.time * 2) | 0) % 2 === 0 });
+    // a long sport name (Portuguese, Dutch) goes onto two lines in a taller button instead of being squeezed
+    const long = textW(msg) + 30 > VIEW.W - 20;
+    const w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(long ? 28 : 22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
+    UI.button(g, 'prompt', x, y, w, h, msg, { col: SPORT_COLOURS[sp], tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
   }
   // touch controls
   if (INPUT.showTouch() && !TB.open) {
@@ -4896,11 +5129,14 @@ function finishRound() {
   RUN.newFeather = res.won && !d.feathers[id];
   if (res.won) d.feathers[id] = true;
   if (RUN.newFeather && SAVE.featherCount() === 7) d.flags.allFeathers = 1;
-  if (res.stars === 3) JC.grantBandana('berry', false);   // the first three-star round: a berry bandana
+  // the first three-star round: a berry bandana (said on the card itself, which would cover a banner)
+  RUN.newBandana = res.stars === 3 && JC.grantBandana('berry', false, true);
+  if (RUN.newBandana) AUDIO.sfx('pickup');
   SAVE.write();
   // the platform hears about the round when the player leaves this card (Retry, Back, or leaving the sport), so the
-  // site's "New best" message never lands on the card's buttons
-  RUN.report = { won: res.won, pts: SAVE.cupPoints() };
+  // site's "New best" message never lands on the card's buttons. Its number is the Cup points, shown on the card too.
+  RUN.cupPts = SAVE.cupPoints();
+  RUN.report = { won: res.won, pts: RUN.cupPts };
   RUN.phase = 'results'; RUN.cardT = 0; RUN.starsShown = 0;
   AUDIO.music(''); JC.audioWant = '';
   AUDIO.sfx(res.won ? 'win' : 'lose');
@@ -4986,27 +5222,42 @@ function drawIntro(g) {
   dimBackdrop(g, col);
   const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230, ps = compact ? 40 : 52, bh0 = Math.max(22, VIEW.tap);
   // tall enough for the words (longer in some languages), never taller than the screen
-  const cw = w - 14, need = ps + 6 + 4 + 4 + 18 + 6 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + wrap(t('sport.' + id + '.touch'), cw - 14).length + wrap(t('sport.' + id + '.keys'), cw - 14).length);
+  // a note from the sport (Paddle Smash's first warm-up), and the gamepad line for a player on a gamepad
+  const noteStr = sp.introNote ? sp.introNote(RUN.ctx) || '' : '';
+  const introLines = () => (noteStr ? ['note'] : []).concat(INPUT.device === 'pad' ? ['pad', 'keys'] : INPUT.showTouch() ? ['touch', 'keys'] : ['keys', 'touch']);
+  const cw = w - 14, lineStr = k => (k === 'note' ? noteStr : k === 'pad' ? t('intro.pad') : t('sport.' + id + '.' + k));
+  const need = ps + 6 + 4 + 4 + 18 + 6 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + introLines().reduce((n, k) => n + wrap(lineStr(k), cw - 14).length, 0)) + 2 * introLines().length;
   const h = Math.min(VIEW.H - 12, Math.max(compact ? 186 : 222, need)), x = Math.round((VIEW.W - w) / 2), y = Math.round((VIEW.H - h) / 2);
   const c = UI.card(g, x, y, w, h);
-  portrait(g, ARCHES[id].champ, c.x + 2, c.y + 2, ps, shade(col, 0.55));
-  const tx = c.x + ps + 8, tw = c.w - ps - 10;
-  const title = t('sport.' + id), big = textW(title, 2) <= tw ? 2 : 1;
-  text(g, title, tx, c.y + 2, { col: col, edge: PAL.ink, scale: big, maxW: tw });
-  text(g, t('vs.' + ARCHES[id].champ), tx, c.y + 4 + 12 * big, { col: PAL.ink, edge: null, maxW: tw });
+  portrait(g, ARCHES[id].champ, RTL ? c.x + c.w - ps - 2 : c.x + 2, c.y + 2, ps, shade(col, 0.55));
+  const tx = RTL ? c.x + c.w - ps - 8 : c.x + ps + 8, tw = c.w - ps - 10, al = RTL ? 'right' : 'left';
+  // every sport's title at the same size on this screen: the biggest that fits all seven
+  const title = t('sport.' + id), big = titleScale(JC.sportOrder.map(s2 => t('sport.' + s2)), tw);
+  text(g, title, tx, c.y + 2, { col: col, edge: PAL.ink, scale: big, maxW: tw, align: al });
+  text(g, t('vs.' + ARCHES[id].champ), tx, c.y + 4 + Math.round(12 * big), { col: PAL.ink, edge: null, maxW: tw, align: al });
   let yy = c.y + ps + 6;
   yy += textBlock(g, t('sport.' + id + '.goal'), c.x + 2, yy, c.w - 4, { col: '#3b2416', edge: null }) + 4;
-  const touchFirst = INPUT.showTouch();
-  const lines = touchFirst ? ['touch', 'keys'] : ['keys', 'touch'];
-  for (const k of lines) {
-    rect(g, c.x + 2, yy + 1, 6, 6, k === 'touch' ? PAL.r3 : PAL.w2);
-    yy += textBlock(g, t('sport.' + id + '.' + k), c.x + 12, yy, c.w - 14, { col: PAL.ink2, edge: null }) + 2;
+  for (const k of introLines()) {
+    const str = k === 'note' ? noteStr : k === 'pad' ? t('intro.pad') : t('sport.' + id + '.' + k);
+    rect(g, RTL ? c.x + c.w - 8 : c.x + 2, yy + 1, 6, 6, k === 'touch' ? PAL.r3 : k === 'pad' ? PAL.p1 : k === 'note' ? PAL.g3 : PAL.w2);
+    yy += textBlock(g, str, RTL ? c.x + 2 : c.x + 12, yy, c.w - 14, { col: PAL.ink2, edge: null }) + 2;
   }
   const bh = Math.max(22, VIEW.tap), bw = Math.min(150, (c.w - 10) / 2);
   const by = y + h - bh - 9;
   UI.button(g, 'back', c.x + 2, by, Math.min(bw, 110), bh, t('btn.back'), { col: '#7a6a8a', icon: UI.icons.back });
   UI.button(g, 'go', c.x + c.w - bw - 2, by, bw, bh, t('btn.play'), { col: '#3fae4a', icon: UI.icons.play });
 }
+/** The biggest title size (2, 1.5 or 1) at which every one of these words fits the width: titles that belong
+ *  together (the seven sports, the map's panels) are drawn at one size instead of some big and some small. */
+const TSCALE = new Map();
+function titleScale(strs, w) {
+  const key = strs.join('|') + '|' + w + '|' + TEXT.clear + '|' + VIEW.gen;
+  let sc = TSCALE.get(key); if (sc) return sc;
+  sc = 1; for (const k of [2, 1.5]) if (strs.every(s2 => textW(s2, k) <= w)) { sc = k; break; }
+  if (TSCALE.size > 200) TSCALE.clear();
+  TSCALE.set(key, sc); return sc;
+}
+JC.titleScale = titleScale;
 function dimBackdrop(g, col) {
   // the sport's own scene behind, darkened (or a leafy pattern before it has started)
   g.fillStyle = shade(col, -0.55); g.fillRect(0, 0, VIEW.W, VIEW.H);
@@ -5023,31 +5274,46 @@ function drawPauseMenu(g) {
   UI.button(g, 'retry', c.x + 4, yy, c.w - 8, bh, t('btn.retry'), { col: PAL.r3, icon: UI.icons.retry }); yy += bh + 4;
   UI.button(g, 'back', c.x + 4, yy, c.w - 8, bh, t('btn.island'), { col: '#7a6a8a', icon: UI.icons.back });
 }
+const bandanaStr = () => t('res.bandana', { name: t('band.berry') });
 function drawResults(g) {
   const res = RUN.result || { score: 0, stars: 0, won: false }, id = RUN.id, col = SPORT_COLOURS[id];
   g.fillStyle = 'rgba(16,10,24,0.55)'; g.fillRect(0, 0, VIEW.W, VIEW.H);
   const k = easeOutBack(clamp(RUN.cardT / 0.35, 0, 1));
   const bh = Math.max(22, VIEW.tap), compact = VIEW.H < 230;
   const w = Math.min(VIEW.W - 12, 320), narrowCard = w - 14 < 250;
-  const h = Math.min(VIEW.H - 10, (compact ? 104 : 118) + bh + (narrowCard ? bh + 4 : 0) + (RUN.newFeather ? (narrowCard ? 26 : 14) : 0)), x = Math.round((VIEW.W - w) / 2);
+  const extra = (RUN.newFeather ? wrap(t('res.feather', { sport: t('sport.' + id) }), w - 30).length * LINE_H + 2 : 0) + (RUN.newBandana ? wrap(bandanaStr(), w - 30).length * LINE_H + 2 : 0);
+  const subPush = Math.max(0, 6 + 24 + LINE_H - (compact ? 30 : 40) - 6);   // a big title and its line can reach below a small portrait
+  const h = Math.min(VIEW.H - 10, (compact ? 104 : 118) + 12 + subPush + bh + (narrowCard ? bh + 4 : 0) + extra), x = Math.round((VIEW.W - w) / 2);
   const y = Math.round((VIEW.H - h) / 2 + (1 - k) * 40);
   const c = UI.card(g, x, y, w, h);
   const ps = compact ? 30 : 40;
-  portrait(g, ARCHES[id].champ, c.x + 2, c.y + 2, ps, shade(col, 0.55));
-  const head = t(res.won ? 'res.won' : 'res.lost'), tw = c.w - ps - 8;
-  text(g, head, c.x + ps + 8, c.y + 2, { col: res.won ? '#2f8a3f' : '#b4302f', edge: null, scale: textW(head, 2) <= tw ? 2 : 1 });
-  text(g, t(res.won ? 'res.wonSub' : 'res.lostSub'), c.x + ps + 8, c.y + 28, { col: PAL.ink2, edge: null });
-  let yy = c.y + ps + 6;
-  text(g, t('res.score'), c.x + 4, yy, { col: PAL.ink, edge: null });
-  text(g, fmt(res.score), c.x + c.w - 4, yy, { col: PAL.ink, edge: null, align: 'right' }); yy += 12;
-  text(g, t(RUN.newBest ? 'res.newBest' : 'res.best'), c.x + 4, yy, { col: RUN.newBest ? '#c8641a' : PAL.ink2, edge: null });
-  text(g, fmt(Math.max(res.score, RUN.prevBest)), c.x + c.w - 4, yy, { col: PAL.ink2, edge: null, align: 'right' }); yy += 14;
+  portrait(g, ARCHES[id].champ, RTL ? c.x + c.w - ps - 2 : c.x + 2, c.y + 2, ps, shade(col, 0.55));
+  // a near miss is "So close!"; a big loss is "Good try!" (kind, and true); a win says what the kid just did
+  const close = res.won || (res.frac !== undefined ? res.frac / 0.3 : 0) >= 0.5;
+  const head = t(res.won ? 'res.won' : close ? 'res.lost' : 'res.lostBig'), tw = c.w - ps - 8, hx = RTL ? c.x + c.w - ps - 8 : c.x + ps + 8, al = RTL ? 'right' : 'left';
+  const sub = res.won ? t('res.wonSub.' + id) : t('res.lostSub');
+  const hs = titleScale([t('res.won'), t('res.lost'), t('res.lostBig')], tw);
+  text(g, head, hx, c.y + 2, { col: res.won ? '#2f8a3f' : '#b4302f', edge: null, scale: hs, align: al });
+  const subH = textBlock(g, sub, RTL ? c.x + 2 : hx, c.y + 4 + Math.round(12 * hs), tw, { col: PAL.ink2, edge: null });
+  let yy = Math.max(c.y + ps + 6, c.y + 6 + Math.round(12 * hs) + subH);
+  const L0 = RTL ? c.x + c.w - 4 : c.x + 4, R0 = RTL ? c.x + 4 : c.x + c.w - 4, la = RTL ? 'right' : 'left', ra = RTL ? 'left' : 'right';
+  text(g, t('res.score'), L0, yy, { col: PAL.ink, edge: null, align: la });
+  text(g, fmt(res.score), R0, yy, { col: PAL.ink, edge: null, align: ra }); yy += 12;
+  text(g, t(RUN.newBest ? 'res.newBest' : 'res.best'), L0, yy, { col: RUN.newBest ? '#c8641a' : PAL.ink2, edge: null, align: la });
+  text(g, fmt(Math.max(res.score, RUN.prevBest)), R0, yy, { col: PAL.ink2, edge: null, align: ra }); yy += 12;
+  // the Cup points: the number the site's "New best" message shows (stars, Feathers and the Cup, over every sport)
+  text(g, t('res.cup'), L0, yy, { col: '#2f6a8a', edge: null, align: la });
+  text(g, fmt(RUN.cupPts || 0), R0, yy, { col: '#2f6a8a', edge: null, align: ra }); yy += 14;
   const frac = res.frac !== undefined ? res.frac : res.stars / 3;
   UI.starBar(g, c.x + 8, yy, c.w - 20, clamp(frac * clamp(RUN.cardT / 1.2, 0, 1), 0, 1), res.marks || null, RUN.starsShown);
   yy += 16;
   if (RUN.newFeather) {
-    spr(g, featherSprite(col), c.x + 4, yy - 1);
-    yy += textBlock(g, t('res.feather', { sport: t('sport.' + id) }), c.x + 14, yy, c.w - 16, { col: '#3b2416', edge: null }) + 2;
+    spr(g, featherSprite(col), RTL ? c.x + c.w - 10 : c.x + 4, yy - 1);
+    yy += textBlock(g, t('res.feather', { sport: t('sport.' + id) }), RTL ? c.x + 2 : c.x + 14, yy, c.w - 16, { col: '#3b2416', edge: null }) + 2;
+  }
+  if (RUN.newBandana) {
+    rect(g, RTL ? c.x + c.w - 11 : c.x + 4, yy + 2, 7, 5, BANDANAS.berry); rect(g, RTL ? c.x + c.w - 11 : c.x + 4, yy + 2, 7, 1, shade(BANDANAS.berry, 0.4));
+    yy += textBlock(g, bandanaStr(), RTL ? c.x + 2 : c.x + 14, yy, c.w - 16, { col: '#7a2a6a', edge: null }) + 2;
   }
   const narrow = c.w < 250, bw = narrow ? c.w - 4 : (c.w - 6) / 2;
   const by = y + h - bh - 9 - (narrow ? bh + 4 : 0);
@@ -5058,7 +5324,7 @@ RUN.draw = function (g) {
   const sp = RUN.sport, ctx = RUN.ctx;
   if (RUN.phase === 'intro') { drawIntro(g); UI.drawFx(g); return; }
   try { sp.draw(g, ctx); } catch (e) { console.error(e); }
-  UI.drawFx(g);
+  if (RUN.phase !== 'results') UI.drawFx(g);
   if (RUN.phase === 'play' || RUN.phase === 'count' || RUN.phase === 'outro') {
     UI.iconButton(g, 'pause', Math.max(14, VIEW.tap / 2 + 4), Math.max(14, VIEW.tap / 2 + 4), UI.icons.pause, { col: '#5b3a24' });
   }
@@ -5070,7 +5336,7 @@ RUN.draw = function (g) {
     g.globalAlpha = 1;
   }
   if (RUN.phase === 'paused') drawPauseMenu(g);
-  if (RUN.phase === 'results') drawResults(g);
+  if (RUN.phase === 'results') { drawResults(g); UI.drawFx(g); }
   TB.draw(g);
 };
 
@@ -5300,7 +5566,8 @@ MAP.onInput = function (e) {
   if (!id) return;
   AUDIO.sfx('select');
   if (id === 'close') { if (MAP.tab === 'map') closeMap(); else { MAP.tab = MAP.tab === 'confirm' ? 'settings' : 'map'; UI.setFocus('close'); } return; }
-  if (id.startsWith('go:')) { const sp = id.slice(3), a = ARCHES[sp]; JC.go('world', { at: [a.x, a.y + 1, 'up'] }); return; }
+  // fast travel lands right in the arch, so its "play" prompt shows at once
+  if (id.startsWith('go:')) { const sp = id.slice(3), a = ARCHES[sp]; JC.go('world', { at: [a.x, a.y, 'up'] }); return; }
   if (id === 'settings' || id === 'controls' || id === 'style') { MAP.tab = id; UI.setFocus('close'); return; }
   if (id === 'sound') { BRBX.mute(!BRBX.muted()); AUDIO.sync(); return; }
   if (id === 'font') { SAVE.data.settings.font = SAVE.data.settings.font === 'clear' ? 'pixel' : 'clear'; SAVE.apply(); SAVE.write(); return; }
@@ -5317,6 +5584,7 @@ function cycleCos(kind) {
   else opts = [''].concat(c.own.filter(x => x.startsWith(kind + '_')).map(x => x.slice(kind.length + 1)));
   const i = opts.indexOf(c[kind]); c[kind] = opts[(i + 1) % opts.length];
   if (kind === 'bandana') JC.refreshCappy();
+  STORY.cache = {};   // the painted panels show Cappy's hat and flag: paint them again
   SAVE.write();
 }
 function panelFrame(g, titleKey) {
@@ -5326,10 +5594,16 @@ function panelFrame(g, titleKey) {
   const w = Math.min(VIEW.W - 8, 520), h = VIEW.H - 8, x = Math.round((VIEW.W - w) / 2), y = 4;
   const c = UI.card(g, x, y, w, h);
   const r = Math.max(10, (VIEW.tap / 2) | 0);
-  text(g, t(titleKey), c.x + 2, c.y + Math.max(0, r - 8), { col: PAL.ink, edge: null, scale: textW(t(titleKey), 2) < c.w - r * 2 - 10 ? 2 : 1 });
-  UI.iconButton(g, 'close', c.x + c.w - r, c.y + r - 2, UI.icons.close, { col: '#b4302f' });
-  return { x: c.x, y: c.y + r * 2 + 2, w: c.w, h: c.h - r * 2 - 2 };
+  // the four panel titles at one size; the title sits beside the close button (mirrored in Arabic and Hebrew), and the
+  // panel's content starts clear below it (the clear font fills its whole line, so a gap is needed)
+  const sc = titleScale(PANEL_TITLES.map(k => t(k)), c.w - r * 2 - 10), th = Math.ceil(LINE_H * sc);
+  const ty = Math.max(c.y - 2, Math.round(c.y + r - 2 - th / 2));
+  text(g, t(titleKey), RTL ? c.x + c.w - 2 : c.x + 2, ty, { col: PAL.ink, edge: null, scale: sc, align: RTL ? 'right' : 'left' });
+  UI.iconButton(g, 'close', RTL ? c.x + r : c.x + c.w - r, c.y + r - 2, UI.icons.close, { col: '#b4302f' });
+  const top = Math.max(c.y + r * 2 + 2, ty + th + 4);
+  return { x: c.x, y: top, w: c.w, h: c.y + c.h - top };
 }
+const PANEL_TITLES = ['map.title', 'settings.title', 'controls.title', 'style.title'];
 function drawFeatherRow(g, x, y) {
   for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
   text(g, label('map.feathers', SAVE.featherCount()), x + 82, y, ROWTEXT2);
@@ -5344,19 +5618,26 @@ function drawMapTab(g) {
   const rh = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap), GAP = 3;
   const listH = area.h - bh - 6;                  // room above the buttons
   const rowsH = cols => Math.ceil(7 / cols) * (rh + GAP);
+  // the sport names are never squeezed: a layout must leave them room, on one line beside the stars and best, or on
+  // a line of their own above them (a tall row)
+  const nameW = JC.sportOrder.reduce((m, id) => Math.max(m, textW(t('sport.' + id))), 0);
+  const bestW = JC.sportOrder.reduce((m, id) => Math.max(m, textW(SAVE.data.plays[id] ? fmt(SAVE.data.best[id] || 0) : '???')), 0);
+  const colW = (lw, c) => Math.floor((lw - (c - 1) * 4) / c);
+  const oneLine = cw => nameW <= cw - 16 - 34 - bestW - 4, twoLine = cw => rh >= 25 && nameW <= cw - 20;
   // pick the first layout that fits: [minimap?, columns]
-  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0;
-  const tries = land ? [[1, 1], [1, 2], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
-  for (let i = 0; i < tries.length; i++) {
-    const m = !!tries[i][0], c = tries[i][1];
+  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0, found = false;
+  const tries = land ? [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
+  for (let pass = 0; pass < 2 && !found; pass++) for (let i = 0; i < tries.length; i++) {
+    const m = !!tries[i][0], c = tries[i][1], last = pass === 1 && i === tries.length - 1;
+    const names = lw => pass === 1 || oneLine(colW(lw, c)) || twoLine(colW(lw, c));
     if (land && m) {
       const lw = Math.min(c === 1 ? 250 : 330, area.w * (c === 1 ? 0.55 : 0.66));
       const mw = area.w - lw - 6, fit = rowsH(c) + 14 <= listH;
-      if (fit && mw >= 90) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; break; }
+      if (fit && mw >= 90 && names(lw)) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; found = true; break; }
     } else if (m) {
       const mh = listH - 16 - rowsH(c) - 4;
-      if (mh >= 56) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; break; }
-    } else if (rowsH(c) + 16 <= listH || i === tries.length - 1) { withMap = false; cols = c; listW = area.w; break; }
+      if (mh >= 56 && names(area.w)) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; found = true; break; }
+    } else if (((rowsH(c) + 16 <= listH) && names(area.w)) || last) { withMap = false; cols = c; listW = area.w; found = true; break; }
   }
   let mx = area.x, my = area.y, mw = 0, mh = 0;
   if (withMap) {
@@ -5364,6 +5645,7 @@ function drawMapTab(g) {
     const k = sc >= 1 ? Math.floor(sc) : sc;
     mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
     mx = area.x + Math.round((mapW - mw) / 2); my = area.y;
+    if (land && RTL) mx = area.x + area.w - mapW + Math.round((mapW - mw) / 2);
     box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
     g.drawImage(MAP.mini, mx, my, mw, mh);
     const mk = mw / MW;
@@ -5372,53 +5654,75 @@ function drawMapTab(g) {
     if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
   }
   // the Feathers, then the rows
-  const lx = withMap && land ? area.x + area.w - listW : area.x;
+  const lx = withMap && land ? (RTL ? area.x : area.x + area.w - listW) : area.x;
   let ly = withMap && !land ? my + mh + 4 : area.y;
   drawFeatherRow(g, lx, ly); ly += 15;
   const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(7 / cols);
   for (let i = 0; i < 7; i++) {
     const id = JC.sportOrder[i], col = (i / perCol) | 0, row = i % perCol;
-    const x = lx + col * (cw + 4), y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
+    const cx0 = RTL ? lx + listW - cw - col * (cw + 4) : lx + col * (cw + 4);
+    const x = cx0, y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
+    // mirrored in Arabic and Hebrew: the colour strip and icon on the right, the stars and best on the left
+    const X = (dx, ww) => (RTL ? x + w - dx - (ww || 0) : x + dx);
     UI.addHit('go:' + id, x, y, w, rh);
     const focused = UI.showFocus && UI.focusedId() === 'go:' + id;
+    if (focused) rect(g, x - 2, y - 2, w + 4, rh + 4, PAL.r5);   // the keyboard / gamepad focus, as on the buttons
     box(g, x, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
-    rect(g, x + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
-    const ic = iconSprite(id); spr(g, ic, x + 8, y + ((rh - ic.h) >> 1));
-    const best = played ? fmt(SAVE.data.best[id] || 0) : '???';
-    ROWTEXT.maxW = w - 16 - 34 - textW(best) - 4;
-    text(g, t('sport.' + id), x + 16, y + ((rh - 12) >> 1), ROWTEXT);
+    rect(g, X(1, 4), y + 1, 4, rh - 2, SPORT_COLOURS[id]);
+    const ic = iconSprite(id); spr(g, ic, X(8, ic.w), y + ((rh - ic.h) >> 1));
+    const best = played ? fmt(SAVE.data.best[id] || 0) : '???', name = t('sport.' + id);
+    const one = oneLine(w), two = !one && twoLine(w);
+    ROWTEXT.maxW = one || two ? 0 : w - 16 - 34 - textW(best) - 4; ROWTEXT.align = RTL ? 'right' : 'left';
+    const ny = two ? y + 2 : y + ((rh - 12) >> 1), sy = two ? y + rh - 13 : ny;
+    text(g, name, X(16), ny, ROWTEXT);
     const st = SAVE.data.stars[id] || 0;
-    for (let s = 0; s < 3; s++) disc(g, x + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
-    text(g, best, x + w - 32, y + ((rh - 12) >> 1), BESTTEXT);
+    const XR = dx => (RTL ? x + dx : x + w - dx);   // measured from the row's far end
+    for (let s = 0; s < 3; s++) disc(g, XR(26 - s * 8), sy + 6, 2, s < st ? '#ffb020' : '#b8a888');
+    BESTTEXT.align = RTL ? 'left' : 'right';
+    text(g, best, XR(32), sy, BESTTEXT);
   }
-  // buttons
-  const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3);
-  UI.button(g, 'settings', area.x, by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });
-  UI.button(g, 'controls', area.x + bw + 4, by, bw, bh, t('btn.controls'), { col: PAL.w2 });
-  UI.button(g, 'style', area.x + (bw + 4) * 2, by, bw, bh, t('btn.style'), { col: '#c04aa8' });
+  // buttons (right to left in Arabic and Hebrew)
+  const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3), bx = i => (RTL ? area.x + (bw + 4) * (2 - i) : area.x + (bw + 4) * i);
+  UI.button(g, 'settings', bx(0), by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });
+  UI.button(g, 'controls', bx(1), by, bw, bh, t('btn.controls'), { col: PAL.w2 });
+  UI.button(g, 'style', bx(2), by, bw, bh, t('btn.style'), { col: '#c04aa8' });
 }
-const ROWTEXT = { col: PAL.ink, edge: null, maxW: 0 };
-function toggleRow(g, id, x, y, w, h, labelKey, value) {
-  const bw = Math.min(110, w * 0.45);
-  ROWTEXT.maxW = w - bw - 6;
-  text(g, t(labelKey), x + 2, y + ((h - 12) >> 1), ROWTEXT);
-  UI.button(g, id, x + w - bw, y, bw, h, value, { col: '#3d8a3a' });
+const ROWTEXT = { col: PAL.ink, edge: null, maxW: 0, align: 'left' };
+/** A label and its button (the value): the button as wide as its word needs, the label on two lines rather than
+ *  squeezed when it is long (mirrored in Arabic and Hebrew). */
+function toggleRow(g, id, x, y, w, h, labelKey, value, values) {
+  // as wide as the longest value it can show (the same for each row of a panel, and steady while cycling)
+  const vw = (values || [value]).reduce((m, v) => Math.max(m, textW(v)), 0);
+  const bw = Math.round(clamp(vw + 18, Math.min(70, w * 0.3), Math.min(130, w * 0.5)));
+  const room = w - bw - 6, lbl = t(labelKey), lines = textW(lbl) <= room ? [lbl] : wrap(lbl, room);
+  ROWTEXT.align = RTL ? 'right' : 'left';
+  const lx = RTL ? x + w - 2 : x + 2;
+  if (lines.length === 2 && h >= 22) { ROWTEXT.maxW = 0; text(g, lines[0], lx, y + (h >> 1) - 11, ROWTEXT); text(g, lines[1], lx, y + (h >> 1) - 1, ROWTEXT); }
+  else { ROWTEXT.maxW = room; text(g, lbl, lx, y + ((h - 12) >> 1), ROWTEXT); }
+  ROWTEXT.maxW = 0; ROWTEXT.align = 'left';
+  UI.button(g, id, RTL ? x : x + w - bw, y, bw, h, value, { col: '#3d8a3a' });
 }
+/** Can this language use the pixel font at all? (Arabic, Hebrew, Japanese, Chinese and Russian always use the clear
+ *  one, so the Text style setting would change nothing: it is not shown.) */
+let PIXEL_LANG = null;
+const pixelLang = () => (PIXEL_LANG === null ? (PIXEL_LANG = pixelUnits(t('tagline') + t('settings.easyHelp')) !== null) : PIXEL_LANG);
 function drawSettings(g) {
   const area = panelFrame(g, 'settings.title'), bh = Math.max(20, VIEW.tap);
   let y = area.y;
-  toggleRow(g, 'sound', area.x, y, area.w, bh, 'settings.sound', t(BRBX.muted() ? 'off' : 'on')); y += bh + 6;
-  toggleRow(g, 'font', area.x, y, area.w, bh, 'settings.font', t(SAVE.data.settings.font === 'clear' ? 'settings.clear' : 'settings.pixel')); y += bh + 6;
-  toggleRow(g, 'easy', area.x, y, area.w, bh, 'settings.easy', t(SAVE.data.settings.easy ? 'on' : 'off')); y += bh + 2;
+  const vals0 = [t('on'), t('off')].concat(pixelLang() ? [t('settings.clear'), t('settings.pixel')] : []);
+  toggleRow(g, 'sound', area.x, y, area.w, bh, 'settings.sound', t(BRBX.muted() ? 'off' : 'on'), vals0); y += bh + 6;
+  if (pixelLang()) { toggleRow(g, 'font', area.x, y, area.w, bh, 'settings.font', t(SAVE.data.settings.font === 'clear' ? 'settings.clear' : 'settings.pixel'), vals0); y += bh + 6; }
+  toggleRow(g, 'easy', area.x, y, area.w, bh, 'settings.easy', t(SAVE.data.settings.easy ? 'on' : 'off'), vals0); y += bh + 2;
   y += textBlock(g, t('settings.easyHelp'), area.x + 2, y, area.w - 4, { col: PAL.ink2, edge: null }) + 6;
-  if (y + bh <= area.y + area.h) UI.button(g, 'new', area.x, Math.max(y, area.y + area.h - bh), Math.min(area.w, 200), bh, t('btn.newGame'), { col: PAL.r2 });
+  const nw = Math.min(area.w, 200);
+  if (y + bh <= area.y + area.h) UI.button(g, 'new', RTL ? area.x + area.w - nw : area.x, Math.max(y, area.y + area.h - bh), nw, bh, t('btn.newGame'), { col: PAL.r2 });
 }
 function drawConfirm(g) {
   const area = panelFrame(g, 'settings.title'), bh = Math.max(20, VIEW.tap);
   textBlock(g, t('confirm.new'), area.x + 2, area.y, area.w - 4, { col: PAL.ink, edge: null });
   const bw = Math.min(140, (area.w - 6) / 2), y = area.y + area.h - bh;
-  UI.button(g, 'no', area.x, y, bw, bh, t('btn.no'), { col: '#3fae4a' });
-  UI.button(g, 'yes', area.x + area.w - bw, y, bw, bh, t('btn.yesNew'), { col: PAL.r2 });
+  UI.button(g, 'no', RTL ? area.x + area.w - bw : area.x, y, bw, bh, t('btn.no'), { col: '#3fae4a' });
+  UI.button(g, 'yes', RTL ? area.x : area.x + area.w - bw, y, bw, bh, t('btn.yesNew'), { col: PAL.r2 });
 }
 const CTRL_HEAD = { col: '#2f8a3f', edge: null }, CTRL_HEAD_R = { col: '#2f8a3f', edge: null, align: 'right' }, CTRL_BODY = { col: PAL.ink, edge: null };
 function drawControls(g) {
@@ -5431,17 +5735,19 @@ function drawControls(g) {
 }
 function drawStyle(g) {
   const area = panelFrame(g, 'style.title'), bh = Math.max(20, VIEW.tap), c = SAVE.data.cos;
-  const k = area.h > 160 ? 3 : 2;
-  box(g, area.x, area.y, 16 * k + 12, 16 * k + 12, '#cde8a8', PAL.ink);
-  const s = SPRITES.cappy_down; sprK(g, s, area.x + 6, area.y + 6, k);
-  if (c.hat) { const h = SPRITES['hat_' + c.hat]; if (h) sprK(g, h, area.x + 6 + k, area.y + 6 - 2 * k, k); }
-  const rx = area.x + 16 * k + 18, rw = area.w - 16 * k - 18;
+  const k = area.h > 160 ? 3 : 2, pw = 16 * k + 12, px = RTL ? area.x + area.w - pw : area.x;
+  // the preview is tall enough for a hat (which sits 2 pixels above the head)
+  box(g, px, area.y, pw, 18 * k + 12, '#cde8a8', PAL.ink);
+  const s = SPRITES.cappy_down; sprK(g, s, px + 6, area.y + 6 + 2 * k, k);
+  if (c.hat) { const h = SPRITES['hat_' + c.hat]; if (h) sprK(g, h, px + 6 + k, area.y + 6, k); }
+  const rx = RTL ? area.x : area.x + 16 * k + 18, rw = area.w - 16 * k - 18;
   let y = area.y;
   const bandName = t('band.' + c.bandana), hatName = c.hat ? t('hat.' + c.hat) : t('none'), flagName = c.flag ? t('flag.' + c.flag) : t('none');
-  toggleRow(g, 'bandana', rx, y, rw, bh, 'style.bandana', bandName); y += bh + 6;
-  toggleRow(g, 'hat', rx, y, rw, bh, 'style.hat', hatName); y += bh + 6;
-  toggleRow(g, 'flag', rx, y, rw, bh, 'style.flag', flagName); y += bh + 6;
-  textBlock(g, t('style.help'), area.x + 2, Math.max(y, area.y + 16 * k + 16), area.w - 4, { col: PAL.ink2, edge: null });
+  const vals = Object.keys(BANDANAS).map(b => t('band.' + b)).concat([t('none'), t('hat.straw'), t('hat.explorer'), t('flag.leaf')]);
+  toggleRow(g, 'bandana', rx, y, rw, bh, 'style.bandana', bandName, vals); y += bh + 6;
+  toggleRow(g, 'hat', rx, y, rw, bh, 'style.hat', hatName, vals); y += bh + 6;
+  toggleRow(g, 'flag', rx, y, rw, bh, 'style.flag', flagName, vals); y += bh + 6;
+  textBlock(g, t('style.help'), area.x + 2, Math.max(y, area.y + 18 * k + 16), area.w - 4, { col: PAL.ink2, edge: null });
 }
 MAP.draw = function (g) {
   if (MAP.tab === 'map') drawMapTab(g);
@@ -5458,7 +5764,7 @@ FIN.enter = function () {
   FIN.t = 0; FIN.raised = false; FIN.thanked = false; JC.audioWant = 'finale';
   // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
   JC.say(JC.storyLines('finale').concat([{ who: 'mango', key: 'end.4' }]), () => {
-    FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3);
+    FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3, 0.1);   // high, clear of the Cup going up
     SAVE.data.cup = true; JC.grantBandana('gold', true, true); SAVE.write(); BRBX.gameOver(true, SAVE.cupPoints());
   });
 };
@@ -5492,6 +5798,7 @@ FIN.draw = function (g) {
   const cx = Math.round(W / 2 - 8), cyy = sy - 16;
   shadow(g, cx + 8, sy, 7);
   spr(g, SPRITES.cappy_down, cx, cyy);
+  const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat]; if (hat) spr(g, hat, cx + 1, cyy - 2);   // his hat, as on the island
   const cup = SPRITES.cup, up = FIN.raised ? Math.min(14, (FIN.t - FIN.raiseT) * 30) : 0;
   sprK(g, cup, cx + 8 - cup.w, cyy - 22 - up, 2);
   if (FIN.raised && ((FIN.t * 3) | 0) % 2) { spr(g, SPRITES.sparkle, cx - 10, cyy - 30 - up); spr(g, SPRITES.sparkle, cx + 20, cyy - 20 - up); }
@@ -5499,12 +5806,14 @@ FIN.draw = function (g) {
   TB.draw(g);
 };
 const CRED = { name: 'credits', t: 0 };
-const CRED_LINES = ['credits.1', 'credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
+// (the big logo is the title, so the roll starts with the cast)
+const CRED_LINES = ['credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
 const CRED_TEXT = { col: PAL.white, align: 'center' };
 const CRED_BTN = { col: '#3fae4a', icon: UI.icons.play };
 CRED.enter = function () { CRED.t = 0; JC.audioWant = 'finale'; UI.setFocus('done'); };
 CRED.update = function (dt) { CRED.t += dt; };
 CRED.onInput = function (e) {
+  if (CRED.t < 1.5) return;   // a tap still meant for the finale's last line does not skip the credits
   const id = UI.menuInput(e);
   if (id === 'done' || (e.type === 'press' && e.key === 'b')) { AUDIO.sfx('select'); JC.go('world', { at: [WORLD.lift.x, WORLD.lift.y + 1, 'down'], say: [{ who: 'mango', key: 'd.mango.free' }] }); }
 };
@@ -5518,8 +5827,9 @@ CRED.draw = function (g) {
   if (LOGO.gen !== VIEW.gen) buildLogo();
   // it rolls up until the last line is in view (or the logo reaches the top, when it all fits)
   let total = LOGO.h + 8; for (let i = 0; i < CRED_LINES.length; i++) total += wrap(t(CRED_LINES[i]), W - 20).length * LINE_H + 8;
-  let y = H - CRED.t * 22;
-  const stop = Math.min(20, btnY - 6 - total); if (y < stop) y = stop;
+  // it starts with the logo already in view (no empty screen), then rolls
+  const stop = Math.min(20, btnY - 6 - total);
+  let y = Math.round(Math.min(H * 0.3, btnY - 6 - LOGO.h - 30)) - CRED.t * 22; if (y < stop) y = stop;
   g.drawImage(LOGO.c, Math.round((W - LOGO.w) / 2), Math.round(y));
   y += LOGO.h + 8;
   for (let i = 0; i < CRED_LINES.length; i++) y += textBlock(g, t(CRED_LINES[i]), 10, y, W - 20, CRED_TEXT) + 8;
@@ -5543,7 +5853,7 @@ STORY.showing = () => !!STORY.line();
 /** Skip every story-panel line in a row (the lines after them, like a cousin's hello, still show). */
 STORY.skip = function () {
   let n = 0;
-  while (STORY.showing() && n++ < 40) { TB.shown = TB.full.length; TB.advance(); }
+  while (STORY.showing() && n++ < 40) TB.nextLine();
   STORY.cur = ''; STORY.prev = '';
 };
 STORY.update = function (dt) {
@@ -5620,8 +5930,9 @@ function pCapy(p, x, y, s, o) {
   p.blob(x + 3 * s * dir, y - 6 * s, 2.2 * s, 2 * s, shade(band, -0.2));
   p.stroke([x + 3 * s * dir, y - 6 * s, x - 2 * s * dir, y - 9 * s - (o.wave ? 3 * s : 0)], band, 1.8 * s);
   p.stroke([x + 3 * s * dir, y - 6 * s, x - 3 * s * dir, y - 4 * s], band, 1.6 * s);
-  if (o.hat === 'straw') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2.2 * s, '#e8c46a'); p.blob(x + 10 * s * dir, y - 15 * s, 5 * s, 3 * s, '#f2d68a'); }
-  if (o.hat === 'explorer') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2 * s, '#9a7a4a'); p.blob(x + 10 * s * dir, y - 15.5 * s, 5.5 * s, 3.5 * s, '#c4a46a'); }
+  // the hats in the pixel hats' colours: golden straw with a red band, the white explorer hat with a blue band
+  if (o.hat === 'straw') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2.2 * s, '#d8b450'); p.blob(x + 10 * s * dir, y - 15 * s, 5 * s, 3 * s, '#f0d070'); p.blob(x + 10 * s * dir, y - 13.6 * s, 5 * s, 0.9 * s, '#e04848'); }
+  if (o.hat === 'explorer') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2 * s, '#e8dcc0'); p.blob(x + 10 * s * dir, y - 15.5 * s, 5.5 * s, 3.5 * s, '#fff8e8'); p.blob(x + 10 * s * dir, y - 13.8 * s, 5.5 * s, 0.9 * s, '#3a7bd5'); }
   if (o.arm) { p.stroke([x + 9 * s * dir, y + 1 * s, x + 14 * s * dir, y - 10 * s], fur, 3 * s); p.blob(x + 14 * s * dir, y - 11 * s, 2 * s, 2 * s, dark); }
 }
 function pRaft(p, x, y, w, flagCol) {
@@ -5633,7 +5944,7 @@ function pRaft(p, x, y, w, flagCol) {
 }
 const CHAMP_LOOK = {
   jada: { col: '#f0a040', spot: '#6a3a10' }, sloane: { col: '#9a8a70', mask: '#4a3a2a' }, tico: { col: '#2a2430', beak: '#ff9b2e' },
-  otters: { col: '#7a4a2a' }, rana: { col: '#5a8aff', spot: '#1a1a40' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
+  otters: { col: '#7a4a2a' }, rana: { col: '#9d5cf0', spot: '#ffd23f' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
 };
 function pCritter(p, id, x, y, s) {
   const L = CHAMP_LOOK[id], c = L.col, d = shade(c, -0.35), l = shade(c, 0.3);
@@ -5797,7 +6108,7 @@ function paintPanel(id, w, h) {
 }
 /** Where the picture goes: the space above the text box (and below the Skip button), keeping 16:10 to 1:1. */
 function storyFrame() {
-  const f = STORY.frame, top = 6, bottom = VIEW.H - 58 - 4 - 16, availW = Math.min(VIEW.W - 12, 560), availH = Math.max(60, bottom - top);
+  const f = STORY.frame, top = 6, bottom = VIEW.H - 64 - 8 - 16, availW = Math.min(VIEW.W - 12, 560), availH = Math.max(60, bottom - top);
   let w = availW, h = Math.round(w * 0.62);
   if (h > availH) { h = availH; w = Math.min(availW, Math.round(h / 0.62)); }
   if (VIEW.portrait) h = Math.min(availH, Math.round(w * 1.25));
@@ -5982,7 +6293,7 @@ const JCT = {
   talk() { act(); return jcState(); },
   skipText() { TB.skipAll(); return jcState(); },
   /** Finish the line being typed and go on to the next one (what a tap does). */
-  next() { if (TB.open) { TB.shown = TB.full.length; TB.advance(); } return jcState(); },
+  next() { TB.nextLine(); return jcState(); },
   /** The buttons drawn last frame, in CSS pixels: [{ id, x, y, w, h }]. */
   buttons() { const k = VIEW.S / VIEW.dpr, out = []; for (let i = 0; i < UI.prevN; i++) { const h = UI.prev[i]; out.push({ id: h.id, x: h.x * k, y: h.y * k, w: h.w * k, h: h.h * k }); } return out; },
   /** The current sport's own hooks (sport.test), e.g. jc.sport('auto', true). */
@@ -6967,6 +7278,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       kx = lerp(kx, tx, k); ky = lerp(ky, S.kDive === 0 ? ty - mh * 0.2 : ty, k);
       if (S.kDive !== 0 && k > 0.25) { q = S.kDive < 0 ? 3 : 1; }
       if (after(S.phase) && S.kDive !== 0 && S.flyT > S.flyDur + 0.5) ky = Math.min(L.gy1 - mw / 2 + ks * 2, ky + (S.flyT - S.flyDur - 0.5) * 120);
+      // his whole dive stays inside the posts (lying down he is as wide as he is tall)
+      const half = (q ? mh : mw) / 2 + 1;
+      kx = clamp(kx, gx0 + half, gx0 + L.gw - half);
     }
     const mSpr = after(S.phase) && S.outcome !== 'goal' && S.flyT > S.flyDur + 0.6 ? SPRITES.bk_mico_cheer : (((ctx.t * 3) | 0) % 2 && !fly ? SPRITES.bk_mico_ready2 : ms);
     JC.draw.shadow(g, Math.round(kx), L.gy1 + 1, Math.round(mw * 0.3));
@@ -7046,7 +7360,11 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.dive !== 9) {
       const k = easeOut(clamp((S.mT - S.diveAt) / 0.28, 0, 1));
       if (S.dive === 0) cy -= Math.round(Math.sin(k * Math.PI) * 14 * K);
-      else { cx = lerp(L.kx, L.kx + S.dive * W * 0.28, k); cy = lerp(cy, L.ky - 14 * K, k); if (k > 0.3) q = S.dive < 0 ? 3 : 1; }
+      else {
+        // a dive stays on screen and above the dive buttons (lying down, Cappy is as wide as the sprite is tall)
+        const hw = cS.h * cs / 2, hh = cS.w * cs / 2, reach = Math.min(W * 0.28, W / 2 - hw - 2);
+        cx = lerp(L.kx, L.kx + S.dive * reach, k); cy = lerp(cy, Math.min(L.ky - 14 * K, L.bottom - hh - 2), k); if (k > 0.3) q = S.dive < 0 ? 3 : 1;
+      }
     }
     const ballFirst = !(u > 0.8 && !S.keepSaved);
     if (ballFirst) drawBall(g, bx, by, br);
@@ -7106,7 +7424,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     }
     drawBoard(g, ctx);
     // the round, and what to do
-    const pre = !after(S.phase) && S.phase !== 'wipe', round = S.side === 'shoot' ? S.nYou + (pre ? 1 : 0) : S.nMico + (pre ? 1 : 0);
+    // during the wipe: the kick just taken, then (once the view has changed sides) the next one, never "Kick 0"
+    const pre = S.phase === 'wipe' ? S.side === S.nextSide : !after(S.phase), round = S.side === 'shoot' ? S.nYou + (pre ? 1 : 0) : S.nMico + (pre ? 1 : 0);
     const ry = 35;
     if (!S.over) text(g, round > REG ? t('bk.suddenShort') : label('bk.round', Math.min(REG, round)), ctx.W / 2, ry, T_ROUND);
     const roleRoom = S.side === 'keep' || L.gy0 - 6 >= ry + 24;
@@ -7712,7 +8031,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   for (let i = 0; i < 6; i++) S.trail.push({ x: 0, h: 0 });
   const HINT = { align: 'center', col: '#fff8e8' }, WARM = { align: 'center', col: PAL.r4 };
   const VA = { name: '', score: 0, of: 7, col: '#45c34e' }, VB = { name: '', score: 0, of: 7, col: '#ff9b2e' };
-  const zoneHalf = ctx => (ctx.easy ? 38 : 26) + (S.stage === 'warm' ? 6 : 0);
+  const zoneHalf = ctx => (ctx.easy ? 38 : 28) + (S.stage === 'warm' ? 6 : 0);
   function baseSpeed(ctx) { return S.stage === 'warm' ? 85 : ctx.easy ? 96 : 112; }
   function maxSpeed(ctx) { return S.stage === 'warm' ? 125 : ctx.easy ? 170 : 205; }
   /** Launch the ball from (x0, h0) to bounce at xb (the far half) at speed vx (units/s, signed by direction). */
@@ -7760,8 +8079,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     const Z = zoneHalf(ctx), d = b.x - (-HIT_X);
     if (d > Z) {
       // swung too early: the paddle has gone by, this ball is lost (so tapping over and over never wins points).
-      // Easier champions forgive a swing that is only a little early.
-      if (ctx.easy && d < Z * 1.6) return;
+      // A swing that is only a little early is forgiven (the paddle comes back in time); more so with Easier champions.
+      if (d < Z * (ctx.easy ? 1.6 : 1.35)) return;
       b.whiffed = true; S.whiffs++;
       UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0');
       return;
@@ -7984,6 +8303,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     id: 'paddle',
     champion: 'jada',
     music: 'paddle',
+    /** The intro card says that a warm-up comes first (until it has been played once). */
+    introNote(ctx) { return ctx.warmedUp ? '' : t('pad.warmCard'); },
     start(ctx) {
       S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
       S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.diveThem = 0; S.diveYou = 0; S.lastQ = 0;
@@ -8827,7 +9148,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     }
     if (!f) return false;
     const T = FLIGHT[row] + 0.08, lead = fruitX(f, T);
-    const p = ctx.easy ? 0.5 : 0.62, hit = ctx.rng() < p;
+    const p = ctx.easy ? 0.5 : 0.56, hit = ctx.rng() < p;
     const sd = fire(ctx, 1, hit ? lead : lead + (ctx.rng() < 0.5 ? -1 : 1) * (hitR(ctx, row) + 6 + ctx.rng() * 8), row, f);
     if (sd) { sd.hit = hit; S.ticoFlap = 0.35; }
     return true;
@@ -8840,8 +9161,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.cappyRecoil > 0) S.cappyRecoil -= dt;
     // keys: move the aim ring
     if (!S.drag) {
+      // the ring speeds up while a key is held, so a long way across the lagoon takes well under a second
       const dx = (ctx.held.right ? 1 : 0) - (ctx.held.left ? 1 : 0);
-      if (dx) { S.aimX = clamp(S.aimX + dx * 120 * dt, 10, S.W - 10); S.aimOn = true; }
+      S.aimHold = dx ? (S.aimHold || 0) + dt : 0;
+      if (dx) { S.aimX = clamp(S.aimX + dx * (120 + 200 * clamp((S.aimHold - 0.15) / 0.45, 0, 1)) * dt, 10, S.W - 10); S.aimOn = true; }
     }
     // the fruit drifts (and comes back after it is hit)
     for (let r = 0; r < ROWS; r++) S.rowSpd[r] = rowSpeed(ctx, r);
@@ -8857,7 +9180,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.ticoT <= 0 && !S.over) {
       // nothing in view: he looks again in a moment instead of waiting a whole turn
       if (!ticoShoot(ctx)) S.ticoT = 0.3;
-      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.5, b = ctx.easy ? 2.6 : 1.6; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3); }
+      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.8, b = ctx.easy ? 2.6 : 1.8; S.ticoT = lerp(a, b, k) * (0.92 + ctx.rng() * 0.16); }
     }
     if (S.auto) bot(dt, ctx);
     if (!S.over && S.time >= TIME) {
@@ -9012,8 +9335,12 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
         if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
         else if (f.pop > 0) { const kk = f.pop / 0.5; g.globalAlpha = kk; spr(g, SPRITES.sparkle, x - 2, y - 14 - (1 - kk) * 14); g.globalAlpha = 1; }
       }
-      // row value tag at the left edge
-      const lb = label('ss.row' + r, POINTS[r]); box(g, 1, y - 6, textW(lb) + 6, 12, 'rgba(27,19,37,0.7)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
+      // the row's value tag at the left edge: faint while a fruit drifts past under it, so it never hides one
+      const lb = label('ss.row' + r, POINTS[r]), lw = textW(lb) + 6;
+      let near = false; for (const f of S.fruit) if (f.row === r && f.use && f.on && f.x < lw + 12) near = true;
+      if (near) g.globalAlpha = 0.3;
+      box(g, 1, y - 6, lw, 12, 'rgba(27,19,37,0.7)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
+      g.globalAlpha = 1;
     }
     if (showAim) {
       const y = S.rowY[ar], R = hitR(ctx, ar), x = Math.round(S.aimX), ry = Math.max(2, Math.round(R * 0.4)), pulse = ((S.time * 6) | 0) % 2;
@@ -9043,7 +9370,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.streak >= 2 && !S.over) text(g, label('ss.streak', S.streak), W / 2, 54, STREAK);
     if (S.hint > 0.05 && !S.over) {
       const hk = ctx.touch ? 'ss.hintTouch' : 'ss.hintKeys';
-      g.globalAlpha = clamp(S.hint * 2, 0, 1); textBlock(g, t(hk), 6, Math.round((S.rowY[1] + S.rowY[2]) / 2) - 8, W - 12, HINT); g.globalAlpha = 1;
+      // on a dark strip (pale words on the blue lagoon were hard to read): above the lagoon when there is room
+      const str = t(hk), h = JC.font.wrap(str, W - 12, 1).length * JC.font.LINE_H + 2;
+      let hy = S.lagTop - h - 4; if (hy < 56) hy = Math.round((S.rowY[1] + S.rowY[2]) / 2) - 8;
+      g.globalAlpha = clamp(S.hint * 2, 0, 1); rect(g, 0, hy - 3, W, h + 5, 'rgba(27,19,37,0.65)'); textBlock(g, str, 6, hy, W - 12, HINT); g.globalAlpha = 1;
     }
     g.setTransform(VIEW.S, 0, 0, VIEW.S, 0, 0);
   }
@@ -9524,7 +9854,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     }
     // coconut, Cappy, bee
     const co = S.coco;
-    if (co.on) { const sh = co.shake > 0 ? Math.round(Math.sin(S.time * 40) * 1.5) : 0; sprK(g, SPRITES.vc_coconut, sxOf(co.x) - 8 + sh, syOf(co.wy) - 8, 2); if (co.shake > 0) text(g, '!', sxOf(co.x), syOf(co.wy) - 22, WARN); }
+    if (co.on) { const sh = co.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.time * 40) * 1.5) : 0; sprK(g, SPRITES.vc_coconut, sxOf(co.x) - 8 + sh, syOf(co.wy) - 8, 2); if (co.shake > 0) text(g, '!', sxOf(co.x), syOf(co.wy) - 22, WARN); }
     drawCappy(g, ctx);
     const b = S.bee;
     if (b.on) {

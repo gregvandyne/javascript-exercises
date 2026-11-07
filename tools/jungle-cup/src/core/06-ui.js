@@ -146,6 +146,8 @@ UI.starBar = function (g, x, y, w, frac, marks, stars) {
 const FLOATS = []; for (let i = 0; i < 24; i++) FLOATS.push({ on: false, x: 0, y: 0, vy: 0, life: 0, str: '', col: '', scale: 1, w: 0 });
 const FOPT = { align: 'center', col: '', scale: 1 }, BOPT = { align: 'center', col: '', scale: 1 };
 UI.float = function (x, y, str, col, scale) {
+  // a newer word on the same spot pushes the older ones up, so "Perfect!" and "Good!" never sit on top of each other
+  for (let i = 0; i < FLOATS.length; i++) { const o = FLOATS[i]; if (o.on && Math.abs(o.x - x) < 50 && o.y > y - 12 && o.y < y + 12) o.y = y - 12; }
   let f = FLOATS[0]; for (let i = 0; i < FLOATS.length; i++) if (!FLOATS[i].on) { f = FLOATS[i]; break; }
   f.on = true; f.x = x; f.y = y; f.vy = -26; f.life = 1; f.str = str; f.col = col || PAL.white; f.scale = scale || 1;
   f.w = textW(str, f.scale) + 2;   // measured once, so the float can be kept inside the screen
@@ -166,8 +168,9 @@ UI.burst = function (x, y, n, col, speed) {
 };
 UI.clearFx = function () { for (const p of PARTS) p.on = false; for (const f of FLOATS) f.on = false; UI.bannerT = 0; };
 /* A big banner across the middle ("GO!", "Feather won!"). */
-UI.bannerStr = ''; UI.bannerT = 0; UI.bannerCol = PAL.r4; UI.bannerMax = 1;
-UI.banner = function (str, col, secs) { UI.bannerStr = str; UI.bannerCol = col || PAL.r4; UI.bannerT = UI.bannerMax = secs || 1.4; };
+UI.bannerStr = ''; UI.bannerT = 0; UI.bannerCol = PAL.r4; UI.bannerMax = 1; UI.bannerY = 0.38;
+/** A banner: the words, their colour, how long, and how far down the screen (0-1, 0.38 by default). */
+UI.banner = function (str, col, secs, y) { UI.bannerStr = str; UI.bannerCol = col || PAL.r4; UI.bannerT = UI.bannerMax = secs || 1.4; UI.bannerY = y || 0.38; };
 UI.update = function (dt) {
   if (UI.pressT > 0) UI.pressT -= dt;
   for (let i = 0; i < FLOATS.length; i++) { const f = FLOATS[i]; if (!f.on) continue; f.y += f.vy * dt; f.vy *= 0.94; f.life -= dt * 0.9; if (f.life <= 0) f.on = false; }
@@ -184,11 +187,12 @@ UI.drawFx = function (g) {
   }
   if (UI.bannerT > 0 && UI.bannerStr) {
     const k = 1 - UI.bannerT / UI.bannerMax, sc = VIEW.W < 260 ? 2 : 3;
-    const pop = k < 0.15 ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * 0.38);
+    // it slides in from the right (still, with reduced motion)
+    const pop = k < 0.15 && !BRBX.reduced() ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * UI.bannerY);
     g.globalAlpha = UI.bannerT < 0.25 ? UI.bannerT / 0.25 : 1;
     rect(g, 0, cy - 4, VIEW.W, 12 * sc + 6, 'rgba(27,19,37,0.55)');
     const w = textW(UI.bannerStr, sc);
-    const s2 = w > VIEW.W - 12 ? Math.max(1, sc - 1) : sc;
+    const s2 = w <= VIEW.W - 12 ? sc : textW(UI.bannerStr, sc - 0.5) <= VIEW.W - 12 ? sc - 0.5 : Math.max(1, sc - 1);
     BOPT.col = UI.bannerCol; BOPT.scale = s2;
     text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, BOPT);
     g.globalAlpha = 1;

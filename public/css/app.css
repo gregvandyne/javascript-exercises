@@ -366,6 +366,7 @@ textarea.input{min-height:96px;resize:vertical}
 @media (min-width:821px){.toasts{bottom:24px}}
 .toast{background:var(--text);color:var(--bg);padding:12px 18px;border-radius:var(--r-sm);font-weight:700;box-shadow:var(--shadow-lg);animation:tin .25s ease-out;pointer-events:auto;text-align:center}
 .toast.bad{background:var(--danger);color:var(--on-danger)}
+.toasts.over-game .toast{pointer-events:none}
 @keyframes tin{from{transform:translateY(12px);opacity:0}}
 
 /* modal sheet */

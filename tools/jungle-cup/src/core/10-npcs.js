@@ -98,7 +98,8 @@ function talkLines(n) {
       const q = qState('specs');
       if (q === 'got') { giveReward('specs'); return L('elder', 'qthanks'); }
       // the first talk: the totem's story, then straight on to her lost spectacles (so nobody misses the quest)
-      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
+      // (with all seven Feathers already won, she says so instead of telling of the empty sockets)
+      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1').concat(f >= 7 ? L('elder', 'totemfull') : L('elder', 'totem2', 'totem3'), q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
       return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
@@ -107,7 +108,10 @@ function talkLines(n) {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
+      if (f >= 7) return L('zuzu', SAVE.data.cup ? 'done' : 'liftopen');
+      // news about the next champion still to beat (Jada first)
+      const next = JC.sportOrder.find(id => !SAVE.data.feathers[id]);
+      return next === 'paddle' ? L('zuzu', 'after') : [{ who: 'zuzu', key: 'd.zuzu.next', vars: { sport: t('sport.' + next) } }];
     }
     case 'marm': return L('marm', 'hi');
     default: {

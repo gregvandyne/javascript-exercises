@@ -153,7 +153,7 @@
     }
     if (!f) return false;
     const T = FLIGHT[row] + 0.08, lead = fruitX(f, T);
-    const p = ctx.easy ? 0.5 : 0.62, hit = ctx.rng() < p;
+    const p = ctx.easy ? 0.5 : 0.56, hit = ctx.rng() < p;
     const sd = fire(ctx, 1, hit ? lead : lead + (ctx.rng() < 0.5 ? -1 : 1) * (hitR(ctx, row) + 6 + ctx.rng() * 8), row, f);
     if (sd) { sd.hit = hit; S.ticoFlap = 0.35; }
     return true;
@@ -166,8 +166,10 @@
     if (S.cappyRecoil > 0) S.cappyRecoil -= dt;
     // keys: move the aim ring
     if (!S.drag) {
+      // the ring speeds up while a key is held, so a long way across the lagoon takes well under a second
       const dx = (ctx.held.right ? 1 : 0) - (ctx.held.left ? 1 : 0);
-      if (dx) { S.aimX = clamp(S.aimX + dx * 120 * dt, 10, S.W - 10); S.aimOn = true; }
+      S.aimHold = dx ? (S.aimHold || 0) + dt : 0;
+      if (dx) { S.aimX = clamp(S.aimX + dx * (120 + 200 * clamp((S.aimHold - 0.15) / 0.45, 0, 1)) * dt, 10, S.W - 10); S.aimOn = true; }
     }
     // the fruit drifts (and comes back after it is hit)
     for (let r = 0; r < ROWS; r++) S.rowSpd[r] = rowSpeed(ctx, r);
@@ -183,7 +185,7 @@
     if (S.ticoT <= 0 && !S.over) {
       // nothing in view: he looks again in a moment instead of waiting a whole turn
       if (!ticoShoot(ctx)) S.ticoT = 0.3;
-      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.5, b = ctx.easy ? 2.6 : 1.6; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3); }
+      else { const k = S.time / TIME, a = ctx.easy ? 3.8 : 2.8, b = ctx.easy ? 2.6 : 1.8; S.ticoT = lerp(a, b, k) * (0.92 + ctx.rng() * 0.16); }
     }
     if (S.auto) bot(dt, ctx);
     if (!S.over && S.time >= TIME) {
@@ -338,8 +340,12 @@
         if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
         else if (f.pop > 0) { const kk = f.pop / 0.5; g.globalAlpha = kk; spr(g, SPRITES.sparkle, x - 2, y - 14 - (1 - kk) * 14); g.globalAlpha = 1; }
       }
-      // row value tag at the left edge
-      const lb = label('ss.row' + r, POINTS[r]); box(g, 1, y - 6, textW(lb) + 6, 12, 'rgba(27,19,37,0.7)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
+      // the row's value tag at the left edge: faint while a fruit drifts past under it, so it never hides one
+      const lb = label('ss.row' + r, POINTS[r]), lw = textW(lb) + 6;
+      let near = false; for (const f of S.fruit) if (f.row === r && f.use && f.on && f.x < lw + 12) near = true;
+      if (near) g.globalAlpha = 0.3;
+      box(g, 1, y - 6, lw, 12, 'rgba(27,19,37,0.7)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
+      g.globalAlpha = 1;
     }
     if (showAim) {
       const y = S.rowY[ar], R = hitR(ctx, ar), x = Math.round(S.aimX), ry = Math.max(2, Math.round(R * 0.4)), pulse = ((S.time * 6) | 0) % 2;
@@ -369,7 +375,10 @@
     if (S.streak >= 2 && !S.over) text(g, label('ss.streak', S.streak), W / 2, 54, STREAK);
     if (S.hint > 0.05 && !S.over) {
       const hk = ctx.touch ? 'ss.hintTouch' : 'ss.hintKeys';
-      g.globalAlpha = clamp(S.hint * 2, 0, 1); textBlock(g, t(hk), 6, Math.round((S.rowY[1] + S.rowY[2]) / 2) - 8, W - 12, HINT); g.globalAlpha = 1;
+      // on a dark strip (pale words on the blue lagoon were hard to read): above the lagoon when there is room
+      const str = t(hk), h = JC.font.wrap(str, W - 12, 1).length * JC.font.LINE_H + 2;
+      let hy = S.lagTop - h - 4; if (hy < 56) hy = Math.round((S.rowY[1] + S.rowY[2]) / 2) - 8;
+      g.globalAlpha = clamp(S.hint * 2, 0, 1); rect(g, 0, hy - 3, W, h + 5, 'rgba(27,19,37,0.65)'); textBlock(g, str, 6, hy, W - 12, HINT); g.globalAlpha = 1;
     }
     g.setTransform(VIEW.S, 0, 0, VIEW.S, 0, 0);
   }

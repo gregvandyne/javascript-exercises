@@ -166,7 +166,8 @@ MAP.onInput = function (e) {
   if (!id) return;
   AUDIO.sfx('select');
   if (id === 'close') { if (MAP.tab === 'map') closeMap(); else { MAP.tab = MAP.tab === 'confirm' ? 'settings' : 'map'; UI.setFocus('close'); } return; }
-  if (id.startsWith('go:')) { const sp = id.slice(3), a = ARCHES[sp]; JC.go('world', { at: [a.x, a.y + 1, 'up'] }); return; }
+  // fast travel lands right in the arch, so its "play" prompt shows at once
+  if (id.startsWith('go:')) { const sp = id.slice(3), a = ARCHES[sp]; JC.go('world', { at: [a.x, a.y, 'up'] }); return; }
   if (id === 'settings' || id === 'controls' || id === 'style') { MAP.tab = id; UI.setFocus('close'); return; }
   if (id === 'sound') { BRBX.mute(!BRBX.muted()); AUDIO.sync(); return; }
   if (id === 'font') { SAVE.data.settings.font = SAVE.data.settings.font === 'clear' ? 'pixel' : 'clear'; SAVE.apply(); SAVE.write(); return; }
@@ -183,6 +184,7 @@ function cycleCos(kind) {
   else opts = [''].concat(c.own.filter(x => x.startsWith(kind + '_')).map(x => x.slice(kind.length + 1)));
   const i = opts.indexOf(c[kind]); c[kind] = opts[(i + 1) % opts.length];
   if (kind === 'bandana') JC.refreshCappy();
+  STORY.cache = {};   // the painted panels show Cappy's hat and flag: paint them again
   SAVE.write();
 }
 function panelFrame(g, titleKey) {
@@ -192,10 +194,16 @@ function panelFrame(g, titleKey) {
   const w = Math.min(VIEW.W - 8, 520), h = VIEW.H - 8, x = Math.round((VIEW.W - w) / 2), y = 4;
   const c = UI.card(g, x, y, w, h);
   const r = Math.max(10, (VIEW.tap / 2) | 0);
-  text(g, t(titleKey), c.x + 2, c.y + Math.max(0, r - 8), { col: PAL.ink, edge: null, scale: textW(t(titleKey), 2) < c.w - r * 2 - 10 ? 2 : 1 });
-  UI.iconButton(g, 'close', c.x + c.w - r, c.y + r - 2, UI.icons.close, { col: '#b4302f' });
-  return { x: c.x, y: c.y + r * 2 + 2, w: c.w, h: c.h - r * 2 - 2 };
+  // the four panel titles at one size; the title sits beside the close button (mirrored in Arabic and Hebrew), and the
+  // panel's content starts clear below it (the clear font fills its whole line, so a gap is needed)
+  const sc = titleScale(PANEL_TITLES.map(k => t(k)), c.w - r * 2 - 10), th = Math.ceil(LINE_H * sc);
+  const ty = Math.max(c.y - 2, Math.round(c.y + r - 2 - th / 2));
+  text(g, t(titleKey), RTL ? c.x + c.w - 2 : c.x + 2, ty, { col: PAL.ink, edge: null, scale: sc, align: RTL ? 'right' : 'left' });
+  UI.iconButton(g, 'close', RTL ? c.x + r : c.x + c.w - r, c.y + r - 2, UI.icons.close, { col: '#b4302f' });
+  const top = Math.max(c.y + r * 2 + 2, ty + th + 4);
+  return { x: c.x, y: top, w: c.w, h: c.y + c.h - top };
 }
+const PANEL_TITLES = ['map.title', 'settings.title', 'controls.title', 'style.title'];
 function drawFeatherRow(g, x, y) {
   for (let i = 0; i < 7; i++) { const id = JC.sportOrder[i]; if (SAVE.data.feathers[id]) spr(g, featherSprite(SPORT_COLOURS[id]), x + 2 + i * 11, y); else rect(g, x + 4 + i * 11, y + 3, 3, 6, '#b8a888'); }
   text(g, label('map.feathers', SAVE.featherCount()), x + 82, y, ROWTEXT2);
@@ -210,19 +218,26 @@ function drawMapTab(g) {
   const rh = Math.max(20, VIEW.tap), bh = Math.max(20, VIEW.tap), GAP = 3;
   const listH = area.h - bh - 6;                  // room above the buttons
   const rowsH = cols => Math.ceil(7 / cols) * (rh + GAP);
+  // the sport names are never squeezed: a layout must leave them room, on one line beside the stars and best, or on
+  // a line of their own above them (a tall row)
+  const nameW = JC.sportOrder.reduce((m, id) => Math.max(m, textW(t('sport.' + id))), 0);
+  const bestW = JC.sportOrder.reduce((m, id) => Math.max(m, textW(SAVE.data.plays[id] ? fmt(SAVE.data.best[id] || 0) : '???')), 0);
+  const colW = (lw, c) => Math.floor((lw - (c - 1) * 4) / c);
+  const oneLine = cw => nameW <= cw - 16 - 34 - bestW - 4, twoLine = cw => rh >= 25 && nameW <= cw - 20;
   // pick the first layout that fits: [minimap?, columns]
-  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0;
-  const tries = land ? [[1, 1], [1, 2], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
-  for (let i = 0; i < tries.length; i++) {
-    const m = !!tries[i][0], c = tries[i][1];
+  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0, found = false;
+  const tries = land ? [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
+  for (let pass = 0; pass < 2 && !found; pass++) for (let i = 0; i < tries.length; i++) {
+    const m = !!tries[i][0], c = tries[i][1], last = pass === 1 && i === tries.length - 1;
+    const names = lw => pass === 1 || oneLine(colW(lw, c)) || twoLine(colW(lw, c));
     if (land && m) {
       const lw = Math.min(c === 1 ? 250 : 330, area.w * (c === 1 ? 0.55 : 0.66));
       const mw = area.w - lw - 6, fit = rowsH(c) + 14 <= listH;
-      if (fit && mw >= 90) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; break; }
+      if (fit && mw >= 90 && names(lw)) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; found = true; break; }
     } else if (m) {
       const mh = listH - 16 - rowsH(c) - 4;
-      if (mh >= 56) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; break; }
-    } else if (rowsH(c) + 16 <= listH || i === tries.length - 1) { withMap = false; cols = c; listW = area.w; break; }
+      if (mh >= 56 && names(area.w)) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; found = true; break; }
+    } else if (((rowsH(c) + 16 <= listH) && names(area.w)) || last) { withMap = false; cols = c; listW = area.w; found = true; break; }
   }
   let mx = area.x, my = area.y, mw = 0, mh = 0;
   if (withMap) {
@@ -230,6 +245,7 @@ function drawMapTab(g) {
     const k = sc >= 1 ? Math.floor(sc) : sc;
     mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
     mx = area.x + Math.round((mapW - mw) / 2); my = area.y;
+    if (land && RTL) mx = area.x + area.w - mapW + Math.round((mapW - mw) / 2);
     box(g, mx - 2, my - 2, mw + 4, mh + 4, '#1f62a0', PAL.ink);
     g.drawImage(MAP.mini, mx, my, mw, mh);
     const mk = mw / MW;
@@ -238,53 +254,75 @@ function drawMapTab(g) {
     if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
   }
   // the Feathers, then the rows
-  const lx = withMap && land ? area.x + area.w - listW : area.x;
+  const lx = withMap && land ? (RTL ? area.x : area.x + area.w - listW) : area.x;
   let ly = withMap && !land ? my + mh + 4 : area.y;
   drawFeatherRow(g, lx, ly); ly += 15;
   const cw = Math.floor((listW - (cols - 1) * 4) / cols), perCol = Math.ceil(7 / cols);
   for (let i = 0; i < 7; i++) {
     const id = JC.sportOrder[i], col = (i / perCol) | 0, row = i % perCol;
-    const x = lx + col * (cw + 4), y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
+    const cx0 = RTL ? lx + listW - cw - col * (cw + 4) : lx + col * (cw + 4);
+    const x = cx0, y = ly + row * (rh + GAP), played = SAVE.data.plays[id], w = cw;
+    // mirrored in Arabic and Hebrew: the colour strip and icon on the right, the stars and best on the left
+    const X = (dx, ww) => (RTL ? x + w - dx - (ww || 0) : x + dx);
     UI.addHit('go:' + id, x, y, w, rh);
     const focused = UI.showFocus && UI.focusedId() === 'go:' + id;
+    if (focused) rect(g, x - 2, y - 2, w + 4, rh + 4, PAL.r5);   // the keyboard / gamepad focus, as on the buttons
     box(g, x, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
-    rect(g, x + 1, y + 1, 4, rh - 2, SPORT_COLOURS[id]);
-    const ic = iconSprite(id); spr(g, ic, x + 8, y + ((rh - ic.h) >> 1));
-    const best = played ? fmt(SAVE.data.best[id] || 0) : '???';
-    ROWTEXT.maxW = w - 16 - 34 - textW(best) - 4;
-    text(g, t('sport.' + id), x + 16, y + ((rh - 12) >> 1), ROWTEXT);
+    rect(g, X(1, 4), y + 1, 4, rh - 2, SPORT_COLOURS[id]);
+    const ic = iconSprite(id); spr(g, ic, X(8, ic.w), y + ((rh - ic.h) >> 1));
+    const best = played ? fmt(SAVE.data.best[id] || 0) : '???', name = t('sport.' + id);
+    const one = oneLine(w), two = !one && twoLine(w);
+    ROWTEXT.maxW = one || two ? 0 : w - 16 - 34 - textW(best) - 4; ROWTEXT.align = RTL ? 'right' : 'left';
+    const ny = two ? y + 2 : y + ((rh - 12) >> 1), sy = two ? y + rh - 13 : ny;
+    text(g, name, X(16), ny, ROWTEXT);
     const st = SAVE.data.stars[id] || 0;
-    for (let s = 0; s < 3; s++) disc(g, x + w - 26 + s * 8, y + (rh >> 1), 2, s < st ? '#ffb020' : '#b8a888');
-    text(g, best, x + w - 32, y + ((rh - 12) >> 1), BESTTEXT);
+    const XR = dx => (RTL ? x + dx : x + w - dx);   // measured from the row's far end
+    for (let s = 0; s < 3; s++) disc(g, XR(26 - s * 8), sy + 6, 2, s < st ? '#ffb020' : '#b8a888');
+    BESTTEXT.align = RTL ? 'left' : 'right';
+    text(g, best, XR(32), sy, BESTTEXT);
   }
-  // buttons
-  const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3);
-  UI.button(g, 'settings', area.x, by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });
-  UI.button(g, 'controls', area.x + bw + 4, by, bw, bh, t('btn.controls'), { col: PAL.w2 });
-  UI.button(g, 'style', area.x + (bw + 4) * 2, by, bw, bh, t('btn.style'), { col: '#c04aa8' });
+  // buttons (right to left in Arabic and Hebrew)
+  const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3), bx = i => (RTL ? area.x + (bw + 4) * (2 - i) : area.x + (bw + 4) * i);
+  UI.button(g, 'settings', bx(0), by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });
+  UI.button(g, 'controls', bx(1), by, bw, bh, t('btn.controls'), { col: PAL.w2 });
+  UI.button(g, 'style', bx(2), by, bw, bh, t('btn.style'), { col: '#c04aa8' });
 }
-const ROWTEXT = { col: PAL.ink, edge: null, maxW: 0 };
-function toggleRow(g, id, x, y, w, h, labelKey, value) {
-  const bw = Math.min(110, w * 0.45);
-  ROWTEXT.maxW = w - bw - 6;
-  text(g, t(labelKey), x + 2, y + ((h - 12) >> 1), ROWTEXT);
-  UI.button(g, id, x + w - bw, y, bw, h, value, { col: '#3d8a3a' });
+const ROWTEXT = { col: PAL.ink, edge: null, maxW: 0, align: 'left' };
+/** A label and its button (the value): the button as wide as its word needs, the label on two lines rather than
+ *  squeezed when it is long (mirrored in Arabic and Hebrew). */
+function toggleRow(g, id, x, y, w, h, labelKey, value, values) {
+  // as wide as the longest value it can show (the same for each row of a panel, and steady while cycling)
+  const vw = (values || [value]).reduce((m, v) => Math.max(m, textW(v)), 0);
+  const bw = Math.round(clamp(vw + 18, Math.min(70, w * 0.3), Math.min(130, w * 0.5)));
+  const room = w - bw - 6, lbl = t(labelKey), lines = textW(lbl) <= room ? [lbl] : wrap(lbl, room);
+  ROWTEXT.align = RTL ? 'right' : 'left';
+  const lx = RTL ? x + w - 2 : x + 2;
+  if (lines.length === 2 && h >= 22) { ROWTEXT.maxW = 0; text(g, lines[0], lx, y + (h >> 1) - 11, ROWTEXT); text(g, lines[1], lx, y + (h >> 1) - 1, ROWTEXT); }
+  else { ROWTEXT.maxW = room; text(g, lbl, lx, y + ((h - 12) >> 1), ROWTEXT); }
+  ROWTEXT.maxW = 0; ROWTEXT.align = 'left';
+  UI.button(g, id, RTL ? x : x + w - bw, y, bw, h, value, { col: '#3d8a3a' });
 }
+/** Can this language use the pixel font at all? (Arabic, Hebrew, Japanese, Chinese and Russian always use the clear
+ *  one, so the Text style setting would change nothing: it is not shown.) */
+let PIXEL_LANG = null;
+const pixelLang = () => (PIXEL_LANG === null ? (PIXEL_LANG = pixelUnits(t('tagline') + t('settings.easyHelp')) !== null) : PIXEL_LANG);
 function drawSettings(g) {
   const area = panelFrame(g, 'settings.title'), bh = Math.max(20, VIEW.tap);
   let y = area.y;
-  toggleRow(g, 'sound', area.x, y, area.w, bh, 'settings.sound', t(BRBX.muted() ? 'off' : 'on')); y += bh + 6;
-  toggleRow(g, 'font', area.x, y, area.w, bh, 'settings.font', t(SAVE.data.settings.font === 'clear' ? 'settings.clear' : 'settings.pixel')); y += bh + 6;
-  toggleRow(g, 'easy', area.x, y, area.w, bh, 'settings.easy', t(SAVE.data.settings.easy ? 'on' : 'off')); y += bh + 2;
+  const vals0 = [t('on'), t('off')].concat(pixelLang() ? [t('settings.clear'), t('settings.pixel')] : []);
+  toggleRow(g, 'sound', area.x, y, area.w, bh, 'settings.sound', t(BRBX.muted() ? 'off' : 'on'), vals0); y += bh + 6;
+  if (pixelLang()) { toggleRow(g, 'font', area.x, y, area.w, bh, 'settings.font', t(SAVE.data.settings.font === 'clear' ? 'settings.clear' : 'settings.pixel'), vals0); y += bh + 6; }
+  toggleRow(g, 'easy', area.x, y, area.w, bh, 'settings.easy', t(SAVE.data.settings.easy ? 'on' : 'off'), vals0); y += bh + 2;
   y += textBlock(g, t('settings.easyHelp'), area.x + 2, y, area.w - 4, { col: PAL.ink2, edge: null }) + 6;
-  if (y + bh <= area.y + area.h) UI.button(g, 'new', area.x, Math.max(y, area.y + area.h - bh), Math.min(area.w, 200), bh, t('btn.newGame'), { col: PAL.r2 });
+  const nw = Math.min(area.w, 200);
+  if (y + bh <= area.y + area.h) UI.button(g, 'new', RTL ? area.x + area.w - nw : area.x, Math.max(y, area.y + area.h - bh), nw, bh, t('btn.newGame'), { col: PAL.r2 });
 }
 function drawConfirm(g) {
   const area = panelFrame(g, 'settings.title'), bh = Math.max(20, VIEW.tap);
   textBlock(g, t('confirm.new'), area.x + 2, area.y, area.w - 4, { col: PAL.ink, edge: null });
   const bw = Math.min(140, (area.w - 6) / 2), y = area.y + area.h - bh;
-  UI.button(g, 'no', area.x, y, bw, bh, t('btn.no'), { col: '#3fae4a' });
-  UI.button(g, 'yes', area.x + area.w - bw, y, bw, bh, t('btn.yesNew'), { col: PAL.r2 });
+  UI.button(g, 'no', RTL ? area.x + area.w - bw : area.x, y, bw, bh, t('btn.no'), { col: '#3fae4a' });
+  UI.button(g, 'yes', RTL ? area.x : area.x + area.w - bw, y, bw, bh, t('btn.yesNew'), { col: PAL.r2 });
 }
 const CTRL_HEAD = { col: '#2f8a3f', edge: null }, CTRL_HEAD_R = { col: '#2f8a3f', edge: null, align: 'right' }, CTRL_BODY = { col: PAL.ink, edge: null };
 function drawControls(g) {
@@ -297,17 +335,19 @@ function drawControls(g) {
 }
 function drawStyle(g) {
   const area = panelFrame(g, 'style.title'), bh = Math.max(20, VIEW.tap), c = SAVE.data.cos;
-  const k = area.h > 160 ? 3 : 2;
-  box(g, area.x, area.y, 16 * k + 12, 16 * k + 12, '#cde8a8', PAL.ink);
-  const s = SPRITES.cappy_down; sprK(g, s, area.x + 6, area.y + 6, k);
-  if (c.hat) { const h = SPRITES['hat_' + c.hat]; if (h) sprK(g, h, area.x + 6 + k, area.y + 6 - 2 * k, k); }
-  const rx = area.x + 16 * k + 18, rw = area.w - 16 * k - 18;
+  const k = area.h > 160 ? 3 : 2, pw = 16 * k + 12, px = RTL ? area.x + area.w - pw : area.x;
+  // the preview is tall enough for a hat (which sits 2 pixels above the head)
+  box(g, px, area.y, pw, 18 * k + 12, '#cde8a8', PAL.ink);
+  const s = SPRITES.cappy_down; sprK(g, s, px + 6, area.y + 6 + 2 * k, k);
+  if (c.hat) { const h = SPRITES['hat_' + c.hat]; if (h) sprK(g, h, px + 6 + k, area.y + 6, k); }
+  const rx = RTL ? area.x : area.x + 16 * k + 18, rw = area.w - 16 * k - 18;
   let y = area.y;
   const bandName = t('band.' + c.bandana), hatName = c.hat ? t('hat.' + c.hat) : t('none'), flagName = c.flag ? t('flag.' + c.flag) : t('none');
-  toggleRow(g, 'bandana', rx, y, rw, bh, 'style.bandana', bandName); y += bh + 6;
-  toggleRow(g, 'hat', rx, y, rw, bh, 'style.hat', hatName); y += bh + 6;
-  toggleRow(g, 'flag', rx, y, rw, bh, 'style.flag', flagName); y += bh + 6;
-  textBlock(g, t('style.help'), area.x + 2, Math.max(y, area.y + 16 * k + 16), area.w - 4, { col: PAL.ink2, edge: null });
+  const vals = Object.keys(BANDANAS).map(b => t('band.' + b)).concat([t('none'), t('hat.straw'), t('hat.explorer'), t('flag.leaf')]);
+  toggleRow(g, 'bandana', rx, y, rw, bh, 'style.bandana', bandName, vals); y += bh + 6;
+  toggleRow(g, 'hat', rx, y, rw, bh, 'style.hat', hatName, vals); y += bh + 6;
+  toggleRow(g, 'flag', rx, y, rw, bh, 'style.flag', flagName, vals); y += bh + 6;
+  textBlock(g, t('style.help'), area.x + 2, Math.max(y, area.y + 18 * k + 16), area.w - 4, { col: PAL.ink2, edge: null });
 }
 MAP.draw = function (g) {
   if (MAP.tab === 'map') drawMapTab(g);
@@ -324,7 +364,7 @@ FIN.enter = function () {
   FIN.t = 0; FIN.raised = false; FIN.thanked = false; JC.audioWant = 'finale';
   // the painted panels (the lift, the Canopy Stage, the Cup), then Mango on the pixel stage and the Cup raised high
   JC.say(JC.storyLines('finale').concat([{ who: 'mango', key: 'end.4' }]), () => {
-    FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3);
+    FIN.raised = true; FIN.raiseT = FIN.t; AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H * 0.35, 90); UI.banner(t('end.cup'), PAL.gold2, 3, 0.1);   // high, clear of the Cup going up
     SAVE.data.cup = true; JC.grantBandana('gold', true, true); SAVE.write(); BRBX.gameOver(true, SAVE.cupPoints());
   });
 };
@@ -358,6 +398,7 @@ FIN.draw = function (g) {
   const cx = Math.round(W / 2 - 8), cyy = sy - 16;
   shadow(g, cx + 8, sy, 7);
   spr(g, SPRITES.cappy_down, cx, cyy);
+  const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat]; if (hat) spr(g, hat, cx + 1, cyy - 2);   // his hat, as on the island
   const cup = SPRITES.cup, up = FIN.raised ? Math.min(14, (FIN.t - FIN.raiseT) * 30) : 0;
   sprK(g, cup, cx + 8 - cup.w, cyy - 22 - up, 2);
   if (FIN.raised && ((FIN.t * 3) | 0) % 2) { spr(g, SPRITES.sparkle, cx - 10, cyy - 30 - up); spr(g, SPRITES.sparkle, cx + 20, cyy - 20 - up); }
@@ -365,12 +406,14 @@ FIN.draw = function (g) {
   TB.draw(g);
 };
 const CRED = { name: 'credits', t: 0 };
-const CRED_LINES = ['credits.1', 'credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
+// (the big logo is the title, so the roll starts with the cast)
+const CRED_LINES = ['credits.2', 'credits.3', 'credits.4', 'credits.5', 'credits.6', 'credits.7', 'credits.8'];
 const CRED_TEXT = { col: PAL.white, align: 'center' };
 const CRED_BTN = { col: '#3fae4a', icon: UI.icons.play };
 CRED.enter = function () { CRED.t = 0; JC.audioWant = 'finale'; UI.setFocus('done'); };
 CRED.update = function (dt) { CRED.t += dt; };
 CRED.onInput = function (e) {
+  if (CRED.t < 1.5) return;   // a tap still meant for the finale's last line does not skip the credits
   const id = UI.menuInput(e);
   if (id === 'done' || (e.type === 'press' && e.key === 'b')) { AUDIO.sfx('select'); JC.go('world', { at: [WORLD.lift.x, WORLD.lift.y + 1, 'down'], say: [{ who: 'mango', key: 'd.mango.free' }] }); }
 };
@@ -384,8 +427,9 @@ CRED.draw = function (g) {
   if (LOGO.gen !== VIEW.gen) buildLogo();
   // it rolls up until the last line is in view (or the logo reaches the top, when it all fits)
   let total = LOGO.h + 8; for (let i = 0; i < CRED_LINES.length; i++) total += wrap(t(CRED_LINES[i]), W - 20).length * LINE_H + 8;
-  let y = H - CRED.t * 22;
-  const stop = Math.min(20, btnY - 6 - total); if (y < stop) y = stop;
+  // it starts with the logo already in view (no empty screen), then rolls
+  const stop = Math.min(20, btnY - 6 - total);
+  let y = Math.round(Math.min(H * 0.3, btnY - 6 - LOGO.h - 30)) - CRED.t * 22; if (y < stop) y = stop;
   g.drawImage(LOGO.c, Math.round((W - LOGO.w) / 2), Math.round(y));
   y += LOGO.h + 8;
   for (let i = 0; i < CRED_LINES.length; i++) y += textBlock(g, t(CRED_LINES[i]), 10, y, W - 20, CRED_TEXT) + 8;

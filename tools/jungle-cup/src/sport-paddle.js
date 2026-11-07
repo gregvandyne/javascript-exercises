@@ -17,7 +17,7 @@
   for (let i = 0; i < 6; i++) S.trail.push({ x: 0, h: 0 });
   const HINT = { align: 'center', col: '#fff8e8' }, WARM = { align: 'center', col: PAL.r4 };
   const VA = { name: '', score: 0, of: 7, col: '#45c34e' }, VB = { name: '', score: 0, of: 7, col: '#ff9b2e' };
-  const zoneHalf = ctx => (ctx.easy ? 38 : 26) + (S.stage === 'warm' ? 6 : 0);
+  const zoneHalf = ctx => (ctx.easy ? 38 : 28) + (S.stage === 'warm' ? 6 : 0);
   function baseSpeed(ctx) { return S.stage === 'warm' ? 85 : ctx.easy ? 96 : 112; }
   function maxSpeed(ctx) { return S.stage === 'warm' ? 125 : ctx.easy ? 170 : 205; }
   /** Launch the ball from (x0, h0) to bounce at xb (the far half) at speed vx (units/s, signed by direction). */
@@ -65,8 +65,8 @@
     const Z = zoneHalf(ctx), d = b.x - (-HIT_X);
     if (d > Z) {
       // swung too early: the paddle has gone by, this ball is lost (so tapping over and over never wins points).
-      // Easier champions forgive a swing that is only a little early.
-      if (ctx.easy && d < Z * 1.6) return;
+      // A swing that is only a little early is forgiven (the paddle comes back in time); more so with Easier champions.
+      if (d < Z * (ctx.easy ? 1.6 : 1.35)) return;
       b.whiffed = true; S.whiffs++;
       UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0');
       return;
@@ -289,6 +289,8 @@
     id: 'paddle',
     champion: 'jada',
     music: 'paddle',
+    /** The intro card says that a warm-up comes first (until it has been played once). */
+    introNote(ctx) { return ctx.warmedUp ? '' : t('pad.warmCard'); },
     start(ctx) {
       S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
       S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.diveThem = 0; S.diveYou = 0; S.lastQ = 0;

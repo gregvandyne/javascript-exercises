@@ -32,6 +32,7 @@ const GLYPHS = {
   161: [16, 0, 16, 16, 16, 16, 16], 191: [4, 0, 4, 8, 16, 17, 14], 215: [0, 17, 10, 4, 10, 17, 0], 176: [8, 20, 8, 0, 0, 0, 0],
   9829: [0, 10, 31, 31, 14, 4, 0], 9733: [4, 4, 31, 14, 14, 27, 0], 8594: [0, 4, 2, 31, 2, 4, 0], 8592: [0, 4, 8, 31, 8, 4, 0],
   8593: [4, 14, 21, 4, 4, 4, 0], 8595: [4, 4, 4, 21, 14, 4, 0], 183: [0, 0, 0, 16, 0, 0, 0],
+  186: [8, 20, 8, 0, 28, 0, 0], 170: [24, 8, 24, 0, 28, 0, 0],
 };
 // Keys over 31 are character codes (so the table holds no quoted text).
 for (const k of Object.keys(GLYPHS)) if (+k > 31) { GLYPHS[String.fromCharCode(+k)] = GLYPHS[k]; delete GLYPHS[k]; }
@@ -101,7 +102,8 @@ function textBitmap(str, col, edge, scale) {
   let b = arr[scale]; if (b) return b;
   const S = VIEW.S, pad = edge ? 1 : 0;
   if (usesPixel(str)) {
-    const u = pixelUnits(str), w = textW(str, 1), k = S * scale;
+    // whole device pixels per font pixel, so a scale like 1.5 stays crisp (it rounds to the nearest whole size)
+    const u = pixelUnits(str), w = textW(str, 1), k = Math.max(1, Math.round(S * scale));
     const c = canvas((w + pad * 2) * k, (LINE_H + pad * 2) * k), x = c.getContext('2d');
     const paint = (dx, dy, fill) => {
       x.fillStyle = fill; let ox = pad + dx;
@@ -109,7 +111,7 @@ function textBitmap(str, col, edge, scale) {
     };
     if (edge) { for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) paint(dx, dy, edge); }
     paint(0, 0, col);
-    b = { c, w: (w + pad * 2) * scale, h: (LINE_H + pad * 2) * scale };
+    b = { c, w: (w + pad * 2) * k / S, h: (LINE_H + pad * 2) * k / S };
   } else {
     const w = textW(str, scale), h = LINE_H * scale;
     const c = canvas((w + 2 + pad * 2) * S, (h + pad * 2) * S), x = c.getContext('2d');
@@ -135,21 +137,33 @@ function text(g, str, x, y, opts) {
   return w;
 }
 const NOOPT = {};
-/** Split text into lines that fit maxW (spaces, or any character for scripts without spaces). Cached. */
+/** Split text into lines that fit maxW (at spaces, and between any two characters of Chinese and Japanese). Cached.
+ *  Closing marks (。、！) never start a line (the character before them moves down with them), and in French the space
+ *  before ! ? : ; and inside « » does not break (a lone "!" at the start of a line). */
 const WRAPS = new Map();
+const CJK_CH = '\u2E80-\u9FFF\u3000-\u30FF\uF900-\uFAFF\uFF00-\uFFEF';
+const WRAP_TOKEN = new RegExp(`[^\\S\\u00a0\\u202f]+|[${CJK_CH}]|(?:[^\\s${CJK_CH}]|[\\u00a0\\u202f])+`, 'g');
+const NO_LINE_START = /^[、。，．・：；？！ー）」』】〕〉》｝…‥ぁぃぅぇぉっゃゅょァィゥェォッャュョ!?.,:;)\]}%»]/;
+const FR_SPACES = /^fr\b/.test(LANG);
+const isSpace = w => /^[^\S\u00a0\u202f]+$/.test(w);
 function wrap(str, maxW, scale) {
   scale = scale || 1;
   const key = (TEXT.clear ? 'C' : 'P') + maxW + '|' + scale + '|' + str;
   let lines = WRAPS.get(key); if (lines) return lines;
   lines = [];
-  for (const para of String(str).split('\n')) {
-    const words = /\s/.test(para) ? para.split(/(\s+)/) : Array.from(para);
+  for (let para of String(str).split('\n')) {
+    if (FR_SPACES) para = para.replace(/ ([!?:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+    const words = para.match(WRAP_TOKEN) || [];
     let cur = '';
     for (const w of words) {
       const next = cur + w;
       if (!cur || textW(next.trim(), scale) <= maxW) { cur = next; continue; }
+      if (isSpace(w)) { lines.push(cur.trim()); cur = ''; continue; }
+      // a closing mark may not start the line: the character before it comes along
+      let carry = '';
+      if (NO_LINE_START.test(w) && !/\s$/.test(cur)) { const ch = Array.from(cur); if (ch.length > 1) { carry = ch.pop(); cur = ch.join(''); } }
       if (cur.trim()) lines.push(cur.trim());
-      cur = /^\s+$/.test(w) ? '' : w;
+      cur = carry + w;
       while (textW(cur, scale) > maxW && cur.length > 1) { let n = cur.length - 1; while (n > 1 && textW(cur.slice(0, n), scale) > maxW) n--; lines.push(cur.slice(0, n)); cur = cur.slice(n); }
     }
     if (cur.trim() || !lines.length) lines.push(cur.trim());
