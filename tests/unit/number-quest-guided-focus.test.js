@@ -177,9 +177,6 @@ const REGISTRY = [
   ['5.2', 1, 0, [6, 24.82, 50, 60.44], [5, 23.2, 46.1, 38.9]],
   ['5.2', 1, 1, [46.07, 59.38, 53.93, 81.65], [45.1, 57.8, 9.9, 25.5]],
   ['5.2', 1, 2, [50, 24.82, 72, 60.44], [49, 23.2, 24.1, 38.9]],
-  ['5.3', 1, 0, [6, 37.33, 28, 52.44], [5.6, 35.7, 22.9, 18.4]],
-  ['5.3', 1, 1, [6, 37.33, 50, 52.44], [5.6, 35.7, 44.9, 18.4]],
-  ['5.3', 1, 2, [6, 28.12, 94, 52.44], [5, 26.5, 90.1, 27.6]],
   ['5.3', 2, 0, [6, 13.9, 94, 38.22], [5, 12.3, 90.1, 27.6]],
   ['5.3', 2, 1, [6, 53.33, 63.2, 68.44], [5.6, 51.7, 58.1, 18.4]],
   ['5.3', 2, 2, [63.2, 53.33, 94, 68.44], [62.8, 51.7, 31.7, 18.4]],
@@ -272,8 +269,11 @@ const REGISTRY = [
   ['4.2', 3, 1, [6, 43.58, 94, 68.44], [5, 42.0, 90, 28.1]],
   ['4.2', 4, 0, [6, 13.36, 94, 38.22], [5, 11.8, 90, 28.1]],
   ['4.2', 4, 1, [6, 43.58, 94, 68.44], [5, 42.0, 90, 28.1]],
+  ['5.3', 1, 0, [6, 37.33, 28, 62], [5, 35.7, 24, 27.9]],
+  ['5.3', 1, 1, [6, 37.33, 50, 62], [5, 35.7, 46, 27.9]],
+  ['5.3', 1, 2, [6, 28.13, 94, 62], [5, 26.5, 90, 37.1]],
 ];
-test('every authored box contains its measured target with a small margin (172-step registry)', () => {
+test('every authored box contains its measured target with a small margin (173-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
@@ -442,4 +442,49 @@ test('every drawn caption (tiles/array diagrams) renders inside the frame at 390
       await page.close();
     }
   } finally { await browser.close(); }
+});
+
+// Fix round A6 (grade r5): a tour badge is a number in a circle, so parked right beside a number on the diagram it
+// reads as one ("score 3" and badge 2 read "32", badge 1 beside "350"). public/js/course.js gives labels that hold a
+// digit a wider berth; this pins it on every Number Quest diagram, in the tour and in the still (reduced-motion) view.
+test('no tour badge sits within 5 px of a number on any Number Quest diagram (390 px, tour and still view)', async () => {
+  const browser = await launch();
+  const problems = [];
+  try {
+    for (const reduced of [false, true]) {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: reduced ? 'reduce' : 'no-preference' });
+      await ctx.addCookies([{ ...sessionCookie(kid), url: base }]);
+      const page = await ctx.newPage();
+      for (const { n, deck: d } of allDecks()) {
+        if (!d.slides.some(s => s.visual && s.focus)) continue;
+        await page.goto(`${base}/courses/number-quest/explorer-${n}`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+        await page.evaluate(() => document.fonts.ready);
+        for (let si = 0; si < d.slides.length; si++) {
+          if (!(d.slides[si].visual && d.slides[si].focus)) continue;
+          await page.evaluate(idx => { const dots = document.querySelectorAll('#deck-dots .dot'); if (dots[idx]) dots[idx].click(); }, si);
+          await page.waitForTimeout(reduced ? 450 : 300);
+          const near = await page.evaluate(idx => {
+            const fig = document.querySelectorAll('.slide')[idx].querySelector('.smedia.gf.vf');
+            if (!fig) return [];
+            const R = el => el.getBoundingClientRect();
+            const nums = [...fig.querySelectorAll('.vf-svg text')].filter(t => /\d/.test(t.textContent)).map(t => ({ r: R(t), s: t.textContent }));
+            const out = [];
+            fig.querySelectorAll('.gf-step').forEach((stp, k) => {
+              const bg = stp.querySelector('.gf-badge');
+              if (!bg || bg.classList.contains('gf-badge--off') || getComputedStyle(bg).display === 'none') return;
+              const g = R(bg); if (!g.width) return;
+              for (const t of nums) {
+                const gap = Math.max(0, t.r.left - g.right, g.left - t.r.right, t.r.top - g.bottom, g.top - t.r.bottom);
+                if (gap < 5) out.push(`badge ${k + 1} is ${gap.toFixed(1)} px from "${t.s}"`);
+              }
+            });
+            return out;
+          }, si);
+          for (const p of near) problems.push(`${reduced ? 'still' : 'tour'} ${n} slide ${si + 1}: ${p}`);
+        }
+      }
+      await ctx.close();
+    }
+  } finally { await browser.close(); }
+  assert.deepEqual(problems, []);
 });
