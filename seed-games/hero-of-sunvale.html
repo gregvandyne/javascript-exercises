@@ -13813,7 +13813,7 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-e0c2218a/breeze-models.js', integrity: 'sha384-gvpS3tq3pg+96q4PoJqakYlyG44cTHI0t5WavkCbiXMkYWjt9g07ro3TCvGZseh9' };
+const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-b4dde207/breeze-models.js', integrity: 'sha384-WJf2A3Z7CKbUJ/uAb83Kj2nfCM1oXxNxdrEXJtzSMQzkTynyd+Yn3aGXPw06ClDM' };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
 function bzLoad() {
@@ -13911,6 +13911,7 @@ function bzApply(d) {
     const Gm = bzCharacter(d.granny, 0.3); BZM.granny = Gm; n.m.body.visible = false; n.m.root.add(Gm.root);
     const mx = new THREE.AnimationMixer(Gm.mesh); Gm.mixer = mx; Gm.idle = mx.clipAction(Gm.clips.idle); Gm.talk = mx.clipAction(Gm.clips.talk); Gm.idle.play(); BZM.mixers.push(mx);
   }
+  if (d.villager) bzVillagers(d.villager);
   // props: one instanced mesh per model part, for every place in the world
   // geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry
   const inst = (geo, mat, list, place, tint) => {
@@ -13946,6 +13947,37 @@ function bzApply(d) {
   });
   if (fp) { fp.castShadow = fp.receiveShadow = false; fp.renderOrder = 2; BZM.footprints = fp; }
   BZM.state = 'ready';
+}
+/** A mesh (and its Ink hull, when it has one) takes a model geometry: the hull pushes along the model's smooth normals. */
+function bzSwap(mesh, geo, hullGeo) {
+  const h = hullGeo || geo; if (!h.attributes.okN) h.setAttribute('okN', h.attributes.normal.clone());
+  mesh.geometry = geo; for (const c of mesh.children) if (c.userData.okInk) c.geometry = h;
+}
+/** Villagers (phase 2): the crowd's instanced parts become the storybook villager's parts (the same pivots and tints), and
+ *  the named people are dressed from the same parts in their own colours, hair, hats, beards and aprons. */
+const BZ_HAIR = { short: 'hair_short', buzz: 'hair_short', bun: 'hair_bun', long: 'hair_long', braids: 'hair_long', curly: 'hair_curls', curls: 'hair_curls' };
+const BZ_HAT = { straw: 'hat_straw', top: 'hat_top', hood: 'hat_hood', helmet: 'helmet', rain: 'hat_hood' };
+function bzVillagers(v) {
+  const tex = bzTex(v), mat = breezeMat({ map: tex, rim: 0.3 }), eyes = new THREE.MeshBasicMaterial({ map: tex, vertexColors: true });
+  const geo = {}, low = {}; for (const [k, m] of Object.entries(v.meshes)) { geo[k] = bzGeo(m); low[k] = m.lod1 ? bzGeo(m.lod1) : geo[k]; }
+  // the crowd (up to 18 people at once): the lighter parts, which read the same at a few metres; their lines too
+  const P = CROWD.parts, put = (i, g, m) => { if (!P[i]) return; const k = Object.keys(geo).find(n => geo[n] === g); bzSwap(P[i].mesh, low[k] || g, low[k] || g); P[i].mesh.material = m || mat; };
+  put(0, geo.legs); put(1, geo.body); put(2, geo.arm); put(3, geo.head); put(4, geo.hair_short); put(5, geo.hair_bun); put(6, geo.hat_straw); put(7, geo.eyes, eyes); put(8, geo.eyes, eyes); put(9, geo.helmet);
+  for (const i of [7, 8]) if (P[i]) for (const c of P[i].mesh.children) if (c.userData.okInk) c.visible = false;
+  // the named people (Granny has her own model)
+  for (const n of NPC_LIST) {
+    if (n.id === 'granny') continue;
+    const L = n.d.look || {}, m = n.m, tinted = (g, c) => { const me = new THREE.Mesh(g, breezeMat({ map: tex, rim: 0.3, color: new THREE.Color(c || '#ffffff') })); me.castShadow = true; return me; };
+    for (const g of [m.body, m.head, m.armL, m.armR, m.legL, m.legR]) if (g) for (const c of g.children) if (c.isMesh) c.visible = false;
+    const shirt = L.dress || L.tabard || L.overalls || L.shirt, add = (grp, me) => { me.userData.bz = true; grp.add(me); B.outline(me, { important: true, width: 0.5 }); me.traverse(c => { if (c.userData.okInk) c.material = inkPushed(inkTinted(c.material)); }); return me; };
+    add(m.body, tinted(geo.legs, L.dress || L.pants || shirt)); add(m.body, tinted(geo.body, shirt));
+    if (L.apron) add(m.body, tinted(geo.apron, L.apron));
+    for (const [arm, sx] of [[m.armL, -1], [m.armR, 1]]) { const a = add(arm, tinted(geo.arm, L.skin)); a.position.x = 0; }
+    add(m.head, tinted(geo.head, L.skin)); const e = new THREE.Mesh(geo.eyes, eyes); e.userData.noInk = true; m.head.add(e);
+    const hair = BZ_HAIR[L.hair]; if (hair && L.hat !== 'helmet') add(m.head, tinted(geo[hair], L.hairColor));
+    if (L.beard || L.mustache) add(m.head, tinted(geo.beard, L.beard || L.mustache));
+    const hat = BZ_HAT[L.hat]; if (hat) add(m.head, tinted(geo[hat], hat === 'helmet' ? '#ffffff' : L.hatColor || '#e9c46a'));
+  }
 }
 /** Only the props near the camera are drawn (the rest are deep in the haze): rewritten every half second. */
 // Levels of detail: lod 0 (the full model) within BZ_LOD m, lod 1 (the lighter copy) out to the haze; -1: one model for all.

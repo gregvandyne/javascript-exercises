@@ -406,6 +406,75 @@ def build_granny():
     return B
 
 
+def build_villager():
+    """The villagers' parts (phase 2): one rounded storybook body cut into the parts the game poses and tints per person,
+    each in its pivot's own frame (Blender: front -Y, up Z; the game's three.js frame after export):
+      legs, body (from the feet), arm (from the shoulder, hanging), head (from the neck: head, ears, nose, painted mouth
+      and blush, all tinted by the skin), eyes (painted, never tinted), hair styles (short, bun, long, curls), beard,
+      hats (straw, top, hood, helmet) and an apron. Tinted parts are white in the model: the game colours each person."""
+    W, D = (1, 1, 1), hexc('#5C3A26'); P = {}
+    def part(name):
+        P[name] = Builder('villager_' + name); return P[name]
+    b = part('legs')
+    for s in (1, -1):
+        b.add(btube((0.13 * s, 0, 0.62), (0.135 * s, 0, 0.16), 0.11, 0.085, 8, 3), W, 'cloth2', 0, 'cloth')
+        b.add(smooth(bsphere((0.14 * s, -0.05, 0.1), (0.12, 0.17, 0.1))), tuple(c * 1.0 for c in (0.42, 0.34, 0.3)), 'boots', 0, 'boots', wonk=0.006)
+    b = part('body')
+    b.add(smooth(bsphere((0, 0, 0.88), (0.31, 0.25, 0.34), (14, 9))), W, 'cloth', 0, 'cloth', wonk=0.01)
+    b.add(blathe([(0.29, 0.52), (0.35, 0.55), (0.33, 0.68), (0.27, 0.8)], 16), W, 'cloth', 0, 'cloth')
+    b.add(blathe([(0.31, 0.7), (0.318, 0.715), (0.312, 0.78), (0.296, 0.79)], 16), tuple(c * 0.55 for c in W), 'belt', 0, 'boots')
+    for s in (1, -1):
+        b.add(smooth(bsphere((0.34 * s, 0, 1.12), (0.13, 0.13, 0.12))), W, 'cloth', 0, 'cloth')
+    b = part('arm')   # pivot at the shoulder; the arm hangs down, a small round hand at the end
+    b.add(btube((0, 0, -0.04), (0.01, -0.01, -0.44), 0.075, 0.055, 9, 3), W, 'skin', 0, 'skin')
+    b.add(smooth(bsphere((0.01, -0.01, -0.5), (0.075, 0.07, 0.08))), W, 'skin', 0, 'skin')
+    b = part('head')  # pivot at the neck
+    b.add(smooth(bsphere((0, 0, 0.4), (0.42, 0.4, 0.4), (16, 10))), W, 'skin', 0, 'skin', wonk=0.004)
+    for s in (1, -1):
+        b.add(smooth(bsphere((0.41 * s, 0.02, 0.37), (0.06, 0.05, 0.085))), W, 'skin', 0, 'skin')
+        b.add(decal((0.25 * s, -0.355, 0.27), 0.11, 0.07, 0.6 * s, 0.1), W, 'skin', 0, 'blush', 'decal')
+    b.add(smooth(bsphere((0, -0.405, 0.32), (0.045, 0.035, 0.035))), tuple(c * 0.93 for c in W), 'skin', 0, 'skin')
+    b.add(decal((0, -0.395, 0.21), 0.17, 0.11, 0, 0.3), W, 'skin', 0, 'mouth', 'decal')
+    b = part('eyes')
+    for s in (1, -1):
+        b.add(decal((0.15 * s, -0.4, 0.4), 0.24, 0.29, 0.36 * s, 0.08), (1, 1, 1), 'eye', 0, 'eye', 'decal')
+    b = part('hair_short')
+    b.add(smooth(bsphere((0, 0.045, 0.47), (0.44, 0.42, 0.36), (14, 8))), W, 'hair', 0, 'hair', wonk=0.01)
+    for x in np.linspace(-0.27, 0.27, 5):
+        b.add(smooth(bsphere((x, -0.3 + abs(x) * 0.35, 0.66 - abs(x) * 0.35), (0.12, 0.085, 0.1), (9, 6), (0.35, 0, -x * 1.4))), W, 'hair', 0, 'hair')
+    b = part('hair_bun')
+    b.add(smooth(bsphere((0, 0.05, 0.48), (0.43, 0.41, 0.33), (18, 10))), W, 'hair', 0, 'hair', wonk=0.008)
+    b.add(smooth(bsphere((0, 0.14, 0.84), (0.18, 0.17, 0.16), (12, 8))), W, 'hair', 0, 'hair')
+    b = part('hair_long')
+    b.add(smooth(bsphere((0, 0.05, 0.48), (0.44, 0.42, 0.34), (18, 10))), W, 'hair', 0, 'hair', wonk=0.01)
+    b.add(smooth(bsphere((0, 0.2, 0.15), (0.4, 0.2, 0.42), (14, 8))), W, 'hair', 0, 'hair', wonk=0.012)
+    b = part('hair_curls')
+    for i in range(14):
+        a = i / 14 * 2 * math.pi; r = 0.33 if i % 2 else 0.27; z = 0.62 + (i % 3) * 0.06
+        b.add(smooth(bsphere((math.cos(a) * r, math.sin(a) * r + 0.05, z), (0.15, 0.15, 0.14), (7, 5))), W, 'hair', 0, 'hair')
+    b.add(smooth(bsphere((0, 0.05, 0.5), (0.43, 0.41, 0.3), (16, 9))), W, 'hair', 0, 'hair')
+    b = part('beard')
+    b.add(smooth(bsphere((0, -0.27, 0.16), (0.3, 0.2, 0.2), (14, 8))), W, 'hair', 0, 'hair', wonk=0.01)
+    for s in (1, -1):
+        b.add(smooth(bsphere((0.34 * s, -0.12, 0.3), (0.1, 0.12, 0.17), (9, 6))), W, 'hair', 0, 'hair')
+    b = part('hat_straw')
+    b.add(smooth(blathe([(0.05, 0.75), (0.7, 0.74), (0.72, 0.76), (0.4, 0.8), (0.36, 1.02), (0.05, 1.04)], 18)), W, 'other', 0, 'hair')
+    b.add(blathe([(0.37, 0.8), (0.39, 0.8), (0.38, 0.87), (0.36, 0.87)], 18), (0.9, 0.3, 0.3), 'other', 0, 'boots')
+    b = part('hat_top')
+    b.add(smooth(blathe([(0.05, 0.76), (0.55, 0.75), (0.56, 0.79), (0.33, 0.81), (0.32, 1.35), (0.05, 1.36)], 16)), W, 'other', 0, 'cloth')
+    b.add(blathe([(0.335, 0.82), (0.345, 0.82), (0.34, 0.92), (0.33, 0.92)], 16), hexc('#FFD23F'), 'metal', 0, 'boots')
+    b = part('hat_hood')
+    b.add(smooth(bsphere((0, 0.08, 0.5), (0.5, 0.48, 0.46), (16, 10))), W, 'other', 0, 'cloth', wonk=0.012)
+    b.add(smooth(bsphere((0, 0.42, 0.1), (0.42, 0.2, 0.3), (12, 8))), W, 'other', 0, 'cloth')
+    b = part('helmet')
+    b.add(smooth(bsphere((0, 0.02, 0.62), (0.47, 0.46, 0.33), (16, 9))), hexc('#DDE6EE'), 'metal', 0, 'white')
+    b.add(blathe([(0.46, 0.55), (0.49, 0.56), (0.49, 0.6), (0.46, 0.61)], 16, (0, 0.02, 0)), hexc('#B4C3D1'), 'metal', 0, 'white')
+    b.add(smooth(bsphere((0, 0.05, 0.98), (0.05, 0.22, 0.12))), hexc('#2F6FC8'), 'other', 0, 'white')
+    b = part('apron')
+    b.add(smooth(bsphere((0, -0.24, 0.74), (0.27, 0.08, 0.27), (12, 8))), W, 'other', 0, 'cloth')
+    return P
+
+
 def build_cottage():
     """Unit cottage: walls 6 x 5 x 3.2 (x, y, z), the roof a soft thick slab with an overhang; two meshes: walls, roof."""
     W, D, H, RH = 6.0, 5.0, 3.2, 2.3
@@ -682,6 +751,29 @@ def make_char(name, builder, atlas, out, renders):
     return data
 
 
+def make_villager(out, renders):
+    """The villager parts as one asset (a mesh per part); the review turntable assembles two people from them."""
+    P = build_villager(); tex = char_atlas((70, 52, 36)); mat = material('villager_mat', to_bimg(tex, 'villager_tex'))
+    obs = {n: b.mesh(mat) for n, b in P.items()}
+    export_glb(os.path.join(out, 'villager.glb'), list(obs.values()))
+    data = {'name': 'villager', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
+    for n, o in obs.items():   # a lighter copy of each part: the crowd's far people and every Ink hull
+        if n != 'eyes' and data['meshes'][n]['tris'] > 200: data['meshes'][n]['lod1'] = lod(o, 0.4)
+    if renders:   # two people: short hair and a straw hat; a bun and an apron (tints painted on for the review)
+        def tint(o, c):
+            col = o.data.color_attributes.get('Col')
+            for d in col.data: d.color = (d.color[0] * c[0], d.color[1] * c[1], d.color[2] * c[2], d.color[3])
+        show = []
+        for k, (dx, hair, hat, shirt, pants, skin, hc) in enumerate([(-0.7, 'hair_short', 'hat_straw', hexc('#4FA8F0'), hexc('#8A5A3C'), hexc('#E8B48A'), hexc('#5C3A26')),
+                                                                     (0.7, 'hair_bun', 'apron', hexc('#FF6B5B'), hexc('#2F6FC8'), hexc('#96603A'), hexc('#2B2220'))]):
+            for n, loc, c in [('legs', (0, 0, 0), pants), ('body', (0, 0, 0), shirt), ('head', (0, 0, 1.22), skin), ('eyes', (0, 0, 1.22), (1, 1, 1)), (hair, (0, 0, 1.22), hc),
+                              (hat, (0, 0, 1.22) if hat != 'apron' else (0, 0, 0), (1, 1, 1)), ('arm', (0.39, 0, 1.17), skin), ('arm', (-0.39, 0, 1.17), skin)]:
+                o = obs[n].copy(); o.data = obs[n].data.copy(); bpy.context.scene.collection.objects.link(o); o.location = (loc[0] + dx, loc[1], loc[2]); tint(o, c); show.append(o)
+        for o in obs.values(): o.hide_render = True
+        turntable(os.path.join(out, 'turn_villager.png'), show, 2.4)
+    return data
+
+
 def make_prop(name, builders, tex, out, renders, height, texs=None):
     """texs: an optional texture per builder (the cottage's walls and roof); otherwise one texture for all."""
     texs = texs or [tex] * len(builders); obs = []
@@ -709,7 +801,8 @@ def main():
             ('cottage', lambda: make_prop('cottage', list(build_cottage()), prop_tex('cottage'), a.out, a.renders, 8.5, [prop_tex('cottage'), prop_tex('roof')])),
             ('tree', lambda: make_prop('tree', [build_tree()], prop_tex('tree'), a.out, a.renders, 5.6)),
             ('barrel', lambda: make_prop('barrel', [build_barrel()], prop_tex('wood'), a.out, a.renders, 1.3)),
-            ('fence', lambda: make_prop('fence', list(build_fence()), prop_tex('wood'), a.out, a.renders, 1.5))]
+            ('fence', lambda: make_prop('fence', list(build_fence()), prop_tex('wood'), a.out, a.renders, 1.5)),
+            ('villager', lambda: make_villager(a.out, a.renders))]
     for name, fn in jobs:
         if only and name not in only: continue
         reset(); d = fn()
