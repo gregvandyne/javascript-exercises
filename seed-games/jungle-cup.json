@@ -1,0 +1,14 @@
+{
+  "slug": "jungle-cup",
+  "title": "Jungle Cup",
+  "icon": "🏆",
+  "cover": "forest",
+  "category": "sports",
+  "tags": "sports,pixel art,adventure,island,capybara,table tennis,climbing,canoe,rhythm,football,tricks,retro",
+  "description": "Float down the river with Cappy the capybara to Delta Isle and take on seven rainforest champions in seven sports. Win each champion's Feather, light up the Cup Totem, and ride the vine lift up the Great Kapok to win the Jungle Cup. Explore the island, help its people, and find new styles for Cappy.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Plain canvas (no Oomba Kit): 16-bit pixel art drawn in code at an integer scale, built from tools/jungle-cup/src by tools/jungle-cup/build.mjs (npm run build:jungle; docs/jungle-cup-plan.md). A top-down overworld (Delta Isle: dock, Mossy Village with the Cup Totem, the Great Kapok and its vine lift, seven sport arches), dialogue, five cosmetic side quests, a map with fast travel, Settings (sound, Pixel/Clear text, Easier champions, new game) and Controls. Sports plug into one runner (intro card, 3-2-1, pause, results with stars); Paddle Smash vs Jada is the reference sport. Saves progress in BRB.storage key 'jungle-cup-v1'. BRB.gameOver({won, score}) after every round, score = cup points (100 per star, 250 per Feather, 500 for the Cup). Sound: WebAudio chiptune made in code, following BRB.sfx.muted. Words: the I18N block (13 locales). Test hooks: window.__brbTest.state/start and window.__brbTest.jc (state, go, play, win, lose, setSave, save, step, manual, speed, press, release, tap, swipe, walk, talk, skipText, buttons, sport, perf)."
+}

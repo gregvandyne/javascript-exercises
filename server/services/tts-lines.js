@@ -75,6 +75,8 @@ export const GAMES = {
   // Doodle Hoot: the game's own lines; the secret words are never in its I18N block (and never spoken: a word read
   // aloud would tell the room the answer)
   'doodle-hoot': { title: 'Doodle Hoot', role: 'bright', spoken: /./ },
+  // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
+  'jungle-cup': { title: 'Jungle Cup', role: 'narrator', spoken: /^(?:d\.[a-z]+\.[a-z0-9]+|story\.\d+|end\.\d+|sign\.[a-z]+|lift\.(?:open|locked))$/ },
 };
 /** The official games that may use AI voices at all (routes/tts.js gameAllowed): only games listed in GAMES, whose
  *  spoken lines the server knows. Every official game is listed (the coverage test in tests/unit/tts-coverage.test.js
