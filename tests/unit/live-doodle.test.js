@@ -2,9 +2,11 @@
 // Live"), over the real socket: who may host (a grown-up with billing off, a teacher; never a kid, a guest or a banned
 // account), two players to start, the turn order, the drawer's three words (to them alone), strokes relayed from memory
 // to everyone else and the projector (never back to the drawer, never to a dashboard) and checked on the way, undo and
-// clear, trays and guesses (tray positions, checked on the server), hints, points, a late joiner and a reload getting the
-// page replayed, the host's Clear drawing, Skip turn and Remove, the hide vote, waiting for players, the end, and that
-// nothing of a drawing or a word is kept, logged or sent anywhere else.
+// clear, typed guesses (checked on the server and forgotten; only a word of the game's own list ever goes on, to the
+// drawer and the projector; a close guess only to its guesser), letter tiles (the host's easier choice: tray positions),
+// who said it out loud (the drawer or the host), hints, points, a late joiner and a reload getting the page replayed,
+// the host's Clear drawing, Skip turn and Remove, the hide vote, waiting for players, the end, and that nothing of a
+// drawing, a word or a guess is kept, logged or sent anywhere else.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -21,7 +23,7 @@ const { billingOn } = await import('../../server/services/stripe.js');
 const { DoodleCore: C } = doodle();
 
 publish(official, liveHtml("live.on('event', () => {});"), { source: 'seed', slug: 'doodle-hoot', title: 'Doodle Hoot' });
-Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300, waitMs: 500, gapMs: 40, drawMs: 20000, reloadMs: 80 });
+Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300, waitMs: 500, gapMs: 40, typeGapMs: 40, drawMs: 20000, reloadMs: 80 });
 // (a long turn, so no hint lands between working out a guess and sending it; the hints test sets a short one)
 
 const seatOf = c => c.wel.seat;
@@ -89,14 +91,17 @@ test('who may host: a grown-up with billing off, a teacher; never a kid, a guest
   const r = await call('/api/live/sessions', { method: 'POST', user: mum, body: { pick: 'mode:doodle', audience: 'open', doodleLang: 'he', doodleLevel: '3', doodleRounds: '1', doodleSecs: '100', replace: true } });
   assert.equal(r.status, 200, r.text);
   const s = LS.hostSession(mum.id);
-  assert.equal(s.doodle.id, 'doodle:he:3:1:100'); assert.equal(s.doodle.dir, 'rtl');
+  assert.equal(s.doodle.id, 'doodle:he:3:1:100'); assert.equal(s.doodle.dir, 'rtl'); assert.equal(s.doodle.tiles, false, 'typing unless the host picks tiles');
+  const r2 = await call('/api/live/sessions', { method: 'POST', user: mum, body: { pick: 'mode:doodle', audience: 'open', doodleLang: 'fr', doodleLevel: '1', doodleRounds: '2', doodleSecs: '80', doodleTiles: '1', replace: true } });
+  assert.equal(r2.status, 200, r2.text);
+  assert.equal(LS.hostSession(mum.id).doodle.id, 'doodle:fr:1:2:80:t'); assert.equal(LS.hostSession(mum.id).doodle.tiles, true);
   const k = await call('/api/live/sessions', { method: 'POST', user: kid, body: { pick: 'mode:doodle', audience: 'open' } });
   assert.notEqual(k.status, 200);
 });
 
-test('a full turn: words to the drawer alone, strokes relayed and checked, guesses on the server, points', async () => {
+test('a full turn (letter tiles): words to the drawer alone, strokes relayed and checked, guesses on the server, points', async () => {
   reset();
-  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60:t', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s), c = await player(s, kid);
   h.send({ t: 'rdy', view: '3d' });
@@ -255,7 +260,7 @@ test('the host: Clear drawing everywhere, Skip turn by its number, Remove the dr
 test('hints, a pick that times out, the hide vote, a drawer who leaves, waiting for players', async (tt) => {
   reset();
   DG.hooks.drawMs = 4000; tt.after(() => { DG.hooks.drawMs = 20000; });
-  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:2:2:60', audience: 'open', lang: 'en' });
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:2:2:60:t', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s), c = await player(s);
   await started(s, h, [a, b, c]);
@@ -296,7 +301,7 @@ test('hints, a pick that times out, the hide vote, a drawer who leaves, waiting 
 test('the end: the podium, then the results; nothing of a drawing or a word is kept or logged', async () => {
   reset();
   logs.length = 0;
-  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60:t', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s);
   h.send({ t: 'rdy', view: '3d' });
@@ -314,7 +319,7 @@ test('the end: the podium, then the results; nothing of a drawing or a word is k
   await h.next('ph', m => m.phase === 'ended', 3000);
   assert.equal(s.doodle.canvas.length, 0); assert.equal(s.doodle.word, null); assert.equal(s.doodle.tray, null);
   const sum = s.summary;
-  assert.equal(sum.scoredBy, 'server'); assert.equal(sum.settings.doodle, 'doodle:en:1:1:60');
+  assert.equal(sum.scoredBy, 'server'); assert.equal(sum.settings.doodle, 'doodle:en:1:1:60:t');
   assert.equal(sum.players[0].rank, 1);
   const kept = JSON.stringify(sum) + JSON.stringify(R.persisted(teacher, s.id) || {});
   for (const w of [w1, w2]) assert.ok(!kept.includes(`"${w}"`), `no word in the results: ${w} in ${kept}`);
@@ -354,7 +359,7 @@ test('blips: a reload at the end of a reveal never ends the game; a reloading gu
   reset();
   Object.assign(DG.hooks, { reloadMs: 3000, graceMs: 3000 });
   tt.after(() => Object.assign(DG.hooks, { reloadMs: 80, graceMs: 300 }));
-  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:2:60', audience: 'open', lang: 'en' });
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:2:60:t', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s), c = await player(s);
   await started(s, h, [a, b, c]);
@@ -379,7 +384,7 @@ test('blips: a reload at the end of a reveal never ends the game; a reloading gu
 
 test('the host: Skip wipes the drawing; Remove locks the room and a removed player never stands on the podium', async () => {
   reset();
-  const s = open(mum, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const s = open(mum, { mode: 'doodle', starter: 'doodle:en:1:1:60:t', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, mum);
   const a = await player(s), b = await player(s), c = await player(s);
   await started(s, h, [a, b, c]);
@@ -453,5 +458,252 @@ test('the real game file is live-ready: it draws its own lobby and host view, ho
   // (the live pack's hash is a test value in this harness, so only the pack check is set aside here)
   assert.deepEqual(r.issues.filter(i => i.code !== 'live_pack'), []);
   assert.equal(r.lobby, true); assert.equal(r.hostView, true); assert.equal(r.maxPlayers, 16);
-  assert.deepEqual(r.words, ['pk', 'ln', 'un', 'cl', 'gs', 'hide', 'need']);
+  assert.deepEqual(r.words, ['pk', 'ln', 'un', 'cl', 'gs', 'aw', 'hide', 'need']);
+  // the guess box is made at run time (no <input type=text> in the file: nothing else can be typed in a live frame)
+  assert.ok(!r.issues.some(i => i.code === 'live_text'));
+});
+
+// ---------------------------------------------------------------- typed guesses and guesses out loud
+/** A typed guess as the game sends it: code points. */
+const typed = (c, n, text) => ev(c, 'gs', { n, c: Array.from(text).map(ch => ch.codePointAt(0)) });
+const gap = () => sleep(DG.hooks.typeGapMs + 15);
+/** Every message a socket got, as one string (to look for a guess's text in it). */
+const all = c => JSON.stringify(c.msgs);
+
+test('typing (the default): open the whole drawing, checked on the server, only list words go on, never to guessers', async () => {
+  reset();
+  logs.length = 0;
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s), c = await player(s);
+  h.send({ t: 'rdy', view: '3d' });
+  await started(s, h, [a, b, c]);
+  assert.equal(dd(s).tiles, false); assert.equal(s.state.dd.tl, 0);
+  const ch = await a.next('ev', m => m.k === 'ch');
+  ev(a, 'pk', { n: 1, i: 0 });
+  const word = (await a.next('ev', m => m.k === 'wd')).d.w;
+  // the guessers get the word's shape and no tiles, before a single stroke: guessing is open from the start
+  const tb = await b.next('ev', m => m.k === 'tray');
+  assert.deepEqual(tb.d.t, []); assert.equal(tb.d.ty, 1); assert.deepEqual(tb.d.g, dd(s).word.groups); assert.deepEqual(tb.d.hn, []);
+  assert.equal(dd(s).canvas.length, 0);
+  const pick = ch.d.w.find(w => w !== word && !w.includes(' '));   // another word of the list (one the drawer was offered)
+  const wrongId = C.words(doodle().DoodleWords, 'en', 0).find(x => x.w === pick).id;
+  // a word of the list: the drawer and the projector see it (as its id), the guesser hears "not quite", nobody else
+  typed(b, 1, pick.toUpperCase());
+  const fa = await a.next('ev', m => m.k === 'fd'), fh = await h.next('ev', m => m.k === 'fd');
+  assert.deepEqual(fa.d, { n: 1, l: [[seatOf(b), 'w', wrongId]] }); assert.deepEqual(fh.d, fa.d);
+  const g0 = await b.next('ev', m => m.k === 'gr');
+  assert.equal(g0.d.ok, false); assert.equal(g0.d.c, undefined); assert.equal(g0.d.left, DD.TYPE_MAX - 1);
+  // anything else goes on only as "something else": a sentence, a rude word, a phone number, a link
+  const secret = ['you are my best friend', 'fuck', 'call me 0791 234 5678', 'www.example.com', 'shit head', 'Ｓｈｉｔ'];
+  for (const text of secret) { await gap(); typed(c, 1, text); await a.next('ev', m => m.k === 'fd' && m.d.l[0][0] === seatOf(c) && evs(a, 'fd').filter(x => x.d.l[0][0] === seatOf(c)).length === secret.indexOf(text) + 1); }
+  for (const f of evs(a, 'fd').filter(x => x.d.l[0][0] === seatOf(c))) assert.deepEqual(f.d.l[0], [seatOf(c), 'x']);
+  // a close guess: "So close!" to that guesser alone; the drawer and the projector see only "something else" (nobody
+  // else learns who is near)
+  await gap();
+  // (a letter off; a short word: two letters swapped)
+  const near = word.length >= 4 ? word.slice(0, -1) + (word.endsWith('z') ? 'y' : 'z') : word[0] !== word[1] ? word[1] + word[0] + word.slice(2) : word[0] + word[2] + word[1];
+  typed(b, 1, near);
+  const gc = await b.next('ev', m => m.k === 'gr' && m.d.c === 1);
+  assert.equal(gc.d.ok, false);
+  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][0] === seatOf(b) && m.d.l[0][1] === 'x')).d.l[0], [seatOf(b), 'x']);
+  assert.ok(!all(a).includes('"c"]') && !all(h).includes('"c"]'), 'no "close" line anywhere');
+  // the right word, typed any old way (capitals, spaces, an article): b gets it, sees the word, the others see only who
+  await gap();
+  typed(b, 1, `  The ${word.toUpperCase()} `);
+  const ok = await b.next('ev', m => m.k === 'gr' && m.d.ok);
+  assert.ok(ok.d.p >= 50); assert.equal((await b.next('ev', m => m.k === 'wd')).d.w, word);
+  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][1] === 'ok')).d.l[0], [seatOf(b), 'ok']);
+  // b can't guess again; c's typed text never reached anyone, as text, anywhere; guessers never get the list
+  await gap(); typed(b, 1, word); await sleep(40);
+  assert.equal(evs(b, 'gr').filter(m => m.d.ok).length, 1);
+  for (const sock of [a, b, c, h]) for (const text of secret) assert.ok(!all(sock).includes(text) && !all(sock).includes(JSON.stringify(text)), `"${text}" reached a device`);
+  assert.equal(evs(b, 'fd').length + evs(c, 'fd').length, 0, 'guessers never see the guesses list');
+  for (const text of [...secret, near]) assert.ok(!JSON.stringify(logs).includes(text), 'no guess in a log');
+  assert.ok(!JSON.stringify(dd(s)).includes('best friend'), 'no guess kept in the room');
+  // c gets it too: everyone has it, the turn ends
+  await gap(); typed(c, 1, word);
+  assert.equal((await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal')).d.dd.rv.why, 'all');
+  assert.equal(s.seats.get(seatOf(a)).score, 120);
+  for (const p of [a, b, c, h]) p.ws.close();
+});
+
+test('typing: what a typed guess may be, rate limits, and messages that are dropped', async () => {
+  reset();
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s);
+  await started(s, h, [a, b]);
+  const word = await picked(s, a, [b]);
+  const before = dd(s).drops;
+  // dropped: tiles in a typing room, text as a string, nothing, too long, control characters, half a surrogate pair,
+  // floats, another turn, extra keys, the drawer guessing
+  for (const d of [{ n: 1, t: [0, 1, 2] }, { n: 1, c: 'cat' }, { n: 1, c: [] }, { n: 1, c: Array(41).fill(97) }, { n: 1, c: [99, 10, 97] }, { n: 1, c: [0x80] },
+    { n: 1, c: [0xD83D] }, { n: 1, c: [97.5] }, { n: 2, c: [97] }, { n: 1, c: [97], x: 1 }]) { ev(b, 'gs', d); await sleep(DG.hooks.typeGapMs + 5); }
+  typed(a, 1, word);
+  await sleep(60);
+  assert.equal(dd(s).drops - before, 11); assert.equal(evs(b, 'gr').length, 0); assert.equal(dd(s).got.length, 0);
+  // one guess every TYPE_GAP_MS: a second at once isn't counted, but is answered (f: 1), so the box never waits forever
+  DG.hooks.typeGapMs = 400;
+  typed(b, 1, 'zzzz'); typed(b, 1, 'yyyy');
+  await b.next('ev', m => m.k === 'gr' && m.d.f === 1); await sleep(60);
+  assert.equal(evs(b, 'gr').length, 2); assert.equal(evs(a, 'fd').length, 1);
+  assert.equal(evs(b, 'gr')[1].d.left, DD.TYPE_MAX - 1, 'too quick is not a wrong guess');
+  // no letters at all (emoji, punctuation): answered (z: 1), not counted, nothing in the list
+  const none = ['???', '🙂🙂', '!'];
+  for (const [i, text] of none.entries()) { await sleep(420); typed(b, 1, text); await b.next('ev', m => m.k === 'gr' && m.d.z === 1 && evs(b, 'gr').filter(x => x.d.z).length === i + 1); }
+  assert.equal(evs(a, 'fd').length, 1); assert.equal(evs(b, 'gr').at(-1).d.left, DD.TYPE_MAX - 1);
+  DG.hooks.typeGapMs = 40;
+  // TYPE_MAX wrong ones a turn, then "keep watching" (left 0) and nothing more is checked
+  // (the socket's own limit is 10 events a second: these go at 8)
+  for (let i = 1; i < DD.TYPE_MAX; i++) { await sleep(125); typed(b, 1, `zz${i}`); }
+  const last = await b.next('ev', m => m.k === 'gr' && m.d.left === 0, 5000);
+  assert.equal(last.d.ok, false);
+  const n0 = evs(b, 'gr').length;
+  await sleep(50); typed(b, 1, word); await sleep(60);
+  assert.equal(dd(s).got.length, 0, 'no guesses left this turn');
+  assert.equal(evs(b, 'gr').length, n0 + 1, 'still answered'); assert.equal(evs(b, 'gr').at(-1).d.left, 0);
+  // a reload: the turn comes back marked as out of guesses (out: 1), so the box doesn't wait for an answer
+  b.ws.close(); await sleep(20);
+  const b2 = socket(); await b2.hello(b.join.tok); b2.send({ t: 'rdy', view: '2d' });
+  assert.equal((await b2.next('ev', m => m.k === 'tray')).d.out, 1);
+  b2.ws.close();
+  assert.ok(evs(a, 'fd').length <= DD.TYPE_MAX && dd(s).feed.length === DD.FEED_MAX, 'the list keeps the last few');
+  for (const p of [a, b, h]) p.ws.close();
+});
+
+test('typing: letter hints show letters; a reloaded drawer and the projector get the guesses so far', async (tt) => {
+  reset();
+  DG.hooks.drawMs = 4000; tt.after(() => { DG.hooks.drawMs = 20000; });
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:2:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s);
+  await started(s, h, [a, b]);
+  await picked(s, a, [b]);
+  typed(b, 1, 'qqqq');
+  await a.next('ev', m => m.k === 'fd');
+  // no decoys to take away: the first hint is a letter, in its slot
+  const hn = await b.next('ev', m => m.k === 'hn', 4000);
+  assert.equal(hn.d.l, dd(s).word.g[hn.d.i]); assert.equal(hn.d.t, undefined);
+  assert.equal(evs(b, 'hd').length, 0); assert.equal(evs(a, 'hn').length, 0);
+  // a guesser who reloads gets the letters so far
+  b.ws.close(); await sleep(20);
+  const b2 = socket(); await b2.hello(b.join.tok); b2.send({ t: 'rdy', view: '2d' });
+  const tr = await b2.next('ev', m => m.k === 'tray');
+  assert.deepEqual(tr.d.hn, dd(s).hints.map(x => [x.i, x.l])); assert.equal(tr.d.ty, 1);
+  // the drawer reloads: the list again (whole: r 1); the projector's frame too
+  a.ws.close(); await sleep(20);
+  const a2 = socket(); await a2.hello(a.join.tok); a2.send({ t: 'rdy', view: '2d' });
+  const fd = await a2.next('ev', m => m.k === 'fd');
+  assert.deepEqual(fd.d, { n: 1, l: [[seatOf(b), 'x']], r: 1 });
+  h.send({ t: 'rdy', view: '3d' });
+  assert.equal((await h.next('ev', m => m.k === 'fd' && m.d.r === 1)).d.l.length, 1);
+  for (const p of [a2, b2, h]) p.ws.close();
+});
+
+test('said out loud: the drawer (or the host) taps who; once a player a turn, only someone who may still get it', async () => {
+  reset();
+  const s = open(mum, { mode: 'doodle', starter: 'doodle:en:1:2:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, mum);
+  const a = await player(s), b = await player(s), c = await player(s), d = await player(s);
+  await started(s, h, [a, b, c, d]);
+  const word = await picked(s, a, [b, c, d]);
+  // nothing drawn yet: no award (the drawer is told, so the game can say "Draw something first!")
+  let before = dd(s).drops;
+  ev(a, 'aw', { n: 1, s: seatOf(b) });
+  assert.deepEqual((await a.next('ev', m => m.k === 'awn')).d, { n: 1, s: seatOf(b) });
+  h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(b) } }); await sleep(50);
+  assert.equal(dd(s).drops - before, 2); assert.equal(dd(s).got.length, 0); assert.equal(evs(b, 'gr').length, 0);
+  ev(a, 'ln', { s: 0, c: 3, w: 1, e: 0, p: [100, 100, 10, 0, 10, 5] }); await sleep(40);
+  before = dd(s).drops;
+  // dropped: a guesser awarding, the drawer awarding themselves, no such seat, another turn, extra keys
+  ev(b, 'aw', { n: 1, s: seatOf(c) }); await sleep(50);
+  ev(a, 'aw', { n: 1, s: seatOf(a) }); await sleep(50);
+  ev(a, 'aw', { n: 1, s: 999 }); await sleep(50);
+  ev(a, 'aw', { n: 2, s: seatOf(b) }); await sleep(50);
+  ev(a, 'aw', { n: 1, s: seatOf(b), x: 1 }); await sleep(50);
+  assert.equal(dd(s).drops - before, 5); assert.equal(dd(s).got.length, 0);
+  // the drawer: b said it. b gets their points by speed and the word; it shows in the list like a typed one
+  ev(a, 'aw', { n: 1, s: seatOf(b) });
+  const g = await b.next('ev', m => m.k === 'gr' && m.d.ok);
+  assert.equal(g.d.a, 1); assert.ok(g.d.p >= 50 && g.d.p <= 120);
+  assert.equal((await b.next('ev', m => m.k === 'wd')).d.w, word);
+  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][1] === 'ok')).d.l[0], [seatOf(b), 'ok', 1], 'marked as said out loud');
+  assert.equal(s.seats.get(seatOf(b)).score, g.d.p); assert.equal(s.seats.get(seatOf(b)).correct, 1);
+  // b again: once a turn
+  await sleep(60); ev(a, 'aw', { n: 1, s: seatOf(b) }); await sleep(60);
+  assert.equal(evs(b, 'gr').filter(m => m.d.ok).length, 1);
+  // the host's page can say who too (c); a second tap on the same player does nothing (once a turn)
+  h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(c) } });
+  h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(c) } });
+  await c.next('ev', m => m.k === 'gr' && m.d.ok); await sleep(80);
+  assert.deepEqual(dd(s).got, [seatOf(b), seatOf(c)]);
+  assert.equal(evs(c, 'gr').filter(m => m.d.ok).length, 1, 'once a turn');
+  // d types it: everyone has it, the drawer's usual share
+  typed(d, 1, word);
+  const rv = await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal');
+  assert.equal(rv.d.dd.rv.why, 'all'); assert.equal(s.seats.get(seatOf(a)).score, 120);
+  // after the drawing, an award does nothing
+  ev(a, 'aw', { n: 1, s: seatOf(d) }); await sleep(40);
+  assert.equal(s.seats.get(seatOf(d)).correct, 1);
+  for (const p of [a, b, c, d, h]) p.ws.close();
+});
+
+test('typing: at most FEED_WORDS list words a guesser a turn go on (words can not be strung into a message)', async () => {
+  reset();
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s), c = await player(s);
+  h.send({ t: 'rdy', view: '3d' });
+  await started(s, h, [a, b, c]);
+  const word = await picked(s, a, [b, c]);
+  const idx = C.index(doodle().DoodleWords, 'en');
+  const msg = C.words(doodle().DoodleWords, 'en', 0).map(x => x.w).filter(w => !w.includes(' ') && C.judge(w, [word], 'en', idx).k === 'word').slice(0, DD.FEED_WORDS + 3);
+  for (const w of msg) { typed(b, 1, w); await gap(); }
+  await a.next('ev', m => m.k === 'fd' && evs(a, 'fd').length === msg.length);
+  const lines = evs(a, 'fd').map(m => m.d.l[0]);
+  assert.equal(lines.filter(l => l[1] === 'w').length, DD.FEED_WORDS);
+  assert.equal(JSON.stringify(lines.slice(DD.FEED_WORDS)), JSON.stringify(msg.slice(DD.FEED_WORDS).map(() => [seatOf(b), 'x'])));
+  // the projector the same; another guesser has their own few
+  await h.next('ev', m => m.k === 'fd' && evs(h, 'fd').length === msg.length);
+  assert.equal(evs(h, 'fd').filter(m => m.d.l[0][1] === 'w').length, DD.FEED_WORDS);
+  typed(c, 1, msg[0]);
+  assert.equal((await a.next('ev', m => m.k === 'fd' && m.d.l[0][0] === seatOf(c))).d.l[0][1], 'w');
+  // a rude word, a sentence, prototype names: never a list word (the index has no prototype)
+  assert.equal(Object.getPrototypeOf(idx), null);
+  for (const t of ['constructor', 'constructors', '__proto__', 'hasOwnProperty', 'toString', 'fuck', 'you are my best friend'])
+    assert.equal(C.judge(t, [word], 'en', idx).k, 'other', t);
+  for (const p of [a, b, c, h]) p.ws.close();
+});
+
+test('letter tiles still work with "said it" (the host\'s easier choice); a typed guess there is dropped', async () => {
+  reset();
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60:t', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s), c = await player(s);
+  await started(s, h, [a, b, c]);
+  const word = await picked(s, a, [b, c]);
+  assert.equal(s.state.dd.tl, 1);
+  const tray = evs(b, 'tray')[0].d;
+  assert.ok(tray.t.length > word.length - 1); assert.equal(tray.ty, undefined);
+  const before = dd(s).drops;
+  typed(b, 1, word); await sleep(60);
+  assert.equal(dd(s).drops - before, 1); assert.equal(dd(s).got.length, 0);
+  ev(b, 'gs', { n: 1, t: spell(s, b) });
+  await b.next('ev', m => m.k === 'gr' && m.d.ok);
+  ev(a, 'ln', { s: 0, c: 3, w: 1, e: 0, p: [100, 100, 10, 0, 10, 5] }); await sleep(40);
+  ev(a, 'aw', { n: 1, s: seatOf(c) });
+  assert.equal((await c.next('ev', m => m.k === 'gr' && m.d.ok)).d.a, 1);
+  assert.equal((await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal')).d.dd.rv.why, 'all');
+  for (const p of [a, b, c, h]) p.ws.close();
+});
+
+test('the protocol carries a typed guess as numbers only (no strings), within the event limits', () => {
+  const word = 'מכונית גדולה ומהירה מאוד מאוד מאוד מאוד'.slice(0, 40);
+  const d = { n: 3, c: Array.from(word).map(ch => ch.codePointAt(0)) };
+  assert.ok(P.evDataOk(d));
+  assert.ok(JSON.stringify(d).length <= P.MAX.ev);
+  const big = { n: 3, c: Array(40).fill(0x1F600) };
+  assert.ok(P.evDataOk(big) && JSON.stringify(big).length <= P.MAX.ev, 'forty emoji still fit');
+  assert.equal(P.evDataOk({ n: 3, c: 'hello there' }), false, 'text itself never travels');
 });

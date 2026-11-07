@@ -219,11 +219,15 @@
     // No typing in a live frame (the only text anyone enters in Oomba Live is the join code, on the site's own page).
     try { Object.defineProperty(window, 'prompt', { value: function () { return null; }, writable: false, configurable: false }); } catch (e) { /* ignore */ }
     var OPEN_TYPES = { button: 1, submit: 1, reset: 1, range: 1, checkbox: 1, radio: 1, color: 1, image: 1, file: 0, hidden: 1 };
+    // The one exception: Doodle Hoot Live's guess box (the built-in mode 'doodle' with typed guesses: the server sets
+    // INIT.live.guess for a player's frame). Its text goes to the server only, never to another player.
+    var GUESS_BOX = LIVE.guess === 1 && LIVE.mode === 'doodle' && LIVE.role !== 'host';
     var lockText = function (root) {
       try {
         var list = root.querySelectorAll ? root.querySelectorAll('input,textarea,[contenteditable]') : [];
         var one = function (el) {
           if (el.tagName === 'INPUT' && OPEN_TYPES[String(el.type || 'text').toLowerCase()] === 1) return;
+          if (GUESS_BOX && el.tagName === 'INPUT' && String(el.type || 'text').toLowerCase() === 'text' && el.hasAttribute('data-live-guess')) return;
           if (el.tagName === 'INPUT' && String(el.type).toLowerCase() === 'file') el.disabled = true;
           if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { if (!el.readOnly) el.readOnly = true; }
           if (el.hasAttribute && el.hasAttribute('contenteditable') && el.getAttribute('contenteditable') !== 'false') el.setAttribute('contenteditable', 'false');

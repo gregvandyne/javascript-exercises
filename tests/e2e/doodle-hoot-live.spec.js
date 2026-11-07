@@ -1,11 +1,13 @@
 // Doodle Hoot Live end to end (docs/live-protocol.md "Doodle Hoot Live"): the demo teacher picks Doodle Hoot on /live
-// (word language, level, rounds, drawing time), two guests join from their own browsers (a phone upright and a phone on
-// its side), the drawer picks a word card and draws with the mouse; the other player and the projector see the strokes
-// as they come, an undo on every screen; the guesser taps a wrong order ("Not quite"), then spells the word with the
-// tiles; the turn ends as soon as everyone has it, and the reveal shows the word on all three screens. Turn 2: the other
-// player draws, the first reloads mid-turn and gets the drawing replayed, then solves it. The end: each player's results
-// card, the projector's podium, then the results page. A second test: the host's Clear drawing, a player hiding a
-// drawing, a late joiner who sees the drawing so far, and Remove on the drawer. LIVE_SHOTS=<dir> saves screenshots.
+// (word language, level, rounds, drawing time, how players guess), two guests join from their own browsers (a phone
+// upright and a phone on its side), the drawer picks a word card and draws with the mouse; the other player and the
+// projector see the strokes as they come, an undo on every screen; the guesser types while the drawing goes on: a word
+// of the game's list (the drawer and the projector see it), something else (they see only "something else"), then the
+// word; the turn ends as soon as everyone has it, and the reveal shows the word on all three screens. Turn 2: the other
+// player draws, the first reloads mid-turn and gets the drawing replayed, says it out loud, and the drawer taps
+// "Someone said it!" and who. The end: each player's results card, the projector's podium, then the results page. A
+// second test, with letter tiles: the host's Clear drawing, a player hiding a drawing, a late joiner who sees the
+// drawing so far, the host's own "Someone said it!", and Remove on the drawer. LIVE_SHOTS=<dir> saves screenshots.
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
 import { login, ownIp } from './helpers.js';
@@ -62,7 +64,7 @@ async function spellByTaps(f, word) {
     await f.locator(`.dh-tray .dh-tile[data-i="${i}"]`).tap();
   }
 }
-async function openRoom(host, { rounds = '1', secs = '60' } = {}) {
+async function openRoom(host, { rounds = '1', secs = '60', tiles = false } = {}) {
   await login(host, TEACHER.username, TEACHER.password);
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator('input[value="mode:doodle"]') }).click();
@@ -72,6 +74,8 @@ async function openRoom(host, { rounds = '1', secs = '60' } = {}) {
   await host.selectOption('#lv-doodle-lang', 'en'); await host.selectOption('#lv-doodle-level', '1');
   await expect(host.locator('#lv-doodle-sample')).toContainText('·');
   await host.selectOption('#lv-doodle-rounds', rounds); await host.selectOption('#lv-doodle-secs', secs);
+  await expect(host.locator('#lv-doodle-guess')).toHaveValue('0');   // typing unless the host picks tiles
+  await host.selectOption('#lv-doodle-guess', tiles ? '1' : '0');
   await host.locator('input[name="audience"][value="open"]').check();
   await host.locator('#lv-new button[type=submit]').click();
   await host.waitForURL(/\/live\/host\//);
@@ -117,8 +121,11 @@ test('a family room: two players in different places draw and spell, a reload mi
   await until(fb, s => s.strokes === 3 && s.points === drawn.points);
   await until(hf, s => s.strokes === 3 && s.points === drawn.points);
   expect((await state(hf)).word).toBeNull();
-  expect((await state(fb)).tray.length).toBeGreaterThan(word.length);
-  await expect(fb.locator('.dh-tray .dh-tile')).toHaveCount((await state(fb)).tray.length);
+  // B types: no tiles, the word's shape as blanks, the guess box (open from the first stroke)
+  const sb0 = await state(fb);
+  expect(sb0.typing).toBe(true); expect(sb0.tray).toEqual([]); expect(sb0.typerOn).toBe(true);
+  expect(sb0.blanks.reduce((x, y) => x + y, 0)).toBe(word.replace(/\s+/g, '').length);
+  await expect(fb.locator('.dh-type input')).toBeVisible();
   // the layout: a phone drawing, a phone on its side spelling, the projector
   expect(await frameProblems(fa)).toEqual([]); expect(await pageScrollsSideways(a)).toBe(false);
   expect(await frameProblems(fb)).toEqual([]); expect(await pageScrollsSideways(b)).toBe(false);
@@ -127,18 +134,32 @@ test('a family room: two players in different places draw and spell, a reload mi
   // undo on A: one stroke fewer everywhere
   await fa.locator('.dh-tools [aria-label="Undo"]').tap();
   await until(fb, s => s.strokes === 2); await until(hf, s => s.strokes === 2);
-  // B: a wrong order first, then the word with the tiles
-  const sb = await state(fb), letters = word.replace(/\s+/g, '');
-  const free = sb.tray.map((x, i) => i).filter(i => !sb.slots.includes(i));
-  const firstFree = sb.slots.indexOf(null);
-  const wrongFirst = free.find(i => sb.tray[i] !== letters[firstFree]);
-  const need = sb.slots.filter(x => x == null).length;
-  for (const i of [wrongFirst, ...free.filter(i => i !== wrongFirst)].slice(0, need)) await fb.locator(`.dh-tray .dh-tile[data-i="${i}"]`).tap();
-  await expect(fb.locator('.dh-say')).toContainText(/Not quite|Keep watching/);
-  await b.waitForTimeout(1300);
-  await spellByTaps(fb, word);
+  // B guesses while A draws: another word of the list (A and the projector see it), then something else (they see
+  // only that), then the word. B never sees the list; nothing B typed reaches anyone as text.
+  const other = pick.choices[1];
+  await fb.locator('.dh-type input').fill(other);
+  await fb.locator('.dh-type input').press('Enter');
+  await expect(fb.locator('.dh-type .dh-say')).toContainText(/Not quite|So close/);
+  await until(fa, s => s.feedText.some(x => x.includes(other.toUpperCase())));
+  await until(hf, s => s.feedText.some(x => x.includes(other.toUpperCase())));
+  await expect(fa.locator('.dh-feed li').first()).toContainText('guessed');
+  await shot(a, 'draw-phone-feed'); await shot(host, 'draw-host-feed');
+  await b.waitForTimeout(1100);
+  await fb.locator('.dh-type input').fill('hello there my friend');
+  await fb.locator('.dh-type .dh-go').tap();
+  await until(fa, s => s.feedText.some(x => /guessed something else/.test(x)));
+  for (const f of [fa, hf]) expect(JSON.stringify(await state(f))).not.toContain('hello there');
+  expect((await state(fb)).feedText).toEqual([]);
+  // no letters at all, then a double tap: never stuck (the server answers every guess; the box works again)
+  await b.waitForTimeout(1150);
+  await fb.locator('.dh-type input').fill('???');
+  await fb.locator('.dh-type input').press('Enter');
+  await expect(fb.locator('.dh-type .dh-say')).toContainText('Type a word with letters');
+  await b.waitForTimeout(1150);
+  await fb.locator('.dh-type input').fill(word.toUpperCase());
+  await fb.locator('.dh-type input').press('Enter');
   await until(fb, s => s.solved);
-  await expect(fb.locator('.dh-say')).toContainText('You got it!');
+  await expect(fb.locator('.dh-type .dh-say')).toContainText('You got it!');
   await shot(b, 'correct-phone-landscape');
   // everyone has it: the reveal on every screen
   for (const f of [fa, fb, hf]) { const s = await until(f, x => x.ph === 'reveal'); expect(s.rv.w).toBe(word); }
@@ -154,9 +175,17 @@ test('a family room: two players in different places draw and spell, a reload mi
   await until(fa, s => s.strokes === 2);
   await a.reload();
   const fa2 = await liveFrame(a);
-  await until(fa2, s => s.ph === 'draw' && s.strokes === 2 && s.points === d2.points && s.tray.length > 0);
-  await spellByTaps(fa2, word2);
-  await until(fa2, s => s.solved);
+  await until(fa2, s => s.ph === 'draw' && s.strokes === 2 && s.points === d2.points && s.typerOn);
+  // A says it out loud: B taps "Someone said it!", then A
+  await expect(fb.locator('#dhSaid')).toBeVisible();
+  await fb.locator('#dhSaid').tap();
+  await expect(fb.locator('.dh-sheet h2')).toContainText('Who guessed it?');
+  await expect(fb.locator('.dh-sheet .dh-who-btns button')).toHaveCount(1);
+  expect(await frameProblems(fb)).toEqual([]);
+  await shot(b, 'said-sheet-landscape');
+  await fb.locator('.dh-sheet .dh-who-btns button').first().tap();
+  await until(fa2, s => s.solved && s.word === word2);
+  await expect(fa2.locator('.dh-type .dh-say')).toContainText('You got it!');
   // the end: each player's results card, the projector's podium, then the results page
   await until(hf, s => s.ph === 'done', 30_000);
   await expect(hf.locator('.dh-podium .nm')).toHaveCount(2);
@@ -176,7 +205,7 @@ test('the host: Clear drawing, a player hides a drawing, a late joiner sees it s
   const hctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const host = await hctx.newPage();
   host.on('dialog', d => d.accept());
-  const code = await openRoom(host, { rounds: '2', secs: '100' });
+  const code = await openRoom(host, { rounds: '2', secs: '100', tiles: true });
   const a = await player(browser, code, { width: 390, height: 844 });
   const b = await player(browser, code, { width: 390, height: 844 });
   const hf = await liveFrame(host), fa = await liveFrame(a), fb = await liveFrame(b);
@@ -205,7 +234,17 @@ test('the host: Clear drawing, a player hides a drawing, a late joiner sees it s
   await expect(host.locator('#lv-joinbox')).not.toHaveClass(/is-locked/);
   const c = await player(browser, code, { width: 390, height: 844 });
   const fc = await liveFrame(c);
-  await until(fc, s => s.ph === 'draw' && s.strokes === 1 && s.tray.length > 0);
+  await until(fc, s => s.ph === 'draw' && s.strokes === 1 && s.tray.length > 0 && !s.typing);
+  // letter tiles: B spells it with taps
+  await spellByTaps(fb, (await state(fa)).word);
+  await until(fb, s => s.solved);
+  // the host's page can say who said it too (the only one left: C)
+  await expect(hf.locator('#dhSaid')).toBeVisible();
+  await hf.locator('#dhSaid').click();
+  await expect(hf.locator('.dh-sheet .dh-who-btns button')).toHaveCount(1);
+  await hf.locator('.dh-sheet .dh-who-btns button').first().click();
+  await until(fc, s => s.solved);
+  await until(hf, s => s.feedText.length >= 2 && s.feedText.some(x => /said it out loud/.test(x)));
   // Remove the drawer: the turn ends and the drawing goes from every screen
   const seatA = (await state(fa)).me;
   await host.locator(`#lv-roster [data-seat="${seatA}"] [data-lv-kick]`).click();

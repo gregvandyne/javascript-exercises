@@ -84,7 +84,7 @@ if (form) {
   if (ddBox && !ddBox.dataset.preset) {
     try {
       const last = JSON.parse(localStorage.getItem(DOODLE_KEY) || 'null');
-      if (last) for (const [id, v] of [['lv-doodle-lang', last.l], ['lv-doodle-level', last.v], ['lv-doodle-rounds', last.r], ['lv-doodle-secs', last.s]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
+      if (last) for (const [id, v] of [['lv-doodle-lang', last.l], ['lv-doodle-level', last.v], ['lv-doodle-rounds', last.r], ['lv-doodle-secs', last.s], ['lv-doodle-guess', last.g]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
     } catch { /* private mode */ }
   }
   form.addEventListener('change', sync); sync();
@@ -95,7 +95,7 @@ if (form) {
     // ticked boxes of one name (wyrTopic, bankBoard, atlasKind) go as a list, as app.js posts forms
     const body = {}; for (const [k, v] of new FormData(form).entries()) body[k] = k in body ? [].concat(body[k], v) : v;
     if (body.pick === 'mode:tug') { try { localStorage.setItem(TUG_KEY, JSON.stringify({ g: body.tugGrade, l: body.tugLen })); } catch { /* private mode */ } }
-    if (body.pick === 'mode:doodle') { try { localStorage.setItem(DOODLE_KEY, JSON.stringify({ l: body.doodleLang, v: body.doodleLevel, r: body.doodleRounds, s: body.doodleSecs })); } catch { /* private mode */ } }
+    if (body.pick === 'mode:doodle') { try { localStorage.setItem(DOODLE_KEY, JSON.stringify({ l: body.doodleLang, v: body.doodleLevel, r: body.doodleRounds, s: body.doodleSecs, g: body.doodleTiles })); } catch { /* private mode */ } }
     const btn = form.querySelector('[type=submit]'), err = form.querySelector('.form-err');
     btn.disabled = true; err.textContent = '';
     const go = async replace => {

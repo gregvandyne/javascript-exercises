@@ -2596,3 +2596,18 @@ as **Doodle Hoot** (slug `doodle-hoot`, live mode `doodle`), hosted by Pip, the 
   - *A blip never ends a game*: a reloading seat (8 s) is still in the game for the turn order, "everyone got it" and the
     hide vote; a seat that joined but never connected stops counting after 8 s.
 
+- **Guess while drawing, typed or out loud (7 Nov 2026, after the owner played it on an iPhone).** Tiles gave the
+  letters away and guessers waited for nothing: now guessing is open for the whole drawing, and **typing on the
+  device's own keyboard is the default**; letter tiles stay as the host's "Letter tiles (easier)" for little ones (and a
+  choice on the solo setup card). This changes "Nobody types" above, with the no-chat rule kept: a typed guess goes to
+  the server only (as code points: the wire protocol still carries no strings), is compared and forgotten (never kept,
+  logged or sent to an AI); the drawer and the host's page see a wrong guess only when it is a word of the game's own
+  reviewed list or its plural (sent as its id, at most 3 a guesser a turn so words can't spell a message), otherwise
+  "Sam guessed something else"; a close guess is "So close!" to that guesser alone (to everyone else it is "something
+  else"); other guessers never see anyone's guess on their own device (the host's page, perhaps on a shared screen,
+  shows the drawer's list). In a live frame the SDK still makes every text box
+  read-only except Doodle Hoot's one guess box, and only when the server says so (`INIT.live.guess`). A guess **said out
+  loud** is awarded by the drawer's (or the host's) **Someone said it!** → **Who guessed it?** (once something is drawn,
+  once a player a turn, normal speed points, the drawer's usual share, marked "said it out loud" in the list); pass and play has the same button, with the word covered while the
+  others watch. The mobile pass: a word never breaks inside (type shrinks to fit), one column of word cards on a narrow
+  phone, and the guess box stays above the on-screen keyboard. Details: docs/doodle-hoot-plan.md §15.

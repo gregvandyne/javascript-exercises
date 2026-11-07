@@ -4147,7 +4147,7 @@
       "packetPost": "Send packets across a network, pick strong passphrases and spot online tricks.",
       "insideTheMachine": "Build and fix computers: parts, inputs and outputs, bits and pixels, designing for everyone.",
       "tugOfMath": "Math questions picked for each grade from 1 to 8, from adding within 20 to equations, as a tug of war. Play the computer or a friend on one screen.",
-      "doodleHoot": "Draw a word for the others, or spell theirs with letter tiles. Easy, Medium or Tricky words in 13 languages, live with family and friends or on one device.",
+      "doodleHoot": "Draw a word for the others, or guess theirs as they draw: type it, say it, or use letter tiles. Easy, Medium or Tricky words in 13 languages, live with family and friends or on one device.",
       "remisQuietMeadow": "A classroom noise meter: keep the room calm so Remi the red panda can nap, and count up the quiet time together."
     },
     "hubs": {
@@ -4388,7 +4388,7 @@
           "beatLanes": "Tap in time to songs they know, starting with Twinkle Twinkle.",
           "munchMaze": "A maze chase with an Easy mode: plan a route and collect every dot.",
           "tugOfMath": "Pick grade 2 or 3: adding, taking away and times tables, with the computer on Easy until they win it.",
-          "doodleHoot": "Picture words and letter tiles: spelling practice that feels like a party game."
+          "doodleHoot": "Picture words to guess and spell: spelling practice that feels like a party game."
         },
         "faq": {
           "q2": "Are the games too hard for an 8 year old?",
@@ -4937,7 +4937,7 @@
       "tug": "Tug of Math (Live)",
       "tugText": "The class splits into two teams. Everyone answers math questions for their grade on their own keypad, and every right answer pulls the rope.",
       "doodle": "Doodle Hoot (Live)",
-      "doodleText": "One player draws, everyone else spells the word with letter tiles. For family or friends anywhere, each on their own device."
+      "doodleText": "One player draws while everyone else guesses: type it, say it out loud, or use letter tiles. For family or friends anywhere, each on their own device."
     },
     "starter": {
       "title": {
@@ -5741,7 +5741,10 @@
       "roundsList": "1 round (everyone draws once)|2 rounds|3 rounds",
       "secs": "Drawing time",
       "secsN": "{n} seconds",
-      "hint": "Everyone takes a turn to draw. Players join with the code on their own device, wherever they are. Nobody types: guesses are letter tiles, and there is no chat.",
+      "hint": "Everyone takes a turn to draw while the others guess. Players join with the code on their own device, wherever they are. Typed guesses go only to the game: the drawer sees a guess only when it is one of the game’s own words, and there is no chat.",
+      "guess": "How players guess",
+      "guessType": "Type on their keyboard",
+      "guessTiles": "Letter tiles (easier)",
       "bigRoom": "A big group? One round is plenty: everyone still draws once.",
       "play": "Practice or play on one device"
     },
@@ -5872,7 +5875,7 @@
       },
       "doodle": {
         "h": "Doodle Hoot (Live)",
-        "p": "One player draws, the others spell the word with letter tiles: spelling and vocabulary in 13 languages. Best for small groups (up to 16); you can clear a drawing or skip a turn at any time."
+        "p": "One player draws while the others guess, typed or out loud (or with letter tiles for younger players): spelling and vocabulary in 13 languages. Best for small groups (up to 16); you can clear a drawing or skip a turn at any time."
       },
       "tug": {
         "h": "Tug of Math (Live)",

@@ -3858,7 +3858,7 @@
       "packetPost": "Envía paquetes por una red, elige contraseñas fuertes y detecta trampas en línea.",
       "insideTheMachine": "Monta y repara ordenadores: piezas, entradas y salidas, bits y píxeles, diseño para todos.",
       "tugOfMath": "Preguntas de matemáticas para cada curso del 1 al 8, desde sumas hasta 20 hasta ecuaciones, en un juego de tirar de la cuerda. Contra la compu o contra un amigo en la misma pantalla.",
-      "doodleHoot": "Dibuja una palabra para los demás o deletrea la suya con fichas de letras. Palabras fáciles, medias o difíciles en 13 idiomas, en vivo con familia y amigos o en un dispositivo.",
+      "doodleHoot": "Dibuja una palabra para los demás o adivina la suya mientras dibujan: escríbela, dila en voz alta o usa fichas de letras. Palabras fáciles, medias o difíciles en 13 idiomas, en vivo con familia y amigos o en un dispositivo.",
       "remisQuietMeadow": "Un medidor de ruido para la clase: mantengan la calma para que Remi, el panda rojo, pueda dormir, y cuenten juntos el tiempo de silencio."
     },
     "hubs": {
@@ -4080,7 +4080,7 @@
           "beatLanes": "Tocan al ritmo de canciones que conocen, empezando por Estrellita, ¿dónde estás?",
           "munchMaze": "Una persecución en un laberinto con modo Fácil: planear una ruta y comer todos los puntitos.",
           "tugOfMath": "Elige el curso 2 o 3: sumas, restas y tablas de multiplicar, con la compu en Fácil hasta que le ganen.",
-          "doodleHoot": "Palabras con dibujo y fichas de letras: practicar ortografía como en un juego de fiesta."
+          "doodleHoot": "Palabras con dibujo para adivinar y escribir: practicar ortografía como en un juego de fiesta."
         },
         "faq": {
           "q2": "¿Son demasiado difíciles los juegos para un niño de 8 años?",
@@ -4629,7 +4629,7 @@
       "tug": "Tug of Math (En vivo)",
       "tugText": "La clase se divide en dos equipos. Cada uno responde preguntas de matemáticas de su curso en su propio teclado, y cada respuesta correcta tira de la cuerda.",
       "doodle": "Doodle Hoot (En vivo)",
-      "doodleText": "Un jugador dibuja y los demás deletrean la palabra con fichas de letras. Para la familia o los amigos, estén donde estén, cada uno en su dispositivo."
+      "doodleText": "Un jugador dibuja mientras los demás adivinan: escribiendo, en voz alta o con fichas de letras. Para la familia o los amigos, estén donde estén, cada uno en su dispositivo."
     },
     "starter": {
       "title": {
@@ -5433,7 +5433,10 @@
       "roundsList": "1 ronda (cada uno dibuja una vez)|2 rondas|3 rondas",
       "secs": "Tiempo para dibujar",
       "secsN": "{n} segundos",
-      "hint": "Todos dibujan por turnos. Los jugadores entran con el código en su propio dispositivo, estén donde estén. Nadie escribe: se adivina con fichas de letras y no hay chat.",
+      "hint": "Todos dibujan por turnos mientras los demás adivinan. Los jugadores entran con el código en su propio dispositivo, estén donde estén. Lo que se escribe solo llega al juego: quien dibuja ve una respuesta solo si es una de las palabras del juego, y no hay chat.",
+      "guess": "Cómo adivinan",
+      "guessType": "Escribiendo con su teclado",
+      "guessTiles": "Fichas de letras (más fácil)",
       "bigRoom": "¿Un grupo grande? Con una ronda basta: cada uno dibuja una vez.",
       "play": "Practicar o jugar en un dispositivo"
     },
@@ -5564,7 +5567,7 @@
       },
       "doodle": {
         "h": "Doodle Hoot (En vivo)",
-        "p": "Un jugador dibuja y los demás deletrean la palabra con fichas de letras: ortografía y vocabulario en 13 idiomas. Ideal para grupos pequeños (hasta 16); puedes borrar un dibujo o saltar un turno cuando quieras."
+        "p": "Un jugador dibuja mientras los demás adivinan, escribiendo o en voz alta (o con fichas de letras para los más pequeños): ortografía y vocabulario en 13 idiomas. Ideal para grupos pequeños (hasta 16); puedes borrar un dibujo o saltar un turno cuando quieras."
       },
       "tug": {
         "h": "Tug of Math (En vivo)",

@@ -267,6 +267,9 @@ down on its second load (`public/js/live-common.js`). Games never use the port: 
   `clk {s}` (the server's time, so the frame can count down to the same moment as everyone).
 - In a live frame nothing can be typed: `prompt()` returns null, text inputs and textareas are read-only and
   contenteditable is switched off, also for elements the game adds later (buttons, sliders and checkboxes still work).
+  The one exception is the built-in Doodle Hoot Live with typed guesses: in a player's frame (the server sets
+  `INIT.live.guess: 1` only for mode `doodle` without tiles) an `<input type="text" data-live-guess>` stays typeable.
+  Its text is sent to the server only (as code points), checked there and never passed on.
 - `BRB.device` (3D games): `{webgl2, importmap}`. A game with `<meta name="oomba-live" content="2d">` gets no "newer
   device" card when they are missing: it draws its own 2D view.
 
