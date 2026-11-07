@@ -34,31 +34,34 @@
    "title": "Expected and actual",
    "text": "Ask two questions. What did I expect Bolt to do? What did Bolt actually do? The bug is where those two first split apart.",
    "art": "magnifier",
-   "img": "csq/robo-route/debug-1b-midrun",
-   "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
-   ],
-   "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised.",
+   "img": "csq/robo-route/debug-1b-split-c",
+   "alt": "The broken program stepped to its turn left block: Bolt climbed three squares and now faces the wall, away from the flag.",
    "focus": [
     {
-     "cue": "Expected: Bolt reaches the flag",
+     "cue": "Expected: Bolt turns toward the flag",
      "box": [
-      26.5,
-      49,
-      6.5,
-      12
+      20,
+      47,
+      7,
+      10
      ]
     },
     {
-     "cue": "Actual: Bolt stopped here",
+     "cue": "Actual: he turned left, away from it",
      "box": [
-      5.5,
-      49.5,
-      6.5,
-      11.5
+      0.8,
+      47,
+      7.5,
+      10
+     ]
+    },
+    {
+     "cue": "They split at this block: turn left",
+     "box": [
+      79.5,
+      33,
+      14.5,
+      10
      ]
     }
    ]
@@ -108,22 +111,25 @@
    "title": "One too many",
    "text": "Bolt goes one square too far? Look at the numbers. A repeat count that is one too big is a very common bug.",
    "art": "loop",
-   "img": "csq/robo-route/debug-1b-count",
-   "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
-   ],
-   "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many.",
+   "img": "csq/robo-route/debug-1b-repeat6-c",
+   "alt": "Debug Lab level 2: the flag is five squares from Bolt, but the program says repeat 6 times, move.",
    "focus": [
     {
-     "cue": "The flag is 5 squares away, but the program repeats 6 times: one too many.",
+     "cue": "The flag is 5 squares away",
      "box": [
-      12.4,
-      49.4,
-      34.4,
-      12.7
+      0.8,
+      47,
+      39,
+      10
+     ]
+    },
+    {
+     "cue": "But the program says repeat 6 times: one too many",
+     "box": [
+      71,
+      33,
+      16,
+      10
      ]
     }
    ]

@@ -36,7 +36,58 @@
   {
    "title": "Read the badge",
    "text": "Public domain: anyone may use it. Creative commons with credit: use it and say who made it. All rights reserved: ask first.",
-   "art": "shield"
+   "art": "shield",
+   "visual": {
+    "type": "table",
+    "label": "Three license badges and what each one lets you do",
+    "head": [
+     "Badge",
+     "You may"
+    ],
+    "rows": [
+     [
+      "Public",
+      "use freely"
+     ],
+     [
+      "CC credit",
+      "credit it"
+     ],
+     [
+      "Reserved",
+      "ask first"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Public domain: anyone may use it",
+     "box": [
+      5,
+      34.5,
+      90,
+      14
+     ]
+    },
+    {
+     "cue": "Creative commons: use it and say who made it",
+     "box": [
+      5,
+      48.2,
+      90,
+      14
+     ]
+    },
+    {
+     "cue": "All rights reserved: ask first",
+     "box": [
+      5,
+      61.8,
+      90,
+      14
+     ]
+    }
+   ]
   },
   {
    "kind": "example",

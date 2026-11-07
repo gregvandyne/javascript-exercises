@@ -1,7 +1,7 @@
 // The drawn diagram types that views/nq-diagrams.js draws (grid, squares, lines, chart, table), cleaned the way
 // services/courses.js cleanSlide cleans the older types: strictly shaped per type, every string capped, every
 // number checked; anything malformed returns null and the slide drops the whole visual (fromDeck reports it).
-export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build']);
+export const DIAGRAM_TYPES = Object.freeze(['grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'tally']);
 export const LINE_KINDS = Object.freeze(['parallel', 'perpendicular', 'crossing']);
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
@@ -58,6 +58,12 @@ export function cleanDiagram(v, label) {
   if (v.type === 'build') {
     if (!Array.isArray(v.digits) || v.digits.length < 2 || v.digits.length > 5 || !v.digits.every(d => /^\d$/.test(d))) return null;
     return { type: 'build', label, digits: [...v.digits], ...(str(v.number, 8) ? { number: str(v.number, 8) } : {}) };
+  }
+  if (v.type === 'tally') {
+    // a survey's tally: one row per answer, its marks drawn in fives (four lines, one across) and its count
+    if (!Array.isArray(v.rows) || v.rows.length < 2 || v.rows.length > 4) return null;
+    if (!v.rows.every(r => r && str(r.label, 10) && int(r.n, 0, 15))) return null;
+    return { type: 'tally', label, rows: v.rows.map(r => ({ label: str(r.label, 10), n: r.n })) };
   }
   return null;
 }

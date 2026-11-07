@@ -99,7 +99,6 @@ const SHOTS = [
   // ---- 1.5 Functions, Explorer (fn-1..fn-6; starters load on their own where a shot has no program)
   { key: 'functions-1b-key', chapter: 'functions', band: '1b', level: 1, clear: true },
   { key: 'functions-1b-my-block', chapter: 'functions', band: '1b', level: 1, program: 'proc Stair { move; pick; right; move; left }' },
-  { key: 'functions-1b-three-stairs', chapter: 'functions', band: '1b', level: 1, program: 'proc Stair { move; pick; right; move; left }; call Stair; call Stair; call Stair' },
   { key: 'functions-1b-defined-not-called', chapter: 'functions', band: '1b', level: 2, program: 'proc Side { move; move; move; right }' },
   { key: 'functions-1b-remix-credit', chapter: 'functions', band: '1b', level: 4 },
   // ---- 1.5 Functions, Pro (fn-1 pro, fn-2 pro, fn-3p..fn-7p)

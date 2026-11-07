@@ -107,36 +107,36 @@
    "title": "Climb three stairs",
    "text": "The Stair block holds the steps for one stair. Three calls climb all three stairs.",
    "art": "grid",
-   "img": "csq/robo-route/functions-1b-three-stairs",
-   "view": [
-    50.9,
-    31,
-    49.1,
-    48.4
-   ],
-   "alt": "The Stair block is defined once, then called three times in a row at the bottom of the tray: call Stair, call Stair, call Stair.",
    "steps": [
     "call Stair",
     "call Stair",
     "call Stair"
    ],
+   "img": "csq/robo-route/functions-1b-stairs-w",
+   "view": [
+    63,
+    31.2,
+    33,
+    32
+   ],
+   "alt": "My Block Stair is made once at the top of the program, and three call Stair blocks below it climb all three stairs.",
    "focus": [
     {
      "cue": "Stair is made once, up here.",
      "box": [
-      53.4,
-      43,
-      44.8,
-      14.9
+      65.5,
+      33.5,
+      26,
+      20
      ]
     },
     {
      "cue": "Three calls at the bottom climb all three stairs.",
      "box": [
-      53.4,
-      64.6,
-      29.4,
-      7.7
+      65.5,
+      55.5,
+      30,
+      5.5
      ]
     }
    ]

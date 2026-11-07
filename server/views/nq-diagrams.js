@@ -10,7 +10,8 @@
 //   table   a small table, a timetable, with one row picked out (5.2);
 //   letters big letters in panels, each with its fold line dashed down the middle where it has one (6.3);
 //   spinner a real spinner: a circle cut into equal parts, some shaded red, with its pointer (7.3);
-//   build   digit cards apart, then joined into the number they build (1.1).
+//   build   digit cards apart, then joined into the number they build (1.1);
+//   tally   a survey's tally (CS Quest 3.3): one row per answer, its marks in fives (four lines, one across), its count.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
 // Every text size is 3.4 units or more: about 12 px on a 390 px phone.
@@ -222,8 +223,30 @@ function buildSvg(v) {
 }
 const buildExtent = () => [8, 47];
 
-const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg };
-const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent };
+// ---------------------------------------------------------------------------------------------- tally
+/** Rows from y 13 (9.4 apart): the answer at x 8, its marks from x 30 (groups of five 11 units apart, a stroke every
+ *  1.9), and the count at x 90. The caption sits above at 6.5. */
+const tallyGeo = v => ({ top: 13, rh: 9.4, bottom: 13 + 9.4 * v.rows.length });
+function tallySvg(v) {
+  const g = tallyGeo(v);
+  let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
+  v.rows.forEach((r, i) => {
+    const y = g.top + i * g.rh, mid = y + g.rh / 2;
+    s += `<rect x="6" y="${r2(y)}" width="88" height="${g.rh}" fill="${i % 2 ? '#FFFFFF' : '#F3F0E2'}" stroke="${LINE}" stroke-width="0.3"/>`;
+    s += tx(8, mid + 1.35, r.label, 3.8, 'start', 800);
+    for (let k = 0; k < r.n; k++) {
+      const grp = Math.floor(k / 5), j = k % 5, x0 = 30 + grp * 11;
+      if (j < 4) { const x = x0 + j * 1.9; s += `<line x1="${r2(x)}" y1="${r2(mid - 3)}" x2="${r2(x)}" y2="${r2(mid + 3)}" stroke="${INK}" stroke-width="0.7" stroke-linecap="round"/>`; }
+      else s += `<line x1="${r2(x0 - 1.2)}" y1="${r2(mid + 2.4)}" x2="${r2(x0 + 6.9)}" y2="${r2(mid - 2.4)}" stroke="${LEAF}" stroke-width="0.8" stroke-linecap="round"/>`;
+    }
+    s += tx(90, mid + 1.35, String(r.n), 3.8, 'end', 800, LEAF);
+  });
+  return s;
+}
+const tallyExtent = v => { const g = tallyGeo(v); return [v.label ? tTop(6.5, capFs(v.label)) : g.top, g.bottom]; };
+
+const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg };
+const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent };
 /** The SVG body of one of these diagrams (a string of SVG elements in the 100 x 56.25 space). */
 export const diagramSvg = v => SVG[v.type](v);
 /** Where it sits top to bottom: [a, b] in the 100 x 56.25 space. */

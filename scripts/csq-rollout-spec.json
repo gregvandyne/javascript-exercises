@@ -11,20 +11,6 @@
  },
  {
   "game": "robo-route",
-  "state": "debug-1b-midrun",
-  "chapter": "debug",
-  "band": "1b",
-  "level": 1,
-  "actions": [
-   {
-    "steps": 4
-   }
-  ],
-  "concept": "Expected and actual: compare what Bolt did with what you expected",
-  "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised."
- },
- {
-  "game": "robo-route",
   "state": "debug-1b-step",
   "chapter": "debug",
   "band": "1b",
@@ -36,16 +22,6 @@
   ],
   "concept": "Step, stop, fix: step one block at a time and stop at the first surprise",
   "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square."
- },
- {
-  "game": "robo-route",
-  "state": "debug-1b-count",
-  "chapter": "debug",
-  "band": "1b",
-  "level": 2,
-  "actions": [],
-  "concept": "One too many: a repeat count one too big is a common bug",
-  "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many."
  },
  {
   "game": "robo-route",
@@ -150,16 +126,6 @@
   ],
   "concept": "Back in order: numbers put arriving packets back together",
   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
- },
- {
-  "game": "packet-post",
-  "state": "routes-1b-roads",
-  "chapter": "routes",
-  "band": "1b",
-  "level": 1,
-  "actions": [],
-  "concept": "Many roads: each packet can take a different road through routers",
-  "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
  },
  {
   "game": "packet-post",

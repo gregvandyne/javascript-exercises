@@ -1296,7 +1296,8 @@ const KINDS = {
       if (S.done || i >= l.jobs.length || !btns[id]) return;
       const b = btns[id], want = l.jobs[i].a;
       if (id === want) { A.picks.push(id); b.classList.add('good'); sfx('correct'); i++; later(600, () => { if (i >= l.jobs.length) finish(A); else show(); }); }
-      else { A.wrong++; b.classList.add('bad', 'im-shake'); sfx('wrong'); banner('wrong', tr('Not that one. Try another part.')); failRun(); later(500, () => b.classList.remove('bad', 'im-shake')); }
+      // the miss says why: the part tapped and what kind of part it is (an input, an output, power...)
+      else { const p = L.PARTS[id]; A.wrong++; b.classList.add('bad', 'im-shake'); sfx('wrong'); banner('wrong', `${tr('Not that one. Try another part.')} ${tr(p.name)}: ${tr(L.ROLE_NAMES[p.role])}.`); failRun(); later(500, () => b.classList.remove('bad', 'im-shake')); }
     };
     show();
     return { intro: tr(l.jobs[0].q), tap, answer: () => A, solve: sol => { S.fast = true; for (const id of sol.picks) tap(id); },
