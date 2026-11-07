@@ -195,13 +195,13 @@
    "text": "Open Data Detective at My Data and finish all 3 survey cases. Each case is your own survey: pick the question, tally the answers, chart them, and pin only a claim the chart really shows.",
    "art": "trophy",
    "img": "nq/data-detective/my-data",
-   "alt": "Data Detective, My Data: a class survey tallied with the steppers and built into a bar chart, a claim ready to pin.",
+   "alt": "Data Detective, My Data, on a phone: a pet survey charted as bars (Dog 4, Cat 3, Fish 1, Bird 0, Rabbit 0, None 2), Bars picked.",
    "kind": "mission",
    "view": [
-    1.5,
-    9.5,
-    53,
-    86
+    0,
+    0,
+    55.33,
+    100
    ]
   }
  ],

@@ -174,13 +174,13 @@
    "text": "Open Data Detective at Chart It and finish all 5 cases. Each case hands you a messy stall and asks for the chart that answers. Say what each bar counts before you compare any two.",
    "art": "trophy",
    "img": "nq/data-detective/chart-it",
-   "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",
+   "alt": "Data Detective, Chart It, on a phone: fruit counts as a bar chart (Apple 6, Banana 4, Grape 7, Pear 2), the Bars view picked.",
    "kind": "mission",
    "view": [
-    1.5,
-    10,
-    53,
-    88
+    0,
+    0,
+    46.02,
+    100
    ]
   }
  ],
