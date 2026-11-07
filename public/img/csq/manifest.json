@@ -1598,17 +1598,6 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/packet-post/protocols-1b-key",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "1b",
-   "state": "protocols-1b-key",
-   "concept": "say got it, the first round",
-   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/packet-post/protocols-1b-sealed",
    "game": "packet-post",
    "chapter": "protocols",
@@ -3325,17 +3314,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/would-you-rather/online-comments-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-comments-2",
-   "concept": "a page anyone can comment on",
-   "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/would-you-rather/online-credit-1b-n1",
    "game": "would-you-rather",
    "chapter": "online",
@@ -3369,17 +3347,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/would-you-rather/online-download-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-download-1b",
-   "concept": "ask before every download",
-   "alt": "Would you rather: ask before every download, or never download anything?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/would-you-rather/online-drawing-1b",
    "game": "would-you-rather",
    "chapter": "online",
@@ -3402,17 +3369,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/would-you-rather/online-name-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-name-1b",
-   "concept": "nickname or real first name",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
    "key": "csq/would-you-rather/online-name-2",
    "game": "would-you-rather",
    "chapter": "online",
@@ -3420,28 +3376,6 @@
    "state": "online-name-2",
    "concept": "nickname or real first name",
    "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-photo-1b",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-photo-1b",
-   "concept": "one photo for the world, or ten for friends",
-   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
-   "capturedAt": "2026-11-04",
-   "commit": "8516310"
-  },
-  {
-   "key": "csq/would-you-rather/online-photo-2",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "2",
-   "state": "online-photo-2",
-   "concept": "one photo for the world, or ten for friends",
-   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
   },
