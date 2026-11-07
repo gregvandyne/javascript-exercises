@@ -11,7 +11,7 @@ const SRC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../to
 const read = f => fs.readFileSync(path.join(SRC, f), 'utf8');
 const words = id => { const I18N = {}; vm.runInNewContext(read(`i18n/${id}.en.js`), { I18N }); return I18N.en; };
 const SPORTS = { vine: { prefix: 'vc', families: { 'vc.sign': [0, 1, 2] }, music: 'vine', sfx: ['buzz'] },
-  seed: { prefix: 'ss', families: { 'ss.row': [0, 1, 2], 'ss.plus': [0, 1, 2], 'ss.tico': [0, 1, 2] }, music: 'seed', sfx: ['pop'] } };
+  seed: { prefix: 'ss', families: { 'ss.row': [0, 1, 2, 3], 'ss.plus': [0, 1, 2, 3], 'ss.tico': [0, 1, 2, 3] }, music: 'seed', sfx: ['pop'] } };
 
 for (const [id, o] of Object.entries(SPORTS)) {
   test(`${id}: every word it asks for is in i18n/${id}.en.js, under its own prefix`, () => {
@@ -44,6 +44,6 @@ for (const [id, o] of Object.entries(SPORTS)) {
 }
 test('seed: Seed Shot only ever aims at fruit', () => {
   const src = read('sport-seed.js');
-  assert.match(src, /FRUIT = \['ss_berry', 'ss_mango', 'ss_papaya'\]/);
+  assert.match(src, /FRUIT = \['ss_star', 'ss_berry', 'ss_mango', 'ss_papaya'\]/);
   assert.ok(!/target[^\n]*(tico|cappy|SPRITES\.(?!ss_))/i.test(src.replace(/sd\.target/g, '')), 'no seed is aimed at a character');
 });
