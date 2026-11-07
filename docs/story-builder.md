@@ -33,7 +33,7 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 | Jobs: state machine, limits, sharing and approval | `server/services/story-jobs.js` (table `stories`, migration `0053_stories`) |
 | Pipeline (stages, progress) / worker core / worker loop | `server/stories/pipeline.js`, `server/stories/worker.js`, `server/stories/loop.js` |
 | Renderers: interface + local Blender, remote/Modal client, scene clips | `server/stories/renderer.js`, `server/stories/remote-renderer.js`, `server/stories/clip.js` |
-| Felt-and-paper kit and scene renderer (Python) | `server/stories/blender/feltkit.py`, `server/stories/blender/render_story.py` |
+| Felt-and-paper kit (shared with the other Blender tools) and scene renderer (Python) | `tools/blender/feltkit.py` (+ `styles.py`), `server/stories/blender/render_story.py` |
 | ffmpeg assembly | `server/stories/assemble.js` |
 | Modal GPU app | `services/story-renderer/modal_app.py` |
 | CPU renderer service (fallback) | `services/story-renderer/server.js`, `spec.js`, `Dockerfile` |

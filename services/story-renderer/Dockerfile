@@ -35,6 +35,7 @@ WORKDIR /app
 # music composer and caption timing (pure JS), the site's font for the words, and the service itself.
 COPY services/story-renderer/package.json ./package.json
 COPY server/stories/blender ./server/stories/blender
+COPY tools/blender/feltkit.py tools/blender/styles.py ./tools/blender/
 COPY server/stories/renderer.js server/stories/remote-renderer.js server/stories/clip.js server/stories/assemble.js ./server/stories/
 COPY server/services/story-music.js server/services/story-captions.js ./server/services/
 COPY public/fonts ./public/fonts

@@ -20,7 +20,14 @@ import time
 
 import bpy
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# The felt-and-paper kit is shared with the other Blender tools: tools/blender/feltkit.py (and styles.py) is the one
+# copy. Looked up in STORY_KIT_DIR, then the repository's tools/blender, then next to this file (the Modal image puts
+# the kit beside it).
+_HERE = os.path.dirname(os.path.abspath(__file__))
+for _d in (os.environ.get('STORY_KIT_DIR'), os.path.join(_HERE, '..', '..', '..', 'tools', 'blender'), _HERE):
+    if _d and os.path.exists(os.path.join(_d, 'feltkit.py')):
+        sys.path.insert(0, os.path.abspath(_d))
+        break
 import feltkit as K  # noqa: E402
 
 # How far from the middle a character may start a scene (the frame is ~4.3 wide each side where they stand).

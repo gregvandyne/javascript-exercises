@@ -5,7 +5,7 @@
 import { hasProfanity, personalInfo } from './textfilter.js';
 import { prefilter, mockClassify } from '../builder/screen.js';
 
-/** What the Blender kit can build. Keep in step with server/stories/blender/render_story.py and feltkit.py. */
+/** What the Blender kit can build. Keep in step with server/stories/blender/render_story.py and tools/blender/feltkit.py. */
 export const KIT = {
   sets: ['lighthouse', 'village', 'forest', 'meadow', 'sky'],
   times: ['night', 'dusk', 'dawn', 'day'],

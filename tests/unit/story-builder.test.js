@@ -41,7 +41,7 @@ test('script: the sample story passes, and the schema offers exactly the kit', (
 
 test('script: the kit the writer may use is the kit Blender can build', () => {
   const py = fs.readFileSync(path.join(ROOT, 'server/stories/blender/render_story.py'), 'utf8');
-  const kit = fs.readFileSync(path.join(ROOT, 'server/stories/blender/feltkit.py'), 'utf8');
+  const kit = fs.readFileSync(path.join(ROOT, 'tools/blender/feltkit.py'), 'utf8');
   const sets = py.match(/SETS = \{([^}]*)\}/)[1].match(/'(\w+)'/g).map(s => s.slice(1, -1));
   assert.deepEqual(sets.sort(), [...S.KIT.sets].sort());
   const times = Object.keys(Object.fromEntries([...py.matchAll(/^ {4}'(\w+)': dict\(/gm)].map(m => [m[1], 1])));
