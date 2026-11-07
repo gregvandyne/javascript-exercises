@@ -378,3 +378,17 @@ function again(m) {
   if (sock) sock.close(); if (frame) frame.destroy();
   location.href = `/live/play/${encodeURIComponent(m.sid)}`;
 }
+
+// Doodle Hoot Live's guess box: with an on-screen keyboard up, the page fits what is still visible, so the box and
+// the drawing stay in view. Android shrinks the page itself (the viewport's interactive-widget=resizes-content); iOS
+// keeps the page full height and slides it, so the visual viewport's size and offset are used here.
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const fitKeyboard = () => {
+    const up = document.body.dataset.lvMode === 'doodle' && vv.height < window.innerHeight * 0.8;
+    document.body.classList.toggle('lv-kb', up);
+    document.documentElement.style.setProperty('--lv-vvh', `${Math.round(vv.height)}px`);
+    document.documentElement.style.setProperty('--lv-vvt', `${Math.round(vv.offsetTop)}px`);
+  };
+  vv.addEventListener('resize', fitKeyboard); vv.addEventListener('scroll', fitKeyboard);
+}

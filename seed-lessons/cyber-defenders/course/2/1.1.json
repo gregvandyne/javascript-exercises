@@ -10,31 +10,25 @@
    "title": "The road, in one minute",
    "text": "Fast recap, because this band moves quickly. Messages travel as numbered packets, routers pass them hop by hop, and a protocol is the shared rules every stop follows.",
    "art": "network",
-   "img": "csq/packet-post/protocols-2-key",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
-   "view": [
-    8.1,
-    21.5,
-    86.3,
-    66.2
-   ],
+   "img": "csq/packet-post/routes-2-hop-n",
+   "alt": "Many Roads, Pro: numbered cookie packets hop from office to office across Netville towards the school.",
    "focus": [
     {
-     "cue": "Pim's Post to Grandma's House, through Mill Office",
+     "cue": "Numbered packets hop from office to office",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      42,
+      12,
+      16,
+      32
      ]
     },
     {
-     "cue": "Then each packet is numbered for its journey",
+     "cue": "Pim's Post to The School, road by road",
      "box": [
-      54.1,
-      38.0,
-      25.5,
-      12.3
+      6,
+      12,
+      88,
+      87
      ]
     }
    ]
@@ -45,17 +39,17 @@
    "text": "The receiver says got it for each packet. A missing number is asked for again, and extra copies are thrown away.",
    "art": "envelope",
    "steps": [
-    "sent: packets 1, 2, 3, 4",
-    "got it: 1, 2, 4",
-    "a gap: please send 3 again",
-    "got 3: the message is whole"
+    "sent: packets 1 to 5",
+    "got it: 1 and 2, their slots turn green",
+    "slot 3 is empty: please send packet 3 again",
+    "keep going until every slot is green"
    ],
    "img": "csq/packet-post/protocols-2-ack",
    "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap.",
    "view": [
-    50.0,
+    50,
     37.2,
-    40.0,
+    40,
     35.6
    ],
    "focus": [
@@ -65,7 +59,7 @@
       54.1,
       41.3,
       25.5,
-      9.0
+      9
      ]
     },
     {
@@ -74,7 +68,7 @@
       65.3,
       41.3,
       4.2,
-      9.0
+      9
      ]
     },
     {
@@ -91,35 +85,7 @@
   {
    "title": "Three things on an open road",
    "text": "Unsealed, a packet is a postcard on an open road. An interceptor can read it, copy it and keep the copy, or change its words before it travels on.",
-   "art": "mask",
-   "img": "csq/packet-post/routes-2-sealed",
-   "alt": "Sealed roads wear padlocks: open roads cost one hop, but a snoopy cat reads every packet on them.",
-   "view": [
-    7.2,
-    19.6,
-    85.4,
-    75.6
-   ],
-   "focus": [
-    {
-     "cue": "On an open road, a packet can be read",
-     "box": [
-      10.2,
-      42.9,
-      41.6,
-      26.5
-     ]
-    },
-    {
-     "cue": "It can be copied, or changed, on its way",
-     "box": [
-      58.4,
-      26.5,
-      29.4,
-      12.9
-     ]
-    }
-   ]
+   "art": "mask"
   },
   {
    "title": "A count catches accidents",
@@ -129,8 +95,8 @@
    "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again.",
    "view": [
     50.2,
-    40.0,
-    40.0,
+    40,
+    40,
     40.9
    ],
    "focus": [
@@ -147,7 +113,7 @@
      "cue": "Count again at the far end: a match means whole",
      "box": [
       54.4,
-      70.0,
+      70,
       18.5,
       5.9
      ]
@@ -210,22 +176,16 @@
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then play the 2 Many Roads levels the game sends you to. Each time a packet is resent, say why: missing, or damaged?",
    "art": "trophy",
-   "img": "csq/packet-post/protocols-2-rules",
-   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on.",
-   "view": [
-    6.8,
-    38.3,
-    45.7,
-    40.6
-   ],
+   "img": "csq/packet-post/protocols-2-twice-n",
+   "alt": "Rules of the Road, Pro: a slow got it made the sender resend, so extra copies wait in the inbox while one packet is still missing.",
    "focus": [
     {
      "cue": "Play Rules of the Road: name why a packet is resent",
      "box": [
-      9.8,
-      46.9,
-      39.7,
-      23.4
+      2.9,
+      69.8,
+      94.3,
+      30.2
      ]
     }
    ]

@@ -143,23 +143,19 @@
    "text": "The shortcut scales up. For 23 × 4, split 23 into 20 and 3. Then 20 × 4 = 80 and 3 × 4 = 12, so 23 × 4 = 92.",
    "art": "star",
    "visual": {
-    "type": "bars",
+    "type": "split",
     "label": "Splitting 23 × 4: 20 × 4 = 80 and 3 × 4 = 12",
-    "rows": [
+    "whole": "23 × 4",
+    "parts": [
      {
-      "label": "23 × 4, split into two easy parts",
-      "parts": [
-       {
-        "w": 0.87,
-        "label": "20×4=80",
-        "tone": 0
-       },
-       {
-        "w": 0.13,
-        "label": "3×4=12",
-        "tone": 1
-       }
-      ]
+      "w": 0.87,
+      "label": "20 × 4 = 80",
+      "tone": 0
+     },
+     {
+      "w": 0.13,
+      "label": "3 × 4 = 12",
+      "tone": 1
      }
     ]
    },
@@ -167,19 +163,19 @@
     {
      "cue": "Split 23 into 20 and 3. 20 × 4 = 80.",
      "box": [
-      5.6,
-      35.7,
-      77.5,
-      18.4
+      5,
+      37.5,
+      78.6,
+      19.2
      ]
     },
     {
      "cue": "3 × 4 = 12. Join them: 80 + 12 = 92.",
      "box": [
-      82.1,
-      35.7,
-      12.4,
-      18.4
+      75.5,
+      37.5,
+      19.5,
+      32.9
      ]
     }
    ]

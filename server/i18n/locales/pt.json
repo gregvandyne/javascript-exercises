@@ -3867,7 +3867,7 @@
       "packetPost": "Envie pacotes por uma rede, escolha frases-senha fortes e identifique truques online.",
       "insideTheMachine": "Monte e conserte computadores: peças, entradas e saídas, bits e pixels, design para todos.",
       "tugOfMath": "Perguntas de matemática escolhidas para cada ano, do 1º ao 8º, de somas até 20 a equações, num cabo de guerra. Contra o computador ou um amigo na mesma tela.",
-      "doodleHoot": "Desenhe uma palavra para os outros ou soletre a deles com peças de letras. Palavras fáceis, médias ou difíceis em 13 idiomas, ao vivo com família e amigos ou em um aparelho.",
+      "doodleHoot": "Desenhe uma palavra para os outros ou adivinhe a deles enquanto desenham: digite, fale em voz alta ou use peças de letras. Palavras fáceis, médias ou difíceis em 13 idiomas, ao vivo com família e amigos ou em um aparelho.",
       "remisQuietMeadow": "Um medidor de barulho para a sala: mantenham a calma para o Remi, o panda-vermelho, dormir, e contem juntos o tempo de silêncio."
     },
     "hubs": {
@@ -4089,7 +4089,7 @@
           "beatLanes": "Toque no ritmo de músicas conhecidas, começando por Brilha, brilha, estrelinha.",
           "munchMaze": "Uma perseguição no labirinto com modo Fácil: planeje o caminho e pegue todas as bolinhas.",
           "tugOfMath": "Escolha o 2º ou 3º ano: soma, subtração e tabuada, com o computador no Fácil até conseguirem vencer.",
-          "doodleHoot": "Palavras com desenhos e peças de letras: ortografia com cara de jogo de festa."
+          "doodleHoot": "Palavras com desenhos para adivinhar e escrever: treino de ortografia que parece jogo de festa."
         },
         "faq": {
           "q2": "Os jogos são difíceis demais para uma criança de 8 anos?",
@@ -4638,7 +4638,7 @@
       "tug": "Tug of Math (Ao vivo)",
       "tugText": "A turma se divide em dois times. Cada um responde perguntas de matemática do seu ano no próprio teclado, e cada resposta certa puxa a corda.",
       "doodle": "Doodle Hoot (Ao vivo)",
-      "doodleText": "Um jogador desenha e os outros soletram a palavra com peças de letras. Para a família ou amigos, onde estiverem, cada um no seu aparelho."
+      "doodleText": "Um jogador desenha enquanto os outros adivinham: digitando, em voz alta ou com peças de letras. Para a família ou os amigos, onde estiverem, cada um no seu aparelho."
     },
     "starter": {
       "title": {
@@ -5442,7 +5442,10 @@
       "roundsList": "1 rodada (cada um desenha uma vez)|2 rodadas|3 rodadas",
       "secs": "Tempo para desenhar",
       "secsN": "{n} segundos",
-      "hint": "Todos desenham na sua vez. Os jogadores entram com o código no próprio aparelho, onde estiverem. Ninguém digita: os palpites são peças de letras e não há chat.",
+      "hint": "Todos desenham na sua vez enquanto os outros adivinham. Os jogadores entram com o código no próprio aparelho, onde estiverem. O que se digita vai só para o jogo: quem desenha só vê um palpite se for uma das palavras do jogo, e não há chat.",
+      "guess": "Como adivinham",
+      "guessType": "Digitando no teclado",
+      "guessTiles": "Peças de letras (mais fácil)",
       "bigRoom": "Um grupo grande? Uma rodada basta: cada um desenha uma vez.",
       "play": "Praticar ou jogar em um aparelho"
     },
@@ -5573,7 +5576,7 @@
       },
       "doodle": {
         "h": "Doodle Hoot (Ao vivo)",
-        "p": "Um jogador desenha e os outros soletram a palavra com peças de letras: ortografia e vocabulário em 13 idiomas. Melhor para grupos pequenos (até 16); você pode apagar um desenho ou pular uma vez a qualquer momento."
+        "p": "Um jogador desenha enquanto os outros adivinham, digitando ou em voz alta (ou com peças de letras para os menores): ortografia e vocabulário em 13 idiomas. Ideal para grupos pequenos (até 16); você pode apagar um desenho ou pular uma vez a qualquer momento."
       },
       "tug": {
         "h": "Tug of Math (Ao vivo)",
@@ -6042,6 +6045,10 @@
       "locked": "Bloqueado",
       "preview": "Pré-visualizar",
       "lockedNote": "Esse passo ainda está bloqueado. Termine primeiro o passo {n}:",
+      "stamps": "Seus selos",
+      "stampsCount": "{n} de {total} selos",
+      "stampEarned": "Selo conquistado",
+      "stampToEarn": "Termine esta unidade para ganhá-lo",
       "unit": "Unidade {n}",
       "units": "Unidades {from}–{to}",
       "build": {
@@ -6074,6 +6081,7 @@
     "check": {
       "h": "Teste rápido",
       "intro": "Três perguntas. Acerte duas para liberar o módulo de jogo.",
+      "introTalk": "Três perguntas. Acerte duas para terminar este passo.",
       "q": "Pergunta {n} de {total}",
       "send": "Conferir respostas",
       "done": "Teste concluído",

@@ -13,9 +13,9 @@
    "img": "csq/robo-route/conditionals-1b-fog",
    "view": [
     0,
-    17.5,
-    48.6,
-    82.5
+    12.5,
+    54.5,
+    87.5
    ],
    "alt": "Fog covers Bolt's board: only the squares near Bolt can be seen, so no fixed list of steps could work here.",
    "focus": [
@@ -47,7 +47,7 @@
    "view": [
     51.8,
     40.4,
-    30.0,
+    30,
     41.7
    ],
    "alt": "One if / else block in the tray: if path ahead, move; else, turn left. Bolt checks and picks a side every time it runs.",
@@ -84,7 +84,7 @@
     48.6,
     82.5
    ],
-   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
+   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the open path across a board of water.",
    "steps": [
     "repeat until goal:",
     "if path ahead: move",
@@ -92,7 +92,7 @@
    ],
    "focus": [
     {
-     "cue": "Path ahead clear? Move. Bolt drives along the dry row.",
+     "cue": "Path ahead clear? Move. Bolt drives along the open row.",
      "box": [
       5.7,
       85.2,
@@ -148,7 +148,7 @@
    "view": [
     51.8,
     40.4,
-    30.0,
+    30,
     46.4
    ],
    "alt": "A when block waits at the top of the program: when a gem is picked up, turn right, with the driving loop underneath it.",

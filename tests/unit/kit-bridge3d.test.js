@@ -231,3 +231,34 @@ test('in a 3D world up and W walk forward and never jump (jump: Space, Z, the pa
   const on = src => { I.srcDown(src); I.update(); const p = I.pressed('jump'); I.srcUp(src); I.update(); return p; };
   assert.equal(on('KeyW'), false, 'W walks'); assert.equal(on('ArrowUp'), false, 'up walks'); assert.equal(on('Space'), true, 'Space jumps');
 });
+
+test('cartoon (kit 1.1.5): opt-in only; one hard cel band from a screen-fixed key light, a Cream rim, no shadow maps, the Ink palette', () => {
+  const mk = (o, search = '') => kit({ search }).O.three(THREE, { scene: new THREE.Scene(), camera: camera(), renderer: renderer(), theme: 'castle', ...o });
+  // the default and Bold are untouched; the page alone cannot switch a game that did not offer the style
+  const P = mk({}), Q = mk({}, '?okStyle=cartoon'), Bd = mk({ style: 'bold' }, '?okStyle=cartoon');
+  assert.equal(P.style, 'playful'); assert.equal(P.cartoon, false); assert.equal(Q.style, 'playful', 'a game that lists no styles ignores ?okStyle'); assert.equal(Bd.style, 'bold');
+  assert.equal(P.toon('mint').customProgramCacheKey(), 'okToon');
+  // a game asks for it, or offers it (styles) and the page picks it
+  const C = mk({ style: 'cartoon' }), D = mk({ styles: ['cartoon'] }, '?okStyle=cartoon'), E = mk({ styles: ['cartoon'] }, '?okStyle=pixel');
+  assert.equal(C.style, 'cartoon'); assert.equal(C.cartoon, true); assert.equal(D.style, 'cartoon'); assert.equal(E.style, 'playful', 'only a style the game offers');
+  assert.equal(mk({ style: 'cartoon', theme: 'cyber' }).style, 'cartoon', 'a Bold theme does not override it');
+  const m = C.toon('mint'); assert.ok(m.isMeshToonMaterial); assert.equal(m.customProgramCacheKey(), 'okCel'); assert.equal(C.toon('coral').customProgramCacheKey(), 'okCel', 'one program');
+  const sh = { uniforms: {}, fragmentShader: 'void main() {\n#include <opaque_fragment>\n}', vertexShader: '' }; m.onBeforeCompile(sh);
+  assert.match(sh.fragmentShader, /okLit = smoothstep\( okEdge - okW, okEdge \+ okW, okNd \)[\s\S]*vec3 okF = [\s\S]*outgoingLight = okF \* mix\([\s\S]*#include <opaque_fragment>/, 'the colour is the fill, one band of shade');
+  for (const u of ['okKey', 'okShade', 'okEdge', 'okTint', 'okRim', 'okRimK', 'okSoft', 'okDepth']) assert.ok(sh.uniforms[u], u);
+  assert.ok(sh.uniforms.okRim.value.equals(new THREE.Color('#FFFDF2')) && sh.uniforms.okRimK.value > 0 && sh.uniforms.okRimK.value < 0.2, 'a faint Cream rim');
+  assert.ok(sh.uniforms.okKey.value.x < 0 && sh.uniforms.okKey.value.y > 0, 'the key light is at the top-left of the screen (view space)');
+  assert.equal(sh.uniforms.okTint.value, C.light.tint, 'the game tints the mood through B.light');
+  const land = C.toon(null, { vertexColors: true, soft: 0.1, depth: 0.6 }), sh2 = { uniforms: {}, fragmentShader: '#include <opaque_fragment>' }; land.onBeforeCompile(sh2);
+  assert.equal(sh2.uniforms.okSoft.value, 0.1); assert.equal(sh2.uniforms.okDepth.value, 0.6); assert.notEqual(land, C.toon(null, { vertexColors: true }));
+  // no shadow maps (contact blobs instead); Playful keeps its shadows
+  const r = renderer(), S = kit().O.three(THREE, { scene: new THREE.Scene(), camera: camera(), renderer: r, style: 'cartoon' }); S.sky({ size: 20 });
+  assert.equal(r.shadowMap.enabled, false); assert.equal(S.sun.castShadow, false); S.setQuality(2); assert.equal(r.shadowMap.enabled, false);
+  const r2 = renderer(), Pl = kit().O.three(THREE, { scene: new THREE.Scene(), camera: camera(), renderer: r2 }); Pl.sky({ size: 20 }); assert.equal(r2.shadowMap.enabled, true);
+  // the Ink palette: any colour -> the nearest kit colour; k < 1 moves part of the way
+  const { O } = kit(), all = new Set([O.color('ink'), O.color('cream'), ...['mint', 'spark', 'coral', 'sky', 'grape', 'peach', 'cocoa', 'stone', 'snow'].flatMap(h => [0, 1, 2, 3].map(i => O.color(h, i)))].map(c => c.toUpperCase()));
+  for (const c of ['#7ccf4f', '#d9534a', '#4f7fd9', '#f7ecd6', '#9a6a3f', '#ffc83d', '#2b2b2b', '#ffffff']) assert.ok(all.has(C.palette(c).toUpperCase()), `${c} -> ${C.palette(c)}`);
+  assert.ok(['coral'].some(h => [0, 1, 2, 3].some(i => O.color(h, i).toUpperCase() === C.palette('#d9534a').toUpperCase())), 'a red roof is coral');
+  assert.equal(C.palette('#141414').toUpperCase(), '#141414');
+  assert.ok(!all.has(C.palette('#7ccf4f', 0.5).toUpperCase()), 'half way');
+});

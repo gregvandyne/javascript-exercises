@@ -1284,8 +1284,9 @@ export function emote(s, seat, e) {
 export function event(s, from, m) {
   // Tug of Math Live: a player's answer (or "my question again") goes to the server only, never to anyone else.
   if (s.tug) { if (from && ['playing', 'paused'].includes(s.phase)) TG.fromPlayer(s, io, from, m); return; }
-  // Doodle Hoot Live: strokes, picks, guesses and hides go to the server, which relays only what it has checked.
-  if (s.doodle) { if (from && ['playing', 'paused'].includes(s.phase)) DG.fromPlayer(s, io, from, m); return; }
+  // Doodle Hoot Live: strokes, picks, guesses and hides go to the server, which relays only what it has checked; the
+  // host's page may say who guessed it out loud (aw). Nothing is relayed as it came.
+  if (s.doodle) { if (['playing', 'paused'].includes(s.phase)) { if (from) DG.fromPlayer(s, io, from, m); else DG.fromHost(s, io, m); } return; }
   if (!['lobby', 'loading', 'countdown', 'playing', 'between'].includes(s.phase)) return;
   // Brain Board: a tile pick (the projector's game, or the player whose turn it is), and the host's "players pick" switch.
   if (s.board && m.k === 'pick' && m.d && typeof m.d === 'object') { boardPick(s, m.d.c, m.d.r, from ? from.no : 0); return; }

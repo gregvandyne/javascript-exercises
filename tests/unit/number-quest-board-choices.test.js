@@ -70,16 +70,32 @@ test('1.1 Digit value: every choice is the same digit in some place (9, 90, 900,
   }
 });
 
-test('1.1 Round it: three-digit numbers that need rounding, the key right, every distractor a plausible rounding', () => {
-  for (let r = 1; r <= RUNS; r++) for (const it of board('1.1', r).items.filter(i => i.cat === 'Round it')) {
-    const m = /Round ([\d,]+) to the nearest (ten|hundred)\./.exec(it.q), n = num(m[1]), unit = m[2] === 'ten' ? 10 : 100;
-    assert.ok(n >= 100 && n <= 999 && n % 10 !== 0, `${it.q}: a three-digit number that needs rounding`);
-    assert.equal(num(it.choices[it.answer]), Math.round(n / unit) * unit, it.q);
-    for (const c of it.choices) {
-      assert.ok(num(c) >= 0 && num(c) % 10 === 0, `${it.q}: "${c}" is a rounded number`);
-      assert.ok(Math.abs(num(c) - n) <= 2 * unit + 100, `${it.q}: "${c}" is near the number`);
+test('1.1 Build it (rounding is 1.2\'s skill, never on the 1.1 board): the key is the number, every wrong build uses the same four digits', () => {
+  for (let r = 1; r <= RUNS; r++) {
+    const items = board('1.1', r).items;
+    assert.ok(!items.some(i => /round/i.test(i.q)), 'no rounding on the place value board');
+    for (const it of items.filter(i => i.cat === 'Build it')) {
+      const m = /Build it: (\d) thousands?, (\d) hundreds?, (\d) tens? and (\d) ones?\./.exec(it.q);
+      assert.ok(m, it.q);
+      const want = +m[1] * 1000 + +m[2] * 100 + +m[3] * 10 + +m[4];
+      assert.equal(num(it.choices[it.answer]), want, it.q);
+      const digits = [m[1], m[2], m[3], m[4]].sort().join();
+      for (const c of it.choices) assert.equal(String(num(c)).split('').sort().join(), digits, `${it.q}: "${c}" is built from the same digits`);
     }
   }
+});
+
+test('2.3 Estimate first: the key rounds each number first, and no other choice is the rounded exact sum', () => {
+  let differ = 0;
+  for (let r = 1; r <= RUNS; r++) for (const it of board('2.3', r).items.filter(i => i.cat === 'Estimate first')) {
+    const m = /About how much is (\d+) \+ (\d+)\?/.exec(it.q), a = +m[1], b = +m[2];
+    const each = Math.round(a / 100) * 100 + Math.round(b / 100) * 100, sumRound = Math.round((a + b) / 100) * 100;
+    assert.equal(it.choices[it.answer], `About ${each}`, it.q);
+    if (each !== sumRound) { differ++; assert.ok(!it.choices.includes(`About ${sumRound}`), `${it.q}: rounding the sum (${sumRound}) is not offered as a second answer`); }
+  }
+  // the hand-checked case from the grade: 249 + 249 is about 200 + 200 = 400, not 500
+  assert.equal(Math.round(249 / 100) * 100 * 2, 400);
+  assert.ok(differ > 0, 'boards where the two methods differ were exercised');
 });
 
 test('5.1 teaches what it asks: no liters or milliliters on the Measures board', () => {

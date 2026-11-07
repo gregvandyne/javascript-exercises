@@ -7,8 +7,8 @@
  "minutes": 5,
  "slides": [
   {
-   "title": "The last piece",
-   "text": "The last piece locks in and the Spark comes back all at once: light, warmth, and every game in Netville humming again. You coded your way here.",
+   "title": "The Spark comes back",
+   "text": "You put the four pieces together and the Spark comes back all at once: light, warmth, and every game in Netville humming again. You coded your way here.",
    "art": "star",
    "story": {
     "scene": "relight",
@@ -24,7 +24,20 @@
   {
    "title": "Bolt says thanks",
    "text": "Bolt's antenna is spinning. You took his roads from single steps to loops inside loops, and you never once gave up on a bug. That is what coders do.",
-   "art": "robot"
+   "art": "robot",
+   "img": "csq/chars/meet-bolt",
+   "alt": "Bolt the robot, the Robo Route guide, with his visor and antenna light, standing in front of a softened board from his game.",
+   "focus": [
+    {
+     "cue": "Bolt, whose roads you taught to run again",
+     "box": [
+      34.8,
+      23.6,
+      30.5,
+      55.6
+     ]
+    }
+   ]
   },
   {
    "title": "The whole team",

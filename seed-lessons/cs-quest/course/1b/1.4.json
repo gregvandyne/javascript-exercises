@@ -10,50 +10,34 @@
    "title": "Bolt needs to remember",
    "text": "Some doors open only when Bolt has picked up every gem on the way. How does a program remember how many it has? It uses a variable.",
    "art": "robot",
-   "img": "csq/robo-route/variables-1b-key",
-   "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
-   ],
-   "alt": "Bolt's row holds three gems, then a door, then the flag; the door's counter reads count = 3 and the starter program counts.",
+   "img": "csq/robo-route/variables-1b-door-c",
+   "alt": "Three gems lie on the way to a door that opens at count = 3, and the program sets count to 0 before the loop.",
    "focus": [
     {
      "cue": "The door's counter: count = 3. Three gems open it.",
      "box": [
-      0,
-      93.9,
-      11.6,
+      0.8,
+      94,
+      17.5,
       5.7
      ]
     },
     {
      "cue": "Three gems, then the door, then the flag.",
      "box": [
-      7,
-      58.9,
-      38.5,
-      11.9
-     ],
-     "path": [
-      [
-       10.5,
-       64.9
-      ],
-      [
-       41.9,
-       64.9
-      ]
+      8,
+      57,
+      29,
+      11
      ]
     },
     {
      "cue": "The door stays shut until count reaches 3.",
      "box": [
-      32.1,
-      58.9,
-      7.1,
-      11.9
+      25.5,
+      57,
+      5.5,
+      11
      ]
     }
    ]
@@ -65,9 +49,9 @@
    "img": "csq/robo-route/variables-1b-named-box",
    "view": [
     52.2,
-    33.6,
     38,
-    33.8
+    38,
+    27.6
    ],
    "alt": "The program names its box: set count to 0, then repeat 5 times move, pick up, and change count by 1, beside the gem column.",
    "focus": [
@@ -108,7 +92,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     34.5
    ],
    "alt": "Bolt stands by the door with the counter strip reading steps = 2: set steps to 4 started it, and change steps by -1 ticks it down.",
@@ -123,7 +107,7 @@
      ]
     },
     {
-     "cue": "Change by -1 takes one away each time.",
+     "cue": "The change block adds its number. Here it is -1, so it takes one away.",
      "box": [
       55.8,
       49.9,
@@ -145,7 +129,7 @@
   {
    "kind": "example",
    "title": "Counting gems",
-   "text": "Every time Bolt picks up a gem, count goes up by one. Watch the watch pill: 1, 2, 3, 4, 5!",
+   "text": "Every time Bolt picks up a gem, count goes up by one. Watch the count under the board: 1, 2, 3, 4, 5!",
    "art": "grid",
    "img": "csq/robo-route/variables-1b-counting-gems",
    "view": [
@@ -164,7 +148,7 @@
    ],
    "focus": [
     {
-     "cue": "The watch pill says count = 2: two gems counted.",
+     "cue": "Under the board: count = 2. Two gems counted.",
      "box": [
       11.1,
       93.9,
@@ -239,7 +223,7 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Robo Route at Variables and finish all 6 levels. Press Step and read the watch pill after each block: what is in the box now?",
+   "text": "Open Robo Route at Variables and finish all 6 levels. Press Step and read the count under the board after each block: what is in the box now?",
    "art": "trophy",
    "img": "csq/robo-route/variables-1b-key",
    "view": [

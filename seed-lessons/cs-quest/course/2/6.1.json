@@ -10,27 +10,55 @@
    "title": "Tradeoffs everywhere",
    "text": "Technology is neither all good nor all bad. Every advance has a benefit for someone and a cost for someone else.",
    "art": "globe",
-   "img": "csq/would-you-rather/tech-2-first",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else."
+   "img": "csq/would-you-rather/tech-2-ads-n",
+   "alt": "Would you rather: a game that is free but shows ads, or a game you pay for once with no ads?",
+   "focus": [
+    {
+     "cue": "Free: a benefit for players, ads the cost",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Paid once: no ads, but it costs money",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "title": "Automation",
-   "text": "Automation means a machine does a task people used to do. It changes jobs more than it erases them.",
+   "text": "Automation means a machine does a task people used to do. It changes jobs more than it erases them: someone builds the robots, and someone fixes them.",
    "art": "robot",
-   "img": "csq/would-you-rather/tech-2-second",
-   "view": [
-    6.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do."
+   "img": "csq/would-you-rather/tech-2-jobs-n",
+   "alt": "Would you rather have a job building robots, or a job fixing robots?",
+   "focus": [
+    {
+     "cue": "New jobs: building robots",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "and fixing them",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -47,14 +75,28 @@
    "title": "Hidden costs",
    "text": "A map app saves time, but you may stop learning your way around. Driverless cars might prevent some crashes and change drivers' jobs.",
    "art": "map",
-   "img": "csq/would-you-rather/tech-2-second",
-   "view": [
-    52.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "Another technology dilemma, about machines doing tasks people used to do, and what changes when they do."
+   "img": "csq/would-you-rather/tech-2-map-n",
+   "alt": "Would you rather: a map app that picks your route, or a paper map and your own choices?",
+   "focus": [
+    {
+     "cue": "A map app saves time",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "A paper map: you learn the way yourself",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -85,14 +127,28 @@
    "title": "Your mission",
    "text": "Pick one technology you used today. Name one benefit for everyday life and one cost for someone's job or privacy. Then talk about it.",
    "art": "trophy",
-   "img": "csq/would-you-rather/tech-2-first",
-   "view": [
-    52.8,
-    30,
-    40.5,
-    40
-   ],
-   "alt": "A Pro technology dilemma: each side of the choice helps someone and costs someone else."
+   "img": "csq/would-you-rather/tech-2-voice-n",
+   "alt": "Would you rather: a voice helper that knows everything, or one that never listens unless you press a button?",
+   "focus": [
+    {
+     "cue": "Benefit: a helper that knows everything",
+     "box": [
+      1.9,
+      1.9,
+      96.2,
+      44.4
+     ]
+    },
+    {
+     "cue": "Privacy: one that only listens on a press",
+     "box": [
+      1.9,
+      60.6,
+      96.2,
+      39.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

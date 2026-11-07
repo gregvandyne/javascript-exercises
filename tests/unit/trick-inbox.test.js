@@ -20,7 +20,7 @@ for (const m of HTML.matchAll(/<script>([\s\S]*?)<\/script>/g)) vm.runInContext(
 const E = ctx.TrickInbox;
 const J = v => JSON.parse(JSON.stringify(v));
 
-test('trick-inbox: the exact kit 1.1.4 tag and its four packs, the metadata, and a clean scan', () => {
+test('trick-inbox: the exact kit 1.1.5 tag and its four packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Trick Inbox</title>'));
   assert.ok(HTML.includes(kitTag()), 'the byte-exact kit tag');
   for (const p of ['art-props', 'art-animals', 'art-school', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `${p} pack tag`);
@@ -36,12 +36,12 @@ test('trick-inbox: the exact kit 1.1.4 tag and its four packs, the metadata, and
   assert.doesNotMatch(HTML, /<input|<textarea|contenteditable/i, 'tap-only: no text inputs');
 });
 
-test('trick-inbox: the seven sets and their band contract', () => {
-  assert.deepEqual(J(E.SETS.map(s => s.id)), ['letters', 'chat', 'mix', 'senders', 'pressure', 'media', 'boss']);
+test('trick-inbox: the eleven sets and their band contract', () => {
+  assert.deepEqual(J(E.SETS.map(s => s.id)), ['letters', 'chat', 'mix', 'senders', 'pressure', 'media', 'keys', 'private', 'ask-first', 'rules', 'boss']);
   E.SETS.forEach((s, i) => assert.equal(s.index, i + 1));
   for (const s of E.SETS) for (const band of s.bands) assert.ok(E.round(s.id, band, 1).length >= 6, `${s.id} ${band} has a full round`);
   // Explorer never sees the Pro-only sets; Pro sees everything
-  assert.deepEqual(J(E.SETS.filter(s => s.bands.includes('1b')).map(s => s.id)), ['letters', 'chat', 'mix', 'boss']);
+  assert.deepEqual(J(E.SETS.filter(s => s.bands.includes('1b')).map(s => s.id)), ['letters', 'chat', 'mix', 'keys', 'private', 'ask-first', 'rules', 'boss']);
   // the boss round is Lock 4's shape: Explorer 6, Pro 8 with a faked sender among them
   assert.equal(E.round('boss', '1b', 1).length, 6);
   const bossPro = E.round('boss', '2', 1);
@@ -79,6 +79,9 @@ test('trick-inbox: every message is well-formed, fictional and fairly judged', (
     assert.ok(ms.some(m => m.action === 'deliver'), `${s.id} ${band}: has a safe message`);
     assert.ok(ms.some(m => m.action !== 'deliver'), `${s.id} ${band}: has a trick`);
   }
+  // Pro names the same four as its threat actors (Pro 4.2 teaches the scammer, the account thief, the vandal and the spy)
+  assert.deepEqual(Object.keys(E.ACTORS).sort(), Object.keys(E.MOTIVES).sort());
+  for (const v of Object.values(E.ACTORS)) assert.match(v, /^the (scammer|account thief|vandal|spy), who wants /);
   // all four Unit 4 motives appear in each band's playable content, the forwarder included
   for (const band of ['1b', '2']) {
     const motives = new Set(E.MESSAGES.filter(m => m.bands.includes(band) && m.motive).map(m => m.motive));

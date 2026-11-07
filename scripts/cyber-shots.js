@@ -32,21 +32,24 @@ const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const args = process.argv.slice(2);
 const outIdx = args.indexOf('--out');
-const OUTROOT = outIdx >= 0 ? path.resolve(args[outIdx + 1]) : path.join(ROOT, 'scripts', 'cyber-masters');
+// --course csq: CS Quest's own table (scripts/csq-shots-spec.json, the Data Detective, Packet Post, Inside the Machine,
+// Robo Route Level Maker and Would You Rather shots of units 2.2-6), its rects in scripts/csq-shots-rects.json.
+const CSQ = args.includes('--course') && args[args.indexOf('--course') + 1] === 'csq';
+const OUTROOT = outIdx >= 0 ? path.resolve(args[outIdx + 1]) : path.join(ROOT, 'scripts', CSQ ? 'csq-masters' : 'cyber-masters');
 const WEBP = args.includes('--webp');
 const MANIFEST = args.includes('--manifest');
 const onlyIdx = args.indexOf('--only');
 const ONLY = onlyIdx >= 0 ? new Set(args[onlyIdx + 1].split(',')) : null;
 const specIdx = args.indexOf('--spec'); // a trial shot table (candidates looked at before they join the real spec)
-const gamesWanted = args.filter(a => !a.startsWith('--') && ![outIdx, onlyIdx, specIdx].filter(i => i >= 0).map(i => args[i + 1]).includes(a));
-const ALL = JSON.parse(fs.readFileSync(specIdx >= 0 ? path.resolve(args[specIdx + 1]) : path.join(ROOT, 'scripts', 'cyber-shots-spec.json'), 'utf8'));
+const gamesWanted = args.filter(a => !a.startsWith('--') && ![outIdx, onlyIdx, specIdx, args.indexOf('--course')].filter(i => i >= 0).map(i => args[i + 1]).includes(a));
+const ALL = JSON.parse(fs.readFileSync(specIdx >= 0 ? path.resolve(args[specIdx + 1]) : path.join(ROOT, 'scripts', CSQ ? 'csq-shots-spec.json' : 'cyber-shots-spec.json'), 'utf8'));
 const shots = ALL.filter(s => (!gamesWanted.length || gamesWanted.includes(s.game)) && (!ONLY || ONLY.has(s.state)));
 if (!shots.length) { console.error('no shots matched'); process.exit(1); }
 
-const RECTS_FILE = path.join(ROOT, 'scripts', 'cyber-shots-rects.json');
+const RECTS_FILE = path.join(ROOT, 'scripts', CSQ ? 'csq-shots-rects.json' : 'cyber-shots-rects.json');
 const RECTS = fs.existsSync(RECTS_FILE) ? JSON.parse(fs.readFileSync(RECTS_FILE, 'utf8')) : {};
 /** Collected in the frame: the named elements of Trick Inbox and Escape, as [x, y, w, h] in % of the viewport. */
-function collectRects(clip) {
+function collectRects(clip, marks) {
   // clip { top, height } (CSS px): a narrow shot's 16:9 slice of the page; boxes are then % of the slice
   const T = clip ? clip.top : 0, W = innerWidth, H = clip ? clip.height : innerHeight, out = {};
   const sh = q => ({ left: q.left, right: q.right, top: q.top - T, bottom: q.bottom - T, width: q.width, height: q.height });
@@ -88,6 +91,8 @@ function collectRects(clip) {
     // Would You Rather: the question, its two choices (a, b) with their words, and the OR between them
     ['wyrask', '#ask'], ['wyropt', '#pair .opt'], ['wyrtx', '#pair .opt .tx'], ['wyror', '#pair .or'],
   ];
+  // a shot's own named parts (CS Quest shots name what their slide's highlights point at): { name: selector }
+  for (const [name, sel] of Object.entries(marks || {})) [...document.querySelectorAll(sel)].filter(e => !e.closest('[hidden]')).forEach((el, i) => add(`${name}${i + 1}`, el));
   for (const [name, sel] of SEL) {
     const els = [...document.querySelectorAll(sel)].filter(e => !e.closest('[hidden]'));
     els.forEach((el, i) => add(els.length === 1 && !['clue', 'act', 'pill', 'lock', 'tile', 'slot', 'li', 'epcard', 'node', 'nodelabel', 'road', 'cardtitle', 'cardp', 'clues', 'dline', 'btn', 'trow', 'ptext', 'set', 'h', 'row', 'pptile', 'ppverdict', 'ppbadge'].includes(name) ? name : `${name}${i + 1}`, el));
@@ -122,7 +127,50 @@ function collectRects(clip) {
     }
   }
   out['~words'] = words;
+  // The text itself, line by line (an authoring aid: a slide's highlight is placed on the words it names).
+  const tl = [];
+  const tw2 = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let t = tw2.nextNode(); t; t = tw2.nextNode()) {
+    const el = t.parentElement, s = t.textContent.replace(/\s+/g, ' ').trim();
+    if (!s || !el || el.closest('[hidden]')) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+    const rg = document.createRange(); rg.selectNodeContents(t);
+    for (const q of [...rg.getClientRects()].map(sh)) {
+      if (q.width < 1 || q.height < 4 || q.right <= 0 || q.bottom <= 0 || q.left >= W || q.top >= H) continue;
+      tl.push([r1(Math.max(0, q.left) / W * 100), r1(Math.max(0, q.top) / H * 100), r1((Math.min(W, q.right) - Math.max(0, q.left)) / W * 100), r1((Math.min(H, q.bottom) - Math.max(0, q.top)) / H * 100), s.slice(0, 50)]);
+    }
+  }
+  out['~lines'] = tl;
   return out;
+}
+
+/** In the frame: the slice top (CSS px) for a narrow.at anchor (see the runner). */
+function sliceTop(at, H) {
+  const lines = [];
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let anchor = null;
+  for (let t = tw.nextNode(); t; t = tw.nextNode()) {
+    const el = t.parentElement; if (!t.textContent.trim() || !el || el.closest('[hidden]') || !el.getClientRects().length) continue;
+    const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+    const rg = document.createRange(); rg.selectNodeContents(t);
+    for (const q of rg.getClientRects()) if (q.height >= 4 && q.width >= 1) lines.push([q.top, q.bottom]);
+    if (!anchor && at.text && t.textContent.replace(/\s+/g, ' ').includes(at.text)) anchor = rg.getBoundingClientRect().top;
+  }
+  if (at.sel) { const e = [...document.querySelectorAll(at.sel)].find(x => !x.closest('[hidden]') && x.getClientRects().length); if (e) anchor = e.getBoundingClientRect().top; }
+  if (anchor == null) throw new Error(`narrow.at: no ${at.text || at.sel} on screen`);
+  let top = Math.max(0, anchor - (at.pad != null ? at.pad : 6) + (at.dy || 0));
+  // both edges at least G px clear of every line of text: the nearest such top to the anchor's, earlier tops first
+  // (the anchor stays in the slice), then later ones
+  for (const G of [6, 4, 2.5]) {
+    const clear = y => !lines.some(l => l[0] < y + G && l[1] > y - G);
+    const ok = t => t >= 0 && (t === 0 || clear(t)) && clear(t + H);
+    for (let d = 0; d <= 120; d += 0.5) {
+      if (d <= 40 && ok(top + d)) return Math.round((top + d) * 10) / 10;
+      if (ok(top - d)) return Math.round((top - d) * 10) / 10;
+    }
+  }
+  throw new Error(`narrow.at: no slice near ${top} has both edges between lines of text`);
 }
 
 async function runGame(browser, slug, list) {
@@ -169,14 +217,56 @@ async function runGame(browser, slug, list) {
         T.skipAnimations && T.skipAnimations();
         if (s.title) { await wait(600); return { screen: 'title' }; }
         if (s.game === 'would-you-rather') {
-          T.start('alone', { topics: ['online'], count: 10 });
+          const topic = s.topic || 'online';
+          T.start('alone', { topics: [topic], count: s.topic ? 20 : 10 });   // a CS Quest topic: the whole bank, so the named dilemma comes up
           await wait(600);
-          for (let i = 0; i < 12; i++) {
+          for (let i = 0; i < (s.topic ? 22 : 12); i++) {
             const st = T.state();
-            if (st.cur === s.dilemma) return { levelId: st.cur, chapter: 'online', screen: st.screen };
+            if (st.cur === s.dilemma) {
+              if (s.pick) { T.pick(s.pick); await wait(500); }   // the reveal: the choice made and what it costs
+              return { levelId: st.cur, chapter: topic, screen: T.state().screen };
+            }
             T.pick('a'); await wait(350); T.next(); await wait(450);
           }
-          const st = T.state(); return { levelId: st.cur, chapter: 'online', screen: st.screen, missed: st.cur !== s.dilemma };
+          const st = T.state(); return { levelId: st.cur, chapter: topic, screen: st.screen, missed: st.cur !== s.dilemma };
+        }
+        // CS Quest's worlds (the csq-shots-rollout.js drivers): Robo Route's Level Maker, Data Detective, Inside the Machine
+        if (s.game === 'robo-route' || s.game === 'data-detective' || s.game === 'inside-the-machine') {
+          if (s.game === 'robo-route') {
+            T.start({ chapter: s.chapter, band: s.band, level: s.level, seed: 7, mode: s.chapter === 'level-maker' ? 'maker' : 'play' });
+            await wait(500); T.closeModal(); await wait(300);
+            // a level with a plan card: complete it, as the rollout captures do (the program panel then takes its full width)
+            if (T.state().planDone === false) { T.plan(); await wait(900); T.closeModal(); await wait(300); }
+          } else if (s.game === 'data-detective') {
+            T.start({ chapter: s.chapter, band: s.band, level: s.level, seed: 7, mode: s.mode || 'play' });
+            await wait(500); if (!s.keepDialog) { T.closeDialog(); await wait(300); }
+          } else { T.start({ chapter: s.chapter, band: s.band, level: s.level, seed: 7, learn: !!s.learn }); await wait(500); }
+          for (const a of s.actions) {
+            if (a.program) T.program(a.program);
+            else if (a.steps) { for (let i = 0; i < a.steps; i++) { T.stepOnce(); await wait(130); } }
+            else if (a.solve) { await T.solve(); await wait(600); }
+            else if (a.closeModal) { if (T.closeModal) T.closeModal(); else T.closeDialog(); await wait(300); }
+            else if (a.mkRows) { T.mkRows(a.mkRows); await wait(300); }
+            else if (a.mkCheck) { T.mkCheck(); await wait(300); }
+            else if (a.mkTest) { await T.mkTest(); await wait(400); }
+            else if (a.makerFree) { T.maker(); await wait(400); }
+            else if (a.run) { await T.run(); await wait(600); }
+            else if (a.act) { T.act(a.act); await wait(400); }
+            else if (a.acts) { for (const x of a.acts) { T.act(x); await wait(350); } }
+            else if (a.claimCard) { T.claimCard(); await wait(400); }
+            else if (a.tap != null) { T.tap(a.tap); await wait(350); }
+            else if (a.answer) { T.answer(a.answer); await wait(400); }
+            else if (a.next) { T.next(); await wait(400); }
+            else if (a.cover) { await T.cover(); await wait(600); }   // the game's own cover state (its character on stage)
+            else if (a.click) { const b = [...document.querySelectorAll(a.click.sel || 'button')].filter(x => !a.click.text || (x.getAttribute('aria-label') || x.textContent || '').trim().includes(a.click.text))[a.click.i || 0]; if (b) b.click(); await wait(350); }
+            // clicks: [[selector, index], ...], each a real click on the game's own control (the frame forbids eval)
+            else if (a.clicks) { for (const [sel, i] of a.clicks) { const b = document.querySelectorAll(sel)[i]; if (b) b.click(); await wait(120); } await wait(250); }
+            // Inside the Machine's card sorter: put the next n cards in their right bins (hw: the hardware cards' words)
+            else if (a.sortCards) { for (let i = 0; i < a.sortCards; i++) { const t = (document.querySelector('.im-face span') || {}).textContent; const b = document.querySelector(`.im-bin[data-id="${a.hw.includes(t) ? 'hw' : 'sw'}"]`); if (b) b.click(); await wait(200); } await wait(250); }
+            else if (a.scroll) { const el = document.querySelector(a.scroll); if (el) el.scrollIntoView({ block: a.block || 'start' }); await wait(200); }
+            await wait(120);
+          }
+          const st = T.state(); return { levelId: st.levelId || st.level, chapter: st.chapter && (st.chapter.id || st.chapter), screen: st.screen };
         }
         if (s.game === 'trick-inbox') {
           T.start({ chapter: s.chapter, band: s.band, seed: 7, lesson: true, lock: true });
@@ -226,8 +316,12 @@ async function runGame(browser, slug, list) {
         const st = T.state(); return { levelId: st.levelId, chapter: st.chapter, screen: st.screen };
       }, s);
       await wait(400);
+      // narrow.at (CS Quest shots): place the slice from the game's own words instead of a fixed top: the slice starts
+      // `pad` px above the first visible text that contains at.text (or the element at.sel), and both its edges are then
+      // moved into gaps between lines of text. The top it lands on is printed, so the spec can pin it.
+      if (s.narrow && s.narrow.at) s.narrow.top = await f.evaluate(`(${sliceTop})(${JSON.stringify(s.narrow.at)}, ${s.narrow.width * 9 / 16})`);
       const clip = s.narrow && s.narrow.top != null ? { top: s.narrow.top, height: s.narrow.width * 9 / 16 } : null;
-      { const r = await f.evaluate(collectRects, clip); RECTS[`csq/${slug}/${s.state}`] = r; }   // every shot: its words (zoom-to-cue)
+      { const r = await f.evaluate(`(${collectRects})(${JSON.stringify(clip)}, ${JSON.stringify(s.marks || null)})`); RECTS[`csq/${slug}/${s.state}`] = r; }   // every shot: its words (zoom-to-cue)
       const file = path.join(outDir, `${s.state}.png`);
       if (clip) await page.screenshot({ path: file, clip: { x: 0, y: clip.top, width: s.narrow.width, height: clip.height } });
       else await frameEl.screenshot({ path: file });
@@ -238,7 +332,7 @@ async function runGame(browser, slug, list) {
         execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', file, '-vf', "scale='min(1280,iw)':-2", '-c:v', 'libwebp', '-quality', '80', dest]);
         extra = ` -> ${Math.round(fs.statSync(dest).size / 1024)} KB`;
       }
-      console.log(`✓ ${slug}/${s.state}: level ${seen.levelId} chapter ${seen.chapter}${seen.missed ? ' ⚠ DILEMMA MISSED' : ''}${extra}`);
+      console.log(`✓ ${slug}/${s.state}: level ${seen.levelId} chapter ${seen.chapter}${seen.missed ? ' ⚠ DILEMMA MISSED' : ''}${s.narrow && s.narrow.at ? ` top ${s.narrow.top}` : ''}${extra}`);
     } catch (e) { console.log(`✗ ${slug}/${s.state}: ${e.message.split('\n')[0]}`); }
   }
   if (errors.length) console.log('page errors:', [...new Set(errors)].slice(0, 3).join('; '));

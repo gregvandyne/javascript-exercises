@@ -219,11 +219,15 @@
     // No typing in a live frame (the only text anyone enters in Oomba Live is the join code, on the site's own page).
     try { Object.defineProperty(window, 'prompt', { value: function () { return null; }, writable: false, configurable: false }); } catch (e) { /* ignore */ }
     var OPEN_TYPES = { button: 1, submit: 1, reset: 1, range: 1, checkbox: 1, radio: 1, color: 1, image: 1, file: 0, hidden: 1 };
+    // The one exception: Doodle Hoot Live's guess box (the built-in mode 'doodle' with typed guesses: the server sets
+    // INIT.live.guess for a player's frame). Its text goes to the server only, never to another player.
+    var GUESS_BOX = LIVE.guess === 1 && LIVE.mode === 'doodle' && LIVE.role !== 'host';
     var lockText = function (root) {
       try {
         var list = root.querySelectorAll ? root.querySelectorAll('input,textarea,[contenteditable]') : [];
         var one = function (el) {
           if (el.tagName === 'INPUT' && OPEN_TYPES[String(el.type || 'text').toLowerCase()] === 1) return;
+          if (GUESS_BOX && el.tagName === 'INPUT' && String(el.type || 'text').toLowerCase() === 'text' && el.hasAttribute('data-live-guess')) return;
           if (el.tagName === 'INPUT' && String(el.type).toLowerCase() === 'file') el.disabled = true;
           if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { if (!el.readOnly) el.readOnly = true; }
           if (el.hasAttribute && el.hasAttribute('contenteditable') && el.getAttribute('contenteditable') !== 'false') el.setAttribute('contenteditable', 'false');
@@ -1025,20 +1029,21 @@
 
   function deepFreeze(o) { if (o && typeof o === 'object') { Object.keys(o).forEach(function (k) { deepFreeze(o[k]); }); Object.freeze(o); } return o; }
   // Lesson parameters (docs/sdk.md "Lesson parameters"): a lesson step may open the game at a chapter, for a band, in a
-  // mode, at a level, locked or not. Only those five keys, values [a-z0-9-]{1,16}; band '1b' or '2'; level 1-30 and
-  // lock 0 or 1 as numbers. Anything else is dropped, so a game reads (window.BRB && BRB.params) || {} and nothing more.
+  // mode, at a level, locked or not, in an art style. Only those six keys, values [a-z0-9-]{1,16}; band '1b' or '2'; level 1-30 and
+  // lock 0 or 1 as numbers; style 'ink' or 'pixel'. Anything else is dropped, so a game reads (window.BRB && BRB.params) || {} and nothing more.
   function cleanParams(p) {
     var out = {};
     if (!p || typeof p !== 'object') return out;
     var str = function (v) { if (typeof v === 'number' && isFinite(v)) v = String(v); return typeof v === 'string' && /^[a-z0-9-]{1,16}$/.test(v) ? v : null; };
     // Own properties only: nothing arrives through a prototype (the server sends a plain object; this is belt and braces).
     var own = function (k) { return Object.prototype.hasOwnProperty.call(p, k) ? p[k] : undefined; };
-    var chapter = str(own('chapter')), band = str(own('band')), mode = str(own('mode')), level = str(own('level')), lock = str(own('lock'));
+    var chapter = str(own('chapter')), band = str(own('band')), mode = str(own('mode')), level = str(own('level')), lock = str(own('lock')), style = str(own('style'));
     if (chapter) out.chapter = chapter;
     if (band === '1b' || band === '2') out.band = band;
     if (mode) out.mode = mode;
     if (level && /^[0-9]{1,2}$/.test(level) && +level >= 1 && +level <= 30) out.level = +level;
     if (lock === '0' || lock === '1') out.lock = +lock;
+    if (style === 'ink' || style === 'pixel') out.style = style;   // the art style (an Oomba Kit game with a pixel look)
     return out;
   } /* end cleanParams */
   var BRB = {

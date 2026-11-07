@@ -3,11 +3,11 @@
 The content of Oomba Academy's cybersecurity and online-safety course (grades 3-5 = band **1b**, "Explorer";
 grades 6-8 = band **2**, "Pro"), set in Pim the owl's Netville post office. It is a standalone course beside
 CS Quest: it reuses CS Quest's student-course machinery (`server/services/courses.js`), its deck format, its
-check rules (three questions, pass 2 of 3) and its games (Packet Post, Would You Rather), but none of its
+check rules (three questions, pass 2 of 3) and its game Packet Post, but none of its
 content files. Its own games carry the trick, chat and kindness units: Trick Inbox rounds (`chapter=<set>&band=..&lock=1`)
 and Escape the Post Office practice locks (`chapter=<lock id>&band=..&lock=1` opens one lock alone; `chapter=escape` is
-the whole room). Packet Post keeps the network, key and cipher units (1-2); Would You Rather is locked to its online
-topic (`topic=online&lock=1`). Everything in this folder is data. Lesson text is English and shows verbatim in every UI
+the whole room). Packet Post keeps the network, key and cipher units (1-2); the privacy, sharing and rules steps play the
+scored Trick Inbox sets Key Keepers, Private Facts, Ask First and Rule Breakers (no step opens Would You Rather). Everything in this folder is data. Lesson text is English and shows verbatim in every UI
 language; only the chrome around it is translated (`courses.*` keys). US spelling throughout.
 
 | File | What |
@@ -26,15 +26,15 @@ Checked by `node --test tests/unit/cyber-defenders-course-content.test.js` and
 - 20 steps per band (0.1, 1.1-6.4), in `units.json` order; a deck for every step and nothing else in
   `course/<band>`.
 - A deck's game module is exactly the one `units.json` names for that band (a Packet Post chapter, a Trick
-  Inbox set or an escape-room lock with canonical params, or Would You Rather locked to "Online: share or keep"),
+  Inbox set or an escape-room lock with canonical params),
   and its mission slide names the game and the chapter as the game shows them. Units 1-2 play Packet Post
-  (except 1.3, Escape's Lock 1: Sorting Gate; 2.2, Trick Inbox's Prize Letters; and 2.3, Escape's Lock 2: Sealed
-  Note), units 4-6 the course's own games (except Explorer 4.1, Packet Post's own Spot the Trick cards, which chain
-  into its 3 Secret Messages puzzles), and steps 4.3, 5.1 and 5.2 open three different modules. Neighboring steps
+  (except 1.3, Escape's Lock 1: Sorting Gate; 2.2, Trick Inbox's Key Keepers; and 2.3, Escape's Lock 2: Sealed
+  Note), units 4-6 the course's own games (Explorer 4.1 plays Trick Inbox's Prize Letters, so no cipher puzzles are
+  tacked onto spotting tricks), and steps 4.3, 5.1 and 5.2 open three different modules. Neighboring steps
   never open the same module, and never two cipher-wheel games (Secret Messages, Sealed Note) back to back.
   No step replays work an earlier step already required: not its chapter, not the chapter Packet Post chains
-  into at the end (Break It Up into Many Roads, Rules of the Road into Many Roads, Explorer's Spot the Trick into
-  Secret Messages, Pro's Secret Messages into Spot the Trick), and not an escape lock (no lock is a band's module twice; the finale plays the whole escape).
+  into at the end (Break It Up into Many Roads, Rules of the Road into Many Roads, Pro's Secret Messages into
+  Spot the Trick), and not an escape lock (no lock is a band's module twice; the finale plays the whole escape).
 - A slide is pictured only when the capture shows what the slide teaches, and its tour cues name what is on it;
   otherwise it draws a diagram of the exact idea (`visual`, one of the engine's drawn types, with a tour), or its
   topic art (`art`) with no picture and no tour.

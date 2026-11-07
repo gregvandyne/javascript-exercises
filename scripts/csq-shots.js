@@ -57,7 +57,6 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 const SHOTS = [
   // ---- 1.1 Sequences, Explorer (chapter sequences, levels seq-1..seq-6)
   { key: 'sequences-1b-key', chapter: 'sequences', band: '1b', level: 1 },
-  { key: 'sequences-1b-program-order', chapter: 'sequences', band: '1b', level: 1, program: 'move; move; move; move' },
   { key: 'sequences-1b-turn-then-move', chapter: 'sequences', band: '1b', level: 5, program: 'right; move; move; move; move; left; move; move; move' },
   { key: 'sequences-1b-turn-in-place', chapter: 'sequences', band: '1b', level: 2, program: 'move; move; move; move; left; move; move', steps: 5 },
   { key: 'sequences-1b-better-route', chapter: 'best-route', band: '1b', level: 1, route: 0 },
@@ -67,7 +66,6 @@ const SHOTS = [
   { key: 'sequences-2-plan-to-blocks', chapter: 'sequences', band: '2', level: 3, program: 'move; move; move; move; pick; move; left; move; move; move; move; move; pick; left; move; move; move; left; move; move; move' },
   { key: 'sequences-2-compare-routes', chapter: 'sequences', band: '2', level: 5 },
   // ---- 1.2 Loops, Explorer (loop-1..loop-7)
-  { key: 'loops-1b-five-moves', chapter: 'loops', band: '1b', level: 1, program: 'move; move; move; move; move' },
   { key: 'loops-1b-repeat-bracket', chapter: 'loops', band: '1b', level: 1, program: 'repeat 5 { move }' },
   { key: 'loops-1b-repeat-number', chapter: 'loops', band: '1b', level: 3, program: 'repeat 2 { move; move; pick }; move' },
   { key: 'loops-1b-turn-inside', chapter: 'loops', band: '1b', level: 1, program: 'repeat 5 { right }' },
@@ -94,14 +92,10 @@ const SHOTS = [
   { key: 'variables-1b-set-change', chapter: 'variables', band: '1b', level: 3, program: 'set steps 4; repeat 4 { change steps -1; move }; move', steps: 5 },
   { key: 'variables-1b-counting-gems', chapter: 'variables', band: '1b', level: 1, program: 'set count 0; repeat 5 { move; pick; change count 1 }; right; move; move', steps: 7 },
   // ---- 1.4 Variables, Pro (var-1 pro, var-2, var-3 pro, var-4p..var-6p)
-  { key: 'variables-2-key', chapter: 'variables', band: '2', level: 6 },
-  { key: 'variables-2-names', chapter: 'variables', band: '2', level: 1, program: 'set count 0; repeat 7 { move; pick; change count 1 }; right; move; move' },
-  { key: 'variables-2-types', chapter: 'variables', band: '2', level: 4, program: 'set hasKey off; repeat until goal { if pickup { pick; set hasKey on }; if path { move } else { right } }', steps: 10 },
   { key: 'variables-2-watch-value', chapter: 'variables', band: '2', level: 3, program: 'set steps 6; repeat 6 { change steps -1; move }; move', steps: 5 },
   // ---- 1.5 Functions, Explorer (fn-1..fn-6; starters load on their own where a shot has no program)
   { key: 'functions-1b-key', chapter: 'functions', band: '1b', level: 1, clear: true },
   { key: 'functions-1b-my-block', chapter: 'functions', band: '1b', level: 1, program: 'proc Stair { move; pick; right; move; left }' },
-  { key: 'functions-1b-three-stairs', chapter: 'functions', band: '1b', level: 1, program: 'proc Stair { move; pick; right; move; left }; call Stair; call Stair; call Stair' },
   { key: 'functions-1b-defined-not-called', chapter: 'functions', band: '1b', level: 2, program: 'proc Side { move; move; move; right }' },
   { key: 'functions-1b-remix-credit', chapter: 'functions', band: '1b', level: 4 },
   // ---- 1.5 Functions, Pro (fn-1 pro, fn-2 pro, fn-3p..fn-7p)

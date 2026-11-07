@@ -22,31 +22,25 @@
     "fingerprint: something you are",
     "know + have beats know + know"
    ],
-   "img": "csq/packet-post/locks-2-pass",
-   "alt": "The Pro mailbox key builder: a passphrase made of chosen words, different from every other account key.",
-   "view": [
-    5.2,
-    15.9,
-    86.2,
-    76.6
-   ],
+   "img": "csq/packet-post/locks-2-pass-n",
+   "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "Something you know: the passphrase you build here",
      "box": [
-      8.2,
-      57.7,
-      44.8,
-      6.0
+      3,
+      50,
+      94,
+      17
      ]
     },
     {
-     "cue": "Words nobody could guess about you",
+     "cue": "Words nobody could guess about you: hundreds of years",
      "box": [
-      54.0,
-      38.0,
-      34.4,
-      32.4
+      8,
+      83,
+      84,
+      10
      ]
     }
    ]
@@ -63,8 +57,8 @@
    "img": "csq/packet-post/locks-1b-protect",
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
    "view": [
-    0.0,
-    0.0,
+    0,
+    0,
     92.6,
     76.2
    ],

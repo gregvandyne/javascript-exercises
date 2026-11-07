@@ -7,7 +7,15 @@
 //   lines   pairs of lines side by side: parallel (with matching arrow marks), perpendicular (with the square
 //           corner marked), or just crossing (6.3);
 //   chart   a bar chart with a numbered scale and gridlines, each bar named under it and counted on top (7.1);
-//   table   a small table, a timetable, with one row picked out (5.2).
+//   table   a small table, a timetable, with one row picked out (5.2);
+//   letters big letters in panels, each with its fold line dashed down the middle where it has one (6.3);
+//   spinner a real spinner: a circle cut into equal parts, some shaded red, with its pointer (7.3);
+//   build   digit cards apart, then joined into the number they build (1.1);
+//   tally   a survey's tally (CS Quest 3.3): one row per answer, its marks in fives (four lines, one across), its count;
+//   swap    two tiles swapped, an arrow, then the same tiles back in order (0.1);
+//   split   a whole bar over the same amount split into parts, each part named under it (3.1, 7.4);
+//   ladder  words stacked from most likely to least, with the direction marked (7.3).
+// The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
 // Every text size is 3.4 units or more: about 12 px on a 390 px phone.
@@ -160,8 +168,146 @@ function tableSvg(v) {
 }
 const tableExtent = v => { const g = tableGeo(v); return [v.label ? tTop(6.5, capFs(v.label)) : g.top, g.bottom]; };
 
-const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg };
-const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent };
+// ---------------------------------------------------------------------------------------------- letters
+/** Panels of big letters across 9-91 (band y 8-38), each named under it at y 45; `fold` draws its line of
+ *  symmetry dashed straight down the middle. */
+function lettersSvg(v) {
+  // across 9-91, not 6-94: a step's badge can sit outside the first and last panels without leaving the frame
+  const n = v.items.length, cw = 82 / n;
+  return v.items.map((it, i) => {
+    const cx = 9 + cw * (i + 0.5);
+    let s = `<rect x="${r2(9 + cw * i + 1.5)}" y="8" width="${r2(cw - 3)}" height="30" rx="1.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.5"/>`;
+    s += tx(cx, 32.5, it.ch, 24, 'middle', 800, it.fold ? INK : '#8A8577');
+    if (it.fold) s += `<line x1="${r2(cx)}" y1="10" x2="${r2(cx)}" y2="36" stroke="${LEAF}" stroke-width="0.8" stroke-dasharray="2 1.4"/>`;
+    return s + tx(cx, 45, it.name, Math.min(3.8, (cw - 4) / (String(it.name).length * 0.56)), 'middle', 800, it.fold ? LEAF : INK);
+  }).join('');
+}
+const lettersExtent = () => [8, tBot(45, 3.8)];
+
+// ---------------------------------------------------------------------------------------------- spinner
+const SPIN = { cx: 50, cy: 25, r: 16.5 };
+/** One part of the spinner (part k of n, clockwise from the top) as an SVG path. */
+const sector = (k, n) => {
+  const a0 = -Math.PI / 2 + k * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n, { cx, cy, r } = SPIN;
+  return `M${cx} ${cy} L${r2(cx + r * Math.cos(a0))} ${r2(cy + r * Math.sin(a0))} A${r} ${r} 0 ${n === 1 ? 1 : 0} 1 ${r2(cx + r * Math.cos(a1))} ${r2(cy + r * Math.sin(a1))} Z`;
+};
+function spinnerSvg(v) {
+  const { cx, cy, r } = SPIN;
+  let s = '';
+  for (let k = 0; k < v.parts; k++) s += `<path d="${sector(k, v.parts)}" fill="${k < v.shaded ? '#E9465C' : '#FFFFFF'}" stroke="${INK}" stroke-width="0.6" stroke-linejoin="round"/>`;
+  // the pointer, resting in a white part (a picture of the spinner, not of a spin's result)
+  const ap = -Math.PI / 2 + (v.shaded + 0.5 + Math.floor((v.parts - v.shaded) / 2)) * 2 * Math.PI / v.parts;
+  s += `<line x1="${cx}" y1="${cy}" x2="${r2(cx + r * 0.72 * Math.cos(ap))}" y2="${r2(cy + r * 0.72 * Math.sin(ap))}" stroke="${INK}" stroke-width="1.2" stroke-linecap="round"/>`
+    + head(cx + r * 0.78 * Math.cos(ap), cy + r * 0.78 * Math.sin(ap), Math.cos(ap), Math.sin(ap), INK, 2.4)
+    + `<circle cx="${cx}" cy="${cy}" r="1.6" fill="#FFD23F" stroke="${INK}" stroke-width="0.6"/>`;
+  if (v.left) s += tx(cx - r - 4, cy + 1.3, v.left, 3.8, 'end', 800);
+  if (v.right) s += tx(cx + r + 4, cy + 1.3, v.right, 3.8, 'start', 800, '#C2431F');
+  return s;
+}
+const spinnerExtent = () => [SPIN.cy - SPIN.r, SPIN.cy + SPIN.r];
+
+// ---------------------------------------------------------------------------------------------- build
+/** Digit cards apart on top (y 8-22), an arrow, then the same digits joined into one number (y 32-48). */
+function buildSvg(v) {
+  const n = v.digits.length, w = 12, gap = 7, top0 = 50 - (n * w + (n - 1) * gap) / 2, bot0 = 50 - (n * w) / 2;
+  let s = '';
+  v.digits.forEach((d, i) => {
+    const x = top0 + i * (w + gap);
+    s += `<rect x="${r2(x)}" y="8" width="${w}" height="14" rx="1.8" fill="#FFFFFF" stroke="${INK}" stroke-width="0.7"/>` + tx(x + w / 2, 18.6, d, 9);
+  });
+  s += `<line x1="50" y1="24.5" x2="50" y2="29" stroke="${LEAF}" stroke-width="1"/>` + head(50, 31, 0, 1, LEAF, 2);
+  s += `<rect x="${r2(bot0)}" y="33" width="${n * w}" height="14" rx="1.8" fill="${TONES[0]}" stroke="${INK}" stroke-width="0.8"/>`;
+  v.digits.forEach((d, i) => {
+    const x = bot0 + i * w;
+    if (i) s += `<line x1="${r2(x)}" y1="33" x2="${r2(x)}" y2="47" stroke="${INK}" stroke-width="0.3" stroke-opacity="0.35"/>`;
+    s += tx(x + w / 2, 43.6, d, 9);
+  });
+  if (v.number) s += tx(bot0 + n * w + 3, 42.2, '= ' + v.number, 4.2, 'start', 800, LEAF);
+  return s;
+}
+const buildExtent = () => [8, 47];
+
+// ---------------------------------------------------------------------------------------------- tally
+/** Rows from y 13 (9.4 apart): the answer at x 8, its marks from x 30 (groups of five 11 units apart, a stroke every
+ *  1.9), and the count at x 90. The caption sits above at 6.5. */
+const tallyGeo = v => ({ top: 13, rh: 9.4, bottom: 13 + 9.4 * v.rows.length });
+function tallySvg(v) {
+  const g = tallyGeo(v);
+  let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
+  v.rows.forEach((r, i) => {
+    const y = g.top + i * g.rh, mid = y + g.rh / 2;
+    s += `<rect x="6" y="${r2(y)}" width="88" height="${g.rh}" fill="${i % 2 ? '#FFFFFF' : '#F3F0E2'}" stroke="${LINE}" stroke-width="0.3"/>`;
+    s += tx(8, mid + 1.35, r.label, 3.8, 'start', 800);
+    for (let k = 0; k < r.n; k++) {
+      const grp = Math.floor(k / 5), j = k % 5, x0 = 30 + grp * 11;
+      if (j < 4) { const x = x0 + j * 1.9; s += `<line x1="${r2(x)}" y1="${r2(mid - 3)}" x2="${r2(x)}" y2="${r2(mid + 3)}" stroke="${INK}" stroke-width="0.7" stroke-linecap="round"/>`; }
+      else s += `<line x1="${r2(x0 - 1.2)}" y1="${r2(mid + 2.4)}" x2="${r2(x0 + 6.9)}" y2="${r2(mid - 2.4)}" stroke="${LEAF}" stroke-width="0.8" stroke-linecap="round"/>`;
+    }
+    s += tx(90, mid + 1.35, String(r.n), 3.8, 'end', 800, LEAF);
+  });
+  return s;
+}
+const tallyExtent = v => { const g = tallyGeo(v); return [v.label ? tTop(6.5, capFs(v.label)) : g.top, g.bottom]; };
+
+// ---------------------------------------------------------------------------------------------- swap
+const SW = { w: 12, gap: 2, y: 14, h: 15, arrow: 14 };
+function swapGeo(v) {
+  const grp = n => n * SW.w + (n - 1) * SW.gap, total = grp(v.before.length) + SW.arrow + grp(v.after.length);
+  const x0 = 50 - total / 2, x1 = x0 + grp(v.before.length) + SW.arrow;
+  return { x0, x1, grp };
+}
+function swapSvg(v) {
+  const g = swapGeo(v), RED = '#C2431F';
+  const tile = (x, t, bad) => `<rect x="${r2(x)}" y="${SW.y}" width="${SW.w}" height="${SW.h}" rx="1.8" fill="${bad ? '#FFE1D6' : '#FFFFFF'}" stroke="${bad ? RED : INK}" stroke-width="${bad ? 1 : 0.7}"${bad ? ' stroke-dasharray="2 1.4"' : ''}/>` + tx(x + SW.w / 2, SW.y + 10.5, t, 9);
+  let s = v.before.map((t, i) => tile(g.x0 + i * (SW.w + SW.gap), t, v.mark.includes(i))).join('');
+  const marked = v.mark.map(i => g.x0 + i * (SW.w + SW.gap) + SW.w / 2);
+  s += tx((Math.min(...marked) + Math.max(...marked)) / 2, SW.y + SW.h + 6.5, v.badName || 'swapped!', 4.2, 'middle', 800, RED);
+  const ax = g.x0 + g.grp(v.before.length) + 2, ay = SW.y + SW.h / 2;
+  s += `<line x1="${r2(ax)}" y1="${ay}" x2="${r2(ax + SW.arrow - 6)}" y2="${ay}" stroke="${LEAF}" stroke-width="1.1"/>` + head(ax + SW.arrow - 4, ay, 1, 0, LEAF, 2.2);
+  s += v.after.map((t, i) => tile(g.x1 + i * (SW.w + SW.gap), t, false)).join('');
+  s += tx(g.x1 + g.grp(v.after.length) / 2, SW.y + SW.h + 6.5, v.goodName || 'back in order', 4.2, 'middle', 800, LEAF);
+  return s;
+}
+const swapExtent = () => [SW.y, tBot(SW.y + SW.h + 6.5, 4.2)];
+
+// ---------------------------------------------------------------------------------------------- split
+/** A whole bar (y 8-17, its name inside) over the same amount split into parts (y 22-31), each part's name under
+ *  it at 4.2 units; a part too narrow for its name has it right-aligned to the bar's end, under its own part. */
+function splitSvg(v) {
+  let s = '';
+  if (v.whole) s += `<rect x="6" y="8" width="88" height="9" fill="${TONES[2]}" stroke="${INK}" stroke-width="0.6"/>` + tx(50, 14.2, v.whole, 4.2);
+  let x = 6;
+  v.parts.forEach((p, i) => {
+    const w = p.w * 88;
+    s += `<rect x="${r2(x)}" y="22" width="${r2(w)}" height="9" fill="${TONES[(p.tone ?? i) % TONES.length]}" stroke="${INK}" stroke-width="0.6"/>`;
+    const need = String(p.label).length * 0.56 * 4.2;
+    s += need + 2 <= w ? tx(x + w / 2, 37.5, p.label, 4.2) : tx(x + w, 37.5, p.label, 4.2, 'end');
+    s += `<line x1="${r2(x + w / 2)}" y1="31" x2="${r2(x + w / 2)}" y2="33.2" stroke="${INK}" stroke-width="0.5"/>`;
+    x += w;
+  });
+  return s;
+}
+const splitExtent = v => [v.whole ? 8 : 22, tBot(37.5, 4.2)];
+
+// ---------------------------------------------------------------------------------------------- ladder
+/** Words stacked as chips from the top (most) to the bottom (least), with an arrow beside them naming the
+ *  direction: a scale, not a strip, so a long word ("impossible", "even chance") keeps a phone-sized chip. */
+const LAD = { x: 34, w: 44, h: 7.2, step: 9, y: 6 };
+function ladderSvg(v) {
+  let s = '';
+  v.words.forEach((w, i) => {
+    const y = LAD.y + i * LAD.step;
+    s += `<rect x="${LAD.x}" y="${r2(y)}" width="${LAD.w}" height="${LAD.h}" rx="3.6" fill="${TONES[i % TONES.length]}" stroke="${INK}" stroke-width="0.6"/>` + tx(LAD.x + LAD.w / 2, y + 5.1, w, 4.2);
+  });
+  const top = LAD.y + 1, bot = LAD.y + (v.words.length - 1) * LAD.step + LAD.h - 1, ax = LAD.x - 6;
+  s += `<line x1="${ax}" y1="${r2(bot)}" x2="${ax}" y2="${r2(top + 2)}" stroke="${LEAF}" stroke-width="1"/>` + head(ax, top, 0, -1, LEAF, 2.2);
+  s += tx(ax - 2, top + 3.2, v.up || 'more likely', 4.0, 'end', 800, LEAF) + tx(ax - 2, bot, v.down || 'less likely', 4.0, 'end', 800, LEAF);
+  return s;
+}
+const ladderExtent = v => [LAD.y, LAD.y + (v.words.length - 1) * LAD.step + LAD.h + 0.4];
+
+const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg };
+const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent };
 /** The SVG body of one of these diagrams (a string of SVG elements in the 100 x 56.25 space). */
 export const diagramSvg = v => SVG[v.type](v);
 /** Where it sits top to bottom: [a, b] in the 100 x 56.25 space. */

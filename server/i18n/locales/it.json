@@ -3866,7 +3866,7 @@
       "packetPost": "Invia pacchetti in rete, scegli passphrase robuste e riconosci i trucchi online.",
       "insideTheMachine": "Monta e ripara computer: componenti, input e output, bit e pixel, design per tutti.",
       "tugOfMath": "Domande di matematica scelte per ogni classe dalla 1 alla 8, dalle addizioni entro il 20 alle equazioni, in un tiro alla fune. Contro il computer o un amico sullo stesso schermo.",
-      "doodleHoot": "Disegna una parola per gli altri o componi la loro con le tessere delle lettere. Parole facili, medie o difficili in 13 lingue, dal vivo con famiglia e amici o su un dispositivo.",
+      "doodleHoot": "Disegna una parola per gli altri o indovina la loro mentre disegnano: scrivila, dilla a voce o usa le tessere delle lettere. Parole facili, medie o difficili in 13 lingue, dal vivo con famiglia e amici o su un dispositivo.",
       "remisQuietMeadow": "Un misuratore di rumore per la classe: restate calmi così Remi, il panda rosso, può dormire, e contate insieme il tempo di silenzio."
     },
     "hubs": {
@@ -4088,7 +4088,7 @@
           "beatLanes": "Toccare a tempo su canzoni che conoscono, a cominciare da Brilla brilla la stellina.",
           "munchMaze": "Un inseguimento nel labirinto con una modalità Facile: pianificare un percorso e mangiare tutti i puntini.",
           "tugOfMath": "Scegli la classe 2 o 3: addizioni, sottrazioni e tabelline, con il computer su Facile finché non lo battono.",
-          "doodleHoot": "Parole da disegnare e tessere delle lettere: l’ortografia come un gioco di società."
+          "doodleHoot": "Parole illustrate da indovinare e scrivere: ortografia come in un gioco di società."
         },
         "faq": {
           "q2": "I giochi sono troppo difficili per un bambino di 8 anni?",
@@ -4637,7 +4637,7 @@
       "tug": "Tug of Math (Dal vivo)",
       "tugText": "La classe si divide in due squadre. Ognuno risponde a domande di matematica della sua classe sul proprio tastierino, e ogni risposta giusta tira la fune.",
       "doodle": "Doodle Hoot (Dal vivo)",
-      "doodleText": "Un giocatore disegna, gli altri compongono la parola con le tessere delle lettere. Per famiglia o amici, ovunque siano, ognuno sul proprio dispositivo."
+      "doodleText": "Un giocatore disegna mentre gli altri indovinano: scrivendo, a voce o con le tessere delle lettere. Per la famiglia o gli amici, ovunque siano, ognuno sul proprio dispositivo."
     },
     "starter": {
       "title": {
@@ -5441,7 +5441,10 @@
       "roundsList": "1 giro (ognuno disegna una volta)|2 giri|3 giri",
       "secs": "Tempo per disegnare",
       "secsN": "{n} secondi",
-      "hint": "Tutti disegnano a turno. I giocatori entrano con il codice dal proprio dispositivo, ovunque siano. Nessuno scrive: si indovina con le tessere delle lettere e non c’è chat.",
+      "hint": "Ognuno disegna a turno mentre gli altri indovinano. I giocatori entrano con il codice dal proprio dispositivo, ovunque siano. Quello che si scrive arriva solo al gioco: chi disegna vede una risposta solo se è una delle parole del gioco, e non c’è chat.",
+      "guess": "Come si indovina",
+      "guessType": "Scrivendo con la tastiera",
+      "guessTiles": "Tessere delle lettere (più facile)",
       "bigRoom": "Un gruppo grande? Basta un giro: ognuno disegna una volta.",
       "play": "Esercitati o gioca su un dispositivo"
     },
@@ -5572,7 +5575,7 @@
       },
       "doodle": {
         "h": "Doodle Hoot (Dal vivo)",
-        "p": "Un giocatore disegna, gli altri compongono la parola con le tessere delle lettere: ortografia e lessico in 13 lingue. Ideale per piccoli gruppi (fino a 16); puoi cancellare un disegno o saltare un turno quando vuoi."
+        "p": "Un giocatore disegna mentre gli altri indovinano, scrivendo o a voce (o con le tessere delle lettere per i più piccoli): ortografia e vocabolario in 13 lingue. Ideale per piccoli gruppi (fino a 16); puoi cancellare un disegno o saltare un turno in qualsiasi momento."
       },
       "tug": {
         "h": "Tug of Math (Dal vivo)",
@@ -6041,6 +6044,10 @@
       "locked": "Bloccato",
       "preview": "Anteprima",
       "lockedNote": "Quel passo è ancora bloccato. Prima finisci il passo {n}:",
+      "stamps": "I tuoi timbri",
+      "stampsCount": "{n} timbri su {total}",
+      "stampEarned": "Timbro guadagnato",
+      "stampToEarn": "Finisci questa unità per guadagnarlo",
       "unit": "Unità {n}",
       "units": "Unità {from}–{to}",
       "build": {
@@ -6073,6 +6080,7 @@
     "check": {
       "h": "Mini quiz",
       "intro": "Tre domande. Con due risposte giuste si apre il modulo di gioco.",
+      "introTalk": "Tre domande. Con due risposte giuste finisci questo passo.",
       "q": "Domanda {n} di {total}",
       "send": "Controlla le risposte",
       "done": "Quiz superato",

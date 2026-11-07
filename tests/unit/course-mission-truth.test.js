@@ -15,7 +15,7 @@ const C = await import('../../server/services/courses.js');
 // Chapter sizes [Explorer, Pro] counted from the games' level data (seed-games/*.html) on 2026-11-05.
 const SIZE = {
   'robo-route': { sequences: [6, 6], loops: [7, 8], conditionals: [7, 7], variables: [6, 6], functions: [6, 7], debug: [7, 7], 'best-route': [5, 5], 'level-maker': [3, 3] },
-  'packet-post': { packets: [5, 5], routes: [4, 6], protocols: [2, 6], locks: [6, 7], tricks: [6, 10], ciphers: [3, 7] },
+  'packet-post': { packets: [5, 5], routes: [4, 6], protocols: [3, 6], locks: [6, 7], tricks: [6, 10], ciphers: [3, 7] },
   'data-detective': { sort: [6, 6], chart: [5, 5], claims: [6, 6], cleanup: [6, 6], models: [5, 5], fair: [4, 4], 'my-data': [3, 3] },
   'inside-the-machine': { parts: [6, 6], 'hw-sw': [5, 5], fixit: [7, 7], bits: [5, 7], gadget: [5, 5], 'design-lab': [3, 5] },
 };
@@ -26,7 +26,6 @@ const CHAIN_PHRASE = {
   'cs-quest 2 4.1': 'two Many Roads levels',
   'cs-quest 2 4.3': 'the 4 trick cards',
   'cyber-defenders 1b 1.1': 'all 4 levels of Many Roads',
-  'cyber-defenders 1b 4.1': 'Secret Messages: solve its 3 puzzles',
   'cyber-defenders 2 1.1': 'the 2 Many Roads levels',
 };
 // Steps whose game chapter was already required in full by an earlier step: the mission must say the
@@ -84,7 +83,8 @@ test('chained Packet Post chapters are named in the mission with their true size
 test('every quick-check item in the audited units carries a why, and a miss returns it', () => {
   const audited = {
     'cs-quest': ['0.1', '1.1', '1.2', '1.3', '1.4', '1.5', '2.1', '2.2', '3.1', '3.2', '3.3'],
-    'cyber-defenders': ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3'],
+    // Cyber Defenders: every step since the 2026-11-07 pass (units 3-6 got their whys too)
+    'cyber-defenders': ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '6.4'],
   };
   let checked = 0;
   for (const { course, band, deck: d } of ALL) {
@@ -100,7 +100,7 @@ test('every quick-check item in the audited units carries a why, and a miss retu
       checked++;
     }
   }
-  assert.equal(checked, 108, 'the audited units hold 108 deck-check items');
+  assert.equal(checked, 186, 'the audited units hold 186 deck-check items');
 });
 
 // Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).

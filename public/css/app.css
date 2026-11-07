@@ -428,6 +428,8 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen{top:0}
+/* an on-screen keyboard up (public/js/play.js): the stage fits the part of the page still visible */
+body.playmode.kb-up .stage{top:calc(52px + var(--vvt,0px));bottom:auto;height:calc(var(--vvh,100dvh) - 52px)}
 /* The playbar's back link again, inside the stage: fullscreen paints only the stage's subtree, so the playbar
    never shows there. Shown only in fullscreen, over the game's top-start corner, in the playbar's own colours. */
 .fsback{display:none}
@@ -1083,6 +1085,15 @@ ol.steps li{margin-bottom:var(--s2)}
 .cmap-gh{display:flex;align-items:center;gap:12px}
 .cmap-gh h3{margin:0;font-size:1.25rem}
 .cmap-gh p{margin:0}
+/* A unit's stamp (Cyber Defenders' Defender stamps): a postage-stamp chip, dashed and faded until the unit is done */
+.cstamp{display:inline-flex;align-items:center;gap:6px;margin-left:auto;flex:none;padding:4px 10px;border-radius:8px;border:2px dashed var(--line);color:var(--muted);font-weight:700;font-size:.92rem;line-height:1.2;background:var(--card)}
+.cstamp.is-earned{border-style:solid;border-color:var(--spark);background:var(--spark-soft);color:var(--text)}
+.cstamp-i{font-size:1.05rem}
+.cstamp-s{margin:0;font-size:.85rem;padding:3px 8px}
+.cstamps{display:grid;gap:6px}
+.cstamps-h{margin:0}
+.cstamps-l{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.cstamps-l a{text-decoration:none;color:inherit}
 .cmap-cover{width:56px;flex:none}
 .cmap-cover .coverart{aspect-ratio:1;border-radius:14px}
 .cmap-cover-e{height:56px;display:grid;place-items:center;font-size:1.8rem;border-radius:14px;background:var(--spark-soft)}

@@ -10,27 +10,55 @@
    "title": "Messages in packets",
    "text": "Every message on the internet is cut into numbered packets. They travel through routers and are rebuilt at the other end.",
    "art": "envelope",
-   "img": "csq/packet-post/protocols-2-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+   "img": "csq/packet-post/protocols-2-trip-n",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
+   "focus": [
+    {
+     "cue": "Five numbered packets, two lost on the way",
+     "box": [
+      14.1,
+      2,
+      81.1,
+      28.1
+     ]
+    },
+    {
+     "cue": "Arrived packets go in their numbered slots",
+     "box": [
+      3.8,
+      34.2,
+      21.7,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "Rules everyone follows",
    "text": "A protocol is a set of rules every computer on the network agrees on. Without the same rules everywhere, a packet could not be passed on or rebuilt.",
    "art": "network",
-   "img": "csq/packet-post/protocols-2-rules",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "A second protocol level: every router on the road follows the same rules, or no packet could be passed on."
+   "img": "csq/packet-post/protocols-2-design",
+   "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
+   "focus": [
+    {
+     "cue": "Three things go wrong on this road",
+     "box": [
+      2.9,
+      3.1,
+      94.3,
+      37.7
+     ]
+    },
+    {
+     "cue": "A rule set every computer follows catches them",
+     "box": [
+      2.9,
+      44.2,
+      94.3,
+      52.5
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -41,43 +69,86 @@
     "got 1",
     "got 2",
     "got 4",
-    "please send 3 again",
-    "got 3"
+    "please send 3 and 5 again",
+    "got 3",
+    "got 5"
    ],
-   "img": "csq/packet-post/protocols-2-ack",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "The delivery is under way: packets have been sent and the receiver is saying got it, watching for a gap."
+   "img": "csq/packet-post/protocols-2-ack-n",
+   "alt": "Got 1, 2, 3 and 4: four mail slots are ticked, and packet 5, asked for again, is in the inbox.",
+   "focus": [
+    {
+     "cue": "Got it: each arrived packet is ticked",
+     "box": [
+      3.8,
+      34.2,
+      21.7,
+      13.3
+     ]
+    },
+    {
+     "cue": "A missing packet, asked for again, arrives",
+     "box": [
+      3.8,
+      75.2,
+      13.8,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "Damaged on the way?",
    "text": "A checksum is a count sent along with a packet. If the count does not match when it arrives, the packet was damaged, so it is sent again.",
    "art": "magnifier",
-   "img": "csq/packet-post/protocols-2-check",
-   "view": [
-    54.5,
-    25,
-    45,
-    62
-   ],
-   "alt": "A later protocol level on the road: here a damaged packet must be spotted by its count and sent again."
+   "img": "csq/packet-post/protocols-2-check-n",
+   "alt": "Every packet carries a dot count. Count the dots: a packet whose dots do not match what it says was damaged.",
+   "focus": [
+    {
+     "cue": "Each packet says how many dots it carries",
+     "box": [
+      14.1,
+      16.4,
+      78.8,
+      36.1
+     ]
+    },
+    {
+     "cue": "Count them: a mismatch means damage",
+     "box": [
+      23.8,
+      84.6,
+      51.3,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "Hops",
    "text": "Each jump from one router to the next is a hop. If a router is busy, pick another path that still fits the hop budget.",
    "art": "map",
-   "img": "csq/packet-post/routes-2-hops",
-   "view": [
-    6.5,
-    30,
-    48,
-    62
-   ],
-   "alt": "Many Roads in Pro: the map counts hops, and a busy router means picking another path inside the budget."
+   "img": "csq/packet-post/routes-2-budget-n",
+   "alt": "Hop budget: thirteen hops for four packets. Packet 2 of 4 is on the road, and the counter reads Hops: 3 of 13.",
+   "focus": [
+    {
+     "cue": "The hop budget: 13 hops for 4 packets",
+     "box": [
+      14.1,
+      44.4,
+      76.2,
+      28
+     ]
+    },
+    {
+     "cue": "Hops used so far: 3 of 13",
+     "box": [
+      46.3,
+      79.9,
+      26,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -108,14 +179,28 @@
    "title": "Your mission",
    "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then two Many Roads levels with a hop budget.",
    "art": "trophy",
-   "img": "csq/packet-post/protocols-2-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
+   "img": "csq/packet-post/protocols-2-trip-n",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
+   "focus": [
+    {
+     "cue": "Get every packet through",
+     "box": [
+      14.1,
+      2,
+      81.1,
+      28.1
+     ]
+    },
+    {
+     "cue": "Watch the slots fill",
+     "box": [
+      3.8,
+      34.2,
+      21.7,
+      13.3
+     ]
+    }
+   ]
   }
  ],
  "check": [

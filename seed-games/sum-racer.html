@@ -269,6 +269,53 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .resPanel #againBtn.ok-quiet{background:#39A9F5;--ok-press:#1F78B8}
 .resPanel #nextBtn.ok-quiet{background:#2EC27E;--ok-press:#1A8A57}
 .ok-rm .resFinish{animation:none}
+/* ---------- Pixel style (?style=pixel; html.sr-pixel once the pixel art is ready). The same screens, in the kit's
+   pixel skin: square boxes with stepped corners (clip-path, one --u pixel), hard Ink lips instead of soft shadows, no
+   gradients, the pixel font (words: Pixelify Sans; numbers: the kit's pixel digits, so 5 never reads as S). Sizes,
+   layout and touch targets are the Ink look's. ---------- */
+.sr-pixel .sr,.sr-pixel .ok-title-screen{--u:var(--sr-u,3px);--cut:polygon(0 var(--u),var(--u) var(--u),var(--u) 0,calc(100% - var(--u)) 0,calc(100% - var(--u)) var(--u),100% var(--u),100% calc(100% - var(--u) + var(--lip,0px)),calc(100% - var(--u)) calc(100% - var(--u) + var(--lip,0px)),calc(100% - var(--u)) calc(100% + var(--lip,0px)),var(--u) calc(100% + var(--lip,0px)),var(--u) calc(100% - var(--u) + var(--lip,0px)),0 calc(100% - var(--u) + var(--lip,0px)))}
+.sr-pixel .sr canvas{image-rendering:crisp-edges;image-rendering:pixelated}
+/* the pixel fonts unsmoothed where the platform allows it (macOS); sizes snap to their pixel grid in the script */
+.sr-pixel .ok-ui{-webkit-font-smoothing:none;-moz-osx-font-smoothing:auto;font-smooth:never}
+.sr-pixel .sr .qline,.sr-pixel .sr .qbox,.sr-pixel .sr .ans,.sr-pixel .sr .key,.sr-pixel .sr .chip,.sr-pixel .sr .tcard,.sr-pixel .sr .seg,.sr-pixel .sr-tcard,
+.sr-pixel .sr .pickHint,.sr-pixel .sr .resStats,.sr-pixel .sr .resRow,.sr-pixel .sr .tables button,.sr-pixel .signs span,.sr-pixel .sr .tnum,.sr-pixel .sr .tbadge,.sr-pixel .sr .mk{border-radius:0!important;clip-path:var(--cut)}
+.sr-pixel .sr .qpanel{background:#2B1F5C;border-top-width:var(--u)}
+.sr-pixel .race .bar{background:#2B1F5C;border-bottom-width:var(--u)}
+.sr-pixel .race.two .bar{background:linear-gradient(90deg,var(--sr-coral) 50%,var(--sr-sky) 50%)}
+@media (orientation:portrait){.sr-pixel .race.two .bar{background:linear-gradient(180deg,var(--sr-sky) 50%,var(--sr-coral) 50%)}}
+.sr-pixel .sr .qline{--lip:calc(var(--u) * 2);border-width:var(--u);box-shadow:0 calc(var(--u) * 2) 0 #120C2C}
+.sr-pixel .sr .qbox{border-width:var(--u);padding:0 .25em}
+.sr-pixel .sr .qmain{font-weight:700;letter-spacing:.04em}
+.sr-pixel .sr .qlabel{font-weight:600;letter-spacing:.02em}
+.sr-pixel .sr .ans,.sr-pixel .sr .key{--lip:calc(var(--u) * 2);border-width:var(--u);font-weight:700}
+.sr-pixel .sr .choices .ans{box-shadow:inset 0 calc(var(--u) * -2) 0 var(--tile),0 calc(var(--u) * 2) 0 #120C2C}
+.sr-pixel .sr .choices .ans:active{box-shadow:inset 0 calc(var(--u) * -2) 0 var(--tile),0 var(--u) 0 #120C2C;transform:translateY(var(--u))}
+.sr-pixel .sr .choices .ans.isRight,.sr-pixel .sr .choices .ans.isOops,.sr-pixel .sr .key{box-shadow:0 calc(var(--u) * 2) 0 #120C2C}
+.sr-pixel .sr .key:active{box-shadow:0 var(--u) 0 #120C2C;transform:translateY(var(--u))}
+.sr-pixel .sr .ans .n{font-size:.32em;opacity:.55;top:6px}
+.sr-pixel .sr .mk{clip-path:none;border-radius:0!important;border-width:var(--u)}.sr-pixel .sr .ans.isOops .mk{transform:none}.sr-pixel .sr .ans.isOops .mk svg{transform:none}
+/* a right answer punches in two steps, a wrong one shakes by whole pixels (steps, not easing) */
+.sr-pixel .sr .ans.isRight{animation:srPxPunch 240ms steps(2,jump-none)}
+@keyframes srPxPunch{50%{transform:scale(1.08)}}
+.sr-pixel .sr .ans.isOops{animation:srPxNudge 300ms steps(4,jump-none)}
+@keyframes srPxNudge{0%,100%{transform:none}25%{transform:translateX(calc(var(--u) * -2))}75%{transform:translateX(calc(var(--u) * 2))}}
+.sr-pixel .sr .chip{--lip:var(--u);border-width:var(--u);box-shadow:0 var(--u) 0 var(--sr-ink);padding:5px 14px 5px 9px}
+.sr-pixel .sr .tcard{--lip:calc(var(--u) * 2);border-width:var(--u);box-shadow:0 calc(var(--u) * 2) 0 var(--sr-ink)}
+.sr-pixel .sr .tcard:active{transform:translateY(var(--u));box-shadow:0 var(--u) 0 var(--sr-ink)}
+.sr-pixel .sr .tcard canvas{border-bottom-width:var(--u)}
+.sr-pixel .sr .tcard .tnum{border-width:var(--u);clip-path:none;border-radius:0!important}
+.sr-pixel .sr .tcard .tbadge{transform:none;--lip:var(--u);box-shadow:0 var(--u) 0 var(--sr-ink);border-width:var(--u)}
+.sr-pixel .sr .seg{--lip:var(--u);border-width:var(--u);box-shadow:0 var(--u) 0 var(--sr-ink)}
+.sr-pixel .sr .seg button{border-radius:0}.sr-pixel .sr .seg button[aria-pressed="true"]{box-shadow:inset 0 0 0 var(--u) var(--sr-ink)}
+.sr-pixel .sr .pickHint{--lip:var(--u);border-width:var(--u);box-shadow:0 var(--u) 0 var(--sr-ink)}
+.sr-pixel .sr .pickHead h2{-webkit-text-stroke:0;text-shadow:3px 0 0 var(--sr-ink),-3px 0 0 var(--sr-ink),0 3px 0 var(--sr-ink),0 -3px 0 var(--sr-ink),3px 3px 0 var(--sr-ink),-3px 3px 0 var(--sr-ink),3px -3px 0 var(--sr-ink),-3px -3px 0 var(--sr-ink),0 6px 0 var(--sr-ink)}
+.sr-pixel .sr-tcard{--lip:calc(var(--u) * 2);border-width:var(--u);box-shadow:0 calc(var(--u) * 2) 0 var(--sr-ink)}
+.sr-pixel .signs span{-webkit-text-stroke:0;text-shadow:2px 0 0 var(--sr-ink),-2px 0 0 var(--sr-ink),0 2px 0 var(--sr-ink),0 -2px 0 var(--sr-ink),0 4px 0 var(--sr-ink);border-width:var(--u);box-shadow:none}
+.sr-pixel .sr .tables button{border-width:var(--u)}
+.sr-pixel .sr .resStats{border-width:var(--u)}.sr-pixel .sr .resRow{border-width:var(--u)}
+.sr-pixel .sr .resFinish{border-radius:0;rotate:0deg;border-width:var(--u);box-shadow:0 calc(var(--u) * 2) 0 var(--sr-ink)}
+.sr-pixel .sr .resRow canvas{width:40px;height:40px}
+.sr-pixel .ok-rm .sr .ans.isRight,.sr-pixel .ok-rm .sr .ans.isOops{animation:none}
 </style>
 
 <div id="game" class="sr">
@@ -359,15 +406,20 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   </div>
 </template>
 </div>
-<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-zeLmUxnF20GLI7VC6XfgOcb9DiFTxC7mSAc0QTkXllv6zvdzzEFtrAWb6TsmeAIY" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-animals.js" integrity="sha384-GntsshX3KJc7NNGcJsefnPEcYLfY5lHGL5ow+tGUPHbiwbiLKzdYKFp9uciiblsG" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-school.js" integrity="sha384-VQndRmNEoGnNDs6VhEBvG5GpzW0Iwl5NJYE8VU2j403u8b7qeI44NX89zuTbzM21" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-biomes.js" integrity="sha384-7EqxxnUHM57jidVwIEmkW2+6tInN7yNz5FL4U425SDba9aG6E0pxZ4WCVUpMkutY" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/dress.js" integrity="sha384-lGMyixBO/dQI5mVlIYp2m9rQk1Qiejkp7f7tcNxKKlSew+i0VKx3Soojbns6sDRo" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-biomes.js" integrity="sha384-GZIPG24spJUT/m+y7cL2hnMJsfaCw1Re0HwZIS/n9qKpP2PBC6QA9NMl/HZllS5c" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/style-pixel.js" integrity="sha384-gmGUKQplvoPe9/p5mv33fxwfMp5Zj3hIBBoH1kFECaq6OnyMQe9AuSv4FrEtiz5Q" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-pixel.js" integrity="sha384-U8DO/3C9FAhd6nEhZa2vejLv81hHwZMjwDn18z7MMIctLDnn2iyyu8d3xiySdNVa" crossorigin="anonymous"></script>
 <script>
 /* @@PURE-BEGIN: CONFIG + maths + race model. No DOM in here (the Node tests run this block on its own). */
 const CONFIG = {
   title: 'Sum Racer',
+  // The art style: 'ink' (the Oomba Ink look) or 'pixel' (pixel art, kit packs style-pixel + art-pixel). A play link's
+  // ?style=pixel (BRB.params.style) picks it too; anything else, or a missing pack, is Ink.
+  style: 'ink',
   saveKey: 'sum-racer-v1',
   laps: 3,
   race: {
@@ -524,8 +576,10 @@ function genQuestion(track, rng, ctx) {
     case 9: {
       // The Rounding Run: every question is a rounding question — to the nearest ten or the nearest
       // hundred — so a win here is a win at rounding and nothing else.
+      // Never a number that is already round ("Round 600 to the nearest ten" has nothing to round).
       const place = rng() < 0.5 ? 10 : 100;
-      return roundQ(place === 10 ? R(15, 995) : R(105, 9950), place);
+      let n; do n = place === 10 ? R(15, 995) : R(105, 9950); while (n % place === 0);
+      return roundQ(n, place);
     }
     case 8: default: {
       const tables = (ctx.tables && ctx.tables.length) ? ctx.tables : CONFIG.practiceTables;
@@ -535,8 +589,9 @@ function genQuestion(track, rng, ctx) {
   }
 }
 
-/** Is a wrong option believable? Close to the answer (within 4 for small answers, else within 10 or half the answer). */
-function plausible(v, a) { return Number.isInteger(v) && v >= 0 && v !== a && Math.abs(v - a) <= (a <= 10 ? 4 : Math.max(10, Math.round(a * 0.5))); }
+/** Is a wrong option believable? Close to the answer (within 4 for small answers, else within 10 or half the answer),
+ *  and never 0 unless the answer itself is 0 (no one shares 16 by 8 and gets nothing). */
+function plausible(v, a) { return Number.isInteger(v) && v >= (a === 0 ? 0 : 1) && v !== a && Math.abs(v - a) <= (a <= 10 ? 4 : Math.max(10, Math.round(a * 0.5))); }
 
 /** Four different options, exactly one right. Wrong options are the mistakes kids really make:
     one or two off, forgetting to carry/borrow (10 off), the neighbouring times fact, the other operation. */
@@ -547,7 +602,8 @@ function makeChoices(q, rng) {
     // The mistakes a rounder really makes: the other friendly number (rounded the wrong way), the
     // number itself (did not round), and one place out either side.
     const down = Math.floor(q.x / q.y) * q.y;
-    near.push(a === down ? down + q.y : down, q.x, a + q.y, a - q.y);
+    const other = q.y === 10 ? 100 : 10; // rounded to the wrong place
+    near.push(a === down ? down + q.y : down, q.x, a + q.y, a - q.y, Math.round(q.x / other) * other, a + 2 * q.y);
   } else if (q.op === '+' || q.op === '-') {
     near.push(a + 1, a - 1, a + 2, a - 2);
     if (a >= 10 && Math.max(q.x, q.y) >= 10) two(a + 10, a - 10);                 // carry / borrow slip
@@ -563,7 +619,10 @@ function makeChoices(q, rng) {
     smart.push(q.y);                                                               // the number it was shared by
   }
   const picked = [];
-  const take = list => { for (const v of shuffled(list, rng)) { if (picked.length >= 3) return; if (plausible(v, a) && !picked.includes(v)) picked.push(v); } };
+  // A rounding question's wrong answers are the rounder's own slips (the other neighbour, not rounding, a place out),
+  // however far apart they sit: 100 and 200 are both believable for "Round 149 to the nearest hundred".
+  const ok = v => (q.op === 'round' ? Number.isInteger(v) && v > 0 && v !== a : plausible(v, a));
+  const take = list => { for (const v of shuffled(list, rng)) { if (picked.length >= 3) return; if (ok(v) && !picked.includes(v)) picked.push(v); } };
   // Mostly the clever mistakes, plus one or two near misses so the right answer is not the "middle" one.
   take(smart.slice(0, rng() < 0.5 ? 1 : 2)); take(near); take(smart);
   for (let k = 3; picked.length < 3; k++) { if (plausible(a + k, a) && !picked.includes(a + k)) picked.push(a + k); else if (plausible(a - k, a) && !picked.includes(a - k)) picked.push(a - k); if (k > 40) break; }
@@ -1116,6 +1175,11 @@ const TAU = Math.PI * 2;
 const visRng = makeRng((Math.random() * 4294967295) >>> 0);   // looks only (particles, cheers): never the maths or the race
 const pickOne = arr => arr[Math.floor(visRng() * arr.length)];
 const D = Oomba.draw;
+// The art style, chosen once before the kit's stage is made: pixel when the play link (?style=pixel) or CONFIG says so and
+// the kit's pixel packs are here; Ink otherwise. PIX() turns true once the pixel atlas has decoded.
+const STYLE = (() => { const p = (window.BRB && BRB.params) || {}; return (p.style || CONFIG.style) === 'pixel' ? 'pixel' : 'ink'; })();
+const PXK = STYLE === 'pixel' && Oomba.style('pixel') === 'pixel' && Oomba.pixel ? Oomba.pixel : null;
+const PIX = () => !!(PXK && PXK.on);
 const NIGHT = () => Oomba.theme.mode === 'dark';
 const C = (hue, step) => Oomba.color(hue, step);
 const INK = C('ink'), CREAM = C('card');
@@ -1545,7 +1609,56 @@ function makeView(canvas, kind) {
     amb: [], emit: [0, 0, 0, 0], pops: [] };
 }
 /** Fit the view's canvas to its box with the kit (Oomba.fit: device pixels, capped), in CSS px. */
+/* ---------- Pixel style: canvases in device pixels (Ink keeps Oomba.fit, capped at 2x, as before) ----------
+   A pixel canvas's buffer is its box in DEVICE pixels (no cap: an iPhone is 3x), its CSS size is exactly that over the
+   device pixel ratio, and it is moved onto the device-pixel grid, so one buffer pixel is one screen pixel and every art
+   pixel (a whole number of them) stays square and hard-edged. Resizes, rotation, fullscreen and zoom come back here. */
+const pxDpr = () => Math.min(4, window.devicePixelRatio || 1);
+/** Browsers lay out in 1/64 CSS px: a canvas size or position that is not a whole number of device pixels AND of those
+ *  units gets resampled by a hair. The step (device px) that is both: 1 at 1x/2x/4x, 3 at 3x, 21 at 2.625x... */
+function pxStep(dpr) { for (let m = 1; m <= 4096; m++) { const dev = m * dpr / 64; if (Math.abs(dev - Math.round(dev)) < 1e-6) return Math.round(dev); } return 1; }
+function pxFit(v) {
+  if (v.fit && v.fit.off) v.fit.off();
+  const cv = v.cv, box = cv.parentElement, r = box.getBoundingClientRect(), dpr = pxDpr(), st = pxStep(dpr);
+  // the box's top-left on that grid, and a size that covers the box (overflow is clipped by the box)
+  const L = Math.round(r.left * dpr / st) * st, T = Math.round(r.top * dpr / st) * st;
+  const pw = Math.max(st, Math.ceil((r.right * dpr - L) / st) * st), ph = Math.max(st, Math.ceil((r.bottom * dpr - T) / st) * st);
+  if (cv.width !== pw) cv.width = pw;
+  if (cv.height !== ph) cv.height = ph;
+  Object.assign(cv.style, { width: pw / dpr + 'px', height: ph / dpr + 'px', left: (L / dpr - r.left) + 'px', top: (T / dpr - r.top) + 'px', right: 'auto', bottom: 'auto' });
+  v.fit = { off() {}, px: true };
+  const w = pw / dpr, h = ph / dpr, changed = w !== v.w || h !== v.h || dpr !== v.dpr || v.night !== NIGHT();
+  v.w = w; v.h = h; v.dpr = dpr; v.night = NIGHT();
+  if (changed) { v.m = metrics(w, h, v.kind); v.tiles = null; v.pxb = null; }
+  v.g.imageSmoothingEnabled = false;   // a resize resets the context
+  return changed;
+}
+/** A track card's canvas: the same, at its card's width (21:9), each time the picker is drawn. */
+function pxSizeThumb(v) {
+  const cv = v.cv; cv.style.width = ''; cv.style.height = ''; cv.style.position = ''; cv.style.left = '';
+  const r = cv.getBoundingClientRect(), dpr = pxDpr(), st = pxStep(dpr), L = Math.round(r.left * dpr / st) * st;
+  const pw = Math.max(st, Math.floor((r.right * dpr - L) / st) * st), ph = Math.max(st, Math.round(pw * 9 / 21 / st) * st);
+  cv.width = pw; cv.height = ph;
+  Object.assign(cv.style, { width: pw / dpr + 'px', height: ph / dpr + 'px', position: 'relative', left: (L / dpr - r.left) + 'px' });
+  v.w = pw / dpr; v.h = ph / dpr; v.dpr = dpr; v.m = metrics(v.w, v.h, v.kind); v.tiles = null; v.pxb = null;
+  v.g.imageSmoothingEnabled = false;
+}
+/** The pixel UI's unit (--u, the kit's --px) as whole device pixels, and the font grid step (--sr-fu). */
+function pxUnits() {
+  const dpr = pxDpr(), u = Math.max(1, Math.round(3 * dpr)) / dpr, root = document.documentElement;
+  root.style.setProperty('--sr-u', u + 'px');
+  const ui = Oomba.ui.root(); if (ui) ui.style.setProperty('--px', u + 'px');
+}
+/** The pixel fonts are drawn on a grid of 92 units to the 1000-unit em (Oomba Pixel Digits exactly; Pixelify Sans close
+ *  to it): a font size that makes one grid pixel a whole number of device pixels keeps their edges hard. */
+const pxFontPx = size => { const step = 1000 / 92 / pxDpr(); return Math.max(step, Math.round(size / step) * step); };
+function pxSnapFonts() {
+  for (const el of document.querySelectorAll('.sr .ans, .sr .key, .sr .qlabel, .sr .chip, .sr .bar .tname b')) {
+    el.style.fontSize = ''; el.style.fontSize = pxFontPx(parseFloat(getComputedStyle(el).fontSize) || 16) + 'px';
+  }
+}
 function fitView(v) {
+  if (PIX()) return pxFit(v);
   if (v.fit) v.fit.off();
   v.fit = Oomba.fit(v.cv, { size: [100, 100], fit: 'expand', dprCap: 2 });
   const k = v.fit.scale / v.fit.dpr, w = Math.round(v.fit.vw * k), h = Math.round(v.fit.vh * k);
@@ -1840,6 +1953,7 @@ function drawSpeedLines(v, k, time) {
 /** Draw a whole race view. */
 function drawRaceView(v, dt, time) {
   if (!v.m || !S.race) return;
+  if (PIX()) return pxRaceView(v, dt, time);
   if (!v.tiles) buildTiles(v);
   const g = v.g, race = S.race, me = race.karts[v.follow], m = v.m;
   const lead = REDUCED ? 0 : Math.min(1, me.boost / CONFIG.race.maxBoost) * m.w * 0.08;
@@ -1860,6 +1974,485 @@ function drawRaceView(v, dt, time) {
   if (me.finished && me.human) drawFinishBanner(v, me.place);
 }
 
+/* =====================================================================================
+   Pixel style (opt-in: ?style=pixel or CONFIG.style; the kit's style-pixel and art-pixel packs, docs/kit.md "Pixel
+   style"). The same race, drawn as pixel art: each view draws its world into a small canvas at the art's own pixels
+   (one art pixel = px.kd device pixels, an integer, chosen so a kart is about as big as the Ink kart) and scales it up
+   with nearest neighbour, so every sprite, tile, particle and line sits on one pixel grid. Words (HUD, pops, banners)
+   are drawn on top at screen resolution in the pixel font, so they stay sharp and readable at any size. The art is
+   one atlas: karts and drivers rendered in Blender through the style sheet's pixel pipeline, the track tiles
+   hand-pixelled in the same 32 (+8) colours (tools/blender/). Until the atlas is decoded (a frame or two), and
+   whenever the packs are missing, the game draws its Ink look: the style always falls back.
+   ===================================================================================== */
+const PXA = () => PXK.art;
+const pxMod = (a, n) => ((a % n) + n) % n;
+/** The view's pixel buffer: its integer scale (device px per art px), size in art px and the css -> art factor. */
+function pxPrepare(v) {
+  const m = v.m, dpr = v.dpr || 1, A = PXA();
+  const kd = Math.max(1, Math.min(v.pxKdMax || 99, Math.round(m.kartW * dpr / (v.kind === 'title' ? 54 : 60))));
+  const NW = Math.ceil(m.w * dpr / kd), NH = Math.ceil(m.h * dpr / kd);
+  let P = v.pxb;
+  if (!P || P.kd !== kd || P.NW !== NW || P.NH !== NH || P.scene !== v.scene || P.night !== v.night) {
+    const cv = P && P.cv || makeCanvas(NW, NH);
+    cv.width = NW; cv.height = NH;
+    P = v.pxb = { kd, NW, NH, f: dpr / kd, cv, g: cv.getContext('2d'), scene: v.scene, night: v.night, tiles: null, texts: [] };
+    P.g.imageSmoothingEnabled = false;
+  }
+  if (!P.tiles) {
+    const sc = A.scenes[v.scene], night = v.night && !sc.dark, rt = Math.round(m.roadTop * P.f);
+    const sky = makeCanvas(NW, Math.max(1, rt)), sg = sky.getContext('2d');
+    PXK.sky(sg, NW, Math.max(1, rt), night ? A.night.sky : sc.sky);
+    const r = makeRng(5 + v.scene);
+    if (night || sc.dark) for (let i = 0; i < NW * rt / 90; i++) { sg.fillStyle = r() < 0.2 ? P_CREAM : '#B4C3D1'; sg.fillRect(Math.floor(r() * NW), Math.floor(r() * rt * 0.75), 1, 1); }
+    const decos = night ? [['moon', 0.8, 0.2]] : sc.deco;
+    for (const [d, fx, fy] of decos) { const f = PXK.frame('sky_' + d); if (f) PXK.draw(sg, 'sky_' + d, Math.round(fx * NW - f[2] / 2), Math.round(Math.max(1, Math.min(rt - f[3] - 20, fy * rt - f[3] / 2))), 1); }
+    const layer = name => { const f = PXK.frame(`sc${v.scene}_${name}`), c = makeCanvas(f[2], f[3]); PXK.draw(c.getContext('2d'), `sc${v.scene}_${name}`, 0, 0, 1); return night ? PXK.night(c) : c; };
+    P.tiles = { sky, far: layer('far'), mid: layer('mid'), side: layer('side'), night, sc };
+    initAmbient(v);
+  }
+  P.texts.length = 0;
+  return P;
+}
+const P_CREAM = '#FFFDF2', P_INK = '#141414';
+/** css x / y -> art pixels in this view */
+const pxX = (P, x) => Math.round(x * P.f);
+/** A box in the pixel style: fill, a 1 px Ink edge, stepped corners, a darker lip under it. */
+function pxBox(g, x, y, w, h, fill, lip) {
+  g.fillStyle = P_INK; g.fillRect(x + 1, y, w - 2, h + (lip ? 1 : 0)); g.fillRect(x, y + 1, w, h - 2 + (lip ? 1 : 0));
+  g.fillStyle = fill; g.fillRect(x + 1, y + 1, w - 2, h - 2);
+  if (lip) { g.fillStyle = lip; g.fillRect(x + 1, y + h - 2, w - 2, 1); }
+}
+/** Text over the pixels, drawn after the scale-up at screen resolution (css px): the pixel font with an Ink edge. */
+function pxText(P, text, x, y, size, color, o = {}) { P.texts.push({ text, x, y, size, color, o }); }
+/* Words over the pixels, drawn the pixel-art way: each label is rendered once at the pixel fonts' own grid (one canvas
+   pixel per design pixel, 1000/92 px type), its alpha cut hard (no anti-aliased fringe), the Ink edge added as a one
+   design-pixel ring (and a two-pixel drop), and the bitmap scaled up by a whole number of device pixels onto a device
+   pixel. Scripts the pixel fonts do not have (Japanese, Hebrew, Arabic...) keep ordinary text at a grid size. */
+const PX_GRID = 1000 / 92, PX_LATIN = /^[\u0020-\u024F\u0400-\u04FF\u2010-\u205E\u2190-\u21FF\u2212\u00D7\u00F7]*$/;
+const pxLabels = new Map();
+function pxLabel(text, color, edge) {
+  const key = text + '|' + color + '|' + edge + '|' + FONTSTACK; let L = pxLabels.get(key); if (L) return L;
+  const meas = makeCanvas(1, 1).getContext('2d'); meas.font = font(PX_GRID, 700);
+  const tw = Math.ceil(meas.measureText(text).width), W = tw + 6, H = Math.ceil(PX_GRID * 1.7) + 4, base = Math.round(PX_GRID * 1.15) + 2;
+  const c = makeCanvas(W, H), g = c.getContext('2d'); g.font = font(PX_GRID, 700); g.fillStyle = '#000'; g.textBaseline = 'alphabetic'; g.fillText(text, 3, base);
+  const src = g.getImageData(0, 0, W, H).data, on = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) on[i] = src[i * 4 + 3] >= 110 ? 1 : 0;
+  const out = g.createImageData(W, H), d = out.data, fill = hex2(color), ink = hex2(P_INK);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x; let col = null;
+    if (on[i]) col = fill;
+    else if (edge) { for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [1, -1], [-1, 1], [1, 1], [0, -2], [-1, -2], [1, -2]]) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && on[yy * W + xx]) { col = ink; break; } } }
+    if (col) { d[i * 4] = col[0]; d[i * 4 + 1] = col[1]; d[i * 4 + 2] = col[2]; d[i * 4 + 3] = 255; }
+  }
+  g.putImageData(out, 0, 0);
+  L = { c, w: tw + 2, base, x0: 2 }; pxLabels.set(key, L);
+  if (pxLabels.size > 160) pxLabels.delete(pxLabels.keys().next().value);
+  return L;
+}
+function pxFlushTexts(v, P) {
+  const g = v.g, d = v.dpr || 1, at = n => Math.round(n * d) / d;
+  for (const T of P.texts) {
+    g.globalAlpha = T.o.alpha == null ? 1 : T.o.alpha;
+    const edge = T.o.edge !== false, al = T.o.align || 'center';
+    if (PX_LATIN.test(T.text) && /^#[0-9a-f]{6}$/i.test(T.color)) {
+      const L = pxLabel(T.text, T.color, edge);
+      // device pixels per design pixel: the size asked for, rounded down, and smaller still until it fits its room
+      let n = Math.max(1, Math.floor(T.size / PX_GRID * d));
+      while (n > 1 && T.o.max && L.w * n / d > T.o.max) n--;
+      const wd = L.w * n, x = Math.round((al === 'center' ? T.x * d - wd / 2 : al === 'right' || al === 'end' ? T.x * d - wd : T.x * d)) - L.x0 * n;
+      const y = Math.round(T.y * d - (L.base - 3.5) * n);   // the caps' middle row on the given y
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = false;
+      g.drawImage(L.c, x, y, L.c.width * n, L.c.height * n); g.restore();
+    } else {
+      textDir(g, T.o.words !== false);
+      let size = pxFontPx(T.size); if (size > T.size + 0.01) size -= PX_GRID / d; g.font = font(size, 700);
+      if (T.o.max) { while (size > PX_GRID / d * 2 && g.measureText(T.text).width > T.o.max) { size -= PX_GRID / d; g.font = font(size, 700); } }
+      const w = g.measureText(T.text).width, x = at(al === 'center' ? T.x - w / 2 : al === 'right' || al === 'end' ? T.x - w : T.x), y = at(T.y + size * 0.32);
+      g.textAlign = 'left'; g.textBaseline = 'alphabetic';   // 'left' is the left edge in either direction
+      const e = Math.max(1, Math.round(size * 0.092 * d)) / d;
+      if (edge) { g.fillStyle = P_INK; for (const [dx, dy] of [[-e, 0], [e, 0], [0, -e], [0, e], [-e, -e], [e, -e], [-e, e], [e, e], [0, e * 2], [-e, e * 2], [e, e * 2]]) g.fillText(T.text, x + dx, y + dy); }
+      g.fillStyle = T.color; g.fillText(T.text, x, y);
+    }
+    g.globalAlpha = 1;
+  }
+  P.texts.length = 0;
+}
+function pxBlit(v, P) {
+  const g = v.g; g.setTransform(1, 0, 0, 1, 0, 0); g.imageSmoothingEnabled = false;
+  g.drawImage(P.cv, 0, 0, P.NW * P.kd, P.NH * P.kd);
+  g.setTransform(v.dpr, 0, 0, v.dpr, 0, 0);
+}
+/** The track: sky, three scrolling layers (far, middle, roadside) and the road with its kerbs and lane dashes. */
+function pxScene(v, P, cam) {
+  const g = P.g, m = v.m, f = P.f, T = P.tiles, A = PXA(), sc = T.sc, rt = Math.round(m.roadTop * f), rb = Math.round(m.roadBot * f), camN = cam * m.ppm * f;
+  g.drawImage(T.sky, 0, 0);
+  if (T.sky.height < rt) { g.fillStyle = sc.sky[sc.sky.length - 1]; g.fillRect(0, T.sky.height, P.NW, rt - T.sky.height); }
+  for (const [name, par] of [['far', 0.06], ['mid', 0.3], ['side', 1]]) {
+    const t = T[name], tw = t.width;
+    for (let x = -pxMod(Math.round(camN * par), tw); x < P.NW; x += tw) g.drawImage(t, x, rt - t.height);
+  }
+  const road = A.scenes[v.scene].road, laneH = m.laneH * f, kh = Math.max(2, Math.round(laneH * 0.16)), kp = Math.max(6, Math.round(laneH * 0.9));
+  const asphalt = T.night ? PXK.nearest(hex2(road[0]).map((c, i) => c * 0.5 + [14, 42, 46][i] * 0.5)) : road[0];
+  P.shadow = PXK.nearest(hex2(asphalt).map(c => c * 0.62));   // toward the night sky, not brown
+  g.fillStyle = asphalt; g.fillRect(0, rt, P.NW, rb - rt);
+  // a little grit on the asphalt, moving with the road
+  g.fillStyle = PXK.nearest(hex2(asphalt).map(c => Math.min(255, c + 22)));
+  for (let i = 0; i < P.NW * (rb - rt) / 160; i++) { const gx = pxMod(Math.round((i * 73.37) % 997 - camN), P.NW + 40) - 20, gy = rt + 2 + Math.floor((i * 37.91) % Math.max(1, rb - rt - 3)); g.fillRect(gx, gy, (i % 3) ? 1 : 2, 1); }
+  const off = pxMod(Math.round(camN), kp * 2);
+  for (let x = -off; x < P.NW; x += kp * 2) {
+    g.fillStyle = road[2]; g.fillRect(x, rt - kh, kp, kh); g.fillRect(x + kp, rb, kp, P.NH - rb);
+    g.fillStyle = road[3]; g.fillRect(x + kp, rt - kh, kp, kh); g.fillRect(x, rb, kp, P.NH - rb);
+  }
+  g.fillStyle = P_INK; g.fillRect(0, rt - kh - 1, P.NW, 1); g.fillRect(0, rt, P.NW, 1); g.fillRect(0, rb - 1, P.NW, 1);
+  const per = Math.max(10, Math.round(m.ppm * f * 7)), dw = Math.round(per / 2), lh = Math.max(1, Math.round(laneH * 0.07)), doff = pxMod(Math.round(camN), per);
+  g.fillStyle = road[1];
+  for (let i = 1; i < 4; i++) { const y = Math.round(rt + laneH * i - lh / 2); for (let x = -doff; x < P.NW; x += per) g.fillRect(x, y, dw, lh); }
+}
+/** The start and lap lines, their banners, the finish line and its cheering stands. */
+function pxGantries(v, P, cam, race, time) {
+  const g = P.g, m = v.m, f = P.f, lap = race.total / CONFIG.laps, rt = Math.round(m.roadTop * f), rb = Math.round(m.roadBot * f);
+  for (let k = 0; k <= CONFIG.laps; k++) {
+    const x = pxX(P, sx(v, cam, k * lap)); if (x < -60 || x > P.NW + 60) continue;
+    const sq = Math.max(2, Math.round(m.laneH * f / 4));
+    for (let r = 0; r * sq < rb - rt; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? P_INK : P_CREAM; g.fillRect(x + c * sq, rt + r * sq, sq, Math.min(sq, rb - rt - r * sq)); }
+    if (k === 0 && v.kind === 'race' && (S.phase === 'countdown' || S.goT > 0)) continue;
+    const label = k === 0 ? t('g_start') : k === CONFIG.laps ? t('g_finish') : t('g_lap', { n: k + 1 });
+    const bhc = Math.max(18, Math.min(32, m.roadTop * 0.17)), byc = Math.max(m.hud + 6, m.roadTop - bhc * 2.6);
+    v.g.font = font(bhc * 0.62, 700); const bwc = v.g.measureText(label).width + bhc * 1.1;
+    const bx = x - 2, by = Math.round(byc * f), bw = Math.round(bwc * f) + 4, bh = Math.round(bhc * f);
+    g.fillStyle = '#5E5A50'; g.fillRect(bx, by, 2, rt - by); g.fillRect(bx + bw - 2, by, 2, rt - by);
+    g.fillStyle = P_INK; g.fillRect(bx - 1, by, 1, rt - by); g.fillRect(bx + bw, by, 1, rt - by);
+    pxBox(g, bx - 2, by, bw + 4, bh, k === CONFIG.laps ? '#FF9C8F' : P_CREAM, k === CONFIG.laps ? '#C8402F' : '#E0DDD2');
+    pxText(P, label, (bx + bw / 2) / f, (by + bh / 2) / f, bhc * 0.62, P_INK, { edge: false });
+  }
+  const fx = pxX(P, sx(v, cam, race.total));
+  if (fx > -P.NW && fx < P.NW * 2) {
+    const s = Math.max(2, Math.round(m.roadTop * f * 0.05)), standW = s * 26, standH = s * 6, base = rt - Math.max(2, Math.round(m.laneH * f * 0.16)) - 1;
+    const cols = ['#FF6B5B', '#4FA8F0', '#66C792', '#9B6BE8', '#F5A26B', '#FFD23F'], skin = ['#FFC89E', '#BF957A', '#8A5A3C', '#F5A26B'];
+    for (const side of [-1, 1]) {
+      const x0 = side < 0 ? fx - standW - s * 3 : fx + s * 12;
+      pxBox(g, x0, base - standH, standW, standH + 1, '#C6C2B5', null);
+      g.fillStyle = '#8F8A7C'; for (let r = 1; r < 3; r++) g.fillRect(x0 + 1, base - standH + r * Math.round(standH / 3), standW - 2, 1);
+      for (let r = 0; r < 2; r++) for (let c = 0; c < 12; c++) {
+        const jump = REDUCED ? 0 : (Math.sin(time * 7 + c * 1.7 + r * 2.1) > 0.3 ? s : 0), hx = x0 + s + Math.round(c * (standW - 2 * s) / 11.5), hy = base - standH + s + r * Math.round(standH / 2.4) - jump;
+        g.fillStyle = cols[(c + r * 2) % cols.length]; g.fillRect(hx - s, hy, s * 2, s);
+        g.fillStyle = skin[(c * 3 + r) % skin.length]; g.fillRect(hx - Math.ceil(s / 2), hy - s, s, s);
+      }
+    }
+  }
+}
+/** Which picture a kart uses: a rival (or player 2, the fox) is one Blender sprite with its driver; player 1 is their
+ *  own avatar, snapped to the palette at run time, between an empty kart and its front layer. */
+const PX_KEYS = { bunny: 'bunny', robot: 'robot', dino: 'dino' };
+function pxKartKey(info) { return info.key === 'p1' ? 'fox' : PX_KEYS[info.key] || null; }
+const pxAvatars = new Map();
+/** The player's own avatar as pixel art: the kit's portrait, shrunk to the Blender drivers' size and snapped to the
+ *  palette with the same 1 px Ink edge (head: true -> the 24 px HUD head). */
+/** A kid avatar as a pixel driver, hand-pixelled from its spec (skin, hair style and colour, top colour) to match the
+ *  Blender drivers: a big head, dot eyes with a highlight, blush, shoulders in the top's colour. 26 x 30 art px (head:
+ *  just the head, 24 x 22). The kit's portrait at this size would be its ring eyes and Ink lines and little else. */
+function pxKid(ch, head) {
+  const W = 26, H = head ? 23 : 31, c = makeCanvas(W, H), g = c.getContext('2d'), T = Oomba.tokens;
+  const skin = T.skin[Math.max(0, Math.min(T.skin.length - 1, ch.skin | 0))], skinS = T.skin[Math.min(T.skin.length - 1, (ch.skin | 0) + 2)];
+  const hair = (ch.hair && T.hair[ch.hair.color]) || T.hair.cocoa, style = (ch.hair && ch.hair.style) || 'bob';
+  const top = C((ch.outfit && ch.outfit.color) || 'sky'), topS = C((ch.outfit && ch.outfit.color) || 'sky', 'shade');
+  const px = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
+  const disc = (cx, cy, r, col) => { g.fillStyle = col; for (let y = -r; y <= r; y++) { const dx = Math.round(Math.sqrt(Math.max(0, r * r - y * y + r * 0.6))); g.fillRect(cx - dx, cy + y, dx * 2 + 1, 1); } };
+  const cx = 13, cy = 12;
+  if (!head) { px(4, 24, 18, 7, top); px(3, 26, 20, 5, top); px(15, 25, 7, 6, topS); px(10, 23, 6, 2, skinS); }   // shoulders, the neck's shadow
+  // hair that hangs behind the head
+  if (style === 'long') { px(3, 10, 20, 14, hair); }
+  if (style === 'braids') { px(2, 13, 4, 10, hair); px(20, 13, 4, 10, hair); px(2, 22, 4, 2, C('coral')); px(20, 22, 4, 2, C('coral')); }
+  if (style === 'puffs') { disc(4, 4, 4, hair); disc(22, 4, 4, hair); }
+  if (style === 'curls') { for (const [x, y, r] of [[5, 7, 5], [21, 7, 5], [8, 3, 5], [18, 3, 5], [13, 2, 5], [4, 13, 4], [22, 13, 4]]) disc(x, y, r, hair); }
+  disc(cx, cy, 9, skin);
+  px(cx + 2, cy + 4, 6, 4, skinS); px(cx + 5, cy, 3, 6, skinS);   // the cel shade, away from the light (top-left)
+  disc(cx, cy, 9, 'rgba(0,0,0,0)');
+  // hair on top
+  const cap = (y1, fringe) => { for (let y = 2; y <= y1; y++) { const dx = Math.round(Math.sqrt(Math.max(0, 81 - (y - cy) ** 2))) + 1; px(cx - dx, y, dx * 2 + 1, 1, hair); } if (fringe) px(cx - 6, y1 + 1, 12, 1, hair); };
+  if (style === 'buzz') cap(5, false);
+  else if (style === 'spiky') { cap(7, false); for (const x of [6, 10, 14, 18]) { px(x, 0, 2, 3, hair); px(x - 1, 2, 4, 2, hair); } }
+  else if (style === 'cap') { cap(7, false); px(4, 3, 18, 5, top); px(16, 7, 9, 2, topS); px(11, 2, 4, 1, top); }
+  else if (style === 'curls') { cap(7, true); }
+  else { cap(7, true); px(cx - 9, 8, 3, style === 'bob' || style === 'long' ? 10 : 5, hair); px(cx + 7, 8, 3, style === 'bob' || style === 'long' ? 10 : 5, hair); }
+  // face: dot eyes with a highlight, blush, a small smile (looking a little towards the road ahead)
+  for (const ex of [cx - 4, cx + 3]) { px(ex, cy + 1, 2, 3, P_INK); px(ex + 1, cy + 1, 1, 1, '#FFFFFF'); }
+  px(cx - 7, cy + 5, 2, 1, C('coral', 'light')); px(cx + 6, cy + 5, 2, 1, C('coral', 'light'));
+  px(cx - 1, cy + 6, 3, 1, P_INK); px(cx - 2, cy + 5, 1, 1, P_INK); px(cx + 2, cy + 5, 1, 1, P_INK);
+  if (head) { const out = makeCanvas(24, 22); out.getContext('2d').drawImage(c, -1, 1); return PXK.snap(out, { outline: true }); }
+  const out = makeCanvas(W + 2, H + 1); out.getContext('2d').drawImage(c, 1, 1); return PXK.snap(out, { outline: true });
+}
+function pxAvatar(info, head) {
+  const key = (head ? 'h' : 'd') + JSON.stringify(info.char);
+  let c = pxAvatars.get(key); if (c) return c;
+  if (info.char && info.char.species === 'kid') { c = pxKid(info.char, head); pxAvatars.set(key, c); return c; }
+  // drawn at twice the size and snapped to the palette there, then halved by majority (each 2 x 2 block takes its
+  // commonest colour), so the kit's Ink lines survive as single pixels instead of blurring into grey
+  const dc = driverCanvas(info.char, head ? 24 : 34, 2, head), h = head ? 22 : 30, w = Math.max(1, Math.round(h * dc.width / dc.height));
+  const big = makeCanvas(w * 2, h * 2), bg = big.getContext('2d'); bg.imageSmoothingQuality = 'high';
+  bg.drawImage(dc, 0, 0, w * 2, h * 2); PXK.snap(big, { outline: false });
+  const src = bg.getImageData(0, 0, w * 2, h * 2).data;
+  c = makeCanvas(w + 2, h + 2); const g = c.getContext('2d'), out = g.createImageData(w + 2, h + 2), d = out.data;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const n = new Map(); let opaque = 0;
+    for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { const i = ((y * 2 + dy) * w * 2 + x * 2 + dx) * 4; if (src[i + 3] < 128) continue; opaque++; const k = src[i] << 16 | src[i + 1] << 8 | src[i + 2]; n.set(k, (n.get(k) || 0) + 1 + (k === 0x141414 ? 0.6 : 0)); }
+    if (opaque < 2) continue;
+    let best = 0, bk = 0; for (const [k, v] of n) if (v > best) { best = v; bk = k; }
+    const o = ((y + 1) * (w + 2) + x + 1) * 4; d[o] = bk >> 16; d[o + 1] = bk >> 8 & 255; d[o + 2] = bk & 255; d[o + 3] = 255;
+  }
+  // the kit's Cream sticker rim would be a white halo at this size: the edge pixels that are light go, the Ink edge
+  // comes back round the silhouette (snap's outline)
+  const W2 = w + 2, lit = i => d[i * 4 + 3] && d[i * 4] + d[i * 4 + 1] + d[i * 4 + 2] > 640, edge = i => !d[(i - 1) * 4 + 3] || !d[(i + 1) * 4 + 3] || !d[(i - W2) * 4 + 3] || !d[(i + W2) * 4 + 3];
+  const drop = []; for (let y = 1; y <= h; y++) for (let x = 1; x <= w; x++) { const i = y * W2 + x; if (lit(i) && edge(i)) drop.push(i); }
+  for (const i of drop) d[i * 4 + 3] = 0;
+  g.putImageData(out, 0, 0); PXK.snap(c, { outline: true });
+  pxAvatars.set(key, c); return c;
+}
+function pxDigits(g, s, x, y, col) {
+  const D3 = { 0: 'xxxx.xx.xx.xxxx', 1: '.x.xx..x..x.xxx', 2: 'xxx..xxxxx..xxx', 3: 'xxx..xxxx..xxxx', 4: 'x.xx.xxxx..x..x', 5: 'xxxx..xxx..xxxx', 6: 'xxxx..xxxx.xxxx', 7: 'xxx..x.x..x..x.', 8: 'xxxx.xxxxx.xxxx', 9: 'xxxx.xxxx..xxxx' };
+  g.fillStyle = col;
+  for (let i = 0; i < s.length; i++) { const b = D3[s[i]]; if (!b) continue; for (let k = 0; k < 15; k++) if (b[k] === 'x') g.fillRect(x + i * 4 + (k % 3), y + Math.floor(k / 3), 1, 1); }
+}
+/** A kart at (x, y) css (y = where its wheels touch the road). frame: idle | d0-d2 | cheer. */
+function pxKart(P, info, x, y, frame, o = {}) {
+  const g = P.g, A = PXA(), [FW, FH] = A.kart, X = Math.round(x * P.f) - FW / 2 + 4, Y = Math.round(y * P.f) - A.ground + (o.dy || 0);
+  const k = pxKartKey(info), f = frame === 'cheer' && !k ? 'idle' : frame;
+  // a soft shadow under the wheels
+  // a shadow under the wheels in a darker palette colour of the road (solid: a see-through shadow blends colours)
+  g.fillStyle = P.shadow || P_INK; g.fillRect(X + 6, Y + A.ground - 1, FW - 12, 2); g.fillRect(X + 10, Y + A.ground + 1, FW - 20, 1);
+  if (o.flame) PXK.draw(g, 'fx_flame_' + o.flame % 2, X - 9 - (o.flame % 2) * 2, Y + A.ground - 21, 1);
+  if (k) PXK.draw(g, `kart_${k}_${f}`, X, Y, 1);
+  else {
+    const hue = info.kart || 'coral', av = pxAvatar(info);
+    PXK.draw(g, `kart_empty_${hue}_${f}`, X, Y, 1);
+    PXK.draw(g, `kart_front_${hue}_${f}`, X, Y, 1);
+    // the driver sits down in the kart: everything of them below the kart's top edge is hidden by its body
+    const [sx0, sy0] = A.seat || [28, 34];
+    g.save(); g.beginPath(); g.rect(X, Y - 8, FW, sy0 + 11); g.clip();
+    g.drawImage(av, Math.round(X + sx0 - av.width / 2 + 1), Math.round(Y + sy0 - av.height + 12)); g.restore();
+  }
+  if (A.disc && info.num) {   // the number disc, drawn here so the digit sits square in it
+    const cx = Math.round(X + A.disc[0]), cy = Math.round(Y + A.disc[1]);
+    g.fillStyle = P_INK; g.fillRect(cx - 3, cy - 5, 7, 11); g.fillRect(cx - 5, cy - 3, 11, 7); g.fillRect(cx - 4, cy - 4, 9, 9);
+    g.fillStyle = P_CREAM; g.fillRect(cx - 2, cy - 4, 5, 9); g.fillRect(cx - 4, cy - 2, 9, 5); g.fillRect(cx - 3, cy - 3, 7, 7);
+    pxDigits(g, String(info.num).slice(0, 1), cx - 1, cy - 2, P_INK);
+  }
+}
+function pxHead(info) {
+  const k = pxKartKey(info);
+  if (k) { const f = PXK.frame('head_' + k), c = makeCanvas(f[2], f[3]); PXK.draw(c.getContext('2d'), 'head_' + k, 0, 0, 1); return c; }
+  return pxAvatar(info, true);
+}
+const pxHeads = new Map();
+function pxHeadCached(info) { let c = pxHeads.get(info.key + JSON.stringify(info.char)); if (!c) { c = pxHead(info); pxHeads.set(info.key + JSON.stringify(info.char), c); } return c; }
+/** A head in a round badge in the kart's colour, s art px across (HUD strip, edge bubbles, results rows). */
+function pxBadge(g, info, x, y, s) {
+  const h = pxHeadCached(info), r = s / 2, cx = x + r, cy = y + r;
+  g.fillStyle = P_INK; for (let yy = 0; yy < s; yy++) { const dx = Math.round(Math.sqrt(Math.max(0, r * r - (yy + 0.5 - r) ** 2))); g.fillRect(Math.round(cx - dx), y + yy, dx * 2, 1); }
+  g.fillStyle = PXK.nearest(hex2(C(info.kart, 'light'))); for (let yy = 1; yy < s - 1; yy++) { const dx = Math.round(Math.sqrt(Math.max(0, (r - 1) ** 2 - (yy + 0.5 - r) ** 2))); g.fillRect(Math.round(cx - dx), y + yy, dx * 2, 1); }
+  const k = Math.max(1, Math.floor((s - 2) / h.height)), w = h.width * k, hh = h.height * k;
+  g.save(); g.beginPath(); g.rect(x + 1, y + 1, s - 2, s - 2); g.clip(); g.drawImage(h, Math.round(cx - w / 2), Math.round(y + s - hh), w, hh); g.restore();
+}
+function pxKartFrame(k, time) { if (k.v < 1) return 'idle'; return 'd' + (Math.floor(k.dist * 1.6) % 3); }
+function pxDrawKarts(v, P, race, infos, cam, time, order) {
+  const m = v.m, me = race.karts[v.follow];
+  for (const i of order || S.laneOrder) {
+    const k = race.karts[i], x = sx(v, cam, k.dist) + (k.lane - 1.5) * m.kartW * 0.32 * Math.max(0, 1 - k.dist / 35), y = laneY(v, k.lane);
+    if (v.kind === 'race' && x < -m.kartW * 0.6) { pxEdgeBubble(v, P, infos[i], false, me.dist - k.dist, y - m.laneH * 0.5); continue; }
+    if (v.kind === 'race' && x > m.w + m.kartW * 0.6) { pxEdgeBubble(v, P, infos[i], true, k.dist - me.dist, y - m.laneH * 0.5); continue; }
+    const bob = k.v > 1 && !REDUCED && Math.sin(time * 17 + k.lane * 2) > 0.4 ? -1 : 0;
+    const shake = k.wobble > 0 ? (REDUCED ? 0 : (Math.floor(time * 18) % 2 ? 1 : -1)) : 0;
+    const flame = k.boost > 7 && !k.finished ? 1 + (Math.floor(time * 14) % 2) : 0;
+    pxKart(P, infos[i], x + shake / P.f, y, k.finished && k.place === 1 && v.kind !== 'race' ? 'cheer' : pxKartFrame(k, time), { dy: bob, flame });
+  }
+}
+function pxEdgeBubble(v, P, info, ahead, gap, y) {
+  const g = P.g, m = v.m, s = Math.max(12, Math.min(18, Math.round(m.laneH * P.f * 0.6))), w = s * 3, x = ahead ? P.NW - w - 2 : 2, cy = Math.max(Math.round(m.roadTop * P.f) + s / 2 + 1, Math.min(P.NH - s / 2 - 1, Math.round(y * P.f)));
+  pxBox(g, x, cy - s / 2, w, s, '#2B1F5C', null);
+  pxBadge(g, info, ahead ? x + w - s : x, cy - s / 2, s);
+  g.fillStyle = P_CREAM; const ax = ahead ? P.NW - 1 : 0; for (let i = 0; i < 3; i++) g.fillRect(ahead ? ax - i : ax + i, cy - (2 - i), 1, (2 - i) * 2 + 1);
+  pxText(P, t('meters', { n: Math.round(gap) }), (ahead ? x + (w - s) / 2 : x + s + (w - s) / 2) / P.f, cy / P.f, s / P.f * 0.5, P_CREAM, { edge: false, max: (w - s) / P.f - 2 });
+}
+function pxParts(v, P, cam, front) {
+  const g = P.g, m = v.m, dust = PXA().scenes[v.scene].dust, tint = dust === '#FFC89E' || dust === '#BF957A' ? 'sand' : dust === '#C6C2B5' || dust === '#C6A9F3' ? 'dark' : 'light';
+  for (let i = 0; i < v.pn; i++) {
+    const k = v.pk[i]; if ((k === 2) !== front) continue;
+    const x = pxX(P, sx(v, cam, v.px[i])), y = Math.round((m.roadTop + v.py[i] * m.laneH) * P.f), f = v.pl[i] / v.pm[i];
+    if (x < -10 || x > P.NW + 10) continue;
+    if (k === 0) { if (f > 0.25) PXK.draw(g, `fx_dust_${tint}_${f > 0.7 ? 0 : f > 0.45 ? 1 : 2}`, x, y, 1, { anchor: 'bottom' }); }
+    else if (k === 1) { if (f > 0.5 && i % 3 === 0) { g.fillStyle = '#FFD23F'; g.fillRect(x, y, 1, 1); } }   // the kart's own flame sprite is the exhaust; these are its sparks
+    else if (k === 2) PXK.draw(g, `fx_spark_${f > 0.66 ? 0 : f > 0.33 ? 1 : 2}`, x, y, 1, { anchor: 'bottom' });
+    else if (k === 3) PXK.draw(g, `fx_puff_${f > 0.5 ? 1 : 0}`, x, y, 1, { anchor: 'bottom' });
+  }
+}
+function pxAmbient(v, P, dt, time, speed) {
+  const g = P.g, m = v.m, f = P.f, type = PXA().scenes[v.scene].amb, drift = speed * dt / 70;
+  for (const a of v.amb) {
+    if (type === 'snow') { a.y += dt * (0.08 + a.s * 0.05); a.x -= drift * 0.5 + dt * 0.02 * Math.sin(time + a.p); }
+    else if (type === 'ember') { a.y -= dt * (0.05 + a.s * 0.04); a.x -= drift * 0.3; }
+    else if (type === 'leaf') { a.y += dt * 0.05 * a.s; a.x -= drift * 0.4 + dt * 0.03 * Math.sin(time * 0.7 + a.p); }
+    else if (type === 'tumble') a.x -= drift + dt * 0.08 * a.s;
+    else if (type === 'flutter' || type === 'gull') { a.x -= drift * 0.15 + dt * 0.02; a.y += Math.sin(time * 1.3 + a.p) * dt * 0.02; }
+    else a.x -= drift * 0.05;
+    if (a.x < -0.05) { a.x += 1.1; a.y = visRng(); } if (a.x > 1.05) a.x -= 1.1; if (a.y > 1.02) { a.y = -0.02; a.x = visRng(); } if (a.y < -0.02) { a.y = 1.02; a.x = visRng(); }
+    const x = Math.round(a.x * P.NW), top = m.hud * f, sky = (m.roadTop - m.hud) * f;
+    if (type === 'snow') { g.fillStyle = '#FFFFFF'; const s = a.s > 1.1 ? 2 : 1; g.fillRect(x, Math.round(top + a.y * (P.NH - top)), s, s); }
+    else if (type === 'ember') { g.fillStyle = a.s > 1 ? '#FFC89E' : '#FF9C8F'; g.fillRect(x, Math.round(top + a.y * (P.NH - top)), 1, a.s > 1.2 ? 2 : 1); }
+    else if (type === 'leaf') PXK.draw(g, 'amb_leaf', x, Math.round(top + a.y * sky * 1.2), 1);
+    else if (type === 'tumble') PXK.draw(g, 'amb_tumble_' + (Math.floor(time * 6 + a.p) % 2), x, Math.round(m.roadTop * f) - 12 - (Math.sin(time * 4 + a.p) > 0 ? 2 : 0), 1);
+    else if (type === 'flutter') { if (a.s > 1.05) PXK.draw(g, 'amb_fly_' + (Math.floor(time * 9 + a.p * 3) % 2), x, Math.round(top + 3 + a.y * sky * 0.7), 1); }
+    else if (type === 'gull') PXK.draw(g, 'amb_gull_' + (Math.floor(time * 4 + a.p * 3) % 2), x, Math.round(top + 3 + a.y * sky * 0.45), 1);
+    else if (type === 'twinkle') { if (Math.sin(time * 1.4 + a.p * 3) > 0.2) { const y = Math.round(top + a.y * sky * 0.85); g.fillStyle = P_CREAM; g.fillRect(x, y - 1, 1, 3); g.fillRect(x - 1, y, 3, 1); } }
+  }
+}
+/** The HUD band: place, the race strip with every racer's face, the lap, the streak. Shapes on the pixel grid, words
+ *  at screen resolution. */
+function pxHud(v, P, race, infos, p) {
+  const g = P.g, m = v.m, f = P.f, me = race.karts[v.follow], place = race.placeOf(me), hh = Math.round(m.hud * f);
+  g.fillStyle = '#2B1F5C'; g.fillRect(0, 0, P.NW, hh); g.fillStyle = '#3D2775'; g.fillRect(0, 0, P.NW, 1); g.fillStyle = P_INK; g.fillRect(0, hh - 1, P.NW, 1);
+  const ph = hh - 4, bw = Math.round(ph * 1.7), py = 2;
+  pxBox(g, 2, py, bw, ph - 1, place === 1 ? '#FFD23F' : place === 2 ? '#F4F7FA' : place === 3 ? '#FFC89E' : '#C6A9F3', place === 1 ? '#C99A00' : '#B4C3D1');
+  pxText(P, ordinal(place), (2 + bw / 2) / f, (py + ph / 2) / f, ph / f * 0.56, P_INK, { edge: false, max: (bw - 4) / f });
+  const lapTxt = t('hud_lap', { n: race.lapOf(me), total: CONFIG.laps }); v.g.font = font(ph / f * 0.48, 700);
+  const lw = Math.round((v.g.measureText(lapTxt).width + ph / f * 0.8) * f);
+  pxBox(g, P.NW - 2 - lw, py, lw, ph - 1, P_CREAM, '#E0DDD2');
+  pxText(P, lapTxt, (P.NW - 2 - lw / 2) / f, (py + ph / 2) / f, ph / f * 0.48, P_INK, { edge: false });
+  let right = P.NW - lw - 6;
+  if (p && p.streak >= 2) {
+    const st = '×' + Oomba.num(p.streak); v.g.font = font(ph / f * 0.5, 700); const tw = Math.round(v.g.measureText(st).width * f);
+    const fx = right - tw - 9; PXK.draw(g, 'fx_flame_' + (Math.floor(S.time * 10) % 2), fx - 2, Math.round(hh / 2 - 4), 1, { flip: false });
+    pxText(P, st, (fx + 10 + tw / 2) / f, (hh / 2) / f, ph / f * 0.5, P_CREAM); right = fx - 6;
+  }
+  const x0 = 2 + bw + 8, x1 = right - 8, y = Math.round(hh / 2);
+  if (x1 - x0 > 20) {
+    const bh = Math.max(3, Math.round(ph * 0.22)), fill = x0 + Math.round((x1 - x0) * Math.min(1, me.dist / race.total));
+    g.fillStyle = P_CREAM; g.fillRect(x0 - 1, y - bh - 1, x1 - x0 + 2, bh * 2 + 2);
+    g.fillStyle = '#3D2775'; g.fillRect(x0, y - bh, x1 - x0, bh * 2);
+    g.fillStyle = '#66C792'; g.fillRect(x0, y - bh, fill - x0, bh * 2); g.fillStyle = '#9BDDB7'; g.fillRect(x0, y - bh, fill - x0, 1);
+    g.fillStyle = P_CREAM; for (let l = 1; l < CONFIG.laps; l++) g.fillRect(x0 + Math.round((x1 - x0) * l / CONFIG.laps), y - bh - 1, 1, bh * 2 + 2);
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 2; c++) { g.fillStyle = (r + c) % 2 ? P_INK : P_CREAM; g.fillRect(x1 + 2 + c * 2, y - 2 + r * 2, 2, 2); }
+    const hs = Math.max(10, Math.min(ph, 20));
+    race.karts.forEach((k, i) => { if (i === v.follow) return; pxBadge(g, infos[i], x0 + Math.round((x1 - x0) * Math.min(1, k.dist / race.total)) - hs / 2, y - hs / 2, hs); });
+    const ms = Math.min(ph + 2, hs + 2); pxBadge(g, infos[v.follow], x0 + Math.round((x1 - x0) * Math.min(1, me.dist / race.total)) - ms / 2, y - ms / 2, ms);
+  }
+}
+function pxCountdown(v, P) {
+  const g = P.g, m = v.m, f = P.f, e = S.cd, lit = S.phase === 'countdown' ? Math.min(3, Math.floor(e / CD_STEP) + 1) : 0, go = S.phase !== 'countdown' && S.goT > 0;
+  if (!lit && !go) return;
+  const sky = (m.roadTop - m.hud) * f, r = Math.max(3, Math.min(9, Math.round(sky * 0.15))), w = r * 8 + 4, h = r * 2 + 6;
+  const lx = Math.max(w / 2 + 2, Math.min(P.NW * 0.55, pxX(P, sx(v, v.cam, 0)))), x = Math.round(lx - w / 2), y = Math.round(m.hud * f + Math.max(3, sky * 0.1)), rt = Math.round(m.roadTop * f);
+  g.fillStyle = '#5E5A50'; g.fillRect(Math.round(lx) - 1, y + h, 3, Math.max(0, rt - y - h)); g.fillStyle = P_INK; g.fillRect(Math.round(lx) - 2, y + h, 1, Math.max(0, rt - y - h)); g.fillRect(Math.round(lx) + 2, y + h, 1, Math.max(0, rt - y - h));
+  pxBox(g, x, y, w, h, '#2B2B2B', '#141414');
+  for (let i = 0; i < 3; i++) {
+    const cx = x + 3 + r + i * (r * 2 + 2) + 1, cy = y + h / 2, col = go ? '#66C792' : i < lit ? '#FF6B5B' : '#5E5A50';
+    for (let yy = -r; yy < r; yy++) { const dx = Math.round(Math.sqrt(Math.max(0, r * r - (yy + 0.5) ** 2))); g.fillStyle = col; g.fillRect(cx - dx, Math.round(cy + yy), dx * 2, 1); }
+    if (go || i < lit) { g.fillStyle = go ? '#9BDDB7' : '#FF9C8F'; g.fillRect(cx - Math.round(r / 2), Math.round(cy - r / 2), Math.max(1, Math.round(r / 3)), Math.max(1, Math.round(r / 3))); }
+  }
+  const txt = go ? t('go') : Oomba.num(4 - lit), room = (P.NW - x - w) / f - 16, size = Math.max(16, Math.min(80, sky / f * 0.62, Math.max(28, room * 0.55)));
+  pxText(P, txt, (x + w) / f + 8 + room / 2, (y + h / 2) / f, size, go ? '#66C792' : P_CREAM, { max: room });
+}
+function pxSpeedLines(v, P, k, time) {
+  if (REDUCED || k.boost < 12) return;
+  const g = P.g, m = v.m, top = m.hud * P.f; g.fillStyle = PXK.nearest(hex2(P.tiles.sc.road[0]).map(c => c + (255 - c) * 0.45));
+  for (let i = 0; i < 7; i++) { const y = Math.round(top + ((i * 97) % 100) / 100 * (P.NH - top)), len = Math.round(P.NW * (0.15 + (i % 3) * 0.08)), x = P.NW - Math.round((time * 900 * P.f + i * 211) % (P.NW + len)); g.fillRect(x, y, len, 1); }
+}
+function pxPops(v, P, race, cam, dt) {
+  const m = v.m;
+  for (let i = v.pops.length - 1; i >= 0; i--) { v.pops[i].t += dt; if (v.pops[i].t > 1.3) v.pops.splice(i, 1); }
+  const p = v.pops[v.pops.length - 1]; if (!p) return;
+  const k = race.karts[p.k], a = p.t > 0.9 ? Math.max(0, 1 - (p.t - 0.9) / 0.4) : 1; if (a < 0.5) return;   // gone in one step: a fade would blend colours
+  const step = REDUCED ? 1 : p.t < 0.08 ? 0.7 : p.t < 0.16 ? 1.15 : 1;   // pops in steps, as pixel art does
+  const big = Math.max(26, Math.min(60, m.kartW * 0.4, m.h * 0.15)) * step;
+  // the word stays whole on screen: shrunk to fit, then kept half its (measured) width from each edge
+  const size = Math.min(big, fitFont(v.g, p.text, big, m.w - 24, 700)), half = v.g.measureText(p.text).width / 2 + 10;
+  const x = Math.max(half, Math.min(m.w - half, sx(v, cam, k.dist) + m.kartW * 0.2 - (REDUCED ? 0 : Math.max(0, p.t - 0.76) * m.w * 0.5)));
+  const y = Math.max(m.hud + big * 0.7, laneY(v, k.lane) - m.kartW * 0.95);
+  pxText(P, p.text, x, y, size, p.role ? C(p.role, 'light') : '#FFE27A', { max: m.w - 24 });
+}
+function pxFinish(v, P, place) {
+  const g = P.g, m = v.m, f = P.f, size = Math.max(22, Math.min(54, m.h * 0.14)), y = m.hud + (m.roadTop - m.hud) * 0.5;
+  g.fillStyle = P_INK; g.fillRect(0, Math.round((y - size) * f), P.NW, Math.round(size * 2 * f));
+  pxText(P, place === 1 ? t('won_banner') : t('fin_place', { place: placeName(place) }), m.w / 2, y, size, place === 1 ? '#FFD23F' : P_CREAM, { max: m.w - 24 });
+}
+function pxRaceView(v, dt, time) {
+  const race = S.race, me = race.karts[v.follow], m = v.m;
+  const lead = REDUCED ? 0 : Math.min(1, me.boost / CONFIG.race.maxBoost) * m.w * 0.08;
+  v.lead += (lead - v.lead) * Math.min(1, dt * 2);
+  const cam = me.dist - v.lead / m.ppm; v.cam = cam;
+  const P = pxPrepare(v);
+  pxScene(v, P, cam);
+  pxGantries(v, P, cam, race, time);
+  if (S.phase !== 'countdown') { emitKartParts(v, race, dt); stepParts(v, dt); }
+  pxParts(v, P, cam, false);
+  pxDrawKarts(v, P, race, S.infos, cam, time);
+  pxParts(v, P, cam, true);
+  pxSpeedLines(v, P, me, time);
+  pxAmbient(v, P, dt, time, me.v);
+  pxHud(v, P, race, S.infos, S.P[v.follow]);
+  pxCountdown(v, P);
+  if (me.finished && me.human) pxFinish(v, P, me.place);
+  pxPops(v, P, race, cam, dt);
+  pxBlit(v, P); pxFlushTexts(v, P);
+}
+function pxDemo(v, race, cam, dt, time) {
+  v.pxKdMax = 0;   // the podium's cap (below) is for the results only
+  const P = pxPrepare(v);
+  pxScene(v, P, cam);
+  emitKartParts(v, race, dt); stepParts(v, dt); pxParts(v, P, cam, false);
+  const lead = race.karts.reduce((a, k) => (k.dist > a.dist ? k : a), race.karts[0]);
+  if (!REDUCED) { const g = P.g, x = pxX(P, sx(v, cam, lead.dist)) - 34, y = Math.round(laneY(v, lead.lane) * P.f); g.fillStyle = P_CREAM; for (let i = 0; i < 4; i++) { const len = 14 + (i * 7) % 12, sh = Math.floor((time * 5 + i * 0.37) % 1 * 8); g.fillRect(x - len - sh, y - 8 - i * 6, len, 1); } }
+  pxDrawKarts(v, P, race, demo.infos, cam, time, demo.order);
+  pxAmbient(v, P, dt, time, 20);
+  pxBlit(v, P); pxFlushTexts(v, P);
+}
+function pxThumb(v, id) {
+  const P = pxPrepare(v); pxScene(v, P, 40 + id * 17);
+  pxKart(P, rivalInfo(CONFIG.rivals[id % 3], 3), v.m.x0 + v.m.kartW * 0.9, laneY(v, 1), 'idle');
+  pxKart(P, playerInfo(0), v.m.x0, laneY(v, 3), 'idle');
+  pxBlit(v, P);
+}
+/* ---------- Results in pixel art: the karts parked on a podium on the track's own ground, pixel confetti ---------- */
+const pxPod = { confetti: [], t: 0 };
+function pxPodiumStart() {
+  pxPod.t = 0; pxPod.confetti.length = 0;
+  const v = demo.view; v.scene = sceneOf(S.track); v.pxb = null; v.night = NIGHT();
+}
+function pxPodium(dt, time) {
+  const v = demo.view; if (!v.fit) fitView(v); if (!v.m || !S.results) return;
+  const R = S.results, card = $('resultScreen').querySelector('.ok-card'), wide = innerWidth / innerHeight >= 1.25;
+  const r = card ? card.getBoundingClientRect() : { left: innerWidth, top: innerHeight };
+  pxPod.t += dt;
+  const m = v.m, A = PXA(), [FW, FH] = A.kart, bw = FW + 4, unit = Math.max(8, Math.round(FW * 0.28));
+  // the free part of the screen (beside the card on wide screens, above it on tall ones), in css px
+  const fx0 = 0, fx1 = wide ? Math.max(m.w * 0.4, r.left - 16) : m.w, fy1 = wide ? m.roadTop + m.laneH : Math.max(m.h * 0.22, r.top - 6);
+  // the whole podium (three steps and the fourth kart beside them, 4.15 karts wide; the top step and its kart about
+  // 3 units + a kart tall) must fit that part: the pixel scale shrinks until it does, so no kart is ever behind the card
+  // wide screens park fourth place on the road in front of the steps (room below; the group is 3.6 karts wide), tall
+  // ones beside them (the card is below)
+  const dpr = v.dpr || 1, needW = bw * (wide ? 3.6 : 4.15) + 4, needH = unit * 3 + FH + 10 + (wide ? 24 : 0);
+  v.pxKdMax = Math.max(1, Math.floor(Math.min((fx1 - fx0) * dpr / needW, (fy1 - m.hud - 8) * dpr / needH)));
+  const P = pxPrepare(v), g = P.g, f = P.f;
+  pxScene(v, P, 30);
+  // the group runs from the fourth kart (-2.65 karts) to the third step (+1.5): centred in the free width
+  const cx = Math.round(((fx0 + fx1) / 2) * f + (wide ? 0.275 : 0.575) * bw), base = Math.round(Math.min(m.roadTop + m.laneH * 1.2, fy1 - 4) * f);
+  const steps = [[0, 3, '#FFD23F', '#C99A00'], [-1, 2, '#4FA8F0', '#2F6FC8'], [1, 1, '#FFC89E', '#C9713A']];
+  for (const [col, n, fill, lip] of steps) {
+    const x = cx + col * bw - bw / 2, top = base - n * unit;
+    pxBox(g, Math.round(x), top, bw, n * unit + 2, fill, lip);
+    g.fillStyle = PXK.nearest(hex2(lip)); g.fillRect(Math.round(x) + 2, top + 2, bw - 4, 1);
+    { const d = makeCanvas(3, 5); pxDigits(d.getContext('2d'), String(4 - n), 0, 0, P_INK); g.drawImage(d, Math.round(x + bw / 2 - 3), top + Math.round(n * unit / 2) - 5, 6, 10); }
+  }
+  R.standings.forEach((ki, i) => {
+    const info = S.infos[ki], [col, n] = i < 3 ? steps[i] : wide ? [-1.55, -1.4] : [-2.15, 0], hop = !REDUCED && i === 0 && Math.sin(pxPod.t * 6) > 0.5 ? 2 : 0;
+    pxKart(P, info, (cx + col * bw) / f, (base - n * unit - hop) / f, i === 0 ? 'cheer' : 'idle');
+  });
+  // confetti: pixel squares in the kit colours (none with reduced motion)
+  const won = R.place === 1 || (S.players === 2 && Math.min(R.per[0].place, R.per[1].place) === 1);
+  if (won && !REDUCED && pxPod.t < 5 && pxPod.confetti.length < 120) for (let i = 0; i < 3; i++) pxPod.confetti.push({ x: visRng() * P.NW, y: -2, vx: (visRng() - 0.5) * 8, vy: 14 + visRng() * 18, c: ['#FF6B5B', '#FFD23F', '#4FA8F0', '#66C792', '#9B6BE8'][i + (pxPod.confetti.length % 3)], s: visRng() < 0.3 ? 2 : 1 });
+  for (const c of pxPod.confetti) { c.x += c.vx * dt; c.y += c.vy * dt; g.fillStyle = c.c; if (c.y < P.NH) g.fillRect(Math.round(c.x), Math.round(c.y), c.s, Math.floor(pxPod.t * 8 + c.x) % 3 ? c.s : 1); }
+  pxAmbient(v, P, dt, time, 0);
+  pxBlit(v, P); pxFlushTexts(v, P);
+}
 /* =====================================================================================
    Saving (BRB.storage is the per-player cloud save). Only player 1 (the device owner) is saved.
    ===================================================================================== */
@@ -2092,6 +2685,7 @@ function fitMain(qm) {
   if (w0 > avail) { size = Math.max(17, Math.floor(size * avail / w0)); qm.style.fontSize = size + 'px'; }
   while (range.getBoundingClientRect().width > avail && size > 17) { size -= 0.5; qm.style.fontSize = size + 'px'; }
   if (range.getBoundingClientRect().width > avail) qm.classList.add('wrap');
+  if (PIX()) { const f = parseFloat(getComputedStyle(qm).fontSize) || size; let px = pxFontPx(f); if (px > f + 0.01) px -= 1000 / 92 / pxDpr(); qm.style.fontSize = Math.max(1000 / 92 / pxDpr(), px) + 'px'; }
 }
 function setLabel(ui, text, icon) { ui.qlabel.textContent = text; if (icon) ui.qlabel.insertAdjacentHTML('afterbegin', Oomba.icon(icon)); }
 function renderPanel(p) {
@@ -2136,7 +2730,7 @@ function showScreen(name) {
   S.screen = name; Oomba.scene = name;
   $('pickScreen').hidden = name !== 'pick';
   $('raceScreen').hidden = name !== 'race'; $('resultScreen').hidden = name !== 'results';
-  $('titleCanvas').hidden = name !== 'title' && name !== 'pick';
+  $('titleCanvas').hidden = name !== 'title' && name !== 'pick' && !(name === 'results' && PIX());
   $('practiceScreen').hidden = true;
   if (name === 'results') buildPodium(); else clearPodium();
   if (name === 'title') openTitle();
@@ -2224,7 +2818,10 @@ function showPicker() {
 function drawThumbs() {
   document.querySelectorAll('.tcard').forEach(b => {
     const id = +b.dataset.track, cv = b.querySelector('canvas'), w = Math.max(150, Math.round(cv.clientWidth || 180)), h = Math.round(w * 9 / 21);
-    const v = makeView(cv, 'thumb'); v.scene = sceneOf(id); v.night = NIGHT(); sizeView(v, w, h); buildTiles(v);
+    const v = makeView(cv, 'thumb'); v.scene = sceneOf(id); v.night = NIGHT();
+    if (PIX()) { pxSizeThumb(v); pxThumb(v, id); return; }
+    sizeView(v, w, h);
+    buildTiles(v);
     v.g.setTransform(v.dpr, 0, 0, v.dpr, 0, 0); drawScene(v, 40 + id * 17);
     const fake = (lane, dist) => ({ lane, dist, v: 0, wobble: 0, boost: 0, finished: false });
     drawKart(v, fake(1, 0), rivalInfo(CONFIG.rivals[id % 3], 3), v.m.x0 + v.m.kartW * 0.9, laneY(v, 1), 0);
@@ -2250,6 +2847,7 @@ let podium = [];
 function clearPodium() { for (const e of podium) e.remove(null); podium = []; WORLD.setBiome('none'); }
 function buildPodium() {
   clearPodium(); const R = S.results; if (!R) return;
+  if (PIX()) { pxPodiumStart(); return; }
   const tc = CONFIG.tracks[S.track - 1], cell = 64;
   WORLD.setBiome(tc.biome); if (!NIGHT()) WORLD.setTimeOfDay(tc.dusk ? 0.55 : 0, 0);
   // the podium: big blocks in the place colours (1st spark, 2nd sky, 3rd peach) on the track's ground
@@ -2300,7 +2898,11 @@ function showResults() {
     R.per.forEach((p, i) => {
       const r = document.createElement('div'); r.className = 'resRow';
       const info = S.infos[S.race.karts.indexOf(S.P[i].kart)], hs = headSprite(info, 40, DPR()), c = document.createElement('canvas');
-      c.width = hs.c.width; c.height = hs.c.height; c.getContext('2d').drawImage(hs.c, 0, 0); c.setAttribute('aria-hidden', 'true');
+      c.width = hs.c.width; c.height = hs.c.height; c.setAttribute('aria-hidden', 'true');
+      if (PIX()) {
+        const st = pxStep(pxDpr()), k = Math.max(1, Math.floor(40 * pxDpr() / 20 / st) * st || st), b = makeCanvas(20, 20), bg = b.getContext('2d'); bg.imageSmoothingEnabled = false; pxBadge(bg, info, 0, 0, 20);
+        c.width = c.height = 20 * k; c.style.width = c.style.height = 20 * k / pxDpr() + 'px'; const cg = c.getContext('2d'); cg.imageSmoothingEnabled = false; cg.drawImage(b, 0, 0, 20 * k, 20 * k);
+      } else c.getContext('2d').drawImage(hs.c, 0, 0);
       const b = document.createElement('b'), s = document.createElement('span'); b.textContent = ordinal(p.place);
       s.textContent = t('row_line', { i: i + 1, n: p.correct, acc: PCT.format(p.acc / 100) }) + (p.fastest != null ? ' · ' + t('secs', { s: NF1.format(p.fastest) }) : '');
       r.append(c, b, s); rows.append(r);
@@ -2308,13 +2910,13 @@ function showResults() {
     stats.append(chip(t('c_p1pts', { n: R.points }), 'star', 'star'));
   }
   const missed = R.per[0].missed.concat(two ? R.per[1].missed : []).filter((m, i, a) => a.findIndex(o => o.key === m.key) === i).slice(0, 3);
-  $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + m.answer)).join(t('list_sep')) }) : t('noMistakes');
+  $('resPractise').textContent = missed.length ? t('practise', { list: missed.map(m => LTR(m.text + ' = ' + qNum(m.answer))).join(t('list_sep')) }) : t('noMistakes');
   const mu = $('resMoveUp'); mu.hidden = !R.moveUp; if (R.moveUp) { mu.innerHTML = Oomba.icon('next'); mu.append(t('moveUp', { n: CONFIG.moveUpAfterWins, track: trackName(S.track + 1) })); }
   const hasNext = !LESSON.track && S.track < 7; $('nextBtn').hidden = !hasNext;
   const nextFirst = R.moveUp || R.place === 1;
   $('againBtn').className = 'ok-btn ' + (nextFirst && hasNext ? 'ok-quiet' : 'ok-hot'); $('nextBtn').className = 'ok-btn ' + (nextFirst ? 'ok-hot' : 'ok-quiet');
   const won = R.place === 1 || (two && Math.min(R.per[0].place, R.per[1].place) === 1);
-  if (won) { sfx('win', { caption: undefined }); if (!REDUCED) for (const ms of [400, 1300, 2300, 3400]) Oomba.time.real.after(S.fast ? 0 : ms, () => { if (S.screen === 'results') Oomba.juice.confetti(); }); }
+  if (won) { sfx('win', { caption: undefined }); if (!REDUCED && !PIX()) for (const ms of [400, 1300, 2300, 3400]) Oomba.time.real.after(S.fast ? 0 : ms, () => { if (S.screen === 'results') Oomba.juice.confetti(); }); }
   else sfx('pop');
   ($('nextBtn').hidden ? $('againBtn') : (nextFirst ? $('nextBtn') : $('againBtn'))).focus({ preventScroll: true });
   Oomba.time.real.after(0, framePodium);
@@ -2338,8 +2940,9 @@ function drawDemo(dt, time) {
   const race = demo.race; demo.t += dt;
   race.step(dt); demo.next -= dt; const me = race.karts[0];
   if (demo.next <= 0) { race.right(me, 2); demo.next = 1.6 + visRng() * 1.4; }
-  if (!v.tiles) buildTiles(v);
   const cam = race.karts.reduce((a, k) => a + k.dist, 0) / race.karts.length;
+  if (PIX()) return pxDemo(v, race, cam, dt, time);
+  if (!v.tiles) buildTiles(v);
   v.g.setTransform(v.dpr, 0, 0, v.dpr, 0, 0); drawScene(v, cam);
   emitKartParts(v, race, dt); stepParts(v, dt); drawParts(v, cam, false);
   const lead = race.karts.reduce((a, k) => (k.dist > a.dist ? k : a), race.karts[0]);
@@ -2354,11 +2957,22 @@ function drawDemo(dt, time) {
 function layoutViews() {
   VIEWS.forEach(v => { const box = v.cv.parentElement; if (box.offsetParent === null) return; fitView(v); });
   if (!$('titleCanvas').hidden) fitView(demo.view);
+  if (PIX()) { pxUnits(); pxSnapFonts(); if (S.screen === 'pick') drawThumbs(); }
   if (S.screen === 'results') framePodium();
 }
 if (window.ResizeObserver) { const ro = new ResizeObserver(layoutViews); VIEWS.forEach(v => ro.observe(v.cv.parentElement)); }
 window.addEventListener('resize', layoutViews);
+{ const watchDpr = () => { try { const q = matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`); q.addEventListener('change', () => { layoutViews(); watchDpr(); }, { once: true }); } catch (e) { /* older browsers: resize covers it */ } }; watchDpr(); }
 Oomba.theme.on('change', () => { thumbsDrawn = false; layoutViews(); });
+if (PXK) PXK.ready.then(ok => {
+  if (!ok) return;
+  document.documentElement.classList.add('sr-pixel'); pxUnits();
+  thumbsDrawn = false; VIEWS.concat(demo.view).forEach(v => { v.tiles = null; v.pxb = null; });
+  if (S.screen === 'pick') drawThumbs();
+  if (S.screen === 'results') buildPodium();
+  const again = () => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONTSTACK; pxLabels.clear(); if (S.screen === 'pick') drawThumbs(); layoutViews(); };
+  again(); try { document.fonts.load(`700 20px '${PXK.font}'`).then(again, () => {}); } catch (e) { /* the kit font stays */ }
+});
 Oomba.fonts.ready.then(() => { FONTSTACK = getComputedStyle(Oomba.ui.root()).getPropertyValue('--ok-font') || FONTSTACK; spriteCache.clear(); VIEWS.concat(demo.view).forEach(v => { v.tiles = null; }); });
 
 let last = performance.now(), frameGaps = null;
@@ -2371,6 +2985,7 @@ function frame(now) {
     if (!S.paused && !S.manual) update(dt);
     const vdt = S.paused ? 0 : dt;
     if (S.screen === 'race') for (let i = 0; i < S.players; i++) drawRaceView(VIEWS[i], vdt, S.time);
+    else if (PIX()) pxPodium(dt, S.time);
   }
   requestAnimationFrame(frame);
 }
@@ -2443,6 +3058,8 @@ requestAnimationFrame(frame);
 let nextSeed = null;
 window.__brbTest = Object.assign(window.__brbTest || {}, {
   /** cover(on): frame the race closer for the library cover (bigger kart and driver; the cover script calls it). */
+  /** style() -> 'pixel' when the race is drawn in pixel art (asked for and the art is ready), else 'ink'. */
+  style() { return PIX() ? 'pixel' : 'ink'; },
   cover(on = true) { COVER = on !== false; for (const v of VIEWS) { v.w = 0; v.h = 0; fitView(v); } return COVER; },
   state() {
     const race = S.race, p1 = S.P[0];

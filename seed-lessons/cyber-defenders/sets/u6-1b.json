@@ -21,7 +21,8 @@
     "It deletes your backup",
     "It changes your passphrase for you"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Tricksters hunt for known holes in old versions. An update is the fix that closes those holes, which is why it matters more than a brighter screen or a new look."
   },
   {
    "id": "cd-1b-6.1-e2",
@@ -38,7 +39,8 @@
     "The loudest ringtone",
     "The newest game"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "When the tablet breaks, every copy stored inside it is stuck too. A copy kept in another place is not in the broken tablet, so it is still there."
   },
   {
    "id": "cd-1b-6.1-e3",
@@ -55,7 +57,8 @@
     "If one layer slips, the second still guards you",
     "Strong locks are against the rules"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Every lock can slip once: a key is guessed, a door left open. With a second layer, the trickster has to be lucky twice, and that rarely happens."
   },
   {
    "id": "cd-1b-6.2-e1",
@@ -72,7 +75,8 @@
     "Nobody writes them down",
     "On the post office roof"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Rules have to be written down where everyone can read them before they join. That is the agreement: by joining, every player says yes to the same rules."
   },
   {
    "id": "cd-1b-6.2-e2",
@@ -89,7 +93,8 @@
     "Nothing at all",
     "The law, which says the drawing is yours"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Making something gives you a say over who may copy and share it. A site that takes your drawing as its own is breaking that rule, even if nobody stops it."
   },
   {
    "id": "cd-1b-6.2-e3",
@@ -106,7 +111,8 @@
     "Fix it all by yourself",
     "Leave every game forever"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Breaking rules back puts you in trouble too, and you cannot make a stranger stop on your own. A trusted adult can report it and get the rules enforced."
   },
   {
    "id": "cd-1b-6.3-e1",
@@ -123,7 +129,8 @@
     "Stop, save it, tell an adult, block or report, carry on",
     "Open, read, answer, forward, close"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "The order matters: stopping keeps it from getting worse, saving keeps the proof, telling gets help, blocking cuts it off, and then you can carry on safely."
   },
   {
    "id": "cd-1b-6.3-e2",
@@ -140,7 +147,8 @@
     "It sends the message back",
     "It does not help at all"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Adults and the app can only act on what they can see. A deleted message is gone, and with it the proof of who sent it."
   },
   {
    "id": "cd-1b-6.3-e3",
@@ -157,7 +165,8 @@
     "Type it again to check",
     "Tell nobody and hope"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Whoever made the fake page now has your key and can use it at any moment. Changing it fast makes the stolen key useless, and an adult can help do it right."
   },
   {
    "id": "cd-1b-6.4-e1",
@@ -174,7 +183,8 @@
     "Building a longer passphrase",
     "Sorting Share and Keep Private"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "The clues sit in the letter itself: it rushes you, and you cannot win something you never entered. Spotting clues like those is how tricks are caught."
   },
   {
    "id": "cd-1b-6.4-e2",
@@ -191,7 +201,8 @@
     "Always trust the first message",
     "Ask the Magpie which is real"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Footprint clues decide it: what each message knows, and how it asks. Colors, order or the Magpie's word prove nothing."
   },
   {
    "id": "cd-1b-6.4-e3",
@@ -208,7 +219,8 @@
     "Unit 5, kind screens",
     "Unit 2, keys and secret codes"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Codes that only the key holder can read were trained in Unit 2, keys and secret codes."
   }
  ]
 }

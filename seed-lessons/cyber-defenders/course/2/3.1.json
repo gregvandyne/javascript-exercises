@@ -9,29 +9,7 @@
   {
    "title": "Facts that point at you",
    "text": "Pim calls these facts PII: your full name, where you live, school, birthday, location, photos and voice. Each one points at one person: you.",
-   "art": "people",
-   "img": "csq/would-you-rather/online-name-2",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-   "focus": [
-    {
-     "cue": "A nickname that nobody can trace to you",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
-     ]
-    },
-    {
-     "cue": "Your real first name, out in the open",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "title": "Sharing buys real things",
@@ -115,29 +93,7 @@
   {
    "title": "Fixing an overshare",
    "text": "Some sharing can be undone: delete the post and ask the service to remove its copies. Some cannot, so tell a trusted adult fast, and in some places the law can help too.",
-   "art": "shield",
-   "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "focus": [
-    {
-     "cue": "Delete an old post you are embarrassed by",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or leave it, and laugh it off",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "shield"
   },
   {
    "kind": "words",
@@ -166,18 +122,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. For one dilemma, name the price in PII and say if the benefit is worth it.",
+   "text": "Open Trick Inbox at Private Facts and sort all 6 messages. For each one, name the PII it asks for, and say whether any benefit is worth that price.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-photo-2",
-   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
+   "img": "csq/trick-inbox/private-1b-pf-1-all",
+   "alt": "A letter from Birthday Club with both clues marked: three me-facts asked together, and a surprise present as the bait.",
    "focus": [
     {
-     "cue": "Play Online: name the price in PII",
+     "cue": "Play Private Facts: name the PII it asks for",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      46.6,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -189,8 +145,8 @@
   "cd-2-3.1-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "private",
+  "params": "chapter=private&band=2&lock=1"
  }
 }

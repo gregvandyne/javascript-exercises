@@ -10,27 +10,84 @@
    "title": "Data from real people",
    "text": "Today the data comes from real people: you and the people around you. Collecting it well is half the job.",
    "art": "people",
-   "img": "csq/data-detective/mydata-1b-key",
-   "view": [
-    55,
-    9,
-    45,
-    67
-   ],
-   "alt": "My Data opens a class survey: one question, and answer rows waiting for the class to fill them in."
+   "img": "csq/data-detective/mydata-1b-start-n",
+   "alt": "The class survey begins: one stepper per answer, Dog 3 and Cat 2 so far, and Dot explains how to tally, chart and claim.",
+   "focus": [
+    {
+     "cue": "One tap on plus for every answer",
+     "box": [
+      3,
+      27.2,
+      94,
+      13.2
+     ]
+    },
+    {
+     "cue": "Dog 3 and Cat 2 so far",
+     "box": [
+      3,
+      54.2,
+      94,
+      13.2
+     ]
+    }
+   ]
   },
   {
-   "title": "Tally marks",
-   "text": "A survey asks people one question. Each answer gets a tally mark. Count the marks in fives: four lines, then one across.",
+   "title": "One mark per answer",
+   "text": "A survey asks people one question. Each answer gets one mark: on paper a tally mark, counted in fives, four lines then one across. In the game, one tap on plus.",
    "art": "pencil",
-   "img": "csq/data-detective/mydata-1b-tally",
-   "view": [
-    0.8,
-    9,
-    54,
-    48
-   ],
-   "alt": "Tallying the survey: answers are counted with the steppers, each one adding to its row of the class data."
+   "visual": {
+    "type": "tally",
+    "label": "Pets at home, tallied: Dog 12, Cat 3, Fish 4, None 2",
+    "rows": [
+     {
+      "label": "Dog",
+      "n": 12
+     },
+     {
+      "label": "Cat",
+      "n": 3
+     },
+     {
+      "label": "Fish",
+      "n": 4
+     },
+     {
+      "label": "None",
+      "n": 2
+     }
+    ]
+   },
+   "focus": [
+    {
+     "cue": "Dog: 12 answers, 12 marks",
+     "box": [
+      5,
+      23.5,
+      90,
+      16
+     ]
+    },
+    {
+     "cue": "Every fifth mark goes across a group of four",
+     "box": [
+      28,
+      23.5,
+      10,
+      16
+     ]
+    },
+    {
+     "cue": "Fish: 4 marks, so 4 answers",
+     "box": [
+      5,
+      57,
+      90,
+      16
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -40,43 +97,85 @@
    "steps": [
     "dog: 12",
     "cat: 3",
-    "other: 4",
+    "fish: 4",
     "none: 2"
    ],
-   "img": "csq/data-detective/mydata-1b-chart",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The survey tallies turned into a bar chart: one bar per pet, and the dog bar towers over the rest."
+   "img": "csq/data-detective/mydata-1b-chart-n",
+   "alt": "The same tally as a bar chart: Dog 12 towers over Cat 3, Fish 4 and None 2.",
+   "focus": [
+    {
+     "cue": "Dog: 12, the tallest bar",
+     "box": [
+      6.1,
+      12.5,
+      14,
+      27
+     ]
+    },
+    {
+     "cue": "Cat 3, Fish 4, None 2",
+     "box": [
+      23.7,
+      74.2,
+      68.8,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "title": "Fair claims",
    "text": "A fair claim says only what the chart shows, about the people you asked. Dogs are the favorite pet in our class is fair. Dogs are everyone's favorite is not.",
    "art": "star",
-   "img": "csq/data-detective/mydata-1b-chart",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The survey tallies turned into a bar chart: one bar per pet, and the dog bar towers over the rest."
+   "img": "csq/data-detective/mydata-1b-claims-n",
+   "alt": "The claim card for the pet chart: most kids picked Dog; fewest picked Bird; more than half picked Dog; Dog and Fish tied.",
+   "focus": [
+    {
+     "cue": "Fair: most kids in our class picked Dog",
+     "box": [
+      20.8,
+      3.7,
+      43.9,
+      12.4
+     ]
+    },
+    {
+     "cue": "Fewest picked Bird? Rabbit got 0 too",
+     "box": [
+      20.8,
+      29.1,
+      48.5,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "Ask someone else",
-   "text": "Show your claim to someone else and ask: is it fair? They may see something you missed.",
+   "text": "Show your claim to someone else and ask: is it fair? Dot does the same: she asks you to show the bar that proves it.",
    "art": "people",
-   "img": "csq/data-detective/mydata-1b-second",
-   "view": [
-    55,
-    9,
-    45,
-    67
-   ],
-   "alt": "A second survey question waits in My Data: fresh answers to collect before anyone pins a claim about them."
+   "img": "csq/data-detective/mydata-1b-showme-n",
+   "alt": "A claim is pinned, and Dot asks for proof: now show me, tap the bar that proves it.",
+   "focus": [
+    {
+     "cue": "Dot asks: show me the proof",
+     "box": [
+      21.7,
+      27.3,
+      73.8,
+      21.2
+     ]
+    },
+    {
+     "cue": "Tap the bar that proves it",
+     "box": [
+      4.3,
+      60.2,
+      91,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -104,7 +203,7 @@
   },
   {
    "title": "Dot's piece lights up",
-   "text": "Dot's piece clicks into place — two of four, and the Spark is shining. Next, Pim the owl is waiting at the post office, with a town full of letters to deliver.",
+   "text": "Dot's piece clicks into place: two of four, and the Spark glows a little brighter. Next, Pim the owl is waiting at the post office, with a town full of letters to deliver.",
    "art": "chart",
    "story": {
     "scene": "handoff",
@@ -120,14 +219,28 @@
    "title": "Your mission",
    "text": "Open Data Detective at My Data. Chart both survey questions with the steppers. Pin one claim, then ask someone if it is fair.",
    "art": "trophy",
-   "img": "csq/data-detective/mydata-1b-key",
-   "view": [
-    55,
-    9,
-    45,
-    67
-   ],
-   "alt": "My Data opens a class survey: one question, and answer rows waiting for the class to fill them in."
+   "img": "csq/data-detective/mydata-1b-start-n",
+   "alt": "The class survey begins: one stepper per answer, Dog 3 and Cat 2 so far, and Dot explains how to tally, chart and claim.",
+   "focus": [
+    {
+     "cue": "Tally each answer with the steppers",
+     "box": [
+      3,
+      27.2,
+      94,
+      13.2
+     ]
+    },
+    {
+     "cue": "Then chart it and pin one fair claim",
+     "box": [
+      45.5,
+      2,
+      11.5,
+      12.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -44,7 +44,7 @@
      "cue": "A group falls out over a dare",
      "box": [
       7.1,
-      32.0,
+      32,
       85.7,
       22.4
      ]
@@ -65,13 +65,13 @@
    "text": "Every incident has roles: the target, the actor, the bystanders and the upstander. Most people are bystanders, which is exactly why bystanders decide how these stories end.",
    "art": "people",
    "img": "csq/trick-inbox/chat-2-ch-3-debrief",
-   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
+   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the vandal.",
    "focus": [
     {
      "cue": "Bystanders decide: never join in, never pass it on",
      "box": [
       6.4,
-      17.9,
+      19.5,
       87.1,
       47.4
      ]
@@ -127,9 +127,9 @@
     {
      "cue": "Keep the evidence, then tell an adult",
      "box": [
-      5.0,
-      25.0,
-      90.0,
+      5,
+      25,
+      90,
       36.4
      ]
     }
@@ -165,15 +165,15 @@
    "text": "Open Trick Inbox at Chat Careful and sort all 7 chat messages. Before you start, know your reporting route: the trusted adult at home or at school you would tell.",
    "art": "trophy",
    "img": "csq/trick-inbox/chat-2-ch-1-debrief",
-   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
+   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the account thief, who wants into your account.",
    "focus": [
     {
      "cue": "Play Chat Careful: know your reporting route",
      "box": [
       2.8,
-      7.2,
+      2.5,
       94.4,
-      91.7
+      97.5
      ]
     }
    ]

@@ -129,7 +129,9 @@ export function gameFrame({ stage, role, getToken, onReady = () => {}, onOut = (
     });
     // ?okTier=low|mid|high on the page goes on to the game (the kit's device tier: Chromebook testing)
     const tier = /^(low|mid|high)$/.test(new URLSearchParams(location.search).get('okTier') || '') ? new URLSearchParams(location.search).get('okTier') : '';
-    const q = [v === '2d' ? 'view=2d' : '', tier ? `okTier=${tier}` : ''].filter(Boolean).join('&');
+    // ?style=cartoon too (the kit's okStyle: the art style a 3D game offers)
+    const style = ['cartoon', 'breeze'].includes(new URLSearchParams(location.search).get('style')) ? new URLSearchParams(location.search).get('style') : '';
+    const q = [v === '2d' ? 'view=2d' : '', tier ? `okTier=${tier}` : '', style ? `okStyle=${style}` : ''].filter(Boolean).join('&');
     iframe.src = `/live/frame/${encodeURIComponent(token)}${q ? `?${q}` : ''}`;
     stage.appendChild(iframe);
   }

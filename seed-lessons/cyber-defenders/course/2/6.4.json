@@ -17,9 +17,9 @@
      "cue": "Spark Day: every channel at once",
      "box": [
       2.8,
-      69.0,
+      69,
       94.4,
-      31.0
+      31
      ]
     }
    ]
@@ -64,7 +64,7 @@
       5.2,
       50.2,
       41.2,
-      49.0
+      49
      ]
     }
    ]
@@ -150,16 +150,16 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office and play the full escape. Open all six locks, earn your Defender shield, and share the debrief page with a trusted adult or your class.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/door-2-five",
-   "alt": "Lock open! Lock 1, Sorting Gate (Unit 1 stamp: Roadwise), and Lock 2, Sealed Note (Unit 2 stamp: Keykeeper), both open.",
+   "img": "csq/escape-the-post-office/shield-2",
+   "alt": "The Defender shield: all six locks open, each with its stamp and the skill it trained.",
    "focus": [
     {
      "cue": "Open each lock in turn, then share the debrief",
      "box": [
-      2.7,
-      45.9,
-      94.5,
-      53.5
+      6.9,
+      4.4,
+      88,
+      10
      ]
     }
    ]

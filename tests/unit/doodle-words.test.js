@@ -85,7 +85,12 @@ test('Pip\'s doodles: valid strokes on the board, each for a word in the list, e
 });
 
 test('the starter id and the landing samples', () => {
-  assert.deepEqual(DD.parseId('doodle:fr:2:3:100'), { lang: 'fr', lvl: 2, rounds: 3, secs: 100 });
+  assert.deepEqual(DD.parseId('doodle:fr:2:3:100'), { lang: 'fr', lvl: 2, rounds: 3, secs: 100, tiles: false });
+  // ':t' at the end: letter tiles (the host's easier choice); without it players type their guesses
+  assert.deepEqual(DD.parseId('doodle:fr:2:3:100:t'), { lang: 'fr', lvl: 2, rounds: 3, secs: 100, tiles: true });
+  assert.equal(DD.parseId('doodle:fr:2:3:100:x'), null);
+  assert.equal(DD.makeId({ lang: 'de', lvl: 1, rounds: 2, secs: 80, tiles: true }), 'doodle:de:1:2:80:t');
+  assert.equal(DD.makeId({ lang: 'de', lvl: 1, rounds: 2, secs: 80, tiles: 'yes' }), 'doodle:de:1:2:80', 'only true, 1 or "1" means tiles');
   // Japanese and Traditional Chinese words wait for a native speaker's review: not offered, and those pages play in English
   assert.ok(!DD.LANGS.includes('ja') && !DD.LANGS.includes('zh-Hant'));
   assert.equal(DD.parseId('doodle:zh-Hant:1:1:60'), null); assert.equal(DD.langFor('ja'), 'en');

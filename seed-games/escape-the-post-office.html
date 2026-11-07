@@ -45,6 +45,9 @@
   .ep-node .ep-ico { position: absolute; left: -23px; top: -23px; width: 46px; height: 46px; border-radius: 50%; background: var(--ok-card); border: 3px solid var(--ok-edge); display: grid; place-items: center; font-size: 22px; }
   .ep-node.ep-here .ep-ico { outline: 4px solid var(--ep-lit); outline-offset: 2px; }
   .ep-node small { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: .72em; background: var(--ok-card); border-radius: 8px; padding: 1px 6px; white-space: nowrap; }
+  /* a place name rides above the road buttons (taps still reach them: nodes take no pointer events), so a road button next to
+     a long name never hides its last letters ("Post Offic") */
+  .ep-board .ep-node { z-index: 3; }
   .ep-link { position: absolute; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
     display: grid; place-items: center; padding: 0; cursor: pointer; font: inherit; font-weight: 800; box-shadow: 0 3px 0 var(--ok-edge); z-index: 2; }
   .ep-link.ep-ok { background: var(--ep-go); color: var(--ep-ink); }
@@ -80,11 +83,11 @@
   @media (orientation: landscape) and (max-height: 520px) { .ep { top: calc(64px + env(safe-area-inset-top)); gap: 6px; } .ep-main { gap: 6px; } .ep-say { min-height: 44px; padding: 4px 8px; } .ep-board { height: min(52vh, 320px); } }
 </style>
 <div id="game"></div>
-<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-zeLmUxnF20GLI7VC6XfgOcb9DiFTxC7mSAc0QTkXllv6zvdzzEFtrAWb6TsmeAIY" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-props.js" integrity="sha384-9tpA0++uM7b3UfvT/6FfH/hFFWhP5Ipvv1JEBl7UPxkukZiBOM9ADRblCr0qCzKk" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-animals.js" integrity="sha384-GntsshX3KJc7NNGcJsefnPEcYLfY5lHGL5ow+tGUPHbiwbiLKzdYKFp9uciiblsG" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-school.js" integrity="sha384-VQndRmNEoGnNDs6VhEBvG5GpzW0Iwl5NJYE8VU2j403u8b7qeI44NX89zuTbzM21" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/style-bold.js" integrity="sha384-dtsIs1XzPIodWCwlRmUUGv3b45RNWFTtMH4mSmcY+QmPfH+QqjFebkDnd+QfbB0w" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-props.js" integrity="sha384-313YTtGuc9OuNirXhcAwWuNAozOpYv7J0aA689cyD+RnwN6wDLPIbgXK6jhPsQfD" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/style-bold.js" integrity="sha384-Hf1XPJGmd/jqSL2OQ5zX8FnGjLZPrFI7HWmKei+PZGnSFeP+m2M2NQo1E5G3l0cS" crossorigin="anonymous"></script>
 <script>
 /* ===== Escape the Post Office engine: the six trick locks, their runs, the hint feathers and the shield.
    Plain data and functions (no DOM, no kit), so the unit test can load this block on its own.
@@ -256,7 +259,7 @@ class Run {
     if (this.lock.id === 'sorting-gate') {
       if (a.t !== 'hop') return this.wobble('Tap a road to move the golden letter.');
       if (!this.linksAt(this.s.at).includes(a.id)) return this.wobble('That road does not start here. Follow the letter.');
-      if (this.closed(a.id)) return this.wobble('That road is closed. Pim nudges: find another way round.');
+      if (this.closed(a.id)) return this.wobble('That road is closed, so no letter can pass it. The network sends it round by another open road: find one.');
       this.s.at = this.other(a.id, this.s.at); this.s.hops++; this.s.note = '';
       if (this.s.at === d.route.to) return this.finish('The golden letter reached the sorting room door.');
       return { ok: true, note: '' };
@@ -364,6 +367,9 @@ const practiceLock = () => E.LOCKS.find(l => l.id === S.practice);
 let PIM = O.char(CONFIG.pim);
 
 const SET = ['                      ', '                      ', '                      ', '                      ', '                      ', '                      ', '  P   N               ', '######################', '######################'];
+/* A finished run wakes to its own win screen, never to the Pause menu: the page's win sheet takes the focus, the frame
+   blurs and the kit opens its pause screen; when the focus comes back (Keep playing), that pause closes again. */
+try { O.on('focus', () => { if (!S.reported) return; const r = document.querySelector('.ok-modal.ok-pause [data-ok-focus]'); if (r) r.click(); }); } catch (e) { /* an older kit */ }
 let game = O.game({
   api: 1, title: CONFIG.title, subtitle: tr('Six locks. Six stamps. One way out.'), biome: CONFIG.biome,
   controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.7, countdown: 0,
@@ -378,7 +384,7 @@ function frame(w) {
   Cm.bounds(null); Cm.zoom = z; Cm.x = L.w / 2; Cm.y = L.h - w.cell * 1.6 - V.vh / z / 2;
   const pim = w.find('pim'); if (pim && w.hero) { const d = (tall ? 1.1 : 2.4) * w.cell; pim.x = L.w / 2 + d; w.hero.x = L.w / 2 - d; }
 }
-function onStart(w) { S.w = w; if (S.practice) { S.reported = false; newEscape(); return renderLock(practiceLock()); } showDoor(); }
+function onStart(w) { S.w = w; if (S.practice) { S.reported = false; newEscape(); hudSync(); return renderLock(practiceLock()); } hudSync(); showDoor(); }
 function hideAll() { if (S.dom) S.dom.ep.hidden = true; }
 function build() {
   if (S.dom) return S.dom;
@@ -415,8 +421,14 @@ function hintButton(main, lock) {
   if (used) say2.textContent = tr(lock.hint[S.band]);
   return say2;
 }
+/** The HUD: a star for every open lock (a practice lock: its one star), and the progress bar the same. */
+function hudSync() {
+  const w = S.w; if (!w || !w.hud || !S.esc) return;
+  const total = S.practice ? 1 : 6, got = S.practice ? (S.esc.open.includes(S.practice) ? 1 : 0) : S.esc.open.length;
+  try { if (w.hud.count) w.hud.count.set(got, total); if (w.hud.progress) w.hud.progress.set(got / total); } catch (e) { /* an older kit */ }
+}
 function lockDone(lock, note) {
-  persist(); sfx('win');
+  persist(); sfx('win'); hudSync();
   try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'ep', lock: lock.id, unit: lock.unit, band: S.band === '2' ? 2 : 1, hintsUsed: S.esc.hintsUsed }); } catch (e) { /* older SDK */ }
   if (S.practice) return showPracticeDone(lock, note);
   if (S.esc.escaped) return showShield();

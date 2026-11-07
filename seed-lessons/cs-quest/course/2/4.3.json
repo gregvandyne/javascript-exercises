@@ -10,14 +10,28 @@
    "title": "Scramble it",
    "text": "Encryption scrambles a message so only someone with the key can read it. Decrypting turns it back.",
    "art": "cipher",
-   "img": "csq/packet-post/ciphers-2-key",
-   "view": [
-    7,
-    28,
-    47,
-    68
-   ],
-   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
+   "img": "csq/packet-post/ciphers-2-shift-n",
+   "alt": "The shift cipher wheel turned to 3: DSSOH reads APPLE.",
+   "focus": [
+    {
+     "cue": "Scrambled: DSSOH",
+     "box": [
+      5,
+      86.2,
+      22.3,
+      13.5
+     ]
+    },
+    {
+     "cue": "The key, shift 3, turns it back into APPLE",
+     "box": [
+      40.6,
+      8,
+      18.7,
+      15
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -30,53 +44,109 @@
     "C → F",
     "CAT → FDW"
    ],
-   "img": "csq/packet-post/ciphers-2-shift",
-   "view": [
-    7,
-    28,
-    47,
-    68
-   ],
-   "alt": "The wheel at work: letters are shifting along the alphabet by the key, turning plain words into code."
+   "img": "csq/packet-post/ciphers-2-shift-n",
+   "alt": "The shift cipher wheel turned to 3: DSSOH reads APPLE.",
+   "focus": [
+    {
+     "cue": "The key: how far to shift",
+     "box": [
+      40.6,
+      8,
+      18.7,
+      15
+     ]
+    },
+    {
+     "cue": "D back 3 is A: DSSOH reads APPLE",
+     "box": [
+      5,
+      86.2,
+      22.3,
+      13.5
+     ]
+    }
+   ]
   },
   {
    "title": "Brute force",
    "text": "A shift has only 25 keys, so you can try them all. That is brute force. A keyed substitution has so many keys that trying them all takes far too long.",
    "art": "chip",
-   "img": "csq/packet-post/ciphers-2-brute",
-   "view": [
-    7,
-    28,
-    47,
-    68
-   ],
-   "alt": "A later cipher level: with so few keys, trying every one is a real way in — for a shift cipher."
+   "img": "csq/packet-post/ciphers-2-brute-n",
+   "alt": "An unknown shift: turn the wheel one step at a time until DAOWQF turns into a real word.",
+   "focus": [
+    {
+     "cue": "No shift given: try them one by one",
+     "box": [
+      40.5,
+      8,
+      19,
+      15
+     ]
+    },
+    {
+     "cue": "Until DAOWQF reads as a real word",
+     "box": [
+      5,
+      86.2,
+      27.2,
+      13.5
+     ]
+    }
+   ]
   },
   {
    "title": "Hiding is not scrambling",
    "text": "Steganography hides a message, for example in a picture's pixels. Anyone who finds it can read it. Encryption makes it unreadable without the key.",
    "art": "pixel",
-   "img": "csq/packet-post/ciphers-2-stego",
-   "view": [
-    16,
-    41,
-    30,
-    42
-   ],
-   "alt": "Steganography: a heart hidden in a picture. Each pixel is a number, and its last bit says dot or blank, so the picture looks the same."
+   "img": "csq/packet-post/ciphers-2-stego-n",
+   "alt": "Hide a heart inside an ordinary picture: every pixel is a number, and its last bit, odd or even, carries the secret.",
+   "focus": [
+    {
+     "cue": "Every pixel is a number",
+     "box": [
+      17,
+      1,
+      63,
+      97
+     ]
+    },
+    {
+     "cue": "Its last bit, odd or even, hides the secret",
+     "box": [
+      17,
+      1,
+      63,
+      18
+     ]
+    }
+   ]
   },
   {
    "title": "Faked senders",
    "text": "A trick message can fake its sender name. That is spoofing. It may also use facts from a public profile to seem friendly.",
    "art": "mask",
-   "img": "csq/packet-post/tricks-2-fake",
-   "view": [
-    6.5,
-    25.5,
-    48,
-    28
-   ],
-   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
+   "img": "csq/packet-post/tricks-2-fake-n",
+   "alt": "A card that says it is from Your bank, but carries an unknown sender badge: the name is faked.",
+   "focus": [
+    {
+     "cue": "It says Your bank",
+     "box": [
+      24.4,
+      33.4,
+      19.9,
+      11.6
+     ]
+    },
+    {
+     "cue": "But the sender is unknown: spoofed",
+     "box": [
+      53.9,
+      33.4,
+      31.4,
+      11.6
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -104,7 +174,7 @@
   },
   {
    "title": "Pim's piece lights up",
-   "text": "Three pieces lit. Pim bows, and the Spark is nearly whole. One world is left: Gizmo the mouse is waiting inside the machine, where everything is very, very small.",
+   "text": "Three pieces lit. Pim bows, and the Spark glows brighter still. One world is left: Gizmo the mouse is waiting inside the machine, where everything is very, very small.",
    "art": "envelope",
    "story": {
     "scene": "handoff",
@@ -120,14 +190,28 @@
    "title": "Your mission",
    "text": "Open Packet Post at Secret Messages and finish all 7 levels with the key wheel. Then the game sends you to Spot the Trick: check the 4 trick cards there for faked senders.",
    "art": "trophy",
-   "img": "csq/packet-post/ciphers-2-key",
-   "view": [
-    7,
-    28,
-    47,
-    68
-   ],
-   "alt": "Secret Messages in Pro: the cipher wheel waits with a scrambled message only the key can open."
+   "img": "csq/packet-post/ciphers-2-shift-n",
+   "alt": "The shift cipher wheel turned to 3: DSSOH reads APPLE.",
+   "focus": [
+    {
+     "cue": "Turn the key wheel",
+     "box": [
+      40.6,
+      8,
+      18.7,
+      15
+     ]
+    },
+    {
+     "cue": "Until the reading makes sense",
+     "box": [
+      5,
+      86.2,
+      22.3,
+      13.5
+     ]
+    }
+   ]
   }
  ],
  "check": [

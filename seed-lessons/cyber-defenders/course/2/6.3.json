@@ -34,9 +34,9 @@
     {
      "cue": "Contain first: stop and disconnect",
      "box": [
-      5.0,
+      5,
       55.8,
-      90.0,
+      90,
       20.3
      ]
     }
@@ -45,20 +45,7 @@
   {
    "title": "Preserve the evidence",
    "text": "Preserve means keep the proof: screenshots, the message, the time it arrived. Do not delete in embarrassment. Evidence is what lets adults and platforms act, and speed beats embarrassment, twice over.",
-   "art": "envelope",
-   "img": "csq/escape-the-post-office/moves-2-three",
-   "alt": "Three moves placed: stop and disconnect, save the evidence (delete nothing), tell a trusted adult. The rest wait as tiles below.",
-   "focus": [
-    {
-     "cue": "Preserve: save the evidence, delete nothing",
-     "box": [
-      5.0,
-      25.0,
-      90.0,
-      20.3
-     ]
-    }
-   ]
+   "art": "envelope"
   },
   {
    "title": "Report, then recover",
@@ -70,7 +57,7 @@
     {
      "cue": "Report and block, then recover",
      "box": [
-      5.0,
+      5,
       36.1,
       75.3,
       27.9
@@ -88,19 +75,6 @@
     "Preserve: screenshot the page and note the time",
     "Report: trusted adult, school, platform",
     "Recover: new passphrase everywhere it was reused"
-   ],
-   "img": "csq/trick-inbox/senders-2-sd-1-debrief-n1",
-   "alt": "The debrief: the name says Post Office, but the real address is a freemail box and the button goes elsewhere. That mismatch is spoofing.",
-   "focus": [
-    {
-     "cue": "A faked sender's button went somewhere else",
-     "box": [
-      6.4,
-      20.3,
-      87.1,
-      47.4
-     ]
-    }
    ]
   },
   {

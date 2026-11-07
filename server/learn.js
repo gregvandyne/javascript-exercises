@@ -29,7 +29,7 @@ export const LEARNING = {
   'data-detective': { key: 'dataDetective', teaches: ['Organizing data', 'Charts', 'Claims from data', 'Cleaning data', 'Fairness in data'], level: 'Grades 3-8' },
   'packet-post': { key: 'packetPost', teaches: ['Packets', 'Routing', 'Protocols', 'Passphrases', 'Spotting tricks', 'Ciphers'], level: 'Grades 3-8' },
   'inside-the-machine': { key: 'insideTheMachine', teaches: ['Computer parts', 'Hardware and software', 'Troubleshooting', 'Bits and pixels', 'Designing for everyone'], level: 'Grades 3-8' },
-  // Doodle Hoot: draw a word, or spell one with letter tiles; Easy, Medium or Tricky words in 13 languages.
+  // Doodle Hoot: draw a word, or guess one (typed, out loud, or with letter tiles); Easy, Medium or Tricky words in 13 languages.
   'doodle-hoot': { key: 'doodleHoot', teaches: ['Spelling', 'Vocabulary', 'Drawing', 'Languages'], level: 'Grades 1-8' },
 };
 /** The grade band of some launch games, for the visible "Grades 1–5" line: { from, to } ('K' or a number), or null. */

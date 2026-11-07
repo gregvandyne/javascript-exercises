@@ -10,27 +10,55 @@
    "title": "Fair questions first",
    "text": "A survey asks people questions. The answers can only be fair if the questions are fair.",
    "art": "people",
-   "img": "csq/data-detective/mydata-2-key",
-   "view": [
-    55,
-    9,
-    45,
-    67
-   ],
-   "alt": "My Data in Pro: a survey question and its answer rows, where fairness starts with how the question is asked."
+   "img": "csq/data-detective/mydata-2-fair-n",
+   "alt": "One plain survey question, Pets at home, tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2.",
+   "focus": [
+    {
+     "cue": "One plain question: pets at home",
+     "box": [
+      7.9,
+      14.3,
+      27.3,
+      12.4
+     ]
+    },
+    {
+     "cue": "Every answer is counted the same",
+     "box": [
+      6,
+      32.5,
+      63.5,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "Leading questions",
    "text": "A question that pushes people toward one answer is a leading question. It builds bias into the data before anyone counts.",
    "art": "mask",
-   "img": "csq/data-detective/mydata-2-second",
-   "view": [
-    55,
-    9,
-    45,
-    67
-   ],
-   "alt": "A second Pro survey question: its wording matters, because a pushing question bends the data before counting."
+   "img": "csq/data-detective/mydata-2-own-n",
+   "alt": "Pick a question: pets, colors, fruit, sport, how we get to school, or our own question.",
+   "focus": [
+    {
+     "cue": "Ready-made questions",
+     "box": [
+      5.5,
+      32.9,
+      64,
+      12.4
+     ]
+    },
+    {
+     "cue": "Or your own question: keep it fair",
+     "box": [
+      56.2,
+      80.3,
+      36.1,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -40,41 +68,70 @@
    "steps": [
     "leading: Don't you agree homework is too long?",
     "fair: Is homework too long, about right or too short?"
-   ],
-   "img": "csq/data-detective/fair-2-questions",
-   "view": [
-    0.8,
-    9,
-    54,
-    55
-   ],
-   "alt": "One Grade Asked: a fairness case about who a survey asked, and who it never reached."
+   ]
   },
   {
    "title": "A bigger, fairer sample",
    "text": "More answers from more kinds of people make a fairer sample. Even a few missing answers can change a close result.",
    "art": "chart",
-   "img": "csq/data-detective/fair-2-sample",
-   "view": [
-    0.8,
-    9,
-    54,
-    66
-   ],
-   "alt": "Who Is Missing? The fairness case that asks which people a sample left out before trusting its answer."
+   "img": "csq/data-detective/fair-2-missing-n",
+   "alt": "The lunch vote sorted by Voted: every No is a veggie eater. The screen stood in the meat line.",
+   "focus": [
+    {
+     "cue": "Every No is a veggie eater",
+     "box": [
+      3,
+      19,
+      94,
+      63
+     ]
+    },
+    {
+     "cue": "The Yes votes came from the meat line",
+     "box": [
+      3,
+      87,
+      94,
+      12.5
+     ]
+    }
+   ]
   },
   {
    "title": "Compare by percent",
-   "text": "Your class: 18 of 25 walk to school. Another class: 20 of 40. Compare 72% with 50%, not 18 with 20.",
+   "text": "Our class: 6 of 12 picked blue, which is 50%. The other class is a different size, so compare shares: 50% against their 33%, not 6 against their count.",
    "art": "table",
-   "img": "csq/data-detective/mydata-2-percent",
-   "view": [
-    55,
-    8,
-    45,
-    58
-   ],
-   "alt": "A third survey question in My Data: the case for comparing classes by percent instead of raw counts."
+   "img": "csq/data-detective/mydata-2-compare-n",
+   "alt": "Favorite colors in percent: ours next to another class. Blue is 50% here and 33% there.",
+   "focus": [
+    {
+     "cue": "Ours: blue is 50%",
+     "box": [
+      6,
+      49.7,
+      49.7,
+      12.4
+     ]
+    },
+    {
+     "cue": "The other class: 33%",
+     "box": [
+      68.7,
+      49.7,
+      11.3,
+      12.4
+     ]
+    },
+    {
+     "cue": "Percent makes different sizes fair to compare",
+     "box": [
+      46.3,
+      14.3,
+      16.4,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -105,14 +162,28 @@
    "title": "Your mission",
    "text": "Open Data Detective at My Data. Chart one survey question, clean it, and compare it with another class by percent.",
    "art": "trophy",
-   "img": "csq/data-detective/mydata-2-key",
-   "view": [
-    55,
-    9,
-    45,
-    67
-   ],
-   "alt": "My Data in Pro: a survey question and its answer rows, where fairness starts with how the question is asked."
+   "img": "csq/data-detective/mydata-2-fair-n",
+   "alt": "One plain survey question, Pets at home, tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2.",
+   "focus": [
+    {
+     "cue": "Chart one question",
+     "box": [
+      7.9,
+      14.3,
+      27.3,
+      12.4
+     ]
+    },
+    {
+     "cue": "Then compare by percent",
+     "box": [
+      6,
+      32.5,
+      63.5,
+      12.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

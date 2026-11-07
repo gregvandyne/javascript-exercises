@@ -104,7 +104,12 @@ test('every spec state is in the manifest with the same alt, its WebP exists, an
 const Z = await import('../../public/js/course-zoom.js');
 const ZOOM_DATA = (await import('../../public/js/course-zoom-data.js')).default;
 const FRAME_390 = 326;
-const SHORT = { WIDE: 4, CAPPED: 7 };
+// 2026-11-07: +1 each: the Sorting Gate captures now show the whole "Post Office" label (it was hidden under a road
+// button), a longer line that the gate steps' boxes touch, and the padlock-road mission of 1b 1.2.
+// r4: +1 capped: 2.3's cipher wheel is now a narrow capture (its letters read at 10 px, from 3), still a hair under 11.
+// r5: +1 capped: the 1.2 mission is now the phone-width map protocols-1b-sealed-n3, whose labels read at 10 px when
+// zoomed (the zoom cannot cut the map's other labels), up from about 5 px on the wide capture.
+const SHORT = { WIDE: 5, CAPPED: 10 };
 test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
   const short = { WIDE: 0, CAPPED: 0 }, problems = [];

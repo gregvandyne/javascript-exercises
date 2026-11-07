@@ -7,7 +7,8 @@ Owner's decisions (asked explicitly):
 - **Who joins:** anyone with a code, like the existing Oomba Live games. The host shows a 7-digit code, a QR and a link.
   Anyone who has it joins from anywhere, on their own device, over the internet.
 - **Guessing:** players spell the answer with letter tiles: the word's letters plus a few decoys. Nobody types text
-  anywhere.
+  anywhere. *(Changed after the owner played it on an iPhone: see §15. Guessers now type on their own keyboard while
+  the drawing goes on, or say it out loud; tiles are the host's easier choice.)*
 
 Safety defaults the lead promised (all kept below):
 - Only a grown-up, teacher or school staff account (or the platform admin) can host. Kids never host or co-host.
@@ -824,3 +825,46 @@ The known `play.js uses layout.back` failure also fails on main and is not ours.
   first, and pass-and-play still gives a full offline game.
 - **Billing state.** While billing isn't public, only existing grown-ups and staff can host. The game page's Host button
   is shown only to those who can host, so nobody hits a dead end.
+
+## 15. Guess while drawing, typed or out loud (the owner's second request)
+
+The owner, after playing on an iPhone: "The guesser should be able to guess while the drawer is drawing [so the drawer
+can] adjust what they are drawing if the guesser is going off course. Also, the guesser should be able to type in
+(without the bank of letters... just the normal keyboard because it's too easy with letters already given) or guess
+aloud and the drawer should have an option to just pick a button that says something like Guessed Correctly!" Also: a
+mobile and desktop pass (a photo showed SUNFLOWER broken as "SUNFLOWE / R" on the word cards).
+
+Decisions (told to the owner before building):
+1. **Guessing is open for the whole drawing.** It already was on the server (a guesser gets the turn when the drawing
+   starts, before the first stroke); the guess box shows from that moment and stays while strokes arrive.
+2. **Typing is the default**, on the device's own keyboard: one line and a Guess button, Enter sends. Letter tiles stay
+   as the host's choice "Letter tiles (easier)" for little ones (`doodleTiles`, starter `:t`), off by default; the game
+   on its own has the same choice on its setup card. A typed guess goes to the server only, as code points (the wire
+   protocol still carries no strings), is compared there and forgotten: never kept, logged or sent to an AI.
+   `DoodleCore.judge` (shared with the game on its own) normalises it (NFKC, lower case, accents and marks, ß/ss,
+   umlauts, ё/е, alef forms, Arabic ال and Hebrew ה on the word, Hebrew final letters, spaces, hyphens, a leading
+   article; 40 letters at most) and accepts the answer, its plural (an ending added; dropped only from a plural answer,
+   leaving 4 letters or more) and the other English spelling, never another word of the list (Ei/Eis, Koch/Kochen).
+   Japanese and Chinese input methods never send a half-made word; in the other languages Enter and Guess send what is
+   in the box even while an Android keyboard still marks the word as "in composition". Every typed guess gets an answer
+   from the server (too soon or no letters: not counted, and the box works again), and the game stops waiting after
+   2.5 s, so a guess box can never get stuck.
+3. **What anyone else sees of a guess.** The drawer and the host's page get a short list (the last 6): a wrong guess
+   only when it is a word of the game's own reviewed list for that language or its plural ("Sam guessed DOG", sent as
+   the word's id), at most 3 a guesser a turn (so list words can't spell out a message), anything else as "Sam guessed
+   something else", a right one as "Sam got it!". A close guess is "So close!" to that guesser alone; the drawer and the
+   host's page see it only as "something else" (on a shared screen the whole room would learn who is near). Other
+   guessers never see anyone's guesses on their own device (no copying); the host's page may be on a shared screen, so
+   the room can see the vetted list words there. This keeps the no-free-text rule: only vetted vocabulary is ever passed
+   on. One guess a second, 30 wrong a turn.
+4. **Said out loud.** The drawer has **Someone said it!**, which opens **Who guessed it?** with a button for each
+   player who may still get it; a tap counts as that player's right guess (points by speed, the drawer's usual share).
+   Only the drawer while drawing (or the host's page), once something is drawn that turn (a blank page can't hand out
+   points: "Draw something first!"), once a player a turn; the list shows it as "Sam said it out loud!". Pass and play has
+   the same button while drawing (the word stays covered so the others can watch; "My word" shows it for a moment).
+5. **Mobile and desktop.** A word never breaks inside: word cards (one column on a narrow phone), the top bar's word,
+   the reveal and the host's blanks shrink their type to fit (`fit()`); slots stay on one line and shrink. Below 600 px
+   wide (a phone with its keyboard up included) the game stacks; with the keyboard up the players strip and notes give
+   way, and the live page and the play page fit the visible part of the screen (`interactive-widget=resizes-content`,
+   and the visual viewport on iOS). Checked with `tests/e2e/doodle-hoot-shots.spec.js` (DOODLE_SHOTS=<dir>) at
+   375x667, 390x844, 430x932, 360x640, 844x390, 820x1180, 1366x768 and 1920x1080, light and dark, with frame-fit.

@@ -10,60 +10,133 @@
    "title": "Real data is messy",
    "text": "People make typos, answer twice or write numbers that cannot be true. Chart messy data and the chart tells the wrong story.",
    "art": "magnifier",
-   "img": "csq/data-detective/cleanup-2-key",
-   "view": [
-    0.8,
-    9,
-    54,
-    76
-   ],
-   "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."
+   "img": "csq/data-detective/cleanup-2-messy-n",
+   "alt": "Twelve kids typed their pet: Cat, dog, Fish, Dog, d0g, Cat, Dog. Three of the dogs are spelled wrong.",
+   "focus": [
+    {
+     "cue": "dog, with a small d",
+     "box": [
+      6,
+      19,
+      59.3,
+      12.4
+     ]
+    },
+    {
+     "cue": "d0g, with a zero",
+     "box": [
+      6,
+      69.8,
+      59.5,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "Clean it first",
    "text": "Fix typos, merge true repeats and remove values that cannot be true. Never remove a row just because you do not like its answer.",
    "art": "wrench",
-   "img": "csq/data-detective/cleanup-2-edit",
-   "view": [
-    0.8,
-    9,
-    54,
-    64
-   ],
-   "alt": "Double Trouble: a second messy case, where the same student answered twice and one row must go."
+   "img": "csq/data-detective/cleanup-2-mess-n",
+   "alt": "Sports sign-ups with every kind of mess: soccer in lower case, Jo twice, Tenis misspelled, and an age of 120.",
+   "focus": [
+    {
+     "cue": "A typo to fix: soccer",
+     "box": [
+      6,
+      2,
+      47,
+      12.4
+     ]
+    },
+    {
+     "cue": "Jo again: already higher up the list, so merge it",
+     "box": [
+      6,
+      52.8,
+      47.4,
+      12.4
+     ]
+    },
+    {
+     "cue": "A value that cannot be true: 120",
+     "box": [
+      6,
+      86.7,
+      72.5,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
    "title": "Pet survey clean-up",
-   "text": "Three spellings of dog split one bar into three short bars. Clean first, then chart.",
+   "text": "Three misspellings of dog split one bar into four short bars. Clean first, then chart.",
    "art": "table",
    "steps": [
-    "dog, Dog, dgo: one spelling",
-    "same student twice: keep one",
-    "twelvety pets: remove",
-    "then chart"
+    "grouped as typed: Dog 4, dog 1, d0g 1, Dgo 1",
+    "fix dog, d0g and Dgo to Dog",
+    "group again: Dog 7"
    ],
-   "img": "csq/data-detective/cleanup-2-pets",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The cleaned pet chart: the three misspelled dogs are fixed to one spelling, and the Dog bar counts all seven."
+   "img": "csq/data-detective/cleanup-2-split-n",
+   "alt": "Grouped before cleaning: Dog 4, but dog, d0g and Dgo each get a short bar of their own.",
+   "focus": [
+    {
+     "cue": "Dog 4: only the dogs spelled right",
+     "box": [
+      5.3,
+      11.7,
+      14,
+      27
+     ]
+    },
+    {
+     "cue": "dog, d0g, Dgo: three more dogs, split off",
+     "box": [
+      38.5,
+      89.7,
+      53.2,
+      10
+     ]
+    }
+   ]
   },
   {
    "title": "Compare by percent",
-   "text": "Class A: 9 of 20 like chess. Class B: 12 of 40. B has more, but A is 45% and B is 30%. Percent is part divided by whole, times 100.",
+   "text": "Class A: 10 of 20 kids walk to school. Class B: 12 of 30. B has more walkers, but A is 50% and B is 40%. Percent is part divided by whole, times 100.",
    "art": "chart",
-   "img": "csq/data-detective/cleanup-2-percent",
-   "view": [
-    0.8,
-    9,
-    54,
-    48
-   ],
-   "alt": "Tidy, Then Compare: two cleaned sets side by side, the case where comparing fairly means comparing percents."
+   "img": "csq/data-detective/cleanup-2-share-n",
+   "alt": "Walkers by class with percent on: Class A 10 of 20 is 50%, Class B 12 of 30 is 40%.",
+   "focus": [
+    {
+     "cue": "Class A: 10 of 20 walk = 50%",
+     "box": [
+      3,
+      27.2,
+      94,
+      12.5
+     ]
+    },
+    {
+     "cue": "Class B: 12 of 30 walk = 40%",
+     "box": [
+      3,
+      42.8,
+      94,
+      12.5
+     ]
+    },
+    {
+     "cue": "The % button turns counts into shares",
+     "box": [
+      83,
+      10.9,
+      6.2,
+      11.7
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -94,14 +167,28 @@
    "title": "Your mission",
    "text": "Open Data Detective at Clean-Up Crew and solve all 6 cases. Chart the data as it is first, then clean it and chart it again. What changed?",
    "art": "trophy",
-   "img": "csq/data-detective/cleanup-2-key",
-   "view": [
-    0.8,
-    9,
-    54,
-    76
-   ],
-   "alt": "The Twelve Pets case as it arrived: a messy table where one kind of pet hides under several spellings."
+   "img": "csq/data-detective/cleanup-2-messy-n",
+   "alt": "Twelve kids typed their pet: Cat, dog, Fish, Dog, d0g, Cat, Dog. Three of the dogs are spelled wrong.",
+   "focus": [
+    {
+     "cue": "Chart it as it is first: dog and d0g split the bars",
+     "box": [
+      6,
+      19,
+      59.3,
+      12.4
+     ]
+    },
+    {
+     "cue": "Then clean it and chart it again",
+     "box": [
+      6,
+      69.8,
+      59.5,
+      12.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -21,7 +21,8 @@
     "Less than a real-life friend: a nickname and your game talk",
     "Everything a real-life friend knows"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "An online-only friend can be real company, but they get less than a real-life friend: no live location, school or route."
   },
   {
    "id": "cd-2-5.1-e2",
@@ -38,7 +39,8 @@
     "A clear yes from everyone in the photo",
     "No yes if the photo is flattering"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Everyone in the photo gets their own yes, before it is posted. Who took it, or how good it looks, does not replace that."
   },
   {
    "id": "cd-2-5.1-e3",
@@ -55,7 +57,8 @@
     "A safety feature of the chat",
     "A dare you must accept to stay in the group"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Sharing your live location to prove trust is pressure, not friendship. Saying no, or leaving, is a complete answer."
   },
   {
    "id": "cd-2-5.2-e1",
@@ -72,7 +75,8 @@
     "Both equally",
     "The daily mocking: a pattern with a power gap"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A two-sided fall-out is a conflict. Cyberbullying is a pattern aimed at one person who cannot make it stop: a power gap."
   },
   {
    "id": "cd-2-5.2-e2",
@@ -89,7 +93,8 @@
     "Forward the thread to another school",
     "Watch silently so you stay safe and neutral"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Saving, reporting and backing the target change things. Arguing, spreading it or staying silent leave the target alone."
   },
   {
    "id": "cd-2-5.2-e3",
@@ -106,7 +111,8 @@
     "Report it, save it, and support the person targeted",
     "Quote it to show friends"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Debating or quoting hate speech spreads it, and ignoring it leaves the target alone. Report it, save it and support them."
   },
   {
    "id": "cd-2-5.3-e1",
@@ -123,7 +129,8 @@
     "Passphrases and padlocks",
     "Ciphers and checksums"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "Neither one waits for you to choose: the next video starts on its own and the badge pulls you back. Apps add them to keep you watching longer."
   },
   {
    "id": "cd-2-5.3-e2",
@@ -140,7 +147,8 @@
     "A longer passphrase",
     "More notifications"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "An endless feed has no natural stopping point. A time limit you chose, with autoplay off, gives it one."
   },
   {
    "id": "cd-2-5.3-e3",
@@ -157,7 +165,8 @@
     "The app is engineered to hold attention, so fix the design and settings",
     "Balance does not matter at all"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Apps are designed to hold attention, so willpower alone is an unfair fight. Change the settings and the design instead."
   }
  ]
 }

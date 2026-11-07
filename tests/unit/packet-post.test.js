@@ -24,12 +24,12 @@ const SEEDS = [1, 2, 3, 4, 5, 6];
 const J = v => JSON.parse(JSON.stringify(v));   // values from the vm realm: compare by structure, not prototype
 const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
 // the contract: levels per chapter and band
-const CONTRACT = { packets: { '1b': 5, '2': 5 }, routes: { '1b': 4, '2': 6 }, protocols: { '1b': 2, '2': 6 }, locks: { '1b': 6, '2': 7 }, tricks: { '1b': 6, '2': 10 }, ciphers: { '1b': 3, '2': 7 } };
+const CONTRACT = { packets: { '1b': 5, '2': 5 }, routes: { '1b': 4, '2': 6 }, protocols: { '1b': 3, '2': 6 }, locks: { '1b': 6, '2': 7 }, tricks: { '1b': 6, '2': 10 }, ciphers: { '1b': 3, '2': 7 } };
 // the standards each chapter claims per band (the contract); a level's csta (Explorer) / csta2 (Pro) stay inside them
 const CHAPTER_CSTA = { packets: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, routes: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, protocols: { '1b': ['1B-NI-04'], '2': ['2-NI-04'] }, locks: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] }, tricks: { '1b': ['1B-NI-05'], '2': ['2-NI-05', '2-IC-23'] }, ciphers: { '1b': [], '2': ['2-NI-06'] } };
 const cstaFor = (l, band) => (band === '2' ? (l.csta2 || l.csta) : l.csta) || [];
 
-test('packet-post: the exact kit 1.1.4 tag and its four packs, the metadata, and a clean scan', () => {
+test('packet-post: the exact kit 1.1.5 tag and its four packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Packet Post</title>'));
   assert.ok(HTML.includes(kitTag()), 'the byte-exact kit tag');
   for (const p of ['art-props', 'art-animals', 'art-school', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `${p} pack tag`);

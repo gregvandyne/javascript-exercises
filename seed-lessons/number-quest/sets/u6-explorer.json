@@ -14,21 +14,21 @@
    "topic": "Quadrilaterals",
    "kind": "recall",
    "secs": 20,
-   "q": "Which shape is NOT a quadrilateral?",
+   "q": "Which shape is a quadrilateral?",
    "choices": [
-    "Square",
     "Triangle",
     "Rectangle",
-    "Rhombus"
+    "Pentagon",
+    "Hexagon"
    ],
    "answer": 1,
    "misconceptions": [
-    "forgot that a square has 4 sides",
+    "thought 3 sides were enough",
     "correct",
-    "forgot that a rectangle has 4 sides",
-    "forgot that a rhombus has 4 sides"
+    "thought any shape with corners counts",
+    "thought any shape with more sides counts"
    ],
-   "why": "Quadrilateral means four sides. A square, a rectangle and a rhombus all have 4 sides; a triangle has only 3."
+   "why": "Quadrilateral means 4 straight sides. A rectangle has 4; a triangle has 3, a pentagon 5 and a hexagon 6."
   },
   {
    "id": "nq-explorer-6.1-e2",

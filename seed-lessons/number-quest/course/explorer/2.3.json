@@ -17,10 +17,20 @@
    "art": "table",
    "visual": {
     "type": "bars",
-    "label": "A bar model: one whole bar split into a known part and an unknown part",
+    "label": "A bar model: one long bar for the whole, and under it two shorter bars for the parts, one known and one a question mark",
     "rows": [
      {
-      "label": "One whole, two parts",
+      "label": "The whole",
+      "parts": [
+       {
+        "w": 1,
+        "label": "the whole",
+        "tone": 2
+       }
+      ]
+     },
+     {
+      "label": "The parts, under it",
       "parts": [
        {
         "w": 0.6,
@@ -34,25 +44,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "The long bar is the whole story in one picture.",
      "box": [
       5,
-      26.5,
-      90.1,
-      27.6
+      11.8,
+      90,
+      28.1
      ]
     },
     {
-     "cue": "The part with no number gets a question mark. That mark is your job.",
+     "cue": "Shorter bars under it are the parts. The unknown part gets a question mark.",
      "box": [
-      58.4,
-      35.7,
-      36.1,
-      18.4
+      5,
+      42.0,
+      90,
+      28.0
      ]
     }
    ]
@@ -60,13 +71,13 @@
   {
    "kind": "example",
    "title": "Rough first, then draw",
-   "text": "Rough first: about 400 ribbons, minus about 150, leaves about 250. A shop had 386 ribbons and sold 147. Draw it.",
+   "text": "Rough first: round each number to the nearest hundred. 386 is about 400 and 147 is about 100, so about 300 are left. A shop had 386 ribbons and sold 147. Draw it.",
    "art": "pencil",
    "steps": [
     "whole bar: 386 ribbons",
     "one part: 147 sold",
     "the other part: ? left",
-    "386 - 147 = 239 left, close to our rough 250"
+    "386 - 147 = 239 left: a few hundred, as our rough 300 said"
    ],
    "visual": {
     "type": "bars",
@@ -87,25 +98,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "One part is known: 147 ribbons sold.",
      "box": [
-      5.6,
+      5,
       35.7,
-      34.4,
-      18.4
+      35.5,
+      18.3
      ]
     },
     {
      "cue": "The other part is the question: how many are left?",
      "box": [
-      39.1,
+      38.5,
       35.7,
-      55.4,
-      18.4
+      56.5,
+      18.3
      ]
     }
    ]
@@ -134,7 +146,7 @@
       ]
      },
      {
-      "label": "The story's bar: a whole with a gap to find",
+      "label": "The story's bar: a gap to find",
       "parts": [
        {
         "w": 0.7,
@@ -148,31 +160,32 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "The Jumble's bar joins two parts: it added.",
      "box": [
       5,
-      12.3,
-      90.1,
-      27.6
+      11.8,
+      90,
+      28.1
      ]
     },
     {
      "cue": "The story asked for a difference: the gap is the unknown part.",
      "box": [
-      67.1,
+      66.6,
       51.7,
-      27.4,
-      18.4
+      28.4,
+      18.3
      ]
     }
    ]
   },
   {
-   "title": "Stretch: Two steps, two bars",
+   "title": "Stretch: Two steps, one bar",
    "text": "Some stories need two moves. Maya needs 500 points, has 275, and earns 90 more today. Draw one bar for what she still needs after today.",
    "art": "star",
    "visual": {
@@ -189,7 +202,7 @@
        },
        {
         "w": 0.18,
-        "label": "90 today",
+        "label": "+90",
         "tone": 1
        },
        {
@@ -199,25 +212,26 @@
        }
       ]
      }
-    ]
+    ],
+    "big": true
    },
    "focus": [
     {
      "cue": "275 points she has, and 90 more today: two known parts.",
      "box": [
-      5.6,
+      5,
       35.7,
-      65.1,
-      18.4
+      66.2,
+      18.3
      ]
     },
     {
      "cue": "What is left of the 500 is still to earn: 135 points.",
      "box": [
-      69.8,
+      69.2,
       35.7,
-      24.7,
-      18.4
+      25.8,
+      18.3
      ]
     }
    ]

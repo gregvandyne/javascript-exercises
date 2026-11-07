@@ -17,31 +17,25 @@
    "title": "Your world too",
    "text": "Netville is a story, but the post is real. The games you play, the photos you send and the videos you watch all travel as packets on real roads. Real tricksters send real fake messages too, and what you learn here protects the real you.",
    "art": "globe",
-   "img": "csq/packet-post/packets-1b-order",
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
-   "view": [
-    5.4,
-    30.4,
-    64.0,
-    65.5
-   ],
+   "img": "csq/packet-post/packets-1b-start-n",
+   "alt": "Break It Up: packet 1 of 3, an apple's first piece, waits at Pim's Post with its number, ready to ride to Grandma's House.",
    "focus": [
     {
-     "cue": "Your photos and games travel as packets",
+     "cue": "Your photos and games travel as packets, road by road",
      "box": [
-      8.4,
-      35.4,
-      45.5,
-      55.5
+      7,
+      14,
+      86,
+      72
      ]
     },
     {
-     "cue": "Each packet carries its number",
+     "cue": "Each packet carries its number: packet 1 of 3",
      "box": [
-      55.6,
-      42.6,
-      10.8,
-      12.8
+      7.5,
+      49,
+      14,
+      29
      ]
     }
    ]
@@ -58,7 +52,7 @@
      "box": [
       29.6,
       11.3,
-      40.0,
+      40,
       7.8
      ]
     },
@@ -86,22 +80,16 @@
     "a drawing of a rainbow: safe post",
     "a hello card for a friend: safe post"
    ],
-   "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
-   "view": [
-    3.0,
-    13.0,
-    52.0,
-    37.0
-   ],
+   "img": "csq/packet-post/locks-1b-sort-n1",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
    "focus": [
     {
      "cue": "Where you live: a shiny secret to keep",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      3,
+      94.3,
+      21.2
      ]
     }
    ]
@@ -189,27 +177,27 @@
     {
      "cue": "Roadwise guards packets; Keykeeper guards keys",
      "box": [
-      5.0,
+      5,
       5.5,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Private guards what you share; Trickspotter spots fakes",
      "box": [
-      5.0,
+      5,
       35.7,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Kind Screen keeps chats kind; Shield stacks layers",
      "box": [
-      5.0,
-      66.0,
-      90.0,
+      5,
+      66,
+      90,
       23.8
      ]
     }

@@ -1,4 +1,4 @@
-// Packet Post (CS Quest unit 4) in the real sandboxed frame (the kit-pilots pattern): the pinned kit 1.1.4 tag and its
+// Packet Post (CS Quest unit 4) in the real sandboxed frame (the kit-pilots pattern): the pinned kit 1.1.5 tag and its
 // four packs, no CSP violations, the kit title screen with a Play button, a level played through __brbTest with the
 // score label in the gradebook grammar, the chapter map with the Daily Crew Challenge, and the wheel tool.
 import { test, expect } from '@playwright/test';
@@ -25,9 +25,9 @@ const T = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest[fn](...a), [
 test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solved through the hooks, the score label', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/art-animals.js', '/vendor/oomba-kit/1.1.4/packs/art-school.js', '/vendor/oomba-kit/1.1.4/packs/style-bold.js']);
+  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-props.js', '/vendor/oomba-kit/1.1.5/packs/art-animals.js', '/vendor/oomba-kit/1.1.5/packs/art-school.js', '/vendor/oomba-kit/1.1.5/packs/style-bold.js']);
   for (const x of tags.slice(0, 5)) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.4', 'art-animals,art-props,art-school,style-bold', 'function']);
+  expect(await f.evaluate(() => [Oomba.version, Oomba.packs.sort().join(','), typeof __brbTest.setTheme])).toEqual(['1.1.5', 'art-animals,art-props,art-school,style-bold', 'function']);
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   // a lesson-shaped start: Lock It, Explorer, level 1 (the learn card), then the solver, then the Case-closed card and the results card
   const s1 = await T(f, 'start', { chapter: 'locks', band: '1b', level: 1, seed: 2, lesson: true, lock: true });
@@ -40,13 +40,42 @@ test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solve
   const snap = await T(f, 'solve');
   expect(snap.phase).toBe('done');
   await expect(f.locator('.ok-ask')).toBeVisible({ timeout: 8000 });   // the Case-closed card (the kit quiz card)
-  await f.locator('.ok-ask .ok-tile').first().click();
-  await expect(f.locator('.ok-dialog')).toBeVisible({ timeout: 8000 });   // how sure were you?
+  const right = await f.evaluate(() => [...document.querySelectorAll('.ok-ask .ok-tile')].findIndex(t => /home address/.test(t.textContent)));
+  const wrongPick = right === 0 ? 1 : 0;
+  await f.locator('.ok-ask .ok-tile').nth(wrongPick).click();
+  // a wrong pick: after the card shows the right answer, a card says why it is right, at the child's own pace
+  await expect(f.locator('.ok-dialog')).toContainText('A stranger could use your address to find you', { timeout: 8000 });
+  await f.locator('.ok-dialog .ok-btn').last().click();
+  await expect(f.locator('.ok-dialog')).toContainText('How sure were you?', { timeout: 8000 });
   await f.locator('.ok-dialog .ok-btn').last().click();
   await expect(f.locator('.ok-win')).toBeVisible({ timeout: 8000 });
   const s2 = await T(f, 'state');
   expect(s2.levelStars).toBe(3); expect(s2.label).toMatch(LABEL); expect(s2.label).toMatch(/^1\/6 levels, 3 stars, [01]\/1 checks$/);
   expect(await f.evaluate(() => window.__csp)).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+// Every packet carries its piece of the picture: the board's packets, the inbox tiles and the rebuilt slots are copies of
+// the cut picture, and a copied canvas must be painted again (cloneNode keeps none of a canvas's pixels: the bug that
+// left every packet a blank white square in Break It Up, Rules of the Road and the padlock road).
+test('Packet Post: every packet piece shows its part of the picture (no blank squares)', async ({ page }) => {
+  test.setTimeout(150_000);   // three levels, each played a few moves in with real animations
+  const { f, errors } = await open(page);
+  for (const [chapter, level] of [['packets', 1], ['protocols', 1], ['protocols', 3]]) {
+    await T(f, 'start', { chapter, band: '1b', level, seed: 2, lesson: false });
+    await T(f, 'closeCards'); await T(f, 'skipAnimations');
+    // a few moves so packets reach the board, the inbox and the slots
+    for (let i = 0; i < 4; i++) { const a = await T(f, 'advice'); if (!a) break; await T(f, 'act', a); await f.page().waitForTimeout(300); }
+    const pieces = await f.evaluate(() => [...document.querySelectorAll('canvas.pp-piece')].filter(c => c.getClientRects().length).map(c => {
+      const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let ink = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 0) ink++;
+      return ink / (c.width * c.height);
+    }));
+    expect(pieces.length, `${chapter} ${level}: pieces on screen`).toBeGreaterThan(0);
+    // a piece is a slice of the picture, so it holds some ink (a corner slice of the apple is still well over 2%)
+    expect(Math.max(...pieces), `${chapter} ${level}: the pieces have pixels`).toBeGreaterThan(0.1);
+    for (const share of pieces) expect(share, `${chapter} ${level}: no blank piece`).toBeGreaterThan(0.02);
+  }
   expect(errors).toEqual([]);
 });
 

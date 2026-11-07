@@ -1,12 +1,14 @@
 <title>Doodle Hoot</title>
 <style>
-/* Doodle Hoot on the Oomba Kit: one player draws, the others spell the word with letter tiles (never typed text).
+/* Doodle Hoot on the Oomba Kit: one player draws while the others guess (typed on their own keyboard, out loud, or with
+   letter tiles: the easier choice).
    Live (Oomba Live, mode 'doodle'): each player on their own device, anywhere; the host's screen shows the drawing, the
    scores and the podium. On its own: "Guess Pip's doodles" (Pip draws, you spell) or pass-and-play on one device.
    The board is a fixed 4:3 grid drawn on paper white in both themes, so a drawing looks the same on every screen.
-   Layout: portrait stacks the top bar, the board and the tools or tiles; landscape puts the board left and the tools,
-   tiles or scores right. Every control is at least 44px; colour is never the only cue (swatches have names, ticks have
-   a mark). */
+   Layout: portrait (and anything under 600px wide, such as a phone with its keyboard up) stacks the top bar, the board
+   and the tools, guess box or tiles; landscape from 600px puts the board left and the side right. Every control is at
+   least 44px; colour is never the only cue (swatches have names, ticks have a mark). A word is never broken inside:
+   fit() makes its type smaller until the longest word fits on one line. */
 html,body{height:100%}
 body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
@@ -32,7 +34,7 @@ html.dh-live .ok-row{display:none!important}
 .dh-clock b{width:36px;height:36px;border-radius:50%;background:var(--ok-card);display:grid;place-items:center;font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
 .dh-clock.low{background:conic-gradient(var(--bad) calc(var(--p,1) * 360deg),var(--ok-card) 0)}
 /* the word the drawer draws (or a guesser who got it) */
-.dh-word{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:4px 14px;border-radius:16px;background:var(--chip);border:3px solid var(--ok-edge);font-weight:900;font-size:clamp(18px,2.4vh + .8vw,34px);text-align:center}
+.dh-word{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;min-width:0;white-space:nowrap;padding:4px 14px;border-radius:16px;background:var(--chip);border:3px solid var(--ok-edge);font-weight:900;font-size:clamp(18px,2.4vh + .8vw,34px);text-align:center}
 .dh-word small{font-size:.55em;font-weight:700;opacity:.8}
 .dh-word.got{background:var(--goodTint)}
 /* the board and the side */
@@ -44,7 +46,7 @@ html.dh-live .ok-row{display:none!important}
 .dh-board.is-hidden canvas{filter:blur(22px) grayscale(1);opacity:.35}
 .dh-veil{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;text-align:center;color:#1D2340;font-weight:800;font-size:clamp(15px,2.2vh + .5vw,30px);pointer-events:none}
 .dh-veil canvas{width:auto;height:min(40%,180px)}
-.dh-veil .big{font-size:1.5em}
+.dh-veil .big{font-size:1.5em;max-width:100%;overflow-wrap:normal;line-height:1.1}
 .dh-veil .emo{font-size:2.6em;line-height:1}
 .dh-veil.rv{background:rgba(255,255,255,.86)}
 .dh-side{flex:0 1 auto;display:flex;flex-direction:column;gap:8px;min-height:0;container-type:inline-size}
@@ -62,27 +64,68 @@ html.dh-live .ok-row{display:none!important}
 .dh-btn.hot{background:#FFC83D;color:#1D2340}
 .dh-btn.warn{background:var(--badTint)}
 .dh-size i{display:block;border-radius:50%;background:currentColor}
+.dh-dark .dh-size i{box-shadow:0 0 0 2px #FFFFFF}
 .dh-tools{position:relative}
 .dh-cur i{display:block;border-radius:50%;border:2px solid var(--ok-edge)}
 .dh-cur.dh-size i{border:0}
 .dh-szs{display:contents}
 /* a phone held upright: the colours and sizes fold into two buttons, each opening a small tray over the board */
-@media (orientation:portrait){
+@media (orientation:portrait),(max-width:599px){
   .dh-tools .dh-sw{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:3;padding:8px;border-radius:18px;background:var(--ok-card);border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge)}
   .dh-tools.pal-open .dh-sw{display:grid}
   .dh-szs{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:3;gap:6px;padding:8px;border-radius:18px;background:var(--ok-card);border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge)}
   .dh-tools.size-open .dh-szs{display:flex}
   .dh-tools .dh-note{display:none}
 }
-@media (orientation:landscape) and (min-height:501px){ .dh-cur{display:none!important} }
+@media (orientation:landscape) and (min-width:600px) and (min-height:501px){ .dh-cur{display:none!important} }
 .dh-note{margin:0;font-size:13px;font-weight:700;opacity:.8;text-align:center}
 /* slots and tiles */
 .dh-guess{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-height:0;flex:0 1 auto;overflow-x:hidden;overflow-y:auto}
 .dh-slots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;min-height:44px}
-.dh-wd{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
-.dh-slot{width:clamp(44px,11cqw,64px);height:clamp(44px,12cqw,68px);border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:clamp(20px,5cqw,30px);display:grid;place-items:center;padding:0}
+/* a word's slots stay on one line (never broken inside a word): they shrink to fit the side's width */
+.dh-wd{display:flex;flex-wrap:nowrap;justify-content:center;gap:3px;--sw:min(64px,max(40px,12cqw),calc((100cqw - (var(--n,6) - 1) * 3px) / var(--n,6)))}
+.dh-slot{flex:none;width:var(--sw);height:calc(var(--sw) * 1.08);border-radius:10px;border:3px solid var(--ok-edge);border-style:dashed;background:transparent;font-weight:900;font-size:calc(var(--sw) * .55);line-height:1;display:grid;place-items:center;padding:0;cursor:pointer}
 .dh-slot.full{border-style:solid;background:var(--ok-card)}
 .dh-slot.lock{border-style:solid;background:var(--hintTint);cursor:default}
+/* typing: the word's shape as small blanks (hint letters in them), the box and its Guess button */
+.dh-type{display:flex;flex-direction:column;gap:8px;align-items:stretch;min-height:0;flex:0 1 auto}
+.dh-type .dh-slots{min-height:0}
+.dh-type .dh-wd{--sw:min(34px,calc((100cqw - (var(--n,6) - 1) * 3px) / var(--n,6)));gap:3px}
+.dh-type .dh-slot{height:calc(var(--sw) * 1.15);border-width:0 0 4px;border-style:solid;border-radius:0;cursor:default}
+.dh-type .dh-slot.lock{background:var(--hintTint);border-radius:6px 6px 0 0}
+.dh-type.ok .dh-slot{background:none}
+.dh-form{display:flex;gap:6px;align-items:stretch;margin:0}
+.dh-form input{flex:1 1 auto;min-width:0;min-height:48px;border-radius:14px;border:3px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);font:inherit;font-weight:800;font-size:max(16px,min(22px,5cqw));padding:4px 12px;user-select:text;-webkit-user-select:text}
+.dh-form input::placeholder{color:var(--ok-text);opacity:.55;font-weight:700}
+.dh-form input:focus-visible{outline:3px solid var(--hint);outline-offset:2px}
+.dh-form .dh-btn{flex:0 0 auto;min-width:72px}
+.dh-form .dh-eye{min-width:48px;padding:2px 6px}
+.dh-form .dh-eye span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dh-type.ok .dh-form,.dh-type.out .dh-form input,.dh-type.out .dh-form .dh-go{display:none}
+.dh-say.close{color:var(--hint)}
+/* the drawer's and the host's side: "Someone said it!" and the guesses so far (newest first) */
+.dh-heard{display:flex;flex-direction:column;gap:8px;min-height:0;flex:0 1 auto}
+.dh-said{flex:none;width:100%}
+.dh-feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;min-height:0;overflow:hidden;flex:0 1 auto}
+.dh-feed li{flex:none;display:flex;align-items:center;gap:6px;min-height:32px;padding:3px 10px;border-radius:12px;background:var(--ok-card);border:2px solid var(--ok-edge);font-weight:800;font-size:15px;line-height:1.2}
+.dh-feed li span{min-width:0;overflow-wrap:normal}
+.dh-feed li.ok{background:var(--goodTint)}
+.dh-feed li.c{background:var(--hintTint)}
+.dh-feed li.x{font-weight:700}
+.dh-host .dh-feed li{font-size:clamp(15px,1.2vw + .4vh,22px);min-height:40px}
+/* "Who guessed it?": over the whole game */
+.dh-sheet{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--ok-scrim)}
+.dh-sheet>div{width:min(94vw,560px);max-height:100%;overflow-x:hidden;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:24px;background:var(--ok-bg2);color:var(--ok-text);border:4px solid var(--ok-edge);box-shadow:0 6px 0 var(--ok-edge);text-align:center}
+.dh-sheet h2{margin:0;font-size:clamp(20px,2.4vh + 1vw,32px);font-weight:900}
+.dh-sheet .dh-who-btns button{background:var(--ok-card)}
+.dh-sheet .dh-who-btns span{max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dh-sheet .dh-btn{flex:none;align-self:center;min-width:140px}
+/* pass and play: the drawer's word stays covered while the others watch ("My word" shows it for a moment) */
+.dh-word.peek>span{position:relative;visibility:hidden}
+.dh-word.peek>span::after{content:'';visibility:visible;position:absolute;inset:18% 0;border-radius:10px;background:var(--ok-edge);opacity:.28}
+.dh-word.peek.show>span{visibility:visible}
+.dh-word.peek.show>span::after{content:none}
+.dh-word.peek>button[aria-pressed="true"]{background:var(--ok-edge);color:var(--ok-card)}
 .dh-guess.ok .dh-slot{background:var(--goodTint);border-style:solid}
 .dh-guess.no .dh-slots{animation:dhShake .35s ease}
 .dh-preview{margin:0;text-align:center;font-size:24px;font-weight:800;min-height:1.3em}
@@ -121,7 +164,13 @@ html.dh-live .ok-row{display:none!important}
 .dh-people li canvas{width:calc(var(--cell,110px) * .7);height:auto}
 .dh-people li span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--ok-card);border-radius:999px;padding:0 8px}
 .dh-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:min(96vw,900px)}
-.dh-card{min-height:clamp(96px,22vh,200px);border-radius:20px;border:4px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 6px 0 var(--ok-edge);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;font-weight:900;font-size:clamp(16px,2vh + 1vw,32px);overflow-wrap:anywhere}
+.dh-card{min-width:0;min-height:clamp(96px,22vh,200px);border-radius:20px;border:4px solid var(--ok-edge);background:var(--ok-card);box-shadow:0 6px 0 var(--ok-edge);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;font-weight:900;font-size:clamp(16px,2vh + 1vw,32px);overflow-wrap:normal;word-break:normal;hyphens:manual;line-height:1.15}
+.dh-card>span:last-child{max-width:100%}
+@media (max-width:599px) and (orientation:portrait){
+  .dh-cards{grid-template-columns:1fr;width:min(92vw,420px)}
+  .dh-card{flex-direction:row;justify-content:flex-start;gap:14px;min-height:clamp(64px,11vh,96px);padding:6px 16px;font-size:clamp(22px,6.4vw,30px);text-align:start}
+  .dh-card .emo{font-size:1.5em}
+}
 .dh-card .emo{font-size:2em;line-height:1}
 .dh-card:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ok-edge)}
 .dh-podium{display:flex;align-items:flex-end;justify-content:center;gap:clamp(8px,2vw,30px);width:min(96vw,1000px)}
@@ -143,11 +192,12 @@ html.dh-live .ok-row{display:none!important}
 .dh-who-btns canvas{width:40px;height:40px}
 .dh-over{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:var(--ok-scrim);pointer-events:none}
 .dh-over b{background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);border-radius:24px;box-shadow:0 5px 0 var(--ok-edge);padding:10px 24px;font-size:clamp(28px,min(9vw,8vh),96px);font-weight:900;text-align:center;max-width:90%}
-.dh-toast{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:7;background:var(--ok-card);border:3px solid var(--ok-edge);border-radius:16px;padding:8px 16px;font-weight:800;max-width:90vw;text-align:center}
+.dh-toast{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:7;background:var(--ok-card);border:3px solid var(--ok-edge);border-radius:16px;padding:8px 16px;font-weight:800;width:max-content;max-width:min(90vw,520px);text-align:center;pointer-events:none}
 /* the setup card (on its own) */
 .dhs{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--ok-scrim)}
 .dhs-card{width:min(96vw,560px);max-height:96vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:24px;background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);box-shadow:0 6px 0 var(--ok-edge)}
 .dhs-card h2{margin:0;text-align:center;font-size:26px;font-weight:900}
+.dhs-card .dhs-sub{margin:-6px 0 2px;text-align:center;font-weight:800;color:var(--ok-text-2,var(--ok-text));opacity:.85}
 .dhs-card fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .dhs-card legend{font-weight:800;margin-bottom:4px}
 .dhs-card .opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -155,13 +205,13 @@ html.dh-live .ok-row{display:none!important}
 .dhs-card .opt[aria-checked="true"]{background:#FFC83D;color:#1D2340}
 .dhs-card p{margin:0;font-size:14px;font-weight:700;opacity:.85;text-align:center}
 /* landscape: the board left, the side right */
-@media (orientation:landscape){
+@media (orientation:landscape) and (min-width:600px){
   .dh-main{flex-direction:row}
   .dh-side{flex:0 0 clamp(250px,36vw,460px);justify-content:flex-start;justify-content:safe center;overflow-x:hidden;overflow-y:auto}
   .dh-host .dh-side{flex-basis:clamp(260px,26vw,440px);justify-content:flex-start}
   .dh-sw{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-@media (orientation:landscape) and (max-height:500px){
+@media (orientation:landscape) and (min-width:600px) and (max-height:500px){
   .dh{gap:4px;padding-top:calc(4px + env(safe-area-inset-top));padding-bottom:calc(4px + env(safe-area-inset-bottom))}
   .dh-top{min-height:40px}.dh-clock{width:42px;height:42px}.dh-clock b{width:30px;height:30px;font-size:13px}
   .dh-word{min-height:36px;font-size:18px}
@@ -189,6 +239,27 @@ html.dh-live .ok-row{display:none!important}
   html.dh-live .ok-modal.ok-win .ok-score{font-size:28px;line-height:1.1}
   .dh-seepod{min-height:48px;font-size:18px}
 }
+/* the host's blanks: each word's underscores together */
+.dh-word .dh-bl{white-space:nowrap;letter-spacing:.12em}
+/* the keyboard up on a phone (very little height): a slim top bar (the clock stays), small blanks (how many letters
+   stays), the board and the box get the rest */
+@media (orientation:landscape) and (max-height:300px){
+  .dh{gap:4px;padding-top:calc(2px + env(safe-area-inset-top));padding-bottom:2px}
+  .dh-top{min-height:32px;gap:6px}.dh-top .dh-chip{display:none}.dh-who{font-size:14px}.dh-who canvas{width:28px;height:28px}
+  .dh-clock{width:34px;height:34px;border-width:2px}.dh-clock b{width:26px;height:26px;font-size:12px}
+  .dh-word{min-height:30px;font-size:16px;padding:1px 10px}
+  .dh-type .dh-slots{gap:2px 10px}
+  .dh-type .dh-wd{--sw:min(20px,calc((100cqw - (var(--n,6) - 1) * 3px) / var(--n,6)))}
+  .dh-type .dh-slot{border-bottom-width:3px;font-size:13px}
+  .dh-type .dh-say{min-height:0;font-size:14px}
+  .dh-type .dh-say:empty{display:none}
+  .dh-type{gap:4px}
+  .dh-form input{min-height:44px}
+}
+/* the keyboard is up (a phone): the players strip and the drawing notes give the guess box the room */
+.dh.dh-kb .dh-strip,.dh.dh-kb .dh-note{display:none}
+.dh.dh-kb{gap:4px}
+.dh.dh-kb .dh-boardbox{min-height:90px}
 /* a narrow phone: the word in the top bar gets the room */
 @media (max-width:420px){
   .dh-chip{padding:2px 8px;font-size:13px}
@@ -200,10 +271,10 @@ html.dh-live .ok-row{display:none!important}
 .dh.rm *,.rm .dh-guess.no .dh-slots{animation:none!important;transition:none!important}
 @keyframes dhShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
-<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-zeLmUxnF20GLI7VC6XfgOcb9DiFTxC7mSAc0QTkXllv6zvdzzEFtrAWb6TsmeAIY" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-animals.js" integrity="sha384-GntsshX3KJc7NNGcJsefnPEcYLfY5lHGL5ow+tGUPHbiwbiLKzdYKFp9uciiblsG" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/dress.js" integrity="sha384-lGMyixBO/dQI5mVlIYp2m9rQk1Qiejkp7f7tcNxKKlSew+i0VKx3Soojbns6sDRo" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/live.js" integrity="sha384-V/WZAt4Rt7htCl5SRMF8bKpJwS6/1ijg3qNaqdnbhovlXPMbC2Oy6TYc5XrjXx1V" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/live.js" integrity="sha384-20jXn5wIizwJ//YBQJUILmlALHi914BQlxzKBm3v5Z4lh5YOic+mHK2WiezyG4km" crossorigin="anonymous"></script>
 <script>
 /* doodle-core:begin */
 /* DoodleCore: Doodle Hoot's rules. Pure ES5 plus Intl.Segmenter where there is one; no DOM and no globals but
@@ -448,6 +519,118 @@ html.dh-live .ok-row{display:none!important}
     });
     return out;
   }
+  /* ---- typed guesses (the default way to guess; letter tiles are the easier choice) ----
+     A typed guess is compared, never shown: plain() makes it comparable (NFKC, the language's lower case, no accents or
+     marks, ß as ss, æ/œ as ae/oe, ё as е, one alef, ة as ه, ى as ي; only letters and digits, so spaces, hyphens and
+     apostrophes don't count; a leading "a", "the", "le", "der"... goes), then judge() says if it is the answer (or its
+     other English spelling, or a plural), close to it (a letter off: told to that player only), another word of the
+     list (the only text ever passed on, as the list's own word id) or something else (never passed on). */
+  var MAX_TYPED = 40;
+  var ARTICLES = { en: 'a an the', es: 'el la los las un una unos unas', fr: 'le la les l un une des du', de: 'der die das den dem ein eine einen',
+    it: 'il lo la i gli le l un uno una', pt: 'o a os as um uma', nl: 'de het een', ar: '', he: '', ru: '' };
+  /** Plural endings a guess may add to (or drop from) the answer. */
+  var PLURAL = { en: ['s', 'es'], es: ['s', 'es'], fr: ['s', 'x'], de: ['e', 'n', 'en', 'er', 's'], it: [], pt: ['s', 'es'], nl: ['s', 'en'], he: ['ימ', 'ות'] };
+  function base(lang) { return lang === 'en-GB' ? 'en' : String(lang || 'en').split('-')[0]; }
+  function plain(str, lang) {
+    var L = base(lang), s = String(str == null ? '' : str).slice(0, MAX_TYPED * 2).normalize('NFKC');
+    try { s = s.toLocaleLowerCase(L === 'zh' ? 'zh' : L); } catch (e) { s = s.toLowerCase(); }
+    s = s.replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe');
+    if (L === 'de') s = s.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue');
+    s = s.normalize('NFKD').replace(/[̀-֑ͯ-ׇً-ٰٟـ]/g, '').normalize('NFC');
+    if (L === 'ru') s = s.replace(/ё/g, 'е');
+    if (L === 'ar') s = s.replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/[ىی]/g, 'ي').replace(/ک/g, 'ك');
+    if (L === 'he') s = s.replace(/ך/g, 'כ').replace(/ם/g, 'מ').replace(/ן/g, 'נ').replace(/ף/g, 'פ').replace(/ץ/g, 'צ');
+    var words = s.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+    var arts = (ARTICLES[L] || '').split(' ');
+    if (words.length > 1 && arts.indexOf(words[0]) >= 0) words.shift();
+    // Arabic "al-" and Hebrew "ha-" are written onto the word: dropped from each word (the answer's too, so both match)
+    var pre = L === 'ar' ? 'ال' : L === 'he' ? 'ה' : '';
+    if (pre) words = words.map(function (w) { return w.length > pre.length + 2 && w.indexOf(pre) === 0 ? w.slice(pre.length) : w; });
+    return words.join('');
+  }
+  /** German words are also accepted with their umlauts written plainly (schildkrote as well as schildkroete). */
+  function forms(word, lang) {
+    var out = [plain(word, lang)];
+    if (base(lang) === 'de') { var b = String(word).normalize('NFC').toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u'); var p = plain(b, 'de'); if (out.indexOf(p) < 0) out.push(p); }
+    return out;
+  }
+  /** Is g the word f, or its plural (or, for a plural answer, its singular)? An ending added counts on a word of 3
+   *  letters or more; an ending dropped only leaves a guess of 4 or more (a guess with letters cut off never counts:
+   *  "ba" is not "bär", "bu" not "bus"); judge() also never takes another word of the list as a plural. */
+  function same(g, f, lang) {
+    if (!g || !f) return false;
+    if (g === f) return true;
+    var L = base(lang), ends = PLURAL[L] || [], nf = Array.from(f).length, ng = Array.from(g).length;
+    for (var i = 0; i < ends.length; i++) {
+      if (nf >= 3 && g === f + ends[i]) return true;
+      if (ng >= 4 && f === g + ends[i]) return true;
+    }
+    if (L === 'en' && nf >= 3 && /[^aeiou]y$/.test(f) && g === f.slice(0, -1) + 'ies') return true;
+    return false;
+  }
+  var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
+  /** Edit distance with swaps (two letters the wrong way round count as one), stopping past max. */
+  function dist(a, b, max) {
+    a = Array.from(a); b = Array.from(b);
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (j = 0; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) {
+      var low = Infinity;
+      for (j = 1; j <= b.length; j++) {
+        var c = a[i - 1] === b[j - 1] ? 0 : 1;
+        var v = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, d[i - 2][j - 2] + 1);
+        d[i][j] = v; if (v < low) low = v;
+      }
+      if (low > max) return max + 1;
+    }
+    return d[a.length][b.length];
+  }
+  /** The words a guess may be for a word id in a language: its own word, and in English its other spelling (fire truck
+   *  and fire engine both count, in either room). */
+  function answers(data, lang, id) {
+    var out = [];
+    words(data, lang, 0).forEach(function (x) { if (x.id === id) out.push(x.w); });
+    var L = base(lang);
+    if (L === 'en') { var other = words(data, lang === 'en-GB' ? 'en' : 'en-GB', 0); other.forEach(function (x) { if (x.id === id && out.indexOf(x.w) < 0) out.push(x.w); }); }
+    return out;
+  }
+  /** Every word of a language's list (all levels, both English spellings), as plain() makes it -> its word id. */
+  function index(data, lang) {
+    var map = Object.create(null), add = function (x) { forms(x.w, lang).forEach(function (f) { if (f && !own(map, f)) map[f] = x.id; }); };
+    words(data, lang, 0).forEach(add);
+    if (base(lang) === 'en') words(data, lang === 'en-GB' ? 'en' : 'en-GB', 0).forEach(add);
+    return map;
+  }
+  /**
+   * What a typed guess is: { k: 'ok' } the answer; { k: 'close' } a letter or two off (told to that player only);
+   * { k: 'word', id } another word of the list (index: from index()); { k: 'other' } anything else; null when there is
+   * nothing to compare (no letters, or too long). ans: the answer's words (answers()).
+   */
+  function judge(text, ans, lang, idx) {
+    if (text == null || Array.from(String(text)).length > MAX_TYPED) return null;
+    var g = plain(text, lang);
+    if (!g) return null;
+    var fs = [];
+    (ans || []).forEach(function (w) { forms(w, lang).forEach(function (f) { if (f && fs.indexOf(f) < 0) fs.push(f); }); });
+    if (fs.indexOf(g) >= 0) return { k: 'ok' };
+    // (another word of the list is never taken as the answer's plural: Ei and Eis, Koch and Kochen)
+    var listed = !!idx && own(idx, g) && typeof idx[g] === 'string';
+    if (!listed) for (var i = 0; i < fs.length; i++) if (same(g, fs[i], lang)) return { k: 'ok' };
+    for (var j = 0; j < fs.length; j++) {
+      var n = Array.from(fs[j]).length, max = n >= 8 ? 2 : n >= 4 ? 1 : 0;
+      if (max ? dist(g, fs[j], max) <= max : (Array.from(g).length === n && dist(g, fs[j], 1) <= 1 && Array.from(g).sort().join('') === Array.from(fs[j]).sort().join(''))) return { k: 'close' };
+    }
+    if (idx) {
+      if (listed) return { k: 'word', id: idx[g] };
+      var ends = PLURAL[base(lang)] || [];
+      for (var e = 0; e < ends.length; e++) { var stem = g.slice(0, -ends[e].length); if (g.length > ends[e].length + 2 && g.slice(-ends[e].length) === ends[e] && own(idx, stem) && typeof idx[stem] === 'string') return { k: 'word', id: idx[stem] }; }
+    }
+    return { k: 'other' };
+  }
+
   /** Decoy pool for a language whose letters come from its own words (ja kana, zh-Hant characters). */
   function wordPool(data, lang) {
     if (lang !== 'ja' && lang !== 'zh-Hant') return null;
@@ -462,6 +645,7 @@ html.dh-live .ok-row{display:none!important}
     rng: rng, rude: rude, hash: hash, graphemes: graphemes, parts: parts, shown: shown, twinKey: twinKey, decoyCount: decoyCount, buildTray: buildTray,
     check: check, hintPlan: hintPlan, guessPoints: guessPoints, drawPoints: drawPoints, keep: keep, steps: steps,
     line: line, render: render, words: words, wordPool: wordPool, dir: function (lang) { return RTL[lang] ? 'rtl' : 'ltr'; },
+    MAX_TYPED: MAX_TYPED, plain: plain, forms: forms, same: same, dist: dist, answers: answers, index: index, judge: judge,
   };
 })(window);
 /* doodle-core:end */
@@ -714,7 +898,7 @@ var I18N = {
   en: {
     title: 'Doodle Hoot', tag: 'Draw it. Spell it. Hoot!', board: 'Drawing board',
     setup: 'Get ready to doodle!', howPlay: 'How to play', practice: 'Guess Pip’s doodles', pass: 'Pass and play', level: 'Words', easy: 'Easy', medium: 'Medium', tricky: 'Tricky', playersN: 'Players', start: 'Start',
-    practiceNote: 'Pip draws, and you spell the word with the letter tiles.', passNote: 'Take turns on this device: one player draws, the others spell the word.',
+    practiceNote: 'Pip draws, and you spell the word with the letter tiles.', passNote: 'Take turns on this device: one player draws while the others call out their guesses.',
     round: 'Round {n} of {of}', doodleN: 'Doodle {n} of {of}', turnN: 'Turn {n} of {of}', pipDraws: 'Pip is drawing…',
     drawing: '{name} is drawing', choosing: '{name} is choosing a word…', youDraw: 'Your turn to draw!', pickWord: 'Pick a word to draw', drawThis: 'Draw:', getReady: 'Pick a word in a moment.', spellSoon: 'Get ready to spell!',
     notLetters: 'Draw pictures, not letters.', colours: 'Colours', sizes: 'Sizes', size: 'Size {n}', eraser: 'Eraser', undo: 'Undo', clear: 'Clear', clearAsk: 'Clear all?', full: 'The page is full: undo or clear to draw more.',
@@ -726,13 +910,15 @@ var I18N = {
     waitHost: 'Waiting for the host to start…', waitPlayers: 'Waiting for players…', waitMore: 'The game goes on when there are two players again.', needTwo: 'Two players are needed to play.', players: '{n} players are here', hostHow: 'Everyone joins with the code on their own device, wherever they are.',
     secsLeft: 'Seconds left: {n}', left10: '10 seconds left', paused: 'Paused', go: 'Go!', you: 'You', points: '{n} points',
     podium: 'Final scores', place1: '1st place!', place2: '2nd place!', place3: '3rd place!', wellPlayed: 'Well played!', superSpeller: 'Super speller!',
-    player: 'Player {n}', passTo: 'Pass to {name}', passDraw: 'Your turn to draw. No peeking, everyone else!', imReady: 'I’m ready', done: 'Done', passGuess: 'Pass to the guessers', passGuessP: 'Spell the word together. Who gets it first?', whoGot: 'Who spelled it?', wins: '{name} wins!', tie: 'It’s a tie!',
+    player: 'Player {n}', passTo: 'Pass to {name}', passDraw: 'Your turn to draw. No peeking, everyone else!', imReady: 'I’m ready', done: 'Done', passGuess: 'Pass to the guessers', passGuessP: 'Guess the word together. Who gets it first?', whoGot: 'Who got it?', wins: '{name} wins!', tie: 'It’s a tie!',
+    tooQuick: 'One moment, then guess again!', useLetters: 'Type a word with letters.', feedSaid: '{name} said it out loud!', drawFirst: 'Draw something first!',
+    typeHere: 'Type your guess', guessBtn: 'Guess', soClose: 'So close!', saidIt: 'Someone said it!', whoSaid: 'Who guessed it?', cancel: 'Cancel', feedWord: '{name} guessed {word}', feedOther: '{name} guessed something else', feedClose: '{name} is close!', guesses: 'Guesses', guessBy: 'Guess with', typing: 'Typing', tilesEasy: 'Letter tiles (easier)', practiceType: 'Pip draws, and you type what you think it is.', passWatch: 'Everyone else: watch and call out your guesses!', showWord: 'My word',
   },
   'en-GB': {},
   es: {
     title: 'Doodle Hoot', tag: 'Dibújalo. Deletréalo. ¡Uh-uh!', board: 'Tablero de dibujo',
     setup: '¡A dibujar!', howPlay: 'Cómo jugar', practice: 'Adivina los dibujos de Pip', pass: 'Pasar y jugar', level: 'Palabras', easy: 'Fáciles', medium: 'Medias', tricky: 'Difíciles', playersN: 'Jugadores', start: 'Empezar',
-    practiceNote: 'Pip dibuja y tú deletreas la palabra con las fichas de letras.', passNote: 'Turnaos en este dispositivo: uno dibuja y los demás deletrean la palabra.',
+    practiceNote: 'Pip dibuja y tú deletreas la palabra con las fichas de letras.', passNote: 'Turnaos en este dispositivo: uno dibuja mientras los demás dicen en voz alta lo que creen.',
     round: 'Ronda {n} de {of}', doodleN: 'Dibujo {n} de {of}', turnN: 'Turno {n} de {of}', pipDraws: 'Pip está dibujando…',
     drawing: '{name} está dibujando', choosing: '{name} está eligiendo una palabra…', youDraw: '¡Te toca dibujar!', pickWord: 'Elige una palabra para dibujar', drawThis: 'Dibuja:', getReady: 'Enseguida eliges una palabra.', spellSoon: '¡Prepárate para deletrear!',
     notLetters: 'Dibuja imágenes, no letras.', colours: 'Colores', sizes: 'Grosores', size: 'Grosor {n}', eraser: 'Goma', undo: 'Deshacer', clear: 'Borrar', clearAsk: '¿Borrar todo?', full: 'La hoja está llena: deshaz o borra para seguir dibujando.',
@@ -744,12 +930,14 @@ var I18N = {
     waitHost: 'Esperando a que el anfitrión empiece…', waitPlayers: 'Esperando jugadores…', waitMore: 'El juego sigue cuando vuelva a haber dos jugadores.', needTwo: 'Hacen falta dos jugadores.', players: 'Jugadores aquí: {n}', hostHow: 'Cada uno entra con el código en su dispositivo, esté donde esté.',
     secsLeft: 'Segundos restantes: {n}', left10: 'Quedan 10 segundos', paused: 'En pausa', go: '¡Ya!', you: 'Tú', points: '{n} puntos',
     podium: 'Puntuación final', place1: '¡1.er puesto!', place2: '¡2.º puesto!', place3: '¡3.er puesto!', wellPlayed: '¡Bien jugado!', superSpeller: '¡Súper deletreo!',
-    player: 'Jugador {n}', passTo: 'Pásalo a {name}', passDraw: 'Te toca dibujar. ¡Que nadie mire!', imReady: 'Estoy listo', done: 'Listo', passGuess: 'Pásalo a los que adivinan', passGuessP: 'Deletread la palabra juntos. ¿Quién acierta primero?', whoGot: '¿Quién la deletreó?', wins: '¡Gana {name}!', tie: '¡Empate!',
+    player: 'Jugador {n}', passTo: 'Pásalo a {name}', passDraw: 'Te toca dibujar. ¡Que nadie mire!', imReady: 'Estoy listo', done: 'Listo', passGuess: 'Pásalo a los que adivinan', passGuessP: 'Adivinad la palabra juntos. ¿Quién acierta primero?', whoGot: '¿Quién acertó?', wins: '¡Gana {name}!', tie: '¡Empate!',
+    tooQuick: 'Un momento y vuelve a intentarlo.', useLetters: 'Escribe una palabra con letras.', feedSaid: '¡{name} lo dijo en voz alta!', drawFirst: '¡Dibuja algo primero!',
+    typeHere: 'Escribe tu respuesta', guessBtn: 'Adivinar', soClose: '¡Casi!', saidIt: '¡Alguien lo dijo!', whoSaid: '¿Quién lo adivinó?', cancel: 'Cancelar', feedWord: '{name} dijo {word}', feedOther: '{name} probó otra cosa', feedClose: '¡{name} está cerca!', guesses: 'Respuestas', guessBy: 'Adivinar con', typing: 'Teclado', tilesEasy: 'Fichas de letras (más fácil)', practiceType: 'Pip dibuja y tú escribes lo que crees que es.', passWatch: '¡Los demás: mirad y decid lo que creéis!', showWord: 'Mi palabra',
   },
   fr: {
     title: 'Doodle Hoot', tag: 'Dessine. Épelle. Hou hou !', board: 'Planche à dessin',
     setup: 'Prêts à dessiner ?', howPlay: 'Comment jouer', practice: 'Devine les dessins de Pip', pass: 'Chacun son tour', level: 'Mots', easy: 'Faciles', medium: 'Moyens', tricky: 'Difficiles', playersN: 'Joueurs', start: 'Commencer',
-    practiceNote: 'Pip dessine, et tu épelles le mot avec les tuiles de lettres.', passNote: 'Jouez à tour de rôle sur cet appareil : un joueur dessine, les autres épellent le mot.',
+    practiceNote: 'Pip dessine, et tu épelles le mot avec les tuiles de lettres.', passNote: 'Jouez à tour de rôle sur cet appareil : un joueur dessine pendant que les autres devinent à voix haute.',
     round: 'Manche {n} sur {of}', doodleN: 'Dessin {n} sur {of}', turnN: 'Tour {n} sur {of}', pipDraws: 'Pip dessine…',
     drawing: '{name} dessine', choosing: '{name} choisit un mot…', youDraw: 'À toi de dessiner !', pickWord: 'Choisis un mot à dessiner', drawThis: 'Dessine :', getReady: 'Tu choisis un mot dans un instant.', spellSoon: 'Prépare-toi à épeler !',
     notLetters: 'Dessine des images, pas des lettres.', colours: 'Couleurs', sizes: 'Épaisseurs', size: 'Épaisseur {n}', eraser: 'Gomme', undo: 'Annuler', clear: 'Effacer', clearAsk: 'Tout effacer ?', full: 'La feuille est pleine : annule ou efface pour continuer.',
@@ -761,12 +949,14 @@ var I18N = {
     waitHost: 'On attend que l’hôte lance la partie…', waitPlayers: 'On attend des joueurs…', waitMore: 'La partie reprend dès qu’il y a de nouveau deux joueurs.', needTwo: 'Il faut deux joueurs.', players: 'Joueurs présents : {n}', hostHow: 'Chacun rejoint avec le code sur son appareil, où qu’il soit.',
     secsLeft: 'Secondes restantes : {n}', left10: 'Plus que 10 secondes', paused: 'En pause', go: 'C’est parti !', you: 'Toi', points: '{n} points',
     podium: 'Scores finaux', place1: '1re place !', place2: '2e place !', place3: '3e place !', wellPlayed: 'Bien joué !', superSpeller: 'Champion de l’orthographe !',
-    player: 'Joueur {n}', passTo: 'Passe à {name}', passDraw: 'À toi de dessiner. Les autres, on ne regarde pas !', imReady: 'Je suis prêt', done: 'Fini', passGuess: 'Passe aux devineurs', passGuessP: 'Épelez le mot ensemble. Qui trouve en premier ?', whoGot: 'Qui l’a épelé ?', wins: '{name} gagne !', tie: 'Égalité !',
+    player: 'Joueur {n}', passTo: 'Passe à {name}', passDraw: 'À toi de dessiner. Les autres, on ne regarde pas !', imReady: 'Je suis prêt', done: 'Fini', passGuess: 'Passe aux devineurs', passGuessP: 'Devinez le mot ensemble. Qui trouve en premier ?', whoGot: 'Qui a trouvé ?', wins: '{name} gagne !', tie: 'Égalité !',
+    tooQuick: 'Un instant, puis réessaie !', useLetters: 'Écris un mot avec des lettres.', feedSaid: '{name} l’a dit à voix haute !', drawFirst: 'Dessine d’abord quelque chose !',
+    typeHere: 'Écris ta réponse', guessBtn: 'Deviner', soClose: 'Presque !', saidIt: 'Quelqu’un l’a dit !', whoSaid: 'Qui a trouvé ?', cancel: 'Annuler', feedWord: '{name} a proposé {word}', feedOther: '{name} a proposé autre chose', feedClose: '{name} y est presque !', guesses: 'Propositions', guessBy: 'Deviner avec', typing: 'Clavier', tilesEasy: 'Tuiles de lettres (plus facile)', practiceType: 'Pip dessine, et tu écris ce que tu crois que c’est.', passWatch: 'Les autres : regardez et devinez à voix haute !', showWord: 'Mon mot',
   },
   de: {
     title: 'Doodle Hoot', tag: 'Malen. Buchstabieren. Huhu!', board: 'Zeichenbrett',
     setup: 'Bereit zum Kritzeln?', howPlay: 'So wird gespielt', practice: 'Rate Pips Bilder', pass: 'Reihum spielen', level: 'Wörter', easy: 'Leicht', medium: 'Mittel', tricky: 'Knifflig', playersN: 'Spieler', start: 'Los geht’s',
-    practiceNote: 'Pip malt, und du legst das Wort mit den Buchstabenkärtchen.', passNote: 'Reihum auf diesem Gerät: Einer malt, die anderen legen das Wort.',
+    practiceNote: 'Pip malt, und du legst das Wort mit den Buchstabenkärtchen.', passNote: 'Reihum auf diesem Gerät: Einer malt, die anderen rufen ihre Antworten.',
     round: 'Runde {n} von {of}', doodleN: 'Bild {n} von {of}', turnN: 'Zug {n} von {of}', pipDraws: 'Pip malt…',
     drawing: '{name} malt', choosing: '{name} wählt ein Wort…', youDraw: 'Du bist dran mit Malen!', pickWord: 'Wähle ein Wort zum Malen', drawThis: 'Male:', getReady: 'Gleich wählst du ein Wort.', spellSoon: 'Mach dich bereit zum Buchstabieren!',
     notLetters: 'Male Bilder, keine Buchstaben.', colours: 'Farben', sizes: 'Stiftgrößen', size: 'Größe {n}', eraser: 'Radiergummi', undo: 'Rückgängig', clear: 'Löschen', clearAsk: 'Alles löschen?', full: 'Das Blatt ist voll: Mach etwas rückgängig oder lösche, um weiterzumalen.',
@@ -778,12 +968,14 @@ var I18N = {
     waitHost: 'Warten, bis der Gastgeber startet…', waitPlayers: 'Warten auf Spieler…', waitMore: 'Es geht weiter, sobald wieder zwei Spieler da sind.', needTwo: 'Es braucht zwei Spieler.', players: 'Spieler da: {n}', hostHow: 'Alle kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind.',
     secsLeft: 'Sekunden übrig: {n}', left10: 'Noch 10 Sekunden', paused: 'Pause', go: 'Los!', you: 'Du', points: '{n} Punkte',
     podium: 'Endstand', place1: '1. Platz!', place2: '2. Platz!', place3: '3. Platz!', wellPlayed: 'Gut gespielt!', superSpeller: 'Rechtschreib-Profi!',
-    player: 'Spieler {n}', passTo: 'Gib weiter an {name}', passDraw: 'Du malst. Alle anderen: nicht hingucken!', imReady: 'Ich bin bereit', done: 'Fertig', passGuess: 'Gib weiter an die Rater', passGuessP: 'Legt das Wort zusammen. Wer hat es zuerst?', whoGot: 'Wer hat es gelegt?', wins: '{name} gewinnt!', tie: 'Unentschieden!',
+    player: 'Spieler {n}', passTo: 'Gib weiter an {name}', passDraw: 'Du malst. Alle anderen: nicht hingucken!', imReady: 'Ich bin bereit', done: 'Fertig', passGuess: 'Gib weiter an die Rater', passGuessP: 'Ratet das Wort zusammen. Wer hat es zuerst?', whoGot: 'Wer hat es?', wins: '{name} gewinnt!', tie: 'Unentschieden!',
+    tooQuick: 'Einen Moment, dann nochmal!', useLetters: 'Tippe ein Wort mit Buchstaben.', feedSaid: '{name} hat es laut gesagt!', drawFirst: 'Mal zuerst etwas!',
+    typeHere: 'Tippe deine Antwort', guessBtn: 'Raten', soClose: 'Ganz knapp!', saidIt: 'Jemand hat’s gesagt!', whoSaid: 'Wer hat es erraten?', cancel: 'Abbrechen', feedWord: '{name} rät {word}', feedOther: '{name} rät etwas anderes', feedClose: '{name} ist ganz nah dran!', guesses: 'Antworten', guessBy: 'Raten mit', typing: 'Tastatur', tilesEasy: 'Buchstabenkärtchen (leichter)', practiceType: 'Pip malt, und du tippst, was es sein könnte.', passWatch: 'Alle anderen: zuschauen und laut raten!', showWord: 'Mein Wort',
   },
   it: {
     title: 'Doodle Hoot', tag: 'Disegna. Componi. Uh uh!', board: 'Lavagna da disegno',
     setup: 'Pronti a scarabocchiare?', howPlay: 'Come si gioca', practice: 'Indovina i disegni di Pip', pass: 'A turno', level: 'Parole', easy: 'Facili', medium: 'Medie', tricky: 'Difficili', playersN: 'Giocatori', start: 'Inizia',
-    practiceNote: 'Pip disegna e tu componi la parola con le tessere delle lettere.', passNote: 'A turno su questo dispositivo: uno disegna, gli altri compongono la parola.',
+    practiceNote: 'Pip disegna e tu componi la parola con le tessere delle lettere.', passNote: 'A turno su questo dispositivo: uno disegna mentre gli altri dicono a voce cosa pensano.',
     round: 'Giro {n} di {of}', doodleN: 'Disegno {n} di {of}', turnN: 'Turno {n} di {of}', pipDraws: 'Pip sta disegnando…',
     drawing: '{name} sta disegnando', choosing: '{name} sta scegliendo una parola…', youDraw: 'Tocca a te disegnare!', pickWord: 'Scegli una parola da disegnare', drawThis: 'Disegna:', getReady: 'Tra poco scegli una parola.', spellSoon: 'Preparati a comporre la parola!',
     notLetters: 'Disegna figure, non lettere.', colours: 'Colori', sizes: 'Spessori', size: 'Spessore {n}', eraser: 'Gomma', undo: 'Annulla', clear: 'Cancella', clearAsk: 'Cancellare tutto?', full: 'Il foglio è pieno: annulla o cancella per disegnare ancora.',
@@ -795,12 +987,14 @@ var I18N = {
     waitHost: 'In attesa che l’host inizi…', waitPlayers: 'In attesa di giocatori…', waitMore: 'Il gioco riprende quando ci sono di nuovo due giocatori.', needTwo: 'Servono due giocatori.', players: 'Giocatori presenti: {n}', hostHow: 'Ognuno entra con il codice dal proprio dispositivo, ovunque sia.',
     secsLeft: 'Secondi rimasti: {n}', left10: 'Mancano 10 secondi', paused: 'In pausa', go: 'Via!', you: 'Tu', points: '{n} punti',
     podium: 'Punteggi finali', place1: '1° posto!', place2: '2° posto!', place3: '3° posto!', wellPlayed: 'Ben giocato!', superSpeller: 'Campione di ortografia!',
-    player: 'Giocatore {n}', passTo: 'Passa a {name}', passDraw: 'Tocca a te disegnare. Gli altri non guardano!', imReady: 'Sono pronto', done: 'Fatto', passGuess: 'Passa a chi indovina', passGuessP: 'Componete la parola insieme. Chi indovina per primo?', whoGot: 'Chi l’ha composta?', wins: 'Vince {name}!', tie: 'Pareggio!',
+    player: 'Giocatore {n}', passTo: 'Passa a {name}', passDraw: 'Tocca a te disegnare. Gli altri non guardano!', imReady: 'Sono pronto', done: 'Fatto', passGuess: 'Passa a chi indovina', passGuessP: 'Indovinate la parola insieme. Chi indovina per primo?', whoGot: 'Chi ha indovinato?', wins: 'Vince {name}!', tie: 'Pareggio!',
+    tooQuick: 'Un attimo, poi riprova!', useLetters: 'Scrivi una parola con le lettere.', feedSaid: '{name} l’ha detto ad alta voce!', drawFirst: 'Prima disegna qualcosa!',
+    typeHere: 'Scrivi la tua risposta', guessBtn: 'Prova', soClose: 'Quasi!', saidIt: 'Qualcuno l’ha detto!', whoSaid: 'Chi ha indovinato?', cancel: 'Annulla', feedWord: '{name} ha detto {word}', feedOther: '{name} ha provato altro', feedClose: '{name} ci è vicino!', guesses: 'Risposte', guessBy: 'Indovina con', typing: 'Tastiera', tilesEasy: 'Tessere (più facile)', practiceType: 'Pip disegna e tu scrivi cosa pensi che sia.', passWatch: 'Gli altri: guardate e dite cosa pensate!', showWord: 'La mia parola',
   },
   pt: {
     title: 'Doodle Hoot', tag: 'Desenhe. Soletre. Uh-uh!', board: 'Quadro de desenho',
     setup: 'Prontos para rabiscar?', howPlay: 'Como jogar', practice: 'Adivinhe os desenhos do Pip', pass: 'Passe e jogue', level: 'Palavras', easy: 'Fáceis', medium: 'Médias', tricky: 'Difíceis', playersN: 'Jogadores', start: 'Começar',
-    practiceNote: 'O Pip desenha e você soletra a palavra com as peças de letras.', passNote: 'Revezem-se neste aparelho: um desenha e os outros soletram a palavra.',
+    practiceNote: 'O Pip desenha e você soletra a palavra com as peças de letras.', passNote: 'Revezem-se neste aparelho: um desenha enquanto os outros falam seus palpites.',
     round: 'Rodada {n} de {of}', doodleN: 'Desenho {n} de {of}', turnN: 'Vez {n} de {of}', pipDraws: 'O Pip está desenhando…',
     drawing: '{name} está desenhando', choosing: '{name} está escolhendo uma palavra…', youDraw: 'Sua vez de desenhar!', pickWord: 'Escolha uma palavra para desenhar', drawThis: 'Desenhe:', getReady: 'Já já você escolhe uma palavra.', spellSoon: 'Prepare-se para soletrar!',
     notLetters: 'Desenhe figuras, não letras.', colours: 'Cores', sizes: 'Espessuras', size: 'Espessura {n}', eraser: 'Borracha', undo: 'Desfazer', clear: 'Apagar', clearAsk: 'Apagar tudo?', full: 'A folha está cheia: desfaça ou apague para continuar.',
@@ -812,12 +1006,14 @@ var I18N = {
     waitHost: 'Esperando o anfitrião começar…', waitPlayers: 'Esperando jogadores…', waitMore: 'O jogo continua quando houver dois jogadores de novo.', needTwo: 'São necessários dois jogadores.', players: 'Jogadores aqui: {n}', hostHow: 'Cada um entra com o código no próprio aparelho, onde estiver.',
     secsLeft: 'Segundos restantes: {n}', left10: 'Faltam 10 segundos', paused: 'Pausado', go: 'Já!', you: 'Você', points: '{n} pontos',
     podium: 'Placar final', place1: '1º lugar!', place2: '2º lugar!', place3: '3º lugar!', wellPlayed: 'Mandou bem!', superSpeller: 'Craque da ortografia!',
-    player: 'Jogador {n}', passTo: 'Passe para {name}', passDraw: 'Sua vez de desenhar. Ninguém espia!', imReady: 'Estou pronto', done: 'Pronto', passGuess: 'Passe para quem adivinha', passGuessP: 'Soletrem a palavra juntos. Quem acerta primeiro?', whoGot: 'Quem soletrou?', wins: '{name} venceu!', tie: 'Empate!',
+    player: 'Jogador {n}', passTo: 'Passe para {name}', passDraw: 'Sua vez de desenhar. Ninguém espia!', imReady: 'Estou pronto', done: 'Pronto', passGuess: 'Passe para quem adivinha', passGuessP: 'Adivinhem a palavra juntos. Quem acerta primeiro?', whoGot: 'Quem acertou?', wins: '{name} venceu!', tie: 'Empate!',
+    tooQuick: 'Espere um pouco e tente de novo!', useLetters: 'Digite uma palavra com letras.', feedSaid: '{name} falou em voz alta!', drawFirst: 'Desenhe algo primeiro!',
+    typeHere: 'Digite seu palpite', guessBtn: 'Chutar', soClose: 'Quase!', saidIt: 'Alguém falou!', whoSaid: 'Quem acertou?', cancel: 'Cancelar', feedWord: '{name} chutou {word}', feedOther: '{name} chutou outra coisa', feedClose: '{name} está quase!', guesses: 'Palpites', guessBy: 'Adivinhar com', typing: 'Teclado', tilesEasy: 'Peças de letras (mais fácil)', practiceType: 'O Pip desenha e você digita o que acha que é.', passWatch: 'Os outros: olhem e falem seus palpites!', showWord: 'Minha palavra',
   },
   nl: {
     title: 'Doodle Hoot', tag: 'Teken het. Spel het. Oehoe!', board: 'Tekenbord',
     setup: 'Klaar om te krabbelen?', howPlay: 'Zo speel je', practice: 'Raad Pips tekeningen', pass: 'Om de beurt', level: 'Woorden', easy: 'Makkelijk', medium: 'Gemiddeld', tricky: 'Lastig', playersN: 'Spelers', start: 'Start',
-    practiceNote: 'Pip tekent, en jij legt het woord met de lettertegels.', passNote: 'Om de beurt op dit apparaat: één speler tekent, de anderen leggen het woord.',
+    practiceNote: 'Pip tekent, en jij legt het woord met de lettertegels.', passNote: 'Om de beurt op dit apparaat: één speler tekent terwijl de anderen hardop raden.',
     round: 'Ronde {n} van {of}', doodleN: 'Tekening {n} van {of}', turnN: 'Beurt {n} van {of}', pipDraws: 'Pip tekent…',
     drawing: '{name} tekent', choosing: '{name} kiest een woord…', youDraw: 'Jij mag tekenen!', pickWord: 'Kies een woord om te tekenen', drawThis: 'Teken:', getReady: 'Zo meteen kies je een woord.', spellSoon: 'Maak je klaar om te spellen!',
     notLetters: 'Teken plaatjes, geen letters.', colours: 'Kleuren', sizes: 'Diktes', size: 'Dikte {n}', eraser: 'Gum', undo: 'Ongedaan maken', clear: 'Wissen', clearAsk: 'Alles wissen?', full: 'Het blad is vol: maak iets ongedaan of wis om verder te tekenen.',
@@ -829,12 +1025,14 @@ var I18N = {
     waitHost: 'Wachten tot de host begint…', waitPlayers: 'Wachten op spelers…', waitMore: 'Het spel gaat verder zodra er weer twee spelers zijn.', needTwo: 'Er zijn twee spelers nodig.', players: 'Spelers hier: {n}', hostHow: 'Iedereen doet mee met de code op een eigen apparaat, waar ze ook zijn.',
     secsLeft: 'Seconden over: {n}', left10: 'Nog 10 seconden', paused: 'Gepauzeerd', go: 'Start!', you: 'Jij', points: '{n} punten',
     podium: 'Eindstand', place1: '1e plaats!', place2: '2e plaats!', place3: '3e plaats!', wellPlayed: 'Goed gespeeld!', superSpeller: 'Spelkampioen!',
-    player: 'Speler {n}', passTo: 'Geef door aan {name}', passDraw: 'Jij tekent. De rest: niet kijken!', imReady: 'Ik ben klaar', done: 'Klaar', passGuess: 'Geef door aan de raders', passGuessP: 'Leg het woord samen. Wie heeft het als eerste?', whoGot: 'Wie heeft het gelegd?', wins: '{name} wint!', tie: 'Gelijkspel!',
+    player: 'Speler {n}', passTo: 'Geef door aan {name}', passDraw: 'Jij tekent. De rest: niet kijken!', imReady: 'Ik ben klaar', done: 'Klaar', passGuess: 'Geef door aan de raders', passGuessP: 'Raad het woord samen. Wie heeft het als eerste?', whoGot: 'Wie had het?', wins: '{name} wint!', tie: 'Gelijkspel!',
+    tooQuick: 'Even wachten, dan opnieuw!', useLetters: 'Typ een woord met letters.', feedSaid: '{name} zei het hardop!', drawFirst: 'Teken eerst iets!',
+    typeHere: 'Typ je gok', guessBtn: 'Raden', soClose: 'Bijna!', saidIt: 'Iemand zei het!', whoSaid: 'Wie heeft het geraden?', cancel: 'Annuleren', feedWord: '{name} gokte {word}', feedOther: '{name} gokte iets anders', feedClose: '{name} zit er dichtbij!', guesses: 'Gokken', guessBy: 'Raden met', typing: 'Toetsenbord', tilesEasy: 'Lettertegels (makkelijker)', practiceType: 'Pip tekent, en jij typt wat je denkt dat het is.', passWatch: 'De rest: kijk mee en roep wat je denkt!', showWord: 'Mijn woord',
   },
   ru: {
     title: 'Doodle Hoot', tag: 'Нарисуй. Составь слово. Угу!', board: 'Доска для рисования',
     setup: 'Готовы рисовать?', howPlay: 'Как играть', practice: 'Угадай рисунки Пипа', pass: 'По очереди', level: 'Слова', easy: 'Лёгкие', medium: 'Средние', tricky: 'Трудные', playersN: 'Игроки', start: 'Начать',
-    practiceNote: 'Пип рисует, а ты собираешь слово из плиток с буквами.', passNote: 'По очереди на этом устройстве: один рисует, остальные собирают слово.',
+    practiceNote: 'Пип рисует, а ты собираешь слово из плиток с буквами.', passNote: 'По очереди на этом устройстве: один рисует, остальные угадывают вслух.',
     round: 'Раунд {n} из {of}', doodleN: 'Рисунок {n} из {of}', turnN: 'Ход {n} из {of}', pipDraws: 'Пип рисует…',
     drawing: 'Рисует: {name}', choosing: '{name} выбирает слово…', youDraw: 'Твоя очередь рисовать!', pickWord: 'Выбери слово для рисунка', drawThis: 'Нарисуй:', getReady: 'Сейчас ты выберешь слово.', spellSoon: 'Приготовься собирать слово!',
     notLetters: 'Рисуй картинки, а не буквы.', colours: 'Цвета', sizes: 'Толщина', size: 'Толщина {n}', eraser: 'Ластик', undo: 'Отменить', clear: 'Стереть', clearAsk: 'Стереть всё?', full: 'Лист заполнен: отмени или сотри, чтобы рисовать дальше.',
@@ -846,12 +1044,14 @@ var I18N = {
     waitHost: 'Ждём, когда ведущий начнёт…', waitPlayers: 'Ждём игроков…', waitMore: 'Игра продолжится, когда снова будут два игрока.', needTwo: 'Нужны два игрока.', players: 'Игроков здесь: {n}', hostHow: 'Каждый входит по коду со своего устройства, где бы он ни был.',
     secsLeft: 'Осталось секунд: {n}', left10: 'Осталось 10 секунд', paused: 'Пауза', go: 'Вперёд!', you: 'Ты', points: 'Очки: {n}',
     podium: 'Итоговый счёт', place1: '1-е место!', place2: '2-е место!', place3: '3-е место!', wellPlayed: 'Отличная игра!', superSpeller: 'Мастер правописания!',
-    player: 'Игрок {n}', passTo: 'Передай: {name}', passDraw: 'Ты рисуешь. Остальные — не подглядывать!', imReady: 'Я готов', done: 'Готово', passGuess: 'Передай отгадчикам', passGuessP: 'Соберите слово вместе. Кто первым?', whoGot: 'Кто собрал слово?', wins: 'Победа: {name}!', tie: 'Ничья!',
+    player: 'Игрок {n}', passTo: 'Передай: {name}', passDraw: 'Ты рисуешь. Остальные — не подглядывать!', imReady: 'Я готов', done: 'Готово', passGuess: 'Передай отгадчикам', passGuessP: 'Угадайте слово вместе. Кто первым?', whoGot: 'Кто угадал?', wins: 'Победа: {name}!', tie: 'Ничья!',
+    tooQuick: 'Секунду, потом попробуй ещё!', useLetters: 'Напиши слово буквами.', feedSaid: '{name} сказал вслух!', drawFirst: 'Сначала нарисуй что-нибудь!',
+    typeHere: 'Напиши ответ', guessBtn: 'Ответить', soClose: 'Почти!', saidIt: 'Кто-то сказал!', whoSaid: 'Кто угадал?', cancel: 'Отмена', feedWord: '{name}: {word}', feedOther: '{name}: что-то другое', feedClose: '{name} почти угадывает!', guesses: 'Ответы', guessBy: 'Как угадывать', typing: 'Клавиатура', tilesEasy: 'Плитки с буквами (проще)', practiceType: 'Пип рисует, а ты пишешь, что это.', passWatch: 'Остальные: смотрите и угадывайте вслух!', showWord: 'Моё слово',
   },
   ja: {
     title: 'Doodle Hoot', tag: 'かいて、つづって、ホーホー！', board: 'おえかきボード',
     setup: 'おえかきの準備はいい？', howPlay: 'あそびかた', practice: 'ピップの絵をあてよう', pass: 'じゅんばんにまわす', level: '言葉', easy: 'やさしい', medium: 'ふつう', tricky: 'むずかしい', playersN: 'プレイヤー', start: 'スタート',
-    practiceNote: 'ピップが絵をかくよ。文字タイルで言葉をつづろう。', passNote: 'この端末をじゅんばんに使います。1人がかいて、ほかの人がつづります。',
+    practiceNote: 'ピップが絵をかくよ。文字タイルで言葉をつづろう。', passNote: 'この端末をじゅんばんに使います。1人がかき、ほかの人は声に出して当てます。',
     round: 'ラウンド {n}/{of}', doodleN: '絵 {n}/{of}', turnN: 'ばん {n}/{of}', pipDraws: 'ピップがかいています…',
     drawing: '{name}がかいています', choosing: '{name}が言葉をえらんでいます…', youDraw: 'あなたがかく番です！', pickWord: 'かく言葉をえらぼう', drawThis: 'かくもの：', getReady: 'もうすぐ言葉をえらびます。', spellSoon: 'つづる準備をしよう！',
     notLetters: '文字ではなく絵をかこう。', colours: '色', sizes: '太さ', size: '太さ {n}', eraser: 'けしゴム', undo: 'もどす', clear: 'ぜんぶけす', clearAsk: 'ぜんぶけす？', full: 'もうかけません。もどすか、けしてください。',
@@ -863,12 +1063,14 @@ var I18N = {
     waitHost: 'ホストがはじめるのを待っています…', waitPlayers: 'プレイヤーを待っています…', waitMore: 'また2人そろったら続きます。', needTwo: '2人必要です。', players: 'いる人：{n}人', hostHow: 'みんな、どこにいても自分の端末でコードを入れて参加します。',
     secsLeft: 'のこり{n}秒', left10: 'のこり10秒', paused: '一時停止', go: 'スタート！', you: 'あなた', points: '{n}点',
     podium: 'さいしゅう結果', place1: '1位！', place2: '2位！', place3: '3位！', wellPlayed: 'よくできました！', superSpeller: 'つづりの名人！',
-    player: 'プレイヤー{n}', passTo: '{name}にわたしてね', passDraw: 'あなたがかく番。ほかの人は見ないでね！', imReady: '準備できた', done: 'できた', passGuess: 'あてる人にわたしてね', passGuessP: 'みんなで言葉をつづろう。だれが先にわかるかな？', whoGot: 'だれがつづった？', wins: '{name}の勝ち！', tie: '引き分け！',
+    player: 'プレイヤー{n}', passTo: '{name}にわたしてね', passDraw: 'あなたがかく番。ほかの人は見ないでね！', imReady: '準備できた', done: 'できた', passGuess: 'あてる人にわたしてね', passGuessP: 'みんなで言葉を当てよう。だれが先にわかるかな？', whoGot: 'だれが当てた？', wins: '{name}の勝ち！', tie: '引き分け！',
+    tooQuick: 'ちょっと待ってから、もういちど！', useLetters: '文字で言葉を打ってね。', feedSaid: '{name}が声で当てた！', drawFirst: 'まず何かかいてね！',
+    typeHere: 'こたえを打ってね', guessBtn: 'こたえる', soClose: 'おしい！', saidIt: 'だれかが言った！', whoSaid: 'だれが当てた？', cancel: 'やめる', feedWord: '{name}：{word}', feedOther: '{name}：ほかの答え', feedClose: '{name}がおしい！', guesses: 'こたえ', guessBy: '当て方', typing: 'キーボード', tilesEasy: '文字タイル（やさしい）', practiceType: 'ピップが絵をかくよ。なにかわかったら打ってね。', passWatch: 'ほかの人は見ながら、声に出して当ててね！', showWord: 'わたしの言葉',
   },
   'zh-Hant': {
     title: 'Doodle Hoot', tag: '畫出來，拼出來，呼呼！', board: '畫板',
     setup: '準備好塗鴉了嗎？', howPlay: '怎麼玩', practice: '猜猜 Pip 的畫', pass: '輪流玩', level: '詞語', easy: '簡單', medium: '中等', tricky: '困難', playersN: '玩家', start: '開始',
-    practiceNote: 'Pip 畫圖，你用字母方塊拼出詞語。', passNote: '在這台裝置上輪流：一人畫圖，其他人拼出詞語。',
+    practiceNote: 'Pip 畫圖，你用字母方塊拼出詞語。', passNote: '在這台裝置上輪流：一人畫圖，其他人大聲猜。',
     round: '第 {n}/{of} 回合', doodleN: '第 {n}/{of} 張畫', turnN: '第 {n}/{of} 輪', pipDraws: 'Pip 正在畫…',
     drawing: '{name} 正在畫', choosing: '{name} 正在選詞…', youDraw: '輪到你畫了！', pickWord: '選一個詞來畫', drawThis: '要畫：', getReady: '等一下就要選詞了。', spellSoon: '準備好來拼！',
     notLetters: '畫圖，不要寫字。', colours: '顏色', sizes: '粗細', size: '粗細 {n}', eraser: '橡皮擦', undo: '復原', clear: '清除', clearAsk: '全部清除？', full: '畫紙滿了：復原或清除後再畫。',
@@ -880,12 +1082,14 @@ var I18N = {
     waitHost: '等待主持人開始…', waitPlayers: '等待玩家…', waitMore: '再有兩位玩家時遊戲會繼續。', needTwo: '需要兩位玩家。', players: '目前玩家：{n}', hostHow: '每個人不論在哪裡，都用自己的裝置輸入代碼加入。',
     secsLeft: '還剩 {n} 秒', left10: '還剩 10 秒', paused: '已暫停', go: '開始！', you: '你', points: '{n} 分',
     podium: '最終分數', place1: '第 1 名！', place2: '第 2 名！', place3: '第 3 名！', wellPlayed: '玩得好！', superSpeller: '拼字高手！',
-    player: '玩家 {n}', passTo: '交給 {name}', passDraw: '輪到你畫。其他人不要偷看！', imReady: '我準備好了', done: '完成', passGuess: '交給猜的人', passGuessP: '一起拼出詞語。誰最先拼出來？', whoGot: '誰拼出來的？', wins: '{name} 獲勝！', tie: '平手！',
+    player: '玩家 {n}', passTo: '交給 {name}', passDraw: '輪到你畫。其他人不要偷看！', imReady: '我準備好了', done: '完成', passGuess: '交給猜的人', passGuessP: '一起猜詞語。誰最先猜到？', whoGot: '誰答對了？', wins: '{name} 獲勝！', tie: '平手！',
+    tooQuick: '等一下再猜！', useLetters: '請用文字輸入。', feedSaid: '{name} 說出來了！', drawFirst: '先畫點東西吧！',
+    typeHere: '輸入你的答案', guessBtn: '猜', soClose: '好接近！', saidIt: '有人說對了！', whoSaid: '誰猜對了？', cancel: '取消', feedWord: '{name} 猜：{word}', feedOther: '{name} 猜了別的', feedClose: '{name} 很接近了！', guesses: '猜測', guessBy: '怎麼猜', typing: '打字', tilesEasy: '字母方塊（比較簡單）', practiceType: 'Pip 畫圖，你打出你覺得是什麼。', passWatch: '其他人：一邊看一邊大聲猜！', showWord: '我的詞',
   },
   ar: {
     title: 'Doodle Hoot', tag: 'ارسمها. هجّئها. هوو هوو!', board: 'لوحة الرسم',
     setup: 'مستعدون للرسم؟', howPlay: 'طريقة اللعب', practice: 'خمّن رسومات بِب', pass: 'بالدور على جهاز واحد', level: 'الكلمات', easy: 'سهلة', medium: 'متوسطة', tricky: 'صعبة', playersN: 'اللاعبون', start: 'ابدأ',
-    practiceNote: 'بِب يرسم، وأنت تهجّئ الكلمة ببطاقات الحروف.', passNote: 'تبادلوا الأدوار على هذا الجهاز: لاعب يرسم والآخرون يهجّئون الكلمة.',
+    practiceNote: 'بِب يرسم، وأنت تهجّئ الكلمة ببطاقات الحروف.', passNote: 'تبادلوا الأدوار على هذا الجهاز: لاعب يرسم والآخرون يخمّنون بصوت عالٍ.',
     round: 'الجولة {n} من {of}', doodleN: 'الرسمة {n} من {of}', turnN: 'الدور {n} من {of}', pipDraws: 'بِب يرسم…',
     drawing: 'يرسم الآن: {name}', choosing: '{name} يختار كلمة…', youDraw: 'دورك في الرسم!', pickWord: 'اختر كلمة لترسمها', drawThis: 'ارسم:', getReady: 'ستختار كلمة بعد قليل.', spellSoon: 'استعد للتهجئة!',
     notLetters: 'ارسم صورًا لا حروفًا.', colours: 'الألوان', sizes: 'السُمك', size: 'السُمك {n}', eraser: 'ممحاة', undo: 'تراجع', clear: 'امسح', clearAsk: 'تمسح الكل؟', full: 'امتلأت الورقة: تراجع أو امسح لتكمل الرسم.',
@@ -897,12 +1101,14 @@ var I18N = {
     waitHost: 'بانتظار أن يبدأ المضيف…', waitPlayers: 'بانتظار اللاعبين…', waitMore: 'تستمر اللعبة عندما يصبح هناك لاعبان من جديد.', needTwo: 'يلزم لاعبان.', players: 'اللاعبون هنا: {n}', hostHow: 'ينضم الجميع بالرمز من أجهزتهم أينما كانوا.',
     secsLeft: 'الثواني المتبقية: {n}', left10: 'بقيت 10 ثوانٍ', paused: 'متوقف مؤقتًا', go: 'انطلق!', you: 'أنت', points: '{n} نقطة',
     podium: 'النتائج النهائية', place1: 'المركز الأول!', place2: 'المركز الثاني!', place3: 'المركز الثالث!', wellPlayed: 'أحسنت اللعب!', superSpeller: 'بطل التهجئة!',
-    player: 'اللاعب {n}', passTo: 'أعطِ الجهاز إلى {name}', passDraw: 'دورك في الرسم. لا يختلس أحد النظر!', imReady: 'أنا مستعد', done: 'تم', passGuess: 'أعطِ الجهاز للمخمّنين', passGuessP: 'هجّئوا الكلمة معًا. من يعرفها أولًا؟', whoGot: 'من هجّأها؟', wins: 'فاز {name}!', tie: 'تعادل!',
+    player: 'اللاعب {n}', passTo: 'أعطِ الجهاز إلى {name}', passDraw: 'دورك في الرسم. لا يختلس أحد النظر!', imReady: 'أنا مستعد', done: 'تم', passGuess: 'أعطِ الجهاز للمخمّنين', passGuessP: 'خمّنوا الكلمة معًا. من يعرفها أولًا؟', whoGot: 'من أصاب؟', wins: 'فاز {name}!', tie: 'تعادل!',
+    tooQuick: 'لحظة، ثم خمّن مرة أخرى!', useLetters: 'اكتب كلمة بالحروف.', feedSaid: 'قالها {name} بصوت عالٍ!', drawFirst: 'ارسم شيئًا أولًا!',
+    typeHere: 'اكتب تخمينك', guessBtn: 'خمّن', soClose: 'قريب جدًا!', saidIt: 'أحدهم قالها!', whoSaid: 'من خمّنها؟', cancel: 'إلغاء', feedWord: '{name} خمّن: {word}', feedOther: '{name} خمّن شيئًا آخر', feedClose: '{name} قريب جدًا!', guesses: 'التخمينات', guessBy: 'التخمين بـ', typing: 'الكتابة', tilesEasy: 'بطاقات الحروف (أسهل)', practiceType: 'بِب يرسم، وأنت تكتب ما تظنه.', passWatch: 'الباقون: شاهدوا وخمّنوا بصوت عالٍ!', showWord: 'كلمتي',
   },
   he: {
     title: 'Doodle Hoot', tag: 'ציירו. אייתו. הו־הו!', board: 'לוח ציור',
     setup: 'מוכנים לשרבט?', howPlay: 'איך משחקים', practice: 'נחשו את הציורים של פיפ', pass: 'מעבירים מיד ליד', level: 'מילים', easy: 'קלות', medium: 'בינוניות', tricky: 'מאתגרות', playersN: 'שחקנים', start: 'מתחילים',
-    practiceNote: 'פיפ מצייר, ואתם מאייתים את המילה באריחי אותיות.', passNote: 'בתורות על המכשיר הזה: אחד מצייר, והשאר מאייתים את המילה.',
+    practiceNote: 'פיפ מצייר, ואתם מאייתים את המילה באריחי אותיות.', passNote: 'בתורות על המכשיר הזה: אחד מצייר והשאר מנחשים בקול.',
     round: 'סבב {n} מתוך {of}', doodleN: 'ציור {n} מתוך {of}', turnN: 'תור {n} מתוך {of}', pipDraws: 'פיפ מצייר…',
     drawing: 'מצייר/ת עכשיו: {name}', choosing: '{name} בוחר/ת מילה…', youDraw: 'תורך לצייר!', pickWord: 'בחרו מילה לציור', drawThis: 'ציירו:', getReady: 'עוד רגע בוחרים מילה.', spellSoon: 'מתכוננים לאיית!',
     notLetters: 'ציירו תמונות, לא אותיות.', colours: 'צבעים', sizes: 'עוביים', size: 'עובי {n}', eraser: 'מחק', undo: 'ביטול', clear: 'ניקוי', clearAsk: 'לנקות הכול?', full: 'הדף מלא: בטלו או נקו כדי להמשיך לצייר.',
@@ -914,7 +1120,9 @@ var I18N = {
     waitHost: 'מחכים שהמארח יתחיל…', waitPlayers: 'מחכים לשחקנים…', waitMore: 'המשחק ימשיך כשיהיו שוב שני שחקנים.', needTwo: 'צריך שני שחקנים.', players: 'שחקנים כאן: {n}', hostHow: 'כולם מצטרפים עם הקוד מהמכשיר שלהם, איפה שהם.',
     secsLeft: 'שניות שנותרו: {n}', left10: 'נשארו 10 שניות', paused: 'בהשהיה', go: 'צאו!', you: 'את/ה', points: '{n} נקודות',
     podium: 'התוצאות הסופיות', place1: 'מקום 1!', place2: 'מקום 2!', place3: 'מקום 3!', wellPlayed: 'כל הכבוד!', superSpeller: 'אלופי האיות!',
-    player: 'שחקן {n}', passTo: 'העבירו אל {name}', passDraw: 'תורך לצייר. כל השאר: לא מציצים!', imReady: 'מוכן/ה', done: 'סיימתי', passGuess: 'העבירו למנחשים', passGuessP: 'אייתו את המילה יחד. מי מנחש ראשון?', whoGot: 'מי איית?', wins: '{name} ניצח/ה!', tie: 'תיקו!',
+    player: 'שחקן {n}', passTo: 'העבירו אל {name}', passDraw: 'תורך לצייר. כל השאר: לא מציצים!', imReady: 'מוכן/ה', done: 'סיימתי', passGuess: 'העבירו למנחשים', passGuessP: 'נחשו את המילה יחד. מי מנחש ראשון?', whoGot: 'מי ניחש?', wins: '{name} ניצח/ה!', tie: 'תיקו!',
+    tooQuick: 'רגע, ואז נסו שוב!', useLetters: 'הקלידו מילה באותיות.', feedSaid: '{name} אמר/ה את זה בקול!', drawFirst: 'קודם ציירו משהו!',
+    typeHere: 'הקלידו ניחוש', guessBtn: 'ניחוש', soClose: 'כמעט!', saidIt: 'מישהו אמר!', whoSaid: 'מי ניחש?', cancel: 'ביטול', feedWord: '{name} ניחש/ה: {word}', feedOther: '{name} ניחש/ה משהו אחר', feedClose: '{name} ממש קרוב/ה!', guesses: 'ניחושים', guessBy: 'איך מנחשים', typing: 'הקלדה', tilesEasy: 'אריחי אותיות (קל יותר)', practiceType: 'פיפ מצייר, ואתם מקלידים מה לדעתכם זה.', passWatch: 'כל השאר: תסתכלו ותנחשו בקול!', showWord: 'המילה שלי',
   },
 };
 I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
@@ -953,6 +1161,23 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   /** A word as the tiles show it (capitals where the script has them), words apart. */
   function caps(w, lang) { return String(w || '').split(/\s+/).map(function (x) { return C.graphemes(x, lang).map(function (g) { return C.shown(g, lang); }).join(''); }).join(' '); }
   function clockText(ms) { return O.num(Math.max(0, Math.ceil(ms / 1000))); }
+  /** A word never breaks inside (SUNFLOWE / R): the box's type gets smaller until its longest word fits on one line
+   *  (a two-word answer may still wrap at its space), down to min px. Marked .dh-fit; run again on every resize. */
+  function fit(node, min) {
+    if (!node || !node.isConnected) return;
+    node.classList.add('dh-fit'); node.dataset.fitMin = String(min || 12);
+    node.style.fontSize = '';
+    var w = node.clientWidth; if (!w) return;
+    var size = parseFloat(getComputedStyle(node).fontSize) || 16, lo = min || 12;
+    for (var i = 0; i < 8 && node.scrollWidth > node.clientWidth + 1 && size > lo; i++) {
+      size = Math.max(lo, Math.floor(size * Math.min(0.96, node.clientWidth / node.scrollWidth)));
+      node.style.fontSize = size + 'px';
+    }
+  }
+  function refit(root) { var list = (root || document).querySelectorAll('.dh-fit'); for (var i = 0; i < list.length; i++) fit(list[i], +list[i].dataset.fitMin || 12); }
+  var fitAt = 0; window.addEventListener('resize', function () { clearTimeout(fitAt); fitAt = setTimeout(function () { refit(); }, 60); });
+  /** After the layout settles (a panel just built): fit now and on the next frame. */
+  function fitSoon(node, min) { fit(node, min); requestAnimationFrame(function () { fit(node, min); }); }
 
   /* ---------- the board: a 4:3 canvas on paper white, the same picture at any size ---------- */
   function Board(box) {
@@ -1085,6 +1310,14 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     var back = btn('dh-btn', t('back'), 'back', function () { T.back(); });
     row.appendChild(back);
     box.append(slotsEl, prev, trayEl, row, say);
+    // a tap on a filled slot takes its tile back (Back and Backspace do too: a slot is no button, it can be small).
+    // Like press(): the finger must go down and up on the same slot, so a tap that lands on a tile never takes a
+    // letter back when the tray moves under it.
+    var slotDown = null;
+    var slotAt = function (e) { var s = e.target.closest && e.target.closest('.dh-slot'); return s && s.dataset.i != null ? s : null; };
+    slotsEl.addEventListener('pointerdown', function (e) { var s = slotAt(e); slotDown = s ? { id: e.pointerId, el: s } : null; });
+    slotsEl.addEventListener('pointerup', function (e) { var s = slotAt(e), d = slotDown; slotDown = null; if (s && d && d.id === e.pointerId && d.el === s) { e.preventDefault(); T.unslot(+s.dataset.i); } });
+    slotsEl.addEventListener('pointercancel', function () { slotDown = null; });
     T.el = box; T.row = row; T.sayEl = say;
     T.set = function (d, lng) {
       T.n = d.n || 0; T.tray = d.t.slice(); T.groups = d.g.slice(); T.dir = d.dir || 'ltr'; T.lang = lng || T.lang; T.rm = {}; T.locks = {}; T.busy = false; T.solved = !!d.ok; T.order = [];
@@ -1099,12 +1332,12 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       slotsEl.textContent = ''; slotsEl.dir = T.dir;
       var k = 0;
       T.groups.forEach(function (n) {
-        var wd = el('span', 'dh-wd');
+        var wd = el('span', 'dh-wd'); wd.style.setProperty('--n', String(n));
         for (var j = 0; j < n; j++, k++) (function (i) {
-          var tIdx = T.slots[i], s = btn('dh-slot' + (tIdx != null ? ' full' : '') + (T.locks[i] != null ? ' lock' : ''), null, null, function () { T.unslot(i); });
+          var tIdx = T.slots[i], s = el('span', 'dh-slot' + (tIdx != null ? ' full' : '') + (T.locks[i] != null ? ' lock' : ''));
           s.textContent = tIdx != null ? C.shown(T.tray[tIdx], T.lang) : '';
-          s.setAttribute('aria-label', tIdx != null ? s.textContent : t('empty'));
-          if (T.locks[i] != null) s.disabled = true;
+          s.setAttribute('aria-label', tIdx != null ? s.textContent : t('empty')); s.setAttribute('role', 'img');
+          if (T.locks[i] == null && tIdx != null) s.dataset.i = i;
           wd.appendChild(s);
         })(k);
         slotsEl.appendChild(wd);
@@ -1166,7 +1399,108 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       for (var k2 = 0; k2 < picks.length; k2++) if (T.locks[k2] == null) T.tap(picks[k2]);
       return true;
     };
-    window.addEventListener('keydown', function (e) { if (e.ctrlKey || e.metaKey || e.altKey) return; if (T.key(e)) e.preventDefault(); });
+    window.addEventListener('keydown', function (e) { if (e.ctrlKey || e.metaKey || e.altKey || (e.target && e.target.tagName === 'INPUT')) return; if (T.key(e)) e.preventDefault(); });
+    return T;
+  }
+
+  /* ---------- typing a guess: the word's shape (blanks, with any hint letters), a box and Guess ----------
+     The default way to guess. Enter or Guess sends it; a word still being put together with an input method (Japanese,
+     Chinese, and so on) is never sent half-made. onGuess(text) checks it (the server in Oomba Live: there the text goes
+     as code points, to the server only). */
+  function Typer(onGuess, lang) {
+    var T = { groups: [], dir: 'ltr', locks: {}, solved: false, out: false, busy: false, lang: lang || 'en', n: 0, at: 0 };
+    // (no <form>: a game frame is sandboxed without forms, so Enter and Guess are handled here)
+    var box = el('div', 'dh-guess dh-type'), blanks = el('div', 'dh-slots'), form = el('div', 'dh-form'), input = el('input'), say = el('p', 'dh-say');
+    input.type = 'text'; input.setAttribute('data-live-guess', ''); input.autocomplete = 'off'; input.setAttribute('autocorrect', 'off'); input.setAttribute('autocapitalize', 'none');
+    input.spellcheck = false; input.maxLength = 60; input.setAttribute('enterkeyhint', 'send'); input.placeholder = t('typeHere'); input.setAttribute('aria-label', t('typeHere')); input.dir = 'auto';
+    input.className = 'dh-input';
+    var go = el('button', 'dh-btn hot dh-go'); go.type = 'button'; go.appendChild(el('span', '', t('guessBtn')));
+    // (a tap on Guess keeps the keyboard up: the box keeps its focus)
+    go.addEventListener('pointerdown', function (e) { if (document.activeElement === input) e.preventDefault(); });
+    form.append(input, go);
+    blanks.setAttribute('aria-hidden', 'true'); say.setAttribute('role', 'status');
+    box.append(blanks, form, say);
+    T.el = box; T.row = form; T.input = input; T.sayEl = say;
+    var composing = false, enterLater = false;
+    // (only Japanese and Chinese build a word in the box before it counts; elsewhere, an Android keyboard keeps every
+    // word "in composition" while it is typed, so Enter and Guess send what is in the box)
+    var ime = function () { return /^(ja|zh)/.test(T.lang); };
+    input.addEventListener('compositionstart', function () { composing = true; });
+    input.addEventListener('compositionend', function () { composing = false; if (enterLater) { enterLater = false; if (!ime()) T.send(); } });
+    // Enter sends it, except the Enter that finishes a word in a Japanese or Chinese input method (isComposing, 229)
+    input.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.keyCode !== 13) return;
+      e.preventDefault();
+      if ((e.isComposing || composing || e.keyCode === 229) && ime()) return;
+      if (composing && !ime()) enterLater = true;
+      T.send();
+    });
+    // (a tap on the box always brings the keyboard up)
+    input.addEventListener('pointerup', function () { if (document.activeElement !== input) T.focus(); });
+    // (the last answer goes once more typing starts)
+    input.addEventListener('input', function () { if (say.textContent && !T.solved && !T.out) { say.textContent = ''; say.className = 'dh-say'; box.classList.remove('no'); } });
+    press(go, function () { if (!composing || !ime()) T.send(); });
+    var wait = 0;
+    T.send = function () {
+      var v = String(input.value || '').trim();
+      if (!v || T.solved || T.out || T.busy) return false;
+      // (a little slower than the server's one a second, so a quick second tap is never thrown away)
+      var now = Date.now(); if (now - T.at < 1100) return false;
+      T.at = now; T.busy = true; T.last = v;
+      v = Array.from(v).slice(0, C.MAX_TYPED).join('');
+      input.value = ''; enterLater = false;
+      // no answer in 2.5 s (a dropped message): the box works again, with what was typed back in it
+      clearTimeout(wait); wait = setTimeout(function () { if (T.busy) { T.busy = false; if (!input.value) input.value = T.last || ''; } }, 2500);
+      onGuess(v);
+      return true;
+    };
+    /** Not counted (too quick, or no letters): the box works again, with what was typed back in it when keep. */
+    T.retry = function (keep, text) {
+      clearTimeout(wait); T.busy = false; T.at = 0;
+      if (keep && !input.value) input.value = T.last || '';
+      say.className = 'dh-say'; say.textContent = text || '';
+    };
+    T.set = function (d, lng) {
+      var same = T.n === (d.n || 0) && T.n > 0;
+      T.n = d.n || 0; T.groups = (d.g || []).slice(); T.dir = d.dir || 'ltr'; T.lang = lng || T.lang; T.locks = {}; T.solved = !!d.ok; T.out = !!d.out; T.busy = false; T.at = 0;
+      clearTimeout(wait);
+      (d.hn || []).forEach(function (h) { T.locks[h[0]] = h[1]; });
+      // (the same turn again, after a reconnect: what was being typed stays)
+      if (!same || T.solved || T.out) input.value = '';
+      input.lang = T.lang; input.readOnly = false;
+      box.classList.remove('ok', 'no', 'out'); if (T.solved) box.classList.add('ok'); if (T.out) box.classList.add('out');
+      if (!same) { say.textContent = ''; say.className = 'dh-say'; }
+      T.render();
+    };
+    T.render = function () {
+      blanks.textContent = ''; blanks.dir = T.dir;
+      var k = 0;
+      T.groups.forEach(function (n) {
+        var wd = el('span', 'dh-wd'); wd.style.setProperty('--n', String(n));
+        for (var j = 0; j < n; j++, k++) { var l = T.locks[k], s = el('span', 'dh-slot' + (l != null ? ' lock' : '')); s.textContent = l != null ? C.shown(l, T.lang) : ''; wd.appendChild(s); }
+        blanks.appendChild(wd);
+      });
+    };
+    /** The answer: ok (got it), close (told only to this player), no (a wrong guess: left, how many may still come). */
+    T.result = function (kind, text) {
+      clearTimeout(wait); T.busy = false; box.classList.remove('no'); void box.offsetWidth;
+      say.className = 'dh-say' + (kind === 'ok' ? ' good' : kind === 'close' ? ' close' : '');
+      say.textContent = text || '';
+      if (kind === 'ok') { T.solved = true; box.classList.add('ok'); try { input.blur(); } catch (e) { /* fine */ } }
+      else if (kind === 'out') { T.out = true; box.classList.add('out'); try { input.blur(); } catch (e) { /* fine */ } }
+      else box.classList.add('no');
+    };
+    T.hint = function (i, letter) { if (i < 0 || i >= T.groups.reduce(function (a, b) { return a + b; }, 0)) return; T.locks[i] = letter; T.render(); };
+    T.focus = function () { try { input.focus({ preventScroll: true }); } catch (e) { /* fine */ } };
+    /** A key pressed anywhere else (a computer): it goes into the box. */
+    window.addEventListener('keydown', function (e) {
+      if (box.hidden || !box.isConnected || T.solved || T.out || e.ctrlKey || e.metaKey || e.altKey || !e.key || e.key.length > 2) return;
+      var tg = e.target; if (tg === input || (tg && (tg.tagName === 'INPUT' || tg.tagName === 'BUTTON' && e.key === ' '))) return;
+      var r = box.getBoundingClientRect(); if (!r.width) return;
+      T.focus();
+    });
+    /** The test hook: type this and send it. */
+    T.type = function (word) { input.value = String(word); T.at = 0; return T.send(); };
     return T;
   }
 
@@ -1205,14 +1539,22 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     // (a toast sits over the top of the board, never over the tiles, the slots or the scores)
     var tt = 0; U.say = function (x, ms) {
       U.toast.textContent = x; U.toast.hidden = false;
-      var r = !U.main.hidden && U.board.el.getBoundingClientRect(), top = U.root.getBoundingClientRect().top;
-      U.toast.style.top = r && r.height ? Math.max(4, r.top - top + 10) + 'px' : ''; U.toast.style.left = r && r.width ? (r.left + r.width / 2) + 'px' : '';
+      // (placed once the layout has settled, and kept inside the screen)
+      var place = function () {
+        var r = !U.main.hidden && U.board.el.getBoundingClientRect(), box = U.root.getBoundingClientRect();
+        U.toast.style.top = r && r.height ? Math.max(4, r.top - box.top + 10) + 'px' : '';
+        var w = U.toast.offsetWidth, mid = r && r.width ? r.left - box.left + r.width / 2 : box.width / 2;
+        U.toast.style.left = Math.max(w / 2 + 6, Math.min(box.width - w / 2 - 6, mid)) + 'px';
+      };
+      place(); requestAnimationFrame(place); U.placeToast = place;
       clearTimeout(tt); tt = setTimeout(function () { U.toast.hidden = true; }, ms || 2600); U.announce(x);
     };
+    // (a phone turned while it shows: placed again)
+    window.addEventListener('resize', function () { if (!U.toast.hidden && U.placeToast) U.placeToast(); });
     /** "A hint!" popping up on the board for a moment (and read out). */
     U.hintPop = function () { var b = el('div', 'dh-hint', t('hint')); b.setAttribute('aria-hidden', 'true'); U.board.el.appendChild(b); setTimeout(function () { b.remove(); }, 1700); U.announce(t('hint')); };
     U.overlay = function (x) { U.over.hidden = !x; U.overB.textContent = x || ''; };
-    U.whoIs = function (spec, text) { U.whoPic.textContent = ''; if (spec) { var c = figure(spec, 80); U.whoPic.appendChild(c); } U.whoTxt.textContent = text || ''; };
+    U.whoIs = function (spec, text) { U.whoPic.textContent = ''; if (spec) { var c = figure(spec, 80); U.whoPic.appendChild(c); } U.whoTxt.textContent = text || ''; fit(U.whoTxt, 11); };
     /** A full-screen panel: nodes in it, or nothing to close it. */
     // key: the panel is built again only when what it shows changes (a tap never lands on a card being replaced)
     var panelKey = null;
@@ -1228,22 +1570,64 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   function cards(words, emoji, onPick) {
     var g = el('div', 'dh-cards');
     words.forEach(function (w, i) { var b = btn('dh-card', null, null, function () { onPick(i); }); b.appendChild(el('span', 'emo', emoji[i] || '')); b.appendChild(el('span', '', caps(w, WL()))); b.lang = WL(); b.dataset.i = i; g.appendChild(b); });
+    // (each word on one line, in the biggest type that fits its card)
+    requestAnimationFrame(function () { [].forEach.call(g.querySelectorAll('.dh-card'), function (b) { fit(b, 13); }); });
     return g;
   }
   var wordLang = LANG;
   function WL() { return wordLang; }
+  /** A word of the list by its id, in a language (the guesses list shows a guess as the list's own word). */
+  var byId = {};
+  function wordOf(id, lang) {
+    if (!byId[lang]) { byId[lang] = {}; C.words(DW, lang, 0).forEach(function (x) { byId[lang][x.id] = x.w; }); }
+    return byId[lang][id] || '';
+  }
+  /** "Who guessed it?": a sheet over the game with a button for each player who may still get it; pick(id). */
+  function whoSheet(U, people, pick) {
+    closeSheet(U);
+    var wrap = el('div', 'dh-sheet'), card = el('div'), h = el('h2', '', t('whoSaid'));
+    h.id = 'dhWhoH'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'dhWhoH');
+    var row = el('div', 'dh-who-btns');
+    people.forEach(function (p, k) {
+      var b = btn('', p.name, null, function () { closeSheet(U); pick(p.id); });
+      b.insertBefore(figure(p.spec, 80), b.firstChild); b.dataset.k = k; row.appendChild(b);
+    });
+    var no = btn('dh-btn', t('cancel'), null, function () { closeSheet(U); }); no.id = 'dhWhoNo';
+    card.append(h, row, no); wrap.appendChild(card);
+    wrap.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(U); });
+    wrap.addEventListener('pointerdown', function (e) { if (e.target === wrap) closeSheet(U); });
+    U.root.appendChild(wrap); U.sheet = wrap;
+    var first = row.querySelector('button') || no; try { first.focus({ preventScroll: true }); } catch (e) { /* fine */ }
+    return wrap;
+  }
+  function closeSheet(U) { if (U && U.sheet) { U.sheet.remove(); U.sheet = null; } }
+  /** The drawer's (and the host's) side: "Someone said it!" and the guesses so far, newest first. */
+  function Heard(onSaid) {
+    var box = el('div', 'dh-heard'), said = btn('dh-btn hot dh-said', t('saidIt'), null, onSaid), list = el('ol', 'dh-feed');
+    said.id = 'dhSaid'; list.setAttribute('aria-label', t('guesses')); list.setAttribute('aria-live', 'polite');
+    box.append(said, list);
+    var key = '';
+    return { el: box, said: said, list: list, render: function (rows) {
+      var k = JSON.stringify(rows); if (k === key) return; key = k;
+      list.textContent = ''; list.hidden = !rows.length;
+      rows.forEach(function (r) { var li = el('li', r[0]); li.appendChild(el('span', '', r[1])); list.appendChild(li); });
+    } };
+  }
 
   /* ---------- Doodle Hoot Live (Oomba Live, built-in mode 'doodle'; docs/live-protocol.md "Doodle Hoot Live") ----------
      The server runs every turn. The drawer gets three words (ch), picks one (pk), and draws: strokes go out in small
-     batches (ln, at most 8 messages a second) and the server relays them to everyone else. Guessers get a tray of
-     tiles (tray) and spell the word with taps (gs: tray positions, never text); the result comes back to them alone
-     (gr). Hints (hd: decoys go, hn: a letter locks) come from the server. Shared state dd says whose turn it is, the
-     clock and who got it; the word only shows in the reveal. The host's screen shows the drawing, the scores and the
-     podium. Nobody types anything: there is no chat. */
+     batches (ln, at most 8 messages a second) and the server relays them to everyone else. Guessers guess the whole
+     time the drawing goes on: they type (gs { n, c: code points }: to the server only, which checks it and forgets it)
+     or, when the host chose letter tiles, spell it with taps (gs { n, t: tray positions }); the result comes back to
+     them alone (gr; "So close!" too). Someone who says it out loud: the drawer (or the host) taps "Someone said it!"
+     and who (aw). The drawer and the host see the guesses so far (fd): a word of the game's own list, or only
+     "something else"; nobody else sees anyone's guess. Hints (hd: decoys go, hn: a letter shows) come from the server.
+     Shared state dd says whose turn it is, the clock and who got it; the word only shows in the reveal. The host's
+     screen shows the drawing, the guesses, the scores and the podium. There is no chat. */
   function liveGame() {
     var host = L.role === 'host', phase = L.phase, U = Shell(host ? 'host' : 'player');
-    var S = { tn: 0, dd: null, word: null, choices: null, solved: false, myPts: 0, hid: 0, hidden: false, myScore: 0, results: false, lastRv: 0, said: {} };
-    var pad = null, tools = null, tiles = null, Q = null;
+    var S = { tn: 0, dd: null, word: null, choices: null, solved: false, myPts: 0, hid: 0, hidden: false, myScore: 0, results: false, lastRv: 0, said: {}, feed: [] };
+    var pad = null, tools = null, tiles = null, typer = null, Q = null;
     function dd() { var x = L.state && L.state.dd; return x && typeof x === 'object' ? x : null; }
     function me() { return host ? 0 : (L.me && L.me.seat) || 0; }
     function nameOf(seat) { return L.nameOf(seat) || ''; }
@@ -1252,12 +1636,40 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       pad = Pad(U.board, { start: function (st) { Q.start(st); }, more: function (st, pts) { Q.more(st, pts); }, end: function () { Q.end(); } });
       tools = Tools(pad, { undo: undo, clear: clearMine });
       tiles = Tiles(function (picks) { if (!L.send('gs', { n: S.tn, t: picks }, { toHost: true })) tiles.result(false); }, LANG);
+      // (what is typed goes as code points, to the server only: never to another player)
+      typer = Typer(function (text) { var c = Array.from(text).map(function (ch) { return ch.codePointAt(0); }); if (!L.send('gs', { n: S.tn, c: c }, { toHost: true })) typer.result('no', ''); }, LANG);
       var hideB = btn('dh-btn', t('hide'), 'eye', function () { setHidden(!S.hidden); });
       hideB.id = 'dhHide'; tiles.row.appendChild(hideB); S.hideB = hideB;
-      U.side.append(tools.el, tiles.el);
+      U.side.append(tools.el, tiles.el, typer.el);
       Q = Sender();
+      // the keyboard is up on a phone: the guess box gets the room
+      var kb = function () { var on = document.activeElement === typer.input && window.innerHeight < 600; if (U.root.classList.contains('dh-kb') !== on) { U.root.classList.toggle('dh-kb', on); } };
+      typer.input.addEventListener('focus', function () { kb(); setTimeout(kb, 350); }); typer.input.addEventListener('blur', function () { setTimeout(kb, 50); }); window.addEventListener('resize', kb);
     }
+    // the drawer and the host: "Someone said it!" and the guesses so far
+    var heard = Heard(function () { openWho(); }); heard.el.hidden = true; U.side.appendChild(heard.el);
     var scores = el('ol', 'dh-scores'); U.side.appendChild(scores);
+    /** Who said it out loud: the players who may still get it (here, not the drawer, not got it yet). */
+    function mayGet() { var x = dd(); if (!x) return []; return L.players().filter(function (p) { return p.seat !== x.dr && p.connected !== false && (x.got || []).indexOf(p.seat) < 0; }); }
+    function openWho() {
+      var x = dd(); if (!x || x.ph !== 'draw' || phase !== 'playing' || !(host || x.dr === me())) return false;
+      // (no points for a blank page: the server says the same)
+      if (!U.board.strokes.length) { U.say(t('drawFirst')); return false; }
+      whoSheet(U, mayGet().map(function (p) { return { id: p.seat, name: p.name || nameOf(p.seat), spec: p.avatar || avatarOf(p.seat) }; }), function (seat) {
+        var d = { n: S.tn, s: seat };
+        if (host ? L.send('aw', d) : L.send('aw', d, { toHost: true })) sfx('select');
+      });
+      return true;
+    }
+    function feedRows(lang) {
+      // (the last five: they fit beside the board on a small phone)
+      return S.feed.slice(-5).reverse().map(function (e) {
+        var nm = e[0] === me() ? t('you') : nameOf(e[0]);
+        if (e[1] === 'ok') return ['ok', '✓ ' + t(e[2] === 1 ? 'feedSaid' : 'gotItName', { name: nm })];
+        if (e[1] === 'w' && wordOf(e[2], lang)) return ['w', t('feedWord', { name: nm, word: caps(wordOf(e[2], lang), lang) })];
+        return ['x', t('feedOther', { name: nm })];
+      });
+    }
 
     /* the stroke sender: batches every 100 ms (or 30 points), at most 8 messages a second (burst 12), so a drawer stays
        under the server's limits; a backlog over a second makes the drawing coarser until it catches up */
@@ -1306,6 +1718,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       if (pad) { pad.reset(0); pad.set(false); }
       if (Q) Q.reset();
       if (tiles) tiles.set({ n: n, t: [], g: [] });
+      if (typer) typer.set({ n: n, g: [] });
+      S.feed = []; closeSheet(U);
     }
     function onEvent(ev) {
       var d = ev.data || {}, x = dd();
@@ -1315,14 +1729,35 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
         switch (ev.kind) {
           case 'ch': S.choices = d; sfx('levelup', { volume: 0.4 }); U.announce(t('youDraw')); break;
           case 'wd': S.word = d; if (x && x.dr === me() && pad) { pad.reset(d.s0 || 0); } if (d.s0 == null && !S.solved) { S.solved = true; } break;
-          case 'tray': if (tiles) { tiles.set(d, x ? x.lang : LANG); S.solved = !!d.ok; } break;
-          case 'hn': if (tiles) { tiles.hint(d.i, d.t); if (!tiles.solved) U.hintPop(); sfx('select', { volume: 0.4 }); } break;
-          case 'hd': if (tiles) { tiles.removeDecoys(d.t || []); if (!tiles.solved) U.hintPop(); } break;
-          case 'gr':
-            if (!tiles) break;
-            if (d.ok) { S.solved = true; S.myPts = d.p || 0; tiles.result(true, t('gotIt') + ' ' + t('gotPts', { n: d.p || 0 })); sfx('correct'); U.announce(t('gotIt')); }
-            else { tiles.result(false, d.left > 0 ? t('notQuite') : t('keepWatching')); sfx('wrong', { volume: 0.5 }); if (!(d.left > 0)) tiles.busy = true; }
+          case 'tray':
+            if (d.ty) { if (typer) { typer.set(d, x ? x.lang : LANG); S.solved = !!d.ok; if (!S.solved && window.matchMedia && matchMedia('(pointer: fine)').matches) typer.focus(); } }
+            else if (tiles) { tiles.set(d, x ? x.lang : LANG); S.solved = !!d.ok; }
             break;
+          case 'hn':
+            if (d.l != null) { if (typer) { typer.hint(d.i, d.l); if (!typer.solved) U.hintPop(); sfx('select', { volume: 0.4 }); } }
+            else if (tiles) { tiles.hint(d.i, d.t); if (!tiles.solved) U.hintPop(); sfx('select', { volume: 0.4 }); }
+            break;
+          case 'hd': if (tiles) { tiles.removeDecoys(d.t || []); if (!tiles.solved) U.hintPop(); } break;
+          case 'gr': {
+            if (!tiles) break;
+            var typed = !(x && x.tl);
+            if (d.ok) {
+              S.solved = true; S.myPts = d.p || 0;
+              var say = t('gotIt') + ' ' + t('gotPts', { n: d.p || 0 });
+              if (typed) typer.result('ok', say); else tiles.result(true, say);
+              sfx('correct'); U.announce(t('gotIt'));
+            } else if (typed && (d.f || d.z)) {
+              // not counted: too quick (what was typed comes back), or no letters in it
+              typer.retry(!!d.f, d.f ? t('tooQuick') : t('useLetters'));
+            } else if (typed) {
+              var out = !(d.left > 0);
+              typer.result(out ? 'out' : d.c ? 'close' : 'no', out ? t('keepWatching') : d.c ? t('soClose') : t('notQuite'));
+              sfx(d.c ? 'select' : 'wrong', { volume: 0.5 });
+            } else { tiles.result(false, d.left > 0 ? t('notQuite') : t('keepWatching')); sfx('wrong', { volume: 0.5 }); if (!(d.left > 0)) tiles.busy = true; }
+            break;
+          }
+          case 'fd': S.feed = (d.r ? [] : S.feed).concat(Array.isArray(d.l) ? d.l : []).slice(-6); break;
+          case 'awn': U.say(t('drawFirst')); break;
           case 'full': U.say(t('full')); break;
           case 'cl': U.board.clear(); break;
           case 'cv': if (d.k === 0) U.board.strokes = []; (d.l || []).forEach(function (r) { U.board.strokes.push({ s: r[0], c: r[1], w: r[2], e: r[3], pts: r.slice(4) }); }); U.board.redraw(); break;
@@ -1354,8 +1789,9 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
           li.appendChild(el('span', 's', O.num(r.score))); scores.appendChild(li);
         });
         U.strip.textContent = '';
-        // every player: picture, name (two players can have the same picture) and points; it scrolls sideways
-        rows.forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(el('b', '', r.me ? t('you') : r.name)); s.appendChild(document.createTextNode((r.got ? ' ✓ ' : r.dr ? ' ✏️ ' : ' ') + O.num(r.score))); U.strip.appendChild(s); });
+        // every player: picture, name (two players can have the same picture) and points; it scrolls sideways, with
+        // "You" first so a narrow phone always shows your own points
+        rows.filter(function (r) { return r.me; }).concat(rows.filter(function (r) { return !r.me; })).forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(el('b', '', r.me ? t('you') : r.name)); s.appendChild(document.createTextNode((r.got ? ' ✓ ' : r.dr ? ' ✏️ ' : ' ') + O.num(r.score))); U.strip.appendChild(s); });
       }
     }
     function lobby() {
@@ -1399,6 +1835,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       var mine = (rv.pts || []).filter(function (r) { return r[0] === me(); })[0];
       if (mine && mine[1]) nodes.push(el('div', '', t('gotPts', { n: mine[1] })));
       U.board.veilShow(nodes, 'rv');
+      var big = U.board.veil.querySelector('.big'); if (big) fitSoon(big, 14);
     }
     function draw() {
       var x = dd(), started = L.started || phase === 'playing' || phase === 'paused';
@@ -1434,12 +1871,23 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.word.hidden = true;
       var wide = window.innerWidth > window.innerHeight && window.innerWidth >= 900;
       U.strip.hidden = host || wide || (meDraw && x.ph === 'draw');
+      var typing = !x.tl;
       if (!host) {
         tools.el.hidden = !(meDraw && x.ph === 'draw');
         pad.set(meDraw && x.ph === 'draw' && phase === 'playing' && x.run);
-        tiles.el.hidden = meDraw || x.ph !== 'draw' || !tiles.tray.length;
-        if (S.hideB) S.hideB.hidden = meDraw;
+        // guessing is open the whole time the drawing goes on
+        tiles.el.hidden = typing || meDraw || x.ph !== 'draw' || !tiles.tray.length;
+        typer.el.hidden = !typing || meDraw || x.ph !== 'draw' || !typer.groups.length;
+        if (S.hideB) {
+          var into = typing ? typer.row : tiles.row;
+          if (S.hideB.parentNode !== into) into.appendChild(S.hideB);
+          S.hideB.classList.toggle('dh-eye', typing); S.hideB.hidden = meDraw;
+        }
       }
+      // the drawer and the host: who said it, and the guesses so far
+      heard.el.hidden = !(x.ph === 'draw' && (host || meDraw));
+      if (!heard.el.hidden) { heard.render(feedRows(x.lang)); heard.said.disabled = phase !== 'playing' || !mayGet().length; }
+      else closeSheet(U);
       scores.hidden = !host && !wide;
       drawScores();
       // the veil over the board: the reveal, a hidden drawing, or Pip while nobody has drawn yet
@@ -1448,7 +1896,13 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       else if (host && S.hid) U.board.veilShow(null);
       else U.board.veilShow(null);
       if (host) { var hidEl = U.chip; if (S.hid) hidEl.textContent = t('round', { n: Math.max(1, x.rd), of: x.rds }) + ' · ' + t('hidCount', { n: S.hid }); }
-      if (host && x.g && x.ph === 'draw') { U.word.hidden = false; U.word.classList.remove('got'); U.word.textContent = x.g.map(function (n) { return new Array(n + 1).join('_ ').trim(); }).join('   ') + (x.hint ? '  · ' + t('hints', { n: x.hint }) : ''); }
+      if (host && x.g && x.ph === 'draw') {
+        // the blanks: each word's underscores together (never split over two lines)
+        var bk = x.g.join(',') + ':' + x.hint;
+        if (U.word.dataset.k !== bk) { U.word.dataset.k = bk; U.word.textContent = ''; x.g.forEach(function (n) { U.word.appendChild(el('span', 'dh-bl', new Array(n + 1).join('_\u00a0').trim())); }); if (x.hint) U.word.appendChild(el('small', '', '· ' + t('hints', { n: x.hint }))); }
+        U.word.hidden = false; U.word.classList.remove('got'); fit(U.word, 14);
+      }
+      fit(U.whoTxt, 11);
     }
     function tick() {
       var x = dd();
@@ -1488,7 +1942,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     L.on('join', draw); L.on('leave', draw); L.on('update', draw); L.on('names', draw);
     L.on('welcome', function () { phase = L.phase; draw(); if (!host && (phase === 'playing' || phase === 'paused')) L.send('need', null, { toHost: true }); });
     L.on('end', function (e) { phase = 'ended'; U.overlay(''); var x = dd(); if (x && x.ph === 'done') results(x); draw(); });
-    L.ready({ lobby: true, hostView: true, maxPlayers: 16, words: ['pk', 'ln', 'un', 'cl', 'gs', 'hide', 'need'] });
+    L.ready({ lobby: true, hostView: true, maxPlayers: 16, words: ['pk', 'ln', 'un', 'cl', 'gs', 'aw', 'hide', 'need'] });
     var rsz = 0; window.addEventListener('resize', function () { clearTimeout(rsz); rsz = setTimeout(draw, 120); });
     draw(); requestAnimationFrame(tick);
 
@@ -1497,6 +1951,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
         var x = dd();
         return { doodleLive: true, mode: 'live', role: L.role, phase: phase, me: me(), ph: x ? x.ph : null, rd: x ? x.rd : 0, tn: x ? x.tn : 0, drawer: x ? x.dr : 0,
           word: S.word ? S.word.w : null, choices: S.choices ? S.choices.w.slice() : null, tray: tiles ? tiles.tray.slice() : [], slots: tiles ? tiles.slots.slice() : [],
+          typing: !!(x && !x.tl), blanks: typer ? typer.groups.slice() : [], typerOn: !!(typer && !typer.el.hidden), say: (x && !x.tl ? typer && typer.sayEl.textContent : tiles && tiles.sayEl.textContent) || '',
+          feed: S.feed.slice(), feedText: [].map.call(heard.list.querySelectorAll('li'), function (li) { return li.textContent; }), sheet: !!U.sheet,
           hintSlots: tiles ? Object.keys(tiles.locks).map(Number) : [], solved: S.solved, strokes: U.board.strokes.length, points: U.board.points(), hidden: S.hidden, hid: S.hid,
           got: x && x.got ? x.got.slice() : [], scores: scoreRows().map(function (r) { return [r.seat, r.score]; }), rv: x ? x.rv : null, top: x ? x.top : null, ended: phase === 'ended',
           canDraw: !!(pad && pad.on), queue: Q ? Q.size() : 0, results: S.results };
@@ -1508,6 +1964,9 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       draw: function (pts) { return !!pad && pad.feed(pts); },
       tap: function (i) { return !!tiles && tiles.tap(i); },
       spell: function (w) { return !!tiles && tiles.spell(w); },
+      type: function (w) { return !!typer && typer.type(w); },
+      said: function () { return openWho(); },
+      who: function (k) { var b = U.sheet && U.sheet.querySelectorAll('.dh-who-btns button')[k | 0]; if (!b) return false; b.click(); return true; },
       undo: function () { undo(); return true; },
       clear: function () { clearMine(); return true; },
       hide: function () { setHidden(true); return true; },
@@ -1524,14 +1983,15 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   var WLANG = WORD_LANGS.indexOf(LANG) >= 0 ? LANG : 'en';
   function load() { try { return (window.BRB && BRB.storage && BRB.storage.get(KEY)) || {}; } catch (e) { return {}; } }
   var saved = load();
-  var CFG = { mode: saved.mode === 'pass' ? 'pass' : 'practice', lvl: [1, 2, 3].indexOf(saved.lvl) >= 0 ? saved.lvl : 1, n: saved.n >= 2 && saved.n <= 6 ? saved.n : 2 };
+  // guess: 'type' (the default: the device's own keyboard) or 'tiles' (letter tiles: easier, for little ones)
+  var CFG = { mode: saved.mode === 'pass' ? 'pass' : 'practice', lvl: [1, 2, 3].indexOf(saved.lvl) >= 0 ? saved.lvl : 1, n: saved.n >= 2 && saved.n <= 6 ? saved.n : 2, guess: saved.guess === 'tiles' ? 'tiles' : 'type' };
   var BEST = +saved.best || 0;
-  function save() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, { mode: CFG.mode, lvl: CFG.lvl, n: CFG.n, best: BEST }); } catch (e) { /* no save */ } }
+  function save() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, { mode: CFG.mode, lvl: CFG.lvl, n: CFG.n, guess: CFG.guess, best: BEST }); } catch (e) { /* no save */ } }
   var CREW = [{ species: 'fox' }, { species: 'bunny' }, { species: 'frog' }, { species: 'bear' }, { species: 'cat' }, { species: 'penguin' }];
   var game = null, M = null, setupApi = null, fast = false;
   var SET = ['                    ', '                    ', '                    ', '                    ', '                    ', '   P          o     ', '####################', '####################'];
   if (!LIVE) game = O.game({
-    api: 1, title: t('title'), subtitle: t('tag'), theme: 'meadow', titleHue: 'spark',
+    api: 1, title: false, theme: 'meadow', titleHue: 'spark',   // no title screen: the setup card (with the name) is the one Start
     controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 0,
     level: O.level.grid(SET, { o: { kind: 'npc', species: 'owl', wear: ['scarf'], tag: 'pip', size: 1.6, flip: true } }),
     intro: function () { return setupCard(); },
@@ -1546,7 +2006,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       setupOpen = true;
       var wrap = el('div', 'dhs'); wrap.dir = O.dir || 'ltr';
       var card = el('div', 'dhs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'dhsH'); wrap.appendChild(card);
-      var h = el('h2', '', t('setup')); h.id = 'dhsH'; card.appendChild(h);
+      var h = el('h2', '', t('title')); h.id = 'dhsH'; card.appendChild(h); card.appendChild(el('p', 'dhs-sub', t('setup')));
       var groups = [];
       function group(key, label, opts, get, set) {
         var fs = el('fieldset'); fs.dataset.k = key; fs.appendChild(el('legend', '', label));
@@ -1556,10 +2016,11 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
         var g = { fs: fs, sync: function () { bs.forEach(function (b) { var on = b.dataset.v === String(get()); b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); } };
         groups.push(g); return g;
       }
-      function sync() { groups.forEach(function (g) { g.sync(); }); players.fs.hidden = CFG.mode !== 'pass'; note.textContent = CFG.mode === 'pass' ? t('passNote') : t('practiceNote'); if (CFG.mode === 'practice' && CFG.lvl === 3) { CFG.lvl = 2; sync(); } lv3.hidden = CFG.mode === 'practice'; }
+      function sync() { groups.forEach(function (g) { g.sync(); }); players.fs.hidden = CFG.mode !== 'pass'; note.textContent = CFG.mode === 'pass' ? t('passNote') : CFG.guess === 'tiles' ? t('practiceNote') : t('practiceType'); if (CFG.mode === 'practice' && CFG.lvl === 3) { CFG.lvl = 2; sync(); } lv3.hidden = CFG.mode === 'practice'; }
       group('mode', t('howPlay'), [{ v: 'practice', label: t('practice') }, { v: 'pass', label: t('pass') }], function () { return CFG.mode; }, function (v) { CFG.mode = v; });
       var lv = group('lvl', t('level'), [{ v: 1, label: t('easy') }, { v: 2, label: t('medium') }, { v: 3, label: t('tricky') }], function () { return CFG.lvl; }, function (v) { CFG.lvl = +v; });
       var lv3 = lv.fs.querySelector('[data-v="3"]');
+      group('guess', t('guessBy'), [{ v: 'type', label: t('typing') }, { v: 'tiles', label: t('tilesEasy') }], function () { return CFG.guess; }, function (v) { CFG.guess = v === 'tiles' ? 'tiles' : 'type'; });
       var players = group('n', t('playersN'), [2, 3, 4, 5, 6].map(function (n) { return { v: n, label: O.num(n) }; }), function () { return CFG.n; }, function (v) { CFG.n = +v; });
       var note = el('p'); card.appendChild(note);
       var start = O.ui.button(t('start'), { kind: 'hot', big: true, icon: 'play', onPress: function () { if (!setupOpen) return; setupOpen = false; save(); wrap.remove(); resolve(); } });
@@ -1580,18 +2041,33 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     M = { w: w, U: U, r: r, mode: CFG.mode, lvl: CFG.lvl, score: 0, i: 0, ph: 'none', solvedN: 0 };
     if (CFG.mode === 'practice') practice(); else passPlay();
   }
-  /** A guess round on this device: the tray, the hints over time, the clock. done(ok, left, hints) when it ends. */
+  /** A guess round on this device: the guess box (or the tray), the hints over time, the clock. done(ok, left, hints)
+   *  when it ends. */
   function round(word, ms, done) {
-    var U = M.U, lang = WLANG, P = C.parts(word.w, lang), b = C.buildTray(word.w, lang, M.lvl, M.r, { pool: C.wordPool(DW, lang) });
+    var U = M.U, lang = WLANG, P = C.parts(word.w, lang), typing = CFG.guess !== 'tiles';
+    var b = typing ? { tray: [], decoys: [] } : C.buildTray(word.w, lang, M.lvl, M.r, { pool: C.wordPool(DW, lang) });
     var plan = C.hintPlan(P.g.length, M.r), hints = [], step = 0, removed = {}, t0 = O.time.now, left = ms, over = false;
-    var tiles = Tiles(function (picks) {
-      var locks = {}; hints.forEach(function (h) { locks[h.i] = h.t; });
-      if (C.check(b.tray, P.g, picks, locks)) { tiles.result(true, t('gotIt')); sfx('correct'); finish(true); }
-      else { tiles.result(false, t('notQuite')); sfx('wrong', { volume: 0.5 }); }
-    }, lang);
-    tiles.set({ t: b.tray, g: P.groups, dir: C.dir(lang) }, lang);
-    M.tiles = tiles; M.word = word; M.tray = b.tray;
-    U.side.textContent = ''; U.side.appendChild(tiles.el);
+    var tiles = null, typer = null;
+    if (typing) {
+      var ans = C.answers(DW, lang, word.id), idx = C.index(DW, lang);
+      typer = Typer(function (text) {
+        var r = C.judge(text, ans, lang, idx);
+        if (!r) { typer.retry(false, t('useLetters')); return; }
+        if (r && r.k === 'ok') { typer.result('ok', t('gotIt')); sfx('correct'); finish(true); }
+        else { typer.result(r && r.k === 'close' ? 'close' : 'no', r && r.k === 'close' ? t('soClose') : t('notQuite')); sfx('wrong', { volume: 0.5 }); }
+      }, lang);
+      typer.set({ g: P.groups, dir: C.dir(lang) }, lang);
+    } else {
+      tiles = Tiles(function (picks) {
+        var locks = {}; hints.forEach(function (h) { locks[h.i] = h.t; });
+        if (C.check(b.tray, P.g, picks, locks)) { tiles.result(true, t('gotIt')); sfx('correct'); finish(true); }
+        else { tiles.result(false, t('notQuite')); sfx('wrong', { volume: 0.5 }); }
+      }, lang);
+      tiles.set({ t: b.tray, g: P.groups, dir: C.dir(lang) }, lang);
+    }
+    M.tiles = tiles; M.typer = typer; M.word = word; M.tray = b.tray;
+    U.side.textContent = ''; U.side.appendChild((typer || tiles).el);
+    if (typer && window.matchMedia && matchMedia('(pointer: fine)').matches) typer.focus();
     function finish(ok) { if (over) return; over = true; clearInterval(M.timer); M.timer = 0; done(ok, left, hints.length); }
     M.timer = setInterval(function () {
       if (over) return;
@@ -1601,17 +2077,18 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       while (step < C.HINTS.length && ms - left >= ms * C.HINTS[step].at) {
         var h = C.HINTS[step++];
         if (h.min && P.g.length < h.min) continue;
-        if (h.k === 'decoys') { var gone = b.decoys.filter(function (i) { return !removed[i]; }).slice(0, h.n); gone.forEach(function (i) { removed[i] = 1; }); tiles.removeDecoys(gone); if (gone.length) U.hintPop(); }
+        if (h.k === 'decoys') { if (!tiles) continue; var gone = b.decoys.filter(function (i) { return !removed[i]; }).slice(0, h.n); gone.forEach(function (i) { removed[i] = 1; }); tiles.removeDecoys(gone); if (gone.length) U.hintPop(); }
+        else if (typer) { var sl = plan.filter(function (i) { return !hints.some(function (q) { return q.i === i; }); })[0]; if (sl == null) continue; hints.push({ i: sl, t: -1 }); typer.hint(sl, P.g[sl]); U.hintPop(); }
         else { var slot = plan.filter(function (i) { return !hints.some(function (q) { return q.i === i; }); })[0]; if (slot == null) continue; var used = hints.map(function (q) { return q.t; }); var ti = b.tray.findIndex(function (g, i) { return g === P.g[slot] && used.indexOf(i) < 0 && b.decoys.indexOf(i) < 0; }); if (ti < 0) continue; hints.push({ i: slot, t: ti }); tiles.hint(slot, ti); U.hintPop(); }
       }
       if (left <= 0) finish(false);
     }, 100);
-    return tiles;
+    return tiles || typer;
   }
   function reveal(word, extra, then) {
-    var U = M.U, nodes = [el('div', '', t('itWas')), el('div', 'emo', word.e), el('div', 'big', caps(word.w, WLANG))];
+    var U = M.U, big = el('div', 'big', caps(word.w, WLANG)), nodes = [el('div', '', t('itWas')), el('div', 'emo', word.e), big];
     if (extra) nodes.push(el('div', '', extra));
-    U.board.veilShow(nodes, 'rv');
+    U.board.veilShow(nodes, 'rv'); fitSoon(big, 14);
     O.time.real.after(fast ? 10 : 2200, then);
   }
 
@@ -1647,7 +2124,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
           if (!cur) { cur = U.board.add({ s: i, c: s.c, w: s.w, e: 0, pts: [s.pts[0], s.pts[1]] }); k = 2; continue; }
           if (k < s.pts.length) { U.board.append(i, [s.pts[k], s.pts[k + 1]]); k += 2; } else { cur = null; i++; }
         }
-        if (i >= strokes.length) { clearInterval(id); U.whoIs(PIP, t('spell')); }
+        if (i >= strokes.length) { clearInterval(id); U.whoIs(PIP, M.typer ? t('typeHere') : t('spell')); }
       }, fast ? 1 : 33);
       M.anim = function () { alive = false; clearInterval(id); M.anim = null; };
     }
@@ -1686,16 +2163,33 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.panel([el('h2', '', t('pickWord')), cards(ch.map(function (x) { return x.w; }), ch.map(function (x) { return x.e; }), function (i) { drawTurn(ch[i]); }), el('p', '', t('notLetters'))]);
       M.cards = true; void p;
     }
+    /* The drawer draws while the others watch and call out their guesses: the word stays covered ("My word" shows and
+       hides it); "Someone said it!" and who ends the turn. Done (or the clock) passes the device to the guessers. */
     function drawTurn(word) {
       M.used[word.id] = 1; M.word = word; M.ph = 'draw';
       U.panel(null);
-      U.word.hidden = false; U.word.textContent = ''; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, WLANG)));
-      U.side.textContent = ''; U.side.appendChild(tools.el); var done = el('button', 'dh-btn hot', t('done')); done.type = 'button'; U.side.appendChild(done);
-      pad.set(true);
-      var t0 = O.time.now, over = false;
-      function stopDraw() { if (over) return; over = true; clearInterval(M.timer); pad.set(false); U.word.hidden = true; toGuessers(); }
-      press(done, stopDraw); M.doneBtn = done;
-      M.timer = setInterval(function () { var left = Math.max(0, PASS_DRAW_MS - (O.time.now - t0)); U.clock.set(left, PASS_DRAW_MS); if (left <= 0) stopDraw(); }, 100);
+      // a switch: tap to show, tap again to cover (it covers itself after 5 s too). A plain cover, not a blur: a blur is
+      // slow to redraw on phones.
+      var peek = btn('dh-btn', t('showWord'), 'eye', function () { showWord(!U.word.classList.contains('show')); });
+      function showWord(on) { U.word.classList.toggle('show', on); peek.setAttribute('aria-pressed', String(on)); clearTimeout(M.peekT); if (on) M.peekT = setTimeout(function () { showWord(false); }, 5000); }
+      peek.setAttribute('aria-pressed', 'false');
+      U.word.hidden = false; U.word.textContent = ''; U.word.className = 'dh-word peek'; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, WLANG))); U.word.appendChild(peek);
+      fit(U.word, 13);
+      U.side.textContent = ''; U.side.appendChild(tools.el);
+      var row = el('div', 'dh-row'), said = btn('dh-btn hot', t('saidIt'), null, function () { whoSheet(U, M.players.filter(function (p) { return p !== M.players[M.turn]; }).map(function (p) { return { id: p.i, name: p.name, spec: p.spec }; }), heard); });
+      said.id = 'dhSaid';
+      var done = el('button', 'dh-btn', t('done')); done.type = 'button'; row.append(said, done); U.side.appendChild(row);
+      pad.set(true); U.say(t('passWatch'), 3200);
+      var t0 = O.time.now, over = false, left = PASS_DRAW_MS;
+      function stopDraw() { if (over) return false; over = true; clearInterval(M.timer); pad.set(false); closeSheet(U); U.word.hidden = true; U.word.className = 'dh-word'; return true; }
+      /** Someone said it out loud: their points by speed, the drawer's share, then the reveal. */
+      function heard(i) {
+        var p = M.players[i], drawer = M.players[M.turn]; if (!p || p === drawer || !stopDraw()) return;
+        p.score += C.guessPoints(left, PASS_DRAW_MS, 0, 0); drawer.score += C.drawPoints(1, 1);
+        sfx('correct'); M.ph = 'reveal'; reveal(M.word, t('gotItName', { name: p.name }), nextTurn);
+      }
+      press(done, function () { if (stopDraw()) toGuessers(); }); M.doneBtn = done; M.saidBtn = said;
+      M.timer = setInterval(function () { left = Math.max(0, PASS_DRAW_MS - (O.time.now - t0)); U.clock.set(left, PASS_DRAW_MS); if (left <= 0 && stopDraw()) toGuessers(); }, 100);
     }
     function toGuessers() {
       M.ph = 'cover2';
@@ -1731,13 +2225,13 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   }
 
   function soloState() {
-    return { doodle: true, mode: CFG.mode, screen: setupOpen ? 'setup' : M ? M.ph : 'none', lvl: CFG.lvl, players: CFG.n, score: M ? M.score : 0, i: M ? M.i : 0, turn: M ? M.turn : null,
+    return { doodle: true, mode: CFG.mode, guess: CFG.guess, typing: !!(M && M.typer), say: M && (M.typer || M.tiles) ? (M.typer || M.tiles).sayEl.textContent : '', sheet: !!(M && M.U.sheet), screen: setupOpen ? 'setup' : M ? M.ph : 'none', lvl: CFG.lvl, players: CFG.n, score: M ? M.score : 0, i: M ? M.i : 0, turn: M ? M.turn : null,
       word: M && M.word ? M.word.w : null, tray: M && M.tiles ? M.tiles.tray.slice() : [], slots: M && M.tiles ? M.tiles.slots.slice() : [], strokes: M ? M.U.board.strokes.length : 0,
       points: M ? M.U.board.points() : 0, choices: M && M.choices ? M.choices.map(function (x) { return x.w; }) : null,
       scores: M && M.players ? M.players.map(function (p) { return p.score; }) : null, best: BEST, saved: load() };
   }
   if (!LIVE) Object.assign(window.__brbTest, {
-    setup: function (o) { o = o || {}; if (o.mode) CFG.mode = o.mode === 'pass' ? 'pass' : 'practice'; if ([1, 2, 3].indexOf(+o.lvl) >= 0) CFG.lvl = +o.lvl; if (o.players) CFG.n = Math.max(2, Math.min(6, +o.players)); return soloState(); },
+    setup: function (o) { o = o || {}; if (o.mode) CFG.mode = o.mode === 'pass' ? 'pass' : 'practice'; if ([1, 2, 3].indexOf(+o.lvl) >= 0) CFG.lvl = +o.lvl; if (o.players) CFG.n = Math.max(2, Math.min(6, +o.players)); if (o.guess) CFG.guess = o.guess === 'tiles' ? 'tiles' : 'type'; return soloState(); },
     start: function (o) { if (o) window.__brbTest.setup(o); if (o && o.seed != null) { /* fixed rounds */ } if (setupApi) setupApi.close(); game.start(); return soloState(); },
     state: function () { return soloState(); },
     pick: function (i) { var b = M && M.U.screen.querySelector('.dh-card[data-i="' + (i | 0) + '"]'); if (!b) return false; b.click(); return true; },
@@ -1745,8 +2239,10 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     ready: function () { if (M && M.go && M.go.isConnected) { M.go.click(); return true; } return false; },
     done: function () { if (M && M.doneBtn && M.doneBtn.isConnected) { M.doneBtn.click(); return true; } return false; },
     tap: function (i) { return !!(M && M.tiles) && M.tiles.tap(i); },
-    spell: function (w) { return !!(M && M.tiles) && M.tiles.spell(w || (M.word && M.word.w)); },
-    who: function (k) { var b = M && M.U.screen.querySelectorAll('.dh-who-btns button')[k | 0]; if (!b) return false; b.click(); return true; },
+    spell: function (w) { if (M && M.typer) return M.typer.type(w || (M.word && M.word.w)); return !!(M && M.tiles) && M.tiles.spell(w || (M.word && M.word.w)); },
+    type: function (w) { return !!(M && M.typer) && M.typer.type(w); },
+    said: function () { if (M && M.saidBtn && M.saidBtn.isConnected) { M.saidBtn.click(); return true; } return false; },
+    who: function (k) { var b = M && M.U.root.querySelectorAll('.dh-who-btns button')[k | 0]; if (!b) return false; b.click(); return true; },
     skipAnimations: function () { fast = true; return true; },
   });
 })();

@@ -36,7 +36,7 @@
      "box": [
       26.2,
       2.5,
-      35.0,
+      35,
       7.4
      ]
     },
@@ -62,7 +62,7 @@
      "cue": "A chat that must stay secret from adults",
      "box": [
       7.1,
-      39.0,
+      39,
       82.2,
       13.5
      ]
@@ -84,8 +84,8 @@
    "text": "A new player in your game chat is very friendly, then asks two things. A Defender reads the signs before answering.",
    "art": "magnifier",
    "steps": [
-    "They ask which school you go to",
-    "They ask you to move to a private chat",
+    "A gift from a stranger: a rare skin, free",
+    "Then a secret: keep this our secret",
     "Both are warning signs",
     "Leave the chat and tell a trusted adult"
    ],
@@ -96,8 +96,8 @@
      "cue": "First a gift: a rare skin, free",
      "box": [
       7.1,
-      39.0,
-      79.0,
+      39,
+      79,
       13.5
      ]
     },
@@ -122,7 +122,7 @@
     {
      "cue": "Report and block is always allowed",
      "box": [
-      51.0,
+      51,
       24.8,
       46.2,
       20.3
@@ -159,16 +159,16 @@
    "title": "Your mission",
    "text": "Open Trick Inbox at Chat Careful and sort all 6 chat messages. For each one, ask: do I know this person in real life?",
    "art": "trophy",
-   "img": "csq/trick-inbox/chat-1b-ch-1-debrief",
-   "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
+   "img": "csq/trick-inbox/chat-1b-ch-1-debrief-s",
+   "alt": "The debrief: chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
    "focus": [
     {
      "cue": "Play Chat Careful: do you know them in real life?",
      "box": [
-      2.8,
-      7.2,
-      94.4,
-      91.7
+      8.4,
+      23.9,
+      83.1,
+      74.6
      ]
     }
    ]

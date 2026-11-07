@@ -8,43 +8,27 @@
  "slides": [
   {
    "title": "The same block again?",
-   "text": "Bolt has to go 5 squares in a straight line. You could use move, move, move, move, move. That is a lot of the same block!",
+   "text": "Bolt has to go 5 squares in a straight line. Without a loop, that takes one move block for each square: move, move, move, move, move. That is a lot of the same block!",
    "art": "robot",
-   "img": "csq/robo-route/loops-1b-five-moves",
-   "view": [
-    0,
-    17.5,
-    48.6,
-    82.5
-   ],
-   "alt": "Five separate move blocks stacked in the tray do the same job as one repeat block, but take five times the room.",
+   "img": "csq/robo-route/loops-1b-five-c",
+   "alt": "Bolt and the flag five squares apart in a straight row, and five move blocks in the program, one for each square.",
    "focus": [
     {
      "cue": "Five squares in a straight line to the flag.",
      "box": [
-      5.7,
-      49.4,
-      41.2,
-      12.7
-     ],
-     "path": [
-      [
-       9.4,
-       55.7
-      ],
-      [
-       43,
-       55.7
-      ]
+      1.5,
+      49,
+      37.5,
+      12
      ]
     },
     {
-     "cue": "The floor numbers count them: 1, 2, 3, 4, 5. That is five move blocks.",
+     "cue": "Five move blocks, one for each square.",
      "box": [
-      12.4,
-      49.4,
-      34.4,
-      12.7
+      41.5,
+      44,
+      50,
+      20
      ]
     }
    ]
@@ -57,7 +41,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     20.1
    ],
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",
@@ -132,14 +116,14 @@
   },
   {
    "title": "What the number means",
-   "text": "The number says how many times the whole inside runs. Repeat 2 with move, move, pick up inside runs all three blocks twice: 4 moves and 2 pick-ups.",
+   "text": "The number says how many times the whole inside runs. Look at repeat 2 with move, move and pick up inside it: all three blocks run twice. That makes 4 moves and 2 pick-ups.",
    "art": "star",
    "img": "csq/robo-route/loops-1b-repeat-number",
    "view": [
     51.8,
     32.9,
-    30.0,
-    49.0
+    30,
+    49
    ],
    "alt": "A repeat 2 times bracket holds move, move, pick up, and one more move follows it: Bolt drives five squares and picks up both gems.",
    "focus": [
@@ -180,7 +164,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     20.1
    ],
    "alt": "The repeat bracket holds turn right instead of move, so Bolt would spin on one square instead of driving anywhere.",
@@ -238,7 +222,7 @@
    "view": [
     51.8,
     32.9,
-    30.0,
+    30,
     20.1
    ],
    "alt": "One bracket does the work: a repeat 5 times block with a single move block inside it, and Bolt's row of five squares ahead.",

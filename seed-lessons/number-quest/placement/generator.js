@@ -49,7 +49,12 @@ export const ARCHETYPES = {
     const glyph = glyphs[c] || '⭐';
     // manip: the objects as tappable counters, so a count-out item is counted with fingers, not just
     // read (the page renders one button per object; tapping marks it counted, and no total is shown).
-    return { prompt: `Count the ${c}. How many are there? ${glyph.repeat(n)}`, answer: n, manip: { kind: 'count-out', glyph, count: n },
+    // The objects live only in those tiles: the prompt carries no emoji row of its own, or the child
+    // sees every shell twice (once after the words, once as tiles) and cannot tell which to count.
+    // A data-strand count (gen.sort: K.MD.B, classify and count) says it is sorting: the child is counting one
+    // sorted pile, which is what the strand's "Data" means here.
+    const prompt = g.sort ? `Tally is making a chart of her beach finds. Count the ${c} so she can fill in the ${c} row of her chart. How many ${c} are there?` : `Count the ${c}. How many are there?`;
+    return { prompt, answer: n, manip: { kind: 'count-out', glyph, count: n },
       distractors: [{ value: n + 1, misconception: 'counted-one-too-many' }, { value: Math.max(0, n - 1), misconception: 'missed-one-object' }, { value: n + 2, misconception: 'double-counted' }] };
   },
   // Hands-on archetypes for the mid rungs (repair round 3): the bank's count-out/build items used to
@@ -104,8 +109,9 @@ export const ARCHETYPES = {
   },
   countOn(rng, g, c) {
     const a = ri(rng, g.lo, g.hi), b = ri(rng, 2, 5);
+    // counting back is only a believable slip when it lands on a number above 0 (never "-1" or "0")
     return { prompt: `Start at ${a}. Count on ${b} more. Where do you land?`, answer: a + b,
-      distractors: [{ value: a + b - 1, misconception: 'counted-the-start-as-one' }, { value: a + b + 1, misconception: 'counted-one-too-far' }, { value: a - b, misconception: 'counted-backwards' }] };
+      distractors: [{ value: a + b - 1, misconception: 'counted-the-start-as-one' }, { value: a + b + 1, misconception: 'counted-one-too-far' }, a - b > 0 ? { value: a - b, misconception: 'counted-backwards' } : { value: a, misconception: 'stayed-at-the-start' }] };
   },
   skipCount(rng, g, c) {
     const step = g.step || 5, start = step * ri(rng, 1, 4);
@@ -152,10 +158,15 @@ export const ARCHETYPES = {
     return { prompt: `Round ${n} to the nearest ${place === 10 ? 'ten' : place === 100 ? 'hundred' : 'thousand'}.`, answer: ans,
       distractors: [{ value: Math.floor(n / place) * place, misconception: 'always-rounds-down' }, { value: Math.ceil(n / place) * place === ans ? ans + place : Math.ceil(n / place) * place, misconception: 'always-rounds-up' }, { value: n, misconception: 'did-not-round' }] };
   },
-  compare(rng, g, c) {
+  compare(rng, g, c, strand) {
     let a = ri(rng, g.lo, g.hi), b = ri(rng, g.lo, g.hi); if (a === b) b += 1;
     const bigger = Math.max(a, b), smaller = Math.min(a, b);
-    return { prompt: `Which number is greater: ${a} or ${b}?`, answer: bigger,
+    // The same comparison, asked the way its strand asks it: lengths in Shape & Measure, a chart's groups in
+    // Data & Chance, bare numbers in Number.
+    const prompt = strand === 'shape-measure' ? `A red ribbon is ${a} cm long and a blue ribbon is ${b} cm long. How long is the longer ribbon, in cm?`
+      : strand === 'data-chance' ? `Tally's chart shows ${a} red counters and ${b} blue counters. How many counters are in the bigger group?`
+      : `Which number is greater: ${a} or ${b}?`;
+    return { prompt, answer: bigger,
       distractors: [{ value: smaller, misconception: 'compared-the-wrong-way' }, { value: a + b, misconception: 'added-the-numbers' }, { value: Math.abs(a - b), misconception: 'gave-the-difference' }] };
   },
   orderNum(rng, g, c) {
@@ -279,7 +290,7 @@ export const ARCHETYPES = {
   },
   elapsed(rng, g, c) {
     const start = ri(rng, 1, 10), dur = ri(rng, 1, 4);
-    return { prompt: `A film starts at ${start} o'clock and lasts ${dur} hours. At what o'clock does it end? Give just the hour number.`, answer: start + dur > 12 ? start + dur - 12 : start + dur,
+    return { prompt: `A film starts at ${start} o'clock and lasts ${dur} ${dur === 1 ? 'hour' : 'hours'}. At what o'clock does it end? Give just the hour number.`, answer: start + dur > 12 ? start + dur - 12 : start + dur,
       distractors: [{ value: start, misconception: 'gave-the-start-time' }, { value: dur, misconception: 'gave-the-length' }, { value: (start + dur + 1 > 12 ? start + dur + 1 - 12 : start + dur + 1), misconception: 'counted-the-start-hour' }] };
   },
   money(rng, g, c) {
@@ -298,9 +309,16 @@ export const ARCHETYPES = {
     return { prompt: `A picture graph shows ${a} apples picked on Monday and ${b} apples picked on Tuesday. How many more apples were picked on Tuesday?`, answer: b - a,
       distractors: [{ value: a + b, misconception: 'added-instead-of-comparing' }, { value: b, misconception: 'gave-the-bigger-count' }, { value: b - a + 1, misconception: 'off-by-one' }] };
   },
-  sortCount(rng, g, c) {
+  sortCount(rng, g, c, strand) {
     const a = ri(rng, 2, 8), b = ri(rng, 2, 8), d = ri(rng, 1, 6), total = a + b + d;
-    return { prompt: `In a basket there are ${a} red balls, ${b} blue balls and ${d} green balls. How many balls are there in all?`, answer: total,
+    const balls = (n, colour) => `${n} ${colour} ${n === 1 ? 'ball' : 'balls'}`; // "1 green ball", never "1 green balls"
+    const shapes = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    // Sorting and counting, asked in its strand's terms: shapes sorted by kind in Shape & Measure, a colour
+    // chart in Data & Chance.
+    const prompt = strand === 'shape-measure'
+      ? `Tally sorts shapes by kind: ${shapes(a, 'circle', 'circles')}, ${shapes(b, 'square', 'squares')} and ${shapes(d, 'triangle', 'triangles')}. How many shapes did she sort in all?`
+      : `Tally sorted the balls in a basket by colour for her chart: ${balls(a, 'red')}, ${balls(b, 'blue')} and ${balls(d, 'green')}. How many balls are on the chart in all?`;
+    return { prompt, answer: total,
       distractors: [{ value: a + b, misconception: 'left-one-group-out' }, { value: total + 1, misconception: 'off-by-one' }, { value: Math.max(a, b, d), misconception: 'gave-the-biggest-group' }] };
   },
   meanCalc(rng, g, c) {
@@ -334,7 +352,7 @@ export const ARCHETYPES = {
   sides(rng, g, c) {
     const shapes = [['triangle', 3], ['square', 4], ['rectangle', 4], ['pentagon', 5], ['hexagon', 6], ['octagon', 8]];
     const [name, n] = pickOne(rng, shapes.filter(([, s]) => s >= (g.minSides || 3)));
-    return { prompt: `How many sides does a ${name} have?`, answer: n,
+    return { prompt: `How many sides does ${/^[aeiou]/.test(name) ? 'an' : 'a'} ${name} have?`, answer: n,
       distractors: [{ value: n + 1, misconception: 'counted-a-corner-twice' }, { value: n - 1, misconception: 'missed-a-side' }, { value: n + 2, misconception: 'guessed' }] };
   },
   shapeName(rng, g, c) {
@@ -347,7 +365,7 @@ export const ARCHETYPES = {
   symmetry(rng, g, c) {
     const shapes = [['square', 4], ['rectangle', 2], ['equilateral triangle', 3], ['regular hexagon', 6]];
     const [name, n] = pickOne(rng, shapes);
-    return { prompt: `How many lines of symmetry does a ${name} have?`, answer: n,
+    return { prompt: `How many lines of symmetry does ${/^[aeiou]/.test(name) ? 'an' : 'a'} ${name} have?`, answer: n,
       distractors: [{ value: n + 1, misconception: 'counted-a-diagonal-that-does-not-fold' }, { value: Math.max(0, n - 1), misconception: 'missed-a-fold-line' }, { value: n * 2, misconception: 'doubled-the-count' }] };
   },
   mixedOps(rng, g, c) {
@@ -357,19 +375,25 @@ export const ARCHETYPES = {
   },
 };
 
+/** "1 loose counter", "1 more counter", "1 cup of flour", "1 notebook": a count of one names one thing, wherever
+ *  an archetype built the sentence from a number. Words between the number and its noun (loose, more, red) stay. */
+const COUNT_NOUNS = 'counter|cup|ball|marble|sticker|treat|friend|group|frame|hour|minute|apple|piece|point|seed|shell|star|block|bird|cube|square|side|layer|row|pile|notebook|triangle|hexagon|angle|unit|meter|metre|gram|kilogram|cent|dollar|circle|day|book|tile|coin';
+const SINGULAR = new RegExp(`\\b1 ((?:(?:loose|more|red|blue|green|full|equal|unit|cubic|square) )*)(${COUNT_NOUNS})s\\b`, 'g');
+export const pluralFix = text => String(text).replace(SINGULAR, '1 $1$2');
+
 export function generateItem(template, seed) {
   const fn = ARCHETYPES[template.archetype];
   if (!fn) throw new Error(`unknown archetype ${template.archetype} in ${template.id}`);
   const rng = rngFromSeed(`${template.id}:${seed}`);
   let out = null;
   for (let attempt = 0; attempt < 40; attempt++) {
-    out = fn(rng, template.gen || {}, template.context || '');
+    out = fn(rng, template.gen || {}, template.context || '', template.strand);
     const vals = [out.answer, ...out.distractors.map(d => d.value)];
     if (new Set(vals.map(v => String(v))).size === vals.length) break;
     out = null;
   }
   if (!out) { // bounded nudge fallback: shift numeric distractors until unique
-    out = fn(rngFromSeed(`${template.id}:${seed}:fallback`), template.gen || {}, template.context || '');
+    out = fn(rngFromSeed(`${template.id}:${seed}:fallback`), template.gen || {}, template.context || '', template.strand);
     const seen = new Set([String(out.answer)]);
     out.distractors = out.distractors.map(d => {
       let v = d.value, guard = 0;
@@ -378,8 +402,29 @@ export function generateItem(template, seed) {
       return { ...d, value: v };
     });
   }
+  // A young child is never asked to type a word ("certain", "pentagon"), a fraction or a long number ("480"):
+  // those items are served as buttons, the key and its three tagged mistakes, and any "Answer like ..." line
+  // that only told a typist the format goes (it named the answer itself: "What is 1/4 + 2/4? Answer like 3/4.").
+  // Typed answers stay for short whole numbers (0-99), the hands-on counts among them.
+  const typedOk = typeof out.answer === 'number' && Number.isInteger(out.answer) && out.answer >= 0 && out.answer < 100;
+  if (template.responseType === 'pick' || !typedOk) { // buttons: a format line for a typist only gives the answer away
+    out.prompt = out.prompt.replace(/\s*Answer(?: like [^.?!]*| "[^"]*" or "[^"]*"|: [^.]*)\.$/, '');
+    // only real mistakes become buttons: a two-way question (even or odd) keeps its two answers, never a nudged "odd (other)"
+    out.distractors = out.distractors.filter((d, i, all) => !/ \(other\)$/.test(String(d.value)) && String(d.value) !== String(out.answer) && all.findIndex(x => String(x.value) === String(d.value)) === i);
+  }
+  // No impossible choice: for a positive answer on a page with no negative numbers, a wrong answer of 0 or below
+  // ("-1", or "0" for "Start at 5, count on 5") is swapped for a near miss above the answer.
+  if (typeof out.answer === 'number' && out.answer > 0 && !/(^|[^\d])-\d/.test(out.prompt)) {
+    const taken = new Set([String(out.answer), ...out.distractors.map(d => String(d.value))]);
+    out.distractors = out.distractors.map(d => {
+      if (!(typeof d.value === 'number' && d.value <= 0)) return d;
+      let v = out.answer + 2; while (taken.has(String(v))) v++;
+      taken.add(String(v)); return { value: v, misconception: 'near-miss' };
+    });
+  }
+  out.prompt = pluralFix(out.prompt);
   const spokenPrompt = out.prompt.replace(/[_]{2,}/g, 'blank');
-  if (template.responseType !== 'pick') {
+  if (template.responseType !== 'pick' && typedOk) {
     return { templateId: template.id, strand: template.strand, rung: template.rung, prompt: out.prompt, spokenPrompt,
       responseType: template.responseType, answer: out.answer, choices: null, answerIndex: null,
       ...(out.manip ? { manip: out.manip } : {}),
@@ -388,7 +433,8 @@ export function generateItem(template, seed) {
   const choices = [{ value: out.answer, misconception: null }, ...out.distractors];
   for (let i = choices.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [choices[i], choices[j]] = [choices[j], choices[i]]; }
   return { templateId: template.id, strand: template.strand, rung: template.rung, prompt: out.prompt, spokenPrompt,
-    responseType: 'pick', answer: out.answer, choices, answerIndex: choices.findIndex(ch => ch.misconception === null) };
+    responseType: 'pick', answer: out.answer, choices, answerIndex: choices.findIndex(ch => ch.misconception === null),
+    ...(template.responseType !== 'pick' ? { servedAsPick: true, distractorMisconceptions: out.distractors.map(d => d.misconception), ...(out.manip ? { manip: out.manip } : {}) } : {}) };
 }
 
 export function generateById(id, seed = 1) {

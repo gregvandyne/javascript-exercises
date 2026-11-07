@@ -4420,7 +4420,8 @@
    "context": "shells",
    "gen": {
     "lo": 4,
-    "hi": 12
+    "hi": 12,
+    "sort": true
    },
    "strandLabel": "Data & Chance",
    "ccssClusterCode": "K.MD.B",
@@ -4489,7 +4490,8 @@
    "context": "shells",
    "gen": {
     "lo": 6,
-    "hi": 16
+    "hi": 16,
+    "sort": true
    },
    "strandLabel": "Data & Chance",
    "ccssClusterCode": "K.MD.B",

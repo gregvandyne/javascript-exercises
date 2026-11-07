@@ -3866,7 +3866,7 @@
       "packetPost": "Schicke Pakete durchs Netz, wähle starke Passphrasen und erkenne Tricks im Netz.",
       "insideTheMachine": "Baue und repariere Computer: Bauteile, Ein- und Ausgaben, Bits und Pixel, Design für alle.",
       "tugOfMath": "Matheaufgaben für jede Klasse von 1 bis 8, vom Plus im Zahlenraum bis 20 bis zu Gleichungen, als Tauziehen. Gegen den Computer oder zu zweit an einem Bildschirm.",
-      "doodleHoot": "Male ein Wort für die anderen oder setze ihres aus Buchstabenkärtchen zusammen. Leichte, mittlere oder knifflige Wörter in 13 Sprachen, live mit Familie und Freunden oder auf einem Gerät.",
+      "doodleHoot": "Male ein Wort für die anderen oder rate ihres, während sie malen: tippen, laut sagen oder mit Buchstabenkärtchen. Leichte, mittlere oder knifflige Wörter in 13 Sprachen, live mit Familie und Freunden oder auf einem Gerät.",
       "remisQuietMeadow": "Eine Lärmampel für die Klasse: Bleibt leise, damit Remi, der Rote Panda, schlafen kann, und zählt gemeinsam die leise Zeit."
     },
     "hubs": {
@@ -4088,7 +4088,7 @@
           "beatLanes": "Im Takt zu bekannten Liedern tippen, zum Anfang mit „Funkel, funkel, kleiner Stern“.",
           "munchMaze": "Eine Jagd durchs Labyrinth mit leichtem Modus: einen Weg planen und alle Kügelchen sammeln.",
           "tugOfMath": "Klasse 2 oder 3 wählen: Plus, Minus und Einmaleins, mit dem Computer auf Leicht, bis sie ihn schlagen.",
-          "doodleHoot": "Bilderwörter und Buchstabenkärtchen: Rechtschreibung wie bei einem Partyspiel."
+          "doodleHoot": "Bilderwörter zum Raten und Schreiben: Rechtschreibung üben wie bei einem Partyspiel."
         },
         "faq": {
           "q2": "Sind die Spiele zu schwer für 8-Jährige?",
@@ -4637,7 +4637,7 @@
       "tug": "Tug of Math (Live)",
       "tugText": "Die Klasse teilt sich in zwei Teams. Alle lösen Matheaufgaben für ihre Klasse auf ihrem eigenen Ziffernblock, und jede richtige Antwort zieht am Seil.",
       "doodle": "Doodle Hoot (Live)",
-      "doodleText": "Eine Person malt, alle anderen setzen das Wort aus Buchstabenkärtchen zusammen. Für Familie oder Freunde, egal wo, jeder auf dem eigenen Gerät."
+      "doodleText": "Einer malt, während alle anderen raten: tippen, laut rufen oder mit Buchstabenkärtchen. Für Familie oder Freunde, wo auch immer sie sind, jeder auf seinem eigenen Gerät."
     },
     "starter": {
       "title": {
@@ -5441,7 +5441,10 @@
       "roundsList": "1 Runde (jeder malt einmal)|2 Runden|3 Runden",
       "secs": "Zeit zum Malen",
       "secsN": "{n} Sekunden",
-      "hint": "Alle malen der Reihe nach. Die Spieler kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind. Niemand tippt: geraten wird mit Buchstabenkärtchen, und es gibt keinen Chat.",
+      "hint": "Alle malen reihum, während die anderen raten. Die Spieler kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind. Getippte Antworten gehen nur ans Spiel: Wer malt, sieht eine Antwort nur, wenn sie eines der Wörter des Spiels ist, und es gibt keinen Chat.",
+      "guess": "So wird geraten",
+      "guessType": "Tippen auf der eigenen Tastatur",
+      "guessTiles": "Buchstabenkärtchen (leichter)",
       "bigRoom": "Eine große Gruppe? Eine Runde reicht: Jeder malt einmal.",
       "play": "Üben oder auf einem Gerät spielen"
     },
@@ -5572,7 +5575,7 @@
       },
       "doodle": {
         "h": "Doodle Hoot (Live)",
-        "p": "Eine Person malt, die anderen setzen das Wort aus Buchstabenkärtchen zusammen: Rechtschreibung und Wortschatz in 13 Sprachen. Am besten für kleine Gruppen (bis 16); du kannst jederzeit ein Bild löschen oder einen Zug überspringen."
+        "p": "Einer malt, während die anderen raten, getippt oder laut (oder mit Buchstabenkärtchen für Jüngere): Rechtschreibung und Wortschatz in 13 Sprachen. Am besten für kleine Gruppen (bis 16); du kannst jederzeit ein Bild löschen oder einen Zug überspringen."
       },
       "tug": {
         "h": "Tug of Math (Live)",
@@ -6041,6 +6044,10 @@
       "locked": "Gesperrt",
       "preview": "Vorschau",
       "lockedNote": "Dieser Schritt ist noch gesperrt. Schließ zuerst Schritt {n} ab:",
+      "stamps": "Deine Stempel",
+      "stampsCount": "{n} von {total} Stempeln",
+      "stampEarned": "Stempel verdient",
+      "stampToEarn": "Schließ diese Einheit ab, um ihn zu verdienen",
       "unit": "Einheit {n}",
       "units": "Einheiten {from}–{to}",
       "build": {
@@ -6073,6 +6080,7 @@
     "check": {
       "h": "Kurzer Test",
       "intro": "Drei Fragen. Zwei richtige öffnen das Spielmodul.",
+      "introTalk": "Drei Fragen. Zwei richtige schließen diesen Schritt ab.",
       "q": "Frage {n} von {total}",
       "send": "Antworten prüfen",
       "done": "Test bestanden",

@@ -35,6 +35,8 @@ import * as courses from '../services/courses.js';
 import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
 export const router = Router();
+/** Art styles a play page may pass on to its game frame (?style=, the kit's okStyle). */
+export const FRAME_STYLES = Object.freeze(['cartoon', 'breeze']);
 const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 /** [key, label] pairs in the reader's language (English by default; the admin panel uses English). */
 export const reportReasons = (t = tEn) => REASON_KEYS.map(k => [k, t(`game.report.reasons.${k}`)]);
@@ -290,6 +292,9 @@ router.get('/play/:slug', (req, res) => {
   // the game opens. Only the five known keys with valid values go into the token (o), nothing else from the URL.
   const o = packParams(parseParams(req.query));
   const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}) }, 15 * 60);
+  // An art style the page asks for (?style=cartoon): it goes on to the frame as the Oomba Kit's ?okStyle=, and a game that
+  // offers that style (Oomba.three's styles) draws it; every other game ignores it. Only the known style names pass.
+  const frameQ = FRAME_STYLES.includes(String(req.query.style || '')) ? `?okStyle=${req.query.style}` : '';
   const liked = games.userLiked(g.id, u && u.id);
   const grownup = isGrownup(u);   // no Like or Rate for grown-up accounts
   // AI voices (routes/tts.js): official games only, when TTS is on and a language is switched on; absent otherwise.
@@ -316,11 +321,12 @@ router.get('/play/:slug', (req, res) => {
   </header>
   <div class="stage" id="stage" dir="ltr">
     <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
-    <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
+    <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo" aria-hidden="true">📱</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}) })}`;
-  page(req, res, { title: g.title, bare: true, bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
+  // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
+  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.

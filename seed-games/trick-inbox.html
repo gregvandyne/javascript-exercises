@@ -43,7 +43,13 @@
   .ti-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; flex: none; }
   @media (min-width: 640px) { .ti-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .ti-actions .ok-btn { min-width: 0; text-align: center; padding: 0 6px; }
-  .ti-debrief { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: none; }
+  /* the debrief shrinks and scrolls on a short screen, so the Next message button under it is always whole */
+  .ti-debrief { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: 0 1 auto; min-height: 6.5em; overflow-y: auto; overscroll-behavior: contain; }
+  /* when the debrief scrolls, a soft shadow at its edge says there is more (the classic scroll shadow: it fades away
+     when the end is reached), and the scroll ends on a whole line */
+  .ti-debrief { background: linear-gradient(var(--ok-bg2) 30%, transparent) top / 100% 28px no-repeat local, linear-gradient(transparent, var(--ok-bg2) 70%) bottom / 100% 28px no-repeat local, radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.22), transparent) top / 100% 12px no-repeat scroll, radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.28), transparent) bottom / 100% 14px no-repeat scroll, var(--ok-bg2); padding-bottom: 14px; }
+  .ti-debrief.ti-more::after { content: '\2193'; position: sticky; bottom: -14px; align-self: center; font-weight: 800; line-height: 1; padding: 2px 10px; border-radius: 999px; background: var(--ok-card); border: 2px solid var(--ok-edge); }
+  .ti-debrief > * { flex: none; }
   .ti-debrief b { font-size: 1.05em; }
   .ti-debrief p { margin: 0; font-weight: 600; line-height: 1.4; }
   .ti-debrief .ti-missed { font-weight: 700; }
@@ -74,11 +80,11 @@
   .ti-clue.ti-found, .ti-seg button[aria-pressed="true"] { color: var(--ti-ink); }
 </style>
 <div id="game"></div>
-<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-zeLmUxnF20GLI7VC6XfgOcb9DiFTxC7mSAc0QTkXllv6zvdzzEFtrAWb6TsmeAIY" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-props.js" integrity="sha384-9tpA0++uM7b3UfvT/6FfH/hFFWhP5Ipvv1JEBl7UPxkukZiBOM9ADRblCr0qCzKk" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-animals.js" integrity="sha384-GntsshX3KJc7NNGcJsefnPEcYLfY5lHGL5ow+tGUPHbiwbiLKzdYKFp9uciiblsG" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/art-school.js" integrity="sha384-VQndRmNEoGnNDs6VhEBvG5GpzW0Iwl5NJYE8VU2j403u8b7qeI44NX89zuTbzM21" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/style-bold.js" integrity="sha384-dtsIs1XzPIodWCwlRmUUGv3b45RNWFTtMH4mSmcY+QmPfH+QqjFebkDnd+QfbB0w" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-props.js" integrity="sha384-313YTtGuc9OuNirXhcAwWuNAozOpYv7J0aA689cyD+RnwN6wDLPIbgXK6jhPsQfD" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-animals.js" integrity="sha384-oz8m2BL9yvRGC3Nd9k1Ge6zWoo9Ysw0OkUjZDO4gGjORmGg/8voCnkEUd5MuAaNE" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/art-school.js" integrity="sha384-mBfY0huHPUm87jMAr2MR4tO3/VQBAzdC1PRsDqusr/zdWV0mvfxN6PriXweB6jpp" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/style-bold.js" integrity="sha384-Hf1XPJGmd/jqSL2OQ5zX8FnGjLZPrFI7HWmKei+PZGnSFeP+m2M2NQo1E5G3l0cS" crossorigin="anonymous"></script>
 <script>
 /* ===== Trick Inbox engine and content: the message sets, the trickster motives, the judging and the scoring.
    Plain data and functions (no DOM, no kit), so the unit test can load this block on its own.
@@ -122,6 +128,9 @@ const CLUES = {
   mean: 'It is mean about someone',
   toogood: 'It sounds too good to be true',
   authority: 'It pretends to be in charge',
+  noyes: 'It skips someone\'s yes',
+  copy: 'It passes off someone else\'s work',
+  rule: 'It asks you to break a safety rule',
 };
 /** The four trickster motives of Cyber Defenders Unit 4 (Explorer names; the forwarder is the fourth nest). */
 const MOTIVES = {
@@ -129,6 +138,14 @@ const MOTIVES = {
   'prize-faker': 'the prize-faker, who wants you to tap and type',
   'giggler': 'the giggler, who wants a big reaction',
   'forwarder': 'the forwarder, who wants you to share the trick with everyone',
+};
+/** The same four, as Pro's threat actors (Cyber Defenders Pro 4.2: the scammer, the account thief, the vandal, the spy):
+ *  the Pro debrief names the actor and what it wants. A chain is the vandal's: it wants the trick spread as far as it goes. */
+const ACTORS = {
+  'key-hunter': 'the account thief, who wants into your account',
+  'prize-faker': 'the scammer, who wants your money or your tap',
+  'giggler': 'the vandal, who wants damage and a big reaction',
+  'forwarder': 'the vandal, who wants the trick spread as far as it goes',
 };
 /** The sets (the game's chapters). Explorer plays letters, chat, mix and the boss; Pro adds senders, pressure
  *  and media, and its boss round runs longer. The boss round's engine is the one Escape the Post Office's
@@ -140,7 +157,11 @@ const SETS = [
   { index: 4, id: 'senders', title: 'Faked Senders', noun: 'messages', pic: 'shield', bands: ['2'], blurb: 'The name looks friendly. The real sender is not.' },
   { index: 5, id: 'pressure', title: 'Pressure', noun: 'messages', pic: 'clock', bands: ['2'], blurb: 'Rushing, daring and pretending to be in charge.' },
   { index: 6, id: 'media', title: 'Fake or Fact?', noun: 'messages', pic: 'globe', bands: ['2'], blurb: 'Fake news, sneaky ads and made-up videos.' },
-  { index: 7, id: 'boss', title: 'Boss Round', noun: 'messages', pic: 'star', bands: ['1b', '2'], blurb: 'The Magpie throws everything it has at your inbox.' },
+  { index: 7, id: 'keys', title: 'Key Keepers', noun: 'messages', pic: 'key', bands: ['1b', '2'], blurb: 'Who may have your mailbox key? Friends, fixers and finders ask.' },
+  { index: 8, id: 'private', title: 'Private Facts', noun: 'messages', pic: 'door', bands: ['1b', '2'], blurb: 'Messages that fish for where you live, your school and your birthday.' },
+  { index: 9, id: 'ask-first', title: 'Ask First', noun: 'messages', pic: 'heart', bands: ['1b', '2'], blurb: 'Photos, drawings and posts: whose yes do you need?' },
+  { index: 10, id: 'rules', title: 'Rule Breakers', noun: 'messages', pic: 'sign', bands: ['1b', '2'], blurb: 'Messages that ask you to break the rules that keep you safe.' },
+  { index: 11, id: 'boss', title: 'Boss Round', noun: 'messages', pic: 'star', bands: ['1b', '2'], blurb: 'The Magpie throws everything it has at your inbox.' },
 ];
 const BOTH = ['1b', '2'], PRO = ['2'];
 /* action: the best move. accept: other moves that also count as right. motive: a trick's Unit 4 motive (null
@@ -304,6 +325,106 @@ const MESSAGES = [
     body: ['A ', { t: 'secret trick gives free gems', clue: 'prize' }, ' in your favorite game. Just ', { t: 'tap the tiny link', clue: 'link' }, ' at the bottom and wait.'],
     action: 'bin', accept: ['report'], motive: 'prize-faker',
     why: 'Free gems through a tiny hidden link is a trap with a tip-shaped hat. Real game rewards are announced inside the game. Bin it.' },
+  /* ---- Key Keepers (Explorer + Pro): who may have your mailbox key — only you and a trusted adult ---- */
+  { id: 'kk-1', set: 'keys', bands: BOTH, kind: 'chat', from: 'Your Best Friend', badge: 'known', subject: 'Game chat',
+    body: [{ t: 'Can I have your mailbox key?', clue: 'key' }, ' Then I can play your game while you are away. ', { t: 'I promise I will never tell anyone.', clue: 'secret' }],
+    action: 'bin', accept: ['show'], motive: 'key-hunter',
+    why: 'Even a best friend never gets your mailbox key, however kindly they promise. Say no, and keep being friends. Only you and a trusted adult may know it.' },
+  { id: 'kk-2', set: 'keys', bands: BOTH, kind: 'letter', from: 'Dad', badge: 'known', subject: 'The new family tablet',
+    body: ['I set up the new family tablet. Tonight at the kitchen table we can choose your mailbox key together, and I will help you remember it.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. A trusted adult who looks after your account may help you make your key, face to face. Nothing here is a trick.' },
+  { id: 'kk-3', set: 'keys', bands: BOTH, kind: 'letter', from: 'Tablet Fixers', badge: 'odd', subject: 'Your tablet is slow',
+    body: ['We can make your tablet fast again. ', { t: 'Send us your mailbox key', clue: 'key' }, ' ', { t: 'in the next five minutes', clue: 'rush' }, ', before it breaks for good.'],
+    button: 'Fix it', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Real fixers never need your key sent to them, and a tablet does not break in five minutes. The rush is there to stop you thinking. Bin it.' },
+  { id: 'kk-4', set: 'keys', bands: BOTH, kind: 'chat', from: 'Someone at the Park', badge: 'odd', subject: 'Game chat',
+    body: [{ t: 'I found a tablet on the bench with your sticker on it!', clue: 'stranger' }, ' ', { t: 'Tell me its unlock code', clue: 'key' }, ' and I will check it is yours.'],
+    action: 'show', accept: ['report'], motive: 'key-hunter',
+    why: 'Finding a tablet does not make it anyone\'s to open. A stranger who wants its code is the wrong person. Show Pim: a trusted adult can fetch it safely.' },
+  { id: 'kk-5', set: 'keys', bands: BOTH, kind: 'letter', from: 'Your Teacher', badge: 'known', subject: 'Your class account card',
+    body: ['Your class account card is in your take-home folder. Keep it there, and show it only to your family.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Your teacher is telling you where your card is and who may see it, and asks for nothing back.' },
+  { id: 'kk-6', set: 'keys', bands: BOTH, kind: 'post', from: 'Gem Swap Club', badge: 'odd', subject: 'Swap keys, get gems!',
+    body: [{ t: 'Swap mailbox keys with us', clue: 'key' }, ' and get ', { t: '500 free gems', clue: 'prize' }, '. ', { t: 'Everyone in your class already did!', clue: 'dare' }],
+    button: 'Swap now', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'Gems are the bait and your key is the catch. "Everyone already did" is pressure, not a fact. A key is never for swapping. Bin it.' },
+  /* ---- Private Facts (Explorer + Pro): me-facts stay private ---- */
+  { id: 'pf-1', set: 'private', bands: BOTH, kind: 'letter', from: 'Birthday Club', badge: 'odd', subject: 'Join the birthday club!',
+    body: ['Send us ', { t: 'your full name, your birthday and your home address', clue: 'facts' }, ' and we will post you ', { t: 'a surprise present', clue: 'prize' }, '!'],
+    button: 'Join now', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'Name, birthday and address together point straight at you. A club you never joined does not need them. The present is only bait. Bin it.' },
+  { id: 'pf-2', set: 'private', bands: BOTH, kind: 'letter', from: 'The Library', badge: 'known', subject: 'Story time is moving',
+    body: ['Story time moves to the big room on Tuesday. Bring a friend and a cushion!'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. A sender you know, ordinary news, and no questions about you at all.' },
+  { id: 'pf-3', set: 'private', bands: BOTH, kind: 'chat', from: 'MapGamePal', badge: 'odd', subject: 'Game chat',
+    body: ['Cool avatar! ', { t: 'Which school do you go to?', clue: 'facts' }, ' And ', { t: 'what street do you walk home on?', clue: 'facts' }],
+    action: 'show', accept: ['report'], motive: 'key-hunter',
+    why: 'A game friend you have never met has no need for your school or your street. Those are me-facts. Do not answer: Show Pim, and a trusted adult can help.' },
+  { id: 'pf-4', set: 'private', bands: BOTH, kind: 'post', from: 'Photo Contest', badge: 'odd', subject: 'Win a bike!',
+    body: [{ t: 'Win a bike!', clue: 'prize' }, ' Post a photo of yourself ', { t: 'in your school sweater, in front of your house', clue: 'facts' }, '.'],
+    button: 'Enter', action: 'bin', accept: ['report'], motive: 'prize-faker',
+    why: 'A school sweater and a front door can tell a stranger where you learn and where you live. No bike is worth that. Bin it.' },
+  { id: 'pf-5', set: 'private', bands: BOTH, kind: 'chat', from: 'Grandpa Leo', badge: 'known', subject: 'Family chat',
+    body: ['I loved your drawing of the owl. Will you show me the next one on Sunday?'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Your grandpa already knows you, and he asks for nothing private.' },
+  { id: 'pf-6', set: 'private', bands: BOTH, kind: 'post', from: 'Name Maker', badge: 'odd', subject: 'Your superhero name!',
+    body: [{ t: 'Your first pet\'s name plus your street name', clue: 'facts' }, ' makes your superhero name! Post yours below and ', { t: 'tag five friends', clue: 'chain' }, '.'],
+    action: 'bin', accept: ['report'], motive: 'forwarder',
+    why: 'A pet\'s name and a street name are the answers to secret questions, and the tagging spreads the trick. Fun on the outside, fishing on the inside. Bin it.' },
+  /* ---- Ask First (Explorer + Pro): a photo or a drawing needs its owner's yes ---- */
+  { id: 'af-1', set: 'ask-first', bands: BOTH, kind: 'chat', from: 'Group Chat', badge: 'odd', subject: 'Group chat',
+    body: [{ t: 'Post that funny photo of Sam asleep on the bus!', clue: 'noyes' }, ' ', { t: 'He will never know.', clue: 'secret' }, ' ', { t: 'Everyone will laugh.', clue: 'dare' }],
+    action: 'bin', accept: ['report'], motive: 'giggler',
+    why: 'A photo of Sam needs Sam\'s yes, always. "He will never know" is the clue that he would say no. Do not post it.' },
+  { id: 'af-2', set: 'ask-first', bands: BOTH, kind: 'letter', from: 'Ava from Class', badge: 'known', subject: 'Our class poster',
+    body: ['Can I put your owl drawing on our class poster? I will write your name under it. Is that okay with you?'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Ava asks first and gives you credit: that is exactly how sharing someone\'s work should go.' },
+  { id: 'af-3', set: 'ask-first', bands: BOTH, kind: 'post', from: 'Free Art Page', badge: 'odd', subject: 'Instant artist!',
+    body: [{ t: 'Copy any picture from this page and say you drew it.', clue: 'copy' }, ' ', { t: 'Nobody ever checks!', clue: 'dare' }],
+    action: 'bin', accept: ['report'], motive: 'giggler',
+    why: 'Finding a picture does not make it yours. The maker decides how it is used, and their name belongs on it. Bin it, and draw your own.' },
+  { id: 'af-4', set: 'ask-first', bands: BOTH, kind: 'chat', from: 'Max', badge: 'known', subject: 'Game chat',
+    body: [{ t: 'I posted that photo of you with spaghetti on your face.', clue: 'noyes' }, ' 300 likes! ', { t: 'I will not take it down.', clue: 'mean' }],
+    action: 'show', accept: ['report'], motive: 'giggler',
+    why: 'A photo of you needs your yes. You can ask Max to take it down, and when it stays up, Show Pim: a trusted adult can help report it. It is not your fault.' },
+  { id: 'af-5', set: 'ask-first', bands: BOTH, kind: 'letter', from: 'Coach Rana', badge: 'known', subject: 'Team photo day',
+    body: ['Team photo day is Friday. The photo goes in the team folder, for our families only.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Your coach says where the photo goes and who sees it. Nothing is asked of you.' },
+  { id: 'af-6', set: 'ask-first', bands: BOTH, kind: 'post', from: 'Video Star Contest', badge: 'odd', subject: 'Be a video star!',
+    body: ['Send us a video of your whole class and we will post it ', { t: 'for the whole world to see', clue: 'toogood' }, '. ', { t: 'No need to ask them first!', clue: 'noyes' }],
+    button: 'Upload', action: 'bin', accept: ['report'], motive: 'forwarder',
+    why: 'Each friend in that video gets their own yes, and "no need to ask" skips every one of them. Bin it.' },
+  /* ---- Rule Breakers (Explorer + Pro): rules are layers that protect you ---- */
+  { id: 'rb-1', set: 'rules', bands: BOTH, kind: 'chat', from: 'ShortcutKid', badge: 'odd', subject: 'Game chat',
+    body: ['The school filter is boring. ', { t: 'Here is a trick to switch it off.', clue: 'rule' }, ' ', { t: 'Do not tell your teacher.', clue: 'secret' }],
+    action: 'show', accept: ['report'], motive: 'giggler',
+    why: 'The school\'s internet rules keep tricks and nasty sites away from you. A "trick" that switches them off, kept secret from adults, breaks them. Show Pim.' },
+  { id: 'rb-2', set: 'rules', bands: BOTH, kind: 'letter', from: 'Your School', badge: 'known', subject: 'Our internet rules',
+    body: ['Our internet rules are on the board by the door. If one is unclear, ask your teacher to explain it.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. Your school shares its rules and invites questions. That is what good rules look like.' },
+  { id: 'rb-3', set: 'rules', bands: BOTH, kind: 'post', from: 'Game Sign-up', badge: 'odd', subject: 'Too young to play?',
+    body: ['Too young for this game? ', { t: 'Just say you are 13.', clue: 'rule' }, ' ', { t: 'Everyone does it!', clue: 'dare' }],
+    button: 'Sign up', action: 'bin', accept: ['report'], motive: 'key-hunter',
+    why: 'An app\'s age rule is part of its agreement, and it is there to protect younger players. A sign-up that tells you to fib about it is not one to join. Bin it.' },
+  { id: 'rb-4', set: 'rules', bands: BOTH, kind: 'chat', from: 'TeamCaptain7', badge: 'odd', subject: 'Team chat',
+    body: [{ t: 'Our team kicks out anyone who will not share.', clue: 'dare' }, ' ', { t: 'Send me your mailbox key', clue: 'key' }, ' or you are out.'],
+    action: 'report', accept: ['show'], motive: 'key-hunter',
+    why: 'Asking for keys breaks the game\'s rules, and no team is worth your key. Report it so the game can act, and tell a trusted adult.' },
+  { id: 'rb-5', set: 'rules', bands: BOTH, kind: 'chat', from: 'LoudPlayer', badge: 'odd', subject: 'Game chat',
+    body: ['You lost, so ', { t: 'now everyone will spam you all night!', clue: 'mean' }, ' Ha!'],
+    action: 'report', accept: ['show'], motive: 'giggler',
+    why: 'That breaks the game\'s rules against you, and it is never your fault. You do not fix it alone: report and block, save it, and tell a trusted adult.' },
+  { id: 'rb-6', set: 'rules', bands: BOTH, kind: 'letter', from: 'Game Club', badge: 'known', subject: 'New chat rule',
+    body: ['We changed our rules: game chat is now only for friends you added yourself. Read the new rule with your family.'],
+    action: 'deliver', accept: [], motive: null,
+    why: 'Safe to deliver. A rule that keeps strangers out of your chat is a layer that protects you, and it asks you to read it with your family.' },
 ];
 /** The boss round: a fixed mixed deal per band (the Pro eight include faked senders, as Lock 4 of the escape
  *  room requires). Ids point into MESSAGES, so the boss never drifts from the sets it mixes. */
@@ -363,7 +484,7 @@ function cleanParams(raw, sets) {
   out.present = ['chapter', 'band', 'mode'].some(k => k in out) || out.lock === 1;
   return out;
 }
-root.TrickInbox = { rng, seedOf, ACTIONS, ACTION_IDS, CLUES, MOTIVES, SETS, SET_BY_ID, MESSAGES, BY_ID, BOSS, cluesOf, round, judge, starsFor, label, LABEL_RE, cleanParams };
+root.TrickInbox = { rng, seedOf, ACTIONS, ACTION_IDS, CLUES, MOTIVES, ACTORS, SETS, SET_BY_ID, MESSAGES, BY_ID, BOSS, cluesOf, round, judge, starsFor, label, LABEL_RE, cleanParams };
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script type="module">
@@ -395,7 +516,22 @@ const icon = (name, o) => O.icon(name, o);
 const iconEl = name => { const e = $('span', 'ti-ic'); e.innerHTML = icon(name); e.setAttribute('aria-hidden', 'true'); return e; };
 const btn = (label, o) => O.ui.button(label, o);
 const announce = t => O.ui.announce(t);
-const toast = t => O.ui.toast(t);
+const toast = t => { O.ui.toast(t); placeToast(); };
+/** The toast drops to the first band, from its usual place down, with no words or buttons of the game in it: at the
+ *  top it would sit on the quest and level chips and on Pim's line. Nothing clear: it stays where it was. */
+function placeToast() {
+  const el = document.querySelector('.ok-toast'); if (!el) return;
+  el.style.top = '';
+  const w = el.offsetWidth, h = el.offsetHeight, H = window.innerHeight, x0 = (window.innerWidth - w) / 2, x1 = x0 + w;
+  if (!w || !h) return;
+  const boxes = [], keep = b => { if (b.width && b.height && b.bottom > 0 && b.top < H && b.right > x0 && b.left < x1) boxes.push(b); };
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.nodeValue.trim() && n.parentElement && !n.parentElement.closest('.ok-toast, .ok-live, .ok-caption, [hidden]') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT) });
+  const rg = document.createRange();
+  for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (getComputedStyle(n.parentElement).visibility === 'hidden') continue; rg.selectNodeContents(n); for (const b of rg.getClientRects()) keep(b); }
+  for (const b of document.querySelectorAll('button')) if (!b.closest('.ok-toast') && getComputedStyle(b).visibility !== 'hidden') keep(b.getBoundingClientRect());
+  const base = parseFloat(getComputedStyle(el).top) || 72;
+  for (let y = base; y + h <= H - 8; y += 6) if (!boxes.some(b => b.top < y + h + 4 && b.bottom > y - 4)) { if (y !== base) el.style.top = y + 'px'; return; }
+}
 const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
 const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
 const KIND_LABEL = { letter: 'Letter', chat: 'Chat', post: 'Post' };
@@ -581,10 +717,13 @@ function renderMessage() {
     for (const a of E.ACTIONS) acts.appendChild(btn(tr(a.label), { kind: a.id === 'show' ? 'go' : 'quiet', icon: a.icon, onPress: () => doAct({ t: 'action', action: a.id }) }));
   } else if (run.phase === 'debrief') {
     panel.appendChild(debriefEl());
+    // a debrief taller than its room says so (an arrow on its lower edge) until it is scrolled to the end
+    { const db = panel.querySelector('#ti-debrief'); const more = () => db.classList.toggle('ti-more', db.scrollHeight - db.scrollTop - db.clientHeight > 4); db.addEventListener('scroll', more, { passive: true }); renderMessage._more = more; }
     const row = $('div', 'ti-row ti-center'); panel.appendChild(row);
     row.appendChild(btn(run.i + 1 >= run.msgs.length ? tr('Finish') : tr('Next message'), { kind: 'hot', icon: 'next', onPress: () => doAct({ t: 'next' }) }));
   }
   hudSync();
+  if (run.phase === 'debrief' && renderMessage._more) renderMessage._more();
 }
 function markFound(el) { el.classList.add('ti-found'); if (!el.querySelector('svg')) el.appendChild(iconEl('check')); el.setAttribute('aria-pressed', 'true'); }
 function toggleClue(id, el) {
@@ -599,7 +738,7 @@ function debriefEl() {
   d.appendChild($('b', '', j.best ? tr('That is the move!') : j.right ? tr('That works too.') : tr('Not this time — here is why.')));
   if (j.deliveredTrick) d.appendChild($('p', '', tr('Delivering a trick is the one move that costs a stamp-star. No shame — spotting it next time is the skill.')));
   d.appendChild($('p', '', msg.why));
-  if (msg.motive) d.appendChild($('p', '', tr('Behind this one: {motive}. The Magpie slipped it into the post.', { motive: tr(E.MOTIVES[msg.motive]) })));
+  if (msg.motive) d.appendChild($('p', '', tr('Behind this one: {motive}. The Magpie slipped it into the post.', { motive: tr((S.band === '2' ? E.ACTORS : E.MOTIVES)[msg.motive]) })));
   if (msg.link) d.appendChild($('p', '', tr('The button said {shown}, but it really went to {goes}.', { shown: msg.link.shown, goes: msg.link.goes })));
   if (j.missed.length) { const m = $('p', 'ti-missed', tr('Clues still hiding: ') + j.missed.map(c => tr(E.CLUES[c.kind]) + ' — “' + c.text + '”').join('; ')); d.appendChild(m); }
   else if (E.cluesOf(msg).length) d.appendChild($('p', '', tr('You found every clue. Sharp eyes!')));

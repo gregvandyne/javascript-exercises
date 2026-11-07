@@ -37,7 +37,7 @@ const PLAN = [
 ];
 const KINDS = ['tap', 'pick', 'wire', 'sort', 'order', 'ticket', 'flow', 'switches', 'pixels', 'rgb', 'bin', 'persona'];
 
-test('inside-the-machine: the file is a kit 1.1.4 game that passes the scanner, with its metadata', () => {
+test('inside-the-machine: the file is a kit 1.1.5 game that passes the scanner, with its metadata', () => {
   assert.ok(HTML.startsWith('<title>Inside the Machine</title>'));
   assert.ok(HTML.includes(kitTag()), 'the exact kit tag');
   for (const p of ['art-school', 'art-props', 'art-animals', 'dress', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `the exact ${p} pack tag`);

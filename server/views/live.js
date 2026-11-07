@@ -529,6 +529,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
       <p class="small muted" id="lv-doodle-like">${t('live.doodleUi.like')} <span id="lv-doodle-sample" dir="auto">${(doodle.samples[ddLang] || {})[ddLvl] || ''}</span></p>
       <div class="field"><label for="lv-doodle-rounds">${t('live.doodleUi.rounds')}</label><select id="lv-doodle-rounds" name="doodleRounds">${doodle.rounds.map(n => html`<option value="${n}"${n === (dd ? dd.rounds : 2) ? raw(' selected') : ''}>${t('live.doodleUi.roundsList').split('|')[n - 1] || n}</option>`)}</select></div>
       <div class="field"><label for="lv-doodle-secs">${t('live.doodleUi.secs')}</label><select id="lv-doodle-secs" name="doodleSecs">${doodle.secs.map(n => html`<option value="${n}"${n === (dd ? dd.secs : 80) ? raw(' selected') : ''}>${t('live.doodleUi.secsN', { n })}</option>`)}</select></div>
+      <div class="field"><label for="lv-doodle-guess">${t('live.doodleUi.guess')}</label><select id="lv-doodle-guess" name="doodleTiles"><option value="0"${dd && dd.tiles ? '' : raw(' selected')}>${t('live.doodleUi.guessType')}</option><option value="1"${dd && dd.tiles ? raw(' selected') : ''}>${t('live.doodleUi.guessTiles')}</option></select></div>
       <p class="small muted">${t('live.doodleUi.hint')}</p>
       <p class="small muted" id="lv-doodle-big" hidden>${t('live.doodleUi.bigRoom')}</p>
       ${jsonData('lv-doodle-samples', doodle.samples)}

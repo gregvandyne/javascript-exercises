@@ -183,8 +183,11 @@ test('tiles: bad-tile index breaks the pattern, sequences and sharing strips add
     if (Array.isArray(v.bad)) {
       // Two tiles marked as a swap (0.1: "2, 1, 3"): swapping them back must give a clean +1/+d run.
       assert.equal(v.bad.length, 2, `${where}: a swap marks two tiles`);
-      const back = [...nums]; [back[v.bad[0]], back[v.bad[1]]] = [back[v.bad[1]], back[v.bad[0]]];
+      // A strip may show the fix too, after an arrow tile (0.1: "2, 1, 3 → 1, 2, 3"): it must be exactly the swap undone.
+      const arrow = v.values.indexOf('→'), before = arrow < 0 ? nums : nums.slice(0, arrow);
+      const back = [...before]; [back[v.bad[0]], back[v.bad[1]]] = [back[v.bad[1]], back[v.bad[0]]];
       assert.ok(back.every(n => n != null) && back.every((n, j) => n === back[0] + j * (back[1] - back[0])), `${where}: swapping the marked tiles back gives the pattern`);
+      if (arrow >= 0) assert.deepEqual(nums.slice(arrow + 1), back, `${where}: the tiles after the arrow are the swap undone`);
       assert.ok(!nums.every((n, j) => n === nums[0] + j * (nums[1] - nums[0])), `${where}: the marked tiles really are out of place`);
     } else if (v.bad != null) {
       assert.ok(nums[v.bad] != null, `${where}: bad tile not numeric`);

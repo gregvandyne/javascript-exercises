@@ -23,7 +23,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const NARROW = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'cyber-shots-spec.json'), 'utf8')).filter(x => x.narrow).map(x => `csq/${x.game}/${x.state}`));
+const NARROW = new Set(['cyber-shots-spec.json', 'csq-shots-spec.json'].flatMap(f => JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', f), 'utf8'))).filter(x => x.narrow).map(x => `csq/${x.game}/${x.state}`)); // CS Quest's narrow Packet Post shots too
 const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
 const CS = path.join(ROOT, 'seed-lessons/cs-quest');
 const { scanVersion } = await import('../../server/services/scanner.js');
@@ -297,14 +297,14 @@ test('course design: each unit plays the game that teaches it, and no step repea
       // Units 1-2 play Packet Post, except where a step's own skill is trained by one of the course's own games,
       // so no step reopens a chapter (or a chained chapter) an earlier step already required: 1.3's journey in
       // Escape's Lock 1: Sorting Gate (Packet Post's Many Roads is already chained from 1.1), the key-fishing letters
-      // of Trick Inbox's Prize Letters at 2.2 (who may have your key), and the Magpie's note in Escape's Lock 2:
+      // of Trick Inbox's Key Keepers at 2.2 (who may have your key), and the Magpie's note in Escape's Lock 2:
       // Sealed Note at 2.3 (Pro: Secret Messages chains into Spot the Trick, 2-1.2's module). Explorer's unit 2 so
       // plays three different mechanics in a row (key tiles, an inbox, the cipher wheel), never two wheels back to back.
       const OWN = { '1b-1.3': 'escape-the-post-office', '1b-2.2': 'trick-inbox', '1b-2.3': 'escape-the-post-office', '2-1.3': 'escape-the-post-office', '2-2.2': 'trick-inbox', '2-2.3': 'escape-the-post-office' };
       if (m.unit <= 2) assert.equal(m.slug, OWN[`${band}-${m.n}`] || 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
-      // Units 4-6 play the course's own games; the one exception is Explorer 4.1 "Spot the trick", which plays Packet
-      // Post's own Spot the Trick cards (Prize Letters moved to 2.2), chained into the 3 Secret Messages puzzles.
-      const OWN46 = { '1b-4.1': 'packet-post' };
+      // Units 4-6 play the course's own games (Explorer 4.1 plays Trick Inbox's Prize Letters since the
+      // 2026-11-07 pass: Packet Post's Spot the Trick chained cipher puzzles onto it; 2.2 plays Key Keepers).
+      const OWN46 = {};
       if (m.unit >= 4) assert.ok([OWN46[`${band}-${m.n}`], 'trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
     }
     const counts = mods.reduce((a, m) => ({ ...a, [m.slug]: (a[m.slug] || 0) + 1 }), {});
@@ -323,11 +323,32 @@ test('course design: each unit plays the game that teaches it, and no step repea
   }
 });
 
-test('pictures: at most two uses of the same picture per band', () => {
+test('pictures: no picture repeats within a step, and none repeats across neighbouring steps', () => {
+  // A child reading a step meets each picture once, and the next step opens on pictures of its own (the 2026-11-07
+  // grader found 6.3's three Five Moves slides were 5.2's, and 6.1's layers screen on most of its slides).
   for (const band of BANDS) {
-    const uses = new Map();
-    for (const { deck: d } of decks.filter(x => x.band === band)) for (const s of d.slides) if (s.img) uses.set(s.img, (uses.get(s.img) || 0) + 1);
-    for (const [img, n] of uses) assert.ok(n <= 2, `${band}: ${img} is used ${n} times`);
+    const list = decks.filter(x => x.band === band).sort((a, b) => parseFloat(a.deck.n) - parseFloat(b.deck.n));
+    const imgsOf = d => [...d.slides, ...(d.slides_first_time || [])].filter(s => s.img).map(s => s.img);
+    list.forEach(({ deck: d }, i) => {
+      const own = d.slides.filter(s => s.img).map(s => s.img);
+      assert.equal(new Set(own).size, own.length, `${band}-${d.n}: a picture repeats within the step (${own.filter((x, k) => own.indexOf(x) !== k)})`);
+      if (d.slides_first_time) { const ft = d.slides_first_time.filter(s => s.img).map(s => s.img); assert.equal(new Set(ft).size, ft.length, `${band}-${d.n}: a picture repeats within the first-time slides`); }
+      if (i) { const prev = new Set(imgsOf(list[i - 1].deck)); const both = imgsOf(d).filter(x => prev.has(x)); assert.deepEqual(both, [], `${band}-${d.n} repeats ${list[i - 1].deck.n}'s pictures`); }
+    });
+  }
+});
+
+test('pictures: every picture belongs to one slide of one step in a band (no repeats anywhere)', () => {
+  // 2026-11-07 r4: a child meets each picture once in the whole course band. A Pro intro's first-time slides are the
+  // same step told another way, so they may share that step's pictures, but no other step's.
+  for (const band of BANDS) {
+    const owner = new Map();
+    for (const { deck: d } of decks.filter(x => x.band === band)) {
+      const mine = new Set();
+      for (const s of d.slides) if (s.img) { assert.ok(!mine.has(s.img), `${band}-${d.n}: ${s.img} twice in the step`); mine.add(s.img); }
+      for (const s of d.slides_first_time || []) if (s.img) mine.add(s.img);
+      for (const img of mine) { assert.ok(!owner.has(img), `${band}: ${img} is used by ${owner.get(img)} and ${d.n}`); owner.set(img, d.n); }
+    }
   }
 });
 
@@ -377,17 +398,18 @@ test('guided focus geometry: the reported slide and the shared road maps cover t
   const covers = (box, [x0, y0, x1, y1]) => box[0] <= x0 && box[1] <= y0 && box[0] + box[2] >= x1 && box[1] + box[3] >= y1;
   const deck = (band, n) => decks.find(d => d.band === band && d.step.n === n).deck;
   const gregs = deck('1b', '1.1').slides[0];
-  assert.equal(gregs.img, 'csq/packet-post/packets-1b-key');
-  assert.ok(covers(gregs.focus[0].box, [11.1, 61.4, 15.0, 69.2]), `the packet at Pim's Post sits inside step 1's box: ${gregs.focus[0].box}`);
-  assert.ok(covers(gregs.focus[1].box, [10.6, 48.5, 50.2, 71.2]), `the whole route sits inside step 2's box: ${gregs.focus[1].box}`);
-  for (const [px, py] of gregs.focus[1].path || []) assert.ok(px >= 9 && px <= 53 && py >= 43 && py <= 72, `step 2's path stays on the route: ${px},${py}`);
-  // The Rules of the Road diagram incl. labels, per capture (perfection-pass measurements): the
-  // protocols-*-key diagram spans x 11.1-50.2, y 48.6-71.2; the protocols-2-rules diagram sits
-  // slightly higher and narrower, x 9.8-49.5, y 46.9-70.3. Every step that sends the eye to a
-  // diagram must cover its own capture's diagram.
+  // r5 (2026-11-07): the slide shows the phone-width capture packets-1b-hop-n (the wide one's labels read at about
+  // 5 px on a phone): the packet and its label at Pim's Post span x 8.5-20.5, y 52-80; the route with its labels
+  // spans x 7-93, y 31-81.
+  assert.equal(gregs.img, 'csq/packet-post/packets-1b-hop-n');
+  assert.ok(covers(gregs.focus[0].box, [8.5, 52, 20.5, 80]), `the packet at Pim's Post sits inside step 1's box: ${gregs.focus[0].box}`);
+  assert.ok(covers(gregs.focus[1].box, [7, 31, 93, 81]), `the whole route sits inside step 2's box: ${gregs.focus[1].box}`);
+  for (const [px, py] of gregs.focus[1].path || []) assert.ok(px >= 7 && px <= 93 && py >= 31 && py <= 81, `step 2's path stays on the route: ${px},${py}`);
+  // A Rules of the Road map incl. labels, per capture: every step that sends the eye to a road must cover it.
+  // r5: the 1.2 mission shows the phone-width protocols-1b-sealed-n3, whose padlock road over the hill spans
+  // x 25-94, y 10-58 (the Pro 1.1 mission now rings Pim's line about resending, not a map).
   const roadAt = [
-    [ '1b', '1.2', 6, 0, [11.1, 48.6, 50.2, 71.2] ],
-    [ '2', '1.1', 6, 0, [9.8, 46.9, 49.5, 70.3] ],
+    [ '1b', '1.2', 6, 0, [25, 10, 72, 57] ],
   ];
   for (const [band, n, si, fi, extent] of roadAt) {
     const s = deck(band, n).slides[si];

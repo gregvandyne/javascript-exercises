@@ -10,40 +10,73 @@
    "title": "Meet Dot",
    "text": "Dot the fox is a data detective. Dot solves cases with facts, not guesses.",
    "art": "magnifier",
-   "img": "csq/data-detective/sort-1b-key",
-   "view": [
-    0.8,
-    9,
-    54,
-    72
-   ],
-   "alt": "Dot opens the first case: a table of who, where and when facts in rows and columns, and the question: who was last in the hall?"
+   "img": "csq/chars/meet-dot",
+   "alt": "Dot the fox, the Data Detective guide, in her round glasses, standing in front of a softened chart from her game.",
+   "focus": [
+    {
+     "cue": "This is Dot the fox. She solves cases with facts",
+     "box": [
+      36.8,
+      15.3,
+      26.4,
+      75
+     ]
+    }
+   ]
   },
   {
    "title": "Data is facts in rows",
    "text": "A table holds facts in rows and columns. A table full of facts does not answer anything yet. You have to make the answer show.",
    "art": "table",
-   "img": "csq/data-detective/sort-1b-rows",
-   "view": [
-    0.8,
-    9,
-    54,
-    48
-   ],
-   "alt": "Another case table: every row is one tower of blocks, every column one kind of fact about it."
+   "img": "csq/data-detective/sort-1b-rows-n",
+   "alt": "Tower Trouble as a table: every row is one team's tower, every column one kind of fact: team, blocks, color.",
+   "focus": [
+    {
+     "cue": "One row: one team's tower",
+     "box": [
+      6,
+      19,
+      70.4,
+      12.4
+     ]
+    },
+    {
+     "cue": "One column: one kind of fact, blocks",
+     "box": [
+      36.6,
+      0.8,
+      15.4,
+      12.4
+     ]
+    }
+   ]
   },
   {
    "title": "Sort or group",
    "text": "Sorting puts the rows in order, like smallest to biggest. Grouping puts rows of the same kind together and counts them.",
    "art": "chart",
-   "img": "csq/data-detective/sort-1b-grouped",
-   "view": [
-    0.8,
-    9,
-    54,
-    89
-   ],
-   "alt": "The pet case grouped: one bar per kind of pet, counted, so the most common pet jumps out of the chart."
+   "img": "csq/data-detective/sort-1b-grouped-n",
+   "alt": "The pet case grouped by pet: one bar per kind, counted. Dog 4, Cat 2, Fish 2.",
+   "focus": [
+    {
+     "cue": "Grouped by pet: one bar for each kind",
+     "box": [
+      15.9,
+      89.7,
+      68.5,
+      10
+     ]
+    },
+    {
+     "cue": "Counted: Dog 4, the most common",
+     "box": [
+      12.9,
+      11.7,
+      14,
+      27
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -56,27 +89,73 @@
     "sort by time",
     "read the last Hall row"
    ],
-   "img": "csq/data-detective/sort-1b-sorted",
-   "view": [
-    0.8,
-    9,
-    54,
-    64
-   ],
-   "alt": "The case sorted by time: the Hall rows now run in time order, so the last Hall row answers the question."
+   "img": "csq/data-detective/sort-1b-sorted-n",
+   "alt": "The hall case sorted by time: Eli, Fay, Kai, Gus, Ida, Jo. The last Hall row is Gus at 3:10.",
+   "focus": [
+    {
+     "cue": "Sorted by time: the rows run from early to late",
+     "box": [
+      6,
+      2,
+      69.4,
+      12.4
+     ]
+    },
+    {
+     "cue": "Gus, Hall, 3:10: the last Hall row",
+     "box": [
+      6,
+      52.8,
+      69.4,
+      12.4
+     ]
+    },
+    {
+     "cue": "After 3:10 nobody is in the Hall",
+     "box": [
+      6,
+      69.8,
+      69.4,
+      29.3
+     ]
+    }
+   ]
   },
   {
    "title": "Show me first",
    "text": "Dot has one rule: you can only pin a claim when the view on the screen shows it. Most of each kind? Group and count.",
    "art": "star",
-   "img": "csq/data-detective/sort-1b-claim",
-   "view": [
-    26,
-    23,
-    48,
-    54
-   ],
-   "alt": "With the grouped chart showing the evidence, the claim card opens: Dot will only pin a claim the view proves."
+   "img": "csq/data-detective/sort-1b-pin-n",
+   "alt": "The grouped bars answer the question, so Dot says: that view answers it, pin your claim. The Pin a claim button lights up.",
+   "focus": [
+    {
+     "cue": "Grouped by pet: this view shows the answer",
+     "box": [
+      38.8,
+      12.6,
+      27.2,
+      12.4
+     ]
+    },
+    {
+     "cue": "So Dot says: that view answers it",
+     "box": [
+      21.7,
+      47.4,
+      70.1,
+      12.4
+     ]
+    },
+    {
+     "cue": "Now the claim can be pinned",
+     "box": [
+      41.6,
+      79.5,
+      24,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -107,14 +186,28 @@
    "title": "Your mission",
    "text": "Open Data Detective at Sort & Group and solve all 6 cases. For each one ask: which column is the question about?",
    "art": "trophy",
-   "img": "csq/data-detective/sort-1b-key",
-   "view": [
-    0.8,
-    9,
-    54,
-    72
-   ],
-   "alt": "Dot opens the first case: a table of who, where and when facts in rows and columns, and the question: who was last in the hall?"
+   "img": "csq/data-detective/sort-1b-dot-n",
+   "alt": "Dot the fox stands in the woods and asks the first case's question: who was last in the hall?",
+   "focus": [
+    {
+     "cue": "Dot asks the question: read it first",
+     "box": [
+      21.7,
+      71.9,
+      47.9,
+      12.4
+     ]
+    },
+    {
+     "cue": "Which column is it about? Group or sort by it",
+     "box": [
+      11.7,
+      37.2,
+      67.1,
+      12.4
+     ]
+    }
+   ]
   }
  ],
  "check": [

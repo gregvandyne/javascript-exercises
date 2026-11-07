@@ -10,16 +10,16 @@
    "title": "A drill, like a fire drill",
    "text": "Defenders practice what to do when something online goes wrong, the way schools practice a fire drill. Calm, practiced moves beat panicked clever ones, every time.",
    "art": "shield",
-   "img": "csq/escape-the-post-office/moves-1b",
-   "alt": "Five empty move slots, and the tiles to put in order: Carry on, Tell a trusted adult, Save it, Stop, Block or report it.",
+   "img": "csq/escape-the-post-office/moves-1b-five",
+   "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Calm work. Skill trained: run the five moves in order.",
    "focus": [
     {
-     "cue": "The five moves, like a fire drill",
+     "cue": "The five moves, like a fire drill: in order, calm work",
      "box": [
-      2.8,
-      20.5,
-      94.4,
-      78.6
+      6.6,
+      21.8,
+      75.1,
+      9
      ]
     }
    ]
@@ -28,25 +28,25 @@
    "title": "Stop, then save it",
    "text": "Move one is Stop: hands off, do not reply, and do not delete in a panic. Move two is Save it: keep the message or a picture of it, because it is proof of what happened.",
    "art": "envelope",
-   "img": "csq/escape-the-post-office/moves-1b-two",
-   "alt": "A message unkind to Sam is going around the class chat. Two moves placed: Stop, do not pass it on, then Save it, keep the message.",
+   "img": "csq/escape-the-post-office/moves-1b-one",
+   "alt": "Lock 5: Five Moves. The first move is placed: Stop, do not pass it on. The tiles left: Carry on, Tell a trusted adult, Save it, Block or report.",
    "focus": [
     {
-     "cue": "Move one: Stop",
+     "cue": "Move one: Stop, do not pass it on",
      "box": [
       4.8,
-      43.6,
+      50.2,
       48.2,
-      11.3
+      12.9
      ]
     },
     {
-     "cue": "Move two: Save it",
+     "cue": "The other moves wait their turn below",
      "box": [
-      4.8,
-      57.4,
-      54.8,
-      12.9
+      2.7,
+      70.8,
+      94.6,
+      23.4
      ]
     }
    ]
@@ -55,16 +55,16 @@
    "title": "Tell an adult",
    "text": "Move three is Tell an adult: a trusted adult at home or at school. If the first adult does not act, tell another. Telling fast is protection, never shame, and never your fault.",
    "art": "people",
-   "img": "csq/escape-the-post-office/moves-1b-four",
-   "alt": "A message unkind to Sam is going around the class chat. Four moves placed: Stop, Save it, Tell a trusted adult, Block or report.",
+   "img": "csq/escape-the-post-office/moves-1b-three",
+   "alt": "Lock 5: Five Moves. Three moves placed: Stop, Save it, Tell a trusted adult. Two to go: Carry on, and Block or report it in the app.",
    "focus": [
     {
      "cue": "Move three: Tell a trusted adult",
      "box": [
       4.8,
-      68.8,
+      77.1,
       41.9,
-      11.3
+      12.9
      ]
     }
    ]
@@ -73,14 +73,14 @@
    "title": "Block or report",
    "text": "Move four is Block or report, using the buttons in the app, always with a trusted adult beside you in real life. Move five is Carry on: the worry is handed over, and you go back to your day.",
    "art": "lock",
-   "img": "csq/trick-inbox/chat-1b-ch-4-decide",
-   "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
+   "img": "csq/trick-inbox/chat-1b-ch-3-decide",
+   "alt": "The moves for JokerJay's mean message: Deliver, Bin it, Show Pim, Report & block.",
    "focus": [
     {
-     "cue": "Block or report: a button, pressed with an adult",
+     "cue": "Report & block: a button, pressed with an adult beside you",
      "box": [
-      51.0,
-      24.8,
+      51,
+      70.3,
       46.2,
       20.3
      ]

@@ -210,10 +210,10 @@ function cleanSlide(s) {
         && v.rows.every(r => r && str(r.label, 60) && Array.isArray(r.parts) && r.parts.length >= 1 && r.parts.length <= 4
           && r.parts.every(p => p && num(p.w) && p.w > 0 && p.w <= 1 && (p.tone == null || (Number.isInteger(p.tone) && p.tone >= -1 && p.tone <= 3)))
           && r.parts.reduce((sum, p) => sum + p.w, 0) <= 1.02)) {
-        vis = { type: 'bars', label, ...(v.half ? { half: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), parts: r.parts.map(p => ({ w: p.w, label: str(p.label, 20), ...(p.tone != null ? { tone: p.tone } : {}), ...(p.unknown ? { unknown: true } : {}) })) })) };
+        vis = { type: 'bars', label, ...(v.half ? { half: true } : {}), ...(v.big ? { big: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), parts: r.parts.map(p => ({ w: p.w, label: str(p.label, 20), ...(p.tone != null ? { tone: p.tone } : {}), ...(p.unknown ? { unknown: true } : {}) })) })) };
       } else if (v.type === 'fraction' && Array.isArray(v.rows) && v.rows.length >= 1 && v.rows.length <= 3
         && v.rows.every(r => r && str(r.label, 60) && Number.isInteger(r.cuts) && r.cuts >= 2 && r.cuts <= 12 && Number.isInteger(r.shaded) && r.shaded >= 0 && r.shaded <= r.cuts)) {
-        vis = { type: 'fraction', label, ...(v.half ? { half: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), cuts: r.cuts, shaded: r.shaded })) };
+        vis = { type: 'fraction', label, ...(v.half ? { half: true } : {}), ...(v.big ? { big: true } : {}), rows: v.rows.map(r => ({ label: str(r.label, 60), cuts: r.cuts, shaded: r.shaded })) };
       } else if (v.type === 'array' && Number.isInteger(v.rows) && v.rows >= 1 && v.rows <= 8 && Number.isInteger(v.cols) && v.cols >= 1 && v.cols <= 10) {
         vis = { type: 'array', label, rows: v.rows, cols: v.cols, ...(v.extra ? { extra: 1, extraLabel: str(v.extraLabel, 20) } : {}), ...(v.turn && !v.extra ? { turn: true } : {}) };
       } else if (v.type === 'tiles' && Array.isArray(v.values) && v.values.length >= 3 && v.values.length <= 7
@@ -393,7 +393,7 @@ function loadCyber(items) {
   const reg = readJson(path.join(CD, 'units.json'));
   const registry = readJson(path.join(CD, 'standards.json'));
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
-  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}) }));
+  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}), ...(u.stamp ? { stamp: u.stamp } : {}) }));
   const steps = {};
   const problems = {};
   for (const band of BANDS) {

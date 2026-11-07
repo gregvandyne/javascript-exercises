@@ -64,16 +64,25 @@
    "title": "Their photo, their yes",
    "text": "A photo of someone else is their image, not your content. Posting it needs their yes, every time. The same respect covers their private facts, their location and their bad days.",
    "art": "people",
-   "img": "csq/trick-inbox/pressure-2-pr-4-all",
-   "alt": "A group chat from The Cool Group with clues marked: post a silly photo of your friend, or leave the group; everyone will laugh.",
+   "img": "csq/trick-inbox/ask-first-1b-af-1-all",
+   "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
    "focus": [
     {
-     "cue": "A dare to post a friend's silly photo, without their yes",
+     "cue": "A dare to post a friend's photo, without their yes",
      "box": [
       7.1,
-      32.0,
+      36.7,
       85.7,
       22.4
+     ]
+    },
+    {
+     "cue": "\"He will never know\": he never said yes",
+     "box": [
+      7.1,
+      59.1,
+      45.4,
+      13.5
      ]
     }
    ]
@@ -117,13 +126,13 @@
     "Tell a trusted adult if it continues"
    ],
    "img": "csq/trick-inbox/chat-2-ch-7-debrief",
-   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
+   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the vandal, who wants damage and a big reaction.",
    "focus": [
     {
      "cue": "Pressure dressed up as friendship",
      "box": [
       6.4,
-      17.9,
+      19.5,
       87.1,
       47.4
      ]
@@ -140,7 +149,7 @@
     {
      "cue": "Leaving and blocking are always allowed",
      "box": [
-      51.0,
+      51,
       24.8,
       46.2,
       20.3
@@ -175,18 +184,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. Judge each dilemma by consent, not by popularity.",
+   "text": "Open Trick Inbox at Ask First and sort all 6 messages. Judge each one by consent, not by popularity.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
+   "img": "csq/trick-inbox/ask-first-1b-af-6-all",
+   "alt": "A post from Video Star Contest with both clues marked: “for the whole world to see” and “No need to ask them first!”",
    "focus": [
     {
-     "cue": "Play Online: judge by consent, not popularity",
+     "cue": "Play Ask First: judge by consent, not popularity",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      60.1,
+      58,
+      13.5
      ]
     }
    ]
@@ -198,8 +207,8 @@
   "cd-2-5.1-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "ask-first",
+  "params": "chapter=ask-first&band=2&lock=1"
  }
 }

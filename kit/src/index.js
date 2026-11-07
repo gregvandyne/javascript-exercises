@@ -31,13 +31,13 @@ import { makeGame, GAME_PARTS, groundFollow, CONTROLS, KIND_NAMES } from './game
 import { grid, generate, LEGEND } from './level.js';
 import { installPacks, PACK_NAMES } from './packs.js';
 
-export const VERSION = '1.1.4', API = 1;
+export const VERSION = '1.1.5', API = 1;
 
 function parseQuery(win) {
   const out = {};
   try {
     const s = new URLSearchParams(win.location.search || '');
-    for (const k of ['okBackend', 'okTier', 'okDpr', 'okUltra', 'okGov', 'okDebug']) if (s.get(k)) out[k] = s.get(k);
+    for (const k of ['okBackend', 'okTier', 'okDpr', 'okUltra', 'okGov', 'okDebug', 'okStyle']) if (s.get(k)) out[k] = s.get(k);
   } catch (e) { /* opaque or odd location */ }
   const o = win.__OK_OPTS__; if (o && typeof o === 'object') for (const k in o) out[k] = String(o[k]);
   return out;

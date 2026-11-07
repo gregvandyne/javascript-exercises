@@ -14,38 +14,12 @@
   {
    "title": "A read letter",
    "text": "Confidentiality breaks first in our story: a sealed letter is steamed open and read on its journey. The words arrive unchanged, but the secret is gone, and the promise with it.",
-   "art": "envelope",
-   "img": "csq/escape-the-post-office/note-2",
-   "alt": "The Magpie's sealed note reads IJQNAJW, a scramble to turn back shift by shift.",
-   "focus": [
-    {
-     "cue": "A sealed note keeps its words secret",
-     "box": [
-      5.2,
-      38.4,
-      55.6,
-      33.8
-     ]
-    }
-   ]
+   "art": "envelope"
   },
   {
    "title": "A changed address",
    "text": "Integrity breaks differently: the letter is never read, but its address is altered, so the package goes to the wrong house. Availability breaks loudest of all: the sorting office itself burns down.",
-   "art": "mask",
-   "img": "csq/escape-the-post-office/gate-2",
-   "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads run past the Market and the School to the Sorting Room.",
-   "focus": [
-    {
-     "cue": "Change the route, and it reaches the wrong door",
-     "box": [
-      2.6,
-      5.0,
-      95.1,
-      79.7
-     ]
-    }
-   ]
+   "art": "mask"
   },
   {
    "title": "Rules stack too",
@@ -66,29 +40,7 @@
   {
    "title": "Agreements protect users too",
    "text": "Agreements are not only the owner's shield. Terms also promise users things: notice before changes, a way to appeal, a route to complain. When rules are broken against you, the rulebook names who must act.",
-   "art": "people",
-   "img": "csq/would-you-rather/online-credit-1b-n1",
-   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
-   "focus": [
-    {
-     "cue": "Use someone's picture: the rules protect its maker",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or make your own: your work is protected too",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
-   ]
+   "art": "people"
   },
   {
    "kind": "words",
@@ -117,18 +69,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. For each dilemma, name which of the three promises is at stake.",
+   "text": "Open Trick Inbox at Rule Breakers and sort all 6 messages. For each one, name the rule that is broken and which of the three promises it protects.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-download-1b",
-   "alt": "Would you rather: ask before every download, or never download anything?",
+   "img": "csq/trick-inbox/rules-1b-rb-3-all",
+   "alt": "A post from Game Sign-up with both clues marked: “Just say you are 13.” and “Everyone does it!”",
    "focus": [
     {
-     "cue": "Play Online: which promise is at stake?",
+     "cue": "Play Rule Breakers: which rule, which promise?",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      46.7,
+      44.7,
+      13.5
      ]
     }
    ]
@@ -140,8 +92,8 @@
   "cd-2-6.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "rules",
+  "params": "chapter=rules&band=2&lock=1"
  }
 }

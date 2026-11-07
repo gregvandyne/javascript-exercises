@@ -162,10 +162,10 @@
 <div class="qr-fx" id="fx" aria-hidden="true"></div>
 <div class="qr-stick qr-hide" id="stick" aria-hidden="true"><i></i></div>
 <p class="qr-sr" id="sr" aria-live="assertive"></p>
-<script src="/vendor/oomba-kit/1.1.4/oomba-kit.js" integrity="sha384-zeLmUxnF20GLI7VC6XfgOcb9DiFTxC7mSAc0QTkXllv6zvdzzEFtrAWb6TsmeAIY" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/dress.js" integrity="sha384-lGMyixBO/dQI5mVlIYp2m9rQk1Qiejkp7f7tcNxKKlSew+i0VKx3Soojbns6sDRo" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/bridge-3d.js" integrity="sha384-dZl/EUIjGYcH90e1J93U/DTNE+FYkhePQoWjUCYuSGuB0brjy8Jdple5cbF56eeL" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.4/packs/live.js" integrity="sha384-V/WZAt4Rt7htCl5SRMF8bKpJwS6/1ijg3qNaqdnbhovlXPMbC2Oy6TYc5XrjXx1V" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/dress.js" integrity="sha384-iA6wBpJRwXbO+frP3QRXDBAWgER5R/hrlLRAio2M5bLwRMqOd7oUHkFfX9Cads3m" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/bridge-3d.js" integrity="sha384-XKfp/1O4hRKW/A1E8IFWReXitSVIqaqyMvucFAiyK3Of+uT6VzNvDXAVKBFa7fNa" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-kit/1.1.5/packs/live.js" integrity="sha384-20jXn5wIizwJ//YBQJUILmlALHi914BQlxzKBm3v5Z4lh5YOic+mHK2WiezyG4km" crossorigin="anonymous"></script>
 <script>
 /* Solo practice questions from the Oomba Live question bank (the same code in Quest Race, Question Battle and Brain
    Board). The bank for the player's language is a reviewed file in /vendor/data/live-bank/, built by
@@ -805,41 +805,45 @@ window.SoloBank = (function () {
   // course and step) opens straight on eight generated pattern questions, with no subject/level
   // picker first. Every other way in keeps the picker and the bank, unchanged.
   var NQ_STEP = (window.BRB && BRB.params && /^nq-\d-\d$/.test(String(BRB.params.mode || ''))) ? 'explorer-' + String(BRB.params.mode).slice(3).replace('-', '.') : '';
+  var nqPads = 0;
   function nqPatternItems(rnd) {
     var out = [];
     var mk = function (q, ans, wrong) {
       var all = [ans]; wrong.forEach(function (w) { if (w >= 0 && all.indexOf(w) < 0) all.push(w); });
       var sh = rnd.shuffle(all.slice(0, 4));
-      while (sh.length < 4) sh.push(ans + sh.length * 3 + 1);
+      while (sh.length < 4) { nqPads++; sh.push(ans + sh.length * 3 + 1); } // a safety net only: the tests hold it at zero
       out.push({ q: q, choices: sh.map(String), answer: sh.indexOf(ans), secs: 15 });
     };
     var a = rnd.int(2, 9), d = [3, 4, 5, 6][rnd.int(0, 3)];
     mk('Pattern: ' + [a, a + d, a + 2 * d, a + 3 * d].join(', ') + ', ... What comes next? Call out the rule!', a + 4 * d, [a + 4 * d + 1, a + 4 * d - 1, a + 5 * d]);
     a = rnd.int(3, 12); d = [2, 5, 10][rnd.int(0, 2)];
-    mk('Pattern: ' + a + ', ' + (a + d) + ', ?, ' + (a + 3 * d) + ', ' + (a + 4 * d) + '. Which tile is missing?', a + 2 * d, [a + d, a + 3 * d, a + 2 * d + 2]);
+    mk('Pattern: ' + a + ', ' + (a + d) + ', ?, ' + (a + 3 * d) + ', ' + (a + 4 * d) + '. Which tile is missing?', a + 2 * d, [a + 2 * d + 1, a + 2 * d - 1, a + 3 * d]);
     a = rnd.int(2, 7); d = [4, 5][rnd.int(0, 1)];
     mk('The rule is add ' + d + '. Starting at ' + a + ', what is the 8th number?', a + 7 * d, [a + 8 * d, a + 6 * d, a + 7 * d + 1]);
-    a = rnd.int(2, 6);
-    mk('Doubling pattern: ' + [a, a * 2, a * 4].join(', ') + ', ... What comes next?', a * 8, [a * 6, a * 16, a * 8 + 2]);
-    a = rnd.int(40, 80); d = [3, 5, 7][rnd.int(0, 2)];
-    mk('Pattern: ' + [a, a - d, a - 2 * d, a - 3 * d].join(', ') + ', ... What comes next?', a - 4 * d, [a - 4 * d + 1, a - 5 * d, a - 3 * d]);
+    // Only add patterns, the kind 1.3 teaches: no doubling, no counting back.
+    a = rnd.int(2, 9); d = [4, 5, 6][rnd.int(0, 2)];
+    mk('Pattern: ' + [a, a + d, a + 2 * d, a + 3 * d].join(', ') + ', ... What number does the rule add each time?', d, [d + 1, d - 1, a + d]); // a + d: the second number read as the rule
+    a = rnd.int(10, 30); d = [3, 7, 8][rnd.int(0, 2)];
+    mk('Pattern: ' + [a, a + d, a + 2 * d].join(', ') + ', ... Keep the add-' + d + ' promise. What comes next?', a + 3 * d, [a + 3 * d + 1, a + 4 * d, a + 2 * d + 1]);
     a = rnd.int(2, 9);
-    mk('Pattern: ' + [a, a + 2, a + 7, a + 9, a + 14].join(', ') + ', ... The steps take turns: +2, +5, +2, +5. What comes next?', a + 16, [a + 19, a + 15, a + 21]);
+    d = [3, 4, 6][rnd.int(0, 2)];
+    mk('Pattern rule: start at ' + a + ' and add ' + d + ' each time. What is the 5th number?', a + 4 * d, [a + 5 * d, a + 3 * d, a + 4 * d + 1]);
     a = rnd.int(3, 9);
     mk('Trays of ' + a + ' skip-count: ' + [a, a * 2, a * 3].join(', ') + ', ... What comes next?', a * 4, [a * 4 + 1, a * 5, a * 3 + a - 1]);
     a = rnd.int(4, 15); d = [5, 6, 9][rnd.int(0, 2)];
     mk('The Jumble hid a tile: ' + a + ', ' + (a + d) + ', ' + (a + 2 * d) + ', ?, ' + (a + 4 * d) + '. What did it hide?', a + 3 * d, [a + 2 * d + 1, a + 4 * d, a + 3 * d - 2]);
     return out;
   }
-  // ---- Number Quest lesson race, step 5.2 (Time and timetables): eight generated timetable questions
-  // (end times, elapsed times, start times, one minutes-to-hours swap), answers as clock strings, so a
-  // lesson arrival practises elapsed time as hops on the hour, not a general bank.
+  // ---- Number Quest lesson race, step 5.2 (Time and timetables): eight generated timetable questions,
+  // every one a hop FORWARD on the clock, the way the lesson teaches it (end times, elapsed times, a
+  // timetable row read and hopped), answers as clock strings, so a lesson arrival practises elapsed time
+  // as hops on the hour, not a general bank.
   function nqTimetableItems(rnd) {
     var out = [];
     var mkS = function (q, ans, wrong) {
       var all = [ans]; wrong.forEach(function (w) { if (all.indexOf(w) < 0) all.push(w); });
       var sh = rnd.shuffle(all.slice(0, 4));
-      while (sh.length < 4) sh.push(ans + ' x' + sh.length);
+      while (sh.length < 4) { nqPads++; sh.push(ans + ' x' + sh.length); }
       out.push({ q: q, choices: sh, answer: sh.indexOf(ans), secs: 25 });
     };
     var fmt = function (mins) { var h = Math.floor(mins / 60), m = mins % 60; return h + ':' + (m < 10 ? '0' : '') + m; };
@@ -860,16 +864,17 @@ window.SoloBank = (function () {
       mkS('Practice runs from ' + fmt(start) + ' to ' + fmt(end) + '. How many minutes is that?',
         dur + ' minutes', [(dur + 10) + ' minutes', (dur - 10) + ' minutes', (dur + 30) + ' minutes']);
     }
-    for (i = 0; i < 2; i++) { // Start times: hop backwards from the end.
-      end = rnd.int(10, 12) * 60 + [0, 5, 15, 30][rnd.int(0, 3)];
-      dur = [30, 35, 45, 50][rnd.int(0, 3)]; start = end - dur;
-      mkS('A film ends at ' + fmt(end) + ' and lasts ' + dur + ' minutes. When did it start?',
-        fmt(start), [fmt(start + 10), fmt(start - 10), fmt(end - 15)]);
+    for (i = 0; i < 2; i++) { // Tours that cross the hour: hop to the hour, then the rest.
+      start = rnd.int(9, 11) * 60 + [35, 40, 45, 50][rnd.int(0, 3)];
+      dur = [25, 30, 35, 40][rnd.int(0, 3)]; end = start + dur;
+      mkS('A tour starts at ' + fmt(start) + ' and lasts ' + dur + ' minutes. When does it end?',
+        fmt(end), [fmt(end + 10), fmt(end - 10), fmt(end + 20)]);
     }
-    // One swap: minutes named as hours and minutes.
-    var tot = [75, 90, 105, 120, 135][rnd.int(0, 4)], hh = Math.floor(tot / 60), mm = tot % 60;
-    var hm = function (h, m) { return h + (h === 1 ? ' hour' : ' hours') + (m ? ' ' + m + ' minutes' : ''); }; // "2 hours", never "2 hours 0 minutes"
-    mkS('How long is ' + tot + ' minutes, in hours and minutes?', hm(hh, mm), [hm(hh, mm + 10), hm(hh + 1, mm), tot + ' hours']);
+    // One timetable row, read and hopped (the lesson's Bus C).
+    var bus = ['A', 'B', 'C'][rnd.int(0, 2)];
+    start = rnd.int(9, 11) * 60 + [40, 45, 50, 55][rnd.int(0, 3)]; dur = [15, 20, 25][rnd.int(0, 2)]; end = start + dur;
+    mkS('The timetable says Bus ' + bus + ' leaves at ' + fmt(start) + ' and the ride takes ' + dur + ' minutes. When does Bus ' + bus + ' arrive?',
+      fmt(end), [fmt(end + 10), fmt(end - 10), fmt(start + 60)]);
     return out;
   }
   // ---- Number Quest lesson race, step 7.3 (Likely or not?): eight chance questions, every one judged from its
@@ -898,7 +903,7 @@ window.SoloBank = (function () {
   }
   // ---- Number Quest lesson race, step 7.4 (the Vault of Measures): the sequenced mixed mission that
   // stands in for the Vault game until it ships - eight questions, one lock per workshop in street
-  // order (place, join, groups, shares, measures, shapes, charts) and the Honest Wheel to close.
+  // order (place, join, groups, shares, measures, shapes, charts) and a last chance lock (a spinner) to close.
   function nqVaultItems(rnd) {
     var out = [];
     var mkS = function (q, ans, wrong) {
@@ -936,15 +941,15 @@ window.SoloBank = (function () {
     mkS('LOCK 4 · A cake is cut into ' + c + ' equal parts. You take ' + a + ' of them. What fraction of the cake did you take?', a + '/' + c, [c + '/' + a, '1/' + c, a + '/' + (c + a)]);
     // Lock 5 (Unit 5, the heavy sack): a conversion.
     a = rnd.int(2, 7);
-    mkS('LOCK 5 · A sack is marked ' + a + ' kilograms. How many grams is that?', fmt(a * 1000) + ' grams', [fmt(a * 100) + ' grams', fmt(a * 1000 - 100) + ' grams', fmt(a * 1000 + 1000) + ' grams']);
+    mkS('LOCK 5 · A sack is marked ' + a + ' kilograms. How many grams is that?', fmt(a * 1000) + ' grams', [fmt(a * 100) + ' grams', fmt(a * 10) + ' grams', fmt(a) + ' grams']); // 100 or 10 in a kilogram, or not converted
     // Lock 6 (Unit 6, fence the garden): the perimeter.
     a = rnd.int(4, 9); b = rnd.int(3, 8); if (b === a) b += 1;
     mkS('LOCK 6 · A garden is ' + a + ' by ' + b + ' meters. How many meters of fence go around it?', 2 * (a + b), [a * b, a + b, 2 * (a + b) + 4]);
     // Lock 7 (Unit 7, charts that answer): how many more.
     a = rnd.int(11, 19); b = rnd.int(4, a - 4); if (a === 2 * b) b += 1; // a = 2b would make the b distractor equal the key
     mkS('LOCK 7 · A chart shows ' + a + ' rides on Saturday and ' + b + ' on Sunday. How many more rides on Saturday?', a - b, [a + b, a - b + 2, b]);
-    // The Honest Wheel (Unit 7.3): chance words, honestly named.
-    mkS('THE HONEST WHEEL · A spinner has 6 equal parts and 1 part is red. Landing on red is...', 'Unlikely', ['Certain', 'Impossible', 'An even chance']);
+    // The last lock (Unit 7.3): chance words, honestly named, on a spinner.
+    mkS('LAST LOCK · A spinner has 6 equal parts and 1 part is red. Landing on red is...', 'Unlikely', ['Certain', 'Impossible', 'An even chance']);
     return out;
   }
   // Playing alone: choose the questions first (subject, level, how many), then race.

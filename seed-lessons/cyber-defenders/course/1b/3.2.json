@@ -9,29 +9,7 @@
   {
    "title": "A trail in the snow",
    "text": "Pim walks home through fresh snow. By morning, the whole town can see where she went. Her footprints tell the story of her walk.",
-   "art": "map",
-   "img": "csq/escape-the-post-office/pim-1b",
-   "alt": "Two Pim cards' clues: both postmarked Netville, today. One has small owl prints and asks for help; one has big round prints and asks for your key.",
-   "focus": [
-    {
-     "cue": "A trail of small owl prints: Pim's footprint",
-     "box": [
-      11.2,
-      19.5,
-      34.3,
-      25.4
-     ]
-    },
-    {
-     "cue": "The trail tells the story: Netville, today",
-     "box": [
-      11.2,
-      2.6,
-      34.3,
-      16.9
-     ]
-    }
-   ]
+   "art": "map"
   },
   {
    "title": "Posts leave footprints",
@@ -52,8 +30,8 @@
      "cue": "A post, a photo, a score, a comment: footprints",
      "box": [
       5.5,
-      32.0,
-      89.0,
+      32,
+      89,
       26.7
      ]
     }
@@ -69,28 +47,6 @@
     "online post: stays put",
     "screenshot: copies it",
     "copied print: travels far"
-   ],
-   "img": "csq/would-you-rather/online-delete-1b",
-   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
-   "focus": [
-    {
-     "cue": "Delete an old post you are embarrassed by",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or leave it, and laugh it off",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
    ]
   },
   {
@@ -157,7 +113,7 @@
      "box": [
       6.4,
       50.8,
-      39.0,
+      39,
       47.2
      ]
     }

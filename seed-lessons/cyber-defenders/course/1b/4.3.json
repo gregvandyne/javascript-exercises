@@ -18,7 +18,7 @@
      "box": [
       7.1,
       69.6,
-      50.0,
+      50,
       13.5
      ]
     },
@@ -27,7 +27,7 @@
      "box": [
       7.1,
       83.1,
-      58.0,
+      58,
       13.5
      ]
     }
@@ -37,24 +37,24 @@
    "title": "The crown jewels",
    "text": "Real shops sell their best gems to stay open, so they do not give away the crown jewels. Too-good posters share clues: a miracle prize, a famous singer's face, or you are the millionth visitor.",
    "art": "trophy",
-   "img": "csq/trick-inbox/mix-1b-mx-6-all",
-   "alt": "A letter from Prize Team, “Visitor number 1000!”, with clues marked: visitor number 1000, and your free games console.",
+   "img": "csq/trick-inbox/keys-1b-kk-6-all",
+   "alt": "A post from Gem Swap Club with clues marked: swap mailbox keys with us, 500 free gems, and everyone in your class already did.",
    "focus": [
     {
-     "cue": "You are visitor number 1000!",
+     "cue": "500 free gems: too good to be true",
      "box": [
-      21.9,
-      59.2,
-      46.9,
+      7.1,
+      49.8,
+      36.2,
       13.5
      ]
     },
     {
-     "cue": "A free prize for a contest you never entered",
+     "cue": "\"Everyone already did\": pressure, not a fact",
      "box": [
       7.1,
-      72.7,
-      55.7,
+      63.4,
+      75.3,
       13.5
      ]
     }
@@ -80,7 +80,7 @@
      "cue": "Check it with a second source first",
      "box": [
       7.1,
-      41.0,
+      41,
       85.7,
       22.4
      ]

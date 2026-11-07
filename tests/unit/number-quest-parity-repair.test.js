@@ -211,10 +211,9 @@ test('Brain Board lesson boards: a Number Quest step opens its own skill board, 
   }
   const byCat = (items, cat) => items.filter(i => i.cat === cat);
   const i11 = run('explorer-1.1');
-  for (const it of byCat(i11, 'Round it')) {
-    const m = /Round ([\d,]+) to the nearest (ten|hundred)/.exec(it.q);
-    const want = Math.round(Number(m[1].replace(/,/g, '')) / (m[2] === 'ten' ? 10 : 100)) * (m[2] === 'ten' ? 10 : 100);
-    assert.equal(Number(it.choices[it.answer]), want, it.q);
+  for (const it of byCat(i11, 'Build it')) {
+    const m = /Build it: (\d) thousands?, (\d) hundreds?, (\d) tens? and (\d) ones?\./.exec(it.q);
+    assert.equal(Number(it.choices[it.answer].replace(/,/g, '')), +m[1] * 1000 + +m[2] * 100 + +m[3] * 10 + +m[4], it.q);
   }
   for (const it of byCat(i11, 'Digit value')) {
     const m = /In ([\d,]+), what is the value of the (\d)\?/.exec(it.q);

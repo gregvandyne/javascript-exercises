@@ -161,7 +161,9 @@ function gfBadgesVf(fig) {
   const frame = fig.querySelector('.sframe');
   // The still view keeps badges off the frame's rounded corners (they would be clipped): an inset frame.
   const fr = reduced ? grow(rectOf(frame), -8) : rectOf(frame);
-  const texts = [...fig.querySelectorAll('.vf-svg text')].map(t => grow(rectOf(t), 1));
+  // A badge is a number in a circle: parked right beside a number it reads as one ("score 3" + badge 2 = "32"), so
+  // a label holding a digit keeps a wider berth (6 px) than a word (1 px).
+  const texts = [...fig.querySelectorAll('.vf-svg text')].map(t => grow(rectOf(t), /\d/.test(t.textContent) ? 6 : 1));
   const placed = [];
   for (const box of fig.querySelectorAll('.gf-box')) {
     const badge = box.querySelector('.gf-badge');
@@ -254,9 +256,10 @@ function gfTextMap(fig) {
 /** The share (0..1) of an element's area (a chip, a badge) that sits on the picture's lettering. */
 function gfOnText(fig, el, map) { return gfTextShare(fig, rectOf(el), map, 2); }
 function gfTextShare(fig, cr, map, level) {
-  // a badge (level 1) also steers clear of the capture's recorded words, when zoom-to-cue has loaded them
-  // (course-zoom.js sets fig.gfWords): big phone-width lettering can slip through the 16 px cells of the text map
-  const wd = level === 1 && fig.gfWords ? gfWordShare(fig, cr) : 0;
+  // a badge (level 1) and a chip (level 2) also steer clear of the capture's recorded words, when zoom-to-cue has
+  // loaded them (course-zoom.js sets fig.gfWords): big phone-width lettering can slip through the 16 px cells of the
+  // text map, and a chip parked on a game's line hides words the child needs
+  const wd = fig.gfWords ? gfWordShare(fig, cr) : 0;
   if (!map) return wd;
   return Math.max(wd, gfMapShare(fig, cr, map, level));
 }
@@ -290,8 +293,9 @@ function gfMapShare(fig, cr, map, level) {
   }
   return a / all;
 }
-/** A chip may cover this much of the picture's lettering (a stray stroke of a word under its edge). */
-const TEXT_MAX = 0.03;
+/** A chip may cover only a trace of the picture's lettering (an anti-aliased stroke at its edge): a chip that would sit on
+ *  words goes to the caption strip instead (2026-11-07 r4: chips covered lines in 0.1, 3.1 and 6.4 at 3%). */
+const TEXT_MAX = 0.005;
 
 // --- screenshots: the cue chip clear of the ring, the badge, the zoom button and the picture's text
 // Each step's chip is measured against its ring (the box plus its outset), its badge and the zoom button,
@@ -299,13 +303,37 @@ const TEXT_MAX = 0.03;
 // takes the one on the least text (the earliest on a tie), trying in order: the server's side as styled; the
 // same side at full width (a wider chip wraps less); the other side both ways; the same placements anchored
 // to the opposite corner; the chip slid sideways past the badge; the chip pulled tighter into its corner
-// (2px from the edge); and the chip slightly smaller. -> true when a clear placement was found that covers
+// (2px from the edge). -> true when a clear placement was found that covers
 // at most TEXT_MAX of text; false sends the whole figure's cues to the strip under the picture.
+// A placement only counts when the chip lies wholly inside the picture's frame and keeps its words readable:
+// at least CUE_MIN_W px wide (or its whole one-line width, when that is less). A chip slid past a badge at the
+// frame's right edge would otherwise be squeezed into a sliver beyond the picture (the frame clips it), showing
+// the ring and badge but none of the step's words.
+const CUE_MIN_W = 200;
+/** The chip's width on one line, at its current font: what it needs to show its words without squeezing. */
+function gfCueNatural(cue) {
+  const c = cue.cloneNode(true);
+  c.style.cssText = cue.style.cssText + ';position:absolute;left:0;right:auto;top:0;bottom:auto;max-width:none;width:auto;white-space:nowrap;visibility:hidden';
+  cue.parentNode.append(c);
+  const w = c.getBoundingClientRect().width;
+  c.remove();
+  return w;
+}
+function gfCueFits(cue, frame) {
+  const r = rectOf(cue), w = r.right - r.left;
+  if (w <= 0) return false;
+  if (r.left < frame.left - 1 || r.right > frame.right + 1 || r.top < frame.top - 1 || r.bottom > frame.bottom + 1) return false;
+  return w >= Math.min(CUE_MIN_W, gfCueNatural(cue) - 2, frame.right - frame.left - 20);
+}
+// Nor may a chip sit on another step's box: a chip parked on the second of two option cards reads as that card's
+// label (Would You Rather's two cards: option 1's words on option 2).
 function gfCueOverlap(cue, box, badge, zoom) {
   const cr = rectOf(cue);
   if (cr.right - cr.left <= 0) return 0;
   const targets = [grow(rectOf(box), ringOut(box)), rectOf(badge)];
   if (zoom) targets.push(rectOf(zoom));
+  const fig = box.closest('.smedia');
+  if (fig) for (const other of fig.querySelectorAll('.gf-box')) if (other !== box) targets.push(rectOf(other));
   return targets.reduce((s, r) => s + area(cr, r), 0);
 }
 function gfPlaceCue(fig, i) {
@@ -321,7 +349,7 @@ function gfPlaceCue(fig, i) {
     cue.classList.toggle('gf-cue--top', top);
     cue.style.left = anchor === 'right' ? 'auto' : (shiftPx ? shiftPx + 'px' : '');
     cue.style.right = anchor === 'right' ? '10px' : '';
-    cue.style.maxWidth = wide || shiftPx ? 'calc(100% - 20px)' : '';
+    cue.style.maxWidth = shiftPx ? `calc(100% - ${shiftPx + 10}px)` : wide ? 'calc(100% - 20px)' : '';
     cue.style.top = top && tight ? '2px' : '';
     cue.style.bottom = !top && tight ? '2px' : '';
     cue.style.fontSize = compact ? '12px' : '';
@@ -338,13 +366,14 @@ function gfPlaceCue(fig, i) {
   const shift = () => Math.ceil(badge.getBoundingClientRect().right - fig.querySelector('.sframe').getBoundingClientRect().left) + 6;
   for (const top of [serverTop, !serverTop]) tries.push([top, 'left', true, 'shift']);
   for (const top of [serverTop, !serverTop]) for (const anchor of ['left', 'right']) tries.push([top, anchor, true, 0, true]);
-  for (const top of [serverTop, !serverTop]) for (const anchor of ['left', 'right']) tries.push([top, anchor, true, 0, true, true]);
-  for (const top of [serverTop, !serverTop]) for (const tight of [false, true]) tries.push([top, 'left', true, 'shift', tight, true]);
+  // No shrunken chips: a cue that only fits as a 12 px pill reads better in the caption strip under the picture.
   const map = gfTextMap(fig);
+  const frame = rectOf(fig.querySelector('.sframe'));
   let best = null, bestArea = Infinity, clear = null, clearText = Infinity;
   for (const t of tries) {
     const args = t.map(v => (v === 'shift' ? shift() : v));
     apply(...args);
+    if (!gfCueFits(cue, frame)) continue; // off the picture, or squeezed past its words: never a place for the chip
     const a = gfCueOverlap(cue, box, badge, zoom);
     if (!a) {
       const tx = gfOnText(fig, cue, map);
@@ -353,7 +382,7 @@ function gfPlaceCue(fig, i) {
     } else if (a < bestArea) { bestArea = a; best = args; }
   }
   if (clear) { apply(...clear); return clearText <= TEXT_MAX; }
-  if (best) apply(...best);
+  if (best) apply(...best); else apply(serverTop, 'left', false, 0);
   return false;
 }
 // --- screenshots: the numbered badge off the picture's text

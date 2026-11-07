@@ -60,6 +60,8 @@ function stopGame() {
 // (finished), the finish did not complete the step (notyet), or the win could not be saved (failed).
 // Free play never sees it: it is driven entirely by d.cstep.
 let courseBar = null;
+/** Hand the keyboard focus back to the game frame (its window gets focus, so a kit game resumes what blur paused). */
+function refocusGame() { try { frame.focus(); frame.contentWindow.focus(); } catch { /* frame gone */ } }
 function hideCourseBar() { if (courseBar) { courseBar.remove(); courseBar = null; } const box = document.getElementById('toasts'); if (box) box.style.bottom = ''; }
 function showCourseBar(kind) {
   hideCourseBar();
@@ -70,7 +72,7 @@ function showCourseBar(kind) {
   bar.innerHTML = `<p class="cd-text">${esc(text)}</p>
     <a class="btn btn-primary btn-big" href="${esc(d.backHref)}">${esc(d.backLabel || t('layout.back'))}</a>
     <button type="button" class="btn cd-keep">${esc(t('js.play.courseKeepPlaying'))}</button>`;
-  bar.querySelector('.cd-keep').addEventListener('click', hideCourseBar);
+  bar.querySelector('.cd-keep').addEventListener('click', () => { hideCourseBar(); refocusGame(); });
   stage.appendChild(bar); courseBar = bar;
   // The toast stack is viewport-fixed at the bottom and would land on top of the bar, hiding its text
   // and its primary button behind the Number Quest toasts (which fire a moment earlier). Lift the stack
@@ -176,7 +178,9 @@ addEventListener('message', e => {
         if (e && e.data && e.data.needAccount) {
           const s = sheet({ title: t('js.play.guestWinTitle'), content: `<p>${esc(t('js.play.guestWin'))}</p>
             <p><a class="btn btn-primary btn-big" href="${esc(e.data.signup || '/signup')}">${esc(t('js.play.guestWinAction'))}</a></p>
-            <p><button type="button" class="btn" id="guest-win-later">${esc(t('js.play.guestWinLater'))}</button></p>` });
+            <p><button type="button" class="btn" id="guest-win-later">${esc(t('js.play.guestWinLater'))}</button></p>`, onClose: refocusGame });
+          // Closing the sheet (Keep playing, the close button, Escape) gives the game its focus back: the sheet took it, the frame blurred, and a game that pauses on
+          // blur (the kit) would otherwise leave the child on its Pause menu instead of its own win screen.
           const later = s.el.querySelector('#guest-win-later'); if (later) later.addEventListener('click', s.close);
           // The win is banked, not recorded: the bar offers the way back without claiming the step.
           showCourseBar('finished');
@@ -306,3 +310,15 @@ $('#p-voices') && $('#p-voices').addEventListener('click', () => {
     $('#p-voices').setAttribute('aria-pressed', String(r.value === 'ai'));
   });
 });
+
+// A game's text box (Doodle Hoot's guess box): with an on-screen keyboard up, the stage fits what is still visible.
+// Android shrinks the page itself (interactive-widget=resizes-content); iOS keeps it full height and slides it.
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const fitKeyboard = () => {
+    document.body.classList.toggle('kb-up', vv.height < window.innerHeight * 0.8);
+    document.documentElement.style.setProperty('--vvh', `${Math.round(vv.height)}px`);
+    document.documentElement.style.setProperty('--vvt', `${Math.round(vv.offsetTop)}px`);
+  };
+  vv.addEventListener('resize', fitKeyboard); vv.addEventListener('scroll', fitKeyboard);
+}

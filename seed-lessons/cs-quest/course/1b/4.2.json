@@ -10,27 +10,64 @@
    "title": "Lock it up",
    "text": "At home you lock the door and keep the key safe. Online you do the same: lock it, keep the key, keep a spare copy.",
    "art": "lock",
-   "img": "csq/packet-post/locks-1b-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    62
-   ],
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+   "img": "csq/packet-post/locks-1b-pass-n",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
+   "focus": [
+    {
+     "cue": "Your key: four word tiles",
+     "box": [
+      32,
+      34.2,
+      35.9,
+      13.3
+     ]
+    },
+    {
+     "cue": "Long and random: hundreds of years to guess",
+     "box": [
+      9.1,
+      81.2,
+      81.8,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "Private or fine to share?",
    "text": "Some things are private: where you live, your birthday, your passphrase. Fun things, like your favorite animal or a joke you made up, are fine to share.",
    "art": "shield",
-   "img": "csq/packet-post/locks-1b-sort",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
+   "img": "csq/packet-post/locks-1b-sort-n",
+   "alt": "Sorting the mail: where you live and your mailbox key are Keep, a favorite book is Share. Next up: a joke you made up.",
+   "focus": [
+    {
+     "cue": "Private: where you live",
+     "box": [
+      6,
+      69.9,
+      35.6,
+      11.6
+     ]
+    },
+    {
+     "cue": "Private: your mailbox key",
+     "box": [
+      6,
+      85.2,
+      31.8,
+      11.6
+     ]
+    },
+    {
+     "cue": "Next card: a joke you made up. Fine to share",
+     "box": [
+      5,
+      44.4,
+      46.3,
+      14.1
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
@@ -38,45 +75,96 @@
    "text": "Pick four random words that do not belong together. It is long, so it is hard to guess. The funny picture makes it easy to remember.",
    "art": "key",
    "steps": [
-    "purple",
     "volcano",
-    "teapot",
-    "giraffe"
+    "giraffe",
+    "bicycle",
+    "thunder"
    ],
-   "img": "csq/packet-post/locks-1b-built",
-   "view": [
-    54.5,
-    25,
-    45,
-    62
-   ],
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess."
+   "img": "csq/packet-post/locks-1b-pass-n",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
+   "focus": [
+    {
+     "cue": "Four random words that do not belong together",
+     "box": [
+      4,
+      52,
+      92,
+      13
+     ]
+    },
+    {
+     "cue": "Long, so it is hard to guess",
+     "box": [
+      9.1,
+      81.2,
+      81.8,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "Who may know it?",
    "text": "Keep your passphrase secret, even from your best friend. Only a parent or another trusted adult may know it.",
    "art": "key",
-   "img": "csq/packet-post/locks-1b-tell",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
+   "img": "csq/packet-post/locks-1b-who-n",
+   "alt": "Who may know your mailbox key? A trusted adult at home: okay to tell. Your best friend: keep it to yourself.",
+   "focus": [
+    {
+     "cue": "Who may know it? Sort each person",
+     "box": [
+      14.1,
+      6.3,
+      79.2,
+      28.1
+     ]
+    },
+    {
+     "cue": "A trusted adult at home: okay to tell",
+     "box": [
+      6,
+      78.4,
+      60.7,
+      19.2
+     ]
+    }
+   ]
   },
   {
    "title": "Keep a spare copy",
    "text": "A backup is a spare copy kept somewhere else. If the tablet breaks, your photos are still safe.",
    "art": "box",
-   "img": "csq/packet-post/locks-1b-backup",
-   "view": [
-    54.5,
-    25,
-    45,
-    45
-   ],
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not."
+   "img": "csq/packet-post/locks-1b-spare2-n",
+   "alt": "Sorted so far: the only copy on one tablet is not a spare; a family online folder, a printout and last year's copy are good spares.",
+   "focus": [
+    {
+     "cue": "The only copy, on one tablet: not a spare",
+     "box": [
+      3,
+      13,
+      94,
+      12
+     ]
+    },
+    {
+     "cue": "Copies kept somewhere else: good spares",
+     "box": [
+      3,
+      26,
+      94,
+      38
+     ]
+    },
+    {
+     "cue": "An old copy never updated: not a spare either",
+     "box": [
+      3,
+      63.5,
+      94,
+      24
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -103,14 +191,28 @@
    "title": "Your mission",
    "text": "Open Packet Post at Lock It and finish all 6 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-1b-key",
-   "view": [
-    54.5,
-    25,
-    45,
-    62
-   ],
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
+   "img": "csq/packet-post/locks-1b-pass-n",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
+   "focus": [
+    {
+     "cue": "In the game your passphrase is your mailbox key",
+     "box": [
+      32,
+      34.2,
+      35.9,
+      13.3
+     ]
+    },
+    {
+     "cue": "You only tap tiles: nothing real is shared",
+     "box": [
+      9.1,
+      81.2,
+      81.8,
+      13.3
+     ]
+    }
+   ]
   }
  ],
  "check": [

@@ -113,6 +113,21 @@ function mapStep(t, c, s, total, preview = false) {
   </li>`;
 }
 
+/** A course's unit stamps (Cyber Defenders' six Defender stamps): a unit's stamp is earned when every step of the
+ *  unit is done. Each unit header carries its own stamp, and the progress panel shows all of them at once. */
+const stampEarned = (ov, gr) => { const l = ov.list.filter(s => s.step.group === gr.id); return l.length > 0 && l.every(s => s.complete); };
+function stampBadge(t, name, earned, small = false) {
+  const tip = earned ? t('courses.map.stampEarned') : t('courses.map.stampToEarn');
+  return html`<span class="cstamp${earned ? ' is-earned' : ''}${small ? ' cstamp-s' : ''}" title="${tip}"><span class="cstamp-i" aria-hidden="true">${earned ? '🏅' : '🔖'}</span><span class="cstamp-n"${en}>${name}</span><span class="sr-only">: ${tip}</span></span>`;
+}
+function stampStrip(t, c, ov) {
+  const gs = C.groupsFor(c).filter(gr => gr.stamp);
+  if (!gs.length) return '';
+  const got = gs.filter(gr => stampEarned(ov, gr)).length;
+  return html`<div class="cstamps" id="cmap-stamps"><p class="cstamps-h"><b>${t('courses.map.stamps')}</b> · ${t('courses.map.stampsCount', { n: got, total: gs.length })}</p>
+      <ul class="cstamps-l">${gs.map(gr => html`<li><a href="#${gr.id}">${stampBadge(t, gr.stamp, stampEarned(ov, gr), true)}</a></li>`)}</ul></div>`;
+}
+
 /** The note a kid sees on the map after a locked step sent them back (?locked=<step key>): which step to
  *  finish first (the first open step not done yet). */
 export function lockedNote(t, ov, key) {
@@ -138,6 +153,7 @@ export function coursePage({ course: c, games, ov, canPick, preview = false, loc
         ${other ? html`<form method="post" action="/courses/${c.slug}/band"><button class="linkbtn" type="submit" name="band" value="${other}" id="band-switch">${t('courses.band.switch', { band: bandName(t, other) })}</button></form>` : ''}</div>
       <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${ov.total}" aria-valuenow="${ov.done}" aria-label="${t('courses.stepsDone', { n: ov.done, total: ov.total })}"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>
       <p class="cmap-count">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</p>
+      ${stampStrip(t, c, ov)}
       ${ov.next ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
     <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
@@ -155,6 +171,7 @@ export function coursePage({ course: c, games, ov, canPick, preview = false, loc
         <header class="cmap-gh">
           <span class="cmap-cover cmap-cover-e" aria-hidden="true">${gr.emoji || '💡'}</span>
           <div><h3 id="${gr.id}-h">${gr.title ? html`<span${en}>${gr.title}</span>` : gr.titleKey ? t(gr.titleKey) : g ? g.title : gr.id}</h3>${sub ? html`<p class="muted small">${sub}</p>` : ''}</div>
+          ${gr.stamp ? stampBadge(t, gr.stamp, stampEarned(ov, gr)) : ''}
         </header>
         <ol class="cmap-steps">${list.map(s => mapStep(t, c, s, ov.total, preview))}</ol>
       </section>`;
@@ -351,6 +368,10 @@ const gfCues = s => html`<figcaption class="gf-cues"><ol>${s.focus.map(st => htm
  *  focus boxes land on the part they name; the frame then shows only the drawing's content band (visualFit).
  *  Tones cycle the brand palette. */
 const VF_TONES = ['#66C792', '#FFD23F', '#8FC1F5', '#F2A65A'];
+/** A bar or fraction diagram marked `big` (Number Quest's bar models, fix round A6) draws every word at phone size:
+ *  4.1 units is about 13 px on a 390 px phone, where the standard row label (3.7) reads at 12 and a part label in a
+ *  narrow part (down to 2.4) at 8. Its decks keep its part labels short enough to fit their parts at that size. */
+const BIG_ROW = 4.1, BIG_PART = 4.1, BIG_HALF = 4.0;
 /** The one drawn caption a diagram carries (tiles and array visuals) is centred over the frame, so
  *  at the standard 3.8 units a long caption overflows the 100-wide frame and clips at both edges —
  *  measured on the rendered slides: a 69-character caption renders 120 units wide. The fit size
@@ -369,12 +390,12 @@ function visualExtent(v) {
   if (v.type === 'places') return [9, tBot(43, 4.2)];
   if (v.type === 'numberline') {
     const tallest = Math.max(0, ...(v.stacks || []).map(k => k.n));
-    const a = Math.min(33.4, v.point ? tTop(28.5, 4.6) : 99, v.hops && v.hops.length ? tTop(17.5, 3.8) : 99, tallest ? 33 - tallest * 3.4 - 1.2 : 99);
+    const a = Math.min(33.4, v.point ? tTop(28.5, 4.6) : 99, v.hops && v.hops.length ? tTop(17.5, 3.8) : 99, tallest ? 33 - tallest * 4.2 - 1.6 : 99);
     return [a, tBot(numberlineLabels(v).some(m => m.y > 45) ? 52.3 : 45, 3.6)];
   }
   if (v.type === 'bars' || v.type === 'fraction') {
     const n = v.rows.length, yOff = n === 1 ? 13 : n === 2 ? 5 : 0;
-    return [v.half ? tTop(3.4 + yOff, 3.2) : tTop(8 + yOff - 1.8, 3.7), 8 + yOff + (n - 1) * 17 + 8.5];
+    return [v.half ? tTop(3.4 + yOff, v.big ? BIG_HALF : 3.2) : tTop(8 + yOff - 1.8, v.big ? BIG_ROW : 3.7), 8 + yOff + (n - 1) * 17 + 8.5];
   }
   if (v.type === 'array') {
     const a = v.label ? tTop(6.5, labelFs(v.label)) : 10 + 17 / v.rows - 2.3;
@@ -456,8 +477,8 @@ function visualSvg(v, f) {
         + tx(m.cx, m.y, m.label, 3.6, 'middle', 700)).join('')
       + (v.stacks || []).map(k => Array.from({ length: k.n }, (_, j) => {
         // A line plot's stack: one x per data point, piled up above its mark.
-        const cx = X(k.at), cy = 31.2 - j * 3.4, d = 1.25;
-        return raw(`<path d="M${r2(cx - d)} ${r2(cy - d)} L${r2(cx + d)} ${r2(cy + d)} M${r2(cx + d)} ${r2(cy - d)} L${r2(cx - d)} ${r2(cy + d)}" stroke="${leaf}" stroke-width="0.8" stroke-linecap="round"/>`);
+        const cx = X(k.at), cy = 31.2 - j * 4.2, d = 1.7; // an X 3.4 units tall: 11 px on a 390 px phone
+        return raw(`<path d="M${r2(cx - d)} ${r2(cy - d)} L${r2(cx + d)} ${r2(cy + d)} M${r2(cx + d)} ${r2(cy - d)} L${r2(cx - d)} ${r2(cy + d)}" stroke="${leaf}" stroke-width="1" stroke-linecap="round"/>`);
       }).join('')).join('')
       + (v.point ? raw(`<circle cx="${X(v.point.at).toFixed(2)}" cy="36" r="2.3" fill="#FFD23F" stroke="${ink}" stroke-width="0.7"/>`)
         + tx(X(v.point.at), 28.5, v.point.label, 4.6, 'middle', 800) : '');
@@ -473,12 +494,12 @@ function visualSvg(v, f) {
         const w = p.w * 88;
         const fill = p.unknown ? '#FFFFFF' : p.tone === -1 || p.tone == null && v.type === 'fraction' ? '#FFFFFF' : VF_TONES[(p.tone || 0) % VF_TONES.length];
         parts += raw(`<rect x="${x.toFixed(2)}" y="${y}" width="${w.toFixed(2)}" height="8.5" fill="${fill}" stroke="${ink}" stroke-width="0.6"${p.unknown ? ' stroke-dasharray="1.6 1.2"' : ''}/>`)
-          + (p.label ? tx(x + w / 2, y + 5.9, p.label, Math.min(3.6, Math.max(2.4, w / Math.max(3, String(p.label).length) * 1.5))) : '')
+          + (p.label ? tx(x + w / 2, y + (v.big ? 6.1 : 5.9), p.label, v.big ? BIG_PART : Math.min(3.6, Math.max(2.4, w / Math.max(3, String(p.label).length) * 1.5))) : '')
           + (p.unknown ? tx(x + w / 2, y + 5.9, '?', 4.4, 'middle', 800, leaf) : '');
         x += w;
       }
-      return tx(6, y - 1.8, r.label, 3.7, 'start', 700) + parts;
-    }).join('') + (v.half ? raw(`<line x1="50" y1="${(4 + yOff).toFixed(1)}" x2="50" y2="${(8 + yOff + rows.length * 17 - 6).toFixed(1)}" stroke="${leaf}" stroke-width="0.7" stroke-dasharray="2 1.6"/>`) + tx(50, (3.4 + yOff).toFixed(1), 'halfway', 3.2, 'middle', 700, leaf) : '');
+      return tx(6, y - 1.8, r.label, v.big ? BIG_ROW : 3.7, 'start', 700) + parts;
+    }).join('') + (v.half ? raw(`<line x1="50" y1="${(4 + yOff).toFixed(1)}" x2="50" y2="${(8 + yOff + rows.length * 17 - 6).toFixed(1)}" stroke="${leaf}" stroke-width="0.7" stroke-dasharray="2 1.6"/>`) + tx(50, (3.4 + yOff).toFixed(1), 'halfway', v.big ? BIG_HALF : 3.2, 'middle', 700, leaf) : '');
   } else if (v.type === 'array') {
     const R = v.rows, C = v.cols;
     let dots = '';
@@ -657,7 +678,7 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn, sl
       <h2 id="check-h">✅ ${t('courses.check.h')}</h2>
       ${s.checked ? html`<p class="cl-passed">✓ ${t('courses.check.done')}</p>
         ${c.slug === 'number-quest' ? html`<p class="nq-passed-tally"><img class="nq-tally-img" src="/img/csq/chars/tally.webp" alt="" width="219" height="353"> <span lang="en" dir="ltr">Tally is purring: check passed. The mission is open below.</span></p>` : ''}`
-        : html`<p class="muted">${t('courses.check.intro')}</p>
+        : html`<p class="muted">${t(step.game ? 'courses.check.intro' : 'courses.check.introTalk')}</p>
         ${result ? html`<div class="cl-result ${result.passed ? 'ok' : 'bad'}" role="status">${result.passed ? t('courses.check.passed', { score: result.score, total: 3 }) : t('courses.check.failed', { score: result.score, total: 3 })}
           ${result.passed ? '' : html`<ul${en}>${result.results.filter(r => !r.right).map(r => html`<li>${C.item(r.id).q} → <b>${r.text}</b></li>`)}</ul>`}</div>` : ''}
         ${signedIn ? checkForm(t, c, step, qs) : html`<p class="notice">${t('errors.api.signInFirst')}</p>`}`}

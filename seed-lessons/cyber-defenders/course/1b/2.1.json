@@ -10,31 +10,25 @@
    "title": "A key for your house",
    "text": "Your house key opens your front door, and only your front door. Pim says a good key is kept safe, never lent out, and never left lying around.",
    "art": "key",
-   "img": "csq/packet-post/locks-1b-habits",
-   "alt": "If one key opens every door, losing it opens them all: a habit card waits to be sorted, safe or risky.",
-   "view": [
-    51.0,
-    19.9,
-    41.6,
-    35.8
-   ],
+   "img": "csq/packet-post/locks-1b-habits-n",
+   "alt": "Lock It, safe habit or risky habit: a habit card waits to be sorted, and Pim asks how you keep a key.",
    "focus": [
     {
      "cue": "If one key opens every door, losing it opens them all",
      "box": [
-      58.4,
-      26.5,
-      26.8,
-      7.9
+      2.9,
+      3.4,
+      94.3,
+      24.6
      ]
     },
     {
-     "cue": "Safe habit or risky habit: how do you keep a key?",
+     "cue": "Safe or risky: changing the key when a site leaks it",
      "box": [
-      58.7,
-      42.6,
-      23.4,
-      5.9
+      2.9,
+      31.3,
+      94.3,
+      21.2
      ]
     }
    ]
@@ -43,31 +37,16 @@
    "title": "A key for your mailbox",
    "text": "In Netville, your mailbox has a key too, and that key is a passphrase. It locks your letters away so only the right person can open them.",
    "art": "lock",
-   "img": "csq/packet-post/locks-1b-key",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
-   "view": [
-    51.0,
-    21.5,
-    40.4,
-    39.5
-   ],
+   "img": "csq/packet-post/locks-1b-key-n",
+   "alt": "Lock It: build a mailbox key for Pim from four word tiles, and watch the meter.",
    "focus": [
     {
      "cue": "Build a mailbox key for Pim from four word tiles",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
-     ]
-    },
-    {
-     "cue": "The word tiles to build it from",
-     "box": [
-      54.0,
-      38.0,
-      34.4,
-      22.5
+      2.9,
+      19.7,
+      94.3,
+      31.7
      ]
     }
    ]
@@ -75,39 +54,33 @@
   {
    "kind": "example",
    "title": "Build a passphrase",
-   "text": "Pick four random words that do not belong together. Picture them in one funny scene, like a purple volcano in a teapot hat beside a giraffe.",
+   "text": "Pick four random words that do not belong together. Picture them in one funny scene, like a giraffe riding a bicycle up a volcano in the thunder.",
    "art": "key",
    "steps": [
-    "purple",
     "volcano",
-    "teapot",
-    "giraffe"
+    "giraffe",
+    "bicycle",
+    "thunder"
    ],
-   "img": "csq/packet-post/locks-1b-built",
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
-   "view": [
-    5.0,
-    39.7,
-    51.2,
-    45.5
-   ],
+   "img": "csq/packet-post/locks-1b-pass-n",
+   "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A guessing computer would need hundreds of years.",
    "focus": [
     {
      "cue": "Picked words land in your passphrase",
      "box": [
-      8.2,
-      57.7,
-      44.8,
-      6.0
+      3,
+      50,
+      94,
+      17
      ]
     },
     {
-     "cue": "The meter fills: longer keys take longer to guess",
+     "cue": "The meter: guessing would take hundreds of years",
      "box": [
-      8.0,
-      64.9,
-      45.2,
-      2.3
+      8,
+      83,
+      84,
+      10
      ]
     }
    ]
@@ -116,31 +89,25 @@
    "title": "Who may know it?",
    "text": "Only you and a trusted adult may know your passphrase. Never share it with your best friend, even if they promise to keep it secret.",
    "art": "shield",
-   "img": "csq/packet-post/locks-1b-tell",
-   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
-   "view": [
-    51.0,
-    21.5,
-    40.3,
-    42.5
-   ],
+   "img": "csq/packet-post/locks-1b-tell-n",
+   "alt": "Lock It, who may know your key: a card waits for its tray, Okay to tell or Keep it to yourself.",
    "focus": [
     {
-     "cue": "Only the adults who look after your account may know",
+     "cue": "Only the trusted adults who look after your account may know",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      2.9,
+      6.3,
+      94.3,
+      31.7
      ]
     },
     {
-     "cue": "Okay to tell, or keep it to yourself: sort each person",
+     "cue": "A trusted adult at home: okay to tell",
      "box": [
-      54.1,
-      44.6,
-      20.5,
-      14.4
+      2.9,
+      41.5,
+      94.3,
+      31.4
      ]
     }
    ]
@@ -174,24 +141,24 @@
    "title": "Your mission",
    "text": "Open Packet Post at Lock It and finish all 6 levels. In the game your passphrase is called your mailbox key. You only tap tiles, so nothing real gets shared.",
    "art": "trophy",
-   "img": "csq/packet-post/locks-1b-key",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
-   "view": [
-    51.0,
-    33.0,
-    40.4,
-    42.4
-   ],
+   "img": "csq/packet-post/locks-1b-built-n",
+   "alt": "Three random words in the passphrase so far. The meter says a computer would need about a hundred years.",
    "focus": [
     {
      "cue": "Open Lock It and build mailbox keys from word tiles",
      "box": [
-      54.0,
-      38.0,
-      34.4,
-      32.4
+      2.9,
+      5,
+      94.3,
+      18
      ]
     }
+   ],
+   "view": [
+    0,
+    0,
+    100,
+    74
    ]
   }
  ],

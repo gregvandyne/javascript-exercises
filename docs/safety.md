@@ -456,7 +456,8 @@ Open rooms run only official games, the built-in modes and public games that pas
 pass the same visibility rule as anywhere else (`games.canView`, a guest counts as signed out), checked again when a
 frame loads and every 30 seconds. Grown-ups' open rooms are capped at 30 players.
 
-**No free text from players, anywhere.** Players press buttons. The one typed input is the 7-digit code. Names are
+**No free text from players, anywhere.** Players press buttons. The one typed input is the 7-digit code (and Doodle
+Hoot Live's guess box, below, whose text goes to the server only and is never passed on). Names are
 one of 144 fixed, kind nickname phrases (account names only in a teacher's own class room). Emotes are 6 fixed
 animations. Game events between players (`ev`) may carry only numbers, booleans, `null` and identifier tokens
 (`[a-z0-9_-]`, 24 at most), nested at most twice, 512 bytes at most; and a player's event kind and every token in it
@@ -465,7 +466,9 @@ session opens, each through the text filter). Underscore-joined messages (`add_m
 game cannot become a chat (the kit checks it, the server checks it again). Question sets, and every string the host
 sends to players (shared state, host events), are written by adults and pass the rude-word and personal-information
 checks (contact words, handles and links included). In live frames the SDK also turns text entry off at run time: `prompt()` returns null, text boxes are
-read-only and contenteditable is off, also for elements added later (docs/sdk.md "Live messages").
+read-only and contenteditable is off, also for elements added later (docs/sdk.md "Live messages"). The one exception is
+Doodle Hoot Live's guess box (an `<input data-live-guess>`, only in the built-in mode `doodle` with typed guesses, only
+in a player's frame: the server sets `INIT.live.guess`).
 
 **Doodle Hoot Live (drawings).** The one live game where a player makes something free-form: a drawing. Strokes are
 numbers only, checked on the server (the drawer only, while drawing; keys, ranges, steps, at most 600 strokes and 8,000
@@ -473,9 +476,21 @@ points on the page at once, stroke ids 0-4095 a turn, 400 points a second) and r
 exists only for a late joiner or a reload (at most one replay per connection every 2.5 s, and never on top of a slow
 connection's backlog) and is wiped at the end of every turn and of the session. Drawings are never stored (no database,
 file, saved run, report or log line), never in shared state, never screenshotted and never sent to any AI
-(`services/classlive-doodle.js` imports none of that; a static test checks it). Guesses are tray positions, never text;
-the words come only from the reviewed list in the game, and a word reaches only the drawer, and a guesser once they have
-spelled it, until the reveal. Every tray is checked against the site's rude-word lists anywhere in its run of tiles (the
+(`services/classlive-doodle.js` imports none of that; a static test checks it). **Typed guesses** (the default; letter
+tiles are the host's easier choice, and a guess said out loud is awarded by the drawer or the host tapping who) travel
+as code points to the server only, never to another player; the server compares them with the answer and forgets them:
+never kept, logged, analysed or sent to any AI. Nothing typed is ever passed on as text: the drawer and the host's page
+see a wrong guess only when it is a word of the game's own reviewed list for that language, or its plural (as that
+word's id, shown in the list's own spelling), and at most 3 such words a guesser a turn (so list words can't be strung
+into a message); otherwise only "Sam guessed something else". A guess a letter or two off is told "So close!" to that
+guesser alone; the drawer and the host's page see it only as "something else", so nobody learns who is near. A right
+one shows as "Sam got it!" (or "Sam said it out loud!"). Other guessers never see anyone's guess on their own device;
+the host's page, which may be on a shared screen in the room, shows the same list as the drawer, so the vetted list
+words can be seen there. So a rude word, a sentence, a name or a phone number typed in the box reaches nobody
+(tests/unit/live-doodle.test.js and doodle-core.test.js check every entry of all 13 rude-word lists). One guess a
+second, 30 wrong ones a turn. "Someone said it!" counts only once something is drawn that turn, once per player a turn
+(the list marks it as said out loud), so a blank page can't hand out points. The words come only from the reviewed list in the game, and a word reaches only the drawer,
+and a guesser once they have guessed it, until the reveal. Every tray is checked against the site's rude-word lists anywhere in its run of tiles (the
 server in Oomba Live; on its own, the game checks a hash of the same lists, so no rude word is written in the game).
 Japanese and Traditional Chinese words are not offered until a native speaker has reviewed them (those pages play with
 English words). **Watching:** drawings go out only while a grown-up has the host's page open (it shows every drawing

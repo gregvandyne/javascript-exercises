@@ -16,63 +16,62 @@
    "text": "Chance has its own words, and each one is a promise about the parts. Certain means every part, an even chance means half, unlikely means a small share, and impossible means no part. This spinner gives red 1 part of 6.",
    "art": "grid",
    "visual": {
-    "type": "fraction",
-    "label": "A spinner drawn as a bar cut into 6 equal parts, with 1 part shaded for red",
-    "rows": [
-     {
-      "label": "Spinner: 6 equal parts, 1 red",
-      "cuts": 6,
-      "shaded": 1
-     }
-    ]
+    "type": "spinner",
+    "label": "A spinner cut into 6 equal parts, with 1 part red",
+    "parts": 6,
+    "shaded": 1,
+    "left": "6 equal parts",
+    "right": "1 red part"
    },
    "focus": [
     {
      "cue": "One red part out of 6 equal parts.",
      "box": [
-      5.6,
-      35.7,
-      15.6,
-      18.4
+      49,
+      13.5,
+      40.0,
+      36.5
      ]
     },
     {
      "cue": "Every other part is not red: 5 of the 6.",
      "box": [
-      20.2,
-      35.7,
-      74.3,
-      18.4
+      32.5,
+      13.5,
+      35.0,
+      61.9
      ]
     },
     {
      "cue": "Six equal parts in all. Equal parts make the chance fair to judge.",
      "box": [
-      5,
-      26.5,
-      90.1,
-      27.6
+      3.7,
+      13.5,
+      63.8,
+      61.9
      ]
     }
    ]
   },
   {
    "title": "Worked example: sorting the words",
-   "text": "Rough first: the words should spread out, because the stalls are all different. Sort four stalls by their red parts: all red is certain, most red likely, one of 6 unlikely, none impossible.",
+   "text": "Rough first: the words should spread out, because the stalls are all different. Sort five stalls by their red parts: all red is certain, most red likely, half red an even chance, one of 6 unlikely, none impossible.",
    "art": "dice",
    "kind": "example",
    "steps": [
     "All 6 parts red: certain",
     "5 parts of 6 red: likely",
+    "3 parts of 6 red: an even chance",
     "1 part of 6 red: unlikely",
     "0 parts red: impossible"
    ],
    "visual": {
-    "type": "tiles",
-    "label": "Four chance words, most likely to least",
-    "values": [
+    "type": "ladder",
+    "label": "Five chance words, most likely to least: certain, likely, even chance, unlikely, impossible",
+    "words": [
      "certain",
      "likely",
+     "even chance",
      "unlikely",
      "impossible"
     ]
@@ -81,19 +80,19 @@
     {
      "cue": "Certain: it happens every single time.",
      "box": [
-      5,
-      30.4,
-      22.6,
-      29.9
+      33,
+      9.1,
+      46,
+      16.0
      ]
     },
     {
      "cue": "Unlikely: it can happen, but it probably will not.",
      "box": [
-      50,
-      30.4,
-      22.6,
-      29.9
+      33,
+      57.1,
+      46,
+      16.0
      ]
     }
    ]

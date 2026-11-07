@@ -1,5 +1,5 @@
 // Trick Inbox (Cyber Defenders Phase 2) in the real sandboxed frame (the packet-post pattern): the pinned kit
-// 1.1.4 tag and its four packs, no CSP violations, a full Explorer set played through __brbTest to the win
+// 1.1.5 tag and its four packs, no CSP violations, a full Explorer set played through __brbTest to the win
 // signal (and only there), a wrong Deliver costing a stamp-star with the missed clue named in the debrief, the
 // Pro boss round's eight messages, and lesson lock mode hiding the map.
 import { test, expect } from '@playwright/test';
@@ -26,15 +26,15 @@ const T = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest[fn](...a), [
 test('Trick Inbox runs on the kit: pinned tags, the set map, a full Letters round solved through the hooks', async ({ page }) => {
   const { f, errors } = await open(page);
   const tags = await f.evaluate(() => [...document.querySelectorAll('script[src]')].map(s => [s.getAttribute('src'), !!s.integrity, s.crossOrigin]));
-  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.4/oomba-kit.js', '/vendor/oomba-kit/1.1.4/packs/art-props.js', '/vendor/oomba-kit/1.1.4/packs/art-animals.js', '/vendor/oomba-kit/1.1.4/packs/art-school.js', '/vendor/oomba-kit/1.1.4/packs/style-bold.js']);
+  expect(tags.map(x => x[0]).slice(0, 5)).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-props.js', '/vendor/oomba-kit/1.1.5/packs/art-animals.js', '/vendor/oomba-kit/1.1.5/packs/art-school.js', '/vendor/oomba-kit/1.1.5/packs/style-bold.js']);
   for (const x of tags.slice(0, 5)) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
-  expect(await f.evaluate(() => Oomba.version)).toBe('1.1.4');
+  expect(await f.evaluate(() => Oomba.version)).toBe('1.1.5');
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
-  // free play: the title leads to the set map (Explorer: four sets)
+  // free play: the title leads to the set map (Explorer: eight sets)
   await f.locator('.ok-title-screen .ok-hot').click();
   const go = f.locator('.ok-howto .ok-hot');
   await go.waitFor({ state: 'visible', timeout: 8000 }).then(() => go.click(), () => {});
-  await expect(f.locator('.ti-ch')).toHaveCount(4, { timeout: 15000 });
+  await expect(f.locator('.ti-ch')).toHaveCount(8, { timeout: 15000 });
   // a lesson-shaped start: Letters, Explorer, seed 2 — solved perfectly through the hooks
   const s1 = await T(f, 'start', { chapter: 'letters', band: '1b', seed: 2, lesson: true, lock: true });
   expect([s1.screen, s1.chapter, s1.band, s1.lesson, s1.lock, s1.total, s1.gameOver]).toEqual(['round', 'letters', '1b', true, true, 6, false]);
@@ -66,17 +66,17 @@ test('Trick Inbox: a wrong Deliver costs a stamp-star and the debrief names the 
   expect(errors).toEqual([]);
 });
 
-test('Trick Inbox: the Pro boss round runs eight messages, and the map offers all seven sets', async ({ page }) => {
+test('Trick Inbox: the Pro boss round runs eight messages, and the map offers all eleven sets', async ({ page }) => {
   const { f, errors } = await open(page);
   await T(f, 'start', { chapter: 'boss', band: '2', seed: 5, lesson: true, lock: true });
   const s1 = await T(f, 'state');
   expect([s1.chapter, s1.band, s1.total]).toEqual(['boss', '2', 8]);
   const done = await T(f, 'solve');
   expect(done.gameOver).toBe(true); expect(done.label).toMatch(/^8\/8 messages, 3 stars$/);
-  // back in free play, Pro sees all seven sets
+  // back in free play, Pro sees all eleven sets
   const s2 = await T(f, 'start', { band: '2', lesson: false, lock: false });
   expect(s2.screen).toBe('map');
-  await expect(f.locator('.ti-ch')).toHaveCount(7, { timeout: 15000 });
+  await expect(f.locator('.ti-ch')).toHaveCount(11, { timeout: 15000 });
   expect(await f.evaluate(() => window.__csp)).toEqual([]);
   expect(errors).toEqual([]);
 });

@@ -10,59 +10,116 @@
    "title": "Everything is numbers",
    "text": "Inside a computer, every number, letter and color is stored as bits: switches that are on (1) or off (0).",
    "art": "bits",
-   "img": "csq/inside-the-machine/bits-2-key",
-   "view": [
-    0.8,
-    45,
-    44.5,
-    38.5
-   ],
-   "alt": "Pro bits opens with five switches and a bigger ask: make 21, where every place is worth double the last."
+   "img": "csq/inside-the-machine/bits-2-21-n",
+   "alt": "Five bits worth 16, 8, 4, 2 and 1: 16, 4 and 1 are on, so the bits read 10101 and the total is 21.",
+   "focus": [
+    {
+     "cue": "Letters are numbers too: A is 1",
+     "box": [
+      4.1,
+      24,
+      89.5,
+      28.1
+     ]
+    },
+    {
+     "cue": "Bits on and off make a number",
+     "box": [
+      3,
+      55,
+      94,
+      21
+     ]
+    }
+   ]
   },
   {
    "title": "Binary place values",
    "text": "In binary each place is worth double the one to its right: 16, 8, 4, 2, 1. Switches 16, 4 and 1 on read 10101, which is 16 + 4 + 1 = 21.",
    "art": "bits",
-   "img": "csq/inside-the-machine/bits-2-codes",
-   "view": [
-    0.8,
-    45,
-    44.5,
-    38.5
-   ],
-   "alt": "The switches read 16, 4 and 1 switched on: the number 21 written in bits instead of decimal."
+   "img": "csq/inside-the-machine/bits-2-21-n",
+   "alt": "Five bits worth 16, 8, 4, 2 and 1: 16, 4 and 1 are on, so the bits read 10101 and the total is 21.",
+   "focus": [
+    {
+     "cue": "16, 4 and 1 on: 10101",
+     "box": [
+      3,
+      55,
+      94,
+      21
+     ]
+    },
+    {
+     "cue": "16 + 4 + 1 = 21",
+     "box": [
+      45.2,
+      84.6,
+      9.7,
+      13.3
+     ]
+    }
+   ]
   },
   {
    "title": "More bits, more values",
    "text": "One bit shows 2 values. Each extra bit doubles that: 2 bits show 4, 3 bits show 8. Eight bits, a byte, show 256.",
    "art": "chart",
-   "img": "csq/inside-the-machine/bits-2-byte",
-   "view": [
-    0.8,
-    38,
-    44.5,
-    45
-   ],
-   "alt": "Eight switches in a row: a full byte, worth 0 to 255. Only the 128 switch is on, making the middle gray."
+   "img": "csq/inside-the-machine/bits-2-byte-n",
+   "alt": "Eight bits make a byte, worth 128 down to 1. The 128 bit alone is on: a middle gray, 128.",
+   "focus": [
+    {
+     "cue": "Eight bits: a byte, 0 to 255",
+     "box": [
+      4.1,
+      6.7,
+      90.5,
+      20
+     ]
+    },
+    {
+     "cue": "The 128 bit on: a middle gray",
+     "box": [
+      3,
+      26,
+      22,
+      18
+     ]
+    }
+   ]
   },
   {
    "kind": "example",
    "title": "One thing, many codes",
-   "text": "The same data can be written many ways. Each way is an encoding. A color can be three numbers too: 255, 0, 0 is pure red.",
+   "text": "The same data can be written many ways. Each way is an encoding. A color can be three numbers too: red 220, green 90, blue 40 is this orange.",
    "art": "pixel",
    "steps": [
-    "red: 255",
-    "green: 0, blue: 0",
-    "name: pure red"
+    "red: 220",
+    "green: 90",
+    "blue: 40",
+    "together: orange"
    ],
-   "img": "csq/inside-the-machine/bits-2-rgb",
-   "view": [
-    0.8,
-    40,
-    44.5,
-    42
-   ],
-   "alt": "The color round: a swatch to match with three numbers, because a pixel mixes red, green and blue light."
+   "img": "csq/inside-the-machine/bits-2-rgb-n",
+   "alt": "Match the swatch: the target is 220, 90, 40, an orange. Red 220, green 100, blue 40 already looks the same.",
+   "focus": [
+    {
+     "cue": "The target: 220, 90, 40",
+     "box": [
+      33.4,
+      77.4,
+      33.3,
+      12
+     ]
+    },
+    {
+     "cue": "Lots of red, some green, little blue: orange",
+     "box": [
+      38,
+      0.5,
+      23,
+      33
+     ]
+    }
+   ]
   },
   {
    "kind": "words",
@@ -89,8 +146,8 @@
    ]
   },
   {
-   "title": "The Spark is whole",
-   "text": "Gizmo's piece flies home — all four pieces are lit, and Netville is shining again. One step is left: come and see what you have done.",
+   "title": "Gizmo's piece lights up",
+   "text": "Gizmo's piece flies home: four of four. The pieces are ready, but the Spark is not back yet. Unit 6 is about the people technology is for. Finish it, and you put the Spark together.",
    "art": "chip",
    "story": {
     "scene": "handoff",
@@ -105,14 +162,28 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Bits & Pixels and finish all 7 levels. Flip switches to send numbers, letters and gray levels.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/bits-2-key",
-   "view": [
-    0.8,
-    45,
-    44.5,
-    38.5
-   ],
-   "alt": "Pro bits opens with five switches and a bigger ask: make 21, where every place is worth double the last."
+   "img": "csq/inside-the-machine/bits-2-21-n",
+   "alt": "Five bits worth 16, 8, 4, 2 and 1: 16, 4 and 1 are on, so the bits read 10101 and the total is 21.",
+   "focus": [
+    {
+     "cue": "Flip switches to send a number",
+     "box": [
+      3,
+      55,
+      94,
+      21
+     ]
+    },
+    {
+     "cue": "Then letters and gray levels",
+     "box": [
+      4.1,
+      24,
+      89.5,
+      28.1
+     ]
+    }
+   ]
   }
  ],
  "check": [

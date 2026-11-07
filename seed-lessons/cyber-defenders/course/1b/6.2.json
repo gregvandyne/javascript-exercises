@@ -20,25 +20,25 @@
    "title": "The law protects your work",
    "text": "Your drawing is yours, and the law protects it, just like it protects your private facts. Rules and laws are not only limits. They are layers that guard people and their work.",
    "art": "shield",
-   "img": "csq/would-you-rather/online-credit-1b-n1",
-   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+   "img": "csq/trick-inbox/ask-first-1b-af-3-all",
+   "alt": "A post from Free Art Page with both clues marked: “Copy any picture from this page and say you drew it.” and “Nobody ever checks!”",
    "focus": [
     {
-     "cue": "Use a picture, credit its maker",
+     "cue": "Copy a picture and say you drew it?",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
+      7.1,
+      36.2,
+      85.7,
+      22.4
      ]
     },
     {
-     "cue": "Draw your own, even if it is worse",
+     "cue": "The law protects its maker, checked or not",
      "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
+      7.1,
+      58.6,
+      48.8,
+      13.5
      ]
     }
    ]
@@ -58,16 +58,16 @@
    "title": "A rule broken against you",
    "text": "If someone breaks the rules against you, that is never your fault and never yours to fix alone. A broken rule is a reason to tell a trusted adult, who must act.",
    "art": "people",
-   "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
-   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
+   "img": "csq/trick-inbox/rules-1b-rb-5-debrief",
+   "alt": "The debrief: that is the move! That breaks the game’s rules against you, and it is never your fault. Report and block, save it, and tell a trusted adult.",
    "focus": [
     {
-     "cue": "Not yours to fix alone: save it and tell an adult",
+     "cue": "Not your fault, and not yours to fix alone",
      "box": [
       6.4,
-      17.9,
+      19.3,
       87.1,
-      47.4
+      37.9
      ]
     }
    ]
@@ -99,18 +99,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. For each choice, name the rule that helps you decide.",
+   "text": "Open Trick Inbox at Rule Breakers and sort all 6 messages. For each one, name the rule that helps you decide.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-name-1b",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
+   "img": "csq/trick-inbox/rules-1b-rb-1-all",
+   "alt": "A game chat from ShortcutKid with both clues marked: “Here is a trick to switch it off.” and “Do not tell your teacher.”",
    "focus": [
     {
-     "cue": "Play Online: name the rule for each choice",
+     "cue": "Play Rule Breakers: name the rule for each one",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      46.7,
+      64.2,
+      13.5
      ]
     }
    ]
@@ -122,8 +122,8 @@
   "cd-1b-6.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "rules",
+  "params": "chapter=rules&band=1b&lock=1"
  }
 }

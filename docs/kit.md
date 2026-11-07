@@ -43,7 +43,14 @@
 >   14). Same API plus additions, so `KIT_PATCHES` maps 1.1.0 and 1.1.1 → 1.1.2 (every saved game gets the key fix);
 >   the official games and the live lobby moved with `scripts/kit-upgrade-seeds.js`. The Builder's 3D rules send maps
 >   to the walker (docs/kit-api.md, "Walking around a 3D map").
-> - **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
+> - **1.1.5 (the 3D bridge's opt-in cartoon style):** the `bridge-3d` pack gains `style: 'cartoon'` (§6.6): the approved
+  style sheet's cartoon look in real time. The core only learns the `okStyle` query key; nothing else changes, so the
+  default look is byte-for-byte the same and `KIT_PATCHES` maps 1.1.3 and 1.1.4 → 1.1.5 (1.1.4 is locked in
+  `kit/SHIPPED.json`, its `live` pack unlocked as before). The play page passes `?style=cartoon` to the frame as
+  `?okStyle=cartoon` (only names in `FRAME_STYLES`, routes/games.js; the live page too); only a game that offers the
+  style (`styles: ['cartoon']`, Hero of Sunvale) draws it. bridge-3d is 13.9 KB brotli (cap 14). 1.1.5 also carries
+  every 1.1.4 pack, Sum Racer's `style-pixel` and `art-pixel` (with their fonts) included.
+- **Platform:** the frame CSP allows `<origin>/vendor/oomba-kit/` in `script-src` and `font-src` (next to cdnjs and
 >   `/vendor/three/`); the scanner accepts exactly `kitTag()` and, after it, exactly `kitPackTag(name)` for each pack (same
 >   version), fails anything else naming the kit (`kit_pin`, `kit_tag`) and flags games that name `Oomba.debug` or the
 >   pack hook `Oomba.__pk` (`kit_debug`); `snapshot.js` and `scripts/covers.js` serve kit files from
@@ -617,10 +624,60 @@ pay nothing. `Oomba.three(THREE, { renderer, scene, camera, theme })` → a brid
   floating rocks, `B.update(dt)` in its loop; its own quality ladder stays (`governor: false`). About 46 draw calls.
 - **Preview:** `/kit?scene=three&th=castle&style=bold&view=cast` (`kit/demo/three.html`): a small spark hunt with a
   quiz, or `view=cast` (rigs in front of their 2D twins).
+- **Cartoon (kit 1.1.5, opt-in).** The style sheet's cartoon look ("Oomba Ink" as a Blender render: kit palette, one
+  hard cel shade, Ink outline, contact shadow) in real time. `style: 'cartoon'`, or `styles: ['cartoon']` plus the
+  page's `?okStyle=cartoon`. Every toon material shares one program (`okCel`): the colour is the flat fill, one hard
+  band of the shade colour (a cool multiplier, about the palette's shade step) away from a key light fixed at the
+  top-left of the screen (view space, so it never swings with the camera; the edge is anti-aliased over a pixel),
+  a faint Cream rim on the lit side, then fog; the fills are a touch more saturated, and the shader has no scene-light
+  loops (the band comes from the key light alone), which pays for the rest on phones. `soft` and `depth` give rolling
+  land a wider, lighter band. No shadow maps on any tier (contact blobs are the look). The Ink is bold so it reads at
+  phone size: 0.68% of the view height (3.2-6.5 px, about 4.9 px at 720p) and full width out to 70 m (Playful thins
+  it from 12 m), so the far village keeps its line; far detail Ink still goes first on the low-end ladder. `B.palette(colour, k)` snaps a game's own colours to the nearest kit
+  colour (OKLab, lightness weighted); `B.light.tint` lets the game tint the mood (Sunvale's gloom). Theme styles never
+  override it; the UI stays Playful. Hero of Sunvale is the first game to offer it (`/play/hero-of-sunvale?style=cartoon`):
+  it snaps its colours, builds characters and props from rounded boxes, smooth-shades curves, puts soft blobs
+  under people, trees and houses and adds halos on its lamps (bloom on lamps only, one additive draw call).
 - **Versioning.** `bridge-3d` was first added beside the locked 1.1.0 with `node scripts/build-kit.js --packs` (it builds
   only the packs the lock does not list, and checks the core and every locked pack byte for byte). Foundation step 3
   (1.1.0 had not shipped yet) rebuilt 1.1.0's core (`Oomba.avatar()`, and `bridge-3d` in `Oomba.pack()`'s pack names)
   and re-locked it with all eight packs, `bridge-3d` included; the seven other packs kept their bytes.
+
+### 6.8 Pixel style (kit 1.1.4, packs `style-pixel` + `art-pixel`; the Sum Racer pilot)
+
+The owner chose pixel art for Sum Racer from the style sheet (felt, Oomba Ink cartoon, pixel; branch
+`feature/style-sheet`, `server/stories/blender/style_sheet.py`). The pixel look is one Blender scene and kit with
+different materials and post: cartoon (toon) materials rendered small with no anti-aliasing, a 1 px Ink line, snapped to
+a fixed palette with an ordered (Bayer) dither on gradients, scaled up nearest-neighbour. It is opt-in, per game:
+
+- **Switch.** A game loads `style-pixel` and `art-pixel` after the kit tag and calls `Oomba.style('pixel')` before its
+  stage. Without `style-pixel`, `Oomba.style('pixel')` is the Ink look (`'playful'`): the style always falls back.
+  Sum Racer picks it with `?style=pixel` on its play link (`BRB.params.style`, a lesson/URL parameter: `ink` or `pixel`,
+  docs/sdk.md) or `CONFIG.style`; the default is Ink, so nothing changes for anyone who does not ask, and course links
+  (`level=…&mode=…&lock=1`) keep working and can add `&style=pixel`.
+- **Versions.** 1.1.4 is locked in `kit/SHIPPED.json` (core and packs; `live` unlocked as before) and the two packs and
+  the font files were added to it with `build-kit --packs`: no file 1.1.4 shipped changed, so every game pinned to 1.1.4
+  or older loads exactly what it did, and no new kit version (or seed re-pin) was needed.
+- **style-pixel** (3 KB br): the UI skin under `.ok-pixel` (square boxes with stepped corners via `clip-path`, hard Ink
+  lips, no title gradients or glows, no ligatures), the fonts (Pixelify Sans, SIL OFL, Latin/Latin-ext/Cyrillic, and
+  **Oomba Pixel Digits**, the kit's own 6 x 7 digits and maths signs, because Pixelify's 5 reads as S, plus its own Z, z, G and B, which Pixelify draws almost like 2, 6 and 8; other scripts
+  keep the kit font), loaded with `FontFace` only when the style is on, and `Oomba.pixel` (kit-api.md): integer scale,
+  nearest-neighbour sprites, a dithered sky, a palette snap with the Ink edge for anything drawn at run time (a
+  player's own avatar), a night grade inside the palette.
+- **art-pixel** (20 KB br, cap 24): one indexed PNG atlas (19.9 KB, 512 x 1391) as a `data:` URI, because the frame's
+  `img-src` is `data: blob:` only. Generated by `tools/blender/`: `pixel_racers.py` (the kart and the cast: fox, bunny,
+  Rex the frog, Bolt the Oomba; idle, three drive frames, cheer; empty karts and their front layer; HUD heads),
+  `pixel_props.py` (21 scenery props), both through the style sheet's Blender pixel pipeline (`styles.py`,
+  `feltkit.py`, copied from `feature/style-sheet`), and `pixel_atlas.py` (the seven track worlds hand-pixelled in code
+  with the props stamped in: far, middle and roadside tiles 256 px wide; effects, sky decorations and ambient life;
+  the scene recipes; the shelf packer and the indexed PNG). Palette: the style sheet's 32 colours, 8 kit colours the
+  cast and tracks need (grape, light mint, light sky, the dock's deep grape) and the kit's skin and hair tones.
+- **Drawing.** A view draws its world into a buffer at the art's own pixels (`kd` device pixels per art pixel, an
+  integer, chosen so a kart is about as big as the Ink kart) and scales it up nearest-neighbour, so sprites, tiles,
+  particles and lines share one grid; words (HUD, pops, banners) are drawn on top at screen resolution in the pixel
+  font. Night (the dark theme) regrades the day tracks inside the palette. Reduced motion keeps its rules (no bob, no
+  shake, no confetti). Rebuild: `python3 tools/blender/pixel_racers.py --out D/racers`, `pixel_props.py --out D/props`,
+  `pixel_atlas.py --sprites D/racers D/props`, `pixel_digits.py`, then `node scripts/build-kit.js --packs`.
 
 ### 6.7 Live class games (kit 1.1.0, pack `live`)
 

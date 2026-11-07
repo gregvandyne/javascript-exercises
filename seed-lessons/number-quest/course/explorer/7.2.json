@@ -13,7 +13,7 @@
   },
   {
    "title": "One class, charted",
-   "text": "One Netville class answered one question: how do you get to school? The answers tallied into three bars. Bus is the tallest, and the chart can already answer questions nobody has asked yet.",
+   "text": "One Netville class answered one question: how do you get to school? The answers tallied into three bars. Bus is the longest bar, and the chart can already answer questions nobody has asked yet.",
    "art": "table",
    "visual": {
     "type": "bars",
@@ -54,17 +54,17 @@
      "box": [
       5,
       3.4,
-      68.1,
-      27.6
+      68,
+      27.5
      ]
     },
     {
-     "cue": "Bus is the tallest bar: 12 students.",
+     "cue": "Bus is the longest bar: 12 students.",
      "box": [
       5,
       33.6,
-      90.1,
-      27.6
+      90,
+      27.5
      ]
     },
     {
@@ -72,7 +72,7 @@
      "box": [
       5,
       63.9,
-      31.4,
+      90,
       27.5
      ]
     }
@@ -132,26 +132,26 @@
      "box": [
       3.9,
       57.8,
-      4.3,
+      4.2,
       25.5
      ]
     },
     {
      "cue": "Three pencils measure exactly 6 inches: three x marks stack here.",
      "box": [
-      33.1,
-      39.6,
-      4.5,
-      43.7
+      32.6,
+      35.9,
+      5.4,
+      47.3
      ]
     },
     {
      "cue": "The longest pencil: 8 inches.",
      "box": [
-      91.8,
-      51.6,
-      4.5,
-      31.7
+      91.3,
+      50.8,
+      5.4,
+      32.4
      ]
     }
    ]
@@ -192,7 +192,7 @@
   },
   {
    "title": "Your mission",
-   "text": "Open Data Detective at My Data and finish all 3 survey cases. Each case is your own survey: pick the question, tally the answers, chart them, and pin only a claim the chart really shows.",
+   "text": "Open Data Detective at My Data and finish all 3 survey cases. Each one asks about your class: ask your class, family or friends, then tally and chart the answers. In case 3 you pick the question first. Pin only a claim the chart really shows.",
    "art": "trophy",
    "img": "nq/data-detective/my-data",
    "alt": "Data Detective, My Data, on a phone: a pet survey charted as bars (Dog 4, Cat 3, Fish 1, Bird 0, Rabbit 0, None 2), Bars picked.",

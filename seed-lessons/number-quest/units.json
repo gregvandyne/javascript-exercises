@@ -838,8 +838,8 @@
     {
      "game": {
       "explorer": {
-       "chapter": "Practice Race",
-       "chapterTitle": "Practice Race",
+       "chapter": "Vault Run",
+       "chapterTitle": "Vault Run",
        "params": "mode=nq-7-4&lock=1",
        "slug": "quest-race"
       }

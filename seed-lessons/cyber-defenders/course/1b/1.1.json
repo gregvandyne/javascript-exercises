@@ -10,52 +10,46 @@
    "title": "Pim sorts the post",
    "text": "Pim the owl sorts the morning post at the Netville post office. Every message must reach the right house, safe and whole.",
    "art": "envelope",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
-   "view": [
-    7.6,
-    39.6,
-    45.6,
-    40.5
-   ],
+   "img": "csq/packet-post/packets-1b-hop-n",
+   "alt": "Break It Up: packet 1 of the apple picture has left Pim's Post and rides the road towards Mill Office and Grandma's House.",
    "focus": [
     {
-     "cue": "A photo waits at Pim's Post, ready to travel",
+     "cue": "Packet 2 waits its turn at Pim's Post",
      "box": [
-      11.1,
-      61.4,
-      3.9,
-      7.8
+      7,
+      50,
+      17,
+      32
      ]
     },
     {
-     "cue": "Its trip: across the roads to Grandma's House",
+     "cue": "Its trip: through Mill Office to Grandma's House",
      "box": [
-      10.6,
-      48.5,
-      39.6,
-      22.7
+      6,
+      30,
+      88,
+      52
      ],
      "path": [
       [
-       13.0,
-       65.6
+       14.5,
+       63.5
       ],
       [
-       21.8,
-       59.0
+       29.5,
+       53
       ],
       [
-       30.7,
-       51.6
+       44.5,
+       41.5
       ],
       [
-       39.5,
-       59.0
+       68,
+       52.5
       ],
       [
-       48.4,
-       66.0
+       86,
+       65
       ]
      ]
     }
@@ -65,31 +59,25 @@
    "title": "Too big for one envelope",
    "text": "A photo is too big for one envelope. Pim cuts it into small numbered pieces called packets, so each piece can travel on its own.",
    "art": "pixel",
-   "img": "csq/packet-post/packets-1b-split",
-   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office.",
-   "view": [
-    7.0,
-    30.7,
-    60.9,
-    64.0
-   ],
+   "img": "csq/packet-post/packets-1b-learn-n1",
+   "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
    "focus": [
     {
-     "cue": "One photo, three packets: each takes its own road",
+     "cue": "One picture, too big to send in one go",
      "box": [
-      10.0,
-      37.8,
-      41.9,
-      51.9
+      39.5,
+      2.6,
+      20.5,
+      37.5
      ]
     },
     {
-     "cue": "Packet 1 of 3: every packet wears its number",
+     "cue": "Cut into small numbered packets, each on its own road",
      "box": [
-      54.1,
-      35.7,
       10.8,
-      5.4
+      49,
+      78.4,
+      47
      ]
     }
    ]
@@ -98,31 +86,25 @@
    "title": "Different roads",
    "text": "Packets travel different roads through routers, which are other post offices along the way. If one road closes, a packet can take another road instead.",
    "art": "network",
-   "img": "csq/packet-post/routes-1b-roads",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
-   "view": [
-    7.0,
-    20.6,
-    84.3,
-    74.9
-   ],
+   "img": "csq/packet-post/routes-1b-roads-n",
+   "alt": "Many roads to the school: packets can go by Hill Office or River Office, and one road will close.",
    "focus": [
     {
      "cue": "Packets travel the roads from office to office",
      "box": [
-      10.0,
-      37.8,
-      41.9,
-      51.9
+      6,
+      16,
+      88,
+      84
      ]
     },
     {
-     "cue": "If a road closes, another road can carry them",
+     "cue": "Two roads lead on to The School: either can carry a packet",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      7.9
+      50,
+      16,
+      47,
+      84
      ]
     }
    ]
@@ -133,45 +115,39 @@
    "text": "Packets can arrive mixed up at the far end. Their numbers show the right order, so the far end can rebuild the whole photo.",
    "art": "envelope",
    "steps": [
-    "packet 3 arrives first",
-    "packet 1 arrives next",
-    "packet 2 arrives last",
-    "rebuild in order: 1, 2, 3"
+    "packets 1 and 2 are already in place",
+    "3, 4, 5 and 6 wait in the tray",
+    "tap each one in number order",
+    "the far end rebuilds the whole picture"
    ],
-   "img": "csq/packet-post/packets-1b-order",
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
-   "view": [
-    5.4,
-    30.4,
-    64.0,
-    65.5
-   ],
+   "img": "csq/packet-post/packets-1b-order-n",
+   "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
    "focus": [
     {
      "cue": "Packets can arrive mixed up at the far end",
      "box": [
-      8.4,
-      35.4,
-      45.5,
-      55.5
+      34.8,
+      53.5,
+      53.1,
+      18.6
      ]
     },
     {
      "cue": "Their numbers show the right order",
      "box": [
-      55.6,
-      42.6,
-      10.8,
-      12.8
+      34.8,
+      53.5,
+      12,
+      18.6
      ]
     },
     {
-     "cue": "The far end rebuilds the photo from the numbers",
+     "cue": "The far end rebuilds the picture from the numbers",
      "box": [
-      44.7,
-      59.2,
-      9.2,
-      8.4
+      2.6,
+      47,
+      30.6,
+      50
      ]
     }
    ]
@@ -180,31 +156,25 @@
    "title": "Hands that could peek",
    "text": "Every hand that carries a packet could peek inside it. That is why later steps teach seals and locks to keep messages private.",
    "art": "lock",
-   "img": "csq/packet-post/packets-1b-center",
-   "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
-   "view": [
-    5.6,
-    27.0,
-    82.1,
-    67.7
-   ],
+   "img": "csq/packet-post/packets-1b-center-n",
+   "alt": "Break It Up, level 4: five packets for the zoo. Every road on the map meets at the Center Office before Zoo Gate.",
    "focus": [
     {
-     "cue": "Every road here meets at the center office",
+     "cue": "Every road here meets at the Center Office",
      "box": [
-      21.3,
-      59.3,
-      8.0,
-      8.6
+      27.3,
+      38.9,
+      19.6,
+      25.5
      ]
     },
     {
-     "cue": "Many hands carry each packet on its way",
+     "cue": "Every office and router on the way handles the packet",
      "box": [
-      8.6,
-      37.8,
-      45.2,
-      51.9
+      44,
+      4,
+      28,
+      42
      ]
     }
    ]
@@ -238,22 +208,16 @@
    "title": "Your mission",
    "text": "Open Packet Post at Break It Up and finish all 5 levels, then play all 4 levels of Many Roads. Watch the number on every packet.",
    "art": "trophy",
-   "img": "csq/packet-post/packets-1b-key",
-   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered.",
-   "view": [
-    7.6,
-    39.6,
-    45.6,
-    40.5
-   ],
+   "img": "csq/packet-post/packets-1b-trip-n",
+   "alt": "Grandma's apple picture, cut into 3 numbered packets: packet 2 is on its way down the road.",
    "focus": [
     {
      "cue": "Play Break It Up: watch the number on every packet",
      "box": [
-      10.6,
-      48.5,
-      39.6,
-      22.7
+      3,
+      36,
+      33,
+      43
      ]
     }
    ]

@@ -52,8 +52,9 @@ test('20 steps per band from units.json, decks clean, games as catalogued', () =
   }
   assert.equal(C.getStep(course, '1b-0.1').game, null);
   assert.deepEqual(C.getStep(course, '1b-1.1').game, { slug: 'packet-post', chapter: 'packets', chapterTitle: 'Break It Up', params: 'chapter=packets&band=1b&lock=1', title: 'Packet Post' });
-  assert.equal(C.getStep(course, '1b-3.1').game.slug, 'would-you-rather');
-  assert.equal(C.getStep(course, '1b-3.1').game.title, 'Would You Rather?');
+  assert.equal(C.getStep(course, '1b-3.1').game.slug, 'trick-inbox');
+  assert.equal(C.getStep(course, '1b-3.1').game.chapter, 'private');
+  assert.equal(C.getStep(course, '1b-3.1').game.title, 'Trick Inbox');
   assert.equal(C.getStep(course, '2-3.3').game.slug, 'trick-inbox');
   assert.equal(C.getStep(course, '2-3.3').game.chapter, 'pressure');
   assert.equal(C.getStep(course, '1b-3.2').game.params, 'chapter=which-pim&band=1b&lock=1', 'a practice lock of the escape room');
@@ -131,17 +132,14 @@ test('a Packet Post mission opens from a Cyber Defenders step (the game owner is
   assert.equal((await get('/g/packet-post', kid)).location, '/courses/cs-quest#packet-post');
 });
 
-test('a Would You Rather mission: an open game, no gate, but the step context starts the step and its win completes it', async () => {
+test('a Trick Inbox mission (the scored privacy set that replaced Would You Rather): the step context starts the step and its win completes it', async () => {
   const kid = newKid(); C.setBand(kid, course, '1b');
   for (const s of C.steps(course, '1b').slice(0, 7)) doneByHand(kid, s);
   const s31 = C.getStep(course, '1b-3.1');
   assert.equal(C.stateOf(kid, course, '1b-3.1').open, true);
   const r = await post('/api/courses/cyber-defenders/1b-3.1/check', kid, { answers: allRight(s31) });
-  assert.equal(r.json.play, '/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1&topic=online&lock=1', 'the module opens the game locked to its online topic');
-  // Without the step context the open game just plays — for anyone, signed in or not.
-  assert.equal((await get('/play/would-you-rather', kid)).status, 200);
-  assert.equal((await get('/g/would-you-rather', kid)).status, 200, 'the game keeps its own page');
-  const play = await get('/play/would-you-rather?course=cyber-defenders&cstep=1b-3.1&topic=online&lock=1', kid);
+  assert.equal(r.json.play, '/play/trick-inbox?course=cyber-defenders&cstep=1b-3.1&chapter=private&band=1b&lock=1', 'the module opens the game locked to its Private Facts set');
+  const play = await get('/play/trick-inbox?course=cyber-defenders&cstep=1b-3.1&chapter=private&band=1b&lock=1', kid);
   assert.equal(play.status, 200);
   assert.match(play.text, /href="\/courses\/cyber-defenders\/1b-3\.1#play"/, 'back goes to the Defender step');
   const started = C.stateOf(kid, course, '1b-3.1');
@@ -149,6 +147,8 @@ test('a Would You Rather mission: an open game, no gate, but the step context st
   const won = await post('/api/courses/cyber-defenders/1b-3.1/complete', kid, {});
   assert.equal(won.status, 200);
   assert.ok(C.stateOf(kid, course, '1b-3.1').complete, 'the step completes when the game reports the win');
+  // No Cyber Defenders step opens Would You Rather's unscored dilemmas any more
+  for (const band of ['1b', '2']) assert.ok(C.steps(course, band).every(x => !x.game || x.game.slug !== 'would-you-rather'), band);
 });
 
 test('shared games keep their place in the open lists; owned course games stay out', () => {
@@ -187,7 +187,7 @@ test('guided focus renders on a Cyber Defenders unit 1 step page (shared rendere
   assert.equal(page.status, 200);
   assert.match(page.text, /<figure class="smedia gf(?: crop)?" style="--ar:[\d.]+;--fhr:[\d.]+" data-gf>/, 'a guided-focus figure');
   assert.match(page.text, /<div class="gf-layer" aria-hidden="true">/, 'the overlay layer');
-  assert.ok(page.text.includes('A photo waits at Pim&#39;s Post, ready to travel') || page.text.includes("A photo waits at Pim's Post, ready to travel"), 'the first cue is on the page');
+  assert.ok(page.text.includes('Packet 2 waits its turn at Pim&#39;s Post') || page.text.includes("Packet 2 waits its turn at Pim's Post"), 'the first cue is on the page');
   assert.match(page.text, /<button class="gf-replay" type="button" hidden>/, 'the replay button');
 });
 

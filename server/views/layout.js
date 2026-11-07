@@ -150,7 +150,7 @@ export function themePicker(req) {
   </details>`;
 }
 
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
@@ -234,7 +234,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
 <html lang="${esc(locale)}" dir="${esc(info.dir)}"${theme ? ` data-theme="${theme}"` : ''}>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover${keyboard ? ', interactive-widget=resizes-content' : ''}">
 <meta name="color-scheme" content="${theme || 'light dark'}">
 <title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(desc)}">
