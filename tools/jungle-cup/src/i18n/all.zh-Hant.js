@@ -161,6 +161,7 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "sport.leaf.keys": "按鍵：空白鍵跳。在空中：左/右旋轉，上鍵翻轉，下鍵抓板。",
   "ls.jump": "跳", "ls.spin": "旋轉", "ls.flip": "翻轉", "ls.grab": "抓板",
   "ls.pop": "起跳！", "ls.hop": "小跳！+30", "ls.bonk": "咚！", "ls.low": "太低了！", "ls.wipeout": "摔倒了！",
+  "ls.perfectLand": "完美落地！", "ls.bigAir": "超高跳躍！", "ls.mega": "超級跳台！", "ls.combo": "連招 x{n}！", "ls.shake": "沒關係，再來！", "ls.ring": "綠圈＝漂亮落地",
   "ls.youWin": "你打敗琪琪了！", "ls.kikiWins": "這次琪琪贏了",
   "ls.hintTouch": "在跳台上點一下起跳！在空中滑動或按特技。特技做完再落地。",
   "ls.hintKeys": "在跳台上按空白鍵起跳！在空中：左/右旋轉，上翻轉，下抓板。特技做完再落地。",

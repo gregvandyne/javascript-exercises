@@ -158,6 +158,7 @@ I18N.es = Object.assign(I18N.es || {}, {
   "sport.leaf.keys": "Teclas: Espacio para saltar. En el aire: Izquierda / Derecha para Giro, Arriba para Voltereta, Abajo para Agarre.",
   "ls.jump": "Saltar", "ls.spin": "Giro", "ls.flip": "Voltereta", "ls.grab": "Agarre",
   "ls.pop": "¡Hop!", "ls.hop": "¡Saltito! +30", "ls.bonk": "¡Bonc!", "ls.low": "¡Muy bajo!", "ls.wipeout": "¡Caída!",
+  "ls.perfectLand": "¡Aterrizaje perfecto!", "ls.bigAir": "¡Gran salto!", "ls.mega": "¡Megarrampa!", "ls.combo": "¡Combo x{n}!", "ls.shake": "¡Arriba, otra vez!", "ls.ring": "Anillo verde = buen aterrizaje",
   "ls.youWin": "¡Has ganado a Kiki!", "ls.kikiWins": "Esta vez gana Kiki",
   "ls.hintTouch": "¡Toca en una rampa para saltar! En el aire, desliza o pulsa un truco. Aterriza sin ningún truco a medias.",
   "ls.hintKeys": "¡Espacio en una rampa para saltar! En el aire: Izquierda / Derecha Giro, Arriba Voltereta, Abajo Agarre. Aterriza sin ningún truco a medias.",

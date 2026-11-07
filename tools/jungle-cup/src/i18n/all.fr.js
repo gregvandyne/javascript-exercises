@@ -158,6 +158,7 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "sport.leaf.keys": "Touches : Espace pour sauter. En l'air : Gauche / Droite pour Vrille, Haut pour Salto, Bas pour Grab.",
   "ls.jump": "Sauter", "ls.spin": "Vrille", "ls.flip": "Salto", "ls.grab": "Grab",
   "ls.pop": "Hop !", "ls.hop": "Petit saut ! +30", "ls.bonk": "Bong !", "ls.low": "Trop bas !", "ls.wipeout": "Chute !",
+  "ls.perfectLand": "Atterrissage parfait !", "ls.bigAir": "Gros saut !", "ls.mega": "Méga-tremplin !", "ls.combo": "Combo x{n} !", "ls.shake": "On repart !", "ls.ring": "Anneau vert = bon atterrissage",
   "ls.youWin": "Tu as battu Kiki !", "ls.kikiWins": "Kiki gagne cette fois",
   "ls.hintTouch": "Touche sur un tremplin pour sauter ! En l'air, glisse ou appuie sur une figure. Atterris sans figure en cours.",
   "ls.hintKeys": "Espace sur un tremplin pour sauter ! En l'air : Gauche / Droite Vrille, Haut Salto, Bas Grab. Atterris sans figure en cours.",

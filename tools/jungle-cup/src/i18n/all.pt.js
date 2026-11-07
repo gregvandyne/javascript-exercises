@@ -158,6 +158,7 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "sport.leaf.keys": "Teclas: Espaço para pular. No ar: Esquerda / Direita para Giro, Cima para Mortal, Baixo para Pegada.",
   "ls.jump": "Pular", "ls.spin": "Giro", "ls.flip": "Mortal", "ls.grab": "Pegada",
   "ls.pop": "Hop!", "ls.hop": "Pulinho! +30", "ls.bonk": "Bonc!", "ls.low": "Baixo demais!", "ls.wipeout": "Tombo!",
+  "ls.perfectLand": "Aterrissagem perfeita!", "ls.bigAir": "Salto enorme!", "ls.mega": "Mega rampa!", "ls.combo": "Combo x{n}!", "ls.shake": "Bora, de novo!", "ls.ring": "Anel verde = boa aterrissagem",
   "ls.youWin": "Você venceu o Kiki!", "ls.kikiWins": "Desta vez o Kiki venceu",
   "ls.hintTouch": "Toque numa rampa para pular! No ar, deslize ou aperte uma manobra. Aterrisse sem manobra pela metade.",
   "ls.hintKeys": "Espaço numa rampa para pular! No ar: Esquerda / Direita Giro, Cima Mortal, Baixo Pegada. Aterrisse sem manobra pela metade.",

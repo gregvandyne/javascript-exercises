@@ -6,29 +6,37 @@
 //   tricks (a repeat is worth half). Land with no trick still going to bank the points; land mid-trick and it is a
 //   wipeout (the combo is lost and the leaf slows down). Berries floating over the landings and hopped logs add a
 //   few points. Kiki rides the same slope just ahead and scores on every ramp: beat her score when time runs out.
+//   The jumps are the show: Cappy crouches on the kicker, launches with a burst and speed lines, hangs at the top of
+//   the arc, and the camera opens up to show the landing spot (a ring on the mud: green = you'll land clean, red =
+//   finish your trick first). Clean landings squash and splat; a trick finished just before touch-down is a
+//   "Perfect landing!", a long air is "Big air!" (small bonuses). From the middle of the run, golden mega ramps.
 // World units are virtual pixels: x to the right, y down the screen (the slope goes down to the right).
 // ======================================================================================================
 (function () {
   const TIME = 90, STEP = 4, LEN = 19000, NS = (LEN / STEP) | 0, GRAV = 480, HOP_V = 75, POP_V = 100, MIN_AIR = 12;
+  // hang time: near the top of the arc gravity eases off, so a big jump floats for a moment
+  const HANG_V = 45, HANG_K = 0.5, PERFECT_T = 0.3, BIGAIR_T = 1.15;
+  const gravAt = vy => (vy > -HANG_V && vy < HANG_V ? GRAV * HANG_K : GRAV);
   const TRICKS = { spin: { pts: 100, dur: 0.42 }, flip: { pts: 150, dur: 0.52 }, grab: { pts: 80, dur: 0.34 } };
   const MAXR = 48, MAXL = 48, MAXB = 160, MAXM = 32;
   const S = {
     r: Math.random, ctx: null, seed: 0, auto: false, skill: 1, time: 0, over: false, won: false, endT: 0, hint: 1,
     G: new Float32Array(NS + 2), F: new Uint8Array(NS + 2),
-    ramps: new Float32Array(MAXR), rampBig: new Uint8Array(MAXR), rampH: new Float32Array(MAXR), nR: 0,
+    ramps: new Float32Array(MAXR), rampBig: new Uint8Array(MAXR), rampH: new Float32Array(MAXR), rampL: new Float32Array(MAXR), nR: 0, megaSeen: -1,
     logs: new Float32Array(MAXL), nL: 0, mud0: new Float32Array(MAXM), mud1: new Float32Array(MAXM), nM: 0,
     bx: new Float32Array(MAXB), by: new Float32Array(MAXB), bOn: new Uint8Array(MAXB), nB: 0,
     // Cappy
     x: 40, y: 0, vx: 60, vy: 0, air: false, airT: 0, pop: false, crash: 0, landCd: 0, nextLip: 0, nextLog: 0, lowMsg: false,
-    trick: '', trickT: 0, trickDur: 0, queue: '', nTr: 0, cSpin: 0, cFlip: 0, cGrab: 0, pend: 0, score: 0, crashes: 0, combos: 0, bestCombo: 0, tricksDone: 0, berries: 0, hops: 0, pops: 0,
+    trick: '', trickT: 0, trickDur: 0, queue: '', nTr: 0, lastTrickEnd: -9, sqT: 0, sqK: 0, perfects: 0, bigAirs: 0, megas: 0, landX: 0, landT: 0, trailT: 0, lean: 0, cSpin: 0, cFlip: 0, cGrab: 0, pend: 0, score: 0, crashes: 0, combos: 0, bestCombo: 0, tricksDone: 0, berries: 0, hops: 0, pops: 0,
     // Kiki
     kx: 90, ky: 0, kvx: 60, kvy: 0, kair: false, kairT: 0, kNextLip: 0, kNextLog: 0, kScore: 0, kTrickQ: 0, kTotal: 0,
     // camera and drawing
-    camX: 0, camY: 0, K: 1, A: 2, bgFar: null, bgNear: null, bgGen: -1, bgH: 0, bgW: 0, flash: 0, botCd: 0, botRamp: -1, finished: false,
+    camX: 0, camY: 0, camLead: 0.28, K: 1, A: 2, bgFar: null, bgNear: null, bgGen: -1, bgH: 0, bgW: 0, flash: 0, botCd: 0, botRamp: -1, finished: false,
   };
   const HINT = { align: 'center', col: '#fff8e8' }, T_TR = { align: 'center', col: '#ffe9a0' };
   const T_MULT = { align: 'left', col: PAL.r4 };
   const VA = { name: '', score: 0, col: '#8ee070' }, VB = { name: '', score: 0, col: '#ff6fb5' };
+  const SQ = { sx: 1, sy: 1 }, TRAIL = JC.juice.trail(6), T_BIG = { align: 'center', col: '#ffd24a' };
   const B_J = { col: '#3fae4a', glow: false }, B_S = { col: '#ff6fb5', disabled: false }, B_F = { col: '#b06cff', disabled: false }, B_G = { col: '#3fb7ff', disabled: false };
 
   /* ---------- sprites ---------- */
@@ -40,12 +48,16 @@
   sprite('ls_berry', ['..oGo.', '.oppo.', 'opPppo', 'oppPpo', '.oppo.', '..oo..'], { o: OUT, p: '#b06cff', P: '#e0c0ff', G: '#3d9a2e' });
   sprite('ls_fern', ['o...o...o', 'go..g..og', '.go.g.og.', '..gogog..', '...ggg...', '....g....'], { o: '#1f5a34', g: '#4fa83f' });
   sprite('ls_flower', ['.o.o.', 'opopo', '.oyo.', 'opopo', '.o.o.', '..g..', '..g..'], { o: OUT, p: '#ff6fb5', y: '#ffd23f', g: '#2f7d3c' });
+  sprite('ls_flag', ['oo....', 'oyyyo.', 'oyyyyo', 'oyyyo.', 'oo....', 'o.....', 'o.....', 'o.....', 'o.....', 'o.....'], { o: OUT, y: '#ffd23f' });
   sprite('ls_arrow', ['...o...', '..oyo..', '.oyyyo.', 'oyyyyyo', 'oooyooo', '..oyo..', '..oyo..', '..ooo..'], { o: OUT, y: '#ffd23f' });
 
   /* ---------- sounds and music ---------- */
   AUDIO.addSfx('lsPop', (t, b) => { const P = AUDIO.prims; P.tone(b, 'square', 260, t, 0.14, 0.18, 720, 0.002, 0.05, 0.4); P.noise(b, t, 0.2, 0.2, 'lowpass', 1200, 0.8, 300); });
   AUDIO.addSfx('lsTrick', (t, b) => { const P = AUDIO.prims; P.tone(b, 'square', 880, t, 0.06, 0.12); P.tone(b, 'square', 1320, t + 0.05, 0.08, 0.12); });
-  AUDIO.addSfx('lsLand', (t, b) => { const P = AUDIO.prims; P.noise(b, t, 0.18, 0.3, 'lowpass', 900, 0.7, 200); P.tone(b, 'sine', 140, t, 0.1, 0.4, 70); });
+  AUDIO.addSfx('lsLand', (t, b) => { const P = AUDIO.prims; P.noise(b, t, 0.22, 0.34, 'lowpass', 1400, 0.6, 180); P.noise(b, t + 0.03, 0.08, 0.2, 'highpass', 2600, 0.8, 1200); P.tone(b, 'sine', 150, t, 0.12, 0.45, 60); });
+  AUDIO.addSfx('lsWind', (t, b) => { const P = AUDIO.prims; P.noise(b, t, 0.7, 0.12, 'bandpass', 700, 0.3, 1500); P.tone(b, 'sine', 520, t, 0.5, 0.05, 900); });
+  AUDIO.addSfx('lsPerfect', (t, b) => { const P = AUDIO.prims; P.tone(b, 'square', 660, t, 0.07, 0.13); P.tone(b, 'square', 880, t + 0.07, 0.07, 0.13); P.tone(b, 'square', 1320, t + 0.14, 0.16, 0.13); });
+  AUDIO.addSfx('lsMega', (t, b) => { const P = AUDIO.prims; P.tone(b, 'square', 220, t, 0.35, 0.16, 880, 0.005, 0.1, 0.5); P.noise(b, t, 0.3, 0.25, 'lowpass', 2000, 0.8, 400); });
   AUDIO.addSfx('lsSplat', (t, b) => { const P = AUDIO.prims; P.noise(b, t, 0.4, 0.35, 'lowpass', 1600, 0.6, 150); P.tone(b, 'triangle', 300, t, 0.3, 0.2, 90); });
   AUDIO.songs.leaf = { bpm: 150, steps: 32, leadWave: 'square', harmWave: 'triangle', swing: 0.06,
     lead: 'E5 . G5 . B5 - A5 . G5 . E5 . D5 - . . E5 . G5 . B5 - D6 . C6 - B5 . A5 - G5 .',
@@ -63,13 +75,15 @@
     slope.fill(0.24);
     let x = 300, n = 0;
     while (x < LEN - 700 && S.nR < MAXR) {
-      const big = n % 3 === 2, RL = big ? 84 : 64, h = big ? 26 : 17, lip = x + RL;
-      S.ramps[S.nR] = lip; S.rampBig[S.nR] = big ? 1 : 0; S.rampH[S.nR] = h; S.nR++;
+      // from the middle of the run every fourth ramp is a golden mega ramp
+      const mega = x > LEN * 0.4 && n % 4 === 3, big = mega || n % 3 === 2, RL = mega ? 104 : big ? 84 : 64, h = mega ? 36 : big ? 26 : 17, lip = x + RL;
+      S.ramps[S.nR] = lip; S.rampBig[S.nR] = mega ? 2 : big ? 1 : 0; S.rampH[S.nR] = h; S.rampL[S.nR] = RL; S.nR++;
       for (let px = x; px < lip; px += STEP) { const i = (px / STEP) | 0, k = (px - x) / RL; off[i] -= h * Math.pow(k, 1.7); F[i] = 1; }
       F[(lip / STEP) | 0] = 2;
       // the landing: steeper for a while, so the air is long
-      for (let px = lip; px < lip + 210; px += STEP) slope[(px / STEP) | 0] = 0.52;
-      x = lip + 210 + 40;
+      const land = mega ? 290 : 210;
+      for (let px = lip; px < lip + land; px += STEP) slope[(px / STEP) | 0] = mega ? 0.56 : 0.52;
+      x = lip + land + 40;
       // the flat stretch between ramps
       const gap = 170 + r() * 110; let gx = x + 20;
       while (gx < x + gap - 50) {
@@ -87,7 +101,7 @@
     // berries: an arc over each landing, high enough that only a popped jump reaches them
     for (let k = 0; k < S.nR && S.nB < MAXB - 3; k++) {
       const lip = S.ramps[k], big = S.rampBig[k];
-      for (let j = 0; j < 3; j++) { const bx = lip + 50 + j * 34; S.bx[S.nB] = bx; S.by[S.nB] = groundAt(lip) - (big ? 58 : 50) + j * j * 4 + (bx - lip) * 0.2; S.bOn[S.nB] = 1; S.nB++; }
+      for (let j = 0; j < 3; j++) { const bx = lip + (big === 2 ? 64 : 50) + j * (big === 2 ? 42 : 34); S.bx[S.nB] = bx; S.by[S.nB] = groundAt(lip) - (big === 2 ? 74 : big ? 58 : 50) + j * j * 4 + (bx - lip) * 0.2; S.bOn[S.nB] = 1; S.nB++; }
     }
     void ctx;
   }
@@ -109,8 +123,8 @@
   }
   /** Seconds until a body in the air at (x, y) with (vx, vy) lands (a quick forward simulation, for bots and tests). */
   function landIn(x, y, vx, vy) {
-    for (let i = 1; i < 240; i++) { const dt = 1 / 60; vy += GRAV * dt; x += vx * dt; y += vy * dt; if (y >= groundAt(x)) return i / 60; }
-    return 4;
+    for (let i = 1; i < 300; i++) { const dt = 1 / 60; vy += gravAt(vy) * dt; x += vx * dt; y += vy * dt; if (y >= groundAt(x)) { S.landX = x; return i / 60; } }
+    S.landX = x; return 5;
   }
 
   /* ---------- Cappy ---------- */
@@ -124,8 +138,18 @@
   }
   function takeOff(ctx, vy) {
     S.air = true; S.airT = 0; S.vy = vy + S.vx * slopeAt(S.x) * 0.5; S.lowMsg = false;
-    S.nTr = 0; S.cSpin = 0; S.cFlip = 0; S.cGrab = 0; S.pend = 0; S.trick = ''; S.queue = '';
-    ctx.sfx(vy < -HOP_V - 10 ? 'lsPop' : 'whoosh');
+    S.nTr = 0; S.cSpin = 0; S.cFlip = 0; S.cGrab = 0; S.pend = 0; S.trick = ''; S.queue = ''; S.lastTrickEnd = -9; S.windOn = false;
+    const big = vy < -HOP_V - 10;
+    ctx.sfx(big ? 'lsPop' : 'whoosh');
+    S.sqT = 0.16; S.sqK = big ? 0.9 : 0.5;              // stretch on the way up
+    JC.juice.clearTrail(TRAIL);
+    if (big) {
+      // a launch burst: mud and leaf bits fly off the lip
+      const X = sx(S.x), Y = sy(S.y);
+      for (let i = 0; i < 10; i++) UI.particle(X - 4, Y, -30 - S.r() * 60, -20 - S.r() * 80, i % 3 ? '#9a6234' : '#7cc84a', 0.5 + S.r() * 0.3, 2, 260);
+      JC.juice.shake(1, 0.12);
+      if (S.ringHints < 2 && (ctx.firstTime || S.ringHints < 1)) { S.ringHints++; S.ringSay = true; }
+    }
   }
   function trickInput(ctx, id) {
     if (!S.air || S.over || S.crash > 0) return;
@@ -134,7 +158,7 @@
   }
   function startTrick(ctx, id) {
     const h = groundAt(S.x) - S.y;
-    if (h < MIN_AIR && S.airT > 0.05) { if (!S.lowMsg) { S.lowMsg = true; UI.float(sx(S.x), sy(S.y) - 30, t('ls.low'), '#ffe9a0'); } return; }
+    if (h < MIN_AIR && S.airT > 0.05) { if (!S.lowMsg) { S.lowMsg = true; UI.float(sx(S.x), fy(sy(S.y) - 30), t('ls.low'), '#ffe9a0'); } return; }
     S.trick = id; S.trickT = 0; S.trickDur = TRICKS[id].dur * (S.ctx.easy ? 0.85 : 1);
     S.hint = Math.max(0, S.hint - 0.2);
     ctx.sfx('whoosh');
@@ -144,33 +168,51 @@
     const c = id === 'spin' ? S.cSpin++ : id === 'flip' ? S.cFlip++ : S.cGrab++;
     S.pend += c ? base / 2 : base; S.nTr++; S.tricksDone++;
     S.trick = '';
-    ctx.sfx('lsTrick');
-    UI.float(sx(S.x), sy(S.y) - 28, t('ls.' + id), '#ffe9a0');
+    ctx.sfx('lsTrick'); S.lastTrickEnd = S.airT;
+    UI.float(sx(S.x) + 30 * S.K, fy(sy(S.y) - 30), t('ls.' + id), '#ffe9a0', 2);
+    if (S.nTr > 1) UI.float(sx(S.x) + 30 * S.K, fy(sy(S.y) - 52), label('ls.combo', S.nTr), '#ffd24a', 2);
     if (S.queue) { const q = S.queue; S.queue = ''; startTrick(ctx, q); }
   }
   function land(ctx) {
     S.air = false; S.y = groundAt(S.x); S.vy = 0; S.landCd = 0.12; S.pop = false;
     if (S.trick) {
       // landed mid-trick: wipeout
+      // a big, friendly splat: Cappy tumbles, the leaf flips away, and he's straight back on
       S.trick = ''; S.queue = ''; S.crash = 0.85; S.crashes++; S.vx = Math.min(S.vx, 70);
-      ctx.sfx('lsSplat'); UI.burst(sx(S.x), sy(S.y), 16, '#7a4a26', 70);
-      UI.float(sx(S.x), sy(S.y) - 30, t('ls.wipeout'), '#ffb3d6');
+      ctx.sfx('lsSplat'); UI.burst(sx(S.x), sy(S.y), 18, '#7a4a26', 80);
+      for (let i = 0; i < 8; i++) UI.particle(sx(S.x), sy(S.y) - 4, (S.r() - 0.3) * 120, -40 - S.r() * 70, '#6e4325', 0.7, 3, 300);
+      UI.float(sx(S.x), fy(sy(S.y) - 34), t('ls.wipeout'), '#ffb3d6', 2);
+      UI.float(sx(S.x), fy(sy(S.y) - 56), t('ls.shake'), '#fff8e8');
+      JC.juice.shake(2, 0.2);
       S.pend = 0; S.nTr = 0;
       return;
     }
-    ctx.sfx('lsLand'); UI.burst(sx(S.x), sy(S.y), 6, '#9a6234', 40);
+    const air = S.airT, big = air > 0.6;
+    ctx.sfx('lsLand');
+    S.sqT = 0.2; S.sqK = -(big ? 1 : 0.5);             // squash on touch-down
+    UI.burst(sx(S.x), sy(S.y), big ? 12 : 6, '#9a6234', big ? 60 : 40);
+    if (big) {
+      // a mud splat forward and skid sparks behind the leaf
+      for (let i = 0; i < 8; i++) UI.particle(sx(S.x) + 6, sy(S.y) - 2, 30 + S.r() * 90, -30 - S.r() * 60, i % 2 ? '#6e4325' : '#9a6234', 0.5, 2, 320);
+      for (let i = 0; i < 6; i++) UI.particle(sx(S.x) - 14, sy(S.y) - 2, -40 - S.r() * 70, -10 - S.r() * 30, i % 2 ? '#ffd24a' : '#ff9a3c', 0.35, 1, 120);
+      JC.juice.shake(air > BIGAIR_T ? 2 : 1, 0.15);
+    }
+    let bonus = 0;
+    if (air >= BIGAIR_T) { bonus += 40; S.bigAirs++; UI.float(sx(S.x), fy(sy(S.y) - 70), t('ls.bigAir'), '#9fe8ff', 2); }
     if (S.nTr > 0) {
       // a clean landing banks the tricks plus a landing bonus (so one good trick per ramp keeps up with Kiki)
-      const pts = Math.round(S.pend * S.nTr + 50);
+      if (air - S.lastTrickEnd <= PERFECT_T) { bonus += 60; S.perfects++; ctx.sfx('lsPerfect'); UI.float(sx(S.x), fy(sy(S.y) - 56), t('ls.perfectLand'), '#ffd24a', 2); for (let i = 0; i < 10; i++) UI.particle(sx(S.x), sy(S.y) - 10, (S.r() - 0.5) * 160, -40 - S.r() * 90, i % 2 ? '#ffd24a' : '#fff8e8', 0.6, 2, 160); }
+      const pts = Math.round(S.pend * S.nTr + 50 + bonus);
       S.score += pts; S.combos++; S.bestCombo = Math.max(S.bestCombo, S.nTr);
-      UI.float(sx(S.x), sy(S.y) - 40, '+' + pts, S.nTr > 1 ? '#ffd24a' : '#8ee070', S.nTr > 2 ? 2 : 1);
+      UI.float(sx(S.x), fy(sy(S.y) - 40), '+' + pts, S.nTr > 1 ? '#ffd24a' : '#8ee070', S.nTr > 1 ? 2 : 1);
       if (S.nTr > 1) { ctx.sfx('star'); S.flash = 0.25; }
       S.pend = 0; S.nTr = 0;
-    }
+    } else if (bonus) { S.score += bonus; UI.float(sx(S.x), fy(sy(S.y) - 40), '+' + bonus, '#9fe8ff'); }
   }
   function moveCappy(dt, ctx) {
     if (S.landCd > 0) S.landCd -= dt;
     if (S.crash > 0) { S.crash -= dt; }
+    if (S.sqT > 0) S.sqT -= dt;
     if (!S.air) {
       S.vx = clamp(S.vx + groundAccel(S.x, S.vx) * dt * (S.crash > 0 ? 0.3 : 1), 55, 215);
       const x0 = S.x;
@@ -179,24 +221,32 @@
       if (S.nextLip < S.nR && x0 <= S.ramps[S.nextLip] && S.x > S.ramps[S.nextLip]) {
         const k = S.nextLip; S.nextLip++;
         if (S.crash <= 0) {
-          const rs = -(S.rampH[k] * 1.7) / (S.rampBig[k] ? 84 : 64);
+          const rs = -(S.rampH[k] * 1.7) / S.rampL[k];
           let vy = S.vx * rs;
-          if (S.pop) { vy -= POP_V + (S.rampBig[k] ? 15 : 0); S.pops++; UI.float(sx(S.x), sy(S.y) - 26, t('ls.pop'), '#8ee070'); }
+          if (S.pop) { vy -= POP_V + (S.rampBig[k] === 2 ? 25 : S.rampBig[k] ? 15 : 0); S.pops++; UI.float(sx(S.x), fy(sy(S.y) - 26), t('ls.pop'), '#8ee070', 2); }
+          if (S.rampBig[k] === 2) { S.megas++; ctx.sfx('lsMega'); }
           takeOff(ctx, vy); S.vy = vy;
         }
       }
+      // a golden mega ramp coming up: say so once
+      if (S.nextLip < S.nR && S.rampBig[S.nextLip] === 2 && S.megaSeen !== S.nextLip && S.ramps[S.nextLip] - S.x < 260) { S.megaSeen = S.nextLip; UI.banner(t('ls.mega'), '#ffd24a', 1); }
       // logs: hop them or bonk
       if (S.nextLog < S.nL && S.x + 6 > S.logs[S.nextLog]) {
         S.nextLog++;
-        if (S.crash <= 0) { S.vx *= 0.55; ctx.sfx('bonk'); UI.float(sx(S.x), sy(S.y) - 28, t('ls.bonk'), '#ffb3d6'); S.crash = Math.max(S.crash, 0.3); }
+        if (S.crash <= 0) { S.vx *= 0.55; ctx.sfx('bonk'); UI.float(sx(S.x), fy(sy(S.y) - 28), t('ls.bonk'), '#ffb3d6'); S.crash = Math.max(S.crash, 0.3); }
       }
       // mud splashes (just for fun)
       if (flagAt(S.x) === 4 && ((S.time * 20) | 0) % 3 === 0) UI.particle(sx(S.x) - 4, sy(S.y) - 2, -20 - S.r() * 30, -30 - S.r() * 40, '#6e4325', 0.5, 2, 200);
     } else {
       S.airT += dt;
-      S.vy += GRAV * dt; S.x += S.vx * dt; S.y += S.vy * dt;
+      S.vy += gravAt(S.vy) * dt; S.x += S.vx * dt; S.y += S.vy * dt;
+      // the whistle of the wind at the top of a big jump; an afterimage trail while a trick is going
+      if (!S.windOn && S.vy > -HANG_V && S.airT > 0.25) { S.windOn = true; ctx.sfx('lsWind'); }
+      if (S.ringSay && S.airT > 0.15 && S.landT > 0.3) { S.ringSay = false; UI.float(sx(S.landX), fy(sy(groundAt(S.landX)) - 22 * S.K), t('ls.ring'), '#8ee070'); }
+      S.trailT -= dt;
+      if (S.trick && S.trailT <= 0) { S.trailT = 0.05; JC.juice.push(TRAIL, S.x, S.y, S.trick === 'flip' ? flipAng() : 0, S.trick === 'spin' ? 1 : S.trick === 'grab' ? 2 : 3); }
       if (S.trick) { S.trickT += dt; if (S.trickT >= S.trickDur) trickDone(ctx); }
-      if (S.nextLog < S.nL && S.x > S.logs[S.nextLog]) { S.nextLog++; S.hops++; S.score += 30; UI.float(sx(S.x), sy(S.y) - 24, t('ls.hop'), '#8ee070'); ctx.sfx('pickup'); }
+      if (S.nextLog < S.nL && S.x > S.logs[S.nextLog]) { S.nextLog++; S.hops++; S.score += 30; UI.float(sx(S.x), fy(sy(S.y) - 24), t('ls.hop'), '#8ee070'); ctx.sfx('pickup'); }
       while (S.nextLip < S.nR && S.ramps[S.nextLip] < S.x) S.nextLip++;
       if (S.y >= groundAt(S.x)) land(ctx);
     }
@@ -209,18 +259,20 @@
   }
 
   /* ---------- Kiki: rides the same slope, always pops, scores on every ramp ---------- */
+  // Kiki's points per ramp (the jumps got bigger, so she keeps up: tuned with the bots in jungle-cup-c's balance test)
+  const KIKI_BASE = 215, KIKI_EASY = 135, KIKI_MEGA = 140, KIKI_MEGA_E = 70, KIKI_RND = 70, KIKI_RND_E = 55, KIKI_BIG = 45, KIKI_BIG_E = 22;
   function moveKiki(dt, ctx) {
     if (!S.kair) {
       S.kvx = clamp(S.kvx + groundAccel(S.kx, S.kvx) * dt, 55, 215);
       const x0 = S.kx; S.kx += S.kvx * dt; S.ky = groundAt(S.kx);
       if (S.kNextLip < S.nR && x0 <= S.ramps[S.kNextLip] && S.kx > S.ramps[S.kNextLip]) {
         const k = S.kNextLip++;
-        S.kvy = S.kvx * -(S.rampH[k] * 1.7) / (S.rampBig[k] ? 84 : 64) - POP_V; S.kair = true; S.kairT = 0;
-        S.kTrickQ = Math.round((ctx.easy ? 95 : 150) + S.r() * (ctx.easy ? 40 : 50) + (S.rampBig[k] ? (ctx.easy ? 15 : 30) : 0));
+        S.kvy = S.kvx * -(S.rampH[k] * 1.7) / S.rampL[k] - POP_V - (S.rampBig[k] === 2 ? 25 : 0); S.kair = true; S.kairT = 0;
+        S.kTrickQ = Math.round((ctx.easy ? KIKI_EASY : KIKI_BASE) + S.r() * (ctx.easy ? KIKI_RND_E : KIKI_RND) + (S.rampBig[k] === 2 ? (ctx.easy ? KIKI_MEGA_E : KIKI_MEGA) : S.rampBig[k] ? (ctx.easy ? KIKI_BIG_E : KIKI_BIG) : 0));
       }
       if (S.kNextLog < S.nL && S.kx + 26 > S.logs[S.kNextLog]) { S.kNextLog++; S.kvy = -HOP_V - 10; S.kair = true; S.kairT = 0; S.kTrickQ = 30; }
     } else {
-      S.kairT += dt; S.kvy += GRAV * dt; S.kx += S.kvx * dt; S.ky += S.kvy * dt;
+      S.kairT += dt; S.kvy += gravAt(S.kvy) * dt; S.kx += S.kvx * dt; S.ky += S.kvy * dt;
       while (S.kNextLip < S.nR && S.ramps[S.kNextLip] < S.kx) S.kNextLip++;
       if (S.ky >= groundAt(S.kx)) {
         S.kair = false; S.ky = groundAt(S.kx);
@@ -260,6 +312,7 @@
   }
   function update(dt, ctx) {
     S.ctx = ctx;
+    JC.juice.tick(dt);
     if (S.flash > 0) S.flash -= dt;
     if (!S.over) {
       S.time += dt;
@@ -275,17 +328,27 @@
         S.finished = true;
         const score = Math.round(S.score), kiki = Math.max(1, Math.round(S.kScore)), won = S.won;
         const stars = won ? 1 + (score >= kiki * 1.35 ? 1 : 0) + (score >= kiki * 1.8 ? 1 : 0) : 0;
-        ctx.finish({ score, stars, won, frac: won ? [0.34, 0.67, 1][stars - 1] : Math.min(0.3, score / kiki * 0.3), stats: { kiki, crashes: S.crashes, bestCombo: S.bestCombo, tricks: S.tricksDone } });
+        ctx.finish({ score, stars, won, frac: won ? [0.34, 0.67, 1][stars - 1] : Math.min(0.3, score / kiki * 0.3), stats: { kiki, crashes: S.crashes, bestCombo: S.bestCombo, tricks: S.tricksDone, perfects: S.perfects, bigAirs: S.bigAirs } });
       }
     }
     camera(dt, ctx);
   }
   function camera(dt, ctx) {
     const W = ctx.W / S.K, H = ctx.H / S.K;
-    const wantX = S.x - W * 0.28, wantY = Math.min(S.y, groundAt(S.x)) - H * 0.5 + 14;
-    S.camX = wantX;
-    S.camY += (wantY - S.camY) * Math.min(1, dt * 6);
+    // in the air the view opens up ahead and frames both Cappy and the spot he'll land on
+    const flying = S.air && !S.over && S.airT > 0.08;
+    S.camLead += ((flying ? 0.2 : 0.28) - S.camLead) * Math.min(1, dt * 3);
+    S.camX = S.x - W * S.camLead;
+    let wantY = Math.min(S.y, groundAt(S.x)) - H * 0.5 + 14;
+    if (S.air) {
+      S.landT = landIn(S.x, S.y, S.vx, S.vy);
+      if (flying) { const ly = groundAt(S.landX); wantY = Math.min((S.y + ly) / 2 - H * 0.5 + 14, S.y - TOPGAP / S.K); }
+    }
+    S.camY += (wantY - S.camY) * Math.min(1, dt * (flying ? 4 : 6));
   }
+  // the score panels take the top of the screen: Cappy and the words over him stay below them
+  const TOPGAP = 96, HUD_Y = 66;
+  const fy = v => Math.max(v, HUD_Y);
   const sx = x => Math.round((x - S.camX) * S.K);
   const sy = y => Math.round((y - S.camY) * S.K);
 
@@ -341,7 +404,8 @@
     }
     S.bgNear = c;
   }
-  function drawRider(g, x, y, board, who, trick, tt, crash) {
+  const flipAng = () => -Math.min(1, S.trickT / S.trickDur) * Math.PI * 2;
+  function drawRider(g, x, y, board, who, trick, tt, crash, ghost) {
     // x, y: the board's bottom centre on screen; the rider sits on the board (drawn at twice the world's scale)
     const K = S.A, bs = SPRITES[board], rs = who === 'kiki' ? SPRITES.kiki : SPRITES.cappy_right;
     const bw = bs.w * K, bh = bs.h * K;
@@ -352,29 +416,34 @@
       rot(g, bs, x - 14 * K, y - 4 * K - Math.round(Math.sin(crash * 6) * 4 * K), K, (q + 2) % 4, false);
       return;
     }
-    if (trick === 'flip') {
-      const q = Math.min(3, Math.floor(tt * 4));
-      g.save(); g.translate(Math.round(x), Math.round(y - 10 * K)); g.rotate(-q * Math.PI / 2);
-      g.drawImage(bs.c, -Math.round(bw / 2), 10 * K - bh, bw, bh);
-      g.drawImage(rs.c, -8 * K, 10 * K - bh - 16 * K + 3 * K, 16 * K, 16 * K);
-      g.restore();
-      return;
+    // the pose: crouch on the kicker, stretch on take-off, squash on landing, lean with the arc, the trick's turn
+    let k = 0, lean = 0, ang = 0, bsc = 1;
+    if (who === 'cappy' && !ghost) {
+      if (!S.air && S.pop && onRamp(S.x)) k = -0.55;
+      else if (S.sqT > 0) k = S.sqK * clamp(S.sqT / 0.2, 0, 1);
+      if (S.air && !trick) lean = clamp(S.vy / 480, -0.3, 0.35);
     }
+    JC.juice.squash(SQ, k);
+    if (trick === 'flip') ang = ghost ? tt : -tt * Math.PI * 2;
+    if (trick === 'spin') bsc = Math.cos((ghost ? 0.35 : tt) * Math.PI * 2);
+    g.save(); g.translate(Math.round(x), Math.round(y - 8 * K)); if (ang + lean) g.rotate(ang + lean); g.scale(SQ.sx, SQ.sy);
     if (trick === 'grab') {
       // the leaf held up behind, like a sail
-      rot(g, bs, x - 2 * K, y - 16 * K, K, 3, false);
+      rot(g, bs, -2 * K, -8 * K, K, 3, false);
       const s2 = who === 'kiki' ? SPRITES.kiki : SPRITES.cappy_right_w;
-      g.drawImage(s2.c, Math.round(x - 8 * K), Math.round(y - 18 * K), 16 * K, 16 * K);
-      return;
+      g.drawImage(s2.c, -8 * K, -10 * K, 16 * K, 16 * K);
+      g.restore(); return;
     }
-    g.drawImage(bs.c, Math.round(x - bw / 2), Math.round(y - bh), bw, bh);
-    let s = rs, flip = false;
+    const w = Math.max(K, Math.round(Math.abs(bsc) * bw));
+    g.drawImage(bsc < 0 ? bs.f : bs.c, -Math.round(w / 2), 8 * K - bh, w, bh);
+    let sp = rs, flip = false;
     if (trick === 'spin') {
-      const f = Math.min(3, Math.floor(tt * 4));
+      const f = ghost ? 1 : Math.min(3, Math.floor(tt * 4));
       if (who === 'kiki') { flip = f % 2 === 1; }
-      else { s = f === 0 ? SPRITES.cappy_down : f === 1 ? SPRITES.cappy_right : f === 2 ? SPRITES.cappy_up : SPRITES.cappy_right; flip = f === 1; }
+      else { sp = f === 0 ? SPRITES.cappy_down : f === 1 ? SPRITES.cappy_right : f === 2 ? SPRITES.cappy_up : SPRITES.cappy_right; flip = f === 1; }
     }
-    g.drawImage(flip ? s.f : s.c, Math.round(x - 9 * K), Math.round(y - bh - 16 * K + 3 * K), 16 * K, 16 * K);
+    g.drawImage(flip ? sp.f : sp.c, -9 * K, 8 * K - bh - 13 * K, 16 * K, 16 * K);
+    g.restore();
   }
   function rot(g, s, cx, cy, k, q, flip) {
     if (!s) return;
@@ -385,6 +454,7 @@
     S.K = Math.max(1, Math.floor(Math.min(ctx.W / 260, ctx.H / 200))); S.A = 2 * S.K;
     const K = S.K, W = ctx.W, H = ctx.H;
     if (!S.bgFar || S.bgGen !== VIEW.gen || S.bgW !== W || S.bgH !== H) buildBg(ctx);
+    g.save(); if (JC.juice.ox || JC.juice.oy) g.translate(JC.juice.ox * K, JC.juice.oy * K);
     // parallax background
     g.drawImage(S.bgFar, -Math.round((S.camX * 0.1) % 256), 0);
     g.drawImage(S.bgNear, -Math.round((S.camX * 0.35) % 192), Math.round(H * 0.08));
@@ -414,10 +484,11 @@
     }
     for (let i = 0; i < S.nR; i++) {
       const lip = S.ramps[i]; if (lip < S.camX - 100 || lip > S.camX + W / K + 100) continue;
-      const len = S.rampBig[i] ? 84 : 64, on = !S.air && S.x > lip - len && S.x < lip && i === S.nextLip;
-      // wooden boards on the kicker and arrows that blink while you ride it
-      for (let wx = lip - len + 10; wx < lip; wx += 10) rect(g, sx(wx), sy(groundAt(wx)) + 2 * K, K, 3 * K, '#5e3a20');
-      rect(g, sx(lip) - 2 * K, sy(groundAt(lip - 1)), 3 * K, 6 * K, '#c9a37a');
+      const len = S.rampL[i], mega = S.rampBig[i] === 2, on = !S.air && S.x > lip - len && S.x < lip && i === S.nextLip;
+      // wooden boards on the kicker (gold on a mega ramp) and arrows that blink while you ride it
+      for (let wx = lip - len + 10; wx < lip; wx += 10) rect(g, sx(wx), sy(groundAt(wx)) + 2 * K, K, 3 * K, mega ? '#c8961e' : '#5e3a20');
+      rect(g, sx(lip) - 2 * K, sy(groundAt(lip - 1)), 3 * K, 6 * K, mega ? '#ffd24a' : '#c9a37a');
+      if (mega) { const fl = SPRITES.ls_flag; for (const fx of [lip - len, lip]) g.drawImage(fl.c, sx(fx), sy(groundAt(fx)) - fl.h * S.A, fl.w * S.A, fl.h * S.A); }
       const blink = ((S.time * 6) | 0) % 2;
       if (on && !S.pop && blink) { const a = SPRITES.ls_arrow; g.drawImage(a.c, sx(lip - len * 0.45) - 3 * K, sy(groundAt(lip - len * 0.45)) - 26 * K, a.w * K, a.h * K); }
       if (on && S.pop) { g.globalAlpha = 0.5; rect(g, sx(lip - len), sy(groundAt(lip)) - 2 * K, len * K, 2 * K, '#8ee070'); g.globalAlpha = 1; }
@@ -446,11 +517,25 @@
       const yy = clamp(sy(S.ky) - 10, 50, H - 40);
       JC.portrait(g, 'kiki', W - 26, yy, 22, '#ffd0e6');
     }
-    const gy = sy(groundAt(S.x)), near = S.air && S.trick && groundAt(S.x) - S.y < 26;
-    if (near) { g.globalAlpha = 0.5; JC.draw.oval(g, sx(S.x), gy, 10 * S.A, 2 * S.A, '#ff3a3a'); g.globalAlpha = 1; }
-    else JC.draw.shadow(g, sx(S.x), gy, 10 * S.A);
+    const gy = sy(groundAt(S.x)), hgt = groundAt(S.x) - S.y;
+    // in the air: a ring on the mud where Cappy will land (green: land clean, red: the trick won't be done in time)
+    if (S.air && !S.over && S.airT > 0.12 && S.landT > 0.15) {
+      const left = S.trick ? (S.trickDur - S.trickT) + (S.queue ? TRICKS[S.queue].dur : 0) : 0, ok = left < S.landT;
+      const lx = sx(S.landX), ly = sy(groundAt(S.landX)), pulse = 1 + (((S.time * 6) | 0) % 2) * 0.15;
+      g.globalAlpha = 0.6; JC.draw.oval(g, lx, ly, Math.round(12 * S.A * pulse), 3 * S.A, ok ? '#6ad34a' : '#ff4a4a'); g.globalAlpha = 1;
+      JC.draw.oval(g, lx, ly, Math.round(7 * S.A * pulse), Math.round(1.5 * S.A), ok ? '#2f7d3c' : '#a01e1e');
+    }
+    JC.draw.shadow(g, sx(S.x), gy, Math.round(10 * S.A * clamp(1 - hgt / 160, 0.45, 1)));
+    // speed lines on a fast launch, ghosts of the trick so far
+    if (S.air && S.vy < -50 && !BRBX.reduced()) JC.juice.speedLines(g, sx(S.x), sy(S.y) - 8 * S.A, Math.atan2(S.vy, S.vx), 22 * K, 6, 'rgba(255,255,255,0.75)', (S.airT * 12) | 0, K);
+    if (S.air && TRAIL.c) JC.juice.each(TRAIL, (x, y, a, f, age) => {
+      g.globalAlpha = 0.32 * (1 - age) + 0.05;
+      drawRider(g, sx(x), sy(y), 'ls_leaf', 'cappy', f === 1 ? 'spin' : f === 2 ? 'grab' : f === 3 ? 'flip' : '', f === 3 ? a : 0, 0, true);
+    });
+    g.globalAlpha = 1;
     const tt = S.trick ? S.trickT / S.trickDur : 0;
     drawRider(g, sx(S.x), sy(S.y), 'ls_leaf', 'cappy', S.trick, tt, S.crash > 0.3 ? S.crash : 0);
+    g.restore();
     if (S.flash > 0 && !BRBX.reduced()) { g.globalAlpha = S.flash * 1.2; rect(g, 0, 0, W, H, '#fff8e8'); g.globalAlpha = 1; }
     // HUD: the two scores, the clock, the combo in the air
     VA.name = t('name.cappy'); VA.score = Math.round(S.score); VB.name = t('name.kiki'); VB.score = Math.round(S.kScore);
@@ -495,18 +580,21 @@
       S.trick = ''; S.queue = ''; S.nTr = 0; S.pend = 0; S.score = 0; S.crashes = 0; S.combos = 0; S.bestCombo = 0; S.tricksDone = 0; S.berries = 0; S.hops = 0; S.pops = 0;
       S.kx = 100; S.ky = groundAt(100); S.kvx = 70; S.kvy = 0; S.kair = false; S.kNextLip = 0; S.kNextLog = 0; S.kScore = 0; S.kTrickQ = 0;
       S.hint = ctx.firstTime ? 2 : 0.8; S.flash = 0;
+      S.ringHints = 0; S.ringSay = false; S.megaSeen = -1; S.lastTrickEnd = -9; S.sqT = 0; S.sqK = 0; S.perfects = 0; S.bigAirs = 0; S.megas = 0; S.camLead = 0.28; S.windOn = false; S.landT = 0; S.trailT = 0;
+      JC.juice.reset(); JC.juice.clearTrail(TRAIL);
       S.K = Math.max(1, Math.floor(Math.min(ctx.W / 260, ctx.H / 200))); S.A = 2 * S.K;
       S.camX = S.x - ctx.W / S.K * 0.28; S.camY = S.y - ctx.H / S.K * 0.5 + 14;
     },
     update,
     draw,
     onInput,
-    outro(dt, ctx) { if (S.flash > 0) S.flash -= dt; camera(dt, ctx); },
+    outro(dt, ctx) { if (S.flash > 0) S.flash -= dt; JC.juice.tick(dt); camera(dt, ctx); },
     testState() {
       return { time: Math.round(S.time * 10) / 10, x: Math.round(S.x), vx: Math.round(S.vx), air: S.air, onRamp: onRamp(S.x), pop: S.pop, trick: S.trick, queue: S.queue,
         landIn: S.air ? landIn(S.x, S.y, S.vx, S.vy) : 0, h: Math.round(groundAt(S.x) - S.y), nTr: S.nTr, score: Math.round(S.score), kiki: Math.round(S.kScore), kx: Math.round(S.kx),
         crashes: S.crashes, combos: S.combos, bestCombo: S.bestCombo, pops: S.pops, hops: S.hops, berries: S.berries, ramps: S.nR, nextLog: S.nextLog < S.nL ? Math.round(S.logs[S.nextLog] - S.x) : -1,
-        over: S.over, won: S.won, auto: S.auto, crash: S.crash > 0 };
+        over: S.over, won: S.won, auto: S.auto, crash: S.crash > 0,
+        perfects: S.perfects, bigAirs: S.bigAirs, megas: S.megas, airT: Math.round(S.airT * 100) / 100, landT: S.air ? Math.round(S.landT * 100) / 100 : 0, landX: S.air ? Math.round(S.landX) : 0, sq: S.sqT > 0 ? Math.round(S.sqK * 10) / 10 : 0, trail: TRAIL.c, nextMega: S.nextLip < S.nR && S.rampBig[S.nextLip] === 2, toLip: S.nextLip < S.nR ? Math.round(S.ramps[S.nextLip] - S.x) : -1, megaRamps: Array.from(S.rampBig.subarray(0, S.nR)).filter(b => b === 2).length };
     },
     test: {
       auto(ctx, on) { S.auto = !!on; return S.auto; },

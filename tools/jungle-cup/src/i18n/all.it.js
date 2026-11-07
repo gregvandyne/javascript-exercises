@@ -158,6 +158,7 @@ I18N.it = Object.assign(I18N.it || {}, {
   "sport.leaf.keys": "Tasti: Spazio per saltare. In aria: Sinistra / Destra per Giro, Su per Capriola, Giù per Presa.",
   "ls.jump": "Salta", "ls.spin": "Giro", "ls.flip": "Capriola", "ls.grab": "Presa",
   "ls.pop": "Hop!", "ls.hop": "Saltello! +30", "ls.bonk": "Bonk!", "ls.low": "Troppo basso!", "ls.wipeout": "Caduta!",
+  "ls.perfectLand": "Atterraggio perfetto!", "ls.bigAir": "Salto enorme!", "ls.mega": "Mega rampa!", "ls.combo": "Combo x{n}!", "ls.shake": "Su, si riparte!", "ls.ring": "Anello verde = atterraggio pulito",
   "ls.youWin": "Hai battuto Kiki!", "ls.kikiWins": "Questa volta vince Kiki",
   "ls.hintTouch": "Tocca su una rampa per saltare! In aria, scorri o premi un'acrobazia. Atterra senza acrobazie in corso.",
   "ls.hintKeys": "Spazio su una rampa per saltare! In aria: Sinistra / Destra Giro, Su Capriola, Giù Presa. Atterra senza acrobazie in corso.",
