@@ -7179,17 +7179,17 @@ function buildFoam() {
   const c = document.createElement('canvas'); c.width = 512; c.height = 64; const g = c.getContext('2d'), r = makeRng(9);
   g.fillStyle = g.strokeStyle = '#ffffff'; g.lineCap = 'round';
   const shapes = [];
-  for (let x = 0; x < 512;) { const L = 34 + r() * 56; shapes.push({ x, L, w: 7 + r() * 4, y: 46 + r() * 4, curl: r() < 0.75 ? (r() < 0.5 ? -1 : 1) : 0, b: [r(), r(), r(), r()] }); x += L + 12 + r() * 26; }
+  for (let x = 0; x < 512;) { const L = 34 + r() * 56; shapes.push({ x, L, w: 9 + r() * 4, y: 24 + r() * 4, curl: r() < 0.75 ? (r() < 0.5 ? -1 : 1) : 0, b: [r(), r(), r(), r()] }); x += L + 12 + r() * 26; }
   for (const off of [0, -512, 512]) for (const sh of shapes) {
     const x0 = sh.x + off; g.lineWidth = sh.w; g.beginPath();
     for (let t = 0; t <= 1.0001; t += 0.1) { const xx = x0 + sh.L * t, yy = sh.y + Math.sin(xx / 15) * 2.5 - Math.sin(t * Math.PI) * 2; t ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
     g.stroke();
     if (sh.curl) {   // a little curl rolling up off the end of the dash
-      const cx = sh.curl > 0 ? x0 + sh.L + 1 : x0 - 1, cy = sh.y - 8; g.lineWidth = 3.5; g.beginPath();
-      for (let t = 0; t <= 1.0001; t += 0.08) { const a = Math.PI * 0.5 + t * Math.PI * 1.7 * sh.curl, rr = 7 * (1 - t * 0.55); g.lineTo(cx + Math.cos(a) * rr * -sh.curl, cy + Math.sin(a) * rr); }
+      const cx = sh.curl > 0 ? x0 + sh.L + 3 : x0 - 3, cy = sh.y + 9; g.lineWidth = 5; g.beginPath();
+      for (let t = 0; t <= 1.0001; t += 0.08) { const a = Math.PI * 0.5 + t * Math.PI * 1.7 * sh.curl, rr = 10 * (1 - t * 0.55); g.lineTo(cx + Math.cos(a) * rr * -sh.curl, cy + Math.sin(a) * rr); }
       g.stroke();
     }
-    for (let i = 0; i < 2; i++) { g.beginPath(); g.arc(x0 + sh.b[i * 2] * sh.L, 18 + sh.b[i * 2 + 1] * 14, 1.8 + sh.b[i] * 2.2, 0, Math.PI * 2); g.fill(); }
+    for (let i = 0; i < 2; i++) { g.beginPath(); g.arc(x0 + sh.b[i * 2] * sh.L, 40 + sh.b[i * 2 + 1] * 16, 2.2 + sh.b[i] * 2.8, 0, Math.PI * 2); g.fill(); }
   }
   const t = canvasTexture(c, true);
   const pos = [], uv = [], idx = []; let n = 0;
@@ -7198,7 +7198,7 @@ function buildFoam() {
     for (let x = -366; x <= 366.01; x += 4) {
       const z = riverZ(x), z2 = riverZ(x + 0.5), tl = hyp(0.5, z2 - z), nx = -(z2 - z) / tl * side, nz = 0.5 / tl * side;
       along += hyp(x - px, z - pz); px = x; pz = z;
-      const d0 = RIVER_HW - 1.6, d1 = RIVER_HW + 0.5;
+      const d0 = RIVER_HW - 3.4, d1 = RIVER_HW + 0.5;   // breeze: the band near the shore, curls and bubbles out on the water
       pos.push(x + nx * d0, 0.06, z + nz * d0, x + nx * d1, 0.06, z + nz * d1); uv.push(along / 16, 0, along / 16, 1);
       if (n > base) { const a = (n - 1) * 2; if (side > 0) idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); else idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
       n++;
