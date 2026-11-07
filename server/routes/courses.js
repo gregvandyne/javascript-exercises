@@ -139,7 +139,7 @@ const TALLY_PRAISE = ['Tally purrs: exactly right.', 'Tally nods: that is the wa
  *  phrase about the mix-up ("added the sides instead of multiplying"), so it reads after "the Jumble ...". */
 const JUMBLE_FRAMES = [
   m => `The Jumble ${m}! Tally says: let's look again, slowly.`,
-  m => `The Jumble grins: that is its favorite mix-up. It ${m}. Tally says: watch what the numbers are really doing.`,
+  m => `The Jumble grins: that is its favorite mix-up. It ${m}. Tally says: read what the question really asks.`,
   m => `Oops, the Jumble ${m}. Tally says: try it step by step.`,
 ];
 const TALLY_PLAIN = ['Tally says: have another look, slowly.', 'Tally says: that one is tricky. Read the question once more.', 'Tally says: mix-ups help us learn. Look at the right answer.'];

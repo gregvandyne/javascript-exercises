@@ -711,7 +711,7 @@ window.SoloBank = (function () {
       var names = ['Maya', 'Sam', 'Leo', 'Ana', 'Ben'], things = [['ribbons', 'sold'], ['stickers', 'gave away'], ['cans', 'recycled'], ['books', 'lent out'], ['seeds', 'planted']];
       for (i = 0; i < 5; i++) { // Draw the story: whole and one part given, find the other part.
         a = ri(180, 480); b = ri(60, a - 60); var th = things[i % things.length];
-        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. On the bar, the whole is ' + a + ' and one part is ' + b + '. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
+        out.push(nqItem('A shop had ' + a + ' ' + th[0] + ' and ' + th[1] + ' ' + b + '. Sketch a bar: the whole is ' + a + ' and one part is ' + b + '. How many are left?', a - b, [a + b, a - b + 10, a - b - 10], 'Draw the story'));
       }
       for (i = 0; i < 5; i++) { // Joining stories: two parts make the whole.
         a = ri(120, 390); b = ri(40, 290);
@@ -840,10 +840,12 @@ window.SoloBank = (function () {
       ];
       for (i = 0; i < 5; i++) out.push(nqItem(jobs[i][0], jobs[i][1],
         [jobs[i][1] === 'The area' ? 'The perimeter' : 'The area', 'The number of corners', 'The number of sides'], 'Fence or carpet?'));
-      for (i = 0; i < 5; i++) { // Same fence: with one fence, the square holds the most carpet.
-        var s = [4, 5, 6, 4, 5][i], per = 4 * s;
-        out.push(nqItem('Which rectangle with perimeter ' + per + ' has the biggest area?', s + ' by ' + s,
-          [(s + 2) + ' by ' + (s - 2), (s + 1) + ' by ' + (s - 1), (s + 3) + ' by ' + (s - 3)], 'Same fence'));
+      var pairs = [[8, 2, 5], [6, 2, 4], [7, 3, 5], [9, 3, 6], [7, 1, 4]]; // [long, thin, square side]: one fence each
+      for (i = 0; i < 5; i++) { // Same fence: the lesson's own comparison, a long thin garden beside a square one
+        // with the same fence (8 by 2 and 5 by 5 both take 20 m); the square holds more carpet.
+        var L = pairs[i][0], T = pairs[i][1], S = pairs[i][2];
+        out.push(nqItem('Two gardens both take ' + (2 * (L + T)) + ' meters of fence: one is ' + L + ' by ' + T + ', one is ' + S + ' by ' + S + '. Which holds more carpet?',
+          'The ' + S + ' by ' + S + ' garden', ['The ' + L + ' by ' + T + ' garden', 'They hold the same', 'The one with more fence'], 'Same fence'));
       }
       return out;
     }
