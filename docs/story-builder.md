@@ -174,7 +174,7 @@ The sandbox: 4 vCPU (x86-64), 15 GB RAM, **no GPU** (EEVEE through Mesa llvmpipe
 | Assembly in a container capped like a web instance | 0.5 CPU / 512 MB: **killed (out of memory)**; 0.5 CPU / 768 MB: 155 s; 1 CPU / 1 GB: 82 s |
 | End to end through the CPU renderer service in Docker (site on one port, container on another; 2 scenes, test size) | story done in 86 s; the service's work folder empty afterwards |
 | Modal web API served locally on the CPU (`modal_app.py --serve`, 2 scenes in parallel, test size) | clips back through the site's `STORY_RENDERER=modal` client (tests/unit/story-modal.test.js) |
-SAMPLE2_ROW
+| **The sample again, with the framing fixes** (Nov 7: 5 scenes, 46.7 s, 602 frames, 1 process, nothing else running) | **4,365 s = 93 s of render per second of video, 7.2 s per frame**; the whole run (voice, render, clips, assembly) 4,416 s |
 
 The sample: `scripts/story-samples/lost-stars.json` ("Pip and the Lost Stars"), rendered with
 `node scripts/story-render.js --quality full`, offline voice (no TTS key in the sandbox); the script was written by
