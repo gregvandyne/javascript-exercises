@@ -122,7 +122,7 @@ function linesSvg(v) {
 const linesExtent = v => [8, tBot(45, 3.8)];
 
 // ---------------------------------------------------------------------------------------------- chart
-const chartGeo = v => { const n = v.bars.length, x0 = 20, x1 = 92, bw = Math.min(14, (x1 - x0) / n * 0.6); return { x0, x1, y0: 44, top: v.label ? 13 : 9, bw, slot: (x1 - x0) / n }; };
+const chartGeo = v => { const n = v.bars.length, x0 = 20, x1 = 92, bw = Math.min(14, (x1 - x0) / n * 0.6); return { x0, x1, y0: 44, top: v.label ? 15 : 9, bw, slot: (x1 - x0) / n }; };
 function chartSvg(v) {
   const g = chartGeo(v), Y = val => g.y0 - (val / v.max) * (g.y0 - g.top);
   let s = v.label ? tx(50, 6.5, v.label, capFs(v.label)) : '';
