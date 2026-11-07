@@ -122,7 +122,7 @@ test('on its own: practice typing and pass and play, every size, light and dark'
   await page.goto('/play/doodle-hoot');
   let f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.spell, null, { timeout: 30000 });
-  await f.locator('.ok-title-screen .ok-hot').click();
+  await expect(f.locator('.ok-title-screen')).toHaveCount(0);   // no title screen: the setup card's Start is the only one
   for (const sz of [[375, 667], [1366, 768]]) await snap(page, f, 'solo-setup', sz);
   await T(f, 'start', { mode: 'practice', lvl: 2, guess: 'type' });
   await f.waitForFunction(() => window.__brbTest.state().screen === 'guess' && window.__brbTest.state().strokes > 3);

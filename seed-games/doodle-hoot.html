@@ -194,6 +194,7 @@ html.dh-live .ok-row{display:none!important}
 .dhs{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;background:var(--ok-scrim)}
 .dhs-card{width:min(96vw,560px);max-height:96vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:24px;background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);box-shadow:0 6px 0 var(--ok-edge)}
 .dhs-card h2{margin:0;text-align:center;font-size:26px;font-weight:900}
+.dhs-card .dhs-sub{margin:-6px 0 2px;text-align:center;font-weight:800;color:var(--ok-text-2,var(--ok-text));opacity:.85}
 .dhs-card fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .dhs-card legend{font-weight:800;margin-bottom:4px}
 .dhs-card .opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -1987,7 +1988,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
   var game = null, M = null, setupApi = null, fast = false;
   var SET = ['                    ', '                    ', '                    ', '                    ', '                    ', '   P          o     ', '####################', '####################'];
   if (!LIVE) game = O.game({
-    api: 1, title: t('title'), subtitle: t('tag'), theme: 'meadow', titleHue: 'spark',
+    api: 1, title: false, theme: 'meadow', titleHue: 'spark',   // no title screen: the setup card (with the name) is the one Start
     controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 0,
     level: O.level.grid(SET, { o: { kind: 'npc', species: 'owl', wear: ['scarf'], tag: 'pip', size: 1.6, flip: true } }),
     intro: function () { return setupCard(); },
@@ -2002,7 +2003,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       setupOpen = true;
       var wrap = el('div', 'dhs'); wrap.dir = O.dir || 'ltr';
       var card = el('div', 'dhs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'dhsH'); wrap.appendChild(card);
-      var h = el('h2', '', t('setup')); h.id = 'dhsH'; card.appendChild(h);
+      var h = el('h2', '', t('title')); h.id = 'dhsH'; card.appendChild(h); card.appendChild(el('p', 'dhs-sub', t('setup')));
       var groups = [];
       function group(key, label, opts, get, set) {
         var fs = el('fieldset'); fs.dataset.k = key; fs.appendChild(el('legend', '', label));
