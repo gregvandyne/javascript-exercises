@@ -81,13 +81,21 @@ for (const t of TEMPLATES) {
     if (item.answer === undefined || item.answer === null || item.answer === '') fail(`${t.id} seed ${s}: empty key`);
     if (typeof item.answer === 'number' && !Number.isFinite(item.answer)) fail(`${t.id} seed ${s}: non-finite key`);
     if (t.responseType === 'pick') {
-      if (!Array.isArray(item.choices) || item.choices.length !== 4) fail(`${t.id} seed ${s}: pick needs exactly 4 choices`);
+      // 4 choices, or 2 for a two-way question (even or odd): never a nudged "odd (other)" filler
+      if (!Array.isArray(item.choices) || item.choices.length < 2 || item.choices.length > 4 || (item.choices.length < 4 && new Set(item.choices.map(c => String(c.value))).size > 2)) fail(`${t.id} seed ${s}: pick needs 4 choices (2 for a two-way question)`);
       else {
         const vals = item.choices.map(c => String(c.value));
-        if (new Set(vals).size !== 4) fail(`${t.id} seed ${s}: duplicate choices ${vals.join(',')}`);
+        if (vals.some(v => / \(other\)$/.test(v))) fail(`${t.id} seed ${s}: nudged filler ${vals.join(',')}`);
+        if (new Set(vals).size !== vals.length) fail(`${t.id} seed ${s}: duplicate choices ${vals.join(',')}`);
         if (item.choices[item.answerIndex]?.value !== item.answer) fail(`${t.id} seed ${s}: answerIndex does not point at the key`);
         for (const c of item.choices) if (c.value !== item.answer && !c.misconception) fail(`${t.id} seed ${s}: distractor without misconception tag`);
       }
+    } else if (item.servedAsPick) {
+      // a word, fraction or long-number answer served as buttons (no young child types "pentagon" or "480")
+      const vals = item.choices.map(c => String(c.value));
+      if (item.choices.length < 2 || new Set(vals).size !== vals.length) fail(`${t.id} seed ${s}: buttons need 2-4 distinct choices ${vals.join(',')}`);
+      if (item.choices[item.answerIndex]?.value !== item.answer) fail(`${t.id} seed ${s}: answerIndex does not point at the key`);
+      for (const c of item.choices) if (c.value !== item.answer && !c.misconception) fail(`${t.id} seed ${s}: distractor without misconception tag`);
     } else if (!Array.isArray(item.distractorMisconceptions) || item.distractorMisconceptions.length !== 3) {
       fail(`${t.id} seed ${s}: non-pick item needs 3 distractor misconceptions`);
     }

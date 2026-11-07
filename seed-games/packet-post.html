@@ -166,6 +166,8 @@
   .pp-wheel .pp-inner { transition: transform .35s ease; transform-origin: 50% 50%; }
   .pp-shift { font-size: 1.3em; font-weight: 800; min-width: 110px; text-align: center; }
   .pp-lesson-note { font-weight: 700; font-size: .9em; opacity: .85; margin: 0; text-align: center; }
+  /* the tap hint under the mail slots sits on its own pill, never straight on the busy flowers behind */
+  p.pp-lesson-note { opacity: 1; background: var(--ok-card); border: 2px solid var(--ok-edge); border-radius: 999px; padding: 4px 12px; width: fit-content; max-width: 100%; margin: 0 auto; }
   @keyframes pp-pulse { 50% { transform: scale(1.08); } }
   .ok-rm .pp-link.pp-ok { animation: none; }
   .ok-rm .pp-wheel .pp-inner { transition: none; }
@@ -1007,7 +1009,9 @@ const icon = (name, o) => O.icon(name, o);
 const iconEl = name => { const e = $('span', 'pp-ic'); e.innerHTML = icon(name); e.setAttribute('aria-hidden', 'true'); return e; };
 const btn = (label, o) => O.ui.button(label, o);
 const announce = t => O.ui.announce(t);
-const toast = t => O.ui.toast(t);
+const toast = (t, o) => O.ui.toast(t, o);
+/** Clear the last toast at once (a right move after a wrong one: the old hint must not sit over the next item). */
+const clearToast = () => { const tt = document.querySelector('.ok-toast.on'); if (tt) tt.classList.remove('on'); };
 const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
 const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
 
@@ -1728,16 +1732,16 @@ async function doAction(a) {
       if (r.flagged) { sfx('select'); syncCheck && syncCheck(); }
       else if (r.failed) { const parts = []; if (r.missed.length) parts.push(tr('Packet {n} does not match and was not sent again.', { n: r.missed[0] })); if (r.fine.length) parts.push(tr('Packet {n} is fine.', { n: r.fine[0] })); fail(parts.join(' '), true); return r; }
     } else if (run.type === 'order') {
-      if (r.wrong) { sfx('wrong', { volume: 0.5 }); O.juice.shake(0.3, UI.tiles[a.id]); toast(tr('Not that one yet. What comes before it?')); }
-      else if (r.put) { sfx('correct', { pitch: 1 + run.s.seq.length * 0.05, volume: 0.6 }); syncOrder(); }
+      if (r.wrong) { sfx('wrong', { volume: 0.5 }); O.juice.shake(0.3, UI.tiles[a.id]); toast(run.inst.hints && run.inst.hints[1] ? tr(run.inst.hints[1]) : tr('Not that one yet. What comes before it?'), { ms: 3200 }); }
+      else if (r.put) { clearToast(); sfx('correct', { pitch: 1 + run.s.seq.length * 0.05, volume: 0.6 }); syncOrder(); }
     } else if (run.type === 'rules') {
       if (r.chosen) { sfx('select'); syncRules(); }
       else if (r.failed) { syncRules(r.caught); const bad = r.caught.find(c => !c.ok); fail(r.over ? tr('Too many rules! Keep only the ones the problems need.') : tr('{event} Nothing in your rules catches that.', { event: tr(bad.text) }), true); return r; }
       else if (r.done) syncRules(r.caught);
     }
     else if (run.type === 'sort') {
-      if (r.wrong) { sfx('wrong', { volume: 0.5 }); toast(a.t === 'bin' ? tr('Think again: where does that belong?') : tr('Not that reason. Think about what could go wrong.')); const el = a.t === 'bin' ? UI.binRow.querySelector(`[data-bin="${a.bin}"]`) : UI.whyBox.querySelector(`[data-why="${a.k}"]`); if (el) O.juice.shake(0.3, el); }
-      else { sfx('correct', { volume: 0.6 }); syncSort(); }
+      if (r.wrong) { sfx('wrong', { volume: 0.5 }); toast(a.t === 'bin' ? (run.inst.hints && run.inst.hints[1] ? tr(run.inst.hints[1]) : tr('Think again: where does that belong?')) : tr('Not that reason. Think about what could go wrong.'), { ms: 3200 }); const el = a.t === 'bin' ? UI.binRow.querySelector(`[data-bin="${a.bin}"]`) : UI.whyBox.querySelector(`[data-why="${a.k}"]`); if (el) O.juice.shake(0.3, el); }
+      else { clearToast(); sfx('correct', { volume: 0.6 }); syncSort(); }
     } else if (run.type === 'pass') {
       if (r.full) toast(tr('{n} words is enough. Tap a word to swap it.', { n: run.inst.need }));
       else if (r.chosen) { sfx('select'); syncPass(); }
@@ -1848,7 +1852,7 @@ async function solved(flow) {
 }
 function caseClosed(check) {
   // a level's last 'Think again' toast must not sit over the check card (its timer can be held while a card is open)
-  const tt = document.querySelector('.ok-toast.on'); if (tt) tt.classList.remove('on');
+  clearToast();
   const tiles = check.tiles.map(t => tr(t));
   const who = window.innerHeight < 520 ? undefined : (S.pim || undefined);   // on a short screen the card stays centered without the asker
   const order = E.rng(E.seedOf((S.level ? S.level.id : '') + ':check:' + S.seed0 + ':' + S.attempt)).shuffle(tiles.map((_, k) => k));

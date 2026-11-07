@@ -31,7 +31,7 @@ function race(name, seed) {
 
 // The columns each board may have: one per skill its deck teaches.
 const COLUMNS = {
-  '1.1': ['Digit value', 'Expanded form', 'Bigger number', 'Where it sits', 'Round it'],
+  '1.1': ['Digit value', 'Expanded form', 'Bigger number', 'Where it sits', 'Build it'],
   '2.3': ['Draw the story', 'Joining stories', 'Gap stories', 'Two steps', 'Estimate first'],
   '5.1': ['Centimeters', 'Kilograms', 'Count the units', 'Add the measure', 'Which is longer'],
   '5.3': ['Coin values', 'Make the price', 'Change back', 'Add the prices', 'Dollars and cents'],
@@ -67,7 +67,7 @@ test('6.1 Shape Hunt: only the five shapes the lesson draws, named with the righ
 
 test('the odd choices are gone: no 0 for a rounding, cent for one cent, no 0 dimes, one "and", real conversion slips', () => {
   for (let seed = 1; seed <= 40; seed++) {
-    for (const it of board('1.1', seed).filter(i => i.cat === 'Round it')) assert.ok(!it.choices.includes('0'), `${it.q}: ${it.choices}`);
+    for (const it of board('1.1', seed)) assert.ok(!it.choices.includes('0'), `${it.q}: ${it.choices}`);
     for (const it of board('5.3', seed)) {
       for (const c of it.choices) assert.doesNotMatch(c, /^1 cents$/, `${it.q}: "${c}"`);
       if (it.cat === 'Make the price') {

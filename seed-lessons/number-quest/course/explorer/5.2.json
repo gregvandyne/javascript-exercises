@@ -98,13 +98,17 @@
    ],
    "visual": {
     "type": "numberline",
-    "label": "A number line from 9:00 to 11:00 showing a bus leaving at 9:25 and a hop of 35 minutes landing at 10:00",
+    "label": "A number line from 9:00 to 11:00: the bus leaves at 9:25, hops 25 minutes to 9:50, then 10 more to 10:00",
     "min": 0,
     "max": 120,
     "marks": [
      {
       "at": 0,
       "label": "9:00"
+     },
+     {
+      "at": 50,
+      "label": "9:50"
      },
      {
       "at": 60,
@@ -122,8 +126,13 @@
     "hops": [
      {
       "from": 25,
+      "to": 50,
+      "label": "+25 min"
+     },
+     {
+      "from": 50,
       "to": 60,
-      "label": "+35 min"
+      "label": "+10"
      }
     ]
    },
@@ -133,23 +142,23 @@
      "box": [
       18.3,
       41.4,
-      12.1,
+      12.0,
       28.3
      ]
     },
     {
-     "cue": "The ride: 25 minutes reach 9:50, then 10 more cross into 10:00.",
+     "cue": "Hop 25 minutes to 9:50, then 10 more cross into 10:00.",
      "box": [
       18.3,
-      23.2,
-      32.8,
-      46.5
+      23.5,
+      32.7,
+      38.5
      ]
     },
     {
      "cue": "The landing: 10:00 exactly.",
      "box": [
-      44.3,
+      48.2,
       57.8,
       11.5,
       25.5

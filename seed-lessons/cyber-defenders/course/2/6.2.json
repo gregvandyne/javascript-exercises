@@ -14,38 +14,12 @@
   {
    "title": "A read letter",
    "text": "Confidentiality breaks first in our story: a sealed letter is steamed open and read on its journey. The words arrive unchanged, but the secret is gone, and the promise with it.",
-   "art": "envelope",
-   "img": "csq/escape-the-post-office/note-2",
-   "alt": "The Magpie's sealed note reads IJQNAJW, a scramble to turn back shift by shift.",
-   "focus": [
-    {
-     "cue": "A sealed note keeps its words secret",
-     "box": [
-      5.2,
-      38.4,
-      55.6,
-      33.8
-     ]
-    }
-   ]
+   "art": "envelope"
   },
   {
    "title": "A changed address",
    "text": "Integrity breaks differently: the letter is never read, but its address is altered, so the package goes to the wrong house. Availability breaks loudest of all: the sorting office itself burns down.",
-   "art": "mask",
-   "img": "csq/escape-the-post-office/gate-2",
-   "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads run past the Market and the School to the Sorting Room.",
-   "focus": [
-    {
-     "cue": "Change the route, and it reaches the wrong door",
-     "box": [
-      2.6,
-      5,
-      95.1,
-      79.7
-     ]
-    }
-   ]
+   "art": "mask"
   },
   {
    "title": "Rules stack too",

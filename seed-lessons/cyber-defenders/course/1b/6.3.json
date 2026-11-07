@@ -73,14 +73,14 @@
    "title": "Block or report",
    "text": "Move four is Block or report, using the buttons in the app, always with a trusted adult beside you in real life. Move five is Carry on: the worry is handed over, and you go back to your day.",
    "art": "lock",
-   "img": "csq/trick-inbox/chat-1b-ch-4-decide",
-   "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
+   "img": "csq/trick-inbox/chat-1b-ch-3-decide",
+   "alt": "The moves for JokerJay's mean message: Deliver, Bin it, Show Pim, Report & block.",
    "focus": [
     {
-     "cue": "Block or report: a button, pressed with an adult",
+     "cue": "Report & block: a button, pressed with an adult beside you",
      "box": [
       51,
-      24.8,
+      70.3,
       46.2,
       20.3
      ]
