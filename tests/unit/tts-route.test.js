@@ -264,6 +264,10 @@ test('admin: /admin/voices and its APIs are admin-only; samples play in any lang
   const ok = await call('/api/admin/tts/settings', { method: 'POST', body: { locales: { en: { on: true, narrator: 'sage' } }, roles: { wise: 'ballad' } }, user: boss });
   assert.equal(ok.status, 200, ok.text);
   assert.equal(V.voiceFor('narrator', 'en'), 'sage'); assert.deepEqual(tts.onLocales(), ['en']);
+  // The warm-up panel lists every game; ?warm= picks one (an unknown one falls back to Hero of Sunvale).
+  const wp = await call('/admin/voices?warm=word-trail', { user: boss });
+  assert.match(wp.text, /<option value="word-trail" selected>Word Trail<\/option>/); assert.match(wp.text, /Warm up Word Trail/);
+  assert.match((await call('/admin/voices?warm=nope', { user: boss })).text, /Warm up Hero of Sunvale/);
   // Warm-up of Hero of Sunvale for en (the mock): every line made, then a second run is all cached.
   const w = await call('/api/admin/tts/warm', { method: 'POST', body: { games: ['hero-of-sunvale'], locales: ['en'] }, user: boss });
   assert.equal(w.status, 200, w.text); assert.equal(w.json.running, true);

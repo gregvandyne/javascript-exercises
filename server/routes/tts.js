@@ -221,7 +221,9 @@ router.get('/admin/voices', (req, res) => {
   const on = tts.ttsEnabled(), s = V.load(), st = tts.cacheStats(), use = usage.todayUse(), b = aiBudget.status();
   const allowed = new Set(config.ttsLocales);
   const onNow = config.ttsLocales.filter(l => s.locales[l].on);
-  let est = null; try { est = lines.estimate(['hero-of-sunvale'], onNow.length ? onNow : config.ttsLocales); delete est.list; } catch { est = null; }
+  // The game to warm: picked on the page (?warm=slug), Hero of Sunvale by default.
+  const warmGame = lines.GAMES[req.query.warm] ? String(req.query.warm) : 'hero-of-sunvale', warmTitle = lines.GAMES[warmGame].title;
+  let est = null; try { est = lines.estimate([warmGame], onNow.length ? onNow : config.ttsLocales); delete est.list; } catch { est = null; }
   const locales = LOCALES.filter(l => ttsLocaleList().includes(l.code));
   const games_ = TG.list(), silent = TG.silentWhy();
   const body = html`
@@ -266,12 +268,13 @@ router.get('/admin/voices', (req, res) => {
   </section>
   <h2 class="stats-h">Warm-up</h2>
   <section class="panel" id="tv-warm">
-    <p class="small">Makes every spoken line of Hero of Sunvale ahead of time for the languages switched on, so kids never wait. Lines already made are skipped. It stops by itself at the daily character cap or the AI budget.</p>
+    <p class="small">Makes every spoken line of a game ahead of time for the languages switched on, so kids never wait. Lines already made are skipped. It stops by itself at the daily character cap or the AI budget.</p>
     ${est ? html`<p class="small" id="tv-est">${est.lines} lines for ${onNow.length ? onNow.join(', ') : html`<b>all allowed languages</b> (none is switched on yet)`}: ${est.missing} still to make, ${est.chars.toLocaleString('en-US')} characters, about <b>${usd(est.usd)}</b>.</p>` : ''}
-    <div class="row"><button class="btn" type="button" id="tv-warm-go" ${on ? '' : raw('disabled')}>Warm up Hero of Sunvale</button><button class="btn" type="button" id="tv-warm-stop" hidden>Stop</button></div>
+    <label class="field"><span>Game</span><select class="input" id="tv-warm-game">${Object.entries(lines.GAMES).sort((a, b) => a[1].title.localeCompare(b[1].title)).map(([k, g]) => html`<option value="${k}" ${k === warmGame ? raw('selected') : ''}>${g.title}</option>`)}</select></label>
+    <div class="row"><button class="btn" type="button" id="tv-warm-go" ${on ? '' : raw('disabled')}>Warm up ${warmTitle}</button><button class="btn" type="button" id="tv-warm-stop" hidden>Stop</button></div>
     <p class="small" id="tv-warm-status" role="status"></p>
   </section>
-  ${jsonData('page-data', { on, warm: lines.status(), onLocales: onNow, allowed: config.ttsLocales })}`;
+  ${jsonData('page-data', { on, warmGame, warm: lines.status(), onLocales: onNow, allowed: config.ttsLocales })}`;
   page(req, res, { title: 'AI voices', active: 'me', body, head: raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`), scripts: ['/js/admin-voices.js'], back: '/admin', backLabel: 'Admin' });
 });
 
