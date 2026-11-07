@@ -54,6 +54,7 @@ test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solve
 // the cut picture, and a copied canvas must be painted again (cloneNode keeps none of a canvas's pixels: the bug that
 // left every packet a blank white square in Break It Up, Rules of the Road and the padlock road).
 test('Packet Post: every packet piece shows its part of the picture (no blank squares)', async ({ page }) => {
+  test.setTimeout(150_000);   // three levels, each played a few moves in with real animations
   const { f, errors } = await open(page);
   for (const [chapter, level] of [['packets', 1], ['protocols', 1], ['protocols', 3]]) {
     await T(f, 'start', { chapter, band: '1b', level, seed: 2, lesson: false });
