@@ -69,10 +69,16 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   // 2. timeline
   const tl = timeline(script, durations);
   tl.lines.forEach((l, j) => { clips[j].start = l.start; });
-  // 3. music
-  const music = path.join(workDir, 'music.wav');
-  const bed = lullaby({ seconds: tl.total, seed: seedOf(id), duck: tl.narration });
-  writeWav(music, [bed.left, bed.right]);
+  // 3. music: composed here for a local build; a remote renderer composes the same piece from the same seed
+  const remote = !!renderer.assembles;
+  const musicParams = { seconds: tl.total, seed: seedOf(id), duck: tl.narration };
+  let music = null, musicInfo = null;
+  if (!remote) {
+    music = path.join(workDir, 'music.wav');
+    const bed = lullaby(musicParams);
+    writeWav(music, [bed.left, bed.right]);
+    musicInfo = bed.info;
+  }
   // 4. words
   const q = QUALITY[quality] || QUALITY.full;
   const cueList = cues(tl.lines);
@@ -84,27 +90,39 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   fs.writeFileSync(vtt, toVtt(cueList, { title: script.title, titleAt, end: { start: endAt[0], end: endAt[1], text: end } }));
   const ass = path.join(workDir, 'captions.ass');
   fs.writeFileSync(ass, toAss(cueList, { width: q.width, height: q.height, title: script.title, titleAt, endText: end, endAt }));
-  // 5. render
+  const posterAt = titleAt[0] + 1.4;
+  // 5. render (and, on a remote renderer, 6. build there too: the web server never runs Blender or the big ffmpeg)
   stop();
   onStage('rendering');
   const spec = renderSpec(script, tl, { id, quality, outDir: path.join(workDir, 'frames') });
-  const t0 = Date.now();
-  const r = await renderer.render(spec, { signal, onProgress: p => onProgress(stageProgress('rendering', p.done / p.total)) });
-  const renderSec = (Date.now() - t0) / 1000;
-  // 6. build
-  stop();
-  onStage('assembling');
-  onProgress(stageProgress('assembling', 0.1));
   const out = path.join(workDir, 'story.mp4');
-  const sceneClips = spec.scenes.map(s => (r.clips && r.clips[s.id]) || path.join(spec.out_dir, `${s.id}.mp4`));
-  await assemble({ tl, sceneClips, fps: q.fps, width: q.width, height: q.height, music, clips, ass, out, xfade: T.xfade, posterAt: titleAt[0] + 1.4 });
+  const t0 = Date.now();
+  const bundle = remote ? { timeline: { scenes: tl.scenes, total: tl.total }, xfade: T.xfade, posterAt, ass, music: musicParams, voice: clips.map(c => ({ start: c.start, file: c.file })), outDir: workDir } : null;
+  const r = await renderer.render(spec, {
+    signal, assemble: bundle,
+    onProgress: p => onProgress(p.phase === 'assembling' ? stageProgress('assembling', 0.5) : stageProgress('rendering', p.done / p.total)),
+    onPhase: ph => { if (ph === 'assembling') onStage('assembling'); },
+  });
+  const renderSec = (Date.now() - t0) / 1000;
+  if (remote) {
+    onStage('assembling');
+    musicInfo = r.music || null;
+  } else {
+    // 6. build
+    stop();
+    onStage('assembling');
+    onProgress(stageProgress('assembling', 0.1));
+    const sceneClips = spec.scenes.map(s => (r.clips && r.clips[s.id]) || path.join(spec.out_dir, `${s.id}.mp4`));
+    await assemble({ tl, sceneClips, fps: q.fps, width: q.width, height: q.height, music, clips, ass, out, xfade: T.xfade, posterAt });
+  }
+  if (!fs.existsSync(out) || !fs.existsSync(path.join(workDir, 'poster.jpg'))) throw Object.assign(new Error('no video came back'), { stage: 'assembling' });
   // the clips were only needed to build the video
   fs.rmSync(spec.out_dir, { recursive: true, force: true });
   onProgress(1);
   const meta = {
     total: tl.total, scenes: tl.scenes, lines: tl.lines.map(l => ({ scene: l.scene, start: l.start, end: l.end })),
-    voice: used, music: bed.info,
-    render: { engine: r.engine, frames: r.frames, seconds: Math.round(renderSec), quality, width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
+    voice: used, music: musicInfo,
+    render: { renderer: renderer.name, engine: r.engine, frames: r.frames, seconds: Math.round(renderSec), quality, width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
       secPerVideoSec: Math.round((renderSec / tl.total) * 10) / 10, secPerFrame: r.frames ? Math.round((r.frameSeconds / r.frames) * 100) / 100 : null },
   };
   fs.writeFileSync(path.join(workDir, 'meta.json'), JSON.stringify(meta, null, 1));

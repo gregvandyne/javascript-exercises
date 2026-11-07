@@ -7,7 +7,7 @@
 //              when the service is off or refuses (a story is never left without a voice when one can be made);
 //   'silent'   silence of a reading-speed length (tests).
 // 'auto' = 'service' when the AI voice is on for the language, else 'local' when an offline voice is installed,
-// else 'silent'. The text was written by Claude and passed the story checks; speakable() is the backstop here too.
+// else none (the story fails at the voice stage). The text was written by Claude and passed the story checks; speakable() is the backstop here too.
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,7 +35,34 @@ export function run(cmd, args, { timeout = 120000 } = {}) {
   });
 }
 /** Seconds of an audio file (ffprobe). */
+// MPEG audio frame tables (Layer III): bitrates in kbit/s by [MPEG-1 | MPEG-2/2.5][index], sample rates by version.
+const BITRATES = [[0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320], [0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160]];
+const RATES = { 3: [44100, 48000, 32000], 2: [22050, 24000, 16000], 0: [11025, 12000, 8000] };
+/**
+ * Seconds of an MP3 (Layer III), counted frame by frame (so VBR files come out right too), with no ffmpeg: the web
+ * server measures the site voice's clips this way. -> seconds, or null when it isn't an MP3 it can read.
+ */
+export function mp3Duration(buf) {
+  let i = 0;
+  if (buf.length > 10 && buf.toString('latin1', 0, 3) === 'ID3') i = 10 + ((buf[6] & 0x7f) << 21 | (buf[7] & 0x7f) << 14 | (buf[8] & 0x7f) << 7 | (buf[9] & 0x7f));
+  let seconds = 0, frames = 0;
+  while (i + 4 <= buf.length) {
+    const b1 = buf[i + 1], b2 = buf[i + 2];
+    const ver = (b1 >> 3) & 3, layer = (b1 >> 1) & 3, bri = b2 >> 4, sri = (b2 >> 2) & 3;
+    if (buf[i] !== 0xff || (b1 & 0xe0) !== 0xe0 || ver === 1 || layer !== 1 || bri === 0 || bri === 15 || sri === 3) { i++; continue; }
+    const sr = RATES[ver][sri], kbps = BITRATES[ver === 3 ? 0 : 1][bri], pad = (b2 >> 1) & 1;
+    const len = Math.floor(((ver === 3 ? 144 : 72) * kbps * 1000) / sr) + pad;
+    if (len < 4) { i++; continue; }
+    seconds += (ver === 3 ? 1152 : 576) / sr;
+    frames++;
+    i += len;
+  }
+  return frames ? seconds : null;
+}
+
+/** Seconds of an audio file: MP3s are counted here, anything else asks ffprobe. */
 export async function durationOf(file) {
+  if (/\.mp3$/i.test(file)) { const d = mp3Duration(fs.readFileSync(file)); if (d) return d; }
   const out = await run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', file]);
   const d = parseFloat(out);
   if (!Number.isFinite(d)) throw new Error('no duration');
@@ -46,7 +73,9 @@ export function pickProvider(locale, want = process.env.STORY_VOICE || 'auto') {
   if (want === 'service' || want === 'local' || want === 'silent') return want;
   if (tts.ttsEnabled() && V.ttsLocale(locale) && tts.localeOn(V.ttsLocale(locale))) return 'service';
   const lv = localVoices();
-  return lv.pico || lv.espeak ? 'local' : 'silent';
+  // No voice at all: the story fails at the voice stage ('voice') rather than becoming a silent video by accident.
+  // 'silent' is only ever used when asked for (STORY_VOICE=silent: tests).
+  return lv.pico || lv.espeak ? 'local' : 'none';
 }
 
 async function localClip(text, locale, out) {
@@ -87,6 +116,7 @@ export async function voiceLine(text, { locale = 'en', dir, index, provider = pi
   }
   const file = path.join(dir, `line-${index}.wav`);
   if (provider === 'local') await localClip(s, locale, file);
-  else await silentClip(s, file);
+  else if (provider === 'silent') await silentClip(s, file);
+  else throw new Error('no voice: turn the AI voice on for this language (TTS_ENABLED, /admin/voices) or install an offline voice');
   return { file, duration: await durationOf(file), provider };
 }

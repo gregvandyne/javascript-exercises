@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 export function encodeClip(framesDir, out, { fps = 24, step = 1, timeoutMs = 20 * 60e3 } = {}) {
   const rate = String(fps / Math.max(1, step));
   const args = ['-v', 'error', '-y', '-framerate', rate, '-i', `${framesDir}/f_%05d.png`,
-    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '12', '-pix_fmt', 'yuv420p', '-r', rate, '-threads', '2', '-movflags', '+faststart', out];
+    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '16', '-pix_fmt', 'yuv420p', '-r', rate, '-threads', '2', '-movflags', '+faststart', out];
   return new Promise((resolve, reject) => {
     const p = spawn(process.env.STORY_FFMPEG || 'ffmpeg', args, { stdio: ['ignore', 'ignore', 'pipe'] });
     let err = '';

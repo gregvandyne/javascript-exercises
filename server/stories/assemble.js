@@ -7,11 +7,24 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { run } from '../services/story-voice.js';
+import { spawn } from 'node:child_process';
+
+// Only node built-ins in this file: the renderer service (services/story-renderer) assembles with it too.
+export function run(cmd, args, { timeout = 120000 } = {}) {
+  return new Promise((resolve, reject) => {
+    const p = spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '', err = '';
+    const timer = setTimeout(() => p.kill('SIGKILL'), timeout);
+    p.stdout.on('data', d => { out += d; });
+    p.stderr.on('data', d => { err = (err + d).slice(-20000); });
+    p.on('error', e => { clearTimeout(timer); reject(e); });
+    p.on('close', code => { clearTimeout(timer); code === 0 ? resolve(out) : reject(new Error(`${cmd} exited ${code}: ${err.slice(-400)}`)); });
+  });
+}
 
 /** The site's own display font (Bricolage Grotesque, OFL) for the words; libass falls back through fontconfig for
  *  scripts it doesn't cover (Hebrew, Arabic, Japanese, Chinese, Cyrillic). */
-export const FONTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'fonts');
+export const FONTS_DIR = process.env.STORY_FONTS_DIR || path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'fonts');
 
 /** The ffmpeg arguments (exported for tests). */
 export function ffmpegArgs({ tl, sceneClips, fps, width, height, music, clips, ass, out, fontsDir = FONTS_DIR, xfade }) {

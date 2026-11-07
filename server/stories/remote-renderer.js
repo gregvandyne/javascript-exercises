@@ -1,9 +1,13 @@
 // Story Builder: the render step on another machine (docs/story-builder.md "Hosting"). STORY_RENDERER=remote.
 // Talks to the story renderer service (services/story-renderer/server.js) at STORY_RENDER_URL with the bearer token
 // STORY_RENDER_TOKEN:
-//   POST   /jobs                    { key, spec }  -> 202 { id, total }   (503 busy: another story is rendering)
-//   GET    /jobs/:id                -> { status: running|done|failed, done, total, engine, frameSeconds, clips, error }
-//   GET    /jobs/:id/clips/:scene   -> the scene's MP4 clip
+//   POST   /jobs                    { key, spec, assemble? }  -> 202 { id, total }   (503 busy: another story is rendering)
+//   GET    /jobs/:id                -> { status: running|done|failed, phase: render|assemble, done, total, engine, ... }
+//   GET    /jobs/:id/clips/:scene   -> the scene's MP4 clip (a render-only job)
+//   GET    /jobs/:id/files/story.mp4 | poster.jpg   -> the finished video and poster (a job with `assemble`)
+// With `assemble` (what the pipeline sends: the timeline, the caption file's text, the music's seed, the voice clips)
+// the service also composes the music and builds the final video, so the web server never runs the big ffmpeg (it
+// needs more memory than a small web instance has).
 //   DELETE /jobs/:id                -> the service forgets the job and deletes its files
 // Polling, not streaming: a dropped connection or a renderer restart costs nothing but a few seconds. `key` is the
 // story id, so when this worker restarts and sends the same story again the service drops the old copy and starts over
@@ -25,6 +29,7 @@ export class RemoteRenderer {
     if (!url) throw new Error('STORY_RENDERER=remote needs STORY_RENDER_URL');
     if (!token) throw new Error('STORY_RENDERER=remote needs STORY_RENDER_TOKEN');
     this.name = 'remote';
+    this.assembles = true;
     this.url = String(url).replace(/\/+$/, '');
     this.token = token;
     this.pollMs = Math.max(200, pollMs);
@@ -44,6 +49,13 @@ export class RemoteRenderer {
     return { status: res.status, data: data || {} };
   }
 
+  async download(p, file, signal) {
+    const res = await this.call('GET', p, { signal, raw: true });
+    if (res.status !== 200 || !res.body) throw new Error(`story renderer: ${p} missing (${res.status})`);
+    await pipeline(Readable.fromWeb(res.body), fs.createWriteStream(file));
+    return file;
+  }
+
   /** -> { engine } from the service's health check (no token needed there, but it is sent anyway). */
   async probe() {
     const r = await this.call('GET', '/health');
@@ -51,8 +63,16 @@ export class RemoteRenderer {
     return { engine: r.data.engine || 'unknown' };
   }
 
-  async render(spec, { onProgress = null, signal = null } = {}) {
+  async render(spec, { onProgress = null, onPhase = null, signal = null, assemble = null } = {}) {
     const { out_dir: outDir, ...send } = spec;
+    let asm = null;
+    if (assemble) {
+      asm = {
+        timeline: assemble.timeline, xfade: assemble.xfade, posterAt: assemble.posterAt, music: assemble.music,
+        ass: fs.readFileSync(assemble.ass, 'utf8'),
+        voice: assemble.voice.map(v => ({ start: v.start, ext: path.extname(v.file).slice(1), data: fs.readFileSync(v.file).toString('base64') })),
+      };
+    }
     fs.mkdirSync(outDir, { recursive: true });
     const key = String(spec.key || path.basename(path.dirname(outDir)) || 'story');
     const t0 = Date.now();
@@ -60,7 +80,7 @@ export class RemoteRenderer {
     let job;
     for (;;) {
       if (signal && signal.aborted) throw Object.assign(new Error('stopped'), { code: 'stopped' });
-      const r = await this.call('POST', '/jobs', { body: { key, spec: send }, signal });
+      const r = await this.call('POST', '/jobs', { body: { key, spec: send, ...(asm ? { assemble: asm } : {}) }, signal });
       if (r.status === 202) { job = r.data; break; }
       if (r.status === 503 && Date.now() - t0 < this.busyWaitMs) { await sleep(Math.max(this.pollMs, 5000), signal); continue; }
       throw new Error(`story renderer refused the job (${r.status} ${r.data.error || ''})`);
@@ -68,7 +88,7 @@ export class RemoteRenderer {
     const stop = () => { this.call('DELETE', `/jobs/${job.id}`).catch(() => {}); };
     try {
       // 2. follow it
-      let st, misses = 0;
+      let st, misses = 0, phase = 'render';
       for (;;) {
         await sleep(this.pollMs, signal);
         if (Date.now() - t0 > this.timeoutMs) throw new Error('story renderer: timed out');
@@ -82,11 +102,17 @@ export class RemoteRenderer {
         if (r.status !== 200) { if (++misses > 20) throw new Error(`story renderer: ${r.status}`); continue; }
         misses = 0;
         st = r.data;
-        if (onProgress && st.total) onProgress({ done: st.done || 0, total: st.total });
+        if (st.phase && st.phase !== phase) { phase = st.phase; if (phase === 'assemble' && onPhase) onPhase('assembling'); }
+        if (onProgress && st.total) onProgress({ done: st.done || 0, total: st.total, phase: phase === 'assemble' ? 'assembling' : 'rendering' });
         if (st.status === 'failed') throw new Error(`story renderer: ${st.error || 'render failed'}`);
         if (st.status === 'done') break;
       }
-      // 3. fetch the clips
+      // 3. bring the result home: the finished video and poster, or the scene clips
+      if (asm) {
+        for (const f of ['story.mp4', 'poster.jpg']) await this.download(`/jobs/${job.id}/files/${f}`, path.join(assemble.outDir, f), signal);
+        stop();
+        return { engine: st.engine, frames: st.done, seconds: (Date.now() - t0) / 1000, frameSeconds: st.frameSeconds || 0, assembled: true, music: st.music || null };
+      }
       const clips = {};
       for (const s of spec.scenes) {
         const res = await this.call('GET', `/jobs/${job.id}/clips/${encodeURIComponent(s.id)}`, { signal, raw: true });

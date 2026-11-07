@@ -7,6 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const { createRendererService } = await import('../../services/story-renderer/server.js');
 const { checkSpec, MAX_BODY } = await import('../../services/story-renderer/spec.js');
@@ -152,6 +153,59 @@ test('RemoteRenderer: hands the spec over, reports progress, brings the clips ho
     await assert.rejects(p, e => e.code === 'stopped');
     await until(() => s.srv.jobs.size === 0, 3000);
   } finally { await s.close(); fs.rmSync(out, { recursive: true, force: true }); }
+});
+
+const hasFfmpeg = spawnSync('ffmpeg', ['-version']).status === 0;
+test('the whole story through the remote path: the service composes the music and builds the video; the site gets story.mp4 and the poster', { skip: hasFfmpeg ? false : 'ffmpeg is not installed', timeout: 120e3 }, async () => {
+  // a renderer whose "scenes" are real (tiny) video clips, so the service's ffmpeg assembly really runs
+  const renderer = fakeRenderer({ stepMs: 2 });
+  const plain = renderer.render;
+  renderer.render = async (s, o) => {
+    const r = await plain(s, o);
+    for (const [id, f] of Object.entries(r.clips)) spawnSync('ffmpeg', ['-v', 'error', '-y', '-f', 'lavfi', '-i', `color=c=0x2a4590:s=${s.width}x${s.height}:r=${s.fps / s.step}:d=4`, '-pix_fmt', 'yuv420p', f]);
+    return r;
+  };
+  const s = await service({ renderer });
+  const work = fs.mkdtempSync(path.join(os.tmpdir(), 'rr-asm-'));
+  try {
+    const W = await import('../../server/services/story-captions.js');
+    const { ttsBytes } = { ttsBytes: (await import('../../server/services/tts.js')).silentMp3 };
+    const script = { title: 'Moss', scenes: [{ lines: [{ say: 'Moss could not sleep.', show: 'Moss could not sleep.' }] }, { lines: [{ say: 'Goodnight, Moss.', show: 'Goodnight, Moss.' }] }] };
+    const tl = W.timeline(script, [[1.2], [1.0]]);
+    const voice = tl.lines.map((l, i) => { const f = path.join(work, `line-${i}.mp3`); fs.writeFileSync(f, ttsBytes(30)); return { file: f, start: l.start }; });
+    const ass = path.join(work, 'captions.ass');
+    fs.writeFileSync(ass, W.toAss(W.cues(tl.lines), { width: 128, height: 72, title: 'Moss', titleAt: [0.5, 2] }));
+    const sp = { ...spec(), scenes: spec().scenes.map((x, i) => ({ ...x, frames: Math.ceil(tl.scenes[i].dur * 8) + 4 })) };
+    const rr = new RemoteRenderer({ url: s.url, token: TOKEN, pollMs: 200 });
+    assert.equal(rr.assembles, true);
+    const phases = [];
+    const r = await rr.render({ ...sp, out_dir: path.join(work, 'frames') }, {
+      onPhase: ph => phases.push(ph),
+      assemble: { timeline: { scenes: tl.scenes, total: tl.total }, xfade: W.T.xfade, posterAt: 1.0, ass, music: { seconds: tl.total, seed: 7, duck: tl.narration }, voice, outDir: work },
+    });
+    assert.equal(r.assembled, true);
+    assert.deepEqual(r.music && Object.keys(r.music).sort(), ['bars', 'bpm', 'key', 'notes'], 'the music was composed on the renderer');
+    const probe = JSON.parse(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration:stream=codec_type', '-of', 'json', path.join(work, 'story.mp4')]).stdout.toString());
+    assert.deepEqual(probe.streams.map(x => x.codec_type).sort(), ['audio', 'video']);
+    assert.ok(Math.abs(+probe.format.duration - tl.total) < 0.3, `${probe.format.duration} vs ${tl.total}`);
+    assert.ok(fs.statSync(path.join(work, 'poster.jpg')).size > 200);
+    await until(() => s.srv.jobs.size === 0, 3000);
+    assert.equal(fs.readdirSync(s.dir).length, 0, 'nothing left on the renderer');
+    // a bundle that doesn't match the spec is refused up front
+    const bad = await req(s.url, '/jobs', { method: 'POST', body: { key: 'x', spec: sp, assemble: { timeline: { scenes: [], total: 5 }, ass: 'nope', voice: [] } } });
+    assert.equal(bad.status, 400);
+    const pr = (await bad.json()).problems.join(' ');
+    assert.match(pr, /timeline\.scenes/); assert.match(pr, /ass:/); assert.match(pr, /voice:/);
+  } finally { await s.close(); fs.rmSync(work, { recursive: true, force: true }); }
+});
+
+test('mp3Duration counts MPEG audio frames (the web server measures the site voice without ffmpeg)', async () => {
+  const { mp3Duration } = await import('../../server/services/story-voice.js');
+  const { silentMp3 } = await import('../../server/services/tts.js');
+  const b = silentMp3(120);   // 10 frames of 1152 samples at 44.1 kHz
+  assert.ok(Math.abs(mp3Duration(b) - (10 * 1152) / 44100) < 1e-9);
+  assert.ok(Math.abs(mp3Duration(Buffer.concat([Buffer.from('ID3\x03\x00\x00\x00\x00\x00\x05abcde', 'latin1'), b])) - (10 * 1152) / 44100) < 1e-9, 'an ID3 tag is skipped');
+  assert.equal(mp3Duration(Buffer.from('not audio at all')), null);
 });
 
 test('createRenderer picks the renderer from STORY_RENDERER', () => {
