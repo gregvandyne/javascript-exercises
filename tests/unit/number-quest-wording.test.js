@@ -28,13 +28,15 @@ test('the words say what they mean', () => {
   assert.doesNotMatch(allText() + read('seed-games/quest-race.html'), /ledger/i, 'no "ledger": the course never teaches the word');
 });
 
-test('7.4 states the race it plays: seven locks and the Honest Wheel, eight questions', () => {
+test('7.4 states the race it plays: seven locks and a last chance lock, eight questions, on the Vault Run', () => {
   const qr = read('seed-games/quest-race.html');
   const body = qr.slice(qr.indexOf('function nqVaultItems'), qr.indexOf('// Playing alone'));
   assert.equal((body.match(/mkS\(/g) || []).length, 8, 'the Vault Run asks eight questions');
   const m = deck('7.4').slides.at(-1).text;
   assert.match(m, /eight questions/);
   assert.doesNotMatch(m, /seven locks, one question per workshop, with/, 'no longer promises seven questions');
+  assert.doesNotMatch(m + qr, /Honest Wheel/, 'never names a wheel the course never introduces');
+  assert.equal(deck('7.4').game.chapter, 'Vault Run', 'the play button names the Vault Run');
 });
 
 test('the Rounding Run writes four-digit numbers with their comma (Round 5,322)', () => {

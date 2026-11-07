@@ -102,7 +102,7 @@
    ],
    "visual": {
     "type": "numberline",
-    "label": "268 on a number line from 260 to 270, two away from 270",
+    "label": "268 on a number line from 260 to 270: 8 back to 260, only 2 on to 270",
     "min": 260,
     "max": 270,
     "marks": [
@@ -125,6 +125,11 @@
     },
     "hops": [
      {
+      "from": 260,
+      "to": 268,
+      "label": "8 away"
+     },
+     {
       "from": 268,
       "to": 270,
       "label": "2 away"
@@ -137,17 +142,17 @@
      "box": [
       70.9,
       41.4,
-      11,
+      11.0,
       28.3
      ]
     },
     {
-     "cue": "The hop to 270 is only 2. The hop back to 260 is 8.",
+     "cue": "The hop back to 260 is 8. The hop on to 270 is only 2.",
      "box": [
-      70.9,
-      23.2,
-      27.3,
-      60.1
+      5,
+      23.5,
+      90,
+      38.5
      ]
     }
    ]
