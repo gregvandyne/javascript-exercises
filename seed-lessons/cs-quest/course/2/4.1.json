@@ -11,7 +11,7 @@
    "text": "Every message on the internet is cut into numbered packets. They travel through routers and are rebuilt at the other end.",
    "art": "envelope",
    "img": "csq/packet-post/protocols-2-trip-n",
-   "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "focus": [
     {
      "cue": "Five numbered packets, two lost on the way",
@@ -180,7 +180,7 @@
    "text": "Open Packet Post at Rules of the Road and finish all 6 levels, then two Many Roads levels with a hop budget.",
    "art": "trophy",
    "img": "csq/packet-post/protocols-2-trip-n",
-   "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "focus": [
     {
      "cue": "Get every packet through",

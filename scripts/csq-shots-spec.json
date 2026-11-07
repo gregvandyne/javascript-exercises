@@ -1286,10 +1286,10 @@
   "level": 1,
   "actions": [
    {
-    "acts": 3
+    "acts": 2
    }
   ],
-  "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+  "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
   "concept": "Messages in packets",
   "narrow": {
    "width": 420,

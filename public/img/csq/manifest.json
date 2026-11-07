@@ -1692,7 +1692,7 @@
    "band": "2",
    "state": "protocols-2-trip-n",
    "concept": "Messages in packets",
-   "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+   "alt": "Five packets, two lost on the way: packet 1 sits in its mail slot, and packets 2 and 4 wait in the inbox.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
   },
