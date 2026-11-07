@@ -71,7 +71,7 @@
      "cue": "A dare to post a friend's silly photo, without their yes",
      "box": [
       7.1,
-      32.0,
+      32,
       85.7,
       22.4
      ]
@@ -140,7 +140,7 @@
     {
      "cue": "Leaving and blocking are always allowed",
      "box": [
-      51.0,
+      51,
       24.8,
       46.2,
       20.3
@@ -175,18 +175,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. Judge each dilemma by consent, not by popularity.",
+   "text": "Open Trick Inbox at Ask First and sort all 6 messages. Judge each one by consent, not by popularity.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-comments-2",
-   "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
+   "img": "csq/trick-inbox/ask-first-1b-af-6-all",
+   "alt": "A post from Video Star Contest with both clues marked: “for the whole world to see” and “No need to ask them first!”",
    "focus": [
     {
-     "cue": "Play Online: judge by consent, not popularity",
+     "cue": "Play Ask First: judge by consent, not popularity",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      60.1,
+      58,
+      13.5
      ]
     }
    ]
@@ -198,8 +198,8 @@
   "cd-2-5.1-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "ask-first",
+  "params": "chapter=ask-first&band=2&lock=1"
  }
 }

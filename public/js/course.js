@@ -321,11 +321,15 @@ function gfCueFits(cue, frame) {
   if (r.left < frame.left - 1 || r.right > frame.right + 1 || r.top < frame.top - 1 || r.bottom > frame.bottom + 1) return false;
   return w >= Math.min(CUE_MIN_W, gfCueNatural(cue) - 2, frame.right - frame.left - 20);
 }
+// Nor may a chip sit on another step's box: a chip parked on the second of two option cards reads as that card's
+// label (Would You Rather's two cards: option 1's words on option 2).
 function gfCueOverlap(cue, box, badge, zoom) {
   const cr = rectOf(cue);
   if (cr.right - cr.left <= 0) return 0;
   const targets = [grow(rectOf(box), ringOut(box)), rectOf(badge)];
   if (zoom) targets.push(rectOf(zoom));
+  const fig = box.closest('.smedia');
+  if (fig) for (const other of fig.querySelectorAll('.gf-box')) if (other !== box) targets.push(rectOf(other));
   return targets.reduce((s, r) => s + area(cr, r), 0);
 }
 function gfPlaceCue(fig, i) {

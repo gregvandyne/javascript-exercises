@@ -279,9 +279,9 @@
     {
      "game": {
       "1b": {
-       "chapter": "letters",
-       "chapterTitle": "Prize Letters",
-       "params": "chapter=letters&band=1b&lock=1",
+       "chapter": "keys",
+       "chapterTitle": "Key Keepers",
+       "params": "chapter=keys&band=1b&lock=1",
        "slug": "trick-inbox"
       },
       "2": {
@@ -388,16 +388,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "private",
+       "chapterTitle": "Private Facts",
+       "params": "chapter=private&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "private",
+       "chapterTitle": "Private Facts",
+       "params": "chapter=private&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "3.1",
@@ -481,10 +481,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "ask-first",
+       "chapterTitle": "Ask First",
+       "params": "chapter=ask-first&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
        "chapter": "pressure",
@@ -543,10 +543,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "tricks",
-       "chapterTitle": "Spot the Trick",
-       "params": "chapter=tricks&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "letters",
+       "chapterTitle": "Prize Letters",
+       "params": "chapter=letters&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
        "chapter": "senders",
@@ -697,10 +697,10 @@
        "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "ask-first",
+       "chapterTitle": "Ask First",
+       "params": "chapter=ask-first&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "5.1",
@@ -869,16 +869,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "rules",
+       "chapterTitle": "Rule Breakers",
+       "params": "chapter=rules&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "rules",
+       "chapterTitle": "Rule Breakers",
+       "params": "chapter=rules&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "6.2",

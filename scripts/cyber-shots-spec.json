@@ -280,22 +280,6 @@
  {
   "actions": [],
   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "nickname or real first name",
-  "dilemma": "online-3",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-name-1b",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
   "band": "2",
   "chapter": "online",
   "concept": "nickname or real first name",
@@ -303,54 +287,6 @@
   "game": "would-you-rather",
   "level": 0,
   "state": "online-name-2",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "one photo for the world, or ten for friends",
-  "dilemma": "online-2",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-photo-1b",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
-  "band": "2",
-  "chapter": "online",
-  "concept": "one photo for the world, or ten for friends",
-  "dilemma": "online-2",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-photo-2",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
-  "band": "2",
-  "chapter": "online",
-  "concept": "a page anyone can comment on",
-  "dilemma": "online-9",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-comments-2",
   "narrow": {
    "width": 520,
    "height": 520,
@@ -415,22 +351,6 @@
   "game": "would-you-rather",
   "level": 0,
   "state": "online-location-1b",
-  "narrow": {
-   "width": 520,
-   "height": 520,
-   "top": 103.5
-  }
- },
- {
-  "actions": [],
-  "alt": "Would you rather: ask before every download, or never download anything?",
-  "band": "1b",
-  "chapter": "online",
-  "concept": "ask before every download",
-  "dilemma": "online-5",
-  "game": "would-you-rather",
-  "level": 0,
-  "state": "online-download-1b",
   "narrow": {
    "width": 520,
    "height": 520,
@@ -656,7 +576,7 @@
   "narrow": {
    "width": 450,
    "height": 1000,
-   "top": 426.0
+   "top": 426
   }
  },
  {
@@ -738,7 +658,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 251.0
+   "top": 251
   }
  },
  {
@@ -793,7 +713,7 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 249.0
+   "top": 249
   }
  },
  {
@@ -875,7 +795,7 @@
   "narrow": {
    "width": 430,
    "height": 1000,
-   "top": 430.0
+   "top": 430
   }
  },
  {
@@ -1194,7 +1114,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 451.0
+   "top": 451
   }
  },
  {
@@ -1290,7 +1210,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 451.0
+   "top": 451
   }
  },
  {
@@ -1434,7 +1354,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 242.0
+   "top": 242
   }
  },
  {
@@ -1498,7 +1418,7 @@
   "narrow": {
    "width": 430,
    "height": 1000,
-   "top": 339.0
+   "top": 339
   }
  },
  {
@@ -1801,7 +1721,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 168.0
+   "top": 168
   }
  },
  {
@@ -1883,5 +1803,212 @@
    "height": 1000,
    "top": 231
   }
+ },
+ {
+  "alt": "A game chat from Your Best Friend with both clues marked: “Can I have your mailbox key?” and “I promise I will never tell anyone.”",
+  "band": "1b",
+  "chapter": "keys",
+  "concept": "a best friend asks for your key",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "kk-1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 250
+  },
+  "phase": "hunt",
+  "state": "keys-1b-kk-1-all"
+ },
+ {
+  "alt": "A game chat from Someone at the Park with both clues marked: “I found a tablet on the bench with your sticker on it!” and “Tell me its unlock code”.",
+  "band": "1b",
+  "chapter": "keys",
+  "concept": "a found tablet and a stranger",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "kk-4",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 240.8
+  },
+  "phase": "hunt",
+  "state": "keys-1b-kk-4-all"
+ },
+ {
+  "alt": "A letter from Birthday Club with both clues marked: three me-facts asked together, and a surprise present as the bait.",
+  "band": "1b",
+  "chapter": "private",
+  "concept": "me-facts asked together",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "pf-1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 232
+  },
+  "phase": "hunt",
+  "state": "private-1b-pf-1-all"
+ },
+ {
+  "alt": "A game chat from MapGamePal with both clues marked: “Which school do you go to?” and “what street do you walk home on?”",
+  "band": "1b",
+  "chapter": "private",
+  "concept": "a game friend asks for school and street",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "pf-3",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 227
+  },
+  "phase": "hunt",
+  "state": "private-1b-pf-3-all"
+ },
+ {
+  "alt": "A post from Name Maker with both clues marked: “Your first pet’s name plus your street name” and “tag five friends”.",
+  "band": "1b",
+  "chapter": "private",
+  "concept": "a name game that fishes for answers",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "pf-6",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 222.8
+  },
+  "phase": "hunt",
+  "state": "private-1b-pf-6-all"
+ },
+ {
+  "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
+  "band": "1b",
+  "chapter": "ask-first",
+  "concept": "a dare to post a friend’s photo",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "af-1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 230.8
+  },
+  "phase": "hunt",
+  "state": "ask-first-1b-af-1-all"
+ },
+ {
+  "alt": "A letter from Ava from Class: “Can I put your owl drawing on our class poster? I will write your name under it. Is that okay with you?”",
+  "band": "1b",
+  "chapter": "ask-first",
+  "concept": "asking first, with credit",
+  "game": "trick-inbox",
+  "msg": "af-2",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 232
+  },
+  "phase": "hunt",
+  "state": "ask-first-1b-af-2-new"
+ },
+ {
+  "alt": "A post from Free Art Page with both clues marked: “Copy any picture from this page and say you drew it.” and “Nobody ever checks!”",
+  "band": "1b",
+  "chapter": "ask-first",
+  "concept": "passing off someone’s picture",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "af-3",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 232
+  },
+  "phase": "hunt",
+  "state": "ask-first-1b-af-3-all"
+ },
+ {
+  "alt": "A game chat from Max with both clues marked: “I posted that photo of you with spaghetti on your face.” and “I will not take it down.”",
+  "band": "1b",
+  "chapter": "ask-first",
+  "concept": "a photo posted without your yes",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "af-4",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 232
+  },
+  "phase": "hunt",
+  "state": "ask-first-1b-af-4-all"
+ },
+ {
+  "alt": "A post from Video Star Contest with both clues marked: “for the whole world to see” and “No need to ask them first!”",
+  "band": "1b",
+  "chapter": "ask-first",
+  "concept": "a contest that skips your friends’ yes",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "af-6",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 232
+  },
+  "phase": "hunt",
+  "state": "ask-first-1b-af-6-all"
+ },
+ {
+  "alt": "A game chat from ShortcutKid with both clues marked: “Here is a trick to switch it off.” and “Do not tell your teacher.”",
+  "band": "1b",
+  "chapter": "rules",
+  "concept": "a trick to switch off the school filter",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "rb-1",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 250
+  },
+  "phase": "hunt",
+  "state": "rules-1b-rb-1-all"
+ },
+ {
+  "alt": "A post from Game Sign-up with both clues marked: “Just say you are 13.” and “Everyone does it!”",
+  "band": "1b",
+  "chapter": "rules",
+  "concept": "a sign-up that says fib about your age",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "rb-3",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 250
+  },
+  "phase": "hunt",
+  "state": "rules-1b-rb-3-all"
+ },
+ {
+  "alt": "The debrief: that is the move! That breaks the game’s rules against you, and it is never your fault. Report and block, save it, and tell a trusted adult.",
+  "band": "1b",
+  "chapter": "rules",
+  "concept": "a rule broken against you",
+  "found": "all",
+  "game": "trick-inbox",
+  "msg": "rb-5",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 416
+  },
+  "phase": "debrief",
+  "state": "rules-1b-rb-5-debrief"
  }
 ]

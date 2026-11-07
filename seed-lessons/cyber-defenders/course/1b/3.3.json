@@ -10,25 +10,25 @@
    "title": "You made it, it is yours",
    "text": "A drawing you make is yours, because you made it. Finding something online does not make it yours. The maker decides how their work may be used.",
    "art": "pencil",
-   "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
+   "img": "csq/trick-inbox/ask-first-1b-af-2-new",
+   "alt": "A letter from Ava from Class: “Can I put your owl drawing on our class poster? I will write your name under it. Is that okay with you?”",
    "focus": [
     {
-     "cue": "Your drawing, shown to everyone online",
+     "cue": "Ava asks first: may she use your drawing?",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
+      6.9,
+      36.2,
+      86.2,
+      31.1
      ]
     },
     {
-     "cue": "Your drawing, kept to family only",
+     "cue": "Ava from Class: someone you know",
      "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
+      29.6,
+      10.5,
+      36.6,
+      7.8
      ]
     }
    ]
@@ -42,52 +42,30 @@
     "no badge: ask first",
     "credit badge: use it and give credit",
     "public domain: free for anyone"
-   ],
-   "img": "csq/would-you-rather/online-credit-1b-n1",
-   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
-   "focus": [
-    {
-     "cue": "Use a picture, credit its maker",
-     "box": [
-      1.9,
-      1.9,
-      96.2,
-      44.4
-     ]
-    },
-    {
-     "cue": "Or draw your own, even if it is worse",
-     "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
-     ]
-    }
    ]
   },
   {
    "title": "Photos need a yes",
    "text": "Sharing a photo of someone else needs their yes, always. If a friend posts a photo of you that you do not like, ask them to take it down. If it stays up, tell a trusted adult, who can help report it.",
    "art": "people",
-   "img": "csq/trick-inbox/pressure-2-pr-4-all",
-   "alt": "A group chat from The Cool Group with clues marked: post a silly photo of your friend, or leave the group; everyone will laugh.",
+   "img": "csq/trick-inbox/ask-first-1b-af-4-all",
+   "alt": "A game chat from Max with both clues marked: “I posted that photo of you with spaghetti on your face.” and “I will not take it down.”",
    "focus": [
     {
-     "cue": "A dare to post a silly photo of a friend",
+     "cue": "A photo of you, posted without your yes",
      "box": [
       7.1,
-      32.0,
+      36.2,
       85.7,
       22.4
      ]
     },
     {
-     "cue": "Everyone will laugh, but the friend never said yes",
+     "cue": "It stays up: tell a trusted adult",
      "box": [
-      7.1,
-      54.4,
-      46.8,
+      26.1,
+      58.6,
+      50.1,
       13.5
      ]
     }
@@ -152,18 +130,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. Then write the credit line for a game you might make. Last, name one thing you keep private.",
+   "text": "Open Trick Inbox at Ask First and sort all 6 messages: whose yes does each one need? Then write the credit line for a game you might make. Last, name one thing you keep private.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-photo-1b",
-   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
+   "img": "csq/trick-inbox/ask-first-1b-af-1-all",
+   "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
    "focus": [
     {
-     "cue": "Play Online: judge each pair",
+     "cue": "Play Ask First: whose yes does it need?",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      36.7,
+      85.7,
+      22.4
      ]
     }
    ]
@@ -175,8 +153,8 @@
   "cd-1b-3.3-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "ask-first",
+  "params": "chapter=ask-first&band=1b&lock=1"
  }
 }

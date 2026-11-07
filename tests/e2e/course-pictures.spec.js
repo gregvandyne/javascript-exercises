@@ -11,6 +11,7 @@
 //   - a diagram never carries a cue on the picture at all (its cues are the caption strip under it);
 //   - a diagram's badge never sits on any of the diagram's text;
 //   - no edge of a diagram's focus box (or of its ring) crosses a text: every label is wholly inside or outside.
+//   - a chip never sits on another step's box (it would read as that box's label);
 //   - while each tour step plays, its words are wholly on screen (inside the viewport and the figure; a chip inside
 //     the picture) and at least 200 px wide, or their whole one-line width: never a sliver past the picture's edge.
 // Every size runs twice: the tour's layout, and the still view a reduced-motion setting shows (every step's box and
@@ -132,6 +133,8 @@ function figureProblems(fig, arg) {
     const cue = st.querySelector('.gf-cue');
     if (vf && cue) out.push(`${n}: a diagram's cue is drawn on the picture`);
     if (cue && !strip && shown(cue) && hit(R(cue), ring)) out.push(`${n}: the cue chip overlaps its focus box`);
+    // ... nor another step's box: there it reads as that box's label (option 1's words on option 2's card)
+    if (cue && !strip && shown(cue) && only == null) fig.querySelectorAll('.gf-step').forEach((o, j) => { if (j !== i && hit(R(cue), R(o.querySelector('.gf-box')))) out.push(`${n}: the cue chip sits on step ${j + 1}'s box`); });
     if (cue && !strip && shown(cue) && words.length) {
       const c = R(cue), share = words.reduce((a, w) => a + over(c, w), 0) / (c.width * c.height);
       if (share > 0.07) out.push(`${n}: the cue chip hides the picture's text (${Math.round(share * 100)}% of the chip${rects ? ', in its recorded text boxes' : ''})`);

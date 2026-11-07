@@ -297,14 +297,14 @@ test('course design: each unit plays the game that teaches it, and no step repea
       // Units 1-2 play Packet Post, except where a step's own skill is trained by one of the course's own games,
       // so no step reopens a chapter (or a chained chapter) an earlier step already required: 1.3's journey in
       // Escape's Lock 1: Sorting Gate (Packet Post's Many Roads is already chained from 1.1), the key-fishing letters
-      // of Trick Inbox's Prize Letters at 2.2 (who may have your key), and the Magpie's note in Escape's Lock 2:
+      // of Trick Inbox's Key Keepers at 2.2 (who may have your key), and the Magpie's note in Escape's Lock 2:
       // Sealed Note at 2.3 (Pro: Secret Messages chains into Spot the Trick, 2-1.2's module). Explorer's unit 2 so
       // plays three different mechanics in a row (key tiles, an inbox, the cipher wheel), never two wheels back to back.
       const OWN = { '1b-1.3': 'escape-the-post-office', '1b-2.2': 'trick-inbox', '1b-2.3': 'escape-the-post-office', '2-1.3': 'escape-the-post-office', '2-2.2': 'trick-inbox', '2-2.3': 'escape-the-post-office' };
       if (m.unit <= 2) assert.equal(m.slug, OWN[`${band}-${m.n}`] || 'packet-post', `${band}-${m.n}: units 1-2 play Packet Post`);
-      // Units 4-6 play the course's own games; the one exception is Explorer 4.1 "Spot the trick", which plays Packet
-      // Post's own Spot the Trick cards (Prize Letters moved to 2.2), chained into the 3 Secret Messages puzzles.
-      const OWN46 = { '1b-4.1': 'packet-post' };
+      // Units 4-6 play the course's own games (Explorer 4.1 plays Trick Inbox's Prize Letters since the
+      // 2026-11-07 pass: Packet Post's Spot the Trick chained cipher puzzles onto it; 2.2 plays Key Keepers).
+      const OWN46 = {};
       if (m.unit >= 4) assert.ok([OWN46[`${band}-${m.n}`], 'trick-inbox', 'escape-the-post-office', 'would-you-rather'].includes(m.slug), `${band}-${m.n}: units 4-6 play Cyber Defenders' own games`);
     }
     const counts = mods.reduce((a, m) => ({ ...a, [m.slug]: (a[m.slug] || 0) + 1 }), {});
