@@ -469,7 +469,7 @@
     }
     // coconut, Cappy, bee
     const co = S.coco;
-    if (co.on) { const sh = co.shake > 0 ? Math.round(Math.sin(S.time * 40) * 1.5) : 0; sprK(g, SPRITES.vc_coconut, sxOf(co.x) - 8 + sh, syOf(co.wy) - 8, 2); if (co.shake > 0) text(g, '!', sxOf(co.x), syOf(co.wy) - 22, WARN); }
+    if (co.on) { const sh = co.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.time * 40) * 1.5) : 0; sprK(g, SPRITES.vc_coconut, sxOf(co.x) - 8 + sh, syOf(co.wy) - 8, 2); if (co.shake > 0) text(g, '!', sxOf(co.x), syOf(co.wy) - 22, WARN); }
     drawCappy(g, ctx);
     const b = S.bee;
     if (b.on) {

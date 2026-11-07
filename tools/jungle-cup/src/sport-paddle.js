@@ -647,6 +647,8 @@
     music: 'paddle',
     // the floating joystick moves Cappy; a touch anywhere else (or the Swing button) swings
     stick: true,
+    /** The intro card says that a warm-up comes first (until it has been played once). */
+    introNote(ctx) { return ctx.warmedUp ? '' : t('pad.warmCard'); },
     start(ctx) {
       S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.hits = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.6 : 0; S.hintRound = S.hint > 0; S.auto = false; S.bot = null;
       S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.jdive = 0; S.cdive = 0; S.lastQ = 0.5; S.fzYou = 0; S.fzThem = 0;

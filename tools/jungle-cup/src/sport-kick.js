@@ -462,6 +462,9 @@
       kx = lerp(kx, tx, k); ky = lerp(ky, S.kDive === 0 ? ty - mh * 0.2 : ty, k);
       if (S.kDive !== 0 && k > 0.25) { q = S.kDive < 0 ? 3 : 1; }
       if (after(S.phase) && S.kDive !== 0 && S.flyT > S.flyDur + 0.5) ky = Math.min(L.gy1 - mw / 2 + ks * 2, ky + (S.flyT - S.flyDur - 0.5) * 120);
+      // his whole dive stays inside the posts (lying down he is as wide as he is tall)
+      const half = (q ? mh : mw) / 2 + 1;
+      kx = clamp(kx, gx0 + half, gx0 + L.gw - half);
     }
     const mSpr = after(S.phase) && S.outcome !== 'goal' && S.flyT > S.flyDur + 0.6 ? SPRITES.bk_mico_cheer : (((ctx.t * 3) | 0) % 2 && !fly ? SPRITES.bk_mico_ready2 : ms);
     JC.draw.shadow(g, Math.round(kx), L.gy1 + 1, Math.round(mw * 0.3));
@@ -541,7 +544,11 @@
     if (S.dive !== 9) {
       const k = easeOut(clamp((S.mT - S.diveAt) / 0.28, 0, 1));
       if (S.dive === 0) cy -= Math.round(Math.sin(k * Math.PI) * 14 * K);
-      else { cx = lerp(L.kx, L.kx + S.dive * W * 0.28, k); cy = lerp(cy, L.ky - 14 * K, k); if (k > 0.3) q = S.dive < 0 ? 3 : 1; }
+      else {
+        // a dive stays on screen and above the dive buttons (lying down, Cappy is as wide as the sprite is tall)
+        const hw = cS.h * cs / 2, hh = cS.w * cs / 2, reach = Math.min(W * 0.28, W / 2 - hw - 2);
+        cx = lerp(L.kx, L.kx + S.dive * reach, k); cy = lerp(cy, Math.min(L.ky - 14 * K, L.bottom - hh - 2), k); if (k > 0.3) q = S.dive < 0 ? 3 : 1;
+      }
     }
     const ballFirst = !(u > 0.8 && !S.keepSaved);
     if (ballFirst) drawBall(g, bx, by, br);
@@ -601,7 +608,8 @@
     }
     drawBoard(g, ctx);
     // the round, and what to do
-    const pre = !after(S.phase) && S.phase !== 'wipe', round = S.side === 'shoot' ? S.nYou + (pre ? 1 : 0) : S.nMico + (pre ? 1 : 0);
+    // during the wipe: the kick just taken, then (once the view has changed sides) the next one, never "Kick 0"
+    const pre = S.phase === 'wipe' ? S.side === S.nextSide : !after(S.phase), round = S.side === 'shoot' ? S.nYou + (pre ? 1 : 0) : S.nMico + (pre ? 1 : 0);
     const ry = 35;
     if (!S.over) text(g, round > REG ? t('bk.suddenShort') : label('bk.round', Math.min(REG, round)), ctx.W / 2, ry, T_ROUND);
     const roleRoom = S.side === 'keep' || L.gy0 - 6 >= ry + 24;

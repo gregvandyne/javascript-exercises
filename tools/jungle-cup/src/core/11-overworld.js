@@ -10,7 +10,7 @@ JC.player = P;
 const CAM = { x: 0, y: 0 };
 const OW = { name: 'world', time: 0, water: 0, prompt: null, promptT: 0, celebrate: null, steps: 0, aPtr: -1, wantArch: '', glide: 0 };
 // what Cappy can talk to or use right now (found each step, no allocation)
-const TARGET = { kind: '', ref: null, tx: 0, ty: 0, d: 0 };
+const TARGET = { kind: '', ref: null, tx: 0, ty: 0, d: 0, score: 0 };
 JC.overworld = OW;
 JC.refreshCappy = function () { const c = SAVE.data.cos; buildCappy('cappy', BANDANAS[c.bandana] || BANDANAS.green); };
 function placePlayer(x, y, d) { P.x = x; P.y = y; P.fpx = x * TS; P.fpy = y * TS; P.px = P.fpx; P.py = P.fpy; P.dir = d || P.dir; P.moving = false; P.t = 0; P.glideT = 0; OW.prompt = ''; }
@@ -92,13 +92,16 @@ function archHere() { return archNear(); }
 const REACH = 27, BESIDE = 18;
 function consider(kind, ref, tx, ty) {
   const cx = tx * TS + 8, cy = ty * TS + 8, vx = cx - feetX(), vy = cy - feetY(), d = Math.hypot(vx, vy);
-  if (d > REACH || d >= TARGET.d) return;
-  const [fx, fy] = DIRS[P.dir];
-  if (d > BESIDE && (vx * fx + vy * fy) / (d || 1) < 0.35) return; // further away: only in front
-  TARGET.kind = kind; TARGET.ref = ref; TARGET.tx = tx; TARGET.ty = ty; TARGET.d = d;
+  if (d > REACH) return;
+  const [fx, fy] = DIRS[P.dir], front = (vx * fx + vy * fy) / (d || 1) >= 0.35;
+  if (d > BESIDE && !front) return; // further away: only in front
+  // what Cappy faces wins over what is beside or behind him (a sign at his back never beats the friend he looks at)
+  const score = d + (front ? 0 : 12);
+  if (score >= TARGET.score) return;
+  TARGET.kind = kind; TARGET.ref = ref; TARGET.tx = tx; TARGET.ty = ty; TARGET.d = d; TARGET.score = score;
 }
 function findTarget() {
-  TARGET.kind = ''; TARGET.ref = null; TARGET.d = 1e9;
+  TARGET.kind = ''; TARGET.ref = null; TARGET.d = 1e9; TARGET.score = 1e9;
   for (const n of WORLD.npcs) consider('npc', n, n.x, n.y);
   for (const s of WORLD.signs) consider('sign', s, s.x, s.y);
   consider('lift', null, WORLD.lift.x, WORLD.lift.y);
@@ -283,15 +286,6 @@ function drawTotemSockets(g, ox, oy) {
   for (let i = 0; i < NSPORTS; i++) {
     const id = JC.sportOrder[i], s = sk[i], x = s.x - ox, y = s.y - oy;
     const lit = SAVE.data.feathers[id], fresh = OW.celebrate && OW.celebrate.id === id;
-    if (fresh && OW.celebrate.t < 1.5) {
-      // the new feather flies into its socket
-      const k = easeOut(clamp(OW.celebrate.t / 1.5, 0, 1));
-      const fx = lerp(VIEW.W / 2, x, k), fy = lerp(VIEW.H / 2, y - 8, k);
-      spr(g, featherSprite(SPORT_COLOURS[id]), fx - 3, fy - 5);
-      if (((OW.celebrate.t * 20) | 0) % 3 === 0) UI.particle(fx + ox - CAM.x, fy, (Math.random() - 0.5) * 30, -10, SPORT_COLOURS[id], 0.5, 1, 20);
-      disc(g, x, y, 3, OUT); disc(g, x, y, 2, '#3b2416');
-      continue;
-    }
     disc(g, x, y, 3, OUT);
     if (lit) {
       if (fresh) { const r = 4 + Math.round(Math.sin(OW.celebrate.t * 8) * 1.5); g.globalAlpha = 0.5; disc(g, x, y - 4, r + 3, SPORT_COLOURS[id]); g.globalAlpha = 1; }
@@ -341,10 +335,21 @@ OW.drawHud = function (g) {
   // the Feathers, top left
   const n = NSPORTS, sw = 11, x0 = 6, y0 = 6;
   box(g, x0 - 2, y0 - 2, n * sw + 4, 18, 'rgba(27,19,37,0.72)', PAL.ink);
+  const cel = OW.celebrate, flying = cel && cel.t < 1.5;
   for (let i = 0; i < n; i++) {
-    const id = JC.sportOrder[i], on = SAVE.data.feathers[id];
-    if (on) spr(g, featherSprite(SPORT_COLOURS[id]), x0 + i * sw + 2, y0 + 1);
-    else spr(g, featherSprite('#4a4060'), x0 + i * sw + 2, y0 + 1);
+    const id = JC.sportOrder[i], on = SAVE.data.feathers[id] && !(flying && cel.id === id), hx = x0 + i * sw + 2;
+    if (on) {
+      // the new Feather's place glows a moment after it lands
+      if (cel && cel.id === id) { g.globalAlpha = 0.6 * (1 - (cel.t - 1.5) / 2.5); disc(g, hx + 3, y0 + 6, 7, SPORT_COLOURS[id]); g.globalAlpha = 1; }
+      spr(g, featherSprite(SPORT_COLOURS[id]), hx, y0 + 1);
+    } else spr(g, featherSprite('#4a4060'), hx, y0 + 1);
+  }
+  // a new Feather flies from the middle of the screen into its place in the bar (the totem in the village lights too)
+  if (flying) {
+    const i = JC.sportOrder.indexOf(cel.id), k = easeOut(clamp(cel.t / 1.5, 0, 1));
+    const tx = x0 + i * sw + 2, fx = lerp(VIEW.W / 2, tx, k), fy = lerp(VIEW.H / 2, y0 + 1, k) - Math.sin(k * Math.PI) * 30;
+    sprK(g, featherSprite(SPORT_COLOURS[cel.id]), fx - 3 * (2 - k), fy - 5 * (2 - k), k < 0.6 ? 2 : 1);
+    if (((cel.t * 20) | 0) % 3 === 0) UI.particle(fx, fy, (Math.random() - 0.5) * 30, -10, SPORT_COLOURS[cel.id], 0.5, 1, 20);
   }
   // map button, top right
   UI.iconButton(g, 'map', VIEW.W - Math.max(14, VIEW.tap / 2 + 4), Math.max(14, VIEW.tap / 2 + 4), UI.icons.map, { col: '#3d8a3a' });
@@ -352,8 +357,10 @@ OW.drawHud = function (g) {
   if (OW.prompt && !TB.open) {
     const sp = OW.prompt, name = t('sport.' + sp);
     const msg = INPUT.showTouch() ? t('arch.tap', { sport: name }) : t('arch.key', { sport: name });
-    const w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
-    UI.button(g, 'prompt', x, y, w, h, msg, { col: SPORT_COLOURS[sp], tcol: PAL.white, icon: UI.icons.play, glow: ((OW.time * 2) | 0) % 2 === 0 });
+    // a long sport name (Portuguese, Dutch) goes onto two lines in a taller button instead of being squeezed
+    const long = textW(msg) + 30 > VIEW.W - 20;
+    const w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(long ? 28 : 22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
+    UI.button(g, 'prompt', x, y, w, h, msg, { col: SPORT_COLOURS[sp], tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
   }
   // touch controls
   if (INPUT.showTouch() && !TB.open) {

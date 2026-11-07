@@ -93,11 +93,13 @@ test('Jungle Cup: Continue shows the panels once per launch; a first three-star 
   await J(f, 'tap', 'continue'); await J(f, 'step', 800);
   s = await state(f);
   expect([s.screen, s.text]).toEqual(['world', null]);
-  // two stars give no bandana; the first three-star round (the vine bot climbs in about 30 s) gives the berry one
+  // two stars give no bandana; the first three-star round gives the berry one (a three-star result is set directly:
+  // the bots' star counts vary now that hazards can knock Cappy down)
   s = await J(f, 'win', 'paddle');
   expect([s.sport.result.stars, s.cos.own.includes('berry')]).toEqual([2, false]);
-  await J(f, 'play', 'vine'); await J(f, 'step', 3800); await J(f, 'sport', 'auto', true);
-  for (let i = 0; i < 60; i++) { s = await J(f, 'step', 1000); if (s.sport.phase === 'results') break; }
+  await J(f, 'play', 'vine'); await J(f, 'step', 300);
+  await f.evaluate(() => { const R = JC.runner; R.result = { score: 3000, stars: 3, won: true, frac: 1 }; R.finishNow(); });
+  await J(f, 'step', 1500); s = await state(f);
   expect([s.sport.phase, s.sport.result.stars]).toEqual(['results', 3]);
   expect(s.cos.own).toContain('berry');
   expect(s.cos.bandana).not.toBe('berry');   // given, not forced on: Style picks what Cappy wears

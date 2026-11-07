@@ -28,7 +28,7 @@ frame.addEventListener('load', () => {
   stopLoud();   // a (re)loaded game starts with the microphone off
   if (stopped) return;
   if (framePins > 0) { framePins--; return; }   // a reload we triggered below
-  if (!frameSettled) { frameSettled = true; return; }   // the game's own first load
+  if (!frameSettled) { frameSettled = true; focusOnLoad(); return; }   // the game's own first load
   // A game that keeps reloading itself with no tap from the player: after two pins in 30 s, stop instead of looping.
   if (!(ua && ua.isActive)) {
     const now = Date.now(); pinnedAt = pinnedAt.filter(at => now - at < 30e3);
@@ -38,6 +38,15 @@ frame.addEventListener('load', () => {
   framePins = 2; frame.src = 'about:blank'; setTimeout(() => { frame.src = frameSrc; }, 30);
 });
 frame.src = frameSrc;
+// The game gets the keyboard on load, so a laptop player can press Space at once (no click or five Tabs first) —
+// unless the player has already put the focus somewhere on the page.
+function focusOnLoad() {
+  const a = document.activeElement;
+  if (a && a !== document.body && a !== document.documentElement && a !== frame) return;
+  try { frame.focus({ preventScroll: true }); } catch { /* frame gone */ }
+}
+// The toasts sit over the game: they never take a tap meant for the game's own buttons (its D-pad, its A button).
+{ const box = document.getElementById('toasts'); if (box) box.classList.add('over-game'); }
 // The frame goes AFTER the fullscreen back link, not before it: in fullscreen the browser tabs only within
 // the stage, so the back link must be the first stop — otherwise a keyboard player has to tab through the
 // whole game to reach the way out. Both are absolutely positioned; the visual stack is unchanged.
@@ -123,11 +132,24 @@ export function validMessage(e, frameWin) {
   const check = TYPES[m.type]; if (!check) return null;
   try { return check(m) ? m : null; } catch { return null; }
 }
-let saveTimer = null, pendingSave = null, lastScoreAt = 0;
+let saveTimer = null, pendingSave = null, lastScoreAt = 0, saveRetry = 0;
+// A save that does not reach the server (the connection dropped) is kept and sent again — after 5 s, then less
+// often, and at once when the browser is back online — unless a newer save has replaced it. The player hears once.
 async function flushSave() {
   saveTimer = null; const data = pendingSave; pendingSave = null; if (!data) return;
-  try { await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data }, active: playing() }); } catch (err) { if (err.status !== 401) toast(t('js.play.saveFailed'), { bad: true }); }
+  try {
+    await api(`/api/games/${d.gameId}/save`, { method: 'POST', body: { data }, active: playing() });
+    saveRetry = 0;
+  } catch (err) {
+    if (err.status === 401) return;
+    if (!saveRetry) toast(t('js.play.saveFailed'), { bad: true });
+    if (err.status && err.status < 500 && err.status !== 408 && err.status !== 429) return;   // refused: sending it again would not help
+    if (!pendingSave) pendingSave = data;
+    saveRetry = Math.min(saveRetry + 1, 5);
+    if (!saveTimer) saveTimer = setTimeout(flushSave, 5000 * 2 ** (saveRetry - 1));
+  }
 }
+addEventListener('online', () => { if (pendingSave && saveRetry) { clearTimeout(saveTimer); saveTimer = null; flushSave(); } });
 // An online match (?match=<id>): the frame hands its private port over with brb:ready; public/js/match.js relays.
 const relay = d.match ? startRelay(d, stage) : null;
 addEventListener('message', e => {
@@ -150,7 +172,7 @@ addEventListener('message', e => {
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
     case 'brb:score': {
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
-      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' }, active: playing() }).then(r => { if (r.improved) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
+      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' }, active: playing() }).then(r => { if (r.improved && r.best > 0) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
       lessonEvent({ event: 'score', score: m.score, label: m.label || '' });
       break;
     }

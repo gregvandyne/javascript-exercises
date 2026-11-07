@@ -71,7 +71,7 @@ const JCT = {
   talk() { act(); return jcState(); },
   skipText() { TB.skipAll(); return jcState(); },
   /** Finish the line being typed and go on to the next one (what a tap does). */
-  next() { if (TB.open) { TB.shown = TB.full.length; TB.advance(); } return jcState(); },
+  next() { TB.nextLine(); return jcState(); },
   /** The buttons drawn last frame, in CSS pixels: [{ id, x, y, w, h }]. */
   buttons() { const k = VIEW.S / VIEW.dpr, out = []; for (let i = 0; i < UI.prevN; i++) { const h = UI.prev[i]; out.push({ id: h.id, x: h.x * k, y: h.y * k, w: h.w * k, h: h.h * k }); } return out; },
   /** The current sport's own hooks (sport.test), e.g. jc.sport('auto', true). */

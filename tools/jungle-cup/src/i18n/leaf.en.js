@@ -8,6 +8,6 @@ I18N.en = Object.assign(I18N.en || {}, {
   'ls.mult': 'x{n}', 'ls.pend': '{n}',
   'ls.perfectLand': "Perfect landing!", 'ls.bigAir': "Big air!", 'ls.mega': "Mega ramp!", 'ls.combo': "Combo x{n}!", 'ls.shake': "Shake it off!", 'ls.ring': "Green ring = clean landing",
   'ls.youWin': 'You beat Kiki!', 'ls.kikiWins': 'Kiki wins this time',
-  'ls.hintTouch': 'Tap on a ramp to pop! In the air, swipe or press a trick. Land with no trick going.',
-  'ls.hintKeys': 'Space on a ramp to pop! In the air: Left / Right Spin, Up Flip, Down Grab. Land with no trick going.',
+  'ls.hintTouch': 'Tap on a ramp to pop! In the air, swipe or press a trick. Finish your trick before you land!',
+  'ls.hintKeys': 'Space on a ramp to pop! In the air: Left / Right Spin, Up Flip, Down Grab. Finish your trick before you land!',
 });

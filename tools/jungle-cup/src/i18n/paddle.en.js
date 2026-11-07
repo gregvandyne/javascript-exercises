@@ -6,6 +6,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'pad.perfect': 'Perfect!', 'pad.good': 'Good!', 'pad.early': 'Too early!', 'pad.miss': 'Miss!', 'pad.smash': 'Smash!',
   'pad.pounce': 'POUNCE!', 'pad.pounceMeter': 'Pounce', 'pad.pounceReady': 'Pounce ready!',
   'pad.point': 'Your point!', 'pad.pointJada': 'Point to Jada', 'pad.pointMarm': 'Point to the marmosets',
+  'pad.warmCard': 'First, a quick warm-up against two marmosets: first to 3.',
   'pad.warm': 'Warm-up: first to 3', 'pad.warmBanner': 'Warm-up!', 'pad.warmDone': 'Warm-up done!',
   'pad.hintTouch': 'Run to the ring, then tap Swing when the white circle meets it!', 'pad.hintKeys': 'Arrows to the ring, then Space when the white circle meets it!',
   'pad.hintServeTouch': 'Tap to serve', 'pad.hintServeKeys': 'Space to serve',

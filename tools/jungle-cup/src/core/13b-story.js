@@ -13,7 +13,7 @@ STORY.showing = () => !!STORY.line();
 /** Skip every story-panel line in a row (the lines after them, like a cousin's hello, still show). */
 STORY.skip = function () {
   let n = 0;
-  while (STORY.showing() && n++ < 40) { TB.shown = TB.full.length; TB.advance(); }
+  while (STORY.showing() && n++ < 40) TB.nextLine();
   STORY.cur = ''; STORY.prev = '';
 };
 STORY.update = function (dt) {
@@ -90,8 +90,9 @@ function pCapy(p, x, y, s, o) {
   p.blob(x + 3 * s * dir, y - 6 * s, 2.2 * s, 2 * s, shade(band, -0.2));
   p.stroke([x + 3 * s * dir, y - 6 * s, x - 2 * s * dir, y - 9 * s - (o.wave ? 3 * s : 0)], band, 1.8 * s);
   p.stroke([x + 3 * s * dir, y - 6 * s, x - 3 * s * dir, y - 4 * s], band, 1.6 * s);
-  if (o.hat === 'straw') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2.2 * s, '#e8c46a'); p.blob(x + 10 * s * dir, y - 15 * s, 5 * s, 3 * s, '#f2d68a'); }
-  if (o.hat === 'explorer') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2 * s, '#9a7a4a'); p.blob(x + 10 * s * dir, y - 15.5 * s, 5.5 * s, 3.5 * s, '#c4a46a'); }
+  // the hats in the pixel hats' colours: golden straw with a red band, the white explorer hat with a blue band
+  if (o.hat === 'straw') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2.2 * s, '#d8b450'); p.blob(x + 10 * s * dir, y - 15 * s, 5 * s, 3 * s, '#f0d070'); p.blob(x + 10 * s * dir, y - 13.6 * s, 5 * s, 0.9 * s, '#e04848'); }
+  if (o.hat === 'explorer') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2 * s, '#e8dcc0'); p.blob(x + 10 * s * dir, y - 15.5 * s, 5.5 * s, 3.5 * s, '#fff8e8'); p.blob(x + 10 * s * dir, y - 13.8 * s, 5.5 * s, 0.9 * s, '#3a7bd5'); }
   if (o.arm) { p.stroke([x + 9 * s * dir, y + 1 * s, x + 14 * s * dir, y - 10 * s], fur, 3 * s); p.blob(x + 14 * s * dir, y - 11 * s, 2 * s, 2 * s, dark); }
 }
 function pRaft(p, x, y, w, flagCol) {
@@ -103,7 +104,7 @@ function pRaft(p, x, y, w, flagCol) {
 }
 const CHAMP_LOOK = {
   jada: { col: '#f0a040', spot: '#6a3a10' }, sloane: { col: '#9a8a70', mask: '#4a3a2a' }, tico: { col: '#2a2430', beak: '#ff9b2e' },
-  otters: { col: '#7a4a2a' }, rana: { col: '#5a8aff', spot: '#1a1a40' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
+  otters: { col: '#7a4a2a' }, rana: { col: '#9d5cf0', spot: '#ffd23f' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
   pecca: { col: '#6e5c54' },
 };
 function pCritter(p, id, x, y, s) {
@@ -278,7 +279,7 @@ function paintPanel(id, w, h) {
 }
 /** Where the picture goes: the space above the text box (and below the Skip button), keeping 16:10 to 1:1. */
 function storyFrame() {
-  const f = STORY.frame, top = 6, bottom = VIEW.H - 58 - 4 - 16, availW = Math.min(VIEW.W - 12, 560), availH = Math.max(60, bottom - top);
+  const f = STORY.frame, top = 6, bottom = VIEW.H - 64 - 8 - 16, availW = Math.min(VIEW.W - 12, 560), availH = Math.max(60, bottom - top);
   let w = availW, h = Math.round(w * 0.62);
   if (h > availH) { h = availH; w = Math.min(availW, Math.round(h / 0.62)); }
   if (VIEW.portrait) h = Math.min(availH, Math.round(w * 1.25));
