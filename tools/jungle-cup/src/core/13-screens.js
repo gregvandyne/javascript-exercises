@@ -346,11 +346,12 @@ FIN.draw = function (g) {
   for (let y = sy + 6; y < H; y += 6) rect(g, 0, y, W, 1, '#4a2c18');
   // champions in a row (in their colours)
   const champs = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
-  const gap = Math.min(30, (W - 60) / 7);
+  // three on Cappy's left, four on his right (the Otter Twins stand together in one slot)
+  const gap = Math.max(18, Math.min(28, (W / 2 - 34) / 3));
   champs.forEach((c, i) => {
-    const s = SPRITES[CHAMP_SPR[c]], x = Math.round(W / 2 + (i - 3) * gap - 8 + (i >= 3 ? 26 : -26) * (i === 3 ? 0 : 1)), y = sy - 16 + ((((FIN.t * 2) | 0) + i) % 2);
-    if (i === 3) return;
-    shadow(g, x + 8, sy, 6); spr(g, s, x, y, i > 3);
+    const s = SPRITES[CHAMP_SPR[c]], x = Math.round(i < 3 ? W / 2 - 8 - 24 - (2 - i) * gap : W / 2 - 8 + 24 + (i - 3) * gap), y = sy - 16 + ((((FIN.t * 2) | 0) + i) % 2);
+    shadow(g, x + 8, sy, 6);
+    if (c === 'otters') { spr(g, s, x - 4, y + 1, true); spr(g, s, x + 4, y, true); } else spr(g, s, x, y, i > 3);
     spr(g, featherSprite(SPORT_COLOURS[JC.sportOrder[i]]), x + 12, y - 6);
   });
   // Cappy and the Jungle Cup
