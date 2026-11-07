@@ -54,13 +54,13 @@
   {
    "kind": "example",
    "title": "Build a passphrase",
-   "text": "Pick four random words that do not belong together. Picture them in one funny scene, like a purple volcano in a teapot hat beside a giraffe.",
+   "text": "Pick four random words that do not belong together. Picture them in one funny scene, like a giraffe riding a bicycle up a volcano in the thunder.",
    "art": "key",
    "steps": [
-    "purple",
     "volcano",
-    "teapot",
-    "giraffe"
+    "giraffe",
+    "bicycle",
+    "thunder"
    ],
    "img": "csq/packet-post/locks-1b-pass-n",
    "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
