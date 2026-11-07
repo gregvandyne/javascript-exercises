@@ -27,7 +27,7 @@ export function run(cmd, args, { timeout = 120000 } = {}) {
 export const FONTS_DIR = process.env.STORY_FONTS_DIR || path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'fonts');
 
 /** The ffmpeg arguments (exported for tests). */
-export function ffmpegArgs({ tl, sceneClips, fps, width, height, music, clips, ass, out, fontsDir = FONTS_DIR, xfade }) {
+export function ffmpegArgs({ tl, sceneClips, fits = null, fps, width, height, music, clips, ass, out, fontsDir = FONTS_DIR, xfade }) {
   const args = ['-v', 'error', '-y'];
   sceneClips.forEach(f => args.push('-i', f));
   const nS = sceneClips.length;
@@ -35,7 +35,11 @@ export function ffmpegArgs({ tl, sceneClips, fps, width, height, music, clips, a
   clips.forEach(c => args.push('-i', c.file));
   const f = [];
   tl.scenes.forEach((s, i) => {
-    f.push(`[${i}:v]fps=${fps},trim=duration=${s.dur.toFixed(3)},setpts=PTS-STARTPTS,scale=${width}:${height}:flags=lanczos,format=yuv420p,settb=AVTB[s${i}]`);
+    // a kept clip shorter than its scene's new length (stories/remake.js fitClip): slowed a little, then its last frame held
+    const fit = fits && fits[i] ? fits[i] : { stretch: 1, pad: 0 };
+    const slow = fit.stretch > 1 ? `setpts=${fit.stretch}*PTS,` : '';
+    const hold = fit.pad > 0 ? `,tpad=stop_mode=clone:stop_duration=${fit.pad.toFixed(3)}` : '';
+    f.push(`[${i}:v]${slow}fps=${fps}${hold},trim=duration=${s.dur.toFixed(3)},setpts=PTS-STARTPTS,scale=${width}:${height}:flags=lanczos,format=yuv420p,settb=AVTB[s${i}]`);
   });
   let last = 's0';
   for (let i = 1; i < nS; i++) {

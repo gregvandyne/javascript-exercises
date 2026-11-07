@@ -9,7 +9,7 @@
 //   GET    /jobs/:id/clips/:scene       -> video/mp4 (a render-only job)
 //   GET    /jobs/:id/files/story.mp4 | poster.jpg   (a job sent with `assemble`: the finished video)
 // With `assemble` (the timeline, the ASS captions, the music's seed, the voice clips) the service also composes the
-// music-box lullaby and builds the final video with ffmpeg, so the web server never needs the memory for that.
+// background music (the story's mood) and builds the final video with ffmpeg, so the web server never needs the memory for that.
 //   DELETE /jobs/:id                    -> 204 (stops it if running; deletes its files)
 // One job at a time. A new job with the same key as the running one (the site's worker restarted and sent the same
 // story again) replaces it; any other is "busy". Finished jobs are kept for STORY_RENDER_KEEP_MIN minutes (default
@@ -22,7 +22,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LocalBlenderRenderer } from '../../server/stories/renderer.js';
 import { assemble as buildVideo } from '../../server/stories/assemble.js';
-import { lullaby, writeWav } from '../../server/services/story-music.js';
+import { bed, writeWav } from '../../server/services/story-music.js';
 import { checkSpec, checkAssemble, MAX_BODY } from './spec.js';
 
 const log = (level, msg, extra = {}) => process.stdout.write(JSON.stringify({ t: new Date().toISOString(), level, msg, ...extra }) + '\n');
@@ -59,15 +59,15 @@ export function createRendererService({ token, dir, renderer = new LocalBlenderR
   async function assembleJob(j, clips) {
     const a = j.assemble, adir = path.join(j.dir, 'asm');
     fs.mkdirSync(adir, { recursive: true });
-    const bed = lullaby({ seconds: a.music.seconds, seed: a.music.seed, duck: a.music.duck });
+    const piece = bed({ seconds: a.music.seconds, seed: a.music.seed, duck: a.music.duck, mood: a.music.mood });
     const music = path.join(adir, 'music.wav');
-    writeWav(music, [bed.left, bed.right]);
+    writeWav(music, [piece.left, piece.right]);
     const voice = a.voice.map((v, i) => { const f = path.join(adir, `line-${i}.${v.ext}`); fs.writeFileSync(f, v.data); return { file: f, start: v.start }; });
     const ass = path.join(adir, 'captions.ass');
     fs.writeFileSync(ass, a.ass);
     const out = path.join(adir, 'story.mp4');
     const r = await buildVideo({ tl: a.timeline, sceneClips: j.sceneIds.map(id => clips[id]), fps: j.fps, width: j.width, height: j.height, music, clips: voice, ass, out, xfade: a.xfade, posterAt: a.posterAt });
-    return { files: { 'story.mp4': r.video, 'poster.jpg': r.poster }, music: bed.info };
+    return { files: { 'story.mp4': r.video, 'poster.jpg': r.poster }, music: piece.info };
   }
 
   function start(key, spec, asm = null) {

@@ -6,6 +6,8 @@ export const MAX_BODY = 24 * 1024 * 1024;
 export const LIMITS = { width: 1920, height: 1080, fps: 30, step: 6, samples: 32, scenes: 10, sceneSeconds: 120, chars: 3, props: 6, onlyFrames: 12 };
 const NAME = /^[a-z][a-z0-9_]{0,23}$/;
 const ID = /^[A-Za-z0-9_-]{1,16}$/;
+/** The music moods (server/services/story-music.js MOOD_NAMES; a test keeps them in step). */
+export const MOODS = ['lullaby', 'playful', 'adventure', 'magical', 'piano', 'none'];
 
 /** -> { ok, spec, problems } */
 export function checkSpec(input) {
@@ -73,7 +75,8 @@ export function checkAssemble(input, spec) {
   const m = d.music && typeof d.music === 'object' ? d.music : {};
   const duck = Array.isArray(m.duck) ? m.duck : [];
   if (duck.length > 100) problems.push('music.duck: at most 100 spans');
-  out.music = { seconds: total, seed: Math.trunc(num(m.seed ?? 1, 0, 2 ** 32, 'music.seed')), duck: duck.slice(0, 100).map((p, i) => [num(p && p[0], 0, 600, `music.duck[${i}]`), num(p && p[1], 0, 600, `music.duck[${i}]`)]) };
+  // the mood (story-music.js MOODS): an unknown one is the lullaby, as before moods existed
+  out.music = { seconds: total, mood: MOODS.includes(m.mood) ? m.mood : 'lullaby', seed: Math.trunc(num(m.seed ?? 1, 0, 2 ** 32, 'music.seed')), duck: duck.slice(0, 100).map((p, i) => [num(p && p[0], 0, 600, `music.duck[${i}]`), num(p && p[1], 0, 600, `music.duck[${i}]`)]) };
   const voice = Array.isArray(d.voice) ? d.voice : [];
   if (!voice.length || voice.length > 40) problems.push('voice: 1..40 clips');
   out.voice = voice.slice(0, 40).map((v, i) => {

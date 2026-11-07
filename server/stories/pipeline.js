@@ -1,17 +1,21 @@
 // Story Builder: from a checked script to a finished video (docs/story-builder.md).
-//   1. voice   one clip per line (services/story-voice.js), each measured;
+//   1. voice   one clip per line (services/story-voice.js) in the narrator voice chosen, each measured;
 //   2. time    the timeline follows the narration (services/story-captions.js timeline);
-//   3. music   a lullaby composed for exactly that length, ducked under every line (services/story-music.js);
+//   3. music   the chosen mood composed for exactly that length, ducked under every line (services/story-music.js);
 //   4. words   caption cues, a WebVTT file for the player and an ASS file to burn in;
-//   5. render  each scene's frames through the renderer interface (renderer.js; Blender);
+//   5. render  each scene's frames through the renderer interface (renderer.js; Blender) — only scenes with no kept
+//              clip (stories/remake.js: a clip is kept per scene under a key of its pictures, so a new voice, new
+//              music or new words render nothing again);
 //   6. build   ffmpeg: crossfaded scenes + words + music + voice -> story.mp4 and poster.jpg (assemble.js).
 // Stages report through onStage(name) and onProgress(fraction of the whole job, 0..1). Everything lands in workDir.
 import fs from 'node:fs';
 import path from 'node:path';
-import { voiceLine, pickProvider } from '../services/story-voice.js';
+import { voiceLine, pickProvider, durationOf } from '../services/story-voice.js';
 import { timeline, cues, toVtt, toAss, T } from '../services/story-captions.js';
-import { lullaby, writeWav, seedOf } from '../services/story-music.js';
+import { bed, writeWav, seedOf } from '../services/story-music.js';
+import { providerVoice, pitchOf } from '../services/story-options.js';
 import { assemble } from './assemble.js';
+import { sceneKey, cachedClips, keepClip, fitClip } from './remake.js';
 
 /** Render quality presets. 'full' is the product; 'preview' for quick looks; 'tiny' for the integration test. */
 export const QUALITY = {
@@ -27,26 +31,33 @@ export const WEIGHTS = { writing: [0, 0.06], voicing: [0.06, 0.12], rendering: [
 const END = { en: 'The End. Goodnight!', 'en-GB': 'The End. Goodnight!', pt: 'Fim. Boa noite!', fr: 'Fin. Bonne nuit !', es: 'Fin. ¡Buenas noches!', de: 'Ende. Gute Nacht!', he: 'הסוף. לילה טוב!', ja: 'おしまい。おやすみなさい！', ar: 'النهاية. تصبح على خير!', ru: 'Конец. Спокойной ночи!', it: 'Fine. Buonanotte!', 'zh-Hant': '完。晚安！', nl: 'Einde. Welterusten!' };
 export const endWords = locale => END[locale] || END[String(locale).split('-')[0]] || END.en;
 
+/** What each scene's pictures are (no length): the render spec's scenes without frames. Seeds come from the story id. */
+export function sceneVisuals(script, { id }) {
+  const base = seedOf(id);
+  return script.scenes.map((s, i) => ({
+    id: `s${i + 1}`, set: s.set, time: s.time, props: s.props, characters: s.characters, camera: s.camera,
+    seed: (base + i * 7919) % 100000, focus: s.characters[0] ? s.characters[0].kind : null,
+  }));
+}
 /** The render spec for a script on a timeline (frames per scene from the timeline; seeds from the story id). */
 export function renderSpec(script, tl, { id, quality = 'full', outDir }) {
   const q = QUALITY[quality] || QUALITY.full;
-  const base = seedOf(id);
   return {
     ...q, key: String(id), out_dir: outDir,
-    scenes: script.scenes.map((s, i) => ({
-      id: `s${i + 1}`, set: s.set, time: s.time, props: s.props, characters: s.characters, camera: s.camera,
-      frames: Math.ceil(tl.scenes[i].dur * q.fps) + q.step, seed: (base + i * 7919) % 100000, focus: s.characters[0] ? s.characters[0].kind : null,
-    })),
+    scenes: sceneVisuals(script, { id }).map((s, i) => ({ ...s, frames: Math.ceil(tl.scenes[i].dur * q.fps) + q.step })),
   };
 }
+/** The picture key of every scene of a script at a quality (stories/remake.js sceneKey). */
+export const sceneKeys = (script, { id, quality = 'full' }) => sceneVisuals(script, { id }).map(s => sceneKey(s, QUALITY[quality] || QUALITY.full));
 
 const stageProgress = (stage, f) => { const [a, b] = WEIGHTS[stage]; return a + (b - a) * Math.max(0, Math.min(1, f)); };
 
 /**
- * { id, script, locale, workDir, renderer, quality, voice, onStage, onProgress, signal }
- * -> { video, poster, vtt, meta: { total, timeline, voice, music, render } }
+ * { id, script, locale, workDir, renderer, quality, voice (provider: service | local | silent), narrator (story-options
+ *   NARRATORS id), mood (story-music MOODS), clipCache (a folder of kept scene clips, or null), onStage, onProgress, signal }
+ * -> { video, poster, vtt, meta: { total, timeline, voice, music, render: { ..., rendered, reused } , clips } }
  */
-export async function produce({ id, script, locale = 'en', workDir, renderer, quality = 'full', voice = null, onStage = () => {}, onProgress = () => {}, signal = null }) {
+export async function produce({ id, script, locale = 'en', workDir, renderer, quality = 'full', voice = null, narrator = 'auto', mood = 'lullaby', clipCache = null, onStage = () => {}, onProgress = () => {}, signal = null }) {
   fs.mkdirSync(workDir, { recursive: true });
   const stop = () => { if (signal && signal.aborted) throw Object.assign(new Error('stopped'), { code: 'stopped' }); };
   // 1. voice
@@ -60,7 +71,7 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   let n = 0, used = provider;
   for (const { i, k, l } of allLines) {
     stop();
-    const r = await voiceLine(l.say, { locale, dir: voiceDir, index: n, provider });
+    const r = await voiceLine(l.say, { locale, dir: voiceDir, index: n, provider, voice: providerVoice(narrator), pitch: pitchOf(narrator) });
     used = r.provider;
     (durations[i] = durations[i] || [])[k] = r.duration;
     clips.push({ file: r.file, scene: i, line: k });
@@ -72,13 +83,13 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   tl.lines.forEach((l, j) => { clips[j].start = l.start; });
   // 3. music: composed here for a local build; a remote renderer composes the same piece from the same seed
   const remote = !!renderer.assembles;
-  const musicParams = { seconds: tl.total, seed: seedOf(id), duck: tl.narration };
+  const musicParams = { seconds: tl.total, seed: seedOf(id), duck: tl.narration, mood };
   let music = null, musicInfo = null;
   if (!remote) {
     music = path.join(workDir, 'music.wav');
-    const bed = lullaby(musicParams);
-    writeWav(music, [bed.left, bed.right]);
-    musicInfo = bed.info;
+    const piece = bed(musicParams);
+    writeWav(music, [piece.left, piece.right]);
+    musicInfo = piece.info;
   }
   // 4. words
   const q = QUALITY[quality] || QUALITY.full;
@@ -96,38 +107,52 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   stop();
   onStage('rendering');
   const spec = renderSpec(script, tl, { id, quality, outDir: path.join(workDir, 'frames') });
+  const keys = spec.scenes.map(s => sceneKey(s, q));
   const out = path.join(workDir, 'story.mp4');
   const t0 = Date.now();
+  // Scenes with a kept clip are not rendered again (the remote renderer that builds the video itself needs every scene).
+  const kept = remote || !clipCache ? new Map() : cachedClips(clipCache);
+  const toRender = spec.scenes.filter((s, i) => !kept.has(keys[i]));
   const bundle = remote ? { timeline: { scenes: tl.scenes, total: tl.total }, xfade: T.xfade, posterAt, ass, music: musicParams, voice: clips.map(c => ({ start: c.start, file: c.file })), outDir: workDir } : null;
-  const r = await renderer.render(spec, {
-    signal, assemble: bundle,
-    onProgress: p => onProgress(p.phase === 'assembling' ? stageProgress('assembling', 0.5) : stageProgress('rendering', p.done / p.total)),
-    onPhase: ph => { if (ph === 'assembling') onStage('assembling'); },
-  });
+  let r = { engine: null, frames: 0, frameSeconds: 0, clips: {} };
+  if (toRender.length) {
+    r = await renderer.render({ ...spec, scenes: toRender }, {
+      signal, assemble: bundle,
+      onProgress: p => onProgress(p.phase === 'assembling' ? stageProgress('assembling', 0.5) : stageProgress('rendering', p.done / p.total)),
+      onPhase: ph => { if (ph === 'assembling') onStage('assembling'); },
+    });
+  }
   const renderSec = (Date.now() - t0) / 1000;
   const voiceSec = (t0 - tStart) / 1000;
   const t1 = Date.now();
+  let fits = null;
   if (remote) {
     onStage('assembling');
     musicInfo = r.music || null;
   } else {
-    // 6. build
+    // 6. build: keep each new clip under its key, and fit every clip to its scene's length
     stop();
     onStage('assembling');
     onProgress(stageProgress('assembling', 0.1));
-    const sceneClips = spec.scenes.map(s => (r.clips && r.clips[s.id]) || path.join(spec.out_dir, `${s.id}.mp4`));
-    await assemble({ tl, sceneClips, fps: q.fps, width: q.width, height: q.height, music, clips, ass, out, xfade: T.xfade, posterAt });
+    const sceneClips = await Promise.all(spec.scenes.map(async (s, i) => {
+      if (kept.has(keys[i])) return kept.get(keys[i]);
+      const file = (r.clips && r.clips[s.id]) || path.join(spec.out_dir, `${s.id}.mp4`);
+      return clipCache ? keepClip(clipCache, keys[i], file) : file;
+    }));
+    fits = await Promise.all(sceneClips.map(async (f, i) => (kept.has(keys[i]) ? fitClip(await durationOf(f).catch(() => 0), tl.scenes[i].dur) : { stretch: 1, pad: 0 })));
+    await assemble({ tl, sceneClips, fits, fps: q.fps, width: q.width, height: q.height, music, clips, ass, out, xfade: T.xfade, posterAt });
   }
   if (!fs.existsSync(out) || !fs.existsSync(path.join(workDir, 'poster.jpg'))) throw Object.assign(new Error('no video came back'), { stage: 'assembling' });
-  // the clips were only needed to build the video
+  // the frames folder was only needed to build the video (kept clips live in clipCache)
   fs.rmSync(spec.out_dir, { recursive: true, force: true });
   onProgress(1);
   const meta = {
     total: tl.total, scenes: tl.scenes, lines: tl.lines.map(l => ({ scene: l.scene, start: l.start, end: l.end })),
-    voice: used, music: musicInfo,
+    voice: used, narrator, music: musicInfo, clips: remote ? [] : keys,
     render: { renderer: renderer.name, engine: r.engine, frames: r.frames, seconds: Math.round(renderSec), quality, width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
       secPerVideoSec: Math.round((renderSec / tl.total) * 10) / 10, secPerFrame: r.frames && r.frameSeconds ? Math.round((r.frameSeconds / r.frames) * 100) / 100 : null,
-      sceneSeconds: r.sceneSeconds || undefined },
+      sceneSeconds: r.sceneSeconds || undefined, rendered: toRender.length, reused: spec.scenes.length - toRender.length,
+      stretched: fits ? fits.filter(f => f.stretch > 1 || f.pad > 0).length : 0 },
     stageSeconds: { voiceAndWords: Math.round(voiceSec * 10) / 10, render: Math.round(renderSec * 10) / 10, assemble: Math.round(((Date.now() - t1) / 1000) * 10) / 10 },
   };
   fs.writeFileSync(path.join(workDir, 'meta.json'), JSON.stringify(meta, null, 1));

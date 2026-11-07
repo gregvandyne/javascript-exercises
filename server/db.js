@@ -580,6 +580,31 @@ export const MIGRATIONS = [
       started_at INTEGER, finished_at INTEGER);
     CREATE INDEX IF NOT EXISTS stories_owner ON stories(owner_id, created_at);
     CREATE INDEX IF NOT EXISTS stories_status ON stories(status, created_at);`],
+  // Story Builder choices and edits (docs/story-builder.md "Choices" and "Changing a story"; services/story-options.js,
+  // story-jobs.js). style/tone/voice/music: closed lists (old rows get the original bedtime + music box). characters,
+  // lesson: the optional short texts (screened like the idea). version: the finished video's number (1, then +1 per
+  // remake). remake: the change waiting or being made (JSON), with its own small state (remake_status '' | queued |
+  // working | failed) beside the story's, so the finished video keeps playing (and stays shared) while a new one is
+  // made; remake_at: when it was asked for (queue order). story_edits: one row per change asked for, for the daily
+  // limits (a rewrite counts like a new story; words, voice and music changes have their own allowance). Kept when a
+  // story is deleted (deleting can't reset a limit); removed with the account.
+  ['0054_story_options', `
+    ALTER TABLE stories ADD COLUMN style TEXT NOT NULL DEFAULT 'bedtime';
+    ALTER TABLE stories ADD COLUMN tone TEXT NOT NULL DEFAULT 'cozy';
+    ALTER TABLE stories ADD COLUMN voice TEXT NOT NULL DEFAULT 'auto';
+    ALTER TABLE stories ADD COLUMN music TEXT NOT NULL DEFAULT 'lullaby';
+    ALTER TABLE stories ADD COLUMN characters TEXT NOT NULL DEFAULT '';
+    ALTER TABLE stories ADD COLUMN lesson TEXT NOT NULL DEFAULT '';
+    ALTER TABLE stories ADD COLUMN version INTEGER NOT NULL DEFAULT 1;
+    ALTER TABLE stories ADD COLUMN remake TEXT NOT NULL DEFAULT '';
+    ALTER TABLE stories ADD COLUMN remake_status TEXT NOT NULL DEFAULT '';
+    ALTER TABLE stories ADD COLUMN remake_progress REAL NOT NULL DEFAULT 0;
+    ALTER TABLE stories ADD COLUMN remake_error TEXT NOT NULL DEFAULT '';
+    ALTER TABLE stories ADD COLUMN remake_at INTEGER;
+    CREATE INDEX IF NOT EXISTS stories_remake ON stories(remake_status, remake_at);
+    CREATE TABLE IF NOT EXISTS story_edits (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id TEXT NOT NULL, owner_id TEXT NOT NULL,
+      kind TEXT NOT NULL, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS story_edits_owner ON story_edits(owner_id, created_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

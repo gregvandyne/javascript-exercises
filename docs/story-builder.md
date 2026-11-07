@@ -1,14 +1,15 @@
 # Story Builder
 
-Type an idea, get a narrated bedtime-story **video** in a felt-and-paper 3D world: Claude writes the story, Blender
-builds and films every shot, a calm voice reads it, a music-box lullaby composed in code plays underneath, and the
-words come up on screen in time with the voice. Phase 1 (this document) is the whole pipeline, end to end, on one
+Type an idea, get a narrated story **video** in a felt-and-paper 3D world: Claude writes the story, Blender
+builds and films every shot, a voice reads it, music composed in code plays underneath, and the words come up on
+screen in time with the voice. The person picks the kind of story, its feeling, the narrator and the music ("Choices"),
+and can change the story afterwards ("Changing a story"). Phase 1 (this document) is the whole pipeline, end to end, on one
 machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker running beside the site.
 
 ## How it fits together
 
 ```
- /stories/new ──POST /api/stories──▶ screen the idea (Builder screening) ─▶ stories row: queued
+ /stories/new ──POST /api/stories──▶ screen the idea + extras (Builder screening) ─▶ stories row: queued (+ choices)
                                                                               │
  story worker loop (inside the site's process; 1 job at a time) ◀── claimNext ┘
    writing     Claude ▶ story script JSON (kit-only, schema-checked, kid-safe checks, model classifier) ── retry once
@@ -18,7 +19,8 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
                  modal   Modal app: every scene at once, each on its own GPU ▶ scene clips back
                  remote  CPU renderer service (Docker): scenes ▶ and it also builds the video
                  local   Blender on this machine (development, or a one-box setup)
-   assembling  music: lullaby composed for exactly that length, ducked under every line
+               every new scene clip is kept under a key of its pictures (stories/remake.js)
+   assembling  music: the chosen mood composed for exactly that length, ducked under every line
                ffmpeg: scene clips ▶ crossfades ▶ words ▶ music + voice ▶ story.mp4 (H.264+AAC) + poster.jpg
    done        /stories/:id plays it (with a captions track and the story's words below)
 ```
@@ -26,9 +28,11 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 | Piece | File |
 | --- | --- |
 | Script schema, the kit, validation, kid-safe text checks | `server/services/story-script.js` |
+| The choices (style, tone, narrator, music, extras) | `server/services/story-options.js` (columns from migration `0054_story_options`) |
+| Changing a story: kept scene clips, the remake planner | `server/stories/remake.js`, `runRemake` in `server/stories/worker.js` |
 | Claude writer (model, budget, retry, moderation) | `server/services/story-writer.js` |
 | Timeline, caption cues, WebVTT, ASS, ducking curve | `server/services/story-captions.js` |
-| Music-box lullaby (composer + tine synth + reverb + WAV) | `server/services/story-music.js` |
+| Music: six moods (composers + small synth + reverb + WAV) | `server/services/story-music.js` |
 | Voice per line (site TTS, offline), MP3 length without ffmpeg | `server/services/story-voice.js` |
 | Jobs: state machine, limits, sharing and approval | `server/services/story-jobs.js` (table `stories`, migration `0053_stories`) |
 | Pipeline (stages, progress) / worker core / worker loop | `server/stories/pipeline.js`, `server/stories/worker.js`, `server/stories/loop.js` |
@@ -94,7 +98,7 @@ start inside the picture (at most 3 units from the middle, a short stroll), neve
   service refuses; with neither, the story fails at the voice stage (it never goes silent by accident). Durations are
   measured (MP3s frame by frame in JS, anything else with ffprobe) and **drive the timeline**: a title card, each scene as long
   as its lines plus a little air, 0.7 s crossfades with no narration inside them, an end card.
-- **Music**: `story-music.js` composes a 3/4 waltz from the story id's seed: chord progressions, a stepwise melody
+- **Music**: the mood picked on the form ("Choices"); the original and default, `lullaby`: `story-music.js` composes a 3/4 waltz from the story id's seed: chord progressions, a stepwise melody
   that lands on chord tones, phrase form A A′ B A″, a cadence home; synthesised on music-box "tines" (inharmonic
   partials, fast-decaying highs), a Schroeder room reverb, fitted exactly to the video's length (the tempo flexes so
   the last bar lands on the end), faded in/out and ducked to ~38% under every line. Deterministic (tested).
@@ -113,8 +117,9 @@ start inside the picture (at most 3 units from the middle, a short stroll), neve
   moved twice. `progress` (0..1, never backwards) and a heartbeat come from the worker; a job whose worker went quiet
   for 10 minutes (or every running job when the worker starts) goes back in the queue, and fails `stalled` after 3
   tries. A retry keeps the written script (no second Claude call).
-- Limits: `STORY_DAILY_LIMIT` new stories a day per kid (default 2; grown-ups and staff get twice as many),
-  `STORY_QUEUE_MAX` waiting site-wide (default 20), a request rate limit, and the AI budget.
+- Limits: `STORY_DAILY_LIMIT` new stories a day per kid (default 2; grown-ups and staff get twice as many; a rewrite
+  counts as one), `STORY_REMAKE_LIMIT` quick changes a day (default 4, grown-ups and staff 8), `STORY_QUEUE_MAX`
+  waiting site-wide (default 20, new stories and changes together), request rate limits, and the AI budget.
 - Pages: `/stories` (my stories; for linked grown-ups and teachers, "Waiting for your OK"), `/stories/new`,
   `/stories/:id` (a moon and a progress bar that polls `/api/stories/:id`, then the player). Files are served only to
   people who may watch (byte ranges for the video).
@@ -125,6 +130,84 @@ start inside the picture (at most 3 units from the middle, a short stroll), neve
   audit log; a deleted account's stories and files go with it.
 - All UI text is in the locale files (`stories.*`, `js.stories.*`) for all 13 languages. The story itself is written
   and narrated in the page's language; the end card ("The End. Goodnight!") is per language.
+
+### 8. Choices
+
+`/stories/new` asks for the idea, then offers big tappable cards (an emoji and a short label; the radio button inside
+is visually hidden, so keyboards and screen readers still work), each with a sensible default already picked. Nothing
+but the idea is required.
+
+| Choice | Values (`story-options.js`) | What it changes |
+| --- | --- | --- |
+| Kind of story (`style`) | bedtime (default), adventure, funny, rhyming, fable (with a lesson), mystery | one paragraph of the writer's prompt; only bedtime ends asleep at night |
+| Feeling (`tone`) | cozy (default), exciting, silly, heartfelt, brave | one line of the prompt |
+| Narrator (`voice`) | auto (the narrator the admin chose for the language), coral, sage, nova, shimmer, fable, onyx — with kid names ("Warm and kind", "Deep and calm"…) | the site AI voice that reads every line; the offline voice is shifted in pitch so the choice is still heard |
+| Music (`music`) | lullaby (music box, default), playful, adventure, magical, piano, none | the mood `story-music.js` composes; picking a style preselects its music until the person picks music themselves |
+| Who is in it (`characters`, optional, 120 chars) | free text | sent as `<characters>`; screened like the idea |
+| A lesson (`lesson`, optional, 120 chars) | free text | sent as `<lesson>`; screened like the idea |
+| Age band, length | as before, under "More choices" | |
+
+The safety paragraph of the prompt is the same for every style. The world is still the kit: the prompt tells the writer
+to turn every person, pet or creature into the closest felt animal (keeping its name) and every place into the closest
+set, and the form says so under the idea ("Everyone in your story becomes a felt animal friend"). Unknown values fall
+back to the defaults; old rows read as bedtime / cozy / auto / lullaby. The story page shows the choices as small pills.
+
+**Narrator samples.** Each voice card has a ▶ while the AI voice is on for the page's language: `POST
+/api/stories/voice-sample { voice }` reads one fixed sentence per language (`stories.voiceSample`) in that voice,
+pinned in the TTS cache, so each sample is made once for the whole site (at most 13 languages × 7 voices) and a person
+can never choose the text. 30 a person per 10 minutes.
+
+**Music moods** (all composed from the story's seed, fitted to the exact length, ducked under the voice):
+`lullaby` 3/4 waltz on music-box tines; `playful` bouncy 4/4 ~116 bpm, marimba tune on the major pentatonic, plucked
+bass, chord stabs and a woodblock on 2 and 4; `adventure` 4/4 ~100 bpm in a minor key, horn melody in long notes over an
+eighth-note ostinato and timpani; `magical` slow 3/4 in the Lydian mode, bell arpeggios over a soft pad with high
+sparkles and a bigger room; `piano` gentle 4/4 ~68 bpm, broken chords and a stepwise tune on a piano voice; `none`
+silence. A test checks every pair differs in metre, tempo, note density or brightness, and in instruments.
+
+### 9. Changing a story
+
+The owner of a finished story gets **Edit story** (`/stories/:id/edit`):
+
+- **Change the words**: the title and every line, scene by scene (the scene's place and time shown with it). New words
+  go through `checkEdited` (`validateScript`'s word rules and lengths, and the model classifier when a key is set); a
+  story much longer than its length is refused, a shorter one is fine. Only the words change: the scenes and pictures
+  stay.
+- **Who reads it / Background music**: the same cards as the form.
+- **Make the new video** sends all of that as one quick change (`POST /api/stories/:id/remake`).
+- **Ask for a rewrite**: a short note ("make it funnier", "add a picnic at the end"), screened like the idea, and maybe
+  a new kind of story or feeling (`POST /api/stories/:id/rewrite`). The writer gets the current script as
+  `<current_story>` and the note as `<change_request>` and sends a whole new script, checked like any other.
+
+**The old video keeps playing.** A change is a small job of its own on the finished row (`remake_status`: queued ▶
+working ▶ done, or failed), so the story stays `done` (and shared) while the new version is built in `<story>/next`.
+Only when it is complete are its files moved over the old ones (the video last) and the row updated (`version` + 1;
+file URLs carry `?v=<version>`). A failure leaves the old video exactly as it was; the owner can try again or keep the
+old one. The worker takes new stories and changes oldest first; a worker that stops puts a change back in line (three
+tries, then `stalled`).
+
+**Only what changed is made again** (`stories/remake.js`). Every rendered scene clip is kept in `<story>/clips/` under a
+key of its pictures (set, time, props, characters with action and place, camera, seed, render size) — not its length,
+which follows the narration. Before rendering, the pipeline looks each scene's key up and renders only the missing ones:
+
+| Change | Claude | Voice | Scenes rendered |
+| --- | --- | --- | --- |
+| New narrator | no | every line (the site voice's cache makes repeats free) | none |
+| New music | no | none new (cache) | none |
+| New words | no (the classifier checks them) | the changed lines | none |
+| Rewrite | yes | the new lines | only scenes whose pictures changed |
+
+A kept clip shorter than its scene's new length is slowed (up to 1.5×), then its last frame is held (`fitClip`; the
+assembly's `setpts` and `tpad`). Clips no version uses any more are removed. The CPU renderer service
+(`STORY_RENDERER=remote`) builds the whole video itself and returns no clips, so there every change renders every scene;
+Modal and local keep clips. Stories made before clips were kept render once on their first change.
+
+**Limits.** Quick changes: `STORY_REMAKE_LIMIT` a day (default 4; grown-ups and staff 8). A rewrite pays Claude, so it
+counts like a new story against `STORY_DAILY_LIMIT`, needs the AI budget, and is refused while the writer is resting.
+One change at a time per story; changes count against `STORY_QUEUE_MAX` with new stories. Every change asked for is a
+row in `story_edits` (kept when the story is deleted, so deleting doesn't refund it; removed with the account).
+
+**Sharing.** When a new version replaces a kid's shared or waiting story, it goes back to "waiting for OK": the
+grown-up said yes to the old words. A grown-up's shared story stays shared. Only the owner can change a story.
 
 ## Running it
 
@@ -148,6 +231,7 @@ node scripts/story-render.js --idea "a sleepy owl who counts the stars" --second
 ```
 
 Settings: `STORY_BUILDER` (off by default), `STORY_DAILY_LIMIT` (2 a day per kid; grown-ups and staff twice that),
+`STORY_REMAKE_LIMIT` (4 quick changes a day; grown-ups and staff twice that),
 `STORY_QUEUE_MAX` (20), `STORY_WORKER` (`inline` | `external`), `STORY_RENDERER` (`local` | `modal` | `remote`),
 `STORY_RENDER_URL`, `STORY_RENDER_TOKEN`, `STORY_MODEL`, `STORY_VOICE` (`auto` | `service` | `local`), `STORY_QUALITY`
 (`full` 1280×720 · `preview` · `tiny` · `test`), `STORY_ENGINE` (`auto|eevee|cycles`), `STORY_RENDER_PROCS`,
@@ -269,6 +353,6 @@ seconds per story; Modal's dashboard shows GPU time) and switch to L4 if L40S bu
 
 ## Next
 
-A public gallery with moderation; more kit (interiors, weather, more animals); per-shot framing from the script; a
-re-render of the same script with a new look without paying Claude again; once Modal numbers are known, set
+A public gallery with moderation; more kit (interiors, weather, more animals, people); per-shot framing from the
+script; editing a scene's pictures by hand (set, animals) on the edit page; once Modal numbers are known, set
 `STORY_RENDER_RATIO` from them.

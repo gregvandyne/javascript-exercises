@@ -1647,7 +1647,9 @@
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
       "failed": "Etwas ist schiefgegangen. Versuch es noch einmal.",
       "copied": "Link kopiert!",
-      "deleteConfirm": "Diese Geschichte löschen? Das kann man nicht rückgängig machen."
+      "deleteConfirm": "Diese Geschichte löschen? Das kann man nicht rückgängig machen.",
+      "needNote": "Schreib, was sich ändern soll, oder wähl eine andere Art von Geschichte oder ein anderes Gefühl.",
+      "sampleOff": "Diese Stimme kann gerade nicht spielen."
     },
     "app": {
       "wentWrong": "Etwas ist schiefgelaufen. Bitte versuch es noch mal.",
@@ -6113,7 +6115,19 @@
       "left": "{count, plural, one {Du kannst heute noch # Geschichte machen.} other {Du kannst heute noch # Geschichten machen.}}",
       "none": "Du hast heute schon alle deine Geschichten gemacht. Komm morgen wieder!",
       "safety": "Die Geschichten sind immer sanft und freundlich. Jede Idee und jede Geschichte wird geprüft, bevor sie gemacht wird.",
-      "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen)."
+      "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
+      "kitHint": "Alle in deiner Geschichte werden zu Filztier-Freunden: eine Maus, ein Fuchs, eine Eule oder ein Hase.",
+      "styleH": "Was für eine Geschichte?",
+      "toneH": "Wie soll sie sich anfühlen?",
+      "voiceH": "Wer liest vor?",
+      "voiceAi": "Die Stimmen sind KI-Stimmen. Tippe auf ▶, um eine anzuhören.",
+      "listen": "{name} anhören",
+      "musicH": "Hintergrundmusik",
+      "more": "Mehr Auswahl (kannst du überspringen)",
+      "charsLabel": "Wer kommt vor?",
+      "charsHint": "Zum Beispiel: meine Katze Luna und ein netter Fuchs. Sie werden zu Filztieren.",
+      "lessonLabel": "Etwas zum Lernen?",
+      "lessonHint": "Zum Beispiel: Teilen macht alle froh."
     },
     "status": {
       "queued": "Wartet in der Schlange…",
@@ -6159,6 +6173,81 @@
       "decideP": "Ein Kind, um das Sie sich kümmern, hat diese Geschichte gemacht und möchte sie teilen. Dürfen andere sie anschauen?",
       "approve": "Ja, teilen",
       "decline": "Diese nicht"
+    },
+    "options": "Auswahl für die Geschichte",
+    "voiceSample": "Es war einmal in einem kleinen Filzdorf eine müde Eule, die zum Himmel schaute und die Sterne zählte.",
+    "style": {
+      "bedtime": "Gute Nacht",
+      "adventure": "Abenteuer",
+      "funny": "Lustig",
+      "rhyming": "Mit Reimen",
+      "fable": "Fabel mit Lehre",
+      "mystery": "Rätsel"
+    },
+    "tone": {
+      "cozy": "Gemütlich",
+      "exciting": "Spannend",
+      "silly": "Albern",
+      "heartfelt": "Herzlich",
+      "brave": "Mutig"
+    },
+    "voice": {
+      "auto": "Unsere Erzählerin",
+      "coral": "Warm und freundlich",
+      "sage": "Sanft und weise",
+      "nova": "Fröhliche Freundin",
+      "shimmer": "Hell und funkelnd",
+      "fable": "Bilderbuchstimme",
+      "onyx": "Tief und ruhig"
+    },
+    "music": {
+      "lullaby": "Spieluhr",
+      "playful": "Verspielt",
+      "adventure": "Abenteuer",
+      "magical": "Zauberfunkeln",
+      "piano": "Sanftes Klavier",
+      "none": "Keine Musik"
+    },
+    "set": {
+      "lighthouse": "Leuchtturm",
+      "village": "Dorf",
+      "forest": "Wald",
+      "meadow": "Wiese",
+      "sky": "Himmel"
+    },
+    "time": {
+      "night": "Nacht",
+      "dusk": "Abend",
+      "dawn": "Sonnenaufgang",
+      "day": "Tag"
+    },
+    "edit": {
+      "btn": "Geschichte ändern",
+      "h": "Ändere deine Geschichte",
+      "back": "Zurück zur Geschichte",
+      "wordsH": "Die Wörter ändern",
+      "wordsP": "Verbessere oder ändere jeden Satz. Die Bilder bleiben gleich.",
+      "titleLabel": "Titel",
+      "scene": "Szene {n}",
+      "line": "Satz {n}",
+      "remakeP": "Neue Wörter, eine neue Stimme oder neue Musik gehen schnell: Die Bilder bleiben.",
+      "remakesLeft": "{count, plural, one {Du kannst heute noch # schnelle Änderung machen.} other {Du kannst heute noch # schnelle Änderungen machen.}}",
+      "remakeNone": "Du hast heute alle schnellen Änderungen benutzt. Komm morgen wieder!",
+      "remake": "Das neue Video machen",
+      "rewriteH": "Neu schreiben lassen",
+      "rewriteP": "Sag dem Geschichtenschreiber, was sich ändern soll. Neu schreiben zählt wie eine deiner neuen Geschichten für heute.",
+      "noteLabel": "Was soll sich ändern?",
+      "noteHint": "Zum Beispiel: Mach sie lustiger, oder am Ende gibt es ein Picknick.",
+      "rewrite": "Meine Geschichte neu schreiben",
+      "nothing": "Ändere zuerst etwas: die Wörter, die Stimme oder die Musik.",
+      "needNote": "Schreib, was sich ändern soll, oder wähl eine andere Art von Geschichte oder ein anderes Gefühl.",
+      "unsafe": "Diese Wörter dürfen hier nicht in eine Geschichte. Versuch es mit netteren Wörtern.",
+      "invalid": "Die Geschichte ist zu lang geworden. Versuch es mit kürzeren Sätzen.",
+      "busy": "Eine neue Version wird schon gemacht.",
+      "working": "Die neue Version wird gemacht… Das alte Video bleibt hier, bis sie fertig ist.",
+      "failed": "Die neue Version hat nicht geklappt, deine Geschichte bleibt so, wie sie war.",
+      "keepOld": "Die alte behalten",
+      "asksAgain": "Nach einer Änderung muss ein Erwachsener oder deine Lehrkraft noch einmal OK sagen, bevor andere sie sehen können."
     }
   }
 }
