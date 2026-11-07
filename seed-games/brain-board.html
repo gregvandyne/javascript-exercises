@@ -695,15 +695,15 @@ window.SoloBank = (function () {
         out.push(nqItem('Which number has a ' + d + ' worth ' + nqFmt(d * want) + '?', nqFmt(mk(want)),
           places.filter(function (p) { return p !== want; }).map(function (p) { return nqFmt(mk(p)); }), 'Where it sits'));
       }
-      for (i = 0; i < 5; i++) { // Round it: the unit's rounding skill, on the place-value board.
-        // Three-digit numbers that need rounding; the wrong choices are the other neighbour (rounded the
-        // wrong way), rounding to the wrong place, and the next jump on, never a negative or the number itself.
-        var unit = i % 2 ? 100 : 10;
-        do num = ri(112, 988); while (num % 10 === 0 || num % 100 === 50 || (unit === 100 && Math.round(num / 10) * 10 === Math.round(num / 100) * 100));
-        var ans = Math.round(num / unit) * unit, lo = Math.floor(num / unit) * unit, other = lo === ans ? lo + unit : lo;
-        var wrongPlace = unit === 10 ? Math.round(num / 100) * 100 : Math.round(num / 10) * 10;
-        var rWrong = [other, wrongPlace, ans > other ? ans + unit : ans - unit, ans + 2 * unit].filter(function (w) { return w > 0 && w !== ans; });
-        out.push(nqItem('Round ' + nqFmt(num) + ' to the nearest ' + (unit === 10 ? 'ten' : 'hundred') + '.', ans, rWrong, 'Round it'));
+      for (i = 0; i < 5; i++) { // Build it: the number from its place values (1.1's "build it place by place").
+        // Rounding is 1.2's skill, so this board never asks it. Four different digits, so every wrong build
+        // (two places traded, the digits read backwards) is a different number from the right one.
+        do pickDigit([0, 0, 0, 0]); while (new Set(digs).size < 4);
+        var bWords = ['thousands', 'hundreds', 'tens', 'ones'].map(function (w, k) { return digs[k] + ' ' + (digs[k] === 1 ? w.slice(0, -1) : w); });
+        var tradeHT = digs[0] * 1000 + digs[2] * 100 + digs[1] * 10 + digs[3], tradeTO = digs[0] * 1000 + digs[1] * 100 + digs[3] * 10 + digs[2];
+        var backwards = digs[3] * 1000 + digs[2] * 100 + digs[1] * 10 + digs[0];
+        out.push(nqItem('Build it: ' + bWords.slice(0, 3).join(', ') + ' and ' + bWords[3] + '. Which number is that?', nqFmt(num),
+          [nqFmt(tradeHT), nqFmt(tradeTO), nqFmt(backwards)], 'Build it'));
       }
       return out;
     }
@@ -725,9 +725,15 @@ window.SoloBank = (function () {
         a = ri(150, 320); b = ri(40, 160); c = ri(30, 120); if (a + b - c <= 0) c = 30;
         out.push(nqItem('A class collected ' + a + ' cans, then ' + b + ' more, then recycled ' + c + '. How many cans are left?', a + b - c, [a + b, a + b - c + 10, a - b - c > 0 ? a - b - c : a + b + c], 'Two steps'));
       }
-      for (i = 0; i < 5; i++) { // Estimate first: the Rough first habit, rounded to the nearest hundred.
-        a = ri(140, 480); b = ri(120, 460); var est = Math.round((a + b) / 100) * 100;
-        out.push(nqItem('Best estimate for ' + a + ' + ' + b + '? Rough first!', 'About ' + est, ['About ' + (est - 100), 'About ' + (est + 100), 'About ' + (est + 200)], 'Estimate first'));
+      for (i = 0; i < 5; i++) { // Estimate first: the Rough first habit as the course teaches it, each number
+        // rounded to the nearest hundred, then added (249 + 249 is about 200 + 200 = 400). Rounding the exact sum
+        // instead can land elsewhere (498 -> 500), so that value is never offered as a wrong choice: only one
+        // choice can match a method the course teaches.
+        a = ri(140, 480); b = ri(120, 460);
+        var est = Math.round(a / 100) * 100 + Math.round(b / 100) * 100, sumRound = Math.round((a + b) / 100) * 100;
+        var eWrong = [est - 100, est + 100, est + 200, est - 200, est + 300].filter(function (v) { return v > 0 && v !== sumRound; });
+        out.push(nqItem('Rough first: round each number to the nearest hundred, then add. About how much is ' + a + ' + ' + b + '?', 'About ' + est,
+          eWrong.map(function (v) { return 'About ' + v; }), 'Estimate first'));
       }
       return out;
     }

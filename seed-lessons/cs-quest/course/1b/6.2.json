@@ -176,25 +176,25 @@
    "title": "Your mission",
    "text": "Open Inside the Machine at Design Lab. Fill in the audit with 4 settings, then solve all three briefs. Watch where the user struggles.",
    "art": "trophy",
-   "img": "csq/inside-the-machine/design-1b-watch-n",
-   "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana: which moment is she struggling?",
+   "img": "csq/inside-the-machine/design-1b-change-n",
+   "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
    "focus": [
     {
-     "cue": "Watch where the user struggles",
+     "cue": "Pick the changes that fix what you saw: bigger text",
      "box": [
-      4.3,
-      17.8,
-      82.3,
-      12.9
+      5,
+      29,
+      29,
+      21
      ]
     },
     {
-     "cue": "Then pick the changes that fix it",
+     "cue": "Or read the menu aloud",
      "box": [
-      7.5,
-      76,
-      66.3,
-      20.6
+      35,
+      75,
+      30,
+      20
      ]
     }
    ]

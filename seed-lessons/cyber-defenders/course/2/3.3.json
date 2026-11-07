@@ -106,20 +106,7 @@
   {
    "title": "The Magpie asks nicely",
    "text": "Last week the Magpie tried a new trick: no fake letters, just friendly questions about Pim's route. The clue was the pattern: every question fished for a private fact.",
-   "art": "magnifier",
-   "img": "csq/trick-inbox/chat-2-ch-6-all",
-   "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
-   "focus": [
-    {
-     "cue": "Friendly questions that fish for private facts",
-     "box": [
-      7.1,
-      39.2,
-      85.7,
-      22.4
-     ]
-    }
-   ]
+   "art": "magnifier"
   },
   {
    "kind": "words",

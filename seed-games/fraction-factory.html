@@ -165,7 +165,15 @@ class Run {
     else if (this.type === 'compare') { why = 'pick-first'; }
     else {
       if (!s.denom) why = 'no-cut';
-      else if (s.denom !== g.denom) why = this.type === 'equiv' ? 'reslice' : 'cut-size';
+      else if (s.denom !== g.denom) {
+        // An equivalent finer cut is the same amount (1/2 = 2/4, the Re-Slice lesson), so a slice or recipe order
+        // cut into a multiple of its parts is served by the matching count of the smaller pieces. A cut that
+        // cannot build the order exactly (thirds for a half) is still the wrong size. Re-Slice orders keep their
+        // own rule: they ask for one named cut.
+        const finer = (this.type === 'slice' || this.type === 'add') && s.denom % g.denom === 0;
+        if (!finer) why = this.type === 'equiv' ? 'reslice' : 'cut-size';
+        else { const want = g.take * (s.denom / g.denom); if (this.takenCount !== want) why = this.takenCount < want ? 'too-few' : 'too-many'; }
+      }
       else if (this.takenCount !== g.take) why = this.takenCount < g.take ? 'too-few' : 'too-many';
       else if (!sameValue([this.takenCount, s.denom], g.value)) why = 'value';
       if (!why) { s.done = true; s.phase = 'done'; return { ok: true, done: true }; }
@@ -428,7 +436,7 @@ const I18N = {
     "hint.rc-6.2": "One cake only holds 4 fourths, so fetch a second cake.",
     "hint.rc-6.3": "Fill the first cake, then take 1 part from the second.",
     "why.no-cut": "Cut the whole into equal parts first. Pick a slicer!",
-    "why.cut-size": "Those parts are the wrong size for this order. Try a different slicer.",
+    "why.cut-size": "Those parts cannot build this order exactly. Pick a slicer whose parts fit it: its own number of parts, or a finer cut that splits each one evenly.",
     "why.reslice": "Re-slice finer: cut each part smaller so the tray fits the new size.",
     "why.too-few": "Not enough on the tray yet. Count the order again.",
     "why.too-many": "Too much on the tray! Tap a part to take it back off.",
@@ -682,8 +690,14 @@ function wholeSVG(level, denom, taken, wholes, interactive) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     if (level.whole === 'cake') {
       svg.setAttribute('viewBox', '0 0 200 200'); svg.setAttribute('width', '190'); svg.setAttribute('height', '190');
-      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Cake cut into ' + denom + ' equal parts');
-      for (let i = 0; i < denom; i++) {
+      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', denom === 1 ? 'A whole cake, not cut yet' : 'Cake cut into ' + denom + ' equal parts');
+      if (denom === 1) { // a whole cake: one round, no cuts (a 360-degree sector draws nothing)
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', '100'); c.setAttribute('cy', '100'); c.setAttribute('r', '92');
+        c.setAttribute('fill', 'var(--ok-bg2, #eee)'); c.setAttribute('stroke', 'var(--ok-edge)'); c.setAttribute('stroke-width', '3');
+        svg.appendChild(c);
+      }
+      for (let i = 0; denom > 1 && i < denom; i++) {
         const idx = w * denom + i, a0 = -Math.PI / 2 + (i * 2 * Math.PI) / denom, a1 = -Math.PI / 2 + ((i + 1) * 2 * Math.PI) / denom;
         const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         p.setAttribute('d', sectorPath(100, 100, 92, a0, a1));
@@ -696,7 +710,7 @@ function wholeSVG(level, denom, taken, wholes, interactive) {
       }
     } else {
       svg.setAttribute('viewBox', '0 0 280 110'); svg.setAttribute('width', '260'); svg.setAttribute('height', '102');
-      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', 'Bar cut into ' + denom + ' equal parts');
+      svg.setAttribute('role', 'group'); svg.setAttribute('aria-label', denom === 1 ? 'A whole bar, not cut yet' : 'Bar cut into ' + denom + ' equal parts');
       const pw = 264 / denom;
       for (let i = 0; i < denom; i++) {
         const idx = w * denom + i;
@@ -788,7 +802,7 @@ function renderLevel() {
     if (L.type === 'add') { const src = $('div', 'ff-stage'); src.append(miniBar(L.a, fr(L.a)), miniBar(L.b, fr(L.b))); main.appendChild(src); }
     if (L.type === 'equiv') { const src = $('div', 'ff-stage'); src.appendChild(miniBar(L.from, 'You start with ' + fr(L.from))); main.appendChild(src); }
     const taken = new Set(snap.taken);
-    main.appendChild(wholeSVG(L, snap.denom || L.denom, taken, snap.denom ? run.goal.wholes : 1, !!snap.denom));
+    main.appendChild(wholeSVG(L, snap.denom || 1, taken, snap.denom ? run.goal.wholes : 1, !!snap.denom)); // uncut (1 part) until a slicer is picked: the order's own cut is never given away
     if (!snap.denom) main.appendChild($('p', 'ff-h', 'Pick a slicer to cut the whole into equal parts.'));
     const read = $('div', 'ff-read');
     read.textContent = snap.denom ? (snap.takenCount + '/' + snap.denom) : 'not cut yet';
@@ -811,7 +825,7 @@ function renderLevel() {
 }
 const WHY = {
   'no-cut': 'Cut the whole into equal parts first. Pick a slicer!',
-  'cut-size': 'Those parts are the wrong size for this order. Try a different slicer.',
+  'cut-size': 'Those parts cannot build this order exactly. Pick a slicer whose parts fit it: its own number of parts, or a finer cut that splits each one evenly.',
   'reslice': 'Re-slice finer: cut each part smaller so the tray fits the new size.',
   'too-few': 'Not enough on the tray yet. Count the order again.',
   'too-many': 'Too much on the tray! Tap a part to take it back off.',

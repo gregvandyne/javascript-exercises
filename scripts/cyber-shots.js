@@ -235,6 +235,8 @@ async function runGame(browser, slug, list) {
           if (s.game === 'robo-route') {
             T.start({ chapter: s.chapter, band: s.band, level: s.level, seed: 7, mode: s.chapter === 'level-maker' ? 'maker' : 'play' });
             await wait(500); T.closeModal(); await wait(300);
+            // a level with a plan card: complete it, as the rollout captures do (the program panel then takes its full width)
+            if (T.state().planDone === false) { T.plan(); await wait(900); T.closeModal(); await wait(300); }
           } else if (s.game === 'data-detective') {
             T.start({ chapter: s.chapter, band: s.band, level: s.level, seed: 7, mode: s.mode || 'play' });
             await wait(500); if (!s.keepDialog) { T.closeDialog(); await wait(300); }

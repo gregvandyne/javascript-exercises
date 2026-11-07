@@ -11,20 +11,6 @@
  },
  {
   "game": "robo-route",
-  "state": "debug-1b-midrun",
-  "chapter": "debug",
-  "band": "1b",
-  "level": 1,
-  "actions": [
-   {
-    "steps": 4
-   }
-  ],
-  "concept": "Expected and actual: compare what Bolt did with what you expected",
-  "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised."
- },
- {
-  "game": "robo-route",
   "state": "debug-1b-step",
   "chapter": "debug",
   "band": "1b",
@@ -36,16 +22,6 @@
   ],
   "concept": "Step, stop, fix: step one block at a time and stop at the first surprise",
   "alt": "Stepping one block at a time: the first block is lit in the tray and Bolt has moved exactly one square."
- },
- {
-  "game": "robo-route",
-  "state": "debug-1b-count",
-  "chapter": "debug",
-  "band": "1b",
-  "level": 2,
-  "actions": [],
-  "concept": "One too many: a repeat count one too big is a common bug",
-  "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many."
  },
  {
   "game": "robo-route",
@@ -136,88 +112,6 @@
   "actions": [],
   "concept": "Meet Pim: every message must reach the right house",
   "alt": "Pim opens the Netville map: houses, roads and the first message waiting to be delivered."
- },
- {
-  "game": "packet-post",
-  "state": "packets-1b-order",
-  "chapter": "packets",
-  "band": "1b",
-  "level": 5,
-  "actions": [
-   {
-    "acts": 2
-   }
-  ],
-  "concept": "Back in order: numbers put arriving packets back together",
-  "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order."
- },
- {
-  "game": "packet-post",
-  "state": "routes-1b-roads",
-  "chapter": "routes",
-  "band": "1b",
-  "level": 1,
-  "actions": [],
-  "concept": "Many roads: each packet can take a different road through routers",
-  "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end."
- },
- {
-  "game": "packet-post",
-  "state": "locks-1b-key",
-  "chapter": "locks",
-  "band": "1b",
-  "level": 2,
-  "actions": [],
-  "concept": "Lock it up: lock it, keep the key, keep a spare copy",
-  "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post."
- },
- {
-  "game": "packet-post",
-  "state": "locks-1b-built",
-  "chapter": "locks",
-  "band": "1b",
-  "level": 2,
-  "actions": [
-   {
-    "acts": 2
-   }
-  ],
-  "concept": "Build a passphrase: four random words, long and hard to guess",
-  "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess."
- },
- {
-  "game": "packet-post",
-  "state": "locks-1b-tell",
-  "chapter": "locks",
-  "band": "1b",
-  "level": 4,
-  "actions": [],
-  "concept": "Who may know it? Only a trusted adult may know your passphrase",
-  "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
- },
- {
-  "game": "packet-post",
-  "state": "ciphers-1b-wheel",
-  "chapter": "ciphers",
-  "band": "1b",
-  "level": 1,
-  "actions": [
-   {
-    "acts": 1
-   }
-  ],
-  "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key (shift 3)",
-  "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one."
- },
- {
-  "game": "packet-post",
-  "state": "protocols-2-key",
-  "chapter": "protocols",
-  "band": "2",
-  "level": 1,
-  "actions": [],
-  "concept": "Messages in packets: numbered, routed and rebuilt at the other end",
-  "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules."
  },
  {
   "game": "packet-post",

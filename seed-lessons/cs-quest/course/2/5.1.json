@@ -76,19 +76,19 @@
     {
      "cue": "Too many parts: cost 19 of 12",
      "box": [
-      32.7,
-      75.2,
-      7.5,
-      8.6
+      1.5,
+      76,
+      38,
+      6
      ]
     },
     {
      "cue": "Battery 7 of 5 and size 8 of 6: over too",
      "box": [
-      34,
-      81.5,
-      6.2,
-      14.8
+      1.5,
+      82.5,
+      38,
+      13
      ]
     }
    ]
@@ -132,31 +132,25 @@
    "title": "Users decide what is next",
    "text": "A gadget is finished when people can use it. Read what users say, and make that your next improvement.",
    "art": "people",
-   "img": "csq/inside-the-machine/gadget-2-trade-c",
-   "view": [
-    0,
-    19.5,
-    45,
-    80.5
-   ],
-   "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
+   "img": "csq/inside-the-machine/gadget-2-users-c",
+   "alt": "Three walkers tried the step counter: they could not see the count, it fell off, the battery ran flat. Pick two improvements.",
    "focus": [
     {
-     "cue": "Over budget: users would feel it",
+     "cue": "Three walkers said what went wrong",
      "box": [
-      32.7,
-      75.2,
-      7.5,
-      21.1
+      2.5,
+      58,
+      36,
+      27
      ]
     },
     {
-     "cue": "Pick only what the brief needs",
+     "cue": "Pick two improvements that answer them",
      "box": [
-      17.4,
-      67.7,
-      21.1,
-      8.2
+      42.5,
+      17,
+      55,
+      13
      ]
     }
    ]

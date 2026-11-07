@@ -45,6 +45,10 @@
   .ti-actions .ok-btn { min-width: 0; text-align: center; padding: 0 6px; }
   /* the debrief shrinks and scrolls on a short screen, so the Next message button under it is always whole */
   .ti-debrief { background: var(--ok-bg2); border: 3px solid var(--ok-edge); border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; flex: 0 1 auto; min-height: 6.5em; overflow-y: auto; overscroll-behavior: contain; }
+  /* when the debrief scrolls, a soft shadow at its edge says there is more (the classic scroll shadow: it fades away
+     when the end is reached), and the scroll ends on a whole line */
+  .ti-debrief { background: linear-gradient(var(--ok-bg2) 30%, transparent) top / 100% 28px no-repeat local, linear-gradient(transparent, var(--ok-bg2) 70%) bottom / 100% 28px no-repeat local, radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.22), transparent) top / 100% 12px no-repeat scroll, radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.28), transparent) bottom / 100% 14px no-repeat scroll, var(--ok-bg2); padding-bottom: 14px; }
+  .ti-debrief.ti-more::after { content: '\2193'; position: sticky; bottom: -14px; align-self: center; font-weight: 800; line-height: 1; padding: 2px 10px; border-radius: 999px; background: var(--ok-card); border: 2px solid var(--ok-edge); }
   .ti-debrief > * { flex: none; }
   .ti-debrief b { font-size: 1.05em; }
   .ti-debrief p { margin: 0; font-weight: 600; line-height: 1.4; }
@@ -698,10 +702,13 @@ function renderMessage() {
     for (const a of E.ACTIONS) acts.appendChild(btn(tr(a.label), { kind: a.id === 'show' ? 'go' : 'quiet', icon: a.icon, onPress: () => doAct({ t: 'action', action: a.id }) }));
   } else if (run.phase === 'debrief') {
     panel.appendChild(debriefEl());
+    // a debrief taller than its room says so (an arrow on its lower edge) until it is scrolled to the end
+    { const db = panel.querySelector('#ti-debrief'); const more = () => db.classList.toggle('ti-more', db.scrollHeight - db.scrollTop - db.clientHeight > 4); db.addEventListener('scroll', more, { passive: true }); renderMessage._more = more; }
     const row = $('div', 'ti-row ti-center'); panel.appendChild(row);
     row.appendChild(btn(run.i + 1 >= run.msgs.length ? tr('Finish') : tr('Next message'), { kind: 'hot', icon: 'next', onPress: () => doAct({ t: 'next' }) }));
   }
   hudSync();
+  if (run.phase === 'debrief' && renderMessage._more) renderMessage._more();
 }
 function markFound(el) { el.classList.add('ti-found'); if (!el.querySelector('svg')) el.appendChild(iconEl('check')); el.setAttribute('aria-pressed', 'true'); }
 function toggleClue(id, el) {

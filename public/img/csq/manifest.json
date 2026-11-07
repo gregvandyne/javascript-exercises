@@ -311,17 +311,6 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/data-detective/mydata-1b-tally-n",
-   "game": "data-detective",
-   "chapter": "my-data",
-   "band": "1b",
-   "state": "mydata-1b-tally-n",
-   "concept": "One mark per answer",
-   "alt": "The survey tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2. One mark for every answer.",
-   "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
-  },
-  {
    "key": "csq/data-detective/mydata-2-compare-n",
    "game": "data-detective",
    "chapter": "my-data",
@@ -509,6 +498,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/gate-1b-hop",
+   "game": "escape-the-post-office",
+   "chapter": "sorting-gate",
+   "band": "1b",
+   "state": "gate-1b-hop",
+   "concept": "the letter on its way",
+   "alt": "The Sorting Gate: the golden letter has left the Post Office on an open road, heading for the Sorting Room door.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
    "key": "csq/escape-the-post-office/gate-2",
    "game": "escape-the-post-office",
    "chapter": "sorting-gate",
@@ -619,6 +619,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/layers-1b-5",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "1b",
+   "state": "layers-1b-5",
+   "concept": "every threat met its layer",
+   "alt": "Lock 6: Layers, open! Every threat met its layer. No single lock did it alone. Skill trained: match each threat to the layer that stops it.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
    "key": "csq/escape-the-post-office/layers-2",
    "game": "escape-the-post-office",
    "chapter": "layers",
@@ -663,6 +674,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/layers-2-4",
+   "game": "escape-the-post-office",
+   "chapter": "layers",
+   "band": "2",
+   "state": "layers-2-4",
+   "concept": "a broken tablet, the only copy",
+   "alt": "Threat 4 of 6: a broken tablet takes the only copy of the class letters with it. Six layer tiles, from Padlock Gate to Long Passphrase.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
    "key": "csq/escape-the-post-office/layers-2-5",
    "game": "escape-the-post-office",
    "chapter": "layers",
@@ -696,6 +718,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/moves-1b-five",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-five",
+   "concept": "the drill, done",
+   "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Calm work. Skill trained: run the five moves in order.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
    "key": "csq/escape-the-post-office/moves-1b-four",
    "game": "escape-the-post-office",
    "chapter": "five-moves",
@@ -705,6 +738,28 @@
    "alt": "A message unkind to Sam is going around the class chat. Four moves placed: Stop, Save it, Tell a trusted adult, Block or report.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-one",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-one",
+   "concept": "the first move: stop",
+   "alt": "Lock 5: Five Moves. The first move is placed: Stop, do not pass it on. The tiles left: Carry on, Tell a trusted adult, Save it, Block or report.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/escape-the-post-office/moves-1b-three",
+   "game": "escape-the-post-office",
+   "chapter": "five-moves",
+   "band": "1b",
+   "state": "moves-1b-three",
+   "concept": "three moves placed",
+   "alt": "Lock 5: Five Moves. Three moves placed: Stop, Save it, Tell a trusted adult. Two to go: Carry on, and Block or report it in the app.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
   },
   {
    "key": "csq/escape-the-post-office/moves-1b-two",
@@ -839,6 +894,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/escape-the-post-office/pim-1b-n2",
+   "game": "escape-the-post-office",
+   "chapter": "which-pim",
+   "band": "1b",
+   "state": "pim-1b-n2",
+   "concept": "two Pim cards, read from the top",
+   "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
    "key": "csq/escape-the-post-office/pim-1b-pick",
    "game": "escape-the-post-office",
    "chapter": "which-pim",
@@ -870,6 +936,17 @@
    "alt": "Three messages say they are from Pim; one wears a faked trail. A card from Pim asks you to bring your mailbox key to a side gate.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/escape-the-post-office/shield-2",
+   "game": "escape-the-post-office",
+   "chapter": "escape",
+   "band": "2",
+   "state": "shield-2",
+   "concept": "the completion shield",
+   "alt": "The Defender shield: all six locks open, each with its stamp and the skill it trained.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/inside-the-machine/bits-1b-five-n",
@@ -1136,6 +1213,17 @@
    "commit": "e78ab0e"
   },
   {
+   "key": "csq/inside-the-machine/gadget-2-users-c",
+   "game": "inside-the-machine",
+   "chapter": "gadget",
+   "band": "2",
+   "state": "gadget-2-users-c",
+   "concept": "Users decide what is next",
+   "alt": "Three walkers tried the step counter: they could not see the count, it fell off, the battery ran flat. Pick two improvements.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
+  },
+  {
    "key": "csq/inside-the-machine/hwsw-1b-sort-n",
    "game": "inside-the-machine",
    "chapter": "hw-sw",
@@ -1191,26 +1279,37 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/ciphers-1b-wheel",
+   "key": "csq/packet-post/ciphers-1b-unknown-n",
    "game": "packet-post",
    "chapter": "ciphers",
    "band": "1b",
-   "state": "ciphers-1b-wheel",
-   "concept": "Secret codes for fun: a cipher wheel shifts each letter by the key (shift 3)",
-   "alt": "The cipher wheel: turn the key and every letter shifts, turning a plain message into a secret one.",
-   "capturedAt": "2026-11-06",
-   "commit": "2f3e745"
+   "state": "ciphers-1b-unknown-n",
+   "concept": "a secret word, shift unknown",
+   "alt": "Secret Messages: a secret word with an unknown shift. Secret message DAOWQF; your reading, DAOWQF, until the wheel turns.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
   },
   {
-   "key": "csq/packet-post/ciphers-1b-wheel-n",
+   "key": "csq/packet-post/ciphers-1b-wheel-c",
    "game": "packet-post",
    "chapter": "ciphers",
    "band": "1b",
-   "state": "ciphers-1b-wheel-n",
+   "state": "ciphers-1b-wheel-c",
    "concept": "Secret codes for fun",
-   "alt": "The cipher wheel on shift 3: the secret message DSSOH reads APPLE.",
+   "alt": "The cipher wheel turned to shift 3: the secret message DSSOH now reads APPLE.",
    "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
+   "commit": "f3909f1"
+  },
+  {
+   "key": "csq/packet-post/ciphers-1b-wheel-n2",
+   "game": "packet-post",
+   "chapter": "ciphers",
+   "band": "1b",
+   "state": "ciphers-1b-wheel-n2",
+   "concept": "turn the wheel back",
+   "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/packet-post/ciphers-2-brute",
@@ -1323,15 +1422,26 @@
    "commit": "2700f45"
   },
   {
-   "key": "csq/packet-post/locks-1b-built",
+   "key": "csq/packet-post/locks-1b-backup-n2",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-built",
-   "concept": "Build a passphrase: four random words, long and hard to guess",
-   "alt": "The passphrase is taking shape: words are being picked for the mailbox key, and longer means harder to guess.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-1b-backup-n2",
+   "concept": "spare copies sorted",
+   "alt": "The spare-copy sort: two copies sorted, the next card waiting: a good spare copy, or not a spare copy?",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-built-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-built-n",
+   "concept": "three words: a hundred years",
+   "alt": "Three random words in the passphrase so far. The meter says a computer would need about a hundred years.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/packet-post/locks-1b-habits",
@@ -1345,15 +1455,26 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/locks-1b-key",
+   "key": "csq/packet-post/locks-1b-habits-n",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-key",
-   "concept": "Lock it up: lock it, keep the key, keep a spare copy",
-   "alt": "The mailbox key builder: pick words for a passphrase, the key that locks your mailbox in Packet Post.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-1b-habits-n",
+   "concept": "safe or risky key habits",
+   "alt": "Lock It, safe habit or risky habit: a habit card waits to be sorted, and Pim asks how you keep a key.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-key-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-key-n",
+   "concept": "build a key from word tiles",
+   "alt": "Lock It: build a mailbox key for Pim from four word tiles, and watch the meter.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/packet-post/locks-1b-pass-n",
@@ -1400,26 +1521,37 @@
    "commit": "2700f45"
   },
   {
-   "key": "csq/packet-post/locks-1b-spare-n",
+   "key": "csq/packet-post/locks-1b-sort-n2",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-spare-n",
-   "concept": "Keep a spare copy",
-   "alt": "Spare copies: a copy in the family's online folder and a printout in a drawer are good; the only copy on one tablet is not.",
+   "state": "locks-1b-sort-n2",
+   "concept": "cards sorted into trays",
+   "alt": "The sharing sort: some cards already in their trays, Share or Keep, and the next card waiting.",
    "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
+   "commit": "aa57a7f"
   },
   {
-   "key": "csq/packet-post/locks-1b-tell",
+   "key": "csq/packet-post/locks-1b-spare2-n",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-tell",
-   "concept": "Who may know it? Only a trusted adult may know your passphrase",
-   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-1b-spare2-n",
+   "concept": "Keep a spare copy",
+   "alt": "Sorted so far: the only copy on one tablet is not a spare; a family online folder, a printout and last year's copy are good spares.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-tell-n",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-tell-n",
+   "concept": "who may know your key",
+   "alt": "Lock It, who may know your key: a card waits for its tray, Okay to tell or Keep it to yourself.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/packet-post/locks-1b-who-n",
@@ -1554,6 +1686,17 @@
    "commit": "8516310"
   },
   {
+   "key": "csq/packet-post/packets-1b-center-n",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-center-n",
+   "concept": "every road meets at the center office",
+   "alt": "Break It Up, level 4: five packets for the zoo. Every road on the map meets at the Center Office before Zoo Gate.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
    "key": "csq/packet-post/packets-1b-key",
    "game": "packet-post",
    "chapter": "packets",
@@ -1576,17 +1719,6 @@
    "commit": "95753ad"
   },
   {
-   "key": "csq/packet-post/packets-1b-order",
-   "game": "packet-post",
-   "chapter": "packets",
-   "band": "1b",
-   "state": "packets-1b-order",
-   "concept": "Back in order: numbers put arriving packets back together",
-   "alt": "Packets are on the roads of Netville, each carrying its number, so the far end can rebuild the message in order.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
    "key": "csq/packet-post/packets-1b-order-n",
    "game": "packet-post",
    "chapter": "packets",
@@ -1596,6 +1728,17 @@
    "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/packets-1b-start-n",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-start-n",
+   "concept": "a numbered packet ready to travel",
+   "alt": "Break It Up: packet 1 of 3, an apple's first piece, waits at Pim's Post with its number, ready to ride to Grandma's House.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/packet-post/packets-1b-trip-n",
@@ -1618,6 +1761,28 @@
    "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
    "capturedAt": "2026-11-07",
    "commit": "d1020df"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed-n",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed-n",
+   "concept": "the open road and the padlock road",
+   "alt": "Explorer padlock level: the padlock road climbs over Hill Office to Birthday House; the open road runs below past River Office.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed-n2",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed-n2",
+   "concept": "a secret goes on the padlock road",
+   "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
+   "capturedAt": "2026-11-07",
+   "commit": "99934df"
   },
   {
    "key": "csq/packet-post/protocols-2-ack",
@@ -1675,15 +1840,15 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/protocols-2-key",
+   "key": "csq/packet-post/protocols-2-key-n",
    "game": "packet-post",
    "chapter": "protocols",
    "band": "2",
-   "state": "protocols-2-key",
-   "concept": "Messages in packets: numbered, routed and rebuilt at the other end",
-   "alt": "Rules of the Road opens: numbered packets wait at the first router, ready to travel by the shared rules.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "protocols-2-key-n",
+   "concept": "numbered packets at the first stop",
+   "alt": "Rules of the Road, Pro: five numbered packets wait at Pim's Post for the road through Mill Office to Grandma's House.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/packet-post/protocols-2-rules",
@@ -1717,17 +1882,6 @@
    "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
-  },
-  {
-   "key": "csq/packet-post/routes-1b-roads",
-   "game": "packet-post",
-   "chapter": "routes",
-   "band": "1b",
-   "state": "routes-1b-roads",
-   "concept": "Many roads: each packet can take a different road through routers",
-   "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
   },
   {
    "key": "csq/packet-post/routes-1b-roads-n",
@@ -1794,6 +1948,17 @@
    "alt": "A card from “Your bank”, marked unknown sender: “Your account is locked.”",
    "capturedAt": "2026-11-06",
    "commit": "ddca4eb"
+  },
+  {
+   "key": "csq/packet-post/tricks-1b-choose-n",
+   "game": "packet-post",
+   "chapter": "tricks",
+   "band": "1b",
+   "state": "tricks-1b-choose-n",
+   "concept": "Your mission: spot the trick",
+   "alt": "The prize card's cues to tap: hurry, asks for the mailbox key, a prize you never entered, says congratulations. Then Safe, Trick or Ask.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
   },
   {
    "key": "csq/packet-post/tricks-1b-clues-n1",
@@ -1912,7 +2077,7 @@
    "band": "1b",
    "state": "conditionals-1b-fog-proof",
    "concept": "Worked example: the fog-proof program",
-   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
+   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the open path across a board of water.",
    "capturedAt": "2026-11-06",
    "commit": "csq-content-fix"
   },
@@ -2005,17 +2170,6 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/debug-1b-count",
-   "game": "robo-route",
-   "chapter": "debug",
-   "band": "1b",
-   "state": "debug-1b-count",
-   "concept": "One too many: a repeat count one too big is a common bug",
-   "alt": "The broken program is one repeat block set to 6, but the flag is five squares away: one move too many.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
-  },
-  {
    "key": "csq/robo-route/debug-1b-fixed",
    "game": "robo-route",
    "chapter": "debug",
@@ -2038,15 +2192,26 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/debug-1b-midrun",
+   "key": "csq/robo-route/debug-1b-repeat6-c",
    "game": "robo-route",
    "chapter": "debug",
    "band": "1b",
-   "state": "debug-1b-midrun",
-   "concept": "Expected and actual: compare what Bolt did with what you expected",
-   "alt": "Bolt has run part of the broken program and stopped in the wrong place: what Bolt did is not what the program promised.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "debug-1b-repeat6-c",
+   "concept": "One too many",
+   "alt": "Debug Lab level 2: the flag is five squares from Bolt, but the program says repeat 6 times, move.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
+  },
+  {
+   "key": "csq/robo-route/debug-1b-split-c",
+   "game": "robo-route",
+   "chapter": "debug",
+   "band": "1b",
+   "state": "debug-1b-split-c",
+   "concept": "Expected and actual",
+   "alt": "The broken program stepped to its turn left block: Bolt climbed three squares and now faces the wall, away from the flag.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
   },
   {
    "key": "csq/robo-route/debug-1b-step",
@@ -2148,15 +2313,15 @@
    "commit": "csq-content-fix"
   },
   {
-   "key": "csq/robo-route/functions-1b-three-stairs",
+   "key": "csq/robo-route/functions-1b-stairs-w",
    "game": "robo-route",
    "chapter": "functions",
    "band": "1b",
-   "state": "functions-1b-three-stairs",
-   "concept": "Call it three times",
-   "alt": "The Stair block is defined once, then called three times in a row at the bottom of the tray: call Stair, call Stair, call Stair.",
-   "capturedAt": "2026-11-06",
-   "commit": "csq-content-fix"
+   "state": "functions-1b-stairs-w",
+   "concept": "Climb three stairs",
+   "alt": "My Block Stair is made once at the top of the program, and three call Stair blocks below it climb all three stairs.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
   },
   {
    "key": "csq/robo-route/functions-2-key",
@@ -2522,6 +2687,17 @@
    "commit": "csq-content-fix"
   },
   {
+   "key": "csq/robo-route/variables-1b-door-c",
+   "game": "robo-route",
+   "chapter": "variables",
+   "band": "1b",
+   "state": "variables-1b-door-c",
+   "concept": "Bolt needs to remember",
+   "alt": "Three gems lie on the way to a door that opens at count = 3, and the program sets count to 0 before the loop.",
+   "capturedAt": "2026-11-07",
+   "commit": "f3909f1"
+  },
+  {
    "key": "csq/robo-route/variables-1b-key",
    "game": "robo-route",
    "chapter": "variables",
@@ -2731,6 +2907,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/trick-inbox/chat-1b-ch-3-decide",
+   "game": "trick-inbox",
+   "chapter": "chat",
+   "band": "1b",
+   "state": "chat-1b-ch-3-decide",
+   "concept": "report and block a mean message",
+   "alt": "The moves for JokerJay's mean message: Deliver, Bin it, Show Pim, Report & block.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
    "key": "csq/trick-inbox/chat-1b-ch-4-all",
    "game": "trick-inbox",
    "chapter": "chat",
@@ -2874,6 +3061,17 @@
    "commit": "b23626e"
   },
   {
+   "key": "csq/trick-inbox/keys-1b-kk-6-all",
+   "game": "trick-inbox",
+   "chapter": "keys",
+   "band": "1b",
+   "state": "keys-1b-kk-6-all",
+   "concept": "too good to be true",
+   "alt": "A post from Gem Swap Club with clues marked: swap mailbox keys with us, 500 free gems, and everyone in your class already did.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
    "key": "csq/trick-inbox/letters-1b-lt-1-all",
    "game": "trick-inbox",
    "chapter": "letters",
@@ -2916,6 +3114,17 @@
    "alt": "The debrief: a thousand free coins, gone in an hour? Real shops do not hand out coins like that. Behind this one: the prize-faker.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/letters-1b-lt-6-all",
+   "game": "trick-inbox",
+   "chapter": "letters",
+   "band": "1b",
+   "state": "letters-1b-lt-6-all",
+   "concept": "a chain letter",
+   "alt": "A letter from A Friend of a Friend, Pass it on!, with clues marked: send this letter to ten friends, before midnight.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/trick-inbox/letters-2-lt-7-all",
@@ -3026,6 +3235,17 @@
    "alt": "The debrief: the Magpie loves a chain, the trick does its own traveling. Behind this one: the forwarder.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/mix-1b-mx-3-all",
+   "game": "trick-inbox",
+   "chapter": "mix",
+   "band": "1b",
+   "state": "mix-1b-mx-3-all",
+   "concept": "an official-looking name",
+   "alt": "A letter from Account Team, Check your account, with clues marked: your mailbox key, and before Friday.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
   },
   {
    "key": "csq/trick-inbox/mix-1b-mx-3-debrief",
@@ -3314,6 +3534,17 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/trick-inbox/senders-2-sd-6-all",
+   "game": "trick-inbox",
+   "chapter": "senders",
+   "band": "2",
+   "state": "senders-2-sd-6-all",
+   "concept": "a faked bank asks for your key",
+   "alt": "A letter from Bank of Netville, Confirm it is you, with its real address and the clue marked: your mailbox key and your birthday.",
+   "capturedAt": "2026-11-07",
+   "commit": "aa57a7f"
+  },
+  {
    "key": "csq/would-you-rather/online-cloud-2",
    "game": "would-you-rather",
    "chapter": "online",
@@ -3477,116 +3708,6 @@
    "alt": "Would you rather: a voice helper that knows everything, or one that never listens unless you press a button?",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
-  },
-  {
-   "key": "csq/escape-the-post-office/layers-1b-5",
-   "game": "escape-the-post-office",
-   "chapter": "layers",
-   "band": "1b",
-   "state": "layers-1b-5",
-   "concept": "every threat met its layer",
-   "alt": "Lock 6: Layers, open! Every threat met its layer. No single lock did it alone. Skill trained: match each threat to the layer that stops it.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/escape-the-post-office/layers-2-4",
-   "game": "escape-the-post-office",
-   "chapter": "layers",
-   "band": "2",
-   "state": "layers-2-4",
-   "concept": "a broken tablet, the only copy",
-   "alt": "Threat 4 of 6: a broken tablet takes the only copy of the class letters with it. Six layer tiles, from Padlock Gate to Long Passphrase.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/escape-the-post-office/moves-1b-five",
-   "game": "escape-the-post-office",
-   "chapter": "five-moves",
-   "band": "1b",
-   "state": "moves-1b-five",
-   "concept": "the drill, done",
-   "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Calm work. Skill trained: run the five moves in order.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/escape-the-post-office/moves-1b-one",
-   "game": "escape-the-post-office",
-   "chapter": "five-moves",
-   "band": "1b",
-   "state": "moves-1b-one",
-   "concept": "the first move: stop",
-   "alt": "Lock 5: Five Moves. The first move is placed: Stop, do not pass it on. The tiles left: Carry on, Tell a trusted adult, Save it, Block or report.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/escape-the-post-office/moves-1b-three",
-   "game": "escape-the-post-office",
-   "chapter": "five-moves",
-   "band": "1b",
-   "state": "moves-1b-three",
-   "concept": "three moves placed",
-   "alt": "Lock 5: Five Moves. Three moves placed: Stop, Save it, Tell a trusted adult. Two to go: Carry on, and Block or report it in the app.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/escape-the-post-office/pim-1b-n2",
-   "game": "escape-the-post-office",
-   "chapter": "which-pim",
-   "band": "1b",
-   "state": "pim-1b-n2",
-   "concept": "two Pim cards, read from the top",
-   "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/packet-post/ciphers-1b-unknown-n",
-   "game": "packet-post",
-   "chapter": "ciphers",
-   "band": "1b",
-   "state": "ciphers-1b-unknown-n",
-   "concept": "a secret word, shift unknown",
-   "alt": "Secret Messages: a secret word with an unknown shift. Secret message DAOWQF; your reading, DAOWQF, until the wheel turns.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/packet-post/packets-1b-center-n",
-   "game": "packet-post",
-   "chapter": "packets",
-   "band": "1b",
-   "state": "packets-1b-center-n",
-   "concept": "every road meets at the center office",
-   "alt": "Break It Up, level 4: five packets for the zoo. Every road on the map meets at the Center Office before Zoo Gate.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/packet-post/protocols-1b-sealed-n",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "1b",
-   "state": "protocols-1b-sealed-n",
-   "concept": "the open road and the padlock road",
-   "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
-  },
-  {
-   "key": "csq/packet-post/protocols-1b-sealed-n2",
-   "game": "packet-post",
-   "chapter": "protocols",
-   "band": "1b",
-   "state": "protocols-1b-sealed-n2",
-   "concept": "a secret goes on the padlock road",
-   "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
-   "capturedAt": "2026-11-07",
-   "commit": "99934df"
   }
  ]
 }

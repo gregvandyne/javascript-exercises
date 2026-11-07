@@ -26,7 +26,7 @@
   },
   {
    "title": "Counting with bits",
-   "text": "Counting with bits is called binary. Five switches worth 16, 8, 4, 2 and 1 can make any number from 0 to 31.",
+   "text": "Counting with bits is called binary. Five switches worth 16, 8, 4, 2 and 1 can make any number from 0 to 31. Switches 4 and 2 on make 6.",
    "art": "bits",
    "img": "csq/inside-the-machine/bits-1b-pick-n",
    "alt": "Read the cards: 16 off, 8 off, 4 on, 2 on, 1 off. Which number do the switches make: 6, 42 or 2?",
@@ -41,7 +41,7 @@
      ]
     },
     {
-     "cue": "4 and 2 are on: which number do they make?",
+     "cue": "4 and 2 are on: 4 + 2 = 6",
      "box": [
       47.3,
       66.2,

@@ -84,7 +84,7 @@
     48.6,
     82.5
    ],
-   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the dry path across a board of water.",
+   "alt": "The repeat until goal program with the if / else inside it, feeling its way along the open path across a board of water.",
    "steps": [
     "repeat until goal:",
     "if path ahead: move",

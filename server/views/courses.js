@@ -386,7 +386,7 @@ function visualExtent(v) {
   if (v.type === 'places') return [9, tBot(43, 4.2)];
   if (v.type === 'numberline') {
     const tallest = Math.max(0, ...(v.stacks || []).map(k => k.n));
-    const a = Math.min(33.4, v.point ? tTop(28.5, 4.6) : 99, v.hops && v.hops.length ? tTop(17.5, 3.8) : 99, tallest ? 33 - tallest * 3.4 - 1.2 : 99);
+    const a = Math.min(33.4, v.point ? tTop(28.5, 4.6) : 99, v.hops && v.hops.length ? tTop(17.5, 3.8) : 99, tallest ? 33 - tallest * 4.2 - 1.6 : 99);
     return [a, tBot(numberlineLabels(v).some(m => m.y > 45) ? 52.3 : 45, 3.6)];
   }
   if (v.type === 'bars' || v.type === 'fraction') {
@@ -473,8 +473,8 @@ function visualSvg(v, f) {
         + tx(m.cx, m.y, m.label, 3.6, 'middle', 700)).join('')
       + (v.stacks || []).map(k => Array.from({ length: k.n }, (_, j) => {
         // A line plot's stack: one x per data point, piled up above its mark.
-        const cx = X(k.at), cy = 31.2 - j * 3.4, d = 1.25;
-        return raw(`<path d="M${r2(cx - d)} ${r2(cy - d)} L${r2(cx + d)} ${r2(cy + d)} M${r2(cx + d)} ${r2(cy - d)} L${r2(cx - d)} ${r2(cy + d)}" stroke="${leaf}" stroke-width="0.8" stroke-linecap="round"/>`);
+        const cx = X(k.at), cy = 31.2 - j * 4.2, d = 1.7; // an X 3.4 units tall: 11 px on a 390 px phone
+        return raw(`<path d="M${r2(cx - d)} ${r2(cy - d)} L${r2(cx + d)} ${r2(cy + d)} M${r2(cx + d)} ${r2(cy - d)} L${r2(cx - d)} ${r2(cy + d)}" stroke="${leaf}" stroke-width="1" stroke-linecap="round"/>`);
       }).join('')).join('')
       + (v.point ? raw(`<circle cx="${X(v.point.at).toFixed(2)}" cy="36" r="2.3" fill="#FFD23F" stroke="${ink}" stroke-width="0.7"/>`)
         + tx(X(v.point.at), 28.5, v.point.label, 4.6, 'middle', 800) : '');

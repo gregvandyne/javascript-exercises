@@ -259,7 +259,7 @@ class Run {
     if (this.lock.id === 'sorting-gate') {
       if (a.t !== 'hop') return this.wobble('Tap a road to move the golden letter.');
       if (!this.linksAt(this.s.at).includes(a.id)) return this.wobble('That road does not start here. Follow the letter.');
-      if (this.closed(a.id)) return this.wobble('That road is closed. Pim nudges: find another way round.');
+      if (this.closed(a.id)) return this.wobble('That road is closed, so no letter can pass it. The network sends it round by another open road: find one.');
       this.s.at = this.other(a.id, this.s.at); this.s.hops++; this.s.note = '';
       if (this.s.at === d.route.to) return this.finish('The golden letter reached the sorting room door.');
       return { ok: true, note: '' };
@@ -384,7 +384,7 @@ function frame(w) {
   Cm.bounds(null); Cm.zoom = z; Cm.x = L.w / 2; Cm.y = L.h - w.cell * 1.6 - V.vh / z / 2;
   const pim = w.find('pim'); if (pim && w.hero) { const d = (tall ? 1.1 : 2.4) * w.cell; pim.x = L.w / 2 + d; w.hero.x = L.w / 2 - d; }
 }
-function onStart(w) { S.w = w; if (S.practice) { S.reported = false; newEscape(); return renderLock(practiceLock()); } showDoor(); }
+function onStart(w) { S.w = w; if (S.practice) { S.reported = false; newEscape(); hudSync(); return renderLock(practiceLock()); } hudSync(); showDoor(); }
 function hideAll() { if (S.dom) S.dom.ep.hidden = true; }
 function build() {
   if (S.dom) return S.dom;
@@ -421,8 +421,14 @@ function hintButton(main, lock) {
   if (used) say2.textContent = tr(lock.hint[S.band]);
   return say2;
 }
+/** The HUD: a star for every open lock (a practice lock: its one star), and the progress bar the same. */
+function hudSync() {
+  const w = S.w; if (!w || !w.hud || !S.esc) return;
+  const total = S.practice ? 1 : 6, got = S.practice ? (S.esc.open.includes(S.practice) ? 1 : 0) : S.esc.open.length;
+  try { if (w.hud.count) w.hud.count.set(got, total); if (w.hud.progress) w.hud.progress.set(got / total); } catch (e) { /* an older kit */ }
+}
 function lockDone(lock, note) {
-  persist(); sfx('win');
+  persist(); sfx('win'); hudSync();
   try { if (window.BRB && typeof BRB.progress === 'function') BRB.progress({ game: 'ep', lock: lock.id, unit: lock.unit, band: S.band === '2' ? 2 : 1, hintsUsed: S.esc.hintsUsed }); } catch (e) { /* older SDK */ }
   if (S.practice) return showPracticeDone(lock, note);
   if (S.esc.escaped) return showShield();

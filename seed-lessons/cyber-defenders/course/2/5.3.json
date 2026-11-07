@@ -44,28 +44,6 @@
     "Notifications: silence all but people",
     "Streaks: let one lapse on purpose",
     "Endless scroll: set a time limit you chose"
-   ],
-   "img": "csq/trick-inbox/pressure-2-pr-6-all",
-   "alt": "A letter from Shop Bot, “Only two left!”, with clues marked: only two left, and pay in the next five minutes.",
-   "focus": [
-    {
-     "cue": "A hook: only two left",
-     "box": [
-      7.1,
-      59.6,
-      33.0,
-      13.5
-     ]
-    },
-    {
-     "cue": "Another hook: a countdown",
-     "box": [
-      7.1,
-      73.1,
-      61.5,
-      13.5
-     ]
-    }
    ]
   },
   {

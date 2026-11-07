@@ -22,7 +22,7 @@
     "It changes your passphrase for you"
    ],
    "answer": 0,
-   "why": "An update patches holes that tricksters could climb through. It does not change your brightness, backups or passphrase."
+   "why": "Tricksters hunt for known holes in old versions. An update is the fix that closes those holes, which is why it matters more than a brighter screen or a new look."
   },
   {
    "id": "cd-1b-6.1-e2",
@@ -40,7 +40,7 @@
     "The newest game"
    ],
    "answer": 1,
-   "why": "A broken tablet takes its own copies with it. Only a backup kept somewhere else still has your photos."
+   "why": "When the tablet breaks, every copy stored inside it is stuck too. A copy kept in another place is not in the broken tablet, so it is still there."
   },
   {
    "id": "cd-1b-6.1-e3",
@@ -58,7 +58,7 @@
     "Strong locks are against the rules"
    ],
    "answer": 2,
-   "why": "Layers back each other up: if one slips, the next still guards you. That is why two ordinary layers beat one lock."
+   "why": "Every lock can slip once: a key is guessed, a door left open. With a second layer, the trickster has to be lucky twice, and that rarely happens."
   },
   {
    "id": "cd-1b-6.2-e1",
@@ -76,7 +76,7 @@
     "On the post office roof"
    ],
    "answer": 1,
-   "why": "A game's rules for what may be posted are written in its agreement, which every player accepts when they join."
+   "why": "Rules have to be written down where everyone can read them before they join. That is the agreement: by joining, every player says yes to the same rules."
   },
   {
    "id": "cd-1b-6.2-e2",
@@ -94,7 +94,7 @@
     "The law, which says the drawing is yours"
    ],
    "answer": 3,
-   "why": "The law says the drawing is yours because you made it. A site cannot take it as its own."
+   "why": "Making something gives you a say over who may copy and share it. A site that takes your drawing as its own is breaking that rule, even if nobody stops it."
   },
   {
    "id": "cd-1b-6.2-e3",
@@ -112,7 +112,7 @@
     "Leave every game forever"
    ],
    "answer": 1,
-   "why": "A rule broken against you is never yours to fix alone, and breaking rules back makes it worse. Tell a trusted adult."
+   "why": "Breaking rules back puts you in trouble too, and you cannot make a stranger stop on your own. A trusted adult can report it and get the rules enforced."
   },
   {
    "id": "cd-1b-6.3-e1",
@@ -130,7 +130,7 @@
     "Open, read, answer, forward, close"
    ],
    "answer": 2,
-   "why": "The five moves go stop, save it, tell an adult, block or report, carry on. The other lists spread the trouble or skip help."
+   "why": "The order matters: stopping keeps it from getting worse, saving keeps the proof, telling gets help, blocking cuts it off, and then you can carry on safely."
   },
   {
    "id": "cd-1b-6.3-e2",
@@ -148,7 +148,7 @@
     "It does not help at all"
    ],
    "answer": 1,
-   "why": "A saved message is proof a trusted adult can act on. Deleting it in a panic throws the proof away."
+   "why": "Adults and the app can only act on what they can see. A deleted message is gone, and with it the proof of who sent it."
   },
   {
    "id": "cd-1b-6.3-e3",
@@ -166,7 +166,7 @@
     "Tell nobody and hope"
    ],
    "answer": 0,
-   "why": "A key typed into a fake page must be changed fast. A trusted adult can help change it before anyone uses it."
+   "why": "Whoever made the fake page now has your key and can use it at any moment. Changing it fast makes the stolen key useless, and an adult can help do it right."
   },
   {
    "id": "cd-1b-6.4-e1",

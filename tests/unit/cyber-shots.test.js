@@ -106,7 +106,8 @@ const ZOOM_DATA = (await import('../../public/js/course-zoom-data.js')).default;
 const FRAME_390 = 326;
 // 2026-11-07: +1 each: the Sorting Gate captures now show the whole "Post Office" label (it was hidden under a road
 // button), a longer line that the gate steps' boxes touch, and the padlock-road mission of 1b 1.2.
-const SHORT = { WIDE: 5, CAPPED: 8 };
+// r4: +1 capped: 2.3's cipher wheel is now a narrow capture (its letters read at 10 px, from 3), still a hair under 11.
+const SHORT = { WIDE: 5, CAPPED: 9 };
 test('zoom-to-cue at 390: no cut line, every touched line whole, 11 px wherever the layout allows', () => {
   let n = 0;
   const short = { WIDE: 0, CAPPED: 0 }, problems = [];
