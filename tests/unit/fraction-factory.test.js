@@ -27,7 +27,7 @@ const J = v => JSON.parse(JSON.stringify(v));
 const levelsFor = (ch, band) => LEVELS.filter(l => l.ch === ch && l.bands.includes(band));
 const CONTRACT = { folds: 3, 'first-cuts': 6, 're-slice': 6, recipe: 6 };
 
-test('fraction-factory: the exact kit 1.1.4 tag and its packs, the metadata, and a clean scan', () => {
+test('fraction-factory: the exact kit 1.1.5 tag and its packs, the metadata, and a clean scan', () => {
   assert.ok(HTML.startsWith('<title>Fraction Factory</title>'));
   assert.ok(HTML.includes(kitTag()), 'the byte-exact kit tag');
   for (const p of ['art-props', 'art-animals', 'art-school', 'style-bold']) assert.ok(HTML.includes(kitPackTag(p)), `${p} pack tag`);

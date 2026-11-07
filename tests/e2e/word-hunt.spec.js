@@ -3,14 +3,14 @@
 import { test, expect } from '@playwright/test';
 import { gameFrame } from './helpers.js';
 
-test('Word Hunt runs on kit 1.1.4: title, real selections, pause, results, daily and a race', async ({ page }) => {
+test('Word Hunt runs on kit 1.1.5: title, real selections, pause, results, daily and a race', async ({ page }) => {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto('/play/word-hunt');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.select);
-  expect(await f.evaluate(() => [Oomba.version, ['dress', 'art-props', 'art-biomes', 'art-biomes-2'].every(p => Oomba.packs.includes(p))])).toEqual(['1.1.4', true]);
+  expect(await f.evaluate(() => [Oomba.version, ['dress', 'art-props', 'art-biomes', 'art-biomes-2'].every(p => Oomba.packs.includes(p))])).toEqual(['1.1.5', true]);
   // the kit's title with the game's card: daily, three levels, 13 themes + Surprise, Relax, Play and Race
   await expect(f.locator('.ok-title-screen .wh-tcard')).toBeVisible();
   await expect(f.locator('.wh-tcard [data-theme]')).toHaveCount(14);
