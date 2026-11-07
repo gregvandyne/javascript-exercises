@@ -110,6 +110,11 @@ button 0 = a, 1 = b, 9 = pause (the left stick is also `ctx.axis`). Touch-first:
 with keys alone. Draw your own touch buttons with `JC.ui.button(g, id, x, y, w, h, label)` (at least `ctx.tap` big)
 and check them with `JC.ui.hitAt(e.x, e.y)`.
 
+**Jump juice** (`core/06c-juice.js`): `JC.juice.shake(px, secs)` (never with reduced motion; call `JC.juice.tick(dt)`
+in `update` and translate by `JC.juice.ox / oy` when drawing), `JC.juice.squash(o, k)` (fills `o.sx / o.sy`, k from -1
+squashed to 1 stretched), `JC.juice.trail(n)` + `push(tr, x, y, a, f)` + `each(tr, fn)` (afterimages, allocated once),
+`JC.juice.speedLines(g, x, y, angle, len, n, col, seed, unit)`. Leaf Slide and Vine Climb use it.
+
 **Shared helpers**: `JC.hud.versus(g, {name, score, of, col}, {...})` (two score panels), `JC.hud.timer(g, secsLeft,
 frac)`, `JC.hud.score(g, n)`, `JC.hud.meter(g, x, y, w, label, frac, col, glow)`, `JC.hud.pop(x, y, key, col)`;
 `JC.ui.bar`, `JC.ui.starBar`, `JC.ui.float(x, y, text, col)`, `JC.ui.burst(x, y, n, col)`, `JC.ui.confetti(x, y, n)`,

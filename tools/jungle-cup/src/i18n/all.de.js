@@ -158,6 +158,7 @@ I18N.de = Object.assign(I18N.de || {}, {
   "sport.leaf.keys": "Tasten: Leertaste zum Springen. In der Luft: Links / Rechts für Dreh, Hoch für Salto, Runter für Griff.",
   "ls.jump": "Springen", "ls.spin": "Dreh", "ls.flip": "Salto", "ls.grab": "Griff",
   "ls.pop": "Hopp!", "ls.hop": "Hüpfer! +30", "ls.bonk": "Bonk!", "ls.low": "Zu niedrig!", "ls.wipeout": "Sturz!",
+  "ls.perfectLand": "Perfekte Landung!", "ls.bigAir": "Riesensprung!", "ls.mega": "Mega-Rampe!", "ls.combo": "Kombo x{n}!", "ls.shake": "Weiter geht's!", "ls.ring": "Grüner Ring = gute Landung",
   "ls.youWin": "Du hast Kiki geschlagen!", "ls.kikiWins": "Diesmal gewinnt Kiki",
   "ls.hintTouch": "Tippe auf einer Rampe zum Abspringen! In der Luft wischen oder einen Trick drücken. Lande ohne laufenden Trick.",
   "ls.hintKeys": "Leertaste auf einer Rampe zum Abspringen! In der Luft: Links / Rechts Dreh, Hoch Salto, Runter Griff. Lande ohne laufenden Trick.",

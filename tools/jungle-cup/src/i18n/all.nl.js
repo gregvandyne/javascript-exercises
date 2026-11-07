@@ -158,6 +158,7 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "sport.leaf.keys": "Toetsen: Spatie om te springen. In de lucht: Links / Rechts voor Draai, Omhoog voor Salto, Omlaag voor Grijp.",
   "ls.jump": "Spring", "ls.spin": "Draai", "ls.flip": "Salto", "ls.grab": "Grijp",
   "ls.pop": "Hop!", "ls.hop": "Huppel! +30", "ls.bonk": "Bonk!", "ls.low": "Te laag!", "ls.wipeout": "Onderuit!",
+  "ls.perfectLand": "Perfecte landing!", "ls.bigAir": "Hoge sprong!", "ls.mega": "Megaschans!", "ls.combo": "Combo x{n}!", "ls.shake": "Hup, weer door!", "ls.ring": "Groene ring = goede landing",
   "ls.youWin": "Je hebt Kiki verslagen!", "ls.kikiWins": "Deze keer wint Kiki",
   "ls.hintTouch": "Tik op een schans om te springen! In de lucht veeg je of druk je op een truc. Land zonder truc bezig.",
   "ls.hintKeys": "Spatie op een schans om te springen! In de lucht: Links / Rechts Draai, Omhoog Salto, Omlaag Grijp. Land zonder truc bezig.",
