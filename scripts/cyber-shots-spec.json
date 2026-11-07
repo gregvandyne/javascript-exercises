@@ -2207,8 +2207,12 @@
   "state": "packets-1b-start-n"
  },
  {
-  "actions": [],
-  "alt": "The cipher wheel: the secret message DSSOH, and a reading that turns back into APPLE as the wheel turns.",
+  "actions": [
+   {
+    "acts": 1
+   }
+  ],
+  "alt": "The cipher wheel turned back by 3: the secret message DSSOH now reads APPLE.",
   "band": "1b",
   "chapter": "ciphers",
   "concept": "turn the wheel back",

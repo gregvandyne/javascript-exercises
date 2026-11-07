@@ -516,7 +516,22 @@ const icon = (name, o) => O.icon(name, o);
 const iconEl = name => { const e = $('span', 'ti-ic'); e.innerHTML = icon(name); e.setAttribute('aria-hidden', 'true'); return e; };
 const btn = (label, o) => O.ui.button(label, o);
 const announce = t => O.ui.announce(t);
-const toast = t => O.ui.toast(t);
+const toast = t => { O.ui.toast(t); placeToast(); };
+/** The toast drops to the first band, from its usual place down, with no words or buttons of the game in it: at the
+ *  top it would sit on the quest and level chips and on Pim's line. Nothing clear: it stays where it was. */
+function placeToast() {
+  const el = document.querySelector('.ok-toast'); if (!el) return;
+  el.style.top = '';
+  const w = el.offsetWidth, h = el.offsetHeight, H = window.innerHeight, x0 = (window.innerWidth - w) / 2, x1 = x0 + w;
+  if (!w || !h) return;
+  const boxes = [], keep = b => { if (b.width && b.height && b.bottom > 0 && b.top < H && b.right > x0 && b.left < x1) boxes.push(b); };
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.nodeValue.trim() && n.parentElement && !n.parentElement.closest('.ok-toast, .ok-live, .ok-caption, [hidden]') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT) });
+  const rg = document.createRange();
+  for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (getComputedStyle(n.parentElement).visibility === 'hidden') continue; rg.selectNodeContents(n); for (const b of rg.getClientRects()) keep(b); }
+  for (const b of document.querySelectorAll('button')) if (!b.closest('.ok-toast') && getComputedStyle(b).visibility !== 'hidden') keep(b.getBoundingClientRect());
+  const base = parseFloat(getComputedStyle(el).top) || 72;
+  for (let y = base; y + h <= H - 8; y += 6) if (!boxes.some(b => b.top < y + h + 4 && b.bottom > y - 4)) { if (y !== base) el.style.top = y + 'px'; return; }
+}
 const sfx = (n, o) => { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* quiet */ } };
 const C = (role, step) => { try { return O.color(role, step); } catch (e) { return null; } };
 const KIND_LABEL = { letter: 'Letter', chat: 'Chat', post: 'Post' };
