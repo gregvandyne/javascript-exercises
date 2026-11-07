@@ -50,6 +50,29 @@ test('Packet Post runs on the kit: pinned tags, the title, a Lock It level solve
   expect(errors).toEqual([]);
 });
 
+// Every packet carries its piece of the picture: the board's packets, the inbox tiles and the rebuilt slots are copies of
+// the cut picture, and a copied canvas must be painted again (cloneNode keeps none of a canvas's pixels: the bug that
+// left every packet a blank white square in Break It Up, Rules of the Road and the padlock road).
+test('Packet Post: every packet piece shows its part of the picture (no blank squares)', async ({ page }) => {
+  const { f, errors } = await open(page);
+  for (const [chapter, level] of [['packets', 1], ['protocols', 1], ['protocols', 3]]) {
+    await T(f, 'start', { chapter, band: '1b', level, seed: 2, lesson: false });
+    await T(f, 'closeCards'); await T(f, 'skipAnimations');
+    // a few moves so packets reach the board, the inbox and the slots
+    for (let i = 0; i < 4; i++) { const a = await T(f, 'advice'); if (!a) break; await T(f, 'act', a); await f.page().waitForTimeout(300); }
+    const pieces = await f.evaluate(() => [...document.querySelectorAll('canvas.pp-piece')].filter(c => c.getClientRects().length).map(c => {
+      const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let ink = 0;
+      for (let i = 3; i < d.length; i += 4) if (d[i] > 0) ink++;
+      return ink / (c.width * c.height);
+    }));
+    expect(pieces.length, `${chapter} ${level}: pieces on screen`).toBeGreaterThan(0);
+    // a piece is a slice of the picture, so it holds some ink (a corner slice of the apple is still well over 2%)
+    expect(Math.max(...pieces), `${chapter} ${level}: the pieces have pixels`).toBeGreaterThan(0.1);
+    for (const share of pieces) expect(share, `${chapter} ${level}: no blank piece`).toBeGreaterThan(0.02);
+  }
+  expect(errors).toEqual([]);
+});
+
 test('Packet Post: the chapter map with its six chapters and the Daily Crew Challenge, the band toggle, the wheel tool', async ({ page }) => {
   const { f, errors } = await open(page);
   await f.locator('.ok-title-screen .ok-hot').click();

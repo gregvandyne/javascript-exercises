@@ -1542,7 +1542,13 @@ function pieces(I) {
   for (let k = 0; k < n; k++) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.ceil(pw)); c.height = Math.max(1, Math.ceil(ph)); try { c.getContext('2d').drawImage(src, (k % cols) * pw, Math.floor(k / cols) * ph, pw, ph, 0, 0, c.width, c.height); } catch (e) { /* empty piece */ } c.className = 'pp-piece'; c.style.width = Math.round(30 * pw / Math.max(pw, ph)) + 'px'; c.style.height = Math.round(30 * ph / Math.max(pw, ph)) + 'px'; out.push(c); }
   return { cols, rows, out, src };
 }
-function pieceEl(k) { return PIECES.out[k - 1].cloneNode(true); }
+/** A copy of piece k for the board, a tile or a slot. cloneNode copies a canvas element but never its pixels, so every
+ *  copy is painted again from the piece (the bug that left every packet a blank white square). */
+function pieceEl(k) {
+  const src = PIECES.out[k - 1], c = src.cloneNode(false);
+  try { c.getContext('2d').drawImage(src, 0, 0); } catch (e) { /* an empty piece */ }
+  return c;
+}
 function renderRoutePanel() {
   const run = S.run, I = run.inst, panel = UI.panel;
   const row = $('div', 'pp-row'); panel.appendChild(row);
