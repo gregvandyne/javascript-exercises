@@ -257,7 +257,8 @@ if modal is not None:
     progress = modal.Dict.from_name("story-renderer-progress", create_if_missing=True)
     secret = modal.Secret.from_name("story-renderer")   # STORY_RENDER_TOKEN
 
-    @app.function(image=image, gpu=GPU, timeout=60 * 60, max_containers=20, retries=0)
+    # scaledown_window: a GPU container is billed while it idles; scenes arrive together, so let it go quickly.
+    @app.function(image=image, gpu=GPU, timeout=60 * 60, max_containers=20, retries=0, scaledown_window=10)
     def render_scene(spec: dict, index: int, job: str) -> bytes:
         """One scene on one GPU -> its MP4 clip."""
         sid = spec["scenes"][index]["id"]

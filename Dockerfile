@@ -18,7 +18,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 # tini (PID 1: passes signals on, reaps zombies) and headless Chromium (plus its fonts, emoji included) for game
 # screenshots: cover pictures and the Builder's playtests (in the app on Render, in the worker container elsewhere).
-RUN apt-get update && apt-get install -y --no-install-recommends tini \
+# ffmpeg (with libass) and the CJK fallback font: the Story Builder voices its lines and assembles each video here when
+# the scenes are rendered elsewhere (docs/story-builder.md; it is off unless STORY_BUILDER=1).
+RUN apt-get update && apt-get install -y --no-install-recommends tini ffmpeg fonts-noto-cjk \
   && node node_modules/playwright-core/cli.js install --with-deps --only-shell chromium \
   && rm -rf /var/lib/apt/lists/* /tmp/*
 COPY --from=litestream /usr/local/bin/litestream /usr/local/bin/litestream

@@ -10,13 +10,16 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 ```
  /stories/new ──POST /api/stories──▶ screen the idea (Builder screening) ─▶ stories row: queued
                                                                               │
- scripts/story-worker.js (own process, 1 job at a time) ◀── claimNext ───────┘
+ story worker loop (inside the site's process; 1 job at a time) ◀── claimNext ┘
    writing     Claude ▶ story script JSON (kit-only, schema-checked, kid-safe checks, model classifier) ── retry once
    voicing     one clip per line (site TTS / offline voice) ▶ measured durations ▶ timeline
-               music: lullaby composed for exactly that length, ducked under every line
                words: caption cues ▶ captions.vtt (player) + captions.ass (burn-in)
-   rendering   renderer.render(spec)  ── LocalBlenderRenderer: python3 render_story.py (bpy, EEVEE ▶ Cycles)
-   assembling  ffmpeg: scene clips ▶ crossfades ▶ words ▶ music + voice ▶ story.mp4 (H.264+AAC) + poster.jpg
+   rendering   renderer.render(spec), STORY_RENDERER =
+                 modal   Modal app: every scene at once, each on its own GPU ▶ scene clips back
+                 remote  CPU renderer service (Docker): scenes ▶ and it also builds the video
+                 local   Blender on this machine (development, or a one-box setup)
+   assembling  music: lullaby composed for exactly that length, ducked under every line
+               ffmpeg: scene clips ▶ crossfades ▶ words ▶ music + voice ▶ story.mp4 (H.264+AAC) + poster.jpg
    done        /stories/:id plays it (with a captions track and the story's words below)
 ```
 
@@ -26,15 +29,17 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 | Claude writer (model, budget, retry, moderation) | `server/services/story-writer.js` |
 | Timeline, caption cues, WebVTT, ASS, ducking curve | `server/services/story-captions.js` |
 | Music-box lullaby (composer + tine synth + reverb + WAV) | `server/services/story-music.js` |
-| Voice per line (site TTS, offline, silent) | `server/services/story-voice.js` |
+| Voice per line (site TTS, offline), MP3 length without ffmpeg | `server/services/story-voice.js` |
 | Jobs: state machine, limits, sharing and approval | `server/services/story-jobs.js` (table `stories`, migration `0053_stories`) |
-| Pipeline (stages, progress) / worker core | `server/stories/pipeline.js`, `server/stories/worker.js` |
-| Render interface + local Blender renderer | `server/stories/renderer.js` |
+| Pipeline (stages, progress) / worker core / worker loop | `server/stories/pipeline.js`, `server/stories/worker.js`, `server/stories/loop.js` |
+| Renderers: interface + local Blender, remote/Modal client, scene clips | `server/stories/renderer.js`, `server/stories/remote-renderer.js`, `server/stories/clip.js` |
 | Felt-and-paper kit and scene renderer (Python) | `server/stories/blender/feltkit.py`, `server/stories/blender/render_story.py` |
 | ffmpeg assembly | `server/stories/assemble.js` |
+| Modal GPU app | `services/story-renderer/modal_app.py` |
+| CPU renderer service (fallback) | `services/story-renderer/server.js`, `spec.js`, `Dockerfile` |
 | Pages and APIs | `server/routes/stories.js`, `public/js/stories.js`, `public/css/stories.css` |
-| Worker process / command-line render | `scripts/story-worker.js`, `scripts/story-render.js` |
-| Tests | `tests/unit/story-builder.test.js`, `tests/unit/story-pipeline.test.js` |
+| Worker as its own process / command-line render | `scripts/story-worker.js`, `scripts/story-render.js` |
+| Tests | `tests/unit/story-builder.test.js`, `story-pipeline.test.js`, `story-renderer.test.js`, `story-modal.test.js` |
 
 ### 1. The story script
 
@@ -72,24 +77,32 @@ same word rules (`validateScript`) and the model classifier; one retry with the 
 
 Render engine: EEVEE first. Without a GPU it still runs headless through EGL + Mesa's llvmpipe (packages
 `libegl1 libegl-mesa0 libgl1-mesa-dri`). If EEVEE can't start (no libEGL), the renderer's probe falls back to Cycles
-on the CPU (16 samples + OpenImageDenoise). Frames are rendered **on twos** (every other frame, held for two, like
-stop-motion), at 1280×720, 24 fps out.
+on the CPU (16 samples + OpenImageDenoise). On Modal's NVIDIA GPUs EEVEE uses the driver's EGL; if that isn't
+available there, Cycles runs on the GPU (OptiX, else CUDA; `STORY_CYCLES_DEVICE=GPU`). Frames are rendered **on twos**
+(every other frame, held for two, like stop-motion), at 1280×720, 24 fps out. Each scene comes back as one small
+H.264 clip (`clip.js`, crf 16, 12 fps) whatever the renderer.
+
+Framing (fixed after the first sample): the camera sits at the animals' eye level and pitches down a touch, so they
+stand above the caption band; the lighthouse stands further back and smaller so its lamp stays in a push-in; walkers
+start inside the picture (at most 3 units from the middle, a short stroll), never at the frame's edge.
 
 ### 3–6. Voice, music, words, assembly
 
 - **Voice**: one clip per line, `STORY_VOICE=auto|service|local|silent`. `service` is the site's AI voice
   (`services/tts.js synthesize`, ctx `story`, narrator role, slow rate, same cache/limits/budget); `local` is SVOX
   Pico (en/de/es/fr/it) or eSpeak NG, slowed and warmed with ffmpeg — for development and as the fallback when the
-  service refuses. Durations are measured with ffprobe and **drive the timeline**: a title card, each scene as long
+  service refuses; with neither, the story fails at the voice stage (it never goes silent by accident). Durations are
+  measured (MP3s frame by frame in JS, anything else with ffprobe) and **drive the timeline**: a title card, each scene as long
   as its lines plus a little air, 0.7 s crossfades with no narration inside them, an end card.
 - **Music**: `story-music.js` composes a 3/4 waltz from the story id's seed: chord progressions, a stepwise melody
   that lands on chord tones, phrase form A A′ B A″, a cadence home; synthesised on music-box "tines" (inharmonic
   partials, fast-decaying highs), a Schroeder room reverb, fitted exactly to the video's length (the tempo flexes so
   the last bar lands on the end), faded in/out and ducked to ~38% under every line. Deterministic (tested).
 - **Words**: phrases of at most ~34 characters, two rows at a time, the line's time shared out by length; burned in
-  with libass in the site's own font (Bricolage Grotesque, from `public/fonts`) with a soft outline; the same cues
-  as `captions.vtt` for the player's captions track.
-- **Assembly**: one ffmpeg graph: each scene's frames ▶ exact scene length ▶ `xfade` chain ▶ fade in/out ▶ vignette
+  with libass in the site's own font (Bricolage Grotesque, from `public/fonts`) on a soft night-blue panel in a band at
+  the very bottom of the picture, below the characters; the same cues as `captions.vtt` for the player's captions
+  track.
+- **Assembly**: one ffmpeg graph: each scene's clip ▶ 24 fps ▶ exact scene length ▶ `xfade` chain ▶ fade in/out ▶ vignette
   ▶ words; music + each voice clip (`adelay` to its line) ▶ `amix` ▶ limiter; H.264 (crf 20) + AAC 160k,
   `+faststart`. The poster is a frame while the title is on screen.
 
@@ -115,24 +128,31 @@ stop-motion), at 1280×720, 24 fps out.
 
 ## Running it
 
-Worker machine needs: Node 22, `python3` (3.11+; bpy 5.x wheels are for Python 3.13) with `pip install bpy`,
-`ffmpeg` with libass, and for EEVEE without a GPU `libegl1 libegl-mesa0 libgl1-mesa-dri`. Optional offline voice:
-`libttspico-utils` and/or `espeak-ng`.
+The site runs the story worker loop **in its own process** when `STORY_BUILDER=1` (`server/index.js`; nothing else
+to start; `STORY_WORKER=external` hands it to `node scripts/story-worker.js` instead). The loop is light: one Claude
+call, the voice clips, the music, and one ffmpeg assembly (run with `nice` and two threads). Rendering goes to the
+renderer named by `STORY_RENDERER`.
 
 ```bash
-STORY_BUILDER=1 ANTHROPIC_API_KEY=… npm start          # the site, with /stories on
-node scripts/story-worker.js                            # the worker, beside it, same BRB_DATA_DIR
-node scripts/story-worker.js --once                     # just the next queued story
+# development, everything on one machine (needs python3.13 + bpy, ffmpeg; an offline voice: pico2wave or espeak-ng)
+STORY_BUILDER=1 ANTHROPIC_API_KEY=… npm start
 
-# Without the site: render a script (or an idea, with a key) straight to a folder
+# the Modal web API run locally on the CPU (same scene code as on Modal), and the site pointed at it
+pip install bpy==5.2.3 "fastapi[standard]" uvicorn
+STORY_RENDER_TOKEN=$(openssl rand -hex 24) python3 services/story-renderer/modal_app.py --serve 3482
+STORY_BUILDER=1 STORY_RENDERER=modal STORY_RENDER_URL=http://127.0.0.1:3482 STORY_RENDER_TOKEN=<same> npm start
+
+# without the site: render a script (or an idea, with a key) straight to a folder
 node scripts/story-render.js --script scripts/story-samples/lost-stars.json --out /tmp/story [--quality full|preview|tiny]
 node scripts/story-render.js --idea "a sleepy owl who counts the stars" --seconds 45 --out /tmp/owl
 ```
 
-The worker shares the site's SQLite file (WAL mode is fine with a second process on the same disk; never over a
-network file system). Settings: `STORY_MODEL`, `STORY_VOICE`, `STORY_QUALITY` (`full` 1280×720 · `preview` · `tiny`
-· `test`), `STORY_RENDERER` (`local`), `STORY_ENGINE` (`auto|eevee|cycles`), `STORY_RENDER_PROCS` (scenes rendered at
-once; 1–2), `STORY_PYTHON`, `STORY_POLL_MS`, `STORY_RENDER_RATIO` (for the wait estimate on the page).
+Settings: `STORY_BUILDER` (off by default), `STORY_DAILY_LIMIT` (2 a day per kid; grown-ups and staff twice that),
+`STORY_QUEUE_MAX` (20), `STORY_WORKER` (`inline` | `external`), `STORY_RENDERER` (`local` | `modal` | `remote`),
+`STORY_RENDER_URL`, `STORY_RENDER_TOKEN`, `STORY_MODEL`, `STORY_VOICE` (`auto` | `service` | `local`), `STORY_QUALITY`
+(`full` 1280×720 · `preview` · `tiny` · `test`), `STORY_ENGINE` (`auto|eevee|cycles`), `STORY_RENDER_PROCS`,
+`STORY_PYTHON`, `STORY_POLL_MS`, `STORY_RENDER_POLL_MS`, `STORY_RENDER_TIMEOUT_MS`, `STORY_RENDER_RATIO` (the
+wait estimate on the progress page: render seconds per video second; set 4 for Modal).
 
 ## Measured on this machine
 
@@ -151,6 +171,10 @@ The sandbox: 4 vCPU (x86-64), 15 GB RAM, **no GPU** (EEVEE through Mesa llvmpipe
 | Voice (offline, 5 lines) + music + captions | < 10 s |
 | ffmpeg assembly (720p, H.264 crf 20) | ~27 s for 47 s of video; the MP4 is ~12.7 MB |
 | Integration test (2 scenes, 128×72) | ~1–2 min |
+| Assembly in a container capped like a web instance | 0.5 CPU / 512 MB: **killed (out of memory)**; 0.5 CPU / 768 MB: 155 s; 1 CPU / 1 GB: 82 s |
+| End to end through the CPU renderer service in Docker (site on one port, container on another; 2 scenes, test size) | story done in 86 s; the service's work folder empty afterwards |
+| Modal web API served locally on the CPU (`modal_app.py --serve`, 2 scenes in parallel, test size) | clips back through the site's `STORY_RENDERER=modal` client (tests/unit/story-modal.test.js) |
+SAMPLE2_ROW
 
 The sample: `scripts/story-samples/lost-stars.json` ("Pip and the Lost Stars"), rendered with
 `node scripts/story-render.js --quality full`, offline voice (no TTS key in the sandbox); the script was written by
@@ -159,36 +183,68 @@ for.
 
 ## Production hosting
 
-What a story costs besides compute: Claude writes ~1.5k output tokens from ~3k input (about **$0.02–0.03** on
-Sonnet at the prices in `ai-budget.js`, plus the screening classifier, a fraction of a cent); the AI voice reads
-~600 characters (about **$0.01** at `TTS_USD_PER_1K_CHARS`). Rendering dominates.
+**Chosen: Modal, serverless GPUs, one per scene.** The site (Render web service, unchanged apart from env vars) keeps
+the job table, the worker loop, the voice and the assembly; Modal renders. Nothing has been deployed: there is no
+Modal account yet, and no Render service was created or changed.
 
-Rough options (prices are public list prices as remembered, late 2026 — **check them before buying**; the
-render times are from the measurements above, the GPU ones are estimates, not measured here):
+### Modal: deploy steps
 
-| Option | Render time for a 60 s story | Compute per story | Notes |
-| --- | --- | --- | --- |
-| CPU worker, 4 vCPU (like this sandbox; e.g. a Render 4 CPU instance ≈ $175/month) | ~75–100 min | ≈ $0.30 at full use; ~550 stories/month max | Simplest, same code. One-hour waits; one story at a time per box. |
-| CPU worker, dedicated 8–16 cores (e.g. Hetzner CCX/AX, €50–100/month) | ~30–50 min (llvmpipe scales with cores) | ≈ €0.05–0.10 | Cheapest per story at steady load; still slow. |
-| GPU on demand (serverless: Modal / RunPod, L4 or A10G ≈ $0.60–1.20/hour, per-second billing) | ~2–5 min (EEVEE on a real GPU is ~0.1–0.3 s a 720p frame, plus the ~0.2 s per-frame Python step) | ≈ $0.03–0.10 + cold start (bpy image ~1 GB: 30–60 s) | Best wait time; pay only when stories are made; needs the `RemoteRenderer` (below). |
-| GPU box rented by the hour (e.g. RTX 4090 ≈ $0.35–0.70/hour) | ~2–4 min | ≈ $0.02–0.05 while busy | Good for a known busy evening; idle hours cost the same. |
+1. Install the client and sign in (once, on the machine you deploy from):
+   `pip install modal` then `modal token new`.
+2. Make the shared secret (keep the value: the site needs the same one; never commit it):
+   `modal secret create story-renderer STORY_RENDER_TOKEN=$(openssl rand -hex 32)`
+3. Deploy from the repository root (the GPU type is read at deploy time; default L40S):
+   `STORY_GPU=L40S modal deploy services/story-renderer/modal_app.py`
+   (or `STORY_GPU=L4` / `STORY_GPU=A10G`). The first deploy builds the image (Blender 5.2 + ffmpeg, ~2 GB; a few
+   minutes); Modal prints the web URL, `https://<workspace>--oomba-story-renderer.modal.run`.
+4. Check it: `curl https://<workspace>--oomba-story-renderer.modal.run/health` → `{"ok":true,"busy":false,"engine":"modal-L40S"}`.
+5. On the site (Render dashboard → the web service → Environment), when the user is ready to open it:
+   - `STORY_RENDERER=modal`
+   - `STORY_RENDER_URL=https://<workspace>--oomba-story-renderer.modal.run`
+   - `STORY_RENDER_TOKEN=<the value from step 2>` (a secret env var)
+   - `STORY_RENDER_RATIO=4` (the wait the progress page promises)
+   - `STORY_DAILY_LIMIT=1` and `STORY_QUEUE_MAX=10` for the small group first
+   - the AI voice for the story's language (`TTS_ENABLED=1`, its key, the locale switched on at /admin/voices)
+   - last, `STORY_BUILDER=1`.
+6. The site's image now has ffmpeg and a CJK font (root `Dockerfile`): the next deploy carries them.
+7. Web instance size: assembling a 47 s story peaks between 512 MB and 768 MB (measured: killed at 512 MB, fine at
+   768 MB) on top of the site itself, so the web service needs **at least 1 GB, better 2 GB** (Render's current
+   `starter`, 512 MB, is too small; e.g. Render Standard, 2 GB). Measured assembly time: 82 s on 1 CPU, 155 s on 0.5 CPU.
 
-Per story all-in on the GPU path: roughly **$0.06–0.15** (Claude + voice + GPU). On a 4 vCPU CPU worker: about
-**$0.35** at full use, more when idle.
+What can't be checked without an account (built to Modal's documented API, modal 1.6; the module imports and the web
+API runs locally): the image build, EEVEE through the NVIDIA EGL driver (if it doesn't start, the probe falls back to
+Cycles on the GPU, slower but fine), cold-start time, and the real per-frame GPU time.
 
-**Recommendation.** Launch phase 1 behind `STORY_BUILDER=1` for a small group (families and teachers who opt in),
-with the daily limit at 1–2 per kid and a CPU worker: it works today and the hour's wait fits "make it after school,
-watch it at bedtime" (the page says how long it will take; people can leave and come back). Before opening it widely,
-add a `RemoteRenderer` that sends the render spec to a serverless GPU function and gets the frames (or the five scene
-clips) back: stories come back in minutes for a few cents, and nothing heavy runs next to the site.
+### Expected time and cost per story (estimates, not measured)
 
-Where it runs on Render: the site's SQLite file lives on the web service's own disk, and a Render disk attaches to one
-service only, so a separate Render background worker can't share the job table. Either run the (light) worker loop in
-the web service's machine as a second process and send the heavy render to a remote renderer (the recommended path),
-or move the job table behind a small HTTP API first. Do not render inside the web service on Render as it is today: a
-render pins every core for most of an hour and would starve the site. No Render configuration was changed for this.
+Each scene renders in its own container in parallel. A 60 s story is ~5 scenes of ~140 frames (on twos). EEVEE on an
+L40S at 720p with 4 samples is expected around 0.2–0.4 s a frame plus Blender start-up and shader compile (~15 s) and
+a cold container start (~20–40 s with the image cached).
 
-Phase 2 work, in order: a `RemoteRenderer` (POST the spec, get frames or scene clips
-back) so the worker can stay next to the database while rendering moves; a public gallery with moderation; more kit
-(interiors, weather, more animals); per-shot camera framing from the script; a re-render with the same script
-(different look) without paying Claude again.
+| GPU (`STORY_GPU`) | Modal list price (check before buying) | Time to rendered clips | GPU-seconds per story | GPU cost per story |
+| --- | --- | --- | --- | --- |
+| **L40S** (default) | ≈ $1.95 / hour | ~1.5–2.5 min | ~5 × 90 s | **≈ $0.25** |
+| A10G | ≈ $1.10 / hour | ~2–3 min | ~5 × 110 s | ≈ $0.17 |
+| L4 | ≈ $0.80 / hour | ~2.5–4 min | ~5 × 140 s | ≈ $0.16 |
+
+Add ~1.5 min on the site for voice + assembly, Claude ≈ $0.02–0.03 and the AI voice ≈ $0.01: **about 3–4 minutes and
+$0.20–0.30 a story on L40S.** The containers scale to zero 10 s after their scene (`scaledown_window`), so nothing is
+paid while no one makes stories. Measure the real numbers with the first few stories (the worker logs `render`
+seconds per story; Modal's dashboard shows GPU time) and switch to L4 if L40S buys little time.
+
+### Fallbacks
+
+- **CPU renderer service** (`STORY_RENDERER=remote`, `services/story-renderer/Dockerfile`, tested here in Docker):
+  one job at a time, the same token rules, and it builds the video too (so the web instance can stay small).
+  As a Render **Private Service** (Docker): root directory = repository root, Dockerfile path
+  `services/story-renderer/Dockerfile`, env `STORY_RENDER_TOKEN` (secret), health path `/health`, instance with
+  4 CPU / 8 GB (measured speed ≈ 80–100 s of render per second of video: a 60 s story in ~80–100 min); site env
+  `STORY_RENDERER=remote`, `STORY_RENDER_URL=http://<private-service-host>:<port>`, `STORY_RENDER_TOKEN`.
+- **Local** (`STORY_RENDERER=local`, the default): Blender on the site's own machine. Development only: in production
+  the site logs a warning, because a render takes every core for over an hour.
+
+## Next
+
+A public gallery with moderation; more kit (interiors, weather, more animals); per-shot framing from the script; a
+re-render of the same script with a new look without paying Claude again; once Modal numbers are known, set
+`STORY_RENDER_RATIO` from them.
