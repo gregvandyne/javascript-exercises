@@ -3446,6 +3446,17 @@
    "commit": "8516310"
   },
   {
+   "key": "csq/would-you-rather/online-public-2-n",
+   "game": "would-you-rather",
+   "chapter": "online",
+   "band": "2",
+   "state": "online-public-2-n",
+   "concept": "Public or private?",
+   "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
+   "capturedAt": "2026-11-07",
+   "commit": "69a392a"
+  },
+  {
    "key": "csq/would-you-rather/tech-1b-call-n",
    "game": "would-you-rather",
    "chapter": "tech",

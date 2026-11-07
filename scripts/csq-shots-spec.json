@@ -2339,5 +2339,22 @@
    "height": 520,
    "top": 103.5
   }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "online-public-2-n",
+  "chapter": "online",
+  "topic": "online",
+  "band": "2",
+  "level": 0,
+  "dilemma": "online-2",
+  "actions": [],
+  "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
+  "concept": "Public or private?",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  }
 ]
