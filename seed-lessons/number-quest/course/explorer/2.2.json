@@ -246,12 +246,12 @@
    "text": "Open Sum Racer. It opens on the Trading Post track, taking away big numbers only, and it stays there. Every question needs a trade. Win the race: for this one race, solve every gap by counting up.",
    "art": "trophy",
    "img": "nq/sum-racer/subtraction-track",
-   "alt": "Sum Racer on the Trading Post track, taking away: a big subtraction that needs a trade, four answers to pick from, the race under way.",
+   "alt": "Sum Racer's Trading Post track on a phone: question 2, a big take-away that needs a trade, four answers to pick from.",
    "view": [
-    50,
-    10.5,
-    49.5,
-    83
+    0,
+    0,
+    54.14,
+    100
    ]
   }
  ],

@@ -139,16 +139,6 @@
  },
  {
   "game": "packet-post",
-  "state": "packets-1b-split",
-  "chapter": "packets",
-  "band": "1b",
-  "level": 2,
-  "actions": [],
-  "concept": "Too big to send: the network cuts a message into numbered packets",
-  "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office."
- },
- {
-  "game": "packet-post",
   "state": "packets-1b-order",
   "chapter": "packets",
   "band": "1b",
@@ -183,16 +173,6 @@
  },
  {
   "game": "packet-post",
-  "state": "locks-1b-sort",
-  "chapter": "locks",
-  "band": "1b",
-  "level": 1,
-  "actions": [],
-  "concept": "Private or fine to share? Some things stay private",
-  "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases."
- },
- {
-  "game": "packet-post",
   "state": "locks-1b-built",
   "chapter": "locks",
   "band": "1b",
@@ -214,16 +194,6 @@
   "actions": [],
   "concept": "Who may know it? Only a trusted adult may know your passphrase",
   "alt": "Okay to Tell: a sorting round about who may hear what, where a passphrase is never fine to share."
- },
- {
-  "game": "packet-post",
-  "state": "locks-1b-backup",
-  "chapter": "locks",
-  "band": "1b",
-  "level": 5,
-  "actions": [],
-  "concept": "Keep a spare copy: a backup kept somewhere else",
-  "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not."
  },
  {
   "game": "packet-post",
@@ -370,21 +340,5 @@
   "actions": [],
   "concept": "Faked senders: a trick can fake its sender name, called spoofing",
   "alt": "A Pro trick card: the sender name looks friendly, but a faked name is exactly what spoofing means."
- },
- {
-  "game": "would-you-rather",
-  "state": "online-1b-first",
-  "chapter": "online",
-  "band": "1b",
-  "level": 0,
-  "actions": [
-   {
-    "topics": [
-     "online"
-    ]
-   }
-  ],
-  "concept": "Write a credit line / share or keep: weigh both sides before sharing",
-  "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it."
  }
 ]

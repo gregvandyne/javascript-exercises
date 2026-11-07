@@ -45,6 +45,9 @@
   .ep-node .ep-ico { position: absolute; left: -23px; top: -23px; width: 46px; height: 46px; border-radius: 50%; background: var(--ok-card); border: 3px solid var(--ok-edge); display: grid; place-items: center; font-size: 22px; }
   .ep-node.ep-here .ep-ico { outline: 4px solid var(--ep-lit); outline-offset: 2px; }
   .ep-node small { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); font-weight: 800; font-size: .72em; background: var(--ok-card); border-radius: 8px; padding: 1px 6px; white-space: nowrap; }
+  /* a place name rides above the road buttons (taps still reach them: nodes take no pointer events), so a road button next to
+     a long name never hides its last letters ("Post Offic") */
+  .ep-board .ep-node { z-index: 3; }
   .ep-link { position: absolute; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; border: 3px solid var(--ok-edge); background: var(--ok-card); color: var(--ok-text);
     display: grid; place-items: center; padding: 0; cursor: pointer; font: inherit; font-weight: 800; box-shadow: 0 3px 0 var(--ok-edge); z-index: 2; }
   .ep-link.ep-ok { background: var(--ep-go); color: var(--ep-ink); }

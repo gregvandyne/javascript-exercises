@@ -54,7 +54,7 @@
   .qr-timer.low i { background: linear-gradient(90deg, #ff7a2a, #e9465c); }
   [dir="rtl"] .qr-timer i { transform-origin: right center; }
   .qr-pad { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .qr-a { position: relative; min-height: 58px; border: 0; border-radius: 16px; color: #fff; font: 800 clamp(16px, 4.2vw, 24px)/1.15 inherit; font-family: inherit; padding: 8px 10px; display: flex; align-items: center; gap: 10px; text-align: start; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,.28); transition: transform .08s, box-shadow .08s, opacity .2s; }
+  .qr-a { position: relative; min-height: 58px; border: 0; border-radius: 16px; color: #fff; font: 800 clamp(16px, 4.2vw, 24px)/1.15 sans-serif; font-family: inherit; padding: 8px 10px; display: flex; align-items: center; gap: 10px; text-align: start; cursor: pointer; box-shadow: 0 6px 0 rgba(0,0,0,.28); transition: transform .08s, box-shadow .08s, opacity .2s; }
   .qr-a:active:not([disabled]) { transform: translateY(5px) scale(.98); box-shadow: 0 1px 0 rgba(0,0,0,.28); }
   .qr-a .sh { font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
   .qr-a .tx { flex: 1; overflow-wrap: anywhere; }
@@ -925,9 +925,9 @@ window.SoloBank = (function () {
     // Distractors: the same digit at the other three places (6 / 60 / 600 / 6,000), so a ones-place digit
     // never collapses two choices into the answer or into a nonsense 1.
     mkS('LOCK 1 · In ' + fmt(num) + ', what is the value of the ' + digs[pos] + '?', fmt(val), [1, 10, 100, 1000].map(function (p) { return digs[pos] * p; }).filter(function (v) { return v !== val; }).map(fmt));
-    // Lock 2 (Unit 2, the ledger gap): how many more to reach the whole?
+    // Lock 2 (Unit 2, the gap): how many more to reach the whole?
     a = rnd.int(320, 640); b = rnd.int(120, a - 120);
-    mkS('LOCK 2 · The ledger needs ' + a + ' stamps and holds ' + b + '. How many more stamps are needed?', a - b, [a + b, a - b + 20, a - b - 20]);
+    mkS('LOCK 2 · A stamp book needs ' + a + ' stamps and holds ' + b + '. How many more stamps are needed?', a - b, [a + b, a - b + 20, a - b - 20]);
     // Lock 3 (Unit 3, tray trouble): groups of groups.
     a = rnd.int(3, 9); b = rnd.int(3, 9);
     mkS('LOCK 3 · ' + a + ' trays hold ' + b + ' rolls each. How many rolls in all?', a * b, [a + b, a * b + a, a * b - b]);

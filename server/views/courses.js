@@ -5,6 +5,7 @@ import { html, raw, jsonData } from './html.js';
 import { coverArt } from './components.js';
 import { current } from '../i18n/index.js';
 import * as C from '../services/courses.js';
+import { DIAGRAM_TYPES, diagramSvg, diagramExtent } from './nq-diagrams.js';
 
 const BAND_INFO = { '1b': { key: 'explorer', emoji: '🧭' }, 2: { key: 'pro', emoji: '🚀' }, explorer: { key: 'explorer', emoji: '🧭' } };
 export const bandName = (t, band) => t(`courses.band.${BAND_INFO[band].key}`);
@@ -112,6 +113,21 @@ function mapStep(t, c, s, total, preview = false) {
   </li>`;
 }
 
+/** A course's unit stamps (Cyber Defenders' six Defender stamps): a unit's stamp is earned when every step of the
+ *  unit is done. Each unit header carries its own stamp, and the progress panel shows all of them at once. */
+const stampEarned = (ov, gr) => { const l = ov.list.filter(s => s.step.group === gr.id); return l.length > 0 && l.every(s => s.complete); };
+function stampBadge(t, name, earned, small = false) {
+  const tip = earned ? t('courses.map.stampEarned') : t('courses.map.stampToEarn');
+  return html`<span class="cstamp${earned ? ' is-earned' : ''}${small ? ' cstamp-s' : ''}" title="${tip}"><span class="cstamp-i" aria-hidden="true">${earned ? '🏅' : '🔖'}</span><span class="cstamp-n"${en}>${name}</span><span class="sr-only">: ${tip}</span></span>`;
+}
+function stampStrip(t, c, ov) {
+  const gs = C.groupsFor(c).filter(gr => gr.stamp);
+  if (!gs.length) return '';
+  const got = gs.filter(gr => stampEarned(ov, gr)).length;
+  return html`<div class="cstamps" id="cmap-stamps"><p class="cstamps-h"><b>${t('courses.map.stamps')}</b> · ${t('courses.map.stampsCount', { n: got, total: gs.length })}</p>
+      <ul class="cstamps-l">${gs.map(gr => html`<li><a href="#${gr.id}">${stampBadge(t, gr.stamp, stampEarned(ov, gr), true)}</a></li>`)}</ul></div>`;
+}
+
 /** The note a kid sees on the map after a locked step sent them back (?locked=<step key>): which step to
  *  finish first (the first open step not done yet). */
 export function lockedNote(t, ov, key) {
@@ -137,6 +153,7 @@ export function coursePage({ course: c, games, ov, canPick, preview = false, loc
         ${other ? html`<form method="post" action="/courses/${c.slug}/band"><button class="linkbtn" type="submit" name="band" value="${other}" id="band-switch">${t('courses.band.switch', { band: bandName(t, other) })}</button></form>` : ''}</div>
       <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${ov.total}" aria-valuenow="${ov.done}" aria-label="${t('courses.stepsDone', { n: ov.done, total: ov.total })}"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>
       <p class="cmap-count">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</p>
+      ${stampStrip(t, c, ov)}
       ${ov.next ? html`<a class="btn btn-primary btn-big cmap-go" href="/courses/${c.slug}/${ov.next.step.key}" id="cmap-go">▶ ${ov.done ? t('courses.continue') : t('courses.start')}</a>` : ''}
     </section>
     <aside class="cmap-build"><span class="cmap-build-e" aria-hidden="true">🛠️</span><div><h3>${t('courses.map.build.h')}</h3><p>${t('courses.map.build.text')}</p>
@@ -154,6 +171,7 @@ export function coursePage({ course: c, games, ov, canPick, preview = false, loc
         <header class="cmap-gh">
           <span class="cmap-cover cmap-cover-e" aria-hidden="true">${gr.emoji || '💡'}</span>
           <div><h3 id="${gr.id}-h">${gr.title ? html`<span${en}>${gr.title}</span>` : gr.titleKey ? t(gr.titleKey) : g ? g.title : gr.id}</h3>${sub ? html`<p class="muted small">${sub}</p>` : ''}</div>
+          ${gr.stamp ? stampBadge(t, gr.stamp, stampEarned(ov, gr)) : ''}
         </header>
         <ol class="cmap-steps">${list.map(s => mapStep(t, c, s, ov.total, preview))}</ol>
       </section>`;
@@ -384,6 +402,7 @@ function visualExtent(v) {
     return [v.label ? tTop(10, labelFs(v.label)) : shapes ? 14 : 18, shapes ? 44 : v.bad != null ? tBot(40, 3.4) : 33];
   }
   if (v.type === 'shapes') return [9, tBot(48, shapeNameFs(v))];
+  if (DIAGRAM_TYPES.has(v.type)) return diagramExtent(v); // grid, squares, lines, chart, table: views/nq-diagrams.js
   return [0, 56.25];
 }
 /** The diagram's content band [y0, y1] in the 100 x 56.25 space: the drawing with a margin, grown to hold
@@ -522,6 +541,7 @@ function visualSvg(v, f) {
     }).join('') + (v.label ? tx(50, 10, v.label, labelFs(v.label), 'middle', 700) : '');
   }
   else if (v.type === 'shapes') body = shapesBody(v, tx, ink);
+  else if (DIAGRAM_TYPES.has(v.type)) body = raw(diagramSvg(v));
   return raw(`<svg class="vf-svg" viewBox="0 ${f.y0} 100 ${f.fh}" role="img" aria-label="${String(v.label || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" preserveAspectRatio="xMidYMid meet"><rect x="0" y="0" width="100" height="56.25" fill="#FFFDF2"/>${body}</svg>`);
 }
 /** A shapes diagram's one name size: the longest name sets it (one text size per row). */
@@ -654,7 +674,7 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn, sl
       <h2 id="check-h">✅ ${t('courses.check.h')}</h2>
       ${s.checked ? html`<p class="cl-passed">✓ ${t('courses.check.done')}</p>
         ${c.slug === 'number-quest' ? html`<p class="nq-passed-tally"><img class="nq-tally-img" src="/img/csq/chars/tally.webp" alt="" width="219" height="353"> <span lang="en" dir="ltr">Tally is purring: check passed. The mission is open below.</span></p>` : ''}`
-        : html`<p class="muted">${t('courses.check.intro')}</p>
+        : html`<p class="muted">${t(step.game ? 'courses.check.intro' : 'courses.check.introTalk')}</p>
         ${result ? html`<div class="cl-result ${result.passed ? 'ok' : 'bad'}" role="status">${result.passed ? t('courses.check.passed', { score: result.score, total: 3 }) : t('courses.check.failed', { score: result.score, total: 3 })}
           ${result.passed ? '' : html`<ul${en}>${result.results.filter(r => !r.right).map(r => html`<li>${C.item(r.id).q} → <b>${r.text}</b></li>`)}</ul>`}</div>` : ''}
         ${signedIn ? checkForm(t, c, step, qs) : html`<p class="notice">${t('errors.api.signInFirst')}</p>`}`}

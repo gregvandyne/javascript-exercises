@@ -178,12 +178,12 @@
    "text": "Open Sum Racer. It opens on the Trading Post track, adding big numbers only, and it stays there. Every question needs a trade. Win the race: when a column passes ten, say the trade out loud.",
    "art": "trophy",
    "img": "nq/sum-racer/addition-track",
-   "alt": "Sum Racer on the Trading Post track, adding: a big addition that needs a trade, four answers to pick from, the race under way.",
+   "alt": "Sum Racer's Trading Post track on a phone: question 2, a big addition that needs a trade, four answers to pick from.",
    "view": [
-    50,
-    10.5,
-    49.5,
-    83
+    0,
+    0,
+    54.14,
+    100
    ]
   }
  ],

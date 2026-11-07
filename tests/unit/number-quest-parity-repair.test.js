@@ -48,7 +48,7 @@ test('Sum Racer missions are locked to the taught skill in units.json and in eve
     '1.2': 'level=9&lock=1',               // the Rounding Run: nothing but rounding questions
     '2.1': 'level=10&mode=add&lock=1',     // the Trading Post: big adds that need a trade
     '2.2': 'level=10&mode=sub&lock=1',     // the Trading Post: big take-aways that need a trade
-    '3.1': 'level=4&lock=1',               // 2, 5 and 10 times tables
+    '3.1': 'level=5&lock=1',               // every times table to 12 x 12 (6 x 7, 7 x 8 are taught)
     '3.2': 'level=6&lock=1',               // sharing (division)
     '3.3': 'level=7&lock=1',               // the mixed Grand Prix
   };

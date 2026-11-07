@@ -38,12 +38,12 @@
      ],
      "path": [
       [
-       13.0,
+       13,
        65.6
       ],
       [
        21.8,
-       59.0
+       59
       ],
       [
        30.7,
@@ -51,11 +51,11 @@
       ],
       [
        39.5,
-       59.0
+       59
       ],
       [
        48.4,
-       66.0
+       66
       ]
      ]
     }
@@ -65,31 +65,25 @@
    "title": "Too big for one envelope",
    "text": "A photo is too big for one envelope. Pim cuts it into small numbered pieces called packets, so each piece can travel on its own.",
    "art": "pixel",
-   "img": "csq/packet-post/packets-1b-split",
-   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office.",
-   "view": [
-    7.0,
-    30.7,
-    60.9,
-    64.0
-   ],
+   "img": "csq/packet-post/packets-1b-learn-n1",
+   "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
    "focus": [
     {
-     "cue": "One photo, three packets: each takes its own road",
+     "cue": "One picture, too big to send in one go",
      "box": [
-      10.0,
-      37.8,
-      41.9,
-      51.9
+      39.5,
+      2.6,
+      20.5,
+      37.5
      ]
     },
     {
-     "cue": "Packet 1 of 3: every packet wears its number",
+     "cue": "Cut into small numbered packets, each on its own road",
      "box": [
-      54.1,
-      35.7,
       10.8,
-      5.4
+      49,
+      78.4,
+      47
      ]
     }
    ]
@@ -101,7 +95,7 @@
    "img": "csq/packet-post/routes-1b-roads",
    "alt": "Many Roads: the town map offers more than one road between the same houses, and a closed road is not the end.",
    "view": [
-    7.0,
+    7,
     20.6,
     84.3,
     74.9
@@ -110,7 +104,7 @@
     {
      "cue": "Packets travel the roads from office to office",
      "box": [
-      10.0,
+      10,
       37.8,
       41.9,
       51.9
@@ -119,7 +113,7 @@
     {
      "cue": "If a road closes, another road can carry them",
      "box": [
-      54.0,
+      54,
       26.5,
       34.3,
       7.9
@@ -143,7 +137,7 @@
    "view": [
     5.4,
     30.4,
-    64.0,
+    64,
     65.5
    ],
    "focus": [
@@ -184,7 +178,7 @@
    "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
    "view": [
     5.6,
-    27.0,
+    27,
     82.1,
     67.7
    ],
@@ -194,7 +188,7 @@
      "box": [
       21.3,
       59.3,
-      8.0,
+      8,
       8.6
      ]
     },

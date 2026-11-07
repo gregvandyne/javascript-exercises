@@ -1301,15 +1301,15 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/locks-1b-backup",
+   "key": "csq/packet-post/locks-1b-backup-n1",
    "game": "packet-post",
    "chapter": "locks",
    "band": "1b",
-   "state": "locks-1b-backup",
-   "concept": "Keep a spare copy: a backup kept somewhere else",
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
+   "state": "locks-1b-backup-n1",
+   "concept": "a good spare copy, kept elsewhere",
+   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
+   "capturedAt": "2026-11-07",
+   "commit": "2700f45"
   },
   {
    "key": "csq/packet-post/locks-1b-built",
@@ -1367,17 +1367,6 @@
    "commit": "8516310"
   },
   {
-   "key": "csq/packet-post/locks-1b-sort",
-   "game": "packet-post",
-   "chapter": "locks",
-   "band": "1b",
-   "state": "locks-1b-sort",
-   "concept": "Private or fine to share? Some things stay private",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
    "key": "csq/packet-post/locks-1b-sort-n",
    "game": "packet-post",
    "chapter": "locks",
@@ -1387,6 +1376,17 @@
    "alt": "Sorting the mail: where you live and your mailbox key are Keep, a favorite book is Share. Next up: a joke you made up.",
    "capturedAt": "2026-11-07",
    "commit": "38a0b7d"
+  },
+  {
+   "key": "csq/packet-post/locks-1b-sort-n1",
+   "game": "packet-post",
+   "chapter": "locks",
+   "band": "1b",
+   "state": "locks-1b-sort-n1",
+   "concept": "share or keep: sort each fact",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
+   "capturedAt": "2026-11-07",
+   "commit": "2700f45"
   },
   {
    "key": "csq/packet-post/locks-1b-spare-n",
@@ -1554,6 +1554,17 @@
    "commit": "2f3e745"
   },
   {
+   "key": "csq/packet-post/packets-1b-learn-n1",
+   "game": "packet-post",
+   "chapter": "packets",
+   "band": "1b",
+   "state": "packets-1b-learn-n1",
+   "concept": "too big for one envelope: cut into packets",
+   "alt": "Break it up: a picture of an apple is too big to send in one go, so the network cuts it into small numbered packets.",
+   "capturedAt": "2026-11-07",
+   "commit": "95753ad"
+  },
+  {
    "key": "csq/packet-post/packets-1b-order",
    "game": "packet-post",
    "chapter": "packets",
@@ -1576,17 +1587,6 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/packet-post/packets-1b-split",
-   "game": "packet-post",
-   "chapter": "packets",
-   "band": "1b",
-   "state": "packets-1b-split",
-   "concept": "Too big to send: the network cuts a message into numbered packets",
-   "alt": "Break It Up: a message too big for one trip is cut into small numbered packets at the post office.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
-  },
-  {
    "key": "csq/packet-post/packets-1b-trip-n",
    "game": "packet-post",
    "chapter": "packets",
@@ -1607,6 +1607,17 @@
    "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
    "capturedAt": "2026-11-04",
    "commit": "8516310"
+  },
+  {
+   "key": "csq/packet-post/protocols-1b-sealed",
+   "game": "packet-post",
+   "chapter": "protocols",
+   "band": "1b",
+   "state": "protocols-1b-sealed",
+   "concept": "the padlock road keeps a secret sealed",
+   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
+   "capturedAt": "2026-11-07",
+   "commit": "d1020df"
   },
   {
    "key": "csq/packet-post/protocols-2-ack",
@@ -2588,6 +2599,61 @@
    "commit": "csq-content-fix"
   },
   {
+   "key": "csq/trick-inbox/ask-first-1b-af-1-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-1-all",
+   "concept": "a dare to post a friend’s photo",
+   "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-2-new",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-2-new",
+   "concept": "asking first, with credit",
+   "alt": "A letter from Ava from Class: “Can I put your owl drawing on our class poster? I will write your name under it. Is that okay with you?”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-3-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-3-all",
+   "concept": "passing off someone’s picture",
+   "alt": "A post from Free Art Page with both clues marked: “Copy any picture from this page and say you drew it.” and “Nobody ever checks!”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-4-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-4-all",
+   "concept": "a photo posted without your yes",
+   "alt": "A game chat from Max with both clues marked: “I posted that photo of you with spaghetti on your face.” and “I will not take it down.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/ask-first-1b-af-6-all",
+   "game": "trick-inbox",
+   "chapter": "ask-first",
+   "band": "1b",
+   "state": "ask-first-1b-af-6-all",
+   "concept": "a contest that skips your friends’ yes",
+   "alt": "A post from Video Star Contest with both clues marked: “for the whole world to see” and “No need to ask them first!”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
    "key": "csq/trick-inbox/boss-1b-c1",
    "game": "trick-inbox",
    "chapter": "boss",
@@ -2784,6 +2850,28 @@
    "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
+  },
+  {
+   "key": "csq/trick-inbox/keys-1b-kk-1-all",
+   "game": "trick-inbox",
+   "chapter": "keys",
+   "band": "1b",
+   "state": "keys-1b-kk-1-all",
+   "concept": "a best friend asks for your key",
+   "alt": "A game chat from Your Best Friend with both clues marked: “Can I have your mailbox key?” and “I promise I will never tell anyone.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/keys-1b-kk-4-all",
+   "game": "trick-inbox",
+   "chapter": "keys",
+   "band": "1b",
+   "state": "keys-1b-kk-4-all",
+   "concept": "a found tablet and a stranger",
+   "alt": "A game chat from Someone at the Park with both clues marked: “I found a tablet on the bench with your sticker on it!” and “Tell me its unlock code”.",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
   },
   {
    "key": "csq/trick-inbox/letters-1b-lt-1-all",
@@ -3105,6 +3193,72 @@
    "commit": "4866608"
   },
   {
+   "key": "csq/trick-inbox/private-1b-pf-1-all",
+   "game": "trick-inbox",
+   "chapter": "private",
+   "band": "1b",
+   "state": "private-1b-pf-1-all",
+   "concept": "me-facts asked together",
+   "alt": "A letter from Birthday Club with both clues marked: three me-facts asked together, and a surprise present as the bait.",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/private-1b-pf-3-all",
+   "game": "trick-inbox",
+   "chapter": "private",
+   "band": "1b",
+   "state": "private-1b-pf-3-all",
+   "concept": "a game friend asks for school and street",
+   "alt": "A game chat from MapGamePal with both clues marked: “Which school do you go to?” and “what street do you walk home on?”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/private-1b-pf-6-all",
+   "game": "trick-inbox",
+   "chapter": "private",
+   "band": "1b",
+   "state": "private-1b-pf-6-all",
+   "concept": "a name game that fishes for answers",
+   "alt": "A post from Name Maker with both clues marked: “Your first pet’s name plus your street name” and “tag five friends”.",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/rules-1b-rb-1-all",
+   "game": "trick-inbox",
+   "chapter": "rules",
+   "band": "1b",
+   "state": "rules-1b-rb-1-all",
+   "concept": "a trick to switch off the school filter",
+   "alt": "A game chat from ShortcutKid with both clues marked: “Here is a trick to switch it off.” and “Do not tell your teacher.”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/rules-1b-rb-3-all",
+   "game": "trick-inbox",
+   "chapter": "rules",
+   "band": "1b",
+   "state": "rules-1b-rb-3-all",
+   "concept": "a sign-up that says fib about your age",
+   "alt": "A post from Game Sign-up with both clues marked: “Just say you are 13.” and “Everyone does it!”",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
+   "key": "csq/trick-inbox/rules-1b-rb-5-debrief",
+   "game": "trick-inbox",
+   "chapter": "rules",
+   "band": "1b",
+   "state": "rules-1b-rb-5-debrief",
+   "concept": "a rule broken against you",
+   "alt": "The debrief: that is the move! That breaks the game’s rules against you, and it is never your fault. Report and block, save it, and tell a trusted adult.",
+   "capturedAt": "2026-11-07",
+   "commit": "b23626e"
+  },
+  {
    "key": "csq/trick-inbox/senders-2-sd-1-all",
    "game": "trick-inbox",
    "chapter": "senders",
@@ -3158,17 +3312,6 @@
    "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
    "capturedAt": "2026-11-06",
    "commit": "4866608"
-  },
-  {
-   "key": "csq/would-you-rather/online-1b-first",
-   "game": "would-you-rather",
-   "chapter": "online",
-   "band": "1b",
-   "state": "online-1b-first",
-   "concept": "Write a credit line / share or keep: weigh both sides before sharing",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
-   "capturedAt": "2026-11-04",
-   "commit": "2f3e745"
   },
   {
    "key": "csq/would-you-rather/online-cloud-2",

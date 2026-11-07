@@ -187,14 +187,8 @@
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Measures board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Then measure one real thing nearby and say its measure, unit and all.",
    "art": "trophy",
    "img": "nq/brain-board/measures-board",
-   "alt": "Brain Board in play: the Measures board, categories Centimeters, Kilograms, Liters, Add the measure and Which is longer, a centimeters question open.",
-   "kind": "mission",
-   "view": [
-    8.5,
-    26.5,
-    83,
-    41.5
-   ]
+   "alt": "Brain Board's Measures board on a phone: a Centimeters question for 100 points, four answers to pick from.",
+   "kind": "mission"
   }
  ],
  "check": [

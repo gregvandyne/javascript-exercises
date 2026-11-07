@@ -13,153 +13,124 @@
   },
   {
    "title": "Bars that speak",
-   "text": "Each bar's length is its count. Bananas sold 20, the longest bar on the chart. Compare the lengths first, then read the numbers to say exactly how many.",
+   "text": "Each bar's height is its count, read across to the scale. Bananas sold 20, the tallest bar on the chart. Compare the heights first, then read the numbers to say exactly how many.",
    "art": "table",
    "visual": {
-    "type": "bars",
-    "label": "A bar graph of fruit sold at a stall: apples 12, bananas 20, pears 16; the longest bar makes 20",
-    "rows": [
+    "type": "chart",
+    "label": "Fruit sold at the stall",
+    "max": 20,
+    "step": 4,
+    "bars": [
      {
       "label": "Apples",
-      "parts": [
-       {
-        "w": 0.6,
-        "label": "12"
-       }
-      ]
+      "value": 12
      },
      {
       "label": "Bananas",
-      "parts": [
-       {
-        "w": 1,
-        "label": "20"
-       }
-      ]
+      "value": 20
      },
      {
       "label": "Pears",
-      "parts": [
-       {
-        "w": 0.8,
-        "label": "16"
-       }
-      ]
+      "value": 16
      }
     ]
    },
    "focus": [
     {
-     "cue": "Apples: a bar of 12.",
+     "cue": "The scale counts up the side by 4s: 0, 4, 8, 12, 16, 20.",
      "box": [
-      5,
-      3.4,
-      54.9,
-      27.6
+      12.7,
+      21.5,
+      8.3,
+      62.1
      ]
     },
     {
-     "cue": "The longest bar: bananas, 20 sold.",
+     "cue": "The tallest bar: bananas, 20 sold.",
      "box": [
-      5,
-      33.6,
-      90.1,
-      27.6
+      47.4,
+      16.4,
+      17.3,
+      74.0
      ]
     },
     {
-     "cue": "Pears: 16 sold, longer than apples, shorter than bananas.",
+     "cue": "Pears sold 16: that is 4 more than the 12 apples.",
      "box": [
-      5,
-      63.9,
-      72.5,
-      27.5
+      72,
+      26.7,
+      16,
+      63.6
      ]
     }
    ]
   },
   {
-   "title": "Worked example: ribbons end to end",
-   "text": "Rough first: four short ribbons should make a bit more than a yard. Lay them on the line: a half, another half, then two quarters. The halves make a whole yard, and the quarters make another half.",
+   "title": "Worked example: the ribbon line plot",
+   "text": "Rough first: four short ribbons should make a bit more than a yard. The line plot puts an X over each ribbon: two at 1/4 yard and two at 1/2 yard. End to end, the halves make a yard and the quarters another half.",
    "art": "ruler",
    "kind": "example",
    "steps": [
-    "First ribbon: 1/2 yard, landing at the 1/2 mark",
-    "Second ribbon: 1/2 more, landing at 1 yard",
-    "Two ribbons of 1/4: another 1/2 yard",
+    "Two Xs at 1/2: two ribbons of 1/2 yard",
+    "Two Xs at 1/4: two ribbons of 1/4 yard",
+    "1/2 + 1/2 = 1 yard, and 1/4 + 1/4 = 1/2 yard",
     "In all: 1 1/2 yards"
    ],
    "visual": {
     "type": "numberline",
-    "label": "A number line from 0 to 2 yards with hops laying ribbons of 1/2, 1/2, 1/4 and 1/4 end to end, landing at 1 1/2",
+    "label": "A line plot of ribbon lengths from 0 to 1 yard: two Xs at 1/4 and two Xs at 1/2",
     "min": 0,
-    "max": 2,
+    "max": 1,
     "marks": [
      {
       "at": 0,
       "label": "0"
      },
      {
+      "at": 0.25,
+      "label": "1/4"
+     },
+     {
       "at": 0.5,
       "label": "1/2"
      },
      {
+      "at": 0.75,
+      "label": "3/4"
+     },
+     {
       "at": 1,
       "label": "1"
-     },
-     {
-      "at": 1.5,
-      "label": "1 1/2"
-     },
-     {
-      "at": 2,
-      "label": "2"
      }
     ],
-    "hops": [
+    "stacks": [
      {
-      "from": 0,
-      "to": 0.5,
-      "label": "+1/2"
+      "at": 0.25,
+      "n": 2
      },
      {
-      "from": 0.5,
-      "to": 1,
-      "label": "+1/2"
-     },
-     {
-      "from": 1,
-      "to": 1.5,
-      "label": "+1/4+1/4"
+      "at": 0.5,
+      "n": 2
      }
     ]
    },
    "focus": [
     {
-     "cue": "Lay the first ribbon: it reaches the 1/2 mark.",
+     "cue": "Two Xs at 1/4: two ribbons, each a quarter of a yard.",
      "box": [
-      3.8,
-      23.2,
-      27.6,
-      60.1
+      24.7,
+      45.6,
+      6.9,
+      37.6
      ]
     },
     {
-     "cue": "Two quarter ribbons in a row: another half yard.",
+     "cue": "Two Xs at 1/2: two ribbons, each half a yard.",
      "box": [
-      49,
-      23.2,
-      24.1,
-      38.9
-     ]
-    },
-    {
-     "cue": "The ribbons end at 1 1/2 yards in all.",
-     "box": [
-      67.6,
-      57.8,
-      8.8,
-      25.5
+      46.6,
+      45.6,
+      6.7,
+      37.6
      ]
     }
    ]
@@ -203,13 +174,13 @@
    "text": "Open Data Detective at Chart It and finish all 5 cases. Each case hands you a messy stall and asks for the chart that answers. Say what each bar counts before you compare any two.",
    "art": "trophy",
    "img": "nq/data-detective/chart-it",
-   "alt": "Data Detective, Chart It: a case's counts shown as a bar chart, the Bars view picked, a claim ready to pin.",
+   "alt": "Data Detective, Chart It, on a phone: fruit counts as a bar chart (Apple 6, Banana 4, Grape 7, Pear 2), the Bars view picked.",
    "kind": "mission",
    "view": [
-    1.5,
-    10,
-    53,
-    88
+    0,
+    0,
+    46.02,
+    100
    ]
   }
  ],

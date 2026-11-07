@@ -188,13 +188,7 @@
    "text": "Open Quest Race and finish one whole Practice Race, all the way to the podium. It opens straight on pattern questions, with no picking first. Call out the rule of each pattern before you answer, every single time.",
    "art": "trophy",
    "img": "nq/quest-race/pattern-race",
-   "alt": "Quest Race on the island course: a number pattern question on screen, four answers to pick from, the runners on the track below.",
-   "view": [
-    20,
-    54,
-    60,
-    44
-   ]
+   "alt": "Quest Race on a phone: a number pattern question and four answers to pick from, the race track just above."
   }
  ],
  "check": [

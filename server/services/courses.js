@@ -30,6 +30,7 @@ import * as games from './games.js';
 import { onAccountMerge } from './schools.js';
 
 import { COURSES, courseOfSlug } from './course-catalog.js';
+import { DIAGRAM_TYPES, cleanDiagram } from './diagrams.js';
 export { COURSES, courseOfSlug };
 export const getCourse = slug => COURSES.find(c => c.slug === slug) || null;
 
@@ -162,7 +163,7 @@ export function viewMisses(sl) {
 /** The shapes a `shapes` diagram draws. */
 export const SHAPE_KINDS = Object.freeze(['triangle', 'square', 'rectangle', 'pentagon', 'hexagon', 'rhombus', 'parallelogram', 'trapezoid']);
 /** The drawn diagram types a slide's `visual` may be. */
-export const VISUAL_TYPES = Object.freeze(['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes']);
+export const VISUAL_TYPES = Object.freeze(['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', ...DIAGRAM_TYPES]);
 /** One slide, cleaned: only the fields the viewer draws. */
 function cleanSlide(s) {
   const kind = ['example', 'words', 'mission'].includes(s && s.kind) ? s.kind : 'text';
@@ -225,6 +226,8 @@ function cleanSlide(s) {
         // Real drawn shapes (the geometry steps): each a regular outline with its name under it, and
         // optional right-angle marks in its corners.
         vis = { type: 'shapes', label, items: v.items.map(it => ({ shape: it.shape, name: str(it.name, 14), ...(it.corners ? { corners: true } : {}) })) };
+      } else if (DIAGRAM_TYPES.includes(v.type)) {
+        vis = cleanDiagram(v, label); // grid, squares, lines, chart, table (services/diagrams.js)
       }
     }
     if (vis) out.visual = vis;
@@ -390,7 +393,7 @@ function loadCyber(items) {
   const reg = readJson(path.join(CD, 'units.json'));
   const registry = readJson(path.join(CD, 'standards.json'));
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
-  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}) }));
+  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}), ...(u.stamp ? { stamp: u.stamp } : {}) }));
   const steps = {};
   const problems = {};
   for (const band of BANDS) {

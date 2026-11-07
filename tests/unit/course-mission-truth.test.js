@@ -15,7 +15,7 @@ const C = await import('../../server/services/courses.js');
 // Chapter sizes [Explorer, Pro] counted from the games' level data (seed-games/*.html) on 2026-11-05.
 const SIZE = {
   'robo-route': { sequences: [6, 6], loops: [7, 8], conditionals: [7, 7], variables: [6, 6], functions: [6, 7], debug: [7, 7], 'best-route': [5, 5], 'level-maker': [3, 3] },
-  'packet-post': { packets: [5, 5], routes: [4, 6], protocols: [2, 6], locks: [6, 7], tricks: [6, 10], ciphers: [3, 7] },
+  'packet-post': { packets: [5, 5], routes: [4, 6], protocols: [3, 6], locks: [6, 7], tricks: [6, 10], ciphers: [3, 7] },
   'data-detective': { sort: [6, 6], chart: [5, 5], claims: [6, 6], cleanup: [6, 6], models: [5, 5], fair: [4, 4], 'my-data': [3, 3] },
   'inside-the-machine': { parts: [6, 6], 'hw-sw': [5, 5], fixit: [7, 7], bits: [5, 7], gadget: [5, 5], 'design-lab': [3, 5] },
 };
@@ -26,7 +26,6 @@ const CHAIN_PHRASE = {
   'cs-quest 2 4.1': 'two Many Roads levels',
   'cs-quest 2 4.3': 'the 4 trick cards',
   'cyber-defenders 1b 1.1': 'all 4 levels of Many Roads',
-  'cyber-defenders 1b 4.1': 'Secret Messages: solve its 3 puzzles',
   'cyber-defenders 2 1.1': 'the 2 Many Roads levels',
 };
 // Steps whose game chapter was already required in full by an earlier step: the mission must say the

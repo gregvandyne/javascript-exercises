@@ -290,9 +290,9 @@
     {
      "game": {
       "explorer": {
-       "chapter": "Times Tables 2, 5 and 10",
-       "chapterTitle": "Snowy Summit track",
-       "params": "level=4&lock=1",
+       "chapter": "All Times Tables",
+       "chapterTitle": "Jungle Jam track",
+       "params": "level=5&lock=1",
        "slug": "sum-racer"
       }
      },

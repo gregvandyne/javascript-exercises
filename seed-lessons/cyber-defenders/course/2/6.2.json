@@ -40,7 +40,7 @@
      "cue": "Change the route, and it reaches the wrong door",
      "box": [
       2.6,
-      5.0,
+      5,
       95.1,
       79.7
      ]
@@ -117,18 +117,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. For each dilemma, name which of the three promises is at stake.",
+   "text": "Open Trick Inbox at Rule Breakers and sort all 6 messages. For each one, name the rule that is broken and which of the three promises it protects.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-download-1b",
-   "alt": "Would you rather: ask before every download, or never download anything?",
+   "img": "csq/trick-inbox/rules-1b-rb-3-all",
+   "alt": "A post from Game Sign-up with both clues marked: “Just say you are 13.” and “Everyone does it!”",
    "focus": [
     {
-     "cue": "Play Online: which promise is at stake?",
+     "cue": "Play Rule Breakers: which rule, which promise?",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      46.7,
+      44.7,
+      13.5
      ]
     }
    ]
@@ -140,8 +140,8 @@
   "cd-2-6.2-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "rules",
+  "params": "chapter=rules&band=2&lock=1"
  }
 }

@@ -18,8 +18,8 @@
    "img": "csq/packet-post/locks-1b-protect",
    "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
    "view": [
-    51.0,
-    20.0,
+    51,
+    20,
     41.6,
     36.7
    ],
@@ -81,33 +81,27 @@
   },
   {
    "title": "A spare copy, kept elsewhere",
-   "text": "A backup is a spare copy of your things, kept somewhere else, like photos saved in another place. A backup is for your things, never for your secrets.",
+   "text": "A backup is a spare copy of your things, kept somewhere else, like photos saved in another place. Your passphrase is different: it stays in your head, never in a copy.",
    "art": "box",
-   "img": "csq/packet-post/locks-1b-backup",
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
-   "view": [
-    5.0,
-    10.9,
-    86.3,
-    65.2
-   ],
+   "img": "csq/packet-post/locks-1b-backup-n1",
+   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
    "focus": [
     {
      "cue": "A copy in the family's online folder: a spare kept elsewhere",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      6.3,
+      94.3,
+      21.2
      ]
     },
     {
      "cue": "A good spare copy, or not a spare copy?",
      "box": [
-      54.1,
-      44.6,
-      21.2,
-      14.4
+      2.9,
+      73.3,
+      57.4,
+      20.3
      ]
     }
    ]
@@ -116,24 +110,24 @@
    "title": "The wrong person",
    "text": "Finding a tablet on a bench does not make it yours to open. A letter that asks for your mailbox key is the wrong person too: only you and a trusted adult may know it.",
    "art": "people",
-   "img": "csq/trick-inbox/letters-1b-lt-3-all",
-   "alt": "A letter from Post Office Team, “Your mailbox will close”, with clues marked: your mailbox key, and today.",
+   "img": "csq/trick-inbox/keys-1b-kk-4-all",
+   "alt": "A game chat from Someone at the Park with both clues marked: “I found a tablet on the bench with your sticker on it!” and “Tell me its unlock code”.",
    "focus": [
     {
-     "cue": "Anyone can type \"Post Office Team\" on a letter",
+     "cue": "Finding a tablet does not make it theirs to open",
      "box": [
-      29.6,
-      11.3,
-      40.0,
-      7.8
+      7.1,
+      40.3,
+      85.7,
+      22.4
      ]
     },
     {
-     "cue": "It asks for your mailbox key: no permission",
+     "cue": "A stranger asks for its code: no permission",
      "box": [
-      12.5,
-      47.3,
-      41.4,
+      7.1,
+      62.7,
+      51.6,
       13.5
      ]
     }
@@ -166,17 +160,17 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Trick Inbox at Prize Letters and sort all 6 letters. Tap every clue, then choose a move. Some letters ask for your mailbox key, but only you and a trusted adult may know it.",
+   "text": "Open Trick Inbox at Key Keepers and sort all 6 messages. Tap every clue, then choose a move. Friends, fixers and finders ask for your key, but only you and a trusted adult may know it.",
    "art": "trophy",
-   "img": "csq/trick-inbox/letters-1b-lt-1-all",
-   "alt": "A letter, “You won a tablet!”, with clues marked: you are our lucky winner; your mailbox key; in the next ten minutes.",
+   "img": "csq/trick-inbox/keys-1b-kk-1-all",
+   "alt": "A game chat from Your Best Friend with both clues marked: “Can I have your mailbox key?” and “I promise I will never tell anyone.”",
    "focus": [
     {
-     "cue": "Play Prize Letters: who may have your key?",
+     "cue": "Play Key Keepers: even a best friend asks",
      "box": [
       7.1,
-      37.7,
-      31.7,
+      36.4,
+      63.5,
       13.5
      ]
     }
@@ -190,7 +184,7 @@
  ],
  "game": {
   "slug": "trick-inbox",
-  "chapter": "letters",
-  "params": "chapter=letters&band=1b&lock=1"
+  "chapter": "keys",
+  "params": "chapter=keys&band=1b&lock=1"
  }
 }
