@@ -174,7 +174,7 @@ STYLES = {
         'line_min_px': 1.4,
         'line_frac': 0.05,               # ...but at most 5% of the object's height on screen
         'glow': 1.35,                    # emission strength of lamps, moon, windows (bloom above 1.0)
-        'beam': 0.42,
+        'beam': 0.5,
         'contact': 0.30,                 # contact shadow: Ink at 30% at night, 18% by day
         'samples': 8,
         'bloom': (1.0, 0.45),            # threshold, strength
@@ -194,6 +194,7 @@ STYLES = {
         'contact': 0.30,
         'samples': 1,
         'bloom': None,
+        'eyes': 1.25,                    # pixel art draws eyes bigger: at 320x180 bead eyes are one pixel
         'scale': 4,                      # render at 1/4 (1280x720 -> 320x180), upscale x4 nearest neighbour
         'dither': 0.045,                 # ordered (Bayer 4x4) dither spread, sRGB units
         # the fixed palette (32): Ink, the kit colours the map uses, and the night sky between its two keys
@@ -330,30 +331,23 @@ def bands(tok, strength, axis, power, name):
         L.new(tc.outputs['Object'], grad.inputs['Vector'])
         fac = grad.outputs['Fac']
     else:
+        # along the beam only (0 at the far end, 1 at the lamp): the cone's own edge is the hard edge
         sep = N.new('ShaderNodeSeparateXYZ')
         L.new(tc.outputs['Generated'], sep.inputs['Vector'])
-        lw = N.new('ShaderNodeLayerWeight')
-        lw.inputs['Blend'].default_value = 0.5
-        inv = N.new('ShaderNodeMath')
-        inv.operation = 'SUBTRACT'
-        inv.inputs[0].default_value = 1.0
-        L.new(lw.outputs['Facing'], inv.inputs[1])
-        m = N.new('ShaderNodeMath')
-        m.operation = 'MULTIPLY'
-        L.new(sep.outputs['Z'], m.inputs[0])
-        L.new(inv.outputs['Value'], m.inputs[1])
-        fac = m.outputs['Value']
+        fac = sep.outputs['Z']
     pw = N.new('ShaderNodeMath')
     pw.operation = 'POWER'
-    pw.inputs[1].default_value = max(0.6, power * 0.5)
+    pw.inputs[1].default_value = max(0.6, power * 0.5) if axis == 'radial' else 1.0
     L.new(fac, pw.inputs[0])
     r = N.new('ShaderNodeValToRGB')
     r.color_ramp.interpolation = 'CONSTANT'
     els = r.color_ramp.elements
     els[0].position, els[0].color = 0.0, (0, 0, 0, 1)
-    els[1].position, els[1].color = 0.18, (0.7, 0.7, 0.7, 1)
-    e = els.new(0.5)
-    e.color = (1, 1, 1, 1)
+    steps = ((0.18, 0.7), (0.5, 1.0)) if axis == 'radial' else ((0.38, 0.72), (0.62, 0.86), (0.82, 1.0))
+    els[1].position, els[1].color = steps[0][0], (steps[0][1],) * 3 + (1,)
+    for at, v in steps[1:]:
+        e = els.new(at)
+        e.color = (v, v, v, 1)
     L.new(pw.outputs['Value'], r.inputs['Fac'])
     k = N.new('ShaderNodeMath')
     k.operation = 'MULTIPLY'
@@ -413,6 +407,7 @@ def bands(tok, strength, axis, power, name):
     L.new(em.outputs['Emission'], mix.inputs[2])
     L.new(mix.outputs['Shader'], out.inputs['Surface'])
     K._blended(mat)
+    mat.use_backface_culling = True  # one layer of light, not the cone's front and back on top of each other
     mat['ink'] = False
     return mat
 
@@ -588,6 +583,11 @@ def finish(spec, sc_spec=None):
     for fn in K.ANIMS:  # pose everything at the start, so the line weights fit what the camera sees
         fn(0.0, 0)
     bpy.context.view_layer.update()
+    if CUR.get('eyes'):
+        for ob in bpy.data.objects:
+            if ob.type == 'MESH' and ob.name.startswith(('eye', 'glint')):
+                for v in ob.data.vertices:  # in the mesh, so the blink (which scales the object) still works
+                    v.co *= CUR['eyes']
     tod = (sc_spec or {}).get('time', 'night')
     contact_shadows(CUR['contact'] if tod in ('night', 'dusk') else CUR['contact'] * 0.6)
     if cam:

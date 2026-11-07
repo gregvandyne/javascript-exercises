@@ -79,6 +79,25 @@ def closeup(cam):
         look_at(lo, (p.x, p.y, 0.9))
 
 
+def tidy_frame(cam):
+    """Set dressing for a still: a hanging star cut by the frame edge is taken down for this shot (its thread
+    running out of the top of the frame is fine; half a star is not)."""
+    from bpy_extras.object_utils import world_to_camera_view
+    sc = bpy.context.scene
+    bpy.context.view_layer.update()
+    for piv in [o for o in bpy.data.objects if o.name.startswith('hstar') and o.parent is None]:
+        kids = list(piv.children_recursive)
+        stars = [k for k in kids if k.name.endswith('_star')]
+        cut = False
+        for st in stars:
+            for c in st.bound_box:
+                v = world_to_camera_view(sc, cam, st.matrix_world @ Vector(c))
+                if v.z > 0 and not (0.0 <= v.x <= 1.0 and 0.0 <= v.y <= 1.0):
+                    cut = True
+        for k in [piv] + kids:
+            k.hide_render = cut
+
+
 def render(path, spec, small=None):
     bpy.context.scene.render.filepath = path
     t0 = time.time()
@@ -94,6 +113,7 @@ def shoot(style, out, w, h, quick):
     R.build_scene(spec, SCENE)
     times['build'] = round(time.time() - t0, 2)
     pose(T)
+    tidy_frame(bpy.context.scene.camera)
     times['wide'] = render(os.path.join(out, f'{style}.png'), spec, os.path.join(out, 'pixel_320.png') if style == 'pixel' else None)
     sc = bpy.context.scene
     cam = sc.camera
@@ -102,6 +122,7 @@ def shoot(style, out, w, h, quick):
     bpy.context.view_layer.update()
     if style != 'felt':
         S.add_lines(cam, sc.render.resolution_x, sc.render.resolution_y)  # line weights for the new distance
+    tidy_frame(cam)
     times['closeup'] = render(os.path.join(out, f'{style}_fox.png'), spec, os.path.join(out, 'pixel_fox_320.png') if style == 'pixel' else None)
     return times
 
@@ -124,9 +145,9 @@ def turntable(style, out, w, h, quick, seconds=3.0, fps=24):
         p = fox.matrix_world.translation
         a = math.radians(-35) + math.radians(70) * (0.5 - 0.5 * math.cos(math.pi * 2 * f / n))
         cam.data.lens = 50
-        cam.location = (p.x + math.sin(a) * 5.0, p.y - math.cos(a) * 5.0, 1.5)
-        look_at(cam, (p.x, p.y, 0.85))
-        cam.data.dof.focus_distance = 5.0
+        cam.location = (p.x + math.sin(a) * 6.4, p.y - math.cos(a) * 6.4, 1.55)
+        look_at(cam, (p.x, p.y, 1.0))
+        cam.data.dof.focus_distance = 6.4
         bpy.context.view_layer.update()
         if style != 'felt' and f == 0:
             S.add_lines(cam, sc.render.resolution_x, sc.render.resolution_y)
@@ -158,7 +179,7 @@ def sprite_strip(out, quick):
     # pixel sprites exaggerate the face: at 64 px the kit's bead eyes would be one pixel
     for o in head.children:
         if o.name.startswith(('eye', 'glint')):
-            o.scale *= 1.6 if o.name.startswith('eye') else 1.4
+            o.scale *= 1.15
             o.location.z += 0.02
     head.scale = (1.2, 1.2, 1.2)  # and a bigger head (chibi, kit: 2-2.3 heads tall)
     for o in body.children:
@@ -178,10 +199,15 @@ def sprite_strip(out, quick):
     sc.render.resolution_x = sc.render.resolution_y = SPRITE
     sc.render.film_transparent = True
     sc.render.image_settings.color_mode = 'RGBA'
-    S.add_lines(cam, SPRITE, SPRITE)
+    for o in bpy.data.objects:  # no inner lines at 64 px (they turn into stray dots): the outline is drawn after
+        for m in [m for m in o.modifiers if m.name.startswith('ink')]:
+            o.modifiers.remove(m)
     legs = sorted([c for c in body.children if c.name.startswith('f_leg')], key=lambda o: o.location.x)
     arms = sorted([c for c in body.children if c.name.startswith('arm')], key=lambda o: o.location.x)
     tail = next(c for c in body.children if c.name.startswith('tail'))
+    # the tail swings out behind (to the left) so the silhouette says "fox" from this side
+    tail.location = (-0.12, 0.42, 0.3)
+    tail.rotation_euler.z = math.radians(150)
     leg0 = [l.location.copy() for l in legs]
     frames = []
     tmp = os.path.join(out, '_sprite.png')
@@ -201,7 +227,7 @@ def sprite_strip(out, quick):
             body.rotation_euler.x = -0.08  # leaning into the walk
             head.rotation_euler.y = 0.0
             head.rotation_euler.x = 0.04 * math.cos(ph * 2)
-            tail.rotation_euler.y = 0.25 * math.sin(ph)
+            tail.rotation_euler.y = 0.1 + 0.12 * math.sin(ph)
         bpy.context.view_layer.update()
         sc.render.filepath = tmp
         bpy.ops.render.render(write_still=True)
@@ -318,6 +344,7 @@ def main(argv):
     ap.add_argument('--quick', action='store_true')
     ap.add_argument('--loop', action='store_true')
     ap.add_argument('--no-sheet', action='store_true')
+    ap.add_argument('--loop-only', action='store_true', help='just the turntables (keeps the stills and timings)')
     a = ap.parse_args(argv)
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
@@ -329,14 +356,14 @@ def main(argv):
     tf = os.path.join(out, 'timings.json')
     if os.path.exists(tf):
         timings = json.load(open(tf))
-    for st in styles:
+    for st in ([] if a.loop_only else styles):
         timings[st] = shoot(st, out, w, h, a.quick)
         print(json.dumps({'style': st, **timings[st]}), flush=True)
-    if 'pixel' in styles:
+    if 'pixel' in styles and not a.loop_only:
         t0 = time.time()
         sprite_strip(out, a.quick)
         timings['sprite'] = round(time.time() - t0, 2)
-    if a.loop:
+    if a.loop or a.loop_only:
         for st in styles:
             timings[st]['loop'] = turntable(st, out, w, h, a.quick)
             print(json.dumps({'style': st, 'loop': timings[st]['loop']}), flush=True)
