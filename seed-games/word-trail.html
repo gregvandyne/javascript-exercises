@@ -1,4 +1,6 @@
 <title>Word Trail</title>
+<!-- Andika: a font made for early readers (a and g as children write them, l with a tail so it is never I) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@700&display=swap">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
 /* Word Trail: an official sight-word game for ages about 4-8. The Dolch words (Pre-primer to Grade 3) are five units
@@ -52,6 +54,7 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 #bg .sun{fill:var(--sun)}#bg .cl{fill:var(--cloud)}#bg .cl2{fill:var(--cloud2)}
 #bg .h1{fill:var(--hill1)}#bg .h2{fill:var(--hill2)}#bg .h3{fill:var(--hill3)}
 #bg .tex{mix-blend-mode:multiply;opacity:.55}
+.wt:not(.on-title) #bg .sunG{display:none}
 #bg .st{fill:none;stroke:var(--stitch);stroke-width:3;stroke-dasharray:9 8;stroke-linecap:round;opacity:.75}
 .dark #bg .st{opacity:.35}
 
@@ -69,7 +72,10 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .dark .chip{color:#fff6e4}
 
 /* the trail map */
-#map .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative}
+#map .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative;
+  -webkit-mask-image:linear-gradient(transparent,#000 18px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(transparent,#000 18px,#000 calc(100% - 24px),transparent)}
+/* a stone, card or tag cut by the top or bottom edge fades out until it is scrolled into view */
+#trail .edge{opacity:.12;transition:opacity .2s}
 #trail{position:relative;margin:0 auto;width:100%}
 #trail svg.path{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .path .road{fill:none;stroke:var(--path);stroke-linecap:round;stroke-linejoin:round}
@@ -102,6 +108,7 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .dock{display:flex;gap:10px;justify-content:center;padding:10px 12px var(--bot);z-index:5}
 .dock button{flex:1;max-width:240px;height:60px;border:none;border-radius:20px;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px}
 .dock svg{width:30px;height:30px}
+.dark .dock button{color:#fff6e4}
 
 /* big felt buttons */
 .btn{border:none;border-radius:22px;min-height:64px;padding:0 26px;font-size:24px;font-weight:900;letter-spacing:.01em;color:#fff;
@@ -150,7 +157,7 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .grid.six{grid-template-columns:1fr 1fr}
 /* the word card: a paper tag with a stitched edge; the word itself is plain, crisp, high-contrast type */
 .card{border:none;border-radius:22px;min-height:86px;padding:10px 12px;display:flex;align-items:center;justify-content:center;
-  font-family:var(--read);font-weight:800;font-size:clamp(34px,10vw,48px);line-height:1;color:var(--ink);letter-spacing:.01em;
+  font-family:var(--read);font-weight:700;font-size:clamp(34px,10vw,48px);line-height:1;color:var(--ink);letter-spacing:.01em;
   box-shadow:0 4px 0 var(--paperEdge),0 10px 18px rgba(80,50,20,.14);position:relative;transition:transform .12s}
 .card::after{content:"";position:absolute;inset:7px;border:2.5px dashed var(--cstitch);border-radius:16px;pointer-events:none}
 .card:active{transform:translateY(3px)}
@@ -161,17 +168,17 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .card.sel{box-shadow:0 0 0 5px var(--sky),0 4px 0 var(--paperEdge)}
 .card.done{opacity:.35;pointer-events:none}
 .card.dim{opacity:.55}
-.word{font-family:var(--read);font-weight:800;color:var(--ink)}
+.word{font-family:var(--read);font-weight:700;color:var(--ink)}
 .bigword{min-width:200px;min-height:130px;font-size:clamp(56px,17vw,84px);padding:16px 30px;border-radius:26px}
 .sentence{width:100%;max-width:480px;padding:18px 18px 20px;border-radius:20px;font-family:var(--read);font-size:clamp(26px,7.4vw,34px);font-weight:700;line-height:1.35;text-align:center}
 .blank{display:inline-block;min-width:3.2em;border-bottom:4px solid var(--ink2);margin:0 .12em;color:var(--mintD);line-height:1.1}
 .hl{color:#c4472e;text-decoration:underline;text-decoration-thickness:4px;text-underline-offset:6px}
 .slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .slot{width:52px;height:64px;border-radius:14px;border:3px dashed var(--pathEdge);background:rgba(255,250,240,.65);display:flex;align-items:center;justify-content:center;
-  font-family:var(--read);font-size:38px;font-weight:800;color:var(--ink);padding:0}
+  font-family:var(--read);font-size:38px;font-weight:700;color:var(--ink);padding:0}
 .slot.on{border-style:solid;border-color:var(--paperEdge);background-color:var(--paper)}
 .tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:420px}
-.tile{width:60px;height:66px;border:none;border-radius:16px;font-family:var(--read);font-size:38px;font-weight:800;padding:0;
+.tile{width:60px;height:66px;border:none;border-radius:16px;font-family:var(--read);font-size:38px;font-weight:700;padding:0;
   box-shadow:0 4px 0 var(--paperEdge),0 8px 12px rgba(80,50,20,.14);position:relative}
 .tile::after{content:"";position:absolute;inset:5px;border:2px dashed var(--cstitch);border-radius:11px}
 .tile.used{visibility:hidden}
@@ -192,9 +199,9 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .foot{padding:10px 16px var(--bot);min-height:96px;display:flex;align-items:flex-end;justify-content:center}
 .foot .btn{width:100%;max-width:460px}
 /* the feedback panel: a felt patch that slides up */
-.fb{position:absolute;left:0;right:0;bottom:0;padding:16px 16px var(--bot);border-radius:26px 26px 0 0;transform:translateY(105%);transition:transform .28s cubic-bezier(.3,1.3,.6,1);z-index:6;
+.fb{position:absolute;left:0;right:0;bottom:0;padding:16px 16px var(--bot);border-radius:26px 26px 0 0;transform:translateY(105%);visibility:hidden;transition:transform .28s cubic-bezier(.3,1.3,.6,1),visibility 0s .28s;z-index:6;
   box-shadow:0 -6px 22px rgba(60,40,20,.2)}
-.fb.on{transform:none}
+.fb.on{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.3,1.3,.6,1),visibility 0s}
 .fb.good{background-color:#d9f3e2}.fb.oops{background-color:#ffe6e0}
 .fb .row{display:flex;align-items:center;gap:12px;max-width:560px;margin:0 auto 12px}
 .fb .mini{width:74px;height:84px;flex:none;background:center bottom/contain no-repeat}
@@ -204,7 +211,7 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .fb .ans .word{font-size:34px;background-color:var(--paper);padding:2px 14px;border-radius:12px}
 .fb .ans .say{width:46px;height:46px}.fb .ans .say svg{width:24px;height:24px}
 .fb .btn{display:flex;width:100%;max-width:560px;margin:0 auto}
-.combo{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%) scale(.6);opacity:0;padding:12px 22px;border-radius:18px;background-color:#ff8a3d;color:#fff;
+.combo{position:absolute;left:50%;top:15%;transform:translate(-50%,-50%) scale(.6);opacity:0;padding:12px 22px;border-radius:18px;background-color:#ff8a3d;color:#fff;
   font-size:28px;font-weight:900;white-space:nowrap;pointer-events:none;z-index:7;box-shadow:var(--shadow)}
 .combo::after{content:"";position:absolute;inset:5px;border:2.5px dashed rgba(255,255,255,.6);border-radius:13px}
 .combo.on{animation:wt-combo 1.6s ease-out forwards}
@@ -226,7 +233,10 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
 .stat b svg{width:30px;height:30px}
 .stat span{display:block;font-size:14px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
 .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:460px}
-.wchip{border:none;padding:6px 14px;border-radius:12px;font-family:var(--read);font-size:24px;font-weight:800;box-shadow:0 3px 0 var(--paperEdge)}
+.wchip{border:none;padding:6px 14px;border-radius:12px;font-family:var(--read);font-size:24px;font-weight:700;box-shadow:0 3px 0 var(--paperEdge)}
+.bwrap{display:flex;flex-direction:column;align-items:center;gap:18px}
+.trow{display:flex;align-items:center;justify-content:center;gap:16px}
+.trow .hero{width:130px;height:150px;margin:0}
 .chest{width:min(260px,62vw);height:min(220px,52vw);background:center bottom/contain no-repeat;border:none;padding:0;filter:drop-shadow(0 10px 8px rgba(60,40,10,.25))}
 .chest.shake{animation:wt-shake .5s ease-in-out 2}
 .badge{width:150px;height:150px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:900;position:relative;box-shadow:var(--shadow)}
@@ -272,10 +282,16 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
   .say.big{width:84px;height:84px}.say.big svg{width:44px;height:44px}.opt{min-height:80px}.sentence{padding:10px 14px;font-size:24px}
   .pairs{grid-template-columns:auto 1fr auto 1fr;max-width:760px}.foot{min-height:76px;padding-top:6px}.endbox{gap:8px}
   .logo span{font-size:40px}.sub{margin-top:8px}.slot{height:54px}.tile{height:56px}
+  .stage.t-say,.stage.t-hear,.stage.t-build,.stage.t-speed,.stage.t-intro{flex-direction:row;gap:22px}
+  .t-intro .newtag{display:none}.t-intro .sentrow{max-width:420px}.t-say .bigword{min-width:160px}.t-say .opts{max-width:360px}
+  .t-speed .introrow{flex-direction:column}.t-speed .timer{min-width:0!important;width:110px;flex:none!important}
+  .t-hear .grid{grid-template-columns:1fr 1fr;max-width:440px}.bwrap{gap:10px}
+  .endbox .chips,.endbox .sub,.endbox .hero{display:none}.stat{padding:6px 10px}.stat b{font-size:24px}.endbox h1{font-size:28px}
+  .endbox.tre{flex-direction:row;flex-wrap:wrap;align-content:center}.endbox.tre h1{width:100%}.chest{height:120px;width:150px}.badge{width:100px;height:100px}.badge svg{width:36px;height:36px}.trow .hero{display:block;width:90px;height:100px}
 }
 </style>
 
-<div class="wt" id="wt">
+<div class="wt on-title" id="wt">
   <svg id="bg" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
       <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky0"/><stop offset="1" class="sky1"/></linearGradient>
@@ -284,7 +300,7 @@ body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-sel
     </defs>
     <rect width="400" height="800" fill="url(#gSky)"/>
     <rect class="tex" width="400" height="800" fill="url(#pPaper)"/>
-    <g transform="translate(330 268)"><circle class="sun" r="38"/><circle class="tex" r="38" fill="url(#pFelt)"/><circle class="st" r="30"/></g>
+    <g class="sunG" transform="translate(330 268)"><circle class="sun" r="38"/><circle class="tex" r="38" fill="url(#pFelt)"/><circle class="st" r="30"/></g>
     <g id="clouds"></g>
     <g id="hills"></g>
   </svg>
@@ -1016,7 +1032,7 @@ window.WTCore = (function () {
   var screen = 'title';
   function show(id) {
     ['title', 'map', 'lesson', 'done'].forEach(function (s) { $(s).hidden = s !== id; });
-    screen = id;
+    screen = id; root.classList.toggle('on-title', id === 'title');
   }
   function sheet(build) {
     closeSheet();
@@ -1133,6 +1149,15 @@ window.WTCore = (function () {
       tag.style.left = cp.x + 'px'; tag.style.top = (cp.y + (cur.kind === 'treasure' ? 56 : 44)) + 'px';
       tr.appendChild(tag);
     }
+    setTimeout(watchEdges, 0);
+  }
+  // Stones, cards and tags only partly in view fade out (they never sit half under the top bar or the buttons below).
+  var edgeObs = null;
+  function watchEdges() {
+    if (edgeObs) edgeObs.disconnect();
+    if (!window.IntersectionObserver) return;
+    edgeObs = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('edge', e.intersectionRatio < 0.98); }); }, { root: $('mapScroll'), threshold: [0, 0.5, 0.98, 1] });
+    Array.prototype.forEach.call($('trail').querySelectorAll('.node,.unitcard,.tag'), function (n) { edgeObs.observe(n); });
   }
   function scrollToCurrent(smooth) {
     var cur = C.current(save), p = cur && nodePos[cur.id], sc = $('mapScroll');
@@ -1182,11 +1207,11 @@ window.WTCore = (function () {
     if (!plan) { openMap(); return; }
     L = { plan: plan, kind: plan.kind, node: n, intro: plan.intro.slice(), introAt: 0, queue: plan.items.slice(), total: plan.items.length, done: 0,
       right: 0, mistakes: 0, combo: 0, best: 0, results: {}, item: null, answered: false, startedHearts: h };
-    // ask for the lesson's lines ahead, so the first ones start at once
-    var keys = ['ins.intro', 'ins.hear', 'ins.say', 'ins.fill', 'ins.build', 'ins.match', 'ins.speed'];
+    // ask for the new words' lines ahead, so the intro starts at once (only those: new audio is limited per minute,
+    // and the rest is usually in the server's warm cache already)
+    var keys = [];
     plan.intro.forEach(function (w) { keys.push('w.' + w, 's.' + w); });
-    plan.items.forEach(function (it) { keys.push('w.' + it.word); if (it.type === 'fill') keys.push('c.' + it.word); });
-    prefetch(keys.filter(function (k, i) { return keys.indexOf(k) === i; }));
+    if (keys.length) prefetch(keys);
     show('lesson'); $('lFb').className = 'fb'; setBar();
     if (plan.kind === 'review') speak('review.intro', { auto: true });
     if (plan.kind === 'practice') speak('practice.intro', { auto: true });
@@ -1207,7 +1232,7 @@ window.WTCore = (function () {
 
   // the intro of a new word: the word, its sound and an example sentence
   function introStep() {
-    var w = L.intro[L.introAt], st = $('lStage');
+    var w = L.intro[L.introAt], st = $('lStage'); st.className = 'stage col t-intro';
     setAsk('ins.intro', 'mascot_idle', function () { speakAll(['w.' + w, 's.' + w]); });
     st.innerHTML = '';
     st.appendChild(el('div', 'newtag', esc(t('ui.newWords').replace(/s$/, ''))));
@@ -1238,7 +1263,7 @@ window.WTCore = (function () {
     $('lFb').className = 'fb'; hush();
     if (!L.queue.length) { finish(); return; }
     L.item = L.queue.shift(); L.answered = false; L.tries = 0;
-    var it = L.item, st = $('lStage'); st.innerHTML = ''; foot(null);
+    var it = L.item, st = $('lStage'); st.innerHTML = ''; st.className = 'stage col t-' + it.type; foot(null);
     RENDER[it.type](it, st);
     setBar();
   }
@@ -1323,7 +1348,7 @@ window.WTCore = (function () {
         });
         tiles.appendChild(b);
       });
-      st.appendChild(slots); st.appendChild(tiles);
+      var bw = el('div', 'bwrap'); bw.appendChild(slots); bw.appendChild(tiles); st.appendChild(bw);
       speakAll(['ins.build', 'w.' + it.word], { auto: true });
     },
     match: function (it, st) {
@@ -1511,7 +1536,7 @@ window.WTCore = (function () {
     try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true, score: save.xp }); } catch (e) { /* offline */ }
     var words = Object.keys(L.results);
     show('done');
-    var box = $('doneBox'); box.innerHTML = '';
+    var box = $('doneBox'); box.innerHTML = ''; box.className = 'endbox col';
     var hero = el('div', 'hero' + (reduced() ? '' : ' bob')); bgOf(hero, 'mascot_cheer'); box.appendChild(hero);
     box.appendChild(el('h1', '', esc(t(kind === 'review' ? 'ui.reviewDone' : kind === 'practice' ? 'ui.practiceDone' : 'ui.lessonDone'))));
     var acc = Math.round(100 * L.right / Math.max(1, L.plan.items.length));
@@ -1543,6 +1568,7 @@ window.WTCore = (function () {
   function openTreasure(n) {
     show('done'); hush();
     var box = $('doneBox'), opened = save.treasures.indexOf(n.unit) >= 0;
+    box.className = 'endbox col tre';
     box.innerHTML = '';
     box.appendChild(el('h1', '', esc(t('ui.treasureT'))));
     box.appendChild(el('p', 'sub paper patch', esc(t('ui.unit', { n: n.unit + 1 }) + ' · ' + t('ui.u' + n.unit))));
@@ -1550,14 +1576,14 @@ window.WTCore = (function () {
     bgOf(chest, opened ? 'chest_open' : 'chest_closed');
     if (!ART.chest_closed) { chest.style.background = '#b5733f'; chest.style.borderRadius = '22px'; }
     box.appendChild(chest);
-    var hero = el('div', 'hero'); hero.style.height = '150px'; bgOf(hero, opened ? 'mascot_cheer' : 'mascot_idle'); box.appendChild(hero);
+    var trow = el('div', 'trow'), hero = el('div', 'hero'); hero.style.height = '150px'; bgOf(hero, opened ? 'mascot_cheer' : 'mascot_idle'); trow.appendChild(hero); box.appendChild(trow);
     var foot = $('doneFoot'); foot.innerHTML = '';
     var cont = el('button', 'btn go', esc(t('ui.continue'))); cont.dataset.act = 'done';
     cont.addEventListener('click', function () { openMap(); scrollToCurrent(true); });
     var reveal = function () {
       bgOf(chest, 'chest_open'); bgOf(hero, 'mascot_cheer');
       var badge = el('div', 'badge felt', IC.star + '<small>' + esc(t('ui.u' + n.unit)) + '</small>');
-      badge.style.backgroundColor = BADGE[n.unit]; box.insertBefore(badge, hero); hero.style.height = '110px';
+      badge.style.backgroundColor = BADGE[n.unit]; trow.insertBefore(badge, hero); hero.style.height = '';
       if (!reduced()) { badge.classList.add('pop'); sparkle(badge); }
       foot.appendChild(cont);
     };
@@ -1704,7 +1730,7 @@ window.WTCore = (function () {
     practice: function () { practice(); return testState(); },
     intro: function () { while (L && L.introAt < L.intro.length) { L.introAt++; } if (L) nextItem(); return testState(); },
     answer: function (wrong) { rightAction(!!wrong); return testState(); },
-    next: function () { var b = document.querySelector('#lFb.on [data-act="continue"], #lFoot [data-act="next"]'); if (b) b.click(); return testState(); },
+    next: function () { var b = document.querySelector(L && L.answered ? '#lFb [data-act="continue"]' : '#lFoot [data-act="next"]'); if (b) b.click(); return testState(); },
     finish: function () { var n = 0; while (L && screen === 'lesson' && n++ < 80) { if (L.introAt < L.intro.length) { window.__brbTest.intro(); continue; } if (!L.answered) rightAction(false); window.__brbTest.next(); } return testState(); },
     setSave: function (o) { save = C.norm(JSON.parse(JSON.stringify(o || {}))); store(); if (screen === 'map') { refreshBar(); drawMap(); } return testState(); },
     save: function () { return JSON.parse(JSON.stringify(save)); },
