@@ -53,6 +53,14 @@ settings, controls, style, finale, credits), `14-main.js` (scenes, loop), `15-te
 A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf`, wrapped in its own
 `(function () { ... })();` and ending with `JC.register({...})`. Paddle Smash (`sport-paddle.js`) is the reference.
 
+Paddle Smash is table tennis seen from above (a 3/4 view): the table runs up the screen on a phone (Cappy at the bottom)
+and turns sideways on a wide screen (Cappy on the left). It opts into the joystick (`stick: true`) and reads
+`ctx.axis` to run Cappy round his end; each ball coming to him shows where it bounces, a ring where to stand and a
+white circle that shrinks onto the ring for the moment to swing (Swing button / a tap / Space / A). Swinging at a ball
+still out of reach loses it, so mashing never wins. At 3 and 6 points the marmosets start a Fruit Frenzy (2, then 3
+balls; 2 with Easier champions) where every ball scores on its own. `test.sim(ctx, cfg, n)` runs whole matches with a
+play-bot of a given skill for the balance check (`tests/e2e/jungle-cup-paddle.spec.js`).
+
 ```js
 (function () {
   const S = { /* all state here, allocated once */ };

@@ -1,43 +1,126 @@
 // ======================================================================================================
-// PADDLE SMASH vs Jada the jaguar: table tennis seen from the side, under the jungle canopy.
-// The reference sport: it shows the whole module interface (docs/jungle-cup-plan.md "Sport module interface").
-//   Swing (tap anywhere / Space / A) when the ball reaches your hit zone. Early = a short shot, late = a long one.
-//   Perfect and Good swings fill the Pounce meter; when it is full your next hit is a super-fast Pounce.
-//   First to 7, win by 2. The first time, a quick warm-up against two marmosets (first to 3).
-// Court units: x = 0 is the net, the table top is height 0, Cappy plays from the left.
+// PADDLE SMASH vs Jada the jaguar: table tennis seen from above (a 3/4 view), on a clay court in a jungle clearing.
+//   Move Cappy round your end of the table (the joystick / arrows / pad) to the ring where the ball will be, then
+//   Swing (the Swing button, a tap, Space / A) as the shrinking circle meets the ring: Perfect / Good / Early / Late.
+//   Push the stick left or right as you swing to aim. Perfect and Good hits fill the Pounce meter; when it is full
+//   your next hit is a super-fast Pounce. Swinging at a ball that is still far away loses it (no button mashing).
+//   Fruit Frenzy: at 3 and at 6 points the marmosets toss extra fruit-coloured balls onto the table. Every ball
+//   counts: each one you get past Jada is your point, each one you miss is hers.
+//   First to 7, win by 2 (at 10-10 the next point wins). The first time, a warm-up against two marmosets (first to 3).
+// Court units: x runs across the table (-30..30), y along it (Jada's end -54, the net 0, Cappy's end +54), h is the
+// height above the table top (the floor is at FLOOR_H). Tall views draw the table up the screen (Cappy at the bottom);
+// wide views turn it sideways (Cappy on the left).
 // ======================================================================================================
 (function () {
-  const TABLE = 54, NET_H = 9, FLOOR = -46, HIT_X = 64, STAND_X = 79, DEAD_X = 108, GRAV = 430;
+  const TW = 30, TL = 54, NET_H = 7, GRAV = 170, BOUNCE = 0.78, FRICT = 0.8, FLOOR_H = -18, BACK = 92, SIDE = 50;
+  const YOU_HOME = 78, NBALL = 3, NTRAIL = 6;
+  const FRZ_COLS = ['#b6f05a', '#ff9b2e', '#ff6fb5'], PLAIN = '#fff8e8';
   const S = {
-    stage: 'match', you: 0, them: 0, target: 7, serve: 'you', serveN: 0, phase: 'serve', phaseT: 0, rally: 0, maxRally: 0, perfects: 0, whiffs: 0,
-    pounce: 0, pounceReady: false, swingT: 9, swingQ: '', themSwingT: 9, speed: 115,
-    ball: { x: 0, h: 0, vx: 0, vh: 0, dir: 1, live: false, bounced: 0, pounce: false, smash: false, decided: false, whiffed: false, willReturn: true, fromX: 0 },
-    trail: [], hitsYou: 0, lastQ: 0, auto: false, pointTo: '', k: 1, ox: 0, oy: 0, bg: null, bgGen: -1, bgK: 0, hint: 1, msg: '', jumpYou: 0, jumpThem: 0, diveThem: 0, diveYou: 0,
+    stage: 'match', you: 0, them: 0, target: 7, serve: 'you', serveN: 0, phase: 'serve', phaseT: 0, rally: 0, maxRally: 0,
+    perfects: 0, whiffs: 0, hits: 0, pounce: 0, pounceReady: false, swingT: 9, themSwingT: 9, speed: 80, lastQ: 0.5,
+    cx: 0, cy: YOU_HOME, cmoving: false, jx: 0, jy: -YOU_HOME, jmoving: false, jdive: 0, cdive: 0, jumpYou: 0, jumpThem: 0,
+    ax: 0, ay: 0, am: 0, frenzy: 0, fzDone: 0, fzYou: 0, fzThem: 0, tossAt: [0, 0, 0], tossWarn: [9, 9, 9], tossN: 0, sinceServe: 0,
+    hint: 1, hintRound: false, auto: false, bot: null, botMashT: 0, port: true, k: 1, ky: 1, kh: 1, ks: 1, ox: 0, oy: 0,
+    bg: null, bgGen: -1, bgK: 0, bgPort: null, ptYou: 0, ptThem: 0, ctx: null, reduced: false,
   };
-  for (let i = 0; i < 6; i++) S.trail.push({ x: 0, h: 0 });
-  const HINT = { align: 'center', col: '#fff8e8' }, WARM = { align: 'center', col: PAL.r4 };
-  const VA = { name: '', score: 0, of: 7, col: '#45c34e' }, VB = { name: '', score: 0, of: 7, col: '#ff9b2e' };
-  const zoneHalf = ctx => (ctx.easy ? 38 : 26) + (S.stage === 'warm' ? 6 : 0);
-  function baseSpeed(ctx) { return S.stage === 'warm' ? 85 : ctx.easy ? 96 : 112; }
-  function maxSpeed(ctx) { return S.stage === 'warm' ? 125 : ctx.easy ? 170 : 205; }
-  /** Launch the ball from (x0, h0) to bounce at xb (the far half) at speed vx (units/s, signed by direction). */
-  function launch(x0, h0, xb, vx) {
-    const b = S.ball, T = Math.abs(xb - x0) / Math.abs(vx);
-    b.x = x0; b.h = h0; b.vx = vx; b.dir = vx > 0 ? 1 : -1; b.vh = (GRAV * T * T / 2 - h0) / T;
-    b.live = true; b.bounced = 0; b.decided = false; b.whiffed = false; b.fromX = x0;
-    for (const p of S.trail) { p.x = x0; p.h = h0; }
+  const BALLS = [];
+  for (let i = 0; i < NBALL; i++) {
+    const tr = []; for (let j = 0; j < NTRAIL; j++) tr.push({ x: 0, y: 0, h: 0 });
+    BALLS.push({ i, live: false, fade: 0, x: 0, y: 0, h: 0, vx: 0, vy: 0, vh: 0, toward: 1, bounced: 0, age: 0, bx: 0, by: 0, bT: 0,
+      sweetX: 0, sweetY: 0, sweetT: 0, col: PLAIN, pounce: false, smash: false, whiffed: false, willReturn: true, offX: 0,
+      missFloat: false, botDT: 0, botSwung: false, botOX: 0, botOY: 0, trail: tr });
   }
-  function point(ctx, who) {
-    if (S.phase === 'point') return;
-    S.phase = 'point'; S.phaseT = 0; S.pointTo = who;
-    if (who === 'you') { S.you++; S.jumpYou = 0.6; ctx.sfx('cheer'); UI.float(ctx.W / 2, ctx.H * 0.3, t('pad.point'), PAL.r4, 2); }
-    else { S.them++; S.jumpThem = 0.6; ctx.sfx('miss'); UI.float(ctx.W / 2, ctx.H * 0.3, t(S.stage === 'warm' ? 'pad.pointMarm' : 'pad.pointJada'), '#ffb3d6', 1); }
+  const BOT_AXIS = { x: 0, y: 0, mag: 0 };
+  const HINT = { align: 'center', col: '#fff8e8' }, WARM = { align: 'center', col: PAL.r4 }, CHIP = { align: 'left', col: '#fff8e8' };
+  const VA = { name: '', score: 0, of: 7, col: '#45c34e' }, VB = { name: '', score: 0, of: 7, col: '#ff9b2e' };
+  const B_SW = { col: '#e04848', glow: false };
+  const SPR_C = { up: ['cappy_up', 'cappy_up_w'], right: ['cappy_right', 'cappy_right_w'] };
+  const WRAP = { str: '', w: 0, clear: null, n: 1 };
+  const COL = { table: '#2a8a5a', tableHi: '#5fd08a', tableLo: '#1f6a44', line: '#fff8e8', clay: '#c98a52', clayLo: '#b8744a', clayHi: '#d89a62' };
+  const rnd = () => Math.random();
+  const gauss = () => (rnd() + rnd() + rnd() - 1.5) * 2;          // about a normal spread (sd ~1)
+  const warm = () => S.stage === 'warm';
+  /** How far from Cappy's paddle a ball can be and still be hit (court units). */
+  const reach = ctx => (ctx.easy ? 21 : 16) + (warm() ? 4 : 0);
+  const jReach = ctx => (warm() ? 17 : ctx.easy ? 13 : 15);
+  const cSpeed = ctx => (ctx.easy ? 122 : 110);
+  const jSpeed = ctx => (warm() ? 70 : ctx.easy ? 78 : 100);
+  const baseSpeed = ctx => (warm() ? 72 : ctx.easy ? 84 : 108);
+  const maxSpeed = ctx => (warm() ? 96 : ctx.easy ? 128 : 175);
+  AUDIO.addSfx('padPerfect', (t, b) => { const P = AUDIO.prims; P.tone(b, 'square', 1320, t, 0.07, 0.09, 1320); P.tone(b, 'square', 1760, t + 0.06, 0.1, 0.08, 1760); });
+  AUDIO.addSfx('padToss', (t, b) => { const P = AUDIO.prims; P.tone(b, 'triangle', 660, t, 0.08, 0.1, 990); P.tone(b, 'square', 1200, t + 0.07, 0.05, 0.05, 1500); });
+  AUDIO.addSfx('padWhiff', (t, b) => { AUDIO.prims.noise(b, t, 0.12, 0.12, 'bandpass', 1400, 1.5, 700); });
+
+  /* ---------- the court on the screen ---------- */
+  function SX(x, y) { return S.port ? S.ox + x * S.k : S.ox - y * S.k; }
+  function SY(x, y, h) { return (S.port ? S.oy + y * S.ky : S.oy + x * S.ky) - h * S.kh; }
+  /** Snap a scale to whole screen pixels (crisp). */
+  function snap(v) { return Math.max(1 / VIEW.S, Math.floor(v * VIEW.S) / VIEW.S); }
+  function swingSize(ctx) { return Math.max(Math.round(ctx.tap * 1.5), 46); }
+  function layout(ctx) {
+    const W = ctx.W, H = ctx.H;
+    S.port = H > W * 1.05;
+    // keep Cappy's end clear of the joystick and the Swing button (tall views keep a strip for them at the bottom)
+    const stickD = ctx.stick && ctx.stick.baseR ? ctx.stick.baseR * 2 : 60;
+    const ctrl = ctx.touch ? Math.max(swingSize(ctx), stickD) + 12 : 22;
+    // the court is (SIDE + 6) across each way and (BACK + 4) along; the characters stand up to ~26 units tall
+    const AX = SIDE + 6, AL = BACK + 4;
+    if (S.port) {
+      const top = S.hintRound ? 84 : 56, k = Math.min((W - 6) / (AX * 2), (H - top - ctrl) / (AL * 2 * 0.8 + 26));
+      S.k = k; S.ky = k * 0.8; S.kh = k * 0.85;
+      const courtH = AL * 2 * S.ky + 26 * k;
+      S.ox = Math.round(W / 2);
+      S.oy = Math.round(top + 26 * k + AL * S.ky + Math.max(0, (H - top - ctrl - courtH) / 2));
+    } else {
+      const top = 34, bottom = ctx.touch ? 10 : 6, k = Math.min((W - 12) / (AL * 2), (H - top - bottom) / (AX * 2 * 0.8 + 26));
+      S.k = k; S.ky = k * 0.8; S.kh = k * 0.85;
+      S.ox = Math.round(W / 2);
+      S.oy = Math.round(top + 26 * k + AX * S.ky + Math.max(0, (H - top - bottom - (AX * 2 * S.ky + 26 * k)) / 2));
+    }
+    S.ks = Math.max(1, snap(S.k * (S.port ? 1.15 : 1.3)));
+  }
+
+  /* ---------- balls ---------- */
+  /** Send ball b from (x0, y0, h0) to bounce at (xb, yb), moving at v court units a second along the ground. */
+  function launch(b, x0, y0, h0, xb, yb, v) {
+    const T = Math.max(0.35, Math.hypot(xb - x0, yb - y0) / v);
+    b.x = x0; b.y = y0; b.h = h0; b.vx = (xb - x0) / T; b.vy = (yb - y0) / T; b.vh = (GRAV * T * T / 2 - h0) / T;
+    b.live = true; b.fade = 0; b.bounced = 0; b.age = 0; b.bx = xb; b.by = yb; b.bT = T; b.toward = yb > 0 ? 1 : -1;
+    b.whiffed = false; b.botSwung = false; b.smash = false; b.pounce = false; b.missFloat = false; b.offX = 0;
+    // the sweet spot: the top of the hop after the bounce (the table slows the ball a little), kept inside the court
+    const vh2 = -(b.vh - GRAV * T) * BOUNCE, vx2 = b.vx * FRICT, vy2 = b.vy * FRICT;
+    let ts = clamp(vh2 / GRAV, 0.12, 0.6);
+    const lim = 94 * b.toward, ys = yb + vy2 * ts;
+    if ((b.toward > 0 && ys > lim) || (b.toward < 0 && ys < lim)) ts = Math.max(0.08, (lim - yb) / vy2);
+    b.sweetT = T + ts; b.sweetX = clamp(xb + vx2 * ts, -SIDE + 4, SIDE - 4); b.sweetY = yb + vy2 * ts;
+    for (const p of b.trail) { p.x = x0; p.y = y0; p.h = h0; }
+    // the play-bot's human faults for this ball (where it stands, when it swings)
+    if (S.bot) { b.botOX = (rnd() - 0.5) * 2 * S.bot.pos; b.botOY = (rnd() - 0.5) * 2 * S.bot.pos; b.botDT = gauss() * S.bot.time; }
+  }
+  function liveCount() { let n = 0; for (const b of BALLS) if (b.live) n++; return n; }
+  function freeBall() { for (const b of BALLS) if (!b.live && b.fade <= 0) return b; for (const b of BALLS) if (!b.live) return b; return BALLS[0]; }
+  function pendingTosses() { let n = 0; for (let i = 0; i < S.tossN; i++) if (S.tossAt[i] > 0) n++; return n; }
+  /** A ball is dead: the point goes to `who`. */
+  function point(ctx, who, b) {
+    if (!b.live) return;
+    b.live = false; b.fade = 0.6;
+    if (who === 'you') { S.you++; S.ptYou++; if (S.frenzy) S.fzYou++; S.jumpYou = 0.5; }
+    else { S.them++; S.ptThem++; if (S.frenzy) S.fzThem++; S.jumpThem = 0.5; }
+    // Frenzy: each ball shows its own result (a ball Cappy missed already said so where he stood)
+    if (S.frenzy && (who === 'you' || !b.missFloat)) UI.float(SX(b.x, b.y), SY(b.x, b.y, Math.max(b.h, 0)) - 10, who === 'you' ? '+1' : t('pad.missShort'), who === 'you' ? PAL.r4 : '#ffb3d6');
+    ctx.sfx(who === 'you' ? 'cheer' : 'miss');
     S.maxRally = Math.max(S.maxRally, S.rally);
-    S.rally = 0; S.ball.smash = false;
+    if (!liveCount() && !pendingTosses()) endRally(ctx);
+  }
+  function endRally(ctx) {
+    S.phase = 'point'; S.phaseT = 0;
+    if (S.frenzy) UI.banner(t('pad.frenzyEnd', { a: S.ptYou, b: S.ptThem }), S.ptYou >= S.ptThem ? PAL.r4 : '#ffb3d6', 1.4);
+    else UI.float(ctx.W / 2, ctx.H * 0.3, t(S.ptYou ? 'pad.point' : warm() ? 'pad.pointMarm' : 'pad.pointJada'), S.ptYou ? PAL.r4 : '#ffb3d6', 2);
+    S.frenzy = 0; S.tossN = 0; S.rally = 0;
   }
   function gameWon() {
     const a = S.you, b = S.them, T = S.target;
-    if (S.stage === 'warm') return a >= T ? 'you' : b >= T ? 'them' : '';
+    if (warm()) return a >= T ? 'you' : b >= T ? 'them' : '';
     if (a >= T && a - b >= 2) return 'you';
     if (b >= T && b - a >= 2) return 'them';
     // a long deuce ends at 11: the next point after 10-10 wins (golden point)
@@ -45,268 +128,582 @@
     if (b >= 11 && b > a) return 'them';
     return '';
   }
-  function nextServe() {
+  /** Fruit Frenzy comes once someone reaches 3 (two balls) and again at 6 (three; two with Easier champions). */
+  function frenzyDue(ctx) {
+    if (warm()) return 0;
+    const top = Math.max(S.you, S.them);
+    if (S.fzDone === 0 && top >= 3) return 2;
+    if (S.fzDone === 1 && top >= 6) return ctx.easy ? 2 : 3;
+    return 0;
+  }
+  function nextServe(ctx) {
     S.serveN++;
     if (S.serveN % 2 === 0 || (S.you >= S.target - 1 && S.them >= S.target - 1)) S.serve = S.serve === 'you' ? 'them' : 'you';
-    S.phase = 'serve'; S.phaseT = 0; S.ball.live = false; S.speed = baseSpeed(S.ctx);
+    S.phase = 'serve'; S.phaseT = 0; S.speed = baseSpeed(ctx); S.ptYou = 0; S.ptThem = 0;
+    const n = frenzyDue(ctx);
+    if (n) {
+      S.frenzy = n; S.fzDone++; S.tossN = n - 1;
+      S.tossAt[0] = 1.5; S.tossAt[1] = 3.0; S.tossWarn[0] = S.tossWarn[1] = 9;
+      UI.banner(t('pad.frenzy'), '#ffd24a', 1.8); ctx.sfx('fanfare');
+    }
   }
   function startStage(ctx, stage) {
     S.stage = stage; S.you = 0; S.them = 0; S.target = stage === 'warm' ? 3 : 7; S.serve = 'you'; S.serveN = 0;
-    S.rally = 0; S.pounce = 0; S.pounceReady = false; S.phase = 'serve'; S.phaseT = 0; S.ball.live = false; S.speed = baseSpeed(ctx);
+    S.rally = 0; S.pounce = 0; S.pounceReady = false; S.phase = 'serve'; S.phaseT = 0; S.speed = baseSpeed(ctx);
+    S.frenzy = 0; S.fzDone = 0; S.tossN = 0; S.ptYou = 0; S.ptThem = 0;
+    for (const b of BALLS) { b.live = false; b.fade = 0; }
+    S.cx = 0; S.cy = YOU_HOME; S.jx = 0; S.jy = -YOU_HOME;
   }
-  /** Cappy's swing: judge the timing against the ball. */
+  /** Cappy's paddle: just in front of him, on his right. */
+  const hitX = () => S.cx + 4, hitY = () => S.cy - 7;
+  /** Cappy swings. */
   function swing(ctx) {
-    if (S.swingT < 0.22) return;
+    if (S.swingT < 0.26 || S.phase === 'over' || S.phase === 'point') return;
     S.swingT = 0;
-    ctx.sfx('whoosh');
-    if (S.phase === 'serve' && S.serve === 'you') { S.hint = Math.max(0, S.hint - 0.5); serveFrom('you', ctx, 0.7); return; }
-    const b = S.ball;
-    if (S.phase !== 'rally' || !b.live || b.dir > 0 || b.whiffed) return;
-    const Z = zoneHalf(ctx), d = b.x - (-HIT_X);
-    if (d > Z) {
-      // swung too early: the paddle has gone by, this ball is lost (so tapping over and over never wins points).
-      // Easier champions forgive a swing that is only a little early.
-      if (ctx.easy && d < Z * 1.6) return;
-      b.whiffed = true; S.whiffs++;
-      UI.float(S.sx(-HIT_X), S.sy(30), t('pad.early'), '#ffe9a0');
+    if (S.phase === 'serve') { if (S.serve === 'you') serveYou(ctx); return; }
+    const R = reach(ctx), hx = hitX(), hy = hitY();
+    // the closest ball in reach, after its bounce on Cappy's side
+    let best = null, bd = 1e9;
+    for (const b of BALLS) {
+      if (!b.live || b.toward < 0 || b.whiffed || b.bounced < 1 || b.h > 40) continue;
+      const d = Math.hypot(b.x - hx, b.y - hy);
+      if (d <= R && d < bd) { best = b; bd = d; }
+    }
+    if (best) { hitYou(ctx, best, R); return; }
+    // nothing in reach: a swing at a ball that is still coming (on Cappy's half, ahead of him) loses it, so tapping
+    // over and over never wins points (Easier champions forgive a swing that is only a little early)
+    let early = null, ed = 1e9;
+    for (const b of BALLS) {
+      if (!b.live || b.toward < 0 || b.whiffed || b.y < 0) continue;
+      const dy = hy - b.y, dx = Math.abs(b.x - hx);
+      if (dy > 0 && dy < R * 3.2 && dx < R * 1.6 && dy < ed) { early = b; ed = dy; }
+    }
+    ctx.sfx('padWhiff');
+    if (early && !(ctx.easy && ed < R * 1.5)) {
+      early.whiffed = true; S.whiffs++;
+      UI.float(SX(hx, hy), SY(hx, hy, 24), t('pad.early'), '#ffe9a0');
+    }
+  }
+  function hitYou(ctx, b, R) {
+    const dy = b.y - hitY(), dx = b.x - hitX();
+    const q = clamp(1 - Math.max(Math.abs(dy) / R, Math.abs(dx) / R * 0.75), 0, 1);
+    let word, col = '#fff8e8';
+    if (q > 0.62) { word = 'pad.perfect'; col = '#ffd24a'; S.perfects++; S.pounce = Math.min(1, S.pounce + 0.34); ctx.sfx('padPerfect'); }
+    else if (q > 0.34) { word = 'pad.good'; col = '#8ee070'; S.pounce = Math.min(1, S.pounce + 0.15); }
+    else word = dy < 0 ? 'pad.earlyHit' : 'pad.late';
+    S.lastQ = q; S.hint = Math.max(0, S.hint - 0.25); S.rally++; S.hits++;
+    S.speed = Math.min(maxSpeed(ctx), S.speed + (warm() ? 4 : ctx.easy ? 5 : 7));
+    // aim: a sideways push on the stick picks the side; no push = away from Jada
+    const side = Math.abs(S.ax) * S.am > 0.3 ? S.ax * S.am : (S.jx > 0 ? -1 : 1) * (0.4 + rnd() * 0.5);
+    let xb = clamp(side * 25 + (rnd() - 0.5) * 6, -27, 27), yb = -(18 + q * 24), v = S.speed * (0.85 + 0.35 * q), h0 = 10 + q * 4;
+    if (q <= 0.34) { yb = -(14 + rnd() * 10); v *= 0.85; h0 = 16; }   // a weak hit floats up short: easy to smash
+    const pounce = S.pounceReady && q > 0.2;
+    if (pounce) {
+      S.pounceReady = false; S.pounce = 0; word = 'pad.pounce'; col = '#ff9b2e';
+      v = warm() ? 150 : ctx.easy ? 170 : 200; yb = -44; h0 = 9; ctx.sfx('pounce');
+      UI.burst(SX(b.x, b.y), SY(b.x, b.y, b.h), 14, '#ff9b2e', 70);
+    } else if (S.pounce >= 1) S.pounceReady = true;
+    UI.float(SX(b.x, b.y), SY(b.x, b.y, b.h + 16), t(word), col);
+    ctx.sfx('tick'); UI.burst(SX(b.x, b.y), SY(b.x, b.y, b.h), 5, '#fff8e8', 40);
+    launch(b, b.x, b.y, Math.max(6, Math.min(b.h, 20)), xb, yb, v);
+    b.pounce = pounce; decideThem(ctx, b, q);
+  }
+  /** Jada (or a marmoset) decides, as the ball leaves Cappy's paddle, whether this one comes back. */
+  function decideThem(ctx, b, q) {
+    let p = warm() ? 0.86 : ctx.easy ? 0.88 : 0.97;
+    if (q > 0.62) p -= warm() ? 0.08 : 0.05;
+    if (S.rally > 10) p -= (S.rally - 10) * 0.03;
+    if (b.pounce) p = warm() ? 0.05 : ctx.easy ? 0.1 : 0.2;
+    b.willReturn = rnd() < clamp(p, 0.04, 0.97);
+    // a ball she won't get: she runs the wrong way a little
+    b.offX = b.willReturn ? 0 : (rnd() < 0.5 ? -1 : 1) * (jReach(ctx) + 6);
+  }
+  function serveYou(ctx) {
+    S.hint = Math.max(0, S.hint - 0.4);
+    const b = freeBall();
+    b.col = S.frenzy ? FRZ_COLS[0] : PLAIN;
+    const side = Math.abs(S.ax) * S.am > 0.3 ? S.ax * S.am : (rnd() < 0.5 ? -1 : 1) * 0.5;
+    launch(b, hitX(), hitY(), 14, clamp(side * 22, -24, 24), -(26 + rnd() * 14), S.speed * 0.9);
+    decideThem(ctx, b, 0.5);
+    ctx.sfx('tick'); startRally();
+  }
+  function serveThem(ctx) {
+    const b = freeBall();
+    b.col = S.frenzy ? FRZ_COLS[0] : PLAIN;
+    shotAtYou(ctx, b, S.jx - 4, S.jy + 7, 14, 0.9);
+    S.themSwingT = 0; ctx.sfx('tock'); startRally();
+  }
+  function startRally() { S.phase = 'rally'; S.phaseT = 0; S.rally = 0; S.sinceServe = 0; }
+  /** A shot from Jada's side to Cappy's: it makes him move (sideways, and short or long). */
+  function shotAtYou(ctx, b, x0, y0, h0, mul) {
+    const spread = warm() ? 16 : ctx.easy ? 20 : Math.min(28, 20 + S.rally * 2);
+    const away = Math.abs(S.cx) > 6 && rnd() < 0.65 ? (S.cx > 0 ? -1 : 1) : (rnd() < 0.5 ? -1 : 1);
+    const xb = away * spread * (0.35 + 0.65 * rnd());
+    const long = warm() ? S.rally % 2 === 1 : rnd() < 0.5;
+    let yb = long ? 38 + rnd() * 10 : 14 + rnd() * 10, v = S.speed * (0.95 + rnd() * 0.12) * mul, smash = false;
+    if (!warm() && !S.frenzy && (S.lastQ <= 0.34 ? rnd() < 0.55 : S.lastQ <= 0.62 && !ctx.easy && rnd() < 0.25)) {
+      v = Math.min(200, S.speed * 1.3); yb = 38 + rnd() * 8; smash = true;
+      UI.float(SX(x0, y0), SY(x0, y0, 30), t('pad.smash'), '#ff9b2e');
+    }
+    launch(b, x0, y0, h0, xb, yb, v);
+    b.smash = smash;
+  }
+  function hitThem(ctx, b) {
+    S.themSwingT = 0; ctx.sfx('tock'); UI.burst(SX(b.x, b.y), SY(b.x, b.y, b.h), 5, '#fff8e8', 40);
+    S.lastQ = S.lastQ || 0.5;
+    shotAtYou(ctx, b, b.x, b.y, Math.max(6, Math.min(b.h, 20)), 1);
+  }
+  /** A marmoset tosses a fruit ball in from the side of the table (Fruit Frenzy). */
+  function toss(ctx, i) {
+    const b = freeBall(), side = i % 2 ? 1 : -1, x0 = side * (TW + 14);
+    b.col = FRZ_COLS[Math.min(i + 1, 2)];
+    launch(b, x0, -6, 22, -side * (6 + rnd() * 14), 22 + rnd() * 18, ctx.easy ? 70 : 88);
+    ctx.sfx('padToss'); UI.float(SX(x0, -6), SY(x0, -6, 34), t('pad.toss'), b.col);
+  }
+
+  /* ---------- the play-bot (test.auto and the balance check): it really moves and swings ---------- */
+  function botThink(dt, ctx) {
+    const cfg = S.bot; BOT_AXIS.x = 0; BOT_AXIS.y = 0; BOT_AXIS.mag = 0;
+    if (S.phase === 'serve') { if (S.serve === 'you' && S.phaseT > 0.5) swing(ctx); return; }
+    if (cfg.mash) { S.botMashT += dt; if (S.botMashT > 0.2) { S.botMashT = 0; swing(ctx); } if (cfg.still) return; }
+    let tb = null, tl = 1e9;
+    for (const b of BALLS) {
+      if (!b.live || b.toward < 0 || b.whiffed || b.age < cfg.react) continue;
+      const left = b.sweetT - b.age;
+      if (left > -0.3 && left < tl) { tb = b; tl = left; }
+    }
+    let gx = 0, gy = YOU_HOME;
+    if (tb) {
+      gx = tb.sweetX - 4 + tb.botOX; gy = tb.sweetY + 7 + tb.botOY;
+      if (!cfg.mash && !tb.botSwung && tb.age >= tb.sweetT + tb.botDT) { tb.botSwung = true; S.swingT = 9; swing(ctx); }
+    }
+    const dx = gx - S.cx, dy = gy - S.cy, d = Math.hypot(dx, dy);
+    if (d > 0.5) {
+      const ax = dx / d, ay = dy / d;
+      // the bot pushes the screen stick: turn court directions back into screen ones
+      if (S.port) { BOT_AXIS.x = ax; BOT_AXIS.y = ay; } else { BOT_AXIS.x = -ay; BOT_AXIS.y = ax; }
+      BOT_AXIS.mag = Math.min(1, d / 6) * (cfg.speed || 1);
+    }
+  }
+
+  /* ---------- update ---------- */
+  function readAxis(ctx) {
+    const a = S.bot ? BOT_AXIS : ctx.axis;
+    if (!a || !a.mag) { S.ax = 0; S.ay = 0; S.am = 0; return; }
+    const l = Math.hypot(a.x, a.y) || 1, x = a.x / l, y = a.y / l;
+    if (S.port) { S.ax = x; S.ay = y; } else { S.ax = y; S.ay = -x; }
+    S.am = a.mag;
+  }
+  function moveCappy(dt, ctx) {
+    readAxis(ctx);
+    S.cmoving = S.am > 0.05;
+    if (!S.cmoving) return;
+    const v = cSpeed(ctx) * S.am;
+    S.cx = clamp(S.cx + S.ax * v * dt, -SIDE, SIDE);
+    S.cy = clamp(S.cy + S.ay * v * dt, TL + 6, BACK - 2);
+  }
+  function moveJada(dt, ctx) {
+    // the most urgent ball coming to Jada's side; else drift back to the middle
+    let tb = null, tl = 1e9;
+    for (const b of BALLS) { if (!b.live || b.toward > 0) continue; const left = b.sweetT - b.age; if (left > -0.2 && left < tl) { tb = b; tl = left; } }
+    let gx = 0, gy = -YOU_HOME;
+    if (tb && tb.age > 0.18) { gx = tb.sweetX + 4 + tb.offX; gy = tb.sweetY - 7; }
+    const dx = gx - S.jx, dy = gy - S.jy, d = Math.hypot(dx, dy), sp = jSpeed(ctx) * (tb ? 1 : 0.5);
+    S.jmoving = d > 1;
+    if (d > 0.5) { const s = Math.min(d, sp * dt) / d; S.jx = clamp(S.jx + dx * s, -SIDE, SIDE); S.jy = clamp(S.jy + dy * s, -BACK + 2, -TL - 6); }
+  }
+  function stepBall(dt, ctx, b) {
+    if (!b.live) {
+      if (b.fade > 0) { b.fade -= dt; b.x += b.vx * dt * 0.5; b.y += b.vy * dt * 0.5; b.vh -= GRAV * dt; b.h = Math.max(FLOOR_H, b.h + b.vh * dt); }
       return;
     }
-    if (d < -Z) return;
-    hitYou(ctx, d / Z);
-  }
-  function hitYou(ctx, s) {   // s: -1 (late) .. 1 (early)
-    const q = 1 - Math.abs(s), b = S.ball;
-    let word = 'pad.ok', col = '#fff8e8';
-    if (q > 0.72) { word = 'pad.perfect'; col = '#ffd24a'; S.perfects++; S.pounce = Math.min(1, S.pounce + 0.34); }
-    else if (q > 0.38) { word = 'pad.good'; col = '#8ee070'; S.pounce = Math.min(1, S.pounce + 0.15); }
-    S.lastQ = q; S.swingQ = word; S.hint = Math.max(0, S.hint - 0.2);
-    S.rally++; S.speed = Math.min(maxSpeed(ctx), S.speed + 6);
-    let vx = S.speed * (0.9 + 0.3 * q), xb = 36 - s * 18, h0 = 12 + (s < 0 ? 6 : 0);
-    b.pounce = false; b.smash = false;
-    if (S.pounceReady) { S.pounceReady = false; S.pounce = 0; b.pounce = true; vx = ctx.easy ? 250 : 285; xb = 46; h0 = 16; word = 'pad.pounce'; col = '#ff9b2e'; ctx.sfx('pounce'); UI.burst(S.sx(-HIT_X), S.sy(b.h), 14, '#ff9b2e', 70); }
-    else if (S.pounce >= 1) S.pounceReady = true;
-    UI.float(S.sx(-HIT_X), S.sy(b.h + 18), t(word), col);
-    ctx.sfx('tick'); UI.burst(S.sx(-HIT_X), S.sy(b.h), 5, '#fff8e8', 40);
-    launch(-HIT_X, Math.max(4, b.h), xb, vx);
-  }
-  function serveFrom(who, ctx, q) {
-    S.phase = 'rally'; S.phaseT = 0; S.rally = 0;
-    const dir = who === 'you' ? 1 : -1;
-    const xb = (30 + Math.random() * 18) * dir;
-    if (who === 'you') { S.swingT = 0; ctx.sfx('tick'); } else { S.themSwingT = 0; ctx.sfx('tock'); }
-    launch(-HIT_X * dir, 14, xb, S.speed * 0.95 * dir);
-    S.ball.pounce = false; S.ball.smash = false;
-    void q;
-  }
-  /** The champion decides, as the ball crosses the net, whether this one comes back. */
-  function decide(ctx) {
-    const b = S.ball; b.decided = true;
-    let p = S.stage === 'warm' ? 0.8 : ctx.easy ? 0.72 : 0.9;
-    p -= Math.max(0, (Math.abs(b.vx) - 110) / 300);
-    const xb = Math.abs(b.fromX) > 0 ? 0 : 0; void xb;
-    if (S.lastQ > 0.72) p -= 0.07;
-    if (S.rally > 9) p -= (S.rally - 9) * 0.05;
-    if (b.pounce) p = S.stage === 'warm' ? 0.05 : ctx.easy ? 0.12 : 0.22;
-    b.willReturn = Math.random() < clamp(p, 0.04, 0.97);
-  }
-  function hitThem(ctx) {
-    const b = S.ball;
-    S.themSwingT = 0; ctx.sfx('tock'); UI.burst(S.sx(HIT_X), S.sy(b.h), 5, '#fff8e8', 40);
-    let vx = S.speed * (0.95 + Math.random() * 0.15), xb = -(20 + Math.random() * 36), h0 = 13;
-    b.smash = false;
-    if (S.stage !== 'warm' && S.lastQ < 0.38 && Math.random() < 0.5) { vx = Math.min(250, S.speed * 1.35); xb = -(32 + Math.random() * 14); h0 = 20; b.smash = true; UI.float(S.sx(HIT_X), S.sy(b.h + 20), t('pad.smash'), '#ff9b2e'); }
-    b.pounce = false;
-    launch(HIT_X, Math.max(4, b.h), xb, -vx);
+    for (let i = NTRAIL - 1; i > 0; i--) { b.trail[i].x = b.trail[i - 1].x; b.trail[i].y = b.trail[i - 1].y; b.trail[i].h = b.trail[i - 1].h; }
+    b.trail[0].x = b.x; b.trail[0].y = b.y; b.trail[0].h = b.h;
+    b.age += dt; b.x += b.vx * dt; b.y += b.vy * dt; b.vh -= GRAV * dt; b.h += b.vh * dt;
+    const onTable = Math.abs(b.x) <= TW && Math.abs(b.y) <= TL;
+    if (b.vh < 0 && b.h <= 0 && onTable) {
+      b.h = 0;
+      if (b.bounced >= 1) { point(ctx, b.toward > 0 ? 'them' : 'you', b); return; }   // a second bounce
+      b.vh = -b.vh * BOUNCE; b.vx *= FRICT; b.vy *= FRICT; b.bounced = 1; ctx.sfx('tock');
+    }
+    if (b.h <= FLOOR_H || Math.abs(b.y) > BACK + 10 || Math.abs(b.x) > SIDE + 16) {
+      // off the table or away: a ball that never bounced on the far side was out (the hitter loses it)
+      const toYou = b.toward > 0;
+      point(ctx, b.bounced ? (toYou ? 'them' : 'you') : (toYou ? 'you' : 'them'), b);
+      return;
+    }
+    if (b.toward < 0) {
+      // Jada's side: at the sweet moment she hits it back if she reached it and means to
+      if (b.bounced && b.age >= b.sweetT && b.willReturn) {
+        const d = Math.hypot(b.x - (S.jx - 4), b.y - (S.jy + 7));
+        if (d <= jReach(ctx)) hitThem(ctx, b);
+        else { b.willReturn = false; S.jdive = 0.5; S.themSwingT = 0; }
+      } else if (b.bounced && b.age >= b.sweetT && !S.jdive && !b.missFloat) { b.missFloat = true; S.jdive = 0.5; S.themSwingT = 0; }
+    } else if (b.bounced && !b.whiffed && !b.missFloat && b.age > b.sweetT + 0.05 && b.y > hitY() + reach(ctx)) {
+      b.missFloat = true;
+      const far = Math.hypot(b.sweetX - hitX(), b.sweetY - hitY()) > reach(ctx);
+      UI.float(SX(hitX(), hitY()), SY(hitX(), hitY(), 26), t(far ? 'pad.reach' : 'pad.miss'), '#ffb3d6');
+      S.cdive = 0.4;
+    }
   }
   function update(dt, ctx) {
     S.ctx = ctx;
     S.swingT += dt; S.themSwingT += dt; S.phaseT += dt;
-    if (S.jumpYou > 0) S.jumpYou -= dt; if (S.jumpThem > 0) S.jumpThem -= dt; if (S.diveThem > 0) S.diveThem -= dt; if (S.diveYou > 0) S.diveYou -= dt;
-    const b = S.ball;
+    if (S.jumpYou > 0) S.jumpYou -= dt; if (S.jumpThem > 0) S.jumpThem -= dt;
+    if (S.jdive > 0) S.jdive = Math.max(0, S.jdive - dt); if (S.cdive > 0) S.cdive = Math.max(0, S.cdive - dt);
+    if (S.bot) botThink(dt, ctx);
+    if (S.phase !== 'over') moveCappy(dt, ctx);
+    moveJada(dt, ctx);
     if (S.phase === 'serve') {
-      if (S.serve === 'them' && S.phaseT > 1.0) serveFrom('them', ctx, 0.7);
-      else if (S.serve === 'you' && (S.phaseT > 4 || (S.auto && S.phaseT > 0.4))) { S.swingT = 9; swing(ctx); }
+      if (S.serve === 'them' && S.phaseT > (S.frenzy ? 1.8 : 1.0)) serveThem(ctx);
+      else if (S.serve === 'you' && S.phaseT > 4) { S.swingT = 9; swing(ctx); }
+    } else if (S.phase === 'rally') {
+      S.sinceServe += dt;
+      for (let i = 0; i < S.tossN; i++) {
+        if (S.tossAt[i] <= 0) continue;
+        S.tossWarn[i] = S.tossAt[i] - S.sinceServe;
+        if (S.sinceServe >= S.tossAt[i]) { S.tossAt[i] = 0; toss(ctx, i); }
+      }
     } else if (S.phase === 'point') {
-      if (S.phaseT > 1.3) {
+      if (S.phaseT > 1.4) {
         const w = gameWon();
         if (w) {
-          if (S.stage === 'warm') {
+          if (warm()) {
             ctx.markWarm(); startStage(ctx, 'match'); UI.banner(t('pad.warmDone'), PAL.r4, 2);
             ctx.say([{ who: 'jada', key: 'd.jada.ready' }]);
           } else {
             S.phase = 'over';
             const margin = S.you - S.them, won = w === 'you';
-            // stars ask for good timing too, not only a big margin: 2 = a clear win or plenty of Perfects, 3 = both
-            const stars = won ? 1 + (margin >= 3 || S.perfects >= 6 ? 1 : 0) + (margin >= 3 && S.perfects >= 8 ? 1 : 0) : 0;
-            const score = S.you * 100 + S.perfects * 20 + S.maxRally * 15 + (won ? 500 + margin * 50 : 0);
-            ctx.finish({ score, stars, won, frac: won ? stars / 3 : (S.you / S.target) * 0.3, stats: { you: S.you, them: S.them, perfects: S.perfects, early: S.whiffs } });
+            // stars ask for good timing and the Frenzies too: 2 = a clear win or plenty of Perfects, 3 = plenty of
+            // Perfects and more Frenzy balls won than lost
+            const stars = won ? 1 + (margin >= 3 || S.perfects >= 6 ? 1 : 0) + (S.perfects >= 8 && S.fzYou > S.fzThem ? 1 : 0) : 0;
+            const score = S.you * 100 + S.perfects * 20 + S.maxRally * 15 + S.fzYou * 60 + (won ? 500 + margin * 50 : 0);
+            ctx.finish({ score, stars, won, frac: won ? stars / 3 : (S.you / S.target) * 0.3, stats: { you: S.you, them: S.them, perfects: S.perfects, early: S.whiffs, frenzyYou: S.fzYou, frenzyThem: S.fzThem } });
           }
-        } else nextServe();
+        } else nextServe(ctx);
       }
     }
-    if (b.live) {
-      // the trail (ring buffer, no allocation)
-      for (let i = S.trail.length - 1; i > 0; i--) { S.trail[i].x = S.trail[i - 1].x; S.trail[i].h = S.trail[i - 1].h; }
-      S.trail[0].x = b.x; S.trail[0].h = b.h;
-      b.x += b.vx * dt; b.vh -= GRAV * dt; b.h += b.vh * dt;
-      // bounce on the table, or on the floor past it
-      if (b.h <= 0 && b.vh < 0 && Math.abs(b.x) <= TABLE) { b.h = 0; b.vh = -b.vh * 0.82; b.bounced++; ctx.sfx('tock'); }
-      if (b.h <= FLOOR && b.vh < 0) { b.h = FLOOR; b.vh = -b.vh * 0.5; }
-      if (S.phase === 'rally') {
-        if (b.dir > 0) {
-          if (!b.decided && b.x > 0) decide(ctx);
-          if (b.decided && b.x >= HIT_X) {
-            if (b.willReturn) hitThem(ctx);
-            else if (!S.diveThem) { S.diveThem = 0.5; S.themSwingT = 0; }
-          }
-          if (b.x > DEAD_X) point(ctx, 'you');
-        } else {
-          if (S.auto && b.x <= -HIT_X + 1 && b.x > -HIT_X - 6) { S.swingT = 9; swing(ctx); }
-          if (b.x < -HIT_X - zoneHalf(ctx) && !S.diveYou) { S.diveYou = 0.5; UI.float(S.sx(-HIT_X), S.sy(26), t('pad.miss'), '#ffb3d6'); }
-          if (b.x < -DEAD_X) point(ctx, 'them');
-        }
-      }
-      if (Math.abs(b.x) > 140) b.live = false;
-    }
+    for (const b of BALLS) stepBall(dt, ctx, b);
   }
+
   /* ---------- drawing ---------- */
-  function layout(ctx) {
-    const W = ctx.W, H = ctx.H;
-    // whole virtual pixels in a wide view; in a tall (phone) view the width decides, so the court may also use a
-    // fraction of a virtual pixel that is still a whole number of screen pixels (crisp), and sits higher up
-    const tall = H > W * 1.2, fit = Math.min(W / (tall ? 190 : 200), (H - 70) / 130);
-    S.k = tall ? Math.max(1, Math.floor(fit * VIEW.S) / VIEW.S) : Math.max(1, Math.floor(fit));
-    // the floor sits low, leaving room under it for the Pounce meter and the hint
-    S.ox = Math.round(W / 2); S.oy = Math.round(H - 58 + FLOOR * S.k);
-    if (tall) S.oy = Math.min(S.oy, Math.round(H * 0.64 + FLOOR * S.k));
-    if (S.oy - 72 * S.k < 34) S.oy = 34 + 72 * S.k;
-  }
-  S.sx = x => S.ox + x * S.k;
-  S.sy = h => S.oy - h * S.k;
   function buildBg(ctx) {
-    const W = ctx.W, H = ctx.H, c = JC.canvas2(W, H), g = c.getContext('2d'), k = S.k;
-    const D = JC.draw;
-    // sky through the canopy, tree trunks, vines, the clay court floor
-    g.fillStyle = '#2f6a4a'; g.fillRect(0, 0, W, H);
-    const floorY = S.sy(FLOOR);
-    for (let y = 0; y < floorY; y += 2) { const kk = y / floorY; g.fillStyle = kk < 0.3 ? '#9fd8a8' : kk < 0.55 ? '#5fae7a' : kk < 0.8 ? '#3f8a5a' : '#2f6a4a'; g.fillRect(0, y, W, 2); }
-    for (let i = 0; i < 9; i++) { const x = ((i * 97) % (W + 60)) - 30, w = 10 + (i % 3) * 8; g.fillStyle = i % 2 ? '#3b5a3a' : '#4a6a42'; g.fillRect(x, 0, w, floorY); g.fillStyle = 'rgba(0,0,0,0.15)'; g.fillRect(x + w - 3, 0, 3, floorY); }
-    for (let x = -20; x < W + 20; x += 22) { D.disc(g, x, 6 + (x % 3) * 4, 20, '#1f5a34'); D.disc(g, x + 8, 2, 14, '#2f7d3c'); }
-    for (let x = 0; x < W; x += 3) { const r = JC.hash(x, 1, 9); if (r < 0.35) for (let y = 10; y < 10 + r * 120; y++) { g.fillStyle = y % 6 ? '#2a7a30' : '#8ee070'; g.fillRect(x + Math.round(Math.sin(y / 6) * 1.5), y, 1, 1); } }
-    // spectators on a branch (Mango and friends)
-    const by = Math.max(30, S.sy(70) - 8);
-    g.fillStyle = '#5e3820'; g.fillRect(0, by + 14, W, 4); g.fillStyle = '#7a4a26'; g.fillRect(0, by + 14, W, 1);
-    const fans = ['mango', 'marmoset', 'zuzu', 'coco_down', 'pip_down', 'marmoset'];
-    for (let i = 0; i < fans.length; i++) { const s = SPRITES[fans[i]]; if (!s) continue; const x = Math.round(W * (0.12 + i * 0.16)); if (Math.abs(x - W / 2) < 12) continue; g.drawImage(s.c, x, by + 14 - s.h); }
-    // floor
-    g.fillStyle = '#b8744a'; g.fillRect(0, floorY, W, H - floorY);
-    g.fillStyle = '#a0623c'; for (let y = floorY + 4; y < H; y += 6) g.fillRect(0, y, W, 1);
-    g.fillStyle = '#d08a5a'; g.fillRect(0, floorY, W, 1);
-    // the table (side-on): top edge, front face, legs, the net
-    const tx0 = S.sx(-TABLE), tx1 = S.sx(TABLE), ty = S.sy(0);
-    g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(tx0 + 4 * k, floorY - k, tx1 - tx0 - 8 * k, 3 * k);
-    for (const lx of [-TABLE + 6, -6, 6, TABLE - 6]) { g.fillStyle = OUT; g.fillRect(S.sx(lx) - k, ty, 3 * k, floorY - ty); g.fillStyle = '#5a5a6a'; g.fillRect(S.sx(lx), ty, k, floorY - ty); }
-    g.fillStyle = OUT; g.fillRect(tx0 - k, ty - k, tx1 - tx0 + 2 * k, 6 * k);
-    g.fillStyle = '#2a8a5a'; g.fillRect(tx0, ty, tx1 - tx0, 4 * k);
-    g.fillStyle = '#5fd08a'; g.fillRect(tx0, ty, tx1 - tx0, k);
-    g.fillStyle = '#fff8e8'; g.fillRect(tx0, ty, 2 * k, 4 * k); g.fillRect(tx1 - 2 * k, ty, 2 * k, 4 * k);
-    g.fillStyle = '#1f6a44'; g.fillRect(tx0, ty + 3 * k, tx1 - tx0, k);
-    // net
-    const nx = S.sx(0);
-    g.fillStyle = OUT; g.fillRect(nx - k, S.sy(NET_H) - k, 3 * k, (NET_H + 1) * k);
-    g.fillStyle = '#e8e8f0'; g.fillRect(nx, S.sy(NET_H), k, NET_H * k);
-    for (let h = 1; h < NET_H; h += 2) { g.fillStyle = '#b8b8c8'; g.fillRect(nx - k, S.sy(h), 3 * k, k); }
-    g.fillStyle = '#fff8e8'; g.fillRect(nx - k, S.sy(NET_H) - k, 3 * k, k);
-    S.bg = c; S.bgGen = VIEW.gen; S.bgK = k;
-  }
-  function drawPaddle(g, x, y, ang, col) {
-    // a round paddle at (x, y) (screen), angle in radians
-    const k = S.k, D = JC.draw, hx = x - Math.cos(ang) * 5 * k, hy = y - Math.sin(ang) * 5 * k;
-    D.line(g, x, y, hx, hy, '#5e3820');
-    D.disc(g, x, y, 3 * k + 1, OUT); D.disc(g, x, y, 3 * k, col); D.disc(g, x - k, y - k, k, shade(col, 0.5));
-  }
-  function drawPlayers(g, ctx) {
-    const k = S.k, floorY = S.sy(FLOOR);
-    // Cappy (left), facing right
-    const yJ = S.jumpYou > 0 ? Math.round(Math.sin(S.jumpYou / 0.6 * Math.PI) * 8 * k) : 0;
-    const cx = S.sx(-STAND_X), sprC = SPRITES[(((ctx.t * 4) | 0) % 2 && S.phase === 'rally') ? 'cappy_right_w' : 'cappy_right'];
-    JC.draw.shadow(g, cx, floorY, 8 * k);
-    JC.sprK(g, sprC, cx - 8 * k * 2 / 2, floorY - 16 * k * 2 + 2 * k - yJ, 2 * k);
-    const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat]; if (hat) JC.sprK(g, hat, cx - 2 * k, floorY - 32 * k - yJ, 2 * k);
-    const sw = clamp(S.swingT / 0.22, 0, 1), angC = S.swingT < 0.22 ? lerp(2.4, -0.6, easeOut(sw)) : 1.2;
-    drawPaddle(g, cx + 12 * k + Math.round(Math.cos(angC) * 4 * k), floorY - 22 * k - yJ - Math.round(Math.sin(angC) * 6 * k), angC + Math.PI, '#e04848');
-    // the champion (right)
-    const yT = S.jumpThem > 0 ? Math.round(Math.sin(S.jumpThem / 0.6 * Math.PI) * 8 * k) : 0;
-    const jx = S.sx(STAND_X) + (S.diveThem > 0 ? Math.round(Math.sin(S.diveThem / 0.5 * Math.PI) * 6 * k) : 0);
-    if (S.stage === 'warm') {
-      const m = SPRITES.marmoset, active = S.rally % 2;
-      for (let i = 0; i < 2; i++) { const x = jx - 10 * k + i * 18 * k, on = i === active; JC.draw.shadow(g, x, floorY, 6 * k); JC.sprK(g, m, x - m.w * k, floorY - m.h * 2 * k - (on ? yT : 0), 2 * k, true); }
-    } else {
-      const js = SPRITES.jada, bob = S.phase === 'rally' ? (((ctx.t * 4) | 0) % 2) * k : 0;
-      JC.draw.shadow(g, jx, floorY, 8 * k);
-      JC.sprK(g, js, jx - 8 * 2 * k, floorY - 32 * k - yT - bob, 2 * k);
+    const W = ctx.W, H = ctx.H, c = JC.canvas2(W, H), g = c.getContext('2d'), D = JC.draw;
+    // grass all round, a clay court, the jungle at the edges
+    g.fillStyle = '#3f8a4a'; g.fillRect(0, 0, W, H);
+    for (let y = 0; y < H; y += 3) for (let x = (y * 7) % 5; x < W; x += 5) { const r = JC.hash(x, y, 4); if (r < 0.25) { g.fillStyle = r < 0.08 ? '#6fc060' : '#357a40'; g.fillRect(x, y, 1, 2); } }
+    const ax = SX(-SIDE - 6, -BACK - 4), bx = SX(SIDE + 6, BACK + 4), ay = SY(-SIDE - 6, -BACK - 4, FLOOR_H), by = SY(SIDE + 6, BACK + 4, FLOOR_H);
+    const cx0 = Math.round(Math.min(ax, bx)), cx1 = Math.round(Math.max(ax, bx)), cy0 = Math.round(Math.min(ay, by)), cy1 = Math.round(Math.max(ay, by));
+    g.fillStyle = '#7a4a26'; g.fillRect(cx0 - 2, cy0 - 2, cx1 - cx0 + 4, cy1 - cy0 + 4);
+    g.fillStyle = COL.clay; g.fillRect(cx0, cy0, cx1 - cx0, cy1 - cy0);
+    for (let y = cy0 + 3; y < cy1; y += 5) { g.fillStyle = COL.clayLo; g.fillRect(cx0, y, cx1 - cx0, 1); }
+    for (let i = 0; i < 90; i++) { const x = cx0 + JC.hash(i, 3, 7) * (cx1 - cx0), y = cy0 + JC.hash(i, 5, 7) * (cy1 - cy0); g.fillStyle = COL.clayHi; g.fillRect(x | 0, y | 0, 2, 1); }
+    // white lines round the court
+    g.fillStyle = 'rgba(255,248,232,0.55)';
+    g.fillRect(cx0 + 3, cy0 + 3, cx1 - cx0 - 6, 1); g.fillRect(cx0 + 3, cy1 - 4, cx1 - cx0 - 6, 1);
+    g.fillRect(cx0 + 3, cy0 + 3, 1, cy1 - cy0 - 6); g.fillRect(cx1 - 4, cy0 + 3, 1, cy1 - cy0 - 6);
+    // bushes and big leaves round the clearing
+    for (let i = 0; i < 30; i++) {
+      const f = (i >> 2) / 7.5 + JC.hash(i, 9, 2) * 0.08, edge = i % 4;
+      let x, y;
+      if (edge === 0) { x = f * W; y = 4 + JC.hash(i, 1, 2) * 8; } else if (edge === 1) { x = f * W; y = H - 4 - JC.hash(i, 1, 2) * 6; }
+      else if (edge === 2) { x = 2 + JC.hash(i, 2, 2) * 8; y = f * H; } else { x = W - 2 - JC.hash(i, 2, 2) * 8; y = f * H; }
+      D.disc(g, x, y, 9 + (i % 3) * 3, '#1f5a34'); D.disc(g, x + 3, y - 2, 6 + (i % 2) * 2, '#2f7d3c'); D.disc(g, x + 4, y - 4, 2, '#5fae5a');
     }
-    const swT = clamp(S.themSwingT / 0.22, 0, 1), angJ = S.themSwingT < 0.22 ? lerp(0.6, 3.6, easeOut(swT)) : 2.0;
-    drawPaddle(g, jx - 12 * k - Math.round(Math.cos(angJ - Math.PI) * 4 * k), floorY - 22 * k - yT - Math.round(Math.sin(angJ) * 6 * k), angJ - Math.PI, '#3a7bd5');
+    // the fans on logs along the sides (Mango and friends)
+    const fans = ['mango', 'marmoset', 'zuzu', 'coco_down', 'pip_down', 'tapir'];
+    for (let i = 0; i < fans.length; i++) {
+      const s = SPRITES[fans[i]]; if (!s) continue;
+      let x, y;
+      if (S.port) { const left = i % 2 === 0; x = left ? Math.max(1, cx0 - s.w - 3) : Math.min(W - s.w - 1, cx1 + 3); y = cy0 + 24 + ((i / 2) | 0) * ((cy1 - cy0 - 60) / 2); }
+      else { const top = i % 2 === 0; x = cx0 + 34 + ((i / 2) | 0) * ((cx1 - cx0 - 80) / 2); y = top ? Math.max(1, cy0 - s.h - 1) : Math.min(H - s.h - 1, cy1 + 1); }
+      x = Math.round(x); y = Math.round(y);
+      g.fillStyle = '#5e3820'; g.fillRect(x - 2, y + s.h - 2, s.w + 4, 3);
+      g.drawImage(s.c, x, y);
+    }
+    drawTable(g);
+    S.bg = c; S.bgGen = VIEW.gen; S.bgK = S.k; S.bgPort = S.port;
+  }
+  function drawTable(g) {
+    const k = S.k;
+    const x0 = Math.round(Math.min(SX(-TW, -TL), SX(TW, TL))), x1 = Math.round(Math.max(SX(-TW, -TL), SX(TW, TL)));
+    const y0 = Math.round(Math.min(SY(-TW, -TL, 0), SY(TW, TL, 0))), y1 = Math.round(Math.max(SY(-TW, -TL, 0), SY(TW, TL, 0)));
+    const legH = Math.round(-FLOOR_H * S.kh), th = Math.max(2, Math.round(3 * k));
+    // the shadow on the floor, the legs, the front edge
+    g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(x0 + Math.round(3 * k), y0 + legH, x1 - x0 - Math.round(2 * k), y1 - y0);
+    for (const fx of [0.08, 0.92]) for (const fy of [0.12, 0.88]) {
+      const lx = Math.round(x0 + (x1 - x0) * fx), ly = Math.round(y0 + (y1 - y0) * fy), lw = Math.max(2, Math.round(2 * k));
+      g.fillStyle = OUT; g.fillRect(lx - 1, ly, lw + 2, legH + 1); g.fillStyle = '#5a5a6a'; g.fillRect(lx, ly, lw, legH);
+    }
+    g.fillStyle = OUT; g.fillRect(x0 - 1, y0 - 1, x1 - x0 + 2, y1 - y0 + th + 2);
+    g.fillStyle = COL.tableLo; g.fillRect(x0, y1, x1 - x0, th);
+    g.fillStyle = COL.table; g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    // white edge lines and the centre line, a sheen
+    const lw = Math.max(1, Math.round(k));
+    g.fillStyle = COL.line;
+    g.fillRect(x0, y0, x1 - x0, lw); g.fillRect(x0, y1 - lw, x1 - x0, lw); g.fillRect(x0, y0, lw, y1 - y0); g.fillRect(x1 - lw, y0, lw, y1 - y0);
+    if (S.port) g.fillRect(Math.round((x0 + x1) / 2), y0, 1, y1 - y0); else g.fillRect(x0, Math.round((y0 + y1) / 2), x1 - x0, 1);
+    g.fillStyle = COL.tableHi; g.globalAlpha = 0.35; g.fillRect(x0 + lw, y0 + lw, x1 - x0 - 2 * lw, 1); g.globalAlpha = 1;
+    // the net across the middle, on two posts
+    const nh = Math.max(3, Math.round(NET_H * S.kh));
+    if (S.port) {
+      const ny = Math.round(SY(0, 0, 0)), nx0 = Math.round(SX(-TW - 3, 0)), nx1 = Math.round(SX(TW + 3, 0));
+      g.fillStyle = OUT; g.fillRect(nx0 - 1, ny - nh - 1, nx1 - nx0 + 2, nh + 2);
+      g.fillStyle = 'rgba(232,232,240,0.85)'; g.fillRect(nx0, ny - nh, nx1 - nx0, nh);
+      g.fillStyle = '#9a9aac'; for (let x = nx0 + 1; x < nx1; x += 2) g.fillRect(x, ny - nh + 1, 1, nh - 1);
+      g.fillStyle = '#ffffff'; g.fillRect(nx0, ny - nh, nx1 - nx0, 1);
+      g.fillStyle = '#3a3a48'; g.fillRect(nx0 - 1, ny - nh - 1, 2, nh + 3); g.fillRect(nx1 - 1, ny - nh - 1, 2, nh + 3);
+    } else {
+      const nx = Math.round(SX(0, 0)), ny0 = Math.round(SY(-TW - 3, 0, 0)), ny1 = Math.round(SY(TW + 3, 0, 0)), w = Math.max(2, Math.round(k * 1.5));
+      g.fillStyle = OUT; g.fillRect(nx - w, ny0 - nh - 1, w * 2, ny1 - ny0 + nh + 2);
+      g.fillStyle = 'rgba(232,232,240,0.85)'; g.fillRect(nx - w + 1, ny0 - nh, w * 2 - 2, ny1 - ny0 + nh);
+      g.fillStyle = '#9a9aac'; for (let y = ny0 - nh + 1; y < ny1; y += 2) g.fillRect(nx - w + 1, y, w * 2 - 2, 1);
+      g.fillStyle = '#3a3a48'; g.fillRect(nx - 1, ny0 - nh - 2, 2, nh + 3); g.fillRect(nx - 1, ny1 - nh - 1, 2, nh + 3);
+    }
+  }
+  function drawPaddle(g, x, y, sw, col, colHi, flip) {
+    // a round paddle; sw 0..1 is the swing (it sweeps forward and across)
+    const k = S.ks, a = (flip ? Math.PI + 2.2 - sw * 2.6 : -2.2 + sw * 2.6), px = x + Math.cos(a) * 5 * k, py = y + Math.sin(a) * 4 * k;
+    JC.draw.line(g, x, y, px, py, '#5e3820');
+    const r = Math.max(2, Math.round(2.4 * k));
+    JC.draw.disc(g, px, py, r + 1, OUT); JC.draw.disc(g, px, py, r, col); JC.draw.disc(g, px - 1, py - 1, Math.max(1, r >> 1), colHi);
+  }
+  function drawCappy(g, ctx) {
+    const ks = S.ks, x = Math.round(SX(S.cx, S.cy)), y = Math.round(SY(S.cx, S.cy, FLOOR_H));
+    const hop = S.jumpYou > 0 && !S.reduced ? Math.round(Math.sin(S.jumpYou / 0.5 * Math.PI) * 6 * ks) : 0;
+    const walk = S.cmoving && (((ctx.t * 8) | 0) % 2) ? 1 : 0, names = SPR_C[S.port ? 'up' : 'right'];
+    const s = SPRITES[names[walk]] || SPRITES[names[0]];
+    JC.draw.shadow(g, x, y, 7 * ks);
+    if (s) JC.sprK(g, s, x - s.w * ks / 2, y - s.h * ks + ks - hop, ks);
+    const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat];
+    if (hat && s) JC.sprK(g, hat, x - hat.w * ks / 2, y - s.h * ks - hat.h * ks + 4 * ks - hop, ks);
+    // the paddle, in his right hand
+    const sw = S.swingT < 0.22 ? easeOut(clamp(S.swingT / 0.22, 0, 1)) : 0;
+    drawPaddle(g, x + 6 * ks, y - 8 * ks - hop, sw, '#e04848', '#ff9a9a', false);
+  }
+  function drawJada(g, ctx) {
+    const ks = S.ks, x = Math.round(SX(S.jx, S.jy)), y = Math.round(SY(S.jx, S.jy, FLOOR_H));
+    const hop = S.jumpThem > 0 && !S.reduced ? Math.round(Math.sin(S.jumpThem / 0.5 * Math.PI) * 6 * ks) : 0;
+    const lean = S.jdive > 0 && !S.reduced ? Math.round(Math.sin(S.jdive / 0.5 * Math.PI) * 5 * ks) : 0;
+    const sw = S.themSwingT < 0.22 ? easeOut(clamp(S.themSwingT / 0.22, 0, 1)) : 0;
+    if (warm()) {
+      const m = SPRITES.marmoset, active = S.rally % 2;
+      for (let i = 0; i < 2; i++) {
+        const off = (i ? 1 : -1) * 11 * ks, mx = S.port ? x + off : x, my = S.port ? y : y + off * 0.8, on = i === active;
+        JC.draw.shadow(g, mx, my, 5 * ks);
+        JC.sprK(g, m, mx - m.w * ks / 2, my - m.h * ks - (on ? hop : 0), ks, !S.port);
+      }
+      drawPaddle(g, x - 2 * ks, y - 8 * ks, sw, '#3a7bd5', '#9ac0ff', true);
+      return;
+    }
+    const js = SPRITES.jada, bob = S.jmoving ? (((ctx.t * 6) | 0) % 2) : 0;
+    JC.draw.shadow(g, x + lean, y, 7 * ks);
+    JC.sprK(g, js, x - js.w * ks / 2 + lean, y - js.h * ks + ks - hop - bob, ks, !S.port);
+    drawPaddle(g, x - 6 * ks + lean, y - 9 * ks - hop, sw, '#3a7bd5', '#9ac0ff', true);
+  }
+  function drawHelpers(g, ctx) {
+    // Fruit Frenzy: two marmosets on stools by the net toss the extra balls in
+    if (!S.frenzy) return;
+    const m = SPRITES.marmoset, ks = S.ks;
+    for (let i = 0; i < 2; i++) {
+      const side = i ? 1 : -1, cx = side * (TW + 14), x = Math.round(SX(cx, -6)), y = Math.round(SY(cx, -6, FLOOR_H));
+      const warn = i < S.tossN && S.tossAt[i] > 0 && S.tossWarn[i] < 0.8;
+      const jump = warn && !S.reduced ? Math.round(Math.abs(Math.sin(ctx.t * 12)) * 3 * ks) : 0;
+      g.fillStyle = '#5e3820'; g.fillRect(x - 5 * ks, y - 2 * ks, 10 * ks, 3 * ks);
+      JC.sprK(g, m, x - m.w * ks / 2, y - m.h * ks - 2 * ks - jump, ks, side > 0);
+      if (warn) {
+        const col = FRZ_COLS[Math.min(i + 1, 2)], r = Math.max(3, Math.round(2 * ks)), by = y - m.h * ks - 8 * ks - jump;
+        JC.draw.disc(g, x, by, r + 1, OUT); JC.draw.disc(g, x, by, r, col);
+        text(g, '!', x + r + 4, by - 8, WARM);
+      }
+    }
+  }
+  /** A pixel ellipse outline (no allocation). */
+  function ring(g, cx, cy, rx, ry, col, w) {
+    g.fillStyle = col;
+    const n = Math.max(16, Math.round((rx + ry) * 1.3));
+    for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; g.fillRect(Math.round(cx + Math.cos(a) * rx), Math.round(cy + Math.sin(a) * ry), w, w); }
+  }
+  function drawMarkers(g, ctx) {
+    // for each ball coming to Cappy: where it bounces (a little x), where to stand (the ring, filled once he is in
+    // place), and when to swing (a white circle that shrinks onto the ring)
+    const R = reach(ctx), hx = hitX(), hy = hitY();
+    for (const b of BALLS) {
+      if (!b.live || b.toward < 0 || b.whiffed || b.age > b.sweetT + 0.25) continue;
+      const sx = SX(b.sweetX, b.sweetY), sy = SY(b.sweetX, b.sweetY, FLOOR_H), rx = R * 0.6 * S.k, ry = R * 0.6 * S.ky;
+      const inPos = Math.hypot(b.sweetX - hx, b.sweetY - hy) <= R * 0.62;
+      if (inPos) { g.globalAlpha = 0.3; JC.draw.oval(g, sx, sy, rx, ry, b.col); }
+      g.globalAlpha = inPos ? 0.95 : 0.7; ring(g, sx, sy, rx, ry, b.col, inPos ? 2 : 1); g.globalAlpha = 1;
+      const left = b.sweetT - b.age;
+      if (left < 0.75 && left > -0.12) { const f = 1 + Math.max(0, left) / 0.75 * 1.6; g.globalAlpha = 0.9; ring(g, sx, sy, rx * f, ry * f, '#ffffff', 1); g.globalAlpha = 1; }
+      if (!b.bounced) {
+        const bx = Math.round(SX(b.bx, b.by)), by = Math.round(SY(b.bx, b.by, 0));
+        g.fillStyle = b.col; g.globalAlpha = 0.8;
+        g.fillRect(bx - 2, by - 2, 1, 1); g.fillRect(bx + 1, by - 2, 1, 1); g.fillRect(bx - 1, by - 1, 2, 2); g.fillRect(bx - 2, by + 1, 1, 1); g.fillRect(bx + 1, by + 1, 1, 1);
+        g.globalAlpha = 1;
+      }
+    }
+  }
+  function drawBall(g, b) {
+    if (!b.live && b.fade <= 0) return;
+    const k = S.k, alpha = b.live ? 1 : clamp(b.fade / 0.6, 0, 1);
+    const ground = Math.abs(b.x) <= TW && Math.abs(b.y) <= TL && b.h >= -0.5 ? 0 : FLOOR_H;
+    g.globalAlpha = 0.32 * alpha; JC.draw.oval(g, SX(b.x, b.y), SY(b.x, b.y, ground), Math.max(2, 2 * k), Math.max(1, k), '#000'); g.globalAlpha = 1;
+    if (b.live) for (let i = NTRAIL - 1; i >= 1; i--) {
+      const p = b.trail[i]; g.globalAlpha = (1 - i / NTRAIL) * 0.5;
+      JC.draw.disc(g, SX(p.x, p.y), SY(p.x, p.y, p.h), Math.max(1, Math.round(k)), b.pounce ? '#ff9b2e' : b.smash ? '#ff5a5a' : b.col);
+    }
+    const r = Math.max(2, Math.round(1.8 * k)), x = Math.round(SX(b.x, b.y)), y = Math.round(SY(b.x, b.y, b.h));
+    g.globalAlpha = alpha;
+    JC.draw.disc(g, x, y, r + 1, OUT); JC.draw.disc(g, x, y, r, b.pounce ? '#ffb030' : b.col);
+    g.fillStyle = '#ffffff'; g.fillRect(x - 1, y - 1, 1, 1);
+    g.globalAlpha = 1;
   }
   function draw(g, ctx) {
+    S.reduced = BRBX.reduced();
     layout(ctx);
-    if (S.bgGen !== VIEW.gen || S.bgK !== S.k || !S.bg) buildBg(ctx);
+    if (!S.bg || S.bgGen !== VIEW.gen || S.bgK !== S.k || S.bgPort !== S.port) buildBg(ctx);
     g.drawImage(S.bg, 0, 0);
-    const k = S.k, b = S.ball;
-    // the hit zone: a soft band at Cappy's end that glows while the ball is in it
-    const Z = zoneHalf(ctx), zx0 = S.sx(-HIT_X - Z), zw = Z * 2 * k, zy = S.sy(40), zh = S.sy(-2) - zy;
-    const inZone = b.live && b.dir < 0 && S.phase === 'rally' && Math.abs(b.x + HIT_X) <= Z;
-    for (let i = 0; i < 4; i++) { g.globalAlpha = (inZone ? 0.3 : 0.1) * (1 - i * 0.22); g.fillStyle = inZone ? '#ffd24a' : '#fff8e8'; g.fillRect(zx0 + i * 2 * k, zy + i * 3 * k, zw - i * 4 * k, zh - i * 3 * k); }
-    const pz = Math.max(1, Math.round(Z * 0.28 * k)); g.globalAlpha = inZone ? 0.45 : 0.18; g.fillStyle = '#ffd24a'; g.fillRect(S.sx(-HIT_X) - pz, zy, pz * 2, zh); g.globalAlpha = 1;
-    for (let x = zx0; x < zx0 + zw; x += 4 * k) { g.fillStyle = inZone ? '#ffd24a' : 'rgba(255,248,232,0.5)'; g.fillRect(x, S.sy(-2), 2 * k, k); }
-    drawPlayers(g, ctx);
-    // the ball, its trail and its shadow
-    if (b.live) {
-      const shH = Math.abs(b.x) <= TABLE && b.h >= 0 ? 0 : FLOOR;
-      g.globalAlpha = 0.3; JC.draw.oval(g, S.sx(b.x), S.sy(shH) + (shH ? 0 : -k), 2 * k, k, '#000'); g.globalAlpha = 1;
-      for (let i = S.trail.length - 1; i >= 1; i--) { const p = S.trail[i]; g.globalAlpha = (1 - i / S.trail.length) * 0.5; JC.draw.disc(g, S.sx(p.x), S.sy(p.h), Math.max(1, k), b.pounce ? '#ff9b2e' : b.smash ? '#ff5a5a' : '#fff3c0'); }
-      g.globalAlpha = 1;
-      const r = Math.max(2, Math.round(1.5 * k));
-      JC.draw.disc(g, S.sx(b.x), S.sy(b.h), r + 1, OUT); JC.draw.disc(g, S.sx(b.x), S.sy(b.h), r, b.pounce ? '#ffb030' : '#fff8e8'); g.fillStyle = '#ffffff'; g.fillRect(S.sx(b.x) - 1, S.sy(b.h) - 1, 1, 1);
-    } else if (S.phase === 'serve') {
-      const sxv = S.serve === 'you' ? S.sx(-HIT_X + 6) : S.sx(HIT_X - 6), toss = Math.abs(Math.sin(S.phaseT * 4)) * 10 * k;
-      JC.draw.disc(g, sxv, S.sy(18) - toss, Math.max(2, Math.round(1.5 * k)) + 1, OUT); JC.draw.disc(g, sxv, S.sy(18) - toss, Math.max(2, Math.round(1.5 * k)), '#fff8e8');
+    drawMarkers(g, ctx);
+    drawJada(g, ctx);
+    drawHelpers(g, ctx);
+    // the serve: the ball bobs over the server's paddle
+    if (S.phase === 'serve') {
+      const you = S.serve === 'you', bx = you ? hitX() : S.jx - 4, by = you ? hitY() : S.jy + 7, h = 14 + Math.abs(Math.sin(S.phaseT * 4)) * 8;
+      const x = Math.round(SX(bx, by)), y = Math.round(SY(bx, by, h)), r = Math.max(2, Math.round(1.8 * S.k));
+      JC.draw.disc(g, x, y, r + 1, OUT); JC.draw.disc(g, x, y, r, S.frenzy ? FRZ_COLS[0] : PLAIN);
     }
-    // HUD: the score panels, the Pounce meter, the hint
-    const champ = S.stage === 'warm' ? t('name.marm') : t('name.jada');
-    VA.name = t('name.cappy'); VA.score = S.you; VA.of = S.target; VB.name = champ; VB.score = S.them; VB.of = S.target;
+    drawCappy(g, ctx);
+    for (const b of BALLS) drawBall(g, b);
+    drawHud(g, ctx);
+  }
+  /** Centred text squeezed to fit a width (cached cut, no per-frame string while it is the same). */
+  const FITC = { src: '', w: 0, clear: null, out: '' }, WARMC = { align: 'center', col: PAL.r4 };
+  function textFit(g, str, cx, y, w) {
+    if (FITC.src !== str || FITC.w !== w || FITC.clear !== TEXT.clear) {
+      let o = str; while (o.length > 4 && textW(o) > w) o = o.slice(0, -2) + '…';
+      FITC.src = str; FITC.w = w; FITC.clear = TEXT.clear; FITC.out = o;
+    }
+    text(g, FITC.out, cx, y, WARMC);
+  }
+  const FITL = { src: '', w: 0, clear: null, out: '' };
+  function textFitL(g, str, x, y, w) {
+    if (FITL.src !== str || FITL.w !== w || FITL.clear !== TEXT.clear) {
+      let o = str; while (o.length > 3 && textW(o) > w) o = o.slice(0, -1);
+      FITL.src = str; FITL.w = w; FITL.clear = TEXT.clear; FITL.out = o;
+    }
+    text(g, FITL.out, x, y, CHIP);
+  }
+  function hintLines(str, w) {
+    if (WRAP.str !== str || WRAP.w !== w || WRAP.clear !== TEXT.clear) { WRAP.str = str; WRAP.w = w; WRAP.clear = TEXT.clear; WRAP.n = JC.font.wrap(str, w, 1).length; }
+    return WRAP.n;
+  }
+  function drawHud(g, ctx) {
+    const W = ctx.W, H = ctx.H;
+    VA.name = t('name.cappy'); VA.score = S.you; VA.of = S.target;
+    VB.name = warm() ? t('name.marm') : t('name.jada'); VB.score = S.them; VB.of = S.target;
     HUD.versus(g, VA, VB);
-    const mw = Math.min(110, ctx.W - 20), my = Math.min(ctx.H - 26, S.sy(FLOOR) + 6);
-    HUD.meter(g, 8, my, mw, t(S.pounceReady ? 'pad.pounceReady' : 'pad.pounceMeter'), S.pounceReady ? 1 : S.pounce, '#ff9b2e', S.pounceReady);
-    if (S.stage === 'warm' && S.phase !== 'over') text(g, t('pad.warm'), ctx.W / 2, 32, WARM);
+    // the Pounce meter: under the scores (tall), between them (wide), or at the bottom when that gap is too small
+    const mw = S.port ? 80 : 96, pw = Math.min(150, (W - HUD.left() - 12) / 2 | 0), gap = W - 6 - HUD.left() - 2 * pw;
+    const mx = S.port ? HUD.left() : Math.round(W / 2 - mw / 2), my = S.port ? 34 : gap >= mw + 8 ? 6 : H - 24;
+    HUD.meter(g, mx, my, mw, t(S.pounceReady ? 'pad.pounceReady' : 'pad.pounceMeter'), S.pounceReady ? 1 : S.pounce, '#ff9b2e', S.pounceReady);
+    if (warm() && S.phase !== 'over') {
+      // tall: a chip beside the meter (the score bars already show first to 3)
+      if (S.port) { const x = mx + mw + 6, w = W - x - 6; JC.draw.box(g, x, 34, w, 18, 'rgba(27,19,37,0.82)', PAL.ink); textFit(g, t('pad.warmBanner'), x + w / 2, 36, w - 6); }
+      else text(g, t('pad.warm'), W / 2, 28, WARM);
+    }
+    // Fruit Frenzy: a chip with the balls in play
+    if (S.frenzy) {
+      const x = S.port ? mx + mw + 6 : Math.round(W / 2 - 48), w = S.port ? W - x - 6 : 96, y = S.port ? 34 : (my === 6 ? 26 : 6);
+      JC.draw.box(g, x, y, w, 18, '#e0701f', OUT);
+      textFitL(g, t('pad.frenzyChip'), x + 4, y + 2, w - 8 - S.frenzy * 8);
+      for (let i = 0; i < S.frenzy; i++) { const bx = x + w - 6 - (S.frenzy - 1 - i) * 8; JC.draw.disc(g, bx, y + 9, 3, OUT); JC.draw.disc(g, bx, y + 9, 2, FRZ_COLS[i]); }
+    }
+    // the Swing button (touch)
+    if (ctx.touch && S.phase !== 'over') {
+      const bs = swingSize(ctx);
+      B_SW.glow = S.pounceReady; B_SW.col = S.pounceReady ? '#ff9b2e' : '#e04848';
+      UI.button(g, 'pswing', W - bs - 8, H - bs - 8, bs, bs, t('pad.swing'), B_SW);
+    }
+    // the hint, above the controls
     if (S.hint > 0.05 && (S.phase === 'serve' || S.phase === 'rally')) {
-      const hk = S.phase === 'serve' && S.serve === 'you' ? (ctx.touch ? 'pad.hintServeTouch' : 'pad.hintServeKeys') : (ctx.touch ? 'pad.hintTouch' : 'pad.hintKeys');
-      g.globalAlpha = clamp(S.hint * 2, 0, 1); textBlock(g, t(hk), 6, my + 22, ctx.W - 12, HINT); g.globalAlpha = 1;
+      const serve = S.phase === 'serve' && S.serve === 'you';
+      const str = t(serve ? (ctx.touch ? 'pad.hintServeTouch' : 'pad.hintServeKeys') : (ctx.touch ? 'pad.hintTouch' : 'pad.hintKeys'));
+      // tall: under the scores, above Jada's end (never over Cappy's end); wide: low in the middle, between the stick
+      // and the Swing button
+      const bs = swingSize(ctx), wide = !S.port;
+      const hx = wide && ctx.touch ? Math.round(W * 0.22) : 6;
+      const wMax = wide && ctx.touch ? W - bs - 16 - hx - 4 : W - 12, n = hintLines(str, wMax), LH = JC.font.LINE_H;
+      const by = wide ? (my > H / 2 ? my - 6 : H - 6) - n * LH : 56;
+      g.globalAlpha = clamp(S.hint * 2, 0, 1);
+      JC.draw.box(g, hx - 2, by - 2, wMax + 4, n * LH + 4, 'rgba(27,19,37,0.72)', 'rgba(27,19,37,0.72)');
+      textBlock(g, str, hx, by, wMax, HINT); g.globalAlpha = 1;
     }
   }
+
   JC.register({
     id: 'paddle',
     champion: 'jada',
     music: 'paddle',
+    // the floating joystick moves Cappy; a touch anywhere else (or the Swing button) swings
+    stick: true,
     start(ctx) {
-      S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.5 : 0.6; S.auto = false;
-      S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.diveThem = 0; S.diveYou = 0; S.lastQ = 0;
+      S.ctx = ctx; S.perfects = 0; S.whiffs = 0; S.hits = 0; S.maxRally = 0; S.hint = ctx.firstTime ? 1.6 : 0; S.hintRound = S.hint > 0; S.auto = false; S.bot = null;
+      S.swingT = 9; S.themSwingT = 9; S.jumpYou = 0; S.jumpThem = 0; S.jdive = 0; S.cdive = 0; S.lastQ = 0.5; S.fzYou = 0; S.fzThem = 0;
       startStage(ctx, ctx.warmedUp ? 'match' : 'warm');
       if (!ctx.warmedUp) UI.banner(t('pad.warmBanner'), PAL.r4, 1.6);
     },
     update,
     draw,
     onInput(e, ctx) {
-      if ((e.type === 'press' && e.key === 'a') || e.type === 'down') swing(ctx);
+      if (e.type === 'press' && e.key === 'a') swing(ctx);
+      else if (e.type === 'down') swing(ctx);       // the Swing button, or a touch / click anywhere outside the joystick
     },
     outro(dt, ctx) { update(dt, ctx); },
-    /** Test hooks: the state, a bot that swings perfectly, and a quick result. */
-    testState() { return { stage: S.stage, you: S.you, them: S.them, target: S.target, phase: S.phase, serve: S.serve, rally: S.rally, pounce: S.pounce, pounceReady: S.pounceReady, perfects: S.perfects, ball: { x: Math.round(S.ball.x), h: Math.round(S.ball.h), live: S.ball.live, dir: S.ball.dir }, auto: S.auto }; },
+    /** Test hooks: the state, a play-bot that moves and swings, the balance check, and a quick result. */
+    testState(ctx) {
+      return { stage: S.stage, you: S.you, them: S.them, target: S.target, phase: S.phase, serve: S.serve, rally: S.rally, pounce: S.pounce,
+        pounceReady: S.pounceReady, perfects: S.perfects, whiffs: S.whiffs, hits: S.hits, frenzy: S.frenzy, frenzyDone: S.fzDone, frenzyYou: S.fzYou, frenzyThem: S.fzThem,
+        port: S.port, reach: ctx ? reach(ctx) : 0, auto: S.auto,
+        cappy: { x: +S.cx.toFixed(1), y: +S.cy.toFixed(1), hx: +hitX().toFixed(1), hy: +hitY().toFixed(1) }, jada: { x: Math.round(S.jx), y: Math.round(S.jy) },
+        balls: BALLS.map(b => ({ live: b.live, toward: b.toward, x: +b.x.toFixed(1), y: +b.y.toFixed(1), h: +b.h.toFixed(1), bounced: b.bounced, whiffed: b.whiffed,
+          age: +b.age.toFixed(3), sweetT: +b.sweetT.toFixed(3), sweetX: +b.sweetX.toFixed(1), sweetY: +b.sweetY.toFixed(1), col: b.col })),
+        // where Cappy is on the screen (virtual px), for real-input tests
+        screen: { cappy: [Math.round(SX(S.cx, S.cy)), Math.round(SY(S.cx, S.cy, FLOOR_H))], k: S.k } };
+    },
     test: {
-      auto(ctx, on) { S.auto = !!on; return S.auto; },
-      point(ctx, who) { point(ctx, who === 'them' ? 'them' : 'you'); return S.you + ':' + S.them; },
+      auto(ctx, on) { S.auto = !!on; S.bot = on ? { react: 0.12, pos: 0, time: 0, speed: 1 } : null; return S.auto; },
+      /** A play-bot with human-like faults: { react (s), pos (court units off), time (s timing spread), speed, mash, still }. */
+      bot(ctx, cfg) { S.bot = cfg ? Object.assign({ react: 0.3, pos: 4, time: 0.06, speed: 1 }, cfg) : null; S.auto = !!cfg; return !!S.bot; },
+      point(ctx, who) { const b = freeBall(); b.live = true; point(ctx, who === 'them' ? 'them' : 'you', b); return S.you + ':' + S.them; },
       skipWarm(ctx) { ctx.markWarm(); startStage(ctx, 'match'); return S.stage; },
+      /** Jump to a score between points (at 3 or 6 the next serve brings a Fruit Frenzy). */
+      score(ctx, you, them) {
+        S.you = you; S.them = them;
+        for (const b of BALLS) { b.live = false; b.fade = 0; }
+        S.frenzy = 0; S.tossN = 0; S.phase = 'point'; S.phaseT = 9; S.ptYou = 0; S.ptThem = 0;
+        return S.you + ':' + S.them;
+      },
+      /** The balance check: n whole matches (no warm-up) with a bot, run at once without drawing. */
+      sim(ctx, cfg, n) {
+        const keep = S.bot, out = { n: n || 20, wins: 0, you: 0, them: 0, secs: 0, perfects: 0, fzYou: 0, fzThem: 0, stars: [0, 0, 0, 0] };
+        let res = null;
+        const fake = { easy: !!(cfg && cfg.easy), W: ctx.W, H: ctx.H, tap: ctx.tap, touch: false, firstTime: false, warmedUp: true, t: 0, axis: BOT_AXIS,
+          sfx() {}, say() {}, markWarm() {}, finish(r) { res = r; } };
+        for (let m = 0; m < out.n; m++) {
+          res = null; S.bot = Object.assign({ react: 0.3, pos: 4, time: 0.06, speed: 1 }, cfg || {});
+          S.perfects = 0; S.whiffs = 0; S.maxRally = 0; S.fzYou = 0; S.fzThem = 0; S.lastQ = 0.5;
+          startStage(fake, 'match');
+          let tt = 0;
+          while (!res && tt < 900) { update(1 / 60, fake); tt += 1 / 60; fake.t = tt; }
+          if (res) { out.wins += res.won ? 1 : 0; out.you += res.stats.you; out.them += res.stats.them; out.perfects += res.stats.perfects; out.fzYou += res.stats.frenzyYou; out.fzThem += res.stats.frenzyThem; out.stars[res.stars]++; }
+          out.secs += tt;
+        }
+        S.bot = keep; S.auto = !!keep; startStage(ctx, 'match'); UI.clearFx();
+        out.winRate = +(out.wins / out.n).toFixed(2); out.avgSecs = Math.round(out.secs / out.n); out.avgYou = +(out.you / out.n).toFixed(1); out.avgThem = +(out.them / out.n).toFixed(1);
+        out.avgPerfects = +(out.perfects / out.n).toFixed(1);
+        return out;
+      },
     },
     cheat(won) { const you = won ? 7 : 3, them = won ? 3 : 7; S.you = you; S.them = them; return { score: you * 100 + (won ? 700 : 0), stars: won ? 2 : 0, won, frac: won ? 0.67 : 0.13 }; },
   });
