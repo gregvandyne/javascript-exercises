@@ -60,7 +60,7 @@
    "topic": "Groups",
    "kind": "recall",
    "secs": 20,
-   "q": "What is 24 x 3?",
+   "q": "What is 24 × 3?",
    "choices": [
     "72",
     "612",
@@ -152,7 +152,7 @@
    "topic": "Fast facts",
    "kind": "recall",
    "secs": 20,
-   "q": "What is 7 x 8?",
+   "q": "What is 7 × 8?",
    "choices": [
     "54",
     "56",
@@ -161,10 +161,10 @@
    ],
    "answer": 1,
    "misconceptions": [
-    "grabbed a near fact: 6 x 9",
+    "grabbed a near fact: 6 × 9",
     "correct",
-    "grabbed the neighbor fact 6 x 8",
-    "grabbed the neighbor fact 8 x 8"
+    "grabbed the neighbor fact 6 × 8",
+    "grabbed the neighbor fact 8 × 8"
    ]
   },
   {
@@ -175,11 +175,11 @@
    "topic": "Fast facts",
    "kind": "recall",
    "secs": 20,
-   "q": "Which choice is the same as 8 x 6?",
+   "q": "Which choice is the same as 8 × 6?",
    "choices": [
     "8 + 6",
-    "8 x 5",
-    "6 x 8",
+    "8 × 5",
+    "6 × 8",
     "6 + 6 + 6"
    ],
    "answer": 2,
@@ -198,7 +198,7 @@
    "topic": "Fast facts",
    "kind": "scenario",
    "secs": 20,
-   "q": "Mia knows 6 x 8 = 48. What is 48 divided by 8?",
+   "q": "Mia knows 6 × 8 = 48. What is 48 divided by 8?",
    "choices": [
     "8",
     "48",
@@ -209,7 +209,7 @@
    "misconceptions": [
     "repeated the 8 instead of finding the missing factor",
     "kept the whole 48 and shared nothing",
-    "grabbed a far fact: 4 x 8 is only 32",
+    "grabbed a far fact: 4 × 8 is only 32",
     "correct"
    ]
   }

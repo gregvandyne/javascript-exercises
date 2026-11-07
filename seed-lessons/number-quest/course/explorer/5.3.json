@@ -8,8 +8,48 @@
  "slides": [
   {
    "title": "The shop till",
-   "text": "At the till, money is measured like everything else in this shop. A dollar is a whole, and the coins are its parts. Four quarters fill it exactly, the way four fourths filled a cake in Unit 4.",
-   "art": "coins"
+   "text": "At the till, a dollar is a whole of 100 cents, and coins are its parts. A quarter is 25 cents, a dime is 10 cents, a nickel is 5 cents and a penny is 1 cent. Four quarters fill the dollar exactly.",
+   "art": "coins",
+   "visual": {
+    "type": "table",
+    "label": "The four coins and what each is worth in cents",
+    "head": [
+     "Coin",
+     "quarter",
+     "dime",
+     "nickel",
+     "penny"
+    ],
+    "rows": [
+     [
+      "Cents",
+      "25",
+      "10",
+      "5",
+      "1"
+     ]
+    ]
+   },
+   "focus": [
+    {
+     "cue": "A quarter is 25 cents: four of them make a dollar.",
+     "box": [
+      22.6,
+      19.7,
+      19.6,
+      30.2
+     ]
+    },
+    {
+     "cue": "A dime is 10 cents, a nickel 5 and a penny 1.",
+     "box": [
+      40.2,
+      19.7,
+      54.8,
+      30.2
+     ]
+    }
+   ]
   },
   {
    "title": "One dollar, four quarters",
@@ -179,14 +219,8 @@
    "text": "Open Brain Board at Practice Board and score 3,000 points to finish. It opens straight on your Money board, and your board saves as you go. Get there your way: lots of easy tiles, or fewer hard ones. Count every change answer up from the price before you pick a tile.",
    "art": "trophy",
    "img": "nq/brain-board/money-board",
-   "alt": "Brain Board in play: the Money board, categories Coin values, Make the price, Change back, Add the prices and Dollars and cents, a coin values question open.",
-   "kind": "mission",
-   "view": [
-    8.5,
-    26.5,
-    83,
-    41.5
-   ]
+   "alt": "Brain Board's Money board on a phone: a Coin values question for 100 points, four answers to pick from.",
+   "kind": "mission"
   }
  ],
  "check": [

@@ -76,7 +76,7 @@
    "steps": [
     "6 trays, 7 rolls on each tray",
     "skip-count by 7: 7, 14, 21, 28, 35, 42",
-    "6 x 7 = 42 rolls in all",
+    "6 × 7 = 42 rolls in all",
     "the array shows 6 rows of 7"
    ],
    "visual": {
@@ -96,7 +96,7 @@
      ]
     },
     {
-     "cue": "Six rows of 7: 6 x 7 = 42 rolls in all.",
+     "cue": "Six rows of 7: 6 × 7 = 42 rolls in all.",
      "box": [
       16.1,
       17.6,
@@ -140,23 +140,23 @@
   },
   {
    "title": "Stretch: Bigger groups",
-   "text": "The shortcut scales up. For 23 x 4, split 23 into 20 and 3. Then 20 x 4 = 80 and 3 x 4 = 12, so 23 x 4 = 92.",
+   "text": "The shortcut scales up. For 23 × 4, split 23 into 20 and 3. Then 20 × 4 = 80 and 3 × 4 = 12, so 23 × 4 = 92.",
    "art": "star",
    "visual": {
     "type": "bars",
-    "label": "Splitting 23 x 4: 20 x 4 = 80 and 3 x 4 = 12",
+    "label": "Splitting 23 × 4: 20 × 4 = 80 and 3 × 4 = 12",
     "rows": [
      {
-      "label": "23 x 4, split into two easy parts",
+      "label": "23 × 4, split into two easy parts",
       "parts": [
        {
         "w": 0.87,
-        "label": "20x4=80",
+        "label": "20×4=80",
         "tone": 0
        },
        {
         "w": 0.13,
-        "label": "3x4=12",
+        "label": "3×4=12",
         "tone": 1
        }
       ]
@@ -165,7 +165,7 @@
    },
    "focus": [
     {
-     "cue": "Split 23 into 20 and 3. 20 x 4 = 80.",
+     "cue": "Split 23 into 20 and 3. 20 × 4 = 80.",
      "box": [
       5.6,
       35.7,
@@ -174,7 +174,7 @@
      ]
     },
     {
-     "cue": "3 x 4 = 12. Join them: 80 + 12 = 92.",
+     "cue": "3 × 4 = 12. Join them: 80 + 12 = 92.",
      "box": [
       82.1,
       35.7,
@@ -211,10 +211,10 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Snowy Summit track, the 2, 5 and 10 times tables, and it stays there. Win the race: picture the trays of groups before you answer each fact.",
+   "text": "Open Sum Racer. It opens on the Jungle Jam track, every times table up to 12 × 12, and it stays there. Win the race: picture the trays of groups before you answer each fact, and skip-count when a fact is new.",
    "art": "trophy",
-   "img": "nq/sum-racer/times-tables-track",
-   "alt": "Sum Racer on the Snowy Summit times tables track: a multiplication question on screen, four answers to pick from, the race under way.",
+   "img": "nq/sum-racer/all-tables-track",
+   "alt": "Sum Racer on the Jungle Jam track, all times tables to 12: a multiplication question on screen, four answers to pick from, the race under way.",
    "view": [
     50,
     10.5,
@@ -230,7 +230,7 @@
  ],
  "game": {
   "slug": "sum-racer",
-  "chapter": "Times Tables 2, 5 and 10",
-  "params": "level=4&lock=1"
+  "chapter": "All Times Tables",
+  "params": "level=5&lock=1"
  }
 }

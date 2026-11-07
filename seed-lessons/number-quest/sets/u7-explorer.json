@@ -52,7 +52,7 @@
     "correct",
     "multiplied 5 by itself instead of by the scale"
    ],
-   "why": "The scale is the key: each picture is worth 2 books, so 5 pictures are 5 x 2 = 10 books."
+   "why": "The scale is the key: each picture is worth 2 books, so 5 pictures are 5 × 2 = 10 books."
   },
   {
    "id": "nq-explorer-7.1-e3",
@@ -62,7 +62,7 @@
    "topic": "Line plots",
    "kind": "scenario",
    "secs": 20,
-   "q": "Three ribbons measure 1/2, 1/4 and 1/4 of a yard. Laid end to end, how long are they together?",
+   "q": "A line plot of ribbon lengths has one X at 1/2 yard and two Xs at 1/4 yard. Laid end to end, how long are those three ribbons together?",
    "choices": [
     "3/4 of a yard",
     "1 1/4 yards",
@@ -244,7 +244,7 @@
     "correct",
     "added an extra zero"
    ],
-   "why": "2 kilograms is 2 x 1,000 = 2,000 grams, and 2,000 + 600 = 2,600 grams."
+   "why": "2 kilograms is 2 × 1,000 = 2,000 grams, and 2,000 + 600 = 2,600 grams."
   },
   {
    "id": "nq-explorer-7.4-e2",

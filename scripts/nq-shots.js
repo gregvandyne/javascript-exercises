@@ -5,6 +5,15 @@
 // its assigned mode: Sum Racer locked to the mission's track, Brain Board opened straight on the step's
 // board, Quest Race on pattern questions, Fraction Factory inside the mission's chapter.
 //
+// Phone-width shots (fix round A2, the Cyber Defenders scripts/cyber-shots.js "narrow" mode): a shot with
+// `narrow: { width, height, top }` lays the game out as on a phone (width CSS px wide, so its words wrap short
+// and sit at the game's own size), then keeps the 16:9 slice from `top`, shot at 1280 px wide. On a 390 px
+// phone the slide frame shows that slice at about 350 px, so the game's 14-18 px words read at 11 px or more,
+// and the slide needs no crop (no `view`, so no expand button over the question). `top` may be a CSS
+// selector instead of a number: the slice then starts just above that element; or `bottom`, a selector the
+// slice ends just under. Without `top` the whole
+// narrow page is shot as <state>-survey.png (a survey, to choose the slice), and no WebP is written.
+//
 // Usage: node scripts/nq-shots.js [--no-webp] [state ...]
 //   masters (PNG, 1280x720) go to scripts/nq-masters/<game>/<state>.png (kept locally, the re-runnable
 //   source); each master also converts to public/img/nq/<game>/<state>.webp (WebP q80, max 1280 wide),
@@ -21,7 +30,7 @@ import { vendorFile } from '../server/services/snapshot.js';
 import { parseParams } from '../server/services/play-params.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const EXE = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const EXE = process.env.CHROME_EXE || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
 const WEBP = !process.argv.includes('--no-webp');
 const wait = ms => new Promise(r => setTimeout(r, ms));
 /* Poll with evaluate rather than waitForFunction: its rAF polling starves in a frame whose render loop
@@ -35,13 +44,13 @@ async function play(f) { await wait(900); for (const sel of ['.ok-title-screen .
 // One shot per mission slide: the deck (step), the game, the lesson parameters from that deck's own
 // game.params, and how to reach the moment worth photographing — mid-play, the assigned skill on screen.
 const SHOTS = [
-  { step: '1.1', state: 'place-value-board', slug: 'brain-board', params: 'mode=nq-1-1&lock=1', prep: brainBoard },
+  { step: '1.1', state: 'place-value-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-1-1&lock=1', prep: brainBoard },
   { step: '1.2', state: 'rounding-run', slug: 'sum-racer', params: 'level=9&lock=1', prep: sumRacer },
-  { step: '1.3', state: 'pattern-race', slug: 'quest-race', params: 'mode=nq-1-3&lock=1', prep: questRace, cdp: true },
+  { step: '1.3', state: 'pattern-race', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-1-3&lock=1', prep: questRace, cdp: true },
   { step: '2.1', state: 'addition-track', slug: 'sum-racer', params: 'level=10&mode=add&lock=1', prep: sumRacer },
   { step: '2.2', state: 'subtraction-track', slug: 'sum-racer', params: 'level=10&mode=sub&lock=1', prep: sumRacer },
-  { step: '2.3', state: 'story-board', slug: 'brain-board', params: 'mode=nq-2-3&lock=1', prep: brainBoard },
-  { step: '3.1', state: 'times-tables-track', slug: 'sum-racer', params: 'level=4&lock=1', prep: sumRacer },
+  { step: '2.3', state: 'story-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-2-3&lock=1', prep: brainBoard },
+  { step: '3.1', state: 'all-tables-track', slug: 'sum-racer', params: 'level=5&lock=1', prep: sumRacer },
   { step: '3.2', state: 'sharing-track', slug: 'sum-racer', params: 'level=6&lock=1', prep: sumRacer },
   { step: '3.3', state: 'grand-prix', slug: 'sum-racer', params: 'level=7&lock=1', prep: sumRacer },
   { step: '4.1', state: 'first-cuts', slug: 'fraction-factory', params: 'chapter=first-cuts&band=1b&lock=1', prep: fractionFactory },
@@ -50,16 +59,16 @@ const SHOTS = [
   // The Phase 2 sweep (Units 5-7 + the Vault of Measures finale): the same discipline, the decks' own
   // game.params. Data Detective and Would You Rather join the pipeline here, in the chapters and topic
   // their missions assign.
-  { step: '5.1', state: 'measures-board', slug: 'brain-board', params: 'mode=nq-5-1&lock=1', prep: brainBoard },
-  { step: '5.2', state: 'timetable-race', slug: 'quest-race', params: 'mode=nq-5-2&lock=1', prep: questRace, cdp: true },
-  { step: '5.3', state: 'money-board', slug: 'brain-board', params: 'mode=nq-5-3&lock=1', prep: brainBoard },
-  { step: '6.1', state: 'shapes-board', slug: 'brain-board', params: 'mode=nq-6-1&lock=1', prep: brainBoard },
-  { step: '6.2', state: 'around-inside-board', slug: 'brain-board', params: 'mode=nq-6-2&lock=1', prep: brainBoard },
-  { step: '6.3', state: 'lines-grids-board', slug: 'brain-board', params: 'mode=nq-6-3&lock=1', prep: brainBoard },
+  { step: '5.1', state: 'measures-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-5-1&lock=1', prep: brainBoard },
+  { step: '5.2', state: 'timetable-race', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-5-2&lock=1', prep: questRace, cdp: true },
+  { step: '5.3', state: 'money-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-5-3&lock=1', prep: brainBoard },
+  { step: '6.1', state: 'shapes-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-6-1&lock=1', prep: brainBoard },
+  { step: '6.2', state: 'around-inside-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-6-2&lock=1', prep: brainBoard },
+  { step: '6.3', state: 'lines-grids-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-6-3&lock=1', prep: brainBoard },
   { step: '7.1', state: 'chart-it', slug: 'data-detective', params: 'chapter=chart&band=1b&lock=1', prep: dataDetective },
   { step: '7.2', state: 'my-data', slug: 'data-detective', params: 'chapter=my-data&band=1b&lock=1', prep: dataDetective },
-  { step: '7.3', state: 'chance-race', slug: 'quest-race', params: 'mode=nq-7-3&lock=1', prep: questRace, cdp: true },
-  { step: '7.4', state: 'vault-run', slug: 'quest-race', params: 'mode=nq-7-4&lock=1', prep: questRace, cdp: true },
+  { step: '7.3', state: 'chance-race', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-7-3&lock=1', prep: questRace, cdp: true },
+  { step: '7.4', state: 'vault-run', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-7-4&lock=1', prep: questRace, cdp: true },
 ];
 
 async function brainBoard(f) {
@@ -158,7 +167,8 @@ async function capture(browser, shot) {
     r.end(`<!doctype html><style>html,body{margin:0;height:100%;background:#000}iframe{width:100%;height:100%;border:0;display:block}</style><iframe sandbox="${SANDBOX}" src="/g"></iframe>`);
   });
   await new Promise(r => srv.listen(0, r));
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+  const nw = shot.narrow && (process.env.NQ_SURVEY ? { ...shot.narrow, top: null } : shot.narrow); // NQ_SURVEY=1: survey the whole narrow page
+  const ctx = await browser.newContext(nw ? { viewport: { width: nw.width, height: nw.height }, deviceScaleFactor: 1280 / nw.width } : { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
   const page = await ctx.newPage();
   await page.route(/fonts\.(googleapis|gstatic)\.com/, route => {
     try {
@@ -174,26 +184,47 @@ async function capture(browser, shot) {
     await hook(f);
     await shot.prep(f, page);
     const st = await f.evaluate(() => window.__brbTest.state());
-    const master = path.join(ROOT, 'scripts', 'nq-masters', shot.slug, `${shot.state}.png`);
+    const survey = nw && nw.top == null && nw.bottom == null;
+    if (survey) console.log('  card', JSON.stringify(await f.evaluate(() => [...document.querySelectorAll('#card, #card > *')].map(e => { const r = e.getBoundingClientRect(); return [e.id || e.className, Math.round(r.top), Math.round(r.bottom)]; }))));
+    const master = path.join(ROOT, 'scripts', 'nq-masters', shot.slug, `${shot.state}${survey ? '-survey' : ''}.png`);
+    // The slice's top: a number (CSS px), or an element's top less a small margin (its card, so the question
+    // and its answers are the slice), kept inside the page.
+    let clip = null;
+    if (nw && !survey) {
+      // no keyboard focus ring on the first answer: the photograph shows the card as a child first sees it
+      await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
+      await wait(250);
+      const h = nw.width * 9 / 16, edge = (sel, side) => f.evaluate(([q, k]) => { const el = document.querySelector(q); return el ? el.getBoundingClientRect()[k] : 0; }, [sel, side]);
+      // `bottom`: the slice ends just under that element (Quest Race: the card's hint line, so the question,
+      // and its four answers are all in, and the racers' track shows above them).
+      // With both, the slice starts above `top` unless that would cut `bottom` off (a three-line Brain Board
+      // question): then it ends under `bottom`, so the question and every answer are always in.
+      let top = typeof nw.top === 'string' ? await edge(nw.top, 'top') - 8 : nw.top;
+      if (nw.bottom) top = Math.max(top ?? -Infinity, await edge(nw.bottom, 'bottom') + 12 - h);
+      top = Math.max(0, Math.min(nw.height - h, top));
+      clip = { x: 0, y: top, width: nw.width, height: h, scale: 1280 / nw.width };
+      shot.sliceTop = Math.round(top * 10) / 10;
+    }
     fs.mkdirSync(path.dirname(master), { recursive: true });
     const frameEl = await page.$('iframe');
     const cdpShot = async () => { // Quest Race's WebGL view never looks "stable" to Playwright's
       // screenshot wait; a raw CDP capture takes the frame as it stands (the harness page is the
       // iframe, full-bleed).
       const cdp = await ctx.newCDPSession(page);
-      const shot64 = await cdp.send('Page.captureScreenshot', { format: 'png' });
+      const shot64 = await cdp.send('Page.captureScreenshot', clip ? { format: 'png', clip } : { format: 'png' });
       fs.writeFileSync(master, Buffer.from(shot64.data, 'base64'));
     };
     if (shot.cdp) await cdpShot();
+    else if (clip) await page.screenshot({ path: master, clip: { x: clip.x, y: clip.y, width: clip.width, height: clip.height }, timeout: 15000 }).catch(cdpShot);
     else { try { await frameEl.screenshot({ path: master, timeout: 15000 }); } catch { await cdpShot(); } }
     let extra = '';
-    if (WEBP) {
+    if (WEBP && !survey) {
       const dest = path.join(ROOT, 'public', 'img', 'nq', shot.slug, `${shot.state}.webp`);
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', master, '-vf', "scale='min(1280,iw)':-2", '-c:v', 'libwebp', '-quality', '80', dest]);
       extra = ` -> public/img/nq/${shot.slug}/${shot.state}.webp (${Math.round(fs.statSync(dest).size / 1024)} KB)`;
     }
-    console.log(`✓ ${shot.step} nq/${shot.slug}/${shot.state}: ${JSON.stringify(st).slice(0, 180)}${extra}${errors.length ? '  page errors: ' + [...new Set(errors)].join('; ') : ''}`);
+    console.log(`✓ ${shot.step} nq/${shot.slug}/${shot.state}${shot.sliceTop != null ? ` (slice from ${shot.sliceTop}px)` : ''}: ${JSON.stringify(st).slice(0, 180)}${extra}${errors.length ? '  page errors: ' + [...new Set(errors)].join('; ') : ''}`);
   } catch (e) {
     console.log(`✗ ${shot.step} nq/${shot.slug}/${shot.state}: ${e.message.split('\n')[0]}`);
   } finally { await ctx.close(); srv.close(); }

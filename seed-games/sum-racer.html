@@ -438,8 +438,8 @@ function shuffled(arr, rng) { const a = arr.slice(); for (let i = a.length - 1; 
 const SYM = { '+': '+', '-': '−', 'x': '×', '/': '÷' };
 /** A number as a question shows it: 4-digit numbers with a thousands comma ("3,486"), as the lessons write them. */
 const qNum = n => (n >= 1000 ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : String(n));
-/** An answer as the panel shows it: like the question's own numbers (a rounding answer keeps its plain digits). */
-const ansText = (q, n) => (q.op === 'round' ? String(n) : qNum(n));
+/** An answer as the panel shows it: like the question's own numbers (4-digit numbers with their comma, 5,300). */
+const ansText = (q, n) => qNum(n);
 function makeQ(op, x, y) {
   const answer = op === '+' ? x + y : op === '-' ? x - y : op === 'x' ? x * y : x / y;
   return { op, x, y, answer, text: qNum(x) + ' ' + SYM[op] + ' ' + qNum(y), key: x + op + y };
@@ -449,7 +449,7 @@ function makeQ(op, x, y) {
  *  fact saved as "tricky" comes back as the same question, never as a division (makeQ's fall-through). */
 function roundQ(n, place) {
   const answer = Math.round(n / place) * place;
-  return { op: 'round', x: n, y: place, answer, text: 'Round ' + n + ' to the nearest ' + (place === 10 ? 'ten' : 'hundred'), key: 'round' + n + 'to' + place };
+  return { op: 'round', x: n, y: place, answer, text: 'Round ' + qNum(n) + ' to the nearest ' + (place === 10 ? 'ten' : 'hundred'), key: 'round' + n + 'to' + place };
 }
 const rebuildQ = q => (q.op === 'round' ? roundQ(q.x, q.y) : makeQ(q.op, q.x, q.y));
 /** Carrying (add) or borrowing (take away) needed in the ones column? */

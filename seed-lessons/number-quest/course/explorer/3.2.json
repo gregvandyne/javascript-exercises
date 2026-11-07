@@ -13,35 +13,77 @@
   },
   {
    "title": "Two sharing questions",
-   "text": "Division answers two questions. How many in each share, if you know the groups? Or how many groups, if you know the share size?",
+   "text": "Division answers two questions. If you know the number of groups, find the share: 12 plums shared by 4 friends is 3 each. If you know the share, find the groups: 12 plums in bags of 3 fill 4 bags.",
    "art": "branch",
    "visual": {
-    "type": "tiles",
-    "label": "29 plums, 4 friends: 7 each, 1 left over",
-    "values": [
-     "29 plums",
-     "4 friends",
-     "7 each",
-     "1 left"
+    "type": "bars",
+    "label": "Two bars of 12 plums: shared by 4 friends, each share unknown; packed in bags of 3, the bags counted",
+    "rows": [
+     {
+      "label": "Share 12 by 4 friends: how many each?",
+      "parts": [
+       {
+        "w": 0.25,
+        "unknown": true
+       },
+       {
+        "w": 0.25,
+        "unknown": true
+       },
+       {
+        "w": 0.25,
+        "unknown": true
+       },
+       {
+        "w": 0.25,
+        "unknown": true
+       }
+      ]
+     },
+     {
+      "label": "Pack 12 in bags of 3: how many bags?",
+      "parts": [
+       {
+        "w": 0.25,
+        "label": "bag of 3",
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "label": "bag of 3",
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "label": "bag of 3",
+        "tone": 1
+       },
+       {
+        "w": 0.25,
+        "label": "bag of 3",
+        "tone": 1
+       }
+      ]
+     }
     ]
    },
    "focus": [
     {
-     "cue": "29 plums, shared by 4 friends.",
+     "cue": "Know the groups (4 friends): find the share. 12 ÷ 4 = 3 each.",
      "box": [
       5,
-      30.4,
-      45.1,
-      29.9
+      12.3,
+      90,
+      27.5
      ]
     },
     {
-     "cue": "Each friend gets 7, and 1 plum is left over.",
+     "cue": "Know the share (3 a bag): count the groups. 12 ÷ 3 = 4 bags.",
      "box": [
-      50,
-      30.4,
-      45.1,
-      29.9
+      5,
+      42.5,
+      90,
+      27.5
      ]
     }
    ]
@@ -53,7 +95,7 @@
    "art": "people",
    "steps": [
     "29 plums, 4 friends",
-    "each friend gets 7 plums: 4 x 7 = 28",
+    "each friend gets 7 plums: 4 × 7 = 28",
     "1 plum is left over",
     "29 shared by 4 is 7 remainder 1"
    ],
