@@ -143,3 +143,26 @@ test('Hero of Sunvale: ?style=cartoon loads the cartoon look, and the default is
   await expect(f.locator('#endPics canvas')).toHaveCount(2);
   expect(errors).toEqual([]);
 });
+
+// The breeze mockup (?style=breeze): the start pack (hero, Granny, villagers, village props, the Blobble) arrives before
+// play, the world pack follows in the background, both under the frame's CSP and their pinned hashes, with no errors.
+test('Hero of Sunvale: ?style=breeze loads its two model packs and plays', async ({ page }) => {
+  test.setTimeout(300_000);
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  await page.goto('/play/hero-of-sunvale?style=breeze');
+  const f = await gameFrame(page);
+  expect(f.url()).toContain('?okStyle=breeze');
+  await f.waitForFunction(() => window.__brbTest.state().ready, null, { timeout: 180_000 });
+  await expect.poll(() => f.evaluate(() => window.__brbTest.kitLook().models), { timeout: 60_000 }).toBe('ready');
+  await expect.poll(() => f.evaluate(() => window.__brbTest.kitLook().world), { timeout: 60_000 }).toBe('ready');
+  expect(await f.evaluate(() => window.__brbTest.kitLook().style)).toBe('breeze');
+  await f.locator('#newBtn').click();
+  await f.locator('#makerGo').click();
+  await f.locator('#introSkip').click();
+  await expect.poll(() => f.evaluate(() => window.__brbTest.state().screen)).toBe('play');
+  const fight = await f.evaluate(() => { const t = window.__brbTest; t.start({ mission: 'm2', step: 2 }); t.manual(true); t.teleport({ x: 175, z: 250 }); t.step(0.2); t.moveTo(175, 244, { direct: true }); t.step(2.5); const s = t.state(); t.manual(false); return s.enemiesNear.length; });
+  expect(fight).toBeGreaterThan(1);
+  expect(errors).toEqual([]);
+});

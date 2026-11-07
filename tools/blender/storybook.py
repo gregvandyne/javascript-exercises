@@ -85,6 +85,20 @@ def mouth_img(s, open_=False):
     return im.resize((s, s), Image.LANCZOS)
 
 
+def fur_swatch(w, h, seed):
+    """Short soft fur: rows of small curved tufts on a soft light ground (for the boars), not long straight strokes."""
+    im = painted(w, h, (246, 244, 240), seed, 0, grad=0.15, blot=0.08); d = ImageDraw.Draw(im, 'RGBA'); rr = random.Random(seed)
+    for _ in range(int(w * h / 40)):
+        x, y, L = rr.random() * w, rr.random() * h, 3 + rr.random() * 4
+        d.line([(x - L * 0.5, y + L * 0.3), (x, y - L * 0.4), (x + L * 0.5, y + L * 0.3)], fill=(190, 182, 172, 140), width=1)
+    return im.filter(ImageFilter.GaussianBlur(0.5))
+
+
+def foe_atlas():
+    """The foes' atlas: the characters' one with fur in place of the hair strands."""
+    A = char_atlas((70, 52, 36)); A.paste(fur_swatch(128, 64, 41), (0, 128)); return A
+
+
 def char_atlas(iris=(70, 45, 30)):
     """256 px: left half the neutral painted cloth/skin/hair detail (rows), top right the eye, below it the mouth and blush."""
     A = Image.new('RGB', (256, 256), (245, 245, 245))
@@ -593,14 +607,15 @@ def build_big():
 
     def part(name):
         P[name] = Builder('big_' + name); return P[name]
-    steel, steelD, steelL, violet, dark = hexc('#AAB8C8'), hexc('#6E7C8E'), hexc('#DDE6EE'), hexc('#9B6BE8'), hexc('#2B2220')
+    steel, steelD, steelL, violet, dark = hexc('#8A9BB2'), hexc('#4E5A6C'), hexc('#D4DEEA'), hexc('#9B6BE8'), hexc('#2B2220')
     b = part('clank_0')   # the body from the ground: breastplate, belt, pauldrons, helm
     b.add(tsph((0, 0.9, 0), (0.36, 0.36, 0.25), (14, 9)), steel, 'metal', 0, 'white', wonk=0.006)
     b.add(tsph((0, 0.97, 0.06), (0.29, 0.28, 0.2), (12, 8)), steelL, 'metal', 0, 'white')
     b.add(ttube((-0.2, 1.22, 0.24), (0.22, 0.6, 0.21), 0.05, 0.05, 6, 3), violet, 'cloth', 0, 'cloth')   # the sash
-    b.add(tlathe([(0.33, 0.56), (0.36, 0.58), (0.36, 0.64), (0.33, 0.66)], 14), steelD, 'metal', 0, 'white')
+    b.add(tlathe([(0.33, 0.56), (0.36, 0.58), (0.36, 0.64), (0.33, 0.66)], 14), hexc('#C99A00'), 'metal', 0, 'white')   # a gold belt
     for s_ in (1, -1):
-        b.add(tsph((0.38 * s_, 1.42, 0), (0.2, 0.15, 0.22), (10, 7)), steel, 'metal', 0, 'white')
+        b.add(tsph((0.38 * s_, 1.42, 0), (0.2, 0.15, 0.22), (10, 7)), steelL, 'metal', 0, 'white')
+        b.add(tsph((0.38 * s_, 1.48, 0), (0.06, 0.04, 0.06), (6, 4)), hexc('#FFD23F'), 'metal', 0, 'white')   # gold rivets
     bm = tlathe([(0.0, 1.27), (0.24, 1.28), (0.26, 1.4), (0.25, 1.65), (0.22, 1.76), (0.0, 1.8)], 16)
     b.add(bm, steel, 'metal', 0, 'white', wonk=0.004)
     b.add(bbox_rounded((0.36, 0.06, 0.09), tv(0, 1.69, 0.235), 0.025, 2), dark, 'other', 0, 'boots')   # the visor slit
@@ -795,7 +810,11 @@ def compact(ob, rig=None, bone_names=None):
             idx.append(key2i[k])
     P = np.array([v[0] for v in verts], 'float32'); mn, mx = P.min(0), P.max(0); span = np.maximum(mx - mn, 1e-6)
     q = np.round((P - mn) / span * 65535 - 32768).astype('<i2')
-    N = np.round(np.clip(np.array([v[1] for v in verts], 'float32'), -1, 1) * 127).astype('<i1')
+    # normals: octahedral, two signed bytes each (the pack stays small; the game decodes them)
+    n3 = np.array([v[1] for v in verts], 'float32'); n3 /= np.maximum(np.abs(n3).sum(1, keepdims=True), 1e-6)
+    ox, oy = n3[:, 0].copy(), n3[:, 1].copy(); neg = n3[:, 2] < 0
+    ox[neg], oy[neg] = (1 - np.abs(n3[neg, 1])) * np.sign(n3[neg, 0] + 1e-9), (1 - np.abs(n3[neg, 0])) * np.sign(n3[neg, 1] + 1e-9)
+    N = np.round(np.clip(np.stack([ox, oy], 1), -1, 1) * 127).astype('<i1')
     U = np.round(np.clip((np.array([v[2] for v in verts], 'float32') + 4) / 8, 0, 1) * 65535).astype('<u2')
     C = np.round(np.clip(np.array([v[3] for v in verts], 'float32'), 0, 1) * 255).astype('u1')
     Bn = np.array([v[4] for v in verts], 'u1')
@@ -939,7 +958,7 @@ def make_char(name, builder, atlas, out, renders):
     export_glb(os.path.join(out, name + '.glb'), [rig, ob])
     bones, cl = rig_data(rig, clips)
     data = {'name': name, 'meshes': {'body': compact(ob)}, 'bones': bones, 'clips': cl}
-    url, nb = tex_url(atlas, 86); data['tex'] = url
+    url, nb = tex_url(atlas, 80); data['tex'] = url
     if renders:
         turntable(os.path.join(out, 'turn_' + name + '.png'), [ob], 1.75)
     return data
@@ -950,9 +969,9 @@ def make_villager(out, renders):
     P = build_villager(); tex = char_atlas((70, 52, 36)); mat = material('villager_mat', to_bimg(tex, 'villager_tex'))
     obs = {n: b.mesh(mat) for n, b in P.items()}
     export_glb(os.path.join(out, 'villager.glb'), list(obs.values()))
-    data = {'name': 'villager', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
-    for n, o in obs.items():   # a lighter copy of each part: the crowd's far people and every Ink hull
-        if n != 'eyes' and data['meshes'][n]['tris'] > 200: data['meshes'][n]['lod1'] = lod(o, 0.3)
+    # one light version of each part (decimated to about half: the villagers are seen at a few metres, never close up),
+    # for the crowd, the named people and their lines alike; the start pack stays small
+    data = {'name': 'villager', 'meshes': {n: (lod(o, 0.5) if n != 'eyes' and len(o.data.polygons) > 200 else compact(o)) for n, o in obs.items()}, 'tex': tex_url(tex, 80)[0]}
     if renders:   # two people: short hair and a straw hat; a bun and an apron (tints painted on for the review)
         def tint(o, c):
             col = o.data.color_attributes.get('Col')
@@ -969,12 +988,12 @@ def make_villager(out, renders):
 
 
 def make_foes(out, renders):
-    P = build_foes(); tex = char_atlas((70, 52, 36)); mat = material('foes_mat', to_bimg(tex, 'foes_tex'))
+    P = build_foes(); tex = foe_atlas(); mat = material('foes_mat', to_bimg(tex, 'foes_tex'))
     obs = {n: b.mesh(mat) for n, b in P.items()}
     export_glb(os.path.join(out, 'foes.glb'), list(obs.values()))
-    data = {'name': 'foes', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
+    data = {'name': 'foes', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 80)[0]}
     for n, o in obs.items():
-        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(o, 0.3)
+        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(o, 0.22)
     if renders:   # a turntable per foe, assembled at its pivots (game space -> Blender), in a typical tint
         PIV = {'blobble': [(0, 0, 0)], 'grumblin': [(0, 0, 0), (0.3, 0.72, 0), (-0.3, 0.72, 0), (0, 0.3, 0)], 'puffcap': [(0, 0, 0), (0, 0.86, 0)],
                'boar': [(0, 0, 0), (0, 0.62, 0.55), (0, 0.62, 0.55), (0, 0.34, 0)], 'chief': [(0, 0, 0), (0.3, 0.72, 0), (-0.3, 0.72, 0), (0, 0.3, 0)]}
@@ -997,9 +1016,9 @@ def make_big(out, renders):
     P = build_big(); tex = char_atlas((70, 52, 36)); mat = material('big_mat', to_bimg(tex, 'big_tex'))
     obs = {n: b.mesh(mat) for n, b in P.items()}
     export_glb(os.path.join(out, 'big.glb'), list(obs.values()))
-    data = {'name': 'big', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 86)[0]}
+    data = {'name': 'big', 'meshes': {n: compact(o) for n, o in obs.items()}, 'tex': tex_url(tex, 80)[0]}
     for n, o in obs.items():
-        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(o, 0.3)
+        if data['meshes'][n]['tris'] > 300: data['meshes'][n]['lod1'] = lod(o, 0.22)
     if renders:
         PIV = {'clank': [('clank_0', (0, 0, 0)), ('clank_1', (0.42, 1.36, 0)), ('clank_2', (-0.42, 1.36, 0)), ('clank_3', (0, 0.62, 0))],
                'snarlwick': [('snarl_body', (0, 0, 0)), ('snarl_head', (0, 1.9, 0)), ('snarl_crown', (0, 1.9, 0)), ('snarl_armL', (-0.42, 1.78, 0)), ('snarl_armR', (0.42, 1.78, 0))]}
@@ -1022,7 +1041,7 @@ def make_prop(name, builders, tex, out, renders, height, texs=None):
     key = lambda o: o.name.replace(name + '_', '') if o.name != name else 'body'
     data = {'name': name, 'meshes': {key(o): compact(o) for o in obs}}
     for o in obs:   # a lighter level of detail for the distance (props drawn many times over)
-        if data['meshes'][key(o)]['tris'] > 300: data['meshes'][key(o)]['lod1'] = lod(o, 0.3)
+        if data['meshes'][key(o)]['tris'] > 300: data['meshes'][key(o)]['lod1'] = lod(o, 0.22)
     url, nb = tex_url(texs[0], 80); data['tex'] = url
     for b_ob, t in zip(obs, texs):
         if t is not texs[0]: data['meshes'][b_ob.name.replace(name + '_', '')]['tex'] = tex_url(t, 80)[0]

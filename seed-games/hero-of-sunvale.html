@@ -6328,7 +6328,7 @@ function inkWorld() {
     let inks = 0, heroInks = 0; scene.traverse(o => { if (o.userData.okInk) { inks++; if (hero.rig && isUnder(o, hero.rig.root)) heroInks++; } });
     return { version: OK.version, toon: [MAT.terrain.type, MAT.lit.type, MAT.char.type], inks, heroInks, quality: B.quality, detailInk: camera.layers.isEnabled(INK_DETAIL), title: !!(HOS_TITLE && HOS_TITLE.open), theme: B.look.name,
       // the art style (?style=cartoon): the bridge's style, its shader, shadow maps, rounded boxes, the lamp halos
-      style: BREEZE ? 'breeze' : B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, models: BZM.state, windOn: !!(WIND.mesh && WIND.mesh.visible), ground: '#' + TC.g1.getHexString() };
+      style: BREEZE ? 'breeze' : B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, models: BZM.state, world: BZM.world, windOn: !!(WIND.mesh && WIND.mesh.visible), ground: '#' + TC.g1.getHexString() };
   } });
 }
 function isUnder(o, root) { for (let p = o; p; p = p.parent) if (p === root) return true; return false; }
@@ -13813,13 +13813,15 @@ function onBuilt() {
    shipped as a reviewed data pack (scripts/hos-breeze-pack.js; the frame has no network, so no .glb is fetched at run
    time). They replace the procedural hero, Granny Fern, the cottages, the scattered trees, the barrels and the fences;
    colliders and rules are unchanged. If the pack does not load, the procedural props are built after all. */
-const BZ_PACK = { src: '/vendor/data/hero-of-sunvale/1.0.0-cecda87c/breeze-models.js', integrity: 'sha384-oQMDi2Cz5b3CMAZnpzfiFeki8Vx9JdnHZ27AmV1iRn9LduwDaB12AohhHmeUd/A0' };
+const BZ_PACKS = { start: { src: '/vendor/data/hero-of-sunvale/1.0.0-828739d5/breeze-start.js', integrity: 'sha384-lX7Br/jCoWe4EYoRoA7rOu4IG//e0Klz/3BHQxmm7fZevvhrPJOF+CCKMiwRdXml' }, world: { src: '/vendor/data/hero-of-sunvale/1.0.0-828739d5/breeze-world.js', integrity: 'sha384-3zGskgKpLw2fEWPjtPNQvF/BftceTKbKwGovsfs2+0QEde4bNbzIFgeihcxo4Cal' } };
 const BZM = { state: BREEZE ? 'loading' : 'off', data: null, hero: null, granny: null, mixers: [], props: [] };
 const PART = { skin: 1, hair: 2, cloth: 3, cloth2: 4 };
-function bzLoad() {
+/** Load one pack (start: before play; world: in the background once play starts). Resolves with the assets it added. */
+function bzLoad(name) {
   return new Promise(res => {
-    const sc = document.createElement('script'); sc.src = BZ_PACK.src; sc.integrity = BZ_PACK.integrity; sc.crossOrigin = 'anonymous';
-    sc.onload = () => res(window.__hosBreeze || null); sc.onerror = () => res(null); document.head.appendChild(sc);
+    const P = BZ_PACKS[name], sc = document.createElement('script'); sc.src = P.src; sc.integrity = P.integrity; sc.crossOrigin = 'anonymous';
+    const before = new Set(Object.keys(window.__hosBreeze || {}));
+    sc.onload = () => res((window.__hosBreezeLoaded || []).includes(name) ? window.__hosBreeze : null); sc.onerror = () => res(null); document.head.appendChild(sc);
   });
 }
 function bzArr(s, T) { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new T(u.buffer); }
@@ -13828,7 +13830,8 @@ function bzGeo(m, skinned) {
   const n = m.verts, q = bzArr(m.pos, Int16Array), N = bzArr(m.nrm, Int8Array), U = bzArr(m.uv, Uint16Array), C = bzArr(m.col, Uint8Array), Bn = m.bone ? bzArr(m.bone, Uint8Array) : new Uint8Array(m.verts), I = bzArr(m.idx, n < 65536 ? Uint16Array : Uint32Array);
   const P = new Float32Array(n * 3), NN = new Float32Array(n * 3), UV = new Float32Array(n * 2), CC = new Float32Array(n * 3), part = new Uint8Array(n);
   for (let i = 0; i < n; i++) {
-    for (let a = 0; a < 3; a++) { P[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32768) / 65535 * (m.max[a] - m.min[a]); NN[i * 3 + a] = N[i * 3 + a] / 127; }
+    for (let a = 0; a < 3; a++) P[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32768) / 65535 * (m.max[a] - m.min[a]);
+    { let x = N[i * 2] / 127, y = N[i * 2 + 1] / 127; const z = 1 - Math.abs(x) - Math.abs(y); if (z < 0) { const ox = x; x = (1 - Math.abs(y)) * Math.sign(ox || 1); y = (1 - Math.abs(ox)) * Math.sign(y || 1); } const l = Math.hypot(x, y, z) || 1; NN[i * 3] = x / l; NN[i * 3 + 1] = y / l; NN[i * 3 + 2] = z / l; }   // octahedral normals (two bytes)
     UV[i * 2] = U[i * 2] / 65535 * 8 - 4; UV[i * 2 + 1] = U[i * 2 + 1] / 65535 * 8 - 4;
     C1.setRGB(C[i * 4] / 255, C[i * 4 + 1] / 255, C[i * 4 + 2] / 255, THREE.SRGBColorSpace); CC[i * 3] = C1.r; CC[i * 3 + 1] = C1.g; CC[i * 3 + 2] = C1.b; part[i] = Math.round(C[i * 4 + 3] / 255 * 16);
   }
@@ -13912,8 +13915,7 @@ function bzApply(d) {
     const mx = new THREE.AnimationMixer(Gm.mesh); Gm.mixer = mx; Gm.idle = mx.clipAction(Gm.clips.idle); Gm.talk = mx.clipAction(Gm.clips.talk); Gm.idle.play(); BZM.mixers.push(mx);
   }
   if (d.villager) bzVillagers(d.villager);
-  if (d.foes) bzFoes(d.foes);
-  if (d.big) bzBig(d.big);
+  if (d.foes) bzFoes(d.foes);   // the start pack's part of it: the Blobble
   // props: one instanced mesh per model part, for every place in the world
   // geo: a compact mesh (with an optional lighter lod1 for the distance) or a ready BufferGeometry
   const inst = (geo, mat, list, place, tint) => {
@@ -14033,7 +14035,17 @@ function bzFrame(dt) {
   if ((BZM.cullT = (BZM.cullT || 0) - dt) <= 0) { BZM.cullT = 0.5; for (const m of BZM.props) bzCull(m); }
   if (BZM.footprints) BZM.footprints.visible = !renderer.shadowMap.enabled;
 }
-if (BREEZE) { const pack = bzLoad(); GAME.on('ready', () => { pack.then(bzApply); }); }
+/** The world pack, once play has started: each model replaces its procedural stand-in as it arrives. */
+function bzWorld(d) {
+  if (!d) { BZM.world = 'failed'; return; }
+  if (d.foes) bzFoes(d.foes);
+  if (d.big) bzBig(d.big);
+  BZM.world = 'ready';
+}
+if (BREEZE) {
+  const start = bzLoad('start'); BZM.world = 'waiting';
+  GAME.on('ready', () => { start.then(d => { bzApply(d); if (BZM.state === 'ready') { BZM.world = 'loading'; setTimeout(() => bzLoad('world').then(bzWorld), 400); } }); });
+}
 
 /* ==== 15. window.__brbTest: deterministic hooks for automated checks ==== */
 // Real time drives the simulation unless manual(true); step(seconds) runs fixed 1/60 s steps either way. Input
