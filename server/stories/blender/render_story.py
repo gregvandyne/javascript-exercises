@@ -4,7 +4,7 @@
     python3 render_story.py --probe eevee|cycles  render one tiny frame and exit 0 if the engine works here
 
 The spec (written by server/stories/renderer.js) is:
-  { width, height, fps, step, engine: 'eevee'|'cycles', samples, out_dir,
+  { width, height, fps, step, engine: 'eevee'|'cycles', samples, out_dir, style: 'felt'|'cartoon'|'pixel' (default felt),
     scenes: [{ id, set, time, props: [], characters: [{ kind, action, place, color }], camera, frames, seed, focus }] }
 `frames` is the scene length in output frames (fps). With step 2 every other frame is rendered ("on twos", like
 stop-motion) and the assembler holds each one for two frames.
@@ -22,6 +22,7 @@ import bpy
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import feltkit as K  # noqa: E402
+import styles as S  # noqa: E402
 
 PLACES = {'far_left': -3.3, 'left': -1.8, 'center': 0.0, 'right': 1.8, 'far_right': 3.3}
 
@@ -303,6 +304,7 @@ def camera(move, frames, fps, focus_obj, lens=45):
 def build_scene(spec, sc_spec):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     K.reset()
+    K.set_style(spec.get('style') or 'felt')  # felt | cartoon | pixel (styles.py)
     rng = random.Random(int(sc_spec.get('seed', 1)))
     tod = TIMES.get(sc_spec.get('time'), TIMES['night'])
     setup_render(spec, tod)
@@ -349,6 +351,7 @@ def build_scene(spec, sc_spec):
     for l in bpy.data.lights:
         if l.name != 'key' or spec.get('shadows') is False:
             l.use_shadow = False
+    S.finish(spec, sc_spec)  # the style's light, line and render settings (felt: nothing)
     return frames
 
 
@@ -371,6 +374,7 @@ def render_scene(spec, idx, sc_spec):
         sc.render.filepath = os.path.join(out, f'f_{n:05d}.png')
         t1 = time.time()
         bpy.ops.render.render(write_still=True)
+        S.post(spec, sc.render.filepath)  # pixel: palette + upscale (others: nothing)
         print(json.dumps({'scene': idx, 'frame': n + 1, 'of': len(todo), 'sec': round(time.time() - t1, 3)}), flush=True)
     return {'scene': idx, 'frames': len(todo), 'seconds': round(time.time() - t0, 2)}
 

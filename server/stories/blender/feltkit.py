@@ -29,6 +29,21 @@ def reset():
     _MATS.clear()
 
 
+# ---------------------------------------------------------------- style switch (styles.py: felt | cartoon | pixel)
+STYLE = 'felt'
+_restyle = None  # styles.material while the style isn't felt
+
+
+def set_style(name='felt'):
+    """Pick the look before building a scene. felt (the default) is this file's own materials, unchanged."""
+    global STYLE, _restyle
+    import styles
+    STYLE = styles.use(name)
+    styles._MATS.clear()
+    _restyle = None if STYLE == 'felt' else styles.material
+    return STYLE
+
+
 def hexcol(h, a=1.0):
     h = h.lstrip('#')
     r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
@@ -51,6 +66,8 @@ def _nodes(mat):
 
 def felt(color, name=None, sheen=0.9, fuzz=1.0, emit=0.0, emit_color=None, scale=1.0):
     """Wool felt: matte, a soft sheen at grazing angles, mottled colour and a fine fibre bump."""
+    if _restyle:
+        return _restyle('felt', color, emit=emit, emit_color=emit_color)
     key = ('felt', color, sheen, fuzz, emit, emit_color, scale)
     if key in _MATS:
         return _MATS[key]
@@ -110,6 +127,8 @@ def felt(color, name=None, sheen=0.9, fuzz=1.0, emit=0.0, emit_color=None, scale
 
 def paper(color, name=None, emit=0.0, tooth=1.0):
     """Card / paper: flat colour, a soft tooth bump, faint fibres."""
+    if _restyle:
+        return _restyle('paper', color, emit=emit)
     key = ('paper', color, emit, tooth)
     if key in _MATS:
         return _MATS[key]
@@ -144,6 +163,8 @@ def paper(color, name=None, emit=0.0, tooth=1.0):
 
 
 def glossy(color, rough=0.15):
+    if _restyle:
+        return _restyle('glossy', color)
     key = ('glossy', color, rough)
     if key in _MATS:
         return _MATS[key]
@@ -160,6 +181,8 @@ def glossy(color, rough=0.15):
 
 
 def glow(color, strength=4.0, name=None):
+    if _restyle:
+        return _restyle('glow', color, strength=strength)
     key = ('glow', color, strength)
     if key in _MATS:
         return _MATS[key]
@@ -189,6 +212,8 @@ def _blended(mat):
 def haze(color, strength=1.0, axis='radial', power=2.0, name='haze'):
     """Additive soft light (moon halo, lighthouse beam): emission whose strength fades out (radially from the
     object's origin, or along -Z for a beam), added on top of a fully transparent surface. Casts no shadow."""
+    if _restyle:
+        return _restyle('haze', color, strength=strength, axis=axis, power=power, name=name)
     mat = bpy.data.materials.new(name)
     nt, N, L = _nodes(mat)
     out = N.new('ShaderNodeOutputMaterial')
@@ -243,6 +268,8 @@ def haze(color, strength=1.0, axis='radial', power=2.0, name='haze'):
 
 def sky_material(top, bottom, star_density=0.0):
     """The painted backdrop: a vertical gradient on paper, with a mottled paper tooth."""
+    if _restyle:
+        return _restyle('sky', None, top=top, bottom=bottom)
     mat = bpy.data.materials.new('sky')
     nt, N, L = _nodes(mat)
     out = N.new('ShaderNodeOutputMaterial')
