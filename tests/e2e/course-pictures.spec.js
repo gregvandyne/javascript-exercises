@@ -187,7 +187,8 @@ function cueProblem(fig, { s, min }) {
   if (!el) return 'its words are nowhere on screen';
   const r = R(el), f = R(fig), fr = R(fig.querySelector('.sframe'));
   const c = el.cloneNode(true);
-  c.style.cssText = 'position:fixed;left:0;top:0;display:flex;width:auto;max-width:none;white-space:nowrap;visibility:hidden';
+  // its one-line width at its own size (a chip may be set a little smaller to fit: its inline font size counts)
+  c.style.cssText = el.style.cssText + ';position:fixed;left:0;top:0;right:auto;bottom:auto;display:flex;width:auto;max-width:none;white-space:nowrap;visibility:hidden';
   document.body.append(c);
   const one = c.getBoundingClientRect().width; c.remove();
   const box = el === chip ? fr : f, where = el === chip ? 'chip' : el === cell ? 'caption strip' : 'cue list';
