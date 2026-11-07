@@ -160,15 +160,17 @@ function sliceTop(at, H) {
   if (at.sel) { const e = [...document.querySelectorAll(at.sel)].find(x => !x.closest('[hidden]') && x.getClientRects().length); if (e) anchor = e.getBoundingClientRect().top; }
   if (anchor == null) throw new Error(`narrow.at: no ${at.text || at.sel} on screen`);
   let top = Math.max(0, anchor - (at.pad != null ? at.pad : 6) + (at.dy || 0));
-  const G = 2;
-  for (let k = 0; k < 8; k++) {
-    const a = lines.find(l => l[0] < top + G && l[1] > top - G);
-    if (a) { top = Math.max(0, a[0] - G - 1); continue; }
-    const b = lines.find(l => l[0] < top + H + G && l[1] > top + H - G);
-    if (b) { top = b[1] + G + 1 - H; continue; }
-    break;
+  // both edges at least G px clear of every line of text: the nearest such top to the anchor's, earlier tops first
+  // (the anchor stays in the slice), then later ones
+  for (const G of [6, 4, 2.5]) {
+    const clear = y => !lines.some(l => l[0] < y + G && l[1] > y - G);
+    const ok = t => t >= 0 && (t === 0 || clear(t)) && clear(t + H);
+    for (let d = 0; d <= 120; d += 0.5) {
+      if (d <= 40 && ok(top + d)) return Math.round((top + d) * 10) / 10;
+      if (ok(top - d)) return Math.round((top - d) * 10) / 10;
+    }
   }
-  return Math.round(Math.max(0, top) * 10) / 10;
+  throw new Error(`narrow.at: no slice near ${top} has both edges between lines of text`);
 }
 
 async function runGame(browser, slug, list) {
@@ -216,9 +218,9 @@ async function runGame(browser, slug, list) {
         if (s.title) { await wait(600); return { screen: 'title' }; }
         if (s.game === 'would-you-rather') {
           const topic = s.topic || 'online';
-          T.start('alone', { topics: [topic], count: 10 });
+          T.start('alone', { topics: [topic], count: s.topic ? 20 : 10 });   // a CS Quest topic: the whole bank, so the named dilemma comes up
           await wait(600);
-          for (let i = 0; i < 12; i++) {
+          for (let i = 0; i < (s.topic ? 22 : 12); i++) {
             const st = T.state();
             if (st.cur === s.dilemma) {
               if (s.pick) { T.pick(s.pick); await wait(500); }   // the reveal: the choice made and what it costs
@@ -250,11 +252,14 @@ async function runGame(browser, slug, list) {
             else if (a.act) { T.act(a.act); await wait(400); }
             else if (a.acts) { for (const x of a.acts) { T.act(x); await wait(350); } }
             else if (a.claimCard) { T.claimCard(); await wait(400); }
-            else if (a.tap) { T.tap(a.tap); await wait(350); }
+            else if (a.tap != null) { T.tap(a.tap); await wait(350); }
             else if (a.answer) { T.answer(a.answer); await wait(400); }
             else if (a.next) { T.next(); await wait(400); }
             else if (a.click) { const b = [...document.querySelectorAll(a.click.sel || 'button')].filter(x => !a.click.text || (x.getAttribute('aria-label') || x.textContent || '').trim().includes(a.click.text))[a.click.i || 0]; if (b) b.click(); await wait(350); }
-            else if (a.eval) { (0, eval)(a.eval); await wait(350); }
+            // clicks: [[selector, index], ...], each a real click on the game's own control (the frame forbids eval)
+            else if (a.clicks) { for (const [sel, i] of a.clicks) { const b = document.querySelectorAll(sel)[i]; if (b) b.click(); await wait(120); } await wait(250); }
+            // Inside the Machine's card sorter: put the next n cards in their right bins (hw: the hardware cards' words)
+            else if (a.sortCards) { for (let i = 0; i < a.sortCards; i++) { const t = (document.querySelector('.im-face span') || {}).textContent; const b = document.querySelector(`.im-bin[data-id="${a.hw.includes(t) ? 'hw' : 'sw'}"]`); if (b) b.click(); await wait(200); } await wait(250); }
             else if (a.scroll) { const el = document.querySelector(a.scroll); if (el) el.scrollIntoView({ block: a.block || 'start' }); await wait(200); }
             await wait(120);
           }

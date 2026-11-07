@@ -1,0 +1,2377 @@
+[
+ {
+  "game": "robo-route",
+  "state": "maker-1b-key-c",
+  "chapter": "level-maker",
+  "band": "1b",
+  "level": 1,
+  "actions": [],
+  "alt": "Level Maker task 1: the goal is walled in. Open one wall so Bolt can reach it, then press Check.",
+  "concept": "Be the game designer: plan, build, test, fix, explain",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-1b-plan-c",
+  "chapter": "level-maker",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "#######",
+     "#>..#.#",
+     "#.#~~.#",
+     "#.#~~.#",
+     "#.....#",
+     "#####G#",
+     "#######"
+    ]
+   },
+   {
+    "mkCheck": true
+   }
+  ],
+  "alt": "A level built from a plan: Bolt starts top left, the goal is bottom right, and a pond of water is the one tricky part.",
+  "concept": "Plan it first: start, goal and one tricky part",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-1b-built-c",
+  "chapter": "level-maker",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "######",
+     "#>.*.#",
+     "#.##.#",
+     "#K##D#",
+     "####G#",
+     "######"
+    ]
+   },
+   {
+    "mkCheck": true
+   }
+  ],
+  "alt": "A built level with a gem, a key, a door and the goal, and Check says it can be solved: par 17.",
+  "concept": "The maker loop: Check proves a level can be solved and shows its par",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-1b-test-w",
+  "chapter": "level-maker",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "######",
+     "#>.*.#",
+     "#.##.#",
+     "#K##D#",
+     "####G#",
+     "######"
+    ]
+   },
+   {
+    "mkCheck": true
+   },
+   {
+    "mkTest": true
+   },
+   {
+    "program": "right; move; move; pick"
+   },
+   {
+    "steps": 3
+   }
+  ],
+  "alt": "A friend tests the level: the tester builds a program and Bolt drives it, while the maker watches.",
+  "concept": "The designer stays quiet: a tester plays while the designer watches"
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-1b-water-c",
+  "chapter": "level-maker",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "#######",
+     "#>..~K#",
+     "#.#.~.#",
+     "#.#...#",
+     "#.###D#",
+     "#####G#",
+     "#######"
+    ]
+   },
+   {
+    "mkCheck": true
+   }
+  ],
+  "alt": "The key sits behind a strip of water, so Bolt must plan a path around it before the door opens. Check: solvable.",
+  "concept": "Explain your choice: the key behind the water",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-key-c",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 1,
+  "actions": [],
+  "alt": "Pro Level Maker task 1 of 3: the goal is walled in. Open walls so Bolt can reach it, then press Check.",
+  "concept": "Design for someone else: plan, build, test, improve, document",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-task-c",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 2,
+  "actions": [],
+  "alt": "Task 2 of 3: too easy, par is 1. Move the goal or add walls until par is at least 10, and keep it solvable.",
+  "concept": "Keep a timeline: the tasks are checkpoints",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-built-c",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "########",
+     "#>..*..#",
+     "#.####.#",
+     "#.####.#",
+     "#K####D#",
+     "######.#",
+     "######G#",
+     "########"
+    ]
+   },
+   {
+    "mkCheck": true
+   }
+  ],
+  "alt": "A Pro level with a gem, a key and a door on the way to the goal, and Check says it can be solved: par 23.",
+  "concept": "Iterate: plan, build, Check, test, change, test again",
+  "compact": true
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-feedback-w",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "########",
+     "########",
+     "#>.....#",
+     "######.#",
+     "#......#",
+     "#G.....#",
+     "########",
+     "########"
+    ]
+   },
+   {
+    "mkCheck": true
+   },
+   {
+    "mkTest": true
+   },
+   {
+    "program": "move; move; move; move; move; right; move; move; right; move; move; move; move; move; left; move"
+   },
+   {
+    "run": true
+   },
+   {
+    "closeModal": true
+   }
+  ],
+  "alt": "After a friend tests the level, the tester card asks for one fun thing and one confusing thing, with nothing to type.",
+  "concept": "Feedback is information"
+ },
+ {
+  "game": "robo-route",
+  "state": "maker-2-note-c",
+  "chapter": "level-maker",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "makerFree": true
+   },
+   {
+    "mkRows": [
+     "########",
+     "#>.*.*.#",
+     "#.####*#",
+     "#K####.#",
+     "######D#",
+     "######G#",
+     "########",
+     "########"
+    ]
+   },
+   {
+    "mkCheck": true
+   }
+  ],
+  "alt": "A level worth a note: three gems on the way to the door, a key to fetch first, and Check says it can be solved.",
+  "concept": "Write the level note",
+  "compact": true
+ },
+ {
+  "game": "data-detective",
+  "state": "sort-1b-dot-n",
+  "chapter": "sort",
+  "band": "1b",
+  "level": 1,
+  "actions": [],
+  "alt": "Dot the fox stands in the woods and asks the first case's question: who was last in the hall?",
+  "concept": "Meet Dot",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Group by Where",
+    "pad": 80
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "sort-1b-rows-n",
+  "chapter": "sort",
+  "band": "1b",
+  "level": 2,
+  "actions": [],
+  "alt": "Tower Trouble as a table: every row is one team's tower, every column one kind of fact: team, blocks, color.",
+  "concept": "Data is facts in rows",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Team",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "sort-1b-grouped-n",
+  "chapter": "sort",
+  "band": "1b",
+  "level": 3,
+  "actions": [
+   {
+    "acts": [
+     [
+      "group",
+      "pet"
+     ]
+    ]
+   }
+  ],
+  "alt": "The pet case grouped by pet: one bar per kind, counted. Dog 4, Cat 2, Fish 2.",
+  "concept": "Sort or group",
+  "narrow": {
+   "width": 500,
+   "height": 740,
+   "top": 50
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "sort-1b-sorted-n",
+  "chapter": "sort",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "sort",
+      "when"
+     ]
+    ]
+   }
+  ],
+  "alt": "The hall case sorted by time: Eli, Fay, Kai, Gus, Ida, Jo. The last Hall row is Gus at 3:10.",
+  "concept": "Who was in the hall last?",
+  "narrow": {
+   "width": 420,
+   "height": 1100,
+   "at": {
+    "text": "Eli",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "sort-1b-pin-n",
+  "chapter": "sort",
+  "band": "1b",
+  "level": 3,
+  "actions": [
+   {
+    "acts": [
+     [
+      "group",
+      "pet"
+     ]
+    ]
+   }
+  ],
+  "alt": "The grouped bars answer the question, so Dot says: that view answers it, pin your claim. The Pin a claim button lights up.",
+  "concept": "Show me first",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Group by Pet",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "claims-1b-plant-n",
+  "chapter": "claims",
+  "band": "1b",
+  "level": 1,
+  "actions": [],
+  "alt": "The bean plant measured each day: 2, 4, 6, 8, 10 cm. Dot asks: is this claim supported by the chart?",
+  "concept": "Is it true? A claim and its evidence",
+  "narrow": {
+   "width": 500,
+   "height": 740,
+   "top": 50
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "claims-1b-hunch-n",
+  "chapter": "claims",
+  "band": "1b",
+  "level": 3,
+  "actions": [
+   {
+    "claimCard": true
+   }
+  ],
+  "alt": "Two days of data and a big claim: it will be 20 cm tall by day 10. Supported, not supported, or can't tell yet?",
+  "concept": "Enough data?",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Supported",
+    "pad": 60
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "claims-1b-predict-n",
+  "chapter": "claims",
+  "band": "1b",
+  "level": 4,
+  "actions": [
+   {
+    "acts": [
+     [
+      "slider",
+      12
+     ]
+    ]
+   }
+  ],
+  "alt": "Days 1 to 5 grow 2 cm each, up to 10 cm, and the prediction slider for day 6 is set to 12 cm.",
+  "concept": "Predict the plant",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "My prediction",
+    "pad": 110
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "claims-1b-bikes-n",
+  "chapter": "claims",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "acts": [
+     [
+      "claim",
+      0
+     ]
+    ]
+   }
+  ],
+  "alt": "Bikes counted each morning: Thursday's bar is tallest at 15. Dot says the chart goes against the claim that Friday is busiest.",
+  "concept": "Say only what it shows",
+  "narrow": {
+   "width": 500,
+   "height": 740,
+   "top": 50
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-1b-start-n",
+  "chapter": "my-data",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Dog",
+      3
+     ],
+     [
+      "tally",
+      "Cat",
+      2
+     ]
+    ]
+   }
+  ],
+  "alt": "The class survey begins: one stepper per answer, Dog 3 and Cat 2 so far, and Dot explains how to tally, chart and claim.",
+  "concept": "Data from real people",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Pictures",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-1b-tally-n",
+  "chapter": "my-data",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Dog",
+      12
+     ],
+     [
+      "tally",
+      "Cat",
+      3
+     ],
+     [
+      "tally",
+      "Fish",
+      4
+     ],
+     [
+      "tally",
+      "None",
+      2
+     ]
+    ]
+   }
+  ],
+  "alt": "The survey tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2. One mark for every answer.",
+  "concept": "One mark per answer",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Pets at home",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-1b-chart-n",
+  "chapter": "my-data",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Dog",
+      12
+     ],
+     [
+      "tally",
+      "Cat",
+      3
+     ],
+     [
+      "tally",
+      "Fish",
+      4
+     ],
+     [
+      "tally",
+      "None",
+      2
+     ],
+     [
+      "view",
+      "bar"
+     ]
+    ]
+   }
+  ],
+  "alt": "The same tally as a bar chart: Dog 12 towers over Cat 3, Fish 4 and None 2.",
+  "concept": "From tally to chart",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "top": 54
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-1b-claims-n",
+  "chapter": "my-data",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Dog",
+      12
+     ],
+     [
+      "tally",
+      "Cat",
+      3
+     ],
+     [
+      "tally",
+      "Fish",
+      4
+     ],
+     [
+      "tally",
+      "None",
+      2
+     ],
+     [
+      "view",
+      "bar"
+     ]
+    ]
+   },
+   {
+    "claimCard": true
+   }
+  ],
+  "alt": "The claim card for the pet chart: most kids picked Dog; fewest picked Bird; more than half picked Dog; Dog and Fish tied.",
+  "concept": "Fair claims",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Most kids picked Dog",
+    "pad": 14
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-1b-showme-n",
+  "chapter": "my-data",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Dog",
+      12
+     ],
+     [
+      "tally",
+      "Cat",
+      3
+     ],
+     [
+      "tally",
+      "Fish",
+      4
+     ],
+     [
+      "tally",
+      "None",
+      2
+     ],
+     [
+      "view",
+      "bar"
+     ],
+     [
+      "claim",
+      0
+     ]
+    ]
+   }
+  ],
+  "alt": "A claim is pinned, and Dot asks for proof: now show me, tap the bar that proves it.",
+  "concept": "Ask someone else",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Answers:",
+    "pad": 8
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "cleanup-2-messy-n",
+  "chapter": "cleanup",
+  "band": "2",
+  "level": 1,
+  "actions": [],
+  "alt": "Twelve kids typed their pet: Cat, dog, Fish, Dog, d0g, Cat, Dog. Three of the dogs are spelled wrong.",
+  "concept": "Real data is messy",
+  "narrow": {
+   "width": 420,
+   "height": 1100,
+   "at": {
+    "text": "Bo",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "cleanup-2-mess-n",
+  "chapter": "cleanup",
+  "band": "2",
+  "level": 4,
+  "actions": [],
+  "alt": "Sports sign-ups with every kind of mess: soccer in lower case, Jo twice, Tenis misspelled, and an age of 120.",
+  "concept": "Clean it first",
+  "narrow": {
+   "width": 420,
+   "height": 1100,
+   "at": {
+    "text": "Lu",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "cleanup-2-split-n",
+  "chapter": "cleanup",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "group",
+      "pet"
+     ]
+    ]
+   }
+  ],
+  "alt": "Grouped before cleaning: Dog 4, but dog, d0g and Dgo each get a short bar of their own.",
+  "concept": "Pet survey clean-up",
+  "narrow": {
+   "width": 500,
+   "height": 740,
+   "top": 50
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "cleanup-2-share-n",
+  "chapter": "cleanup",
+  "band": "2",
+  "level": 5,
+  "actions": [
+   {
+    "acts": [
+     [
+      "pct"
+     ]
+    ]
+   }
+  ],
+  "alt": "Walkers by class with percent on: Class A 10 of 20 is 50%, Class B 12 of 30 is 40%.",
+  "concept": "Compare by percent",
+  "narrow": {
+   "width": 460,
+   "height": 740,
+   "top": 54
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "models-2-rule-n",
+  "chapter": "models",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "rule",
+      2
+     ]
+    ]
+   }
+  ],
+  "alt": "The ramp model set to distance = 2 × height: the Model column predicts 20, 40, 60, 80, 100 before any trial runs.",
+  "concept": "Rules that predict",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Distance = 2",
+    "pad": 150
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "models-2-low-n",
+  "chapter": "models",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "run"
+     ]
+    ]
+   }
+  ],
+  "alt": "With distance = 1 × height every real trial goes farther than the model: each row is off by a lot.",
+  "concept": "The ramp: the rule is too low",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Height (cm)",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "models-2-fit-n",
+  "chapter": "models",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "run"
+     ],
+     [
+      "rule",
+      2
+     ],
+     [
+      "run"
+     ]
+    ]
+   }
+  ],
+  "alt": "Refined to distance = 2 × height and run again: the trials sit close to the model, and Dot says the model fits.",
+  "concept": "Predict, compare, refine",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Average miss",
+    "pad": 130
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "models-2-balance-n",
+  "chapter": "models",
+  "band": "2",
+  "level": 5,
+  "actions": [
+   {
+    "acts": [
+     [
+      "rule",
+      7
+     ],
+     [
+      "run"
+     ]
+    ]
+   }
+  ],
+  "alt": "Game balance: 20 test runs at one jump power, each a tick or a cross, counted as finished or fell.",
+  "concept": "One trial is not proof",
+  "narrow": {
+   "width": 500,
+   "height": 740,
+   "at": {
+    "text": "Finished",
+    "pad": 250
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-2-fair-n",
+  "chapter": "my-data",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Dog",
+      12
+     ],
+     [
+      "tally",
+      "Cat",
+      3
+     ],
+     [
+      "tally",
+      "Fish",
+      4
+     ],
+     [
+      "tally",
+      "None",
+      2
+     ]
+    ]
+   }
+  ],
+  "alt": "One plain survey question, Pets at home, tallied: Dog 12, Cat 3, Fish 4, Bird 0, Rabbit 0, None 2.",
+  "concept": "Fair questions first",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Pets at home",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-2-own-n",
+  "chapter": "my-data",
+  "band": "2",
+  "level": 3,
+  "actions": [],
+  "alt": "Pick a question: pets, colors, fruit, sport, how we get to school, or our own question.",
+  "concept": "Leading questions",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Pictures",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "fair-2-missing-n",
+  "chapter": "fair",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "acts": [
+     [
+      "sort",
+      "voted"
+     ]
+    ]
+   }
+  ],
+  "alt": "The lunch vote sorted by Voted: every No is a veggie eater. The screen stood in the meat line.",
+  "concept": "Who is missing from the sample?",
+  "narrow": {
+   "width": 420,
+   "height": 1100,
+   "at": {
+    "text": "Lunch",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "fair-2-onegrade-n",
+  "chapter": "fair",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": [
+     [
+      "group",
+      "grade"
+     ]
+    ]
+   }
+  ],
+  "alt": "The recess app testers grouped by grade: one single bar, Grade 3. No other grade tried the app.",
+  "concept": "Fair questions, unfair tests",
+  "narrow": {
+   "width": 500,
+   "height": 740,
+   "top": 50
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "fair-2-voice-n",
+  "chapter": "fair",
+  "band": "2",
+  "level": 3,
+  "actions": [
+   {
+    "acts": [
+     [
+      "pct"
+     ]
+    ]
+   }
+  ],
+  "alt": "The voice helper: worked for 9 of 10 deep voices (90%) and 3 of 6 high voices (50%).",
+  "concept": "Compare percents, not counts",
+  "narrow": {
+   "width": 460,
+   "height": 740,
+   "top": 54
+  }
+ },
+ {
+  "game": "data-detective",
+  "state": "mydata-2-compare-n",
+  "chapter": "my-data",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "acts": [
+     [
+      "tally",
+      "Red",
+      2
+     ],
+     [
+      "tally",
+      "Blue",
+      6
+     ],
+     [
+      "tally",
+      "Green",
+      3
+     ],
+     [
+      "tally",
+      "Yellow",
+      1
+     ],
+     [
+      "other"
+     ],
+     [
+      "pct"
+     ]
+    ]
+   }
+  ],
+  "alt": "Favorite colors in percent: ours next to another class. Blue is 50% here and 33% there.",
+  "concept": "Compare by percent",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Favorite color",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "title-c",
+  "chapter": "title",
+  "band": "1b",
+  "level": 0,
+  "actions": [],
+  "alt": "Packet Post's title screen: Pim the owl at the Netville post office. Deliver every packet. Keep every secret.",
+  "concept": "Meet Pim",
+  "compact": true,
+  "title": true
+ },
+ {
+  "game": "packet-post",
+  "state": "packets-1b-trip-n",
+  "chapter": "packets",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "Grandma's apple picture, cut into 3 numbered packets: packet 2 is on its way down the road.",
+  "concept": "Too big to send: numbered packets",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Grandma wants",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "routes-1b-roads-n",
+  "chapter": "routes",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Many roads to the school: packets can go by Hill Office or River Office, and one road will close.",
+  "concept": "Many roads",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Level 1 of 4",
+    "pad": -32
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "packets-1b-order-n",
+  "chapter": "packets",
+  "band": "1b",
+  "level": 5,
+  "actions": [
+   {
+    "acts": 20
+   }
+  ],
+  "alt": "All six packets are here: 1 and 2 are back in place, and 3, 4, 5 and 6 wait to be tapped in number order.",
+  "concept": "Back in order",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "All packets are here",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-1b-sort-n",
+  "chapter": "locks",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Sorting the mail: home address and mailbox key are Keep, a favorite book is Share; next up, a joke you made up.",
+  "concept": "Private or fine to share?",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Pim is sorting",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-1b-pass-n",
+  "chapter": "locks",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "acts": 4
+   }
+  ],
+  "alt": "A mailbox key built from four word tiles: volcano, giraffe, bicycle, thunder. A computer would need centuries to guess it.",
+  "concept": "Build a passphrase",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Build a mailbox key",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-1b-who-n",
+  "chapter": "locks",
+  "band": "1b",
+  "level": 4,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "Who may know your mailbox key? A trusted adult at home: okay to tell. Your best friend: keep it to yourself.",
+  "concept": "Who may know it?",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Who may know",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-1b-spare-n",
+  "chapter": "locks",
+  "band": "1b",
+  "level": 5,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "Spare copies: a copy in the family's online folder and a printout in a drawer are good; the only copy on one tablet is not.",
+  "concept": "Keep a spare copy",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "A spare key",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "ciphers-1b-wheel-n",
+  "chapter": "ciphers",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 1
+   }
+  ],
+  "alt": "The cipher wheel on shift 3: the secret message DSSOH reads APPLE.",
+  "concept": "Secret codes for fun",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Grandma sent",
+    "pad": 95
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "tricks-1b-bank-n",
+  "chapter": "tricks",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "A card from \"Your bank\", unknown sender: your account is locked, send your mailbox key today. Two cues are already found.",
+  "concept": "Trick or safe?",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "From:",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "tricks-1b-act-n",
+  "chapter": "tricks",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Cues found on the bank card: threatens to close, asks for the key, unknown sender. Then: Safe, Trick or Ask a trusted adult.",
+  "concept": "What to do",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Tap every cue",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "protocols-2-trip-n",
+  "chapter": "protocols",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Five packets, two lost on the way: packets 1 and 2 sit in their mail slots, packet 4 waits in the inbox.",
+  "concept": "Messages in packets",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Five packets, two lost",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "protocols-2-ack-n",
+  "chapter": "protocols",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 6
+   }
+  ],
+  "alt": "Got 1, 2, 3 and 4: four mail slots are ticked, and packet 5, asked for again, is in the inbox.",
+  "concept": "Say got it",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Five packets, two lost",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "protocols-2-check-n",
+  "chapter": "protocols",
+  "band": "2",
+  "level": 3,
+  "actions": [],
+  "alt": "Every packet carries a dot count. Count the dots: a packet whose dots do not match what it says was damaged.",
+  "concept": "Damaged on the way? The checksum",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Every packet carries",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "routes-2-budget-n",
+  "chapter": "routes",
+  "band": "2",
+  "level": 5,
+  "actions": [
+   {
+    "acts": 3
+   }
+  ],
+  "alt": "Hop budget: thirteen hops for four packets. Packet 2 of 4 is on the road, and the counter reads Hops: 3 of 13.",
+  "concept": "Hops and a hop budget",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Hop budget",
+    "pad": 110
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-2-sort-n",
+  "chapter": "locks",
+  "band": "2",
+  "level": 3,
+  "actions": [
+   {
+    "acts": 4
+   }
+  ],
+  "alt": "Physical or digital: a cable lock and a privacy screen are physical; encryption and a virus scanner are digital.",
+  "concept": "Two halves of security",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Netville Post protects",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-2-sealed-n",
+  "chapter": "locks",
+  "band": "2",
+  "level": 4,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "The shop order rides the padlock street: sealed roads wear padlocks, while the open street is shorter but read by a snoopy cat.",
+  "concept": "The padlock",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Level 4 of 7",
+    "pad": -32
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-2-pass-n",
+  "chapter": "locks",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "acts": 4
+   }
+  ],
+  "alt": "Four random word tiles make the key: volcano, giraffe, bicycle, thunder. A computer would need about centuries.",
+  "concept": "Strong passphrases",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Build a mailbox key",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "locks-2-post-n",
+  "chapter": "locks",
+  "band": "2",
+  "level": 7,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "Share or Shield: your home address. Good side: friends could send you a card. Risk: a stranger could turn up at your door.",
+  "concept": "Think before you post",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Share or Shield",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "ciphers-2-shift-n",
+  "chapter": "ciphers",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "acts": 1
+   }
+  ],
+  "alt": "The shift cipher wheel turned to 3: DSSOH reads APPLE.",
+  "concept": "A shift of 3",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Grandma sent",
+    "pad": 95
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "ciphers-2-brute-n",
+  "chapter": "ciphers",
+  "band": "2",
+  "level": 3,
+  "actions": [],
+  "alt": "An unknown shift: turn the wheel one step at a time until DAOWQF turns into a real word.",
+  "concept": "Brute force",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "A secret word with an unknown",
+    "pad": 95
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "ciphers-2-stego-n",
+  "chapter": "ciphers",
+  "band": "2",
+  "level": 5,
+  "actions": [
+   {
+    "acts": 8
+   }
+  ],
+  "alt": "Hide a heart inside an ordinary picture: every pixel is a number, and its last bit, odd or even, carries the secret.",
+  "concept": "Hiding is not scrambling",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Level 5 of 7",
+    "pad": -32
+   }
+  }
+ },
+ {
+  "game": "packet-post",
+  "state": "tricks-2-fake-n",
+  "chapter": "tricks",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "acts": 2
+   }
+  ],
+  "alt": "A card that says it is from Your bank, but carries an unknown sender badge: the name is faked.",
+  "concept": "Faked senders",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "From:",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "title-c",
+  "chapter": "title",
+  "band": "1b",
+  "level": 0,
+  "actions": [],
+  "alt": "Inside the Machine's title screen: Gizmo the mouse. Parts, fixes, bits and gadgets with Gizmo.",
+  "concept": "Meet Gizmo",
+  "compact": true,
+  "title": true
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "parts-1b-jobs-n",
+  "chapter": "parts",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "tap": "screen"
+   }
+  ],
+  "alt": "Which part takes the photo? Screen, microphone, speaker, battery, touch sensor or camera: every part has its own job.",
+  "concept": "Every part has a job",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Which part",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "hwsw-1b-sort-n",
+  "chapter": "hw-sw",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "sortCards": 5,
+    "hw": [
+     "Screen",
+     "Keyboard",
+     "Battery",
+     "Camera",
+     "Speaker",
+     "Processor chip",
+     "Printer"
+    ]
+   }
+  ],
+  "alt": "Sorting cards into Hardware, what you can touch, and Software, the instructions. Five cards are sorted so far.",
+  "concept": "Hardware and software",
+  "narrow": {
+   "width": 480,
+   "height": 740,
+   "at": {
+    "text": "cards to go",
+    "pad": 100
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "hwsw-1b-tap-n",
+  "chapter": "hw-sw",
+  "band": "1b",
+  "level": 2,
+  "actions": [
+   {
+    "tap": "finger"
+   },
+   {
+    "tap": "touch"
+   },
+   {
+    "tap": "cpu"
+   },
+   {
+    "tap": "app"
+   }
+  ],
+  "alt": "A Tap Travels: your finger taps, the touch sensor feels it, the processor works it out, the camera app says take a photo.",
+  "concept": "A tap travels",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "A Tap Travels",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-1b-ticket-n",
+  "chapter": "fixit",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "tap": "hold"
+   }
+  ],
+  "alt": "Ticket: it will not turn on. Hold the power button: still a black screen. Each check shows how many minutes it takes.",
+  "concept": "It is not working!",
+  "narrow": {
+   "width": 480,
+   "height": 740,
+   "at": {
+    "text": "It will not turn on",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-1b-quick-n",
+  "chapter": "fixit",
+  "band": "1b",
+  "level": 2,
+  "actions": [],
+  "alt": "No wireless connection: quick checks like airplane mode take 1 minute, restarting the network box takes 5.",
+  "concept": "Quick checks first",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Time used",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-1b-nosound-n",
+  "chapter": "fixit",
+  "band": "1b",
+  "level": 3,
+  "actions": [
+   {
+    "tap": "plugged"
+   },
+   {
+    "tap": "volume"
+   }
+  ],
+  "alt": "No sound in the headphones: two quick checks done, volume up and plugged in all the way. Next on the list: is it muted?",
+  "concept": "No sound",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "The volume is up",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-1b-caps-n",
+  "chapter": "fixit",
+  "band": "1b",
+  "level": 5,
+  "actions": [],
+  "alt": "The password does not work, even though you know it. The first check on the list: is caps lock on?",
+  "concept": "Small clues",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Time used",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-1b-five-n",
+  "chapter": "bits",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "tap": 2
+   },
+   {
+    "tap": 4
+   }
+  ],
+  "alt": "Five switches worth 16, 8, 4, 2 and 1: the 4 and the 1 are on, and the total reads 5.",
+  "concept": "Make the number 5",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Five switches",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-1b-pick-n",
+  "chapter": "bits",
+  "band": "1b",
+  "level": 2,
+  "actions": [],
+  "alt": "Read the cards: 16 off, 8 off, 4 on, 2 on, 1 off. Which number do the switches make: 6, 42 or 2?",
+  "concept": "Counting with bits",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Which number do the switches make",
+    "pad": 60
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-1b-pixels-n",
+  "chapter": "bits",
+  "band": "1b",
+  "level": 3,
+  "actions": [
+   {
+    "clicks": [
+     [
+      ".im-px",
+      1
+     ],
+     [
+      ".im-px",
+      3
+     ],
+     [
+      ".im-px",
+      5
+     ],
+     [
+      ".im-px",
+      6
+     ],
+     [
+      ".im-px",
+      7
+     ],
+     [
+      ".im-px",
+      8
+     ],
+     [
+      ".im-px",
+      9
+     ],
+     [
+      ".im-px",
+      10
+     ],
+     [
+      ".im-px",
+      11
+     ],
+     [
+      ".im-px",
+      12
+     ],
+     [
+      ".im-px",
+      13
+     ],
+     [
+      ".im-px",
+      14
+     ]
+    ]
+   }
+  ],
+  "alt": "A picture as a grid of pixels: rows 1 to 3 are copied, dark where the row says 1, light where it says 0.",
+  "concept": "Pictures are dots",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "sel": ".im-px",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-1b-photo-n",
+  "chapter": "bits",
+  "band": "1b",
+  "level": 5,
+  "actions": [],
+  "alt": "You take a photo and switch the tablet off. Where is the photo? In storage, kept as bits; gone forever; on the dark screen.",
+  "concept": "Where does a photo live?",
+  "narrow": {
+   "width": 480,
+   "height": 740,
+   "at": {
+    "text": "You take a photo",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "gadget-2-brief-n",
+  "chapter": "gadget",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "tap": "motion"
+   },
+   {
+    "tap": "cpu"
+   }
+  ],
+  "alt": "The step counter brief: small, cheap, lasts all day. A motion sensor and a processor are in; the needs list ticks them off.",
+  "concept": "What makes a gadget",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Step counter",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "gadget-2-sensors-n",
+  "chapter": "gadget",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "tap": "moisture"
+   }
+  ],
+  "alt": "The plant waterer brief: it needs something that feels dry soil. The moisture sensor is in, and the need is ticked.",
+  "concept": "Sensors",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Plant waterer",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "gadget-2-trade-n",
+  "chapter": "gadget",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "tap": "motion"
+   },
+   {
+    "tap": "screen"
+   },
+   {
+    "tap": "wireless"
+   },
+   {
+    "tap": "bigbatt"
+   },
+   {
+    "tap": "cpu"
+   }
+  ],
+  "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
+  "concept": "Tradeoffs",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Something that feels each step",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-2-flow-n",
+  "chapter": "fixit",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "tap": "power"
+   },
+   {
+    "tap": "paper"
+   },
+   {
+    "tap": "queue"
+   },
+   {
+    "tap": "which"
+   }
+  ],
+  "alt": "The printer prints nothing: the flowchart is built cheapest first: is it on, is there paper, is the job stuck, the right printer?",
+  "concept": "The printer prints nothing",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "The printer prints nothing",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-2-start-n",
+  "chapter": "fixit",
+  "band": "2",
+  "level": 2,
+  "actions": [],
+  "alt": "No internet on the laptop: before touching anything, build a flowchart of yes/no questions, cheapest first.",
+  "concept": "Fixers do not guess",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "No internet on the laptop",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "fixit-2-swap-n",
+  "chapter": "fixit",
+  "band": "2",
+  "level": 5,
+  "actions": [],
+  "alt": "The headset microphone is silent: build the flowchart, and if it is still broken, swap a part.",
+  "concept": "The swap test",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "The headset microphone",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-2-21-n",
+  "chapter": "bits",
+  "band": "2",
+  "level": 1,
+  "actions": [
+   {
+    "tap": 0
+   },
+   {
+    "tap": 2
+   },
+   {
+    "tap": 4
+   }
+  ],
+  "alt": "Five bits worth 16, 8, 4, 2 and 1: 16, 4 and 1 are on, so the bits read 10101 and the total is 21.",
+  "concept": "Binary place values",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Five bits",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-2-byte-n",
+  "chapter": "bits",
+  "band": "2",
+  "level": 3,
+  "actions": [
+   {
+    "tap": 0
+   }
+  ],
+  "alt": "Eight bits make a byte, worth 128 down to 1. The 128 bit alone is on: a middle gray, 128.",
+  "concept": "More bits, more values",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Eight bits make a byte",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "bits-2-rgb-n",
+  "chapter": "bits",
+  "band": "2",
+  "level": 2,
+  "actions": [
+   {
+    "clicks": [
+     [
+      ".im-stepper > :last-child",
+      0
+     ],
+     [
+      ".im-stepper > :last-child",
+      0
+     ],
+     [
+      ".im-stepper > :last-child",
+      0
+     ],
+     [
+      ".im-stepper > :last-child",
+      0
+     ],
+     [
+      ".im-stepper > :last-child",
+      0
+     ],
+     [
+      ".im-stepper > :last-child",
+      0
+     ],
+     [
+      ".im-stepper > :first-child",
+      2
+     ],
+     [
+      ".im-stepper > :first-child",
+      2
+     ],
+     [
+      ".im-stepper > :first-child",
+      2
+     ]
+    ]
+   }
+  ],
+  "alt": "Match the swatch: the target is 220, 90, 40, an orange. Red 220, green 100, blue 40 already looks the same.",
+  "concept": "One thing, many codes: a color as three numbers",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Target: 220",
+    "pad": 150
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-1b-watch-n",
+  "chapter": "design-lab",
+  "band": "1b",
+  "level": 1,
+  "actions": [],
+  "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana: which moment is she struggling?",
+  "concept": "Made for everyone",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Ana",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-1b-change-n",
+  "chapter": "design-lab",
+  "band": "1b",
+  "level": 1,
+  "actions": [
+   {
+    "tap": 2
+   }
+  ],
+  "alt": "Pick two changes that would help Ana: bigger text, a bigger Play button, captions for sounds, read the menu aloud and more.",
+  "concept": "Every switch is for someone",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Bigger text",
+    "pad": 24
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-1b-sol-n",
+  "chapter": "design-lab",
+  "band": "1b",
+  "level": 3,
+  "actions": [],
+  "alt": "Sol is six and cannot read yet. A box of words pops up: Save your game? Yes or No. Sol taps anywhere and loses.",
+  "concept": "Ask for ideas",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Sol",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-2-ren-n",
+  "chapter": "design-lab",
+  "band": "2",
+  "level": 3,
+  "actions": [
+   {
+    "tap": 2
+   }
+  ],
+  "alt": "Ren plays in bright sun: changes to pick from include stronger contrast, outlines and a sun mode.",
+  "concept": "Edges help everyone",
+  "narrow": {
+   "width": 480,
+   "height": 740,
+   "at": {
+    "text": "Pick two changes",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-2-tao-n",
+  "chapter": "design-lab",
+  "band": "2",
+  "level": 4,
+  "actions": [],
+  "alt": "Tao tries face unlock. The makers only tested it on faces like their own, and it does not recognize Tao.",
+  "concept": "Bias",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Tao",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-2-taofix-n",
+  "chapter": "design-lab",
+  "band": "2",
+  "level": 4,
+  "actions": [
+   {
+    "tap": 3
+   }
+  ],
+  "alt": "Fixes for Tao: test with people of many ages, skin tones and faces, and always offer a passcode as another way in.",
+  "concept": "Who was missing?",
+  "narrow": {
+   "width": 480,
+   "height": 740,
+   "at": {
+    "text": "Pick two changes",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "inside-the-machine",
+  "state": "design-2-ana-n",
+  "chapter": "design-lab",
+  "band": "2",
+  "level": 1,
+  "actions": [],
+  "alt": "Ana loves puzzle games, but small text is a blur to her. Watch Ana and tap the moment she struggles.",
+  "concept": "Design for real people",
+  "narrow": {
+   "width": 420,
+   "height": 740,
+   "at": {
+    "text": "Ana",
+    "pad": 10
+   }
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-1b-paper-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "1b",
+  "level": 0,
+  "dilemma": "tech-17",
+  "actions": [],
+  "alt": "Would you rather: every lesson on a tablet, or every lesson on paper?",
+  "concept": "What is technology? A tablet and paper",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-1b-call-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "1b",
+  "level": 0,
+  "dilemma": "tech-6",
+  "actions": [],
+  "alt": "Would you rather: video-call a relative far away every day, or visit them once a month?",
+  "concept": "Tech changes how we live: video calls",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-1b-map-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "1b",
+  "level": 0,
+  "dilemma": "tech-11",
+  "actions": [],
+  "alt": "Would you rather: a map app that picks your route, or a paper map and your own choices?",
+  "concept": "One invention you use every day",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-2-ads-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "2",
+  "level": 0,
+  "dilemma": "tech-8",
+  "actions": [],
+  "alt": "Would you rather: a game that is free but shows ads, or a game you pay for once with no ads?",
+  "concept": "Tradeoffs everywhere",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-2-jobs-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "2",
+  "level": 0,
+  "dilemma": "tech-20",
+  "actions": [],
+  "alt": "Would you rather have a job building robots, or a job fixing robots?",
+  "concept": "Automation changes jobs",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-2-map-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "2",
+  "level": 0,
+  "dilemma": "tech-11",
+  "actions": [],
+  "alt": "Would you rather: a map app that picks your route, or a paper map and your own choices?",
+  "concept": "Hidden costs",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "game": "would-you-rather",
+  "state": "tech-2-voice-n",
+  "chapter": "tech",
+  "topic": "tech",
+  "band": "2",
+  "level": 0,
+  "dilemma": "tech-7",
+  "actions": [],
+  "alt": "Would you rather: a voice helper that knows everything, or one that never listens unless you press a button?",
+  "concept": "A benefit and a privacy cost",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ }
+]
