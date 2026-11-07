@@ -121,8 +121,11 @@ html.dh-live .ok-row{display:none!important}
 .dh-sheet .dh-who-btns span{max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dh-sheet .dh-btn{flex:none;align-self:center;min-width:140px}
 /* pass and play: the drawer's word stays covered while the others watch ("My word" shows it for a moment) */
-.dh-word.peek>span{filter:blur(10px)}
-.dh-word.peek.show>span{filter:none}
+.dh-word.peek>span{position:relative;visibility:hidden}
+.dh-word.peek>span::after{content:'';visibility:visible;position:absolute;inset:18% 0;border-radius:10px;background:var(--ok-edge);opacity:.28}
+.dh-word.peek.show>span{visibility:visible}
+.dh-word.peek.show>span::after{content:none}
+.dh-word.peek>button[aria-pressed="true"]{background:var(--ok-edge);color:var(--ok-card)}
 .dh-guess.ok .dh-slot{background:var(--goodTint);border-style:solid}
 .dh-guess.no .dh-slots{animation:dhShake .35s ease}
 .dh-preview{margin:0;text-align:center;font-size:24px;font-weight:800;min-height:1.3em}
@@ -2160,12 +2163,16 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       U.panel([el('h2', '', t('pickWord')), cards(ch.map(function (x) { return x.w; }), ch.map(function (x) { return x.e; }), function (i) { drawTurn(ch[i]); }), el('p', '', t('notLetters'))]);
       M.cards = true; void p;
     }
-    /* The drawer draws while the others watch and call out their guesses: the word stays covered ("My word" shows it
-       for a moment); "Someone said it!" and who ends the turn. Done (or the clock) passes the device to the guessers. */
+    /* The drawer draws while the others watch and call out their guesses: the word stays covered ("My word" shows and
+       hides it); "Someone said it!" and who ends the turn. Done (or the clock) passes the device to the guessers. */
     function drawTurn(word) {
       M.used[word.id] = 1; M.word = word; M.ph = 'draw';
       U.panel(null);
-      var peek = btn('dh-btn', t('showWord'), 'eye', function () { U.word.classList.add('show'); clearTimeout(M.peekT); M.peekT = setTimeout(function () { U.word.classList.remove('show'); }, 2500); });
+      // a switch: tap to show, tap again to cover (it covers itself after 5 s too). A plain cover, not a blur: a blur is
+      // slow to redraw on phones.
+      var peek = btn('dh-btn', t('showWord'), 'eye', function () { showWord(!U.word.classList.contains('show')); });
+      function showWord(on) { U.word.classList.toggle('show', on); peek.setAttribute('aria-pressed', String(on)); clearTimeout(M.peekT); if (on) M.peekT = setTimeout(function () { showWord(false); }, 5000); }
+      peek.setAttribute('aria-pressed', 'false');
       U.word.hidden = false; U.word.textContent = ''; U.word.className = 'dh-word peek'; U.word.appendChild(el('small', '', t('drawThis'))); U.word.appendChild(el('span', '', word.e)); U.word.appendChild(el('span', '', caps(word.w, WLANG))); U.word.appendChild(peek);
       fit(U.word, 13);
       U.side.textContent = ''; U.side.appendChild(tools.el);

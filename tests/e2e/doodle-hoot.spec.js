@@ -132,8 +132,14 @@ test('pass and play for two: cover, word cards, drawing, said out loud, the gues
     await page.mouse.move(box.x + 40, box.y + 40); await page.mouse.down();
     await page.mouse.move(box.x + box.width - 40, box.y + box.height - 40, { steps: 10 }); await page.mouse.up();
     await until(f, s => s.strokes === 1);
-    // the word stays covered while the others watch; "My word" shows it for a moment
+    // the word stays covered while the others watch; "My word" is a switch: tap shows it, tap again covers it
     await expect(f.locator('.dh-word')).toHaveClass(/peek/);
+    if (turn === 0) {
+      const peek = f.locator('.dh-word > button');
+      await expect(f.locator('.dh-word')).not.toHaveClass(/show/);
+      await peek.click(); await expect(f.locator('.dh-word')).toHaveClass(/show/); await expect(peek).toHaveAttribute('aria-pressed', 'true');
+      await peek.click(); await expect(f.locator('.dh-word')).not.toHaveClass(/show/); await expect(peek).toHaveAttribute('aria-pressed', 'false');
+    }
     if (turn === 0) {
       expect(await frameProblems(f)).toEqual([]); expect(await pageScrollsSideways(page)).toBe(false);
       // someone called it out: "Someone said it!", then who
