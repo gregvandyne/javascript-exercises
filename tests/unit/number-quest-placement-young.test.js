@@ -49,7 +49,7 @@ test('one green ball, not "1 green balls"; the data strand’s shell count is a 
     assert.doesNotMatch(p2, /\b1 (hours|minutes|balls|apples|marbles)\b/, `${t.id}: "${p2}"`);
   }
   for (const t of BANK.templates.filter(t => t.strand === 'data-chance' && t.archetype === 'count')) {
-    assert.match(generateItem(t, 2).prompt, /sorted the beach finds into piles/, `${t.id}: a data count says it is sorting`);
+    assert.match(generateItem(t, 2).prompt, /making a chart of her beach finds/, `${t.id}: a data count says it is for a chart`);
   }
   for (const t of BANK.templates.filter(t => t.strand !== 'data-chance' && t.archetype === 'count')) {
     assert.match(generateItem(t, 2).prompt, /^Count the \w+\. How many are there\?$/, t.id);
