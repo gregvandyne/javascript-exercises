@@ -958,7 +958,7 @@ const LIVE = !!(window.BRB && BRB.live && BRB.live.active);
 
 /* ---------- words: English is the key; a language pack adds the translation (Oomba.strings) ---------- */
 const LANG0 = String(O.lang || 'en'), IS_EN0 = /^en/.test(LANG0);
-const PACK_VER = '1.0.0-a7ee1926', PACK_SRI = {"es":"sha384-GZrrJQgt0Ktcj0KhvP+mZCpOzVsTPlJriozkojVEc1QU/FbSBlpuMuoi34SeAg83","fr":"sha384-Y1DklMO/H0ZKyxpnHzuxFMM+3CDoDTQ82AuhhGn2LOtnxHLQa48efBqV1Ns93eIO","de":"sha384-egKJ6rjqZ0NLho9IKqjMn9QzLD72fPcSLYPubYprDgYcxhC/+M8XytaB6oohoRau","it":"sha384-A+6bofacOGvPjVhI2vtAqOAtAKVGHuTrE3diTXHN3dqhZ4h37pjhN4cb5kQrYldC","pt":"sha384-Mes7d/sWBesx00iUvGQsy2fxD3geTMal7+FZf/r7Mm1FF4Yf1iRsFdbMlusAYAem","nl":"sha384-sPVf0CJJWzXaiUW1G3FTuoQQn3ywo0H7XGNow8wCK+KrXYLVwYnXIc1nb//YzAM3","ru":"sha384-JIPalNcfeCp2n9I4J4TBptAPgUxJHn6XtJ+sqGs1pCVa4szOvgX9P58w1I9EegJg","ja":"sha384-WjBRKY5JinkIotzYUZLocP5qkd1aBRpBxuVIoGMvLqgO00Zu4W3XfiEZxEplJk1o","zh-Hant":"sha384-ws8MvOYZXtLAvY+itX7h3Oxqn2ut8XAS0RyPqwpHlILfLylCVaCfCTaqudcM/uVU","he":"sha384-Gkx0d7aLhGD66AHNylEFbeYvd8+vAv/zGI7B7bWGvIvWqlz5BiOW0Cdc1BMLMVNl","ar":"sha384-YeCPR94ZFtJX3L/as46Juz6XMztVspnkoTxHhOf7BQ4xzVMzvRobM7onh1+QswB/"};
+const PACK_VER = '1.0.0-357f9f1f', PACK_SRI = {"es":"sha384-pW5OvZTNY8vPTGRdW+se8p75UhWPgd8ddhuqQTQa8UtlC2Y582HcXupfAVLiyA8P","fr":"sha384-zZPqjwWyoxkQkh2JbG+qcUeSE0rw/4XZVv983UNyNFNPFLuIH/TMm5qqXCSRRxhB","de":"sha384-mGUjqOxRkfp2EAutZcwgvCMKR/H1QTmo5j0xieEQ9v5iTys6qQVzrqQj49T+T9Ed","it":"sha384-0dOEoQlVZt/2VSvEqZd3NPwAT+vmDdBnMndjcMDMltTMZ0QXxE14D3arj/bG20Bv","pt":"sha384-bJIiqFCxGdJ9Fruwn8+urjukKwuiKcLkz9zkswZYdLcI3IrUNks0zDrReSEP7EDY","nl":"sha384-OoKobCFPE4YNntDvi3RfXOD8fs9fHCvMm2e9Wj/njDbOLZWfXS0Y4/4Lmox+SZt7","ru":"sha384-ReV8xeR6iKGdKXLBt7QGjy3cNTf63E+uC15hkVKZ4O0SFdOcak+ik66EdDJZWzEp","ja":"sha384-znEplYE+hVZwuJcuiVWMqyYS4pkJUDfGnlqg6BiXMKYpTv9qjduMcG3PX5O6AwDW","zh-Hant":"sha384-SgsBqAb2TTf7nGqhnKwDwriAEe4MzLA6jj5oV9lDDrwEIFdSA4uNMm5zvua+cyrU","he":"sha384-VQjrGMuZXEaunH1zfg9PV29jUlp6TUuhnGprBJj5WphcpoQCXKyhv5JxzkcPAXSy","ar":"sha384-C+nIO8/JfZMqSD7KIqTlCifaO8MU63TXQCW5gOaO6cXQgG+mKvbjPaZOYeMAnS9I"};
 const PACK = await new Promise(res => {
   if (IS_EN0 || !PACK_VER || !PACK_SRI[LANG0]) return res(null);
   const s = document.createElement('script');
@@ -1416,7 +1416,7 @@ function syncSort() {
 }
 
 /* ----- pass levels: the passphrase builder ----- */
-const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'many years', 'centuries'];
+const GUESS_TIME = ['a few seconds', 'a few minutes', 'a few days', 'a hundred years', 'centuries'];
 function renderPassPanel() {
   const run = S.run, I = run.inst, panel = UI.panel, board = UI.board; board.innerHTML = '';
   const fill = cardHost(true); fill.style.width = '100%';
@@ -1847,6 +1847,8 @@ async function solved(flow) {
   nextLevel();
 }
 function caseClosed(check) {
+  // a level's last 'Think again' toast must not sit over the check card (its timer can be held while a card is open)
+  const tt = document.querySelector('.ok-toast.on'); if (tt) tt.classList.remove('on');
   const tiles = check.tiles.map(t => tr(t));
   const who = window.innerHeight < 520 ? undefined : (S.pim || undefined);   // on a short screen the card stays centered without the asker
   const order = E.rng(E.seedOf((S.level ? S.level.id : '') + ':check:' + S.seed0 + ':' + S.attempt)).shuffle(tiles.map((_, k) => k));
