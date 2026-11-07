@@ -6033,6 +6033,10 @@
       "locked": "Verrouillé",
       "preview": "Aperçu",
       "lockedNote": "Cette étape est encore verrouillée. Termine d’abord l’étape {n} :",
+      "stamps": "Tes tampons",
+      "stampsCount": "{n} tampons sur {total}",
+      "stampEarned": "Tampon gagné",
+      "stampToEarn": "Termine cette unité pour le gagner",
       "unit": "Unité {n}",
       "units": "Unités {from} à {to}",
       "build": {
@@ -6065,6 +6069,7 @@
     "check": {
       "h": "Petit quiz",
       "intro": "Trois questions. Deux bonnes réponses ouvrent le module de jeu.",
+      "introTalk": "Trois questions. Deux bonnes réponses terminent cette étape.",
       "q": "Question {n} sur {total}",
       "send": "Vérifier mes réponses",
       "done": "Quiz réussi",

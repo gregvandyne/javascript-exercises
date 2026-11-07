@@ -6034,6 +6034,10 @@
       "locked": "Gesperrt",
       "preview": "Vorschau",
       "lockedNote": "Dieser Schritt ist noch gesperrt. Schließ zuerst Schritt {n} ab:",
+      "stamps": "Deine Stempel",
+      "stampsCount": "{n} von {total} Stempeln",
+      "stampEarned": "Stempel verdient",
+      "stampToEarn": "Schließ diese Einheit ab, um ihn zu verdienen",
       "unit": "Einheit {n}",
       "units": "Einheiten {from}–{to}",
       "build": {
@@ -6066,6 +6070,7 @@
     "check": {
       "h": "Kurzer Test",
       "intro": "Drei Fragen. Zwei richtige öffnen das Spielmodul.",
+      "introTalk": "Drei Fragen. Zwei richtige schließen diesen Schritt ab.",
       "q": "Frage {n} von {total}",
       "send": "Antworten prüfen",
       "done": "Test bestanden",

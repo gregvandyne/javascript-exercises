@@ -390,7 +390,7 @@ function loadCyber(items) {
   const reg = readJson(path.join(CD, 'units.json'));
   const registry = readJson(path.join(CD, 'standards.json'));
   const gameInfo = readJson(path.join(CSQ, 'games.json')).games || {};
-  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}) }));
+  const groups = (reg.units || []).map(u => ({ id: u.group, units: [u.n], game: u.tool || null, emoji: u.emoji || '💡', title: u.title, ...(u.sub ? { sub: u.sub } : {}), ...(u.stamp ? { stamp: u.stamp } : {}) }));
   const steps = {};
   const problems = {};
   for (const band of BANDS) {

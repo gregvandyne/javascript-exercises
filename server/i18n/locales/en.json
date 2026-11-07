@@ -6376,6 +6376,10 @@
       "locked": "Locked",
       "preview": "Preview",
       "lockedNote": "That step is locked for now. Finish step {n} first:",
+      "stamps": "Your stamps",
+      "stampsCount": "{n} of {total} stamps",
+      "stampEarned": "Stamp earned",
+      "stampToEarn": "Finish this unit to earn it",
       "unit": "Unit {n}",
       "units": "Units {from}–{to}",
       "build": {
@@ -6409,6 +6413,7 @@
     "check": {
       "h": "Quick check",
       "intro": "Three questions. Get two right to open the game module.",
+      "introTalk": "Three questions. Get two right to finish this step.",
       "q": "Question {n} of {total}",
       "send": "Check my answers",
       "done": "Check passed",
