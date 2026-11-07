@@ -39,7 +39,7 @@ if GPU not in ("L4", "L40S", "A10G", "A100", "H100"):
 MAX_SCENES = 10
 # the Python kit render_story.py imports (tests/unit/story-modal.test.js checks this list covers every felt_*.py)
 KIT_FILES = ("feltkit.py", "styles.py", "felt_people.py", "felt_animals.py", "felt_actions.py", "felt_props.py",
-             "felt_sets.py", "felt_stage.py")
+             "felt_sets.py", "felt_sets_rooms.py", "felt_sets_outdoor.py", "felt_stage.py")
 
 
 # ---------------------------------------------------------------- the scene work (no Modal needed)

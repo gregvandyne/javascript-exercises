@@ -2,10 +2,13 @@
 
     python3 render_story.py spec.json            render every scene in the spec
     python3 render_story.py --probe eevee|cycles  render one tiny frame and exit 0 if the engine works here
+    python3 render_story.py --kit                 print what the kit can build (checked against catalog.json)
 
 The spec (written by server/stories/renderer.js) is:
   { width, height, fps, step, engine: 'eevee'|'cycles', samples, out_dir,
-    scenes: [{ id, set, time, props: [], characters: [{ kind, action, place, color }], camera, frames, seed, focus }] }
+    scenes: [{ id, set, time, props: [], characters: [{ kind, action, place, who?, look?, holds? }], camera, frames, seed, focus }] }
+The sets, characters, actions and props are the felt kit in tools/blender (felt_sets, felt_people, felt_animals,
+felt_actions, felt_props), placed by felt_stage.stage().
 `frames` is the scene length in output frames (fps). With step 2 every other frame is rendered ("on twos", like
 stop-motion) and the assembler holds each one for two frames.
 

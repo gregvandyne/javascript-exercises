@@ -280,3 +280,10 @@ def set_soccer_field(tod, rng, props):
 
 SETS = {'lighthouse': set_lighthouse, 'village': set_village, 'forest': set_forest, 'meadow': set_meadow, 'sky': set_sky,
         'soccer_field': set_soccer_field}
+
+# the rest live in their own files (they import the shared pieces above)
+import felt_sets_outdoor  # noqa: E402
+import felt_sets_rooms  # noqa: E402
+
+SETS.update(felt_sets_rooms.ROOM_SETS)
+SETS.update(felt_sets_outdoor.OUTDOOR_SETS)

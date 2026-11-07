@@ -33,7 +33,9 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 | Jobs: state machine, limits, sharing and approval | `server/services/story-jobs.js` (table `stories`, migration `0053_stories`) |
 | Pipeline (stages, progress) / worker core / worker loop | `server/stories/pipeline.js`, `server/stories/worker.js`, `server/stories/loop.js` |
 | Renderers: interface + local Blender, remote/Modal client, scene clips | `server/stories/renderer.js`, `server/stories/remote-renderer.js`, `server/stories/clip.js` |
+| The kit catalog: every set, character, action, prop and look (the one list) | `server/stories/blender/catalog.json` |
 | Felt-and-paper kit (shared with the other Blender tools) and scene renderer (Python) | `tools/blender/feltkit.py` (+ `styles.py`), `server/stories/blender/render_story.py` |
+| Story kit 2: people, animals, actions, props, sets, staging | `tools/blender/felt_people.py`, `felt_animals.py`, `felt_actions.py`, `felt_props.py`, `felt_sets.py` (+ `felt_sets_rooms.py`, `felt_sets_outdoor.py`), `felt_stage.py` |
 | ffmpeg assembly | `server/stories/assemble.js` |
 | Modal GPU app | `services/story-renderer/modal_app.py` |
 | CPU renderer service (fallback) | `services/story-renderer/server.js`, `spec.js`, `Dockerfile` |
@@ -44,12 +46,29 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 ### 1. The story script
 
 Claude (`STORY_MODEL`, else `BUILDER_MODEL`) answers in the JSON schema `SCHEMA`: a title and 2–8 scenes, each with
-a **set** (lighthouse, village, forest, meadow, sky), a **time** (night, dusk, dawn, day), optional **props** (boat,
-lantern, fireflies), up to three **characters** (mouse, fox, owl, bunny) with an **action** (idle, walk, walk_out,
-hop, wave, look_up, sleep, fly, hold_star) and a **place**, a **camera** move (drift, slow_push, pull_back,
-pan_left/right, tilt_up/down), and 1–3 **lines** (`say`: narration; `show`: the words on screen). The enums are the
-kit, so the writer can't ask for something the renderer can't build (a test keeps the JS kit and the Python kit in
-step). Age band and length (45/60/90 s) go into the prompt; the estimated length is checked too.
+a **set**, a **time** (night, dusk, dawn, day), optional **props**, up to three **characters** with an **action** and a
+**place**, a **camera** move (drift, slow_push, pull_back, pan_left/right, tilt_up/down), and 1–3 **lines** (`say`:
+narration; `show`: the words on screen). Age band and length (45/60/90 s) go into the prompt; the estimated length is
+checked too.
+
+**The kit is one catalog**, `server/stories/blender/catalog.json` (each entry with the few words the writer is told):
+35 sets (the first five, a football pitch, rooms — classroom, bedroom, kitchen, library, doctor's room, party room,
+theatre stage, bakery — and places outdoors and far away — playground, garden, campsite, farm, zoo, basketball court,
+baseball field, swimming pool, city street, train station, airport, beach, rainforest river, under the sea, pirate
+ship, the moon, castle, jungle, snowy mountain, desert, dinosaur valley); 21 characters (18 felt animals; `kid`,
+`grownup`, `grandparent`); 30 actions; ~55 props; and the **look** of a person. `story-script.js` builds `KIT`, the
+schema's enums and a compact kit summary for the writer's prompt (`kitPrompt()`) from it, and
+`render_story.py --kit` prints what the Python kit can build: `tests/unit/story-builder.test.js` checks the two are
+exactly the same (and, without Blender, that every name appears in the Python kit). Adding an asset = a builder in
+the Python kit + a line in the catalog.
+
+A character entry may also carry (all optional): **`who`** (its name in the story, the same in every scene; also the
+seed for anything about its look the story left out), **`look`** for people (`hair_color`, `skin`, `hair`, `shirt`,
+`outfit`, `glasses`, `age`: e.g. two blonde brothers in the same team kit), and **`holds`** (a prop it carries: a
+trophy, a ball, balloons...). `validateScript` carries a person's look over to later scenes by `who` (an outfit may
+change), reports unknown look values and holdables to the writer, and turns `fly` into `jump` for anyone who can't fly
+(only the owl, bird, dragon and unicorn, and people dressed as a superhero or an astronaut). The writer is told to use
+people for stories about children and grown-ups and animals when the idea is about animals.
 
 Safety, both ways: the idea goes through the Builder's own input screening (`builder/screen.js`: injection rules,
 word lists for every site language, personal details, the category rules, and the Haiku classifier when a key is
@@ -69,11 +88,27 @@ same word rules (`validateScript`) and the model classifier; one retry with the 
   that drift, **stars hanging on threads** that sway, layered felt sea that bobs, a striped **lighthouse** with a
   glowing lamp room and a sweeping warm beam (additive cone, soft edges), houses with glowing windows, pine and
   round trees, rocks, a boat, a lantern, fireflies, flowers, tufts and pebbles.
-- **Characters** from spheres, cones and discs: mouse, fox, owl, bunny (bead eyes with a glint that blink, felt
-  cheeks). Actions: walk (with a hop in the step), hop, wave, look up, sleep (eyes closed, slow breathing), fly
-  (owl wings), hold a glowing star; everyone breathes and sways a little.
+- **Characters** from spheres, cones and discs, with bead eyes that blink and felt cheeks: the animals (mouse, fox,
+  owl, bunny in `feltkit.py`; dog, cat, bear, elephant, lion, penguin, dinosaur, dragon, unicorn, horse, fish, turtle,
+  bird, frog in `felt_animals.py`) and felt **people** (`felt_people.py`): kids, grown-ups and grandparents with a hair
+  colour, skin tone (six, light to deep), hair style (felt hair shells, curls and buns; no hair simulation), shirt
+  colour, glasses, small/big, and an outfit (casual, dress, sports kit in the shirt colour, pyjamas, swimsuit, winter
+  coat, astronaut, pirate, knight, princess, superhero, coach, teacher, doctor, chef, overalls). People have three
+  mouths (smile, open, sad) and brows that the actions switch.
+- **Actions** (`felt_actions.py`, one system for people and animals; everyone breathes and sways): idle, walk,
+  walk_out, hop, wave, look_up, sleep (Zzz), fly, hold_star, run, jump, kick (the ball flies into the goal on the
+  pitch), throw and catch (one ball travels from the thrower to the catcher), cheer, high_five and hug (the two meet
+  in the middle), sit, sad, point, dance, swim (a ripple at the waist; floating under the sea), climb (a ladder), read
+  (a book whose page turns), eat, laugh, cry (tears), think (a thought cloud), sleep_in_bed (tucked in, Zzz), ride (a
+  bike, or the horse or unicorn in the scene).
+- **Staging** (`felt_stage.py`): places, who moves to whom, the ball, held props, and props put in free slots behind
+  and beside the characters (or in the sky, across the top, or over the whole picture for rain and snow).
 - **Camera**: eased moves (push in, pull back, pans, tilts, drift) with a gentle float and depth of field focused
   on the first character; compositor bloom on the glows; AgX colour.
+
+Daylight (day, dawn) uses Blender's Standard view transform: AgX greyed the bright day colours (felt read milky);
+dusk and night keep AgX. Big, static set dressing (crowds, pitch lines, shelves of books, fences) is built as one
+mesh per group (`felt_props.Batch`), so a set builds in a second or two and stays at roughly 8–30k faces.
 
 Render engine: EEVEE first. Without a GPU it still runs headless through EGL + Mesa's llvmpipe (packages
 `libegl1 libegl-mesa0 libgl1-mesa-dri`). If EEVEE can't start (no libEGL), the renderer's probe falls back to Cycles
@@ -267,8 +302,11 @@ seconds per story; Modal's dashboard shows GPU time) and switch to L4 if L40S bu
 - **Local** (`STORY_RENDERER=local`, the default): Blender on the site's own machine. Development only: in production
   the site logs a warning, because a render takes every core for over an hour.
 
+Contact sheets of the kit (every set at day, dusk and night; characters, outfits, actions): `python3
+tools/blender/story_kit_sheet.py cells.json sheet.jpg` builds each cell exactly as a story scene and tiles the stills.
+
 ## Next
 
-A public gallery with moderation; more kit (interiors, weather, more animals); per-shot framing from the script; a
+A public gallery with moderation; per-shot framing from the script; a
 re-render of the same script with a new look without paying Claude again; once Modal numbers are known, set
 `STORY_RENDER_RATIO` from them.

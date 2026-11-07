@@ -44,7 +44,7 @@ test('script: the sample story passes, and the schema offers exactly the kit', (
 // The kit the writer may use (server/stories/blender/catalog.json) is the kit Blender can build: the Python kit's own
 // registries, asked through `render_story.py --kit` when Blender's Python module is here, and always (without bpy) by
 // name in the Python sources.
-const KIT_PY = ['server/stories/blender/render_story.py', ...['feltkit', 'felt_people', 'felt_animals', 'felt_actions', 'felt_props', 'felt_sets', 'felt_stage'].map(f => `tools/blender/${f}.py`)];
+const KIT_PY = ['server/stories/blender/render_story.py', ...['feltkit', 'felt_people', 'felt_animals', 'felt_actions', 'felt_props', 'felt_sets', 'felt_sets_rooms', 'felt_sets_outdoor', 'felt_stage'].map(f => `tools/blender/${f}.py`)];
 test('script: the kit the writer may use is the kit Blender can build (by name in the Python kit)', () => {
   const py = KIT_PY.map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
   const named = n => py.includes(`'${n}'`);
@@ -94,6 +94,11 @@ test('script: people have a look that stays the same, things to hold, and only f
   assert.deepEqual(item.properties.look.properties.hair_color.enum, S.LOOK.hair_color);
   assert.deepEqual(item.properties.holds.enum, S.HOLDS);
   assert.match(S.kitPrompt(), /people: kid/);
+  // the people sample (scripts/story-samples/banks-and-rev.json): two blonde brothers on one team, the same all through
+  const br = S.validateScript(JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts/story-samples/banks-and-rev.json'), 'utf8')), { seconds: 45 });
+  assert.ok(br.ok, br.errors.join('; '));
+  assert.equal(br.script.scenes[1].characters[0].look.hair_color, 'blonde', 'Banks keeps his look in a scene that did not repeat it');
+  assert.equal(br.script.scenes[4].characters[1].look.outfit, 'pyjamas', 'and Rev changes into pyjamas for bed');
   assert.match(S.kitPrompt(), /soccer_field \(/);
 });
 

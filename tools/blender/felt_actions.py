@@ -69,6 +69,9 @@ class Char:
         a.rotation_euler = (-fwd, -s * out, -s * inward)
 
     def leg(self, l, fwd=0.0, out=0.0):
+        if self.side_view:  # four legs seen from the side: they swing along the body (its +X is forward)
+            l.rotation_euler = (0, -fwd, 0)
+            return
         s = self.side(l)
         l.rotation_euler = (-fwd, -s * out, 0)
 
@@ -214,7 +217,7 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
     rider_of = ctx.get('rider_of')
     if action == 'ride' and rider_of is not None:
         root.parent = rider_of.body
-        root.location = (0, 0, rider_of.height * 0.62)
+        root.location = (-0.05, 0, float(rider_of.root.get('saddle', rider_of.height * 0.62)) - 0.1)
         root.rotation_euler.z = -rider_of.root.rotation_euler.z * 0.0
     if action == 'sleep_in_bed':
         root.rotation_euler = (0, -math.pi / 2, 0)

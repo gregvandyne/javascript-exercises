@@ -178,6 +178,10 @@ def stage(sc_spec, fps, frames, rng, hints=None):
                 caught.scale = (1, 1, 1) if u >= 1 else hide
         K.anim(go)
 
+    # someone sleeping in their own bed: the room's own bed makes way
+    if hints.get('bed') is not None and any(m['action'] == 'sleep_in_bed' for m in cast):
+        hints['bed'].location.z = -60.0
+
     # riding: on a horse if there is one in the scene, else a bike
     horses = [m for m in cast if m['kind'] in ('horse', 'unicorn')]
     focus = None

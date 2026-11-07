@@ -6,7 +6,13 @@
     "dawn": "a soft early-morning sky",
     "day": "a bright blue sky and sunshine"
   },
-  "places": ["far_left", "left", "center", "right", "far_right"],
+  "places": [
+    "far_left",
+    "left",
+    "center",
+    "right",
+    "far_right"
+  ],
   "cameras": {
     "drift": "a slow float",
     "slow_push": "moving in for a close, cosy moment",
@@ -17,21 +23,341 @@
     "tilt_down": "looking down from the sky"
   },
   "sets": {
-    "lighthouse": { "about": "a striped lighthouse by the sea with a warm light beam", "tags": ["outdoors", "sea"] },
-    "village": { "about": "little houses with glowing windows", "tags": ["outdoors", "town"] },
-    "forest": { "about": "felt trees, fireflies at night", "tags": ["outdoors", "nature"] },
-    "meadow": { "about": "hills, flowers and a big tree", "tags": ["outdoors", "nature"] },
-    "sky": { "about": "up among paper clouds and hanging stars", "tags": ["fantasy"] },
-    "soccer_field": { "about": "a football (soccer) pitch with a goal, white lines, stands full of cheering fans and floodlights", "tags": ["sports"] }
+    "lighthouse": {
+      "about": "a striped lighthouse by the sea with a warm light beam",
+      "tags": [
+        "outdoors",
+        "sea"
+      ]
+    },
+    "village": {
+      "about": "little houses with glowing windows",
+      "tags": [
+        "outdoors",
+        "town"
+      ]
+    },
+    "forest": {
+      "about": "felt trees, fireflies at night",
+      "tags": [
+        "outdoors",
+        "nature"
+      ]
+    },
+    "meadow": {
+      "about": "hills, flowers and a big tree",
+      "tags": [
+        "outdoors",
+        "nature"
+      ]
+    },
+    "sky": {
+      "about": "up among paper clouds and hanging stars",
+      "tags": [
+        "fantasy"
+      ]
+    },
+    "soccer_field": {
+      "about": "a football (soccer) pitch with a goal, white lines, stands full of cheering fans and floodlights",
+      "tags": [
+        "sports"
+      ]
+    },
+    "classroom": {
+      "about": "a classroom with a chalkboard, little desks and chairs, ABC bunting and a clock",
+      "tags": [
+        "indoors",
+        "school"
+      ]
+    },
+    "bedroom": {
+      "about": "a child's bedroom with a cosy bed, star wallpaper, toys and a night light",
+      "tags": [
+        "indoors",
+        "home",
+        "bedtime"
+      ]
+    },
+    "kitchen": {
+      "about": "a home kitchen with counters, a stove with a steaming pot and a table",
+      "tags": [
+        "indoors",
+        "home",
+        "food"
+      ]
+    },
+    "library": {
+      "about": "a library with tall shelves of books, a rug and a reading armchair",
+      "tags": [
+        "indoors",
+        "school"
+      ]
+    },
+    "hospital": {
+      "about": "a friendly doctor's room with a bed, a curtain and a height chart",
+      "tags": [
+        "indoors"
+      ]
+    },
+    "party_room": {
+      "about": "a party room with bunting, balloons, presents and a birthday cake",
+      "tags": [
+        "indoors",
+        "party"
+      ]
+    },
+    "stage": {
+      "about": "a theatre stage with red curtains, spotlights and footlights",
+      "tags": [
+        "indoors",
+        "music"
+      ]
+    },
+    "bakery": {
+      "about": "a bakery shop with cakes in the counter and shelves of bread",
+      "tags": [
+        "indoors",
+        "food",
+        "town"
+      ]
+    },
+    "playground": {
+      "about": "a park playground with a slide, swings, a seesaw and a sandpit",
+      "tags": [
+        "outdoors",
+        "park"
+      ]
+    },
+    "garden": {
+      "about": "a garden with vegetable beds, sunflowers, a fence and a shed",
+      "tags": [
+        "outdoors",
+        "home",
+        "nature"
+      ]
+    },
+    "campsite": {
+      "about": "a campsite in the woods with a tent and a campfire",
+      "tags": [
+        "outdoors",
+        "nature"
+      ]
+    },
+    "farm": {
+      "about": "a farm with a red barn, a silo, hay bales, a fence and sheep",
+      "tags": [
+        "outdoors",
+        "animals"
+      ]
+    },
+    "zoo": {
+      "about": "a zoo with an enclosure, a giraffe, a zebra and a pond",
+      "tags": [
+        "outdoors",
+        "animals"
+      ]
+    },
+    "basketball_court": {
+      "about": "an outdoor basketball court with a hoop, in the city",
+      "tags": [
+        "sports"
+      ]
+    },
+    "baseball_field": {
+      "about": "a baseball diamond with bases, stands full of fans and a scoreboard",
+      "tags": [
+        "sports"
+      ]
+    },
+    "swimming_pool": {
+      "about": "an outdoor swimming pool with lanes, a diving board and umbrellas",
+      "tags": [
+        "sports",
+        "water"
+      ]
+    },
+    "city": {
+      "about": "a city street with buildings, a zebra crossing, street lamps and a traffic light",
+      "tags": [
+        "outdoors",
+        "town"
+      ]
+    },
+    "train_station": {
+      "about": "a train station platform with a felt train waiting",
+      "tags": [
+        "outdoors",
+        "town",
+        "vehicles"
+      ]
+    },
+    "airport": {
+      "about": "an airport with a big plane, a control tower and a runway",
+      "tags": [
+        "outdoors",
+        "vehicles"
+      ]
+    },
+    "beach": {
+      "about": "a sandy beach by the sea with palm trees, shells and a beach umbrella",
+      "tags": [
+        "outdoors",
+        "water"
+      ]
+    },
+    "river": {
+      "about": "a rainforest river with big leaves, palms and lily pads",
+      "tags": [
+        "outdoors",
+        "water",
+        "nature"
+      ]
+    },
+    "underwater": {
+      "about": "under the sea with seaweed, coral, bubbles and little fish",
+      "tags": [
+        "water",
+        "fantasy"
+      ]
+    },
+    "pirate_ship": {
+      "about": "on the deck of a pirate ship at sea, with sails, a wheel and barrels",
+      "tags": [
+        "water",
+        "fantasy"
+      ]
+    },
+    "space": {
+      "about": "on the moon, with the Earth, a ringed planet, stars and a rocket",
+      "tags": [
+        "fantasy",
+        "space"
+      ]
+    },
+    "castle": {
+      "about": "a fairy-tale castle with towers, flags and a moat",
+      "tags": [
+        "outdoors",
+        "fantasy"
+      ]
+    },
+    "jungle": {
+      "about": "a jungle with palms, giant leaves, vines and flowers",
+      "tags": [
+        "outdoors",
+        "nature"
+      ]
+    },
+    "snowy_mountain": {
+      "about": "snowy mountains with pine trees, a cabin and a sled",
+      "tags": [
+        "outdoors",
+        "winter"
+      ]
+    },
+    "desert": {
+      "about": "a desert with sand dunes, cacti and a mesa",
+      "tags": [
+        "outdoors"
+      ]
+    },
+    "dinosaur_valley": {
+      "about": "a valley long ago with a friendly volcano, ferns and a nest of eggs",
+      "tags": [
+        "outdoors",
+        "fantasy"
+      ]
+    }
   },
   "characters": {
-    "mouse": { "about": "a little grey mouse", "type": "animal" },
-    "fox": { "about": "an orange fox with a bushy tail", "type": "animal" },
-    "owl": { "about": "a wise brown owl that can fly", "type": "animal", "flies": true },
-    "bunny": { "about": "a white bunny with long ears", "type": "animal" },
-    "kid": { "about": "a felt child (give them a look)", "type": "person" },
-    "grownup": { "about": "a grown-up: a parent, coach, teacher, doctor or chef (the outfit says which)", "type": "person" },
-    "grandparent": { "about": "a grandma or grandpa", "type": "person" }
+    "mouse": {
+      "about": "a little grey mouse",
+      "type": "animal"
+    },
+    "fox": {
+      "about": "an orange fox with a bushy tail",
+      "type": "animal"
+    },
+    "owl": {
+      "about": "a wise brown owl that can fly",
+      "type": "animal",
+      "flies": true
+    },
+    "bunny": {
+      "about": "a white bunny with long ears",
+      "type": "animal"
+    },
+    "dog": {
+      "about": "a friendly dog with floppy ears and a red collar",
+      "type": "animal"
+    },
+    "cat": {
+      "about": "an orange tabby cat",
+      "type": "animal"
+    },
+    "bear": {
+      "about": "a big cuddly brown bear",
+      "type": "animal"
+    },
+    "elephant": {
+      "about": "a little elephant with a swinging trunk",
+      "type": "animal"
+    },
+    "lion": {
+      "about": "a lion with a fluffy mane",
+      "type": "animal"
+    },
+    "penguin": {
+      "about": "a penguin in a blue scarf",
+      "type": "animal"
+    },
+    "dinosaur": {
+      "about": "a friendly green dinosaur",
+      "type": "animal"
+    },
+    "dragon": {
+      "about": "a small friendly purple dragon with wings (can fly)",
+      "type": "animal",
+      "flies": true
+    },
+    "unicorn": {
+      "about": "a white unicorn with a rainbow mane (can fly; a child can ride it)",
+      "type": "animal",
+      "flies": true
+    },
+    "horse": {
+      "about": "a brown horse with a saddle (a child can ride it)",
+      "type": "animal"
+    },
+    "fish": {
+      "about": "a round orange fish",
+      "type": "animal"
+    },
+    "turtle": {
+      "about": "a turtle with a shell",
+      "type": "animal"
+    },
+    "bird": {
+      "about": "a little bluebird (can fly)",
+      "type": "animal",
+      "flies": true
+    },
+    "frog": {
+      "about": "a green frog",
+      "type": "animal"
+    },
+    "kid": {
+      "about": "a felt child (give them a look)",
+      "type": "person"
+    },
+    "grownup": {
+      "about": "a grown-up: a parent, coach, teacher, doctor or chef (the outfit says which)",
+      "type": "person"
+    },
+    "grandparent": {
+      "about": "a grandma or grandpa",
+      "type": "person"
+    }
   },
   "actions": {
     "idle": "standing, breathing, looking around",
@@ -41,7 +367,7 @@
     "wave": "waving hello or goodbye",
     "look_up": "looking up at the sky",
     "sleep": "dozing standing up (eyes closed, Zzz)",
-    "fly": "flying (owl, bird, dragon, unicorn; a kid only as a superhero or astronaut)",
+    "fly": "flying (owl, bird, dragon, unicorn; a person only as a superhero or astronaut)",
     "hold_star": "carrying a little glowing star",
     "run": "running into place",
     "jump": "big happy jumps",
@@ -63,67 +389,406 @@
     "cry": "crying a little",
     "think": "thinking hard (a thought cloud)",
     "sleep_in_bed": "asleep in a cosy bed",
-    "ride": "riding a bike (or a horse, if one is in the scene)"
+    "ride": "riding a bike (or the horse or unicorn in the scene)"
   },
   "props": {
-    "boat": { "about": "a little sailing boat on the sea", "tags": ["sea"] },
-    "lantern": { "about": "a glowing lantern", "tags": ["night"], "hold": true },
-    "fireflies": { "about": "glowing fireflies", "tags": ["night"] },
-    "soccer_ball": { "about": "a football (soccer ball)", "tags": ["sports"], "hold": true },
-    "basketball": { "about": "a basketball", "tags": ["sports"], "hold": true },
-    "baseball": { "about": "a baseball", "tags": ["sports"], "hold": true },
-    "baseball_bat": { "about": "a baseball bat", "tags": ["sports"], "hold": true },
-    "beach_ball": { "about": "a striped beach ball", "tags": ["sports", "beach"], "hold": true },
-    "trophy": { "about": "a golden trophy (the championship cup)", "tags": ["sports", "party"], "hold": true },
-    "medal": { "about": "a gold medal on a ribbon", "tags": ["sports"], "hold": true },
-    "scoreboard": { "about": "a scoreboard", "tags": ["sports"] },
-    "flags": { "about": "colourful bunting across the top", "tags": ["party", "sports"] },
-    "confetti": { "about": "confetti falling everywhere", "tags": ["party", "sports"] },
-    "books": { "about": "a stack of books", "tags": ["school", "home"], "hold": true },
-    "backpack": { "about": "a school backpack", "tags": ["school"] },
-    "teddy": { "about": "a teddy bear", "tags": ["home", "toys"], "hold": true },
-    "blocks": { "about": "toy building blocks", "tags": ["home", "toys"] },
-    "balloons": { "about": "balloons", "tags": ["party"], "hold": true },
-    "presents": { "about": "wrapped presents", "tags": ["party"], "hold": true },
-    "cake": { "about": "a birthday cake with candles on a table", "tags": ["party", "food"] },
-    "cookies": { "about": "a plate of cookies and milk", "tags": ["food", "home"], "hold": true },
-    "fruit": { "about": "a bowl of fruit", "tags": ["food", "home"] },
-    "ice_cream": { "about": "an ice cream (a cart, or a cone to hold)", "tags": ["food"], "hold": true },
-    "picnic": { "about": "a picnic blanket and basket", "tags": ["food", "outdoors"] },
-    "bed": { "about": "a cosy bed with a patchwork quilt", "tags": ["home"] },
-    "flowers": { "about": "a patch of flowers", "tags": ["nature"] },
-    "flower": { "about": "one big flower", "tags": ["nature"], "hold": true },
-    "butterflies": { "about": "fluttering butterflies", "tags": ["nature"] },
-    "kite": { "about": "a kite flying high", "tags": ["outdoors"], "hold": true },
-    "bike": { "about": "a bicycle", "tags": ["vehicles"] },
-    "car": { "about": "a little car", "tags": ["vehicles", "town"] },
-    "bus": { "about": "a yellow bus", "tags": ["vehicles", "town", "school"] },
-    "tent": { "about": "a camping tent", "tags": ["outdoors"] },
-    "campfire": { "about": "a crackling campfire", "tags": ["outdoors", "night"] },
-    "snowman": { "about": "a snowman", "tags": ["winter"] },
-    "sandcastle": { "about": "a sandcastle", "tags": ["beach"] },
-    "umbrella": { "about": "a beach umbrella (or an umbrella to hold)", "tags": ["beach", "weather"], "hold": true },
-    "sun": { "about": "a smiling sun", "tags": ["weather", "sky"] },
-    "rainbow": { "about": "a rainbow", "tags": ["weather", "sky"] },
-    "rain": { "about": "gentle rain", "tags": ["weather"] },
-    "snow": { "about": "falling snow", "tags": ["weather", "winter"] },
-    "star": { "about": "a big shining star (or a little star to hold)", "tags": ["sky", "night"], "hold": true },
-    "rocket": { "about": "a rocket", "tags": ["vehicles", "space"] },
-    "plane": { "about": "an aeroplane flying past", "tags": ["vehicles", "sky"] },
-    "hot_air_balloon": { "about": "a hot-air balloon", "tags": ["vehicles", "sky"] },
-    "tractor": { "about": "a red tractor", "tags": ["vehicles", "farm"] },
-    "guitar": { "about": "a guitar", "tags": ["music"], "hold": true },
-    "drum": { "about": "a drum", "tags": ["music"] },
-    "piano": { "about": "a piano", "tags": ["music"] },
-    "treasure_chest": { "about": "a treasure chest full of gold", "tags": ["pirates", "fantasy"] },
-    "wand": { "about": "a magic wand with a star", "tags": ["fantasy"], "hold": true },
-    "telescope": { "about": "a telescope", "tags": ["space", "sky"] }
+    "boat": {
+      "about": "a little sailing boat on the sea",
+      "tags": [
+        "sea"
+      ]
+    },
+    "lantern": {
+      "about": "a glowing lantern",
+      "tags": [
+        "night"
+      ],
+      "hold": true
+    },
+    "fireflies": {
+      "about": "glowing fireflies",
+      "tags": [
+        "night"
+      ]
+    },
+    "soccer_ball": {
+      "about": "a football (soccer ball)",
+      "tags": [
+        "sports"
+      ],
+      "hold": true
+    },
+    "basketball": {
+      "about": "a basketball",
+      "tags": [
+        "sports"
+      ],
+      "hold": true
+    },
+    "baseball": {
+      "about": "a baseball",
+      "tags": [
+        "sports"
+      ],
+      "hold": true
+    },
+    "baseball_bat": {
+      "about": "a baseball bat",
+      "tags": [
+        "sports"
+      ],
+      "hold": true
+    },
+    "beach_ball": {
+      "about": "a striped beach ball",
+      "tags": [
+        "sports",
+        "beach"
+      ],
+      "hold": true
+    },
+    "trophy": {
+      "about": "a golden trophy (the championship cup)",
+      "tags": [
+        "sports",
+        "party"
+      ],
+      "hold": true
+    },
+    "medal": {
+      "about": "a gold medal on a ribbon",
+      "tags": [
+        "sports"
+      ],
+      "hold": true
+    },
+    "scoreboard": {
+      "about": "a scoreboard",
+      "tags": [
+        "sports"
+      ]
+    },
+    "flags": {
+      "about": "colourful bunting across the top",
+      "tags": [
+        "party",
+        "sports"
+      ]
+    },
+    "confetti": {
+      "about": "confetti falling everywhere",
+      "tags": [
+        "party",
+        "sports"
+      ]
+    },
+    "books": {
+      "about": "a stack of books",
+      "tags": [
+        "school",
+        "home"
+      ],
+      "hold": true
+    },
+    "backpack": {
+      "about": "a school backpack",
+      "tags": [
+        "school"
+      ]
+    },
+    "teddy": {
+      "about": "a teddy bear",
+      "tags": [
+        "home",
+        "toys"
+      ],
+      "hold": true
+    },
+    "blocks": {
+      "about": "toy building blocks",
+      "tags": [
+        "home",
+        "toys"
+      ]
+    },
+    "balloons": {
+      "about": "balloons",
+      "tags": [
+        "party"
+      ],
+      "hold": true
+    },
+    "presents": {
+      "about": "wrapped presents",
+      "tags": [
+        "party"
+      ],
+      "hold": true
+    },
+    "cake": {
+      "about": "a birthday cake with candles on a table",
+      "tags": [
+        "party",
+        "food"
+      ]
+    },
+    "cookies": {
+      "about": "a plate of cookies and milk",
+      "tags": [
+        "food",
+        "home"
+      ],
+      "hold": true
+    },
+    "fruit": {
+      "about": "a bowl of fruit",
+      "tags": [
+        "food",
+        "home"
+      ]
+    },
+    "ice_cream": {
+      "about": "an ice cream (a cart, or a cone to hold)",
+      "tags": [
+        "food"
+      ],
+      "hold": true
+    },
+    "picnic": {
+      "about": "a picnic blanket and basket",
+      "tags": [
+        "food",
+        "outdoors"
+      ]
+    },
+    "bed": {
+      "about": "a cosy bed with a patchwork quilt",
+      "tags": [
+        "home"
+      ]
+    },
+    "flowers": {
+      "about": "a patch of flowers",
+      "tags": [
+        "nature"
+      ]
+    },
+    "flower": {
+      "about": "one big flower",
+      "tags": [
+        "nature"
+      ],
+      "hold": true
+    },
+    "butterflies": {
+      "about": "fluttering butterflies",
+      "tags": [
+        "nature"
+      ]
+    },
+    "kite": {
+      "about": "a kite flying high",
+      "tags": [
+        "outdoors"
+      ],
+      "hold": true
+    },
+    "bike": {
+      "about": "a bicycle",
+      "tags": [
+        "vehicles"
+      ]
+    },
+    "car": {
+      "about": "a little car",
+      "tags": [
+        "vehicles",
+        "town"
+      ]
+    },
+    "bus": {
+      "about": "a yellow bus",
+      "tags": [
+        "vehicles",
+        "town",
+        "school"
+      ]
+    },
+    "tent": {
+      "about": "a camping tent",
+      "tags": [
+        "outdoors"
+      ]
+    },
+    "campfire": {
+      "about": "a crackling campfire",
+      "tags": [
+        "outdoors",
+        "night"
+      ]
+    },
+    "snowman": {
+      "about": "a snowman",
+      "tags": [
+        "winter"
+      ]
+    },
+    "sandcastle": {
+      "about": "a sandcastle",
+      "tags": [
+        "beach"
+      ]
+    },
+    "umbrella": {
+      "about": "a beach umbrella (or an umbrella to hold)",
+      "tags": [
+        "beach",
+        "weather"
+      ],
+      "hold": true
+    },
+    "sun": {
+      "about": "a smiling sun",
+      "tags": [
+        "weather",
+        "sky"
+      ]
+    },
+    "rainbow": {
+      "about": "a rainbow",
+      "tags": [
+        "weather",
+        "sky"
+      ]
+    },
+    "rain": {
+      "about": "gentle rain",
+      "tags": [
+        "weather"
+      ]
+    },
+    "snow": {
+      "about": "falling snow",
+      "tags": [
+        "weather",
+        "winter"
+      ]
+    },
+    "star": {
+      "about": "a big shining star (or a little star to hold)",
+      "tags": [
+        "sky",
+        "night"
+      ],
+      "hold": true
+    },
+    "rocket": {
+      "about": "a rocket",
+      "tags": [
+        "vehicles",
+        "space"
+      ]
+    },
+    "plane": {
+      "about": "an aeroplane flying past",
+      "tags": [
+        "vehicles",
+        "sky"
+      ]
+    },
+    "hot_air_balloon": {
+      "about": "a hot-air balloon",
+      "tags": [
+        "vehicles",
+        "sky"
+      ]
+    },
+    "tractor": {
+      "about": "a red tractor",
+      "tags": [
+        "vehicles",
+        "farm"
+      ]
+    },
+    "guitar": {
+      "about": "a guitar",
+      "tags": [
+        "music"
+      ],
+      "hold": true
+    },
+    "drum": {
+      "about": "a drum",
+      "tags": [
+        "music"
+      ]
+    },
+    "piano": {
+      "about": "a piano",
+      "tags": [
+        "music"
+      ]
+    },
+    "treasure_chest": {
+      "about": "a treasure chest full of gold",
+      "tags": [
+        "pirates",
+        "fantasy"
+      ]
+    },
+    "wand": {
+      "about": "a magic wand with a star",
+      "tags": [
+        "fantasy"
+      ],
+      "hold": true
+    },
+    "telescope": {
+      "about": "a telescope",
+      "tags": [
+        "space",
+        "sky"
+      ]
+    }
   },
   "look": {
-    "hair_color": ["blonde", "brown", "black", "red", "grey", "white"],
-    "skin": ["light", "fair", "medium", "tan", "brown", "deep"],
-    "hair": ["short", "long", "curly", "ponytail", "bun", "buzz", "bald"],
-    "shirt": ["red", "orange", "yellow", "green", "teal", "blue", "navy", "purple", "pink", "white"],
+    "hair_color": [
+      "blonde",
+      "brown",
+      "black",
+      "red",
+      "grey",
+      "white"
+    ],
+    "skin": [
+      "light",
+      "fair",
+      "medium",
+      "tan",
+      "brown",
+      "deep"
+    ],
+    "hair": [
+      "short",
+      "long",
+      "curly",
+      "ponytail",
+      "bun",
+      "buzz",
+      "bald"
+    ],
+    "shirt": [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "teal",
+      "blue",
+      "navy",
+      "purple",
+      "pink",
+      "white"
+    ],
     "outfit": {
       "casual": "everyday clothes",
       "dress": "a dress",
@@ -142,6 +807,9 @@
       "chef": "a chef's hat and apron",
       "overalls": "overalls (a farmer)"
     },
-    "age": ["small", "big"]
+    "age": [
+      "small",
+      "big"
+    ]
   }
 }
