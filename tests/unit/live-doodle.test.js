@@ -23,7 +23,7 @@ const { billingOn } = await import('../../server/services/stripe.js');
 const { DoodleCore: C } = doodle();
 
 publish(official, liveHtml("live.on('event', () => {});"), { source: 'seed', slug: 'doodle-hoot', title: 'Doodle Hoot' });
-Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300, waitMs: 500, gapMs: 40, typeGapMs: 40, awardGapMs: 40, drawMs: 20000, reloadMs: 80 });
+Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300, waitMs: 500, gapMs: 40, typeGapMs: 40, drawMs: 20000, reloadMs: 80 });
 // (a long turn, so no hint lands between working out a guess and sending it; the hints test sets a short one)
 
 const seatOf = c => c.wel.seat;
@@ -498,14 +498,16 @@ test('typing (the default): open the whole drawing, checked on the server, only 
   const secret = ['you are my best friend', 'fuck', 'call me 0791 234 5678', 'www.example.com', 'shit head', 'Ｓｈｉｔ'];
   for (const text of secret) { await gap(); typed(c, 1, text); await a.next('ev', m => m.k === 'fd' && m.d.l[0][0] === seatOf(c) && evs(a, 'fd').filter(x => x.d.l[0][0] === seatOf(c)).length === secret.indexOf(text) + 1); }
   for (const f of evs(a, 'fd').filter(x => x.d.l[0][0] === seatOf(c))) assert.deepEqual(f.d.l[0], [seatOf(c), 'x']);
-  // a close guess: "So close!" to that guesser alone; the drawer and the projector see only that it was close
+  // a close guess: "So close!" to that guesser alone; the drawer and the projector see only "something else" (nobody
+  // else learns who is near)
   await gap();
   // (a letter off; a short word: two letters swapped)
   const near = word.length >= 4 ? word.slice(0, -1) + (word.endsWith('z') ? 'y' : 'z') : word[0] !== word[1] ? word[1] + word[0] + word.slice(2) : word[0] + word[2] + word[1];
   typed(b, 1, near);
   const gc = await b.next('ev', m => m.k === 'gr' && m.d.c === 1);
   assert.equal(gc.d.ok, false);
-  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][1] === 'c')).d.l[0], [seatOf(b), 'c']);
+  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][0] === seatOf(b) && m.d.l[0][1] === 'x')).d.l[0], [seatOf(b), 'x']);
+  assert.ok(!all(a).includes('"c"]') && !all(h).includes('"c"]'), 'no "close" line anywhere');
   // the right word, typed any old way (capitals, spaces, an article): b gets it, sees the word, the others see only who
   await gap();
   typed(b, 1, `  The ${word.toUpperCase()} `);
@@ -541,19 +543,31 @@ test('typing: what a typed guess may be, rate limits, and messages that are drop
   typed(a, 1, word);
   await sleep(60);
   assert.equal(dd(s).drops - before, 11); assert.equal(evs(b, 'gr').length, 0); assert.equal(dd(s).got.length, 0);
-  // one guess every TYPE_GAP_MS: a second at once is dropped (no answer, no line in the list)
+  // one guess every TYPE_GAP_MS: a second at once isn't counted, but is answered (f: 1), so the box never waits forever
   DG.hooks.typeGapMs = 400;
   typed(b, 1, 'zzzz'); typed(b, 1, 'yyyy');
-  await b.next('ev', m => m.k === 'gr'); await sleep(60);
-  assert.equal(evs(b, 'gr').length, 1); assert.equal(evs(a, 'fd').length, 1);
+  await b.next('ev', m => m.k === 'gr' && m.d.f === 1); await sleep(60);
+  assert.equal(evs(b, 'gr').length, 2); assert.equal(evs(a, 'fd').length, 1);
+  assert.equal(evs(b, 'gr')[1].d.left, DD.TYPE_MAX - 1, 'too quick is not a wrong guess');
+  // no letters at all (emoji, punctuation): answered (z: 1), not counted, nothing in the list
+  const none = ['???', '🙂🙂', '!'];
+  for (const [i, text] of none.entries()) { await sleep(420); typed(b, 1, text); await b.next('ev', m => m.k === 'gr' && m.d.z === 1 && evs(b, 'gr').filter(x => x.d.z).length === i + 1); }
+  assert.equal(evs(a, 'fd').length, 1); assert.equal(evs(b, 'gr').at(-1).d.left, DD.TYPE_MAX - 1);
   DG.hooks.typeGapMs = 40;
   // TYPE_MAX wrong ones a turn, then "keep watching" (left 0) and nothing more is checked
   // (the socket's own limit is 10 events a second: these go at 8)
   for (let i = 1; i < DD.TYPE_MAX; i++) { await sleep(125); typed(b, 1, `zz${i}`); }
   const last = await b.next('ev', m => m.k === 'gr' && m.d.left === 0, 5000);
   assert.equal(last.d.ok, false);
+  const n0 = evs(b, 'gr').length;
   await sleep(50); typed(b, 1, word); await sleep(60);
   assert.equal(dd(s).got.length, 0, 'no guesses left this turn');
+  assert.equal(evs(b, 'gr').length, n0 + 1, 'still answered'); assert.equal(evs(b, 'gr').at(-1).d.left, 0);
+  // a reload: the turn comes back marked as out of guesses (out: 1), so the box doesn't wait for an answer
+  b.ws.close(); await sleep(20);
+  const b2 = socket(); await b2.hello(b.join.tok); b2.send({ t: 'rdy', view: '2d' });
+  assert.equal((await b2.next('ev', m => m.k === 'tray')).d.out, 1);
+  b2.ws.close();
   assert.ok(evs(a, 'fd').length <= DD.TYPE_MAX && dd(s).feed.length === DD.FEED_MAX, 'the list keeps the last few');
   for (const p of [a, b, h]) p.ws.close();
 });
@@ -594,7 +608,14 @@ test('said out loud: the drawer (or the host) taps who; once a player a turn, on
   const a = await player(s), b = await player(s), c = await player(s), d = await player(s);
   await started(s, h, [a, b, c, d]);
   const word = await picked(s, a, [b, c, d]);
-  const before = dd(s).drops;
+  // nothing drawn yet: no award (the drawer is told, so the game can say "Draw something first!")
+  let before = dd(s).drops;
+  ev(a, 'aw', { n: 1, s: seatOf(b) });
+  assert.deepEqual((await a.next('ev', m => m.k === 'awn')).d, { n: 1, s: seatOf(b) });
+  h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(b) } }); await sleep(50);
+  assert.equal(dd(s).drops - before, 2); assert.equal(dd(s).got.length, 0); assert.equal(evs(b, 'gr').length, 0);
+  ev(a, 'ln', { s: 0, c: 3, w: 1, e: 0, p: [100, 100, 10, 0, 10, 5] }); await sleep(40);
+  before = dd(s).drops;
   // dropped: a guesser awarding, the drawer awarding themselves, no such seat, another turn, extra keys
   ev(b, 'aw', { n: 1, s: seatOf(c) }); await sleep(50);
   ev(a, 'aw', { n: 1, s: seatOf(a) }); await sleep(50);
@@ -607,18 +628,17 @@ test('said out loud: the drawer (or the host) taps who; once a player a turn, on
   const g = await b.next('ev', m => m.k === 'gr' && m.d.ok);
   assert.equal(g.d.a, 1); assert.ok(g.d.p >= 50 && g.d.p <= 120);
   assert.equal((await b.next('ev', m => m.k === 'wd')).d.w, word);
-  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][1] === 'ok')).d.l[0], [seatOf(b), 'ok']);
+  assert.deepEqual((await a.next('ev', m => m.k === 'fd' && m.d.l[0][1] === 'ok')).d.l[0], [seatOf(b), 'ok', 1], 'marked as said out loud');
   assert.equal(s.seats.get(seatOf(b)).score, g.d.p); assert.equal(s.seats.get(seatOf(b)).correct, 1);
   // b again: once a turn
   await sleep(60); ev(a, 'aw', { n: 1, s: seatOf(b) }); await sleep(60);
   assert.equal(evs(b, 'gr').filter(m => m.d.ok).length, 1);
-  // the host's page can say who too (c), and two at once are kept apart (the second waits)
-  DG.hooks.awardGapMs = 500; await sleep(520);
+  // the host's page can say who too (c); a second tap on the same player does nothing (once a turn)
   h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(c) } });
-  h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(d) } });
+  h.send({ t: 'ev', k: 'aw', d: { n: 1, s: seatOf(c) } });
   await c.next('ev', m => m.k === 'gr' && m.d.ok); await sleep(80);
-  assert.deepEqual(dd(s).got, [seatOf(b), seatOf(c)], 'one award at a time');
-  DG.hooks.awardGapMs = 40;
+  assert.deepEqual(dd(s).got, [seatOf(b), seatOf(c)]);
+  assert.equal(evs(c, 'gr').filter(m => m.d.ok).length, 1, 'once a turn');
   // d types it: everyone has it, the drawer's usual share
   typed(d, 1, word);
   const rv = await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal');
@@ -627,6 +647,33 @@ test('said out loud: the drawer (or the host) taps who; once a player a turn, on
   ev(a, 'aw', { n: 1, s: seatOf(d) }); await sleep(40);
   assert.equal(s.seats.get(seatOf(d)).correct, 1);
   for (const p of [a, b, c, d, h]) p.ws.close();
+});
+
+test('typing: at most FEED_WORDS list words a guesser a turn go on (words can not be strung into a message)', async () => {
+  reset();
+  const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60', audience: 'open', lang: 'en' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s), c = await player(s);
+  h.send({ t: 'rdy', view: '3d' });
+  await started(s, h, [a, b, c]);
+  const word = await picked(s, a, [b, c]);
+  const idx = C.index(doodle().DoodleWords, 'en');
+  const msg = C.words(doodle().DoodleWords, 'en', 0).map(x => x.w).filter(w => !w.includes(' ') && C.judge(w, [word], 'en', idx).k === 'word').slice(0, DD.FEED_WORDS + 3);
+  for (const w of msg) { typed(b, 1, w); await gap(); }
+  await a.next('ev', m => m.k === 'fd' && evs(a, 'fd').length === msg.length);
+  const lines = evs(a, 'fd').map(m => m.d.l[0]);
+  assert.equal(lines.filter(l => l[1] === 'w').length, DD.FEED_WORDS);
+  assert.equal(JSON.stringify(lines.slice(DD.FEED_WORDS)), JSON.stringify(msg.slice(DD.FEED_WORDS).map(() => [seatOf(b), 'x'])));
+  // the projector the same; another guesser has their own few
+  await h.next('ev', m => m.k === 'fd' && evs(h, 'fd').length === msg.length);
+  assert.equal(evs(h, 'fd').filter(m => m.d.l[0][1] === 'w').length, DD.FEED_WORDS);
+  typed(c, 1, msg[0]);
+  assert.equal((await a.next('ev', m => m.k === 'fd' && m.d.l[0][0] === seatOf(c))).d.l[0][1], 'w');
+  // a rude word, a sentence, prototype names: never a list word (the index has no prototype)
+  assert.equal(Object.getPrototypeOf(idx), null);
+  for (const t of ['constructor', 'constructors', '__proto__', 'hasOwnProperty', 'toString', 'fuck', 'you are my best friend'])
+    assert.equal(C.judge(t, [word], 'en', idx).k, 'other', t);
+  for (const p of [a, b, c, h]) p.ws.close();
 });
 
 test('letter tiles still work with "said it" (the host\'s easier choice); a typed guess there is dropped', async () => {
@@ -644,6 +691,7 @@ test('letter tiles still work with "said it" (the host\'s easier choice); a type
   assert.equal(dd(s).drops - before, 1); assert.equal(dd(s).got.length, 0);
   ev(b, 'gs', { n: 1, t: spell(s, b) });
   await b.next('ev', m => m.k === 'gr' && m.d.ok);
+  ev(a, 'ln', { s: 0, c: 3, w: 1, e: 0, p: [100, 100, 10, 0, 10, 5] }); await sleep(40);
   ev(a, 'aw', { n: 1, s: seatOf(c) });
   assert.equal((await c.next('ev', m => m.k === 'gr' && m.d.ok)).d.a, 1);
   assert.equal((await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal')).d.dd.rv.why, 'all');

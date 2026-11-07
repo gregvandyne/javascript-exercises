@@ -842,16 +842,25 @@ Decisions (told to the owner before building):
    on its own has the same choice on its setup card. A typed guess goes to the server only, as code points (the wire
    protocol still carries no strings), is compared there and forgotten: never kept, logged or sent to an AI.
    `DoodleCore.judge` (shared with the game on its own) normalises it (NFKC, lower case, accents and marks, ß/ss,
-   umlauts, ё/е, alef forms, spaces, hyphens, a leading article; 40 letters at most) and accepts the answer, its plural
-   or singular, and the other English spelling. Input methods (Japanese, Chinese...) never send a half-made word.
+   umlauts, ё/е, alef forms, Arabic ال and Hebrew ה on the word, Hebrew final letters, spaces, hyphens, a leading
+   article; 40 letters at most) and accepts the answer, its plural (an ending added; dropped only from a plural answer,
+   leaving 4 letters or more) and the other English spelling, never another word of the list (Ei/Eis, Koch/Kochen).
+   Japanese and Chinese input methods never send a half-made word; in the other languages Enter and Guess send what is
+   in the box even while an Android keyboard still marks the word as "in composition". Every typed guess gets an answer
+   from the server (too soon or no letters: not counted, and the box works again), and the game stops waiting after
+   2.5 s, so a guess box can never get stuck.
 3. **What anyone else sees of a guess.** The drawer and the host's page get a short list (the last 6): a wrong guess
-   only when it is exactly a word of the game's own reviewed list for that language ("Sam guessed DOG", sent as the
-   word's id), anything else as "Sam guessed something else", a close guess as "Sam is close!" (its text never), a right
-   one as "Sam got it!". The guesser alone is told "So close!". Other guessers never see anyone's guesses (no copying).
-   This keeps the no-free-text rule: only vetted vocabulary is ever passed on. One guess a second, 30 wrong a turn.
+   only when it is a word of the game's own reviewed list for that language or its plural ("Sam guessed DOG", sent as
+   the word's id), at most 3 a guesser a turn (so list words can't spell out a message), anything else as "Sam guessed
+   something else", a right one as "Sam got it!". A close guess is "So close!" to that guesser alone; the drawer and the
+   host's page see it only as "something else" (on a shared screen the whole room would learn who is near). Other
+   guessers never see anyone's guesses on their own device (no copying); the host's page may be on a shared screen, so
+   the room can see the vetted list words there. This keeps the no-free-text rule: only vetted vocabulary is ever passed
+   on. One guess a second, 30 wrong a turn.
 4. **Said out loud.** The drawer has **Someone said it!**, which opens **Who guessed it?** with a button for each
    player who may still get it; a tap counts as that player's right guess (points by speed, the drawer's usual share).
-   Only the drawer while drawing (or the host's page), once a player a turn, one award every 0.6 s. Pass and play has
+   Only the drawer while drawing (or the host's page), once something is drawn that turn (a blank page can't hand out
+   points: "Draw something first!"), once a player a turn; the list shows it as "Sam said it out loud!". Pass and play has
    the same button while drawing (the word stays covered so the others can watch; "My word" shows it for a moment).
 5. **Mobile and desktop.** A word never breaks inside: word cards (one column on a narrow phone), the top bar's word,
    the reveal and the host's blanks shrink their type to fit (`fit()`); slots stay on one line and shrink. Below 600 px

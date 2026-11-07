@@ -411,24 +411,27 @@ refused). At most 16 players (`CAPACITY.doodle`). `h start` with fewer than 2 se
   | `ln` | `{ s, c, w, e, p }`: stroke id 0-4095 (a new id starts a stroke, at most 17 above the last; the same id continues it), colour 0-11, size 0-3, eraser 0/1, `p`: 2-60 whole numbers; a new stroke starts with an absolute point (0-1000, 0-750), then steps of at most ±127 | the drawer, during `draw`, while the clock runs |
   | `un` | `{ n, s }` (the last stroke's id) | the drawer |
   | `cl` | `{ n }` | the drawer |
-  | `gs` | typing: `{ n, c: [1-40 code points] }` (no control characters or lone surrogates: the text travels as numbers, so the protocol's no-strings rule holds) | a guesser who has the turn and hasn't got it, for the **whole drawing** (from before the first stroke), at most one every 1 s, 30 wrong ones a turn (`TYPE_MAX`) |
+  | `gs` | typing: `{ n, c: [1-40 code points] }` (no control characters or lone surrogates: the text travels as numbers, so the protocol's no-strings rule holds) | a guesser who has the turn and hasn't got it, for the **whole drawing** (from before the first stroke), at most one every 1 s, 30 wrong ones a turn (`TYPE_MAX`). Every typed guess of the right shape gets a `gr`, so the box never waits forever: too soon `gr { ok: false, f: 1 }` and no letters at all `gr { ok: false, z: 1 }` (neither counted), none left `left: 0`. The game also stops waiting after 2.5 s and waits 1.1 s between guesses |
   | `gs` | tiles: `{ n, t: [tray positions in slot order] }` | the same, at most one every 1.2 s; wrong ones a turn: 3 for an answer of 3 tiles or fewer, 5 for 4-5, else 12 (`guessMax`). A hint slot takes any tile with its letter |
-  | `aw` | `{ n, s: seat }` (who said it out loud) | the drawer during `draw` (also the projector: `ev` from the host's frame); a seat here that has the turn and hasn't got it, so once a player a turn; one award every 0.6 s. Counts as that player's right guess (the same points by speed; the drawer's usual share) |
+  | `aw` | `{ n, s: seat }` (who said it out loud) | the drawer during `draw` (also the projector: `ev` from the host's frame), once at least one stroke is down this turn (before that it isn't counted, and the drawer gets `awn { n, s }`: "Draw something first!"); a seat here that has the turn and hasn't got it, so once a player a turn. Counts as that player's right guess (the same points by speed; the drawer's usual share); the guesses list marks it `[seat, 'ok', 1]` ("said it out loud") |
   | `hide` | `{ n }` | any player but the drawer, once a turn |
   | `need` | `null` | a frame asking for its part of the turn and the page again: once per connection and turn every 2.5 s (a new connection always gets one); a connection already behind gets the page once it has caught up |
 - **Typed guesses.** The server decodes the code points, compares them and forgets them: the text is never kept, logged
   or passed on. `DoodleCore.judge` (in the game's own core, so the game on its own judges the same way) compares
   `plain()` forms: NFKC, the language's lower case, no accents or marks (German umlauts also as ae/oe/ue, ß as ss, ё as
-  е, Arabic alef forms as one, ة as ه, ى as ي, Hebrew without niqqud), letters and digits only (spaces, hyphens and
-  apostrophes don't count), a leading article dropped. **Right:** the answer, its plural (or singular), or in English its
-  other spelling (fire truck / fire engine). **Close:** one letter off for 4-7 letters, two for 8 or more, two letters
+  е, Arabic alef forms as one, ة as ه, ى/ی as ي, ک as ك, Hebrew without niqqud and with final letters as plain ones),
+  letters and digits only (spaces, hyphens and apostrophes don't count), a leading article dropped (and Arabic ال /
+  Hebrew ה written onto a word). **Right:** the answer, its plural (an ending added to an answer of 3 letters or more; for
+  a plural answer, the ending dropped leaving 4 or more), or in English its other spelling (fire truck / fire engine);
+  never another word of the list (Ei/Eis, Koch/Kochen). **Close:** one letter off for 4-7 letters, two for 8 or more, two letters
   swapped for 3: `gr { ok: false, c: 1 }` to that guesser only ("So close!"). **Else:** a word of the game's own
-  reviewed list for that language (every level, both English spellings) is passed on as its **word id**; anything else as
-  nothing but "something else". In the frame, the one guess box (`data-live-guess`) is the only text box the SDK lets a
+  reviewed list for that language (every level, both English spellings), or its plural, is passed on as its **word id**,
+  at most 3 a guesser a turn (`FEED_WORDS`: list words can't be strung into a message); anything else, a close guess
+  too, as nothing but "something else". In the frame, the one guess box (`data-live-guess`) is the only text box the SDK lets a
   player type in, and only in this mode with typing on (`INIT.live.guess: 1`, set by the server for a player's frame).
 - **Guesses list** (`ev { f: 0, k: 'fd', d: { n, l, r? } }`, to the drawer and the projector only, never to a guesser
-  or a dashboard): `l` is lines `[seat, 'w', word id]` (a list word), `[seat, 'x']` (something else), `[seat, 'c']`
-  (close), `[seat, 'ok']` (got it: typed, tiles or out loud); `r: 1` replaces the list (a reloaded drawer, the
+  or a dashboard): `l` is lines `[seat, 'w', word id]` (a list word), `[seat, 'x']` (something else, or close: nobody but
+  the guesser learns who is near), `[seat, 'ok']` (got it: typed or tiles), `[seat, 'ok', 1]` (said out loud); `r: 1` replaces the list (a reloaded drawer, the
   projector's `rdy`), else the lines are added. The server keeps the last 6 of the turn (`FEED_MAX`), wiped with it.
 - **Strokes.** Checked for their keys, ranges, ids, steps and the caps (600 strokes and 8,000 points on the page at once,
   so the drawer's own `cl` frees them; ids 0-4095 a turn; 400 points a second over 2 s); points past the edge are clamped. Past a cap the drawer is told once: `ev { f: 0, k: 'full', d: { n } }`.
@@ -439,11 +442,12 @@ refused). At most 16 players (`CAPACITY.doodle`). `h start` with fewer than 2 se
 - **Private events** (`ev { f: 0, ... }` to one seat; `ch` and `tray` carry `v: 1`, this version of their shape): `ch { v, n, w: [3 words], e: [3 emoji], ms }` (the drawer, during
   pick); `wd { n, w, e, s0? }` (the drawer's word and the next stroke id after a reload; a guesser's once they guessed
   it); `tray { v, n, t: [tiles], g: [letters per word], dir, rm: [decoy positions gone], hn: [[slot, position]], ok }` (each
-  guesser; the same tray for everyone); typing: `tray { v, n, t: [], g, dir, ty: 1, hn: [[slot, letter]], ok }` (the
-  word's shape, sent when the drawing starts); `hd { n, t: [positions] }` (tiles: two decoys go, at 40 % of the time);
+  guesser; the same tray for everyone); typing: `tray { v, n, t: [], g, dir, ty: 1, hn: [[slot, letter]], ok, out? }` (the
+  word's shape, sent when the drawing starts; `out: 1` no guesses left, after a reload); `hd { n, t: [positions] }` (tiles: two decoys go, at 40 % of the time);
   `hn { n, i: slot, t: position }` (tiles) or `hn { n, i: slot, l: letter }` (typing): a letter shows in its slot at
-  55 %, 75 % and, for 8 letters or more, 85 %; never more than half the word; `gr { n, ok, p?, left?, c?, a? }` (a
-  guess's result, to that player only; `c: 1` close, `a: 1` someone said it was them); `cv { n, k, of, l: [[s, c, w, e, x, y, ...]] }`
+  55 %, 75 % and, for 8 letters or more, 85 %; never more than half the word; `gr { n, ok, p?, left?, c?, a?, f?, z? }` (a
+  guess's result, to that player only; `c: 1` close, `a: 1` someone said it was them, `f: 1` too soon, `z: 1` no letters:
+  those two not counted); `cv { n, k, of, l: [[s, c, w, e, x, y, ...]] }`
   (the page so far, in chunks of at most 12 KB; `k: 0` clears first), on `rdy`, `need` or the projector's `rdy`.
 - **To the hosts:** `ev { f: 0, k: 'hid', d: { n, k } }`: how many players hid this turn's drawing. When at least half the
   guessers here (and at least 2 of them, counting only those still here) hide it, the page is wiped everywhere and the turn ends (`rv.why: 'hid'`, no drawer

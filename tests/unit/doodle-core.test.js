@@ -210,3 +210,25 @@ test('typed guesses: plain() keeps letters and digits only, in every script', ()
   assert.equal(C.plain('ice-cream', 'en'), 'icecream'); assert.equal(C.plain('ice cream', 'en'), 'icecream');
   assert.equal(C.plain('ねこ', 'ja'), 'ねこ');
 });
+
+test('typed guesses: a plural ending only added (or dropped from a long plural), and never another word of the list', () => {
+  // another list word is never taken as the answer's plural or singular
+  assert.deepEqual(judge('eis', 'egg', 'de'), { k: 'word', id: 'icecream' }); assert.deepEqual(judge('ei', 'icecream', 'de'), { k: 'word', id: 'egg' });
+  assert.deepEqual(judge('kochen', 'chef', 'de'), { k: 'word', id: 'cooking' }); assert.deepEqual(judge('koch', 'cooking', 'de'), { k: 'word', id: 'chef' });
+  assert.notEqual(judge('drachen', 'dragon', 'de').k, 'ok'); assert.notEqual(judge('drache', 'kite', 'de').k, 'ok');
+  assert.deepEqual(judge('koken', 'chef', 'nl'), { k: 'word', id: 'cooking' });
+  // letters cut off the answer are never right
+  for (const [t, id, l] of [['ba', 'bear', 'de'], ['tu', 'door', 'de'], ['ank', 'anchor', 'de'], ['bu', 'bus', 'en'], ['bu', 'bus', 'de'], ['vi', 'fish', 'nl']]) assert.notEqual(judge(t, id, l).k, 'ok', `${t} (${l})`);
+  assert.deepEqual(judge('vissen', 'fish', 'nl'), { k: 'word', id: 'fishing' }, 'a plural that is another list word stays that word');
+  // a real plural still counts
+  for (const [t, id, l] of [['cats', 'cat', 'en'], ['buses', 'bus', 'en'], ['Katzen', 'cat', 'de'], ['Hunde', 'dog', 'de'], ['honden', 'dog', 'nl']]) assert.deepEqual(judge(t, id, l), { k: 'ok' }, `${t} (${l})`);
+});
+
+test('typed guesses: Arabic al- and Hebrew ha- on the word, Hebrew final letters and plurals, Persian-keyboard letters', () => {
+  assert.deepEqual(judge('القطة', 'cat', 'ar'), { k: 'ok' }); assert.notEqual(judge('القط', 'cat', 'ar').k, 'ok');
+  assert.deepEqual(judge('رجل ثلج', 'snowman', 'ar'), { k: 'ok' }); assert.deepEqual(judge('رجل الثلج', 'snowman', 'ar'), { k: 'ok' });
+  assert.deepEqual(judge('الكلب', 'cat', 'ar'), { k: 'word', id: 'dog' });
+  assert.deepEqual(judge('کلب', 'dog', 'ar'), { k: 'ok' }, 'Persian keyboard kaf');
+  assert.deepEqual(judge('החתול', 'cat', 'he'), { k: 'ok' }); assert.deepEqual(judge('חתולים', 'cat', 'he'), { k: 'ok' });
+  assert.deepEqual(judge('הכלב', 'cat', 'he'), { k: 'word', id: 'dog' });
+});

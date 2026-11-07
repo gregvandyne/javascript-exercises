@@ -150,7 +150,12 @@ test('a family room: two players in different places draw and spell, a reload mi
   await until(fa, s => s.feedText.some(x => /guessed something else/.test(x)));
   for (const f of [fa, hf]) expect(JSON.stringify(await state(f))).not.toContain('hello there');
   expect((await state(fb)).feedText).toEqual([]);
-  await b.waitForTimeout(1100);
+  // no letters at all, then a double tap: never stuck (the server answers every guess; the box works again)
+  await b.waitForTimeout(1150);
+  await fb.locator('.dh-type input').fill('???');
+  await fb.locator('.dh-type input').press('Enter');
+  await expect(fb.locator('.dh-type .dh-say')).toContainText('Type a word with letters');
+  await b.waitForTimeout(1150);
   await fb.locator('.dh-type input').fill(word.toUpperCase());
   await fb.locator('.dh-type input').press('Enter');
   await until(fb, s => s.solved);
@@ -239,7 +244,7 @@ test('the host: Clear drawing, a player hides a drawing, a late joiner sees it s
   await expect(hf.locator('.dh-sheet .dh-who-btns button')).toHaveCount(1);
   await hf.locator('.dh-sheet .dh-who-btns button').first().click();
   await until(fc, s => s.solved);
-  await until(hf, s => s.feedText.length >= 2);
+  await until(hf, s => s.feedText.length >= 2 && s.feedText.some(x => /said it out loud/.test(x)));
   // Remove the drawer: the turn ends and the drawing goes from every screen
   const seatA = (await state(fa)).me;
   await host.locator(`#lv-roster [data-seat="${seatA}"] [data-lv-kick]`).click();

@@ -61,12 +61,12 @@ test('Guess Pip\'s doodles by typing: the setup card, Pip draws, a wrong and a c
       await f.locator('.dh-type input').fill('xylophone');
       await f.locator('.dh-type input').press('Enter');
       await expect(f.locator('.dh-say')).toContainText('Not quite');
-      await page.waitForTimeout(950);
+      await page.waitForTimeout(1150);
       const near = s.word.length >= 4 ? s.word.slice(0, -1) + (s.word.endsWith('z') ? 'y' : 'z') : s.word[1] + s.word[0] + s.word.slice(2);
       await f.locator('.dh-type input').fill(near);
       await f.locator('.dh-type .dh-go').click();
       await expect(f.locator('.dh-say')).toContainText(s.word[0] === s.word[1] && s.word.length < 4 ? /Not quite|So close/ : 'So close');
-      await page.waitForTimeout(950);
+      await page.waitForTimeout(1150);
       // the keyboard up (the frame about 45% shorter): the box and the drawing still fit
       await page.setViewportSize({ width: 390, height: 464 });
       await f.locator('.dh-type input').focus();

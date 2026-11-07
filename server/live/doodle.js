@@ -25,9 +25,10 @@ export const DROP_GRACE_MS = 15000, WAIT_MAX_MS = 180000;
  *  letter hint already shown costs HINT_COST points. */
 export const GUESS_GAP_MS = 1200, GUESS_MAX = 12, HINT_COST = 10;
 /** Typed guesses: at most one every TYPE_GAP_MS and TYPE_MAX wrong ones a turn. The drawer and the host's page see the
- *  last FEED_MAX guesses (a list word, or only "something else"). The drawer (or the host) can say who guessed it out
- *  loud: at most one award every AWARD_GAP_MS, once per player a turn. */
-export const TYPE_GAP_MS = 1000, TYPE_MAX = 30, FEED_MAX = 6, AWARD_GAP_MS = 600;
+ *  last FEED_MAX guesses: a word of the list (at most FEED_WORDS a guesser a turn, so words can't spell out a message),
+ *  or only "something else". The drawer (or the host) can say who guessed it out loud, once something is drawn: once
+ *  per player a turn. */
+export const TYPE_GAP_MS = 1000, TYPE_MAX = 30, FEED_MAX = 6, FEED_WORDS = 3;
 /** The page: at most this many strokes and points on it at once (the drawer's own Clear empties it; stroke ids, 0-4095,
  *  bound a turn), and points a second over a rolling 2 s window. */
 export const MAX_STROKES = 600, MAX_POINTS = 8000, MAX_PPS = 400;

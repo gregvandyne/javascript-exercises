@@ -480,12 +480,16 @@ file, saved run, report or log line), never in shared state, never screenshotted
 tiles are the host's easier choice, and a guess said out loud is awarded by the drawer or the host tapping who) travel
 as code points to the server only, never to another player; the server compares them with the answer and forgets them:
 never kept, logged, analysed or sent to any AI. Nothing typed is ever passed on as text: the drawer and the host's page
-see a wrong guess only when it is exactly a word of the game's own reviewed list for that language (as that word's id,
-shown in the list's own spelling), and otherwise only "Sam guessed something else"; a guess a letter or two off is told
-"So close!" to that guesser alone (the drawer sees only "Sam is close!"); a right one shows as "Sam got it!". Other
-guessers never see anyone's guess. So a rude word, a sentence, a name or a phone number typed in the box reaches nobody
+see a wrong guess only when it is a word of the game's own reviewed list for that language, or its plural (as that
+word's id, shown in the list's own spelling), and at most 3 such words a guesser a turn (so list words can't be strung
+into a message); otherwise only "Sam guessed something else". A guess a letter or two off is told "So close!" to that
+guesser alone; the drawer and the host's page see it only as "something else", so nobody learns who is near. A right
+one shows as "Sam got it!" (or "Sam said it out loud!"). Other guessers never see anyone's guess on their own device;
+the host's page, which may be on a shared screen in the room, shows the same list as the drawer, so the vetted list
+words can be seen there. So a rude word, a sentence, a name or a phone number typed in the box reaches nobody
 (tests/unit/live-doodle.test.js and doodle-core.test.js check every entry of all 13 rude-word lists). One guess a
-second, 30 wrong ones a turn. The words come only from the reviewed list in the game, and a word reaches only the drawer,
+second, 30 wrong ones a turn. "Someone said it!" counts only once something is drawn that turn, once per player a turn
+(the list marks it as said out loud), so a blank page can't hand out points. The words come only from the reviewed list in the game, and a word reaches only the drawer,
 and a guesser once they have guessed it, until the reveal. Every tray is checked against the site's rude-word lists anywhere in its run of tiles (the
 server in Oomba Live; on its own, the game checks a hash of the same lists, so no rude word is written in the game).
 Japanese and Traditional Chinese words are not offered until a native speaker has reviewed them (those pages play with

@@ -237,12 +237,20 @@ html.dh-live .ok-row{display:none!important}
 }
 /* the host's blanks: each word's underscores together */
 .dh-word .dh-bl{white-space:nowrap;letter-spacing:.12em}
-/* a phone on its side with the keyboard up (very little height): the top bar goes, the board and the box get it all */
+/* the keyboard up on a phone (very little height): a slim top bar (the clock stays), small blanks (how many letters
+   stays), the board and the box get the rest */
 @media (orientation:landscape) and (max-height:300px){
-  .dh-top{display:none}
-  .dh-type .dh-slots{display:none}
+  .dh{gap:4px;padding-top:calc(2px + env(safe-area-inset-top));padding-bottom:2px}
+  .dh-top{min-height:32px;gap:6px}.dh-top .dh-chip{display:none}.dh-who{font-size:14px}.dh-who canvas{width:28px;height:28px}
+  .dh-clock{width:34px;height:34px;border-width:2px}.dh-clock b{width:26px;height:26px;font-size:12px}
+  .dh-word{min-height:30px;font-size:16px;padding:1px 10px}
+  .dh-type .dh-slots{gap:2px 10px}
+  .dh-type .dh-wd{--sw:min(20px,calc((100cqw - (var(--n,6) - 1) * 3px) / var(--n,6)))}
+  .dh-type .dh-slot{border-bottom-width:3px;font-size:13px}
   .dh-type .dh-say{min-height:0;font-size:14px}
+  .dh-type .dh-say:empty{display:none}
   .dh-type{gap:4px}
+  .dh-form input{min-height:44px}
 }
 /* the keyboard is up (a phone): the players strip and the drawing notes give the guess box the room */
 .dh.dh-kb .dh-strip,.dh.dh-kb .dh-note{display:none}
@@ -517,7 +525,7 @@ html.dh-live .ok-row{display:none!important}
   var ARTICLES = { en: 'a an the', es: 'el la los las un una unos unas', fr: 'le la les l un une des du', de: 'der die das den dem ein eine einen',
     it: 'il lo la i gli le l un uno una', pt: 'o a os as um uma', nl: 'de het een', ar: '', he: '', ru: '' };
   /** Plural endings a guess may add to (or drop from) the answer. */
-  var PLURAL = { en: ['s', 'es'], es: ['s', 'es'], fr: ['s', 'x'], de: ['e', 'n', 'en', 'er', 's'], it: [], pt: ['s', 'es'], nl: ['s', 'en'] };
+  var PLURAL = { en: ['s', 'es'], es: ['s', 'es'], fr: ['s', 'x'], de: ['e', 'n', 'en', 'er', 's'], it: [], pt: ['s', 'es'], nl: ['s', 'en'], he: ['ימ', 'ות'] };
   function base(lang) { return lang === 'en-GB' ? 'en' : String(lang || 'en').split('-')[0]; }
   function plain(str, lang) {
     var L = base(lang), s = String(str == null ? '' : str).slice(0, MAX_TYPED * 2).normalize('NFKC');
@@ -526,10 +534,14 @@ html.dh-live .ok-row{display:none!important}
     if (L === 'de') s = s.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue');
     s = s.normalize('NFKD').replace(/[̀-֑ͯ-ׇً-ٰٟـ]/g, '').normalize('NFC');
     if (L === 'ru') s = s.replace(/ё/g, 'е');
-    if (L === 'ar') s = s.replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+    if (L === 'ar') s = s.replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/[ىی]/g, 'ي').replace(/ک/g, 'ك');
+    if (L === 'he') s = s.replace(/ך/g, 'כ').replace(/ם/g, 'מ').replace(/ן/g, 'נ').replace(/ף/g, 'פ').replace(/ץ/g, 'צ');
     var words = s.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
     var arts = (ARTICLES[L] || '').split(' ');
     if (words.length > 1 && arts.indexOf(words[0]) >= 0) words.shift();
+    // Arabic "al-" and Hebrew "ha-" are written onto the word: dropped from each word (the answer's too, so both match)
+    var pre = L === 'ar' ? 'ال' : L === 'he' ? 'ה' : '';
+    if (pre) words = words.map(function (w) { return w.length > pre.length + 2 && w.indexOf(pre) === 0 ? w.slice(pre.length) : w; });
     return words.join('');
   }
   /** German words are also accepted with their umlauts written plainly (schildkrote as well as schildkroete). */
@@ -538,18 +550,21 @@ html.dh-live .ok-row{display:none!important}
     if (base(lang) === 'de') { var b = String(word).normalize('NFC').toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u'); var p = plain(b, 'de'); if (out.indexOf(p) < 0) out.push(p); }
     return out;
   }
-  /** Is g the word f, or its plural (or f's singular)? */
+  /** Is g the word f, or its plural (or, for a plural answer, its singular)? An ending added counts on a word of 3
+   *  letters or more; an ending dropped only leaves a guess of 4 or more (a guess with letters cut off never counts:
+   *  "ba" is not "bär", "bu" not "bus"); judge() also never takes another word of the list as a plural. */
   function same(g, f, lang) {
     if (!g || !f) return false;
     if (g === f) return true;
-    var L = base(lang), ends = PLURAL[L] || [];
+    var L = base(lang), ends = PLURAL[L] || [], nf = Array.from(f).length, ng = Array.from(g).length;
     for (var i = 0; i < ends.length; i++) {
-      var e = ends[i];
-      if (g === f + e || f === g + e) return true;
+      if (nf >= 3 && g === f + ends[i]) return true;
+      if (ng >= 4 && f === g + ends[i]) return true;
     }
-    if (L === 'en' && ((/y$/.test(f) && g === f.slice(0, -1) + 'ies') || (/y$/.test(g) && f === g.slice(0, -1) + 'ies'))) return true;
+    if (L === 'en' && nf >= 3 && /[^aeiou]y$/.test(f) && g === f.slice(0, -1) + 'ies') return true;
     return false;
   }
+  var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
   /** Edit distance with swaps (two letters the wrong way round count as one), stopping past max. */
   function dist(a, b, max) {
     a = Array.from(a); b = Array.from(b);
@@ -580,7 +595,7 @@ html.dh-live .ok-row{display:none!important}
   }
   /** Every word of a language's list (all levels, both English spellings), as plain() makes it -> its word id. */
   function index(data, lang) {
-    var map = {}, add = function (x) { forms(x.w, lang).forEach(function (f) { if (f && !map[f]) map[f] = x.id; }); };
+    var map = Object.create(null), add = function (x) { forms(x.w, lang).forEach(function (f) { if (f && !own(map, f)) map[f] = x.id; }); };
     words(data, lang, 0).forEach(add);
     if (base(lang) === 'en') words(data, lang === 'en-GB' ? 'en' : 'en-GB', 0).forEach(add);
     return map;
@@ -596,15 +611,18 @@ html.dh-live .ok-row{display:none!important}
     if (!g) return null;
     var fs = [];
     (ans || []).forEach(function (w) { forms(w, lang).forEach(function (f) { if (f && fs.indexOf(f) < 0) fs.push(f); }); });
-    for (var i = 0; i < fs.length; i++) if (same(g, fs[i], lang)) return { k: 'ok' };
+    if (fs.indexOf(g) >= 0) return { k: 'ok' };
+    // (another word of the list is never taken as the answer's plural: Ei and Eis, Koch and Kochen)
+    var listed = !!idx && own(idx, g) && typeof idx[g] === 'string';
+    if (!listed) for (var i = 0; i < fs.length; i++) if (same(g, fs[i], lang)) return { k: 'ok' };
     for (var j = 0; j < fs.length; j++) {
       var n = Array.from(fs[j]).length, max = n >= 8 ? 2 : n >= 4 ? 1 : 0;
       if (max ? dist(g, fs[j], max) <= max : (Array.from(g).length === n && dist(g, fs[j], 1) <= 1 && Array.from(g).sort().join('') === Array.from(fs[j]).sort().join(''))) return { k: 'close' };
     }
     if (idx) {
-      if (idx[g]) return { k: 'word', id: idx[g] };
+      if (listed) return { k: 'word', id: idx[g] };
       var ends = PLURAL[base(lang)] || [];
-      for (var e = 0; e < ends.length; e++) { var stem = g.slice(0, -ends[e].length); if (g.length > ends[e].length + 1 && g.slice(-ends[e].length) === ends[e] && idx[stem]) return { k: 'word', id: idx[stem] }; }
+      for (var e = 0; e < ends.length; e++) { var stem = g.slice(0, -ends[e].length); if (g.length > ends[e].length + 2 && g.slice(-ends[e].length) === ends[e] && own(idx, stem) && typeof idx[stem] === 'string') return { k: 'word', id: idx[stem] }; }
     }
     return { k: 'other' };
   }
@@ -889,6 +907,7 @@ var I18N = {
     secsLeft: 'Seconds left: {n}', left10: '10 seconds left', paused: 'Paused', go: 'Go!', you: 'You', points: '{n} points',
     podium: 'Final scores', place1: '1st place!', place2: '2nd place!', place3: '3rd place!', wellPlayed: 'Well played!', superSpeller: 'Super speller!',
     player: 'Player {n}', passTo: 'Pass to {name}', passDraw: 'Your turn to draw. No peeking, everyone else!', imReady: 'I’m ready', done: 'Done', passGuess: 'Pass to the guessers', passGuessP: 'Guess the word together. Who gets it first?', whoGot: 'Who got it?', wins: '{name} wins!', tie: 'It’s a tie!',
+    tooQuick: 'One moment, then guess again!', useLetters: 'Type a word with letters.', feedSaid: '{name} said it out loud!', drawFirst: 'Draw something first!',
     typeHere: 'Type your guess', guessBtn: 'Guess', soClose: 'So close!', saidIt: 'Someone said it!', whoSaid: 'Who guessed it?', cancel: 'Cancel', feedWord: '{name} guessed {word}', feedOther: '{name} guessed something else', feedClose: '{name} is close!', guesses: 'Guesses', guessBy: 'Guess with', typing: 'Typing', tilesEasy: 'Letter tiles (easier)', practiceType: 'Pip draws, and you type what you think it is.', passWatch: 'Everyone else: watch and call out your guesses!', showWord: 'My word',
   },
   'en-GB': {},
@@ -908,6 +927,7 @@ var I18N = {
     secsLeft: 'Segundos restantes: {n}', left10: 'Quedan 10 segundos', paused: 'En pausa', go: '¡Ya!', you: 'Tú', points: '{n} puntos',
     podium: 'Puntuación final', place1: '¡1.er puesto!', place2: '¡2.º puesto!', place3: '¡3.er puesto!', wellPlayed: '¡Bien jugado!', superSpeller: '¡Súper deletreo!',
     player: 'Jugador {n}', passTo: 'Pásalo a {name}', passDraw: 'Te toca dibujar. ¡Que nadie mire!', imReady: 'Estoy listo', done: 'Listo', passGuess: 'Pásalo a los que adivinan', passGuessP: 'Adivinad la palabra juntos. ¿Quién acierta primero?', whoGot: '¿Quién acertó?', wins: '¡Gana {name}!', tie: '¡Empate!',
+    tooQuick: 'Un momento y vuelve a intentarlo.', useLetters: 'Escribe una palabra con letras.', feedSaid: '¡{name} lo dijo en voz alta!', drawFirst: '¡Dibuja algo primero!',
     typeHere: 'Escribe tu respuesta', guessBtn: 'Adivinar', soClose: '¡Casi!', saidIt: '¡Alguien lo dijo!', whoSaid: '¿Quién lo adivinó?', cancel: 'Cancelar', feedWord: '{name} dijo {word}', feedOther: '{name} probó otra cosa', feedClose: '¡{name} está cerca!', guesses: 'Respuestas', guessBy: 'Adivinar con', typing: 'Teclado', tilesEasy: 'Fichas de letras (más fácil)', practiceType: 'Pip dibuja y tú escribes lo que crees que es.', passWatch: '¡Los demás: mirad y decid lo que creéis!', showWord: 'Mi palabra',
   },
   fr: {
@@ -926,6 +946,7 @@ var I18N = {
     secsLeft: 'Secondes restantes : {n}', left10: 'Plus que 10 secondes', paused: 'En pause', go: 'C’est parti !', you: 'Toi', points: '{n} points',
     podium: 'Scores finaux', place1: '1re place !', place2: '2e place !', place3: '3e place !', wellPlayed: 'Bien joué !', superSpeller: 'Champion de l’orthographe !',
     player: 'Joueur {n}', passTo: 'Passe à {name}', passDraw: 'À toi de dessiner. Les autres, on ne regarde pas !', imReady: 'Je suis prêt', done: 'Fini', passGuess: 'Passe aux devineurs', passGuessP: 'Devinez le mot ensemble. Qui trouve en premier ?', whoGot: 'Qui a trouvé ?', wins: '{name} gagne !', tie: 'Égalité !',
+    tooQuick: 'Un instant, puis réessaie !', useLetters: 'Écris un mot avec des lettres.', feedSaid: '{name} l’a dit à voix haute !', drawFirst: 'Dessine d’abord quelque chose !',
     typeHere: 'Écris ta réponse', guessBtn: 'Deviner', soClose: 'Presque !', saidIt: 'Quelqu’un l’a dit !', whoSaid: 'Qui a trouvé ?', cancel: 'Annuler', feedWord: '{name} a proposé {word}', feedOther: '{name} a proposé autre chose', feedClose: '{name} y est presque !', guesses: 'Propositions', guessBy: 'Deviner avec', typing: 'Clavier', tilesEasy: 'Tuiles de lettres (plus facile)', practiceType: 'Pip dessine, et tu écris ce que tu crois que c’est.', passWatch: 'Les autres : regardez et devinez à voix haute !', showWord: 'Mon mot',
   },
   de: {
@@ -944,6 +965,7 @@ var I18N = {
     secsLeft: 'Sekunden übrig: {n}', left10: 'Noch 10 Sekunden', paused: 'Pause', go: 'Los!', you: 'Du', points: '{n} Punkte',
     podium: 'Endstand', place1: '1. Platz!', place2: '2. Platz!', place3: '3. Platz!', wellPlayed: 'Gut gespielt!', superSpeller: 'Rechtschreib-Profi!',
     player: 'Spieler {n}', passTo: 'Gib weiter an {name}', passDraw: 'Du malst. Alle anderen: nicht hingucken!', imReady: 'Ich bin bereit', done: 'Fertig', passGuess: 'Gib weiter an die Rater', passGuessP: 'Ratet das Wort zusammen. Wer hat es zuerst?', whoGot: 'Wer hat es?', wins: '{name} gewinnt!', tie: 'Unentschieden!',
+    tooQuick: 'Einen Moment, dann nochmal!', useLetters: 'Tippe ein Wort mit Buchstaben.', feedSaid: '{name} hat es laut gesagt!', drawFirst: 'Mal zuerst etwas!',
     typeHere: 'Tippe deine Antwort', guessBtn: 'Raten', soClose: 'Ganz knapp!', saidIt: 'Jemand hat’s gesagt!', whoSaid: 'Wer hat es erraten?', cancel: 'Abbrechen', feedWord: '{name} rät {word}', feedOther: '{name} rät etwas anderes', feedClose: '{name} ist ganz nah dran!', guesses: 'Antworten', guessBy: 'Raten mit', typing: 'Tastatur', tilesEasy: 'Buchstabenkärtchen (leichter)', practiceType: 'Pip malt, und du tippst, was es sein könnte.', passWatch: 'Alle anderen: zuschauen und laut raten!', showWord: 'Mein Wort',
   },
   it: {
@@ -962,6 +984,7 @@ var I18N = {
     secsLeft: 'Secondi rimasti: {n}', left10: 'Mancano 10 secondi', paused: 'In pausa', go: 'Via!', you: 'Tu', points: '{n} punti',
     podium: 'Punteggi finali', place1: '1° posto!', place2: '2° posto!', place3: '3° posto!', wellPlayed: 'Ben giocato!', superSpeller: 'Campione di ortografia!',
     player: 'Giocatore {n}', passTo: 'Passa a {name}', passDraw: 'Tocca a te disegnare. Gli altri non guardano!', imReady: 'Sono pronto', done: 'Fatto', passGuess: 'Passa a chi indovina', passGuessP: 'Indovinate la parola insieme. Chi indovina per primo?', whoGot: 'Chi ha indovinato?', wins: 'Vince {name}!', tie: 'Pareggio!',
+    tooQuick: 'Un attimo, poi riprova!', useLetters: 'Scrivi una parola con le lettere.', feedSaid: '{name} l’ha detto ad alta voce!', drawFirst: 'Prima disegna qualcosa!',
     typeHere: 'Scrivi la tua risposta', guessBtn: 'Prova', soClose: 'Quasi!', saidIt: 'Qualcuno l’ha detto!', whoSaid: 'Chi ha indovinato?', cancel: 'Annulla', feedWord: '{name} ha detto {word}', feedOther: '{name} ha provato altro', feedClose: '{name} ci è vicino!', guesses: 'Risposte', guessBy: 'Indovina con', typing: 'Tastiera', tilesEasy: 'Tessere (più facile)', practiceType: 'Pip disegna e tu scrivi cosa pensi che sia.', passWatch: 'Gli altri: guardate e dite cosa pensate!', showWord: 'La mia parola',
   },
   pt: {
@@ -980,6 +1003,7 @@ var I18N = {
     secsLeft: 'Segundos restantes: {n}', left10: 'Faltam 10 segundos', paused: 'Pausado', go: 'Já!', you: 'Você', points: '{n} pontos',
     podium: 'Placar final', place1: '1º lugar!', place2: '2º lugar!', place3: '3º lugar!', wellPlayed: 'Mandou bem!', superSpeller: 'Craque da ortografia!',
     player: 'Jogador {n}', passTo: 'Passe para {name}', passDraw: 'Sua vez de desenhar. Ninguém espia!', imReady: 'Estou pronto', done: 'Pronto', passGuess: 'Passe para quem adivinha', passGuessP: 'Adivinhem a palavra juntos. Quem acerta primeiro?', whoGot: 'Quem acertou?', wins: '{name} venceu!', tie: 'Empate!',
+    tooQuick: 'Espere um pouco e tente de novo!', useLetters: 'Digite uma palavra com letras.', feedSaid: '{name} falou em voz alta!', drawFirst: 'Desenhe algo primeiro!',
     typeHere: 'Digite seu palpite', guessBtn: 'Chutar', soClose: 'Quase!', saidIt: 'Alguém falou!', whoSaid: 'Quem acertou?', cancel: 'Cancelar', feedWord: '{name} chutou {word}', feedOther: '{name} chutou outra coisa', feedClose: '{name} está quase!', guesses: 'Palpites', guessBy: 'Adivinhar com', typing: 'Teclado', tilesEasy: 'Peças de letras (mais fácil)', practiceType: 'O Pip desenha e você digita o que acha que é.', passWatch: 'Os outros: olhem e falem seus palpites!', showWord: 'Minha palavra',
   },
   nl: {
@@ -998,6 +1022,7 @@ var I18N = {
     secsLeft: 'Seconden over: {n}', left10: 'Nog 10 seconden', paused: 'Gepauzeerd', go: 'Start!', you: 'Jij', points: '{n} punten',
     podium: 'Eindstand', place1: '1e plaats!', place2: '2e plaats!', place3: '3e plaats!', wellPlayed: 'Goed gespeeld!', superSpeller: 'Spelkampioen!',
     player: 'Speler {n}', passTo: 'Geef door aan {name}', passDraw: 'Jij tekent. De rest: niet kijken!', imReady: 'Ik ben klaar', done: 'Klaar', passGuess: 'Geef door aan de raders', passGuessP: 'Raad het woord samen. Wie heeft het als eerste?', whoGot: 'Wie had het?', wins: '{name} wint!', tie: 'Gelijkspel!',
+    tooQuick: 'Even wachten, dan opnieuw!', useLetters: 'Typ een woord met letters.', feedSaid: '{name} zei het hardop!', drawFirst: 'Teken eerst iets!',
     typeHere: 'Typ je gok', guessBtn: 'Raden', soClose: 'Bijna!', saidIt: 'Iemand zei het!', whoSaid: 'Wie heeft het geraden?', cancel: 'Annuleren', feedWord: '{name} gokte {word}', feedOther: '{name} gokte iets anders', feedClose: '{name} zit er dichtbij!', guesses: 'Gokken', guessBy: 'Raden met', typing: 'Toetsenbord', tilesEasy: 'Lettertegels (makkelijker)', practiceType: 'Pip tekent, en jij typt wat je denkt dat het is.', passWatch: 'De rest: kijk mee en roep wat je denkt!', showWord: 'Mijn woord',
   },
   ru: {
@@ -1016,6 +1041,7 @@ var I18N = {
     secsLeft: 'Осталось секунд: {n}', left10: 'Осталось 10 секунд', paused: 'Пауза', go: 'Вперёд!', you: 'Ты', points: 'Очки: {n}',
     podium: 'Итоговый счёт', place1: '1-е место!', place2: '2-е место!', place3: '3-е место!', wellPlayed: 'Отличная игра!', superSpeller: 'Мастер правописания!',
     player: 'Игрок {n}', passTo: 'Передай: {name}', passDraw: 'Ты рисуешь. Остальные — не подглядывать!', imReady: 'Я готов', done: 'Готово', passGuess: 'Передай отгадчикам', passGuessP: 'Угадайте слово вместе. Кто первым?', whoGot: 'Кто угадал?', wins: 'Победа: {name}!', tie: 'Ничья!',
+    tooQuick: 'Секунду, потом попробуй ещё!', useLetters: 'Напиши слово буквами.', feedSaid: '{name} сказал вслух!', drawFirst: 'Сначала нарисуй что-нибудь!',
     typeHere: 'Напиши ответ', guessBtn: 'Ответить', soClose: 'Почти!', saidIt: 'Кто-то сказал!', whoSaid: 'Кто угадал?', cancel: 'Отмена', feedWord: '{name}: {word}', feedOther: '{name}: что-то другое', feedClose: '{name} почти угадывает!', guesses: 'Ответы', guessBy: 'Как угадывать', typing: 'Клавиатура', tilesEasy: 'Плитки с буквами (проще)', practiceType: 'Пип рисует, а ты пишешь, что это.', passWatch: 'Остальные: смотрите и угадывайте вслух!', showWord: 'Моё слово',
   },
   ja: {
@@ -1034,6 +1060,7 @@ var I18N = {
     secsLeft: 'のこり{n}秒', left10: 'のこり10秒', paused: '一時停止', go: 'スタート！', you: 'あなた', points: '{n}点',
     podium: 'さいしゅう結果', place1: '1位！', place2: '2位！', place3: '3位！', wellPlayed: 'よくできました！', superSpeller: 'つづりの名人！',
     player: 'プレイヤー{n}', passTo: '{name}にわたしてね', passDraw: 'あなたがかく番。ほかの人は見ないでね！', imReady: '準備できた', done: 'できた', passGuess: 'あてる人にわたしてね', passGuessP: 'みんなで言葉を当てよう。だれが先にわかるかな？', whoGot: 'だれが当てた？', wins: '{name}の勝ち！', tie: '引き分け！',
+    tooQuick: 'ちょっと待ってから、もういちど！', useLetters: '文字で言葉を打ってね。', feedSaid: '{name}が声で当てた！', drawFirst: 'まず何かかいてね！',
     typeHere: 'こたえを打ってね', guessBtn: 'こたえる', soClose: 'おしい！', saidIt: 'だれかが言った！', whoSaid: 'だれが当てた？', cancel: 'やめる', feedWord: '{name}：{word}', feedOther: '{name}：ほかの答え', feedClose: '{name}がおしい！', guesses: 'こたえ', guessBy: '当て方', typing: 'キーボード', tilesEasy: '文字タイル（やさしい）', practiceType: 'ピップが絵をかくよ。なにかわかったら打ってね。', passWatch: 'ほかの人は見ながら、声に出して当ててね！', showWord: 'わたしの言葉',
   },
   'zh-Hant': {
@@ -1052,6 +1079,7 @@ var I18N = {
     secsLeft: '還剩 {n} 秒', left10: '還剩 10 秒', paused: '已暫停', go: '開始！', you: '你', points: '{n} 分',
     podium: '最終分數', place1: '第 1 名！', place2: '第 2 名！', place3: '第 3 名！', wellPlayed: '玩得好！', superSpeller: '拼字高手！',
     player: '玩家 {n}', passTo: '交給 {name}', passDraw: '輪到你畫。其他人不要偷看！', imReady: '我準備好了', done: '完成', passGuess: '交給猜的人', passGuessP: '一起猜詞語。誰最先猜到？', whoGot: '誰答對了？', wins: '{name} 獲勝！', tie: '平手！',
+    tooQuick: '等一下再猜！', useLetters: '請用文字輸入。', feedSaid: '{name} 說出來了！', drawFirst: '先畫點東西吧！',
     typeHere: '輸入你的答案', guessBtn: '猜', soClose: '好接近！', saidIt: '有人說對了！', whoSaid: '誰猜對了？', cancel: '取消', feedWord: '{name} 猜：{word}', feedOther: '{name} 猜了別的', feedClose: '{name} 很接近了！', guesses: '猜測', guessBy: '怎麼猜', typing: '打字', tilesEasy: '字母方塊（比較簡單）', practiceType: 'Pip 畫圖，你打出你覺得是什麼。', passWatch: '其他人：一邊看一邊大聲猜！', showWord: '我的詞',
   },
   ar: {
@@ -1070,6 +1098,7 @@ var I18N = {
     secsLeft: 'الثواني المتبقية: {n}', left10: 'بقيت 10 ثوانٍ', paused: 'متوقف مؤقتًا', go: 'انطلق!', you: 'أنت', points: '{n} نقطة',
     podium: 'النتائج النهائية', place1: 'المركز الأول!', place2: 'المركز الثاني!', place3: 'المركز الثالث!', wellPlayed: 'أحسنت اللعب!', superSpeller: 'بطل التهجئة!',
     player: 'اللاعب {n}', passTo: 'أعطِ الجهاز إلى {name}', passDraw: 'دورك في الرسم. لا يختلس أحد النظر!', imReady: 'أنا مستعد', done: 'تم', passGuess: 'أعطِ الجهاز للمخمّنين', passGuessP: 'خمّنوا الكلمة معًا. من يعرفها أولًا؟', whoGot: 'من أصاب؟', wins: 'فاز {name}!', tie: 'تعادل!',
+    tooQuick: 'لحظة، ثم خمّن مرة أخرى!', useLetters: 'اكتب كلمة بالحروف.', feedSaid: 'قالها {name} بصوت عالٍ!', drawFirst: 'ارسم شيئًا أولًا!',
     typeHere: 'اكتب تخمينك', guessBtn: 'خمّن', soClose: 'قريب جدًا!', saidIt: 'أحدهم قالها!', whoSaid: 'من خمّنها؟', cancel: 'إلغاء', feedWord: '{name} خمّن: {word}', feedOther: '{name} خمّن شيئًا آخر', feedClose: '{name} قريب جدًا!', guesses: 'التخمينات', guessBy: 'التخمين بـ', typing: 'الكتابة', tilesEasy: 'بطاقات الحروف (أسهل)', practiceType: 'بِب يرسم، وأنت تكتب ما تظنه.', passWatch: 'الباقون: شاهدوا وخمّنوا بصوت عالٍ!', showWord: 'كلمتي',
   },
   he: {
@@ -1088,6 +1117,7 @@ var I18N = {
     secsLeft: 'שניות שנותרו: {n}', left10: 'נשארו 10 שניות', paused: 'בהשהיה', go: 'צאו!', you: 'את/ה', points: '{n} נקודות',
     podium: 'התוצאות הסופיות', place1: 'מקום 1!', place2: 'מקום 2!', place3: 'מקום 3!', wellPlayed: 'כל הכבוד!', superSpeller: 'אלופי האיות!',
     player: 'שחקן {n}', passTo: 'העבירו אל {name}', passDraw: 'תורך לצייר. כל השאר: לא מציצים!', imReady: 'מוכן/ה', done: 'סיימתי', passGuess: 'העבירו למנחשים', passGuessP: 'נחשו את המילה יחד. מי מנחש ראשון?', whoGot: 'מי ניחש?', wins: '{name} ניצח/ה!', tie: 'תיקו!',
+    tooQuick: 'רגע, ואז נסו שוב!', useLetters: 'הקלידו מילה באותיות.', feedSaid: '{name} אמר/ה את זה בקול!', drawFirst: 'קודם ציירו משהו!',
     typeHere: 'הקלידו ניחוש', guessBtn: 'ניחוש', soClose: 'כמעט!', saidIt: 'מישהו אמר!', whoSaid: 'מי ניחש?', cancel: 'ביטול', feedWord: '{name} ניחש/ה: {word}', feedOther: '{name} ניחש/ה משהו אחר', feedClose: '{name} ממש קרוב/ה!', guesses: 'ניחושים', guessBy: 'איך מנחשים', typing: 'הקלדה', tilesEasy: 'אריחי אותיות (קל יותר)', practiceType: 'פיפ מצייר, ואתם מקלידים מה לדעתכם זה.', passWatch: 'כל השאר: תסתכלו ותנחשו בקול!', showWord: 'המילה שלי',
   },
 };
@@ -1387,33 +1417,55 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     blanks.setAttribute('aria-hidden', 'true'); say.setAttribute('role', 'status');
     box.append(blanks, form, say);
     T.el = box; T.row = form; T.input = input; T.sayEl = say;
-    var composing = false;
+    var composing = false, enterLater = false;
+    // (only Japanese and Chinese build a word in the box before it counts; elsewhere, an Android keyboard keeps every
+    // word "in composition" while it is typed, so Enter and Guess send what is in the box)
+    var ime = function () { return /^(ja|zh)/.test(T.lang); };
     input.addEventListener('compositionstart', function () { composing = true; });
-    input.addEventListener('compositionend', function () { composing = false; });
-    // Enter sends it, except the Enter that finishes a word in an input method (isComposing, keyCode 229)
+    input.addEventListener('compositionend', function () { composing = false; if (enterLater) { enterLater = false; if (!ime()) T.send(); } });
+    // Enter sends it, except the Enter that finishes a word in a Japanese or Chinese input method (isComposing, 229)
     input.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter') return;
+      if (e.key !== 'Enter' && e.keyCode !== 13) return;
       e.preventDefault();
-      if (e.isComposing || composing || e.keyCode === 229) return;
+      if ((e.isComposing || composing || e.keyCode === 229) && ime()) return;
+      if (composing && !ime()) enterLater = true;
       T.send();
     });
-    press(go, function () { if (!composing) T.send(); });
+    // (a tap on the box always brings the keyboard up)
+    input.addEventListener('pointerup', function () { if (document.activeElement !== input) T.focus(); });
+    // (the last answer goes once more typing starts)
+    input.addEventListener('input', function () { if (say.textContent && !T.solved && !T.out) { say.textContent = ''; say.className = 'dh-say'; box.classList.remove('no'); } });
+    press(go, function () { if (!composing || !ime()) T.send(); });
+    var wait = 0;
     T.send = function () {
       var v = String(input.value || '').trim();
       if (!v || T.solved || T.out || T.busy) return false;
-      var now = Date.now(); if (now - T.at < 900) return false;
-      T.at = now; T.busy = true;
+      // (a little slower than the server's one a second, so a quick second tap is never thrown away)
+      var now = Date.now(); if (now - T.at < 1100) return false;
+      T.at = now; T.busy = true; T.last = v;
       v = Array.from(v).slice(0, C.MAX_TYPED).join('');
-      input.value = '';
+      input.value = ''; enterLater = false;
+      // no answer in 2.5 s (a dropped message): the box works again, with what was typed back in it
+      clearTimeout(wait); wait = setTimeout(function () { if (T.busy) { T.busy = false; if (!input.value) input.value = T.last || ''; } }, 2500);
       onGuess(v);
       return true;
     };
+    /** Not counted (too quick, or no letters): the box works again, with what was typed back in it when keep. */
+    T.retry = function (keep, text) {
+      clearTimeout(wait); T.busy = false; T.at = 0;
+      if (keep && !input.value) input.value = T.last || '';
+      say.className = 'dh-say'; say.textContent = text || '';
+    };
     T.set = function (d, lng) {
-      T.n = d.n || 0; T.groups = (d.g || []).slice(); T.dir = d.dir || 'ltr'; T.lang = lng || T.lang; T.locks = {}; T.solved = !!d.ok; T.out = false; T.busy = false; T.at = 0;
+      var same = T.n === (d.n || 0) && T.n > 0;
+      T.n = d.n || 0; T.groups = (d.g || []).slice(); T.dir = d.dir || 'ltr'; T.lang = lng || T.lang; T.locks = {}; T.solved = !!d.ok; T.out = !!d.out; T.busy = false; T.at = 0;
+      clearTimeout(wait);
       (d.hn || []).forEach(function (h) { T.locks[h[0]] = h[1]; });
-      input.value = ''; input.lang = T.lang; input.readOnly = false;
-      box.classList.remove('ok', 'no', 'out'); if (T.solved) box.classList.add('ok');
-      say.textContent = ''; say.className = 'dh-say';
+      // (the same turn again, after a reconnect: what was being typed stays)
+      if (!same || T.solved || T.out) input.value = '';
+      input.lang = T.lang; input.readOnly = false;
+      box.classList.remove('ok', 'no', 'out'); if (T.solved) box.classList.add('ok'); if (T.out) box.classList.add('out');
+      if (!same) { say.textContent = ''; say.className = 'dh-say'; }
       T.render();
     };
     T.render = function () {
@@ -1427,7 +1479,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     };
     /** The answer: ok (got it), close (told only to this player), no (a wrong guess: left, how many may still come). */
     T.result = function (kind, text) {
-      T.busy = false; box.classList.remove('no'); void box.offsetWidth;
+      clearTimeout(wait); T.busy = false; box.classList.remove('no'); void box.offsetWidth;
       say.className = 'dh-say' + (kind === 'ok' ? ' good' : kind === 'close' ? ' close' : '');
       say.textContent = text || '';
       if (kind === 'ok') { T.solved = true; box.classList.add('ok'); try { input.blur(); } catch (e) { /* fine */ } }
@@ -1597,6 +1649,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
     function mayGet() { var x = dd(); if (!x) return []; return L.players().filter(function (p) { return p.seat !== x.dr && p.connected !== false && (x.got || []).indexOf(p.seat) < 0; }); }
     function openWho() {
       var x = dd(); if (!x || x.ph !== 'draw' || phase !== 'playing' || !(host || x.dr === me())) return false;
+      // (no points for a blank page: the server says the same)
+      if (!U.board.strokes.length) { U.say(t('drawFirst')); return false; }
       whoSheet(U, mayGet().map(function (p) { return { id: p.seat, name: p.name || nameOf(p.seat), spec: p.avatar || avatarOf(p.seat) }; }), function (seat) {
         var d = { n: S.tn, s: seat };
         if (host ? L.send('aw', d) : L.send('aw', d, { toHost: true })) sfx('select');
@@ -1604,10 +1658,10 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       return true;
     }
     function feedRows(lang) {
-      return S.feed.slice().reverse().map(function (e) {
+      // (the last five: they fit beside the board on a small phone)
+      return S.feed.slice(-5).reverse().map(function (e) {
         var nm = e[0] === me() ? t('you') : nameOf(e[0]);
-        if (e[1] === 'ok') return ['ok', '✓ ' + t('gotItName', { name: nm })];
-        if (e[1] === 'c') return ['c', t('feedClose', { name: nm })];
+        if (e[1] === 'ok') return ['ok', '✓ ' + t(e[2] === 1 ? 'feedSaid' : 'gotItName', { name: nm })];
         if (e[1] === 'w' && wordOf(e[2], lang)) return ['w', t('feedWord', { name: nm, word: caps(wordOf(e[2], lang), lang) })];
         return ['x', t('feedOther', { name: nm })];
       });
@@ -1688,6 +1742,9 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
               var say = t('gotIt') + ' ' + t('gotPts', { n: d.p || 0 });
               if (typed) typer.result('ok', say); else tiles.result(true, say);
               sfx('correct'); U.announce(t('gotIt'));
+            } else if (typed && (d.f || d.z)) {
+              // not counted: too quick (what was typed comes back), or no letters in it
+              typer.retry(!!d.f, d.f ? t('tooQuick') : t('useLetters'));
             } else if (typed) {
               var out = !(d.left > 0);
               typer.result(out ? 'out' : d.c ? 'close' : 'no', out ? t('keepWatching') : d.c ? t('soClose') : t('notQuite'));
@@ -1696,6 +1753,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
             break;
           }
           case 'fd': S.feed = (d.r ? [] : S.feed).concat(Array.isArray(d.l) ? d.l : []).slice(-6); break;
+          case 'awn': U.say(t('drawFirst')); break;
           case 'full': U.say(t('full')); break;
           case 'cl': U.board.clear(); break;
           case 'cv': if (d.k === 0) U.board.strokes = []; (d.l || []).forEach(function (r) { U.board.strokes.push({ s: r[0], c: r[1], w: r[2], e: r[3], pts: r.slice(4) }); }); U.board.redraw(); break;
@@ -1727,8 +1785,9 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
           li.appendChild(el('span', 's', O.num(r.score))); scores.appendChild(li);
         });
         U.strip.textContent = '';
-        // every player: picture, name (two players can have the same picture) and points; it scrolls sideways
-        rows.forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(el('b', '', r.me ? t('you') : r.name)); s.appendChild(document.createTextNode((r.got ? ' ✓ ' : r.dr ? ' ✏️ ' : ' ') + O.num(r.score))); U.strip.appendChild(s); });
+        // every player: picture, name (two players can have the same picture) and points; it scrolls sideways, with
+        // "You" first so a narrow phone always shows your own points
+        rows.filter(function (r) { return r.me; }).concat(rows.filter(function (r) { return !r.me; })).forEach(function (r) { var s = el('span', (r.got ? 'got' : '') + (r.me ? ' me' : '')); s.appendChild(figure(r.avatar, 44)); s.appendChild(el('b', '', r.me ? t('you') : r.name)); s.appendChild(document.createTextNode((r.got ? ' ✓ ' : r.dr ? ' ✏️ ' : ' ') + O.num(r.score))); U.strip.appendChild(s); });
       }
     }
     function lobby() {
@@ -1989,6 +2048,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { c_grey: 'Grey' });
       var ans = C.answers(DW, lang, word.id), idx = C.index(DW, lang);
       typer = Typer(function (text) {
         var r = C.judge(text, ans, lang, idx);
+        if (!r) { typer.retry(false, t('useLetters')); return; }
         if (r && r.k === 'ok') { typer.result('ok', t('gotIt')); sfx('correct'); finish(true); }
         else { typer.result(r && r.k === 'close' ? 'close' : 'no', r && r.k === 'close' ? t('soClose') : t('notQuite')); sfx('wrong', { volume: 0.5 }); }
       }, lang);

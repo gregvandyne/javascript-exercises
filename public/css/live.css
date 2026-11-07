@@ -52,7 +52,7 @@
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play { gap: 6px; padding-block: 4px; block-size: 100dvh; min-block-size: 0; }
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar { flex-wrap: nowrap; gap: 6px; padding-block: 4px; }
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar :is(.lv-title, #lv-me-name) { display: none; }
-  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar .btn { min-block-size: 36px; padding-block: 2px; }
+  body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > .lv-bar .btn { min-block-size: 44px; padding-block: 2px; }
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play .lv-stage { min-block-size: 0; }
 }
 /* Doodle Hoot Live on a phone on its side with the keyboard up (very little height): the page's bar steps aside */
@@ -60,10 +60,11 @@
   body[data-lv-mode="doodle"]:is([data-lv-phase="playing"], [data-lv-phase="paused"]) .lv-play > :is(.lv-bar, .lv-emotes, .lv-phase) { display: none; }
 }
 /* Doodle Hoot Live with the on-screen keyboard up (public/js/live-play.js): the page fits the part still visible, the
-   game gets it all */
-body.lv-kb .lv-play { position: fixed; inset-inline: 0; inset-block-start: var(--lv-vvt, 0px); block-size: var(--lv-vvh, 100dvh); min-block-size: 0; overflow: hidden; gap: 4px; padding-block: 2px; }
-body.lv-kb .lv-play > :is(.lv-emotes, .lv-phase) { display: none; }
-body.lv-kb .lv-play .lv-stage { min-block-size: 0; }
+   game gets it all (the bar with Report and Leave comes back once the keyboard goes). As specific as the playing rules
+   above and after them, so it wins over their full height while a game runs (iOS keeps the page full height). */
+body.lv-kb[data-lv-mode="doodle"]:is([data-lv-phase], :not([data-lv-phase])) .lv-play { position: fixed; inset-inline: 0; inset-block-start: var(--lv-vvt, 0px); block-size: var(--lv-vvh, 100dvh); min-block-size: 0; overflow: hidden; gap: 4px; padding-block: 2px; }
+body.lv-kb[data-lv-mode="doodle"] .lv-play > :is(.lv-emotes, .lv-phase, .lv-bar) { display: none; }
+body.lv-kb[data-lv-mode="doodle"] .lv-play .lv-stage { min-block-size: 0; }
 .lv-count { font-weight: 800; font-size: 1.2rem; }
 .lv-stage { position: relative; inline-size: 100%; min-block-size: 50vh; border-radius: 16px; overflow: hidden; background: #bfe8ff; }
 .lv-stage iframe { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; border: 0; }
@@ -415,3 +416,5 @@ button.lv-dash-role:focus-visible { outline: 3px solid var(--focus); outline-off
 .lv-bank-board legend { font-weight: 700; margin-block-end: 6px; }
 .lv-bank-subs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 4px 12px; }
 .lv-bank-hint { grid-column: 1 / -1; margin: 0; }
+/* Doodle Hoot Live: a short message sits at the top, never over the guess box at the bottom */
+body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: calc(8px + env(safe-area-inset-top)); }
