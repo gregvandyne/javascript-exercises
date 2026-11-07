@@ -35,7 +35,7 @@ test('the default is the Ink look: CONFIG.style is ink and only ?style=pixel (BR
   assert.match(html, /const STYLE = \(\(\) => \{ const p = \(window\.BRB && BRB\.params\) \|\| \{\}; return \(p\.style \|\| CONFIG\.style\) === 'pixel' \? 'pixel' : 'ink'; \}\)\(\);/);
   assert.match(html, /const PXK = STYLE === 'pixel' && Oomba\.style\('pixel'\) === 'pixel' && Oomba\.pixel \? Oomba\.pixel : null;/, 'pixel only when the kit says the style is on');
   // every pixel drawing path is behind PIX() (the art decoded), so Ink players run exactly the old code
-  for (const hook of ['if (PIX()) return pxRaceView(v, dt, time);', 'if (PIX()) return pxDemo(v, race, cam, dt, time);', 'if (PIX()) { pxThumb(v, id); return; }', 'if (PIX()) { pxPodiumStart(); return; }']) assert.ok(html.includes(hook), hook);
+  for (const hook of ['if (PIX()) return pxRaceView(v, dt, time);', 'if (PIX()) return pxDemo(v, race, cam, dt, time);', 'if (PIX()) { pxSizeThumb(v); pxThumb(v, id); return; }', 'if (PIX()) { pxPodiumStart(); return; }']) assert.ok(html.includes(hook), hook);
   // the pixel skin's CSS only applies under html.sr-pixel, set once the art is ready
   const css = html.slice(0, html.indexOf('</style>'));
   for (const rule of css.match(/^[^@\n{}][^{}\n]*\{/gm).filter(r => /pixel|--u\b/.test(r))) assert.match(rule, /\.sr-pixel/, `pixel rule outside .sr-pixel: ${rule}`);
@@ -91,4 +91,24 @@ test('the art: every frame the game draws, inside one small indexed PNG that use
   for (const tc of CONFIG.tracks) { const sc = art.scenes[sceneOf(tc.id)]; assert.ok(sc && sc.sky.length >= 2 && sc.road.length === 4, `track ${tc.id}`); for (const c of [...sc.sky, ...sc.road, sc.dust]) assert.ok(art.palette.includes(c), c); }
   assert.deepEqual(art.tile, [256, 80]);
   assert.ok(art.disc && art.seat, 'where the number disc and the seat are');
+});
+
+test('crisp on any screen: pixel canvases in device pixels (no 2x cap), whole art pixels, no see-through or anti-aliased drawing', () => {
+  const px = html.slice(html.indexOf('const PXA = '), html.indexOf('const freshSave'));
+  const fit = html.slice(html.indexOf('function pxFit(v)'), html.indexOf('function pxSizeThumb('));
+  assert.match(fit, /pxDpr\(\)/, 'the real ratio');
+  assert.doesNotMatch(fit, /dprCap|DPR\(\)/, 'no 2x cap in the pixel fit');
+  assert.match(fit, /width: pw \/ dpr \+ 'px', height: ph \/ dpr \+ 'px'/, 'CSS size = device pixels / ratio');
+  assert.match(fit, /imageSmoothingEnabled = false/, 'smoothing off after a resize');
+  assert.match(html, /const pxDpr = \(\) => Math\.min\(4, window\.devicePixelRatio \|\| 1\);/);
+  assert.match(html, /function pxStep\(dpr\)/, 'sizes and positions on the 1/64 px layout grid too');
+  assert.match(html, /\.sr-pixel \.sr canvas\{image-rendering:crisp-edges;image-rendering:pixelated\}/);
+  assert.match(html, /if \(PIX\(\)\) return pxFit\(v\);/, 'every pixel view goes through it');
+  // the pixel drawing: solid palette colours only (a translucent shadow, streak or fade blends colours on edges) and
+  // words as hard-edged bitmaps scaled by whole device pixels
+  assert.doesNotMatch(px.replace("disc(cx, cy, 9, 'rgba(0,0,0,0)');", ''), /rgba\(/, 'no see-through colours in the pixel drawing');
+  assert.doesNotMatch(px, /alpha: a\b/, 'pops vanish in a step, never fade');
+  assert.match(px, /function pxLabel\(text, color, edge\)/);
+  assert.match(px, /on\[i\] = src\[i \* 4 \+ 3\] >= 110 \? 1 : 0/, 'the label alpha is cut hard');
+  assert.match(px, /let n = Math\.max\(1, Math\.floor\(T\.size \/ PX_GRID \* d\)\)/, 'whole device pixels per font pixel');
 });

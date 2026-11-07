@@ -31,6 +31,15 @@ test('?style=pixel: the pixel packs, the pixel font and the pixel race', async (
   });
   expect(colours).toBeGreaterThan(2);
   expect(colours).toBeLessThan(40);
+  // one buffer pixel is one device pixel, and the canvas sits on the device-pixel grid (crisp on a 3x phone too)
+  const grid = await f.evaluate(() => {
+    const cv = document.querySelector('#half0 canvas'), r = cv.getBoundingClientRect(), d = devicePixelRatio;
+    return { perCss: cv.width / r.width, d, left: r.left * d, top: r.top * d, smoothing: cv.getContext('2d').imageSmoothingEnabled };
+  });
+  expect(Math.abs(grid.perCss - grid.d)).toBeLessThan(0.01);
+  expect(Math.abs(grid.left - Math.round(grid.left))).toBeLessThan(0.02);
+  expect(Math.abs(grid.top - Math.round(grid.top))).toBeLessThan(0.02);
+  expect(grid.smoothing).toBe(false);
   // the results: the pixel podium on the scenery canvas, the kit's world stays empty
   const end = await f.evaluate(() => __brbTest.finish({ every: 2 }));
   expect(end.screen).toBe('results');
