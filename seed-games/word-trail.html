@@ -1,0 +1,1743 @@
+<title>Word Trail</title>
+<!-- Andika: a font made for early readers (a and g as children write them, l with a tail so it is never I) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@700&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+/* Word Trail: an official sight-word game for ages about 4-8. The Dolch words (Pre-primer to Grade 3) are five units
+   on a winding felt-and-paper trail through a daytime meadow; each unit is a row of lesson stones, a review stone and
+   a treasure chest. Lessons are short (new words first, then 10-12 exercises: hear it, say-pick, fill the sentence,
+   build it, match pairs, speed tap) with XP, a daily streak, gentle hearts, combos, a mastery level per word and
+   simple spaced repetition. Bramble (our own hedgehog) guides. Every word, sentence and instruction is spoken
+   through BRB.speak and registered in server/services/tts-lines.js, so the AI voice reads it (the device's voice only
+   as the fallback). The sprites are felt renders from Blender (tools/blender/word_trail.py) in a data pack; without
+   the pack the game still plays with plain shapes. The words on the cards are never textured: big, crisp, dark ink on
+   light paper. */
+html,body{height:100%;margin:0}
+body{overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;background:#cfe9f3}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+:root{
+  --ink:#2a1b22;--ink2:#5b4636;--onbg:#2a1b22;
+  --sky1:#a9dcf2;--sky2:#fff1d2;--sun:#ffd65c;--cloud:#fffdf6;--cloud2:#e9f1f6;
+  --hill1:#b6dca0;--hill2:#98cc84;--hill3:#7dbd6c;
+  --path:#f6e4be;--pathEdge:#d8bb86;--stitch:rgba(255,253,242,.95);
+  --paper:#fffaf0;--paperEdge:#eadcc0;--cstitch:rgba(160,118,78,.55);
+  --mint:#46b873;--mintD:#2c8d55;--mintL:#dff5e6;--coral:#ff7466;--coralD:#c8402f;--coralL:#ffe3df;
+  --gold:#ffc23d;--goldD:#b8860b;--lilac:#9d84e6;--sky:#4fa8f0;--skyD:#2f6fc8;
+  --chrome:#fff6e4;--chromeEdge:#e3cfa8;
+  --felt:none;--ptex:none;
+  --shadow:0 3px 0 rgba(120,80,40,.2),0 10px 22px rgba(80,50,20,.16);
+  --font:"Bricolage Grotesque",ui-rounded,"Nunito","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --read:"Andika","Century Gothic","Avenir Next","Avenir","Nunito",ui-rounded,"Bricolage Grotesque",system-ui,sans-serif;
+  --top:max(10px,env(safe-area-inset-top));--bot:max(12px,env(safe-area-inset-bottom));
+}
+.dark{
+  --onbg:#fff6e4;--sky1:#3a4f7a;--sky2:#c7a7a0;--sun:#ffcf8a;--cloud:#e7e3f0;--cloud2:#c4c7dd;
+  --hill1:#5f8b6c;--hill2:#4c7a5c;--hill3:#3d6a4e;--path:#e3cf9f;--pathEdge:#a98f5c;
+  --chrome:#3a3150;--chromeEdge:#241d33;--shadow:0 3px 0 rgba(0,0,0,.35),0 10px 22px rgba(0,0,0,.35);
+}
+.wt{position:fixed;inset:0;font-family:var(--font);color:var(--ink);overflow:hidden}
+.wt button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.wt button:focus-visible{outline:4px solid var(--sky);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- felt and paper surfaces (a grey swatch tiled and multiplied over a colour) ---------- */
+.felt{background-image:var(--felt);background-size:256px;background-blend-mode:multiply}
+.paper{background-color:var(--paper);background-image:var(--ptex);background-size:256px;background-blend-mode:multiply}
+.stitched{position:relative}
+.stitched::after{content:"";position:absolute;inset:6px;border:2.5px dashed var(--cstitch);border-radius:inherit;pointer-events:none}
+.patch{border-radius:18px;box-shadow:var(--shadow)}
+
+/* ---------- the backdrop: paper sky, a paper sun, felt clouds and layered felt hills ---------- */
+#bg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#bg .sky0{stop-color:var(--sky1)}#bg .sky1{stop-color:var(--sky2)}
+#bg .sun{fill:var(--sun)}#bg .cl{fill:var(--cloud)}#bg .cl2{fill:var(--cloud2)}
+#bg .h1{fill:var(--hill1)}#bg .h2{fill:var(--hill2)}#bg .h3{fill:var(--hill3)}
+#bg .tex{mix-blend-mode:multiply;opacity:.55}
+.wt:not(.on-title) #bg .sunG{display:none}
+#bg .st{fill:none;stroke:var(--stitch);stroke-width:3;stroke-dasharray:9 8;stroke-linecap:round;opacity:.75}
+.dark #bg .st{opacity:.35}
+
+/* ---------- screens ---------- */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.col{width:100%;max-width:600px;margin:0 auto}
+
+/* top bar: felt patches with the streak, XP and hearts */
+.topbar{display:flex;align-items:center;gap:8px;padding:var(--top) 12px 8px;z-index:5}
+.chip{display:flex;align-items:center;gap:6px;height:48px;padding:0 14px 0 10px;border-radius:24px;background-color:var(--chrome);border:none;
+  font-weight:800;font-size:20px;color:var(--onbg);box-shadow:var(--shadow);white-space:nowrap}
+.chip svg{width:28px;height:28px;flex:none}
+.chip.icon{width:52px;padding:0;justify-content:center}
+.chip.grow{margin-left:auto}
+.dark .chip{color:#fff6e4}
+
+/* the trail map */
+#map .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative;
+  -webkit-mask-image:linear-gradient(transparent,#000 18px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(transparent,#000 18px,#000 calc(100% - 24px),transparent)}
+/* a stone, card or tag cut by the top or bottom edge fades out until it is scrolled into view */
+#trail .edge{opacity:.12;transition:opacity .2s}
+#trail{position:relative;margin:0 auto;width:100%}
+#trail svg.path{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.path .road{fill:none;stroke:var(--path);stroke-linecap:round;stroke-linejoin:round}
+.path .edge{fill:none;stroke:var(--pathEdge);stroke-linecap:round;stroke-linejoin:round}
+.path .seam{fill:none;stroke:var(--stitch);stroke-width:3;stroke-dasharray:10 9;stroke-linecap:round}
+.path .ptex{fill:none;stroke-linecap:round;stroke-linejoin:round;mix-blend-mode:multiply;opacity:.6}
+.band{position:absolute;left:-40px;right:-40px}
+.band svg{position:absolute;left:0;top:-36px;width:100%;height:44px;display:block}
+.band .fill{position:absolute;inset:0}
+.deco{position:absolute;pointer-events:none;background:center bottom/contain no-repeat;filter:drop-shadow(0 6px 5px rgba(60,40,10,.18))}
+.sign{position:absolute;width:150px;height:150px;pointer-events:none}
+.sign .post{position:absolute;inset:0;background:center bottom/contain no-repeat}
+.unitcard{position:absolute;left:50%;transform:translateX(-50%);width:min(320px,82%);padding:12px 18px 14px;border-radius:20px;text-align:center}
+.unitcard .u{font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.unitcard .n{font-size:26px;font-weight:900;line-height:1.1;margin-top:2px}
+.unitcard .l{font-size:15px;font-weight:700;color:var(--ink2);margin-top:4px}
+.node{position:absolute;width:104px;height:84px;margin:-42px 0 0 -52px;border:none;background:center/contain no-repeat;padding:0;filter:drop-shadow(0 6px 4px rgba(60,40,10,.22))}
+.node .ic{position:absolute;left:50%;top:40%;width:40px;height:40px;transform:translate(-50%,-50%);pointer-events:none}
+.node .stars{position:absolute;left:0;right:0;bottom:-16px;display:flex;justify-content:center;gap:2px}
+.node .stars svg{width:18px;height:18px}
+.node.locked{filter:drop-shadow(0 4px 3px rgba(60,40,10,.15)) saturate(.7)}
+.node.cur{animation:wt-bob 1.6s ease-in-out infinite}
+.node.cur::before{content:"";position:absolute;inset:-22px -26px -14px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,226,122,.85),rgba(255,214,92,.35) 60%,rgba(255,214,92,0));z-index:-1;animation:wt-glow 1.6s ease-in-out infinite}
+@keyframes wt-glow{0%,100%{opacity:.75}50%{opacity:1}}
+.node.chest{width:118px;height:104px;margin:-56px 0 0 -59px}
+.noart .node{border-radius:50%/42%;width:96px;height:72px;margin:-36px 0 0 -48px;box-shadow:inset 0 -8px 0 rgba(0,0,0,.12),var(--shadow)}
+.noart .node.s-grey{background-color:#bdb6a8}.noart .node.s-gold{background-color:#ffb627}.noart .node.s-mint{background-color:#4fbf7a}.noart .node.s-lilac{background-color:#9d84e6}.noart .node.chest{background-color:#b5733f;border-radius:18px}
+.tag{position:absolute;padding:6px 14px;border-radius:12px;font-weight:900;font-size:18px;white-space:nowrap;transform:translate(-50%,0);pointer-events:none;
+  animation:wt-bob 1.6s ease-in-out infinite;box-shadow:var(--shadow)}
+.tag::before{content:"";position:absolute;left:50%;top:-8px;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom-color:var(--paper)}
+.guide{position:absolute;width:92px;height:110px;background:center bottom/contain no-repeat;pointer-events:none;transition:left .5s,top .5s}
+.dock{display:flex;gap:10px;justify-content:center;padding:10px 12px var(--bot);z-index:5}
+.dock button{flex:1;max-width:240px;height:60px;border:none;border-radius:20px;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px}
+.dock svg{width:30px;height:30px}
+.dark .dock button{color:#fff6e4}
+
+/* big felt buttons */
+.btn{border:none;border-radius:22px;min-height:64px;padding:0 26px;font-size:24px;font-weight:900;letter-spacing:.01em;color:#fff;
+  box-shadow:0 5px 0 rgba(0,0,0,.18),0 12px 20px rgba(60,40,20,.18);position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px}
+.btn::after{content:"";position:absolute;inset:5px;border:2.5px dashed rgba(255,255,255,.6);border-radius:17px;pointer-events:none}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.btn.go{background-color:var(--mint)}.btn.hot{background-color:#ff8a3d}.btn.sky{background-color:var(--sky)}.btn.coral{background-color:var(--coral)}
+.btn.quiet{background-color:var(--paper);color:var(--ink)}.btn.quiet::after{border-color:var(--cstitch)}
+.btn[disabled]{background-color:#cfc6b5;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.08)}
+.btn.wide{width:100%}
+.say{border:none;border-radius:50%;width:56px;height:56px;flex:none;display:flex;align-items:center;justify-content:center;background-color:var(--sky);color:#fff;
+  box-shadow:0 4px 0 var(--skyD),0 8px 14px rgba(40,60,120,.2);position:relative}
+.say::after{content:"";position:absolute;inset:4px;border:2px dashed rgba(255,255,255,.65);border-radius:50%}
+.say svg{width:30px;height:30px}
+.say.big{width:128px;height:128px}.say.big svg{width:64px;height:64px}
+.say.playing{animation:wt-pulse .7s ease-in-out infinite}
+
+/* ---------- title ---------- */
+#title{align-items:center;justify-content:center;text-align:center;padding:var(--top) 20px var(--bot)}
+.logo{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.logo b{display:inline-flex;gap:5px;white-space:nowrap}
+.logo span{display:inline-block;padding:4px 9px 6px;border-radius:12px;font-size:clamp(34px,9.6vw,64px);font-weight:900;color:#fff;line-height:1;box-shadow:var(--shadow);position:relative}
+.logo span::after{content:"";position:absolute;inset:4px;border:2px dashed rgba(255,255,255,.55);border-radius:9px}
+.logo{column-gap:16px;row-gap:10px}
+.sub{margin:14px auto 0;max-width:340px;padding:10px 16px;border-radius:16px;font-size:19px;font-weight:700;color:var(--ink2)}
+.hero{width:min(220px,48vw);height:min(250px,54vw);margin:14px auto 4px;background:center bottom/contain no-repeat}
+.hero.bob{animation:wt-bob 2.2s ease-in-out infinite}
+
+/* ---------- lesson ---------- */
+#lesson .lhead{display:flex;align-items:center;gap:10px;padding:var(--top) 14px 6px}
+.x{width:48px;height:48px;border:none;border-radius:50%;background-color:var(--chrome);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+.x svg{width:24px;height:24px}
+.bar{flex:1;height:26px;border-radius:13px;background-color:#e8dcc4;position:relative;overflow:hidden;box-shadow:inset 0 3px 0 rgba(0,0,0,.08)}
+.dark .bar{background-color:#5a5070}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:13px;background-color:var(--mint);transition:width .4s cubic-bezier(.3,1.4,.6,1);min-width:26px}
+.bar i::after{content:"";position:absolute;left:8px;right:8px;top:50%;border-top:2.5px dashed rgba(255,255,255,.7)}
+.hearts{display:flex;align-items:center;gap:4px;font-weight:900;font-size:22px;color:var(--onbg)}
+.hearts svg{width:32px;height:32px}
+.ask{display:flex;align-items:center;gap:10px;padding:4px 14px}
+.ask .mini{width:70px;height:80px;flex:none;background:center bottom/contain no-repeat}
+.bubble{flex:1;padding:12px 16px;border-radius:18px;font-size:19px;font-weight:800;line-height:1.25;position:relative}
+.bubble::before{content:"";position:absolute;left:-9px;top:50%;margin-top:-9px;border:9px solid transparent;border-left:0;border-right-color:var(--paper)}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:8px 16px;min-height:0;overflow:hidden}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:460px}
+.grid.three{grid-template-columns:1fr}
+.grid.six{grid-template-columns:1fr 1fr}
+/* the word card: a paper tag with a stitched edge; the word itself is plain, crisp, high-contrast type */
+.card{border:none;border-radius:22px;min-height:86px;padding:10px 12px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--read);font-weight:700;font-size:clamp(34px,10vw,48px);line-height:1;color:var(--ink);letter-spacing:.01em;
+  box-shadow:0 4px 0 var(--paperEdge),0 10px 18px rgba(80,50,20,.14);position:relative;transition:transform .12s}
+.card::after{content:"";position:absolute;inset:7px;border:2.5px dashed var(--cstitch);border-radius:16px;pointer-events:none}
+.card:active{transform:translateY(3px)}
+.card.ok{background-color:var(--mintL);box-shadow:0 4px 0 var(--mint),0 10px 18px rgba(30,120,60,.2)}
+.card.ok::after{border-color:var(--mint)}
+.card.bad{background-color:var(--coralL);box-shadow:0 4px 0 var(--coral),0 10px 18px rgba(160,40,30,.18)}
+.card.bad::after{border-color:var(--coral)}
+.card.sel{box-shadow:0 0 0 5px var(--sky),0 4px 0 var(--paperEdge)}
+.card.done{opacity:.35;pointer-events:none}
+.card.dim{opacity:.55}
+.word{font-family:var(--read);font-weight:700;color:var(--ink)}
+.bigword{min-width:200px;min-height:130px;font-size:clamp(56px,17vw,84px);padding:16px 30px;border-radius:26px}
+.sentence{width:100%;max-width:480px;padding:18px 18px 20px;border-radius:20px;font-family:var(--read);font-size:clamp(26px,7.4vw,34px);font-weight:700;line-height:1.35;text-align:center}
+.blank{display:inline-block;min-width:3.2em;border-bottom:4px solid var(--ink2);margin:0 .12em;color:var(--mintD);line-height:1.1}
+.hl{color:#c4472e;text-decoration:underline;text-decoration-thickness:4px;text-underline-offset:6px}
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.slot{width:52px;height:64px;border-radius:14px;border:3px dashed var(--pathEdge);background:rgba(255,250,240,.65);display:flex;align-items:center;justify-content:center;
+  font-family:var(--read);font-size:38px;font-weight:700;color:var(--ink);padding:0}
+.slot.on{border-style:solid;border-color:var(--paperEdge);background-color:var(--paper)}
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:420px}
+.tile{width:60px;height:66px;border:none;border-radius:16px;font-family:var(--read);font-size:38px;font-weight:700;padding:0;
+  box-shadow:0 4px 0 var(--paperEdge),0 8px 12px rgba(80,50,20,.14);position:relative}
+.tile::after{content:"";position:absolute;inset:5px;border:2px dashed var(--cstitch);border-radius:11px}
+.tile.used{visibility:hidden}
+.pairs{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;width:100%;max-width:420px;align-items:center}
+.pairs .say{width:76px;height:76px}
+.pairs .say.on{box-shadow:0 0 0 5px var(--gold),0 4px 0 var(--skyD)}
+.pairs .say.ok{background-color:var(--mint);box-shadow:0 4px 0 var(--mintD)}
+.pairs .card{min-height:76px;font-size:clamp(30px,9vw,42px)}
+.opts{display:flex;gap:12px;justify-content:center;width:100%;max-width:440px}
+.opt{flex:1;border:none;border-radius:22px;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 4px;
+  box-shadow:0 4px 0 var(--paperEdge),0 10px 18px rgba(80,50,20,.14);position:relative;font-weight:900;font-size:20px;color:var(--ink2)}
+.opt::after{content:"";position:absolute;inset:7px;border:2.5px dashed var(--cstitch);border-radius:16px}
+.opt svg{width:46px;height:46px;color:var(--skyD)}
+.opt.sel{box-shadow:0 0 0 5px var(--sky),0 4px 0 var(--paperEdge)}
+.opt.ok{background-color:var(--mintL)}.opt.bad{background-color:var(--coralL)}
+.timer{width:100%;max-width:440px;height:16px;border-radius:8px;background:#e8dcc4;overflow:hidden}
+.timer i{display:block;height:100%;background-color:var(--gold);border-radius:8px;transition:width .1s linear}
+.foot{padding:10px 16px var(--bot);min-height:96px;display:flex;align-items:flex-end;justify-content:center}
+.foot .btn{width:100%;max-width:460px}
+/* the feedback panel: a felt patch that slides up */
+.fb{position:absolute;left:0;right:0;bottom:0;padding:16px 16px var(--bot);border-radius:26px 26px 0 0;transform:translateY(105%);visibility:hidden;transition:transform .28s cubic-bezier(.3,1.3,.6,1),visibility 0s .28s;z-index:6;
+  box-shadow:0 -6px 22px rgba(60,40,20,.2)}
+.fb.on{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.3,1.3,.6,1),visibility 0s}
+.fb.good{background-color:#d9f3e2}.fb.oops{background-color:#ffe6e0}
+.fb .row{display:flex;align-items:center;gap:12px;max-width:560px;margin:0 auto 12px}
+.fb .mini{width:74px;height:84px;flex:none;background:center bottom/contain no-repeat}
+.fb .msg{font-size:26px;font-weight:900;line-height:1.1}
+.fb.good .msg{color:#1f7a45}.fb.oops .msg{color:#b03a2a}
+.fb .ans{margin-top:6px;display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;color:var(--ink2)}
+.fb .ans .word{font-size:34px;background-color:var(--paper);padding:2px 14px;border-radius:12px}
+.fb .ans .say{width:46px;height:46px}.fb .ans .say svg{width:24px;height:24px}
+.fb .btn{display:flex;width:100%;max-width:560px;margin:0 auto}
+.cbadge{position:absolute;right:18px;top:-22px;padding:8px 16px;border-radius:14px;background-color:#ff8a3d;color:#fff;font-size:20px;font-weight:900;box-shadow:var(--shadow);rotate:-3deg;animation:wt-pop .5s ease-out}
+.cbadge::after{content:"";position:absolute;inset:4px;border:2px dashed rgba(255,255,255,.65);border-radius:10px}
+.combo{position:absolute;left:50%;top:15%;transform:translate(-50%,-50%) scale(.6);opacity:0;padding:12px 22px;border-radius:18px;background-color:#ff8a3d;color:#fff;
+  font-size:28px;font-weight:900;white-space:nowrap;pointer-events:none;z-index:7;box-shadow:var(--shadow)}
+.combo::after{content:"";position:absolute;inset:5px;border:2.5px dashed rgba(255,255,255,.6);border-radius:13px}
+.combo.on{animation:wt-combo 1.6s ease-out forwards}
+.spark{position:absolute;width:22px;height:22px;pointer-events:none;z-index:8;animation:wt-spark .8s ease-out forwards}
+/* intro of a new word */
+.newtag{padding:6px 16px;border-radius:12px;background-color:var(--gold);color:#5a3a00;font-weight:900;font-size:19px;letter-spacing:.05em;text-transform:uppercase;position:relative}
+.newtag::after{content:"";position:absolute;inset:4px;border:2px dashed rgba(255,255,255,.7);border-radius:9px}
+.introrow{display:flex;align-items:center;gap:14px}
+.sentrow{display:flex;align-items:center;gap:12px;width:100%;max-width:500px}
+.sentrow .sentence{flex:1;font-size:clamp(24px,6.6vw,30px)}
+
+/* ---------- end of lesson, treasure, sheets ---------- */
+.endbox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:var(--top) 18px 8px;text-align:center}
+.endbox h1{margin:0;font-size:clamp(32px,9vw,44px);font-weight:900;color:var(--onbg);text-shadow:0 2px 0 rgba(255,255,255,.5)}
+.dark .endbox h1{text-shadow:none}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stat{min-width:100px;padding:10px 12px 12px;border-radius:18px;text-align:center}
+.stat b{display:flex;align-items:center;justify-content:center;gap:6px;font-size:30px;font-weight:900}
+.stat b svg{width:30px;height:30px}
+.stat span{display:block;font-size:14px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:460px}
+.wchip{border:none;padding:6px 14px;border-radius:12px;font-family:var(--read);font-size:24px;font-weight:700;box-shadow:0 3px 0 var(--paperEdge)}
+.bwrap{display:flex;flex-direction:column;align-items:center;gap:18px}
+.trow{display:flex;align-items:center;justify-content:center;gap:16px}
+.trow .hero{width:130px;height:150px;margin:0}
+.chest{width:min(260px,62vw);height:min(220px,52vw);background:center bottom/contain no-repeat;border:none;padding:0;filter:drop-shadow(0 10px 8px rgba(60,40,10,.25))}
+.chest.shake{animation:wt-shake .5s ease-in-out 2}
+.badge{width:150px;height:150px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:900;position:relative;box-shadow:var(--shadow)}
+.badge::after{content:"";position:absolute;inset:7px;border:3px dashed rgba(255,255,255,.7);border-radius:50%}
+.badge svg{width:56px;height:56px}
+.badge small{font-size:15px;margin-top:2px;max-width:110px;line-height:1.1}
+.scrim{position:absolute;inset:0;background:rgba(40,28,20,.42);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:560px;max-height:88%;overflow:auto;border-radius:28px 28px 0 0;padding:20px 18px var(--bot);display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;
+  animation:wt-up .25s ease-out}
+.sheet h2{margin:0;font-size:28px;font-weight:900}
+.sheet p{margin:0;font-size:19px;font-weight:700;color:var(--ink2)}
+.sheet .row2{display:flex;gap:10px;width:100%}
+.sheet .row2 .btn{flex:1}
+.wbook{display:flex;flex-direction:column;gap:12px;width:100%;text-align:left}
+.wbook h3{margin:6px 0 0;font-size:18px;font-weight:900;color:var(--ink2)}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.wcell{border:none;border-radius:14px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 3px 0 var(--paperEdge)}
+.wcell .word{font-size:24px}
+.wcell .m{display:flex;gap:2px}.wcell .m i{width:9px;height:9px;border-radius:50%;background:#e2d6be}.wcell .m i.on{background:var(--gold)}
+.wcell.miss{background-color:var(--coralL)}
+
+@keyframes wt-bob{0%,100%{translate:0 0}50%{translate:0 -6px}}
+@keyframes wt-pulse{0%,100%{scale:1}50%{scale:1.06}}
+@keyframes wt-pop{0%{scale:1}40%{scale:1.12}70%{scale:.96}100%{scale:1}}
+@keyframes wt-shake{0%,100%{translate:0}20%{translate:-9px}40%{translate:8px}60%{translate:-6px}80%{translate:4px}}
+@keyframes wt-combo{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
+@keyframes wt-spark{0%{opacity:1;transform:translate(0,0) scale(.4) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.1) rotate(160deg)}}
+@keyframes wt-up{from{transform:translateY(40%)}to{transform:none}}
+.pop{animation:wt-pop .45s ease-out}
+.shake{animation:wt-shake .45s ease-in-out}
+.rm *,.rm *::before,.rm *::after{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (min-height:900px) and (min-width:700px){
+  .card{min-height:104px}.grid{max-width:520px;gap:18px}.bubble{font-size:22px}.ask .mini{width:96px;height:110px}
+}
+@media (max-height:700px){
+  .card{min-height:70px;font-size:clamp(30px,9vw,40px)}.bigword{min-height:96px}.hero{height:min(190px,40vw)}.say.big{width:104px;height:104px}
+  .opt{min-height:96px}.ask .mini{width:56px;height:64px}.bubble{font-size:17px}.foot{min-height:84px}
+}
+@media (orientation:landscape) and (max-height:500px){
+  .ask .mini{display:none}.stage{gap:10px}.grid{grid-template-columns:repeat(4,1fr);max-width:760px}.grid.six{grid-template-columns:repeat(3,1fr)}
+  .grid.three{grid-template-columns:repeat(3,1fr)}.card{min-height:64px}.hero{display:none}.bigword{min-height:84px;font-size:56px}
+  .say.big{width:84px;height:84px}.say.big svg{width:44px;height:44px}.opt{min-height:80px}.sentence{padding:10px 14px;font-size:24px}
+  .pairs{grid-template-columns:auto 1fr auto 1fr;max-width:760px}.foot{min-height:76px;padding-top:6px}.endbox{gap:8px}
+  .logo span{font-size:40px}.sub{margin-top:8px}.slot{height:54px}.tile{height:56px}
+  .stage.t-say,.stage.t-hear,.stage.t-build,.stage.t-speed,.stage.t-intro{flex-direction:row;gap:22px}
+  .t-intro .newtag{display:none}.t-intro .sentrow{max-width:420px}.t-say .bigword{min-width:160px}.t-say .opts{max-width:360px}
+  .t-speed .introrow{flex-direction:column}.t-speed .timer{min-width:0!important;width:110px;flex:none!important}
+  .t-hear .grid{grid-template-columns:1fr 1fr;max-width:440px}.bwrap{gap:10px}
+  .endbox .chips,.endbox .sub,.endbox .hero{display:none}.stat{padding:6px 10px}.stat b{font-size:24px}.endbox h1{font-size:28px}
+  .endbox.tre{flex-direction:row;flex-wrap:wrap;align-content:center}.endbox.tre h1{width:100%}.chest{height:120px;width:150px}.badge{width:100px;height:100px}.badge svg{width:36px;height:36px}.trow .hero{display:block;width:90px;height:100px}
+}
+</style>
+
+<div class="wt on-title" id="wt">
+  <svg id="bg" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sky0"/><stop offset="1" class="sky1"/></linearGradient>
+      <pattern id="pFelt" patternUnits="userSpaceOnUse" width="128" height="128"><image id="pFeltImg" width="128" height="128"/></pattern>
+      <pattern id="pPaper" patternUnits="userSpaceOnUse" width="160" height="160"><image id="pPaperImg" width="160" height="160"/></pattern>
+    </defs>
+    <rect width="400" height="800" fill="url(#gSky)"/>
+    <rect class="tex" width="400" height="800" fill="url(#pPaper)"/>
+    <g class="sunG" transform="translate(330 268)"><circle class="sun" r="38"/><circle class="tex" r="38" fill="url(#pFelt)"/><circle class="st" r="30"/></g>
+    <g id="clouds"></g>
+    <g id="hills"></g>
+  </svg>
+
+  <!-- title -->
+  <section class="screen" id="title">
+    <div class="logo" aria-hidden="true"></div>
+    <h1 class="sr" id="titleText"></h1>
+    <div class="hero bob" id="titleHero"></div>
+    <p class="sub paper patch" id="titleSub"></p>
+    <div style="margin-top:18px;display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:340px">
+      <button class="btn go wide" id="playBtn" data-start></button>
+    </div>
+  </section>
+
+  <!-- the trail map -->
+  <section class="screen" id="map" hidden>
+    <div class="topbar col">
+      <div class="chip felt" id="cStreak"></div>
+      <div class="chip felt" id="cXp"></div>
+      <div class="chip felt grow" id="cHearts"></div>
+      <button class="chip icon felt" id="cSound"></button>
+    </div>
+    <div class="scroll" id="mapScroll"><div id="trail"></div></div>
+    <nav class="dock col">
+      <button class="felt" id="bWords" style="background-color:var(--chrome);box-shadow:var(--shadow)"></button>
+      <button class="felt" id="bPractice" style="background-color:var(--chrome);box-shadow:var(--shadow)"></button>
+    </nav>
+  </section>
+
+  <!-- a lesson -->
+  <section class="screen" id="lesson" hidden>
+    <div class="lhead col">
+      <button class="x felt" id="lQuit"></button>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="lBar"><i></i></div>
+      <div class="hearts" id="lHearts"></div>
+    </div>
+    <div class="ask col">
+      <div class="mini" id="lMini"></div>
+      <div class="bubble paper patch" id="lAsk"></div>
+      <button class="say" id="lReplay"></button>
+    </div>
+    <div class="stage col" id="lStage"></div>
+    <div class="foot col" id="lFoot"></div>
+    <div class="fb" id="lFb" aria-live="polite"></div>
+    <div class="combo" id="lCombo"></div>
+  </section>
+
+  <!-- end of a lesson / the treasure -->
+  <section class="screen" id="done" hidden><div class="endbox col" id="doneBox"></div><div class="foot col" id="doneFoot"></div></section>
+  <div id="sheets"></div>
+  <div class="sr" aria-live="polite" id="live"></div>
+</div>
+
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script>
+// ==== I18N START ====
+// Word Trail teaches English sight words, so its content is English: every word, its example sentence (s.*) and the
+// same sentence with the word left out (c.*, read with a pause where the word goes), the instructions (ins.*) and
+// Bramble's lines. The screens' words (ui.*) are English too (docs/decisions.md "Word Trail"). Every line that is read
+// aloud is registered for AI voices (server/services/tts-lines.js reads this block).
+var I18N = {
+  en: {
+    'w.a': 'a', 's.a': 'I see a big dog.', 'c.a': 'I see … big dog.',
+    'w.and': 'and', 's.and': 'Mom and Dad sing.', 'c.and': 'Mom … Dad sing.',
+    'w.away': 'away', 's.away': 'The bird flew away.', 'c.away': 'The bird flew …',
+    'w.big': 'big', 's.big': 'The bear is big.', 'c.big': 'The bear is …',
+    'w.blue': 'blue', 's.blue': 'The sky is blue.', 'c.blue': 'The sky is …',
+    'w.can': 'can', 's.can': 'I can hop.', 'c.can': 'I … hop.',
+    'w.come': 'come', 's.come': 'Please come in.', 'c.come': 'Please … in.',
+    'w.down': 'down', 's.down': 'Sit down on the rug.', 'c.down': 'Sit … on the rug.',
+    'w.find': 'find', 's.find': 'Can you find my hat?', 'c.find': 'Can you … my hat?',
+    'w.for': 'for', 's.for': 'This cake is for you.', 'c.for': 'This cake is … you.',
+    'w.funny': 'funny', 's.funny': 'The clown is funny.', 'c.funny': 'The clown is …',
+    'w.go': 'go', 's.go': 'We go to school.', 'c.go': 'We … to school.',
+    'w.help': 'help', 's.help': 'I help my mom.', 'c.help': 'I … my mom.',
+    'w.here': 'here', 's.here': 'Come here, puppy!', 'c.here': 'Come …, puppy!',
+    'w.i': 'I', 's.i': 'I like cats.', 'c.i': '… like cats.',
+    'w.in': 'in', 's.in': 'The fish is in the pond.', 'c.in': 'The fish is … the pond.',
+    'w.is': 'is', 's.is': 'The sun is hot.', 'c.is': 'The sun … hot.',
+    'w.it': 'it', 's.it': 'I love it.', 'c.it': 'I love …',
+    'w.jump': 'jump', 's.jump': 'Frogs jump high.', 'c.jump': 'Frogs … high.',
+    'w.little': 'little', 's.little': 'I have a little kitten.', 'c.little': 'I have a … kitten.',
+    'w.look': 'look', 's.look': 'Look at the moon.', 'c.look': '… at the moon.',
+    'w.make': 'make', 's.make': 'We make a cake.', 'c.make': 'We … a cake.',
+    'w.me': 'me', 's.me': 'Give the ball to me.', 'c.me': 'Give the ball to …',
+    'w.my': 'my', 's.my': 'This is my bike.', 'c.my': 'This is … bike.',
+    'w.not': 'not', 's.not': 'I am not sad.', 'c.not': 'I am … sad.',
+    'w.one': 'one', 's.one': 'I have one nose.', 'c.one': 'I have … nose.',
+    'w.play': 'play', 's.play': 'We play tag.', 'c.play': 'We … tag.',
+    'w.red': 'red', 's.red': 'The apple is red.', 'c.red': 'The apple is …',
+    'w.run': 'run', 's.run': 'Dogs run fast.', 'c.run': 'Dogs … fast.',
+    'w.said': 'said', 's.said': 'Mom said yes.', 'c.said': 'Mom … yes.',
+    'w.see': 'see', 's.see': 'I see a bee.', 'c.see': 'I … a bee.',
+    'w.the': 'the', 's.the': 'Pet the dog.', 'c.the': 'Pet … dog.',
+    'w.three': 'three', 's.three': 'I see three ducks.', 'c.three': 'I see … ducks.',
+    'w.to': 'to', 's.to': 'We walk to the park.', 'c.to': 'We walk … the park.',
+    'w.two': 'two', 's.two': 'I have two hands.', 'c.two': 'I have … hands.',
+    'w.up': 'up', 's.up': 'The kite goes up.', 'c.up': 'The kite goes …',
+    'w.we': 'we', 's.we': 'We like to sing.', 'c.we': '… like to sing.',
+    'w.where': 'where', 's.where': 'Where is my shoe?', 'c.where': '… is my shoe?',
+    'w.yellow': 'yellow', 's.yellow': 'The duck is yellow.', 'c.yellow': 'The duck is …',
+    'w.you': 'you', 's.you': 'I love you.', 'c.you': 'I love …',
+    'w.all': 'all', 's.all': 'We ate all the grapes.', 'c.all': 'We ate … the grapes.',
+    'w.am': 'am', 's.am': 'I am six.', 'c.am': 'I … six.',
+    'w.are': 'are', 's.are': 'You are my friend.', 'c.are': 'You … my friend.',
+    'w.at': 'at', 's.at': 'Look at the stars.', 'c.at': 'Look … the stars.',
+    'w.ate': 'ate', 's.ate': 'The goat ate the hay.', 'c.ate': 'The goat … the hay.',
+    'w.be': 'be', 's.be': 'I want to be a pilot.', 'c.be': 'I want to … a pilot.',
+    'w.black': 'black', 's.black': 'The cat is black.', 'c.black': 'The cat is …',
+    'w.brown': 'brown', 's.brown': 'The bear is brown.', 'c.brown': 'The bear is …',
+    'w.but': 'but', 's.but': 'I am small but strong.', 'c.but': 'I am small … strong.',
+    'w.came': 'came', 's.came': 'The bus came late.', 'c.came': 'The bus … late.',
+    'w.did': 'did', 's.did': 'I did my best.', 'c.did': 'I … my best.',
+    'w.do': 'do', 's.do': 'What do cows say?', 'c.do': 'What … cows say?',
+    'w.eat': 'eat', 's.eat': 'I eat soup.', 'c.eat': 'I … soup.',
+    'w.four': 'four', 's.four': 'A dog has four legs.', 'c.four': 'A dog has … legs.',
+    'w.get': 'get', 's.get': 'Go get the ball.', 'c.get': 'Go … the ball.',
+    'w.good': 'good', 's.good': 'This pie is good.', 'c.good': 'This pie is …',
+    'w.have': 'have', 's.have': 'I have a red hat.', 'c.have': 'I … a red hat.',
+    'w.he': 'he', 's.he': 'He likes trucks.', 'c.he': '… likes trucks.',
+    'w.into': 'into', 's.into': 'The frog hops into the pond.', 'c.into': 'The frog hops … the pond.',
+    'w.like': 'like', 's.like': 'I like pizza.', 'c.like': 'I … pizza.',
+    'w.must': 'must', 's.must': 'You must brush your teeth.', 'c.must': 'You … brush your teeth.',
+    'w.new': 'new', 's.new': 'I have new shoes.', 'c.new': 'I have … shoes.',
+    'w.no': 'no', 's.no': 'No, thank you.', 'c.no': '…, thank you.',
+    'w.now': 'now', 's.now': 'Let\'s eat now.', 'c.now': 'Let\'s eat …',
+    'w.on': 'on', 's.on': 'The cat sits on the mat.', 'c.on': 'The cat sits … the mat.',
+    'w.our': 'our', 's.our': 'This is our house.', 'c.our': 'This is … house.',
+    'w.out': 'out', 's.out': 'The dog ran out the door.', 'c.out': 'The dog ran … the door.',
+    'w.please': 'please', 's.please': 'More milk, please.', 'c.please': 'More milk, …',
+    'w.pretty': 'pretty', 's.pretty': 'What a pretty flower!', 'c.pretty': 'What a … flower!',
+    'w.ran': 'ran', 's.ran': 'The fox ran fast.', 'c.ran': 'The fox … fast.',
+    'w.ride': 'ride', 's.ride': 'I ride my bike.', 'c.ride': 'I … my bike.',
+    'w.saw': 'saw', 's.saw': 'I saw a whale.', 'c.saw': 'I … a whale.',
+    'w.say': 'say', 's.say': 'What did you say?', 'c.say': 'What did you …?',
+    'w.she': 'she', 's.she': 'She can swim.', 'c.she': '… can swim.',
+    'w.so': 'so', 's.so': 'The puppy is so soft.', 'c.so': 'The puppy is … soft.',
+    'w.soon': 'soon', 's.soon': 'We will eat soon.', 'c.soon': 'We will eat …',
+    'w.that': 'that', 's.that': 'I want that cookie.', 'c.that': 'I want … cookie.',
+    'w.there': 'there', 's.there': 'The ball is over there.', 'c.there': 'The ball is over …',
+    'w.they': 'they', 's.they': 'They play ball.', 'c.they': '… play ball.',
+    'w.this': 'this', 's.this': 'This box is heavy.', 'c.this': '… box is heavy.',
+    'w.too': 'too', 's.too': 'I want to come too.', 'c.too': 'I want to come …',
+    'w.under': 'under', 's.under': 'The cat is under the bed.', 'c.under': 'The cat is … the bed.',
+    'w.want': 'want', 's.want': 'I want a hug.', 'c.want': 'I … a hug.',
+    'w.was': 'was', 's.was': 'It was a sunny day.', 'c.was': 'It … a sunny day.',
+    'w.well': 'well', 's.well': 'You did well!', 'c.well': 'You did …!',
+    'w.went': 'went', 's.went': 'We went to the zoo.', 'c.went': 'We … to the zoo.',
+    'w.what': 'what', 's.what': 'What is in the box?', 'c.what': '… is in the box?',
+    'w.white': 'white', 's.white': 'Snow is white.', 'c.white': 'Snow is …',
+    'w.who': 'who', 's.who': 'Who is at the door?', 'c.who': '… is at the door?',
+    'w.will': 'will', 's.will': 'I will help you.', 'c.will': 'I … help you.',
+    'w.with': 'with', 's.with': 'Come with me.', 'c.with': 'Come … me.',
+    'w.yes': 'yes', 's.yes': 'Yes, I can!', 'c.yes': '…, I can!',
+    'w.after': 'after', 's.after': 'We play after lunch.', 'c.after': 'We play … lunch.',
+    'w.again': 'again', 's.again': 'Read it again!', 'c.again': 'Read it …!',
+    'w.an': 'an', 's.an': 'I ate an apple.', 'c.an': 'I ate … apple.',
+    'w.any': 'any', 's.any': 'Do you have any socks?', 'c.any': 'Do you have … socks?',
+    'w.as': 'as', 's.as': 'I am dressed as a cat.', 'c.as': 'I am dressed … a cat.',
+    'w.ask': 'ask', 's.ask': 'Ask the teacher.', 'c.ask': '… the teacher.',
+    'w.by': 'by', 's.by': 'Sit by me.', 'c.by': 'Sit … me.',
+    'w.could': 'could', 's.could': 'I could see the moon.', 'c.could': 'I … see the moon.',
+    'w.every': 'every', 's.every': 'I brush my teeth every day.', 'c.every': 'I brush my teeth … day.',
+    'w.fly': 'fly', 's.fly': 'Birds can fly.', 'c.fly': 'Birds can …',
+    'w.from': 'from', 's.from': 'I got a gift from Grandma.', 'c.from': 'I got a gift … Grandma.',
+    'w.give': 'give', 's.give': 'Give the dog a bone.', 'c.give': '… the dog a bone.',
+    'w.going': 'going', 's.going': 'We are going home.', 'c.going': 'We are … home.',
+    'w.had': 'had', 's.had': 'I had a nap.', 'c.had': 'I … a nap.',
+    'w.has': 'has', 's.has': 'The cat has a long tail.', 'c.has': 'The cat … a long tail.',
+    'w.her': 'her', 's.her': 'I gave her a hug.', 'c.her': 'I gave … a hug.',
+    'w.him': 'him', 's.him': 'I see him.', 'c.him': 'I see …',
+    'w.his': 'his', 's.his': 'That is his hat.', 'c.his': 'That is … hat.',
+    'w.how': 'how', 's.how': 'How are you?', 'c.how': '… are you?',
+    'w.just': 'just', 's.just': 'I am just a little tired.', 'c.just': 'I am … a little tired.',
+    'w.know': 'know', 's.know': 'I know my ABCs.', 'c.know': 'I … my ABCs.',
+    'w.let': 'let', 's.let': 'Let me help.', 'c.let': '… me help.',
+    'w.live': 'live', 's.live': 'Fish live in water.', 'c.live': 'Fish … in water.',
+    'w.may': 'may', 's.may': 'May I have a cookie?', 'c.may': '… I have a cookie?',
+    'w.of': 'of', 's.of': 'I want a cup of milk.', 'c.of': 'I want a cup … milk.',
+    'w.old': 'old', 's.old': 'My dog is old.', 'c.old': 'My dog is …',
+    'w.once': 'once', 's.once': 'Once there was a king.', 'c.once': '… there was a king.',
+    'w.open': 'open', 's.open': 'Open the door.', 'c.open': '… the door.',
+    'w.over': 'over', 's.over': 'The cow jumped over the moon.', 'c.over': 'The cow jumped … the moon.',
+    'w.put': 'put', 's.put': 'Put on your coat.', 'c.put': '… on your coat.',
+    'w.round': 'round', 's.round': 'The ball is round.', 'c.round': 'The ball is …',
+    'w.some': 'some', 's.some': 'I want some juice.', 'c.some': 'I want … juice.',
+    'w.stop': 'stop', 's.stop': 'Stop at the red light.', 'c.stop': '… at the red light.',
+    'w.take': 'take', 's.take': 'Take my hand.', 'c.take': '… my hand.',
+    'w.thank': 'thank', 's.thank': 'Thank you for the gift.', 'c.thank': '… you for the gift.',
+    'w.them': 'them', 's.them': 'I love them.', 'c.them': 'I love …',
+    'w.then': 'then', 's.then': 'First we eat, then we play.', 'c.then': 'First we eat, … we play.',
+    'w.think': 'think', 's.think': 'I think it will rain.', 'c.think': 'I … it will rain.',
+    'w.walk': 'walk', 's.walk': 'We walk to school.', 'c.walk': 'We … to school.',
+    'w.were': 'were', 's.were': 'We were at the beach.', 'c.were': 'We … at the beach.',
+    'w.when': 'when', 's.when': 'When is lunch?', 'c.when': '… is lunch?',
+    'w.always': 'always', 's.always': 'I always wear my hat.', 'c.always': 'I … wear my hat.',
+    'w.around': 'around', 's.around': 'We ran around the tree.', 'c.around': 'We ran … the tree.',
+    'w.because': 'because', 's.because': 'I smile because I am happy.', 'c.because': 'I smile … I am happy.',
+    'w.been': 'been', 's.been': 'I have been to the farm.', 'c.been': 'I have … to the farm.',
+    'w.before': 'before', 's.before': 'Wash your hands before dinner.', 'c.before': 'Wash your hands … dinner.',
+    'w.best': 'best', 's.best': 'You are my best friend.', 'c.best': 'You are my … friend.',
+    'w.both': 'both', 's.both': 'I like both dogs.', 'c.both': 'I like … dogs.',
+    'w.buy': 'buy', 's.buy': 'We buy some apples.', 'c.buy': 'We … some apples.',
+    'w.call': 'call', 's.call': 'I call my cat Fluff.', 'c.call': 'I … my cat Fluff.',
+    'w.cold': 'cold', 's.cold': 'Ice is cold.', 'c.cold': 'Ice is …',
+    'w.does': 'does', 's.does': 'Does a fish swim?', 'c.does': '… a fish swim?',
+    'w.dont': 'don\'t', 's.dont': 'I don\'t like rain.', 'c.dont': 'I … like rain.',
+    'w.fast': 'fast', 's.fast': 'The car is fast.', 'c.fast': 'The car is …',
+    'w.first': 'first', 's.first': 'I am first in line.', 'c.first': 'I am … in line.',
+    'w.five': 'five', 's.five': 'I can count to five.', 'c.five': 'I can count to …',
+    'w.found': 'found', 's.found': 'I found my sock.', 'c.found': 'I … my sock.',
+    'w.gave': 'gave', 's.gave': 'She gave me a flower.', 'c.gave': 'She … me a flower.',
+    'w.goes': 'goes', 's.goes': 'The train goes choo choo.', 'c.goes': 'The train … choo choo.',
+    'w.green': 'green', 's.green': 'Grass is green.', 'c.green': 'Grass is …',
+    'w.its': 'its', 's.its': 'The bird flaps its wings.', 'c.its': 'The bird flaps … wings.',
+    'w.made': 'made', 's.made': 'I made a card.', 'c.made': 'I … a card.',
+    'w.many': 'many', 's.many': 'I see many stars.', 'c.many': 'I see … stars.',
+    'w.off': 'off', 's.off': 'Turn off the light.', 'c.off': 'Turn … the light.',
+    'w.or': 'or', 's.or': 'Do you want milk or juice?', 'c.or': 'Do you want milk … juice?',
+    'w.pull': 'pull', 's.pull': 'Pull the wagon.', 'c.pull': '… the wagon.',
+    'w.read': 'read', 's.read': 'I read a book.', 'c.read': 'I … a book.',
+    'w.right': 'right', 's.right': 'Raise your right hand.', 'c.right': 'Raise your … hand.',
+    'w.sing': 'sing', 's.sing': 'Birds sing in the morning.', 'c.sing': 'Birds … in the morning.',
+    'w.sit': 'sit', 's.sit': 'Sit on the chair.', 'c.sit': '… on the chair.',
+    'w.sleep': 'sleep', 's.sleep': 'Bats sleep in the day.', 'c.sleep': 'Bats … in the day.',
+    'w.tell': 'tell', 's.tell': 'Tell me a story.', 'c.tell': '… me a story.',
+    'w.their': 'their', 's.their': 'The kids put on their boots.', 'c.their': 'The kids put on … boots.',
+    'w.these': 'these', 's.these': 'These socks are warm.', 'c.these': '… socks are warm.',
+    'w.those': 'those', 's.those': 'Look at those clouds.', 'c.those': 'Look at … clouds.',
+    'w.upon': 'upon', 's.upon': 'Once upon a time.', 'c.upon': 'Once … a time.',
+    'w.us': 'us', 's.us': 'Come and play with us.', 'c.us': 'Come and play with …',
+    'w.use': 'use', 's.use': 'I use a spoon.', 'c.use': 'I … a spoon.',
+    'w.very': 'very', 's.very': 'The giraffe is very tall.', 'c.very': 'The giraffe is … tall.',
+    'w.wash': 'wash', 's.wash': 'Wash your face.', 'c.wash': '… your face.',
+    'w.which': 'which', 's.which': 'Which hat is yours?', 'c.which': '… hat is yours?',
+    'w.why': 'why', 's.why': 'Why is the sky blue?', 'c.why': '… is the sky blue?',
+    'w.wish': 'wish', 's.wish': 'I wish I could fly.', 'c.wish': 'I … I could fly.',
+    'w.work': 'work', 's.work': 'Bees work hard.', 'c.work': 'Bees … hard.',
+    'w.would': 'would', 's.would': 'Would you like a snack?', 'c.would': '… you like a snack?',
+    'w.write': 'write', 's.write': 'I can write the letter A.', 'c.write': 'I can … the letter A.',
+    'w.your': 'your', 's.your': 'Brush your teeth.', 'c.your': 'Brush … teeth.',
+    'w.about': 'about', 's.about': 'This book is about a dragon.', 'c.about': 'This book is … a dragon.',
+    'w.better': 'better', 's.better': 'I feel better now.', 'c.better': 'I feel … now.',
+    'w.bring': 'bring', 's.bring': 'Bring your coat.', 'c.bring': '… your coat.',
+    'w.carry': 'carry', 's.carry': 'I carry my bag.', 'c.carry': 'I … my bag.',
+    'w.clean': 'clean', 's.clean': 'My room is clean.', 'c.clean': 'My room is …',
+    'w.cut': 'cut', 's.cut': 'Cut the paper.', 'c.cut': '… the paper.',
+    'w.done': 'done', 's.done': 'I am done!', 'c.done': 'I am …!',
+    'w.draw': 'draw', 's.draw': 'We draw a cat.', 'c.draw': 'We … a cat.',
+    'w.drink': 'drink', 's.drink': 'I drink water.', 'c.drink': 'I … water.',
+    'w.eight': 'eight', 's.eight': 'A spider has eight legs.', 'c.eight': 'A spider has … legs.',
+    'w.fall': 'fall', 's.fall': 'Leaves fall down.', 'c.fall': 'Leaves … down.',
+    'w.far': 'far', 's.far': 'The moon is far away.', 'c.far': 'The moon is … away.',
+    'w.full': 'full', 's.full': 'My cup is full.', 'c.full': 'My cup is …',
+    'w.got': 'got', 's.got': 'I got a new toy.', 'c.got': 'I … a new toy.',
+    'w.grow': 'grow', 's.grow': 'Plants grow in the sun.', 'c.grow': 'Plants … in the sun.',
+    'w.hold': 'hold', 's.hold': 'Hold my hand.', 'c.hold': '… my hand.',
+    'w.hot': 'hot', 's.hot': 'The soup is hot.', 'c.hot': 'The soup is …',
+    'w.hurt': 'hurt', 's.hurt': 'Did you hurt your knee?', 'c.hurt': 'Did you … your knee?',
+    'w.if': 'if', 's.if': 'If it rains, we stay in.', 'c.if': '… it rains, we stay in.',
+    'w.keep': 'keep', 's.keep': 'Keep the door shut.', 'c.keep': '… the door shut.',
+    'w.kind': 'kind', 's.kind': 'Be kind to others.', 'c.kind': 'Be … to others.',
+    'w.laugh': 'laugh', 's.laugh': 'Jokes make me laugh.', 'c.laugh': 'Jokes make me …',
+    'w.light': 'light', 's.light': 'A feather is light.', 'c.light': 'A feather is …',
+    'w.long': 'long', 's.long': 'A snake is long.', 'c.long': 'A snake is …',
+    'w.much': 'much', 's.much': 'Thank you so much!', 'c.much': 'Thank you so …!',
+    'w.myself': 'myself', 's.myself': 'I did it myself.', 'c.myself': 'I did it …',
+    'w.never': 'never', 's.never': 'I never give up.', 'c.never': 'I … give up.',
+    'w.only': 'only', 's.only': 'I have only one pet.', 'c.only': 'I have … one pet.',
+    'w.own': 'own', 's.own': 'I have my own room.', 'c.own': 'I have my … room.',
+    'w.pick': 'pick', 's.pick': 'Pick a card.', 'c.pick': '… a card.',
+    'w.seven': 'seven', 's.seven': 'A week has seven days.', 'c.seven': 'A week has … days.',
+    'w.shall': 'shall', 's.shall': 'Shall we dance?', 'c.shall': '… we dance?',
+    'w.show': 'show', 's.show': 'Show me your picture.', 'c.show': '… me your picture.',
+    'w.six': 'six', 's.six': 'A bug has six legs.', 'c.six': 'A bug has … legs.',
+    'w.small': 'small', 's.small': 'An ant is small.', 'c.small': 'An ant is …',
+    'w.start': 'start', 's.start': 'We start the race.', 'c.start': 'We … the race.',
+    'w.ten': 'ten', 's.ten': 'I have ten toes.', 'c.ten': 'I have … toes.',
+    'w.today': 'today', 's.today': 'Today is a fun day.', 'c.today': '… is a fun day.',
+    'w.together': 'together', 's.together': 'We sing together.', 'c.together': 'We sing …',
+    'w.try': 'try', 's.try': 'Try again!', 'c.try': '… again!',
+    'w.warm': 'warm', 's.warm': 'My blanket is warm.', 'c.warm': 'My blanket is …',
+    'ins.intro': 'A new word! Listen and look.',
+    'ins.hear': 'Listen. Tap the word you hear.',
+    'ins.say': 'Tap each sound. Which one says this word?',
+    'ins.fill': 'Which word finishes the sentence?',
+    'ins.build': 'Spell the word you hear.',
+    'ins.match': 'Tap a sound, then tap its word.',
+    'ins.speed': 'Quick! Tap every card that says this word.',
+    'ok.1': 'Great job!', 'ok.2': 'You got it!', 'ok.3': 'Super reading!', 'ok.4': 'Yes! Well done!', 'ok.5': 'Wonderful!', 'ok.6': 'Nice work!',
+    'no.1': 'Good try! The answer is:', 'no.2': "That's okay. The answer is:",
+    'later': "We'll try it again later.",
+    'combo.3': 'Three in a row!', 'combo.5': 'Five in a row! Amazing!', 'combo.8': 'Eight in a row! Super star!',
+    'speed.time': "Time's up! Here they are.",
+    'done.say': 'Lesson complete! You are a great reader!', 'done.streak': 'You kept your streak going!', 'done.perfect': 'Perfect! No mistakes!',
+    'review.intro': "Review time! Let's practise the words on this part of the trail.",
+    'practice.intro': "Practice time! Let's read some words again.",
+    'treasure.tap': 'Tap the chest to open it!', 'treasure.say': 'You found the treasure! Here is a sticker for you.',
+    'hearts.out': "You're out of hearts. Practise some words to earn one back!", 'hearts.back': 'You earned a heart!',
+    'title.hi': "Hi! I'm Bramble. Let's read words together on the Word Trail!",
+    'map.tap': 'Tap the glowing stone to start.',
+    'lesson.ready': "Ready? Let's learn new words!",
+    'ui.title': 'Word Trail', 'ui.sub': 'Read sight words with Bramble the hedgehog', 'ui.play': 'Play', 'ui.next': 'Next', 'ui.start': 'Start',
+    'ui.continue': 'Continue', 'ui.check': 'Check', 'ui.go': "Let's go!", 'ui.practise': 'Practise', 'ui.words': 'My words', 'ui.close': 'Close',
+    'ui.quit': 'Stop the lesson', 'ui.keep': 'Keep going', 'ui.quitAsk': 'Stop this lesson?', 'ui.quitP': 'Your progress in this lesson will be lost.',
+    'ui.unit': 'Unit {n}', 'ui.lesson': 'Lesson {n}', 'ui.review': 'Review', 'ui.treasure': 'Treasure', 'ui.newWords': 'New words',
+    'ui.reviewP': 'All the words from this part of the trail.', 'ui.treasureP': 'Finish every stone above to open it.', 'ui.locked': 'Not yet!', 'ui.lockedP': 'Finish the stones before this one first.',
+    'ui.lessonDone': 'Lesson complete!', 'ui.reviewDone': 'Review complete!', 'ui.practiceDone': 'Practice complete!', 'ui.treasureT': 'Treasure!',
+    'ui.xp': 'XP', 'ui.right': 'Right', 'ui.days': 'Day streak', 'ui.practised': 'Words you practised',
+    'ui.heartsOut': 'Out of hearts', 'ui.heartsSoon': 'A new heart comes every few minutes.', 'ui.later': 'Later',
+    'ui.mastery': 'Stars show how well you know a word.', 'ui.noWords': 'Learn your first words on the trail!', 'ui.missed': 'Words to practise',
+    'ui.sound': 'Sound', 'ui.replay': 'Hear it again', 'ui.play1': 'Sound {n}', 'ui.streak': '{n} day streak', 'ui.xpN': '{n} XP', 'ui.heartsN': '{n} hearts',
+    'ui.sticker': 'Sticker', 'ui.find': 'Find', 'ui.here': 'Start here!', 'ui.u0': 'Sunny Meadow', 'ui.u1': 'Bluebell Wood', 'ui.u2': 'Berry Hill',
+    'ui.u3': 'Willow Pond', 'ui.u4': 'Sunflower Hilltop', 'ui.l0': 'Pre-primer words', 'ui.l1': 'Primer words', 'ui.l2': 'Grade 1 words',
+    'ui.l3': 'Grade 2 words', 'ui.l4': 'Grade 3 words',
+  },
+};
+I18N['en-GB'] = I18N.en;
+// ==== I18N END ====
+// ==== VOICES START ====
+// Bramble reads everything (the words, the sentences and the instructions), in the friendly voice.
+const VOICE_ROLES = { story: 'friendly' };
+// ==== VOICES END ====
+</script>
+<script>
+/* wt-core:begin */
+/* WTCore: the word lists, the lesson plan, the exercise generators, spaced repetition, hearts and the streak, with no
+   DOM (tests/unit/word-trail.test.js runs this block with node:vm). Randomness comes from a seeded generator. */
+window.WTCore = (function () {
+  'use strict';
+  // The Dolch sight words by level (id:class). Classes: A describing words (and a, the, my, numbers, colours),
+  // V doing words, N pronouns, P place and position words, D other little words (now, here, not, please…),
+  // C joining words, Q question words. The class picks fill-the-sentence choices that can never fit the sentence.
+  var LEVELS = [
+    'a:A and:C away:D big:A blue:A can:V come:V down:P find:V for:P funny:A go:V help:V here:D i:N in:P is:V it:N jump:V little:A look:V make:V me:N my:A not:D one:A play:V red:A run:V said:V see:V the:A three:A to:P two:A up:P we:N where:Q yellow:A you:N',
+    'all:A am:V are:V at:P ate:V be:V black:A brown:A but:C came:V did:V do:V eat:V four:A get:V good:A have:V he:N into:P like:V must:V new:A no:D now:D on:P our:A out:P please:D pretty:A ran:V ride:V saw:V say:V she:N so:D soon:D that:A there:D they:N this:A too:D under:P want:V was:V well:D went:V what:Q white:A who:Q will:V with:P yes:D',
+    'after:P again:D an:A any:A as:P ask:V by:P could:V every:A fly:V from:P give:V going:V had:V has:V her:N him:N his:A how:Q just:D know:V let:V live:V may:V of:P old:A once:D open:V over:P put:V round:A some:A stop:V take:V thank:V them:N then:D think:V walk:V were:V when:Q',
+    'always:D around:P because:C been:V before:P best:A both:A buy:V call:V cold:A does:V dont:V fast:A first:A five:A found:V gave:V goes:V green:A its:A made:V many:A off:P or:C pull:V read:V right:A sing:V sit:V sleep:V tell:V their:A these:A those:A upon:P us:N use:V very:D wash:V which:Q why:Q wish:V work:V would:V write:V your:A',
+    'about:P better:A bring:V carry:V clean:A cut:V done:A draw:V drink:V eight:A fall:V far:A full:A got:V grow:V hold:V hot:A hurt:V if:C keep:V kind:A laugh:V light:A long:A much:A myself:N never:D only:A own:A pick:V seven:A shall:V show:V six:A small:A start:V ten:A today:D together:D try:V warm:A',
+  ];
+  var ALLOW = { A: ['V', 'Q', 'C'], V: ['Q', 'C', 'N'], N: ['P', 'C', 'Q'], P: ['V', 'A'], D: ['C', 'N'], C: ['V', 'A'], Q: ['V', 'A'] };
+  // Words that fit too many sentences to be a wrong choice in fill the sentence (they are still practised).
+  var NOT_FILL = ' going open done clean light right well round fast kind hurt cut found made own best first better like as over out off down up then now here there so too very not away again soon today together always never once just please yes no me him her them us it you myself an a the some any all much many only every ';
+  var SUBJECT = ' i he she we they ';
+  // Words that sound the same (or nearly): never two of a group in one set of choices.
+  var SOUNDS = [['to', 'too', 'two'], ['for', 'four'], ['no', 'know'], ['right', 'write'], ['their', 'there'], ['by', 'buy'], ['ate', 'eight'],
+    ['read', 'red'], ['our', 'are'], ['an', 'and'], ['then', 'than'], ['were', 'where'], ['its', 'it'], ['one', 'won'], ['new', 'knew'], ['would', 'wood'], ['which', 'witch']];
+  var CONFUSE = { b: 'dp', d: 'bq', p: 'qb', q: 'pd', m: 'nw', n: 'mu', u: 'nv', w: 'mv', e: 'ac', a: 'eo', i: 'lj', l: 'it', h: 'nk', o: 'ac', t: 'fl', f: 't', s: 'zc', c: 'eo', r: 'n', g: 'qy', y: 'gv', v: 'yw', k: 'hx', j: 'ig', x: 'kz', z: 's' };
+  var INTERVAL = [0, 1, 2, 4, 7, 12];   // lessons until a word comes back, by its box (0-5)
+  var HEARTS = 5, REGEN_MS = 10 * 60 * 1000;
+  var LESSON_ITEMS = 12, REVIEW_ITEMS = 12, PRACTICE_ITEMS = 8;
+
+  var WORDS = {}, ORDER = [], UNITS = [], NODES = [];
+  LEVELS.forEach(function (row, u) {
+    var ids = row.split(' ').map(function (x) { var p = x.split(':'); WORDS[p[0]] = { id: p[0], cls: p[1], unit: u, text: p[0] }; ORDER.push(p[0]); return p[0]; });
+    UNITS.push({ i: u, words: ids, lessons: [] });
+  });
+  // Lessons of about five new words each.
+  UNITS.forEach(function (U) {
+    var n = Math.round(U.words.length / 5), at = 0;
+    for (var k = 0; k < n; k++) {
+      var size = Math.floor(U.words.length / n) + (k < U.words.length % n ? 1 : 0);
+      var node = { id: 'u' + U.i + 'l' + k, kind: 'lesson', unit: U.i, n: k + 1, words: U.words.slice(at, at + size) };
+      at += size; U.lessons.push(node); NODES.push(node);
+    }
+    NODES.push({ id: 'u' + U.i + 'r', kind: 'review', unit: U.i, words: U.words.slice() });
+    NODES.push({ id: 'u' + U.i + 't', kind: 'treasure', unit: U.i, words: [] });
+  });
+  var BYID = {}; NODES.forEach(function (n, i) { n.index = i; BYID[n.id] = n; });
+
+  /** The words' printed forms (the game's I18N table: w.<id>). */
+  function setText(T) { ORDER.forEach(function (id) { if (T && T['w.' + id]) WORDS[id].text = T['w.' + id]; }); }
+
+  // ---------- randomness
+  function rng(seed) {
+    var a = (seed >>> 0) || 1;
+    return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  }
+  function shuffle(a, r) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function pick(a, r) { return a[Math.floor(r() * a.length)]; }
+
+  // ---------- similar words
+  function soundsLike(a, b) {
+    if (a === b) return true;
+    for (var i = 0; i < SOUNDS.length; i++) if (SOUNDS[i].indexOf(a) >= 0 && SOUNDS[i].indexOf(b) >= 0) return true;
+    return false;
+  }
+  /** How alike two words look (higher is more alike): a shared first letter, a close length, shared letters. */
+  function alike(a, b) {
+    var s = 0; if (a[0] === b[0]) s += 3; if (a[a.length - 1] === b[b.length - 1]) s += 1;
+    s -= Math.abs(a.length - b.length);
+    for (var i = 0; i < b.length; i++) if (a.indexOf(b[i]) >= 0) s += 0.5;
+    return s;
+  }
+  /** n wrong choices for word w from pool (ids): look-alikes first, never w, never one that sounds like w or like
+   *  another choice, never a duplicate. Falls back to all the words when the pool is small. */
+  function distractors(w, pool, n, r, filter) {
+    var seen = {}; var cand = [];
+    function add(list) {
+      list.forEach(function (x) { if (!seen[x] && x !== w && WORDS[x] && (!filter || filter(x))) { seen[x] = 1; cand.push(x); } });
+    }
+    add(pool);
+    if (cand.length < n + 2) add(UNITS[WORDS[w].unit].words);
+    if (cand.length < n + 2) add(ORDER);
+    var scored = cand.map(function (x) { return { x: x, s: alike(WORDS[w].text.toLowerCase(), WORDS[x].text.toLowerCase()) + r() * 2.5 }; })
+      .sort(function (p, q) { return q.s - p.s; });
+    var out = [];
+    for (var i = 0; i < scored.length && out.length < n; i++) {
+      var x = scored[i].x;
+      if (soundsLike(x, w)) continue;
+      if (out.some(function (y) { return soundsLike(x, y) || WORDS[x].text.toLowerCase() === WORDS[y].text.toLowerCase(); })) continue;
+      out.push(x);
+    }
+    return out;
+  }
+
+  // ---------- the six exercises
+  function hear(w, pool, r) { return { type: 'hear', word: w, choices: shuffle([w].concat(distractors(w, pool, 3, r)), r) }; }
+  function say(w, pool, r) { return { type: 'say', word: w, choices: shuffle([w].concat(distractors(w, pool, 2, r)), r) }; }
+  /** The sentence with a blank: choices from word classes that cannot fit it, and never a word already in it. */
+  function fillChoices(w, sentence, pool, r) {
+    var allow = ALLOW[WORDS[w].cls] || ['V'];
+    var inSentence = ' ' + String(sentence || '').toLowerCase().replace(/[^a-z' ]/g, ' ').replace(/'/g, '') + ' ';
+    var ok = function (x) {
+      var c = WORDS[x].cls;
+      if (allow.indexOf(c) < 0 || NOT_FILL.indexOf(' ' + x + ' ') >= 0 || inSentence.indexOf(' ' + x + ' ') >= 0) return false;
+      if (c === 'N' && SUBJECT.indexOf(' ' + x + ' ') < 0) return false;   // only I, he, she, we, they
+      return true;
+    };
+    return distractors(w, pool, 2, r, ok);
+  }
+  function fill(w, sentence, pool, r) { return { type: 'fill', word: w, choices: shuffle([w].concat(fillChoices(w, sentence, pool, r)), r) }; }
+  function canBuild(w) { var t = WORDS[w] && WORDS[w].text; return !!t && t.length >= 2 && /^[a-z]+$/.test(t); }
+  function build(w, r) {
+    var t = WORDS[w].text, letters = t.split(''), extra = [], k = Math.max(1, Math.min(t.length <= 3 ? 2 : 3, 10 - t.length));
+    var near = '';
+    letters.forEach(function (c) { near += CONFUSE[c] || ''; });
+    shuffle(near.split(''), r).forEach(function (c) { if (extra.length < k && t.indexOf(c) < 0 && extra.indexOf(c) < 0) extra.push(c); });
+    var abc = shuffle('abcdefghijklmnopqrstuvwxyz'.split(''), r);
+    for (var i = 0; extra.length < k && i < abc.length; i++) if (t.indexOf(abc[i]) < 0 && extra.indexOf(abc[i]) < 0) extra.push(abc[i]);
+    return { type: 'build', word: w, letters: letters, tiles: shuffle(letters.concat(extra), r) };
+  }
+  /** Match pairs: 3 (or 4) different words, none sounding like another. */
+  function match(words, pool, r, n) {
+    n = n || 3; var out = [];
+    words.concat(shuffle(pool, r)).forEach(function (x) {
+      if (out.length < n && WORDS[x] && !out.some(function (y) { return y === x || soundsLike(x, y); })) out.push(x);
+    });
+    return { type: 'match', word: out[0], words: out, right: shuffle(out, r) };
+  }
+  /** Speed tap: six cards, the word 2 or 3 times, look-alikes for the rest. */
+  function speed(w, pool, r) {
+    var times = 2 + (r() < 0.5 ? 1 : 0), others = distractors(w, pool, 3, r), cards = [];
+    for (var i = 0; i < times; i++) cards.push(w);
+    for (var j = 0; cards.length < 6; j++) cards.push(others[j % others.length]);
+    return { type: 'speed', word: w, cards: shuffle(cards, r), count: times, secs: 14 };
+  }
+
+  // ---------- the player's words (spaced repetition by lessons played: a Leitner box per word)
+  function fresh() { return { v: 1, xp: 0, streak: 0, best: 0, last: '', hearts: HEARTS, heartsAt: 0, played: 0, done: {}, words: {}, missed: [], treasures: [], today: { day: '', xp: 0 } }; }
+  function norm(s) {
+    var f = fresh(); s = s && typeof s === 'object' ? s : {};
+    for (var k in f) if (!(k in s)) s[k] = f[k];
+    if (!Array.isArray(s.missed)) s.missed = []; if (!Array.isArray(s.treasures)) s.treasures = [];
+    if (!s.words || typeof s.words !== 'object') s.words = {}; if (!s.done || typeof s.done !== 'object') s.done = {};
+    s.missed = s.missed.filter(function (x) { return WORDS[x]; });
+    return s;
+  }
+  function wordState(s, id) { return s.words[id] || (s.words[id] = { b: 0, d: s.played, n: 0, r: 0, w: 0 }); }
+  /** Grade the words of a finished lesson once each: right (no miss in the lesson) moves a word up a box and further
+   *  away; a miss puts it back to the start, due in the very next lesson, and on the "words you missed" list. */
+  function grade(s, results) {
+    var L = s.played;
+    Object.keys(results).forEach(function (id) {
+      if (!WORDS[id]) return;
+      var x = wordState(s, id), res = results[id];
+      x.n += 1; x.r += res.r || 0; x.w += res.w || 0;
+      if (res.w) { x.b = x.b >= 3 ? 1 : 0; x.d = L + 1; if (s.missed.indexOf(id) < 0) s.missed.push(id); }
+      else if (res.r) { x.b = Math.min(5, x.b + 1); x.d = L + INTERVAL[x.b]; if (x.b >= 2) s.missed = s.missed.filter(function (m) { return m !== id; }); }
+    });
+    return s;
+  }
+  /** Learned words due by now: missed ones first, then the weakest, then the longest waiting. */
+  function due(s, n, exclude, maxUnit) {
+    exclude = exclude || [];
+    var L = s.played;
+    var ids = Object.keys(s.words).filter(function (id) {
+      return WORDS[id] && exclude.indexOf(id) < 0 && (maxUnit == null || WORDS[id].unit <= maxUnit) && (s.words[id].d <= L || s.missed.indexOf(id) >= 0);
+    });
+    ids.sort(function (a, b) {
+      var ma = s.missed.indexOf(a) >= 0 ? 0 : 1, mb = s.missed.indexOf(b) >= 0 ? 0 : 1;
+      return ma - mb || s.words[a].b - s.words[b].b || s.words[a].d - s.words[b].d || ORDER.indexOf(a) - ORDER.indexOf(b);
+    });
+    return ids.slice(0, n);
+  }
+  function mastery(s, id) { return s.words[id] ? s.words[id].b : 0; }
+
+  // ---------- lesson plans
+  function learnedPool(s, extra) { return Object.keys(s.words).filter(function (id) { return WORDS[id]; }).concat(extra || []); }
+  function make(type, w, pool, r, T) {
+    if (type === 'build' && !canBuild(w)) type = 'hear';
+    if (type === 'hear') return hear(w, pool, r);
+    if (type === 'say') return say(w, pool, r);
+    if (type === 'fill') return fill(w, T ? T['s.' + w] : '', pool, r);
+    if (type === 'build') return build(w, r);
+    if (type === 'speed') return speed(w, pool, r);
+    return hear(w, pool, r);
+  }
+  /** Spread items so the same word is never twice in a row (when it can be helped). */
+  function spread(items) {
+    var left = items.slice(), out = [];
+    while (left.length) {
+      var prev = out.length ? out[out.length - 1].word : null, k = 0, n = {}, top = null;
+      left.forEach(function (x) { n[x.word] = (n[x.word] || 0) + 1; if (top === null || n[x.word] > n[top]) top = x.word; });
+      // a word that is more than half of what is left must go now, or it would end up twice in a row
+      if (top !== prev && n[top] * 2 > left.length) { while (left[k].word !== top) k++; }
+      else while (k < left.length && left[k].word === prev) k++;
+      out.push(left.splice(k < left.length ? k : 0, 1)[0]);
+    }
+    return out;
+  }
+  /** A lesson: its new words are introduced first, then 12 exercises: each new word once with an easy exercise
+   *  (hear it / say-pick), up to 3 due or missed words, the new words again with harder ones (fill, build), then match
+   *  pairs and a speed tap. */
+  function planLesson(s, node, seed, T) {
+    var r = rng(seed), news = node.words.slice(), pool = learnedPool(s, news);
+    var rev = due(s, 3, news);
+    var hard = Math.max(2, LESSON_ITEMS - 2 - news.length - rev.length);
+    var items = [];
+    shuffle(news, r).forEach(function (w, i) { items.push(make(i % 2 ? 'say' : 'hear', w, pool, r, T)); });
+    rev.forEach(function (w, i) { items.push(make(['fill', 'build', 'hear'][i % 3], w, pool, r, T)); });
+    var order = shuffle(news, r), rest = order.slice(hard);
+    for (var i = 0; i < hard; i++) items.push(make(i % 2 ? 'build' : 'fill', order[i % order.length], pool, r, T));
+    // match and speed take the new words the harder ones did not, so every new word comes twice
+    items.push(match(rest.concat(order.slice(0, hard), rev), pool, r, 3));
+    items.push(make('speed', rest[3] || pick(news, r), pool, r, T));
+    return { kind: 'lesson', node: node.id, intro: news, items: spread(items) };
+  }
+  /** A unit review: no new words; the unit's weakest words, every kind of exercise. */
+  function planReview(s, node, seed, T) {
+    var r = rng(seed), U = UNITS[node.unit].words, pool = learnedPool(s, U);
+    var ws = U.slice().sort(function (a, b) { return (s.missed.indexOf(b) >= 0) - (s.missed.indexOf(a) >= 0) || mastery(s, a) - mastery(s, b) || r() - 0.5; });
+    var types = ['hear', 'fill', 'build', 'say', 'fill', 'build', 'hear', 'fill', 'say', 'build'];
+    var items = [];
+    for (var i = 0; i < REVIEW_ITEMS - 2; i++) items.push(make(types[i % types.length], ws[i % ws.length], pool, r, T));
+    items.push(match(shuffle(ws.slice(0, 6), r), pool, r, 4));
+    items.push(make('speed', ws[0], pool, r, T));
+    return { kind: 'review', node: node.id, intro: [], items: spread(items) };
+  }
+  /** Practice (any time, and the way to win a heart back): missed words first, then the weakest learned ones. */
+  function planPractice(s, seed, T) {
+    var r = rng(seed), learned = learnedPool(s);
+    if (!learned.length) return null;
+    var ws = due(s, PRACTICE_ITEMS, []);
+    if (ws.length < PRACTICE_ITEMS) learned.slice().sort(function (a, b) { return mastery(s, a) - mastery(s, b); }).forEach(function (x) { if (ws.length < PRACTICE_ITEMS && ws.indexOf(x) < 0) ws.push(x); });
+    var types = ['hear', 'fill', 'build', 'say'], items = [];
+    for (var i = 0; i < Math.min(PRACTICE_ITEMS, Math.max(4, ws.length)); i++) items.push(make(types[i % 4], ws[i % ws.length], learned, r, T));
+    if (ws.length >= 3) items.push(match(shuffle(ws, r), learned, r, 3));
+    return { kind: 'practice', node: null, intro: [], items: spread(items) };
+  }
+
+  // ---------- the trail: which stone is open
+  function isDone(s, node) { return node.kind === 'treasure' ? s.treasures.indexOf(node.unit) >= 0 : !!s.done[node.id]; }
+  function current(s) { for (var i = 0; i < NODES.length; i++) if (!isDone(s, NODES[i])) return NODES[i]; return null; }
+  function open(s, node) { var c = current(s); return isDone(s, node) || (!!c && node.index <= c.index); }
+
+  // ---------- hearts, XP and the daily streak
+  function hearts(s, now) {
+    if (s.hearts >= HEARTS) return { n: HEARTS, next: 0 };
+    var gained = Math.floor(Math.max(0, now - (s.heartsAt || now)) / REGEN_MS);
+    if (gained > 0) { s.hearts = Math.min(HEARTS, s.hearts + gained); s.heartsAt = s.hearts >= HEARTS ? 0 : (s.heartsAt + gained * REGEN_MS); }
+    return { n: s.hearts, next: s.hearts >= HEARTS ? 0 : s.heartsAt + REGEN_MS - now };
+  }
+  function loseHeart(s, now) { hearts(s, now); if (s.hearts >= HEARTS) s.heartsAt = now; s.hearts = Math.max(0, s.hearts - 1); return s.hearts; }
+  function gainHeart(s, now) { hearts(s, now); s.hearts = Math.min(HEARTS, s.hearts + 1); if (s.hearts >= HEARTS) s.heartsAt = 0; return s.hearts; }
+  function dayNum(day) { var p = String(day || '').split('-'); return p.length === 3 ? Math.round(Date.UTC(+p[0], +p[1] - 1, +p[2]) / 864e5) : null; }
+  /** The streak shown today: it lasts while the last lesson was today or yesterday. */
+  function streakNow(s, today) { var a = dayNum(s.last), b = dayNum(today); return a != null && b != null && b - a <= 1 ? s.streak : 0; }
+  /** A lesson finished today: -> true when the streak went up. */
+  function addDay(s, today) {
+    var a = dayNum(s.last), b = dayNum(today);
+    if (a === b) return false;
+    s.streak = a != null && b - a === 1 ? s.streak + 1 : 1; s.last = today; s.best = Math.max(s.best || 0, s.streak);
+    return true;
+  }
+  /** XP for a finished lesson: a base for the kind, one a first-try right answer, two for each 5-in-a-row, five for no
+   *  mistakes. */
+  function xpFor(kind, right, total, mistakes, bestCombo) {
+    var base = kind === 'review' ? 15 : kind === 'practice' ? 5 : 10;
+    return base + right + 2 * Math.floor((bestCombo || 0) / 5) + (mistakes === 0 && total > 0 ? 5 : 0);
+  }
+  function starsFor(mistakes) { return mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1; }
+
+  return { LEVELS: LEVELS, WORDS: WORDS, ORDER: ORDER, UNITS: UNITS, NODES: NODES, BYID: BYID, SOUNDS: SOUNDS, ALLOW: ALLOW, HEARTS: HEARTS, REGEN_MS: REGEN_MS,
+    INTERVAL: INTERVAL, setText: setText, rng: rng, shuffle: shuffle, soundsLike: soundsLike, distractors: distractors, hear: hear, say: say, fill: fill,
+    fillChoices: fillChoices, build: build, canBuild: canBuild, match: match, speed: speed, fresh: fresh, norm: norm, grade: grade, due: due, mastery: mastery,
+    planLesson: planLesson, planReview: planReview, planPractice: planPractice, isDone: isDone, current: current, open: open, hearts: hearts,
+    loseHeart: loseHeart, gainHeart: gainHeart, streakNow: streakNow, addDay: addDay, dayNum: dayNum, xpFor: xpFor, starsFor: starsFor };
+})();
+/* wt-core:end */
+</script>
+<script>
+/* The game: screens, the trail, the six exercises, feedback, saving, speech and the test hooks. */
+(function () {
+  'use strict';
+  var C = window.WTCore, T = I18N.en;
+  C.setText(T);
+  var KEY = 'word-trail-v1';
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $('wt');
+  var now = function () { return Date.now(); };
+  function t(k, v) { var s = T[k] != null ? T[k] : k; return v ? s.replace(/\{(\w+)\}/g, function (m, x) { return x in v ? v[x] : m; }) : s; }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function today() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+  function reduced() { try { if (window.Oomba && Oomba.settings && Oomba.settings.reduced) return true; } catch (e) { /* no kit */ } return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
+
+  /* ---------- icons (felt shapes: a fill and a stitched line) ---------- */
+  var IC = {
+    speaker: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M5 12h5l7-6v20l-7-6H5z"/><path d="M21 11c2 1.5 2 8.5 0 10M24.5 8c4 3 4 13 0 16" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
+    heart: '<svg viewBox="0 0 32 32"><path d="M16 28S3 20 3 11.5A6.5 6.5 0 0 1 16 8a6.5 6.5 0 0 1 13 3.5C29 20 16 28 16 28z" fill="#ff6b5b"/><path d="M16 24.5S6.5 18.5 6.5 11.8a3.4 3.4 0 0 1 6.6-1.3" fill="none" stroke="#fff" stroke-width="1.8" stroke-dasharray="3 3" stroke-linecap="round" opacity=".8"/></svg>',
+    heartOff: '<svg viewBox="0 0 32 32"><path d="M16 28S3 20 3 11.5A6.5 6.5 0 0 1 16 8a6.5 6.5 0 0 1 13 3.5C29 20 16 28 16 28z" fill="#cfc6b5"/></svg>',
+    flame: '<svg viewBox="0 0 32 32"><path d="M16 3c1 6 9 8 9 17a9 9 0 0 1-18 0c0-5 3-7 4-11 2 2 2 4 3 5 1-4 0-7 2-11z" fill="#ff8a3d"/><path d="M16 15c1 3 4 4 4 8a4 4 0 0 1-8 0c0-2 1-3 2-5 1 1 1 2 2 2 0-2-1-3 0-5z" fill="#ffd23f"/></svg>',
+    flameOff: '<svg viewBox="0 0 32 32"><path d="M16 3c1 6 9 8 9 17a9 9 0 0 1-18 0c0-5 3-7 4-11 2 2 2 4 3 5 1-4 0-7 2-11z" fill="#cfc6b5"/></svg>',
+    star: '<svg viewBox="0 0 32 32"><path d="M16 2.5l4.1 8.6 9.4 1.2-6.9 6.5 1.8 9.3L16 23.6l-8.4 4.5 1.8-9.3-6.9-6.5 9.4-1.2z" fill="#ffc23d"/><path d="M16 7.5l2.8 5.8 6.3.8-4.6 4.4 1.2 6.2L16 21.7l-5.7 3 1.2-6.2-4.6-4.4 6.3-.8z" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="2.5 2.5" opacity=".8"/></svg>',
+    starOff: '<svg viewBox="0 0 32 32"><path d="M16 2.5l4.1 8.6 9.4 1.2-6.9 6.5 1.8 9.3L16 23.6l-8.4 4.5 1.8-9.3-6.9-6.5 9.4-1.2z" fill="#e2d6be"/></svg>',
+    check: '<svg viewBox="0 0 40 40"><path d="M9 21l7 7 15-16" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    lock: '<svg viewBox="0 0 40 40"><rect x="9" y="17" width="22" height="17" rx="5" fill="#fff" opacity=".9"/><path d="M14 18v-4a6 6 0 0 1 12 0v4" fill="none" stroke="#fff" stroke-width="4" opacity=".9"/></svg>',
+    go: '<svg viewBox="0 0 40 40"><path d="M20 4l4.6 9.6 10.4 1.4-7.6 7.2 2 10.4L20 27.6 10.6 32.6l2-10.4L5 15l10.4-1.4z" fill="#fff"/></svg>',
+    book: '<svg viewBox="0 0 40 40"><path d="M6 9c5-2 10-1 14 2 4-3 9-4 14-2v22c-5-2-10-1-14 2-4-3-9-4-14-2z" fill="#fff"/><path d="M20 11v22" stroke="#9d84e6" stroke-width="2.5"/></svg>',
+    x: '<svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg>',
+    soundOff: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M5 12h5l7-6v20l-7-6H5z"/><path d="M21 12l7 8M28 12l-7 8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
+    bookIc: '<svg viewBox="0 0 32 32"><path d="M4 7c4-2 8-1 12 2 4-3 8-4 12-2v18c-4-2-8-1-12 2-4-3-8-4-12-2z" fill="#4fa8f0"/><path d="M16 9v18" stroke="#fff" stroke-width="2"/></svg>',
+    leaf: '<svg viewBox="0 0 32 32"><path d="M6 26C6 12 14 5 27 5c0 13-7 21-21 21z" fill="#46b873"/><path d="M8 24C13 18 18 13 24 8" stroke="#fff" stroke-width="2" stroke-dasharray="3 3" fill="none"/></svg>',
+  };
+
+  /* ---------- art: the data pack (tools/blender/word_trail.py); plain shapes until it comes ---------- */
+  var ART = {}, ART_VER = '1.0.0-554b30a5', ART_SRI = 'sha384-zNFZ7Nl6EPpCqgz2c7bBxSE39PcRJRJ+C6mwm+31foJcfX9NZGiiy/5fEeKMMjiz';
+  function img(name) { return ART[name] ? 'url("' + ART[name] + '")' : ''; }
+  function bgOf(node, name) { if (node) node.style.backgroundImage = img(name); }
+  function loadArt(done) {
+    var fin = false, end = function () { if (!fin) { fin = true; done(); } };
+    try {
+      var s = document.createElement('script');
+      s.src = '/vendor/data/word-trail/' + ART_VER + '/art.js'; s.integrity = ART_SRI; s.crossOrigin = 'anonymous';
+      s.onload = function () { ART = window.__wtArt || {}; end(); }; s.onerror = end;
+      document.head.appendChild(s);
+    } catch (e) { end(); }
+    setTimeout(end, 8000);
+  }
+  function applyArt() {
+    root.classList.toggle('noart', !ART.mascot_idle);
+    if (ART.tex_felt) { root.style.setProperty('--felt', 'url("' + ART.tex_felt + '")'); $('pFeltImg').setAttribute('href', ART.tex_felt); }
+    if (ART.tex_paper) { root.style.setProperty('--ptex', 'url("' + ART.tex_paper + '")'); $('pPaperImg').setAttribute('href', ART.tex_paper); }
+    bgOf($('titleHero'), 'mascot_idle');
+  }
+
+  /* ---------- the backdrop: felt clouds and hills with stitched edges ---------- */
+  function cloudPath(x, y, w) {
+    var h = w * 0.34, d = 'M' + x + ' ' + (y + h) + ' ';
+    var bumps = [[0.1, 0.55, 0.16], [0.32, 0.2, 0.22], [0.58, 0.05, 0.25], [0.84, 0.45, 0.17]];
+    bumps.forEach(function (b) { var cx = x + w * b[0], r = w * b[2]; d += 'L' + (cx - r) + ' ' + (y + h * b[1] + r * 0.6) + ' A' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + (y + h * b[1] + r * 0.6) + ' '; });
+    return d + 'L' + (x + w) + ' ' + (y + h) + ' Z';
+  }
+  function hillPath(y, amp, ph, k) {
+    var d = 'M-20 820 L-20 ' + y;
+    for (var x = -20; x <= 420; x += 20) d += ' L' + x + ' ' + (y - amp * (0.5 + 0.5 * Math.sin(ph + x / 400 * Math.PI * k)));
+    return d + ' L420 820 Z';
+  }
+  function drawBackdrop() {
+    var cl = '';
+    [[24, 120, 120], [210, 210, 96], [60, 300, 70]].forEach(function (c) {
+      var p = cloudPath(c[0], c[1], c[2]);
+      cl += '<path class="cl2" d="' + p + '" transform="translate(4 6)"/><path class="cl" d="' + p + '"/><path class="tex" d="' + p + '" fill="url(#pPaper)"/>';
+    });
+    $('clouds').innerHTML = cl;
+    var hl = '';
+    [['h1', 560, 60, 0.6, 1.4], ['h2', 640, 70, 2.1, 1.1], ['h3', 720, 60, 4, 1.6]].forEach(function (h) {
+      var p = hillPath(h[1], h[2], h[3], h[4]);
+      hl += '<path class="' + h[0] + '" d="' + p + '"/><path class="tex" d="' + p + '" fill="url(#pFelt)"/><path class="st" d="' + p + '" transform="translate(0 9)"/>';
+    });
+    $('hills').innerHTML = hl;
+  }
+
+  /* ---------- theme ---------- */
+  function applyTheme() {
+    var th = window.BRB && BRB.theme;
+    var dark = th === 'dark' || (!th && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.classList.toggle('dark', !!dark);
+    root.classList.toggle('rm', reduced());
+  }
+
+  /* ---------- sound and speech (every line goes through BRB.speak: the AI voice when it is on) ---------- */
+  var spoken = [];
+  function muted() { try { return !!(window.BRB && BRB.sfx && BRB.sfx.muted); } catch (e) { return false; } }
+  function sfx(name) {
+    if (muted()) return;
+    try { if (window.Oomba && Oomba.sfx) { Oomba.sfx(name, { caption: false }); return; } } catch (e) { /* fall through */ }
+    try { if (window.BRB && BRB.sfx) BRB.sfx.play({ correct: 'coin', wrong: 'hit', win: 'win', levelup: 'powerup', pop: 'click', select: 'click', spark: 'coin' }[name] || 'click'); } catch (e) { /* no sound */ }
+  }
+  /** Read one of the game's own lines (by key) aloud. o: { queue, onend, auto } (auto: not when the sound is off). */
+  function speak(key, o) {
+    o = o || {}; var text = T[key];
+    if (!text || (o.auto && muted())) { if (o.onend) o.onend(); return false; }
+    spoken.push(key); if (spoken.length > 60) spoken.shift();
+    var ok = false;
+    try { if (window.BRB && BRB.speak) ok = BRB.speak(text, { lang: 'en', voice: 'friendly', queue: !!o.queue, onend: o.onend }); } catch (e) { ok = false; }
+    if (!ok && o.onend) o.onend();
+    return ok;
+  }
+  function speakAll(keys, o) { keys.forEach(function (k, i) { speak(k, { queue: i > 0 || !!(o && o.queue), auto: o && o.auto }); }); }
+  function hush() { try { if (window.BRB && BRB.stopSpeaking) BRB.stopSpeaking(); } catch (e) { /* none */ } }
+  function prefetch(keys) {
+    try { if (window.BRB && BRB.prefetchSpeech) BRB.prefetchSpeech(keys.map(function (k) { return T[k]; }).filter(Boolean), { lang: 'en', voice: 'friendly' }); } catch (e) { /* none */ }
+  }
+  function sayBtn(onTap, label, big) {
+    var b = el('button', 'say' + (big ? ' big' : ''), IC.speaker); b.setAttribute('aria-label', label || t('ui.replay'));
+    b.addEventListener('click', function (e) { e.stopPropagation(); b.classList.remove('playing'); void b.offsetWidth; if (!reduced()) b.classList.add('playing'); setTimeout(function () { b.classList.remove('playing'); }, 1400); onTap(); });
+    return b;
+  }
+
+  /* ---------- the save ---------- */
+  var save = C.fresh();
+  function load() { try { save = C.norm(window.BRB && BRB.storage ? BRB.storage.get(KEY) : null); } catch (e) { save = C.fresh(); } }
+  function store() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, save); } catch (e) { /* offline */ } }
+
+  /* ---------- screens and sheets ---------- */
+  var screen = 'title';
+  function show(id) {
+    ['title', 'map', 'lesson', 'done'].forEach(function (s) { $(s).hidden = s !== id; });
+    screen = id; root.classList.toggle('on-title', id === 'title');
+  }
+  function sheet(build) {
+    closeSheet();
+    var sc = el('div', 'scrim'), sh = el('div', 'sheet paper');
+    sc.appendChild(sh); $('sheets').appendChild(sc);
+    sc.addEventListener('click', function (e) { if (e.target === sc) closeSheet(); });
+    build(sh);
+    var f = sh.querySelector('button'); if (f) setTimeout(function () { try { f.focus({ preventScroll: true }); } catch (e) { /* old */ } }, 50);
+    return sh;
+  }
+  function closeSheet() { $('sheets').innerHTML = ''; }
+  function announce(s) { $('live').textContent = ''; $('live').textContent = s; }
+
+  /* ---------- the top bar ---------- */
+  function refreshBar() {
+    var st = C.streakNow(save, today()), h = C.hearts(save, now()).n;
+    $('cStreak').innerHTML = (st ? IC.flame : IC.flameOff) + '<span>' + st + '</span>'; $('cStreak').setAttribute('aria-label', t('ui.streak', { n: st }));
+    $('cXp').innerHTML = IC.star + '<span>' + save.xp + '</span>'; $('cXp').setAttribute('aria-label', t('ui.xpN', { n: save.xp }));
+    $('cHearts').innerHTML = IC.heart + '<span>' + h + '</span>'; $('cHearts').setAttribute('aria-label', t('ui.heartsN', { n: h }));
+    $('cSound').innerHTML = muted() ? IC.soundOff : IC.speaker; $('cSound').setAttribute('aria-label', t('ui.sound'));
+    $('cSound').setAttribute('aria-pressed', String(!muted()));
+  }
+
+  /* ---------- the trail map ---------- */
+  var UNIT_COL = [['#bfe3a4', '#4a8a3f'], ['#a9d8b8', '#2f7a5c'], ['#d6e59e', '#6a8a2f'], ['#a8dcd4', '#2f7a72'], ['#e6e4a0', '#8a7a2f']];
+  var UNIT_DARK = ['#3f6a4c', '#34604f', '#55663a', '#335f5a', '#5f5e3a'];
+  var nodePos = {};
+  function drawMap() {
+    // a bigger trail on tablets and desktops (the same layout, zoomed)
+    var tr = $('trail'), full = $('mapScroll').clientWidth || window.innerWidth, z = full >= 700 ? Math.min(1.45, full / 560) : 1, dark = root.classList.contains('dark');
+    tr.style.zoom = z === 1 ? '' : String(z);
+    var W = full / z, colW = Math.min(600, W), amp = Math.min(120, colW * 0.27), cx = W / 2, y = 30, k = 0;
+    tr.innerHTML = ''; nodePos = {};
+    var cur = C.current(save);
+    var frag = document.createDocumentFragment(), bands = document.createDocumentFragment(), path = [], decos = [];
+    C.UNITS.forEach(function (U) {
+      var top = y;
+      // the unit's signpost and name card
+      var head = el('div', 'unitcard paper patch stitched');
+      head.innerHTML = '<div class="u">' + esc(t('ui.unit', { n: U.i + 1 })) + '</div><div class="n">' + esc(t('ui.u' + U.i)) + '</div><div class="l">' + esc(t('ui.l' + U.i)) + '</div>';
+      head.style.top = (y + 40) + 'px';
+      var sign = el('div', 'sign'); sign.innerHTML = '<div class="post"></div>'; sign.style.left = (cx + Math.min(150, colW * 0.34) - 30) + 'px'; sign.style.top = (y - 30) + 'px';
+      bgOf(sign.firstChild, 'sign'); sign.style.width = '90px'; sign.style.height = '100px';
+      var nodes = C.NODES.filter(function (n) { return n.unit === U.i; });
+      y += 236;
+      var first = true;
+      nodes.forEach(function (n) {
+        var x = cx + amp * Math.sin(k * 0.95); k++;
+        nodePos[n.id] = { x: x, y: y };
+        path.push([x, y]);
+        // a tree, a bush or flowers on the open side
+        var side = x > cx ? -1 : 1, kinds = ['tree', 'bush', 'pine', 'flowers', 'bush', 'tree'], kind = kinds[(k + U.i) % kinds.length];
+        if (!first || U.i > 0) decos.push({ kind: kind, x: cx + side * Math.min(colW * 0.36, amp + 70), y: y + 10, side: side });
+        first = false;
+        y += n.kind === 'treasure' ? 150 : 118;
+      });
+      var band = el('div', 'band felt');
+      band.style.top = (top + 20) + 'px'; band.style.height = (y - top + 10) + 'px';
+      band.style.backgroundColor = dark ? UNIT_DARK[U.i] : UNIT_COL[U.i][0];
+      band.innerHTML = '<svg viewBox="0 0 400 44" preserveAspectRatio="none"><path d="M0 44 L0 20 Q50 0 100 16 T200 14 T300 18 T400 10 L400 44Z" fill="' + (dark ? UNIT_DARK[U.i] : UNIT_COL[U.i][0]) + '"/><path d="M0 28 Q50 8 100 24 T200 22 T300 26 T400 18" fill="none" stroke="rgba(255,253,242,.75)" stroke-width="2.5" stroke-dasharray="8 7"/></svg>';
+      bands.appendChild(band); frag.appendChild(sign); frag.appendChild(head);
+      y += 30;
+    });
+    tr.style.height = (y + 40) + 'px';
+    // the path: a sandy felt ribbon with a stitched seam, through every stone
+    var d = 'M' + path[0][0] + ' ' + (path[0][1] - 80);
+    for (var i = 0; i < path.length; i++) {
+      var p0 = path[i - 1] || [path[0][0], path[0][1] - 80], p1 = path[i];
+      var my = (p0[1] + p1[1]) / 2;
+      d += ' C' + p0[0] + ' ' + my + ' ' + p1[0] + ' ' + my + ' ' + p1[0] + ' ' + p1[1];
+    }
+    var svg = '<svg class="path" width="' + W + '" height="' + (y + 40) + '"><path class="edge" stroke-width="44" d="' + d + '" transform="translate(0 4)"/><path class="road" stroke-width="38" d="' + d + '"/>' +
+      '<path class="ptex" stroke-width="38" stroke="url(#pPaper)" d="' + d + '"/><path class="seam" d="' + d + '"/></svg>';
+    tr.appendChild(bands);
+    tr.insertAdjacentHTML('beforeend', svg);
+    tr.appendChild(frag);
+    decos.forEach(function (o) {
+      var sz = { tree: [96, 112], pine: [70, 100], bush: [92, 60], flowers: [96, 52] }[o.kind];
+      var e = el('div', 'deco'); bgOf(e, o.kind);
+      e.style.width = sz[0] + 'px'; e.style.height = sz[1] + 'px'; e.style.left = (o.x - sz[0] / 2) + 'px'; e.style.top = (o.y - sz[1] + 20) + 'px';
+      if (!ART[o.kind]) e.hidden = true;
+      tr.appendChild(e);
+    });
+    C.NODES.forEach(function (n) {
+      var p = nodePos[n.id], done = C.isDone(save, n), isCur = cur && cur.id === n.id, open = C.open(save, n);
+      var b = el('button', 'node');
+      b.dataset.node = n.id;
+      b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
+      var label;
+      if (n.kind === 'treasure') {
+        b.classList.add('chest'); bgOf(b, done ? 'chest_open' : 'chest_closed');
+        label = t('ui.treasure');
+      } else {
+        var stone = done ? 'stone_mint' : isCur ? (n.kind === 'review' ? 'stone_lilac' : 'stone_gold') : n.kind === 'review' ? 'stone_lilac' : 'stone_grey';
+        b.classList.add('s-' + stone.slice(6)); bgOf(b, stone);
+        b.innerHTML = '<span class="ic">' + (done ? IC.check : !open ? IC.lock : n.kind === 'review' ? IC.book : IC.go) + '</span>';
+        if (done && save.done[n.id]) { var s = ''; for (var j = 0; j < 3; j++) s += j < save.done[n.id] ? IC.star : IC.starOff; b.insertAdjacentHTML('beforeend', '<span class="stars">' + s + '</span>'); }
+        label = n.kind === 'review' ? t('ui.review') : t('ui.lesson', { n: n.n });
+      }
+      if (!open) b.classList.add('locked');
+      if (isCur) b.classList.add('cur');
+      b.setAttribute('aria-label', t('ui.unit', { n: n.unit + 1 }) + ', ' + label + (done ? ' ✓' : !open ? ', ' + t('ui.locked') : ''));
+      b.addEventListener('click', function () { tapNode(n); });
+      tr.appendChild(b);
+    });
+    // Bramble beside the open stone, and a "Start here" tag over it
+    if (cur) {
+      var cp = nodePos[cur.id], side = cp.x > cx ? -1 : 1;
+      var g = el('div', 'guide'); g.id = 'guide'; bgOf(g, 'mascot_idle');
+      g.style.left = (cp.x + side * 92 - 46) + 'px'; g.style.top = (cp.y - 92) + 'px';
+      if (!ART.mascot_idle) g.hidden = true;
+      tr.appendChild(g);
+      var tag = el('div', 'tag paper', esc(cur.kind === 'treasure' ? t('ui.treasure') : t('ui.start')));
+      tag.style.left = cp.x + 'px'; tag.style.top = (cp.y + (cur.kind === 'treasure' ? 56 : 44)) + 'px';
+      tr.appendChild(tag);
+    }
+    setTimeout(watchEdges, 0);
+  }
+  // Stones, cards and tags only partly in view fade out (they never sit half under the top bar or the buttons below).
+  var edgeObs = null;
+  function watchEdges() {
+    if (edgeObs) edgeObs.disconnect();
+    if (!window.IntersectionObserver) return;
+    edgeObs = new IntersectionObserver(function (es) { es.forEach(function (e) { e.target.classList.toggle('edge', e.intersectionRatio < 0.98); }); }, { root: $('mapScroll'), threshold: [0, 0.5, 0.98, 1] });
+    Array.prototype.forEach.call($('trail').querySelectorAll('.node,.unitcard,.tag'), function (n) { edgeObs.observe(n); });
+  }
+  function scrollToCurrent(smooth) {
+    var cur = C.current(save), p = cur && nodePos[cur.id], sc = $('mapScroll');
+    if (!p) return;
+    var top = Math.max(0, p.y - sc.clientHeight * 0.55);
+    try { sc.scrollTo({ top: top, behavior: smooth && !reduced() ? 'smooth' : 'auto' }); } catch (e) { sc.scrollTop = top; }
+  }
+  function openMap(opts) {
+    hush(); closeSheet(); show('map'); refreshBar(); drawMap(); scrollToCurrent(false);
+    $('bWords').innerHTML = IC.bookIc + '<span>' + esc(t('ui.words')) + '</span>';
+    $('bPractice').innerHTML = IC.leaf + '<span>' + esc(t('ui.practise')) + '</span>';
+    if (opts && opts.hint) speak('map.tap', { auto: true });
+  }
+  function tapNode(n) {
+    sfx('select');
+    if (!C.open(save, n)) {
+      sheet(function (sh) {
+        sh.innerHTML = '<div class="hero" style="width:120px;height:130px;margin:0"></div><h2>' + esc(t('ui.locked')) + '</h2><p>' + esc(t('ui.lockedP')) + '</p>';
+        bgOf(sh.firstChild, 'mascot_think');
+        var b = el('button', 'btn go wide', esc(t('ui.close'))); b.addEventListener('click', closeSheet); sh.appendChild(b);
+      });
+      return;
+    }
+    if (n.kind === 'treasure') { openTreasure(n); return; }
+    sheet(function (sh) {
+      var title = n.kind === 'review' ? t('ui.review') : t('ui.lesson', { n: n.n });
+      sh.innerHTML = '<p style="font-size:15px;text-transform:uppercase;letter-spacing:.06em;font-weight:900">' + esc(t('ui.unit', { n: n.unit + 1 }) + ' · ' + t('ui.u' + n.unit)) + '</p><h2>' + esc(title) + '</h2>';
+      if (n.kind === 'lesson') {
+        sh.insertAdjacentHTML('beforeend', '<p>' + esc(t('ui.newWords')) + '</p>');
+        var chips = el('div', 'chips');
+        n.words.forEach(function (w) { var c = el('button', 'wchip paper', esc(C.WORDS[w].text)); c.addEventListener('click', function () { speak('w.' + w); }); chips.appendChild(c); });
+        sh.appendChild(chips);
+      } else sh.insertAdjacentHTML('beforeend', '<p>' + esc(t('ui.reviewP')) + '</p>');
+      var b = el('button', 'btn go wide', esc(t('ui.start'))); b.dataset.go = n.id;
+      b.addEventListener('click', function () { closeSheet(); startLesson(n); });
+      sh.appendChild(b);
+    });
+  }
+
+  /* ---------- a lesson ---------- */
+  var L = null;
+  function seed() { return (now() ^ (save.played * 7919)) >>> 0; }
+  function startLesson(n, plan) {
+    var h = C.hearts(save, now()).n;
+    if (!plan && n && h <= 0) { heartsOut(); return; }
+    plan = plan || (n ? (n.kind === 'review' ? C.planReview(save, n, seed(), T) : C.planLesson(save, n, seed(), T)) : C.planPractice(save, seed(), T));
+    if (!plan) { openMap(); return; }
+    L = { plan: plan, kind: plan.kind, node: n, intro: plan.intro.slice(), introAt: 0, queue: plan.items.slice(), total: plan.items.length, done: 0,
+      right: 0, mistakes: 0, combo: 0, best: 0, results: {}, item: null, answered: false, startedHearts: h };
+    // ask for the new words' lines ahead, so the intro starts at once (only those: new audio is limited per minute,
+    // and the rest is usually in the server's warm cache already)
+    var keys = [];
+    plan.intro.forEach(function (w) { keys.push('w.' + w, 's.' + w); });
+    if (keys.length) prefetch(keys);
+    show('lesson'); $('lFb').className = 'fb'; setBar();
+    if (plan.kind === 'review') speak('review.intro', { auto: true });
+    if (plan.kind === 'practice') speak('practice.intro', { auto: true });
+    if (L.intro.length) introStep(); else nextItem();
+  }
+  function setBar() {
+    var p = L ? Math.round(100 * L.done / Math.max(1, L.total)) : 0;
+    $('lBar').firstChild.style.width = Math.max(4, p) + '%'; $('lBar').setAttribute('aria-valuenow', String(p));
+    $('lHearts').innerHTML = (L && L.kind === 'practice' ? IC.leaf : IC.heart) + '<span>' + C.hearts(save, now()).n + '</span>';
+  }
+  function setAsk(key, mini, replay) {
+    $('lAsk').textContent = t(key); $('lAsk').dataset.key = key;
+    bgOf($('lMini'), mini || 'mascot_think');
+    var r = $('lReplay'); r.innerHTML = IC.speaker; r.setAttribute('aria-label', t('ui.replay'));
+    r.onclick = function () { hush(); if (replay) replay(); else speak(key); };
+  }
+  function foot(btn) { var f = $('lFoot'); f.innerHTML = ''; if (btn) f.appendChild(btn); }
+
+  // the intro of a new word: the word, its sound and an example sentence
+  function introStep() {
+    var w = L.intro[L.introAt], st = $('lStage'); st.className = 'stage col t-intro';
+    setAsk('ins.intro', 'mascot_idle', function () { speakAll(['w.' + w, 's.' + w]); });
+    st.innerHTML = '';
+    st.appendChild(el('div', 'newtag', esc(t('ui.newWords').replace(/s$/, ''))));
+    var row = el('div', 'introrow');
+    var card = el('div', 'card bigword paper', esc(C.WORDS[w].text)); card.dataset.word = w;
+    row.appendChild(card); row.appendChild(sayBtn(function () { speak('w.' + w); }, t('ui.replay')));
+    st.appendChild(row);
+    var sr = el('div', 'sentrow'), sen = el('div', 'sentence paper patch stitched');
+    sen.innerHTML = highlight(T['s.' + w], C.WORDS[w].text);
+    sr.appendChild(sen); sr.appendChild(sayBtn(function () { speak('s.' + w); }, t('ui.replay')));
+    st.appendChild(sr);
+    if (!reduced()) card.classList.add('pop');
+    var last = L.introAt >= L.intro.length - 1;
+    var b = el('button', 'btn go', esc(last ? t('ui.go') : t('ui.next'))); b.dataset.act = 'next';
+    b.addEventListener('click', function () { hush(); sfx('pop'); L.introAt++; if (L.introAt < L.intro.length) introStep(); else nextItem(); });
+    foot(b);
+    if (L.introAt === 0) speakAll(['ins.intro', 'w.' + w, 's.' + w], { auto: true, queue: L.kind !== 'lesson' }); else speakAll(['w.' + w, 's.' + w], { auto: true });
+  }
+  function highlight(sentence, word) {
+    var re = new RegExp("(^|[^A-Za-z'])(" + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ")(?![A-Za-z'])", 'i');
+    return esc(sentence).replace(re, function (m, a, b) { return a + '<span class="hl">' + b + '</span>'; });
+  }
+  function blankSentence(w) {
+    return esc(T['c.' + w]).replace('…', '<span class="blank" id="blank">&nbsp;</span>');
+  }
+
+  function nextItem() {
+    $('lFb').className = 'fb'; hush();
+    if (!L.queue.length) { finish(); return; }
+    L.item = L.queue.shift(); L.answered = false; L.tries = 0;
+    var it = L.item, st = $('lStage'); st.innerHTML = ''; st.className = 'stage col t-' + it.type; foot(null);
+    RENDER[it.type](it, st);
+    setBar();
+  }
+  var RENDER = {
+    hear: function (it, st) {
+      var playW = function () { speak('w.' + it.word); };
+      setAsk('ins.hear', 'mascot_think', function () { speakAll(['ins.hear', 'w.' + it.word]); });
+      st.appendChild(sayBtn(playW, t('ui.replay'), true));
+      var g = el('div', 'grid');
+      it.choices.forEach(function (c) {
+        var b = el('button', 'card paper', esc(C.WORDS[c].text)); b.dataset.word = c;
+        b.addEventListener('click', function () { if (L.answered) return; answer(c === it.word, b); });
+        g.appendChild(b);
+      });
+      st.appendChild(g);
+      speakAll(['ins.hear', 'w.' + it.word], { auto: true });
+    },
+    say: function (it, st) {
+      setAsk('ins.say', 'mascot_think', function () { speak('ins.say'); });
+      var card = el('div', 'card bigword paper', esc(C.WORDS[it.word].text)); card.dataset.word = it.word;
+      st.appendChild(card);
+      var row = el('div', 'opts'), chosen = null, check = el('button', 'btn go', esc(t('ui.check')));
+      check.disabled = true; check.dataset.act = 'check';
+      it.choices.forEach(function (c, i) {
+        var b = el('button', 'opt paper', IC.speaker + '<span>' + (i + 1) + '</span>'); b.dataset.word = c; b.setAttribute('aria-label', t('ui.play1', { n: i + 1 }));
+        b.addEventListener('click', function () {
+          if (L.answered) return;
+          hush(); speak('w.' + c); chosen = c;
+          row.querySelectorAll('.opt').forEach(function (o) { o.classList.toggle('sel', o === b); });
+          check.disabled = false;
+        });
+        row.appendChild(b);
+      });
+      st.appendChild(row);
+      check.addEventListener('click', function () {
+        if (L.answered || !chosen) return;
+        var b = row.querySelector('.opt.sel');
+        answer(chosen === it.word, b, function () { var r = row.querySelector('[data-word="' + it.word + '"]'); if (r) r.classList.add('ok'); });
+      });
+      foot(check);
+      speak('ins.say', { auto: true });
+    },
+    fill: function (it, st) {
+      setAsk('ins.fill', 'mascot_think', function () { speakAll(['ins.fill', 'c.' + it.word]); });
+      var sr = el('div', 'sentrow'), sen = el('div', 'sentence paper patch stitched', blankSentence(it.word));
+      sr.appendChild(sen); sr.appendChild(sayBtn(function () { speak('c.' + it.word); }, t('ui.replay')));
+      st.appendChild(sr);
+      var g = el('div', 'grid three');
+      it.choices.forEach(function (c) {
+        var b = el('button', 'card paper', esc(C.WORDS[c].text)); b.dataset.word = c;
+        b.addEventListener('click', function () {
+          if (L.answered) return;
+          var ok = c === it.word;
+          if (ok) { var bl = $('blank'); if (bl) bl.textContent = C.WORDS[c].text; }
+          answer(ok, b, function () { var bl = $('blank'); if (bl) bl.textContent = C.WORDS[it.word].text; }, ok ? 's.' + it.word : null);
+        });
+        g.appendChild(b);
+      });
+      st.appendChild(g);
+      speakAll(['ins.fill', 'c.' + it.word], { auto: true });
+    },
+    build: function (it, st) {
+      setAsk('ins.build', 'mascot_think', function () { speakAll(['ins.build', 'w.' + it.word]); });
+      st.appendChild(sayBtn(function () { speak('w.' + it.word); }, t('ui.replay'), true));
+      var slots = el('div', 'slots'), tiles = el('div', 'tiles'), placed = [];
+      it.letters.forEach(function () { slots.appendChild(el('button', 'slot', '')); });
+      var redraw = function () {
+        slots.querySelectorAll('.slot').forEach(function (s, i) { var p = placed[i]; s.textContent = p ? p.l : ''; s.classList.toggle('on', !!p); s.setAttribute('aria-label', p ? p.l : '_'); });
+      };
+      slots.querySelectorAll('.slot').forEach(function (s, i) {
+        s.addEventListener('click', function () { if (L.answered || !placed[i]) return; var p = placed.splice(i, 1)[0]; p.b.classList.remove('used'); sfx('pop'); redraw(); });
+      });
+      it.tiles.forEach(function (l, i) {
+        var b = el('button', 'tile paper', esc(l)); b.dataset.letter = l; b.dataset.i = String(i);
+        b.addEventListener('click', function () {
+          if (L.answered || placed.length >= it.letters.length) return;
+          placed.push({ l: l, b: b }); b.classList.add('used'); sfx('pop'); redraw();
+          if (placed.length === it.letters.length) {
+            var ok = placed.map(function (p) { return p.l; }).join('') === it.letters.join('');
+            answer(ok, slots, function () { placed.forEach(function (p, k) { p.l = it.letters[k]; }); redraw(); });
+          }
+        });
+        tiles.appendChild(b);
+      });
+      var bw = el('div', 'bwrap'); bw.appendChild(slots); bw.appendChild(tiles); st.appendChild(bw);
+      speakAll(['ins.build', 'w.' + it.word], { auto: true });
+    },
+    match: function (it, st) {
+      setAsk('ins.match', 'mascot_think', function () { speak('ins.match'); });
+      var grid = el('div', 'pairs'), sel = null, left = [], right = [], got = 0, miss = false;
+      var rights = it.right.map(function (w) { var b = el('button', 'card paper', esc(C.WORDS[w].text)); b.dataset.word = w; return b; });
+      it.words.forEach(function (w, i) {
+        var s = sayBtn(function () {
+          if (L.answered || s.classList.contains('ok')) return;
+          sel = w; left.forEach(function (x) { x.classList.toggle('on', x === s); }); speak('w.' + w);
+        }, t('ui.play1', { n: i + 1 }));
+        s.dataset.word = w; left.push(s);
+        grid.appendChild(s); grid.appendChild(rights[i]);
+      });
+      rights.forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (L.answered || b.classList.contains('ok')) return;
+          if (!sel) { var first = left.find(function (x) { return !x.classList.contains('ok'); }); if (first) { first.classList.add('on'); first.click(); } return; }
+          var s = left.find(function (x) { return x.dataset.word === sel; });
+          if (b.dataset.word === sel) {
+            b.classList.add('ok'); s.classList.add('ok'); s.classList.remove('on'); sel = null; got++; sfx('correct');
+            note(b.dataset.word, true);
+            if (!reduced()) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+            if (got === it.words.length) answer(!miss, null, null, null, true);
+          } else {
+            miss = true; sfx('wrong'); note(sel, false);
+            if (!reduced()) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+            b.classList.add('bad'); setTimeout(function () { b.classList.remove('bad'); }, 600);
+          }
+        });
+      });
+      st.appendChild(grid);
+      speak('ins.match', { auto: true });
+    },
+    speed: function (it, st) {
+      setAsk('ins.speed', 'mascot_think', function () { speakAll(['ins.speed', 'w.' + it.word]); });
+      var top = el('div', 'introrow');
+      top.appendChild(sayBtn(function () { speak('w.' + it.word); }, t('ui.replay')));
+      var tm = el('div', 'timer'); tm.innerHTML = '<i style="width:100%"></i>'; tm.style.flex = '1'; tm.style.minWidth = '180px';
+      top.appendChild(tm); st.appendChild(top);
+      var g = el('div', 'grid six'), found = 0, miss = false, t0 = 0, total = it.secs * 1000;
+      it.cards.forEach(function (c, i) {
+        var b = el('button', 'card paper', esc(C.WORDS[c].text)); b.dataset.word = c; b.dataset.i = String(i);
+        b.addEventListener('click', function () {
+          if (L.answered || b.classList.contains('ok')) return;
+          if (!t0) t0 = now();
+          if (c === it.word) {
+            b.classList.add('ok'); found++; sfx('correct'); sparkle(b);
+            if (found === it.count) { stop(); answer(!miss, null, null, null, true); }
+          } else {
+            miss = true; sfx('wrong');
+            if (!reduced()) { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+            b.classList.add('bad'); setTimeout(function () { b.classList.remove('bad'); }, 600);
+          }
+        });
+        g.appendChild(b);
+      });
+      st.appendChild(g);
+      var started = 0, timer = null;
+      var stop = function () { if (timer) clearInterval(timer); timer = null; };
+      // the clock starts once the word has been said, and only runs while the lesson is on screen
+      var go = function () {
+        if (timer || L.answered || L.item !== it) return;
+        started = now();
+        timer = setInterval(function () {
+          if (L.item !== it || screen !== 'lesson') { stop(); return; }
+          if (document.hidden || $('sheets').firstChild) { started += 100; return; }
+          var left = Math.max(0, total - (now() - started));
+          tm.firstChild.style.width = (100 * left / total) + '%';
+          if (left <= 0) {
+            stop(); g.querySelectorAll('.card').forEach(function (b) { if (b.dataset.word === it.word) b.classList.add('ok'); else b.classList.add('dim'); });
+            timeUp();
+          }
+        }, 100);
+      };
+      it.stop = stop;
+      speakAll(['ins.speed', 'w.' + it.word], { auto: true });
+      setTimeout(go, muted() ? 300 : 2600);
+    },
+  };
+
+  /** Results per word for the end of the lesson (grade once each). */
+  function note(w, ok) { var r = L.results[w] || (L.results[w] = { r: 0, w: 0 }); if (ok) r.r++; else r.w++; }
+  function sparkle(target) {
+    if (reduced() || !target) return;
+    var box = target.getBoundingClientRect(), host = $('lesson');
+    for (var i = 0; i < 8; i++) {
+      var s = el('div', 'spark', IC.star), a = i / 8 * Math.PI * 2;
+      s.style.left = (box.left + box.width / 2 - 11) + 'px'; s.style.top = (box.top + box.height / 2 - 11) + 'px';
+      s.style.setProperty('--dx', Math.round(Math.cos(a) * (box.width / 2 + 30)) + 'px'); s.style.setProperty('--dy', Math.round(Math.sin(a) * (box.height / 2 + 30)) + 'px');
+      host.appendChild(s); setTimeout(function (n) { return function () { n.remove(); }; }(s), 900);
+    }
+  }
+  /**
+   * The answer to the item on screen. ok: right or not; target: the card (or slots) tapped; showRight(): marks the
+   * right answer on a miss; sayKey: a line to read after a right answer (the full sentence for fill); graded: the
+   * item noted its own words already (match, speed).
+   */
+  function answer(ok, target, showRight, sayKey, graded) {
+    if (L.answered) return;
+    L.answered = true; var it = L.item;
+    if (it.stop) it.stop();
+    if (!graded) note(it.word, ok);
+    if (ok) {
+      L.done++; L.combo++; L.best = Math.max(L.best, L.combo); if (!it.retry) L.right++;
+      if (target) { target.classList.add('ok'); if (!reduced()) { target.classList.remove('pop'); void target.offsetWidth; target.classList.add('pop'); } sparkle(target); }
+      sfx('correct');
+      if (L.combo === 3 || L.combo === 5 || L.combo === 8) combo(L.combo);
+    } else {
+      L.mistakes++; L.combo = 0;
+      if (target) { target.classList.add('bad'); if (!reduced()) { target.classList.remove('shake'); void target.offsetWidth; target.classList.add('shake'); } }
+      if (showRight) showRight();
+      else if (it.type === 'hear') { var r = $('lStage').querySelector('.card[data-word="' + it.word + '"]'); if (r) r.classList.add('ok'); }
+      sfx('wrong');
+      if (L.kind !== 'practice') { C.loseHeart(save, now()); store(); }
+      // the item comes back at the end of the lesson, once
+      if (!it.retry) { var again = JSON.parse(JSON.stringify(it)); again.retry = true; delete again.stop; L.queue.push(again); L.total++; }
+      else L.done++;
+    }
+    setBar();
+    feedback(ok, it, sayKey);
+  }
+  function timeUp() {
+    var it = L.item; L.answered = true; L.done++; L.combo = 0;
+    note(it.word, true);
+    setBar();
+    var fb = $('lFb'); fb.className = 'fb oops paper';
+    fb.innerHTML = '<div class="row"><div class="mini"></div><div><div class="msg">' + esc(t('speed.time')) + '</div></div></div>';
+    bgOf(fb.querySelector('.mini'), 'mascot_idle');
+    var b = el('button', 'btn go', esc(t('ui.continue'))); b.dataset.act = 'continue'; b.addEventListener('click', function () { hush(); nextItem(); });
+    fb.appendChild(b); requestAnimationFrame(function () { fb.classList.add('on'); });
+    speak('speed.time', { auto: true });
+  }
+  var praise = 0;
+  function feedback(ok, it, sayKey) {
+    var fb = $('lFb'); fb.className = 'fb ' + (ok ? 'good' : 'oops');
+    var w = it.word, msgKey = ok ? 'ok.' + (1 + (praise++ % 6)) : 'no.' + (1 + (L.mistakes % 2));
+    var cn = ok ? L.comboN : 0; L.comboN = 0;
+    var html = (cn ? '<div class="cbadge">' + esc(t('combo.' + cn)) + '</div>' : '') + '<div class="row"><div class="mini"></div><div style="flex:1"><div class="msg">' + esc(t(msgKey)) + '</div>';
+    if (!ok && it.type !== 'match' && it.type !== 'speed') html += '<div class="ans"><span class="word">' + esc(C.WORDS[w].text) + '</span><span class="sbtn"></span></div>';
+    if (!ok && !it.retry) html += '<div class="ans" style="font-size:16px">' + esc(t('later')) + '</div>';
+    html += '</div></div>';
+    fb.innerHTML = html;
+    bgOf(fb.querySelector('.mini'), ok ? 'mascot_cheer' : 'mascot_sad');
+    var sb = fb.querySelector('.sbtn'); if (sb) sb.appendChild(sayBtn(function () { speak('w.' + w); }, t('ui.replay')));
+    var b = el('button', 'btn ' + (ok ? 'go' : 'coral'), esc(t('ui.continue'))); b.dataset.act = 'continue';
+    b.addEventListener('click', function () { hush(); sfx('pop'); nextItem(); });
+    fb.appendChild(b);
+    requestAnimationFrame(function () { fb.classList.add('on'); try { b.focus({ preventScroll: true }); } catch (e) { /* old */ } });
+    announce(t(msgKey) + (ok ? '' : ' ' + C.WORDS[w].text));
+    hush();
+    if (ok) { speak(msgKey, { auto: true }); if (sayKey) speak(sayKey, { queue: true, auto: true }); if (cn) speak('combo.' + cn, { queue: true, auto: true }); }
+    else if (it.type !== 'match' && it.type !== 'speed') speakAll([msgKey, 'w.' + w], { auto: true });
+    else speak(msgKey, { auto: true });
+  }
+  // a combo shows as a ribbon on the feedback panel (never over the words) and is read after the praise
+  function combo(n) { L.comboN = n; sfx('levelup'); }
+  function quitAsk() {
+    sheet(function (sh) {
+      sh.innerHTML = '<div class="hero" style="width:110px;height:120px;margin:0"></div><h2>' + esc(t('ui.quitAsk')) + '</h2><p>' + esc(t('ui.quitP')) + '</p>';
+      bgOf(sh.firstChild, 'mascot_sad');
+      var row = el('div', 'row2'), keep = el('button', 'btn go', esc(t('ui.keep'))), stop = el('button', 'btn quiet', esc(t('ui.quit')));
+      keep.addEventListener('click', closeSheet);
+      stop.addEventListener('click', function () { if (L && L.item && L.item.stop) L.item.stop(); L = null; openMap(); });
+      row.appendChild(stop); row.appendChild(keep); sh.appendChild(row);
+    });
+  }
+
+  /* ---------- the end of a lesson ---------- */
+  function finish() {
+    var kind = L.kind, n = L.node, earned = C.xpFor(kind, L.right, L.plan.items.length, L.mistakes, L.best);
+    C.grade(save, L.results);
+    save.played++;
+    save.xp += earned;
+    if (save.today.day !== today()) save.today = { day: today(), xp: 0 };
+    save.today.xp += earned;
+    var streakUp = C.addDay(save, today());
+    var stars = C.starsFor(L.mistakes);
+    if (n && n.kind !== 'treasure') save.done[n.id] = Math.max(save.done[n.id] || 0, stars);
+    var heart = false;
+    if (kind === 'practice' && C.hearts(save, now()).n < C.HEARTS) { C.gainHeart(save, now()); heart = true; }
+    store();
+    try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true, score: save.xp }); } catch (e) { /* offline */ }
+    var words = Object.keys(L.results);
+    show('done');
+    var box = $('doneBox'); box.innerHTML = ''; box.className = 'endbox col';
+    var hero = el('div', 'hero' + (reduced() ? '' : ' bob')); bgOf(hero, 'mascot_cheer'); box.appendChild(hero);
+    box.appendChild(el('h1', '', esc(t(kind === 'review' ? 'ui.reviewDone' : kind === 'practice' ? 'ui.practiceDone' : 'ui.lessonDone'))));
+    var acc = Math.round(100 * L.right / Math.max(1, L.plan.items.length));
+    var stats = el('div', 'stats');
+    stats.innerHTML = '<div class="stat paper patch"><b>' + IC.star + '+' + earned + '</b><span>' + esc(t('ui.xp')) + '</span></div>' +
+      '<div class="stat paper patch"><b style="color:#2c8d55">' + acc + '%</b><span>' + esc(t('ui.right')) + '</span></div>' +
+      '<div class="stat paper patch"><b>' + IC.flame + C.streakNow(save, today()) + '</b><span>' + esc(t('ui.days')) + '</span></div>' +
+      (heart ? '<div class="stat paper patch"><b>' + IC.heart + '+1</b><span>' + esc(t('hearts.back')) + '</span></div>' : '');
+    box.appendChild(stats);
+    if (words.length) {
+      box.appendChild(el('p', 'sub paper patch', esc(t('ui.practised'))));
+      var chips = el('div', 'chips');
+      words.slice(0, 10).forEach(function (w) { var c = el('button', 'wchip paper', esc(C.WORDS[w].text)); c.addEventListener('click', function () { speak('w.' + w); }); chips.appendChild(c); });
+      box.appendChild(chips);
+    }
+    var b = el('button', 'btn go', esc(t('ui.continue'))); b.dataset.act = 'done';
+    b.addEventListener('click', function () { sfx('pop'); L = null; openMap(); scrollToCurrent(true); });
+    $('doneFoot').innerHTML = ''; $('doneFoot').appendChild(b);
+    sfx('win');
+    var lines = ['done.say']; if (L.mistakes === 0) lines.push('done.perfect'); if (streakUp) lines.push('done.streak'); if (heart) lines.push('hearts.back');
+    speakAll(lines, { auto: true });
+    if (!reduced()) { try { if (window.BRB && BRB.fx && BRB.fx.confetti) BRB.fx.confetti(); } catch (e) { /* none */ } }
+    lastDone = { kind: kind, xp: earned, right: L.right, mistakes: L.mistakes, streakUp: streakUp, heart: heart, stars: stars };
+  }
+  var lastDone = null;
+
+  /* ---------- the unit treasure ---------- */
+  var BADGE = ['#ff8a3d', '#4fa8f0', '#e8483c', '#2f9a74', '#9d84e6'];
+  function openTreasure(n) {
+    show('done'); hush();
+    var box = $('doneBox'), opened = save.treasures.indexOf(n.unit) >= 0;
+    box.className = 'endbox col tre';
+    box.innerHTML = '';
+    box.appendChild(el('h1', '', esc(t('ui.treasureT'))));
+    box.appendChild(el('p', 'sub paper patch', esc(t('ui.unit', { n: n.unit + 1 }) + ' · ' + t('ui.u' + n.unit))));
+    var chest = el('button', 'chest'); chest.dataset.act = 'chest'; chest.setAttribute('aria-label', t('treasure.tap'));
+    bgOf(chest, opened ? 'chest_open' : 'chest_closed');
+    if (!ART.chest_closed) { chest.style.background = '#b5733f'; chest.style.borderRadius = '22px'; }
+    box.appendChild(chest);
+    var trow = el('div', 'trow'), hero = el('div', 'hero'); hero.style.height = '150px'; bgOf(hero, opened ? 'mascot_cheer' : 'mascot_idle'); trow.appendChild(hero); box.appendChild(trow);
+    var foot = $('doneFoot'); foot.innerHTML = '';
+    var cont = el('button', 'btn go', esc(t('ui.continue'))); cont.dataset.act = 'done';
+    cont.addEventListener('click', function () { openMap(); scrollToCurrent(true); });
+    var reveal = function () {
+      bgOf(chest, 'chest_open'); bgOf(hero, 'mascot_cheer');
+      var badge = el('div', 'badge felt', IC.star + '<small>' + esc(t('ui.u' + n.unit)) + '</small>');
+      badge.style.backgroundColor = BADGE[n.unit]; trow.insertBefore(badge, hero); hero.style.height = '';
+      if (!reduced()) { badge.classList.add('pop'); sparkle(badge); }
+      foot.appendChild(cont);
+    };
+    if (opened) { reveal(); return; }
+    speak('treasure.tap', { auto: true });
+    chest.addEventListener('click', function once() {
+      chest.removeEventListener('click', once);
+      if (!reduced()) chest.classList.add('shake');
+      sfx('select');
+      setTimeout(function () {
+        save.treasures.push(n.unit); save.xp += 25; store();
+        try { if (window.BRB && BRB.gameOver) BRB.gameOver({ won: true, score: save.xp }); } catch (e) { /* offline */ }
+        sfx('win'); reveal(); speak('treasure.say', { auto: true });
+        if (!reduced()) { try { if (window.BRB && BRB.fx && BRB.fx.confetti) BRB.fx.confetti(); } catch (e) { /* none */ } }
+      }, reduced() ? 0 : 900);
+    });
+  }
+
+  /* ---------- hearts, practice and the word book ---------- */
+  function heartsOut() {
+    speak('hearts.out', { auto: true });
+    sheet(function (sh) {
+      var h = C.hearts(save, now());
+      sh.innerHTML = '<div class="hero" style="width:120px;height:130px;margin:0"></div><h2>' + esc(t('ui.heartsOut')) + '</h2><p>' + esc(t('hearts.out')) + '</p><p style="font-size:16px">' + esc(t('ui.heartsSoon')) + '</p>';
+      bgOf(sh.firstChild, 'mascot_sad');
+      var row = el('div', 'row2'), later = el('button', 'btn quiet', esc(t('ui.later'))), go = el('button', 'btn go', esc(t('ui.practise')));
+      later.addEventListener('click', closeSheet); go.addEventListener('click', function () { closeSheet(); practice(); });
+      row.appendChild(later); row.appendChild(go); sh.appendChild(row);
+      void h;
+    });
+  }
+  function practice() {
+    var plan = C.planPractice(save, seed(), T);
+    if (!plan) { sheet(function (sh) { sh.innerHTML = '<h2>' + esc(t('ui.practise')) + '</h2><p>' + esc(t('ui.noWords')) + '</p>'; var b = el('button', 'btn go wide', esc(t('ui.close'))); b.addEventListener('click', closeSheet); sh.appendChild(b); }); return; }
+    startLesson(null, plan);
+  }
+  function wordBook() {
+    sheet(function (sh) {
+      sh.innerHTML = '<h2>' + esc(t('ui.words')) + '</h2><p>' + esc(t('ui.mastery')) + '</p>';
+      var bk = el('div', 'wbook'), any = false;
+      var cell = function (w, miss) {
+        var b = el('button', 'wcell paper' + (miss ? ' miss' : ''), '<span class="word">' + esc(C.WORDS[w].text) + '</span>');
+        var m = el('span', 'm'), lv = C.mastery(save, w);
+        for (var i = 0; i < 5; i++) m.appendChild(el('i', i < lv ? 'on' : ''));
+        b.appendChild(m); b.setAttribute('aria-label', C.WORDS[w].text + ', ' + lv + '/5');
+        b.addEventListener('click', function () { speak('w.' + w); });
+        return b;
+      };
+      if (save.missed.length) {
+        bk.appendChild(el('h3', '', esc(t('ui.missed'))));
+        var g0 = el('div', 'wgrid'); save.missed.forEach(function (w) { g0.appendChild(cell(w, true)); }); bk.appendChild(g0);
+      }
+      C.UNITS.forEach(function (U) {
+        var ws = U.words.filter(function (w) { return save.words[w]; });
+        if (!ws.length) return; any = true;
+        bk.appendChild(el('h3', '', esc(t('ui.unit', { n: U.i + 1 }) + ' · ' + t('ui.u' + U.i))));
+        var g = el('div', 'wgrid'); ws.forEach(function (w) { g.appendChild(cell(w, false)); }); bk.appendChild(g);
+      });
+      if (!any) bk.appendChild(el('p', '', esc(t('ui.noWords'))));
+      sh.appendChild(bk);
+      var b = el('button', 'btn go wide', esc(t('ui.close'))); b.addEventListener('click', closeSheet); sh.appendChild(b);
+    });
+  }
+
+  /* ---------- title ---------- */
+  function drawTitle() {
+    var logo = document.querySelector('#title .logo'), cols = ['#ff8a3d', '#4fa8f0', '#46b873', '#e8483c', '#9d84e6'], i = 0;
+    logo.innerHTML = '';
+    t('ui.title').split(' ').forEach(function (word, wi) {
+      var wb = el('b'); logo.appendChild(wb);
+      word.split('').forEach(function (ch, ci) {
+        var s = el('span', 'felt', esc(ch)); s.style.backgroundColor = cols[i++ % cols.length]; s.style.rotate = ((i % 2 ? -1 : 1) * (2 + (i % 3))) + 'deg';
+        wb.appendChild(s);
+      });
+    });
+    $('titleText').textContent = t('ui.title'); $('titleSub').textContent = t('ui.sub');
+    $('playBtn').textContent = t('ui.play');
+  }
+
+  /* ---------- wiring ---------- */
+  $('playBtn').addEventListener('click', function () {
+    sfx('select');
+    var first = !save.played;
+    speak('title.hi', { auto: true });
+    openMap({ hint: first });
+  });
+  $('lQuit').innerHTML = IC.x; $('lQuit').setAttribute('aria-label', t('ui.quit'));
+  $('lQuit').addEventListener('click', quitAsk);
+  $('cSound').addEventListener('click', function () { try { if (window.BRB && BRB.sfx) BRB.sfx.mute(); } catch (e) { /* none */ } if (muted()) hush(); refreshBar(); });
+  $('cHearts').addEventListener('click', function () { if (C.hearts(save, now()).n < C.HEARTS) heartsOut(); });
+  $('bWords').addEventListener('click', wordBook);
+  $('bPractice').addEventListener('click', practice);
+  var rz = null;
+  window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (screen === 'map') { drawMap(); } }, 150); });
+  if (window.matchMedia) try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { applyTheme(); if (screen === 'map') drawMap(); }); } catch (e) { /* old */ }
+  setInterval(function () { if (screen === 'map') refreshBar(); }, 30000);
+
+  load(); applyTheme(); drawBackdrop(); drawTitle(); applyArt();
+  loadArt(function () { applyArt(); if (screen === 'map') drawMap(); });
+
+  /* ---------- test hooks (the e2e tests, the covers and the contact sheet) ---------- */
+  function rightAction(wrong) {
+    var it = L && L.item, st = $('lStage');
+    if (!it || L.answered) return false;
+    var pickCard = function (pred) { var c = Array.prototype.find.call(st.querySelectorAll('[data-word]'), pred); if (c) c.click(); return !!c; };
+    if (it.type === 'hear' || it.type === 'fill') return pickCard(function (c) { return c.classList.contains('card') && (wrong ? c.dataset.word !== it.word : c.dataset.word === it.word); });
+    if (it.type === 'say') { pickCard(function (c) { return c.classList.contains('opt') && (wrong ? c.dataset.word !== it.word : c.dataset.word === it.word); }); $('lFoot').querySelector('button').click(); return true; }
+    if (it.type === 'build') {
+      var tiles = Array.prototype.slice.call(st.querySelectorAll('.tile')), letters = wrong ? it.letters.slice().reverse() : it.letters;
+      if (wrong && letters.join('') === it.letters.join('')) letters = [it.tiles.find(function (x) { return it.letters.indexOf(x) < 0; })].concat(it.letters.slice(1));
+      letters.forEach(function (l) { var b = tiles.find(function (x) { return x.dataset.letter === l && !x.classList.contains('used'); }); if (b) b.click(); });
+      return true;
+    }
+    if (it.type === 'match') {
+      var cards = st.querySelectorAll('.card');
+      it.words.forEach(function (w, i) {
+        var s = st.querySelector('.say[data-word="' + w + '"]'); s.click();
+        var target = wrong && i === 0 ? Array.prototype.find.call(cards, function (c) { return c.dataset.word !== w; }) : null;
+        if (target) { target.click(); s.click(); }
+        Array.prototype.find.call(cards, function (c) { return c.dataset.word === w; }).click();
+      });
+      return true;
+    }
+    if (it.type === 'speed') {
+      if (wrong) pickCard(function (c) { return c.dataset.word !== it.word; });
+      Array.prototype.forEach.call(st.querySelectorAll('.card'), function (c) { if (c.dataset.word === it.word && !L.answered) c.click(); });
+      return true;
+    }
+    return false;
+  }
+  function testState() {
+    var it = L && L.item;
+    return { screen: screen, art: !!ART.mascot_idle, dark: root.classList.contains('dark'), xp: save.xp, streak: C.streakNow(save, today()), hearts: C.hearts(save, now()).n,
+      played: save.played, done: Object.keys(save.done), treasures: save.treasures.slice(), missed: save.missed.slice(), current: (C.current(save) || {}).id || null,
+      lesson: L ? { kind: L.kind, node: L.node && L.node.id, intro: L.intro.length - L.introAt, left: L.queue.length, total: L.total, done: L.done, right: L.right, mistakes: L.mistakes, combo: L.combo,
+        item: it ? { type: it.type, word: it.word, retry: !!it.retry, answered: L.answered } : null } : null,
+      lastDone: lastDone, spoken: spoken.slice(), sheet: !!$('sheets').firstChild };
+  }
+  window.__brbTest = Object.assign(window.__brbTest || {}, {
+    state: testState,
+    start: function () { if (screen === 'title') $('playBtn').click(); return testState(); },
+    map: function () { openMap(); return testState(); },
+    lesson: function (id) { var n = C.BYID[id || (C.current(save) || {}).id]; if (!n) return null; closeSheet(); if (n.kind === 'treasure') openTreasure(n); else startLesson(n); return testState(); },
+    practice: function () { practice(); return testState(); },
+    intro: function () { while (L && L.introAt < L.intro.length) { L.introAt++; } if (L) nextItem(); return testState(); },
+    answer: function (wrong) { rightAction(!!wrong); return testState(); },
+    next: function () { var b = document.querySelector(L && L.answered ? '#lFb [data-act="continue"]' : '#lFoot [data-act="next"]'); if (b) b.click(); return testState(); },
+    finish: function () { var n = 0; while (L && screen === 'lesson' && n++ < 80) { if (L.introAt < L.intro.length) { window.__brbTest.intro(); continue; } if (!L.answered) rightAction(false); window.__brbTest.next(); } return testState(); },
+    setSave: function (o) { save = C.norm(JSON.parse(JSON.stringify(o || {}))); store(); if (screen === 'map') { refreshBar(); drawMap(); } return testState(); },
+    save: function () { return JSON.parse(JSON.stringify(save)); },
+    core: function () { return { nodes: C.NODES.length, words: C.ORDER.length }; },
+    plan: function () { return L ? JSON.parse(JSON.stringify(L.plan)) : null; },
+  });
+})();
+</script>
