@@ -41,7 +41,7 @@ test('Guess Pip\'s doodles by typing: the setup card, Pip draws, a wrong and a c
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 390, height: 844 });
   const { f, errors } = await open(page);
-  await f.locator('.ok-title-screen .ok-hot').click();
+  await expect(f.locator('.ok-title-screen')).toHaveCount(0);   // no title screen: the setup card's Start is the only one
   await expect(f.locator('.dhs-card')).toBeVisible();
   await radio(f, 'mode', 'pass').click();
   await expect(f.locator('.dhs fieldset[data-k="n"]')).toBeVisible();
@@ -92,7 +92,7 @@ test('Guess Pip\'s doodles with letter tiles (the easier choice): tiles spell th
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 390, height: 844 });
   const { f, errors } = await open(page);
-  await f.locator('.ok-title-screen .ok-hot').click();
+  await expect(f.locator('.ok-title-screen')).toHaveCount(0);   // no title screen: the setup card's Start is the only one
   await radio(f, 'mode', 'practice').click(); await radio(f, 'lvl', 1).click(); await radio(f, 'guess', 'tiles').click();
   await f.locator('#dhStart').click();
   for (let k = 0; k < 8; k++) {
@@ -132,8 +132,14 @@ test('pass and play for two: cover, word cards, drawing, said out loud, the gues
     await page.mouse.move(box.x + 40, box.y + 40); await page.mouse.down();
     await page.mouse.move(box.x + box.width - 40, box.y + box.height - 40, { steps: 10 }); await page.mouse.up();
     await until(f, s => s.strokes === 1);
-    // the word stays covered while the others watch; "My word" shows it for a moment
+    // the word stays covered while the others watch; "My word" is a switch: tap shows it, tap again covers it
     await expect(f.locator('.dh-word')).toHaveClass(/peek/);
+    if (turn === 0) {
+      const peek = f.locator('.dh-word > button');
+      await expect(f.locator('.dh-word')).not.toHaveClass(/show/);
+      await peek.click(); await expect(f.locator('.dh-word')).toHaveClass(/show/); await expect(peek).toHaveAttribute('aria-pressed', 'true');
+      await peek.click(); await expect(f.locator('.dh-word')).not.toHaveClass(/show/); await expect(peek).toHaveAttribute('aria-pressed', 'false');
+    }
     if (turn === 0) {
       expect(await frameProblems(f)).toEqual([]); expect(await pageScrollsSideways(page)).toBe(false);
       // someone called it out: "Someone said it!", then who
