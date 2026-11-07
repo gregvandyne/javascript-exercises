@@ -6204,6 +6204,14 @@ const B = OK.three(THREE, { renderer, scene, camera, theme: 'castle', governor: 
    ("chunky") boxes and smooth-shaded spheres, shadow maps give way to soft contact blobs, the sky and water take the
    kit's sky ramp, clouds get Ink, and lamps get a soft additive halo (bloom on lamps only). Without it nothing changes. */
 const TOON = B.style === 'cartoon';
+/* Breeze (?style=breeze, a mockup): a bright storybook cel look of our own. Two soft-edged toon bands (warm sun, cool
+   blue-violet shade) from the one sun, with hard cel cast shadows near the player (a small Basic shadow map); no Ink on
+   the land, buildings or props, thin colour-tinted lines on characters only; bigger round heads and eyes; a painted
+   sky with flat swirl clouds, drifting wind lines and blue distance haze; saturated greens with patches; deep blue
+   water with white foam; soft glow on lamps. Low-end ladder: shadows go first, then wind lines and grass tufts. */
+const BREEZE = !TOON && (() => { try { return new URLSearchParams(location.search).get('okStyle') === 'breeze'; } catch (e) { return false; } })();
+/** Smooth, rounded shapes (rounded boxes, round cylinders, smooth normals): the cartoon and breeze looks. */
+const ROUND = TOON || BREEZE;
 /** Cartoon: the outline weight. The bridge's cartoon line is bold so it reads far away; this keeps it about 3-5 px on a
  *  phone (characters ~4 px, buildings a little less, small props less again, see inkSized). */
 const TOON_INK = TOON ? 0.78 : 1;
@@ -6230,6 +6238,18 @@ if (TOON) {
   SKY_COLORS.gloomTop.set(OK.color('grape', 3)); SKY_COLORS.gloomHorizon.set(OK.color('grape', 1));
   scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
 }
+if (BREEZE) {
+  // hard cel shadows from the one sun, near the player only (a small Basic map: no filtering) on the top level; below it,
+  // hard-edged cel shadow shapes under people and foes, stretched away from the sun (the low-end ladder: shadows go first). A lower, warmer sun for longer storybook shadows.
+  CONFIG.levels.forEach((L, i) => { L.shadows = i <= 0; L.fogNear = Math.round(L.fogNear * 1.15); });
+  renderer.shadowMap.type = THREE.BasicShadowMap; sun.shadow.mapSize.set(1024, 1024);
+  Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16 }); sun.shadow.camera.updateProjectionMatrix();
+  sun.shadow.bias = -0.002; sun.shadow.normalBias = 0.05;
+  SUN_OFFSET.set(30, 24, 20); sun.color.set('#fff2d6');
+  // a painted sky: deep blue overhead to a pale blue by the horizon; blue haze in the distance
+  SKY_COLORS.top.set('#1f6fd8'); SKY_COLORS.mid.set('#5aaef0'); SKY_COLORS.horizon.set('#cfeaff');
+  scene.fog.color.copy(SKY_COLORS.horizon); scene.background.copy(SKY_COLORS.horizon);
+}
 /** A soft round blot (white in the middle, clear at the edge): cartoon contact shadows and lamp halos. */
 function softDisc() {
   const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -6237,18 +6257,41 @@ function softDisc() {
   g.fillStyle = gr; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 /** A shared vertex-coloured toon material (rim: the rim light's strength; flat: keep the low-poly facets). */
-function inkMat(rim, flat) { const m = B.toon(null, { vertexColors: true, rim }); if (flat) { m.flatShading = true; m.needsUpdate = true; } return m; }
+function inkMat(rim, flat) { if (BREEZE) return breezeMat({ rim: rim > 1 ? 0.35 : 0 }); const m = B.toon(null, { vertexColors: true, rim }); if (flat) { m.flatShading = true; m.needsUpdate = true; } return m; }
+/* Breeze materials: three's toon lighting with a soft two-step ramp, so the sun's light (and its shadow) is 0 or 1 with a
+   short soft edge; then the colour is graded: the lit side warm, the shade side a cool blue-violet, never grey; fills a
+   touch more saturated; a warm rim on characters. One program for all of them. */
+const BZ = { sun: { value: new THREE.Color().setRGB(1.06, 1.0, 0.86) }, shade: { value: new THREE.Color().setRGB(0.42, 0.45, 0.82) },
+  sunK: { value: 2.5 }, tint: { value: new THREE.Color(1, 1, 1) }, rim: { value: new THREE.Color().setRGB(1.0, 0.95, 0.8) } };
+const BZ_RAMP = (() => { const t = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0, 0, 255, 255, 255, 255, 255]), 10, 1, THREE.RedFormat); t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.needsUpdate = true; return t; })();
+function breezeMat(o) {
+  o = o || {};
+  const m = new THREE.MeshToonMaterial({ vertexColors: o.vertexColors !== false, gradientMap: BZ_RAMP, color: o.color || 0xffffff, fog: o.fog !== false });
+  const rimK = { value: o.rim || 0 }, sat = { value: o.sat || 1.18 };
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { bzSun: BZ.sun, bzShade: BZ.shade, bzSunK: BZ.sunK, bzTint: BZ.tint, bzRim: BZ.rim, bzRimK: rimK, bzSat: sat });
+    sh.fragmentShader = ' uniform vec3 bzSun, bzShade, bzTint, bzRim;\nuniform float bzSunK, bzRimK, bzSat;\n' + sh.fragmentShader.replace('#include <opaque_fragment>', `
+      float bzL = dot( reflectedLight.directDiffuse, vec3( 0.3333 ) ) * 3.14159265 / max( dot( diffuseColor.rgb, vec3( 0.3333 ) ), 1e-3 ) / bzSunK;
+      float bzB = clamp( bzL, 0.0, 1.0 );
+      vec3 bzA = max( vec3( 0.0 ), mix( vec3( dot( diffuseColor.rgb, vec3( 0.2126, 0.7152, 0.0722 ) ) ), diffuseColor.rgb, bzSat ) );
+      vec3 bzN = normalize( normal );
+      outgoingLight = bzA * mix( bzShade, bzSun, bzB ) * bzTint + totalEmissiveRadiance
+        + bzRim * bzRimK * smoothstep( 0.62, 0.95, 1.0 - clamp( dot( bzN, normalize( vViewPosition ) ), 0.0, 1.0 ) );
+      #include <opaque_fragment>`);
+  };
+  m.customProgramCacheKey = () => 'bzToon'; return m;
+}
 /** Materials shared by everything (few shader programs, few state changes): the kit's toon (cel) materials with a rim
  *  (faceted ones keep their facets), so the world has the Oomba Ink look. */
 const MAT = {
   // cartoon: the land is smooth-shaded with a softer, lighter band (rolling hills, not a checkerboard of facets)
-  terrain: TOON ? B.toon(null, { vertexColors: true, rim: 0.25, soft: 0.1, depth: 0.6 }) : inkMat(0.35, true),
+  terrain: TOON ? B.toon(null, { vertexColors: true, rim: 0.25, soft: 0.1, depth: 0.6 }) : BREEZE ? breezeMat({ sat: 1.05 }) : inkMat(0.35, true),
   lit: inkMat(1, false),
-  litFlat: TOON ? inkMat(0.9, false) : inkMat(0.9, true),   // cartoon: rocks, cabbages and crowns shade round (creased normals)
+  litFlat: ROUND ? inkMat(0.9, false) : inkMat(0.9, true),   // cartoon: rocks, cabbages and crowns shade round (creased normals)
   glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
   char: inkMat(1.25, false),
   groundBlob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.26, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }) : null,
-  blob: TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.45, depthWrite: false })
+  blob: BREEZE ? new THREE.MeshBasicMaterial({ color: '#203a86', transparent: true, opacity: 0.4, depthWrite: false }) : TOON ? new THREE.MeshBasicMaterial({ color: OK.color('ink'), map: softDisc(), transparent: true, opacity: 0.45, depthWrite: false })
     : new THREE.MeshBasicMaterial({ color: 0x1d2340, transparent: true, opacity: 0.28, depthWrite: false }),
   // the hero's eyes, nose, cheeks and smile: flat colour, no light, so they stay crisp (lit, the whites went mint at the rim)
   face: new THREE.MeshBasicMaterial({ vertexColors: true }),
@@ -6269,6 +6312,8 @@ function inkWorld() {
   const list = [];
   scene.traverse(o => { if (o.isMesh && !o.userData.okInk && !o.userData.noInk && (o.material === MAT.lit || o.material === MAT.litFlat || o.material === MAT.char) && !(hero.rig && isUnder(o, hero.rig.root))) list.push(o); });
   for (const o of list) {
+    if (BREEZE && o.material !== MAT.char) continue;   // breeze: no Ink on the land, buildings or props; people and foes only
+    if (BREEZE) { B.outline(o, { important: true, width: 0.5 }); o.traverse(c => { if (c.userData.okInk) c.material = inkPushed(inkTinted(c.material)); }); continue; }
     const scatter = SCATTER.list.some(k => k.mesh === o), detail = scatter || (!o.isInstancedMesh && o.material !== MAT.char);
     B.outline(o, scatter ? { width: 0.85 * TOON_INK } : { important: true, width: (o.material === MAT.char ? 1 : 0.9) * TOON_INK });
     // cartoon: a landmark's small parts (barrels, crates, posts, window boxes) take a thinner line (Kit's okS, see inkSized)
@@ -6283,7 +6328,7 @@ function inkWorld() {
     let inks = 0, heroInks = 0; scene.traverse(o => { if (o.userData.okInk) { inks++; if (hero.rig && isUnder(o, hero.rig.root)) heroInks++; } });
     return { version: OK.version, toon: [MAT.terrain.type, MAT.lit.type, MAT.char.type], inks, heroInks, quality: B.quality, detailInk: camera.layers.isEnabled(INK_DETAIL), title: !!(HOS_TITLE && HOS_TITLE.open), theme: B.look.name,
       // the art style (?style=cartoon): the bridge's style, its shader, shadow maps, rounded boxes, the lamp halos
-      style: B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, ground: '#' + TC.g1.getHexString() };
+      style: BREEZE ? 'breeze' : B.style, program: MAT.lit.customProgramCacheKey(), shadows: renderer.shadowMap.enabled, rounded: !!PRIM.rbox, halos: HALOS.length / 5, windOn: !!(WIND.mesh && WIND.mesh.visible), ground: '#' + TC.g1.getHexString() };
   } });
 }
 function isUnder(o, root) { for (let p = o; p; p = p.parent) if (p === root) return true; return false; }
@@ -6293,14 +6338,22 @@ function heroInk() {
   const old = []; r.root.traverse(o => { if (o.userData.okInk) old.push(o); });
   for (const o of old) o.parent.remove(o);
   // the hero maker's close-up gets a finer line (the kit's line is sized for a character a few metres away)
-  B.outline(r.root, { important: true, width: (hero.onStage ? 0.7 : 1) * TOON_INK });
-  r.root.traverse(o => { if (o.userData.okInk) { o.material = inkPushed(o.material); if (hero.onStage) o.layers.enable(STAGE); } });
+  B.outline(r.root, { important: true, width: (hero.onStage ? 0.7 : 1) * TOON_INK * (BREEZE ? 0.5 : 1) });
+  r.root.traverse(o => { if (o.userData.okInk) { o.material = inkPushed(BREEZE ? inkTinted(o.material) : o.material); if (hero.onStage) o.layers.enable(STAGE); } });
 }
 /** The kit's Ink hull, drawn a few centimetres further back. The hero is many parts that touch (sleeve and cuff, ears
  *  and head, belt and shirt); right at those seams the hull and the next part's skin had the same depth and fought,
  *  which drew dashed and stippled lines all over the body. Pushed back (10 cm), a seam's hull hides behind the part in front,
  *  while the outline round the hero (the sky or ground is far behind it) is untouched. */
-const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map(), INK_SIZED = new Map();
+const INK_PUSH = { value: 0.1 }, INK_PUSHED = new Map(), INK_SIZED = new Map(), INK_TINTED = new Map();
+/** Breeze: a character's line is a dark version of each part's own colour (the hull takes the vertex and instance
+ *  colours, darkened), never black. */
+function inkTinted(base) {
+  let m = INK_TINTED.get(base); if (m) return m;
+  m = base.clone(); m.vertexColors = true; m.color.setRGB(0.28, 0.22, 0.34); m.fog = true;
+  m.onBeforeCompile = base.onBeforeCompile; m.customProgramCacheKey = () => 'okInkTinted';
+  INK_TINTED.set(base, m); return m;
+}
 /** Cartoon: the kit's Ink hull with a per-vertex width (okS, written by Kit: 1 on big parts, less on small props), so a
  *  barrel or crate in the foreground does not carry a heavier line than the people beside it. */
 function inkSized(base) {
@@ -7002,6 +7055,10 @@ const TC = {
   stone: col('#d8d0bf'), stone2: col('#c4bba8'), dark: col('#76698a'), dark2: col('#655a78'), wheat: col('#f0cd58'), crop: col('#69bd47'),
   soil: col('#a8743f'), gloom: col('#6e6380'), tile: col('#b9b0c4'), tile2: col('#8f84a0'),
 };
+if (BREEZE) {   // storybook land: saturated greens (lighter and darker patches), warm paths and sand
+  for (const [k, v] of Object.entries({ g1: '#46ad3d', g2: '#348f3a', g3: '#7cc94a', forest: '#2f8a3c', forest2: '#267838', dirt: '#dcae6c', dirt2: '#c9975c', sand: '#f7e3a8',
+    wet: '#d6bd84', rock: '#a9aab8', rock2: '#8c8ea0', snow: '#ffffff', wheat: '#ffd65c', crop: '#72d24c', soil: '#b98048' })) TC[k].set(v);
+}
 if (TOON) {   // the land in Ink colours: mint meadows, cocoa paths, peach sand, stone and snow, grape gloom
   const k = (h, i) => col(OK.color(h, i)), mx = (a, b, t) => k(a[0], a[1]).lerp(k(b[0], b[1]), t);
   Object.assign(TC, { g1: k('mint', 2), g2: mx(['mint', 2], ['mint', 3], 0.3), g3: mx(['mint', 2], ['mint', 1], 0.55), forest: mx(['mint', 2], ['mint', 3], 0.5), forest2: mx(['mint', 2], ['mint', 3], 0.7),
@@ -7032,7 +7089,7 @@ function terrainColor(x, z, h, i, j, c) {
   const hx = HF[j * GV + Math.min(GV - 1, i + 1)] - HF[j * GV + Math.max(0, i - 1)], hz = HF[Math.min(GV - 1, j + 1) * GV + i] - HF[Math.max(0, j - 1) * GV + i];
   const slope = Math.sqrt(hx * hx + hz * hz) / (2 * CELL);
   const n = vnoise(x / 9, z / 9), n2 = vnoise(x / 31 + 7, z / 31 + 3);
-  if (TOON) c.copy(TC.g1).lerp(TC.g2, smooth(0.56, 0.66, n)).lerp(TC.g3, smooth(0.5, 0.6, n2));   // cartoon: soft-edged patches in two more greens
+  if (ROUND) c.copy(TC.g1).lerp(TC.g2, smooth(0.5, 0.58, n)).lerp(TC.g3, smooth(0.46, 0.54, n2));   // cartoon: soft-edged patches in two more greens
   else c.copy(TC.g1).lerp(TC.g2, n * 0.8).lerp(TC.g3, Math.max(0, n2 - 0.55) * 1.6);
   const fm = forestMask(x, z); if (fm > 0) c.lerp(n > 0.5 ? TC.forest : TC.forest2, clamp(fm * 1.2, 0, 0.85));
   // Sunny Farm fields: rotated patches of wheat, crops and soil.
@@ -7090,6 +7147,17 @@ function buildTerrainChunks() {
 }
 function waveTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 128;
+  if (BREEZE) {   // deep blue water with flat white foam shapes (scalloped blobs and curls), its own random numbers
+    const g = c.getContext('2d'), r = makeRng(77); g.fillStyle = '#1b66d2'; g.fillRect(0, 0, 128, 128);
+    g.fillStyle = 'rgba(70,150,240,.9)'; for (let i = 0; i < 6; i++) { g.beginPath(); g.ellipse(r() * 128, r() * 128, 18 + r() * 14, 5 + r() * 4, 0, 0, 7); g.fill(); }
+    g.fillStyle = '#ffffff'; g.strokeStyle = '#ffffff'; g.lineWidth = 3; g.lineCap = 'round';
+    for (let i = 0; i < 7; i++) {
+      const x = r() * 128, y = r() * 128, w = 8 + r() * 10;
+      for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(x + k * w * 0.55, y - (k === 1 ? 2 : 0), w * 0.34, 0, 7); g.fill(); }
+      g.beginPath(); g.arc(x + w * 1.6, y - 4, 4, Math.PI * 0.2, Math.PI * 1.8); g.stroke();
+    }
+    return canvasTexture(c, true);
+  }
   const g = c.getContext('2d'); g.fillStyle = TOON ? OK.color('sky', 2) : '#4ab4f0'; g.fillRect(0, 0, 128, 128);
   g.strokeStyle = TOON ? OK.color('sky', 0) : 'rgba(200,240,255,.55)'; g.lineWidth = 2.5; g.lineCap = 'round';
   for (let i = 0; i < 14; i++) {
@@ -7101,7 +7169,7 @@ function waveTexture() {
 function buildWater() {
   const tex = waveTexture();
   // cartoon: flat water in the kit's sky colours (no light on it)
-  const mat = TOON ? new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.92 }) : new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.86, color: 0xffffff });
+  const mat = TOON || BREEZE ? new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: BREEZE ? 0.95 : 0.92 }) : new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.86, color: 0xffffff });
   const pos = [], uv = [], idx = [];
   let along = 0, px = -366, pz = riverZ(-366), n = 0;
   for (let x = -366; x <= 366.01; x += 4) {
@@ -7119,7 +7187,7 @@ function buildWater() {
   pool.position.set(POOL.x, POOL.y, POOL.z); pool.renderOrder = 1; scene.add(pool);
   // The waterfall: a scrolling sheet over the cliff behind the pool.
   const fallTex = waveTexture(); fallTex.repeat.set(1, 1.5);
-  const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), TOON ? new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, opacity: 0.95 }) : new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
+  const fall = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 7.2, 1, 1), TOON || BREEZE ? new THREE.MeshBasicMaterial({ map: fallTex, transparent: true, opacity: 0.95 }) : new THREE.MeshLambertMaterial({ map: fallTex, transparent: true, opacity: 0.9, emissive: 0x335577 }));
   fall.position.set(POOL.x - 3, POOL.y + 3.6, POOL.z - 7.3); scene.add(fall);
   WORLD.water = { tex, fallTex, river, pool, fall };
 }
@@ -7146,6 +7214,20 @@ function buildSky() {
     clouds.setMatrixAt(i, m.compose(pp, q, s));
   }
   if (TOON) B.outline(clouds, { important: true, width: 1.1, color: OK.color('ink') });   // a coloured hull has no fog: the line stays crisp far away
+  if (BREEZE) {   // flat, puffy painted clouds with swirl motifs: cards on a ring round the camera, one draw call
+    clouds.visible = false;
+    const cc = document.createElement('canvas'); cc.width = 256; cc.height = 128; const x = cc.getContext('2d');
+    const puff = () => { x.beginPath(); for (const [px, py, pr] of [[52, 84, 30], [92, 64, 40], [140, 56, 46], [186, 70, 36], [218, 88, 24], [30, 98, 18]]) { x.moveTo(px + pr, py); x.arc(px, py, pr, 0, Math.PI * 2); } x.rect(14, 84, 228, 26); };
+    x.fillStyle = '#ffffff'; puff(); x.fill();
+    x.save(); puff(); x.clip(); x.fillStyle = '#d6e6ff'; x.fillRect(0, 92, 256, 40); x.restore();
+    x.strokeStyle = '#bcd5fb'; x.lineWidth = 4; x.lineCap = 'round';
+    for (const [sx, sy, sr] of [[96, 66, 14], [150, 58, 17], [190, 76, 11]]) { x.beginPath(); for (let t = 0; t <= 1.0001; t += 0.04) { const a = t * Math.PI * 3.2, rr = sr * (1 - t * 0.85); x.lineTo(sx + Math.cos(a) * rr, sy + Math.sin(a) * rr); } x.stroke(); }
+    const ct = new THREE.CanvasTexture(cc); ct.colorSpace = THREE.SRGBColorSpace;
+    const cards = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 0.5), new THREE.MeshBasicMaterial({ map: ct, transparent: true, depthWrite: false, fog: false }), 13);
+    const o = new THREE.Object3D(), cr = makeRng(41);
+    for (let i = 0; i < 13; i++) { const a = i / 13 * Math.PI * 2 + cr() * 0.3, r = 150 + cr() * 25, sc = 34 + cr() * 26; o.position.set(Math.cos(a) * r, 52 + cr() * 26, Math.sin(a) * r); o.lookAt(0, o.position.y, 0); o.scale.set(sc, sc, 1); o.updateMatrix(); cards.setMatrixAt(i, o.matrix); }
+    cards.frustumCulled = false; cards.renderOrder = -9; group.add(cards);
+  }
   WORLD.sky = { dome, clouds: group };
 }
 /** Fog-free silhouettes of the fortress spire and the castle tower, drawn when the real ones are past the far plane. */
@@ -7175,7 +7257,7 @@ function prim(key) {
   let [kind, a, b] = key.split(':');
   // cartoon: round props read as round (barrels, logs, posts, wells, spires): at least 16 sides, with smooth normals
   // below (creaseNormals); 3- and 4-sided ones are meant to be spikes, pyramids and square posts
-  if (TOON && (kind === 'cyl' || kind === 'cone') && +a >= 5 && +a < 16) a = '16';
+  if (ROUND && (kind === 'cyl' || kind === 'cone') && +a >= 5 && +a < 16) a = '16';
   if (kind === 'box') g = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
   else if (kind === 'cyl') g = new THREE.CylinderGeometry(+b, 1, 1, +a).translate(0, 0.5, 0);
   else if (kind === 'cone') g = new THREE.ConeGeometry(1, 1, +a).translate(0, 0.5, 0);
@@ -7197,7 +7279,7 @@ function prim(key) {
   }
   if (g.index) g = g.toNonIndexed();
   g.computeVertexNormals();
-  if (TOON && kind !== 'box' && kind !== 'prism') creaseNormals(g, 50);
+  if (ROUND && kind !== 'box' && kind !== 'prism') creaseNormals(g, 50);
   return (PRIM[key] = g);
 }
 /** Cartoon: smooth the normals of faces that meet at less than `deg` degrees (round things shade as round, a cylinder's
@@ -7215,7 +7297,7 @@ function creaseNormals(g, deg) {
 }
 /** The box characters and props are built from: chunky rounded ones in the cartoon look. */
 // (the hero is seen closest, so its rounding has more steps: its Ink hull follows a smooth curve, not a chamfer)
-const CBOX = fine => prim(TOON ? (fine ? 'rbox:12:6' : 'rbox') : 'box');
+const CBOX = fine => prim(ROUND ? (fine ? 'rbox:12:6' : 'rbox') : 'box');
 /** Cartoon: a part's Ink weight from its size (small props get a thinner line; walls, roofs and towers the full one). */
 const inkScale = (sx, sy, sz) => { const m = Math.max(Math.abs(sx), Math.abs(sy), Math.abs(sz)); return m < 0.8 ? 0.62 : m < 1.6 ? 0.78 : 1; };
 class Kit {
@@ -7246,7 +7328,7 @@ class Kit {
     return this;
   }
   cone(x, y, z, r, h, color, seg, opt) { this.add(prim(`cone:${seg || 8}`), x, y, z, r, h, r, 0, opt && opt.ry || 0, 0, color, opt && opt.glow); return this; }
-  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${TOON && !detail && r < 0.6 ? 1 : detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
+  sphere(x, y, z, r, color, detail, sy, sz, opt) { this.add(prim(`sph:${ROUND && !detail && r < 0.6 ? 1 : detail || 0}`), x, y, z, r, r * (sy || 1), r * (sz || 1), 0, 0, 0, color, opt && opt.glow); if (opt && opt.halo) halo(x, y, z, r * 5, color); return this; }
   /** Gable roof: ridge along local x, apex at y + h. */
   prism(x, y, z, sx, h, sz, color, ry) { this.add(prim('prism'), x, y, z, sx, h, sz, 0, ry || 0, 0, color); return this; }
   /** A box between two points (a beam, rail or plank). */
@@ -7480,7 +7562,7 @@ function banner(k, x, y, z, ry, color, hgt) {
 }
 /** Cartoon: a lamp's glow (bloom on lamps only): soft additive halos, all of them one draw call (see haloFrame). */
 const HALOS = [], GROUND_BLOBS = [];   // cartoon: lamp halos; soft blobs under the houses
-function halo(x, y, z, size, color) { if (TOON) HALOS.push(x, y, z, size, color); }
+function halo(x, y, z, size, color) { if (TOON || BREEZE) HALOS.push(x, y, z, size, color); }
 function lantern(k, x, z, y) { y = y === undefined ? gy(x, z) : y; halo(x, y + 2.52, z, 2.6, PAL.glowY); k.cyl(x, y, z, 0.08, 0.1, 2.4, PAL.woodD, 5); k.box(x, y + 2.3, z, 0.4, 0.45, 0.4, PAL.glowY, 0, { glow: true }); k.box(x, y + 2.74, z, 0.5, 0.08, 0.5, PAL.woodD); }
 /** A horizontal log centred on (x, z), turned by ry (length along local x), resting on y. */
 function log(k, x, y, z, ry, len, r, color) { k.add(prim('cyl:8:1.000'), x + len / 2 * Math.cos(ry), y + r, z - len / 2 * Math.sin(ry), r, len, r, 0, ry, Math.PI / 2, color); }
@@ -8116,12 +8198,12 @@ function mergedGeo(parts) {
   for (const [g, x, y, z, sx, sy, sz, c, rz] of parts) k.add(g, x, y, z, sx, sy, sz, 0, 0, rz || 0, c);
   return k.geometry('lit');
 }
-function openCone(seg) { if (TOON && seg >= 5) seg = 10; const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 65); return g; }
-function openCyl(seg, top) { if (TOON && seg >= 5) seg = 9; const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (TOON) creaseNormals(g, 75); return g; }
+function openCone(seg) { if (ROUND && seg >= 5) seg = 10; const g = new THREE.ConeGeometry(1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (ROUND) creaseNormals(g, 65); return g; }
+function openCyl(seg, top) { if (ROUND && seg >= 5) seg = 9; const g = new THREE.CylinderGeometry(top, 1, 1, seg, 1, true).translate(0, 0.5, 0).toNonIndexed(); g.computeVertexNormals(); if (ROUND) creaseNormals(g, 75); return g; }
 function buildScatterKinds() {
   const trunk = openCyl(5, 0.75), ico = prim('sph:0'), cone6 = openCone(6), cone3 = openCone(3), octa = (() => { const g = new THREE.OctahedronGeometry(1, 0).toNonIndexed(); g.computeVertexNormals(); return g; })();
   // cartoon: round, smooth-shaded crowns and bushes (one clean shade band), soft contact blobs under them
-  const soft = TOON ? MAT.lit : undefined;
+  const soft = ROUND ? MAT.lit : undefined;
   if (TOON) SCATTER.addKind('tblob', new THREE.CircleGeometry(1, 12).rotateX(-Math.PI / 2), 2600, { material: MAT.groundBlob, receive: false, fade: true, crown: 1.05, hs: 0.48, radius: 0.55 });   // fades with its tree
   SCATTER.addKind('tree', mergedGeo([[trunk, 0, -0.3, 0, 0.28, 2.1, 0.28, '#8a5a34'], [ico, 0, 2.6, 0, 1.75, 1.6, 1.75, '#ffffff'], [ico, 0.55, 3.55, 0.3, 1.15, 1.05, 1.15, '#f0fff0']]), 1100, { fade: true, crown: 2.2, material: soft });
   SCATTER.addKind('pine', mergedGeo([[trunk, 0, -0.3, 0, 0.24, 1.6, 0.24, '#7a4e2c'], [cone6, 0, 1.0, 0, 1.55, 2.3, 1.55, '#ffffff'], [cone6, 0, 2.3, 0, 1.2, 2.0, 1.2, '#f2fff2'], [cone6, 0, 3.4, 0, 0.82, 1.7, 0.82, '#e8ffe8']]), 900, { material: soft, fade: true, crown: 1.8 });
@@ -8421,6 +8503,7 @@ function buildHeroModel() {
   for (const s of [-1, 1]) { ek.add(s1, s * 0.12, 0, 0, 0.075, 0.095, 0.04, 0, 0, 0, '#ffffff'); ek.add(s1, s * 0.12, -0.01, 0.03, 0.05, 0.065, 0.025, 0, 0, 0, '#2b1b0e'); ek.add(s1, s * 0.12 + 0.02, 0.02, 0.05, 0.018, 0.018, 0.01, 0, 0, 0, '#ffffff'); }
   const eyeM = mk(ek.geometry('lit'), MAT.face); eyeM.castShadow = false; eyeM.userData.noInk = true; eyes.add(eyeM);
   scene.add(root);
+  if (BREEZE) { head.scale.setScalar(1.32); head.position.y = 0.27; eyes.scale.set(1.25, 1.4, 1); torsoM.scale.set(0.9, 0.95, 0.92); }   // storybook: a big round head, big eyes, a smaller body
   hero.rig = { root, body, legL, legR, legLM, legRM, torso, torsoM, badgeM, chest, cape, capeM, armL, armR, armLM, armRM, hand, sword, swordGlow, shield, shieldGlow, head, headM, faceM, hair, helmet, hat, eyes };
 }
 const EMPTY_GEO = new THREE.BufferGeometry();
@@ -8503,6 +8586,10 @@ const BLOBS = {
   begin() { this.n = 0; },
   add(x, y, z, r) {
     if (!this.mesh || this.n >= 64 || renderer.shadowMap.enabled) return;
+    if (BREEZE) {   // breeze without a shadow map (phones): a hard-edged cel shadow, stretched away from the sun
+      const sx = -SUN_OFFSET.x, sz = -SUN_OFFSET.z, l = Math.hypot(sx, sz) || 1; V1.set(x + sx / l * r * 0.55, y + 0.04, z + sz / l * r * 0.55); Q1.setFromAxisAngle(UP, Math.atan2(-sz, sx)); V2.set(r * 1.6, 1, r * 1.05);
+      M4.compose(V1, Q1, V2).toArray(this.mesh.instanceMatrix.array, this.n * 16); this.n++; return;
+    }
     const a = this.mesh.instanceMatrix.array, m = this.n * 16;
     a[m] = r; a[m + 1] = 0; a[m + 2] = 0; a[m + 3] = 0; a[m + 4] = 0; a[m + 5] = 1; a[m + 6] = 0; a[m + 7] = 0; a[m + 8] = 0; a[m + 9] = 0; a[m + 10] = r; a[m + 11] = 0; a[m + 12] = x; a[m + 13] = y + 0.04; a[m + 14] = z; a[m + 15] = 1;
     this.n++;
@@ -11249,6 +11336,7 @@ function personKits(o) {
   // a hood is a shell behind the face (its opening frames the face; its band used to cross the eyes like a mask)
   if (hat === 'hood') { H.add(s2, 0, 0.47, -0.1, 0.44, 0.39, 0.42, 0, 0, 0, hcol); for (let i = -1; i <= 1; i++) H.add(s1, i * 0.11, 0.545 - Math.abs(i) * 0.02, 0.255, 0.1, 0.055, 0.08, 0, 0, i * -0.35, hc); H.add(cone, 0, 0.55, -0.42, 0.14, 0.35, 0.14, -2.1, 0, 0, hcol); }
   if (o.clip) { for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; H.add(s1, 0.32 + Math.cos(a) * 0.07, 0.55 + Math.sin(a) * 0.07, 0.05, 0.05, 0.05, 0.03, 0, 0, 0, '#ffd23f'); } H.add(s1, 0.32, 0.55, 0.07, 0.045, 0.045, 0.03, 0, 0, 0, '#7a4a24'); }
+  if (BREEZE) for (const k of [K.head, K.face]) for (const b of [k.b.lit, k.b.glow]) for (let i = 0; i < b.p.length; i++) b.p[i] *= 1.3;   // breeze: a bigger round head (from the neck)
   return K;
 }
 /** Make the meshes of a person from personKits: { root, body, head, armL, armR, legL, legR }. */
@@ -13520,6 +13608,48 @@ function makerRender() {
   } catch (e) { A.need = false; renderer.setRenderTarget(null); renderer.render(scene, camera); }
 }
 const WHITE = new THREE.Color(1, 1, 1), DOME_GLOOM = new THREE.Color('#8f6cb8'), TOON_GLOOM = new THREE.Color(OK.color('grape', 1)), TOON_DUSK = new THREE.Color(OK.color('sky', 1));
+/** Breeze: soft white wind lines that drift and curl across the scene now and then (one ribbon mesh, rebuilt on the
+ *  processor each frame: 6 lines x 28 segments). Off with reduced motion and on the two lowest picture levels. */
+const WIND = { mesh: null, lines: [], seg: 28, rng: makeRng(5), dir: new THREE.Vector3(1, 0, 0.35).normalize() };
+const WV = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+function windPoint(L, u, out) {
+  const d = WIND.dir, len = 13 * L.len;
+  out.set(L.x + d.x * u * len - d.z * Math.sin(u * 5 + L.ph) * 0.45, L.y + Math.sin(u * 3.3 + L.ph) * 0.35, L.z + d.z * u * len + d.x * Math.sin(u * 5 + L.ph) * 0.45);
+  if (u > 0.66) { const k = (u - 0.66) / 0.34, a = k * Math.PI * 1.9, rr = 1.0 * (1 - k * 0.4); out.x += d.x * (Math.sin(a) * rr - k * 0.6); out.z += d.z * (Math.sin(a) * rr - k * 0.6); out.y += (1 - Math.cos(a)) * rr; }
+  return out;
+}
+function windFrame(dt) {
+  const on = !calm() && S.quality <= 1;
+  if (!WIND.mesh) {
+    const n = 8, seg = WIND.seg, vc = n * (seg + 1) * 2, idx = [];
+    for (let l = 0; l < n; l++) for (let i = 0; i < seg; i++) { const a = (l * (seg + 1) + i) * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vc * 3), 3)); g.setAttribute('bzA', new THREE.BufferAttribute(new Float32Array(vc), 1)); g.setIndex(idx);
+    const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
+      vertexShader: 'attribute float bzA; varying float vA; void main() { vA = bzA; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'varying float vA; void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, vA * 0.9); }' });
+    WIND.mesh = new THREE.Mesh(g, mat); WIND.mesh.frustumCulled = false; WIND.mesh.renderOrder = 4; scene.add(WIND.mesh);
+    for (let l = 0; l < n; l++) WIND.lines.push({ age: 99, life: 3.2 + WIND.rng() * 1.6, x: 0, y: 0, z: 0, ph: 0, len: 1 });
+  }
+  WIND.mesh.visible = on; if (!on) return;
+  const pos = WIND.mesh.geometry.attributes.position, al = WIND.mesh.geometry.attributes.bzA, seg = WIND.seg, r = WIND.rng;
+  camera.getWorldDirection(WV[3]);
+  const fx = camera.position.x + WV[3].x * 11, fz = camera.position.z + WV[3].z * 11;   // gusts in view, ahead of the camera
+  WIND.lines.forEach((L, l) => {
+    L.age += dt;
+    if (L.age > L.life) {   // a new gust somewhere round the player, upwind
+      const a = r() * Math.PI * 2, d = r() * 8; L.x = fx + Math.cos(a) * d - WIND.dir.x * 6; L.z = fz + Math.sin(a) * d - WIND.dir.z * 6;
+      L.y = heightAt(L.x, L.z) + 1.4 + r() * 3; L.ph = r() * 6; L.len = 0.7 + r() * 0.6; L.age = L.age > 50 ? -r() * 2.5 : -r() * 0.8; L.life = 3 + r() * 1.8;
+    }
+    const k = Math.max(0, L.age) / L.life, head = Math.min(1, k * 1.5), tail = Math.max(0, head - 0.5), fade = Math.sin(Math.PI * Math.min(1, k)) * (L.age > 0 ? 1 : 0);
+    for (let i = 0; i <= seg; i++) {
+      const u = tail + (head - tail) * i / seg, p = windPoint(L, u, WV[0]), q = windPoint(L, Math.min(1, u + 0.01), WV[1]);
+      WV[2].subVectors(q, p).cross(WV[3]).normalize().multiplyScalar(0.075 * Math.sin(Math.PI * i / seg) + 0.015);
+      const v = (l * (seg + 1) + i) * 2; pos.setXYZ(v, p.x + WV[2].x, p.y + WV[2].y, p.z + WV[2].z); pos.setXYZ(v + 1, p.x - WV[2].x, p.y - WV[2].y, p.z - WV[2].z);
+      const a = fade * Math.min(1, Math.sin(Math.PI * i / seg) * 2.5); al.setX(v, a); al.setX(v + 1, a);
+    }
+  });
+  pos.needsUpdate = true; al.needsUpdate = true;
+}
 /** Cartoon: the lamps' halos (made once, the first frame after the world is built): brighter in the gloom. */
 function haloFrame(gl) {
   if (!WORLD.halos && HALOS.length) {
@@ -13555,6 +13685,7 @@ function worldFrame(dt, now) {
   scene.fog.color.copy(SKY_COLORS.horizon).lerp(SKY_COLORS.gloomHorizon, gl); scene.background.copy(scene.fog.color);
   dome.material.color.copy(WHITE).lerp(DOME_GLOOM, gl * 0.85);
   hemi.color.copy(SKY_COLORS.hemiSky).lerp(SKY_COLORS.gloomHemi, gl); sun.intensity = 2.5 - gl * 0.5; hemi.intensity = 1.65 + gl * 0.1;
+  if (BREEZE) { BZ.sunK.value = sun.intensity * (sun.color.r + sun.color.g + sun.color.b) / 3; BZ.tint.value.copy(WHITE).lerp(TOON_GLOOM, gl * 0.45); haloFrame(gl); windFrame(dt, now); }
   if (TOON) { B.light.tint.copy(WHITE).lerp(TOON_GLOOM, gl * 0.5); if (hero.onStage && hero.stageNight) B.light.tint.multiply(TOON_DUSK); haloFrame(gl); }
   // moving bits
   const w = WORLD.water; if (L.water) { w.tex.offset.y -= dt * 0.035; w.tex.offset.x += dt * 0.01; } w.fallTex.offset.y += dt * (L.water ? 0.55 : 0);
