@@ -112,11 +112,15 @@ export class LocalBlenderRenderer {
   }
 }
 
-/** The renderer the worker uses: STORY_RENDERER 'local' (Blender on this machine, the default) or 'remote' (the
- *  story renderer service at STORY_RENDER_URL, services/story-renderer/). */
+/** The renderer the worker uses: STORY_RENDERER 'local' (Blender on this machine, the default), 'remote' (the CPU
+ *  story renderer service at STORY_RENDER_URL, services/story-renderer/server.js: it also builds the video) or 'modal'
+ *  (the GPU app on Modal at STORY_RENDER_URL, services/story-renderer/modal_app.py: scene clips, assembled here). */
 export function createRenderer(opts = {}) {
   const kind = process.env.STORY_RENDERER || 'local';
   if (kind === 'remote') return new RemoteRenderer(opts);
-  if (kind !== 'local') throw new Error(`STORY_RENDERER=${kind} is not available ("local" or "remote")`);
+  // Modal (services/story-renderer/modal_app.py): the same job API, every scene on its own GPU at once; the clips come
+  // back and the video is assembled here.
+  if (kind === 'modal') return new RemoteRenderer({ name: 'modal', assembles: false, pollMs: +process.env.STORY_RENDER_POLL_MS || 4000, ...opts });
+  if (kind !== 'local') throw new Error(`STORY_RENDERER=${kind} is not available ("local", "remote" or "modal")`);
   return new LocalBlenderRenderer(opts);
 }

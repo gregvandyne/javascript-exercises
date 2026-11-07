@@ -56,6 +56,23 @@ def setup_render(spec, tod):
     if engine == 'cycles':
         sc.render.engine = 'CYCLES'
         sc.cycles.device = 'CPU'
+        if os.environ.get('STORY_CYCLES_DEVICE') == 'GPU':   # Modal's NVIDIA GPUs: OptiX, else CUDA
+            try:
+                prefs = bpy.context.preferences.addons['cycles'].preferences
+                for kind in ('OPTIX', 'CUDA'):
+                    try:
+                        prefs.compute_device_type = kind
+                        prefs.get_devices()
+                        gpus = [d for d in prefs.devices if d.type == kind]
+                        if gpus:
+                            for d in prefs.devices:
+                                d.use = d.type == kind
+                            sc.cycles.device = 'GPU'
+                            break
+                    except Exception:
+                        continue
+            except Exception as e:
+                print(json.dumps({'warn': f'cycles gpu: {e}'}), flush=True)
         # a path tracer needs more samples than EEVEE's anti-aliasing passes; the denoiser cleans up the rest
         sc.cycles.samples = max(16, int(spec.get('samples', 16))) if spec.get('width', 0) >= 640 else max(4, int(spec.get('samples', 4)))
         sc.cycles.use_denoising = True

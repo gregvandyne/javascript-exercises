@@ -25,11 +25,12 @@ const sleep = (ms, signal) => new Promise((resolve, reject) => {
 export class RemoteRenderer {
   /** opts: { url, token, pollMs, busyWaitMs (how long to wait for a busy renderer), timeoutMs, fetch } */
   constructor({ url = process.env.STORY_RENDER_URL, token = process.env.STORY_RENDER_TOKEN, pollMs = +process.env.STORY_RENDER_POLL_MS || 3000,
-    busyWaitMs = 30 * 60e3, timeoutMs = +process.env.STORY_RENDER_TIMEOUT_MS || 4 * 3600e3, fetch: f = (...a) => globalThis.fetch(...a) } = {}) {
-    if (!url) throw new Error('STORY_RENDERER=remote needs STORY_RENDER_URL');
-    if (!token) throw new Error('STORY_RENDERER=remote needs STORY_RENDER_TOKEN');
-    this.name = 'remote';
-    this.assembles = true;
+    busyWaitMs = 30 * 60e3, timeoutMs = +process.env.STORY_RENDER_TIMEOUT_MS || 4 * 3600e3, fetch: f = (...a) => globalThis.fetch(...a),
+    name = 'remote', assembles = true } = {}) {
+    if (!url) throw new Error(`STORY_RENDERER=${name} needs STORY_RENDER_URL`);
+    if (!token) throw new Error(`STORY_RENDERER=${name} needs STORY_RENDER_TOKEN`);
+    this.name = name;
+    this.assembles = assembles;   // the CPU service builds the video too; Modal returns scene clips only
     this.url = String(url).replace(/\/+$/, '');
     this.token = token;
     this.pollMs = Math.max(200, pollMs);
