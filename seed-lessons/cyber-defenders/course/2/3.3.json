@@ -18,13 +18,13 @@
     "request: share the secret"
    ],
    "img": "csq/trick-inbox/pressure-2-pr-3-debrief",
-   "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the key-hunter.",
+   "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the account thief.",
    "focus": [
     {
      "cue": "The door was talked open, not broken",
      "box": [
       6.4,
-      18.0,
+      18,
       87.1,
       37.9
      ]
@@ -90,7 +90,7 @@
    "text": "One move defeats every lever: verify through a different channel. Ask the person in real life, or type the real address yourself instead of tapping the link you were sent.",
    "art": "shield",
    "img": "csq/trick-inbox/pressure-2-pr-1-debrief",
-   "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the key-hunter, who wants into your mailbox.",
+   "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the account thief, who wants into your account.",
    "focus": [
     {
      "cue": "Check another way, in person",
@@ -159,7 +159,7 @@
       7.1,
       59.6,
       61.5,
-      27.0
+      27
      ]
     }
    ]

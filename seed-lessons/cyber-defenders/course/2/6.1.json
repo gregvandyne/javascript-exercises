@@ -18,7 +18,7 @@
      "box": [
       5.1,
       2.9,
-      83.0,
+      83,
       12.7
      ]
     },
@@ -71,7 +71,7 @@
      "cue": "It meets the second step and stops",
      "box": [
       53.3,
-      53.0,
+      53,
       36.7,
       20.5
      ]
@@ -90,7 +90,7 @@
      "box": [
       4.5,
       6.7,
-      89.0,
+      89,
       19.9
      ]
     },
@@ -164,16 +164,16 @@
    "title": "Your mission",
    "text": "Open Escape the Post Office at Lock 6: Layers and match all 6 threats. For each one, name the layer of the stack that stops it.",
    "art": "trophy",
-   "img": "csq/escape-the-post-office/layers-2-5",
-   "alt": "A threat card: a faked postmark fools the front desk. The layer tiles: encryption, two-step sign-in, updates, backups and more.",
+   "img": "csq/escape-the-post-office/layers-2-4",
+   "alt": "Threat 4 of 6: a broken tablet takes the only copy of the class letters with it. Six layer tiles, from Padlock Gate to Long Passphrase.",
    "focus": [
     {
      "cue": "Play Layers: match each threat to its layer",
      "box": [
-      2.7,
-      4.1,
-      94.5,
-      95.9
+      2.6,
+      51,
+      94.9,
+      45
      ]
     }
    ]

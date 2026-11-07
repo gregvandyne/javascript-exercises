@@ -64,16 +64,25 @@
    "title": "Their photo, their yes",
    "text": "A photo of someone else is their image, not your content. Posting it needs their yes, every time. The same respect covers their private facts, their location and their bad days.",
    "art": "people",
-   "img": "csq/trick-inbox/pressure-2-pr-4-all",
-   "alt": "A group chat from The Cool Group with clues marked: post a silly photo of your friend, or leave the group; everyone will laugh.",
+   "img": "csq/trick-inbox/ask-first-1b-af-1-all",
+   "alt": "A group chat with three clues marked: “Post that funny photo of Sam asleep on the bus!”, “He will never know.” and “Everyone will laugh.”",
    "focus": [
     {
-     "cue": "A dare to post a friend's silly photo, without their yes",
+     "cue": "A dare to post a friend's photo, without their yes",
      "box": [
       7.1,
-      32,
+      36.7,
       85.7,
       22.4
+     ]
+    },
+    {
+     "cue": "\"He will never know\": he never said yes",
+     "box": [
+      7.1,
+      59.1,
+      45.4,
+      13.5
      ]
     }
    ]
@@ -117,13 +126,13 @@
     "Tell a trusted adult if it continues"
    ],
    "img": "csq/trick-inbox/chat-2-ch-7-debrief",
-   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
+   "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the vandal, who wants damage and a big reaction.",
    "focus": [
     {
      "cue": "Pressure dressed up as friendship",
      "box": [
       6.4,
-      17.9,
+      19.5,
       87.1,
       47.4
      ]

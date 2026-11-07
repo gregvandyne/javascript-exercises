@@ -79,6 +79,9 @@ test('trick-inbox: every message is well-formed, fictional and fairly judged', (
     assert.ok(ms.some(m => m.action === 'deliver'), `${s.id} ${band}: has a safe message`);
     assert.ok(ms.some(m => m.action !== 'deliver'), `${s.id} ${band}: has a trick`);
   }
+  // Pro names the same four as its threat actors (Pro 4.2 teaches the scammer, the account thief, the vandal and the spy)
+  assert.deepEqual(Object.keys(E.ACTORS).sort(), Object.keys(E.MOTIVES).sort());
+  for (const v of Object.values(E.ACTORS)) assert.match(v, /^the (scammer|account thief|vandal|spy), who wants /);
   // all four Unit 4 motives appear in each band's playable content, the forwarder included
   for (const band of ['1b', '2']) {
     const motives = new Set(E.MESSAGES.filter(m => m.bands.includes(band) && m.motive).map(m => m.motive));

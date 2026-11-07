@@ -23,7 +23,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const NARROW = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'cyber-shots-spec.json'), 'utf8')).filter(x => x.narrow).map(x => `csq/${x.game}/${x.state}`));
+const NARROW = new Set(['cyber-shots-spec.json', 'csq-shots-spec.json'].flatMap(f => JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', f), 'utf8'))).filter(x => x.narrow).map(x => `csq/${x.game}/${x.state}`)); // CS Quest's narrow Packet Post shots too
 const CD = path.join(ROOT, 'seed-lessons/cyber-defenders');
 const CS = path.join(ROOT, 'seed-lessons/cs-quest');
 const { scanVersion } = await import('../../server/services/scanner.js');
@@ -320,6 +320,21 @@ test('course design: each unit plays the game that teaches it, and no step repea
       assert.notEqual(key(a.n), key(b.n), `${band}: ${a.n} and ${b.n} open the same module`);
       assert.ok(!(wheel(a) && wheel(b)), `${band}: ${a.n} and ${b.n} are both cipher-wheel games`);
     }
+  }
+});
+
+test('pictures: no picture repeats within a step, and none repeats across neighbouring steps', () => {
+  // A child reading a step meets each picture once, and the next step opens on pictures of its own (the 2026-11-07
+  // grader found 6.3's three Five Moves slides were 5.2's, and 6.1's layers screen on most of its slides).
+  for (const band of BANDS) {
+    const list = decks.filter(x => x.band === band).sort((a, b) => parseFloat(a.deck.n) - parseFloat(b.deck.n));
+    const imgsOf = d => [...d.slides, ...(d.slides_first_time || [])].filter(s => s.img).map(s => s.img);
+    list.forEach(({ deck: d }, i) => {
+      const own = d.slides.filter(s => s.img).map(s => s.img);
+      assert.equal(new Set(own).size, own.length, `${band}-${d.n}: a picture repeats within the step (${own.filter((x, k) => own.indexOf(x) !== k)})`);
+      if (d.slides_first_time) { const ft = d.slides_first_time.filter(s => s.img).map(s => s.img); assert.equal(new Set(ft).size, ft.length, `${band}-${d.n}: a picture repeats within the first-time slides`); }
+      if (i) { const prev = new Set(imgsOf(list[i - 1].deck)); const both = imgsOf(d).filter(x => prev.has(x)); assert.deepEqual(both, [], `${band}-${d.n} repeats ${list[i - 1].deck.n}'s pictures`); }
+    });
   }
 });
 

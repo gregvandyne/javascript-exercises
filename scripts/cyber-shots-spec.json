@@ -51,16 +51,6 @@
  },
  {
   "actions": [],
-  "alt": "Five packets for the zoo: every road on this map meets at the center office, where many hands can carry them.",
-  "band": "1b",
-  "chapter": "packets",
-  "concept": "every road meets at the center office",
-  "game": "packet-post",
-  "level": 4,
-  "state": "packets-1b-center"
- },
- {
-  "actions": [],
   "alt": "A tablet holds messages and pictures. Signing out on a shared computer: does the habit protect it, or is it risky?",
   "band": "1b",
   "chapter": "locks",
@@ -108,16 +98,6 @@
   "game": "packet-post",
   "level": 2,
   "state": "ciphers-1b-send"
- },
- {
-  "actions": [],
-  "alt": "A secret word, DAOWQF, with no shift marked on the card. Only trying the wheel will show what it says.",
-  "band": "1b",
-  "chapter": "ciphers",
-  "concept": "a secret word, shift unknown",
-  "game": "packet-post",
-  "level": 3,
-  "state": "ciphers-1b-unknown"
  },
  {
   "actions": [],
@@ -1113,7 +1093,7 @@
   }
  },
  {
-  "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
+  "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the account thief, who wants into your account.",
   "band": "2",
   "chapter": "chat",
   "concept": "show Pim, the debrief",
@@ -1125,7 +1105,7 @@
   "narrow": {
    "width": 430,
    "height": 1000,
-   "top": 436.1
+   "top": 447.5
   }
  },
  {
@@ -1145,7 +1125,7 @@
   }
  },
  {
-  "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
+  "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the vandal.",
   "band": "2",
   "chapter": "chat",
   "concept": "the bystander move",
@@ -1157,7 +1137,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 423.2
+   "top": 419.3
   }
  },
  {
@@ -1225,7 +1205,7 @@
   }
  },
  {
-  "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
+  "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the vandal, who wants damage and a big reaction.",
   "band": "2",
   "chapter": "chat",
   "concept": "pressure, the debrief",
@@ -1237,7 +1217,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 423.2
+   "top": 419.3
   }
  },
  {
@@ -1544,7 +1524,7 @@
   }
  },
  {
-  "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
+  "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the account thief.",
   "band": "2",
   "chapter": "mix",
   "concept": "the account thief",
@@ -1560,7 +1540,7 @@
   }
  },
  {
-  "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
+  "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the vandal, who wants damage and a big reaction.",
   "band": "2",
   "chapter": "mix",
   "concept": "the giggler",
@@ -1572,11 +1552,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 489
+   "top": 448.5
   }
  },
  {
-  "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
+  "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the scammer.",
   "band": "2",
   "chapter": "mix",
   "concept": "the prize-faker",
@@ -1608,7 +1588,7 @@
   }
  },
  {
-  "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the key-hunter, who wants into your mailbox.",
+  "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the account thief, who wants into your account.",
   "band": "2",
   "chapter": "pressure",
   "concept": "authority, the debrief",
@@ -1656,7 +1636,7 @@
   }
  },
  {
-  "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the key-hunter.",
+  "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the account thief.",
   "band": "2",
   "chapter": "pressure",
   "concept": "the footprint, the debrief",
@@ -1748,7 +1728,7 @@
   "narrow": {
    "width": 430,
    "height": 1000,
-   "top": 536.4
+   "top": 563
   }
  },
  {
@@ -2044,6 +2024,149 @@
    "width": 420,
    "height": 1000,
    "top": 418
+  }
+ },
+ {
+  "alt": "Lock 3: Which Pim? Two cards say From: Pim. One asks for sorting help at the front desk; one asks for your mailbox key. Postmark: Netville, today.",
+  "band": "1b",
+  "chapter": "which-pim",
+  "concept": "two Pim cards, read from the top",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 161.5
+  },
+  "state": "pim-1b-n2"
+ },
+ {
+  "acts": 1,
+  "alt": "Lock 5: Five Moves. The first move is placed: Stop, do not pass it on. The tiles left: Carry on, Tell a trusted adult, Save it, Block or report.",
+  "band": "1b",
+  "chapter": "five-moves",
+  "concept": "the first move: stop",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 440,
+   "height": 1000,
+   "top": 239.5
+  },
+  "state": "moves-1b-one"
+ },
+ {
+  "acts": 3,
+  "alt": "Lock 5: Five Moves. Three moves placed: Stop, Save it, Tell a trusted adult. Two to go: Carry on, and Block or report it in the app.",
+  "band": "1b",
+  "chapter": "five-moves",
+  "concept": "three moves placed",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 440,
+   "height": 1000,
+   "top": 241
+  },
+  "state": "moves-1b-three"
+ },
+ {
+  "acts": 5,
+  "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Calm work. Skill trained: run the five moves in order.",
+  "band": "1b",
+  "chapter": "five-moves",
+  "concept": "the drill, done",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 440,
+   "height": 1000,
+   "top": 160
+  },
+  "state": "moves-1b-five"
+ },
+ {
+  "acts": 4,
+  "alt": "Lock 6: Layers, open! Every threat met its layer. No single lock did it alone. Skill trained: match each threat to the layer that stops it.",
+  "band": "1b",
+  "chapter": "layers",
+  "concept": "every threat met its layer",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 470,
+   "height": 1000,
+   "top": 160
+  },
+  "state": "layers-1b-5"
+ },
+ {
+  "acts": 3,
+  "alt": "Threat 4 of 6: a broken tablet takes the only copy of the class letters with it. Six layer tiles, from Padlock Gate to Long Passphrase.",
+  "band": "2",
+  "chapter": "layers",
+  "concept": "a broken tablet, the only copy",
+  "game": "escape-the-post-office",
+  "narrow": {
+   "width": 470,
+   "height": 1000,
+   "top": 202
+  },
+  "state": "layers-2-4"
+ },
+ {
+  "actions": [],
+  "alt": "Explorer padlock level: from Pim’s Post, the padlock road climbs over Hill Office to Birthday House; the open road runs below.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "the open road and the padlock road",
+  "game": "packet-post",
+  "level": 3,
+  "state": "protocols-1b-sealed-n",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 165
+  }
+ },
+ {
+  "actions": [],
+  "alt": "Pim: this picture is a secret birthday surprise. On the open road a snoopy cat reads every packet; the padlock road is sealed like an envelope.",
+  "band": "1b",
+  "chapter": "protocols",
+  "concept": "a secret goes on the padlock road",
+  "game": "packet-post",
+  "level": 3,
+  "state": "protocols-1b-sealed-n2",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 525
+  }
+ },
+ {
+  "actions": [],
+  "alt": "Break It Up, level 4: five packets for the zoo. Every road on the map meets at the Center Office before Zoo Gate.",
+  "band": "1b",
+  "chapter": "packets",
+  "concept": "every road meets at the center office",
+  "game": "packet-post",
+  "level": 4,
+  "state": "packets-1b-center-n",
+  "narrow": {
+   "width": 420,
+   "height": 700,
+   "top": 133
+  }
+ },
+ {
+  "actions": [],
+  "alt": "Secret Messages: a secret word with an unknown shift. Secret message DAOWQF; your reading, DAOWQF, until the wheel turns.",
+  "band": "1b",
+  "chapter": "ciphers",
+  "concept": "a secret word, shift unknown",
+  "game": "packet-post",
+  "level": 3,
+  "state": "ciphers-1b-unknown-n",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 450.4
   }
  }
 ]

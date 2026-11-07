@@ -22,31 +22,25 @@
     "in the vault, at rest: lock the storage",
     "same photo, three different locks"
    ],
-   "img": "csq/packet-post/locks-2-sealed",
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
-   "view": [
-    19.3,
-    21.5,
-    72.0,
-    70.6
-   ],
+   "img": "csq/packet-post/locks-2-sealed-n",
+   "alt": "The shop order rides the padlock street: sealed roads wear padlocks, while the open street is shorter but read by a snoopy cat.",
    "focus": [
     {
-     "cue": "In transit: a message on the sealed road",
+     "cue": "In transit: a packet on the sealed road",
      "box": [
-      22.3,
-      60.2,
-      30.0,
-      26.9
+      43.8,
+      70.8,
+      51.2,
+      29.2
      ]
     },
     {
-     "cue": "Name and address inside: the padlock street keeps them sealed",
+     "cue": "Padlock roads keep what is inside sealed",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      12.9
+      17,
+      72,
+      15,
+      22
      ]
     }
    ]
@@ -58,7 +52,7 @@
    "img": "csq/packet-post/locks-2-backup",
    "alt": "The backup rule in four steps: make a second copy, keep it in another place, check it opens, keep it fresh.",
    "view": [
-    39.0,
+    39,
     19.6,
     53.6,
     44.4
@@ -68,7 +62,7 @@
      "cue": "Keep a copy in another place: the cloud is someone else's place",
      "box": [
       40.6,
-      52.0,
+      52,
       15.4,
       8.2
      ]

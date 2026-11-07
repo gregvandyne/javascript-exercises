@@ -11,7 +11,7 @@
    "text": "Some tricks are not accidents. Behind each one is a threat actor: a person or group trying to get something they should not have.",
    "art": "mask",
    "img": "csq/trick-inbox/mix-2-mx-3-debrief",
-   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
+   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the account thief.",
    "focus": [
     {
      "cue": "Behind each trick: someone who wants something",
@@ -29,7 +29,7 @@
    "text": "Meet the gallery in plain words: the scammer wants money, the account thief wants in, the vandal wants damage, and the spy wants secrets. None of them is glamorous. Each is simply trying to take what is not theirs.",
    "art": "people",
    "img": "csq/trick-inbox/mix-2-mx-6-debrief",
-   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
+   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the scammer.",
    "focus": [
     {
      "cue": "The debrief names the actor",
@@ -54,25 +54,25 @@
     "Want: a way into accounts",
     "Guard: do not reply; report it"
    ],
-   "img": "csq/trick-inbox/senders-2-sd-3-all",
-   "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
+   "img": "csq/trick-inbox/senders-2-sd-1-all",
+   "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
    "focus": [
     {
-     "cue": "A fake school message asks for account details",
+     "cue": "A fake Post Office message asks for your key",
      "box": [
       7.1,
-      67.9,
+      70,
       85.7,
-      22.4
+      13.5
      ]
     },
     {
      "cue": "Who sent it? Check the real address",
      "box": [
-      5.7,
-      21.8,
-      63.4,
-      11.2
+      29.6,
+      57.2,
+      29.9,
+      7.8
      ]
     }
    ]
@@ -89,7 +89,7 @@
      "box": [
       5.2,
       0.5,
-      85.0,
+      85,
       12.9
      ]
     },
@@ -152,15 +152,15 @@
    "text": "Open Trick Inbox at Magpie Mix and sort all 6 messages. Name the actor behind each trick and what it wants.",
    "art": "trophy",
    "img": "csq/trick-inbox/mix-2-mx-4-debrief",
-   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
+   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the vandal, who wants damage and a big reaction.",
    "focus": [
     {
      "cue": "Play Magpie Mix: name the actor behind each",
      "box": [
       6.4,
-      40.9,
+      58,
       87.1,
-      19.0
+      28.4
      ]
     }
    ]
