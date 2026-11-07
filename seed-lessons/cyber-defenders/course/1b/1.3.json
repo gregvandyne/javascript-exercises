@@ -77,7 +77,7 @@
    "text": "A copy you send to a friend can be forwarded to others without you knowing. Once a copy travels on, you cannot call it back.",
    "art": "people",
    "img": "csq/trick-inbox/mix-1b-mx-1-all",
-   "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
+   "alt": "A letter from Lucky Letters, “The shiny chain”, with clues marked: pass this letter to ten friends; a shiny surprise will find you; tonight.",
    "focus": [
     {
      "cue": "Pass it to ten friends: each copy travels on without you",
@@ -101,30 +101,24 @@
     "not sure: ask a trusted adult first"
    ],
    "img": "csq/would-you-rather/online-drawing-1b",
-   "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
    "focus": [
     {
      "cue": "Share a drawing so everyone can see it",
      "box": [
-      9.9,
-      38.5,
-      35.5,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Or show it only to your family",
      "box": [
-      56.2,
-      41.0,
-      32.2,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -134,13 +128,13 @@
    "text": "Pim warns that the Magpie keeps a copy of every shiny secret it finds. In its nest, those copies stay pinned up, forever.",
    "art": "mask",
    "img": "csq/packet-post/tricks-1b-stranger-n1",
-   "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+   "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
    "focus": [
     {
      "cue": "A stranger's card, fishing for a shiny secret",
      "box": [
       2.9,
-      2.5,
+      5.4,
       94.3,
       54.3
      ]
@@ -149,7 +143,7 @@
      "cue": "It asks where you live: a fact to keep private",
      "box": [
       6.4,
-      21.6,
+      24.5,
       87.1,
       29.7
      ]
@@ -186,15 +180,15 @@
    "text": "Open Escape the Post Office at Lock 1: Sorting Gate and send the golden letter around the closed road. Count the stops it passes: each one could keep a copy. Then name one thing you would never send.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/gate-1b",
-   "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
+   "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads lead past the Market and the Library to the Sorting Room.",
    "focus": [
     {
      "cue": "Play Sorting Gate: pick an open road for the letter",
      "box": [
       22.9,
-      18.9,
+      18.0,
       11.4,
-      56.8
+      56.9
      ]
     }
    ]

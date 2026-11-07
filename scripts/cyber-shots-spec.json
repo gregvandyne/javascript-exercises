@@ -22,13 +22,18 @@
  },
  {
   "actions": [],
-  "alt": "Design the rule set: three things go wrong on this road, and four rule cards are there to catch them.",
+  "alt": "What goes wrong on this road: packet 3 never arrives, packet 2 arrives twice, they arrive mixed up. Below, the first four rule cards to pick from.",
   "band": "2",
   "chapter": "protocols",
   "concept": "design the rule set",
   "game": "packet-post",
   "level": 5,
-  "state": "protocols-2-design"
+  "state": "protocols-2-design",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 222.6
+  }
  },
  {
   "actions": [
@@ -126,7 +131,7 @@
  },
  {
   "actions": [],
-  "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+  "alt": "A prize card from Prize Team, marked unknown sender: “You won a tablet!”",
   "band": "1b",
   "chapter": "tricks",
   "concept": "Some messages are tricks: they want you to hurry or give things away",
@@ -136,12 +141,12 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 182
+   "top": 189.1
   }
  },
  {
   "actions": [],
-  "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+  "alt": "Cues to tap: hurry, only ten minutes; asks for the mailbox key; a prize you never entered; says congratulations. Then Safe, Trick or Ask a trusted adult.",
   "band": "1b",
   "chapter": "tricks",
   "concept": "Some messages are tricks: they want you to hurry or give things away",
@@ -151,7 +156,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 393
+   "top": 390.8
   }
  },
  {
@@ -160,7 +165,7 @@
     "acts": 1
    }
   ],
-  "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+  "alt": "The prize card's cues: hurry, only ten minutes; asks for the mailbox key; a prize you never entered; says congratulations. Then the three choices.",
   "band": "1b",
   "chapter": "tricks",
   "concept": "Clues of a trick: hurry, a prize, a request for your passphrase",
@@ -170,12 +175,12 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 370
+   "top": 385.3
   }
  },
  {
   "actions": [],
-  "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+  "alt": "A card from “Your bank”, marked unknown sender: “Your account is locked.”",
   "band": "1b",
   "chapter": "tricks",
   "concept": "Trick or safe? A threat, a rush and a key request",
@@ -190,7 +195,7 @@
  },
  {
   "actions": [],
-  "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
+  "alt": "Cues to tap: a button that wants a tap right now; talks about coins. Then three choices: Safe, Trick, Ask a trusted adult.",
   "band": "1b",
   "chapter": "tricks",
   "concept": "the free coins card",
@@ -209,13 +214,18 @@
     "acts": 4
    }
   ],
-  "alt": "The two-key lockbox card: anyone can click it shut, but only the owner holds the key that opens it.",
+  "alt": "Pim asks which ways to keep a secret are easy or hard to crack. The two-key lockbox: anyone can click it shut, but only the owner holds the opening key.",
   "band": "2",
   "chapter": "ciphers",
   "concept": "the two-key lockbox card",
   "game": "packet-post",
   "level": 7,
-  "state": "ciphers-2-lockbox"
+  "state": "ciphers-2-lockbox",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 107.5
+  }
  },
  {
   "actions": [],
@@ -229,7 +239,7 @@
  },
  {
   "actions": [],
-  "alt": "A trick card from someone you do not know: it fishes for the street a player lives on.",
+  "alt": "A card from “A new friend”, marked unknown sender, asking to get together after school. Cues to tap: a personal question, from someone you have never met.",
   "band": "1b",
   "chapter": "tricks",
   "concept": "a stranger asks for your street",
@@ -239,7 +249,7 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 174
+   "top": 167.2
   }
  },
  {
@@ -254,123 +264,178 @@
  },
  {
   "actions": [],
-  "alt": "A parcel trick: a delivery you never ordered is waiting, and a small fee must be paid within two hours.",
+  "alt": "A card from Parcel Service, marked unknown sender: “Your parcel is waiting.” Pay a small fee within two hours to get it back, with a Pay now button.",
   "band": "2",
   "chapter": "tricks",
   "concept": "a parcel you never ordered",
   "game": "packet-post",
   "level": 8,
-  "state": "tricks-2-parcel"
+  "state": "tricks-2-parcel",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 177.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+  "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
   "band": "1b",
   "chapter": "online",
   "concept": "nickname or real first name",
   "dilemma": "online-3",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-name-1b"
+  "state": "online-name-1b",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
+  "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
   "band": "2",
   "chapter": "online",
   "concept": "nickname or real first name",
   "dilemma": "online-3",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-name-2"
+  "state": "online-name-2",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+  "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
   "band": "1b",
   "chapter": "online",
   "concept": "one photo for the world, or ten for friends",
   "dilemma": "online-2",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-photo-1b"
+  "state": "online-photo-1b",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather share one photo with the whole world, or ten photos with just ten friends?",
+  "alt": "Would you rather: share one photo with the whole world, or share ten photos with ten friends?",
   "band": "2",
   "chapter": "online",
   "concept": "one photo for the world, or ten for friends",
   "dilemma": "online-2",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-photo-2"
+  "state": "online-photo-2",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather put class work on a page anyone can comment on, or a page only your class can see?",
+  "alt": "Would you rather: a class page where anyone can comment, or one where only your class can?",
   "band": "2",
   "chapter": "online",
   "concept": "a page anyone can comment on",
   "dilemma": "online-9",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-comments-2"
+  "state": "online-comments-2",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+  "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
   "band": "1b",
   "chapter": "online",
   "concept": "delete an old post, or leave it",
   "dilemma": "online-10",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-delete-1b"
+  "state": "online-delete-1b",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
+  "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
   "band": "2",
   "chapter": "online",
   "concept": "delete an old post, or leave it",
   "dilemma": "online-10",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-delete-2"
+  "state": "online-delete-2",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather share a drawing so everyone can see it, or show it only to your family?",
+  "alt": "Would you rather: everyone online can see your drawing, or only your family can see it?",
   "band": "1b",
   "chapter": "online",
   "concept": "a drawing for everyone, or family only",
   "dilemma": "online-1",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-drawing-1b"
+  "state": "online-drawing-1b",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather play a free game that always sees where you are, or pay for one that never knows?",
+  "alt": "Would you rather: an app that is free if it sees where you are, or an app that costs a little and never knows?",
   "band": "1b",
   "chapter": "online",
   "concept": "a free game that sees where you are",
   "dilemma": "online-4",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-location-1b"
+  "state": "online-location-1b",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
-  "alt": "Would you rather ask a trusted adult before every download, or never download anything at all?",
+  "alt": "Would you rather: ask before every download, or never download anything?",
   "band": "1b",
   "chapter": "online",
   "concept": "ask before every download",
   "dilemma": "online-5",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-download-1b"
+  "state": "online-download-1b",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
   "actions": [],
@@ -385,27 +450,52 @@
  },
  {
   "actions": [],
-  "alt": "Would you rather keep photos only on your own tablet, or keep a copy on a service someone else runs?",
+  "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
+  "band": "1b",
+  "chapter": "online",
+  "concept": "credit a picture, or draw your own",
+  "dilemma": "online-8",
+  "game": "would-you-rather",
+  "level": 0,
+  "state": "online-credit-1b-n1",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
+ },
+ {
+  "actions": [],
+  "alt": "Would you rather: photos only on your tablet, where nobody else sees them, or also a copy on a service someone else runs?",
   "band": "2",
   "chapter": "online",
   "concept": "photos on your tablet, or a copy elsewhere",
   "dilemma": "online-7",
   "game": "would-you-rather",
   "level": 0,
-  "state": "online-cloud-2"
+  "state": "online-cloud-2",
+  "narrow": {
+   "width": 520,
+   "height": 520,
+   "top": 103.5
+  }
  },
  {
-  "alt": "Five of the six locks are open in green. Only Lock 6, Layers, still guards the sorting room door.",
+  "alt": "Lock open! Lock 1, Sorting Gate (Unit 1 stamp: Roadwise), and Lock 2, Sealed Note (Unit 2 stamp: Keykeeper), both open.",
   "band": "1b",
   "chapter": "escape",
-  "compact": true,
   "concept": "one lock to go",
   "game": "escape-the-post-office",
   "open": 5,
-  "state": "door-1b-five"
+  "state": "door-1b-five",
+  "narrow": {
+   "width": 440,
+   "height": 1000,
+   "top": 118.5
+  }
  },
  {
-  "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
+  "alt": "Spark Day: six trick locks. Lock 1, Sorting Gate, wants the Roadwise stamp: route the golden letter. Lock 2, Sealed Note, opens after it.",
   "band": "1b",
   "chapter": "escape",
   "concept": "the locked door",
@@ -414,24 +504,24 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 173
+   "top": 176.5
   }
  },
  {
-  "alt": "Escape the Post Office: six trick locks guard the sorting room door, one for each Defender stamp.",
+  "alt": "Escape the Post Office begins: 0 of 6 locks open. Spark Day! The Magpie locked the sorting room with six trick locks and kept the real post inside.",
   "band": "1b",
   "chapter": "escape",
   "concept": "the locked door",
   "game": "escape-the-post-office",
   "state": "door-1b-new-n2",
   "narrow": {
-   "width": 420,
+   "width": 430,
    "height": 1000,
-   "top": 72
+   "top": 51.2
   }
  },
  {
-  "alt": "The sorting room door with two locks open in green, and Lock 3, Which Pim?, next in line.",
+  "alt": "Lock open! Lock 1, Sorting Gate, and Lock 2, Sealed Note, are open: their Roadwise and Keykeeper stamps did the work.",
   "band": "1b",
   "chapter": "escape",
   "concept": "two locks open",
@@ -439,49 +529,53 @@
   "open": 2,
   "state": "door-1b-two",
   "narrow": {
-   "width": 470,
+   "width": 420,
    "height": 1000,
-   "top": 239
+   "top": 169.7
   }
  },
  {
-  "alt": "Five of six Pro locks are open in green. Lock 6, Layers, is the last one between you and the sorting room.",
+  "alt": "Lock open! Lock 1, Sorting Gate (Unit 1 stamp: Roadwise), and Lock 2, Sealed Note (Unit 2 stamp: Keykeeper), both open.",
   "band": "2",
   "chapter": "escape",
-  "compact": true,
   "concept": "one lock to go (Pro)",
   "game": "escape-the-post-office",
   "open": 5,
-  "state": "door-2-five"
+  "state": "door-2-five",
+  "narrow": {
+   "width": 440,
+   "height": 1000,
+   "top": 118.5
+  }
  },
  {
-  "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+  "alt": "Lock 1, Sorting Gate, wants the Roadwise stamp: route the golden letter; the short road is not always open. Lock 2, Sealed Note, opens after it.",
   "band": "2",
   "chapter": "escape",
   "concept": "the locked door (Pro)",
   "game": "escape-the-post-office",
   "state": "door-2-new",
   "narrow": {
-   "width": 470,
+   "width": 450,
    "height": 1000,
-   "top": 177
+   "top": 239.9
   }
  },
  {
-  "alt": "Escape the Post Office at Pro: six trick locks guard the sorting room door, one for each Defender stamp.",
+  "alt": "Escape the Post Office begins: 0 of 6 locks open. Spark Day! The Magpie locked the sorting room with six trick locks and kept the real post inside.",
   "band": "2",
   "chapter": "escape",
   "concept": "the locked door (Pro)",
   "game": "escape-the-post-office",
   "state": "door-2-new-n2",
   "narrow": {
-   "width": 420,
+   "width": 430,
    "height": 1000,
-   "top": 72
+   "top": 51.2
   }
  },
  {
-  "alt": "The Pro door with two locks open in green and Lock 3, Which Pim?, next: one card wears a faked postmark.",
+  "alt": "Lock open! Lock 1, Sorting Gate, and Lock 2, Sealed Note, are open: their Roadwise and Keykeeper stamps did the work.",
   "band": "2",
   "chapter": "escape",
   "concept": "two locks open (Pro)",
@@ -489,13 +583,13 @@
   "open": 2,
   "state": "door-2-two",
   "narrow": {
-   "width": 470,
+   "width": 420,
    "height": 1000,
-   "top": 239
+   "top": 169.7
   }
  },
  {
-  "alt": "Lock 1, Sorting Gate: the golden letter waits at the Post Office, and roads lead past the Market and the Library.",
+  "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads lead past the Market and the Library to the Sorting Room.",
   "band": "1b",
   "chapter": "sorting-gate",
   "concept": "the sorting gate",
@@ -504,43 +598,38 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 307
+   "top": 312
   }
  },
  {
-  "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
-  "band": "2",
-  "chapter": "sorting-gate",
-  "compact": true,
-  "concept": "the sorting gate (Pro)",
-  "game": "escape-the-post-office",
-  "state": "gate-2"
- },
- {
-  "alt": "Lock 1 at Pro: the golden letter must cross Netville to the sorting room, and the short road is not always open.",
+  "alt": "The Sorting Gate map: the golden letter waits at the Post Office. Roads run past the Market and the School to the Sorting Room.",
   "band": "2",
   "chapter": "sorting-gate",
   "concept": "the sorting gate (Pro)",
   "game": "escape-the-post-office",
-  "state": "gate-2-n1",
+  "state": "gate-2",
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 289
+   "top": 281
   }
  },
  {
-  "alt": "Lock 4, Trick Inbox: the first of six messages, a library book, with four moves to choose from.",
+  "alt": "Lock 4: a message from Library desk, “Your book is ready”: pick it up any time. Below it, the first moves: Deliver it, Bin it.",
   "band": "1b",
   "chapter": "trick-inbox",
-  "compact": true,
   "concept": "the inbox lock",
   "game": "escape-the-post-office",
-  "state": "inbox-1b"
+  "state": "inbox-1b",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 275
+  }
  },
  {
   "acts": 1,
-  "alt": "Lock 4, message 2 of 6: a Prize Parrot says you won a shiny prize you never tried to win. Tap fast!",
+  "alt": "Lock 4: a message from Prize Parrot, “You won a prize!”: a shiny prize you never tried to win, tap fast. Below it, the four moves.",
   "band": "1b",
   "chapter": "trick-inbox",
   "concept": "a prize you never entered",
@@ -549,12 +638,12 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 270
+   "top": 271
   }
  },
  {
   "acts": 1,
-  "alt": "A wrong try on Lock 4 only wobbles it: Pim shows the missed clue, and the lock waits for another try.",
+  "alt": "A wrong try: Pim shows the missed clue, a prize you never tried to win plus a rush. The moves wait below to try again.",
   "band": "1b",
   "chapter": "trick-inbox",
   "concept": "a wobble, not a fail",
@@ -565,13 +654,13 @@
    "id": "deliver"
   },
   "narrow": {
-   "width": 420,
+   "width": 450,
    "height": 1000,
-   "top": 404
+   "top": 426.0
   }
  },
  {
-  "alt": "Lock 4 at Pro: the first of eight messages, with four moves to choose from and a hint feather below.",
+  "alt": "Lock 4's moves: Deliver it, Bin it, Show Pim, Report and block. Below them, the hint feather button.",
   "band": "2",
   "chapter": "trick-inbox",
   "concept": "the inbox lock (Pro)",
@@ -580,25 +669,25 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 386
+   "top": 425.1
   }
  },
  {
   "acts": 4,
-  "alt": "Lock 4 at Pro, message 5 of 8: Post Office asks you to confirm your key, but the postmark is a far-town hand stamp.",
+  "alt": "Inside Lock 4: a key check from “Post Office”. The sender name says Post Office, but the postmark is a hand stamp.",
   "band": "2",
   "chapter": "trick-inbox",
   "concept": "a spoofed sender in the lock",
   "game": "escape-the-post-office",
   "state": "inbox-2-5",
   "narrow": {
-   "width": 420,
+   "width": 430,
    "height": 1000,
-   "top": 198
+   "top": 172.1
   }
  },
  {
-  "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
+  "alt": "A trouble card: a snooper tries to peek inside a sealed note on its trip. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
   "band": "1b",
   "chapter": "layers",
   "concept": "the layers lock",
@@ -607,12 +696,12 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 253
+   "top": 255.1
   }
  },
  {
   "acts": 1,
-  "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
+  "alt": "A trouble card: a guesser tries key after key on a mailbox. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
   "band": "1b",
   "chapter": "layers",
   "concept": "a guesser at the mailbox",
@@ -621,12 +710,12 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 200
+   "top": 251.4
   }
  },
  {
   "acts": 2,
-  "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
+  "alt": "A trouble card: an old lock has a known hole that anyone can use. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
   "band": "1b",
   "chapter": "layers",
   "concept": "a known hole",
@@ -640,7 +729,7 @@
  },
  {
   "acts": 3,
-  "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
+  "alt": "A trouble card: a flood soaks the only copy of a letter. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
   "band": "1b",
   "chapter": "layers",
   "concept": "the only copy",
@@ -649,25 +738,25 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 224
+   "top": 251.0
   }
  },
  {
-  "alt": "Lock 6 at Pro: an interceptor reads a note while it travels. Six layers wait, from padlock to long passphrase.",
+  "alt": "A threat card: an interceptor reads a note while it travels. Six layer tiles, from Padlock Gate (encryption) to Long Passphrase (strong key).",
   "band": "2",
   "chapter": "layers",
   "concept": "defense in depth",
   "game": "escape-the-post-office",
   "state": "layers-2",
   "narrow": {
-   "width": 470,
+   "width": 430,
    "height": 1000,
-   "top": 261
+   "top": 286.1
   }
  },
  {
   "acts": 1,
-  "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
+  "alt": "A threat card: a stolen key is tried on the mailbox from a new device. Below it, Padlock Gate and Key Checker (two-step sign-in).",
   "band": "2",
   "chapter": "layers",
   "concept": "a stolen key",
@@ -676,12 +765,12 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 217
+   "top": 216
   }
  },
  {
   "acts": 1,
-  "alt": "Threat 2 of 6: a stolen key is tried on the mailbox from a new device. The Key Checker is one of six layers.",
+  "alt": "Layer tiles: Padlock Gate (encryption), Key Checker (two-step sign-in), Patch Crew (updates), Copy Vault (backups).",
   "band": "2",
   "chapter": "layers",
   "concept": "a stolen key",
@@ -690,12 +779,12 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 316
+   "top": 328.8
   }
  },
  {
   "acts": 2,
-  "alt": "Threat 3 of 6: a known hole in old software lets a trick letter slip in. The Patch Crew closes it.",
+  "alt": "A threat card: a known hole in old software lets a trick letter slip in. Below it, the layer tiles, Patch Crew (updates) among them.",
   "band": "2",
   "chapter": "layers",
   "concept": "a known hole (Pro)",
@@ -704,26 +793,26 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 249
+   "top": 249.0
   }
  },
  {
   "acts": 4,
-  "alt": "Threat 5 of 6: a faked postmark fools the front desk. All six layers are on the table.",
+  "alt": "A threat card: a faked postmark fools the front desk. The layer tiles: encryption, two-step sign-in, updates, backups and more.",
   "band": "2",
   "chapter": "layers",
   "concept": "six layers",
   "game": "escape-the-post-office",
   "state": "layers-2-5",
   "narrow": {
-   "width": 470,
+   "width": 440,
    "height": 1000,
-   "top": 255
+   "top": 248.8
   }
  },
  {
   "acts": 5,
-  "alt": "Threat 6 of 6: a one-word key is guessed in an afternoon. The Long Passphrase layer stops it.",
+  "alt": "A threat card: a one-word key is guessed in an afternoon. The layer tiles: encryption, two-step sign-in, updates, backups and more.",
   "band": "2",
   "chapter": "layers",
   "concept": "a guessed key",
@@ -736,75 +825,62 @@
   }
  },
  {
-  "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
+  "alt": "Five empty move slots, and the tiles to put in order: Carry on, Tell a trusted adult, Save it, Stop, Block or report it.",
   "band": "1b",
   "chapter": "five-moves",
   "concept": "the five moves",
   "game": "escape-the-post-office",
   "state": "moves-1b",
   "narrow": {
-   "width": 470,
+   "width": 430,
    "height": 1000,
-   "top": 259
-  }
- },
- {
-  "alt": "Lock 5, Five Moves: a message unkind to Sam is going around the class chat. Five move tiles wait to be put in order.",
-  "band": "1b",
-  "chapter": "five-moves",
-  "concept": "the five moves",
-  "game": "escape-the-post-office",
-  "state": "moves-1b-n2",
-  "narrow": {
-   "width": 470,
-   "height": 1000,
-   "top": 383
+   "top": 365.1
   }
  },
  {
   "acts": 4,
-  "alt": "Four moves in order: Stop, Save it, Tell a trusted adult, Block or report. Carry on is the last tile.",
+  "alt": "A message unkind to Sam is going around the class chat. Four moves placed: Stop, Save it, Tell a trusted adult, Block or report.",
   "band": "1b",
   "chapter": "five-moves",
   "concept": "four moves placed",
   "game": "escape-the-post-office",
   "state": "moves-1b-four",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 1000,
-   "top": 326
+   "top": 261.5
   }
  },
  {
   "acts": 2,
-  "alt": "Two moves placed in order: Stop, do not pass it on, then Save it, keep the message.",
+  "alt": "A message unkind to Sam is going around the class chat. Two moves placed: Stop, do not pass it on, then Save it, keep the message.",
   "band": "1b",
   "chapter": "five-moves",
   "concept": "stop, then save",
   "game": "escape-the-post-office",
   "state": "moves-1b-two",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 1000,
-   "top": 326
+   "top": 255.8
   }
  },
  {
-  "alt": "Lock 5 at Pro: someone has a classmate's mailbox key, and a second message pressures you. Six drill tiles wait.",
+  "alt": "The move tiles for Lock 5: change the key from a clean device, tell a trusted adult fast, carry on with a log, save the evidence, and more.",
   "band": "2",
   "chapter": "five-moves",
   "concept": "the incident drill",
   "game": "escape-the-post-office",
   "state": "moves-2",
   "narrow": {
-   "width": 470,
+   "width": 430,
    "height": 1000,
-   "top": 410
+   "top": 430.0
   }
  },
  {
   "acts": 6,
-  "alt": "Lock 5 open: the drill ran in order, start to finish. Calm work, and the skill it trained.",
+  "alt": "Lock 5: Five Moves, open! The drill, in order, start to finish. Skill trained: run the five moves in order when something goes wrong.",
   "band": "2",
   "chapter": "five-moves",
   "concept": "the drill, done",
@@ -813,12 +889,12 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 64
+   "top": 64.2
   }
  },
  {
   "acts": 5,
-  "alt": "Five drill moves in order, up to change the key from a clean device. Only the one-line log is left.",
+  "alt": "Moves placed in order: tell a trusted adult fast, report and block, change the key from a clean device. One slot is left to fill.",
   "band": "2",
   "chapter": "five-moves",
   "concept": "report and recover",
@@ -827,36 +903,40 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 423
+   "top": 462
   }
  },
  {
   "acts": 1,
-  "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
-  "band": "2",
-  "chapter": "five-moves",
-  "compact": true,
-  "concept": "contain first",
-  "game": "escape-the-post-office",
-  "state": "moves-2-one"
- },
- {
-  "acts": 1,
-  "alt": "The drill begins: Stop and disconnect is placed first. Five tiles still wait to be put in order.",
+  "alt": "A classmate's mailbox has been broken into. The first move placed: stop and disconnect, pass nothing on. Five slots wait.",
   "band": "2",
   "chapter": "five-moves",
   "concept": "contain first",
   "game": "escape-the-post-office",
-  "state": "moves-2-one-n1",
+  "state": "moves-2-one",
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 248
+   "top": 273.5
+  }
+ },
+ {
+  "acts": 1,
+  "alt": "The first move placed: stop and disconnect. Five slots wait, and below them the tiles: change the key, tell a trusted adult, save the evidence.",
+  "band": "2",
+  "chapter": "five-moves",
+  "concept": "contain first",
+  "game": "escape-the-post-office",
+  "state": "moves-2-one-n2",
+  "narrow": {
+   "width": 450,
+   "height": 1000,
+   "top": 376.8
   }
  },
  {
   "acts": 3,
-  "alt": "Three drill moves in order: stop and disconnect, save the evidence, tell a trusted adult, fast.",
+  "alt": "Three moves placed: stop and disconnect, save the evidence (delete nothing), tell a trusted adult. The rest wait as tiles below.",
   "band": "2",
   "chapter": "five-moves",
   "concept": "preserve and tell",
@@ -865,11 +945,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 361
+   "top": 400.2
   }
  },
  {
-  "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
+  "alt": "The Magpie's sealed note reads RSHQ: a scramble. Below it, the Turn back button and the shift count.",
   "band": "1b",
   "chapter": "sealed-note",
   "concept": "the sealed note",
@@ -878,11 +958,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 229
+   "top": 259.2
   }
  },
  {
-  "alt": "Lock 2, Sealed Note: the Magpie's note reads RSHQ, and the cipher wheel turns it back one step at a time.",
+  "alt": "The Magpie's sealed note reads RSHQ, a scramble, with the Turn back and Turn forward buttons to try each shift.",
   "band": "1b",
   "chapter": "sealed-note",
   "concept": "the sealed note",
@@ -891,12 +971,12 @@
   "narrow": {
    "width": 470,
    "height": 1000,
-   "top": 249
+   "top": 253
   }
  },
  {
   "acts": 1,
-  "alt": "Lock 2 turned to shift 3: the Magpie's note RSHQ now reads OPEN, and the lock is ready to open.",
+  "alt": "The note's wheel at shift 3: Turn back, Turn forward, a green Open the lock button and Use a hint feather.",
   "band": "1b",
   "chapter": "sealed-note",
   "concept": "the sealed note, read",
@@ -905,11 +985,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 332
+   "top": 386.6
   }
  },
  {
-  "alt": "Lock 2 at Pro: the Magpie's sealed note waits beside the cipher wheel. No first letter is given this time.",
+  "alt": "The Magpie's sealed note reads IJQNAJW, a scramble to turn back shift by shift.",
   "band": "2",
   "chapter": "sealed-note",
   "concept": "the sealed note (Pro)",
@@ -918,11 +998,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 229
+   "top": 167.6
   }
  },
  {
-  "alt": "Lock 3, Which Pim?: three cards say they are from Pim. Each lists a postmark, a footprint and what it asks for.",
+  "alt": "Two Pim cards' clues: both postmarked Netville, today. One has small owl prints and asks for help; one has big round prints and asks for your key.",
   "band": "1b",
   "chapter": "which-pim",
   "concept": "which Pim is real",
@@ -931,40 +1011,52 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 387
+   "top": 394.2
   }
  },
  {
-  "alt": "The real Pim is picked: a Netville postmark, owl footprints, and a request for help in the open.",
+  "alt": "Three messages say they are from Pim; only one really is. Two cards: one asks for sorting help after lunch, one asks for your mailbox key.",
   "band": "1b",
   "chapter": "which-pim",
-  "compact": true,
   "concept": "the real Pim, picked",
   "game": "escape-the-post-office",
   "pick": "real",
-  "state": "pim-1b-pick"
+  "state": "pim-1b-pick",
+  "narrow": {
+   "width": 420,
+   "height": 1000,
+   "top": 163
+  }
  },
  {
-  "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
+  "alt": "Two Pim cards' clues: one has a hand-press postmark and owl-shaped prints; the other, the office stamp and small owl prints. Pick this card buttons.",
   "band": "2",
   "chapter": "which-pim",
-  "compact": true,
   "concept": "which Pim is real (Pro)",
   "game": "escape-the-post-office",
-  "state": "pim-2"
+  "state": "pim-2",
+  "narrow": {
+   "width": 470,
+   "height": 1000,
+   "top": 352.5
+  }
  },
  {
-  "alt": "The real Pim is picked at Pro: the office stamp, the worn left-edge footprint, help asked in the open.",
+  "alt": "Three messages say they are from Pim; one wears a faked trail. A card from Pim asks you to bring your mailbox key to a side gate.",
   "band": "2",
   "chapter": "which-pim",
-  "compact": true,
   "concept": "the real Pim, picked (Pro)",
   "game": "escape-the-post-office",
   "pick": "real",
-  "state": "pim-2-pick"
+  "state": "pim-2-pick",
+  "narrow": {
+   "width": 470,
+   "height": 1000,
+   "top": 113.9
+  }
  },
  {
-  "alt": "Trick Inbox, the Boss Round: a stranger's game chat waits in the inbox, one clue found in green and one still hiding.",
+  "alt": "A game chat from CoolGamer99 with two clues marked: keep our chats from your parents, and a place to get together, the park gate. Clues found: 1 of 2.",
   "band": "1b",
   "chapter": "boss",
   "concept": "the boss round",
@@ -974,13 +1066,13 @@
   "phase": "hunt",
   "state": "boss-1b-c1",
   "narrow": {
-   "width": 420,
+   "width": 460,
    "height": 1000,
-   "top": 224
+   "top": 203.5
   }
  },
  {
-  "alt": "Game chat from a player nobody knows: keep our chat secret from your parents, and a plan to meet. Both clues found.",
+  "alt": "A game chat from CoolGamer99 with both clues marked: keep our chats from your parents, and a place to get together, the park gate.",
   "band": "1b",
   "chapter": "chat",
   "concept": "a stranger in game chat",
@@ -992,11 +1084,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 255
+   "top": 249.9
   }
  },
  {
-  "alt": "The stranger's chat, shown to Pim: chat is for people you know in real life, so show a trusted adult.",
+  "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
   "band": "1b",
   "chapter": "chat",
   "concept": "show Pim, the debrief",
@@ -1006,13 +1098,13 @@
   "phase": "debrief",
   "state": "chat-1b-ch-1-debrief",
   "narrow": {
-   "width": 470,
+   "width": 430,
    "height": 1000,
-   "top": 402
+   "top": 436.1
   }
  },
  {
-  "alt": "Mia's message, delivered: safe, because Mia is someone you know in real life and she asks for nothing.",
+  "alt": "Mia from Class: “Great game! Your tower at the end was amazing.” The debrief: that is the move, safe to deliver.",
   "band": "1b",
   "chapter": "chat",
   "concept": "safe to deliver",
@@ -1021,13 +1113,13 @@
   "phase": "debrief",
   "state": "chat-1b-ch-2-debrief",
   "narrow": {
-   "width": 470,
+   "width": 440,
    "height": 1000,
-   "top": 205
+   "top": 250.5
   }
  },
  {
-  "alt": "Game chat from Mia from Class: great game, your tower was amazing, see you at school tomorrow.",
+  "alt": "A game chat from Mia from Class: “Great game! Your tower at the end was amazing. See you at school.”",
   "band": "1b",
   "chapter": "chat",
   "concept": "a kind chat from a classmate",
@@ -1038,11 +1130,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 238
+   "top": 242.2
   }
  },
  {
-  "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
+  "alt": "A game chat from JokerJay with clues marked: “Everyone laugh at Pip, he plays like a baby!” and “Share this so the whole school sees.”",
   "band": "1b",
   "chapter": "chat",
   "concept": "a mean message",
@@ -1054,11 +1146,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 242
+   "top": 236.6
   }
  },
  {
-  "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
+  "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
   "band": "1b",
   "chapter": "chat",
   "concept": "the mean message, the debrief",
@@ -1070,11 +1162,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 397
+   "top": 423.2
   }
  },
  {
-  "alt": "Game chat from NewFriend: a rare game skin, free, if you keep it our secret and send your game key.",
+  "alt": "A game chat from NewFriend with clues marked: “I can send you a rare game skin, free” and “keep this our secret.”",
   "band": "1b",
   "chapter": "chat",
   "concept": "a free gift and a secret",
@@ -1086,11 +1178,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 255
+   "top": 249.9
   }
  },
  {
-  "alt": "NewFriend's chat with both clues found, and the four moves below it: Deliver, Bin it, Show Pim, Report and block.",
+  "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
   "band": "1b",
   "chapter": "chat",
   "concept": "choosing the move in chat",
@@ -1102,11 +1194,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 406
+   "top": 451.0
   }
  },
  {
-  "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday.",
+  "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
   "band": "1b",
   "chapter": "chat",
   "concept": "a quiz that collects private facts",
@@ -1122,7 +1214,7 @@
   }
  },
  {
-  "alt": "A stranger's game chat, shown to Pim: someone who asks for secrets from adults and wants to meet is the biggest red flag.",
+  "alt": "The debrief: that is the move! Chat is for people you know in real life. Behind this one: the key-hunter, who wants into your mailbox.",
   "band": "2",
   "chapter": "chat",
   "concept": "show Pim, the debrief",
@@ -1132,13 +1224,13 @@
   "phase": "debrief",
   "state": "chat-2-ch-1-debrief",
   "narrow": {
-   "width": 470,
+   "width": 430,
    "height": 1000,
-   "top": 402
+   "top": 436.1
   }
  },
  {
-  "alt": "Game chat from JokerJay: everyone laugh at Pip, and share this so the whole school sees.",
+  "alt": "A game chat from JokerJay with clues marked: “Everyone laugh at Pip, he plays like a baby!” and “Share this so the whole school sees.”",
   "band": "2",
   "chapter": "chat",
   "concept": "a mean message with an audience",
@@ -1150,11 +1242,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 242
+   "top": 236.6
   }
  },
  {
-  "alt": "The mean message, reported: do not join in, never pass it on, and a kind word to Pip helps more than any reply.",
+  "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
   "band": "2",
   "chapter": "chat",
   "concept": "the bystander move",
@@ -1166,11 +1258,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 397
+   "top": 423.2
   }
  },
  {
-  "alt": "Game chat from NewFriend: you seem nice, a rare game skin for free, just keep this our secret.",
+  "alt": "A game chat from NewFriend with clues marked: “I can send you a rare game skin, free” and “keep this our secret.”",
   "band": "2",
   "chapter": "chat",
   "concept": "an online-only friend",
@@ -1182,11 +1274,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 255
+   "top": 249.5
   }
  },
  {
-  "alt": "NewFriend's chat with both clues found, and the four moves below: Deliver, Bin it, Show Pim, Report and block.",
+  "alt": "The moves for NewFriend's chat: Deliver, Bin it, Show Pim, Report & block.",
   "band": "2",
   "chapter": "chat",
   "concept": "leaving is a move",
@@ -1198,11 +1290,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 406
+   "top": 451.0
   }
  },
  {
-  "alt": "A Fun Quiz in game chat asks for your first pet, the street you grew up on and your birthday, then a share.",
+  "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
   "band": "2",
   "chapter": "chat",
   "concept": "friendly questions that collect facts",
@@ -1214,11 +1306,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 250
+   "top": 249.5
   }
  },
  {
-  "alt": "Group chat: everyone is doing it, post the photo or you are out, and do not show any adult this chat.",
+  "alt": "A group chat with clues marked: “Everyone is doing it. Post the photo or you are out of the group” and “do not show any adult this chat.”",
   "band": "2",
   "chapter": "chat",
   "concept": "a group chat dare",
@@ -1230,11 +1322,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 221
+   "top": 225.9
   }
  },
  {
-  "alt": "The group chat dare, reported: pressure dressed up as friendship, and leaving a chat like that is a strength.",
+  "alt": "The debrief: that is the move! Pressure dressed up as friendship. Behind this one: the giggler, who wants a big reaction.",
   "band": "2",
   "chapter": "chat",
   "concept": "pressure, the debrief",
@@ -1246,11 +1338,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 397
+   "top": 423.2
   }
  },
  {
-  "alt": "The tablet letter with all three clues found: you are our lucky winner, mailbox key, in the next ten minutes.",
+  "alt": "A letter, “You won a tablet!”, with clues marked: you are our lucky winner; your mailbox key; in the next ten minutes.",
   "band": "1b",
   "chapter": "letters",
   "concept": "the prize letter, every clue found",
@@ -1266,7 +1358,7 @@
   }
  },
  {
-  "alt": "A letter from the Post Office Team says your mailbox will close unless you send your mailbox key today.",
+  "alt": "A letter from Post Office Team, “Your mailbox will close”, with clues marked: your mailbox key, and today.",
   "band": "1b",
   "chapter": "letters",
   "concept": "a faked Post Office letter",
@@ -1278,11 +1370,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 221
+   "top": 230.2
   }
  },
  {
-  "alt": "A Game Shop letter offers a thousand free coins, but the offer ends in one hour. Both clues are found.",
+  "alt": "A letter from Game Shop, “Free coins today only!”, with clues marked: a thousand free coins, and the offer ends in one hour.",
   "band": "1b",
   "chapter": "letters",
   "concept": "free coins, too good to be true",
@@ -1294,11 +1386,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 237
+   "top": 177.7
   }
  },
  {
-  "alt": "The free coins letter, binned: Pim explains it was too good to be true, from the prize-faker.",
+  "alt": "The debrief: a thousand free coins, gone in an hour? Real shops do not hand out coins like that. Behind this one: the prize-faker.",
   "band": "1b",
   "chapter": "letters",
   "concept": "free coins, the debrief",
@@ -1314,7 +1406,7 @@
   }
  },
  {
-  "alt": "A Package Service letter: we could not deliver your package, pay a small fee within two hours.",
+  "alt": "A letter's clues marked: pay a small fee, within two hours. Clues found: 2 of 2.",
   "band": "2",
   "chapter": "letters",
   "concept": "a package you never ordered",
@@ -1326,11 +1418,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 230
+   "top": 309.5
   }
  },
  {
-  "alt": "Trick Inbox, Fake or Fact?: a news flash says school closes forever with free candy for a year. Share before they delete this!",
+  "alt": "A post from Netville News Flash, “School to close forever!”, with clues marked: free candy for a year, and share before they delete this.",
   "band": "2",
   "chapter": "media",
   "concept": "a hoax that begs to be shared",
@@ -1342,11 +1434,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 252
+   "top": 242.0
   }
  },
  {
-  "alt": "The school closing post, binned: real news does not beg to be shared, so check big stories first.",
+  "alt": "The post's clues marked, then the debrief: real news does not beg to be shared before deletion. Check big stories with a trusted adult.",
   "band": "2",
   "chapter": "media",
   "concept": "the hoax, the debrief",
@@ -1356,13 +1448,13 @@
   "phase": "debrief",
   "state": "media-2-md-1-debrief",
   "narrow": {
-   "width": 420,
+   "width": 440,
    "height": 1000,
-   "top": 401
+   "top": 313.5
   }
  },
  {
-  "alt": "A Prize Ad says tap to claim your free phone, but only the first fifty people get one.",
+  "alt": "A post from Prize Ad, “You won a phone!”, with clues marked: your free phone, and only the first fifty people.",
   "band": "2",
   "chapter": "media",
   "concept": "an ad in a prize costume",
@@ -1378,7 +1470,7 @@
   }
  },
  {
-  "alt": "A video clip shows the mayor singing in a fountain, but his mouth moves after the words end.",
+  "alt": "A post from Video Clip, “The mayor sings in a fountain!”, with a clue marked: his mouth moves after the words end.",
   "band": "2",
   "chapter": "media",
   "concept": "an AI fake",
@@ -1394,7 +1486,7 @@
   }
  },
  {
-  "alt": "The fountain video, shown to Pim: some videos are made by computers to look real. Check a real news page first.",
+  "alt": "The clue marked, his mouth moves after the words end, then the debrief: some videos are made by computers to look real, AI fakes.",
   "band": "2",
   "chapter": "media",
   "concept": "the AI fake, the debrief",
@@ -1404,13 +1496,13 @@
   "phase": "debrief",
   "state": "media-2-md-3-debrief",
   "narrow": {
-   "width": 420,
+   "width": 430,
    "height": 1000,
-   "top": 422
+   "top": 339.0
   }
  },
  {
-  "alt": "Netville News: the library opens its new reading room on Saturday. Ordinary news, no prizes and no panic.",
+  "alt": "A post from Netville News, “New reading room”: the library opens its new reading room on Saturday.",
   "band": "2",
   "chapter": "media",
   "concept": "real news",
@@ -1421,11 +1513,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 221
+   "top": 177.7
   }
  },
  {
-  "alt": "A Which Dragon Are You quiz asks for your first pet, your mother's first name and your birthday.",
+  "alt": "A post from Which Dragon Are You?, a fun quiz, with a clue marked: your first pet, your mother's first name and your birthday.",
   "band": "2",
   "chapter": "media",
   "concept": "a quiz that harvests answers",
@@ -1441,7 +1533,7 @@
   }
  },
  {
-  "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
+  "alt": "A letter from Lucky Letters, “The shiny chain”, with clues marked: pass this letter to ten friends; a shiny surprise will find you; tonight.",
   "band": "1b",
   "chapter": "mix",
   "concept": "a chain letter",
@@ -1457,7 +1549,7 @@
   }
  },
  {
-  "alt": "The chain letter, binned: the debrief names the forwarder, who wants you to share the trick with everyone.",
+  "alt": "The debrief: the Magpie loves a chain, the trick does its own traveling. Behind this one: the forwarder.",
   "band": "1b",
   "chapter": "mix",
   "concept": "the forwarder",
@@ -1473,7 +1565,7 @@
   }
  },
  {
-  "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+  "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
   "band": "1b",
   "chapter": "mix",
   "concept": "the key-hunter",
@@ -1489,7 +1581,7 @@
   }
  },
  {
-  "alt": "A post from News Flash says school is closing forever with free candy for everyone, and begs you to tell everyone.",
+  "alt": "A post from News Flash, “School is closing forever!”, with clues marked: free candy for everyone on Monday, and tell everyone you know.",
   "band": "1b",
   "chapter": "mix",
   "concept": "fake news with candy on top",
@@ -1501,11 +1593,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 221
+   "top": 245.2
   }
  },
  {
-  "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction.",
+  "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
   "band": "1b",
   "chapter": "mix",
   "concept": "the giggler",
@@ -1521,7 +1613,7 @@
   }
  },
  {
-  "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
+  "alt": "A letter from Prize Team, “Visitor number 1000!”, with clues marked: visitor number 1000, and your free games console.",
   "band": "1b",
   "chapter": "mix",
   "concept": "visitor number 1000",
@@ -1533,11 +1625,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 221
+   "top": 177.7
   }
  },
  {
-  "alt": "The visitor prize, binned: you did not enter anything, so you cannot have won. The prize-faker sent it.",
+  "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
   "band": "1b",
   "chapter": "mix",
   "concept": "the prize-faker",
@@ -1553,7 +1645,7 @@
   }
  },
  {
-  "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+  "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
   "band": "2",
   "chapter": "mix",
   "concept": "the account thief",
@@ -1569,7 +1661,7 @@
   }
  },
  {
-  "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction and a crowd.",
+  "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
   "band": "2",
   "chapter": "mix",
   "concept": "the giggler",
@@ -1585,7 +1677,7 @@
   }
  },
  {
-  "alt": "The visitor 1000 prize, binned: the debrief names the prize-faker, who wants you to tap and type.",
+  "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
   "band": "2",
   "chapter": "mix",
   "concept": "the prize-faker",
@@ -1601,7 +1693,7 @@
   }
  },
  {
-  "alt": "Trick Inbox, Pressure: a letter says this is the head teacher speaking. Send your key before lunch, no questions.",
+  "alt": "A letter from The Head Teacher, “At once”, with clues marked: this is the head teacher speaking; your mailbox key; before lunch.",
   "band": "2",
   "chapter": "pressure",
   "concept": "authority and a rush",
@@ -1613,11 +1705,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 223
+   "top": 219.8
   }
  },
  {
-  "alt": "The head teacher letter, reported: authority is a costume here, and do not ask questions is the loudest clue.",
+  "alt": "The debrief: that is the move! Authority is a costume here. Behind this one: the key-hunter, who wants into your mailbox.",
   "band": "2",
   "chapter": "pressure",
   "concept": "authority, the debrief",
@@ -1629,11 +1721,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 415
+   "top": 417.2
   }
  },
  {
-  "alt": "A System letter says your account will be deleted in one hour unless you send your key right now.",
+  "alt": "A letter from System, “Deleted in one hour”, with clues marked: your account will be deleted in one hour, and send your key.",
   "band": "2",
   "chapter": "pressure",
   "concept": "fear and a countdown",
@@ -1649,7 +1741,7 @@
   }
  },
  {
-  "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
+  "alt": "A post from Fan Club, “Hello, skateboard star!”, with clues marked: things it knows about you, and your mailbox key.",
   "band": "2",
   "chapter": "pressure",
   "concept": "flattery from a public profile",
@@ -1661,11 +1753,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 268
+   "top": 240.4
   }
  },
  {
-  "alt": "The Fan Club post, binned: everything it knew came from a public profile. Flattery built from your footprint.",
+  "alt": "The debrief: that is the move! Everything it “knows” came from a public profile. Behind this one: the key-hunter.",
   "band": "2",
   "chapter": "pressure",
   "concept": "the footprint, the debrief",
@@ -1677,11 +1769,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 496
+   "top": 499.2
   }
  },
  {
-  "alt": "Group chat from The Cool Group: post a silly photo of your friend or leave the group. Everyone will laugh.",
+  "alt": "A group chat from The Cool Group with clues marked: post a silly photo of your friend, or leave the group; everyone will laugh.",
   "band": "2",
   "chapter": "pressure",
   "concept": "a dare that spends a friend",
@@ -1693,11 +1785,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 228
+   "top": 233.1
   }
  },
  {
-  "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
+  "alt": "A letter from Shop Bot, “Only two left!”, with clues marked: only two left, and pay in the next five minutes.",
   "band": "2",
   "chapter": "pressure",
   "concept": "a countdown hook",
@@ -1709,11 +1801,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 223
+   "top": 168.0
   }
  },
  {
-  "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+  "alt": "A letter from Post Office, “Your mailbox key expired”, with a clue marked: the real address is a freemail box, not the post office.",
   "band": "2",
   "chapter": "senders",
   "concept": "a faked sender, every clue found",
@@ -1725,11 +1817,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 173
+   "top": 121.7
   }
  },
  {
-  "alt": "The faked Post Office letter with every clue found: the real address, the key ask, the rush, and a button that goes elsewhere.",
+  "alt": "The letter's clues marked: the real address, a freemail box; your mailbox key; today; and the Renew key button, which goes somewhere else.",
   "band": "2",
   "chapter": "senders",
   "concept": "a faked sender, every clue found",
@@ -1741,23 +1833,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 277
+   "top": 280.5
   }
  },
  {
-  "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
-  "band": "2",
-  "chapter": "senders",
-  "compact": true,
-  "concept": "spoofing, the debrief",
-  "found": "all",
-  "game": "trick-inbox",
-  "msg": "sd-1",
-  "phase": "debrief",
-  "state": "senders-2-sd-1-debrief"
- },
- {
-  "alt": "The faked Post Office letter, reported: the name says Post Office, but the address and the button tell the truth.",
+  "alt": "The debrief: the name says Post Office, but the real address is a freemail box and the button goes elsewhere. That mismatch is spoofing.",
   "band": "2",
   "chapter": "senders",
   "concept": "spoofing, the debrief",
@@ -1767,13 +1847,13 @@
   "phase": "debrief",
   "state": "senders-2-sd-1-debrief-n1",
   "narrow": {
-   "width": 420,
+   "width": 430,
    "height": 1000,
-   "top": 514
+   "top": 536.4
   }
  },
  {
-  "alt": "Trick Inbox, Faked Senders: a letter from Post Office says your key expired. Its real address is a freemail box.",
+  "alt": "A new letter from Post Office, “Your mailbox key expired”, with its real address showing: a freemail box.",
   "band": "2",
   "chapter": "senders",
   "concept": "a faked sender, before the hunt",
@@ -1785,11 +1865,11 @@
   "narrow": {
    "width": 420,
    "height": 1000,
-   "top": 148
+   "top": 121.3
   }
  },
  {
-  "alt": "A letter named Your Teacher, sent from a stranger's mail box, asks where you live and for your mailbox key.",
+  "alt": "A letter from Your Teacher, “Homework check”, with one clue marked: it asks where you are at home and for your mailbox key.",
   "band": "2",
   "chapter": "senders",
   "concept": "a teacher in costume",

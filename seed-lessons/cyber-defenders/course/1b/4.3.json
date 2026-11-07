@@ -11,13 +11,13 @@
    "text": "Posters appear all over Netville overnight, promising free game gems to everyone. Pim tilts her head. Free gems for the whole town sounds too good.",
    "art": "star",
    "img": "csq/trick-inbox/letters-1b-lt-5-all",
-   "alt": "A Game Shop letter offers a thousand free coins, but the offer ends in one hour. Both clues are found.",
+   "alt": "A letter from Game Shop, “Free coins today only!”, with clues marked: a thousand free coins, and the offer ends in one hour.",
    "focus": [
     {
      "cue": "A thousand free coins for everyone",
      "box": [
       7.1,
-      44.5,
+      69.6,
       50.0,
       13.5
      ]
@@ -26,7 +26,7 @@
      "cue": "Too good, and it rushes you",
      "box": [
       7.1,
-      58.0,
+      83.1,
       58.0,
       13.5
      ]
@@ -38,13 +38,13 @@
    "text": "Real shops sell their best gems to stay open, so they do not give away the crown jewels. Too-good posters share clues: a miracle prize, a famous singer's face, or you are the millionth visitor.",
    "art": "trophy",
    "img": "csq/trick-inbox/mix-1b-mx-6-all",
-   "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
+   "alt": "A letter from Prize Team, “Visitor number 1000!”, with clues marked: visitor number 1000, and your free games console.",
    "focus": [
     {
      "cue": "You are visitor number 1000!",
      "box": [
       21.9,
-      40.9,
+      59.2,
       46.9,
       13.5
      ]
@@ -53,7 +53,7 @@
      "cue": "A free prize for a contest you never entered",
      "box": [
       7.1,
-      54.4,
+      72.7,
       55.7,
       13.5
      ]
@@ -65,13 +65,13 @@
    "text": "Ads are allowed to exaggerate to sound exciting. A fact is different: facts need a second source you can trust before you believe them.",
    "art": "magnifier",
    "img": "csq/trick-inbox/mix-1b-mx-4-all",
-   "alt": "A post from News Flash says school is closing forever with free candy for everyone, and begs you to tell everyone.",
+   "alt": "A post from News Flash, “School is closing forever!”, with clues marked: free candy for everyone on Monday, and tell everyone you know.",
    "focus": [
     {
      "cue": "A huge claim from a sender nobody knows",
      "box": [
       6.9,
-      15.1,
+      4.9,
       86.2,
       22.4
      ]
@@ -80,7 +80,7 @@
      "cue": "Check it with a second source first",
      "box": [
       7.1,
-      51.2,
+      41.0,
       85.7,
       22.4
      ]
@@ -99,22 +99,22 @@
     "Believe it only if it checks out"
    ],
    "img": "csq/escape-the-post-office/inbox-1b-2",
-   "alt": "Lock 4, message 2 of 6: a Prize Parrot says you won a shiny prize you never tried to win. Tap fast!",
+   "alt": "Lock 4: a message from Prize Parrot, “You won a prize!”: a shiny prize you never tried to win, tap fast. Below it, the four moves.",
    "focus": [
     {
      "cue": "A prize you never tried to win, and a rush",
      "box": [
       5.2,
       20.2,
-      83.5,
-      20.3
+      87.7,
+      21.2
      ]
     },
     {
      "cue": "Pause, then make a calm choice",
      "box": [
       2.9,
-      48.9,
+      49.8,
       94.3,
       47.4
      ]
@@ -126,7 +126,7 @@
    "text": "Then Pim finds gravel scattered behind the posters, and one cheeky feather. The posters were the Magpie's work, and the gems were only gravel.",
    "art": "mask",
    "img": "csq/trick-inbox/letters-1b-lt-5-debrief",
-   "alt": "The free coins letter, binned: Pim explains it was too good to be true, from the prize-faker.",
+   "alt": "The debrief: a thousand free coins, gone in an hour? Real shops do not hand out coins like that. Behind this one: the prize-faker.",
    "focus": [
     {
      "cue": "The coins were bait from the prize-faker",
@@ -169,21 +169,15 @@
    "text": "Open Escape the Post Office at Lock 4: Trick Inbox and answer all 6 messages. Pause on every amazing promise before you choose.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/inbox-1b",
-   "alt": "Lock 4, Trick Inbox: the first of six messages, a library book, with four moves to choose from.",
-   "view": [
-    0.0,
-    3.7,
-    100.0,
-    96.3
-   ],
+   "alt": "Lock 4: a message from Library desk, “Your book is ready”: pick it up any time. Below it, the first moves: Deliver it, Bin it.",
    "focus": [
     {
      "cue": "Play Lock 4: choose the safe move each time",
      "box": [
-      1.5,
-      36.9,
-      97.0,
-      41.1
+      2.9,
+      9.7,
+      94.3,
+      71.5
      ]
     }
    ]

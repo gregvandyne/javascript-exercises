@@ -22,39 +22,33 @@
     "a game saves your top score: a service"
    ],
    "img": "csq/escape-the-post-office/pim-2",
-   "alt": "Lock 3 at Pro: three cards from Pim. One postmark is stamped by a hand press, and one asks for a secret.",
-   "view": [
-    0.0,
-    39.0,
-    66.9,
-    61.0
-   ],
+   "alt": "Two Pim cards' clues: one has a hand-press postmark and owl-shaped prints; the other, the office stamp and small owl prints. Pick this card buttons.",
    "focus": [
     {
      "cue": "Postmark: written by a service",
      "box": [
-      38.5,
-      60.3,
-      25.4,
-      8.9
+      58.3,
+      10.5,
+      36.0,
+      15.1
      ]
     },
     {
      "cue": "Footprint: written by you, step by step",
      "box": [
-      38.5,
-      69.2,
-      25.4,
-      13.3
+      58.3,
+      25.7,
+      36.0,
+      30.3
      ]
     },
     {
      "cue": "A card written to fake the trail",
      "box": [
-      5.9,
-      60.3,
-      25.4,
-      13.3
+      10.0,
+      2.4,
+      36.0,
+      22.7
      ]
     }
    ]
@@ -64,30 +58,24 @@
    "text": "Deleting a post is asking nicely for it to go. Copies, screenshots and shares can keep it alive long after your own copy is gone.",
    "art": "shield",
    "img": "csq/would-you-rather/online-delete-2",
-   "alt": "Would you rather delete an old post you are embarrassed by, or leave it up and laugh about it?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: delete an old post you are embarrassed by, or leave it and laugh?",
    "focus": [
     {
      "cue": "Deleting asks nicely for a post to go",
      "box": [
-      11.9,
-      38.5,
-      31.6,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Copies and screenshots can keep it alive",
      "box": [
-      61.1,
-      41.0,
-      22.4,
-      15.3
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -132,13 +120,13 @@
    "text": "Public gets you seen and found; private keeps you safe. Before you post, ask the Cyber Defender question: what could someone do with this?",
    "art": "globe",
    "img": "csq/trick-inbox/pressure-2-pr-3-all",
-   "alt": "A Fan Club post knows you love skateboards, your dog's name and your birthday, and asks for your key.",
+   "alt": "A post from Fan Club, “Hello, skateboard star!”, with clues marked: things it knows about you, and your mailbox key.",
    "focus": [
     {
      "cue": "A post built from someone's public profile",
      "box": [
       7.1,
-      27.6,
+      39.3,
       85.7,
       22.4
      ]
@@ -147,7 +135,7 @@
      "cue": "What could someone do with this?",
      "box": [
       29.5,
-      50.0,
+      61.7,
       41.4,
       13.5
      ]
@@ -184,21 +172,15 @@
    "text": "Open Escape the Post Office at Lock 3: Which Pim? One card wears a faked postmark. Check every clue in each trail, then pick the real Pim.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/pim-2-pick",
-   "alt": "The real Pim is picked at Pro: the office stamp, the worn left-edge footprint, help asked in the open.",
-   "view": [
-    0.0,
-    25.2,
-    97.3,
-    74.8
-   ],
+   "alt": "Three messages say they are from Pim; one wears a faked trail. A card from Pim asks you to bring your mailbox key to a side gate.",
    "focus": [
     {
      "cue": "Play Which Pim?: trust the trail, not the name",
      "box": [
-      34.2,
-      36.9,
-      31.7,
-      63.1
+      54.0,
+      56.4,
+      40.2,
+      42.1
      ]
     }
    ]

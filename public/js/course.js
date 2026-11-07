@@ -254,7 +254,26 @@ function gfTextMap(fig) {
 /** The share (0..1) of an element's area (a chip, a badge) that sits on the picture's lettering. */
 function gfOnText(fig, el, map) { return gfTextShare(fig, rectOf(el), map, 2); }
 function gfTextShare(fig, cr, map, level) {
-  if (!map) return 0;
+  // a badge (level 1) also steers clear of the capture's recorded words, when zoom-to-cue has loaded them
+  // (course-zoom.js sets fig.gfWords): big phone-width lettering can slip through the 16 px cells of the text map
+  const wd = level === 1 && fig.gfWords ? gfWordShare(fig, cr) : 0;
+  if (!map) return wd;
+  return Math.max(wd, gfMapShare(fig, cr, map, level));
+}
+/** The share of a rect that sits on the capture's recorded words ([x, y, w, h] in % of the picture, padded 1 px). */
+function gfWordShare(fig, cr) {
+  const ir = rectOf(fig.querySelector('.simg')), fr = rectOf(fig.querySelector('.sframe'));
+  const c = { left: Math.max(cr.left, fr.left), top: Math.max(cr.top, fr.top), right: Math.min(cr.right, fr.right), bottom: Math.min(cr.bottom, fr.bottom) };
+  const all = (cr.right - cr.left) * (cr.bottom - cr.top), W = ir.right - ir.left, H = ir.bottom - ir.top;
+  if (all <= 0 || W <= 0) return 0;
+  let a = 0;
+  for (const w of fig.gfWords) {
+    const l = ir.left + w[0] * W / 100 - 1, t = ir.top + w[1] * H / 100 - 1;
+    a += area(c, { left: l, top: t, right: l + w[2] * W / 100 + 2, bottom: t + w[3] * H / 100 + 2 });
+  }
+  return Math.min(1, a / all);
+}
+function gfMapShare(fig, cr, map, level) {
   const img = fig.querySelector('.simg'), ir = rectOf(img);
   const fr = rectOf(fig.querySelector('.sframe'));
   const c = { left: Math.max(cr.left, fr.left), top: Math.max(cr.top, fr.top), right: Math.min(cr.right, fr.right), bottom: Math.min(cr.bottom, fr.bottom) };
@@ -347,7 +366,7 @@ function gfPlaceCue(fig, i) {
 // chip is placed after the badge (it steers clear of it), and gfLayout tries the next one when the chip finds
 // no room. A badge that cannot avoid every word gets a dark rim (gf-badge--ink) so its number still reads.
 function gfBadgeSpots(fig, box, badge, map) {
-  badge.classList.remove('gf-badge--at', 'gf-badge--ink');
+  badge.classList.remove('gf-badge--at', 'gf-badge--ink', 'gf-badge--off');
   const fr = rectOf(fig.querySelector('.sframe'));
   const zs = fig.querySelector('.szoom span');
   const zoom = zs ? grow(rectOf(zs), 3) : null;
@@ -388,6 +407,10 @@ function gfBadgeSpots(fig, box, badge, map) {
     const bx = rectOf(st.querySelector('.gf-box'));
     taken.push(grow({ left: bx.left + sp[0], top: bx.top + sp[1], right: bx.left + sp[0] + d, bottom: bx.top + sp[1] + d }, 2));
   }
+  // ... and, of spots clear of the same text, it prefers one not on or beside another step's box: a number
+  // there reads as that box's (two stacked clue lines)
+  const others = [];
+  if (reduced && me) for (const st of fig.querySelectorAll('.gf-step')) if (st !== me) { const r = rectOf(st.querySelector('.gf-box')); others.push({ left: r.left - o - d, top: r.top, right: r.right + o + d, bottom: r.bottom }); }
   let out = [];
   const all = [];
   spots.forEach((p, k) => {
@@ -396,21 +419,26 @@ function gfBadgeSpots(fig, box, badge, map) {
       if (r.left < fr.left + 1 || r.top < fr.top + 1 || r.right > fr.right - 1 || r.bottom > fr.bottom - 1) return;
       if ((k < inner && area(r, ring)) || (zoom && area(r, zoom))) return;
     }
-    const c = { p, k, tx: gfTextShare(fig, r, map, 1), rel: p || [d0.left - b.left, d0.top - b.top] };
+    const c = { p, k, tx: gfTextShare(fig, r, map, 1), rel: p || [d0.left - b.left, d0.top - b.top], by: others.some(t => area(r, t)) ? 1 : 0 };
     all.push(c);
     if (!taken.some(t => area(r, t))) out.push(c);
   });
   if (!out.length) out = all;
   out.sort((a, c) => a.tx - c.tx || a.k - c.k);
-  return out.filter(c => c.tx <= out[0].tx + 0.005);
+  const best = out.filter(c => c.tx <= out[0].tx + 0.005);
+  return [...best.filter(c => !c.by), ...best.filter(c => c.by)];
 }
 const gfSpotOf = new WeakMap();
 function gfSetBadge(badge, spot) {
-  badge.classList.remove('gf-badge--at', 'gf-badge--ink');
+  badge.classList.remove('gf-badge--at', 'gf-badge--ink', 'gf-badge--off');
   if (spot.rel) gfSpotOf.set(badge, spot.rel); else gfSpotOf.delete(badge);
   if (spot.p) { badge.style.setProperty('--gx', spot.p[0] + 'px'); badge.style.setProperty('--gy', spot.p[1] + 'px'); badge.classList.add('gf-badge--at'); }
   if (spot.tx > 0) badge.classList.add('gf-badge--ink');
+  // a number that would hide a good part of a word (a clue on a dense phone-width shot) stays off: the cue list
+  // and the strip carry the step's number, and the ring still marks the spot
+  if (spot.tx > BADGE_TEXT_MAX) badge.classList.add('gf-badge--off');
 }
+const BADGE_TEXT_MAX = 0.04;
 /** Place one screenshot step: its badge on the least text, then its chip clear of the badge (another
  *  equally clear badge spot when the chip finds no room). -> what gfPlaceCue says. */
 function gfPlaceStep(fig, i) {
@@ -459,7 +487,7 @@ if (gfFigs.length) {
 }
 // Zoom-to-cue: a screenshot whose game words would read under 11 px zooms to each step (public/js/course-zoom.js,
 // self-contained: it only reads the figure, sets the picture's and the step's geometry, and calls gfPlaceStep).
-if (gfFigs.length) import('/js/course-zoom.js').then(m => m.init({ figs: gfFigs, placeStep: gfPlaceStep, reduced })).catch(() => { /* no zoom: the plain tour */ });
+if (gfFigs.length) import('/js/course-zoom.js').then(m => m.init({ figs: gfFigs, placeStep: gfPlaceStep, relayout: gfLayout, reduced })).catch(() => { /* no zoom: the plain tour */ });
 if (gfFigs.length && !reduced) {
   const gfIO = new IntersectionObserver(es => {
     for (const e of es) {

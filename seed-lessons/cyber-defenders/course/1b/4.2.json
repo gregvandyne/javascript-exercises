@@ -11,7 +11,7 @@
    "text": "Behind the post office, Pim finds four messy nests built by the Magpie. Each nest holds a trick, and each trick has a motive.",
    "art": "map",
    "img": "csq/trick-inbox/mix-1b-mx-1-debrief",
-   "alt": "The chain letter, binned: the debrief names the forwarder, who wants you to share the trick with everyone.",
+   "alt": "The debrief: the Magpie loves a chain, the trick does its own traveling. Behind this one: the forwarder.",
    "focus": [
     {
      "cue": "Every trick has a motive behind it",
@@ -29,7 +29,7 @@
    "text": "The key-hunter wants into your mailbox, so its letters beg for your key. The prize-faker wants you to tap and type, so it dangles a fake reward.",
    "art": "key",
    "img": "csq/trick-inbox/mix-1b-mx-3-debrief",
-   "alt": "A letter asking for your mailbox key, binned: the debrief names the key-hunter, who wants into your mailbox.",
+   "alt": "The debrief: checking an account never needs your key sent in a letter. Behind this one: the key-hunter.",
    "focus": [
     {
      "cue": "The key-hunter wants into your mailbox",
@@ -47,7 +47,7 @@
    "text": "The giggler wants a reaction, so it sends teasing tricks to make you reply fast. The forwarder wants you to share its trick with all your friends.",
    "art": "people",
    "img": "csq/trick-inbox/mix-1b-mx-4-debrief",
-   "alt": "The school closing post, binned: the debrief names the giggler, who wants a big reaction.",
+   "alt": "The debrief: huge news from a sender nobody knows, with candy on top. Behind this one: the giggler, who wants a big reaction.",
    "focus": [
     {
      "cue": "The giggler wants a big reaction",
@@ -72,13 +72,13 @@
     "So do not tap it"
    ],
    "img": "csq/trick-inbox/mix-1b-mx-6-all",
-   "alt": "A Prize Team letter says you are visitor number 1000 and can claim a free games console.",
+   "alt": "A letter from Prize Team, “Visitor number 1000!”, with clues marked: visitor number 1000, and your free games console.",
    "focus": [
     {
      "cue": "A prize to claim with one tap",
      "box": [
       7.1,
-      40.9,
+      59.2,
       61.7,
       27.0
      ]
@@ -87,7 +87,7 @@
      "cue": "Name the motive before you choose",
      "box": [
       29.6,
-      15.1,
+      33.5,
       29.7,
       7.8
      ]
@@ -99,7 +99,7 @@
    "text": "Knowing the motive tells you the defense: starve it. Do not reply, do not tap, and do not share, and the trick gets nothing it wanted.",
    "art": "shield",
    "img": "csq/trick-inbox/mix-1b-mx-1-all",
-   "alt": "Magpie Mix: a chain letter says pass it to ten friends and a shiny surprise will find you tonight.",
+   "alt": "A letter from Lucky Letters, “The shiny chain”, with clues marked: pass this letter to ten friends; a shiny surprise will find you; tonight.",
    "focus": [
     {
      "cue": "A chain only works if you pass it on",
@@ -151,7 +151,7 @@
    "text": "Open Trick Inbox at Magpie Mix and sort all 6 messages. Before you choose, name the motive: key-hunter, prize-faker, giggler or forwarder.",
    "art": "trophy",
    "img": "csq/trick-inbox/mix-1b-mx-6-debrief",
-   "alt": "The visitor prize, binned: you did not enter anything, so you cannot have won. The prize-faker sent it.",
+   "alt": "The debrief: you did not enter anything, so you cannot have won anything. Behind this one: the prize-faker.",
    "focus": [
     {
      "cue": "Play Magpie Mix: name the motive behind each",

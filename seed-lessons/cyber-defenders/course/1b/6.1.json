@@ -11,7 +11,7 @@
    "text": "The post office never trusts a single lock. A strong door guards the hall, a safe guards the packages, and only Pim's key opens the safe. Three layers, one job.",
    "art": "lock",
    "img": "csq/escape-the-post-office/layers-1b",
-   "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
+   "alt": "A trouble card: a snooper tries to peek inside a sealed note on its trip. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
    "focus": [
     {
      "cue": "One trouble card: a snooper peeks",
@@ -26,7 +26,7 @@
      "cue": "Four layers, each stops a different trick",
      "box": [
       2.6,
-      33.3,
+      33.2,
       94.9,
       42.4
      ]
@@ -38,7 +38,7 @@
    "text": "When a game or tablet asks to update, it is patching holes. A hole is a small flaw a trickster could climb through, and the update sews it shut.",
    "art": "wrench",
    "img": "csq/escape-the-post-office/layers-1b-3",
-   "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
+   "alt": "A trouble card: an old lock has a known hole that anyone can use. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
    "focus": [
     {
      "cue": "An old lock has a known hole",
@@ -65,13 +65,13 @@
    "text": "A backup is a spare copy of your things, kept somewhere else. If a tablet breaks or gets locked by a trick, a safe copy elsewhere means nothing precious is lost.",
    "art": "box",
    "img": "csq/escape-the-post-office/layers-1b-4",
-   "alt": "Threat 4 of 4: a flood soaks the only copy of a letter. The Copy Vault keeps a spare somewhere else.",
+   "alt": "A trouble card: a flood soaks the only copy of a letter. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
    "focus": [
     {
      "cue": "A flood soaks the only copy",
      "box": [
       5.2,
-      18.3,
+      6.9,
       75.5,
       12.9
      ]
@@ -80,7 +80,7 @@
      "cue": "A spare kept somewhere else saves it",
      "box": [
       53.3,
-      68.7,
+      57.2,
       22.6,
       20.5
      ]
@@ -99,13 +99,13 @@
     "A backup copy kept somewhere else"
    ],
    "img": "csq/escape-the-post-office/layers-1b",
-   "alt": "Lock 6, Layers: a snooper tries to peek inside a sealed note. Four layers wait: padlock, key checker, patch crew, copy vault.",
+   "alt": "A trouble card: a snooper tries to peek inside a sealed note on its trip. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
    "focus": [
     {
      "cue": "Padlock, key checker, patches, spare copies",
      "box": [
       2.6,
-      33.3,
+      33.2,
       94.9,
       42.4
      ]
@@ -126,13 +126,13 @@
    "text": "No single layer is perfect, and that is fine. Two ordinary layers together can beat one strong one, because a trick that slips past the first still meets the second.",
    "art": "shield",
    "img": "csq/escape-the-post-office/layers-1b-2",
-   "alt": "Threat 2 of 4: a guesser tries key after key on a mailbox. Which layer stops it?",
+   "alt": "A trouble card: a guesser tries key after key on a mailbox. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
    "focus": [
     {
      "cue": "A guesser tries key after key",
      "box": [
       5.2,
-      28.5,
+      6.7,
       83.4,
       12.9
      ]
@@ -141,7 +141,7 @@
      "cue": "A second layer, the key checker, still stands",
      "box": [
       53.3,
-      50.9,
+      29.1,
       36.7,
       20.5
      ]
@@ -178,7 +178,7 @@
    "text": "Open Escape the Post Office at Lock 6: Layers and match all 4 trouble cards. For each one, name the layer that stops it.",
    "art": "trophy",
    "img": "csq/escape-the-post-office/layers-1b-3",
-   "alt": "Threat 3 of 4: an old lock has a known hole that anyone can use. The Patch Crew waits among the layers.",
+   "alt": "A trouble card: an old lock has a known hole that anyone can use. The layer tiles: Padlock Gate, Key Checker, Patch Crew, Copy Vault.",
    "focus": [
     {
      "cue": "Play Layers: match each trouble to its layer",

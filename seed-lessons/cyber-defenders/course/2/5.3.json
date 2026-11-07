@@ -21,7 +21,7 @@
    "text": "If an app is engineered by hundreds of designers to hold you, staying is not a character test you failed. Balance is a design problem, so fix the design, not just your intentions.",
    "art": "shield",
    "img": "csq/trick-inbox/pressure-2-pr-2-all",
-   "alt": "A System letter says your account will be deleted in one hour unless you send your key right now.",
+   "alt": "A letter from System, “Deleted in one hour”, with clues marked: your account will be deleted in one hour, and send your key.",
    "focus": [
     {
      "cue": "A countdown built to keep you tapping",
@@ -46,13 +46,13 @@
     "Endless scroll: set a time limit you chose"
    ],
    "img": "csq/trick-inbox/pressure-2-pr-6-all",
-   "alt": "A Shop Bot letter: only two left at this price, pay in the next five minutes or lose them forever.",
+   "alt": "A letter from Shop Bot, “Only two left!”, with clues marked: only two left, and pay in the next five minutes.",
    "focus": [
     {
      "cue": "A hook: only two left",
      "box": [
       7.1,
-      36.3,
+      59.6,
       33.0,
       13.5
      ]
@@ -61,7 +61,7 @@
      "cue": "Another hook: a countdown",
      "box": [
       7.1,
-      49.9,
+      73.1,
       61.5,
       13.5
      ]

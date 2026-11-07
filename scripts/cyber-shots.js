@@ -82,6 +82,11 @@ function collectRects(clip) {
     // Packet Post's trick cards (Spot the Trick)
     ['ppsay', '.pp-say'], ['pph', '.pp-panel > .pp-h'], ['ppletter', '.pp-letter'], ['ppfrom', '.pp-letter .pp-from'], ['ppbadge', '.pp-letter .pp-badge'],
     ['ppsubj', '.pp-letter b'], ['ppbody', '.pp-letter p'], ['pptile', '.pp-tile'], ['ppverdict', '.pp-verdicts .ok-btn'],
+    // ... and its other panels: an item card (a lockbox, a secret message), a cipher's letters, what goes wrong on a road
+    ['ppitem', '.pp-itemcard'], ['ppcipher', '.pp-cipher'], ['ppevents', '.pp-events'], ['ppev', '.pp-events li'], ['pptiles', '.pp-tiles'],
+    ['ppbtn', '.pp-panel .ok-btn'],
+    // Would You Rather: the question, its two choices (a, b) with their words, and the OR between them
+    ['wyrask', '#ask'], ['wyropt', '#pair .opt'], ['wyrtx', '#pair .opt .tx'], ['wyror', '#pair .or'],
   ];
   for (const [name, sel] of SEL) {
     const els = [...document.querySelectorAll(sel)].filter(e => !e.closest('[hidden]'));
@@ -94,6 +99,7 @@ function collectRects(clip) {
   for (let t = walker.nextNode(); t; t = walker.nextNode()) {
     const el = t.parentElement, s = t.textContent.trim();
     if (!s || !el || el.closest('[hidden]') || !el.getClientRects().length) continue;
+    if (clip) { const q = R(el); if (q.bottom <= 0 || q.top >= H) continue; }   // a slice: only the words it shows
     const px = Math.round(parseFloat(getComputedStyle(el).fontSize) * 1280 / W * 10) / 10;
     sizes.set(px, (sizes.get(px) || 0) + s.length);
   }

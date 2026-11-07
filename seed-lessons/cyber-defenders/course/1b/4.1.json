@@ -11,13 +11,13 @@
    "text": "A letter lands in the Netville post with big, exciting words. Pim reads it slowly. Exciting does not always mean true, says Pim.",
    "art": "envelope",
    "img": "csq/packet-post/tricks-1b-key-n1",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "alt": "A prize card from Prize Team, marked unknown sender: “You won a tablet!”",
    "focus": [
     {
      "cue": "Big, exciting words: You won a tablet!",
      "box": [
       2.9,
-      6.3,
+      3.3,
       94.3,
       79.5
      ]
@@ -26,7 +26,7 @@
      "cue": "Read it slowly: who really sent it?",
      "box": [
       48.5,
-      11.9,
+      8.8,
       39.6,
       11.0
      ]
@@ -38,13 +38,13 @@
    "text": "Clue one is a rush: reply in ten minutes or lose it! Clue two is a prize for a contest you never entered.",
    "art": "magnifier",
    "img": "csq/packet-post/tricks-1b-clues-n1",
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "alt": "The prize card's cues: hurry, only ten minutes; asks for the mailbox key; a prize you never entered; says congratulations. Then the three choices.",
    "focus": [
     {
      "cue": "Clue one, the rush: only ten minutes",
      "box": [
       2.9,
-      23.6,
+      17.1,
       46.2,
       24.6
      ]
@@ -53,7 +53,7 @@
      "cue": "Clue two, a prize you never entered for",
      "box": [
       2.9,
-      51.5,
+      45.1,
       46.2,
       24.6
      ]
@@ -65,7 +65,7 @@
    "text": "Clue three: it comes from someone you do not know. Clue four asks for your key. Real companies and real games never ask for your passphrase.",
    "art": "mask",
    "img": "csq/packet-post/tricks-1b-card-n1",
-   "alt": "A second message card to judge: is it a trick with clues, or a safe message with none?",
+   "alt": "A card from “Your bank”, marked unknown sender: “Your account is locked.”",
    "focus": [
     {
      "cue": "Clue three: an unknown sender",
@@ -99,13 +99,13 @@
     "Please send your key"
    ],
    "img": "csq/packet-post/tricks-1b-key-n2",
-   "alt": "Spot the Trick opens its first message card: friendly words on the surface, and clues hiding in the text.",
+   "alt": "Cues to tap: hurry, only ten minutes; asks for the mailbox key; a prize you never entered; says congratulations. Then Safe, Trick or Ask a trusted adult.",
    "focus": [
     {
      "cue": "Tap every cue that smells like a trick",
      "box": [
       2.9,
-      13.9,
+      14.8,
       94.3,
       52.5
      ]
@@ -114,7 +114,7 @@
      "cue": "Then decide: safe or trick?",
      "box": [
       2.9,
-      69.7,
+      70.7,
       94.2,
       20.3
      ]
@@ -126,7 +126,7 @@
    "text": "When you spot a trick, do not reply and do not tap anything. Show it to a trusted adult. A trick that fishes for secrets is called phishing.",
    "art": "shield",
    "img": "csq/packet-post/tricks-1b-coins-n1",
-   "alt": "Spot the Trick, card 4: a Game Shop offers a thousand free coins if you tap, and the offer ends in one hour.",
+   "alt": "Cues to tap: a button that wants a tap right now; talks about coins. Then three choices: Safe, Trick, Ask a trusted adult.",
    "focus": [
     {
      "cue": "A button that wants a tap right now: do not tap",
@@ -178,15 +178,15 @@
    "text": "Open Packet Post at Spot the Trick and check all 6 cards. Tap every clue you find, then choose. After that, the game goes on to Secret Messages: solve its 3 puzzles with the cipher wheel.",
    "art": "trophy",
    "img": "csq/packet-post/tricks-1b-clues-n1",
-   "alt": "Checking the message: the first clue is marked, and the card still has more of its tricks to find.",
+   "alt": "The prize card's cues: hurry, only ten minutes; asks for the mailbox key; a prize you never entered; says congratulations. Then the three choices.",
    "focus": [
     {
      "cue": "Play Spot the Trick: tap every clue, then choose",
      "box": [
       2.9,
-      23.6,
+      17.1,
       94.3,
-      52.5
+      52.6
      ]
     }
    ]

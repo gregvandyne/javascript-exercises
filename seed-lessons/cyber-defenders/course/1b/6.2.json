@@ -20,31 +20,25 @@
    "title": "The law protects your work",
    "text": "Your drawing is yours, and the law protects it, just like it protects your private facts. Rules and laws are not only limits. They are layers that guard people and their work.",
    "art": "shield",
-   "img": "csq/would-you-rather/online-credit-1b",
-   "alt": "Would you rather use a picture someone else made and credit them, or draw your own from scratch?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "img": "csq/would-you-rather/online-credit-1b-n1",
+   "alt": "Would you rather: use a picture someone else made and credit them, or draw your own, even if it is worse?",
    "focus": [
     {
      "cue": "Use a picture, credit its maker",
      "box": [
-      11.0,
-      38.5,
-      33.4,
-      20.4
+      1.9,
+      1.9,
+      96.2,
+      44.4
      ]
     },
     {
      "cue": "Draw your own, even if it is worse",
      "box": [
-      56.1,
-      38.5,
-      32.4,
-      20.4
+      1.9,
+      60.6,
+      96.2,
+      39.4
      ]
     }
    ]
@@ -65,13 +59,13 @@
    "text": "If someone breaks the rules against you, that is never your fault and never yours to fix alone. A broken rule is a reason to tell a trusted adult, who must act.",
    "art": "people",
    "img": "csq/trick-inbox/chat-1b-ch-3-debrief",
-   "alt": "The mean message, reported: do not join in, a kind word to Pip helps more, and save it and tell an adult.",
+   "alt": "The debrief: that is the move! Mean messages want an audience: do not join in, never pass them on. Behind this one: the giggler.",
    "focus": [
     {
      "cue": "Not yours to fix alone: save it and tell an adult",
      "box": [
       6.4,
-      29.0,
+      17.9,
       87.1,
       47.4
      ]
@@ -108,21 +102,15 @@
    "text": "Open Would You Rather at Online: share or keep. For each choice, name the rule that helps you decide.",
    "art": "trophy",
    "img": "csq/would-you-rather/online-name-1b",
-   "alt": "Would you rather use a nickname nobody can trace to you, or your real first name so friends can find you?",
-   "view": [
-    4.2,
-    8.5,
-    91.6,
-    82.6
-   ],
+   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
    "focus": [
     {
      "cue": "Play Online: name the rule for each choice",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      1.9,
+      1.9,
+      96.2,
+      98.1
      ]
     }
    ]
