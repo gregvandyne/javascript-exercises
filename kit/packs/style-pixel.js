@@ -4,7 +4,8 @@
 // Same Oomba Ink rules at a pixel scale (docs/kit.md "Pixel style"): the kit's colours, a 1 px Ink edge, one hard
 // shade. What changes:
 // - the UI (under .ok-pixel): a pixel font (Pixelify Sans, SIL OFL, self-hosted next to the kit, Latin and Cyrillic;
-//   other scripts keep the kit font), square cards and buttons with stepped corners and hard Ink drop edges, no
+//   other scripts keep the kit font; numbers and maths signs in Oomba Pixel Digits, drawn so 5 never reads as S),
+//   square cards and buttons with stepped corners and hard Ink drop edges, no
 //   gradients on the title lockup;
 // - Oomba.pixel: the pixel palette, the art from the art-pixel pack (one atlas of Blender-rendered sprites and
 //   hand-pixelled tiles), and the helpers a 2D game needs to draw in the style at any screen size: an integer pixel
@@ -15,13 +16,13 @@ export function define(K) {
   const kit = K.kit, win = kit.win, doc = kit.doc, INK = K.INK;
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const S = { on: false, art: null, img: null, wait: [], pal: null, lut: new Map(), nightLut: null };
-  const FONT = 'Oomba Pixel';
+  const FONT = 'Oomba Pixel', DIGITS = 'Oomba Pixel Digits';   // words in Pixelify Sans, numbers and signs in the kit's own pixel digits
   // ---- the style switch: pixel, or the kit's own (bold / playful) ----
   const base = kit.setStyle;
   const font = () => {
     const r = kit.ui.root; if (!r) return;
     const cur = r.style.getPropertyValue('--ok-font');
-    if (S.on && cur.indexOf(FONT) < 0) r.style.setProperty('--ok-font', `'${FONT}',` + cur);
+    if (S.on && cur.indexOf(FONT) < 0) r.style.setProperty('--ok-font', `'${DIGITS}','${FONT}',` + cur);
   };
   const sync = kit.ui.sync.bind(kit.ui);
   kit.ui.sync = () => { sync(); font(); };
@@ -30,8 +31,8 @@ export function define(K) {
     if (faces || !win.FontFace || !doc.fonts || !kit.base) return; faces = true;
     for (const [f, range] of [['pixelify-latin.woff2', 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD'],
       ['pixelify-latin-ext.woff2', 'U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF'],
-      ['pixelify-cyrillic.woff2', 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116']]) {
-      try { const face = new win.FontFace(FONT, `url(${kit.base}fonts/${f}) format('woff2')`, { weight: '400 700', unicodeRange: range, display: 'swap' }); doc.fonts.add(face); face.load().catch(() => {}); } catch (e) { /* the kit font stays */ }
+      ['pixelify-cyrillic.woff2', 'U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116'], ['oomba-pixel-digits.woff2', 'U+2B-2F,U+30-39,U+3D,U+3F,U+D7,U+F7,U+2212']]) {
+      try { const face = new win.FontFace(f.startsWith('oomba') ? DIGITS : FONT, `url(${kit.base}fonts/${f}) format('woff2')`, { weight: '400 700', unicodeRange: range, display: 'swap' }); doc.fonts.add(face); face.load().catch(() => {}); } catch (e) { /* the kit font stays */ }
     }
   };
   kit.setStyle = n => {
@@ -108,12 +109,12 @@ export function define(K) {
     }
     g.putImageData(im, 0, 0); return cv;
   };
-  /** sky(g, w, h, stops): a vertical gradient through the stops (palette colours), as an ordered dither between each
-   *  neighbouring pair, w x h in the pixels of g (draw it into a native-size canvas and scale it up). */
+  /** sky(g, w, h, stops): a vertical gradient through the stops (palette colours): solid bands with an ordered dither
+   *  where each neighbouring pair meets, w x h in the pixels of g (draw it into a native-size canvas and scale it up). */
   const sky = (g, w, h, stops) => {
     const n = stops.length - 1;
     for (let y = 0; y < h; y++) {
-      const t = (y / Math.max(1, h - 1)) * n, i = Math.min(n - 1, Math.floor(t)), f = t - i;
+      const t = (y / Math.max(1, h - 1)) * n, i = Math.min(n - 1, Math.floor(t)), f = Math.min(1, Math.max(0, (t - i - 0.5) * 2.6 + 0.5));   // solid bands, dithered where they meet
       for (let x = 0; x < w; x += 4) {
         for (let k = 0; k < 4 && x + k < w; k++) { g.fillStyle = f > (BAYER[(y % 4) * 4 + ((x + k) % 4)] + 0.5) / 16 ? stops[i + 1] : stops[i]; g.fillRect(x + k, y, 1, 1); }
       }
@@ -153,7 +154,7 @@ export function define(K) {
     /** scale(cssPx, artPx): the integer pixel size that makes artPx art pixels about cssPx CSS pixels (at least 1). */
     scale: (css, art) => Math.max(1, Math.round(css / art)),
     draw, snap, night, sky, nearest: rgb => nearest(rgb).h,
-    font: FONT,
+    font: FONT, digits: DIGITS,
   };
   const O = win.Oomba || win.OK;
   if (O && !O.pixel) Object.defineProperty(O, 'pixel', { value: api, enumerable: true });

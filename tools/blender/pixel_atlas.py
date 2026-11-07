@@ -30,12 +30,15 @@ sys.path.insert(0, HERE)
 
 TW, LH = 256, 80
 INK = '#141414'
-# the palette (kept equal to pixel_racers.PALETTE; that module needs bpy, this one does not)
+# the palette: pixel_racers.PALETTE (the style sheet's 32 and 8 kit colours) and the kit's skin and hair tones
 PALETTE = [INK, '#FFFDF2', '#E0DDD2', '#FFFFFF', '#F4F7FA', '#DDE6EE', '#B4C3D1', '#C6C2B5', '#8F8A7C', '#5E5A50',
            '#BF957A', '#8A5A3C', '#5C3A26', '#FFC89E', '#F5A26B', '#C9713A', '#FF9C8F', '#FF6B5B', '#C8402F',
            '#FFF3C4', '#FFE27A', '#FFD23F', '#C99A00', '#4FA8F0', '#2F6FC8', '#1F54A8', '#12397A', '#1F9D63', '#0F7A48',
            '#0E2A2E', '#12323A', '#163B3A',
-           '#C6A9F3', '#9B6BE8', '#6C44C0', '#3D2775', '#2B1F5C', '#9BDDB7', '#66C792', '#93CBF6']
+           '#C6A9F3', '#9B6BE8', '#6C44C0', '#3D2775', '#2B1F5C', '#9BDDB7', '#66C792', '#93CBF6',
+           # the kit's 8 skin tones and the hair colours that are not already here (Oomba.tokens.skin / hair), so a
+           # player's own avatar, drawn at run time, keeps its colours when it is snapped to the palette
+           '#FCE1CB', '#F5CBA7', '#E8B48A', '#D29A6B', '#B97E4E', '#96603A', '#6E4529', '#4A2E1C', '#2B2220', '#E8C26A', '#C8572F']
 # names for the colours used below
 C = dict(ink=INK, cream='#FFFDF2', creamS='#E0DDD2', white='#FFFFFF', snowL='#F4F7FA', snow='#DDE6EE', snowS='#B4C3D1',
          stoneL='#C6C2B5', stone='#8F8A7C', stoneS='#5E5A50', cocoaL='#BF957A', cocoa='#8A5A3C', cocoaS='#5C3A26',

@@ -162,10 +162,11 @@ function writeIndex(dir, VERSION) {
   }
 }
 // The pixel style's font (style-pixel loads it with FontFace from next to the kit, only when a game turns the style on):
-// Pixelify Sans, SIL OFL 1.1. Added to a version with the style-pixel pack (--packs adds them to a locked version: new
+// Pixelify Sans, SIL OFL 1.1, and the kit's Oomba Pixel Digits. Added to a version with the style-pixel pack (--packs adds them to a locked version: new
 // files only, nothing it shipped changes).
 const PIXEL_FONTS = [['pixelify-sans-latin.woff2', 'fonts/pixelify-latin.woff2'], ['pixelify-sans-latin-ext.woff2', 'fonts/pixelify-latin-ext.woff2'],
-  ['pixelify-sans-cyrillic.woff2', 'fonts/pixelify-cyrillic.woff2'], ['pixelify-sans-OFL.txt', 'fonts/OFL-pixelify.txt']];
+  ['pixelify-sans-cyrillic.woff2', 'fonts/pixelify-cyrillic.woff2'], ['pixelify-sans-OFL.txt', 'fonts/OFL-pixelify.txt'],
+  ['oomba-pixel-digits.woff2', 'fonts/oomba-pixel-digits.woff2']];   // the kit's own pixel digits (tools/blender/pixel_digits.py)
 function copyPixelFonts(dir) {
   if (!packNames().includes('style-pixel')) return;
   fs.mkdirSync(path.join(dir, 'fonts'), { recursive: true });
