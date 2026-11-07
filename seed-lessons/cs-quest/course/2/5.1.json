@@ -64,25 +64,31 @@
    "title": "Tradeoffs",
    "text": "Every part costs money, battery and space. Wireless lets a gadget move freely but uses more battery than a cable. That is a tradeoff.",
    "art": "battery",
-   "img": "csq/inside-the-machine/gadget-2-trade-n",
+   "img": "csq/inside-the-machine/gadget-2-trade-c",
+   "view": [
+    0,
+    19.5,
+    45,
+    80.5
+   ],
    "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
    "focus": [
     {
      "cue": "Too many parts: cost 19 of 12",
      "box": [
-      84.9,
-      16,
-      11.3,
-      12.1
+      32.7,
+      75.2,
+      7.5,
+      8.6
      ]
     },
     {
      "cue": "Battery 7 of 5 and size 8 of 6: over too",
      "box": [
-      87.3,
-      27.3,
-      8.9,
-      23.4
+      34,
+      81.5,
+      6.2,
+      14.8
      ]
     }
    ]
@@ -126,25 +132,31 @@
    "title": "Users decide what is next",
    "text": "A gadget is finished when people can use it. Read what users say, and make that your next improvement.",
    "art": "people",
-   "img": "csq/inside-the-machine/gadget-2-trade-n",
+   "img": "csq/inside-the-machine/gadget-2-trade-c",
+   "view": [
+    0,
+    19.5,
+    45,
+    80.5
+   ],
    "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
    "focus": [
     {
      "cue": "Over budget: users would feel it",
      "box": [
-      84.9,
-      16,
-      11.3,
-      34.7
+      32.7,
+      75.2,
+      7.5,
+      21.1
      ]
     },
     {
      "cue": "Pick only what the brief needs",
      "box": [
-      34.4,
-      2.2,
-      36.1,
-      11.3
+      17.4,
+      67.7,
+      21.1,
+      8.2
      ]
     }
    ]

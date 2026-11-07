@@ -50,7 +50,7 @@
      ]
     },
     {
-     "cue": "A repeat to merge: Jo twice",
+     "cue": "Jo again: already higher up the list, so merge it",
      "box": [
       6,
       52.8,
@@ -112,19 +112,19 @@
     {
      "cue": "Class A: 10 of 20 walk = 50%",
      "box": [
-      5.3,
-      27.6,
-      15.2,
-      11.7
+      3,
+      27.2,
+      94,
+      12.5
      ]
     },
     {
      "cue": "Class B: 12 of 30 walk = 40%",
      "box": [
-      5.3,
-      43.2,
-      15.1,
-      11.7
+      3,
+      42.8,
+      94,
+      12.5
      ]
     },
     {

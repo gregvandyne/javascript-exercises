@@ -1114,15 +1114,15 @@
    "commit": "38a0b7d"
   },
   {
-   "key": "csq/inside-the-machine/gadget-2-trade-n",
+   "key": "csq/inside-the-machine/gadget-2-trade-c",
    "game": "inside-the-machine",
    "chapter": "gadget",
    "band": "2",
-   "state": "gadget-2-trade-n",
+   "state": "gadget-2-trade-c",
    "concept": "Tradeoffs",
    "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
    "capturedAt": "2026-11-07",
-   "commit": "38a0b7d"
+   "commit": "e78ab0e"
   },
   {
    "key": "csq/inside-the-machine/hwsw-1b-sort-n",

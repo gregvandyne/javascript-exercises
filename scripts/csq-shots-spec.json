@@ -1882,7 +1882,7 @@
  },
  {
   "game": "inside-the-machine",
-  "state": "gadget-2-trade-n",
+  "state": "gadget-2-trade-c",
   "chapter": "gadget",
   "band": "2",
   "level": 1,
@@ -1905,14 +1905,7 @@
   ],
   "alt": "Too many parts for a step counter: the screen, wireless chip and big battery push the cost, battery and size meters up.",
   "concept": "Tradeoffs",
-  "narrow": {
-   "width": 440,
-   "height": 740,
-   "at": {
-    "text": "Cost",
-    "pad": 12
-   }
-  }
+  "compact": true
  },
  {
   "game": "inside-the-machine",
