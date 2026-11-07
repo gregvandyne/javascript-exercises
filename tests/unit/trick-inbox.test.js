@@ -36,12 +36,12 @@ test('trick-inbox: the exact kit 1.1.4 tag and its four packs, the metadata, and
   assert.doesNotMatch(HTML, /<input|<textarea|contenteditable/i, 'tap-only: no text inputs');
 });
 
-test('trick-inbox: the seven sets and their band contract', () => {
-  assert.deepEqual(J(E.SETS.map(s => s.id)), ['letters', 'chat', 'mix', 'senders', 'pressure', 'media', 'boss']);
+test('trick-inbox: the eleven sets and their band contract', () => {
+  assert.deepEqual(J(E.SETS.map(s => s.id)), ['letters', 'chat', 'mix', 'senders', 'pressure', 'media', 'keys', 'private', 'ask-first', 'rules', 'boss']);
   E.SETS.forEach((s, i) => assert.equal(s.index, i + 1));
   for (const s of E.SETS) for (const band of s.bands) assert.ok(E.round(s.id, band, 1).length >= 6, `${s.id} ${band} has a full round`);
   // Explorer never sees the Pro-only sets; Pro sees everything
-  assert.deepEqual(J(E.SETS.filter(s => s.bands.includes('1b')).map(s => s.id)), ['letters', 'chat', 'mix', 'boss']);
+  assert.deepEqual(J(E.SETS.filter(s => s.bands.includes('1b')).map(s => s.id)), ['letters', 'chat', 'mix', 'keys', 'private', 'ask-first', 'rules', 'boss']);
   // the boss round is Lock 4's shape: Explorer 6, Pro 8 with a faked sender among them
   assert.equal(E.round('boss', '1b', 1).length, 6);
   const bossPro = E.round('boss', '2', 1);

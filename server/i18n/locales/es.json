@@ -6033,6 +6033,10 @@
       "locked": "Bloqueado",
       "preview": "Vista previa",
       "lockedNote": "Ese paso aún está bloqueado. Primero termina el paso {n}:",
+      "stamps": "Tus sellos",
+      "stampsCount": "{n} de {total} sellos",
+      "stampEarned": "Sello ganado",
+      "stampToEarn": "Termina esta unidad para ganarlo",
       "unit": "Unidad {n}",
       "units": "Unidades {from}–{to}",
       "build": {
@@ -6065,6 +6069,7 @@
     "check": {
       "h": "Prueba rápida",
       "intro": "Tres preguntas. Acierta dos para abrir el módulo de juego.",
+      "introTalk": "Tres preguntas. Acierta dos para terminar este paso.",
       "q": "Pregunta {n} de {total}",
       "send": "Revisar mis respuestas",
       "done": "Prueba superada",

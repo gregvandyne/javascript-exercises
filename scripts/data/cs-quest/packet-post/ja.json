@@ -780,6 +780,14 @@
   "Those answers are not secrets, so it is fine": "その答えはひみつじゃないから、だいじょうぶ",
   "Not quite: look at the cues again.": "おしい。もう一度ヒントを見てみよう。",
   "It is a trick, and this one needs a trusted adult.": "これはわなだよ。そして、これは大人に知らせる必要がある。",
-  "Asking is always OK. This one was safe.": "聞くのはいつでもいいこと。これは安全だったよ。"
+  "Asking is always OK. This one was safe.": "聞くのはいつでもいいこと。これは安全だったよ。",
+  "This picture is a secret birthday surprise. On the open road a snoopy cat reads every packet, like a postcard. The padlock road is sealed like an envelope.": "この絵はひみつのたんじょう日サプライズです。ひらいた道では、のぞきやのネコがはがきのようにパケットをぜんぶ読みます。かぎの道はふうとうのようにふうがされています。",
+  "Who can read a packet on the open road?": "ひらいた道のパケットを読めるのはだれ？",
+  "Roads with a padlock are sealed. Nobody on the way can read what rides on them.": "かぎのある道はふうがされています。とちゅうのだれも、そこを通るものを読めません。",
+  "Tap the padlock road over the hill, then the padlock road into the house, for every packet.": "パケットごとに、おかの上のかぎの道をタップして、つぎに家へ行くかぎの道をタップしよう。",
+  "Why does a secret ride on the padlock road?": "ひみつがかぎの道を通るのはなぜ？",
+  "It is sealed, so nobody on the way can read it": "ふうがされていて、とちゅうのだれも読めないから",
+  "It is the shortest road": "いちばんみじかい道だから",
+  "The snoopy cat likes it": "のぞきやのネコが気に入っているから"
  }
 }

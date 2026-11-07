@@ -6034,6 +6034,10 @@
       "locked": "Op slot",
       "preview": "Voorbeeld",
       "lockedNote": "Die stap is nog op slot. Maak eerst stap {n} af:",
+      "stamps": "Jouw stempels",
+      "stampsCount": "{n} van {total} stempels",
+      "stampEarned": "Stempel verdiend",
+      "stampToEarn": "Maak deze unit af om hem te verdienen",
       "unit": "Unit {n}",
       "units": "Units {from}–{to}",
       "build": {
@@ -6066,6 +6070,7 @@
     "check": {
       "h": "Snelle check",
       "intro": "Drie vragen. Heb er twee goed en de spelmodule gaat open.",
+      "introTalk": "Drie vragen. Heb er twee goed en deze stap is klaar.",
       "q": "Vraag {n} van {total}",
       "send": "Check mijn antwoorden",
       "done": "Check gehaald",

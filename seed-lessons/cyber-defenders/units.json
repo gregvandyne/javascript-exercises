@@ -279,9 +279,9 @@
     {
      "game": {
       "1b": {
-       "chapter": "letters",
-       "chapterTitle": "Prize Letters",
-       "params": "chapter=letters&band=1b&lock=1",
+       "chapter": "keys",
+       "chapterTitle": "Key Keepers",
+       "params": "chapter=keys&band=1b&lock=1",
        "slug": "trick-inbox"
       },
       "2": {
@@ -388,16 +388,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "private",
+       "chapterTitle": "Private Facts",
+       "params": "chapter=private&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "private",
+       "chapterTitle": "Private Facts",
+       "params": "chapter=private&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "3.1",
@@ -481,10 +481,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "ask-first",
+       "chapterTitle": "Ask First",
+       "params": "chapter=ask-first&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
        "chapter": "pressure",
@@ -543,10 +543,10 @@
     {
      "game": {
       "1b": {
-       "chapter": "tricks",
-       "chapterTitle": "Spot the Trick",
-       "params": "chapter=tricks&band=1b&lock=1",
-       "slug": "packet-post"
+       "chapter": "letters",
+       "chapterTitle": "Prize Letters",
+       "params": "chapter=letters&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
        "chapter": "senders",
@@ -697,10 +697,10 @@
        "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "ask-first",
+       "chapterTitle": "Ask First",
+       "params": "chapter=ask-first&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "5.1",
@@ -806,7 +806,6 @@
      }
     }
    ],
-   "sub": "Kind screens, safe chats",
    "teacherNotes": [
     "Step 5.2 is host-led where possible: align it with your school's anti-bullying policy before the lesson, and know your local reporting route so a disclosure in class can be acted on the same day.",
     "Explorer 5.2 is deliberately slim (kindness and tell a trusted adult only); the word cyberbullying and the full response drill are Pro-only. Step 5.3's settings work uses pretend screens only; no real device data is collected."
@@ -870,16 +869,16 @@
     {
      "game": {
       "1b": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "rules",
+       "chapterTitle": "Rule Breakers",
+       "params": "chapter=rules&band=1b&lock=1",
+       "slug": "trick-inbox"
       },
       "2": {
-       "chapter": "online",
-       "chapterTitle": "Online: share or keep",
-       "params": "topic=online&lock=1",
-       "slug": "would-you-rather"
+       "chapter": "rules",
+       "chapterTitle": "Rule Breakers",
+       "params": "chapter=rules&band=2&lock=1",
+       "slug": "trick-inbox"
       }
      },
      "n": "6.2",
@@ -1005,7 +1004,6 @@
      }
     }
    ],
-   "sub": "The Defender's toolkit",
    "teacherNotes": [
     "Before Unit 6, pin the school's actual named adults and reporting routes beside the generic drill in 6.3, so a child who needs the moves knows exactly who to tell in this building.",
     "The finale (6.4) has no fail state and no outcome-changing timer by design; the completion shield records honestly how many of the three hint feathers were used."

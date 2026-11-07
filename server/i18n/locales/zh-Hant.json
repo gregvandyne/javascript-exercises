@@ -6033,6 +6033,10 @@
       "locked": "未解鎖",
       "preview": "預覽",
       "lockedNote": "這一步還沒解鎖。請先完成第 {n} 步：",
+      "stamps": "你的郵戳",
+      "stampsCount": "{total} 個郵戳中的 {n} 個",
+      "stampEarned": "已得到郵戳",
+      "stampToEarn": "完成這個單元就能得到",
       "unit": "第 {n} 單元",
       "units": "第 {from}–{to} 單元",
       "build": {
@@ -6065,6 +6069,7 @@
     "check": {
       "h": "小測驗",
       "intro": "三個問題，答對兩題就能解鎖遊戲關卡。",
+      "introTalk": "三個問題，答對兩題就完成這一步。",
       "q": "第 {n} 題，共 {total} 題",
       "send": "檢查我的答案",
       "done": "測驗通過",

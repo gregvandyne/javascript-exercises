@@ -14,9 +14,9 @@
    "alt": "The second of four packets is on its way across the diamond map, two hops done and two to go.",
    "view": [
     7.5,
-    33.0,
-    47.0,
-    60.0
+    33,
+    47,
+    60
    ],
    "focus": [
     {
@@ -25,13 +25,13 @@
       28.6,
       36.9,
       4.2,
-      7.0
+      7
      ]
     },
     {
      "cue": "It passes stop after stop on the way",
      "box": [
-      10.0,
+      10,
       36.5,
       41.6,
       31.6
@@ -43,31 +43,25 @@
    "title": "Copies kept safe",
    "text": "The cloud is someone else's very big post office that keeps copies safe for you. A backup there saves your photos when a tablet breaks.",
    "art": "box",
-   "img": "csq/packet-post/locks-1b-backup",
-   "alt": "A Good Spare Copy: the sorting round that tells a real backup, kept somewhere else, from a copy that is not.",
-   "view": [
-    5.0,
-    0.0,
-    86.3,
-    76.7
-   ],
+   "img": "csq/packet-post/locks-1b-backup-n1",
+   "alt": "Lock It, the spare-copy sort: a copy in the family’s online folder. A good spare copy, or not a spare copy?",
    "focus": [
     {
-     "cue": "Sorting spare copies: which way keeps them safe?",
+     "cue": "A copy in the family's online folder: kept somewhere else",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      6.3,
+      94.3,
+      21.2
      ]
     },
     {
-     "cue": "A copy in another place survives a broken tablet",
+     "cue": "A good spare copy? It survives a broken tablet",
      "box": [
-      54.0,
-      26.5,
-      34.3,
-      10.3
+      2.9,
+      73.3,
+      57.4,
+      20.3
      ]
     }
    ]
@@ -186,7 +180,7 @@
      "cue": "Play Sorting Gate: pick an open road for the letter",
      "box": [
       22.9,
-      18.0,
+      18,
       11.4,
       56.9
      ]

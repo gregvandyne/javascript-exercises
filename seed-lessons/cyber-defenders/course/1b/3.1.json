@@ -10,25 +10,25 @@
    "title": "Me-facts point at you",
    "text": "Pim says some facts are me-facts. Your name, your school, where you live and your birthday are all me-facts. Together, they can point straight at you.",
    "art": "shield",
-   "img": "csq/would-you-rather/online-name-1b",
-   "alt": "Would you rather: a nickname online that nobody knows, or your real first name online?",
+   "img": "csq/trick-inbox/private-1b-pf-1-all",
+   "alt": "A letter from Birthday Club with both clues marked: three me-facts asked together, and a surprise present as the bait.",
    "focus": [
     {
-     "cue": "A nickname nobody can trace",
+     "cue": "Name, birthday and address, asked together",
      "box": [
-      1.9,
-      1.9,
-      96.2,
-      98.1
+      7.1,
+      46.6,
+      85.7,
+      22.4
      ]
     },
     {
-     "cue": "Your real name, for all to see",
+     "cue": "A present is the bait",
      "box": [
-      1.9,
-      60.6,
-      96.2,
-      39.4
+      46.1,
+      69,
+      43.7,
+      13.5
      ]
     }
    ]
@@ -46,31 +46,25 @@
     "Keep private: a birthday",
     "Keep private: a photo in school uniform"
    ],
-   "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
-   "view": [
-    5.0,
-    9.5,
-    86.3,
-    64.6
-   ],
+   "img": "csq/packet-post/locks-1b-sort-n1",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
    "focus": [
     {
      "cue": "The first card to sort: where you live",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      3,
+      94.3,
+      21.2
      ]
     },
     {
      "cue": "Share, or keep private? Every card gets a tray",
      "box": [
-      54.1,
-      44.5,
-      25.8,
-      6.6
+      2.9,
+      69.9,
+      63.6,
+      20.3
      ]
     }
    ]
@@ -79,16 +73,25 @@
    "title": "Small facts can join up",
    "text": "One fact alone may look harmless. Add two more, and the three together can point at one child. That is why me-facts stay private online.",
    "art": "magnifier",
-   "img": "csq/trick-inbox/chat-1b-ch-6-all",
-   "alt": "A game chat from Fun Quiz with clues marked: your first pet, the street you grew up on and your birthday; share your result with everyone!",
+   "img": "csq/trick-inbox/private-1b-pf-6-all",
+   "alt": "A post from Name Maker with both clues marked: “Your first pet’s name plus your street name” and “tag five friends”.",
    "focus": [
     {
-     "cue": "Three small facts asked together: first pet, street, birthday",
+     "cue": "Two small facts, joined into one big clue",
      "box": [
       7.1,
-      44.9,
+      40.1,
       85.7,
       22.4
+     ]
+    },
+    {
+     "cue": "Tagging five friends spreads the trick",
+     "box": [
+      27.3,
+      72.9,
+      37.5,
+      13.5
      ]
     }
    ]
@@ -113,9 +116,9 @@
      "cue": "A real game never needs to know where you live",
      "box": [
       2.9,
-      77.0,
+      77,
       46.2,
-      23.0
+      23
      ]
     }
    ]
@@ -147,24 +150,18 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Would You Rather at Online: share or keep. For each choice, ask: could this point at me?",
+   "text": "Open Trick Inbox at Private Facts and sort all 6 messages. For each one, ask: could this point at me? Then choose a move.",
    "art": "trophy",
-   "img": "csq/would-you-rather/online-1b-first",
-   "alt": "A Would You Rather online dilemma: something you made, and the choice of whether to share it or keep it.",
-   "view": [
-    4.2,
-    9.7,
-    91.6,
-    81.4
-   ],
+   "img": "csq/trick-inbox/private-1b-pf-3-all",
+   "alt": "A game chat from MapGamePal with both clues marked: “Which school do you go to?” and “what street do you walk home on?”",
    "focus": [
     {
-     "cue": "Play Online: judge each pair",
+     "cue": "Play Private Facts: could this point at me?",
      "box": [
-      7.2,
-      17.1,
-      85.6,
-      66.6
+      30.3,
+      38.3,
+      60,
+      13.5
      ]
     }
    ]
@@ -176,8 +173,8 @@
   "cd-1b-3.1-e3"
  ],
  "game": {
-  "slug": "would-you-rather",
-  "chapter": "online",
-  "params": "topic=online&lock=1"
+  "slug": "trick-inbox",
+  "chapter": "private",
+  "params": "chapter=private&band=1b&lock=1"
  }
 }

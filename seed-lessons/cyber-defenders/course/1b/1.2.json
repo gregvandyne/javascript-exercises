@@ -13,16 +13,16 @@
    "img": "csq/packet-post/locks-2-sealed",
    "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
    "view": [
-    8.0,
-    24.0,
-    84.0,
-    72.0
+    8,
+    24,
+    84,
+    72
    ],
    "focus": [
     {
      "cue": "The open street: anyone on it can read the post, like a postcard",
      "box": [
-      18.0,
+      18,
       37.8,
       23.4,
       17.5
@@ -42,26 +42,7 @@
   {
    "title": "Open like a postcard",
    "text": "An open network is like a postcard. Anyone nearby could read what travels on it, so it is not a place for private things.",
-   "art": "network",
-   "img": "csq/packet-post/locks-2-sealed",
-   "alt": "The sealed route: a message travels a road marked sealed, the padlock idea played as a journey.",
-   "view": [
-    52.0,
-    22.0,
-    40.0,
-    32.0
-   ],
-   "focus": [
-    {
-     "cue": "Pim: the snoopy cat reads everything on the open street",
-     "box": [
-      55.3,
-      26.4,
-      32.9,
-      12.9
-     ]
-    }
-   ]
+   "art": "network"
   },
   {
    "kind": "example",
@@ -115,7 +96,7 @@
       17.7,
       36.4,
       28.1,
-      11.0
+      11
      ]
     },
     {
@@ -124,7 +105,7 @@
       47.2,
       36.4,
       39.6,
-      11.0
+      11
      ]
     }
    ]
@@ -161,26 +142,26 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Packet Post at Rules of the Road and play its 2 levels: say when each packet arrives, and resend the ones that go missing.",
+   "text": "Open Packet Post at Rules of the Road and play its 3 levels. Say when each packet arrives, and resend the lost ones. Then send a secret on the padlock road.",
    "art": "trophy",
-   "img": "csq/packet-post/protocols-1b-key",
-   "alt": "Say Got It begins: three packets are on the road to the mill office, and the second one has fallen off the van.",
-   "view": [
-    8.1,
-    39.9,
-    45.1,
-    40.1
-   ],
+   "img": "csq/packet-post/protocols-1b-sealed",
+   "alt": "A secret birthday surprise: padlock roads run over the hill, and Pim says a snoopy cat reads every packet on the open road.",
    "focus": [
     {
-     "cue": "Play Rules of the Road: arrivals and resends",
+     "cue": "Play Rules of the Road: secrets take the padlock road",
      "box": [
-      11.1,
-      48.6,
-      39.1,
-      22.6
+      9.4,
+      37.4,
+      42.4,
+      52
      ]
     }
+   ],
+   "view": [
+    5,
+    25.5,
+    50,
+    74
    ]
   }
  ],

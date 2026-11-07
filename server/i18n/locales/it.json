@@ -6034,6 +6034,10 @@
       "locked": "Bloccato",
       "preview": "Anteprima",
       "lockedNote": "Quel passo è ancora bloccato. Prima finisci il passo {n}:",
+      "stamps": "I tuoi timbri",
+      "stampsCount": "{n} timbri su {total}",
+      "stampEarned": "Timbro guadagnato",
+      "stampToEarn": "Finisci questa unità per guadagnarlo",
       "unit": "Unità {n}",
       "units": "Unità {from}–{to}",
       "build": {
@@ -6066,6 +6070,7 @@
     "check": {
       "h": "Mini quiz",
       "intro": "Tre domande. Con due risposte giuste si apre il modulo di gioco.",
+      "introTalk": "Tre domande. Con due risposte giuste finisci questo passo.",
       "q": "Domanda {n} di {total}",
       "send": "Controlla le risposte",
       "done": "Quiz superato",

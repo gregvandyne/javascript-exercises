@@ -6035,6 +6035,10 @@
       "locked": "Bloqueado",
       "preview": "Pré-visualizar",
       "lockedNote": "Esse passo ainda está bloqueado. Termine primeiro o passo {n}:",
+      "stamps": "Seus selos",
+      "stampsCount": "{n} de {total} selos",
+      "stampEarned": "Selo conquistado",
+      "stampToEarn": "Termine esta unidade para ganhá-lo",
       "unit": "Unidade {n}",
       "units": "Unidades {from}–{to}",
       "build": {
@@ -6067,6 +6071,7 @@
     "check": {
       "h": "Teste rápido",
       "intro": "Três perguntas. Acerte duas para liberar o módulo de jogo.",
+      "introTalk": "Três perguntas. Acerte duas para terminar este passo.",
       "q": "Pergunta {n} de {total}",
       "send": "Conferir respostas",
       "done": "Teste concluído",

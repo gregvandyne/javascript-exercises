@@ -22,7 +22,7 @@
    "view": [
     5.4,
     30.4,
-    64.0,
+    64,
     65.5
    ],
    "focus": [
@@ -58,7 +58,7 @@
      "box": [
       29.6,
       11.3,
-      40.0,
+      40,
       7.8
      ]
     },
@@ -86,22 +86,16 @@
     "a drawing of a rainbow: safe post",
     "a hello card for a friend: safe post"
    ],
-   "img": "csq/packet-post/locks-1b-sort",
-   "alt": "The sharing sort: cards to split into Share and Keep Private, from favorite animals to passphrases.",
-   "view": [
-    3.0,
-    13.0,
-    52.0,
-    37.0
-   ],
+   "img": "csq/packet-post/locks-1b-sort-n1",
+   "alt": "Lock It, the sharing sort: the first card, where you live, waits for its tray. Share, or keep it private?",
    "focus": [
     {
      "cue": "Where you live: a shiny secret to keep",
      "box": [
-      8.0,
-      27.9,
-      45.2,
-      6.8
+      2.9,
+      3,
+      94.3,
+      21.2
      ]
     }
    ]
@@ -189,27 +183,27 @@
     {
      "cue": "Roadwise guards packets; Keykeeper guards keys",
      "box": [
-      5.0,
+      5,
       5.5,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Private guards what you share; Trickspotter spots fakes",
      "box": [
-      5.0,
+      5,
       35.7,
-      90.0,
+      90,
       23.8
      ]
     },
     {
      "cue": "Kind Screen keeps chats kind; Shield stacks layers",
      "box": [
-      5.0,
-      66.0,
-      90.0,
+      5,
+      66,
+      90,
       23.8
      ]
     }
