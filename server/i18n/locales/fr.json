@@ -1696,7 +1696,8 @@
       "voicesAi": "Voix IA",
       "voicesDevice": "La voix de cet appareil",
       "voicesNote": "Les personnages de ce jeu ont des voix faites par un ordinateur (voix IA de {provider}). Elles lisent seulement les mots du jeu, jamais ce que tu écris ni ton nom.",
-      "voicesSaveData": "L'économiseur de données est activé : la voix de cet appareil est utilisée tant que tu ne choisis pas les voix IA."
+      "voicesSaveData": "L'économiseur de données est activé : la voix de cet appareil est utilisée tant que tu ne choisis pas les voix IA.",
+      "courseBack": "Retour"
     },
     "friends": {
       "codeCopied": "Code copié ! Donne-le à un ami que tu connais.",
@@ -6090,6 +6091,11 @@
       "failed": "{score} bonnes réponses sur {total}. Regarde les bonnes réponses, puis réessaie."
     },
     "play": "Jouer : {game} · {chapter}"
+  },
+  "move": {
+    "title": "Pauses actives",
+    "teachersH": "Pour les enseignants",
+    "teachersP": "Les pauses actives sont indépendantes des cours : vous pouvez en lancer une entre deux leçons, quelles qu’elles soient. Deux postures s’arrêtent 10 secondes sur « À toi », pour que la classe fasse la posture au lieu de seulement regarder."
   },
   "stories": {
     "title": "Créateur d’histoires",

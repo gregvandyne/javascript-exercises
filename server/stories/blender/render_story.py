@@ -324,6 +324,9 @@ def build_scene(spec, sc_spec):
     comic = look_of(spec) == 'comic'
     if comic or K.STYLE != 'felt':
         K.set_style(look_of(spec))
+    # a soft fill on faces (and hands) at night and dusk, so expressions still read in the dark
+    tod_name = sc_spec.get('time') if sc_spec.get('time') in TIMES else 'night'
+    felt_stage.felt_people.FACE_FILL = {'night': 0.32, 'dusk': 0.16}.get(tod_name, 0.0)
     setup_render(spec, tod)
     if comic:
         import comic_look

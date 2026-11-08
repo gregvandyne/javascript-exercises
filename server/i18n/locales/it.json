@@ -1697,7 +1697,8 @@
       "voicesAi": "Voci IA",
       "voicesDevice": "La voce di questo dispositivo",
       "voicesNote": "I personaggi di questo gioco hanno voci fatte da un computer (voci IA di {provider}). Leggono solo le parole del gioco, mai quello che scrivi e mai il tuo nome.",
-      "voicesSaveData": "Il risparmio dati è attivo, quindi si usa la voce di questo dispositivo finché non scegli le voci IA."
+      "voicesSaveData": "Il risparmio dati è attivo, quindi si usa la voce di questo dispositivo finché non scegli le voci IA.",
+      "courseBack": "Indietro"
     },
     "friends": {
       "codeCopied": "Codice copiato! Dallo a un amico che conosci.",
@@ -6091,6 +6092,11 @@
       "failed": "{score} giuste su {total}. Guarda le risposte giuste e riprova."
     },
     "play": "Gioca: {game} · {chapter}"
+  },
+  "move": {
+    "title": "Pause attive",
+    "teachersH": "Per gli insegnanti",
+    "teachersP": "Le pause attive sono separate dai corsi, quindi può usarne una tra una lezione e l’altra. In due posizioni il video si ferma 10 secondi su «Tocca a te», così la classe fa la posizione invece di guardarla soltanto."
   },
   "stories": {
     "title": "Crea storie",

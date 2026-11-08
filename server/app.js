@@ -172,7 +172,9 @@ export function createApp() {
   app.use('/vendor', express.static(path.join(ROOT, 'public/vendor'), { index: false, immutable: true, maxAge: '365d', setHeaders: res => res.set({ 'Access-Control-Allow-Origin': '*', 'Cross-Origin-Resource-Policy': 'cross-origin' }) }));
   app.use('/css', staticAssets(path.join(ROOT, 'public/css')));
   app.use('/js', staticAssets(path.join(ROOT, 'public/js')));
-  app.use(express.static(path.join(ROOT, 'public'), { maxAge: config.env === 'production' ? '1h' : 0, index: false, setHeaders: versionedCache }));
+  // redirect: false: a folder of files under public/ (public/teachers/ holds the Spot the Trick PDF) never answers its own
+  // bare address. Otherwise /teachers would be sent to /teachers/, which pathLocale sends back to /teachers: a loop.
+  app.use(express.static(path.join(ROOT, 'public'), { maxAge: config.env === 'production' ? '1h' : 0, index: false, redirect: false, setHeaders: versionedCache }));
   // /es/teachers, /fr/g/sum-racer…: a public page in that language (server/seo.js), before the i18n middleware reads it.
   app.use(pathLocale);
   app.use(express.json({ limit: '3mb', ...NO_INFLATE }));
