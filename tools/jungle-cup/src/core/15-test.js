@@ -2,13 +2,18 @@
 // TEST HOOKS: window.__brbTest (the platform's autotest reads state()) and window.__brbTest.jc for our own tests.
 // Harmless in production: they only do what a player could do, faster.
 // ======================================================================================================
-const PLACES = { dock: [36, 61, 'up'], village: [36, 40, 'up'], totem: [36, 39, 'up'], kapok: [36, 17, 'up'], lift: [36, 17, 'up'], lagoon: [16, 47, 'left'], islet: [60, 40, 'up'] };
+const PLACES = { dock: [50, 90, 'up'], village: [50, 66, 'up'], totem: [50, 64, 'up'], kapok: [50, 24, 'up'], lift: [50, 24, 'up'], lagoon: [27, 60, 'left'], islet: [96, 51, 'up'],
+  clearing: [ARCHES.dash.x, ARCHES.dash.y + 2, 'up'], grove: [77, 30, 'up'], cliffs: [77, 39, 'up'], bridge: [34, 60, 'left'], swing: [16, 45, 'up'],
+  cave: [61, 68, 'right'], grotto: [75, 73, 'right'], hills: [18, 32, 'up'], pitch: [17, 68, 'down'], gorgeLog: [ROUTES.gorgeX - 3, ROUTES.logY, 'right'], zip: [ROUTES.zip.a[0], ROUTES.zip.a[1] + 1, 'up'] };
 function sceneName() { return JC.scene ? JC.scene.name : 'loading'; }
 function jcState() {
   const d = SAVE.data;
   return {
     screen: sceneName(), ready: WORLD.ready, fading: JC.fading(), tab: MAP.tab,
-    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
+    pos: { x: P.x, y: P.y, dir: P.dir, moving: P.moving, px: Math.round(P.fpx * 10) / 10, py: Math.round(P.fpy * 10) / 10, climb: !!P.climb, tile: TRAVEL.feetTile() },
+    trav: TRAVEL.near ? TRAVEL.near.kind : '', ride: TRAVEL.ride ? TRAVEL.ride.kind : '', acorns: TRAVEL.acornsGot(), acornN: TRAVEL.acornN, cave: TRAVEL.caveK,
+    visited: JC.sportOrder.filter(id => d.flags['v_' + id]), shortcuts: { ladder: !!d.flags.scLadder, log: !!d.flags.scLog }, chunks: WORLD.chunkCount(), target: TARGET.kind ? { kind: TARGET.kind, x: TARGET.tx, y: TARGET.ty } : null,
+    axis: { x: INPUT.axis.x, y: INPUT.axis.y, mag: INPUT.axis.mag }, stick: { on: STICK.id >= 0, mag: STICK.mag, x: STICK.bx, y: STICK.by, restX: STICK.restX, restY: STICK.restY, R: STICK.R }, aBtn: { x: PAD.ax, y: PAD.ay, r: PAD.ar }, prompt: OW.prompt || '', text: TB.open ? { who: TB.lines[TB.i].who, key: TB.lines[TB.i].key } : null, panel: STORY.line(),
     sport: JC.scene === RUN ? { id: RUN.id, phase: RUN.phase, result: RUN.result, newFeather: RUN.newFeather, state: RUN.sport && RUN.sport.testState ? RUN.sport.testState(RUN.ctx) : null } : null,
     feathers: SAVE.featherCount(), feathersBy: Object.assign({}, d.feathers), best: Object.assign({}, d.best), stars: Object.assign({}, d.stars),
     quests: Object.assign({}, d.quests), cos: JSON.parse(JSON.stringify(d.cos)), settings: Object.assign({}, d.settings), cup: d.cup,
@@ -35,6 +40,7 @@ const JCT = {
     else if (where === 'map' || where === 'settings' || where === 'controls' || where === 'style') JC.go('map', { tab: where }, true);
     else if (where === 'finale' || where === 'credits') JC.go(where, {}, true);
     else if (ARCHES[where]) { const a = ARCHES[where]; JC.go('world', { at: [a.x, a.y, 'up'] }, true); }
+    else if (where === 'ferry') JC.go('world', { at: [WORLD.ferry.a[0] - 1, WORLD.ferry.a[1], 'right'] }, true);
     else if (PLACES[where]) JC.go('world', { at: PLACES[where] }, true);
     else if (Array.isArray(where)) JC.go('world', { at: where }, true);
     else JC.go('world', {}, true);
@@ -70,12 +76,16 @@ const JCT = {
   talk() { act(); return jcState(); },
   skipText() { TB.skipAll(); return jcState(); },
   /** Finish the line being typed and go on to the next one (what a tap does). */
-  next() { if (TB.open) { TB.shown = TB.full.length; TB.advance(); } return jcState(); },
+  next() { TB.nextLine(); return jcState(); },
   /** The buttons drawn last frame, in CSS pixels: [{ id, x, y, w, h }]. */
+  mapLayout() { return MAP.lay ? Object.assign({}, MAP.lay) : null; },
   buttons() { const k = VIEW.S / VIEW.dpr, out = []; for (let i = 0; i < UI.prevN; i++) { const h = UI.prev[i]; out.push({ id: h.id, x: h.x * k, y: h.y * k, w: h.w * k, h: h.h * k }); } return out; },
   /** The current sport's own hooks (sport.test), e.g. jc.sport('auto', true). */
   sport(name, ...a) { const sp = RUN.sport; if (!sp) return null; if (!name) return sp.testState ? sp.testState(RUN.ctx) : null; return sp.test && sp.test[name] ? sp.test[name](RUN.ctx, ...a) : null; },
   perf() { return { fps: Math.round(LOOP.fps), slowest: Math.round(LOOP.slowest * 10) / 10, frames: LOOP.frames }; },
+  /** Where things are on the island (tiles): the arches, the ways round, the acorns, the people. */
+  routes() { return { routes: ROUTES, ferry: WORLD.ferry, acorns: WORLD.acorns.map(a => [a.x, a.y]), places: PLACES, size: [MW, MH] }; },
+  tileAt(x, y) { return WORLD.tileAt(x, y); },
   world() { return { arches: ARCHES, npcs: WORLD.npcs.map(n => ({ id: n.id, x: n.x, y: n.y })), items: WORLD.items.map(i => ({ quest: i.quest, x: i.x, y: i.y })), solid: (x, y) => WORLD.isSolid(x, y) }; },
   solidAt(x, y) { return WORLD.isSolid(x, y); },
   /** Show every sprite on a sheet (for screenshots). */

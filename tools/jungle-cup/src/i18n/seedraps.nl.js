@@ -1,0 +1,20 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N.nl = Object.assign(I18N.nl || {}, {
+  "sport.seed.goal": "Raak het drijvende fruit vóór Tico! Fruit dichtbij is 50 waard, dan 75, 100 en 150 voor de stervrucht helemaal achteraan. Gouden fruit telt dubbel. Let op fruit dat onderduikt en op de zwaluwen! Scoor in 60 seconden meer dan Tico.",
+  "ss.golden": "Goud!",
+  "ss.snack": "Zwaluwsnack!",
+  "sport.rapids.goal": "Race 1350 m tegen de Ottertweeling de rivier af! Spring over boomstammen en kleine watervallen, duik onder takken en lianen, stuur om rotsen, draaikolken en beverdammen heen en pak het snelle water. Kom als eerste aan!",
+  "rap.sec0": "Luie Bocht",
+  "rap.sec1": "Krokodillenbeek",
+  "rap.sec2": "Beverbos",
+  "rap.sec3": "Watervalroute",
+  "rap.tipwhirl": "Draaikolk! Stuur eromheen",
+  "rap.tipdam": "Beverdam! Zoek de opening",
+  "rap.tipfall": "Waterval! Spring voor een grote duik",
+  "rap.tiproll": "Rollende stam! Spring of stuur weg",
+  "rap.tipchan": "Snel water! Blijf bij de pijlen",
+  "rap.tipvine": "Lianen! Duik eronder",
+  "rap.spin": "Rondje!",
+  "rap.bigDrop": "Grote duik!",
+  "rap.fast": "Snel water!",
+});

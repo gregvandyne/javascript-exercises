@@ -1,7 +1,7 @@
 # Jungle Cup: plan, architecture and the sport module interface
 
 Jungle Cup is an official seed game (`seed-games/jungle-cup.html` + `jungle-cup.json`): Cappy the capybara rafts to
-Delta Isle, beats seven rainforest champions at seven sports, lights the Cup Totem with their Feathers and rides the
+Delta Isle, beats eight rainforest champions at eight sports, lights the Cup Totem with their Feathers and rides the
 vine lift up the Great Kapok to win the Jungle Cup. It is an original design: its own name, cast, island, story, UI and
 structure. Later stages must keep it that way (no names, characters, places, layouts or logos from other games).
 
@@ -50,14 +50,22 @@ settings, controls, style, finale, credits), `14-main.js` (scenes, loop), `15-te
 
 ## Sport module interface
 
-A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf`, wrapped in its own
+A sport file is `src/sport-<id>.js`, where id is one of `paddle vine seed rapids frog kick leaf dash`, wrapped in its own
 `(function () { ... })();` and ending with `JC.register({...})`. Paddle Smash (`sport-paddle.js`) is the reference.
+
+Paddle Smash is table tennis seen from above (a 3/4 view): the table runs up the screen on a phone (Cappy at the bottom)
+and turns sideways on a wide screen (Cappy on the left). It opts into the joystick (`stick: true`) and reads
+`ctx.axis` to run Cappy round his end; each ball coming to him shows where it bounces, a ring where to stand and a
+white circle that shrinks onto the ring for the moment to swing (Swing button / a tap / Space / A). Swinging at a ball
+still out of reach loses it, so mashing never wins. At 3 and 6 points the marmosets start a Fruit Frenzy (2, then 3
+balls; 2 with Easier champions) where every ball scores on its own. `test.sim(ctx, cfg, n)` runs whole matches with a
+play-bot of a given skill for the balance check (`tests/e2e/jungle-cup-paddle.spec.js`).
 
 ```js
 (function () {
   const S = { /* all state here, allocated once */ };
   JC.register({
-    id: 'vine',                 // required, one of the seven ids
+    id: 'vine',                 // required, one of the eight ids
     champion: 'sloane',         // the champion's speaker id (portrait + name.<id>); the arch already knows it
     music: 'vine',              // a song id in JC.audio.songs (add your own: JC.audio.songs.vine = {...}); default 'paddle'
     start(ctx) {},              // a new round: reset S. Called before the 3-2-1 (draw() runs during the countdown)
@@ -85,12 +93,35 @@ this sport), `warmedUp` and `markWarm()` (for a once-only warm-up), `best`, `col
 `t` (seconds played this round), `rng` (seeded random), `sfx(name)`, `music(id)`, `say(lines, done)` (a text box; play
 pauses while it is open), `held` (JC.input.held: left right up down a b), `hud` (= JC.hud), `ui` (= JC.ui), `finish(res)`.
 
+**Analog movement: `ctx.axis`** = `{ x, y, mag }` (the same object every step; read it in `update`, don't keep a copy).
+`x` and `y` run -1..1 (y is down the screen), `mag` 0..1 is how hard it is pushed (0 = not moving). It comes from the
+touch joystick while a thumb is on it, else the gamepad's left stick (dead zone 0.2, rescaled so a light push moves
+slowly), else the arrow keys / WASD / the pad's d-pad (1 along an axis, diagonals normalised to length 1). Move with
+`speed * mag` along `(x, y) / |(x, y)|` for analog feel. The joystick also holds `left/right/up/down` once it is
+pushed past 0.45 that way, so `press` / `release` events and `ctx.held` keep working for sports that steer in steps.
+
+**The touch joystick: `stick: true`** in `JC.register({...})` gives a sport the floating joystick (like Hero of
+Sunvale's): a thumb landing in the left part of the screen (left 55% in portrait, 45% in landscape, below the top
+button row) starts it there, the knob follows up to the base's edge (dead zone 0.15), release springs it back, and a
+faint one rests bottom left as a hint. It follows its own touch id, so the sport's other touches (an A button on the
+right) work at the same time; the stick's own `down/move/up` events never reach the sport. For a different start
+area pass a function: `stick: (x, y, ctx) => x < ctx.W * 0.5` (that also lets it start anywhere the function allows).
+`ctx.stick` is the stick itself (`ctx.stick.id >= 0` while held; `STICK.draw(g, true)` is drawn by the core above
+the sport). The island uses the same stick: Cappy walks freely and analog, slides along walls and slips round corners
+(up to 7 px), and arches (24 px round each, kept to 32 px once the prompt shows), people, signs and the lift
+(27 px in front, 18 px all round) answer from a generous distance, so one approach is always enough.
+
 **Input events** (`e.type`): `press` / `release` with `e.key` in `left right up down a b pause` (keys, gamepad);
 `down` / `move` / `up` with `e.id, x, y, sx, sy, dx, dy` in virtual pixels (touch or mouse); `tap` (`x, y`); `swipe`
 (`dir`, `dx, dy`, `speed`). Keyboard: arrows/WASD, Space/Enter/Z = a, Esc/Backspace/X = b. Gamepad: stick/d-pad,
-button 0 = a, 1 = b, 9 = pause. Touch-first: every sport must be fully playable with taps/drags/swipes alone, and
+button 0 = a, 1 = b, 9 = pause (the left stick is also `ctx.axis`). Touch-first: every sport must be fully playable with taps/drags/swipes alone, and
 with keys alone. Draw your own touch buttons with `JC.ui.button(g, id, x, y, w, h, label)` (at least `ctx.tap` big)
 and check them with `JC.ui.hitAt(e.x, e.y)`.
+
+**Jump juice** (`core/06c-juice.js`): `JC.juice.shake(px, secs)` (never with reduced motion; call `JC.juice.tick(dt)`
+in `update` and translate by `JC.juice.ox / oy` when drawing), `JC.juice.squash(o, k)` (fills `o.sx / o.sy`, k from -1
+squashed to 1 stretched), `JC.juice.trail(n)` + `push(tr, x, y, a, f)` + `each(tr, fn)` (afterimages, allocated once),
+`JC.juice.speedLines(g, x, y, angle, len, n, col, seed, unit)`. Leaf Slide and Vine Climb use it.
 
 **Shared helpers**: `JC.hud.versus(g, {name, score, of, col}, {...})` (two score panels), `JC.hud.timer(g, secsLeft,
 frac)`, `JC.hud.score(g, n)`, `JC.hud.meter(g, x, y, w, label, frac, col, glow)`, `JC.hud.pop(x, y, key, col)`;
@@ -146,13 +177,43 @@ Score to the platform: `BRB.gameOver({ won, score })` after every round, score =
 `talk()`, `skipText()`, `buttons()` (CSS px), `sport()` (testState) / `sport(name, ...args)` (sport.test hooks),
 `perf()`, `world()`, `sheet(on)` (every sprite on screen, for looking at the art).
 
-## The island (tiles, 72 x 68)
+## The island (tiles, 112 x 100)
+Delta Isle grew (map v2) so that getting from one sport to the next is a small adventure. `core/09-world.js` lays it
+out (`ARCHES`, `ROUTES`); `core/11b-travel.js` runs the ways round. The intended flow: the dock (south) → the boardwalk
+→ Mossy Village (the Cup Totem) → the sports spread round the island.
 
-Dock and raft (36, 64); boardwalk north to Mossy Village (totem at 36, 37; elder, tapir's stall, huts); Great Kapok and
-the vine lift (36, 16) to the north. Arches (stand here to play): paddle (26, 31) canopy court; leaf (16, 22) hills and
-mud slope; seed (12, 46) lagoon; kick (20, 50) pitch; frog (46, 51) lily pond; rapids (61, 38) east islet over the
-stepping stones (y 34) or the rope bridge (y 44); vine (46, 21) giant grove. Side quests: the ants' leaf, the elder's
-glasses, Zuzu's letter, Pip's three shells, Mango's mango (cosmetic rewards only, never blocking).
+| Area | Sport | The way there |
+|---|---|---|
+| Canopy court, west of the village | Paddle Smash | a short path (the first sport) |
+| Tico's islet in the lagoon (west) | Seed Shot | the rope bridge over the gorge (it sways), then stepping stones and bobbing lily pads |
+| The pitch (south-west) | Banana Kick | over the rope bridge, south |
+| The hills (north-west) | Leaf Slide | the vine swing over the ravine (A at the edge; both ways) |
+| The giant grove on the high cliffs (north-east) | Vine Climb | the long ladder up the cliff face (stick up / down; stop anywhere); the zipline is the quick way down |
+| The muddy clearing (east) | Mango Dash | the mud trail below the cliffs (splashy, a little slower) |
+| The east bank, across the river | Rapids Run | the river ferry (a raft on a rope; both ways) |
+| Rana's grotto (south-east) | Frog Chorus | the glowing Mushroom Cave through the ridge, out behind the waterfall |
+| The Great Kapok (north) | the finale | the Kapok road; the vine lift opens with all eight Feathers |
+
+- **Shortcuts** (open once you get there, kept in the save): kick the rolled-up ladder down from the cliff top above
+  the Kapok road (`flags.scLadder`), and push the log over the gorge by the pitch (`flags.scLog`), a quick way back to
+  the boardwalk. `WORLD.applyShortcuts()` changes the tiles and redraws only the chunks round them.
+- **Golden acorns**: 16 along the ways round (`flags.ac0`..`ac15`); a counter shows under the Feathers once the first is
+  found; all 16 give the acorn-cap hat.
+- **Fast travel**: the map's rows (and a tap on the minimap) go only to places Cappy has walked to: a sport counts once
+  its arch prompt has shown (`flags.v_<id>`); the village and the dock always. Unvisited rows are dimmed and say "walk
+  there first". The minimap clouds over the parts not seen yet (`flags.disc`, 8 x 8-tile cells).
+- **Signposts** at the junctions point the way with the sports' icons (no reading needed) and say it when read.
+- **Friendly animals**: butterflies, a beach turtle, jumping fish, fireflies in the cave (just life, no talking).
+- **Nothing traps or hurts**: rides always end on solid ground; no falls; if Cappy is ever inside something solid
+  (an old save, a changed map) he is put back on open ground within a second.
+- **Drawing**: the island is drawn in 256 x 256 chunks on demand (ground in two frames for the water, plus the "over"
+  layer), at most 30 kept; one missing chunk near the view is drawn per frame, so there is never one giant canvas.
+- **Reduced motion**: no camera bob on the rope bridge, no acorn bob, no butterfly flapping, a slower waterfall.
+- **Old saves** (`flags.mapv` < 2): the position was on the old map, so Continue starts in Mossy Village; sports already
+  played count as visited; everything else (Feathers, bests, quests, styles) is kept.
+- **Tests**: `tests/e2e/jungle-cup-island.spec.js` walks a fresh save from the dock to all eight arches with real
+  joystick drags along these routes (and a keyboard run with both shortcuts and the zipline); `jc.routes()` gives the
+  map's routes, ferry landings, acorns and test places.
 
 ## Story panels and the finale
 
@@ -162,3 +223,22 @@ skips too): `JC.storyLines('intro')` (river, isle, dock: each launch, from Play 
 `JC.storyLines('finale')` (lift, stage, cup), then Mango on the pixel Canopy Stage, the Cup raised, Cappy's thanks,
 the credits and free play. Bonus bandanas: gold for the Cup (worn at once), berry for the first three-star round.
 Timed beats (Cappy's thanks, Zuzu's lift news) run on game time, never `setTimeout`.
+
+## Mango Dash (the eighth sport)
+
+Pecca the peccary, captain of the Grunt Gang, guards the eighth Feather (`ARCHES.dash` in `core/09-world.js`; the
+clearing, its props, Pecca's spot and the `clearing` test place are placed relative to that entry). `sport-dash.js`:
+carry the mango 280 m in four sections, each starting at a checkpoint with its own look, hazards and music:
+Muddy Clearing (logs, mud, puddles) -> Bamboo Grove (bamboo rows that funnel, thorns, ambushers) -> Riverbank (a narrow
+log bridge, boulders, rolling coconuts) -> Pecca's Stretch (everything denser, Pecca charges twice). Cappy runs by
+himself; the joystick / arrows steer (up = sprint). Coco, Pip and Tapo run open lines beside and behind; PASS (button /
+Space / A) throws to the teammate with the arrow (the safest), and a catch gives a short speed boost.
+The gang hunts whoever holds the mango: pigs, zig-zag piglets, big slow bruisers, ambushers hiding behind cover, and
+Pecca. Close in, a pig shows its tell ("!", pawing, a dotted line where it will lunge), then lunges along that line.
+A pass breaks a tell (the pig hunts the new carrier from scratch; no new lunge for 0.7 s after a catch); a lunge in
+flight is committed. A tackle is a cartoon tumble: one mango (life) lost, back to the last checkpoint; with none left
+the run ends. The gang keeps off the log bridge. Power-ups: a lightning bolt (5 s faster) and a fireball (10 s flame
+aura: pigs skid away and never come within its radius, no lunges); both stay with the mango when it is passed.
+Stars: a win; at most one tackle (two on Easier); no tackles and under 170 s (185 s Easier).
+Everything that counted seven counts `NSPORTS` (`JC.sportOrder.length`). Saves from before Mango Dash load as they
+are: a won Cup stays won, the lift waits for the eighth Feather, and Mango tells the news once (`flags.dashNews`).

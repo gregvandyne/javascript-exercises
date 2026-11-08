@@ -27,6 +27,7 @@ const LOOP = { last: 0, acc: 0, speed: 1, frames: 0, fps: 60, fpsT: 0, fpsN: 0, 
 JC.loop = LOOP;
 function step(dt) {
   INPUT.poll();
+  INPUT.updateAxis();
   UI.update(dt);
   if (FADE.dir) {
     FADE.t += dt * 4;

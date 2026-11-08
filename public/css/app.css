@@ -366,6 +366,11 @@ textarea.input{min-height:96px;resize:vertical}
 @media (min-width:821px){.toasts{bottom:24px}}
 .toast{background:var(--text);color:var(--bg);padding:12px 18px;border-radius:var(--r-sm);font-weight:700;box-shadow:var(--shadow-lg);animation:tin .25s ease-out;pointer-events:auto;text-align:center}
 .toast.bad{background:var(--danger);color:var(--on-danger)}
+.toasts.over-game .toast{pointer-events:none}
+/* Over a game the toasts sit as a small pill inside the play bar itself (outside the game frame): never on a game's
+   title logo, its HUD, its bottom controls, its joystick, its text box or the buttons of its results card. */
+.toasts.over-game{top:calc(env(safe-area-inset-top,0px) + 9px);bottom:auto!important;width:auto;max-width:min(56vw,320px);gap:4px}
+.toasts.over-game .toast{padding:5px 12px;font-size:.8rem;line-height:1.25;border-radius:17px;opacity:.97;max-width:100%}
 @keyframes tin{from{transform:translateY(12px);opacity:0}}
 
 /* modal sheet */

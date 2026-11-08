@@ -1,5 +1,5 @@
 // Jungle Cup, the whole game put together: the painted raft-arrival panels at each launch (Skip, and Continue shows
-// them once per launch), a full run of all seven Feathers (the totem, the map, the vine lift), the finale (painted
+// them once per launch), a full run of all eight Feathers (the totem, the map, the vine lift), the finale (painted
 // panels, the Cup raised on the Canopy Stage, credits, free play), the bonus bandanas, every site language, and the
 // score sent to the platform. With JC_INTEGRATE_SHOTS=<dir> it also takes the pictures of every screen at 390 x 844
 // and 1366 x 768 in the light and dark site themes, each with the layout check.
@@ -12,7 +12,7 @@ import { frameProblems, pageScrollsSideways } from './frame-fit.js';
 
 const J = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest.jc[fn](...a), [fn, a]);
 const state = f => J(f, 'state');
-const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'];
+const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'];
 async function open(page, size = { width: 390, height: 844 }) {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -25,7 +25,7 @@ async function open(page, size = { width: 390, height: 844 }) {
   return { f, errors };
 }
 
-test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the finale, credits and free play', async ({ page }) => {
+test('Jungle Cup: raft-arrival panels (Skip), eight Feathers, the vine lift, the finale, credits and free play', async ({ page }) => {
   test.setTimeout(180_000);
   const { f, errors } = await open(page);
   await J(f, 'tap', 'play');
@@ -42,16 +42,16 @@ test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the
   s = await state(f);
   expect([s.panel, s.text && s.text.key]).toEqual(['', 'd.coco.hi']);
   await J(f, 'skipText');
-  // win all seven: each Feather lights a totem socket, the map shows it, the lift opens
+  // win all eight: each Feather lights a totem socket, the map shows it, the lift opens
   for (const id of SPORTS) {
     s = await J(f, 'win', id);
     expect(s.sport.newFeather).toBe(true);
   }
   s = await state(f);
-  expect(s.feathers).toBe(7);
+  expect(s.feathers).toBe(SPORTS.length);
   for (const id of SPORTS) expect(s.stars[id]).toBeGreaterThanOrEqual(1);
   await J(f, 'go', 'map'); await J(f, 'step', 100);
-  expect((await J(f, 'buttons')).filter(b => b.id.startsWith('go:')).length).toBe(7);
+  expect((await J(f, 'buttons')).filter(b => b.id.startsWith('go:')).length).toBe(SPORTS.length);
   await J(f, 'go', 'lift'); await J(f, 'step', 400);
   await J(f, 'talk');
   expect((await state(f)).text.key).toBe('lift.open');
@@ -66,7 +66,7 @@ test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the
   await J(f, 'next'); await J(f, 'step', 3000);
   s = await state(f);
   expect([s.cup, s.cos.bandana, s.cos.own.includes('gold'), s.text.key]).toEqual([true, 'gold', true, 'end.5']);
-  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1)).toEqual({ won: true, score: s.stars && Object.values(s.stars).reduce((a, b) => a + b, 0) * 100 + 7 * 250 + 500 });
+  expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1)).toEqual({ won: true, score: s.stars && Object.values(s.stars).reduce((a, b) => a + b, 0) * 100 + SPORTS.length * 250 + 500 });
   await J(f, 'next'); await J(f, 'step', 800);
   expect((await state(f)).screen).toBe('credits');
   await J(f, 'step', 2000);
@@ -79,7 +79,7 @@ test('Jungle Cup: raft-arrival panels (Skip), seven Feathers, the vine lift, the
 test('Jungle Cup: Continue shows the panels once per launch; a first three-star round gives the berry bandana', async ({ page }) => {
   test.setTimeout(90_000);
   const { f, errors } = await open(page);
-  await J(f, 'setSave', { pos: { x: 36, y: 40, d: 'up' } });
+  await J(f, 'setSave', { pos: { x: 50, y: 66, d: 'up' } });
   await J(f, 'go', 'title'); await J(f, 'step', 100);
   await J(f, 'tap', 'continue');
   await expect.poll(async () => (await state(f)).screen).toBe('world');
@@ -93,11 +93,13 @@ test('Jungle Cup: Continue shows the panels once per launch; a first three-star 
   await J(f, 'tap', 'continue'); await J(f, 'step', 800);
   s = await state(f);
   expect([s.screen, s.text]).toEqual(['world', null]);
-  // two stars give no bandana; the first three-star round (the vine bot climbs in about 30 s) gives the berry one
+  // two stars give no bandana; the first three-star round gives the berry one (a three-star result is set directly:
+  // the bots' star counts vary now that hazards can knock Cappy down)
   s = await J(f, 'win', 'paddle');
   expect([s.sport.result.stars, s.cos.own.includes('berry')]).toEqual([2, false]);
-  await J(f, 'play', 'vine'); await J(f, 'step', 3800); await J(f, 'sport', 'auto', true);
-  for (let i = 0; i < 60; i++) { s = await J(f, 'step', 1000); if (s.sport.phase === 'results') break; }
+  await J(f, 'play', 'vine'); await J(f, 'step', 300);
+  await f.evaluate(() => { const R = JC.runner; R.result = { score: 3000, stars: 3, won: true, frac: 1 }; R.finishNow(); });
+  await J(f, 'step', 1500); s = await state(f);
   expect([s.sport.phase, s.sport.result.stars]).toEqual(['results', 3]);
   expect(s.cos.own).toContain('berry');
   expect(s.cos.bandana).not.toBe('berry');   // given, not forced on: Style picks what Cappy wears
@@ -126,7 +128,7 @@ test.describe('pictures', () => {
       await J(f, 'go', 'village'); await J(f, 'step', 600); await shot('03-overworld');
       await J(f, 'win', 'paddle'); await J(f, 'win', 'vine'); await J(f, 'win', 'seed');
       await J(f, 'go', 'paddle'); await J(f, 'step', 300); await shot('04-arch');
-      await f.evaluate(() => { window.JC.go('world', { at: [36, 40, 'up'], celebrate: 'frog' }, true); });
+      await f.evaluate(() => { window.JC.go('world', { at: [50, 66, 'up'], celebrate: 'frog' }, true); });
       await f.evaluate(() => { const s = window.JC.save.data; s.feathers.frog = true; });
       await J(f, 'step', 1200); await shot('05-totem');
       await J(f, 'go', 'map'); await J(f, 'step', 300); await shot('06-map');

@@ -42,16 +42,16 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   await expect.poll(async () => (await state(f)).text?.key).toBe('story.1');
   await J(f, 'skipText');
   let s = await state(f);
-  expect([s.pos.x, s.pos.y, s.feathers, s.saved]).toEqual([36, 64, 0, true]);
+  expect([s.pos.x, s.pos.y, s.feathers, s.saved]).toEqual([50, 93, 0, true]);
   // walk with the keys: up the pier
   await J(f, 'manual', true);
   await J(f, 'walk', 'up', 3);
-  expect((await state(f)).pos.y).toBe(61);
+  expect((await state(f)).pos.y).toBe(90);
   // just below Jada's arch, then one step up into it: the prompt
-  await J(f, 'go', [26, 32, 'up']);
+  await J(f, 'go', [40, 57, 'up']);
   await J(f, 'walk', 'up', 1);
   s = await state(f);
-  expect([s.pos.x, s.pos.y, s.prompt]).toEqual([26, 31, 'paddle']);
+  expect([s.pos.x, s.pos.y, s.prompt]).toEqual([40, 56, 'paddle']);
   // Space in the arch: the intro card
   await J(f, 'tapKey', 'a');
   await J(f, 'step', 400);
@@ -80,7 +80,9 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   await J(f, 'step', 600);
   await J(f, 'tap', 'back'); await J(f, 'step', 800);
   s = await state(f);
-  expect([s.screen, s.pos.x, s.pos.y]).toEqual(['world', 26, 32]);
+  // Cappy stands a step outside the arch's zone, so its button doesn't pop straight up again
+  expect([s.screen, s.prompt]).toEqual(['world', '']);
+  expect(Math.hypot(s.pos.x - 40, s.pos.y - 56)).toBeLessThan(4);
   // lose: play again and stand still (warm-up done, so straight into the match with Jada)
   await J(f, 'play', 'paddle'); await J(f, 'step', 4000);
   expect((await state(f)).sport.state.stage).toBe('match');

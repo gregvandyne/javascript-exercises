@@ -1,0 +1,20 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N.it = Object.assign(I18N.it || {}, {
+  "sport.seed.goal": "Colpisci la frutta galleggiante prima di Tico! La frutta vicina vale 50, poi 75, 100 e 150 la carambola in fondo. La frutta dorata vale doppio. Attento alla frutta che si tuffa e alle rondini! Fai più punti di Tico in 60 secondi.",
+  "ss.golden": "Dorata!",
+  "ss.snack": "Spuntino di rondine!",
+  "sport.rapids.goal": "Sfida le Lontre Gemelle per 1.350 m giù per il fiume! Salta tronchi e piccole cascate, abbassati sotto rami e liane, evita rocce, mulinelli e dighe dei castori, e sfrutta l'acqua veloce. Arriva primo!",
+  "rap.sec0": "Ansa Pigra",
+  "rap.sec1": "Torrente dei Coccodrilli",
+  "rap.sec2": "Bosco dei Castori",
+  "rap.sec3": "Discesa delle Cascate",
+  "rap.tipwhirl": "Mulinello! Giragli intorno",
+  "rap.tipdam": "Diga dei castori! Trova il varco",
+  "rap.tipfall": "Cascata! Salta per un gran tuffo",
+  "rap.tiproll": "Tronco che rotola! Saltalo o spostati",
+  "rap.tipchan": "Acqua veloce! Resta nelle frecce",
+  "rap.tipvine": "Liane! Abbassati",
+  "rap.spin": "Che giro!",
+  "rap.bigDrop": "Gran tuffo!",
+  "rap.fast": "Acqua veloce!",
+});

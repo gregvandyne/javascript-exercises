@@ -1,0 +1,21 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N.ja = Object.assign(I18N.ja || {}, {
+  "sport.seed.goal": "ティコよりさきに うかぶ くだものを ねらおう！ ちかいのは 50、つぎは 75、100、いちばん おくの スターフルーツは 150。きんいろの くだものは 2ばい！ もぐる くだものと ツバメに ちゅうい。60びょうで ティコより たくさん とろう！",
+  "ss.golden": "きんいろ！",
+  "ss.snack": "ツバメの おやつ！",
+  "sport.rapids.goal": "カワウソのふたごと 1350m かわを くだる レース！ まるたや ちいさな たきは とびこえ、えだや つるの したを くぐり、いわ、うずまき、ビーバーの ダムを よけて、はやい ながれに のろう。1いを めざせ！",
+  "rap.sec0": "のんびりカーブ",
+  "rap.sec1": "ワニのおがわ",
+  "rap.sec2": "ビーバーのもり",
+  "rap.sec3": "たきのみち",
+  "rap.tipwhirl": "うずまき！よけよう",
+  "rap.tipdam": "ビーバーのダム！すきまを さがそう",
+  "rap.tipfall": "たき！ジャンプで おおジャンプ",
+  "rap.tiproll": "ころがる まるた！とぶか よけよう",
+  "rap.tipchan": "はやい ながれ！やじるしに のろう",
+  "rap.tipvine": "つる！くぐろう",
+  "rap.spin": "くるくる！",
+  "rap.bigDrop": "おおジャンプ！",
+  "rap.fast": "はやい ながれ！",
+  "ss.tico3": "ティコ +{n}",
+});

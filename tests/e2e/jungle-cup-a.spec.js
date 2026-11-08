@@ -142,20 +142,20 @@ test('Seed Shot: the bot outscores Tico, not shooting loses, a real mouse pull-b
   // real mouse: pull back from the slingshot (down = near row at a short pull) and let go, aimed ahead of a near fruit
   await J(f, 'step', 600);
   await J(f, 'tap', 'retry'); await J(f, 'step', 4000);
-  await J(f, 'sport', 'ticoOff');
+  await J(f, 'sport', 'ticoOff'); await J(f, 'sport', 'lifeOff');   // no swallows or divers: this part checks the aim
   let st = await sport(f), hits = 0;
   for (let n = 0; n < 4; n++) {
     st = await sport(f);
-    const lead = await J(f, 'sport', 'lead', 2);
+    const lead = await J(f, 'sport', 'lead', 3);
     expect(lead).not.toBeNull();
     // aimX = slX + (startX - x) * 2.4, so pulling left of the start aims right
-    const sx = st.slX, sy = st.rowY[1], ex = sx - (lead - st.slX) / 2.4, ey = sy + 12;
+    const sx = st.slX, sy = st.rowY[2], ex = sx - (lead - st.slX) / 2.4, ey = sy + 12;
     const k = st.k, [px, py] = await toPage(page, f, sx * k, sy * k), [qx, qy] = await toPage(page, f, ex * k, ey * k);
     expect(py).toBeLessThan(380); expect(qy).toBeLessThan(380);
     await page.mouse.move(px, py); await page.mouse.down();
     await page.mouse.move((px + qx) / 2, (py + qy) / 2); await page.mouse.move(qx, qy);
     const aim = await sport(f);
-    expect([aim.drag, aim.aimOn, aim.aimRow]).toEqual([true, true, 2]);
+    expect([aim.drag, aim.aimOn, aim.aimRow]).toEqual([true, true, 3]);   // a short pull: the near row (of four)
     expect(Math.abs(aim.aimX - lead)).toBeLessThanOrEqual(3);
     await page.mouse.up();
     await J(f, 'step', 700);
@@ -166,12 +166,12 @@ test('Seed Shot: the bot outscores Tico, not shooting loses, a real mouse pull-b
   expect(hits).toBeGreaterThanOrEqual(3);
   expect(st.you).toBeGreaterThanOrEqual(150);
   // a pull that is too short does not fire
-  const [ax, ay] = await toPage(page, f, st.slX * st.k, st.rowY[1] * st.k);
+  const [ax, ay] = await toPage(page, f, st.slX * st.k, st.rowY[2] * st.k);
   await page.mouse.move(ax, ay); await page.mouse.down(); await page.mouse.move(ax, ay + 2); await page.mouse.up();
   await J(f, 'step', 100);
   expect((await sport(f)).shots).toBe(4);
-  // real keys: Up picks the far row, Left/Right move the ring, Space fires
-  await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowUp');
+  // real keys: Up picks the far row (the star fruit), Left/Right move the ring, Space fires
+  await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowUp');
   expect((await sport(f)).aimRow).toBe(0);
   const x0 = (await sport(f)).aimX;
   await page.keyboard.down('ArrowRight'); await J(f, 'step', 300); await page.keyboard.up('ArrowRight');

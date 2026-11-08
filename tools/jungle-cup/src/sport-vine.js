@@ -4,8 +4,10 @@
 //   brings you under it (the ring turns green) to leap and grab it. Too far away: nothing happens ("Wait for it").
 //   Close but not close enough: your paws slip and you fall to the last branch platform (at 15, 30 and 45 m).
 //   Standing on a branch, the next vine swings over you: grab it as it passes.
-//   Hazards: coconuts shake, then drop (a bonk makes you dizzy); angry bees fly across (a leap into one bounces you
-//   back). Sloane is slow but never stops: reach the canopy (60 m) before she does.
+//   Hazards: coconuts shake, then drop past the next vine; angry bees buzz in from the edge, then fly across the gap.
+//   Leap into either and Cappy is knocked off: "Bonk!", a tumble, and he drops to the last branch platform he passed
+//   (with Easier champions, only a couple of vines: he catches one on the way down). Hanging on is safe: wait for it to
+//   pass, then leap. Sloane is slow but never stops: reach the canopy (60 m) before she does.
 // World units: x in pixels from the trunk's centre, y (wy) in pixels upwards from the forest floor (PXM per metre).
 // ======================================================================================================
 (function () {
@@ -14,7 +16,7 @@
   const S = {
     T: [], cur: 0, state: 'stand', x: -26, y: 28, hm: 0, maxM: 0, facing: 1, vx: 0, vy: 0, walkTo: -26,
     leapT: 0, leapFrom: 0, leapX0: 0, leapY0: 0, leapOk: true, leapBack: 0, tapAt: -1, tapFor: 0, daze: 0, time: 0, auto: false, sigma: 0, eps: 0,
-    sloane: 0, sloaneV: 1, falls: 0, perfects: 0, grabs: 0, bonks: 0, cam: 0, waitMsg: 0, over: false, won: false, hint: 1,
+    sloane: 0, sloaneV: 1, falls: 0, perfects: 0, grabs: 0, bonks: 0, knocks: 0, knock: 0, spin: 0, fallTo: -1, cam: 0, waitMsg: 0, over: false, won: false, hint: 1,
     coco: { on: false, x: 0, wy: 0, vy: 0, shake: 0, next: 8, hit: false },
     bee: { on: false, x: 0, wy: 0, dir: 1, warn: 0, next: 10, hit: false, t: 0 },
     cheer: 0, bg: null, bgGen: -1, bgH: 0, trunk: null, floor: null, canopy: null, branch: null, finishT: 0,
@@ -167,8 +169,21 @@
     S.hm = v.h; S.maxM = Math.max(S.maxM, v.h);
   }
   function fall(ctx) {
-    S.state = 'fall'; S.vy = 0; S.falls++;
+    S.state = 'fall'; S.vy = 0; S.falls++; S.fallTo = lastStand(S.cur);
     ctx.sfx('miss'); fl(sxOf(S.x), syOf(S.y) - 30, t('vc.slip'), '#ffb3d6');
+  }
+  /** Hit by a coconut or a bee: knocked off, a tumble, and down to the last branch (Easier: catch a vine two below). */
+  function knock(ctx, msg, col) {
+    S.bonks++; S.knocks++; S.knock = 1; S.spin = 0;
+    ctx.sfx('bonk'); ctx.sfx('miss');
+    fl(sxOf(S.x), syOf(S.y) - 40, msg, col);
+    bu(sxOf(S.x), syOf(S.y - 8), 10, '#ffe9a0', 70);
+    JC.juice.shake(3, 0.3);
+    const ls = lastStand(S.cur);
+    if (S.state === 'stand') { S.daze = 1.1; S.knock = 0.9; return; }       // on a branch: knocked flat where you stand
+    let to = ls;
+    if (ctx.easy) { const c = Math.max(ls, S.cur - 2); if (c > ls && S.T[c].kind === 'vine') to = c; }
+    S.state = 'fall'; S.vy = 80; S.fallTo = to;
   }
   function lastStand(i) { for (let k = i; k >= 0; k--) if (isStand(S.T[k].kind)) return k; return 0; }
   function win(ctx) {
@@ -183,13 +198,15 @@
     let stars = 0;
     if (won) stars = 1 + (secs <= 46 ? 1 : 0) + (secs <= 34 ? 1 : 0);
     const score = Math.round(S.maxM * 10 + S.perfects * 20 + (won ? 500 + Math.max(0, TIME - secs) * 10 : 0));
-    ctx.finish({ score, stars, won, frac: won ? [0.34, 0.67, 1][stars - 1] : (S.maxM / TOP_M) * 0.32, stats: { metres: S.maxM, secs: Math.round(secs), falls: S.falls, sloane: Math.round(S.sloane) } });
+    ctx.finish({ score, stars, won, frac: won ? [0.34, 0.67, 1][stars - 1] : (S.maxM / TOP_M) * 0.32, stats: { metres: S.maxM, secs: Math.round(secs), falls: S.falls, knocks: S.knocks, sloane: Math.round(S.sloane) } });
   }
   function update(dt, ctx) {
     S.ctx = ctx; view(ctx);
     S.time += dt;
     if (S.waitMsg > 0) S.waitMsg -= dt;
     if (S.daze > 0) S.daze -= dt;
+    if (S.knock > 0 && S.state !== 'fall') S.knock -= dt;
+    JC.juice.tick(dt);
     if (S.cheer > 0) S.cheer -= dt;
     // Sloane: slow, steady, never stops
     if (!S.over) S.sloane = Math.min(TOP_M, S.sloane + S.sloaneV * dt);
@@ -224,20 +241,26 @@
       // an angry bee in the way bounces you back to where you were
       const b = S.bee;
       if (b.on && !b.hit && Math.abs(b.x - S.x) < 11 && Math.abs(b.wy - (S.y - 12)) < 14) {
-        b.hit = true; S.bonks++; ctx.sfx('bonk'); fl(sxOf(S.x), syOf(S.y) - 30, t('vc.buzz'), '#ffd23f');
-        S.daze = 0.8; const back = S.T[S.leapFrom];
-        if (isStand(back.kind)) { S.state = 'stand'; S.cur = S.leapFrom; S.walkTo = back.sx; S.x = clamp(S.x, -44, 44); }
-        else { S.cur = S.leapFrom; ride(back, ang(back, S.time)); S.state = 'hang'; }
+        b.hit = true; S.cur = S.leapFrom; knock(ctx, t('vc.buzz'), '#ffd23f');
         return;
       }
       if (k >= 1) { if (S.leapOk) landOn(ctx, S.leapFrom + 1); else fall(ctx); }
     } else if (S.state === 'fall') {
       S.vy -= 520 * dt; S.y += S.vy * dt;
-      const li = lastStand(S.cur), floor = S.T[li].h * PXM + 28;
+      if (S.knock > 0) S.spin += dt * 14;
+      const li = S.fallTo >= 0 ? S.fallTo : lastStand(S.cur), v = S.T[li];
       S.hm = Math.max(0, (S.y - 28) / PXM);
+      if (!isStand(v.kind)) {
+        // Easier: grab a vine on the way down
+        const ty = tipY(v, S.time);
+        S.x += (tipX(v, S.time) - S.x) * Math.min(1, dt * 8);
+        if (S.vy < 0 && S.y <= ty) { S.cur = li; ride(v, ang(v, S.time)); S.state = 'hang'; S.daze = 0.6; S.knock = 0; S.fallTo = -1; S.hm = v.h; ctx.sfx('grab'); bu(sxOf(S.x), syOf(S.y), 6, '#7cc84a', 40); }
+        return;
+      }
+      const floor = v.h * PXM + 28;
       if (S.y <= floor) {
-        S.y = floor; S.cur = li; S.state = 'stand'; S.walkTo = S.T[li].sx; S.daze = 0.4;
-        ctx.sfx('bonk'); bu(sxOf(S.x), syOf(S.y - 28), 8, '#c48a4c', 50);
+        S.y = floor; S.cur = li; S.state = 'stand'; S.walkTo = v.sx; S.hm = v.h; S.daze = S.knock > 0 ? 1.0 : 0.4; S.knock = S.knock > 0 ? 0.8 : 0; S.fallTo = -1;
+        ctx.sfx('bonk'); bu(sxOf(S.x), syOf(S.y - 28), 10, '#c48a4c', 60);
         const n = S.T[li + 1]; if (n) n.p = Math.PI * 0.9 - n.w * S.time;
       }
     }
@@ -247,20 +270,22 @@
     // coconuts from 15 m: one shakes on a clump above Cappy, then drops
     if (!co.on && !S.over) {
       co.next -= dt;
-      if (co.next <= 0 && S.hm >= 14 && S.state !== 'fall') {
+      if (co.next <= 0 && S.hm >= 14 && S.state === 'hang') {
         const n = S.T[Math.min(N, S.cur + 1)];
         co.on = true; co.hit = false; co.shake = 1.0; co.vy = 0;
         co.x = clamp((n.kind === 'branch' ? n.sx : n.X) + (ctx.rng() - 0.5) * 16, -50, 50);
         co.wy = S.y + 70;
-        co.next = (easy ? 11 : 6.5) + ctx.rng() * 3;
+        co.next = (easy ? 11 : 8.5) + ctx.rng() * 3;
       }
     } else if (co.on) {
       if (co.shake > 0) { co.shake -= dt; if (co.shake <= 0) ctx.sfx('whoosh'); }
       else {
         co.vy -= 420 * dt; co.wy += co.vy * dt;
-        if (!co.hit && S.state !== 'fall' && Math.abs(co.x - S.x) < 11 && co.wy < S.y + 4 && co.wy > S.y - 34) {
-          co.hit = true; S.bonks++; S.daze = 1.0; ctx.sfx('bonk'); fl(sxOf(S.x), syOf(S.y) - 34, t('vc.bonk'), '#ffb3d6');
-          bu(sxOf(co.x), syOf(co.wy), 8, '#b07a44', 60); co.on = false;
+        // a leap into a falling coconut knocks you down (hanging on, you're safe: wait for it to drop past)
+        if (!co.hit && S.state === 'leap' && Math.abs(co.x - S.x) < 11 && co.wy < S.y + 4 && co.wy > S.y - 34) {
+          co.hit = true; bu(sxOf(co.x), syOf(co.wy), 8, '#b07a44', 60); co.on = false;
+          S.cur = S.leapFrom;
+          knock(ctx, t('vc.bonk'), '#ffb3d6');
         }
         if (co.wy < S.cam - 260) co.on = false;
       }
@@ -271,7 +296,7 @@
       if (b.next <= 0 && S.hm >= 28 && (S.state === 'hang' || S.state === 'stand')) {
         b.on = true; b.hit = false; b.warn = 1.0; b.t = 0; b.dir = ctx.rng() < 0.5 ? 1 : -1;
         b.x = -b.dir * (S.vw / 2 + 10); b.wy = S.y + 18;
-        b.next = (easy ? 13 : 7.5) + ctx.rng() * 3; ctx.sfx('buzz');
+        b.next = (easy ? 13 : 9.5) + ctx.rng() * 3; ctx.sfx('buzz');
       }
     } else if (b.on) {
       b.t += dt;
@@ -279,10 +304,7 @@
       else {
         b.x += b.dir * (easy ? 42 : 52) * dt;
         if (Math.abs(b.x) > S.vw / 2 + 20) b.on = false;
-        // flying into Cappy while he hangs makes him dizzy
-        if (!b.hit && S.state === 'hang' && Math.abs(b.x - S.x) < 9 && Math.abs(b.wy + Math.sin(b.t * 8) * 3 - (S.y - 16)) < 14) {
-          b.hit = true; S.bonks++; S.daze = 0.8; ctx.sfx('bonk'); fl(sxOf(S.x), syOf(S.y) - 34, t('vc.buzz'), '#ffd23f');
-        }
+
       }
     }
   }
@@ -291,7 +313,9 @@
     if (S.daze > 0 || (S.state !== 'hang' && S.state !== 'stand')) { S.tapAt = -1; return; }
     const n = S.T[S.cur + 1]; if (!n) return;
     const b = S.bee;
-    if (b.on && !b.hit && Math.abs(b.x - S.x) < 40 && !S.sigma) return;      // the careful bot waits for bees
+    // the careful bot waits for a bee in the gap, or a coconut over the next vine (then times its leap afresh)
+    const co = S.coco;
+    if (!S.sigma && ((b.on && !b.hit && Math.abs(b.x - S.x) < 40) || (co.on && !co.hit && Math.abs(co.x - (n.kind === 'branch' ? n.sx : n.X)) < 26))) { S.tapAt = -1; return; }
     if (n.kind === 'branch') { tryGrab(ctx); return; }
     let best = 1e9, bestT = 0;
     for (let k = 0; k <= 150; k++) { const tt = S.time + k / 60, d = Math.abs(nextX(tt) - cappyX(tt)); if (d < best - 0.01) { best = d; bestT = k / 60; } if (k > 10 && d > best + 12) break; }
@@ -378,8 +402,20 @@
     } else {
       buildHang();
       const fr = S.state === 'leap' || S.state === 'fall' || ((S.time * 3) | 0) % 2 ? 'vc_hang2' : 'vc_hang';
-      sprK(g, SPRITES[fr], x - 19, y - 1, 2);
-      const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat]; if (hat) sprK(g, hat, x - 15, y + 8, 2);
+      if (S.state === 'fall' && S.knock > 0) {
+        // knocked off: tumbling head over heels on the way down
+        const sp = SPRITES[fr];
+        g.save(); g.translate(x, y + 20); g.rotate(BRBX.reduced() ? 0.6 : S.spin); g.drawImage(sp.c, -sp.w, -sp.h, sp.w * 2, sp.h * 2); g.restore();
+      } else {
+        sprK(g, SPRITES[fr], x - 19, y - 1, 2);
+        const hat = SAVE.data.cos.hat && SPRITES['hat_' + SAVE.data.cos.hat]; if (hat) sprK(g, hat, x - 15, y + 8, 2);
+      }
+    }
+    // knocked down: a ring of little stars and a "bonk" mark over Cappy's head
+    if (S.knock > 0 && S.state !== 'fall') {
+      const top = S.state === 'stand' ? y - 4 : y + 6;
+      for (let i = 0; i < 5; i++) { const a = S.time * 7 + i * 1.257; spr(g, SPRITES.sparkle, x - 3 + Math.cos(a) * 12, top + Math.sin(a) * 3); }
+      return;
     }
     if (S.daze > 0) for (let i = 0; i < 3; i++) { const a = S.time * 6 + i * 2.1; spr(g, SPRITES.sparkle, x - 2 + Math.cos(a) * 10, y + (S.state === 'stand' ? -4 : 6) + Math.sin(a) * 3); }
   }
@@ -394,7 +430,7 @@
     S.ctx = ctx; view(ctx);
     const W = S.vw, H = S.vh, k = S.k;
     if (S.bgGen !== VIEW.gen || S.bgK !== k || !S.bg) buildBg(ctx);
-    g.setTransform(VIEW.S * k, 0, 0, VIEW.S * k, 0, 0);
+    g.setTransform(VIEW.S * k, 0, 0, VIEW.S * k, JC.juice.ox * VIEW.S * k, JC.juice.oy * VIEW.S * k);
     BASEY = Math.round(H * 0.55);
     // the far forest (parallax)
     const off = Math.round(Math.min(0, H - S.bgH + S.cam * 0.35));
@@ -433,7 +469,7 @@
     }
     // coconut, Cappy, bee
     const co = S.coco;
-    if (co.on) { const sh = co.shake > 0 ? Math.round(Math.sin(S.time * 40) * 1.5) : 0; sprK(g, SPRITES.vc_coconut, sxOf(co.x) - 8 + sh, syOf(co.wy) - 8, 2); if (co.shake > 0) text(g, '!', sxOf(co.x), syOf(co.wy) - 22, WARN); }
+    if (co.on) { const sh = co.shake > 0 && !BRBX.reduced() ? Math.round(Math.sin(S.time * 40) * 1.5) : 0; sprK(g, SPRITES.vc_coconut, sxOf(co.x) - 8 + sh, syOf(co.wy) - 8, 2); if (co.shake > 0) text(g, '!', sxOf(co.x), syOf(co.wy) - 22, WARN); }
     drawCappy(g, ctx);
     const b = S.bee;
     if (b.on) {
@@ -492,7 +528,7 @@
     music: 'vine',
     start(ctx) {
       S.ctx = ctx; view(ctx); build(ctx);
-      S.cur = 0; S.state = 'stand'; S.x = -26; S.walkTo = -26; S.y = 28; S.hm = 0; S.maxM = 0; S.facing = 1; S.time = 0; S.daze = 0;
+      S.cur = 0; S.state = 'stand'; S.x = -26; S.walkTo = -26; S.y = 28; S.hm = 0; S.maxM = 0; S.facing = 1; S.time = 0; S.daze = 0; S.knock = 0; S.knocks = 0; S.spin = 0; S.fallTo = -1; JC.juice.reset();
       S.sloane = 0; S.sloaneV = TOP_M / (ctx.easy ? 72 : 62); S.falls = 0; S.perfects = 0; S.grabs = 0; S.bonks = 0; S.over = false; S.won = false;
       S.cam = 40; S.waitMsg = 0; S.cheer = 0; S.auto = false; S.sigma = 0; S.eps = 0; S.hint = ctx.firstTime ? 1.6 : 0.7;
       S.coco.on = false; S.coco.next = ctx.easy ? 6 : 3; S.bee.on = false; S.bee.next = ctx.easy ? 5 : 2;
@@ -508,7 +544,7 @@
       const n = S.T[S.cur + 1];
       return { state: S.state, cur: S.cur, metres: Math.round(S.hm * 10) / 10, best: S.maxM, sloane: Math.round(S.sloane * 10) / 10, time: Math.round(S.time * 100) / 100,
         dx: n ? Math.round((n.kind === 'branch' ? 0 : nextX(S.time) - cappyX(S.time)) * 10) / 10 : 0, next: n ? n.kind : '', r: R(ctx), daze: S.daze > 0,
-        falls: S.falls, perfects: S.perfects, grabs: S.grabs, bonks: S.bonks, over: S.over, won: S.won, auto: S.auto, coconut: S.coco.on, bee: S.bee.on };
+        falls: S.falls, perfects: S.perfects, grabs: S.grabs, bonks: S.bonks, knocks: S.knocks, knocked: S.knock > 0, fallTo: S.fallTo, over: S.over, won: S.won, auto: S.auto, coconut: S.coco.on, bee: S.bee.on };
     },
     test: {
       auto(ctx, on, sigma) { S.auto = !!on; S.sigma = +sigma || 0; S.eps = 0; S.tapAt = -1; return S.auto; },
@@ -516,6 +552,11 @@
       to(ctx, i) { i = clamp(i | 0, 0, N - 1); const v = S.T[i]; if (isStand(v.kind)) { S.state = 'stand'; S.cur = i; S.x = v.sx; S.walkTo = v.sx; S.y = v.h * PXM + 28; } else { S.cur = i; ride(v, 0); S.state = 'hang'; S.x = tipX(v, S.time); S.y = tipY(v, S.time); } S.hm = v.h; S.maxM = Math.max(S.maxM, v.h); S.cam = S.y + 10; return S.cur; },
       sloane(ctx, m) { S.sloane = clamp(+m || 0, 0, TOP_M); return S.sloane; },
       hazards(ctx, on) { S.coco.next = on ? 0 : 999; S.bee.next = on ? 0 : 999; S.coco.on = false; S.bee.on = false; return !!on; },
+      /** Drop a coconut right above Cappy, or send a bee straight at him (tests of the knockdown). */
+      drop(ctx, kind) {
+        if (kind === 'bee') { const b = S.bee; b.on = true; b.hit = false; b.warn = 0; b.t = 0; b.dir = 1; b.x = S.x - 3; b.wy = S.y - 16; return true; }
+        const co = S.coco; co.on = true; co.hit = false; co.shake = 0; co.vy = -30; co.x = S.x; co.wy = S.y + 2; return true;
+      },
     },
     cheat(won) { S.over = true; S.won = won; S.maxM = won ? TOP_M : 27; return { score: won ? 1300 : 270, stars: won ? 2 : 0, won, frac: won ? 0.67 : 0.14 }; },
   });

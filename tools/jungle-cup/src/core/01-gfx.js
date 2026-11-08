@@ -14,12 +14,15 @@ function resize() {
   const cssW = Math.max(200, CV.clientWidth || window.innerWidth || 320), cssH = Math.max(200, CV.clientHeight || window.innerHeight || 240);
   let dpr = dpr0, bw = Math.round(cssW * dpr), bh = Math.round(cssH * dpr);
   const short = Math.min(bw, bh);
-  // the short side ends up about 240 virtual pixels (never under 1x)
-  const S = Math.max(1, Math.round(short / 240));
-  // a small 1x screen (a short laptop window, split screen): fewer canvas pixels, stretched by the browser (still
-  // nearest-pixel, never blurred), so the words are not tiny 7 px text
-  if (S === 1 && short > 280) {
-    const f = Math.min(1.6, short / 240);
+  // the short side ends up about 240 virtual pixels; on a small screen (a phone on its side, a short window) fewer,
+  // down to 200, so one virtual pixel is at least about 1.6 CSS pixels and the words stay big enough to read
+  const want = Math.round(clamp(Math.min(cssW, cssH) / 1.6, 200, 240));
+  let S = Math.max(1, Math.round(short / want));
+  while (S > 1 && short / S < 180) S--;
+  // too many rows at a whole scale (a 1x screen): fewer canvas pixels, stretched by the browser (still nearest-pixel,
+  // never blurred), so the words are not tiny 7 px text
+  if (short / S > want * 1.15) {
+    const f = short / S / want;
     dpr = dpr0 / f; bw = Math.round(cssW * dpr); bh = Math.round(cssH * dpr);
   }
   if (CV.width !== bw) CV.width = bw;
@@ -55,7 +58,7 @@ const PAL = {
 };
 JC.pal = PAL;
 // Each sport's champion colour (its Feather, its arch flowers, its bars).
-const SPORT_COLOURS = { paddle: '#ff9b2e', vine: '#6ad34a', seed: '#ff5a5a', rapids: '#3fb7ff', frog: '#b06cff', kick: '#ffd23f', leaf: '#ff6fb5' };
+const SPORT_COLOURS = { paddle: '#ff9b2e', vine: '#6ad34a', seed: '#ff5a5a', rapids: '#3fb7ff', frog: '#b06cff', kick: '#ffd23f', leaf: '#ff6fb5', dash: '#1fc8a8' };
 JC.sportColours = SPORT_COLOURS;
 
 /* ---------- colour helpers ---------- */

@@ -1,0 +1,20 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N.es = Object.assign(I18N.es || {}, {
+  "sport.seed.goal": "¡Dale a la fruta flotante antes que Tico! La fruta cercana vale 50, luego 75, 100 y 150 la carambola del fondo. La fruta dorada vale el doble. ¡Cuidado con la fruta que se sumerge y con las golondrinas! Consigue más puntos que Tico en 60 segundos.",
+  "ss.golden": "¡Dorada!",
+  "ss.snack": "¡Merienda de golondrina!",
+  "sport.rapids.goal": "¡Echa una carrera de 1350 m a las Nutrias Gemelas río abajo! Salta troncos y pequeñas cascadas, agáchate bajo ramas y lianas, esquiva rocas, remolinos y diques de castor, y aprovecha el agua rápida. ¡Llega el primero!",
+  "rap.sec0": "Curva Tranquila",
+  "rap.sec1": "Arroyo del Cocodrilo",
+  "rap.sec2": "Bosque del Castor",
+  "rap.sec3": "Ruta de Cascadas",
+  "rap.tipwhirl": "¡Remolino! Esquívalo",
+  "rap.tipdam": "¡Dique de castor! Busca el hueco",
+  "rap.tipfall": "¡Cascada! Salta para una gran caída",
+  "rap.tiproll": "¡Tronco rodante! Sáltalo o apártate",
+  "rap.tipchan": "¡Agua rápida! Sigue las flechas",
+  "rap.tipvine": "¡Lianas! Agáchate",
+  "rap.spin": "¡Vueltas!",
+  "rap.bigDrop": "¡Gran caída!",
+  "rap.fast": "¡Agua rápida!",
+});

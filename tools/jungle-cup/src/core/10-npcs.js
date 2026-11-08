@@ -4,28 +4,28 @@
 // ======================================================================================================
 const QUESTS = {
   // id: who gives it, the item to find (or the person to bring it to), the reward (a cosmetic)
-  leaf: { giver: 'ants', item: 'leaf', at: [58, 29], reward: { bandana: 'sky' } },
-  specs: { giver: 'elder', item: 'specs', at: [7, 45], reward: { hat: 'straw' } },
+  leaf: { giver: 'ants', item: 'leaf', at: [100, 40], reward: { bandana: 'sky' } },
+  specs: { giver: 'elder', item: 'specs', at: [14, 67], reward: { hat: 'straw' } },
   letter: { giver: 'zuzu', item: 'letter', to: 'tapir', reward: { flag: 'leaf' } },
-  shells: { giver: 'pip', item: 'shell', at: [[63, 50], [8, 31], [44, 62]], reward: { bandana: 'sunset' } },
-  mango: { giver: 'mango', item: 'mangofruit', at: [24, 21], reward: { hat: 'explorer' } },
+  shells: { giver: 'pip', item: 'shell', at: [[60, 92], [8, 72], [101, 66]], reward: { bandana: 'sunset' } },
+  mango: { giver: 'mango', item: 'mangofruit', at: [24, 33], reward: { hat: 'explorer' } },
 };
 JC.quests = QUESTS;
 const BANDANAS = { green: '#45c34e', sky: '#3fb7ff', sunset: '#ff8b3d', gold: '#ffd23f', berry: '#c04aa8' };
 JC.bandanas = BANDANAS;
 const NPC_DEFS = [
-  { id: 'mango', x: 38, y: 56, spr: 'mango', bob: true },
-  { id: 'coco', x: 35, y: 61, spr: 'coco_down' },
-  { id: 'pip', x: 37, y: 61, spr: 'pip_down' },
-  { id: 'tapir', x: 41, y: 44, spr: 'tapir' },
-  { id: 'ants', x: 30, y: 47, spr: 'ant', many: 3 },
-  { id: 'elder', x: 34, y: 37, spr: 'elder' },
-  { id: 'zuzu', x: 38, y: 21, spr: 'zuzu', fly: true },
-  { id: 'marm', x: 22, y: 32, spr: 'marmoset', many: 2 },
+  { id: 'mango', x: 52, y: 84, spr: 'mango', bob: true },
+  { id: 'coco', x: 48, y: 90, spr: 'coco_down' },
+  { id: 'pip', x: 53, y: 90, spr: 'pip_down' },
+  { id: 'tapir', x: 55, y: 69, spr: 'tapir' },
+  { id: 'ants', x: 44, y: 72, spr: 'ant', many: 3 },
+  { id: 'elder', x: 48, y: 63, spr: 'elder' },
+  { id: 'zuzu', x: 52, y: 26, spr: 'zuzu', fly: true },
+  { id: 'marm', x: 36, y: 57, spr: 'marmoset', many: 2 },
 ];
 // a champion stands beside each arch
-const CHAMP_SPOT = { paddle: [28, 32], leaf: [18, 23], seed: [10, 47], kick: [22, 49], frog: [48, 52], rapids: [63, 39], vine: [48, 22] };
-const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki' };
+const CHAMP_SPOT = {}; for (const id in ARCHES) { const a = ARCHES[id], o = { seed: [-3, 1], kick: [2, -1], leaf: [2, 1] }[id] || [2, 1]; CHAMP_SPOT[id] = [a.x + o[0], a.y + o[1]]; }
+const CHAMP_SPR = { jada: 'jada', sloane: 'sloane', tico: 'tico', otters: 'otter', rana: 'rana', mico: 'mico', kiki: 'kiki', pecca: 'pecca' };
 function nearestFree(x, y) {
   if (!WORLD.isSolid(x, y)) return [x, y];
   for (let r = 1; r < 6; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!WORLD.isSolid(x + dx, y + dy)) return [x + dx, y + dy];
@@ -67,12 +67,14 @@ function talkLines(n) {
   const f = SAVE.featherCount();
   switch (n.id) {
     case 'mango': {
-      if (!SAVE.data.flags.metMango) { SAVE.data.flags.metMango = 1; return L('mango', 'intro1', 'intro2', 'intro3', 'intro4', 'intro5'); }
+      if (!SAVE.data.flags.metMango) { SAVE.data.flags.metMango = 1; SAVE.data.flags.dashNews = 1; return L('mango', 'intro1', 'intro2', 'intro3', 'intro4', 'intro5'); }
+      // a save from before Mango Dash: the news of the eighth champion first
+      if (!SAVE.data.flags.dashNews) { SAVE.data.flags.dashNews = 1; return L('mango', 'dash1', 'dash2'); }
       const q = qState('mango');
       if (q === 'got') { giveReward('mango'); return L('mango', 'qthanks'); }
       if (!q && f >= 1) { SAVE.data.quests.mango = 'active'; return L('mango', 'qask1', 'qask2'); }
       if (q === 'active') return L('mango', 'qwait');
-      if (f >= 7) return L('mango', SAVE.data.cup ? 'after' : 'allf');
+      if (f >= NSPORTS) return L('mango', SAVE.data.cup ? 'after' : 'allf');
       return L('mango', 'hint' + Math.min(3, f));
     }
     case 'coco': return L('coco', SAVE.data.flags.metCoco ? 'again' : 'hi');
@@ -98,16 +100,20 @@ function talkLines(n) {
       const q = qState('specs');
       if (q === 'got') { giveReward('specs'); return L('elder', 'qthanks'); }
       // the first talk: the totem's story, then straight on to her lost spectacles (so nobody misses the quest)
-      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1', 'totem2', 'totem3').concat(q ? [] : L('elder', 'qask1', 'qask2')); }
+      // (with all seven Feathers already won, she says so instead of telling of the empty sockets)
+      if (!SAVE.data.flags.metElder) { SAVE.data.flags.metElder = 1; if (!q) SAVE.data.quests.specs = 'active'; return L('elder', 'totem1').concat(f >= NSPORTS ? L('elder', 'totemfull') : L('elder', 'totem2', 'totem3'), q ? [] : L('elder', 'qask1', 'qask2')); }
       if (!q) { SAVE.data.quests.specs = 'active'; return L('elder', 'qask1', 'qask2'); }
       if (q === 'active') return L('elder', 'qwait');
-      return [{ who: 'elder', key: f >= 7 ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
+      return [{ who: 'elder', key: f >= NSPORTS ? 'd.elder.allf' : 'd.elder.count', vars: { n: f } }];
     }
     case 'zuzu': {
       const q = qState('letter');
       if (!q) { SAVE.data.quests.letter = 'active'; return L('zuzu', 'qask1', 'qask2'); }
       if (q === 'active') return L('zuzu', 'qwait');
-      return L('zuzu', f >= 7 && !SAVE.data.cup ? 'liftopen' : 'after');
+      if (f >= NSPORTS) return L('zuzu', SAVE.data.cup ? 'done' : 'liftopen');
+      // news about the next champion still to beat (Jada first)
+      const next = JC.sportOrder.find(id => !SAVE.data.feathers[id]);
+      return next === 'paddle' ? L('zuzu', 'after') : [{ who: 'zuzu', key: 'd.zuzu.next', vars: { sport: t('sport.' + next) } }];
     }
     case 'marm': return L('marm', 'hi');
     default: {
@@ -125,7 +131,7 @@ JC.talkLines = talkLines;
 function hasNews(n) {
   const f = SAVE.featherCount(), fl = SAVE.data.flags;
   switch (n.id) {
-    case 'mango': { const q = qState('mango'); return !fl.metMango || q === 'got' || (!q && f >= 1); }
+    case 'mango': { const q = qState('mango'); return !fl.metMango || !fl.dashNews || q === 'got' || (!q && f >= 1); }
     case 'elder': { const q = qState('specs'); return !fl.metElder || !q || q === 'got'; }
     case 'pip': { const q = qState('shells'); return !q || (q === 'active' && questItemsGot('shells') >= questItemsTotal('shells')); }
     case 'ants': { const q = qState('leaf'); return !q || q === 'got'; }

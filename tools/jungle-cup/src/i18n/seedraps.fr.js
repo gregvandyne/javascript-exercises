@@ -1,0 +1,20 @@
+// Seed Shot's busier lagoon and Rapids Run's longer river, in this language (new and updated lines).
+I18N.fr = Object.assign(I18N.fr || {}, {
+  "sport.seed.goal": "Touche les fruits flottants avant Tico ! Les fruits proches valent 50, puis 75, 100 et 150 pour la carambole tout au fond. Les fruits dorés comptent double. Attention aux fruits qui plongent et aux hirondelles ! Marque plus que Tico en 60 secondes.",
+  "ss.golden": "Doré !",
+  "ss.snack": "Goûter d'hirondelle !",
+  "sport.rapids.goal": "Fais la course avec les Jumelles Loutres sur 1 350 m de rivière ! Saute les troncs et les petites cascades, baisse-toi sous les branches et les lianes, évite les rochers, les tourbillons et les barrages de castor, et profite de l'eau rapide. Arrive premier !",
+  "rap.sec0": "Méandre Paresseux",
+  "rap.sec1": "Ruisseau aux Crocos",
+  "rap.sec2": "Bois des Castors",
+  "rap.sec3": "Descente des Cascades",
+  "rap.tipwhirl": "Tourbillon ! Contourne-le",
+  "rap.tipdam": "Barrage de castor ! Trouve le passage",
+  "rap.tipfall": "Cascade ! Saute pour un grand plongeon",
+  "rap.tiproll": "Tronc qui roule ! Saute ou écarte-toi",
+  "rap.tipchan": "Eau rapide ! Reste dans les flèches",
+  "rap.tipvine": "Lianes ! Baisse-toi",
+  "rap.spin": "Ça tourne !",
+  "rap.bigDrop": "Grand plongeon !",
+  "rap.fast": "Eau rapide !",
+});

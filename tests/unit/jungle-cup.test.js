@@ -17,8 +17,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const SRC = path.join(ROOT, 'tools/jungle-cup/src');
 const html = fs.readFileSync(OUT, 'utf8');
 const LOCALES = ['en', 'en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl'];
-const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf'];
-const CHAMPS = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
+const SPORTS = ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash'];
+const CHAMPS = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki', 'pecca'];
 const i18n = () => {
   const a = html.indexOf('// ==== I18N START ===='), b = html.indexOf('// ==== I18N END ====');
   return vm.runInNewContext(html.slice(a, b) + '\n;I18N', Object.create(null), { timeout: 2000 });
@@ -109,4 +109,17 @@ test('i18n source files only add words: I18N.<locale> = Object.assign(I18N.<loca
     const loc = m[2].includes('-') ? `I18N\\['${m[2]}'\\]` : `I18N\\.${m[2]}`;
     assert.match(src, new RegExp(`^${loc} = Object\\.assign\\(${loc} \\|\\| \\{\\}, \\{`, 'm'), f);
   }
+});
+
+test('jump juice: one shared helper (shake, squash, trail, speed lines), used by Leaf Slide and Vine Climb, off with reduced motion', () => {
+  const juice = fs.readFileSync(path.join(SRC, 'core/06c-juice.js'), 'utf8');
+  for (const fn of ['shake(', 'tick(', 'squash(', 'trail(', 'push(', 'each(', 'speedLines(']) assert.ok(juice.includes(fn), fn);
+  assert.match(juice, /shake\(px, secs\) \{\s*if \(BRBX\.reduced\(\)\) return;/, 'no shake with reduced motion');
+  const leaf = stripComments(fs.readFileSync(path.join(SRC, 'sport-leaf.js'), 'utf8'));
+  for (const use of ['JC.juice.shake(', 'JC.juice.squash(', 'JC.juice.push(', 'JC.juice.speedLines(', 'JC.juice.tick(']) assert.ok(leaf.includes(use), 'leaf: ' + use);
+  for (const k of ['ls.perfectLand', 'ls.bigAir', 'ls.mega', 'ls.combo', 'ls.shake', 'ls.ring']) assert.ok(leaf.includes(`'${k}'`), k);
+  const vine = stripComments(fs.readFileSync(path.join(SRC, 'sport-vine.js'), 'utf8'));
+  assert.ok(vine.includes('function knock(') && vine.includes('JC.juice.shake('), 'vine: knockdown');
+  // both hazards knock Cappy down when he leaps into them (no more "just dizzy")
+  assert.equal((vine.match(/knock\(ctx, t\('vc\.(bonk|buzz)'\)/g) || []).length, 2);
 });

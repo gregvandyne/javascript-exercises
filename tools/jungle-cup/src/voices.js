@@ -4,6 +4,6 @@
 // prefix, else VOICE_ROLES[speaker] for d.<speaker>.*, else VOICE_ROLES.story. Only the game's own words are read.
 const VOICE_ROLES = { story: 'narrator', mango: 'bright', coco: 'friendly', pip: 'friendly', tapir: 'deep', ants: 'friendly',
   elder: 'wise', zuzu: 'bright', jada: 'deep', sloane: 'wise', tico: 'bright', otters: 'friendly', rana: 'bright', mico: 'grumpy',
-  kiki: 'friendly', lift: 'narrator', sign: 'narrator' };
+  kiki: 'friendly', pecca: 'grumpy', lift: 'narrator', sign: 'narrator' };
 const VOICE_KEY_ROLES = { 'end.': 'narrator', 'story.': 'narrator' };
 // ==== VOICES END ====

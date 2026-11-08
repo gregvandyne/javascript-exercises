@@ -13,7 +13,7 @@ STORY.showing = () => !!STORY.line();
 /** Skip every story-panel line in a row (the lines after them, like a cousin's hello, still show). */
 STORY.skip = function () {
   let n = 0;
-  while (STORY.showing() && n++ < 40) { TB.shown = TB.full.length; TB.advance(); }
+  while (STORY.showing() && n++ < 40) TB.nextLine();
   STORY.cur = ''; STORY.prev = '';
 };
 STORY.update = function (dt) {
@@ -90,8 +90,9 @@ function pCapy(p, x, y, s, o) {
   p.blob(x + 3 * s * dir, y - 6 * s, 2.2 * s, 2 * s, shade(band, -0.2));
   p.stroke([x + 3 * s * dir, y - 6 * s, x - 2 * s * dir, y - 9 * s - (o.wave ? 3 * s : 0)], band, 1.8 * s);
   p.stroke([x + 3 * s * dir, y - 6 * s, x - 3 * s * dir, y - 4 * s], band, 1.6 * s);
-  if (o.hat === 'straw') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2.2 * s, '#e8c46a'); p.blob(x + 10 * s * dir, y - 15 * s, 5 * s, 3 * s, '#f2d68a'); }
-  if (o.hat === 'explorer') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2 * s, '#9a7a4a'); p.blob(x + 10 * s * dir, y - 15.5 * s, 5.5 * s, 3.5 * s, '#c4a46a'); }
+  // the hats in the pixel hats' colours: golden straw with a red band, the white explorer hat with a blue band
+  if (o.hat === 'straw') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2.2 * s, '#d8b450'); p.blob(x + 10 * s * dir, y - 15 * s, 5 * s, 3 * s, '#f0d070'); p.blob(x + 10 * s * dir, y - 13.6 * s, 5 * s, 0.9 * s, '#e04848'); }
+  if (o.hat === 'explorer') { p.blob(x + 10 * s * dir, y - 13 * s, 9 * s, 2 * s, '#e8dcc0'); p.blob(x + 10 * s * dir, y - 15.5 * s, 5.5 * s, 3.5 * s, '#fff8e8'); p.blob(x + 10 * s * dir, y - 13.8 * s, 5.5 * s, 0.9 * s, '#3a7bd5'); }
   if (o.arm) { p.stroke([x + 9 * s * dir, y + 1 * s, x + 14 * s * dir, y - 10 * s], fur, 3 * s); p.blob(x + 14 * s * dir, y - 11 * s, 2 * s, 2 * s, dark); }
 }
 function pRaft(p, x, y, w, flagCol) {
@@ -103,13 +104,25 @@ function pRaft(p, x, y, w, flagCol) {
 }
 const CHAMP_LOOK = {
   jada: { col: '#f0a040', spot: '#6a3a10' }, sloane: { col: '#9a8a70', mask: '#4a3a2a' }, tico: { col: '#2a2430', beak: '#ff9b2e' },
-  otters: { col: '#7a4a2a' }, rana: { col: '#5a8aff', spot: '#1a1a40' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
+  otters: { col: '#7a4a2a' }, rana: { col: '#9d5cf0', spot: '#ffd23f' }, mico: { col: '#5a3418', tail: true }, kiki: { col: '#d49a3a', tail: true },
+  pecca: { col: '#6e5c54' },
 };
 function pCritter(p, id, x, y, s) {
   const L = CHAMP_LOOK[id], c = L.col, d = shade(c, -0.35), l = shade(c, 0.3);
   p.blob(x, y + 12 * s, 11 * s, 2.5 * s, '#000', 0.2);
   if (id === 'otters') { for (const ox of [-6, 6]) { p.blob(x + ox * s, y + 2 * s, 5 * s, 10 * s, c); p.blob(x + ox * s, y - 9 * s, 5 * s, 4.5 * s, c); p.blob(x + ox * s, y - 7 * s, 3 * s, 2 * s, l); p.blob(x + ox * s - 1.5 * s, y - 10 * s, 0.8 * s, 0.8 * s, '#111'); p.blob(x + ox * s + 1.5 * s, y - 10 * s, 0.8 * s, 0.8 * s, '#111'); } return; }
   if (id === 'rana') { p.blob(x, y + 4 * s, 10 * s, 7 * s, c); p.blob(x, y - 3 * s, 8 * s, 5 * s, c); for (const ox of [-4, 4]) { p.blob(x + ox * s, y - 7 * s, 2.6 * s, 2.6 * s, c); p.blob(x + ox * s, y - 7 * s, 1.4 * s, 1.4 * s, '#111'); } for (let i = 0; i < 5; i++) p.blob(x + (p.r() - 0.5) * 14 * s, y + (p.r() - 0.2) * 8 * s, 1.3 * s, 1.1 * s, L.spot); p.blob(x - 9 * s, y + 9 * s, 4 * s, 1.6 * s, d); p.blob(x + 9 * s, y + 9 * s, 4 * s, 1.6 * s, d); return; }
+  if (id === 'pecca') {
+    // a round bristly peccary: pale collar, pink snout, teal captain's headband
+    p.blob(x, y + 3 * s, 10 * s, 9 * s, c); p.blob(x, y - 7 * s, 8 * s, 6.5 * s, c);
+    for (let i = 0; i < 5; i++) p.blob(x - 4 * s + i * 2 * s, y - 14 * s, 1.2 * s, 2.6 * s, d, 0.95);
+    p.blob(x, y - 1 * s, 9.5 * s, 1.8 * s, '#efe4d0', 0.95);
+    p.blob(x, y - 11 * s, 7.5 * s, 1.5 * s, '#1fc8a8', 0.95);
+    p.blob(x, y - 4 * s, 4 * s, 2.6 * s, '#d49a8c'); p.blob(x - 1.4 * s, y - 4 * s, 0.7 * s, 0.7 * s, '#5a2a2a'); p.blob(x + 1.4 * s, y - 4 * s, 0.7 * s, 0.7 * s, '#5a2a2a');
+    p.blob(x - 3 * s, y - 8 * s, 1 * s, 1 * s, '#111'); p.blob(x + 3 * s, y - 8 * s, 1 * s, 1 * s, '#111');
+    p.blob(x - 7 * s, y - 12 * s, 2 * s, 2 * s, d); p.blob(x + 7 * s, y - 12 * s, 2 * s, 2 * s, d);
+    return;
+  }
   if (id === 'tico') { p.blob(x, y + 2 * s, 7 * s, 10 * s, c); p.blob(x, y + 4 * s, 4 * s, 5 * s, '#fff2c0', 0.9); p.blob(x, y - 9 * s, 6 * s, 5.5 * s, c); p.poly([x + 3 * s, y - 11 * s, x + 17 * s, y - 8 * s, x + 3 * s, y - 5 * s], L.beak); p.blob(x + 1 * s, y - 10 * s, 1 * s, 1 * s, '#fff'); return; }
   if (L.tail) p.curve(x - 6 * s, y + 6 * s, x - 18 * s, y + 4 * s, x - 14 * s, y - 8 * s, d, 2.4 * s);
   p.blob(x, y + 2 * s, 8 * s, 10 * s, c);
@@ -144,7 +157,7 @@ function pCup(p, x, y, s) {
   p.blob(x, y - 16 * s, 16 * s, 3.4 * s, '#8a5a12'); p.blob(x, y - 16.5 * s, 14.5 * s, 2.4 * s, '#b8801c');
   for (let i = 0; i < 7; i++) p.leaf(x - 14 * s + i * 4.6 * s, y - 1 * s + (i % 2) * 3 * s, 9 * s, -1.2 + i * 0.4, i % 2 ? '#ffd24a' : '#f0b830', 0.95);
   p.curve(x - 15 * s, y - 12 * s, x - 26 * s, y - 6 * s, x - 13 * s, y + 2 * s, '#c8901e', 3 * s); p.curve(x + 15 * s, y - 12 * s, x + 26 * s, y - 6 * s, x + 13 * s, y + 2 * s, '#c8901e', 3 * s);
-  for (let i = 0; i < 7; i++) p.blob(x - 12 * s + i * 4 * s, y - 20 * s - (i % 2) * 2 * s, 1.4 * s, 2.6 * s, SPORT_COLOURS[JC.sportOrder[i]], 0.95, (i - 3) * 0.15);
+  for (let i = 0; i < NSPORTS; i++) p.blob(x - 14 * s + i * 4 * s, y - 20 * s - (i % 2) * 2 * s, 1.4 * s, 2.6 * s, SPORT_COLOURS[JC.sportOrder[i]], 0.95, (i - (NSPORTS - 1) / 2) * 0.15);
 }
 /* ---------- the panels (logical width 320, height LH between 180 and 320; ground near the bottom) ---------- */
 const PANELS = {
@@ -176,7 +189,7 @@ const PANELS = {
     p.wash(LW * 0.5, hz - 6, LW * 0.42, 22, '#5a9a5a', 26, 0.45);
     p.wash(LW * 0.5, hz - 2, LW * 0.5, 12, '#3f7a44', 22, 0.5);
     pKapok(p, LW * 0.56, hz - 6, LH * 0.34, '#8a6a48');
-    for (let i = 0; i < 7; i++) { const ax = LW * (0.2 + i * 0.1), ay = hz - 4 + (i % 2) * 3; p.curve(ax - 4, ay, ax, ay - 8, ax + 4, ay, '#8a5a30', 1.4); p.blob(ax, ay - 7, 2.2, 1.6, SPORT_COLOURS[JC.sportOrder[i]], 0.95); }
+    for (let i = 0; i < NSPORTS; i++) { const ax = LW * (0.17 + i * 0.095), ay = hz - 4 + (i % 2) * 3; p.curve(ax - 4, ay, ax, ay - 8, ax + 4, ay, '#8a5a30', 1.4); p.blob(ax, ay - 7, 2.2, 1.6, SPORT_COLOURS[JC.sportOrder[i]], 0.95); }
     for (let i = 0; i < 6; i++) { const hx = LW * (0.38 + i * 0.05); p.poly([hx - 6, hz - 4, hx, hz - 12, hx + 6, hz - 4], '#c9a050', 0.9); }
     const w = p.g.createLinearGradient(0, hz, 0, LH); w.addColorStop(0, '#7ac8d0'); w.addColorStop(1, '#2a7aa0');
     p.g.fillStyle = w; p.g.fillRect(0, hz + 2, LW, LH - hz);
@@ -238,10 +251,9 @@ const PANELS = {
     p.poly([0, sy, LW, sy, LW, LH, 0, LH], '#8a5a30');
     for (let i = 0; i < 16; i++) p.stroke([i * 22, sy, i * 22 - 8, LH], '#6a4020', 1, 0.6);
     p.blob(LW / 2, sy, LW / 2, 1.4, '#e0b070', 0.7);
-    const ids = ['jada', 'sloane', 'tico', 'otters', 'rana', 'mico', 'kiki'];
-    for (let i = 0; i < 7; i++) {
-      const cx = LW * (0.08 + i * 0.14), cy = sy - 12 - (i % 2) * 3, s = 1.15;
-      pCritter(p, ids[i], cx, cy, s);
+    for (let i = 0; i < NSPORTS; i++) {
+      const cx = LW * (0.065 + i * 0.124), cy = sy - 12 - (i % 2) * 3, s = 1.1;
+      pCritter(p, ARCHES[JC.sportOrder[i]].champ, cx, cy, s);
       p.leaf(cx + 7 * s, cy - 18 * s, 12, -1.2, SPORT_COLOURS[JC.sportOrder[i]], 0.95);
     }
     pCapy(p, LW * 0.5, sy + (LH - sy) * 0.45, 1.6, { hat: SAVE.data.cos.hat, arm: true, wave: true });
@@ -267,7 +279,7 @@ function paintPanel(id, w, h) {
 }
 /** Where the picture goes: the space above the text box (and below the Skip button), keeping 16:10 to 1:1. */
 function storyFrame() {
-  const f = STORY.frame, top = 6, bottom = VIEW.H - 58 - 4 - 16, availW = Math.min(VIEW.W - 12, 560), availH = Math.max(60, bottom - top);
+  const f = STORY.frame, top = 6, bottom = VIEW.H - 64 - 8 - 16, availW = Math.min(VIEW.W - 12, 560), availH = Math.max(60, bottom - top);
   let w = availW, h = Math.round(w * 0.62);
   if (h > availH) { h = availH; w = Math.min(availW, Math.round(h / 0.62)); }
   if (VIEW.portrait) h = Math.min(availH, Math.round(w * 1.25));

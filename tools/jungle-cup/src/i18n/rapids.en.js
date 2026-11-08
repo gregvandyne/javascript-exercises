@@ -1,6 +1,6 @@
 // Rapids Run's words (English). Keys: sport.rapids.* for the intro card, rap.* while racing.
 I18N.en = Object.assign(I18N.en || {}, {
-  'sport.rapids.goal': 'Race the Otter Twins down the river! Jump logs, duck under branches, steer round rocks and grab bubbles. Finish first!',
+  'sport.rapids.goal': 'Race the Otter Twins 1,350 m down the river! Jump logs and little waterfalls, duck under branches and vines, steer round rocks, whirlpools and beaver dams, and ride the fast water. Finish first!',
   'sport.rapids.touch': 'Touch: the buttons or swipes steer, jump and duck.',
   'sport.rapids.keys': 'Keys: Left/Right steer, Up or Space jumps, Down ducks.',
   'rap.ripple': 'Ripple', 'rap.splash': 'Splash',
@@ -13,4 +13,8 @@ I18N.en = Object.assign(I18N.en || {}, {
   'rap.tipDuckTouch': 'Branch! Swipe down to duck', 'rap.tipDuckKeys': 'Branch! Press Down to duck',
   'rap.tipSteer': 'Rock! Steer round it',
   'rap.keysHint': 'Left/Right steer, Up jump, Down duck',
+  'rap.sec0': 'Lazy Bend', 'rap.sec1': 'Croc Creek', 'rap.sec2': 'Beaver Woods', 'rap.sec3': 'Waterfall Run',
+  'rap.tipwhirl': 'Whirlpool! Steer round it', 'rap.tipdam': 'Beaver dam! Find the gap', 'rap.tipfall': 'Waterfall! Jump it for a big drop',
+  'rap.tiproll': 'Rolling log! Jump it or steer clear', 'rap.tipchan': 'Fast water! Stay in the arrows', 'rap.tipvine': 'Vines! Duck under them',
+  'rap.spin': 'Spin!', 'rap.bigDrop': 'Big drop!', 'rap.fast': 'Fast water!',
 });
