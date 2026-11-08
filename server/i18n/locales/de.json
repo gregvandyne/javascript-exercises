@@ -1697,7 +1697,8 @@
       "voicesAi": "KI-Stimmen",
       "voicesDevice": "Stimme dieses Geräts",
       "voicesNote": "Die Figuren in diesem Spiel sprechen mit Computerstimmen (KI-Stimmen von {provider}). Sie lesen nur die Wörter des Spiels vor, nie etwas, das du tippst, und nie deinen Namen.",
-      "voicesSaveData": "Der Datensparmodus ist an, darum wird die Stimme dieses Geräts benutzt, bis du KI-Stimmen wählst."
+      "voicesSaveData": "Der Datensparmodus ist an, darum wird die Stimme dieses Geräts benutzt, bis du KI-Stimmen wählst.",
+      "courseBack": "Zurück"
     },
     "friends": {
       "codeCopied": "Code kopiert! Gib ihn einem Freund, den du kennst.",
@@ -6091,6 +6092,11 @@
       "failed": "{score} von {total} richtig. Schau dir die richtigen Antworten an und versuch es noch mal."
     },
     "play": "Spielen: {game} · {chapter}"
+  },
+  "move": {
+    "title": "Bewegungspausen",
+    "teachersH": "Für Lehrkräfte",
+    "teachersP": "Die Bewegungspausen gehören zu keinem Kurs, also passen sie zwischen zwei beliebige Unterrichtsstunden. Bei zwei Übungen hält das Video 10 Sekunden lang für „Du bist dran“ an: Die Klasse macht die Übung mit, statt nur zuzusehen."
   },
   "stories": {
     "title": "Geschichtenmacher",

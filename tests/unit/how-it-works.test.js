@@ -39,15 +39,20 @@ const PRICE = /\$\s?\d|\d\.\d\d\b|\bUSD\b|€|£\s?\d|\/mo\b|a month\b|per (mont
 const PROMISES = [/COPPA/i, /kidSAFE/i, /parental controls?/i, /\bmonitor/i, /\btrack/i];
 
 for (const page of ['parents', 'teachers']) {
-  test(`/${page}: "How it works" comes right after the hero (on /parents, after the short safety section), with numbered steps and real screenshots`, async () => {
+  test(`/${page}: "How it works" comes right after the hero (on /parents, after the short video and the short safety section), with numbered steps and real screenshots`, async () => {
     const h = await get(`/${page}`);
     const sec = element(h, '<section class="lp-sec how" id="how-it-works"');
     assert.ok(sec, 'the section is there');
     assert.ok(h.indexOf('id="how-it-works"') < h.indexOf('id="play"'), 'before the games');
     assert.ok(h.indexOf('class="lp-hero lp-hero-how"') < h.indexOf('id="how-it-works"'), 'after the hero');
-    // Headings in order: the page's one h1, (on /parents: "What makes it safe", an h2), then this h2, then one h3 per step.
-    const before = page === 'parents' ? [1, 2] : [1];
-    if (page === 'parents') assert.ok(h.indexOf('class="lp-hero lp-hero-how"') < h.indexOf('id="safe"') && h.indexOf('id="safe"') < h.indexOf('id="how-it-works"'), 'the one parent page: hero, safety, How it works');
+    // Headings in order: the page's one h1, (on /parents: "See it in under a minute" and "What makes it safe", two h2s),
+    // then this h2, then one h3 per step.
+    const before = page === 'parents' ? [1, 2, 2] : [1];
+    if (page === 'parents') {
+      const at = s => h.indexOf(s);
+      assert.ok(at('class="lp-hero lp-hero-how"') < at('id="video"') && at('id="video"') < at('id="safe"') && at('id="safe"') < at('id="how-it-works"'), 'the one parent page: hero, video, safety, How it works');
+      assert.match(h.slice(at('id="video"'), at('id="safe"')), /<h2 id="video-h">[^<]+<\/h2>/);
+    }
     const heads = [...h.slice(h.indexOf('<main'), h.indexOf('id="play"')).matchAll(/<h([1-6])[\s>]/g)].map(m => +m[1]);
     assert.deepEqual(heads, [...before, 2, ...Array(heads.length - before.length - 1).fill(3)]);
     assert.match(sec, /<h2 id="how-h">[^<]+<\/h2>/);
