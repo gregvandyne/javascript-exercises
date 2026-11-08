@@ -2768,3 +2768,11 @@ Owner: "see all new users added to the platform so I can better monitor usage."
 - **Privacy**: only what the Users tab already showed: never a password, token, session, friend code or IP; for a child
   only names, who looks after them and counts. Guests are left out. Admin pages stay English (like the rest of /admin).
 
+## Everyone builds like a teacher, and prompting tips while the AI builds (November 2026)
+
+The owner asked that individual users get the same game-building experience as teachers. `BUILDER_FULL_FOR_ALL` (on by
+default) makes every signed-in account in good standing a full maker (`builder/usage.js trustedMaker`): the Pro model on
+every message (one message, never the Pro weight), the longer time cap, 20 model calls and 3 playtest fix rounds.
+Guests are not included. Set it to 0 to go back to teachers and staff only if AI spend runs high; the AI daily budget
+still applies to everyone. The Studio's build card now alternates "Prompting tip" lines (12, in every language) with
+the "Did you know?" facts, a tip first; the facts about rounds and Pro were updated to match.

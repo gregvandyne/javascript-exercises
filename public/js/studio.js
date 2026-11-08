@@ -335,7 +335,7 @@ function renderLog() {
 // starts row i, stepinfo {i, ...facts} updates row i (not always the newest: a failed edit marks its own row later).
 // While the turn runs, the card shows the latest rows. The running row has ONE 💡 line: a "Just now" line for a step
 // that was over in a flash (the safety program, naming the game…), then the step's own line, then (once a turn) what
-// thinking is, then on a long AI step a "Did you know?" fact. When the turn ends the card folds into a one-line summary
+// thinking is, then on a long AI step a "Prompting tip" and a "Did you know?" fact, taking turns. When the turn ends the card folds into a one-line summary
 // drawn from the record that 'done' carries, which is also saved as the reply's last event, so a reload draws the same.
 // Model text (the AI's plan, a game title) is only ever set with textContent. Nothing here is timer-driven except the
 // seconds, the order of the 💡 lines and when the card appears: every row is a real server step (or the page's own
@@ -353,6 +353,8 @@ const AUTHOR = new Set(['write', 'edit', 'fix']);
 const JUST_NOW = ['check', 'read', 'template', 'notes', 'name', 'ask'];
 const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next', 'msg', 'auto']);
 const FACTS = [...'abcdefghijk'];
+// Prompting tips (the owner's ask): how to write a message that gets a better game. They take turns with the facts.
+const PROMPT_TIPS = [...'abcdefghijkl'];
 const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;
 const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s says that big ideas take a while   // how long each 💡 line stays
 const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
@@ -363,6 +365,8 @@ const ETA_AUTHOR = new Set(['write', 'edit', 'fix', 'template', 'check']);   // 
 const narrow = matchMedia('(max-width: 520px)');   // phones: one finished row above the running one, not two
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let factNext = Math.floor(Math.random() * FACTS.length);   // carries on across turns, so each turn shows new facts
+let promptNext = Math.floor(Math.random() * PROMPT_TIPS.length);
+let slotNext = 0;                               // even: a prompting tip, odd: a fact (a prompting tip comes first)
 let live = null;                                // the steps card of the turn in progress
 let stepSeq = 0;
 let tipsOn = true;
@@ -689,8 +693,12 @@ function liveSteps() {
     else if (kind === 'long') withIcon(tip, '⏳', ST('think.learn.long'));
     else if (kind === 'think') { withIcon(tip, '🤔', ST('think.learn.thinking')); if (tipsOn) { turn.thinkShown = true; r.thinkHere = true; } }
     else if (kind) {
-      if (r.factFor !== kind) { r.factFor = kind; r.factText = ST(`facts.${FACTS[factNext++ % FACTS.length]}`); }
-      withIcon(tip, '🌟', r.factText, ST('factLabel'));
+      if (r.factFor !== kind) {
+        r.factFor = kind;
+        r.factPrompt = slotNext++ % 2 === 0;
+        r.factText = r.factPrompt ? ST(`promptTips.${PROMPT_TIPS[promptNext++ % PROMPT_TIPS.length]}`) : ST(`facts.${FACTS[factNext++ % FACTS.length]}`);
+      }
+      withIcon(tip, r.factPrompt ? '✍️' : '🌟', r.factText, ST(r.factPrompt ? 'promptTipLabel' : 'factLabel'));
     } else tip.textContent = '';
   }
   function push(key, facts, i, at = null) {
