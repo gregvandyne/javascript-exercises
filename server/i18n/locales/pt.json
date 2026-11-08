@@ -2223,7 +2223,17 @@
         "play": "Jogar",
         "others": "Jogar jogos de outras crianças",
         "grownUp": "Um adulto pode se vincular à sua conta:",
-        "grownUpWhere": "Eu › Para adultos"
+        "grownUpWhere": "Eu › Para adultos",
+        "askText": "Quer construir mais? Seu adulto pode liberar mais mensagens do Construtor para você.",
+        "askTextSpark": "Quer continuar construindo hoje? Seu adulto pode adicionar um Pacote Faísca com mensagens extras do Construtor.",
+        "askButton": "Pedir ao meu adulto",
+        "asked": "Seu adulto vai ver que você pediu. Obrigado!",
+        "showText": "Quer construir mais? Mostre isto a um adulto. Em {address} ele vê como",
+        "qrLabel": "Um código que um adulto pode ler com o celular",
+        "classText": "O Construtor da sua turma está descansando por hoje. Pergunte ao seu professor quando você pode construir de novo.",
+        "resting": "O Construtor está descansando para todo mundo agora. Seu jogo está salvo.",
+        "getSpark": "Pegar um Pacote Faísca",
+        "back": "Chegaram mais mensagens do Construtor. Boa construção!"
       },
       "mic": {
         "start": "Falar em vez de digitar",
@@ -2244,7 +2254,8 @@
       "limit": {
         "seePlans": "Ver planos para mais mensagens do Construtor"
       },
-      "themeUse": "Use o tema {name}."
+      "themeUse": "Use o tema {name}.",
+      "sparks": "{n, plural, one {# mensagem de Pacotes Faísca} other {# mensagens de Pacotes Faísca}}"
     },
     "character": {
       "unsaved": "Ainda não salvo",
@@ -3523,6 +3534,50 @@
       "later": "Vou fazer isso depois",
       "laterNote": "Você pode adicionar seus filhos a qualquer momento em “Sua família”.",
       "cta": "Adicionar uma criança"
+    },
+    "sparks": {
+      "heading": "Pacotes Faísca",
+      "intro": "Um Pacote Faísca é uma recarga única de mensagens extras do Construtor para sua família. Elas são usadas quando acabam as mensagens grátis do dia e as mensagens extras do seu plano.",
+      "left": "{n, plural, one {Resta # mensagem de Pacotes Faísca} other {Restam # mensagens de Pacotes Faísca}}",
+      "none": "Não restam mensagens de Pacotes Faísca.",
+      "expires": "As próximas vencem em {date}.",
+      "needPlan": "Os Pacotes Faísca complementam um plano Básico ou Família.",
+      "soon": "Os Pacotes Faísca ainda não estão à venda.",
+      "pick": "Adicionar um Pacote Faísca",
+      "buy": "{n} mensagens · {price}",
+      "terms": {
+        "once": "Um único pagamento. Nada é renovado.",
+        "who": "Para você e até {max} crianças vinculadas, mesmo que seu plano termine depois.",
+        "expire": "As mensagens que você não usar vencem {days} dias depois da compra do pacote.",
+        "daily": "Cada pessoa pode usar até {max} mensagens de Pacotes Faísca por dia.",
+        "refund": "Um pacote não usado é reembolsado a pedido em até 14 dias. O reembolso retira as mensagens que sobraram."
+      },
+      "waiting": "Adicionando seu Pacote Faísca… Esta página se atualiza sozinha.",
+      "done": "Seu Pacote Faísca está pronto. Boa construção!",
+      "history": "Seus pacotes",
+      "pack": "{n} mensagens",
+      "grant": "{n} mensagens da equipe Oomba",
+      "state": {
+        "active": "Restam {left} de {n} · até {date}",
+        "used": "Esgotado",
+        "ended": "Vencido",
+        "processing": "Pagamento em processamento",
+        "failed": "O pagamento não foi concluído",
+        "refunded": "Reembolsado",
+        "disputed": "Pagamento contestado",
+        "revoked": "Encerrado pela equipe Oomba"
+      },
+      "errors": {
+        "noPlan": "Os Pacotes Faísca complementam um plano: escolha primeiro um plano Básico ou Família.",
+        "noPrice": "Não é possível comprar Pacotes Faísca agora. Tente de novo mais tarde."
+      }
+    },
+    "asks": {
+      "heading": "Pedidos para o Construtor",
+      "plan": "{name} usou as mensagens do Construtor de hoje e pediu para construir mais.",
+      "spark": "{name} usou as mensagens do Construtor de hoje e pediu um Pacote Faísca.",
+      "getSpark": "Pegar um Pacote Faísca",
+      "dismiss": "Dispensar"
     }
   },
   "plans": {

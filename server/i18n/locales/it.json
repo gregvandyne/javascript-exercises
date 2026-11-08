@@ -2223,7 +2223,17 @@
         "play": "Giocare",
         "others": "Giocare ai giochi di altri ragazzi",
         "grownUp": "Un adulto può collegarsi al tuo account:",
-        "grownUpWhere": "Io › Per gli adulti"
+        "grownUpWhere": "Io › Per gli adulti",
+        "askText": "Vuoi costruire ancora? Il tuo adulto può sbloccarti altri messaggi al Costruttore.",
+        "askTextSpark": "Vuoi continuare a costruire oggi? Il tuo adulto può aggiungere un Pacchetto Scintilla con messaggi extra al Costruttore.",
+        "askButton": "Chiedi al mio adulto",
+        "asked": "Il tuo adulto vedrà che hai chiesto. Grazie!",
+        "showText": "Vuoi costruire ancora? Mostralo a un adulto. Su {address} può vedere come fare",
+        "qrLabel": "Un codice che un adulto può scansionare con il telefono",
+        "classText": "Il Costruttore della tua classe riposa per oggi. Chiedi al tuo insegnante quando potrai costruire di nuovo.",
+        "resting": "Il Costruttore sta riposando per tutti in questo momento. Il tuo gioco è salvato.",
+        "getSpark": "Prendi un Pacchetto Scintilla",
+        "back": "Sono arrivati nuovi messaggi al Costruttore. Buona costruzione!"
       },
       "mic": {
         "start": "Parla invece di scrivere",
@@ -2244,7 +2254,8 @@
       "limit": {
         "seePlans": "Vedi i piani per più messaggi del Costruttore"
       },
-      "themeUse": "Usa il tema {name}."
+      "themeUse": "Usa il tema {name}.",
+      "sparks": "{n, plural, one {# messaggio dai Pacchetti Scintilla} other {# messaggi dai Pacchetti Scintilla}}"
     },
     "character": {
       "unsaved": "Non ancora salvato",
@@ -3522,6 +3533,50 @@
       "later": "Lo farò più tardi",
       "laterNote": "Potete aggiungere i vostri figli in qualsiasi momento da «La vostra famiglia».",
       "cta": "Aggiungi un figlio o una figlia"
+    },
+    "sparks": {
+      "heading": "Pacchetti Scintilla",
+      "intro": "Un Pacchetto Scintilla è una ricarica unica di messaggi extra al Costruttore per la vostra famiglia. Si usano quando finiscono i messaggi gratuiti del giorno e i messaggi extra del vostro piano.",
+      "left": "{n, plural, one {Resta # messaggio dai Pacchetti Scintilla} other {Restano # messaggi dai Pacchetti Scintilla}}",
+      "none": "Nessun messaggio dai Pacchetti Scintilla rimasto.",
+      "expires": "I prossimi scadono il {date}.",
+      "needPlan": "I Pacchetti Scintilla si aggiungono a un piano Basic o Famiglia.",
+      "soon": "I Pacchetti Scintilla non sono ancora in vendita.",
+      "pick": "Aggiungi un Pacchetto Scintilla",
+      "buy": "{n} messaggi · {price}",
+      "terms": {
+        "once": "Un solo pagamento. Niente si rinnova.",
+        "who": "Per voi e fino a {max} bambini collegati, anche se il vostro piano termina in seguito.",
+        "expire": "I messaggi non usati scadono {days} giorni dopo l’acquisto del pacchetto.",
+        "daily": "Ogni persona può usare fino a {max} messaggi dai Pacchetti Scintilla al giorno.",
+        "refund": "Un pacchetto non usato si rimborsa su richiesta entro 14 giorni. Un rimborso toglie i messaggi rimasti."
+      },
+      "waiting": "Stiamo aggiungendo il vostro Pacchetto Scintilla… Questa pagina si aggiorna da sola.",
+      "done": "Il vostro Pacchetto Scintilla è pronto. Buona costruzione!",
+      "history": "I vostri pacchetti",
+      "pack": "{n} messaggi",
+      "grant": "{n} messaggi dal team di Oomba",
+      "state": {
+        "active": "Restano {left} di {n} · fino al {date}",
+        "used": "Esaurito",
+        "ended": "Scaduto",
+        "processing": "Pagamento in corso",
+        "failed": "Il pagamento non è andato a buon fine",
+        "refunded": "Rimborsato",
+        "disputed": "Pagamento contestato",
+        "revoked": "Chiuso dal team di Oomba"
+      },
+      "errors": {
+        "noPlan": "I Pacchetti Scintilla si aggiungono a un piano: scegliete prima un piano Basic o Famiglia.",
+        "noPrice": "In questo momento non è possibile acquistare Pacchetti Scintilla. Riprovate più tardi."
+      }
+    },
+    "asks": {
+      "heading": "Richieste per il Costruttore",
+      "plan": "{name} ha usato i messaggi di oggi al Costruttore e chiede di poter costruire ancora.",
+      "spark": "{name} ha usato i messaggi di oggi al Costruttore e chiede un Pacchetto Scintilla.",
+      "getSpark": "Prendi un Pacchetto Scintilla",
+      "dismiss": "Nascondi"
     }
   },
   "plans": {

@@ -2,6 +2,7 @@
 // DB only: no events, no timers. status: queued | running | interrupted | done | failed | cancelled (db.js).
 import { q, uid, now, tx } from '../db.js';
 import { refundTurn } from './usage.js';
+import { giveBack as giveBackSparks } from '../services/sparks.js';
 
 const LIVE = "('queued','running','interrupted')";
 const parse = s => { try { return JSON.parse(s || '{}') || {}; } catch { return {}; } };
@@ -51,12 +52,14 @@ export function finish(id, { status, end, versions = 0, modelCalls = 0, tokensIn
 }
 export const setContinue = (id, on) => q.run('UPDATE builder_turns SET can_continue=? WHERE id=?', on ? 1 : 0, id);
 /** Give the build's turns back, once (idempotent; the day and the weight it was charged with, to the source that paid:
- *  only 'free' exists today). -> true when it gave them back now. */
+ *  the daily count always, and a Spark Pack's credits too). -> true when it gave them back now. */
 export function refund(id) {
   return tx(() => {
-    const r = q.get('SELECT user_id, charged_day, refunded, weight FROM builder_turns WHERE id=?', id);
+    const r = q.get('SELECT user_id, charged_day, refunded, weight, charged_to FROM builder_turns WHERE id=?', id);
     if (!r || r.refunded || !r.charged_day) return false;
     refundTurn(r.user_id, r.charged_day, r.weight);
+    // A Spark Pack message: its credits go back to the packs it took them from (services/sparks.js).
+    if (String(r.charged_to).startsWith('spark:')) giveBackSparks(id);
     q.run('UPDATE builder_turns SET refunded=1 WHERE id=?', id);
     return true;
   });

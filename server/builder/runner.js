@@ -354,10 +354,11 @@ function carryOver(job) {
   if (!why) {
     const day = today();
     row = tx(() => {
-      const charge = takeTurn(job.userId, day, { pro: !!job.pro });
+      const id = uid(16);
+      const charge = takeTurn(job.userId, day, { pro: !!job.pro, turnId: id });
       // The provider follows the pool this message is charged to (a forced provider, e.g. in tests, stays).
       const kind = job.providerArg ? job.provider : providerKind(providerName(charge ? charge.pool : 'free'));
-      return charge ? turns.create({ gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
+      return charge ? turns.create({ id, gameId: job.gameId, userId: job.userId, status: 'running', request: { followUpIds: [...ids] }, locale: job.locale, pro: job.pro,
         chain: job.chain + 1, attempt: 1, chargedDay: day, provider: kind, baseVersion: turns.newestVersion(job.gameId), startedAt: Date.now(),
         chargedTo: charge.source, weight: charge.weight }) : null;
     });

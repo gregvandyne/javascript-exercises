@@ -2222,7 +2222,17 @@
         "play": "Jugar",
         "others": "Jugar juegos de otros niños",
         "grownUp": "Un adulto puede vincularse con tu cuenta:",
-        "grownUpWhere": "Yo › Para las familias"
+        "grownUpWhere": "Yo › Para las familias",
+        "askText": "¿Quieres seguir construyendo? Tu adulto puede darte más mensajes para el Constructor.",
+        "askTextSpark": "¿Quieres seguir construyendo hoy? Tu adulto puede añadir un Paquete Chispa con mensajes extra para el Constructor.",
+        "askButton": "Pedírselo a mi adulto",
+        "asked": "Tu adulto verá que lo pediste. ¡Gracias!",
+        "showText": "¿Quieres seguir construyendo? Enséñale esto a un adulto. En {address} puede ver cómo",
+        "qrLabel": "Un código que un adulto puede escanear con el móvil",
+        "classText": "El Constructor de tu clase descansa por hoy. Pregúntale a tu profe cuándo podrás construir otra vez.",
+        "resting": "El Constructor está descansando para todos ahora mismo. Tu juego está guardado.",
+        "getSpark": "Conseguir un Paquete Chispa",
+        "back": "¡Ya tienes más mensajes para el Constructor! ¡A construir!"
       },
       "mic": {
         "start": "Hablar en vez de escribir",
@@ -2243,7 +2253,8 @@
       "limit": {
         "seePlans": "Ver planes para más mensajes del Constructor"
       },
-      "themeUse": "Usa el tema {name}."
+      "themeUse": "Usa el tema {name}.",
+      "sparks": "{n, plural, one {# mensaje de Paquetes Chispa} other {# mensajes de Paquetes Chispa}}"
     },
     "character": {
       "unsaved": "Sin guardar",
@@ -3521,6 +3532,50 @@
       "later": "Lo haré más tarde",
       "laterNote": "Puede añadir a sus hijos cuando quiera desde «Su familia».",
       "cta": "Añadir a un niño"
+    },
+    "sparks": {
+      "heading": "Paquetes Chispa",
+      "intro": "Un Paquete Chispa es una recarga única de mensajes extra para el Constructor para su familia. Se usan cuando se acaban los mensajes gratis del día y los mensajes extra de su plan.",
+      "left": "{n, plural, one {Queda # mensaje de Paquetes Chispa} other {Quedan # mensajes de Paquetes Chispa}}",
+      "none": "No quedan mensajes de Paquetes Chispa.",
+      "expires": "Los próximos vencen el {date}.",
+      "needPlan": "Los Paquetes Chispa complementan un plan Básico o Familiar.",
+      "soon": "Los Paquetes Chispa todavía no están a la venta.",
+      "pick": "Añadir un Paquete Chispa",
+      "buy": "{n} mensajes · {price}",
+      "terms": {
+        "once": "Un solo pago. Nada se renueva.",
+        "who": "Para usted y hasta {max} niños vinculados, aunque su plan termine más adelante.",
+        "expire": "Los mensajes que no use vencen {days} días después de comprar el paquete.",
+        "daily": "Cada persona puede usar hasta {max} mensajes de Paquetes Chispa al día.",
+        "refund": "Puede pedir el reembolso de un paquete sin usar en un plazo de 14 días. Un reembolso retira los mensajes que queden."
+      },
+      "waiting": "Añadiendo su Paquete Chispa… Esta página se actualiza sola.",
+      "done": "Su Paquete Chispa está listo. ¡A construir!",
+      "history": "Sus paquetes",
+      "pack": "{n} mensajes",
+      "grant": "{n} mensajes del equipo de Oomba",
+      "state": {
+        "active": "Quedan {left} de {n} · hasta el {date}",
+        "used": "Agotado",
+        "ended": "Vencido",
+        "processing": "Pago en proceso",
+        "failed": "El pago no se completó",
+        "refunded": "Reembolsado",
+        "disputed": "Pago disputado",
+        "revoked": "Terminado por el equipo de Oomba"
+      },
+      "errors": {
+        "noPlan": "Los Paquetes Chispa complementan un plan: elija primero un plan Básico o Familiar.",
+        "noPrice": "Ahora mismo no se pueden comprar Paquetes Chispa. Vuelva a intentarlo más tarde."
+      }
+    },
+    "asks": {
+      "heading": "Peticiones para el Constructor",
+      "plan": "{name} usó los mensajes de hoy para el Constructor y pide poder construir más.",
+      "spark": "{name} usó los mensajes de hoy para el Constructor y pide un Paquete Chispa.",
+      "getSpark": "Conseguir un Paquete Chispa",
+      "dismiss": "Descartar"
     }
   },
   "plans": {

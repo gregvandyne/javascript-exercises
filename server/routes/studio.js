@@ -29,6 +29,8 @@ import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn,
 import * as live from '../builder/live.js';
 import * as turns from '../builder/turns.js';
 import { allowanceFor, counter, familyOf, trustedMaker } from '../builder/usage.js';
+import { upsellFor, askTarget } from '../builder/upsell.js';
+import * as sparks from '../services/sparks.js';
 import { loadChat } from '../builder/chat.js';
 import { previewUrl } from '../builder/tools.js';
 import { saveUpload, getUpload, deleteUpload, readUploadBytes, listUploads, LIMITS, UploadError } from '../builder/uploads.js';
@@ -133,6 +135,8 @@ export function studioState(user, gameId, t = tEn, req = null) {
     // live: words show while the kid speaks (services/stt-live.js), unless STT_LIVE=0; the page records and uploads otherwise.
     mic: sttEnabled() && user.builder_enabled ? { maxMs: config.sttMaxSeconds * 1000, maxBytes: config.sttMaxBytes, live: liveEnabled(), ...(liveEnabled() ? { rate: RATE[config.sttProvider] } : {}) } : null,
     grownUpLink: grownUpLinkHint(req, user),
+    // The daily-limit card's offer (builder/upsell.js): a plan or a Spark Pack, asked of a child's grown-up; never a price.
+    upsell: upsellFor(user, req),
     // Oomba Live: is the current version a live class game (and the published one hostable)? The Studio offers "Make it a
     // live class game" (a fixed, translated Builder message) until it is; hosts get "Host live" once it is published.
     liveClass: liveOn() && cur ? liveClassState(user, g, cur, t) : null,
@@ -260,6 +264,15 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
 });
 
 // ---------------------------------------------------------------- APIs
+// "Ask my grown-up" on the daily-limit card (builder/upsell.js askTarget): a child with a linked grown-up and no message
+// left today asks for more building; the grown-up sees it on /family. One open ask per child (services/sparks.js).
+router.post('/api/studio/ask-grownup', requireBuilder, rateLimit('builder-ask', 6, 3600e3), (req, res) => {
+  const target = askTarget(req.user, req);
+  if (!target) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  const r = sparks.ask(req.user, target.fid, target.kind);
+  if (!r.ok) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  res.json({ ok: true, already: r.already });
+});
 router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e3, 'studio.api.tooManyGames'), async (req, res) => {
   const t = req.t;
   const key = String((req.body || {}).template || '');
