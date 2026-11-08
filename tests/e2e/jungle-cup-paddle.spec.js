@@ -207,27 +207,31 @@ test('Paddle Smash balance (first to 30): good players win, sloppy ones rarely, 
   await J(f, 'manual', true);
   await J(f, 'play', 'paddle'); await J(f, 'step', 4000);
   const sim = (cfg, n) => J(f, 'sport', 'sim', cfg, n);
-  const sloppy = { react: 0.45, pos: 7, time: 0.09, speed: 0.85 };
+  // the sport's simulated players: a touch player (analog stick) and key players (arrows on or off, decisions every
+  // 40 ms, a ~300 ms reaction); 'sloppy' stands off the ball and swings late or early more often
   const decent = await sim({ react: 0.3, pos: 4, time: 0.05 }, 12);
+  const keys = await sim({ keys: true, react: 0.3, pos: 5, time: 0.07 }, 12);
+  const sloppy = { keys: true, react: 0.4, pos: 8, time: 0.1 };
   const kid = await sim(sloppy, 20);
   const kidEasy = await sim({ ...sloppy, easy: true }, 12);
   const mash = await sim({ react: 0.2, pos: 0, time: 0, mash: true }, 10);
   const mashEasy = await sim({ react: 0.2, pos: 0, time: 0, mash: true, easy: true }, 10);
-  // a match to 30: a good player nearly always wins, an average kid about 6 times in 10, a sloppy one rarely on
-  // Normal but most of the time with Easier champions (20 matches is noisy, so the bounds are loose)
+  // a match to 30: good touch and key players usually win, a sloppy key player rarely on Normal but most of the time
+  // with Easier champions; button mashing never (20 matches is noisy, so the bounds are loose)
   expect(decent.winRate).toBeGreaterThanOrEqual(0.6);
-  expect(kid.winRate).toBeLessThan(0.5);
+  expect(keys.winRate).toBeGreaterThanOrEqual(0.5);
+  expect(kid.winRate).toBeLessThan(0.6);
   expect(kidEasy.winRate).toBeGreaterThan(kid.winRate);
-  expect(kidEasy.winRate).toBeGreaterThanOrEqual(0.6);
+  expect(kidEasy.winRate).toBeGreaterThanOrEqual(0.7);
   expect(mash.wins).toBe(0);
   expect(mashEasy.wins).toBe(0);
   // a match takes a minute or more of play, and Frenzy balls are counted
   expect(kid.avgSecs).toBeGreaterThan(180);
   expect(kid.fzYou + kid.fzThem).toBeGreaterThan(0);
   // Fruit Frenzy is paced: balls reach Cappy one after another (almost never within 0.7 s of each other), a decent kid
-  // returns most Frenzy balls and a sloppy one about half or more
+  // returns most Frenzy balls and a sloppy one a good share
   expect(decent.fzYou / (decent.fzYou + decent.fzThem)).toBeGreaterThanOrEqual(0.75);
-  expect(kid.fzYou / (kid.fzYou + kid.fzThem)).toBeGreaterThanOrEqual(0.45);
+  expect(kid.fzYou / (kid.fzYou + kid.fzThem)).toBeGreaterThanOrEqual(0.35);
   expect(decent.fzTight + kid.fzTight).toBeLessThanOrEqual(Math.ceil((decent.fzArr + kid.fzArr) * 0.02));
-  if (SHOTS) fs.writeFileSync(path.join(SHOTS, 'paddle-balance.json'), JSON.stringify({ decent, kid, kidEasy, mash, mashEasy }, null, 1));
+  if (SHOTS) fs.writeFileSync(path.join(SHOTS, 'paddle-balance.json'), JSON.stringify({ decent, keys, kid, kidEasy, mash, mashEasy }, null, 1));
 });

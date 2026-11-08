@@ -11156,6 +11156,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 //   Swing (the Swing button, a tap, Space / A) as the shrinking circle meets the ring: Perfect / Good / Early / Late.
 //   Push the stick left or right as you swing to aim. Perfect and Good hits fill the Pounce meter; when it is full
 //   your next hit is a super-fast Pounce. Swinging at a ball that is still far away loses it (no button mashing).
+//   A swing a moment early or a moment late (touch and keys have a small delay) still hits, at most a Good.
 //   Fruit Frenzy: at 10, 20 and 25 points the marmosets toss extra fruit-coloured balls onto the table. Every ball
 //   counts: each one you get past Jada is your point, each one you miss is hers.
 //   The extra balls come one at a time: a marmoset winds up ("!") only when the new ball can reach Cappy a fair gap
@@ -11171,7 +11172,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   const YOU_HOME = 78, NBALL = 3, NTRAIL = 6;
   /** Balance (Normal): Jada's return chance by hit quality, Cappy's reach, the ball's starting speed and how much it
    *  speeds up by the end of a match to 30, the speed each hit adds. Easier champions stay well below these. */
-  const BAL = { pPerf: 0.945, pGood: 0.978, pWeak: 0.99, reach: 15, base: 110, gain: 25, add: 7, max: 175, rb: 0, eReach: 0, eBase: 0, eP: 0 };
+  const BAL = { pPerf: 0.94, pGood: 0.975, pWeak: 0.989, reach: 15.5, base: 106, gain: 22, add: 6, max: 170, rb: 0, eReach: 3.5, eBase: 12, eP: 0.05 };
   // (Easier champions keep their own help on top: Jada slower and with less reach, Cappy quicker, a gentler speed-up,
   //  Frenzies of two balls with longer gaps, and a forgiving early swing.)
   const STAR2 = 60, STAR3 = 85;                            // Perfects for 2 and 3 stars in a match to 30
@@ -11181,6 +11182,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     perfects: 0, whiffs: 0, hits: 0, pounce: 0, pounceReady: false, swingT: 9, themSwingT: 9, speed: 80, lastQ: 0.5,
     cx: 0, cy: YOU_HOME, cmoving: false, jx: 0, jy: -YOU_HOME, jmoving: false, jdive: 0, cdive: 0, jumpYou: 0, jumpThem: 0,
     ax: 0, ay: 0, am: 0, frenzy: 0, fzDone: 0, fzYou: 0, fzThem: 0, tossAt: [0, 0, 0], tossWarn: [9, 9, 9], tossWind: [0, 0, 0], tossWait: [0, 0, 0], tossN: 0, sinceServe: 0, lastTossT: -9, lastHitT: -9,
+    // diagnostics for the tests and the balance check (how points are won and lost)
+    dg: { far: 0, miss: 0, perf: 0, good: 0, weak: 0, toss: 0, swHit: 0, swLate: 0, swBuf: 0, swEarly: 0, swNone: 0, swCool: 0 },
     clock: 0, arr: [0, 0, 0, 0, 0, 0], arrI: 0, fzMinGap: 9, fzTight: 0, fzArr: 0,
     hint: 1, hintRound: false, auto: false, bot: null, botMashT: 0, port: true, k: 1, ky: 1, kh: 1, ks: 1, ox: 0, oy: 0,
     bg: null, bgGen: -1, bgK: 0, bgPort: null, ptYou: 0, ptThem: 0, ctx: null, reduced: false,
@@ -11360,6 +11363,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     }
   }
   function startStage(ctx, stage) {
+    for (const k in S.dg) S.dg[k] = 0;
     S.stage = stage; S.you = 0; S.them = 0; S.target = stage === 'warm' ? 3 : 30; S.serve = 'you'; S.serveN = 0;
     S.rally = 0; S.pounce = 0; S.pounceReady = false; S.phase = 'serve'; S.phaseT = 0; S.speed = baseSpeed(ctx);
     S.frenzy = 0; S.fzDone = 0; S.tossN = 0; S.ptYou = 0; S.ptThem = 0; S.buffer = 0;
@@ -11370,6 +11374,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   const hitX = () => S.cx + 4, hitY = () => S.cy - 7;
   /** Cappy swings. */
   function swing(ctx) {
+    if (S.swingT < 0.26 && S.phase === 'rally') S.dg.swCool++;
     if (S.swingT < 0.26 || S.phase === 'over' || S.phase === 'point') return;
     // a deliberate swing (not one of a burst of taps) is the only kind the forgiving rules below help
     const deliberate = S.swingT > 0.5;
@@ -11383,13 +11388,20 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       const d = Math.hypot(b.x - hx, b.y - hy);
       if (d <= R && d < bd) { best = b; bd = d; }
     }
-    if (best) { hitYou(ctx, best, R); return; }
+    if (best) { S.dg.swHit++; hitYou(ctx, best, R); return; }
+    // a swing a moment too late (the ball went past the ring up to 0.14 s ago and is still close) still hits it, at
+    // most a Good: touch screens and keys have a small delay, and kids react a little late
+    for (const b of BALLS) {
+      if (!b.live || b.toward < 0 || b.whiffed || b.bounced < 1 || b.h > 40) continue;
+      const past = b.age - b.sweetT, d = Math.hypot(b.x - hx, b.y - hy);
+      if (past > 0 && past <= 0.14 && d <= R * 1.35) { S.dg.swLate++; hitYou(ctx, b, R * 1.35, 0.55); return; }
+    }
     // a swing a moment too early (the ball reaches the ring within 0.13 s, and Cappy is there) waits for it, so a
     // touch screen's small delay never costs the ball; the hit is then at most Good
     for (const b of BALLS) {
       if (!b.live || b.toward < 0 || b.whiffed || b.h > 40) continue;
       const left = b.sweetT - b.age;
-      if (deliberate && left > 0 && left < 0.13 && Math.hypot(b.sweetX - hx, b.sweetY - hy) <= R) { S.buffer = 0.18; S.bufBall = b; return; }
+      if (deliberate && left > 0 && left < 0.13 && Math.hypot(b.sweetX - hx, b.sweetY - hy) <= R) { S.dg.swBuf++; S.buffer = 0.18; S.bufBall = b; return; }
     }
     // nothing in reach: a swing at a ball that is still coming (on Cappy's half, ahead of him) loses it, so tapping
     // over and over never wins points (Easier champions forgive a swing that is only a little early)
@@ -11400,6 +11412,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (dy > 0 && dy < R * 3.2 && dx < R * 1.6 && dy < ed) { early = b; ed = dy; }
     }
     ctx.sfx('padWhiff');
+    if (early && !(ctx.easy && deliberate && ed < R * 1.5)) S.dg.swEarly++; else S.dg.swNone++;
     if (early && !(ctx.easy && deliberate && ed < R * 1.5)) {
       early.whiffed = true; S.whiffs++;
       UI.float(SX(hx, hy), SY(hx, hy, 24), t('pad.early'), '#ffe9a0');
@@ -11412,6 +11425,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (q > 0.62) { word = 'pad.perfect'; col = '#ffd24a'; S.perfects++; S.pounce = Math.min(1, S.pounce + 0.34); ctx.sfx('padPerfect'); }
     else if (q > 0.34) { word = 'pad.good'; col = '#8ee070'; S.pounce = Math.min(1, S.pounce + 0.15); }
     else word = dy < 0 ? 'pad.earlyHit' : 'pad.late';
+    if (q > 0.62) S.dg.perf++; else if (q > 0.34) S.dg.good++; else S.dg.weak++;
     S.lastQ = q; S.hint = Math.max(0, S.hint - 0.25); S.rally++; S.hits++; S.lastHitT = S.clock;
     S.speed = Math.min(maxSpeed(ctx), S.speed + (warm() ? 4 : ctx.easy ? BAL.add * 0.7 : BAL.add));
     // aim: a sideways push on the stick picks the side; no push = away from Jada
@@ -11544,7 +11558,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 
   /* ---------- the play-bot (test.auto and the balance check): it really moves and swings ---------- */
   function botThink(dt, ctx) {
-    const cfg = S.bot; BOT_AXIS.x = 0; BOT_AXIS.y = 0; BOT_AXIS.mag = 0;
+    const cfg = S.bot;
+    // a key player (cfg.keys): looks and decides every tick (40 ms), arrow keys are on or off, Space a moment off
+    if (cfg.keys) { S.botTickT = (S.botTickT || 0) + dt; if (S.botTickT < (cfg.tick || 0.04)) return; S.botTickT = 0; }
+    BOT_AXIS.x = 0; BOT_AXIS.y = 0; BOT_AXIS.mag = 0;
     if (S.phase === 'serve') { if (S.serve === 'you' && S.phaseT > 0.5) swing(ctx); return; }
     if (cfg.mash) { S.botMashT += dt; if (S.botMashT > 0.2) { S.botMashT = 0; swing(ctx); } if (cfg.still) return; }
     let tb = null, tl = 1e9;
@@ -11556,9 +11573,15 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     let gx = 0, gy = YOU_HOME;
     if (tb) {
       gx = tb.sweetX - 4 + tb.botOX; gy = tb.sweetY + 7 + tb.botOY;
-      if (!cfg.mash && !tb.botSwung && tb.age >= tb.sweetT + tb.botDT) { tb.botSwung = true; S.swingT = 9; swing(ctx); }
+      if (!cfg.mash && !tb.botSwung && tb.age >= tb.sweetT + tb.botDT) { tb.botSwung = true; if (!cfg.keys) S.swingT = 9; swing(ctx); }
     }
     const dx = gx - S.cx, dy = gy - S.cy, d = Math.hypot(dx, dy);
+    if (cfg.keys) {
+      const sx = S.port ? dx : -dy, sy = S.port ? dy : dx;
+      BOT_AXIS.x = sx > 1.5 ? 1 : sx < -1.5 ? -1 : 0; BOT_AXIS.y = sy > 1.5 ? 1 : sy < -1.5 ? -1 : 0;
+      BOT_AXIS.mag = BOT_AXIS.x || BOT_AXIS.y ? 1 : 0;
+      return;
+    }
     if (d > 0.5) {
       const ax = dx / d, ay = dy / d;
       // the bot pushes the screen stick: turn court directions back into screen ones
@@ -11623,6 +11646,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     } else if (b.bounced && !b.whiffed && !b.missFloat && b.age > b.sweetT + 0.05 && b.y > hitY() + reach(ctx)) {
       b.missFloat = true;
       const far = Math.hypot(b.sweetX - hitX(), b.sweetY - hitY()) > reach(ctx);
+      if (far) S.dg.far++; else S.dg.miss++;
       UI.float(SX(hitX(), hitY()), SY(hitX(), hitY(), 26), t(far ? 'pad.reach' : 'pad.miss'), '#ffb3d6');
       S.cdive = 0.4;
     }
@@ -11957,7 +11981,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     testState(ctx) {
       return { stage: S.stage, you: S.you, them: S.them, target: S.target, phase: S.phase, serve: S.serve, rally: S.rally, pounce: S.pounce,
         pounceReady: S.pounceReady, perfects: S.perfects, whiffs: S.whiffs, hits: S.hits, frenzy: S.frenzy, frenzyDone: S.fzDone, frenzyYou: S.fzYou, frenzyThem: S.fzThem, fzMinGap: +S.fzMinGap.toFixed(2), fzTight: S.fzTight, fzArr: S.fzArr,
-        tossWarn: S.tossWarn.slice(0, 2), tossPending: pendingTosses(),
+        tossWarn: S.tossWarn.slice(0, 2), tossPending: pendingTosses(), dg: Object.assign({}, S.dg), speed: Math.round(S.speed), easy: !!(ctx && ctx.easy),
         port: S.port, reach: ctx ? reach(ctx) : 0, auto: S.auto,
         cappy: { x: +S.cx.toFixed(1), y: +S.cy.toFixed(1), hx: +hitX().toFixed(1), hy: +hitY().toFixed(1) }, jada: { x: Math.round(S.jx), y: Math.round(S.jy) },
         balls: BALLS.map(b => ({ live: b.live, toward: b.toward, x: +b.x.toFixed(1), y: +b.y.toFixed(1), h: +b.h.toFixed(1), bounced: b.bounced, whiffed: b.whiffed,
