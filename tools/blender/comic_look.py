@@ -70,7 +70,8 @@ LOOK = {
     'soft': 0.02,            # half-width of the soft edge between steps
     'hatch': 0.32,           # how dark the hatching in the deep step is (0 = none)
     'hatch_px': 5.0,         # hatch spacing at 720p
-    'eye_scale': 0.62,       # bead eyes -> ink dots this much smaller
+    'fill': 0.22,            # the camera-side fill light, as a share of the key
+    'eye_scale': 0.8,        # bead eyes -> ink dots this much smaller
 }
 
 # no ink on these (part names, as the kit names them)
@@ -374,6 +375,14 @@ def lights(hints=None):
         else:
             ob.data.energy *= p['lamps']
             ob.data.use_shadow = False
+    # a soft fill from the camera's side (no shadow), so faces turned to the camera aren't lost in the shade
+    fill = bpy.data.lights.new('fill', 'SUN')
+    fill.energy = p['key'][1] * LOOK['fill']
+    fill.color = (1.0, 1.0, 1.0)
+    fill.use_shadow = False
+    fo = bpy.data.objects.new('fill', fill)
+    K.link(fo)
+    fo.rotation_euler = (math.radians(80), 0, 0)
     col, strength, el, az = p['key']
     sun = bpy.data.lights.new('key', 'SUN')
     sun.energy = strength
@@ -441,15 +450,9 @@ def _style(name, width, k, alpha):
     dist.value_min = 1.0
     dist.value_max = LOOK['line_far_k']
     dist.mapping = 'LINEAR'
-    # and far away a little lighter (air between)
-    fade = st.alpha_modifiers.new('far', 'DISTANCE_FROM_CAMERA')
-    fade.blend = 'MULTIPLY'
-    fade.range_min = 8.0
-    fade.range_max = 30.0
-    fade.mapping = 'LINEAR'
-    fade.invert = True
-    fade.influence = 0.45
-    st.geometry_modifiers.new('sample', 'SAMPLING').sampling = 2.0
+    # a stroke point every 4 px: the stroke shaders run in Python per point, so this is most of what the line
+    # style costs (2 px looked no different and took ~1.5 s more a frame on the classroom)
+    st.geometry_modifiers.new('sample', 'SAMPLING').sampling = 4.0
     w = st.geometry_modifiers.new('hand', 'PERLIN_NOISE_1D')
     w.frequency = 6.0
     w.amplitude = LOOK['wobble_px'] * k
@@ -530,7 +533,8 @@ def faces():
                 seen.add(ob.data.name)
                 if ob.data.users > 1:
                     ob.data = ob.data.copy()
-                _scale_mesh(ob, LOOK['eye_scale'], LOOK['eye_scale'] * 0.6, LOOK['eye_scale'] * 1.1)
+                # smaller and a touch taller, but just as deep: the dot stays on the face's surface
+                _scale_mesh(ob, LOOK['eye_scale'], 1.0, LOOK['eye_scale'] * 1.1)
             ob.data.materials.clear()
             ob.data.materials.append(inkm)
         elif base.startswith(('glint', 'cheek')):

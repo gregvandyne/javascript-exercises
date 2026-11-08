@@ -2688,3 +2688,39 @@ once it is made (docs/story-builder.md "Choices" and "Changing a story").
   which survives deleting the story (deleting doesn't refund a rewrite) and goes with the account.
 - **Sharing.** A kid's shared or waiting story goes back to "waiting for OK" when a new version replaces it: the
   grown-up approved the old words. A grown-up's shared story stays shared. Only the owner can change a story.
+
+## Story Builder: a second look, "Comic" (8 Nov 2026)
+
+The owner saw a reel drawn like a graphic novel (dark ink outlines of varying weight, very simple round heads with dot
+eyes, flat muted colour with soft cel shading, moody film light and framings) and asked for "this type of animation"
+in the Story Builder (docs/story-builder.md "Looks").
+
+- **One kit, two looks.** Comic is drawn from the same 3D kit as felt and paper, so every set, person, animal, prop,
+  action and camera works in both and nothing has to be built twice. A story has a `look` (felt by default; migration
+  `0055_story_look`), the render spec carries it (absent for felt, so felt renders exactly as before), and
+  `tools/blender/comic_look.py` does the rest through feltkit's existing material hook. People and animals are not
+  touched: their faces are restyled by part name after the scene is built, which keeps the people redesign on its
+  own branch an easy merge.
+- **Only the drawing style.** The reference is a moody crime skit; we took the ink, the colour and the framing, not
+  the subject. The writer's safety rules are unchanged; comic only adds a line about film framings.
+- **Ink: Freestyle, not an inverted hull or Grease Pencil Line Art.** An inverted hull (what styles.py's cartoon look
+  uses) draws only outer silhouettes at one weight; it can't draw folds, furniture edges or where colours meet, and it
+  reads as a toon filter. Grease Pencil Line Art needs a GP object rebaked per frame and is fragile headless. Freestyle
+  runs on the CPU in the same render call for EEVEE and Cycles, and its line styles give what makes a line look drawn:
+  thick-and-thin by direction (a brush pen), heavier near the camera, tapered ends, a small wobble and overshoot, and a
+  heavier outer contour than inner lines. Its cost is on the CPU, so a GPU doesn't make it faster: on this machine
+  a comic frame takes 9.8 s against felt's 8.1 s (+22%), the ink alone 2.3–5 s; on Modal that is most of a comic
+  frame's time (≈3× felt's GPU time per story, estimated ≈ $0.60–0.80 on L40S). Accepted for the look; measure it with
+  the first real comic stories (docs/story-builder.md).
+- **Shading: three soft steps from the real light** (Shader to RGB in EEVEE, so cast shadows become the dark step and
+  get hatching), colours muted in OKLab per time of day (warm lamp-light indoors at night, cool outdoors), a paper
+  grain fixed to the screen, no depth of field. Cycles has no Shader to RGB: there the steps come from a fixed light
+  direction (the fallback only).
+- **Film framings for both looks**: cameras `two_shot` and `over_shoulder` (in the catalog, so the writer may pick them
+  in either look; the comic prompt prefers them when characters talk), placed from where the cast stands; with them
+  the characters turn more towards each other.
+- **A new look is a quick change** (no Claude) but renders every scene again: the look is part of the scene clip key
+  (felt adds nothing to the key, so every clip kept so far still matches). Music: comic preselects piano unless the
+  kind of story brings playful or adventure music; a person's own pick always stays.
+- **Modal**: `comic_look.py` is added to the image's kit files and the spec check accepts `look`; the renderer must be
+  redeployed (the workflow) before comic stories render there. Until then the old image ignores `look` and draws felt.

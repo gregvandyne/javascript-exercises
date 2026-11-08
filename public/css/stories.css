@@ -74,3 +74,5 @@
 .sb-form h2 { margin-top: 0; }
 .sb-remake { margin: 1rem 0; }
 .sb-remake .sb-bar { background: var(--line); margin: .6rem 0 .2rem; max-width: none; }
+/* the big form buttons wrap on a phone rather than run off it (long German labels) */
+.sb-form .btn-big { white-space: normal; max-width: 100%; text-align: center; padding-block: 10px; }

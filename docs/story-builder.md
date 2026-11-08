@@ -2,7 +2,8 @@
 
 Type an idea, get a narrated story **video** in a felt-and-paper 3D world: Claude writes the story, Blender
 builds and films every shot, a voice reads it, music composed in code plays underneath, and the words come up on
-screen in time with the voice. The person picks the kind of story, its feeling, the narrator and the music ("Choices"),
+screen in time with the voice. The person picks the kind of story, how it is drawn (felt and paper, or comic: "Looks"),
+its feeling, the narrator and the music ("Choices"),
 and can change the story afterwards ("Changing a story"). Phase 1 (this document) is the whole pipeline, end to end, on one
 machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker running beside the site.
 
@@ -39,6 +40,7 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 | Renderers: interface + local Blender, remote/Modal client, scene clips | `server/stories/renderer.js`, `server/stories/remote-renderer.js`, `server/stories/clip.js` |
 | The kit catalog: every set, character, action, prop and look (the one list) | `server/stories/blender/catalog.json` |
 | Felt-and-paper kit (shared with the other Blender tools) and scene renderer (Python) | `tools/blender/feltkit.py` (+ `styles.py`), `server/stories/blender/render_story.py` |
+| The comic look (ink lines, muted cel colour, drawn faces) over the same kit | `tools/blender/comic_look.py` (column from migration `0055_story_look`) |
 | Story kit 2: people, animals, actions, props, sets, staging | `tools/blender/felt_people.py`, `felt_animals.py`, `felt_actions.py`, `felt_props.py`, `felt_sets.py` (+ `felt_sets_rooms.py`, `felt_sets_outdoor.py`), `felt_stage.py` |
 | ffmpeg assembly | `server/stories/assemble.js` |
 | Modal GPU app | `services/story-renderer/modal_app.py` |
@@ -51,7 +53,8 @@ machine. It is **off** unless `STORY_BUILDER=1`, because it needs a story worker
 
 Claude (`STORY_MODEL`, else `BUILDER_MODEL`) answers in the JSON schema `SCHEMA`: a title and 2–8 scenes, each with
 a **set**, a **time** (night, dusk, dawn, day), optional **props**, up to three **characters** with an **action** and a
-**place**, a **camera** move (drift, slow_push, pull_back, pan_left/right, tilt_up/down), and 1–3 **lines** (`say`:
+**place**, a **camera** move (drift, slow_push, pull_back, pan_left/right, tilt_up/down, and the film framings two_shot
+and over_shoulder), and 1–3 **lines** (`say`:
 narration; `show`: the words on screen). Age band and length (45/60/90 s) go into the prompt; the estimated length is
 checked too.
 
@@ -108,7 +111,11 @@ same word rules (`validateScript`) and the model classifier; one retry with the 
 - **Staging** (`felt_stage.py`): places, who moves to whom, the ball, held props, and props put in free slots behind
   and beside the characters (or in the sky, across the top, or over the whole picture for rain and snow).
 - **Camera**: eased moves (push in, pull back, pans, tilts, drift) with a gentle float and depth of field focused
-  on the first character; compositor bloom on the glows; AgX colour.
+  on the first character; compositor bloom on the glows; AgX colour. Two film framings follow the cast (where the
+  characters stand 60% into the scene): **two_shot** frames everyone from about the knees up, a touch below eye level,
+  with a slow push in; **over_shoulder** looks past the first character's shoulder (large, at the edge of the picture)
+  at the character furthest from them, framed a third in from the other side, with a small push. With either, the
+  characters who stand still turn further towards each other (as if talking). One character alone: a two-shot of one.
 
 Daylight (day, dawn) uses Blender's Standard view transform: AgX greyed the bright day colours (felt read milky);
 dusk and night keep AgX. Big, static set dressing (crowds, pitch lines, shelves of books, fences) is built as one
@@ -177,7 +184,8 @@ but the idea is required.
 | Kind of story (`style`) | bedtime (default), adventure, funny, rhyming, fable (with a lesson), mystery | one paragraph of the writer's prompt; only bedtime ends asleep at night |
 | Feeling (`tone`) | cozy (default), exciting, silly, heartfelt, brave | one line of the prompt |
 | Narrator (`voice`) | auto (the narrator the admin chose for the language), coral, sage, nova, shimmer, fable, onyx — with kid names ("Warm and kind", "Deep and calm"…) | the site AI voice that reads every line; the offline voice is shifted in pitch so the choice is still heard |
-| Music (`music`) | lullaby (music box, default), playful, adventure, magical, piano, none | the mood `story-music.js` composes; picking a style preselects its music until the person picks music themselves |
+| Look (`look`) | felt (felt and paper, default), comic | how every scene is drawn ("Looks"); comic also tells the writer to frame scenes like a film |
+| Music (`music`) | lullaby (music box, default), playful, adventure, magical, piano, none | the mood `story-music.js` composes; picking a style (and a look: comic leans to piano) preselects its music until the person picks music themselves |
 | Who is in it (`characters`, optional, 120 chars) | free text | sent as `<characters>`; screened like the idea |
 | A lesson (`lesson`, optional, 120 chars) | free text | sent as `<lesson>`; screened like the idea |
 | Age band, length | as before, under "More choices" | |
@@ -200,6 +208,46 @@ eighth-note ostinato and timpani; `magical` slow 3/4 in the Lydian mode, bell ar
 sparkles and a bigger room; `piano` gentle 4/4 ~68 bpm, broken chords and a stepwise tune on a piano voice; `none`
 silence. A test checks every pair differs in metre, tempo, note density or brightness, and in instruments.
 
+### 8b. Looks
+
+One 3D kit, two ways to draw it, picked per story (`look`: a column on the story, `spec.look` for the renderer, absent
+for felt so a felt spec is exactly what it was). Every set, character, prop, action and camera works in both.
+
+- **Felt & paper** (`felt`, the default): `feltkit.py` as described above.
+- **Comic** (`comic`, `tools/blender/comic_look.py`): a graphic-novel look, after a reference the owner liked (2D
+  hand-drawn cartoon: dark ink outlines of varying weight, very simple round heads, tiny dot eyes, flat muted colour
+  with soft cel shading, moody film light). Only the drawing style was taken: the stories stay kid-safe and friendly.
+  `feltkit.set_style('comic')` sends every material the kit asks for (felt, paper, glossy, glow, haze, sky) to
+  `comic_look.material` with the felt colour it was given, so the kit itself is unchanged; once the scene is built,
+  `comic_look.finish()` swaps the light, draws the lines and the faces.
+  - **Colour**: each felt colour is muted in OKLab (40–58% of its chroma, lightness squeezed into the time of day's
+    range, pulled towards the time's tint: cool blue at night outdoors, warm lamp-light at night indoors, lilac at
+    dusk, paper-warm by day) and shown in three steps — lit, shade (darker, a little cooler), deep — picked by how much
+    light reaches the surface (EEVEE: Shader to RGB of a white diffuse, cast shadows included; Cycles, which has no
+    Shader to RGB, uses a fixed light direction). The steps meet with a narrow soft edge (soft cel), the deep step
+    carries fine diagonal ink hatching, and a paper grain fixed to the screen sits over everything. Colours are
+    emission, so the palette shows exactly (Standard view transform).
+  - **Light**: the felt rig goes; one key sun with crisp shadows (its colour, height and side per time of day), a weak
+    fill from the camera's side so faces don't sink, a low ambient, and the set's own lamps kept dimmer as pools of
+    light. No depth of field (everything crisp, like a drawing); bloom only on the brightest lamps.
+  - **Ink** (Freestyle, on the CPU, the same in EEVEE and Cycles): a heavy outline (silhouettes, borders, outer
+    contours, 3 px at 720p) and lighter inner lines (creases, where colours meet: folds, furniture edges, wall tiles,
+    pitch markings) at 60% of that, in a warm near-black. Thick-and-thin by stroke direction like a brush pen, slightly
+    thinner at a stroke's ends, heavier near the camera and lighter far away, a small hand wobble and a 1.5 px
+    overshoot. The sky, glows, light beams, weather and tiny bits (tufts, pebbles, glints) get no line. Butt caps: round
+    caps fail on some very short strokes and drop the whole line set.
+  - **Faces** (by part name, so `felt_people.py` and `felt_animals.py` need no change): bead eyes become small ink dots
+    (they still blink), glints and felt cheeks go, a person's felt nose goes (a simple round head), brows and mouths are
+    ink; the expressions the actions switch (smile, open, sad, closed, squint) work as before.
+- **Choosing it**: a Look row of cards on `/stories/new` (under the kind of story) and on the edit page. Comic nudges
+  the music to piano unless the kind of story brings playful or adventure music; once the person picks music, it stays.
+  The writer is told (comic only) to prefer two_shot / over_shoulder when characters talk and slow_push for a quiet
+  moment.
+- **Cost**: the look is part of each scene clip's key (`sceneKey(scene, q, look)`; felt adds nothing, so old clips still
+  match). A new look is a quick change (no Claude) that renders every scene again; switching back reuses the clips
+  still kept. Render time: see "Measured on this machine".
+- **Contact sheets**: `LOOK=comic python3 tools/blender/story_kit_sheet.py cells.json sheet.jpg` (or `look` per cell).
+
 ### 9. Changing a story
 
 The owner of a finished story gets **Edit story** (`/stories/:id/edit`):
@@ -208,7 +256,7 @@ The owner of a finished story gets **Edit story** (`/stories/:id/edit`):
   go through `checkEdited` (`validateScript`'s word rules and lengths, and the model classifier when a key is set); a
   story much longer than its length is refused, a shorter one is fine. Only the words change: the scenes and pictures
   stay.
-- **Who reads it / Background music**: the same cards as the form.
+- **Who reads it / Background music / Look**: the same cards as the form (a new look draws every scene again).
 - **Make the new video** sends all of that as one quick change (`POST /api/stories/:id/remake`).
 - **Ask for a rewrite**: a short note ("make it funnier", "add a picnic at the end"), screened like the idea, and maybe
   a new kind of story or feeling (`POST /api/stories/:id/rewrite`). The writer gets the current script as
@@ -229,6 +277,7 @@ which follows the narration. Before rendering, the pipeline looks each scene's k
 | --- | --- | --- | --- |
 | New narrator | no | every line (the site voice's cache makes repeats free) | none |
 | New music | no | none new (cache) | none |
+| New look | no | none new (cache) | every scene (kept clips in that look are reused) |
 | New words | no (the classifier checks them) | the changed lines | none |
 | Rewrite | yes | the new lines | only scenes whose pictures changed |
 
@@ -294,6 +343,8 @@ The sandbox: 4 vCPU (x86-64), 15 GB RAM, **no GPU** (EEVEE through Mesa llvmpipe
 | Assembly in a container capped like a web instance | 0.5 CPU / 512 MB: **killed (out of memory)**; 0.5 CPU / 768 MB: 155 s; 1 CPU / 1 GB: 82 s |
 | End to end through the CPU renderer service in Docker (site on one port, container on another; 2 scenes, test size) | story done in 86 s; the service's work folder empty afterwards |
 | Modal web API served locally on the CPU (`modal_app.py --serve`, 2 scenes in parallel, test size) | clips back through the site's `STORY_RENDERER=modal` client (tests/unit/story-modal.test.js) |
+| **Comic look vs felt** (Nov 8: the same 4 scenes — kitchen at night, the football pitch, a classroom, the moon — 6 frames each at 1280×720, 4 samples, through `render_story.py`, nothing else running) | felt **8.1 s** a frame, comic **9.8 s** (+22%): comic's EEVEE part is a little lighter (emission only, no depth of field, one shadowed sun), its Freestyle ink adds **2.3–5 s a frame on the CPU** (most on the classroom: plank floor, wall boards, desks; least on the moon). Lines off, the same comic frames take 5.4–6.3 s |
+| Freestyle's cost, where it goes (classroom) | line set up and view map ~4 s whatever the line style; the stroke shaders (Python, per stroke point) the rest: a point every 4 px instead of 2 saved ~1.5 s with no visible change, so it ships at 4 px |
 | **The sample again, with the framing fixes** (Nov 7: 5 scenes, 46.7 s, 602 frames, 1 process, nothing else running) | **4,365 s = 93 s of render per second of video, 7.2 s per frame**; the whole run (voice, render, clips, assembly) 4,416 s |
 
 The sample: `scripts/story-samples/lost-stars.json` ("Pip and the Lost Stars"), rendered with
@@ -360,6 +411,13 @@ API runs locally): the image build, EEVEE through the NVIDIA EGL driver (if it d
 Cycles on the GPU, slower but fine), cold-start time, and the real per-frame GPU time.
 
 ### Expected time and cost per story (estimates, not measured)
+
+**Comic on Modal.** Freestyle runs on the container's CPU, not the GPU, so on an L40S the comic look costs what the
+lines cost: roughly 2–5 s a rendered frame on top of EEVEE's ~0.3 s (estimate from the CPU numbers above; a faster
+server core will do better). A 60 s story's scenes (~70 rendered frames each, in parallel) then take ~3–6 min each
+instead of ~1.5 min, about 3× the GPU time of felt (≈ $0.60–0.80 a story on L40S instead of ≈ $0.25). Worth measuring
+with the first comic stories; if it is too slow, give `render_scene` more CPU (Freestyle is mostly one thread, so a
+guaranteed core matters more than many) before anything else.
 
 Each scene renders in its own container in parallel. A 60 s story is ~5 scenes of ~140 frames (on twos). EEVEE on an
 L40S at 720p with 4 samples is expected around 0.2–0.4 s a frame plus Blender start-up and shader compile (~15 s) and

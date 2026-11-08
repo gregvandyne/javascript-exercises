@@ -3,7 +3,8 @@
     python3 tools/blender/story_kit_sheet.py cells.json sheet.jpg [columns] [width] [height]
 
 cells.json is a list of {label, scene: {set, time, props, characters, camera, seed}, t: seconds into the scene,
-cam: [x, y, z, lens] (optional close-up), look: felt | comic (optional; else LOOK in the environment, else felt)}. The scene is built exactly as render_story.py builds it (preview samples),
+cam: [x, y, z, lens] (optional close-up), look: felt | comic (optional; else LOOK in the environment, else felt)}.
+The scene is built exactly as render_story.py builds it (preview samples),
 each still is pasted into the sheet and deleted. Prints build and render seconds and the face count per cell.
 """
 import json

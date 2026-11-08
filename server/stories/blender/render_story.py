@@ -5,8 +5,10 @@
     python3 render_story.py --kit                 print what the kit can build (checked against catalog.json)
 
 The spec (written by server/stories/renderer.js) is:
-  { width, height, fps, step, engine: 'eevee'|'cycles', samples, out_dir,
+  { width, height, fps, step, engine: 'eevee'|'cycles', samples, out_dir, look?: 'felt'|'comic',
     scenes: [{ id, set, time, props: [], characters: [{ kind, action, place, who?, look?, holds? }], camera, frames, seed, focus }] }
+`look` is how the whole story is drawn: felt (felt and paper, the default) or comic (tools/blender/comic_look.py: ink
+lines, muted cel colour, drawn faces). A character's `look` is something else: a person's hair, skin and clothes.
 The sets, characters, actions and props are the felt kit in tools/blender (felt_sets, felt_people, felt_animals,
 felt_actions, felt_props), placed by felt_stage.stage().
 `frames` is the scene length in output frames (fps). With step 2 every other frame is rendered ("on twos", like
