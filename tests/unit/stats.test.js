@@ -67,8 +67,8 @@ test('/admin/stats: admins only; shows tiles, charts with tables, and lists', as
   for (const days of [7, 30, 90]) {
     const r = await fetch(base + `/admin/stats?days=${days}`, { headers: { cookie: cookieFor(admin.id) } });
     assert.equal(r.status, 200); const h = await r.text();
-    assert.equal((h.match(/class="chart panel"/g) || []).length, 7);
-    assert.equal((h.match(/class="bar"/g) || []).length, 7 * days);
+    assert.equal((h.match(/class="chart panel"/g) || []).length, 8, 'seven charts and Active people');
+    assert.equal((h.match(/class="bar"/g) || []).length, 8 * days);
     for (const s of ['Visitors today', 'AI cost today', 'Tokens today', 'Most played', 'AI by model', 'Show as a table', 'Stat Game', 'claude-sonnet-5-5']) assert.ok(h.includes(s), s);
     if (days === 7) { assert.ok(h.includes('<td>Home</td>') && h.includes('<td>Search</td>') && h.includes('<td>Schools</td>'), 'areas are shown by name'); }
   }
