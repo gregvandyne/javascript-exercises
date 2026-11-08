@@ -114,7 +114,7 @@ router.get('/stories/new', requireBuilder, (req, res) => {
       <div class="field"><label for="sb-idea">${t('stories.form.idea')}</label>
         <textarea class="input" id="sb-idea" name="idea" maxlength="${LIMITS.idea}" rows="4" required aria-describedby="sb-hint sb-kit"></textarea>
         <span class="hint" id="sb-hint">${t('stories.form.ideaHint')}</span>
-        <span class="sb-kit" id="sb-kit"><span aria-hidden="true">🐭🦊🦉🐰</span> ${t('stories.form.kitHint')}</span>
+        <span class="sb-kit" id="sb-kit"><span aria-hidden="true">🧒👩🐶🦊🏰⚽</span> ${t('stories.form.kitHint')}</span>
         <span class="err" id="sb-err" role="alert"></span></div>
       ${choices(t, { name: 'style', legend: t('stories.form.styleH'), list: STYLES, current: DEFAULTS.style, keyOf: styleKey })}
       ${choices(t, { name: 'tone', legend: t('stories.form.toneH'), list: TONES, current: DEFAULTS.tone, keyOf: toneKey })}

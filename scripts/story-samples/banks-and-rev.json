@@ -1,0 +1,47 @@
+{
+  "title": "Banks and Rev Win the Cup",
+  "scenes": [
+    {
+      "set": "soccer_field", "time": "day", "props": ["flags"], "camera": "pull_back",
+      "characters": [
+        { "kind": "kid", "who": "Banks", "action": "run", "place": "left", "look": { "hair_color": "blonde", "skin": "fair", "hair": "short", "shirt": "blue", "outfit": "sports_kit", "glasses": false, "age": "big" } },
+        { "kind": "kid", "who": "Rev", "action": "run", "place": "right", "look": { "hair_color": "blonde", "skin": "fair", "hair": "curly", "shirt": "blue", "outfit": "sports_kit", "glasses": false, "age": "small" } },
+        { "kind": "grownup", "who": "Coach Kim", "action": "wave", "place": "center", "look": { "hair_color": "black", "skin": "medium", "hair": "ponytail", "shirt": "blue", "outfit": "coach", "glasses": false, "age": "big" } }
+      ],
+      "lines": [{ "say": "Banks and Rev were brothers, and they played on the very same football team.", "show": "Banks and Rev were brothers, and they played on the same team." }]
+    },
+    {
+      "set": "soccer_field", "time": "dusk", "props": [], "camera": "drift",
+      "characters": [
+        { "kind": "kid", "who": "Banks", "action": "throw", "place": "left" },
+        { "kind": "kid", "who": "Rev", "action": "catch", "place": "right" }
+      ],
+      "lines": [{ "say": "Every evening they practised together. Banks passed, and Rev caught it.", "show": "Every evening they practised together." }]
+    },
+    {
+      "set": "soccer_field", "time": "day", "props": ["scoreboard"], "camera": "slow_push",
+      "characters": [
+        { "kind": "kid", "who": "Banks", "action": "point", "place": "left" },
+        { "kind": "kid", "who": "Rev", "action": "kick", "place": "center" }
+      ],
+      "lines": [{ "say": "In the big final, Banks pointed to the goal. Rev kicked the ball, and it flew into the net!", "show": "Rev kicked the ball, and it flew into the net!" }]
+    },
+    {
+      "set": "soccer_field", "time": "night", "props": ["confetti", "flags"], "camera": "slow_push",
+      "characters": [
+        { "kind": "kid", "who": "Banks", "action": "cheer", "place": "left" },
+        { "kind": "kid", "who": "Rev", "action": "cheer", "place": "center", "holds": "trophy" },
+        { "kind": "grownup", "who": "Coach Kim", "action": "cheer", "place": "right" }
+      ],
+      "lines": [{ "say": "They won the cup! \"We did it together,\" said Banks, and everyone cheered.", "show": "They won the cup! \"We did it together!\"" }]
+    },
+    {
+      "set": "bedroom", "time": "night", "props": [], "camera": "pull_back",
+      "characters": [
+        { "kind": "kid", "who": "Banks", "action": "sleep_in_bed", "place": "left", "look": { "hair_color": "blonde", "skin": "fair", "hair": "short", "shirt": "blue", "outfit": "pyjamas", "glasses": false, "age": "big" } },
+        { "kind": "kid", "who": "Rev", "action": "sleep_in_bed", "place": "right", "look": { "hair_color": "blonde", "skin": "fair", "hair": "curly", "shirt": "blue", "outfit": "pyjamas", "glasses": false, "age": "small" } }
+      ],
+      "lines": [{ "say": "That night, two happy brothers fell fast asleep. Goodnight, Banks. Goodnight, Rev.", "show": "Goodnight, Banks. Goodnight, Rev." }]
+    }
+  ]
+}

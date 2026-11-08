@@ -2,10 +2,13 @@
 
     python3 render_story.py spec.json            render every scene in the spec
     python3 render_story.py --probe eevee|cycles  render one tiny frame and exit 0 if the engine works here
+    python3 render_story.py --kit                 print what the kit can build (checked against catalog.json)
 
 The spec (written by server/stories/renderer.js) is:
   { width, height, fps, step, engine: 'eevee'|'cycles', samples, out_dir,
-    scenes: [{ id, set, time, props: [], characters: [{ kind, action, place, color }], camera, frames, seed, focus }] }
+    scenes: [{ id, set, time, props: [], characters: [{ kind, action, place, who?, look?, holds? }], camera, frames, seed, focus }] }
+The sets, characters, actions and props are the felt kit in tools/blender (felt_sets, felt_people, felt_animals,
+felt_actions, felt_props), placed by felt_stage.stage().
 `frames` is the scene length in output frames (fps). With step 2 every other frame is rendered ("on twos", like
 stop-motion) and the assembler holds each one for two frames.
 
@@ -29,20 +32,22 @@ for _d in (os.environ.get('STORY_KIT_DIR'), os.path.join(_HERE, '..', '..', '..'
         sys.path.insert(0, os.path.abspath(_d))
         break
 import feltkit as K  # noqa: E402
+import felt_sets  # noqa: E402
+import felt_stage  # noqa: E402
 
-# How far from the middle a character may start a scene (the frame is ~4.3 wide each side where they stand).
-EDGE = 3.0
-PLACES = {'far_left': -3.3, 'left': -1.8, 'center': 0.0, 'right': 1.8, 'far_right': 3.3}
+SETS = felt_sets.SETS
+PLACES = felt_stage.PLACES
 
 TIMES = {
     'night': dict(top='#0b1238', bottom='#4166c4', world='#1b2a5c', world_k=0.55, stars=1.0, moon=True,
                   key=(0.75, 0.82, 1.0), key_e=2.4, fill=(0.55, 0.62, 1.0)),
     'dusk': dict(top='#232a66', bottom='#f0a08a', world='#5a4a7a', world_k=0.6, stars=0.4, moon=True,
                  key=(1.0, 0.75, 0.6), key_e=3.0, fill=(0.6, 0.55, 0.9)),
-    'dawn': dict(top='#7da4e0', bottom='#ffd2a6', world='#b9b4d0', world_k=0.8, stars=0.0, moon=False,
-                 key=(1.0, 0.85, 0.7), key_e=4.0, fill=(0.8, 0.8, 1.0)),
-    'day': dict(top='#5fb0ea', bottom='#d6f0fb', world='#cfe6f5', world_k=1.0, stars=0.0, moon=False,
-                key=(1.0, 0.97, 0.9), key_e=5.0, fill=(0.85, 0.9, 1.0)),
+    # Daylight uses the Standard view: AgX/Filmic grey out the bright day colours (felt reads milky); night keeps AgX.
+    'dawn': dict(top='#7da4e0', bottom='#ffd2a6', world='#b9b4d0', world_k=0.6, stars=0.0, moon=False,
+                 key=(1.0, 0.85, 0.7), key_e=3.6, fill=(0.8, 0.8, 1.0), view='Standard', exposure=-0.1),
+    'day': dict(top='#5fb0ea', bottom='#d6f0fb', world='#cfe6f5', world_k=0.7, stars=0.0, moon=False,
+                key=(1.0, 0.97, 0.9), key_e=4.4, fill=(0.85, 0.9, 1.0), view='Standard', exposure=-0.1),
 }
 
 
@@ -102,17 +107,17 @@ def setup_render(spec, tod):
             sc.eevee.use_raytracing = False
         except Exception:
             pass
-    for vt in ('AgX', 'Filmic', 'Standard'):
+    for vt in ((tod['view'],) if tod.get('view') else ('AgX', 'Filmic', 'Standard')):
         try:
             sc.view_settings.view_transform = vt
             break
         except Exception:
             continue
     try:
-        sc.view_settings.look = 'AgX - Medium High Contrast'
+        sc.view_settings.look = 'None' if tod.get('view') else 'AgX - Medium High Contrast'
     except Exception:
         pass
-    sc.view_settings.exposure = float(spec.get('exposure', 0.35))
+    sc.view_settings.exposure = float(spec.get('exposure', tod.get('exposure', 0.35)))
     # world: soft coloured ambient light
     w = bpy.data.worlds.new('world')
     sc.world = w
@@ -178,107 +183,10 @@ def lights(tod, rng):
     fo.rotation_euler = (math.radians(85), 0, math.radians(20))
 
 
-# ---------------------------------------------------------------- sets
-def sky_layers(tod, rng, moon_at=(-6.5, 20, 7.2), clouds=True, many_stars=False, stars_hanging=True, props=()):
-    K.backdrop(tod['top'], tod['bottom'])
-    if tod['stars'] > 0:
-        K.star_field(rng, count=int((420 if many_stars else 300) * tod['stars']))
-    if tod['moon'] and ('moon' in props or True):
-        K.moon(moon_at[0], moon_at[2], moon_at[1])
-    if clouds:
-        night = tod['stars'] > 0
-        cols = ('#eef2fd', '#c6d3f3', '#9fb3e3') if night else ('#ffffff', '#e8f1fb', '#cfe0f4')
-        K.cloud('cloudA', moon_at[0] + 1.0, 4.4, 18.5, 9.0, 1.9, rng, cols, drift=0.05)
-        K.cloud('cloudB', 9.5, 6.8, 19.0, 7.5, 1.4, rng, cols, drift=-0.04)
-        K.cloud('cloudC', -11.5, 2.6, 16.0, 7.0, 1.3, rng, cols, drift=0.03)
-        K.cloud('cloudD', 3.0, 9.5, 20.5, 6.0, 1.1, rng, cols, drift=0.02)
-    if stars_hanging and tod['stars'] > 0:
-        spots = [(-8.5, 5.2, 12), (-4.6, 7.3, 9), (-1.2, 4.6, 14), (2.2, 6.4, 10), (5.0, 8.2, 13), (8.8, 5.9, 11), (-11, 7.6, 15), (11.5, 8.0, 15)]
-        for i, (x, z, y) in enumerate(spots):
-            K.hanging_star(f'hstar{i}', x + rng.uniform(-0.4, 0.4), z + rng.uniform(-0.4, 0.4), y, rng.uniform(0.32, 0.5), 22, rng)
-            if rng.random() < 0.45:  # a pair on one thread, like the reference
-                K.hanging_star(f'hstar{i}b', x + rng.uniform(-0.1, 0.1), z + 0.9, y + 0.05, rng.uniform(0.25, 0.32), 22, rng)
-
-
-def set_lighthouse(tod, rng, props):
-    sky_layers(tod, rng, moon_at=(-6.5, 20, 6.4), props=props)
-    K.sea(14, 0.9, 70, rows=6)
-    K.hills(17, 0.4, 70, 1.6, ['#2f4f8a', '#3a5c96'], 0.9, 'farhills', waves=2.5)
-    K.rocks(4.9, 11.8, 0.2, 3.0, rng)
-    K.lighthouse(4.9, 12.0, 0.35, h=2.9, beam=True)
-    K.ground(-7.0, 0.0, 60, 10.0, '#c7a77a' if tod['stars'] == 0 else '#2f3b6a', rng, tufts=('#3f5f86', '#4a6b8f'), pebbles=('#5b6085', '#6b7095'))
-    if 'boat' in props:
-        K.boat(-6.0, 9.0, 0.35)
-
-
-def set_village(tod, rng, props):
-    sky_layers(tod, rng, moon_at=(6.5, 20, 7.0), props=props)
-    K.hills(16, 0.0, 80, 3.2, ['#2c4f80', '#35608c', '#3f6f96'] if tod['stars'] else ['#7fb27a', '#93c48a', '#a8d39b'], 0.3, 'farhills')
-    lit = tod['stars'] > 0
-    cols = [('#f3d9b1', '#b9473f'), ('#d8e4f0', '#3f6db9'), ('#f6e3a1', '#7a4f9a'), ('#f0c9b4', '#4f8a5b'), ('#e9d6f0', '#c25a6a')]
-    for i, x in enumerate([-7.5, -4.2, -1.0, 2.6, 6.2]):
-        w, r = cols[i % len(cols)]
-        K.house(f'house{i}', x, 7.5 + (i % 2) * 1.6, 0.1, 1.5 + rng.uniform(-0.2, 0.3), 1.3 + rng.uniform(-0.2, 0.4), w, r, lit)
-    for i in range(7):
-        K.tree(f'tree{i}', rng.uniform(-12, 12), rng.uniform(9.5, 12), 0.3, rng.uniform(1.4, 2.4), rng.choice(['pine', 'round']), rng.choice(['#2f6b4f', '#3f7f5a', '#4d8c63']), rng)
-    K.ground(-7.0, 0.0, 60, 14.0, '#2c4a44' if lit else '#7db86c', rng)
-    K.lantern(-1.6, 0.6, 0.0) if 'lantern' in props else None
-
-
-def set_forest(tod, rng, props):
-    sky_layers(tod, rng, moon_at=(-5.5, 20, 7.6), clouds=True, props=props)
-    night = tod['stars'] > 0
-    K.hills(17, 0.0, 80, 3.6, ['#2a4a70', '#30577c'] if night else ['#6aa673', '#7fb886'], 1.2, 'farhills')
-    greens = ['#1f5a46', '#2b6b52', '#2f7a58', '#3c8a62'] if night else ['#3f8a55', '#4e9b60', '#5aa86a', '#2f7a4a']
-    for layer, (y, n, hmin, hmax) in enumerate([(13, 14, 2.6, 3.6), (9.5, 11, 2.2, 3.2), (6.5, 7, 1.8, 2.8), (3.5, 4, 1.6, 2.4)]):
-        for i in range(n):
-            x = -14 + 28 * (i + rng.uniform(0.1, 0.9)) / n
-            if layer == 3 and abs(x) < 3.2:
-                continue
-            K.tree(f'ft{layer}_{i}', x, y + rng.uniform(-0.6, 0.6), 0.1, rng.uniform(hmin, hmax), rng.choice(['pine', 'pine', 'round']), greens[(layer + i) % len(greens)], rng)
-    K.ground(-7.0, 0.0, 60, 12.0, '#26402f' if night else '#6fa862', rng, tufts=('#2f6b4f', '#3c7a55'))
-    if night or 'fireflies' in props:
-        fireflies(rng)
-
-
-def fireflies(rng, n=18):
-    for i in range(n):
-        ob = K.prim('sphere', f'fly{i}', (rng.uniform(-8, 8), rng.uniform(1, 8), rng.uniform(0.6, 3.5)), (0.05, 0.05, 0.05), mat=K.glow('#ffe58a', 8.0), segs=8)
-        x0, z0, ph = ob.location.x, ob.location.z, rng.uniform(0, 6.28)
-        K.anim(lambda t, f, o=ob, x0=x0, z0=z0, ph=ph: (setattr(o.location, 'x', x0 + math.sin(t * 0.5 + ph) * 0.6),
-                                                       setattr(o.location, 'z', z0 + math.sin(t * 0.8 + ph * 2) * 0.3)))
-
-
-def set_meadow(tod, rng, props):
-    sky_layers(tod, rng, moon_at=(6.0, 20, 7.4), props=props)
-    night = tod['stars'] > 0
-    K.hills(15, 0.0, 80, 3.0, ['#4a5a92', '#55689c', '#6276a6'] if night else ['#8cc77f', '#9fd28f', '#b5dd9f'], 2.0, 'farhills', waves=2.2)
-    K.tree('bigtree', 6.5, 5.0, 0.2, 3.6, 'round', '#3f7f5a' if night else '#5aa86a', rng)
-    flower_cols = ['#f29aa6', '#fbe28a', '#ffffff', '#b8a4f0']
-    for i in range(40):
-        x, y = rng.uniform(-12, 12), rng.uniform(-0.8, 6)
-        if abs(x) < 3.4 and y < 1.5:
-            continue
-        K.prim('cyl', f'flower{i}', (x, y, 0.06), (0.09, 0.09, 0.02), (math.pi / 2 - 0.3, 0, 0), mat=K.felt(rng.choice(flower_cols)), segs=10)
-    K.ground(-7.0, 0.0, 60, 14.0, '#3f5577' if night else '#7db86c', rng)
-    if night:
-        fireflies(rng, 10)
-
-
-def set_sky(tod, rng, props):
-    sky_layers(tod, rng, moon_at=(5.5, 18, 6.5), many_stars=True, props=props)
-    # a big cloud to stand on, in front
-    night = tod['stars'] > 0
-    cols = ('#e6ecfb', '#c3d0f1', '#9bb0e0') if night else ('#ffffff', '#eef4fb', '#d6e4f4')
-    K.cloud('standcloud', 0.0, -1.0, -0.6, 14.0, 1.3, rng, cols)
-    K.cloud('midcloud1', -8.0, 1.0, 8.0, 8.0, 1.6, rng, cols, drift=0.04)
-    K.cloud('midcloud2', 9.0, 2.0, 10.0, 7.0, 1.4, rng, cols, drift=-0.04)
-
-
-SETS = {'lighthouse': set_lighthouse, 'village': set_village, 'forest': set_forest, 'meadow': set_meadow, 'sky': set_sky}
-
-
 # ---------------------------------------------------------------- camera
+CAMERAS = ('drift', 'slow_push', 'pull_back', 'pan_left', 'pan_right', 'tilt_up', 'tilt_down')
+
+
 def camera(move, frames, fps, focus_obj, lens=45):
     cam = bpy.data.cameras.new('cam')
     cam.lens = lens
@@ -332,44 +240,12 @@ def build_scene(spec, sc_spec):
     tod = TIMES.get(sc_spec.get('time'), TIMES['night'])
     setup_render(spec, tod)
     props = set(sc_spec.get('props') or [])
-    SETS.get(sc_spec.get('set'), set_lighthouse)(tod, rng, props)
+    hints = SETS.get(sc_spec.get('set'), felt_sets.set_lighthouse)(tod, rng, props) or {}
+    hints.setdefault('night', tod['stars'] > 0.5)
     lights(tod, rng)
     fps = int(spec.get('fps', 24))
     frames = int(sc_spec['frames'])
-    dur = frames / fps
-    focus = None
-    chars = sc_spec.get('characters') or []
-    for i, c in enumerate(chars[:3]):
-        kind = c.get('kind') if c.get('kind') in K.CHARACTERS else 'mouse'
-        maker = K.CHARACTERS[kind]
-        root, body, head = maker(f'{kind}{i}', *( [c['color']] if c.get('color') else []))
-        scale = {'mouse': 1.0, 'bunny': 1.05, 'fox': 1.15, 'owl': 1.0}[kind]
-        root.scale = (scale, scale, scale)
-        x1 = PLACES.get(c.get('place'), [-1.4, 1.4, 0.0][i % 3])
-        action = c.get('action') or 'idle'
-        x0 = x1
-        # Walkers start inside the picture (a short stroll in, never popping in at the frame's edge): at most
-        # EDGE from the middle, where the frame is about 4.3 wide on each side.
-        if action in ('walk', 'walk_in', 'hold_star'):
-            dist = 1.2 if action == 'hold_star' else 2.0
-            x0 = x1 - dist if x1 <= 0 else x1 + dist
-            x0 = max(-EDGE, min(EDGE, x0))
-        elif action == 'walk_out':
-            x0, x1 = x1, x1 + (4.0 if x1 >= 0 else -4.0)
-        elif action == 'fly':
-            x0 = x1 + (2.5 if x1 <= 0 else -2.5)
-        y = 0.25 + i * 0.35
-        root.location = (x0, y, 0)
-        # face the camera, turned a little towards the middle
-        root.rotation_euler.z = 0.25 if x1 < 0 else -0.25 if x1 > 0 else 0
-        start = 0.3 + i * 0.4
-        walk_dur = min(dur * 0.55, 4.5)
-        K.act(root, body, head, action, x0, x1, start, walk_dur, phase=i * 1.7, kind=kind, z0=0.0)
-        if focus is None or c.get('kind') == sc_spec.get('focus'):
-            focus = head
-        if action in ('idle', 'wave', 'look_up', 'sleep', 'hop'):
-            rz = root.rotation_euler.z
-            K.anim(lambda t, f, r=root, rz=rz: setattr(r.rotation_euler, 'z', rz))
+    focus = felt_stage.stage(sc_spec, fps, frames, rng, hints)
     camera(sc_spec.get('camera') or 'drift', frames, fps, focus)
     # Only the key light casts shadows: every shadowed light costs a shadow map per frame, and on a CPU renderer
     # that is most of the frame time. The glows (moon, lamp, windows) are fine without.
@@ -422,7 +298,26 @@ def probe(engine):
     return ok
 
 
+def kit():
+    """Everything this renderer can build, for the kit test (tests/unit/story-builder.test.js) to compare with
+    catalog.json."""
+    import felt_actions
+    import felt_people
+    import felt_props
+    return {
+        'sets': sorted(SETS), 'times': sorted(TIMES), 'places': sorted(PLACES), 'characters': sorted(felt_stage.CHARACTERS),
+        'actions': sorted(felt_actions.ACTIONS), 'props': sorted(felt_props.PROPS), 'holds': sorted(list(felt_props.HOLD) + ['star']),
+        'flyers': sorted(f for f in felt_actions.FLYERS if f in felt_stage.CHARACTERS), 'cameras': sorted(CAMERAS),
+        'look': {'hair_color': sorted(felt_people.HAIR_COLORS), 'skin': sorted(felt_people.SKIN), 'hair': sorted(felt_people.HAIR),
+                 'shirt': sorted(felt_people.SHIRTS), 'outfit': sorted(felt_people.OUTFITS), 'age': sorted(felt_people.AGES)},
+        'flying_outfits': sorted(felt_people.FLYING_OUTFITS), 'people': sorted(felt_people.PEOPLE),
+    }
+
+
 def main(argv):
+    if argv[:1] == ['--kit']:
+        print(json.dumps(kit()))
+        return
     if len(argv) >= 2 and argv[0] == '--probe':
         sys.exit(0 if probe(argv[1]) else 1)
     with open(argv[0]) as fh:
