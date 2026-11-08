@@ -300,14 +300,16 @@ test('a long AI step shows "Did you know?" facts; a dropped connection says the 
   await expect(write).not.toContainText('✓');
   await write.locator('button.stp-line').click();
   await expect(write.locator('.stp-plan')).toContainText('A fox who hops');
-  // One 💡 line under the running row: its own line first, then after a while a "Did you know?" fact.
+  // One 💡 line under the running row: its own line first, then after a while a "Prompting tip" and a "Did you know?"
+  // fact taking turns, a prompting tip first (#257).
   const tip = cur.locator('.stp-tip');
   await expect(tip).toContainText('called a server');
   await page.clock.fastForward(8500);
-  await expect(tip).toContainText('Did you know?');
+  await expect(tip).toContainText('Prompting tip:');
   const first = await tip.textContent();
   await page.clock.fastForward(11500);
-  await expect.poll(() => tip.textContent()).not.toBe(first);
+  await expect(tip).toContainText('Did you know?');
+  expect(await tip.textContent()).not.toBe(first);
   await live.locator('.stp-tips').click();
   await expect(tip).toBeHidden();
   await live.locator('.stp-tips').click();
