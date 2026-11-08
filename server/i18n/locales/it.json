@@ -3535,7 +3535,7 @@
       "cta": "Aggiungi un figlio o una figlia"
     },
     "sparks": {
-      "heading": "Pacchetti Scintilla",
+      "heading": "I Pacchetti Scintilla",
       "intro": "Un Pacchetto Scintilla è una ricarica unica di messaggi extra al Costruttore per la vostra famiglia. Si usano quando finiscono i messaggi gratuiti del giorno e i messaggi extra del vostro piano.",
       "left": "{n, plural, one {Resta # messaggio dai Pacchetti Scintilla} other {Restano # messaggi dai Pacchetti Scintilla}}",
       "none": "Nessun messaggio dai Pacchetti Scintilla rimasto.",
