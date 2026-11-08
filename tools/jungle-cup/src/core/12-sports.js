@@ -64,13 +64,13 @@ RUN.begin = function () {
   AUDIO.music(song); JC.audioWant = song;
 };
 RUN.leave = function () { sendReport(); INPUT.releaseTouch(); if (RUN.sport && RUN.sport.stop) { try { RUN.sport.stop(RUN.ctx); } catch (e) { console.error(e); } } };
-RUN.back = function () { AUDIO.sfx('back'); const a = ARCHES[RUN.id]; JC.go('world', { at: [a.x, a.y + 1, 'down'] }); };
+RUN.back = function () { AUDIO.sfx('back'); const a = ARCHES[RUN.id]; JC.go('world', { at: [a.x, a.y + 1, 'down'], away: RUN.id }); };
 function finishRound() {
   const res = RUN.result || { score: 0, stars: 0, won: false };
   res.score = Math.max(0, Math.round(res.score || 0)); res.stars = clamp(res.stars | 0, 0, 3); res.won = !!res.won;
   const d = SAVE.data, id = RUN.id;
   RUN.prevBest = d.best[id] || 0;
-  RUN.newBest = res.score > RUN.prevBest;
+  RUN.newBest = res.score > RUN.prevBest && (res.won || RUN.prevBest > 0);   // a first-ever loss is not a "New best!"
   if (RUN.newBest) d.best[id] = res.score;
   d.stars[id] = Math.max(d.stars[id] || 0, res.stars);
   d.plays[id] = (d.plays[id] || 0) + 1;
@@ -158,7 +158,7 @@ RUN.leaveResults = function () {
   const a = ARCHES[RUN.id];
   // the last Feather: once the totem has lit up, Zuzu flies in with the news (3.2 s of game time later)
   const news = RUN.newFeather && SAVE.featherCount() === NSPORTS ? [{ who: 'zuzu', key: 'd.zuzu.liftopen' }] : null;
-  JC.go('world', { at: [a.x, a.y + 1, 'down'], celebrate: RUN.newFeather ? RUN.id : '', later: news, laterT: 3.2 });
+  JC.go('world', { at: [a.x, a.y + 1, 'down'], away: RUN.id, celebrate: RUN.newFeather ? RUN.id : '', later: news, laterT: 3.2 });
 };
 /* ---------- drawing ---------- */
 function portrait(g, who, x, y, size, bg) {
@@ -174,13 +174,23 @@ JC.portrait = portrait;
 function drawIntro(g) {
   const sp = RUN.sport, id = RUN.id, col = SPORT_COLOURS[id];
   dimBackdrop(g, col);
-  const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230, ps = compact ? 40 : 52, bh0 = Math.max(22, VIEW.tap);
+  const w = Math.min(VIEW.W - 12, 330), compact = VIEW.H < 230, bh0 = Math.max(22, VIEW.tap);
+  let ps = compact ? 40 : 52;
   // tall enough for the words (longer in some languages), never taller than the screen
   // a note from the sport (Paddle Smash's first warm-up), and the gamepad line for a player on a gamepad
-  const noteStr = sp.introNote ? sp.introNote(RUN.ctx) || '' : '';
-  const introLines = () => (noteStr ? ['note'] : []).concat(INPUT.device === 'pad' ? ['pad', 'keys'] : INPUT.showTouch() ? ['touch', 'keys'] : ['keys', 'touch']);
+  // only the controls for the device in hand (touch on a phone, keys on a laptop, the pad's line on a gamepad)
+  let noteStr = sp.introNote ? sp.introNote(RUN.ctx) || '' : '';
+  const dev = INPUT.device === 'pad' ? 'pad' : INPUT.showTouch() ? 'touch' : 'keys';
+  let showDev = true;
+  const introLines = () => (noteStr ? ['note'] : []).concat(showDev ? [dev] : []);
   const cw = w - 14, lineStr = k => (k === 'note' ? noteStr : k === 'pad' ? t('intro.pad') : t('sport.' + id + '.' + k));
-  const need = ps + 6 + 4 + 4 + 18 + 6 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + introLines().reduce((n, k) => n + wrap(lineStr(k), cw - 14).length, 0)) + 2 * introLines().length;
+  const needFor = () => ps + 6 + 4 + 4 + 18 + 6 + bh0 + LINE_H * (wrap(t('sport.' + id + '.goal'), cw - 4).length + introLines().reduce((n, k) => n + wrap(lineStr(k), cw - 14).length, 0)) + 2 * introLines().length;
+  let need = needFor();
+  // a short screen gives way in this order: the note, a smaller portrait, then the controls line (each sport's own
+  // hint shows the controls again as play starts), so the words never run under the buttons
+  if (need > VIEW.H - 12 && noteStr) { noteStr = ''; need = needFor(); }
+  if (need > VIEW.H - 12 && ps > 40) { ps = 40; need = needFor(); }
+  if (need > VIEW.H - 12) { showDev = false; need = needFor(); }
   const h = Math.min(VIEW.H - 12, Math.max(compact ? 186 : 222, need)), x = Math.round((VIEW.W - w) / 2), y = Math.round((VIEW.H - h) / 2);
   const c = UI.card(g, x, y, w, h);
   portrait(g, ARCHES[id].champ, RTL ? c.x + c.w - ps - 2 : c.x + 2, c.y + 2, ps, shade(col, 0.55));
@@ -243,7 +253,8 @@ function drawResults(g) {
   const ps = compact ? 30 : 40;
   portrait(g, ARCHES[id].champ, RTL ? c.x + c.w - ps - 2 : c.x + 2, c.y + 2, ps, shade(col, 0.55));
   // a near miss is "So close!"; a big loss is "Good try!" (kind, and true); a win says what the kid just did
-  const close = res.won || (res.frac !== undefined ? res.frac / 0.3 : 0) >= 0.5;
+  // ("So close!" only when it really was: within about 15% of the champion)
+  const close = res.won || (res.frac !== undefined ? res.frac / 0.3 : 0) >= 0.85;
   const head = t(res.won ? 'res.won' : close ? 'res.lost' : 'res.lostBig'), tw = c.w - ps - 8, hx = RTL ? c.x + c.w - ps - 8 : c.x + ps + 8, al = RTL ? 'right' : 'left';
   const sub = res.won ? t('res.wonSub.' + id) : t('res.lostSub');
   const hs = titleScale([t('res.won'), t('res.lost'), t('res.lostBig')], tw);
@@ -271,8 +282,11 @@ function drawResults(g) {
   }
   const narrow = c.w < 250, bw = narrow ? c.w - 4 : (c.w - 6) / 2;
   const by = y + h - bh - 9 - (narrow ? bh + 4 : 0);
-  UI.button(g, 'back', narrow ? c.x + 2 : c.x + 4 + bw, by, bw, bh, t('btn.island'), { col: '#3fae4a', icon: UI.icons.back });
-  UI.button(g, 'retry', c.x + 2, narrow ? by + bh + 4 : by, bw, bh, t('btn.retry'), { col: PAL.r3, icon: UI.icons.retry });
+  // after a win the island is the main way on; after a loss "Try again" is (first, green, where the thumb is)
+  const pri = res.won ? 'back' : 'retry', sec2 = res.won ? 'retry' : 'back';
+  const lab = id2 => (id2 === 'back' ? t('btn.island') : t('btn.retry')), ico = id2 => (id2 === 'back' ? UI.icons.back : UI.icons.retry);
+  UI.button(g, pri, narrow ? c.x + 2 : c.x + 4 + bw, by, bw, bh, lab(pri), { col: '#3fae4a', icon: ico(pri) });
+  UI.button(g, sec2, c.x + 2, narrow ? by + bh + 4 : by, bw, bh, lab(sec2), { col: res.won ? PAL.r3 : '#7a6a8a', icon: ico(sec2) });
 }
 RUN.draw = function (g) {
   const sp = RUN.sport, ctx = RUN.ctx;
@@ -291,7 +305,7 @@ RUN.draw = function (g) {
     g.globalAlpha = 1;
   }
   if (RUN.phase === 'paused') drawPauseMenu(g);
-  if (RUN.phase === 'results') { drawResults(g); UI.drawFx(g); }
+  if (RUN.phase === 'results') { UI.drawFx(g); drawResults(g); }   // banners and confetti go behind the card, never over its words
   TB.draw(g);
 };
 
@@ -300,7 +314,8 @@ RUN.draw = function (g) {
 const FIT = [{ src: '', w: 0, out: '' }, { src: '', w: 0, out: '' }];
 function fitName(i, src, maxW) {
   const f = FIT[i]; if (f.src === src && f.w === maxW && f.clear === TEXT.clear) return f.out;
-  let name = src; while (name.length > 3 && textW(name) > maxW) name = name.slice(0, -1);
+  // a long name (German, Japanese) is narrowed to fit first; only a very long one is also shortened
+  let name = src; while (name.length > 3 && textW(name) * 0.68 > maxW) name = name.slice(0, -1);
   f.src = src; f.w = maxW; f.clear = TEXT.clear; f.out = name; return name;
 }
 const VS_NAME = [{ col: PAL.white, align: 'left' }, { col: PAL.white, align: 'right' }];
@@ -317,6 +332,7 @@ const HUD = {
       box(g, x, y, w, 26, 'rgba(27,19,37,0.82)', PAL.ink);
       // the name on top (cut to fit), the score and its bar below
       const name = fitName(i, s.name, w - 8);
+      VS_NAME[i].maxW = w - 8;
       text(g, name, i ? x + w - 4 : x + 4, y + 1, VS_NAME[i]);
       const sc = s.of ? label(i ? 'hud.vsB' : 'hud.vsA', s.score) : String(s.score), sw = textW(sc);
       const so = VS_SC[i]; so.col = s.col || PAL.r4;

@@ -30,7 +30,9 @@ UI.moveFocus = function (dir) {
     if (i === UI.focus) continue;
     const h = UI.prev[i], dx = h.x + h.w / 2 - cx, dy = h.y + h.h / 2 - cy;
     const along = dir === 'left' ? -dx : dir === 'right' ? dx : dir === 'up' ? -dy : dy;
-    const across = dir === 'left' || dir === 'right' ? Math.abs(dy) : Math.abs(dx);
+    // across: measured from the current button's own span (a wide row 'covers' every button under it, so Down from it
+    // goes to the first one, not to whichever centre happens to be nearest)
+    const across = dir === 'left' || dir === 'right' ? Math.max(0, Math.abs(dy) - cur.h / 2) : Math.max(0, Math.abs(dx) - cur.w / 2);
     if (along <= 2) continue;
     const d = along + across * 2.5;
     if (d < bestD) { bestD = d; best = i; }
@@ -62,7 +64,8 @@ UI.button = function (g, id, x, y, w, h, label, opts) {
   const focused = UI.showFocus && UI.prevN && UI.prev[Math.min(UI.focus, UI.prevN - 1)].id === id && !o.disabled;
   const down = UI.pressT > 0 && UI.pressId === id;
   const fill = o.disabled ? '#7a7488' : o.col || PAL.r3, dy = down ? 1 : 0;
-  if (focused || o.glow) { rect(g, x - 2, y - 2 + dy, w + 4, h + 4, focused ? PAL.r5 : shade(fill, 0.5)); }
+  if (focused) { rect(g, x - 4, y - 4 + dy, w + 8, h + 8, PAL.ink); rect(g, x - 3, y - 3 + dy, w + 6, h + 6, '#ffd23f'); }   // a strong ring
+  else if (o.glow) rect(g, x - 2, y - 2 + dy, w + 4, h + 4, shade(fill, 0.5));
   rect(g, x + 1, y + 2, w - 2, h - 1, PAL.ink);                    // drop shadow
   box(g, x, y + dy, w, h - 2, PAL.ink, PAL.ink);
   rect(g, x + 1, y + 1 + dy, w - 2, h - 4, shade(fill, -0.3));      // dark base
@@ -190,10 +193,10 @@ UI.drawFx = function (g) {
     // it slides in from the right (still, with reduced motion)
     const pop = k < 0.15 && !BRBX.reduced() ? easeOutBack(k / 0.15) : 1, cy = Math.round(VIEW.H * UI.bannerY);
     g.globalAlpha = UI.bannerT < 0.25 ? UI.bannerT / 0.25 : 1;
-    rect(g, 0, cy - 4, VIEW.W, 12 * sc + 6, 'rgba(27,19,37,0.55)');
+    rect(g, 0, cy - 4, VIEW.W, 12 * sc + 6, 'rgba(27,19,37,0.72)');   // dark enough that a yellow word reads over grass
     const w = textW(UI.bannerStr, sc);
     const s2 = w <= VIEW.W - 12 ? sc : textW(UI.bannerStr, sc - 0.5) <= VIEW.W - 12 ? sc - 0.5 : Math.max(1, sc - 1);
-    BOPT.col = UI.bannerCol; BOPT.scale = s2;
+    BOPT.col = UI.bannerCol; BOPT.scale = s2; BOPT.maxW = VIEW.W - 8;   // never wider than the screen
     text(g, UI.bannerStr, VIEW.W / 2 + (1 - pop) * VIEW.W * 0.5, cy, BOPT);
     g.globalAlpha = 1;
   }

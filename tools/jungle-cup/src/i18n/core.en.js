@@ -30,7 +30,7 @@ I18N.en = Object.assign(I18N.en || {}, {
   'settings.title': 'Settings', 'settings.sound': 'Sound', 'settings.font': 'Text style', 'settings.pixel': 'Pixel', 'settings.clear': 'Clear',
   'settings.easy': 'Easier champions', 'settings.easyHelp': 'Easier champions play a little slower and miss a little more. Turn it on any time.',
   'controls.title': 'Controls', 'controls.touch': 'Touch', 'controls.keys': 'Keyboard', 'controls.pad': 'Gamepad',
-  'controls.touch.body': 'Walk with the arrow pad. Tap A to talk, read and play. Each sport shows its own buttons. The map button opens the map.',
+  'controls.touch.body': 'Walk with the joystick: put your thumb down on the left and push. Tap A to talk, read and play. Each sport shows its own buttons. The map button opens the map.',
   'controls.keys.body': 'Arrow keys or WASD to walk. Space or Enter to talk and play. Esc or Backspace to go back or pause.',
   'controls.pad.body': 'Stick or d-pad to walk. Button A (bottom) to talk and play, B to go back. Start pauses.',
   'style.title': 'Style', 'style.bandana': 'Bandana', 'style.hat': 'Hat', 'style.flag': 'Raft flag',

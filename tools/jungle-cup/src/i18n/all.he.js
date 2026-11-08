@@ -15,7 +15,7 @@ I18N.he = Object.assign(I18N.he || {}, {
   "settings.title": "הגדרות", "settings.sound": "צליל", "settings.font": "סגנון טקסט", "settings.pixel": "פיקסלים", "settings.clear": "ברור",
   "settings.easy": "אלופים קלים יותר", "settings.easyHelp": "אלופים קלים יותר משחקים קצת לאט יותר ומחטיאים קצת יותר. אפשר להפעיל מתי שרוצים.",
   "controls.title": "שליטה", "controls.touch": "מגע", "controls.keys": "מקלדת", "controls.pad": "שלט משחק",
-  "controls.touch.body": "הולכים עם לוח החצים. הקש A כדי לדבר, לקרוא ולשחק. לכל ענף ספורט יש כפתורים משלו. כפתור המפה פותח את המפה.",
+  "controls.touch.body": "הולכים עם הג׳ויסטיק: שימו אגודל בצד שמאל ודחפו. הקישו על A כדי לדבר, לקרוא ולשחק. לכל ענף ספורט יש כפתורים משלו. כפתור המפה פותח את המפה.",
   "controls.keys.body": "חצים או WASD כדי ללכת. רווח או Enter כדי לדבר ולשחק. Esc או Backspace כדי לחזור או להשהות.",
   "controls.pad.body": "ג׳ויסטיק או לוח חצים כדי ללכת. כפתור A (למטה) כדי לדבר ולשחק, B כדי לחזור. Start משהה.",
   "style.title": "סגנון", "style.bandana": "בנדנה", "style.hat": "כובע", "style.flag": "דגל הרפסודה",

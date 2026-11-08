@@ -335,8 +335,8 @@ sprite('kiki', [
   '.okkkkccckkkko..',
   'okKkkcccccckKko.',
   'oKo.okkkkkko.oKo',
-  '.o..oKKooKKo..o.ooo',
-  '.....oo..oo..oKKKo'], KIKI_PAL);
+  '.o..oKKooKKo..o.',
+  '.....oo..oo.....'], KIKI_PAL);
 // Pecca the peccary, captain of the Grunt Gang (Mango Dash): bristly mane, a pale collar, a teal captain's headband.
 const PECCA_PAL = { o: OUT, p: '#6e5c54', P: '#4a3c36', m: '#2e2420', c: '#efe4d0', s: '#d49a8c', S: '#a86a5c', k: '#120e14', w: '#ffffff', t: '#1fc8a8', T: '#138a74' };
 sprite('pecca', [

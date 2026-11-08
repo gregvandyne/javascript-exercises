@@ -15,7 +15,7 @@ I18N.it = Object.assign(I18N.it || {}, {
   "settings.title": "Impostazioni", "settings.sound": "Suono", "settings.font": "Scrittura", "settings.pixel": "Pixel", "settings.clear": "Chiara",
   "settings.easy": "Campioni più facili", "settings.easyHelp": "I campioni più facili giocano un po' più piano e sbagliano un po' di più. Attivalo quando vuoi.",
   "controls.title": "Comandi", "controls.touch": "Touch", "controls.keys": "Tastiera", "controls.pad": "Controller",
-  "controls.touch.body": "Cammina con la croce. Tocca A per parlare, leggere e giocare. Ogni sport ha i suoi pulsanti. Il pulsante mappa apre la mappa.",
+  "controls.touch.body": "Cammina con il joystick: appoggia il pollice a sinistra e spingi. Tocca A per parlare, leggere e giocare. Ogni sport ha i suoi pulsanti. Il pulsante mappa apre la mappa.",
   "controls.keys.body": "Frecce o WASD per camminare. Spazio o Invio per parlare e giocare. Esc o Backspace per tornare indietro o mettere in pausa.",
   "controls.pad.body": "Levetta o croce per camminare. Pulsante A (in basso) per parlare e giocare, B per tornare indietro. Start mette in pausa.",
   "style.title": "Stile", "style.bandana": "Bandana", "style.hat": "Cappello", "style.flag": "Bandiera della zattera",

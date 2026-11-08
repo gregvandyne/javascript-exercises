@@ -15,7 +15,7 @@ I18N.es = Object.assign(I18N.es || {}, {
   "settings.title": "Ajustes", "settings.sound": "Sonido", "settings.font": "Letra", "settings.pixel": "Píxel", "settings.clear": "Clara",
   "settings.easy": "Campeones más fáciles", "settings.easyHelp": "Los campeones más fáciles van un poco más despacio y fallan un poco más. Actívalo cuando quieras.",
   "controls.title": "Controles", "controls.touch": "Táctil", "controls.keys": "Teclado", "controls.pad": "Mando",
-  "controls.touch.body": "Camina con la cruceta. Toca A para hablar, leer y jugar. Cada deporte tiene sus propios botones. El botón del mapa abre el mapa.",
+  "controls.touch.body": "Camina con el joystick: pon el pulgar a la izquierda y empuja. Toca A para hablar, leer y jugar. Cada deporte tiene sus propios botones. El botón del mapa abre el mapa.",
   "controls.keys.body": "Flechas o WASD para caminar. Espacio o Intro para hablar y jugar. Esc o Retroceso para volver o pausar.",
   "controls.pad.body": "Palanca o cruceta para caminar. Botón A (abajo) para hablar y jugar, B para volver. Start pausa.",
   "style.title": "Estilo", "style.bandana": "Pañuelo", "style.hat": "Sombrero", "style.flag": "Bandera de la balsa",

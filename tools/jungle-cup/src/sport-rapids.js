@@ -511,8 +511,9 @@
     rect(g, L, y - 24, R - L, 1, '#5e3a20');
     for (let x = L + 2, i = 0; x < R - 4; x += 7, i++) { const fc = i % 3 === 0 ? col : i % 3 === 1 ? PAL.r4 : PAL.white; rect(g, x, y - 23, 5, 3, fc); rect(g, x + 1, y - 20, 3, 1, fc); rect(g, x + 2, y - 19, 1, 1, fc); }
     const s = t(key), w = textW(s) + 8;
-    box(g, c - w / 2, y - 14, w, 13, col, OUT, shade(col, 0.4));
-    text(g, s, c, y - 14, { align: 'center', col: PAL.white });
+    // the sign hangs above the pennants, so the canoes on the line never cover it
+    box(g, c - w / 2, y - 40, w, 13, col, OUT, shade(col, 0.4));
+    text(g, s, c, y - 40, { align: 'center', col: PAL.white });
     // the line on the water
     for (let x = Math.round(c - S.half); x < c + S.half; x += 4) rect(g, x, y + 2, 2, 1, PAL.white);
   }

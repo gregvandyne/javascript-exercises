@@ -15,7 +15,7 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "settings.title": "Réglages", "settings.sound": "Son", "settings.font": "Police", "settings.pixel": "Pixel", "settings.clear": "Lisible",
   "settings.easy": "Champions plus faciles", "settings.easyHelp": "Les champions plus faciles jouent un peu plus lentement et ratent un peu plus. Active-le quand tu veux.",
   "controls.title": "Commandes", "controls.touch": "Tactile", "controls.keys": "Clavier", "controls.pad": "Manette",
-  "controls.touch.body": "Marche avec la croix. Touche A pour parler, lire et jouer. Chaque sport a ses propres boutons. Le bouton carte ouvre la carte.",
+  "controls.touch.body": "Marche avec le joystick : pose ton pouce à gauche et pousse. Touche A pour parler, lire et jouer. Chaque sport a ses propres boutons. Le bouton carte ouvre la carte.",
   "controls.keys.body": "Flèches ou WASD pour marcher. Espace ou Entrée pour parler et jouer. Échap ou Retour arrière pour revenir ou mettre en pause.",
   "controls.pad.body": "Stick ou croix pour marcher. Bouton A (en bas) pour parler et jouer, B pour revenir. Start met en pause.",
   "style.title": "Style", "style.bandana": "Bandana", "style.hat": "Chapeau", "style.flag": "Drapeau du radeau",

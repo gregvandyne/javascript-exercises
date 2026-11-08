@@ -499,11 +499,14 @@
         } else if (f.on) sprK(g, sp, x - ((sp.w * k) >> 1), y - sp.h * k + 1 + bob, k);
         else if (f.pop > 0) { const kk = f.pop / 0.5; g.globalAlpha = kk; spr(g, SPRITES.sparkle, x - 2, y - 14 - (1 - kk) * 14); g.globalAlpha = 1; }
       }
-      // the row's value tag at the left edge: faint while a fruit drifts past under it, so it never hides one
-      const lb = label('ss.row' + r, POINTS[r]), lw = textW(lb) + 6;
+    }
+    // the rows' value tags at the left edge, drawn over every row's pads (a nearer row's big pads never hide a tag);
+    // faint while a fruit drifts past under one, so a tag never hides a fruit either
+    for (let r = 0; r < S.rowY.length; r++) {
+      const y = S.rowY[r], lb = label('ss.row' + r, POINTS[r]), lw = textW(lb) + 6;
       let near = false; for (const f of S.fruit) if (f.row === r && f.use && f.on && f.x < lw + 12) near = true;
-      if (near) g.globalAlpha = 0.3;
-      box(g, 1, y - 6, lw, 12, 'rgba(27,19,37,0.7)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
+      if (near) g.globalAlpha = 0.45;
+      box(g, 1, y - 6, lw, 12, 'rgba(27,19,37,0.82)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
       g.globalAlpha = 1;
     }
     if (showAim) {

@@ -80,7 +80,9 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   await J(f, 'step', 600);
   await J(f, 'tap', 'back'); await J(f, 'step', 800);
   s = await state(f);
-  expect([s.screen, s.pos.x, s.pos.y]).toEqual(['world', 40, 57]);
+  // Cappy stands a step outside the arch's zone, so its button doesn't pop straight up again
+  expect([s.screen, s.prompt]).toEqual(['world', '']);
+  expect(Math.hypot(s.pos.x - 40, s.pos.y - 56)).toBeLessThan(4);
   // lose: play again and stand still (warm-up done, so straight into the match with Jada)
   await J(f, 'play', 'paddle'); await J(f, 'step', 4000);
   expect((await state(f)).sport.state.stage).toBe('match');

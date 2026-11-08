@@ -513,7 +513,8 @@
   function layout(ctx) {
     const W = ctx.W, H = ctx.H;
     S.z = Math.max(1, Math.min(3, Math.floor(Math.min((W - 16) / FW, H / 230))));
-    S.ox = Math.round(W / 2); S.baseY = Math.round(H * (H > W ? 0.72 : 0.74));
+    // on a touch screen the runners sit higher, so the floating joystick and PASS (bottom corners) never cover the team
+    S.ox = Math.round(W / 2); S.baseY = Math.round(H * (H > W ? (ctx.touch ? 0.6 : 0.72) : (ctx.touch ? 0.66 : 0.74)));
   }
   S.sx = x => Math.round(S.ox + x * S.z);
   S.sy = d => Math.round(S.baseY - (d - S.camD) * S.z);
@@ -593,7 +594,7 @@
         for (let x = fx0; x < fx1; x += 10 * z) { D.rect(g, x, y - z, 6 * z, 2 * z, '#1fc8a8'); D.rect(g, x + 2 * z, y + z, 2 * z, 2 * z, '#fff8e8'); }
         for (let s = 0; s < 2; s++) { const px = s ? fx1 : fx0 - 2 * z; D.rect(g, px, y - 22 * z, 2 * z, 22 * z, '#5e3820'); D.rect(g, px + 2 * z, y - 22 * z, 8 * z, 5 * z, '#1fc8a8'); }
       } else for (let x = fx0 + 2 * z; x < fx1; x += 10 * z) D.rect(g, x, y, 5 * z, z, 'rgba(255,248,232,0.5)');
-      text(g, S.marks[i], fx1 + 14 * z > ctx.W - 4 ? fx1 - 14 * z : fx1 + 14 * z, y - 6, MARK);
+      { const mw = textW(S.marks[i]) / 2 + 4; text(g, S.marks[i], clamp(fx1 + 14 * z, mw, ctx.W - mw), y - 6, MARK); }   // never clipped at the edge
     }
   }
   function drawAura(g, x, y, z) {
@@ -824,6 +825,6 @@
       /** A power-up right ahead of the mango, in its lane. */
       powerup(ctx, kind, dd) { const h = holder(); return !!addUp(kind === 'fire' ? 'fire' : 'bolt', h.x, h.d + (dd || 40)); },
     },
-    cheat(won) { return won ? { score: 6200, stars: 2, won: true, frac: 0.67 } : { score: 900, stars: 0, won: false, frac: 0.1 }; },
+    cheat(won) { S.over = true; S.won = !!won; return won ? { score: 6200, stars: 2, won: true, frac: 0.67 } : { score: 900, stars: 0, won: false, frac: 0.1 }; },
   });
 })();

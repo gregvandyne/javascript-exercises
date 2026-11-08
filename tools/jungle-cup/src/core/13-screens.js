@@ -256,10 +256,10 @@ function drawMapTab(g) {
     if (land && m) {
       const lw = Math.min(c === 1 ? 250 : 330, area.w * (c === 1 ? 0.55 : 0.66));
       const mw = area.w - lw - 6, fit = rowsH(c, r) + 14 <= listH;
-      if (fit && mw >= 90 && names(lw)) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; rh = r; found = true; break; }
+      if (fit && mw >= Math.max(90, MW * 0.7) && listH >= MH * 0.7 && names(lw)) { withMap = true; cols = c; listW = lw; mapW = mw; mapH = listH; rh = r; found = true; break; }
     } else if (m) {
       const mh = listH - 16 - rowsH(c, r) - 4;
-      if (mh >= 56 && names(area.w)) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; rh = r; found = true; break; }
+      if (mh >= MH * 0.7 && names(area.w)) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; rh = r; found = true; break; }
     } else if (((rowsH(c, r) + 16 <= listH) && names(area.w)) || last) { withMap = false; cols = c; listW = area.w; rh = r; found = true; break; }
   }
   if (!found || (cols > 1 && !oneLine(colW(listW, cols)) && !twoLine(colW(listW, cols)))) {
@@ -270,7 +270,8 @@ function drawMapTab(g) {
   }
   let mx = area.x, my = area.y, mw = 0, mh = 0;
   if (withMap) {
-    const sc = Math.max(0.5, Math.min(mapW / (MW * 2), mapH / (MH * 2)));
+    // (never under 0.35 scale: the layout above only offers the minimap when that much room is there)
+    const sc = Math.max(0.35, Math.min(mapW / (MW * 2), mapH / (MH * 2)));
     const k = sc >= 1 ? Math.floor(sc) : sc;
     mw = Math.round(MW * 2 * k); mh = Math.round(MH * 2 * k);
     mx = area.x + Math.round((mapW - mw) / 2); my = area.y;
@@ -290,6 +291,7 @@ function drawMapTab(g) {
     disc(g, mx + WORLD.totem.x * mk + mk / 2, my + WORLD.totem.y * mk, 2, '#a8703e');
     MAP.miniRect = { x: mx, y: my, k: mk };
     UI.addHit('mini', mx, my, mw, mh);
+    if (UI.showFocus && UI.focusedId() === 'mini') { g.strokeStyle = PAL.ink; g.lineWidth = 4; g.strokeRect(mx - 4, my - 4, mw + 8, mh + 8); g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(mx - 4, my - 4, mw + 8, mh + 8); }
     if (((MAP.t * 3) | 0) % 3) { const cx = mx + P.x * mk + mk / 2, cy = my + P.y * mk; disc(g, cx, cy, 4, PAL.ink); disc(g, cx, cy, 3, PAL.white); disc(g, cx, cy, 1, '#b0703e'); }
   }
   // the Feathers, then the rows
@@ -305,7 +307,7 @@ function drawMapTab(g) {
     const X = (dx, ww) => (RTL ? x + w - dx - (ww || 0) : x + dx);
     UI.addHit('go:' + id, x, y, w, rh);
     const focused = UI.showFocus && UI.focusedId() === 'go:' + id;
-    if (focused) rect(g, x - 2, y - 2, w + 4, rh + 4, PAL.r5);   // the keyboard / gamepad focus, as on the buttons
+    if (focused) { rect(g, x - 3, y - 3, w + 6, rh + 6, PAL.ink); rect(g, x - 2, y - 2, w + 4, rh + 4, '#ffd23f'); }   // the keyboard / gamepad focus, as on the buttons
     box(g, x, y, w, rh, focused ? '#fff3a8' : '#f0dca8', PAL.ink);
     rect(g, X(1, 4), y + 1, 4, rh - 2, SPORT_COLOURS[id]);
     const ic = iconSprite(id); spr(g, ic, X(8, ic.w), y + ((rh - ic.h) >> 1));
@@ -323,7 +325,8 @@ function drawMapTab(g) {
     g.globalAlpha = 1;
   }
   // "walk there first" when a sport not yet visited is tapped
-  if (MAP.msgT > 0) { const s = MAP.msg, w = Math.min(area.w - 8, textW(s) + 16), x = area.x + Math.round((area.w - w) / 2), y = area.y + area.h - bh - 26; box(g, x, y, w, 20, PAL.ink, PAL.ink); text(g, s, x + w / 2, y + 4, { col: PAL.white, align: 'center', maxW: w - 8 }); }
+  // (over the panel title, beside the close button: never over a sport row or the buttons)
+  if (MAP.msgT > 0) { const r0 = Math.max(10, (VIEW.tap / 2) | 0), s = MAP.msg, w = Math.min(area.w - r0 * 2 - 10, textW(s) + 16), x = RTL ? area.x + area.w - w : area.x, y = Math.max(6, area.y - r0 * 2 - 2 + Math.round(r0 - 10)); box(g, x, y, w, 20, PAL.ink, PAL.ink); text(g, s, x + w / 2, y + 4, { col: PAL.white, align: 'center', maxW: w - 8 }); }
   // buttons (right to left in Arabic and Hebrew)
   const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3), bx = i => (RTL ? area.x + (bw + 4) * (2 - i) : area.x + (bw + 4) * i);
   UI.button(g, 'settings', bx(0), by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });

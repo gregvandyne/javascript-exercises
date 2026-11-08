@@ -572,7 +572,7 @@
   }
 
   JC.register({
-    id: 'leaf',
+    id: 'leaf', introNote() { return t('ls.comboNote'); },
     champion: 'kiki',
     music: 'leaf',
     start(ctx) {

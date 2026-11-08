@@ -15,7 +15,7 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "settings.title": "せってい", "settings.sound": "サウンド", "settings.font": "もじ", "settings.pixel": "ドット", "settings.clear": "よみやすい",
   "settings.easy": "やさしいチャンピオン", "settings.easyHelp": "やさしいチャンピオンは、すこしゆっくりで、すこしミスがおおくなるよ。いつでもオンにできるよ。",
   "controls.title": "そうさ", "controls.touch": "タッチ", "controls.keys": "キーボード", "controls.pad": "ゲームパッド",
-  "controls.touch.body": "じゅうじボタンであるこう。Aをタップしてはなす、よむ、あそぶ。スポーツごとにボタンがあるよ。マップボタンでマップをひらくよ。",
+  "controls.touch.body": "ジョイスティックであるこう：ひだりがわにおやゆびをおいて、おしてね。Aをタップすると、はなす・よむ・あそぶ。スポーツごとにボタンがあるよ。ちずのボタンでちずがひらくよ。",
   "controls.keys.body": "やじるしキーかWASDであるく。スペースかエンターではなす・あそぶ。EscかBackspaceでもどる・ポーズ。",
   "controls.pad.body": "スティックかじゅうじボタンであるく。Aボタン（した）ではなす・あそぶ、Bでもどる。スタートでポーズ。",
   "style.title": "スタイル", "style.bandana": "バンダナ", "style.hat": "ぼうし", "style.flag": "いかだのはた",

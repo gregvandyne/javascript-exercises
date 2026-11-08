@@ -15,7 +15,7 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "settings.title": "Instellingen", "settings.sound": "Geluid", "settings.font": "Letters", "settings.pixel": "Pixel", "settings.clear": "Duidelijk",
   "settings.easy": "Makkelijkere kampioenen", "settings.easyHelp": "Makkelijkere kampioenen spelen iets langzamer en missen iets vaker. Zet het aan wanneer je wilt.",
   "controls.title": "Besturing", "controls.touch": "Aanraken", "controls.keys": "Toetsenbord", "controls.pad": "Controller",
-  "controls.touch.body": "Loop met het pijlkruis. Tik op A om te praten, te lezen en te spelen. Elke sport heeft eigen knoppen. De kaartknop opent de kaart.",
+  "controls.touch.body": "Loop met de joystick: zet je duim links neer en duw. Tik op A om te praten, te lezen en te spelen. Elke sport heeft eigen knoppen. De kaartknop opent de kaart.",
   "controls.keys.body": "Pijltjes of WASD om te lopen. Spatie of Enter om te praten en te spelen. Esc of Backspace om terug te gaan of te pauzeren.",
   "controls.pad.body": "Stick of pijlkruis om te lopen. Knop A (onder) om te praten en te spelen, B om terug te gaan. Start pauzeert.",
   "style.title": "Stijl", "style.bandana": "Bandana", "style.hat": "Hoed", "style.flag": "Vlotvlag",

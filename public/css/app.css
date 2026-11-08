@@ -367,6 +367,10 @@ textarea.input{min-height:96px;resize:vertical}
 .toast{background:var(--text);color:var(--bg);padding:12px 18px;border-radius:var(--r-sm);font-weight:700;box-shadow:var(--shadow-lg);animation:tin .25s ease-out;pointer-events:auto;text-align:center}
 .toast.bad{background:var(--danger);color:var(--on-danger)}
 .toasts.over-game .toast{pointer-events:none}
+/* Over a game the toasts sit small at the top, just under the play bar: never on a game's bottom controls, its
+   joystick, its text box or the buttons of its results card (games keep their top row for small HUDs, so the toast sits just below it). */
+.toasts.over-game{top:calc(52px + env(safe-area-inset-top,0px) + 64px);bottom:auto!important;width:auto;max-width:min(70vw,360px)}
+.toasts.over-game .toast{padding:6px 14px;font-size:.85rem;opacity:.94}
 @keyframes tin{from{transform:translateY(12px);opacity:0}}
 
 /* modal sheet */

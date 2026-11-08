@@ -15,7 +15,7 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "settings.title": "Ajustes", "settings.sound": "Som", "settings.font": "Letra", "settings.pixel": "Pixel", "settings.clear": "Clara",
   "settings.easy": "Campeões mais fáceis", "settings.easyHelp": "Campeões mais fáceis jogam um pouco mais devagar e erram um pouco mais. Ligue quando quiser.",
   "controls.title": "Controles", "controls.touch": "Toque", "controls.keys": "Teclado", "controls.pad": "Controle",
-  "controls.touch.body": "Ande com o direcional. Toque em A para falar, ler e jogar. Cada esporte tem seus próprios botões. O botão do mapa abre o mapa.",
+  "controls.touch.body": "Anda com o joystick: põe o polegar à esquerda e empurra. Toca em A para falar, ler e jogar. Cada desporto tem os seus botões. O botão do mapa abre o mapa.",
   "controls.keys.body": "Setas ou WASD para andar. Espaço ou Enter para falar e jogar. Esc ou Backspace para voltar ou pausar.",
   "controls.pad.body": "Alavanca ou direcional para andar. Botão A (embaixo) para falar e jogar, B para voltar. Start pausa.",
   "style.title": "Estilo", "style.bandana": "Bandana", "style.hat": "Chapéu", "style.flag": "Bandeira da jangada",

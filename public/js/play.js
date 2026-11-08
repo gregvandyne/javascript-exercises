@@ -172,7 +172,7 @@ addEventListener('message', e => {
     case 'brb:save': if (!d.canSave) return; pendingSave = m.data; if (!saveTimer) saveTimer = setTimeout(flushSave, 1500); break;
     case 'brb:score': {
       if (!d.canSave || Date.now() - lastScoreAt < 2000) return; lastScoreAt = Date.now();
-      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' }, active: playing() }).then(r => { if (r.improved && r.best > 0) toast(t('js.play.newBest', { score: r.best })); }).catch(() => {});
+      api(`/api/games/${d.gameId}/score`, { method: 'POST', body: { score: m.score, label: m.label || '' }, active: playing() }).then(r => { if (r.improved && r.best > 0) toast(t('js.play.newBest', { score: r.best }), { ms: 2200 }); }).catch(() => {});
       lessonEvent({ event: 'score', score: m.score, label: m.label || '' });
       break;
     }

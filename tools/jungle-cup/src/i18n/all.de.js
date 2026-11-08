@@ -15,7 +15,7 @@ I18N.de = Object.assign(I18N.de || {}, {
   "settings.title": "Einstellungen", "settings.sound": "Ton", "settings.font": "Schrift", "settings.pixel": "Pixel", "settings.clear": "Klar",
   "settings.easy": "Leichtere Champions", "settings.easyHelp": "Leichtere Champions spielen etwas langsamer und verfehlen etwas öfter. Du kannst es jederzeit einschalten.",
   "controls.title": "Steuerung", "controls.touch": "Touch", "controls.keys": "Tastatur", "controls.pad": "Gamepad",
-  "controls.touch.body": "Lauf mit dem Steuerkreuz. Tippe A zum Reden, Lesen und Spielen. Jede Sportart hat eigene Knöpfe. Der Kartenknopf öffnet die Karte.",
+  "controls.touch.body": "Lauf mit dem Joystick: Daumen links auflegen und schieben. Tippe auf A zum Reden, Lesen und Spielen. Jede Sportart zeigt ihre eigenen Knöpfe. Der Kartenknopf öffnet die Karte.",
   "controls.keys.body": "Pfeiltasten oder WASD zum Laufen. Leertaste oder Enter zum Reden und Spielen. Esc oder Rücktaste für zurück oder Pause.",
   "controls.pad.body": "Stick oder Steuerkreuz zum Laufen. Knopf A (unten) zum Reden und Spielen, B für zurück. Start pausiert.",
   "style.title": "Stil", "style.bandana": "Halstuch", "style.hat": "Hut", "style.flag": "Floßflagge",

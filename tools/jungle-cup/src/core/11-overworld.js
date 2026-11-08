@@ -21,6 +21,7 @@ OW.enter = function (opts) {
   applyShortcuts();
   TRAVEL.ride = null;
   if (opts && opts.at) placePlayer(opts.at[0], opts.at[1], opts.at[2]);
+  if (opts && opts.away && ARCHES[opts.away]) stepAway(ARCHES[opts.away]);
   OW.celebrate = opts && opts.celebrate ? { id: opts.celebrate, t: 0 } : null;
   if (OW.celebrate) { AUDIO.sfx('fanfare'); UI.confetti(VIEW.W / 2, VIEW.H / 3, 60); UI.banner(t('feather.won'), SPORT_COLOURS[OW.celebrate.id], 2.4); }
   OW.camSnap = true;
@@ -85,6 +86,19 @@ function updateTile() {
 function npcAt(x, y) { for (const n of WORLD.npcs) if (n.x === x && n.y === y) return n; return null; }
 function itemAt(x, y) { for (const it of WORLD.items) if (it.x === x && it.y === y && JC.questVisible(it)) return it; return null; }
 function signAt(x, y) { for (const s of WORLD.signs) if (s.x === x && s.y === y) return s; return null; }
+/** Back from a sport: Cappy stands a step outside the arch's zone (facing away), so its "Tap to play" button doesn't
+ *  pop straight up again and invite a second go by accident; one step back towards it brings it back. */
+function stepAway(a) {
+  const ax = a.x * TS + 8, ay = a.y * TS + 8;
+  const dirs = [[0, 1, 'down'], [-1, 0, 'left'], [1, 0, 'right'], [0.7, 0.7, 'down'], [-0.7, 0.7, 'down'], [0, -1, 'up'], [0.7, -0.7, 'up'], [-0.7, -0.7, 'up']];
+  for (let d = ARCH_IN + 4; d <= ARCH_IN + 24; d += 4) for (const [dx, dy, face] of dirs) {
+    const px = Math.round(ax + dx * d - 8), py = Math.round(ay + dy * d - 12);
+    if (feetHit(px, py)) continue;
+    P.fpx = px; P.fpy = py; P.px = px; P.py = py; P.dir = face; P.x = Math.floor((px + 8) / TS); P.y = Math.floor((py + 12) / TS); OW.prompt = '';
+    return true;
+  }
+  return false;
+}
 /* ---------- arches: a generous zone round each one (any side, any speed), kept a little longer once shown ---------- */
 const ARCH_IN = 24, ARCH_OUT = 32;
 function archDist(a) { return Math.hypot(feetX() - (a.x * TS + 8), feetY() - (a.y * TS + 8)); }
@@ -136,6 +150,8 @@ function act() {
   if (arch && !(tg && tg.kind === 'npc' && tg.d < 20 && tg.d < archDist(ARCHES[arch]))) { JC.playSport(arch); return; }
   // a ride or a shortcut right here (the swing, the zipline, the ferry, the ladder to kick, the log to push)
   if (TRAVEL.near && !(tg && tg.kind === 'npc' && tg.d < 20)) { TRAVEL.act(); return; }
+  // the open vine lift: a whole zone round it, like an arch
+  if (OW.liftNear && !(tg && tg.kind === 'npc' && tg.d < 20)) { rideLift(); return; }
   if (!tg) return;
   if (tg.kind === 'npc') {
     const n = tg.ref, vx = n.x * TS + 8 - feetX(), vy = n.y * TS + 8 - feetY();
@@ -149,13 +165,14 @@ function act() {
   if (tg.kind === 'sign') { JC.say([{ who: 'sign', key: tg.ref.key }]); return; }
   if (tg.kind === 'lift') {
     const f = SAVE.featherCount();
-    if (f >= NSPORTS) JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale'));
+    if (f >= NSPORTS) rideLift();
     else JC.say([{ who: 'lift', key: 'lift.locked', vars: { n: f } }]);
     return;
   }
   if (tg.kind === 'item') pickItem(tg.ref);
 }
 JC.act = act;
+function rideLift() { JC.say([{ who: 'lift', key: 'lift.open' }], () => JC.go('finale')); }
 /* ---------- touch controls (virtual pixels): the floating joystick and A ---------- */
 const PAD = { ax: 0, ay: 0, ar: 0 };
 function layoutPad() {
@@ -183,6 +200,7 @@ OW.onInput = function (e) {
     if (hit === 'map') { AUDIO.sfx('select'); JC.go('map'); }
     else if (hit === 'prompt' && OW.prompt) JC.playSport(OW.prompt);
     else if (hit === 'trav' && TRAVEL.near) TRAVEL.act();
+    else if (hit === 'lift' && OW.liftNear) rideLift();
   }
 };
 OW.leave = function () { OW.aPtr = -1; INPUT.releaseTouch(); };
@@ -222,6 +240,8 @@ OW.update = function (dt) {
   // the arch prompt (and the arch counts as visited: the map can bring Cappy back here)
   OW.prompt = TB.open || riding ? '' : archNear();
   if (OW.prompt && !SAVE.data.flags['v_' + OW.prompt]) { SAVE.data.flags['v_' + OW.prompt] = 1; SAVE.soon(); }
+  // with every Feather the lift answers from a generous zone round its plank, from any side
+  OW.liftNear = !OW.prompt && !TB.open && !riding && SAVE.featherCount() >= NSPORTS && Math.hypot(feetX() - (WORLD.lift.x * TS + 8), feetY() - (WORLD.lift.y * TS + 10)) <= 30;
   // the rope bridge sways a little under Cappy (the camera too, unless motion is reduced)
   OW.sway = TRAVEL.feetTile() === WORLD.T.ROPE ? Math.sin(OW.time * 4.5) : 0;
   WORLD.warm(CAM.x, CAM.y, VIEW.W, VIEW.H);
@@ -297,7 +317,10 @@ function drawLift(g, x, y) {
     // a knot of vines with an empty feather badge
     rect(g, x + 1, y + 2, 14, 2, '#2a7a30'); rect(g, x + 6, y, 4, 6, '#3d9a2e');
     text(g, label('lift.n', SAVE.featherCount()), x + 8, y - 12, { align: 'center', col: PAL.white, edge: PAL.ink });
-  } else if (((OW.time * 3) | 0) % 2) spr(g, SPRITES.sparkle, x + 5, y - 6);
+  } else {
+    text(g, label('lift.n', SAVE.featherCount()), x + 8, y - 12, { align: 'center', col: '#ffd23f', edge: PAL.ink });
+    if (((OW.time * 3) | 0) % 2) spr(g, SPRITES.sparkle, x + 5, y - 6);
+  }
 }
 function drawTotemSockets(g, ox, oy) {
   const sk = totemSockets();
@@ -356,7 +379,7 @@ OW.draw = function (g) {
   TRAVEL.drawHigh(g, cx, cy, VIEW.W, VIEW.H);
   TRAVEL.drawDark(g, cx, cy, VIEW.W, VIEW.H);
   // the "talk" hint above someone Cappy faces
-  if (!TB.open && TARGET.kind && TARGET.kind !== 'item' && !OW.prompt && !TRAVEL.near && !TRAVEL.ride) {
+  if (!TB.open && TARGET.kind && TARGET.kind !== 'item' && !OW.prompt && !OW.liftNear && !TRAVEL.near && !TRAVEL.ride) {
     const fx = TARGET.tx, fy = TARGET.ty;
     {
       const bx = fx * TS + 8 - cx, by = fy * TS - 14 - cy + (((OW.time * 2) | 0) % 2);
@@ -400,8 +423,13 @@ OW.drawHud = function (g) {
     const w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(long ? 28 : 22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
     UI.button(g, 'prompt', x, y, w, h, msg, { col: SPORT_COLOURS[sp], tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
   }
+  // the open vine lift: a big button like the arches'
+  if (OW.liftNear && !TB.open) {
+    const msg = t('lift.ride'), w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
+    UI.button(g, 'lift', x, y, w, h, msg, { col: '#c8961e', tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
+  }
   // a ride or a shortcut right here: the same big button (tap it, or A / Space)
-  if (!OW.prompt && TRAVEL.near && !TB.open && !TRAVEL.ride) {
+  if (!OW.prompt && !OW.liftNear && TRAVEL.near && !TB.open && !TRAVEL.ride) {
     const msg = TRAVEL.label(), w = Math.min(VIEW.W - 20, textW(msg) + 30), h = Math.max(22, VIEW.tap), x = Math.round((VIEW.W - w) / 2), y = Math.round(VIEW.H * 0.2);
     UI.button(g, 'trav', x, y, w, h, msg, { col: '#3d8a3a', tcol: PAL.white, icon: UI.icons.play, glow: BRBX.reduced() || ((OW.time * 2) | 0) % 2 === 0 });
   }

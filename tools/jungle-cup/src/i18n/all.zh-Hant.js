@@ -15,7 +15,7 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "settings.title": "設定", "settings.sound": "聲音", "settings.font": "文字", "settings.pixel": "像素", "settings.clear": "清楚",
   "settings.easy": "簡單一點的冠軍", "settings.easyHelp": "簡單一點的冠軍動作會慢一些，也比較常失誤。隨時都可以打開。",
   "controls.title": "操作", "controls.touch": "觸控", "controls.keys": "鍵盤", "controls.pad": "手把",
-  "controls.touch.body": "用方向鍵走路。點 A 來說話、閱讀和遊玩。每種運動都有自己的按鈕。地圖按鈕會打開地圖。",
+  "controls.touch.body": "用搖桿走路：把拇指放在左邊再推。點 A 可以說話、閱讀和開始遊戲。每項運動都有自己的按鈕。地圖按鈕會打開地圖。",
   "controls.keys.body": "用方向鍵或 WASD 走路。按空白鍵或 Enter 說話和遊玩。按 Esc 或 Backspace 返回或暫停。",
   "controls.pad.body": "用搖桿或十字鍵走路。A 鍵（下方）說話和遊玩，B 鍵返回。Start 暫停。",
   "style.title": "造型", "style.bandana": "頭巾", "style.hat": "帽子", "style.flag": "木筏旗子",

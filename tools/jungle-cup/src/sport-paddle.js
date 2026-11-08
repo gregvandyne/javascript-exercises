@@ -219,7 +219,7 @@
   /** Jada (or a marmoset) decides, as the ball leaves Cappy's paddle, whether this one comes back. */
   function decideThem(ctx, b, q) {
     // a better hit is harder to get back, and so is one placed away from her
-    let p = q > 0.62 ? 0.87 : q > 0.34 ? 0.93 : 0.97;
+    let p = q > 0.62 ? 0.89 : q > 0.34 ? 0.94 : 0.97;
     if (warm()) p -= 0.14; else if (ctx.easy) p -= 0.1;
     if (Math.abs(b.tx || 0) > 14 && Math.sign(b.tx) !== Math.sign(S.jx || 1)) p -= 0.07;
     if (S.rally > 10) p -= (S.rally - 10) * 0.03;
@@ -598,10 +598,11 @@
   const FITC = { src: '', w: 0, clear: null, out: '' }, WARMC = { align: 'center', col: PAL.r4 };
   function textFit(g, str, cx, y, w) {
     if (FITC.src !== str || FITC.w !== w || FITC.clear !== TEXT.clear) {
-      let o = str; while (o.length > 4 && textW(o) > w) o = o.slice(0, -2) + '…';
+      // narrowed to fit first (Japanese, German); only a very long label is also shortened
+      let o = str; while (o.length > 4 && textW(o) * 0.68 > w) o = o.slice(0, -2) + '…';
       FITC.src = str; FITC.w = w; FITC.clear = TEXT.clear; FITC.out = o;
     }
-    text(g, FITC.out, cx, y, WARMC);
+    WARMC.maxW = w; text(g, FITC.out, cx, y, WARMC);
   }
   const FITL = { src: '', w: 0, clear: null, out: '' };
   function textFitL(g, str, x, y, w) {
@@ -650,11 +651,12 @@
       // and the Swing button
       const bs = swingSize(ctx), wide = !S.port;
       const hx = wide && ctx.touch ? Math.round(W * 0.22) : 6;
-      const wMax = wide && ctx.touch ? W - bs - 16 - hx - 4 : W - 12, n = hintLines(str, wMax), LH = JC.font.LINE_H;
+      // the words keep a margin inside their dark bar (Chinese and Japanese wrap right up to the edge otherwise)
+      const wMax = wide && ctx.touch ? W - bs - 16 - hx - 4 : W - 12, n = hintLines(str, wMax - 10), LH = JC.font.LINE_H;
       const by = wide ? (my > H / 2 ? my - 6 : H - 6) - n * LH : 56;
       g.globalAlpha = clamp(S.hint * 2, 0, 1);
       JC.draw.box(g, hx - 2, by - 2, wMax + 4, n * LH + 4, 'rgba(27,19,37,0.72)', 'rgba(27,19,37,0.72)');
-      textBlock(g, str, hx, by, wMax, HINT); g.globalAlpha = 1;
+      textBlock(g, str, hx + 5, by, wMax - 10, HINT); g.globalAlpha = 1;
     }
   }
 

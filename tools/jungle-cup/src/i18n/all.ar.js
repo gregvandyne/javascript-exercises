@@ -15,7 +15,7 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "settings.title": "الإعدادات", "settings.sound": "الصوت", "settings.font": "نمط الخط", "settings.pixel": "بكسل", "settings.clear": "واضح",
   "settings.easy": "أبطال أسهل", "settings.easyHelp": "الأبطال الأسهل يلعبون أبطأ قليلًا ويخطئون أكثر قليلًا. شغّلها متى شئت.",
   "controls.title": "التحكم", "controls.touch": "اللمس", "controls.keys": "لوحة المفاتيح", "controls.pad": "يد التحكم",
-  "controls.touch.body": "امشِ بلوحة الأسهم. انقر A للتحدث والقراءة واللعب. لكل رياضة أزرارها. زر الخريطة يفتح الخريطة.",
+  "controls.touch.body": "امشِ بعصا التحكم: ضع إبهامك على اليسار وادفع. اضغط A للتحدث والقراءة واللعب. لكل رياضة أزرارها الخاصة. زر الخريطة يفتح الخريطة.",
   "controls.keys.body": "الأسهم أو WASD للمشي. المسافة أو Enter للتحدث واللعب. Esc أو Backspace للرجوع أو الإيقاف المؤقت.",
   "controls.pad.body": "العصا أو لوحة الأسهم للمشي. الزر A (السفلي) للتحدث واللعب، وB للرجوع. Start للإيقاف المؤقت.",
   "style.title": "المظهر", "style.bandana": "عصابة الرأس", "style.hat": "القبعة", "style.flag": "علم الطوف",
