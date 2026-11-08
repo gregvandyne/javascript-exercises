@@ -271,6 +271,11 @@ keep playing the old, approved version; the new one is public only once a person
   on a game, it is hidden automatically until an admin looks.
 - Admins have a review queue with a preview and the safety report, can approve or reject with a note the builder sees,
   hide, suspend, ban, and read the audit log. Every moderation action is written to the audit log.
+- The platform admin (only) sees user analytics: every account's last login and last active, days active, plays,
+  games built, AI Builder messages, course steps and live games, and per person a 30-day activity chart and timeline
+  (sign-ins, games started and published, plays). Counts, dates and game titles only: never passwords, tokens, IPs,
+  browsers, chat text or what a child asked the Builder; sign-ins and active days are kept 400 days and deleted with
+  the account (docs/decisions.md "Admin: user analytics").
 
 ## 8. Chat is friends-only
 

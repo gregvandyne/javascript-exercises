@@ -631,6 +631,38 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS announcements_at ON announcements(created_at);
     CREATE INDEX IF NOT EXISTS plays_user ON plays(user_id, started_at);
     ${GRANDFATHER_SQL}`],
+  // User analytics for the platform admin (docs/decisions.md "Admin: user analytics"; services/admin-analytics.js).
+  // Sessions are deleted when someone signs out or a sign-in ends, so they can't tell when someone last signed in:
+  // - users.last_login_at: the latest sign-in (auth.startSession, never for guests);
+  // - sign_ins: one row per sign-in with how (password, google, switch, signup; '' for rows copied from old sessions),
+  //   no IP and no browser; kept 400 days;
+  // - user_days: one row per account per UTC day it was used (a sign-in or any signed-in request), for "days active"
+  //   and DAU / WAU / MAU; kept 400 days. Guests write neither.
+  // Backfill: last_login_at from the newest session still stored, else the sign-up itself for accounts people made for
+  // themselves; sign_ins from stored sessions; user_days from plays, Builder messages, stored sessions, course and Number
+  // Quest activity, the last-seen day of anyone who signed in and the sign-up day of self sign-ups. Older history is
+  // only as good as those rows. plays_user_game: plays and distinct games per player read from the index alone.
+  ['0056_user_analytics', `
+    ALTER TABLE users ADD COLUMN last_login_at INTEGER NOT NULL DEFAULT 0;
+    UPDATE users SET last_login_at=COALESCE((SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id=users.id),
+      CASE WHEN made_by IS NULL AND managed_school='' THEN created_at ELSE 0 END) WHERE is_guest=0;
+    CREATE TABLE IF NOT EXISTS sign_ins (user_id TEXT NOT NULL, at INTEGER NOT NULL, method TEXT NOT NULL DEFAULT '');
+    CREATE INDEX IF NOT EXISTS sign_ins_user ON sign_ins(user_id, at);
+    CREATE INDEX IF NOT EXISTS sign_ins_at ON sign_ins(at);
+    INSERT INTO sign_ins(user_id, at, method) SELECT s.user_id, s.created_at, CASE WHEN s.via='switch' THEN 'switch' ELSE '' END
+      FROM sessions s JOIN users u ON u.id=s.user_id WHERE u.is_guest=0;
+    CREATE TABLE IF NOT EXISTS user_days (user_id TEXT NOT NULL, day TEXT NOT NULL, PRIMARY KEY (user_id, day)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS user_days_day ON user_days(day);
+    INSERT OR IGNORE INTO user_days SELECT p.user_id, strftime('%Y-%m-%d', p.started_at / 1000, 'unixepoch') FROM plays p JOIN users u ON u.id=p.user_id WHERE u.is_guest=0;
+    INSERT OR IGNORE INTO user_days SELECT b.user_id, b.day FROM builder_usage b JOIN users u ON u.id=b.user_id WHERE u.is_guest=0 AND b.turns>0;
+    INSERT OR IGNORE INTO user_days SELECT s.user_id, strftime('%Y-%m-%d', s.created_at / 1000, 'unixepoch') FROM sessions s JOIN users u ON u.id=s.user_id WHERE u.is_guest=0;
+    INSERT OR IGNORE INTO user_days SELECT s.user_id, strftime('%Y-%m-%d', s.last_active / 1000, 'unixepoch') FROM sessions s JOIN users u ON u.id=s.user_id WHERE u.is_guest=0 AND s.last_active>0;
+    INSERT OR IGNORE INTO user_days SELECT c.user_id, strftime('%Y-%m-%d', COALESCE(c.completed_at, c.checked_at, c.read_at, c.played_at) / 1000, 'unixepoch')
+      FROM course_progress c JOIN users u ON u.id=c.user_id WHERE u.is_guest=0 AND COALESCE(c.completed_at, c.checked_at, c.read_at, c.played_at)>1;
+    INSERT OR IGNORE INTO user_days SELECT a.user_id, a.day FROM nq_daily_activity a JOIN users u ON u.id=a.user_id WHERE u.is_guest=0;
+    INSERT OR IGNORE INTO user_days SELECT id, strftime('%Y-%m-%d', last_seen / 1000, 'unixepoch') FROM users WHERE is_guest=0 AND last_login_at>0 AND last_seen>0;
+    INSERT OR IGNORE INTO user_days SELECT id, strftime('%Y-%m-%d', created_at / 1000, 'unixepoch') FROM users WHERE is_guest=0 AND made_by IS NULL AND managed_school='';
+    CREATE INDEX IF NOT EXISTS plays_user_game ON plays(user_id, game_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

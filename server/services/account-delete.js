@@ -13,7 +13,8 @@
 //   5. the child's games, hard deleted: versions, Builder chats, uploads, saves, scores, plays, ratings, likes, class
 //      shares and reports on them;
 //   6. the child's rows on other games: saves, scores, ratings and likes (the games' totals adjusted), and their course
-//      progress and band (services/courses.js); plays and the reports they filed are kept without their user id;
+//      progress and band (services/courses.js), and the admin's activity rows (sign_ins, user_days); plays and the
+//      reports they filed are kept without their user id;
 //   7. Builder turns keep only what the family and AI-spend totals add up from (id, user, charged to, day, weight,
 //      refunded); their request text goes. The per-day counters (builder_usage, ai_usage) hold no content and stay;
 //   8. the profile photo; 9. Google sign-in rows, invites and class join requests;
@@ -77,7 +78,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // 6. the child's rows on other games
     for (const r of q.all('SELECT game_id FROM likes WHERE user_id=?', u.id)) q.run('UPDATE games SET likes=MAX(0, likes-1) WHERE id=?', r.game_id);
     for (const r of q.all('SELECT game_id, stars FROM ratings WHERE user_id=?', u.id)) q.run('UPDATE games SET rating_sum=MAX(0, rating_sum-?), rating_count=MAX(0, rating_count-1) WHERE id=?', r.stars, r.game_id);
-    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands', 'course_pending_wins', 'nq_xp_events', 'nq_daily_goals', 'nq_daily_activity', 'nq_laps', 'nq_placement', 'nq_sort_runs', 'nq_testout']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+    for (const tbl of ['saves', 'scores', 'ratings', 'likes', 'builder_uploads', 'course_progress', 'course_bands', 'course_pending_wins', 'nq_xp_events', 'nq_daily_goals', 'nq_daily_activity', 'nq_laps', 'nq_placement', 'nq_sort_runs', 'nq_testout', 'user_days', 'sign_ins']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
     q.run('DELETE FROM stories WHERE owner_id=?', u.id);   // Story Builder videos (their files go after the commit)
     q.run('DELETE FROM story_edits WHERE owner_id=?', u.id);   // their story changes (for the daily limits)
     q.run('UPDATE plays SET user_id=NULL WHERE user_id=?', u.id);

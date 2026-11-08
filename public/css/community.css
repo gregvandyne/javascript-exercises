@@ -145,9 +145,9 @@ details.chatsafety p{margin:6px 0 0}
 .nu-spark figcaption{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;color:var(--text)}
 .nu-spark svg{display:block;inline-size:100%;block-size:56px;margin-block:8px 4px}
 .nu-spark .xaxis{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)}
-.nu-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;align-items:end;margin-block:16px 12px}
+.nu-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:12px;align-items:end;margin-block:16px 12px}
 .nu-filters .field{margin:0}
-.nu-go{gap:8px}
+.nu-go{gap:8px;grid-column:1/-1}
 .nu-quick{margin-bottom:8px}
 .nu-quick .chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .nu-who{display:flex;align-items:center;gap:8px;color:var(--text);min-width:0}

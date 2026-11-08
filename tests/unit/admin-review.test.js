@@ -14,6 +14,11 @@ const mod = await import('../../server/services/moderation.js');
 const chat = await import('../../server/services/chat.js');
 const team = await import('../../server/services/team.js');
 const AU = await import('../../server/services/admin-users.js');
+const AA = await import('../../server/services/admin-analytics.js');
+/** The old New users filters ({ range, type, search, page }) on the All users list. */
+const asFilters = f => AA.cleanFilters({ joined: f.range, type: f.type, q: f.search, page: f.page, sort: 'joined' });
+const listNew = (f, o) => AA.listUsers(asFilters(f), o);
+const newCsv = f => AA.usersCsv(asFilters(f));
 const F = await import('../../server/services/family.js');
 const S = await import('../../server/services/schools.js');
 const { config } = await import('../../server/config.js');
@@ -297,25 +302,25 @@ test('new users: newest first, filters, search, paging; guests and the team acco
   const a = mk('NuKid'); const b = mk('NuGrown', { accountType: 'grownup' }); const c = mk('NuOld');
   const guest = auth.createGuest();
   q.run('UPDATE users SET created_at=? WHERE id=?', t0 - 20 * 86400e3, c.id);
-  let r = AU.listNewUsers({ range: '7d' }, { perPage: 500 });
+  let r = listNew({ range: '7d' }, { perPage: 500 });
   const ids = r.rows.map(x => x.id);
   assert.ok(ids.includes(a.id) && ids.includes(b.id)); assert.ok(!ids.includes(c.id), 'older than 7 days');
   assert.ok(!ids.includes(guest.id)); assert.ok(!r.rows.some(x => x.username === auth.OFFICIAL));
   assert.ok(r.rows.every((x, i) => i === 0 || r.rows[i - 1].created_at >= x.created_at), 'newest first');
-  assert.ok(AU.listNewUsers({ range: '30d' }, { perPage: 500 }).rows.some(x => x.id === c.id));
-  r = AU.listNewUsers({ range: 'all', type: 'grownup' }, { perPage: 500 });
+  assert.ok(listNew({ range: '30d' }, { perPage: 500 }).rows.some(x => x.id === c.id));
+  r = listNew({ range: 'all', type: 'grownup' }, { perPage: 500 });
   assert.ok(r.rows.every(x => x.type === 'grownup')); assert.ok(r.rows.some(x => x.id === b.id));
-  r = AU.listNewUsers({ range: 'all', search: 'NuKid' });
+  r = listNew({ range: 'all', search: 'NuKid' });
   assert.ok(r.rows.some(x => x.id === a.id)); assert.ok(r.rows.every(x => /nukid/i.test(x.username + x.display_name)));
-  assert.equal(AU.listNewUsers({ range: 'all', search: '%' }).total, 0, 'LIKE wildcards are literal');
+  assert.equal(listNew({ range: 'all', search: '%' }).total, 0, 'LIKE wildcards are literal');
   // Paging.
-  const p1 = AU.listNewUsers({ range: 'all' }, { perPage: 2 }); const p2 = AU.listNewUsers({ range: 'all', page: 2 }, { perPage: 2 });
+  const p1 = listNew({ range: 'all' }, { perPage: 2 }); const p2 = listNew({ range: 'all', page: 2 }, { perPage: 2 });
   assert.equal(p1.rows.length, 2); assert.ok(p1.pages >= 2); assert.notEqual(p1.rows[0].id, p2.rows[0].id);
   // No secrets ever: rows carry no password hash, friend code or session.
   for (const row of p1.rows) for (const k of ['password_hash', 'friend_code', 'lang']) assert.equal(k in row, false);
   // Kid linked to a parent shows the parent; a banned account is "suspended".
   const parent = linkParent(a); q.run('UPDATE users SET banned=1 WHERE id=?', c.id);
-  r = AU.listNewUsers({ range: 'all' }, { perPage: 1000 });
+  r = listNew({ range: 'all' }, { perPage: 1000 });
   assert.equal(r.rows.find(x => x.id === a.id).parent, parent.username);
   assert.equal(r.rows.find(x => x.id === c.id).status, 'suspended');
   // Sign-ups per day: 30 days, zeros included, today counted.
@@ -328,9 +333,9 @@ test('new users: counts of games, public games and plays; CSV is spreadsheet-saf
   q.run("UPDATE users SET display_name='=HYPERLINK(\"x\")' WHERE id=?", maker.id);
   const g = games.createGame(maker.id, { title: 'Counted' }); const v = games.addVersion(g.id, GOOD);
   q.run("UPDATE games SET status='published', visibility='public', published_version_id=?, plays=7 WHERE id=?", v.id, g.id);
-  const row = AU.listNewUsers({ range: 'all', search: maker.username }).rows[0];
+  const row = listNew({ range: 'all', search: maker.username }).rows[0];
   assert.equal(row.games_made, 1); assert.equal(row.games_public, 1); assert.equal(row.plays_of_games, 7);
-  const csv = AU.newUsersCsv({ range: 'all', search: maker.username });
+  const csv = newCsv({ range: 'all', search: maker.username });
   assert.match(csv, /'=HYPERLINK/, 'a formula is never run by a spreadsheet');
   assert.doesNotMatch(csv, /\$2[aby]\$/, 'no password hashes');
   const res = await req(`/admin/new-users.csv?range=all&q=${maker.username}`, { user: admin });
