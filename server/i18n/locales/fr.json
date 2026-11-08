@@ -1502,7 +1502,9 @@
     "class": "{count, plural, one {En ligne pour {name} ! Tout le monde dans ta classe peut le trouver et y jouer.} other {En ligne pour tes classes ! Tout le monde dedans peut le trouver et y jouer.}}",
     "schoolOnly": "Ton école garde les jeux à l’intérieur de l’école. Partage-le plutôt avec ton école.",
     "liveFamily": "En ligne pour votre famille ! Vous et les enfants liés à votre famille pouvez y jouer.",
-    "liveConnections": "Partagé avec vos contacts adultes ! Seuls vous et eux pouvez y jouer."
+    "liveConnections": "Partagé avec vos contacts adultes ! Seuls vous et eux pouvez y jouer.",
+    "waitingTeam": "Tes amis peuvent déjà y jouer ! Quelqu'un de l'équipe Oomba vérifie chaque jeu avant que tout le monde puisse y jouer. On t'enverra un message quand ce sera fait.",
+    "waitingTeamGrownup": "Vos contacts adultes peuvent déjà y jouer. Quelqu'un de l'équipe Oomba vérifie chaque jeu avant que tout le monde puisse y jouer, et nous vous enverrons un message quand ce sera fait."
   },
   "builder": {
     "kindRefusal": "Je ne peux pas t’aider pour ça. Créons plutôt quelque chose d’amusant ! Quel genre de jeu aimerais-tu ?",
@@ -1762,7 +1764,8 @@
       "blockTitle": "Bloquer {name} ?",
       "blockText": "Tu ne verras plus les messages de {name}, et {name} ne pourra plus t’en envoyer. Vous restez amis, et tu peux annuler le blocage sur la page Amis.",
       "block": "Bloquer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "verified": "Équipe Oomba vérifiée"
     },
     "studio": {
       "docTitle": "Studio : {title} · Oomba Academy",
@@ -1823,7 +1826,9 @@
         "publishFirst": "Publie-le, puis tu pourras le lancer en direct.",
         "teacher": "Un prof ou un adulte peut le lancer en direct pour ta classe. Partage-le d’abord avec ta classe.",
         "notYet": "Pas encore prêt pour le direct : {issue}.",
-        "make": "En faire un jeu de classe en direct"
+        "make": "En faire un jeu de classe en direct",
+        "waitingReview": "En attente de vérification",
+        "teamCheck": "Quelqu'un de l'équipe Oomba vérifie chaque jeu avant que tout le monde puisse y jouer. Tu peux continuer à jouer, à partager avec tes amis et à modifier. On t'enverra un message quand ce sera fait."
       },
       "safety": {
         "chipPass": "Sûr",
@@ -6268,6 +6273,48 @@
       "failed": "La nouvelle version n’a pas marché, alors ton histoire reste comme avant.",
       "keepOld": "Garder l’ancienne",
       "asksAgain": "Après un changement, un adulte ou ton enseignant devra redire OK avant que d’autres puissent la regarder."
+    }
+  },
+  "review": {
+    "reasons": {
+      "characters": "Utilise tes propres personnages, pas ceux de films, de séries ou d'autres jeux.",
+      "people": "N'utilise pas les noms ou les photos de vraies personnes dans ton jeu.",
+      "scary": "C'est un peu trop effrayant ou brutal pour les plus jeunes. Tu peux le rendre plus gentil ?",
+      "words": "Change quelques mots pour que le jeu soit gentil et sympa pour tout le monde.",
+      "personal": "Enlève tout ce qui demande aux joueurs leur nom, leur âge ou l'endroit où ils habitent.",
+      "brands": "Enlève les vraies marques et les logos.",
+      "flashing": "Rends les clignotements plus lents ou plus doux. Une lumière qui clignote vite peut faire mal aux yeux de certains joueurs.",
+      "broken": "Nous n'avons pas réussi à le faire marcher. Joue-y toi-même, puis demande au Constructeur de réparer ce qui ne va pas.",
+      "other": "Fais d'abord quelques changements."
+    }
+  },
+  "team": {
+    "name": "Équipe Oomba",
+    "verified": "Équipe Oomba vérifiée",
+    "sub": "Les messages des personnes qui font Oomba Academy",
+    "empty": "Pas encore de messages. Les nouvelles de tes jeux apparaîtront ici.",
+    "safety": {
+      "child": "Ces messages viennent de l'équipe Oomba. Ton adulte peut les voir aussi. Ne donne jamais ton mot de passe, ton adresse ou ton numéro de téléphone, même pas à nous.",
+      "grownup": "Messages de l'équipe Oomba. Nous ne vous demanderons jamais votre mot de passe. Quand nous écrivons à un enfant lié à vous, vous en recevez une copie ici, ainsi que de ses réponses."
+    },
+    "cant": {
+      "guest": "Crée un compte gratuit pour recevoir les messages de l'équipe Oomba.",
+      "banned": "Ton compte est en pause.",
+      "notYet": "Tu pourras répondre ici quand l'équipe Oomba t'aura envoyé un message.",
+      "noGrownup": "Tu peux lire ici les messages de l'équipe Oomba. Pour répondre, demande à un adulte de se lier à ton compte.",
+      "block": "Tu ne peux pas bloquer l'équipe Oomba. Si un message t'inquiète, signale-le ou parles-en à un adulte."
+    },
+    "copy": {
+      "to": "Copie : nous avons écrit à {name} :",
+      "from": "Copie : {name} nous a écrit :"
+    },
+    "notice": {
+      "approved": "Bonne nouvelle ! « {title} » a passé la vérification de l'équipe Oomba : plus de monde peut y jouer maintenant.",
+      "sentBack": "« {title} » a besoin de quelques changements avant que tout le monde puisse y jouer."
+    },
+    "link": {
+      "new": "{count, plural, one {# nouveau message de l'équipe Oomba} other {# nouveaux messages de l'équipe Oomba}}",
+      "open": "Messages de l'équipe Oomba"
     }
   }
 }

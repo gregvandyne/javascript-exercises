@@ -24,6 +24,15 @@ export const now = () => Date.now();
 export const uid = (n = 12) => crypto.randomBytes(24).toString('base64url').replace(/[^a-zA-Z0-9]/g, '').slice(0, n);
 export const today = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
 
+/** Migration 0055: the live version of every game that is public now counts as approved by the team for everyone. Safe
+ *  to run again (the tests run it on rows they made). */
+export const GRANDFATHER_SQL = `UPDATE game_versions SET review_status='approved', review_report=json_set(
+      CASE WHEN json_valid(review_report) THEN review_report ELSE '{}' END,
+      '$.was', json_extract(CASE WHEN json_valid(review_report) THEN review_report ELSE '{}' END, '$.by'),
+      '$.verdict', 'allowed', '$.by', 'admin', '$.for', 'public', '$.grandfathered', 1)
+    WHERE id IN (SELECT published_version_id FROM games WHERE visibility='public' AND published_version_id IS NOT NULL
+      AND status IN ('published', 'suspended'))
+    AND NOT (review_status='approved' AND json_valid(review_report) AND json_extract(review_report, '$.by')='admin' AND json_extract(review_report, '$.for')='public');`;
 export const MIGRATIONS = [
   ['0001_init', `
   CREATE TABLE IF NOT EXISTS users (
@@ -605,6 +614,23 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS story_edits (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id TEXT NOT NULL, owner_id TEXT NOT NULL,
       kind TEXT NOT NULL, created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS story_edits_owner ON story_edits(owner_id, created_at);`],
+  // Oomba admin approval before a game is public, and the Oomba team inbox (docs/decisions.md "Admin approval before a
+  // game goes public" and "Admin messages: the Oomba team inbox"; services/publish.js, services/team.js).
+  // Grandfathering: the version every game that is public today plays is marked approved by the team for everyone
+  // (review_report by 'admin', for 'public', grandfathered 1, the earlier reviewer kept in 'was'), so nothing already public
+  // is taken down and moving one off public and back needs no new review. Seed games are approved the same way.
+  // games.review_reason: the preset reason a game was sent back with (chat.js REVIEW_REASONS; shown in the builder's
+  // language next to review_note). chat_messages.sent_by: the admin behind a team message (NULL for automatic notices).
+  // announcements: one row per announcement (the fan-out is one 'announce' message per person). plays_user: the new-users
+  // list counts plays per person.
+  ['0055_admin_review', `
+    ALTER TABLE games ADD COLUMN review_reason TEXT NOT NULL DEFAULT '';
+    ALTER TABLE chat_messages ADD COLUMN sent_by TEXT;
+    CREATE TABLE IF NOT EXISTS announcements (id TEXT PRIMARY KEY, sent_by TEXT NOT NULL, audience TEXT NOT NULL, school_id TEXT,
+      body TEXT NOT NULL, recipients INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS announcements_at ON announcements(created_at);
+    CREATE INDEX IF NOT EXISTS plays_user ON plays(user_id, started_at);
+    ${GRANDFATHER_SQL}`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
