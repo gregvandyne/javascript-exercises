@@ -431,3 +431,11 @@ test('unsend: an admin takes back a team message (and the grown-up copies) or a 
   assert.equal(team.recentAnnouncements(5).find(x => x.id === sent.id).unsent, 1);
   assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.announce.unsend' AND target=?", sent.id));
 });
+
+test('team messages keep their line breaks (paragraphs and bullet lines), at most one blank line in a row', () => {
+  const kid = mk('Lines');
+  const r = team.sendDirect(admin, kid, 'Hi Sam,\r\n\r\n\r\n\r\nA few things:\n• Play\n•   Build   games\n\nBest, Greg');
+  assert.equal(r.ok, true);
+  assert.equal(q.get('SELECT body FROM chat_messages WHERE id=?', r.id).body, 'Hi Sam,\n\nA few things:\n• Play\n• Build games\n\nBest, Greg');
+  assert.equal(team.cleanBody('one‮two\nthree'), 'one two\nthree');
+});
