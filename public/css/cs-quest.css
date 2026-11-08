@@ -173,6 +173,7 @@ details.csq-menu .menu a:hover{background:var(--hover);text-decoration:none}
 .csq-crew{list-style:none;padding:0;margin:0;display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
 .csq-crew>li{margin:0;display:flex;flex-direction:column;gap:var(--s2)}
 .csq-crew .csq-crew-e{font-size:2.4rem;line-height:1}
+.csq-crew .csq-crew-shot{display:block;width:84px;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:2px solid var(--line);background:var(--card-2)}
 .csq-crew h3{margin:0}
 .csq-crew .row{margin-top:auto}
 .csq-public-units{list-style:none;margin:0;padding:0;display:grid;gap:var(--s3)}

@@ -50,6 +50,13 @@ test('every stated equation in decks and sets is true', () => {
     if (s.visual) {
       checkEquations(s.visual.label || '', `${where} visual label`, failures);
       for (const v of s.visual.values || []) checkEquations(v, `${where} tile`, failures);
+      // A Jumble beat (fix): the trick's steps and the right answer are true; the struck-through answer, when it is
+      // an equation, must be FALSE (it is the Jumble's mistake, drawn crossed out, never a claim the slide makes).
+      if (s.visual.type === 'fix') {
+        for (const t of [...s.visual.steps, s.visual.right]) checkEquations(t, `${where} fix step`, failures);
+        const bad = []; checkEquations(s.visual.wrong, `${where} fix wrong`, bad);
+        if (s.visual.wrong.match(EQ) && !bad.length) failures.push(`${where}: the Jumble's "${s.visual.wrong}" is not a mistake`);
+      }
       for (const r of Array.isArray(s.visual.rows) ? s.visual.rows : []) { checkEquations(r.label || '', `${where} row`, failures); for (const p of r.parts || []) checkEquations(p.label || '', `${where} part`, failures); }
     }
   });

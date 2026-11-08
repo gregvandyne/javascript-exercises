@@ -14,7 +14,9 @@
 //   tally   a survey's tally (CS Quest 3.3): one row per answer, its marks in fives (four lines, one across), its count;
 //   swap    two tiles swapped, an arrow, then the same tiles back in order (0.1);
 //   split   a whole bar over the same amount split into parts, each part named under it (3.1, 7.4);
-//   ladder  words stacked from most likely to least, with the direction marked (7.3).
+//   ladder  words stacked from most likely to least, with the direction marked (7.3);
+//   fix     a Jumble beat: the Jumble's wrong answer on its card, crossed out, an arrow, then the trick that fixes it,
+//           step by step, down to the right answer (3.3, 4.3, 5.3, 6.3, 7.3).
 // The three A6 types draw every word at 4.2 units or more: 13 px or more on a 390 px phone.
 // Each layout is fixed per type, so authored focus boxes land on the part they name, and diagramExtent says where
 // the drawing sits top to bottom, the band the slide frame shows (the visualExtent contract in courses.js).
@@ -306,8 +308,44 @@ function ladderSvg(v) {
 }
 const ladderExtent = v => [LAD.y, LAD.y + (v.words.length - 1) * LAD.step + LAD.h + 0.4];
 
-const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg };
-const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent };
+// ---------------------------------------------------------------------------------------------- fix
+/** The Jumble's mistake and its fix, one card over the other (full width, so a phone reads them at 4.2 units or
+ *  more): the top card names who said it (`badName`, "The Jumble says") with "not right" under it, and the wrong
+ *  answer struck through on its right; an arrow down; the bottom card names the fix (`goodName`, "Fix it") over the
+ *  steps of the trick (one or two lines, on the left) and the right answer in a pill on the right. The kid reads
+ *  the mistake first and the fix second, the beat's own order. The words start clear of the cards' top-left
+ *  corners, where the guided tour's badges sit. */
+const FX = { x: 12, w: 80, top: 13, topH: 12.5, gap: 6, tx: 17, s0: 11.6, step: 5.4 }; // s0: the first step's baseline under the bottom card's top
+function fixGeo(v) {
+  const t2 = FX.top + FX.topH + FX.gap, last = t2 + FX.s0 + (v.steps.length - 1) * FX.step;
+  return { t2, bottom: last + 4.4 };
+}
+// (the cards sit inset from the frame's sides, x 12-92, so each step's badge has room outside its card)
+const fitFs = (str, w, max) => Math.min(max, w / (String(str).length * 0.58));
+function fixSvg(v) {
+  const g = fixGeo(v), RED = '#C2431F';
+  let s = `<rect x="${FX.x}" y="${FX.top}" width="${FX.w}" height="${FX.topH}" rx="2.4" fill="#FFE1D6" stroke="${RED}" stroke-width="0.9" stroke-dasharray="2 1.4"/>`;
+  s += tx(FX.tx, FX.top + 5.4, v.badName || 'The Jumble says', 4.2, 'start', 800, RED);
+  s += tx(FX.tx, FX.top + 10.4, v.wrongNote || 'not right', 4.2, 'start', 700, RED);
+  const wx = 73, wy = FX.top + FX.topH / 2 + 2, wfs = r2(Math.max(4.2, fitFs(v.wrong, 34, 6.4))), ww = String(v.wrong).length * 0.56 * wfs;
+  s += tx(wx, wy, v.wrong, wfs, 'middle', 800);
+  s += `<line x1="${r2(wx - ww / 2 - 1)}" y1="${r2(wy - wfs * 0.32)}" x2="${r2(wx + ww / 2 + 1)}" y2="${r2(wy - wfs * 0.32)}" stroke="${RED}" stroke-width="0.8" stroke-linecap="round"/>`;
+  s += `<line x1="52" y1="${FX.top + FX.topH + 0.6}" x2="52" y2="${r2(g.t2 - 2.4)}" stroke="${LEAF}" stroke-width="1.1"/>` + head(52, g.t2 - 0.5, 0, 1, LEAF, 2);
+  s += `<rect x="${FX.x}" y="${g.t2}" width="${FX.w}" height="${r2(g.bottom - g.t2)}" rx="2.4" fill="#FFFFFF" stroke="${INK}" stroke-width="0.7"/>`;
+  s += tx(FX.tx, g.t2 + 5.6, v.goodName || 'Fix it', 4.2, 'start', 800, LEAF);
+  const sfs = r2(Math.max(4.2, Math.min(...v.steps.map(t => fitFs(t, 39, 4.6)))));
+  v.steps.forEach((t, i) => { s += tx(FX.tx, r2(g.t2 + FX.s0 + i * FX.step), t, sfs, 'start', 700); });
+  const py = (g.t2 + g.bottom) / 2, pw = 32, px = 90 - pw;
+  s += `<rect x="${px}" y="${r2(py - 4.6)}" width="${pw}" height="9.2" rx="4.6" fill="${TONES[0]}" stroke="${INK}" stroke-width="0.6"/>`;
+  s += tx(px + pw / 2, r2(py + 1.8), v.right, r2(Math.max(4.2, fitFs(v.right, pw - 4, 5.2))), 'middle', 800);
+  return s;
+}
+// The band above the top card is the first step's badge row: the guided tour parks a badge at its box's top-left
+// corner, outside the box, and without this row it would land between the cards, beside the other step.
+const fixExtent = v => [FX.top - 9, fixGeo(v).bottom];
+
+const SVG = { grid: gridSvg, squares: squaresSvg, lines: linesSvg, chart: chartSvg, table: tableSvg, letters: lettersSvg, spinner: spinnerSvg, build: buildSvg, tally: tallySvg, swap: swapSvg, split: splitSvg, ladder: ladderSvg, fix: fixSvg };
+const EXTENT = { grid: gridExtent, squares: squaresExtent, lines: linesExtent, chart: chartExtent, table: tableExtent, letters: lettersExtent, spinner: spinnerExtent, build: buildExtent, tally: tallyExtent, swap: swapExtent, split: splitExtent, ladder: ladderExtent, fix: fixExtent };
 /** The SVG body of one of these diagrams (a string of SVG elements in the 100 x 56.25 space). */
 export const diagramSvg = v => SVG[v.type](v);
 /** Where it sits top to bottom: [a, b] in the 100 x 56.25 space. */

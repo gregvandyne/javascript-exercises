@@ -148,9 +148,39 @@
    ]
   },
   {
-   "title": "The Jumble races itself",
-   "text": "The Jumble tried to race by memorizing every fact alone. It mixed up 7 × 8 for a week, until it learned the trick: double 7 × 4.",
-   "art": "bug"
+   "title": "The Jumble guesses 7 × 8",
+   "text": "The Jumble raced without a trick and shouted 54 for 7 × 8. Close is not right. Fix it with the doubling trick: 7 × 4 = 28, and double 28 is 56. So 7 × 8 = 56.",
+   "art": "bug",
+   "visual": {
+    "type": "fix",
+    "label": "The Jumble said 54 for 7 × 8; double 7 × 4, which is 28, to get 56",
+    "wrong": "7 × 8 = 54",
+    "steps": [
+     "7 × 4 = 28",
+     "28 + 28 = 56"
+    ],
+    "right": "7 × 8 = 56"
+   },
+   "focus": [
+    {
+     "cue": "The Jumble guessed 54 for 7 × 8. That is not right.",
+     "box": [
+      11,
+      21.3,
+      82,
+      25.8
+     ]
+    },
+    {
+     "cue": "Fix it: 7 × 4 is 28, and double 28 is 56.",
+     "box": [
+      11,
+      54.2,
+      82,
+      41.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: Doubling chains",
@@ -213,16 +243,17 @@
   {
    "kind": "mission",
    "title": "Your mission",
-   "text": "Open Sum Racer. It opens on the Galaxy Grand Prix track, a mix of everything, and it stays there. Win the race against your own best, and name the trick behind each hard fact.",
+   "text": "Open Sum Racer. It opens on the Galaxy Grand Prix track, a mix of everything, and it stays there. When a hard fact like 6 × 8 comes up, use a trick: double 6 × 4. Win the race against your own best.",
    "art": "trophy",
    "img": "nq/sum-racer/grand-prix",
-   "alt": "Sum Racer's Galaxy Grand Prix on a phone: question 2, a mixed question, four answers to pick from.",
+   "alt": "Sum Racer's Galaxy Grand Prix on a phone: question 1 is the times fact 6 × 8, four answers to pick from.",
    "view": [
     0,
     0,
-    54.14,
+    50.25,
     100
-   ]
+   ],
+   "whole": true
   }
  ],
  "check": [

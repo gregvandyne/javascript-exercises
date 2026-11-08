@@ -183,6 +183,10 @@ function cleanSlide(s) {
     if (Array.isArray(v) && v.length === 4 && v.every(n) && v[0] >= 0 && v[1] >= 0 && v[2] >= 15 && v[3] >= 15
       && v[0] + v[2] <= 100.001 && v[1] + v[3] <= 100.001) {
       out.view = v.map(x => Math.round(x * 100) / 100);
+      // `whole: true`: the view IS the whole picture (a phone-width band set on a padded 16:9 canvas, Number Quest's
+      // mission shots from scripts/nq-shots.js), so the frame has no expand button and no zoom: there is nothing
+      // more to see, and the button would sit on the game's own words.
+      if (s.whole === true) out.whole = true;
     }
   }
   // A drawn maths diagram (Number Quest's pictorial step): the slide's own numbers drawn as place-value

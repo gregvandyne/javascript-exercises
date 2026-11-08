@@ -64,7 +64,7 @@
    "kind": "example",
    "title": "Plus and minus",
    "text": "Every invention is a tradeoff. It makes something easier and changes something else.",
-   "art": "table",
+   "art": "scale",
    "steps": [
     "video call",
     "plus: see your cousin far away",
