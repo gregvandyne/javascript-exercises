@@ -2860,3 +2860,19 @@ sensitive." (`services/team.js`, "automatic welcomes".)
   standards (Common Core math, CSTA, CYBER.ORG) with teacher notes, and CS Quest's lessons are 45 minutes, instead of
   "full lesson plans ... aligned to standards" for all three.
 
+## Jungle Cup: a snappier joystick in Mango Dash (November 2026)
+
+The owner said the joystick in the mango race "isn't quite as responsive as I'd like". Measured with real touches on a
+390 x 844 phone, one frame at a time (`tests/e2e/jungle-cup-dash-stick.spec.js`), four causes, all in the game's own
+stick (`tools/jungle-cup/src/core/04-input.js`; Jungle Cup doesn't use the Oomba Kit):
+- **A thumb by the edge started with a push.** The base was moved on screen and its centre went with it, so a thumb
+  within about 64 CSS px of the left or bottom edge read as a push (a corner landing: a full push down-left, the
+  carrier running backwards). The centre is now always where the thumb landed; only the drawing is pulled on screen.
+- **Turning back after an overshoot needed the thumb back past where it landed.** Past the rim the centre now follows
+  the thumb (a full push that way), so a turn back reads as soon as the thumb turns.
+- **A 15 % dead zone and full speed only at the rim (50 CSS px).** Dead zone 10 % for every stick sport; Mango Dash
+  reaches full speed from a 70 % push (a lighter push is still slower). Before, a 70 % push ran at 65 %.
+- **The carrier eased in slowly** (90 % of full speed after 150 ms; a juke after 167 ms). Now 100 ms and 117 ms, eased
+  the same at any frame rate; slick mud still slides. Keys and a gamepad get the same quicker easing.
+The edge fix, the following centre and the dead zone are shared by the island walk and Paddle Smash; the 70 % curve and
+the easing are Mango Dash only. No other balance change: the pigs' tells and lunges are as they were.

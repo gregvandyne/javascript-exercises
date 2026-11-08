@@ -53,6 +53,10 @@
     easy: { spd: 0.84, turn: 0.8, tell: 1.4, lunge: 0.86, rr: -1, lead: 0.2, cap: 3, lives: 4, mud: 0.7, pud: 0.85, stum: 0.32, ups: 3, esc: 0.1, ev: 0.6 },
   };
   const FIRE_R = 56, FIRE_T = 10, BOLT_T = 5, BOOST_T = 1;
+  // how the carrier answers the stick: full speed from a comfortable push (FULL of the stick's reading, about 70 % of
+  // the knob's travel; a lighter push is slower), and how fast the run catches up with it (per second: starting and
+  // stopping, a turn back, slick mud)
+  const FULL = 0.67, EASE = 24, EASE_REV = 34, EASE_SLICK = 1.6;
   const D = JC.draw;
   const S = {
     over: false, won: false, t: 0, score: 0, dodges: 0, passes: 0, stumbles: 0, tackles: 0, lives: 3, cp: 0, sec: 0, carrier: 0, passT: 9, passQ: 0, marked: -1,
@@ -416,7 +420,11 @@
     UI.float(S.sx(m.x), S.sy(m.d) - 24, t('md.caughtIt'), '#ffd24a');
   }
   function steer(ctx) {
-    if (S.auto) { S.ax = S.botX; S.ay = S.botY; } else { S.ax = ctx.axis.mag > 0 ? ctx.axis.x : 0; S.ay = ctx.axis.mag > 0 ? ctx.axis.y : 0; }
+    if (S.auto) { S.ax = S.botX; S.ay = S.botY; return; }
+    const a = ctx.axis;
+    if (!(a.mag > 0)) { S.ax = 0; S.ay = 0; return; }
+    const k = Math.min(1, a.mag / FULL) / a.mag;
+    S.ax = a.x * k; S.ay = a.y * k;
   }
   function collect(ctx, m) {
     for (const u of S.ups) {
@@ -446,7 +454,7 @@
     // quick to start and stop, and quicker still to change direction (a juke works the same on keys, pad or stick);
     // on slick mud you slide (slow to start, slow to stop)
     const tx = S.ax * sp, td = -S.ay * sp, rev = tx * S.cvx + td * S.cvd < 0;
-    const k = Math.min(1, dt * (slick ? 1.6 : rev ? 22 : 14));
+    const k = 1 - Math.exp(-dt * (slick ? EASE_SLICK : rev ? EASE_REV : EASE));
     S.cvx += (tx - S.cvx) * k; S.cvd += (td - S.cvd) * k;
     S.slick = slick;
     let vx = S.cvx, vd = S.cvd;
