@@ -23,6 +23,7 @@ import * as funnel from '../services/funnel.js';
 import * as billing from '../services/billing.js';
 import * as sparks from '../services/sparks.js';
 import * as stripe from '../services/stripe.js';
+import { readiness } from '../services/billing-ready.js';
 import { audit, q } from '../db.js';
 import { config } from '../config.js';
 import * as webSearch from '../builder/search.js';
@@ -778,8 +779,23 @@ function sparkSection() {
     <p class="small muted">A grant is a pack of its own (lasts ${config.sparkExpiryDays} days, audited). A grown-up's username names their family; a linked child's names the family they are linked to. Refund a paid pack in the Stripe Dashboard: the webhook then takes back what is left (all of it for a full refund).</p>
   </section>`;
 }
-router.get('/admin/billing', (req, res) => {
+/** "Ready to go live?" (services/billing-ready.js; docs/billing-go-live.md): one row per check, green or red, with what to
+ *  do. Setting names only: never a key, secret or id. All green folds the list away. */
+function readyPanel(r) {
+  const allOk = r.ready === r.total;
+  const list = html`<ul class="readylist">${r.rows.map(x => html`<li class="ready-row ${x.ok ? 'is-ok' : 'is-bad'}" data-check="${x.id}">
+      <span class="chip-s ready-chip ${x.ok ? 'good' : 'bad'}">${x.ok ? html`<span aria-hidden="true">✓</span> Ready` : html`<span aria-hidden="true">✗</span> To do`}</span>
+      <div class="ready-main"><b>${x.label}</b><div class="small muted ready-now">Now: ${x.now}</div>${x.fix ? html`<div class="small ready-fix">${x.fix}</div>` : ''}</div></li>`)}</ul>`;
+  return html`<section class="panel" id="ready"><h2>🚦 Ready to go live?</h2>
+    <p class="ready-sum"><span class="chip-s ${allOk ? 'good' : 'bad'}"><b>${r.ready} of ${r.total}</b>&nbsp;ready</span> ${allOk ? 'Every check is green.' : html`Red rows still need doing. The full steps, the open decisions and the test purchase are in <code>docs/billing-go-live.md</code>.`}</p>
+    ${allOk ? html`<details class="anote"><summary>Show the checks</summary>${list}</details>` : list}
+    <p class="small muted">Read from the server's settings by name only: no key, secret or id is shown here. The lawyer's sign-off and the Stripe Dashboard's own settings (Customer emails, the Portal, Radar) are on the checklist in the doc.</p>
+    <p><a class="btn btn-sm" href="/admin/billing?recheck=1#ready">Check again</a></p>
+  </section>`;
+}
+router.get('/admin/billing', async (req, res) => {
   const mode = stripe.billingMode();
+  const ready = await readiness({ refresh: req.query.recheck === '1' });
   const status = SUB_STATUSES.includes(req.query.status) || req.query.status === 'entitled' ? req.query.status : '';
   const flag = Object.hasOwn(BILLING_FLAGS, req.query.flag) || req.query.flag === 'any' ? req.query.flag : '';
   const lm = stripe.currentLivemode();
@@ -810,7 +826,8 @@ router.get('/admin/billing', (req, res) => {
     ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
     ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
   </div>
-  ${jumpNav([['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['sparks', 'Spark Packs', sparks.recentPacks(50).length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
+  ${jumpNav([['ready', 'Go-live checks', ready.total - ready.ready, 'need'], ['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['sparks', 'Spark Packs', sparks.recentPacks(50).length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
+  ${readyPanel(ready)}
   <section class="panel" id="requests"><h2>School invoice requests</h2>
     ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
       <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}</p>

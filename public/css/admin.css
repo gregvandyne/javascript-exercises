@@ -276,6 +276,17 @@ main.wrap>.tabs.adminnav{margin-inline:0;padding-inline:0}
 .binv{gap:var(--s3)}
 .binv-seats{display:inline-flex;align-items:center;gap:var(--s2)}
 @media (max-width:600px){.binv{display:grid;grid-template-columns:minmax(0,1fr)}.binv .btn{inline-size:100%;white-space:normal}}
+/* Ready to go live? (green / red rows; on a phone the chip sits above the text) */
+.adminpage .chip-s.good{background:var(--ok-bg);color:var(--ok)}
+.adminpage .chip-s.bad{background:var(--bad-bg);color:var(--bad-ink)}
+.ready-sum{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.readylist{list-style:none;margin:0 0 var(--s3);padding:0;display:grid;gap:var(--s2)}
+.ready-row{display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s3);border-radius:12px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);border-inline-start:4px solid var(--ok)}
+.ready-row.is-bad{border-inline-start-color:var(--bad-ink)}
+.ready-chip{flex:none;min-inline-size:6.5em;justify-content:center}
+.ready-main{min-inline-size:0;overflow-wrap:anywhere}
+.ready-now,.ready-fix{margin-top:2px}
+@media (max-width:600px){.ready-row{flex-direction:column;gap:var(--s2)}.ready-chip{min-inline-size:0}}
 
 /* ---------- Stats: side tables fit a phone ---------- */
 @media (max-width:520px){

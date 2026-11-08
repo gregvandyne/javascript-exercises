@@ -117,6 +117,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 
 **Paid plans (Stripe; off until the key and webhook secret are set)**
 
+Going live is a list of owner steps in **docs/billing-go-live.md**, tracked on /admin/billing's "Ready to go live?" panel.
 Billing is built in steps (docs/decisions.md "Paid plans"). With `STRIPE_API_KEY` unset nothing changes: no billing
 route answers and nobody is on a plan. Keys and secrets go in the host's secret settings (Render dashboard), never in a
 file; the app never logs them. Prices are found by their lookup keys (`oomba_family_monthly`, `oomba_family_yearly`,

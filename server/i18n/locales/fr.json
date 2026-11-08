@@ -871,7 +871,8 @@
       "intro": {
         "h": "À propos de cette politique",
         "p1": "Cette page explique comment résilier un abonnement Oomba Academy et quand vous pouvez être remboursé. Elle fait partie de nos <a href=\"/terms\">Conditions d’utilisation</a>.",
-        "p2": "Jouer et les messages gratuits quotidiens pour le Constructeur sont toujours gratuits. Cette politique concerne uniquement les abonnements payants <b>famille</b> et <b>école</b>, qui ajoutent des messages pour le Constructeur."
+        "p2": "Jouer et les messages gratuits quotidiens pour le Constructeur sont toujours gratuits. Cette politique concerne uniquement les abonnements payants <b>famille</b> et <b>école</b>, qui ajoutent des messages pour le Constructeur.",
+        "p3": "Les Packs Étincelle, des recharges ponctuelles de messages pour le Constructeur destinées à une famille abonnée, ont leur propre section ci-dessous."
       },
       "cancel": {
         "h": "Résiliation",
@@ -890,6 +891,15 @@
         "p5": "<b>Comment demander :</b> écrivez à <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> depuis n’importe quelle adresse. Indiquez-nous le nom de votre compte adulte (ou de l’école), ainsi que la date et le montant figurant sur votre reçu Stripe. Nous répondons sous 3 jours ouvrés.",
         "p6": "<b>Quand vous recevez l’argent :</b> le remboursement est versé sur la carte ou le compte utilisé pour payer. Les banques mettent généralement 5 à 10 jours ouvrés pour l’afficher.",
         "p7": "<b>Écoles payant sur facture :</b> les 14 jours commencent à la date à laquelle le paiement nous parvient. Payé par chèque ? Nous remboursons par chèque ou par virement bancaire."
+      },
+      "sparks": {
+        "h": "Packs Étincelle",
+        "p1": "Un <b>Pack Étincelle</b> est un paiement unique pour des messages supplémentaires pour le Constructeur, destiné à une famille qui a un abonnement Essentiel ou famille. Il ne se renouvelle pas : il n’y a donc rien à résilier.",
+        "li1": "<b>Pack non utilisé, sous 14 jours :</b> si vous le demandez dans les <b>14 jours</b> suivant l’achat d’un pack et qu’aucun de ses messages n’a été utilisé, nous le remboursons en totalité. Faites la demande comme pour un abonnement (voir <b>Comment demander</b> plus haut).",
+        "li2": "<b>Sinon, les packs ne sont pas remboursés :</b> dès que certains messages d’un pack ont été utilisés, ou après 14 jours, nous ne le remboursons pas, sauf si la loi de votre pays l’exige.",
+        "li3": "<b>Effet d’un remboursement :</b> dès que le remboursement est effectué, les messages restants du pack sont retirés. Un remboursement total met fin au pack ; un remboursement partiel retire la part correspondante de ses messages. Les messages déjà utilisés le restent.",
+        "li4": "<b>Fin des packs :</b> les messages d’un pack expirent un an après son achat. Jusque-là, le pack continue de fonctionner même après la fin de votre abonnement. Les messages restants à l’expiration d’un pack ne sont pas remboursés.",
+        "li5": "<b>Vous avez contesté le prélèvement auprès de votre banque ?</b> Le pack prend fin immédiatement, comme un abonnement."
       },
       "special": {
         "h": "Cas particuliers",

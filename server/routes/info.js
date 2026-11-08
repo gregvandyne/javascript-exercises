@@ -141,7 +141,7 @@ function legal(req, pageKey, emoji, sections) {
 }
 const legalPage = (pageKey, emoji, sections) => (req, res) => page(req, res, { title: req.t(`info.${pageKey}.title`), back: '/', description: req.t(`info.${pageKey}.description`), body: legal(req, pageKey, emoji, sections(req)), seo: { index: true, path: `/${pageKey}` } });
 router.get('/terms', legalPage('terms', '📜', () => ['who', 'accounts', 'schools', 'rules', 'ai', 'games', 'plans', 'ending', 'disclaimers', 'liability', 'disputes', 'changes', 'other', 'contact']));
-router.get('/refunds', legalPage('refunds', '💳', () => ['intro', 'cancel', 'refunds', 'special', 'rights', 'contact']));
+router.get('/refunds', legalPage('refunds', '💳', () => ['intro', 'cancel', 'refunds', 'sparks', 'special', 'rights', 'contact']));
 // The site's privacy text (the /parents sections, with the same paid-plan swaps) plus grown-up accounts, payments and
 // school billing. The billing sections name plans, so they show only to grown-up accounts, school staff and the
 // platform admin, or with ?for=grownups. Kids, students and guests (whose footer links here) get the rest; the

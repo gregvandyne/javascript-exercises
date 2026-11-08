@@ -331,6 +331,7 @@ export const config = {
   stripeApiVersion: stripe.apiVersion,
   stripeApiBase: stripe.apiBase,                     // tests only: a local fake Stripe (tests/support/fake-stripe.js)
   stripeTax: stripe.tax,
+  stripeLiveOk: stripe.liveOk,                       // STRIPE_LIVE_OK=1: a live key may start the server (the going-live checklist is done)
   stripePmcFamily: stripe.pmcFamily,                 // pmc_…: family Checkout's payment method configuration (required to sell family plans)
   stripePmcSchool: stripe.pmcSchool,                 // pmc_…: school Checkout's payment method configuration (optional)
   // TERMS_PUBLISHED=1 once /terms is on the site: family Checkout then asks the buyer to agree to it (Stripe's own
