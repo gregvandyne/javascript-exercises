@@ -2422,7 +2422,8 @@
         "on": "Piano scuola attivo",
         "billing": "Fatturazione",
         "settling": "Stiamo attivando il piano…"
-      }
+      },
+      "tools": "Strumenti per insegnare"
     },
     "class": {
       "new": "Nuova classe",
@@ -2549,7 +2550,8 @@
       "createStaff": "Crea account e scheda di accesso",
       "addToSchool": "Aggiungi alla scuola",
       "added": "{name} fa ora parte della scuola come {role}",
-      "putInClass": "Classe"
+      "putInClass": "Classe",
+      "changeGrade": "Cambia la classe di {name}"
     },
     "settings": {
       "name": "Nome della scuola",
@@ -2573,7 +2575,9 @@
       "timeZone": "Fuso orario",
       "timeZoneNone": "Non impostato (i giorni sono contati in UTC)",
       "timeZoneUnset": "Imposti il fuso orario della sua scuola così le lezioni diventano disponibili a mezzanotte e le scadenze terminano a mezzanotte dove si trova. Fino ad allora, nessuno è in ritardo fino a 36 ore dopo l'inizio del giorno di scadenza.",
-      "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}."
+      "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}.",
+      "groupSchool": "Scuola",
+      "groupClasses": "Classi e iscrizioni"
     },
     "cards": {
       "title": "Schede di accesso",
@@ -2585,7 +2589,8 @@
       "gone": "Queste schede di accesso non sono più disponibili. Crei una nuova password dalla sezione Studenti della classe o dalla sezione Persone della scuola.",
       "backPeople": "Torna a Persone",
       "backClass": "Torna a {name}",
-      "skipped": "{count, plural, one {# studente usa un account personale e mantiene la sua password} other {# studenti usano un account personale e mantengono le loro password}}: {names}."
+      "skipped": "{count, plural, one {# studente usa un account personale e mantiene la sua password} other {# studenti usano un account personale e mantengono le loro password}}: {names}.",
+      "count": "{count, plural, one {# scheda di accesso} other {# schede di accesso}}"
     },
     "errors": {
       "notFound": "Non l'abbiamo trovato, oppure non è accessibile da questo account.",
@@ -2767,6 +2772,19 @@
         "planOn": "La sua scuola ha già un piano scuola.",
         "noAdmin": "La sua scuola non ha ancora un admin, quindi non c'è nessuno a cui chiedere."
       }
+    },
+    "jump": {
+      "label": "Vai a",
+      "aria": "In questa pagina"
+    },
+    "filter": {
+      "label": "Cerca un nome",
+      "none": "Nessuno con questo nome qui."
+    },
+    "stats": {
+      "classes": "{count, plural, one {# classe} other {# classi}}",
+      "teachers": "{count, plural, one {# insegnante} other {# insegnanti}}",
+      "unplaced": "{count, plural, one {# studente senza classe} other {# studenti senza classe}}"
     }
   },
   "lessons": {
@@ -2793,7 +2811,9 @@
       "newLesson": "Nuova lezione",
       "newLessonPlaceholder": "Titolo della lezione, es. Riscaldamento sulle frazioni",
       "empty": "Ancora nessuna lezione qui",
-      "emptyText": "Crei una nuova lezione, lasci che l'IA ne prepari una bozza, oppure copi una lezione condivisa da un collega."
+      "emptyText": "Crei una nuova lezione, lasci che l'IA ne prepari una bozza, oppure copi una lezione condivisa da un collega.",
+      "find": "Cerca una lezione",
+      "readyMade": "Già pronti"
     },
     "folder": {
       "name": "Nome della cartella",
@@ -3010,7 +3030,8 @@
       "feedbackPlaceholder": "Feedback per lo studente (facoltativo)",
       "send": "Salva e segna come controllata",
       "update": "Aggiorna il feedback",
-      "noAnswers": "Ancora nessuna risposta."
+      "noAnswers": "Ancora nessuna risposta.",
+      "attention": "Prima chi ha bisogno di attenzione"
     },
     "student": {
       "doneOf": "{done} su {total} fatti",
@@ -3033,6 +3054,9 @@
       "sentAgo": "Inviata {when}",
       "feedback": "Dall'insegnante",
       "readNoFeedback": "L'insegnante ha visto la tua risposta."
+    },
+    "courses": {
+      "started": "{started} su {total} hanno iniziato"
     }
   },
   "google": {
@@ -5091,7 +5115,8 @@
       "teacherHost": "Sei un insegnante? Avvialo live con la tua classe",
       "solo": "Allenati da solo",
       "play": "Gioca contro il computer o in 2",
-      "joinGo": "Entra"
+      "joinGo": "Entra",
+      "forClass": "Per {name}"
     },
     "check": {
       "live_pack": "non carica ancora il pacchetto dal vivo",

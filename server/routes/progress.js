@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState } from '../views/components.js';
+import { avatar, emptyState, jumpNav, nameFilter } from '../views/components.js';
 import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
@@ -124,7 +124,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const col = new Map(gb.lessons.map((l, i) => [l.id, i]));
   const toReview = P.toReadByLesson(c.id).filter(r => col.has(r.cl)).sort((a, b) => col.get(a.cl) - col.get(b.cl));
   const anyLate = gb.lessons.map((l, i) => gb.students.some(p => p.cells[i].late));
-  const table = html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.gradebook.title')}"><table class="tbl gradebook">
+  const table = html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.gradebook.title')}"><table class="tbl gradebook" id="gb-lessons">
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>
       ${gb.lessons.map((l, i) => { const chips = dateChips(t, f, l, { late: anyLate[i], short: true });
         return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}</th>`; })}
@@ -143,12 +143,12 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         })}
         <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}</td></tr>`;
     })}</tbody></table></div>`;
-  const body = html`${classHeader(req, c, 'progress')}
-  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools"><p class="muted grow">${t('progress.gradebook.text')} ${zoneNote(t, c.school_id)}</p><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
+  const body = html`
+  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp"><summary>ⓘ ${t('cs.standards.legend.h')}</summary><p class="small muted">${t('progress.gradebook.text')} ${zoneNote(t, c.school_id)}</p></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
   ${toReview.length ? html`<p class="notice gb-review" id="to-review">✍️ <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
-    : html`<section class="panel">${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
+    : html`<section class="panel">${gb.students.length > 8 ? nameFilter(t, 'gb-lessons') : ''}${table}<p class="small muted gb-key"><span>✅ ${t('progress.key.done')}</span><span><span class="pbar"><span style="width:60%"></span></span> ${t('progress.key.steps')}</span><span class="gb-late-key">⏰ ${t('progress.key.late')}</span><span>✍️ ${t('progress.key.toRead')}</span></p></section>`}`;
   // Courses: per-student completion status, step progress and recorded check scores for every registered
   // course, for this class's students only (the same roster the gradebook above is built from, and the
   // route's own class gate decides who may look). One panel per course in the shared registry, so a
@@ -156,8 +156,9 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const coursePanels = gb.students.length ? C.COURSES.map(course => {
     const rows = C.classCourseProgress(gb.students, C.getCourse(course.slug));
     const dot = s => (s.complete ? '✅' : s.row ? '🟡' : '⚪');
+    const started = rows.filter(r => r.status !== 'not-started').length;
     const statusChip = r => (r.status === 'completed' ? html`<span class="chip-s">✅ ${t('progress.courses.completed')}</span>` : r.status === 'in-progress' ? html`<span class="chip-s warn">${t('progress.courses.inProgress')}</span>` : html`<span class="muted">${t('progress.status.none')}</span>`);
-    return html`<section class="panel"><h2>${course.emoji} ${t(`${course.key}.title`)}</h2>
+    return html`<details class="panel coursepanel" id="course-${course.slug}" ${started ? raw('open') : ''}><summary><h2>${course.emoji} ${t(`${course.key}.title`)}</h2><span class="small muted">${t('progress.courses.started', { started, total: rows.length })}</span></summary>
     <div class="gbwrap" tabindex="0" role="region" aria-label="${t(`${course.key}.title`)}"><table class="tbl gradebook">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.courses.status')}</th><th scope="col">${t('progress.courses.steps')}</th><th scope="col">${t('progress.courses.checks')}</th><th scope="col">${t('progress.courses.perStep')}</th></tr></thead>
       <tbody>${rows.map(r => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(r.user, 28)}<b>${nameOf(r.user)}</b></span></th>
@@ -165,7 +166,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td><span class="gb-num">${r.done}/${r.total}</span>${bar(r.done, r.total)}</td>
         <td>${r.maxScore ? html`<span class="gb-num">${r.score}/${r.maxScore}</span>` : html`<span class="muted">–</span>`}</td>
         <td>${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
-    <p class="small muted">${t('progress.courses.note')}</p></section>`;
+    <p class="small muted">${t('progress.courses.note')}</p></details>`;
   }) : '';
   // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).
   // Part 3: a team row for team runs, "Teams for live games" (the class teams editor: live-class-teams.js) and, with
@@ -196,7 +197,9 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     ${sup.length ? html`<section class="lv-class-support" id="lv-class-support"><h3>${t('live.dash.support')}</h3><p class="small">${t('live.support.count', { count: sup.length })}</p>
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
   </section>` : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), ...(teamsHere && CLASS_TEAMS_JS ? { scripts: ['/js/live-class-teams.js'] } : {}) });
+  // Jump chips to the sections below the gradebook (only the ones on this page).
+  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `📚 ${t('school.classTabs.lessons')}`] : null, ...C.COURSES.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), livePanel ? ['live-games', `📡 ${t('live.panel.title')}`] : null]) : '';
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js', ...(teamsHere && CLASS_TEAMS_JS ? ['/js/live-class-teams.js'] : [])] });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same
@@ -287,14 +290,14 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   ${toRead ? html`<p class="notice" id="to-review">✍️ ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
   ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : !lp.steps.length ? html`<section class="panel"><p class="muted">${t('lessons.lesson.noSteps')}</p></section>`
-    : html`<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps">
+    : html`<section class="panel">${lp.students.length > 3 ? html`<div class="row gb-sort" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">⚠️ ${t('progress.lesson.attention')}</button></div>` : ''}<div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps" id="lp-steps">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col" title="${s.title || t(`lessons.kinds.${s.kind}`)}"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
-      <tbody>${lp.students.map(p => html`<tr id="s-${p.id}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">✍️ ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
+      <tbody>${lp.students.map(p => html`<tr id="s-${p.id}" data-attn="${(p.toRead ? 4 : 0) + (lateFor(p) ? 2 : 0) + (p.done && p.done < p.total ? 1 : 0)}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">✍️ ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
         ${lp.steps.map((s, i) => { const x = p.cells[i]; const g = s.kind === 'build' && x && x.game_id ? games_.get(x.game_id) : null;
           return html`<td><span class="st">${icon(s, x)}</span>${g && g.status === 'published' && games.canView(req.user, g) ? html`<a class="small" href="/g/${g.slug}">${t('progress.lesson.openGame')}</a>` : ''}${s.kind === 'question' && x && x.answer ? html`<a class="small" href="#a-${s.id}-${p.id}">${t('progress.lesson.readAnswer')}</a>` : ''}</td>`; })}
         <td class="small muted">${p.last ? f.ago(p.last) : '–'}</td></tr>`)}</tbody></table></div></section>`}
   ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}`;
-  page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
+  page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
 });
 
 /** Feedback and, on question / build steps with a rubric, marks: { feedback?, marks?: [2, 3, '-', 1] | '23-1' } or the

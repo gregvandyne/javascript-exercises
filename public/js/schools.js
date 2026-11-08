@@ -28,6 +28,53 @@ document.querySelectorAll('.stepgrid select[name="kind"]').forEach(syncStepKind)
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]'); const id = a && a.getAttribute('href').slice(1); if (!id) return;
   const el = document.getElementById(id); const d = el && el.closest('details');
-  if (!d || el === d) return;
+  if (d === el) { d.open = true; return; }   // a "Jump to" chip to a folded section opens it
+  if (!d) return;
   e.preventDefault(); d.open = true; el.focus();
+});
+
+// ---- Tidy-up: "Find a name" over long lists (components.js nameFilter) ----
+// Rows are table rows or the labels of a tick list; a row matches when its text has every typed word (accents and case
+// ignored). The optional chip shows only the rows marked data-<only> (e.g. students not in a class). Hidden rows stay
+// in the page (and in forms), they are only out of sight.
+const fold = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+document.querySelectorAll('[data-filter]').forEach(box => {
+  const list = document.getElementById(box.dataset.filter); if (!list) return;
+  const rows = [...list.querySelectorAll('tbody > tr, fieldset > label, li')];
+  const input = box.querySelector('input'), chip = box.querySelector('[data-only]'), none = box.querySelector('[data-filter-none]');
+  const run = () => {
+    const words = fold(input.value).split(/\s+/).filter(Boolean), only = chip && chip.getAttribute('aria-pressed') === 'true' ? chip.dataset.only : '';
+    let shown = 0;
+    for (const r of rows) {
+      const ok = words.every(w => fold(r.textContent).includes(w)) && (!only || r.dataset[only] !== undefined);
+      r.hidden = !ok; if (ok) shown++;
+    }
+    none.hidden = shown > 0;
+  };
+  input.addEventListener('input', run);
+  if (chip) chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); run(); });
+  box.hidden = false;
+});
+
+// Standards tab on phones: each standard's statement is cut to two lines; tap (or Enter / Space) shows all of it.
+if (matchMedia('(max-width: 700px)').matches) document.querySelectorAll('.csq-std .csq-std-id .small').forEach(d => {
+  if (d.scrollHeight <= d.clientHeight + 1) return;
+  d.classList.add('more'); d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-expanded', 'false');
+  const flip = () => d.setAttribute('aria-expanded', String(d.classList.toggle('open')));
+  d.addEventListener('click', flip);
+  d.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+});
+
+// One lesson's progress: "Needs attention first" puts students with answers to read, then late, then half-done on top;
+// pressed again, the roster order comes back. Nothing is hidden.
+document.querySelectorAll('[data-sort]').forEach(btn => {
+  const body = document.querySelector(`#${btn.dataset.sort} tbody`); if (!body) return;
+  const rows = [...body.rows];
+  btn.addEventListener('click', () => {
+    const on = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', String(on));
+    const order = on ? rows.map((r, i) => [r, i]).sort((a, b) => (+b[0].dataset.attn - +a[0].dataset.attn) || a[1] - b[1]).map(x => x[0]) : rows;
+    order.forEach(r => body.appendChild(r));
+  });
+  btn.closest('[hidden]')?.removeAttribute('hidden');
 });

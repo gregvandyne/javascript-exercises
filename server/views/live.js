@@ -446,7 +446,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
 
 /** /live: pick a game or mode, a question set, who can join, then open the room (a data-api form: works without the
  *  page script). */
-export function landingBody(req, { modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null, tug = null, doodle = null }) {
+export function landingBody(req, { forClass = null, modes, groups, sets, starters, classes, family, pre, recent, maxPlayers, origin, prefs = null, teamsOn = false, cohost = null, bank = null, wyr = null, atlas = null, tug = null, doodle = null }) {
   const t = req.t;
   // part 4: invites to co-host and games this account co-hosts (only inside Oomba: no email, no push)
   const ch = cohost || { invites: [], on: [] };
@@ -491,6 +491,7 @@ export function landingBody(req, { modes, groups, sets, starters, classes, famil
   const audDefault = pre.audience && audiences.includes(pre.audience) ? pre.audience : audiences[0];
   return html`<div class="lv lv-landing" data-lv-page="landing">
   <h1>${t('live.landing.heading')}</h1>
+  ${forClass ? html`<p class="lv-for"><b>🍎 ${t('live.entry.forClass', { name: forClass.name })}</b></p>` : ''}
   ${ch.invites.map(x => html`<p class="notice good lv-cohost-invite" data-lv-cohost-invite="${x.sid}">${t('live.cohost.landingInvite', { name: x.from, title: x.title })} <a class="btn btn-sm btn-primary" href="/live/cohost/${x.sid}">${t('live.cohost.openInvite')}</a></p>`)}
   ${ch.on.map(x => html`<p class="notice lv-cohost-on" data-lv-cohost-on="${x.sid}">${t('live.cohost.landingOn', { title: x.title })} <a class="btn btn-sm" href="/live/host/${x.sid}/dash">${t('live.cohost.openDash')}</a></p>`)}
   <p class="muted">${t('live.landing.intro', { url: `${origin.replace(/^https?:\/\//, '')}/join` })}</p>

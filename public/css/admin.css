@@ -62,9 +62,7 @@ main.wrap>.tabs.adminnav{margin-inline:0;padding-inline:0}
 }
 
 /* ---------- Shared pieces ---------- */
-/* "On this page" chips */
-.ajump{margin:var(--s3) 0 var(--s4)}
-.ajump .chip{font-size:.9rem;padding:0 14px}
+/* "Jump to" chips (.ajump) are in app.css: the school and teacher pages use them too. */
 /* Folded notes and sections: the summary is a 44 px row */
 .adminpage main summary{min-height:44px;display:flex;align-items:center;gap:var(--s2);cursor:pointer;font-weight:700;list-style-position:inside}
 /* Every folded section shows it opens: a + at the end of the row that turns to − (the .lp-fold pattern in app.css).
@@ -329,11 +327,6 @@ main.wrap>.tabs.adminnav{margin-inline:0;padding-inline:0}
 .atable td[data-label="Period end"],.atable td[data-label="Due"]{white-space:nowrap}
 
 /* ---------- Jump chips: "Jump to" links, outlined and smaller so they don't look like the actions above them ---------- */
-.ajump{align-items:center}
-.ajump-l{font-size:.8125rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-inline-end:var(--s1)}
-.ajump .chip{background:transparent;border-width:1px;border-style:dashed;font-weight:600;color:var(--text-2)}
-.ajump .chip:hover{border-style:solid}
-.ajump .badge.quiet{background:var(--card-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
 .upanel .uacts+.ajump{margin-top:var(--s5);padding-top:var(--s3);border-top:1px solid var(--line)}
 
 /* ---------- A team message's Unsend: a real button under its line ---------- */

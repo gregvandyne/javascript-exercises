@@ -2422,7 +2422,8 @@
         "on": "Schulabo aktiv",
         "billing": "Abrechnung",
         "settling": "Ihr Abo wird eingerichtet…"
-      }
+      },
+      "tools": "Werkzeuge für den Unterricht"
     },
     "class": {
       "new": "Neue Klasse",
@@ -2549,7 +2550,8 @@
       "createStaff": "Konto und Anmeldekarte erstellen",
       "addToSchool": "Zur Schule hinzufügen",
       "added": "{name} als {role} hinzugefügt",
-      "putInClass": "Klasse"
+      "putInClass": "Klasse",
+      "changeGrade": "Klassenstufe von {name} ändern"
     },
     "settings": {
       "name": "Name der Schule",
@@ -2573,7 +2575,9 @@
       "timeZone": "Zeitzone",
       "timeZoneNone": "Nicht festgelegt (die Tage werden in UTC gezählt)",
       "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
-      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}."
+      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
+      "groupSchool": "Schule",
+      "groupClasses": "Klassen und Beitreten"
     },
     "cards": {
       "title": "Anmeldekarten",
@@ -2585,7 +2589,8 @@
       "gone": "Diese Anmeldekarten sind nicht mehr verfügbar. Erstellen Sie ein neues Passwort auf der Klassenseite unter „Schüler“ oder auf der Schulseite unter „Personen“.",
       "backPeople": "Zurück zu „Personen“",
       "backClass": "Zurück zu {name}",
-      "skipped": "{count, plural, one {# Schüler nutzt ein eigenes Konto und behält sein Passwort} other {# Schüler nutzen ein eigenes Konto und behalten ihre Passwörter}}: {names}."
+      "skipped": "{count, plural, one {# Schüler nutzt ein eigenes Konto und behält sein Passwort} other {# Schüler nutzen ein eigenes Konto und behalten ihre Passwörter}}: {names}.",
+      "count": "{count, plural, one {# Anmeldekarte} other {# Anmeldekarten}}"
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder es ist für dieses Konto nicht zugänglich.",
@@ -2767,6 +2772,19 @@
         "planOn": "Ihre Schule hat schon ein Schulabo.",
         "noAdmin": "Ihre Schule hat noch keinen Schuladmin, also gibt es niemanden, den Sie fragen können."
       }
+    },
+    "jump": {
+      "label": "Springe zu",
+      "aria": "Auf dieser Seite"
+    },
+    "filter": {
+      "label": "Namen suchen",
+      "none": "Niemand mit diesem Namen."
+    },
+    "stats": {
+      "classes": "{count, plural, one {# Klasse} other {# Klassen}}",
+      "teachers": "{count, plural, one {# Lehrkraft} other {# Lehrkräfte}}",
+      "unplaced": "{count, plural, one {# Schüler in keiner Klasse} other {# Schüler in keiner Klasse}}"
     }
   },
   "lessons": {
@@ -2793,7 +2811,9 @@
       "newLesson": "Neue Lektion",
       "newLessonPlaceholder": "Titel der Lektion, z. B. Brüche zum Aufwärmen",
       "empty": "Hier gibt es noch keine Lektionen",
-      "emptyText": "Erstellen Sie eine neue Lektion, lassen Sie die KI einen Entwurf schreiben, oder kopieren Sie eine Lektion, die jemand aus dem Kollegium geteilt hat."
+      "emptyText": "Erstellen Sie eine neue Lektion, lassen Sie die KI einen Entwurf schreiben, oder kopieren Sie eine Lektion, die jemand aus dem Kollegium geteilt hat.",
+      "find": "Lektion suchen",
+      "readyMade": "Fertige Kurse"
     },
     "folder": {
       "name": "Ordnername",
@@ -3010,7 +3030,8 @@
       "feedbackPlaceholder": "Feedback für den Schüler (optional)",
       "send": "Speichern und als geprüft markieren",
       "update": "Feedback aktualisieren",
-      "noAnswers": "Noch keine Antworten."
+      "noAnswers": "Noch keine Antworten.",
+      "attention": "Wer Hilfe braucht, zuerst"
     },
     "student": {
       "doneOf": "{done} von {total} geschafft",
@@ -3033,6 +3054,9 @@
       "sentAgo": "Abgeschickt {when}",
       "feedback": "Von deiner Lehrkraft",
       "readNoFeedback": "Deine Lehrkraft hat deine Antwort gesehen."
+    },
+    "courses": {
+      "started": "{started} von {total} begonnen"
     }
   },
   "google": {
@@ -5091,7 +5115,8 @@
       "teacherHost": "Lehrkraft? Starte es live mit deiner Klasse",
       "solo": "Allein üben",
       "play": "Gegen den Computer oder zu zweit spielen",
-      "joinGo": "Beitreten"
+      "joinGo": "Beitreten",
+      "forClass": "Für {name}"
     },
     "check": {
       "live_pack": "es lädt das Live-Paket noch nicht",

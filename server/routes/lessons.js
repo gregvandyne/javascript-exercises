@@ -4,7 +4,7 @@
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { emptyState, gradeLabel } from '../views/components.js';
+import { emptyState, gradeLabel, nameFilter, jumpNav } from '../views/components.js';
 import { tHtml } from '../i18n/index.js';
 import { requireUser, requireAccount } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -108,7 +108,6 @@ router.get('/teach/lessons', requireUser, (req, res) => {
           <label class="sr-only" for="nf">${t('lessons.folder.name')}</label><input class="input grow" id="nf" name="name" maxlength="60" placeholder="${t('lessons.folder.newPlaceholder')}" required>
           <button class="btn btn-primary" type="submit">📁 ${t('lessons.folder.new')}</button></form>
         <p class="small muted">${t('lessons.folder.hint')}</p></details>
-      <a class="btn" href="/teach/cs-quest?school=${school.id}">💻 ${t('cs.program.title')}</a>
       <details class="libdrop aidraft" ${open === 'ai' ? raw('open') : ''}><summary class="btn">✨ ${t('lessons.ai.button')}</summary>
         <form class="formgrid aiform" data-api="/api/lessons/draft" novalidate><input type="hidden" name="schoolId" value="${school.id}"><input type="hidden" name="folderId" value="${folder ? folder.id : ''}"><input type="hidden" name="classId" value="${classId}">
           <div class="field wide"><label for="ai-t">${t('lessons.ai.topic')}</label><input class="input" id="ai-t" name="topic" maxlength="200" required placeholder="${t('lessons.ai.topicPlaceholder')}" ${open === 'ai' ? raw('autofocus') : ''}><span class="err" id="ai-t-err"></span></div>
@@ -118,8 +117,9 @@ router.get('/teach/lessons', requireUser, (req, res) => {
           <div class="formacts"><button class="btn btn-primary" type="submit">✨ ${t('lessons.ai.make')}</button><p class="small muted">${t('lessons.ai.note')}</p></div>
         </form></details>
     </div>
+    <nav class="chips readymade" aria-label="${t('lessons.library.readyMade')}"><span class="ajump-l">${t('lessons.library.readyMade')}</span><a class="chip" href="/teach/cs-quest?school=${school.id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a></nav>
     ${sub.length ? html`<ul class="plain folderlist">${sub.map((f, i) => html`<li class="panel folderrow">
-      <a class="fr-name" href="${q(`&folder=${f.id}`)}">📁 ${f.name}</a>
+      <a class="fr-name" href="${q(`&folder=${f.id}`)}"><span>📁 ${f.name}</span><span class="small muted fr-count">${t('cs.unit.lessonsN', { count: L.lessonsIn(u.id, school.id, f.id).length })}</span></a>
       <span class="acts">${i ? html`<form data-api="/api/lesson-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < sub.length - 1 ? html`<form data-api="/api/lesson-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
         <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: f.name })}">⋯</summary><div class="menu">
           <span class="lbl" aria-hidden="true">${t('lessons.folder.name')}</span>
@@ -128,7 +128,8 @@ router.get('/teach/lessons', requireUser, (req, res) => {
           <form class="row" data-api="/api/lesson-folders/${f.id}/move" data-reload><select class="input input-sm grow" name="parentId" aria-label="${t('lessons.moveTo')}">${folderOptions(f.parent_id, f.id)}</select><button class="btn btn-sm" type="submit">${t('lessons.move')}</button></form>
           <form data-api="/api/lesson-folders/${f.id}/delete" data-reload data-confirm="${t('lessons.folder.deleteConfirm', { name: f.name })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.folder.delete')}</button></form>
         </div></details></span></li>`)}</ul>` : ''}
-    ${list.length ? html`<ul class="plain lessonlist">${list.map((l, i) => html`<li class="panel lessonrow">
+    ${list.length > 8 ? nameFilter(t, 'lesson-list', { placeholder: t('lessons.library.find') }) : ''}
+    ${list.length ? html`<ul class="plain lessonlist" id="lesson-list">${list.map((l, i) => html`<li class="panel lessonrow">
       <a class="lr-main" href="/teach/lessons/${l.id}"><b dir="auto">${l.title}</b><span class="small muted">${meta([l.subject, gradeLabel(t, l.grade), t('lessons.stepsN', { count: l.steps })])}</span>
         <span class="lr-chips">${l.shared ? html`<span class="chip-s">🏫 ${t('lessons.lesson.sharedChip')}</span>` : ''}${l.assigned ? html`<span class="chip-s">📌 ${t('lessons.assignedN', { count: l.assigned })}</span>` : ''}</span></a>
       <span class="acts">${i ? html`<form data-api="/api/lessons/${l.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < list.length - 1 ? html`<form data-api="/api/lessons/${l.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
@@ -153,7 +154,7 @@ router.get('/teach/lessons', requireUser, (req, res) => {
   ${schools.length > 1 ? html`<nav class="seg schoolpick" aria-label="${t('school.class.school')}">${schools.map(s => html`<a class="btn btn-sm ${s.id === school.id ? 'btn-primary' : ''}" href="/teach/lessons?school=${s.id}">${s.name}</a>`)}</nav>` : ''}
   <nav class="tabs" aria-label="${t('lessons.library.title')}"><a href="${q()}" ${tab === 'mine' ? raw('aria-current="page"') : ''}>${t('lessons.library.mine')}</a><a href="${q('&tab=shared')}" ${tab === 'shared' ? raw('aria-current="page"') : ''}>${t('lessons.library.shared')}</a></nav>
   ${tab === 'mine' ? mine : shared}`;
-  page(req, res, { title: t('lessons.library.title'), active: 'classes', mid: true, body, head: CSS, back: '/teach', backLabel: t('school.teach.title') });
+  page(req, res, { title: t('lessons.library.title'), active: 'classes', mid: true, body, head: CSS, scripts: ['/js/schools.js'], back: '/teach', backLabel: t('school.teach.title') });
 });
 
 // ---- library APIs
@@ -291,10 +292,11 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
     </form></details>` : ''}
   ${l.summary ? html`<div class="panel">${paras(l.summary)}</div>` : ''}
   ${l.objectives ? html`<section class="panel"><h2>🎯 ${t('lessons.lesson.objectives')}</h2><ul>${l.objectives.split('\n').filter(Boolean).map(o => html`<li>${o.replace(/^[-•*]\s*/, '')}</li>`)}</ul></section>` : ''}
-  <h2 class="sec-h">🪜 ${t('lessons.lesson.steps')}</h2>
+  ${edit && st.length > 2 ? jumpNav(t, [['steps', `🪜 ${t('lessons.lesson.steps')}`, st.length], ['add-step', `➕ ${t('lessons.step.add')}`], ['assign', `📌 ${t('lessons.assign.title')}`]]) : ''}
+  <h2 class="sec-h" id="steps">🪜 ${t('lessons.lesson.steps')}</h2>
   ${st.length ? html`<ol class="plain steplist">${st.map(stepView)}</ol>` : html`<p class="muted">${t('lessons.lesson.noSteps')}</p>`}
   ${edit ? html`
-  <section class="panel"><h2>➕ ${t('lessons.step.add')}</h2>
+  <section class="panel" id="add-step"><h2>➕ ${t('lessons.step.add')}</h2>
     <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true })}
       <div class="formacts"><button class="btn btn-primary" type="submit">➕ ${t('lessons.step.addButton')}</button></div></form>
     <details class="newgame"><summary class="small">➕ ${t('lessons.step.newGameLink')}</summary>
@@ -409,6 +411,26 @@ export function teacherLessonsPanel(req, c) {
   return html`<section class="panel" id="lessons" aria-labelledby="ls-h"><h2 id="ls-h" class="sr-only">📚 ${t('lessons.class.title')}</h2>
     ${count ? '' : html`<div class="empty"><div class="emo" aria-hidden="true">📚</div><h3>${t('lessons.class.empty')}</h3>${libOk ? html`<p>${t('lessons.class.emptyText')}</p>
       <div class="row emptyacts"><a class="btn btn-primary" href="${lib}&class=${c.id}&open=new">➕ ${t('lessons.library.newLesson')}</a><a class="btn" href="${lib}&class=${c.id}&open=ai">✨ ${t('lessons.ai.button')}</a></div>` : ''}</div>`}
+    <div class="cl-tools">
+      <div class="cl-more">
+        ${avail.length || back.length ? html`<details class="libdrop assigndrop" ${count ? '' : raw('open')}><summary class="btn btn-primary">📌 ${t('lessons.class.assign')}</summary>
+        <form class="formgrid" data-api="/api/classes/${c.id}/lessons" data-reload novalidate>
+        <div class="field"><label for="al-l">${t('lessons.class.assign')}</label><select class="input" id="al-l" name="lessonId">${back.length
+          ? html`${avail.length ? html`<optgroup label="${t('lessons.library.mine')}">${avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>` : ''}<optgroup label="${t('lessons.class.removedGroup')}">${back.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>`
+          : avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</select></div>
+        ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}
+        <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
+        <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
+        <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
+        <p class="small muted wide">${zoneNote(t, c.school_id)}</p></form></details>` : ''}
+        ${libOk ? html`<a class="btn" href="${lib}">📚 ${t('lessons.class.library')}</a>` : ''}
+        <details class="libdrop unitdrop"><summary class="btn">🗂️ ${t('lessons.class.newUnit')}</summary>
+          <form class="row unitform" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input grow" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn btn-primary" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form>
+          <p class="small muted">${t('lessons.class.unitHint')}</p></details>
+        ${mine.length && !avail.length && !back.length ? html`<p class="small muted allin">${t('lessons.class.allIn')}</p>` : ''}
+      </div>
+      ${colleagues && libOk ? html`<p class="small muted">💡 ${tHtml(t, 'lessons.class.sharedHint', { tab: html`<a href="${lib}&tab=shared">${t('lessons.library.shared')}</a>` })}</p>` : ''}
+    </div>
     ${plan.map((g, gi) => (g.unit || g.lessons.length) ? html`<div class="unit">
       ${g.unit ? html`<div class="unit-head"><h3>🗂️ ${g.unit.name}</h3><span class="acts">
         ${gi > 1 ? html`<form data-api="/api/class-units/${g.unit.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${gi < plan.length - 1 ? html`<form data-api="/api/class-units/${g.unit.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
@@ -417,24 +439,7 @@ export function teacherLessonsPanel(req, c) {
           <form data-api="/api/class-units/${g.unit.id}/delete" data-reload data-confirm="${t('lessons.class.deleteUnitConfirm', { name: g.unit.name })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.deleteUnit')}</button></form>
         </div></details></span></div>` : ''}
       ${g.lessons.length ? html`<ol class="plain cl-list">${g.lessons.map((cl, i) => lessonRow(cl, i, g.lessons.length))}</ol>` : html`<p class="small muted">${t('lessons.class.emptyUnit')}</p>`}</div>` : '')}
-    <div class="cl-tools">
-      ${avail.length || back.length ? html`<form class="formgrid" data-api="/api/classes/${c.id}/lessons" data-reload novalidate>
-        <div class="field"><label for="al-l">${t('lessons.class.assign')}</label><select class="input" id="al-l" name="lessonId">${back.length
-          ? html`${avail.length ? html`<optgroup label="${t('lessons.library.mine')}">${avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>` : ''}<optgroup label="${t('lessons.class.removedGroup')}">${back.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>`
-          : avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</select></div>
-        ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}
-        <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
-        <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
-        <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
-        <p class="small muted wide">${zoneNote(t, c.school_id)}</p></form>` : ''}
-      ${colleagues && libOk ? html`<p class="small muted">💡 ${tHtml(t, 'lessons.class.sharedHint', { tab: html`<a href="${lib}&tab=shared">${t('lessons.library.shared')}</a>` })}</p>` : ''}
-      <div class="cl-more">
-        ${mine.length && !avail.length && !back.length ? html`<p class="small muted allin">${t('lessons.class.allIn')}</p>` : ''}
-        ${libOk ? html`<a class="btn" href="${lib}">📚 ${t('lessons.class.library')}</a>` : ''}
-        <details class="libdrop unitdrop"><summary class="btn">🗂️ ${t('lessons.class.newUnit')}</summary>
-          <form class="row unitform" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input grow" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn btn-primary" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form>
-          <p class="small muted">${t('lessons.class.unitHint')}</p></details></div>
-    </div></section>`;
+  </section>`;
 }
 /** Student view: open lessons by unit, with how far the student has got in each. */
 export function studentLessonsPanel(req, c) {

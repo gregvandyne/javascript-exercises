@@ -1595,3 +1595,14 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
   .sart{height:130px} .sart-main{font-size:72px}
   .course-hero .course-emo.big{font-size:2.4rem}
 }
+
+/* "Jump to" chips on long pages (admin pages, school and teacher pages): server/views/admin-ui.js jumpNav and
+   server/views/components.js jumpNav. Each chip is a 44 px tap target; a count shows as a badge. */
+.ajump{margin:var(--s3) 0 var(--s4)}
+.ajump .chip{font-size:.9rem;padding:0 14px}
+.ajump{align-items:center}
+.ajump-l{font-size:.8125rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-inline-end:var(--s1)}
+.ajump .chip{background:transparent;border-width:1px;border-style:dashed;font-weight:600;color:var(--text-2)}
+.ajump .chip:hover{border-style:solid}
+.ajump .badge.quiet{background:var(--card-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+

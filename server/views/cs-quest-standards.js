@@ -26,7 +26,7 @@ export function classBody(req, { c, data, all, student = null }) {
   const tools = html`<div class="row csq-std-tools noprint">
     <form method="get" action="${base}" class="row csq-std-pick">${all ? html`<input type="hidden" name="all" value="1">` : ''}
       <label class="small" for="std-student">${t('cs.standards.pick')}</label>
-      <select id="std-student" name="student"><option value="">${t('cs.standards.everyone')}</option>${data.students.map(p => html`<option value="${p.id}" ${student && student.id === p.id ? 'selected' : ''}>${p.name}</option>`)}</select>
+      <select class="input input-sm" id="std-student" name="student"><option value="">${t('cs.standards.everyone')}</option>${data.students.map(p => html`<option value="${p.id}" ${student && student.id === p.id ? 'selected' : ''}>${p.name}</option>`)}</select>
       <button class="btn btn-sm" type="submit">${t('cs.standards.show')}</button></form>
     <a class="btn btn-sm" href="${qs({ all: !all })}">${all ? t('cs.standards.levelsClass') : t('cs.standards.levelsAll')}</a>
     <a class="btn btn-sm" href="${base}.csv${all ? '?all=1' : ''}" download>⬇️ ${t('cs.standards.csv')}</a>
@@ -45,23 +45,25 @@ export function classBody(req, { c, data, all, student = null }) {
       <div class="gbwrap" tabindex="0" role="region" aria-label="${t('cs.standards.title')}"><table class="tbl csq-std">
       <thead><tr><th scope="col">${t('cs.standards.cols.standard')}</th><th scope="col">${t('cs.standards.cols.practiced')}</th><th scope="col">${t('cs.standards.cols.checked')}</th><th scope="col">${t('cs.standards.cols.applied')}</th><th scope="col">${t('cs.standards.cols.status')}</th></tr></thead>
       ${groupBy(data.rows).map(([concept, rows]) => html`<tbody><tr class="csq-std-concept"><th colspan="5" scope="colgroup">${concept}</th></tr>${rows.map(r => { const x = r.by.get(student.id);
-        if (student.noData || !x) return html`<tr>${stdCell(r)}<td>${nd}</td><td>${nd}</td><td>${nd}</td><td>${nd}</td></tr>`;
-        return html`<tr>${stdCell(r)}<td>${x.practiced ? '✅' : dash}</td>
-          <td>${x.checked ? html`${t('cs.standards.ticket', { right: x.checked.ticket.right, tagged: x.checked.ticket.tagged })}<span class="small muted"> · ${x.checked.pct}%</span>` : nd}</td>
-          <td>${x.applied ? t('cs.standards.best', { best: x.applied.best, count: x.applied.n }) : nd}</td>
-          <td>${x.meets ? chip('meets') : x.checked || x.applied ? chip('checked') : x.practiced ? chip('practiced') : r.lessons.length ? chip('assigned') : chip('notYet')}</td></tr>`; })}</tbody>`)}
+        const L = k => t(`cs.standards.cols.${k}`);
+        if (student.noData || !x) return html`<tr>${stdCell(r)}<td data-label="${L('practiced')}">${nd}</td><td data-label="${L('checked')}">${nd}</td><td data-label="${L('applied')}">${nd}</td><td data-label="${L('status')}">${nd}</td></tr>`;
+        return html`<tr>${stdCell(r)}<td data-label="${L('practiced')}">${x.practiced ? '✅' : dash}</td>
+          <td data-label="${L('checked')}">${x.checked ? html`${t('cs.standards.ticket', { right: x.checked.ticket.right, tagged: x.checked.ticket.tagged })}<span class="small muted"> · ${x.checked.pct}%</span>` : nd}</td>
+          <td data-label="${L('applied')}">${x.applied ? t('cs.standards.best', { best: x.applied.best, count: x.applied.n }) : nd}</td>
+          <td data-label="${L('status')}">${x.meets ? chip('meets') : x.checked || x.applied ? chip('checked') : x.practiced ? chip('practiced') : r.lessons.length ? chip('assigned') : chip('notYet')}</td></tr>`; })}</tbody>`)}
       </table></div></section>${legend(t)}`;
   }
   const names = new Map(data.students.map(p => [p.id, p.name]));
+  const L = k => t(`cs.standards.cols.${k}`);
   return html`${tools}<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${t('cs.standards.title')}"><table class="tbl csq-std">
     <thead><tr>${['standard', 'lessons', 'practiced', 'checked', 'applied', 'needsLook', 'last', 'status'].map(k => html`<th scope="col">${t(`cs.standards.cols.${k}`)}</th>`)}</tr></thead>
     ${groupBy(data.rows).map(([concept, rows]) => html`<tbody><tr class="csq-std-concept"><th colspan="8" scope="colgroup">${concept}</th></tr>${rows.map(r => html`<tr class="${r.status === 'notYet' ? 'csq-std-quiet' : ''}">
-      ${stdCell(r)}<td class="csq-std-lessons">${lessonLinks(r)}</td>
-      <td><b>${r.practiced}</b> / ${m}</td>
-      <td>${checkedText(t, r) || dash}</td>
-      <td>${appliedText(t, r) || dash}</td>
-      <td>${r.needsLook.length ? r.needsLook.map((id, i) => html`${i ? ', ' : ''}<a href="${qs({ student: id })}" dir="auto">${names.get(id)}</a>`) : dash}</td>
-      <td class="nw">${r.last ? f.day(r.last, SHORT) : dash}</td><td>${chip(r.status)}</td></tr>`)}</tbody>`)}
+      ${stdCell(r)}<td class="csq-std-lessons" data-label="${L('lessons')}">${lessonLinks(r)}</td>
+      <td data-label="${L('practiced')}"><b>${r.practiced}</b> / ${m}</td>
+      <td data-label="${L('checked')}">${checkedText(t, r) || dash}</td>
+      <td data-label="${L('applied')}">${appliedText(t, r) || dash}</td>
+      <td data-label="${L('needsLook')}">${r.needsLook.length ? r.needsLook.map((id, i) => html`${i ? ', ' : ''}<a href="${qs({ student: id })}" dir="auto">${names.get(id)}</a>`) : dash}</td>
+      <td class="nw" data-label="${L('last')}">${r.last ? f.day(r.last, SHORT) : dash}</td><td data-label="${L('status')}">${chip(r.status)}</td></tr>`)}</tbody>`)}
   </table></div></section>${legend(t)}`;
 }
 

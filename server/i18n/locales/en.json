@@ -2441,7 +2441,8 @@
         "on": "School plan on",
         "billing": "Billing",
         "settling": "Setting up your plan…"
-      }
+      },
+      "tools": "Teaching tools"
     },
     "class": {
       "new": "New class",
@@ -2568,7 +2569,8 @@
       "createStaff": "Create account and login card",
       "addToSchool": "Add to school",
       "added": "{name} added as {role}",
-      "putInClass": "Class"
+      "putInClass": "Class",
+      "changeGrade": "Change the grade for {name}"
     },
     "settings": {
       "name": "School name",
@@ -2592,7 +2594,9 @@
       "timeZone": "Time zone",
       "timeZoneNone": "Not set (days are counted in UTC)",
       "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
-      "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now."
+      "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now.",
+      "groupSchool": "School",
+      "groupClasses": "Classes and joining"
     },
     "cards": {
       "title": "Login cards",
@@ -2604,7 +2608,8 @@
       "gone": "These login cards are gone. Make a new password from the class's Students tab or the school's People tab.",
       "backPeople": "Back to People",
       "backClass": "Back to {name}",
-      "skipped": "{count, plural, one {# student uses their own account and keeps their password} other {# students use their own account and keep their passwords}}: {names}."
+      "skipped": "{count, plural, one {# student uses their own account and keeps their password} other {# students use their own account and keep their passwords}}: {names}.",
+      "count": "{count, plural, one {# login card} other {# login cards}}"
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -2786,6 +2791,19 @@
         "planOn": "Your school already has a School plan.",
         "noAdmin": "Your school has no admin yet, so there is nobody to ask."
       }
+    },
+    "jump": {
+      "label": "Jump to",
+      "aria": "On this page"
+    },
+    "filter": {
+      "label": "Find a name",
+      "none": "No one here by that name."
+    },
+    "stats": {
+      "classes": "{count, plural, one {# class} other {# classes}}",
+      "teachers": "{count, plural, one {# teacher} other {# teachers}}",
+      "unplaced": "{count, plural, one {# student not in a class} other {# students not in a class}}"
     }
   },
   "lessons": {
@@ -2812,7 +2830,9 @@
       "newLesson": "New lesson",
       "newLessonPlaceholder": "Lesson title, e.g. Fractions warm-up",
       "empty": "No lessons here yet",
-      "emptyText": "Make a new lesson, let the AI draft one, or copy one a colleague shared."
+      "emptyText": "Make a new lesson, let the AI draft one, or copy one a colleague shared.",
+      "find": "Find a lesson",
+      "readyMade": "Ready-made"
     },
     "folder": {
       "name": "Folder name",
@@ -3001,7 +3021,8 @@
       "inProgress": "In progress",
       "stepDone": "completed",
       "stepStarted": "started",
-      "note": "Course progress for this class's students: a step counts as done when its slides are read, its check is passed and its game chapter is finished. The checks score is the best recorded result per step (up to 3 per step). Students in another band see that band's steps."
+      "note": "Course progress for this class's students: a step counts as done when its slides are read, its check is passed and its game chapter is finished. The checks score is the best recorded result per step (up to 3 per step). Students in another band see that band's steps.",
+      "started": "{started} of {total} started"
     },
     "key": {
       "done": "done",
@@ -3040,7 +3061,8 @@
       "feedbackPlaceholder": "Feedback for the student (optional)",
       "send": "Save and mark reviewed",
       "update": "Update feedback",
-      "noAnswers": "No answers yet."
+      "noAnswers": "No answers yet.",
+      "attention": "Needs attention first"
     },
     "student": {
       "doneOf": "{done} of {total} done",
@@ -5398,7 +5420,8 @@
       "teacherHost": "Teacher? Host it live for your class",
       "solo": "Practice solo",
       "play": "Play vs the computer or 2 players",
-      "joinGo": "Join"
+      "joinGo": "Join",
+      "forClass": "For {name}"
     },
     "check": {
       "live_pack": "it doesn't load the live pack yet",

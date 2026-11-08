@@ -2421,7 +2421,8 @@
         "on": "Abonnement école actif",
         "billing": "Facturation",
         "settling": "Activation de votre abonnement…"
-      }
+      },
+      "tools": "Outils pour enseigner"
     },
     "class": {
       "new": "Nouvelle classe",
@@ -2548,7 +2549,8 @@
       "createStaff": "Créer le compte et la carte de connexion",
       "addToSchool": "Ajouter à l’école",
       "added": "{name} fait maintenant partie du personnel ({role})",
-      "putInClass": "Classe"
+      "putInClass": "Classe",
+      "changeGrade": "Changer le niveau de {name}"
     },
     "settings": {
       "name": "Nom de l’école",
@@ -2572,7 +2574,9 @@
       "timeZone": "Fuseau horaire",
       "timeZoneNone": "Non défini (les jours sont comptés en UTC)",
       "timeZoneUnset": "Définissez le fuseau horaire de votre école pour que les leçons ouvrent à minuit et que les dates limites se terminent à minuit là où vous êtes. En attendant, personne n’est en retard avant 36 heures après le début du jour de l’échéance.",
-      "timeZoneHint": "Les leçons ouvrent et les dates limites se terminent à minuit dans ce fuseau. Il est actuellement {time} là-bas."
+      "timeZoneHint": "Les leçons ouvrent et les dates limites se terminent à minuit dans ce fuseau. Il est actuellement {time} là-bas.",
+      "groupSchool": "École",
+      "groupClasses": "Classes et inscriptions"
     },
     "cards": {
       "title": "Cartes de connexion",
@@ -2584,7 +2588,8 @@
       "gone": "Ces cartes de connexion ne sont plus disponibles. Créez un nouveau mot de passe depuis l’onglet Élèves de la classe ou l’onglet Personnes de l’école.",
       "backPeople": "Retour à Personnes",
       "backClass": "Retour à {name}",
-      "skipped": "{count, plural, one {# élève utilise son propre compte et garde son mot de passe} other {# élèves utilisent leur propre compte et gardent leur mot de passe}} : {names}."
+      "skipped": "{count, plural, one {# élève utilise son propre compte et garde son mot de passe} other {# élèves utilisent leur propre compte et gardent leur mot de passe}} : {names}.",
+      "count": "{count, plural, one {# carte de connexion} other {# cartes de connexion}}"
     },
     "errors": {
       "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
@@ -2766,6 +2771,19 @@
         "planOn": "Votre école a déjà un abonnement école.",
         "noAdmin": "Votre école n’a pas encore d’admin, il n’y a donc personne à qui demander."
       }
+    },
+    "jump": {
+      "label": "Aller à",
+      "aria": "Sur cette page"
+    },
+    "filter": {
+      "label": "Chercher un nom",
+      "none": "Personne ne porte ce nom ici."
+    },
+    "stats": {
+      "classes": "{count, plural, one {# classe} other {# classes}}",
+      "teachers": "{count, plural, one {# enseignant} other {# enseignants}}",
+      "unplaced": "{count, plural, one {# élève sans classe} other {# élèves sans classe}}"
     }
   },
   "lessons": {
@@ -2792,7 +2810,9 @@
       "newLesson": "Nouvelle leçon",
       "newLessonPlaceholder": "Titre de la leçon, ex. Échauffement sur les fractions",
       "empty": "Pas encore de leçon ici",
-      "emptyText": "Créez une nouvelle leçon, laissez l’IA en rédiger une ébauche, ou copiez une leçon partagée par un collègue."
+      "emptyText": "Créez une nouvelle leçon, laissez l’IA en rédiger une ébauche, ou copiez une leçon partagée par un collègue.",
+      "find": "Chercher une leçon",
+      "readyMade": "Prêts à l’emploi"
     },
     "folder": {
       "name": "Nom du dossier",
@@ -3009,7 +3029,8 @@
       "feedbackPlaceholder": "Commentaire pour l’élève (facultatif)",
       "send": "Enregistrer et marquer comme corrigée",
       "update": "Modifier le commentaire",
-      "noAnswers": "Pas encore de réponse."
+      "noAnswers": "Pas encore de réponse.",
+      "attention": "À suivre en premier"
     },
     "student": {
       "doneOf": "{done} sur {total} terminées",
@@ -3032,6 +3053,9 @@
       "sentAgo": "Envoyée {when}",
       "feedback": "De ton prof",
       "readNoFeedback": "Ton prof a vu ta réponse."
+    },
+    "courses": {
+      "started": "{started} sur {total} ont commencé"
     }
   },
   "google": {
@@ -5090,7 +5114,8 @@
       "teacherHost": "Enseignant ? Lancez-le en direct avec votre classe",
       "solo": "S’entraîner seul",
       "play": "Jouer contre l’ordi ou à 2",
-      "joinGo": "Rejoindre"
+      "joinGo": "Rejoindre",
+      "forClass": "Pour {name}"
     },
     "check": {
       "live_pack": "il ne charge pas encore le pack direct",
