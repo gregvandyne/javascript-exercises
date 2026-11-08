@@ -23,6 +23,7 @@ const GOOD = {
   swap: { type: 'swap', before: ['2', '1'], after: ['1', '2'], mark: [0, 1] },
   split: { type: 'split', whole: '3 kg 400 g', parts: [{ w: 0.882, label: '3,000 g' }, { w: 0.118, label: '400 g' }] },
   ladder: { type: 'ladder', words: ['certain', 'likely', 'even chance', 'unlikely', 'impossible'] },
+  fix: { type: 'fix', wrong: '7 × 8 = 54', steps: ['7 × 4 = 28', '28 + 28 = 56'], right: '7 × 8 = 56' },
 };
 const texts = svg => [...svg.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)" font-size="([\d.]+)"[^>]*>([^<]*)<\/text>/g)].map(m => ({ x: +m[1], y: +m[2], size: +m[3], s: m[4] }));
 
@@ -122,6 +123,23 @@ test('swap, split and ladder (fix round A6) draw every word at 13 px or more on 
   assert.deepEqual(texts(diagramSvg(cleanDiagram(GOOD.ladder, 'L'))).filter(x => x.size === 4.2).map(x => x.s), GOOD.ladder.words, 'most likely at the top');
   assert.equal(cleanDiagram({ type: 'split', parts: [{ w: 0.5, label: 'a' }, { w: 0.2, label: 'b' }] }, 'L'), null, 'parts make the whole');
   assert.equal(cleanDiagram({ type: 'swap', before: ['2', '1'], after: ['1', '2'], mark: [5] }, 'L'), null);
+});
+
+test('fix (the Jumble beats): the wrong answer struck through over the trick and the right answer, phone-sized, inside its extent', () => {
+  const v = cleanDiagram(GOOD.fix, 'The Jumble said 54 for 7 × 8');
+  assert.deepEqual(v, { type: 'fix', label: 'The Jumble said 54 for 7 × 8', ...GOOD.fix });
+  const svg = diagramSvg(v), ts = texts(svg), [a, b] = diagramExtent(v);
+  for (const x of ts) assert.ok(x.size >= 4.2, `"${x.s}" at ${x.size}`);
+  const at = s => ts.find(x => x.s === s);
+  assert.ok(at('The Jumble says') && at('not right') && at('Fix it'), 'the default card names');
+  assert.ok(at('7 × 8 = 54').y < at('7 × 4 = 28').y && at('7 × 4 = 28').y < at('28 + 28 = 56').y, 'the mistake first, then the trick, step by step');
+  assert.ok(at('7 × 8 = 56').x > at('7 × 4 = 28').x, 'the right answer beside the steps, in its pill');
+  assert.match(svg, /<line x1="[\d.]+" y1="([\d.]+)" x2="[\d.]+" y2="\1" stroke="#C2431F"/, 'the wrong answer is struck through');
+  for (const x of ts) assert.ok(x.y - 0.84 * x.size >= a && x.y + 0.28 * x.size <= b + 0.01, `"${x.s}" inside the extent [${a}, ${b}]`);
+  assert.ok(b <= 56.25, 'two steps fit the frame');
+  assert.equal(cleanDiagram({ ...GOOD.fix, steps: [] }, 'L'), null, 'a fix needs its trick');
+  assert.equal(cleanDiagram({ ...GOOD.fix, steps: ['a', 'b', 'c'] }, 'L'), null, 'at most two steps (a third would push the fix card out of the frame)');
+  assert.equal(cleanDiagram({ ...GOOD.fix, wrong: 'x'.repeat(19) }, 'L'), null, 'every line fits its card (18 characters)');
 });
 
 test('a bar model marked big keeps the flag through the course engine', async () => {

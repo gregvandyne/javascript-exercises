@@ -91,7 +91,7 @@
    "kind": "example",
    "title": "The five moves in order",
    "text": "A fake page just asked for a player's mailbox key, and the player typed it. Put the Defender moves in order.",
-   "art": "loop",
+   "art": "shield",
    "steps": [
     "Stop: hands off the fake page",
     "Save it: keep a picture of the page",
@@ -103,7 +103,7 @@
   {
    "title": "Speed is protection",
    "text": "If you ever type something private into a trick page, telling fast is what saves you. Adults can change the key before the trickster uses it, so every minute of honesty helps.",
-   "art": "star"
+   "art": "clock"
   },
   {
    "kind": "words",

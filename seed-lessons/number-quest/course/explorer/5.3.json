@@ -183,7 +183,38 @@
   {
    "title": "The Jumble at the till",
    "text": "The Jumble tried to help by ringing up a sticker priced at $2.05. It charged 235 cents, as if the price said $2.35. The zero matters: it holds the tens place, so $2.05 is 205 cents, not 235.",
-   "art": "bug"
+   "art": "bug",
+   "visual": {
+    "type": "fix",
+    "label": "The Jumble charged 235 cents for $2.05; the zero holds the tens place, so it is 205 cents",
+    "badName": "The Jumble charged",
+    "wrong": "235¢",
+    "steps": [
+     "2 dollars: 200¢",
+     "0 dimes, 5 pennies"
+    ],
+    "right": "$2.05 is 205¢"
+   },
+   "focus": [
+    {
+     "cue": "The Jumble charged 235 cents for a $2.05 sticker.",
+     "box": [
+      11,
+      21.3,
+      82,
+      25.8
+     ]
+    },
+    {
+     "cue": "Fix it: 2 dollars, 0 dimes, 5 pennies make 205 cents.",
+     "box": [
+      11,
+      54.2,
+      82,
+      41.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: fewest coins",

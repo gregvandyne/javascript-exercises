@@ -245,7 +245,7 @@ test('visual strings respect the deck loader caps (server/services/courses.js cl
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {
-  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'swap', 'split', 'ladder'];
+  const TYPES = ['places', 'numberline', 'bars', 'fraction', 'array', 'tiles', 'shapes', 'grid', 'squares', 'lines', 'chart', 'table', 'letters', 'spinner', 'build', 'swap', 'split', 'ladder', 'fix'];
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     const drawn = d.slides.filter(s => s.visual);

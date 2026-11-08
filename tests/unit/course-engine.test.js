@@ -84,6 +84,20 @@ test('crop: the step page draws the region at the frame\'s aspect, the remapped 
   assert.doesNotMatch(plain.text, /szoom/, 'no crop, no viewer');
 });
 
+test('crop: a whole-band view (whole: true) is drawn at its aspect with no expand button and no viewer', async () => {
+  // Number Quest's mission bands (scripts/nq-shots.js): the view IS the whole capture, so a corner button would open
+  // nothing more and only sit on the game's words (the owner's 3.3 finding: a cream strip kept just for that button).
+  writeDeck(d => { d.slides[0].view = [0, 0, 50, 100]; d.slides[0].whole = true; });
+  const kid = newUser(); C.setBand(kid, csq, '1b');
+  const page = await get('/courses/cs-quest/1b-1.1', kid);
+  assert.equal(page.status, 200);
+  assert.match(page.text, /<img class="simg simg--crop" [^>]*style="width:200%;height:100%;left:0%;top:0%"/, 'the band fills the frame');
+  assert.doesNotMatch(page.text, /szoom/, 'no expand button, no viewer');
+  writeDeck(d => { d.slides[0].view = [0, 0, 50, 100]; d.slides[0].whole = 'yes'; });
+  assert.match((await get('/courses/cs-quest/1b-1.1', kid)).text, /class="szoom"/, 'only whole: true counts');
+  writeDeck(() => {});
+});
+
 test('diagrams: the frame is the drawing\'s content band; boxes stay in the drawing\'s 100 x 56.25 coordinates', () => {
   const v = { type: 'bars', label: 'x', rows: [{ label: 'One whole, two parts', parts: [{ w: 0.6, label: 'a', tone: 0 }, { w: 0.4, label: '', unknown: true }] }] };
   const [y0, y1] = V.visualFit(v, []);

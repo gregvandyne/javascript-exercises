@@ -167,7 +167,39 @@
   {
    "title": "The Jumble delivers a parcel",
    "text": "The Jumble read an address as (2, 4) when the card said (4, 2). It walked 2 right and 4 up, and left the parcel two squares off in both directions. A swapped pair is a different square, every time.",
-   "art": "bug"
+   "art": "bug",
+   "visual": {
+    "type": "fix",
+    "label": "The Jumble walked to (2, 4); the card said (4, 2): 4 right first, then 2 up",
+    "badName": "The Jumble went to",
+    "wrong": "(2, 4)",
+    "wrongNote": "wrong square",
+    "steps": [
+     "First: 4 right",
+     "Then: 2 up"
+    ],
+    "right": "(4, 2)"
+   },
+   "focus": [
+    {
+     "cue": "The Jumble swapped the pair and went to (2, 4).",
+     "box": [
+      11,
+      21.3,
+      82,
+      25.8
+     ]
+    },
+    {
+     "cue": "Fix it: the first number walks right, the second walks up.",
+     "box": [
+      11,
+      54.2,
+      82,
+      41.6
+     ]
+    }
+   ]
   },
   {
    "title": "Stretch: the swap trap",

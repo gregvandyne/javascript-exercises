@@ -64,7 +64,7 @@
    "kind": "example",
    "title": "Self-checkout",
    "text": "Look at both sides: what it does for daily life, and what it does to jobs.",
-   "art": "table",
+   "art": "scale",
    "steps": [
     "daily life: shorter lines",
     "careers: fewer cashier jobs",

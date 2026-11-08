@@ -16,6 +16,7 @@ import * as C from '../services/courses.js';
 import * as seo from '../seo.js';
 import { el, lp, faqBlock, launchGame } from './teachers.js';
 import * as V from '../views/cs-quest.js';
+import { crewArt } from '../views/components.js';
 
 export const router = Router();
 const K = 'teachers.cd';
@@ -120,7 +121,7 @@ router.get('/teachers/cyber-defenders', (req, res) => {
   <section class="lp-sec" id="promise" aria-labelledby="promise-h">${el(t, 'h2', `${K}.promise.h`, {}, ' id="promise-h"')}
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `${K}.promise.li${n}`))}</ul></section>
   <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${K}.crew.h`, {}, ' id="crew-h"')}${el(t, 'p', `${K}.crew.p`)}
-    <ul class="csq-crew">${crew.map(c => html`<li class="panel"><span class="csq-crew-e" aria-hidden="true">${c.emoji}</span><h3 lang="en" dir="ltr">${c.title}</h3>
+    <ul class="csq-crew">${crew.map(c => html`<li class="panel">${crewArt(c.slug, c.emoji)}<h3 lang="en" dir="ltr">${c.title}</h3>
       ${el(t, 'p', `${K}.crew.${c.key}`, {}, ' class="small"')}
       <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/cyber-defenders')}">🦉 ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
   <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, {}, ' id="units-h"')}${el(t, 'p', `${K}.units.p`)}
@@ -185,7 +186,7 @@ router.get('/teach/cyber-defenders', requireUser, staffPage, (req, res) => {
   <ul class="plain">${cat.units.map(u => html`<li class="panel"><b lang="en" dir="ltr">${t('cs.unit.n', { n: u.n })} · ${u.title}</b>${u.stamp ? html` <span class="chip-s">🏅 ${t(`${K}.units.stamp`, { stamp: u.stamp })}</span>` : ''}
     <ol class="csq-lessons" lang="en" dir="ltr">${(u.steps || []).map(s => html`<li>${s.n} ${(s.titles || {})['1b'] || s.n}${(s.titles || {})['2'] && s.titles['2'] !== s.titles['1b'] ? html` <span class="small muted">(Pro: ${s.titles['2']})</span>` : ''}</li>`)}</ol></li>`)}</ul>
   <h2>${t(`${TK}.games.h`)}</h2>
-  <ul class="csq-crew">${games.map(g => html`<li class="panel"><span class="csq-crew-e" aria-hidden="true">${g.emoji}</span><h3 lang="en" dir="ltr">${g.title}</h3>
+  <ul class="csq-crew">${games.map(g => html`<li class="panel">${crewArt(g.slug, g.emoji)}<h3 lang="en" dir="ltr">${g.title}</h3>
     <div class="row">${g.live ? html`<a class="btn btn-primary" href="/play/${g.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : ''}</div></li>`)}</ul>
   <p class="small muted">${t(`${TK}.note`)}</p>`;
   page(req, res, { title: t(`${TK}.title`), active: 'classes', body, head: V.CSS, back: '/teach', backLabel: t('school.teach.title') });
