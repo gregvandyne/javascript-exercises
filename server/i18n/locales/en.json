@@ -1647,7 +1647,9 @@
       "needIdea": "Write your idea first (a few words is enough).",
       "failed": "Something went wrong. Please try again.",
       "copied": "Link copied!",
-      "deleteConfirm": "Delete this story? This can't be undone."
+      "deleteConfirm": "Delete this story? This can't be undone.",
+      "needNote": "Write what should change, or pick a new kind of story or feeling.",
+      "sampleOff": "That voice can't play right now."
     },
     "app": {
       "wentWrong": "Something went wrong. Please try again.",
@@ -6495,7 +6497,19 @@
       "left": "{count, plural, one {You can make # more story today.} other {You can make # more stories today.}}",
       "none": "You've made all your stories for today. Come back tomorrow!",
       "safety": "Stories are always gentle and kind. Every idea and every story is checked before it is made.",
-      "needIdea": "Write your idea first (a few words is enough)."
+      "needIdea": "Write your idea first (a few words is enough).",
+      "kitHint": "Everyone in your story becomes a felt animal friend: a mouse, a fox, an owl or a bunny.",
+      "styleH": "What kind of story?",
+      "toneH": "How should it feel?",
+      "voiceH": "Who reads it?",
+      "voiceAi": "The voices are AI voices. Tap ▶ to hear one.",
+      "listen": "Listen to {name}",
+      "musicH": "Background music",
+      "more": "More choices (you can skip these)",
+      "charsLabel": "Who is in it?",
+      "charsHint": "For example: my cat Luna and a kind fox. They become felt animals.",
+      "lessonLabel": "A lesson to learn?",
+      "lessonHint": "For example: sharing makes everyone happy."
     },
     "status": {
       "queued": "Waiting in line…",
@@ -6541,6 +6555,81 @@
       "decideP": "A child you look after made this story and would like to share it. May other people watch it?",
       "approve": "Yes, share it",
       "decline": "Not this one"
+    },
+    "options": "Story choices",
+    "voiceSample": "Once upon a time, in a little felt village, a sleepy owl looked up and counted the stars.",
+    "style": {
+      "bedtime": "Bedtime",
+      "adventure": "Adventure",
+      "funny": "Funny",
+      "rhyming": "Rhyming",
+      "fable": "Fable with a lesson",
+      "mystery": "Mystery"
+    },
+    "tone": {
+      "cozy": "Cozy",
+      "exciting": "Exciting",
+      "silly": "Silly",
+      "heartfelt": "Heartfelt",
+      "brave": "Brave"
+    },
+    "voice": {
+      "auto": "Our storyteller",
+      "coral": "Warm and kind",
+      "sage": "Gentle and wise",
+      "nova": "Cheerful friend",
+      "shimmer": "Bright and sparkly",
+      "fable": "Storybook voice",
+      "onyx": "Deep and calm"
+    },
+    "music": {
+      "lullaby": "Music box",
+      "playful": "Playful",
+      "adventure": "Adventure",
+      "magical": "Magic sparkles",
+      "piano": "Gentle piano",
+      "none": "No music"
+    },
+    "set": {
+      "lighthouse": "Lighthouse",
+      "village": "Village",
+      "forest": "Forest",
+      "meadow": "Meadow",
+      "sky": "Sky"
+    },
+    "time": {
+      "night": "Night",
+      "dusk": "Evening",
+      "dawn": "Sunrise",
+      "day": "Day"
+    },
+    "edit": {
+      "btn": "Edit story",
+      "h": "Change your story",
+      "back": "Back to the story",
+      "wordsH": "Change the words",
+      "wordsP": "Fix or change any line. The pictures stay the same.",
+      "titleLabel": "Title",
+      "scene": "Scene {n}",
+      "line": "Line {n}",
+      "remakeP": "New words, a new voice or new music are quick: the pictures are kept.",
+      "remakesLeft": "{count, plural, one {You can make # more quick change today.} other {You can make # more quick changes today.}}",
+      "remakeNone": "You've used all your quick changes for today. Come back tomorrow!",
+      "remake": "Make the new video",
+      "rewriteH": "Ask for a rewrite",
+      "rewriteP": "Tell the story writer what to change. A rewrite counts as one of your new stories for today.",
+      "noteLabel": "What should change?",
+      "noteHint": "For example: make it funnier, or add a picnic at the end.",
+      "rewrite": "Rewrite my story",
+      "nothing": "Change something first: the words, the voice or the music.",
+      "needNote": "Write what should change, or pick a new kind of story or feeling.",
+      "unsafe": "Those words can't go in a story here. Try kinder, gentler words.",
+      "invalid": "The story got too long. Try shorter lines.",
+      "busy": "A new version is already being made.",
+      "working": "Making the new version… The old video stays here until it's ready.",
+      "failed": "The new version didn't work, so your story stays as it was.",
+      "keepOld": "Keep the old one",
+      "asksAgain": "After a change, a grown-up or your teacher will be asked to say OK again before others can watch it."
     }
   }
 }

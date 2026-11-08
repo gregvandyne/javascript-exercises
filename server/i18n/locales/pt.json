@@ -1647,7 +1647,9 @@
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
       "failed": "Algo deu errado. Tente de novo.",
       "copied": "Link copiado!",
-      "deleteConfirm": "Apagar esta história? Não dá para desfazer."
+      "deleteConfirm": "Apagar esta história? Não dá para desfazer.",
+      "needNote": "Escreva o que deve mudar, ou escolha outro tipo de história ou sentimento.",
+      "sampleOff": "Essa voz não pode tocar agora."
     },
     "app": {
       "wentWrong": "Algo deu errado. Tente de novo.",
@@ -6114,7 +6116,19 @@
       "left": "{count, plural, one {Você pode criar mais # história hoje.} other {Você pode criar mais # histórias hoje.}}",
       "none": "Você já criou todas as suas histórias de hoje. Volte amanhã!",
       "safety": "As histórias são sempre gentis e carinhosas. Cada ideia e cada história é verificada antes de ser criada.",
-      "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam)."
+      "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
+      "kitHint": "Todo mundo na sua história vira um amigo animal de feltro: um ratinho, uma raposa, uma coruja ou um coelhinho.",
+      "styleH": "Que tipo de história?",
+      "toneH": "Como ela deve ser?",
+      "voiceH": "Quem vai ler?",
+      "voiceAi": "As vozes são vozes de IA. Toque em ▶ para ouvir uma.",
+      "listen": "Ouvir {name}",
+      "musicH": "Música de fundo",
+      "more": "Mais escolhas (pode pular)",
+      "charsLabel": "Quem está na história?",
+      "charsHint": "Por exemplo: minha gata Luna e uma raposa gentil. Eles viram animais de feltro.",
+      "lessonLabel": "Uma lição para aprender?",
+      "lessonHint": "Por exemplo: dividir deixa todo mundo feliz."
     },
     "status": {
       "queued": "Esperando na fila…",
@@ -6160,6 +6174,81 @@
       "decideP": "Uma criança que você acompanha fez esta história e quer compartilhá-la. Outras pessoas podem assistir?",
       "approve": "Sim, compartilhar",
       "decline": "Esta não"
+    },
+    "options": "Escolhas da história",
+    "voiceSample": "Era uma vez, numa vilinha de feltro, uma coruja sonolenta que olhou para o céu e contou as estrelas.",
+    "style": {
+      "bedtime": "Hora de dormir",
+      "adventure": "Aventura",
+      "funny": "Engraçada",
+      "rhyming": "Com rimas",
+      "fable": "Fábula com lição",
+      "mystery": "Mistério"
+    },
+    "tone": {
+      "cozy": "Aconchegante",
+      "exciting": "Emocionante",
+      "silly": "Boba",
+      "heartfelt": "Carinhosa",
+      "brave": "Corajosa"
+    },
+    "voice": {
+      "auto": "Nossa contadora",
+      "coral": "Calorosa e gentil",
+      "sage": "Suave e sábia",
+      "nova": "Amiga alegre",
+      "shimmer": "Brilhante e animada",
+      "fable": "Voz de livro",
+      "onyx": "Grave e calma"
+    },
+    "music": {
+      "lullaby": "Caixinha de música",
+      "playful": "Brincalhona",
+      "adventure": "Aventura",
+      "magical": "Brilhos mágicos",
+      "piano": "Piano suave",
+      "none": "Sem música"
+    },
+    "set": {
+      "lighthouse": "Farol",
+      "village": "Vila",
+      "forest": "Floresta",
+      "meadow": "Campo",
+      "sky": "Céu"
+    },
+    "time": {
+      "night": "Noite",
+      "dusk": "Fim de tarde",
+      "dawn": "Amanhecer",
+      "day": "Dia"
+    },
+    "edit": {
+      "btn": "Editar história",
+      "h": "Mude a sua história",
+      "back": "Voltar para a história",
+      "wordsH": "Mudar as palavras",
+      "wordsP": "Arrume ou mude qualquer frase. As imagens continuam as mesmas.",
+      "titleLabel": "Título",
+      "scene": "Cena {n}",
+      "line": "Frase {n}",
+      "remakeP": "Palavras novas, uma voz nova ou uma música nova são rápidas: as imagens ficam.",
+      "remakesLeft": "{count, plural, one {Você pode fazer mais # mudança rápida hoje.} other {Você pode fazer mais # mudanças rápidas hoje.}}",
+      "remakeNone": "Você já usou todas as mudanças rápidas de hoje. Volte amanhã!",
+      "remake": "Fazer o vídeo novo",
+      "rewriteH": "Pedir para reescrever",
+      "rewriteP": "Conte para quem escreve as histórias o que mudar. Reescrever conta como uma das suas histórias novas de hoje.",
+      "noteLabel": "O que deve mudar?",
+      "noteHint": "Por exemplo: deixe mais engraçada, ou coloque um piquenique no final.",
+      "rewrite": "Reescrever minha história",
+      "nothing": "Mude alguma coisa primeiro: as palavras, a voz ou a música.",
+      "needNote": "Escreva o que deve mudar, ou escolha outro tipo de história ou sentimento.",
+      "unsafe": "Essas palavras não podem entrar numa história aqui. Tente palavras mais gentis.",
+      "invalid": "A história ficou longa demais. Tente frases mais curtas.",
+      "busy": "Uma versão nova já está sendo feita.",
+      "working": "Fazendo a versão nova… O vídeo antigo fica aqui até ela ficar pronta.",
+      "failed": "A versão nova não deu certo, então sua história ficou como estava.",
+      "keepOld": "Ficar com a antiga",
+      "asksAgain": "Depois de uma mudança, um adulto ou seu professor vai precisar dizer OK de novo antes que outras pessoas possam assistir."
     }
   }
 }

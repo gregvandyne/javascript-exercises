@@ -78,7 +78,7 @@ export function pickProvider(locale, want = process.env.STORY_VOICE || 'auto') {
   return lv.pico || lv.espeak ? 'local' : 'none';
 }
 
-async function localClip(text, locale, out) {
+async function localClip(text, locale, out, pitch = 1) {
   const lv = localVoices();
   const raw = out.replace(/\.wav$/, '.raw.wav');
   const code = PICO[locale] ? locale : PICO[String(locale).split('-')[0]] ? String(locale).split('-')[0] : null;
@@ -86,7 +86,10 @@ async function localClip(text, locale, out) {
   else if (lv.espeak) await run('espeak-ng', ['-v', ESPEAK[locale] || ESPEAK[String(locale).split('-')[0]] || 'en-us', '-s', '135', '-w', raw, text]);
   else throw new Error('no local voice');
   // calmer and warmer: a touch slower, the hiss off the top, a little body, a small room
-  await run('ffmpeg', ['-v', 'error', '-y', '-i', raw, '-af', 'atempo=0.9,highpass=f=70,lowpass=f=7000,equalizer=f=220:t=q:w=1:g=3,aecho=0.8:0.5:40:0.12,loudnorm=I=-18:TP=-2', '-ar', '32000', '-ac', '1', out]);
+  // the narrator chosen (story-options NARRATORS pitch): shifted up or down a little, at the same speed
+  const p = Math.max(0.7, Math.min(1.3, +pitch || 1));
+  const shift = p === 1 ? '' : `aresample=32000,asetrate=${Math.round(32000 * p)},aresample=32000,atempo=${(1 / p).toFixed(4)},`;
+  await run('ffmpeg', ['-v', 'error', '-y', '-i', raw, '-af', `${shift}atempo=0.9,highpass=f=70,lowpass=f=7000,equalizer=f=220:t=q:w=1:g=3,aecho=0.8:0.5:40:0.12,loudnorm=I=-18:TP=-2`, '-ar', '32000', '-ac', '1', out]);
   fs.rmSync(raw, { force: true });
 }
 
@@ -97,14 +100,15 @@ async function silentClip(text, out) {
 
 /**
  * Voice one line into dir/line-<i>.(wav|mp3). -> { file, duration, provider }.
+ * voice: the site voice to read it (tts-voices VOICES; null: the language's narrator); pitch: the offline voice's shift.
  * A 'service' refusal or failure falls back to the local voice (when there is one).
  */
-export async function voiceLine(text, { locale = 'en', dir, index, provider = pickProvider(locale) }) {
+export async function voiceLine(text, { locale = 'en', dir, index, provider = pickProvider(locale), voice = null, pitch = 1 }) {
   const s = tts.spokenText(text);
   if (!s) throw new Error('empty line');
   if (provider === 'service') {
     try {
-      const r = await tts.synthesize({ text: s, locale: V.ttsLocale(locale) || locale, role: 'narrator', rate: 'slow', ctx: 'story' });
+      const r = await tts.synthesize({ text: s, locale: V.ttsLocale(locale) || locale, role: 'narrator', rate: 'slow', voice: voice && V.VOICES.includes(voice) ? voice : null, ctx: 'story' });
       const file = path.join(dir, `line-${index}.mp3`);
       fs.copyFileSync(tts.fileOf(r.hash), file);
       return { file, duration: await durationOf(file), provider };
@@ -115,7 +119,7 @@ export async function voiceLine(text, { locale = 'en', dir, index, provider = pi
     }
   }
   const file = path.join(dir, `line-${index}.wav`);
-  if (provider === 'local') await localClip(s, locale, file);
+  if (provider === 'local') await localClip(s, locale, file, pitch);
   else if (provider === 'silent') await silentClip(s, file);
   else throw new Error('no voice: turn the AI voice on for this language (TTS_ENABLED, /admin/voices) or install an offline voice');
   return { file, duration: await durationOf(file), provider };

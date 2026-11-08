@@ -184,7 +184,7 @@ test('the whole story through the remote path: the service composes the music an
       assemble: { timeline: { scenes: tl.scenes, total: tl.total }, xfade: W.T.xfade, posterAt: 1.0, ass, music: { seconds: tl.total, seed: 7, duck: tl.narration }, voice, outDir: work },
     });
     assert.equal(r.assembled, true);
-    assert.deepEqual(r.music && Object.keys(r.music).sort(), ['bars', 'bpm', 'key', 'notes'], 'the music was composed on the renderer');
+    assert.deepEqual(r.music && Object.keys(r.music).sort(), ['bars', 'bpm', 'key', 'mood', 'notes'], 'the music was composed on the renderer');
     const probe = JSON.parse(spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration:stream=codec_type', '-of', 'json', path.join(work, 'story.mp4')]).stdout.toString());
     assert.deepEqual(probe.streams.map(x => x.codec_type).sort(), ['audio', 'video']);
     assert.ok(Math.abs(+probe.format.duration - tl.total) < 0.3, `${probe.format.duration} vs ${tl.total}`);

@@ -206,6 +206,8 @@ export const config = {
   storyBuilder: parseFlag(process.env.STORY_BUILDER, 'STORY_BUILDER').on,
   storyDailyLimit: Math.max(0, Math.floor(num(process.env.STORY_DAILY_LIMIT, 2))),
   storyQueueMax: Math.max(1, Math.floor(num(process.env.STORY_QUEUE_MAX, 20))),
+  // Quick story changes (new words, voice or music: no new pictures) a day per person; grown-ups and staff get twice as many.
+  storyRemakeLimit: Math.max(0, Math.floor(num(process.env.STORY_REMAKE_LIMIT, 4))),
   // STORY_WORKER: 'inline' (the default) runs the story worker loop inside the site's process when STORY_BUILDER=1;
   // 'external' leaves it to scripts/story-worker.js. With STORY_RENDERER=remote the loop is light (the render runs on
   // the story renderer service, services/story-renderer/).
