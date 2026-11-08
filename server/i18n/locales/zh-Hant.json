@@ -2400,6 +2400,7 @@
     },
     "actions": "操作",
     "save": "儲存",
+    "cancel": "取消",
     "roles": {
       "admin": "校務管理員",
       "teacher": "老師",
@@ -2782,7 +2783,6 @@
     },
     "stats": {
       "classes": "{count, plural, other {# 個班級}}",
-      "teachers": "{count, plural, other {# 位老師}}",
       "unplaced": "{count, plural, other {# 位學生尚未分班}}"
     }
   },

@@ -96,6 +96,8 @@ router.get('/teach/lessons', requireUser, (req, res) => {
   const sub = tree.filter(f => (f.parent_id || null) === (folder ? folder.id : null));
   const list = L.lessonsIn(u.id, school.id, folder ? folder.id : null);
   const folderOptions = (selected, exclude = null) => html`<option value="">📚 ${t('lessons.library.top')}</option>${tree.filter(f => !exclude || (f.id !== exclude)).map(f => html`<option value="${f.id}" ${f.id === selected ? raw('selected') : ''}>${'  '.repeat(f.depth)}📁 ${f.name}</option>`)}`;
+  // A folder row counts the lessons in it and in every folder inside it, so a folder of folders doesn't read as empty.
+  const lessonsUnder = id => L.lessonsIn(u.id, school.id, id).length + tree.filter(f => f.parent_id === id).reduce((n, f) => n + lessonsUnder(f.id), 0);
   const meta = parts => parts.filter(Boolean).map((x, i) => html`${i ? ' · ' : ''}<span class="nw">${x}</span>`);
   const mine = html`
     ${crumbs.length ? html`<nav class="crumbs" aria-label="${t('lessons.library.path')}"><a href="${q()}">📚 ${t('lessons.library.top')}</a>${crumbs.map((f, i) => html` <span aria-hidden="true">›</span> ${i === crumbs.length - 1 ? html`<span aria-current="page">📁 ${f.name}</span>` : html`<a href="${q(`&folder=${f.id}`)}">${f.name}</a>`}`)}</nav>` : ''}
@@ -119,7 +121,7 @@ router.get('/teach/lessons', requireUser, (req, res) => {
     </div>
     <nav class="chips readymade" aria-label="${t('lessons.library.readyMade')}"><span class="ajump-l">${t('lessons.library.readyMade')}</span><a class="chip" href="/teach/cs-quest?school=${school.id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a></nav>
     ${sub.length ? html`<ul class="plain folderlist">${sub.map((f, i) => html`<li class="panel folderrow">
-      <a class="fr-name" href="${q(`&folder=${f.id}`)}"><span>📁 ${f.name}</span><span class="small muted fr-count">${t('cs.unit.lessonsN', { count: L.lessonsIn(u.id, school.id, f.id).length })}</span></a>
+      <a class="fr-name" href="${q(`&folder=${f.id}`)}"><span>📁 ${f.name}</span><span class="small muted fr-count">${t('cs.unit.lessonsN', { count: lessonsUnder(f.id) })}</span></a>
       <span class="acts">${i ? html`<form data-api="/api/lesson-folders/${f.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < sub.length - 1 ? html`<form data-api="/api/lesson-folders/${f.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
         <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: f.name })}">⋯</summary><div class="menu">
           <span class="lbl" aria-hidden="true">${t('lessons.folder.name')}</span>

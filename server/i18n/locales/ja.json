@@ -2400,6 +2400,7 @@
     },
     "actions": "操作",
     "save": "保存",
+    "cancel": "キャンセル",
     "roles": {
       "admin": "学校管理者",
       "teacher": "教員",
@@ -2782,7 +2783,6 @@
     },
     "stats": {
       "classes": "{count, plural, other {#クラス}}",
-      "teachers": "{count, plural, other {先生 #人}}",
       "unplaced": "{count, plural, other {クラス未所属の児童 #人}}"
     }
   },

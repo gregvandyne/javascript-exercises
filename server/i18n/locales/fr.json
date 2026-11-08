@@ -2400,6 +2400,7 @@
     },
     "actions": "Actions",
     "save": "Enregistrer",
+    "cancel": "Annuler",
     "roles": {
       "admin": "Admin de l’école",
       "teacher": "Enseignant",
@@ -2782,7 +2783,6 @@
     },
     "stats": {
       "classes": "{count, plural, one {# classe} other {# classes}}",
-      "teachers": "{count, plural, one {# enseignant} other {# enseignants}}",
       "unplaced": "{count, plural, one {# élève sans classe} other {# élèves sans classe}}"
     }
   },

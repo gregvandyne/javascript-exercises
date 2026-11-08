@@ -2401,6 +2401,7 @@
     },
     "actions": "Acties",
     "save": "Opslaan",
+    "cancel": "Annuleren",
     "roles": {
       "admin": "Schoolbeheerder",
       "teacher": "Leerkracht",
@@ -2783,7 +2784,6 @@
     },
     "stats": {
       "classes": "{count, plural, one {# klas} other {# klassen}}",
-      "teachers": "{count, plural, one {# leerkracht} other {# leerkrachten}}",
       "unplaced": "{count, plural, one {# leerling zonder klas} other {# leerlingen zonder klas}}"
     }
   },

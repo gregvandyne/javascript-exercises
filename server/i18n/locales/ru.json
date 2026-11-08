@@ -2400,6 +2400,7 @@
     },
     "actions": "Действия",
     "save": "Сохранить",
+    "cancel": "Отмена",
     "roles": {
       "admin": "Администратор школы",
       "teacher": "Учитель",
@@ -2782,7 +2783,6 @@
     },
     "stats": {
       "classes": "{count, plural, one {# класс} few {# класса} many {# классов} other {# класса}}",
-      "teachers": "{count, plural, one {# учитель} few {# учителя} many {# учителей} other {# учителя}}",
       "unplaced": "{count, plural, one {# ученик без класса} few {# ученика без класса} many {# учеников без класса} other {# ученика без класса}}"
     }
   },

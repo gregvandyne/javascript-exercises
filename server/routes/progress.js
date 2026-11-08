@@ -159,13 +159,13 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     const started = rows.filter(r => r.status !== 'not-started').length;
     const statusChip = r => (r.status === 'completed' ? html`<span class="chip-s">✅ ${t('progress.courses.completed')}</span>` : r.status === 'in-progress' ? html`<span class="chip-s warn">${t('progress.courses.inProgress')}</span>` : html`<span class="muted">${t('progress.status.none')}</span>`);
     return html`<details class="panel coursepanel" id="course-${course.slug}" ${started ? raw('open') : ''}><summary><h2>${course.emoji} ${t(`${course.key}.title`)}</h2><span class="small muted">${t('progress.courses.started', { started, total: rows.length })}</span></summary>
-    <div class="gbwrap" tabindex="0" role="region" aria-label="${t(`${course.key}.title`)}"><table class="tbl gradebook">
+    <div class="gbwrap" tabindex="0" role="region" aria-label="${t(`${course.key}.title`)}"><table class="tbl gradebook cptable">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.courses.status')}</th><th scope="col">${t('progress.courses.steps')}</th><th scope="col">${t('progress.courses.checks')}</th><th scope="col">${t('progress.courses.perStep')}</th></tr></thead>
       <tbody>${rows.map(r => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(r.user, 28)}<b>${nameOf(r.user)}</b></span></th>
-        <td>${statusChip(r)}</td>
-        <td><span class="gb-num">${r.done}/${r.total}</span>${bar(r.done, r.total)}</td>
-        <td>${r.maxScore ? html`<span class="gb-num">${r.score}/${r.maxScore}</span>` : html`<span class="muted">–</span>`}</td>
-        <td>${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
+        <td data-label="${t('progress.courses.status')}">${statusChip(r)}</td>
+        <td data-label="${t('progress.courses.steps')}"><span class="gb-num">${r.done}/${r.total}</span>${bar(r.done, r.total)}</td>
+        <td data-label="${t('progress.courses.checks')}">${r.maxScore ? html`<span class="gb-num">${r.score}/${r.maxScore}</span>` : html`<span class="muted">–</span>`}</td>
+        <td class="cp-steps" data-label="${t('progress.courses.perStep')}">${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.courses.note')}</p></details>`;
   }) : '';
   // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).

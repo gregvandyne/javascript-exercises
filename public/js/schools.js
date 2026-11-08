@@ -56,8 +56,11 @@ document.querySelectorAll('[data-filter]').forEach(box => {
   box.hidden = false;
 });
 
-// Standards tab on phones: each standard's statement is cut to two lines; tap (or Enter / Space) shows all of it.
-if (matchMedia('(max-width: 700px)').matches) document.querySelectorAll('.csq-std .csq-std-id .small').forEach(d => {
+// A text cut short with an ellipsis shows all of it on tap (or Enter / Space): a standard's statement on the Standards tab
+// on phones (two lines), and a step title over one lesson's progress (three lines; touch screens have no hover title).
+const expandable = [...document.querySelectorAll('.gradebook.steps .gb-step')];
+if (matchMedia('(max-width: 700px)').matches) expandable.push(...document.querySelectorAll('.csq-std .csq-std-id .small'));
+expandable.forEach(d => {
   if (d.scrollHeight <= d.clientHeight + 1) return;
   d.classList.add('more'); d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-expanded', 'false');
   const flip = () => d.setAttribute('aria-expanded', String(d.classList.toggle('open')));
@@ -77,4 +80,15 @@ document.querySelectorAll('[data-sort]').forEach(btn => {
     order.forEach(r => body.appendChild(r));
   });
   btn.closest('[hidden]')?.removeAttribute('hidden');
+});
+
+// A link to a folded section from another page (People's #add-staff from a class's Settings) opens it on arrival.
+{ const el = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (el && el.tagName === 'DETAILS' && !el.open) { el.open = true; el.scrollIntoView(); } }
+
+// School settings on phones: the Save bar sticks to the bottom of the screen only once the page has been scrolled, so it
+// never sits over the first fields when the page opens.
+document.querySelectorAll('.settingsform').forEach(form => {
+  const on = () => { if (scrollY > 0) { form.classList.add('scrolled'); removeEventListener('scroll', on); } };
+  addEventListener('scroll', on, { passive: true }); on();
 });

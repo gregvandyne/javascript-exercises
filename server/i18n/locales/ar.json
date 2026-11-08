@@ -2401,6 +2401,7 @@
     },
     "actions": "إجراءات",
     "save": "حفظ",
+    "cancel": "إلغاء",
     "roles": {
       "admin": "مسؤول المدرسة",
       "teacher": "معلّم",
@@ -2783,7 +2784,6 @@
     },
     "stats": {
       "classes": "{count, plural, zero {لا صفوف} one {صف واحد} two {صفان} few {# صفوف} many {# صفًا} other {# صف}}",
-      "teachers": "{count, plural, zero {لا معلمين} one {معلم واحد} two {معلمان} few {# معلمين} many {# معلمًا} other {# معلم}}",
       "unplaced": "{count, plural, zero {لا طلاب بلا صف} one {طالب واحد بلا صف} two {طالبان بلا صف} few {# طلاب بلا صف} many {# طالبًا بلا صف} other {# طالب بلا صف}}"
     }
   },

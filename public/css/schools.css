@@ -500,15 +500,25 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 
 /* ---- School and teacher pages: tidy-up (phones first) ---- */
 /* Gradebooks: names wrap between words only ("Hernández-" / "Valenzuela"), never inside one; the sticky name column is
-   wide enough for a long surname next to the avatar. One lesson's steps: short step titles (full title on hover) so the
-   table, Last active included, fits a laptop. */
+   wide enough for a long surname next to the avatar (on phones it is narrower, so two lesson columns show beside it, and
+   it grows only for a word that needs it). One lesson's steps: step titles wrap to three lines in a narrow column so the
+   table, Last active included, fits a laptop; a longer title shows whole on tap (public/js/schools.js) and on hover. */
 .gradebook .gb-name{min-width:168px}
 .gradebook .gb-name .pp{align-items:flex-start}
 .gradebook .gb-name .pp>.avatar{flex:none}
 .gradebook .gb-name .pp b{overflow-wrap:normal;word-break:normal;hyphens:manual;min-width:0}
-@media (max-width:600px){.gradebook .gb-name{min-width:148px;max-width:180px;padding-inline:var(--s2)}}
-.gradebook.steps thead th{min-width:88px;max-width:132px}
-.gradebook.steps .gb-step{max-width:112px}
+@media (max-width:600px){
+  .gradebook .gb-name{min-width:0;width:124px;max-width:none;padding-inline:var(--s2)}
+  .gradebook .gb-name .pp{gap:6px}
+  .gradebook .gb-name .pp>.avatar{--s:22px!important}
+  .gradebook tbody .gb-name{font-size:.875rem}
+  .gradebook:not(.steps) thead th:not(.gb-name){min-width:96px;padding-inline:var(--s2)}
+  .gradebook:not(.steps) td{padding-inline:var(--s2)}
+}
+.gradebook.steps thead th{min-width:88px;max-width:140px;vertical-align:bottom}
+.gradebook.steps .gb-step{max-width:128px;white-space:normal;text-overflow:clip;overflow-wrap:break-word;hyphens:auto;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3}
+.gradebook.steps .gb-step.more{cursor:pointer}
+.gradebook.steps .gb-step.open{display:block;-webkit-line-clamp:unset;line-clamp:none}
 .gradebook.steps td:last-child,.gradebook.steps th:last-child{white-space:nowrap}
 /* A class row's ↑ ↓ ⋯ stay together at the row's end. */
 .cl-row>.acts{margin-inline-start:auto}
@@ -559,9 +569,10 @@ main.wrap>.namefilter{margin-bottom:var(--s3)}
   .rtable td.edit[data-label]::before{flex:none}
 }
 /* My classes: the teaching tools as one compact row (a 2 × 2 grid on phones); the school an admin runs, as a card. */
+/* The buttons share a row when their labels fit on one line, else take a row each; rows 12 px apart. */
 @media (max-width:600px){
-  .pagehead>.teachtools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
-  .pagehead>.teachtools>.btn{white-space:normal;line-height:1.15;text-align:center;padding:4px 10px}
+  .pagehead>.teachtools{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s2)}
+  .pagehead>.teachtools>.btn{flex:1 1 auto;white-space:nowrap;justify-content:center}
 }
 .schoolcard{display:grid;gap:var(--s3)}
 .sc-link{display:flex;flex-direction:column;gap:2px;min-height:44px;justify-content:center;color:var(--text);text-decoration:none}
@@ -569,16 +580,15 @@ main.wrap>.namefilter{margin-bottom:var(--s3)}
 .sc-link:hover>b{text-decoration:underline}
 .schoolcard>.teachplan{margin:0;padding:var(--s3) 0 0;box-shadow:none;background:transparent;border-top:1px solid var(--line);border-radius:0}
 .schoolcard>.teachplan>h2{font-size:1rem}
-/* School settings: three groups in one form; on phones Save stays in reach at the bottom of the screen. */
+/* School settings: three groups in one form; on phones Save stays in reach at the bottom of the screen once the page is
+   scrolled (not on load, where it would sit over the first fields). */
 .settingsform>h3.setgroup-h{margin-top:0;padding-top:0;border-top:0}
 @media (max-width:600px){
-  .settingsform>.savebar{position:sticky;bottom:calc(var(--tabbar,64px) + env(safe-area-inset-bottom) + var(--s2));z-index:2;padding:var(--s2);margin-inline:calc(-1 * var(--s2));border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow)}
+  .settingsform.scrolled>.savebar{position:sticky;bottom:calc(var(--tabbar,64px) + env(safe-area-inset-bottom) + var(--s2));z-index:2;padding:var(--s2);margin-inline:calc(-1 * var(--s2));border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow)}
   .settingsform>.savebar>.btn{width:100%}
 }
-/* Archive / delete: a danger-zone card at the bottom of Settings. */
+/* Archive / delete at the bottom of Settings: the card turns red only when it holds Delete (archiving can be undone). */
 .panel.dangerzone{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 35%,var(--line))}
-/* Students tab: "New login cards for the class" under the roster, at its end. */
-.rosterfoot{display:flex;justify-content:flex-end;padding-top:var(--s3);border-top:1px solid var(--line)}
 .ajump .chip code{font-weight:800;letter-spacing:.08em}
 /* Progress: "How to read it" folds the intro; course panels fold to "n of N started" until someone starts. */
 .gb-tools{justify-content:space-between}
@@ -596,9 +606,13 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .readymade .chip{font-size:.9rem;padding:0 14px}
 .fr-name{flex-direction:column;align-items:flex-start;justify-content:center;gap:0}
 .fr-count{font-weight:600}
-/* Login cards: the Print / Back bar stays at the top while scrolling the cards on a phone. */
+/* Login cards: on a phone only the Print / Back row stays at the top while scrolling the cards (the heading scrolls away);
+   a solid strip, full width, right under the top bar. */
 @media (max-width:600px){
-  main.wrap>.cardsbar{position:sticky;top:var(--top);z-index:3;padding:var(--s2) 0;background:var(--bg);margin-bottom:var(--s3)}
+  main.wrap>.cardsbar{display:contents}
+  main.wrap>.cardsbar>div:first-child{margin-bottom:var(--s3)}
+  main.wrap>.cardsbar>.row{position:sticky;top:var(--top);z-index:3;margin:0 calc(-1 * var(--s4)) var(--s3);padding:var(--s2) var(--s4);background:var(--bg);box-shadow:0 1px 0 var(--line)}
+  main.wrap>.cardsbar>.row>.btn{flex:1 1 auto;justify-content:center}
 }
 /* Lesson editor actions on phones: equal buttons, two a row. */
 @media (max-width:600px){
@@ -614,31 +628,85 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .csq-std tr>th.csq-std-id{margin-bottom:var(--s1)}
   .csq-std tr>*{display:block;border:0!important;padding:0!important;min-width:0;max-width:none;text-align:start}
   .csq-std tr>th.csq-std-id,.csq-std td.csq-std-lessons{grid-column:1/-1}
-  .csq-std tr.csq-std-concept{display:block;padding:var(--s4) 0 var(--s1);border-bottom:0}
-  .csq-std tr.csq-std-concept>th{padding:var(--s2) var(--s3)!important;border-radius:var(--r-sm)}
+  .csq-std tr.csq-std-concept{display:block;position:sticky;top:var(--top);z-index:2;padding:var(--s3) 0 var(--s1);border-bottom:0;background:var(--card)}
+  .csq-std tr.csq-std-concept>th{padding:var(--s2) var(--s3)!important;border-radius:var(--r-sm);font-size:1rem;color:var(--text);background:var(--card-2);box-shadow:inset 4px 0 0 var(--accent)}
+  .csq-std-tools>.csq-std-pick{flex:1 1 100%;flex-wrap:nowrap;min-width:0}
+  .csq-std-pick>label{flex:none}
   .csq-std td[data-label]::before{content:attr(data-label);display:inline;margin-inline-end:6px;font-size:.8125rem;font-weight:700;color:var(--muted)}
   .csq-std .csq-std-id .small:not(.open){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .csq-std .csq-std-id .small.more{cursor:pointer}
-  .csq-std-pick select.input-sm{max-width:none;flex:1 1 160px}
+  .csq-std-pick select.input-sm{max-width:none;flex:1 1 auto;min-width:0;width:auto}
 }
 .csq-std-tools{display:flex}
 .csq-std-pick>.input-sm{max-width:220px}
-/* Class Lessons toolbar on phones: Assign on its own row, Lesson library and New unit side by side. */
+/* Class Lessons toolbar on phones: Assign on its own row; Lesson library and New unit side by side when both labels fit on
+   one line, else one a row (long translations); rows 12 px apart. */
 @media (max-width:600px){
+  .cl-more{row-gap:var(--s3)}
   .cl-more>.assigndrop{flex:1 1 100%}
-  .cl-more>.btn,.cl-more>.unitdrop:not([open]){flex:1 1 40%;min-width:0}
+  .cl-more>.btn,.cl-more>.unitdrop:not([open]){flex:1 1 auto;min-width:0}
+  .cl-more>.btn,.cl-more>.unitdrop:not([open])>summary{white-space:nowrap}
 }
-/* Class roster cards: the Oomba Academy name takes the room it needs, the grade sits at the end of its line. */
-@media (max-width:900px){.rtable.roster tr{grid-template-columns:minmax(0,1fr) auto}}
 /* CS Quest coverage tables on phones: each standard is a card with labelled cells (the practices × units grid keeps
    its own sideways scroll: it is a grid). */
 @media (max-width:700px){
-  .csq-tbl:has(>.csq-cov){overflow:visible}
-  .csq-cov thead{display:none}
-  .csq-cov,.csq-cov tbody{display:block;width:100%}
-  .csq-cov tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
-  .csq-cov td{display:block;border:0!important;padding:0!important;min-width:0;overflow-wrap:anywhere}
+  .csq-tbl:has(>.csq-cov td[data-label]){overflow:visible}
+  .csq-cov:has(td[data-label]) thead{display:none}
+  .csq-cov:has(td[data-label]),.csq-cov:has(td[data-label]) tbody{display:block;width:100%}
+  .csq-cov:has(td[data-label]) tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .csq-cov:has(td[data-label]) td{display:block;border:0!important;padding:0!important;min-width:0;overflow-wrap:anywhere}
   .csq-cov td.id{grid-column:1/-1;font-weight:800}
   .csq-cov td.full{grid-column:1/-1}
+  /* The two short fields (Practices, Items) share a line after the concept; the long ones follow, full width. */
+  .csq-cov:has(td[data-label]) td:nth-child(n+4){order:2}
+  .csq-cov:has(td[data-label]) td:is(:nth-child(3),:nth-child(6)){order:1}
   .csq-cov td[data-label]::before{content:attr(data-label);display:inline;margin-inline-end:6px;font-size:.8125rem;font-weight:700;color:var(--muted)}
 }
+
+/* ---- Review round 1 ---- */
+/* Class, People and roster tables on phones: a card whose fields flow as "Label value" pieces, side by side when they fit
+   and full width when long (no half-width columns squeezing a name or "none yet"); the actions (⋯) join the last line when
+   there is room. Field + Save editors, open menus and the staff role editor take the full width. */
+@media (max-width:900px){
+  .rtable:is(.classes,.people,.roster) tr{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4);padding:var(--s3) 0}
+  .rtable:is(.classes,.people,.roster) tr:first-child{padding-top:0}
+  .rtable:is(.classes,.people,.roster) tr>td:first-child{flex:1 1 100%}
+  .rtable:is(.classes,.people,.roster) td[data-label]{flex:0 1 auto;max-width:100%;overflow-wrap:anywhere}
+  .rtable:is(.classes,.people,.roster) td[data-label]::before{white-space:nowrap}
+  .rtable:is(.classes,.people,.roster) td[data-label]>a.chip-s{vertical-align:middle}
+  .rtable:is(.classes,.people,.roster) td.tacts{flex:0 0 auto;margin-inline-start:auto}
+  .rtable:is(.classes,.people,.roster) td.tacts:has(.inline-menu[open]){flex:1 1 100%}
+  .rtable:is(.classes,.people,.roster) td.edit{flex:1 1 100%;width:auto}
+  .rtable:is(.classes,.people,.roster) td.edit:has(>.gedit){flex:0 1 auto}
+  .rtable:is(.classes,.people,.roster) td.edit:has(>.gedit[open]){flex:1 1 100%}
+  .rtable.roster td[data-label]:nth-child(2){flex-basis:100%}
+}
+/* A student's grade while it is being changed: the field, Save and ✕ (close) on one line; the grade chip is hidden. */
+.gedit .gx{display:none}
+.gedit[open]{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.gedit[open]>summary{order:2;margin-bottom:0}
+.gedit[open]>summary>.gv{display:none}
+.gedit[open]>summary>.gx{display:inline}
+.gedit[open]>form.inline{flex:1 1 auto;min-width:0}
+.gedit[open]>form.inline>.input{min-width:0;width:6rem;flex:1 1 4rem}
+.rtable td.edit>.gedit[open]{flex:1 1 12rem;min-width:0}
+/* People: "➕ Add …" beside each heading opens its form under the heading (open on load when the list is empty). */
+.sec-row>.adddrop[open]{flex:1 1 100%}
+.adddrop>div>p:first-child{margin-top:0}
+/* Course panels (Progress) on phones: each student is a card: name, then Status, Steps done, Checks, Per step. */
+@media (max-width:600px){
+  .gbwrap:has(>.cptable){overflow:visible}
+  .cptable thead{display:none}
+  .cptable,.cptable tbody{display:block;width:100%}
+  .cptable tr{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .cptable tr:last-child{border-bottom:0}
+  .cptable tr>*{display:block;border:0!important;padding:0!important;min-width:0;text-align:start;background:none}
+  .cptable tr>th.gb-name{display:block;position:static;flex:1 1 100%;width:auto;max-width:none}
+  .cptable td[data-label]::before{content:attr(data-label);margin-inline-end:6px;font-size:.8125rem;font-weight:700;color:var(--muted)}
+  .cptable td .pbar{margin-inline-start:6px}
+  .cptable td.cp-steps{flex-basis:100%;overflow-wrap:anywhere}
+}
+/* School at a glance: the staff count reads like the People tab's ("🍎 Staff 3"). */
+.statstrip .count{height:24px;min-width:24px;font-size:.85rem}
+/* Standards: the "Jump to" chips' concept anchors clear the top bar (and, on phones, land under the sticky heading). */
+.csq-std-concept{scroll-margin-top:calc(var(--top) + var(--s3))}

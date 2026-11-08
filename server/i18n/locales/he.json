@@ -2402,6 +2402,7 @@
     },
     "actions": "פעולות",
     "save": "שמירה",
+    "cancel": "ביטול",
     "roles": {
       "admin": "מנהל בית ספר",
       "teacher": "מורה",
@@ -2784,7 +2785,6 @@
     },
     "stats": {
       "classes": "{count, plural, one {כיתה אחת} two {# כיתות} other {# כיתות}}",
-      "teachers": "{count, plural, one {מורה אחד} two {# מורים} other {# מורים}}",
       "unplaced": "{count, plural, one {תלמיד אחד בלי כיתה} two {# תלמידים בלי כיתה} other {# תלמידים בלי כיתה}}"
     }
   },

@@ -2,10 +2,12 @@
 // principal's coverage report (aggregate only, no names). Teacher-facing: standard codes are shown here, never to kids.
 // Data from server/services/standards.js; words under cs.standards.*.
 import { html } from './html.js';
-import { emptyState } from './components.js';
+import { emptyState, jumpNav } from './components.js';
 
 const SHORT = { month: 'short', day: 'numeric' };
 const groupBy = rows => { const m = new Map(); for (const r of rows) { if (!m.has(r.concept)) m.set(r.concept, []); m.get(r.concept).push(r); } return [...m]; };
+/** "Jump to" chips, one per CSTA concept (the group headings of the table carry the ids std-c0, std-c1, …). */
+const conceptJump = (t, rows) => { const g = groupBy(rows); return g.length > 1 ? jumpNav(t, g.map(([concept, list], i) => [`std-c${i}`, concept, list.length])) : ''; };
 const dash = html`<span class="muted">–</span>`;
 
 /** "72% · 6 items · 24 students" / "2.1 · 12 marked" (null when nothing yet). */
@@ -41,10 +43,10 @@ export function classBody(req, { c, data, all, student = null }) {
   const m = data.students.length;
   if (student) {
     const nd = html`<span class="muted csq-nodata" title="${t('cs.standards.noDataHint')}">${t('cs.standards.noData')}</span>`;
-    return html`${tools}<section class="panel"><h2>${student.name}</h2>${student.noData ? html`<p class="notice">${t('cs.standards.noDataHint')}</p>` : ''}
+    return html`${tools}${conceptJump(t, data.rows)}<section class="panel"><h2>${student.name}</h2>${student.noData ? html`<p class="notice">${t('cs.standards.noDataHint')}</p>` : ''}
       <div class="gbwrap" tabindex="0" role="region" aria-label="${t('cs.standards.title')}"><table class="tbl csq-std">
       <thead><tr><th scope="col">${t('cs.standards.cols.standard')}</th><th scope="col">${t('cs.standards.cols.practiced')}</th><th scope="col">${t('cs.standards.cols.checked')}</th><th scope="col">${t('cs.standards.cols.applied')}</th><th scope="col">${t('cs.standards.cols.status')}</th></tr></thead>
-      ${groupBy(data.rows).map(([concept, rows]) => html`<tbody><tr class="csq-std-concept"><th colspan="5" scope="colgroup">${concept}</th></tr>${rows.map(r => { const x = r.by.get(student.id);
+      ${groupBy(data.rows).map(([concept, rows], gi) => html`<tbody><tr class="csq-std-concept" id="std-c${gi}"><th colspan="5" scope="colgroup">${concept}</th></tr>${rows.map(r => { const x = r.by.get(student.id);
         const L = k => t(`cs.standards.cols.${k}`);
         if (student.noData || !x) return html`<tr>${stdCell(r)}<td data-label="${L('practiced')}">${nd}</td><td data-label="${L('checked')}">${nd}</td><td data-label="${L('applied')}">${nd}</td><td data-label="${L('status')}">${nd}</td></tr>`;
         return html`<tr>${stdCell(r)}<td data-label="${L('practiced')}">${x.practiced ? '✅' : dash}</td>
@@ -55,9 +57,9 @@ export function classBody(req, { c, data, all, student = null }) {
   }
   const names = new Map(data.students.map(p => [p.id, p.name]));
   const L = k => t(`cs.standards.cols.${k}`);
-  return html`${tools}<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${t('cs.standards.title')}"><table class="tbl csq-std">
+  return html`${tools}${conceptJump(t, data.rows)}<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${t('cs.standards.title')}"><table class="tbl csq-std">
     <thead><tr>${['standard', 'lessons', 'practiced', 'checked', 'applied', 'needsLook', 'last', 'status'].map(k => html`<th scope="col">${t(`cs.standards.cols.${k}`)}</th>`)}</tr></thead>
-    ${groupBy(data.rows).map(([concept, rows]) => html`<tbody><tr class="csq-std-concept"><th colspan="8" scope="colgroup">${concept}</th></tr>${rows.map(r => html`<tr class="${r.status === 'notYet' ? 'csq-std-quiet' : ''}">
+    ${groupBy(data.rows).map(([concept, rows], gi) => html`<tbody><tr class="csq-std-concept" id="std-c${gi}"><th colspan="8" scope="colgroup">${concept}</th></tr>${rows.map(r => html`<tr class="${r.status === 'notYet' ? 'csq-std-quiet' : ''}">
       ${stdCell(r)}<td class="csq-std-lessons" data-label="${L('lessons')}">${lessonLinks(r)}</td>
       <td data-label="${L('practiced')}"><b>${r.practiced}</b> / ${m}</td>
       <td data-label="${L('checked')}">${checkedText(t, r) || dash}</td>

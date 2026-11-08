@@ -2420,6 +2420,7 @@
     },
     "actions": "Actions",
     "save": "Save",
+    "cancel": "Cancel",
     "roles": {
       "admin": "School admin",
       "teacher": "Teacher",
@@ -2802,7 +2803,6 @@
     },
     "stats": {
       "classes": "{count, plural, one {# class} other {# classes}}",
-      "teachers": "{count, plural, one {# teacher} other {# teachers}}",
       "unplaced": "{count, plural, one {# student not in a class} other {# students not in a class}}"
     }
   },
