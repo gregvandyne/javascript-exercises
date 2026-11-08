@@ -1503,7 +1503,9 @@
     "class": "{count, plural, one {Live for {name}! Everyone in your class can find and play it.} other {Live for your classes! Everyone in them can find and play it.}}",
     "schoolOnly": "Your school keeps games inside the school. Share it with your school instead.",
     "liveFamily": "Live for your family! You and the kids linked to your family can play it.",
-    "liveConnections": "Shared with your grown-up connections! Only they and you can play it."
+    "liveConnections": "Shared with your grown-up connections! Only they and you can play it.",
+    "waitingTeam": "Your friends can play it now! Someone from the Oomba team checks every game before everyone can play it. We'll send you a message when it's done.",
+    "waitingTeamGrownup": "Your grown-up connections can play it now. Someone from the Oomba team checks every game before everyone can play it, and we'll send you a message when it's done."
   },
   "builder": {
     "kindRefusal": "I can’t help with that one. Let’s build something fun instead. What kind of game would you like?",
@@ -1775,7 +1777,8 @@
       "blockTitle": "Block {name}?",
       "blockText": "You won't see messages from {name}, and they can't send you any. You stay friends, and you can unblock them on the Friends page.",
       "block": "Block",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "verified": "Verified Oomba team"
     },
     "studio": {
       "docTitle": "Studio: {title} · Oomba Academy",
@@ -1836,7 +1839,9 @@
         "publishFirst": "Publish it, then you can host it live.",
         "teacher": "A teacher or grown-up can host it live for your class. Share it with your class first.",
         "notYet": "Not live-ready yet: {issue}.",
-        "make": "Make it a live class game"
+        "make": "Make it a live class game",
+        "waitingReview": "Waiting for review",
+        "teamCheck": "Someone from the Oomba team checks every game before everyone can play it. You can keep playing, sharing with friends and editing. We'll send you a message when it's done."
       },
       "safety": {
         "chipPass": "Safe",
@@ -6631,6 +6636,48 @@
       "failed": "The new version didn't work, so your story stays as it was.",
       "keepOld": "Keep the old one",
       "asksAgain": "After a change, a grown-up or your teacher will be asked to say OK again before others can watch it."
+    }
+  },
+  "review": {
+    "reasons": {
+      "characters": "Please use your own characters, not ones from films, TV shows or other games.",
+      "people": "Please don't use real people's names or pictures in your game.",
+      "scary": "It's a bit too scary or rough for younger players. Can you make it friendlier?",
+      "words": "Please change some of the words so the game is kind and friendly for everyone.",
+      "personal": "Please take out anything that asks players for their name, age or where they live.",
+      "brands": "Please take out real brands and logos.",
+      "flashing": "Please make the flashing slower or softer. Fast flashing can hurt some players' eyes.",
+      "broken": "We couldn't get it to work. Play it yourself, then ask the Builder to fix what goes wrong.",
+      "other": "Please make a few changes first."
+    }
+  },
+  "team": {
+    "name": "Oomba team",
+    "verified": "Verified Oomba team",
+    "sub": "Messages from the people who run Oomba Academy",
+    "empty": "No messages yet. News about your games will show up here.",
+    "safety": {
+      "child": "These messages are from the Oomba team. Your grown-up can see them too. Never share your password, address or phone number, not even with us.",
+      "grownup": "Messages from the Oomba team. We will never ask for your password. When we write to a child linked to you, you get a copy here, and a copy of their replies."
+    },
+    "cant": {
+      "guest": "Make a free account to get messages from the Oomba team.",
+      "banned": "Your account is paused.",
+      "notYet": "You can write back here once the Oomba team has sent you a message.",
+      "noGrownup": "You can read messages from the Oomba team here. To write back, ask a grown-up to link to your account.",
+      "block": "You can't block the Oomba team. If a message worries you, report it or tell a grown-up."
+    },
+    "copy": {
+      "to": "Copy: we wrote to {name}:",
+      "from": "Copy: {name} wrote to us:"
+    },
+    "notice": {
+      "approved": "Good news! “{title}” passed the Oomba team's check, so more people can play it now.",
+      "sentBack": "“{title}” needs a few changes before everyone can play it."
+    },
+    "link": {
+      "new": "{count, plural, one {# new message from the Oomba team} other {# new messages from the Oomba team}}",
+      "open": "Messages from the Oomba team"
     }
   }
 }

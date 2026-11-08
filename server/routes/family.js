@@ -41,6 +41,16 @@ import * as friends from '../services/friends.js';
 import * as games from '../services/games.js';
 import { coverArt, statusLabel } from '../views/components.js';
 import { liveOn } from '../services/classlive-sessions.js';
+import * as team from '../services/team.js';
+import { present as presentMessage } from '../services/chat.js';
+
+/** "Messages from the Oomba team" on the Family page, once the team ever wrote (also copies of what the team and a linked
+ *  child said to each other). */
+function teamLink(req) {
+  const t = req.t, row = team.inboxRow(req.user, t, presentMessage);
+  if (!row) return '';
+  return html`<p class="notice teamlink"><a href="/chat/${auth.OFFICIAL}"><span aria-hidden="true">📬</span> ${row.unread ? t('team.link.new', { count: row.unread }) : t('team.link.open')}</a></p>`;
+}
 
 export const router = Router();
 const isApi = req => req.originalUrl.startsWith('/api/');
@@ -59,13 +69,17 @@ const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/sta
   // Online matches: grown-ups play their own children (and other grown-ups) (routes/match.js).
   /^\/api\/match\/(people|inbox|[^/]+\/wait)$/,
   // Number Quest: a grown-up reads their linked child's Starting Point note (routes/number-quest.js checks the link).
-  /^\/number-quest\/starting-point$/];
+  /^\/number-quest\/starting-point$/,
+  // The Oomba team thread (routes/chat.js; /chat sends a grown-up there): messages from the team, copies of what the team
+  // and their children said to each other. No friends' chat.
+  /^\/chat(\/oombaacademy)?$/i, /^\/api\/chat\/oombaacademy$/i];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/number-quest\/placement\/override$/,   // a grown-up's absolute placement override for a linked child (link checked in the route)
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll)$/,
-  /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/];
+  /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/,
+  /^\/api\/chat\/oombaacademy$/i];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections
 // (the friend-code APIs; services/friends.js keeps adults and kids apart). Chat, /friends and /u/ stay closed.
 const GROWNUP_BUILDER_GET = [/^\/stories(\/new|\/[^/]+(\/(edit|video\.mp4|poster\.jpg|captions\.vtt))?)?$/, /^\/api\/stories\/[^/]+$/, /^\/build$/, /^\/studio\/[^/]+$/, /^\/api\/studio\/[^/]+(\/(live|uploads\/[^/]+))?$/, /^\/family\/connections$/, /^\/api\/friends$/];
@@ -355,7 +369,7 @@ router.get('/family', grownupOnly, async (req, res) => {
   // Families off (billing off): no children, links or plans, but the grown-up can still change their language and
   // password and sign out.
   if (!F.familiesOn(req)) {
-    const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
+    const body = html`<div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
     <section class="panel"><p class="muted"${en('family.page.offAccount')}>${t('family.page.offAccount')}</p>
       <p style="margin-bottom:0"><a class="btn" href="/family/account">⚙️ ${t(navLabel(t, 'account'))}</a></p></section>`;
     return page(req, res, { title: t('family.page.title'), active: 'family', body, scripts: ['/js/family.js'] });
@@ -421,7 +435,7 @@ router.get('/family', grownupOnly, async (req, res) => {
   // A plan picked on /plans (and not paid yet) comes first: that is what the grown-up came here to do.
   const planFirst = (chosen && !plan.entitled) || (typeof req.query.checkout === 'string' && !plan.entitled);
   const body = html`
-  <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>
+  <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
   ${yourGames}

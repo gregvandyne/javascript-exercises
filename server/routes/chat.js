@@ -3,7 +3,8 @@ import { Router } from 'express';
 import { html, jsonData } from '../views/html.js';
 import { page, notFound } from '../views/layout.js';
 import { avatar, emptyState } from '../views/components.js';
-import { requireAccount, getUserByName } from '../auth.js';
+import { requireAccount, requireAnyAccount, getUserByName, isGrownup, OFFICIAL } from '../auth.js';
+import * as team from '../services/team.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as chat from '../services/chat.js';
 import * as games from '../services/games.js';
@@ -18,15 +19,19 @@ function guestPage(req, res) {
     ${!req.user ? html`<p class="center small">${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(req.originalUrl)}">${t('auth.page.signInLink')}</a></p>` : ''}`;
   page(req, res, { title: t('chat.title'), active: 'friends', body, head: COMMUNITY_CSS });
 }
-const inboxRow = (req, th) => { const t = req.t; return html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/chat/${th.username}" data-thread="${th.username}">
-  ${avatar(th, 48)}<span class="who"><span class="nm">${th.displayName}</span><span class="sub">${th.preview || (th.chatOn ? t('chat.inbox.sayHi') : t('chat.inbox.off'))}</span></span>
+/** The ✓ after the Oomba team's name (a real team account: nobody else can have this name or tick). */
+export const verified = t => html`<span class="verified" title="${t('team.verified')}"><span aria-hidden="true">✓</span><span class="sr-only">${t('team.verified')}</span></span>`;
+const inboxRow = (req, th) => { const t = req.t; return html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}${th.team ? ' teamrow' : ''}" href="/chat/${th.username}" data-thread="${th.username}">
+  ${avatar(th, 48)}<span class="who"><span class="nm">${th.displayName}${th.team ? verified(t) : ''}</span><span class="sub">${th.preview || (th.chatOn ? t('chat.inbox.sayHi') : t('chat.inbox.off'))}</span></span>
   <span class="meta">${th.last ? html`<span class="time">${req.fmt.ago(th.last)}</span>` : ''}${th.unread ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: th.unread })}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`; };
 
 router.get('/chat', (req, res) => {
   const t = req.t;
   const u = req.user;
   if (!u || u.is_guest) return guestPage(req, res);
-  const list = chat.inbox(u, t);
+  // Grown-ups have no friends' chat: their inbox is the Oomba team thread.
+  if (isGrownup(u)) return res.redirect(302, `/chat/${OFFICIAL}`);
+  const list = withTeam(u, t, chat.inbox(u, t));
   const body = html`
   <div class="chatcol">
   <div class="pagehead"><h1>${t('chat.title')}</h1><a class="btn" href="/friends"><span aria-hidden="true">👫</span> ${t('nav.friends')}</a></div>
@@ -38,6 +43,51 @@ router.get('/chat', (req, res) => {
   ${jsonData('page-data', { mode: 'inbox' })}`;
   page(req, res, { title: t('chat.title'), active: 'friends', body, head: COMMUNITY_CSS, scripts: ['/js/chat.js'] });
 });
+
+/** The inbox with the Oomba team's thread on top (when the team ever wrote). */
+function withTeam(u, t, list) {
+  const row = team.inboxRow(u, t, chat.present);
+  return row ? [row, ...list] : list;
+}
+
+// ---- The Oomba team thread (services/team.js): every real account, grown-ups too (routes/family.js lets them in).
+// No block, no game sharing; a child's messages here are also seen by their grown-up (said on the page).
+function teamPage(req, res) {
+  const t = req.t, u = req.user;
+  if (!u || u.is_guest) return guestPage(req, res);
+  const tu = team.teamUser();
+  const msgs = chat.thread(u, tu, {}, t);
+  chat.markRead(u, tu);
+  const can = team.canReply(u, t);
+  const child = team.isChild(u);
+  const name = t('team.name');
+  const max = child ? chat.MAX_LEN : team.MAX_TEAM_LEN;
+  const body = html`
+  <div class="chatpage teampage">
+    <div class="threadhead">
+      <span class="th-who">${avatar(tu, 44)}<span class="who"><span class="nm">${name}${verified(t)}</span><span class="sub">${t('team.sub')}</span></span></span>
+    </div>
+    <p class="notice small chatsafety"><span aria-hidden="true">🛡️</span> ${t(child ? 'team.safety.child' : 'team.safety.grownup')}</p>
+    <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="${t('chat.thread.label', { name })}" tabindex="0">
+      <p class="msgs-empty muted center" id="msgs-empty" ${msgs.length ? 'hidden' : ''}>${t('team.empty')}</p>
+    </div>
+    <div class="composer" id="composer" ${can.ok ? '' : 'hidden'}>
+      ${child ? html`<div class="quick chips scroll" role="group" aria-label="${t('chat.thread.quickLabel')}">${chat.quickPhrases(t).map(([id, text]) => html`<button class="chip" type="button" data-quick="${id}">${text}</button>`)}</div>` : ''}
+      <p class="notice warn small" id="pausednote" hidden></p>
+      <form id="sendform" class="sendrow" novalidate>
+        <label class="sr-only" for="msg">${t('chat.thread.messageTo', { name })}</label>
+        <input class="input" id="msg" name="body" maxlength="${max}" dir="auto" autocomplete="off" placeholder="${t('chat.thread.placeholder')}" aria-describedby="msgcount sendmsg">
+        <button class="btn btn-primary" type="submit">${t('chat.thread.send')}</button>
+      </form>
+      <div class="sendinfo"><span class="err" id="sendmsg" aria-live="polite"></span><span class="small muted" id="msgcount" dir="ltr">0/${max}</span></div>
+    </div>
+    <p class="notice cantchat" id="cantchat" ${can.ok ? 'hidden' : ''}>${can.reason}</p>
+  </div>
+  ${jsonData('page-data', { mode: 'thread', team: true, other: { id: tu.id, username: tu.username, displayName: name }, can, messages: msgs, paused: child ? chat.pausedUntil(u.id) : 0, games: [], reasons: chat.reportReasons(t), max, reportable: !isGrownup(u) })}`;
+  const grown = isGrownup(u);
+  page(req, res, { title: t('chat.thread.title', { name }), active: grown ? 'family' : 'friends', body, head: COMMUNITY_CSS, back: grown ? '/family' : '/chat', backLabel: grown ? t('nav.family') : t('chat.allChats'), bodyClass: 'chatmode', scripts: ['/js/chat.js'] });
+}
+router.get(`/chat/${OFFICIAL}`, teamPage);
 
 router.get('/chat/:username', (req, res) => {
   const t = req.t;
@@ -82,8 +132,23 @@ router.get('/chat/:username', (req, res) => {
 
 // ---- APIs ----
 const poll = rateLimit('chatpoll', 150, 60e3);
+// The team thread's APIs come first (the username routes below are for friends only, and closed to grown-ups).
+router.get(`/api/chat/${OFFICIAL}`, requireAnyAccount, poll, (req, res) => {
+  const tu = team.teamUser();
+  const messages = chat.thread(req.user, tu, { after: +req.query.after || 0 }, req.t);
+  if (messages.length) chat.markRead(req.user, tu);
+  res.set('Cache-Control', 'no-store').json({ messages, can: team.canReply(req.user, req.t), paused: team.isChild(req.user) ? chat.pausedUntil(req.user.id) : 0 });
+});
+router.post(`/api/chat/${OFFICIAL}`, requireAnyAccount, rateLimit('chatsend', 30, 60e3, 'chat.errors.rate'), (req, res) => {
+  const { kind = 'text', body = '' } = req.body || {};
+  const r = team.reply(req.user, { kind: String(kind), body: String(body ?? '') }, req.t);
+  if (!r.ok) return res.status(r.code === 'rate' || r.code === 'daily' ? 429 : 400).json({ error: r.error, code: r.code, blocked: !!r.blocked, paused: r.paused ? r.until : 0 });
+  res.json({ ok: true, message: chat.present(r.message, req.user, req.t) });
+});
+// Nobody blocks the team (a message from it can still be reported, like any other).
+router.post([`/api/chat/${OFFICIAL}/block`, `/api/chat/${OFFICIAL}/unblock`], requireAnyAccount, (req, res) => res.status(400).json({ error: req.t('team.cant.block') }));
 router.get('/api/chat', requireAccount, poll, (req, res) => {
-  const threads = chat.inbox(req.user, req.t);
+  const threads = withTeam(req.user, req.t, chat.inbox(req.user, req.t));
   res.set('Cache-Control', 'no-store').json({ threads, unread: threads.reduce((s, th) => s + th.unread, 0) });
 });
 function other(req, res) {
