@@ -9,4 +9,5 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "md.stampede": "Troupeau ! Attends ou passe par-dessus !",
   "md.logs": "Des troncs dévalent la pente !",
   "md.stuck": "Coincé dans la boue !",
+  "md.trampled": "Ouf, piétiné !",
 });

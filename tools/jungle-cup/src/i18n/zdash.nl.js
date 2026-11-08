@@ -9,4 +9,5 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "md.stampede": "Kudde! Wacht of speel eroverheen!",
   "md.logs": "Rollende stammen!",
   "md.stuck": "Vast in de modder!",
+  "md.trampled": "Oef, omvergelopen!",
 });

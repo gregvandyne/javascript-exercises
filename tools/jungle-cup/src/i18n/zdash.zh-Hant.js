@@ -9,4 +9,5 @@ I18N['zh-Hant'] = Object.assign(I18N['zh-Hant'] || {}, {
   "md.stampede": "豬群狂奔！等一下或從上面傳過去！",
   "md.logs": "木頭滾下來了！",
   "md.stuck": "卡在泥巴裡了！",
+  "md.trampled": "哎呀，被撞倒了！",
 });

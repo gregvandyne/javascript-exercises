@@ -9,4 +9,5 @@ I18N.ja = Object.assign(I18N.ja || {}, {
   "md.stampede": "大移動だ！待つか、上をパス！",
   "md.logs": "丸太が転がってくる！",
   "md.stuck": "泥にはまった！",
+  "md.trampled": "うわっ、ふまれた！",
 });

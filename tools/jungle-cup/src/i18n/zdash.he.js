@@ -9,4 +9,5 @@ I18N.he = Object.assign(I18N.he || {}, {
   "md.stampede": "עדר דוהר! חכו או מסרו מעליהם!",
   "md.logs": "בולי עץ מתגלגלים!",
   "md.stuck": "תקוע בבוץ!",
+  "md.trampled": "אוף, נדרסתי!",
 });

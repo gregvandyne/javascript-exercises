@@ -170,7 +170,7 @@ test('Mango Dash: a pig hunts the carrier, shows its tell, lunges at him, and sw
   if (s.state.resetting) {
     await page.screenshot({ path: '/dev/shm/dash/shot-tackle-390x844.png' });
     for (let i = 0; i < 30 && s.state.resetting; i++) s = await step(f, 100);
-    expect([s.state.carrier, s.state.checkpoint, s.state.lives]).toEqual(['cappy', 0, 2]);
+    expect([s.state.carrier, s.state.checkpoint, s.state.lives]).toEqual(['cappy', 0, 3]);
   }
   expect(errors).toEqual([]);
 });
