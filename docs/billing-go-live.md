@@ -26,7 +26,7 @@ in code.
 | D0 | Free AI budget | Keep $150 a month, $5 a day until Step 0's numbers say otherwise. | `AI_MONTHLY_BUDGET_USD`, `AI_DAILY_BUDGET_USD` (render.yaml) |
 | D3 | Free daily messages | Keep 60. If you lower it, ship that change on its own, weeks before paid plans, never in the same release. | `BUILDER_DAILY_TURNS` |
 | D4 | Family extra messages a month | Start at 40 (about half the family plan's net price ÷ cost per message); Basic 25. Recompute with Step 0's cost. | `FAMILY_EXTRA_MESSAGES`, `BASIC_EXTRA_MESSAGES` |
-| D5 | Pro message weight | Switch to 2 in the same release that opens plans (approved; the panel checks it). | `PRO_TURN_WEIGHT=2` |
+| D5 | Pro message weight | Switch to 2 in the same release that opens plans (approved). **But** while `BUILDER_FULL_FOR_ALL` is on (the default since "Everyone builds like a teacher", November 2026) every signed-in maker builds with Pro and each message counts as one, so `PRO_TURN_WEIGHT` changes nothing and every message costs a Pro message: measure Step 0 that way and price on it, or set `BUILDER_FULL_FOR_ALL=0` (then the weight of 2 applies to kids and grown-ups; teachers and staff still count one). The panel's row shows which applies. | `PRO_TURN_WEIGHT=2`, `BUILDER_FULL_FOR_ALL` |
 | D6 | School price | $20 per student per year, at least 25 students, 100 messages per paid student a year: keep, then check that 100 × Step 0's cost per message stays well under $20. | Stripe Price `oomba_school_seat_yearly`; `SCHOOL_TURNS_PER_SEAT`, `SCHOOL_MIN_SEATS` |
 | Prices | Basic and Family, monthly and yearly | **Your decision; not fixed anywhere in the design.** The Spark Pack design calls 20¢ a message "the Basic plan's rate" (25 messages ≈ $4.99 a month). Set them only after Step 0. | Stripe Prices `oomba_basic_monthly`, `oomba_basic_yearly`, `oomba_family_monthly`, `oomba_family_yearly` |
 | Spark Packs | The three prices | As designed: 25 messages $4.99, 60 messages $9.99, 150 messages $19.99 (each keeps a margin at ~10¢ of AI cost a message). | Stripe Prices `oomba_spark_25`, `oomba_spark_60`, `oomba_spark_150` |
@@ -68,8 +68,9 @@ Do these in the Stripe Dashboard with **Test mode switched off**. They mirror wh
 7. **Card retries.** Settings → Billing → Subscriptions and emails: make retries end within 7 days (the grace period,
    `BILLING_GRACE_DAYS`; legal review item 16).
 8. **Restricted key.** Developers → API keys → **Create restricted key** "oomba-live" with: Checkout Sessions,
-   Customers, Subscriptions, Customer portal, Invoices, Refunds (**write**); Charges, Disputes, Prices, Tax settings,
-   Tax registrations (**read**). Never use the `sk_live_` secret key: the site refuses to start with it.
+   Customers, Subscriptions, Customer portal, Invoices, Refunds (**write**); Charges, Disputes, Prices, Products, Tax
+   settings, Tax registrations (**read**). Products (read) is needed because the site reads a subscription with its
+   Price's Product. If a panel row says "Stripe answered" a permission error, add the permission it names. Never use the `sk_live_` secret key: the site refuses to start with it.
 9. **Webhook.** Developers → Webhooks → Add endpoint `https://oomba.ai/api/billing/webhook`, API version
    `2026-09-30.endive` (the same as `STRIPE_API_VERSION`), with these 14 events: `checkout.session.completed`,
    `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`,
@@ -92,13 +93,14 @@ Render → the oomba service → **Environment**. Paste values only there, never
 | `PUBLIC_URL` | `https://oomba.ai` (already set if the domain move is done) |
 | `CONTACT_EMAIL` | `greg@oomba.ai` (in render.yaml already) |
 | `ANTHROPIC_API_KEY` | set since Step 0 |
-| `PRO_TURN_WEIGHT` | `2` (D5) |
+| `PRO_TURN_WEIGHT` | `2` (D5; no effect while `BUILDER_FULL_FOR_ALL` is on, see Step 1) |
 | `BILLING_PREVIEW_TOKEN` | any 24+ random characters, so you can see the pages before everyone does |
 | `TERMS_PUBLISHED` | `1`, only after Step 2 |
 | `BILLING_PUBLIC` | **leave unset for now** (Step 6) |
 
 Save. Render restarts the site. If it doesn't come back, the log's first lines say which setting is wrong (never its
-value). Open /admin/billing: every row except the webhook and `BILLING_PUBLIC` should now be green.
+value). Open /admin/billing and press **Check again**: every row except the webhook, `TERMS_PUBLISHED` (until Step 2) and
+`BILLING_PUBLIC` should now be green.
 
 ## Step 5. Make one real purchase, then refund it
 

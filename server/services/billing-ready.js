@@ -88,8 +88,15 @@ export async function readiness({ refresh = false } = {}) {
   row('ai', 'ANTHROPIC_API_KEY is set (what is sold are real Builder messages)', !!config.anthropicKey, config.anthropicKey ? 'set' : 'not set: the Builder is the offline mock',
     'Owner Step 0: set ANTHROPIC_API_KEY, build about 20 games and read the cost per message on /admin/stats before setting prices.');
 
-  row('proWeight', 'PRO_TURN_WEIGHT is 2 (D5: a Pro message counts as 2)', config.proTurnWeight >= 2, `${config.proTurnWeight}`,
-    'D5 (approved): set PRO_TURN_WEIGHT=2 on Render in the same release that opens paid plans.');
+  // BUILDER_FULL_FOR_ALL (on by default, the owner's November rule "Everyone builds like a teacher"): every signed-in maker
+  // builds with Pro and each message counts as one (builder/usage.js trustedMaker), so PRO_TURN_WEIGHT changes nothing.
+  if (config.builderFullForAll) {
+    row('proWeight', 'Pro messages: BUILDER_FULL_FOR_ALL is on (every message is Pro and counts as one)', true,
+      `PRO_TURN_WEIGHT is ${config.proTurnWeight} but has no effect while BUILDER_FULL_FOR_ALL is on`, '');
+  } else {
+    row('proWeight', 'PRO_TURN_WEIGHT is 2 (D5: a Pro message counts as 2)', config.proTurnWeight >= 2, `${config.proTurnWeight}`,
+      'D5 (approved): set PRO_TURN_WEIGHT=2 on Render in the same release that opens paid plans.');
+  }
 
   const gaps = billingKeyGaps(); const short = Object.entries(gaps);
   row('i18n', 'Every paid-plan word is in all 13 languages', !short.length, short.length ? short.map(([c, k]) => `${c} lacks ${k.length}`).join(', ') : 'complete',

@@ -2966,3 +2966,10 @@ card only; every other D16 / §17 rule stays (no prices, plan names or links to 
   year after purchase and still work after the plan ends. Marked for the owner's and the lawyer's sign-off
   (docs/legal-review.md item 45). `LEGAL_UPDATED` was left alone: it is also the parent-made accounts' notice version,
   so it moves on sign-off.
+- **Review fixes:** `BUILDER_FULL_FOR_ALL` (on by default, "Everyone builds like a teacher") makes every signed-in maker
+  build with Pro at one message each, so `PRO_TURN_WEIGHT` changes nothing while it is on: the panel's Pro row says so
+  (green) instead of asking for a setting that does nothing, and docs/billing-go-live.md's D5 row says to measure Step 0
+  and price on Pro messages, or turn `BUILDER_FULL_FOR_ALL` off. The restricted key's permissions gain Products (read)
+  (a subscription is read with its Price's Product). The panel's admin-only test now also tries a grown-up, a guest, a
+  school admin, a teacher and a student. `billing-checkout.test.js`'s Pro-weight check runs with `BUILDER_FULL_FOR_ALL`
+  off, as the other regular-maker tests do (it failed since #257 made the flag default on).

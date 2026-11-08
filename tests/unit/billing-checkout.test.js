@@ -432,13 +432,15 @@ test('a family child: the free daily messages first, then the family\'s extras (
   // A failed build gives its extra back.
   build(a.child, { refund: true });
   assert.equal(usage.allowanceFor(a.child).extraLeft, 4);
-  // Pro counts with its weight.
-  config.proTurnWeight = 2;
-  assert.equal(build(a.child, { pro: true }).weight, 2);
-  assert.equal(usage.allowanceFor(a.child).extraLeft, 2);
-  // The per-child daily ceiling (4 extras a day here): this child has used 3, so one more today.
-  assert.equal(usage.allowanceFor(a.child).extraToday, 1);
-  config.proTurnWeight = 1;
+  // Pro counts with its weight for a regular maker (BUILDER_FULL_FOR_ALL off). With it on (the default), every signed-in
+  // maker builds like a teacher: Pro on every message, one message each (builder-trusted.test.js).
+  config.proTurnWeight = 2; const fullForAll = config.builderFullForAll; config.builderFullForAll = false;
+  try {
+    assert.equal(build(a.child, { pro: true }).weight, 2);
+    assert.equal(usage.allowanceFor(a.child).extraLeft, 2);
+    // The per-child daily ceiling (4 extras a day here): this child has used 3, so one more today.
+    assert.equal(usage.allowanceFor(a.child).extraToday, 1);
+  } finally { config.proTurnWeight = 1; config.builderFullForAll = fullForAll; }
   assert.equal(build(a.child).source, `family:${a.fam.id}`);
   assert.equal(usage.allowanceFor(a.child).left, 0);
   assert.equal(build(a.child), false, 'no more today for this child');

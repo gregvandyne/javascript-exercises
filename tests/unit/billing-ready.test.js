@@ -19,6 +19,7 @@ const B = await import('../../server/services/billing.js');
 const S = await import('../../server/services/stripe.js');
 const { readiness } = await import('../../server/services/billing-ready.js');
 const { withoutKeys } = await import('../support/i18n-gaps.js');
+const SC = await import('../../server/services/schools.js');
 
 let server, base;
 test.before(async () => {
@@ -29,7 +30,7 @@ test.before(async () => {
 test.after(async () => { server.close(); await fake.close(); });
 const LIVE_KEY = 'rk_live_fakeready', TEST_KEY = 'rk_test_fake';
 const defaults = { stripeApiKey: TEST_KEY, stripeWebhookSecret: SECRET, stripeWebhookSecretOld: '', stripeApiBase: fake.url, stripeLiveOk: false, stripeTax: false, stripePmcFamily: '', stripePmcSchool: '',
-  termsPublished: false, billingPublic: false, contactEmail: '', publicUrl: '', anthropicKey: '', proTurnWeight: 1 };
+  termsPublished: false, billingPublic: false, contactEmail: '', publicUrl: '', anthropicKey: '', proTurnWeight: 1, builderFullForAll: false };
 test.beforeEach(() => { Object.assign(config, defaults); S._reset(); q.run('DELETE FROM billing_events'); });
 
 function signIn(u) { let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, u.id); return { cookie: c }; }
@@ -122,9 +123,27 @@ test('/admin/billing shows the panel to the admin only, by setting name, never a
   const n = fake.requests.filter(x => x.path === '/v1/prices').length;
   assert.equal((await get(admin(), '/admin/billing?recheck=1')).status, 200);
   assert.ok(fake.requests.filter(x => x.path === '/v1/prices').length > n);
-  // Nobody else gets the page.
-  const kid = signIn(auth.createUser({ username: `RdyKid${uid(4)}`, password: 'rainbow-77' }));
-  for (const who of [null, kid]) assert.notEqual((await get(who, '/admin/billing')).status, 200);
+  // Nobody else gets the page: not a kid, a grown-up, a guest, a school admin, a teacher or a student.
+  const boss = auth.createUser({ username: `RdyBoss${uid(4)}`, password: 'admin-password-1', role: 'admin' });
+  const school = SC.createSchool(boss, { name: `Rdy School ${uid(4)}` }).school;
+  const schoolAdmin = SC.createSchoolAccount(boss, school.id, { rosterName: 'Rdy Head', role: 'admin' }).user;
+  const teacher = SC.createSchoolAccount(boss, school.id, { rosterName: 'Ms Rdy', role: 'teacher' }).user;
+  const student = SC.createSchoolAccount(teacher, school.id, { rosterName: 'Stu Rdy' }).user;
+  const others = [auth.createUser({ username: `RdyKid${uid(4)}`, password: 'rainbow-77' }), auth.createUser({ username: `RdyPar${uid(4)}`, password: 'grownup-password-1', accountType: 'grownup' }),
+    auth.createGuest(), schoolAdmin, teacher, student];
+  for (const who of [null, ...others.map(signIn)]) {
+    for (const path of ['/admin/billing', '/admin/billing?recheck=1']) {
+      const o = await get(who, path);
+      assert.equal(o.status, 404, `${path} is not found for anyone but the platform admin`);
+      assert.doesNotMatch(o.text, /Ready to go live|STRIPE_|rk_live|whsec_|pmc_/);
+    }
+  }
+});
+
+test('BUILDER_FULL_FOR_ALL on (the default): PRO_TURN_WEIGHT changes nothing, so the row says so and is green', async () => {
+  config.builderFullForAll = true;
+  const c = byId(await readiness());
+  assert.equal(c.proWeight.ok, true); assert.match(c.proWeight.label, /BUILDER_FULL_FOR_ALL is on/); assert.match(c.proWeight.now, /no effect/);
 });
 
 test('every row green folds the list away behind "Show the checks"', async () => {
