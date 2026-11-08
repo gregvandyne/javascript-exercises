@@ -92,19 +92,31 @@ same word rules (`validateScript`) and the model classifier; one retry with the 
   that drift, **stars hanging on threads** that sway, layered felt sea that bobs, a striped **lighthouse** with a
   glowing lamp room and a sweeping warm beam (additive cone, soft edges), houses with glowing windows, pine and
   round trees, rocks, a boat, a lantern, fireflies, flowers, tufts and pebbles.
-- **Characters** from spheres, cones and discs, with bead eyes that blink and felt cheeks: the animals (mouse, fox,
-  owl, bunny in `feltkit.py`; dog, cat, bear, elephant, lion, penguin, dinosaur, dragon, unicorn, horse, fish, turtle,
-  bird, frog in `felt_animals.py`) and felt **people** (`felt_people.py`): kids, grown-ups and grandparents with a hair
-  colour, skin tone (six, light to deep), hair style (felt hair shells, curls and buns; no hair simulation), shirt
-  colour, glasses, small/big, and an outfit (casual, dress, sports kit in the shirt colour, pyjamas, swimsuit, winter
-  coat, astronaut, pirate, knight, princess, superhero, coach, teacher, doctor, chef, overalls). People have three
-  mouths (smile, open, sad) and brows that the actions switch.
+- **Characters**: the animals (mouse, fox, owl, bunny in `feltkit.py`; dog, cat, bear, elephant, lion, penguin,
+  dinosaur, dragon, unicorn, horse, fish, turtle, bird, frog in `felt_animals.py`), soft felt shapes with bead eyes
+  that blink and felt brows; and felt **people** (`felt_people.py`) for 6-12 year olds, styled like designer vinyl
+  toys: a big head (about a quarter of the height), chunky limbs with elbows and real hands, oversized sneakers,
+  glossy bean eyes with relaxed lids and clear arched brows (a darker felt than the hair, so they read on every skin
+  tone). Kids, grown-ups and grandparents have a hair colour, skin tone (six, light to deep), hair style, shirt
+  colour, glasses, small/big, and an outfit (casual, dress, sports kit in the shirt colour with a number, pyjamas,
+  swimsuit, winter coat, astronaut, pirate, knight, princess, superhero, coach, teacher, doctor, chef, overalls).
+  The seed of the character's name picks the rest, so the same `who` always looks the same: everyday clothes (hoodie,
+  bomber, denim jacket, numbered jersey, overshirt, tee; joggers, jeans, cargo or plain shorts; a backwards cap,
+  headphones or a backpack; cardigans, vests and flat caps for grandparents), the hair variant (short: styled spikes
+  or a swept quiff; curly: a big cloud or a curly top; long: braids, locs or loose with a side fringe; a swinging
+  ponytail; one bun or space buns; a fade; bald with or without a beard) and the idle attitude (weight on one leg,
+  arms crossed, hands in the pockets or hoodie pouch, a hand on the hip, thumbs in the backpack straps). Hair is a
+  felt cap out to a smooth hairline (fringe, sideburns) with big soft felt tufts on it; no hair simulation. Faces
+  have three mouths (smile, open, sad); the actions set the brows for the mood (happy, sad, frustrated, determined).
+  At night and dusk the skin gets a soft fill (`FACE_FILL`, set per scene by render_story.py) so faces still read.
+  Shapes of a kind share one mesh (colour on the object), which keeps a scene quick to build (about 3.7 s).
 - **Actions** (`felt_actions.py`, one system for people and animals; everyone breathes and sways): idle, walk,
   walk_out, hop, wave, look_up, sleep (Zzz), fly, hold_star, run, jump, kick (the ball flies into the goal on the
   pitch), throw and catch (one ball travels from the thrower to the catcher), cheer, high_five and hug (the two meet
   in the middle), sit, sad, point, dance, swim (a ripple at the waist; floating under the sea), climb (a ladder), read
   (a book whose page turns), eat, laugh, cry (tears), think (a thought cloud), sleep_in_bed (tucked in, Zzz), ride (a
-  bike, or the horse or unicorn in the scene).
+  bike, or the horse or unicorn in the scene). People bend at the elbow (arm > elbow > hand): actions set the
+  bend (running arms, hands to the face, a hand at the chin, holding the tummy, a hug).
 - **Staging** (`felt_stage.py`): places, who moves to whom, the ball, held props, and props put in free slots behind
   and beside the characters (or in the sky, across the top, or over the whole picture for rain and snow).
 - **Camera**: eased moves (push in, pull back, pans, tilts, drift) with a gentle float and depth of field focused

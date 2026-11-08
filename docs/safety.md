@@ -233,7 +233,7 @@ Builders pick who can play:
 | 👫 Friends | the builder's accepted friends | the scan must not fail |
 | 🎒 My class(es) | students and teachers of the classes the builder picked (and that school's admins), only while the builder is still in each class and it isn't archived | a clean scan, or a person's approval **for that audience** |
 | 🏫 My school | everyone in the builder's schools | a clean scan, or a person's approval for the school (or wider) |
-| 🌍 Everyone | everybody | the scan must not fail **and** a review |
+| 🌍 Everyone | everybody | the scan must not fail **and** a person on the Oomba team approves it |
 
 **Class and school sharing** reach children who didn't choose it (a class page lists every class game for the whole
 class), so a flagged version waits for a person, like "Everyone". An approval is stored with the audience it was given
@@ -254,11 +254,16 @@ allowed, needs changes (with kid-friendly reasons the builder sees), or blocked.
 that are only visible on screen (a copied character, a scary scene) and not in the text. Pictures reuse the cover already
 taken for that version when there is one, or a fresh snapshot is taken with a short time limit so publishing never hangs;
 if screenshots are off or time out, the review goes ahead on the text and code alone. A **flagged** version is never
-approved automatically. If there is no API key, or the review fails for any reason, the game waits in the **human review
-queue** for an admin.
+approved automatically. **Since November 2026 no game becomes public without a person**: the model's "allowed" is only a
+hint shown to the admin, and every public request waits in the **review queue** (Admin › Review queue). While it waits,
+the builder can play it, keep editing and share it with their friends (a game that wasn't live yet goes live for friends
+at once). The admin approves, or sends it back with a kid-friendly preset reason and/or a note; the builder gets a
+message from "Oomba team ✓" in their inbox either way. Games that were already public then were grandfathered (migration
+`0055_admin_review`), and official seed games count as approved.
 
 **Updating a live game.** Builders can keep improving games after publishing. While an update waits for review, players
-keep playing the old version. Only `server/services/publish.js` can move a version live.
+keep playing the old, approved version; the new one is public only once a person approves it. Only
+`server/services/publish.js` can move a version live.
 
 ## 7. Reports and admins
 
@@ -266,6 +271,11 @@ keep playing the old version. Only `server/services/publish.js` can move a versi
   on a game, it is hidden automatically until an admin looks.
 - Admins have a review queue with a preview and the safety report, can approve or reject with a note the builder sees,
   hide, suspend, ban, and read the audit log. Every moderation action is written to the audit log.
+- The platform admin (only) sees user analytics: every account's last login and last active, days active, plays,
+  games built, AI Builder messages, course steps and live games, and per person a 30-day activity chart and timeline
+  (sign-ins, games started and published, plays). Counts, dates and game titles only: never passwords, tokens, IPs,
+  browsers, chat text or what a child asked the Builder; sign-ins and active days are kept 400 days and deleted with
+  the account (docs/decisions.md "Admin: user analytics").
 
 ## 8. Chat is friends-only
 
@@ -277,6 +287,16 @@ schools, meet-ups) and refused messages are never stored. Repeated refusals paus
 and daily limits. Anyone can block or report a message, and chat can be switched off on the account's own Me page
 (there is no separate grown-up control for it yet: an owner decision, docs/legal-review.md).
 (See `server/services/chat.js`.)
+
+**Messages from the Oomba team** (`server/services/team.js`). The platform admins can write to people as "Oomba team ✓"
+(one thread per person in the same inbox) and send announcements (to everyone, kids, grown-ups, teachers and school
+staff, or one school; the admin sees how many people it reaches and confirms; at most one every 10 minutes and 5 a day).
+The Oomba team (platform admins: the owner's trusted staff) is the one adult that may message any kid account (owner's
+decision, November 2026). Every team message to a child and every reply from the child is written to the audit log
+with its text, and copied at once to their linked family grown-up (and, for school students, their school's admins)
+when they have one; the admin's page says when no copy goes to anyone. A child's
+replies go through the same filters, pause and limits as friends' chat; a child can report a team message like any
+other; nobody can block the team.
 
 **In every language.** The site is offered in 13 languages, and the same filters check every message whatever language
 it is written in. Text is normalised first: full-width letters and digits (`０１２`, `ｂｏｂ＠ｍａｉｌ．ｃｏｍ`) count as plain

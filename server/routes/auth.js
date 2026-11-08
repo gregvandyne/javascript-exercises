@@ -192,12 +192,12 @@ router.post('/api/auth/signup', (req, res) => {
   let u;
   if (req.user && req.user.is_guest) {
     u = auth.upgradeGuest(req.user.id, { username: n.value, password }); audit(u.id, 'user.upgrade', u.id);
-    auth.endSession(req, res); auth.startSession(res, u.id, req.headers['user-agent']); // fresh session id after the upgrade
+    auth.endSession(req, res); auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup' }); // fresh session id after the upgrade
   }
   else {
     try { u = auth.createUser({ username: n.value, password }); }
     catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
-    auth.startSession(res, u.id, req.headers['user-agent']); audit(u.id, 'user.signup', u.id);
+    auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup' }); audit(u.id, 'user.signup', u.id);
   }
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   funnel.bump('kid.signup');   // the guardrail: a daily total of new kid accounts (a guest keeping their progress too)

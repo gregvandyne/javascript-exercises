@@ -1,8 +1,10 @@
 // AI voices for one chosen game that is not an official seed game (docs/decisions.md "AI voices for a chosen game").
 // The site owner (platform admin) switches a game on at /admin/voices or on the game's own page (/g/<slug>); every
-// switch is audited. Only a game made by a teacher, school staff or the admin can be switched on: a student's game never,
-// because its words are a kid's; an official game never (it has its own known lines, registered in tts-lines).
-// - Stored in settings 'tts.games' as { <game id>: { by, at } }.
+// switch is audited. A game made by a teacher, school staff or the admin can be switched on as it is. A student's game
+// can be switched on too (owner's call, November 2026), but only for the published version the admin had in front of
+// them: its words are a kid's, so the switch pins that version, and once the student publishes a new one the voices
+// stop until the admin switches them on again. An official game never (it has its own known lines, in tts-lines).
+// - Stored in settings 'tts.games' as { <game id>: { by, at, version? } } (version: the pinned published version).
 // - What may be read: only the game's OWN words, taken from its PUBLISHED version's HTML (string literals in its
 //   scripts, text and a few text attributes in its markup), cached per published version id, so publishing a new version
 //   uses the new words at once. A line matches one of the game's strings as a whole; its placeholders (${…}, {name},
@@ -43,8 +45,17 @@ export function whyNot(g) {
   if (isOfficial(g)) return TTS_GAMES.has(g.slug) ? 'This official game already has AI voices: its known lines are read (tts-lines).' : 'This official game is missing from the AI voices list (tts-lines GAMES). That is a bug: every official game must be registered.';
   const owner = q.get('SELECT * FROM users WHERE id=?', g.owner_id);
   if (!owner || owner.is_guest || owner.banned) return 'This game\'s maker has no account in good standing, so it keeps the device\'s voice.';
-  if (owner.role === 'admin' || isStaff(owner)) return null;
-  return `This game was made by @${owner.username}, who is not a teacher, school staff or admin. Only games made by teachers, school staff or the admin can have AI voices (a student's game holds a kid's own words).`;
+  return null;
+}
+/** A student's game (its maker is not a teacher, school staff or the admin): its switch covers one published version. */
+export function isStudentGame(g) {
+  const owner = g && q.get('SELECT * FROM users WHERE id=?', g.owner_id);
+  return !!owner && !(owner.role === 'admin' || isStaff(owner));
+}
+/** For a student's game switched on: did the student publish a new version since the admin switched it on? */
+export function stale(g) {
+  const s = g && switched()[g.id];
+  return !!s && isStudentGame(g) && s.version !== g.published_version_id;
 }
 
 /** Find a game from what the admin pasted: a slug, a game id, or a link to /g/<slug> or /play/<slug> (any language
@@ -67,10 +78,12 @@ export function set(actor, g, on) {
   if (on) {
     const why = whyNot(g);
     if (why) return { ok: false, status: 400, error: why };
-    map[g.id] = { by: actor.id, at: Date.now() };
+    const student = isStudentGame(g);
+    if (student && !g.published_version_id) return { ok: false, status: 400, error: 'This is a student\'s game: publish it first. The switch covers the published version you can play now, so its words are ones you have seen.' };
+    map[g.id] = { by: actor.id, at: Date.now(), ...(student ? { version: g.published_version_id } : {}) };
   } else delete map[g.id];
   setting(KEY, JSON.stringify(map));
-  audit(actor.id, on ? 'admin.tts.game.on' : 'admin.tts.game.off', g.id, { slug: g.slug });
+  audit(actor.id, on ? 'admin.tts.game.on' : 'admin.tts.game.off', g.id, { slug: g.slug, ...(on && map[g.id].version ? { version: map[g.id].version, student: true } : {}) });
   return { ok: true, game: info(g) };
 }
 
@@ -78,7 +91,7 @@ export function set(actor, g, on) {
 export function info(g) {
   const on = isOn(g.id), why = whyNot(g);
   const live = g.status === 'published' && !!g.published_version_id && !g.hidden_reason;
-  return { id: g.id, slug: g.slug, title: g.title, on, ok: !why, why, live, owner: (q.get('SELECT username FROM users WHERE id=?', g.owner_id) || {}).username || '' };
+  return { id: g.id, slug: g.slug, title: g.title, on, ok: !why, why, live, student: !why && isStudentGame(g), stale: on && stale(g), owner: (q.get('SELECT username FROM users WHERE id=?', g.owner_id) || {}).username || '' };
 }
 /** Why a game switched on plays nothing yet, for the admin pages: null, or a sentence. */
 export const silentWhy = () => (!ttsEnabled() ? 'AI voices are off for the whole site (TTS_ENABLED and a key), so nothing plays yet.'
@@ -90,7 +103,7 @@ export function list() {
 
 /** May this game use AI voices because the admin switched it on: switched on, still made by an allowed maker,
  *  published, not hidden or suspended. Never a draft or a preview (those are not the published version). */
-export const allowed = g => !!g && isOn(g.id) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason && !whyNot(g);
+export const allowed = g => !!g && isOn(g.id) && g.status === 'published' && !!g.published_version_id && !g.hidden_reason && !whyNot(g) && !stale(g);
 
 // ---------------------------------------------------------------- the game's own words
 const NUM = '';    // a number in the text (a run of up to MAX_DIGITS digits, maybe grouped: 1,234 · 1 234)

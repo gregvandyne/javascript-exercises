@@ -1,5 +1,5 @@
 """More felt animals for the Story Builder kit (the first four, mouse, fox, owl and bunny, are in feltkit.py), built
-the same way: soft felt spheres and cones, bead eyes with a glint that blink, felt cheeks, and the same named parts
+the same way: soft felt spheres and cones, bead eyes with a glint that blink, felt brows, and the same named parts
 (`arm`, `leg`, `wing`, `ear`, `tail` empties, a `<name>_head` empty) so felt_actions.py can move them.
 
 Most stand upright like the first four (a picture-book cast that faces the reader). The horse and the unicorn stand
@@ -12,6 +12,30 @@ import feltkit as K
 
 F = K.felt
 prim = K.prim
+
+
+def _eyes(head, x, y, z, r, gap, seed=0.0):
+    """Bead eyes with a glint that blink (feltkit), and felt brows above them: a little attitude, and the brows
+    move with the mood in felt_actions (happy, sad, frustrated, determined) like the people's."""
+    eyes = K._eyes(head, x, y, z, r, gap, seed)
+    brow = F('#2e2224', fuzz=0.3, sheen=0.4)
+    bw, bt = r * 1.25, r * 0.42
+    for sx in (-1, 1):
+        pts = [(-bw, -bt * 0.2), (-bw * 0.3, bt * 0.2), (bw * 0.45, bt * 0.1), (bw, -bt * 0.55), (bw * 0.95, -bt * 0.1),
+               (bw * 0.4, bt * 0.8), (-bw * 0.35, bt * 1.05), (-bw * 1.02, bt * 0.85)]
+        if sx < 0:
+            pts = [(-px, pz) for px, pz in reversed(pts)]
+        b = K.outline_obj('brow', pts, 0.02, brow, bevel=0.004)
+        b.parent = head
+        b.location = (x + sx * gap, y - r * 0.2, z + r * 1.75)
+        b['side'] = sx
+        b['rest_z'] = b.location.z
+    return eyes
+
+
+def _cheeks(*a, **kw):
+    """No blush circles: the animals read a little older and sleeker without them."""
+    return None
 
 
 def _base(name):
@@ -49,8 +73,8 @@ def dog(name, color='#d9a66b'):
         prim('sphere', 'd_ear', (sx * 0.05, 0, -0.17), (0.1, 0.05, 0.22), (0, sx * 0.3, 0), mat=dark, parent=ear, segs=14)
         _arm(body, sx, 0.3, 0.6, fur)
     _feet(body, fur)
-    K._eyes(head, 0, -0.27, 0.08, 0.055, 0.13, 0.4)
-    K._cheeks(head, 0, -0.26, -0.07, 0.21)
+    _eyes(head, 0, -0.27, 0.08, 0.055, 0.13, 0.4)
+    _cheeks(head, 0, -0.26, -0.07, 0.21)
     tail = K.empty('tail', (0, 0.3, 0.3), body)
     prim('sphere', 'd_tail', (0, 0.05, 0.12), (0.06, 0.06, 0.16), (-0.6, 0, 0), mat=fur, parent=tail, segs=10)
     prim('torus', 'collar', (0, 0, 0.82), (0.24, 0.22, 0.2), mat=F('#d9473f'), parent=body, segs=20, minor=0.15)
@@ -80,8 +104,8 @@ def cat(name, color='#e8a05a'):
             prim('cyl', 'whisker', (sx * 0.22, -0.3, -0.07 + k * 0.05), (0.006, 0.006, 0.13), (0, math.pi / 2 + sx * (0.15 - k * 0.3), 0), mat=F('#fbf1e4'), parent=head, segs=4)
         _arm(body, sx, 0.27, 0.58, fur, r=0.065)
     _feet(body, white, r=(0.1, 0.15, 0.06))
-    K._eyes(head, 0, -0.26, 0.05, 0.055, 0.13, 1.9)
-    K._cheeks(head, 0, -0.24, -0.08, 0.2)
+    _eyes(head, 0, -0.26, 0.05, 0.055, 0.13, 1.9)
+    _cheeks(head, 0, -0.24, -0.08, 0.2)
     tail = K.empty('tail', (0.15, 0.25, 0.15), body)
     for k in range(8):
         a = k / 7
@@ -105,8 +129,8 @@ def bear(name, color='#9a6a45'):
         prim('sphere', 'be_ear_in', (0, -0.04, 0), (0.06, 0.03, 0.06), mat=light, parent=ear, segs=10)
         _arm(body, sx, 0.36, 0.7, fur, r=0.09, length=0.2)
     _feet(body, fur, x=0.19, r=(0.14, 0.2, 0.08))
-    K._eyes(head, 0, -0.29, 0.07, 0.05, 0.14, 2.7)
-    K._cheeks(head, 0, -0.27, -0.06, 0.24)
+    _eyes(head, 0, -0.29, 0.07, 0.05, 0.14, 2.7)
+    _cheeks(head, 0, -0.27, -0.06, 0.24)
     root['height'] = 1.45
     return root, body, head
 
@@ -128,8 +152,8 @@ def elephant(name, color='#9aa5c4'):
         prim('sphere', 'el_trunk', (0, -0.08 * a - 0.02, -0.4 * a + 0.1 * a * a * 2), (0.09 - 0.025 * a, 0.09 - 0.025 * a, 0.08), mat=skin, parent=trunk, segs=12)
     K.anim(lambda t, f: setattr(trunk.rotation_euler, 'x', -0.2 + math.sin(t * 1.4) * 0.25))
     _feet(body, skin, x=0.2, r=(0.15, 0.17, 0.09))
-    K._eyes(head, 0, -0.3, 0.1, 0.05, 0.15, 0.9)
-    K._cheeks(head, 0, -0.28, -0.04, 0.24)
+    _eyes(head, 0, -0.3, 0.1, 0.05, 0.15, 0.9)
+    _cheeks(head, 0, -0.28, -0.04, 0.24)
     tail = K.empty('tail', (0, 0.38, 0.45), body)
     prim('cyl', 'el_tail', (0, 0.05, -0.1), (0.025, 0.025, 0.14), (0.4, 0, 0), mat=skin, parent=tail, segs=6)
     root['height'] = 1.48
@@ -153,8 +177,8 @@ def lion(name, color='#f0b648'):
         prim('sphere', 'l_ear', (0, -0.04, 0), (0.08, 0.05, 0.08), mat=fur, parent=ear, segs=10)
         _arm(body, sx, 0.31, 0.62, fur)
     _feet(body, fur)
-    K._eyes(head, 0, -0.25, 0.06, 0.05, 0.13, 1.1)
-    K._cheeks(head, 0, -0.24, -0.06, 0.2)
+    _eyes(head, 0, -0.25, 0.06, 0.05, 0.13, 1.1)
+    _cheeks(head, 0, -0.24, -0.06, 0.2)
     tail = K.empty('tail', (0.1, 0.3, 0.25), body)
     prim('cyl', 'l_tail', (0.12, 0.05, 0.15), (0.03, 0.03, 0.22), (0, 0.6, 0), mat=fur, parent=tail, segs=6)
     prim('sphere', 'l_tuft', (0.25, 0.08, 0.33), (0.08, 0.08, 0.09), mat=mane, parent=tail, segs=10)
@@ -175,8 +199,8 @@ def penguin(name, color='#2f3346'):
         arm = K.empty('arm', (sx * 0.34, 0, 0.72), body)
         prim('sphere', 'p_flipper', (sx * 0.02, 0, -0.18), (0.06, 0.12, 0.24), mat=black, parent=arm, segs=12)
     _feet(body, orange, r=(0.1, 0.16, 0.04))
-    K._eyes(head, 0, -0.27, 0.05, 0.045, 0.1, 0.5)
-    K._cheeks(head, 0, -0.27, -0.06, 0.15)
+    _eyes(head, 0, -0.27, 0.05, 0.045, 0.1, 0.5)
+    _cheeks(head, 0, -0.27, -0.06, 0.15)
     prim('torus', 'p_scarf', (0, 0, 0.85), (0.26, 0.24, 0.22), mat=F('#4fa8f0'), parent=body, segs=18, minor=0.18)
     root['height'] = 1.28
     return root, body, head
@@ -199,8 +223,8 @@ def dinosaur(name, color='#6fbf6a'):
     for k in range(5):
         prim('cone', 'dn_plate', (0, 0.3 + k * 0.02, 1.2 - k * 0.22), (1, 0.4, 0.12), (-0.4 - k * 0.15, 0, 0), mat=plate, parent=body, segs=4, r1=0.11, r2=0.0)
     _feet(body, skin, x=0.2, r=(0.14, 0.2, 0.08))
-    K._eyes(head, 0, -0.24, 0.12, 0.055, 0.15, 1.5)
-    K._cheeks(head, 0, -0.38, -0.08, 0.2)
+    _eyes(head, 0, -0.24, 0.12, 0.055, 0.15, 1.5)
+    _cheeks(head, 0, -0.38, -0.08, 0.2)
     tail = K.empty('tail', (0, 0.35, 0.3), body)
     for k in range(5):
         prim('sphere', 'dn_tail', (0.12 * k, 0.12 + 0.13 * k, -0.04 * k), (0.2 - k * 0.035, 0.2 - k * 0.035, 0.16 - k * 0.025), mat=skin, parent=tail, segs=12)
@@ -228,8 +252,8 @@ def dragon(name, color='#8a6ad9'):
         w.parent = wing
         _arm(body, sx, 0.31, 0.62, skin, r=0.065)
     _feet(body, skin)
-    K._eyes(head, 0, -0.25, 0.08, 0.055, 0.13, 2.3)
-    K._cheeks(head, 0, -0.26, -0.06, 0.2)
+    _eyes(head, 0, -0.25, 0.08, 0.055, 0.13, 2.3)
+    _cheeks(head, 0, -0.26, -0.06, 0.2)
     tail = K.empty('tail', (0, 0.3, 0.2), body)
     for k in range(5):
         prim('sphere', 'dr_tail', (0.1 * k, 0.1 + 0.1 * k, 0.02 * k), (0.12 - k * 0.018, 0.12 - k * 0.018, 0.1), mat=skin, parent=tail, segs=10)
@@ -326,8 +350,8 @@ def turtle(name, color='#7fbf6a'):
     for sx in (-1, 1):
         _arm(body, sx, 0.33, 0.6, skin, r=0.07)
     _feet(body, skin, r=(0.12, 0.16, 0.07))
-    K._eyes(head, 0, -0.24, 0.06, 0.05, 0.12, 0.2)
-    K._cheeks(head, 0, -0.23, -0.07, 0.18)
+    _eyes(head, 0, -0.24, 0.06, 0.05, 0.12, 0.2)
+    _cheeks(head, 0, -0.23, -0.07, 0.18)
     root['height'] = 1.22
     return root, body, head
 
@@ -352,8 +376,8 @@ def bird(name, color='#4fa8f0'):
         lg['side'] = sx
         prim('cyl', 'bi_leg', (0, 0, -0.04), (0.02, 0.02, 0.06), mat=beak, parent=lg, segs=6)
         prim('sphere', 'bi_foot', (0, -0.05, -0.09), (0.05, 0.07, 0.02), mat=beak, parent=lg, segs=8)
-    K._eyes(head, 0, -0.2, 0.05, 0.045, 0.1, 1.2)
-    K._cheeks(head, 0, -0.2, -0.06, 0.15, 0.05)
+    _eyes(head, 0, -0.2, 0.05, 0.045, 0.1, 1.2)
+    _cheeks(head, 0, -0.2, -0.06, 0.15, 0.05)
     root['height'] = 1.05
     return root, body, head
 
@@ -371,8 +395,8 @@ def frog(name, color='#6fbf4a'):
     for sx in (-1, 1):
         prim('sphere', 'fr_eyebump', (sx * 0.18, -0.08, 0.2), (0.13, 0.13, 0.12), mat=skin, parent=head, segs=14)
         _arm(body, sx, 0.33, 0.5, skin, r=0.06, length=0.14)
-    K._eyes(head, 0, -0.18, 0.22, 0.06, 0.18, 0.6)
-    K._cheeks(head, 0, -0.27, -0.02, 0.24)
+    _eyes(head, 0, -0.18, 0.22, 0.06, 0.18, 0.6)
+    _cheeks(head, 0, -0.27, -0.02, 0.24)
     for sx in (-1, 1):
         lg = K.empty('leg', (sx * 0.22, 0, 0.12), body)
         lg['side'] = sx

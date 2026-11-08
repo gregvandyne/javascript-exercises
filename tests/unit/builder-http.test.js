@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import zlib from 'node:zlib';
 
 const { config } = await import('../../server/config.js');
+config.builderFullForAll = false;   // a regular maker's caps and limits (BUILDER_FULL_FOR_ALL: builder-trusted.test.js)
 config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');
 const games = await import('../../server/services/games.js');
