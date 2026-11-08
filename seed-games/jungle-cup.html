@@ -14150,7 +14150,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 // VINE CLIMB vs Sloane the sloth: race up the Great Grove tree, 60 m in 75 s.
 //   Cappy hangs on a swinging vine. The next vine (the one with the ring) is above; tap / Space / A when your swing
 //   brings you under it (the ring turns green) to leap and grab it. Too far away: nothing happens ("Wait for it").
-//   Close but not close enough: your paws slip and you fall to the last branch platform (at 15, 30 and 45 m).
+//   A tap a moment early waits for the ring to turn green. A late tap slips: Cappy drops back and catches the vine he
+//   leapt from (off a branch, he lands back on it). Branch platforms at 15, 30 and 45 m.
 //   Standing on a branch, the next vine swings over you: grab it as it passes.
 //   Hazards: coconuts shake, then drop past the next vine; angry bees buzz in from the edge, then fly across the gap.
 //   Leap into either and Cappy is knocked off: "Bonk!", a tumble, and he drops to the last branch platform he passed
@@ -14159,11 +14160,13 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 // World units: x in pixels from the trunk's centre, y (wy) in pixels upwards from the forest floor (PXM per metre).
 // ======================================================================================================
 (function () {
-  const PXM = 40 / 3, GAP = 3, N = 20, TOP_M = 60, TIME = 75, LEAP = 0.3, TRUNK = 21;
+  const PXM = 40 / 3, GAP = 3, N = 20, TOP_M = 60, TIME = 75, LEAP = 0.3, TRUNK = 21, BUF = 0.3, BEE_FROM = 110;
+  // Sloane reaches the canopy in this many seconds (tuned so an average kid wins about 6 in 10; Easier about 85%)
+  const SLOANE_N = 45, SLOANE_EASY = 56;
   const BRANCHES = { 5: true, 10: true, 15: true }, BR_LIST = [5, 10, 15];
   const S = {
     T: [], cur: 0, state: 'stand', x: -26, y: 28, hm: 0, maxM: 0, facing: 1, vx: 0, vy: 0, walkTo: -26,
-    leapT: 0, leapFrom: 0, leapX0: 0, leapY0: 0, leapOk: true, leapBack: 0, tapAt: -1, tapFor: 0, daze: 0, time: 0, auto: false, sigma: 0, eps: 0,
+    buf: 0, bufFor: -1, leapT: 0, leapFrom: 0, leapX0: 0, leapY0: 0, leapOk: true, leapBack: 0, tapAt: -1, tapFor: 0, daze: 0, time: 0, auto: false, sigma: 0, eps: 0,
     sloane: 0, sloaneV: 1, falls: 0, perfects: 0, grabs: 0, bonks: 0, knocks: 0, knock: 0, spin: 0, fallTo: -1, cam: 0, waitMsg: 0, over: false, won: false, hint: 1,
     coco: { on: false, x: 0, wy: 0, vy: 0, shake: 0, next: 8, hit: false },
     bee: { on: false, x: 0, wy: 0, dir: 1, warn: 0, next: 10, hit: false, t: 0 },
@@ -14287,6 +14290,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     const n = S.T[S.cur + 1]; if (!n) return;
     const r = R(ctx) + (S.state === 'stand' ? 2 : 0);
     const dx = n.kind === 'branch' ? 0 : nextX(S.time) - cappyX(S.time), ad = Math.abs(dx);
+    // a tap a moment early, while the vine is still coming into reach, is held and leaps the instant the ring turns
+    // green (kids anticipate; touch adds a little delay). A late tap, as the swing carries you away, still slips.
+    if (ad > r && n.kind !== 'branch' && S.buf <= 0) { const k = soonInReach(r, BUF); if (k >= 0) { S.buf = k + 1 / 60; S.bufFor = S.cur; return; } }
     // standing on the ground or a branch, nothing is lost by waiting: a jump only goes when the vine is in reach
     if (ad > (S.state === 'stand' ? r : r * 2.4)) { if (S.waitMsg <= 0) { fl(sxOf(S.x), syOf(S.y) - 34, t('vc.wait'), '#ffe9a0'); S.waitMsg = 0.7; } return; }
     S.hint = Math.max(0, S.hint - 0.25);
@@ -14298,6 +14304,11 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       else fl(sxOf(S.leapX0), syOf(S.y) - 40, t('vc.good'), '#8ee070');
     }
     S.eps = S.sigma ? gauss() * S.sigma : 0;
+  }
+  /** Seconds until the next target comes within r (looking at most `win` s ahead), or -1. */
+  function soonInReach(r, win) {
+    for (let k = 1; k <= Math.ceil(win * 60); k++) { const tt = S.time + k / 60; if (Math.abs(nextX(tt) - cappyX(tt)) <= r) return k / 60; }
+    return -1;
   }
   function gauss() { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283 * v); }
   function landOn(ctx, i) {
@@ -14317,7 +14328,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     S.hm = v.h; S.maxM = Math.max(S.maxM, v.h);
   }
   function fall(ctx) {
-    S.state = 'fall'; S.vy = 0; S.falls++; S.fallTo = lastStand(S.cur);
+    // a slipped leap catches the vine you leapt from (a moment lost, not the whole climb); off a branch you drop back to it
+    const from = S.T[S.cur];
+    S.state = 'fall'; S.vy = 0; S.falls++; S.fallTo = from && from.kind === 'vine' ? S.cur : lastStand(S.cur);
     ctx.sfx('miss'); fl(sxOf(S.x), syOf(S.y) - 30, t('vc.slip'), '#ffb3d6');
   }
   /** Hit by a coconut or a bee: knocked off, a tumble, and down to the last branch (Easier: catch a vine two below). */
@@ -14344,7 +14357,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     S.finishT = S.time;
     const won = S.won, secs = S.time;
     let stars = 0;
-    if (won) stars = 1 + (secs <= 46 ? 1 : 0) + (secs <= 34 ? 1 : 0);
+    if (won) stars = 1 + (secs <= 40 ? 1 : 0) + (secs <= 34 ? 1 : 0);
     const score = Math.round(S.maxM * 10 + S.perfects * 20 + (won ? 500 + Math.max(0, TIME - secs) * 10 : 0));
     ctx.finish({ score, stars, won, frac: won ? [0.34, 0.67, 1][stars - 1] : (S.maxM / TOP_M) * 0.32, stats: { metres: S.maxM, secs: Math.round(secs), falls: S.falls, knocks: S.knocks, sloane: Math.round(S.sloane) } });
   }
@@ -14352,6 +14365,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     S.ctx = ctx; view(ctx);
     S.time += dt;
     if (S.waitMsg > 0) S.waitMsg -= dt;
+    if (S.buf > 0) { S.buf -= dt; if (S.bufFor !== S.cur || (S.state !== 'hang' && S.state !== 'stand')) S.buf = 0; else if (S.buf <= 0) { S.buf = 0; tryGrab(ctx); } }
     if (S.daze > 0) S.daze -= dt;
     if (S.knock > 0 && S.state !== 'fall') S.knock -= dt;
     JC.juice.tick(dt);
@@ -14399,7 +14413,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       const li = S.fallTo >= 0 ? S.fallTo : lastStand(S.cur), v = S.T[li];
       S.hm = Math.max(0, (S.y - 28) / PXM);
       if (!isStand(v.kind)) {
-        // Easier: grab a vine on the way down
+        // a slip (or, with Easier, a knock) catches a vine on the way down
         const ty = tipY(v, S.time);
         S.x += (tipX(v, S.time) - S.x) * Math.min(1, dt * 8);
         if (S.vy < 0 && S.y <= ty) { S.cur = li; ride(v, ang(v, S.time)); S.state = 'hang'; S.daze = 0.6; S.knock = 0; S.fallTo = -1; S.hm = v.h; ctx.sfx('grab'); bu(sxOf(S.x), syOf(S.y), 6, '#7cc84a', 40); }
@@ -14443,7 +14457,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       b.next -= dt;
       if (b.next <= 0 && S.hm >= 28 && (S.state === 'hang' || S.state === 'stand')) {
         b.on = true; b.hit = false; b.warn = 1.0; b.t = 0; b.dir = ctx.rng() < 0.5 ? 1 : -1;
-        b.x = -b.dir * (S.vw / 2 + 10); b.wy = S.y + 18;
+        b.x = -b.dir * Math.min(S.vw / 2 + 10, BEE_FROM); b.wy = S.y + 18;
         b.next = (easy ? 13 : 9.5) + ctx.rng() * 3; ctx.sfx('buzz');
       }
     } else if (b.on) {
@@ -14451,7 +14465,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (b.warn > 0) b.warn -= dt;
       else {
         b.x += b.dir * (easy ? 42 : 52) * dt;
-        if (Math.abs(b.x) > S.vw / 2 + 20) b.on = false;
+        if (Math.abs(b.x) > Math.min(S.vw / 2 + 20, BEE_FROM + 10)) b.on = false;   // same crossing on every screen
 
       }
     }
@@ -14677,8 +14691,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     start(ctx) {
       S.ctx = ctx; view(ctx); build(ctx);
       S.cur = 0; S.state = 'stand'; S.x = -26; S.walkTo = -26; S.y = 28; S.hm = 0; S.maxM = 0; S.facing = 1; S.time = 0; S.daze = 0; S.knock = 0; S.knocks = 0; S.spin = 0; S.fallTo = -1; JC.juice.reset();
-      S.sloane = 0; S.sloaneV = TOP_M / (ctx.easy ? 72 : 62); S.falls = 0; S.perfects = 0; S.grabs = 0; S.bonks = 0; S.over = false; S.won = false;
-      S.cam = 40; S.waitMsg = 0; S.cheer = 0; S.auto = false; S.sigma = 0; S.eps = 0; S.hint = ctx.firstTime ? 1.6 : 0.7;
+      S.sloane = 0; S.sloaneV = TOP_M / (ctx.easy ? SLOANE_EASY : SLOANE_N); S.falls = 0; S.perfects = 0; S.grabs = 0; S.bonks = 0; S.over = false; S.won = false;
+      S.cam = 40; S.waitMsg = 0; S.buf = 0; S.bufFor = -1; S.cheer = 0; S.auto = false; S.sigma = 0; S.eps = 0; S.hint = ctx.firstTime ? 1.6 : 0.7;
       S.coco.on = false; S.coco.next = ctx.easy ? 6 : 3; S.bee.on = false; S.bee.next = ctx.easy ? 5 : 2;
       const n = S.T[1]; n.p = Math.PI * 0.9;
     },
@@ -14699,6 +14713,18 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       /** Jump to target i (e.g. 19, just under the top). */
       to(ctx, i) { i = clamp(i | 0, 0, N - 1); const v = S.T[i]; if (isStand(v.kind)) { S.state = 'stand'; S.cur = i; S.x = v.sx; S.walkTo = v.sx; S.y = v.h * PXM + 28; } else { S.cur = i; ride(v, 0); S.state = 'hang'; S.x = tipX(v, S.time); S.y = tipY(v, S.time); } S.hm = v.h; S.maxM = Math.max(S.maxM, v.h); S.cam = S.y + 10; return S.cur; },
       sloane(ctx, m) { S.sloane = clamp(+m || 0, 0, TOP_M); return S.sloane; },
+      /** For each start target i, the closest the next target ever comes over 5 s of swinging (px), and the grab radius.
+       *  Moves Cappy around (use on a throwaway round). */
+      gaps(ctx) {
+        const out = [];
+        for (let i = 0; i < N; i++) {
+          this.to(ctx, i); const n = S.T[i + 1];
+          let mn = 0;
+          if (n.kind !== 'branch') { mn = 1e9; for (let k = 0; k <= 300; k++) { const tt = S.time + k / 60; mn = Math.min(mn, Math.abs(nextX(tt) - cappyX(tt))); } }
+          out.push({ i, m: S.T[i].h, next: n.kind, min: Math.round(mn * 10) / 10, r: R(ctx) + (S.state === 'stand' ? 2 : 0) });
+        }
+        return out;
+      },
       hazards(ctx, on) { S.coco.next = on ? 0 : 999; S.bee.next = on ? 0 : 999; S.coco.on = false; S.bee.on = false; return !!on; },
       /** Drop a coconut right above Cappy, or send a bee straight at him (tests of the knockdown). */
       drop(ctx, kind) {
