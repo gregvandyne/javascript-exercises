@@ -398,3 +398,36 @@ test("the admin's Me badge counts the review queue; the admin header shows it", 
   assert.match(page, /Review queue: \d+ games? waiting/);
   assert.match(page, /Send back/); assert.match(page, /Please use your own characters/);
 });
+
+test('unsend: an admin takes back a team message (and the grown-up copies) or a whole announcement; audited; admins only', async () => {
+  const kid = mk('Oops'); const parent = linkParent(kid);
+  const r = team.sendDirect(admin, kid, 'Hi [first name], welcome!');
+  assert.equal(r.ok, true);
+  const copy = q.get("SELECT * FROM chat_messages WHERE to_id=? AND kind='copy' ORDER BY created_at DESC", parent.id);
+  assert.equal(copy.status, 'ok');
+  // Not an admin: 404 (the admin API is admin only).
+  assert.equal((await req(`/api/admin/team/messages/${r.id}/unsend`, { user: kid, method: 'POST', body: {} })).status, 404);
+  const res = await req(`/api/admin/team/messages/${r.id}/unsend`, { user: admin, method: 'POST', body: {} });
+  assert.equal(res.status, 200, await res.clone().text()); assert.equal((await res.json()).copies, 1);
+  assert.equal(q.get('SELECT status FROM chat_messages WHERE id=?', r.id).status, 'unsent');
+  assert.equal(q.get('SELECT status FROM chat_messages WHERE id=?', copy.id).status, 'unsent');
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.message.unsend' AND target=? AND details LIKE '%first name%'", kid.id));
+  // The kid's team thread no longer shows it; the admin's thread marks it unsent.
+  const kt = await (await req(`/chat/${auth.OFFICIAL}`, { user: kid })).text();
+  assert.ok(!kt.includes('[first name]'), 'gone from the kid\'s inbox');
+  assert.match(await (await req(`/admin/messages/${kid.username}`, { user: admin })).text(), /unsent \(they no longer see it\)/);
+  // A reply or a missing id can't be unsent.
+  assert.equal(team.unsendDirect(admin, 'nope').code, 'missing');
+  // An announcement: every delivery disappears; the list says unsent.
+  const a1 = mk('AnnA'); const a2 = mk('AnnB');
+  q.run('DELETE FROM announcements');
+  const pv = team.previewAnnouncement(admin, { audience: 'kids', text: 'Hello [name]!' });
+  const sent = team.sendAnnouncement(admin, { audience: 'kids', text: 'Hello [name]!', confirm: pv.confirm });
+  assert.equal(sent.ok, true, JSON.stringify(sent));
+  assert.ok(q.get("SELECT COUNT(*) n FROM chat_messages WHERE kind='announce' AND status='ok' AND to_id IN (?,?)", a1.id, a2.id).n === 2);
+  const ur = await req(`/api/admin/announcements/${sent.id}/unsend`, { user: admin, method: 'POST', body: {} });
+  assert.equal(ur.status, 200);
+  assert.equal(q.get("SELECT COUNT(*) n FROM chat_messages WHERE kind='announce' AND status='ok' AND body LIKE ?", `{"id":"${sent.id}"%`).n, 0);
+  assert.equal(team.recentAnnouncements(5).find(x => x.id === sent.id).unsent, 1);
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.announce.unsend' AND target=?", sent.id));
+});
