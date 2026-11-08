@@ -2,7 +2,7 @@
 // second finger on a 390 x 844 phone, then the keys on a 1366 x 768 laptop, then a simulated gamepad. The player-bot in
 // this file only reads where the ball is going (like eyes) and moves the thumb / presses keys; it never calls the
 // sport's own shortcuts. It plays the marmoset warm-up to the end, rallies with Jada, and returns balls in a Fruit
-// Frenzy (the score is moved to 3-2 so the Frenzy comes on the next serve). Then the balance check: the sport's
+// Frenzy (the score is moved to 10-9 so the Frenzy comes on the next serve): the extra ball is announced and paced. Then the balance check: the sport's
 // simulated players (a sloppy kid wins sometimes, Easier champions more, button mashing never).
 // Run alone: E2E_PORT=5101 npx playwright test tests/e2e/jungle-cup-paddle.spec.js
 import { test, expect } from '@playwright/test';
@@ -116,13 +116,20 @@ test.describe('touch', () => {
     const h0 = s.hits;
     s = await play(25);
     expect(s.hits).toBeGreaterThan(h0);
-    // Fruit Frenzy: at 3 points the next serve brings a second (lime and orange) ball in from the marmosets
-    await J(f, 'sport', 'score', 3, 2);
-    s = await play(25, st => st.frenzy === 2 && st.balls.filter(b => b.live).length >= 2);
+    // Fruit Frenzy: at 10 points the next serve brings a second (lime and orange) ball in from the marmosets
+    await J(f, 'sport', 'score', 10, 9);
+    // the extra ball is announced: a marmoset winds up (the "!" tell) before it is tossed
+    let sawTell = false;
+    const tell = st => { if (st.tossWarn.some(w => w > 0 && w < 9)) sawTell = true; };
+    s = await play(25, st => { tell(st); return st.frenzy === 2 && st.balls.filter(b => b.live).length >= 2; });
     expect(s.frenzy).toBe(2);
     if (SHOTS) await page.screenshot({ path: path.join(SHOTS, 'paddle-390x844-touch-frenzy.png') });
     const fz0 = s.frenzyYou + s.frenzyThem, hits0 = s.hits;
     s = await play(25, st => st.frenzy === 0 && st.phase !== 'rally');
+    expect(sawTell, 'a marmoset winds up before the toss').toBe(true);
+    // the balls are paced: none reached Cappy's end on top of another one
+    expect(s.fzArr).toBeGreaterThanOrEqual(2);
+    expect(s.fzTight, 'two balls reaching Cappy less than 0.7 s apart').toBe(0);
     expect(s.frenzyDone).toBe(1);
     expect(s.frenzyYou + s.frenzyThem).toBeGreaterThanOrEqual(fz0 + 2);   // every ball counted
     expect(s.hits).toBeGreaterThan(hits0);                                 // and Cappy returned Frenzy balls
@@ -194,7 +201,7 @@ test('Paddle Smash on a laptop with the keys, then a gamepad: arrows run, Space 
   expect(errors).toEqual([]);
 });
 
-test('Paddle Smash balance: sloppy kids win sometimes, Easier champions more, button mashing never', async ({ page }) => {
+test('Paddle Smash balance (first to 30): good players win, sloppy ones rarely, Easier champions often, button mashing never', async ({ page }) => {
   test.setTimeout(300_000);
   const { f } = await open(page, { width: 390, height: 844 });
   await J(f, 'manual', true);
@@ -206,14 +213,21 @@ test('Paddle Smash balance: sloppy kids win sometimes, Easier champions more, bu
   const kidEasy = await sim({ ...sloppy, easy: true }, 12);
   const mash = await sim({ react: 0.2, pos: 0, time: 0, mash: true }, 10);
   const mashEasy = await sim({ react: 0.2, pos: 0, time: 0, mash: true, easy: true }, 10);
-  expect(decent.winRate).toBeGreaterThanOrEqual(0.75);
-  expect(kid.winRate).toBeGreaterThan(0.15);
-  expect(kid.winRate).toBeLessThan(0.95);   // (a sloppy kid wins most matches after a few tries; 20 matches is noisy)
+  // a match to 30: a good player nearly always wins, an average kid about 6 times in 10, a sloppy one rarely on
+  // Normal but most of the time with Easier champions (20 matches is noisy, so the bounds are loose)
+  expect(decent.winRate).toBeGreaterThanOrEqual(0.6);
+  expect(kid.winRate).toBeLessThan(0.5);
   expect(kidEasy.winRate).toBeGreaterThan(kid.winRate);
+  expect(kidEasy.winRate).toBeGreaterThanOrEqual(0.6);
   expect(mash.wins).toBe(0);
   expect(mashEasy.wins).toBe(0);
   // a match takes a minute or more of play, and Frenzy balls are counted
-  expect(kid.avgSecs).toBeGreaterThan(60);
+  expect(kid.avgSecs).toBeGreaterThan(180);
   expect(kid.fzYou + kid.fzThem).toBeGreaterThan(0);
+  // Fruit Frenzy is paced: balls reach Cappy one after another (almost never within 0.7 s of each other), a decent kid
+  // returns most Frenzy balls and a sloppy one about half or more
+  expect(decent.fzYou / (decent.fzYou + decent.fzThem)).toBeGreaterThanOrEqual(0.75);
+  expect(kid.fzYou / (kid.fzYou + kid.fzThem)).toBeGreaterThanOrEqual(0.45);
+  expect(decent.fzTight + kid.fzTight).toBeLessThanOrEqual(Math.ceil((decent.fzArr + kid.fzArr) * 0.02));
   if (SHOTS) fs.writeFileSync(path.join(SHOTS, 'paddle-balance.json'), JSON.stringify({ decent, kid, kidEasy, mash, mashEasy }, null, 1));
 });
