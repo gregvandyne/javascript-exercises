@@ -27,6 +27,9 @@ test('teacher adds Core 10, opens a plan page, prints, assigns a unit; the stude
   // the program page: Core 10 (no Builder) first, one click adds its lessons
   await t.goto('/teach'); await t.click('a[href="/teach/cs-quest"]');
   await expect(t.locator('h1')).toContainText('CS Quest');
+  // The Add buttons are data-api forms that app.js (a module script) sends as JSON: wait for the page's scripts, or a
+  // click that lands first submits the plain form and only reloads the page.
+  await t.waitForLoadState('load');
   await expect(t.locator('.csq-before')).toContainText('Before you start');
   await expect(t.locator('.csq-paths article').first()).toContainText('Core 10 (no Builder)');
   await t.locator('form[data-api="/api/lessons/from-template/path/core10-no-builder"] button').click();
@@ -45,9 +48,10 @@ test('teacher adds Core 10, opens a plan page, prints, assigns a unit; the stude
   await expect(print.locator('header.topbar, nav.topnav, .site-header')).toHaveCount(0);
   await print.emulateMedia({ media: 'print' }); await expect(print.locator('.printbar')).toBeHidden(); await print.close();
 
-  // assign unit 1 with a cadence: the first lesson opens today
+  // assign unit 1 with a cadence: the first lesson opens today. Daily, so that holds on any day of the week ("weekdays"
+  // skips weekends: started on a Saturday or Sunday, the first lesson opens on Monday; cadenceDates in the unit tests).
   await t.click('#assign-unit summary');
-  await t.selectOption('#au-w', 'unit:1'); await t.selectOption('#au-cad', 'weekdays');
+  await t.selectOption('#au-w', 'unit:1'); await t.selectOption('#au-cad', 'daily');
   await t.click('#assign-unit button[type=submit]');
   await expect(t.locator('#toasts .toast')).toContainText('Robot Class');
 
