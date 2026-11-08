@@ -15,11 +15,10 @@ I18N.de = Object.assign(I18N.de || {}, {
   "trav.shortcut": "Abkürzung offen!",
   "acorn.got": "Goldene Eichel! {n} von {total}",
   "acorn.all": "Alle goldenen Eicheln! Eichelhut freigeschaltet!",
-  "map.walk": "Geh erst einmal hin, dann kannst du zurückreisen!",
   "hat.acorn": "Eichelhut",
   "d.mango.hint2": "Prima! Folge dem Schlammpfad unter den Klippen. Die Flussfähre bringt dich zum Ostufer.",
   "d.ants.qask2": "Es ist über den Fluss geweht, ans Ostufer. Kannst du es zurückbringen?",
   "d.ants.qwait": "Unser Blatt ist am Ostufer. Nimm die Flussfähre, hinter dem Schlammpfad!",
   "d.mango.dash2": "Sie spielen Mango-Sprint auf der Schlammlichtung. Folge dem Schlammpfad unter den Klippen, östlich vom Dorf. Der Totem hat eine achte Fassung bekommen!",
-  "d.tapir.tip4": "Tipp: Wenn du einmal bei einer Sportart warst, tippe sie auf der Karte an, um direkt zurückzugehen.",
+  "d.tapir.tip4": "Tipp: Tippe auf der Karte auf einen Sport, dann bist du sofort dort!",
 });

@@ -3,7 +3,7 @@
 // the intended ways round — the rope bridge over the gorge, the stepping stones and lily pads, the vine swing over the
 // ravine, the long ladder up the cliffs, the zipline down, the mud trail, the river ferry and the glowing cave out
 // behind the waterfall — and opens each sport on the first try. A keyboard run kicks the shortcut ladder down, rides
-// the zipline and pushes the log over the gorge. Fast travel only goes to places Cappy has walked to; an old save
+// the zipline and pushes the log over the gorge. Fast travel goes to every sport from the start; an old save
 // (from the smaller island) lands safely in the village. Game time is stepped between real inputs so the long walks
 // run fast and the same every time.
 // Run alone: E2E_PORT=5301 npx playwright test tests/e2e/jungle-cup-island.spec.js
@@ -267,8 +267,8 @@ test('Jungle Cup: keys on a laptop: the ladder up, the shortcut ladder kicked do
   expect(errors).toEqual([]);
 });
 
-test('Jungle Cup: fast travel only to places walked to; an old save lands in the village', async ({ page }) => {
-  test.setTimeout(120_000);
+test('Jungle Cup: fast travel to every sport from a fresh save; an old save lands in the village', async ({ page }) => {
+  test.setTimeout(180_000);
   const { f, errors } = await open(page, { width: 390, height: 844 });
   // an old save from the smaller island: its position means nothing on the new map
   await J(f, 'setSave', { pos: { x: 36, y: 40, d: 'up' }, plays: { paddle: 2 }, feathers: { paddle: true }, best: { paddle: 900 }, stars: { paddle: 2 }, flags: { storySeen: 1, metMango: 1, dashNews: 1 } });
@@ -277,18 +277,28 @@ test('Jungle Cup: fast travel only to places walked to; an old save lands in the
   for (let i = 0; i < 10; i++) { await J(f, 'step', 150); const s = await state(f); if (s.panel) await J(f, 'tapKey', 'b'); else if (s.text) await J(f, 'skipText'); }
   let s = await state(f);
   expect([s.screen, s.pos.x, s.pos.y]).toEqual(['world', 50, 66]);
-  expect(s.visited).toEqual(['paddle']);
   expect(s.feathersBy.paddle).toBe(true);
-  // the map: a sport not walked to yet says so and stays on the map; a visited one travels straight there
-  await J(f, 'go', 'map'); await J(f, 'step', 200);
-  await J(f, 'tap', 'go:frog'); await J(f, 'step', 100);
-  s = await state(f);
-  expect(s.screen).toBe('map');
-  if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: path.join(SHOTS, 'map-walk-first-390x844.png') }); }
-  await J(f, 'tap', 'go:paddle'); await J(f, 'step', 600);
-  s = await state(f);
-  expect([s.screen, s.prompt]).toEqual(['world', 'paddle']);
-  // the minimap: a tap travels to the nearest place Cappy can go (here, the dock at the bottom)
+  // a fresh save: every row on the map travels straight there, walked to or not, and lands just in front of the
+  // arch (a step outside its zone, so its button isn't up yet); one step in opens it
+  await J(f, 'setSave', { flags: { storySeen: 1, metMango: 1, dashNews: 1 } });
+  await J(f, 'go', [50, 66, 'up']); await J(f, 'step', 200); await J(f, 'skipText');
+  expect((await state(f)).visited).toEqual([]);
+  const arches = (await J(f, 'world')).arches;
+  for (const id of ['paddle', 'vine', 'seed', 'rapids', 'frog', 'kick', 'leaf', 'dash']) {
+    await J(f, 'go', 'map'); await J(f, 'step', 200);
+    if (id === 'paddle' && SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: path.join(SHOTS, 'map-all-open-390x844.png') }); }
+    await J(f, 'tap', 'go:' + id); await J(f, 'step', 400); await J(f, 'skipText');
+    s = await state(f);
+    const a = arches[id];
+    expect(s.screen, id).toBe('world');
+    expect(Math.hypot(s.pos.x - a.x, s.pos.y - a.y), id + ' lands by its arch').toBeLessThanOrEqual(4);
+    expect(s.prompt, id + ' lands outside the arch zone').not.toBe(id);
+    // walk in: its button shows
+    const key = s.pos.y > a.y ? 'up' : s.pos.y < a.y ? 'down' : s.pos.x > a.x ? 'left' : 'right';
+    await J(f, 'press', key); for (let i = 0; i < 30 && (await state(f)).prompt !== id; i++) await J(f, 'step', 50); await J(f, 'release', key);
+    expect((await state(f)).prompt, id + ' opens one step in').toBe(id);
+  }
+  // the minimap: a tap travels to the nearest place, even under the clouds (here, the dock at the bottom)
   await J(f, 'go', 'map'); await J(f, 'step', 200);
   const mini = (await J(f, 'buttons')).find(b => b.id === 'mini');
   expect(mini).toBeTruthy();
@@ -298,5 +308,13 @@ test('Jungle Cup: fast travel only to places walked to; an old save lands in the
   await J(f, 'step', 600);
   s = await state(f);
   expect(s.screen).toBe('world'); expect(s.pos.y).toBeGreaterThan(85);
+  // and the top of the island, by the Great Kapok
+  await J(f, 'go', 'map'); await J(f, 'step', 200);
+  const lift = await f.evaluate(() => { const r = window.__brbTest.jc.routes(); return r; });
+  await page.mouse.click(fb.x + c.x + mini.x + mini.w * 0.45, fb.y + c.y + mini.y + mini.h * 0.12);
+  await J(f, 'step', 600);
+  s = await state(f);
+  expect(s.screen).toBe('world'); expect(s.pos.y).toBeLessThan(40);
+  expect(lift.size[1]).toBe(100);
   expect(errors).toEqual([]);
 });

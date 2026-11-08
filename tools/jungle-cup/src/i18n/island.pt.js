@@ -15,11 +15,10 @@ I18N.pt = Object.assign(I18N.pt || {}, {
   "trav.shortcut": "Atalho aberto!",
   "acorn.got": "Bolota dourada! {n} de {total}",
   "acorn.all": "Todas as bolotas douradas! Chapéu de bolota liberado!",
-  "map.walk": "Vá até lá a pé primeiro, depois você pode voltar direto!",
   "hat.acorn": "Chapéu de bolota",
   "d.mango.hint2": "Muito bem! Siga a trilha de lama sob os penhascos. A balsa do rio leva você à margem leste.",
   "d.ants.qask2": "Vimos a folha voar por cima do rio, para a margem leste. Você traz de volta?",
   "d.ants.qwait": "Nossa folha está na margem leste. Pegue a balsa do rio, depois da trilha de lama!",
   "d.mango.dash2": "Elas jogam a Corrida da Manga na clareira de lama. Siga a trilha de lama sob os penhascos, a leste da vila. O totem ganhou um oitavo encaixe!",
-  "d.tapir.tip4": "Dica: depois de ir a pé até um esporte, toque nele no mapa para voltar direto.",
+  "d.tapir.tip4": "Dica: toque em qualquer esporte no mapa para ir direto para lá!",
 });
