@@ -9,8 +9,10 @@
 //   (dead zone 0.2) or the keys (diagonals normalised). Sports get it as ctx.axis. The joystick also holds
 //   left/right/up/down (past 0.45 along that side), so 'press' / 'release' events and held keep working.
 // Touch joystick (like Hero of Sunvale's): it floats to where the thumb lands in the left part of the screen, the knob
-//   follows up to the base's edge (analog, dead zone 0.15), it follows its own touch so A works at the same time, and
-//   it springs back on release. A faint one rests bottom left as a hint.
+//   follows up to the base's edge (analog, dead zone 0.1), it follows its own touch so A works at the same time, and
+//   it springs back on release. A faint one rests bottom left as a hint. The centre is always where the thumb landed
+//   (near an edge only the drawing is pulled on screen, so a thumb by the edge never starts with a push), and a thumb
+//   dragged past the rim pulls the centre along, so turning back works the moment the thumb turns.
 // Keys: arrows / WASD move, Space / Enter / Z = A (action), Esc / Backspace / X = B (back), P = pause.
 // Gamepad: left stick or d-pad, button 0 = A, 1 = B, 9 (start) = pause.
 // ======================================================================================================
@@ -124,7 +126,7 @@ INPUT.poll = function () {
 /* ---------- the analog axis (ctx.axis) ---------- */
 const AXIS = { x: 0, y: 0, mag: 0 };
 const PADAXIS = { x: 0, y: 0, mag: 0 };
-const PAD_DEAD = 0.2, STICK_DEAD = 0.15, STICK_HOLD = 0.45;
+const PAD_DEAD = 0.2, STICK_DEAD = 0.1, STICK_HOLD = 0.45;
 INPUT.axis = AXIS;
 /** Work out the axis for this step: the touch stick, else the gamepad stick, else the keys (and the pad's d-pad). */
 INPUT.updateAxis = function () {
@@ -137,7 +139,7 @@ INPUT.updateAxis = function () {
   return AXIS;
 };
 /* ---------- the touch joystick ---------- */
-const STICK = { id: -1, bx: 0, by: 0, kx: 0, ky: 0, x: 0, y: 0, mag: 0, R: 30, baseR: 38, knobR: 17, restX: 0, restY: 0, gen: -1, zoneTop: 0, zoneRight: 0 };
+const STICK = { id: -1, ox: 0, oy: 0, bx: 0, by: 0, kx: 0, ky: 0, x: 0, y: 0, mag: 0, R: 30, baseR: 38, knobR: 17, restX: 0, restY: 0, gen: -1, zoneTop: 0, zoneRight: 0 };
 INPUT.stick = STICK;
 /** Sizes from CSS pixels, as in Hero of Sunvale (base 132, knob 60, the knob travels 52), a touch smaller for a pixel screen. */
 STICK.layout = function () {
@@ -155,15 +157,20 @@ STICK.down = function (e, force) {
   if (STICK.id >= 0 || (!force && !STICK.inZone(e.x, e.y))) return false;
   STICK.layout();
   STICK.id = e.id;
-  // the base appears under the thumb, kept fully on screen
-  STICK.bx = clamp(e.x, STICK.baseR + 2, VIEW.W - STICK.baseR - 2); STICK.by = clamp(e.y, STICK.baseR + 2, VIEW.H - STICK.baseR - 2);
+  // the centre is exactly where the thumb landed; the base is drawn there, kept fully on screen
+  STICK.ox = e.x; STICK.oy = e.y; STICK.place();
   STICK.kx = STICK.bx; STICK.ky = STICK.by; STICK.x = 0; STICK.y = 0; STICK.mag = 0;
   return true;
 };
+/** Where the base is drawn: on the centre, pulled fully on screen (the reading always uses the centre itself). */
+STICK.place = function () {
+  STICK.bx = clamp(STICK.ox, STICK.baseR + 2, VIEW.W - STICK.baseR - 2); STICK.by = clamp(STICK.oy, STICK.baseR + 2, VIEW.H - STICK.baseR - 2);
+};
 STICK.move = function (e) {
   if (e.id !== STICK.id) return false;
-  let dx = (e.x - STICK.bx) / STICK.R, dy = (e.y - STICK.by) / STICK.R; const d = Math.hypot(dx, dy);
-  if (d > 1) { dx /= d; dy /= d; }
+  let dx = (e.x - STICK.ox) / STICK.R, dy = (e.y - STICK.oy) / STICK.R; const d = Math.hypot(dx, dy);
+  // past the rim the centre is pulled along behind the thumb (a full push that way), so a turn back reads at once
+  if (d > 1) { dx /= d; dy /= d; STICK.ox = e.x - dx * STICK.R; STICK.oy = e.y - dy * STICK.R; STICK.place(); }
   const m = Math.min(1, d);
   STICK.kx = STICK.bx + dx * STICK.R; STICK.ky = STICK.by + dy * STICK.R;
   if (m > STICK_DEAD) { STICK.mag = (m - STICK_DEAD) / (1 - STICK_DEAD); STICK.x = dx / Math.max(1e-6, m) * STICK.mag; STICK.y = dy / Math.max(1e-6, m) * STICK.mag; }
