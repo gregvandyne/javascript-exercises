@@ -8,8 +8,11 @@
 //    live at once; a flagged one waits for a human, like public. 'family' is a grown-up builder's linked children;
 //    'class' also needs the chosen classes (schools.validateClassPick).
 //  - A grown-up's games go through exactly this pipeline too: nothing here depends on who the owner is.
-//  - Public: also needs a model review (services/review.js). If the model is unavailable the
-//    version waits in the admin review queue (pending_version_id).
+//  - Public: needs a person on the Oomba team (a platform admin) to approve it (docs/decisions.md "Admin approval before a
+//    game goes public"). The model review (services/review.js) still runs first when it is set up: it sends a game back
+//    at once when it finds a problem, and its "allowed" is only a hint for the admin; the version always waits in the
+//    admin review queue (pending_version_id). A game that isn't live yet goes live for the builder's friends at once while
+//    it waits (friends sharing is instant anyway). Only a team approval (or a grandfathered or seed one) covers public.
 //  - games.pending_visibility records what a waiting review is for; approval applies exactly that audience.
 //  - UPDATING a game that is already live: the old published version keeps playing for everyone
 //    while the new one is reviewed; when approved it replaces it. Builders can update forever.
@@ -21,6 +24,8 @@ import { tEn } from '../i18n/index.js';
 import { queueShot } from './shots.js';
 import { sharingOptions, validateClassPick, setGameClasses, gameClassIds, shareableClasses, removedClassIds } from './schools.js';
 import { getUser, isGrownup } from '../auth.js';
+import * as team from './team.js';
+import { REVIEW_REASONS } from './chat.js';
 
 const CLASS_ERRORS = { pickClass: 'studio.api.pickClass', classGone: 'studio.api.classGone', classRemoved: 'studio.api.classRemoved' };
 
@@ -36,6 +41,8 @@ export function ensureScanned(version) {
 // come from public requests (flagged versions always go to a person), and admin approvals from before this was stored
 // always made games public, so both cover everything.
 const WIDTH = { family: 1, class: 2, school: 3, public: 4 };
+/** Does this version have the team's approval for everyone? (Studio, tests.) */
+export const approvedForPublic = version => { const s = approvalScope(version); return !!s && s.vis === 'public'; };
 /** The class list waiting for a person (games.pending_classes), or null. */
 export function pendingClasses(game) {
   if (!game || !game.pending_classes) return null;
@@ -45,7 +52,9 @@ function approvalScope(version) {
   if (!version || version.review_status !== 'approved') return null;
   let r = {}; try { r = JSON.parse(version.review_report || '{}') || {}; } catch { r = {}; }
   if (r.by === 'admin' && WIDTH[r.for]) return { vis: r.for, classes: Array.isArray(r.classes) ? r.classes : [] };
-  return { vis: 'public', classes: [] };
+  if (r.by === 'admin' || r.by === 'seed-import') return { vis: 'public', classes: [] };
+  // A model approval (from before the team approved every public game): it still covers every group, never public.
+  return { vis: 'school', classes: [] };
 }
 /** Does this approval cover sharing at `visibility` (with these classes, for 'class')? */
 export function approvalCovers(scope, visibility, classIds = []) {
@@ -98,7 +107,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   if (visibility !== 'public' && instant) {
     tx(() => {
       if (pick) setGameClasses(game.id, pick, user.id);
-      q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
+      q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note='', review_reason='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number, ...classesLine });
     queueShot(version.id);
@@ -110,12 +119,13 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   let approved = covered;
   if (!covered) {
     const verdict = await reviewVersion(game, version);
-    if (verdict.verdict === 'allowed') {
+    // Public waits for the team even when the model says "allowed" (kept on the version as a hint for the admin).
+    if (verdict.verdict === 'allowed' && visibility !== 'public') {
       q.run("UPDATE game_versions SET review_status='approved', review_report=? WHERE id=?", JSON.stringify(verdict), version.id);
       approved = true;
     } else if (verdict.verdict === 'needs_changes' || verdict.verdict === 'blocked') {
       q.run("UPDATE game_versions SET review_status='rejected', review_report=? WHERE id=?", JSON.stringify(verdict), version.id);
-      q.run('UPDATE games SET review_note=?, updated_at=? WHERE id=?', (verdict.reasons || []).join(' ').slice(0, 500), now(), game.id);
+      q.run("UPDATE games SET review_note=?, review_reason='', updated_at=? WHERE id=?", (verdict.reasons || []).join(' ').slice(0, 500), now(), game.id);
       audit(user.id, 'game.review_rejected', game.id, verdict);
       return { ok: false, state: 'rejected', message: t('publish.rejected'), reasons: verdict.reasons || [], game: getGame(game.id) };
     } else if (!scope) {
@@ -127,7 +137,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   if (approved) {
     tx(() => {
       if (pick) setGameClasses(game.id, pick, user.id);
-      q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
+      q.run("UPDATE games SET visibility=?, status='published', published_version_id=?, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note='', review_reason='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", visibility, version.id, now(), now(), game.id);
     });
     audit(user.id, wasLive ? 'game.update' : 'game.publish', game.id, { visibility, version: version.number, reviewed: 'model', ...classesLine });
     queueShot(version.id);
@@ -138,15 +148,21 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   // pending_classes until a person approves it (its approval may cover fewer classes); otherwise links don't count yet
   // (they only count while games.visibility='class'), so the list is written at once.
   const liveForClasses = wasLive && game.visibility === 'class';
+  // A public request for a game that isn't live yet: friends can play it at once while it waits (sharing with friends is
+  // instant at any time; this saves the builder a second step and keeps the public request).
+  const friendsNow = !wasLive && visibility === 'public' && sharingOptions(owner, game).includes('friends');
   tx(() => {
     if (pick && !liveForClasses) setGameClasses(game.id, pick, user.id);
     q.run('UPDATE games SET pending_classes=? WHERE id=?', pick && liveForClasses ? JSON.stringify(pick) : '', game.id);
-    if (wasLive) q.run("UPDATE games SET pending_version_id=?, pending_visibility=?, review_note='', updated_at=? WHERE id=?", version.id, visibility, now(), game.id);
-    else q.run("UPDATE games SET status='in_review', pending_version_id=?, pending_visibility=?, review_note='', updated_at=? WHERE id=?", version.id, visibility, now(), game.id);
+    if (wasLive) q.run("UPDATE games SET pending_version_id=?, pending_visibility=?, review_note='', review_reason='', updated_at=? WHERE id=?", version.id, visibility, now(), game.id);
+    else if (friendsNow) q.run("UPDATE games SET status='published', visibility='friends', published_version_id=?, pending_version_id=?, pending_visibility=?, review_note='', review_reason='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", version.id, version.id, visibility, now(), now(), game.id);
+    else q.run("UPDATE games SET status='in_review', pending_version_id=?, pending_visibility=?, review_note='', review_reason='', updated_at=? WHERE id=?", version.id, visibility, now(), game.id);
     if (!scope) q.run("UPDATE game_versions SET review_status='queued' WHERE id=?", version.id);
   });
-  audit(user.id, 'game.submit_review', game.id, { version: version.number, update: wasLive, visibility, ...classesLine });
-  return { ok: true, state: 'in_review', message: wasLive ? t('publish.updateWaiting') : t('publish.waiting'), game: getGame(game.id) };
+  if (friendsNow) queueShot(version.id);
+  audit(user.id, 'game.submit_review', game.id, { version: version.number, update: wasLive, visibility, ...(friendsNow ? { friendsNow: true } : {}), ...classesLine });
+  const waitMsg = friendsNow ? t(isGrownup(owner) ? 'publish.waitingTeamGrownup' : 'publish.waitingTeam') : wasLive ? t('publish.updateWaiting') : t('publish.waiting');
+  return { ok: true, state: 'in_review', message: waitMsg, game: getGame(game.id) };
 }
 /** "Live for 5B!" / "Live for your classes!" / "Live for your school!" … after a level went live without a review. */
 function liveMessage(visibility, game, t) {
@@ -173,7 +189,8 @@ function approvedAudience(game) {
   if (want === 'public' && opts.includes('school')) return 'school';
   return 'private';
 }
-/** Admin approves the pending version: it goes live for the audience the builder asked for (pending_visibility). */
+/** Admin approves the pending version: it goes live for the audience the builder asked for (pending_visibility). The
+ *  builder gets a notice in their Oomba team inbox. */
 export function approve(admin, gameId, note = '') {
   const game = getGame(gameId); if (!game || !game.pending_version_id) return null;
   const vis = approvedAudience(game);
@@ -185,21 +202,26 @@ export function approve(admin, gameId, note = '') {
   tx(() => {
     if (okIds && okIds.length) setGameClasses(game.id, okIds, admin.id);
     q.run("UPDATE game_versions SET review_status='approved', review_report=? WHERE id=?", JSON.stringify({ verdict: 'allowed', by: 'admin', note, ...scope }), game.pending_version_id);
-    q.run("UPDATE games SET visibility=?, status='published', published_version_id=pending_version_id, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note=?, published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", vis, String(note).slice(0, 500), now(), now(), game.id);
+    q.run("UPDATE games SET visibility=?, status='published', published_version_id=pending_version_id, pending_version_id=NULL, pending_visibility='', pending_classes='', review_note=?, review_reason='', published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?", vis, String(note).slice(0, 500), now(), now(), game.id);
   });
   audit(admin.id, 'admin.approve', game.id, { note, visibility: vis });
   queueShot(game.pending_version_id);
+  team.notify(game.owner_id, { k: 'approved', game: game.id, title: game.title, slug: game.slug, visibility: vis });
   return getGame(game.id);
 }
-/** Admin rejects: the builder sees the note. A live game keeps its old version. */
-export function reject(admin, gameId, note = '') {
+/** Admin sends it back: the builder sees the reason (a preset, chat.js REVIEW_REASONS, in their language) and the note,
+ *  in the Studio and as a notice in their Oomba team inbox. A live game keeps its old version. */
+export function reject(admin, gameId, note = '', reason = '') {
   const game = getGame(gameId); if (!game) return null;
+  const why = REVIEW_REASONS.includes(reason) ? reason : '';
+  const text = String(note || '').slice(0, 500);
   tx(() => {
-    if (game.pending_version_id) q.run("UPDATE game_versions SET review_status='rejected', review_report=? WHERE id=?", JSON.stringify({ verdict: 'needs_changes', by: 'admin', reasons: [note] }), game.pending_version_id);
+    if (game.pending_version_id) q.run("UPDATE game_versions SET review_status='rejected', review_report=? WHERE id=?", JSON.stringify({ verdict: 'needs_changes', by: 'admin', reasons: [text || tEn(`review.reasons.${why || 'other'}`)], reason: why || undefined }), game.pending_version_id);
     const live = game.status === 'published' && game.published_version_id;
-    q.run(`UPDATE games SET pending_version_id=NULL, pending_visibility='', pending_classes='', review_note=?, status=?, updated_at=? WHERE id=?`, String(note || 'Needs changes.').slice(0, 500), live ? 'published' : 'rejected', now(), game.id);
+    q.run(`UPDATE games SET pending_version_id=NULL, pending_visibility='', pending_classes='', review_note=?, review_reason=?, status=?, updated_at=? WHERE id=?`, text || (why ? '' : 'Needs changes.'), why, live ? 'published' : 'rejected', now(), game.id);
   });
-  audit(admin.id, 'admin.reject', game.id, { note });
+  audit(admin.id, 'admin.reject', game.id, { note: text, reason: why || undefined });
+  if (game.pending_version_id) team.notify(game.owner_id, { k: 'sentBack', game: game.id, title: game.title, slug: game.slug, reason: why, note: text });
   return getGame(game.id);
 }
 /** Change who can see a live game without changing its version (and, for 'class', which classes). Moving to public

@@ -1502,7 +1502,9 @@
     "class": "{count, plural, one {¡Ya está en {name}! Todos en tu clase pueden encontrarlo y jugarlo.} other {¡Ya está en tus clases! Todos en ellas pueden encontrarlo y jugarlo.}}",
     "schoolOnly": "Tu escuela mantiene los juegos dentro de la escuela. Mejor compártelo con tu escuela.",
     "liveFamily": "¡Publicado para su familia! Usted y los niños vinculados a su familia pueden jugarlo.",
-    "liveConnections": "¡Compartido con sus contactos adultos! Solo usted y ellos pueden jugarlo."
+    "liveConnections": "¡Compartido con sus contactos adultos! Solo usted y ellos pueden jugarlo.",
+    "waitingTeam": "¡Tus amigos ya pueden jugarlo! Alguien del equipo Oomba revisa cada juego antes de que todo el mundo pueda jugarlo. Te enviaremos un mensaje cuando esté listo.",
+    "waitingTeamGrownup": "Tus contactos adultos ya pueden jugarlo. Alguien del equipo Oomba revisa cada juego antes de que todo el mundo pueda jugarlo, y te enviaremos un mensaje cuando esté listo."
   },
   "builder": {
     "kindRefusal": "Con eso no te puedo ayudar. Mejor hagamos algo divertido. ¿Qué tipo de juego te gustaría?",
@@ -1762,7 +1764,8 @@
       "blockTitle": "¿Bloquear a {name}?",
       "blockText": "No verás los mensajes de {name} y no podrá enviarte ninguno. Siguen siendo amigos, y puedes desbloquearlo en la página Amigos.",
       "block": "Bloquear",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "verified": "Equipo Oomba verificado"
     },
     "studio": {
       "docTitle": "Estudio: {title} · Oomba Academy",
@@ -1823,7 +1826,9 @@
         "publishFirst": "Publícalo y luego podrás jugarlo en vivo.",
         "teacher": "Un profe o un adulto puede jugarlo en vivo con tu clase. Primero compártelo con tu clase.",
         "notYet": "Aún no está listo para jugar en vivo: {issue}.",
-        "make": "Hacerlo un juego de clase en vivo"
+        "make": "Hacerlo un juego de clase en vivo",
+        "waitingReview": "Esperando revisión",
+        "teamCheck": "Alguien del equipo Oomba revisa cada juego antes de que todo el mundo pueda jugarlo. Puedes seguir jugando, compartiéndolo con amigos y editándolo. Te enviaremos un mensaje cuando esté listo."
       },
       "safety": {
         "chipPass": "Seguro",
@@ -1972,6 +1977,21 @@
         "planLabel": "Plan:",
         "thoughtFirst": "primero pensó",
         "thinkingNow": "pensando",
+        "promptTipLabel": "Consejo para tu mensaje:",
+        "promptTips": {
+          "a": "Primero di qué tipo de juego quieres: “un juego de carreras”, “un quiz”, “un juego de plataformas”. Luego agrega los detalles.",
+          "b": "Dile a la IA cómo se gana y cómo se pierde. Unas reglas claras hacen un juego mejor.",
+          "c": "Describe cómo debe verse: los colores, un tema como el espacio o la selva, y quién es el héroe.",
+          "d": "Cambia una sola cosa cada vez. “Haz que salte más alto” funciona mejor que diez cambios a la vez.",
+          "e": "Da detalles. “Haz que los enemigos vayan más lentos en el nivel 1” es mejor que “hazlo más fácil”.",
+          "f": "¿Encontraste un error? Di qué hiciste, qué pasó y qué esperabas que pasara.",
+          "g": "Di qué controles quieres: las flechas del teclado, tocar, deslizar el dedo o la barra espaciadora.",
+          "h": "Pide niveles que se vuelvan más difíciles, como “3 niveles, cada uno un poco más rápido”.",
+          "i": "¿Quieres sonidos o puntos? Pídelos: “agrega un sonido de moneda y un récord”.",
+          "j": "Juega tu juego después de cada cambio y luego dile a la IA exactamente qué arreglar.",
+          "k": "Da un ejemplo: “como un laberinto, pero las paredes se mueven” ayuda a la IA a imaginar tu idea.",
+          "l": "¿No sabes qué agregar? Pregúntale a la IA: “¿Me das 3 ideas para que sea más divertido?”"
+        },
         "factLabel": "¿Lo sabías?",
         "justNow": "Hace un momento:",
         "tokens": "La IA leyó {read} tokens y escribió {wrote}. Un token es un pedacito de una palabra. El número es grande porque en cada ronda la IA vuelve a leer sus instrucciones, el chat y el juego.",
@@ -2090,11 +2110,11 @@
           "b": "Una IA escribe prediciendo el siguiente token, una y otra vez, muy rápido.",
           "c": "Si preguntas lo mismo dos veces, puedes recibir otra respuesta, porque la IA elige entre palabras probables.",
           "d": "En cada ronda, la IA vuelve a leer el chat reciente. Por eso los chats largos usan más tokens.",
-          "e": "Un agente es una IA que usa herramientas en un ciclo. Este Constructor puede hacer hasta 14 rondas por mensaje.",
+          "e": "Un agente es una IA que usa herramientas en un ciclo. Este Constructor puede hacer hasta 20 rondas por mensaje.",
           "f": "El Constructor de IA no puede usar internet. Construye con lo que aprendió y con lo que tú le dices.",
           "g": "Los modelos de IA aprenden patrones de enormes cantidades de textos y código hechos por personas.",
           "h": "La IA puede sonar segura y aun así equivocarse. Por eso un programa de seguridad también revisa el código.",
-          "i": "✨ La calidad pro usa una IA más grande que piensa por más tiempo: es más lenta, pero a menudo mejor para juegos difíciles.",
+          "i": "Este Constructor usa una IA grande que piensa antes de escribir: es más lenta, pero mejor para juegos difíciles.",
           "j": "Juega siempre tu juego tú mismo. Hasta una IA lista se pierde cosas que un jugador de verdad notaría.",
           "k": "Puedes enviar ideas nuevas mientras la IA trabaja. Las lee entre un paso y otro."
         },
@@ -6253,6 +6273,48 @@
       "failed": "La versión nueva no salió bien, así que tu cuento se queda como estaba.",
       "keepOld": "Quedarme con el anterior",
       "asksAgain": "Después de un cambio, un adulto o tu maestro tendrá que decir que sí otra vez antes de que otros puedan verlo."
+    }
+  },
+  "review": {
+    "reasons": {
+      "characters": "Usa tus propios personajes, no los de películas, series u otros juegos.",
+      "people": "No uses nombres ni fotos de personas reales en tu juego.",
+      "scary": "Da un poco de miedo o es demasiado bruto para los más pequeños. ¿Puedes hacerlo más amable?",
+      "words": "Cambia algunas palabras para que el juego sea amable y simpático para todos.",
+      "personal": "Quita todo lo que pida a los jugadores su nombre, su edad o dónde viven.",
+      "brands": "Quita las marcas y los logos reales.",
+      "flashing": "Haz los destellos más lentos o más suaves. Las luces que parpadean rápido pueden hacer daño a los ojos de algunos jugadores.",
+      "broken": "No conseguimos que funcione. Juégalo tú y luego pide al Constructor que arregle lo que falla.",
+      "other": "Haz algunos cambios primero."
+    }
+  },
+  "team": {
+    "name": "Equipo Oomba",
+    "verified": "Equipo Oomba verificado",
+    "sub": "Mensajes de las personas que llevan Oomba Academy",
+    "empty": "Aún no hay mensajes. Aquí aparecerán las novedades de tus juegos.",
+    "safety": {
+      "child": "Estos mensajes son del equipo Oomba. Tu adulto también puede verlos. Nunca compartas tu contraseña, tu dirección ni tu teléfono, ni siquiera con nosotros.",
+      "grownup": "Mensajes del equipo Oomba. Nunca te pediremos tu contraseña. Cuando escribimos a un niño vinculado a ti, recibes una copia aquí, y también de sus respuestas."
+    },
+    "cant": {
+      "guest": "Crea una cuenta gratis para recibir mensajes del equipo Oomba.",
+      "banned": "Tu cuenta está en pausa.",
+      "notYet": "Podrás responder aquí cuando el equipo Oomba te haya enviado un mensaje.",
+      "noGrownup": "Aquí puedes leer los mensajes del equipo Oomba. Para responder, pide a un adulto que se vincule a tu cuenta.",
+      "block": "No puedes bloquear al equipo Oomba. Si un mensaje te preocupa, denúncialo o cuéntaselo a un adulto."
+    },
+    "copy": {
+      "to": "Copia: escribimos a {name}:",
+      "from": "Copia: {name} nos escribió:"
+    },
+    "notice": {
+      "approved": "¡Buenas noticias! «{title}» pasó la revisión del equipo Oomba, así que ahora más gente puede jugarlo.",
+      "sentBack": "«{title}» necesita algunos cambios antes de que todo el mundo pueda jugarlo."
+    },
+    "link": {
+      "new": "{count, plural, one {# mensaje nuevo del equipo Oomba} other {# mensajes nuevos del equipo Oomba}}",
+      "open": "Mensajes del equipo Oomba"
     }
   }
 }

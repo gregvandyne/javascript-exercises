@@ -1,6 +1,7 @@
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+const { q } = await import('../../server/db.js');
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const pub = await import('../../server/services/publish.js');
@@ -57,13 +58,18 @@ test('updating a friends game goes live immediately; approved versions are not r
   const back = await pub.setVisibility(owner, g.id, 'friends'); assert.equal(back.game.visibility, 'friends');
   const again = await pub.setVisibility(owner, g.id, 'public'); assert.equal(again.state, 'live', 'already-approved version skips review');
 });
-test('first-time public rejection marks the game rejected with the note', async () => {
+test('first-time public: friends can play while it waits; a rejection keeps it friends-only with the note', async () => {
   const g = games.createGame(owner.id, { title: 'Reject Me' });
   games.addVersion(g.id, GOOD); await pub.publish(owner, g.id, 'public');
-  assert.equal(games.getGame(g.id).status, 'in_review');
+  const waiting = games.getGame(g.id);
+  assert.equal(waiting.status, 'published'); assert.equal(waiting.visibility, 'friends'); assert.equal(waiting.pending_visibility, 'public');
   const r = pub.reject(admin, g.id, 'Too scary');
-  assert.equal(r.status, 'rejected'); assert.equal(r.review_note, 'Too scary');
+  assert.equal(r.status, 'published'); assert.equal(r.visibility, 'friends'); assert.equal(r.review_note, 'Too scary');
   assert.equal(games.canView(stranger, r), false);
+  // Asked for a group first (no friends step): a rejection still marks it rejected.
+  const g2 = games.createGame(owner.id, { title: 'Reject Me Too' });
+  games.addVersion(g2.id, GOOD); q.run("UPDATE games SET status='in_review', pending_version_id=current_version_id, pending_visibility='public' WHERE id=?", g2.id);
+  assert.equal(pub.reject(admin, g2.id, 'Too scary').status, 'rejected');
 });
 
 test("a flagged 'school' version waits for review, but a clean one goes live", async () => {

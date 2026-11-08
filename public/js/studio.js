@@ -33,6 +33,9 @@ const safetyChip = s => ({ pass: `<span class="stchip good">✅ ${esc(t('js.stud
 
 // ---------------------------------------------------------------- state + top
 function applyState(st) { if (st) { S = { ...S, ...st }; renderTop(); renderLive(); renderSafety(); renderTurns(); } }
+/** A request to share with everyone is waiting for the Oomba team (every public game is checked by a person first). */
+const teamWait = () => !!(S.pending && (S.pending.visibility || 'public') === 'public');
+const teamNote = () => `<p class="note info st-teamcheck">🛡️ ${E('js.studio.live.teamCheck')}</p>`;
 function renderTop() {
   $('#st-icon').textContent = S.game.icon;
   if (document.activeElement !== $('#st-title')) $('#st-title').value = S.game.title;
@@ -40,7 +43,7 @@ function renderTop() {
   const canUpdate = S.live && S.current && S.current.id !== S.live.id && !(S.pending && S.pending.id === S.current.id);
   pb.classList.toggle('st-update', !!canUpdate);
   pb.classList.toggle('btn-hot', !S.live || !!canUpdate);
-  pb.textContent = !S.live ? (S.pending ? `⏳ ${t('js.studio.top.inReview')}` : `🚀 ${t('js.studio.top.publish')}`) : canUpdate ? `⬆️ ${t('js.studio.top.update')}` : `✅ ${t('js.studio.top.live')}`;
+  pb.textContent = !S.live ? (S.pending ? `⏳ ${t('js.studio.top.inReview')}` : `🚀 ${t('js.studio.top.publish')}`) : canUpdate ? `⬆️ ${t('js.studio.top.update')}` : teamWait() ? `⏳ ${t('js.studio.top.inReview')}` : `✅ ${t('js.studio.top.live')}`;
   document.title = t('js.studio.docTitle', { title: S.game.title });
 }
 // Free messages left today of the daily ones; a child whose family plan pays extra messages also sees how many are left
@@ -101,7 +104,7 @@ function renderLive() {
     const reach = S.live.visibility === 'class' ? classShare().live : null;
     // A class game that reaches no class right now is, in effect, only for its builder: say so, and why.
     const [e, w] = reach && !reach.length ? ['🔒', t('js.studio.live.onlyYouNow')] : visOf(S.live.visibility, reach ? reach.length : 1);
-    parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span><span class="vtag">${cur}</span>`);
+    parts.push(`<span class="stchip good">🟢 ${E('js.studio.live.liveVersion', { number: S.live.number, who: `${e} ${w}` })}</span>${teamWait() ? `<span class="stchip warn">⏳ ${E('js.studio.live.waitingReview')}</span>` : ''}<span class="vtag">${cur}</span>`);
     if (reach) {
       const off = classShare().classes.filter(c => c.removed).map(c => c.name);
       if (reach.length) {
@@ -116,10 +119,12 @@ function renderLive() {
     if (canUpdate) parts.push(`<button class="btn btn-hot btn-sm st-update" type="button" data-act="update">⬆️ ${E('js.studio.live.updateTo', { number: S.current.number })}</button>`);
     if (S.pending && S.pending.id === S.live.id) parts.push(`<p class="note">⏳ ${waitingText()}</p>`);
     else if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingUpdate', { pending: S.pending.number, live: S.live.number })}</p>`);
+    if (teamWait()) parts.push(teamNote());
     else if (canUpdate) parts.push(`<p class="note info">${E('js.studio.live.playersOn', { live: S.live.number, number: S.current.number })}${S.live.visibility === 'public' ? ' ' + E('js.studio.live.publicCheck') : isGroup(S.live.visibility) && needsCheck(S.current.id) ? ' ' + E('js.studio.share.groupHint') : ''}</p>`);
   } else {
     parts.push(`<span class="stchip">${esc(S.status.label)}${S.status.code === 'draft' ? ' · ' + E('js.studio.live.onlyYou') : ''}</span><span class="vtag">${cur}</span>`);
     if (S.pending) parts.push(`<p class="note">⏳ ${E('js.studio.live.pendingNew', { number: S.pending.number })}</p>`);
+    if (teamWait()) parts.push(teamNote());
   }
   if (S.game.review_note) parts.push(`<p class="note">💬 ${E('js.studio.live.reviewer', { note: S.game.review_note })}</p>`);
   box.innerHTML = parts.join('');
@@ -330,7 +335,7 @@ function renderLog() {
 // starts row i, stepinfo {i, ...facts} updates row i (not always the newest: a failed edit marks its own row later).
 // While the turn runs, the card shows the latest rows. The running row has ONE 💡 line: a "Just now" line for a step
 // that was over in a flash (the safety program, naming the game…), then the step's own line, then (once a turn) what
-// thinking is, then on a long AI step a "Did you know?" fact. When the turn ends the card folds into a one-line summary
+// thinking is, then on a long AI step a "Prompting tip" and a "Did you know?" fact, taking turns. When the turn ends the card folds into a one-line summary
 // drawn from the record that 'done' carries, which is also saved as the reply's last event, so a reload draws the same.
 // Model text (the AI's plan, a game title) is only ever set with textContent. Nothing here is timer-driven except the
 // seconds, the order of the 💡 lines and when the card appears: every row is a real server step (or the page's own
@@ -348,6 +353,8 @@ const AUTHOR = new Set(['write', 'edit', 'fix']);
 const JUST_NOW = ['check', 'read', 'template', 'notes', 'name', 'ask'];
 const THINK_WHY = new Set(['start', 'look', 'scan', 'retry', 'next', 'msg', 'auto']);
 const FACTS = [...'abcdefghijk'];
+// Prompting tips (the owner's ask): how to write a message that gets a better game. They take turns with the facts.
+const PROMPT_TIPS = [...'abcdefghijkl'];
 const TIP_JUST = 6000, TIP_OWN = 8000, TIP_THINK = 8000, TIP_FACT = 11000;
 const LONG_AT = 45000, TIP_LONG = 15000;   // a round still planning after 45 s says that big ideas take a while   // how long each 💡 line stays
 const SHOW_AFTER = 700;    // the live card appears once a turn has lasted this long (a quick turn goes straight to its summary)
@@ -358,6 +365,8 @@ const ETA_AUTHOR = new Set(['write', 'edit', 'fix', 'template', 'check']);   // 
 const narrow = matchMedia('(max-width: 520px)');   // phones: one finished row above the running one, not two
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let factNext = Math.floor(Math.random() * FACTS.length);   // carries on across turns, so each turn shows new facts
+let promptNext = Math.floor(Math.random() * PROMPT_TIPS.length);
+let slotNext = 0;                               // even: a prompting tip, odd: a fact (a prompting tip comes first)
 let live = null;                                // the steps card of the turn in progress
 let stepSeq = 0;
 let tipsOn = true;
@@ -684,8 +693,12 @@ function liveSteps() {
     else if (kind === 'long') withIcon(tip, '⏳', ST('think.learn.long'));
     else if (kind === 'think') { withIcon(tip, '🤔', ST('think.learn.thinking')); if (tipsOn) { turn.thinkShown = true; r.thinkHere = true; } }
     else if (kind) {
-      if (r.factFor !== kind) { r.factFor = kind; r.factText = ST(`facts.${FACTS[factNext++ % FACTS.length]}`); }
-      withIcon(tip, '🌟', r.factText, ST('factLabel'));
+      if (r.factFor !== kind) {
+        r.factFor = kind;
+        r.factPrompt = slotNext++ % 2 === 0;
+        r.factText = r.factPrompt ? ST(`promptTips.${PROMPT_TIPS[promptNext++ % PROMPT_TIPS.length]}`) : ST(`facts.${FACTS[factNext++ % FACTS.length]}`);
+      }
+      withIcon(tip, r.factPrompt ? '✍️' : '🌟', r.factText, ST(r.factPrompt ? 'promptTipLabel' : 'factLabel'));
     } else tip.textContent = '';
   }
   function push(key, facts, i, at = null) {

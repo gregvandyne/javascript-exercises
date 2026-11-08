@@ -299,6 +299,10 @@ export const config = {
   builderTurnMaxMs: Math.max(1, num(process.env.BUILDER_TURN_MAX_SECONDS, 1200)) * 1000,
   // The same cap for trusted makers (the platform admin, school staff and class teachers, builder/usage.js
   // trustedMaker): their builds always use the Pro model and get more model calls, so they get longer.
+  // Every signed-in maker builds like a teacher (the owner's rule, November 2026): the Pro model, the longer cap, more
+  // model calls and playtest fix rounds (builder/usage.js trustedMaker). Guests are not included. Set 0 to go back to
+  // teachers and staff only (to save AI spend).
+  builderFullForAll: !/^(0|false|no|off)$/i.test(String(process.env.BUILDER_FULL_FOR_ALL ?? '1').trim()),
   builderStaffTurnMaxMs: Math.max(1, num(process.env.BUILDER_STAFF_TURN_MAX_SECONDS, 2400)) * 1000,
   // AI spending cap in US dollars (see server/services/ai-budget.js). Calls stop once either is reached.
   aiDailyBudgetUsd: posNum(process.env.AI_DAILY_BUDGET_USD, 5),

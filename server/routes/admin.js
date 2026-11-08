@@ -1,5 +1,5 @@
 // Admin panel (role admin only). Internal tool: its text stays English (the page frame follows the admin's language). Non-admins get 404 for every page and API under /admin and /api/admin.
-// Tabs: Review queue, Reports, Chat reports, Users, Audit log. Every action is audited (services/moderation.js, services/publish.js).
+// Tabs: Review queue, Reports, Chat reports, New users, Users, Team inbox, Audit log. Every action is audited (services/moderation.js, services/publish.js).
 import * as aiBudget from '../services/ai-budget.js';
 import * as stats from '../services/stats.js';
 import * as photos from '../services/photos.js';
@@ -25,12 +25,16 @@ import { audit, q } from '../db.js';
 import { config } from '../config.js';
 import * as webSearch from '../builder/search.js';
 import * as liveR from '../services/classlive-results.js';
+import * as team from '../services/team.js';
+import * as AU from '../services/admin-users.js';
+import { getUserByName, OFFICIAL } from '../auth.js';
+import { rateLimit } from '../services/ratelimit.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['newusers', '🆕', 'New users'], ['users', '👤', 'Users'], ['messages', '📬', 'Team inbox'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -40,7 +44,8 @@ function queueTab(req) {
   if (!items.length) return emptyState({ emoji: '✅', title: 'Nothing to review', text: 'Games waiting for a human check show up here.' });
   // What the builder asked for: approving applies exactly this audience (never more).
   const audience = (a, classes) => (a === 'class' ? `🎒 ${classes.length ? classes.join(', ') : 'their classes (none live right now)'}` : a === 'school' ? '🏫 the school' : a === 'family' ? '🏠 their family (the grown-up and their linked children)' : '🌍 everyone');
-  return html`<div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, safety, review, audience: aud, classes }) => {
+  return html`<p class="small muted">Every game must be approved here before strangers can find or play it (home, search, explore, the sitemap and /g pages). Approving tells the builder in their Oomba team inbox; so does sending it back.</p>
+  <div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, liveFor, safety, review, audience: aud, classes }) => {
     const token = signToken({ v: v.id, g: g.id, u: req.user.id, p: 1 }, 3600);
     const issues = safety.issues || [];
     return html`<article class="panel reviewcard" aria-label="Review ${g.title}">
@@ -49,7 +54,7 @@ function queueTab(req) {
         <div class="rc-info">
           <h2>${g.title}</h2>
           <p class="muted small">by ${g.owner_type === 'grownup' ? html`${g.owner_display} <span class="chip-s">🧑 Grown-up builder</span>` : html`<a href="/u/${g.owner_name}">${g.owner_display}</a>`} (@${g.owner_name}) · version ${v.number} · ${fmtNum(Math.round((v.size || 0) / 1024))} KB · sent ${when(g.updated_at)}</p>
-          <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New game</span>`}</p>
+          <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New game</span>`}${liveFor && !isUpdate ? html` Live now for ${liveFor === 'friends' ? (g.owner_type === 'grownup' ? 'their grown-up connections' : 'their friends') : liveFor} while it waits.` : ''}</p>
           <p class="small">Waiting to share with: <b>${audience(aud, classes)}</b></p>
           ${g.description ? html`<p class="small">${g.description}</p>` : ''}
           ${v.notes ? html`<p class="small muted">Builder notes: ${v.notes}</p>` : ''}
@@ -60,12 +65,15 @@ function queueTab(req) {
         <div class="rc-checks">
           <h3>Safety scan: <span class="scan-${safety.status || v.safety_status}">${safety.status || v.safety_status || 'unchecked'}</span></h3>
           ${issues.length ? html`<ul class="issues">${issues.map(i => html`<li class="lvl-${i.level}"><b>${i.level}</b> ${i.message}</li>`)}</ul>` : html`<p class="small muted">No issues found.</p>`}
-          <h3>Model review: ${review.verdict || 'none'}${review.by ? html` <span class="small muted">(${review.by})</span>` : ''}</h3>
+          <h3>Model pre-check: ${review.verdict ? (review.verdict === 'allowed' ? 'no problems found (a hint, not an approval)' : review.verdict) : 'none'}</h3>
           ${(review.reasons || []).length ? html`<ul class="issues">${review.reasons.map(r => html`<li>${r}</li>`)}</ul>` : ''}
           <form class="decide" data-game="${g.id}" novalidate>
+            <div class="field"><label for="reason-${g.id}">Reason (if you send it back)</label>
+              <select class="input" id="reason-${g.id}" name="reason"><option value="">No preset: use my note</option>${chat.REVIEW_REASONS.map(k => html`<option value="${k}">${tEn(`review.reasons.${k}`)}</option>`)}</select>
+              <span class="hint">Presets are kid-friendly and shown in the builder's own language.</span></div>
             <div class="field"><label for="note-${g.id}">Note for the builder</label>
-              <textarea class="input" id="note-${g.id}" name="note" maxlength="500" placeholder="Say what is great, or what to change"></textarea></div>
-            <div class="row"><button class="btn btn-primary" type="button" data-act="approve" data-id="${g.id}">✅ Approve</button><button class="btn btn-danger" type="button" data-act="reject" data-id="${g.id}">✏️ Reject</button></div>
+              <textarea class="input" id="note-${g.id}" name="note" maxlength="500" placeholder="Say what is great, or what to change (shown as you type it)"></textarea></div>
+            <div class="row"><button class="btn btn-primary" type="button" data-act="approve" data-id="${g.id}">✅ Approve</button><button class="btn btn-danger" type="button" data-act="reject" data-id="${g.id}">✏️ Send back</button></div>
           </form>
         </div>
       </div>
@@ -109,7 +117,7 @@ function chatTab() {
     <div class="row">
       <button class="btn" type="button" data-act="hide" data-id="${r.id}">🙈 Hide message</button>
       <button class="btn" type="button" data-act="dismiss" data-id="${r.id}">👍 Dismiss</button>
-      ${sender && !sender.banned && sender.role !== 'admin' ? html`<button class="btn btn-danger" type="button" data-act="bansender" data-id="${r.id}" data-name="${sender.username}">⛔ Ban sender</button>` : ''}
+      ${sender && !sender.banned && sender.role !== 'admin' && sender.username !== OFFICIAL ? html`<button class="btn btn-danger" type="button" data-act="bansender" data-id="${r.id}" data-name="${sender.username}">⛔ Ban sender</button>` : ''}
     </div>
   </article>`)}</div>`;
 }
@@ -210,13 +218,14 @@ function usersTab(req) {
       <input class="input" id="uname" name="username" value="${name}" placeholder="Exact username" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button class="btn btn-primary" type="submit">Look up</button>
     </form>
-    <p class="small muted" style="margin:8px 0 0">Exact usernames only. There is no browsing of players.</p>
+    <p class="small muted" style="margin:8px 0 0">Exact usernames here. To browse sign-ups, use <a href="/admin?tab=newusers">New users</a>.</p>
   </section>
   ${name && !u ? html`<p class="notice warn" style="margin-top:16px">No user called “${name}”.</p>` : ''}
   ${u ? html`<section class="panel" style="margin-top:16px">
     <div class="row">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
       ${u.banned ? html`<span class="chip-s bad">⛔ Banned</span>` : html`<span class="chip-s">✅ Active</span>`}</div>
     <div class="tblwrap"><table class="tbl" style="margin-top:12px"><tbody>
+      <tr><th scope="row">Account type</th><td>${AU.TYPE_LABEL[AU.accountTypeOf(u.id)]} · ${AU.METHOD_LABEL[AU.signupMethod(u.id)]}</td></tr>
       <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
       <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
       <tr><th scope="row">Family</th><td>${familyCell(u)}</td></tr>
@@ -227,11 +236,115 @@ function usersTab(req) {
       <tr><th scope="row">Games</th><td>${u.games}</td></tr>
       <tr><th scope="row">Friends</th><td>${u.friends}</td></tr>
       <tr><th scope="row">Chat</th><td>${u.chat_enabled ? 'on' : 'off'} · ${u.chatReports} message report${u.chatReports === 1 ? '' : 's'} against them</td></tr>
+      <tr><th scope="row">Reports</th><td>${(r => html`${r.againstGames} against their games · ${r.made} made by them`)(AU.reportCounts(u.id))}</td></tr>
     </tbody></table></div>
-    <div class="row" style="margin-top:12px">${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
+    ${userGamesPanel(u)}
+    ${userAuditPanel(u)}
+    <div class="row" style="margin-top:12px">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
       ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
       ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
   </section>` : ''}`;
+}
+
+const VIS_LABEL = { private: 'Only them', family: 'Family', friends: 'Friends', class: 'Classes', school: 'School', public: 'Everyone' };
+function userGamesPanel(u) {
+  const list = AU.userGames(u.id);
+  if (!list.length) return '';
+  return html`<h3 style="margin:16px 0 6px">Games (${list.length})</h3><div class="tblwrap"><table class="tbl small rtable"><thead><tr><th>Game</th><th>Status</th><th>Who can play</th><th>Plays</th><th>Reports</th></tr></thead><tbody>
+    ${list.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td data-label="Status">${statusLabel(g, tEn)}${g.pending_version_id ? html` <span class="chip-s warn">⏳ waiting for ${g.pending_visibility || 'public'}</span>` : ''}</td>
+      <td data-label="Who can play">${g.status === 'published' ? VIS_LABEL[g.visibility] || g.visibility : '–'}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="Reports">${g.reports}</td></tr>`)}
+  </tbody></table></div>`;
+}
+function userAuditPanel(u) {
+  const rows = AU.userAudit(u.id);
+  if (!rows.length) return '';
+  return html`<details style="margin-top:12px"><summary>Audit log for @${u.username} (${rows.length} latest)</summary><div class="tblwrap"><table class="tbl small audit"><thead><tr><th>When</th><th>Who</th><th>What</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td>${r.actor_name ? '@' + r.actor_name : 'system'}</td><td><code>${r.action}</code></td></tr>`)}
+  </tbody></table></div></details>`;
+}
+
+/** Sign-ups, newest first (services/admin-users.js). Filters are plain GET links, so the page works without JavaScript. */
+const RANGE_LABEL = { today: 'Today', '7d': 'Last 7 days', '30d': 'Last 30 days', all: 'All time' };
+function newUsersQuery(req) {
+  const type = AU.TYPES.includes(req.query.type) ? req.query.type : '';
+  const range = Object.hasOwn(AU.RANGES, req.query.range) ? req.query.range : '30d';
+  const search = String(req.query.q || '').trim().slice(0, 40);
+  return { type, range, search, page: req.query.page };
+}
+const qs = o => Object.entries(o).filter(([, v]) => v !== '' && v !== undefined && v !== null).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+function sparkline(days) {
+  const max = Math.max(1, ...days.map(d => d.n)); const w = 300, h = 48, step = w / Math.max(1, days.length - 1);
+  const pts = days.map((d, i) => `${(i * step).toFixed(1)},${(h - 4 - (d.n / max) * (h - 8)).toFixed(1)}`).join(' ');
+  const total = days.reduce((a, d) => a + d.n, 0);
+  return html`<figure class="panel nu-spark"><figcaption><b>Sign-ups per day</b> <span class="small muted">last ${days.length} days · ${int(total)} in all · busiest day ${int(max === 1 && !total ? 0 : max)}</span></figcaption>
+    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Sign-ups per day for the last ${days.length} days, ${int(total)} in all, ${int(days[days.length - 1].n)} today">
+      <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+    <div class="xaxis" aria-hidden="true"><span>${shortDay(days[0].day)}</span><span>today: ${int(days[days.length - 1].n)}</span></div>
+    <details><summary>Show as a table</summary><div class="tblwrap"><table class="tbl small"><thead><tr><th>Day</th><th>Sign-ups</th></tr></thead><tbody>${days.slice().reverse().map(d => html`<tr><td>${shortDay(d.day)}</td><td>${int(d.n)}</td></tr>`)}</tbody></table></div></details>
+  </figure>`;
+}
+function newUsersTab(req) {
+  const f = newUsersQuery(req);
+  const r = AU.listNewUsers(f);
+  const c = AU.signupCounts();
+  const link = over => `/admin?${qs({ tab: 'newusers', type: f.type, range: f.range, q: f.search, ...over })}`;
+  const linked = u => (u.type === 'grownup' ? `${u.children} child${u.children === 1 ? '' : 'ren'} linked` : [u.parent ? `grown-up @${u.parent}` : '', u.schools || ''].filter(Boolean).join(' · ') || '–');
+  return html`
+  <div class="kpis">
+    ${tile('🆕 Today', int(c.today), 'since midnight UTC')}
+    ${tile('📅 Last 7 days', int(c.week))}
+    ${tile('🗓️ Last 30 days', int(c.month), Object.entries(c.byType).filter(([, n]) => n).map(([k, n]) => `${int(n)} ${AU.TYPE_LABEL[k].toLowerCase()}`).join(' · ') || 'none yet')}
+  </div>
+  ${sparkline(AU.signupsByDay(30))}
+  <form class="panel nu-filters" method="get" action="/admin" role="search">
+    <input type="hidden" name="tab" value="newusers">
+    <div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="field"><label for="nu-type">Account type</label><select class="input" id="nu-type" name="type"><option value="">All types</option>${AU.TYPES.map(k => html`<option value="${k}" ${f.type === k ? raw('selected') : ''}>${AU.TYPE_LABEL[k]}</option>`)}</select></div>
+    <div class="field"><label for="nu-range">Joined</label><select class="input" id="nu-range" name="range">${Object.keys(RANGE_LABEL).map(k => html`<option value="${k}" ${f.range === k ? raw('selected') : ''}>${RANGE_LABEL[k]}</option>`)}</select></div>
+    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/new-users.csv?${qs({ type: f.type, range: f.range, q: f.search })}" download><span aria-hidden="true">⬇️</span> CSV</a></div>
+  </form>
+  <nav class="chips nu-quick" aria-label="Quick ranges">${Object.keys(RANGE_LABEL).map(k => html`<a class="chip ${f.range === k ? 'on' : ''}" href="${link({ range: k, page: '' })}" ${f.range === k ? raw('aria-current="true"') : ''}>${RANGE_LABEL[k]}</a>`)}</nav>
+  <p class="small muted">${int(r.total)} account${r.total === 1 ? '' : 's'}${f.type ? ` · ${AU.TYPE_LABEL[f.type]}` : ''} · ${RANGE_LABEL[f.range].toLowerCase()}${f.search ? ` · matching “${f.search}”` : ''}. Guests are not listed. Kids show only their names, who looks after them and counts.</p>
+  ${r.rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable nu-table"><thead><tr><th>Account</th><th>Type</th><th>Joined</th><th>How</th><th>Grown-up / school</th><th>Last active</th><th>Games</th><th>Plays</th><th>Status</th></tr></thead><tbody>
+    ${r.rows.map(u => html`<tr>
+      <td><a class="nu-who" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">${avatar(u, 32)}<span><b dir="auto">${u.display_name}</b><br><span class="small muted">@${u.username}</span></span></a></td>
+      <td data-label="Type">${AU.TYPE_LABEL[u.type]}</td>
+      <td data-label="Joined"><time datetime="${new Date(u.created_at).toISOString()}">${new Date(u.created_at).toISOString().replace('T', ' ').slice(0, 16)}</time> <span class="small muted">(${timeAgo(u.created_at)})</span></td>
+      <td data-label="How">${AU.METHOD_LABEL[u.method]}</td>
+      <td data-label="Grown-up / school" class="small">${linked(u)}</td>
+      <td data-label="Last active">${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td>
+      <td data-label="Games">${int(u.games_made)} made · ${int(u.games_public)} public${u.games_waiting ? html` · <span class="chip-s warn">${u.games_waiting} waiting</span>` : ''}</td>
+      <td data-label="Plays">${int(u.plays_of_games)} of their games · ${int(u.plays_made)} played</td>
+      <td data-label="Status">${u.banned ? html`<span class="chip-s bad">⛔ Suspended</span>` : html`<span class="chip-s">✅ Active</span>`}</td>
+    </tr>`)}
+  </tbody></table></div>
+  ${r.pages > 1 ? html`<nav class="row nu-pages" aria-label="Pages">${r.page > 1 ? html`<a class="btn" href="${link({ page: r.page - 1 })}" rel="prev">← Newer</a>` : ''}<span class="small muted">Page ${r.page} of ${r.pages}</span>${r.page < r.pages ? html`<a class="btn" href="${link({ page: r.page + 1 })}" rel="next">Older →</a>` : ''}</nav>` : ''}`
+    : emptyState({ emoji: '🆕', title: 'No sign-ups match', text: 'Try a longer date range or another account type.' })}`;
+}
+
+/** The Oomba team inbox (services/team.js): people the team wrote to or who wrote back, and announcements. */
+const AUDIENCE_LABEL = { all: 'Everyone with an account', kids: 'Kids', grownups: 'Grown-ups (parents)', staff: 'Teachers and school staff', school: 'One school' };
+function messagesTab(req) {
+  const threads = team.adminThreads();
+  const lim = team.announceLimits();
+  const schools = q.all('SELECT id, name FROM schools WHERE archived_at IS NULL ORDER BY name COLLATE NOCASE LIMIT 500');
+  const recent = team.recentAnnouncements(10);
+  return html`
+  <section class="panel" aria-labelledby="ann-h">
+    <h2 id="ann-h" style="margin-top:0">📣 Send an announcement</h2>
+    <p class="small muted">It arrives in each person's inbox from “Oomba team ✓”. You will see how many people it reaches and confirm before it goes. At most one every ${team.ANNOUNCE_GAP_MS / 60e3} minutes and ${team.ANNOUNCE_DAILY} a day for the whole site${lim.nextAt ? html`: next one possible ${when(lim.nextAt)}` : ''} (${lim.leftToday} left today). Kids read it too, so write for a 6-year-old.</p>
+    <form id="announce" class="stack" novalidate>
+      <div class="field"><label for="ann-aud">Who gets it</label><select class="input" id="ann-aud" name="audience">${team.AUDIENCES.map(k => html`<option value="${k}">${AUDIENCE_LABEL[k]}</option>`)}</select></div>
+      <div class="field" id="ann-school-f" hidden><label for="ann-school">School</label><select class="input" id="ann-school" name="schoolId">${schools.map(s => html`<option value="${s.id}">${s.name}</option>`)}</select></div>
+      <div class="field"><label for="ann-text">Message</label><textarea class="input" id="ann-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3" placeholder="New games are here! ..."></textarea></div>
+      <div class="row"><button class="btn btn-primary" type="submit">Check who it reaches…</button></div>
+    </form>
+    ${recent.length ? html`<details><summary>Recent announcements (${recent.length})</summary><ul class="small">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}”</li>`)}</ul></details>` : ''}
+  </section>
+  <h2 class="stats-h">Conversations</h2>
+  <p class="small muted">To start one, open a person on <a href="/admin?tab=users">Users</a> or <a href="/admin?tab=newusers">New users</a> and press Message. Messages to a child are copied to their linked grown-up (or their school's admins) and logged with their text; a child with neither can't be messaged directly.</p>
+  ${threads.length ? html`<ul class="plain inbox panel">${threads.map(th => html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/admin/messages/${encodeURIComponent(th.username)}">${avatar(th, 40)}<span class="who"><span class="nm">${th.display_name}</span><span class="sub">@${th.username}${th.account_type === 'grownup' ? ' · grown-up' : ''}${th.banned ? ' · banned' : ''}</span></span><span class="meta"><span class="time">${timeAgo(th.last)}</span>${th.unread ? html`<span class="badge">${th.unread}</span>` : ''}</span></a></li>`)}</ul>`
+    : emptyState({ emoji: '📬', title: 'No conversations yet', text: 'Replies to the team show up here.' })}`;
 }
 
 function auditTab() {
@@ -268,15 +381,49 @@ function aiSpendPanel() {
 router.get('/admin', (req, res) => {
   const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
-  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount() };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, users: usersTab, searches: searchesTab, audit: auditTab }[tab](req);
+  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount(), messages: team.adminUnread() };
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, newusers: newUsersTab, users: usersTab, messages: messagesTab, searches: searchesTab, audit: auditTab }[tab](req);
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a><a class="btn" href="/admin/story-art"><span aria-hidden="true">🎨</span> AI-drawn lab</a></div></div>
+  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a><a class="btn" href="/admin/story-art"><span aria-hidden="true">🎨</span> AI-drawn lab</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
   ${jsonData('page-data', { tab })}`;
-  page(req, res, { title: 'Admin', active: 'me', body, head: COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/me', backLabel: 'Me' });
+  page(req, res, { title: 'Admin', active: 'me', body, head: tab === 'newusers' ? raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`) : COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/me', backLabel: 'Me' });
+});
+
+// ---- New users as CSV (the same filters as the tab, up to services/admin-users.js CSV_MAX rows). Audited.
+router.get('/admin/new-users.csv', (req, res) => {
+  const f = newUsersQuery(req);
+  audit(req.user.id, 'admin.export_users', '', { type: f.type || 'all', range: f.range, q: f.search || undefined });
+  res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="oomba-new-users-${f.range}-${new Date().toISOString().slice(0, 10)}.csv"`, 'Cache-Control': 'no-store' });
+  res.send(AU.newUsersCsv(f));
+});
+
+// ---- One conversation with the Oomba team (an admin writes as the team).
+router.get('/admin/messages/:username', (req, res) => {
+  const u = getUserByName(req.params.username);
+  if (!u || u.is_guest || u.username === OFFICIAL) return res.status(404).send('Not found');
+  team.markReadByTeam(u);
+  const msgs = team.adminThread(u);
+  const can = team.canMessage(u);
+  const tu = team.teamUser();
+  const type = AU.accountTypeOf(u.id);
+  const line = m => {
+    const fromTeam = m.from_id === tu.id;
+    return html`<li class="msg ${fromTeam ? 'mine' : 'theirs'} ${m.kind}"><div class="bubble" dir="auto">${chat.present(m, u, tEn).body}</div>
+      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : `@${m.admin_name || '?'}`) : `@${u.username}`} · ${when(m.created_at)}${m.status !== 'ok' ? ' · hidden' : ''}</span></li>`;
+  };
+  const body = html`
+  <div class="pagehead"><h1>📬 ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">👤 User details</a></div></div>
+  <p class="small">${AU.TYPE_LABEL[type]}${u.banned ? ' · banned' : ''}. They see these messages as from <b>Oomba team ✓</b>, in their inbox (<code>/chat/${OFFICIAL}</code>).</p>
+  ${can.ok && can.child ? html`<p class="notice warn small">👀 This is a child. Everything you send here, and everything they reply, is copied to ${can.guardians.map(g => `@${g.username}`).join(', ')} and written to the audit log with its text.</p>` : ''}
+  <section class="panel"><ol class="plain adminthread" aria-label="Conversation">${msgs.length ? msgs.map(line) : html`<li class="muted">No messages yet.</li>`}</ol></section>
+  ${can.ok ? html`<form class="panel stack" id="dm" data-id="${u.id}" novalidate>
+      <div class="field"><label for="dm-text">Message as the Oomba team</label><textarea class="input" id="dm-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3"></textarea></div>
+      <div class="row"><button class="btn btn-primary" type="submit">Send</button></div></form>`
+    : html`<p class="notice warn">${can.error}</p>`}`;
+  page(req, res, { title: `Messages: ${u.username}`, active: 'me', body, head: COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/admin?tab=messages', backLabel: 'Team inbox' });
 });
 
 // ---- Stats dashboard ----
@@ -550,7 +697,23 @@ const gameAct = fn => (req, res) => {
   res.json({ ok: true });
 };
 router.post('/api/admin/games/:id/approve', gameAct(req => mod.approve(req.user, req.params.id, note(req))));
-router.post('/api/admin/games/:id/reject', gameAct(req => mod.reject(req.user, req.params.id, note(req))));
+router.post('/api/admin/games/:id/reject', gameAct(req => mod.reject(req.user, req.params.id, note(req), String((req.body || {}).reason || ''))));
+// The Oomba team writes to one person (services/team.js: a child's messages are copied to their grown-up and audited).
+router.post('/api/admin/users/:id/message', rateLimit('admin-dm', 30, 10 * 60e3), (req, res) => {
+  const u = q.get('SELECT * FROM users WHERE id=?', String(req.params.id));
+  const r = team.sendDirect(req.user, u, String((req.body || {}).text || ''));
+  res.status(r.ok ? 200 : r.code === 'missing' ? 404 : 400).json(r.ok ? { ok: true, copiedTo: r.copiedTo.map(g => g.username) } : { error: r.error, code: r.code });
+});
+// Announcements: preview (how many people, and the confirm code), then send with that code. Limits live in team.js.
+const annInput = req => { const b = req.body || {}; return { audience: String(b.audience || ''), schoolId: String(b.schoolId || ''), text: String(b.text || ''), confirm: String(b.confirm || '') }; };
+router.post('/api/admin/announcements/preview', rateLimit('admin-ann', 30, 10 * 60e3), (req, res) => {
+  const r = team.previewAnnouncement(req.user, annInput(req));
+  res.status(r.ok ? 200 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
+router.post('/api/admin/announcements', rateLimit('admin-ann', 30, 10 * 60e3), (req, res) => {
+  const r = team.sendAnnouncement(req.user, annInput(req));
+  res.status(r.ok ? 200 : r.code === 'rate' || r.code === 'daily' ? 429 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
 router.post('/api/admin/games/:id/restore', gameAct(req => mod.restoreGame(req.user, req.params.id)));
 router.post('/api/admin/games/:id/suspend', gameAct(req => mod.suspendGame(req.user, req.params.id, note(req))));
 router.post('/api/admin/games/:id/unsuspend', gameAct(req => mod.unsuspendGame(req.user, req.params.id)));

@@ -1503,7 +1503,9 @@
     "class": "{count, plural, one {Online für {name}! Alle in deiner Klasse können es finden und spielen.} other {Online für deine Klassen! Alle darin können es finden und spielen.}}",
     "schoolOnly": "Deine Schule behält Spiele in der Schule. Teile es stattdessen mit deiner Schule.",
     "liveFamily": "Live für Ihre Familie! Sie und die Kinder, die mit Ihrer Familie verknüpft sind, können es spielen.",
-    "liveConnections": "Mit Ihren Erwachsenen-Kontakten geteilt! Nur Sie und diese Kontakte können es spielen."
+    "liveConnections": "Mit Ihren Erwachsenen-Kontakten geteilt! Nur Sie und diese Kontakte können es spielen.",
+    "waitingTeam": "Deine Freunde können es schon spielen! Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können. Wir schicken dir eine Nachricht, wenn es fertig ist.",
+    "waitingTeamGrownup": "Ihre Erwachsenen-Kontakte können es schon spielen. Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können, und wir schicken Ihnen eine Nachricht, wenn es fertig ist."
   },
   "builder": {
     "kindRefusal": "Dabei kann ich leider nicht helfen. Lass uns lieber etwas Lustiges bauen. Was für ein Spiel hättest du gern?",
@@ -1763,7 +1765,8 @@
       "blockTitle": "{name} blockieren?",
       "blockText": "Du siehst keine Nachrichten mehr von {name}, und {name} kann dir keine mehr schicken. Ihr bleibt Freunde, und auf der Seite „Freunde“ kannst du {name} wieder entsperren.",
       "block": "Blockieren",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "verified": "Bestätigtes Oomba-Team"
     },
     "studio": {
       "docTitle": "Studio: {title} · Oomba Academy",
@@ -1824,7 +1827,9 @@
         "publishFirst": "Veröffentliche es, dann kannst du es live spielen.",
         "teacher": "Eine Lehrkraft oder ein Erwachsener kann es live mit deiner Klasse spielen. Teile es zuerst mit deiner Klasse.",
         "notYet": "Noch nicht live-bereit: {issue}.",
-        "make": "Ein Live-Klassenspiel daraus machen"
+        "make": "Ein Live-Klassenspiel daraus machen",
+        "waitingReview": "Wartet auf Prüfung",
+        "teamCheck": "Jemand vom Oomba-Team prüft jedes Spiel, bevor alle es spielen können. Du kannst weiter spielen, es mit Freunden teilen und es bearbeiten. Wir schicken dir eine Nachricht, wenn es fertig ist."
       },
       "safety": {
         "chipPass": "Sicher",
@@ -1973,6 +1978,21 @@
         "planLabel": "Plan:",
         "thoughtFirst": "erst nachgedacht",
         "thinkingNow": "denkt nach",
+        "promptTipLabel": "Schreib-Tipp:",
+        "promptTips": {
+          "a": "Sag zuerst, was für ein Spiel es werden soll: „ein Rennspiel“, „ein Quiz“, „ein Jump’n’Run“. Dann kommen die Details.",
+          "b": "Sag der KI, wie man gewinnt und wie man verliert. Klare Regeln machen ein besseres Spiel.",
+          "c": "Beschreib, wie es aussehen soll: Farben, ein Thema wie Weltall oder Dschungel und wer der Held ist.",
+          "d": "Ändere immer nur eine Sache. „Lass die Figur höher springen“ klappt besser als zehn Änderungen auf einmal.",
+          "e": "Sei genau. „Mach die Gegner in Level 1 langsamer“ ist besser als „mach es leichter“.",
+          "f": "Einen Fehler gefunden? Sag, was du gemacht hast, was passiert ist und was eigentlich passieren sollte.",
+          "g": "Sag, wie man steuern soll: mit den Pfeiltasten, durch Tippen, Wischen oder mit der Leertaste.",
+          "h": "Wünsch dir Level, die immer schwerer werden, zum Beispiel „3 Level, jedes ein bisschen schneller“.",
+          "i": "Willst du Geräusche oder Punkte? Dann frag danach: „füge einen Münz-Sound und einen Highscore hinzu“.",
+          "j": "Spiel dein Spiel nach jeder Änderung und sag der KI dann genau, was sie als Nächstes reparieren soll.",
+          "k": "Gib ein Beispiel: „wie ein Labyrinth, aber die Wände bewegen sich“ hilft der KI, sich deine Idee vorzustellen.",
+          "l": "Keine Idee, was noch fehlt? Frag die KI: „Hast du 3 Ideen, wie das Spiel noch mehr Spaß macht?“"
+        },
         "factLabel": "Wusstest du schon?",
         "justNow": "Gerade eben:",
         "tokens": "Die KI hat {read} Tokens gelesen und {wrote} geschrieben. Ein Token ist ein kleines Stück von einem Wort. Die Zahl ist so groß, weil die KI in jeder Runde ihre Anweisungen, den Chat und das Spiel noch einmal liest.",
@@ -2091,11 +2111,11 @@
           "b": "Eine KI schreibt, indem sie das nächste Token vorhersagt, immer wieder, sehr schnell.",
           "c": "Fragst du zweimal dasselbe, bekommst du vielleicht eine andere Antwort, weil die KI aus wahrscheinlichen Wörtern auswählt.",
           "d": "In jeder Runde liest die KI den letzten Chat noch einmal. Darum brauchen lange Chats mehr Tokens.",
-          "e": "Ein Agent ist eine KI, die Werkzeuge in einer Schleife benutzt. Dieser Baumeister kann bis zu 14 Runden pro Nachricht machen.",
+          "e": "Ein Agent ist eine KI, die Werkzeuge in einer Schleife benutzt. Dieser Baumeister kann bis zu 20 Runden pro Nachricht machen.",
           "f": "Der KI-Baumeister kann nicht ins Internet. Er baut mit dem, was er gelernt hat und was du ihm sagst.",
           "g": "KI-Modelle lernen Muster aus riesigen Mengen an Texten und Code, die Menschen geschrieben haben.",
           "h": "KI kann sehr sicher klingen und trotzdem falschliegen. Darum prüft auch ein Sicherheitsprogramm den Code.",
-          "i": "✨ Profi-Qualität nutzt eine größere KI, die länger nachdenkt: langsamer, aber oft besser bei kniffligen Spielen.",
+          "i": "Dieser Baumeister nutzt eine große KI, die nachdenkt, bevor sie schreibt: langsamer, aber besser bei kniffligen Spielen.",
           "j": "Spiel dein Spiel immer selbst. Auch eine schlaue KI übersieht Dinge, die echten Spielern auffallen würden.",
           "k": "Du kannst neue Ideen schicken, während die KI arbeitet. Sie liest sie zwischen ihren Schritten."
         },
@@ -6254,6 +6274,48 @@
       "failed": "Die neue Version hat nicht geklappt, deine Geschichte bleibt so, wie sie war.",
       "keepOld": "Die alte behalten",
       "asksAgain": "Nach einer Änderung muss ein Erwachsener oder deine Lehrkraft noch einmal OK sagen, bevor andere sie sehen können."
+    }
+  },
+  "review": {
+    "reasons": {
+      "characters": "Bitte nimm deine eigenen Figuren, nicht welche aus Filmen, Serien oder anderen Spielen.",
+      "people": "Bitte verwende keine Namen oder Bilder von echten Menschen in deinem Spiel.",
+      "scary": "Es ist ein bisschen zu gruselig oder grob für jüngere Spieler. Kannst du es freundlicher machen?",
+      "words": "Bitte ändere ein paar Wörter, damit das Spiel für alle nett und freundlich ist.",
+      "personal": "Bitte nimm alles heraus, was Spieler nach ihrem Namen, Alter oder Wohnort fragt.",
+      "brands": "Bitte nimm echte Marken und Logos heraus.",
+      "flashing": "Bitte lass es langsamer oder sanfter blinken. Schnelles Blinken kann manchen Spielern in den Augen wehtun.",
+      "broken": "Wir konnten es nicht zum Laufen bringen. Spiel es selbst und bitte dann den Baumeister, den Fehler zu beheben.",
+      "other": "Bitte ändere zuerst ein paar Dinge."
+    }
+  },
+  "team": {
+    "name": "Oomba-Team",
+    "verified": "Bestätigtes Oomba-Team",
+    "sub": "Nachrichten von den Menschen hinter Oomba Academy",
+    "empty": "Noch keine Nachrichten. Neuigkeiten zu deinen Spielen erscheinen hier.",
+    "safety": {
+      "child": "Diese Nachrichten sind vom Oomba-Team. Deine erwachsene Bezugsperson kann sie auch sehen. Verrate nie dein Passwort, deine Adresse oder Telefonnummer, auch nicht uns.",
+      "grownup": "Nachrichten vom Oomba-Team. Wir fragen Sie nie nach Ihrem Passwort. Wenn wir einem mit Ihnen verknüpften Kind schreiben, bekommen Sie hier eine Kopie, auch von seinen Antworten."
+    },
+    "cant": {
+      "guest": "Erstelle ein kostenloses Konto, um Nachrichten vom Oomba-Team zu bekommen.",
+      "banned": "Dein Konto ist pausiert.",
+      "notYet": "Du kannst hier antworten, sobald das Oomba-Team dir geschrieben hat.",
+      "noGrownup": "Hier kannst du Nachrichten vom Oomba-Team lesen. Um zu antworten, bitte einen Erwachsenen, sich mit deinem Konto zu verknüpfen.",
+      "block": "Das Oomba-Team kannst du nicht blockieren. Wenn dir eine Nachricht Sorgen macht, melde sie oder erzähl es einem Erwachsenen."
+    },
+    "copy": {
+      "to": "Kopie: Wir haben {name} geschrieben:",
+      "from": "Kopie: {name} hat uns geschrieben:"
+    },
+    "notice": {
+      "approved": "Gute Nachricht! „{title}“ hat die Prüfung des Oomba-Teams bestanden, jetzt können es mehr Leute spielen.",
+      "sentBack": "„{title}“ braucht noch ein paar Änderungen, bevor alle es spielen können."
+    },
+    "link": {
+      "new": "{count, plural, one {# neue Nachricht vom Oomba-Team} other {# neue Nachrichten vom Oomba-Team}}",
+      "open": "Nachrichten vom Oomba-Team"
     }
   }
 }
