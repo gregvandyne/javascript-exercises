@@ -120,8 +120,9 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 Billing is built in steps (docs/decisions.md "Paid plans"). With `STRIPE_API_KEY` unset nothing changes: no billing
 route answers and nobody is on a plan. Keys and secrets go in the host's secret settings (Render dashboard), never in a
 file; the app never logs them. Prices are found by their lookup keys (`oomba_family_monthly`, `oomba_family_yearly`,
-`oomba_school_seat_yearly`), so the same code works in the sandbox and live: **set these lookup keys on the live
-Prices too** (and `oomba_plan` = `family` / `school` metadata on each Product). Start-up and the 6-hourly reconcile log a
+`oomba_school_seat_yearly`, and the one-time Spark Pack Prices `oomba_spark_25`, `oomba_spark_60`, `oomba_spark_150`),
+so the same code works in the sandbox and live: **set these lookup keys on the live Prices too** (and `oomba_plan` =
+`family` / `school` metadata on each plan Product). Start-up and the 6-hourly reconcile log a
 warning when a lookup key has no active Price. A subscription's plan comes from its Price's lookup key, else its
 Product, so moving a lookup key to a new Price keeps existing subscribers on their plan; a price that names no plan is
 logged, audited and flagged `unknown_price`.
@@ -145,6 +146,9 @@ logged, audited and flagged `unknown_price`.
 | `FAMILY_MONTHLY_AI_USD` | `4` | AI cost (US dollars) one family's extra messages may reach in a UTC month before they stop (stated as a limit on unusually expensive use). Also sets the paid AI pool: families with a plan, or with extra messages used this month, × this. |
 | `BASIC_EXTRA_MESSAGES` | `25` | Extra Builder messages the Basic plan (one child) adds each month, used only after the child's free daily ones (or while the free AI budget rests). Shown on /plans and /family. |
 | `BASIC_MONTHLY_AI_USD` | `2.5` | Like `FAMILY_MONTHLY_AI_USD`, for a Basic plan: the AI cost its extra messages may reach in a UTC month before they stop, and its share of the paid AI pool. |
+| `SPARK_PACK_EXPIRY_DAYS` | `365` | Days a Spark Pack (a one-time top-up of Builder messages, docs/decisions.md "Spark Packs") lasts from its payment; what is left then is written off. Stated on /family before paying. |
+| `SPARK_PACK_DAILY_MAX` | `60` | Spark Pack messages one builder (a child or the grown-up) may use in a UTC day. Stated on /family. |
+| `SPARK_PACK_AI_USD_PER_MESSAGE` | `0.1` | What each Spark Pack message adds to the paid AI pool's ceiling (messages used from packs this month plus messages left in usable packs, × this). |
 | `AI_PAID_MONTHLY_BUDGET_USD` | computed | A cap on the paid AI pool (family extra messages). Unset: families with a plan (or with extra messages used this month) × `FAMILY_MONTHLY_AI_USD`. |
 | `AI_HARD_MONTHLY_USD` | free + paid | Stops every AI call site-wide for the rest of the UTC month. Default: `AI_MONTHLY_BUDGET_USD` + the paid pool. |
 | `STRIPE_PMC_FAMILY` | – | `pmc_…`: the "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off) for family Checkout. Required to sell family plans: unset, family plans are not on sale (never a fallback to the account's default configuration, which may have Link on); start-up logs a warning and /admin/billing shows a banner. Never a list of payment method types. |

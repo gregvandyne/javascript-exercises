@@ -2860,3 +2860,67 @@ sensitive." (`services/team.js`, "automatic welcomes".)
   standards (Common Core math, CSTA, CYBER.ORG) with teacher notes, and CS Quest's lessons are 45 minutes, instead of
   "full lesson plans ... aligned to standards" for all three.
 
+
+## Spark Packs: the Builder's limit card offers a way on (8 Nov 2026)
+
+The owner asked that when a builder runs out of Builder messages, the Builder keep saying it is resting for today (as
+now) and also offer a way on: a paid plan for a free account, and more messages for a paid one, with Stripe, tested end
+to end for both kinds of account. This replaces D16's "kid pages never show a nudge to ask a grown-up" for the limit
+card only; every other D16 / §17 rule stays (no prices, plan names or links to grown-up pages on a child's page).
+
+- **The name: Spark Packs** (⚡). A spark is the small thing that gets a build going again; it is short, kind to read
+  aloud, works as "a Spark Pack" and "Spark Pack messages", and doesn't sound like money or a game currency (no coins
+  or gems: the unit stays "Builder messages", one message = one credit, so nothing new to explain). Translated as a
+  name in every language (Funkenpaket, Paquete Chispa, Pack Étincelle, Pacchetto Scintilla, Vonkpakket, Pacote Faísca,
+  набор искр, スパークパック, 火花包, حزمة الشرارة, חבילת ניצוצות); en-GB inherits the English.
+- **Sizes and prices** (Stripe one-time Prices, found by lookup key like the plans; amounts live in Stripe, never in
+  code): `oomba_spark_25` 25 messages **$4.99** (20¢ a message, the Basic plan's rate), `oomba_spark_60` 60 messages
+  **$9.99** (16.7¢, the one marked first), `oomba_spark_150` 150 messages **$19.99** (13.3¢). At about 9–10¢ of AI cost a
+  message (D4's arithmetic) every size keeps a margin after Stripe's fee. The size names its messages in code
+  (`services/sparks.js` SIZES); the page sends only a size key, so changing an amount on the page or in the request
+  changes nothing.
+- **Who buys:** a grown-up whose family plan (Basic or Family) is on, on /family#sparks: password again (the same
+  step-up as plans), one button per size with its price, the terms (one payment, no renewal, who shares it, the expiry,
+  the daily limit, refunds, tax), then Stripe-hosted Checkout, `mode=payment`, the family's Customer, its "Family"
+  payment method configuration, address required, `integration_identifier` `oomba_spark_tmzqbwhe`, no promotion codes,
+  metadata (family, `kind=spark_pack`, size, pack id) on the session and its PaymentIntent. Stripe emails the receipt.
+- **Who uses them:** the family's grown-up and its first `FAMILY_MAX_CHILDREN` linked children, whatever the plan (Basic
+  too), and still after the plan ends, until each pack's time runs out (`SPARK_PACK_EXPIRY_DAYS`, 365). Order: the free
+  daily messages, then the plan's extra messages, then packs (while the free pool rests: extras, then packs), up to
+  `SPARK_PACK_DAILY_MAX` (60) a builder a day; the oldest-expiring pack first. A Pro message uses the plan's Pro weight
+  but never more credits than are left: a balance never goes below 0 (also a CHECK on the table). Never in class: a
+  member of a school with a plan builds from the school's pool. Paid by the paid AI pool, whose ceiling grows by
+  `SPARK_PACK_AI_USD_PER_MESSAGE` (10¢) for each message used from packs this month and each one left in a usable pack.
+- **Crediting:** the webhook (`checkout.session.completed`, `…async_payment_succeeded`) or the return page's own sync
+  (`/family?sparks_checkout=…`, which only trusts the family's own row or session), re-reading the session from Stripe,
+  once (idempotent on the event id and on the pack row). A delayed payment credits only when it arrives; a failed or
+  expired Checkout credits nothing. Refunds take back the refunded share of the messages from what is left (a full
+  refund, a dispute or an early fraud warning ends the pack); messages already used stay used. A build given back
+  (`turns.refund`) returns the very credits it took (`spark_ledger.turn_id`). Every change is a ledger row.
+- **The limit card** (`builder/upsell.js`, `public/js/studio.js`): the lead ("You have used all your Builder messages
+  for today", 🌙) and the things to do now stay. Then: a child with a linked grown-up taps **Ask my grown-up** (no plan:
+  "unlock more Builder messages"; plan on: "a Spark Pack"); the grown-up gets a Family badge and the request on /family
+  with one tap to /plans or the pack picker (closed when bought, dismissed or after a week; ids and dates only). A child
+  with no grown-up is shown `oomba.ai/parents` as text and a QR code (never a link) next to the existing "link your
+  grown-up" line. A grown-up building gets a link (/plans, or the pack picker); school staff get /plans; a school student
+  "ask your teacher"; nothing is offered while the AI rests for everyone (the free pool or the site-wide ceiling, or the
+  paid pool at the owner's own cap), nor while Spark Pack messages are left and only today's cap is reached. While the
+  card shows, the Studio reads its state again every 45 seconds and when the tab comes back into view, so a purchase
+  lifts the card without a reload.
+- **Admin:** /admin/billing's Spark Packs panel: this month's packs and amount, messages left, the latest packs (Stripe
+  link, Revoke), and Grant (a grown-up's or a linked child's username, 1–1000 messages, a note; audited
+  `admin.spark.grant` / `billing.spark.revoke`). Refunds are made in Stripe; the webhook takes the messages back.
+- **Data:** migration `0058_spark_packs` (`spark_packs`, `spark_ledger`, `builder_asks`). A daily job ends packs whose
+  time ran out and deletes closed asks and never-paid checkouts after 90 days.
+- **For the owner to confirm:** the three prices; packs only for families with a plan (a free family is offered the
+  plan first); packs last 365 days and stay usable after the plan ends; refunds of unused packs on request within 14 days
+  (the /refunds page doesn't mention packs yet: the legal text needs a line before packs go live); the kid-facing ask.
+- **Owner setup (Stripe and Render):** in Stripe (sandbox, then live) create a Product "Spark Pack" with three one-time
+  Prices in USD, $4.99 / $9.99 / $19.99, lookup keys `oomba_spark_25` / `oomba_spark_60` / `oomba_spark_150` (tax
+  behavior as the plan Prices). No new webhook events: the endpoint already sends `checkout.session.completed`,
+  `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`,
+  `charge.refunded`, `charge.dispute.created` and `radar.early_fraud_warning.created`. The restricted key already has
+  Checkout Sessions (write) and Prices / Charges (read). Turn on Settings → Customer emails → "Successful payments" for
+  receipts. On Render nothing is required (the defaults above); optional `SPARK_PACK_EXPIRY_DAYS`,
+  `SPARK_PACK_DAILY_MAX`, `SPARK_PACK_AI_USD_PER_MESSAGE`. Until the Prices exist the picker says "Spark Packs aren't on
+  sale yet" and the reconcile job logs the missing lookup keys.
