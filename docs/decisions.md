@@ -2068,6 +2068,18 @@ in `tts-lines.GAMES`. Design: docs/tts-design.md "A game the admin switched on".
   game asks for if known, else narrator.
 - Kid-facing text did not change (the Voices button and sheet are the same), so no new translations.
 
+## AI voices for a student's game, pinned to the version the admin saw (November 2026)
+
+The owner asked to be able to turn on AI voices for student games. This changes "Only grown-up staff's games" above:
+- **The admin may switch on a student's game too**, at `/admin/voices` or on the game's page. Teachers' and staff games
+  work as before.
+- **Pinned to one published version.** A student's words are a kid's, so the switch records the published version on
+  screen when the admin switches it on (`tts.games` entry `version`; audited with `student: true`). If the student
+  publishes a new version, the voices pause (the game page and `/admin/voices` say "Paused") until the admin plays it
+  and switches the voices on again. A student's game that was never published can't be switched on.
+- Everything else is unchanged: only the game's own words from that version are read, never what a player types, and
+  the backstops (rude words, personal info, the player's name, length) still run.
+
 ## 3D worlds are the Builder's own; the Oomba Kit is for 2D (November 2026)
 
 The owner found kit-made 3D worlds generic: every 3D game came out as Star Island or a `B.world` meadow, whatever the kid
