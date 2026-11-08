@@ -2821,12 +2821,42 @@ Guests are not included. Set it to 0 to go back to teachers and staff only if AI
 still applies to everyone. The Studio's build card now alternates "Prompting tip" lines (12, in every language) with
 the "Did you know?" facts, a tip first; the facts about rounds and Pro were updated to match.
 
-## Automatic welcome from the Oomba team for new kids (November 2026)
+## Automatic welcome from the Oomba team for new kids, parents and teachers (November 2026)
 
-The owner asked that every new kid get the team's welcome message automatically. At an account's first sign-in ever
-(`auth.onFirstSignIn`: signing up, or a kid made by a grown-up or a school signing in for the first time) a kid account
-made in the last 30 days gets one team message (no admin sender, "automatic welcome" on the admin thread), with
-`{name}` replaced by their first name and line breaks kept. It is copied to their linked grown-ups like any team
-message, audited (`team.welcome`), sent once, and can be unsent. Grown-ups, staff, guests and older accounts get
-nothing. The text and an on/off switch are on the admin Team inbox tab (settings `team.welcome`, audited).
+The owner asked that every new kid get the team's welcome message automatically, then "one for parents and teachers as
+well. For teachers offer to set up a demo or training session and give them my Greg@oomba.ai email for anything time
+sensitive." (`services/team.js`, "automatic welcomes".)
+- **Three audiences, three texts.** Kids, parents (grown-up accounts) and teachers & school staff each have their own
+  on/off and text on the admin Team inbox tab (settings `team.welcome` for kids, unchanged from the first version, plus
+  `team.welcome.grownup` and `team.welcome.teacher`; on by default; saving is audited `admin.team.welcome`). `{name}`
+  becomes the first word of their display name; line breaks are kept.
+- **When.** Kids: at the account's first sign-in ever (`auth.onFirstSignIn`: signing up, or a kid made by a grown-up
+  or a school signing in for the first time), copied to their linked grown-ups like any team message. Parents: at a
+  grown-up account's first sign-in. Teachers & staff: when an account becomes a teacher or school admin
+  (`schools.onStaffJoin`, called from `addMember` with a staff role and from `updateMember` changing a student to
+  staff: the People tab, a staff login card, a Google staff invite; a class teacher is always staff of the school
+  already), at a first sign-in that is already staff, and when a "Set up my school" request sent from an adult account
+  is marked done (`school-requests.onRequestDone`). Grown-up accounts can't join a school, so "a parent who becomes a
+  teacher" is the request path: they get both welcomes.
+- **Once, new accounts only.** One row per account and audience in `team_welcomes` (migration 0057; the kid welcomes
+  already sent were backfilled from the audit log), so each goes at most once per person and audience; only accounts
+  made in the last 30 days; never guests, banned accounts or platform admins. Each is a plain team message with no
+  admin sender ("automatic welcome" on the admin thread), audited `team.welcome` with its audience, unsendable, and the
+  person may reply. Grown-ups read theirs in the team thread at /chat/OombaAcademy (the 📬 link and badge on /family);
+  teachers in their chat inbox.
+- **Teachers never get the kids' text.** The teacher door has no account form: "I'm a teacher" leads to the "Set up my
+  school" request, and a teacher may then make a kid-type account to be added by username (grown-up accounts can't join
+  a school). So "I'm a teacher" (/signup/for/teacher) and a "Set up my school" request sent signed out set a functional
+  cookie (`brb_teacher`, '1', 30 days, nothing about who), which the sign-up routes read and clear: a kid-type account
+  made that way waits 3 days for the kids' welcome (made staff meanwhile: the teachers' welcome instead; still a kid
+  after the wait: the kids' one at a later sign-in), and a grown-up account made that way (or from /teachers/live's
+  "Host a game", ?next=/live) gets the teachers' welcome instead of the parents'. A kid welcome that did go out to an
+  account that then becomes staff is taken back (unsent, audited `team.welcome.withdraw`), unless they already wrote to
+  the team or a grown-up got a copy.
+- **Accuracy edits to the owner's drafts:** "dozens of free learning games" became "lots of free learning games" (about
+  30 official games, some only inside courses); the parents' Family page line says what it does today ("add your kids
+  or link the accounts they already have", plus the copy of any team message to their child) instead of "see what they
+  play and make", which it doesn't show; the teachers' course line says what each course has: all three are mapped to
+  standards (Common Core math, CSTA, CYBER.ORG) with teacher notes, and CS Quest's lessons are 45 minutes, instead of
+  "full lesson plans ... aligned to standards" for all three.
 

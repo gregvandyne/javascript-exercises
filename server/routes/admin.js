@@ -403,21 +403,30 @@ function userActivityPanel(u) {
 
 /** The Oomba team inbox (services/team.js): people the team wrote to or who wrote back, and announcements. */
 const AUDIENCE_LABEL = { all: 'Everyone with an account', kids: 'Kids', grownups: 'Grown-ups (parents)', staff: 'Teachers and school staff', school: 'One school' };
+// The three automatic welcomes (services/team.js): who gets each and when, in the admin's words.
+const WELCOME_PANELS = [
+  { audience: 'kid', title: 'Welcome message for new kids', who: 'new kids', when: 'Sent to every new kid account the first time it signs in, and copied to their grown-up if they have one.' },
+  { audience: 'grownup', title: 'Welcome message for new parents', who: 'new parents', when: 'Sent to every new grown-up (parent) account the first time it signs in. They read it on their Family page (📬 link) at /chat/OombaAcademy. A grown-up who later has a school set up also gets the teachers’ welcome.' },
+  { audience: 'teacher', title: 'Welcome message for new teachers and school staff', who: 'new teachers and school staff', when: 'Sent when an account becomes a teacher or school admin (added on a school’s People tab, a staff login card, a Google staff invite, a role change), when a grown-up’s “Set up my school” request is marked done, or at the first sign-in of someone who signed up after choosing “I’m a teacher”. A kid welcome sent to them before is taken back. They read it in their chat inbox.' },
+];
+const welcomeForm = (w, s) => html`<form class="stack welcomeform" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." novalidate>
+    <h3 id="wel-${w.audience}-h" style="margin-bottom:0">${w.title}</h3>
+    <p class="small muted" style="margin:0">${w.when}</p>
+    <input type="hidden" name="audience" value="${w.audience}">
+    <label class="row" style="gap:8px"><input type="checkbox" name="on" value="1" ${s.on ? raw('checked') : ''}> Send it to ${w.who}</label>
+    <div class="field"><label for="wel-${w.audience}-text">Message</label><textarea class="input" id="wel-${w.audience}-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="14">${s.text}</textarea></div>
+    <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
+  </form>`;
 function messagesTab(req) {
   const threads = team.adminThreads();
   const lim = team.announceLimits();
   const schools = q.all('SELECT id, name FROM schools WHERE archived_at IS NULL ORDER BY name COLLATE NOCASE LIMIT 500');
   const recent = team.recentAnnouncements(10);
-  const wel = team.welcomeSettings();
   return html`
   <section class="panel" aria-labelledby="wel-h">
-    <h2 id="wel-h" style="margin-top:0">👋 Welcome message for new kids</h2>
-    <p class="small muted">Sent automatically from “Oomba team ✓” to every new kid account the first time it signs in (accounts up to ${team.WELCOME_DAYS} days old), and copied to their grown-up if they have one. <code>{name}</code> becomes the kid's first name. Line breaks are kept. They can write back, and replies land in Conversations below.</p>
-    <form class="stack" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." novalidate>
-      <label class="row" style="gap:8px"><input type="checkbox" name="on" value="1" ${wel.on ? raw('checked') : ''}> Send it to new kids</label>
-      <div class="field"><label for="wel-text">Message</label><textarea class="input" id="wel-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="12">${wel.text}</textarea></div>
-      <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
-    </form>
+    <h2 id="wel-h" style="margin-top:0">👋 Welcome messages for new people</h2>
+    <p class="small muted">Sent automatically from “Oomba team ✓”, once per person for each kind of welcome, only to accounts up to ${team.WELCOME_DAYS} days old. <code>{name}</code> becomes their first name. Line breaks are kept. They can write back, and replies land in Conversations below.</p>
+    ${WELCOME_PANELS.map(w => welcomeForm(w, team.welcomeSettings(w.audience)))}
   </section>
   <section class="panel" aria-labelledby="ann-h">
     <h2 id="ann-h" style="margin-top:0">📣 Send an announcement</h2>
@@ -821,10 +830,10 @@ router.post('/api/admin/users/:id/message', rateLimit('admin-dm', 30, 10 * 60e3)
   const r = team.sendDirect(req.user, u, String((req.body || {}).text || ''));
   res.status(r.ok ? 200 : r.code === 'missing' ? 404 : 400).json(r.ok ? { ok: true, copiedTo: r.copiedTo.map(g => g.username) } : { error: r.error, code: r.code });
 });
-// The automatic welcome for new kids (team.js welcomeSettings / saveWelcome).
+// The automatic welcomes (team.js welcomeSettings / saveWelcome): audience 'kid' (the default), 'grownup' or 'teacher'.
 router.post('/api/admin/team/welcome', (req, res) => {
   const b = req.body || {};
-  const r = team.saveWelcome(req.user, { on: b.on === '1' || b.on === true || b.on === 'on', text: String(b.text || '') });
+  const r = team.saveWelcome(req.user, { audience: b.audience === undefined ? 'kid' : String(b.audience), on: b.on === '1' || b.on === true || b.on === 'on', text: String(b.text || '') });
   res.status(r.ok ? 200 : 400).json(r.ok ? r : { error: r.error, code: r.code });
 });
 // Unsend a team message or an announcement (team.js unsendDirect / unsendAnnouncement).

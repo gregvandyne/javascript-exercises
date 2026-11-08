@@ -140,6 +140,12 @@ export function members(schoolId, role = null) {
     FROM school_members m JOIN users u ON u.id=m.user_id WHERE m.school_id=? AND m.status='active' ${role === 'staff' ? "AND m.role!='student'" : role ? 'AND m.role=?' : ''}
     ORDER BY CASE m.role WHEN 'admin' THEN 0 WHEN 'teacher' THEN 1 ELSE 2 END, COALESCE(NULLIF(m.roster_name,''), u.display_name) COLLATE NOCASE`, schoolId, ...(role && role !== 'staff' ? [role] : []));
 }
+/** Told when an account becomes (or is again) a teacher or school admin somewhere: added as staff (People tab, a school
+ *  account made as staff, a Google staff invite) or a member's role changed to staff. services/team.js registers its
+ *  welcome for teachers here (a hook, so there is no import cycle). Never blocks the change. */
+const staffHooks = [];
+export const onStaffJoin = fn => { if (!staffHooks.includes(fn)) staffHooks.push(fn); };
+const staffJoined = userId => { for (const fn of staffHooks) { try { fn(userId); } catch { /* a welcome never blocks it */ } } };
 /** Add (or re-activate, or change the role of) a member. */
 export function addMember(by, schoolId, userId, role, { rosterName = '', grade = '' } = {}) {
   if (!ROLES.includes(role)) return fail('badRole');
@@ -155,6 +161,7 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   // Now staff here: their old requests to join a class of this school as a student are closed.
   if (role !== 'student') q.run("UPDATE join_requests SET status='declined', decided_by=?, decided_at=? WHERE user_id=? AND status='pending' AND class_id IN (SELECT id FROM classrooms WHERE school_id=?)", by.id, now(), u.id, s.id);
   audit(by.id, 'school.member_add', s.id, { user: u.id, role });
+  if (role !== 'student') staffJoined(u.id);
   return ok({ user: u });
 }
 export function updateMember(by, schoolId, userId, { rosterName, grade, role } = {}) {
@@ -163,6 +170,7 @@ export function updateMember(by, schoolId, userId, { rosterName, grade, role } =
   q.run('UPDATE school_members SET roster_name=?, grade=?, role=? WHERE school_id=? AND user_id=?',
     rosterName !== undefined ? clip(rosterName, 60) : m.roster_name, grade !== undefined ? clip(grade, 12) : m.grade, role || m.role, schoolId, userId);
   audit(by.id, 'school.member_update', schoolId, { user: userId, role, grade });
+  if (role && role !== 'student' && m.role === 'student') staffJoined(userId);
   return ok();
 }
 /** Cleanup hooks for data kept per class student or per class outside this module (Oomba Live's saved teams and

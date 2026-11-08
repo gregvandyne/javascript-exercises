@@ -663,6 +663,17 @@ export const MIGRATIONS = [
     INSERT OR IGNORE INTO user_days SELECT id, strftime('%Y-%m-%d', last_seen / 1000, 'unixepoch') FROM users WHERE is_guest=0 AND last_login_at>0 AND last_seen>0;
     INSERT OR IGNORE INTO user_days SELECT id, strftime('%Y-%m-%d', created_at / 1000, 'unixepoch') FROM users WHERE is_guest=0 AND made_by IS NULL AND managed_school='';
     CREATE INDEX IF NOT EXISTS plays_user_game ON plays(user_id, game_id);`],
+  // The Oomba team's automatic welcomes (services/team.js, docs/decisions.md "Automatic welcome from the Oomba team"):
+  // one row per account and audience ('kid', 'grownup', 'teacher'), so each is sent at most once. state: 'sent',
+  // 'withdrawn' (a kid welcome taken back when the account turned out to be a teacher's), 'wait' (a kid-type account
+  // made on its way from a teacher door: the kid welcome waits) or 'skipped' (it waited, and they became staff).
+  // Backfill: the kid welcomes already sent (audit 'team.welcome').
+  ['0057_team_welcomes', `
+    CREATE TABLE IF NOT EXISTS team_welcomes (user_id TEXT NOT NULL, audience TEXT NOT NULL, state TEXT NOT NULL,
+      message_id TEXT, at INTEGER NOT NULL, PRIMARY KEY (user_id, audience)) WITHOUT ROWID;
+    INSERT OR IGNORE INTO team_welcomes(user_id, audience, state, message_id, at)
+      SELECT target, 'kid', 'sent', CASE WHEN json_valid(details) THEN json_extract(details, '$.message') END, created_at
+      FROM audit_log WHERE action='team.welcome' AND target<>'';`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

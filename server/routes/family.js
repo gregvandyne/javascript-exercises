@@ -332,6 +332,8 @@ router.get('/grown-ups/login', on, (req, res) => grownupAuthPage(req, res, 'logi
 // Grown-up sign-up: the same address limits as the kids' sign-up (routes/auth.js SIGNUP: the same buckets), a password
 // of at least 12 characters, and the "parent or guardian, 18 or older" box (a statement, not a check). Never from a
 // guest (a new account; the guest's sign-in on this device ends), never while a kid account is signed in here.
+/** Teacher pages a grown-up sign-up may come back to (/teachers/live's "Host a game" sends ?next=/live). */
+const TEACHER_NEXT = /^\/([a-z]{2}(-[A-Za-z]{2,4})?\/)?(live|teachers)(\/|\?|#|$)/;
 router.post('/api/grown-ups/signup', on, (req, res) => {
   const t = req.t, ip = ipOf(req);
   if (!allow(`signup-try:${ip}`, SIGNUP.triesPerHour, 3600e3)) return res.status(429).json({ error: t('errors.api.slowDown') });
@@ -349,7 +351,11 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
   try { tx(() => { u = auth.createUser({ username: n.value, password: pw, accountType: 'grownup' }); fam = F.ensureFamily(u); }); }
   catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
   if (req.user) auth.endSession(req, res);   // a guest playing on this device: their sign-in ends, their account stays
-  auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup' });
+  // On a teacher's way ("I'm a teacher" or "Set up my school" on this browser, or "Host a game" on /teachers/live):
+  // the team's welcome for teachers instead of the parents' one (services/team.js).
+  const teacherWay = auth.cameTeacherWay(req) || TEACHER_NEXT.test(wantedNext((req.body || {}).next) || '');
+  auth.clearTeacherWay(req, res);
+  auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay });
   audit(u.id, 'user.signup', u.id, { grownup: true });
   funnel.bump('parent.signup');
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);

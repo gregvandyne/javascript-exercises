@@ -165,6 +165,8 @@ router.get('/signup/for/:who', (req, res) => {
   const step = WHO.get(req.params.who);
   if (!step) return res.redirect(302, '/signup');
   if (!req.user && req.method === 'GET' && countable(req)) funnel.bump(step);
+  // "I'm a teacher": whoever signs up on this browser next is probably a teacher (services/team.js welcomes).
+  if (req.params.who === 'teacher' && (!req.user || req.user.is_guest)) auth.noteTeacherWay(res);
   res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
   res.redirect(302, whoTarget(req, req.params.who));
 });
@@ -190,15 +192,18 @@ router.post('/api/auth/signup', (req, res) => {
   const taken = auth.getUserByName(n.value);
   if ((taken && !(req.user && taken.id === req.user.id)) || auth.isRetiredName(n.value)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
   let u;
+  // Came by "I'm a teacher" or sent "Set up my school" on this browser: the kids' welcome waits (services/team.js).
+  const teacherWay = auth.cameTeacherWay(req);
   if (req.user && req.user.is_guest) {
     u = auth.upgradeGuest(req.user.id, { username: n.value, password }); audit(u.id, 'user.upgrade', u.id);
-    auth.endSession(req, res); auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup' }); // fresh session id after the upgrade
+    auth.endSession(req, res); auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay }); // fresh session id after the upgrade
   }
   else {
     try { u = auth.createUser({ username: n.value, password }); }
     catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
-    auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup' }); audit(u.id, 'user.signup', u.id);
+    auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay }); audit(u.id, 'user.signup', u.id);
   }
+  auth.clearTeacherWay(req, res);
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   funnel.bump('kid.signup');   // the guardrail: a daily total of new kid accounts (a guest keeping their progress too)
   if (req.localeSource === 'cookie') saveUserLang(u, req.locale); // a language picked before signing up comes along
