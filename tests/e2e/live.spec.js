@@ -151,9 +151,11 @@ test('Quest Race, open room: guests join with generated names, see each other mo
 test('Question Battle from the landing page: questions on the projector, answers on devices, ended early by the host', async ({ browser }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
-  await host.goto('/live?mode=battle');
+  // The maths starter (questions the test can answer): since #120 the landing's default is the mixed question bank.
+  await host.goto('/live?mode=battle&starter=math-8');
   await expect(host.locator('input[name="pick"][value="mode:battle"]')).toBeChecked();
   await expect(host.locator('#lv-sets')).toBeVisible();
+  await expect(host.locator('#lv-set')).toHaveValue('starter:math-8');
   await host.locator('input[name="audience"][value="open"]').check();
   host.on('dialog', d => d.accept());
   await host.click('#lv-new button[type=submit]');
