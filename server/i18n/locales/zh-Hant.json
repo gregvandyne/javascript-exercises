@@ -1696,7 +1696,8 @@
       "voicesAi": "AI 聲音",
       "voicesDevice": "這台裝置的聲音",
       "voicesNote": "這個遊戲裡的角色由電腦配音（{provider} 的 AI 聲音）。它們只會念遊戲本身的文字，絕不會念你打的字，也不會念你的名字。",
-      "voicesSaveData": "數據節省模式已開啟，所以在你選擇 AI 聲音之前，會使用這台裝置的聲音。"
+      "voicesSaveData": "數據節省模式已開啟，所以在你選擇 AI 聲音之前，會使用這台裝置的聲音。",
+      "courseBack": "返回"
     },
     "friends": {
       "codeCopied": "已複製代碼！把它給你認識的朋友。",
@@ -6090,6 +6091,11 @@
       "failed": "答對 {score}／{total} 題。看看正確答案，再試一次。"
     },
     "play": "開始玩：{game}・{chapter}"
+  },
+  "move": {
+    "title": "活力小休息",
+    "teachersH": "給老師",
+    "teachersP": "活力小休息不屬於任何課程，任何兩堂課之間都能使用。其中兩個姿勢會停在「輪到你了」10 秒，讓全班實際做出姿勢，而不只是看。"
   },
   "stories": {
     "title": "故事製作機",

@@ -1709,7 +1709,8 @@
       "courseFinished": "You finished! 🎉",
       "courseNotYet": "That finish does not complete the step yet. Win the part the step set you, and it counts.",
       "courseSaveFailed": "That win could not be saved. Head back to the step and check it there.",
-      "courseKeepPlaying": "Keep playing"
+      "courseKeepPlaying": "Keep playing",
+      "courseBack": "Back"
     },
     "friends": {
       "codeCopied": "Code copied! Give it to a friend you know.",

@@ -1697,7 +1697,8 @@
       "voicesAi": "AI-stemmen",
       "voicesDevice": "De stem van dit apparaat",
       "voicesNote": "De personages in dit spel praten met stemmen van een computer (AI-stemmen van {provider}). Ze lezen alleen de woorden van het spel voor, nooit iets wat jij typt en nooit je naam.",
-      "voicesSaveData": "Databesparing staat aan, dus de stem van dit apparaat wordt gebruikt tot je AI-stemmen kiest."
+      "voicesSaveData": "Databesparing staat aan, dus de stem van dit apparaat wordt gebruikt tot je AI-stemmen kiest.",
+      "courseBack": "Terug"
     },
     "friends": {
       "codeCopied": "Code gekopieerd! Geef hem aan een vriend die je kent.",
@@ -6091,6 +6092,11 @@
       "failed": "{score} van de {total} goed. Bekijk de goede antwoorden en probeer het opnieuw."
     },
     "play": "Speel: {game} · {chapter}"
+  },
+  "move": {
+    "title": "Beweegpauzes",
+    "teachersH": "Voor leerkrachten",
+    "teachersP": "Beweegpauzes staan los van de cursussen, dus je kunt er tussen elke twee lessen een gebruiken. Bij twee houdingen pauzeert de video 10 seconden voor ‘Jouw beurt’, zodat de klas de houding echt doet en niet alleen kijkt."
   },
   "stories": {
     "title": "Verhalenmaker",

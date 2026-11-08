@@ -69,7 +69,9 @@ if (Object.keys(packs).length) {
 }
 if (fs.existsSync(OUT)) for (const d of fs.readdirSync(OUT)) if (d !== ver) fs.rmSync(path.join(OUT, d), { recursive: true, force: true });
 
-const block = `/* wyr-data:begin */\nvar WYR_PACK_VER = ${JSON.stringify(ver)}, WYR_PACK_SRI = ${JSON.stringify(sri)};\nvar WYR_UI = ${JSON.stringify(ui)};\nvar WYR_EN = ${JSON.stringify(bank)};\n/* wyr-data:end */`;
+// The I18N markers sit inside the generated block so a rebuild keeps them: server/services/tts-lines.js reads the
+// game's spoken lines (AI voices) from the marked block only.
+const block = `/* wyr-data:begin */\nvar WYR_PACK_VER = ${JSON.stringify(ver)}, WYR_PACK_SRI = ${JSON.stringify(sri)};\n// ==== I18N START ====\nvar WYR_UI = ${JSON.stringify(ui)};\nvar I18N = WYR_UI;\n// ==== I18N END ====\nvar WYR_EN = ${JSON.stringify(bank)};\n/* wyr-data:end */`;
 const html = fs.readFileSync(GAME, 'utf8');
 if (!/\/\* wyr-data:begin \*\/[\s\S]*?\/\* wyr-data:end \*\//.test(html)) fail('no wyr-data markers in the game');
 fs.writeFileSync(GAME, html.replace(/\/\* wyr-data:begin \*\/[\s\S]*?\/\* wyr-data:end \*\//, () => block));

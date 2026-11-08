@@ -79,7 +79,7 @@ function showCourseBar(kind) {
   if (!text) return;
   const bar = document.createElement('div'); bar.className = 'course-done'; bar.setAttribute('role', 'status'); bar.dir = document.documentElement.dir || 'ltr';
   bar.innerHTML = `<p class="cd-text">${esc(text)}</p>
-    <a class="btn btn-primary btn-big" href="${esc(d.backHref)}">${esc(d.backLabel || t('layout.back'))}</a>
+    <a class="btn btn-primary btn-big" href="${esc(d.backHref)}">${esc(d.backLabel || t('js.play.courseBack'))}</a>
     <button type="button" class="btn cd-keep">${esc(t('js.play.courseKeepPlaying'))}</button>`;
   bar.querySelector('.cd-keep').addEventListener('click', () => { hideCourseBar(); refocusGame(); });
   stage.appendChild(bar); courseBar = bar;

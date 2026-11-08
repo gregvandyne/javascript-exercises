@@ -1696,7 +1696,8 @@
       "voicesAi": "Voces de IA",
       "voicesDevice": "La voz de este dispositivo",
       "voicesNote": "Los personajes de este juego tienen voces hechas por un ordenador (voces de IA de {provider}). Solo leen las palabras del propio juego, nunca lo que escribes ni tu nombre.",
-      "voicesSaveData": "El ahorro de datos está activado, así que se usa la voz de este dispositivo hasta que elijas voces de IA."
+      "voicesSaveData": "El ahorro de datos está activado, así que se usa la voz de este dispositivo hasta que elijas voces de IA.",
+      "courseBack": "Volver"
     },
     "friends": {
       "codeCopied": "¡Código copiado! Dáselo a un amigo que conozcas.",
@@ -6090,6 +6091,11 @@
       "failed": "{score} de {total} bien. Mira las respuestas correctas y vuelve a intentarlo."
     },
     "play": "Jugar: {game} · {chapter}"
+  },
+  "move": {
+    "title": "Pausas activas",
+    "teachersH": "Para docentes",
+    "teachersP": "Las pausas activas no forman parte de los cursos, así que puede usar una entre cualquier par de clases. Dos posturas se detienen 10 segundos en «Tu turno», para que la clase haga la postura y no solo la mire."
   },
   "stories": {
     "title": "Creador de cuentos",

@@ -86,10 +86,12 @@ async function localClip(text, locale, out, pitch = 1) {
   else if (lv.espeak) await run('espeak-ng', ['-v', ESPEAK[locale] || ESPEAK[String(locale).split('-')[0]] || 'en-us', '-s', '135', '-w', raw, text]);
   else throw new Error('no local voice');
   // calmer and warmer: a touch slower, the hiss off the top, a little body, a small room
-  // the narrator chosen (story-options NARRATORS pitch): shifted up or down a little, at the same speed
+  // the narrator chosen (story-options NARRATORS pitch): shifted up or down a little, at the same speed.
+  // The shift comes after the hiss cut, so the whole cleaned voice moves together: shifted before it, a brighter
+  // voice's raised top was cut away at 7 kHz and it came out duller than the default narrator.
   const p = Math.max(0.7, Math.min(1.3, +pitch || 1));
   const shift = p === 1 ? '' : `aresample=32000,asetrate=${Math.round(32000 * p)},aresample=32000,atempo=${(1 / p).toFixed(4)},`;
-  await run('ffmpeg', ['-v', 'error', '-y', '-i', raw, '-af', `${shift}atempo=0.9,highpass=f=70,lowpass=f=7000,equalizer=f=220:t=q:w=1:g=3,aecho=0.8:0.5:40:0.12,loudnorm=I=-18:TP=-2`, '-ar', '32000', '-ac', '1', out]);
+  await run('ffmpeg', ['-v', 'error', '-y', '-i', raw, '-af', `atempo=0.9,highpass=f=70,lowpass=f=7000,${shift}equalizer=f=220:t=q:w=1:g=3,aecho=0.8:0.5:40:0.12,loudnorm=I=-18:TP=-2`, '-ar', '32000', '-ac', '1', out]);
   fs.rmSync(raw, { force: true });
 }
 

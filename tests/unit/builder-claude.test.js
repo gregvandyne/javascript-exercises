@@ -411,8 +411,11 @@ test('build steps: a real playtest with problems gives "looking at the pictures"
       [{ type: 'tool_use', name: 'playtest_game', input: {} }],
       [{ type: 'tool_use', name: 'edit_game', input: { notes: 'Faster fox', edits: [{ find: 'speed: 1', replace: 'speed: 2' }] } }],
       [{ type: 'text', text: 'Looks good now!' }],
+      // The platform then plays version 2 itself (autotest.js, #133): the missing __brbTest hook is still a problem,
+      // so it goes back to the AI for one fix round.
+      [{ type: 'text', text: 'I checked it again.' }],
     ]);
-    assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'check', 'think', 'playtest', 'think', 'fix', 'check', 'think']);
+    assert.deepEqual(rows.map(x => x.key), ['screen', 'think', 'write', 'check', 'think', 'playtest', 'think', 'fix', 'check', 'think', 'autotest', 'think']);
     const pt = rows[5];
     assert.equal(pt.v, 1); assert.ok(pt.pics >= 1 && pt.pics <= 4, `pictures: ${pt.pics}`);   // the phone's two, then a sheet of every device for each assert.ok(pt.probs >= 1, 'the missing __brbTest hook is a problem');
     assert.equal(pt.probs, events.find(e => e[0] === 'playtest')[1].problems, 'the same count as the playtest card');
@@ -420,6 +423,9 @@ test('build steps: a real playtest with problems gives "looking at the pictures"
     assert.deepEqual(rows[6], { key: 'think', n: 3, c: 'look', a: 1 });
     assert.deepEqual(rows[7], { key: 'fix', via: 'edit', plan: 'Faster fox', e: 1 });
     assert.deepEqual(rows[9], { key: 'think', n: 4, c: 'next', a: 1 });
+    const at = rows[10];
+    assert.equal(at.v, 2, 'the automatic playtest plays the newest version'); assert.ok(at.probs >= 1, `autotest problems: ${at.probs}`);
+    assert.deepEqual(rows[11], { key: 'think', n: 5, c: 'auto', p: at.probs, a: 1 }, 'the fix round says why it started');
   } finally { config.snapshots = false; config.chromiumPath = ''; await snapshot.closeBrowser(); }
 });
 
