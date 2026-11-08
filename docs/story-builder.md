@@ -124,10 +124,12 @@ same word rules (`validateScript`) and the model classifier; one retry with the 
   and beside the characters (or in the sky, across the top, or over the whole picture for rain and snow).
 - **Camera**: eased moves (push in, pull back, pans, tilts, drift) with a gentle float and depth of field focused
   on the first character; compositor bloom on the glows; AgX colour. Two film framings follow the cast (where the
-  characters stand 60% into the scene): **two_shot** frames everyone from about the knees up, a touch below eye level,
-  with a slow push in; **over_shoulder** looks past the first character's shoulder (large, at the edge of the picture)
-  at the character furthest from them, framed a third in from the other side, with a small push. With either, the
-  characters who stand still turn further towards each other (as if talking). One character alone: a two-shot of one.
+  characters stand 60% into the scene): **two_shot** frames everyone from about the waist up (the larger of what the
+  heads-to-waists and the row of characters need), a touch below eye level, with a slow push in; **over_shoulder**
+  looks past the first character's shoulder (close and large, at the edge of the picture) at the character furthest
+  from them, framed a third in from the other side, with a small push. With either, the characters stand closer
+  together (places at 60% of their usual distance from the middle with two, 80% with three) and the ones who stand
+  still turn further towards each other (as if talking). One character alone: a two-shot of one.
 
 Daylight (day, dawn) uses Blender's Standard view transform: AgX greyed the bright day colours (felt read milky);
 dusk and night keep AgX. Big, static set dressing (crowds, pitch lines, shelves of books, fences) is built as one
@@ -242,15 +244,30 @@ for felt so a felt spec is exactly what it was). Every set, character, prop, act
   - **Light**: the felt rig goes; one key sun with crisp shadows (its colour, height and side per time of day), a weak
     fill from the camera's side so faces don't sink, a low ambient, and the set's own lamps kept dimmer as pools of
     light. No depth of field (everything crisp, like a drawing); bloom only on the brightest lamps.
-  - **Ink** (Freestyle, on the CPU, the same in EEVEE and Cycles): a heavy outline (silhouettes, borders, outer
-    contours, 3 px at 720p) and lighter inner lines (creases, where colours meet: folds, furniture edges, wall tiles,
-    pitch markings) at 60% of that, in a warm near-black. Thick-and-thin by stroke direction like a brush pen, slightly
+  - **Ink** (Freestyle, on the CPU, the same in EEVEE and Cycles), in three line sets so the background never
+    competes with the cast: the characters (every mesh under a person's or animal's root) get a heavy, confident
+    outline (silhouettes, borders, outer contours, 5.7 px at 720p) and lighter inner lines (creases, where colours
+    meet: clothes, collars, hair tufts and locks; 1.8 px); the set and its props get only a thinner, lighter outline
+    (2.4 px, 75% ink) and no inner lines, and floor and wall patterns (wallpaper, floor tiles and planks, pitch
+    markings and anything flat on the ground), clouds and the crowd get none: their colour says enough. All in a warm
+    near-black. Thick-and-thin by stroke direction like a brush pen, slightly
     thinner at a stroke's ends, heavier near the camera and lighter far away, a small hand wobble and a 1.5 px
-    overshoot. The sky, glows, light beams, weather and tiny bits (tufts, pebbles, glints) get no line. Butt caps: round
+    overshoot. The sky, glows, light beams, weather and tiny bits of the set (grass tufts, pebbles) get no line;
+    on the characters only glints, cheeks, tears and the like are skipped (their hair tufts are drawn). Butt caps: round
     caps fail on some very short strokes and drop the whole line set.
-  - **Faces** (by part name, so `felt_people.py` and `felt_animals.py` need no change): bead eyes become small ink dots
-    (they still blink), glints and felt cheeks go, a person's felt nose goes (a simple round head), brows and mouths are
-    ink; the expressions the actions switch (smile, open, sad, closed, squint) work as before.
+  - **Faces** (by part name, so `felt_people.py` and `felt_animals.py` need no change). People: the glossy
+    `eye_bean`s become ink beans (the `eye` empty above them still blinks), the `eye_glint`s go, the skin `eye_lid`
+    stays and its edge is drawn as the lid's ink line, the felt `brow`s become bold ink brows (felt_actions still tilts
+    and lifts them with the mood), the mouths are ink (the open mouth without its teeth), the felt nose goes (a simple
+    round head). Animals: bead eyes become smaller ink dots, glints and cheeks go, brows and mouths are ink. The night
+    face fill (`felt_people.FACE_FILL`) is off in comic: a glowing skin would turn flat there, and the look has its own
+    camera-side fill.
+  - **Materials on objects**: the people's primitives of a kind share one mesh with the material on the object
+    (`felt_people.prim`), so everything comic changes on a part goes through the object's material slots
+    (`comic_look.set_mat`, slot link `OBJECT`), and sizes change on the object, never the mesh.
+  - **Ground**: at dusk and night outdoors the kit's grounds are deep greens and blues that the muted palette would
+    turn near black (and hatched) across the bottom of the picture; each `ground` keeps its colour, lifted to at least
+    OKLab L 0.5, without hatching.
 - **Choosing it**: a Look row of cards on `/stories/new` (under the kind of story) and on the edit page. Comic nudges
   the music to piano unless the kind of story brings playful or adventure music; once the person picks music, it stays.
   The writer is told (comic only) to prefer two_shot / over_shoulder when characters talk and slow_push for a quiet
@@ -356,6 +373,7 @@ The sandbox: 4 vCPU (x86-64), 15 GB RAM, **no GPU** (EEVEE through Mesa llvmpipe
 | End to end through the CPU renderer service in Docker (site on one port, container on another; 2 scenes, test size) | story done in 86 s; the service's work folder empty afterwards |
 | Modal web API served locally on the CPU (`modal_app.py --serve`, 2 scenes in parallel, test size) | clips back through the site's `STORY_RENDERER=modal` client (tests/unit/story-modal.test.js) |
 | **Comic look vs felt** (Nov 8: the same 4 scenes — kitchen at night, the football pitch, a classroom, the moon — 6 frames each at 1280×720, 4 samples, through `render_story.py`, nothing else running) | felt **8.1 s** a frame, comic **9.8 s** (+22%): comic's EEVEE part is a little lighter (emission only, no depth of field, one shadowed sun), its Freestyle ink adds **2.3–5 s a frame on the CPU** (most on the classroom: plank floor, wall boards, desks; least on the moon). Lines off, the same comic frames take 5.4–6.3 s |
+| **Comic vs felt, vinyl-toy people** (Nov 8, after the felt people restyle and the comic line sets: same 4 scenes and settings, 4 cores) | felt **5.6 s** a frame, comic **7.2 s** (+30%; per scene 7.0–7.9 s, the moon 6.2 s). The whole run (build + 24 frames) took 423 CPU-seconds felt, 502 comic: **17.6 vs 20.9 CPU-s a frame**. The ink costs less than before per line (no inner lines on the set), but the closer framings put more character outline on screen |
 | Freestyle's cost, where it goes (classroom) | line set up and view map ~4 s whatever the line style; the stroke shaders (Python, per stroke point) the rest: a point every 4 px instead of 2 saved ~1.5 s with no visible change, so it ships at 4 px |
 | **The sample again, with the framing fixes** (Nov 7: 5 scenes, 46.7 s, 602 frames, 1 process, nothing else running) | **4,365 s = 93 s of render per second of video, 7.2 s per frame**; the whole run (voice, render, clips, assembly) 4,416 s |
 

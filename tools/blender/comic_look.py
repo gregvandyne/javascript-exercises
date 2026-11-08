@@ -15,13 +15,17 @@ light reaches the surface (EEVEE: Shader to RGB of a white diffuse; Cycles has n
 come from a fixed light direction). The steps meet with a narrow soft edge (soft cel), the deepest step carries
 diagonal hatching, and a fixed paper grain sits over everything in screen space.
 
-Lines: Freestyle (CPU, the same in EEVEE and Cycles): silhouettes, borders, creases and colour boundaries, in a warm
-ink, thicker near the camera and thinner far away, thick-and-thin by direction like a brush pen, tapered at the ends,
-with a little wobble. The sky, glows, light beams, weather and tiny bits (tufts, pebbles, glints) get no line.
+Lines: Freestyle (CPU, the same in EEVEE and Cycles) in a warm ink, in three sets: a heavy outline round the
+characters and lighter lines inside them (clothes, hair locks), and a thinner, lighter outline round the set with no
+inner lines (floor and wall patterns, pitch markings, clouds: colour only), so the background never competes with the
+cast. Thicker near the camera and thinner far away, thick-and-thin by direction like a brush pen, tapered at the ends,
+with a little wobble. The sky, glows, light beams, weather and tiny bits of the set get no line.
 
-Faces (people and animals, found by part name, so felt_people.py needs no change): the bead eyes become small ink
-dots (they still blink), the glints and felt cheeks go, a person's felt nose goes (a simple round head), brows and
-mouths are ink. The expressions the actions switch (smile, open, sad, closed, squint) work as before.
+Faces (people and animals, found by part name, so felt_people.py needs no change): a person's eye beans become ink
+beans under a skin lid drawn as an ink line, glints go, the felt nose goes (a simple round head), brows are bold ink
+(they still move with the mood) and mouths ink; an animal's bead eyes become small ink dots. The expressions the
+actions switch (smile, open, sad, closed, squint) work as before. Every change goes through the object's material
+slots and the object's scale: the kit's primitives of a kind share one mesh.
 """
 import math
 
@@ -70,14 +74,24 @@ LOOK = {
     'soft': 0.02,            # half-width of the soft edge between steps
     'hatch': 0.32,           # how dark the hatching in the deep step is (0 = none)
     'hatch_px': 5.0,         # hatch spacing at 720p
-    'fill': 0.22,            # the camera-side fill light, as a share of the key
-    'eye_scale': 0.8,        # bead eyes -> ink dots this much smaller
+    'fill': 0.3,             # the camera-side fill light, as a share of the key
+    'eye_scale': 0.8,        # an animal's bead eyes -> ink dots this much smaller
+    'bean_scale': 0.86,      # a person's eye beans -> ink beans this much narrower
+    'brow_z': 1.1,           # ink brows a little bolder than the felt ones
+    'cast': 1.9,             # the characters' outline, as a share of line_px (the heaviest line)
+    'set': 0.8,              # the set's outline, as a share of line_px ...
+    'set_alpha': 0.75,       # ... and a little lighter
+    'ground_L': 0.5,         # the ground's lit colour is at least this light (OKLab L)
 }
 
 # no ink on these (part names, as the kit names them)
 NO_LINE = ('sky', 'backdrop', 'starfield', 'star_field', 'glint', 'cheek', 'thread', 'halo', 'beam', 'haze', 'fly',
            'tuft', 'pebble', 'steam', 'rain', 'snow', 'drop', 'confetti', 'spark', 'ripple', 'zzz', 'lh_window', 'tear',
            'contact', 'crater', 'stars', 'window_sky', 'bulb')
+# on the characters only a few of those hold (hair tufts and locks, clothes threads get their line)
+NO_LINE_CAST = ('glint', 'cheek', 'blush', 'halo', 'zzz', 'tear', 'spark', 'steam', 'contact', 'shadow')
+# set parts drawn by colour only (no outline): floor and wall patterns
+SET_NO_LINE = ('wallpaper', 'floor', 'tile', 'plank', 'stripe', 'pitch', 'rug', 'grout', 'cloud', 'crowd')
 
 CUR = {'time': 'night', 'pal': TIMES['night'], 'engine': 'BLENDER_EEVEE', 'height': 720}
 _MATS = {}
@@ -122,9 +136,9 @@ def mute(hex_col, lift=0.0):
     return S.oklab_to_hex(max(0.0, min(1.0, L + lift)), a, b)
 
 
-def steps_of(hex_col):
+def steps_of(hex_col, lift=0.0):
     """lit, shade, deep for a felt colour. The shade is darker and a little cooler; the deep step darker again."""
-    lit = mute(hex_col)
+    lit = mute(hex_col, lift)
     L, a, b = S.hex_to_oklab(lit)
     cool = S.hex_to_oklab('#2b3150')
     sL, sa, sb = _mix_lab((L - 0.13, a, b), (L - 0.13, cool[1], cool[2]), 0.35)
@@ -260,7 +274,7 @@ def _step(N, L, v, at):
 
 
 def toon(hex_col, lift=0.0, hatch=True, grain=True):
-    lit, shade, deep = steps_of(hex_col) if not lift else (mute(hex_col, lift),) * 3
+    lit, shade, deep = steps_of(hex_col, lift)
     got, mat = _new(f'comic_{hex_col}', ('toon', hex_col, lift, hatch))
     if got is None:
         return mat
@@ -281,6 +295,7 @@ def toon(hex_col, lift=0.0, hatch=True, grain=True):
     L.new(col, em.inputs['Color'])
     L.new(em.outputs['Emission'], out.inputs['Surface'])
     mat['comic'] = 'toon'
+    mat['felt'] = hex_col
     return mat
 
 
@@ -400,18 +415,61 @@ def lights(hints=None):
         bg.inputs['Strength'].default_value = p['amb']
 
 
+# ---------------------------------------------------------------- materials on objects
+def set_mat(ob, mat):
+    """Give one object a material through its object-level slots. The kit's primitives of a kind share one mesh
+    (felt_people.prim), so a mesh's own materials are never edited here: that would change every shape sharing it."""
+    if ob.type != 'MESH':
+        return
+    if len(ob.material_slots) == 0:
+        if ob.data.users > 1:
+            ob.data = ob.data.copy()
+        ob.data.materials.append(None)
+    for slot in ob.material_slots:
+        slot.link = 'OBJECT'
+        slot.material = mat
+
+
+def mats_of(ob):
+    return [s.material for s in getattr(ob, 'material_slots', ()) if s.material is not None]
+
+
+def _cast_roots():
+    """People and animals: the top-level empties the stage gives a height."""
+    return [o for o in bpy.data.objects if o.type == 'EMPTY' and o.parent is None and 'height' in o.keys()]
+
+
+def _desc(ob):
+    for c in ob.children:
+        yield c
+        yield from _desc(c)
+
+
 # ---------------------------------------------------------------- ink lines (Freestyle)
-def _no_line(ob):
+def _no_line(ob, cast=False):
     n = ob.name.lower()
-    if any(s in n for s in NO_LINE):
+    if any(s in n for s in (NO_LINE_CAST if cast else NO_LINE)):
         return True
-    for m in ob.data.materials if ob.type == 'MESH' else ():
-        if m is not None and m.get('comic') in ('sky', 'haze', 'glow', 'ink'):
+    for m in mats_of(ob):
+        if m.get('comic') in ('sky', 'haze', 'glow', 'ink'):
             return True
+    if ob.get('ink_keep'):
+        return False
     d = ob.dimensions
-    if ob.type == 'MESH' and max(d.x, d.y, d.z) * max(ob.matrix_world.to_scale()) < 0.045:
+    if ob.type == 'MESH' and max(d.x, d.y, d.z) * max(ob.matrix_world.to_scale()) < (0.02 if cast else 0.045):
         return True
     return False
+
+
+def _flat_decal(ob):
+    """Painted-on bits of a set (pitch lines, rugs, tiles, planks, wall boards): thin slabs that would only add busy
+    lines behind the characters; their colour says enough."""
+    if any(s in ob.name.lower() for s in SET_NO_LINE):
+        return True
+    from mathutils import Vector
+    pts = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+    dz = max(p.z for p in pts) - min(p.z for p in pts)
+    return dz < 0.03 and max(p.z for p in pts) < 0.08   # flat on the ground
 
 
 def _style(name, width, k, alpha):
@@ -463,7 +521,7 @@ def _style(name, width, k, alpha):
     return st
 
 
-def _lineset(fs, name, off, outer):
+def _lineset(fs, name, coll, outer):
     ls = fs.linesets.new(name)
     ls.select_by_visibility = True
     ls.visibility = 'VISIBLE'
@@ -479,13 +537,16 @@ def _lineset(fs, name, off, outer):
         ls.select_crease = True
         ls.select_material_boundary = True
     ls.select_by_collection = True
-    ls.collection = off
-    ls.collection_negation = 'EXCLUSIVE'
+    ls.collection = coll
+    ls.collection_negation = 'INCLUSIVE'
     return ls
 
 
 def lines(spec):
-    """Freestyle ink: a heavy outline round every shape, lighter lines inside (creases, colour edges)."""
+    """Freestyle ink in three sets: a heavy, confident outline round the characters (people, animals) and lighter
+    lines inside them (clothes, hair locks, where one colour meets another); a thinner, lighter outline round the
+    set and its props, with no inner lines (tile grids, planks and pitch markings stay colour only), so the
+    background never competes with the cast."""
     sc = bpy.context.scene
     vl = bpy.context.view_layer
     k = max(0.25, int(spec.get('height', 720)) / 720.0)
@@ -498,57 +559,79 @@ def lines(spec):
     fs.use_culling = True
     fs.crease_angle = math.radians(LOOK['crease_deg'])
     fs.use_smoothness = True
-    off = bpy.data.collections.new('no_ink')
-    sc.collection.children.link(off)
+    cast_c = bpy.data.collections.new('ink_cast')
+    set_c = bpy.data.collections.new('ink_set')
+    for c in (cast_c, set_c):
+        sc.collection.children.link(c)
+        c.hide_render = False
+    cast_obs = set()
+    for r in _cast_roots():
+        cast_obs.update(o.name for o in _desc(r) if o.type == 'MESH')
     for ob in list(bpy.data.objects):
-        if ob.type == 'MESH' and _no_line(ob):
-            off.objects.link(ob)
+        if ob.type != 'MESH' or ob.hide_render:
+            continue
+        if ob.name in cast_obs:
+            if not _no_line(ob, cast=True):
+                cast_c.objects.link(ob)
+        elif not _no_line(ob) and not _flat_decal(ob):
+            set_c.objects.link(ob)
     for ls in list(fs.linesets):
         fs.linesets.remove(ls)
     a = CUR['pal']['line_alpha']
-    _lineset(fs, 'outline', off, True).linestyle = _style('ink_outline', LOOK['line_px'], k, a)
-    _lineset(fs, 'inner', off, False).linestyle = _style('ink_inner', LOOK['line_px'] * LOOK['inner'], k, a * 0.9)
+    px = LOOK['line_px']
+    _lineset(fs, 'cast', cast_c, True).linestyle = _style('ink_cast', px * LOOK['cast'], k, a)
+    _lineset(fs, 'cast_inner', cast_c, False).linestyle = _style('ink_cast_inner', px * LOOK['inner'], k, a * 0.9)
+    _lineset(fs, 'set', set_c, True).linestyle = _style('ink_set', px * LOOK['set'], k, a * LOOK['set_alpha'])
 
 
 # ---------------------------------------------------------------- faces
-def _scale_mesh(ob, sx, sy=None, sz=None):
-    sy = sx if sy is None else sy
-    sz = sx if sz is None else sz
-    for v in ob.data.vertices:
-        v.co.x *= sx
-        v.co.y *= sy
-        v.co.z *= sz
-
-
 def faces():
-    """Bead eyes -> ink dots; glints, felt cheeks and a person's felt nose go; brows and mouths in ink."""
+    """Faces as clean ink, by part name.
+    People (felt_people): the glossy eye beans become ink beans (they still blink: the `eye` empty above them is
+    what blinks), the glints go, the skin lids stay (their edge is drawn as an ink line over the eye), the felt brows
+    become bold ink brows (the actions still tilt them with the mood), the mouths ink; the felt nose goes.
+    Animals (feltkit beads): the bead eyes become ink dots, glints and cheeks go, brows and mouths ink."""
     inkm = ink()
-    seen = set()
     for ob in list(bpy.data.objects):
         if ob.type != 'MESH':
             continue
         base = ob.name.split('.')[0]
-        if base.startswith('eye') and not base.startswith('eyebump'):
-            if ob.data.name not in seen:
-                seen.add(ob.data.name)
-                if ob.data.users > 1:
-                    ob.data = ob.data.copy()
-                # smaller and a touch taller, but just as deep: the dot stays on the face's surface
-                _scale_mesh(ob, LOOK['eye_scale'], 1.0, LOOK['eye_scale'] * 1.1)
-            ob.data.materials.clear()
-            ob.data.materials.append(inkm)
-        elif base.startswith(('glint', 'cheek')):
+        if base.startswith(('eye_glint', 'glint', 'cheek', 'blush')) or base == 'p_nose' or base == 'mouth_open_teeth':
             ob.hide_render = True
-        elif base == 'p_nose':
-            ob.hide_render = True
-        elif base.startswith(('brow', 'mouth_smile', 'mouth_sad', 'mouth_open')) and not base.startswith('mouth_open_tongue'):
-            ob.data.materials.clear()
-            ob.data.materials.append(inkm)
-            if base.startswith('brow'):
-                _scale_mesh(ob, 1.0, 1.0, 0.7)
+        elif base == 'eye_bean':
+            set_mat(ob, inkm)
+            ob.scale = tuple(v * f for v, f in zip(ob.scale, (LOOK['bean_scale'], 1.0, LOOK['bean_scale'])))
+        elif base == 'eye_lid':
+            ob['ink_keep'] = True    # small, but its edge is the lid line
+        elif base.startswith('eye') and not base.startswith('eyebump'):
+            # an animal's bead eye: a smaller dot, a touch taller, just as deep (it stays on the face's surface)
+            set_mat(ob, inkm)
+            ob.scale = tuple(v * f for v, f in zip(ob.scale, (LOOK['eye_scale'], 1.0, LOOK['eye_scale'] * 1.1)))
+        elif base.startswith('brow'):
+            set_mat(ob, inkm)
+            ob.scale.z *= LOOK['brow_z']
+        elif base.startswith(('mouth_smile', 'mouth_sad', 'mouth_open')) and not base.startswith('mouth_open_tongue'):
+            set_mat(ob, inkm)
         elif base.startswith('mouth_open_tongue'):
-            ob.data.materials.clear()
-            ob.data.materials.append(flat('#c46a72'))
+            set_mat(ob, flat('#c46a72'))
+
+
+# ---------------------------------------------------------------- the ground
+def grounds():
+    """The ground the cast stands on never sinks into the dark: at dusk and night outdoors the kit's grounds are deep
+    greens and blues that the muted palette and the deep step would turn near black (and hatched) across the bottom
+    of the picture. Each ground keeps its own colour, lifted to a readable lightness, and no hatching."""
+    for ob in bpy.data.objects:
+        if ob.type != 'MESH' or not ob.name.split('.')[0] == 'ground':
+            continue
+        m = next(iter(mats_of(ob)), None)
+        col = m.get('felt') if m is not None else None
+        if not col:
+            continue
+        L = S.hex_to_oklab(mute(col))[0]
+        lift = max(0.0, LOOK['ground_L'] - L)
+        if lift > 0.01:
+            set_mat(ob, toon(col, lift=lift, hatch=False))
 
 
 # ---------------------------------------------------------------- the whole look
@@ -581,4 +664,5 @@ def finish(spec, sc_spec=None, hints=None):
             except Exception:
                 pass
     faces()
+    grounds()
     lines(spec)

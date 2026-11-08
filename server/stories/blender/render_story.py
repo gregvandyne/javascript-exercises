@@ -187,7 +187,7 @@ def lights(tod, rng):
 
 # ---------------------------------------------------------------- camera
 CAMERAS = ('drift', 'slow_push', 'pull_back', 'pan_left', 'pan_right', 'tilt_up', 'tilt_down', 'two_shot', 'over_shoulder')
-# film framings that follow the cast (both looks): a two-shot (everyone from the knees up, a slow push in) and an
+# film framings that follow the cast (both looks): a two-shot (everyone from the waist up, a slow push in) and an
 # over-the-shoulder shot (past the first character's shoulder at the one they talk to)
 CAST_SHOTS = ('two_shot', 'over_shoulder')
 
@@ -221,7 +221,7 @@ def cast_shot(move, cast):
         # near one large at the edge of the picture, the other's face a third in from the far side
         ha = Vector((a[0], a[1], a[2] + a[3] * 0.86))
         hb = Vector((b[0], b[1], b[2] + b[3] * 0.8))
-        cam = Vector((a[0] - d * 1.05, a[1] - 2.5, a[2] + a[3] * 0.92))
+        cam = Vector((a[0] - d * 0.7, a[1] - 1.75, a[2] + a[3] * 0.9))
         da, db = (ha - cam).normalized(), (hb - cam).normalized()
         look = (da * 0.4 + db * 0.6).normalized()
         theta = da.angle(db)
@@ -230,18 +230,20 @@ def cast_shot(move, cast):
         end = cam + (tgt - cam) * 0.06
         return (dict(x=cam.x, y=cam.y, z=cam.z, tx=tgt.x, ty=tgt.y, tz=tgt.z, lens=lens),
                 dict(x=end.x, y=end.y, z=end.z, tx=tgt.x, ty=tgt.y, tz=tgt.z, lens=lens))
-    # two-shot (also one character alone): everyone from about the knees up, a touch below eye level, a slow push in
+    # two-shot (also one character alone): waist up (closer when they stand close), a touch below eye level, a slow
+    # push in. The frame is the larger of what the heads-to-waists need and what the row of characters needs.
     cx = (min(xs) + max(xs)) / 2
     cy = sum(c[1] for c in cast) / len(cast)
-    span = max(xs) - min(xs) + 1.3
+    span = max(xs) - min(xs) + 1.8
     lens = 40.0
-    half_w = math.atan(18.0 / lens)
-    half_h = math.atan(18.0 * 9 / 16 / lens)
-    dist = max(span / 2 / math.tan(half_w) * 1.12, hmax * 0.82 / 2 / math.tan(half_h), 2.6)
-    tz = zg + hmax * 0.6
-    cam = Vector((cx, cy - dist, zg + hmax * 0.72))
+    tan_w = 18.0 / lens
+    tan_h = 18.0 * 9 / 16 / lens
+    bottom, top = zg + hmax * 0.36, zg + hmax * 1.2
+    dist = max(span / 2 / tan_w, (top - bottom) / 2 / tan_h, 2.2)
+    tz = (bottom + top) / 2 + 0.02
+    cam = Vector((cx, cy - dist, zg + hmax * 0.8))
     tgt = Vector((cx, cy, tz))
-    end = cam + (tgt - cam) * 0.1
+    end = cam + (tgt - cam) * 0.08
     return (dict(x=cam.x, y=cam.y, z=cam.z, tx=cx, ty=cy, tz=tz, lens=lens),
             dict(x=end.x, y=end.y, z=end.z, tx=cx, ty=cy, tz=tz, lens=lens))
 
@@ -327,6 +329,8 @@ def build_scene(spec, sc_spec):
     # a soft fill on faces (and hands) at night and dusk, so expressions still read in the dark
     tod_name = sc_spec.get('time') if sc_spec.get('time') in TIMES else 'night'
     felt_stage.felt_people.FACE_FILL = {'night': 0.32, 'dusk': 0.16}.get(tod_name, 0.0)
+    if comic:  # comic has its own camera-side fill light; a glowing skin would turn flat (unlit) there
+        felt_stage.felt_people.FACE_FILL = 0.0
     setup_render(spec, tod)
     if comic:
         import comic_look

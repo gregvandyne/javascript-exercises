@@ -58,10 +58,13 @@ def stage(sc_spec, fps, frames, rng, hints=None):
     props = [p for p in dict.fromkeys(sc_spec.get('props') or []) if p in P.PROPS]
     z0 = float(hints.get('z0', 0.0))
     cast = []
+    close = sc_spec.get('camera') in ('two_shot', 'over_shoulder') and len(chars) >= 2
     for i, c in enumerate(chars):
         kind = c.get('kind') if c.get('kind') in CHARACTERS else 'mouse'
         ch = build_character(kind, i, c)
         x1 = PLACES.get(c.get('place'), [-1.4, 1.4, 0.0][i % 3])
+        if close:  # film framings: the ones talking stand closer together, so the camera can come in close
+            x1 *= 0.6 if len(chars) == 2 else 0.8
         action = c.get('action') if c.get('action') in A.ACTIONS else 'idle'
         x0 = x1
         if action in ('walk', 'walk_in', 'hold_star'):
