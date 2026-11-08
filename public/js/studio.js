@@ -84,8 +84,8 @@ function syncLimit() {
     const canPublish = !!S.current && !(S.pending && S.pending.id === S.current.id) && (!S.live || S.current.id !== S.live.id);
     const html = `<p class="st-limit-h" id="${LIMIT_WHY}"><span aria-hidden="true">🌙</span> ${E('js.studio.limitCard.heading')}</p>
       <p class="st-limit-text">${E(S.current ? 'js.studio.limitCard.text' : 'js.studio.limitCard.textEmpty')}</p>
-      <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">🚀 ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">🎮 ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">✨ ${E('js.studio.limitCard.others')}</a></div>
       ${upsellHtml()}
+      <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">🚀 ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">🎮 ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">✨ ${E('js.studio.limitCard.others')}</a></div>
       ${S.grownUpLink ? `<p class="st-limit-gu"><span aria-hidden="true">🧑‍🧒</span> ${E('js.studio.limitCard.grownUp')} <a href="/me#grownups">${E('js.studio.limitCard.grownUpWhere')}</a></p>` : ''}`;
     if (box.dataset.html !== html || box.hidden) { box.innerHTML = html; box.dataset.html = html; }
     box.hidden = false;

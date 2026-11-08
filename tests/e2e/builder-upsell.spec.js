@@ -38,7 +38,7 @@ async function up(url) {
 const stop = async p => { if (p && p.exitCode === null) { p.kill('SIGTERM'); await Promise.race([new Promise(r => p.once('exit', r)), new Promise(r => setTimeout(r, 10_000))]); if (p.exitCode === null) p.kill('SIGKILL'); } };
 const control = async (what, body = {}) => (await fetch(`${STRIPE}/_test/${what}`, { method: 'POST', body: JSON.stringify(body) })).json();
 
-test.use({ baseURL: APP });
+test.use({ baseURL: APP, actionTimeout: 20_000, navigationTimeout: 30_000 });
 test.describe.configure({ mode: 'serial', timeout: 600_000 });
 test.beforeAll(async () => {
   test.setTimeout(240_000);
@@ -129,7 +129,7 @@ const VIEWS = [
 ];
 /** Screenshots of a page in the four views (only when SHOTS_DIR is set). focus: a selector scrolled into view. */
 async function shots(browser, label, page, url, focus, base = APP) {
-  if (!SHOTS) return;
+  if (!SHOTS || process.env.SHOTS_ONLY && !process.env.SHOTS_ONLY.split(',').includes(label)) return;
   fs.mkdirSync(SHOTS, { recursive: true });
   const state = await page.context().storageState();
   for (const v of VIEWS) {
@@ -137,6 +137,8 @@ async function shots(browser, label, page, url, focus, base = APP) {
     const p = await ctx.newPage();
     await p.goto(url);
     if (focus) { const el = p.locator(focus).first(); await el.waitFor({ state: 'visible', timeout: 15_000 }); await el.scrollIntoViewIfNeeded(); }
+    // The limit card scrolls inside itself on a phone: show its offer.
+    if (focus === '#st-limit') await p.evaluate(() => { const c = document.querySelector('#st-limit'), u = c && c.querySelector('.st-limit-up'); if (u) c.scrollTop = Math.max(0, u.offsetTop - c.offsetTop - 60); });
     await p.waitForTimeout(300);
     await p.screenshot({ path: path.join(SHOTS, `${label}--${v.name}.png`) });
     await ctx.close();
@@ -200,7 +202,7 @@ test('paid account: the kid asks for a Spark Pack → the grown-up buys one (one
   await shots(browser, '7-pack-picker', mum, '/family?sparks=1#sparks', '#sparks-buy');
   // Tampering with the page (another value on the button) is refused by the server.
   await mum.evaluate(() => { document.querySelector('#sparks-buy button[value="p25"]').value = 'p999'; });
-  await mum.fill('#pw-sparks', PW).catch(() => {});
+  if (await mum.locator('#pw-sparks').isVisible()) await mum.fill('#pw-sparks', PW);   // typed moments ago: hidden
   await picker.locator('button[value="p999"]').click();
   await expect(picker.locator('.form-err')).not.toBeEmpty();
   await mum.goto('/family?sparks=1#sparks');
