@@ -36,7 +36,9 @@ async function check(page, slug, size, stage, report) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  // BRB_CHROMIUM, else the repo's pinned browser (playwright.config.js) where it is installed, else Playwright's own.
+  const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
+  const browser = await chromium.launch(exe ? { executablePath: exe } : {});
   const report = [];
   for (const slug of GAMES) {
     for (const [size, s] of Object.entries(SIZES)) {
