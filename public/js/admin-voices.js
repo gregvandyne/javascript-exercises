@@ -28,6 +28,8 @@ document.addEventListener('change', e => {
 });
 
 const form = $('#tv-form');
+// Something changed and isn't saved: on phones the Save row then stays in view (admin.css #tv-form.dirty).
+form && form.addEventListener('change', () => form.classList.add('dirty'));
 form && form.addEventListener('submit', async e => {
   e.preventDefault();
   const locales = {}, roles = {};

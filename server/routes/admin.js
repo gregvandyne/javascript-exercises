@@ -328,7 +328,7 @@ function peopleTab(req) {
     <input type="hidden" name="tab" value="people">
     <div class="nu-top"><div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
     <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download><span aria-hidden="true">⬇️</span> CSV</a></div></div>
-    <details class="nu-more" data-open-wide ${filtered ? raw('open') : ''}><summary>Filters &amp; sort <span class="small muted nu-now">· ${desc.length ? `${desc.join(' · ')} · ` : ''}sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}</span></summary><div class="nu-filters">
+    <details class="nu-more" data-open-wide ${filtered ? raw('open') : ''}><summary><span>Filters &amp; sort <span class="small muted nu-now">· ${desc.length ? `${desc.join(' · ')} · ` : ''}sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}</span></span></summary><div class="nu-filters">
     ${sel('nu-type', 'type', 'Account type', f.type, [['', 'All types'], ...AU.TYPES.map(k => [k, AU.TYPE_LABEL[k]])])}
     ${sel('nu-active', 'active', 'Active', f.active, Object.entries(AA.ACTIVE))}
     ${sel('nu-joined', 'joined', 'Joined', f.joined, Object.entries(AA.JOINED))}
@@ -338,7 +338,7 @@ function peopleTab(req) {
     ${sel('nu-dir', 'dir', 'Order', f.dir, [['desc', '↓ Descending'], ['asc', '↑ Ascending']])}
     </div></details>
   </form>
-  <nav class="chips nu-quick scroll" aria-label="Quick views"><a class="chip ${everyone ? 'on' : ''}" href="/admin?tab=people" ${everyone ? raw('aria-current="true"') : ''}>Everyone</a>${Object.entries(AA.QUICK).map(([k, v]) => { const on = AA.quickOn(f, k); return html`<a class="chip ${on ? 'on' : ''}" href="${peopleLink({ ...AA.DEFAULTS, ...v.set })}" ${on ? raw('aria-current="true"') : ''}>${v.label}</a>`; })}</nav>
+  <nav class="chips nu-quick" aria-label="Quick views"><a class="chip ${everyone ? 'on' : ''}" href="/admin?tab=people" ${everyone ? raw('aria-current="true"') : ''}>Everyone</a>${Object.entries(AA.QUICK).map(([k, v]) => { const on = AA.quickOn(f, k); return html`<a class="chip ${on ? 'on' : ''}" href="${peopleLink({ ...AA.DEFAULTS, ...v.set })}" ${on ? raw('aria-current="true"') : ''}>${v.label}</a>`; })}</nav>
   <p class="small muted">${int(r.total)} account${r.total === 1 ? '' : 's'}${desc.length ? ` · ${desc.join(' · ')}` : ''} · sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}. Guests are not listed. Kids show only their names and counts. Days are UTC; “days active” counts the last 30.</p>
   ${r.rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable nu-table au-table"><thead><tr>${COLS.map(th)}</tr></thead><tbody>
     ${r.rows.map(u => html`<tr>
@@ -421,7 +421,7 @@ const WELCOME_PANELS = [
   { audience: 'grownup', title: 'Welcome message for new parents', who: 'new parents', when: 'Sent to every new grown-up (parent) account the first time it signs in. They read it on their Family page (📬 link) at /chat/OombaAcademy. A grown-up who later has a school set up also gets the teachers’ welcome.' },
   { audience: 'teacher', title: 'Welcome message for new teachers and school staff', who: 'new teachers and school staff', when: 'Sent when an account becomes a teacher or school admin (added on a school’s People tab, a staff login card, a Google staff invite, a role change), when a grown-up’s “Set up my school” request is marked done, or at the first sign-in of someone who signed up after choosing “I’m a teacher”. A kid welcome sent to them before is taken back. They read it in their chat inbox.' },
 ];
-const welcomeForm = (w, s) => html`<details class="asection welcomefold" id="wel-${w.audience}"><summary><span id="wel-${w.audience}-h">${w.title}</span> <span class="chip-s ${s.on ? '' : 'warn'}">${s.on ? 'On' : 'Off'}</span></summary>
+const welcomeForm = (w, s) => html`<details class="asection welcomefold" id="wel-${w.audience}" data-open-wide><summary><span id="wel-${w.audience}-h">${w.title}</span> <span class="chip-s ${s.on ? 'wel-on' : 'warn'}">${s.on ? 'On' : 'Off'}</span></summary>
   <form class="stack welcomeform" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." aria-labelledby="wel-${w.audience}-h" novalidate>
     <p class="small muted" style="margin:0">${w.when}</p>
     <input type="hidden" name="audience" value="${w.audience}">
@@ -476,8 +476,8 @@ function searchesTab(req) {
   const filter = html`<nav class="chips afilter" aria-label="Which searches"><a class="chip ${flaggedOnly ? '' : 'on'}" href="/admin?tab=searches" ${flaggedOnly ? '' : raw('aria-current="true"')}>Show all</a><a class="chip ${flaggedOnly ? 'on' : ''}" href="/admin?tab=searches&amp;flagged=1" ${flaggedOnly ? raw('aria-current="true"') : ''}>⚠️ Show flagged only</a></nav>
     <p class="small">${flaggedOnly ? 'Showing flagged searches only.' : 'Showing all searches.'} · Web search is <b>${webSearch.webSearchOn() ? 'on' : 'off'}</b> (BUILDER_WEB_SEARCH) · kept 90 days</p>`;
   if (!rows.length) return html`${filter}${emptyState({ emoji: '🔎', title: 'No web searches', text: 'Searches the Builder makes to check a fact show up here.' })}`;
-  return html`${filter}<div class="panel tblwrap"><table class="tbl audit atable alog"><thead><tr><th>Query</th><th>When</th><th>Sites</th><th>Result</th><th>Game</th><th>Build</th></tr></thead><tbody>
-    ${rows.map(r => html`<tr><td dir="auto">${r.query}</td><td data-label="When">${when(r.created_at)}</td><td data-label="Sites" class="small muted">${r.domains.join(', ') || '–'}</td>
+  return html`${filter}<div class="panel tblwrap"><table class="tbl audit atable alog"><thead><tr><th>When</th><th>Query</th><th>Sites</th><th>Result</th><th>Game</th><th>Build</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td data-label="When">${when(r.created_at)}</td><td class="at" dir="auto">${r.query}</td><td data-label="Sites" class="small muted">${r.domains.join(', ') || '–'}</td>
       <td data-label="Result">${r.flagged ? html`<span class="chip-s warn">⚠️ flagged${r.reason ? ` (${r.reason})` : ''}</span>` : html`${r.results} result${r.results === 1 ? '' : 's'}${r.reason ? html` <span class="small muted">${r.reason}</span>` : ''}`}</td>
       <td data-label="Game">${r.game_slug ? html`<a href="/studio/${r.game_id}">${r.game_title}</a>` : '–'}</td><td data-label="Build" class="small muted"><code>${r.turn_id || ''}</code></td></tr>`)}
   </tbody></table></div>`;
@@ -503,7 +503,7 @@ router.get('/admin', (req, res) => {
   const waiting = Object.values(n).reduce((a, b) => a + (b || 0), 0);
   const tabLink = ([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`;
   const body = html`
-  <div class="pagehead adminhead"><h1>🛡️ Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
+  <div class="pagehead adminhead"><h1>🛡️ Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs adminnav" aria-label="Admin sections">
     <input type="checkbox" id="adminnav-t" class="adminnav-t" aria-controls="adminnav-groups">
@@ -540,7 +540,7 @@ router.get('/admin/messages/:username', (req, res) => {
   const line = m => {
     const fromTeam = m.from_id === tu.id;
     return html`<li class="msg ${fromTeam ? 'mine' : 'theirs'} ${m.kind}"><div class="bubble" dir="auto">${chat.present(m, u, tEn).body}</div>
-      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}${fromTeam && m.kind === 'team' && m.status === 'ok' ? html` · <form class="inline" style="display:inline" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="linkbtn small" type="submit">↩️ Unsend</button></form>` : ''}</span></li>`;
+      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}</span>${fromTeam && m.kind === 'team' && m.status === 'ok' ? html`<form class="unsend" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>` : ''}</li>`;
   };
   const body = html`
   <div class="pagehead"><h1>📬 ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">👤 User details</a></div></div>
@@ -783,7 +783,7 @@ router.get('/admin/billing', (req, res) => {
     ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
     ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
   </div>
-  ${jumpNav([['requests', 'Invoice requests', requests.length], ['unpaid', 'Unpaid', unpaid.length], ['b-subs', `Subscriptions (${subs.length})`], ['b-problems', 'Event problems', problems.length], ['b-webhooks', 'Webhooks']])}
+  ${jumpNav([['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
   <section class="panel" id="requests"><h2>School invoice requests</h2>
     ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
       <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}</p>
@@ -829,14 +829,14 @@ router.get('/admin/billing', (req, res) => {
     ${foldNote('Refund rules', html`Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.`)}
   </section>
   <section class="panel" id="b-problems"><h2>Event problems</h2>
-    ${problems.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>Event</th><th>When</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
-      ${problems.map(e => html`<tr><td><code>${e.type}</code> <span class="muted">${e.event_id}</span></td><td data-label="When">${when(e.received_at)}</td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Customer" class="full">${e.stripe_customer_id || '–'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
+    ${problems.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
+      ${problems.map(e => html`<tr><td data-label="When">${when(e.received_at)}</td><td class="at"><code>${e.type}</code> <span class="muted">${e.event_id}</span></td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Customer" class="full">${e.stripe_customer_id || '–'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
     </tbody></table></div>${foldNote('What "unlinked" means', html`"unlinked": a subscription of a Stripe Customer we don't know (made in the Dashboard?). Linking it to a family or school comes with the next billing update; until then it entitles nobody.`)}` : html`<p class="muted">None.</p>`}
     ${orphaned.length ? html`<p>Subscriptions Stripe no longer knows: ${orphaned.map(r => html`<code>${r.stripe_subscription_id}</code> `)}</p>` : ''}
   </section>
   <section class="panel" id="b-webhooks"><h2>Recent webhook events</h2>
-    ${events.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>Event</th><th>When</th><th>Mode</th><th>Result</th><th>Subscription</th></tr></thead><tbody>
-      ${events.map(e => html`<tr><td><code>${e.type}</code></td><td data-label="When">${when(e.received_at)}</td><td data-label="Mode">${e.livemode ? 'live' : 'test'}</td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
+    ${events.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Event</th><th>Mode</th><th>Result</th><th>Subscription</th></tr></thead><tbody>
+      ${events.map(e => html`<tr><td data-label="When">${when(e.received_at)}</td><td class="at"><code>${e.type}</code></td><td data-label="Mode">${e.livemode ? 'live' : 'test'}</td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
     </tbody></table></div>` : html`<p class="muted">No webhook events yet.</p>`}
   </section>`;
   page(req, res, { title: 'Billing', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin', backLabel: 'Admin' });

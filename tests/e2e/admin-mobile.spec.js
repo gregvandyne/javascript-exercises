@@ -51,6 +51,10 @@ test('admin pages on phones: no sideways scroll, nothing touches, 44 px targets'
       const hidden = await page.evaluate(() => [...document.querySelectorAll('main .tblwrap')].filter(w => w.scrollWidth > w.clientWidth + 1).map(w => w.className));
       if (hidden.length) problems.push(`${at}: a table scrolls inside its box: ${hidden.join(', ')}`);
       for (const s of await smallTargets(page)) problems.push(`${at}: small target ${s}`);
+      // Every folded section shows that it opens: a + / − marker at the end of its row.
+      const unmarked = await page.evaluate(() => [...document.querySelectorAll('main details>summary:not(.btn)')].filter(el => el.getBoundingClientRect().height
+        && !/^"[+−]"$/.test(getComputedStyle(el, '::after').content)).map(el => el.textContent.trim().slice(0, 30)));
+      for (const u of unmarked) problems.push(`${at}: folded section without a marker "${u}"`);
       for (const t of await findTouching(page)) problems.push(`${at}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
       await page.evaluate(() => document.querySelectorAll('main details').forEach(d => { d.open = true; }));
       for (const t of await findTouching(page)) problems.push(`${at} [opened]: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);

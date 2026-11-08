@@ -239,6 +239,7 @@ router.get('/admin/voices', (req, res) => {
   <h2 class="stats-h">Languages and narrator voices</h2>
   <p class="muted small">▶ plays the sample sentence in that language with that voice (made once, then kept; the narrator's ▶ is marked). Narrator: the voice that reads stories, lessons and quiz questions in that language. On a phone, ▶ plays the narrator chosen in that row.</p>
   <form id="tv-form">
+  <p class="small tv-savehint">Switching a language on or off and choosing voices takes effect when you press <b>Save</b>, after Character voices below.</p>
   <p class="small muted tv-scrollhint" aria-hidden="true">The table scrolls sideways: one ▶ column per voice.</p>
   <div class="panel tblwrap"><table class="tbl tv-grid">
     <thead><tr><th>Language</th><th>On</th><th>Narrator</th><th class="tv-one">Play</th>${V.VOICES.map(v => html`<th class="tv-v">${v}</th>`)}</tr></thead>
@@ -253,7 +254,7 @@ router.get('/admin/voices', (req, res) => {
   </table></div>
   <h2 class="stats-h">Character voices (every language)</h2>
   <div class="panel tv-roles">${Object.keys(V.DEFAULT_ROLES).map(r => html`<label class="field">${r} <select class="input" name="role-${r}">${V.VOICES.map(v => html`<option ${v === s.roles[r] ? raw('selected') : ''}>${v}</option>`)}</select></label>`)}</div>
-  <div class="row tv-save"><button class="btn btn-primary" type="submit">Save</button></div>
+  <div class="row tv-save"><span class="small tv-dirtynote"><b>Not saved yet</b></span><button class="btn btn-primary" type="submit">Save</button></div>
   </form>
   <h2 class="stats-h" id="tv-games-h">Games with AI voices</h2>
   <section class="panel" id="tv-games" aria-labelledby="tv-games-h">
