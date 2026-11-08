@@ -9079,7 +9079,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     S.bolt = 0; S.fire = 0;
     if (S.lives <= 0) {
       S.over = true; S.won = false;
-      const m = metres(h.d);
+      const m = metres(S.bestD);   // the furthest point reached: the same number the HUD showed
       S.score += m * 10;
       ctx.finish({ score: S.score, stars: 0, won: false, frac: 0.3 * m / LEN, stats: { metres: m, dodges: S.dodges, passes: S.passes } });
     }
@@ -9591,7 +9591,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     text(g, label('md.metres', m), l + 4, 5, WHITE);
     UI.bar(g, l + 4, 18, w - 8, 6, m / LEN, '#1fc8a8');
     text(g, t(SECT[S.sec].key), l + 4, 26, SECT_OPT);
-    HUD.score(g, S.score + m * 10);
+    HUD.score(g, S.over ? S.score : S.score + metres(S.bestD) * 10);
     // the mangoes left (lives), under the score
     const nl = tune(ctx).lives;
     for (let i = 0; i < nl; i++) { g.globalAlpha = i < S.lives ? 1 : 0.25; JC.sprK(g, SPRITES.md_mango, ctx.W - 8 - (i + 1) * 14, 32, 2); g.globalAlpha = 1; }
@@ -9600,7 +9600,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.bolt > 0) { powerRing(g, px, py, S.bolt / BOLT_T, '#ffe14a', SPRITES.md_bolt); px += 26; }
     if (S.fire > 0 && !(S.fire < 2 && !BRBX.reduced() && ((S.t * 8) | 0) % 2)) powerRing(g, px, py, S.fire / FIRE_T, '#ff9b2e', SPRITES.md_fire);
     // the PASS button (bottom right), gone once the run is over so the results card has only its own buttons
-    if (S.over || (typeof RUN !== 'undefined' && RUN.phase === 'paused')) return;   // nor while the pause menu is up
+    // (RUN here is the run speed: the core's sport runner is JC.scene)
+    const paused = JC.scene && JC.scene.phase === 'paused';
+    if (S.over || paused) return;   // nor while the pause menu is up
     const r = Math.max(22, Math.round(ctx.tap * 0.85)), bx = ctx.W - r - 10, by = ctx.H - r - 12, ok = S.marked >= 0 && !S.ball.fly && !S.over && !S.resetT;
     UI.addHit('mdpass', bx - r, by - r, r * 2, r * 2);
     D.disc(g, bx, by + 2, r, PAL.ink); D.disc(g, bx, by, r, PAL.ink); D.disc(g, bx, by, r - 2, ok ? '#1fc8a8' : '#5c7a74'); D.disc(g, bx - r / 4, by - r / 4, r / 3, ok ? '#7ff0dc' : '#7a948e');
@@ -9608,7 +9610,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     text(g, t('md.pass'), bx, by + 2, PASS_OPT);
     if (S.hint > 0.05 && !S.over) {
       g.globalAlpha = clamp(S.hint * 2, 0, 1);
-      textBlock(g, t(ctx.touch ? 'md.hintTouch' : 'md.hintKeys'), 6, 72, ctx.W - 12, HINT);
+      const hw = Math.min(ctx.W - 12, 240), str = t(ctx.touch ? 'md.hintTouch' : 'md.hintKeys'), hx = Math.round((ctx.W - hw) / 2);
+      const hh = JC.font.wrap(str, hw).length * JC.font.LINE_H;
+      D.rect(g, hx - 4, 69, hw + 8, hh + 6, 'rgba(27,19,37,0.65)');
+      textBlock(g, str, hx, 72, hw, HINT);
       g.globalAlpha = 1;
     }
   }
