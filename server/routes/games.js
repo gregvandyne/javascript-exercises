@@ -180,6 +180,8 @@ function adminVoices(u, g) {
   return html`<section class="panel small" id="admin-voices" lang="en" dir="ltr" data-game="${g.id}"><h2>🔊 AI voices for this game</h2>
     <p class="muted">Admin only. Reads this game's own words (from its published version) with AI voices in the languages switched on at <a href="/admin/voices">AI voices</a>; never what a player types. ${x.on && !x.live ? 'It starts once the game is published and not hidden.' : ''}</p>
     ${x.ok || x.on ? html`<label class="row" style="gap:8px"><input type="checkbox" id="admin-voices-on" ${x.on ? raw('checked') : ''}> AI voices for this game</label>` : ''}
+    ${x.student ? html`<p id="admin-voices-student"><b>A student's game.</b> ${x.on && !x.stale ? 'On for the version published when you switched it on.' : 'Switching on covers the version published now: play it first.'} If the student publishes a new version, the voices stop until you switch them on again.</p>` : ''}
+    ${x.stale ? html`<p id="admin-voices-stale"><b>Paused:</b> the student published a new version. Play it, then switch the voices off and on again to cover it.</p>` : ''}
     ${x.on && x.ok && ttsGames.silentWhy() ? html`<p id="admin-voices-note"><b>Nothing plays yet.</b> ${ttsGames.silentWhy()}</p>` : ''}
     ${x.ok ? '' : html`<p id="admin-voices-why"><b>Can't be switched on.</b> ${x.why}</p>`}
     <p id="admin-voices-status" role="status"></p></section>`;
