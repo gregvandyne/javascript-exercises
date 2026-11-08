@@ -12645,6 +12645,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
 (function () {
   const TIME = 60, ROWS = 4, PER_ROW = 14, SPACING = 88, POINTS = [150, 100, 75, 50], FLIGHT = [0.72, 0.62, 0.5, 0.38], RELOAD = 0.42;
   // golden fruit (double points), divers (bob under and pop back up) and the swallows: how often and how long
+  // aiming with keys or a gamepad (sweep the ring, then fire) is slower than pulling back with a finger or mouse, so
+  // Tico paces himself to how you aim: the race is as fair on a laptop keyboard as on a phone
+  const KEY_PACE = 3.5, KEY_PACE_EASY = 4.2;
   const TICO_P = 0.76, TICO_P_EASY = 0.76, TICO_A = 1.15, TICO_B = 0.78, TICO_A_EASY = 1.3, TICO_B_EASY = 0.9;
   const GOLD_P = 0.08, DIVE_P = 0.2, DIVE_C = 3.4, FLOCK_W = 34, FLOCK_V = 62;
   // a seed that splashes takes longer to reload, and at most two of yours fly at once: firing without aiming never pays
@@ -12910,7 +12913,16 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       // the ring speeds up while a key is held, so a long way across the lagoon takes well under a second
       const dx = (ctx.held.right ? 1 : 0) - (ctx.held.left ? 1 : 0);
       S.aimHold = dx ? (S.aimHold || 0) + dt : 0;
-      if (dx) { S.aimX = clamp(S.aimX + dx * (120 + 200 * clamp((S.aimHold - 0.15) / 0.45, 0, 1)) * dt, 10, S.W - 10); S.aimOn = true; S.aimLive = 1.2; }
+      // aim-assist for keys and gamepad (a finger pulls the aim exactly; a held key is slow to stop): the ring slows
+      // down while it passes over the spot where a fruit will be, and when the key is let go near one it glides onto
+      // that spot and keeps following it, so the marker stays green until you fire
+      const r = S.aimRow, T = FLIGHT[r], R = hitR(ctx, r);
+      let near = null, nd = 1e9;
+      if (!S.auto) for (const f of S.fruit) if (f.row === r && f.on && f.use && hittableAt(f, T)) { const lx = fruitX(f, T), d = Math.abs(lx - S.aimX); if (d < nd) { nd = d; near = lx; } }
+      if (dx) {
+        const slow = nd <= R ? 0.3 : 1;
+        S.aimX = clamp(S.aimX + dx * (140 + 200 * clamp((S.aimHold - 0.2) / 0.5, 0, 1)) * slow * dt, 10, S.W - 10); S.aimOn = true; S.aimLive = 1.2; S.mode = 'keys';
+      } else if (S.aimOn && near !== null && nd < R + (ctx.easy ? 30 : 22)) S.aimX = clamp(S.aimX + (near - S.aimX) * Math.min(1, dt * 14), 10, S.W - 10);
     }
     // the fruit drifts (and comes back after it is hit)
     for (let r = 0; r < ROWS; r++) S.rowSpd[r] = rowSpeed(ctx, r);
@@ -12932,7 +12944,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (S.ticoT <= 0 && !S.over) {
       // nothing in view: he looks again in a moment instead of waiting a whole turn
       if (!ticoShoot(ctx)) S.ticoT = 0.3;
-      else { const k = S.time / TIME, a = ctx.easy ? TICO_A_EASY : TICO_A, b = ctx.easy ? TICO_B_EASY : TICO_B; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3) * (S.tico - S.you > 500 ? 1.45 : 1); }   // he eases off when he's well ahead
+      else { const k = S.time / TIME, a = ctx.easy ? TICO_A_EASY : TICO_A, b = ctx.easy ? TICO_B_EASY : TICO_B; S.ticoT = lerp(a, b, k) * (0.85 + ctx.rng() * 0.3) * (S.tico - S.you > 500 ? 1.45 : 1) * (S.mode === 'keys' ? (ctx.easy ? KEY_PACE_EASY : KEY_PACE) : 1); }   // he eases off when he's well ahead
     }
     if (S.auto) bot(dt, ctx);
     if (!S.over && S.time >= TIME) {
@@ -12988,10 +13000,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   function onInput(e, ctx) {
     if (e.type === 'press') {
       if (e.key === 'a') shoot(ctx);
-      else if (e.key === 'up') { S.aimRow = Math.max(0, S.aimRow - 1); S.aimOn = true; S.aimLive = 1.2; ctx.sfx('blip'); }
-      else if (e.key === 'down') { S.aimRow = Math.min(ROWS - 1, S.aimRow + 1); S.aimOn = true; S.aimLive = 1.2; ctx.sfx('blip'); }
+      else if (e.key === 'up') { S.aimRow = Math.max(0, S.aimRow - 1); S.aimOn = true; S.aimLive = 1.2; S.mode = 'keys'; ctx.sfx('blip'); }
+      else if (e.key === 'down') { S.aimRow = Math.min(ROWS - 1, S.aimRow + 1); S.aimOn = true; S.aimLive = 1.2; S.mode = 'keys'; ctx.sfx('blip'); }
     } else if (e.type === 'down') {
-      S.drag = true; S.dragId = e.id; S.sx = e.x / S.k; S.sy = e.y / S.k; S.pullX = S.sx; S.pullY = S.sy; S.aimOn = false;
+      S.drag = true; S.mode = 'pull'; S.dragId = e.id; S.sx = e.x / S.k; S.sy = e.y / S.k; S.pullX = S.sx; S.pullY = S.sy; S.aimOn = false;
     } else if (e.type === 'move' && S.drag && e.id === S.dragId) {
       S.pullX = e.x / S.k; S.pullY = e.y / S.k; pullAim();
     } else if (e.type === 'up' && S.drag && e.id === S.dragId) {
@@ -13209,7 +13221,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       const hk = ctx.touch ? 'ss.hintTouch' : 'ss.hintKeys';
       // on a dark strip (pale words on the blue lagoon were hard to read): above the lagoon when there is room
       const str = t(hk), h = JC.font.wrap(str, W - 12, 1).length * JC.font.LINE_H + 2;
-      let hy = S.lagTop - h - 4; if (hy < 56) hy = Math.round((S.rowY[1] + S.rowY[2]) / 2) - 8;
+      // at the bottom of the shore (below Cappy): it never covers a row of fruit
+      const hy = S.H - h - 6;
       g.globalAlpha = clamp(S.hint * 2, 0, 1); rect(g, 0, hy - 3, W, h + 5, 'rgba(27,19,37,0.65)'); textBlock(g, str, 6, hy, W - 12, HINT); g.globalAlpha = 1;
     }
     g.setTransform(VIEW.S, 0, 0, VIEW.S, 0, 0);
@@ -13232,7 +13245,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     start(ctx) {
       S.ctx = ctx; S.W = 0; layout(ctx);
       S.time = 0; S.you = 0; S.tico = 0; S.hits = 0; S.shots = 0; S.streak = 0; S.bestStreak = 0; S.over = false; S.won = false; S.finishWait = 0;
-      S.aimX = S.slX; S.aimRow = 2; S.aimOn = true; S.drag = false; S.aimVis = 0; S.aimLive = 0; S.reload = 0; S.auto = false; S.autoT = 0; S.sigma = 0; S.golds = 0; S.snacks = 0;
+      S.aimX = S.slX; S.aimRow = 2; S.aimOn = true; S.drag = false; S.aimVis = 0; S.aimLive = 0; S.mode = ctx.touch ? 'pull' : 'keys'; S.reload = 0; S.auto = false; S.autoT = 0; S.sigma = 0; S.golds = 0; S.snacks = 0;
       S.flock.on = false; S.flock.warn = 0; S.flock.next = ctx.easy ? 12 : 8; S.fish.on = false; S.fish.next = 1.5;
       S.frog.f = null; S.frog.to = null; S.frog.hop = 0; S.frog.hidden = true; S.frog.next = 3;
       S.ticoT = ctx.easy ? 3.2 : 2.4; S.ticoFlap = 0; S.cappyRecoil = 0; S.hint = ctx.firstTime ? 1.8 : 0.8;
@@ -13246,7 +13259,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     outro(dt, ctx) { for (const sd of S.seeds) if (sd.on) { sd.t += dt; if (sd.t >= sd.T) sd.on = false; } for (const p of S.rips) if (p.on) { p.t += dt; if (p.t > 0.8) p.on = false; } },
     testState() {
       return { k: S.k, you: S.you, tico: S.tico, time: Math.round(S.time * 100) / 100, hits: S.hits, shots: S.shots, streak: S.streak, aimX: Math.round(S.aimX), aimRow: S.aimRow,
-        aimOn: S.aimOn, aimHit: S.ctx ? aimHits(S.ctx) : false, aimVis: Math.round(S.aimVis * 100) / 100, lagTop: S.lagTop, lagBot: S.lagBot, W: S.W, H: S.H, drag: S.drag, reload: S.reload > 0, over: S.over, won: S.won, auto: S.auto, slX: S.slX, slY: S.slY, rowY: S.rowY.slice(), rows: ROWS,
+        aimOn: S.aimOn, aimHit: S.ctx ? aimHits(S.ctx) : false, aimVis: Math.round(S.aimVis * 100) / 100, mode: S.mode, lagTop: S.lagTop, lagBot: S.lagBot, W: S.W, H: S.H, drag: S.drag, reload: S.reload > 0, over: S.over, won: S.won, auto: S.auto, slX: S.slX, slY: S.slY, rowY: S.rowY.slice(), rows: ROWS,
         fruit: S.fruit.filter(f => f.on).map(f => ({ row: f.row, x: Math.round(f.x), kind: ['plain', 'golden', 'diver'][f.kind], under: f.under })), seeds: S.seeds.filter(s => s.on).length,
         golds: S.golds, snacks: S.snacks, flock: S.flock.on ? { row: S.flock.row, x: Math.round(S.flock.x) } : null, flockWarn: S.flock.warn > 0,
         frog: S.frog.hidden ? null : { hopping: S.frog.hop > 0 }, fish: S.fish.on };
@@ -13260,6 +13273,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       lifeOff(ctx) { S.flock.next = 999; S.flock.on = false; S.flock.warn = 0; for (const f of S.fruit) if (f.kind === 2) f.kind = 0; return true; },
       /** Where a fruit in a row will be after its seed's flight time (to aim like a careful player). */
       lead(ctx, row) { let best = null; for (const f of S.fruit) if (f.on && f.row === row && hittableAt(f, FLIGHT[row])) { const x = fruitX(f, FLIGHT[row]); if (x > 20 && x < S.W - 20 && (!best || Math.abs(x - S.slX) < Math.abs(best - S.slX))) best = x; } return best === null ? null : Math.round(best); },
+      /** Where the fruit in a row nearest to x will be when a seed fired now lands (null if none can be hit). */
+      leadNear(ctx, row, x) { let best = null; for (const f of S.fruit) if (f.on && f.row === row && hittableAt(f, FLIGHT[row])) { const lx = fruitX(f, FLIGHT[row]); if (lx > 12 && lx < S.W - 12 && (best === null || Math.abs(lx - x) < Math.abs(best - x))) best = lx; } return best; },
       ticoOff(ctx) { S.ticoT = 999; return true; },
       /** Make one fruit in a row a diver (so a test sees one dive and pop up without waiting for the dice). */
       diver(ctx, row) { const r = row || 1; for (const f of S.fruit) if (f.on && f.row === r) { f.kind = 2; f.dv = 0; f.under = false; return true; } return false; },
