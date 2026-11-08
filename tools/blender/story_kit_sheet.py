@@ -3,7 +3,7 @@
     python3 tools/blender/story_kit_sheet.py cells.json sheet.jpg [columns] [width] [height]
 
 cells.json is a list of {label, scene: {set, time, props, characters, camera, seed}, t: seconds into the scene,
-cam: [x, y, z, lens] (optional close-up)}. The scene is built exactly as render_story.py builds it (preview samples),
+cam: [x, y, z, lens] (optional close-up), look: felt | comic (optional; else LOOK in the environment, else felt)}. The scene is built exactly as render_story.py builds it (preview samples),
 each still is pasted into the sheet and deleted. Prints build and render seconds and the face count per cell.
 """
 import json
@@ -26,12 +26,13 @@ def main(argv):
     H = int(argv[4]) if len(argv) > 4 else 270
     raw = os.path.join(os.path.dirname(os.path.abspath(out)), 'raw')
     os.makedirs(raw, exist_ok=True)
-    spec = {'width': W, 'height': H, 'fps': 24, 'step': 2, 'engine': 'eevee', 'samples': int(os.environ.get('SAMPLES', 2))}
+    spec = {'width': W, 'height': H, 'fps': 24, 'step': 2, 'engine': 'eevee', 'samples': int(os.environ.get('SAMPLES', 2)),
+            'look': os.environ.get('LOOK', 'felt')}
     shots = []
     for i, c in enumerate(cells):
         sc = {'frames': 96, 'seed': 7, 'props': [], 'camera': 'drift', **c['scene'], 'id': f'c{i}'}
         t0 = time.time()
-        R.build_scene(spec, sc)
+        R.build_scene({**spec, 'look': c.get('look', spec['look'])}, sc)
         t = c.get('t', 2.0)
         for fn in R.K.ANIMS:
             fn(t, int(t * 24))

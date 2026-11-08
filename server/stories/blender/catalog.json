@@ -20,7 +20,7 @@
     "pan_left": "gliding left",
     "pan_right": "gliding right",
     "tilt_up": "looking up to the sky",
-    "tilt_down": "looking down from the sky"
+    "tilt_down": "looking down from the sky", "two_shot": "two or three characters together, from the knees up, as they talk (a film's two-shot)", "over_shoulder": "past the first character's shoulder at the one they talk to (a film's over-the-shoulder shot; needs two characters)"
   },
   "sets": {
     "lighthouse": {

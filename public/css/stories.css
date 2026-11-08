@@ -38,6 +38,7 @@
 .sb-kit { font-size: .92rem; color: var(--text-2); }
 .sb-choices { border: 0; margin: 0 0 18px; padding: 0; min-width: 0; }
 .sb-choices legend { font-weight: 800; font-size: 1.05rem; margin-bottom: 8px; padding: 0; }
+.sb-choice-hint { font-size: .9rem; color: var(--muted); margin: -4px 0 8px; }
 .sb-chips { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 .sb-choice { position: relative; display: flex; min-width: 0; }
 .sb-choice label { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 84px;

@@ -39,25 +39,31 @@ export function sceneVisuals(script, { id }) {
     seed: (base + i * 7919) % 100000, focus: s.characters[0] ? s.characters[0].kind : null,
   }));
 }
-/** The render spec for a script on a timeline (frames per scene from the timeline; seeds from the story id). */
-export function renderSpec(script, tl, { id, quality = 'full', outDir }) {
+/** The looks the renderer draws (story-options LOOKS; render_story.py LOOKS). */
+const LOOK_NAMES = ['felt', 'comic'];
+const lookName = l => (LOOK_NAMES.includes(l) ? l : 'felt');
+/**
+ * The render spec for a script on a timeline (frames per scene from the timeline; seeds from the story id). `look`
+ * (felt | comic) is one field for the whole story; a felt spec carries none, exactly as before looks existed.
+ */
+export function renderSpec(script, tl, { id, quality = 'full', outDir, look = 'felt' }) {
   const q = QUALITY[quality] || QUALITY.full;
   return {
-    ...q, key: String(id), out_dir: outDir,
+    ...q, key: String(id), out_dir: outDir, ...(lookName(look) !== 'felt' ? { look: lookName(look) } : {}),
     scenes: sceneVisuals(script, { id }).map((s, i) => ({ ...s, frames: Math.ceil(tl.scenes[i].dur * q.fps) + q.step })),
   };
 }
-/** The picture key of every scene of a script at a quality (stories/remake.js sceneKey). */
-export const sceneKeys = (script, { id, quality = 'full' }) => sceneVisuals(script, { id }).map(s => sceneKey(s, QUALITY[quality] || QUALITY.full));
+/** The picture key of every scene of a script at a quality, in a look (stories/remake.js sceneKey). */
+export const sceneKeys = (script, { id, quality = 'full', look = 'felt' }) => sceneVisuals(script, { id }).map(s => sceneKey(s, QUALITY[quality] || QUALITY.full, lookName(look)));
 
 const stageProgress = (stage, f) => { const [a, b] = WEIGHTS[stage]; return a + (b - a) * Math.max(0, Math.min(1, f)); };
 
 /**
  * { id, script, locale, workDir, renderer, quality, voice (provider: service | local | silent), narrator (story-options
- *   NARRATORS id), mood (story-music MOODS), clipCache (a folder of kept scene clips, or null), onStage, onProgress, signal }
+ *   NARRATORS id), mood (story-music MOODS), look (felt | comic: how the pictures are drawn), clipCache (a folder of kept scene clips, or null), onStage, onProgress, signal }
  * -> { video, poster, vtt, meta: { total, timeline, voice, music, render: { ..., rendered, reused } , clips } }
  */
-export async function produce({ id, script, locale = 'en', workDir, renderer, quality = 'full', voice = null, narrator = 'auto', mood = 'lullaby', clipCache = null, onStage = () => {}, onProgress = () => {}, signal = null }) {
+export async function produce({ id, script, locale = 'en', workDir, renderer, quality = 'full', voice = null, narrator = 'auto', mood = 'lullaby', look = 'felt', clipCache = null, onStage = () => {}, onProgress = () => {}, signal = null }) {
   fs.mkdirSync(workDir, { recursive: true });
   const stop = () => { if (signal && signal.aborted) throw Object.assign(new Error('stopped'), { code: 'stopped' }); };
   // 1. voice
@@ -106,8 +112,8 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   // 5. render (and, on a remote renderer, 6. build there too: the web server never runs Blender or the big ffmpeg)
   stop();
   onStage('rendering');
-  const spec = renderSpec(script, tl, { id, quality, outDir: path.join(workDir, 'frames') });
-  const keys = spec.scenes.map(s => sceneKey(s, q));
+  const spec = renderSpec(script, tl, { id, quality, outDir: path.join(workDir, 'frames'), look });
+  const keys = spec.scenes.map(s => sceneKey(s, q, lookName(look)));
   const out = path.join(workDir, 'story.mp4');
   const t0 = Date.now();
   // Scenes with a kept clip are not rendered again (the remote renderer that builds the video itself needs every scene).
@@ -149,7 +155,7 @@ export async function produce({ id, script, locale = 'en', workDir, renderer, qu
   const meta = {
     total: tl.total, scenes: tl.scenes, lines: tl.lines.map(l => ({ scene: l.scene, start: l.start, end: l.end })),
     voice: used, narrator, music: musicInfo, clips: remote ? [] : keys,
-    render: { renderer: renderer.name, engine: r.engine, frames: r.frames, seconds: Math.round(renderSec), quality, width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
+    render: { renderer: renderer.name, engine: r.engine, look: lookName(look), frames: r.frames, seconds: Math.round(renderSec), quality, width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
       secPerVideoSec: Math.round((renderSec / tl.total) * 10) / 10, secPerFrame: r.frames && r.frameSeconds ? Math.round((r.frameSeconds / r.frames) * 100) / 100 : null,
       sceneSeconds: r.sceneSeconds || undefined, rendered: toRender.length, reused: spec.scenes.length - toRender.length,
       stretched: fits ? fits.filter(f => f.stretch > 1 || f.pad > 0).length : 0 },

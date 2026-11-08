@@ -6500,6 +6500,8 @@
       "needIdea": "Write your idea first (a few words is enough).",
       "kitHint": "People in your story become felt children and grown-ups, animals become felt animals, and it can happen almost anywhere: a football pitch, a classroom, the beach, a castle, under the sea or on the moon.",
       "styleH": "What kind of story?",
+      "lookH": "How should it look?",
+      "lookHint": "The same story world, drawn two ways.",
       "toneH": "How should it feel?",
       "voiceH": "Who reads it?",
       "voiceAi": "The voices are AI voices. Tap ▶ to hear one.",
@@ -6590,6 +6592,7 @@
       "piano": "Gentle piano",
       "none": "No music"
     },
+    "look": { "felt": "Felt & paper", "comic": "Comic" },
     "set": {
       "lighthouse": "Lighthouse",
       "village": "Village",
@@ -6613,6 +6616,7 @@
       "scene": "Scene {n}",
       "line": "Line {n}",
       "remakeP": "New words, a new voice or new music are quick: the pictures are kept.",
+      "lookHint": "A new look draws every scene again, so the new video takes a little longer.",
       "remakesLeft": "{count, plural, one {You can make # more quick change today.} other {You can make # more quick changes today.}}",
       "remakeNone": "You've used all your quick changes for today. Come back tomorrow!",
       "remake": "Make the new video",

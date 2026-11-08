@@ -47,7 +47,7 @@ export const metaOf = s => (s ? parse(s.meta || '{}', {}) : {});
 /** Grown-ups, school staff and the admin: may share straight away, and get more stories a day. */
 export const adultOwner = u => !!u && !u.is_guest && (isGrownup(u) || isStaff(u) || isPlatformAdmin(u));
 export const dailyLimit = u => (adultOwner(u) ? config.storyDailyLimit * 2 : config.storyDailyLimit);
-/** Quick changes (words, voice, music: no Claude writing, no new pictures) a day. */
+/** Quick changes (words, voice, music, look: no Claude writing) a day. */
 export const remakeLimit = u => (adultOwner(u) ? config.storyRemakeLimit * 2 : config.storyRemakeLimit);
 const dayStart = (t = now()) => Date.parse(today(t) + 'T00:00:00Z');
 /** New stories today, plus rewrites (a rewrite pays Claude like a new story, so it counts like one). */
@@ -58,10 +58,10 @@ export const remakesToday = u => q.get("SELECT COUNT(*) n FROM story_edits WHERE
 export const queueLength = () => q.get("SELECT COUNT(*) n FROM stories WHERE status='queued'").n + q.get("SELECT COUNT(*) n FROM stories WHERE remake_status='queued'").n;
 
 /** The choice columns a story row has (story-options.js); validated by the caller (choiceFields / extraFields). */
-const OPTION_COLS = ['style', 'tone', 'voice', 'music', 'characters', 'lesson'];
+const OPTION_COLS = ['style', 'tone', 'voice', 'music', 'look', 'characters', 'lesson'];
 
 /**
- * A new story job. opts: { idea, ageBand, seconds, locale, style, tone, voice, music, characters, lesson } (already
+ * A new story job. opts: { idea, ageBand, seconds, locale, style, tone, voice, music, look, characters, lesson } (already
  * checked by story-options choiceFields / extraFields). -> { ok: true, story } | { ok: false, code: 'guest' | 'limit' |
  * 'busy' } (the AI checks are the route's).
  */
@@ -156,8 +156,9 @@ export function remove(u, s) {
 // A change never touches the finished video until the new one is ready: the story stays 'done' (it keeps playing, and
 // keeps its sharing) while remake_status walks '' -> queued -> working -> '' (the new version swapped in) or 'failed'
 // (the old video stays; the owner may try again or keep the old one). Kinds:
-//   remake   new words (the owner's own edit, checked when asked), a new voice or new music: no Claude writing, no new
-//            pictures; STORY_REMAKE_LIMIT a day (grown-ups and staff twice that)
+//   remake   new words (the owner's own edit, checked when asked), a new voice, new music or a new look: no Claude
+//            writing; no new pictures except for a new look (every scene drawn again); STORY_REMAKE_LIMIT a day
+//            (grown-ups and staff twice that)
 //   rewrite  Claude writes it again from the current script and a short note (and maybe a new style or tone): counts
 //            like a new story against STORY_DAILY_LIMIT; only scenes whose pictures changed are rendered again.
 // When a kid's shared (or waiting) story changes, it asks for a yes again: the grown-up approved the old words.
@@ -168,7 +169,7 @@ export const REMAKE_CODES = ['notYours', 'notDone', 'busyEdit', 'limit', 'remake
 
 /**
  * The owner asks for a change. change: { kind: 'remake' | 'rewrite', script? (a remake's new words, already checked),
- * note? (a rewrite's request, already screened), options: { style, tone, voice, music } (already checked) }.
+ * note? (a rewrite's request, already screened), options: { style, tone, voice, music, look } (already checked) }.
  * -> { ok: true } | { ok: false, code: one of REMAKE_CODES }
  */
 export function requestRemake(u, s, change) {
@@ -220,9 +221,9 @@ export function finishRemake(id, { script, options = {}, meta = {} }) {
   const o = choiceFields(options, optionsOf(s));
   const owner = getUser(s.owner_id);
   const share = s.share !== 'private' && !adultOwner(owner) ? 'pending' : s.share;
-  const moved = q.run(`UPDATE stories SET script=?, title=?, style=?, tone=?, voice=?, music=?, meta=?, version=version+1, remake='', remake_status='',
+  const moved = q.run(`UPDATE stories SET script=?, title=?, style=?, tone=?, voice=?, music=?, look=?, meta=?, version=version+1, remake='', remake_status='',
       remake_progress=0, remake_error='', worker='', share=?, approved_by=?, approved_at=?, updated_at=? WHERE id=? AND remake_status='working'`,
-  JSON.stringify(script), script.title, o.style, o.tone, o.voice, o.music, JSON.stringify(meta), share,
+  JSON.stringify(script), script.title, o.style, o.tone, o.voice, o.music, o.look, JSON.stringify(meta), share,
   share === s.share ? s.approved_by : null, share === s.share ? s.approved_at : null, now(), id).changes === 1;
   if (moved && share !== s.share) audit(s.owner_id, 'story.reshare', id, { from: s.share, to: share });
   return { ok: moved, share };

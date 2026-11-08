@@ -11,7 +11,7 @@ import { optionsOf, choiceFields } from '../services/story-options.js';
 import { produce, WEIGHTS, sceneVisuals, QUALITY } from './pipeline.js';
 import { clipDir, cachedClips, pruneClips, planRemake, sceneKey } from './remake.js';
 
-const writeArgs = (s, o) => ({ idea: s.idea, ageBand: s.age_band, seconds: s.seconds, locale: s.locale, style: o.style, tone: o.tone, characters: s.characters || '', lesson: s.lesson || '' });
+const writeArgs = (s, o) => ({ idea: s.idea, ageBand: s.age_band, seconds: s.seconds, locale: s.locale, style: o.style, tone: o.tone, look: o.look, characters: s.characters || '', lesson: s.lesson || '' });
 
 /**
  * Run a claimed job. A story in 'writing' is made from the start; a finished story whose remake_status is 'working'
@@ -40,7 +40,7 @@ export async function runStory(story, deps) {
     let stage = 'voicing';
     const dir = J.storyDir(story.id);
     const res = await produce({
-      id: story.id, script, locale: story.locale, workDir: dir, clipCache: clipDir(dir), renderer, quality, voice, narrator: o.voice, mood: o.music, signal,
+      id: story.id, script, locale: story.locale, workDir: dir, clipCache: clipDir(dir), renderer, quality, voice, narrator: o.voice, mood: o.music, look: o.look, signal,
       onStage: s => {
         if (s === 'rendering' && state === 'voicing') { move('rendering'); stage = 'rendering'; }
         if (s === 'assembling' && state === 'rendering') { move('assembling'); stage = 'assembling'; }
@@ -93,13 +93,13 @@ export async function runRemake(story, { renderer, worker, signal = null, write 
       script = v.script;
     }
     const q = QUALITY[quality] || QUALITY.full;
-    const plan = planRemake({ kind: 'remake', before, after: { script, options, scenes: sceneVisuals(script, { id: story.id }) }, cached: new Set(cachedClips(clipDir(dir)).keys()), keyOf: s => sceneKey(s, q) });
+    const plan = planRemake({ kind: 'remake', before, after: { script, options, scenes: sceneVisuals(script, { id: story.id }) }, cached: new Set(cachedClips(clipDir(dir)).keys()), keyOf: (s, look) => sceneKey(s, q, look) });
     J.remakeProgress(story.id, worker, WEIGHTS.writing[1]);
     // 2..6. into the work folder, reusing every kept clip
     stage = 'voicing';
     fs.rmSync(next, { recursive: true, force: true });
     const res = await produce({
-      id: story.id, script, locale: story.locale, workDir: next, clipCache: clipDir(dir), renderer, quality, voice, narrator: options.voice, mood: options.music, signal,
+      id: story.id, script, locale: story.locale, workDir: next, clipCache: clipDir(dir), renderer, quality, voice, narrator: options.voice, mood: options.music, look: options.look, signal,
       onStage: s => { stage = s; },
       onProgress: p => J.remakeProgress(story.id, worker, p),
     });

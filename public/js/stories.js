@@ -8,14 +8,16 @@ const picked = (root, name) => { const r = $(`input[name="${name}"]:checked`, ro
 // ---------------------------------------------------------------- the idea form
 const form = $('#sb-form');
 if (form) {
-  // The music follows the kind of story until the person picks music themselves.
+  // The music follows the kind of story and the look (comic leans to piano) until the person picks music themselves.
   let musicTouched = false;
   $$('input[name="music"]', form).forEach(r => r.addEventListener('change', () => { musicTouched = true; }));
-  $$('input[name="style"]', form).forEach(r => r.addEventListener('change', () => {
-    const m = data.musicFor && data.musicFor[r.value];
+  const followMusic = () => {
+    const look = data.musicFor && data.musicFor[picked(form, 'look') || 'felt'];
+    const m = look && look[picked(form, 'style')];
     const radio = m && $(`input[name="music"][value="${m}"]`, form);
     if (!musicTouched && radio) radio.checked = true;
-  }));
+  };
+  $$('input[name="style"], input[name="look"]', form).forEach(r => r.addEventListener('change', followMusic));
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const err = $('#sb-err'), go = $('#sb-go'), idea = $('#sb-idea');
@@ -26,7 +28,7 @@ if (form) {
     try {
       const body = {
         idea: idea.value, ageBand: $('#sb-age').value, seconds: +$('#sb-len').value,
-        style: picked(form, 'style'), tone: picked(form, 'tone'), voice: picked(form, 'voice'), music: picked(form, 'music'),
+        style: picked(form, 'style'), tone: picked(form, 'tone'), voice: picked(form, 'voice'), music: picked(form, 'music'), look: picked(form, 'look'),
         characters: $('#sb-chars').value, lesson: $('#sb-lesson').value,
       };
       const r = await api('/api/stories', { method: 'POST', body });
@@ -107,7 +109,7 @@ if (edit) {
     $$('.sb-line', edit).forEach(x => { const i = +x.dataset.scene, k = +x.dataset.line; (lines[i] = lines[i] || [])[k] = x.value; });
     go.disabled = true;
     try {
-      await api(`/api/stories/${encodeURIComponent(data.id)}/remake`, { method: 'POST', body: { title: $('#sb-title').value, lines, voice: picked(edit, 'voice'), music: picked(edit, 'music') } });
+      await api(`/api/stories/${encodeURIComponent(data.id)}/remake`, { method: 'POST', body: { title: $('#sb-title').value, lines, voice: picked(edit, 'voice'), music: picked(edit, 'music'), look: picked(edit, 'look') } });
       location.href = `/stories/${encodeURIComponent(data.id)}`;
     } catch (ex) {
       err.textContent = (ex && ex.message) || t('js.stories.failed');

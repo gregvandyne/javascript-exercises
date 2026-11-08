@@ -6117,6 +6117,8 @@
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
       "kitHint": "Las personas de tu cuento se convierten en niños y adultos de fieltro, los animales en animales de fieltro, y puede pasar casi en cualquier lugar: un campo de fútbol, un aula, la playa, un castillo, bajo el mar o en la Luna.",
       "styleH": "¿Qué tipo de cuento?",
+      "lookH": "¿Cómo se verá?",
+      "lookHint": "El mismo mundo del cuento, dibujado de dos maneras.",
       "toneH": "¿Cómo debe sentirse?",
       "voiceH": "¿Quién lo lee?",
       "voiceAi": "Las voces son voces de IA. Toca ▶ para escuchar una.",
@@ -6207,6 +6209,7 @@
       "piano": "Piano suave",
       "none": "Sin música"
     },
+    "look": { "felt": "Fieltro y papel", "comic": "Cómic" },
     "set": {
       "lighthouse": "Faro",
       "village": "Pueblo",
@@ -6230,6 +6233,7 @@
       "scene": "Escena {n}",
       "line": "Frase {n}",
       "remakeP": "Palabras nuevas, una voz nueva o música nueva son rápidas: las imágenes se guardan.",
+      "lookHint": "Un estilo nuevo vuelve a dibujar todas las escenas, así que el nuevo vídeo tarda un poco más.",
       "remakesLeft": "{count, plural, one {Hoy puedes hacer # cambio rápido más.} other {Hoy puedes hacer # cambios rápidos más.}}",
       "remakeNone": "Ya usaste todos tus cambios rápidos de hoy. ¡Vuelve mañana!",
       "remake": "Hacer el vídeo nuevo",

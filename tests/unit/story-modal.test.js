@@ -61,12 +61,12 @@ test('Modal renderer API, served locally on the CPU: auth, limits, two scenes in
   }
 });
 
-test('Modal image and the CPU renderer image carry the whole Python kit (every felt_*.py)', () => {
+test('Modal image and the CPU renderer image carry the whole Python kit (every felt_*.py, the comic look)', () => {
   const app = fs.readFileSync(path.join(ROOT, 'services/story-renderer/modal_app.py'), 'utf8');
   const listed = app.match(/KIT_FILES = \(([^)]*)\)/)[1].match(/"([\w.]+)"/g).map(s => s.slice(1, -1));
-  const kit = fs.readdirSync(path.join(ROOT, 'tools/blender')).filter(f => /^felt\w*\.py$/.test(f) || f === 'styles.py');
+  const kit = fs.readdirSync(path.join(ROOT, 'tools/blender')).filter(f => /^felt\w*\.py$/.test(f) || f === 'styles.py' || f === 'comic_look.py');
   for (const f of kit) assert.ok(listed.includes(f), `the Modal image adds tools/blender/${f}`);
   const docker = fs.readFileSync(path.join(ROOT, 'services/story-renderer/Dockerfile'), 'utf8');
-  assert.match(docker, /COPY tools\/blender\/feltkit\.py tools\/blender\/styles\.py tools\/blender\/felt_\*\.py/);
+  assert.match(docker, /COPY tools\/blender\/feltkit\.py tools\/blender\/styles\.py tools\/blender\/comic_look\.py tools\/blender\/felt_\*\.py/);
   assert.match(docker, /COPY server\/stories\/blender /, 'the catalog and render_story.py');
 });

@@ -6119,6 +6119,8 @@
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
       "kitHint": "As pessoas da sua história viram crianças e adultos de feltro, os animais viram animais de feltro, e ela pode acontecer em quase qualquer lugar: um campo de futebol, uma sala de aula, a praia, um castelo, o fundo do mar ou a Lua.",
       "styleH": "Que tipo de história?",
+      "lookH": "Como deve ficar?",
+      "lookHint": "O mesmo mundo da história, desenhado de duas maneiras.",
       "toneH": "Como ela deve ser?",
       "voiceH": "Quem vai ler?",
       "voiceAi": "As vozes são vozes de IA. Toque em ▶ para ouvir uma.",
@@ -6209,6 +6211,7 @@
       "piano": "Piano suave",
       "none": "Sem música"
     },
+    "look": { "felt": "Feltro e papel", "comic": "Banda desenhada" },
     "set": {
       "lighthouse": "Farol",
       "village": "Vila",
@@ -6232,6 +6235,7 @@
       "scene": "Cena {n}",
       "line": "Frase {n}",
       "remakeP": "Palavras novas, uma voz nova ou uma música nova são rápidas: as imagens ficam.",
+      "lookHint": "Um visual novo desenha todas as cenas outra vez, por isso o novo vídeo demora um pouco mais.",
       "remakesLeft": "{count, plural, one {Você pode fazer mais # mudança rápida hoje.} other {Você pode fazer mais # mudanças rápidas hoje.}}",
       "remakeNone": "Você já usou todas as mudanças rápidas de hoje. Volte amanhã!",
       "remake": "Fazer o vídeo novo",

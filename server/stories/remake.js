@@ -1,7 +1,7 @@
 // Story Builder: changing a finished story without paying again for what didn't change (docs/story-builder.md
 // "Changing a story"). The GPU render is by far the dearest step, so every rendered scene clip is kept in the story's
 // folder under a key made from everything that decides its pictures (the scene's set, time, props, characters and
-// their actions and places, camera, seed, and the render size) — but not its length, which follows the narration.
+// their actions and places, camera, seed, the render size and the look) — but not its length, which follows the narration.
 // A remake renders only the scenes whose key has no clip yet; a new voice, new music or new words reuse every clip,
 // and a clip a little shorter than its scene's new length is stretched (then, if need be, its last frame held) when
 // the video is put together.
@@ -14,12 +14,16 @@ export const CLIP_VERSION = 1;
 /** A kept clip may be slowed down this much to fill a longer scene; past it, its last frame is held for the rest. */
 export const MAX_STRETCH = 1.5;
 
-/** The scene's picture key: a short hash of its visual spec and the render size (not its frame count). */
-export function sceneKey(scene, q) {
+/**
+ * The scene's picture key: a short hash of its visual spec, the render size and the look (not its frame count). The
+ * felt look adds nothing to the key, so clips kept before looks existed still match.
+ */
+export function sceneKey(scene, q, look = 'felt') {
   const v = {
     v: CLIP_VERSION, set: scene.set, time: scene.time, props: [...(scene.props || [])], camera: scene.camera, seed: scene.seed, focus: scene.focus ?? null,
     characters: (scene.characters || []).map(c => ({ kind: c.kind, action: c.action, place: c.place })),
     width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples,
+    ...(look && look !== 'felt' ? { look } : {}),
   };
   return crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex').slice(0, 24);
 }
@@ -62,10 +66,10 @@ export function fitClip(have, need) {
 const wordsOf = s => [s.title, ...s.scenes.flatMap(sc => sc.lines.map(l => `${l.say}\u0000${l.show}`))];
 /**
  * What a change has to do again, at the least. A pure function (tests: tests/unit/story-builder.test.js).
- *   kind    'remake' (new words, voice or music) | 'rewrite' (Claude writes it again)
- *   before  { script, options: { style, tone, voice, music } } — the finished version
+ *   kind    'remake' (new words, voice, music or look) | 'rewrite' (Claude writes it again)
+ *   before  { script, options: { style, tone, voice, music, look } } — the finished version
  *   after   { script (null for a rewrite not yet written), options, scenes (null likewise) }
- *   cached  Set of the clip keys kept for this story; keyOf: scene -> key (sceneKey with the render size)
+ *   cached  Set of the clip keys kept for this story; keyOf: (scene, look) -> key (sceneKey with the render size)
  * -> { nothing, write, voice: 'all' | [flat line indexes], music, captions, render: [scene indexes] | null (unknown
  *      until written), reuse: [scene indexes], assemble }
  */
@@ -74,6 +78,8 @@ export function planRemake({ kind, before, after, cached = new Set(), keyOf }) {
   const write = kind === 'rewrite';
   const voiceChanged = (o1.voice || o0.voice) !== o0.voice;
   const musicChanged = (o1.music || o0.music) !== o0.music;
+  const look1 = o1.look || o0.look || 'felt';
+  const lookChanged = look1 !== (o0.look || 'felt');
   if (write || !after.script) return { nothing: false, write: true, voice: 'all', music: true, captions: true, render: null, reuse: [], assemble: true };
   const w0 = wordsOf(before.script), w1 = wordsOf(after.script);
   const lines1 = after.script.scenes.flatMap(sc => sc.lines);
@@ -81,11 +87,11 @@ export function planRemake({ kind, before, after, cached = new Set(), keyOf }) {
   const changedLines = lines1.map((l, i) => (!lines0[i] || lines0[i].say !== l.say ? i : -1)).filter(i => i >= 0);
   const wordsChanged = w0.length !== w1.length || w0.some((x, i) => x !== w1[i]);
   const render = [], reuse = [];
-  (after.scenes || []).forEach((sc, i) => (cached.has(keyOf(sc)) ? reuse : render).push(i));
+  (after.scenes || []).forEach((sc, i) => (cached.has(keyOf(sc, look1)) ? reuse : render).push(i));
   // nothing the person changed (missing clips alone are no reason to make it again)
   const look = sc => JSON.stringify([sc.set, sc.time, sc.props, sc.camera, sc.characters.map(c => [c.kind, c.action, c.place])]);
   const visualChanged = before.script.scenes.length !== after.script.scenes.length || after.script.scenes.some((sc, i) => look(sc) !== look(before.script.scenes[i]));
-  const nothing = !wordsChanged && !voiceChanged && !musicChanged && !visualChanged;
+  const nothing = !wordsChanged && !voiceChanged && !musicChanged && !visualChanged && !lookChanged;
   return {
     nothing, write: false,
     voice: voiceChanged ? 'all' : changedLines,

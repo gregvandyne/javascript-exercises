@@ -184,10 +184,67 @@ def lights(tod, rng):
 
 
 # ---------------------------------------------------------------- camera
-CAMERAS = ('drift', 'slow_push', 'pull_back', 'pan_left', 'pan_right', 'tilt_up', 'tilt_down')
+CAMERAS = ('drift', 'slow_push', 'pull_back', 'pan_left', 'pan_right', 'tilt_up', 'tilt_down', 'two_shot', 'over_shoulder')
+# film framings that follow the cast (both looks): a two-shot (everyone from the knees up, a slow push in) and an
+# over-the-shoulder shot (past the first character's shoulder at the one they talk to)
+CAST_SHOTS = ('two_shot', 'over_shoulder')
 
 
-def camera(move, frames, fps, focus_obj, lens=45):
+def cast_now(frames, fps):
+    """Where the characters are once they have arrived (60% into the scene): [(x, y, height)], in the script's order."""
+    roots = [o for o in bpy.data.objects if o.type == 'EMPTY' and o.parent is None and 'height' in o.keys()]
+    t = frames / fps * 0.6
+    for fn in K.ANIMS:
+        fn(t, int(t * fps))
+    bpy.context.view_layer.update()
+    out = [(o.matrix_world.translation.x, o.matrix_world.translation.y, o.matrix_world.translation.z, float(o['height'])) for o in roots]
+    for fn in K.ANIMS:
+        fn(0.0, 0)
+    return out
+
+
+def cast_shot(move, cast):
+    """-> (start, end) camera keys {x, y, z, tx, ty, tz, lens}: the camera at x, y, z looking at tx, ty, tz."""
+    from mathutils import Vector
+    if not cast:
+        return None
+    hmax = max(c[3] for c in cast)
+    zg = min(c[2] for c in cast)
+    xs = [c[0] for c in cast]
+    if move == 'over_shoulder' and len(cast) >= 2:
+        a = cast[0]
+        b = max(cast[1:], key=lambda c: abs(c[0] - a[0]))
+        d = 1 if b[0] >= a[0] else -1
+        # the camera just outside and in front of the near character's shoulder, turned towards the other one: the
+        # near one large at the edge of the picture, the other's face a third in from the far side
+        ha = Vector((a[0], a[1], a[2] + a[3] * 0.86))
+        hb = Vector((b[0], b[1], b[2] + b[3] * 0.8))
+        cam = Vector((a[0] - d * 1.05, a[1] - 2.5, a[2] + a[3] * 0.92))
+        da, db = (ha - cam).normalized(), (hb - cam).normalized()
+        look = (da * 0.4 + db * 0.6).normalized()
+        theta = da.angle(db)
+        lens = max(26.0, min(50.0, 18.0 / math.tan(theta * 0.62 + math.radians(2))))
+        tgt = cam + look * (hb - cam).length
+        end = cam + (tgt - cam) * 0.06
+        return (dict(x=cam.x, y=cam.y, z=cam.z, tx=tgt.x, ty=tgt.y, tz=tgt.z, lens=lens),
+                dict(x=end.x, y=end.y, z=end.z, tx=tgt.x, ty=tgt.y, tz=tgt.z, lens=lens))
+    # two-shot (also one character alone): everyone from about the knees up, a touch below eye level, a slow push in
+    cx = (min(xs) + max(xs)) / 2
+    cy = sum(c[1] for c in cast) / len(cast)
+    span = max(xs) - min(xs) + 1.3
+    lens = 40.0
+    half_w = math.atan(18.0 / lens)
+    half_h = math.atan(18.0 * 9 / 16 / lens)
+    dist = max(span / 2 / math.tan(half_w) * 1.12, hmax * 0.82 / 2 / math.tan(half_h), 2.6)
+    tz = zg + hmax * 0.6
+    cam = Vector((cx, cy - dist, zg + hmax * 0.72))
+    tgt = Vector((cx, cy, tz))
+    end = cam + (tgt - cam) * 0.1
+    return (dict(x=cam.x, y=cam.y, z=cam.z, tx=cx, ty=cy, tz=tz, lens=lens),
+            dict(x=end.x, y=end.y, z=end.z, tx=cx, ty=cy, tz=tz, lens=lens))
+
+
+def camera(move, frames, fps, focus_obj, lens=45, cast=None):
     cam = bpy.data.cameras.new('cam')
     cam.lens = lens
     cam.dof.use_dof = True
@@ -217,6 +274,22 @@ def camera(move, frames, fps, focus_obj, lens=45):
     else:  # 'drift' / 'static': a slow float
         b.update(x=0.35, y=-10.0)
     dur = frames / fps
+    shot = cast_shot(move, cast) if move in CAST_SHOTS else None
+    if shot:
+        from mathutils import Vector
+        a, b = shot
+        cam.lens = a['lens']
+
+        def follow(t, f):
+            u = max(0.0, min(1.0, t / dur))
+            e = u * u * (3 - 2 * u)
+            v = {k: a[k] + (b[k] - a[k]) * e for k in a}
+            co.location = (v['x'] + math.sin(t * 0.4) * 0.03, v['y'], v['z'] + math.sin(t * 0.55) * 0.02)
+            look = Vector((v['tx'], v['ty'], v['tz'])) - co.location
+            co.rotation_euler = look.to_track_quat('-Z', 'Y').to_euler()
+            cam.dof.focus_distance = max(1.0, look.length)
+        K.anim(follow)
+        return co
 
     def go(t, f):
         u = max(0.0, min(1.0, t / dur))
@@ -233,12 +306,26 @@ def camera(move, frames, fps, focus_obj, lens=45):
 
 
 # ---------------------------------------------------------------- one scene
+LOOKS = ('felt', 'comic')
+
+
+def look_of(spec):
+    """The story's look: felt (felt and paper, the default) or comic (ink lines and muted cel colour, comic_look.py)."""
+    return spec.get('look') if spec.get('look') in LOOKS else 'felt'
+
+
 def build_scene(spec, sc_spec):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     K.reset()
     rng = random.Random(int(sc_spec.get('seed', 1)))
     tod = TIMES.get(sc_spec.get('time'), TIMES['night'])
+    comic = look_of(spec) == 'comic'
+    if comic or K.STYLE != 'felt':
+        K.set_style(look_of(spec))
     setup_render(spec, tod)
+    if comic:
+        import comic_look
+        comic_look.begin(sc_spec.get('time'), sc_spec.get('set'), spec)
     props = set(sc_spec.get('props') or [])
     hints = SETS.get(sc_spec.get('set'), felt_sets.set_lighthouse)(tod, rng, props) or {}
     hints.setdefault('night', tod['stars'] > 0.5)
@@ -246,12 +333,15 @@ def build_scene(spec, sc_spec):
     fps = int(spec.get('fps', 24))
     frames = int(sc_spec['frames'])
     focus = felt_stage.stage(sc_spec, fps, frames, rng, hints)
-    camera(sc_spec.get('camera') or 'drift', frames, fps, focus)
+    move = sc_spec.get('camera') or 'drift'
+    camera(move, frames, fps, focus, cast=cast_now(frames, fps) if move in CAST_SHOTS else None)
     # Only the key light casts shadows: every shadowed light costs a shadow map per frame, and on a CPU renderer
     # that is most of the frame time. The glows (moon, lamp, windows) are fine without.
     for l in bpy.data.lights:
         if l.name != 'key' or spec.get('shadows') is False:
             l.use_shadow = False
+    if comic:
+        comic_look.finish(spec, sc_spec, hints)
     return frames
 
 
@@ -307,7 +397,7 @@ def kit():
     return {
         'sets': sorted(SETS), 'times': sorted(TIMES), 'places': sorted(PLACES), 'characters': sorted(felt_stage.CHARACTERS),
         'actions': sorted(felt_actions.ACTIONS), 'props': sorted(felt_props.PROPS), 'holds': sorted(list(felt_props.HOLD) + ['star']),
-        'flyers': sorted(f for f in felt_actions.FLYERS if f in felt_stage.CHARACTERS), 'cameras': sorted(CAMERAS),
+        'flyers': sorted(f for f in felt_actions.FLYERS if f in felt_stage.CHARACTERS), 'cameras': sorted(CAMERAS), 'looks': sorted(LOOKS),
         'look': {'hair_color': sorted(felt_people.HAIR_COLORS), 'skin': sorted(felt_people.SKIN), 'hair': sorted(felt_people.HAIR),
                  'shirt': sorted(felt_people.SHIRTS), 'outfit': sorted(felt_people.OUTFITS), 'age': sorted(felt_people.AGES)},
         'flying_outfits': sorted(felt_people.FLYING_OUTFITS), 'people': sorted(felt_people.PEOPLE),

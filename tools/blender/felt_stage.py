@@ -80,6 +80,15 @@ def stage(sc_spec, fps, frames, rng, hints=None):
             ch.root.rotation_euler.z = -0.4 if x1 <= 0 else math.pi + 0.4
         cast.append(dict(ch=ch, c=c, kind=kind, action=action, x0=x0, x1=x1, y=y, start=0.3 + i * 0.4, i=i))
 
+    # film framings (two-shot, over the shoulder): the ones standing still turn more towards each other, as if talking
+    turn = {'two_shot': 0.5, 'over_shoulder': 0.7}.get(sc_spec.get('camera'))
+    if turn and len(cast) >= 2:
+        for m in cast:
+            if m['ch'].side_view or m['action'] in A.MOVERS or m['action'] == 'sleep_in_bed':
+                continue
+            o = min((o for o in cast if o is not m), key=lambda o: abs(o['x1'] - m['x1']))
+            m['ch'].root.rotation_euler.z = turn if o['x1'] >= m['x1'] else -turn
+
     # pairs: hugs and high fives meet in the middle (both move when both are doing it)
     for m in cast:
         if m['action'] not in ('hug', 'high_five'):

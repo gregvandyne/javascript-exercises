@@ -6118,6 +6118,8 @@
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
       "kitHint": "Menschen in deiner Geschichte werden zu Filzkindern und Filz-Erwachsenen, Tiere zu Filztieren, und sie kann fast überall spielen: auf dem Fußballplatz, im Klassenzimmer, am Strand, in einer Burg, unter dem Meer oder auf dem Mond.",
       "styleH": "Was für eine Geschichte?",
+      "lookH": "Wie soll es aussehen?",
+      "lookHint": "Dieselbe Geschichtenwelt, auf zwei Arten gezeichnet.",
       "toneH": "Wie soll sie sich anfühlen?",
       "voiceH": "Wer liest vor?",
       "voiceAi": "Die Stimmen sind KI-Stimmen. Tippe auf ▶, um eine anzuhören.",
@@ -6208,6 +6210,7 @@
       "piano": "Sanftes Klavier",
       "none": "Keine Musik"
     },
+    "look": { "felt": "Filz und Papier", "comic": "Comic" },
     "set": {
       "lighthouse": "Leuchtturm",
       "village": "Dorf",
@@ -6231,6 +6234,7 @@
       "scene": "Szene {n}",
       "line": "Satz {n}",
       "remakeP": "Neue Wörter, eine neue Stimme oder neue Musik gehen schnell: Die Bilder bleiben.",
+      "lookHint": "Ein neuer Look zeichnet jede Szene neu, deshalb dauert das neue Video etwas länger.",
       "remakesLeft": "{count, plural, one {Du kannst heute noch # schnelle Änderung machen.} other {Du kannst heute noch # schnelle Änderungen machen.}}",
       "remakeNone": "Du hast heute alle schnellen Änderungen benutzt. Komm morgen wieder!",
       "remake": "Das neue Video machen",

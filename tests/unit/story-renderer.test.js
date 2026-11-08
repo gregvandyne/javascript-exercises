@@ -82,6 +82,9 @@ test('renderer service: bad and oversized specs are refused before anything runs
   assert.ok(bad.problems.some(p => /scenes\[0\]\.id/.test(p)) && bad.problems.some(p => /scenes\[0\]\.set/.test(p)) && bad.problems.some(p => /scenes\[1\]\.frames/.test(p)));
   assert.equal(bad.spec.out_dir, undefined, 'the caller never picks the output folder');
   assert.ok(!checkSpec({ ...spec(), scenes: [] }).ok);
+  assert.equal(checkSpec({ ...spec(), look: 'comic' }).spec.look, 'comic', 'the comic look goes through');
+  assert.equal(checkSpec(spec()).spec.look, undefined, 'no look: felt, as before');
+  assert.ok(!checkSpec({ ...spec(), look: '../x' }).ok, 'only the looks there are');
   assert.ok(!checkSpec({ ...spec(), scenes: Array.from({ length: 11 }, (_, i) => ({ ...spec().scenes[0], id: `s${i}` })) }).ok);
   assert.ok(!checkSpec({ ...spec(), scenes: [spec().scenes[0], spec().scenes[0]] }).ok, 'scene ids are unique');
   // a person's look, a name and what they hold get through; anything odd in them does not

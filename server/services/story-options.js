@@ -32,6 +32,16 @@ export const MUSIC = {
   none: { emoji: '🔇' },
 };
 /**
+ * How the pictures are drawn (one 3D kit, two looks; docs/story-builder.md "Looks"). felt: felt and paper, the
+ * original. comic: a graphic-novel look (ink lines, muted cel colour, moody light; tools/blender/comic_look.py), which
+ * also nudges the music towards a calmer, film-like mood (`music`) unless the kind of story already brings a lively one
+ * (`keeps`), and tells the writer to frame scenes like a film (`prompt`). Changing the look renders every scene again.
+ */
+export const LOOKS = {
+  felt: { emoji: '🧶' },
+  comic: { emoji: '✏️', music: 'piano', keeps: ['playful', 'adventure'], prompt: 'The pictures are drawn like a comic book (ink lines, muted colours, film-like light): when two characters talk or share a moment, prefer the cameras two_shot and over_shoulder; slow_push for a close, quiet moment; pull_back or drift to show a new place.' },
+};
+/**
  * Narrator voices offered to kids: a few of the site's AI voices (tts-voices.js VOICES) with friendly names
  * (stories.voice.<id> in the locale files). 'auto' is the narrator the admin chose for the page's language.
  * pitch: the offline voice (development, or when the AI voice is off) is shifted a little so the choice is still heard.
@@ -47,20 +57,26 @@ export const NARRATORS = {
 };
 for (const n of Object.values(NARRATORS)) if (n.voice && !VOICES.includes(n.voice)) throw new Error(`story narrator ${n.voice} is not a site voice`);
 
-export const DEFAULTS = { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby' };
+export const DEFAULTS = { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby', look: 'felt' };
 /** Lengths of the free-text extras (characters, lesson, a rewrite note). */
 export const TEXT_LIMITS = { characters: 120, lesson: 120, note: 200 };
 
 const tidy = s => String(s ?? '').normalize('NFC').replace(/[\u0000-\u001f\u007f‪-‮⁦-⁩]/g, ' ').replace(/\s+/g, ' ').trim();
 const one = (v, list, d) => (Object.hasOwn(list, v) ? v : d);
 
-/** The choices from a form or an API body, every one checked against its list: { style, tone, voice, music }. */
+/**
+ * The choices from a form or an API body, every one checked against its list: { style, tone, voice, music, look }.
+ * Music the body leaves out follows the style and look (musicFor) on a new story; on a change it stays as it was.
+ */
 export function choiceFields(b = {}, base = DEFAULTS) {
+  const style = one(b.style, STYLES, base.style || DEFAULTS.style);
+  const look = one(b.look, LOOKS, base.look || DEFAULTS.look);
   return {
-    style: one(b.style, STYLES, base.style || DEFAULTS.style),
+    style,
     tone: one(b.tone, TONES, base.tone || DEFAULTS.tone),
     voice: one(b.voice, NARRATORS, base.voice || DEFAULTS.voice),
-    music: one(b.music, MUSIC, base.music || DEFAULTS.music),
+    music: one(b.music, MUSIC, base === DEFAULTS ? musicFor(style, look) : base.music || DEFAULTS.music),
+    look,
   };
 }
 /** The optional short texts, tidied and cut to length: { characters, lesson }. */
@@ -70,8 +86,17 @@ export function extraFields(b = {}) {
 export const noteField = b => tidy(b && b.note).slice(0, TEXT_LIMITS.note);
 /** A story row's choices (old rows: the defaults). */
 export const optionsOf = s => choiceFields(s || {}, DEFAULTS);
-/** The music that goes with a style (the form preselects it until the person picks music themselves). */
-export const musicFor = style => (STYLES[style] || STYLES.bedtime).music;
+/**
+ * The music that goes with a style and a look (the form preselects it until the person picks music themselves): the
+ * style's own mood, or the look's (comic: piano) unless the style's mood is one the look keeps.
+ */
+export function musicFor(style, look = 'felt') {
+  const m = (STYLES[style] || STYLES.bedtime).music;
+  const l = LOOKS[look] || LOOKS.felt;
+  return l.music && !(l.keeps || []).includes(m) ? l.music : m;
+}
+/** What the writer is told about the look ('' for felt). */
+export const lookPrompt = look => (LOOKS[look] || LOOKS.felt).prompt || '';
 /** The site voice for a narrator choice (null: the language's own narrator). */
 export const providerVoice = id => (NARRATORS[id] || NARRATORS.auto).voice;
 export const pitchOf = id => (NARRATORS[id] || NARRATORS.auto).pitch;

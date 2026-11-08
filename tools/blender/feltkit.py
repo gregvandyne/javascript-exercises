@@ -42,6 +42,11 @@ _restyle = None  # styles.material while the style isn't felt
 def set_style(name='felt'):
     """Pick the look before building a scene. felt (the default) is this file's own materials, unchanged."""
     global STYLE, _restyle
+    if name == 'comic':  # the Story Builder's comic look (comic_look.py): ink lines, muted cel colour
+        import comic_look
+        STYLE = comic_look.use()
+        _restyle = comic_look.material
+        return STYLE
     import styles
     STYLE = styles.use(name)
     styles._MATS.clear()

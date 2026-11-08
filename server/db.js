@@ -605,6 +605,9 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS story_edits (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id TEXT NOT NULL, owner_id TEXT NOT NULL,
       kind TEXT NOT NULL, created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS story_edits_owner ON story_edits(owner_id, created_at);`],
+  // Story Builder looks (docs/story-builder.md "Looks"): how the pictures are drawn, felt (felt and paper, every story
+  // so far) or comic (ink lines and muted cel colour). Part of each scene clip's key, so a new look renders again.
+  ['0055_story_look', `ALTER TABLE stories ADD COLUMN look TEXT NOT NULL DEFAULT 'felt';`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

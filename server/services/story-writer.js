@@ -17,7 +17,7 @@ import * as aiBudget from './ai-budget.js';
 import { config } from '../config.js';
 import { localeInfo, tEn } from '../i18n/index.js';
 import { SCHEMA, validateScript, LIMITS, WORDS_PER_SEC, kitPrompt } from './story-script.js';
-import { STYLES, TONES, TEXT_LIMITS } from './story-options.js';
+import { STYLES, TONES, TEXT_LIMITS, lookPrompt } from './story-options.js';
 
 const LANGS = { en: 'English (US)', 'en-GB': 'British English', pt: 'Brazilian Portuguese', fr: 'French', es: 'Spanish', de: 'German', he: 'Hebrew', ja: 'Japanese', ar: 'Arabic', ru: 'Russian', it: 'Italian', 'zh-Hant': 'Traditional Chinese', nl: 'Dutch' };
 const AGES = { '3-5': 'ages 3 to 5: very short, simple sentences, lots of repetition', '6-8': 'ages 6 to 8: simple sentences, a few new words', '9-12': 'ages 9 to 12: richer words, still gentle', all: 'the whole family, ages 4 and up' };
@@ -27,16 +27,17 @@ export const storyModel = () => process.env.STORY_MODEL || config.builderModel;
 export const hooks = { create: null, classify: null, screen: null };
 
 /**
- * The writer's instructions. opts: { style, tone } (story-options.js STYLES / TONES; unknown -> bedtime, cozy). The
+ * The writer's instructions. opts: { style, tone, look } (story-options.js STYLES / TONES / LOOKS; unknown -> bedtime,
+ * cozy, felt; a comic look adds a line about film framings). The
  * safety rules are the same for every style; only the kind of story and its feeling change.
  */
-export const SYSTEM = (lang, ageBand, seconds, { style = 'bedtime', tone = 'cozy' } = {}) => `You write gentle stories for children for Oomba Academy, a kid-safe learning website. A story becomes a short narrated video in a cosy felt-and-paper 3D world: a small cast of felt children, grown-ups and animals in paper scenery, a voice reading it, background music and the words on screen.
+export const SYSTEM = (lang, ageBand, seconds, { style = 'bedtime', tone = 'cozy', look = 'felt' } = {}) => `You write gentle stories for children for Oomba Academy, a kid-safe learning website. A story becomes a short narrated video in a cosy felt-and-paper 3D world: a small cast of felt children, grown-ups and animals in paper scenery, a voice reading it, background music and the words on screen.
 Write in ${lang}, for ${AGES[ageBand] || AGES.all}. The story must be about ${seconds} seconds long when read slowly: about ${Math.round(seconds * WORDS_PER_SEC * 0.85)} spoken words in total, in ${seconds <= 45 ? '3 or 4' : seconds <= 60 ? '4 or 5' : '5 to 7'} scenes with 1 to 3 lines each.
 Kind of story: ${(STYLES[style] || STYLES.bedtime).prompt}
 ${(TONES[tone] || TONES.cozy).prompt}
 Always: warm and kind. Nothing scary, sad, violent or mean; no villains, no danger, no injuries, no real people, no brands or characters from films, books or games, no links, no personal details. If the idea asks for any of that, keep only the gentle part of it.
 Build every scene ONLY from this kit (the renderer cannot draw anything else, so never describe things it can't show as if they were on screen):
-${kitPrompt()}
+${kitPrompt()}${lookPrompt(look) ? `\n${lookPrompt(look)}` : ''}
 People in the idea become felt people (kid, grownup, grandparent, with a look that matches them); animals in the idea become the felt animals; keep everyone's name. A place that isn't in the kit becomes the closest set.
 Give the main character a simple name and keep each character the same kind (the same animal, or the same person) all the way through.
 Each line: "say" is what the narrator reads (one or two short sentences, at most ${LIMITS.line} characters); "show" is the words on screen while it is read: the same words, or a shorter version (at most ${LIMITS.words} characters).
@@ -85,17 +86,17 @@ export async function screenIdea(idea, { t = tEn } = {}) {
 }
 
 /**
- * { idea, ageBand, seconds, locale, style, tone, characters, lesson, previous, note } -> { ok: true, script, attempts } |
+ * { idea, ageBand, seconds, locale, style, tone, look, characters, lesson, previous, note } -> { ok: true, script, attempts } |
  * { ok: false, code, errors? }. previous (a checked script) + note: a rewrite of that story.
  * codes: 'aiOff' (no key, or the AI budget is resting), 'refused' (the model refused), 'unsafe' (the script failed the
  * safety checks twice), 'invalid' (wrong shape twice), 'aiFailed' (the call failed).
  */
-export async function writeStory({ idea, ageBand = 'all', seconds = 60, locale = 'en', style = 'bedtime', tone = 'cozy', characters = '', lesson = '', previous = null, note = '' }) {
+export async function writeStory({ idea, ageBand = 'all', seconds = 60, locale = 'en', style = 'bedtime', tone = 'cozy', look = 'felt', characters = '', lesson = '', previous = null, note = '' }) {
   const client = hooks.create ? {} : anthropic();
   if (!client) return { ok: false, code: 'aiOff' };
   if (!aiBudget.ok()) return { ok: false, code: 'aiOff' };
   const lang = LANGS[localeInfo(locale).code] || 'English (US)';
-  const system = SYSTEM(lang, ageBand, seconds, { style, tone });
+  const system = SYSTEM(lang, ageBand, seconds, { style, tone, look });
   const messages = [{ role: 'user', content: userMessage({ idea, characters, lesson, previous, note }) }];
   let last = null;
   for (let attempt = 1; attempt <= 2; attempt++) {

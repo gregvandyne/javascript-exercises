@@ -6117,6 +6117,8 @@
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
       "kitHint": "Les personnes de ton histoire deviennent des enfants et des adultes en feutre, les animaux des animaux en feutre, et elle peut se passer presque partout : un terrain de foot, une classe, la plage, un château, sous la mer ou sur la Lune.",
       "styleH": "Quel genre d’histoire ?",
+      "lookH": "Quel style de dessin ?",
+      "lookHint": "Le même monde, dessiné de deux façons.",
       "toneH": "Quelle ambiance ?",
       "voiceH": "Qui la lit ?",
       "voiceAi": "Ce sont des voix d’IA. Touche ▶ pour en écouter une.",
@@ -6207,6 +6209,7 @@
       "piano": "Piano doux",
       "none": "Sans musique"
     },
+    "look": { "felt": "Feutrine et papier", "comic": "Bande dessinée" },
     "set": {
       "lighthouse": "Phare",
       "village": "Village",
@@ -6230,6 +6233,7 @@
       "scene": "Scène {n}",
       "line": "Phrase {n}",
       "remakeP": "De nouveaux mots, une nouvelle voix ou une nouvelle musique, c’est rapide : les images sont gardées.",
+      "lookHint": "Un nouveau style redessine toutes les scènes : la nouvelle vidéo prend un peu plus de temps.",
       "remakesLeft": "{count, plural, one {Tu peux encore faire # changement rapide aujourd’hui.} other {Tu peux encore faire # changements rapides aujourd’hui.}}",
       "remakeNone": "Tu as utilisé tous tes changements rapides pour aujourd’hui. Reviens demain !",
       "remake": "Faire la nouvelle vidéo",

@@ -593,11 +593,12 @@ const P = await import('../../server/stories/pipeline.js');
 const TV = await import('../../server/services/tts-voices.js');
 
 test('choices: closed lists with defaults; anything else falls back; the short texts are tidied and cut', () => {
-  assert.deepEqual(O.choiceFields({}), { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby' });
-  assert.deepEqual(O.choiceFields({ style: 'mystery', tone: 'brave', voice: 'onyx', music: 'magical' }), { style: 'mystery', tone: 'brave', voice: 'onyx', music: 'magical' });
-  assert.deepEqual(O.choiceFields({ style: 'horror', tone: '<b>', voice: 'alloy', music: 'heavy-metal' }), O.DEFAULTS, 'not on a list: the default (alloy is a site voice, but not one offered here)');
+  assert.deepEqual(O.choiceFields({}), { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby', look: 'felt' });
+  assert.deepEqual(O.choiceFields({ style: 'mystery', tone: 'brave', voice: 'onyx', music: 'magical', look: 'comic' }), { style: 'mystery', tone: 'brave', voice: 'onyx', music: 'magical', look: 'comic' });
+  assert.deepEqual(O.choiceFields({ style: 'horror', tone: '<b>', voice: 'alloy', music: 'heavy-metal', look: 'anime' }), O.DEFAULTS, 'not on a list: the default (alloy is a site voice, but not one offered here)');
   assert.deepEqual(O.choiceFields({ style: 'toString', tone: '__proto__' }), O.DEFAULTS, 'no prototype keys');
-  assert.deepEqual(O.choiceFields({ voice: 'nova' }, { style: 'funny', tone: 'silly', voice: 'sage', music: 'playful' }), { style: 'funny', tone: 'silly', voice: 'nova', music: 'playful' }, 'a change keeps the rest');
+  assert.deepEqual(O.choiceFields({ voice: 'nova' }, { style: 'funny', tone: 'silly', voice: 'sage', music: 'playful', look: 'comic' }), { style: 'funny', tone: 'silly', voice: 'nova', music: 'playful', look: 'comic' }, 'a change keeps the rest');
+  assert.equal(O.choiceFields({ look: 'comic' }, { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby', look: 'felt' }).music, 'lullaby', 'a new look on a change keeps the music chosen');
   const x = O.extraFields({ characters: '  my cat\u0000 Luna   and a fox ' + 'x'.repeat(300), lesson: 'share‮' });
   assert.ok(x.characters.startsWith('my cat Luna and a fox'));
   assert.equal(x.characters.length, O.TEXT_LIMITS.characters);
@@ -607,6 +608,14 @@ test('choices: closed lists with defaults; anything else falls back; the short t
   assert.deepEqual(Object.keys(O.MUSIC), M.MOOD_NAMES, 'every music choice is a mood the composer plays');
   for (const s of Object.values(O.STYLES)) assert.ok(M.MOOD_NAMES.includes(s.music));
   assert.equal(O.musicFor('adventure'), 'adventure');
+  // the comic look nudges the music towards piano, unless the kind of story brings a lively mood; a choice is kept
+  assert.equal(O.musicFor('bedtime', 'comic'), 'piano');
+  assert.equal(O.musicFor('mystery', 'comic'), 'piano');
+  assert.equal(O.musicFor('funny', 'comic'), 'playful');
+  assert.equal(O.musicFor('adventure', 'comic'), 'adventure');
+  assert.equal(O.choiceFields({ look: 'comic' }).music, 'piano');
+  assert.equal(O.choiceFields({ look: 'comic', music: 'lullaby' }).music, 'lullaby', 'the person\'s own music stays');
+  for (const l of Object.values(O.LOOKS)) if (l.music) assert.ok(M.MOOD_NAMES.includes(l.music));
   assert.deepEqual(O.optionsOf({}), O.DEFAULTS, 'an old row: the original bedtime story with the music box');
 });
 
@@ -618,6 +627,7 @@ test('writer prompt: the kind of story and its feeling go in; the safety rules a
     assert.match(p, /Nothing scary, sad, violent or mean; no villains/);
     assert.match(p, /lighthouse \(a striped lighthouse/);
     assert.match(p, /People in the idea become felt people \(kid, grownup, grandparent/, 'people are felt people, animals are felt animals');
+    assert.doesNotMatch(p, /drawn like a comic book/, 'the felt look says nothing about looks');
     assert.doesNotMatch(p, /closest friendly felt animal/);
     prompts.add(p);
   }
@@ -771,6 +781,43 @@ test('remake planner: the scene key ignores the length but not the pictures or t
 });
 
 // ---------------------------------------------------------------- jobs: changes to a finished story
+test('looks: felt or comic; the comic look is in the spec, the clip key and the writer prompt; a new look renders again', () => {
+  const script = S.validateScript(sample()).script;
+  const sc = P.sceneVisuals(script, { id: 'abc' })[0];
+  const q = P.QUALITY.full;
+  // felt adds nothing to the key: clips kept before looks existed still match
+  assert.equal(RM.sceneKey(sc, q), RM.sceneKey(sc, q, 'felt'));
+  assert.equal(RM.sceneKey(sc, q), crypto.createHash('sha256').update(JSON.stringify({ v: RM.CLIP_VERSION, set: sc.set, time: sc.time, props: [...sc.props], camera: sc.camera, seed: sc.seed, focus: sc.focus,
+    characters: sc.characters.map(c => ({ kind: c.kind, action: c.action, place: c.place })), width: q.width, height: q.height, fps: q.fps, step: q.step, samples: q.samples })).digest('hex').slice(0, 24));
+  assert.notEqual(RM.sceneKey(sc, q, 'comic'), RM.sceneKey(sc, q), 'the comic look is another clip');
+  assert.deepEqual(P.sceneKeys(script, { id: 'abc', quality: 'full', look: 'comic' }), P.sceneVisuals(script, { id: 'abc' }).map(x => RM.sceneKey(x, q, 'comic')));
+  // the render spec carries the look only when it isn't felt
+  const tl = C.timeline(script, script.scenes.map(s2 => s2.lines.map(() => 3)));
+  assert.equal(P.renderSpec(script, tl, { id: 'abc', outDir: '/tmp/x' }).look, undefined);
+  assert.equal(P.renderSpec(script, tl, { id: 'abc', outDir: '/tmp/x', look: 'comic' }).look, 'comic');
+  assert.equal(P.renderSpec(script, tl, { id: 'abc', outDir: '/tmp/x', look: 'anime' }).look, undefined, 'unknown: felt');
+  // a new look: no new words or voice, every scene rendered again; back to felt reuses the felt clips
+  const opts = { style: 'bedtime', tone: 'cozy', voice: 'auto', music: 'lullaby', look: 'felt' };
+  const keyOf = (x, look) => RM.sceneKey(x, P.QUALITY.test, look);
+  const scenes = P.sceneVisuals(script, { id: 'abc' });
+  const cached = new Set(scenes.map(x => keyOf(x, 'felt')));
+  const plan = (o, c = cached) => RM.planRemake({ kind: 'remake', before: { script, options: opts }, after: { script, options: o, scenes }, cached: c, keyOf });
+  let pl = plan({ ...opts, look: 'comic' });
+  assert.deepEqual([pl.nothing, pl.voice, pl.captions, pl.render, pl.reuse], [false, [], false, [0, 1, 2, 3, 4], []]);
+  pl = plan({ ...opts, look: 'comic' }, new Set([...cached, ...scenes.map(x => keyOf(x, 'comic'))]));
+  assert.deepEqual([pl.nothing, pl.render.length, pl.reuse.length], [false, 0, 5], 'comic clips kept from before: reused');
+  assert.equal(plan(opts).nothing, true);
+  // the writer hears about film framings only for the comic look, and those cameras are in the kit
+  const p = W.SYSTEM('English (US)', '6-8', 60, { look: 'comic' });
+  assert.match(p, /drawn like a comic book/);
+  assert.match(p, /two_shot and over_shoulder/);
+  for (const cam of ['two_shot', 'over_shoulder']) assert.ok(S.KIT.cameras.includes(cam), cam);
+  // one list of looks everywhere: the options, the Blender renderer, the Modal app
+  assert.deepEqual(Object.keys(O.LOOKS), ['felt', 'comic']);
+  assert.match(fs.readFileSync(path.join(ROOT, 'server/stories/blender/render_story.py'), 'utf8'), /^LOOKS = \('felt', 'comic'\)$/m);
+  assert.match(fs.readFileSync(path.join(ROOT, 'services/story-renderer/modal_app.py'), 'utf8'), /^LOOKS = \("felt", "comic"\)$/m);
+});
+
 test('changes: one at a time, quick ones have their own allowance, a rewrite counts like a new story; the video stays done', () => {
   fresh(); q.run('DELETE FROM story_edits');
   const old = { d: config.storyDailyLimit, r: config.storyRemakeLimit, q: config.storyQueueMax };
@@ -833,9 +880,10 @@ test('changes: the new version takes the script, the choices and a new number; a
   assert.ok(J.canView(null, J.get(s.id)), 'while it is made, the shared version stays shared');
   J.claimNext('w1');
   const script = S.validateScript(sample()).script; script.title = 'New';
-  const r = J.finishRemake(s.id, { script, options: { voice: 'onyx', music: 'piano' }, meta: { total: 40 } });
+  const r = J.finishRemake(s.id, { script, options: { voice: 'onyx', music: 'piano', look: 'comic' }, meta: { total: 40 } });
   assert.deepEqual(r, { ok: true, share: 'pending' });
   const row = J.get(s.id);
+  assert.equal(row.look, 'comic', 'the new look is kept');
   assert.deepEqual([row.title, row.voice, row.music, row.style, row.version, row.remake_status, row.share, row.approved_by], ['New', 'onyx', 'piano', 'bedtime', 2, '', 'pending', null]);
   assert.ok(!J.canView(null, row), 'new words: not public until a grown-up says yes again');
   assert.ok(J.canView(parent, row) && J.pendingFor(parent).some(x => x.id === s.id));
@@ -879,6 +927,10 @@ test('pages: the form offers the choices; they are stored, shown, and screened',
     for (const k of Object.keys(O.STYLES)) assert.match(form.text, new RegExp(`name="style" id="sb-style-${k}" value="${k}"`));
     for (const k of Object.keys(O.MUSIC)) assert.match(form.text, new RegExp(`id="sb-music-${k}"`));
     for (const k of Object.keys(O.NARRATORS)) assert.match(form.text, new RegExp(`id="sb-voice-${k}"`));
+    for (const k of Object.keys(O.LOOKS)) assert.match(form.text, new RegExp(`name="look" id="sb-look-${k}" value="${k}"`));
+    assert.match(form.text, /id="sb-look-felt" value="felt" checked/, 'felt and paper is the default look');
+    assert.match(form.text, /Felt &amp; paper/);
+    assert.match(form.text, /"comic":\{"bedtime":"piano"/, 'the page knows the comic look leans to piano');
     assert.match(form.text, /id="sb-style-bedtime" value="bedtime" checked/, 'sensible defaults are picked');
     assert.match(form.text, /id="sb-music-lullaby" value="lullaby" checked/);
     assert.match(form.text, /become felt children and grown-ups, animals become felt animals/, 'the kit is explained');
@@ -889,15 +941,15 @@ test('pages: the form offers the choices; they are stored, shown, and screened',
     assert.deepEqual([bad.status, bad.json.code], [422, 'refused'], 'the extras are screened like the idea');
     const badLesson = await call(base, cookie, '/api/stories', { method: 'POST', body: { idea: 'a fox', lesson: 'blood' } });
     assert.equal(badLesson.status, 422);
-    const ok = await call(base, cookie, '/api/stories', { method: 'POST', body: { idea: 'a fox and a kite', style: 'adventure', tone: 'brave', voice: 'onyx', music: 'adventure', characters: 'my sister Mia', lesson: 'never give up', seconds: 45 } });
+    const ok = await call(base, cookie, '/api/stories', { method: 'POST', body: { idea: 'a fox and a kite', style: 'adventure', tone: 'brave', voice: 'onyx', music: 'adventure', look: 'comic', characters: 'my sister Mia', lesson: 'never give up', seconds: 45 } });
     assert.equal(ok.status, 200, ok.text);
     const row = J.get(ok.json.id);
-    assert.deepEqual([row.style, row.tone, row.voice, row.music, row.characters, row.lesson], ['adventure', 'brave', 'onyx', 'adventure', 'my sister Mia', 'never give up']);
+    assert.deepEqual([row.style, row.tone, row.voice, row.music, row.look, row.characters, row.lesson], ['adventure', 'brave', 'onyx', 'adventure', 'comic', 'my sister Mia', 'never give up']);
     const junk = await call(base, cookie, '/api/stories', { method: 'POST', body: { idea: 'a sleepy owl', style: 'horror', voice: 'alloy', music: 'x' } });
     const jr = J.get(junk.json.id);
-    assert.deepEqual([jr.style, jr.voice, jr.music], ['bedtime', 'auto', 'lullaby'], 'unknown choices fall back to the defaults');
+    assert.deepEqual([jr.style, jr.voice, jr.music, jr.look], ['bedtime', 'auto', 'lullaby', 'felt'], 'unknown choices fall back to the defaults');
     const pg = await call(base, cookie, `/stories/${ok.json.id}`);
-    assert.match(pg.text, /<ul class="sb-pills"[^>]*>.*Adventure.*Brave.*Deep and calm.*Adventure.*my sister Mia.*never give up/s, 'the choices are on the story page');
+    assert.match(pg.text, /<ul class="sb-pills"[^>]*>.*Adventure.*Comic.*Brave.*Deep and calm.*Adventure.*my sister Mia.*never give up/s, 'the choices are on the story page');
   } finally { config.storyBuilder = old.on; config.anthropicKey = old.key; W.hooks.screen = null; await close(); }
 });
 
@@ -921,6 +973,8 @@ test('pages: the owner edits a finished story (words, voice, music) or asks for 
     assert.match(ed.text, /Lighthouse/);
     assert.match(ed.text, /By the sea stood a striped lighthouse/, 'every line is there to edit');
     assert.match(ed.text, /id="sb-edit-voice-auto" value="auto" checked/);
+    assert.match(ed.text, /id="sb-edit-look-felt" value="felt" checked/);
+    assert.match(ed.text, /A new look draws every scene again/);
     assert.match(ed.text, /id="sb-rewrite"/);
     // nothing changed
     const same = await call(base, cookie, `/api/stories/${s.id}/remake`, { method: 'POST', body: { title: script.title, voice: 'auto', music: 'lullaby' } });
@@ -940,6 +994,13 @@ test('pages: the owner edits a finished story (words, voice, music) or asks for 
     const rm = J.remakeOf(row);
     assert.deepEqual([row.status, row.remake_status, rm.kind, rm.options.voice, rm.options.music, rm.script.scenes[1].lines[0].say], ['done', 'queued', 'remake', 'onyx', 'magical', 'Pip waved to the moon.']);
     assert.deepEqual(rm.script.scenes.map(sc => sc.set), script.scenes.map(sc => sc.set), 'the pictures stay the same');
+    assert.equal(rm.options.look, 'felt');
+    // a new look alone is a change (every scene is drawn again)
+    q.run("UPDATE stories SET remake_status='', remake='' WHERE id=?", s.id);
+    const lk = await call(base, cookie, `/api/stories/${s.id}/remake`, { method: 'POST', body: { title: script.title, voice: 'auto', music: 'lullaby', look: 'comic' } });
+    assert.equal(lk.status, 200, lk.text);
+    assert.deepEqual([J.remakeOf(J.get(s.id)).options.look, lk.json.plan.render], ['comic', script.scenes.length]);
+    q.run("UPDATE stories SET remake_status='queued', remake=? WHERE id=?", JSON.stringify(rm), s.id);
     // the story page: the old video, and the new one on its way
     const busy = await call(base, cookie, `/stories/${s.id}`);
     assert.match(busy.text, /<video id="sb-video"/);

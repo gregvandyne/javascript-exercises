@@ -38,8 +38,12 @@ if GPU not in ("L4", "L40S", "A10G", "A100", "H100"):
     raise SystemExit(f"STORY_GPU must be L4, L40S or A10G (got {GPU})")
 MAX_SCENES = 10
 # the Python kit render_story.py imports (tests/unit/story-modal.test.js checks this list covers every felt_*.py)
-KIT_FILES = ("feltkit.py", "styles.py", "felt_people.py", "felt_animals.py", "felt_actions.py", "felt_props.py",
+KIT_FILES = ("feltkit.py", "styles.py", "comic_look.py", "felt_people.py", "felt_animals.py", "felt_actions.py", "felt_props.py",
              "felt_sets.py", "felt_sets_rooms.py", "felt_sets_outdoor.py", "felt_stage.py")
+
+
+# how the pictures are drawn (render_story.py LOOKS; services/story-renderer/spec.js LOOKS)
+LOOKS = ("felt", "comic")
 
 
 # ---------------------------------------------------------------- the scene work (no Modal needed)
@@ -53,6 +57,8 @@ def check_spec(spec):
         v = spec.get(k)
         if not isinstance(v, int) or not lo <= v <= hi:
             probs.append(f"{k}: a whole number {lo}..{hi}")
+    if spec.get("look") is not None and spec.get("look") not in LOOKS:
+        probs.append("look: " + " or ".join(LOOKS))
     scenes = spec.get("scenes")
     if not isinstance(scenes, list) or not 1 <= len(scenes) <= MAX_SCENES:
         return probs + [f"scenes: 1..{MAX_SCENES}"]
@@ -156,7 +162,7 @@ def make_api(backend, token):
         probs = check_spec(spec)
         if probs:
             return JSONResponse({"error": "bad spec", "problems": probs[:10]}, 400)
-        spec = {k: spec[k] for k in ("width", "height", "fps", "step", "samples", "scenes")}
+        spec = {k: spec[k] for k in ("width", "height", "fps", "step", "samples", "scenes", "look") if k in spec}
         job = uuid.uuid4().hex[:16]
         total = backend.start(job, spec, str(body.get("key", ""))[:64])
         return JSONResponse({"id": job, "total": total}, 202)

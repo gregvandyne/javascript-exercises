@@ -6118,6 +6118,8 @@
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
       "kitHint": "Mensen in je verhaal worden vilten kinderen en volwassenen, dieren worden vilten dieren, en het kan bijna overal gebeuren: op een voetbalveld, in de klas, op het strand, in een kasteel, onder de zee of op de maan.",
       "styleH": "Wat voor verhaal?",
+      "lookH": "Hoe moet het eruitzien?",
+      "lookHint": "Dezelfde verhaalwereld, op twee manieren getekend.",
       "toneH": "Hoe moet het voelen?",
       "voiceH": "Wie leest het voor?",
       "voiceAi": "De stemmen zijn AI-stemmen. Tik op ▶ om er een te horen.",
@@ -6208,6 +6210,7 @@
       "piano": "Zachte piano",
       "none": "Geen muziek"
     },
+    "look": { "felt": "Vilt en papier", "comic": "Strip" },
     "set": {
       "lighthouse": "Vuurtoren",
       "village": "Dorp",
@@ -6231,6 +6234,7 @@
       "scene": "Scène {n}",
       "line": "Zin {n}",
       "remakeP": "Nieuwe woorden, een nieuwe stem of nieuwe muziek gaan snel: de plaatjes blijven.",
+      "lookHint": "Een nieuwe stijl tekent elke scène opnieuw, dus de nieuwe video duurt wat langer.",
       "remakesLeft": "{count, plural, one {Je kunt vandaag nog # snelle wijziging doen.} other {Je kunt vandaag nog # snelle wijzigingen doen.}}",
       "remakeNone": "Je hebt al je snelle wijzigingen voor vandaag gebruikt. Kom morgen terug!",
       "remake": "Maak de nieuwe video",

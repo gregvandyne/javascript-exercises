@@ -7,6 +7,8 @@ export const LIMITS = { width: 1920, height: 1080, fps: 30, step: 6, samples: 32
 const NAME = /^[a-z][a-z0-9_]{0,23}$/;
 const ID = /^[A-Za-z0-9_-]{1,16}$/;
 const LOOK_FIELDS = ['hair_color', 'skin', 'hair', 'shirt', 'outfit', 'glasses', 'age'];
+/** How the pictures are drawn (render_story.py LOOKS; server/services/story-options.js LOOKS). */
+export const LOOKS = ['felt', 'comic'];
 /** The music moods (server/services/story-music.js MOOD_NAMES; a test keeps them in step). */
 export const MOODS = ['lullaby', 'playful', 'adventure', 'magical', 'piano', 'none'];
 
@@ -23,6 +25,7 @@ export function checkSpec(input) {
     samples: int(d.samples ?? 4, 1, LIMITS.samples, 'samples'),
   };
   if (d.engine !== undefined) { if (['eevee', 'cycles'].includes(d.engine)) spec.engine = d.engine; else problems.push('engine: eevee or cycles'); }
+  if (d.look !== undefined) { if (LOOKS.includes(d.look)) spec.look = d.look; else problems.push(`look: ${LOOKS.join(' or ')}`); }
   if (d.only_frames !== undefined) {
     if (!Array.isArray(d.only_frames) || d.only_frames.length > LIMITS.onlyFrames) problems.push(`only_frames: at most ${LIMITS.onlyFrames}`);
     else spec.only_frames = d.only_frames.map((f, i) => int(f, 0, LIMITS.fps * LIMITS.sceneSeconds, `only_frames[${i}]`));

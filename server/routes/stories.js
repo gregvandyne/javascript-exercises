@@ -1,13 +1,14 @@
 // Story Builder pages (docs/story-builder.md). Off unless STORY_BUILDER=1 (it needs scripts/story-worker.js running).
 //   GET  /stories                  my stories, and kids' stories waiting for my OK (linked grown-ups, teachers)
-//   GET  /stories/new              the idea form, with the choices (kind of story, feeling, voice, music, extras)
+//   GET  /stories/new              the idea form, with the choices (kind of story, look, feeling, voice, music, extras)
 //   GET  /stories/:id              progress while it is made, then the player (captions track + the words below)
-//   GET  /stories/:id/edit         the owner changes a finished story: its words, voice and music, or asks for a rewrite
+//   GET  /stories/:id/edit         the owner changes a finished story: its words, voice, music, look, or asks for a rewrite
 //   GET  /stories/:id/video.mp4 | poster.jpg | captions.vtt     the files, for whoever may watch (story-jobs canView)
 //   GET  /api/stories/:id          { status, progress, error, remake } for the progress page
-//   POST /api/stories              { idea, ageBand, seconds, style, tone, voice, music, characters, lesson } -> { id } | 4xx { error, code }
+//   POST /api/stories              { idea, ageBand, seconds, style, tone, voice, music, look, characters, lesson } -> { id } | 4xx { error, code }
 //   POST /api/stories/voice-sample { voice }  -> { u } a fixed sample line in that narrator voice (cached; AI voice on only)
-//   POST /api/stories/:id/remake   { title, lines: [[say per line] per scene], voice, music }   a quick change (no new pictures)
+//   POST /api/stories/:id/remake   { title, lines: [[say per line] per scene], voice, music, look }   a quick change (new
+//                                  pictures only for a new look)
 //   POST /api/stories/:id/rewrite  { note, style, tone }   Claude writes it again (counts like a new story)
 //   POST /api/stories/:id/(share|unshare|approve|decline|retry|delete|remake-retry|remake-dismiss)
 // A kid's idea, characters, lesson and rewrite note go through the Builder's own screening (story-writer screenIdea)
@@ -27,7 +28,7 @@ import * as tts from '../services/tts.js';
 import * as V from '../services/tts-voices.js';
 import { screenIdea, checkEdited } from '../services/story-writer.js';
 import { requestFields, AGE_BANDS, LENGTHS, LIMITS } from '../services/story-script.js';
-import { STYLES, TONES, MUSIC, NARRATORS, TEXT_LIMITS, DEFAULTS, choiceFields, extraFields, noteField, optionsOf, musicFor, providerVoice } from '../services/story-options.js';
+import { STYLES, TONES, MUSIC, NARRATORS, LOOKS, TEXT_LIMITS, DEFAULTS, choiceFields, extraFields, noteField, optionsOf, musicFor, providerVoice } from '../services/story-options.js';
 import { planRemake, cachedClips, clipDir, sceneKey } from '../stories/remake.js';
 import { sceneVisuals, QUALITY } from '../stories/pipeline.js';
 import { log } from '../services/log.js';
@@ -62,11 +63,13 @@ function card(req, s) {
 
 /**
  * A row of big choice cards (radio buttons styled as cards: an emoji and a short label). name: the form field;
- * list: story-options STYLES / TONES / MUSIC / NARRATORS; keyOf(id): the label's key; samples: a ▶ per voice.
+ * list: story-options STYLES / TONES / MUSIC / NARRATORS / LOOKS; keyOf(id): the label's key; samples: a ▶ per voice;
+ * hint: a short line under the legend.
  */
-function choices(t, { name, legend, list, current, keyOf, samples = false, form = null }) {
+function choices(t, { name, legend, list, current, keyOf, samples = false, form = null, hint = '' }) {
   const id = `sb-${form ? `${form}-` : ''}${name}`;
-  return html`<fieldset class="sb-choices" id="${id}"><legend>${legend}</legend>
+  return html`<fieldset class="sb-choices" id="${id}"${hint ? raw(` aria-describedby="${id}-hint"`) : ''}><legend>${legend}</legend>
+    ${hint ? html`<p class="hint sb-choice-hint" id="${id}-hint">${hint}</p>` : ''}
     <div class="sb-chips">${Object.entries(list).map(([k, o]) => html`<span class="sb-choice">
       <input type="radio" class="sr-only" name="${name}" id="${id}-${k}" value="${k}"${k === current ? raw(' checked') : ''}>
       <label for="${id}-${k}"><span class="sb-emo" aria-hidden="true">${o.emoji}</span><span class="sb-lbl">${t(keyOf(k))}</span></label>
@@ -77,11 +80,12 @@ const voiceKey = k => `stories.voice.${k}`;
 const styleKey = k => `stories.style.${k}`;
 const toneKey = k => `stories.tone.${k}`;
 const musicKey = k => `stories.music.${k}`;
+const lookKey = k => `stories.look.${k}`;
 
 /** The story's choices as small read-only pills. */
 function optionPills(t, s) {
   const o = optionsOf(s);
-  const pills = [[STYLES[o.style].emoji, t(styleKey(o.style))], [TONES[o.tone].emoji, t(toneKey(o.tone))], [NARRATORS[o.voice].emoji, t(voiceKey(o.voice))], [MUSIC[o.music].emoji, t(musicKey(o.music))]];
+  const pills = [[STYLES[o.style].emoji, t(styleKey(o.style))], [LOOKS[o.look].emoji, t(lookKey(o.look))], [TONES[o.tone].emoji, t(toneKey(o.tone))], [NARRATORS[o.voice].emoji, t(voiceKey(o.voice))], [MUSIC[o.music].emoji, t(musicKey(o.music))]];
   return html`<ul class="sb-pills" aria-label="${t('stories.options')}">${pills.map(([e, l]) => html`<li><span aria-hidden="true">${e}</span> ${l}</li>`)}
     ${s.characters ? html`<li><span aria-hidden="true">🐾</span> ${s.characters}</li>` : ''}${s.lesson ? html`<li><span aria-hidden="true">💡</span> ${s.lesson}</li>` : ''}</ul>`;
 }
@@ -117,10 +121,11 @@ router.get('/stories/new', requireBuilder, (req, res) => {
         <span class="sb-kit" id="sb-kit"><span aria-hidden="true">🧒👩🐶🦊🏰⚽</span> ${t('stories.form.kitHint')}</span>
         <span class="err" id="sb-err" role="alert"></span></div>
       ${choices(t, { name: 'style', legend: t('stories.form.styleH'), list: STYLES, current: DEFAULTS.style, keyOf: styleKey })}
+      ${choices(t, { name: 'look', legend: t('stories.form.lookH'), list: LOOKS, current: DEFAULTS.look, keyOf: lookKey, hint: t('stories.form.lookHint') })}
       ${choices(t, { name: 'tone', legend: t('stories.form.toneH'), list: TONES, current: DEFAULTS.tone, keyOf: toneKey })}
       ${choices(t, { name: 'voice', legend: t('stories.form.voiceH'), list: NARRATORS, current: DEFAULTS.voice, keyOf: voiceKey, samples })}
       ${samples ? html`<p class="small muted sb-ai">${t('stories.form.voiceAi')}</p>` : ''}
-      ${choices(t, { name: 'music', legend: t('stories.form.musicH'), list: MUSIC, current: musicFor(DEFAULTS.style), keyOf: musicKey })}
+      ${choices(t, { name: 'music', legend: t('stories.form.musicH'), list: MUSIC, current: musicFor(DEFAULTS.style, DEFAULTS.look), keyOf: musicKey })}
       <details class="sb-more"><summary>${t('stories.form.more')}</summary>
         <div class="field"><label for="sb-chars">${t('stories.form.charsLabel')}</label>
           <input class="input" id="sb-chars" name="characters" maxlength="${TEXT_LIMITS.characters}" autocomplete="off" aria-describedby="sb-chars-hint">
@@ -139,7 +144,7 @@ router.get('/stories/new', requireBuilder, (req, res) => {
       <p class="small muted">${left ? t('stories.form.left', { count: left }) : t('stories.form.none')}</p>
       <button class="btn btn-primary btn-big" type="submit" id="sb-go"${left ? '' : raw(' disabled')}>✨ ${t('stories.form.make')}</button>
     </form>
-    ${jsonData('page-data', { musicFor: Object.fromEntries(Object.keys(STYLES).map(k => [k, musicFor(k)])) })}
+    ${jsonData('page-data', { musicFor: Object.fromEntries(Object.keys(LOOKS).map(l => [l, Object.fromEntries(Object.keys(STYLES).map(k => [k, musicFor(k, l)]))])) })}
   </div>`;
   page(req, res, { active: 'stories', title: t('stories.new'), body, head: CSS, scripts: ['/js/stories.js'], back: '/stories', backLabel: t('stories.mine') });
 });
@@ -249,6 +254,7 @@ router.get('/stories/:id/edit', requireBuilder, (req, res) => {
       </section>`)}
       ${choices(t, { name: 'voice', legend: t('stories.form.voiceH'), list: NARRATORS, current: o.voice, keyOf: voiceKey, samples: samplesOn(req), form: 'edit' })}
       ${choices(t, { name: 'music', legend: t('stories.form.musicH'), list: MUSIC, current: o.music, keyOf: musicKey, form: 'edit' })}
+      ${choices(t, { name: 'look', legend: t('stories.form.lookH'), list: LOOKS, current: o.look, keyOf: lookKey, form: 'edit', hint: t('stories.edit.lookHint') })}
       <p class="small muted">${t('stories.edit.remakeP')}</p>
       <p class="small muted">${remakesLeft ? t('stories.edit.remakesLeft', { count: remakesLeft }) : t('stories.edit.remakeNone')}</p>
       <span class="err" id="sb-edit-err" role="alert"></span>
@@ -313,7 +319,7 @@ router.post('/api/stories', requireBuilder, rateLimit('stories', 12, 3600e3), as
   if (!config.anthropicKey || !aiBudget.ok()) return res.status(503).json({ code: 'aiOff', error: t('stories.error.aiOff') });
   const r = J.create(u, { ...f, ...c, ...x, locale: req.locale || 'en' });
   if (!r.ok) return res.status(r.code === 'limit' ? 429 : 503).json({ code: r.code, error: t(r.code === 'limit' ? 'stories.form.none' : 'stories.busy') });
-  log('info', 'story queued', { id: r.story.id, seconds: f.seconds, age: f.ageBand, style: c.style, tone: c.tone, voice: c.voice, music: c.music });
+  log('info', 'story queued', { id: r.story.id, seconds: f.seconds, age: f.ageBand, style: c.style, tone: c.tone, voice: c.voice, music: c.music, look: c.look });
   res.json({ id: r.story.id });
 });
 
@@ -356,7 +362,7 @@ router.post('/api/stories/:id/remake', requireBuilder, rateLimit('stories-edit',
   if (J.remakesToday(u) >= J.remakeLimit(u)) return refuse(req, res, 'remakeLimit');
   const b = req.body || {};
   const before = { script: J.scriptOf(s), options: optionsOf(s) };
-  const options = choiceFields({ voice: b.voice, music: b.music }, before.options);
+  const options = choiceFields({ voice: b.voice, music: b.music, look: b.look }, before.options);
   const edited = withNewWords(before.script, b);
   // New words get every check a written script gets, and the classifier.
   const words = JSON.stringify(edited) !== JSON.stringify(before.script);
@@ -367,11 +373,11 @@ router.post('/api/stories/:id/remake', requireBuilder, rateLimit('stories-edit',
     script = c.script;
   }
   const q = QUALITY[(J.metaOf(s).render || {}).quality || quality()] || QUALITY.full;   // the size the kept clips were made at
-  const plan = planRemake({ kind: 'remake', before, after: { script, options, scenes: sceneVisuals(script, { id: s.id }) }, cached: new Set(cachedClips(clipDir(J.storyDir(s.id))).keys()), keyOf: sc => sceneKey(sc, q) });
+  const plan = planRemake({ kind: 'remake', before, after: { script, options, scenes: sceneVisuals(script, { id: s.id }) }, cached: new Set(cachedClips(clipDir(J.storyDir(s.id))).keys()), keyOf: (sc, look) => sceneKey(sc, q, look) });
   if (plan.nothing) return res.status(422).json({ code: 'nothing', error: t('stories.edit.nothing') });
-  const r = J.requestRemake(u, s, { kind: 'remake', script: words ? script : null, options: { voice: options.voice, music: options.music } });
+  const r = J.requestRemake(u, s, { kind: 'remake', script: words ? script : null, options: { voice: options.voice, music: options.music, look: options.look } });
   if (!r.ok) return refuse(req, res, r.code);
-  log('info', 'story change queued', { id: s.id, kind: 'remake', words, voice: options.voice, music: options.music, render: plan.render.length, reuse: plan.reuse.length });
+  log('info', 'story change queued', { id: s.id, kind: 'remake', words, voice: options.voice, music: options.music, look: options.look, render: plan.render.length, reuse: plan.reuse.length });
   res.json({ ok: true, plan: { render: plan.render.length, reuse: plan.reuse.length } });
 });
 
