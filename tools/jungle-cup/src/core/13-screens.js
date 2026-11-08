@@ -159,24 +159,30 @@ function buildMini() {
   MAP.mini = c;
 }
 MAP.enter = function (opts) { UI.clearFx(); MAP.tab = (opts && opts.tab) || 'map'; MAP.from = (opts && opts.from) || 'world'; if (!MAP.mini) buildMini(); UI.setFocus('close'); };
-MAP.update = function (dt) { MAP.t += dt; if (MAP.msgT > 0) MAP.msgT -= dt; };
-/** Fast travel: the village and the dock always; a sport once Cappy has walked to its arch. */
-const visited = id => !!SAVE.data.flags['v_' + id];
+MAP.update = function (dt) { MAP.t += dt; };
+/** Fast travel: anywhere on the map, straight away (every arch, the village, the dock, the Great Kapok). */
 function travelTo(id) {
   if (id === 'village') { JC.go('world', { at: [WORLD.village.x, WORLD.village.y, 'up'] }); return; }
   if (id === 'dock') { JC.go('world', { at: [WORLD.dock.x, WORLD.dock.y - 3, 'up'] }); return; }
+  if (id === 'lift') { const [fx, fy] = nearestFree(WORLD.lift.x, WORLD.lift.y + 3); JC.go('world', { at: [fx, fy, 'up'] }); return; }
   const a = ARCHES[id]; if (!a) return;
-  if (!visited(id)) { MAP.msg = t('map.walk'); MAP.msgT = 2.6; AUDIO.sfx('miss'); return; }
-  // fast travel lands right in the arch, so its "play" prompt shows at once
-  JC.go('world', { at: [a.x, a.y, 'up'] });
+  // fast travel lands just in front of the arch (a step outside its zone, facing it): one step in and it opens
+  // (on the side with a clear way in: south first, else north, east, west)
+  for (const [dx, dy, dir] of [[0, 3, 'up'], [0, -3, 'down'], [3, 0, 'left'], [-3, 0, 'right']]) {
+    let open = true; for (let k = 1; k <= 3 && open; k++) if (WORLD.isSolid(a.x + Math.sign(dx) * k, a.y + Math.sign(dy) * k)) open = false;
+    if (open) { JC.go('world', { at: [a.x + dx, a.y + dy, dir] }); return; }
+  }
+  const [fx, fy] = nearestFree(a.x, a.y + 3);
+  JC.go('world', { at: [fx, fy, 'up'] });
 }
-/** A tap on the minimap: the nearest place Cappy can travel to (the village, the dock, or a visited arch). */
+/** A tap on the minimap: the nearest place to travel to (the village, the dock, the Kapok, or any arch). */
 function miniTap(e) {
   const m = MAP.miniRect; if (!m || !e || e.x === undefined) { travelTo('village'); return; }
   const tx = (e.x - m.x) / m.k, ty = (e.y - m.y) / m.k;
   let best = 'village', bd = Math.hypot(tx - WORLD.village.x, ty - WORLD.village.y);
   const dd = Math.hypot(tx - WORLD.dock.x, ty - WORLD.dock.y); if (dd < bd) { bd = dd; best = 'dock'; }
-  for (const id of JC.sportOrder) if (visited(id)) { const a = ARCHES[id], d = Math.hypot(tx - a.x, ty - a.y); if (d < bd) { bd = d; best = id; } }
+  const dl = Math.hypot(tx - WORLD.lift.x, ty - WORLD.lift.y); if (dl < bd) { bd = dl; best = 'lift'; }
+  for (const id of JC.sportOrder) { const a = ARCHES[id], d = Math.hypot(tx - a.x, ty - a.y); if (d < bd) { bd = d; best = id; } }
   travelTo(best);
 }
 function closeMap() { AUDIO.sfx('back'); JC.go('world'); }
@@ -295,8 +301,12 @@ function drawMapTab(g) {
       const x0 = Math.floor(mx + cx * cw), y0 = Math.floor(my + cy * cw), x1 = Math.min(mx + mw, Math.ceil(mx + (cx + 1) * cw)), y1 = Math.min(my + mh, Math.ceil(my + (cy + 1) * cw));
       if (x1 > x0 && y1 > y0) g.fillRect(x0, y0, x1 - x0, y1 - y0);
     }
-    for (const id of JC.sportOrder) { const a = ARCHES[id]; if (!visited(id) && !TRAVEL.discovered(a.x >> 3, a.y >> 3)) continue; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
+    for (const id of JC.sportOrder) { const a = ARCHES[id]; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
     disc(g, mx + WORLD.totem.x * mk + mk / 2, my + WORLD.totem.y * mk, 2, '#a8703e');
+    // the rides, once their part of the island is found: the zipline as a dark line, the swing as a green loop
+    { const Z = ROUTES.zip, Wg = ROUTES.swing;
+      if (TRAVEL.discovered(Z.a[0] >> 3, Z.a[1] >> 3) || TRAVEL.discovered(Z.b[0] >> 3, Z.b[1] >> 3)) { g.strokeStyle = PAL.ink; g.lineWidth = 3; g.beginPath(); g.moveTo(mx + Z.a[0] * mk, my + Z.a[1] * mk); g.lineTo(mx + Z.b[0] * mk, my + Z.b[1] * mk); g.stroke(); g.strokeStyle = '#ffd23f'; g.lineWidth = 1; g.stroke(); }
+      if (TRAVEL.discovered(Wg.a[0] >> 3, Wg.a[1] >> 3) || TRAVEL.discovered(Wg.b[0] >> 3, Wg.b[1] >> 3)) { const sx = mx + Wg.anchor[0] * mk, sy = my + Wg.anchor[1] * mk; disc(g, sx, sy, 3, PAL.ink); disc(g, sx, sy, 2, '#5cc84a'); } }
     MAP.miniRect = { x: mx, y: my, k: mk };
     UI.addHit('mini', mx, my, mw, mh);
     if (UI.showFocus && UI.focusedId() === 'mini') { g.strokeStyle = PAL.ink; g.lineWidth = 4; g.strokeRect(mx - 4, my - 4, mw + 8, mh + 8); g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(mx - 4, my - 4, mw + 8, mh + 8); }
@@ -320,7 +330,6 @@ function drawMapTab(g) {
     rect(g, X(1, 4), y + 1, 4, rh - 2, SPORT_COLOURS[id]);
     const ic = iconSprite(id); spr(g, ic, X(8, ic.w), y + ((rh - ic.h) >> 1));
     const best = played ? fmt(SAVE.data.best[id] || 0) : '???', name = t('sport.' + id);
-    if (!visited(id)) { g.globalAlpha = 0.55; }
     const one = oneLine(w), two = !one && (twoLine(w) || compact);
     ROWTEXT.maxW = one || two || noBest ? 0 : w - 16 - 34 - textW(best) - 4; ROWTEXT.align = RTL ? 'right' : 'left';
     const ny = two ? y + (compact ? 1 : 2) : y + ((rh - 12) >> 1), sy = two ? y + rh - (compact ? 11 : 13) : ny;
@@ -332,9 +341,6 @@ function drawMapTab(g) {
     if (!noBest) text(g, best, XR(32), sy, BESTTEXT);
     g.globalAlpha = 1;
   }
-  // "walk there first" when a sport not yet visited is tapped
-  // (over the panel title, beside the close button: never over a sport row or the buttons)
-  if (MAP.msgT > 0) { const r0 = Math.max(10, (VIEW.tap / 2) | 0), s = MAP.msg, w = Math.min(area.w - r0 * 2 - 10, textW(s) + 16), x = RTL ? area.x + area.w - w : area.x, y = Math.max(6, area.y - r0 * 2 - 2 + Math.round(r0 - 10)); box(g, x, y, w, 20, PAL.ink, PAL.ink); text(g, s, x + w / 2, y + 4, { col: PAL.white, align: 'center', maxW: w - 8 }); }
   // buttons (right to left in Arabic and Hebrew)
   const by = area.y + area.h - bh, bw = Math.floor((area.w - 8) / 3), bx = i => (RTL ? area.x + (bw + 4) * (2 - i) : area.x + (bw + 4) * i);
   UI.button(g, 'settings', bx(0), by, bw, bh, t('btn.settings'), { col: '#7a6a8a', icon: UI.icons.gear });

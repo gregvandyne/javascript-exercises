@@ -15,11 +15,10 @@ I18N.es = Object.assign(I18N.es || {}, {
   "trav.shortcut": "¡Atajo abierto!",
   "acorn.got": "¡Bellota dorada! {n} de {total}",
   "acorn.all": "¡Todas las bellotas doradas! ¡Sombrero bellota desbloqueado!",
-  "map.walk": "¡Ve allí caminando primero y luego podrás volver al instante!",
   "hat.acorn": "Sombrero bellota",
   "d.mango.hint2": "¡Muy bien! Sigue el sendero de barro bajo los acantilados. El ferry del río te lleva a la orilla este.",
   "d.ants.qask2": "La vimos volar por encima del río, a la orilla este. ¿Nos la traes?",
   "d.ants.qwait": "Nuestra hoja está en la orilla este. ¡Toma el ferry del río, pasado el sendero de barro!",
   "d.mango.dash2": "Juegan a la Carrera del Mango en el claro de barro. Sigue el sendero de barro bajo los acantilados, al este del pueblo. ¡Al tótem le ha salido un octavo hueco!",
-  "d.tapir.tip4": "Consejo: cuando ya hayas ido a un deporte, tócalo en el mapa para volver directo allí.",
+  "d.tapir.tip4": "Consejo: toca cualquier deporte en el mapa para ir directamente allí.",
 });
