@@ -134,3 +134,15 @@ export function personRow(u, { href = null, sub = '', right = '' } = {}) {
 
 /** "🛠️ Make a game" (the Builder): school staff have no Build tab, so My classes and Me keep it one tap away. */
 export const makeGameBtn = t => html`<a class="btn" href="/build"${t.own('school.teach.makeGame') ? '' : raw(' lang="en" dir="ltr"')}>🛠️ ${t('school.teach.makeGame')}</a>`;
+
+/** "Jump to" chips for a long school or teacher page: [[id, label, count?]] (styles: .ajump in public/css/app.css, the
+ *  same chips as the admin pages). A count shows only above 0. */
+export const jumpNav = (t, items) => html`<nav class="chips ajump" aria-label="${t('school.jump.aria')}"><span class="ajump-l" aria-hidden="true">${t('school.jump.label')}</span>${items.filter(Boolean).map(([id, label, n]) => html`<a class="chip" href="#${id}">${label}${n ? html`&nbsp;<span class="badge">${n}</span>` : ''}</a>`)}</nav>`;
+
+/** A "Find a name" box over a long list (public/js/schools.js hides the rows that don't match; nothing leaves the page).
+ *  `target` is the id of the list or table; `toggle` an optional extra filter button ([label, data-only value]). Hidden
+ *  until the script shows it, so a page without scripts has no dead control. */
+export const nameFilter = (t, target, { placeholder = t('school.filter.label'), toggle = null } = {}) => html`<div class="namefilter" data-filter="${target}" hidden>
+  <label class="sr-only" for="nf-${target}">${placeholder}</label><input class="input" type="search" id="nf-${target}" placeholder="🔎 ${placeholder}" autocomplete="off" enterkeyhint="search">
+  ${toggle ? html`<button class="chip" type="button" aria-pressed="false" data-only="${toggle[1]}">${toggle[0]}</button>` : ''}
+  <p class="small muted" data-filter-none hidden>${t('school.filter.none')}</p></div>`;

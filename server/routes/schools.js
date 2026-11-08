@@ -7,7 +7,7 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, makeGameBtn } from '../views/components.js';
+import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, makeGameBtn, jumpNav, nameFilter } from '../views/components.js';
 import { ADMIN_BODY, ADMIN_CSS } from '../views/admin-ui.js';
 import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -174,9 +174,9 @@ function classMenu(t, s, c) {
 function classTable(req, s, list) {
   const t = req.t, f = req.fmt;
   const toRead = P.toReadByClass(list.map(c => c.id));
-  return html`<div class="panel tblwrap"><table class="tbl rtable classes"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.lessons')}</th><th>${t('school.class.lastActivity')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
+  return html`<div class="panel tblwrap" id="class-list"><table class="tbl rtable classes"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.lessons')}</th><th>${t('school.class.lastActivity')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
     ${list.map(c => html`<tr><td><a href="/class/${c.id}"><b>${c.name}</b></a>${toRead[c.id] ? html` <a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : ''}${c.subject ? html`<div class="small muted">${c.subject}</div>` : ''}</td><td data-label="${t('school.class.grade')}">${c.grade || '–'}</td>
-      <td data-label="${t('school.class.teachers')}">${c.teachers || html`<span class="chip-s warn">⚠️ ${t('school.class.noTeacherChip')}</span>`}</td><td data-label="${t('school.class.students')}">${c.students}</td>
+      <td data-label="${t('school.class.teachers')}">${c.teachers || html`<a class="chip-s warn" href="/class/${c.id}?tab=settings#tch-h">⚠️ ${t('school.class.noTeacherChip')}</a>`}</td><td data-label="${t('school.class.students')}">${c.students}</td>
       <td data-label="${t('school.class.lessons')}">${c.lessons}</td><td data-label="${t('school.class.lastActivity')}">${c.last_activity ? f.ago(c.last_activity) : html`<span class="muted">${t('school.class.noActivity')}</span>`}</td><td data-label="${t('school.class.code')}"><code dir="ltr">${c.join_code}</code></td>
       <td class="tacts"><div class="acts">${classMenu(t, s, c)}</div></td></tr>`)}
   </tbody></table></div>`;
@@ -194,9 +194,30 @@ function newClassForm(t, { schools, me, staff = null, open = false }) {
       <div class="formacts"><button class="btn btn-primary" type="submit">➕ ${t('school.class.create')}</button></div>
     </form></details></div>`;
 }
+/** The school at a glance (Classes tab): classes, teachers, students, students not in a class, answers to review.
+ *  The people numbers link to the People tab. */
+function schoolStats(req, s, live) {
+  const t = req.t;
+  const staff = S.members(s.id, 'staff'), students = S.members(s.id, 'student'), placed = S.memberClasses(s.id);
+  const unplaced = students.filter(p => !placed[p.id]).length;
+  const byClass = P.toReadByClass(live.map(c => c.id));
+  const toRead = Object.values(byClass).reduce((n, x) => n + x, 0);
+  // Answers to review link to the class that has them (its Progress tab, at the list of answers to read); spread over
+  // several classes, to the class list below, where each class shows its own count.
+  const most = live.filter(c => byClass[c.id]).sort((a, z) => byClass[z.id] - byClass[a.id])[0];
+  const people = `/school/${s.slug}?tab=people`;
+  return html`<ul class="plain statstrip" aria-label="${s.name}">
+    <li>🏫 ${t('school.stats.classes', { count: live.length })}</li>
+    <li><a href="${people}#staff">🍎 ${t('school.stats.staff', { count: staff.length })}</a></li>
+    <li><a href="${people}#students">👩‍🎓 ${t('school.class.studentsN', { count: students.length })}</a></li>
+    ${unplaced ? html`<li class="warn"><a href="${people}#students">🧭 ${t('school.stats.unplaced', { count: unplaced })}</a></li>` : ''}
+    ${toRead ? html`<li class="warn"><a href="${Object.keys(byClass).filter(id => byClass[id]).length > 1 ? '#class-list' : `/class/${most.id}/progress#to-review`}">✍️ ${t('progress.teach.toRead', { count: toRead })}</a></li>` : ''}
+  </ul>`;
+}
 function schoolClasses(req, s) {
   const t = req.t; const live = S.classesOfSchool(s.id), old = S.classesOfSchool(s.id, { archived: true });
-  return html`${newClassForm(t, { schools: [s], me: req.user, staff: S.members(s.id, 'staff') })}
+  return html`${schoolStats(req, s, live)}
+  ${newClassForm(t, { schools: [s], me: req.user, staff: S.members(s.id, 'staff') })}
     ${live.length ? classTable(req, s, live) : emptyState({ emoji: '🏫', title: t('school.class.none'), text: t('school.class.noneText') })}
     ${old.length ? html`<details class="panel"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>${classTable(req, s, old)}</details>` : ''}`;
 }
@@ -204,17 +225,17 @@ function schoolClasses(req, s) {
 /** A person's live classes in the school, as links (or "Not in a class"). */
 function classLinks(t, rows, student) {
   if (!rows || !rows.length) return html`<span class="muted">${t('school.people.noClass')}</span>`;
-  return rows.map((c, i) => html`${i ? ', ' : ''}<a href="/class/${c.id}${student ? '?tab=students' : ''}">${c.name}</a>`);
+  return html`<span class="clinks">${rows.map((c, i) => html`${i ? ', ' : ''}<a href="/class/${c.id}${student ? '?tab=students' : ''}">${c.name}</a>`)}</span>`;
 }
 function personRow(req, s, p, me, classes, ginfo) {
   const t = req.t;
   const mine = p.id === me.id; const student = p.role === 'student';
   const second = student
-    ? html`<form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label><input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>`
+    ? html`<details class="gedit"><summary class="btn btn-sm" aria-label="${t('school.people.changeGrade', { name: nameOf(p) })}"><span class="gv">${p.grade || '–'} <span aria-hidden="true">✏️</span></span><span class="gx" aria-hidden="true" title="${t('school.cancel')}">✕</span></summary><form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="g-${p.id}">${t('school.people.grade')}</label><input class="input input-sm" id="g-${p.id}" name="grade" value="${p.grade}" maxlength="12" placeholder="${t('school.people.grade')}"><button class="btn btn-sm" type="submit">${t('school.save')}</button></form></details>`
     : mine ? html`<span>${t('school.people.you', { role: t(`school.roles.${p.role}`) })}</span>`
       : html`<form class="inline" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="sr-only" for="r-${p.id}">${t('school.people.role')}</label><select class="input input-sm" id="r-${p.id}" name="role">${['teacher', 'admin'].map(r => html`<option value="${r}" ${selected(p.role === r)}>${t(`school.roles.${r}`)}</option>`)}</select><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>`;
-  return html`<tr><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"><bdi>@${p.username}</bdi> · ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span>${googleRosterLine(req, ginfo, p)}</span></span></td>
-    <td class="edit">${second}</td>
+  return html`<tr${student && !(classes[p.id] || []).length ? raw(' data-noclass') : ''}><td><span class="pp">${avatar(p, 32)}<span><b>${nameOf(p)}</b><span class="small muted"><bdi>@${p.username}</bdi> · ${p.managed_school === s.id ? t('school.people.schoolAccount') : t('school.people.ownAccount')}</span>${googleRosterLine(req, ginfo, p)}</span></span></td>
+    <td class="edit" data-label="${student ? t('school.people.grade') : t('school.people.role')}">${second}</td>
     <td data-label="${t('school.class.classes')}">${classLinks(t, classes[p.id], student)}</td>
     <td class="tacts"><div class="acts">
       ${p.managed_school === s.id && !mine ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/password" data-confirm="${t('school.people.resetConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">🔑 ${t('school.people.reset')}</button></form>` : ''}
@@ -227,14 +248,15 @@ function schoolPeople(req, s) {
   const t = req.t; const staff = S.members(s.id, 'staff'), classes = S.memberClasses(s.id);
   // Students who aren't in a class yet come first: they are the ones who still need placing.
   const students = S.members(s.id, 'student').map((p, i) => ({ p, i, placed: classes[p.id] ? 1 : 0 })).sort((a, z) => a.placed - z.placed || a.i - z.i).map(x => x.p);
+  const unplaced = students.filter(p => !classes[p.id]).length;
   const live = S.classesOfSchool(s.id);
   const ginfo = googleRosterInfo([...staff, ...students].map(p => p.id));
-  const table = (rows, second, empty) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(req, s, p, req.user, classes, ginfo))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
+  const table = (rows, second, empty, id) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people" id="${id}"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(req, s, p, req.user, classes, ginfo))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
   return html`
   ${req.query.new && !staff.some(p => p.role === 'admin') ? html`<p class="notice good">👋 ${t('school.people.newSchool')}</p>` : ''}
-  <h2 class="sec-h">🍎 ${t('school.people.staff')}</h2>
-  ${table(staff, t('school.people.role'), t('school.people.noStaff'))}
-  <section class="panel" id="add-staff"><h3>➕ ${t('school.people.addStaff')}</h3>
+  ${jumpNav(t, [['staff', `🍎 ${t('school.people.staff')}`, staff.length], ['students', `👩‍🎓 ${t('school.people.students')}`, students.length]])}
+  <div class="sec-row" id="staff"><h2 class="sec-h">🍎 ${t('school.people.staff')} <span class="count">${staff.length}</span></h2>
+    <details class="libdrop adddrop" id="add-staff" ${staff.length ? '' : raw('open')}><summary class="btn btn-sm">➕ ${t('school.people.addStaff')}</summary><div>
     <p class="small muted">${t('school.people.addStaffText')}</p>
     <form class="formgrid staffform" data-api="/api/schools/${s.id}/staff" data-reload novalidate>
       <fieldset class="field wide choice"><legend>${t('school.people.account')}</legend>
@@ -244,35 +266,40 @@ function schoolPeople(req, s) {
       <div class="field"><label for="st-r">${t('school.people.role')}</label><select class="input" id="st-r" name="role"><option value="teacher" ${selected(staff.length)}>${t('school.roles.teacher')}</option><option value="admin" ${selected(!staff.length)}>${t('school.roles.admin')}</option></select></div>
       <div class="field" data-account="existing"><label for="st-u">${t('school.people.existing')}</label><input class="input" id="st-u" name="username" maxlength="16" dir="ltr" autocomplete="off" placeholder="${t('school.people.existingPlaceholder')}"><span class="err" id="st-u-err"></span></div>
       <div class="formacts"><button class="btn btn-primary" type="submit" data-new="🪪 ${t('school.people.createStaff')}" data-existing="➕ ${t('school.people.addToSchool')}">🪪 ${t('school.people.createStaff')}</button></div>
-    </form></section>
+    </form></div></details></div>
+  ${table(staff, t('school.people.role'), t('school.people.noStaff'), 'staff-list')}
   ${staffGoogleInvites(req, s)}
-  <h2 class="sec-h">👩‍🎓 ${t('school.people.students')}</h2>
-  ${table(students, t('school.people.grade'), t('school.people.noStudents'))}
-  <section class="panel"><h3>➕ ${t('school.people.addStudents')}</h3>
+  <div class="sec-row" id="students"><h2 class="sec-h">👩‍🎓 ${t('school.people.students')} <span class="count">${students.length}</span></h2>
+    <details class="libdrop adddrop" id="add-students" ${students.length ? '' : raw('open')}><summary class="btn btn-sm">➕ ${t('school.people.addStudents')}</summary><div>
     <p class="small muted">${t('school.people.addStudentsText')}</p>
     <form class="formgrid" data-api="/api/schools/${s.id}/students" novalidate>
       <div class="field wide"><label for="ss-n">${t('school.people.names')}</label><textarea class="input" id="ss-n" name="names" rows="4" required placeholder="${t('school.people.namesPlaceholder')}"></textarea><span class="err" id="ss-n-err"></span></div>
       <div class="field"><label for="ss-g">${optional(t, t('school.people.grade'))}</label><input class="input" id="ss-g" name="grade" maxlength="12"></div>
       ${live.length ? html`<div class="field"><label for="ss-c">${optional(t, t('school.people.putInClass'))}</label><select class="input" id="ss-c" name="classId"><option value="">–</option>${live.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>` : ''}
       <div class="formacts"><button class="btn btn-primary" type="submit">🪪 ${t('school.people.createAccounts')}</button></div>
-    </form></section>`;
+    </form></div></details></div>
+  ${students.length > 8 ? nameFilter(t, 'student-list', { toggle: unplaced ? [`${t('school.people.noClass')} (${unplaced})`, 'noclass'] : null }) : ''}
+  ${table(students, t('school.people.grade'), t('school.people.noStudents'), 'student-list')}`;
 }
 function schoolSettings(req, s) {
   const t = req.t; const st = S.settingsOf(s); const tz = S.zoneOf(s);
   const yn = (name, val) => html`<select class="input" id="set-${name}" name="${name}"><option value="1" ${selected(val)}>${t('school.settings.yes')}</option><option value="0" ${selected(!val)}>${t('school.settings.no')}</option></select>`;
+  // One form (one Save) in three groups: the school itself, classes and joining, and the game-site rules.
   return html`<section class="panel"><form class="stack settingsform" data-api="/api/schools/${s.id}/settings" data-reload data-toast="${t('school.settings.saved')}" novalidate>
+    <h3 class="setgroup-h">🏫 ${t('school.settings.groupSchool')}</h3>
     <div class="field"><label for="set-name">${t('school.settings.name')}</label><input class="input" id="set-name" name="name" value="${s.name}" maxlength="80"></div>
-    <div class="field"><label for="set-teachersCreateClasses">${t('school.settings.teachersCreate')}</label>${yn('teachersCreateClasses', st.teachersCreateClasses)}</div>
-    <div class="field"><label for="set-allowOwnAccounts">${t('school.settings.ownAccounts')}</label>${yn('allowOwnAccounts', st.allowOwnAccounts)}<span class="hint">${t('school.settings.ownAccountsHint')}</span></div>
     <div class="field"><label for="set-timeZone">${t('school.settings.timeZone')}</label>
       <select class="input" id="set-timeZone" name="timeZone"><option value="" ${selected(!tz)}>${t('school.settings.timeZoneNone')}</option>
         ${zoneGroups().map(([region, zs]) => html`<optgroup label="${region}">${zs.map(z => html`<option value="${z.tz}" ${selected(z.tz === tz)}>${z.label}</option>`)}</optgroup>`)}</select>
       <span class="hint">${tz ? t('school.settings.timeZoneHint', { time: timeThere(tz, req.fmt.intl) }) : t('school.settings.timeZoneUnset')}</span></div>
-    <h3>${t('school.settings.gameSite')}</h3><p class="small muted">${t('school.settings.gameSiteText')}</p>
+    <h3>🍎 ${t('school.settings.groupClasses')}</h3>
+    <div class="field"><label for="set-teachersCreateClasses">${t('school.settings.teachersCreate')}</label>${yn('teachersCreateClasses', st.teachersCreateClasses)}</div>
+    <div class="field"><label for="set-allowOwnAccounts">${t('school.settings.ownAccounts')}</label>${yn('allowOwnAccounts', st.allowOwnAccounts)}<span class="hint">${t('school.settings.ownAccountsHint')}</span></div>
+    <h3>🎮 ${t('school.settings.gameSite')}</h3><p class="small muted">${t('school.settings.gameSiteText')}</p>
     <div class="field"><label for="set-chat">${t('school.settings.chat')}</label><select class="input" id="set-chat" name="chat"><option value="classmates" ${selected(st.chat === 'classmates')}>${t('school.settings.chatClassmates')}</option><option value="off" ${selected(st.chat === 'off')}>${t('school.settings.chatOff')}</option></select><span class="hint">${t('school.settings.chatHint')}</span></div>
     <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>
     <p class="small muted">${t('school.settings.photos')}</p>
-    <div><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
+    <div class="savebar"><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
   </form></section>
   ${schoolGoogleSettings(req, s)}`;
 }
@@ -357,8 +384,10 @@ router.get('/teach', requireUser, (req, res) => {
   const canCreate = schools.filter(x => S.canCreateClass(u, x.id));
   const admins = schools.filter(x => S.canManageSchool(u, x.id));
   const body = html`
-  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><div class="row"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a><a class="btn" href="/teach/cs-quest">💻 ${t('cs.program.title')}</a><a class="btn" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a>${makeGameBtn(t)}${admins.map(x => html`<a class="btn" href="/school/${x.slug}">🏫 ${t('school.teach.manage', { school: x.name })}</a>`)}</div></div>
-  ${admins.map(x => teachPlanCard(req, x))}
+  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a><a class="btn" href="/teach/cs-quest">💻 ${t('cs.program.title')}</a><a class="btn" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a>${makeGameBtn(t)}</nav></div>
+  ${admins.map(x => html`<section class="panel schoolcard"><a class="sc-link" href="/school/${x.slug}"><b>🏫 ${t('school.teach.manage', { school: x.name })}</b>
+      <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
+    ${teachPlanCard(req, x)}</section>`)}
   ${schools.map(x => askPanel(req, x))}
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<div class="panel classcard">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
@@ -467,7 +496,7 @@ function classGamesTab(req, c, people) {
       <div class="cg-body"><a href="/g/${g.slug}"><b dir="auto">${g.title}</b></a>
         <span class="small muted"><bdi>${t('school.classGames.by', { name: who(g) })}</bdi> · ${t('school.classGames.sharedAgo', { when: f.ago(g.shared_at) })}</span></div>
       <form class="cg-act" data-api="/api/classes/${c.id}/games/${g.id}/remove" data-reload data-confirm="${t('school.classGames.removeConfirm', { title: g.title, class: c.name })}"><button class="btn btn-sm" type="submit">${t('school.classGames.remove')}</button></form>
-    </li>`)}</ul>` : html`<p class="muted">${t('school.classGames.empty')}</p>`}
+    </li>`)}</ul>` : html`<div class="empty"><div class="emo" aria-hidden="true">🎮</div><p>${t('school.classGames.empty')}</p><div class="row emptyacts">${makeGameBtn(t)}</div></div>`}
   </section>
   ${off.length ? html`<details class="panel cg-off"><summary>${t('school.classGames.removedHeading', { count: off.length })}</summary>
     <ul class="plain cg-list">${off.map(g => html`<li class="cg-row"><div class="cg-body">${games.canView(req.user, g) ? html`<b dir="auto">${g.icon} ${g.title}</b>` : html`<b>🎮 ${t('school.classGames.hiddenGame')}</b>`}
@@ -488,16 +517,21 @@ function teacherClass(req, res, c) {
   const manager = S.canManageSchool(req.user, s.id);
   const ginfo = googleRosterInfo(students.map(p => p.id));
 
+  // Jump chips: requests, the roster, adding students and the class code (what a teacher needs while projecting) up top.
+  const nReq = S.pendingRequests(c.id).length;
   const studentsTab = html`
+  ${jumpNav(t, [nReq ? ['requests', `✋ ${t('school.requests.title', { count: nReq })}`] : null, students.length ? ['roster', `👩‍🎓 ${t('school.class.studentsN', { count: students.length })}`] : null,
+    ['add-students', `🪪 ${t('school.class.newAccounts')}`], ['class-code', html`🔑 ${t('school.class.joinCode')} <code dir="ltr">${c.join_code}</code>`]])}
   ${requestsPanel(req, c, s, people)}
-  ${students.length ? html`<section class="panel" aria-labelledby="stu-h"><div class="panelhead"><h2 id="stu-h">👩‍🎓 ${t('school.class.studentsN', { count: students.length })}</h2>
+  ${students.length ? html`<section class="panel" id="roster" aria-labelledby="stu-h"><div class="panelhead"><h2 id="stu-h">👩‍🎓 ${t('school.class.studentsN', { count: students.length })}</h2>
       ${cardable ? html`<form data-api="/api/classes/${c.id}/cards" data-confirm="${t('school.class.reprintConfirm', { count: cardable })}"><button class="btn btn-sm" type="submit">🪪 ${t('school.class.reprint')}</button></form>` : ''}</div>
-    <div class="tblwrap"><table class="tbl rtable roster"><thead><tr><th>${t('school.people.name')}</th><th>${t('school.cards.username')}</th><th>${t('school.people.grade')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
+    ${students.length > 8 ? nameFilter(t, 'roster-list') : ''}
+    <div class="tblwrap"><table class="tbl rtable roster" id="roster-list"><thead><tr><th>${t('school.people.name')}</th><th>${t('school.cards.username')}</th><th>${t('school.people.grade')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
       ${students.map(p => studentRow(req, c, s, p, others, ginfo))}
     </tbody></table></div></section>`
     : emptyState({ emoji: '👩‍🎓', title: t('school.class.noStudents'), text: `${t('school.class.noStudentsText')}${st.allowOwnAccounts ? ` ${t('school.class.noStudentsCode')}` : ''}` })}
   ${classInvitesPanel(req, c, s)}
-  <section class="panel"><h2>🪪 ${t('school.class.newAccounts')}</h2>
+  <section class="panel" id="add-students"><h2>🪪 ${t('school.class.newAccounts')}</h2>
     <form class="formgrid" data-api="/api/classes/${c.id}/students" novalidate>
       <div class="field wide"><label for="as-n">${t('school.people.names')}</label><textarea class="input" id="as-n" name="names" rows="4" required placeholder="${t('school.people.namesPlaceholder')}"></textarea><span class="err" id="as-n-err"></span><span class="hint">${t('school.class.newAccountsHint')}</span></div>
       <div class="field"><label for="as-g">${optional(t, t('school.people.grade'))}</label><input class="input" id="as-g" name="grade" maxlength="12" value="${c.grade}"></div>
@@ -505,12 +539,13 @@ function teacherClass(req, res, c) {
     </form></section>
   ${schoolStudents.length ? html`<details class="panel"><summary>➕ ${t('school.class.alreadyAt', { school: s.name, count: schoolStudents.length })}</summary>
     <form class="stack" data-api="/api/classes/${c.id}/students" data-reload novalidate><input type="hidden" name="mode" value="existing">
-      <fieldset class="picklist"><legend class="sr-only">${t('school.class.alreadyAt', { school: s.name, count: schoolStudents.length })}</legend>
+      ${schoolStudents.length > 8 ? nameFilter(t, 'pick-list') : ''}
+      <fieldset class="picklist" id="pick-list"><legend class="sr-only">${t('school.class.alreadyAt', { school: s.name, count: schoolStudents.length })}</legend>
         ${schoolStudents.map(p => html`<label><input type="checkbox" name="existing" value="${p.id}"><span><b>${nameOf(p)}</b> <span class="small muted"><bdi>@${p.username}</bdi></span><span class="small muted pl-sub">${classes[p.id] ? classes[p.id].map(x => x.name).join(', ') : html`<span class="chip-s">${t('school.people.noClass')}</span>`}</span></span></label>`)}</fieldset>
       <span class="err form-err" role="alert"></span>
       <div><button class="btn btn-primary" type="submit">➕ ${t('school.class.addToClass')}</button></div>
     </form></details>` : ''}
-  <section class="panel joincode"><div><h2>🔑 ${t('school.class.joinCode')}</h2><p class="small muted">${st.allowOwnAccounts ? t('school.class.joinCodeTextOn', { school: s.name }) : t('school.class.joinCodeTextOff', { school: s.name })}</p></div>
+  <section class="panel joincode" id="class-code"><div><h2>🔑 ${t('school.class.joinCode')}</h2><p class="small muted">${st.allowOwnAccounts ? t('school.class.joinCodeTextOn', { school: s.name }) : t('school.class.joinCodeTextOff', { school: s.name })}</p></div>
     <div class="jc-code" dir="ltr">${c.join_code}</div>
     <form data-api="/api/classes/${c.id}/code" data-reload data-confirm="${t('school.class.newCodeConfirm')}"><button class="btn btn-sm" type="submit">🔄 ${t('school.class.newCode')}</button></form>
     ${classGoogleJoin(req, c, s)}</section>`;
@@ -520,7 +555,7 @@ function teacherClass(req, res, c) {
   const canDelete = !S.everHadStudents(c.id);
   const settingsTab = html`
   <section class="panel"><h2>✏️ ${t('school.class.details')}</h2>
-    <form class="formgrid" data-api="/api/classes/${c.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
+    <form class="formgrid detailsform" data-api="/api/classes/${c.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
       <div class="field"><label for="ec-n">${t('school.class.name')}</label><input class="input" id="ec-n" name="name" value="${c.name}" maxlength="60" required><span class="err" id="ec-n-err"></span></div>
       <div class="field"><label for="ec-s">${optional(t, t('school.class.subject'))}</label><input class="input" id="ec-s" name="subject" value="${c.subject}" maxlength="40"></div>
       <div class="field"><label for="ec-g">${optional(t, t('school.class.grade'))}</label><input class="input" id="ec-g" name="grade" value="${c.grade}" maxlength="12"></div>
@@ -534,7 +569,7 @@ function teacherClass(req, res, c) {
         : html`<p class="small muted">${t('school.class.onlyStaff', { school: s.name })} ${admins ? t('school.class.askAdmin', { admins }) : t('school.class.askNoAdmin', { school: s.name })}</p>`}
     ${iTeach && teachers.length > 1 ? html`<form data-api="/api/classes/${c.id}/students/${req.user.id}/remove" data-confirm="${t('school.class.leaveConfirm', { name: c.name })}"><button class="btn btn-sm" type="submit">🚪 ${t('school.class.leave')}</button></form>` : ''}
   </section>
-  ${!c.archived_at || canDelete ? html`<section class="panel" aria-labelledby="ad-h"><h2 id="ad-h">🗄️ ${c.archived_at ? t('school.class.deleteTitle') : t('school.class.archiveTitle')}</h2>
+  ${!c.archived_at || canDelete ? html`<section class="panel ${canDelete ? 'dangerzone' : ''}" aria-labelledby="ad-h"><h2 id="ad-h">🗄️ ${c.archived_at ? t('school.class.deleteTitle') : t('school.class.archiveTitle')}</h2>
     ${c.archived_at ? '' : html`<p class="small muted">${t('school.class.archiveText')}</p>
     <form data-api="/api/classes/${c.id}/archive" data-reload data-confirm="${t('school.class.archiveConfirm', { name: c.name })}"><button class="btn" type="submit">🗄️ ${t('school.class.archive')}</button></form>`}
     ${canDelete ? html`<p class="small muted">${t('school.class.deleteText')}</p>
@@ -692,7 +727,7 @@ router.get('/cards/:k', requireUser, (req, res) => {
   const back = v.back === 'class' && c ? { href: `/class/${c.id}?tab=students`, label: t('school.cards.backClass', { name: c.name }) }
     : s ? { href: `/school/${s.slug}?tab=people`, label: t('school.cards.backPeople') } : { href: '/teach', label: t('school.teach.title') };
   const body = html`
-  <div class="pagehead noprint"><h1>🪪 ${t('school.cards.title')}</h1><div class="row"><button class="btn btn-primary" type="button" data-print>🖨️ ${t('school.cards.print')}</button><a class="btn" href="${back.href}">${back.label}</a></div></div>
+  <div class="pagehead noprint cardsbar"><div><h1>🪪 ${t('school.cards.title')}</h1><p class="muted">${t('school.cards.count', { count: v.cards.length })}</p></div><div class="row"><button class="btn btn-primary" type="button" data-print>🖨️ ${t('school.cards.print')}</button><a class="btn" href="${back.href}">${back.label}</a></div></div>
   <p class="notice warn noprint">${t('school.cards.once')}</p>
   ${v.skipped.length ? html`<p class="notice noprint">${t('school.cards.skipped', { count: v.skipped.length, names: v.skipped.join(', ') })}</p>` : ''}
   <div class="cards">${v.cards.map(x => html`<div class="logincard">

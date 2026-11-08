@@ -2411,6 +2411,7 @@
     },
     "actions": "Acciones",
     "save": "Guardar",
+    "cancel": "Cancelar",
     "roles": {
       "admin": "Admin de la escuela",
       "teacher": "Docente",
@@ -2432,7 +2433,8 @@
         "on": "Plan escolar activo",
         "billing": "Pagos",
         "settling": "Estamos activando su plan…"
-      }
+      },
+      "tools": "Herramientas para enseñar"
     },
     "class": {
       "new": "Nueva clase",
@@ -2559,7 +2561,8 @@
       "createStaff": "Crear cuenta y tarjeta de acceso",
       "addToSchool": "Agregar a la escuela",
       "added": "{name} se agregó como {role}",
-      "putInClass": "Clase"
+      "putInClass": "Clase",
+      "changeGrade": "Cambiar el grado de {name}"
     },
     "settings": {
       "name": "Nombre de la escuela",
@@ -2581,9 +2584,11 @@
       "photos": "Las fotos de perfil de las cuentas escolares solo las ven sus compañeros de clase, sus docentes y sus amigos.",
       "chatHint": "Las cuentas escolares solo pueden agregar compañeros de clase como amigos.",
       "timeZone": "Zona horaria",
-      "timeZoneNone": "Sin definir (los días se cuentan en UTC)",
+      "timeZoneNone": "Sin definir (UTC)",
       "timeZoneUnset": "Establezca la zona horaria de su escuela para que las lecciones se abran a medianoche y las fechas de entrega terminen a medianoche donde esté. Hasta entonces, nadie va con retraso hasta 36 horas después de que empieza el día de entrega.",
-      "timeZoneHint": "Las lecciones se abren y las fechas de entrega terminan a medianoche en esta zona. Allí ahora son las {time}."
+      "timeZoneHint": "Las lecciones se abren y las fechas de entrega terminan a medianoche en esta zona. Allí ahora son las {time}.",
+      "groupSchool": "Escuela",
+      "groupClasses": "Clases e ingreso"
     },
     "cards": {
       "title": "Tarjetas de acceso",
@@ -2595,7 +2600,8 @@
       "gone": "Estas tarjetas de acceso ya no están disponibles. Cree una contraseña nueva desde la pestaña Estudiantes de la clase o la pestaña Personas de la escuela.",
       "backPeople": "Volver a Personas",
       "backClass": "Volver a {name}",
-      "skipped": "{count, plural, one {# estudiante usa su propia cuenta y conserva su contraseña} other {# estudiantes usan su propia cuenta y conservan su contraseña}}: {names}."
+      "skipped": "{count, plural, one {# estudiante usa su propia cuenta y conserva su contraseña} other {# estudiantes usan su propia cuenta y conservan su contraseña}}: {names}.",
+      "count": "{count, plural, one {# tarjeta de acceso} other {# tarjetas de acceso}}"
     },
     "errors": {
       "notFound": "No pudimos encontrarlo, o no se puede abrir.",
@@ -2777,6 +2783,19 @@
         "planOn": "Su escuela ya tiene un plan escolar.",
         "noAdmin": "Su escuela todavía no tiene admin, así que no hay a quién pedírselo."
       }
+    },
+    "jump": {
+      "label": "Ir a",
+      "aria": "En esta página"
+    },
+    "filter": {
+      "label": "Buscar un nombre",
+      "none": "Nadie con ese nombre aquí."
+    },
+    "stats": {
+      "classes": "{count, plural, one {# clase} other {# clases}}",
+      "unplaced": "{count, plural, one {# estudiante sin clase} other {# estudiantes sin clase}}",
+      "staff": "{count, plural, one {# miembro del personal} other {# miembros del personal}}"
     }
   },
   "lessons": {
@@ -2803,7 +2822,9 @@
       "newLesson": "Nueva lección",
       "newLessonPlaceholder": "Título de la lección, p. ej., Calentamiento de fracciones",
       "empty": "Todavía no hay lecciones aquí",
-      "emptyText": "Cree una lección nueva, deje que la IA prepare un borrador o copie una lección que compartió un colega."
+      "emptyText": "Cree una lección nueva, deje que la IA prepare un borrador o copie una lección que compartió un colega.",
+      "find": "Buscar una lección",
+      "readyMade": "Listos para usar"
     },
     "folder": {
       "name": "Nombre de la carpeta",
@@ -3020,7 +3041,8 @@
       "feedbackPlaceholder": "Comentario para el estudiante (opcional)",
       "send": "Guardar y marcar como revisada",
       "update": "Actualizar comentario",
-      "noAnswers": "Todavía no hay respuestas."
+      "noAnswers": "Todavía no hay respuestas.",
+      "attention": "Primero quien necesita atención"
     },
     "student": {
       "doneOf": "{done} de {total} hechos",
@@ -3043,6 +3065,9 @@
       "sentAgo": "Enviada {when}",
       "feedback": "De tu profe",
       "readNoFeedback": "Tu profe vio tu respuesta."
+    },
+    "courses": {
+      "started": "{started} de {total} empezaron"
     }
   },
   "google": {
@@ -5145,7 +5170,8 @@
       "teacherHost": "¿Eres docente? Organízalo en vivo con tu clase",
       "solo": "Practicar solo",
       "play": "Jugar contra la compu o 2 jugadores",
-      "joinGo": "Unirme"
+      "joinGo": "Unirme",
+      "forClass": "Para {name}"
     },
     "check": {
       "live_pack": "todavía no carga el paquete en vivo",
@@ -5998,7 +6024,7 @@
     "standards": {
       "title": "Estándares",
       "lead": "Lo que hizo esta clase en cada estándar CSTA. Se cuenta por clase: cuando trabajan en parejas, solo cuenta el alumno que inició sesión.",
-      "pick": "Ver",
+      "pick": "Estudiante",
       "show": "Ver",
       "everyone": "Toda la clase",
       "levelsAll": "Ver los 44 estándares",

@@ -404,7 +404,7 @@ router.get('/class/:id/standards', requireUser, (req, res) => {
   const data = STD.classStandards(c.id, { all });
   const student = req.query.student ? data.students.find(p => p.id === String(req.query.student)) || null : null;
   const body = html`${classHeader(req, c, 'standards')}<p class="muted csq-std-lead">${t('cs.standards.lead')}</p>${standardsBody(req, { c, data, all, student })}`;
-  page(req, res, { title: `${t('cs.standards.title')} · ${c.name}`, active: 'classes', body, head: V.CSS, ...classBack(req, c) });
+  page(req, res, { title: `${t('cs.standards.title')} · ${c.name}`, active: 'classes', body, head: V.CSS, scripts: ['/js/schools.js'], ...classBack(req, c) });
 });
 router.get('/class/:id/standards.csv', requireUser, (req, res) => {
   const c = stdClass(req, res); if (!c) return;

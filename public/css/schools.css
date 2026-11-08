@@ -125,7 +125,10 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 }
 @media (max-width:400px){.classtabs a{font-size:.72rem;padding-inline:1px}}
 
-/* ---------- Tables; on phones and tablets they become stacked cards (label: value) ---------- */
+/* ---------- Tables; on phones and tablets they become labelled cards ---------- */
+/* One pattern with the site admin's tables (public/css/admin.css .atable): the first cell is the card's title; every other
+   cell with data-label shows its label above the value in a small grid; .edit (a field + Save) and .tacts (the row's
+   actions: the main one, then ⋯) span the card, actions at its end. Desktop keeps a real table. */
 .rtable td{vertical-align:middle}
 .rtable td.tacts{width:1%;white-space:nowrap}
 .rtable td.tacts>.acts{flex-wrap:nowrap;justify-content:flex-end}
@@ -135,22 +138,24 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .rtable.people th:nth-child(2){width:26%}
 .rtable.people th:nth-child(3){width:10%}
 @media (max-width:900px){
+  .tblwrap:has(>.rtable){overflow:visible}
   .rtable thead{display:none}
-  .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:100%}
-  .rtable tr{padding:var(--s4) 0;border-bottom:1px solid var(--line)}
+  .rtable,.rtable tbody{display:block;width:100%}
+  .rtable tr{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,8.5rem),1fr));gap:var(--s3) var(--s4);align-items:start;padding:var(--s4) 0;border-bottom:1px solid var(--line)}
   .rtable tr:first-child{padding-top:var(--s1)}
   .rtable tr:last-child{border-bottom:0;padding-bottom:0}
-  .rtable td{border:0;padding:2px 0}
-  .rtable td:first-child{font-size:1.05rem;padding-bottom:var(--s2)}
-  .rtable td[data-label]{display:inline-block;width:auto;margin-inline-end:var(--s4)}
-  .rtable td[data-label]::before{content:attr(data-label) ": ";font-weight:700;color:var(--muted);font-size:.85rem}
-  .rtable td.edit{display:flex;align-items:center;gap:var(--s2);width:100%;margin:var(--s1) 0 0}
+  .rtable td{display:block;width:auto;min-width:0;border:0;padding:0}
+  .rtable tr>td:first-child{grid-column:1/-1;font-size:1.05rem}
+  .rtable td[data-label]::before{content:attr(data-label);display:inline;margin-inline-end:6px;font-weight:700;color:var(--muted);font-size:.8125rem}
+  .rtable td[data-label]{align-self:center}
+  .rtable td.edit{grid-column:1/-1;display:flex;align-items:center;gap:var(--s2);width:100%}
   .rtable td.edit form.inline{flex:1 1 auto}
-  .rtable td.tacts{width:100%;white-space:normal;padding-top:var(--s3)}
-  .rtable td.tacts>.acts{flex-wrap:wrap;justify-content:flex-start}
-  .rtable td.tacts form.inline{order:1;flex:1 1 100%;max-width:420px}
+  .rtable td.tacts{grid-column:1/-1;width:auto;white-space:normal}
+  .rtable td.tacts>.acts{flex-wrap:wrap;justify-content:flex-end}
   .rtable td.hide-sm{display:none}
   .rtable .input-sm{max-width:none;flex:1}
+  /* Links in a card are full tap targets */
+  .rtable td>a,.rtable td>.clinks>a,.rtable td:first-child>a:first-child{display:inline-flex;align-items:center;min-height:44px}
 }
 
 /* ---------- Login cards: 2 per row on paper, nothing else printed ---------- */
@@ -200,7 +205,9 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .inline-menu>summary{list-style:none}
 .inline-menu>summary::-webkit-details-marker{display:none}
 .inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;display:grid;gap:var(--s3);width:min(86vw,340px);padding:var(--s4);border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow-lg)}
-.inline-menu .menu .formgrid{grid-template-columns:1fr 1fr;gap:var(--s3)}
+.inline-menu .menu .formgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+.inline-menu .menu .formgrid .input{width:100%;min-width:0;max-width:none}
+@media (max-width:600px){.inline-menu .menu .formgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr))}}
 .inline-menu .menu .btn{justify-content:center}
 .inline-menu .menu>form:not(.row):not(.formgrid)>.btn,.inline-menu .menu>.btn{width:100%}
 .inline-menu .menu>form.row{flex-wrap:nowrap;gap:var(--s2)}
@@ -248,9 +255,11 @@ form.inline{display:inline-flex;gap:var(--s2);align-items:center;margin:0}
 .cl-row{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between;padding:var(--s3) var(--s4);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
 .cl-row>.cl-main{flex:1 1 220px}
 .cl-meta{display:flex;flex-wrap:wrap;align-items:center;gap:2px var(--s2)}
-.cl-tools{display:grid;gap:var(--s5);padding-top:var(--s5);border-top:1px solid var(--line)}
-.panel>.cl-tools{margin-top:var(--s5)}
-.cl-more{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:space-between}
+.cl-tools{display:grid;gap:var(--s4);padding-bottom:var(--s5);border-bottom:1px solid var(--line)}
+.panel>.cl-tools{margin-top:var(--s4)}
+.panel>.cl-tools+.unit{margin-top:var(--s5)}
+.assigndrop .formgrid{margin:0}
+.cl-more{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;justify-content:flex-start}
 .unitform{display:flex;flex-wrap:wrap;gap:var(--s2);flex:1 1 300px;max-width:560px}
 .unitform .input{flex:1 1 180px;min-width:0}
 @media (max-width:600px){.cl-more{row-gap:var(--s2)}.unitform .btn,.cl-more>.btn{flex:1 1 100%}}
@@ -345,16 +354,25 @@ fieldset.picklist>label{display:flex;align-items:center;flex-wrap:wrap;gap:var(-
 fieldset.picklist>label:has(input:checked){box-shadow:inset 0 0 0 2px var(--accent-line);background:var(--accent-soft)}
 fieldset.picklist input{width:20px;height:20px;flex:none}
 /* ⋯ menus inside tables open in the row (a table scrolls sideways, so a floating menu would be cut off). */
-.rtable .inline-menu .menu{position:static;width:min(100%,340px);min-width:260px;margin-top:var(--s2);white-space:normal;box-shadow:inset 0 0 0 2px var(--line)}
+.rtable .inline-menu .menu{position:static;width:min(100%,340px);min-width:min(100%,260px);margin-top:var(--s2);white-space:normal;box-shadow:inset 0 0 0 2px var(--line)}
 @media (max-width:900px){
   .rtable td.tacts:has(.inline-menu[open]){white-space:normal}
-  .rtable td.tacts .inline-menu[open]{flex-basis:100%}
+  .rtable td.tacts .inline-menu[open]{flex-basis:100%;text-align:end}
   .rtable td.tacts:has(.inline-menu[open])>.acts{flex-wrap:wrap}
+  .rtable .inline-menu[open] .menu{width:100%;min-width:0;text-align:start}
 }
 /* Desktop: the tables fit, so the menu floats under ⋯ as it does elsewhere and the table doesn't reflow. */
 @media (min-width:901px){
   .tblwrap:has(>.rtable){overflow:visible}
   .rtable .inline-menu .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);margin-top:0;min-width:0;width:min(86vw,340px);box-shadow:var(--shadow-lg)}
+}
+/* Phones: a floating menu anchored to ⋯ can open past the screen's edge (⋯ often sits at the start of a stacked row).
+   It opens in the page instead: under its row, as wide as the row, ⋯ staying at the row's end. */
+@media (max-width:600px){
+  .inline-menu[open]{flex-basis:100%;text-align:end}
+  .inline-menu .menu{position:static;width:100%;min-width:0;margin-top:var(--s2);text-align:start;box-shadow:inset 0 0 0 2px var(--line)}
+  :is(.acts,.unit-head>.acts):has(>.inline-menu[open]){flex:1 1 100%;flex-wrap:wrap;justify-content:flex-end}
+  .unit-head:has(.inline-menu[open]){flex-wrap:wrap}
 }
 
 /* ---- Progress pages (batch 2) ---- */
@@ -479,3 +497,273 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 .rubric-mates{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px}
 .rubric-mates .chk{display:inline-flex;align-items:center;gap:6px;min-height:36px}
 .sc-hosted{margin:0}
+
+/* ---- School and teacher pages: tidy-up (phones first) ---- */
+/* Gradebooks: names wrap between words only ("Hernández-" / "Valenzuela"), never inside one; the sticky name column is
+   wide enough for a long surname next to the avatar (on phones it is narrower, so two lesson columns show beside it, and
+   it grows only for a word that needs it). One lesson's steps: step titles wrap to three lines in a narrow column so the
+   table, Last active included, fits a laptop; a longer title shows whole on tap (public/js/schools.js) and on hover. */
+.gradebook .gb-name{min-width:168px}
+.gradebook .gb-name .pp{align-items:flex-start}
+.gradebook .gb-name .pp>.avatar{flex:none}
+.gradebook .gb-name .pp b{overflow-wrap:normal;word-break:normal;hyphens:manual;min-width:0}
+@media (max-width:600px){
+  .gradebook .gb-name{min-width:0;width:124px;max-width:none;padding-inline:var(--s2)}
+  .gradebook .gb-name .pp{gap:6px}
+  .gradebook .gb-name .pp>.avatar{--s:22px!important}
+  .gradebook tbody .gb-name{font-size:.875rem}
+  .gradebook:not(.steps) thead th:not(.gb-name){min-width:96px;padding-inline:var(--s2)}
+  .gradebook:not(.steps) td{padding-inline:var(--s2)}
+}
+.gradebook.steps thead th{min-width:88px;max-width:140px;vertical-align:bottom}
+.gradebook.steps .gb-step{max-width:128px;white-space:normal;text-overflow:clip;overflow-wrap:break-word;hyphens:auto;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3}
+.gradebook.steps .gb-step.more{cursor:pointer}
+.gradebook.steps .gb-step.open{display:block;-webkit-line-clamp:unset;line-clamp:none}
+.gradebook.steps td:last-child,.gradebook.steps th:last-child{white-space:nowrap}
+/* A class row's ↑ ↓ ⋯ stay together at the row's end. */
+.cl-row>.acts{margin-inline-start:auto}
+/* Phones: every button, field and menu trigger is a 44 px tap target. */
+@media (max-width:600px){
+  .acts .btn-sm,.inline .btn-sm,.unit-head .btn-sm,.inline-menu>summary.btn-sm{min-height:44px;min-width:44px}
+  .input.input-sm{min-height:44px;height:44px}
+  .sc-head>.acts{grid-template-columns:repeat(2,44px)}
+  .sc-head>.acts .btn-sm{width:44px}
+  .classcard a.chip-s,.gb-sub a.chip-s,.rtable a.chip-s{display:inline-flex;align-items:center;min-height:44px;padding:0 12px}
+  .fr-name{min-height:44px}
+  .stepcard>details>summary,.newgame>summary{min-height:44px}
+}
+/* A section heading with its count and an "➕ Add …" button beside it (People). */
+.sec-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3);margin:var(--s6) 0 var(--s3);scroll-margin-top:calc(var(--top) + var(--s3))}
+.sec-row>.sec-h{margin:0}
+main.wrap>.ajump+.sec-row{margin-top:var(--s4)}
+.count{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 8px;margin-inline-start:4px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);font-size:.9rem;font-weight:800;color:var(--text-2);vertical-align:middle}
+@media (max-width:600px){.sec-row>.btn{flex:1 1 100%;white-space:normal;text-align:center;line-height:1.2}}
+:is(#add-staff,#add-students,#requests,#roster,#class-code,#add-step,#assign,#steps,#gb,.coursepanel,#live-games){scroll-margin-top:calc(var(--top) + var(--s3))}
+/* School at a glance (Classes tab). */
+.statstrip{display:flex;flex-wrap:wrap;gap:var(--s2);margin:0;padding:0;list-style:none}
+.statstrip>li{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);font-weight:700;font-size:.95rem}
+.statstrip>li>a{display:inline-flex;align-items:center;min-height:44px;color:inherit;text-decoration:none}
+.statstrip>li>a:hover{text-decoration:underline}
+@media (max-width:600px){
+  .statstrip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .statstrip>li{border-radius:var(--r-sm);padding:4px 12px;line-height:1.2;font-size:.9rem}
+}
+.statstrip>li.warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
+/* Name filter over a long list. */
+.namefilter{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
+.namefilter>.input{flex:1 1 220px;max-width:420px;height:44px}
+.namefilter>p{flex:1 1 100%;margin:0}
+.namefilter>.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+main.wrap>.namefilter{margin-bottom:var(--s3)}
+.panel>.namefilter+*{margin-top:var(--s3)}
+/* A student's grade: shown as text with ✏️; the same field + Save open under it. */
+.gedit{display:inline-block}
+.gedit>summary{list-style:none;gap:6px}
+.gedit>summary::-webkit-details-marker{display:none}
+.gedit[open]>summary{margin-bottom:var(--s2)}
+.gedit>form.inline{display:flex}
+.rtable td.edit{flex-wrap:wrap}
+@media (max-width:900px){
+  .rtable td.edit:has(>.gedit){grid-column:auto}
+  .rtable td.edit:has(>.gedit[open]){grid-column:1/-1}
+  .rtable td.edit[data-label]::before{flex:none}
+}
+/* My classes: the teaching tools as one compact row (a 2 × 2 grid on phones); the school an admin runs, as a card. */
+/* The buttons share a row when their labels fit on one line, else take a row each; rows 12 px apart. */
+@media (max-width:600px){
+  .pagehead>.teachtools{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s2)}
+  .pagehead>.teachtools>.btn{flex:1 1 auto;white-space:nowrap;justify-content:center}
+}
+.schoolcard{display:grid;gap:var(--s3)}
+.sc-link{display:flex;flex-direction:column;gap:2px;min-height:44px;justify-content:center;color:var(--text);text-decoration:none}
+.sc-link>b{font-size:1.15rem;color:var(--accent-ink,var(--text))}
+.sc-link:hover>b{text-decoration:underline}
+.schoolcard>.teachplan{margin:0;padding:var(--s3) 0 0;box-shadow:none;background:transparent;border-top:1px solid var(--line);border-radius:0}
+.schoolcard>.teachplan>h2{font-size:1rem}
+/* School settings: three groups in one form; on phones Save stays in reach at the bottom of the screen once the page is
+   scrolled (not on load, where it would sit over the first fields). */
+.settingsform>h3.setgroup-h{margin-top:0;padding-top:0;border-top:0}
+@media (max-width:600px){
+  .settingsform.scrolled>.savebar{position:sticky;bottom:calc(var(--tabbar,64px) + env(safe-area-inset-bottom) + var(--s2));z-index:2;padding:var(--s2);margin-inline:calc(-1 * var(--s2));border-radius:var(--r-sm);background:var(--card);box-shadow:var(--shadow)}
+  .settingsform>.savebar>.btn{width:100%}
+}
+/* Archive / delete at the bottom of Settings: the card turns red only when it holds Delete (archiving can be undone). */
+.panel.dangerzone{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 35%,var(--line))}
+.ajump .chip code{font-weight:800;letter-spacing:.08em}
+/* Progress: "How to read it" folds the intro; course panels fold to "n of N started" until someone starts. */
+.gb-tools{justify-content:space-between}
+.gbhelp{flex:1 1 260px;min-width:0}
+.gbhelp>summary{min-height:44px;display:inline-flex;align-items:center;gap:var(--s2);cursor:pointer;font-weight:700;color:var(--text-2)}
+.gbhelp>p{margin:var(--s1) 0 0}
+details.coursepanel>summary{flex-wrap:wrap;column-gap:var(--s3)}
+details.coursepanel>summary>h2{margin:0;font-size:inherit;font-size:1.15rem}
+details.coursepanel>summary>.small{flex:1 1 auto}
+.gb-sort{justify-content:flex-end}
+.gb-sort>.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.panel>.gb-sort+.gbwrap{margin-top:var(--s3)}
+/* Library: ready-made courses as their own row of links; folder rows count their lessons. */
+.readymade{align-items:center}
+.readymade .chip{font-size:.9rem;padding:0 14px}
+.fr-name{flex-direction:column;align-items:flex-start;justify-content:center;gap:0}
+.fr-count{font-weight:600}
+/* Login cards: on a phone only the Print / Back row stays at the top while scrolling the cards (the heading scrolls away);
+   a solid strip, full width, right under the top bar. */
+@media (max-width:600px){
+  main.wrap>.cardsbar{display:contents}
+  main.wrap>.cardsbar>div:first-child{margin-bottom:var(--s3)}
+  main.wrap>.cardsbar>.row{position:sticky;top:var(--top);z-index:3;margin:0 calc(-1 * var(--s4)) var(--s3);padding:var(--s2) var(--s4);background:var(--bg);box-shadow:0 1px 0 var(--line)}
+  main.wrap>.cardsbar>.row>.btn{flex:1 1 auto;justify-content:center}
+}
+/* Lesson editor actions on phones: equal buttons, two a row. */
+@media (max-width:600px){
+  .pagehead>.edacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pagehead>.edacts>.btn{white-space:normal;line-height:1.15;text-align:center;padding:4px 10px}
+}
+/* Standards tab on phones: each standard is a card (id and statement, then its numbers in a grid). */
+@media (max-width:700px){
+  .gbwrap:has(>.csq-std){overflow:visible}
+  .csq-std thead{display:none}
+  .csq-std,.csq-std tbody{display:block;width:100%}
+  .csq-std tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .csq-std tr>th.csq-std-id{margin-bottom:var(--s1)}
+  .csq-std tr>*{display:block;border:0!important;padding:0!important;min-width:0;max-width:none;text-align:start}
+  .csq-std tr>th.csq-std-id,.csq-std td.csq-std-lessons{grid-column:1/-1}
+  .csq-std tr.csq-std-concept{display:block;position:sticky;top:var(--top);z-index:2;padding:var(--s3) 0 var(--s1);border-bottom:0;background:var(--card)}
+  .csq-std tr.csq-std-concept>th{padding:var(--s2) var(--s3)!important;border-radius:var(--r-sm);font-size:1rem;color:var(--text);background:var(--card-2);box-shadow:inset 4px 0 0 var(--accent)}
+  .csq-std-tools>.csq-std-pick{flex:1 1 100%;flex-wrap:nowrap;min-width:0}
+  .csq-std-pick>label{flex:none}
+  .csq-std td[data-label]::before{content:attr(data-label);display:inline;margin-inline-end:6px;font-size:.8125rem;font-weight:700;color:var(--muted)}
+  .csq-std .csq-std-id .small:not(.open){display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .csq-std .csq-std-id .small.more{cursor:pointer}
+  .csq-std-pick select.input-sm{max-width:none;flex:1 1 auto;min-width:0;width:auto}
+}
+.csq-std-tools{display:flex}
+.csq-std-pick>.input-sm{max-width:220px}
+/* Class Lessons toolbar on phones: Assign on its own row; Lesson library and New unit side by side when both labels fit on
+   one line, else one a row (long translations); rows 12 px apart. */
+@media (max-width:600px){
+  .cl-more{row-gap:var(--s3)}
+  .cl-more>.assigndrop{flex:1 1 100%}
+  .cl-more>.btn,.cl-more>.unitdrop:not([open]){flex:1 1 auto;min-width:0}
+  .cl-more>.btn,.cl-more>.unitdrop:not([open])>summary{white-space:nowrap}
+}
+/* CS Quest coverage tables on phones: each standard is a card with labelled cells (the practices × units grid keeps
+   its own sideways scroll: it is a grid). */
+@media (max-width:700px){
+  .csq-tbl:has(>.csq-cov td[data-label]){overflow:visible}
+  .csq-cov:has(td[data-label]) thead{display:none}
+  .csq-cov:has(td[data-label]),.csq-cov:has(td[data-label]) tbody{display:block;width:100%}
+  .csq-cov:has(td[data-label]) tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .csq-cov:has(td[data-label]) td{display:block;border:0!important;padding:0!important;min-width:0;overflow-wrap:anywhere}
+  .csq-cov td.id{grid-column:1/-1;font-weight:800}
+  .csq-cov td.full{grid-column:1/-1}
+  /* The two short fields (Practices, Items) share a line after the concept; the long ones follow, full width. */
+  .csq-cov:has(td[data-label]) td:nth-child(n+4){order:2}
+  .csq-cov:has(td[data-label]) td:is(:nth-child(3),:nth-child(6)){order:1}
+  .csq-cov td[data-label]::before{content:attr(data-label);display:inline;margin-inline-end:6px;font-size:.8125rem;font-weight:700;color:var(--muted)}
+}
+
+/* ---- Review round 1 ---- */
+/* Class, People and roster tables on phones: a card whose fields flow as "Label value" pieces, side by side when they fit
+   and full width when long (no half-width columns squeezing a name or "none yet"); the actions (⋯) join the last line when
+   there is room. Field + Save editors, open menus and the staff role editor take the full width. */
+@media (max-width:900px){
+  .rtable:is(.classes,.people,.roster) tr{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4);padding:var(--s3) 0}
+  .rtable:is(.classes,.people,.roster) tr:first-child{padding-top:0}
+  .rtable:is(.classes,.people,.roster) tr>td:first-child{flex:1 1 100%}
+  .rtable:is(.classes,.people,.roster) td[data-label]{flex:0 1 auto;max-width:100%;overflow-wrap:anywhere}
+  .rtable:is(.classes,.people,.roster) td[data-label]::before{white-space:nowrap}
+  .rtable:is(.classes,.people,.roster) td[data-label]>a.chip-s{vertical-align:middle}
+  .rtable:is(.classes,.people,.roster) td.tacts{flex:0 0 auto;margin-inline-start:auto}
+  .rtable:is(.classes,.people,.roster) td.tacts:has(.inline-menu[open]){flex:1 1 100%}
+  .rtable:is(.classes,.people,.roster) td.edit{flex:1 1 100%;width:auto}
+  .rtable:is(.classes,.people,.roster) td.edit:has(>.gedit){flex:0 1 auto}
+  .rtable:is(.classes,.people,.roster) td.edit:has(>.gedit[open]){flex:1 1 100%}
+  .rtable.roster td[data-label]:nth-child(2){flex-basis:100%}
+}
+/* A student's grade while it is being changed: the field, Save and ✕ (close) on one line; the grade chip is hidden. */
+.gedit .gx{display:none}
+.gedit[open]{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.gedit[open]>summary{order:2;margin-bottom:0}
+.gedit[open]>summary>.gv{display:none}
+.gedit[open]>summary>.gx{display:inline}
+.gedit[open]>form.inline{flex:1 1 auto;min-width:0}
+.gedit[open]>form.inline>.input{min-width:0;width:6rem;flex:1 1 4rem}
+.rtable td.edit>.gedit[open]{flex:1 1 12rem;min-width:0}
+/* People: "➕ Add …" beside each heading opens its form under the heading (open on load when the list is empty). */
+.sec-row>.adddrop[open]{flex:1 1 100%}
+.adddrop>div>p:first-child{margin-top:0}
+/* Course panels (Progress) on phones: each student is a card: name, then Status, Steps done, Checks, Per step. */
+@media (max-width:600px){
+  .gbwrap:has(>.cptable){overflow:visible}
+  .cptable thead{display:none}
+  .cptable,.cptable tbody{display:block;width:100%}
+  .cptable tr{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .cptable tr:last-child{border-bottom:0}
+  .cptable tr>*{display:block;border:0!important;padding:0!important;min-width:0;text-align:start;background:none}
+  .cptable tr>th.gb-name{display:block;position:static;flex:1 1 100%;width:auto;max-width:none}
+  .cptable td[data-label]::before{content:attr(data-label);margin-inline-end:6px;font-size:.8125rem;font-weight:700;color:var(--muted)}
+  .cptable td .pbar{margin-inline-start:6px}
+  .cptable td.cp-steps{flex-basis:100%;overflow-wrap:anywhere}
+}
+/* Standards: a "Jump to" chip lands on its concept's group of rows (a <tbody>) just under the top bar; on phones the
+   group's own sticky heading is then the only one in view (the previous group has ended above it).
+   (The page's scroll-padding already clears the top bar plus 12 px; phones take those 12 px back.) */
+@media (max-width:700px){.csq-std>tbody[id]{scroll-margin-top:-12px}}
+
+/* ---- Review round 2 ---- */
+/* An open "➕ Add …" / "📌 Assign …" / "🗂️ New unit" fold shows ✕ on its button: tapping it again closes the form. */
+.libdrop[open]>summary::after{content:"✕"/"";margin-inline-start:var(--s1);font-weight:800;opacity:.75}
+/* Class Lessons toolbar: the Assign form opens where its button is (first in the toolbar), not after Library / New
+   unit. On phones the two short buttons have slimmer sides so they share a row in English (long labels still wrap
+   to a row each). */
+.cl-more>.assigndrop[open]{order:0}
+@media (max-width:600px){
+  .cl-more>.btn,.cl-more>.unitdrop>summary{padding-inline:12px;gap:6px}
+}
+/* People on wider screens: "➕ Add …" stays beside its heading while its form opens in the card below. */
+@media (min-width:601px){
+  .sec-row:has(>.adddrop[open]){position:relative}
+  .sec-row:has(>.adddrop[open])>.sec-h{min-height:44px;display:flex;align-items:center;gap:.3em}
+  .sec-row>.adddrop[open]{position:static}
+  .sec-row>.adddrop[open]>summary{position:absolute;top:0;inset-inline-end:0;min-height:44px;margin:0}
+  .sec-row>.adddrop[open]>div{padding-top:0}
+}
+/* School at a glance on phones: an odd last chip takes the whole row. */
+@media (max-width:600px){.statstrip>li:last-child:nth-child(odd){grid-column:1/-1}}
+/* School Classes cards on phones: ⋯ sits at the top right of every card, beside the class name; its menu opens under it
+   as a sheet over the card (the button does not move). */
+@media (max-width:900px){
+  .rtable.classes tr{position:relative}
+  .rtable.classes tr>td:first-child{flex:1 1 calc(100% - 44px - var(--s4));min-width:0}
+  .rtable.classes td.tacts,.rtable.classes td.tacts:has(.inline-menu[open]){order:-1;flex:0 0 auto;margin-inline-start:0;align-self:flex-start}
+  .rtable.classes tr>td:first-child{order:-2}
+  .rtable.classes td.tacts .inline-menu,.rtable.classes td.tacts .inline-menu[open]{position:static;flex-basis:auto}
+  .rtable.classes td.tacts:has(.inline-menu[open])>.acts{flex-wrap:nowrap}
+  .rtable.classes .inline-menu .menu,.rtable.classes .inline-menu[open] .menu{position:absolute;top:auto;inset-inline:0;z-index:20;width:auto;min-width:0;margin-top:6px;box-shadow:var(--shadow-lg)}
+}
+/* School Settings on phones: the sticky Save bar sits right on the bottom tab bar (nothing shows through under it). */
+@media (max-width:600px){
+  .settingsform.scrolled>.savebar{bottom:calc(var(--tabbar,64px) + env(safe-area-inset-bottom));border-radius:var(--r-sm) var(--r-sm) 0 0}
+}
+/* Class Settings on phones: Save is a full-width bar like School Settings'. */
+@media (max-width:600px){.detailsform>.formacts>.btn{width:100%}}
+/* Class roster cards on phones: "@name · school account" is a muted line under the real name, like People (the label
+   stays for screen readers). */
+@media (max-width:900px){
+  .rtable.roster td[data-label]:nth-child(2){margin-top:calc(-1 * var(--s1));padding-inline-start:38px!important;font-size:.875rem;color:var(--text-2)}
+  .rtable.roster td[data-label]:nth-child(2)::before{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+/* One lesson's progress on phones: the "✍️ 1" chip under a name looks like the gradebook's small pill; its tap area
+   stays 44 px tall. */
+@media (max-width:600px){
+  .gb-sub a.chip-s{position:relative;isolation:isolate;min-height:44px;margin-block:-11px;padding:0 10px;background:transparent}
+  .gb-sub a.chip-s::before{content:"";position:absolute;z-index:-1;inset-inline:0;top:50%;height:22px;transform:translateY(-50%);border-radius:999px;background:var(--warn-bg)}
+}
+/* Standards on phones: a statement cut to two lines ends with "… ▾" (tap shows all of it), like the admin pages. */
+@media (max-width:700px){
+  .csq-std .csq-std-id .small.more{position:relative}
+  .csq-std .csq-std-id .small.more:not(.open)::after{content:"… ▾";position:absolute;inset-inline-end:0;bottom:0;padding-inline-start:2.5em;background:linear-gradient(to right,transparent,var(--card) 45%);color:var(--text-2);font-weight:700}
+  .csq-std .csq-std-id .small.more.open{display:block}
+  .csq-std .csq-std-id .small.more:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+}

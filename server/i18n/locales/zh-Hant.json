@@ -2411,6 +2411,7 @@
     },
     "actions": "操作",
     "save": "儲存",
+    "cancel": "取消",
     "roles": {
       "admin": "校務管理員",
       "teacher": "老師",
@@ -2432,7 +2433,8 @@
         "on": "學校方案已啟用",
         "billing": "付款",
         "settling": "正在設定你的方案…"
-      }
+      },
+      "tools": "教學工具"
     },
     "class": {
       "new": "新增班級",
@@ -2559,7 +2561,8 @@
       "createStaff": "建立帳號和登入卡",
       "addToSchool": "加入學校",
       "added": "已將 {name} 新增為{role}",
-      "putInClass": "班級"
+      "putInClass": "班級",
+      "changeGrade": "變更 {name} 的年級"
     },
     "settings": {
       "name": "學校名稱",
@@ -2581,9 +2584,11 @@
       "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。",
       "chatHint": "學校帳號只能把同班同學加為好友。",
       "timeZone": "時區",
-      "timeZoneNone": "未設定（日期以 UTC 計算）",
+      "timeZoneNone": "未設定（UTC）",
       "timeZoneUnset": "設定學校的時區後，課程會在您所在地區的午夜開放，截止日期也會在午夜結束。在此之前，截止日開始後的 36 小時內都不算遲交。",
-      "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。"
+      "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。",
+      "groupSchool": "學校",
+      "groupClasses": "班級與加入"
     },
     "cards": {
       "title": "登入卡",
@@ -2595,7 +2600,8 @@
       "gone": "這些登入卡已無法再顯示。請到班級的「學生」分頁或學校的「成員」分頁產生新密碼。",
       "backPeople": "回到「成員」",
       "backClass": "回到 {name}",
-      "skipped": "{count, plural, other {# 位學生使用個人帳號，密碼維持不變}}：{names}。"
+      "skipped": "{count, plural, other {# 位學生使用個人帳號，密碼維持不變}}：{names}。",
+      "count": "{count, plural, other {# 張登入卡}}"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -2777,6 +2783,19 @@
         "planOn": "你的學校已經有學校方案了。",
         "noAdmin": "你的學校還沒有校務管理員，所以沒有人可以申請。"
       }
+    },
+    "jump": {
+      "label": "跳至",
+      "aria": "本頁內容"
+    },
+    "filter": {
+      "label": "搜尋姓名",
+      "none": "這裡沒有這個名字的人。"
+    },
+    "stats": {
+      "classes": "{count, plural, other {# 個班級}}",
+      "unplaced": "{count, plural, other {# 位學生尚未分班}}",
+      "staff": "{count, plural, other {# 位教職員}}"
     }
   },
   "lessons": {
@@ -2803,7 +2822,9 @@
       "newLesson": "新增課程",
       "newLessonPlaceholder": "課程名稱，例如：分數暖身",
       "empty": "這裡還沒有課程",
-      "emptyText": "建立新課程、讓 AI 擬一份草稿，或複製同事分享的課程。"
+      "emptyText": "建立新課程、讓 AI 擬一份草稿，或複製同事分享的課程。",
+      "find": "搜尋課程",
+      "readyMade": "現成課程"
     },
     "folder": {
       "name": "資料夾名稱",
@@ -3020,7 +3041,8 @@
       "feedbackPlaceholder": "給學生的回饋（選填）",
       "send": "儲存並標為已批閱",
       "update": "更新回饋",
-      "noAnswers": "還沒有答案。"
+      "noAnswers": "還沒有答案。",
+      "attention": "需要關注的優先"
     },
     "student": {
       "doneOf": "已完成 {done}/{total}",
@@ -3043,6 +3065,9 @@
       "sentAgo": "已於 {when} 送出",
       "feedback": "老師的話",
       "readNoFeedback": "老師已經看過你的答案了。"
+    },
+    "courses": {
+      "started": "{total} 人中有 {started} 人已開始"
     }
   },
   "google": {
@@ -5145,7 +5170,8 @@
       "teacherHost": "是老師嗎？為你的班級主持即時遊戲",
       "solo": "自己練習",
       "play": "對戰電腦或雙人遊戲",
-      "joinGo": "加入"
+      "joinGo": "加入",
+      "forClass": "給 {name}"
     },
     "check": {
       "live_pack": "還沒有載入直播套件",
@@ -5998,7 +6024,7 @@
     "standards": {
       "title": "標準",
       "lead": "這個班在每一項 CSTA 標準上做了什麼。以班級為單位計算:兩人一組時,只計算登入的那位學生。",
-      "pick": "顯示",
+      "pick": "學生",
       "show": "顯示",
       "everyone": "全班",
       "levelsAll": "顯示全部 44 項標準",

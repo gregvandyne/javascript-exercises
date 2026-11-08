@@ -10,6 +10,7 @@
 import { html, raw, esc } from './html.js';
 import { VERSION } from './layout.js';
 import { tHtml } from '../i18n/index.js';
+import { jumpNav } from './components.js';
 import * as T from '../services/lesson-templates.js';
 import * as CSTA from '../standards/csta.js';
 
@@ -75,7 +76,7 @@ export function programBody(req, d) {
   const schoolIn = html`<input type="hidden" name="schoolId" value="${school.id}">`;
   const bandIn = html`<input type="hidden" name="band" value="${band}">`;
   const missingGames = ['robo-route', 'data-detective', 'packet-post', 'inside-the-machine'].filter(s => !d.published[s]).map(s => cat.games[s]?.title || s);
-  const before = html`<section class="panel csq-before" aria-labelledby="before-h"><h2 id="before-h">🧭 ${t('cs.before.h')}</h2>
+  const before = html`<section class="panel csq-before" aria-labelledby="before-h"><h2 id="before-h">📋 ${t('cs.before.h')}</h2>
     <ul class="csq-plain">
       <li><span aria-hidden="true">${missingGames.length ? '⚠️' : '✅'}</span><span>${missingGames.length ? t('cs.before.gamesMissing', { games: missingGames.join(', ') }) : t('cs.before.gamesOk')}</span></li>
       <li><span aria-hidden="true">${d.flags.live ? '✅' : 'ℹ️'}</span><span>${t(d.flags.live ? 'cs.before.liveOn' : 'cs.before.liveOff')}</span></li>
@@ -132,10 +133,11 @@ export function programBody(req, d) {
     <nav class="seg" aria-label="${t('cs.band.label')}" data-band-toggle>${T.BANDS.map(bc => html`<a href="${href(bc)}" data-band="${bc}" ${bc === band ? raw('aria-current="page"') : ''}>${t(BAND_KEY[bc])} · <span lang="en" dir="ltr">${cat.bands[bc].inGame}</span></a>`)}</nav>
     <span class="small muted">${t('cs.program.inLibrary', { count: added })}</span></div>
   <p class="small muted">${t('cs.program.lead')}</p>
+  ${jumpNav(t, [['before-h', `📋 ${t('cs.before.h')}`], ['paths-h', `🧭 ${t('cs.paths.h')}`], ['units-h', `📚 ${t('cs.units.h')}`]])}
   ${before}
   <section aria-labelledby="paths-h"><h2 id="paths-h" class="sec-h">🧭 ${t('cs.paths.h')}</h2><p class="small muted">${t('cs.paths.lead', { band: t(BAND_KEY[band]) })}</p>
     <div class="csq-paths">${cat.paths.map(pathCard)}</div></section>
-  <h2 class="sec-h">📚 ${t('cs.units.h')}</h2>
+  <h2 class="sec-h" id="units-h">📚 ${t('cs.units.h')}</h2>
   ${cat.units.map(unitCard)}
   <p class="small muted">${t('teachers.cs.cstaNote')}</p>
   <p class="small muted">${t('cs.program.footer')} <a href="/teachers/cs-quest">${t('cs.program.public')}</a> · <a href="/teach/cs-quest/coverage">${t('cs.program.coverage')}</a> · <span lang="en" dir="ltr">${b.grade}: ${b.inGame}</span></p>`;
@@ -288,10 +290,10 @@ export function coverageBody(req, d) {
   const rubricCell = s => raw(`<span lang="en" dir="ltr">${[...new Set(s.rubric.map(r => `${r.lesson} ${r.line}`))].map(esc).join('; ') || '—'}</span>`);
   const table = lv => html`<section class="panel wide" aria-labelledby="cov-${lv}"><h2 id="cov-${lv}">${t('cs.coverage.level', { level: lv, grades: T.GRADES[lv] })}</h2>
     <div class="csq-tbl"><table class="tbl csq-cov"><thead><tr><th>${t('cs.coverage.cols.id')}</th><th>${t('cs.coverage.cols.concept')}</th><th>${t('cs.coverage.cols.practices')}</th><th>${t('cs.coverage.cols.lessons')}</th><th>${t('cs.coverage.cols.activity')}</th><th>${t('cs.coverage.cols.items')}</th><th>${t('cs.coverage.cols.rubric')}</th></tr></thead>
-    <tbody>${map.ids.filter(s => s.level === lv).map(s => html`<tr><td class="id" lang="en" dir="ltr" title="${s.statement}">${s.id}</td><td lang="en" dir="ltr">${s.concept} · ${s.subconcept}</td><td dir="ltr">${s.practiceCodes.join(', ')}</td><td>${lessonsCell(s)}</td><td>${activityCell(s)}</td><td>${itemsCell(s)}</td><td>${rubricCell(s)}</td></tr>`)}</tbody></table></div></section>`;
+    <tbody>${map.ids.filter(s => s.level === lv).map(s => html`<tr><td class="id" lang="en" dir="ltr" title="${s.statement}">${s.id}</td><td class="full" lang="en" dir="ltr" data-label="${t('cs.coverage.cols.concept')}">${s.concept} · ${s.subconcept}</td><td dir="ltr" data-label="${t('cs.coverage.cols.practices')}">${s.practiceCodes.join(', ')}</td><td class="full" data-label="${t('cs.coverage.cols.lessons')}">${lessonsCell(s)}</td><td class="full" data-label="${t('cs.coverage.cols.activity')}">${activityCell(s)}</td><td data-label="${t('cs.coverage.cols.items')}">${itemsCell(s)}</td><td class="full" data-label="${t('cs.coverage.cols.rubric')}">${rubricCell(s)}</td></tr>`)}</tbody></table></div></section>`;
   const practices = html`<section class="panel wide" aria-labelledby="pr-h"><h2 id="pr-h">${t('cs.coverage.practicesH')}</h2>
     <div class="csq-tbl"><table class="tbl csq-practices"><thead><tr><th>${t('cs.coverage.practice')}</th>${map.units.map(n => html`<th dir="ltr">U${n}</th>`)}<th>${t('cs.coverage.units')}</th></tr></thead>
-    <tbody>${[1, 2, 3, 4, 5, 6, 7].map(p => { const cells = map.units.map(n => (map.practices[p][n] || [])); return html`<tr><th scope="row" lang="en" dir="ltr">P${p} ${PRACTICE_NAMES[p]}</th>${cells.map(c => html`<td class="${c.length ? 'on' : ''}" lang="en" dir="ltr">${c.join(', ')}</td>`)}<td dir="ltr">${cells.filter(c => c.length).length}</td></tr>`; })}</tbody></table></div></section>`;
+    <tbody>${[1, 2, 3, 4, 5, 6, 7].map(p => { const cells = map.units.map(n => (map.practices[p][n] || [])); return html`<tr><th scope="row" lang="en" dir="ltr">P${p} ${PRACTICE_NAMES[p]}</th>${cells.map(c => html`<td class="${c.length ? 'on' : ''}" lang="en" dir="ltr">${c.map((id, i) => html`${i ? ', ' : ''}<span class="nw">${id}</span>`)}</td>`)}<td dir="ltr">${cells.filter(c => c.length).length}</td></tr>`; })}</tbody></table></div></section>`;
   const noPrimary = map.ids.filter(s => !s.primaryOutsideUnit7).map(s => s.id);
   return html`
   <div class="pagehead"><div><span class="small muted">CS Quest</span><h1>🗺️ ${t('cs.coverage.title')}</h1>

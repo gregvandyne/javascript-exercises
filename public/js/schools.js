@@ -28,6 +28,71 @@ document.querySelectorAll('.stepgrid select[name="kind"]').forEach(syncStepKind)
 document.addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]'); const id = a && a.getAttribute('href').slice(1); if (!id) return;
   const el = document.getElementById(id); const d = el && el.closest('details');
-  if (!d || el === d) return;
+  if (d === el) { d.open = true; return; }   // a "Jump to" chip to a folded section opens it
+  if (!d) return;
   e.preventDefault(); d.open = true; el.focus();
 });
+
+// ---- Tidy-up: "Find a name" over long lists (components.js nameFilter) ----
+// Rows are table rows or the labels of a tick list; a row matches when its text has every typed word (accents and case
+// ignored). The optional chip shows only the rows marked data-<only> (e.g. students not in a class). Hidden rows stay
+// in the page (and in forms), they are only out of sight.
+const fold = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+document.querySelectorAll('[data-filter]').forEach(box => {
+  const list = document.getElementById(box.dataset.filter); if (!list) return;
+  const rows = [...list.querySelectorAll('tbody > tr, fieldset > label, li')];
+  const input = box.querySelector('input'), chip = box.querySelector('[data-only]'), none = box.querySelector('[data-filter-none]');
+  const run = () => {
+    const words = fold(input.value).split(/\s+/).filter(Boolean), only = chip && chip.getAttribute('aria-pressed') === 'true' ? chip.dataset.only : '';
+    let shown = 0;
+    for (const r of rows) {
+      const ok = words.every(w => fold(r.textContent).includes(w)) && (!only || r.dataset[only] !== undefined);
+      r.hidden = !ok; if (ok) shown++;
+    }
+    none.hidden = shown > 0;
+  };
+  input.addEventListener('input', run);
+  if (chip) chip.addEventListener('click', () => { chip.setAttribute('aria-pressed', String(chip.getAttribute('aria-pressed') !== 'true')); run(); });
+  box.hidden = false;
+});
+
+// A text cut short with an ellipsis shows all of it on tap (or Enter / Space): a standard's statement on the Standards tab
+// on phones (two lines), and a step title over one lesson's progress (three lines; touch screens have no hover title).
+const expandable = [...document.querySelectorAll('.gradebook.steps .gb-step')];
+if (matchMedia('(max-width: 700px)').matches) expandable.push(...document.querySelectorAll('.csq-std .csq-std-id .small'));
+expandable.forEach(d => {
+  if (d.scrollHeight <= d.clientHeight + 1) return;
+  d.classList.add('more'); d.tabIndex = 0; d.setAttribute('role', 'button'); d.setAttribute('aria-expanded', 'false');
+  const flip = () => d.setAttribute('aria-expanded', String(d.classList.toggle('open')));
+  d.addEventListener('click', flip);
+  d.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
+});
+
+// One lesson's progress: "Needs attention first" puts students with answers to read, then late, then half-done on top;
+// pressed again, the roster order comes back. Nothing is hidden.
+document.querySelectorAll('[data-sort]').forEach(btn => {
+  const body = document.querySelector(`#${btn.dataset.sort} tbody`); if (!body) return;
+  const rows = [...body.rows];
+  btn.addEventListener('click', () => {
+    const on = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', String(on));
+    const order = on ? rows.map((r, i) => [r, i]).sort((a, b) => (+b[0].dataset.attn - +a[0].dataset.attn) || a[1] - b[1]).map(x => x[0]) : rows;
+    order.forEach(r => body.appendChild(r));
+  });
+  btn.closest('[hidden]')?.removeAttribute('hidden');
+});
+
+// A link to a folded section from another page (People's #add-staff from a class's Settings) opens it on arrival.
+{ const el = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (el && el.tagName === 'DETAILS' && !el.open) { el.open = true; el.scrollIntoView(); } }
+
+// School settings on phones: the Save bar sticks to the bottom of the screen only once the page has been scrolled, so it
+// never sits over the first fields when the page opens.
+document.querySelectorAll('.settingsform').forEach(form => {
+  const on = () => { if (scrollY > 0) { form.classList.add('scrolled'); removeEventListener('scroll', on); } };
+  addEventListener('scroll', on, { passive: true }); on();
+});
+
+// A fold that is open on wider screens (data-open-wide): the class's "📌 Assign a lesson" form and the gradebook's
+// "How to read it" stay folded on phones, where space is short, and start open on a desk-sized screen, as before.
+if (matchMedia('(min-width: 901px)').matches) document.querySelectorAll('details[data-open-wide]').forEach(d => { d.open = true; });

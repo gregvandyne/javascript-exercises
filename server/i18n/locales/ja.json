@@ -2411,6 +2411,7 @@
     },
     "actions": "操作",
     "save": "保存",
+    "cancel": "キャンセル",
     "roles": {
       "admin": "学校管理者",
       "teacher": "教員",
@@ -2432,7 +2433,8 @@
         "on": "学校プラン有効",
         "billing": "お支払い",
         "settling": "プランを準備しています…"
-      }
+      },
+      "tools": "授業のツール"
     },
     "class": {
       "new": "新しいクラス",
@@ -2559,7 +2561,8 @@
       "createStaff": "アカウントとログインカードを作成",
       "addToSchool": "学校に追加",
       "added": "{name}を{role}として追加しました",
-      "putInClass": "クラス"
+      "putInClass": "クラス",
+      "changeGrade": "{name}の学年を変更"
     },
     "settings": {
       "name": "学校名",
@@ -2581,9 +2584,11 @@
       "photos": "学校アカウントのプロフィール写真は、クラスメート、教員、フレンドにのみ表示されます。",
       "chatHint": "学校アカウントがフレンドに追加できるのはクラスメートのみです。",
       "timeZone": "タイムゾーン",
-      "timeZoneNone": "未設定（日付はUTCで数えられます）",
+      "timeZoneNone": "未設定（UTC）",
       "timeZoneUnset": "学校のタイムゾーンを設定すると、お住まいの地域の午前0時にレッスンが公開され、期限も午前0時に締め切られます。それまでは、期限日の開始から36時間が過ぎるまでは誰も遅れとはみなされません。",
-      "timeZoneHint": "このタイムゾーンでは、午前0時にレッスンが公開され、期限も午前0時に締め切られます。現地は今{time}です。"
+      "timeZoneHint": "このタイムゾーンでは、午前0時にレッスンが公開され、期限も午前0時に締め切られます。現地は今{time}です。",
+      "groupSchool": "学校",
+      "groupClasses": "クラスと参加"
     },
     "cards": {
       "title": "ログインカード",
@@ -2595,7 +2600,8 @@
       "gone": "このログインカードはもう表示できません。クラスの「生徒」タブまたは学校の「メンバー」タブから新しいパスワードを発行してください。",
       "backPeople": "「メンバー」に戻る",
       "backClass": "{name}に戻る",
-      "skipped": "{count, plural, other {#人の生徒は個人アカウントを使っているため、パスワードは変わりません}}：{names}。"
+      "skipped": "{count, plural, other {#人の生徒は個人アカウントを使っているため、パスワードは変わりません}}：{names}。",
+      "count": "{count, plural, other {ログインカード #枚}}"
     },
     "errors": {
       "notFound": "見つからないか、開く権限がありません。",
@@ -2777,6 +2783,19 @@
         "planOn": "あなたの学校にはすでに学校プランがあります。",
         "noAdmin": "あなたの学校にはまだ学校管理者がいないため、依頼できる人がいません。"
       }
+    },
+    "jump": {
+      "label": "移動",
+      "aria": "このページ内"
+    },
+    "filter": {
+      "label": "名前で探す",
+      "none": "その名前の人はいません。"
+    },
+    "stats": {
+      "classes": "{count, plural, other {#クラス}}",
+      "unplaced": "{count, plural, other {クラス未所属の児童 #人}}",
+      "staff": "{count, plural, other {教職員 #人}}"
     }
   },
   "lessons": {
@@ -2803,7 +2822,9 @@
       "newLesson": "新しいレッスン",
       "newLessonPlaceholder": "レッスン名（例：分数のウォームアップ）",
       "empty": "ここにはまだレッスンがありません",
-      "emptyText": "新しいレッスンを作成するか、AIに下書きを作らせるか、同僚が共有したレッスンをコピーしてください。"
+      "emptyText": "新しいレッスンを作成するか、AIに下書きを作らせるか、同僚が共有したレッスンをコピーしてください。",
+      "find": "レッスンを探す",
+      "readyMade": "すぐ使える教材"
     },
     "folder": {
       "name": "フォルダー名",
@@ -3020,7 +3041,8 @@
       "feedbackPlaceholder": "生徒へのフィードバック（任意）",
       "send": "保存して確認済みにする",
       "update": "フィードバックを更新",
-      "noAnswers": "回答はまだありません。"
+      "noAnswers": "回答はまだありません。",
+      "attention": "対応が必要な順"
     },
     "student": {
       "doneOf": "{done}/{total} できた",
@@ -3043,6 +3065,9 @@
       "sentAgo": "{when}におくりました",
       "feedback": "先生から",
       "readNoFeedback": "先生がきみのこたえを見ました。"
+    },
+    "courses": {
+      "started": "{total}人中{started}人が開始"
     }
   },
   "google": {
@@ -5145,7 +5170,8 @@
       "teacherHost": "先生ですか？クラスでライブではじめる",
       "solo": "ひとりでれんしゅう",
       "play": "コンピューターと対戦、または2人で遊ぶ",
-      "joinGo": "さんか"
+      "joinGo": "さんか",
+      "forClass": "{name}向け"
     },
     "check": {
       "live_pack": "まだライブパックを読みこんでいない",
@@ -5998,7 +6024,7 @@
     "standards": {
       "title": "スタンダード",
       "lead": "このクラスが CSTA の各スタンダードで取り組んだこと。数はクラス単位です。ペアで取り組むときは、サインインしている生徒だけが数えられます。",
-      "pick": "表示",
+      "pick": "生徒",
       "show": "表示",
       "everyone": "クラス全体",
       "levelsAll": "44 のスタンダードをすべて表示",

@@ -418,3 +418,10 @@ button.lv-dash-role:focus-visible { outline: 3px solid var(--focus); outline-off
 .lv-bank-hint { grid-column: 1 / -1; margin: 0; }
 /* Doodle Hoot Live: a short message sits at the top, never over the guess box at the bottom */
 body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: calc(8px + env(safe-area-inset-top)); }
+
+/* Teacher's start page on phones: every field and fold is a 44 px tap target; "For {class}" under the heading. */
+.lv-for { margin: 4px 0 0; }
+@media (max-width: 600px) {
+  .lv-landing select, .lv-landing input[type="number"], .lv-landing input[type="text"] { min-block-size: 44px; }
+  .lv-landing summary { min-block-size: 44px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+}

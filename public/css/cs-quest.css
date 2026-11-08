@@ -60,6 +60,7 @@
 .csq-lrows{list-style:none;margin:0;padding:0;display:grid;gap:var(--s2)}
 .csq-lrow{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);align-items:center;padding:var(--s3);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
 .csq-lrow>.csq-lmain{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.csq-lrow>.csq-lmain>.chip-s{margin-top:6px;align-self:flex-start}
 .csq-lrow b{overflow-wrap:anywhere}
 .csq-lrow>.acts{margin-inline-start:auto}
 .csq-lrow .acts .btn-sm{min-height:44px}
@@ -168,6 +169,8 @@ details.csq-menu .menu a:hover{background:var(--hover);text-decoration:none}
 .csq-legend{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none;font-size:.92rem}
 .csq-legend b{display:inline-block;min-width:5.5em}
 .csq-practices td.on{background:var(--accent-soft)}
+/* Practices by unit: a standard id never breaks inside (the grid scrolls sideways instead). */
+.csq-practices .nw{white-space:nowrap}
 
 /* ---------- Public program page (inside .lp from app.css) ---------- */
 .csq-crew{list-style:none;padding:0;margin:0;display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
@@ -187,9 +190,9 @@ details.csq-menu .menu a:hover{background:var(--hover);text-decoration:none}
 .csq-stat b{display:block;font-size:1.6rem;line-height:1.1}
 
 /* ---------- Added with the pages (stage 4) ---------- */
-.csq-idrow{display:inline-flex;flex-wrap:wrap;gap:4px;vertical-align:middle}
+.csq-idrow{display:inline-flex;flex-wrap:wrap;gap:var(--s2);vertical-align:middle}
 .csq-plan-head h1{overflow-wrap:anywhere}
-.csq-plan-head .csq-meta{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);align-items:center;margin:var(--s1) 0 0;color:var(--muted)}
+.csq-plan-head .csq-meta{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin:var(--s1) 0 0;color:var(--muted)}
 .csq-classpick{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin:var(--s3) 0 0}
 .csq-classpick .input-sm{max-width:100%;min-height:40px}
 .csq-liveform{margin:0}

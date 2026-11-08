@@ -2413,6 +2413,7 @@
     },
     "actions": "Ações",
     "save": "Salvar",
+    "cancel": "Cancelar",
     "roles": {
       "admin": "Admin da escola",
       "teacher": "Professor",
@@ -2434,7 +2435,8 @@
         "on": "Plano Escola ativo",
         "billing": "Cobrança",
         "settling": "Ativando o seu plano…"
-      }
+      },
+      "tools": "Ferramentas para ensinar"
     },
     "class": {
       "new": "Nova turma",
@@ -2561,7 +2563,8 @@
       "createStaff": "Criar conta e cartão de acesso",
       "addToSchool": "Adicionar à escola",
       "added": "{name} entrou na equipe como {role}",
-      "putInClass": "Turma"
+      "putInClass": "Turma",
+      "changeGrade": "Mudar o ano de {name}"
     },
     "settings": {
       "name": "Nome da escola",
@@ -2583,9 +2586,11 @@
       "photos": "As fotos de perfil das contas da escola só são vistas pelos colegas de turma, professores e amigos.",
       "chatHint": "As contas da escola só podem adicionar colegas de turma como amigos.",
       "timeZone": "Fuso horário",
-      "timeZoneNone": "Não definido (os dias são contados em UTC)",
+      "timeZoneNone": "Não definido (UTC)",
       "timeZoneUnset": "Defina o fuso horário da sua escola para que as aulas abram à meia-noite e os prazos terminem à meia-noite onde você está. Até lá, ninguém fica em atraso até 36 horas após o início do dia de entrega.",
-      "timeZoneHint": "As aulas abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}."
+      "timeZoneHint": "As aulas abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}.",
+      "groupSchool": "Escola",
+      "groupClasses": "Turmas e entrada"
     },
     "cards": {
       "title": "Cartões de acesso",
@@ -2597,7 +2602,8 @@
       "gone": "Estes cartões de acesso não estão mais disponíveis. Gere uma nova senha na aba Alunos da turma ou na aba Pessoas da escola.",
       "backPeople": "Voltar para Pessoas",
       "backClass": "Voltar para {name}",
-      "skipped": "{count, plural, one {# aluno usa a própria conta e mantém a senha} other {# alunos usam a própria conta e mantêm a senha}}: {names}."
+      "skipped": "{count, plural, one {# aluno usa a própria conta e mantém a senha} other {# alunos usam a própria conta e mantêm a senha}}: {names}.",
+      "count": "{count, plural, one {# cartão de acesso} other {# cartões de acesso}}"
     },
     "errors": {
       "notFound": "Não encontramos isso, ou não é possível abrir.",
@@ -2779,6 +2785,19 @@
         "planOn": "Sua escola já tem um plano Escola.",
         "noAdmin": "Sua escola ainda não tem admin, então não há a quem pedir."
       }
+    },
+    "jump": {
+      "label": "Ir para",
+      "aria": "Nesta página"
+    },
+    "filter": {
+      "label": "Procurar um nome",
+      "none": "Ninguém com esse nome aqui."
+    },
+    "stats": {
+      "classes": "{count, plural, one {# turma} other {# turmas}}",
+      "unplaced": "{count, plural, one {# aluno sem turma} other {# alunos sem turma}}",
+      "staff": "{count, plural, one {# membro da equipe} other {# membros da equipe}}"
     }
   },
   "lessons": {
@@ -2805,7 +2824,9 @@
       "newLesson": "Nova aula",
       "newLessonPlaceholder": "Título da aula, ex.: Aquecimento de frações",
       "empty": "Ainda não há aulas aqui",
-      "emptyText": "Crie uma nova aula, deixe a IA fazer um rascunho ou copie uma aula que um colega compartilhou."
+      "emptyText": "Crie uma nova aula, deixe a IA fazer um rascunho ou copie uma aula que um colega compartilhou.",
+      "find": "Procurar uma aula",
+      "readyMade": "Prontos para usar"
     },
     "folder": {
       "name": "Nome da pasta",
@@ -3022,7 +3043,8 @@
       "feedbackPlaceholder": "Comentário para o aluno (opcional)",
       "send": "Salvar e marcar como revisada",
       "update": "Atualizar comentário",
-      "noAnswers": "Nenhuma resposta ainda."
+      "noAnswers": "Nenhuma resposta ainda.",
+      "attention": "Quem precisa de atenção primeiro"
     },
     "student": {
       "doneOf": "{done} de {total} feitas",
@@ -3045,6 +3067,9 @@
       "sentAgo": "Enviada {when}",
       "feedback": "Do seu professor",
       "readNoFeedback": "Seu professor viu sua resposta."
+    },
+    "courses": {
+      "started": "{started} de {total} começaram"
     }
   },
   "google": {
@@ -5147,7 +5172,8 @@
       "teacherHost": "É professor? Comece ao vivo com sua turma",
       "solo": "Praticar sozinho",
       "play": "Jogar contra o computador ou em 2",
-      "joinGo": "Entrar"
+      "joinGo": "Entrar",
+      "forClass": "Para {name}"
     },
     "check": {
       "live_pack": "ainda não carrega o pacote ao vivo",
@@ -6000,7 +6026,7 @@
     "standards": {
       "title": "Padrões",
       "lead": "O que esta turma fez em cada padrão CSTA. As contagens são por turma: em duplas, só conta o aluno que entrou na conta.",
-      "pick": "Mostrar",
+      "pick": "Aluno",
       "show": "Mostrar",
       "everyone": "Turma toda",
       "levelsAll": "Mostrar os 44 padrões",
