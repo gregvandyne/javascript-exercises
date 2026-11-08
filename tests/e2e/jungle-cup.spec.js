@@ -63,7 +63,7 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   await J(f, 'sport', 'auto', true);
   await J(f, 'step', 4000);
   expect((await state(f)).sport.state.stage).toBe('warm');
-  s = await playUntilResults(f, 400);
+  s = await playUntilResults(f, 900); // first to 30: a match runs about 6–11 minutes
   expect(s.phase).toBe('results');
   expect(s.result.won).toBe(true);
   expect(s.newFeather).toBe(true);
@@ -86,7 +86,7 @@ test('Jungle Cup: title, new game, walk to the arch, win Paddle Smash (Feather +
   // lose: play again and stand still (warm-up done, so straight into the match with Jada)
   await J(f, 'play', 'paddle'); await J(f, 'step', 4000);
   expect((await state(f)).sport.state.stage).toBe('match');
-  s = await playUntilResults(f, 300);
+  s = await playUntilResults(f, 900);
   expect([s.phase, s.result.won, s.result.stars, s.state.them >= 7]).toEqual(['results', false, 0, true]);
   expect((await f.evaluate(() => { window.__brbTest.jc.report(); return window.__go; })).at(-1).won).toBe(false);
   // losing is never punished: the Feather and the best stay, retry is one tap
