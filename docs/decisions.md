@@ -8,6 +8,7 @@ One line each: the choice, then why. **Bold = please confirm** (product calls th
 - **Name: "BRB Gaming"** (was "Playloom"). SDK global is `window.BRB`, messages are `brb:*`, env vars are `BRB_*`, official account is `BRBGaming`. — Owner asked to rename.
 - **Friends-only chat added** (brief said no chat). Text chat only between accepted friends (added by friend code), both with real accounts, filtered for profanity and personal info (phones, emails, links, addresses, "add me on snap"), quick-chat phrase chips for young kids, rate limits + daily cap, block, report → admin queue, grown-ups can switch chat off on the Me page. No public, group or stranger chat. — Owner asked for a way for users to chat; this is the safest version that meets it.
 - **Every public game is approved by a person on the Oomba team; admins see new sign-ups and can message users** (Nov 2026). See "Admin approval before a game goes public", "Admin messages: the Oomba team inbox" and "Admin: New users" at the end. — Owner: "before a game is published to the live site it needs to go through admin approval", "see all new users", "chat all users".
+- **The admin sees user analytics** (Nov 2026): Admin › All users (every account with last login, days active, plays, builds, AI Builder messages, course steps, live games), a person's Activity on the Users tab, and DAU / WAU / MAU on Stats. See "Admin: user analytics" at the end. — Owner: "I also want to see user analytics like games played, last login, built games, etc."
 - **Updating published games is first-class.** The Studio shows "Live: vN · Editing: vM" and an "Update live game" button; for Public games the update is reviewed while players keep the old version (`games.pending_version_id`). — Owner asked that builders can update games they already published.
 - **Inspiration uploads in the Studio** (photos, drawings, text files, PDFs). They are private to the builder and admins, metadata such as photo GPS is stripped, and images are screened when an API key is set. They are given to the Builder as reference only and never copied into games, so no real photos of kids end up in public games. — Owner asked for uploads for inspiration.
 - Home hero shows only the featured game; "Make your own game" is its own banner below the Featured rail. — Owner feedback: mixing them in one card was confusing.
@@ -2767,6 +2768,49 @@ Owner: "see all new users added to the platform so I can better monitor usage."
   Message button.
 - **Privacy**: only what the Users tab already showed: never a password, token, session, friend code or IP; for a child
   only names, who looks after them and counts. Guests are left out. Admin pages stay English (like the rest of /admin).
+
+## Admin: user analytics (Nov 2026)
+Owner: "I also want to see user analytics like games played, last login, built games, etc."
+- **New users became All users** (`/admin?tab=people`, `server/services/admin-analytics.js`). Every real account (no
+  guests, not the Oomba team account, not deleted or merged tombstones), 50 a page, every column sortable both ways (also
+  a Sort by / Order pair in the filter form): name, type (with how they signed up and the linked grown-up or school),
+  joined, **last login**, **last active**, **days active in the last 30**, **played** (plays and different games),
+  **built** (games made, public, waiting), **AI messages**, **course steps**, **live games joined**, **plays of their
+  games**, status. Filters: type, active (last day / 7 / 30 days, not for 30 days, never), joined (today / 7 / 30 days, or
+  a from-until date range in UTC), search. Quick views: New (30 days), Active today, Active this week, Never active, Top
+  players, Top builders, Most AI messages. `?tab=newusers` (the old tab) opens the New view, and `/admin/new-users.csv`
+  still works. CSV (`/admin/users.csv`): the same filters and order, every column, at most 5,000 rows, the same
+  spreadsheet-safe cells, audited (`admin.export_users`). Aggregates are pre-grouped once per table and joined to the
+  accounts; 5,000 accounts with 60,000 plays list in about 20 ms (test in `tests/unit/admin-analytics.test.js`).
+- **A person's Activity** on the Users tab: last login (and how), last active, days active, plays (different games,
+  minutes), games built / live / public, plays of their games, AI Builder messages (all and 30 days), course steps done
+  per course (band, done of the band's steps), live games joined and hosted; 30-day charts of plays and Builder
+  messages and a strip of active days; the 5 games they play most; and a timeline of the latest sign-ins, games started
+  and published, plays, Builder messages per day, course checks and wins, and live games.
+- **Stats** gains Active people: DAU / WAU / MAU (distinct accounts used per UTC day), WAU against the week before,
+  DAU / MAU, new vs returning this week, an active-people-per-day chart and the most active people of the week (days
+  active, then plays and Builder messages). Plays, games built and Builder messages per day and the top 10 games of the
+  week were already there.
+- **Where each number comes from.** Last login: `users.last_login_at`, set by every sign-in (`auth.startSession`;
+  sessions themselves are deleted at sign-out and swept a day after they end, so they can't answer "last login").
+  Sign-ins: `sign_ins` (user, time, how: password, Google, a grown-up's Switch, sign-up), no IP and no browser.
+  Last active: `users.last_seen`. Days active and DAU / WAU / MAU: `user_days`, one row per account per UTC day it
+  signed in or opened any page signed in (written on a day's first request). Games played: `plays`. Built / public /
+  plays of their games: `games` (deleted games left out). AI Builder messages: `builder_usage` (charged messages per
+  day; a refunded build is given back). Course steps: `course_progress`, done by the courses' own rule (slides read,
+  check passed, and for a step with a game the game reported won). Live games: `live_run_scores` (joined; games without a
+  class are kept 90 days) and `live_runs` (hosted).
+- **Not tracked before this update**: last login and days active. Migration `0056_user_analytics` fills them from
+  what is stored: last login from the newest session still stored, else the sign-up for self sign-ups; sign-ins from
+  stored sessions (how unknown); active days from plays, Builder messages, stored sessions, course and Number Quest
+  activity, the last-seen day of anyone who signed in and the sign-up day. Older history is only as good as those rows,
+  so "days active" and DAU read low for days before the update. Class lesson progress (`step_progress`) is not counted
+  as course steps. Time spent on the site (other than play minutes) is not tracked.
+- **Privacy**: admin-only like every /admin page (404 for everyone else, signed out included); counts, dates and game
+  titles only: never a password, token, session, IP, browser, email, chat text or Builder request text. Kids' rows show
+  their names and counts, to the platform admin only (teachers and grown-ups have their own, narrower views).
+  `sign_ins` and `user_days` are kept 400 days (daily `analytics-retention` job), deleted with the account, and moved on
+  a school-account merge. Guests write neither. Admin pages stay English.
 
 ## Everyone builds like a teacher, and prompting tips while the AI builds (November 2026)
 

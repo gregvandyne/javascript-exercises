@@ -86,7 +86,7 @@ router.get('/auth/google/callback', on, async (req, res) => {
 
   const user = r.user;
   if (req.user) auth.endSession(req, res);
-  auth.startSession(res, user.id, req.headers['user-agent']);
+  auth.startSession(res, user.id, req.headers['user-agent'], { method: 'google' });
   const was = auth.endedUser(req); auth.clearEnded(req, res);
   const next = flow.i === 'signin' && (was === null || was === user.id) ? wantedNext(flow.nx) : null;
   G.auditSignIn(user, r.via, claims.hd);

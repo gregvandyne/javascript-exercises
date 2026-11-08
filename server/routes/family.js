@@ -349,7 +349,7 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
   try { tx(() => { u = auth.createUser({ username: n.value, password: pw, accountType: 'grownup' }); fam = F.ensureFamily(u); }); }
   catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
   if (req.user) auth.endSession(req, res);   // a guest playing on this device: their sign-in ends, their account stays
-  auth.startSession(res, u.id, req.headers['user-agent']);
+  auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup' });
   audit(u.id, 'user.signup', u.id, { grownup: true });
   funnel.bump('parent.signup');
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);

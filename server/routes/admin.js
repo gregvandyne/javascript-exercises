@@ -1,5 +1,5 @@
 // Admin panel (role admin only). Internal tool: its text stays English (the page frame follows the admin's language). Non-admins get 404 for every page and API under /admin and /api/admin.
-// Tabs: Review queue, Reports, Chat reports, New users, Users, Team inbox, Audit log. Every action is audited (services/moderation.js, services/publish.js).
+// Tabs: Review queue, Reports, Chat reports, All users (user analytics), Users, Team inbox, Audit log. Every action is audited (services/moderation.js, services/publish.js).
 import * as aiBudget from '../services/ai-budget.js';
 import * as stats from '../services/stats.js';
 import * as photos from '../services/photos.js';
@@ -27,6 +27,7 @@ import * as webSearch from '../builder/search.js';
 import * as liveR from '../services/classlive-results.js';
 import * as team from '../services/team.js';
 import * as AU from '../services/admin-users.js';
+import * as AA from '../services/admin-analytics.js';
 import { getUserByName, OFFICIAL } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 
@@ -34,7 +35,7 @@ export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['newusers', '🆕', 'New users'], ['users', '👤', 'Users'], ['messages', '📬', 'Team inbox'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['people', '👥', 'All users'], ['users', '👤', 'Users'], ['messages', '📬', 'Team inbox'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -218,7 +219,7 @@ function usersTab(req) {
       <input class="input" id="uname" name="username" value="${name}" placeholder="Exact username" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button class="btn btn-primary" type="submit">Look up</button>
     </form>
-    <p class="small muted" style="margin:8px 0 0">Exact usernames here. To browse sign-ups, use <a href="/admin?tab=newusers">New users</a>.</p>
+    <p class="small muted" style="margin:8px 0 0">Exact usernames here. To browse everyone, with what they play and build, use <a href="/admin?tab=people">All users</a>.</p>
   </section>
   ${name && !u ? html`<p class="notice warn" style="margin-top:16px">No user called “${name}”.</p>` : ''}
   ${u ? html`<section class="panel" style="margin-top:16px">
@@ -238,6 +239,7 @@ function usersTab(req) {
       <tr><th scope="row">Chat</th><td>${u.chat_enabled ? 'on' : 'off'} · ${u.chatReports} message report${u.chatReports === 1 ? '' : 's'} against them</td></tr>
       <tr><th scope="row">Reports</th><td>${(r => html`${r.againstGames} against their games · ${r.made} made by them`)(AU.reportCounts(u.id))}</td></tr>
     </tbody></table></div>
+    ${u.is_guest ? '' : userActivityPanel(u)}
     ${userGamesPanel(u)}
     ${userAuditPanel(u)}
     <div class="row" style="margin-top:12px">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
@@ -263,15 +265,17 @@ function userAuditPanel(u) {
   </tbody></table></div></details>`;
 }
 
-/** Sign-ups, newest first (services/admin-users.js). Filters are plain GET links, so the page works without JavaScript. */
-const RANGE_LABEL = { today: 'Today', '7d': 'Last 7 days', '30d': 'Last 30 days', all: 'All time' };
-function newUsersQuery(req) {
-  const type = AU.TYPES.includes(req.query.type) ? req.query.type : '';
-  const range = Object.hasOwn(AU.RANGES, req.query.range) ? req.query.range : '30d';
-  const search = String(req.query.q || '').trim().slice(0, 40);
-  return { type, range, search, page: req.query.page };
+/** All users with what they did (services/admin-analytics.js): every column sorts, filters and quick views are plain GET
+ *  links, so the page works without JavaScript. ?tab=newusers (the old New users tab) opens it on the New view. */
+function peopleQuery(req) {
+  const qs = { ...req.query };
+  if (req.query.tab === 'newusers' && !qs.joined && !qs.from && !qs.to) qs.joined = Object.hasOwn(AA.JOINED, qs.range) ? qs.range : '30d';
+  return AA.cleanFilters(qs);
 }
 const qs = o => Object.entries(o).filter(([, v]) => v !== '' && v !== undefined && v !== null).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+/** The filters as a query string, defaults left out (so links stay short). */
+const peopleParams = f => Object.fromEntries(Object.entries(f).filter(([k, v]) => v !== AA.DEFAULTS[k] && !(k === 'dir' && v === AA.SORTS[f.sort][1])));
+const peopleLink = f => `/admin?${qs({ tab: 'people', ...peopleParams(f) })}`;
 function sparkline(days) {
   const max = Math.max(1, ...days.map(d => d.n)); const w = 300, h = 48, step = w / Math.max(1, days.length - 1);
   const pts = days.map((d, i) => `${(i * step).toFixed(1)},${(h - 4 - (d.n / max) * (h - 8)).toFixed(1)}`).join(' ');
@@ -283,43 +287,118 @@ function sparkline(days) {
     <details><summary>Show as a table</summary><div class="tblwrap"><table class="tbl small"><thead><tr><th>Day</th><th>Sign-ups</th></tr></thead><tbody>${days.slice().reverse().map(d => html`<tr><td>${shortDay(d.day)}</td><td>${int(d.n)}</td></tr>`)}</tbody></table></div></details>
   </figure>`;
 }
-function newUsersTab(req) {
-  const f = newUsersQuery(req);
-  const r = AU.listNewUsers(f);
-  const c = AU.signupCounts();
-  const link = over => `/admin?${qs({ tab: 'newusers', type: f.type, range: f.range, q: f.search, ...over })}`;
-  const linked = u => (u.type === 'grownup' ? `${u.children} child${u.children === 1 ? '' : 'ren'} linked` : [u.parent ? `grown-up @${u.parent}` : '', u.schools || ''].filter(Boolean).join(' · ') || '–');
+const ymdhm = t => new Date(t).toISOString().replace('T', ' ').slice(0, 16);
+const ago = (t, none = 'never') => (t ? html`<time datetime="${new Date(t).toISOString()}" title="${ymdhm(t)} UTC">${timeAgo(t)}</time>` : none);
+const linkedLine = u => (u.type === 'grownup' ? (u.children ? `${u.children} child${u.children === 1 ? '' : 'ren'} linked` : '') : [u.parent ? `grown-up @${u.parent}` : '', u.schools || ''].filter(Boolean).join(' · '));
+const dirWords = f => (['joined', 'login', 'active'].includes(f.sort) ? (f.dir === 'asc' ? 'oldest first' : 'newest first') : f.sort === 'name' || f.sort === 'type' ? (f.dir === 'asc' ? 'A to Z' : 'Z to A') : f.dir === 'asc' ? 'lowest first' : 'highest first');
+const COLS = [['name', 'Account'], ['type', 'Type'], ['joined', 'Joined'], ['login', 'Last login'], ['active', 'Last active'], ['days', 'Days active'], ['plays', 'Played'], ['built', 'Built'], ['ai', 'AI messages'], ['courses', 'Course steps'], ['live', 'Live games'], ['popularity', 'Popularity'], ['status', 'Status']];
+function peopleTab(req) {
+  const f = peopleQuery(req);
+  const r = AA.listUsers(f);
+  const c = AU.signupCounts(), act = AA.activeCounts();
+  const accounts = q.get('SELECT COUNT(*) n FROM users WHERE is_guest=0 AND username<>?', OFFICIAL).n;
+  const link = over => peopleLink({ ...f, page: 1, ...over });
+  const sortLink = k => link({ sort: k, dir: f.sort === k ? (f.dir === 'asc' ? 'desc' : 'asc') : AA.SORTS[k][1] });
+  const th = ([k, label]) => {
+    const on = f.sort === k || (k === 'plays' && f.sort === 'distinct') || (k === 'built' && f.sort === 'public');
+    return html`<th scope="col" ${on ? raw(`aria-sort="${f.dir === 'asc' ? 'ascending' : 'descending'}"`) : ''}><a class="sorth" href="${sortLink(k)}">${label}${on ? html` <span aria-hidden="true">${f.dir === 'asc' ? '▲' : '▼'}</span>` : ''}</a></th>`;
+  };
+  const sel = (id, name, label, value, opts) => html`<div class="field"><label for="${id}">${label}</label><select class="input" id="${id}" name="${name}">${opts.map(([v, l]) => html`<option value="${v}" ${value === v ? raw('selected') : ''}>${l}</option>`)}</select></div>`;
+  const desc = [f.type ? AU.TYPE_LABEL[f.type] : '', f.active ? AA.ACTIVE[f.active].toLowerCase() : '', f.from || f.to ? `joined ${f.from || '…'} to ${f.to || 'today'}` : f.joined !== 'all' ? `joined ${AA.JOINED[f.joined].toLowerCase()}` : '', f.search ? `matching “${f.search}”` : ''].filter(Boolean);
+  const everyone = !Object.keys(peopleParams({ ...f, page: 1 })).length;
   return html`
   <div class="kpis">
-    ${tile('🆕 Today', int(c.today), 'since midnight UTC')}
-    ${tile('📅 Last 7 days', int(c.week))}
-    ${tile('🗓️ Last 30 days', int(c.month), Object.entries(c.byType).filter(([, n]) => n).map(([k, n]) => `${int(n)} ${AU.TYPE_LABEL[k].toLowerCase()}`).join(' · ') || 'none yet')}
+    ${tile('👥 Accounts', int(accounts), 'real accounts (no guests)')}
+    ${tile('🟢 Active today', int(act.dau), `${int(act.wau)} this week · ${int(act.mau)} in 30 days`)}
+    ${tile('🆕 New, last 7 days', int(c.week), `${int(c.today)} today`)}
+    ${tile('🗓️ New, last 30 days', int(c.month), Object.entries(c.byType).filter(([, n]) => n).map(([k, n]) => `${int(n)} ${AU.TYPE_LABEL[k].toLowerCase()}`).join(' · ') || 'none yet')}
   </div>
   ${sparkline(AU.signupsByDay(30))}
   <form class="panel nu-filters" method="get" action="/admin" role="search">
-    <input type="hidden" name="tab" value="newusers">
+    <input type="hidden" name="tab" value="people">
     <div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-    <div class="field"><label for="nu-type">Account type</label><select class="input" id="nu-type" name="type"><option value="">All types</option>${AU.TYPES.map(k => html`<option value="${k}" ${f.type === k ? raw('selected') : ''}>${AU.TYPE_LABEL[k]}</option>`)}</select></div>
-    <div class="field"><label for="nu-range">Joined</label><select class="input" id="nu-range" name="range">${Object.keys(RANGE_LABEL).map(k => html`<option value="${k}" ${f.range === k ? raw('selected') : ''}>${RANGE_LABEL[k]}</option>`)}</select></div>
-    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/new-users.csv?${qs({ type: f.type, range: f.range, q: f.search })}" download><span aria-hidden="true">⬇️</span> CSV</a></div>
+    ${sel('nu-type', 'type', 'Account type', f.type, [['', 'All types'], ...AU.TYPES.map(k => [k, AU.TYPE_LABEL[k]])])}
+    ${sel('nu-active', 'active', 'Active', f.active, Object.entries(AA.ACTIVE))}
+    ${sel('nu-joined', 'joined', 'Joined', f.joined, Object.entries(AA.JOINED))}
+    <div class="field"><label for="nu-from">Joined from</label><input class="input" type="date" id="nu-from" name="from" value="${f.from}"></div>
+    <div class="field"><label for="nu-to">Joined until</label><input class="input" type="date" id="nu-to" name="to" value="${f.to}"></div>
+    ${sel('nu-sort', 'sort', 'Sort by', f.sort, Object.entries(AA.SORTS).map(([k, v]) => [k, v[2]]))}
+    ${sel('nu-dir', 'dir', 'Order', f.dir, [['desc', '↓ Descending'], ['asc', '↑ Ascending']])}
+    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download><span aria-hidden="true">⬇️</span> CSV</a></div>
   </form>
-  <nav class="chips nu-quick" aria-label="Quick ranges">${Object.keys(RANGE_LABEL).map(k => html`<a class="chip ${f.range === k ? 'on' : ''}" href="${link({ range: k, page: '' })}" ${f.range === k ? raw('aria-current="true"') : ''}>${RANGE_LABEL[k]}</a>`)}</nav>
-  <p class="small muted">${int(r.total)} account${r.total === 1 ? '' : 's'}${f.type ? ` · ${AU.TYPE_LABEL[f.type]}` : ''} · ${RANGE_LABEL[f.range].toLowerCase()}${f.search ? ` · matching “${f.search}”` : ''}. Guests are not listed. Kids show only their names, who looks after them and counts.</p>
-  ${r.rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable nu-table"><thead><tr><th>Account</th><th>Type</th><th>Joined</th><th>How</th><th>Grown-up / school</th><th>Last active</th><th>Games</th><th>Plays</th><th>Status</th></tr></thead><tbody>
+  <nav class="chips nu-quick" aria-label="Quick views"><a class="chip ${everyone ? 'on' : ''}" href="/admin?tab=people" ${everyone ? raw('aria-current="true"') : ''}>Everyone</a>${Object.entries(AA.QUICK).map(([k, v]) => { const on = AA.quickOn(f, k); return html`<a class="chip ${on ? 'on' : ''}" href="${peopleLink({ ...AA.DEFAULTS, ...v.set })}" ${on ? raw('aria-current="true"') : ''}>${v.label}</a>`; })}</nav>
+  <p class="small muted">${int(r.total)} account${r.total === 1 ? '' : 's'}${desc.length ? ` · ${desc.join(' · ')}` : ''} · sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}. Guests are not listed. Kids show only their names and counts. Days are UTC; “days active” counts the last 30.</p>
+  ${r.rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable nu-table au-table"><thead><tr>${COLS.map(th)}</tr></thead><tbody>
     ${r.rows.map(u => html`<tr>
       <td><a class="nu-who" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">${avatar(u, 32)}<span><b dir="auto">${u.display_name}</b><br><span class="small muted">@${u.username}</span></span></a></td>
-      <td data-label="Type">${AU.TYPE_LABEL[u.type]}</td>
-      <td data-label="Joined"><time datetime="${new Date(u.created_at).toISOString()}">${new Date(u.created_at).toISOString().replace('T', ' ').slice(0, 16)}</time> <span class="small muted">(${timeAgo(u.created_at)})</span></td>
-      <td data-label="How">${AU.METHOD_LABEL[u.method]}</td>
-      <td data-label="Grown-up / school" class="small">${linked(u)}</td>
-      <td data-label="Last active">${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td>
-      <td data-label="Games">${int(u.games_made)} made · ${int(u.games_public)} public${u.games_waiting ? html` · <span class="chip-s warn">${u.games_waiting} waiting</span>` : ''}</td>
-      <td data-label="Plays">${int(u.plays_of_games)} of their games · ${int(u.plays_made)} played</td>
+      <td data-label="Type"><span class="au-nw">${AU.TYPE_LABEL[u.type]}</span><span class="au-sub small muted">${[AU.METHOD_LABEL[u.method], linkedLine(u)].filter(Boolean).join(' · ')}</span></td>
+      <td data-label="Joined"><time datetime="${new Date(u.created_at).toISOString()}" title="${ymdhm(u.created_at)} UTC">${new Date(u.created_at).toISOString().slice(0, 10)}</time></td>
+      <td data-label="Last login">${ago(u.last_login_at)}</td>
+      <td data-label="Last active">${u.never_active ? 'never' : ago(u.last_seen)}</td>
+      <td data-label="Days active">${int(u.days30)}</td>
+      <td data-label="Played"><span class="au-l">${int(u.plays)} play${u.plays === 1 ? '' : 's'}</span> <span class="au-l small muted">${int(u.distinct_games)} game${u.distinct_games === 1 ? '' : 's'}</span></td>
+      <td data-label="Built"><span class="au-l">${int(u.games_made)} game${u.games_made === 1 ? '' : 's'}</span> <span class="au-l small muted">${int(u.games_public)} public</span>${u.games_waiting ? html` <span class="chip-s warn">${u.games_waiting} waiting</span>` : ''}</td>
+      <td data-label="AI messages">${int(u.ai_messages)}</td>
+      <td data-label="Course steps">${int(u.course_steps)}</td>
+      <td data-label="Live games">${int(u.live_joined)}</td>
+      <td data-label="Plays of their games" title="Plays of the games they built">${int(u.plays_of_games)}</td>
       <td data-label="Status">${u.banned ? html`<span class="chip-s bad">⛔ Suspended</span>` : html`<span class="chip-s">✅ Active</span>`}</td>
     </tr>`)}
   </tbody></table></div>
-  ${r.pages > 1 ? html`<nav class="row nu-pages" aria-label="Pages">${r.page > 1 ? html`<a class="btn" href="${link({ page: r.page - 1 })}" rel="prev">← Newer</a>` : ''}<span class="small muted">Page ${r.page} of ${r.pages}</span>${r.page < r.pages ? html`<a class="btn" href="${link({ page: r.page + 1 })}" rel="next">Older →</a>` : ''}</nav>` : ''}`
-    : emptyState({ emoji: '🆕', title: 'No sign-ups match', text: 'Try a longer date range or another account type.' })}`;
+  ${r.pages > 1 ? html`<nav class="row nu-pages" aria-label="Pages">${r.page > 1 ? html`<a class="btn" href="${link({ page: r.page - 1 })}" rel="prev">← Previous</a>` : ''}<span class="small muted">Page ${r.page} of ${r.pages}</span>${r.page < r.pages ? html`<a class="btn" href="${link({ page: r.page + 1 })}" rel="next">Next →</a>` : ''}</nav>` : ''}`
+    : emptyState({ emoji: '👥', title: 'No accounts match', text: 'Try another filter or a longer date range.' })}`;
+}
+
+/** One person's activity on the Users tab (services/admin-analytics.js userAnalytics): totals, 30 days of plays, Builder
+ *  messages and active days, the games they play most, course progress and a timeline. Counts and titles only. */
+function dayStrip(daily) {
+  const n = daily.filter(d => d.active).length;
+  return html`<figure class="chart panel"><figcaption><h3>Days active</h3><span class="chart-sum"><b>${n}</b> of ${daily.length} days</span></figcaption>
+    <div class="dstrip" role="img" aria-label="Active on ${n} of the last ${daily.length} days">${daily.map(d => html`<span class="${d.active ? 'on' : ''}" title="${shortDay(d.day)}: ${d.active ? 'active' : 'not active'}"></span>`)}</div>
+    <div class="xaxis dstrip-x" aria-hidden="true"><span>${shortDay(daily[0].day)}</span><span>${shortDay(daily[daily.length - 1].day)}</span></div>
+    <details><summary>Show as a list</summary><p class="small">${daily.filter(d => d.active).map(d => shortDay(d.day)).join(', ') || 'No active days.'}</p></details>
+  </figure>`;
+}
+const TL_ICON = { joined: '🐣', signin: '🔑', built: '🛠️', published: '🚀', played: '🎮', ai: '🤖', course: '📚', live: '📡' };
+const HOW = { password: 'password', google: 'Google', switch: 'switched in by their grown-up', signup: 'sign-up', '': 'sign-in' };
+function userActivityPanel(u) {
+  const a = AA.userAnalytics(u.id);
+  if (!a) return '';
+  const t = a.totals;
+  return html`<section class="ua" aria-labelledby="ua-h"><h3 id="ua-h" class="stats-h">📈 Activity</h3>
+    <div class="kpis">
+      ${tile('🔑 Last login', a.lastLogin ? timeAgo(a.lastLogin) : 'never', a.lastLogin ? `${ymdhm(a.lastLogin)} UTC${a.lastLoginMethod !== null ? ` · ${HOW[a.lastLoginMethod] || 'sign-in'}` : ''}` : 'no sign-in recorded')}
+      ${tile('👣 Last active', a.never ? 'never' : timeAgo(a.lastSeen), a.never ? '' : `${ymdhm(a.lastSeen)} UTC`)}
+      ${tile('📅 Days active', `${int(t.days30)} / 30`, `${int(t.daysAll)} day${t.daysAll === 1 ? '' : 's'} recorded · ${int(t.signIns30)} sign-in${t.signIns30 === 1 ? '' : 's'} in 30 days`)}
+      ${tile('🎮 Games played', int(t.plays), `${int(t.distinctGames)} different · ${int(t.minutes)} min · ${int(t.plays30)} in 30 days`)}
+      ${tile('🛠️ Games built', int(t.built), `${int(t.live)} live · ${int(t.public)} public${t.waiting ? ` · ${t.waiting} waiting` : ''}`)}
+      ${tile('⭐ Plays of their games', int(t.playsOfGames))}
+      ${tile('🤖 AI Builder messages', int(t.ai), `${int(t.ai30)} in the last 30 days`)}
+      ${tile('📚 Course steps done', int(t.courseSteps), a.courses.length ? a.courses.map(c => `${c.name} ${c.done}${c.total ? `/${c.total}` : ''}`).join(' · ') : 'no course started')}
+      ${tile('📡 Live games', int(t.liveJoined), `joined · ${int(t.liveHosted)} hosted`)}
+    </div>
+    <p class="small muted ua-joined">Joined ${ymdhm(a.joined)} UTC (${timeAgo(a.joined)}) · ${AU.METHOD_LABEL[a.method]}. Days are UTC.</p>
+    <div class="charts">
+      ${barChart({ title: 'Plays per day', rows: a.daily, key: 'plays', unit: 'plays' })}
+      ${barChart({ title: 'AI Builder messages per day', rows: a.daily, key: 'ai', unit: 'messages' })}
+      ${dayStrip(a.daily)}
+    </div>
+    <div class="stats-grid">
+      <section class="panel"><h2>🎮 Games they play most</h2>
+        ${a.topPlayed.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Game</th><th>Plays</th><th>Minutes</th><th>Last</th></tr></thead><tbody>
+          ${a.topPlayed.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td>${int(g.plays)}</td><td>${int(g.minutes)}</td><td>${ago(g.last)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet.</p>`}
+      </section>
+      <section class="panel"><h2>📚 Courses</h2>
+        ${a.courses.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Course</th><th>Done</th><th>Band</th><th>Last</th></tr></thead><tbody>
+          ${a.courses.map(c => html`<tr><td>${c.emoji} ${c.name}</td><td>${int(c.done)}${c.total ? ` of ${int(c.total)}` : ''} <span class="small muted">(${int(c.touched)} started)</span></td><td>${c.band || '–'}</td><td>${ago(c.last > 1 ? c.last : 0, '–')}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No course started (CS Quest, Cyber Defenders, Number Quest).</p>`}
+      </section>
+    </div>
+    <section class="panel ua-tl"><h2>🕒 Recent activity</h2>
+      <ol class="plain timeline">${a.timeline.map(e => html`<li><span class="tl-i" aria-hidden="true">${TL_ICON[e.kind] || '•'}</span><span class="tl-t">${e.text}${e.game ? html`: <a href="/g/${e.game.slug}">${e.game.icon} ${e.game.title}</a>` : ''}</span>
+        <span class="tl-w small muted">${e.day ? shortDay(e.day) : html`<time datetime="${new Date(e.at).toISOString()}" title="${ymdhm(e.at)} UTC">${timeAgo(e.at)}</time>`}</span></li>`)}</ol>
+      <p class="small muted">Sign-ins, games started and published, plays, AI Builder messages per day, course checks and wins, live games. Never chat, Builder requests or IPs. Sign-ins and active days are kept ${AA.KEEP_DAYS} days.</p>
+    </section>
+  </section>`;
 }
 
 /** The Oomba team inbox (services/team.js): people the team wrote to or who wrote back, and announcements. */
@@ -342,7 +421,7 @@ function messagesTab(req) {
     ${recent.length ? html`<details><summary>Recent announcements (${recent.length})</summary><ul class="small">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}”</li>`)}</ul></details>` : ''}
   </section>
   <h2 class="stats-h">Conversations</h2>
-  <p class="small muted">To start one, open a person on <a href="/admin?tab=users">Users</a> or <a href="/admin?tab=newusers">New users</a> and press Message. Messages to a child are copied to their linked grown-up (or their school's admins) and logged with their text; a child with neither can't be messaged directly.</p>
+  <p class="small muted">To start one, open a person on <a href="/admin?tab=users">Users</a> or <a href="/admin?tab=people">All users</a> and press Message. Messages to a child are copied to their linked grown-up (or their school's admins) and logged with their text; a child with neither can't be messaged directly.</p>
   ${threads.length ? html`<ul class="plain inbox panel">${threads.map(th => html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/admin/messages/${encodeURIComponent(th.username)}">${avatar(th, 40)}<span class="who"><span class="nm">${th.display_name}</span><span class="sub">@${th.username}${th.account_type === 'grownup' ? ' · grown-up' : ''}${th.banned ? ' · banned' : ''}</span></span><span class="meta"><span class="time">${timeAgo(th.last)}</span>${th.unread ? html`<span class="badge">${th.unread}</span>` : ''}</span></a></li>`)}</ul>`
     : emptyState({ emoji: '📬', title: 'No conversations yet', text: 'Replies to the team show up here.' })}`;
 }
@@ -379,26 +458,32 @@ function aiSpendPanel() {
 }
 
 router.get('/admin', (req, res) => {
-  const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
+  // The old New users tab is All users on its New view (?tab=newusers keeps working, with its ?range=).
+  const tab = req.query.tab === 'newusers' ? 'people' : TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
   const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount(), messages: team.adminUnread() };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, newusers: newUsersTab, users: usersTab, messages: messagesTab, searches: searchesTab, audit: auditTab }[tab](req);
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, people: peopleTab, users: usersTab, messages: messagesTab, searches: searchesTab, audit: auditTab }[tab](req);
   const body = html`
   <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
   ${jsonData('page-data', { tab })}`;
-  page(req, res, { title: 'Admin', active: 'me', body, head: tab === 'newusers' ? raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`) : COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/me', backLabel: 'Me' });
+  page(req, res, { title: 'Admin', active: 'me', body, head: tab === 'people' || tab === 'users' ? raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`) : COMMUNITY_CSS, scripts: tab === 'users' ? ['/js/admin.js', '/js/admin-stats.js'] : ['/js/admin.js'], back: '/me', backLabel: 'Me' });
 });
 
-// ---- New users as CSV (the same filters as the tab, up to services/admin-users.js CSV_MAX rows). Audited.
-router.get('/admin/new-users.csv', (req, res) => {
-  const f = newUsersQuery(req);
-  audit(req.user.id, 'admin.export_users', '', { type: f.type || 'all', range: f.range, q: f.search || undefined });
-  res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="oomba-new-users-${f.range}-${new Date().toISOString().slice(0, 10)}.csv"`, 'Cache-Control': 'no-store' });
-  res.send(AU.newUsersCsv(f));
-});
+// ---- All users as CSV (the same filters and order as the tab, up to services/admin-users.js CSV_MAX rows). Audited.
+// /admin/new-users.csv is the old New users export: the same file on the New view (?range= as the joined range).
+function usersCsv(req, res) {
+  const f = peopleQuery(req.path === '/admin/new-users.csv' ? { query: { ...req.query, tab: 'newusers' } } : req);
+  const { page, ...filters } = f;
+  audit(req.user.id, 'admin.export_users', '', Object.fromEntries(Object.entries(filters).filter(([k, v]) => v !== AA.DEFAULTS[k])));
+  const name = `oomba-users-${f.from || f.to ? `${f.from || 'start'}-to-${f.to || 'today'}` : f.joined}-${new Date().toISOString().slice(0, 10)}.csv`;
+  res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="${name}"`, 'Cache-Control': 'no-store' });
+  res.send(AA.usersCsv(filters));
+}
+router.get('/admin/users.csv', usersCsv);
+router.get('/admin/new-users.csv', usersCsv);
 
 // ---- One conversation with the Oomba team (an admin writes as the team).
 router.get('/admin/messages/:username', (req, res) => {
@@ -485,6 +570,20 @@ function costSection(c) {
     Builder rows are kept 35 days.</p>
   </section>`;
 }
+/** Active people (services/admin-analytics.js activeCounts): distinct real accounts used per UTC day (user_days). */
+function activeSection(a) {
+  const ch = a.wauBefore ? Math.round((a.wau - a.wauBefore) / a.wauBefore * 100) : null;
+  return html`
+  <h2 class="stats-h">Active people</h2>
+  <div class="kpis">
+    ${tile('🟢 Daily active (DAU)', int(a.dau), 'accounts used today')}
+    ${tile('📅 Weekly active (WAU)', int(a.wau), ch === null ? 'last 7 days' : `last 7 days · ${ch > 0 ? '+' : ch < 0 ? '−' : ''}${Math.abs(ch)}% on the week before (${int(a.wauBefore)})`)}
+    ${tile('🗓️ Monthly active (MAU)', int(a.mau), `last 30 days · ${a.stickiness}% come back daily (DAU / MAU)`)}
+    ${tile('🌱 New this week', int(a.newThisWeek), 'joined in the last 7 days and used it')}
+    ${tile('🔁 Returning this week', int(a.returningThisWeek), 'joined before and came back')}
+  </div>
+  <p class="small muted">A person is active on a UTC day when they sign in or open any page signed in. Real accounts only (no guests, not the Oomba team account). <a href="/admin?tab=people">All users</a> has each person's numbers.</p>`;
+}
 /** The funnels (services/funnel.js), weekly: the last 7 days against the 7 before, one table per funnel. */
 function funnelSection(r) {
   const pct = c => (c === null ? '–' : `${c > 0 ? '+' : c < 0 ? '−' : ''}${Math.abs(c)}%`);
@@ -518,6 +617,7 @@ router.get('/admin/stats', (req, res) => {
   const days = [7, 30, 90].includes(+req.query.days) ? +req.query.days : 30;
   const k = stats.kpis(), rows = stats.daily(days);
   const cost = stats.messageCosts(Math.min(days, 30));
+  const act = AA.activeCounts(), activeRows = AA.activeByDay(days), busy = AA.mostActive(7, 10);
   const top7 = stats.topGames(7), topAll = stats.topGamesAllTime(10), builders = stats.topBuilders(10), areas = stats.areas(7), models = stats.aiByModel(30), fresh = stats.newestUsers(8);
   const tok = t => int((t.input || 0) + (t.output || 0));
   const body = html`
@@ -538,11 +638,13 @@ router.get('/admin/stats', (req, res) => {
     ${tile('💬 Builder messages', int(k.ai.turnsToday), `today · from ${int(k.ai.buildersToday)} builder${k.ai.buildersToday === 1 ? '' : 's'}`)}
   </div>
   ${k.ai.ok ? '' : html`<p class="notice warn">The AI ${k.ai.reason} cap is reached: the Builder is using the offline builder until it resets.</p>`}
+  ${activeSection(act)}
   ${costSection(cost)}
   ${funnelSection(funnel.weekly())}
 
   <h2 class="stats-h">Last ${days} days</h2>
   <div class="charts">
+    ${barChart({ title: 'Active people', rows: activeRows, key: 'active', unit: 'people', total: false, tip: r => `${int(r.active)} people used their account` })}
     ${barChart({ title: 'Visitors', rows, key: 'visitors', unit: 'visitors', total: false, tip: r => `${int(r.visitors)} visitors, ${int(r.views)} page views` })}
     ${barChart({ title: 'New accounts', rows, key: 'signups', unit: 'accounts', tip: r => `${int(r.signups)} accounts, ${int(r.guests)} guests` })}
     ${barChart({ title: 'Plays', rows, key: 'plays', unit: 'plays', tip: r => `${int(r.plays)} plays, ${int(r.minutes)} minutes` })}
@@ -573,6 +675,11 @@ router.get('/admin/stats', (req, res) => {
       ${models.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Model</th><th>Calls</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th></tr></thead><tbody>
         ${models.map(m => html`<tr><td><code>${m.model}</code></td><td>${int(m.calls)}</td><td>${fmtNum(m.input + m.cache_read + m.cache_write)}</td><td>${fmtNum(m.output)}</td><td>${usd(m.usd)}</td></tr>`)}</tbody></table></div>
         <p class="small muted">Tokens in include cached prompt tokens. Token counts started with this update; costs before it are in the AI cost chart.</p>` : html`<p class="muted">No AI calls recorded yet.</p>`}
+    </section>
+    <section class="panel"><h2>🙋 Most active, last 7 days</h2>
+      ${busy.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Person</th><th>Days</th><th>Plays</th><th>AI msgs</th></tr></thead><tbody>
+        ${busy.map(b => html`<tr><td><a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">${b.display_name}</a> <span class="muted small">(${AU.TYPE_LABEL[b.type].toLowerCase()})</span></td><td>${int(b.days)}</td><td>${int(b.plays)}</td><td>${int(b.ai)}</td></tr>`)}</tbody></table></div>
+        <p class="small muted"><a href="/admin?tab=people&amp;active=7d&amp;sort=days">Everyone active this week</a></p>` : html`<p class="muted">Nobody has used their account this week.</p>`}
     </section>
     <section class="panel"><h2>🆕 Newest accounts</h2>
       ${fresh.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Player</th><th>Joined</th><th>Last seen</th></tr></thead><tbody>
