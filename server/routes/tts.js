@@ -46,6 +46,7 @@ import * as PROG from '../services/progress.js';
 import * as aiBudget from '../services/ai-budget.js';
 import { LOCALES } from '../i18n/index.js';
 import { COMMUNITY_CSS } from './social.js';
+import { ADMIN_BODY, ADMIN_CSS, note } from '../views/admin-ui.js';
 import * as COURSES from '../services/courses.js';
 import * as NQP from '../services/number-quest-placement.js';
 import { sayOf } from '../views/courses.js';
@@ -238,28 +239,30 @@ router.get('/admin/voices', (req, res) => {
   <h2 class="stats-h">Languages and narrator voices</h2>
   <p class="muted small">▶ plays the sample sentence in that language with that voice (made once, then kept; the narrator's ▶ is marked). Narrator: the voice that reads stories, lessons and quiz questions in that language. On a phone, ▶ plays the narrator chosen in that row.</p>
   <form id="tv-form">
+  <p class="small tv-savehint">Switching a language on or off and choosing voices takes effect when you press <b>Save</b>, after Character voices below.</p>
+  <p class="small muted tv-scrollhint" aria-hidden="true">The table scrolls sideways: one ▶ column per voice.</p>
   <div class="panel tblwrap"><table class="tbl tv-grid">
     <thead><tr><th>Language</th><th>On</th><th>Narrator</th><th class="tv-one">Play</th>${V.VOICES.map(v => html`<th class="tv-v">${v}</th>`)}</tr></thead>
     <tbody>${locales.map(l => html`<tr data-locale="${l.code}">
-      <th scope="row">${l.name} <span class="muted small">${l.code}</span></th>
-      <td><input type="checkbox" name="on-${l.code}" aria-label="${l.name} on" ${s.locales[l.code].on ? raw('checked') : ''} ${allowed.has(l.code) ? '' : raw('disabled title="Not in TTS_LOCALES"')}>
-        <div class="small tv-sample" lang="${l.code}" dir="${l.dir}">${V.sampleFor(l.code)}</div></td>
-      <td><select name="narrator-${l.code}" aria-label="${l.name} narrator" data-narrator="${l.code}">${V.VOICES.map(v => html`<option ${v === s.locales[l.code].narrator ? raw('selected') : ''}>${v}</option>`)}</select></td>
+      <th scope="row">${l.name} <span class="muted small">${l.code}</span>
+        <div class="small tv-sample" lang="${l.code}" dir="${l.dir}">${V.sampleFor(l.code)}</div></th>
+      <td class="tv-on"><label class="tv-onl"><input type="checkbox" name="on-${l.code}" aria-label="${l.name} on" ${s.locales[l.code].on ? raw('checked') : ''} ${allowed.has(l.code) ? '' : raw('disabled title="Not in TTS_LOCALES"')}><span class="tv-onw" aria-hidden="true">On</span></label></td>
+      <td class="tv-nar" data-label="Narrator"><select class="input" name="narrator-${l.code}" aria-label="${l.name} narrator" data-narrator="${l.code}">${V.VOICES.map(v => html`<option ${v === s.locales[l.code].narrator ? raw('selected') : ''}>${v}</option>`)}</select></td>
       <td class="tv-one"><button class="btn btn-sm" type="button" data-play-narrator data-locale="${l.code}" aria-label="Play ${l.name} with the narrator chosen" ${on ? '' : raw('disabled')}>▶</button></td>
       ${V.VOICES.map(v => html`<td class="tv-v"><button class="btn btn-sm" type="button" data-play data-locale="${l.code}" data-voice="${v}" aria-label="Play ${l.name} with ${v}" ${v === s.locales[l.code].narrator ? raw('aria-current="true"') : ''} ${on ? '' : raw('disabled')}>▶</button></td>`)}
     </tr>`)}</tbody>
   </table></div>
   <h2 class="stats-h">Character voices (every language)</h2>
-  <div class="panel row">${Object.keys(V.DEFAULT_ROLES).map(r => html`<label>${r} <select name="role-${r}">${V.VOICES.map(v => html`<option ${v === s.roles[r] ? raw('selected') : ''}>${v}</option>`)}</select></label>`)}</div>
-  <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
+  <div class="panel tv-roles">${Object.keys(V.DEFAULT_ROLES).map(r => html`<label class="field">${r} <select class="input" name="role-${r}">${V.VOICES.map(v => html`<option ${v === s.roles[r] ? raw('selected') : ''}>${v}</option>`)}</select></label>`)}</div>
+  <div class="row tv-save"><span class="small tv-dirtynote"><b>Not saved yet</b></span><button class="btn btn-primary" type="submit">Save</button></div>
   </form>
   <h2 class="stats-h" id="tv-games-h">Games with AI voices</h2>
   <section class="panel" id="tv-games" aria-labelledby="tv-games-h">
-    <p class="small">Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff, a student or you: it reads only that game's own words from its published version (numbers may change, and a placeholder may take one of the game's own names), never what a player types or a player's name. For a student's game the switch covers the version published when you switch it on (play it first); if the student publishes a new version, its voices pause until you switch them on again. Official games don't need it: every one of them is listed for voices. You can also switch a game on or off on its own page.</p>
-    ${games_.length ? html`<div class="tblwrap"><table class="tbl" id="tv-games-list"><thead><tr><th>Game</th><th>Made by</th><th>State</th><th></th></tr></thead><tbody>${games_.map(x => html`<tr data-game="${x.id}">
-      <th scope="row"><a href="/g/${x.slug}">${x.title}</a> <span class="muted small">${x.slug}</span></th><td>@${x.owner}</td>
-      <td class="small">${!x.ok ? html`<b>Not allowed:</b> ${x.why}` : x.stale ? html`<b>Paused:</b> the student published a new version. Play it, then switch off and on again.` : !x.live ? 'On once published (not published, or hidden now)' : silent ? html`On, but nothing plays yet: ${silent}` : 'On'}</td>
-      <td><button class="btn btn-sm" type="button" data-tg-off="${x.id}">Switch off</button></td></tr>`)}</tbody></table></div>` : html`<p class="small muted" id="tv-games-none">No other game has AI voices.</p>`}
+    ${note('Which games have AI voices', html`Official games listed for voices (${[...lines.TTS_GAMES].join(', ')}) always have them. Here you can switch them on for one more game made by a teacher, school staff, a student or you: it reads only that game's own words from its published version (numbers may change, and a placeholder may take one of the game's own names), never what a player types or a player's name. For a student's game the switch covers the version published when you switch it on (play it first); if the student publishes a new version, its voices pause until you switch them on again. Official games don't need it: every one of them is listed for voices. You can also switch a game on or off on its own page.`)}
+    ${games_.length ? html`<div class="tblwrap"><table class="tbl atable" id="tv-games-list"><thead><tr><th>Game</th><th>Made by</th><th>State</th><th></th></tr></thead><tbody>${games_.map(x => html`<tr data-game="${x.id}">
+      <th scope="row"><a href="/g/${x.slug}">${x.title}</a> <span class="muted small">${x.slug}</span></th><td data-label="Made by">@${x.owner}</td>
+      <td data-label="State" class="small">${!x.ok ? html`<b>Not allowed:</b> ${x.why}` : x.stale ? html`<b>Paused:</b> the student published a new version. Play it, then switch off and on again.` : !x.live ? 'On once published (not published, or hidden now)' : silent ? html`On, but nothing plays yet: ${silent}` : 'On'}</td>
+      <td class="acell"><button class="btn btn-sm" type="button" data-tg-off="${x.id}">Switch off</button></td></tr>`)}</tbody></table></div>` : html`<p class="small muted" id="tv-games-none">No other game has AI voices.</p>`}
     <form class="row" id="tv-game-add" novalidate>
       <label class="field" style="flex:1;min-width:220px"><span>Add a game: paste its link or name (slug)</span><input class="input" name="game" id="tv-game-input" autocomplete="off" placeholder="https://oomba.ai/g/my-game" maxlength="500"></label>
       <button class="btn btn-primary" type="submit">Switch on AI voices</button>
@@ -275,7 +278,7 @@ router.get('/admin/voices', (req, res) => {
     <p class="small" id="tv-warm-status" role="status"></p>
   </section>
   ${jsonData('page-data', { on, warmGame, warm: lines.status(), onLocales: onNow, allowed: config.ttsLocales })}`;
-  page(req, res, { title: 'AI voices', active: 'me', body, head: raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`), scripts: ['/js/admin-voices.js'], back: '/admin', backLabel: 'Admin' });
+  page(req, res, { title: 'AI voices', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`)}${ADMIN_CSS}`, scripts: ['/js/admin-voices.js', '/js/admin-ui.js'], back: '/admin', backLabel: 'Admin' });
 });
 
 router.post('/api/admin/tts/sample', async (req, res) => {

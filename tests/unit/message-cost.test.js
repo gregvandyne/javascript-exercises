@@ -156,7 +156,7 @@ test('/admin/stats shows cost per message by quality, messages per day and free 
   for (const days of [7, 30, 90]) {
     const r = await fetch(base + `/admin/stats?days=${days}`, { headers: { cookie: cookieFor(admin.id) } });
     assert.equal(r.status, 200);
-    const h = await r.text();
+    const h = (await r.text()).replace(/ data-label="[^"]*"/g, ''); // cells carry data-label for the phone cards
     assert.match(h, new RegExp(`Cost per Builder message, last ${Math.min(days, 30)} days`));
     assert.match(h, /Average per message/); assert.match(h, /Messages per day/); assert.match(h, /Free messages per month/);
     assert.match(h, /<td>Normal<\/td><td>2 <span class="muted small">\(1 estimated\)<\/span><\/td>\s*<td>/);

@@ -6,6 +6,7 @@ import * as photos from '../services/photos.js';
 import { Router } from 'express';
 import { html, raw, jsonData, fmtNum, timeAgo } from '../views/html.js';
 import { page } from '../views/layout.js';
+import { ADMIN_BODY, ADMIN_CSS, jumpNav, note as foldNote } from '../views/admin-ui.js';
 import { avatar, emptyState, statusLabel, coverArt } from '../views/components.js';
 import { requireAdmin, signToken } from '../auth.js';
 import { SANDBOX } from '../services/frame.js';
@@ -37,6 +38,8 @@ router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
 const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['people', '👥', 'All users'], ['users', '👤', 'Users'], ['messages', '📬', 'Team inbox'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
+// The tab menu, grouped (every tab in exactly one group). On phones it folds under the current tab.
+const TAB_GROUPS = [['Moderation', ['queue', 'reports', 'chat', 'links', 'live']], ['People', ['people', 'users', 'messages', 'schoolreq']], ['Logs', ['searches', 'audit']]];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -69,13 +72,15 @@ function queueTab(req) {
           ${issues.length ? html`<ul class="issues">${issues.map(i => html`<li class="lvl-${i.level}"><b>${i.level}</b> ${i.message}</li>`)}</ul>` : html`<p class="small muted">No issues found.</p>`}
           <h3>Model pre-check: ${review.verdict ? (review.verdict === 'allowed' ? 'no problems found (a hint, not an approval)' : review.verdict) : 'none'}</h3>
           ${(review.reasons || []).length ? html`<ul class="issues">${review.reasons.map(r => html`<li>${r}</li>`)}</ul>` : ''}
+        </div>
+        <div class="rc-decide">
           <form class="decide" data-game="${g.id}" novalidate>
             <div class="field"><label for="reason-${g.id}">Reason (if you send it back)</label>
               <select class="input" id="reason-${g.id}" name="reason"><option value="">No preset: use my note</option>${chat.REVIEW_REASONS.map(k => html`<option value="${k}">${tEn(`review.reasons.${k}`)}</option>`)}</select>
               <span class="hint">Presets are kid-friendly and shown in the builder's own language.</span></div>
             <div class="field"><label for="note-${g.id}">Note for the builder</label>
               <textarea class="input" id="note-${g.id}" name="note" maxlength="500" placeholder="Say what is great, or what to change (shown as you type it)"></textarea></div>
-            <div class="row"><button class="btn btn-primary" type="button" data-act="approve" data-id="${g.id}">✅ Approve</button><button class="btn btn-danger" type="button" data-act="reject" data-id="${g.id}">✏️ Send back</button></div>
+            <div class="row aacts"><button class="btn btn-primary" type="button" data-act="approve" data-id="${g.id}">✅ Approve</button><button class="btn btn-danger" type="button" data-act="reject" data-id="${g.id}">✏️ Send back</button></div>
           </form>
         </div>
       </div>
@@ -97,7 +102,7 @@ function reportsTab() {
         ${g.details.length ? html`<ul class="small">${g.details.map(d => html`<li>“${d}”</li>`)}</ul>` : ''}
       </div>
     </div>
-    <div class="row" style="margin-top:12px">
+    <div class="row aacts" style="margin-top:12px">
       ${g.open_reports || g.hidden_reason ? html`<button class="btn" type="button" data-act="restore" data-id="${g.id}">↩️ Restore &amp; dismiss reports</button>` : ''}
       ${g.status === 'suspended' ? html`<button class="btn" type="button" data-act="unsuspend" data-id="${g.id}">▶️ Unsuspend</button>` : html`<button class="btn btn-danger" type="button" data-act="suspend" data-id="${g.id}">⛔ Suspend game</button>`}
     </div>
@@ -116,7 +121,7 @@ function chatTab() {
       <span class="ctx-who">${c.from_id === m.from_id ? (sender && sender.username) : (reporter && c.from_id === reporter.id ? reporter.username : 'other')}</span>
       <span class="ctx-body">${c.kind === 'game' ? '🎮 shared a game' : c.kind === 'quick' ? chat.quickText(c.body) : c.body}${c.status === 'hidden' ? html` <i class="muted">(hidden)</i>` : ''}</span>
       <span class="ctx-time muted">${when(c.created_at)}</span></li>`)}</ol>
-    <div class="row">
+    <div class="row aacts">
       <button class="btn" type="button" data-act="hide" data-id="${r.id}">🙈 Hide message</button>
       <button class="btn" type="button" data-act="dismiss" data-id="${r.id}">👍 Dismiss</button>
       ${sender && !sender.banned && sender.role !== 'admin' && sender.username !== OFFICIAL ? html`<button class="btn btn-danger" type="button" data-act="bansender" data-id="${r.id}" data-name="${sender.username}">⛔ Ban sender</button>` : ''}
@@ -133,7 +138,7 @@ function linksTab() {
     <p class="row small" style="gap:6px"><span class="chip-s bad">Reported</span>${r.parent_made ? html` <span class="chip-s warn">made account</span>` : ''} ${when(r.created_at)}</p>
     <p class="small" style="margin:0">Child: ${avatar({ id: r.child_id, avatar: r.child_avatar, color: r.child_color, photo_at: r.child_photo_at }, 26)} <b>${r.child_display}</b> <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.child_name)}">@${r.child_name}</a>${r.child_banned ? ' · banned' : ''}</p>
     <p class="small">Grown-up: ${r.owner_name ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(r.owner_name)}">@${r.owner_name}</a> · account made ${when(r.owner_created)}${r.owner_banned ? ' · banned' : ''}` : 'account gone'} · ${r.family_reports} report${r.family_reports === 1 ? '' : 's'} against this family${r.made_count ? html` · ${r.made_count} account${r.made_count === 1 ? '' : 's'} made, ${r.code_linked_count} linked by code` : ''}</p>
-    <div class="row">
+    <div class="row aacts">
       <button class="btn" type="button" data-act="resolvelink" data-id="${r.id}">👍 Done</button>
       ${r.owner_id && !r.owner_banned ? html`<button class="btn btn-danger" type="button" data-act="banlink" data-id="${r.id}" data-name="${r.owner_name}">⛔ Ban grown-up</button>` : ''}
     </div>
@@ -150,8 +155,8 @@ function liveTab() {
     return html`<article class="panel">
     <p class="row small" style="gap:6px"><span class="chip-s bad">${LIVE_REASON[r.reason] || r.reason}</span> ${when(r.created_at)}</p>
     <p class="small" style="margin:0">${r.game_slug ? html`Game: <a href="/g/${r.game_slug}">${r.game_title}</a>` : 'Built-in question mode'}${r.host_name ? html` · Host: <a href="/admin?tab=users&amp;username=${encodeURIComponent(r.host_name)}">@${r.host_name}</a>` : ' · Host: deleted'}</p>
-    ${items.length ? html`<details class="small"><summary>${items.length} question${items.length === 1 ? '' : 's'} in the set</summary><ol>${items.slice(0, 50).map(q => html`<li dir="auto">${typeof q === 'string' ? q : q.q}</li>`)}</ol></details>` : ''}
-    <div class="row"><button class="btn" type="button" data-act="resolvelive" data-id="${r.id}">👍 Done</button></div>
+    ${items.length ? html`<details class="small asum"><summary>${items.length} question${items.length === 1 ? '' : 's'} in the set</summary><ol>${items.slice(0, 50).map(q => html`<li dir="auto">${typeof q === 'string' ? q : q.q}</li>`)}</ol></details>` : ''}
+    <div class="row aacts"><button class="btn" type="button" data-act="resolvelive" data-id="${r.id}">👍 Done</button></div>
   </article>`; })}</div>`;
 }
 const REQUEST_ROLE = { teacher: 'Teacher', leader: 'Principal / head', it: 'IT lead', district: 'District / group', other: 'Other' };
@@ -166,7 +171,7 @@ function schoolRequestsTab() {
       <p class="row small" style="gap:6px"><span class="chip-s warn">Waiting</span> sent ${when(r.created_at)}</p>
       <h2 style="margin:0 0 6px">${r.school_name}</h2>
       ${info(r)}
-      <div class="row" style="margin-top:12px">
+      <div class="row aacts" style="margin-top:12px">
         <a class="btn btn-primary" href="/admin/schools?request=${encodeURIComponent(r.id)}">➕ Create school</a>
         ${act(r, 'done', '👍 Mark done')}
         ${act(r, 'declined', 'Decline', 'btn', `Decline the request from ${r.school_name}? Remember to reply by email.`)}
@@ -174,16 +179,16 @@ function schoolRequestsTab() {
     : emptyState({ emoji: '🏫', title: 'No school requests waiting', text: 'When a teacher fills in "Set up my school" on /teachers, it shows up here. The page promises an answer within 1 school day.' });
   return html`${openList}
     <p class="small muted">The site sends no email: reply to each request from your own mail. Requests are deleted 1 year after they are closed.</p>
-    ${closed.length ? html`<h2 class="stats-h">Recently closed</h2><div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>School</th><th>Answer</th><th>Closed</th><th></th></tr></thead><tbody>
+    ${closed.length ? html`<h2 class="stats-h">Recently closed</h2><div class="panel tblwrap"><table class="tbl atable"><thead><tr><th>School</th><th>Answer</th><th>Closed</th><th></th></tr></thead><tbody>
       ${closed.map(r => html`<tr><td><b>${r.school_name}</b> <span class="small muted">· <span dir="ltr">${r.email}</span></span></td>
         <td data-label="Answer">${r.status === 'done' ? (r.school_slug ? html`✅ <a href="/school/${r.school_slug}?tab=people">${r.linked_school}</a>` : '✅ done') : '✖️ declined'}</td>
-        <td data-label="Closed">${when(r.closed_at)}</td><td>${act(r, 'reopen', 'Reopen', 'btn btn-sm')}</td></tr>`)}
+        <td data-label="Closed">${when(r.closed_at)}</td><td class="acell">${act(r, 'reopen', 'Reopen', 'btn btn-sm')}</td></tr>`)}
     </tbody></table></div>` : ''}`;
 }
 /** The Family row of the users tab: a child's family, or a grown-up's children, each with Break link. */
 function familyCell(u) {
   const l = family.adminLinks(u.id);
-  const brk = (fid, cid, label) => html` <button class="btn" type="button" data-act="unlinkfamily" data-id="${fid}" data-child="${cid}" data-name="${label}">Break link</button>`;
+  const brk = (fid, cid, label) => html` <button class="btn btn-sm" type="button" data-act="unlinkfamily" data-id="${fid}" data-child="${cid}" data-name="${label}">Break link</button>`;
   const st = r => (r.status === 'pending' ? 'asked' : 'linked');
   const look = name => html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(name)}">@${name}</a>`;
   // Parent-made accounts (services/family.js createChildAccount): who made this one, kept after an unlink or a deletion.
@@ -193,10 +198,10 @@ function familyCell(u) {
       ${l.made.map(m => html`<div>· ${m.status === 'deleted' ? html`deleted account (#${m.id})` : look(m.username)} · ${m.status}${['left', 'reported', 'relinked'].includes(m.status) ? ' · not paused with this grown-up: review on its own' : ''}</div>`)}
       <div>Linked by code: ${l.codeLinked}.</div>
       ${u.banned && l.made.some(m => m.pausable) ? html`<button class="btn btn-danger" type="button" data-act="pausemade" data-id="${u.id}" data-name="${u.username}">⛔ Pause all accounts this grown-up made</button>` : ''}</div>` : '';
-    return html`Grown-up account${l.children.length ? html`${l.children.map(c => html`<div>${st(c)}: ${look(c.child_name)}${brk(c.family_id, c.child_id, c.child_name)}</div>`)}` : ' · no children'}${made}`;
+    return html`Grown-up account${l.children.length ? html`${l.children.map(c => html`<div class="famline"><span>${st(c)}: ${look(c.child_name)}</span>${brk(c.family_id, c.child_id, c.child_name)}</div>`)}` : ' · no children'}${made}`;
   }
   if (!l.asChild.length) return madeBy || 'none';
-  return html`${madeBy}${l.asChild.map(r => html`<div>${st(r)} with grown-up ${look(r.owner_name)}${brk(r.family_id, r.child_id, u.username)}</div>`)}`;
+  return html`${madeBy}${l.asChild.map(r => html`<div class="famline"><span>${st(r)} with grown-up ${look(r.owner_name)}</span>${brk(r.family_id, r.child_id, u.username)}</div>`)}`;
 }
 
 const SCHOOL_ROLE = { admin: 'School admin', teacher: 'Teacher', student: 'Student' };
@@ -223,16 +228,24 @@ function usersTab(req) {
     <p class="small muted" style="margin:8px 0 0">Exact usernames here. To browse everyone, with what they play and build, use <a href="/admin?tab=people">All users</a>.</p>
   </section>
   ${name && !u ? html`<p class="notice warn" style="margin-top:16px">No user called “${name}”.</p>` : ''}
-  ${u ? html`<section class="panel" style="margin-top:16px">
-    <div class="row">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
+  ${u ? userPanel(u) : ''}`;
+}
+function userPanel(u) {
+  const games = AU.userGames(u.id), audits = AU.userAudit(u.id);
+  return html`<section class="panel upanel" style="margin-top:16px">
+    <div class="row uhead">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
       ${u.banned ? html`<span class="chip-s bad">⛔ Banned</span>` : html`<span class="chip-s">✅ Active</span>`}</div>
-    <div class="tblwrap"><table class="tbl" style="margin-top:12px"><tbody>
+    <div class="row aacts uacts">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
+      ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
+      ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
+    ${jumpNav([['u-details', 'Details'], u.is_guest ? null : ['u-activity', '📈 Activity'], games.length ? ['u-games', `Games (${games.length})`] : null, audits.length ? ['u-audit', 'Audit log'] : null])}
+    <div class="tblwrap" id="u-details"><table class="tbl afacts" style="margin-top:12px"><tbody>
       <tr><th scope="row">Account type</th><td>${AU.TYPE_LABEL[AU.accountTypeOf(u.id)]} · ${AU.METHOD_LABEL[AU.signupMethod(u.id)]}</td></tr>
       <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
       <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
       <tr><th scope="row">Family</th><td>${familyCell(u)}</td></tr>
-      ${u.account_type === 'grownup' || isStaff(u) ? html`<tr><th scope="row">Billing tester</th><td>${u.billing_tester ? 'yes: may check out while the Stripe key is a test key' : 'no'}
-        <button class="btn" type="button" data-act="tester" data-id="${u.id}" data-on="${u.billing_tester ? '0' : '1'}">${u.billing_tester ? 'Remove tester' : 'Make billing tester'}</button></td></tr>` : ''}
+      ${u.account_type === 'grownup' || isStaff(u) ? html`<tr><th scope="row">Billing tester</th><td><div class="famline"><span>${u.billing_tester ? 'yes: may check out while the Stripe key is a test key' : 'no'}</span>
+        <button class="btn btn-sm" type="button" data-act="tester" data-id="${u.id}" data-on="${u.billing_tester ? '0' : '1'}">${u.billing_tester ? 'Remove tester' : 'Make billing tester'}</button></div></td></tr>` : ''}
       <tr><th scope="row">Created</th><td>${new Date(u.created_at).toISOString().slice(0, 10)} (${timeAgo(u.created_at)})</td></tr>
       <tr><th scope="row">Last seen</th><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>
       <tr><th scope="row">Games</th><td>${u.games}</td></tr>
@@ -241,28 +254,23 @@ function usersTab(req) {
       <tr><th scope="row">Reports</th><td>${(r => html`${r.againstGames} against their games · ${r.made} made by them`)(AU.reportCounts(u.id))}</td></tr>
     </tbody></table></div>
     ${u.is_guest ? '' : userActivityPanel(u)}
-    ${userGamesPanel(u)}
-    ${userAuditPanel(u)}
-    <div class="row" style="margin-top:12px">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
-      ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
-      ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
-  </section>` : ''}`;
+    ${userGamesPanel(games)}
+    ${userAuditPanel(u, audits)}
+  </section>`;
 }
 
 const VIS_LABEL = { private: 'Only them', family: 'Family', friends: 'Friends', class: 'Classes', school: 'School', public: 'Everyone' };
-function userGamesPanel(u) {
-  const list = AU.userGames(u.id);
+function userGamesPanel(list) {
   if (!list.length) return '';
-  return html`<h3 style="margin:16px 0 6px">Games (${list.length})</h3><div class="tblwrap"><table class="tbl small rtable"><thead><tr><th>Game</th><th>Status</th><th>Who can play</th><th>Plays</th><th>Reports</th></tr></thead><tbody>
+  return html`<h3 style="margin:16px 0 6px" id="u-games">Games (${list.length})</h3><div class="tblwrap"><table class="tbl small atable"><thead><tr><th>Game</th><th>Status</th><th>Who can play</th><th>Plays</th><th>Reports</th></tr></thead><tbody>
     ${list.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td data-label="Status">${statusLabel(g, tEn)}${g.pending_version_id ? html` <span class="chip-s warn">⏳ waiting for ${g.pending_visibility || 'public'}</span>` : ''}</td>
       <td data-label="Who can play">${g.status === 'published' ? VIS_LABEL[g.visibility] || g.visibility : '–'}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="Reports">${g.reports}</td></tr>`)}
   </tbody></table></div>`;
 }
-function userAuditPanel(u) {
-  const rows = AU.userAudit(u.id);
+function userAuditPanel(u, rows) {
   if (!rows.length) return '';
-  return html`<details style="margin-top:12px"><summary>Audit log for @${u.username} (${rows.length} latest)</summary><div class="tblwrap"><table class="tbl small audit"><thead><tr><th>When</th><th>Who</th><th>What</th></tr></thead><tbody>
-    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td>${r.actor_name ? '@' + r.actor_name : 'system'}</td><td><code>${r.action}</code></td></tr>`)}
+  return html`<details style="margin-top:12px" id="u-audit"><summary>Audit log for @${u.username} (${rows.length} latest)</summary><div class="tblwrap"><table class="tbl small audit atable"><thead><tr><th>When</th><th>Who</th><th>What</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td data-label="When">${when(r.created_at)}</td><td data-label="Who">${r.actor_name ? '@' + r.actor_name : 'system'}</td><td data-label="What"><code>${r.action}</code></td></tr>`)}
   </tbody></table></div></details>`;
 }
 
@@ -307,6 +315,8 @@ function peopleTab(req) {
   const sel = (id, name, label, value, opts) => html`<div class="field"><label for="${id}">${label}</label><select class="input" id="${id}" name="${name}">${opts.map(([v, l]) => html`<option value="${v}" ${value === v ? raw('selected') : ''}>${l}</option>`)}</select></div>`;
   const desc = [f.type ? AU.TYPE_LABEL[f.type] : '', f.active ? AA.ACTIVE[f.active].toLowerCase() : '', f.from || f.to ? `joined ${f.from || '…'} to ${f.to || 'today'}` : f.joined !== 'all' ? `joined ${AA.JOINED[f.joined].toLowerCase()}` : '', f.search ? `matching “${f.search}”` : ''].filter(Boolean);
   const everyone = !Object.keys(peopleParams({ ...f, page: 1 })).length;
+  // The extra filters fold away on phones; they start open when one of them is in use.
+  const filtered = Boolean(f.type || f.active || f.from || f.to || f.joined !== AA.DEFAULTS.joined);
   return html`
   <div class="kpis">
     ${tile('👥 Accounts', int(accounts), 'real accounts (no guests)')}
@@ -315,9 +325,11 @@ function peopleTab(req) {
     ${tile('🗓️ New, last 30 days', int(c.month), Object.entries(c.byType).filter(([, n]) => n).map(([k, n]) => `${int(n)} ${AU.TYPE_LABEL[k].toLowerCase()}`).join(' · ') || 'none yet')}
   </div>
   ${sparkline(AU.signupsByDay(30))}
-  <form class="panel nu-filters" method="get" action="/admin" role="search">
+  <form class="panel nu-form" method="get" action="/admin" role="search">
     <input type="hidden" name="tab" value="people">
-    <div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="nu-top"><div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download><span aria-hidden="true">⬇️</span> CSV</a></div></div>
+    <details class="nu-more" data-open-wide ${filtered ? raw('open') : ''}><summary><span>Filters &amp; sort <span class="small muted nu-now">· ${desc.length ? `${desc.join(' · ')} · ` : ''}sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}</span></span></summary><div class="nu-filters">
     ${sel('nu-type', 'type', 'Account type', f.type, [['', 'All types'], ...AU.TYPES.map(k => [k, AU.TYPE_LABEL[k]])])}
     ${sel('nu-active', 'active', 'Active', f.active, Object.entries(AA.ACTIVE))}
     ${sel('nu-joined', 'joined', 'Joined', f.joined, Object.entries(AA.JOINED))}
@@ -325,14 +337,14 @@ function peopleTab(req) {
     <div class="field"><label for="nu-to">Joined until</label><input class="input" type="date" id="nu-to" name="to" value="${f.to}"></div>
     ${sel('nu-sort', 'sort', 'Sort by', f.sort, Object.entries(AA.SORTS).map(([k, v]) => [k, v[2]]))}
     ${sel('nu-dir', 'dir', 'Order', f.dir, [['desc', '↓ Descending'], ['asc', '↑ Ascending']])}
-    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download><span aria-hidden="true">⬇️</span> CSV</a></div>
+    </div></details>
   </form>
   <nav class="chips nu-quick" aria-label="Quick views"><a class="chip ${everyone ? 'on' : ''}" href="/admin?tab=people" ${everyone ? raw('aria-current="true"') : ''}>Everyone</a>${Object.entries(AA.QUICK).map(([k, v]) => { const on = AA.quickOn(f, k); return html`<a class="chip ${on ? 'on' : ''}" href="${peopleLink({ ...AA.DEFAULTS, ...v.set })}" ${on ? raw('aria-current="true"') : ''}>${v.label}</a>`; })}</nav>
   <p class="small muted">${int(r.total)} account${r.total === 1 ? '' : 's'}${desc.length ? ` · ${desc.join(' · ')}` : ''} · sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}. Guests are not listed. Kids show only their names and counts. Days are UTC; “days active” counts the last 30.</p>
   ${r.rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable nu-table au-table"><thead><tr>${COLS.map(th)}</tr></thead><tbody>
     ${r.rows.map(u => html`<tr>
       <td><a class="nu-who" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">${avatar(u, 32)}<span><b dir="auto">${u.display_name}</b><br><span class="small muted">@${u.username}</span></span></a></td>
-      <td data-label="Type"><span class="au-nw">${AU.TYPE_LABEL[u.type]}</span><span class="au-sub small muted">${[AU.METHOD_LABEL[u.method], linkedLine(u)].filter(Boolean).join(' · ')}</span></td>
+      <td data-label="Type" class="au-type"><span class="au-nw">${AU.TYPE_LABEL[u.type]}</span><span class="au-sub small muted">${[AU.METHOD_LABEL[u.method], linkedLine(u)].filter(Boolean).join(' · ')}</span></td>
       <td data-label="Joined"><time datetime="${new Date(u.created_at).toISOString()}" title="${ymdhm(u.created_at)} UTC">${new Date(u.created_at).toISOString().slice(0, 10)}</time></td>
       <td data-label="Last login">${ago(u.last_login_at)}</td>
       <td data-label="Last active">${u.never_active ? 'never' : ago(u.last_seen)}</td>
@@ -343,7 +355,7 @@ function peopleTab(req) {
       <td data-label="Course steps">${int(u.course_steps)}</td>
       <td data-label="Live games">${int(u.live_joined)}</td>
       <td data-label="Plays of their games" title="Plays of the games they built">${int(u.plays_of_games)}</td>
-      <td data-label="Status">${u.banned ? html`<span class="chip-s bad">⛔ Suspended</span>` : html`<span class="chip-s">✅ Active</span>`}</td>
+      <td data-label="Status" class="au-status">${u.banned ? html`<span class="chip-s bad">⛔ Suspended</span>` : html`<span class="chip-s">✅ Active</span>`}</td>
     </tr>`)}
   </tbody></table></div>
   ${r.pages > 1 ? html`<nav class="row nu-pages" aria-label="Pages">${r.page > 1 ? html`<a class="btn" href="${link({ page: r.page - 1 })}" rel="prev">← Previous</a>` : ''}<span class="small muted">Page ${r.page} of ${r.pages}</span>${r.page < r.pages ? html`<a class="btn" href="${link({ page: r.page + 1 })}" rel="next">Next →</a>` : ''}</nav>` : ''}`
@@ -366,7 +378,7 @@ function userActivityPanel(u) {
   const a = AA.userAnalytics(u.id);
   if (!a) return '';
   const t = a.totals;
-  return html`<section class="ua" aria-labelledby="ua-h"><h3 id="ua-h" class="stats-h">📈 Activity</h3>
+  return html`<section class="ua" id="u-activity" aria-labelledby="ua-h"><h3 id="ua-h" class="stats-h">📈 Activity</h3>
     <div class="kpis">
       ${tile('🔑 Last login', a.lastLogin ? timeAgo(a.lastLogin) : 'never', a.lastLogin ? `${ymdhm(a.lastLogin)} UTC${a.lastLoginMethod !== null ? ` · ${HOW[a.lastLoginMethod] || 'sign-in'}` : ''}` : 'no sign-in recorded')}
       ${tile('👣 Last active', a.never ? 'never' : timeAgo(a.lastSeen), a.never ? '' : `${ymdhm(a.lastSeen)} UTC`)}
@@ -379,19 +391,19 @@ function userActivityPanel(u) {
       ${tile('📡 Live games', int(t.liveJoined), `joined · ${int(t.liveHosted)} hosted`)}
     </div>
     <p class="small muted ua-joined">Joined ${ymdhm(a.joined)} UTC (${timeAgo(a.joined)}) · ${AU.METHOD_LABEL[a.method]}. Days are UTC.</p>
-    <div class="charts">
+    <details class="asection" open><summary>Charts, last 30 days</summary><div class="charts">
       ${barChart({ title: 'Plays per day', rows: a.daily, key: 'plays', unit: 'plays' })}
       ${barChart({ title: 'AI Builder messages per day', rows: a.daily, key: 'ai', unit: 'messages' })}
       ${dayStrip(a.daily)}
-    </div>
+    </div></details>
     <div class="stats-grid">
       <section class="panel"><h2>🎮 Games they play most</h2>
-        ${a.topPlayed.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Game</th><th>Plays</th><th>Minutes</th><th>Last</th></tr></thead><tbody>
-          ${a.topPlayed.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td>${int(g.plays)}</td><td>${int(g.minutes)}</td><td>${ago(g.last)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet.</p>`}
+        ${a.topPlayed.length ? html`<div class="tblwrap"><table class="tbl atable inl"><thead><tr><th>Game</th><th>Plays</th><th>Minutes</th><th>Last</th></tr></thead><tbody>
+          ${a.topPlayed.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td data-label="Plays">${int(g.plays)}</td><td data-label="Minutes">${int(g.minutes)}</td><td data-label="Last">${ago(g.last)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet.</p>`}
       </section>
       <section class="panel"><h2>📚 Courses</h2>
-        ${a.courses.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Course</th><th>Done</th><th>Band</th><th>Last</th></tr></thead><tbody>
-          ${a.courses.map(c => html`<tr><td>${c.emoji} ${c.name}</td><td>${int(c.done)}${c.total ? ` of ${int(c.total)}` : ''} <span class="small muted">(${int(c.touched)} started)</span></td><td>${c.band || '–'}</td><td>${ago(c.last > 1 ? c.last : 0, '–')}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No course started (CS Quest, Cyber Defenders, Number Quest).</p>`}
+        ${a.courses.length ? html`<div class="tblwrap"><table class="tbl atable inl"><thead><tr><th>Course</th><th>Done</th><th>Band</th><th>Last</th></tr></thead><tbody>
+          ${a.courses.map(c => html`<tr><td>${c.emoji} ${c.name}</td><td data-label="Done">${int(c.done)}${c.total ? ` of ${int(c.total)}` : ''} <span class="small muted">(${int(c.touched)} started)</span></td><td data-label="Band">${c.band || '–'}</td><td data-label="Last">${ago(c.last > 1 ? c.last : 0, '–')}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No course started (CS Quest, Cyber Defenders, Number Quest).</p>`}
       </section>
     </div>
     <section class="panel ua-tl"><h2>🕒 Recent activity</h2>
@@ -410,26 +422,28 @@ const WELCOME_PANELS = [
   { audience: 'grownup', title: 'Welcome message for new parents', who: 'new parents', when: 'Sent to every new grown-up (parent) account the first time it signs in. They read it on their Family page (📬 link) at /chat/OombaAcademy. A grown-up who later has a school set up also gets the teachers’ welcome.' },
   { audience: 'teacher', title: 'Welcome message for new teachers and school staff', who: 'new teachers and school staff', when: 'Sent when an account becomes a teacher or school admin (added on a school’s People tab, a staff login card, a Google staff invite, a role change), when a grown-up’s “Set up my school” request is marked done, or at the first sign-in of someone who signed up after choosing “I’m a teacher”. A kid welcome sent to them before is taken back. They read it in their chat inbox.' },
 ];
-const welcomeForm = (w, s) => html`<form class="stack welcomeform" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." novalidate>
-    <h3 id="wel-${w.audience}-h" style="margin-bottom:0">${w.title}</h3>
+const welcomeForm = (w, s) => html`<details class="asection welcomefold" id="wel-${w.audience}" data-open-wide><summary><span id="wel-${w.audience}-h">${w.title}</span> <span class="chip-s ${s.on ? 'wel-on' : 'warn'}">${s.on ? 'On' : 'Off'}</span></summary>
+  <form class="stack welcomeform" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." aria-labelledby="wel-${w.audience}-h" novalidate>
     <p class="small muted" style="margin:0">${w.when}</p>
     <input type="hidden" name="audience" value="${w.audience}">
-    <label class="row" style="gap:8px"><input type="checkbox" name="on" value="1" ${s.on ? raw('checked') : ''}> Send it to ${w.who}</label>
+    <label class="checkline"><input type="checkbox" name="on" value="1" ${s.on ? raw('checked') : ''}> <span>Send it to ${w.who}</span></label>
     <div class="field"><label for="wel-${w.audience}-text">Message</label><textarea class="input" id="wel-${w.audience}-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="14">${s.text}</textarea></div>
     <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
-  </form>`;
+  </form></details>`;
 function messagesTab(req) {
   const threads = team.adminThreads();
   const lim = team.announceLimits();
   const schools = q.all('SELECT id, name FROM schools WHERE archived_at IS NULL ORDER BY name COLLATE NOCASE LIMIT 500');
   const recent = team.recentAnnouncements(10);
+  const unread = threads.reduce((a, th) => a + (th.unread || 0), 0);
+  // Conversations first (what the tab's badge counts), then announcements, then the three automatic welcomes.
   return html`
-  <section class="panel" aria-labelledby="wel-h">
-    <h2 id="wel-h" style="margin-top:0">👋 Welcome messages for new people</h2>
-    <p class="small muted">Sent automatically from “Oomba team ✓”, once per person for each kind of welcome, only to accounts up to ${team.WELCOME_DAYS} days old. <code>{name}</code> becomes their first name. Line breaks are kept. They can write back, and replies land in Conversations below.</p>
-    ${WELCOME_PANELS.map(w => welcomeForm(w, team.welcomeSettings(w.audience)))}
-  </section>
-  <section class="panel" aria-labelledby="ann-h">
+  ${jumpNav([['conv-h', '💬 Conversations', unread], ['ann-h', '📣 Announce'], ['wel-h', '👋 Welcome messages']])}
+  <h2 class="stats-h" id="conv-h">Conversations</h2>
+  <p class="small muted">To start one, open a person on <a href="/admin?tab=users">Users</a> or <a href="/admin?tab=people">All users</a> and press Message. Messages to a child are logged with their text and copied to their linked grown-up (or their school's admins) when they have one. Sent something by mistake? Open the conversation and press Unsend under it.</p>
+  ${threads.length ? html`<ul class="plain inbox panel">${threads.map(th => html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/admin/messages/${encodeURIComponent(th.username)}">${avatar(th, 40)}<span class="who"><span class="nm">${th.display_name}</span><span class="sub">@${th.username}${th.account_type === 'grownup' ? ' · grown-up' : ''}${th.banned ? ' · banned' : ''}</span></span><span class="meta"><span class="time">${timeAgo(th.last)}</span>${th.unread ? html`<span class="badge">${th.unread}</span>` : ''}</span></a></li>`)}</ul>`
+    : emptyState({ emoji: '📬', title: 'No conversations yet', text: 'Replies to the team show up here.' })}
+  <section class="panel" aria-labelledby="ann-h" style="margin-top:var(--s5)">
     <h2 id="ann-h" style="margin-top:0">📣 Send an announcement</h2>
     <p class="small muted">It arrives in each person's inbox from “Oomba team ✓”. You will see how many people it reaches and confirm before it goes. At most one every ${team.ANNOUNCE_GAP_MS / 60e3} minutes and ${team.ANNOUNCE_DAILY} a day for the whole site${lim.nextAt ? html`: next one possible ${when(lim.nextAt)}` : ''} (${lim.leftToday} left today). Kids read it too, so write for a 6-year-old.</p>
     <form id="announce" class="stack" novalidate>
@@ -438,19 +452,20 @@ function messagesTab(req) {
       <div class="field"><label for="ann-text">Message</label><textarea class="input" id="ann-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3" placeholder="New games are here! ..."></textarea></div>
       <div class="row"><button class="btn btn-primary" type="submit">Check who it reaches…</button></div>
     </form>
-    ${recent.length ? html`<details open><summary>Recent announcements (${recent.length})</summary><ul class="small">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}” ${a.unsent ? html`<b>· unsent</b>` : html`<form class="inline" style="display:inline" data-api="/api/admin/announcements/${a.id}/unsend" data-reload data-toast="Unsent: it's gone from everyone's inbox." data-confirm="Unsend this announcement? It disappears from all ${int(a.recipients)} inboxes."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>`}</li>`)}</ul></details>` : ''}
+    ${recent.length ? html`<details class="asection annhist" data-open-wide><summary>Recent announcements (${recent.length})</summary><ul class="small annlist">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}” ${a.unsent ? html`<b>· unsent</b>` : html`<form class="inline" style="display:inline" data-api="/api/admin/announcements/${a.id}/unsend" data-reload data-toast="Unsent: it's gone from everyone's inbox." data-confirm="Unsend this announcement? It disappears from all ${int(a.recipients)} inboxes."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>`}</li>`)}</ul></details>` : ''}
   </section>
-  <h2 class="stats-h">Conversations</h2>
-  <p class="small muted">To start one, open a person on <a href="/admin?tab=users">Users</a> or <a href="/admin?tab=people">All users</a> and press Message. Messages to a child are logged with their text and copied to their linked grown-up (or their school's admins) when they have one. Sent something by mistake? Open the conversation and press Unsend under it.</p>
-  ${threads.length ? html`<ul class="plain inbox panel">${threads.map(th => html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/admin/messages/${encodeURIComponent(th.username)}">${avatar(th, 40)}<span class="who"><span class="nm">${th.display_name}</span><span class="sub">@${th.username}${th.account_type === 'grownup' ? ' · grown-up' : ''}${th.banned ? ' · banned' : ''}</span></span><span class="meta"><span class="time">${timeAgo(th.last)}</span>${th.unread ? html`<span class="badge">${th.unread}</span>` : ''}</span></a></li>`)}</ul>`
-    : emptyState({ emoji: '📬', title: 'No conversations yet', text: 'Replies to the team show up here.' })}`;
+  <section class="panel" aria-labelledby="wel-h">
+    <h2 id="wel-h" style="margin-top:0">👋 Welcome messages for new people</h2>
+    <p class="small muted">Sent automatically from “Oomba team ✓”, once per person for each kind of welcome, only to accounts up to ${team.WELCOME_DAYS} days old. <code>{name}</code> becomes their first name. Line breaks are kept. They can write back, and replies land in Conversations above.</p>
+    <div class="stack">${WELCOME_PANELS.map(w => welcomeForm(w, team.welcomeSettings(w.audience)))}</div>
+  </section>`;
 }
 
 function auditTab() {
   const rows = mod.auditLog(200);
   if (!rows.length) return emptyState({ emoji: '📜', title: 'No entries yet' });
-  return html`<div class="panel tblwrap"><table class="tbl audit"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Target</th><th>Details</th></tr></thead><tbody>
-    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td>${r.actor_name ? '@' + r.actor_name : 'system'}</td><td><code>${r.action}</code></td><td>${r.targetLabel}</td><td class="small muted">${r.detailsLabel}</td></tr>`)}
+  return html`<div class="panel tblwrap"><table class="tbl audit atable alog alogx"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Target</th><th>Details</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td data-label="When" class="aw-when">${when(r.created_at)}</td><td data-label="Who" class="aw-who">${r.actor_name ? '@' + r.actor_name : 'system'}</td><td data-label="What" class="aw-what"><code>${r.action}</code></td><td data-label="Target" class="full aw-tgt">${r.targetLabel}</td><td data-label="Details" class="small muted full adet">${r.detailsLabel ? html`<span class="adet-t">${r.detailsLabel}</span>` : ''}</td></tr>`)}
   </tbody></table></div>`;
 }
 
@@ -459,22 +474,24 @@ function auditTab() {
 function searchesTab(req) {
   const flaggedOnly = req.query.flagged === '1';
   const rows = webSearch.listSearches({ flagged: flaggedOnly, limit: 300 });
-  const filter = html`<p class="small">${flaggedOnly ? html`Showing flagged searches only. <a href="/admin?tab=searches">Show all</a>` : html`Showing all searches. <a href="/admin?tab=searches&amp;flagged=1">Show flagged only</a>`}
-    · Web search is <b>${webSearch.webSearchOn() ? 'on' : 'off'}</b> (BUILDER_WEB_SEARCH) · kept 90 days</p>`;
+  const filter = html`<nav class="chips afilter" aria-label="Which searches"><a class="chip ${flaggedOnly ? '' : 'on'}" href="/admin?tab=searches" ${flaggedOnly ? '' : raw('aria-current="true"')}>Show all</a><a class="chip ${flaggedOnly ? 'on' : ''}" href="/admin?tab=searches&amp;flagged=1" ${flaggedOnly ? raw('aria-current="true"') : ''}>⚠️ Show flagged only</a></nav>
+    <p class="small">${flaggedOnly ? 'Showing flagged searches only.' : 'Showing all searches.'} · Web search is <b>${webSearch.webSearchOn() ? 'on' : 'off'}</b> (BUILDER_WEB_SEARCH) · kept 90 days</p>`;
   if (!rows.length) return html`${filter}${emptyState({ emoji: '🔎', title: 'No web searches', text: 'Searches the Builder makes to check a fact show up here.' })}`;
-  return html`${filter}<div class="panel tblwrap"><table class="tbl audit"><thead><tr><th>When</th><th>Query</th><th>Sites</th><th>Result</th><th>Game</th><th>Build</th></tr></thead><tbody>
-    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td dir="auto">${r.query}</td><td class="small muted">${r.domains.join(', ') || '–'}</td>
-      <td>${r.flagged ? html`<span class="chip-s warn">⚠️ flagged${r.reason ? ` (${r.reason})` : ''}</span>` : html`${r.results} result${r.results === 1 ? '' : 's'}${r.reason ? html` <span class="small muted">${r.reason}</span>` : ''}`}</td>
-      <td>${r.game_slug ? html`<a href="/studio/${r.game_id}">${r.game_title}</a>` : '–'}</td><td class="small muted"><code>${r.turn_id || ''}</code></td></tr>`)}
+  return html`${filter}<div class="panel tblwrap"><table class="tbl audit atable slog"><thead><tr><th>When</th><th>Query</th><th>Sites</th><th>Result</th><th>Game</th><th>Build</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td data-label="When">${when(r.created_at)}</td><td class="at" dir="auto">${r.query}</td><td data-label="Sites" class="small muted full sl-sites">${r.domains.join(', ') || '–'}</td>
+      <td data-label="Result">${r.flagged ? html`<span class="chip-s warn">⚠️ flagged${r.reason ? ` (${r.reason})` : ''}</span>` : html`${r.results} result${r.results === 1 ? '' : 's'}${r.reason ? html` <span class="small muted">${r.reason}</span>` : ''}`}</td>
+      <td data-label="Game">${r.game_slug ? html`<a href="/studio/${r.game_id}">${r.game_title}</a>` : '–'}</td><td data-label="Build" class="small muted">${r.turn_id ? html`<code>${r.turn_id}</code>` : '–'}</td></tr>`)}
   </tbody></table></div>`;
 }
 
 /** AI spending vs the caps (AI_DAILY_BUDGET_USD / AI_MONTHLY_BUDGET_USD). Admin pages are English-only. */
 function aiSpendPanel() {
   const b = aiBudget.status(); const usd = n => '$' + n.toFixed(2);
-  return html`<section class="panel" aria-label="AI spending"><b>🤖 AI spending</b>
-    today ${usd(b.today)} of ${usd(b.daily)} (${b.todayCalls} calls) · this month ${usd(b.month)} of ${usd(b.monthly)}
-    ${b.ok ? '' : html`<br><b>Cap reached (${b.reason}):</b> the Builder is using the offline builder, picture uploads are paused and public reviews wait for a person.`}</section>`;
+  const bar = (v, max) => html`<span class="ameter" aria-hidden="true"><i style="--p:${Math.min(100, max > 0 ? v / max * 100 : 0).toFixed(1)}%"></i></span>`;
+  return html`<section class="panel aispend${b.ok ? '' : ' bad'}" aria-label="AI spending"><b>🤖 AI spending</b>
+    <span class="aispend-i"><span>today ${usd(b.today)} of ${usd(b.daily)} (${b.todayCalls} calls)</span>${bar(b.today, b.daily)}</span><span class="aispend-sep" aria-hidden="true">·</span>
+    <span class="aispend-i"><span>this month ${usd(b.month)} of ${usd(b.monthly)}</span>${bar(b.month, b.monthly)}</span>
+    ${b.ok ? '' : html`<span class="aispend-cap"><b>Cap reached (${b.reason}):</b> the Builder is using the offline builder, picture uploads are paused and public reviews wait for a person.</span>`}</section>`;
 }
 
 router.get('/admin', (req, res) => {
@@ -483,13 +500,20 @@ router.get('/admin', (req, res) => {
   const c = mod.counts();
   const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount(), messages: team.adminUnread() };
   const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, people: peopleTab, users: usersTab, messages: messagesTab, searches: searchesTab, audit: auditTab }[tab](req);
+  const tabInfo = TABS.find(t => t[0] === tab);
+  const waiting = Object.values(n).reduce((a, b) => a + (b || 0), 0);
+  const tabLink = ([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`;
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
+  <div class="ahead"><div class="pagehead adminhead"><h1>🛡️ Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
   ${aiSpendPanel()}
-  <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
+  <nav class="tabs adminnav" aria-label="Admin sections">
+    <input type="checkbox" id="adminnav-t" class="adminnav-t" aria-controls="adminnav-groups">
+    <label for="adminnav-t" class="adminnav-sum"><span class="adminnav-cur"><span aria-hidden="true">${tabInfo[1]}</span>&nbsp;${tabInfo[2]}</span><span class="adminnav-all">All sections${waiting ? html`&nbsp;<span class="badge" aria-label="${waiting} waiting in all sections">${waiting}</span>` : ''}</span></label>
+    <div class="adminnav-groups" id="adminnav-groups">${TAB_GROUPS.map(([g, keys]) => html`<div class="adminnav-g" role="group" aria-label="${g}"><span class="adminnav-gl" aria-hidden="true">${g}</span>${keys.map(k => tabLink(TABS.find(t => t[0] === k)))}</div>`)}</div>
+  </nav></div>
   ${content}
   ${jsonData('page-data', { tab })}`;
-  page(req, res, { title: 'Admin', active: 'me', body, head: tab === 'people' || tab === 'users' ? raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`) : COMMUNITY_CSS, scripts: tab === 'users' ? ['/js/admin.js', '/js/admin-stats.js'] : ['/js/admin.js'], back: '/me', backLabel: 'Me' });
+  page(req, res, { title: 'Admin', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${COMMUNITY_CSS}${tab === 'people' || tab === 'users' ? raw('<link rel="stylesheet" href="/css/stats.css">') : ''}${ADMIN_CSS}`, scripts: tab === 'users' ? ['/js/admin.js', '/js/admin-stats.js'] : ['/js/admin.js'], back: '/me', backLabel: 'Me' });
 });
 
 // ---- All users as CSV (the same filters and order as the tab, up to services/admin-users.js CSV_MAX rows). Audited.
@@ -517,7 +541,7 @@ router.get('/admin/messages/:username', (req, res) => {
   const line = m => {
     const fromTeam = m.from_id === tu.id;
     return html`<li class="msg ${fromTeam ? 'mine' : 'theirs'} ${m.kind}"><div class="bubble" dir="auto">${chat.present(m, u, tEn).body}</div>
-      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}${fromTeam && m.kind === 'team' && m.status === 'ok' ? html` · <form class="inline" style="display:inline" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="linkbtn small" type="submit">↩️ Unsend</button></form>` : ''}</span></li>`;
+      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}</span>${fromTeam && m.kind === 'team' && m.status === 'ok' ? html`<form class="unsend" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>` : ''}</li>`;
   };
   const body = html`
   <div class="pagehead"><h1>📬 ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">👤 User details</a></div></div>
@@ -528,7 +552,7 @@ router.get('/admin/messages/:username', (req, res) => {
       <div class="field"><label for="dm-text">Message as the Oomba team</label><textarea class="input" id="dm-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3"></textarea></div>
       <div class="row"><button class="btn btn-primary" type="submit">Send</button></div></form>`
     : html`<p class="notice warn">${can.error}</p>`}`;
-  page(req, res, { title: `Messages: ${u.username}`, active: 'me', body, head: COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/admin?tab=messages', backLabel: 'Team inbox' });
+  page(req, res, { title: `Messages: ${u.username}`, active: 'me', body, bodyClass: ADMIN_BODY, head: html`${COMMUNITY_CSS}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin?tab=messages', backLabel: 'Team inbox' });
 });
 
 // ---- Stats dashboard ----
@@ -569,11 +593,11 @@ const AREA_LABELS = { home: 'Home', game: 'Game pages', play: 'Play', build: 'St
 /** Cost per Builder message, messages per day and what the free budget pays for (docs/decisions.md "Paid plans"). */
 function costSection(c) {
   const cents = n => (n >= 1 ? usd(n) : `${(n * 100).toFixed(n * 100 >= 10 ? 0 : 1)}¢`);
-  const row = (label, s) => html`<tr><td>${label}</td><td>${int(s.n)}${s.estimated ? html` <span class="muted small">(${int(s.estimated)} estimated)</span>` : ''}</td>
-    <td>${s.n ? cents(s.avg) : '–'}</td><td>${s.n ? cents(s.median) : '–'}</td><td>${s.n ? cents(s.p90) : '–'}</td><td>${usd(s.total)}</td></tr>`;
+  const row = (label, s) => html`<tr><td>${label}</td><td data-label="Messages">${int(s.n)}${s.estimated ? html` <span class="muted small">(${int(s.estimated)} estimated)</span>` : ''}</td>
+    <td data-label="Average">${s.n ? cents(s.avg) : '–'}</td><td data-label="Median">${s.n ? cents(s.median) : '–'}</td><td data-label="90% under">${s.n ? cents(s.p90) : '–'}</td><td data-label="Total">${usd(s.total)}</td></tr>`;
   const est = c.all.estimated;
   return html`
-  <h2 class="stats-h">Cost per Builder message, last ${c.days} days</h2>
+  <h2 class="stats-h" id="st-cost">Cost per Builder message, last ${c.days} days</h2>
   <div class="kpis">
     ${tile('💵 Average per message', c.all.n ? cents(c.all.avg) : '–', c.all.n ? `median ${cents(c.all.median)} · ${int(c.all.n)} messages` : 'no AI-built messages yet')}
     ${tile('📨 Messages per day', fmtNum(Math.round(c.perDay * 10) / 10), `${fmtNum(Math.round(c.perDay7 * 10) / 10)} a day over the last 7 days`)}
@@ -581,20 +605,20 @@ function costSection(c) {
     ${tile('📆 Free messages per day', c.perDayCap === null ? '–' : int(c.perDayCap), `what the ${usd(c.daily)} daily cap pays for`)}
     ${tile('📈 This month at this pace', usd(c.projectedMonth), `free AI spend for 30 days · budget ${usd(c.monthly)}`, c.projectedMonth > c.monthly ? 'warn' : '')}
   </div>
-  <section class="panel stats-cost"><div class="tblwrap"><table class="tbl"><thead><tr><th>Quality</th><th>Messages</th><th>Average</th><th>Median</th><th>90% under</th><th>Total</th></tr></thead><tbody>
+  <section class="panel stats-cost"><div class="tblwrap"><table class="tbl atable inl"><thead><tr><th>Quality</th><th>Messages</th><th>Average</th><th>Median</th><th>90% under</th><th>Total</th></tr></thead><tbody>
     ${row('Normal', c.normal)}${row('Pro', c.pro)}${row('All', c.all)}</tbody></table></div>
-    <p class="small muted">A message is one Builder build the AI ran, counted on the day it was charged (refunded builds too: their AI calls were paid).
+    ${foldNote('How the cost is counted', html`A message is one Builder build the AI ran, counted on the day it was charged (refunded builds too: their AI calls were paid).
     Its cost is what its own model calls cost; screening, picture checks, reviews and lesson help are the "other AI use"
     (${usd(c.otherUsd)} of ${usd(c.spentUsd)} free AI spend over these days), taken off the monthly budget at the same pace
     before dividing by the average cost.${est ? ` ${int(est)} older builds have no stored cost: they are estimated from their token counts.` : ''}
-    Builder rows are kept 35 days.</p>
+    Builder rows are kept 35 days.`, 'wideopen')}
   </section>`;
 }
 /** Active people (services/admin-analytics.js activeCounts): distinct real accounts used per UTC day (user_days). */
 function activeSection(a) {
   const ch = a.wauBefore ? Math.round((a.wau - a.wauBefore) / a.wauBefore * 100) : null;
   return html`
-  <h2 class="stats-h">Active people</h2>
+  <h2 class="stats-h" id="st-active">Active people</h2>
   <div class="kpis">
     ${tile('🟢 Daily active (DAU)', int(a.dau), 'accounts used today')}
     ${tile('📅 Weekly active (WAU)', int(a.wau), ch === null ? 'last 7 days' : `last 7 days · ${ch > 0 ? '+' : ch < 0 ? '−' : ''}${Math.abs(ch)}% on the week before (${int(a.wauBefore)})`)}
@@ -616,11 +640,11 @@ function funnelSection(r) {
   <h2 class="stats-h" id="funnels">Funnels, last 7 days vs the 7 before</h2>
   <div class="stats-grid stats-funnels">
     ${r.funnels.map(f => html`<section class="panel" aria-labelledby="funnel-${f.key}"><h2 id="funnel-${f.key}">${f.title}</h2>
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>Step</th><th title="${range(r.last)}">Last 7 days</th><th title="${range(r.prev)}">Week before</th><th>Change</th>${f.guardrail || f.tally ? '' : html`<th>Of step before</th>`}</tr></thead><tbody>
-        ${f.steps.map((s, i) => html`<tr><td>${s.label}</td><td>${int(s.last)}</td><td>${int(s.prev)}</td><td>${changeCell(s, f.guardrail)}</td>${f.guardrail || f.tally ? '' : html`<td>${i === 0 ? '' : s.rate === null ? '–' : `${s.rate}%`}</td>`}</tr>`)}
+      <div class="tblwrap"><table class="tbl atable inl"><thead><tr><th>Step</th><th title="${range(r.last)}">Last 7 days</th><th title="${range(r.prev)}">Week before</th><th>Change</th>${f.guardrail || f.tally ? '' : html`<th>Of step before</th>`}</tr></thead><tbody>
+        ${f.steps.map((s, i) => html`<tr><td>${s.label}</td><td data-label="Last 7 days">${int(s.last)}</td><td data-label="Week before">${int(s.prev)}</td><td data-label="Change">${changeCell(s, f.guardrail)}</td>${f.guardrail || f.tally ? '' : html`<td data-label="Of step before">${i === 0 ? '' : s.rate === null ? '–' : `${s.rate}%`}</td>`}</tr>`)}
       </tbody></table></div></section>`)}
   </div>
-  <p class="small muted">Daily totals counted on the server where each step happens (no cookies, no trackers, no ids:
+  ${foldNote('How the funnels are counted', html`Daily totals counted on the server where each step happens (no cookies, no trackers, no ids:
   one number per step per day, so steps compare totals, not the same people). Page views are the parent pages
   (/parents and its guides) and the teacher pages (/teachers, /plans/schools), counted like visits. Paid and
   School plan: a subscription's first invoice once it is paid (an invoiced school counts when it pays, not when the
@@ -629,7 +653,7 @@ function funnelSection(r) {
   visitors and guests see on the home page, and on the top bar's "▶ Play now" (each click counted by a beacon to
   /go/&lt;door&gt; on its way; older links through /go/&lt;door&gt; count and redirect; robots are left out). Who's this for: the choice on Start free (/signup) before the kid form, counted the
   same way through /signup/for/&lt;choice&gt; (a guest keeping their progress and a kid on their way to a page skip it). Counting started
-  with this update, so the first two weeks read low. Days are UTC.</p>`;
+  with this update, so the first two weeks read low. Days are UTC.`, 'wideopen')}`;
 }
 const gameLink = g => html`<a href="/g/${g.slug}">${g.icon} ${g.title}</a>${g.source === 'seed' ? html` <span class="chip-s">launch</span>` : ''}`;
 
@@ -643,8 +667,9 @@ router.get('/admin/stats', (req, res) => {
   const body = html`
   <div class="pagehead"><h1>📊 Stats</h1><nav class="seg" aria-label="Time range">${[7, 30, 90].map(d => html`<a href="/admin/stats?days=${d}" ${d === days ? raw('aria-current="page"') : ''}>${d} days</a>`)}</nav></div>
   <p class="muted small">All times are UTC. Visits count page loads by people (no bots, no tracking: one daily total per page area, and each visitor once a day).</p>
+  ${jumpNav([['st-today', 'Today'], ['st-active', 'Active'], ['st-cost', 'Cost'], ['funnels', 'Funnels'], ['st-days', `Last ${days} days`], ['st-top', 'Top lists']])}
 
-  <h2 class="stats-h">Today and this week</h2>
+  <h2 class="stats-h" id="st-today">Today and this week</h2>
   <div class="kpis">
     ${tile('👀 Visitors today', int(k.visits.visitorsToday), `${int(k.visits.viewsToday)} page views · ${int(k.visits.visitorsWeek)} visitor-days this week`)}
     ${tile('👤 Accounts', int(k.users.accounts), `+${int(k.users.newToday)} today · +${int(k.users.newWeek)} this week`)}
@@ -662,7 +687,7 @@ router.get('/admin/stats', (req, res) => {
   ${costSection(cost)}
   ${funnelSection(funnel.weekly())}
 
-  <h2 class="stats-h">Last ${days} days</h2>
+  <h2 class="stats-h" id="st-days">Last ${days} days</h2>
   <div class="charts">
     ${barChart({ title: 'Active people', rows: activeRows, key: 'active', unit: 'people', total: false, tip: r => `${int(r.active)} people used their account` })}
     ${barChart({ title: 'Visitors', rows, key: 'visitors', unit: 'visitors', total: false, tip: r => `${int(r.visitors)} visitors, ${int(r.views)} page views` })}
@@ -674,40 +699,41 @@ router.get('/admin/stats', (req, res) => {
     ${barChart({ title: 'AI tokens', rows: rows.map(r => ({ ...r, tokens: r.tokensIn + r.tokensOut })), key: 'tokens', fmt: fmtNum, unit: 'tokens', tip: r => `${int(r.tokensIn)} in, ${int(r.tokensOut)} out` })}
   </div>
 
+  <h2 class="stats-h" id="st-top">Top lists</h2>
   <div class="stats-grid">
     <section class="panel"><h2>🔥 Most played, last 7 days</h2>
-      ${top7.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Game</th><th>Plays</th><th>Players</th><th>Minutes</th></tr></thead><tbody>
-        ${top7.map(g => html`<tr><td>${gameLink(g)}</td><td>${int(g.plays)}</td><td>${int(g.players)}</td><td>${int(g.minutes)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet this week.</p>`}
+      ${top7.length ? html`<div class="tblwrap"><table class="tbl atable inl n3"><thead><tr><th>Game</th><th>Plays</th><th>Players</th><th>Minutes</th></tr></thead><tbody>
+        ${top7.map(g => html`<tr><td>${gameLink(g)}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="Players">${int(g.players)}</td><td data-label="Minutes">${int(g.minutes)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet this week.</p>`}
     </section>
     <section class="panel"><h2>🏆 All-time favourites</h2>
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>Game</th><th>Plays</th><th>❤️</th><th>★</th></tr></thead><tbody>
-        ${topAll.map(g => html`<tr><td>${gameLink(g)}</td><td>${int(g.plays)}</td><td>${int(g.likes)}</td><td>${g.rating ? html`${g.rating} <span class="muted small">(${g.rating_count})</span>` : '–'}</td></tr>`)}</tbody></table></div>
+      <div class="tblwrap"><table class="tbl atable inl n3"><thead><tr><th>Game</th><th>Plays</th><th>❤️</th><th>★</th></tr></thead><tbody>
+        ${topAll.map(g => html`<tr><td>${gameLink(g)}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="❤️">${int(g.likes)}</td><td data-label="★">${g.rating ? html`${g.rating} <span class="muted small">(${g.rating_count})</span>` : '–'}</td></tr>`)}</tbody></table></div>
     </section>
     <section class="panel"><h2>🛠️ Top builders</h2>
-      ${builders.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Builder</th><th>Games</th><th>Live</th><th>Plays</th></tr></thead><tbody>
-        ${builders.map(b => html`<tr><td>${b.account_type === 'grownup' ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">🧑 ${b.display_name}</a> <span class="muted small">(grown-up)</span>` : html`<a href="/u/${b.username}">${b.avatar} ${b.display_name}</a>`}</td><td>${int(b.games)}</td><td>${int(b.live)}</td><td>${int(b.plays)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">Nobody has built a game yet.</p>`}
+      ${builders.length ? html`<div class="tblwrap"><table class="tbl atable inl n3"><thead><tr><th>Builder</th><th>Games</th><th>Live</th><th>Plays</th></tr></thead><tbody>
+        ${builders.map(b => html`<tr><td>${b.account_type === 'grownup' ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">🧑 ${b.display_name}</a> <span class="muted small">(grown-up)</span>` : html`<a href="/u/${b.username}">${b.avatar} ${b.display_name}</a>`}</td><td data-label="Games">${int(b.games)}</td><td data-label="Live">${int(b.live)}</td><td data-label="Plays">${int(b.plays)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">Nobody has built a game yet.</p>`}
     </section>
     <section class="panel"><h2>🧭 Where people go, last 7 days</h2>
       ${areas.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Page area</th><th>Views</th></tr></thead><tbody>
         ${areas.map(a => html`<tr><td>${AREA_LABELS[a.area] || a.area}</td><td>${int(a.views)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No visits counted yet. Counting started with this update.</p>`}
     </section>
     <section class="panel"><h2>🤖 AI by model, last 30 days</h2>
-      ${models.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Model</th><th>Calls</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th></tr></thead><tbody>
-        ${models.map(m => html`<tr><td><code>${m.model}</code></td><td>${int(m.calls)}</td><td>${fmtNum(m.input + m.cache_read + m.cache_write)}</td><td>${fmtNum(m.output)}</td><td>${usd(m.usd)}</td></tr>`)}</tbody></table></div>
+      ${models.length ? html`<div class="tblwrap"><table class="tbl atable inl"><thead><tr><th>Model</th><th>Calls</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th></tr></thead><tbody>
+        ${models.map(m => html`<tr><td><code>${m.model}</code></td><td data-label="Calls">${int(m.calls)}</td><td data-label="Tokens in">${fmtNum(m.input + m.cache_read + m.cache_write)}</td><td data-label="Tokens out">${fmtNum(m.output)}</td><td data-label="Cost">${usd(m.usd)}</td></tr>`)}</tbody></table></div>
         <p class="small muted">Tokens in include cached prompt tokens. Token counts started with this update; costs before it are in the AI cost chart.</p>` : html`<p class="muted">No AI calls recorded yet.</p>`}
     </section>
     <section class="panel"><h2>🙋 Most active, last 7 days</h2>
-      ${busy.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Person</th><th>Days</th><th>Plays</th><th>AI msgs</th></tr></thead><tbody>
-        ${busy.map(b => html`<tr><td><a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">${b.display_name}</a> <span class="muted small">(${AU.TYPE_LABEL[b.type].toLowerCase()})</span></td><td>${int(b.days)}</td><td>${int(b.plays)}</td><td>${int(b.ai)}</td></tr>`)}</tbody></table></div>
+      ${busy.length ? html`<div class="tblwrap"><table class="tbl atable inl n3"><thead><tr><th>Person</th><th>Days</th><th>Plays</th><th>AI msgs</th></tr></thead><tbody>
+        ${busy.map(b => html`<tr><td><a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">${b.display_name}</a> <span class="muted small">(${AU.TYPE_LABEL[b.type].toLowerCase()})</span></td><td data-label="Days">${int(b.days)}</td><td data-label="Plays">${int(b.plays)}</td><td data-label="AI msgs">${int(b.ai)}</td></tr>`)}</tbody></table></div>
         <p class="small muted"><a href="/admin?tab=people&amp;active=7d&amp;sort=days">Everyone active this week</a></p>` : html`<p class="muted">Nobody has used their account this week.</p>`}
     </section>
     <section class="panel"><h2>🆕 Newest accounts</h2>
-      ${fresh.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Player</th><th>Joined</th><th>Last seen</th></tr></thead><tbody>
-        ${fresh.map(u => html`<tr><td>${u.account_type === 'grownup' ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">🧑 ${u.display_name}</a>` : html`<a href="/u/${u.username}">${u.avatar} ${u.display_name}</a>`}</td><td>${timeAgo(u.created_at)}</td><td>${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No accounts yet.</p>`}
+      ${fresh.length ? html`<div class="tblwrap"><table class="tbl atable inl"><thead><tr><th>Player</th><th>Joined</th><th>Last seen</th></tr></thead><tbody>
+        ${fresh.map(u => html`<tr><td>${u.account_type === 'grownup' ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">🧑 ${u.display_name}</a>` : html`<a href="/u/${u.username}">${u.avatar} ${u.display_name}</a>`}</td><td data-label="Joined">${timeAgo(u.created_at)}</td><td data-label="Last seen">${u.last_seen ? timeAgo(u.last_seen) : 'never'}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No accounts yet.</p>`}
       <p class="small muted">${int(k.users.guests)} guest players in total, +${int(k.users.guestsWeek)} this week. ${int(k.users.banned)} banned.</p>
     </section>
   </div>`;
-  page(req, res, { title: 'Stats', active: 'me', body, head: raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">'), scripts: ['/js/admin-stats.js'], back: '/admin', backLabel: 'Admin' });
+  page(req, res, { title: 'Stats', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin-stats.js', '/js/admin.js'], back: '/admin', backLabel: 'Admin' });
 });
 
 // ---- Billing (read-only, chunk 4): subscriptions with their flags, recent webhook events and failures, unlinked
@@ -784,63 +810,64 @@ router.get('/admin/billing', (req, res) => {
     ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
     ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
   </div>
-  <section class="panel"><h2>Subscriptions</h2>
-    <form method="get" action="/admin/billing" class="row" role="search">
-      ${sel('status', status, [['', 'Any status'], ['entitled', 'Entitled now'], ...SUB_STATUSES.map(x => [x, x])])}
-      ${sel('flag', flag, [['', 'Any or no flag'], ['any', 'Flagged'], ...Object.entries(BILLING_FLAGS)])}
-      <button class="btn" type="submit">Filter</button></form>
-    ${subs.length ? html`<div class="tblwrap"><table class="tbl small" style="margin-top:12px"><thead><tr><th>Owner</th><th>Plan</th><th>Status</th><th>Period end</th><th>Last payment</th><th>Refund window</th><th>Flag</th><th>Stripe</th></tr></thead><tbody>
-      ${subs.map(r => { const rw = billing.refundWindow(r); return html`<tr>
-        <td>${ownerCell(r)}</td>
-        <td>${r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}${r.plan === 'school' ? html`<div class="small muted">${r.collection_method === 'send_invoice' ? 'invoice' : 'card'} · pool ${r.pool_quantity || 0} paid${r.next_quantity ? ` · next year ${r.next_quantity}` : ''}</div>` : ''}</td>
-        <td>${r.status}${billing.entitledRow(r) ? ' ✅' : ''}${r.cancel_at_period_end ? ' · ends at period end' : ''}${r.grace_until ? ` · grace to ${day(r.grace_until)}` : ''}${r.payment_pending ? ' · payment pending' : ''}${r.orphaned_at ? ' · not at Stripe' : ''}</td>
-        <td>${day(r.current_period_end)}</td>
-        <td>${r.latest_paid_at ? html`${day(r.latest_paid_at)} · $${((r.latest_amount_paid || 0) / 100).toFixed(2)}${r.latest_billing_reason ? html` <span class="muted">(${r.latest_billing_reason.replace('subscription_', '')})</span>` : ''}` : '–'}</td>
-        <td>${rw ? `open until ${day(rw)}` : '–'}</td>
-        <td>${r.flag ? html`<span class="chip-s bad">${BILLING_FLAGS[r.flag] || r.flag}</span>` : ''}${r.risk_payment_intent ? html` <a href="${dash(`payments/${r.risk_payment_intent}`)}" rel="noopener noreferrer" target="_blank">Refund in Stripe</a>` : ''}</td>
-        <td><a href="${dash(`subscriptions/${r.stripe_subscription_id}`)}" rel="noopener noreferrer" target="_blank"><code>${r.stripe_subscription_id}</code></a></td></tr>`; })}
-    </tbody></table></div>` : html`<p class="muted">No subscriptions${status || flag ? ' match' : ' yet'}.</p>`}
-    <p class="small muted">Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.</p>
-  </section>
-  ${sparkSection()}
+  ${jumpNav([['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['sparks', 'Spark Packs', sparks.recentPacks(50).length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
   <section class="panel" id="requests"><h2>School invoice requests</h2>
     ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
       <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}</p>
-      <div class="tblwrap"><table class="tbl small"><tbody>
+      <div class="tblwrap"><table class="tbl small afacts"><tbody>
         <tr><th scope="row">PO number</th><td>${r.po || '–'}</td></tr>
         <tr><th scope="row">Billing contact</th><td>${r.contact_name || '–'} · <span dir="ltr">${r.contact_email || '–'}</span></td></tr>
         <tr><th scope="row">Billing address</th><td>${[r.address.line1, r.address.line2, r.address.city, r.address.state, r.address.postal_code, r.address.country].filter(Boolean).join(', ') || '–'}</td></tr>
         <tr><th scope="row">Tax-exempt</th><td>${r.tax_exempt_claimed ? 'they say so: wait for the exemption certificate before ticking the box below' : 'no'}</td></tr>
         ${r.note ? html`<tr><th scope="row">Note</th><td>${r.note}</td></tr>` : ''}
       </tbody></table></div>
-      <form class="row" data-api="/api/admin/billing/requests/${r.id}/invoice-subscription" data-reload data-toast="Invoice subscription created. Stripe sends the invoice to the contact." data-confirm="Create a yearly invoice subscription (net 30) for ${r.school_name}?" style="margin-top:12px">
-        <label for="seats-${r.id}">Students</label><input class="input" id="seats-${r.id}" name="seats" type="number" min="${config.schoolMinSeats}" step="1" value="${r.seats}" style="max-width:8em">
+      <form class="row binv" data-api="/api/admin/billing/requests/${r.id}/invoice-subscription" data-reload data-toast="Invoice subscription created. Stripe sends the invoice to the contact." data-confirm="Create a yearly invoice subscription (net 30) for ${r.school_name}?" style="margin-top:12px">
+        <span class="binv-seats"><label for="seats-${r.id}">Students</label><input class="input" id="seats-${r.id}" name="seats" type="number" min="${config.schoolMinSeats}" step="1" value="${r.seats}" style="max-width:8em"></span>
         <label class="checkline"><input type="checkbox" name="exempt" value="1"> <span>Exemption certificate received: mark the customer tax-exempt</span></label>
         <button class="btn btn-primary" type="submit">Create invoice subscription</button></form>
       <form data-api="/api/admin/billing/requests/${r.id}/close" data-reload data-confirm="Close this request without an invoice?" style="margin-top:8px"><button class="btn btn-sm" type="submit">Close without invoice</button></form>
     </div>`)}</div>
-    <p class="small muted">Create invoice subscription: the school's Stripe Customer gets the school's name, the contact's email (Stripe emails the invoice there), the address and the PO number; then a yearly send_invoice subscription, due in 30 days${config.stripeTax ? ', with Stripe Tax' : ''}. How a school may pay an invoice (card, ACH, bank transfer) is set in the Stripe Dashboard.</p>` : html`<p class="muted">No open requests.</p>`}
+    ${foldNote('About invoice subscriptions', html`Create invoice subscription: the school's Stripe Customer gets the school's name, the contact's email (Stripe emails the invoice there), the address and the PO number; then a yearly send_invoice subscription, due in 30 days${config.stripeTax ? ', with Stripe Tax' : ''}. How a school may pay an invoice (card, ACH, bank transfer) is set in the Stripe Dashboard.`)}` : html`<p class="muted">No open requests.</p>`}
   </section>
   <section class="panel" id="unpaid"><h2>Unpaid school invoices</h2>
-    ${unpaid.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>School</th><th>Invoice</th><th>Amount</th><th>Due</th><th></th></tr></thead><tbody>
+    ${unpaid.length ? html`<div class="tblwrap"><table class="tbl small atable"><thead><tr><th>School</th><th>Invoice</th><th>Amount</th><th>Due</th><th></th></tr></thead><tbody>
       ${unpaid.map(i => html`<tr><td>${ownerCell(i.row)}${i.row.flag === 'overdue' ? html` <span class="chip-s bad">overdue</span>` : ''}</td>
-        <td><a href="${dash(`invoices/${i.id}`)}" rel="noopener noreferrer" target="_blank"><code>${i.number || i.id}</code></a> · <a href="${dash(`customers/${i.row.stripe_customer_id}`)}" rel="noopener noreferrer" target="_blank">customer (cash balance)</a></td>
-        <td>$${((i.amount_due || 0) / 100).toFixed(2)}</td><td>${day(i.due_date)}</td>
-        <td><form data-api="/api/admin/billing/invoices/${i.id}/paid-by-check" data-reload data-toast="Marked paid." data-confirm="Mark invoice ${i.number || i.id} as paid by check?"><button class="btn btn-sm" type="submit">Mark paid by check</button></form></td></tr>`)}
+        <td data-label="Invoice" class="full"><a href="${dash(`invoices/${i.id}`)}" rel="noopener noreferrer" target="_blank"><code>${i.number || i.id}</code></a> · <a href="${dash(`customers/${i.row.stripe_customer_id}`)}" rel="noopener noreferrer" target="_blank">customer (cash balance)</a></td>
+        <td data-label="Amount">$${((i.amount_due || 0) / 100).toFixed(2)}</td><td data-label="Due">${day(i.due_date)}</td>
+        <td class="acell"><form data-api="/api/admin/billing/invoices/${i.id}/paid-by-check" data-reload data-toast="Marked paid." data-confirm="Mark invoice ${i.number || i.id} as paid by check?"><button class="btn btn-sm" type="submit">Mark paid by check</button></form></td></tr>`)}
     </tbody></table></div><p class="small muted">An invoice school stays on its plan until ${config.schoolInvoiceGraceDays} days after the due date. A bank transfer that doesn't match the invoice waits in the customer's cash balance until you apply it in Stripe.</p>` : html`<p class="muted">None.</p>`}
   </section>
-  <section class="panel"><h2>Event problems</h2>
-    ${problems.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
-      ${problems.map(e => html`<tr><td>${when(e.received_at)}</td><td><code>${e.type}</code> <span class="muted">${e.event_id}</span></td><td>${e.result || 'not finished'}</td><td>${e.stripe_customer_id || '–'}</td><td>${e.stripe_subscription_id || '–'}</td></tr>`)}
-    </tbody></table></div><p class="small muted">"unlinked": a subscription of a Stripe Customer we don't know (made in the Dashboard?). Linking it to a family or school comes with the next billing update; until then it entitles nobody.</p>` : html`<p class="muted">None.</p>`}
+  <section class="panel" id="b-subs"><h2>Subscriptions</h2>
+    <form method="get" action="/admin/billing" class="row bfilter" role="search">
+      ${sel('status', status, [['', 'Any status'], ['entitled', 'Entitled now'], ...SUB_STATUSES.map(x => [x, x])])}
+      ${sel('flag', flag, [['', 'Any or no flag'], ['any', 'Flagged'], ...Object.entries(BILLING_FLAGS)])}
+      <button class="btn" type="submit">Filter</button></form>
+    ${subs.length ? html`<div class="tblwrap"><table class="tbl small atable wide" style="margin-top:12px"><thead><tr><th>Owner</th><th>Plan</th><th>Status</th><th>Period end</th><th>Last payment</th><th>Refund window</th><th>Flag</th><th>Stripe</th></tr></thead><tbody>
+      ${subs.map(r => { const rw = billing.refundWindow(r); return html`<tr>
+        <td>${ownerCell(r)}</td>
+        <td data-label="Plan">${r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}${r.plan === 'school' ? html`<div class="small muted">${r.collection_method === 'send_invoice' ? 'invoice' : 'card'} · pool ${r.pool_quantity || 0} paid${r.next_quantity ? ` · next year ${r.next_quantity}` : ''}</div>` : ''}</td>
+        <td data-label="Status">${r.status}${billing.entitledRow(r) ? ' ✅' : ''}${r.cancel_at_period_end ? ' · ends at period end' : ''}${r.grace_until ? ` · grace to ${day(r.grace_until)}` : ''}${r.payment_pending ? ' · payment pending' : ''}${r.orphaned_at ? ' · not at Stripe' : ''}</td>
+        <td data-label="Period end">${day(r.current_period_end)}</td>
+        <td data-label="Last payment">${r.latest_paid_at ? html`${day(r.latest_paid_at)} · $${((r.latest_amount_paid || 0) / 100).toFixed(2)}${r.latest_billing_reason ? html` <span class="muted">(${r.latest_billing_reason.replace('subscription_', '')})</span>` : ''}` : '–'}</td>
+        <td data-label="Refund window">${rw ? `open until ${day(rw)}` : '–'}</td>
+        <td data-label="Flag">${r.flag ? html`<span class="chip-s bad">${BILLING_FLAGS[r.flag] || r.flag}</span>` : ''}${r.risk_payment_intent ? html` <a href="${dash(`payments/${r.risk_payment_intent}`)}" rel="noopener noreferrer" target="_blank">Refund in Stripe</a>` : ''}</td>
+        <td data-label="Stripe" class="full"><a href="${dash(`subscriptions/${r.stripe_subscription_id}`)}" rel="noopener noreferrer" target="_blank"><code>${r.stripe_subscription_id}</code></a></td></tr>`; })}
+    </tbody></table></div>` : html`<p class="muted">No subscriptions${status || flag ? ' match' : ' yet'}.</p>`}
+    ${foldNote('Refund rules', html`Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.`)}
+  </section>
+  ${sparkSection()}
+  <section class="panel" id="b-problems"><h2>Event problems</h2>
+    ${problems.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
+      ${problems.map(e => html`<tr><td data-label="When">${when(e.received_at)}</td><td class="at"><code>${e.type}</code> <span class="muted">${e.event_id}</span></td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Customer" class="full">${e.stripe_customer_id || '–'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
+    </tbody></table></div>${foldNote('What "unlinked" means', html`"unlinked": a subscription of a Stripe Customer we don't know (made in the Dashboard?). Linking it to a family or school comes with the next billing update; until then it entitles nobody.`)}` : html`<p class="muted">None.</p>`}
     ${orphaned.length ? html`<p>Subscriptions Stripe no longer knows: ${orphaned.map(r => html`<code>${r.stripe_subscription_id}</code> `)}</p>` : ''}
   </section>
-  <section class="panel"><h2>Recent webhook events</h2>
-    ${events.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>When</th><th>Event</th><th>Mode</th><th>Result</th><th>Subscription</th></tr></thead><tbody>
-      ${events.map(e => html`<tr><td>${when(e.received_at)}</td><td><code>${e.type}</code></td><td>${e.livemode ? 'live' : 'test'}</td><td>${e.result || 'not finished'}</td><td>${e.stripe_subscription_id || '–'}</td></tr>`)}
+  <section class="panel" id="b-webhooks"><h2>Recent webhook events</h2>
+    ${events.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Event</th><th>Mode</th><th>Result</th><th>Subscription</th></tr></thead><tbody>
+      ${events.map(e => html`<tr><td data-label="When">${when(e.received_at)}</td><td class="at"><code>${e.type}</code></td><td data-label="Mode">${e.livemode ? 'live' : 'test'}</td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
     </tbody></table></div>` : html`<p class="muted">No webhook events yet.</p>`}
   </section>`;
-  page(req, res, { title: 'Billing', active: 'me', body, head: raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">'), back: '/admin', backLabel: 'Admin' });
+  page(req, res, { title: 'Billing', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin', backLabel: 'Admin' });
 });
 
 // ---- APIs ----
