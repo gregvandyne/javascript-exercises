@@ -222,6 +222,8 @@ test('leaving early counts nothing; a signed-in finish stores exactly once', asy
   await signup(page);
   await page.goto(EP_URL);
   await playToEnd(page);
+  // the end card shows as the finish is posted: its answer can come a moment later
+  await expect.poll(() => completes.length, { timeout: 15_000 }).toBe(1);
   expect(completes).toHaveLength(1);
   expect(completes[0]).toMatchObject({ ok: true, stored: true, already: false });
   await page.click('#mv-again');
