@@ -7,6 +7,7 @@ One line each: the choice, then why. **Bold = please confirm** (product calls th
 - New Render service `magic-cup` (https://magic-cup.onrender.com) replaces `brb-gaming`: Render can't change an existing service's onrender.com subdomain. — Owner asked for the onrender domain to change too.
 - **Name: "BRB Gaming"** (was "Playloom"). SDK global is `window.BRB`, messages are `brb:*`, env vars are `BRB_*`, official account is `BRBGaming`. — Owner asked to rename.
 - **Friends-only chat added** (brief said no chat). Text chat only between accepted friends (added by friend code), both with real accounts, filtered for profanity and personal info (phones, emails, links, addresses, "add me on snap"), quick-chat phrase chips for young kids, rate limits + daily cap, block, report → admin queue, grown-ups can switch chat off on the Me page. No public, group or stranger chat. — Owner asked for a way for users to chat; this is the safest version that meets it.
+- **Every public game is approved by a person on the Oomba team; admins see new sign-ups and can message users** (Nov 2026). See "Admin approval before a game goes public", "Admin messages: the Oomba team inbox" and "Admin: New users" at the end. — Owner: "before a game is published to the live site it needs to go through admin approval", "see all new users", "chat all users".
 - **Updating published games is first-class.** The Studio shows "Live: vN · Editing: vM" and an "Update live game" button; for Public games the update is reviewed while players keep the old version (`games.pending_version_id`). — Owner asked that builders can update games they already published.
 - **Inspiration uploads in the Studio** (photos, drawings, text files, PDFs). They are private to the builder and admins, metadata such as photo GPS is stripped, and images are screened when an API key is set. They are given to the Builder as reference only and never copied into games, so no real photos of kids end up in public games. — Owner asked for uploads for inspiration.
 - Home hero shows only the featured game; "Make your own game" is its own banner below the Featured rail. — Owner feedback: mixing them in one card was confusing.
@@ -2700,3 +2701,70 @@ once it is made (docs/story-builder.md "Choices" and "Changing a story").
   which survives deleting the story (deleting doesn't refund a rewrite) and goes with the account.
 - **Sharing.** A kid's shared or waiting story goes back to "waiting for OK" when a new version replaces it: the
   grown-up approved the old words. A grown-up's shared story stays shared. Only the owner can change a story.
+
+## Admin approval before a game goes public (Nov 2026)
+Owner: "before a game is published to the live site it needs to go through admin approval. Users can still share with
+themselves and friends, but not publish on live site without Oomba admin."
+- **Only a person makes a game public.** `publish()` (server/services/publish.js) never moves a version to `public`
+  without a platform admin's approval. The model review still runs first when a key is set: "needs changes" / "blocked"
+  sends the game back at once (no person is needed to say no), and "allowed" is kept on the version as a hint for the
+  admin ("Model pre-check" in the queue). An older model approval (from before this) still covers family, class and school
+  sharing, never public (`approvalScope`). Group sharing (family / class / school) is unchanged.
+- **Waiting for review.** A game that isn't live yet and is published for Everyone goes live **for the builder's friends
+  at once** (a grown-up's: their grown-up connections) and waits for the team (`pending_visibility='public'`). Friends
+  sharing was already instant at any time; doing it here saves a second step and keeps the public request (choosing
+  Friends afterwards withdraws it, as before). The Studio shows "⏳ Waiting for review" and that someone on the team checks
+  every game; the builder keeps playing, sharing with friends and editing. **Please confirm** this friends-at-once step.
+- **Editing after approval: the approved version stays live** until the new version is approved (the existing
+  `pending_version_id` path). It is the safer of the two options (strangers only ever see a version a person approved)
+  and the kinder one (an update never takes a public game down). Re-approving the exact same version is not needed when
+  the visibility goes back to public (same bytes, same verdict).
+- **Every public surface follows from this.** Home, search, explore, featured, the sitemap, `/g` and `/play` for
+  strangers, share images and live rooms all read `visibility='public' AND status='published'` (`visibleWhere(null)`,
+  `canView`), and only an approval writes that, so nothing else needed changing. There is no remix or fork feature today;
+  a game started from a template or another game is a new game and goes through the same queue.
+- **Sending back.** Preset, kid-friendly reasons (`review.reasons.*`, translated; `games.review_reason`) plus an optional
+  note the admin types (shown as typed, like before). The builder gets a notice from the Oomba team in their inbox when
+  a game is approved or sent back, and the Studio shows the reason.
+- **Grandfathering** (migration `0055_admin_review`): the version every game public at upgrade time plays is marked as
+  approved by the team for everyone (`review_report.by='admin'`, `for='public'`, `grandfathered=1`, the earlier reviewer in
+  `was`). Nothing public is taken down. Official seed games (`scripts/import-game.js`, `by: 'seed-import'`) count as approved.
+- **The queue.** Admin › Review queue (and a "⏳ Review" button with the count in the admin header; the count is also on the
+  admin's Me tab), with the preview, scan, model hint, who made it and what it is waiting for.
+
+## Admin messages: the Oomba team inbox (Nov 2026)
+Owner: "They should also be able to chat all users." Read as: an admin can write to anyone, and send an announcement to
+everyone (or a group).
+- **One inbox, not a second system.** Team messages are rows in `chat_messages` between a person and the official account
+  (`OombaAcademy`), shown as "Oomba team ✓" at `/chat/OombaAcademy` and on top of the chat inbox; the unread count joins
+  the Friends badge (grown-ups: the Family badge and a link on /family; this thread is their only chat, and `/chat`
+  itself stays closed to them). `chat_messages.sent_by` records which admin wrote; nobody signs in as the official account. Admin › Team inbox
+  lists the conversations; the admin writes from `/admin/messages/<username>` ("Message" on a user).
+- **Children (the rule in "Owner requests": no stranger chat, adults and kids are never friends).** The team is adults,
+  so a direct message to a child is allowed only when a grown-up sees it: each team message to a child, and each reply,
+  is copied at once into the team thread of their linked family grown-up and, for school students, their school's
+  admins; the message to the child is in the audit log with its text. **A child with nobody to copy can't be messaged
+  directly** (announcements and automatic notices only) and can't write to the team. A child's reply uses the
+  friends-chat filters, pause and burst limit, plus a daily cap. The page tells the child their grown-up can see it.
+  **Please confirm**: most self-signed-up kids have no linked grown-up, so for them the team has announcements only.
+- **Announcements**: everyone, kids, grown-ups, teachers and school staff, or one school (never guests, banned accounts or
+  the team account). Step 1 shows how many people it reaches and returns a confirm code bound to the audience and the
+  words; step 2 sends it. At most one every 10 minutes and 5 a day for the whole site; each is audited and kept in
+  `announcements` (one 'announce' message per person, so it has the usual unread and report). Not copied to parents
+  (the same words go to everyone).
+- Rate limits: an admin's direct messages 30 per 10 minutes. Team messages can be reported like any message; nobody can
+  block the team (it is how we tell builders about their games).
+
+## Admin: New users (Nov 2026)
+Owner: "see all new users added to the platform so I can better monitor usage."
+- **This replaces "no browsing of players" for admins.** Admin › New users lists every real account newest first:
+  display name and username, account type (kid, grown-up, teacher, school staff, platform admin), joined (UTC), how
+  (signed up, made by a grown-up, school account, Google), the linked grown-up or school, last active, games made /
+  public / waiting, plays of their games and games they played, and active or suspended. Filters: type, today / 7 / 30
+  days / all, search by name; 50 a page; a sign-ups-per-day sparkline (30 days) with tiles; CSV export (same filters, at
+  most 5,000 rows, cells starting with = + - @ are prefixed so a spreadsheet never runs them; every export is audited).
+  Each row opens the Users tab, which now also lists the person's games, report counts, their audit entries and a
+  Message button.
+- **Privacy**: only what the Users tab already showed: never a password, token, session, friend code or IP; for a child
+  only names, who looks after them and counts. Guests are left out. Admin pages stay English (like the rest of /admin).
+

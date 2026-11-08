@@ -164,7 +164,10 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // Staff have no Friends tab: friend requests and unread chat count on Me (/me links to /friends).
   if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
   // Grown-ups have no Friends tab (and no chat): connection requests count on Family (/family links to them).
-  if (grownup) badges.family = badges.requests || 0;
+  // Their only chat is the Oomba team thread (/chat/OombaAcademy, linked from /family): its unread messages count there too.
+  if (grownup) badges.family = (badges.requests || 0) + (badges.unread || 0);
+  // The platform admin: games waiting for the team's review count on Me (the way to /admin).
+  if (u && u.role === 'admin' && badges.review) badges.me = (badges.me || 0) + badges.review;
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
   const playNow = out ? html`<a class="btn btn-hot playnow" href="${(req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play'}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';

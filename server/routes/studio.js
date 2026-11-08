@@ -9,6 +9,7 @@ import { coverArt, emptyState, visLabel, categoryLabel } from '../views/componen
 import * as games from '../services/games.js';
 import { publish, setVisibility } from '../services/publish.js';
 import { cleanText } from '../services/textfilter.js';
+import { REVIEW_REASONS } from '../services/chat.js';
 import { requireBuilder, getUser, isGrownup } from '../auth.js';
 import { rateLimit, allow } from '../services/ratelimit.js';
 import { sttEnabled, liveEnabled, transcribe, sniff, baseMime, MIMES, KINDS, SttError, clipSeconds, countedSeconds, RATE } from '../services/stt.js';
@@ -108,7 +109,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
   const chat = loadChat(g.id);
   const owner = getUser(g.owner_id), grownup = isGrownup(owner);
   return {
-    game: { id: g.id, slug: g.slug, title: g.title, icon: g.icon, description: g.description, category: g.category, tags: g.tags, orientation: g.orientation, players_max: g.players_max, cover: g.cover, visibility: g.visibility, status: g.status, review_note: g.review_note, hidden_reason: g.hidden_reason },
+    game: { id: g.id, slug: g.slug, title: g.title, icon: g.icon, description: g.description, category: g.category, tags: g.tags, orientation: g.orientation, players_max: g.players_max, cover: g.cover, visibility: g.visibility, status: g.status, review_note: [g.review_reason && REVIEW_REASONS.includes(g.review_reason) ? t(`review.reasons.${g.review_reason}`) : '', g.review_note].filter(Boolean).join(' '), hidden_reason: g.hidden_reason },
     status: studioStatus(g, t),
     versions: versions.map(v => ({ id: v.id, number: v.number, notes: v.notes, safety: v.safety_status, review: v.review_status, at: v.created_at, live: v.id === g.published_version_id, pending: v.id === g.pending_version_id, current: v.id === g.current_version_id })),
     theme: themeOf(cur && cur.html),

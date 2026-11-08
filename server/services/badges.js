@@ -7,5 +7,7 @@ export function navBadges(user) {
   const me = familiesOn() ? pendingCount(user) : 0;
   const reqs = q.get("SELECT COUNT(*) n FROM friends WHERE friend_id=? AND status='pending'", user.id).n;
   const unread = q.get("SELECT COUNT(*) n FROM chat_messages WHERE to_id=? AND read_at IS NULL AND status='ok'", user.id).n;
-  return { friends: reqs + unread, requests: reqs, unread, me };
+  // The platform admin: games waiting for a person on the team (the review queue).
+  const review = user.role === 'admin' ? q.get("SELECT COUNT(*) n FROM games WHERE pending_version_id IS NOT NULL AND status<>'deleted'").n : 0;
+  return { friends: reqs + unread, requests: reqs, unread, me, review };
 }

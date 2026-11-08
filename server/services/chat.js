@@ -163,7 +163,26 @@ export function present(m, viewer, t = tEn) {
     out.body = '';
     out.game = g && canView(userById(viewer.id), g) ? { id: g.id, slug: g.slug, title: g.title, icon: g.icon, cover: g.cover } : null;
   }
+  if (TEAM_KINDS.includes(m.kind)) { out.team = true; out.body = teamText(m, t); }
   return out;
+}
+// ---- Oomba team messages (services/team.js writes them; they are shown here, in the reader's language).
+const TEAM_KINDS = ['team', 'notice', 'announce', 'copy'];
+const parseBody = s => { try { const o = JSON.parse(s); return o && typeof o === 'object' ? o : {}; } catch { return {}; } };
+/** Preset reasons an admin can send a game back with (review.reasons.<key>; kid-friendly, in every language). */
+export const REVIEW_REASONS = ['characters', 'people', 'scary', 'words', 'personal', 'brands', 'flashing', 'broken'];
+/** The words of a team message for this reader. */
+export function teamText(m, t = tEn) {
+  if (m.kind === 'team') return m.body;
+  const o = parseBody(m.body);
+  if (m.kind === 'announce') return `📣 ${o.text || ''}`;
+  if (m.kind === 'copy') return `📋 ${t(o.dir === 'from' ? 'team.copy.from' : 'team.copy.to', { name: o.name || '' })} ${o.text || ''}`;
+  if (o.k === 'approved') return `🎉 ${t('team.notice.approved', { title: o.title || '' })}`;
+  if (o.k === 'sentBack') {
+    const why = [REVIEW_REASONS.includes(o.reason) ? t(`review.reasons.${o.reason}`) : '', o.note || ''].filter(Boolean).join(' ');
+    return `✏️ ${t('team.notice.sentBack', { title: o.title || '' })}${why ? ` ${why}` : ''}`;
+  }
+  return '';
 }
 
 const VISIBLE_FOR = `m.status='ok' AND NOT EXISTS (SELECT 1 FROM chat_reports r WHERE r.message_id=m.id AND r.reporter_id=?)`;
