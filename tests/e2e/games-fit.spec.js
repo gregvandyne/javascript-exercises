@@ -9,12 +9,14 @@ import { execFile } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
+import { ADMIN } from './helpers.js';
 
 test('every official game fits phones and tablets in both orientations, and desktops', async ({ baseURL }) => {
   test.setTimeout(60 * 60_000);
   const out = process.env.GAMES_FIT_SHOTS || fs.mkdtempSync(path.join(os.tmpdir(), 'games-fit-'));
   const run = await new Promise(resolve => execFile(process.execPath, ['scripts/games-fit-audit.js'], {
-    env: { ...process.env, BASE: baseURL, OUT: out }, maxBuffer: 32 * 1024 * 1024,
+    // the admin opens the course games, which have no page of their own for a guest
+    env: { ...process.env, BASE: baseURL, OUT: out, ADMIN_USER: ADMIN.username, ADMIN_PASS: ADMIN.password }, maxBuffer: 32 * 1024 * 1024,
   }, (err, stdout, stderr) => resolve({ code: err ? err.code : 0, stdout, stderr })));
   const report = fs.existsSync(path.join(out, 'report.json')) ? JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8')) : [];
   const bad = report.filter(r => r.probs.length).map(r => `${r.slug} ${r.stage} ${r.size}: ${JSON.stringify(r.probs).slice(0, 400)}`);
