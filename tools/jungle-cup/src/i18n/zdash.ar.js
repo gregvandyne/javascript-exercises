@@ -9,4 +9,5 @@ I18N.ar = Object.assign(I18N.ar || {}, {
   "md.stampede": "قطيع هائج! انتظر أو مرِّر فوقهم!",
   "md.logs": "جذوع تتدحرج!",
   "md.stuck": "عالق في الطين!",
+  "md.trampled": "آه، دهسوني!",
 });

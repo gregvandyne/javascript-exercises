@@ -9,4 +9,5 @@ I18N.it = Object.assign(I18N.it || {}, {
   "md.stampede": "Mandria! Aspetta o passa sopra!",
   "md.logs": "Tronchi che rotolano giù!",
   "md.stuck": "Bloccato nel fango!",
+  "md.trampled": "Uff, travolto!",
 });

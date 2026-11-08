@@ -9,4 +9,5 @@ I18N.de = Object.assign(I18N.de || {}, {
   "md.stampede": "Herde! Warte oder pass drüber!",
   "md.logs": "Stämme rollen herab!",
   "md.stuck": "Steckt im Schlamm fest!",
+  "md.trampled": "Uff, überrannt!",
 });

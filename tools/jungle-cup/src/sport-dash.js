@@ -30,11 +30,11 @@
   // per kind: chase speed (px/s), turn rate (rad/s), the range it pounces from, tell (s), dive speed, dive time, how
   // much a dive can still bend (rad/s), catch radius, draw scale
   const KIND = {
-    pig: { hunt: 48, turn: 3.0, from: 32, tell: 0.6, lsp: 125, lt: 0.32, lturn: 0.8, r: 7, k: 1 },
-    piglet: { hunt: 55, turn: 4.4, from: 27, tell: 0.52, lsp: 135, lt: 0.27, lturn: 1.1, r: 5, k: 1 },
-    brute: { hunt: 36, turn: 1.7, from: 38, tell: 0.65, lsp: 110, lt: 0.42, lturn: 0.5, r: 11, k: 2 },
-    pecca: { hunt: 56, turn: 4.6, from: 38, tell: 0.5, lsp: 145, lt: 0.3, lturn: 1.0, r: 9, k: 2 },
-    ambush: { hunt: 52, turn: 3.4, from: 34, tell: 0.55, lsp: 135, lt: 0.3, lturn: 0.8, r: 7, k: 1 },
+    pig: { hunt: 46, turn: 3.0, from: 32, tell: 0.75, lsp: 125, lt: 0.32, lturn: 0.8, r: 7, k: 1 },
+    piglet: { hunt: 53, turn: 4.4, from: 27, tell: 0.65, lsp: 135, lt: 0.27, lturn: 1.1, r: 5, k: 1 },
+    brute: { hunt: 36, turn: 1.7, from: 38, tell: 0.8, lsp: 110, lt: 0.42, lturn: 0.5, r: 11, k: 2 },
+    pecca: { hunt: 56, turn: 4.6, from: 38, tell: 0.62, lsp: 145, lt: 0.3, lturn: 1.0, r: 9, k: 2 },
+    ambush: { hunt: 50, turn: 3.4, from: 34, tell: 0.68, lsp: 135, lt: 0.3, lturn: 0.8, r: 7, k: 1 },
     runner: { hunt: 0, turn: 0, from: 0, tell: 0, lsp: 0, lt: 0, lturn: 0, r: 6, k: 1 },
   };
   // the gang's waves per section: seconds between waves, pigs per wave (min, max), chances of each kind, coconuts
@@ -49,8 +49,8 @@
       { every: 3.6, n0: 1, n1: 2, pair: 0.18, piglet: 0.3, brute: 0.25, coco: 8, amb: 0.18 }],
   };
   const TUNE = {
-    normal: { spd: 1, turn: 1, tell: 1, lunge: 1, rr: 0, lead: 0.35, cap: 5, lives: 3, mud: 0.55, pud: 0.75, stum: 0.5, ups: 1.7, esc: 0.22, ev: 1 },
-    easy: { spd: 0.78, turn: 0.72, tell: 1.6, lunge: 0.8, rr: -2, lead: 0.15, cap: 3, lives: 5, mud: 0.7, pud: 0.85, stum: 0.32, ups: 3, esc: 0.1, ev: 0.6 },
+    normal: { spd: 1, turn: 1, tell: 1, lunge: 1, rr: 0, lead: 0.35, cap: 5, lives: 4, mud: 0.55, pud: 0.75, stum: 0.5, ups: 1.7, esc: 0.22, ev: 1 },
+    easy: { spd: 0.84, turn: 0.8, tell: 1.4, lunge: 0.86, rr: -1, lead: 0.2, cap: 3, lives: 4, mud: 0.7, pud: 0.85, stum: 0.32, ups: 3, esc: 0.1, ev: 0.6 },
   };
   const FIRE_R = 56, FIRE_T = 10, BOLT_T = 5, BOOST_T = 1;
   const D = JC.draw;
@@ -270,7 +270,11 @@
       if (p.st === 'cross') {
         // a stampede runner: straight across its row; it tumbles the mango carrier it runs into (pass over them!)
         p.x += p.vx * (ctx.easy ? 62 : 76) * dt;
-        if (free && Math.abs(dx) < K.r + 4 && Math.abs(dd) < K.r + 4 && h.down <= 0) { tackle(ctx, p); continue; }
+        // running into the stampede knocks you over (time lost, the mango kept): a tumble, not a tackle
+        if (free && Math.abs(dx) < K.r + 4 && Math.abs(dd) < K.r + 4 && h.down <= 0) {
+          h.down = tune(ctx).stum * 1.8; S.stumbles++; S.cvx = 0; S.cvd = 0; ctx.sfx('bonk');
+          UI.float(S.sx(h.x), S.sy(h.d) - 22, t('md.trampled'), '#ffb3d6'); UI.burst(S.sx(h.x), S.sy(h.d), 8, '#c99a6a', 50);
+        }
         if (S.fire > 0) fireRepel(ctx, p);   // runners swerve round the flames too
         if (Math.abs(p.x) > FW / 2 + 30) p.on = false;
         continue;
@@ -316,7 +320,7 @@
         // the tell: it stops, paws the mud and faces the mango ("!"); a pass or a quick getaway breaks it
         if (p.tgt !== p.lastTgt) { p.lastTgt = p.tgt; p.st = 'hunt'; p.t = 0; p.sp *= 0.4; continue; }
         // it faces the mango, then its aim locks for the last part of the tell (that is the moment to sidestep)
-        if (p.t < K.tell * T.tell - 0.22) turnTo(p, Math.atan2(dd, dx), 7, dt);
+        if (p.t < K.tell * T.tell - 0.32) turnTo(p, Math.atan2(dd, dx), 7, dt);
         p.sp = Math.max(0, p.sp - p.sp * 6 * dt); p.x += p.vx * p.sp * dt * 0.3; p.d += p.vd * p.sp * dt * 0.3;
         if (L > K.from * 2.4) { p.st = 'hunt'; p.t = 0; continue; }
         if (p.t > K.tell * T.tell) { p.st = 'lunge'; p.t = 0; p.minD = 999; ctx.sfx('whoosh'); }
@@ -326,7 +330,7 @@
         const ls = K.lsp * T.lunge;
         p.x += p.vx * ls * dt; p.d += p.vd * ls * dt;
         p.minD = Math.min(p.minD, L);
-        if (!S.ball.fly && !S.resetT && !S.over && L < K.r + T.rr + 5) { tackle(ctx, p); continue; }
+        if (!S.ball.fly && !S.resetT && !S.over && L < K.r + T.rr + 4) { tackle(ctx, p); continue; }
         if (p.t > K.lt) {
           p.st = 'tumble'; p.t = 0; p.sp = ls * 0.4;
           if (!S.resetT && p.minD < K.r + 26) { S.dodges++; S.score += 30; UI.float(S.sx(h.x), S.sy(h.d) - 24, t('md.dodge'), '#8ee070'); }
@@ -439,8 +443,11 @@
     if (S.bolt > 0) sp *= 1.45; else if (S.boost > 0) sp *= 1.3;
     if (c.down > 0) sp *= 0.25;
     const slick = slickAt(c.x, c.d);
-    const k = Math.min(1, dt * (slick ? 1.6 : 12));   // on slick mud you slide (slow to start, slow to stop)
-    S.cvx += (S.ax * sp - S.cvx) * k; S.cvd += (-S.ay * sp - S.cvd) * k;
+    // quick to start and stop, and quicker still to change direction (a juke works the same on keys, pad or stick);
+    // on slick mud you slide (slow to start, slow to stop)
+    const tx = S.ax * sp, td = -S.ay * sp, rev = tx * S.cvx + td * S.cvd < 0;
+    const k = Math.min(1, dt * (slick ? 1.6 : rev ? 22 : 14));
+    S.cvx += (tx - S.cvx) * k; S.cvd += (td - S.cvd) * k;
     S.slick = slick;
     let vx = S.cvx, vd = S.cvd;
     // the log bridge: off the planks you wade (slow) and drift back on
@@ -576,6 +583,8 @@
       if (p.kind === 'pecca' && p.st === 'hunt' && dist < 26) wantPass = true;
     }
     if (wantPass && (S.marked < 0 || safety(S.team[S.marked]) < 40)) wantPass = false;
+    // a sidestep first; a pass (which gives up some ground) only when there is no safe way to step
+    if (wantPass && bestC < 110) wantPass = false;
     ADV.x = clamp(best.x + (R() - 0.5) * K.noise, -1, 1); ADV.y = clamp(best.y + (R() - 0.5) * K.noise, -1, 1); ADV.pass = wantPass;
     return ADV;
   }
@@ -735,7 +744,7 @@
         for (let x = fx0; x < fx1; x += 10 * z) { D.rect(g, x, y - z, 6 * z, 2 * z, '#1fc8a8'); D.rect(g, x + 2 * z, y + z, 2 * z, 2 * z, '#fff8e8'); }
         for (let s = 0; s < 2; s++) { const px = s ? fx1 : fx0 - 2 * z; D.rect(g, px, y - 22 * z, 2 * z, 22 * z, '#5e3820'); D.rect(g, px + 2 * z, y - 22 * z, 8 * z, 5 * z, '#1fc8a8'); }
       } else for (let x = fx0 + 2 * z; x < fx1; x += 10 * z) D.rect(g, x, y, 5 * z, z, 'rgba(255,248,232,0.5)');
-      { const mw = textW(S.marks[i]) / 2 + 4; text(g, S.marks[i], clamp(fx1 + 14 * z, mw, ctx.W - mw), y - 6, MARK); }   // never clipped at the edge
+      if (y > 60) { const mw = textW(S.marks[i]) / 2 + 4; text(g, S.marks[i], clamp(fx1 + 14 * z, mw, ctx.W - mw), y - 6, MARK); }   // never clipped at the edge, never under the HUD
     }
   }
   function drawAura(g, x, y, z) {
@@ -872,7 +881,7 @@
     if (S.bolt > 0) { powerRing(g, px, py, S.bolt / BOLT_T, '#ffe14a', SPRITES.md_bolt); px += 26; }
     if (S.fire > 0 && !(S.fire < 2 && !BRBX.reduced() && ((S.t * 8) | 0) % 2)) powerRing(g, px, py, S.fire / FIRE_T, '#ff9b2e', SPRITES.md_fire);
     // the PASS button (bottom right), gone once the run is over so the results card has only its own buttons
-    if (S.over) return;
+    if (S.over || (typeof RUN !== 'undefined' && RUN.phase === 'paused')) return;   // nor while the pause menu is up
     const r = Math.max(22, Math.round(ctx.tap * 0.85)), bx = ctx.W - r - 10, by = ctx.H - r - 12, ok = S.marked >= 0 && !S.ball.fly && !S.over && !S.resetT;
     UI.addHit('mdpass', bx - r, by - r, r * 2, r * 2);
     D.disc(g, bx, by + 2, r, PAL.ink); D.disc(g, bx, by, r, PAL.ink); D.disc(g, bx, by, r - 2, ok ? '#1fc8a8' : '#5c7a74'); D.disc(g, bx - r / 4, by - r / 4, r / 3, ok ? '#7ff0dc' : '#7a948e');
@@ -960,7 +969,7 @@
     test: {
       auto(ctx, on, skill) { S.auto = !!on; S.skill = skill || 'good'; return S.auto; },
       /** The bot's advice without acting on it (a test turns it into real joystick drags and PASS taps). */
-      advice(ctx) { const a = think(ctx, SKILL.good); return { x: a.x, y: a.y, pass: a.pass, marked: S.marked, phase: S.over ? 'over' : S.resetT ? 'reset' : 'play' }; },
+      advice(ctx, sk) { const a = think(ctx, SKILL[sk] || SKILL.good); return { x: a.x, y: a.y, pass: a.pass, marked: S.marked, phase: S.over ? 'over' : S.resetT ? 'reset' : 'play' }; },
       /** Where the PASS button is (virtual pixels). */
       passBtn(ctx) { const r = Math.max(22, Math.round(ctx.tap * 0.85)); return { x: ctx.W - r - 10, y: ctx.H - r - 12, r }; },
       /** Move the run to metre m (its checkpoint too), clearing the gang (tests of later sections and the finish). */
