@@ -2743,10 +2743,10 @@ everyone (or a group).
 - **Children (the rule in "Owner requests": no stranger chat, adults and kids are never friends).** The team is adults,
   so a direct message to a child is allowed only when a grown-up sees it: each team message to a child, and each reply,
   is copied at once into the team thread of their linked family grown-up and, for school students, their school's
-  admins; the message to the child is in the audit log with its text. **A child with nobody to copy can't be messaged
-  directly** (announcements and automatic notices only) and can't write to the team. A child's reply uses the
-  friends-chat filters, pause and burst limit, plus a daily cap. The page tells the child their grown-up can see it.
-  **Please confirm**: most self-signed-up kids have no linked grown-up, so for them the team has announcements only.
+  admins; the message to the child is in the audit log with its text. **Owner's decision (November 2026): the team may
+  message any kid account**, because it is Oomba's own trusted staff: a child with nobody to copy can be messaged and
+  can reply; both directions are in the audit log with their text, and the admin's page says no copy goes to anyone. A
+  child's reply uses the friends-chat filters, pause and burst limit, plus a daily cap.
 - **Announcements**: everyone, kids, grown-ups, teachers and school staff, or one school (never guests, banned accounts or
   the team account). Step 1 shows how many people it reaches and returns a confirm code bound to the audience and the
   words; step 2 sends it. At most one every 10 minutes and 5 a day for the whole site; each is audited and kept in

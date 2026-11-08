@@ -417,7 +417,7 @@ router.get('/admin/messages/:username', (req, res) => {
   const body = html`
   <div class="pagehead"><h1>📬 ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">👤 User details</a></div></div>
   <p class="small">${AU.TYPE_LABEL[type]}${u.banned ? ' · banned' : ''}. They see these messages as from <b>Oomba team ✓</b>, in their inbox (<code>/chat/${OFFICIAL}</code>).</p>
-  ${can.ok && can.child ? html`<p class="notice warn small">👀 This is a child. Everything you send here, and everything they reply, is copied to ${can.guardians.map(g => `@${g.username}`).join(', ')} and written to the audit log with its text.</p>` : ''}
+  ${can.ok && can.child ? html`<p class="notice warn small">👀 This is a child. Everything you send here, and everything they reply, is written to the audit log with its text${can.guardians.length ? html` and copied to ${can.guardians.map(g => `@${g.username}`).join(', ')}` : html`. They have no linked grown-up or school admin, so no copy goes to anyone: keep it to Oomba matters, never ask for personal details`}.</p>` : ''}
   <section class="panel"><ol class="plain adminthread" aria-label="Conversation">${msgs.length ? msgs.map(line) : html`<li class="muted">No messages yet.</li>`}</ol></section>
   ${can.ok ? html`<form class="panel stack" id="dm" data-id="${u.id}" novalidate>
       <div class="field"><label for="dm-text">Message as the Oomba team</label><textarea class="input" id="dm-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3"></textarea></div>

@@ -182,10 +182,11 @@ test('direct messages: a grown-up gets one; a child only with a grown-up who get
   let r = team.sendDirect(admin, grown, 'Hello from the team!');
   assert.equal(r.ok, true);
   assert.equal(teamMsgs(grown.id)[0].body, 'Hello from the team!'); assert.equal(teamMsgs(grown.id)[0].sent_by, admin.id);
-  // A child with nobody to copy: refused (adults never chat with children alone).
+  // A child with nobody to copy (the owner's decision: the team may message any kid): sent, copied to no one, audited with the text.
   const lone = mk('Lone');
-  r = team.sendDirect(admin, lone, 'Hi'); assert.equal(r.ok, false); assert.equal(r.code, 'no_guardian');
-  assert.equal(teamMsgs(lone.id).length, 0);
+  r = team.sendDirect(admin, lone, 'Hi'); assert.equal(r.ok, true, JSON.stringify(r)); assert.deepEqual(r.copiedTo, []);
+  assert.equal(teamMsgs(lone.id).length, 1);
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.message' AND target=? AND details LIKE '%Hi%'", lone.id));
   // A child with a linked grown-up: sent, copied to the grown-up, audited with the text.
   const kid = mk('Kiddo'); const parent = linkParent(kid);
   r = team.sendDirect(admin, kid, 'Your game is great!');
@@ -221,10 +222,11 @@ test("replies: a child's go through the chat filters and are copied to their gro
   assert.equal(r.ok, true);
   assert.ok(teamMsgs(parent.id).some(m => m.kind === 'copy' && JSON.parse(m.body).dir === 'from' && JSON.parse(m.body).text === 'I love them!'));
   assert.equal(team.reply(kid, { kind: 'quick', body: 'thanks' }).ok, true);
-  // A child with nobody to copy can read announcements and notices but not write back.
+  // A child with nobody to copy can write back once the team has written; the reply is filtered and audited with its text.
   const lone = mk('LoneReader'); team.notify(lone.id, { k: 'approved', title: 'X' });
-  assert.equal(team.canReply(lone).code, 'noGrownup');
-  assert.equal(team.reply(lone, { kind: 'text', body: 'hi' }).ok, false);
+  assert.equal(team.canReply(lone).ok, true);
+  assert.equal(team.reply(lone, { kind: 'text', body: 'hi thanks' }).ok, true);
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='team.reply.child' AND actor_id=? AND details LIKE '%hi thanks%'", lone.id));
   // Rate limit: the same burst limit as friends chat.
   const kid2 = mk('Burst'); linkParent(kid2); team.sendDirect(admin, kid2, 'Hi!');
   let last;
@@ -372,7 +374,7 @@ test('admin DM API: works, says who got the copy, and is rate limited', async ()
   assert.equal(res.status, 200); assert.deepEqual((await res.json()).copiedTo, [parent.username]);
   const lone = mk('DmLone');
   res = await req(`/api/admin/users/${lone.id}/message`, { user: admin, method: 'POST', body: { text: 'Hi' } });
-  assert.equal(res.status, 400); assert.equal((await res.json()).code, 'no_guardian');
+  assert.equal(res.status, 200); assert.deepEqual((await res.json()).copiedTo, []);
   const grown = mk('DmGrown', { accountType: 'grownup' });
   let last;
   for (let i = 0; i < 31; i++) last = await req(`/api/admin/users/${grown.id}/message`, { user: admin, method: 'POST', body: { text: `n${i}` } });
