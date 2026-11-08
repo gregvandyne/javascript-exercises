@@ -9977,7 +9977,9 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   for (let i = 0; i < MAXN; i++) S.notes.push({ t: 0, drum: 0, j: 0, jt: 0, bot: 0, bo: 0 });
 
   // Rana's mark: the share of the best possible score she reaches (tuned with simulated players)
-  const TARGET = 0.81, TARGET_EASY = 0.77, FORM = 0.15; // + or - FORM: Rana has good songs and so-so ones
+  // Rana plays the song like a real drummer: she catches most fireflies (RANA_HIT), many of them Perfect (RANA_PERF), keeps
+  // her own streak and multiplier, and loses it when she misses one, so some songs go better for her than others.
+  const RANA_HIT = 0.87, RANA_PERF = 0.62, RANA_HIT_EASY = 0.85, RANA_PERF_EASY = 0.56;
   /* ---------- art ---------- */
   const RANA_PAL2 = { o: OUT, v: '#9d5cf0', V: '#6a34b8', y: '#ffd23f', Y: '#d09a10', k: '#120e14', w: '#ffffff', l: '#c9a0ff', r: '#ff6f8a' };
   // Rana singing (mouth open) and blinking: her idle look is the shared 'rana' sprite
@@ -10087,8 +10089,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     if (q === 3) { S.misses++; S.combo = 0; UI.float(x, y, t('frog.miss'), '#ffb3d6'); return; }
     S.combo++; if (S.combo > S.maxCombo) S.maxCombo = S.combo;
     const fz = S.time < S.frenzyEnd ? 2 : 1, m = mult() * fz;
-    if (q === 1) { S.perfects++; S.pts += 3; S.score += 100 * m; UI.float(x, y, t('frog.perfect'), PAL.gold2); UI.burst(x, L.hitY, 10, PAL.gold2, 60); }
-    else { S.goods++; S.pts += 2; S.score += 60 * m; UI.float(x, y, t('frog.good'), '#8ee070'); UI.burst(x, L.hitY, 6, DCOL[nt.drum], 45); }
+    if (q === 1) { S.perfects++; S.base += 3; S.pts += 3 * m; UI.float(x, y, t('frog.perfect'), PAL.gold2); UI.burst(x, L.hitY, 10, PAL.gold2, 60); }
+    else { S.goods++; S.base += 2; S.pts += 2 * m; UI.float(x, y, t('frog.good'), '#8ee070'); UI.burst(x, L.hitY, 6, DCOL[nt.drum], 45); }
     if (S.combo === 10 || S.combo === 20 || S.combo === 30) ctx.sfx('frogSpark');
     if (S.combo >= S.frenzyNext && S.time >= S.frenzyEnd) {
       S.frenzyEnd = S.time + FRENZY_BARS * BAR; S.frenzies++; S.frenzyNext = S.combo + FRENZY_AT;
@@ -10118,6 +10120,26 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       const nt = S.notes[i]; if (nt.t - tm > NEAR) break;
       if (!nt.j && nt.drum === d) { UI.float(laneX(d), S.L.hitY - 26, t(nt.t > tm ? 'frog.early' : 'frog.late'), PAL.cream); break; }
     }
+  }
+  /** Rana plays firefly nt (when it reaches the drums): a hit or a miss, her own streak, multiplier and Frenzy. */
+  function ranaPlays(nt) {
+    S.ranaT[nt.drum] = 0;
+    const tm = nt.t;
+    if (S.rand() >= S.rHit) { S.rCombo = 0; return; }
+    S.rCombo++;
+    const m = Math.min(4, 1 + Math.floor(S.rCombo / 10)) * (tm < S.rFrenzyEnd ? 2 : 1);
+    S.rana += (S.rand() < S.rPerf ? 3 : 2) * m;
+    if (S.rCombo >= S.rFrenzyNext && tm >= S.rFrenzyEnd) { S.rFrenzyEnd = tm + FRENZY_BARS * BAR; S.rFrenzyNext = S.rCombo + FRENZY_AT; }
+  }
+  /** The best possible score (every firefly Perfect, every streak and Frenzy): the length of the score bars. */
+  function parScore() {
+    let p = 0, c = 0, fe = 0, fn = FRENZY_AT;
+    for (let i = 0; i < S.nN; i++) {
+      const tm = S.notes[i].t; c++;
+      p += 3 * Math.min(4, 1 + Math.floor(c / 10)) * (tm < fe ? 2 : 1);
+      if (c >= fn && tm >= fe) { fe = tm + FRENZY_BARS * BAR; fn = c + FRENZY_AT; }
+    }
+    return p;
   }
   function update(dt, ctx) {
     S.ctx = ctx; S.time += dt;
@@ -10149,17 +10171,17 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (tm - S.lat > nt.t + S.goodW) { judge(nt, 3, ctx); S.open++; continue; }
       break;
     }
-    while (S.passed < S.nN && S.notes[S.passed].t <= tm) { S.ranaT[S.notes[S.passed].drum] = 0; S.passed++; }
-    S.rana = Math.round(S.passed * 3 * S.target);
+    while (S.passed < S.nN && S.notes[S.passed].t <= tm) { ranaPlays(S.notes[S.passed]); S.passed++; }
     if (!S.done && tm >= songEnd()) finishSong(ctx);
   }
   function finishSong(ctx) {
     S.done = true;
-    const max = S.nN * 3, ranaFinal = Math.round(S.nN * 3 * S.target), won = S.pts > ranaFinal, acc = max ? S.pts / max : 0;
+    while (S.passed < S.nN) ranaPlays(S.notes[S.passed++]);
+    const max = S.nN * 3, ranaFinal = S.rana, won = S.pts > ranaFinal, acc = max ? S.base / max : 0;
     const stars = won ? 1 + (acc >= 0.8 ? 1 : 0) + (acc >= 0.9 && S.maxCombo >= 30 ? 1 : 0) : 0;
-    const score = S.score + S.maxCombo * 10 + (won ? 500 : 0);
+    const score = S.pts;   // the same number as the duel at the top
     if (won) { ctx.sfx('frogCroak'); UI.confetti(S.L.rcx, S.L.zy + S.L.zh / 2, 40); }
-    ctx.finish({ score, stars, won, frac: won ? stars / 3 : clamp(acc / Math.max(0.01, S.target), 0, 1) * 0.3,
+    ctx.finish({ score, stars, won, frac: won ? stars / 3 : clamp(S.pts / Math.max(1, ranaFinal), 0, 1) * 0.3,
       stats: { you: S.pts, rana: ranaFinal, perfects: S.perfects, goods: S.goods, misses: S.misses, maxCombo: S.maxCombo, accuracy: Math.round(acc * 100) } });
   }
 
@@ -10369,7 +10391,7 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   const HINT = { align: 'center', col: '#fff8e8' };
   /** Two score panels like JC.hud.versus, but with plain bars (the scores run into the hundreds) and Rana's mark on yours. */
   function drawVersus(g, ctx) {
-    const l = HUD.left(), W = ctx.W, wAll = W - l - 6, w = Math.min(150, (wAll - 6) / 2) | 0, y = 4, max = Math.max(1, S.nN * 3);
+    const l = HUD.left(), W = ctx.W, wAll = W - l - 6, w = Math.min(150, (wAll - 6) / 2) | 0, y = 4, max = Math.max(1, S.par);
     for (let i = 0; i < 2; i++) {
       const x = i ? W - 6 - w : l, sc = i ? S.rana : S.pts, col = i ? '#b06cff' : '#45c34e';
       box(g, x, y, w, 26, 'rgba(27,19,37,0.82)', PAL.ink);
@@ -10392,14 +10414,14 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
     music: 'frog',
     start(ctx) {
       S.ctx = ctx; layout(ctx);
-      S.time = 0; S.nextStep = 0; S.open = 0; S.passed = 0; S.pts = 0; S.score = 0; S.combo = 0; S.maxCombo = 0; S.perfects = 0; S.goods = 0; S.misses = 0; S.wrong = 0;
+      S.time = 0; S.nextStep = 0; S.open = 0; S.passed = 0; S.pts = 0; S.base = 0; S.combo = 0; S.rCombo = 0; S.rFrenzyEnd = 0; S.rFrenzyNext = FRENZY_AT; S.maxCombo = 0; S.perfects = 0; S.goods = 0; S.misses = 0; S.wrong = 0;
       S.done = false; S.auto = false; S.jitter = 0; S.skip = 0; S.mash = 0; S.rand = ctx.rng; S.rana = 0; S.frenzyEnd = 0; S.frenzies = 0; S.frenzyNext = FRENZY_AT;
       for (let i = 0; i < 3; i++) { S.hitT[i] = 9; S.ranaT[i] = 9; S.hitQ[i] = 0; S.lock[i] = 0; S.lastHit[i] = -9; S.mashT[i] = 0; }
-      S.target = (ctx.easy ? TARGET_EASY : TARGET) + (ctx.rng() * 2 - 1) * FORM;
+      S.rHit = ctx.easy ? RANA_HIT_EASY : RANA_HIT; S.rPerf = ctx.easy ? RANA_PERF_EASY : RANA_PERF; S.target = S.rHit;
       // the output delay of the speakers or headphones (Bluetooth can be 0.2 s), at most 0.25 s
       S.lat = 0; try { const ac = AUDIO.ctx; if (ac) S.lat = clamp((ac.outputLatency || 0) || (ac.baseLatency || 0), 0, 0.25); } catch (e) { S.lat = 0; }
       S.perfW = ctx.easy ? 0.09 : 0.07; S.goodW = ctx.easy ? 0.2 : 0.15; S.look = ctx.easy ? 2.4 : 2;
-      buildChart(ctx);
+      buildChart(ctx); S.par = parScore();
     },
     update,
     draw,
@@ -10417,8 +10439,8 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       if (!next) for (let i = S.open; i < S.nN; i++) { const nt = S.notes[i]; if (!nt.j) { next = { t: Math.round(nt.t * 1000) / 1000, drum: nt.drum, inS: Math.round((nt.t - S.time) * 1000) / 1000 }; break; } }
       const L = S.L;
       return { time: Math.round(S.time * 1000) / 1000, phase: S.done ? 'end' : S.time < BAR ? 'count' : 'play', notes: S.nN, onScreen,
-        you: S.pts, rana: S.rana, max: S.nN * 3, target: S.target, combo: S.combo, streak: S.combo, maxCombo: S.maxCombo, mult: mult(), frenzy: S.time < S.frenzyEnd, frenzies: S.frenzies,
-        perfects: S.perfects, goods: S.goods, misses: S.misses, wrong: S.wrong, score: S.score, done: S.done, auto: S.auto, next,
+        you: S.pts, rana: S.rana, base: S.base, max: S.par, target: S.rHit, ranaCombo: S.rCombo, combo: S.combo, streak: S.combo, maxCombo: S.maxCombo, mult: mult(), frenzy: S.time < S.frenzyEnd, frenzies: S.frenzies,
+        perfects: S.perfects, goods: S.goods, misses: S.misses, wrong: S.wrong, score: S.pts, done: S.done, auto: S.auto, next,
         windows: { perfect: S.perfW, good: S.goodW }, look: S.look, lat: S.lat, songSecs: Math.round(songEnd() * 10) / 10,
         lanes: { top: L.laneTop, hitY: L.hitY, x: [laneX(0), laneX(1), laneX(2)] } };
     },
@@ -10426,10 +10448,10 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
       /** auto(on, jitter, skip, mash): a play-bot (jitter s of timing noise, skip a share of notes) or a masher (mash taps a second on every drum). */
       auto(ctx, on, jitter, skip, mash) { S.auto = !!on && !(+mash > 0); S.jitter = +jitter || 0; S.skip = +skip || 0; S.mash = on ? +mash || 0 : 0; return !!on; },
       /** Rana's mark for a balance check: target(share of the best score). */
-      target(ctx, v) { if (v) S.target = +v; return S.target; },
+      target(ctx, v) { if (v) S.rHit = S.target = +v; return S.rHit; },
     },
     cheat(won) {
-      const max = S.nN * 3 || 400;
+      const max = S.par || 1200;
       S.pts = won ? Math.round(max * 0.85) : Math.round(max * 0.3);
       return { score: won ? 9000 : 2000, stars: won ? 2 : 0, won, frac: won ? 0.67 : 0.15 };
     },
