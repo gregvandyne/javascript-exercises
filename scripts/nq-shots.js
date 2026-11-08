@@ -45,17 +45,17 @@ async function play(f) { await wait(900); for (const sel of ['.ok-title-screen .
 // game.params, and how to reach the moment worth photographing — mid-play, the assigned skill on screen.
 const SHOTS = [
   { step: '1.1', state: 'place-value-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-1-1&lock=1', prep: brainBoard },
-  { step: '1.2', state: 'rounding-run', slug: 'sum-racer', narrow: { width: 360, height: 900, from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=9&lock=1', prep: sumRacer },
+  { step: '1.2', state: 'rounding-run', slug: 'sum-racer', narrow: { width: 360, height: 900, head: '#raceBar', from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=9&lock=1', prep: sumRacer },
   { step: '1.3', state: 'pattern-race', slug: 'quest-race', narrow: { width: 480, height: 1000, bottom: '#pad' }, params: 'mode=nq-1-3&lock=1', prep: questRace, cdp: true },
-  { step: '2.1', state: 'addition-track', slug: 'sum-racer', narrow: { width: 360, height: 900, from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=10&mode=add&lock=1', prep: sumRacer },
-  { step: '2.2', state: 'subtraction-track', slug: 'sum-racer', narrow: { width: 360, height: 900, from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=10&mode=sub&lock=1', prep: sumRacer },
+  { step: '2.1', state: 'addition-track', slug: 'sum-racer', narrow: { width: 360, height: 900, head: '#raceBar', from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=10&mode=add&lock=1', prep: sumRacer },
+  { step: '2.2', state: 'subtraction-track', slug: 'sum-racer', narrow: { width: 360, height: 900, head: '#raceBar', from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=10&mode=sub&lock=1', prep: sumRacer },
   { step: '2.3', state: 'story-board', slug: 'brain-board', narrow: { width: 500, height: 900, top: '.bb-cardin', bottom: '#pad' }, params: 'mode=nq-2-3&lock=1', prep: brainBoard },
-  { step: '3.1', state: 'all-tables-track', slug: 'sum-racer', narrow: { width: 360, height: 900, from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=5&lock=1', prep: sumRacer },
-  { step: '3.2', state: 'sharing-track', slug: 'sum-racer', narrow: { width: 360, height: 900, from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=6&lock=1', prep: sumRacer },
-  { step: '3.3', state: 'grand-prix', slug: 'sum-racer', narrow: { width: 360, height: 900, from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=7&lock=1', prep: sumRacer },
-  { step: '4.1', state: 'first-cuts', slug: 'fraction-factory', narrow: { width: 360, height: 1100, from: 146, to: 566 }, params: 'chapter=first-cuts&band=1b&lock=1', prep: fractionFactory },
+  { step: '3.1', state: 'all-tables-track', slug: 'sum-racer', narrow: { width: 360, height: 900, head: '#raceBar', from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=5&lock=1', prep: sumRacer },
+  { step: '3.2', state: 'sharing-track', slug: 'sum-racer', narrow: { width: 360, height: 900, head: '#raceBar', from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=6&lock=1', prep: sumRacer },
+  { step: '3.3', state: 'grand-prix', slug: 'sum-racer', narrow: { width: 360, height: 900, head: '#raceBar', from: '.qpanel', to: '.answers.choices', toPad: 8 }, params: 'level=7&lock=1', prep: sumRacer, want: timesFact },
+  { step: '4.1', state: 'first-cuts', slug: 'fraction-factory', narrow: { width: 360, height: 1100, from: 140, to: 574 }, params: 'chapter=first-cuts&band=1b&lock=1', prep: fractionFactory },
   { step: '4.2', state: 're-slice', slug: 'fraction-factory', narrow: { width: 360, height: 1100, from: 288, to: 684 }, params: 'chapter=re-slice&band=1b&lock=1', prep: fractionFactory },
-  { step: '4.3', state: 'recipe-math', slug: 'fraction-factory', narrow: { width: 360, height: 1100, from: 271, to: 536 }, params: 'chapter=recipe&band=1b&lock=1', prep: fractionFactory },
+  { step: '4.3', state: 'recipe-math', slug: 'fraction-factory', narrow: { width: 360, height: 1100, from: 271, to: 546 }, params: 'chapter=recipe&band=1b&lock=1', prep: fractionFactory },
   // The Phase 2 sweep (Units 5-7 + the Vault of Measures finale): the same discipline, the decks' own
   // game.params. Data Detective and Would You Rather join the pipeline here, in the chapters and topic
   // their missions assign.
@@ -78,15 +78,25 @@ async function brainBoard(f) {
   await until(f, s => s.question && s.card);
   await wait(700);
 }
-async function sumRacer(f) {
+async function sumRacer(f, page, shot) {
   await play(f);
   await f.evaluate(() => window.__brbTest.skipAnimations && window.__brbTest.skipAnimations());
   await until(f, s => s.question && s.phase === 'racing');
   // Answer one correctly so the kart is moving and the race is under way, then let the next question land.
   await f.evaluate(() => { const t = window.__brbTest; t.answer(t.state().question.answer); t.step && t.step(1100); });
   await until(f, s => s.question && s.phase === 'racing');
+  // A shot with `want` (3.3: the mixed Grand Prix, photographed for a fast-facts lesson) restarts the same locked
+  // track with the hook's own seeded start until the race opens on a question of that kind, so the picture shows
+  // the skill the deck teaches, as question 1 of a real race.
+  for (let seed = 100; shot.want && seed < 400; seed++) {
+    if (shot.want(await f.evaluate(() => window.__brbTest.state().question))) break;
+    await f.evaluate(seed => { const t = window.__brbTest; t.start({ track: t.state().track, mode: 'choice', players: 1, seed }); t.skipAnimations && t.skipAnimations(); }, seed);
+    await until(f, s => s.question && s.phase === 'racing');
+  }
   await wait(600);
 }
+/** A hard times fact, the kind 3.3's tricks build (7 × 8 from double 7 × 4): both factors 6 to 9. */
+function timesFact(q) { const m = /^(\d+) × (\d+)$/.exec(q && q.text || ''); return !!m && +m[1] >= 6 && +m[1] <= 9 && +m[2] >= 6 && +m[2] <= 9; }
 async function questRace(f) {
   await play(f);
   // The race cycles questions in real time (its own runners answer), with interstitial banners between
@@ -149,6 +159,23 @@ async function wouldYouRather(f) {
   await wait(500);
 }
 
+/** Keep the deck in step with its picture: the mission slide that shows this shot gets the band's `view` and
+ *  `whole: true` (written in place, the deck's own formatting kept), so a re-run never leaves a stale crop. */
+function writeView(shot) {
+  const file = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', 'explorer', `${shot.step}.json`);
+  let src = fs.readFileSync(file, 'utf8');
+  const key = `"img": "nq/${shot.slug}/${shot.state}"`, at = src.indexOf(key);
+  if (at < 0) return console.log(`  (deck ${shot.step} has no slide with ${key})`);
+  const end = src.indexOf('\n  }', at), slide = src.slice(at, end);
+  const ind = /\n(\s*)"alt"/.exec(slide)?.[1] || '   ';
+  const view = `"view": [\n${shot.view.map(v => `${ind} ${v}`).join(',\n')}\n${ind}]`;
+  let next = /"view": \[[^\]]*\]/.test(slide) ? slide.replace(/"view": \[[^\]]*\]/, view) : slide.replace(/("alt": "[^"]*")/, `$1,\n${ind}${view}`);
+  if (!/"whole": true/.test(next)) next = next.replace(view, `${view},\n${ind}"whole": true`);
+  src = src.slice(0, at) + next + src.slice(end);
+  JSON.parse(src);
+  fs.writeFileSync(file, src);
+}
+
 async function capture(browser, shot) {
   const htmlPath = path.join(ROOT, 'seed-games', `${shot.slug}.html`);
   const params = parseParams(Object.fromEntries(new URLSearchParams(shot.params)));
@@ -182,7 +209,7 @@ async function capture(browser, shot) {
     await page.waitForTimeout(700);
     const f = page.frames().find(x => x.url().includes('/g'));
     await hook(f);
-    await shot.prep(f, page);
+    await shot.prep(f, page, shot);
     const st = await f.evaluate(() => window.__brbTest.state());
     const survey = nw && nw.top == null && nw.bottom == null && nw.from == null;
     // A survey lists the page's lines of text (top, bottom, font size, words), to choose the slice from.
@@ -196,16 +223,21 @@ async function capture(browser, shot) {
     if (nw && nw.from != null) {
       // A band (Sum Racer, Fraction Factory, Data Detective at 360 px): what the mission needs is taller than a 16:9
       // slice of a phone-width page, so the band from `from` (less fromPad) to `to` (plus toPad) is shot at
-      // 1280 px wide and set on a 16:9 canvas under a 40 px Cream strip; the slide's `view` then shows exactly the
-      // strip and the band. The strip is where the frame's expand button sits (its top-right corner), so the
-      // button never covers the game's words. `from` / `to` are selectors or page y values (CSS px).
+      // 1280 px wide and set at the top left of a 16:9 canvas; the slide's `view` shows exactly the band, and
+      // `whole: true` tells the slide that the view IS the whole picture (no expand button: there is nothing more
+      // to see). `head`: a selector for the game's own title bar (Sum Racer's track name and skill), stacked over
+      // the band, so the picture names the track the mission names. No empty strip above or below the game: an
+      // earlier version kept a 40 px Cream strip for the expand button, which read as an empty band on a phone
+      // (tests/unit/nq-picture-bands.test.js now fails on that). `from` / `to` are selectors or page y values.
       await f.evaluate(() => { const a = document.activeElement; if (a && a.blur) a.blur(); });
       await wait(250);
       const at = (sel, k) => (typeof sel === 'number' ? sel : f.evaluate(([q, kk]) => { const el = document.querySelector(q); return el ? el.getBoundingClientRect()[kk] : 0; }, [sel, k]));
       const top = Math.max(0, (await at(nw.from, 'top')) - (nw.fromPad || 0)), bottom = Math.min(nw.height, (await at(nw.to, 'bottom')) + (nw.toPad || 0));
       clip = { x: 0, y: top, width: nw.width, height: bottom - top, scale: 1280 / nw.width };
-      const strip = 40, hh = bottom - top + strip, wc = Math.max(nw.width, hh * 16 / 9);
-      band = { wc, strip, view: [0, 0, Math.round(nw.width / wc * 10000) / 100, Math.round(hh / (wc * 9 / 16) * 10000) / 100] };
+      const headH = nw.head ? Math.round(await at(nw.head, 'bottom')) : 0;
+      if (headH) band = { ...(band || {}), headClip: { x: 0, y: 0, width: nw.width, height: headH } };
+      const hh = bottom - top + headH, wc = Math.max(nw.width, hh * 16 / 9);
+      band = { ...(band || {}), wc, view: [0, 0, Math.round(nw.width / wc * 10000) / 100, Math.round(hh / (wc * 9 / 16) * 10000) / 100] };
       shot.sliceTop = Math.round(top * 10) / 10;
     } else if (nw && !survey) {
       // no keyboard focus ring on the first answer: the photograph shows the card as a child first sees it
@@ -235,11 +267,18 @@ async function capture(browser, shot) {
     else if (clip) await page.screenshot({ path: master, clip: { x: clip.x, y: clip.y, width: clip.width, height: clip.height }, timeout: 15000 }).catch(cdpShot);
     else { try { await frameEl.screenshot({ path: master, timeout: 15000 }); } catch { await cdpShot(); } }
     if (band) {
-      // the band on its 16:9 canvas (Cream, the slide frame's own ground, outside the view), 1280 x 720
+      // the game's title bar over the band (when the shot has a `head`), then the band at the top left of its 16:9
+      // canvas (outside the view, never shown on the slide), 1280 x 720
       const k = 1280 / nw.width;
-      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', master, '-vf', `pad=${Math.round(band.wc * k)}:${Math.round(band.wc * k * 9 / 16)}:0:${Math.round(band.strip * k)}:color=0xFFFDF2,scale=1280:720`, master + '.tmp.png']);
+      if (band.headClip) {
+        await page.screenshot({ path: master + '.head.png', clip: band.headClip, timeout: 15000 });
+        execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', master + '.head.png', '-i', master, '-filter_complex', 'vstack=inputs=2', master + '.tmp.png']);
+        fs.renameSync(master + '.tmp.png', master); fs.unlinkSync(master + '.head.png');
+      }
+      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', master, '-vf', `pad=${Math.round(band.wc * k)}:${Math.round(band.wc * k * 9 / 16)}:0:0:color=0xFFFDF2,scale=1280:720`, master + '.tmp.png']);
       fs.renameSync(master + '.tmp.png', master);
       shot.view = band.view;
+      if (WEBP) writeView(shot);
     }
     let extra = '';
     if (WEBP && !survey) {

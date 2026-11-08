@@ -69,7 +69,7 @@
    "kind": "example",
    "title": "Run the whole drill",
    "text": "You tapped a faked sender's link and typed your passphrase before the doubt arrived. Run the drill in order.",
-   "art": "loop",
+   "art": "shield",
    "steps": [
     "Contain: leave the page, change the key from a clean device",
     "Preserve: screenshot the page and note the time",

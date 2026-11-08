@@ -66,6 +66,12 @@ export function livePill(g) {
 }
 /** A launch game's cover screenshot URL (cache-busted), or null. */
 export const coverUrl = slug => (COVER_SHOTS.has(slug) ? `/covers/${slug}.jpg?v=${COVER_SHOTS.get(slug)}` : null);
+/** A course's game in a "crew" list (the teacher pages of Number Quest, CS Quest and Cyber Defenders): its real cover
+ *  screenshot when it has one (public/covers, `npm run covers`), the emoji only for a game that has none yet. */
+export const crewArt = (slug, emoji) => {
+  const src = coverUrl(slug);
+  return src ? html`<img class="csq-crew-shot" src="${src}" alt="" loading="lazy" decoding="async" width="540" height="720">` : html`<span class="csq-crew-e" aria-hidden="true">${emoji}</span>`;
+};
 /** A game's cover: a real screenshot when there is one (launch games: public/covers; Studio games: the picture of the
  *  published version, or of the draft when draft is true, for the builder's own lists), otherwise the emoji art.
  *  eager: the page's main picture (the largest thing on screen at first): loaded at once, before other pictures. */

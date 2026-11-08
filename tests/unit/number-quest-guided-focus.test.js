@@ -79,8 +79,8 @@ test('every visual slide carries focus; every box is a non-degenerate in-frame r
       });
     });
   }
-  assert.equal(slides, 75, 'visual focus slides across the 23 Explorer decks');
-  assert.equal(steps, 173, 'focus steps across the 23 Explorer decks');
+  assert.equal(slides, 80, 'visual focus slides across the 23 Explorer decks (75, plus the five Jumble beats drawn as fix diagrams)');
+  assert.equal(steps, 183, 'focus steps across the 23 Explorer decks');
 });
 
 // Greg's reported slide: deck 1.2 slide 1 "Look at the next digit" (rounding line 300 — 347 — 350 — 400).
@@ -272,14 +272,25 @@ const REGISTRY = [
   ['7.2', 1, 0, [6, 5.01, 72, 29.33], [5, 3.4, 68, 27.5]],
   ['7.2', 1, 1, [6, 35.24, 94, 59.56], [5, 33.6, 90, 27.5]],
   ['7.2', 1, 2, [6, 65.46, 94, 89.78], [5, 63.9, 90, 27.5]],
+  // The Jumble beats (fix diagrams, 2026-11-07): the mistake card (y 13-25.5 of 56.25) and the fix card (y 31.5-52.9), x 12-92.
+  ['3.3', 3, 0, [12, 23.11, 92, 45.33], [11, 21.3, 82, 25.8]],
+  ['3.3', 3, 1, [12, 56, 92, 94.04], [11, 54.2, 82, 41.6]],
+  ['4.3', 3, 0, [12, 23.11, 92, 45.33], [11, 21.3, 82, 25.8]],
+  ['4.3', 3, 1, [12, 56, 92, 94.04], [11, 54.2, 82, 41.6]],
+  ['5.3', 3, 0, [12, 23.11, 92, 45.33], [11, 21.3, 82, 25.8]],
+  ['5.3', 3, 1, [12, 56, 92, 94.04], [11, 54.2, 82, 41.6]],
+  ['6.3', 3, 0, [12, 23.11, 92, 45.33], [11, 21.3, 82, 25.8]],
+  ['6.3', 3, 1, [12, 56, 92, 94.04], [11, 54.2, 82, 41.6]],
+  ['7.3', 3, 0, [12, 23.11, 92, 45.33], [11, 21.3, 82, 25.8]],
+  ['7.3', 3, 1, [12, 56, 92, 94.04], [11, 54.2, 82, 41.6]],
 ];
-test('every authored box contains its measured target with a small margin (173-step registry)', () => {
+test('every authored box contains its measured target with a small margin (183-step registry)', () => {
   // 2026-11-06 fix round: boxes no longer equal the target bounds (an edge sitting exactly on a
   // label read as a cut letter: "/8" for "5/8", "rays of 5"). Each box now wraps its target with a
   // small margin on every side (about 1% across, 1.6% down; 0.45% across for one part of a bar,
   // where the neighbouring part starts), never more than 3%, and no box edge crosses a label it
   // does not name (measured with getBBox at authoring time).
-  assert.equal(REGISTRY.length, 173);
+  assert.equal(REGISTRY.length, 183);
   const seen = new Set();
   for (const [n, si, fi, measured, box] of REGISTRY) {
     const f = deck(n).slides[si].focus[fi];
@@ -297,7 +308,7 @@ test('every authored box contains its measured target with a small margin (173-s
   for (const { n, deck: d } of allDecks()) {
     d.slides.forEach((s, si) => { if (s.visual && Array.isArray(s.focus)) s.focus.forEach((f, fi) => { total++; assert.ok(seen.has(`${n}/${si}/${fi}`), `${n} s${si} step ${fi + 1} in registry`); }); });
   }
-  assert.equal(total, 173);
+  assert.equal(total, 183);
 });
 
 // The renderer, checked on real step pages in a real browser: the box % must land identically at

@@ -20,6 +20,7 @@ import * as tts from '../services/tts.js';
 import { mapAndNotes, placementSection } from '../views/number-quest-teacher.js';
 import { html } from '../views/html.js';
 import * as V from '../views/cs-quest.js';
+import { crewArt } from '../views/components.js';
 import { el, lp, faqBlock, launchGame } from './teachers.js';
 import * as seo from '../seo.js';
 
@@ -203,7 +204,7 @@ router.get('/teachers/number-quest', (req, res) => {
     <ul class="lp-list">${[1, 2, 3, 4, 5, 6].map(n => el(t, 'li', `${K}.promise.li${n}`))}</ul></section>
   ${placementSection()}
   <section class="lp-sec" id="crew" aria-labelledby="crew-h">${el(t, 'h2', `${K}.crew.h`, {}, ' id="crew-h"')}${el(t, 'p', `${K}.crew.p`)}
-    <ul class="csq-crew">${crew.map(c => html`<li class="panel"><span class="csq-crew-e" aria-hidden="true">${c.emoji}</span><h3 lang="en" dir="ltr">${c.title}</h3>
+    <ul class="csq-crew">${crew.map(c => html`<li class="panel">${crewArt(c.slug, c.emoji)}<h3 lang="en" dir="ltr">${c.title}</h3>
       ${el(t, 'p', `${K}.crew.${c.key}`, {}, ' class="small"')}
       <div class="row">${c.live ? html`<a class="btn btn-primary" href="/play/${c.slug}" rel="nofollow">▶ ${t(`${K}.crew.try`)}</a>` : html`<a class="btn" href="${lp(req, '/courses/number-quest')}">🔢 ${t(`${K}.crew.inCourse`)}</a>`}</div></li>`)}</ul></section>
   <section class="lp-sec" id="units" aria-labelledby="units-h">${el(t, 'h2', `${K}.units.h`, {}, ' id="units-h"')}${el(t, 'p', `${K}.units.p`)}

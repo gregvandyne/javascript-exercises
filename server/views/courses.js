@@ -597,7 +597,7 @@ function slideArt(t, s) {
   if (s.story) return storyArt(t, s);
   if (!s.visual && !s.img) return art(s.art);
   const f = frameOf(s);
-  const gf = !!s.focus, vf = !!s.visual, crop = !vf && !!s.view;
+  const gf = !!s.focus, vf = !!s.visual, crop = !vf && !!s.view && !s.whole; // a whole-band view crops nothing worth opening
   // --ar: the frame's width / height; --fhr: its height as a fraction of its width (the badge's clamps).
   const style = `--ar:${r2(100 / f.fh)};--fhr:${r2(f.fh / 100)}`;
   const pic = vf ? visualSvg(s.visual, f) : shotImg(s, f);
@@ -684,7 +684,7 @@ export function stepPage({ course: c, s, total, next, seed, result, signedIn, sl
         ${signedIn ? checkForm(t, c, step, qs) : html`<p class="notice">${t('errors.api.signInFirst')}</p>`}`}
     </section>
     ${s.checked ? afterSection(t, c, step, s, next) : html`<div id="play-slot"></div>`}
-    ${slides.some(sl => sl.img && sl.view) ? html`<dialog class="szoom-dlg" id="szoom" aria-label="${t('courses.lesson.wholePicture')}">
+    ${slides.some(sl => sl.img && sl.view && !sl.whole) ? html`<dialog class="szoom-dlg" id="szoom" aria-label="${t('courses.lesson.wholePicture')}">
       <button class="btn szoom-x" type="button" id="szoom-x"><span aria-hidden="true">✕</span> ${t('courses.lesson.close')}</button>
       <img id="szoom-img" alt="" width="1280" height="720">
     </dialog>` : ''}

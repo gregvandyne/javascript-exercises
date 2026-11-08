@@ -138,7 +138,7 @@
   {
    "title": "How many more?",
    "text": "The question charts answer best is a comparison. Tuesday sold 20 lunches and Monday sold 12. How many more is a subtraction wearing a chart's clothes: 20 - 12 = 8. Always ask which two bars the question compares.",
-   "art": "table"
+   "art": "chart"
   },
   {
    "title": "Stretch: the sneaky scale",
@@ -179,9 +179,10 @@
    "view": [
     0,
     0,
-    46.02,
+    50.63,
     100
-   ]
+   ],
+   "whole": true
   }
  ],
  "check": [
