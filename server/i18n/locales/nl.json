@@ -2223,7 +2223,17 @@
         "play": "Games spelen",
         "others": "Games van andere kinderen spelen",
         "grownUp": "Een volwassene kan zich aan je account koppelen:",
-        "grownUpWhere": "Ik › Voor volwassenen"
+        "grownUpWhere": "Ik › Voor volwassenen",
+        "askText": "Wil je meer bouwen? Je volwassene kan meer berichten aan de Bouwer voor je vrijspelen.",
+        "askTextSpark": "Wil je vandaag verder bouwen? Je volwassene kan een Vonkpakket met extra berichten aan de Bouwer toevoegen.",
+        "askButton": "Vraag het mijn volwassene",
+        "asked": "Je volwassene ziet dat je het gevraagd hebt. Dank je!",
+        "showText": "Wil je meer bouwen? Laat dit aan een volwassene zien. Op {address} staat hoe het werkt",
+        "qrLabel": "Een code die een volwassene met een telefoon kan scannen",
+        "classText": "De Bouwer van je klas rust voor vandaag. Vraag je leraar wanneer je weer kunt bouwen.",
+        "resting": "De Bouwer rust nu even voor iedereen. Je spel is bewaard.",
+        "getSpark": "Neem een Vonkpakket",
+        "back": "Er zijn nieuwe berichten aan de Bouwer. Veel bouwplezier!"
       },
       "mic": {
         "start": "Praten in plaats van typen",
@@ -2244,7 +2254,8 @@
       "limit": {
         "seePlans": "Bekijk abonnementen voor meer berichten aan de Bouwer"
       },
-      "themeUse": "Gebruik het thema {name}."
+      "themeUse": "Gebruik het thema {name}.",
+      "sparks": "{n, plural, one {# bericht uit Vonkpakketten} other {# berichten uit Vonkpakketten}}"
     },
     "character": {
       "unsaved": "Nog niet bewaard",
@@ -3522,6 +3533,50 @@
       "later": "Dit doe ik later",
       "laterNote": "Je kunt je kinderen altijd toevoegen via ‘Je gezin’.",
       "cta": "Kind toevoegen"
+    },
+    "sparks": {
+      "heading": "Vonkpakketten",
+      "intro": "Een Vonkpakket is een eenmalige aanvulling met extra berichten aan de Bouwer voor je gezin. Ze worden gebruikt als de gratis berichten van de dag en de extra berichten van je abonnement op zijn.",
+      "left": "{n, plural, one {Nog # bericht uit Vonkpakketten} other {Nog # berichten uit Vonkpakketten}}",
+      "none": "Geen berichten uit Vonkpakketten meer.",
+      "expires": "De volgende vervallen op {date}.",
+      "needPlan": "Vonkpakketten vullen een Basic- of Gezinsabonnement aan.",
+      "soon": "Vonkpakketten zijn nog niet te koop.",
+      "pick": "Voeg een Vonkpakket toe",
+      "buy": "{n} berichten · {price}",
+      "terms": {
+        "once": "Eén betaling. Er wordt niets verlengd.",
+        "who": "Voor jou en tot {max} gekoppelde kinderen, ook als je abonnement later stopt.",
+        "expire": "Berichten die je niet gebruikt vervallen {days} dagen na de aankoop van het pakket.",
+        "daily": "Iedereen kan per dag tot {max} berichten uit Vonkpakketten gebruiken.",
+        "refund": "Een ongebruikt pakket wordt op verzoek binnen 14 dagen terugbetaald. Een terugbetaling haalt de overgebleven berichten weg."
+      },
+      "waiting": "Je Vonkpakket wordt toegevoegd… Deze pagina werkt zichzelf bij.",
+      "done": "Je Vonkpakket staat klaar. Veel bouwplezier!",
+      "history": "Je pakketten",
+      "pack": "{n} berichten",
+      "grant": "{n} berichten van het Oomba-team",
+      "state": {
+        "active": "Nog {left} van {n} · tot {date}",
+        "used": "Op",
+        "ended": "Vervallen",
+        "processing": "Betaling wordt verwerkt",
+        "failed": "De betaling is niet gelukt",
+        "refunded": "Terugbetaald",
+        "disputed": "Betaling betwist",
+        "revoked": "Beëindigd door het Oomba-team"
+      },
+      "errors": {
+        "noPlan": "Vonkpakketten vullen een abonnement aan: kies eerst een Basic- of Gezinsabonnement.",
+        "noPrice": "Vonkpakketten kunnen nu niet gekocht worden. Probeer het later nog eens."
+      }
+    },
+    "asks": {
+      "heading": "Vragen voor de Bouwer",
+      "plan": "{name} heeft de berichten aan de Bouwer van vandaag gebruikt en vraagt om meer te mogen bouwen.",
+      "spark": "{name} heeft de berichten aan de Bouwer van vandaag gebruikt en vraagt om een Vonkpakket.",
+      "getSpark": "Neem een Vonkpakket",
+      "dismiss": "Verbergen"
     }
   },
   "plans": {

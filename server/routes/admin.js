@@ -21,6 +21,7 @@ import * as family from '../services/family.js';
 import * as schoolRequests from '../services/school-requests.js';
 import * as funnel from '../services/funnel.js';
 import * as billing from '../services/billing.js';
+import * as sparks from '../services/sparks.js';
 import * as stripe from '../services/stripe.js';
 import { audit, q } from '../db.js';
 import { config } from '../config.js';
@@ -751,6 +752,32 @@ function ownerCell(r) {
   const sc = getSchool(r.owner_id);
   return sc ? html`School <a href="/school/${sc.slug}">${sc.name}</a>` : html`${r.owner_kind} ${r.owner_id}`;
 }
+/** Spark Packs on /admin/billing (services/sparks.js): this month's sales, messages left, the latest packs with Revoke,
+ *  and the grant form (a grown-up's username, or a linked child's, names the family). Refunds are made in Stripe: the
+ *  webhook takes back what is left. */
+function sparkSection() {
+  const tot = sparks.totals(), list = sparks.recentPacks(50);
+  const famOf = fid => q.get('SELECT u.username FROM families f JOIN users u ON u.id=f.owner_id WHERE f.id=?', fid);
+  return html`<section class="panel" id="sparks"><h2>⚡ Spark Packs</h2>
+    <p class="small">This month: <b>${int(tot.sold)}</b> pack${tot.sold === 1 ? '' : 's'} paid · <b>$${((tot.cents || 0) / 100).toFixed(2)}</b> · <b>${int(tot.left)}</b> messages left in usable packs.</p>
+    ${list.length ? html`<div class="tblwrap"><table class="tbl small"><thead><tr><th>When</th><th>Family</th><th>Pack</th><th>Status</th><th>Left</th><th>Paid</th><th>Ends</th><th></th></tr></thead><tbody>
+      ${list.map(p => { const o = famOf(p.family_id); const st = sparks.packState(p); return html`<tr data-pack="${p.id}">
+        <td>${when(p.paid_at || p.created_at)}</td>
+        <td>${o ? html`<a href="/admin?tab=users&amp;username=${encodeURIComponent(o.username)}">@${o.username}</a>` : p.family_id}</td>
+        <td>${p.source === 'grant' ? `grant · ${p.messages}` : `${p.messages} messages`}${p.note ? html`<div class="muted">${p.note}</div>` : ''}</td>
+        <td>${st}</td><td>${int(p.remaining)} / ${int(p.messages)}</td>
+        <td>${p.amount_total != null && p.source === 'stripe' ? `$${(p.amount_total / 100).toFixed(2)}` : '–'}${p.stripe_payment_intent ? html` <a href="${dash(`payments/${p.stripe_payment_intent}`)}" rel="noopener noreferrer" target="_blank">Stripe</a>` : ''}</td>
+        <td>${p.expires_at ? day(p.expires_at) : '–'}</td>
+        <td>${['active', 'processing'].includes(p.status) && p.remaining > 0 ? html`<form data-api="/api/admin/billing/sparks/${p.id}/revoke" data-reload data-confirm="End the ${p.remaining} messages left in this pack?"><button class="btn btn-sm" type="submit">Revoke</button></form>` : ''}</td></tr>`; })}
+    </tbody></table></div>` : html`<p class="muted">No Spark Packs yet.</p>`}
+    <form class="row" data-api="/api/admin/billing/sparks/grant" data-reload data-toast="Spark Pack messages granted." style="margin-top:12px">
+      <label for="spark-user">Username</label><input class="input" id="spark-user" name="username" required maxlength="40" style="max-width:12em">
+      <label for="spark-n">Messages</label><input class="input" id="spark-n" name="messages" type="number" min="1" max="${sparks.GRANT_MAX}" step="1" required style="max-width:7em">
+      <label for="spark-note">Note</label><input class="input" id="spark-note" name="note" maxlength="300" style="max-width:16em">
+      <button class="btn btn-primary" type="submit">Grant</button><span class="err form-err" aria-live="polite"></span></form>
+    <p class="small muted">A grant is a pack of its own (lasts ${config.sparkExpiryDays} days, audited). A grown-up's username names their family; a linked child's names the family they are linked to. Refund a paid pack in the Stripe Dashboard: the webhook then takes back what is left (all of it for a full refund).</p>
+  </section>`;
+}
 router.get('/admin/billing', (req, res) => {
   const mode = stripe.billingMode();
   const status = SUB_STATUSES.includes(req.query.status) || req.query.status === 'entitled' ? req.query.status : '';
@@ -783,7 +810,7 @@ router.get('/admin/billing', (req, res) => {
     ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
     ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
   </div>
-  ${jumpNav([['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
+  ${jumpNav([['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['sparks', 'Spark Packs', sparks.recentPacks(50).length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
   <section class="panel" id="requests"><h2>School invoice requests</h2>
     ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
       <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}</p>
@@ -828,6 +855,7 @@ router.get('/admin/billing', (req, res) => {
     </tbody></table></div>` : html`<p class="muted">No subscriptions${status || flag ? ' match' : ' yet'}.</p>`}
     ${foldNote('Refund rules', html`Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.`)}
   </section>
+  ${sparkSection()}
   <section class="panel" id="b-problems"><h2>Event problems</h2>
     ${problems.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
       ${problems.map(e => html`<tr><td data-label="When">${when(e.received_at)}</td><td class="at"><code>${e.type}</code> <span class="muted">${e.event_id}</span></td><td data-label="Result">${e.result || 'not finished'}</td><td data-label="Customer" class="full">${e.stripe_customer_id || '–'}</td><td data-label="Subscription" class="full">${e.stripe_subscription_id || '–'}</td></tr>`)}
@@ -946,6 +974,22 @@ router.post('/api/admin/billing/invoices/:id/paid-by-check', async (req, res) =>
     if (!r.ok) return requestFail(res, r);
     res.json({ ok: true });
   } catch (e) { billingTrouble(res, e); }
+});
+// Spark Packs (services/sparks.js): the owner grants messages to a family or ends what is left of a pack. Audited.
+router.post('/api/admin/billing/sparks/grant', (req, res) => {
+  const b = req.body || {};
+  const u = getUserByName(String(b.username || '').trim());
+  if (!u) return res.status(404).json({ error: 'No account with that username.', field: 'username' });
+  const fam = family.familyOfOwner(u.id) || family.familyById(family.linkOf(u.id)?.family_id);
+  if (!fam) return res.status(404).json({ error: 'That account has no family (a grown-up, or a child linked to one).', field: 'username' });
+  const r = sparks.grant(req.user, fam.id, b.messages, String(b.note || ''));
+  if (!r.ok) return res.status(400).json({ error: r.code === 'badCount' ? `Between 1 and ${sparks.GRANT_MAX} messages.` : 'No such family.', field: 'messages' });
+  res.json({ ok: true });
+});
+router.post('/api/admin/billing/sparks/:id/revoke', (req, res) => {
+  const r = sparks.revoke(req.user, req.params.id);
+  if (!r.ok) return res.status(404).json({ error: 'No active pack with that id.' });
+  res.json({ ok: true });
 });
 // Billing testers (D14): while the Stripe key is a test key, only these grown-up accounts may check out.
 router.post('/api/admin/users/:id/billing-tester', (req, res) => {

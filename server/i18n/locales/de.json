@@ -2223,7 +2223,17 @@
         "play": "Spiele spielen",
         "others": "Spiele von anderen Kindern",
         "grownUp": "Ein Erwachsener kann sich mit deinem Konto verbinden:",
-        "grownUpWhere": "Ich › Für Erwachsene"
+        "grownUpWhere": "Ich › Für Erwachsene",
+        "askText": "Möchtest du weiterbauen? Dein Erwachsener kann dir mehr Nachrichten an den Baumeister freischalten.",
+        "askTextSpark": "Möchtest du heute weiterbauen? Dein Erwachsener kann ein Funkenpaket mit extra Nachrichten an den Baumeister hinzufügen.",
+        "askButton": "Meinen Erwachsenen fragen",
+        "asked": "Dein Erwachsener sieht, dass du gefragt hast. Danke!",
+        "showText": "Möchtest du weiterbauen? Zeig das einem Erwachsenen. Unter {address} steht, wie es geht",
+        "qrLabel": "Ein Code, den ein Erwachsener mit dem Handy scannen kann",
+        "classText": "Der Baumeister deiner Klasse ruht sich für heute aus. Frag deine Lehrkraft, wann du wieder bauen kannst.",
+        "resting": "Der Baumeister ruht sich gerade für alle aus. Dein Spiel ist gespeichert.",
+        "getSpark": "Funkenpaket holen",
+        "back": "Neue Nachrichten an den Baumeister sind da. Viel Spaß beim Bauen!"
       },
       "mic": {
         "start": "Sprechen statt tippen",
@@ -2244,7 +2254,8 @@
       "limit": {
         "seePlans": "Pläne für mehr Baumeister-Nachrichten ansehen"
       },
-      "themeUse": "Nimm das Thema {name}."
+      "themeUse": "Nimm das Thema {name}.",
+      "sparks": "{n, plural, one {# Nachricht aus Funkenpaketen} other {# Nachrichten aus Funkenpaketen}}"
     },
     "character": {
       "unsaved": "Noch nicht gespeichert",
@@ -3522,6 +3533,50 @@
       "later": "Später erledigen",
       "laterNote": "Unter „Ihre Familie“ können Sie Ihre Kinder jederzeit hinzufügen.",
       "cta": "Kind hinzufügen"
+    },
+    "sparks": {
+      "heading": "Funkenpakete",
+      "intro": "Ein Funkenpaket ist eine einmalige Aufladung mit extra Nachrichten an den Baumeister für Ihre Familie. Sie werden genutzt, wenn die kostenlosen Tagesnachrichten und die Extra-Nachrichten Ihres Abos aufgebraucht sind.",
+      "left": "{n, plural, one {Noch # Nachricht aus Funkenpaketen} other {Noch # Nachrichten aus Funkenpaketen}}",
+      "none": "Keine Nachrichten aus Funkenpaketen mehr.",
+      "expires": "Die nächsten laufen am {date} ab.",
+      "needPlan": "Funkenpakete ergänzen ein Basic- oder Familienabo.",
+      "soon": "Funkenpakete gibt es noch nicht zu kaufen.",
+      "pick": "Funkenpaket hinzufügen",
+      "buy": "{n} Nachrichten · {price}",
+      "terms": {
+        "once": "Eine Zahlung. Nichts verlängert sich.",
+        "who": "Für Sie und bis zu {max} verknüpfte Kinder, auch wenn Ihr Abo später endet.",
+        "expire": "Nicht genutzte Nachrichten verfallen {days} Tage nach dem Kauf.",
+        "daily": "Jede Person kann bis zu {max} Nachrichten aus Funkenpaketen am Tag nutzen.",
+        "refund": "Ein ungenutztes Paket erstatten wir auf Anfrage innerhalb von 14 Tagen. Eine Erstattung entfernt die übrigen Nachrichten."
+      },
+      "waiting": "Ihr Funkenpaket wird hinzugefügt… Diese Seite aktualisiert sich von selbst.",
+      "done": "Ihr Funkenpaket ist bereit. Viel Spaß beim Bauen!",
+      "history": "Ihre Pakete",
+      "pack": "{n} Nachrichten",
+      "grant": "{n} Nachrichten vom Oomba-Team",
+      "state": {
+        "active": "Noch {left} von {n} · bis {date}",
+        "used": "Aufgebraucht",
+        "ended": "Abgelaufen",
+        "processing": "Zahlung in Bearbeitung",
+        "failed": "Die Zahlung ist nicht durchgegangen",
+        "refunded": "Erstattet",
+        "disputed": "Zahlung angefochten",
+        "revoked": "Vom Oomba-Team beendet"
+      },
+      "errors": {
+        "noPlan": "Funkenpakete ergänzen ein Abo: Wählen Sie zuerst ein Basic- oder Familienabo.",
+        "noPrice": "Funkenpakete können gerade nicht gekauft werden. Bitte versuchen Sie es später noch einmal."
+      }
+    },
+    "asks": {
+      "heading": "Anfragen an den Baumeister",
+      "plan": "{name} hat die heutigen Nachrichten an den Baumeister verbraucht und möchte mehr bauen.",
+      "spark": "{name} hat die heutigen Nachrichten an den Baumeister verbraucht und wünscht sich ein Funkenpaket.",
+      "getSpark": "Funkenpaket holen",
+      "dismiss": "Ausblenden"
     }
   },
   "plans": {

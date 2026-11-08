@@ -26,6 +26,7 @@ import * as C from '../services/checkout.js';
 import { log } from '../services/log.js';
 import { familyMonth, coveredChildren } from '../builder/usage.js';
 import * as B from '../services/billing.js';
+import * as sparks from '../services/sparks.js';
 const { customerOf } = B;
 import { rateLimit, allow, count, clear as clearLimit, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { tHtml, saveUserLang } from '../i18n/index.js';
@@ -62,7 +63,7 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // score is never stored (routes/games.js), so they are on no leaderboard.
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
-const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
+const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status|billing\/sparks\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
   /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
   // Oomba Live: grown-ups host (and join) live games (routes/live.js).
   /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/,
@@ -74,7 +75,8 @@ const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/sta
   // children said to each other. No friends' chat: /chat itself stays closed.
   /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
-  /^\/api\/billing\/(family\/checkout|portal)$/,
+  /^\/api\/billing\/(family\/checkout|family\/sparks|portal)$/,
+  /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/number-quest\/placement\/override$/,   // a grown-up's absolute placement override for a linked child (link checked in the route)
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll)$/,
@@ -390,6 +392,8 @@ router.get('/family', grownupOnly, async (req, res) => {
   const covered = new Set(plan.entitled ? coveredChildren(fam.id, plan.plan) : []);
   const max = F.maxChildrenFor(fam.id);
   const planBox = await planPanel(req, fam, plan, kids, chosen);
+  const sparksBox = await sparksPanel(req, fam, plan);
+  const asksBox = asksPanel(req, fam);
   const removeForm = (k, label, confirm) => html`<form data-api="/api/family/children/${F.requestToken(fam.id, k.child_id)}/remove" data-reload data-confirm="${confirm}"><button class="btn" type="submit">${label}</button></form>`;
   const made = F.madeOn(req);
   const rows = kids.map(k => {
@@ -443,7 +447,9 @@ router.get('/family', grownupOnly, async (req, res) => {
   const body = html`
   <div class="pagehead"><h1>👪 ${t('family.page.heading')}</h1>${notYou(req, { plain: true })}</div>${teamLink(req)}
   ${familyChecklist(req, { fam, kids, plan, max, sale: await familyOnSale(u) })}
+  ${asksBox}
   ${planFirst ? html`${planBox}${kidsBox}` : html`${kidsBox}${planBox}`}
+  ${sparksBox}
   ${yourGames}
   ${liveOn() ? html`<section class="panel" aria-labelledby="famlive-h" id="family-live"><h2 id="famlive-h">📡 ${t('live.entry.family')}</h2>
     <p class="muted">${t('live.entry.familyText')}</p><div class="row"><a class="btn btn-primary" href="/live">📡 ${t('live.entry.host')}</a></div></section>` : ''}
@@ -621,6 +627,85 @@ async function checkoutForm(req, chosen, fam, kids = []) {
   </form>`;
 }
 
+// ---------------------------------------------------------------- Spark Packs and asks (services/sparks.js)
+/** The packs on sale with their Stripe prices: [{ size, messages, unitAmount }] (sizes whose one-time Price is missing are
+ *  left out), or null when packs can't be sold here (billing off, no "Family" payment method configuration, Stripe
+ *  unreadable). */
+export async function sparkPrices() {
+  if (!S.billingOn() || !config.stripePmcFamily) return null;
+  try {
+    const p = await S.prices();
+    const out = sparks.SIZE_KEYS.map(size => ({ size, messages: sparks.SIZES[size].messages, price: p[sparks.SIZES[size].lookupKey] }))
+      .filter(x => x.price && !x.price.interval).map(x => ({ size: x.size, messages: x.messages, unitAmount: x.price.unitAmount }));
+    return out.length ? out : null;
+  } catch (e) {
+    log('warn', 'billing: prices not read', e instanceof S.StripeCallError ? e.fields : { error: e.message });
+    return null;
+  }
+}
+/**
+ * The Spark Packs card of /family (#sparks): the family's Spark Pack messages left and when the next ones end, the pack
+ * picker (a plan on, password again, one button per size with its price) and the family's packs. Shown with a plan on,
+ * while packs are left or were bought, and when asked for (?sparks=1, the Studio's card). Back from Checkout
+ * (?sparks_checkout=…) it waits for the pack.
+ */
+async function sparksPanel(req, fam, plan) {
+  const t = req.t, f = req.fmt, u = req.user;
+  const left = sparks.balance(fam.id), list = sparks.packsOf(fam.id);
+  const sid = typeof req.query.sparks_checkout === 'string' ? req.query.sparks_checkout.slice(0, 200) : '';
+  if (!plan.entitled && !left && !list.length && !sid && !req.query.sparks) return '';
+  const head = html`<h2 id="sparks-h"><span aria-hidden="true">⚡</span> ${t('family.sparks.heading')}</h2>`;
+  if (sid) {
+    return html`<section class="panel sparks" aria-labelledby="sparks-h" id="sparks">${head}
+      <div class="notice" role="status" data-checkout-wait="${sid}" data-status-url="/api/billing/sparks/status" data-back="/family#sparks" data-done="${t('family.sparks.done')}">
+        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('family.sparks.waiting')}</p>
+        <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('family.billing.slow')}</p>
+          <p class="small" style="margin:.5em 0 0"><a href="/family#sparks">${t('family.billing.back')}</a></p></div></div></section>`;
+  }
+  const parts = [html`<p>${t('family.sparks.intro')}</p>`];
+  const next = sparks.nextExpiry(fam.id);
+  parts.push(html`<p class="planextras" id="sparks-left"><b>${left ? t('family.sparks.left', { n: left }) : t('family.sparks.none')}</b>${next ? html`<br><span class="small muted">${t('family.sparks.expires', { date: f.date(next) })}</span>` : ''}</p>`);
+  if (!plan.entitled) parts.push(html`<p class="small">${t('family.sparks.needPlan')} <a href="/plans">${t('family.page.seePlans')}</a></p>`);
+  else {
+    const prices = C.mayBill(u) ? await sparkPrices() : null;
+    if (!prices) parts.push(html`<p class="small muted">${t('family.sparks.soon')}</p>`);
+    else {
+      parts.push(html`<form data-api="/api/billing/family/sparks" class="planform planpick sparkpick" id="sparks-buy">
+        <h3>${t('family.sparks.pick')}</h3>
+        <ul class="small planterms">
+          <li>${t('family.sparks.terms.once')}</li>
+          <li>${t('family.sparks.terms.who', { max: config.familyMaxChildren })}</li>
+          <li>${t('family.sparks.terms.expire', { days: config.sparkExpiryDays })}</li>
+          <li>${t('family.sparks.terms.daily', { max: config.sparkDailyMax })}</li>
+          <li>${t('family.sparks.terms.refund')}</li>
+          <li>${t('family.billing.terms.taxPlans')}</li>
+        </ul>
+        ${passwordField(req, 'pw-sparks')}
+        <p class="err form-err" aria-live="polite"></p>
+        <div class="row planbtns sparkbtns">${prices.map((p, i) => html`<button class="btn ${i === 1 ? 'btn-primary' : ''}" type="submit" name="pack" value="${p.size}"><span aria-hidden="true">⚡</span> ${t('family.sparks.buy', { n: p.messages, price: f.money(p.unitAmount) })}</button>`)}</div>
+        <p class="small muted">${t('family.billing.stripe')}</p>
+      </form>`);
+    }
+  }
+  if (list.length) {
+    const state = p => { const st = sparks.packState(p); return st === 'active' ? t('family.sparks.state.active', { left: p.remaining, n: p.messages, date: f.date(p.expires_at) }) : t(`family.sparks.state.${st}`); };
+    parts.push(html`<h3 class="small">${t('family.sparks.history')}</h3><ul class="sparklist small">${list.map(p => html`<li><span>${p.source === 'grant' ? t('family.sparks.grant', { n: p.messages }) : t('family.sparks.pack', { n: p.messages })} · <span class="muted">${f.date(p.paid_at || p.created_at)}</span></span> <span class="sparkstate">${state(p)}</span></li>`)}</ul>`);
+  }
+  return html`<section class="panel sparks" aria-labelledby="sparks-h" id="sparks">${head}${parts}</section>`;
+}
+/** A child's "Ask my grown-up" from the Builder's daily-limit card: who asked, when, and one tap to the plans or a Spark
+ *  Pack, or Dismiss. Seeing them here clears the Family badge. */
+function asksPanel(req, fam) {
+  const t = req.t, f = req.fmt;
+  const asks = sparks.asksFor(fam.id);
+  if (!asks.length) return '';
+  sparks.markSeen(fam.id);
+  return html`<section class="panel famasks" aria-labelledby="asks-h" id="asks"><h2 id="asks-h"><span aria-hidden="true">🙋</span> ${t('family.asks.heading')}</h2>
+    <ul class="famasks-list">${asks.map(a => html`<li class="famask" data-ask="${a.id}"><p>${tHtml(t, a.kind === 'spark' ? 'family.asks.spark' : 'family.asks.plan', { name: html`<b><bdi>${a.name}</bdi></b>` })} <span class="small muted">${f.ago(a.created_at)}</span></p>
+      <div class="row">${a.kind === 'spark' ? html`<a class="btn btn-primary btn-sm" href="/family?sparks=1#sparks"><span aria-hidden="true">⚡</span> ${t('family.asks.getSpark')}</a>` : html`<a class="btn btn-primary btn-sm" href="/plans">${t('family.page.seePlans')}</a>`}
+        <form data-api="/api/family/asks/${a.id}/dismiss" data-reload><button class="btn btn-sm" type="submit">${t('family.asks.dismiss')}</button></form></div></li>`)}</ul></section>`;
+}
+
 // ---------------------------------------------------------------- paying (chunk 4)
 /** Billing APIs: families on for this request (BILLING_PUBLIC or the preview cookie) and a grown-up account; anyone
  *  else gets a 404, as if the address weren't there. */
@@ -667,6 +752,29 @@ router.post('/api/billing/portal', billingGate, rateLimit('billing-portal', 20, 
     if (!r.ok) return res.status(409).json({ error: req.t(`family.billing.errors.${r.code}`) });
     res.json({ ok: true, redirect: r.url });
   } catch (e) { stripeTrouble(req, res, e); }
+});
+// Spark Packs (services/sparks.js): one-time Checkout for a family whose plan is on. The server decides the price (the
+// Stripe Price of the size's lookup key) and the messages (SIZES); the page sends only a size key.
+router.post('/api/billing/family/sparks', billingGate, rateLimit('billing-sparks', 10, 600e3), testerGate, stepUp, async (req, res) => {
+  const t = req.t, size = String((req.body || {}).pack || '');
+  if (!sparks.SIZE_KEYS.includes(size)) return res.status(400).json({ error: t('errors.api.badRequest') });
+  const fam = F.ensureFamily(req.user);
+  try {
+    const r = await sparks.startCheckout({ family: fam, user: req.user, size, base: C.baseUrl(req) });
+    if (!r.ok) return res.status(r.code === 'badPack' ? 400 : 409).json({ error: t(r.code === 'badPack' ? 'errors.api.badRequest' : r.code === 'noPlan' ? 'family.sparks.errors.noPlan' : 'family.sparks.errors.noPrice') });
+    res.json({ ok: true, redirect: r.url });
+  } catch (e) { stripeTrouble(req, res, e); }
+});
+/** The Spark Pack return page's poll: { state: 'active' | 'processing' | 'failed' | 'not_yours' }. */
+router.get('/api/billing/sparks/status', billingGate, rateLimit('billing-status', 60, 60e3), async (req, res) => {
+  const fam = F.ensureFamily(req.user);
+  const id = typeof req.query.checkout === 'string' ? req.query.checkout : '';
+  res.set('Cache-Control', 'no-store').json({ state: await sparks.checkoutReturn(fam.id, id) });
+});
+router.post('/api/family/asks/:id/dismiss', grownupOnly, rateLimit('family-asks', 30, 60e3), (req, res) => {
+  const fam = F.familyOfOwner(req.user.id);
+  if (!fam || !sparks.dismissAsk(req.user, fam.id, req.params.id)) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  res.json({ ok: true });
 });
 /** The return page's poll: { state: 'active' | 'processing' | 'not_yours' | 'none' }. With ?checkout=<session id> it
  *  also runs the shared sync's fallback, which only trusts the session's own owner. */

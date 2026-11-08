@@ -2235,7 +2235,17 @@
         "play": "Play games",
         "others": "Play games other kids made",
         "grownUp": "A grown-up can link to your account:",
-        "grownUpWhere": "Me › For grown-ups"
+        "grownUpWhere": "Me › For grown-ups",
+        "askText": "Want more building? Your grown-up can unlock more Builder messages for you.",
+        "askTextSpark": "Want to keep building today? Your grown-up can add a Spark Pack with extra Builder messages.",
+        "askButton": "Ask my grown-up",
+        "asked": "Your grown-up will see that you asked. Thank you!",
+        "showText": "Want more building? Show this to a grown-up. They can find out how at {address}",
+        "qrLabel": "A code a grown-up can scan with a phone",
+        "classText": "Your class's Builder is resting for today. Ask your teacher when you can build again.",
+        "resting": "The Builder is resting for everyone right now. Your game is saved.",
+        "getSpark": "Get a Spark Pack",
+        "back": "More Builder messages are here. Happy building!"
       },
       "mic": {
         "start": "Speak instead of typing",
@@ -2256,7 +2266,8 @@
       "limit": {
         "seePlans": "See plans for more Builder messages"
       },
-      "themeUse": "Use the {name} theme."
+      "themeUse": "Use the {name} theme.",
+      "sparks": "{n, plural, one {# Spark Pack message} other {# Spark Pack messages}}"
     },
     "character": {
       "unsaved": "Not saved yet",
@@ -3552,6 +3563,50 @@
       "later": "I'll do this later",
       "laterNote": "You can add your children any time from Your family.",
       "cta": "Add a child"
+    },
+    "sparks": {
+      "heading": "Spark Packs",
+      "intro": "A Spark Pack is a one-time top-up of extra Builder messages for your family. They are used after the free daily messages and your plan's extra messages run out.",
+      "left": "{n, plural, one {# Spark Pack message left} other {# Spark Pack messages left}}",
+      "none": "No Spark Pack messages left.",
+      "expires": "The next ones end on {date}.",
+      "needPlan": "Spark Packs top up a Basic or Family plan.",
+      "soon": "Spark Packs aren't on sale yet.",
+      "pick": "Add a Spark Pack",
+      "buy": "{n} messages · {price}",
+      "terms": {
+        "once": "One payment. Nothing renews.",
+        "who": "Shared by you and up to {max} linked children, even if your plan ends later.",
+        "expire": "Messages you don't use end {days} days after you buy the pack.",
+        "daily": "Each builder can use up to {max} Spark Pack messages a day.",
+        "refund": "Ask within 14 days for a refund of an unused pack. A refund takes back the messages that are left."
+      },
+      "waiting": "Adding your Spark Pack… This page updates by itself.",
+      "done": "Your Spark Pack is ready. Happy building!",
+      "history": "Your packs",
+      "pack": "{n} messages",
+      "grant": "{n} messages from the Oomba team",
+      "state": {
+        "active": "{left} of {n} left · until {date}",
+        "used": "Used up",
+        "ended": "Ended",
+        "processing": "Payment processing",
+        "failed": "The payment didn't go through",
+        "refunded": "Refunded",
+        "disputed": "Payment disputed",
+        "revoked": "Ended by the Oomba team"
+      },
+      "errors": {
+        "noPlan": "Spark Packs top up a plan: choose a Basic or Family plan first.",
+        "noPrice": "Spark Packs can't be bought right now. Please try again later."
+      }
+    },
+    "asks": {
+      "heading": "Builder requests",
+      "plan": "{name} used today's Builder messages and asked for more building.",
+      "spark": "{name} used today's Builder messages and asked for a Spark Pack.",
+      "getSpark": "Get a Spark Pack",
+      "dismiss": "Dismiss"
     }
   },
   "plans": {

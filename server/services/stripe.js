@@ -14,6 +14,10 @@ export const PRICE_LOOKUP_KEYS = Object.freeze({
   familyMonthly: 'oomba_family_monthly',
   familyYearly: 'oomba_family_yearly',
   schoolSeatYearly: 'oomba_school_seat_yearly',
+  // Spark Packs (services/sparks.js): one-time Prices (no recurring), one per pack size.
+  spark25: 'oomba_spark_25',
+  spark60: 'oomba_spark_60',
+  spark150: 'oomba_spark_150',
 });
 /** Which plan a lookup key sells: 'basic' (one child) and 'family' are both plans of a family (a grown-up's account),
  *  'school' of a school. */
@@ -111,7 +115,7 @@ export const subscriptionOfInvoice = inv => {
 
 /** integration_identifier of each Checkout flow (API dahlia and later), so the Dashboard can compare them: made once,
  *  with 8 random letters as Stripe asks. Never change them (the Dashboard groups sessions by them). */
-export const INTEGRATION_IDS = Object.freeze({ family: 'oomba_family_qhzvtrkm', school: 'oomba_school_wbnxjfpd' });
+export const INTEGRATION_IDS = Object.freeze({ family: 'oomba_family_qhzvtrkm', school: 'oomba_school_wbnxjfpd', spark: 'oomba_spark_tmzqbwhe' });
 
 /** A Customer for an owner, with no name or email from us (Checkout asks for the email; Stripe keeps it). */
 export const createCustomer = (params, idempotencyKey) => call(s => s.customers.create(params, { idempotencyKey }));

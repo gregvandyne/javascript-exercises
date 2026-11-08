@@ -510,8 +510,8 @@ test('while the free AI pool rests, a family child builds from the extras (paid 
 
 test('the Studio counter: free left of the daily ones, plus the extras this month (numbers only)', async () => {
   const a = await payingFamily();
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false });
-  assert.deepEqual(usage.counter(kid()), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: false });
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, sparkLeft: null, classContext: false });
+  assert.deepEqual(usage.counter(kid()), { turnsLeft: 3, freeLeft: 3, extraLeft: null, sparkLeft: null, classContext: false });
 });
 
 // ---------------------------------------------------------------- pages
@@ -733,9 +733,9 @@ test('a family child in a school without a plan keeps the extras but sees only "
   q.run("INSERT INTO school_members(school_id, user_id, role, status, joined_at) VALUES (?,?,'student','active',?)", school.id, a.child.id, Date.now());
   const al = usage.allowanceFor(a.child);
   assert.equal(al.familyId, a.fam.id); assert.equal(al.extraLeft, null); assert.equal(al.classContext, true);
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 7, extraLeft: null, classContext: true });
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 7, extraLeft: null, sparkLeft: null, classContext: true });
   q.run("UPDATE school_members SET status='left', left_at=? WHERE school_id=? AND user_id=?", Date.now(), school.id, a.child.id);
-  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, classContext: false }, 'out of school: the "+N" counter again');
+  assert.deepEqual(usage.counter(a.child), { turnsLeft: 7, freeLeft: 3, extraLeft: 5, sparkLeft: null, classContext: false }, 'out of school: the "+N" counter again');
 });
 
 test('funnel counts (services/funnel.js): Checkout started once per try; Paid once, from the webhook', async () => {
