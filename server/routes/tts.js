@@ -244,10 +244,10 @@ router.get('/admin/voices', (req, res) => {
   <div class="panel tblwrap"><table class="tbl tv-grid">
     <thead><tr><th>Language</th><th>On</th><th>Narrator</th><th class="tv-one">Play</th>${V.VOICES.map(v => html`<th class="tv-v">${v}</th>`)}</tr></thead>
     <tbody>${locales.map(l => html`<tr data-locale="${l.code}">
-      <th scope="row">${l.name} <span class="muted small">${l.code}</span></th>
-      <td class="tv-on"><label class="tv-onl"><input type="checkbox" name="on-${l.code}" aria-label="${l.name} on" ${s.locales[l.code].on ? raw('checked') : ''} ${allowed.has(l.code) ? '' : raw('disabled title="Not in TTS_LOCALES"')}><span class="tv-onw" aria-hidden="true">On</span></label>
-        <div class="small tv-sample" lang="${l.code}" dir="${l.dir}">${V.sampleFor(l.code)}</div></td>
-      <td class="tv-nar"><select class="input" name="narrator-${l.code}" aria-label="${l.name} narrator" data-narrator="${l.code}">${V.VOICES.map(v => html`<option ${v === s.locales[l.code].narrator ? raw('selected') : ''}>${v}</option>`)}</select></td>
+      <th scope="row">${l.name} <span class="muted small">${l.code}</span>
+        <div class="small tv-sample" lang="${l.code}" dir="${l.dir}">${V.sampleFor(l.code)}</div></th>
+      <td class="tv-on"><label class="tv-onl"><input type="checkbox" name="on-${l.code}" aria-label="${l.name} on" ${s.locales[l.code].on ? raw('checked') : ''} ${allowed.has(l.code) ? '' : raw('disabled title="Not in TTS_LOCALES"')}><span class="tv-onw" aria-hidden="true">On</span></label></td>
+      <td class="tv-nar" data-label="Narrator"><select class="input" name="narrator-${l.code}" aria-label="${l.name} narrator" data-narrator="${l.code}">${V.VOICES.map(v => html`<option ${v === s.locales[l.code].narrator ? raw('selected') : ''}>${v}</option>`)}</select></td>
       <td class="tv-one"><button class="btn btn-sm" type="button" data-play-narrator data-locale="${l.code}" aria-label="Play ${l.name} with the narrator chosen" ${on ? '' : raw('disabled')}>▶</button></td>
       ${V.VOICES.map(v => html`<td class="tv-v"><button class="btn btn-sm" type="button" data-play data-locale="${l.code}" data-voice="${v}" aria-label="Play ${l.name} with ${v}" ${v === s.locales[l.code].narrator ? raw('aria-current="true"') : ''} ${on ? '' : raw('disabled')}>▶</button></td>`)}
     </tr>`)}</tbody>

@@ -27,6 +27,11 @@ document.addEventListener('change', e => {
   }
 });
 
+// "The table scrolls sideways" shows only while the languages table is wider than its box.
+const tvWrap = document.querySelector('.tblwrap:has(> .tv-grid)'), tvHint = document.querySelector('.tv-scrollhint');
+const tvFit = () => { if (tvWrap && tvHint) tvHint.hidden = tvWrap.scrollWidth <= tvWrap.clientWidth + 1; };
+tvFit(); addEventListener('resize', tvFit);
+
 const form = $('#tv-form');
 // Something changed and isn't saved: on phones the Save row then stays in view (admin.css #tv-form.dirty).
 form && form.addEventListener('change', () => form.classList.add('dirty'));
