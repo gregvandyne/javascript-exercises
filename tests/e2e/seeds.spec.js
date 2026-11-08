@@ -1,8 +1,38 @@
 // Every launch game loads inside the sandbox with the SDK and no page errors.
 import { test, expect } from '@playwright/test';
-import { gameFrame } from './helpers.js';
+import { gameFrame, adminPage } from './helpers.js';
 
-const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['packet-post', 'Packet Post'], ['inside-the-machine', 'Inside the Machine'], ['data-detective', 'Data Detective'], ['robo-route', 'Robo Route'], ['tug-of-math', 'Tug of Math'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot'], ['word-trail', 'Word Trail'], ['jungle-cup', 'Jungle Cup']];
+const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['tug-of-math', 'Tug of Math'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot'], ['word-trail', 'Word Trail'], ['jungle-cup', 'Jungle Cup']];
+
+// CS Quest's games are played only inside their course (docs/decisions.md "Course games are played only as part of their
+// course"): no page of their own and not on Home for players, who land on the course page; the platform admin still opens
+// them directly, so each still loads in the sandbox with the SDK and no page errors.
+const COURSE = [['packet-post', 'Packet Post'], ['inside-the-machine', 'Inside the Machine'], ['data-detective', 'Data Detective'], ['robo-route', 'Robo Route']];
+
+for (const [slug, title] of COURSE) {
+  test(`${slug} (a CS Quest game) loads in the sandbox for the admin and lives on the course page, not on Home`, async ({ page, browser }) => {
+    const r = await page.goto(`/g/${slug}`);
+    expect(r.status()).toBe(200);
+    expect(new URL(page.url()).pathname + new URL(page.url()).hash).toBe(`/courses/cs-quest#${slug}`);
+    await expect(page.locator('h1').first()).toHaveText('CS Quest');
+    await page.goto('/');
+    await expect(page.locator('#featured')).toBeVisible();
+    await expect(page.locator('#featured').getByText(title, { exact: true })).toHaveCount(0);
+    const admin = await adminPage(browser);
+    const errors = [];
+    admin.on('pageerror', e => errors.push(e.message));
+    expect((await admin.goto(`/g/${slug}`)).status()).toBe(200);
+    expect((await admin.locator('h1').first().textContent()).trim()).toBe(title);
+    await admin.goto(`/play/${slug}`);
+    expect(new URL(admin.url()).pathname).toBe(`/play/${slug}`);
+    const f = await gameFrame(admin);
+    expect(await f.evaluate(() => typeof window.BRB.sfx.play)).toBe('function');
+    expect(await f.evaluate(() => document.title.length > 0)).toBe(true);
+    await admin.waitForTimeout(800);
+    expect(errors).toEqual([]);
+    await admin.context().close();
+  });
+}
 
 for (const [slug, title] of SEEDS) {
   test(`${slug} loads in the sandbox and shows up on Home`, async ({ page }) => {
