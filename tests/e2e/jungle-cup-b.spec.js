@@ -129,7 +129,7 @@ test('Rapids Run: intro, buttons / keys / swipes steer, jump and duck; a race wo
   expect(errors).toEqual([]);
 });
 
-test('Frog Chorus: intro, drums played by keys and taps in time; a song won by playing and one lost by idling', async ({ page }) => {
+test('Frog Chorus: intro, fireflies hit by drum taps and keys in time; a song won by playing, one lost by idling, one lost by mashing', async ({ page }) => {
   test.setTimeout(240_000);
   const { f, errors } = await open(page);
   await J(f, 'go', 'frog'); await J(f, 'step', 300);
@@ -139,7 +139,8 @@ test('Frog Chorus: intro, drums played by keys and taps in time; a song won by p
   expect([s.screen, s.sport.id, s.sport.phase]).toEqual(['sport', 'frog', 'intro']);
   await J(f, 'tap', 'go'); await J(f, 'step', 3800);
   s = await sport(f);
-  expect([s.phase, s.rounds, s.notes > 60]).toEqual(['count', 18, true]);
+  expect([s.phase, s.notes > 100, s.songSecs > 75 && s.songSecs < 95]).toEqual(['count', true, true]);
+  expect([s.windows.good, s.windows.perfect, s.look]).toEqual([0.15, 0.07, 2]);
   // the drums are canvas buttons (tap targets)
   expect((await J(f, 'buttons')).map(b => b.id)).toEqual(expect.arrayContaining(['pause', 'drum0', 'drum1', 'drum2']));
   // play the whole song: drum taps for the first rounds, then the keys (Left / Down / Right), each on its beat
@@ -149,7 +150,7 @@ test('Frog Chorus: intro, drums played by keys and taps in time; a song won by p
     const st = await sport(f);
     if (!st || st.done || !st.next) break;
     if (st.next.inS > 0.012) { await J(f, 'step', Math.round(st.next.inS * 1000)); continue; }
-    if (st.next.round <= 3) { await J(f, 'tap', 'drum' + st.next.drum); taps++; } else await J(f, 'tapKey', KEYS[st.next.drum]);
+    if (taps < 24) { await J(f, 'tap', 'drum' + st.next.drum); taps++; } else await J(f, 'tapKey', KEYS[st.next.drum]);
     await J(f, 'step', 17);
   }
   expect(taps).toBeGreaterThan(5);
@@ -175,7 +176,13 @@ test('Frog Chorus: intro, drums played by keys and taps in time; a song won by p
   expect(s.state.misses).toBe(s.state.notes);
   s = await state(f);
   expect([s.feathersBy.frog, s.best.frog > 0]).toEqual([true, true]);
-  // a wrong drum is not a hit
+  // drumming on every drum all the time never wins (taps with no firefly near quiet that drum for a moment)
+  await J(f, 'step', 600); await J(f, 'tap', 'retry'); await J(f, 'step', 3800);
+  await J(f, 'sport', 'auto', true, 0, 0, 4);
+  s = await playUntilResults(f, 100);
+  expect([s.phase, s.result.won]).toEqual(['results', false]);
+  expect(s.state.wrong).toBeGreaterThan(100);
+  // a wrong drum is not a hit, and costs nothing
   await J(f, 'step', 600); await J(f, 'tap', 'retry'); await J(f, 'step', 3800);
   for (let i = 0; i < 40; i++) { const st = await sport(f); if (st.next.inS < 0.012) break; await J(f, 'step', Math.max(17, Math.round(st.next.inS * 1000))); }
   const nx = (await sport(f)).next;
@@ -199,7 +206,8 @@ test('Easier champions: slower otters, a lower mark from Rana and wider timing',
   await J(f, 'setSave', { settings: { easy: true, font: 'pixel' } });
   await J(f, 'play', 'frog'); await J(f, 'step', 3800);
   let s = await sport(f);
-  expect(s.target).toBeLessThan(0.5);
+  expect([s.windows.good, s.windows.perfect, s.look]).toEqual([0.2, 0.09, 2.4]);
+  expect(s.target).toBeLessThan(0.93);
   await J(f, 'play', 'rapids'); await J(f, 'step', 3800); await J(f, 'step', 20000);
   const easy = (await sport(f)).rivals[0].d;
   await J(f, 'setSave', { settings: { easy: false, font: 'pixel' } });
