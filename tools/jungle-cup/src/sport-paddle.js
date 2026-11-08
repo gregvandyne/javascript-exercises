@@ -41,7 +41,7 @@
   const gauss = () => (rnd() + rnd() + rnd() - 1.5) * 2;          // about a normal spread (sd ~1)
   const warm = () => S.stage === 'warm';
   /** How far from Cappy's paddle a ball can be and still be hit (court units). */
-  const reach = ctx => (ctx.easy ? 21 : 16) + (warm() ? 4 : 0);
+  const reach = ctx => (ctx.easy ? 22 : 17) + (warm() ? 4 : 0);
   const jReach = ctx => (warm() ? 17 : ctx.easy ? 13 : 15);
   const cSpeed = ctx => (ctx.easy ? 122 : 110);
   const jSpeed = ctx => (warm() ? 70 : ctx.easy ? 78 : 100);
@@ -86,7 +86,7 @@
     const T = Math.max(0.35, Math.hypot(xb - x0, yb - y0) / v);
     b.x = x0; b.y = y0; b.h = h0; b.vx = (xb - x0) / T; b.vy = (yb - y0) / T; b.vh = (GRAV * T * T / 2 - h0) / T;
     b.live = true; b.fade = 0; b.bounced = 0; b.age = 0; b.bx = xb; b.by = yb; b.bT = T; b.toward = yb > 0 ? 1 : -1;
-    b.whiffed = false; b.botSwung = false; b.smash = false; b.pounce = false; b.missFloat = false; b.offX = 0;
+    b.whiffed = false; b.botSwung = false; b.smash = false; b.pounce = false; b.missFloat = false; b.offX = 0; b.tx = xb;
     // the sweet spot: the top of the hop after the bounce (the table slows the ball a little), kept inside the court
     const vh2 = -(b.vh - GRAV * T) * BOUNCE, vx2 = b.vx * FRICT, vy2 = b.vy * FRICT;
     let ts = clamp(vh2 / GRAV, 0.12, 0.6);
@@ -150,7 +150,7 @@
   function startStage(ctx, stage) {
     S.stage = stage; S.you = 0; S.them = 0; S.target = stage === 'warm' ? 3 : 7; S.serve = 'you'; S.serveN = 0;
     S.rally = 0; S.pounce = 0; S.pounceReady = false; S.phase = 'serve'; S.phaseT = 0; S.speed = baseSpeed(ctx);
-    S.frenzy = 0; S.fzDone = 0; S.tossN = 0; S.ptYou = 0; S.ptThem = 0;
+    S.frenzy = 0; S.fzDone = 0; S.tossN = 0; S.ptYou = 0; S.ptThem = 0; S.buffer = 0;
     for (const b of BALLS) { b.live = false; b.fade = 0; }
     S.cx = 0; S.cy = YOU_HOME; S.jx = 0; S.jy = -YOU_HOME;
   }
@@ -170,6 +170,13 @@
       if (d <= R && d < bd) { best = b; bd = d; }
     }
     if (best) { hitYou(ctx, best, R); return; }
+    // a swing a moment too early (the ball reaches the ring within 0.13 s, and Cappy is there) waits for it, so a
+    // touch screen's small delay never costs the ball; the hit is then at most Good
+    for (const b of BALLS) {
+      if (!b.live || b.toward < 0 || b.whiffed || b.h > 40) continue;
+      const left = b.sweetT - b.age;
+      if (left > 0 && left < 0.13 && Math.hypot(b.sweetX - hx, b.sweetY - hy) <= R) { S.buffer = 0.18; S.bufBall = b; return; }
+    }
     // nothing in reach: a swing at a ball that is still coming (on Cappy's half, ahead of him) loses it, so tapping
     // over and over never wins points (Easier champions forgive a swing that is only a little early)
     let early = null, ed = 1e9;
@@ -184,9 +191,9 @@
       UI.float(SX(hx, hy), SY(hx, hy, 24), t('pad.early'), '#ffe9a0');
     }
   }
-  function hitYou(ctx, b, R) {
+  function hitYou(ctx, b, R, cap) {
     const dy = b.y - hitY(), dx = b.x - hitX();
-    const q = clamp(1 - Math.max(Math.abs(dy) / R, Math.abs(dx) / R * 0.75), 0, 1);
+    const q = Math.min(cap || 1, clamp(1 - Math.max(Math.abs(dy) / R, Math.abs(dx) / R * 0.75), 0, 1));
     let word, col = '#fff8e8';
     if (q > 0.62) { word = 'pad.perfect'; col = '#ffd24a'; S.perfects++; S.pounce = Math.min(1, S.pounce + 0.34); ctx.sfx('padPerfect'); }
     else if (q > 0.34) { word = 'pad.good'; col = '#8ee070'; S.pounce = Math.min(1, S.pounce + 0.15); }
@@ -194,7 +201,8 @@
     S.lastQ = q; S.hint = Math.max(0, S.hint - 0.25); S.rally++; S.hits++;
     S.speed = Math.min(maxSpeed(ctx), S.speed + (warm() ? 4 : ctx.easy ? 5 : 7));
     // aim: a sideways push on the stick picks the side; no push = away from Jada
-    const side = Math.abs(S.ax) * S.am > 0.3 ? S.ax * S.am : (S.jx > 0 ? -1 : 1) * (0.4 + rnd() * 0.5);
+    // (a firm sideways push aims; running to the ball doesn't count as aiming, so no push = away from Jada)
+    const side = Math.abs(S.ax) > 0.7 && S.am > 0.6 ? S.ax : (S.jx > 0 ? -1 : 1) * (0.55 + rnd() * 0.4);
     let xb = clamp(side * 25 + (rnd() - 0.5) * 6, -27, 27), yb = -(18 + q * 24), v = S.speed * (0.85 + 0.35 * q), h0 = 10 + q * 4;
     if (q <= 0.34) { yb = -(14 + rnd() * 10); v *= 0.85; h0 = 16; }   // a weak hit floats up short: easy to smash
     const pounce = S.pounceReady && q > 0.2;
@@ -206,12 +214,14 @@
     UI.float(SX(b.x, b.y), SY(b.x, b.y, b.h + 16), t(word), col);
     ctx.sfx('tick'); UI.burst(SX(b.x, b.y), SY(b.x, b.y, b.h), 5, '#fff8e8', 40);
     launch(b, b.x, b.y, Math.max(6, Math.min(b.h, 20)), xb, yb, v);
-    b.pounce = pounce; decideThem(ctx, b, q);
+    b.tx = xb; b.pounce = pounce; decideThem(ctx, b, q);
   }
   /** Jada (or a marmoset) decides, as the ball leaves Cappy's paddle, whether this one comes back. */
   function decideThem(ctx, b, q) {
-    let p = warm() ? 0.86 : ctx.easy ? 0.88 : 0.97;
-    if (q > 0.62) p -= warm() ? 0.08 : 0.05;
+    // a better hit is harder to get back, and so is one placed away from her
+    let p = q > 0.62 ? 0.87 : q > 0.34 ? 0.93 : 0.97;
+    if (warm()) p -= 0.14; else if (ctx.easy) p -= 0.1;
+    if (Math.abs(b.tx || 0) > 14 && Math.sign(b.tx) !== Math.sign(S.jx || 1)) p -= 0.07;
     if (S.rally > 10) p -= (S.rally - 10) * 0.03;
     if (b.pounce) p = warm() ? 0.05 : ctx.easy ? 0.1 : 0.2;
     b.willReturn = rnd() < clamp(p, 0.04, 0.97);
@@ -353,6 +363,13 @@
     if (S.jdive > 0) S.jdive = Math.max(0, S.jdive - dt); if (S.cdive > 0) S.cdive = Math.max(0, S.cdive - dt);
     if (S.bot) botThink(dt, ctx);
     if (S.phase !== 'over') moveCappy(dt, ctx);
+    // a swing pressed a moment early hits as soon as that ball is in reach (at most a Good hit)
+    if (S.buffer > 0) {
+      S.buffer -= dt;
+      const b = S.bufBall, R = reach(ctx);
+      if (!b || !b.live || b.toward < 0 || b.whiffed) S.buffer = 0;
+      else if (b.bounced >= 1 && b.h <= 40 && Math.hypot(b.x - hitX(), b.y - hitY()) <= R) { S.buffer = 0; S.swingT = 0; hitYou(ctx, b, R, 0.55); }
+    }
     moveJada(dt, ctx);
     if (S.phase === 'serve') {
       if (S.serve === 'them' && S.phaseT > (S.frenzy ? 1.8 : 1.0)) serveThem(ctx);

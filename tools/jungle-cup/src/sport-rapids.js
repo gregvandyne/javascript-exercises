@@ -234,9 +234,9 @@
     return { id, nameKey, rider, canoe, lane, lx: lane, d: 0, prevD: 0, v: V0, slow: 1, boostT: 0, jumpT: 0, duckT: 0, bonkT: 0, inv: 0,
       base, easyBase, err, oi: 0, finT: 0, bit, ph: 0, strokeT: 0, spinT: 0 };
   }
-  S.rivals.push(mkRival('ripple', 'rap.ripple', 'rap_ripple', 'rap_canoe_ripple', 0, 15.1, 14.2, 0.05, 2));
-  S.rivals.push(mkRival('splash', 'rap.splash', 'rap_splash', 'rap_canoe_splash', 2, 14.9, 13.9, 0.08, 4));
-  S.rivals.push(mkRival('marm', 'name.marm', 'rap_marm', 'rap_canoe_marm', 1, 14.0, 13.0, 0.16, 8));
+  S.rivals.push(mkRival('ripple', 'rap.ripple', 'rap_ripple', 'rap_canoe_ripple', 0, 14.5, 13.8, 0.05, 2));
+  S.rivals.push(mkRival('splash', 'rap.splash', 'rap_splash', 'rap_canoe_splash', 2, 14.3, 13.5, 0.08, 4));
+  S.rivals.push(mkRival('marm', 'name.marm', 'rap_marm', 'rap_canoe_marm', 1, 13.5, 12.6, 0.16, 8));
   const laneBlocked = (o, l) => (o.kind === ROCK || o.kind === CROC || o.kind === WHIRL || o.kind === DAM) && (o.lanes & (1 << l));
   /** Is this spot in a fast channel's lane? (Channels are few: a short scan back from the racer.) */
   function inChannel(d, lane) {

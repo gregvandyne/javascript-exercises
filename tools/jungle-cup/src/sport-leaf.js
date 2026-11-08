@@ -260,7 +260,8 @@
 
   /* ---------- Kiki: rides the same slope, always pops, scores on every ramp ---------- */
   // Kiki's points per ramp (the jumps got bigger, so she keeps up: tuned with the bots in jungle-cup-c's balance test)
-  const KIKI_BASE = 215, KIKI_EASY = 135, KIKI_MEGA = 140, KIKI_MEGA_E = 70, KIKI_RND = 70, KIKI_RND_E = 55, KIKI_BIG = 45, KIKI_BIG_E = 22;
+  // (one clean trick per ramp is about an even race on Normal; combos and perfect landings win it)
+  const KIKI_BASE = 140, KIKI_EASY = 95, KIKI_MEGA = 95, KIKI_MEGA_E = 50, KIKI_RND = 50, KIKI_RND_E = 40, KIKI_BIG = 30, KIKI_BIG_E = 15;
   function moveKiki(dt, ctx) {
     if (!S.kair) {
       S.kvx = clamp(S.kvx + groundAccel(S.kx, S.kvx) * dt, 55, 215);
@@ -294,6 +295,7 @@
       return;
     }
     if (S.trick || S.queue) return;
+    if (S.botOne && S.nTr >= 1) return;              // a 'one trick per jump' rider (balance checks)
     const left = landIn(S.x, S.y, S.vx, S.vy), want = BOT_ORDER[S.nTr % BOT_ORDER.length];
     const margin = 0.06 + (1 - S.skill) * 0.25 * S.r();
     if (left > TRICKS[want].dur * (ctx.easy ? 0.85 : 1) + margin) { trickInput(ctx, want); S.botCd = 0.05 + (1 - S.skill) * 0.2; }
@@ -327,7 +329,8 @@
       if (S.endT > 1.3 && !S.finished) {
         S.finished = true;
         const score = Math.round(S.score), kiki = Math.max(1, Math.round(S.kScore)), won = S.won;
-        const stars = won ? 1 + (score >= kiki * 1.35 ? 1 : 0) + (score >= kiki * 1.8 ? 1 : 0) : 0;
+        // stars reward style, not just beating Kiki: big margins and perfect landings
+        const stars = won ? 1 + (score >= kiki * 1.35 && S.perfects >= 3 ? 1 : 0) + (score >= kiki * 1.8 && S.perfects >= 8 ? 1 : 0) : 0;
         ctx.finish({ score, stars, won, frac: won ? [0.34, 0.67, 1][stars - 1] : Math.min(0.3, score / kiki * 0.3), stats: { kiki, crashes: S.crashes, bestCombo: S.bestCombo, tricks: S.tricksDone, perfects: S.perfects, bigAirs: S.bigAirs } });
       }
     }
@@ -601,6 +604,7 @@
       /** 0..1: how well the bot rides (1 = pops every ramp and never lands mid-trick). */
       skill(ctx, v) { S.skill = clamp(+v, 0, 1); return S.skill; },
       seed(ctx, n) { S.seed = n | 0; return true; },
+      one(ctx, on) { S.botOne = !!on; return S.botOne; },
       time(ctx, secs) { S.time = clamp(+secs, 0, TIME); return S.time; },
     },
     cheat(won) {
