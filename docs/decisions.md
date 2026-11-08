@@ -2725,8 +2725,8 @@ Owner: "They should also be able to chat all users." Read as: an admin can write
 everyone (or a group).
 - **One inbox, not a second system.** Team messages are rows in `chat_messages` between a person and the official account
   (`OombaAcademy`), shown as "Oomba team ✓" at `/chat/OombaAcademy` and on top of the chat inbox; the unread count joins
-  the Friends badge (grown-ups: the Family badge and a link on /family; grown-ups' `/chat` opens this thread, their only
-  chat). `chat_messages.sent_by` records which admin wrote; nobody signs in as the official account. Admin › Team inbox
+  the Friends badge (grown-ups: the Family badge and a link on /family; this thread is their only chat, and `/chat`
+  itself stays closed to them). `chat_messages.sent_by` records which admin wrote; nobody signs in as the official account. Admin › Team inbox
   lists the conversations; the admin writes from `/admin/messages/<username>` ("Message" on a user).
 - **Children (the rule in "Owner requests": no stranger chat, adults and kids are never friends).** The team is adults,
   so a direct message to a child is allowed only when a grown-up sees it: each team message to a child, and each reply,

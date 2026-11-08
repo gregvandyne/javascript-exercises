@@ -29,8 +29,6 @@ router.get('/chat', (req, res) => {
   const t = req.t;
   const u = req.user;
   if (!u || u.is_guest) return guestPage(req, res);
-  // Grown-ups have no friends' chat: their inbox is the Oomba team thread.
-  if (isGrownup(u)) return res.redirect(302, `/chat/${OFFICIAL}`);
   const list = withTeam(u, t, chat.inbox(u, t));
   const body = html`
   <div class="chatcol">

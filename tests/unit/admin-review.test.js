@@ -241,11 +241,11 @@ test('the team thread in the inbox and on /chat/OombaAcademy: kids, and grown-up
   res = await req(`/chat/${auth.OFFICIAL}`, { user: kid });
   assert.equal(res.status, 200); const page = await res.text();
   assert.match(page, /Your grown-up can see them too/); assert.match(page, /Welcome!/);
-  // A grown-up: /chat sends them to the team thread, which they can read and answer.
+  // A grown-up: the team thread (linked from /family) is their only chat; /chat itself stays closed to them.
   const grown = mk('Dad', { accountType: 'grownup' });
   team.sendDirect(admin, grown, 'Thanks for joining');
-  res = await req('/chat', { user: grown });
-  assert.equal(res.status, 302); assert.equal(res.headers.get('location'), `/chat/${auth.OFFICIAL}`);
+  assert.equal((await req('/chat', { user: grown })).status, 404);
+  res = await req('/family', { user: grown }); assert.match(await res.text(), /new message from the Oomba team/);
   res = await req(`/chat/${auth.OFFICIAL}`, { user: grown }); assert.equal(res.status, 200);
   res = await req(`/api/chat/${auth.OFFICIAL}`, { user: grown, method: 'POST', body: { kind: 'text', body: 'You are welcome' } });
   assert.equal(res.status, 200);

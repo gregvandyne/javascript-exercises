@@ -212,10 +212,9 @@ test('connections: two grown-ups connect by code; the page has no chat and no pr
   assert.ok(games.canView(B, cg));
   assert.equal((await as(B)(`/g/${cg.slug}`)).status, 200);
   // Still closed: chat, the kids' friends page, profiles, chat APIs.
-  // /chat is the Oomba team thread for a grown-up (docs/decisions.md "Admin messages: the Oomba team inbox"), never friends' chat.
-  const inbox = await as(A)('/chat');
-  assert.equal(inbox.status, 302); assert.equal(inbox.location, '/chat/OombaAcademy');
-  for (const [method, path] of [['GET', '/friends'], ['GET', `/u/${B.username}`], ['GET', '/u/x'], ['GET', '/api/chat'], ['POST', `/api/chat/${B.username}`]]) {
+  // Their only chat is the Oomba team thread (/chat/OombaAcademy, tests/unit/admin-review.test.js); friends' chat stays closed.
+  assert.equal((await as(A)('/chat/OombaAcademy')).status, 200);
+  for (const [method, path] of [['GET', '/chat'], ['GET', '/friends'], ['GET', `/u/${B.username}`], ['GET', '/u/x'], ['GET', '/api/chat'], ['POST', `/api/chat/${B.username}`]]) {
     const r = await as(A)(path, { method, body: method === 'POST' ? { text: 'hi' } : undefined });
     assert.equal(r.status, 404, `${method} ${path} -> ${r.status}`);
   }

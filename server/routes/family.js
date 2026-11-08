@@ -70,9 +70,9 @@ const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/sta
   /^\/api\/match\/(people|inbox|[^/]+\/wait)$/,
   // Number Quest: a grown-up reads their linked child's Starting Point note (routes/number-quest.js checks the link).
   /^\/number-quest\/starting-point$/,
-  // The Oomba team thread (routes/chat.js; /chat sends a grown-up there): messages from the team, copies of what the team
-  // and their children said to each other. No friends' chat.
-  /^\/chat(\/oombaacademy)?$/i, /^\/api\/chat\/oombaacademy$/i];
+  // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
+  // children said to each other. No friends' chat: /chat itself stays closed.
+  /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|portal)$/,
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
