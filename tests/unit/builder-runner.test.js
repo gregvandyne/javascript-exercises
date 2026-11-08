@@ -10,6 +10,7 @@ import test, { afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 const { config } = await import('../../server/config.js');
+config.builderFullForAll = false;   // a regular maker's caps and limits (BUILDER_FULL_FOR_ALL: builder-trusted.test.js)
 config.anthropicKey = '';
 const { q, today } = await import('../../server/db.js');
 const auth = await import('../../server/auth.js');

@@ -1,7 +1,7 @@
 // Sessions, passwords, guests and the kid-safe username rules. Reused from the starter, renamed and tightened.
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { q, uid, now, setting, tx, newFriendCode } from './db.js';
+import { q, uid, now, today, setting, tx, newFriendCode } from './db.js';
 import { config } from './config.js';
 import { cleanName, cleanText } from './services/textfilter.js';
 import { tEn, tReq } from './i18n/index.js';
@@ -172,10 +172,26 @@ export const longPasswordKind = u => ['staff', 'grownup'].includes(accountKind(u
 // The cookie outlives its session by a day, so a device that comes back to an ended sign-in (even the next morning) is
 // told so, and the next person to sign in there isn't sent to the last one's page.
 const COOKIE_GRACE = 86400;
-/** via: 'switch' for a sign-in a grown-up's Switch started (routes/family.js; req.sessionVia), else nothing. */
-export function startSession(res, userId, ua = '', { via = null } = {}) {
-  const id = uid(32); const t = now(); const { max } = SESSION_RULES[accountKind(getUser(userId))];
+/** How a sign-in happened, for the admin's user analytics (sign_ins.method). */
+export const SIGN_IN_METHODS = ['password', 'google', 'switch', 'signup'];
+/** A real account was used on this UTC day (user_days: "days active" and DAU / WAU / MAU on the admin pages). */
+export const noteActiveDay = (userId, t = now()) => q.run('INSERT OR IGNORE INTO user_days(user_id, day) VALUES (?,?)', userId, today(t));
+/** via: 'switch' for a sign-in a grown-up's Switch started (routes/family.js; req.sessionVia), else nothing. method: how
+ *  they signed in (SIGN_IN_METHODS; default 'password'). Every real account's sign-in is noted for the admin's analytics
+ *  (users.last_login_at, one sign_ins row with the method only: no IP, no browser); guests' never are. */
+// Told after an account's first sign-in ever (services/team.js sends new kids the team's welcome message).
+const firstSignInListeners = [];
+export function onFirstSignIn(fn) { firstSignInListeners.push(fn); }
+export function startSession(res, userId, ua = '', { via = null, method = 'password' } = {}) {
+  const id = uid(32); const t = now(); const u = getUser(userId); const { max } = SESSION_RULES[accountKind(u)];
+  const first = !!u && !u.is_guest && !u.last_login_at;
   q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua, last_active, via) VALUES (?,?,?,?,?,?,?)', id, userId, t, t + max, String(ua).slice(0, 200), t, via === 'switch' ? 'switch' : null);
+  if (u && !u.is_guest) {
+    q.run('UPDATE users SET last_login_at=? WHERE id=?', t, userId);
+    q.run('INSERT INTO sign_ins(user_id, at, method) VALUES (?,?,?)', userId, t, via === 'switch' ? 'switch' : SIGN_IN_METHODS.includes(method) ? method : 'password');
+    noteActiveDay(userId, t);
+  }
+  if (first) for (const fn of firstSignInListeners) { try { fn(getUser(userId)); } catch { /* a welcome never blocks signing in */ } }
   setCookie(res, COOKIE, pack(id), Math.floor(max / 1000) + COOKIE_GRACE);
   return id;
 }
@@ -239,7 +255,10 @@ export function sessionMiddleware(req, res, next) {
     if (u) {
       req.user = u; req.sessionId = id; req.sessionVia = s.via || null; req.madeCardOk = !!s.made_card_ok;
       if (t - s.last_active > ACTIVITY_EVERY && isActivity(req)) q.run('UPDATE sessions SET last_active=? WHERE id=?', t, id);
-      if (t - u.last_seen > 60e3) q.run('UPDATE users SET last_seen=? WHERE id=?', t, u.id);
+      if (t - u.last_seen > 60e3) {
+        q.run('UPDATE users SET last_seen=? WHERE id=?', t, u.id);
+        if (!u.is_guest && today(t) !== today(u.last_seen)) noteActiveDay(u.id, t);   // the first visit of a UTC day
+      }
     } else {
       // Timed out, or ended from another device: signed out from here on, and pages can say so (once: the cookie goes).
       if (s) q.run('DELETE FROM sessions WHERE id=?', id);

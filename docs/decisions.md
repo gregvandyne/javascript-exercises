@@ -7,6 +7,8 @@ One line each: the choice, then why. **Bold = please confirm** (product calls th
 - New Render service `magic-cup` (https://magic-cup.onrender.com) replaces `brb-gaming`: Render can't change an existing service's onrender.com subdomain. — Owner asked for the onrender domain to change too.
 - **Name: "BRB Gaming"** (was "Playloom"). SDK global is `window.BRB`, messages are `brb:*`, env vars are `BRB_*`, official account is `BRBGaming`. — Owner asked to rename.
 - **Friends-only chat added** (brief said no chat). Text chat only between accepted friends (added by friend code), both with real accounts, filtered for profanity and personal info (phones, emails, links, addresses, "add me on snap"), quick-chat phrase chips for young kids, rate limits + daily cap, block, report → admin queue, grown-ups can switch chat off on the Me page. No public, group or stranger chat. — Owner asked for a way for users to chat; this is the safest version that meets it.
+- **Every public game is approved by a person on the Oomba team; admins see new sign-ups and can message users** (Nov 2026). See "Admin approval before a game goes public", "Admin messages: the Oomba team inbox" and "Admin: New users" at the end. — Owner: "before a game is published to the live site it needs to go through admin approval", "see all new users", "chat all users".
+- **The admin sees user analytics** (Nov 2026): Admin › All users (every account with last login, days active, plays, builds, AI Builder messages, course steps, live games), a person's Activity on the Users tab, and DAU / WAU / MAU on Stats. See "Admin: user analytics" at the end. — Owner: "I also want to see user analytics like games played, last login, built games, etc."
 - **Updating published games is first-class.** The Studio shows "Live: vN · Editing: vM" and an "Update live game" button; for Public games the update is reviewed while players keep the old version (`games.pending_version_id`). — Owner asked that builders can update games they already published.
 - **Inspiration uploads in the Studio** (photos, drawings, text files, PDFs). They are private to the builder and admins, metadata such as photo GPS is stripped, and images are screened when an API key is set. They are given to the Builder as reference only and never copied into games, so no real photos of kids end up in public games. — Owner asked for uploads for inspiration.
 - Home hero shows only the featured game; "Make your own game" is its own banner below the Featured rail. — Owner feedback: mixing them in one card was confusing.
@@ -2068,6 +2070,18 @@ in `tts-lines.GAMES`. Design: docs/tts-design.md "A game the admin switched on".
   game asks for if known, else narrator.
 - Kid-facing text did not change (the Voices button and sheet are the same), so no new translations.
 
+## AI voices for a student's game, pinned to the version the admin saw (November 2026)
+
+The owner asked to be able to turn on AI voices for student games. This changes "Only grown-up staff's games" above:
+- **The admin may switch on a student's game too**, at `/admin/voices` or on the game's page. Teachers' and staff games
+  work as before.
+- **Pinned to one published version.** A student's words are a kid's, so the switch records the published version on
+  screen when the admin switches it on (`tts.games` entry `version`; audited with `student: true`). If the student
+  publishes a new version, the voices pause (the game page and `/admin/voices` say "Paused") until the admin plays it
+  and switches the voices on again. A student's game that was never published can't be switched on.
+- Everything else is unchanged: only the game's own words from that version are read, never what a player types, and
+  the backstops (rude words, personal info, the player's name, length) still run.
+
 ## 3D worlds are the Builder's own; the Oomba Kit is for 2D (November 2026)
 
 The owner found kit-made 3D worlds generic: every 3D game came out as Star Island or a `B.world` meadow, whatever the kid
@@ -2688,3 +2702,131 @@ once it is made (docs/story-builder.md "Choices" and "Changing a story").
   which survives deleting the story (deleting doesn't refund a rewrite) and goes with the account.
 - **Sharing.** A kid's shared or waiting story goes back to "waiting for OK" when a new version replaces it: the
   grown-up approved the old words. A grown-up's shared story stays shared. Only the owner can change a story.
+
+## Admin approval before a game goes public (Nov 2026)
+Owner: "before a game is published to the live site it needs to go through admin approval. Users can still share with
+themselves and friends, but not publish on live site without Oomba admin."
+- **Only a person makes a game public.** `publish()` (server/services/publish.js) never moves a version to `public`
+  without a platform admin's approval. The model review still runs first when a key is set: "needs changes" / "blocked"
+  sends the game back at once (no person is needed to say no), and "allowed" is kept on the version as a hint for the
+  admin ("Model pre-check" in the queue). An older model approval (from before this) still covers family, class and school
+  sharing, never public (`approvalScope`). Group sharing (family / class / school) is unchanged.
+- **Waiting for review.** A game that isn't live yet and is published for Everyone goes live **for the builder's friends
+  at once** (a grown-up's: their grown-up connections) and waits for the team (`pending_visibility='public'`). Friends
+  sharing was already instant at any time; doing it here saves a second step and keeps the public request (choosing
+  Friends afterwards withdraws it, as before). The Studio shows "⏳ Waiting for review" and that someone on the team checks
+  every game; the builder keeps playing, sharing with friends and editing. **Please confirm** this friends-at-once step.
+- **Editing after approval: the approved version stays live** until the new version is approved (the existing
+  `pending_version_id` path). It is the safer of the two options (strangers only ever see a version a person approved)
+  and the kinder one (an update never takes a public game down). Re-approving the exact same version is not needed when
+  the visibility goes back to public (same bytes, same verdict).
+- **Every public surface follows from this.** Home, search, explore, featured, the sitemap, `/g` and `/play` for
+  strangers, share images and live rooms all read `visibility='public' AND status='published'` (`visibleWhere(null)`,
+  `canView`), and only an approval writes that, so nothing else needed changing. There is no remix or fork feature today;
+  a game started from a template or another game is a new game and goes through the same queue.
+- **Sending back.** Preset, kid-friendly reasons (`review.reasons.*`, translated; `games.review_reason`) plus an optional
+  note the admin types (shown as typed, like before). The builder gets a notice from the Oomba team in their inbox when
+  a game is approved or sent back, and the Studio shows the reason.
+- **Grandfathering** (migration `0055_admin_review`): the version every game public at upgrade time plays is marked as
+  approved by the team for everyone (`review_report.by='admin'`, `for='public'`, `grandfathered=1`, the earlier reviewer in
+  `was`). Nothing public is taken down. Official seed games (`scripts/import-game.js`, `by: 'seed-import'`) count as approved.
+- **The queue.** Admin › Review queue (and a "⏳ Review" button with the count in the admin header; the count is also on the
+  admin's Me tab), with the preview, scan, model hint, who made it and what it is waiting for.
+
+## Admin messages: the Oomba team inbox (Nov 2026)
+Owner: "They should also be able to chat all users." Read as: an admin can write to anyone, and send an announcement to
+everyone (or a group).
+- **One inbox, not a second system.** Team messages are rows in `chat_messages` between a person and the official account
+  (`OombaAcademy`), shown as "Oomba team ✓" at `/chat/OombaAcademy` and on top of the chat inbox; the unread count joins
+  the Friends badge (grown-ups: the Family badge and a link on /family; this thread is their only chat, and `/chat`
+  itself stays closed to them). `chat_messages.sent_by` records which admin wrote; nobody signs in as the official account. Admin › Team inbox
+  lists the conversations; the admin writes from `/admin/messages/<username>` ("Message" on a user).
+- **Children (the rule in "Owner requests": no stranger chat, adults and kids are never friends).** The team is adults,
+  so a direct message to a child is allowed only when a grown-up sees it: each team message to a child, and each reply,
+  is copied at once into the team thread of their linked family grown-up and, for school students, their school's
+  admins; the message to the child is in the audit log with its text. **Owner's decision (November 2026): the team may
+  message any kid account**, because it is Oomba's own trusted staff: a child with nobody to copy can be messaged and
+  can reply; both directions are in the audit log with their text, and the admin's page says no copy goes to anyone. A
+  child's reply uses the friends-chat filters, pause and burst limit, plus a daily cap.
+- **Announcements**: everyone, kids, grown-ups, teachers and school staff, or one school (never guests, banned accounts or
+  the team account). Step 1 shows how many people it reaches and returns a confirm code bound to the audience and the
+  words; step 2 sends it. At most one every 10 minutes and 5 a day for the whole site; each is audited and kept in
+  `announcements` (one 'announce' message per person, so it has the usual unread and report). Not copied to parents
+  (the same words go to everyone).
+- Rate limits: an admin's direct messages 30 per 10 minutes. Team messages can be reported like any message; nobody can
+  block the team (it is how we tell builders about their games).
+
+## Admin: New users (Nov 2026)
+Owner: "see all new users added to the platform so I can better monitor usage."
+- **This replaces "no browsing of players" for admins.** Admin › New users lists every real account newest first:
+  display name and username, account type (kid, grown-up, teacher, school staff, platform admin), joined (UTC), how
+  (signed up, made by a grown-up, school account, Google), the linked grown-up or school, last active, games made /
+  public / waiting, plays of their games and games they played, and active or suspended. Filters: type, today / 7 / 30
+  days / all, search by name; 50 a page; a sign-ups-per-day sparkline (30 days) with tiles; CSV export (same filters, at
+  most 5,000 rows, cells starting with = + - @ are prefixed so a spreadsheet never runs them; every export is audited).
+  Each row opens the Users tab, which now also lists the person's games, report counts, their audit entries and a
+  Message button.
+- **Privacy**: only what the Users tab already showed: never a password, token, session, friend code or IP; for a child
+  only names, who looks after them and counts. Guests are left out. Admin pages stay English (like the rest of /admin).
+
+## Admin: user analytics (Nov 2026)
+Owner: "I also want to see user analytics like games played, last login, built games, etc."
+- **New users became All users** (`/admin?tab=people`, `server/services/admin-analytics.js`). Every real account (no
+  guests, not the Oomba team account, not deleted or merged tombstones), 50 a page, every column sortable both ways (also
+  a Sort by / Order pair in the filter form): name, type (with how they signed up and the linked grown-up or school),
+  joined, **last login**, **last active**, **days active in the last 30**, **played** (plays and different games),
+  **built** (games made, public, waiting), **AI messages**, **course steps**, **live games joined**, **plays of their
+  games**, status. Filters: type, active (last day / 7 / 30 days, not for 30 days, never), joined (today / 7 / 30 days, or
+  a from-until date range in UTC), search. Quick views: New (30 days), Active today, Active this week, Never active, Top
+  players, Top builders, Most AI messages. `?tab=newusers` (the old tab) opens the New view, and `/admin/new-users.csv`
+  still works. CSV (`/admin/users.csv`): the same filters and order, every column, at most 5,000 rows, the same
+  spreadsheet-safe cells, audited (`admin.export_users`). Aggregates are pre-grouped once per table and joined to the
+  accounts; 5,000 accounts with 60,000 plays list in about 20 ms (test in `tests/unit/admin-analytics.test.js`).
+- **A person's Activity** on the Users tab: last login (and how), last active, days active, plays (different games,
+  minutes), games built / live / public, plays of their games, AI Builder messages (all and 30 days), course steps done
+  per course (band, done of the band's steps), live games joined and hosted; 30-day charts of plays and Builder
+  messages and a strip of active days; the 5 games they play most; and a timeline of the latest sign-ins, games started
+  and published, plays, Builder messages per day, course checks and wins, and live games.
+- **Stats** gains Active people: DAU / WAU / MAU (distinct accounts used per UTC day), WAU against the week before,
+  DAU / MAU, new vs returning this week, an active-people-per-day chart and the most active people of the week (days
+  active, then plays and Builder messages). Plays, games built and Builder messages per day and the top 10 games of the
+  week were already there.
+- **Where each number comes from.** Last login: `users.last_login_at`, set by every sign-in (`auth.startSession`;
+  sessions themselves are deleted at sign-out and swept a day after they end, so they can't answer "last login").
+  Sign-ins: `sign_ins` (user, time, how: password, Google, a grown-up's Switch, sign-up), no IP and no browser.
+  Last active: `users.last_seen`. Days active and DAU / WAU / MAU: `user_days`, one row per account per UTC day it
+  signed in or opened any page signed in (written on a day's first request). Games played: `plays`. Built / public /
+  plays of their games: `games` (deleted games left out). AI Builder messages: `builder_usage` (charged messages per
+  day; a refunded build is given back). Course steps: `course_progress`, done by the courses' own rule (slides read,
+  check passed, and for a step with a game the game reported won). Live games: `live_run_scores` (joined; games without a
+  class are kept 90 days) and `live_runs` (hosted).
+- **Not tracked before this update**: last login and days active. Migration `0056_user_analytics` fills them from
+  what is stored: last login from the newest session still stored, else the sign-up for self sign-ups; sign-ins from
+  stored sessions (how unknown); active days from plays, Builder messages, stored sessions, course and Number Quest
+  activity, the last-seen day of anyone who signed in and the sign-up day. Older history is only as good as those rows,
+  so "days active" and DAU read low for days before the update. Class lesson progress (`step_progress`) is not counted
+  as course steps. Time spent on the site (other than play minutes) is not tracked.
+- **Privacy**: admin-only like every /admin page (404 for everyone else, signed out included); counts, dates and game
+  titles only: never a password, token, session, IP, browser, email, chat text or Builder request text. Kids' rows show
+  their names and counts, to the platform admin only (teachers and grown-ups have their own, narrower views).
+  `sign_ins` and `user_days` are kept 400 days (daily `analytics-retention` job), deleted with the account, and moved on
+  a school-account merge. Guests write neither. Admin pages stay English.
+
+## Everyone builds like a teacher, and prompting tips while the AI builds (November 2026)
+
+The owner asked that individual users get the same game-building experience as teachers. `BUILDER_FULL_FOR_ALL` (on by
+default) makes every signed-in account in good standing a full maker (`builder/usage.js trustedMaker`): the Pro model on
+every message (one message, never the Pro weight), the longer time cap, 20 model calls and 3 playtest fix rounds.
+Guests are not included. Set it to 0 to go back to teachers and staff only if AI spend runs high; the AI daily budget
+still applies to everyone. The Studio's build card now alternates "Prompting tip" lines (12, in every language) with
+the "Did you know?" facts, a tip first; the facts about rounds and Pro were updated to match.
+
+## Automatic welcome from the Oomba team for new kids (November 2026)
+
+The owner asked that every new kid get the team's welcome message automatically. At an account's first sign-in ever
+(`auth.onFirstSignIn`: signing up, or a kid made by a grown-up or a school signing in for the first time) a kid account
+made in the last 30 days gets one team message (no admin sender, "automatic welcome" on the admin thread), with
+`{name}` replaced by their first name and line breaks kept. It is copied to their linked grown-ups like any team
+message, audited (`team.welcome`), sent once, and can be unsent. Grown-ups, staff, guests and older accounts get
+nothing. The text and an on/off switch are on the admin Team inbox tab (settings `team.welcome`, audited).
+

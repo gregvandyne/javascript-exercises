@@ -49,6 +49,7 @@ process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${fake.address().port}`;
 test.after(() => fake.close());
 
 const { config } = await import('../../server/config.js');
+config.builderFullForAll = false;   // these tests cover a regular maker's limits (BUILDER_FULL_FOR_ALL: builder-trusted.test.js)
 config.anthropicKey = 'sk-ant-test-fake';
 const fsmod = await import('node:fs');
 const exe = process.env.BRB_CHROMIUM || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome', '/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'].find(f => fsmod.existsSync(f));

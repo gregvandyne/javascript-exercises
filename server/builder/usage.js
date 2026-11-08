@@ -29,13 +29,15 @@ import { resting } from './anthropic.js';
 import { isStaff, classesOf } from '../services/schools.js';
 import { getUser } from '../auth.js';
 
-/** Trusted makers: the platform admin, school staff (admins and teachers of a school) and teachers of a class. Their
- *  Builder messages always use the Pro model (the strongest), count as one message (never the Pro weight), and get a
- *  longer time cap and more model calls (docs/decisions.md "Trusted makers build with the Pro model"). Students, family
- *  accounts and guests are unchanged. user: a user row or a user id. */
+/** Makers who get the full Builder: the Pro model (the strongest) on every message, counted as one message (never the
+ *  Pro weight), a longer time cap, more model calls and more playtest fix rounds (docs/decisions.md "Trusted makers
+ *  build with the Pro model", "Everyone builds like a teacher"). With BUILDER_FULL_FOR_ALL on (the default) that is
+ *  every signed-in account in good standing; off, only the platform admin, school staff and class teachers. Guests
+ *  never. user: a user row or a user id. */
 export function trustedMaker(user) {
   const u = user && typeof user === 'object' ? user : (user ? getUser(user) : null);
   if (!u || u.is_guest || u.banned) return false;
+  if (config.builderFullForAll) return true;
   return isStaff(u) || classesOf(u.id, 'teacher').length > 0;
 }
 /** How long one build attempt may run for this builder (runner.js cap, the time estimate). */

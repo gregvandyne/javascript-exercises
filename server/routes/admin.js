@@ -1,5 +1,5 @@
 // Admin panel (role admin only). Internal tool: its text stays English (the page frame follows the admin's language). Non-admins get 404 for every page and API under /admin and /api/admin.
-// Tabs: Review queue, Reports, Chat reports, Users, Audit log. Every action is audited (services/moderation.js, services/publish.js).
+// Tabs: Review queue, Reports, Chat reports, All users (user analytics), Users, Team inbox, Audit log. Every action is audited (services/moderation.js, services/publish.js).
 import * as aiBudget from '../services/ai-budget.js';
 import * as stats from '../services/stats.js';
 import * as photos from '../services/photos.js';
@@ -25,12 +25,17 @@ import { audit, q } from '../db.js';
 import { config } from '../config.js';
 import * as webSearch from '../builder/search.js';
 import * as liveR from '../services/classlive-results.js';
+import * as team from '../services/team.js';
+import * as AU from '../services/admin-users.js';
+import * as AA from '../services/admin-analytics.js';
+import { getUserByName, OFFICIAL } from '../auth.js';
+import { rateLimit } from '../services/ratelimit.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
 router.use('/api/admin', requireAdmin);
 
-const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['users', '👤', 'Users'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
+const TABS = [['queue', '⏳', 'Review queue'], ['reports', '🚩', 'Reports'], ['chat', '💬', 'Chat reports'], ['links', '🧑‍🧒', 'Link reports'], ['live', '📡', 'Live reports'], ['schoolreq', '🏫', 'School requests'], ['people', '👥', 'All users'], ['users', '👤', 'Users'], ['messages', '📬', 'Team inbox'], ['searches', '🔎', 'Web searches'], ['audit', '📜', 'Audit log']];
 const gameReason = k => (GAME_REASONS.find(r => r[0] === k) || [k, k])[1];
 const chatReason = k => (chat.REPORT_REASONS.find(r => r[0] === k) || [k, k])[1];
 const when = t => html`<time datetime="${new Date(t).toISOString()}" title="${new Date(t).toISOString().replace('T', ' ').slice(0, 16)} UTC">${timeAgo(t)}</time>`;
@@ -40,7 +45,8 @@ function queueTab(req) {
   if (!items.length) return emptyState({ emoji: '✅', title: 'Nothing to review', text: 'Games waiting for a human check show up here.' });
   // What the builder asked for: approving applies exactly this audience (never more).
   const audience = (a, classes) => (a === 'class' ? `🎒 ${classes.length ? classes.join(', ') : 'their classes (none live right now)'}` : a === 'school' ? '🏫 the school' : a === 'family' ? '🏠 their family (the grown-up and their linked children)' : '🌍 everyone');
-  return html`<div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, safety, review, audience: aud, classes }) => {
+  return html`<p class="small muted">Every game must be approved here before strangers can find or play it (home, search, explore, the sitemap and /g pages). Approving tells the builder in their Oomba team inbox; so does sending it back.</p>
+  <div class="stack">${items.map(({ game: g, version: v, isUpdate, liveNumber, liveFor, safety, review, audience: aud, classes }) => {
     const token = signToken({ v: v.id, g: g.id, u: req.user.id, p: 1 }, 3600);
     const issues = safety.issues || [];
     return html`<article class="panel reviewcard" aria-label="Review ${g.title}">
@@ -49,7 +55,7 @@ function queueTab(req) {
         <div class="rc-info">
           <h2>${g.title}</h2>
           <p class="muted small">by ${g.owner_type === 'grownup' ? html`${g.owner_display} <span class="chip-s">🧑 Grown-up builder</span>` : html`<a href="/u/${g.owner_name}">${g.owner_display}</a>`} (@${g.owner_name}) · version ${v.number} · ${fmtNum(Math.round((v.size || 0) / 1024))} KB · sent ${when(g.updated_at)}</p>
-          <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New game</span>`}</p>
+          <p>${isUpdate ? html`<span class="chip-s warn">🔁 Update to a live game</span> Players keep version ${liveNumber} until you approve.` : html`<span class="chip-s">🆕 New game</span>`}${liveFor && !isUpdate ? html` Live now for ${liveFor === 'friends' ? (g.owner_type === 'grownup' ? 'their grown-up connections' : 'their friends') : liveFor} while it waits.` : ''}</p>
           <p class="small">Waiting to share with: <b>${audience(aud, classes)}</b></p>
           ${g.description ? html`<p class="small">${g.description}</p>` : ''}
           ${v.notes ? html`<p class="small muted">Builder notes: ${v.notes}</p>` : ''}
@@ -60,12 +66,15 @@ function queueTab(req) {
         <div class="rc-checks">
           <h3>Safety scan: <span class="scan-${safety.status || v.safety_status}">${safety.status || v.safety_status || 'unchecked'}</span></h3>
           ${issues.length ? html`<ul class="issues">${issues.map(i => html`<li class="lvl-${i.level}"><b>${i.level}</b> ${i.message}</li>`)}</ul>` : html`<p class="small muted">No issues found.</p>`}
-          <h3>Model review: ${review.verdict || 'none'}${review.by ? html` <span class="small muted">(${review.by})</span>` : ''}</h3>
+          <h3>Model pre-check: ${review.verdict ? (review.verdict === 'allowed' ? 'no problems found (a hint, not an approval)' : review.verdict) : 'none'}</h3>
           ${(review.reasons || []).length ? html`<ul class="issues">${review.reasons.map(r => html`<li>${r}</li>`)}</ul>` : ''}
           <form class="decide" data-game="${g.id}" novalidate>
+            <div class="field"><label for="reason-${g.id}">Reason (if you send it back)</label>
+              <select class="input" id="reason-${g.id}" name="reason"><option value="">No preset: use my note</option>${chat.REVIEW_REASONS.map(k => html`<option value="${k}">${tEn(`review.reasons.${k}`)}</option>`)}</select>
+              <span class="hint">Presets are kid-friendly and shown in the builder's own language.</span></div>
             <div class="field"><label for="note-${g.id}">Note for the builder</label>
-              <textarea class="input" id="note-${g.id}" name="note" maxlength="500" placeholder="Say what is great, or what to change"></textarea></div>
-            <div class="row"><button class="btn btn-primary" type="button" data-act="approve" data-id="${g.id}">✅ Approve</button><button class="btn btn-danger" type="button" data-act="reject" data-id="${g.id}">✏️ Reject</button></div>
+              <textarea class="input" id="note-${g.id}" name="note" maxlength="500" placeholder="Say what is great, or what to change (shown as you type it)"></textarea></div>
+            <div class="row"><button class="btn btn-primary" type="button" data-act="approve" data-id="${g.id}">✅ Approve</button><button class="btn btn-danger" type="button" data-act="reject" data-id="${g.id}">✏️ Send back</button></div>
           </form>
         </div>
       </div>
@@ -109,7 +118,7 @@ function chatTab() {
     <div class="row">
       <button class="btn" type="button" data-act="hide" data-id="${r.id}">🙈 Hide message</button>
       <button class="btn" type="button" data-act="dismiss" data-id="${r.id}">👍 Dismiss</button>
-      ${sender && !sender.banned && sender.role !== 'admin' ? html`<button class="btn btn-danger" type="button" data-act="bansender" data-id="${r.id}" data-name="${sender.username}">⛔ Ban sender</button>` : ''}
+      ${sender && !sender.banned && sender.role !== 'admin' && sender.username !== OFFICIAL ? html`<button class="btn btn-danger" type="button" data-act="bansender" data-id="${r.id}" data-name="${sender.username}">⛔ Ban sender</button>` : ''}
     </div>
   </article>`)}</div>`;
 }
@@ -210,13 +219,14 @@ function usersTab(req) {
       <input class="input" id="uname" name="username" value="${name}" placeholder="Exact username" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button class="btn btn-primary" type="submit">Look up</button>
     </form>
-    <p class="small muted" style="margin:8px 0 0">Exact usernames only. There is no browsing of players.</p>
+    <p class="small muted" style="margin:8px 0 0">Exact usernames here. To browse everyone, with what they play and build, use <a href="/admin?tab=people">All users</a>.</p>
   </section>
   ${name && !u ? html`<p class="notice warn" style="margin-top:16px">No user called “${name}”.</p>` : ''}
   ${u ? html`<section class="panel" style="margin-top:16px">
     <div class="row">${avatar(u, 56)}<div style="flex:1;min-width:180px"><h2 style="margin:0">${u.display_name}</h2><div class="muted">@${u.username}${u.is_guest ? ' · guest' : ''}</div></div>
       ${u.banned ? html`<span class="chip-s bad">⛔ Banned</span>` : html`<span class="chip-s">✅ Active</span>`}</div>
     <div class="tblwrap"><table class="tbl" style="margin-top:12px"><tbody>
+      <tr><th scope="row">Account type</th><td>${AU.TYPE_LABEL[AU.accountTypeOf(u.id)]} · ${AU.METHOD_LABEL[AU.signupMethod(u.id)]}</td></tr>
       <tr><th scope="row">Site role</th><td>${u.role}</td></tr>
       <tr><th scope="row">Schools</th><td>${schoolsCell(u)}</td></tr>
       <tr><th scope="row">Family</th><td>${familyCell(u)}</td></tr>
@@ -227,11 +237,203 @@ function usersTab(req) {
       <tr><th scope="row">Games</th><td>${u.games}</td></tr>
       <tr><th scope="row">Friends</th><td>${u.friends}</td></tr>
       <tr><th scope="row">Chat</th><td>${u.chat_enabled ? 'on' : 'off'} · ${u.chatReports} message report${u.chatReports === 1 ? '' : 's'} against them</td></tr>
+      <tr><th scope="row">Reports</th><td>${(r => html`${r.againstGames} against their games · ${r.made} made by them`)(AU.reportCounts(u.id))}</td></tr>
     </tbody></table></div>
-    <div class="row" style="margin-top:12px">${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
+    ${u.is_guest ? '' : userActivityPanel(u)}
+    ${userGamesPanel(u)}
+    ${userAuditPanel(u)}
+    <div class="row" style="margin-top:12px">${u.is_guest ? '' : html`<a class="btn btn-primary" href="/admin/messages/${encodeURIComponent(u.username)}"><span aria-hidden="true">📬</span> Message</a>`}${u.account_type === 'grownup' ? '' : html`<a class="btn" href="/u/${u.username}">View profile</a>`}
       ${u.photo_at ? html`<button class="btn" type="button" data-act="unphoto" data-id="${u.id}" data-name="${u.username}">🖼️ Remove photo</button>` : ''}
       ${u.role === 'admin' ? '' : u.banned ? html`<button class="btn" type="button" data-act="unban" data-id="${u.id}" data-name="${u.username}">Unban</button>` : html`<button class="btn btn-danger" type="button" data-act="ban" data-id="${u.id}" data-name="${u.username}">⛔ Ban</button>`}</div>
   </section>` : ''}`;
+}
+
+const VIS_LABEL = { private: 'Only them', family: 'Family', friends: 'Friends', class: 'Classes', school: 'School', public: 'Everyone' };
+function userGamesPanel(u) {
+  const list = AU.userGames(u.id);
+  if (!list.length) return '';
+  return html`<h3 style="margin:16px 0 6px">Games (${list.length})</h3><div class="tblwrap"><table class="tbl small rtable"><thead><tr><th>Game</th><th>Status</th><th>Who can play</th><th>Plays</th><th>Reports</th></tr></thead><tbody>
+    ${list.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td data-label="Status">${statusLabel(g, tEn)}${g.pending_version_id ? html` <span class="chip-s warn">⏳ waiting for ${g.pending_visibility || 'public'}</span>` : ''}</td>
+      <td data-label="Who can play">${g.status === 'published' ? VIS_LABEL[g.visibility] || g.visibility : '–'}</td><td data-label="Plays">${int(g.plays)}</td><td data-label="Reports">${g.reports}</td></tr>`)}
+  </tbody></table></div>`;
+}
+function userAuditPanel(u) {
+  const rows = AU.userAudit(u.id);
+  if (!rows.length) return '';
+  return html`<details style="margin-top:12px"><summary>Audit log for @${u.username} (${rows.length} latest)</summary><div class="tblwrap"><table class="tbl small audit"><thead><tr><th>When</th><th>Who</th><th>What</th></tr></thead><tbody>
+    ${rows.map(r => html`<tr><td>${when(r.created_at)}</td><td>${r.actor_name ? '@' + r.actor_name : 'system'}</td><td><code>${r.action}</code></td></tr>`)}
+  </tbody></table></div></details>`;
+}
+
+/** All users with what they did (services/admin-analytics.js): every column sorts, filters and quick views are plain GET
+ *  links, so the page works without JavaScript. ?tab=newusers (the old New users tab) opens it on the New view. */
+function peopleQuery(req) {
+  const qs = { ...req.query };
+  if (req.query.tab === 'newusers' && !qs.joined && !qs.from && !qs.to) qs.joined = Object.hasOwn(AA.JOINED, qs.range) ? qs.range : '30d';
+  return AA.cleanFilters(qs);
+}
+const qs = o => Object.entries(o).filter(([, v]) => v !== '' && v !== undefined && v !== null).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+/** The filters as a query string, defaults left out (so links stay short). */
+const peopleParams = f => Object.fromEntries(Object.entries(f).filter(([k, v]) => v !== AA.DEFAULTS[k] && !(k === 'dir' && v === AA.SORTS[f.sort][1])));
+const peopleLink = f => `/admin?${qs({ tab: 'people', ...peopleParams(f) })}`;
+function sparkline(days) {
+  const max = Math.max(1, ...days.map(d => d.n)); const w = 300, h = 48, step = w / Math.max(1, days.length - 1);
+  const pts = days.map((d, i) => `${(i * step).toFixed(1)},${(h - 4 - (d.n / max) * (h - 8)).toFixed(1)}`).join(' ');
+  const total = days.reduce((a, d) => a + d.n, 0);
+  return html`<figure class="panel nu-spark"><figcaption><b>Sign-ups per day</b> <span class="small muted">last ${days.length} days · ${int(total)} in all · busiest day ${int(max === 1 && !total ? 0 : max)}</span></figcaption>
+    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Sign-ups per day for the last ${days.length} days, ${int(total)} in all, ${int(days[days.length - 1].n)} today">
+      <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+    <div class="xaxis" aria-hidden="true"><span>${shortDay(days[0].day)}</span><span>today: ${int(days[days.length - 1].n)}</span></div>
+    <details><summary>Show as a table</summary><div class="tblwrap"><table class="tbl small"><thead><tr><th>Day</th><th>Sign-ups</th></tr></thead><tbody>${days.slice().reverse().map(d => html`<tr><td>${shortDay(d.day)}</td><td>${int(d.n)}</td></tr>`)}</tbody></table></div></details>
+  </figure>`;
+}
+const ymdhm = t => new Date(t).toISOString().replace('T', ' ').slice(0, 16);
+const ago = (t, none = 'never') => (t ? html`<time datetime="${new Date(t).toISOString()}" title="${ymdhm(t)} UTC">${timeAgo(t)}</time>` : none);
+const linkedLine = u => (u.type === 'grownup' ? (u.children ? `${u.children} child${u.children === 1 ? '' : 'ren'} linked` : '') : [u.parent ? `grown-up @${u.parent}` : '', u.schools || ''].filter(Boolean).join(' · '));
+const dirWords = f => (['joined', 'login', 'active'].includes(f.sort) ? (f.dir === 'asc' ? 'oldest first' : 'newest first') : f.sort === 'name' || f.sort === 'type' ? (f.dir === 'asc' ? 'A to Z' : 'Z to A') : f.dir === 'asc' ? 'lowest first' : 'highest first');
+const COLS = [['name', 'Account'], ['type', 'Type'], ['joined', 'Joined'], ['login', 'Last login'], ['active', 'Last active'], ['days', 'Days active'], ['plays', 'Played'], ['built', 'Built'], ['ai', 'AI messages'], ['courses', 'Course steps'], ['live', 'Live games'], ['popularity', 'Popularity'], ['status', 'Status']];
+function peopleTab(req) {
+  const f = peopleQuery(req);
+  const r = AA.listUsers(f);
+  const c = AU.signupCounts(), act = AA.activeCounts();
+  const accounts = q.get('SELECT COUNT(*) n FROM users WHERE is_guest=0 AND username<>?', OFFICIAL).n;
+  const link = over => peopleLink({ ...f, page: 1, ...over });
+  const sortLink = k => link({ sort: k, dir: f.sort === k ? (f.dir === 'asc' ? 'desc' : 'asc') : AA.SORTS[k][1] });
+  const th = ([k, label]) => {
+    const on = f.sort === k || (k === 'plays' && f.sort === 'distinct') || (k === 'built' && f.sort === 'public');
+    return html`<th scope="col" ${on ? raw(`aria-sort="${f.dir === 'asc' ? 'ascending' : 'descending'}"`) : ''}><a class="sorth" href="${sortLink(k)}">${label}${on ? html` <span aria-hidden="true">${f.dir === 'asc' ? '▲' : '▼'}</span>` : ''}</a></th>`;
+  };
+  const sel = (id, name, label, value, opts) => html`<div class="field"><label for="${id}">${label}</label><select class="input" id="${id}" name="${name}">${opts.map(([v, l]) => html`<option value="${v}" ${value === v ? raw('selected') : ''}>${l}</option>`)}</select></div>`;
+  const desc = [f.type ? AU.TYPE_LABEL[f.type] : '', f.active ? AA.ACTIVE[f.active].toLowerCase() : '', f.from || f.to ? `joined ${f.from || '…'} to ${f.to || 'today'}` : f.joined !== 'all' ? `joined ${AA.JOINED[f.joined].toLowerCase()}` : '', f.search ? `matching “${f.search}”` : ''].filter(Boolean);
+  const everyone = !Object.keys(peopleParams({ ...f, page: 1 })).length;
+  return html`
+  <div class="kpis">
+    ${tile('👥 Accounts', int(accounts), 'real accounts (no guests)')}
+    ${tile('🟢 Active today', int(act.dau), `${int(act.wau)} this week · ${int(act.mau)} in 30 days`)}
+    ${tile('🆕 New, last 7 days', int(c.week), `${int(c.today)} today`)}
+    ${tile('🗓️ New, last 30 days', int(c.month), Object.entries(c.byType).filter(([, n]) => n).map(([k, n]) => `${int(n)} ${AU.TYPE_LABEL[k].toLowerCase()}`).join(' · ') || 'none yet')}
+  </div>
+  ${sparkline(AU.signupsByDay(30))}
+  <form class="panel nu-filters" method="get" action="/admin" role="search">
+    <input type="hidden" name="tab" value="people">
+    <div class="field"><label for="nu-q">Search</label><input class="input" id="nu-q" name="q" value="${f.search}" placeholder="Username or display name" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    ${sel('nu-type', 'type', 'Account type', f.type, [['', 'All types'], ...AU.TYPES.map(k => [k, AU.TYPE_LABEL[k]])])}
+    ${sel('nu-active', 'active', 'Active', f.active, Object.entries(AA.ACTIVE))}
+    ${sel('nu-joined', 'joined', 'Joined', f.joined, Object.entries(AA.JOINED))}
+    <div class="field"><label for="nu-from">Joined from</label><input class="input" type="date" id="nu-from" name="from" value="${f.from}"></div>
+    <div class="field"><label for="nu-to">Joined until</label><input class="input" type="date" id="nu-to" name="to" value="${f.to}"></div>
+    ${sel('nu-sort', 'sort', 'Sort by', f.sort, Object.entries(AA.SORTS).map(([k, v]) => [k, v[2]]))}
+    ${sel('nu-dir', 'dir', 'Order', f.dir, [['desc', '↓ Descending'], ['asc', '↑ Ascending']])}
+    <div class="row nu-go"><button class="btn btn-primary" type="submit">Show</button><a class="btn" href="/admin/users.csv?${qs(peopleParams({ ...f, page: 1 }))}" download><span aria-hidden="true">⬇️</span> CSV</a></div>
+  </form>
+  <nav class="chips nu-quick" aria-label="Quick views"><a class="chip ${everyone ? 'on' : ''}" href="/admin?tab=people" ${everyone ? raw('aria-current="true"') : ''}>Everyone</a>${Object.entries(AA.QUICK).map(([k, v]) => { const on = AA.quickOn(f, k); return html`<a class="chip ${on ? 'on' : ''}" href="${peopleLink({ ...AA.DEFAULTS, ...v.set })}" ${on ? raw('aria-current="true"') : ''}>${v.label}</a>`; })}</nav>
+  <p class="small muted">${int(r.total)} account${r.total === 1 ? '' : 's'}${desc.length ? ` · ${desc.join(' · ')}` : ''} · sorted by ${AA.SORTS[f.sort][2].toLowerCase()}, ${dirWords(f)}. Guests are not listed. Kids show only their names and counts. Days are UTC; “days active” counts the last 30.</p>
+  ${r.rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable nu-table au-table"><thead><tr>${COLS.map(th)}</tr></thead><tbody>
+    ${r.rows.map(u => html`<tr>
+      <td><a class="nu-who" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">${avatar(u, 32)}<span><b dir="auto">${u.display_name}</b><br><span class="small muted">@${u.username}</span></span></a></td>
+      <td data-label="Type"><span class="au-nw">${AU.TYPE_LABEL[u.type]}</span><span class="au-sub small muted">${[AU.METHOD_LABEL[u.method], linkedLine(u)].filter(Boolean).join(' · ')}</span></td>
+      <td data-label="Joined"><time datetime="${new Date(u.created_at).toISOString()}" title="${ymdhm(u.created_at)} UTC">${new Date(u.created_at).toISOString().slice(0, 10)}</time></td>
+      <td data-label="Last login">${ago(u.last_login_at)}</td>
+      <td data-label="Last active">${u.never_active ? 'never' : ago(u.last_seen)}</td>
+      <td data-label="Days active">${int(u.days30)}</td>
+      <td data-label="Played"><span class="au-l">${int(u.plays)} play${u.plays === 1 ? '' : 's'}</span> <span class="au-l small muted">${int(u.distinct_games)} game${u.distinct_games === 1 ? '' : 's'}</span></td>
+      <td data-label="Built"><span class="au-l">${int(u.games_made)} game${u.games_made === 1 ? '' : 's'}</span> <span class="au-l small muted">${int(u.games_public)} public</span>${u.games_waiting ? html` <span class="chip-s warn">${u.games_waiting} waiting</span>` : ''}</td>
+      <td data-label="AI messages">${int(u.ai_messages)}</td>
+      <td data-label="Course steps">${int(u.course_steps)}</td>
+      <td data-label="Live games">${int(u.live_joined)}</td>
+      <td data-label="Plays of their games" title="Plays of the games they built">${int(u.plays_of_games)}</td>
+      <td data-label="Status">${u.banned ? html`<span class="chip-s bad">⛔ Suspended</span>` : html`<span class="chip-s">✅ Active</span>`}</td>
+    </tr>`)}
+  </tbody></table></div>
+  ${r.pages > 1 ? html`<nav class="row nu-pages" aria-label="Pages">${r.page > 1 ? html`<a class="btn" href="${link({ page: r.page - 1 })}" rel="prev">← Previous</a>` : ''}<span class="small muted">Page ${r.page} of ${r.pages}</span>${r.page < r.pages ? html`<a class="btn" href="${link({ page: r.page + 1 })}" rel="next">Next →</a>` : ''}</nav>` : ''}`
+    : emptyState({ emoji: '👥', title: 'No accounts match', text: 'Try another filter or a longer date range.' })}`;
+}
+
+/** One person's activity on the Users tab (services/admin-analytics.js userAnalytics): totals, 30 days of plays, Builder
+ *  messages and active days, the games they play most, course progress and a timeline. Counts and titles only. */
+function dayStrip(daily) {
+  const n = daily.filter(d => d.active).length;
+  return html`<figure class="chart panel"><figcaption><h3>Days active</h3><span class="chart-sum"><b>${n}</b> of ${daily.length} days</span></figcaption>
+    <div class="dstrip" role="img" aria-label="Active on ${n} of the last ${daily.length} days">${daily.map(d => html`<span class="${d.active ? 'on' : ''}" title="${shortDay(d.day)}: ${d.active ? 'active' : 'not active'}"></span>`)}</div>
+    <div class="xaxis dstrip-x" aria-hidden="true"><span>${shortDay(daily[0].day)}</span><span>${shortDay(daily[daily.length - 1].day)}</span></div>
+    <details><summary>Show as a list</summary><p class="small">${daily.filter(d => d.active).map(d => shortDay(d.day)).join(', ') || 'No active days.'}</p></details>
+  </figure>`;
+}
+const TL_ICON = { joined: '🐣', signin: '🔑', built: '🛠️', published: '🚀', played: '🎮', ai: '🤖', course: '📚', live: '📡' };
+const HOW = { password: 'password', google: 'Google', switch: 'switched in by their grown-up', signup: 'sign-up', '': 'sign-in' };
+function userActivityPanel(u) {
+  const a = AA.userAnalytics(u.id);
+  if (!a) return '';
+  const t = a.totals;
+  return html`<section class="ua" aria-labelledby="ua-h"><h3 id="ua-h" class="stats-h">📈 Activity</h3>
+    <div class="kpis">
+      ${tile('🔑 Last login', a.lastLogin ? timeAgo(a.lastLogin) : 'never', a.lastLogin ? `${ymdhm(a.lastLogin)} UTC${a.lastLoginMethod !== null ? ` · ${HOW[a.lastLoginMethod] || 'sign-in'}` : ''}` : 'no sign-in recorded')}
+      ${tile('👣 Last active', a.never ? 'never' : timeAgo(a.lastSeen), a.never ? '' : `${ymdhm(a.lastSeen)} UTC`)}
+      ${tile('📅 Days active', `${int(t.days30)} / 30`, `${int(t.daysAll)} day${t.daysAll === 1 ? '' : 's'} recorded · ${int(t.signIns30)} sign-in${t.signIns30 === 1 ? '' : 's'} in 30 days`)}
+      ${tile('🎮 Games played', int(t.plays), `${int(t.distinctGames)} different · ${int(t.minutes)} min · ${int(t.plays30)} in 30 days`)}
+      ${tile('🛠️ Games built', int(t.built), `${int(t.live)} live · ${int(t.public)} public${t.waiting ? ` · ${t.waiting} waiting` : ''}`)}
+      ${tile('⭐ Plays of their games', int(t.playsOfGames))}
+      ${tile('🤖 AI Builder messages', int(t.ai), `${int(t.ai30)} in the last 30 days`)}
+      ${tile('📚 Course steps done', int(t.courseSteps), a.courses.length ? a.courses.map(c => `${c.name} ${c.done}${c.total ? `/${c.total}` : ''}`).join(' · ') : 'no course started')}
+      ${tile('📡 Live games', int(t.liveJoined), `joined · ${int(t.liveHosted)} hosted`)}
+    </div>
+    <p class="small muted ua-joined">Joined ${ymdhm(a.joined)} UTC (${timeAgo(a.joined)}) · ${AU.METHOD_LABEL[a.method]}. Days are UTC.</p>
+    <div class="charts">
+      ${barChart({ title: 'Plays per day', rows: a.daily, key: 'plays', unit: 'plays' })}
+      ${barChart({ title: 'AI Builder messages per day', rows: a.daily, key: 'ai', unit: 'messages' })}
+      ${dayStrip(a.daily)}
+    </div>
+    <div class="stats-grid">
+      <section class="panel"><h2>🎮 Games they play most</h2>
+        ${a.topPlayed.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Game</th><th>Plays</th><th>Minutes</th><th>Last</th></tr></thead><tbody>
+          ${a.topPlayed.map(g => html`<tr><td><a href="/g/${g.slug}">${g.icon} ${g.title}</a></td><td>${int(g.plays)}</td><td>${int(g.minutes)}</td><td>${ago(g.last)}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No plays yet.</p>`}
+      </section>
+      <section class="panel"><h2>📚 Courses</h2>
+        ${a.courses.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Course</th><th>Done</th><th>Band</th><th>Last</th></tr></thead><tbody>
+          ${a.courses.map(c => html`<tr><td>${c.emoji} ${c.name}</td><td>${int(c.done)}${c.total ? ` of ${int(c.total)}` : ''} <span class="small muted">(${int(c.touched)} started)</span></td><td>${c.band || '–'}</td><td>${ago(c.last > 1 ? c.last : 0, '–')}</td></tr>`)}</tbody></table></div>` : html`<p class="muted">No course started (CS Quest, Cyber Defenders, Number Quest).</p>`}
+      </section>
+    </div>
+    <section class="panel ua-tl"><h2>🕒 Recent activity</h2>
+      <ol class="plain timeline">${a.timeline.map(e => html`<li><span class="tl-i" aria-hidden="true">${TL_ICON[e.kind] || '•'}</span><span class="tl-t">${e.text}${e.game ? html`: <a href="/g/${e.game.slug}">${e.game.icon} ${e.game.title}</a>` : ''}</span>
+        <span class="tl-w small muted">${e.day ? shortDay(e.day) : html`<time datetime="${new Date(e.at).toISOString()}" title="${ymdhm(e.at)} UTC">${timeAgo(e.at)}</time>`}</span></li>`)}</ol>
+      <p class="small muted">Sign-ins, games started and published, plays, AI Builder messages per day, course checks and wins, live games. Never chat, Builder requests or IPs. Sign-ins and active days are kept ${AA.KEEP_DAYS} days.</p>
+    </section>
+  </section>`;
+}
+
+/** The Oomba team inbox (services/team.js): people the team wrote to or who wrote back, and announcements. */
+const AUDIENCE_LABEL = { all: 'Everyone with an account', kids: 'Kids', grownups: 'Grown-ups (parents)', staff: 'Teachers and school staff', school: 'One school' };
+function messagesTab(req) {
+  const threads = team.adminThreads();
+  const lim = team.announceLimits();
+  const schools = q.all('SELECT id, name FROM schools WHERE archived_at IS NULL ORDER BY name COLLATE NOCASE LIMIT 500');
+  const recent = team.recentAnnouncements(10);
+  const wel = team.welcomeSettings();
+  return html`
+  <section class="panel" aria-labelledby="wel-h">
+    <h2 id="wel-h" style="margin-top:0">👋 Welcome message for new kids</h2>
+    <p class="small muted">Sent automatically from “Oomba team ✓” to every new kid account the first time it signs in (accounts up to ${team.WELCOME_DAYS} days old), and copied to their grown-up if they have one. <code>{name}</code> becomes the kid's first name. Line breaks are kept. They can write back, and replies land in Conversations below.</p>
+    <form class="stack" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." novalidate>
+      <label class="row" style="gap:8px"><input type="checkbox" name="on" value="1" ${wel.on ? raw('checked') : ''}> Send it to new kids</label>
+      <div class="field"><label for="wel-text">Message</label><textarea class="input" id="wel-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="12">${wel.text}</textarea></div>
+      <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
+    </form>
+  </section>
+  <section class="panel" aria-labelledby="ann-h">
+    <h2 id="ann-h" style="margin-top:0">📣 Send an announcement</h2>
+    <p class="small muted">It arrives in each person's inbox from “Oomba team ✓”. You will see how many people it reaches and confirm before it goes. At most one every ${team.ANNOUNCE_GAP_MS / 60e3} minutes and ${team.ANNOUNCE_DAILY} a day for the whole site${lim.nextAt ? html`: next one possible ${when(lim.nextAt)}` : ''} (${lim.leftToday} left today). Kids read it too, so write for a 6-year-old.</p>
+    <form id="announce" class="stack" novalidate>
+      <div class="field"><label for="ann-aud">Who gets it</label><select class="input" id="ann-aud" name="audience">${team.AUDIENCES.map(k => html`<option value="${k}">${AUDIENCE_LABEL[k]}</option>`)}</select></div>
+      <div class="field" id="ann-school-f" hidden><label for="ann-school">School</label><select class="input" id="ann-school" name="schoolId">${schools.map(s => html`<option value="${s.id}">${s.name}</option>`)}</select></div>
+      <div class="field"><label for="ann-text">Message</label><textarea class="input" id="ann-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3" placeholder="New games are here! ..."></textarea></div>
+      <div class="row"><button class="btn btn-primary" type="submit">Check who it reaches…</button></div>
+    </form>
+    ${recent.length ? html`<details open><summary>Recent announcements (${recent.length})</summary><ul class="small">${recent.map(a => html`<li>${when(a.created_at)} · ${AUDIENCE_LABEL[a.audience] || a.audience}${a.school_name ? ` (${a.school_name})` : ''} · ${int(a.recipients)} people · by @${a.admin_name || '?'}: “${a.body.slice(0, 140)}” ${a.unsent ? html`<b>· unsent</b>` : html`<form class="inline" style="display:inline" data-api="/api/admin/announcements/${a.id}/unsend" data-reload data-toast="Unsent: it's gone from everyone's inbox." data-confirm="Unsend this announcement? It disappears from all ${int(a.recipients)} inboxes."><button class="btn btn-sm" type="submit">↩️ Unsend</button></form>`}</li>`)}</ul></details>` : ''}
+  </section>
+  <h2 class="stats-h">Conversations</h2>
+  <p class="small muted">To start one, open a person on <a href="/admin?tab=users">Users</a> or <a href="/admin?tab=people">All users</a> and press Message. Messages to a child are logged with their text and copied to their linked grown-up (or their school's admins) when they have one. Sent something by mistake? Open the conversation and press Unsend under it.</p>
+  ${threads.length ? html`<ul class="plain inbox panel">${threads.map(th => html`<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/admin/messages/${encodeURIComponent(th.username)}">${avatar(th, 40)}<span class="who"><span class="nm">${th.display_name}</span><span class="sub">@${th.username}${th.account_type === 'grownup' ? ' · grown-up' : ''}${th.banned ? ' · banned' : ''}</span></span><span class="meta"><span class="time">${timeAgo(th.last)}</span>${th.unread ? html`<span class="badge">${th.unread}</span>` : ''}</span></a></li>`)}</ul>`
+    : emptyState({ emoji: '📬', title: 'No conversations yet', text: 'Replies to the team show up here.' })}`;
 }
 
 function auditTab() {
@@ -266,17 +468,57 @@ function aiSpendPanel() {
 }
 
 router.get('/admin', (req, res) => {
-  const tab = TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
+  // The old New users tab is All users on its New view (?tab=newusers keeps working, with its ?range=).
+  const tab = req.query.tab === 'newusers' ? 'people' : TABS.some(t => t[0] === req.query.tab) ? req.query.tab : 'queue';
   const c = mod.counts();
-  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount() };
-  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, users: usersTab, searches: searchesTab, audit: auditTab }[tab](req);
+  const n = { queue: c.queue, reports: c.reports, chat: c.chat, links: family.openReportCount(), live: liveR.openReports(500).length, schoolreq: schoolRequests.openCount(), searches: webSearch.flaggedCount(), messages: team.adminUnread() };
+  const content = { queue: queueTab, reports: reportsTab, chat: chatTab, links: linksTab, live: liveTab, schoolreq: schoolRequestsTab, people: peopleTab, users: usersTab, messages: messagesTab, searches: searchesTab, audit: auditTab }[tab](req);
   const body = html`
-  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
+  <div class="pagehead"><h1>🛡️ Admin</h1><div class="row"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn btn-primary" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs" aria-label="Admin sections">${TABS.map(([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`)}</nav>
   ${content}
   ${jsonData('page-data', { tab })}`;
-  page(req, res, { title: 'Admin', active: 'me', body, head: COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/me', backLabel: 'Me' });
+  page(req, res, { title: 'Admin', active: 'me', body, head: tab === 'people' || tab === 'users' ? raw(`${COMMUNITY_CSS}<link rel="stylesheet" href="/css/stats.css">`) : COMMUNITY_CSS, scripts: tab === 'users' ? ['/js/admin.js', '/js/admin-stats.js'] : ['/js/admin.js'], back: '/me', backLabel: 'Me' });
+});
+
+// ---- All users as CSV (the same filters and order as the tab, up to services/admin-users.js CSV_MAX rows). Audited.
+// /admin/new-users.csv is the old New users export: the same file on the New view (?range= as the joined range).
+function usersCsv(req, res) {
+  const f = peopleQuery(req.path === '/admin/new-users.csv' ? { query: { ...req.query, tab: 'newusers' } } : req);
+  const { page, ...filters } = f;
+  audit(req.user.id, 'admin.export_users', '', Object.fromEntries(Object.entries(filters).filter(([k, v]) => v !== AA.DEFAULTS[k])));
+  const name = `oomba-users-${f.from || f.to ? `${f.from || 'start'}-to-${f.to || 'today'}` : f.joined}-${new Date().toISOString().slice(0, 10)}.csv`;
+  res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="${name}"`, 'Cache-Control': 'no-store' });
+  res.send(AA.usersCsv(filters));
+}
+router.get('/admin/users.csv', usersCsv);
+router.get('/admin/new-users.csv', usersCsv);
+
+// ---- One conversation with the Oomba team (an admin writes as the team).
+router.get('/admin/messages/:username', (req, res) => {
+  const u = getUserByName(req.params.username);
+  if (!u || u.is_guest || u.username === OFFICIAL) return res.status(404).send('Not found');
+  team.markReadByTeam(u);
+  const msgs = team.adminThread(u);
+  const can = team.canMessage(u);
+  const tu = team.teamUser();
+  const type = AU.accountTypeOf(u.id);
+  const line = m => {
+    const fromTeam = m.from_id === tu.id;
+    return html`<li class="msg ${fromTeam ? 'mine' : 'theirs'} ${m.kind}"><div class="bubble" dir="auto">${chat.present(m, u, tEn).body}</div>
+      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}${fromTeam && m.kind === 'team' && m.status === 'ok' ? html` · <form class="inline" style="display:inline" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="linkbtn small" type="submit">↩️ Unsend</button></form>` : ''}</span></li>`;
+  };
+  const body = html`
+  <div class="pagehead"><h1>📬 ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">👤 User details</a></div></div>
+  <p class="small">${AU.TYPE_LABEL[type]}${u.banned ? ' · banned' : ''}. They see these messages as from <b>Oomba team ✓</b>, in their inbox (<code>/chat/${OFFICIAL}</code>).</p>
+  ${can.ok && can.child ? html`<p class="notice warn small">👀 This is a child. Everything you send here, and everything they reply, is written to the audit log with its text${can.guardians.length ? html` and copied to ${can.guardians.map(g => `@${g.username}`).join(', ')}` : html`. They have no linked grown-up or school admin, so no copy goes to anyone: keep it to Oomba matters, never ask for personal details`}.</p>` : ''}
+  <section class="panel"><ol class="plain adminthread" aria-label="Conversation">${msgs.length ? msgs.map(line) : html`<li class="muted">No messages yet.</li>`}</ol></section>
+  ${can.ok ? html`<form class="panel stack" id="dm" data-id="${u.id}" novalidate>
+      <div class="field"><label for="dm-text">Message as the Oomba team</label><textarea class="input" id="dm-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="3"></textarea></div>
+      <div class="row"><button class="btn btn-primary" type="submit">Send</button></div></form>`
+    : html`<p class="notice warn">${can.error}</p>`}`;
+  page(req, res, { title: `Messages: ${u.username}`, active: 'me', body, head: COMMUNITY_CSS, scripts: ['/js/admin.js'], back: '/admin?tab=messages', backLabel: 'Team inbox' });
 });
 
 // ---- Stats dashboard ----
@@ -338,6 +580,20 @@ function costSection(c) {
     Builder rows are kept 35 days.</p>
   </section>`;
 }
+/** Active people (services/admin-analytics.js activeCounts): distinct real accounts used per UTC day (user_days). */
+function activeSection(a) {
+  const ch = a.wauBefore ? Math.round((a.wau - a.wauBefore) / a.wauBefore * 100) : null;
+  return html`
+  <h2 class="stats-h">Active people</h2>
+  <div class="kpis">
+    ${tile('🟢 Daily active (DAU)', int(a.dau), 'accounts used today')}
+    ${tile('📅 Weekly active (WAU)', int(a.wau), ch === null ? 'last 7 days' : `last 7 days · ${ch > 0 ? '+' : ch < 0 ? '−' : ''}${Math.abs(ch)}% on the week before (${int(a.wauBefore)})`)}
+    ${tile('🗓️ Monthly active (MAU)', int(a.mau), `last 30 days · ${a.stickiness}% come back daily (DAU / MAU)`)}
+    ${tile('🌱 New this week', int(a.newThisWeek), 'joined in the last 7 days and used it')}
+    ${tile('🔁 Returning this week', int(a.returningThisWeek), 'joined before and came back')}
+  </div>
+  <p class="small muted">A person is active on a UTC day when they sign in or open any page signed in. Real accounts only (no guests, not the Oomba team account). <a href="/admin?tab=people">All users</a> has each person's numbers.</p>`;
+}
 /** The funnels (services/funnel.js), weekly: the last 7 days against the 7 before, one table per funnel. */
 function funnelSection(r) {
   const pct = c => (c === null ? '–' : `${c > 0 ? '+' : c < 0 ? '−' : ''}${Math.abs(c)}%`);
@@ -371,6 +627,7 @@ router.get('/admin/stats', (req, res) => {
   const days = [7, 30, 90].includes(+req.query.days) ? +req.query.days : 30;
   const k = stats.kpis(), rows = stats.daily(days);
   const cost = stats.messageCosts(Math.min(days, 30));
+  const act = AA.activeCounts(), activeRows = AA.activeByDay(days), busy = AA.mostActive(7, 10);
   const top7 = stats.topGames(7), topAll = stats.topGamesAllTime(10), builders = stats.topBuilders(10), areas = stats.areas(7), models = stats.aiByModel(30), fresh = stats.newestUsers(8);
   const tok = t => int((t.input || 0) + (t.output || 0));
   const body = html`
@@ -391,11 +648,13 @@ router.get('/admin/stats', (req, res) => {
     ${tile('💬 Builder messages', int(k.ai.turnsToday), `today · from ${int(k.ai.buildersToday)} builder${k.ai.buildersToday === 1 ? '' : 's'}`)}
   </div>
   ${k.ai.ok ? '' : html`<p class="notice warn">The AI ${k.ai.reason} cap is reached: the Builder is using the offline builder until it resets.</p>`}
+  ${activeSection(act)}
   ${costSection(cost)}
   ${funnelSection(funnel.weekly())}
 
   <h2 class="stats-h">Last ${days} days</h2>
   <div class="charts">
+    ${barChart({ title: 'Active people', rows: activeRows, key: 'active', unit: 'people', total: false, tip: r => `${int(r.active)} people used their account` })}
     ${barChart({ title: 'Visitors', rows, key: 'visitors', unit: 'visitors', total: false, tip: r => `${int(r.visitors)} visitors, ${int(r.views)} page views` })}
     ${barChart({ title: 'New accounts', rows, key: 'signups', unit: 'accounts', tip: r => `${int(r.signups)} accounts, ${int(r.guests)} guests` })}
     ${barChart({ title: 'Plays', rows, key: 'plays', unit: 'plays', tip: r => `${int(r.plays)} plays, ${int(r.minutes)} minutes` })}
@@ -426,6 +685,11 @@ router.get('/admin/stats', (req, res) => {
       ${models.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Model</th><th>Calls</th><th>Tokens in</th><th>Tokens out</th><th>Cost</th></tr></thead><tbody>
         ${models.map(m => html`<tr><td><code>${m.model}</code></td><td>${int(m.calls)}</td><td>${fmtNum(m.input + m.cache_read + m.cache_write)}</td><td>${fmtNum(m.output)}</td><td>${usd(m.usd)}</td></tr>`)}</tbody></table></div>
         <p class="small muted">Tokens in include cached prompt tokens. Token counts started with this update; costs before it are in the AI cost chart.</p>` : html`<p class="muted">No AI calls recorded yet.</p>`}
+    </section>
+    <section class="panel"><h2>🙋 Most active, last 7 days</h2>
+      ${busy.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Person</th><th>Days</th><th>Plays</th><th>AI msgs</th></tr></thead><tbody>
+        ${busy.map(b => html`<tr><td><a href="/admin?tab=users&amp;username=${encodeURIComponent(b.username)}">${b.display_name}</a> <span class="muted small">(${AU.TYPE_LABEL[b.type].toLowerCase()})</span></td><td>${int(b.days)}</td><td>${int(b.plays)}</td><td>${int(b.ai)}</td></tr>`)}</tbody></table></div>
+        <p class="small muted"><a href="/admin?tab=people&amp;active=7d&amp;sort=days">Everyone active this week</a></p>` : html`<p class="muted">Nobody has used their account this week.</p>`}
     </section>
     <section class="panel"><h2>🆕 Newest accounts</h2>
       ${fresh.length ? html`<div class="tblwrap"><table class="tbl"><thead><tr><th>Player</th><th>Joined</th><th>Last seen</th></tr></thead><tbody>
@@ -550,7 +814,38 @@ const gameAct = fn => (req, res) => {
   res.json({ ok: true });
 };
 router.post('/api/admin/games/:id/approve', gameAct(req => mod.approve(req.user, req.params.id, note(req))));
-router.post('/api/admin/games/:id/reject', gameAct(req => mod.reject(req.user, req.params.id, note(req))));
+router.post('/api/admin/games/:id/reject', gameAct(req => mod.reject(req.user, req.params.id, note(req), String((req.body || {}).reason || ''))));
+// The Oomba team writes to one person (services/team.js: a child's messages are copied to their grown-up and audited).
+router.post('/api/admin/users/:id/message', rateLimit('admin-dm', 30, 10 * 60e3), (req, res) => {
+  const u = q.get('SELECT * FROM users WHERE id=?', String(req.params.id));
+  const r = team.sendDirect(req.user, u, String((req.body || {}).text || ''));
+  res.status(r.ok ? 200 : r.code === 'missing' ? 404 : 400).json(r.ok ? { ok: true, copiedTo: r.copiedTo.map(g => g.username) } : { error: r.error, code: r.code });
+});
+// The automatic welcome for new kids (team.js welcomeSettings / saveWelcome).
+router.post('/api/admin/team/welcome', (req, res) => {
+  const b = req.body || {};
+  const r = team.saveWelcome(req.user, { on: b.on === '1' || b.on === true || b.on === 'on', text: String(b.text || '') });
+  res.status(r.ok ? 200 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
+// Unsend a team message or an announcement (team.js unsendDirect / unsendAnnouncement).
+router.post('/api/admin/team/messages/:id/unsend', (req, res) => {
+  const r = team.unsendDirect(req.user, req.params.id);
+  res.status(r.ok ? 200 : r.code === 'missing' ? 404 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
+router.post('/api/admin/announcements/:id/unsend', (req, res) => {
+  const r = team.unsendAnnouncement(req.user, req.params.id);
+  res.status(r.ok ? 200 : r.code === 'missing' ? 404 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
+// Announcements: preview (how many people, and the confirm code), then send with that code. Limits live in team.js.
+const annInput = req => { const b = req.body || {}; return { audience: String(b.audience || ''), schoolId: String(b.schoolId || ''), text: String(b.text || ''), confirm: String(b.confirm || '') }; };
+router.post('/api/admin/announcements/preview', rateLimit('admin-ann', 30, 10 * 60e3), (req, res) => {
+  const r = team.previewAnnouncement(req.user, annInput(req));
+  res.status(r.ok ? 200 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
+router.post('/api/admin/announcements', rateLimit('admin-ann', 30, 10 * 60e3), (req, res) => {
+  const r = team.sendAnnouncement(req.user, annInput(req));
+  res.status(r.ok ? 200 : r.code === 'rate' || r.code === 'daily' ? 429 : 400).json(r.ok ? r : { error: r.error, code: r.code });
+});
 router.post('/api/admin/games/:id/restore', gameAct(req => mod.restoreGame(req.user, req.params.id)));
 router.post('/api/admin/games/:id/suspend', gameAct(req => mod.suspendGame(req.user, req.params.id, note(req))));
 router.post('/api/admin/games/:id/unsuspend', gameAct(req => mod.unsuspendGame(req.user, req.params.id)));

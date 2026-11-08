@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 
 const { config } = await import('../../server/config.js');
 config.anthropicKey = '';
+config.builderFullForAll = false;   // these tests cover the staff-only mode; BUILDER_FULL_FOR_ALL is tested below
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const schools = await import('../../server/services/schools.js');
@@ -113,4 +114,16 @@ test('TRU-5 the Studio shows trusted makers an "included" badge instead of the P
     const kidPage = await studioPage('TruKidPage', false);
     assert.match(kidPage, /id="st-pro"/); assert.doesNotMatch(kidPage, /st-pro-incl/);
   } finally { server.closeAllConnections(); server.close(); }
+});
+
+test('TRU-full everyone builds like a teacher with BUILDER_FULL_FOR_ALL on (the default): students and kids yes, guests and banned no', () => {
+  config.builderFullForAll = true;
+  try {
+    assert.equal(usage.trustedMaker(student.id), true);
+    assert.equal(usage.trustedMaker(kid.id), true);
+    assert.equal(usage.trustedMaker(newUser({ isGuest: true })), false);
+    assert.equal(usage.trustedMaker(null), false);
+    assert.equal(usage.turnCapMs(kid.id), config.builderStaffTurnMaxMs);
+    assert.equal(maxStepsFor(usage.trustedMaker(kid.id)), MAX_STEPS_TRUSTED);
+  } finally { config.builderFullForAll = false; }
 });

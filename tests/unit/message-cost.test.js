@@ -5,6 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 const { q, today } = await import('../../server/db.js');
 const { config } = await import('../../server/config.js');
+config.builderFullForAll = false;   // a regular maker's Pro weight and costs (BUILDER_FULL_FOR_ALL: builder-trusted.test.js)
 const { createUser, startSession } = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const turns = await import('../../server/builder/turns.js');

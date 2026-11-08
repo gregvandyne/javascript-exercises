@@ -37,7 +37,7 @@ test.afterEach(() => off());
 const sw = (user, game, onOff) => call('/api/admin/tts/games', { method: 'POST', user, body: { game, on: onOff } });
 const say = (user, body) => call('/api/tts', { method: 'POST', body, user });
 
-test('the switch: admin only (404 for anyone else), audited, by slug, id or link; a student\'s game is refused', async () => {
+test('the switch: admin only (404 for anyone else), audited, by slug, id or link; a student\'s game is pinned to its version', async () => {
   for (const u of [teacher, mia, kid, null]) {
     const r = await sw(u, 'haberle-quiz', true);
     assert.equal(r.status, 404, `not for ${u ? u.username : 'guests'}`);
@@ -53,12 +53,21 @@ test('the switch: admin only (404 for anyone else), audited, by slug, id or link
   assert.equal(TG.findGame('/play/haberle-quiz').id, teacherGame.id);
   assert.equal(TG.findGame(teacherGame.id).id, teacherGame.id);
   assert.equal((await sw(boss, 'no-such-game', true)).status, 404);
-  // A student's game, a kid's own account: refused with a clear message, and never on.
+  // A student's game (a kid's own account, a school pupil): the admin may switch it on; the switch pins the published
+  // version, audited as a student's game.
   for (const g of [kidGame, pupilGame]) {
     const x = await sw(boss, g.slug, true);
-    assert.equal(x.status, 400); assert.match(x.json.error, /not a teacher, school staff or admin/);
-    assert.equal(TG.isOn(g.id), false);
+    assert.equal(x.status, 200, x.text); assert.equal(x.json.game.student, true); assert.equal(x.json.game.stale, false);
+    assert.equal(TG.switched()[g.id].version, games.getGame(g.id).published_version_id);
+    assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='admin.tts.game.on' AND target=? AND details LIKE '%student%'", g.id));
+    assert.equal((await sw(boss, g.slug, false)).status, 200);
   }
+  // A student's game that was never published can't be switched on: there is no version to pin.
+  const pv = kidGame.published_version_id;
+  q.run('UPDATE games SET published_version_id=NULL WHERE id=?', kidGame.id);
+  const np = await sw(boss, kidGame.slug, true);
+  assert.equal(np.status, 400); assert.match(np.json.error, /publish it first/);
+  q.run('UPDATE games SET published_version_id=? WHERE id=?', pv, kidGame.id);
   // The list and switching off.
   assert.deepEqual((await call('/api/admin/tts/games', { user: boss })).json.games.map(x => x.slug), ['haberle-quiz']);
   const page = await call('/admin/voices', { user: boss });
@@ -84,7 +93,7 @@ test('the game page: the switch shows for the admin only, with the reason for a 
   on(['en']);
   assert.ok(!(await call('/g/haberle-quiz', { user: boss })).text.includes('admin-voices-note'));
   const k = await call('/g/kid-quiz', { user: boss });
-  assert.match(k.text, /id="admin-voices-why"/); assert.ok(!k.text.includes('id="admin-voices-on"'));
+  assert.match(k.text, /id="admin-voices-student"/); assert.match(k.text, /id="admin-voices-on"/); assert.ok(!k.text.includes('admin-voices-why'));
 });
 
 test('play data: only once switched on, published and not hidden; never for a student\'s game or a preview', async () => {
@@ -100,10 +109,23 @@ test('play data: only once switched on, published and not hidden; never for a st
   q.run("UPDATE games SET hidden_reason='', status='draft' WHERE id=?", teacherGame.id);
   assert.equal(R.playData(mia, games.getGame(teacherGame.id)), null);
   q.run("UPDATE games SET status='published' WHERE id=?", teacherGame.id);
-  // A student's game forced into the setting anyway: still off.
+  // A student's game in the setting without a pinned version (or forced in by hand): off.
   q.run('UPDATE settings SET value=? WHERE key=?', JSON.stringify({ [teacherGame.id]: { by: boss.id, at: 1 }, [kidGame.id]: { by: boss.id, at: 1 } }), 'tts.games');
   assert.equal(R.playData(mia, kidGame), null);
   assert.equal(TG.allowed(kidGame), false);
+  // Switched on by the admin: on for that published version only.
+  TG.set(boss, kidGame, false); TG.set(boss, kidGame, true);
+  assert.equal(TG.allowed(games.getGame(kidGame.id)), true);
+  assert.ok(R.playData(mia, games.getGame(kidGame.id)).tok);
+  // The student publishes a new version: paused (stale) until the admin switches it on again.
+  const was = games.getGame(kidGame.id).published_version_id;
+  q.run('UPDATE games SET published_version_id=? WHERE id=?', was + '-new', kidGame.id);
+  assert.equal(TG.stale(games.getGame(kidGame.id)), true);
+  assert.equal(TG.allowed(games.getGame(kidGame.id)), false);
+  assert.equal(R.playData(mia, games.getGame(kidGame.id)), null);
+  assert.match((await call('/g/kid-quiz', { user: boss })).text, /id="admin-voices-stale"/);
+  q.run('UPDATE games SET published_version_id=? WHERE id=?', was, kidGame.id);
+  TG.set(boss, kidGame, false);
 });
 
 test('text: the game\'s own words (numbers may differ, joined strings), anything else 422 filtered; the backstops still run', async () => {

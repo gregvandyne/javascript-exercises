@@ -41,6 +41,7 @@ test.after(() => fake.close());
 
 const { config } = await import('../../server/config.js');
 config.anthropicKey = 'sk-ant-test-fake';
+config.builderFullForAll = false;   // the staff-only mode (BUILDER_FULL_FOR_ALL is covered in builder-trusted.test.js)
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
 const aiBudget = await import('../../server/services/ai-budget.js');

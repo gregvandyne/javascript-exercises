@@ -1503,7 +1503,9 @@
     "class": "{count, plural, one {Online voor {name}! Iedereen in je klas kan hem vinden en spelen.} other {Online voor je klassen! Iedereen daarin kan hem vinden en spelen.}}",
     "schoolOnly": "Je school houdt games binnen de school. Deel hem dus met je school.",
     "liveFamily": "Live voor je gezin! Jij en de kinderen die aan je gezin gekoppeld zijn, kunnen het spelen.",
-    "liveConnections": "Gedeeld met je volwassen contacten! Alleen jij en zij kunnen het spelen."
+    "liveConnections": "Gedeeld met je volwassen contacten! Alleen jij en zij kunnen het spelen.",
+    "waitingTeam": "Je vrienden kunnen het nu al spelen! Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen. We sturen je een bericht als het klaar is.",
+    "waitingTeamGrownup": "Je volwassen contacten kunnen het nu al spelen. Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen, en we sturen je een bericht als het klaar is."
   },
   "builder": {
     "kindRefusal": "Daar kan ik niet mee helpen. Laten we iets leuks bouwen! Wat voor game wil je graag?",
@@ -1763,7 +1765,8 @@
       "blockTitle": "{name} blokkeren?",
       "blockText": "Je ziet geen berichten meer van {name}, en {name} kan je niets meer sturen. Jullie blijven vrienden, en je kunt {name} deblokkeren op de pagina Vrienden.",
       "block": "Blokkeren",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "verified": "Geverifieerd Oomba-team"
     },
     "studio": {
       "docTitle": "Studio: {title} · Oomba Academy",
@@ -1824,7 +1827,9 @@
         "publishFirst": "Publiceer het, dan kun je het live spelen.",
         "teacher": "Een leraar of volwassene kan het live spelen met je klas. Deel het eerst met je klas.",
         "notYet": "Nog niet klaar voor live: {issue}.",
-        "make": "Maak er een live klassenspel van"
+        "make": "Maak er een live klassenspel van",
+        "waitingReview": "Wacht op controle",
+        "teamCheck": "Iemand van het Oomba-team bekijkt elk spel voordat iedereen het kan spelen. Je kunt intussen gewoon spelen, het delen met vrienden en het aanpassen. We sturen je een bericht als het klaar is."
       },
       "safety": {
         "chipPass": "Veilig",
@@ -1973,6 +1978,21 @@
         "planLabel": "Plan:",
         "thoughtFirst": "eerst nagedacht",
         "thinkingNow": "denkt na",
+        "promptTipLabel": "Tip voor je bericht:",
+        "promptTips": {
+          "a": "Zeg eerst wat voor game het wordt: “een racegame”, “een quiz”, “een platformgame”. Voeg daarna de details toe.",
+          "b": "Vertel de AI hoe je wint en hoe je verliest. Duidelijke regels maken een betere game.",
+          "c": "Beschrijf hoe het eruit moet zien: kleuren, een thema zoals de ruimte of de jungle, en wie de held is.",
+          "d": "Verander één ding tegelijk. “Laat hem hoger springen” werkt beter dan tien veranderingen in één keer.",
+          "e": "Wees precies. “Maak de vijanden langzamer in level 1” is beter dan “maak het makkelijker”.",
+          "f": "Een fout gevonden? Vertel wat je deed, wat er gebeurde en wat je had verwacht.",
+          "g": "Zeg welke besturing je wilt: pijltjestoetsen, tikken, vegen of de spatiebalk.",
+          "h": "Vraag om levels die steeds moeilijker worden, zoals “3 levels, elk een beetje sneller”.",
+          "i": "Wil je geluiden of een score? Vraag erom: “voeg een muntgeluid en een highscore toe”.",
+          "j": "Speel je game na elke verandering en vertel de AI dan precies wat hij nu moet verbeteren.",
+          "k": "Geef een voorbeeld: “zoals een doolhof, maar de muren bewegen” helpt de AI om je idee voor zich te zien.",
+          "l": "Weet je niet wat je kunt toevoegen? Vraag de AI: “Heb je 3 ideeën om dit leuker te maken?”"
+        },
         "factLabel": "Wist je dat?",
         "justNow": "Zojuist:",
         "tokens": "De AI las {read} tokens en schreef er {wrote}. Een token is een klein stukje van een woord. Het getal is groot omdat de AI elke ronde zijn instructies, de chat en de game opnieuw leest.",
@@ -2091,11 +2111,11 @@
           "b": "Een AI schrijft door steeds het volgende token te voorspellen, heel snel achter elkaar.",
           "c": "Vraag twee keer hetzelfde en je krijgt misschien een ander antwoord, want de AI kiest uit waarschijnlijke woorden.",
           "d": "Elke ronde leest de AI het laatste stuk van de chat opnieuw. Daarom gebruiken lange chats meer tokens.",
-          "e": "Een agent is een AI die hulpmiddelen in een lus gebruikt. Deze Bouwer kan tot 14 rondes per bericht doen.",
+          "e": "Een agent is een AI die hulpmiddelen in een lus gebruikt. Deze Bouwer kan tot 20 rondes per bericht doen.",
           "f": "De AI-Bouwer kan niet op internet. Hij bouwt met wat hij geleerd heeft en wat jij hem vertelt.",
           "g": "AI-modellen leren patronen uit enorm veel teksten en code die door mensen zijn gemaakt.",
           "h": "AI kan heel zeker klinken en toch fout zitten. Daarom controleert een veiligheidsprogramma de code ook.",
-          "i": "✨ Pro-kwaliteit gebruikt een grotere AI die langer nadenkt: langzamer, maar vaak beter bij lastige games.",
+          "i": "Deze Bouwer gebruikt een grote AI die nadenkt voordat hij schrijft: langzamer, maar beter bij lastige games.",
           "j": "Speel je game altijd zelf. Zelfs een slimme AI mist dingen die een echte speler zou zien.",
           "k": "Je kunt nieuwe ideeën sturen terwijl de AI werkt. Hij leest ze tussen zijn stappen door."
         },
@@ -6254,6 +6274,48 @@
       "failed": "De nieuwe versie is niet gelukt, dus je verhaal blijft zoals het was.",
       "keepOld": "De oude houden",
       "asksAgain": "Na een wijziging moet een volwassene of je leraar opnieuw OK zeggen voordat anderen het kunnen bekijken."
+    }
+  },
+  "review": {
+    "reasons": {
+      "characters": "Gebruik je eigen figuren, niet die uit films, series of andere spellen.",
+      "people": "Gebruik geen namen of foto's van echte mensen in je spel.",
+      "scary": "Het is een beetje te eng of te ruw voor jongere spelers. Kun je het vriendelijker maken?",
+      "words": "Verander een paar woorden, zodat het spel aardig en vriendelijk is voor iedereen.",
+      "personal": "Haal alles weg wat spelers vraagt naar hun naam, leeftijd of waar ze wonen.",
+      "brands": "Haal echte merken en logo's weg.",
+      "flashing": "Laat het knipperen langzamer of zachter gaan. Snel knipperen kan pijn doen aan de ogen van sommige spelers.",
+      "broken": "We kregen het niet werkend. Speel het zelf en vraag de Bouwer dan om te repareren wat misgaat.",
+      "other": "Verander eerst een paar dingen."
+    }
+  },
+  "team": {
+    "name": "Oomba-team",
+    "verified": "Geverifieerd Oomba-team",
+    "sub": "Berichten van de mensen achter Oomba Academy",
+    "empty": "Nog geen berichten. Nieuws over je spellen komt hier.",
+    "safety": {
+      "child": "Deze berichten komen van het Oomba-team. Je volwassene kan ze ook zien. Deel nooit je wachtwoord, adres of telefoonnummer, ook niet met ons.",
+      "grownup": "Berichten van het Oomba-team. We vragen nooit om je wachtwoord. Als we een kind schrijven dat aan jou gekoppeld is, krijg je hier een kopie, ook van de antwoorden."
+    },
+    "cant": {
+      "guest": "Maak een gratis account om berichten van het Oomba-team te krijgen.",
+      "banned": "Je account is gepauzeerd.",
+      "notYet": "Je kunt hier antwoorden zodra het Oomba-team je een bericht heeft gestuurd.",
+      "noGrownup": "Hier kun je berichten van het Oomba-team lezen. Wil je terugschrijven? Vraag dan een volwassene om aan je account te koppelen.",
+      "block": "Je kunt het Oomba-team niet blokkeren. Maakt een bericht je ongerust? Meld het of vertel het aan een volwassene."
+    },
+    "copy": {
+      "to": "Kopie: we schreven aan {name}:",
+      "from": "Kopie: {name} schreef ons:"
+    },
+    "notice": {
+      "approved": "Goed nieuws! ‘{title}’ is goedgekeurd door het Oomba-team, dus nu kunnen meer mensen het spelen.",
+      "sentBack": "‘{title}’ heeft een paar veranderingen nodig voordat iedereen het kan spelen."
+    },
+    "link": {
+      "new": "{count, plural, one {# nieuw bericht van het Oomba-team} other {# nieuwe berichten van het Oomba-team}}",
+      "open": "Berichten van het Oomba-team"
     }
   }
 }

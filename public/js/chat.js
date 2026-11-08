@@ -12,7 +12,7 @@ const avatarHtml = (a, c, s, photo) => photo && /^\/avatars\/[\w-]+\?v=\w+$/.tes
 // ---------------- Inbox ----------------
 if (d.mode === 'inbox') {
   const box = $('#inbox');
-  const row = th => `<li><a class="inboxrow ${th.unread ? 'unread' : ''}" href="/chat/${encodeURIComponent(th.username)}" data-thread="${esc(th.username)}">${avatarHtml(th.avatar, th.color, 48, th.photo)}<span class="who"><span class="nm">${esc(th.displayName)}</span><span class="sub">${esc(th.preview || (th.chatOn ? t('js.chat.sayHi') : t('js.chat.chatOff')))}</span></span><span class="meta">${th.last ? `<span class="time">${esc(ago(th.last))}</span>` : ''}${th.unread ? `<span class="badge" aria-label="${esc(t('js.chat.newCount', { count: th.unread }))}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`;
+  const row = th => `<li><a class="inboxrow ${th.unread ? 'unread' : ''}${th.team ? ' teamrow' : ''}" href="/chat/${encodeURIComponent(th.username)}" data-thread="${esc(th.username)}">${avatarHtml(th.avatar, th.color, 48, th.photo)}<span class="who"><span class="nm">${esc(th.displayName)}${th.team ? `<span class="verified" title="${esc(t('js.chat.verified'))}"><span aria-hidden="true">✓</span><span class="sr-only">${esc(t('js.chat.verified'))}</span></span>` : ''}</span><span class="sub">${esc(th.preview || (th.chatOn ? t('js.chat.sayHi') : t('js.chat.chatOff')))}</span></span><span class="meta">${th.last ? `<span class="time">${esc(ago(th.last))}</span>` : ''}${th.unread ? `<span class="badge" aria-label="${esc(t('js.chat.newCount', { count: th.unread }))}">${th.unread > 9 ? '9+' : th.unread}</span>` : ''}</span></a></li>`;
   let last = box ? box.innerHTML : '';
   const refresh = async () => {
     if (!box || document.hidden) return;
@@ -34,7 +34,7 @@ if (d.mode === 'thread') {
 
   function render(m) {
     const el = document.createElement('div');
-    el.className = `msg ${m.mine ? 'mine' : 'theirs'} ${m.kind}`;
+    el.className = `msg ${m.mine ? 'mine' : 'theirs'} ${m.kind}${m.team ? ' teammsg' : ''}`;
     el.dataset.id = m.id;
     if (m.kind === 'game') {
       const g = m.game;
@@ -48,7 +48,7 @@ if (d.mode === 'thread') {
     }
     const w = document.createElement('span'); w.className = 'when'; w.textContent = clock(m.at); w.title = new Date(m.at).toLocaleString(INTL);
     el.appendChild(w);
-    if (!m.mine) {
+    if (!m.mine && d.reportable !== false) {
       const r = document.createElement('button'); r.type = 'button'; r.className = 'rep'; r.textContent = t('js.chat.report');
       r.setAttribute('aria-label', t('js.chat.reportLabel')); r.dataset.report = m.id;
       el.appendChild(r);

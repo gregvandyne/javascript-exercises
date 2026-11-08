@@ -25,14 +25,19 @@ export function reviewQueue() {
     const live = g.published_version_id ? getVersion(g.published_version_id) : null;
     return {
       game: g, version: { id: v.id, number: v.number, notes: v.notes, created_at: v.created_at, safety_status: v.safety_status, size: v.html ? Buffer.byteLength(v.html) : 0 },
-      isUpdate: g.status === 'published' && !!g.published_version_id, liveNumber: live ? live.number : null,
+      isUpdate: g.status === 'published' && !!g.published_version_id && g.published_version_id !== g.pending_version_id, liveNumber: live ? live.number : null,
+      liveFor: g.status === 'published' && g.published_version_id ? g.visibility : null,
       audience: g.pending_visibility || 'public', classes: classesAsked(g),
       safety: parse(v.safety_report), review: parse(v.review_report),
     };
   });
 }
 export function approve(admin, gameId, note = '') { return publish.approve(admin, gameId, String(note || '').slice(0, 500)); }
-export function reject(admin, gameId, note = '') { return publish.reject(admin, gameId, String(note || '').trim().slice(0, 500) || 'Needs a few changes before it can be public.'); }
+/** Send back with a preset reason (chat.js REVIEW_REASONS) and/or a note; with neither, a plain default note. */
+export function reject(admin, gameId, note = '', reason = '') {
+  const text = String(note || '').trim().slice(0, 500);
+  return publish.reject(admin, gameId, text || (reason ? '' : 'Needs a few changes before it can be public.'), reason);
+}
 
 /** Games with open reports, plus anything hidden by reports or suspended. */
 export function reportedGames() {

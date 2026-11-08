@@ -463,6 +463,11 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
     // Lesson work moves too (if both accounts did the same step, the student's own account keeps theirs).
     q.run('UPDATE OR IGNORE step_progress SET user_id=? WHERE user_id=?', intoUserId, a.id);
     q.run('DELETE FROM step_progress WHERE user_id=?', a.id);
+    // The admin's activity history (sign-ins, days active) moves with it.
+    q.run('INSERT OR IGNORE INTO user_days(user_id, day) SELECT ?, day FROM user_days WHERE user_id=?', intoUserId, a.id);
+    q.run('DELETE FROM user_days WHERE user_id=?', a.id);
+    q.run('UPDATE sign_ins SET user_id=? WHERE user_id=?', intoUserId, a.id);
+    q.run('UPDATE users SET last_login_at=MAX(last_login_at, ?) WHERE id=?', a.last_login_at || 0, intoUserId);
     for (const fn of mergeHooks) fn({ from: a.id, into: intoUserId });
     for (const t of ['sessions', 'friends', 'join_requests', 'google_identities']) q.run(`DELETE FROM ${t} WHERE user_id=?`, a.id);
     q.run("UPDATE google_invites SET status='revoked', revoked_at=? WHERE user_id=? AND status='open'", now(), a.id);

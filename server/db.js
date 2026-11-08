@@ -24,6 +24,15 @@ export const now = () => Date.now();
 export const uid = (n = 12) => crypto.randomBytes(24).toString('base64url').replace(/[^a-zA-Z0-9]/g, '').slice(0, n);
 export const today = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
 
+/** Migration 0055: the live version of every game that is public now counts as approved by the team for everyone. Safe
+ *  to run again (the tests run it on rows they made). */
+export const GRANDFATHER_SQL = `UPDATE game_versions SET review_status='approved', review_report=json_set(
+      CASE WHEN json_valid(review_report) THEN review_report ELSE '{}' END,
+      '$.was', json_extract(CASE WHEN json_valid(review_report) THEN review_report ELSE '{}' END, '$.by'),
+      '$.verdict', 'allowed', '$.by', 'admin', '$.for', 'public', '$.grandfathered', 1)
+    WHERE id IN (SELECT published_version_id FROM games WHERE visibility='public' AND published_version_id IS NOT NULL
+      AND status IN ('published', 'suspended'))
+    AND NOT (review_status='approved' AND json_valid(review_report) AND json_extract(review_report, '$.by')='admin' AND json_extract(review_report, '$.for')='public');`;
 export const MIGRATIONS = [
   ['0001_init', `
   CREATE TABLE IF NOT EXISTS users (
@@ -605,6 +614,55 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS story_edits (id INTEGER PRIMARY KEY AUTOINCREMENT, story_id TEXT NOT NULL, owner_id TEXT NOT NULL,
       kind TEXT NOT NULL, created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS story_edits_owner ON story_edits(owner_id, created_at);`],
+  // Oomba admin approval before a game is public, and the Oomba team inbox (docs/decisions.md "Admin approval before a
+  // game goes public" and "Admin messages: the Oomba team inbox"; services/publish.js, services/team.js).
+  // Grandfathering: the version every game that is public today plays is marked approved by the team for everyone
+  // (review_report by 'admin', for 'public', grandfathered 1, the earlier reviewer kept in 'was'), so nothing already public
+  // is taken down and moving one off public and back needs no new review. Seed games are approved the same way.
+  // games.review_reason: the preset reason a game was sent back with (chat.js REVIEW_REASONS; shown in the builder's
+  // language next to review_note). chat_messages.sent_by: the admin behind a team message (NULL for automatic notices).
+  // announcements: one row per announcement (the fan-out is one 'announce' message per person). plays_user: the new-users
+  // list counts plays per person.
+  ['0055_admin_review', `
+    ALTER TABLE games ADD COLUMN review_reason TEXT NOT NULL DEFAULT '';
+    ALTER TABLE chat_messages ADD COLUMN sent_by TEXT;
+    CREATE TABLE IF NOT EXISTS announcements (id TEXT PRIMARY KEY, sent_by TEXT NOT NULL, audience TEXT NOT NULL, school_id TEXT,
+      body TEXT NOT NULL, recipients INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS announcements_at ON announcements(created_at);
+    CREATE INDEX IF NOT EXISTS plays_user ON plays(user_id, started_at);
+    ${GRANDFATHER_SQL}`],
+  // User analytics for the platform admin (docs/decisions.md "Admin: user analytics"; services/admin-analytics.js).
+  // Sessions are deleted when someone signs out or a sign-in ends, so they can't tell when someone last signed in:
+  // - users.last_login_at: the latest sign-in (auth.startSession, never for guests);
+  // - sign_ins: one row per sign-in with how (password, google, switch, signup; '' for rows copied from old sessions),
+  //   no IP and no browser; kept 400 days;
+  // - user_days: one row per account per UTC day it was used (a sign-in or any signed-in request), for "days active"
+  //   and DAU / WAU / MAU; kept 400 days. Guests write neither.
+  // Backfill: last_login_at from the newest session still stored, else the sign-up itself for accounts people made for
+  // themselves; sign_ins from stored sessions; user_days from plays, Builder messages, stored sessions, course and Number
+  // Quest activity, the last-seen day of anyone who signed in and the sign-up day of self sign-ups. Older history is
+  // only as good as those rows. plays_user_game: plays and distinct games per player read from the index alone.
+  ['0056_user_analytics', `
+    ALTER TABLE users ADD COLUMN last_login_at INTEGER NOT NULL DEFAULT 0;
+    UPDATE users SET last_login_at=COALESCE((SELECT MAX(s.created_at) FROM sessions s WHERE s.user_id=users.id),
+      CASE WHEN made_by IS NULL AND managed_school='' THEN created_at ELSE 0 END) WHERE is_guest=0;
+    CREATE TABLE IF NOT EXISTS sign_ins (user_id TEXT NOT NULL, at INTEGER NOT NULL, method TEXT NOT NULL DEFAULT '');
+    CREATE INDEX IF NOT EXISTS sign_ins_user ON sign_ins(user_id, at);
+    CREATE INDEX IF NOT EXISTS sign_ins_at ON sign_ins(at);
+    INSERT INTO sign_ins(user_id, at, method) SELECT s.user_id, s.created_at, CASE WHEN s.via='switch' THEN 'switch' ELSE '' END
+      FROM sessions s JOIN users u ON u.id=s.user_id WHERE u.is_guest=0;
+    CREATE TABLE IF NOT EXISTS user_days (user_id TEXT NOT NULL, day TEXT NOT NULL, PRIMARY KEY (user_id, day)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS user_days_day ON user_days(day);
+    INSERT OR IGNORE INTO user_days SELECT p.user_id, strftime('%Y-%m-%d', p.started_at / 1000, 'unixepoch') FROM plays p JOIN users u ON u.id=p.user_id WHERE u.is_guest=0;
+    INSERT OR IGNORE INTO user_days SELECT b.user_id, b.day FROM builder_usage b JOIN users u ON u.id=b.user_id WHERE u.is_guest=0 AND b.turns>0;
+    INSERT OR IGNORE INTO user_days SELECT s.user_id, strftime('%Y-%m-%d', s.created_at / 1000, 'unixepoch') FROM sessions s JOIN users u ON u.id=s.user_id WHERE u.is_guest=0;
+    INSERT OR IGNORE INTO user_days SELECT s.user_id, strftime('%Y-%m-%d', s.last_active / 1000, 'unixepoch') FROM sessions s JOIN users u ON u.id=s.user_id WHERE u.is_guest=0 AND s.last_active>0;
+    INSERT OR IGNORE INTO user_days SELECT c.user_id, strftime('%Y-%m-%d', COALESCE(c.completed_at, c.checked_at, c.read_at, c.played_at) / 1000, 'unixepoch')
+      FROM course_progress c JOIN users u ON u.id=c.user_id WHERE u.is_guest=0 AND COALESCE(c.completed_at, c.checked_at, c.read_at, c.played_at)>1;
+    INSERT OR IGNORE INTO user_days SELECT a.user_id, a.day FROM nq_daily_activity a JOIN users u ON u.id=a.user_id WHERE u.is_guest=0;
+    INSERT OR IGNORE INTO user_days SELECT id, strftime('%Y-%m-%d', last_seen / 1000, 'unixepoch') FROM users WHERE is_guest=0 AND last_login_at>0 AND last_seen>0;
+    INSERT OR IGNORE INTO user_days SELECT id, strftime('%Y-%m-%d', created_at / 1000, 'unixepoch') FROM users WHERE is_guest=0 AND made_by IS NULL AND managed_school='';
+    CREATE INDEX IF NOT EXISTS plays_user_game ON plays(user_id, game_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
