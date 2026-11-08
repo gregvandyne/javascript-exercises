@@ -8,6 +8,7 @@ import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, makeGameBtn } from '../views/components.js';
+import { ADMIN_BODY, ADMIN_CSS } from '../views/admin-ui.js';
 import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
@@ -109,7 +110,7 @@ router.get('/admin/schools', requireAdmin, (req, res) => {
       <td data-label="School admin">${admins[s.id] || html`<a class="chip-s warn" href="/school/${s.slug}?tab=people">⚠️ None yet</a>`}</td>
       <td data-label="Classes">${s.classes}</td><td data-label="Students">${s.students}</td><td data-label="Added">${new Date(s.created_at).toISOString().slice(0, 10)}</td></tr>`)}
   </tbody></table></div>` : emptyState({ emoji: '🏫', title: 'No schools yet', text: 'Add the first school above, then appoint its school admin on its People tab.' })}`;
-  page(req, res, { title: 'Schools', active: S.isSchoolStaff(req.user) ? 'me' : 'schools', body, head: CSS, back: '/admin', backLabel: 'Admin' });
+  page(req, res, { title: 'Schools', active: S.isSchoolStaff(req.user) ? 'me' : 'schools', body, bodyClass: ADMIN_BODY, head: html`${CSS}${ADMIN_CSS}`, back: '/admin', backLabel: 'Admin' });
 });
 router.post('/api/admin/schools', requireAdmin, (req, res) => {
   const r = S.createSchool(req.user, { name: b(req).name });

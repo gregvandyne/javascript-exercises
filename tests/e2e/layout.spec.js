@@ -72,10 +72,13 @@ test('teacher pages: nothing touches', async ({ browser }) => {
 });
 
 test('admin pages: nothing touches', async ({ browser }) => {
+  test.setTimeout(720_000);
   const { page, state, ctx } = await signIn(browser, ADMIN.username, ADMIN.password);
   const school = await href(page, '/admin/schools', 'td a[href^="/school/"]');
   await ctx.close();
-  expect(await checkPages(browser, state, ['/admin', '/admin/stats', '/admin/schools', school, `${school}?tab=people`, `${school}?tab=settings`])).toEqual([]);
+  // Every admin tab and page (tests/e2e/admin-mobile.spec.js checks them at 360 px too).
+  const admin = ['queue', 'reports', 'chat', 'links', 'live', 'schoolreq', 'people', 'users', 'messages', 'searches', 'audit'].map(k => `/admin?tab=${k}`);
+  expect(await checkPages(browser, state, [...admin, '/admin?tab=users&username=DemoTeacher', '/admin/stats', '/admin/billing', '/admin/voices', '/admin/schools', school, `${school}?tab=people`, `${school}?tab=settings`])).toEqual([]);
 });
 
 test('the top bar fits the logo, search, the language and theme menus and the Me button in English, German and Russian', async ({ browser }) => {

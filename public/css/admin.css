@@ -1,0 +1,267 @@
+/* Admin pages (server/views/admin-ui.js): loaded last on /admin and its tabs, /admin/stats, /admin/billing,
+   /admin/messages/<user>, /admin/schools and /admin/voices, whose <body> has class "adminpage". Only the tokens in app.css,
+   so light and dark follow the theme. Phones: every table becomes labelled cards, the 11 tabs fold under the current one,
+   tap targets are 44 px and nothing is wider than the screen. Desktop keeps real tables. Containers never touch: every
+   stacked block keeps a gap (tests/e2e/touching.js). */
+
+/* ---------- Header: the shortcuts and the AI spending line ---------- */
+.adminhead .ashort{gap:var(--s2)}
+@media (max-width:600px){
+  .adminhead{gap:var(--s3)}
+  .adminhead h1{flex-basis:100%}
+  .adminhead .ashort{display:grid;grid-template-columns:repeat(auto-fit,minmax(6.25rem,1fr));inline-size:100%}
+  .adminhead .ashort .btn{padding:0 var(--s2);font-size:.95rem;gap:4px}
+}
+.aispend{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3);padding:var(--s3) var(--s4)}
+.aispend-i{display:inline-flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+.aispend-cap{flex-basis:100%}
+.aispend.bad{box-shadow:inset 0 0 0 2px var(--danger)}
+.ameter{display:inline-block;inline-size:64px;block-size:8px;border-radius:999px;background:var(--card-2);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;vertical-align:middle}
+.ameter i{display:block;block-size:100%;inline-size:var(--p);background:var(--accent-line);border-radius:999px}
+.aispend.bad .ameter i{background:var(--danger)}
+@media (max-width:600px){
+  .aispend{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s1)}
+  .aispend-sep{display:none}
+  .aispend-i{justify-content:space-between}
+}
+
+/* ---------- The tab menu: three groups; on phones folded under the current tab ---------- */
+.tabs.adminnav{display:block;overflow:visible;border-bottom:0;margin:var(--s4) 0}
+main.wrap>.tabs.adminnav{margin-inline:0;padding-inline:0}
+.adminnav-t{position:absolute;opacity:0;inline-size:1px;block-size:1px;pointer-events:none}
+.adminnav-sum{display:none}
+.adminnav-groups{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);align-items:flex-start}
+.adminnav-g{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.adminnav-gl{inline-size:100%;font-size:.8125rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tabs.adminnav a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:2px solid var(--line);border-radius:999px;margin:0;background:var(--card);color:var(--text-2);font-size:.95rem;white-space:nowrap}
+.tabs.adminnav a:hover{border-color:var(--accent-line);text-decoration:none}
+.tabs.adminnav a[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.adminnav a .badge{margin-inline-start:2px}
+@media (max-width:600px){
+  .adminnav-sum{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:48px;padding:0 var(--s4);border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer;font-weight:800;user-select:none}
+  .adminnav-cur{min-inline-size:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .adminnav-all{display:inline-flex;align-items:center;gap:4px;flex:none;color:var(--muted);font-size:.9rem}
+  .adminnav-all::after{content:"▾";font-size:1rem;color:var(--text-2)}
+  .adminnav-t:checked+.adminnav-sum .adminnav-all::after{content:"▴"}
+  .adminnav-t:focus-visible+.adminnav-sum{outline:3px solid var(--text);outline-offset:2px}
+  .adminnav-groups{display:none;margin-top:var(--s3);flex-direction:column;gap:var(--s3)}
+  .adminnav-t:checked~.adminnav-groups{display:flex}
+  .adminnav-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);inline-size:100%}
+  .adminnav-gl{grid-column:1/-1}
+  .tabs.adminnav a{padding:4px 10px;white-space:normal;line-height:1.15;border-radius:var(--r-sm)}
+}
+
+/* ---------- Shared pieces ---------- */
+/* "On this page" chips */
+.ajump{margin:var(--s3) 0 var(--s4)}
+.ajump .chip{font-size:.9rem;padding:0 14px}
+/* Folded notes and sections: the summary is a 44 px row */
+.adminpage main summary{min-height:44px;display:flex;align-items:center;gap:var(--s2);cursor:pointer;font-weight:700;list-style-position:inside}
+.adminpage main details[open]>summary{margin-bottom:var(--s2)}
+.anote{margin:var(--s3) 0 0}
+.anote>summary{color:var(--text-2);font-size:.9rem}
+.anote>div{margin:0}
+.stats-funnels+.anote,.stats-cost .anote{margin-top:var(--s3)}
+.asection>summary{font-size:1rem}
+/* Action rows: on phones a 2-column grid of full-width buttons; a lone last one takes the whole row */
+.aacts{gap:var(--s2) var(--s3)}
+@media (max-width:600px){
+  .aacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+  .aacts>*{min-inline-size:0}
+  .aacts>.btn,.aacts>form>.btn{inline-size:100%;white-space:normal;line-height:1.15;padding:0 var(--s3)}
+  .aacts>:last-child:nth-child(odd){grid-column:1/-1}
+}
+/* Small chips that are links get a full tap target; so do names in tables and links under tile numbers */
+.adminpage .nu-who{min-height:44px}
+.adminpage .rtable td>a:first-child,.adminpage .kpi-s>a{display:inline-flex;align-items:center;min-height:44px}
+.adminpage a.chip-s{min-height:44px;padding:0 14px}
+.adminpage .stats-grid .tbl:not(.atable) td:first-child>a{display:inline-flex;align-items:center;min-height:44px}
+/* Text floor on phones: nothing under 13 px */
+@media (max-width:600px){
+  .adminpage .chip-s{font-size:.8125rem}
+  .adminpage .yaxis,.adminpage .xaxis,.adminpage .kpi-s,.adminpage .kpi-l{font-size:.8125rem}
+  .adminpage .plot{height:120px}
+}
+.checkline{min-height:44px;align-items:center}
+.checkline input{margin-top:0}
+/* Facts tables (a person on Users, an invoice request): label above value on phones */
+@media (max-width:600px){
+  .afacts,.afacts tbody,.afacts tr{display:block;inline-size:100%}
+  .afacts th,.afacts td{display:block;border:0;padding:0}
+  .afacts tr{padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+  .afacts tr:last-child{border-bottom:0}
+  .afacts th{font-size:.8125rem;margin-bottom:2px}
+  .afacts td{overflow-wrap:anywhere}
+}
+.famline{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3);padding:var(--s1) 0}
+.famline+.famline{margin-top:var(--s2)}
+.made-list{margin-top:var(--s3)}
+.made-list>.btn{margin-top:var(--s2)}
+
+/* ---------- One table pattern: a real table on desktop, labelled cards on phones ---------- */
+/* First cell is the card's title; every other cell has data-label and shows it above its value. .full spans the card,
+   .acell (actions) too. .wide stacks up to 900 px instead of 700 px (and fills the row with cells). */
+.atable code{overflow-wrap:anywhere}
+@media (max-width:700px){
+  .tblwrap:has(>.atable){overflow:visible}
+  .atable thead{display:none}
+  .atable,.atable tbody{display:block;inline-size:100%}
+  .atable tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .atable tr:first-child{padding-top:0}
+  .atable tr:last-child{border-bottom:0;padding-bottom:0}
+  .atable td,.atable th{display:block;border:0!important;padding:0!important;min-inline-size:0;text-align:start;overflow-wrap:anywhere}
+  .atable tr>:first-child{grid-column:1/-1;font-weight:700}
+  .atable td[data-label]::before{content:attr(data-label);display:block;font-size:.8125rem;font-weight:700;color:var(--muted);text-transform:none;letter-spacing:normal;margin-bottom:1px}
+  .atable td.full,.atable td.acell{grid-column:1/-1}
+  .atable td:empty{display:none}
+  .atable td.acell .btn{inline-size:100%}
+  .atable td a{display:inline-block;line-height:20px;padding-block:12px}
+}
+@media (max-width:900px){
+  .tblwrap:has(>.atable.wide){overflow:visible}
+  .atable.wide thead{display:none}
+  .atable.wide,.atable.wide tbody{display:block;inline-size:100%}
+  .atable.wide tr{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,8rem),1fr));gap:var(--s2) var(--s3);padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .atable.wide tr:first-child{padding-top:0}
+  .atable.wide tr:last-child{border-bottom:0;padding-bottom:0}
+  .atable.wide td{display:block;border:0!important;padding:0!important;min-inline-size:0;overflow-wrap:anywhere}
+  .atable.wide tr>:first-child{grid-column:1/-1;font-weight:700}
+  .atable.wide td[data-label]::before{content:attr(data-label);display:block;font-size:.8125rem;font-weight:700;color:var(--muted);margin-bottom:1px}
+  .atable.wide td.full{grid-column:1/-1}
+  .atable.wide td:empty{display:none}
+  .atable.wide td a{display:inline-block;line-height:20px;padding-block:12px}
+}
+/* .inl: short numbers, label and value on one line ("Last 7 days 12"), two a row */
+@media (max-width:700px){
+  .atable.inl tr{gap:2px var(--s3);padding:var(--s2) 0}
+  .atable.inl tr>:first-child{margin-bottom:2px}
+  .atable.inl td[data-label]::before{display:inline;margin-inline-end:4px}
+}
+/* .alog (audit, web searches, webhooks): compact rows, labels inline ("When 14 min ago · Who @admin · What …") */
+@media (max-width:700px){
+  .atable.alog tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px var(--s3);padding:var(--s2) 0}
+  .atable.alog tr>:first-child{font-weight:400}
+  .atable.alog tr>:first-child:not([data-label]){flex-basis:100%;font-weight:700}
+  .atable.alog td[data-label]::before{display:inline;margin-inline-end:4px}
+  .atable.alog td.full{flex-basis:100%}
+  .atable.alog td.small{font-size:.875rem}
+}
+@media (max-width:900px){
+  .atable.wide.alog tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px var(--s3);padding:var(--s2) 0}
+  .atable.wide.alog tr>:first-child{flex-basis:100%}
+  .atable.wide.alog td[data-label]::before{display:inline;margin-inline-end:4px}
+  .atable.wide.alog td.full{flex-basis:100%}
+}
+.adminpage .aispend .aispend-i{row-gap:2px}
+@media (max-width:600px){.aispend-i .ameter{flex-basis:100%;inline-size:100%;block-size:6px}}
+
+/* ---------- Review queue: checks before the preview on phones ---------- */
+.rc-body{grid-template-areas:"prev checks" "prev decide";grid-template-rows:auto 1fr}
+.rc-preview{grid-area:prev}
+.rc-checks{grid-area:checks}
+.rc-decide{grid-area:decide}
+@media (max-width:900px){
+  .rc-body{grid-template-areas:"checks" "prev" "decide";grid-template-rows:none}
+  .rc-preview{height:clamp(240px,70vw,440px)}
+}
+.rc-decide .field:last-of-type{margin-bottom:var(--s3)}
+
+/* ---------- All users: search first, the other filters folded; rows as compact cards ---------- */
+.nu-form{margin-block:var(--s4) var(--s3)}
+.nu-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s3);align-items:end}
+.nu-top .field{margin:0}
+.nu-top .nu-go{flex-wrap:nowrap}
+.nu-more{margin-top:var(--s3)}
+.adminpage main .nu-more>summary{display:block;padding-block:10px;line-height:1.35}
+.nu-more>summary .nu-now{font-weight:500}
+.nu-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:var(--s3);align-items:end;margin:0}
+@media (max-width:520px){.nu-top{grid-template-columns:minmax(0,1fr)}.nu-top .nu-go{display:grid;grid-template-columns:1fr 1fr}}
+@media (min-width:601px){.nu-quick.scroll{flex-wrap:wrap;overflow:visible;margin:0 0 var(--s2);padding:0}}
+@media (max-width:600px){
+  .nu-quick.scroll{margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+}
+@media (max-width:900px){
+  .nu-table tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px var(--s3);position:relative}
+  .nu-table td{min-inline-size:0;line-height:1.35}
+  .nu-table td:first-child{grid-column:1/-1;padding-inline-end:7.5rem;margin-bottom:var(--s1)}
+  .nu-table td[data-label]{display:block;inline-size:auto;margin:0}
+  .nu-table td[data-label]::before{content:attr(data-label);display:inline;font-size:.8125rem;margin-inline-end:4px}
+  .nu-table td.au-type{grid-column:1/-1;margin-bottom:var(--s1)}
+  .nu-table td.au-type::before{display:none}
+  .nu-table td.au-type .au-sub{display:inline}
+  .nu-table td.au-type .au-sub::before{content:" · "}
+  .nu-table td.au-status{position:absolute;inset-inline-end:0;top:var(--s3)}
+  .nu-table tr:first-child td.au-status{top:0}
+  .nu-table td.au-status::before{display:none}
+  .au-table td[data-label]:not([data-label="Type"]){white-space:normal}
+}
+@media (min-width:901px){.au-table th,.au-table td{padding-inline:5px}}
+
+/* ---------- Users: the actions under the person's name ---------- */
+.uacts{margin-top:var(--s4)}
+.upanel .ajump{margin-bottom:0}
+.upanel .ua{margin-top:var(--s4)}
+.ua .asection{margin-top:var(--s3)}
+
+/* ---------- Team inbox ---------- */
+.welcomefold{border-top:1px solid var(--line);padding-top:var(--s2)}
+.welcomefold>summary{justify-content:space-between}
+.welcomefold>form{margin-top:var(--s2)}
+.annlist li+li{margin-top:var(--s2)}
+
+/* ---------- Web searches filter ---------- */
+.afilter{margin-bottom:var(--s3)}
+.afilter .chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* ---------- Billing ---------- */
+.bfilter{gap:var(--s2) var(--s3)}
+@media (min-width:601px){.bfilter select.input{inline-size:auto;max-inline-size:22rem}}
+@media (max-width:600px){.bfilter{display:grid;grid-template-columns:minmax(0,1fr)}}
+.binv{gap:var(--s3)}
+.binv-seats{display:inline-flex;align-items:center;gap:var(--s2)}
+@media (max-width:600px){.binv{display:grid;grid-template-columns:minmax(0,1fr)}.binv .btn{inline-size:100%;white-space:normal}}
+
+/* ---------- Stats: side tables fit a phone ---------- */
+@media (max-width:520px){
+  .stats-grid .tbl:not(.atable) th{white-space:normal;font-size:.8125rem;letter-spacing:0}
+  .stats-grid .tbl:not(.atable) td:first-child{overflow-wrap:anywhere}
+  .stats-grid .tbl:not(.atable) th,.stats-grid .tbl:not(.atable) td{padding:8px 4px}
+  .stats-grid .tbl:not(.atable) td:first-child,.stats-grid .tbl:not(.atable) th:first-child{padding-inline-start:0}
+}
+
+/* ---------- AI voices: each language a card on phones ---------- */
+.tv-onl{display:inline-flex;align-items:center;gap:var(--s2);min-height:44px;cursor:pointer}
+.tv-onl input{inline-size:22px;block-size:22px}
+.tv-onw{font-weight:700;font-size:.9rem}
+@media (min-width:601px){.tv-onw{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0)}}
+.tv-grid select.input{min-height:44px;padding:6px 8px;inline-size:auto;font-size:.95rem}
+.tv-grid .tv-v .btn-sm,.tv-grid .tv-one .btn-sm{padding:0 12px}
+.tv-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,10rem),1fr));gap:var(--s3)}
+.tv-roles .field{margin:0;text-transform:capitalize}
+.tv-roles select{text-transform:none}
+.tv-save{margin-top:var(--s4)}
+@media (max-width:600px){
+  .tblwrap:has(>.tv-grid){overflow:visible}
+  .tv-grid thead{display:none}
+  .tv-grid,.tv-grid tbody{display:block;inline-size:100%}
+  .tv-grid tr{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"lang on" "sample sample" "nar play";gap:var(--s2) var(--s3);align-items:center;padding:var(--s3) 0;border-bottom:1px solid var(--line)}
+  .tv-grid tr:first-child{padding-top:0}
+  .tv-grid tr:last-child{border-bottom:0;padding-bottom:0}
+  .tv-grid th,.tv-grid td{display:block;border:0!important;padding:0!important;position:static}
+  .tv-grid th[scope=row]{grid-area:lang;background:none}
+  .tv-grid td.tv-on{display:contents}
+  .tv-grid .tv-onl{grid-area:on}
+  .tv-grid .tv-sample{grid-area:sample;margin:0;min-inline-size:0}
+  .tv-grid td.tv-nar{grid-area:nar}
+  .tv-grid td.tv-nar select.input{inline-size:100%}
+  .tv-grid td.tv-one{grid-area:play}
+  .tv-grid td.tv-one .btn{min-inline-size:56px}
+  .tv-grid .tv-v{display:none}
+}
+.adminpage .stats-grid .tbl:not(.atable) td{vertical-align:middle}
+/* Tablets: the stats panels in one column until their tables fit side by side */
+@media (min-width:701px) and (max-width:1000px){.adminpage .stats-grid{grid-template-columns:minmax(0,1fr)}}
+/* The voices grid is the one table that scrolls inside its box on wide screens (one ▶ column per voice): say so. */
+.tv-scrollhint{margin:0 0 var(--s2)}
+@media (max-width:600px){.tv-scrollhint{display:none}}
+.atable td[data-label="Period end"],.atable td[data-label="Due"]{white-space:nowrap}
