@@ -254,4 +254,37 @@ export function sendAnnouncement(admin, input) {
   audit(admin.id, 'admin.announce', id, { audience: input.audience, school: c.school || undefined, recipients: ids.length, text: c.body.slice(0, 500) });
   return { ok: true, id, count: ids.length };
 }
-export const recentAnnouncements = (limit = 20) => q.all('SELECT a.*, u.username AS admin_name, s.name AS school_name FROM announcements a LEFT JOIN users u ON u.id=a.sent_by LEFT JOIN schools s ON s.id=a.school_id ORDER BY a.created_at DESC LIMIT ?', limit);
+export const recentAnnouncements = (limit = 20) => q.all(`SELECT a.*, u.username AS admin_name, s.name AS school_name,
+    NOT EXISTS (SELECT 1 FROM chat_messages m WHERE m.kind='announce' AND m.status='ok' AND m.body LIKE '{"id":"' || a.id || '"%') AS unsent
+    FROM announcements a LEFT JOIN users u ON u.id=a.sent_by LEFT JOIN schools s ON s.id=a.school_id ORDER BY a.created_at DESC LIMIT ?`, limit);
+
+// ---------------------------------------------------------------- unsend
+// An admin takes back a team message (a typo, a blank left in): it disappears from the person's inbox (status
+// 'unsent'; chat shows only 'ok' messages), and so do the copies their grown-ups got. The admin's thread still shows it,
+// marked unsent, and the audit log keeps the text. Replies and automatic notices can't be unsent here.
+export function unsendDirect(admin, messageId) {
+  if (!admin || admin.role !== 'admin') return fail('admin', 'Admins only.');
+  const team = teamUser();
+  const m = q.get('SELECT * FROM chat_messages WHERE id=?', String(messageId || ''));
+  if (!m || m.from_id !== team.id || m.kind !== 'team') return fail('missing', 'No such team message.');
+  if (m.status === 'unsent') return { ok: true, id: m.id, copies: 0, already: true };
+  let copies = 0;
+  tx(() => {
+    q.run("UPDATE chat_messages SET status='unsent' WHERE id=?", m.id);
+    // The copies sent with it: same team sender and admin, within a few seconds, about this child, the same words.
+    for (const c of q.all("SELECT id, body FROM chat_messages WHERE from_id=? AND kind='copy' AND status='ok' AND created_at BETWEEN ? AND ?", team.id, m.created_at - 5000, m.created_at + 5000)) {
+      let b = null; try { b = JSON.parse(c.body); } catch { b = null; }
+      if (b && b.child === m.to_id && b.dir === 'to' && b.text === m.body) { q.run("UPDATE chat_messages SET status='unsent' WHERE id=?", c.id); copies++; }
+    }
+  });
+  audit(admin.id, 'admin.message.unsend', m.to_id, { message: m.id, copies, text: String(m.body).slice(0, 500) });
+  return { ok: true, id: m.id, copies };
+}
+export function unsendAnnouncement(admin, announcementId) {
+  if (!admin || admin.role !== 'admin') return fail('admin', 'Admins only.');
+  const a = q.get('SELECT * FROM announcements WHERE id=?', String(announcementId || ''));
+  if (!a) return fail('missing', 'No such announcement.');
+  const n = q.run(`UPDATE chat_messages SET status='unsent' WHERE from_id=? AND kind='announce' AND status='ok' AND body LIKE ?`, teamUser().id, `{"id":"${a.id}"%`).changes;
+  audit(admin.id, 'admin.announce.unsend', a.id, { removed: n, text: String(a.body).slice(0, 500) });
+  return { ok: true, id: a.id, removed: n };
+}
