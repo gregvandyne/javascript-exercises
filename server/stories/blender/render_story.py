@@ -238,6 +238,9 @@ def build_scene(spec, sc_spec):
     K.reset()
     rng = random.Random(int(sc_spec.get('seed', 1)))
     tod = TIMES.get(sc_spec.get('time'), TIMES['night'])
+    # a soft fill on faces (and hands) at night and dusk, so expressions still read in the dark
+    tod_name = sc_spec.get('time') if sc_spec.get('time') in TIMES else 'night'
+    felt_stage.felt_people.FACE_FILL = {'night': 0.32, 'dusk': 0.16}.get(tod_name, 0.0)
     setup_render(spec, tod)
     props = set(sc_spec.get('props') or [])
     hints = SETS.get(sc_spec.get('set'), felt_sets.set_lighthouse)(tod, rng, props) or {}

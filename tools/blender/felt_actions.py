@@ -53,8 +53,14 @@ class Char:
         self.mouth_scale = {k: tuple(v.get('rest', v.scale)) for k, v in self.mouths.items() if v}
         self.brows = [c for c in head.children if c.name.startswith('brow')]
         self.hands = {}
+        # people bend at the elbow: arm > elbow > hand
+        self.elbows = {}
         for a in self.arms:
-            h = next((c for c in a.children if c.name.startswith('hand')), None)
+            e = next((c for c in a.children if c.name.startswith('elbow')), None)
+            if e is not None:
+                self.elbows[side(a)] = e
+        for a in self.arms:
+            h = next((c for c in _desc(a) if c.name.startswith('hand')), None)
             if h is None:  # the animals: a hand at the end of the paw
                 h = K.empty('hand', (0, -0.05, -0.3), a)
             self.hands[side(a)] = h
@@ -68,6 +74,13 @@ class Char:
         s = self.side(a)
         a.rotation_euler = (-fwd, -s * out, -s * inward)
 
+    def elbow(self, a, bend=0.2, inward=0.0, twist=0.0):
+        """Bend a person's elbow: bend > 0 brings the hand forward and up, inward swings it across the body."""
+        e = self.elbows.get(self.side(a))
+        if e is not None:
+            s = self.side(a)
+            e.rotation_euler = (-bend, s * twist, -s * inward)
+
     def leg(self, l, fwd=0.0, out=0.0):
         if self.side_view:  # four legs seen from the side: they swing along the body (its +X is forward)
             l.rotation_euler = (0, -fwd, 0)
@@ -76,8 +89,9 @@ class Char:
         l.rotation_euler = (-fwd, -s * out, 0)
 
     def face(self, mood='smile', eyes=1.0):
-        """mood: smile | open | sad | closed (sleeping) | squint (laughing)."""
-        show = {'smile': 'smile', 'open': 'open', 'sad': 'sad', 'closed': 'smile', 'squint': 'open'}[mood]
+        """mood: smile | open | sad | closed (sleeping) | squint (laughing) | determined | frustrated."""
+        show = {'smile': 'smile', 'open': 'open', 'sad': 'sad', 'closed': 'smile', 'squint': 'open',
+                'determined': 'smile', 'frustrated': 'sad'}[mood]
         for k, m in self.mouths.items():
             if m:
                 m.scale = self.mouth_scale[k] if k == show else (0, 0, 0)
@@ -90,10 +104,16 @@ class Char:
         else:
             for g, s in self.glints:
                 g.scale = s
+        # brows: happy (open, laughing) lifted; sad: the inner ends up; determined: the inner ends down;
+        # frustrated: down, pinched in and lowered
+        r = float(self.head.get('r', 0.2))
+        tilt, lift = {'open': (0.0, 0.05), 'squint': (-0.08, 0.04), 'sad': (0.32, 0.03), 'determined': (-0.26, -0.02),
+                      'frustrated': (-0.38, -0.05), 'closed': (0.05, -0.02)}.get(mood, (0.0, 0.0))
         for b in self.brows:
             s = b.get('side', 1)
-            b.rotation_euler.y = s * 0.35 if mood == 'sad' else 0.0
-            b.location.z = b.location.z
+            b.rotation_euler.y = s * tilt
+            if 'rest_z' in b.keys():
+                b.location.z = b['rest_z'] + lift * r
 
 
 def _zzz(parent, height, rng_phase=0.0, base=None):
@@ -148,6 +168,68 @@ def _tears(ch):
             s = 1.0 if u < 0.85 else (1 - u) / 0.15
             d.scale = (0.025 * s, 0.018 * s, 0.035 * s)
     K.anim(go)
+
+
+def _attitude(ch, phase):
+    """A person standing about with some attitude: weight on one leg, a head tilt, and arms crossed, hands in the
+    pockets or the hoodie pouch, a hand on the hip, thumbs in the backpack straps or hands behind the back
+    (picked from the person's seed and clothes, so the same character always stands the same way)."""
+    seed = int(ch.root.get('pose_seed', 0))
+    top, acc = ch.root.get('top', ''), ch.root.get('acc', '')
+    modes = ['crossed', 'pockets', 'hip', 'crossed']
+    if top == 'hoodie':
+        modes = ['pouch', 'pouch', 'crossed', 'hip']
+    if acc == 'backpack':
+        modes = ['straps', 'straps', 'pockets']
+    if top in ('dress', 'armour', 'space', 'hero'):
+        modes = ['hip', 'crossed']
+    if ch.kind == 'grandparent':
+        modes = ['behind', 'pockets', 'crossed']
+    mode = modes[seed % len(modes)]
+    lean = 1 if (seed // 7) % 2 else -1
+
+    def go(t):
+        sway = math.sin(t * 0.9 + phase)
+        ch.body.rotation_euler.y = lean * 0.06 + sway * 0.01
+        ch.body.location.x = lean * 0.025
+        if ch.torso is not ch.body:
+            ch.torso.rotation_euler = (ch.rest_x, -lean * 0.09, lean * 0.12)
+        ch.head.rotation_euler = (-0.05, lean * 0.1 + sway * 0.03, -lean * 0.2)
+        for l in ch.legs:
+            if ch.side(l) == -lean:
+                ch.leg(l, -0.12, 0.13)
+                l.rotation_euler.z = -lean * 0.35
+            else:
+                ch.leg(l, 0.0, -0.03)
+        for a in ch.arms:
+            s = ch.side(a)
+            hd = ch.hands.get(s)
+            hide = 1.0
+            if mode == 'crossed':
+                ch.arm(a, 0.5 + (0.06 if s > 0 else 0), 0.16)
+                ch.elbow(a, 1.5 if s > 0 else 1.62, 1.15)
+            elif mode == 'pouch':
+                ch.arm(a, 0.18, 0.22)
+                ch.elbow(a, 1.25, 0.95)
+                hide = 0.45
+            elif mode == 'straps':
+                ch.arm(a, 0.15, 0.08)
+                ch.elbow(a, 1.95, 0.35)
+            elif mode == 'pockets':
+                ch.arm(a, -0.12, 0.24)
+                ch.elbow(a, -0.1, 0.0, 0.55)
+                hide = 0.35
+            elif mode == 'behind':
+                ch.arm(a, -0.35, 0.1)
+                ch.elbow(a, -0.9, -0.6)
+            elif s == lean:  # a hand on the hip
+                ch.arm(a, -0.08, 0.75)
+                ch.elbow(a, 0.0, 0.0, 1.85)
+            else:
+                ch.arm(a, 0.05 * math.sin(t * 1.3), 0.14)
+            if hd is not None:
+                hd.scale = (hide, hide, hide)
+    return go
 
 
 def ease(u):
@@ -225,6 +307,7 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
         root.location = (x0 + h / 2 - 0.16, y0 + 0.02, z0 + 0.5 + 0.14)
 
     walk_like = action in ('walk', 'walk_in', 'walk_out', 'hold_star')
+    attitude = _attitude(ch, phase) if action == 'idle' and ch.person and ch.elbows else None
 
     def go(t, f):
         T = t - start
@@ -244,6 +327,7 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             root.rotation_euler.z = yaw0
         for i, a in enumerate(arms):
             ch.arm(a, 0.05 * math.sin(t * 1.3 + phase + i), 0.12 + math.sin(t * 2.2 + phase) * 0.04)
+            ch.elbow(a, 0.2)
         for l in legs:
             ch.leg(l, 0.0)
         for i, w in enumerate(ch.wings):
@@ -258,12 +342,13 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             else:
                 root.rotation_euler.z = k if dirn > 0 else -k
 
-        def stride(freq, legamp, armamp, bounce):
+        def stride(freq, legamp, armamp, bounce, bend=0.45):
             c = math.sin(t * freq + phase)
             for l in legs:
                 ch.leg(l, ch.side(l) * c * legamp)
             for a in arms:
                 ch.arm(a, -ch.side(a) * c * armamp, 0.15)
+                ch.elbow(a, bend + max(0.0, -ch.side(a) * c) * bend)
             body.location.z = abs(c) * bounce
             if not legs:  # animals without legs waddle
                 body.rotation_euler.y = c * 0.06
@@ -283,13 +368,13 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             root.location.x = x0 + (x1 - x0) * e
             moving = 0 < u < 1
             if moving:
-                stride(12, 0.9, 0.85, 0.11)
+                stride(12, 0.9, 0.85, 0.11, bend=0.9)
                 facing(x1 - x0, 0.8)
                 if torso is not body:
                     torso.rotation_euler.x = ch.rest_x + 0.22
                 else:
                     body.rotation_euler.x = 0.12
-                mood = 'open'
+                mood = 'determined' if (t % 2.0) < 1.3 else 'open'
             else:
                 facing(x1 - x0, 0.2)
                 body.scale.z = 1 + math.sin(t * 6) * 0.03  # puffing after the run
@@ -361,7 +446,10 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
                 mood = 'open'
         elif action == 'wave':
             if armR:
-                ch.arm(armR, 0.2, 2.5 + math.sin(t * 6) * 0.4)
+                ch.arm(armR, 0.2, 2.4 + math.sin(t * 6) * 0.15)
+                e = ch.elbows.get(ch.side(armR))
+                if e is not None:
+                    e.rotation_euler = (-0.15, ch.side(armR) * (0.3 + math.sin(t * 6) * 0.45), 0)
         elif action == 'look_up':
             head.rotation_euler.x = -0.4 + math.sin(t * 0.8) * 0.05
         elif action == 'point':
@@ -391,6 +479,7 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
                     ch.leg(l, 1.45 + ch.side(l) * 0.04 * math.sin(t * 1.4), 0.08)
                 for a in arms:
                     ch.arm(a, 0.25, 0.35)
+                    ch.elbow(a, 0.8, 0.2)
             else:
                 body.scale.z *= 0.9
                 for l in legs:
@@ -411,18 +500,27 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
                 if 1.5 < c < 3.0 and len(arms) == 2:  # wipes the eyes
                     for a in arms:
                         ch.arm(a, 2.3, 0.0, 0.55)
+                        if ch.elbows:
+                            ch.arm(a, 1.0, 0.15, 0.3)
+                            ch.elbow(a, 2.0, 0.55)
                     head.rotation_euler.x = 0.4
         elif action == 'think':
             if armR:
                 ch.arm(armR, 2.1, 0.0, 0.6)
             if armL:
                 ch.arm(armL, 0.9, 0.0, 0.7)
+            if ch.elbows and armR and armL:  # a hand at the chin, the other arm across
+                ch.arm(armR, 0.75, 0.05, 0.3)
+                ch.elbow(armR, 2.2, 0.45)
+                ch.arm(armL, 0.35, 0.1, 0.2)
+                ch.elbow(armL, 1.4, 0.9)
             head.rotation_euler = (-0.15, 0.18 + sway * 0.04, 0)
         elif action == 'cheer':
             c = math.sin(t * 5 + phase)
             body.location.z = max(0, c) * 0.22
             for a in arms:
                 ch.arm(a, 0.15, 2.55 + math.sin(t * 10 + ch.side(a)) * 0.15)
+                ch.elbow(a, 0.35)
             for l in legs:
                 ch.leg(l, -0.25 * max(0, c), 0.12 * max(0, c))
             for i, w in enumerate(ch.wings):
@@ -436,6 +534,9 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
                 torso.rotation_euler.x = ch.rest_x - 0.08
             for a in arms:
                 ch.arm(a, 0.6, 0.0, 0.65)  # holding the tummy
+                if ch.elbows:
+                    ch.arm(a, 0.25, 0.15, 0.2)
+                    ch.elbow(a, 1.35, 1.0)
             mood = 'squint'
         elif action == 'dance':
             beat = t * 4.2 + phase
@@ -473,6 +574,8 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             climbing = 0.05 < lift < 1.24
             for a in arms:
                 ch.arm(a, 0.4, 2.6 + (ch.side(a) * c * 0.35 if climbing else 0))
+            if climbing:
+                mood = 'determined'
             for l in legs:
                 ch.leg(l, 0.5 * max(0, ch.side(l) * c) if climbing else 0.0, 0.15)
             mood = 'open' if not climbing and lift > 1.0 else 'smile'
@@ -480,12 +583,18 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             head.rotation_euler.x = 0.3
             for a in arms:
                 ch.arm(a, 1.1, 0.05, 0.45)
+                if ch.elbows:
+                    ch.arm(a, 0.55, 0.05, 0.2)
+                    ch.elbow(a, 1.15, 0.45)
             P.book_flip(extra['book'], t)
         elif action == 'eat':
             c = (T % 2.6) / 2.6
             k = ease(c / 0.3) if c < 0.3 else (1.0 if c < 0.7 else 1 - ease((c - 0.7) / 0.3))
             if armR:
                 ch.arm(armR, 0.8 + 1.5 * k, 0.1, 0.5 * k)
+                if ch.elbows:
+                    ch.arm(armR, 0.5 + 0.45 * k, 0.1, 0.2 * k)
+                    ch.elbow(armR, 0.4 + 1.9 * k, 0.45 * k)
             chew = 0.3 < c < 0.7
             mood = 'open' if chew and math.sin(t * 16) > 0 else 'smile'
             body.location.z = abs(math.sin(t * 8)) * 0.01 if chew else 0
@@ -496,6 +605,9 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             if T > 1.0:
                 for a in arms:
                     ch.arm(a, 1.35, 0.2, 0.75)
+                    if ch.elbows:
+                        ch.arm(a, 1.25, 0.25, 0.4)
+                        ch.elbow(a, 0.5, 0.9)
                 root.rotation_euler.z = yaw0 * 0.3 + toward * 0.25
                 body.rotation_euler.y = toward * 0.12 + math.sin(t * 1.6) * 0.06
                 mood = 'closed'
@@ -528,6 +640,9 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
                     ch.leg(legk, -0.9 * ease((k + 0.5) / 0.5))
                 if torso is not body:
                     torso.rotation_euler.x = ch.rest_x - 0.1
+                for a in arms:
+                    ch.arm(a, 0.1, 0.5)
+                mood = 'determined'
             elif 0 <= k < 0.5:
                 if legk:
                     ch.leg(legk, -0.9 + 2.3 * ease(k / 0.12))
@@ -549,6 +664,8 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             k = T - 1.0
             if -0.6 < k < 0 and armR:
                 ch.arm(armR, -0.9 * ease((k + 0.6) / 0.6), 0.6)
+                ch.elbow(armR, 1.2 * ease((k + 0.6) / 0.6))
+                mood = 'determined'
                 torso.rotation_euler.z = -0.2 * ease((k + 0.6) / 0.6) if torso is not body else 0
             elif 0 <= k < 0.5 and armR:
                 ch.arm(armR, -0.9 + 2.6 * ease(k / 0.18), 0.6 - 0.4 * ease(k / 0.18))
@@ -560,9 +677,12 @@ def act(ch, action, x0, x1, start, dur, phase=0.0, ctx=None):
             reach = ease((T - (arrive - 0.8)) / 0.5)
             for a in arms:
                 ch.arm(a, 0.4 + 0.9 * reach, 0.2, 0.25 * reach)
+                ch.elbow(a, 0.5 - 0.2 * reach, 0.2 * reach)
             if T > arrive:
                 body.location.z = max(0.0, math.sin((T - arrive) * 6)) * 0.08 if T < arrive + 1 else 0.0
                 mood = 'open' if T < arrive + 1.5 else 'smile'
+        elif action == 'idle' and attitude is not None:
+            attitude(t)
         # idle, and whatever else: the rest pose above
         if ch.tail is not None and action != 'swim':
             ch.tail.rotation_euler.y = math.sin(t * 2.0 + phase) * 0.15
