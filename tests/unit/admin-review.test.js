@@ -439,3 +439,36 @@ test('team messages keep their line breaks (paragraphs and bullet lines), at mos
   assert.equal(q.get('SELECT body FROM chat_messages WHERE id=?', r.id).body, 'Hi Sam,\n\nA few things:\n• Play\n• Build games\n\nBest, Greg');
   assert.equal(team.cleanBody('one‮two\nthree'), 'one two\nthree');
 });
+
+test('welcome: every new kid gets the team welcome at their first sign-in ({name}, line breaks), once; grown-ups and old accounts don\'t; the admin can edit or switch it off', async () => {
+  const res = { setHeader() {}, getHeader() { return undefined; }, append() {} };
+  const fresh = mk('Aaron', { displayName: 'Aaron Smith' });
+  auth.startSession(res, fresh.id, 'test', { method: 'signup' });
+  const w = teamMsgs(fresh.id).filter(m => m.kind === 'team');
+  assert.equal(w.length, 1);
+  assert.match(w[0].body, /^Hi Aaron! /); assert.match(w[0].body, /\n\nWelcome to Oomba Academy!/);
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='team.welcome' AND target=?", fresh.id));
+  // A second sign-in: no second welcome. The kid may reply.
+  auth.startSession(res, fresh.id, 'test');
+  assert.equal(teamMsgs(fresh.id).filter(m => m.kind === 'team').length, 1);
+  assert.equal(team.canReply(auth.getUser(fresh.id)).ok, true);
+  // A grown-up: nothing. An old account (made 40 days ago) signing in for the first time: nothing.
+  const grown = mk('NewMum', { accountType: 'grownup' });
+  auth.startSession(res, grown.id, 'test', { method: 'signup' });
+  assert.equal(teamMsgs(grown.id).length, 0);
+  const old = mk('OldKid'); q.run('UPDATE users SET created_at=? WHERE id=?', Date.now() - 40 * 86400e3, old.id);
+  auth.startSession(res, old.id, 'test');
+  assert.equal(teamMsgs(old.id).length, 0);
+  // The admin edits it and switches it off.
+  const saved = await req('/api/admin/team/welcome', { user: admin, method: 'POST', body: { on: '1', text: 'Hey {name}!\nWelcome.' } });
+  assert.equal(saved.status, 200);
+  const k2 = mk('Bea'); auth.startSession(res, k2.id, 'test');
+  assert.equal(teamMsgs(k2.id).find(m => m.kind === 'team').body, `Hey ${auth.getUser(k2.id).display_name.split(' ')[0]}!\nWelcome.`);
+  assert.equal((await req('/api/admin/team/welcome', { user: admin, method: 'POST', body: { text: 'Off now' } })).status, 200);
+  assert.equal(team.welcomeSettings().on, false);
+  const k3 = mk('Cy'); auth.startSession(res, k3.id, 'test');
+  assert.equal(teamMsgs(k3.id).length, 0);
+  assert.equal((await req('/api/admin/team/welcome', { user: fresh, method: 'POST', body: { on: '1', text: 'x' } })).status, 404);
+  assert.match(await (await req('/admin?tab=messages', { user: admin })).text(), /Welcome message for new kids/);
+  q.run("DELETE FROM settings WHERE key='team.welcome'");
+});

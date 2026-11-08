@@ -408,7 +408,17 @@ function messagesTab(req) {
   const lim = team.announceLimits();
   const schools = q.all('SELECT id, name FROM schools WHERE archived_at IS NULL ORDER BY name COLLATE NOCASE LIMIT 500');
   const recent = team.recentAnnouncements(10);
+  const wel = team.welcomeSettings();
   return html`
+  <section class="panel" aria-labelledby="wel-h">
+    <h2 id="wel-h" style="margin-top:0">👋 Welcome message for new kids</h2>
+    <p class="small muted">Sent automatically from “Oomba team ✓” to every new kid account the first time it signs in (accounts up to ${team.WELCOME_DAYS} days old), and copied to their grown-up if they have one. <code>{name}</code> becomes the kid's first name. Line breaks are kept. They can write back, and replies land in Conversations below.</p>
+    <form class="stack" data-api="/api/admin/team/welcome" data-reload data-toast="Welcome message saved." novalidate>
+      <label class="row" style="gap:8px"><input type="checkbox" name="on" value="1" ${wel.on ? raw('checked') : ''}> Send it to new kids</label>
+      <div class="field"><label for="wel-text">Message</label><textarea class="input" id="wel-text" name="text" maxlength="${team.MAX_TEAM_LEN}" rows="12">${wel.text}</textarea></div>
+      <div class="row"><button class="btn btn-primary" type="submit">Save</button></div>
+    </form>
+  </section>
   <section class="panel" aria-labelledby="ann-h">
     <h2 id="ann-h" style="margin-top:0">📣 Send an announcement</h2>
     <p class="small muted">It arrives in each person's inbox from “Oomba team ✓”. You will see how many people it reaches and confirm before it goes. At most one every ${team.ANNOUNCE_GAP_MS / 60e3} minutes and ${team.ANNOUNCE_DAILY} a day for the whole site${lim.nextAt ? html`: next one possible ${when(lim.nextAt)}` : ''} (${lim.leftToday} left today). Kids read it too, so write for a 6-year-old.</p>
@@ -497,7 +507,7 @@ router.get('/admin/messages/:username', (req, res) => {
   const line = m => {
     const fromTeam = m.from_id === tu.id;
     return html`<li class="msg ${fromTeam ? 'mine' : 'theirs'} ${m.kind}"><div class="bubble" dir="auto">${chat.present(m, u, tEn).body}</div>
-      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : `@${m.admin_name || '?'}`) : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}${fromTeam && m.kind === 'team' && m.status === 'ok' ? html` · <form class="inline" style="display:inline" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="linkbtn small" type="submit">↩️ Unsend</button></form>` : ''}</span></li>`;
+      <span class="when small muted">${fromTeam ? (m.kind === 'notice' ? 'automatic notice' : m.kind === 'announce' ? `announcement by @${m.admin_name || '?'}` : m.admin_name ? `@${m.admin_name}` : 'automatic welcome') : `@${u.username}`} · ${when(m.created_at)}${m.status === 'unsent' ? ' · unsent (they no longer see it)' : m.status !== 'ok' ? ' · hidden' : ''}${fromTeam && m.kind === 'team' && m.status === 'ok' ? html` · <form class="inline" style="display:inline" data-api="/api/admin/team/messages/${m.id}/unsend" data-reload data-toast="Unsent." data-confirm="Unsend this message? It disappears from their inbox (and their grown-up's copy)."><button class="linkbtn small" type="submit">↩️ Unsend</button></form>` : ''}</span></li>`;
   };
   const body = html`
   <div class="pagehead"><h1>📬 ${u.display_name} <span class="muted small">@${u.username}</span></h1><div class="row"><a class="btn" href="/admin?tab=users&amp;username=${encodeURIComponent(u.username)}">👤 User details</a></div></div>
@@ -810,6 +820,12 @@ router.post('/api/admin/users/:id/message', rateLimit('admin-dm', 30, 10 * 60e3)
   const u = q.get('SELECT * FROM users WHERE id=?', String(req.params.id));
   const r = team.sendDirect(req.user, u, String((req.body || {}).text || ''));
   res.status(r.ok ? 200 : r.code === 'missing' ? 404 : 400).json(r.ok ? { ok: true, copiedTo: r.copiedTo.map(g => g.username) } : { error: r.error, code: r.code });
+});
+// The automatic welcome for new kids (team.js welcomeSettings / saveWelcome).
+router.post('/api/admin/team/welcome', (req, res) => {
+  const b = req.body || {};
+  const r = team.saveWelcome(req.user, { on: b.on === '1' || b.on === true || b.on === 'on', text: String(b.text || '') });
+  res.status(r.ok ? 200 : 400).json(r.ok ? r : { error: r.error, code: r.code });
 });
 // Unsend a team message or an announcement (team.js unsendDirect / unsendAnnouncement).
 router.post('/api/admin/team/messages/:id/unsend', (req, res) => {
