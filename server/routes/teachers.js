@@ -17,7 +17,7 @@ import { tHtml, availableLocales } from '../i18n/index.js';
 import { config } from '../config.js';
 import { googleEnabled } from '../oidc.js';
 import { familiesOn } from '../services/family.js';
-import { isGrownup } from '../auth.js';
+import { isGrownup, noteTeacherWay } from '../auth.js';
 import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
 import { allow, count, ipOf } from '../services/ratelimit.js';
@@ -140,6 +140,8 @@ router.post('/api/teachers/school-request', express.urlencoded({ extended: false
     const errors = Object.fromEntries(r.fields.map(f => [f, t(`teachers.setup.errors.${f}`)]));
     return res.status(400).json({ error: errors[r.field], field: r.field, errors });
   }
+  // Sent signed out (or as a guest): whoever signs up on this browser next is probably this teacher (services/team.js).
+  if (signedOut(req.user)) noteTeacherWay(res);
   allow(`school-request:${ip}`, SETUP_LIMITS.perIpHour, 3600e3);
   allow('school-request:all', SETUP_LIMITS.perDay, 86400e3);
   ok();

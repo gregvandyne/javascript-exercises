@@ -20,7 +20,9 @@
 // is in the audit log with its text.
 import crypto from 'node:crypto';
 import { q, uid, now, tx, audit, setting } from '../db.js';
-import { getUser, getUserByName, createUser, OFFICIAL, accountKind, onFirstSignIn } from '../auth.js';
+import { getUser, getUserByName, createUser, OFFICIAL, accountKind, onFirstSignIn, onSignIn } from '../auth.js';
+import { onStaffJoin } from './schools.js';
+import { onRequestDone } from './school-requests.js';
 import { BRAND } from '../views/brand.js';
 import { tEn } from '../i18n/index.js';
 import { cleanBody as cleanLine, checkText, quickText, pausedUntil, RATE_MAX, RATE_WINDOW, QUICK_IDS, QUICK_EMOJI } from './chat.js';
@@ -294,13 +296,30 @@ export function unsendAnnouncement(admin, announcementId) {
   return { ok: true, id: a.id, removed: n };
 }
 
-// ---------------------------------------------------------------- welcome for new kids
-// The owner's welcome message, sent automatically from the Oomba team to every new kid account at its first sign-in
-// (signing up, or the first time a kid made by a grown-up or a school signs in). Accounts made more than WELCOME_DAYS
-// ago are not "new" (an old account whose first recorded sign-in comes late gets nothing). {name} becomes the kid's
-// display name. Stored in settings 'team.welcome' as { on, text }; on by default with DEFAULT_WELCOME. Copied to the
-// kid's grown-ups like any team message and audited.
+// ---------------------------------------------------------------- automatic welcomes
+// The owner's welcome messages, sent automatically from the Oomba team, one text per audience (docs/decisions.md
+// "Automatic welcome from the Oomba team"):
+//   kid      a kid account, at its first sign-in (signing up, or the first time a kid made by a grown-up or a school
+//            signs in); copied to the kid's grown-ups like any team message
+//   grownup  a grown-up account (parents) at its first sign-in
+//   teacher  a teacher or school admin: when an account becomes staff (schools.js onStaffJoin: added as staff, a school
+//            account made as staff, a Google staff invite, a role changed to staff), at a first sign-in that is already
+//            staff, when a "Set up my school" request an adult account sent is marked done (school-requests.js
+//            onRequestDone), and at the first sign-in of a grown-up who signed up on a teacher's way (auth.TEACHER_WAY)
+// Each goes at most once per account and audience (team_welcomes), only to accounts made in the last WELCOME_DAYS (an
+// old account whose first sign-in or promotion comes late gets nothing), never to guests, banned accounts or platform
+// admins. A grown-up who got the parents' welcome and later has a school set up also gets the teachers'. {name} becomes
+// the first word of their display name. Audited ('team.welcome' with the audience), unsendable, replies allowed.
+// Teachers whose account looks like a kid's at first: a kid-type account made on a teacher's way waits
+// TEACHER_WAIT_DAYS for the kid welcome (if it becomes staff meanwhile it gets the teachers' one instead; if not, the
+// kid one goes at a sign-in after the wait), and a kid welcome already sent is taken back (unsent, audited) when the
+// account becomes staff, unless they wrote to the team or a grown-up got a copy.
+// Settings: 'team.welcome' (kids, as in the first version), 'team.welcome.grownup', 'team.welcome.teacher', each
+// { on, text }; on by default with its DEFAULT_WELCOMES text.
 export const WELCOME_DAYS = 30;
+export const TEACHER_WAIT_DAYS = 3;
+export const WELCOME_AUDIENCES = ['kid', 'grownup', 'teacher'];
+export const WELCOME_KEYS = { kid: 'team.welcome', grownup: 'team.welcome.grownup', teacher: 'team.welcome.teacher' };
 export const DEFAULT_WELCOME = `Hi {name}! 👋
 
 Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hi.
@@ -313,34 +332,131 @@ Here are a few fun things to try:
 Got a question, or something that felt confusing? Just write back here. I read every message!
 
 Greg & the Oomba team`;
-export function welcomeSettings() {
-  let v = null; try { v = JSON.parse(setting('team.welcome') || 'null'); } catch { v = null; }
-  return { on: v ? v.on !== false : true, text: v && typeof v.text === 'string' && v.text.trim() ? v.text : DEFAULT_WELCOME };
+export const DEFAULT_WELCOME_GROWNUP = `Hi {name}! 👋
+
+Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hello personally.
+
+A few things your family can try:
+• Play: lots of free learning games, from math racing to geography and chess.
+• Build: kids describe a game idea in their own words and our AI builder makes it, ready to play and share with friends.
+• Learn: free courses like Number Quest (math), CS Quest (computer science) and Cyber Defenders (online safety).
+
+From your Family page you can add your kids or link the accounts they already have. If our team ever writes to your child, you get a copy.
+
+Is there anything I can help you get started with? Any questions about how it works or keeping kids safe? Just reply here. A real person reads every message, and I'd love to hear what you think, good or bad.
+
+Greg & the Oomba team`;
+export const DEFAULT_WELCOME_TEACHER = `Hi {name}! 👋
+
+Welcome to Oomba Academy! I'm Greg from the Oomba team, and I'm glad you're here.
+
+Here's what your class can do:
+• Free courses mapped to standards, with teacher notes: Number Quest (math, Common Core), CS Quest (computer science, CSTA, with 45-minute lessons) and Cyber Defenders (online safety, CYBER.ORG).
+• Live games for warm-ups and exit tickets, hosted from your screen.
+• A game builder where students describe their idea and our AI makes it.
+
+Would a quick demo or a training session for you or your staff help? Reply here with a couple of times that work and I'll set it up.
+
+For anything time-sensitive, email me directly at Greg@oomba.ai.
+
+Greg & the Oomba team`;
+export const DEFAULT_WELCOMES = { kid: DEFAULT_WELCOME, grownup: DEFAULT_WELCOME_GROWNUP, teacher: DEFAULT_WELCOME_TEACHER };
+const DAY = 86400e3;
+const audienceOf = a => (WELCOME_AUDIENCES.includes(a) ? a : 'kid');
+export function welcomeSettings(audience = 'kid') {
+  const a = audienceOf(audience);
+  let v = null; try { v = JSON.parse(setting(WELCOME_KEYS[a]) || 'null'); } catch { v = null; }
+  return { audience: a, on: v ? v.on !== false : true, text: v && typeof v.text === 'string' && v.text.trim() ? v.text : DEFAULT_WELCOMES[a] };
 }
-export function saveWelcome(admin, { on, text }) {
+export function saveWelcome(admin, { on, text, audience = 'kid' }) {
   if (!admin || admin.role !== 'admin') return fail('admin', 'Admins only.');
+  if (!WELCOME_AUDIENCES.includes(audience)) return fail('audience', 'Choose which welcome.');
   const body = cleanBody(text);
   if (!body) return fail('empty', 'Write the welcome message first.');
   if (body.length > MAX_TEAM_LEN) return fail('long', `Keep it under ${MAX_TEAM_LEN} characters.`);
   const value = { on: !!on, text: body };
-  setting('team.welcome', JSON.stringify(value));
-  audit(admin.id, 'admin.team.welcome', 'team.welcome', { on: value.on, text: body.slice(0, 500) });
-  return { ok: true, ...value };
+  setting(WELCOME_KEYS[audience], JSON.stringify(value));
+  audit(admin.id, 'admin.team.welcome', WELCOME_KEYS[audience], { audience, on: value.on, text: body.slice(0, 500) });
+  return { ok: true, audience, ...value };
 }
-/** Send the welcome to this kid now (if on, a kid, new, and not welcomed before). -> message id or null. */
-export function sendWelcome(user, at = now()) {
-  if (!user || user.is_guest || user.banned || !isChild(user)) return null;
-  if (!(user.created_at > at - WELCOME_DAYS * 86400e3)) return null;
-  const w = welcomeSettings(); if (!w.on) return null;
+/** A teacher or school admin of a school now (a platform admin is the team itself and is never welcomed). */
+export const isTeacherNow = u => !!u && !u.is_guest && u.role !== 'admin'
+  && !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role IN ('teacher','admin')", u.id);
+const welcomeRow = (userId, audience) => q.get('SELECT * FROM team_welcomes WHERE user_id=? AND audience=?', userId, audience) || null;
+const setRow = (userId, audience, state, messageId = null, at = now()) => q.run(`INSERT INTO team_welcomes(user_id, audience, state, message_id, at) VALUES (?,?,?,?,?)
+  ON CONFLICT(user_id, audience) DO UPDATE SET state=excluded.state, message_id=COALESCE(excluded.message_id, team_welcomes.message_id), at=excluded.at`, userId, audience, state, messageId, at);
+const isNew = (u, at = now()) => u.created_at > at - WELCOME_DAYS * DAY;
+/** Which welcome an account's first sign-in gets: 'teacher' for school staff (and a grown-up who signed up on a
+ *  teacher's way), 'grownup' for other grown-ups, 'kid' for kids; null for guests, banned accounts and platform admins. */
+export function welcomeAudience(u, { teacherWay = false } = {}) {
+  if (!u || u.is_guest || u.banned || u.role === 'admin') return null;
+  if (isTeacherNow(u)) return 'teacher';
+  if (u.account_type === 'grownup') return teacherWay ? 'teacher' : 'grownup';
+  return isChild(u) ? 'kid' : null;
+}
+/** Send this audience's welcome to this person now (if it is on, they fit the audience, the account is new and they
+ *  haven't had it). -> message id or null. */
+export function sendWelcome(user, audience = 'kid', at = now()) {
+  const a = audienceOf(audience);
+  const u = user && getUser(user.id);
+  if (!u || u.is_guest || u.banned || u.role === 'admin' || !isNew(u, at)) return null;
+  if (a === 'kid' && !isChild(u)) return null;
+  if (a === 'grownup' && (u.account_type !== 'grownup' || isTeacherNow(u))) return null;
+  if (a === 'teacher' && !(isTeacherNow(u) || u.account_type === 'grownup')) return null;
+  const row = welcomeRow(u.id, a);
+  if (row && row.state !== 'wait') return null;
+  const w = welcomeSettings(a); if (!w.on) return null;
   const team = teamUser();
-  if (q.get("SELECT 1 FROM chat_messages WHERE from_id=? AND to_id=? AND kind='team' AND sent_by IS NULL LIMIT 1", team.id, user.id)) return null;
-  const first = String(user.display_name || user.username || '').trim().split(/\s+/)[0] || 'there';
+  const first = String(u.display_name || u.username || '').trim().split(/\s+/)[0] || 'there';
   const body = cleanBody(w.text.replace(/\{name\}/g, first)).slice(0, MAX_TEAM_LEN);
-  const guardians = guardiansOf(user);
+  const guardians = a === 'kid' ? guardiansOf(u) : [];
   let id = '';
-  tx(() => { id = insert(team.id, user.id, 'team', body, null); if (guardians.length) copyTo(guardians, user, 'to', body, null); });
-  audit(null, 'team.welcome', user.id, { message: id, child: true, copiedTo: guardians.map(g => g.id), text: body.slice(0, 500) });
+  tx(() => {
+    id = insert(team.id, u.id, 'team', body, null, at);
+    if (guardians.length) copyTo(guardians, u, 'to', body, null);
+    setRow(u.id, a, 'sent', id, at);
+  });
+  audit(null, 'team.welcome', u.id, { audience: a, message: id, child: a === 'kid', copiedTo: guardians.map(g => g.id), text: body.slice(0, 500) });
   return id;
 }
-onFirstSignIn(u => { sendWelcome(u); });
+/** Someone just became a teacher or school admin: a kid welcome they got (their account looked like a kid's at first)
+ *  is taken back unless they wrote to the team or a grown-up got a copy, one still waiting is dropped, and the
+ *  teachers' welcome goes. -> message id or null. */
+export function welcomeTeacher(userOrId, at = now()) {
+  const u = getUser(typeof userOrId === 'string' ? userOrId : userOrId && userOrId.id);
+  if (!u || !isTeacherNow(u)) return null;
+  const kid = welcomeRow(u.id, 'kid');
+  if (kid && kid.state === 'wait') setRow(u.id, 'kid', 'skipped', null, at);
+  if (kid && kid.state === 'sent' && kid.message_id) {
+    const team = teamUser();
+    const wrote = q.get('SELECT 1 FROM chat_messages WHERE from_id=? AND to_id=? LIMIT 1', u.id, team.id);
+    const copied = q.get("SELECT 1 FROM chat_messages WHERE from_id=? AND kind='copy' AND body LIKE ? LIMIT 1", team.id, `{"child":${JSON.stringify(u.id)},%`);
+    if (!wrote && !copied && q.run("UPDATE chat_messages SET status='unsent' WHERE id=? AND status='ok'", kid.message_id).changes) {
+      setRow(u.id, 'kid', 'withdrawn', null, at);
+      audit(null, 'team.welcome.withdraw', u.id, { audience: 'kid', message: kid.message_id, reason: 'became school staff' });
+    }
+  }
+  return sendWelcome(u, 'teacher', at);
+}
+// First sign-in: the welcome for who they are now. A kid-type account made on a teacher's way waits.
+onFirstSignIn((u, { teacherWay = false } = {}) => {
+  const a = welcomeAudience(u, { teacherWay });
+  if (a === 'kid' && teacherWay) { if (isNew(u)) setRow(u.id, 'kid', 'wait'); return; }
+  if (a) sendWelcome(u, a);
+});
+// A later sign-in: a kid welcome that waited goes once the wait is over (if they are still a kid and still new).
+onSignIn(u => {
+  if (!u || u.is_guest || !isNew(u)) return;
+  const row = welcomeRow(u.id, 'kid');
+  if (!row || row.state !== 'wait' || now() - row.at < TEACHER_WAIT_DAYS * DAY) return;
+  if (isTeacherNow(u)) { setRow(u.id, 'kid', 'skipped'); return; }
+  sendWelcome(u, 'kid');
+});
+onStaffJoin(userId => { welcomeTeacher(userId); });
+// A "Set up my school" request is done: the adult account that sent it (a grown-up, or staff of another school) gets
+// the teachers' welcome.
+onRequestDone(r => {
+  const u = r && r.user_id ? getUser(r.user_id) : null;
+  if (u && (u.account_type === 'grownup' || isTeacherNow(u))) sendWelcome(u, 'teacher');
+});
 

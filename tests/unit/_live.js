@@ -52,7 +52,8 @@ export const leo = S.createSchoolAccount(teacher, school.id, { rosterName: 'Leo 
 export const zed = S.createSchoolAccount(teacher2, school.id, { rosterName: 'Zed Pupil' }).user; S.addToClass(teacher2, cls2.id, zed.id);
 export const kid = auth.createUser({ username: 'LiveKid', password: 'secret123' });
 export const mum = auth.createUser({ username: 'LiveMum', password: 'a-long-password-1', accountType: 'grownup' });
-export const official = auth.createUser({ username: 'OombaAcademy', password: 'secret123' });
+// The teachers' welcome above may already have made the team's account (services/team.js teamUser).
+export const official = auth.getUserByName('OombaAcademy') || auth.createUser({ username: 'OombaAcademy', password: 'secret123' });
 
 /** A published game with this HTML. */
 export function publish(owner, html, { visibility = 'public', source = 'studio', slug = null, title = 'G' } = {}) {

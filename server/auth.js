@@ -179,10 +179,20 @@ export const noteActiveDay = (userId, t = now()) => q.run('INSERT OR IGNORE INTO
 /** via: 'switch' for a sign-in a grown-up's Switch started (routes/family.js; req.sessionVia), else nothing. method: how
  *  they signed in (SIGN_IN_METHODS; default 'password'). Every real account's sign-in is noted for the admin's analytics
  *  (users.last_login_at, one sign_ins row with the method only: no IP, no browser); guests' never are. */
-// Told after an account's first sign-in ever (services/team.js sends new kids the team's welcome message).
-const firstSignInListeners = [];
+// Told after an account's first sign-in ever, and after every sign-in (services/team.js sends new people the team's
+// welcome message: fn(user, { teacherWay }), teacherWay: the account was made on its way from a teacher door).
+const firstSignInListeners = [], signInListeners = [];
 export function onFirstSignIn(fn) { firstSignInListeners.push(fn); }
-export function startSession(res, userId, ua = '', { via = null, method = 'password' } = {}) {
+export function onSignIn(fn) { signInListeners.push(fn); }
+// "I'm a teacher" (/signup/for/teacher) or a "Set up my school" request sent signed out remembers, on this browser only,
+// that whoever signs up here next is probably a teacher: one functional cookie ('1', nothing about who), read and cleared
+// by the sign-up routes, so a teacher whose account starts out looking like a kid's never gets the kids' welcome.
+export const TEACHER_WAY = 'brb_teacher';
+export const TEACHER_WAY_DAYS = 30;
+export const noteTeacherWay = res => setCookie(res, TEACHER_WAY, '1', TEACHER_WAY_DAYS * 86400);
+export const cameTeacherWay = req => parseCookies(req)[TEACHER_WAY] === '1';
+export function clearTeacherWay(req, res) { if (cameTeacherWay(req)) setCookie(res, TEACHER_WAY, '', 0); }
+export function startSession(res, userId, ua = '', { via = null, method = 'password', teacherWay = false } = {}) {
   const id = uid(32); const t = now(); const u = getUser(userId); const { max } = SESSION_RULES[accountKind(u)];
   const first = !!u && !u.is_guest && !u.last_login_at;
   q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua, last_active, via) VALUES (?,?,?,?,?,?,?)', id, userId, t, t + max, String(ua).slice(0, 200), t, via === 'switch' ? 'switch' : null);
@@ -191,7 +201,8 @@ export function startSession(res, userId, ua = '', { via = null, method = 'passw
     q.run('INSERT INTO sign_ins(user_id, at, method) VALUES (?,?,?)', userId, t, via === 'switch' ? 'switch' : SIGN_IN_METHODS.includes(method) ? method : 'password');
     noteActiveDay(userId, t);
   }
-  if (first) for (const fn of firstSignInListeners) { try { fn(getUser(userId)); } catch { /* a welcome never blocks signing in */ } }
+  if (first) for (const fn of firstSignInListeners) { try { fn(getUser(userId), { teacherWay: !!teacherWay }); } catch { /* a welcome never blocks signing in */ } }
+  else if (u && !u.is_guest) for (const fn of signInListeners) { try { fn(getUser(userId)); } catch { /* nor here */ } }
   setCookie(res, COOKIE, pack(id), Math.floor(max / 1000) + COOKIE_GRACE);
   return id;
 }

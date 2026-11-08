@@ -172,6 +172,8 @@ test('the current tab: game pages are Games where there is no Home tab; Family, 
 test('staff have no Friends tab: friend requests and unread chat count on Me; a kid keeps them on Friends', async () => {
   const pal = auth.createUser({ username: 'RolesPal', password: 'rainbow-77' });
   for (const u of [teacher, kid]) q.run("INSERT OR IGNORE INTO friends(user_id, friend_id, status, created_at) VALUES (?,?, 'pending', ?)", pal.id, u.id, Date.now());
+  // The team's welcomes (services/team.js) are read, so the badges count the friend request alone.
+  for (const u of [teacher, kid]) q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND read_at IS NULL', Date.now(), u.id);
   const t = tabbar((await get(teacher, '/')).text);
   assert.doesNotMatch(t, /href="\/friends"/);
   assert.match(t, /href="\/me" [^>]*>[\s\S]*?<span class="badge" aria-label="[^"]*">1<\/span><\/a>/, 'the teacher\'s Me tab has the badge');

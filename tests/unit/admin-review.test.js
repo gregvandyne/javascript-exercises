@@ -252,7 +252,7 @@ test('the team thread in the inbox and on /chat/OombaAcademy: kids, and grown-up
   const grown = mk('Dad', { accountType: 'grownup' });
   team.sendDirect(admin, grown, 'Thanks for joining');
   assert.equal((await req('/chat', { user: grown })).status, 404);
-  res = await req('/family', { user: grown }); assert.match(await res.text(), /new message from the Oomba team/);
+  res = await req('/family', { user: grown }); assert.match(await res.text(), /new messages? from the Oomba team/);
   res = await req(`/chat/${auth.OFFICIAL}`, { user: grown }); assert.equal(res.status, 200);
   res = await req(`/api/chat/${auth.OFFICIAL}`, { user: grown, method: 'POST', body: { kind: 'text', body: 'You are welcome' } });
   assert.equal(res.status, 200);
@@ -440,7 +440,7 @@ test('team messages keep their line breaks (paragraphs and bullet lines), at mos
   assert.equal(team.cleanBody('one‮two\nthree'), 'one two\nthree');
 });
 
-test('welcome: every new kid gets the team welcome at their first sign-in ({name}, line breaks), once; grown-ups and old accounts don\'t; the admin can edit or switch it off', async () => {
+test('welcome: every new kid gets the team welcome at their first sign-in ({name}, line breaks), once; grown-ups get theirs instead, old accounts nothing; the admin can edit or switch it off', async () => {
   const res = { setHeader() {}, getHeader() { return undefined; }, append() {} };
   const fresh = mk('Aaron', { displayName: 'Aaron Smith' });
   auth.startSession(res, fresh.id, 'test', { method: 'signup' });
@@ -452,10 +452,12 @@ test('welcome: every new kid gets the team welcome at their first sign-in ({name
   auth.startSession(res, fresh.id, 'test');
   assert.equal(teamMsgs(fresh.id).filter(m => m.kind === 'team').length, 1);
   assert.equal(team.canReply(auth.getUser(fresh.id)).ok, true);
-  // A grown-up: nothing. An old account (made 40 days ago) signing in for the first time: nothing.
+  // A grown-up: never the kids' text (the parents' welcome instead: tests/unit/team-welcome.test.js). An old account
+  // (made 40 days ago) signing in for the first time: nothing.
   const grown = mk('NewMum', { accountType: 'grownup' });
   auth.startSession(res, grown.id, 'test', { method: 'signup' });
-  assert.equal(teamMsgs(grown.id).length, 0);
+  assert.ok(teamMsgs(grown.id).every(m => !/Here are a few fun things to try/.test(m.body)));
+  assert.match(teamMsgs(grown.id)[0].body, /A few things your family can try/);
   const old = mk('OldKid'); q.run('UPDATE users SET created_at=? WHERE id=?', Date.now() - 40 * 86400e3, old.id);
   auth.startSession(res, old.id, 'test');
   assert.equal(teamMsgs(old.id).length, 0);

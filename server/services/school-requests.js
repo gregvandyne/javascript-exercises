@@ -65,6 +65,10 @@ export function queue({ closed = 20 } = {}) {
     closed: q.all("SELECT r.*, s.slug school_slug, s.name linked_school FROM school_requests r LEFT JOIN schools s ON s.id=r.school_id WHERE r.status!='open' ORDER BY r.closed_at DESC LIMIT ?", closed),
   };
 }
+/** Told when a request is marked done (its school is set up), with the request row: services/team.js sends the welcome
+ *  for teachers to the adult account that sent it, if one did (a hook, so there is no import cycle). */
+const doneHooks = [];
+export const onRequestDone = fn => { if (!doneHooks.includes(fn)) doneHooks.push(fn); };
 /** Marks an open request done or declined (schoolId: the school made for it). -> true if it changed. */
 export function close(by, id, status, { schoolId = null } = {}) {
   if (status !== 'done' && status !== 'declined') return false;
@@ -73,6 +77,7 @@ export function close(by, id, status, { schoolId = null } = {}) {
   q.run('UPDATE school_requests SET status=?, closed_at=?, closed_by=?, school_id=COALESCE(?, school_id) WHERE id=?', status, now(), by.id, schoolId, r.id);
   // Ids only in the audit log: the email stays in this one table, so it goes when the row goes.
   audit(by.id, `school_request.${status}`, r.id, schoolId ? { school: schoolId } : '');
+  if (status === 'done') for (const fn of doneHooks) { try { fn(r); } catch { /* a welcome never blocks it */ } }
   return true;
 }
 /** Opens a closed request again (a mis-click). */
