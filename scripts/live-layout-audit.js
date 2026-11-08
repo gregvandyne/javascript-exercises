@@ -33,7 +33,10 @@ const st = async p => { try { return await frameOf(p).evaluate(() => window.__br
 async function until(fn, ms = 40000) { const t0 = Date.now(); for (;;) { const v = await fn(); if (v) return v; if (Date.now() - t0 > ms) throw new Error('timeout'); await sleep(250); } }
 const report = [];
 (async () => {
-  const br = await chromium.launch(process.env.BRB_CHROMIUM ? { executablePath: process.env.BRB_CHROMIUM } : {});   // BRB_CHROMIUM: a Chromium of its own
+  // BRB_CHROMIUM: a Chromium of its own; else the repo's pinned browser (playwright.config.js) where it is installed, so
+  // the audit runs wherever the e2e tests do; else Playwright's own build.
+  const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
+  const br = await chromium.launch(exe ? { executablePath: exe } : {});
   for (const mode of MODES) {
     const hc = await br.newContext({ viewport: { width: 1280, height: 800 } }); const host = await hc.newPage();
     await host.request.post(B + '/api/auth/login', { data: { username: process.env.ADMIN_USER || 'admin', password: process.env.ADMIN_PASS || '' }, headers: { 'sec-fetch-site': 'same-origin' } });
