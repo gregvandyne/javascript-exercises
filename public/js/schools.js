@@ -92,3 +92,7 @@ document.querySelectorAll('.settingsform').forEach(form => {
   const on = () => { if (scrollY > 0) { form.classList.add('scrolled'); removeEventListener('scroll', on); } };
   addEventListener('scroll', on, { passive: true }); on();
 });
+
+// A fold that is open on wider screens (data-open-wide): the class's "📌 Assign a lesson" form and the gradebook's
+// "How to read it" stay folded on phones, where space is short, and start open on a desk-sized screen, as before.
+if (matchMedia('(min-width: 901px)').matches) document.querySelectorAll('details[data-open-wide]').forEach(d => { d.open = true; });

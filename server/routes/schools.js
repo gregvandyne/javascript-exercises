@@ -174,7 +174,7 @@ function classMenu(t, s, c) {
 function classTable(req, s, list) {
   const t = req.t, f = req.fmt;
   const toRead = P.toReadByClass(list.map(c => c.id));
-  return html`<div class="panel tblwrap"><table class="tbl rtable classes"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.lessons')}</th><th>${t('school.class.lastActivity')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
+  return html`<div class="panel tblwrap" id="class-list"><table class="tbl rtable classes"><thead><tr><th>${t('school.class.name')}</th><th>${t('school.class.grade')}</th><th>${t('school.class.teachers')}</th><th>${t('school.class.students')}</th><th>${t('school.class.lessons')}</th><th>${t('school.class.lastActivity')}</th><th>${t('school.class.code')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>
     ${list.map(c => html`<tr><td><a href="/class/${c.id}"><b>${c.name}</b></a>${toRead[c.id] ? html` <a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : ''}${c.subject ? html`<div class="small muted">${c.subject}</div>` : ''}</td><td data-label="${t('school.class.grade')}">${c.grade || '–'}</td>
       <td data-label="${t('school.class.teachers')}">${c.teachers || html`<a class="chip-s warn" href="/class/${c.id}?tab=settings#tch-h">⚠️ ${t('school.class.noTeacherChip')}</a>`}</td><td data-label="${t('school.class.students')}">${c.students}</td>
       <td data-label="${t('school.class.lessons')}">${c.lessons}</td><td data-label="${t('school.class.lastActivity')}">${c.last_activity ? f.ago(c.last_activity) : html`<span class="muted">${t('school.class.noActivity')}</span>`}</td><td data-label="${t('school.class.code')}"><code dir="ltr">${c.join_code}</code></td>
@@ -202,15 +202,16 @@ function schoolStats(req, s, live) {
   const unplaced = students.filter(p => !placed[p.id]).length;
   const byClass = P.toReadByClass(live.map(c => c.id));
   const toRead = Object.values(byClass).reduce((n, x) => n + x, 0);
-  // Answers to review link to the class with the most of them (its Progress tab, at the list of answers to read).
+  // Answers to review link to the class that has them (its Progress tab, at the list of answers to read); spread over
+  // several classes, to the class list below, where each class shows its own count.
   const most = live.filter(c => byClass[c.id]).sort((a, z) => byClass[z.id] - byClass[a.id])[0];
   const people = `/school/${s.slug}?tab=people`;
   return html`<ul class="plain statstrip" aria-label="${s.name}">
     <li>🏫 ${t('school.stats.classes', { count: live.length })}</li>
-    <li><a href="${people}#staff">🍎 ${t('school.people.staff')}&nbsp;<span class="count">${staff.length}</span></a></li>
+    <li><a href="${people}#staff">🍎 ${t('school.stats.staff', { count: staff.length })}</a></li>
     <li><a href="${people}#students">👩‍🎓 ${t('school.class.studentsN', { count: students.length })}</a></li>
     ${unplaced ? html`<li class="warn"><a href="${people}#students">🧭 ${t('school.stats.unplaced', { count: unplaced })}</a></li>` : ''}
-    ${toRead ? html`<li class="warn"><a href="/class/${most.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead })}</a></li>` : ''}
+    ${toRead ? html`<li class="warn"><a href="${Object.keys(byClass).filter(id => byClass[id]).length > 1 ? '#class-list' : `/class/${most.id}/progress#to-review`}">✍️ ${t('progress.teach.toRead', { count: toRead })}</a></li>` : ''}
   </ul>`;
 }
 function schoolClasses(req, s) {
@@ -554,7 +555,7 @@ function teacherClass(req, res, c) {
   const canDelete = !S.everHadStudents(c.id);
   const settingsTab = html`
   <section class="panel"><h2>✏️ ${t('school.class.details')}</h2>
-    <form class="formgrid" data-api="/api/classes/${c.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
+    <form class="formgrid detailsform" data-api="/api/classes/${c.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
       <div class="field"><label for="ec-n">${t('school.class.name')}</label><input class="input" id="ec-n" name="name" value="${c.name}" maxlength="60" required><span class="err" id="ec-n-err"></span></div>
       <div class="field"><label for="ec-s">${optional(t, t('school.class.subject'))}</label><input class="input" id="ec-s" name="subject" value="${c.subject}" maxlength="40"></div>
       <div class="field"><label for="ec-g">${optional(t, t('school.class.grade'))}</label><input class="input" id="ec-g" name="grade" value="${c.grade}" maxlength="12"></div>

@@ -2574,7 +2574,7 @@
       "photos": "Le foto del profilo degli account scolastici sono visibili solo ai compagni di classe, agli insegnanti e agli amici.",
       "chatHint": "Gli account scolastici possono aggiungere come amici solo i compagni di classe.",
       "timeZone": "Fuso orario",
-      "timeZoneNone": "Non impostato (i giorni sono contati in UTC)",
+      "timeZoneNone": "Non impostato (UTC)",
       "timeZoneUnset": "Imposti il fuso orario della sua scuola così le lezioni diventano disponibili a mezzanotte e le scadenze terminano a mezzanotte dove si trova. Fino ad allora, nessuno è in ritardo fino a 36 ore dopo l'inizio del giorno di scadenza.",
       "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}.",
       "groupSchool": "Scuola",
@@ -2784,7 +2784,8 @@
     },
     "stats": {
       "classes": "{count, plural, one {# classe} other {# classi}}",
-      "unplaced": "{count, plural, one {# studente senza classe} other {# studenti senza classe}}"
+      "unplaced": "{count, plural, one {# studente senza classe} other {# studenti senza classe}}",
+      "staff": "{count, plural, one {# membro del personale} other {# membri del personale}}"
     }
   },
   "lessons": {
@@ -5969,7 +5970,7 @@
     "standards": {
       "title": "Standard",
       "lead": "Cosa ha fatto questa classe per ogni standard CSTA. I conteggi sono per classe: nel lavoro a coppie conta solo lo studente che ha fatto l’accesso.",
-      "pick": "Mostra",
+      "pick": "Studente",
       "show": "Mostra",
       "everyone": "Tutta la classe",
       "levelsAll": "Mostra tutti i 44 standard",

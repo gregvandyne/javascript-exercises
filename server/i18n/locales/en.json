@@ -2593,7 +2593,7 @@
       "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
       "chatHint": "School accounts can only add classmates as friends.",
       "timeZone": "Time zone",
-      "timeZoneNone": "Not set (days are counted in UTC)",
+      "timeZoneNone": "Not set (UTC)",
       "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
       "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now.",
       "groupSchool": "School",
@@ -2803,7 +2803,8 @@
     },
     "stats": {
       "classes": "{count, plural, one {# class} other {# classes}}",
-      "unplaced": "{count, plural, one {# student not in a class} other {# students not in a class}}"
+      "unplaced": "{count, plural, one {# student not in a class} other {# students not in a class}}",
+      "staff": "{count, plural, one {# staff member} other {# staff}}"
     }
   },
   "lessons": {
@@ -6274,7 +6275,7 @@
     "standards": {
       "title": "Standards",
       "lead": "What this class did for each CSTA standard. Counts are per class: when students work in pairs, only the student who signed in is counted.",
-      "pick": "Show",
+      "pick": "Student",
       "show": "Show",
       "everyone": "Whole class",
       "levelsAll": "Show all 44 standards",

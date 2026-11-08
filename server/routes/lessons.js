@@ -415,9 +415,9 @@ export function teacherLessonsPanel(req, c) {
       <div class="row emptyacts"><a class="btn btn-primary" href="${lib}&class=${c.id}&open=new">➕ ${t('lessons.library.newLesson')}</a><a class="btn" href="${lib}&class=${c.id}&open=ai">✨ ${t('lessons.ai.button')}</a></div>` : ''}</div>`}
     <div class="cl-tools">
       <div class="cl-more">
-        ${avail.length || back.length ? html`<details class="libdrop assigndrop" ${count ? '' : raw('open')}><summary class="btn btn-primary">📌 ${t('lessons.class.assign')}</summary>
+        ${avail.length || back.length ? html`<details class="libdrop assigndrop" data-open-wide ${count ? '' : raw('open')}><summary class="btn btn-primary">📌 ${t('lessons.class.assign')}</summary>
         <form class="formgrid" data-api="/api/classes/${c.id}/lessons" data-reload novalidate>
-        <div class="field"><label for="al-l">${t('lessons.class.assign')}</label><select class="input" id="al-l" name="lessonId">${back.length
+        <div class="field"><label class="sr-only" for="al-l">${t('lessons.class.assign')}</label><select class="input" id="al-l" name="lessonId">${back.length
           ? html`${avail.length ? html`<optgroup label="${t('lessons.library.mine')}">${avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>` : ''}<optgroup label="${t('lessons.class.removedGroup')}">${back.map(l => html`<option value="${l.id}">${l.title}</option>`)}</optgroup>`
           : avail.map(l => html`<option value="${l.id}">${l.title}</option>`)}</select></div>
         ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}

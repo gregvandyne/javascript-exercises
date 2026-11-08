@@ -2574,7 +2574,7 @@
       "photos": "Profilfotos von Schulkonten sehen nur Klassenkameraden, Lehrkräfte und Freunde.",
       "chatHint": "Schulkonten können nur Klassenkameraden als Freunde hinzufügen.",
       "timeZone": "Zeitzone",
-      "timeZoneNone": "Nicht festgelegt (die Tage werden in UTC gezählt)",
+      "timeZoneNone": "Nicht festgelegt (UTC)",
       "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
       "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
       "groupSchool": "Schule",
@@ -2784,7 +2784,8 @@
     },
     "stats": {
       "classes": "{count, plural, one {# Klasse} other {# Klassen}}",
-      "unplaced": "{count, plural, one {# Schüler in keiner Klasse} other {# Schüler in keiner Klasse}}"
+      "unplaced": "{count, plural, one {# Schüler in keiner Klasse} other {# Schüler in keiner Klasse}}",
+      "staff": "{count, plural, one {# im Kollegium} other {# im Kollegium}}"
     }
   },
   "lessons": {
@@ -5969,7 +5970,7 @@
     "standards": {
       "title": "Standards",
       "lead": "Was diese Klasse zu jedem CSTA-Standard gemacht hat. Gezählt wird pro Klasse: Bei Partnerarbeit zählt nur das angemeldete Kind.",
-      "pick": "Zeigen",
+      "pick": "Schüler",
       "show": "Zeigen",
       "everyone": "Ganze Klasse",
       "levelsAll": "Alle 44 Standards zeigen",

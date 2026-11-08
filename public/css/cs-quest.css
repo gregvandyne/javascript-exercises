@@ -169,6 +169,8 @@ details.csq-menu .menu a:hover{background:var(--hover);text-decoration:none}
 .csq-legend{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none;font-size:.92rem}
 .csq-legend b{display:inline-block;min-width:5.5em}
 .csq-practices td.on{background:var(--accent-soft)}
+/* Practices by unit: a standard id never breaks inside (the grid scrolls sideways instead). */
+.csq-practices .nw{white-space:nowrap}
 
 /* ---------- Public program page (inside .lp from app.css) ---------- */
 .csq-crew{list-style:none;padding:0;margin:0;display:grid;gap:var(--s4);grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}

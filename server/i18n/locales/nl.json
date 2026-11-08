@@ -2574,7 +2574,7 @@
       "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden.",
       "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen.",
       "timeZone": "Tijdzone",
-      "timeZoneNone": "Niet ingesteld (de dagen worden in UTC geteld)",
+      "timeZoneNone": "Niet ingesteld (UTC)",
       "timeZoneUnset": "Stel de tijdzone van je school in, zodat lessen zichtbaar worden om middernacht en inleverdata om middernacht eindigen waar jij bent. Tot die tijd is niemand te laat tot 36 uur na het begin van de inleverdag.",
       "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}.",
       "groupSchool": "School",
@@ -2784,7 +2784,8 @@
     },
     "stats": {
       "classes": "{count, plural, one {# klas} other {# klassen}}",
-      "unplaced": "{count, plural, one {# leerling zonder klas} other {# leerlingen zonder klas}}"
+      "unplaced": "{count, plural, one {# leerling zonder klas} other {# leerlingen zonder klas}}",
+      "staff": "{count, plural, one {# personeelslid} other {# personeelsleden}}"
     }
   },
   "lessons": {
@@ -5969,7 +5970,7 @@
     "standards": {
       "title": "Standaarden",
       "lead": "Wat deze klas voor elke CSTA-standaard deed. Er wordt per klas geteld: bij samenwerken in tweetallen telt alleen de ingelogde leerling.",
-      "pick": "Toon",
+      "pick": "Leerling",
       "show": "Toon",
       "everyone": "Hele klas",
       "levelsAll": "Toon alle 44 standaarden",

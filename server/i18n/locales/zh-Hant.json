@@ -2573,7 +2573,7 @@
       "photos": "學校帳號的個人照片只有同班同學、老師和好友看得到。",
       "chatHint": "學校帳號只能把同班同學加為好友。",
       "timeZone": "時區",
-      "timeZoneNone": "未設定（日期以 UTC 計算）",
+      "timeZoneNone": "未設定（UTC）",
       "timeZoneUnset": "設定學校的時區後，課程會在您所在地區的午夜開放，截止日期也會在午夜結束。在此之前，截止日開始後的 36 小時內都不算遲交。",
       "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。",
       "groupSchool": "學校",
@@ -2783,7 +2783,8 @@
     },
     "stats": {
       "classes": "{count, plural, other {# 個班級}}",
-      "unplaced": "{count, plural, other {# 位學生尚未分班}}"
+      "unplaced": "{count, plural, other {# 位學生尚未分班}}",
+      "staff": "{count, plural, other {# 位教職員}}"
     }
   },
   "lessons": {
@@ -5968,7 +5969,7 @@
     "standards": {
       "title": "標準",
       "lead": "這個班在每一項 CSTA 標準上做了什麼。以班級為單位計算:兩人一組時,只計算登入的那位學生。",
-      "pick": "顯示",
+      "pick": "學生",
       "show": "顯示",
       "everyone": "全班",
       "levelsAll": "顯示全部 44 項標準",

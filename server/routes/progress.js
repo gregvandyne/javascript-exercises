@@ -144,7 +144,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}</td></tr>`;
     })}</tbody></table></div>`;
   const body = html`
-  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp"><summary>ⓘ ${t('cs.standards.legend.h')}</summary><p class="small muted">${t('progress.gradebook.text')} ${zoneNote(t, c.school_id)}</p></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
+  ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp" data-open-wide><summary>ⓘ ${t('cs.standards.legend.h')}</summary><p class="small muted">${t('progress.gradebook.text')} ${zoneNote(t, c.school_id)}</p></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
   ${toReview.length ? html`<p class="notice gb-review" id="to-review">✍️ <b>${t('progress.gradebook.toReviewList')}</b> ${toReview.map((r, i) => html`${i ? ' · ' : ''}<a href="/class/${c.id}/progress/${r.cl}#answers" dir="auto">${t('progress.gradebook.reviewLink', { title: r.title, count: r.n })}</a>`)}</p>` : ''}
   ${!gb.lessons.length ? html`<section class="panel">${emptyState({ emoji: '📚', title: t('progress.gradebook.noLessons'), text: t('progress.gradebook.noLessonsText') })}</section>`
     : !gb.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`

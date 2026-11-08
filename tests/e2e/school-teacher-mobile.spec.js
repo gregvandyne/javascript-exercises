@@ -170,6 +170,13 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   // Lessons tab: Assign is a fold at the top; the class has a lesson, so it starts closed
   await page.goto(`/class/${cls}`);
   await expect(page.locator('#lessons .assigndrop')).not.toHaveAttribute('open', '');
+  // Lesson library and New unit share a row; Assign opens where its button is (the button stays under the finger)
+  const top = sel => page.locator(sel).evaluate(e => Math.round(e.getBoundingClientRect().top));
+  expect(await top('#lessons .cl-more > a.btn')).toBe(await top('#lessons .unitdrop > summary'));
+  const before = await top('#lessons .assigndrop > summary');
+  await page.click('#lessons .assigndrop > summary');
+  await expect(page.locator('#lessons .assigndrop')).toHaveAttribute('open', '');
+  expect(Math.abs(await top('#lessons .assigndrop > summary') - before)).toBeLessThan(24);
   await ctx.close();
   // School People: counts on the headings and jump chips; grades show as text with ✏️ that opens the same field
   const hc = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: head }); const hp = await hc.newPage();
@@ -182,5 +189,14 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   // School Classes: the at-a-glance strip
   await hp.goto(`/school/${SLUG}?tab=classes`);
   await expect(hp.locator('.statstrip li')).not.toHaveCount(0);
+  await expect(hp.locator('.statstrip li', { hasText: '🍎' })).toHaveText(/🍎 \d+ staff/);
+  // ⋯ sits beside the class name on every card, and opening it does not move it
+  const menus = hp.locator('.rtable.classes tbody tr');
+  for (let i = 0; i < await menus.count(); i++) {
+    const [n, m] = await menus.nth(i).evaluate(tr => [tr.cells[0], tr.querySelector('.inline-menu > summary')].map(e => e.getBoundingClientRect().top));
+    expect(Math.abs(n - m)).toBeLessThan(12);
+  }
+  const first = hp.locator('.rtable.classes .inline-menu > summary').first(); const y = (await first.boundingBox()).y;
+  await first.click(); expect((await first.boundingBox()).y).toBe(y);
   await hc.close();
 });

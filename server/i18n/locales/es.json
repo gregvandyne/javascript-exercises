@@ -2573,7 +2573,7 @@
       "photos": "Las fotos de perfil de las cuentas escolares solo las ven sus compañeros de clase, sus docentes y sus amigos.",
       "chatHint": "Las cuentas escolares solo pueden agregar compañeros de clase como amigos.",
       "timeZone": "Zona horaria",
-      "timeZoneNone": "Sin definir (los días se cuentan en UTC)",
+      "timeZoneNone": "Sin definir (UTC)",
       "timeZoneUnset": "Establezca la zona horaria de su escuela para que las lecciones se abran a medianoche y las fechas de entrega terminen a medianoche donde esté. Hasta entonces, nadie va con retraso hasta 36 horas después de que empieza el día de entrega.",
       "timeZoneHint": "Las lecciones se abren y las fechas de entrega terminan a medianoche en esta zona. Allí ahora son las {time}.",
       "groupSchool": "Escuela",
@@ -2783,7 +2783,8 @@
     },
     "stats": {
       "classes": "{count, plural, one {# clase} other {# clases}}",
-      "unplaced": "{count, plural, one {# estudiante sin clase} other {# estudiantes sin clase}}"
+      "unplaced": "{count, plural, one {# estudiante sin clase} other {# estudiantes sin clase}}",
+      "staff": "{count, plural, one {# miembro del personal} other {# miembros del personal}}"
     }
   },
   "lessons": {
@@ -5968,7 +5969,7 @@
     "standards": {
       "title": "Estándares",
       "lead": "Lo que hizo esta clase en cada estándar CSTA. Se cuenta por clase: cuando trabajan en parejas, solo cuenta el alumno que inició sesión.",
-      "pick": "Ver",
+      "pick": "Estudiante",
       "show": "Ver",
       "everyone": "Toda la clase",
       "levelsAll": "Ver los 44 estándares",

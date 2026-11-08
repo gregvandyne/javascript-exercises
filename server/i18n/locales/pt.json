@@ -2575,7 +2575,7 @@
       "photos": "As fotos de perfil das contas da escola só são vistas pelos colegas de turma, professores e amigos.",
       "chatHint": "As contas da escola só podem adicionar colegas de turma como amigos.",
       "timeZone": "Fuso horário",
-      "timeZoneNone": "Não definido (os dias são contados em UTC)",
+      "timeZoneNone": "Não definido (UTC)",
       "timeZoneUnset": "Defina o fuso horário da sua escola para que as aulas abram à meia-noite e os prazos terminem à meia-noite onde você está. Até lá, ninguém fica em atraso até 36 horas após o início do dia de entrega.",
       "timeZoneHint": "As aulas abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}.",
       "groupSchool": "Escola",
@@ -2785,7 +2785,8 @@
     },
     "stats": {
       "classes": "{count, plural, one {# turma} other {# turmas}}",
-      "unplaced": "{count, plural, one {# aluno sem turma} other {# alunos sem turma}}"
+      "unplaced": "{count, plural, one {# aluno sem turma} other {# alunos sem turma}}",
+      "staff": "{count, plural, one {# membro da equipe} other {# membros da equipe}}"
     }
   },
   "lessons": {
@@ -5970,7 +5971,7 @@
     "standards": {
       "title": "Padrões",
       "lead": "O que esta turma fez em cada padrão CSTA. As contagens são por turma: em duplas, só conta o aluno que entrou na conta.",
-      "pick": "Mostrar",
+      "pick": "Aluno",
       "show": "Mostrar",
       "everyone": "Turma toda",
       "levelsAll": "Mostrar os 44 padrões",

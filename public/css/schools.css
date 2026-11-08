@@ -706,7 +706,64 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .cptable td .pbar{margin-inline-start:6px}
   .cptable td.cp-steps{flex-basis:100%;overflow-wrap:anywhere}
 }
-/* School at a glance: the staff count reads like the People tab's ("🍎 Staff 3"). */
-.statstrip .count{height:24px;min-width:24px;font-size:.85rem}
-/* Standards: the "Jump to" chips' concept anchors clear the top bar (and, on phones, land under the sticky heading). */
-.csq-std-concept{scroll-margin-top:calc(var(--top) + var(--s3))}
+/* Standards: a "Jump to" chip lands on its concept's group of rows (a <tbody>) just under the top bar; on phones the
+   group's own sticky heading is then the only one in view (the previous group has ended above it).
+   (The page's scroll-padding already clears the top bar plus 12 px; phones take those 12 px back.) */
+@media (max-width:700px){.csq-std>tbody[id]{scroll-margin-top:-12px}}
+
+/* ---- Review round 2 ---- */
+/* An open "➕ Add …" / "📌 Assign …" / "🗂️ New unit" fold shows ✕ on its button: tapping it again closes the form. */
+.libdrop[open]>summary::after{content:"✕"/"";margin-inline-start:var(--s1);font-weight:800;opacity:.75}
+/* Class Lessons toolbar: the Assign form opens where its button is (first in the toolbar), not after Library / New
+   unit. On phones the two short buttons have slimmer sides so they share a row in English (long labels still wrap
+   to a row each). */
+.cl-more>.assigndrop[open]{order:0}
+@media (max-width:600px){
+  .cl-more>.btn,.cl-more>.unitdrop>summary{padding-inline:12px;gap:6px}
+}
+/* People on wider screens: "➕ Add …" stays beside its heading while its form opens in the card below. */
+@media (min-width:601px){
+  .sec-row:has(>.adddrop[open]){position:relative}
+  .sec-row:has(>.adddrop[open])>.sec-h{min-height:44px;display:flex;align-items:center;gap:.3em}
+  .sec-row>.adddrop[open]{position:static}
+  .sec-row>.adddrop[open]>summary{position:absolute;top:0;inset-inline-end:0;min-height:44px;margin:0}
+  .sec-row>.adddrop[open]>div{padding-top:0}
+}
+/* School at a glance on phones: an odd last chip takes the whole row. */
+@media (max-width:600px){.statstrip>li:last-child:nth-child(odd){grid-column:1/-1}}
+/* School Classes cards on phones: ⋯ sits at the top right of every card, beside the class name; its menu opens under it
+   as a sheet over the card (the button does not move). */
+@media (max-width:900px){
+  .rtable.classes tr{position:relative}
+  .rtable.classes tr>td:first-child{flex:1 1 calc(100% - 44px - var(--s4));min-width:0}
+  .rtable.classes td.tacts,.rtable.classes td.tacts:has(.inline-menu[open]){order:-1;flex:0 0 auto;margin-inline-start:0;align-self:flex-start}
+  .rtable.classes tr>td:first-child{order:-2}
+  .rtable.classes td.tacts .inline-menu,.rtable.classes td.tacts .inline-menu[open]{position:static;flex-basis:auto}
+  .rtable.classes td.tacts:has(.inline-menu[open])>.acts{flex-wrap:nowrap}
+  .rtable.classes .inline-menu .menu,.rtable.classes .inline-menu[open] .menu{position:absolute;top:auto;inset-inline:0;z-index:20;width:auto;min-width:0;margin-top:6px;box-shadow:var(--shadow-lg)}
+}
+/* School Settings on phones: the sticky Save bar sits right on the bottom tab bar (nothing shows through under it). */
+@media (max-width:600px){
+  .settingsform.scrolled>.savebar{bottom:calc(var(--tabbar,64px) + env(safe-area-inset-bottom));border-radius:var(--r-sm) var(--r-sm) 0 0}
+}
+/* Class Settings on phones: Save is a full-width bar like School Settings'. */
+@media (max-width:600px){.detailsform>.formacts>.btn{width:100%}}
+/* Class roster cards on phones: "@name · school account" is a muted line under the real name, like People (the label
+   stays for screen readers). */
+@media (max-width:900px){
+  .rtable.roster td[data-label]:nth-child(2){margin-top:calc(-1 * var(--s1));padding-inline-start:38px!important;font-size:.875rem;color:var(--text-2)}
+  .rtable.roster td[data-label]:nth-child(2)::before{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+/* One lesson's progress on phones: the "✍️ 1" chip under a name looks like the gradebook's small pill; its tap area
+   stays 44 px tall. */
+@media (max-width:600px){
+  .gb-sub a.chip-s{position:relative;isolation:isolate;min-height:44px;margin-block:-11px;padding:0 10px;background:transparent}
+  .gb-sub a.chip-s::before{content:"";position:absolute;z-index:-1;inset-inline:0;top:50%;height:22px;transform:translateY(-50%);border-radius:999px;background:var(--warn-bg)}
+}
+/* Standards on phones: a statement cut to two lines ends with "… ▾" (tap shows all of it), like the admin pages. */
+@media (max-width:700px){
+  .csq-std .csq-std-id .small.more{position:relative}
+  .csq-std .csq-std-id .small.more:not(.open)::after{content:"… ▾";position:absolute;inset-inline-end:0;bottom:0;padding-inline-start:2.5em;background:linear-gradient(to right,transparent,var(--card) 45%);color:var(--text-2);font-weight:700}
+  .csq-std .csq-std-id .small.more.open{display:block}
+  .csq-std .csq-std-id .small.more:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+}
