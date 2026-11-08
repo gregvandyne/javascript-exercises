@@ -286,10 +286,10 @@ and daily limits. Anyone can block or report a message, and chat can be switched
 **Messages from the Oomba team** (`server/services/team.js`). The platform admins can write to people as "Oomba team ✓"
 (one thread per person in the same inbox) and send announcements (to everyone, kids, grown-ups, teachers and school
 staff, or one school; the admin sees how many people it reaches and confirms; at most one every 10 minutes and 5 a day).
-Because an adult never chats with a child alone, a direct message to a child is only possible when the child has a
-grown-up who sees it: every team message to a child and every reply from the child is copied at once to their linked
-family grown-up (and, for school students, their school's admins), and the team's messages to children are written to
-the audit log with their text. A child with nobody to copy gets announcements and automatic notices only. A child's
+The Oomba team (platform admins: the owner's trusted staff) is the one adult that may message any kid account (owner's
+decision, November 2026). Every team message to a child and every reply from the child is written to the audit log
+with its text, and copied at once to their linked family grown-up (and, for school students, their school's admins)
+when they have one; the admin's page says when no copy goes to anyone. A child's
 replies go through the same filters, pause and limits as friends' chat; a child can report a team message like any
 other; nobody can block the team.
 

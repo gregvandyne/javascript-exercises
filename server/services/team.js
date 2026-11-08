@@ -11,10 +11,11 @@
 //   text/quick  a person's reply to the team
 //
 // Children (the safety rule): kids' chat is between kid friends only and an adult never chats with a child
-// (services/friends.js samePair, services/chat.js canChat). The team is adults, so a direct message to a child is only
-// sent when the child has a grown-up who can see it: every team message to a child, and every reply from the child, is
-// copied at once into the team thread of each linked family grown-up and, for school students, of their school's
-// admins. A child with nobody to copy gets announcements and automatic notices only (no direct messages, no replies).
+// (services/friends.js samePair, services/chat.js canChat). The one exception is the Oomba team (platform admins: the
+// owner's trusted staff, owner's decision November 2026), which may message any kid account. Safeguards: every team
+// message to a child, and every reply from the child, is in the audit log with its text; when the child has a linked
+// family grown-up or (for school students) school admins, each one gets a copy at once in their team thread; the child
+// can report a team message; and the admin page shows whether a child's thread is copied to anyone.
 // A child's reply goes through the same filters, pause and rate limits as friends' chat; every team message to a child
 // is in the audit log with its text.
 import crypto from 'node:crypto';
@@ -79,7 +80,6 @@ export function canMessage(user) {
   if (user.banned) return fail('banned', 'This account is banned.');
   const child = isChild(user);
   const guardians = child ? guardiansOf(user) : [];
-  if (child && !guardians.length) return fail('no_guardian', 'This child has no linked grown-up or school admin who could see the message, so the team does not message them directly. Use an announcement, or write to their grown-up.');
   return { ok: true, child, guardians };
 }
 
@@ -116,7 +116,6 @@ export function canReply(me, t = tEn) {
   if (me.banned) return no('banned');
   if (me.username === OFFICIAL) return no('guest');
   if (!teamWrote(me.id)) return no('notYet');
-  if (isChild(me) && !guardiansOf(me).length) return no('noGrownup');
   return { ok: true, code: 'ok', reason: '' };
 }
 
@@ -155,6 +154,7 @@ export function reply(me, { kind = 'text', body = '' } = {}, t = tEn) {
     id = insert(me.id, team.id, kind, text, null, at);
     if (child) copyTo(guardiansOf(me), me, 'from', kind === 'quick' ? quickText(text) : text, null);
   });
+  if (child) audit(me.id, 'team.reply.child', me.id, { message: id, text: (kind === 'quick' ? quickText(text) : text).slice(0, 500) });
   return { ok: true, id, message: q.get('SELECT * FROM chat_messages WHERE id=?', id) };
 }
 
