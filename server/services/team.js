@@ -23,7 +23,7 @@ import { q, uid, now, tx, audit } from '../db.js';
 import { getUser, getUserByName, createUser, OFFICIAL, accountKind } from '../auth.js';
 import { BRAND } from '../views/brand.js';
 import { tEn } from '../i18n/index.js';
-import { cleanBody, checkText, quickText, pausedUntil, RATE_MAX, RATE_WINDOW, QUICK_IDS, QUICK_EMOJI } from './chat.js';
+import { cleanBody as cleanLine, checkText, quickText, pausedUntil, RATE_MAX, RATE_WINDOW, QUICK_IDS, QUICK_EMOJI } from './chat.js';
 import { hasProfanity } from './textfilter.js';
 
 export const MAX_TEAM_LEN = 1000;          // an admin's message, a grown-up's reply
@@ -57,6 +57,11 @@ export function guardiansOf(child) {
       WHERE s.user_id=? AND s.status='active' AND s.role='student' AND a.role='admin' AND a.status='active'`, child.id, child.id);
   return rows.map(r => getUser(r.id)).filter(g => g && !g.banned && !g.is_guest && g.id !== child.id);
 }
+
+/** A team message or a grown-up's reply keeps its line breaks and blank lines (paragraphs, bullet lines), at most one
+ *  blank line in a row; each line is cleaned like chat (control and direction characters out, spaces collapsed). */
+export const cleanBody = s => String(s ?? '').replace(/\r\n?/g, '\n').split('\n').map(cleanLine).join('\n')
+  .replace(/\n{3,}/g, '\n\n').trim();
 
 const insert = (from, to, kind, body, sentBy = null, at = now()) => {
   const id = uid(14);

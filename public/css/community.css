@@ -73,7 +73,7 @@ details.chatsafety p{margin:6px 0 0}
 .msgs-empty{margin:auto 0}
 .msg{display:flex;align-items:flex-end;gap:6px;max-width:85%}
 .msg.mine{align-self:flex-end;flex-direction:row-reverse}
-.bubble{padding:9px 14px;border-radius:20px 20px 20px 6px;background:var(--card-2);border:1px solid var(--line);color:var(--text);overflow-wrap:anywhere;font-size:1.02rem;line-height:1.35}
+.bubble{white-space:pre-line;padding:9px 14px;border-radius:20px 20px 20px 6px;background:var(--card-2);border:1px solid var(--line);color:var(--text);overflow-wrap:anywhere;font-size:1.02rem;line-height:1.35}
 .msg.mine .bubble{background:var(--accent);border-color:var(--accent);color:var(--on-accent);border-radius:20px 20px 6px 20px}
 .msg.quick .bubble{font-weight:700}
 .msg.emoji .bubble{font-size:2rem;background:transparent;border-color:transparent;padding:0 4px;line-height:1.1}
