@@ -82,7 +82,7 @@ export async function executeTurn(job, { user, game, text = '', pro = false, wan
     //    message is durable (a restart carries the build on).
     name = provider || providerName(allowanceFor(user).pool); const day = today();
     const taken = tx(() => {
-      const charge = takeTurn(user, day, { pro: !!pro });
+      const charge = takeTurn(user, day, { pro: !!pro, turnId: job.id });
       if (!charge) return null;
       if (!provider) name = providerName(charge.pool);   // the pool that pays this very message
       const ups = takeForTurn(game.id, wanted.map(u => u.id));

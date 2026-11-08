@@ -173,7 +173,13 @@ function insertEvent(event, result, extra = {}) {
   event.id, String(event.type), event.livemode ? 1 : 0, event.api_version || null, event.created ? event.created * 1000 : null, now(), result,
   idOf(event.data?.object) || null, extra.subscription || null, extra.customer || null).changes > 0;
 }
-const setEventResult = (event, result, extra = {}) => q.run('UPDATE billing_events SET result=?, stripe_subscription_id=COALESCE(?, stripe_subscription_id), stripe_customer_id=COALESCE(?, stripe_customer_id) WHERE event_id=?',
+/** Records a verified event once (idempotent on its id; inside the caller's transaction). -> true when it is new. */
+export const recordEvent = (event, result, extra = {}) => insertEvent(event, result, extra);
+/** Other billing kinds that read some events first (Spark Packs: one-time payments, services/sparks.js). Each handler
+ *  gets a verified event of a handled type and answers null (not mine) or a result like processEvent's. */
+const eventHandlers = [];
+export function registerEventHandler(fn) { eventHandlers.push(fn); }
+export const setEventResult = (event, result, extra = {}) => q.run('UPDATE billing_events SET result=?, stripe_subscription_id=COALESCE(?, stripe_subscription_id), stripe_customer_id=COALESCE(?, stripe_customer_id) WHERE event_id=?',
   result, extra.subscription || null, extra.customer || null, event.id);
 
 /** Grace (docs/decisions.md "Paid plans" §6.5). Cards: past_due starts BILLING_GRACE_DAYS once (kept while past_due),
@@ -475,6 +481,7 @@ export async function processEvent(event) {
   }
   if (q.get('SELECT 1 FROM billing_events WHERE event_id=?', event.id)) return { result: 'duplicate' };
   if (!HANDLED.has(event.type)) { insertEvent(event, 'ignored'); return { result: 'ignored' }; }
+  for (const h of eventHandlers) { const r = await h(event); if (r) return r; }
   const resolved = await resolveEvent(event);
   const { subId, session } = resolved;
   if (!subId) {

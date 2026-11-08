@@ -165,7 +165,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
   // Grown-ups have no Friends tab (and no chat): connection requests count on Family (/family links to them).
   // Their only chat is the Oomba team thread (/chat/OombaAcademy, linked from /family): its unread messages count there too.
-  if (grownup) badges.family = (badges.requests || 0) + (badges.unread || 0);
+  // A child's "Ask my grown-up" (services/sparks.js) counts there too until the grown-up sees it on /family.
+  if (grownup) badges.family = (badges.requests || 0) + (badges.unread || 0) + (badges.asks || 0);
   // The platform admin: games waiting for the team's review count on Me (the way to /admin).
   if (u && u.role === 'admin' && badges.review) badges.me = (badges.me || 0) + badges.review;
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');

@@ -261,7 +261,7 @@ test('students and staff of a paying school build from the pool (paid AI pool), 
   let al = usage.allowanceFor(a);
   assert.deepEqual({ source: al.source, pool: al.pool, daily: al.daily, left: al.left, classContext: al.classContext, extraLeft: al.extraLeft, schoolId: al.schoolId },
     { source: `school:${x.s.id}`, pool: 'paid', daily: 3, left: 3, classContext: true, extraLeft: null, schoolId: x.s.id });
-  assert.deepEqual(usage.counter(a), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: true });
+  assert.deepEqual(usage.counter(a), { turnsLeft: 3, freeLeft: 3, extraLeft: null, sparkLeft: null, classContext: true });
   for (let i = 0; i < 3; i++) assert.deepEqual(build(a), { source: `school:${x.s.id}`, pool: 'paid', weight: 1 });
   assert.equal(build(a), false, 'the daily cap');
   assert.equal(usage.limitMessage(a, k => k), 'builder.errors.limitClass', 'the class, no number');
@@ -314,7 +314,7 @@ test('a student of a school without a plan: the free allowance, "{left} left tod
   const x = school({ students: 1 });
   const al = usage.allowanceFor(x.kids[0]);
   assert.equal(al.source, 'free'); assert.equal(al.classContext, true);
-  assert.deepEqual(usage.counter(x.kids[0]), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: true });
+  assert.deepEqual(usage.counter(x.kids[0]), { turnsLeft: 3, freeLeft: 3, extraLeft: null, sparkLeft: null, classContext: true });
   assert.equal(usage.allowanceFor(x.teacher).classContext, false, 'staff of an unpaid school: their own counter');
   assert.equal(usage.allowanceFor(kid()).classContext, false);
   for (let i = 0; i < 3; i++) build(x.kids[0]);
@@ -671,7 +671,7 @@ test('billing off is today\'s behavior: a school student has the free allowance,
   const al = usage.allowanceFor(x.kids[0]);
   assert.equal(al.source, 'free'); assert.equal(al.classContext, false);
   assert.deepEqual(SB.schoolSide(x.kids[0].id), { school: null, entitled: false, student: false });
-  assert.deepEqual(usage.counter(x.kids[0]), { turnsLeft: 3, freeLeft: 3, extraLeft: null, classContext: false });
+  assert.deepEqual(usage.counter(x.kids[0]), { turnsLeft: 3, freeLeft: 3, extraLeft: null, sparkLeft: null, classContext: false });
   for (let i = 0; i < 3; i++) build(x.kids[0]);
   assert.deepEqual(usage.limitKey(usage.allowanceFor(x.kids[0])), ['builder.errors.limit', { count: 3 }]);
   assert.equal(SB.poolOf(x.s.id), null);

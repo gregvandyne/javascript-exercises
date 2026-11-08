@@ -204,6 +204,17 @@ button.stp-line{cursor:pointer}
 .st-limit>.st-limit-gu{margin-top:10px;font-size:.92rem}
 .st-limit-gu a{font-weight:700}
 @media (max-width:520px){.st-limit-acts .btn{flex:1 1 40%}}
+/* The card's offer (builder/upsell.js): ask a grown-up, where a grown-up can look (with a QR code), or a link. */
+.st-limit>.st-limit-up{margin-top:10px;padding:10px 12px;border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.st-limit>.st-limit-note{box-shadow:inset 0 0 0 2px var(--line)}
+.st-limit-up p{margin:0}
+.st-limit-up .btn{min-height:44px;margin-top:8px;white-space:normal;text-align:center}
+.st-limit-note{font-size:.95rem;color:var(--text-2)}
+.st-limit-asked{margin-top:8px!important;font-weight:700}
+.st-limit-show{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.st-limit-show>p{flex:1 1 200px}
+.st-limit-qr{flex:none;width:104px;height:104px;padding:6px;border-radius:var(--r-sm);background:#fff;box-shadow:inset 0 0 0 2px var(--line)}
+.st-limit-qr svg{display:block;width:100%;height:100%}
 /* A phone: .st-chat has a fixed height, so the card replaces the typing row (nothing can be sent) and scrolls when
    it is taller than its share; the chat log keeps a usable height and nothing spills over the preview's switcher. */
 @media (max-width:960px){

@@ -674,6 +674,31 @@ export const MIGRATIONS = [
     INSERT OR IGNORE INTO team_welcomes(user_id, audience, state, message_id, at)
       SELECT target, 'kid', 'sent', CASE WHEN json_valid(details) THEN json_extract(details, '$.message') END, created_at
       FROM audit_log WHERE action='team.welcome' AND target<>'';`],
+  // Spark Packs (services/sparks.js, docs/decisions.md "Spark Packs"): one-time top-ups of Builder messages for a family.
+  // spark_packs: one row per Checkout Session (made before the redirect, status 'open') or admin grant. status: open |
+  // processing (a delayed payment) | active | failed | expired (the Checkout was never paid) | refunded | disputed |
+  // revoked | ended (its time ran out). remaining never goes below 0 (CHECK). spark_ledger: every change of a pack's
+  // credit (purchase, grant, use, refund_use (a build given back), refund, dispute, revoke, expire), with the build
+  // (turn_id) a use paid for, so giving a build back returns the very credits it took. builder_asks: a child's "Ask my
+  // grown-up" at the Builder's daily limit, one open per child (kind 'plan' | 'spark'); the family's grown-up sees it on
+  // /family (and a badge) until they dismiss it, a plan or pack is bought, or a week passes.
+  ['0058_spark_packs', `
+    CREATE TABLE IF NOT EXISTS spark_packs (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, size TEXT NOT NULL,
+      messages INTEGER NOT NULL, remaining INTEGER NOT NULL DEFAULT 0 CHECK (remaining >= 0), status TEXT NOT NULL,
+      source TEXT NOT NULL DEFAULT 'stripe', stripe_session_id TEXT UNIQUE, stripe_payment_intent TEXT, amount_total INTEGER,
+      currency TEXT, livemode INTEGER NOT NULL DEFAULT 0, bought_by TEXT, note TEXT, created_at INTEGER NOT NULL,
+      paid_at INTEGER, expires_at INTEGER, ended_at INTEGER);
+    CREATE INDEX IF NOT EXISTS spark_packs_family ON spark_packs(family_id, status, expires_at);
+    CREATE INDEX IF NOT EXISTS spark_packs_pi ON spark_packs(stripe_payment_intent);
+    CREATE TABLE IF NOT EXISTS spark_ledger (id INTEGER PRIMARY KEY AUTOINCREMENT, pack_id TEXT NOT NULL, family_id TEXT NOT NULL,
+      delta INTEGER NOT NULL, reason TEXT NOT NULL, user_id TEXT, turn_id TEXT, event_id TEXT, by_user TEXT, day TEXT, at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS spark_ledger_pack ON spark_ledger(pack_id);
+    CREATE INDEX IF NOT EXISTS spark_ledger_turn ON spark_ledger(turn_id);
+    CREATE INDEX IF NOT EXISTS spark_ledger_family ON spark_ledger(family_id, day);
+    CREATE TABLE IF NOT EXISTS builder_asks (id TEXT PRIMARY KEY, family_id TEXT NOT NULL, child_id TEXT NOT NULL, kind TEXT NOT NULL,
+      created_at INTEGER NOT NULL, seen_at INTEGER, closed_at INTEGER, close_reason TEXT);
+    CREATE UNIQUE INDEX IF NOT EXISTS builder_asks_open ON builder_asks(child_id) WHERE closed_at IS NULL;
+    CREATE INDEX IF NOT EXISTS builder_asks_family ON builder_asks(family_id, closed_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

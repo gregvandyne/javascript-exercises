@@ -55,12 +55,17 @@ function renderTurns() {
   if (en) { el.lang = 'en'; el.dir = 'ltr'; } else { el.removeAttribute('lang'); el.removeAttribute('dir'); }
   if (S.classContext) { $('#st-turns').textContent = `🔋 ${t('js.studio.turnsLeftToday', { left: Math.max(0, S.turnsLeft | 0) })}`; return; }
   const free = typeof S.freeLeft === 'number' ? S.freeLeft : S.turnsLeft;
-  $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}`;
+  $('#st-turns').textContent = `🔋 ${t('js.studio.turns', { left: free, total: S.dailyTurns })}${typeof S.extraLeft === 'number' ? ` · ${t('js.studio.extra', { n: S.extraLeft })}` : ''}${typeof S.sparkLeft === 'number' ? ` · ⚡ ${t('js.studio.sparks', { n: S.sparkLeft })}` : ''}`;
   syncLimit();
 }
 // ---- No Builder messages left today: the daily-limit card. It is drawn from the state (S.turnsLeft), so it is there
 // again after a reload. It offers things to do now and, for a kid's own account with no grown-up linked, a calm line
 // to Me › For grown-ups (S.grownUpLink). A kid's page: no price, no plan name, no /plans link, no countdown.
+// S.upsell (server/builder/upsell.js) adds one more way on: a child with a linked grown-up taps "Ask my grown-up"; a
+// child without one is shown where a grown-up can look (the address as text and a QR code, not a link); a grown-up or
+// a teacher gets a link (plans, or the Spark Pack picker); a class is told to ask their teacher; while the AI rests for
+// everyone, nothing is offered. While the card shows, the state is read again now and then, so a grown-up's purchase
+// lifts it without a reload.
 // Send and the idea buttons (chips, Fix it, Carry on) are greyed out, described by the card's heading. A running build
 // still takes follow-ups, so the card waits until it ends.
 const outOfMessages = () => typeof S.turnsLeft === 'number' && S.turnsLeft <= 0 && !(S.turn || LIVE.pendingCid || LIVE.check) && LIVE.stopped !== 'gone';
@@ -79,13 +84,14 @@ function syncLimit() {
     const canPublish = !!S.current && !(S.pending && S.pending.id === S.current.id) && (!S.live || S.current.id !== S.live.id);
     const html = `<p class="st-limit-h" id="${LIMIT_WHY}"><span aria-hidden="true">🌙</span> ${E('js.studio.limitCard.heading')}</p>
       <p class="st-limit-text">${E(S.current ? 'js.studio.limitCard.text' : 'js.studio.limitCard.textEmpty')}</p>
+      ${upsellHtml()}
       <div class="st-limit-acts">${canPublish ? `<button class="btn btn-sm btn-hot" type="button" data-act="limit-publish">🚀 ${E('js.studio.limitCard.publish')}</button>` : ''}<a class="btn btn-sm" href="/">🎮 ${E('js.studio.limitCard.play')}</a><a class="btn btn-sm" href="/search?sort=new">✨ ${E('js.studio.limitCard.others')}</a></div>
-      ${S.grownup && S.grownup.seePlans ? `<p class="st-limit-gu"><a href="/plans">${E('js.studio.limit.seePlans')}</a></p>` : ''}
       ${S.grownUpLink ? `<p class="st-limit-gu"><span aria-hidden="true">🧑‍🧒</span> ${E('js.studio.limitCard.grownUp')} <a href="/me#grownups">${E('js.studio.limitCard.grownUpWhere')}</a></p>` : ''}`;
     if (box.dataset.html !== html || box.hidden) { box.innerHTML = html; box.dataset.html = html; }
     box.hidden = false;
   }
   if (!out) delete box.dataset.html;
+  watchLimit(out);
   // On a phone the card takes the typing row's place (Send is off anyway), so the chat keeps its height (studio.css).
   $('#st-compose').classList.toggle('st-out', out);
   const send = $('#st-send');
@@ -94,6 +100,51 @@ function syncLimit() {
   ideaButtons().forEach(b => setOff(b, out));
 }
 const E = (key, vars) => esc(t(key, vars));
+/** The card's offer from S.upsell (see above). The server's old S.grownup.seePlans line is its 'plan' case for a grown-up. */
+function upsellHtml() {
+  const u = S.upsell || (S.grownup && S.grownup.seePlans ? { kind: 'plan', who: 'grownup', href: '/plans' } : null);
+  if (!u) return '';
+  if (u.kind === 'resting') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">😴</span> ${E('js.studio.limitCard.resting')}</p>`;
+  if (u.kind === 'class') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">🎒</span> ${E('js.studio.limitCard.classText')}</p>`;
+  const spark = u.kind === 'spark';
+  if (u.who === 'grownup' || u.who === 'staff') {
+    return `<p class="st-limit-up"><a class="btn btn-sm btn-primary" href="${esc(u.href)}" data-upsell="${spark ? 'spark' : 'plan'}">${spark ? `<span aria-hidden="true">⚡</span> ${E('js.studio.limitCard.getSpark')}` : `<span aria-hidden="true">⭐</span> ${E('js.studio.limit.seePlans')}`}</a></p>`;
+  }
+  if (u.grownup) {
+    const text = E(spark ? 'js.studio.limitCard.askTextSpark' : 'js.studio.limitCard.askText');
+    const act = u.asked ? `<p class="st-limit-asked" role="status"><span aria-hidden="true">✅</span> ${E('js.studio.limitCard.asked')}</p>`
+      : `<button class="btn btn-sm btn-primary" type="button" data-act="ask-grownup"><span aria-hidden="true">🙋</span> ${E('js.studio.limitCard.askButton')}</button>`;
+    return `<div class="st-limit-up st-limit-ask"><p>${spark ? '<span aria-hidden="true">⚡</span> ' : '<span aria-hidden="true">🌟</span> '}${text}</p>${act}</div>`;
+  }
+  return `<div class="st-limit-up st-limit-show"><p><span aria-hidden="true">🌟</span> ${t('js.studio.limitCard.showText', { address: `<bdi dir="ltr"><b>${esc(u.address)}</b></bdi>` })}</p>${u.qr ? `<div class="st-limit-qr" role="img" aria-label="${E('js.studio.limitCard.qrLabel')}">${u.qr}</div>` : ''}</div>`;
+}
+/** While the card shows: read the state again every 45 s and when the page comes back into view, so a plan or a Spark
+ *  Pack bought meanwhile lifts the card without a reload (the counter and the offer follow too). */
+let limitTimer = null;
+function watchLimit(out) {
+  if (!out) { clearInterval(limitTimer); limitTimer = null; return; }
+  if (!limitTimer) limitTimer = setInterval(recheckLimit, 45e3);
+}
+async function recheckLimit() {
+  if (document.hidden || !outOfMessages()) return;
+  let st = null;
+  try { st = await api(`/api/studio/${ID}`, { background: true }); } catch { return; }
+  const keys = ['turnsLeft', 'freeLeft', 'extraLeft', 'sparkLeft', 'classContext', 'dailyTurns', 'upsell', 'resting'];
+  const next = Object.fromEntries(keys.filter(k => k in st).map(k => [k, st[k]]));
+  if (JSON.stringify(keys.map(k => next[k])) === JSON.stringify(keys.map(k => S[k]))) return;
+  S = { ...S, ...next };
+  renderTurns();
+  if (S.turnsLeft > 0) { syncCompose(); toast(`⚡ ${t('js.studio.limitCard.back')}`); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && limitTimer) recheckLimit(); });
+async function askGrownup(btn) {
+  btn.disabled = true;
+  try {
+    await api('/api/studio/ask-grownup', { method: 'POST', body: {} });
+    if (S.upsell) S.upsell = { ...S.upsell, asked: true };
+    syncLimit();
+  } catch (e) { btn.disabled = false; toast(e.message, { bad: true }); }
+}
 function renderLive() {
   const box = $('#st-live'); const parts = [];
   const cur = S.current ? `✏️ ${E('js.studio.live.editing', { number: S.current.number })}` : `✏️ ${E('js.studio.live.nothingYet')}`;
@@ -1313,6 +1364,7 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'see') { $('.st-preview').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   else if (a.dataset.act === 'update') updateLive();
   else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
+  else if (a.dataset.act === 'ask-grownup') askGrownup(a);
   else if (a.dataset.act === 'make-live' && S.liveClass) send(S.liveClass.ask);
   else if (a.dataset.act === 'continue' && S.lastTurn) send(t('js.studio.continueMessage'), { continueOf: S.lastTurn.id });
   else if (a.dataset.act === 'putback' && S.lastTurn && S.lastTurn.putBack) { input.value = S.lastTurn.putBack; autosize(); input.focus(); }

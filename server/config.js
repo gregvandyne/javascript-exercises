@@ -362,6 +362,13 @@ export const config = {
   // its own extra messages a UTC month and its own AI cost backstop. FAMILY_CHILD_DAILY_MAX applies to it too.
   basicExtraMessages: Math.max(0, num(process.env.BASIC_EXTRA_MESSAGES, 25)),
   basicMonthlyAiUsd: posNum(process.env.BASIC_MONTHLY_AI_USD, 2.5),
+  // Spark Packs (server/services/sparks.js; docs/decisions.md "Spark Packs"): one-time top-ups of extra Builder messages
+  // for a family with a plan, sold by Stripe Prices with the lookup keys oomba_spark_25 / _60 / _150. Days a pack lasts
+  // from its payment, Spark Pack messages one builder may use in a UTC day, and the AI cost (US dollars) each pack message
+  // adds to the paid AI pool's ceiling.
+  sparkExpiryDays: Math.max(1, Math.floor(num(process.env.SPARK_PACK_EXPIRY_DAYS, 365))),
+  sparkDailyMax: Math.max(0, Math.floor(num(process.env.SPARK_PACK_DAILY_MAX, 60))),
+  sparkAiUsdPerMessage: posNum(process.env.SPARK_PACK_AI_USD_PER_MESSAGE, 0.1),
   // The paid AI pool (services/ai-budget.js): its monthly ceiling is computed (entitled families x FAMILY_MONTHLY_AI_USD);
   // AI_PAID_MONTHLY_BUDGET_USD caps it. AI_HARD_MONTHLY_USD stops every AI call site-wide (default: free + paid monthly).
   // School plans (server/services/school-billing.js; docs/decisions.md "Paid plans" D6): Builder messages each paid

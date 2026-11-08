@@ -17,6 +17,10 @@
 //            comes from the school's pool (paid AI pool), up to the school's daily cap per person (never below the free
 //            daily messages), so they never "rest" with free users. With the pool empty: the free messages, never the
 //            family's extras (no family money in class).
+//   spark    the family's Spark Packs (services/sparks.js): one-time top-ups a grown-up bought, shared by the family's
+//            grown-up and its first FAMILY_MAX_CHILDREN linked children, plan or no plan. Used last: after the free
+//            daily messages and the plan's extras (or while the free pool rests, after the extras), up to
+//            SPARK_PACK_DAILY_MAX a builder a day, paid by the paid pool. Never for a member of a school with a plan.
 // Class contexts (an active student of any school, or anyone building from a school's pool) see only "{left} left
 // today", never a total, and their limit message names the class: children in a class are never compared by plan.
 // builder_turns.charged_to records who paid each message; a refund gives it back to the same source (turns.refund).
@@ -28,6 +32,7 @@ import { schoolSide } from '../services/school-billing.js';
 import { resting } from './anthropic.js';
 import { isStaff, classesOf } from '../services/schools.js';
 import { getUser } from '../auth.js';
+import * as sparks from '../services/sparks.js';
 
 /** Makers who get the full Builder: the Pro model (the strongest) on every message, counted as one message (never the
  *  Pro weight), a longer time cap, more model calls and more playtest fix rounds (docs/decisions.md "Trusted makers
@@ -98,6 +103,9 @@ const childExtrasOn = (userId, familyId, day) => q.get('SELECT COALESCE(SUM(weig
  *    may use them (null when no family pays, and in class contexts); extraToday: how many of them this child can still
  *    use today.
  *    schoolId: the school whose pool pays (null when none). classContext: show "{left} left today" only (no totals).
+ *    sparkFamilyId: the family whose Spark Packs this builder may use (null when none, or none left); sparkLeft: the
+ *    family's Spark Pack messages left (null when none, and in class contexts); sparkToday: how many this builder can
+ *    still use today.
  */
 export function allowanceFor(user, day = today()) {
   const id = idOf(user), daily = dailyTurns(), proWeight = trustedMaker(user) ? 1 : weightOf(true);
@@ -108,12 +116,20 @@ export function allowanceFor(user, day = today()) {
   if (side.school && aiBudget.ok('paid')) {
     const cap = side.school.cap;
     const left = Math.min(Math.max(0, cap - used), side.school.pool.left);
-    return { source: `school:${side.school.id}`, pool: 'paid', daily: cap, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: side.school.id, classContext: true };
+    return { source: `school:${side.school.id}`, pool: 'paid', daily: cap, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: side.school.id, classContext: true, sparkFamilyId: null, sparkLeft: null, sparkToday: 0 };
   }
   const fam = familyOf(id, side);
+  // Spark Packs: the last source, after the free messages and the plan's extras (the paid pool permitting).
+  const bfam = sparks.builderFamily(id, side);
+  const sUsed = bfam ? sparks.usedOn(id, bfam, day) : 0;
+  const sfam = bfam && sparks.balance(bfam) > 0 ? bfam : null;
+  const sLeft = sfam && aiBudget.ok('paid') ? sparks.balance(sfam) : 0;
+  const sparkToday = Math.min(sLeft, Math.max(0, config.sparkDailyMax - sUsed));
+  const spark = { sparkFamilyId: sfam, sparkLeft: sfam && !classContext ? sLeft : null, sparkToday };
   if (!fam) {
-    const left = Math.max(0, daily - used);
-    return { source: 'free', pool: 'free', daily, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: null, classContext };
+    const freeLeft = Math.max(0, daily - (used - sUsed));
+    const viaSpark = sparkToday > 0 && (freeLeft <= 0 || resting('free'));
+    return { source: viaSpark ? `spark:${sfam}` : 'free', pool: viaSpark ? 'paid' : 'free', daily, proWeight, left: freeLeft + sparkToday, freeLeft: classContext ? freeLeft + sparkToday : freeLeft, familyId: null, extraLeft: null, extraToday: 0, schoolId: null, classContext, ...spark };
   }
   const month = familyMonth(fam, day), mine = childExtrasOn(id, fam, day);
   const lim = planLimits(ownerPlan('family', fam).plan);
@@ -121,28 +137,29 @@ export function allowanceFor(user, day = today()) {
   const usable = month.usd < lim.aiUsd && aiBudget.ok('paid');
   const extraLeft = usable ? Math.max(0, lim.extra - month.used) : 0;
   const extraToday = Math.min(extraLeft, Math.max(0, config.familyChildDailyMax - mine));
-  const freeLeft = Math.max(0, daily - (used - mine));
-  // The free daily messages come first; extras after them, or while the free pool rests.
+  const freeLeft = Math.max(0, daily - (used - mine - sUsed));
+  // The free daily messages come first; extras after them, or while the free pool rests; Spark Packs last.
   const viaFamily = extraToday > 0 && (freeLeft <= 0 || resting('free'));
-  const left = freeLeft + extraToday;
+  const viaSpark = !viaFamily && sparkToday > 0 && (freeLeft <= 0 || resting('free'));
+  const left = freeLeft + extraToday + sparkToday;
   // In a class context the extras are not shown apart (only "{left} left today").
-  return { source: viaFamily ? `family:${fam}` : 'free', pool: viaFamily ? 'paid' : 'free', daily, proWeight, left, freeLeft: classContext ? left : freeLeft, familyId: fam, extraLeft: classContext ? null : extraLeft, extraToday, schoolId: null, classContext };
+  return { source: viaFamily ? `family:${fam}` : viaSpark ? `spark:${sfam}` : 'free', pool: viaFamily || viaSpark ? 'paid' : 'free', daily, proWeight, left, freeLeft: classContext ? left : freeLeft, familyId: fam, extraLeft: classContext ? null : extraLeft, extraToday, schoolId: null, classContext, ...spark };
 }
 /** The Builder's "no messages left" words for an allowance: [key, vars]. A class context names the class and no number;
  *  with a family plan, no number either (they used more than the free ones, and a child is never told about plans). */
 export function limitKey(a) {
   if (a.classContext) return ['builder.errors.limitClass'];
-  if (a.familyId) return ['builder.errors.limitToday'];
+  if (a.familyId || a.sparkFamilyId) return ['builder.errors.limitToday'];
   return ['builder.errors.limit', { count: a.daily }];
 }
 export function limitMessage(user, t) {
   const [key, vars] = limitKey(allowanceFor(user));
   return vars ? t(key, vars) : t(key);
 }
-/** The Studio counter's numbers: { turnsLeft, freeLeft, extraLeft, classContext }. */
+/** The Studio counter's numbers: { turnsLeft, freeLeft, extraLeft, sparkLeft, classContext }. */
 export function counter(user) {
   const a = allowanceFor(user);
-  return { turnsLeft: a.left, freeLeft: a.freeLeft, extraLeft: a.extraLeft, classContext: a.classContext };
+  return { turnsLeft: a.left, freeLeft: a.freeLeft, extraLeft: a.extraLeft, sparkLeft: a.sparkLeft, classContext: a.classContext };
 }
 
 export function turnsUsed(user, day = today()) {
@@ -153,11 +170,14 @@ export const turnsLeft = (user, day = today()) => allowanceFor(user, day).left;
 /** Use a message's turns. -> false (and nothing recorded) when no message is left today, else { source, pool, weight }.
  *  A message is taken while any turn is left; a Pro message may then use the last ones and count past the cap (the
  *  count shown never goes below 0). Runs inside the charge transaction (agent.js), so the family's month is read and
- *  charged at once. */
-export function takeTurn(user, day = today(), { pro = false } = {}) {
+ *  charged at once. turnId: the build's row id (Spark Pack credits are recorded against it). */
+export function takeTurn(user, day = today(), { pro = false, turnId = null } = {}) {
   const a = allowanceFor(user, day);
   if (a.left <= 0) return false;
   const weight = pro ? a.proWeight : 1;   // a trusted maker's Pro message is one message
+  // A Spark Pack message takes its credits now, in the same transaction (never more than are left; turnId: the build,
+  // so giving it back returns these very credits).
+  if (a.source.startsWith('spark:') && !sparks.take(a.sparkFamilyId, idOf(user), weight, { turnId, day })) return false;
   q.run('INSERT INTO builder_usage(user_id, day, turns) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET turns=turns+excluded.turns', idOf(user), day, weight);
   return { source: a.source, pool: a.pool, weight };
 }

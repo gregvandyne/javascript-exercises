@@ -2222,7 +2222,17 @@
         "play": "Jouer à des jeux",
         "others": "Jouer aux jeux d’autres enfants",
         "grownUp": "Un adulte peut relier son compte au tien :",
-        "grownUpWhere": "Moi › Pour les parents"
+        "grownUpWhere": "Moi › Pour les parents",
+        "askText": "Tu veux construire encore ? Ton adulte peut te débloquer plus de messages pour le Constructeur.",
+        "askTextSpark": "Tu veux continuer à construire aujourd’hui ? Ton adulte peut ajouter un Pack Étincelle avec des messages en plus pour le Constructeur.",
+        "askButton": "Demander à mon adulte",
+        "asked": "Ton adulte verra que tu as demandé. Merci !",
+        "showText": "Tu veux construire encore ? Montre ceci à un adulte. Il peut voir comment sur {address}",
+        "qrLabel": "Un code qu’un adulte peut scanner avec son téléphone",
+        "classText": "Le Constructeur de ta classe se repose pour aujourd’hui. Demande à ton enseignant quand tu pourras construire de nouveau.",
+        "resting": "Le Constructeur se repose pour tout le monde en ce moment. Ton jeu est enregistré.",
+        "getSpark": "Prendre un Pack Étincelle",
+        "back": "De nouveaux messages pour le Constructeur sont arrivés. Bonne construction !"
       },
       "mic": {
         "start": "Parler au lieu d’écrire",
@@ -2243,7 +2253,8 @@
       "limit": {
         "seePlans": "Voir les formules pour plus de messages du Constructeur"
       },
-      "themeUse": "Utilise le thème {name}."
+      "themeUse": "Utilise le thème {name}.",
+      "sparks": "{n, plural, one {# message de Packs Étincelle} other {# messages de Packs Étincelle}}"
     },
     "character": {
       "unsaved": "Pas encore enregistré",
@@ -3546,6 +3557,50 @@
       "later": "Je le ferai plus tard",
       "laterNote": "Vous pouvez ajouter vos enfants à tout moment depuis « Votre famille ».",
       "cta": "Ajouter un enfant"
+    },
+    "sparks": {
+      "heading": "Packs Étincelle",
+      "intro": "Un Pack Étincelle est une recharge unique de messages en plus pour le Constructeur, pour votre famille. Ils servent une fois épuisés les messages gratuits du jour et les messages en plus de votre abonnement.",
+      "left": "{n, plural, one {Il reste # message de Packs Étincelle} other {Il reste # messages de Packs Étincelle}}",
+      "none": "Plus aucun message de Packs Étincelle.",
+      "expires": "Les prochains expirent le {date}.",
+      "needPlan": "Les Packs Étincelle complètent un abonnement Basic ou Famille.",
+      "soon": "Les Packs Étincelle ne sont pas encore en vente.",
+      "pick": "Ajouter un Pack Étincelle",
+      "buy": "{n} messages · {price}",
+      "terms": {
+        "once": "Un seul paiement. Rien ne se renouvelle.",
+        "who": "Pour vous et jusqu’à {max} enfants reliés, même si votre abonnement prend fin plus tard.",
+        "expire": "Les messages non utilisés expirent {days} jours après l’achat du pack.",
+        "daily": "Chaque personne peut utiliser jusqu’à {max} messages de Packs Étincelle par jour.",
+        "refund": "Un pack non utilisé est remboursé sur demande dans les 14 jours. Un remboursement retire les messages restants."
+      },
+      "waiting": "Ajout de votre Pack Étincelle… Cette page se met à jour toute seule.",
+      "done": "Votre Pack Étincelle est prêt. Bonne construction !",
+      "history": "Vos packs",
+      "pack": "{n} messages",
+      "grant": "{n} messages de l’équipe Oomba",
+      "state": {
+        "active": "{left} sur {n} restants · jusqu’au {date}",
+        "used": "Épuisé",
+        "ended": "Expiré",
+        "processing": "Paiement en cours",
+        "failed": "Le paiement n’a pas abouti",
+        "refunded": "Remboursé",
+        "disputed": "Paiement contesté",
+        "revoked": "Arrêté par l’équipe Oomba"
+      },
+      "errors": {
+        "noPlan": "Les Packs Étincelle complètent un abonnement : choisissez d’abord un abonnement Basic ou Famille.",
+        "noPrice": "Les Packs Étincelle ne peuvent pas être achetés pour le moment. Réessayez plus tard."
+      }
+    },
+    "asks": {
+      "heading": "Demandes pour le Constructeur",
+      "plan": "{name} a utilisé les messages du jour pour le Constructeur et demande à construire davantage.",
+      "spark": "{name} a utilisé les messages du jour pour le Constructeur et demande un Pack Étincelle.",
+      "getSpark": "Prendre un Pack Étincelle",
+      "dismiss": "Masquer"
     }
   },
   "plans": {

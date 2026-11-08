@@ -45,7 +45,7 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   const fake = { url: '', host, port: 0, apiVersion, webhookSecret, webhookUrl, livemode, requests: [], violations: [], failGets: [], slowGets: [], deliveries: [], st };
 
   // ---- Catalogue: the five prices, found by lookup key (like the sandbox) ----
-  const addPrice = (lookup, amount, interval, product) => st.prices.set(lookup, { id: 'price_fake_' + lookup.replace(/^oomba_/, ''), object: 'price', active: true, currency: 'usd', lookup_key: lookup, product, recurring: { interval, interval_count: 1, usage_type: 'licensed' }, tax_behavior: 'exclusive', type: 'recurring', unit_amount: amount, livemode });
+  const addPrice = (lookup, amount, interval, product) => st.prices.set(lookup, { id: 'price_fake_' + lookup.replace(/^oomba_/, ''), object: 'price', active: true, currency: 'usd', lookup_key: lookup, product, recurring: interval ? { interval, interval_count: 1, usage_type: 'licensed' } : null, tax_behavior: 'exclusive', type: interval ? 'recurring' : 'one_time', unit_amount: amount, livemode });
   // Products carry oomba_plan metadata (docs/decisions.md "Paid plans": the plan survives a new Price).
   for (const [id, plan] of [['prod_fake_basic', 'basic'], ['prod_fake_family', 'family'], ['prod_fake_school', 'school'], ['prod_fake_other', null]]) st.products.set(id, { id, object: 'product', active: true, livemode, metadata: plan ? { oomba_plan: plan } : {}, name: id });
   addPrice('oomba_basic_monthly', 499, 'month', 'prod_fake_basic');
@@ -53,6 +53,11 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   addPrice('oomba_family_monthly', 799, 'month', 'prod_fake_family');
   addPrice('oomba_family_yearly', 6900, 'year', 'prod_fake_family');
   addPrice('oomba_school_seat_yearly', 2000, 'year', 'prod_fake_school');
+  // Spark Packs: one-time Prices (no recurring).
+  st.products.set('prod_fake_spark', { id: 'prod_fake_spark', object: 'product', active: true, livemode, metadata: {}, name: 'Spark Pack' });
+  addPrice('oomba_spark_25', 499, null, 'prod_fake_spark');
+  addPrice('oomba_spark_60', 999, null, 'prod_fake_spark');
+  addPrice('oomba_spark_150', 1999, null, 'prod_fake_spark');
   const priceById = id => [...st.prices.values()].find(p => p.id === id);
 
   // ---- Object makers (pinned shapes) ----
@@ -164,6 +169,22 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     s.url = `${fake.url}/pay/${s.id}`;
     st.sessions.set(s.id, s); return s;
   };
+  /** A one-time Checkout (mode=payment) paid: its PaymentIntent and Charge. async: a delayed method (payment_status
+   *  unpaid until fake.settleAsync). */
+  fake.payOnce = (s, { async = false } = {}) => {
+    const pi = rid('pi_');
+    const ch = { id: rid('ch_'), object: 'charge', amount: s.amount_total, amount_refunded: 0, refunded: false, captured: true, currency: s.currency || 'usd', customer: s.customer, livemode, paid: !async, payment_intent: pi, status: async ? 'pending' : 'succeeded', created: sec(), disputed: false };
+    st.charges.set(ch.id, ch);
+    Object.assign(s, { status: 'complete', payment_status: async ? 'unpaid' : 'paid', payment_intent: pi });
+    return ch;
+  };
+  fake.chargeOfSession = id => { const s = st.sessions.get(id); return [...st.charges.values()].find(c => c.payment_intent === s?.payment_intent); };
+  /** A delayed payment of a one-time Checkout arrives (ok) or fails, with Stripe's event. */
+  fake.settleAsync = async (id, ok = true) => {
+    const s = st.sessions.get(id); const ch = fake.chargeOfSession(id);
+    if (ok) { s.payment_status = 'paid'; if (ch) { ch.paid = true; ch.status = 'succeeded'; } } else if (ch) ch.status = 'failed';
+    return fake.emit(ok ? 'checkout.session.async_payment_succeeded' : 'checkout.session.async_payment_failed', id);
+  };
   const expandSub = (s, expand = []) => {
     const o = structuredClone(s);
     if (expand.includes('latest_invoice') && o.latest_invoice) o.latest_invoice = structuredClone(st.invoices.get(o.latest_invoice));
@@ -228,6 +249,13 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         // The grown-up switches plans in the Portal (b.lookupKey, e.g. oomba_basic_monthly).
         if (p === '/_test/switch-plan') { fake.switchPrice(b.subscription, b.lookupKey); return ok(res, await fake.emit('customer.subscription.updated', b.subscription)); }
         if (p === '/_test/fail-next-payment') { fake.failNextPayment(b.n || 1); return ok(res, { ok: true }); }
+        // One-time (Spark Pack) Checkouts: a delayed payment settles or fails; the owner refunds (all or b.amount cents)
+        // or a dispute arrives; a session nobody paid expires.
+        if (p === '/_test/settle-async') return ok(res, await fake.settleAsync(b.session, b.ok !== false));
+        if (p === '/_test/refund-session') { const ch = fake.chargeOfSession(b.session); fake.refund(ch.id, b.amount ?? null); return ok(res, await fake.emit('charge.refunded', ch.id)); }
+        if (p === '/_test/dispute-session') { const ch = fake.chargeOfSession(b.session); return ok(res, await fake.emit('charge.dispute.created', fake.dispute(ch.id))); }
+        if (p === '/_test/expire-session') { const s = st.sessions.get(b.session); s.status = 'expired'; return ok(res, await fake.emit('checkout.session.expired', s.id)); }
+        if (p === '/_test/sessions') return ok(res, { sessions: [...st.sessions.values()] });
         if (p === '/_test/refund-latest') { const sub = st.subscriptions.get(b.subscription); const ch = fake.chargeOf(sub.latest_invoice); fake.refund(ch.id, b.amount ?? null); return ok(res, await fake.emit('charge.refunded', ch.id)); }
       } catch (e) { return err(res, 400, 'invalid_request_error', null, e.message); }
       return err(res, 404, 'invalid_request_error', null, 'unknown control endpoint');
@@ -251,6 +279,16 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
       const s = st.sessions.get(p.slice(5));
       if (!s || s.status !== 'open') return err(res, 404, 'invalid_request_error', null, 'no open session');
       const x = sessionExtra.get(s.id) || {};
+      if (s.mode === 'payment') {
+        // ?async=1: a delayed method (Checkout completes unpaid; /_test/settle-async later). ?webhook=0: no webhook (the
+        // return page's own sync must do it). ?late=1: the redirect first, the webhook a moment later.
+        const async = u.searchParams.get('async') === '1', hook = u.searchParams.get('webhook') !== '0', late = u.searchParams.get('late') === '1';
+        fake.payOnce(s, { async });
+        const send = () => fake.emit('checkout.session.completed', s.id);
+        if (hook && !late) await send();
+        if (hook && late) setTimeout(send, 1500);
+        res.writeHead(302, { location: String(x.successUrl || '/').replace('{CHECKOUT_SESSION_ID}', s.id) }); return res.end();
+      }
       const sub = fake.subscription({ customer: s.customer, lookupKey: x.lookupKey, metadata: x.subscriptionMetadata || {}, quantity: x.quantity || 1 });
       Object.assign(s, { status: 'complete', payment_status: 'paid', subscription: sub.id });
       await fake.emit('customer.subscription.created', sub.id);
@@ -308,8 +346,11 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         const item = (params.line_items || [])[0] || {};
         const price = priceById(item.price);
         if (!price) return err(res, 400, 'invalid_request_error', 'resource_missing', 'No such price', 'line_items[0][price]');
+        if (params.mode === 'payment' && price.recurring) return err(res, 400, 'invalid_request_error', null, 'You specified `payment` mode but passed a recurring price.', 'line_items[0][price]');
+        if (params.mode === 'subscription' && !price.recurring) return err(res, 400, 'invalid_request_error', null, 'You specified `subscription` mode but did not pass any recurring prices.', 'line_items[0][price]');
         const s = fake.session({ customer: params.customer || fake.customer().id, status: 'open', paymentStatus: 'unpaid', metadata: params.metadata || {}, clientReferenceId: params.client_reference_id || null, mode: params.mode });
-        Object.assign(s, { subscription: null, success_url: params.success_url, cancel_url: params.cancel_url || null, integration_identifier: params.integration_identifier || null });
+        Object.assign(s, { subscription: null, success_url: params.success_url, cancel_url: params.cancel_url || null, integration_identifier: params.integration_identifier || null,
+          amount_total: price.unit_amount * (Number(item.quantity) || 1), currency: price.currency, payment_intent: null });
         sessionExtra.set(s.id, { successUrl: params.success_url, paymentMethodConfiguration: params.payment_method_configuration || null, subscriptionMetadata: params.subscription_data?.metadata || {}, lookupKey: price.lookup_key, quantity: Number(item.quantity) || 1 });
         return ok(res, s);
       }

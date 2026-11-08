@@ -707,6 +707,15 @@ ol.steps li{margin-bottom:var(--s2)}
 .planpick h3{margin-top:0}
 .planbtns form.planform{margin:0;flex:1 1 220px}
 .planbtns form.planform .btn{width:100%}
+/* Spark Packs on /family (services/sparks.js): the pack buttons, the family's packs, and a child's asks. */
+.sparkbtns .btn{flex:1 1 180px;white-space:normal}
+.sparklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sparklist li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2)}
+.sparkstate{font-weight:700}
+.famasks-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s3)}
+.famask{padding:var(--s3);border-radius:var(--r-sm);background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.famask p{margin:0 0 var(--s2)}
+.famask .row form{margin:0}
 .welcome .notice{margin-bottom:var(--s4)}
 /* The checklist at the top of /family: three numbered steps, a finished one ticked; folded to "All set" when done. */
 .famcheck h2{margin-top:0}
