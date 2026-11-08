@@ -2820,3 +2820,13 @@ every message (one message, never the Pro weight), the longer time cap, 20 model
 Guests are not included. Set it to 0 to go back to teachers and staff only if AI spend runs high; the AI daily budget
 still applies to everyone. The Studio's build card now alternates "Prompting tip" lines (12, in every language) with
 the "Did you know?" facts, a tip first; the facts about rounds and Pro were updated to match.
+
+## Automatic welcome from the Oomba team for new kids (November 2026)
+
+The owner asked that every new kid get the team's welcome message automatically. At an account's first sign-in ever
+(`auth.onFirstSignIn`: signing up, or a kid made by a grown-up or a school signing in for the first time) a kid account
+made in the last 30 days gets one team message (no admin sender, "automatic welcome" on the admin thread), with
+`{name}` replaced by their first name and line breaks kept. It is copied to their linked grown-ups like any team
+message, audited (`team.welcome`), sent once, and can be unsent. Grown-ups, staff, guests and older accounts get
+nothing. The text and an on/off switch are on the admin Team inbox tab (settings `team.welcome`, audited).
+

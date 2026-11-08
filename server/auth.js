@@ -179,14 +179,19 @@ export const noteActiveDay = (userId, t = now()) => q.run('INSERT OR IGNORE INTO
 /** via: 'switch' for a sign-in a grown-up's Switch started (routes/family.js; req.sessionVia), else nothing. method: how
  *  they signed in (SIGN_IN_METHODS; default 'password'). Every real account's sign-in is noted for the admin's analytics
  *  (users.last_login_at, one sign_ins row with the method only: no IP, no browser); guests' never are. */
+// Told after an account's first sign-in ever (services/team.js sends new kids the team's welcome message).
+const firstSignInListeners = [];
+export function onFirstSignIn(fn) { firstSignInListeners.push(fn); }
 export function startSession(res, userId, ua = '', { via = null, method = 'password' } = {}) {
   const id = uid(32); const t = now(); const u = getUser(userId); const { max } = SESSION_RULES[accountKind(u)];
+  const first = !!u && !u.is_guest && !u.last_login_at;
   q.run('INSERT INTO sessions(id, user_id, created_at, expires_at, ua, last_active, via) VALUES (?,?,?,?,?,?,?)', id, userId, t, t + max, String(ua).slice(0, 200), t, via === 'switch' ? 'switch' : null);
   if (u && !u.is_guest) {
     q.run('UPDATE users SET last_login_at=? WHERE id=?', t, userId);
     q.run('INSERT INTO sign_ins(user_id, at, method) VALUES (?,?,?)', userId, t, via === 'switch' ? 'switch' : SIGN_IN_METHODS.includes(method) ? method : 'password');
     noteActiveDay(userId, t);
   }
+  if (first) for (const fn of firstSignInListeners) { try { fn(getUser(userId)); } catch { /* a welcome never blocks signing in */ } }
   setCookie(res, COOKIE, pack(id), Math.floor(max / 1000) + COOKIE_GRACE);
   return id;
 }

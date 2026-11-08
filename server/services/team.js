@@ -19,8 +19,8 @@
 // A child's reply goes through the same filters, pause and rate limits as friends' chat; every team message to a child
 // is in the audit log with its text.
 import crypto from 'node:crypto';
-import { q, uid, now, tx, audit } from '../db.js';
-import { getUser, getUserByName, createUser, OFFICIAL, accountKind } from '../auth.js';
+import { q, uid, now, tx, audit, setting } from '../db.js';
+import { getUser, getUserByName, createUser, OFFICIAL, accountKind, onFirstSignIn } from '../auth.js';
 import { BRAND } from '../views/brand.js';
 import { tEn } from '../i18n/index.js';
 import { cleanBody as cleanLine, checkText, quickText, pausedUntil, RATE_MAX, RATE_WINDOW, QUICK_IDS, QUICK_EMOJI } from './chat.js';
@@ -293,3 +293,54 @@ export function unsendAnnouncement(admin, announcementId) {
   audit(admin.id, 'admin.announce.unsend', a.id, { removed: n, text: String(a.body).slice(0, 500) });
   return { ok: true, id: a.id, removed: n };
 }
+
+// ---------------------------------------------------------------- welcome for new kids
+// The owner's welcome message, sent automatically from the Oomba team to every new kid account at its first sign-in
+// (signing up, or the first time a kid made by a grown-up or a school signs in). Accounts made more than WELCOME_DAYS
+// ago are not "new" (an old account whose first recorded sign-in comes late gets nothing). {name} becomes the kid's
+// display name. Stored in settings 'team.welcome' as { on, text }; on by default with DEFAULT_WELCOME. Copied to the
+// kid's grown-ups like any team message and audited.
+export const WELCOME_DAYS = 30;
+export const DEFAULT_WELCOME = `Hi {name}! 👋
+
+Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hi.
+
+Here are a few fun things to try:
+• Play: lots of free games, from math racing to geography and chess.
+• Build: tap Build, tell the AI your game idea, and it makes it for you to play and share with friends.
+• Learn: try a course like Number Quest (math), CS Quest (coding) or Cyber Defenders (staying safe online).
+
+Got a question, or something that felt confusing? Just write back here. I read every message!
+
+Greg & the Oomba team`;
+export function welcomeSettings() {
+  let v = null; try { v = JSON.parse(setting('team.welcome') || 'null'); } catch { v = null; }
+  return { on: v ? v.on !== false : true, text: v && typeof v.text === 'string' && v.text.trim() ? v.text : DEFAULT_WELCOME };
+}
+export function saveWelcome(admin, { on, text }) {
+  if (!admin || admin.role !== 'admin') return fail('admin', 'Admins only.');
+  const body = cleanBody(text);
+  if (!body) return fail('empty', 'Write the welcome message first.');
+  if (body.length > MAX_TEAM_LEN) return fail('long', `Keep it under ${MAX_TEAM_LEN} characters.`);
+  const value = { on: !!on, text: body };
+  setting('team.welcome', JSON.stringify(value));
+  audit(admin.id, 'admin.team.welcome', 'team.welcome', { on: value.on, text: body.slice(0, 500) });
+  return { ok: true, ...value };
+}
+/** Send the welcome to this kid now (if on, a kid, new, and not welcomed before). -> message id or null. */
+export function sendWelcome(user, at = now()) {
+  if (!user || user.is_guest || user.banned || !isChild(user)) return null;
+  if (!(user.created_at > at - WELCOME_DAYS * 86400e3)) return null;
+  const w = welcomeSettings(); if (!w.on) return null;
+  const team = teamUser();
+  if (q.get("SELECT 1 FROM chat_messages WHERE from_id=? AND to_id=? AND kind='team' AND sent_by IS NULL LIMIT 1", team.id, user.id)) return null;
+  const first = String(user.display_name || user.username || '').trim().split(/\s+/)[0] || 'there';
+  const body = cleanBody(w.text.replace(/\{name\}/g, first)).slice(0, MAX_TEAM_LEN);
+  const guardians = guardiansOf(user);
+  let id = '';
+  tx(() => { id = insert(team.id, user.id, 'team', body, null); if (guardians.length) copyTo(guardians, user, 'to', body, null); });
+  audit(null, 'team.welcome', user.id, { message: id, child: true, copiedTo: guardians.map(g => g.id), text: body.slice(0, 500) });
+  return id;
+}
+onFirstSignIn(u => { sendWelcome(u); });
+
