@@ -40,7 +40,8 @@ test('Seed Shot: four rows, golden fruit, swallows, divers, the frog and the fis
   let st = await sport(f);
   expect(st.rows).toBe(4);
   expect(new Set(st.fruit.map(x => x.row))).toEqual(new Set([0, 1, 2, 3]));
-  // divers go under and come back up
+  // divers go under and come back up (one is made a diver so the check never rests on the dice)
+  expect(await J(f, 'sport', 'diver', 1)).toBe(true);
   let sawUnder = false, sawDiverUp = false;
   for (let i = 0; i < 80 && !(sawUnder && sawDiverUp); i++) {
     await J(f, 'step', 200); st = await sport(f);

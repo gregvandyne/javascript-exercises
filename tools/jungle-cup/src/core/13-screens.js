@@ -248,7 +248,7 @@ function drawMapTab(g) {
   // a taller row (name on its own line) is tried when the normal height would squeeze the names
   const heights = rh >= 26 ? [rh] : [rh, 26];
   // pick the first layout that fits: [minimap?, columns]
-  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0, found = false;
+  let withMap = true, cols = 1, listW = area.w, mapW = 0, mapH = 0, found = false, noBest = false, compact = false;
   const tries = land ? [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]] : [[1, 1], [1, 2], [0, 1], [0, 2], [0, 3]];
   for (let pass = 0; pass < 2 && !found; pass++) for (let i = 0; i < tries.length && !found; i++) for (const r of (pass ? [rh] : heights)) {
     const m = !!tries[i][0], c = tries[i][1], last = pass === 1 && i === tries.length - 1;
@@ -262,12 +262,20 @@ function drawMapTab(g) {
       if (mh >= MH * 0.7 && names(area.w)) { withMap = true; cols = c; listW = area.w; mapW = area.w; mapH = mh; rh = r; found = true; break; }
     } else if (((rowsH(c, r) + 16 <= listH) && names(area.w)) || last) { withMap = false; cols = c; listW = area.w; rh = r; found = true; break; }
   }
-  if (!found || (cols > 1 && !oneLine(colW(listW, cols)) && !twoLine(colW(listW, cols)))) {
-    // nothing fits with finger-sized rows: one column without the minimap and slightly shorter rows, so every sport
-    // name still reads whole (very short screens with eight sports)
+  if (!found || (!oneLine(colW(listW, cols)) && !twoLine(colW(listW, cols)))) {
+    // nothing fits with finger-sized rows: one full-width column without the minimap and slightly shorter rows, the
+    // name beside the stars or (long names, e.g. German) on a line of its own above them, so every sport name reads
+    // whole on small phones with eight sports
     const r = Math.floor((listH - 16) / NSPORTS) - GAP;
     if (r >= 16 && oneLine(area.w)) { withMap = false; cols = 1; listW = area.w; rh = Math.min(rh, r); found = true; }
+    else if (r >= 25 && twoLine(area.w, r)) { withMap = false; cols = 1; listW = area.w; rh = r; found = true; }
+    // tiny screens with long names (German on a 360 x 640 phone): the name and its stars on one line, the best score
+    // left out (it shows on every bigger screen), rather than a name squashed into a sliver
+    else if (r >= 16 && nameW <= area.w - 16 - 34 - 2) { withMap = false; cols = 1; listW = area.w; rh = Math.min(rh, r); noBest = true; found = true; }
+    // still longer (French, Dutch, Portuguese): a compact two-line row, the name on top, the stars and best under it
+    else if (r >= 21 && nameW <= area.w - 20) { withMap = false; cols = 1; listW = area.w; rh = r; compact = true; found = true; }
   }
+  { const cwl = colW(listW, cols); MAP.lay = { withMap, cols, rh, listW, listH, areaW: area.w, nameW, bestW, one: oneLine(cwl), two: twoLine(cwl), noBest, compact, squeezed: !noBest && !compact && !oneLine(cwl) && !twoLine(cwl) }; }
   let mx = area.x, my = area.y, mw = 0, mh = 0;
   if (withMap) {
     // (never under 0.35 scale: the layout above only offers the minimap when that much room is there)
@@ -313,15 +321,15 @@ function drawMapTab(g) {
     const ic = iconSprite(id); spr(g, ic, X(8, ic.w), y + ((rh - ic.h) >> 1));
     const best = played ? fmt(SAVE.data.best[id] || 0) : '???', name = t('sport.' + id);
     if (!visited(id)) { g.globalAlpha = 0.55; }
-    const one = oneLine(w), two = !one && twoLine(w);
-    ROWTEXT.maxW = one || two ? 0 : w - 16 - 34 - textW(best) - 4; ROWTEXT.align = RTL ? 'right' : 'left';
-    const ny = two ? y + 2 : y + ((rh - 12) >> 1), sy = two ? y + rh - 13 : ny;
+    const one = oneLine(w), two = !one && (twoLine(w) || compact);
+    ROWTEXT.maxW = one || two || noBest ? 0 : w - 16 - 34 - textW(best) - 4; ROWTEXT.align = RTL ? 'right' : 'left';
+    const ny = two ? y + (compact ? 1 : 2) : y + ((rh - 12) >> 1), sy = two ? y + rh - (compact ? 11 : 13) : ny;
     text(g, name, X(16), ny, ROWTEXT);
     const st = SAVE.data.stars[id] || 0;
     const XR = dx => (RTL ? x + dx : x + w - dx);   // measured from the row's far end
     for (let s = 0; s < 3; s++) disc(g, XR(26 - s * 8), sy + 6, 2, s < st ? '#ffb020' : '#b8a888');
     BESTTEXT.align = RTL ? 'left' : 'right';
-    text(g, best, XR(32), sy, BESTTEXT);
+    if (!noBest) text(g, best, XR(32), sy, BESTTEXT);
     g.globalAlpha = 1;
   }
   // "walk there first" when a sport not yet visited is tapped

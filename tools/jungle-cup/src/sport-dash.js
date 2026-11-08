@@ -48,7 +48,7 @@
   const FIRE_R = 56, FIRE_T = 10, BOLT_T = 5, BOOST_T = 1;
   const D = JC.draw;
   const S = {
-    over: false, won: false, t: 0, score: 0, dodges: 0, passes: 0, stumbles: 0, tackles: 0, lives: 3, cp: 0, sec: 0, carrier: 0, passT: 9, marked: -1,
+    over: false, won: false, t: 0, score: 0, dodges: 0, passes: 0, stumbles: 0, tackles: 0, lives: 3, cp: 0, sec: 0, carrier: 0, passT: 9, passQ: 0, marked: -1,
     ball: { fly: false, t: 0, dur: 0.28, to: 0, x: 0, d: 0, x0: 0, d0: 0 },
     team: [], pigs: [], obs: [], cocos: [], ups: [], drawList: [], marks: [],
     nextWave: 0, nextCoco: 0, genD: 0, boss: 0, camD: 0, z: 1, ox: 0, baseY: 0, resetT: 0, grace: 0,
@@ -474,7 +474,10 @@
     if (S.boost > 0) S.boost = Math.max(0, S.boost - dt);
     if (S.grace > 0) S.grace = Math.max(0, S.grace - dt);
     if (S.catchT > 0) S.catchT = Math.max(0, S.catchT - dt);
-    if (S.over) { updatePigs(dt, ctx); return; }
+    if (S.over) { S.passQ = 0; updatePigs(dt, ctx); return; }
+    // a PASS pressed a moment too early (ball still in the air, just after a catch) is kept for a short while, so a
+    // tap is never silently lost
+    if (S.passQ > 0) { S.passQ = Math.max(0, S.passQ - dt); if (pass(ctx)) S.passQ = 0; }
     if (S.resetT > 0) {
       S.resetT -= dt; updatePigs(dt, ctx);
       if (S.resetT <= 0) { S.resetT = 0; restartAtCheckpoint(ctx); }
@@ -722,7 +725,8 @@
     let px = l + 14, py = 56;
     if (S.bolt > 0) { powerRing(g, px, py, S.bolt / BOLT_T, '#ffe14a', SPRITES.md_bolt); px += 26; }
     if (S.fire > 0 && !(S.fire < 2 && !BRBX.reduced() && ((S.t * 8) | 0) % 2)) powerRing(g, px, py, S.fire / FIRE_T, '#ff9b2e', SPRITES.md_fire);
-    // the PASS button (bottom right)
+    // the PASS button (bottom right), gone once the run is over so the results card has only its own buttons
+    if (S.over) return;
     const r = Math.max(22, Math.round(ctx.tap * 0.85)), bx = ctx.W - r - 10, by = ctx.H - r - 12, ok = S.marked >= 0 && !S.ball.fly && !S.over && !S.resetT;
     UI.addHit('mdpass', bx - r, by - r, r * 2, r * 2);
     D.disc(g, bx, by + 2, r, PAL.ink); D.disc(g, bx, by, r, PAL.ink); D.disc(g, bx, by, r - 2, ok ? '#1fc8a8' : '#5c7a74'); D.disc(g, bx - r / 4, by - r / 4, r / 3, ok ? '#7ff0dc' : '#7a948e');
@@ -763,7 +767,7 @@
     start(ctx) {
       const T = tune(ctx);
       S.over = false; S.won = false; S.t = 0; S.score = 0; S.dodges = 0; S.passes = 0; S.stumbles = 0; S.tackles = 0; S.lives = T.lives; S.cp = 0; S.sec = 0;
-      S.passT = 9; S.marked = -1; S.carrier = 0; S.ball.fly = false; S.nextWave = 2.5; S.nextCoco = 3; S.genD = 0; S.boss = 0; S.resetT = 0; S.grace = 0;
+      S.passT = 9; S.passQ = 0; S.marked = -1; S.carrier = 0; S.ball.fly = false; S.nextWave = 2.5; S.nextCoco = 3; S.genD = 0; S.boss = 0; S.resetT = 0; S.grace = 0;
       S.flash = 0; S.botT = 0; S.botX = 0; S.botY = 0; S.auto = false; S.bolt = 0; S.fire = 0; S.boost = 0; S.gotUps = 0; S.catchT = 0;
       S.hint = ctx.firstTime ? 1.4 : 0.6;
       if (ctx.firstTime) S.nextWave = 6;   // the first time, the hint is read before the gang arrives
@@ -780,8 +784,7 @@
     update,
     draw,
     onInput(e, ctx) {
-      if (e.type === 'press' && e.key === 'a') pass(ctx);
-      else if (e.type === 'down' && UI.hitAt(e.x, e.y) === 'mdpass') pass(ctx);
+      if ((e.type === 'press' && e.key === 'a') || (e.type === 'down' && UI.hitAt(e.x, e.y) === 'mdpass')) { if (!pass(ctx) && !S.over) S.passQ = 0.45; }
     },
     outro(dt, ctx) {
       S.t += dt;

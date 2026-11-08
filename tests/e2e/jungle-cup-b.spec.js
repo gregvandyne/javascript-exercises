@@ -78,11 +78,12 @@ test('Rapids Run: intro, buttons / keys / swipes steer, jump and duck; a race wo
     const st = await f.evaluate(() => {
       const j = window.__brbTest.jc, s = j.sport();
       if (!s || j.state().sport.phase !== 'play') return j.state().sport;
-      const blocked = (o, l) => (o.kind === 'rock' || o.kind === 'croc') && (o.lanes & (1 << l));
+      const blocked = (o, l) => (o.kind === 'rock' || o.kind === 'croc' || o.kind === 'whirl' || o.kind === 'dam') && (o.lanes & (1 << l));
       let want = s.lane;
       for (const o of s.ahead) {
-        if (o.kind === 'log' && o.ahead < 3.2 && !s.jumping) j.tapKey('up');
-        if (o.kind === 'branch' && o.ahead < 3.6 && !s.ducking) j.tapKey('down');
+        // jump logs and little waterfalls (and a rolling log in my lane), duck branches and vine curtains
+        if ((o.kind === 'log' || o.kind === 'fall' || (o.kind === 'roll' && (o.lanes & (1 << s.lane)))) && o.ahead < 3.2 && !s.jumping) j.tapKey('up');
+        if ((o.kind === 'branch' || o.kind === 'vine') && o.ahead < 3.6 && !s.ducking) j.tapKey('down');
         if (o.ahead > 2 && o.ahead < 24 && blocked(o, want)) { want = [0, 1, 2].filter(l => !blocked(o, l)).sort((a, b) => Math.abs(a - s.lane) - Math.abs(b - s.lane))[0]; break; }
         if (o.kind === 'bubble' && o.ahead > 2 && o.ahead < 14 && !(o.lanes & (1 << want))) { want = [0, 1, 2].find(l => o.lanes & (1 << l)); break; }
       }

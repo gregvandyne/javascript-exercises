@@ -261,7 +261,7 @@
   /* ---------- Kiki: rides the same slope, always pops, scores on every ramp ---------- */
   // Kiki's points per ramp (the jumps got bigger, so she keeps up: tuned with the bots in jungle-cup-c's balance test)
   // (one clean trick per ramp is about an even race on Normal; combos and perfect landings win it)
-  const KIKI_BASE = 140, KIKI_EASY = 95, KIKI_MEGA = 95, KIKI_MEGA_E = 50, KIKI_RND = 50, KIKI_RND_E = 40, KIKI_BIG = 30, KIKI_BIG_E = 15;
+  const KIKI_BASE = 140, KIKI_EASY = 80, KIKI_MEGA = 95, KIKI_MEGA_E = 50, KIKI_RND = 50, KIKI_RND_E = 40, KIKI_BIG = 30, KIKI_BIG_E = 15;
   function moveKiki(dt, ctx) {
     if (!S.kair) {
       S.kvx = clamp(S.kvx + groundAccel(S.kx, S.kvx) * dt, 55, 215);

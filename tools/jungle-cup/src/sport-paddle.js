@@ -159,6 +159,8 @@
   /** Cappy swings. */
   function swing(ctx) {
     if (S.swingT < 0.26 || S.phase === 'over' || S.phase === 'point') return;
+    // a deliberate swing (not one of a burst of taps) is the only kind the forgiving rules below help
+    const deliberate = S.swingT > 0.5;
     S.swingT = 0;
     if (S.phase === 'serve') { if (S.serve === 'you') serveYou(ctx); return; }
     const R = reach(ctx), hx = hitX(), hy = hitY();
@@ -175,7 +177,7 @@
     for (const b of BALLS) {
       if (!b.live || b.toward < 0 || b.whiffed || b.h > 40) continue;
       const left = b.sweetT - b.age;
-      if (left > 0 && left < 0.13 && Math.hypot(b.sweetX - hx, b.sweetY - hy) <= R) { S.buffer = 0.18; S.bufBall = b; return; }
+      if (deliberate && left > 0 && left < 0.13 && Math.hypot(b.sweetX - hx, b.sweetY - hy) <= R) { S.buffer = 0.18; S.bufBall = b; return; }
     }
     // nothing in reach: a swing at a ball that is still coming (on Cappy's half, ahead of him) loses it, so tapping
     // over and over never wins points (Easier champions forgive a swing that is only a little early)
@@ -186,7 +188,7 @@
       if (dy > 0 && dy < R * 3.2 && dx < R * 1.6 && dy < ed) { early = b; ed = dy; }
     }
     ctx.sfx('padWhiff');
-    if (early && !(ctx.easy && ed < R * 1.5)) {
+    if (early && !(ctx.easy && deliberate && ed < R * 1.5)) {
       early.whiffed = true; S.whiffs++;
       UI.float(SX(hx, hy), SY(hx, hy, 24), t('pad.early'), '#ffe9a0');
     }

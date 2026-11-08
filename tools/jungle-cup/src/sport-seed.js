@@ -23,7 +23,7 @@
     time: 0, you: 0, tico: 0, hits: 0, shots: 0, streak: 0, bestStreak: 0, over: false, won: false, finishT: 0,
     aimX: 0, aimRow: 1, aimOn: true, drag: false, dragId: -1, sx: 0, sy: 0, pullX: 0, pullY: 0, reload: 0, auto: false, autoT: 0, sigma: 0,
     ticoT: 2, ticoFlap: 0, cappyRecoil: 0, hint: 1, ctx: null,
-    k: 1, bgK: 0, rowY: [0, 0, 0, 0], kr: [1, 1, 2, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0, 0], rowDir: [-1, 1, -1, 1], nPer: 4, wrap: 450, lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
+    k: 1, bgK: 0, rowY: [0, 0, 0, 0], tagLift: [0, 0, 0, 0], kr: [1, 1, 2, 2], pullHint: 0, finishWait: 0, rowSpd: [0, 0, 0, 0], rowDir: [-1, 1, -1, 1], nPer: 4, wrap: 450, lagTop: 0, lagBot: 0, slX: 0, slY: 0, tcX: 0, tcY: 0, W: 0, H: 0,
     fruit: [], seeds: [], rips: [], bg: null, bgGen: -1, pads: null, padsGen: -1, golds: 0, snacks: 0,
     // the swallows (one flock at a time), the frog on the empty pads, a jumping fish
     flock: { on: false, warn: 0, x: 0, dir: 1, row: 1, next: 9, t: 0 },
@@ -501,13 +501,14 @@
       }
     }
     // the rows' value tags at the left edge, drawn over every row's pads (a nearer row's big pads never hide a tag);
-    // faint while a fruit drifts past under one, so a tag never hides a fruit either
+    // always fully readable: while a fruit drifts past under one, the tag lifts above the fruit (eased), so neither
+    // hides the other
     for (let r = 0; r < S.rowY.length; r++) {
-      const y = S.rowY[r], lb = label('ss.row' + r, POINTS[r]), lw = textW(lb) + 6;
-      let near = false; for (const f of S.fruit) if (f.row === r && f.use && f.on && f.x < lw + 12) near = true;
-      if (near) g.globalAlpha = 0.45;
-      box(g, 1, y - 6, lw, 12, 'rgba(27,19,37,0.82)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
-      g.globalAlpha = 1;
+      const lb = label('ss.row' + r, POINTS[r]), lw = textW(lb) + 6;
+      let near = false; for (const f of S.fruit) if (f.row === r && f.use && f.on && f.x < lw + 14) near = true;
+      S.tagLift[r] = clamp(S.tagLift[r] + (near ? 1 : -1) * 0.12, 0, 1);
+      const y = Math.round(S.rowY[r] - S.tagLift[r] * 22);
+      box(g, 1, y - 6, lw, 12, 'rgba(27,19,37,0.9)', PAL.ink); text(g, lb, 4, y - 5, ROWLBL);
     }
     if (showAim) {
       const y = S.rowY[ar], R = hitR(ctx, ar), x = Math.round(S.aimX), ry = Math.max(2, Math.round(R * 0.4)), pulse = ((S.time * 6) | 0) % 2;
@@ -594,6 +595,8 @@
       /** Where a fruit in a row will be after its seed's flight time (to aim like a careful player). */
       lead(ctx, row) { let best = null; for (const f of S.fruit) if (f.on && f.row === row && hittableAt(f, FLIGHT[row])) { const x = fruitX(f, FLIGHT[row]); if (x > 20 && x < S.W - 20 && (!best || Math.abs(x - S.slX) < Math.abs(best - S.slX))) best = x; } return best === null ? null : Math.round(best); },
       ticoOff(ctx) { S.ticoT = 999; return true; },
+      /** Make one fruit in a row a diver (so a test sees one dive and pop up without waiting for the dice). */
+      diver(ctx, row) { const r = row || 1; for (const f of S.fruit) if (f.on && f.row === r) { f.kind = 2; f.dv = 0; f.under = false; return true; } return false; },
     },
     cheat(won) { S.you = won ? 1500 : 400; S.tico = won ? 900 : 1100; S.over = true; S.won = won; return { score: S.you, stars: won ? 2 : 0, won, frac: won ? 0.67 : 0.12 }; },
   });

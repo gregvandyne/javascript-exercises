@@ -2,7 +2,7 @@
 // INPUT: touch first, then keyboard and gamepad, all turned into the same small events for the current scene:
 //   { type: 'press' | 'release', key: 'left'|'right'|'up'|'down'|'a'|'b'|'pause', device }   (keys, pad, on-screen pad)
 //   { type: 'down' | 'move' | 'up', id, x, y, sx, sy (where it started), dx, dy, device: 'touch' }  (virtual pixels)
-//   { type: 'tap', x, y }   a short touch or click that did not move
+//   { type: 'tap', x, y }   a short touch or click that did not move, or any press that starts and ends on one button
 //   { type: 'swipe', dir: 'left'|'right'|'up'|'down', x, y, dx, dy, speed }   a quick flick (>= 18 CSS px)
 // Held state: JC.input.held.left ... .a .b (keys, gamepad and the touch joystick together), JC.input.dirX()/dirY().
 // Analog: JC.input.axis = { x, y, mag } (-1..1, y down; mag 0..1) from the touch joystick, the gamepad's left stick
@@ -71,7 +71,10 @@ CV.addEventListener('pointerdown', ev => {
   try { CV.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
   INPUT.device = ev.pointerType === 'mouse' ? 'keys' : 'touch';
   const p = ptr(ev);
-  const rec = { id: ev.pointerId, x: p.x, y: p.y, sx: p.x, sy: p.y, t0: performance.now(), moved: false, cssX: ev.clientX, cssY: ev.clientY };
+  // the on-screen button under the finger (if any): a press that lifts off on the same button is a tap however long
+  // it was held or however much the finger wobbled, so kids never need a second tap
+  const btn = typeof UI !== 'undefined' && UI.hitAt ? UI.hitAt(p.x, p.y) : '';
+  const rec = { id: ev.pointerId, x: p.x, y: p.y, sx: p.x, sy: p.y, t0: performance.now(), moved: false, cssX: ev.clientX, cssY: ev.clientY, btn };
   INPUT.pointers.set(ev.pointerId, rec);
   emit({ type: 'down', id: rec.id, x: p.x, y: p.y, sx: p.x, sy: p.y, dx: 0, dy: 0, device: ev.pointerType === 'mouse' ? 'mouse' : 'touch' });
 });
@@ -87,6 +90,7 @@ function pointerEnd(ev) {
   const p = ptr(ev), dt = performance.now() - rec.t0, dxc = ev.clientX - rec.cssX, dyc = ev.clientY - rec.cssY, dist = Math.hypot(dxc, dyc);
   emit({ type: 'up', id: rec.id, x: p.x, y: p.y, sx: rec.sx, sy: rec.sy, dx: p.x - rec.sx, dy: p.y - rec.sy, device: 'touch', cancel: ev.type === 'pointercancel' });
   if (ev.type === 'pointercancel') return;
+  if (rec.btn && UI.hitAt(p.x, p.y) === rec.btn) { emit({ type: 'tap', x: p.x, y: p.y }); return; }
   if (dist >= 18 && dt < 450) {
     const dir = Math.abs(dxc) > Math.abs(dyc) ? (dxc > 0 ? 'right' : 'left') : (dyc > 0 ? 'down' : 'up');
     emit({ type: 'swipe', dir, x: p.x, y: p.y, sx: rec.sx, sy: rec.sy, dx: p.x - rec.sx, dy: p.y - rec.sy, speed: dist / Math.max(16, dt) });
