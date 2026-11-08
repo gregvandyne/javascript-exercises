@@ -102,8 +102,10 @@ pushed past 0.45 that way, so `press` / `release` events and `ctx.held` keep wor
 
 **The touch joystick: `stick: true`** in `JC.register({...})` gives a sport the floating joystick (like Hero of
 Sunvale's): a thumb landing in the left part of the screen (left 55% in portrait, 45% in landscape, below the top
-button row) starts it there, the knob follows up to the base's edge (dead zone 0.15), release springs it back, and a
-faint one rests bottom left as a hint. It follows its own touch id, so the sport's other touches (an A button on the
+button row) starts it there, the knob follows up to the base's edge (dead zone 0.1), release springs it back, and a
+faint one rests bottom left as a hint. The centre is exactly where the thumb landed (by an edge only the drawing is
+pulled on screen, so a thumb landing in a corner never starts with a push), and a thumb dragged past the rim pulls the
+centre along behind it, so steering back answers as soon as the thumb turns. It follows its own touch id, so the sport's other touches (an A button on the
 right) work at the same time; the stick's own `down/move/up` events never reach the sport. For a different start
 area pass a function: `stick: (x, y, ctx) => x < ctx.W * 0.5` (that also lets it start anywhere the function allows).
 `ctx.stick` is the stick itself (`ctx.stick.id >= 0` while held; `STICK.draw(g, true)` is drawn by the core above
@@ -231,7 +233,9 @@ clearing, its props, Pecca's spot and the `clearing` test place are placed relat
 carry the mango 280 m in four sections, each starting at a checkpoint with its own look, hazards and music:
 Muddy Clearing (logs, mud, puddles) -> Bamboo Grove (bamboo rows that funnel, thorns, ambushers) -> Riverbank (a narrow
 log bridge, boulders, rolling coconuts) -> Pecca's Stretch (everything denser, Pecca charges twice). Cappy runs by
-himself; the joystick / arrows steer (up = sprint). Coco, Pip and Tapo run open lines beside and behind; PASS (button /
+himself; the joystick / arrows steer (he runs the way they point). The carrier is at full speed from a 70 % push (a lighter push is
+slower) and catches up with the stick in about 0.1 s (90 %), a turn back a little quicker; slick mud still slides
+(tests/e2e/jungle-cup-dash-stick.spec.js measures it). Coco, Pip and Tapo run open lines beside and behind; PASS (button /
 Space / A) throws to the teammate with the arrow (the safest), and a catch gives a short speed boost.
 The gang hunts whoever holds the mango: pigs, zig-zag piglets, big slow bruisers, ambushers hiding behind cover, and
 Pecca. Close in, a pig shows its tell ("!", pawing, a dotted line where it will lunge), then lunges along that line.
