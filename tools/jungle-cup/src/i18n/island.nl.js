@@ -15,11 +15,10 @@ I18N.nl = Object.assign(I18N.nl || {}, {
   "trav.shortcut": "Kortere weg open!",
   "acorn.got": "Gouden eikel! {n} van {total}",
   "acorn.all": "Alle gouden eikels! Eikelhoed vrijgespeeld!",
-  "map.walk": "Loop er eerst heen, dan kun je er later meteen terugkomen!",
   "hat.acorn": "Eikelhoed",
   "d.mango.hint2": "Goed zo! Volg het modderpad onder de kliffen. De rivierpont brengt je naar de oostoever.",
   "d.ants.qask2": "We zagen het over de rivier waaien, naar de oostoever. Breng je het terug?",
   "d.ants.qwait": "Ons blad ligt op de oostoever. Neem de rivierpont, voorbij het modderpad!",
   "d.mango.dash2": "Ze spelen Mangosprint op de modderige open plek. Volg het modderpad onder de kliffen, ten oosten van het dorp. De totem heeft een achtste gat gekregen!",
-  "d.tapir.tip4": "Tip: ben je al eens bij een sport geweest, tik er dan op de kaart op om meteen terug te gaan.",
+  "d.tapir.tip4": "Tip: tik op de kaart op een sport om er meteen heen te gaan!",
 });

@@ -15,11 +15,10 @@ I18N.fr = Object.assign(I18N.fr || {}, {
   "trav.shortcut": "Raccourci ouvert !",
   "acorn.got": "Gland doré ! {n} sur {total}",
   "acorn.all": "Tous les glands dorés ! Chapeau gland débloqué !",
-  "map.walk": "Vas-y d'abord à pied, ensuite tu pourras y revenir d'un coup !",
   "hat.acorn": "Chapeau gland",
   "d.mango.hint2": "Bravo ! Suis le sentier de boue sous les falaises. Le bac de la rivière t'emmène sur la rive est.",
   "d.ants.qask2": "On l'a vue s'envoler au-dessus de la rivière, sur la rive est. Tu peux la rapporter ?",
   "d.ants.qwait": "Notre feuille est sur la rive est. Prends le bac de la rivière, après le sentier de boue !",
   "d.mango.dash2": "Elles jouent à la Course à la Mangue dans la clairière boueuse. Suis le sentier de boue sous les falaises, à l'est du village. Le totem a une huitième encoche !",
-  "d.tapir.tip4": "Astuce : une fois que tu es allé à un sport, touche-le sur la carte pour y retourner tout de suite.",
+  "d.tapir.tip4": "Astuce : touche un sport sur la carte pour y aller directement !",
 });

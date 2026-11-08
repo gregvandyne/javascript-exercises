@@ -15,11 +15,10 @@ I18N.it = Object.assign(I18N.it || {}, {
   "trav.shortcut": "Scorciatoia aperta!",
   "acorn.got": "Ghianda d'oro! {n} di {total}",
   "acorn.all": "Tutte le ghiande d'oro! Cappello ghianda sbloccato!",
-  "map.walk": "Prima vai lì a piedi, poi potrai tornarci subito!",
   "hat.acorn": "Cappello ghianda",
   "d.mango.hint2": "Bravo! Segui il sentiero di fango sotto le scogliere. Il traghetto del fiume ti porta alla riva est.",
   "d.ants.qask2": "L'abbiamo vista volare oltre il fiume, sulla riva est. Ce la riporti?",
   "d.ants.qwait": "La nostra foglia è sulla riva est. Prendi il traghetto del fiume, dopo il sentiero di fango!",
   "d.mango.dash2": "Giocano alla Corsa al Mango nella radura fangosa. Segui il sentiero di fango sotto le scogliere, a est del villaggio. Al totem è spuntato un ottavo incavo!",
-  "d.tapir.tip4": "Consiglio: quando sei già stato a uno sport, toccalo sulla mappa per tornarci subito.",
+  "d.tapir.tip4": "Consiglio: tocca uno sport sulla mappa per andarci subito!",
 });

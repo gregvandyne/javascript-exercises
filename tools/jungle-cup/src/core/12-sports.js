@@ -338,7 +338,7 @@ const HUD = {
       const so = VS_SC[i]; so.col = s.col || PAL.r4;
       text(g, sc, i ? x + w - 4 : x + 4, y + 13, so);
       const bx = i ? x + 4 : x + sw + 8, bw = w - sw - 12;
-      if (bw > 10) UI.bar(g, bx, y + 15, bw, 7, s.of ? s.score / s.of : 0, s.col || PAL.r4, s.of);
+      if (bw > 10) UI.bar(g, bx, y + 15, bw, 7, s.of ? s.score / s.of : 0, s.col || PAL.r4, s.of > 12 ? Math.round(s.of / 5) : s.of);   // a long match: a tick every 5
     }
   },
   /** A small labelled meter (Pounce, power, combo...). */

@@ -17,11 +17,10 @@ I18N.en = Object.assign(I18N.en || {}, {
   "acorn.got": "Golden acorn! {n} of {total}",
   "acorn.all": "All the golden acorns! Acorn hat unlocked!",
   "acorn.n": "{n}/16",
-  "map.walk": "Walk there first, then you can travel back!",
   "hat.acorn": "Acorn hat",
   "d.mango.hint2": "Great going! Follow the mud trail below the cliffs. The river ferry takes you to the east bank.",
   "d.ants.qask2": "We saw it blow over the river, to the east bank. Could you bring it back?",
   "d.ants.qwait": "Our leaf is on the east bank. Take the river ferry, past the mud trail!",
   "d.mango.dash2": "They play Mango Dash in the muddy clearing. Follow the mud trail below the cliffs, east of the village. The totem has grown an eighth socket!",
-  "d.tapir.tip4": "Tip: once you have walked to a sport, tap it on the map to go straight back there.",
+  "d.tapir.tip4": "Tip: tap any sport on the map to go straight there!",
 });

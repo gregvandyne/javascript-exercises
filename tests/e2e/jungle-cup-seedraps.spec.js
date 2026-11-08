@@ -102,6 +102,59 @@ test('Seed Shot: four rows, golden fruit, swallows, divers, the frog and the fis
   expect(errors).toEqual([]);
 });
 
+test('Seed Shot aiming: a tall shore to pull back on, and a landing marker that turns green over a fruit it will hit', async ({ page }) => {
+  test.setTimeout(120_000);
+  for (const size of [{ width: 390, height: 844 }, { width: 1366, height: 768 }]) {
+    const { f, errors } = await open(page, size);
+    await start(f, 'seed');
+    await J(f, 'sport', 'ticoOff'); await J(f, 'sport', 'lifeOff'); await J(f, 'step', 1600);
+    let st = await sport(f);
+    // CSS px per game pixel (the game scales its pixels up on big screens)
+    const box = await page.locator('iframe').first().boundingBox(), css = box.width / st.W;
+    const at = (x, y) => [box.x + x * css, box.y + y * css];
+    // the near shore is a good part of the screen (about 30% on a phone held upright), and Cappy stands on it
+    const shore = (st.H - st.lagBot) / st.H;
+    expect(shore).toBeGreaterThanOrEqual(size.width < size.height ? 0.27 : 0.2);
+    expect(st.slY).toBeGreaterThan(st.lagBot);
+    // the four rows all sit on the water above the shore
+    expect(st.rowY.every(y => y > st.lagTop && y < st.lagBot)).toBe(true);
+    // pull back from the shore (real mouse) so the ring sits on where a near-row fruit will be: green, and it is hit
+    let hitOnce = false;
+    for (let n = 0; n < 6 && !hitOnce; n++) {
+      st = await sport(f);
+      const lead = await J(f, 'sport', 'lead', 3);
+      expect(lead).not.toBeNull();
+      const sx = st.slX, sy = st.lagBot + 10, ex = sx - (lead - st.slX) / 2.4, ey = sy + 12;
+      const [px, py] = at(sx, sy), [qx, qy] = at(ex, ey);
+      await page.mouse.move(px, py); await page.mouse.down(); await page.mouse.move((px + qx) / 2, (py + qy) / 2); await page.mouse.move(qx, qy);
+      const aim = await sport(f);
+      expect([aim.drag, aim.aimOn, aim.aimRow]).toEqual([true, true, 3]);
+      const hits = aim.hits;
+      await page.mouse.up(); await J(f, 'step', 700);
+      st = await sport(f);
+      // the marker never lies: green means hit, not green means no hit
+      expect(st.hits > hits).toBe(aim.aimHit);
+      if (aim.aimHit) hitOnce = true;
+      await J(f, 'step', 1400);
+    }
+    expect(hitOnce).toBe(true);
+    // a pull aimed well away from every fruit shows no green and doesn't score
+    st = await sport(f);
+    const far = st.fruit.filter(x => x.row === 3).map(x => x.x);
+    let gap = null; for (let x = 20; x < st.slX * 2 - 20 && gap === null; x += 4) if (far.every(fx => Math.abs(fx - x) > 60)) gap = x;
+    if (gap !== null) {
+      const sx = st.slX, sy = st.lagBot + 10, ex = sx - (gap - st.slX) / 2.4, ey = sy + 12;
+      const [px, py] = at(sx, sy), [qx, qy] = at(ex, ey);
+      await page.mouse.move(px, py); await page.mouse.down(); await page.mouse.move(qx, qy);
+      const aim = await sport(f);
+      expect(aim.aimHit).toBe(false);
+      await page.mouse.up(); await J(f, 'step', 700);
+      expect((await sport(f)).hits).toBe(aim.hits);
+    }
+    expect(errors).toEqual([]);
+  }
+});
+
 test('Rapids Run: 1,350 m of river with every new hazard, real keys steer, jump a waterfall, spin in a whirlpool', async ({ page }) => {
   test.setTimeout(240_000);
   const { f, errors } = await open(page, { width: 1366, height: 768 });
