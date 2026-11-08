@@ -402,6 +402,46 @@ seconds per story; Modal's dashboard shows GPU time) and switch to L4 if L40S bu
 Contact sheets of the kit (every set at day, dusk and night; characters, outfits, actions): `python3
 tools/blender/story_kit_sheet.py cells.json sheet.jpg` builds each cell exactly as a story scene and tiles the stills.
 
+## AI-drawn lab (admin only)
+
+An experiment beside the Blender world: the same story, drawn by an image model as hand-drawn comic stills (dark ink
+outlines of varying weight, round heads with dot eyes and small expressive brows, muted flat colour with soft cel
+shading, cinematic framing), then voiced, scored and captioned by this pipeline. Only the platform admin can open it;
+nothing kid-facing changes (docs/decisions.md "AI-drawn story lab").
+
+**How to use it (phone is fine):** Admin → **🎨 AI-drawn lab** (`/admin/story-art`). The idea is prefilled with a
+sample (Banks and Rev, two brothers on a soccer team); or pick **Use an existing story** (your stories first, marked ★,
+then recent finished ones) to reuse its script. Pick 3–6 scenes and a quality (low / medium / high): the estimate under
+the form updates. **Make test** starts it; the page polls and shows each stage, then the character sheet, every scene
+picture (tap to open it full size; "Words and prompt" shows the exact prompt), the video, the time it took, the number
+of pictures and the cost. A refused picture shows the image API's reason.
+
+| Stage | What happens | File |
+| --- | --- | --- |
+| writing | `writeStory` (adventure, heartfelt, ages 6–8) or the chosen story's script, cut to the scenes asked for | `services/story-writer.js` |
+| directing | Claude: a fixed character bible (name → one short look) + per scene shot (wide, two-shot, over-shoulder, close-up, medium), setting, who, action, expressions; text checks + classifier, one retry. Prompts are built in code: the fixed `STYLE`, each look verbatim in every scene it is in | `services/story-art.js` (`direct`, `buildPrompts`) |
+| sheet | `POST /v1/images/generations` (`STORY_ART_MODEL`, 1536×1024): everyone, front view, side by side | `drawImage` |
+| scenes | `POST /v1/images/edits` (multipart, the sheet as `image`, `input_fidelity=high`, retried without it if the model refuses that field); if edits are unavailable, text-only generations with the bible | `drawImage` |
+| voicing | the story voice for each line (`STORY_VOICE` rules: the AI voice, else offline, else a silent track) | `services/story-voice.js` |
+| assembling | each still → a Ken Burns push / pan / pull clip (`zoompan` on a 16:9 cut, 2× upscaled), then `assemble()`: crossfades, burned-in words, music ducked under the voice | `stillClip`, `stories/assemble.js` |
+
+Results live in `<dataDir>/story-art/<id>/` (`run.json`, `sheet.png/jpg`, `scene-N.png/jpg`, `story.mp4`,
+`poster.jpg`); the newest 10 runs are kept. A run working when the site restarts reads as failed.
+
+**Cost and limits.** Every picture goes into the AI budget (`recordSpend('image:<model>', …, 'free')`): a test is
+refused while the budget rests or if its estimate would pass today's cap, and stops if the cap is hit mid-run. Assumed
+prices at 1536×1024 for `gpt-image-2`: $0.005 / $0.041 / $0.165 a picture (low / medium / high), plus ~$0.012 of input
+per edit; replies carry a usage block, which is what gets recorded. **A 4-scene medium test ≈ $0.33 and ~3 minutes**
+(each picture ~25 s, drawn one after another; the 40 s video ~50 s with the AI voice). `STORY_ART_PER_HOUR` tests an
+hour (default 3), one at a time, at most 6 scenes. The key is the site's OpenAI key (`TTS_API_KEY`, or `STT_API_KEY`
+with OpenAI speech to text). Tests: `tests/unit/story-art.test.js` (OpenAI and Claude mocked).
+
+**Tried for real (8 Nov 2026, from the sandbox):** four style prompts, 14 pictures, ≈ $0.73 in all, and one 39 s
+video with the real AI voice. The first two prompts came out as a bright picture book; asking for a webcomic-reel /
+graphic-novel line (not anime, not a painted picture book), ball-shaped heads with tiny dot eyes and no nose, heavy
+ink, and a muted, desaturated palette with hard-edged cel shadows got close to the reference. With the sheet as the
+input image the brothers kept their hair, shirt numbers (7 and 4) and the green wristband across all four scenes.
+
 ## Next
 
 A public gallery with moderation; per-shot framing from the script; editing a scene's pictures by hand (set,

@@ -1,0 +1,12 @@
+/* /admin/story-art: the AI-drawn lab (admin only). */
+.sa-pick { gap: 12px; flex-wrap: wrap; }
+.sa-pick .field { flex: 1; min-width: 140px; }
+.sa-run h3 { margin: 0 0 4px; }
+.sa-run progress { width: 160px; vertical-align: middle; }
+.sa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+.sa-fig { margin: 0; }
+.sa-fig img { display: block; width: 100%; height: auto; border-radius: 10px; }
+.sa-none { aspect-ratio: 3 / 2; display: grid; place-items: center; border: 2px dashed currentColor; border-radius: 10px; opacity: .5; }
+.sa-video { display: block; width: 100%; max-width: 960px; border-radius: 12px; background: #000; }
+.sa-prompt { white-space: pre-wrap; word-break: break-word; font-size: 12px; max-height: 260px; overflow: auto; }
+.sa-bible { margin: 8px 0; }

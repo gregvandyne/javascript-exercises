@@ -126,6 +126,8 @@ export const TTS_ALL_LOCALES = ['en', 'en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja
 const ttsEnabled = parseFlag(process.env.TTS_ENABLED, 'TTS_ENABLED');
 const ttsProvider = String(process.env.TTS_PROVIDER || 'openai').trim().toLowerCase();
 const ttsModel = String(process.env.TTS_MODEL || 'gpt-4o-mini-tts').trim();
+/** The AI-drawn story lab's image model (server/services/story-art.js, admin only; docs/story-builder.md). */
+const storyArtModel = String(process.env.STORY_ART_MODEL || 'gpt-image-2').trim();
 /** TTS_LOCALES: a comma list of site locales (any case), default all of them. -> { list, error } */
 export function parseTtsLocales(v) {
   if (v == null || !String(v).trim()) return { list: [...TTS_ALL_LOCALES], error: null };
@@ -181,6 +183,7 @@ export const config = {
     !TTS_PROVIDERS.includes(ttsProvider) && `TTS_PROVIDER must be one of ${TTS_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     ttsProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "TTS_PROVIDER=mock is for tests and can't be used in production",
     !/^[A-Za-z0-9._-]{1,60}$/.test(ttsModel) && 'TTS_MODEL must be a model name like gpt-4o-mini-tts, tts-1 or tts-1-hd',
+    !/^[A-Za-z0-9._-]{1,60}$/.test(storyArtModel) && 'STORY_ART_MODEL must be an image model name like gpt-image-2',
     !JOURNAL_MODES.includes(journalMode) && `BRB_JOURNAL_MODE must be one of ${JOURNAL_MODES.join(', ')}`,
     requireSecret.on && sessionSecret && sessionSecret.length < MIN_SECRET_LENGTH
       && `SESSION_SECRET is shorter than ${MIN_SECRET_LENGTH} characters, which REQUIRE_SESSION_SECRET=1 refuses (make one with: openssl rand -hex 32)`,
@@ -212,6 +215,10 @@ export const config = {
   // 'external' leaves it to scripts/story-worker.js. With STORY_RENDERER=remote the loop is light (the render runs on
   // the story renderer service, services/story-renderer/).
   storyWorker: process.env.STORY_WORKER === 'external' ? 'external' : 'inline',
+  // The AI-drawn lab (/admin/story-art, admin only): the image model (STORY_ART_MODEL) and test runs an hour
+  // (STORY_ART_PER_HOUR, default 3). It uses the site's OpenAI key (TTS_API_KEY / STT_API_KEY, see story-art.js).
+  storyArtModel,
+  storyArtPerHour: Math.max(1, Math.floor(num(process.env.STORY_ART_PER_HOUR, 3))),
   // BUILDER_WEB_SEARCH=1: the Builder may look facts up on the web (server/builder/search.js: blocked sites, a cap per
   // build, screening, an admin log). Off when unset. The Anthropic Console's own web search setting is a second switch.
   builderWebSearch: builderWebSearch.on,

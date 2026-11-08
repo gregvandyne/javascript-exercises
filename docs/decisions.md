@@ -2700,3 +2700,44 @@ once it is made (docs/story-builder.md "Choices" and "Changing a story").
   which survives deleting the story (deleting doesn't refund a rewrite) and goes with the account.
 - **Sharing.** A kid's shared or waiting story goes back to "waiting for OK" when a new version replaces it: the
   grown-up approved the old words. A grown-up's shared story stays shared. Only the owner can change a story.
+
+## AI-drawn story lab: an admin-only experiment with image-model pictures (8 Nov 2026)
+
+The owner wants to try story videos that look like a hand-drawn comic reel (dark ink outlines of varying weight, round
+heads with dot eyes and small expressive brows, muted flat colour with soft cel shading, cinematic framing) instead of
+the felt-and-paper Blender world. We copy only that drawing style; the content stays the kid-safe story.
+
+- **A lab, not a feature.** `/admin/story-art` (routes/story-art.js, services/story-art.js) is the platform admin's only:
+  every page, API and file under it is a 404 for anyone else, and nothing kid-facing changed. The owner runs it from a
+  phone on the live site, because the build sandbox could not reach the image API at first.
+- **Same script, same safety.** The script comes from the story writer (or a finished story's script); Claude, with the
+  writer's model and the same AI budget, turns it into a fixed **character bible** (name → one short look) and one shot
+  per scene. The prompts are built in code from that, so each look is pasted word for word into every scene it is in
+  and the style paragraph is the same in every prompt. Every text passes the story text checks and the model
+  classifier (one retry, like the writer); the image API's own moderation runs on every picture, and a refused picture
+  is shown on the page with the API's reason (the run goes on without it).
+- **Character consistency:** a reference sheet first (everyone, front view, in the style), then every scene as an
+  `images/edits` call with the sheet as the input image. If that call is not available the lab falls back to text-only
+  pictures with the bible (and says so). Tried for real on 8 Nov 2026 (14 pictures, ≈ $0.73 in all): with the sheet as
+  input the brothers kept their hair, shirt numbers and wristband across all four scenes.
+- **Model and price.** `STORY_ART_MODEL`, default `gpt-image-2` (`gpt-image-1` was not offered to the site's key; the
+  key lists gpt-image-1-mini, 1.5, 2 and newer). Price assumption, 1536×1024: **$0.005 / $0.041 / $0.165** a picture
+  (low / medium / high) — OpenAI bills image output tokens at $30 per million, and its image guide's examples work out
+  to those numbers (quoted from it by third parties in May 2026; the sandbox could not open openai.com/api/pricing to
+  check). Measured: a medium 1536×1024 picture came back with 1,372 output tokens (= $0.041), and an edit added 1,536
+  input image tokens (assumed $8 per million, ≈ $0.012) plus ~450 prompt tokens. Each reply's usage block is priced
+  with those token rates; the table is the fallback and the estimate. **A 4-scene medium test ≈ $0.33**
+  (5 pictures ≈ $0.26 + Claude ≈ $0.04 + the AI voice, a cent).
+- **Money and limits.** Every picture is recorded with `aiBudget.recordSpend('image:<model>', usd, 'free')`, so the
+  daily and monthly caps apply and it shows on the stats page; a test is refused while the budget rests or when its
+  estimate would pass today's cap, and stops between pictures if the cap is reached mid-run. At most
+  `STORY_ART_PER_HOUR` (3) tests an hour, one at a time, 3–6 scenes. The site's existing OpenAI key is used
+  (`TTS_API_KEY`, or `STT_API_KEY` with OpenAI speech to text); no new secret.
+- **Motion reuses the story pipeline.** The voice (story-voice.js), timeline and burned-in words (story-captions.js),
+  music (story-music.js) and the ffmpeg assembly (stories/assemble.js) are the story builder's own; each still just
+  becomes a slow Ken Burns push, pull or pan (ffmpeg `zoompan` on a 16:9 cut, upscaled twice for smooth motion) before
+  the assembler crossfades them. Runs live in `<dataDir>/story-art/<id>/` (pictures, video, `run.json`); the newest 10
+  are kept.
+- **Next, if the owner likes it:** decide whether drawn pictures replace or sit beside the Blender renderer for kids
+  (cost per story moves from ≈ $0.25 of GPU to ≈ $0.30 of pictures, and minutes of rendering to ~2 minutes), and what
+  extra review a drawn picture needs before a kid sees it (today only the API's moderation and our text checks run).
