@@ -2700,3 +2700,12 @@ once it is made (docs/story-builder.md "Choices" and "Changing a story").
   which survives deleting the story (deleting doesn't refund a rewrite) and goes with the account.
 - **Sharing.** A kid's shared or waiting story goes back to "waiting for OK" when a new version replaces it: the
   grown-up approved the old words. A grown-up's shared story stays shared. Only the owner can change a story.
+
+## Everyone builds like a teacher, and prompting tips while the AI builds (November 2026)
+
+The owner asked that individual users get the same game-building experience as teachers. `BUILDER_FULL_FOR_ALL` (on by
+default) makes every signed-in account in good standing a full maker (`builder/usage.js trustedMaker`): the Pro model on
+every message (one message, never the Pro weight), the longer time cap, 20 model calls and 3 playtest fix rounds.
+Guests are not included. Set it to 0 to go back to teachers and staff only if AI spend runs high; the AI daily budget
+still applies to everyone. The Studio's build card now alternates "Prompting tip" lines (12, in every language) with
+the "Did you know?" facts, a tip first; the facts about rounds and Pro were updated to match.
