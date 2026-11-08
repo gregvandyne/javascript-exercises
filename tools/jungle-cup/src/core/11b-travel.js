@@ -58,11 +58,17 @@ function rideDist(r, end) { const p = r[end]; if (!p) return 1e9; return Math.hy
 TRAVEL.find = function () {
   TRAVEL.near = null;
   if (TRAVEL.ride) return null;
-  let best = TRAV_REACH;
+  let best = 1e9;
   for (const r of RIDES) {
     if (r.flag && flags()[r.flag]) continue;
-    const da = rideDist(r, 'a'); if (da < best) { best = da; TRAVEL.near = r; TRAVEL.from = 'a'; }
-    if (r.two) { const db = rideDist(r, 'b'); if (db < best) { best = db; TRAVEL.near = r; TRAVEL.from = 'b'; } }
+    // the swing and the zipline answer from further away (their button pops up a few steps before the spot)
+    const reach = r.kind === 'swing' || r.kind === 'zip' ? TRAV_REACH + 16 : TRAV_REACH;
+    const da = rideDist(r, 'a'); if (da < reach && da < best) { best = da; TRAVEL.near = r; TRAVEL.from = 'a'; }
+    if (r.two) { const db = rideDist(r, 'b'); if (db < reach && db < best) { best = db; TRAVEL.near = r; TRAVEL.from = 'b'; } }
+    // the first time Cappy comes close to the swing or the zipline, a hint says what it is
+    if ((r.kind === 'swing' || r.kind === 'zip') && !flags()['hint_' + r.kind] && Math.min(da, r.two ? rideDist(r, 'b') : 1e9) < 110) {
+      flags()['hint_' + r.kind] = 1; UI.banner(t(r.kind === 'zip' ? 'trav.hintZip' : 'trav.hintSwing'), '#3d8a3a', 2.6); AUDIO.sfx('pickup', 0.2);
+    }
   }
   return TRAVEL.near;
 };
@@ -218,17 +224,44 @@ TRAVEL.drawHigh = function (g, cx, cy, vw, vh) {
   // the shortcut's dust
   if (TRAVEL.puff) { const p = TRAVEL.puff, k = p.t / 0.8; g.globalAlpha = 1 - k; for (let i = 0; i < 6; i++) disc(g, p.x - cx + Math.cos(i) * 14 * k * (1 + i % 2), p.y - cy + Math.sin(i * 2) * 8 * k, 4 - k * 2, '#e8d6a0'); g.globalAlpha = 1; }
 };
+/** A little wooden sign with the ride's icon (a cable with a handle, or a vine loop). */
+function rideSign(g, x, y, kind) {
+  rect(g, x + 6, y + 8, 2, 8, OUT); rect(g, x, y, 14, 10, OUT); rect(g, x + 1, y + 1, 12, 8, '#c48a4c'); rect(g, x + 1, y + 1, 12, 1, '#e0b070');
+  if (kind === 'zip') { for (let i = 0; i < 9; i++) rect(g, x + 2 + i, y + 2 + (i >> 1), 1, 1, '#2a2a2a'); rect(g, x + 7, y + 5, 1, 3, '#2a2a2a'); rect(g, x + 6, y + 7, 3, 1, '#ff8b3d'); }
+  else { rect(g, x + 3, y + 2, 8, 1, '#1f5e26'); for (let i = 0; i < 5; i++) rect(g, x + 4 + i, y + 3 + Math.round(Math.sin(i / 4 * Math.PI) * 3), 1, 1, '#3d9a2e'); rect(g, x + 8, y + 6, 2, 2, '#5cc84a'); }
+}
 /** The zipline's cable (always) and the swing's vine (hanging at the end nearest Cappy, or carrying him). */
 TRAVEL.drawLines = function (g, cx, cy) {
   const Z = R_.zip, x0 = (Z.a[0] + 1) * TS + 8, y0 = (Z.a[1] + 1) * TS - 24 - 14 + 2, x1 = (Z.b[0] + 1) * TS + 8, y1 = (Z.b[1] + 1) * TS - 10 - 14 + 2;
-  for (let i = 0; i <= 64; i++) { const k = i / 64, x = lerp(x0, x1, k), y = lerp(y0, y1, k) + Math.sin(k * Math.PI) * 6; rect(g, Math.round(x) - cx, Math.round(y) - cy, 2, 1, '#3b3b3b'); }
+  // the cable: thick and dark with a bright top edge, on a post with a pulley at each end
+  const nC = Math.ceil(Math.hypot(x1 - x0, y1 - y0));
+  for (let i = 0; i <= nC; i++) { const k = i / nC, x = Math.round(lerp(x0, x1, k)) - cx, y = Math.round(lerp(y0, y1, k) + Math.sin(k * Math.PI) * 6) - cy; rect(g, x, y, 1, 3, '#1e1e1e'); rect(g, x, y, 1, 1, '#b4b4b4'); }
+  for (const [px, py] of [[x0, y0], [x1, y1]]) { rect(g, px - 2 - cx, py - cy, 4, 26, OUT); rect(g, px - 1 - cx, py - cy, 2, 26, '#8a5a33'); disc(g, px - cx, py - cy, 3, OUT); disc(g, px - cx, py - cy, 2, '#d0d0d0'); }
+  rideSign(g, Z.a[0] * TS - 14 - cx, (Z.a[1] + 1) * TS - 10 - cy, 'zip');
+  rideSign(g, Z.b[0] * TS + 22 - cx, (Z.b[1] + 1) * TS - 10 - cy, 'zip');
+  rideSign(g, R_.swing.a[0] * TS - 14 - cx, R_.swing.a[1] * TS - cy, 'swing');
+  rideSign(g, R_.swing.b[0] * TS - 14 - cx, R_.swing.b[1] * TS + 14 - cy, 'swing');
   const rd = TRAVEL.ride;
   const ax = R_.swing.anchor[0] * TS + 8, ay = R_.swing.anchor[1] * TS - 34;
   let hx, hy;
   if (rd && rd.kind === 'swing') { hx = P.fpx + 8; hy = P.fpy + 2 - ridePos(rd, Math.min(1, rd.t / rd.dur)).lift; }
   else { const a = R_.swing.a, b = R_.swing.b, da = Math.hypot(P.fpx - a[0] * TS, P.fpy - a[1] * TS), db = Math.hypot(P.fpx - b[0] * TS, P.fpy - b[1] * TS), e = da <= db ? a : b; hx = e[0] * TS + 10 + Math.round(Math.sin(OW.time * 1.5) * 2); hy = e[1] * TS + (e === a ? -6 : 10); }
-  for (let i = 0; i <= 24; i++) { const k = i / 24, x = lerp(ax, hx, k) + Math.sin(k * Math.PI) * 3, y = lerp(ay, hy, k); rect(g, Math.round(x) - cx, Math.round(y) - cy, 2, 1, i % 6 ? '#2a7a30' : '#8ee070'); }
-  disc(g, hx - cx, hy - cy, 2, '#3d9a2e');
+  // the vine: thick, with leaves along it, from a big branch over the gap
+  rect(g, ax - 18 - cx, ay - 4 - cy, 36, 5, OUT); rect(g, ax - 17 - cx, ay - 3 - cy, 34, 3, '#6e4224');
+  for (let i = 0; i <= 32; i++) {
+    const k = i / 32, x = Math.round(lerp(ax, hx, k) + Math.sin(k * Math.PI) * 3) - cx, y = Math.round(lerp(ay, hy, k)) - cy;
+    rect(g, x - 1, y, 3, 2, '#1f5e26'); rect(g, x, y, 1, 2, '#3d9a2e');
+    if (i % 5 === 2) { rect(g, x + 2, y - 1, 3, 2, '#5cc84a'); rect(g, x - 4, y + 1, 3, 2, '#5cc84a'); }
+  }
+  disc(g, hx - cx, hy - cy, 3, OUT); disc(g, hx - cx, hy - cy, 2, '#5cc84a');
+  // a bouncing arrow (and a sparkle) over each place to start a ride
+  if (!rd) for (const [px, py] of [[R_.zip.a[0], R_.zip.a[1]], [R_.swing.a[0], R_.swing.a[1]], [R_.swing.b[0], R_.swing.b[1]]]) {
+    const bx = px * TS + 8 - cx, by = py * TS - 18 - cy - (BRBX.reduced() ? 0 : Math.round(Math.abs(Math.sin(OW.time * 3)) * 4));
+    rect(g, bx - 3, by - 8, 7, 7, OUT); rect(g, bx - 2, by - 7, 5, 6, '#ffd23f');
+    rect(g, bx - 7, by - 2, 15, 3, OUT); rect(g, bx - 6, by - 1, 13, 1, '#ffd23f'); rect(g, bx - 5, by + 1, 11, 2, OUT); rect(g, bx - 4, by + 1, 9, 1, '#ffd23f');
+    rect(g, bx - 3, by + 3, 7, 2, OUT); rect(g, bx - 2, by + 3, 5, 1, '#ffd23f'); rect(g, bx - 1, by + 5, 3, 2, OUT); rect(g, bx, by + 5, 1, 1, '#ffd23f');
+    if (!BRBX.reduced() && ((OW.time * 2) | 0) % 3 === 0) spr(g, SPRITES.sparkle, bx + 5, by - 6);
+  }
 };
 /** Cappy on a ride (instead of walking): swinging high, hanging under the zipline, sitting on the raft. */
 TRAVEL.drawRider = function (g, cx, cy) {

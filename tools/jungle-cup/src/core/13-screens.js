@@ -297,6 +297,10 @@ function drawMapTab(g) {
     }
     for (const id of JC.sportOrder) { const a = ARCHES[id]; if (!visited(id) && !TRAVEL.discovered(a.x >> 3, a.y >> 3)) continue; disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 3, PAL.ink); disc(g, mx + a.x * mk + mk / 2, my + a.y * mk, 2, SPORT_COLOURS[id]); }
     disc(g, mx + WORLD.totem.x * mk + mk / 2, my + WORLD.totem.y * mk, 2, '#a8703e');
+    // the rides, once their part of the island is found: the zipline as a dark line, the swing as a green loop
+    { const Z = ROUTES.zip, Wg = ROUTES.swing;
+      if (TRAVEL.discovered(Z.a[0] >> 3, Z.a[1] >> 3) || TRAVEL.discovered(Z.b[0] >> 3, Z.b[1] >> 3)) { g.strokeStyle = PAL.ink; g.lineWidth = 3; g.beginPath(); g.moveTo(mx + Z.a[0] * mk, my + Z.a[1] * mk); g.lineTo(mx + Z.b[0] * mk, my + Z.b[1] * mk); g.stroke(); g.strokeStyle = '#ffd23f'; g.lineWidth = 1; g.stroke(); }
+      if (TRAVEL.discovered(Wg.a[0] >> 3, Wg.a[1] >> 3) || TRAVEL.discovered(Wg.b[0] >> 3, Wg.b[1] >> 3)) { const sx = mx + Wg.anchor[0] * mk, sy = my + Wg.anchor[1] * mk; disc(g, sx, sy, 3, PAL.ink); disc(g, sx, sy, 2, '#5cc84a'); } }
     MAP.miniRect = { x: mx, y: my, k: mk };
     UI.addHit('mini', mx, my, mw, mh);
     if (UI.showFocus && UI.focusedId() === 'mini') { g.strokeStyle = PAL.ink; g.lineWidth = 4; g.strokeRect(mx - 4, my - 4, mw + 8, mh + 8); g.strokeStyle = '#ffd23f'; g.lineWidth = 2; g.strokeRect(mx - 4, my - 4, mw + 8, mh + 8); }

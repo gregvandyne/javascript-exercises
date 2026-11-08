@@ -3,6 +3,8 @@
 //   - a 390 x 844 touch phone (Easier) wins the run with real joystick drags and PASS taps (the bot's eyes only say
 //     which way to push and when to pass; every move reaches the game as a touch);
 //   - a 1366 x 768 laptop loses it on the keyboard (holding Down, never passing), then Try again is offered;
+//   - the carrier runs any way (back and sideways too); a chasing pig turns to follow every change of direction; a
+//     stampede crosses the field after a warning;
 //   - a pig hunts the carrier, shows its tell and lunges at him, and turns to the new carrier the moment the mango is
 //     passed (Space);
 //   - the lightning bolt (grabbed by running into it with the keys) speeds the carrier up; the fireball keeps every pig
@@ -12,6 +14,7 @@
 // Game time is stepped (manual) so the inputs never lag behind the picture.
 // Run alone: E2E_PORT=5121 npx playwright test tests/e2e/jungle-cup-dash.spec.js
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
 import { gameFrame, ownIp } from './helpers.js';
 
 const J = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest.jc[fn](...a), [fn, a]);
@@ -86,9 +89,8 @@ test.describe('touch', () => {
       for (let i = 0; i < 4000; i++) {
         const a = await H(f, 'advice');
         if (a.phase === 'over') break;
-        // a hard dodge is a push straight sideways (full sideways speed), else steer while running up
-        const ay = Math.abs(a.x) >= 0.5 ? 0 : a.y;
-        const thumb = toPage(start.x + a.x * R * 0.95, start.y + ay * R * 0.95);
+        // push the stick the way the bot's eyes say (any direction: up the field, sideways to dodge, back if need be)
+        const thumb = toPage(start.x + a.x * R * 0.95, start.y + a.y * R * 0.95);
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [pt(thumb, 1)] });
         // pass when the bot's eyes say so, and once early on anyway (so a PASS tap is always tested)
         const early = runPasses === 0 && s && s.state.metres >= 4 && !s.state.flying;
@@ -239,5 +241,58 @@ test('a save from before Mango Dash: the Cup stays won, the lift waits for the 8
   await J(f, 'win', 'dash');
   s = await state(f);
   expect([s.feathers, s.cup]).toEqual([8, true]);
+  expect(errors).toEqual([]);
+});
+
+test('Mango Dash: run any way (back and sideways); a chasing pig curves to follow; a stampede crosses after a warning', async ({ page }) => {
+  test.setTimeout(240_000);
+  const SH = process.env.JC_DASH_SHOTS || '';
+  if (SH) fs.mkdirSync(SH, { recursive: true });
+  const { f, errors } = await open(page, { width: 390, height: 844 });
+  await playing(f);
+  await H(f, 'quiet', 999);
+  // up the field first (room to come back), then back down, then sideways: the carrier goes where the keys point
+  await page.keyboard.down('ArrowUp'); let s = await step(f, 1500); await page.keyboard.up('ArrowUp');
+  const d0 = s.state.d;
+  await page.keyboard.down('ArrowDown'); s = await step(f, 700); await page.keyboard.up('ArrowDown');
+  expect(s.state.d, 'ran back down the field').toBeLessThan(d0 - 20);
+  expect(s.state.vd).toBeLessThan(0);
+  if (SH) await page.screenshot({ path: `${SH}/dash-back-390x844.png` });
+  const x0 = s.state.x;
+  await page.keyboard.down('ArrowLeft'); s = await step(f, 500); await page.keyboard.up('ArrowLeft');
+  expect(s.state.x, 'ran sideways').toBeLessThan(x0 - 15);
+  s = await step(f, 300);
+  // a pig far up ahead and to the right: run left, and it turns left after him; run right, and it turns back
+  await H(f, 'spawn', 'pig', 50, 150);
+  s = await step(f, 100);
+  const pig0 = s.state.pigList[0];
+  await page.keyboard.down('ArrowLeft'); s = await step(f, 800); await page.keyboard.up('ArrowLeft');
+  const pig1 = s.state.pigList[0];
+  expect(pig1.st).toBe('hunt');
+  expect(pig1.x, 'the pig follows him left').toBeLessThan(pig0.x - 15);
+  expect(Math.cos(pig1.hd), 'heading left').toBeLessThan(0);
+  if (SH) await page.screenshot({ path: `${SH}/dash-chase-390x844.png` });
+  await page.keyboard.down('ArrowRight'); s = await step(f, 900); await page.keyboard.up('ArrowRight');
+  const pig2 = s.state.pigList[0];
+  // it turned to follow him back right (or, if it got close, it is facing him for its pounce)
+  expect(Math.cos(pig2.hd) > 0 || pig2.st !== 'hunt', 'it turned back').toBe(true);
+  expect(Math.abs(pig2.hd - pig1.hd), 'it turned').toBeGreaterThan(0.3);
+  // standing still, it closes in, stops with a "!" (the tell), then dives
+  let told = false;
+  for (let i = 0; i < 60 && !s.state.lunging && !s.state.resetting; i++) { s = await step(f, 50); if (s.state.telling) { told = true; if (SH && i % 3 === 0) await page.screenshot({ path: `${SH}/dash-tell-390x844.png` }); } }
+  expect(told).toBe(true);
+  for (let i = 0; i < 40 && s.state.resetting; i++) s = await step(f, 100);
+  // a stampede: the warning first (no runners yet), then the runners cross on their row
+  await H(f, 'jump', 25); await H(f, 'events');
+  for (let i = 0; i < 40; i++) { s = await step(f, 100); if (!s.state.resetting) break; }
+  // run up past 26 m, where the clearing's stampede comes, then wait behind its row
+  await page.keyboard.down('ArrowUp'); for (let i = 0; i < 30 && !s.state.stampede; i++) s = await step(f, 100); await page.keyboard.up('ArrowUp');
+  let warned = false, crossed = false;
+  for (let i = 0; i < 60 && !crossed; i++) {
+    s = await step(f, 100);
+    if (s.state.stampede && !s.state.pigList.some(p => p.st === 'cross')) warned = true;
+    if (s.state.pigList.some(p => p.st === 'cross')) { crossed = true; if (SH) await page.screenshot({ path: `${SH}/dash-stampede-390x844.png` }); }
+  }
+  expect([warned, crossed]).toEqual([true, true]);
   expect(errors).toEqual([]);
 });
