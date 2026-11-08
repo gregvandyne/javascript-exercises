@@ -160,7 +160,8 @@ test('/admin/stats shows the three funnels with last 7 days vs the 7 before; adm
   funnel.bump('kid.play', 20, today(Date.now() - 8 * 86400e3));
   const admin = auth.createUser({ username: 'FunnelAdmin', password: 'a-long-password-1' });
   q.run("UPDATE users SET role='admin' WHERE id=?", admin.id);
-  const page = await (await visit('/admin/stats', cookieFor(admin))).text();
+  // The cells carry data-label for the phone card layout (public/css/admin.css); the numbers are what count here.
+  const page = (await (await visit('/admin/stats', cookieFor(admin))).text()).replace(/ data-label="[^"]*"/g, '');
   assert.match(page, /Funnels, last 7 days vs the 7 before/);
   for (const h of ['Parents', 'Teachers', 'Guardrail']) assert.match(page, new RegExp(`<h2 id="funnel-\\w+">${h}`));
   assert.match(page, /<tr><td>Parent page views<\/td><td>40<\/td><td>0<\/td><td>new<\/td><td><\/td><\/tr>/);
