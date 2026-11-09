@@ -3284,8 +3284,8 @@ geared towards conversion … 14 day free trial … very futuristic … parallax
   `X-Robots-Tag: noindex`); its canonical still names "/", whose indexed content is now the landing. Old links to
   `/#play` (the app's "▶ Play now", `/go/kid`) reach the landing's `#play` band, and landing.js sends them on to /play.
 - **Self-contained:** its own header, footer, public/css/landing.css and public/js/landing.js (vanilla; no app.css or
-  app.js). Dark by design (deep space, aurora, mint/cyan/violet neon); an explicit Light choice (`theme` cookie,
-  footer links) gets a light variant with the same layout; "same as my device" stays dark.
+  app.js). In Oomba's own brand (app.css): the app's dark mode by default (warm charcoal, starry sky, soft mint and
+  yellow light, the app's tactile mint buttons, real game covers in the hero and on each course); an explicit Light choice (`theme` cookie, footer links) gets the app's cream light mode with the same layout; "same as my device" stays dark.
 - **Motion:** parallax on fixed star/aurora layers and in-page elements (`data-sky`, `data-depth`), transforms only,
   one requestAnimationFrame per scroll burst, passive listeners; the hero's lesson → Builder → game loop runs only
   while on screen. With `prefers-reduced-motion` nothing moves and the hero shows its finished picture. Without
