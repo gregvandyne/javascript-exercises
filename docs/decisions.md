@@ -3020,3 +3020,189 @@ Four simulated sessions (a new teacher, a school admin, a student, a live class)
   (a subscription is read with its Price's Product). The panel's admin-only test now also tries a grown-up, a guest, a
   school admin, a teacher and a student. `billing-checkout.test.js`'s Pro-weight check runs with `BUILDER_FULL_FOR_ALL`
   off, as the other regular-maker tests do (it failed since #257 made the flag default on).
+
+## Teacher plan: $119 a year per teacher, 14-day free trial (9 Nov 2026)
+
+The owner decided a new **Teacher plan**: **$119 per teacher per year, no per-student charge**, covering all of that
+teacher's classes and students, with a **14-day free trial that needs no card**. It **replaces the per-student School
+plan** (D6) for new purchases: schools buy N Teacher plans ("teacher seats") on one subscription. Stripe is set up in
+live mode: Product "Oomba Teacher plan" (`prod_Vb0YSjk70xhUar`), Price `price_1UZoXC3TnSduDqoY3sZfm1IK`, $119/year,
+tax behavior exclusive, lookup key **`oomba_teacher_yearly`** (`PRICE_LOOKUP_KEYS.teacherYearly`; the price list is
+read with `limit: 100` so every key fits in one page).
+
+- **Owners.** A teacher's own plan is owner `teacher` (the teacher's account id), quantity 1. A school's teacher seats
+  are owner `school`, plan `teacher`, quantity = teachers, bought by card Checkout or the existing invoice / purchase
+  order path (`createInvoiceSubscription`, send_invoice, now at the Teacher price × teachers). The school's admins give
+  the seats to teachers on the Billing tab (`teacher_seats`); seats given beyond the paid ones (fewer seats at a
+  renewal) count in the order they were given. A teacher is a non-grown-up account that is a teacher or school admin
+  of a live school (`TP.isTeacher`); only they can hold the plan.
+- **Free trial.** Checkout `mode=subscription` with `subscription_data.trial_period_days` (`TEACHER_TRIAL_DAYS`, 14),
+  `payment_method_collection: 'if_required'` and `subscription_data.trial_settings.end_behavior.missing_payment_method:
+  'cancel'`. **We chose `cancel`, not `pause`:** a paused subscription stays around as something to "fix" (it would block
+  a new Checkout as unsettled and look like an unpaid plan), while a canceled one is a clean end: the plan's extras stop,
+  nothing is deleted or locked, and the teacher can buy the plan later at /trial (with a card, since the trial is used).
+  Teachers in a trial get the full plan (`trialing` entitles, as before). Stripe sends its own trial reminder email
+  only if the owner turns it on (docs/billing-go-live.md 3.5a).
+- **One trial ever** per teacher, per email (an HMAC of the work email with the server secret, `teacher_trials.
+  email_hash`: the address itself is never stored by us; it is on the teacher's Stripe Customer, where the reminder and
+  receipts go) and per school (a school's seat trial), per Stripe mode. A colleague at the same school can still have
+  their own teacher trial: "per school" limits the school's seat trial, not each teacher. The trial is recorded when its
+  subscription is first synced as trialing (the sync hook in services/teacher-plan.js), and checked before Checkout.
+  Two Checkouts started at the same moment with the same email from two accounts could both trial (one open Checkout
+  per owner prevents it for one account); accepted.
+- **Webhooks.** `customer.subscription.trial_will_end` is the 15th handled event (add it to the live endpoint). It sets
+  `trial_notice_at` and sends one Team inbox message (services/team.js `notify`, kind `trialEnding`) with the link to
+  add a card; My classes shows the notice (also from 7 days before the end). trialing → active (a card added, the first
+  year paid) sends a thank-you and counts as a paid plan in the funnel (`teacher.plan`); trialing → canceled sends
+  "your trial ended, your classes are still here" with the link to /trial. School seat trials tell the school's admins.
+  New funnel step `teacher.trial` (trials started).
+- **AI for the class.** The teacher and every active student of their classes share `TEACHER_DAILY_MESSAGES` (300)
+  Builder messages a UTC day, charged to `teacher:<id>` and paid by the paid AI pool, so the site's caps still apply;
+  each teacher with the plan adds `TEACHER_MONTHLY_AI_USD` (10) to the paid pool's ceiling. builder/usage.js: a legacy
+  school pool first, then the Teacher plan, then the free messages. **A student in several paid teachers' classes**
+  builds from the first class they joined whose teacher has the plan and messages left, then the next: the Builder has
+  no notion of which class a build is for, so "the class in use" can't be known today. A student of a paid teacher
+  never uses the family's extras or Spark Packs (no family money in class); Spark Packs stay family-only. At the cap the
+  limit card says "ask your teacher" to a student and "you and your classes used today's messages" to the teacher
+  (builder/upsell.js `teacher`), never a family upsell; a teacher without a plan is pointed to /trial.
+  **Open:** 300 messages a day used every school day costs far more than $119 a year at today's cost per message; the
+  paid pool ceiling ($10 a teacher a month) stops it first. The owner may want a per-student daily cap (as schools have)
+  or a lower default; the setting is there.
+- **Legacy per-student plans (grandfathered).** A school already on `oomba_school_seat_yearly` keeps it, renewals
+  included, with its shared pool and per-student seats; nothing migrates it automatically, and no new school can buy
+  it (the price only stays active in Stripe for those renewals). Its Billing tab says "Legacy plan" and /admin/billing
+  lists it. Moving one to teacher seats is done by hand (cancel at period end, then teacher seats). Invoice requests
+  made before carry `unit = 'student'`: the owner types the number of teachers when creating the invoice subscription.
+- **`/trial`** (the marketing site's link; `/trial?seats=N` for a school): signed out → the teacher sign-up on the same
+  page (name as students see it, school name, work email, username, a staff-length password, "I'm a teacher, 18+"),
+  which makes an ordinary account, **their own school with them as its school admin** (so they can make a class at
+  once: a self-serve school, new — before, only the platform admin made schools) and starts Checkout with the trial; a
+  teacher with no plan → the work email and "Start my free trial" (or, trial used, "Get the Teacher plan" with the card
+  and the password again); a teacher in a trial or paid → My classes with a notice; a school admin with ?seats=N → the
+  school's seat trial; kids, school students and grown-ups → a page saying it's for teachers, with the families' plans.
+  `/trial/thanks` (Checkout's success URL) confirms the session itself (`syncCheckoutReturn`), so the trial starts even
+  when the webhook is slow. While the key is a test key, only billing testers may start a trial (D14): it is real AI
+  money. Off with paid-plan pages (`BILLING_PUBLIC` / preview cookie): /trial goes to /teachers.
+- **Copy.** /plans has a Teacher card ($119 per teacher a year, 14-day free trial, no card, unlimited students, 300 AI
+  builds a day for the class) and the School card is per teacher with invoice / PO; /plans/schools' calculator counts
+  teachers; the terms (7.3), the privacy policy (seats are teachers), /refunds (trials) and /teachers changed. New
+  strings are in all 13 languages. Some keys keep their old names with new meanings (`plans.schools.print.perStudent`
+  is now "Price per teacher"); the legal text changes need the lawyer's look with the rest of docs/legal-review.md.
+
+## Trial emails: Resend, one-click unsubscribe and the Teacher plan trial sequence (9 Nov 2026)
+
+The site sent no email before this. The owner chose **Resend** and approved a five-email sequence for the Teacher plan's
+14-day free trial (no card), plus a thank-you on conversion.
+
+- **Sending** (`server/services/email.js`): Resend's HTTP API (`POST https://api.resend.com/emails`, bearer key), no
+  SDK. Settings: `RESEND_API_KEY`, `EMAIL_ENABLED` (default on; `0` stops everything), `EMAIL_FROM` (default
+  `Greg at Oomba Academy <greg@oomba.ai>`), `EMAIL_REPLY_TO` (default `Greg@oomba.ai`), `EMAIL_POSTAL_ADDRESS` (CAN-SPAM,
+  **no default**). Each send has an `Idempotency-Key` (Resend keeps it 24 hours) and is retried twice with backoff
+  (1 s, 4 s) on network errors, 429, 5xx and Resend's "concurrent idempotent request" 409; other 4xx are not retried.
+  Every send leaves one `email_log` row (to, template, category, status, Resend's id, a short error, tries): never the
+  body. Kept a year (job `email-log-retention`), deleted with the account.
+- **Two kinds of email.** `nudge` (marketing: the trial sequence) needs `EMAIL_POSTAL_ADDRESS`: while it is empty **no
+  nudge is sent at all** (logged once at start-up and at the first due email; red notice on `/admin/emails` and
+  `/admin/billing`), and never to someone who unsubscribed. `transactional` (the thank-you for a purchase, later
+  receipts) ignores the unsubscribe.
+- **Who and where.** Only to a grown-up account, a teacher / school staff, or the platform admin; never a guest, a banned
+  account or a kid's (asserted in `send()` and in `onTrialStarted`; kid accounts have no address anyway). The address:
+  the account's **Google sign-in address** (verified by Google) if it has one, else the **work email the teacher gave
+  the Teacher plan's Checkout** (the Stripe Customer's email, where Stripe also sends receipts), kept in `email_prefs`
+  (source `checkout`) for these emails. School-request emails (`school_requests`) are **not** used: they were given for
+  the request only. No address: the email is skipped and logged (`no_address`).
+- **Unsubscribe** (`server/routes/email.js`): every email has a signed link (HMAC of the account id under the session
+  secret, labelled `email-unsubscribe:v1`, no expiry) and `List-Unsubscribe` + `List-Unsubscribe-Post:
+  List-Unsubscribe=One-Click` headers (RFC 8058). `GET /email/unsubscribe?t=…` only shows a page with one button (mail
+  scanners open links); `POST` unsubscribes (the button, or the mail app's one-click from its own servers: the route is
+  mounted before the CSRF check and the grown-up guard; the token is the check). The page offers "Subscribe again".
+  It sets `email_prefs.nudges_off_at`; transactional email is unaffected. English page for now.
+- **The sequence** (`server/services/nudges.js`). Interface for billing: `onTrialStarted({ userId, trialEnd,
+  trialStart, email })`, `onTrialConverted(userId)`, `onTrialEnded(userId)`; each idempotent, never throws. One
+  sequence per account (the first trial). Rows in `trial_nudges` (`due_at`, `latest_at`, `status`, `sent_at`):
+  welcome at the start (may go up to 48 h late); class on day 2 (24 h; **skipped if the teacher already has a class**);
+  ideas on day 5 (48 h); ending 3 days before the end **plus 2 hours** (24 h; the 2 hours let Stripe's
+  `trial_will_end` sync land first, so a teacher who already added a card never gets "add a card"); ended when the
+  trial ends without converting (24 h); thanks on conversion (72 h, transactional). Conversion cancels what is left.
+  The job `trial-nudges` runs every 15 minutes (the jobs.js loop, like billing-reconcile) and right after each event.
+  **No double sends:** a row is claimed (`sending`) before the call and marked after; a row left `sending` by a restart
+  is retried after 10 minutes with the **same** Idempotency-Key (Resend drops the copy), and after 23 hours it is marked
+  `failed` instead of risking a second copy. **Late rule:** past `latest_at` a row is `skipped` (`too_late`). Failures
+  retry on later runs, up to 5 tries. The admin switch (`settings` `emails.trial_nudges`, on by default) and missing
+  settings make due rows wait; the late rule still applies.
+- **Copy** (`server/emails/trial-en.js`, rendered by `server/services/email-templates.js`): the owner's approved words,
+  HTML (tables, inline CSS, 560 px, dark-mode overrides, `lang`, hidden preheader with the preview text, a real button)
+  and a plain-text part. Links carry `utm_source=oomba&utm_medium=email&utm_campaign=teacher_trial&utm_content=<email>`.
+  Footer: "You're getting this because you started a free trial on Oomba Academy · Unsubscribe · {EMAIL_POSTAL_ADDRESS}".
+  Signed "Greg / Founder, Oomba Academy" on #1, "Greg" after. Greeting: the first name (a teacher's school roster name
+  first; "Ms Rivera" stays whole), else "Hi there,". The trial end date is in US Eastern time. Changes from the approved
+  copy:
+  - **Owner's request:** the walkthrough-call offer ("Want a quick tour? I'm happy to hop on a 15-minute call…") in
+    #1, #2 and #5, and a short line in #3 ("Prefer a guided tour? Reply and we'll find 15 minutes.").
+  - **Accuracy, #2:** "It's the moment most teachers tell us the room lights up" → "It's often the moment the room
+    lights up" (no data behind "most teachers tell us").
+  - **Accuracy, #3:** "each with lesson plans" → "CS Quest comes with full 45-minute lesson plans, and the other two
+    with teacher notes" (Number Quest and Cyber Defenders have teacher notes, not lesson plans).
+  - **#1:** "14-day" is filled from the trial's own length (`TEACHER_TRIAL_DAYS` can change it).
+  - **#5** ("Your classes and games are saved") checked against the Teacher plan: a trial that ends without a card is
+    cancelled by Stripe and only the plan's extras stop; nothing is deleted or locked (teacher-plan.js, and its test
+    "nothing is lost"). Kept as approved.
+  - **#4** "one yearly price for unlimited students, with no per-student fees" and "pay by invoice or purchase order"
+    match the Teacher plan ($119 per teacher per year, no per-student charge; schools' invoice / PO path).
+  - New: the thank-you ("You're all set!"), short, transactional.
+  CTAs: #1 `/build`, #2 `/teach`, #3 `/teach/lessons` (the ready-made courses), #4 `/teach#teacher-plan` (Add a card),
+  #5 `/trial`, thanks `/teach`. **i18n:** a language is a `trial-<locale>.js` file registered in `COPY`; English only
+  for now (translating approved marketing copy would be guesswork), so every teacher gets English.
+- **Wiring to the Teacher plan** (`services/teacher-plan.js`'s subscription sync hook; one line each): a teacher-owned
+  subscription that is `trialing` → `onTrialStarted` (start from Stripe's `trial_start`, end from the row, email from
+  the expanded Customer); `trialing` with a default card on the subscription or its Customer → `onTrialConverted`;
+  `trialing → active` → `onTrialConverted`; `trialing → canceled` → `onTrialEnded`. A school's seat trial has no one
+  teacher and gets no sequence. Stripe's own trial reminder email and the Team inbox notices stay as they are.
+- **Admin** (`/admin/emails`, linked from /admin): the switch, sent / failed / skipped counts (30 days) and per email,
+  preview of each email (HTML and text, a sample teacher) and "Send me a test" (to the admin's Google address, else
+  `CONTACT_EMAIL`, else `EMAIL_REPLY_TO`; "[Test]" subject), the last 50 sends (addresses shortened), the settings by
+  name (never the key) and the CAN-SPAM warning. Go-live steps: `docs/emails-go-live.md`.
+- **Tables** (migration `0061_trial_emails`, after the Teacher plan's `0060_teacher_plan`): `email_prefs`,
+  `email_log`, `trial_emails`, `trial_nudges`; all deleted with the account.
+- **Tests:** `tests/unit/trial-emails.test.js` (templates, gates, kid accounts, retries, unsubscribe, the scheduler's due
+  times, skip rules, conversion, the end without a card, restarts, late catch-up, admin only) and
+  `tests/unit/trial-emails-wiring.test.js` (the Teacher plan's trial through the fake Stripe). Resend is never called:
+  `email.js` takes a fetch stand-in.
+
+## Teacher landing page at "/" (9 Nov 2026)
+Owner: "build me an absolutely killer marketing website … top right a button that says Just Play … target teachers …
+geared towards conversion … 14 day free trial … very futuristic … parallax … optimized for SEO."
+- **Who sees it:** `GET /` with **no session at all** (first visits, search engines, link previews) gets the teacher
+  landing page (server/routes/landing.js). Everyone with a session (kids, students, teachers, grown-ups, and a guest
+  who already played) gets the home page they had, unchanged. The hook is one router mounted just before the home
+  route in app.js (search "LANDING HOOK"); `renderLanding(req, res)` is exported for whoever reworks the home route
+  (the Play/Learn homes). `LANDING_AT_ROOT=0` turns it off; the unit tests (tests/unit/_setup.js) and Playwright
+  (playwright.config.js) set it off by default because their older specs describe the signed-out home, now at /play.
+- **Just Play:** `JUST_PLAY_URL = '/play'`. `GET /play` hands the request on to today's home route, so the arcade (doors,
+  featured game, rows) is reachable without touching its renderer. /play is private to search engines (`PRIVATE_RE`:
+  `X-Robots-Tag: noindex`); its canonical still names "/", whose indexed content is now the landing. Old links to
+  `/#play` (the app's "▶ Play now", `/go/kid`) reach the landing's `#play` band, and landing.js sends them on to /play.
+- **Self-contained:** its own header, footer, public/css/landing.css and public/js/landing.js (vanilla; no app.css or
+  app.js). Dark by design (deep space, aurora, mint/cyan/violet neon); an explicit Light choice (`theme` cookie,
+  footer links) gets a light variant with the same layout; "same as my device" stays dark.
+- **Motion:** parallax on fixed star/aurora layers and in-page elements (`data-sky`, `data-depth`), transforms only,
+  one requestAnimationFrame per scroll burst, passive listeners; the hero's lesson → Builder → game loop runs only
+  while on screen. With `prefers-reduced-motion` nothing moves and the hero shows its finished picture. Without
+  JavaScript every word is there (reveal-on-scroll only hides what starts below the first screen).
+- **Words:** under `landing.*`, written in all 13 languages (`landing.` is outside the readiness share, like `teachers.`),
+  inserted as text by scripts/i18n-add-landing.mjs from scripts/landing-strings/. Only true features: the Builder takes
+  lesson text, PDFs, pictures and text files (server/builder/uploads.js), playtests on phone/tablet/desktop sizes, keeps
+  versions, and a person reviews anything public; the three courses with their real standards claims; live games;
+  safety as /teachers states it. "Why games work" is qualitative, with two real citations (Roediger & Karpicke 2006;
+  Hattie & Timperley 2007). **No testimonials, logos, ratings or user counts** (a test guards it).
+- **Prices:** none on "/" (kids are never sold to; amounts live on /plans). The pricing section says "one simple yearly
+  price per teacher", unlimited students, 14 days free, no card, 300 AI game builds a day, and links to /plans;
+  `LANDING_SHOW_PRICE` (off) would show the Teacher price and add an `Offer` to the structured data. Every trial button
+  is `/trial` (the Teacher plan's trial, feature/teacher-plan); schools: mailto Greg@oomba.ai and /teachers#start.
+- **SEO:** title/description aimed at teacher searches, canonical, hreflang for every language, Open Graph/Twitter with
+  /og/landing.jpg (scripts/og-images.js), one JSON-LD graph (Organization, WebSite, WebPage, SoftwareApplication without
+  price/rating, FAQPage matching the visible FAQ); the sitemap's "/" entry lists the landing's languages and picture.
+- **Counting:** funnel tally "Teacher landing (signed out)": views (people only) and the beacon `POST /landing/count/<cta>`
+  for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
+- **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
+  parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.

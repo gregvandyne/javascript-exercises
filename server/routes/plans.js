@@ -1,7 +1,8 @@
 // The plans page (docs/decisions.md "Paid plans" §17, the owner's decision of 2026-10-27): /plans, linked from the top
 // menu for everyone while paid-plan pages are on (billing on, and BILLING_PUBLIC=1 or the preview cookie), like the
-// Plans and Family accounts sections of /parents. Four cards like any pricing page: Free, Basic (one child), Family (up
-// to FAMILY_MAX_CHILDREN children) and School, with a monthly / yearly switch. Prices come from Stripe's Price objects
+// Plans and Family accounts sections of /parents. Five cards like any pricing page: Free, Basic (one child), Family (up
+// to FAMILY_MAX_CHILDREN children), Teacher (one teacher, all their classes; 14-day free trial, no card: /trial) and
+// School (Teacher seats for a school's teachers), with a monthly / yearly switch. Prices come from Stripe's Price objects
 // by lookup key (services/stripe.js caches them), so the page always says what Checkout charges.
 //
 // Who buys: only a grown-up account (Basic, Family) or a school admin (School). Everyone may look:
@@ -26,6 +27,7 @@ import * as C from '../services/checkout.js';
 import * as SC from '../services/schools.js';
 import * as SB from '../services/school-billing.js';
 import { familyOf } from '../builder/usage.js';
+import * as TP from '../services/teacher-plan.js';
 import { limitsText, onSale, planName } from './family.js';
 
 export const router = Router();
@@ -121,6 +123,11 @@ router.get('/plans', on, async (req, res) => {
     return html`<a class="btn btn-block" href="/plans?interval=${interval}&ask=${plan}#ask">${T(who === 'staff' ? 'plans.staff.button' : 'plans.kid.button')}</a>`;
   };
   const lim = { basic: B.planLimits('basic'), family: B.planLimits('family') };
+  const tv = { days: config.teacherTrialDays, daily: f.int(config.teacherDailyMessages) };
+  const teacherPrice = all && all.teacher ? all.teacher.year.unitAmount : null;
+  const teacherOn = who === 'staff' && !!u && TP.teacherPlan(u.id).entitled;
+  const teacherBtn = teacherOn ? html`<a class="btn btn-block" href="/teach#teacher-plan">${T('plans.teacher.manage')}</a>`
+    : html`<a class="btn btn-block ${who === 'out' || who === 'staff' ? 'btn-primary' : ''}" href="/trial">${T('plans.teacher.start')}</a>`;
   const items = list => html`<ul class="plan-list">${list.map(s => html`<li><span class="tick" aria-hidden="true">✓</span><span>${s}</span></li>`)}</ul>`;
   const card = ({ id, name, tagline, price, list, button, current, recommended = false }) => html`<section class="plan-card${recommended ? ' recommended' : ''}${current ? ' current' : ''}" id="plan-${id}" aria-labelledby="plan-${id}-h">
     ${recommended ? html`<span class="plan-badge">${T('plans.recommended')}</span>` : ''}
@@ -139,10 +146,14 @@ router.get('/plans', on, async (req, res) => {
       list: [T('plans.basic.li1'), T('plans.extra', { extra: lim.basic.extra }), T('plans.basic.li3'), T('plans.cancel')], button: buyBtn('basic'), current: mine === 'basic' }),
     card({ id: 'family', name: T('plans.family.name'), tagline: T('plans.family.tagline', { max: lim.family.maxChildren }), price: priceOf('family'), recommended: buyer,
       list: [T('plans.basic.li1'), T('plans.family.extra', { extra: lim.family.extra, max: lim.family.maxChildren }), T('plans.family.li3', { max: lim.family.maxChildren }), T('plans.cancel')], button: buyBtn('family'), current: mine === 'family' }),
-    card({ id: 'school', name: T('plans.school.name'), tagline: T('plans.school.tagline'),
-      price: prices && prices.school ? html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(prices.school.year.unitAmount)}</span> <span class="per">${T('plans.school.per')}</span></p><p class="small muted plan-sub">${T('plans.school.min', { min: config.schoolMinSeats })}</p>`
+    card({ id: 'teacher', name: T('plans.teacher.name'), tagline: T('plans.teacher.tagline'),
+      price: teacherPrice !== null ? html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(teacherPrice)}</span> <span class="per">${T('plans.teacher.per')}</span></p><p class="small muted plan-sub">${T('plans.teacher.trial', tv)}</p>`
         : html`<p class="plan-price"><span class="muted small">${T('plans.noPrice')}</span></p>`,
-      list: [T('plans.school.li1', { perSeat: config.schoolTurnsPerSeat }), T('plans.school.li2'), T('plans.school.li3')],
+      list: [T('plans.teacher.li1'), T('plans.teacher.li2', tv), T('plans.teacher.li3'), T('plans.teacher.li4')], button: teacherBtn, current: teacherOn }),
+    card({ id: 'school', name: T('plans.school.name'), tagline: T('plans.school.tagline'),
+      price: prices && prices.school ? html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(prices.school.year.unitAmount)}</span> <span class="per">${T('plans.school.per')}</span></p><p class="small muted plan-sub">${T('plans.school.min')}</p>`
+        : html`<p class="plan-price"><span class="muted small">${T('plans.noPrice')}</span></p>`,
+      list: [T('plans.school.li1', tv), T('plans.school.li2'), T('plans.school.li3')],
       button: html`<a class="btn btn-block ${school.school ? 'btn-primary' : ''}" href="${school.href}">${school.school && schoolPlan && schoolPlan.entitled ? T('plans.school.manage') : T('plans.school.get')}</a>`,
       current: !!(schoolPlan && schoolPlan.entitled) }),
   ];
@@ -153,7 +164,7 @@ router.get('/plans', on, async (req, res) => {
       <p>${TH('plans.kid.text', { where: html`<bdi dir="ltr"><b>${siteHost(req)}/plans</b></bdi>` })}</p>
       <p class="muted" style="margin-bottom:0">${T('plans.kid.free')}</p></section>`
     : html`<section class="panel plan-ask" id="ask" role="status" aria-labelledby="ask-h"><h2 id="ask-h"><span aria-hidden="true">🏫</span> ${T('plans.staff.heading')}</h2>
-      <p>${T('plans.staff.text')}</p><p style="margin-bottom:0"><a class="btn" href="#plan-school">${T('plans.staff.toSchool')}</a></p></section>`) : '';
+      <p>${T('plans.staff.text')}</p><p style="margin-bottom:0"><a class="btn" href="#plan-teacher">${T('plans.staff.toSchool')}</a></p></section>`) : '';
   // Not on sale to this visitor: said at the top, before any card (a signed-out visitor may still make a grown-up account).
   const soonPanel = notOnSale ? html`<section class="panel plan-ask" id="soon" role="status"><p${who === 'out' ? '' : raw(' style="margin-bottom:0"')}><span aria-hidden="true">⏳</span> ${T('plans.notOnSale')}</p>
     ${who === 'out' ? html`<p style="margin-bottom:0">${T('plans.notOnSaleOut')} <a href="/grown-ups/signup">${T('family.landing.signup')}</a></p>` : ''}</section>` : '';
@@ -170,29 +181,31 @@ router.get('/plans', on, async (req, res) => {
   page(req, res, { title: t('plans.title'), active: 'plans', description: t('plans.description'), body, seo: { index: config.billingPublic, path: '/plans' } });
 });
 
-/** The seat calculator's numbers: students as asked (1 to SEAT_CALC_MAX; null when none or not a number), the seats a
- *  plan would have (never fewer than SCHOOL_MIN_SEATS), and the yearly total in cents (null without a Stripe price). */
-export const SEAT_CALC_MAX = 100000;
+/** The seat calculator's numbers: teachers as asked (1 to SEAT_CALC_MAX; null when none or not a number), the seats a
+ *  plan would have (teacher seats: at least 1), and the yearly total in cents (null without a Stripe price). The
+ *  argument keeps its old name (students) for the ?students= links already shared; it counts teachers now. */
+export const SEAT_CALC_MAX = 1000;
 export function seatQuote(students, seatCents) {
   const n = Number(String(students ?? '').trim());
   const asked = String(students ?? '').trim() !== '' && Number.isInteger(n) && n >= 1 ? Math.min(n, SEAT_CALC_MAX) : null;
-  const min = config.schoolMinSeats;
+  const min = 1;
   const seats = asked === null ? null : Math.max(asked, min);
   return { students: asked, seats, min, unit: seatCents ?? null, total: seats !== null && Number.isInteger(seatCents) ? seats * seatCents : null };
 }
 
-/** For schools: the price, a seat calculator, what a school gets, and how a school is set up (the "Set up my school"
- *  form on /teachers, then paid from its Billing tab). Prices are Stripe's (C.planPrices), never written here. */
+/** For schools: the price per teacher, a seat calculator (teachers), what a school gets, and how a school is set up (the
+ *  "Set up my school" form on /teachers, then paid from its Billing tab, or a free trial from /trial?seats=N). Prices are
+ *  Stripe's (C.planPrices), never written here. ?students= is the number of teachers (the old name, kept for links). */
 router.get('/plans/schools', on, async (req, res) => {
   const t = req.t, f = req.fmt, { T, TH } = words(t, f);
   const prices = await C.planPrices();
   const target = schoolTarget(req);
   const email = config.contactEmail || 'greg@oomba.ai';
   const mail = html`<a href="mailto:${email}" dir="ltr">${email}</a>`;
-  const lessons = Math.floor(config.schoolTurnsPerSeat / SB.LESSON_MESSAGES);
   const seat = prices && prices.school ? prices.school.year.unitAmount : null;
   const quote = seatQuote(req.query.students, seat);
-  const shown = quote.students ?? config.schoolMinSeats;
+  const shown = quote.students ?? 1;
+  const daily = f.int(config.teacherDailyMessages);
   const calc = seat === null ? '' : html`<section class="panel seatcalc" id="calc" aria-labelledby="calc-h"><h2 id="calc-h">${T('plans.schools.calc.h')}</h2>
       <form method="get" action="/plans/schools#calc" class="row">
         <div class="field"><label for="calc-students">${T('plans.schools.calc.label')}</label>
@@ -200,16 +213,16 @@ router.get('/plans/schools', on, async (req, res) => {
         <button class="btn" type="submit">${T('plans.schools.calc.button')}</button>
       </form>
       ${quote.total !== null ? html`<p class="seatcalc-out" role="status">${TH('plans.schools.calc.result', { seats: quote.seats, price: cents(seat), total: html`<b>${f.money(quote.total)}</b>` })}</p>` : ''}
-      ${quote.students !== null && quote.students < quote.min ? html`<p class="small">${T('plans.schools.calc.min', { min: quote.min })}</p>` : ''}
       <p class="small muted">${T('plans.schools.calc.tax')}</p>
       <p style="margin-bottom:0"><a class="btn btn-primary" href="/plans/schools/print?students=${shown}">🖨️ ${T('plans.schools.calc.print')}</a></p>
       <p class="small muted" style="margin:var(--s2) 0 0">${T('plans.schools.calc.printHint')}</p></section>`;
   const body = html`<div class="wrap narrow" style="padding:0"><h1>🏫 ${T('plans.schools.heading')}</h1>
     <p class="lead">${T('plans.schools.intro')}</p>
     <section class="panel"><h2>${T('plans.schools.what.h')}</h2>
-      ${seat !== null ? html`<p>${t('school.billing.price', { price: f.money(seat), min: config.schoolMinSeats, perSeat: config.schoolTurnsPerSeat })}</p>` : ''}
-      <p>${t('school.billing.priceLessons', { count: lessons })}</p>
-      <p>${T('plans.schools.what.p1')}</p></section>
+      ${seat !== null ? html`<p>${TH('school.billing.tp.price', { price: cents(seat), daily })}</p>` : ''}
+      <p>${T('plans.trial.lead', { days: config.teacherTrialDays, daily })}</p>
+      <p>${T('plans.schools.what.p1')}</p>
+      <p style="margin-bottom:0"><a class="btn btn-primary" href="/trial?seats=${shown}">${T('plans.teacher.start')}</a></p></section>
     ${calc}
     <section class="panel"><h2>${T('plans.schools.how.h')}</h2>
       <ol class="steps"><li>${TH('plans.schools.how.li1form', { href: '/teachers#start' })}</li><li>${T('plans.schools.how.li2day')}</li><li>${T('plans.schools.how.li3')}</li></ol>
@@ -225,25 +238,24 @@ router.get('/plans/schools/print', on, async (req, res) => {
   const t = req.t, f = req.fmt, { T, TH } = words(t, f);
   const prices = await C.planPrices();
   const seat = prices && prices.school ? prices.school.year.unitAmount : null;
-  const quote = seatQuote(req.query.students ?? config.schoolMinSeats, seat);
+  const quote = seatQuote(req.query.students ?? 1, seat);
   const email = config.contactEmail || 'greg@oomba.ai';
   const host = siteHost(req);
   const row = (k, v, ltr = true) => html`<tr><th scope="row">${T(k)}</th><td${ltr ? raw(' dir="ltr"') : ''}>${v}</td></tr>`;
   const body = html`<div class="printdoc">
     <div class="row printbar"><button class="btn btn-primary" type="button" data-print>🖨️ ${T('plans.schools.print.printButton')}</button>
-      <a class="btn" href="/plans/schools?students=${quote.students ?? config.schoolMinSeats}#calc">${T('plans.schools.print.back')}</a></div>
+      <a class="btn" href="/plans/schools?students=${quote.students ?? 1}#calc">${T('plans.schools.print.back')}</a></div>
     <h1>🏫 ${T('plans.schools.print.heading')}</h1>
     <p class="lead">${T('plans.schools.print.intro')}</p>
     <section class="panel"><h2>${T('plans.schools.print.cost')}</h2>
       ${seat === null ? html`<p style="margin-bottom:0">${T('plans.noPrice')}</p>` : html`<div class="tblwrap"><table class="tbl"><tbody>
         ${row('plans.schools.print.perStudent', f.money(seat))}
-        ${row('plans.schools.print.minimum', T('plans.schools.print.minimumN', { min: quote.min }), false)}
         ${row('plans.schools.print.students', String(quote.seats))}
         ${row('plans.schools.print.total', html`<b>${f.money(quote.total)}</b>`)}
       </tbody></table></div>
       <p class="small" style="margin:var(--s3) 0 0">${T('plans.schools.print.estimate', { date: f.date(Date.now()) })}</p>`}</section>
     <section class="panel"><h2>${T('plans.schools.what.h')}</h2>
-      <p>${t('school.billing.priceLessons', { count: Math.floor(config.schoolTurnsPerSeat / SB.LESSON_MESSAGES) })}</p>
+      <p>${T('plans.trial.lead', { days: config.teacherTrialDays, daily: f.int(config.teacherDailyMessages) })}</p>
       <p style="margin-bottom:0">${T('plans.schools.what.p1')}</p></section>
     <section class="panel"><h2>${T('plans.schools.print.setup')}</h2>
       <ol class="steps"><li>${TH('plans.schools.print.li1', { url: html`<bdi dir="ltr"><b>${host}/teachers</b></bdi>` })}</li><li>${T('plans.schools.how.li2day')}</li><li>${T('plans.schools.how.li3')}</li></ol>

@@ -176,7 +176,7 @@ test('a kid on /plans: the Plans link in the menu, every plan to look at, and a 
   const kid = await person(browser); await signup(kid, uniq('Kid'));
   await kid.goto('/');
   await Promise.all([kid.waitForURL(/\/plans$/), kid.locator('.topnav a[href="/plans"]').click()]);
-  await expect(kid.locator('.plan-card')).toHaveCount(4);
+  await expect(kid.locator('.plan-card')).toHaveCount(5);
   await expect(kid.locator('#plan-free .plan-yours')).toHaveText('Your plan');
   // No sales nudging for kids: no "Recommended" badge.
   await expect(kid.locator('.plan-badge')).toHaveCount(0);
@@ -240,19 +240,16 @@ test('the pages: nothing touches, no sideways scroll (360 / 1280, light / dark, 
   expect([...new Set(problems)]).toEqual([]);
 });
 
-test('/plans/schools: the seat calculator (Stripe\'s seat price, at least 25) and "Send this to my admin"', async ({ browser }) => {
+test('/plans/schools: the seat calculator (the Teacher price per teacher) and "Send this to my admin"', async ({ browser }) => {
   const page = await person(browser);
   await page.goto('/plans/schools');
-  await expect(page.locator('#calc-students')).toHaveValue('25');
+  await expect(page.locator('#calc-students')).toHaveValue('1');
   await page.fill('#calc-students', '12');
   await Promise.all([page.waitForURL(/students=12/), page.locator('#calc button[type=submit]').click()]);
-  await expect(page.locator('.seatcalc-out')).toHaveText('25 students × $20.00 = $500.00 a year');
-  await expect(page.locator('#calc')).toContainText('so a smaller school pays for 25');
-  await page.fill('#calc-students', '140');
-  await Promise.all([page.waitForURL(/students=140/), page.locator('#calc button[type=submit]').click()]);
-  await expect(page.locator('.seatcalc-out')).toHaveText('140 students × $20.00 = $2,800.00 a year');
-  await Promise.all([page.waitForURL(/\/plans\/schools\/print\?students=140/), page.locator('a', { hasText: 'Send this to my admin' }).click()]);
-  await expect(page.locator('.printdoc')).toContainText('$2,800.00');
+  await expect(page.locator('.seatcalc-out')).toHaveText('12 teachers × $119.00 = $1,428.00 a year');
+  await expect(page.locator('main')).not.toContainText('per student');
+  await Promise.all([page.waitForURL(/\/plans\/schools\/print\?students=12/), page.locator('a', { hasText: 'Send this to my admin' }).click()]);
+  await expect(page.locator('.printdoc')).toContainText('$1,428.00');
   await expect(page.locator('[data-print]')).toBeVisible();
   // Printed: no menus, no buttons, just the page.
   await page.emulateMedia({ media: 'print' });

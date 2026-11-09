@@ -796,10 +796,10 @@
         "li10": "Damit ein Kind nicht an einem Tag den ganzen Monat verbraucht, gibt es ein Limit, wie viele zusätzliche Nachrichten ein Kind pro Tag nutzen kann, und ein Limit für ungewöhnlich teure Nutzung.",
         "li11": "Ein Kind an einer Schule mit einem bezahlten Schulabo baut im Unterricht mit dem Kontingent der Schule, nie mit den zusätzlichen Nachrichten der Familie.",
         "li12": "<b>Familienabos gibt es vorerst nur für Familien in den USA.</b> Sie brauchen eine Rechnungsadresse in den USA und eine US-Zahlungskarte (oder Apple Pay oder Google Pay).",
-        "s3": "7.3 Schulabo",
-        "li13": "Der Preis gilt <b>pro Schüler und Jahr</b>, bei <b>mindestens 25 Schülern</b>. Er wird den Schuladmins auf der Registerkarte „Abrechnung“ der Schule angezeigt.",
-        "li14": "Die Schule erhält jedes Jahr einen gemeinsamen Pool an Nachrichten an den Baumeister für ihre Schüler und Lehrkräfte. Die Größe wird auf der Registerkarte „Abrechnung“ der Schule angezeigt. Schüler bekommen immer mindestens die kostenlose tägliche Menge. Wenn der Pool aufgebraucht ist, nutzen die Schüler das kostenlose Kontingent, bis das nächste Jahr beginnt.",
-        "li15": "Bezahlte Plätze zählen aktive Schüler. Wenn Sie im Laufe des Jahres Schüler hinzufügen, können Sie Plätze hinzufügen: Sie zahlen sofort einen anteiligen Betrag für den Rest des Jahres. Sie können die Zahl der Plätze für das nächste Jahr verringern; die Änderung gilt bei der Verlängerung, nie unter 25.",
+        "s3": "7.3 Lehrkraft-Plan und Schulpläne",
+        "li13": "Der <b>Lehrkraft-Plan</b> kostet <b>pro Lehrkraft und Jahr</b>, ohne Kosten pro Kind. Er gilt für alle Klassen und Schülerinnen und Schüler dieser Lehrkraft. Er beginnt mit einem <b>14-tägigen kostenlosen Test</b>, für den keine Karte nötig ist. Wird bis zum Ende des Tests keine Karte hinzugefügt, endet der Plan einfach. Jede Lehrkraft, E-Mail-Adresse und Schule kann einen kostenlosen Test haben.",
+        "li14": "Eine Lehrkraft mit dem Plan und die Schülerinnen und Schüler ihrer Klassen teilen sich eine tägliche Anzahl an Nachrichten an den Baumeister. Sie wird vor dem Start und auf der Seite „Meine Klassen“ der Lehrkraft angezeigt. Sind sie aufgebraucht, nutzen alle bis zum nächsten Tag (UTC) das kostenlose Kontingent.",
+        "li15": "<b>Schulen</b> kaufen Lehrkraft-Pläne zum gleichen Preis pro Lehrkraft und vergeben sie im Tab „Abrechnung“ der Schule an ihre Lehrkräfte. Zusätzliche Lehrkräfte werden sofort für den Rest des Jahres berechnet; weniger Lehrkräfte gelten ab der Verlängerung. Eine Schule, die früher einen Plan pro Kind gekauft hat, behält diesen Plan zu seinem Preis, wenn er sich verlängert.",
         "li16": "<b>Bezahlen:</b> per Karte online oder auf Rechnung (eine Bestellung per Purchase Order ist möglich). Rechnungen sind <b>30 Tage</b> nach Versand fällig (netto 30) und können per Karte, Banküberweisung oder ACH oder per Scheck bezahlt werden (schreiben Sie uns für die Postanschrift).",
         "li17": "Steuerbefreite Schulen können uns ihre Befreiungsbescheinigung schicken.",
         "s4": "7.4 Zahlungen, Stripe und Steuern",
@@ -886,7 +886,7 @@
       "intro": {
         "h": "Über diese Richtlinie",
         "p1": "Diese Seite erklärt, wie Sie ein Abo bei Oomba Academy kündigen und wann Sie Ihr Geld zurückbekommen. Sie ist Teil unserer <a href=\"/terms\">Nutzungsbedingungen</a>.",
-        "p2": "Spielen und die kostenlosen täglichen Nachrichten an den Baumeister sind immer kostenlos. Diese Richtlinie betrifft nur die bezahlten <b>Familienabos</b> und <b>Schulabos</b>, die mehr Nachrichten an den Baumeister bieten.",
+        "p2": "Spielen und die kostenlosen täglichen Nachrichten an den Baumeister sind immer kostenlos. Diese Richtlinie gilt nur für die bezahlten Pläne <b>Familie</b>, <b>Lehrkraft</b> und <b>Schule</b>, die mehr Nachrichten an den Baumeister bringen.",
         "p3": "Funkenpakete, einmalige Aufstockungen der Nachrichten an den Baumeister für eine Familie mit Abo, haben unten einen eigenen Abschnitt."
       },
       "cancel": {
@@ -905,7 +905,8 @@
         "p4": "<b>Was eine Erstattung bewirkt:</b> Eine Erstattung beendet das Abo sofort (wir kündigen es zuerst und erstatten dann), sodass die zusätzlichen Nachrichten sofort wegfallen.",
         "p5": "<b>So beantragen Sie eine Erstattung:</b> Schreiben Sie von einer beliebigen Adresse an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Nennen Sie uns den Namen Ihres Erwachsenenkontos (oder der Schule) sowie Datum und Betrag von Ihrem Stripe-Beleg. Wir antworten innerhalb von 3 Werktagen.",
         "p6": "<b>Wann Sie das Geld bekommen:</b> Die Erstattung geht zurück auf die Karte oder das Konto, mit dem Sie bezahlt haben. Banken brauchen meist 5 bis 10 Werktage, bis sie angezeigt wird.",
-        "p7": "<b>Schulen, die auf Rechnung zahlen:</b> Die 14 Tage beginnen an dem Tag, an dem die Zahlung bei uns eingeht. Per Scheck bezahlt? Dann erstatten wir per Scheck oder Banküberweisung."
+        "p7": "<b>Schulen, die auf Rechnung zahlen:</b> Die 14 Tage beginnen an dem Tag, an dem die Zahlung bei uns eingeht. Per Scheck bezahlt? Dann erstatten wir per Scheck oder Banküberweisung.",
+        "p8": "<b>Kostenlose Tests:</b> Der kostenlose Test eines Lehrkraft-Plans kostet nichts und endet von selbst, wenn keine Karte hinzugefügt wird. Fügst du eine Karte hinzu, wird die erste Zahlung am Ende des Tests fällig, und die 14 Tage beginnen dann."
       },
       "sparks": {
         "h": "Funkenpakete",
@@ -987,7 +988,7 @@
         "li2": "<b>Was wir speichern, wenn eine Schule eine Rechnung anfordert:</b> die Anzahl der Plätze, die Bestellnummer, Name und E-Mail-Adresse des Abrechnungskontakts, die Rechnungsadresse der Schule, ob die Schule angibt, steuerbefreit zu sein, und eine etwaige Anmerkung.",
         "li3": "<b>Was an Stripe geht:</b> Wenn wir die Rechnungen der Schule erstellen, werden der Name der Schule, die E-Mail-Adresse des Abrechnungskontakts, die Rechnungsadresse und die Bestellnummer bei Stripe gespeichert, das die Rechnungen verschickt. Der Name des Kontakts, die Anmerkung und die Angabe zur Steuerbefreiung bleiben nur bei uns. Nichts wird gesendet, bevor wir die Rechnungen erstellen. Eine Schule, die per Karte zahlt, gibt ihren Namen und ihre Rechnungsadresse stattdessen auf der Seite von Stripe ein.",
         "li4": "<b>Wie lange:</b> Name und E-Mail-Adresse des Kontakts, die Adresse, die Anmerkung und die Bestellnummer in unserer Datenbank werden <b>2 Jahre</b> nach Abschluss der Anfrage gelöscht. Stripe bewahrt die Adresse und die Bestellnummer der Schule mit ihren Rechnungen auf (siehe unten).",
-        "li5": "<b>Plätze</b> werden anhand der Anzahl aktiver Schüler gezählt. Für die Abrechnung werden keine Namen oder Arbeiten von Schülern verwendet.",
+        "li5": "<b>Plätze</b> werden in Lehrkräften gezählt: Die Schuladmins wählen, welche Lehrkräfte einen haben. Die Abrechnung nutzt keine Namen oder Arbeiten von Schülerinnen und Schülern.",
         "li6": "<b>Familien sehen nie Aktivitäten aus der Klasse:</b> Ein Erwachsener, der mit einem Schüler verbunden ist, sieht nur die zusätzlichen Familiennachrichten dieses Schülers.",
         "li7": "<b>Ein Schulabo anfragen:</b> Eine Lehrkraft kann die Schuladmins ihrer Schule um ein Schulabo bitten. Wir speichern, welche Lehrkraft gefragt hat, für welche Schule und wann, aber nie eine Nachricht. Die Schuladmins sehen, wer gefragt hat, bis sie die Anfrage ausblenden oder die Schule ein Abo hat, und wir löschen sie <b>90 Tage</b> danach. Lehrkräfte sehen nur, ob ihre Schule ein Abo hat."
       },
@@ -2264,7 +2265,8 @@
         "classText": "Der Baumeister deiner Klasse ruht sich für heute aus. Frag deine Lehrkraft, wann du wieder bauen kannst.",
         "resting": "Der Baumeister ruht sich gerade für alle aus. Dein Spiel ist gespeichert.",
         "getSpark": "Funkenpaket holen",
-        "back": "Neue Nachrichten an den Baumeister sind da. Viel Spaß beim Bauen!"
+        "back": "Neue Nachrichten an den Baumeister sind da. Viel Spaß beim Bauen!",
+        "teacherText": "Du und deine Klassen habt die heutigen Nachrichten an den Baumeister aus deinem Lehrkraft-Plan verbraucht. Morgen gibt es neue!"
       },
       "mic": {
         "start": "Sprechen statt tippen",
@@ -2843,7 +2845,61 @@
       "freeH": "Kostenlos für jede Schule",
       "free": "Alle Spiele, Klassen, Stunden und Kurse, Anmeldekarten, Fortschritt und Live-Spiele für die Klasse, dazu {free} kostenlose Builder-Nachrichten pro Tag für jeden Schüler, wie für alle bei Oomba Academy.",
       "addsH": "Ein Schulplan bringt dazu",
-      "adds": "Mehr Builder-Nachrichten: Jeder bezahlte Schüler fügt {perSeat} pro Jahr zu einem Vorrat hinzu, den die ganze Schule teilt. Sonst ändert sich nichts, und Schüler werden nie zum Bezahlen aufgefordert."
+      "adds": "Mehr Builder-Nachrichten: Jeder bezahlte Schüler fügt {perSeat} pro Jahr zu einem Vorrat hinzu, den die ganze Schule teilt. Sonst ändert sich nichts, und Schüler werden nie zum Bezahlen aufgefordert.",
+      "tp": {
+        "teachersN": "{count, plural, one {# Lehrkraft} other {# Lehrkräfte}}",
+        "active": "{count, plural, one {Lehrkraft-Plan für # Lehrkraft.} other {Lehrkraft-Pläne für # Lehrkräfte.}}",
+        "trialing": "Kostenloser Test bis {date}. Füge unter „Abrechnung verwalten“ eine Karte hinzu, um die Plätze zu behalten. Ohne Karte endet der Test einfach.",
+        "waits": "Die neuen Plätze können vergeben werden, sobald ihre Zahlung durch ist.",
+        "grant": "Ein kostenloser Plan von Oomba Academy bis {date}.",
+        "price": "{price} pro Lehrkraft und Jahr, ohne Kosten pro Kind. Jede Lehrkraft mit Platz bekommt den Lehrkraft-Plan: unbegrenzt viele Schülerinnen und Schüler und {daily} Nachrichten an den Baumeister am Tag für ihre Klassen.",
+        "seatsLabel": "Anzahl der Lehrkräfte",
+        "seatsHint": "Ihr habt jetzt {teachers}.",
+        "total": "{seats} Lehrkräfte × {price} = {total} pro Jahr (zzgl. Steuern, falls fällig)",
+        "trial": "Mit dem {days}-tägigen kostenlosen Test starten (keine Karte nötig)",
+        "renewal": "Euer Plan verlängert sich am {date} für {seats}. Ihr habt jetzt {teachers}.",
+        "renewalButton": "Lehrkräfte fürs nächste Jahr festlegen",
+        "adds": "Jede Lehrkraft mit Platz bekommt unbegrenzt viele Schülerinnen und Schüler und {daily} Nachrichten an den Baumeister am Tag für ihre Klassen. Kinder werden nie gebeten zu bezahlen.",
+        "legacyH": "Bisheriger Plan.",
+        "legacy": "Der Plan eurer Schule wird pro Kind berechnet. Er behält diesen Preis bei der Verlängerung. Schreibt uns, wenn ihr zu Lehrkraft-Plätzen wechseln möchtet.",
+        "pay": {
+          "heading": "Lehrkraft-Pläne für eure Lehrkräfte",
+          "button": "Weiter"
+        },
+        "change": {
+          "heading": "Anzahl der Lehrkräfte ändern",
+          "text": "Mehr Lehrkräfte werden sofort für den Rest des Jahres berechnet. Weniger Lehrkräfte gelten ab der Verlängerung.",
+          "button": "Lehrkräfte ändern"
+        },
+        "seats": {
+          "h": "Wer einen Platz hat",
+          "text": "{used} von {seats} Plätzen vergeben. Eine Lehrkraft mit Platz bekommt den Lehrkraft-Plan für alle ihre Klassen.",
+          "own": "(hat einen eigenen Lehrkraft-Plan)",
+          "waiting": "(wartet auf einen freien Platz)",
+          "give": "Platz vergeben",
+          "take": "Zurücknehmen",
+          "full": "Alle Plätze sind vergeben. Fügt oben Plätze hinzu, um mehr zu vergeben."
+        },
+        "seat": {
+          "given": "Platz vergeben.",
+          "taken": "Platz zurückgenommen."
+        },
+        "seatsDone": {
+          "raised": "Erledigt: {count, plural, one {# Lehrkraft} other {# Lehrkräfte}}.",
+          "pending": "Die Kartenzahlung ist nicht durchgegangen, daher bleibt die Anzahl der Lehrkräfte gleich. Aktualisiert die Karte unter „Abrechnung verwalten“ und versucht es erneut.",
+          "scheduled": "Nächstes Jahr: {count, plural, one {# Lehrkraft} other {# Lehrkräfte}}.",
+          "cleared": "Nächstes Jahr bleibt es bei {count, plural, one {# Lehrkraft} other {# Lehrkräften}}."
+        },
+        "errors": {
+          "notStaff": "Nur Lehrkräfte und Schuladmins dieser Schule können einen Platz haben.",
+          "noSeats": "Eure Schule hat noch keine Lehrkraft-Plätze.",
+          "full": "Alle Plätze sind vergeben. Fügt zuerst Plätze hinzu.",
+          "noSeat": "Diese Lehrkraft hat keinen Platz.",
+          "minSeats": "Gib eine ganze Zahl von 1 bis {max} ein.",
+          "entitled": "Eure Schule hat schon einen Plan. Ändert stattdessen die Anzahl der Lehrkräfte.",
+          "trialUsed": "Eure Schule hatte ihren kostenlosen Test schon."
+        }
+      }
     },
     "pick": {
       "title": "Ihre Schulen",
@@ -3715,7 +3771,7 @@
   },
   "plans": {
     "title": "Abos und Preise",
-    "description": "Die Abos von Oomba Academy: Kostenlos, Basis, Familie und Schule. Alle Spiele zu spielen ist immer kostenlos.",
+    "description": "Die Pläne von Oomba Academy: Kostenlos, Basic, Familie, Lehrkraft und Schule. Alle Spiele zu spielen ist immer kostenlos.",
     "heading": "Abos",
     "intro": "Alle Spiele zu spielen ist kostenlos, und mit den kostenlosen täglichen Nachrichten an den Baumeister zu bauen auch. Ein Abo bringt jeden Monat zusätzliche Nachrichten an den Baumeister.",
     "interval": {
@@ -3764,12 +3820,12 @@
     },
     "school": {
       "name": "Schule",
-      "tagline": "Für Klassen und ganze Schulen",
-      "per": "pro Schüler und Jahr",
-      "min": "Ab {min} Schülern",
-      "li1": "{perSeat, plural, one {# Nachricht an den Baumeister} other {# Nachrichten an den Baumeister}} pro Jahr für jeden bezahlten Schüler, geteilt von der ganzen Schule",
-      "li2": "Klassen bauen mit dem eigenen Pool der Schule",
-      "li3": "Per Karte bezahlen oder eine Rechnung anfordern",
+      "tagline": "Lehrkraft-Pläne für eine ganze Schule",
+      "per": "pro Lehrkraft und Jahr",
+      "min": "Rechnung oder Bestellnummer möglich",
+      "li1": "Ein Lehrkraft-Plan für jede Lehrkraft: unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für ihre Klassen",
+      "li2": "Schuladmins vergeben die Plätze an Lehrkräfte",
+      "li3": "Per Karte bezahlen oder eine Rechnung oder Bestellnummer anfragen",
       "get": "Schulabo anfragen",
       "manage": "Schulabo verwalten"
     },
@@ -3782,8 +3838,8 @@
     "staff": {
       "button": "Für Familien",
       "heading": "Basis und Familie sind für Familien",
-      "text": "Eltern oder Erziehungsberechtigte kaufen sie mit einem Erwachsenenkonto. Für Ihre Klassen gilt ein Schulabo für alle Schüler.",
-      "toSchool": "Zum Schulabo"
+      "text": "Ein Elternteil oder Erziehungsberechtigter kauft sie mit einem Erwachsenenkonto. Für deine Klassen gibt es den Lehrkraft-Plan.",
+      "toSchool": "Zum Lehrkraft-Plan"
     },
     "fine": {
       "h": "Gut zu wissen",
@@ -3792,12 +3848,12 @@
     },
     "schools": {
       "title": "Schulabos",
-      "description": "Schulabos bei Oomba Academy: ein gemeinsamer Pool an Nachrichten an den Baumeister für Ihre Schüler und Lehrkräfte, bezahlt per Karte oder auf Rechnung.",
+      "description": "Oomba Academy für Schulen: der Lehrkraft-Plan für jede deiner Lehrkräfte, ein Preis pro Lehrkraft und Jahr, per Karte oder Rechnung.",
       "heading": "Oomba Academy für Schulen",
-      "intro": "Mit einem Schulabo bekommen Ihre Schüler und Lehrkräfte einen gemeinsamen Pool an Nachrichten an den Baumeister, damit Klassen nie auf die kostenlosen warten müssen.",
+      "intro": "Schulen kaufen den Lehrkraft-Plan für ihre Lehrkräfte: ein Preis pro Lehrkraft und Jahr, unbegrenzt viele Schülerinnen und Schüler und keine Kosten pro Kind.",
       "what": {
         "h": "Was eine Schule bekommt",
-        "p1": "Schuladmins sehen das Abo, die bezahlten Schüler und den Pool auf der Registerkarte „Abrechnung“ der Schule. Familien sehen nie etwas aus dem Unterricht."
+        "p1": "Schuladmins sehen den Plan und vergeben die Plätze an Lehrkräfte im Tab „Abrechnung“ der Schule. Familien sehen nie etwas aus dem Unterricht."
       },
       "how": {
         "h": "So richten Sie eine Schule ein",
@@ -3814,9 +3870,9 @@
       },
       "calc": {
         "h": "Was würde es kosten?",
-        "label": "Anzahl der Schüler",
+        "label": "Anzahl der Lehrkräfte",
         "button": "Berechnen",
-        "result": "{seats, plural, one {# Schüler} other {# Schüler}} × {price} = {total} pro Jahr",
+        "result": "{seats, plural, one {# Lehrkraft} other {# Lehrkräfte}} × {price} = {total} pro Jahr",
         "min": "Ein Schulabo gilt für mindestens {min} Schüler, eine kleinere Schule zahlt also für {min}.",
         "tax": "Die Preise sind in US-Dollar und enthalten keine Umsatzsteuer.",
         "print": "An meinen Schuladmin senden",
@@ -3829,15 +3885,117 @@
         "printButton": "Drucken oder als PDF speichern",
         "back": "Zurück zu den Schulabos",
         "cost": "Was es kostet",
-        "perStudent": "Preis pro Schüler und Jahr",
+        "perStudent": "Preis pro Lehrkraft und Jahr",
         "minimum": "Kleinstes Abo",
         "minimumN": "{min, plural, one {# Schüler} other {# Schüler}}",
-        "students": "Schüler",
+        "students": "Lehrkräfte",
         "total": "Gesamt pro Jahr",
         "estimate": "Dies ist ein Kostenvoranschlag vom {date}, keine Rechnung. Die Preise sind in US-Dollar und enthalten keine Umsatzsteuer.",
         "setup": "So richten Sie es ein",
         "li1": "Schule einrichten (kostenlos): Füllen Sie das kurze Formular unter {url} aus.",
         "contact": "Fragen? Schreiben Sie an {email}."
+      }
+    },
+    "teacher": {
+      "name": "Lehrkraft",
+      "tagline": "Für eine Lehrkraft und alle ihre Klassen",
+      "per": "pro Lehrkraft und Jahr",
+      "trial": "{days} Tage kostenlos testen, ohne Karte",
+      "li1": "Unbegrenzt viele Schülerinnen und Schüler, keine Kosten pro Kind",
+      "li2": "{daily} KI-Spielbauten am Tag für die Klasse",
+      "li3": "Gilt für alle deine Klassen",
+      "li4": "Jederzeit kündbar",
+      "start": "Kostenlos testen",
+      "manage": "Mein Lehrkraft-Plan"
+    },
+    "trial": {
+      "title": "Lehrkraft-Plan",
+      "heading": "Teste den Lehrkraft-Plan {days} Tage kostenlos",
+      "lead": "Alles, was deine Klassen brauchen: unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für die Klasse. Zum Start brauchst du keine Karte.",
+      "price": "Nach dem Test {price} pro Lehrkraft und Jahr. Keine Kosten pro Kind.",
+      "li1": "Unbegrenzt viele Schülerinnen und Schüler in all deinen Klassen",
+      "li2": "{daily} Nachrichten an den Baumeister am Tag, geteilt von dir und deinen Klassen",
+      "li3": "Keine Karte nötig. Fügst du keine hinzu, endet der Plan einfach mit dem Test: deine Klassen und ihre Arbeiten bleiben.",
+      "li4": "Ein Preis pro Lehrkraft, jederzeit kündbar",
+      "email": "Deine dienstliche E-Mail-Adresse",
+      "emailHint": "Stripe, unser Zahlungsanbieter, schickt dir hierhin die Erinnerung vor Testende und die Belege.",
+      "cancelled": "Es wurde nichts gestartet. Du kannst deinen Test starten, wann immer du bereit bist.",
+      "notOpen": "Der Lehrkraft-Plan ist noch nicht verfügbar. Schau bald wieder vorbei.",
+      "subscribe": "Lehrkraft-Plan holen",
+      "already": "Du hast den Lehrkraft-Plan schon.",
+      "welcome": "🎉 Dein Lehrkraft-Plan ist aktiv. Leg eine Klasse an und füge deine Schülerinnen und Schüler hinzu: du und deine Klassen teilt euch {daily} Nachrichten an den Baumeister am Tag.",
+      "teachersN": "{count, plural, one {# Lehrkraft} other {# Lehrkräfte}}",
+      "forTeachers": {
+        "h": "Der Lehrkraft-Plan ist für Lehrkräfte",
+        "p": "Er ist für Lehrkräfte und ihre Klassen und braucht ein Lehrkraft-Konto. Familien haben eigene Pläne.",
+        "link": "Pläne für Familien ansehen"
+      },
+      "school": {
+        "h": "Ein kostenloser Test für deine Schule",
+        "p": "Starte einen {days}-tägigen kostenlosen Test der Lehrkraft-Pläne für {school}: {seats}. Keine Karte nötig. Nach dem Test {price} pro Lehrkraft und Jahr.",
+        "start": "Kostenlosen Test der Schule starten",
+        "billing": "Zum Tab „Abrechnung“"
+      },
+      "used": {
+        "h": "Du hattest deinen kostenlosen Test schon",
+        "p": "Jede Lehrkraft, E-Mail-Adresse und Schule kann den Plan einmal testen. Du kannst ihn weiterhin für {price} im Jahr bekommen.",
+        "school": "Deine Schule hatte ihren kostenlosen Test schon. Lehrkraft-Plätze bekommst du im Tab „Abrechnung“ der Schule."
+      },
+      "start": {
+        "h": "Starte deinen {days}-tägigen kostenlosen Test",
+        "button": "Kostenlosen Test starten",
+        "note": "Zum Bestätigen geht es auf die Seite von Stripe. Für den Test ist keine Karte nötig."
+      },
+      "signup": {
+        "h": "Erstelle dein Lehrkraft-Konto",
+        "lead": "Dein Konto, dein Klassenzimmer und dein kostenloser Test in einem Schritt. Du hast schon ein Lehrkraft-Konto? <a href=\"{login}\">Melde dich an</a>.",
+        "name": "Dein Name, wie deine Schülerinnen und Schüler ihn sehen",
+        "nameHint": "Zum Beispiel: Frau Richter",
+        "school": "Name deiner Schule",
+        "username": "Wähle einen Benutzernamen",
+        "password": "Wähle ein Passwort",
+        "passwordHint": "Mindestens {min} Zeichen.",
+        "adult": "Ich bin Lehrkraft oder arbeite an einer Schule und bin mindestens 18 Jahre alt.",
+        "submit": "Konto erstellen und Test starten",
+        "privacy": "Wir speichern deine dienstliche E-Mail-Adresse nicht in deinem Konto: Sie geht für deinen Plan an Stripe. <a href=\"{privacy}\">Datenschutzerklärung</a>"
+      },
+      "errors": {
+        "signedIn": "Du bist schon angemeldet.",
+        "name": "Gib deinen Namen ein (2 bis 60 Zeichen).",
+        "school": "Gib den Namen deiner Schule ein.",
+        "email": "Gib deine dienstliche E-Mail-Adresse ein.",
+        "password": "Verwende mindestens {min} Zeichen.",
+        "adult": "Bitte bestätige, dass du Lehrkraft oder Schulpersonal und mindestens 18 Jahre alt bist.",
+        "notTeacher": "Für den Lehrkraft-Plan brauchst du ein Lehrkraft-Konto.",
+        "entitled": "Du hast den Lehrkraft-Plan schon.",
+        "fixPayment": "Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ auf „Meine Klassen“.",
+        "trialUsed": "Dieser kostenlose Test wurde schon genutzt.",
+        "noPrice": "Der Lehrkraft-Plan ist gerade nicht erhältlich. Bitte versuche es später noch einmal.",
+        "paying": "Eine Zahlung ist schon unterwegs. Bitte warte eine Minute.",
+        "minSeats": "Gib eine ganze Zahl an Lehrkräften von 1 bis {max} ein.",
+        "noCustomer": "Es gibt noch keine Abrechnung zu verwalten."
+      },
+      "thanks": {
+        "wait": "⏳ Dein Lehrkraft-Plan wird gestartet …",
+        "slow": "Das dauert länger als sonst. Dein Plan erscheint in einer Minute auf „Meine Klassen“.",
+        "back": "Zu „Meine Klassen“"
+      },
+      "card": {
+        "heading": "Lehrkraft-Plan",
+        "grant": "Ein kostenloser Lehrkraft-Plan von Oomba Academy bis {date}.",
+        "trial": "Kostenloser Test bis {date}.",
+        "ends": "Endet am {date}.",
+        "renews": "Verlängert sich am {date}.",
+        "seat": "Ein Platz von {school}.",
+        "pool": "Heute noch {left} von {size} Nachrichten an den Baumeister für dich und deine Klassen.",
+        "ending": "{count, plural, =0 {Dein kostenloser Test endet heute.} one {Dein kostenloser Test endet in # Tag.} other {Dein kostenloser Test endet in # Tagen.}} Füge eine Karte hinzu, um den Lehrkraft-Plan zu behalten. Ohne Karte endet er einfach, und deine Klassen bleiben.",
+        "addCard": "Karte hinzufügen",
+        "manage": "Abrechnung verwalten",
+        "pending": "Deine Zahlung ist unterwegs. Der Plan startet, sobald sie ankommt.",
+        "fix": "Dein Lehrkraft-Plan wartet auf eine Zahlung. Aktualisiere deine Karte unter „Abrechnung verwalten“.",
+        "tryText": "Unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für deine Klassen. {days} Tage kostenlos, ohne Karte.",
+        "getText": "Unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für deine Klassen.",
+        "try": "{days} Tage kostenlos testen"
       }
     }
   },
@@ -3971,7 +4129,7 @@
       "h": "Ihre Schule einrichten (kostenlos)",
       "p1": "Spielen ist für alle kostenlos, und Schüler können jedes Spiel sofort ausprobieren, ohne Anmeldung.",
       "p2": "Für Klassen, Lektionen und Schulkonten schreiben Sie an {email}: den Namen Ihrer Schule und wer sich um sie kümmert. Wir richten Ihre Schule und das Konto Ihres Schuladmins ein, und der Schuladmin fügt Lehrkräfte und Schüler hinzu. Das Einrichten einer Schule ist kostenlos.",
-      "plans": "Mehr Nachrichten an den Baumeister für Ihre Klassen? Ein Schulabo bringt einen gemeinsamen Pool für Ihre Schüler und Lehrkräfte.",
+      "plans": "Mehr für deine Klassen? Teste den Lehrkraft-Plan {days} Tage kostenlos, ohne Karte: unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für die Klasse.",
       "email": "Schreiben Sie uns, um Ihre Schule einzurichten",
       "subject": "Meine Schule bei Oomba Academy einrichten",
       "plansLink": "Schulabos"
@@ -3997,7 +4155,9 @@
       "a8": "Ja. Lektionen speichern den Fortschritt, die Spielpunkte und die schriftlichen Antworten jedes Schülers. Sie sehen sie in der Klasse unter „Fortschritt“ und können den Lektionsfortschritt jedes Schülers als Tabelle (CSV) herunterladen.",
       "q9": "Welche Sprachen gibt es?",
       "a9": "{count} Sprachen, darunter Englisch, Spanisch, Französisch, Arabisch, Russisch, Hebräisch und Japanisch. Jeder Schüler wählt seine eigene.",
-      "a4google": "Schüler tippen nie eine E-Mail-Adresse ein, und wir fragen nie nach ihrem Alter oder ihrer Wohnadresse. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Es gibt keine Werbung und keine Tracking-Cookies. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern."
+      "a4google": "Schüler tippen nie eine E-Mail-Adresse ein, und wir fragen nie nach ihrem Alter oder ihrer Wohnadresse. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Es gibt keine Werbung und keine Tracking-Cookies. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
+      "q1paid": "Ist Oomba Academy für Lehrkräfte kostenlos?",
+      "a1paid": "Spielen, Klassen, Lektionen, Lernfortschritt und Oomba Live sind kostenlos, und alle Schülerinnen und Schüler bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Der optionale Lehrkraft-Plan fügt für deine Klassen einen gemeinsamen täglichen Vorrat an KI-Spielbauten hinzu, mit unbegrenzt vielen Schülerinnen und Schülern. Teste ihn 14 Tage kostenlos, ohne Karte. Die Preise stehen auf der Seite mit den Plänen."
     },
     "setup": {
       "lead": "Erzählen Sie uns kurz von Ihrer Schule. Wir richten sie innerhalb von 1 Schultag ein und antworten Ihnen per E-Mail mit den nächsten Schritten. Das Einrichten einer Schule ist kostenlos.",
@@ -6514,11 +6674,258 @@
     },
     "notice": {
       "approved": "Gute Nachricht! „{title}“ hat die Prüfung des Oomba-Teams bestanden, jetzt können es mehr Leute spielen.",
-      "sentBack": "„{title}“ braucht noch ein paar Änderungen, bevor alle es spielen können."
+      "sentBack": "„{title}“ braucht noch ein paar Änderungen, bevor alle es spielen können.",
+      "trialEnding": "Der kostenlose Test deines Lehrkraft-Plans endet in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}}. Um ihn zu behalten, füge hier eine Karte hinzu: {href} Ohne Karte endet der Plan einfach, und deine Klassen bleiben.",
+      "trialEnded": "Der kostenlose Test deines Lehrkraft-Plans ist vorbei. Deine Klassen, Schülerinnen und Schüler und ihre Spiele sind alle noch da. Den Plan kannst du hier wieder holen: {href}",
+      "trialConverted": "Danke! Dein Lehrkraft-Plan ist für ein Jahr aktiv."
     },
     "link": {
       "new": "{count, plural, one {# neue Nachricht vom Oomba-Team} other {# neue Nachrichten vom Oomba-Team}}",
       "open": "Nachrichten vom Oomba-Team"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "Unterrichtsentwürfe in Klassenspiele verwandeln · Oomba Academy",
+      "description": "Spielbasiertes Lernen für Lehrkräfte: Stunde einfügen oder PDF hochladen, und der KI-Baumeister macht daraus ein interaktives Spiel für die Klasse. 14 Tage gratis, ohne Karte.",
+      "imageAlt": "Oomba Academy für Lehrkräfte: Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse spielen will."
+    },
+    "nav": {
+      "label": "Seite für Lehrkräfte",
+      "home": "Oomba Academy Startseite",
+      "skip": "Zum Inhalt",
+      "how": "So funktioniert’s",
+      "builder": "Baumeister",
+      "courses": "Kurse",
+      "live": "Live-Spiele",
+      "pricing": "Preise",
+      "faq": "FAQ",
+      "signIn": "Anmelden",
+      "justPlay": "Einfach spielen",
+      "trial": "Gratis testen",
+      "trialShort": "Gratis testen"
+    },
+    "hero": {
+      "kicker": "Für Lehrkräfte · Klasse 3 bis 8",
+      "h1": "Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse unbedingt spielen will",
+      "lead": "Füge eine Stunde ein, lade ein PDF hoch oder beschreib einfach eine Idee. Der KI-Baumeister von Oomba macht daraus ein interaktives Spiel, das du live am Beamer spielst oder deiner Klasse zuweist.",
+      "cta": "14 Tage kostenlos testen",
+      "how": "So funktioniert’s",
+      "trustCard": "Keine Karte nötig",
+      "trustCancel": "Jederzeit kündbar",
+      "trustStudents": "Unbegrenzt viele Schüler"
+    },
+    "facts": {
+      "games": "fertige Lernspiele",
+      "courses": "komplette Kurse mit Stundenplänen",
+      "languages": "Sprachen für Schüler und Lehrkräfte",
+      "installs": "Installationen: läuft im Browser"
+    },
+    "demo": {
+      "label": "Illustration: Eine Unterrichtsstunde wird zum Spiel",
+      "lessonTag": "Deine Stunde",
+      "lessonTitle": "Gleichwertige Brüche · Klasse 4",
+      "lessonBody": "Die Kinder zeigen mit Pizzen, Streifen und Zahlenstrahlen, dass 1/2, 2/4 und 4/8 dieselbe Menge sind. Abschluss: drei kurze Kontrollfragen.",
+      "file": "stunde-brueche.pdf",
+      "builderTag": "KI-Baumeister",
+      "step1": "Liest deine Stunde",
+      "step2": "Entwirft die Level",
+      "step3": "Testet auf Handy, Tablet und Computer",
+      "step4": "Bereit zum Spielen",
+      "gameTag": "Dein Spiel",
+      "gameMeta": "Bereit für live oder als Aufgabe",
+      "host": "Live spielen",
+      "assign": "Zuweisen",
+      "credit": "Spielbild aus Fraction Factory, einem der fertigen Spiele von Oomba."
+    },
+    "how": {
+      "kicker": "So funktioniert’s",
+      "h": "Vom Unterrichtsentwurf zum Spiel in drei Schritten",
+      "lead": "Kein Programmieren, kein Design. Wenn du deine Stunde beschreiben kannst, kannst du sie spielbar machen.",
+      "s1": {
+        "h": "Bring deine Stunde mit",
+        "p": "Füge den Text deiner Stunde ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreib mit eigenen Worten, was die Klasse üben soll."
+      },
+      "s2": {
+        "h": "Der Baumeister baut das Spiel",
+        "p": "Er schreibt das Spiel und testet es dann selbst in Handy-, Tablet- und Computergröße. Wünsch dir Änderungen in einfachen Worten: „mach es schwerer“, „füg einen Timer hinzu“."
+      },
+      "s3": {
+        "h": "Spiel es, wie du willst",
+        "p": "Spiel es live am Beamer, teile es nur mit deinen Klassen oder füg es mit Abgabetermin in eine Unterrichtseinheit ein und sieh den Fortschritt jedes Kindes."
+      }
+    },
+    "builder": {
+      "kicker": "Der KI-Baumeister",
+      "h": "Deine Stunde rein, ein echtes Spiel raus",
+      "lead": "Sprich mit dem Baumeister wie mit einer Assistenz, die zufällig Spiele baut. Er speichert jede Version, du kannst also immer zurück.",
+      "you": "Du",
+      "msg": "Mach aus dieser Stunde ein Spiel für meine 4. Klasse. Zehn Minuten, drei Level, und am Ende die Kontrollfragen.",
+      "bot": "Fertig! Version 1 steht: drei Level, das leichteste zuerst, mit den Kontrollfragen am Ende. Tippe auf Spielen, um es auszuprobieren.",
+      "li1": "Versteht Unterrichtstexte und die PDFs, Bilder und Textdateien, die du hochlädst",
+      "li2": "Antwortet in deiner Sprache und in der jedes Kindes",
+      "li3": "Testet jede Version in Handy-, Tablet- und Computergröße",
+      "li4": "Privat, bis du es teilst: nur du, deine Klassen oder, nach Prüfung durch einen Menschen aus unserem Team, alle",
+      "li5": "Auch Schüler können bauen: Ein Spiel beschreiben, testen und verbessern heißt planen, schreiben und Fehler suchen, ganz ohne Code",
+      "shotAlt": "Das Oomba-Studio: Links meldet der Baumeister-Chat, dass Version 2 fertig ist, rechts läuft das Spiel in einer Vorschau in Handygröße.",
+      "caption": "Das echte Studio: links der Baumeister, rechts dein Spiel."
+    },
+    "courses": {
+      "kicker": "Fertige Kurse",
+      "h": "Komplette Kurse, vom ersten Tag an bereit",
+      "lead": "Kurze Foliensätze, schnelle Checks und Spielmissionen auf einem Weg. Jedes Kind lernt im eigenen Tempo; du siehst den Fortschritt in der Notenübersicht.",
+      "nq": {
+        "name": "Number Quest",
+        "tag": "Mathe · Klasse 3 bis 5",
+        "p": "Stellenwerte, Brüche, Messen, Formen und Daten im Numberworks von Netville mit Katze Tally. Jeder Schritt ist den Common Core State Standards für Mathematik zugeordnet."
+      },
+      "cs": {
+        "name": "CS Quest",
+        "tag": "Informatik · Klasse 3 bis 8",
+        "p": "Ein komplettes Programm, das auch Lehrkräfte ohne Informatik-Hintergrund unterrichten können: 45-Minuten-Stunden mit Plan, Spielkapitel, Live-Aufwärmrunde und Abschlussfragen. CSTA-Stufen 1B und 2."
+      },
+      "cd": {
+        "name": "Cyber Defenders",
+        "tag": "Sicher im Netz",
+        "p": "Wie Nachrichten reisen, wie Codes sie schützen, was privat bleibt und wie man einen Trick erkennt, mit Eule Pim im Postamt von Netville. Jeder Schritt ist den CYBER.ORG-Standards zugeordnet."
+      },
+      "link": "Leitfaden für Lehrkräfte"
+    },
+    "live": {
+      "kicker": "Live-Klassenspiele",
+      "h": "Bring den Beamer zum Leuchten",
+      "lead": "Aufwärmrunden und Abschlussfragen, auf die sich deine Klasse wirklich freut. Die Kinder steigen mit einem 7-stelligen Code auf ihrem eigenen Gerät ein.",
+      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math und mehr",
+      "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
+      "li3": "Punkte landen direkt in deiner Notenübersicht",
+      "li4": "Nur angemeldete Schüler: kein Chat, kein Tippen, keine ausgedachten Namen",
+      "shotAlt": "Die Lobby eines Live-Question-Battle: Fünf Schüler-Avatare warten, während der große Bildschirm den Spielcode und einen QR-Code zeigt.",
+      "link": "So funktionieren Live-Spiele"
+    },
+    "why": {
+      "kicker": "Warum Spiele wirken",
+      "h": "Spaß ist der Weg. Lernen ist das Ziel.",
+      "lead": "Gute Lernspiele stützen sich auf ein paar gut erforschte Ideen aus der Lernforschung.",
+      "b1": {
+        "h": "Abrufen üben",
+        "p": "Wer antwortet, um zu gewinnen, holt Wissen aus dem Gedächtnis, und Erinnern ist einer der verlässlichsten Wege, damit etwas hängen bleibt."
+      },
+      "b2": {
+        "h": "Sofortige Rückmeldung",
+        "p": "Jede Antwort bekommt sofort eine Reaktion, so werden Fehler korrigiert, solange der Gedanke noch frisch ist."
+      },
+      "b3": {
+        "h": "Üben ohne Druck",
+        "p": "„Noch eine Runde“ fühlt sich nach Spiel an, nicht nach Arbeitsblatt, also üben die Kinder mehr, ohne das Gewicht einer Note."
+      },
+      "b4": {
+        "h": "Alle machen mit",
+        "p": "Ein Spiel gibt jedem Kind einen Zug, auch denen, die sich selten melden."
+      },
+      "b5": {
+        "h": "Bauen ist Lernen",
+        "p": "Wer ein Spiel zu einem Thema baut, muss es gut genug verstehen, um es einem Computer beizubringen."
+      },
+      "sources": "Zum Weiterlesen"
+    },
+    "safety": {
+      "kicker": "Sicherheit und Datenschutz",
+      "h": "Für die Schule gemacht, sicher von Grund auf",
+      "lead": "Für Kinder von 8 bis 14, und du behältst die Kontrolle über deine Klassen.",
+      "li1": "Keine Werbung und keine Werbe- oder Tracking-Cookies",
+      "li2": "Schüler brauchen nie eine E-Mail-Adresse, und wir fragen nie nach Alter oder Wohnadresse",
+      "li3": "Den echten Namen eines Kindes, falls du ihn einträgst, sieht nur das Personal deiner Schule",
+      "li4": "Du bestätigst, wer deinen Klassen beitritt, und kein Kind kann mit Fremden chatten",
+      "li5": "Jedes Spiel läuft in einer abgeschlossenen Sandbox, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird",
+      "li6": "Was Kinder tippen, wird gefiltert, und hochgeladene Bilder werden geprüft und von Standortdaten befreit",
+      "links": "Lies, <a href=\"{safety}\">wie wir Kinder schützen</a>, und unsere <a href=\"{privacy}\">Datenschutzhinweise</a>."
+    },
+    "everywhere": {
+      "h": "Funktioniert überall, wo deine Klasse ist",
+      "devices": "Chromebooks, iPads, Laptops, Handys und die digitale Tafel, direkt im Browser. Nichts zu installieren.",
+      "languages": "{count} Sprachen, darunter Spanisch, Arabisch, Portugiesisch und Französisch. Jedes Kind wählt seine eigene.",
+      "voicesH": "Vorlesen",
+      "voices": "Natürliche KI-Stimmen lesen jedes offizielle Spiel vor."
+    },
+    "pricing": {
+      "kicker": "Preise",
+      "h": "Ein einfacher Preis pro Lehrkraft. Alle Schüler inklusive.",
+      "lead": "Nie Gebühren pro Kind. Teste alles 14 Tage lang kostenlos.",
+      "teacher": {
+        "name": "Lehrkraft",
+        "price": "Ein einfacher Jahrespreis",
+        "priceShown": "{price} pro Jahr",
+        "trial": "14 Tage gratis · keine Karte nötig",
+        "li1": "Unbegrenzt viele Schüler, keine Gebühr pro Kind",
+        "li2": "300 KI-Spielbauten pro Tag für deine Klasse",
+        "li3": "Alle Kurse, über 30 fertige Spiele und Live-Klassenspiele",
+        "li4": "Klassen, Unterrichtseinheiten, Fortschritt und Notenübersicht",
+        "li5": "Jede Sprache, jedes Gerät",
+        "cta": "Kostenlos testen",
+        "plans": "Tarife und Preise ansehen"
+      },
+      "schools": {
+        "name": "Schulen und Schulträger",
+        "price": "Derselbe Preis pro Lehrkraft",
+        "priceShown": "{price} pro Lehrkraft und Jahr",
+        "li1": "Jede Lehrkraft bekommt den vollen Lehrkraft-Tarif",
+        "li2": "Zahlung per Rechnung oder Bestellschein",
+        "li3": "Schulkonten und Anmeldekarten zum Ausdrucken",
+        "li4": "Wir helfen beim Einrichten deiner Schule",
+        "cta": "Schreib uns",
+        "form": "Schule einrichten",
+        "subject": "Oomba Academy für unsere Schule"
+      }
+    },
+    "faq": {
+      "h": "Fragen von Lehrkräften",
+      "q1": "Was ist Oomba Academy?",
+      "a1": "Eine Plattform für spielbasiertes Lernen für die Klassen 3 bis 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
+      "q2": "Wie funktioniert der kostenlose Test?",
+      "a2": "Starte einen 14-tägigen kostenlosen Test ohne Karte. Während des Tests ist alles aus dem Lehrkraft-Tarif dabei, und am Ende entscheidest du, ob du ein Abo abschließt.",
+      "q3": "Zahle ich für jedes Kind?",
+      "a3": "Nein. Ein Jahrespreis pro Lehrkraft deckt alle deine Schüler ab. Es gibt keine Gebühren pro Kind.",
+      "q4": "Was kann ich in ein Spiel verwandeln?",
+      "a4": "Fast jede Stunde: Füge den Text ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreib das Thema und was die Klasse üben soll. Der Baumeister nutzt dein Material als Vorlage und baut ein Spiel darum herum.",
+      "q5": "Brauchen Schüler eine E-Mail-Adresse?",
+      "a5": "Nein. Du kannst Schulkonten für deine Klasse anlegen und Anmeldekarten drucken, ganz ohne E-Mail der Kinder. Und die kostenlosen Spiele kann jeder sofort spielen.",
+      "q6": "Funktioniert es auf Chromebooks und iPads?",
+      "a6": "Ja. Es läuft in jedem aktuellen Browser auf Chromebooks, iPads und anderen Tablets, Laptops, Handys und digitalen Tafeln, ohne Installation.",
+      "q7": "Ist es sicher für meine Schüler?",
+      "a7": "Es ist für Kinder von 8 bis 14 gemacht: keine Werbung, keine Tracking-Cookies, keine E-Mails der Kinder, kein Chat mit Fremden, gefilterter Text, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird.",
+      "q8": "Kann unsere Schule per Rechnung oder Bestellschein zahlen?",
+      "a8": "Ja. Schulen zahlen denselben Preis pro Lehrkraft und Jahr, per Rechnung oder Bestellschein. Schreib uns, und wir richten es ein.",
+      "q9": "Welche Sprachen gibt es?",
+      "a9": "{count} Sprachen, darunter Englisch, Spanisch, Portugiesisch, Französisch, Deutsch, Arabisch, Hebräisch und Japanisch. Jedes Kind wählt seine eigene, und der Baumeister antwortet darin."
+    },
+    "final": {
+      "h": "Deine nächste Stunde könnte die sein, die sie nochmal spielen wollen",
+      "p": "14 Tage kostenlos. Keine Karte, keine Gebühr pro Kind.",
+      "cta": "14 Tage kostenlos testen"
+    },
+    "play": {
+      "h": "Nur zum Spielen hier?",
+      "p": "Über 30 Lernspiele, kostenlos und ohne Anmeldung.",
+      "cta": "Einfach spielen"
+    },
+    "footer": {
+      "tagline": "Lernspiele für Kinder von 8 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
+      "teachers": "Für Lehrkräfte",
+      "product": "Entdecken",
+      "about": "Über uns",
+      "parents": "Für Eltern",
+      "guide": "Leitfaden für Lehrkräfte",
+      "learn": "Lernspiele nach Fach",
+      "safety": "Sicherheit",
+      "privacy": "Datenschutz",
+      "terms": "Nutzungsbedingungen",
+      "refunds": "Erstattungen",
+      "plans": "Tarife und Preise",
+      "contact": "Kontakt",
+      "languages": "Sprachen",
+      "theme": "Design",
+      "dark": "Dunkel",
+      "light": "Hell"
     }
   }
 }

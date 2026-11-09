@@ -106,6 +106,7 @@ function upsellHtml() {
   if (!u) return '';
   if (u.kind === 'resting') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">😴</span> ${E('js.studio.limitCard.resting')}</p>`;
   if (u.kind === 'class') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">🎒</span> ${E('js.studio.limitCard.classText')}</p>`;
+  if (u.kind === 'teacher') return `<p class="st-limit-up st-limit-note"><span aria-hidden="true">🍎</span> ${E('js.studio.limitCard.teacherText')}</p>`;
   const spark = u.kind === 'spark';
   if (u.who === 'grownup' || u.who === 'staff') {
     return `<p class="st-limit-up"><a class="btn btn-sm btn-primary" href="${esc(u.href)}" data-upsell="${spark ? 'spark' : 'plan'}">${spark ? `<span aria-hidden="true">⚡</span> ${E('js.studio.limitCard.getSpark')}` : `<span aria-hidden="true">⭐</span> ${E('js.studio.limit.seePlans')}`}</a></p>`;

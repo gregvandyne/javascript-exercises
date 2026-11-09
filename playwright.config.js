@@ -55,6 +55,9 @@ export default defineConfig({
       TTS_ENABLED: '1', TTS_PROVIDER: 'mock', TTS_API_KEY: '', REPORTS_TO_HIDE: '3', TRUST_PROXY: '1',
       // Co-host handoff after 3 s instead of 2 minutes, so live-cohost.spec.js can watch it happen.
       LIVE_HANDOFF_SECS: process.env.LIVE_HANDOFF_SECS || '3',
+      // The teacher landing page at "/" (server/routes/landing.js) is off here: the specs written for the signed-out home
+      // (now /play) still open "/". Whoever merges the Play/Learn homes points them at /play and drops this line.
+      LANDING_AT_ROOT: process.env.LANDING_AT_ROOT || '0',
       GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${PORT + 1}` },
   }],
 });

@@ -154,8 +154,11 @@ logged, audited and flagged `unknown_price`.
 | `AI_HARD_MONTHLY_USD` | free + paid | Stops every AI call site-wide for the rest of the UTC month. Default: `AI_MONTHLY_BUDGET_USD` + the paid pool. |
 | `STRIPE_PMC_FAMILY` | – | `pmc_…`: the "Family" payment method configuration (cards, Apple Pay, Google Pay; Link off) for family Checkout. Required to sell family plans: unset, family plans are not on sale (never a fallback to the account's default configuration, which may have Link on); start-up logs a warning and /admin/billing shows a banner. Never a list of payment method types. |
 | `STRIPE_PMC_SCHOOL` | – | `pmc_…`: an optional "School" payment method configuration (cards, Link, ACH Direct Debit) for school Checkout. Unset: the account's default payment methods. Never a list of payment method types. |
-| `SCHOOL_TURNS_PER_SEAT` | `100` | Builder messages each paid student adds to the school's shared pool per billing year (D6). Students and staff of a school with a plan build from the pool. |
-| `SCHOOL_MIN_SEATS` | `25` | The fewest students a school plan can have (card, seat changes and invoices). |
+| `TEACHER_DAILY_MESSAGES` | `300` | The Teacher plan ($119 a year per teacher, lookup key `oomba_teacher_yearly`): Builder messages a UTC day shared by a teacher with the plan and every student of their classes (paid AI pool). Shown on /plans ("AI builds a day for the class"). |
+| `TEACHER_TRIAL_DAYS` | `14` | The Teacher plan's free trial (no card). Shown on /plans, /trial and /terms (the terms say 14 days: change them together). |
+| `TEACHER_MONTHLY_AI_USD` | `10` | What each teacher with the plan (own, granted or a school's paid seat) adds to the paid AI pool's ceiling a month. |
+| `SCHOOL_TURNS_PER_SEAT` | `100` | Legacy per-student school plans only (grandfathered): Builder messages each paid student adds to the school's shared pool per billing year (D6). |
+| `SCHOOL_MIN_SEATS` | `25` | Legacy per-student school plans only: the fewest students (seat changes at renewal). New school plans are teacher seats, at least 1. |
 | `SCHOOL_DAILY_CAP_DEFAULT` | `30` | Default Builder messages per person per day from a school's pool (the school's Billing tab can change it; never below `BUILDER_DAILY_TURNS`). |
 | `SCHOOL_SEAT_AI_USD` | `10` | AI cost (US dollars) a paid student may use per year: the paid AI pool's ceiling adds paid students × this ÷ 12 each month. |
 | `TERMS_PUBLISHED` | off | /terms, /refunds and /privacy are always on the site; `1` makes family Checkout ask the buyer to agree to /terms (set the Terms URL in Stripe's public details first) and /family link to it. The owner's choice, after the legal review (docs/legal-review.md). |
@@ -167,20 +170,42 @@ key only grown-ups marked **billing tester** on /admin (Users) can check out. A 
 dispute or an early fraud warning ends the plan at once; a second plan paid by mistake is cancelled and refunded
 automatically. /admin/billing lists subscriptions, flags, refund windows and webhook problems (read-only).
 
-School plans (chunk 5): a school admin opens the school page's **Billing** tab (shown only to school admins and the
-platform admin, and only with `BILLING_PUBLIC=1` or the preview cookie). **Pay by card** opens Stripe's Checkout for the
-number of students (at least `SCHOOL_MIN_SEATS`). More students are billed at once (a prorated invoice) and added to the
-pool once paid; fewer take effect at the renewal. **Request an invoice** stores the PO number, billing contact, address
+Teacher plan (docs/decisions.md "Teacher plan"): $119 a year per teacher, no per-student charge, a 14-day free trial
+with no card. **`/trial`** is the entry point (marketing links there; `/trial?seats=N` for a school): signed out it makes
+a teacher account and their own classroom, then starts Stripe's Checkout with the trial; a teacher with a plan goes to
+My classes; kids and grown-ups get a page saying it is for teachers. `/trial/thanks` confirms the Checkout itself. My
+classes shows the plan, today's shared Builder messages, the trial's end and **Add a card** (the Customer Portal).
+
+School plans (chunk 5, teacher seats since 2026-11-09): a school admin opens the school page's **Billing** tab (shown
+only to school admins and the platform admin, and only with `BILLING_PUBLIC=1` or the preview cookie). **Continue**
+opens Stripe's Checkout for the number of teachers at the Teacher price (with the free trial once per school) and the
+admin gives the seats to teachers there. More teachers are billed at once (a prorated invoice); fewer take effect at the
+renewal. Schools already on the per-student plan keep it ("Legacy plan"), renewals included. **Request an invoice** stores the PO number, billing contact, address
 and a tax-exempt claim; the owner then clicks **Create invoice subscription** on /admin/billing (net 30, Stripe emails the
 invoice) and can **Mark paid by check**. An invoice school keeps its plan until `SCHOOL_INVOICE_GRACE_DAYS` after the due
 date; when a plan ends everyone goes back to the free Builder messages, and nothing is removed. In test mode only
 billing testers (grown-ups or school staff, set on /admin) and the platform admin can pay.
 
-Stripe webhook events to send (14): `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+Stripe webhook events to send (15): `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
 `checkout.session.async_payment_failed`, `checkout.session.expired`, `customer.subscription.created`,
-`customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`,
+`customer.subscription.updated`, `customer.subscription.deleted`, `customer.subscription.trial_will_end`, `invoice.paid`, `invoice.payment_failed`,
 `invoice.finalized`, `invoice.overdue`, `charge.refunded`, `charge.dispute.created`,
 `radar.early_fraud_warning.created`.
+
+**Email (trial emails via Resend)**
+
+The Teacher plan's trial emails (`server/services/nudges.js`) go out through Resend's HTTP API
+(`server/services/email.js`). Nothing is sent without `RESEND_API_KEY`; the trial emails also wait for
+`EMAIL_POSTAL_ADDRESS`. `/admin/emails` switches the sequence on or off, previews each email, sends the admin a test
+and shows the send log. Setting it up: `docs/emails-go-live.md`.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `RESEND_API_KEY` | – | Resend API key (`re_…`, "Sending access" for the oomba.ai domain). Unset: no email is sent. Never echoed. |
+| `EMAIL_ENABLED` | `1` | `0` stops every email at once (the sequence waits; late ones are then skipped by its rules). |
+| `EMAIL_FROM` | `Greg at Oomba Academy <greg@oomba.ai>` | The sender. Its domain must be verified in Resend. |
+| `EMAIL_REPLY_TO` | `Greg@oomba.ai` | Where replies go. |
+| `EMAIL_POSTAL_ADDRESS` | – (no default) | The postal address CAN-SPAM requires in a marketing email's footer (one line; line breaks become " · "). **While it is empty, trial emails are not sent at all**; start-up logs it once and /admin/emails and /admin/billing warn. Transactional emails don't need it. |
 
 **Screenshots (headless Chromium)**
 

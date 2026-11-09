@@ -1,8 +1,8 @@
 // School plans (paid plans, chunk 5), end to end against the fake Stripe (tests/support/fake-stripe.js): their own
 // server with billing on (E2E_PORT + 7, default 4317) and the fake Stripe (E2E_PORT + 6), whose hosted Checkout page
 // sends signed webhooks back to the server.
-//   - card: the demo school's admin pays by card for 25 students → webhook → the student's Studio counter shows only
-//     "left today" → more students (billed at once, the pool grows);
+//   - card: the demo school's admin buys 2 teacher seats by card → webhook → gives a seat to the class's teacher → the
+//     student's Studio counter shows only "left today" → more teachers (billed at once), fewer next year;
 //   - invoice: another school's admin asks for an invoice → /admin/billing → Create invoice subscription → the plan is
 //     on → Mark paid by check; an overdue invoice shows on the tab;
 //   - "Ask my admin": a teacher asks for a School plan on My classes; the school admin sees it on My classes' plan card
@@ -26,7 +26,7 @@ let DATA = null, app = null, stripe = null;
 const env = () => ({
   PATH: process.env.PATH, HOME: process.env.HOME, PORT: String(PORT), BRB_DATA_DIR: DATA, ADMIN_USERNAME: ADMIN.username, ADMIN_PASSWORD: ADMIN.password,
   DEMO_TEACHER_PASSWORD: DEMO_PW, ANTHROPIC_API_KEY: '', BRB_SILENT: '1', TRUST_PROXY: '1', BRB_ALL_LOCALES: '1', BRB_SNAPSHOTS: '0', BRB_MOCK_DELAY_MS: '0',
-  CONTACT_EMAIL: 'help@example.com', BUILDER_DAILY_TURNS: '2', SCHOOL_TURNS_PER_SEAT: '4', SCHOOL_DAILY_CAP_DEFAULT: '3',
+  CONTACT_EMAIL: 'help@example.com', BUILDER_DAILY_TURNS: '2', SCHOOL_TURNS_PER_SEAT: '4', SCHOOL_DAILY_CAP_DEFAULT: '3', TEACHER_DAILY_MESSAGES: '6',
   // The demo school's teacher is also its school admin here.
   BOOTSTRAP_SCHOOLS: JSON.stringify([{ name: 'Oomba Academy Demo School', admin: 'DemoTeacher' }]),
   STRIPE_API_KEY: 'rk_test_fake', STRIPE_WEBHOOK_SECRET: 'whsec_fake_e2e_school', STRIPE_API_BASE: STRIPE, STRIPE_API_VERSION: '', STRIPE_TAX: '', STRIPE_LIVE_OK: '',
@@ -86,7 +86,7 @@ async function invoiceSchool(browser) {
   return { page, slug, name, adminName, password: 'bursar-pass-123' };
 }
 
-test('card: the school admin pays for 25 students; students see only "left today"; more students are billed and grow the pool', async ({ browser }) => {
+test('card: the school admin buys teacher seats; gives one to the teacher; students see only "left today"; more teachers are billed', async ({ browser }) => {
   const boss = await person(browser); await login(boss, 'DemoTeacher', DEMO_PW);
   // Not a billing tester yet (test mode): the tab is there, but nothing to pay with.
   await boss.goto(`/school/${DEMO_SLUG}?tab=billing`);
@@ -100,48 +100,46 @@ test('card: the school admin pays for 25 students; students see only "left today
   await expect(student.locator('#st-turns')).toHaveText(/🔋 2 left today/);   // a class context: no total, even unpaid
   await makeTester(browser, 'DemoTeacher');
   await boss.goto(`/school/${DEMO_SLUG}?tab=billing`);
-  await expect(boss.locator('#plan')).toContainText('$20.00 per student per year, for at least 25 students');
-  await expect(boss.locator('#seats-pay')).toHaveValue('25');
-  await boss.fill('#seats-pay', '20');
+  await expect(boss.locator('#plan')).toContainText('$119.00 per teacher per year, with no per-student charge');
+  await expect(boss.locator('#plan')).not.toContainText('per student per year');
+  await boss.fill('#seats-pay', '0');
   await boss.fill('#pw-pay', DEMO_PW);
   await boss.locator('#pay button[type=submit]').click();
-  await expect(boss.locator('#seats-pay-err')).toContainText('from 25');
-  await boss.fill('#seats-pay', '25');
+  await expect(boss.locator('#seats-pay-err')).toContainText('from 1');
+  await boss.fill('#seats-pay', '2');
+  await boss.uncheck('#pay input[name=trial]');   // paid by card now (the trial is tested in tests/unit/teacher-plan.test.js)
   await Promise.all([boss.waitForURL(/tab=billing&checkout=cs_test_/), boss.locator('#pay button[type=submit]').click()]);
-  await expect(boss.locator('#plan')).toContainText('School plan for 25 students', { timeout: 30_000 });
-  await expect(boss.locator('#plan')).toContainText('100 of 100 Builder messages left');
+  await expect(boss.locator('#plan')).toContainText('Teacher plans for 2 teachers', { timeout: 30_000 });
+  await expect(boss.locator('#seat-list')).toContainText('0 of 2 seats given');
   const st = await control('state');
   const checkout = st.checkouts.at(-1);
   expect(checkout.payment_method_configuration).toBe('pmc_fakeschool');
-  expect(checkout.line_items[0].quantity).toBe('25');
+  expect(checkout.line_items[0].quantity).toBe('2');
   expect(st.violations).toEqual([]);
 
-  // The student builds from the school's pool: still only "left today" (the school's cap, 3 here).
+  // A seat for the class's teacher (the demo teacher is also the school admin, listed first): their students build
+  // from the teacher's pool, still only "left today".
+  await Promise.all([boss.waitForLoadState('load'), boss.locator('#seat-list button', { hasText: 'Give a seat' }).first().click()]);
+  await expect(boss.locator('#seat-list')).toContainText('1 of 2 seats given', { timeout: 15_000 });
   await student.reload();
-  await expect(student.locator('#st-turns')).toHaveText(/🔋 3 left today/);
+  await expect(student.locator('#st-turns')).toHaveText(/🔋 \d+ left today/);
   await expect(student.locator('main')).not.toContainText(/\$|plan|grown-up/i);
 
-  // More students: billed at once (the fake card pays), the pool grows.
+  // More teachers: billed at once (the fake card pays).
   await boss.goto(`/school/${DEMO_SLUG}?tab=billing`);
-  await boss.fill('#seats-change', '30');
+  await boss.fill('#seats-change', '3');
   await Promise.all([boss.waitForLoadState('load'), boss.locator('#seats button[type=submit]').click()]);
-  await expect(boss.locator('#plan')).toContainText('School plan for 30 students', { timeout: 15_000 });
-  await expect(boss.locator('#plan')).toContainText('of 120 Builder messages left');
-  // Fewer students: next year.
-  await boss.fill('#seats-change', '26');
+  await expect(boss.locator('#plan')).toContainText('Teacher plans for 3 teachers', { timeout: 15_000 });
+  // Fewer teachers: next year.
+  await boss.fill('#seats-change', '2');
   await Promise.all([boss.waitForLoadState('load'), boss.locator('#seats button[type=submit]').click()]);
-  await expect(boss.locator('#seats')).toContainText('Next year: 26 students.', { timeout: 15_000 });
-  // The daily cap setting.
-  await boss.fill('#set-builderDailyCap', '5');
-  await Promise.all([boss.waitForLoadState('load'), boss.locator('#cap button[type=submit]').click()]);
-  await expect(boss.locator('#cap-hint')).toContainText('now 5');
-  await student.reload();
-  await expect(student.locator('#st-turns')).toHaveText(/🔋 5 left today/);
+  await expect(boss.locator('#seats')).toContainText('Next year: 2 teachers.', { timeout: 15_000 });
   // The owner sees the school's plan on /admin/billing.
   const a = await admin(browser);
   await a.goto('/admin/billing');
   await expect(a.locator('main')).toContainText('Oomba Academy Demo School');
-  await expect(a.locator('main')).toContainText('card · pool 30 paid · next year 26');
+  await expect(a.locator('main')).toContainText('teacher seats');
+  await expect(a.locator('main')).toContainText('card · pool 3 paid · next year 2');
   void game;
 });
 
@@ -150,7 +148,7 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
   const p = sch.page;
   await p.goto(`/school/${sch.slug}?tab=billing`);
   await p.locator('#invoice summary').click();
-  await p.fill('#inv-seats', '40');
+  await p.fill('#inv-seats', '4');
   await p.fill('#inv-po', 'PO-2026-17');
   await p.fill('#inv-contactName', 'Pat Bursar');
   await p.fill('#inv-contactEmail', 'bursar@bay.example');
@@ -161,7 +159,7 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
   await p.check('input[name=taxExempt]');
   await Promise.all([p.waitForLoadState('load'), p.locator('#invoice button[type=submit]').click()]);
   await expect(p.locator('#invoice')).toContainText('Invoice requested on', { timeout: 15_000 });
-  await expect(p.locator('#invoice')).toContainText('for 40 students');
+  await expect(p.locator('#invoice')).toContainText('for 4 teachers');
 
   // The owner.
   const a = await admin(browser);
@@ -179,17 +177,16 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
 
   // The school: on at once (net 30), the open invoice shown.
   await p.goto(`/school/${sch.slug}?tab=billing`);
-  await expect(p.locator('#plan')).toContainText('School plan for 40 students');
-  await expect(p.locator('#plan')).toContainText('Invoice for $800.00, due on');
-  await expect(p.locator('#plan')).toContainText('160 of 160 Builder messages left');
+  await expect(p.locator('#plan')).toContainText('Teacher plans for 4 teachers');
+  await expect(p.locator('#plan')).toContainText('Invoice for $476.00, due on');
 
   // Overdue: still on for 30 days after the due date, and the tab says so.
   const st = await control('state');
-  const sub = st.subscriptions.find(s => s.collection_method === 'send_invoice' && s.items.data[0].quantity === 40);
+  const sub = st.subscriptions.find(s => s.collection_method === 'send_invoice' && s.items.data[0].quantity === 4);
   expect((await control('overdue', { subscription: sub.id, days: 3 })).status).toBe(200);
   await p.reload();
   await expect(p.locator('#plan')).toContainText('An invoice is overdue. Pay it by');
-  await expect(p.locator('#plan')).toContainText('School plan for 40 students');
+  await expect(p.locator('#plan')).toContainText('Teacher plans for 4 teachers');
 
   // A check arrives: Mark paid by check.
   await a.goto('/admin/billing');

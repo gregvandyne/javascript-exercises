@@ -146,6 +146,30 @@ const GOOGLE_ID_RE = /^[0-9a-z-]+\.apps\.googleusercontent\.com$/i;
 const googleClientId = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const oidcBase = parsePublicUrl(process.env.GOOGLE_OIDC_BASE, 'GOOGLE_OIDC_BASE');
 const stripe = parseStripe(process.env);
+/** The default sender of Oomba's emails (server/services/email.js) and where replies go. */
+export const EMAIL_FROM_DEFAULT = 'Greg at Oomba Academy <greg@oomba.ai>';
+export const EMAIL_REPLY_TO_DEFAULT = 'Greg@oomba.ai';
+/**
+ * Email settings (server/services/email.js; docs/decisions.md "Trial emails"). Nothing is sent unless RESEND_API_KEY is
+ * set and EMAIL_ENABLED is not 0; trial nudges (marketing) also need EMAIL_POSTAL_ADDRESS (CAN-SPAM), which has no
+ * default. The key is never echoed. -> { apiKey, from, replyTo, postalAddress, enabled, errors }
+ */
+export function parseEmail(env = process.env) {
+  const errors = [];
+  const apiKey = String(env.RESEND_API_KEY || '').trim();
+  const enabled = parseFlag(env.EMAIL_ENABLED, 'EMAIL_ENABLED', true);
+  if (enabled.error) errors.push(enabled.error);
+  if (apiKey && !/^re_[A-Za-z0-9_]+$/.test(apiKey)) errors.push('RESEND_API_KEY must look like re_…');
+  const from = String(env.EMAIL_FROM || '').trim() || EMAIL_FROM_DEFAULT;
+  const replyTo = String(env.EMAIL_REPLY_TO || '').trim() || EMAIL_REPLY_TO_DEFAULT;
+  const addr = /^(?:[^<>@\s]+ )*<?[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+>?$/;
+  if (!addr.test(from)) errors.push('EMAIL_FROM must look like Name <name@example.com> or name@example.com');
+  if (!addr.test(replyTo)) errors.push('EMAIL_REPLY_TO must be an email address');
+  // One line in the footer: line breaks become " · ", and it is clipped (it is printed as text, never as HTML).
+  const postalAddress = String(env.EMAIL_POSTAL_ADDRESS || '').replace(/\s*[\r\n]+\s*/g, ' · ').trim().slice(0, 200);
+  return { apiKey, from, replyTo, postalAddress, enabled: enabled.on, errors };
+}
+const email = parseEmail(process.env);
 
 export const config = {
   port: num(process.env.PORT, 3000),
@@ -172,6 +196,7 @@ export const config = {
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
     ...stripe.errors,
+    ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error,
     builderWebSearch.error,
@@ -380,6 +405,20 @@ export const config = {
   schoolMinSeats: Math.max(1, Math.floor(num(process.env.SCHOOL_MIN_SEATS, 25))),
   schoolDailyCapDefault: Math.max(1, Math.floor(num(process.env.SCHOOL_DAILY_CAP_DEFAULT, 30))),
   schoolSeatAiUsd: posNum(process.env.SCHOOL_SEAT_AI_USD, 10),
+  // Email (server/services/email.js, docs/decisions.md "Trial emails"): sent with Resend's HTTP API. Off without
+  // RESEND_API_KEY; EMAIL_ENABLED=0 stops every send. Trial nudges also need EMAIL_POSTAL_ADDRESS (CAN-SPAM's physical
+  // address in the footer): while it is empty they are not sent at all.
+  resendApiKey: email.apiKey,
+  emailEnabled: email.enabled,
+  emailFrom: email.from,
+  emailReplyTo: email.replyTo,
+  emailPostalAddress: email.postalAddress,
+  // The Teacher plan (server/services/teacher-plan.js; docs/decisions.md "Teacher plan"): Builder messages a UTC day
+  // one teacher's classes share (the teacher and every student of their classes), the free trial's days, and the AI
+  // cost (US dollars) one teacher with a plan adds to the paid AI pool's ceiling a month.
+  teacherDailyMessages: Math.max(0, Math.floor(num(process.env.TEACHER_DAILY_MESSAGES, 300))),
+  teacherTrialDays: Math.min(730, Math.max(1, Math.floor(num(process.env.TEACHER_TRIAL_DAYS, 14)))),
+  teacherMonthlyAiUsd: posNum(process.env.TEACHER_MONTHLY_AI_USD, 10),
   aiPaidMonthlyBudgetUsd: process.env.AI_PAID_MONTHLY_BUDGET_USD ? posNum(process.env.AI_PAID_MONTHLY_BUDGET_USD, null) : null,
   aiHardMonthlyUsd: process.env.AI_HARD_MONTHLY_USD ? posNum(process.env.AI_HARD_MONTHLY_USD, null) : null,
 };
