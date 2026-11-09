@@ -93,5 +93,7 @@ test('Would You Rather Live: tapping the second card on a phone votes for it', a
   await expect(f.locator('#cb')).toHaveClass(/mine/);
   await expect(f.locator('#ca')).not.toHaveClass(/mine/);
   await endOpen(host);
+  // a vote has no scores: the end says the game is over, never "Everyone tied! Nobody scored" or a place
+  await expect(p.locator('#lv-place')).toHaveText('The game is over!');
   await host.close();
 });

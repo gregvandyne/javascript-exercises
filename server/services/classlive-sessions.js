@@ -1393,6 +1393,8 @@ export function endSession(sid, why = 'ended') {
       const sc = p => p.total ?? p.score;
       const tied = summary.players.filter(p => p !== me && p.rank === me.rank).length;
       const zero = summary.players.length > 1 && summary.players.every(p => p.rank === 1 && !(sc(p) > 0));
+      // Would You Rather has no right answers and no scores: no place, no "Nobody scored", just the end.
+      if (Q.isVote(s)) { sendTo(seat.conn, { t: 'you', rank: 0, score: 0, of: summary.players.length }); continue; }
       sendTo(seat.conn, { t: 'you', rank: rows ? me.rank : 0, score: sc(me), of: summary.players.length, ...(tied ? { tied } : {}), ...(zero ? { zero: 1 } : {}), ...(s.tug || T.isOn(s) ? { team: 1 } : {}) });
     }
   }
