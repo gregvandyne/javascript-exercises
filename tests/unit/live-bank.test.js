@@ -10,7 +10,8 @@ import vm from 'node:vm';
 
 const BANK = await import('../../server/live/bank/index.js');
 const { makeBank, SUBJECTS, LEVELS } = await import('../../server/live/bank/engine.js');
-const { profanityMatch } = await import('../../server/services/textfilter.js');
+const textfilterMod = await import('../../server/services/textfilter.js');
+const { profanityMatch } = textfilterMod;
 const { cleanItems } = await import('../../server/services/classlive-sets.js');
 const { availableLocales, tFor } = await import('../../server/i18n/index.js');
 const { loadItems } = await import('../../server/services/classlive-quiz.js');
@@ -138,3 +139,18 @@ test('every language has the whole bank: same levels and counts as English, one 
   }
 });
 
+
+test('a generated maths question the text filter refuses is drawn again (ja "2x + 5 = 23" read as a rude word)', () => {
+  const { cleanText } = textfilterMod;
+  const bad = { q: '2x + 5 = 23 のとき、x は？', choices: ['9', '8', '10', '7'], answer: 0, secs: 20, cat: '算数', id: 'math:a12:2x + 5 = 23 のとき、x は？' };
+  assert.equal(cleanText(bad.q, 300).ok, false, 'the filter refuses this one');
+  const bank = BANK.bankFor('ja');
+  const [fixed] = BANK.redraw(bank, [bad]);
+  assert.notEqual(fixed.q, bad.q);
+  assert.equal(cleanText(fixed.q, 300).ok, true);
+  assert.ok(fixed.id.startsWith('math:a12:'));
+  assert.equal(cleanItems([{ q: fixed.q, choices: fixed.choices, answer: fixed.answer, secs: fixed.secs, cat: fixed.cat }]).ok, true);
+  // a hand-written item is left as it is
+  const hand = { q: 'Q', choices: ['a', 'b'], answer: 0, secs: 20, cat: 'c', id: 'science:a8:0' };
+  assert.equal(BANK.redraw(bank, [hand])[0], hand);
+});
