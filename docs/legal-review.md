@@ -3,8 +3,19 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-11-01** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-11-09** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
+
+## Sign-off (2026-11-09)
+
+- **Owner: yes, 2026-11-09 · Lawyer: yes, 2026-11-09.** The owner reports that the legal team approved the published
+  /terms, /refunds and /privacy as they are live on oomba.ai on 2026-11-09, with no changes to the text. That includes
+  the Spark Packs section of /refunds (item 45 below) and the Teacher plan and free-trial text.
+- `LEGAL_UPDATED` moved to 2026-11-09 (server/routes/info.js; tests/unit/legal.test.js and tests/e2e/legal.spec.js).
+  It is also the notice version parents acknowledge for parent-made accounts, so new acknowledgements carry this date.
+- The checklist below is kept as the record of what was asked. Any later change to the text needs a new sign-off here.
+- Owner steps that remain: Stripe Dashboard → Settings → Business → Public details, Terms of service URL
+  `https://oomba.ai/terms`; then Render `TERMS_PUBLISHED=1`.
 
 ## Turning on TERMS_PUBLISHED
 
@@ -446,7 +457,7 @@ Owner decisions for parent-made accounts (no lawyer needed):
     - **`LEGAL_UPDATED` was not moved** for this change: it is also the version parents acknowledge for parent-made
       accounts (`notice_version`), so the owner moves it to the sign-off date when approving the text (and updates the
       date in tests/unit/legal.test.js and tests/e2e/legal.spec.js).
-    - **Sign-off:** _owner: not yet_ · _lawyer: not yet_. Packs stay off sale until both are recorded here (the Spark
+    - **Sign-off:** _owner: yes, 2026-11-09_ · _lawyer: yes, 2026-11-09_ (see "Sign-off" at the top). Earlier note: packs stay off sale until both are recorded here (the Spark
       Pack Prices are not created in live mode before then: docs/billing-go-live.md step 3).
 
 ### Teacher plan and free trial (2026-11-09; needs the lawyer's sign-off with the rest before `TERMS_PUBLISHED`)
