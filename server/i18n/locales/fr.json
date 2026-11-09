@@ -2422,11 +2422,11 @@
       "passed": "Réussi ! {score} bonnes réponses sur {total}.",
       "failed": "{score} bonnes réponses sur {total}. Il en faut {pass}. Réessaie !"
     },
-  "loudness": {
-    "listening": "À l’écoute",
-    "stop": "Arrêter",
-    "tap": "Touche pour commencer l’écoute"
-  }
+    "loudness": {
+      "listening": "À l’écoute",
+      "stop": "Arrêter",
+      "tap": "Touche pour commencer l’écoute"
+    }
   },
   "favorites": {
     "title": "Mes favoris",
@@ -2460,6 +2460,15 @@
       "title": "Ton enseignant a lancé un jeu en direct !",
       "join": "Rejoindre maintenant",
       "chip": "Jeu en direct"
+    },
+    "tab": {
+      "todo": "À faire",
+      "next": "Ensuite : {step}",
+      "continue": "Continuer",
+      "start": "Commencer",
+      "allDone": "Tout est fait ! Rien à faire pour le moment.",
+      "more": "Fini pour aujourd’hui ?",
+      "pick": "Tes classes"
     }
   },
   "school": {
@@ -6585,6 +6594,18 @@
       "note": "Votre classe reçoit une leçon d’une étape qui lance ce jeu. Vous pourrez la modifier ensuite dans la bibliothèque de leçons.",
       "none": "Vous n’avez pas encore de classe. Créez-en une d’abord dans Ma classe.",
       "liveOnly": "C’est un jeu en direct pour la classe : animez-le sur le grand écran au lieu de l’assigner."
+    },
+    "home": {
+      "hello": "Bonjour, {name}",
+      "classesN": "{count, plural, one {# classe} other {# classes}}",
+      "waitingN": "{count, plural, one {# réponse en attente} other {# réponses en attente}}",
+      "caughtUp": "Tout est à jour",
+      "openClass": "Ouvrir la classe",
+      "courses": "Enseigner avec un cours",
+      "live": "Jeux en direct pour toute la classe",
+      "breaks": "Pauses actives",
+      "breaksText": "Des jeux courts et amusants de Jouer, choisis pour une pause de 5 minutes sur le grand écran.",
+      "allGames": "Voir tout ce que les élèves peuvent jouer"
     }
   }
 }

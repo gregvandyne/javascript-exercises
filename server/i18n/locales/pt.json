@@ -2423,11 +2423,11 @@
       "passed": "Você conseguiu! {score} de {total} certas.",
       "failed": "{score} de {total} certas. Você precisa de {pass}. Tente de novo!"
     },
-  "loudness": {
-    "listening": "Escutando",
-    "stop": "Parar",
-    "tap": "Toque para começar a escutar"
-  }
+    "loudness": {
+      "listening": "Escutando",
+      "stop": "Parar",
+      "tap": "Toque para começar a escutar"
+    }
   },
   "favorites": {
     "title": "Meus favoritos",
@@ -2461,6 +2461,15 @@
       "title": "Seu professor começou um jogo ao vivo!",
       "join": "Entrar agora",
       "chip": "Jogo ao vivo agora"
+    },
+    "tab": {
+      "todo": "Para fazer",
+      "next": "A seguir: {step}",
+      "continue": "Continuar",
+      "start": "Começar",
+      "allDone": "Tudo feito! Não há nada para fazer agora.",
+      "more": "Terminaste por hoje?",
+      "pick": "As tuas turmas"
     }
   },
   "school": {
@@ -6587,6 +6596,18 @@
       "note": "Sua turma recebe uma aula de uma etapa que abre este jogo. Você pode mudá-la depois na biblioteca de aulas.",
       "none": "Você ainda não tem turmas. Crie uma primeiro em Minha sala.",
       "liveOnly": "Este é um jogo ao vivo para a turma: conduza na tela grande em vez de passar como atividade."
+    },
+    "home": {
+      "hello": "Olá, {name}",
+      "classesN": "{count, plural, one {# turma} other {# turmas}}",
+      "waitingN": "{count, plural, one {# resposta à espera} other {# respostas à espera}}",
+      "caughtUp": "Tudo em dia",
+      "openClass": "Abrir a turma",
+      "courses": "Ensine com um curso",
+      "live": "Jogos ao vivo para a turma toda",
+      "breaks": "Pausas ativas",
+      "breaksText": "Jogos curtos e divertidos de Jogar, escolhidos para uma pausa de 5 minutos no ecrã grande.",
+      "allGames": "Ver tudo o que os alunos podem jogar"
     }
   }
 }

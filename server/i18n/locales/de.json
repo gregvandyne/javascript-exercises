@@ -2423,11 +2423,11 @@
       "passed": "Bestanden! {score} von {total} richtig.",
       "failed": "{score} von {total} richtig. Du brauchst {pass}. Versuch es noch mal!"
     },
-  "loudness": {
-    "listening": "Hört zu",
-    "stop": "Stopp",
-    "tap": "Tippen, um zuzuhören"
-  }
+    "loudness": {
+      "listening": "Hört zu",
+      "stop": "Stopp",
+      "tap": "Tippen, um zuzuhören"
+    }
   },
   "favorites": {
     "title": "Meine Favoriten",
@@ -2461,6 +2461,15 @@
       "title": "Deine Lehrkraft hat ein Live-Spiel gestartet!",
       "join": "Jetzt mitmachen",
       "chip": "Jetzt live"
+    },
+    "tab": {
+      "todo": "Zu erledigen",
+      "next": "Als Nächstes: {step}",
+      "continue": "Weiter",
+      "start": "Starten",
+      "allDone": "Alles erledigt! Gerade gibt es nichts zu tun.",
+      "more": "Fertig für heute?",
+      "pick": "Deine Klassen"
     }
   },
   "school": {
@@ -6586,6 +6595,18 @@
       "note": "Ihre Klasse bekommt eine Lektion mit einem Schritt, die dieses Spiel startet. Sie können sie später in der Lektionsbibliothek ändern.",
       "none": "Sie haben noch keine Klasse. Legen Sie zuerst im Klassenraum eine an.",
       "liveOnly": "Das ist ein Live-Spiel für die Klasse: Starten Sie es auf dem großen Bildschirm, statt es zuzuweisen."
+    },
+    "home": {
+      "hello": "Hallo, {name}",
+      "classesN": "{count, plural, one {# Klasse} other {# Klassen}}",
+      "waitingN": "{count, plural, one {# Antwort wartet} other {# Antworten warten}}",
+      "caughtUp": "Alles erledigt",
+      "openClass": "Klasse öffnen",
+      "courses": "Mit einem Kurs unterrichten",
+      "live": "Live-Spiele für die ganze Klasse",
+      "breaks": "Bewegungspausen",
+      "breaksText": "Kurze, lustige Spiele aus „Spielen“, ausgesucht für eine 5-Minuten-Pause auf dem großen Bildschirm.",
+      "allGames": "Alles ansehen, was Schüler spielen können"
     }
   }
 }

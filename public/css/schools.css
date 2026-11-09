@@ -784,3 +784,65 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .setup-steps li{display:flex;align-items:center;gap:var(--s2);min-height:44px}
 .setup-steps .setup-n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--hover);font-weight:800;flex:none}
 .setup-steps li.is-done a{color:var(--muted);text-decoration:line-through}
+
+/* ---- The Classroom tab (/teach) and the Class tab (/classes): docs/decisions.md "Play and Learn" ---- */
+.th-head{align-items:flex-start}
+.th-head h1{margin:0}
+.th-sum{margin:var(--s1) 0 0}
+.th-sec{margin-top:var(--s6)}
+.th-sec>h2{margin:0 0 var(--s3)}
+.th-sec>p.small{margin:calc(-1 * var(--s2)) 0 var(--s3)}
+.th-sec>.libtools,.th-sec>.archived{margin-top:var(--s4)}
+.teachtools{flex-wrap:wrap;gap:var(--s2);margin:0 0 var(--s4)}
+/* A class card: chips for what needs attention, then its buttons (above the stretched name link). */
+.th-class>.th-chips{margin-top:var(--s1)}
+.chip-s.good{background:var(--ok-bg);color:var(--ok);box-shadow:none}
+.chip-s.ok{background:var(--card-2)}
+.classcard a.chip-s:not(.warn){font-size:.8rem;padding:3px 10px}
+.cc-acts{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:auto;padding-top:var(--s3)}
+.cc-acts>.btn{flex:1 1 auto;justify-content:center;white-space:normal;text-align:center;line-height:1.2}
+.classgrid>.th-class>.cc-meta{margin-top:0}
+/* Courses, live games and brain breaks: small tiles (picture or emoji, name, one line). */
+.th-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:var(--s3);margin:0;padding:0}
+.th-tiles>li{display:flex;min-width:0}
+.th-tile{flex:1;display:flex;align-items:center;gap:var(--s3);margin:0;min-height:72px;color:var(--text);text-decoration:none}
+.th-tile:hover{transform:translateY(-2px)}
+.th-tile b{display:block;line-height:1.25}
+.th-t{min-width:0;display:grid;gap:2px}
+.th-art{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:var(--r-sm);background:var(--card-2);font-size:1.8rem;overflow:hidden}
+.th-art>img{width:100%;height:100%;object-fit:cover}
+.th-more{flex-wrap:wrap;gap:var(--s2);margin:var(--s6) 0 0}
+@media (max-width:600px){
+  .th-head>.btn,.th-more>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
+  .cc-acts>.btn,.teachtools>.btn{min-height:44px}
+  .classcard a.chip-s:not(.warn){display:inline-flex;align-items:center;min-height:44px;padding:0 12px}
+}
+
+/* The Class tab: one section per class. */
+.ct-pick{margin-bottom:var(--s4)}
+.ct-class{display:grid;gap:var(--s4);scroll-margin-top:calc(var(--top) + var(--s3))}
+.ct-class+.ct-class{margin-top:var(--s6);padding-top:var(--s5);border-top:1px solid var(--line)}
+.ct-class>.class-live{margin:0}
+.ct-head{display:flex;flex-direction:column;gap:var(--s1);margin:0;color:var(--text);text-decoration:none}
+.ct-head>.cc-name{margin:0;font-size:clamp(1.4rem,4vw,2rem)}
+.ct-head>.cc-meta{margin-top:0;padding-top:0}
+.ct-todos{margin:0}
+.ct-todos>h3,.ct-games h3{margin:0 0 var(--s3)}
+.ct-list{display:grid;gap:var(--s4);margin:0}
+.ct-todo{display:grid;gap:var(--s2);padding-bottom:var(--s4);border-bottom:1px solid var(--line)}
+.ct-todo:last-child{padding-bottom:0;border-bottom:0}
+.ct-todo-t{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2)}
+.ct-todo>p{margin:0}
+.ct-todo>.btn{justify-self:start}
+.ct-done{margin:0}
+.ct-games>.rail-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2)}
+.ct-more{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:var(--s6) 0}
+.ct-top:empty{display:none}
+@media (max-width:600px){.ct-todo>.btn{justify-self:stretch;min-height:44px;justify-content:center}.ct-more>.btn{min-height:44px}}
+/* Chips with a lesson's title wrap instead of pushing a phone's page sideways. */
+.th-chips>.chip-s{white-space:normal;max-width:100%;overflow-wrap:anywhere}
+/* Brain breaks on phones: two small tiles a row (picture above the name). */
+@media (max-width:600px){
+  .th-breaks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .th-breaks .th-tile{flex-direction:column;align-items:flex-start;text-align:start}
+}

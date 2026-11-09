@@ -2422,11 +2422,11 @@
       "passed": "通過了！答對 {score}／{total} 題。",
       "failed": "答對 {score}／{total} 題。需要答對 {pass} 題，再試一次！"
     },
-  "loudness": {
-    "listening": "正在聆聽",
-    "stop": "停止",
-    "tap": "點一下開始聆聽"
-  }
+    "loudness": {
+      "listening": "正在聆聽",
+      "stop": "停止",
+      "tap": "點一下開始聆聽"
+    }
   },
   "favorites": {
     "title": "我的最愛",
@@ -2460,6 +2460,15 @@
       "title": "老師開始了一場即時遊戲！",
       "join": "立即加入",
       "chip": "即時遊戲進行中"
+    },
+    "tab": {
+      "todo": "待辦",
+      "next": "下一步：{step}",
+      "continue": "繼續",
+      "start": "開始",
+      "allDone": "全部完成！現在沒有要做的事。",
+      "more": "今天做完了嗎？",
+      "pick": "你的班級"
     }
   },
   "school": {
@@ -6585,6 +6594,18 @@
       "note": "班級會收到一個只有一步的課，內容就是玩這個遊戲。之後可以在課程庫裡修改。",
       "none": "你還沒有班級。請先在教室建立一個。",
       "liveOnly": "這是全班直播遊戲：請在大螢幕上主持，而不是指派。"
+    },
+    "home": {
+      "hello": "你好，{name}",
+      "classesN": "{count, plural, other {# 個班級}}",
+      "waitingN": "{count, plural, other {# 個回答待看}}",
+      "caughtUp": "都處理好了",
+      "openClass": "開啟班級",
+      "courses": "用課程來教",
+      "live": "全班一起玩的即時遊戲",
+      "breaks": "課間小休息",
+      "breaksText": "從「玩」挑出的有趣小遊戲，適合在大螢幕上休息 5 分鐘。",
+      "allGames": "看看學生能玩的所有遊戲"
     }
   }
 }

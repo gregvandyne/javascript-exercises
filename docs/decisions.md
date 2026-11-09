@@ -1441,6 +1441,25 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
   `home-doors.test.js`; e2e `tests/e2e/play-learn.spec.js` (Play and Learn at 360/390/1280, light/dark, he; filters;
   staff buttons; no sideways scroll, nothing touching, 44px targets).
 
+### Part 2: the Classroom tab and the Class tab
+- **Classroom (`/teach`, teachers and school admins):** "Hello, {name}" (the staff member's own roster name: staff
+  only, it is their own page) with "N classes · N answers waiting" and Host a live game; the tools row (Lesson library,
+  CS Quest, Cyber Defenders, Make a game), school cards with the plan card, staff invites and plan asks stay. My
+  classes: each class card shows what needs attention as chips (✋ requests, ✍️ answers to review, 📡 Live game now,
+  linking the host to their room, 📅 the soonest open lesson due in the next 7 days) or "All caught up", with Open
+  class, Assign a lesson (`/teach/lessons?school=&class=`) and Host a live game (`/live?class=`). New class and the
+  archived list follow. Then Teach with a course (the three courses' staff pages), Live games for the whole class
+  (`LIVE_GAMES` -> `/live?mode=`, only while the teacher may host), Brain breaks (`BRAIN_BREAKS` -> `/play/<slug>`),
+  and links to everything students can play (`/play`) and Learn.
+- **Class (`/classes`, school students):** one section per class (several: a picker of the classes first). Each has
+  its live-game banner (`classLiveBanner`; the first keeps the ids `class-live*`, more get `-n`; `class-live.js` polls
+  every `.class-live[data-class]`), the class card (opens the class page; the class name is the h1 with one class),
+  To do (`P.toDoFor`: due chip, progress bar, "x of y done", "Next: <first step not done>", Start / Continue to the
+  lesson) and Games from our class (up to 8; See all on the class page). "Done for today?" links Play and Learn;
+  joining another class and the waiting list stay below. No classmates are listed.
+- Tests: e2e `tests/e2e/play-learn-homes.spec.js` (teacher -> Classroom, student -> Class with the live banner, guest
+  -> Play, grown-up -> Family on a billing-on server; both homes at 360/390/1280, light/dark, he).
+
 ## "Add your kids" (the step after sign-up and after paying)
 The owner asked that parents can add their children during sign-up: make the child's account there, or link one the
 child already has. `/family/add` (routes/family.js) is that step.

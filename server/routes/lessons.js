@@ -65,7 +65,7 @@ function listOf(t, items, render) {
 }
 /** A class lesson's due chip: 'Due today' (amber) on the day, 'Late' once the day is over (unless done), else the date.
  *  Stored dates are calendar days: always f.day (the same date whatever zone the server runs in). */
-function dueChip(t, f, cl, { done = false } = {}) {
+export function dueChip(t, f, cl, { done = false } = {}) {
   const st = L.dueState(cl);
   if (!st) return '';
   if (st === 'late' && !done) return html`<span class="chip-s bad">⏰ ${t('lessons.class.late')}</span>`;

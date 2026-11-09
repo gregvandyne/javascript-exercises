@@ -2423,11 +2423,11 @@
       "passed": "Gehaald! {score} van de {total} goed.",
       "failed": "{score} van de {total} goed. Je hebt er {pass} nodig. Probeer het opnieuw!"
     },
-  "loudness": {
-    "listening": "Luistert",
-    "stop": "Stop",
-    "tap": "Tik om te beginnen met luisteren"
-  }
+    "loudness": {
+      "listening": "Luistert",
+      "stop": "Stop",
+      "tap": "Tik om te beginnen met luisteren"
+    }
   },
   "favorites": {
     "title": "Mijn favorieten",
@@ -2461,6 +2461,15 @@
       "title": "Je leraar is een live spel begonnen!",
       "join": "Doe nu mee",
       "chip": "Nu live"
+    },
+    "tab": {
+      "todo": "Te doen",
+      "next": "Hierna: {step}",
+      "continue": "Verder",
+      "start": "Beginnen",
+      "allDone": "Alles klaar! Er is nu niets te doen.",
+      "more": "Klaar voor vandaag?",
+      "pick": "Je klassen"
     }
   },
   "school": {
@@ -6586,6 +6595,18 @@
       "note": "Je klas krijgt een les van één stap die deze game speelt. Je kunt die later aanpassen in de lessenbibliotheek.",
       "none": "Je hebt nog geen klassen. Maak er eerst een in Klaslokaal.",
       "liveOnly": "Dit is een live klassengame: start hem op het grote scherm in plaats van hem toe te wijzen."
+    },
+    "home": {
+      "hello": "Hallo, {name}",
+      "classesN": "{count, plural, one {# klas} other {# klassen}}",
+      "waitingN": "{count, plural, one {# antwoord wacht} other {# antwoorden wachten}}",
+      "caughtUp": "Alles bijgewerkt",
+      "openClass": "Klas openen",
+      "courses": "Lesgeven met een cursus",
+      "live": "Livespellen voor de hele klas",
+      "breaks": "Beweegpauzes",
+      "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
+      "allGames": "Alles bekijken wat leerlingen kunnen spelen"
     }
   }
 }
