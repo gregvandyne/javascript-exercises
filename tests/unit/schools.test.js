@@ -189,8 +189,25 @@ test('school page and class flows: who teaches a new class, adding staff, duplic
   const own = createUser({ username: 'MsOwnAccount', password: 'secret123' });
   r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Ms Own', role: 'teacher', username: '' } });
   assert.equal(r.status, 400); assert.equal(r.json.field, 'username');
+  // A school admin's add is an invite: nobody becomes staff (and sees students' real names) until they say yes.
   r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Ms Own', role: 'teacher', username: 'MsOwnAccount' } });
-  assert.equal(r.status, 200); assert.match(r.json.toast, /Ms Own added as Teacher/); assert.equal(S.membership(oak.id, own.id).role, 'teacher');
+  assert.equal(r.status, 200); assert.match(r.json.toast, /Invite sent to @MsOwnAccount/); assert.equal(S.membership(oak.id, own.id), null, 'not staff yet');
+  assert.match((await as(head)(`/school/${oak.slug}?tab=people`)).text, /Invited, waiting[\s\S]*@MsOwnAccount/);
+  assert.match((await as(own)('/classes')).text, /wants to add you as Teacher/);
+  assert.equal((await as(rivera)(`/api/staff-invites/${oak.id}/accept`, { method: 'POST' })).status, 404, 'only the invited person can accept');
+  r = await as(own)(`/api/staff-invites/${oak.id}/accept`, { method: 'POST' });
+  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/teach');
+  assert.equal(S.membership(oak.id, own.id).role, 'teacher'); assert.equal(S.membership(oak.id, own.id).roster_name, 'Ms Own');
+  assert.equal(S.invitesOf(oak.id).length, 0);
+  // Declined and cancelled invites make nobody staff.
+  const other = createUser({ username: 'MrDecline', password: 'secret123' });
+  await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Mr D', role: 'teacher', username: 'MrDecline' } });
+  assert.equal((await as(other)(`/api/staff-invites/${oak.id}/decline`, { method: 'POST' })).status, 200);
+  assert.equal(S.membership(oak.id, other.id), null);
+  await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Mr D', role: 'teacher', username: 'MrDecline' } });
+  assert.equal((await as(head)(`/api/schools/${oak.id}/invites/${other.id}/cancel`, { method: 'POST' })).status, 200);
+  assert.equal((await as(other)(`/api/staff-invites/${oak.id}/accept`, { method: 'POST' })).status, 404);
+  assert.equal(S.membership(oak.id, other.id), null);
   r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Ms Own', role: 'admin', username: 'MsOwnAccount' } });
   assert.equal(r.status, 400); assert.match(r.json.error, /already staff here \(Teacher\)/); assert.equal(S.membership(oak.id, own.id).role, 'teacher', 'unchanged');
   r = await as(head)(`/api/schools/${oak.id}/staff`, { method: 'POST', body: { rosterName: 'Mr New', role: 'teacher', username: 'MsOwnAccount' } });
@@ -322,6 +339,7 @@ test('review fixes: teachers cannot take over staff accounts, wording and links,
   const lrid = S.pendingRequests(pc.id).find(x => x.user_id === later.id).id;
   r = await as(A)(`/api/schools/${pine.id}/staff`, { method: 'POST', body: { account: 'existing', rosterName: 'Lee Later', role: 'admin', username: 'PineLaterStaff' } });
   assert.equal(r.status, 200);
+  assert.equal((await as(later)(`/api/staff-invites/${pine.id}/accept`, { method: 'POST' })).status, 200, 'they accept the invite');
   assert.ok(!S.pendingRequests(pc.id).some(x => x.user_id === later.id), 'no stale card on the Students tab');
   assert.equal(S.approveRequest(T, lrid, { rosterName: 'x' }).code, 'notFound');
   q.run("UPDATE join_requests SET status='pending' WHERE id=?", lrid);   // even if it were still open

@@ -166,7 +166,7 @@ const REQUEST_ROLE = { teacher: 'Teacher', leader: 'Principal / head', it: 'IT l
  *  request. The site sends no email: reply from your own mail. */
 function schoolRequestsTab() {
   const { open, closed } = schoolRequests.queue();
-  const info = r => html`<p class="small" style="margin:0">${REQUEST_ROLE[r.role] || r.role} · <a href="mailto:${r.email}" dir="ltr">${r.email}</a> · about ${int(r.students)} students · ${r.country}${r.locale ? html` · page in <code>${r.locale}</code>` : ''}</p>`;
+  const info = r => html`<p class="small" style="margin:0">${r.contact_name ? html`<b>${r.contact_name}</b> · ` : ''}${REQUEST_ROLE[r.role] || r.role} · <a href="mailto:${r.email}" dir="ltr">${r.email}</a> · about ${int(r.students)} students · ${r.country}${r.locale ? html` · page in <code>${r.locale}</code>` : ''}</p>`;
   const act = (r, what, label, cls = 'btn', confirm = '') => html`<form data-api="/api/admin/school-requests/${r.id}/${what}" data-reload ${confirm ? html`data-confirm="${confirm}"` : ''}><button class="${cls}" type="submit">${label}</button></form>`;
   const openList = open.length ? html`<div class="stack">${open.map(r => html`<article class="panel" aria-label="School request: ${r.school_name}">
       <p class="row small" style="gap:6px"><span class="chip-s warn">Waiting</span> sent ${when(r.created_at)}</p>

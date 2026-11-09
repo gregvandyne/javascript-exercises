@@ -89,7 +89,13 @@ function setupBlock(req, { sent = false, failed = false } = {}) {
   if (sent) {
     return html`<div class="notice good sr-thanks" role="status" id="setup-thanks">
       ${raw(`<h3${fb(t, 'teachers.setup.thanks.h')}><span aria-hidden="true">✅</span> ${tHtml(t, 'teachers.setup.thanks.h')}</h3>`)}
-      ${el(t, 'p', 'teachers.setup.thanks.p1')}${el(t, 'p', 'teachers.setup.thanks.p2', {}, ' style="margin-bottom:0"')}</div>`;
+      ${el(t, 'p', 'teachers.setup.thanks.p1')}${el(t, 'p', 'teachers.setup.thanks.p2')}
+      ${el(t, 'h4', 'teachers.setup.thanks.todayH', {}, ' class="sr-today-h"')}
+      <ul class="lp-list sr-today">
+        ${liveOn() ? html`<li>${tHtml(t, 'teachers.setup.thanks.todayLive', { href: lp(req, '/teachers/live') })}</li>` : ''}
+        <li>${tHtml(t, 'teachers.setup.thanks.todayPlay', { href: lp(req, '/teachers#play') })}</li>
+        <li>${tHtml(t, 'teachers.setup.thanks.todayHow', { href: lp(req, '/teachers#how-it-works') })}</li>
+      </ul></div>`;
   }
   if (!maySetUpSchool(req.user)) return el(t, 'p', 'teachers.setup.kid', {}, ' class="notice"');
   const back = lp(req, '/teachers');
@@ -99,6 +105,8 @@ function setupBlock(req, { sent = false, failed = false } = {}) {
     <form class="sr-form" data-api="/api/teachers/school-request" data-next="${back}?sent=1#start" method="post" action="/api/teachers/school-request" novalidate>
       <input type="hidden" name="back" value="${back}">
       <div class="sr-grid">
+        <div class="field">${lab('sr-name', 'teachers.setup.name')}
+          <input class="input" id="sr-name" name="name" maxlength="${SR.LIMITS.name}" autocomplete="name">${errs('sr-name')}</div>
         <div class="field">${lab('sr-school', 'teachers.setup.school')}
           <input class="input" id="sr-school" name="school" required minlength="2" maxlength="${SR.LIMITS.school}" autocomplete="organization">${errs('sr-school')}</div>
         <div class="field">${lab('sr-role', 'teachers.setup.role')}
@@ -165,11 +173,24 @@ router.get('/teachers', (req, res) => {
   // ?sent=1: the thank-you after the form (nothing it said is shown back); ?failed=1: a form sent without JavaScript
   // that needs fixing (the JavaScript form shows each field's own message instead).
   const sent = req.query.sent === '1', failed = req.query.failed === '1';
+  const startPanel = html`<section class="panel lp-start" id="start" aria-labelledby="start-h">
+    ${el(t, 'h2', 'teachers.start.h', {}, ' id="start-h"')}
+    ${el(t, 'p', 'teachers.start.p1')}
+    ${setupBlock(req, { sent, failed })}
+    ${plans ? el(t, 'p', 'teachers.start.plans') : ''}
+    <div class="row">
+      ${plans ? html`<a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
+      ${list[0] ? html`<a class="btn" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
+    </div>
+    ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}
+  </section>`;
   const body = html`<div class="lp">
+  ${sent ? startPanel : ''}
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'teachers.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'teachers.h1', {}, ' id="lp-h1"')}
     ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
+    <p class="small lp-leader">🏫 ${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
     <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k)}</li>`)}</ul>
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
@@ -220,17 +241,7 @@ router.get('/teachers', (req, res) => {
     </section>
   </div>
 
-  <section class="panel lp-start" id="start" aria-labelledby="start-h">
-    ${el(t, 'h2', 'teachers.start.h', {}, ' id="start-h"')}
-    ${el(t, 'p', 'teachers.start.p1')}
-    ${setupBlock(req, { sent, failed })}
-    ${plans ? el(t, 'p', 'teachers.start.plans') : ''}
-    <div class="row">
-      ${plans ? html`<a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
-      ${list[0] ? html`<a class="btn" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
-    </div>
-    ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}
-  </section>
+  ${sent ? '' : startPanel}
   ${faq.markup}
   </div>`;
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers']];

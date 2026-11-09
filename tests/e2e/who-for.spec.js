@@ -32,7 +32,7 @@ test('the three choices lead on; "My child" signs a kid up; works without JavaSc
     await page.getByRole('link', { name: 'Who’s this for? Pick again' }).click();
     await expect(page).toHaveURL(/\/signup$/);
     // My child: the kid form, unchanged, with a way back.
-    await page.getByRole('link', { name: /My child/ }).click();
+    await page.getByRole('link', { name: /my child/i }).click();
     await expect(page).toHaveURL(/\/signup\?for=kid$/);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Make a free account');
     await expect(page.getByRole('link', { name: 'Who’s this for? Pick again' })).toHaveAttribute('href', '/signup');

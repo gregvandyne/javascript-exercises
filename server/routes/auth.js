@@ -9,7 +9,8 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, invitesFor, staffName } from '../services/schools.js';
+import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, normalizeTheme, setThemeCookie, saveUserTheme } from '../theme.js';
@@ -21,6 +22,7 @@ import { familiesOn } from '../services/family.js';
 import * as funnel from '../services/funnel.js';
 import * as courses from '../services/courses.js';
 import { countable } from '../services/traffic.js';
+import { contactEmail } from './teachers.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -31,7 +33,7 @@ export const wantedNext = n => { const s = safeNext(n); return s === '/' ? null 
 export function homeFor(u) {
   if (!u || u.is_guest) return '/';
   if (auth.isGrownup(u)) return '/family';
-  if (isSchoolStaff(u)) return '/teach';
+  if (isSchoolStaff(u)) { const slug = schoolToSetUp(u); return slug ? `/school/${slug}` : '/teach'; }
   if (isPlatformAdmin(u)) return '/admin';
   if (u.managed_school) return '/classes';
   return '/';
@@ -141,14 +143,15 @@ function authPage(req, res, mode) {
           ${isSignup ? html`<span class="hint">${t('auth.page.nameHint')}</span>` : ''}
           <span class="err" id="username-err" aria-live="polite"></span></div>
         <div class="field"><label for="password">${t('auth.page.passwordLabel')}</label>
-          <input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="${isSignup ? 'new-password' : 'current-password'}" required minlength="6">
-          ${isSignup ? html`<span class="hint">${t('auth.page.passwordHint')}</span>` : ''}
+          <span class="pw-row"><input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="${isSignup ? 'new-password' : 'current-password'}" required minlength="6">
+          <button class="btn pw-toggle" type="button" data-pw-toggle="password" aria-controls="password" aria-pressed="false" data-show="${t('auth.page.showPassword')}" data-hide="${t('auth.page.hidePassword')}">👁️ <span>${t('auth.page.showPassword')}</span></button></span>
+          ${isSignup ? html`<span class="hint">${t('auth.page.passwordHint')}</span>` : html`<span class="hint">${t('auth.page.cardHint')}</span>`}
           <span class="err" id="password-err" aria-live="polite"></span></div>
         <p class="err form-err" aria-live="polite"></p>
         <button class="btn btn-primary btn-block btn-big" type="submit">${isSignup ? t('auth.page.submitSignup') : t('auth.page.submitLogin')}</button>
       </form>
       ${isSignup ? '' : html`<div class="forgot small" id="forgot"><h2 class="forgot-h">${t('auth.page.forgotHeading')}</h2>
-        <p><span aria-hidden="true">🏫</span> ${t('auth.page.forgotSchool')}</p>
+        <p><span aria-hidden="true">🏫</span> ${t('auth.page.forgotSchool')} ${t('auth.page.forgotSchoolAdmin', { email: contactEmail() })}</p>
         <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></div>`}
       ${!u ? html`<div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>` : ''}
       <p class="center small" style="margin-top:16px">${isSignup ? html`${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a>` : html`${t('auth.page.newHere')} <a href="/signup?next=${encodeURIComponent(next)}">${t('auth.page.signupLink')}</a>`}</p>
@@ -228,7 +231,12 @@ router.post('/api/auth/login', (req, res) => {
   const u = username ? auth.getUserByName(username) : null;
   // Always run the password check (against a dummy hash for an unknown name), so the response time doesn't reveal
   // which names exist. It is synchronous, so the check-then-count above can't race with other tries.
-  if (!auth.verifyPassword(u, password)) {
+  // A login card's password typed with spaces for its little lines ("compass crab willow 16"): a school account's card
+  // passwords are words joined by dashes, so spaces count as dashes there (one try, not two).
+  // (the second check runs, against the dummy hash, for any name: the time taken never says which accounts exist)
+  const card = typeof password === 'string' && /\s/.test(password.trim()) ? password.trim().replace(/\s+/g, '-') : null;
+  const asTyped = auth.verifyPassword(u, password);
+  if (!asTyped && !(card && auth.verifyPassword(u && u.managed_school ? u : null, card) && u && u.managed_school)) {
     allow(failKey, LOGIN.ipFails, LOGIN.window); if (lockKey) allow(lockKey, LOGIN.userFails, LOGIN.window);
     return res.status(400).json({ error: req.t('auth.api.wrongLogin'), field: 'password' });
   }
@@ -239,7 +247,7 @@ router.post('/api/auth/login', (req, res) => {
   if (req.user) auth.endSession(req, res);
   auth.startSession(res, u.id, req.headers['user-agent']);
   if (prevGuestId) courses.transferPendingWins(prevGuestId, u.id);
-  auth.notePasswordLength(u, password);
+  auth.notePasswordLength(u, asTyped ? password : card);
   // After a sign-in ended on this device, its page (?next=) is only reopened for the same person: on a shared classroom
   // device the next child goes to their own home, not to the last child's lesson.
   const was = auth.endedUser(req); auth.clearEnded(req, res);
@@ -408,20 +416,24 @@ router.get('/me', auth.requireUser, (req, res) => {
   const news = u.is_guest ? new Map() : buildStatus(u.id);
   const nb = [...news.values()].filter(x => x === 'building').length, nr = [...news.values()].filter(x => x === 'ready').length;
   const gamesSub = [nb && t('me.tiles.building', { count: nb }), nr && t('me.tiles.ready', { count: nr })].filter(Boolean).join(' · ');
+  const nb_ = u.is_guest ? {} : navBadges(u), invites = u.is_guest ? 0 : invitesFor(u.id).length;
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
-    !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes']),
+    !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
     ['🛠️', t('me.tiles.games'), '/build', gamesSub],
-    ['👫', t('me.tiles.friends'), '/friends'],
-    ['💬', t('me.tiles.chat'), '/chat'],
+    ['👫', t('me.tiles.friends'), '/friends', nb_.requests ? t('me.tiles.requests', { count: nb_.requests }) : ''],
+    // the Me badge's source, said where it comes from: new messages on the Chat tile
+    ['💬', t('me.tiles.chat'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : ''],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
   ].filter(Boolean);
   // A kid's "For grown-ups" card (the link code) comes first: the Builder's daily-limit card sends kids here to show a
   // grown-up the code. Empty for everyone else (guests, school accounts, staff) and while family pages are off.
   const family = meFamilyPanel(req);
+  // School staff: their real name as their school knows it, and no kids' character maker (a grown-up's Me page).
+  const staff = !u.is_guest && isSchoolStaff(u);
   const body = html`
-  <div class="pagehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div>${u.is_guest ? '' : notYou(req, { withName: false, plain: auth.accountKind(u) !== 'student' })}</div>${!u.is_guest && isSchoolStaff(u) ? makeGameBtn(t) : ''}</div>
+  <div class="pagehead mehead">${avatar(u, 72)}<div style="flex:1;min-width:0"><h1 style="margin:0">${(staff && staffName(u)) || u.display_name}</h1><div class="muted"><bdi>@${u.username}</bdi>${u.is_guest ? ` · ${t('me.guestTag')}` : ''}</div>${u.is_guest ? '' : notYou(req, { withName: false, plain: auth.accountKind(u) !== 'student' })}</div>${staff ? makeGameBtn(t) : ''}</div>
   ${u.is_guest ? html`<div class="notice warn" style="margin-bottom:16px">${tHtml(t, 'me.guestNotice', { href: '/signup?next=/me' })}</div>` : ''}
   ${family}
   <nav class="metiles" aria-label="${t('me.title')}">
@@ -444,7 +456,7 @@ router.get('/me', auth.requireUser, (req, res) => {
         <div class="lookmenu" role="group" aria-label="${t('me.look.colorGroup')}">${auth.COLORS.map(c => html`<button class="chip" type="button" data-color="${c}" aria-pressed="${c === u.color}" aria-label="${t('me.look.colorLabel', { color: c })}"><span class="avatar" style="--s:26px;--c:${c}"></span></button>`)}</div></section>
     </template>
   </section>
-  ${characterPanel(req)}
+  ${staff ? '' : characterPanel(req)}
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>

@@ -67,6 +67,9 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   const errors = [];
   host.on('pageerror', e => errors.push(`host: ${e.message}`));
   await login(host, TEACHER.username, TEACHER.password);
+  // a room another test left open (a failed one) is ended first, so this one starts clean
+  const mine = await (await host.request.get('/api/live/mine')).json();
+  if (mine.sid) { await host.goto(mine.host); host.once('dialog', d => d.accept()); await host.locator('#lv-controls [data-lv-act="end"]:not([hidden])').click(); await expect.poll(async () => (await (await host.request.get('/api/live/mine')).json()).sid || null).toBe(null); }
   // the landing: Tug of Math with its grade (sample questions) and length; no teams row, no question set
   await host.goto('/live');
   await host.locator('label.lv-pick', { has: host.locator('input[value="mode:tug"]') }).click();

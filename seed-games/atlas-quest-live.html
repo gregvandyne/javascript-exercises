@@ -485,11 +485,16 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     $('note').textContent = m.ok ? t('right', { points: m.points }) : m.points > 0 ? t('close', { points: m.points }) + ' · ' + t('away', { km: Math.round(km(state.myPick, state.answer)) }) : t('wrong') + (state.myPick >= 0 && state.answer >= 0 ? ' · ' + t('away', { km: Math.round(km(state.myPick, state.answer)) }) : '');
     sfx(m.ok ? 'correct' : 'wrong'); buzz(m.ok ? [20, 40, 20] : 30);
   }
+  /** A row's place: equal scores share a place (and its medal); nobody gets a medal for 0 points. */
+  function place(list, k) {
+    var i = k; while (i > 0 && list[i - 1].score === list[k].score) i--;
+    return !(list[k].score > 0) ? '–' : (['🥇', '🥈', '🥉'][i] || String(i + 1));
+  }
   function topFive(top, n) {
     if (!top.length) { $('board').hidden = true; return; }
     $('board').hidden = false; $('boardh').textContent = '🏆 ' + t('top');
     var ol = $('rows'); ol.textContent = '';
-    top.slice(0, 5).forEach(function (r, k) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = ['🥇', '🥈', '🥉', '4', '5'][k]; li.children[1].textContent = r.name || ''; li.children[2].textContent = O.num(r.score); ol.appendChild(li); });
+    top.slice(0, 5).forEach(function (r, k, list) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = place(list, k); li.children[1].textContent = r.name || ''; li.children[2].textContent = O.num(r.score); ol.appendChild(li); });
     var more = Math.max(0, n - Math.min(5, top.length)); $('more').textContent = more ? t('more', { n: more }) : '';
     size();
   }
@@ -497,7 +502,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     clearInterval(ringTimer); $('ringbox').hidden = true; $('main').hidden = true; $('qcard').hidden = true; $('bottom').hidden = true; $('count').hidden = true; banner('');
     $('end').hidden = false; $('endh').textContent = '🏆 ' + t('podium');
     var ol = $('endrows'); ol.textContent = '';
-    (top || []).slice(0, 5).forEach(function (r, k) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = ['🥇', '🥈', '🥉', '4', '5'][k]; li.children[1].textContent = r.name || ''; li.children[2].textContent = O.num(r.score); ol.appendChild(li); });
+    (top || []).slice(0, 5).forEach(function (r, k, list) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = place(list, k); li.children[1].textContent = r.name || ''; li.children[2].textContent = O.num(r.score); ol.appendChild(li); });
     if (L.active && L.teamsOn) L.teams().filter(function (x) { return x.rank; }).slice(0, 3).forEach(function (x) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = x.icon || '★'; li.children[1].textContent = x.name; li.children[2].textContent = O.num(x.score); li.style.background = x.color; li.style.color = x.ink; ol.appendChild(li); });
     $('again').hidden = L.active; $('again').textContent = t('again');
     sfx('win');

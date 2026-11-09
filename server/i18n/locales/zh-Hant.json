@@ -38,7 +38,8 @@
       "builders": "給創作者",
       "terms": "條款",
       "privacy": "隱私權",
-      "teachers": "給老師"
+      "teachers": "給老師",
+      "schools": "給學校"
     },
     "build": {
       "ready": "✨ 你的遊戲「{title}」做好了！<a href=\"{href}\">打開看看</a>",
@@ -159,15 +160,19 @@
       "whoHeading": "這是給誰用的？",
       "whoGrownup": "我自己（大人）",
       "whoGrownupSub": "你自己的帳號，會連結到孩子的帳號",
-      "whoKid": "我的孩子",
-      "whoKidSub": "一個自創名字和一組密碼，不需要電子郵件。自己來的小朋友也從這裡開始。",
+      "whoKid": "小朋友（我自己或我的孩子）",
+      "whoKidSub": "一個自己想的名字和一組密碼，不需要電子郵件。自己來的小朋友和家長都從這裡開始。",
       "whoTeacher": "我是老師",
       "whoTeacherSub": "設定你的學校和班級",
       "whoBack": "這是給誰用的？重新選擇",
       "soonHeading": "大人帳號即將推出",
       "soonText": "很快你就能建立自己的帳號，並連結到孩子的帳號。在那之前，孩子可以先用自創名字和密碼免費開始（不需要電子郵件），家長頁面也會說明 Oomba Academy 怎麼運作，以及如何保護孩子的安全。",
       "soonParents": "給家長的 Oomba Academy",
-      "soonKid": "建立孩子的帳號"
+      "soonKid": "建立孩子的帳號",
+      "showPassword": "顯示",
+      "hidePassword": "隱藏",
+      "cardHint": "用登入卡嗎？請照著卡片輸入密碼，包含小橫線（-）。",
+      "forgotSchoolAdmin": "學校管理員：請寫信到 {email}。"
     },
     "api": {
       "tooManyGuests": "這裡的訪客太多了，請晚點再試。",
@@ -194,7 +199,10 @@
       "favorites": "我的最愛",
       "classes": "我的班級",
       "building": "{count, plural, other {# 個遊戲製作中}}",
-      "ready": "{count, plural, other {# 個遊戲做好了}}"
+      "ready": "{count, plural, other {# 個遊戲做好了}}",
+      "invites": "{count, plural, other {# 個邀請待回覆}}",
+      "requests": "{count, plural, other {# 個好友邀請}}",
+      "unread": "{count, plural, other {# 則新訊息}}"
     },
     "look": {
       "heading": "選擇你的造型",
@@ -525,6 +533,12 @@
       "parentSub": "安全嗎？免費幫孩子設定帳號",
       "teacher": "我是老師",
       "teacherSub": "免費的班級、課程和學習進度"
+    },
+    "class": {
+      "h": "你的班級",
+      "todo": "{count, plural, other {有 # 堂課要做}}",
+      "continue": "繼續",
+      "open": "打開我的班級"
     }
   },
   "search": {
@@ -1252,7 +1266,8 @@
     },
     "safety": {
       "heading": "聊天安全",
-      "text": "只和你在現實生活中認識的朋友聊天。絕對不要說出你的地址、學校或電話號碼。如果覺得哪裡怪怪的，要告訴大人。"
+      "text": "只和你在現實生活中認識的朋友聊天。絕對不要說出你的地址、學校或電話號碼。如果覺得哪裡怪怪的，要告訴大人。",
+      "staff": "Oomba 團隊的訊息會出現在這裡，團隊寫給你學生的內容也會附上副本，讓你隨時知道他們收到了什麼。"
     },
     "inbox": {
       "label": "和好友的聊天",
@@ -1390,7 +1405,8 @@
       "attach": "加入圖片或檔案",
       "inputLabel": "傳給小幫手的訊息",
       "placeholder": "說說你的點子…",
-      "placeholderShort": "你的點子…"
+      "placeholderShort": "你的點子…",
+      "proIncludedAll": "每則訊息都使用專業品質 🎉"
     },
     "preview": {
       "label": "遊戲預覽",
@@ -1496,6 +1512,11 @@
         "autumn": "秋天",
         "city": "城市"
       }
+    },
+    "lesson": {
+      "step": "課程步驟：{title}",
+      "back": "回到課程",
+      "handIn": "繳交"
     }
   },
   "publish": {
@@ -2271,7 +2292,9 @@
       "saved": "你的角色已經儲存！"
     },
     "live-join": {
-      "signIn": "登入"
+      "signIn": "登入",
+      "classCode": "這是班級代碼，不是遊戲代碼！班級代碼要輸入在「我的班級」頁面。",
+      "classCodeLink": "加入我的班級"
     },
     "live-play": {
       "right": "答對了！+{points}",
@@ -2334,7 +2357,15 @@
       "categoryHint": "腦力大板用，例如：行星",
       "categoryColumn": "分類",
       "pasteCats": "若要給腦力大板加分類：在試算表第一欄加上標題「分類」，或在題目前加一行像「# 行星」這樣的文字。",
-      "aiBoard": "腦力大板（5 個分類 × 5 題）"
+      "aiBoard": "腦力大板（5 個分類 × 5 題）",
+      "openOld": {
+        "what": "你從 {time} 起還開著 {title}。",
+        "started": "遊戲已經開始了。",
+        "lobby": "還在大廳等待中。",
+        "players": "{count, plural, =0 {沒有玩家連線。} other {有 # 位玩家連線中。}}",
+        "back": "回到那個遊戲",
+        "replace": "結束它並打開新遊戲"
+      }
     },
     "match": {
       "title": "線上玩 {title}",
@@ -2410,6 +2441,13 @@
       "emptyTitle": "還沒有班級遊戲",
       "emptyText": "做一個遊戲，發布時分享給你的班級。",
       "emptyAction": "做一個遊戲"
+    },
+    "gameCode": "這是遊戲代碼！我們去加入遊戲吧。",
+    "joinAnother": "加入另一個班級",
+    "live": {
+      "title": "老師開始了一場即時遊戲！",
+      "join": "立即加入",
+      "chip": "即時遊戲進行中"
     }
   },
   "school": {
@@ -2444,7 +2482,8 @@
         "billing": "付款",
         "settling": "正在設定你的方案…"
       },
-      "tools": "教學工具"
+      "tools": "教學工具",
+      "hostLive": "主持即時遊戲"
     },
     "class": {
       "new": "新增班級",
@@ -2520,7 +2559,9 @@
       "archivedToast": "已封存 {name}",
       "lessons": "課程",
       "lastActivity": "最近活動",
-      "noActivity": "尚無"
+      "noActivity": "尚無",
+      "noStudentsPick": "在下方挑選已經在 {school} 的學生，或為新學生建立帳號和登入卡。",
+      "selectShown": "全選目前顯示的"
     },
     "requests": {
       "title": "{count, plural, other {# 位學生想加入}}",
@@ -2572,7 +2613,18 @@
       "addToSchool": "加入學校",
       "added": "已將 {name} 新增為{role}",
       "putInClass": "班級",
-      "changeGrade": "變更 {name} 的年級"
+      "changeGrade": "變更 {name} 的年級",
+      "invited": "已傳送邀請給 @{name}。對方在「我的班級」頁面接受後，就會成為這裡的{role}。",
+      "invitesH": "已邀請，等待中",
+      "invitesText": "他們要在自己的「我的班級」頁面接受邀請後，才會成為這裡的教職員。",
+      "invitedWaiting": "等待對方接受",
+      "inviteCancel": "取消邀請",
+      "inviteCancelled": "已取消邀請。",
+      "inviteNote": "我們會傳送邀請：對方接受後才會成為教職員。沒有人會在未同意的情況下被加入。",
+      "sendInvite": "傳送邀請",
+      "existingShort": "對方的使用者名稱",
+      "addToClassFor": "把 {name} 分到班級",
+      "changeName": "修改真實姓名"
     },
     "settings": {
       "name": "學校名稱",
@@ -2598,7 +2650,11 @@
       "timeZoneUnset": "設定學校的時區後，課程會在您所在地區的午夜開放，截止日期也會在午夜結束。在此之前，截止日開始後的 36 小時內都不算遲交。",
       "timeZoneHint": "課程會在這個時區的午夜開放，截止日期也會在午夜結束。當地現在是 {time}。",
       "groupSchool": "學校",
-      "groupClasses": "班級與加入"
+      "groupClasses": "班級與加入",
+      "chatHintOff": "學校帳號不能和任何人聊天，但仍然可以玩和創作。",
+      "unsaved": "你有尚未儲存的變更。",
+      "unsavedLeave": "設定的變更還沒儲存。要不儲存就離開嗎？",
+      "timeZoneUse": "使用 {zone}（這台電腦的時區）"
     },
     "cards": {
       "title": "登入卡",
@@ -2611,7 +2667,10 @@
       "backPeople": "回到「成員」",
       "backClass": "回到 {name}",
       "skipped": "{count, plural, other {# 位學生使用個人帳號，密碼維持不變}}：{names}。",
-      "count": "{count, plural, other {# 張登入卡}}"
+      "count": "{count, plural, other {# 張登入卡}}",
+      "later": "用手機嗎？這些卡片會為你（只有你）保留 24 小時：在學校電腦上從班級的「學生」分頁再次打開並列印，或在手機上用 分享 › 列印 › 儲存為 PDF。",
+      "again": "{count, plural, other {今天做的 # 張登入卡：還在這裡可以列印。}}",
+      "open": "打開卡片"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -2646,7 +2705,8 @@
       "isStudent": "{name} 是這裡的學生，因此無法新增為教職員。",
       "tickStudents": "請至少勾選一位學生。",
       "badZone": "請從清單中選擇時區。",
-      "badCap": "請輸入 {min} 到 {max} 之間的整數。"
+      "badCap": "請輸入 {min} 到 {max} 之間的整數。",
+      "otherSchoolNext": "這個帳號屬於另一所學校。請對方先離開那所學校，或改選「為他們建立學校帳號」。"
     },
     "classTabs": {
       "lessons": "課程",
@@ -2745,7 +2805,9 @@
         "requested": "已於 {date} 申請發票（{seats}）。我們會寄到 {email}。",
         "cancel": "撤回申請",
         "cancelConfirm": "要撤回這個發票申請嗎？",
-        "cancelled": "申請已撤回。"
+        "cancelled": "申請已撤回。",
+        "region": "縣市或地區",
+        "postcode": "郵遞區號"
       },
       "cap": {
         "heading": "每天的小幫手訊息",
@@ -2774,7 +2836,13 @@
         "noRequest": "目前沒有未完成的申請。",
         "noCustomer": "你的學校還沒有付款帳戶。"
       },
-      "legal": "學校方案受我們的<a href=\"/terms\">服務條款</a>、<a href=\"/refunds\">退款與取消政策</a>以及<a href=\"/privacy#schoolBilling\">隱私權政策</a>規範。"
+      "legal": "學校方案受我們的<a href=\"/terms\">服務條款</a>、<a href=\"/refunds\">退款與取消政策</a>以及<a href=\"/privacy#schoolBilling\">隱私權政策</a>規範。",
+      "total": "{seats} 位學生 × {price} = 每年 {total}（如有稅金另計）",
+      "seatsWho": "請計算會使用 Builder 的學生人數：之後還可以再增加。",
+      "freeH": "每所學校都免費",
+      "free": "所有遊戲、班級、課程與系列課程、登入卡、進度和班級即時遊戲，以及每位學生每天 {free} 則免費 Builder 訊息，和 Oomba Academy 的每個人一樣。",
+      "addsH": "學校方案多了",
+      "adds": "更多 Builder 訊息：每位付費學生每年為全校共用的額度增加 {perSeat} 則。其他都不變，也絕不會要求學生付費。"
     },
     "pick": {
       "title": "你的學校",
@@ -2806,6 +2874,23 @@
       "classes": "{count, plural, other {# 個班級}}",
       "unplaced": "{count, plural, other {# 位學生尚未分班}}",
       "staff": "{count, plural, other {# 位教職員}}"
+    },
+    "invite": {
+      "h": "你收到學校的邀請",
+      "text": "{school} 想把你加入為{role}。",
+      "accept": "接受",
+      "decline": "拒絕",
+      "accepted": "你現在是 {school} 的教職員了。",
+      "declined": "已拒絕邀請。"
+    },
+    "setup": {
+      "h": "設定你的學校",
+      "teachers": "加入老師（成員）",
+      "classes": "建立班級並選擇老師（班級）",
+      "students": "加入學生並分到班級（成員）",
+      "rules": "檢查學校規則並設定時區（設定）",
+      "billing": "看看學校方案會多些什麼（付款）",
+      "done": "完成"
     }
   },
   "lessons": {
@@ -2834,7 +2919,8 @@
       "empty": "這裡還沒有課程",
       "emptyText": "建立新課程、讓 AI 擬一份草稿，或複製同事分享的課程。",
       "find": "搜尋課程",
-      "readyMade": "現成課程"
+      "readyMade": "現成課程",
+      "numberQuest": "Number Quest（數學，3–5 年級）"
     },
     "folder": {
       "name": "資料夾名稱",
@@ -2896,7 +2982,9 @@
       "bodyGame": "說明（選填）",
       "buildHint": "例如：「一個有 8 題關於行星的問答遊戲」",
       "newGameLink": "製作新遊戲給學生玩",
-      "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。"
+      "deleteWorkConfirm": "要刪除這個步驟嗎？這個步驟中 {n, plural, other {# 位學生的作品}}也會一併刪除。此動作無法復原。",
+      "liveGames": "班級即時遊戲（由你主持）",
+      "otherGames": "更多遊戲"
     },
     "ai": {
       "button": "用 AI 擬草稿",
@@ -2920,7 +3008,12 @@
       "restored": "已重新指派給 {class}，學生先前的作品也回來了。",
       "changeDates": "變更日期",
       "allClasses": "這堂課程已指派給你所有的班級。",
-      "zoneNote": "{zone, select, none {日期以 UTC 計算，在截止日開始後的 36 小時內都不算遲交。校務管理員可以在設定中指定學校的時區。} other {課程會在 {zone} 時區的午夜開放，截止日期也會在午夜結束。}}"
+      "zoneNote": "{zone, select, none {日期以 UTC 計算，在截止日開始後的 36 小時內都不算遲交。校務管理員可以在設定中指定學校的時區。} other {課程會在 {zone} 時區的午夜開放，截止日期也會在午夜結束。}}",
+      "zoneUnset": "因為學校的時區還沒設定，目前截止時間是 UTC 午夜。",
+      "zoneSet": "設定時區",
+      "zoneAsk": "學校管理員可以在學校的「設定」中設定。",
+      "doneHere": "已指派給 {class}。學生現在就看得到。",
+      "seeStarted": "看看誰已經開始"
     },
     "class": {
       "title": "課程",
@@ -2947,7 +3040,8 @@
       "toReview": "{count} 份待批閱",
       "dueToday": "今天截止",
       "late": "逾期",
-      "removedGroup": "已從這個班級移除"
+      "removedGroup": "已從這個班級移除",
+      "readyMade": "使用現成的課程"
     },
     "view": {
       "teacherPreview": "這是學生畫面。儲存作品的按鈕已為你停用。",
@@ -3052,7 +3146,10 @@
       "send": "儲存並標為已批閱",
       "update": "更新回饋",
       "noAnswers": "還沒有答案。",
-      "attention": "需要關注的優先"
+      "attention": "需要關注的優先",
+      "selfMarked": "學生自己標記完成，沒有在這裡玩",
+      "minutes": "{count, plural, other {# 分鐘}}",
+      "swipe": "左右滑動表格，看全部步驟"
     },
     "student": {
       "doneOf": "已完成 {done}/{total}",
@@ -3074,7 +3171,9 @@
       "updateAnswer": "修改我的答案",
       "sentAgo": "已於 {when} 送出",
       "feedback": "老師的話",
-      "readNoFeedback": "老師已經看過你的答案了。"
+      "readNoFeedback": "老師已經看過你的答案了。",
+      "about": "關於這堂課",
+      "readToMe": "唸給我聽"
     },
     "courses": {
       "started": "{total} 人中有 {started} 人已開始"
@@ -3921,8 +4020,12 @@
       "kid": "老師或學校主管可以在這裡請我們設定學校。把這個頁面給你的老師看吧！",
       "thanks": {
         "h": "謝謝你！我們已經收到你的申請。",
-        "p1": "我們會在 1 個上課日內設定好你的學校，並回信到你提供的電子郵件。",
-        "p2": "等待的時候，可以和全班一起試玩一個遊戲：學生不用註冊，馬上就能玩。"
+        "p1": "我們會在下一個上課日結束前設定好你的學校，並回信到你留下的電子郵件，附上登入方式和接下來要做的事。",
+        "p2": "等待的時候，可以和全班一起試玩一個遊戲：學生不用註冊，馬上就能玩。",
+        "todayH": "等待時，今天就能做的事",
+        "todayLive": "<a href=\"{href}\">和班級玩即時遊戲</a>：學生用任何裝置輸入代碼就能加入，不需要帳號。",
+        "todayPlay": "<a href=\"{href}\">和班級一起玩遊戲</a>：學生不用註冊就能馬上玩。",
+        "todayHow": "<a href=\"{href}\">看看班級、登入卡和課程怎麼運作</a>，學校一設定好就能開始。"
       },
       "errors": {
         "school": "請輸入學校名稱（2 到 100 個字元）。",
@@ -3934,7 +4037,8 @@
         "busyToday": "今天收到很多申請。請明天再試一次，或寫信給我們。",
         "full": "我們現在無法接受更多申請。請改為寫信給我們。",
         "again": "表單裡有些地方需要修正。請檢查後再送出一次。"
-      }
+      },
+      "name": "你的姓名"
     },
     "live": {
       "h": "課堂即時遊戲",
@@ -3946,7 +4050,8 @@
     },
     "cs": {
       "cstaNote": "標準：CSTA K-12 Computer Science Standards（2017），1B 與 2 級。本課程並非由 CSTA 製作、審查或認可。"
-    }
+    },
+    "leaderLine": "學校主管或資訊人員？<a href=\"{href}\">設定你的學校</a>：完全免費。"
   },
   "learn": {
     "crumbs": "導覽路徑",
@@ -4605,7 +4710,8 @@
       "removed": "你無法加入這個遊戲。",
       "slowDown": "嘗試次數太多了。請等幾分鐘再試一次。",
       "takenDown": "這個遊戲現在無法使用。",
-      "off": "即時遊戲目前已關閉。"
+      "off": "即時遊戲目前已關閉。",
+      "onlyYou": "這個遊戲只開放給你的班級，所以你要用自己的身分玩：按上面的「加入」按鈕。不是你嗎？請先登出。"
     },
     "play": {
       "title": "即時遊戲",
@@ -4649,8 +4755,10 @@
       "pickTeam": "選擇你的隊伍",
       "eyes": "請看老師",
       "moved": "你換到了{team}",
-      "again": "老師可能會再開一場遊戲，請留在這個頁面！",
-      "aiVoice": "朗讀使用電腦產生的 AI 聲音（{provider}）。"
+      "again": "等老師一下…… 老師可能會和在場的大家再開一局。",
+      "aiVoice": "朗讀使用電腦產生的 AI 聲音（{provider}）。",
+      "placeTied": "{others, plural, other {你和另外 # 位玩家並列第 {rank} 名！}}",
+      "placeZero": "大家平手！這次沒有人得分。"
     },
     "emote": {
       "wave": "揮手",
@@ -4703,7 +4811,8 @@
       "soundOn": "聲音開",
       "soundOff": "聲音關",
       "seeResultsNow": "現在看結果",
-      "read": "朗讀題目"
+      "read": "朗讀題目",
+      "away": "{count} 位已斷線"
     },
     "landing": {
       "title": "主持即時遊戲",
@@ -5368,7 +5477,9 @@
       "supportPrivate": "只有這位學生和你看得到。",
       "supportWaits": "公布答案會等這位學生作答。你隨時可以選「現在公布」。",
       "saved": "已儲存。",
-      "tabCohosts": "共同主持人"
+      "tabCohosts": "共同主持人",
+      "openWindow": "在這台電腦的新視窗中打開",
+      "openWindowHint": "在班級房間裡，它會顯示學生的真實姓名：別讓那個視窗出現在大螢幕上。"
     },
     "support": {
       "count": "{count, plural, other {# 位學生有儲存的調整。}}",
@@ -5543,7 +5654,8 @@
       "toLine": "直到分出勝負（最多 3 分鐘）",
       "of": "的",
       "hint": "系統會幫你把玩家平均分成兩隊。每個人拿到自己的題目，誰也抄不到，人數較少的隊伍也能拉得一樣用力。",
-      "teamsAuto": "已為你分好兩隊：藍色鯨魚隊和紅色狐狸隊。你可以平衡、打亂或移動玩家。"
+      "teamsAuto": "已為你分好兩隊：藍色鯨魚隊和紅色狐狸隊。你可以平衡、打亂或移動玩家。",
+      "classGrade": "你的班級：{grade}"
     },
     "doodleUi": {
       "legend": "Doodle Hoot（即時）",

@@ -176,8 +176,16 @@
     if (L.active) { if (!L.quiz.answer(k)) return; } else practiceVote(k);
     myPick = k; locked(k); sfx('select'); buzz(20);
   }
-  $('ca').addEventListener('click', function () { choose(0); });
-  $('cb').addEventListener('click', function () { choose(1); });
+  // A finger votes on lifting it from the card it pressed; the browser's click after that tap (on some touch screens it
+  // lands on the other card) is not a second vote. A mouse, Enter or Space votes with the click.
+  var downOn = null, lastTap = -1e9;
+  ['ca', 'cb'].forEach(function (id, k) {
+    var b = $(id);
+    b.addEventListener('pointerdown', function (e) { downOn = e.pointerType === 'mouse' ? null : b; });
+    b.addEventListener('pointerup', function (e) { if (e.pointerType === 'mouse' || downOn !== b) return; downOn = null; lastTap = performance.now(); choose(k); });
+    b.addEventListener('pointercancel', function () { downOn = null; });
+    b.addEventListener('click', function () { if (performance.now() - lastTap < 800) return; choose(k); });
+  });
 
   // ---- the reveal: the class's split, everyone on Oomba, something to talk about --------------------------------------
   var talkN = 0;

@@ -2941,6 +2941,53 @@ card only; every other D16 / §17 rule stays (no prices, plan names or links to 
   `SPARK_PACK_DAILY_MAX`, `SPARK_PACK_AI_USD_PER_MESSAGE`. Until the Prices exist the picker says "Spark Packs aren't on
   sale yet" and the reconcile job logs the missing lookup keys.
 
+## Classroom fixes from simulated class sessions (8 Nov 2026)
+
+Four simulated sessions (a new teacher, a school admin, a student, a live class) found where real classes would stall.
+- **Live games, touch:** on touch screens the browser's follow-up click after a tap could land on another button inside
+  the game frame (reproduced in Chromium touch emulation at a high pixel ratio: Tug of Math typed "96083" for 903). Tug's
+  keypads ignore a click within 800 ms of a pointer press; Would You Rather votes on lifting the finger from the card it
+  pressed and ignores the click after it. `tests/e2e/live-touch.spec.js`. Still to check on a real Android phone, iPhone
+  and touchscreen Chromebook.
+- **An old open room:** "Open the room" with a room still open no longer uses `confirm()` (which a dismissed dialog
+  turned into "go back to the old room"): the landing names the old game, when it opened, whether it started and how many
+  players are connected, with "Go back to it" / "End it and open the new game". Lock / Unlock room stay in the host's
+  controls during the game. "N of 60 players" counts connected players, with "· N disconnected".
+- **Live details:** Tug's grade starts at the class's grade when opened from a class; Game settings hide (and don't send)
+  the quiz fields a game with its own options doesn't use; ties say "You tied for place 1 with 5 other players", all-zero
+  says "Everyone tied!", team games show only the team place; the student end screen hides "Play again" (which leaves the
+  room) while the teacher can still start a rematch; Atlas medals only for points, ties share a place; "Play as a guest"
+  in a class room says why not (`onlyYou`); the Teacher view dialog offers a new window on the same computer.
+- **Codes in the wrong box:** a 6-character class code in /join (Google sign-in off) says so and links /classes?code=…;
+  7 digits in the class-code box go on to /join with the code in the #fragment.
+- **Class live banner:** a student's class page (polling `/api/classes/:id/live` every 8 s), My classes and Home show
+  "Your teacher started a live game · Join now" for the class's open room (class members only).
+- **Staff invites (`staff_invites`, migration 0059):** a school admin adding someone's own account sends an invite; they
+  become staff only when they accept on My classes / Teach. The platform admin's adds stay immediate (appointing a new
+  school's first admin). People shows "Invited, waiting" with Cancel. Audited `school.staff_invite*`.
+- **Teacher identity:** staff see their school's real name for them in their own header and Me page (never public
+  pages); no character maker on a staff Me page; the Chat page's safety line is written for adults; automatic welcome
+  copies to school admins and a school account's own welcome are stored read, so they don't badge Me / Friends.
+- **Self-marked game steps** show ☑️ "Marked done by the student, not played here" in a lesson's progress grid (no time
+  and no score recorded); real play shows minutes. No schema change.
+- **School setup:** a school admin of a school with no classes (who teaches none) lands on the school page, which shows a
+  self-ticking checklist (teachers → classes → students in classes → rules/time zone, and Billing). Settings warn about
+  unsaved changes, the chat hint follows the choice, and an unset time zone offers this computer's zone.
+- **People:** "Put in a class" and "Change real name" in a student's ⋯ menu; an empty class opens "Students already at the
+  school" first (with Select all shown and a Not-in-a-class filter).
+- **Login cards** stay viewable to the teacher who made them for 24 hours (in memory, never stored), linked from the
+  class's Students tab. Sign in has Show password; a school account's card password typed with spaces counts as dashes
+  (the second check runs against the dummy hash for any name, so timing says nothing).
+- **/teachers:** the request form asks "Your name" (optional; fills in the school admin's name for the platform admin);
+  after sending, the thank-you is first on the page with what a teacher can do today. A provisional self-serve teacher
+  account was **not** built: it changes who may create children's accounts before a school is verified, an owner decision.
+- **Lessons:** assign shows "Assigned to … · See who's started" next to the form; the zone note links Settings for
+  school admins; Number Quest is a ready-made chip; the Game picker is grouped by subject; Draft with AI takes the class's
+  grade and subject; New lesson stays on the class's Lessons tab; a student's lesson has "Read to me" (device voice only,
+  teacher text) and "About this lesson"; the Studio opened for a lesson's build step links back to the lesson.
+- **Billing tab:** a live total under the number of students, "Free for every school" vs "A School plan adds", and the
+  invoice form's country from the school's request (Postcode / County for non-US).
+
 ## Billing ready to switch on (8 Nov 2026)
 
 - **What is left is the owner's:** docs/billing-go-live.md lists every Stripe Dashboard and Render step, the decisions

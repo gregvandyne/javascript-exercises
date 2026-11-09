@@ -699,6 +699,14 @@ export const MIGRATIONS = [
       created_at INTEGER NOT NULL, seen_at INTEGER, closed_at INTEGER, close_reason TEXT);
     CREATE UNIQUE INDEX IF NOT EXISTS builder_asks_open ON builder_asks(child_id) WHERE closed_at IS NULL;
     CREATE INDEX IF NOT EXISTS builder_asks_family ON builder_asks(family_id, closed_at);`],
+  // A school admin adding someone's own existing account as staff sends an invite: they become staff only when they
+  // accept it (services/schools.js inviteStaff). One open invite per school and person. And "Set up my school" asks for
+  // the sender's name (school_requests.contact_name), which fills in the school admin's real name for the platform admin.
+  ['0059_staff_invites', `
+    CREATE TABLE IF NOT EXISTS staff_invites (school_id TEXT NOT NULL, user_id TEXT NOT NULL, role TEXT NOT NULL,
+      roster_name TEXT NOT NULL DEFAULT '', invited_by TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (school_id, user_id));
+    CREATE INDEX IF NOT EXISTS staff_invites_user ON staff_invites(user_id);
+    ALTER TABLE school_requests ADD COLUMN contact_name TEXT NOT NULL DEFAULT '';`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

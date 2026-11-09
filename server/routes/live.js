@@ -110,6 +110,9 @@ router.post('/api/live/join', on, async (req, res) => {
   if (!CODE_RE.test(code)) return err(400, 'badCode');
   const s = LS.byJoinCode(code);
   if (!s) { LS.joinMiss(key); return err(404, 'notFound'); }
+  // "Play as a guest" in a class (or family) room: those rooms seat signed-in players as themselves, so say so rather
+  // than seating them as themselves anyway.
+  if (req.body && req.body.asGuest && s.audience !== 'open' && req.user && !req.user.is_guest) return err(400, 'onlyYou');
   const r = LS.join(s, req.user, { asGuest: !!(req.body && req.body.asGuest), useMine: !!(req.body && req.body.useMine), lang: req.locale });
   if (!r.ok) {
     const status = { signIn: 401, notMember: 403, removed: 403, takenDown: 404, locked: 409, full: 409, ended: 410 }[r.code] || 400;
@@ -363,7 +366,12 @@ router.post('/api/live/sessions', on, requireAnyAccount, hostOnly, rateLimit('lv
   } else opts = sessionOpts(b, req);
   const r = LS.createSession(req.user, opts);
   if (!r.ok) {
-    if (r.code === 'hasOpen') return apiErr(req, res, 409, 'hasOpen', { sid: r.sid, host: `/live/host/${r.sid}` });
+    if (r.code === 'hasOpen') {
+      // What the open room is, so the teacher can choose: go back to it, or end it and open the new one.
+      const old = LS.get(r.sid);
+      const players = old ? [...old.seats.values()].filter(x => x.conn).length : 0;
+      return apiErr(req, res, 409, 'hasOpen', { sid: r.sid, host: `/live/host/${r.sid}`, title: old ? old.title : '', started: !!(old && old.startedAt), since: old ? old.createdAt : null, players });
+    }
     const status = { off: 404, notHost: 404, notFound: 404, busy: 503 }[r.code] || 400;
     return apiErr(req, res, status, r.code, r.issue ? { issue: r.issue.code } : {});
   }

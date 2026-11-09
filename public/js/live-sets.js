@@ -51,6 +51,23 @@ if (form) {
     // part 3: quiz-only settings only for picks that use questions; how teams score only when teams are on;
     // "names" (account names) only in a class room
     for (const el of form.querySelectorAll('#lv-settings-landing .lv-quiz-only')) el.hidden = !quiz;
+    // Games with their own question options (Atlas: how many, time per question) show only the settings they use:
+    // never a second "Time per question" or "Number of questions"; Tug of Math and Doodle Hoot score no quiz at all.
+    // (a hidden one is not sent either, so a remembered value can't change the game unseen)
+    {
+      const mode = pick.slice(5), used = own ? { atlas: ['points', 'voices'], wyr: ['voices'] }[mode] || [] : null;
+      for (const k of ['secs', 'count', 'shuffleQ', 'shuffleA', 'points', 'voices']) {
+        const el = $(`lv-ls-${k}`), box = el && el.closest('.field, .lv-check-row');
+        if (!box) continue;
+        if (used) box.hidden = !used.includes(k);
+        const off = !!used && !used.includes(k);
+        for (const x of box.querySelectorAll('input, select')) x.disabled = off;
+      }
+    }
+    if (own) {
+      const mode = pick.slice(5), used = { atlas: ['points', 'voices'], wyr: ['voices'] }[mode] || [];
+      const vh = form.querySelector('#lv-settings-landing p.lv-quiz-only'); if (vh) vh.hidden = !used.includes('voices');
+    }
     const teams = +((form.querySelector('input[name="teams"]:checked') || {}).value || 0);
     const sc = form.querySelector('.lv-team-scoring'); if (sc) sc.hidden = !teams;
     const names = form.querySelector('select[name="names"]');
@@ -76,7 +93,8 @@ if (form) {
   if (tugBox && !tugBox.dataset.preset) {
     try {
       const last = JSON.parse(localStorage.getItem(TUG_KEY) || 'null');
-      if (last) for (const [id, v] of [['lv-tug-grade', last.g], ['lv-tug-len', last.l]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
+      // opened from a class with a grade: that grade, whatever was picked last (the length is still the last one)
+      if (last) for (const [id, v] of [['lv-tug-grade', tugBox.dataset.classGrade || last.g], ['lv-tug-len', last.l]]) { const el = $(id); if (el && [...el.options].some(o => o.value === String(v))) el.value = String(v); }
     } catch { /* private mode */ }
   }
   // Doodle Hoot Live: the word language, level, rounds and time this browser picked last.
@@ -98,12 +116,23 @@ if (form) {
     if (body.pick === 'mode:doodle') { try { localStorage.setItem(DOODLE_KEY, JSON.stringify({ l: body.doodleLang, v: body.doodleLevel, r: body.doodleRounds, s: body.doodleSecs, g: body.doodleTiles })); } catch { /* private mode */ } }
     const btn = form.querySelector('[type=submit]'), err = form.querySelector('.form-err');
     btn.disabled = true; err.textContent = '';
+    if ($('lv-open-old')) $('lv-open-old').hidden = true;
     const go = async replace => {
       try { const r = await api('/api/live/sessions', { method: 'POST', body: { ...body, replace } }); location.href = r.redirect; }
       catch (er) {
         if (er.data && er.data.code === 'hasOpen') {
-          if (confirm(t('js.live-sets.replaceOpen'))) return go(true);
-          location.href = er.data.host; return;
+          // Never straight into the old room: say what is still open and let the teacher choose.
+          const box = $('lv-open-old');
+          if (!box) { if (confirm(t('js.live-sets.replaceOpen'))) return go(true); location.href = er.data.host; return; }
+          const d = er.data, when = d.since ? new Date(d.since).toLocaleTimeString(document.documentElement.lang || undefined, { hour: 'numeric', minute: '2-digit' }) : '';
+          $('lv-open-old-text').textContent = [t('js.live-sets.openOld.what', { title: d.title || '?', time: when }),
+            t(d.started ? 'js.live-sets.openOld.started' : 'js.live-sets.openOld.lobby'), t('js.live-sets.openOld.players', { count: d.players || 0 })].join(' ');
+          $('lv-open-back').href = d.host;
+          const rep = $('lv-open-replace');
+          rep.onclick = () => { rep.disabled = true; box.hidden = true; go(true); };
+          box.hidden = false; rep.disabled = false; btn.disabled = false;
+          box.scrollIntoView({ block: 'center', behavior: 'smooth' }); rep.focus({ preventScroll: true });
+          return;
         }
         err.textContent = er.message; btn.disabled = false;
       }

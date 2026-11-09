@@ -333,3 +333,5 @@ button.stp-line{cursor:pointer}
 @media (max-width:520px){.st-themes-h{display:none}}
 /* Out of messages: nothing can be sent, so the theme chips (they only write into the message) step aside for the card. */
 .st-compose.st-out .st-themes{display:none}
+/* Opened from a lesson's build step: the way back to the lesson (and its Hand in). */
+.st-lesson{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;padding:8px 12px;border-radius:12px;background:var(--hover);font-weight:700}

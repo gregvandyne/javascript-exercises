@@ -42,7 +42,16 @@ form && form.addEventListener('submit', e => {
   if (CLASS_RE.test(v) && !LIVE_RE.test(v) && D.googleOn) return;   // a class code: the class flow takes it from here
   e.preventDefault();
   err.textContent = '';
-  if (!LIVE_RE.test(v)) { say(err, 'badCode'); input.setAttribute('aria-invalid', 'true'); input.focus(); return; }
+  if (!LIVE_RE.test(v)) {
+    // a class code typed here (6 letters and numbers): say so, and point to where class codes go
+    if (CLASS_RE.test(v) && /[A-Za-z]/.test(v)) {
+      const to = `/classes?code=${encodeURIComponent(v.toUpperCase())}`;
+      const a = document.createElement('a'); a.className = 'btn btn-sm'; a.id = 'lv-class-code-link';
+      a.href = D.signedIn ? to : `/login?next=${encodeURIComponent(to)}`; a.textContent = t('js.live-join.classCodeLink');
+      err.textContent = t('js.live-join.classCode'); err.append(' ', a);
+    } else say(err, 'badCode');
+    input.setAttribute('aria-invalid', 'true'); input.focus(); return;
+  }
   input.removeAttribute('aria-invalid');
   code = v;
   if (D.signedIn) { show('who'); const row = $('lv-use-mine-row'); if (row) row.hidden = false; const g = $('lv-as-guest'); if (g) g.hidden = false; return; }
@@ -63,6 +72,8 @@ async function join(opts, errEl = err) {
     if (r.canReroll) { card(r); show('card'); } else location.href = r.play;
   } catch (e) {
     const c = e.data && e.data.code;
+    // a class room: no guest seat for a signed-in player. Stay on "Join as me", without the guest button.
+    if (c === 'onlyYou') { const g = $('lv-as-guest'); if (g) g.hidden = true; say(errEl, c); return; }
     show('code');
     if (c) say(err, c, null, e.data); else err.textContent = e.message;
     input && input.focus();
