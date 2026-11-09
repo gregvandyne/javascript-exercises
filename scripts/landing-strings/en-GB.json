@@ -1,0 +1,27 @@
+{
+  "hero": {
+    "kicker": "For teachers · ages 8 to 14"
+  },
+  "demo": {
+    "lessonTitle": "Equivalent fractions · Year 5",
+    "step3": "Playtesting on phone, tablet and computer"
+  },
+  "how": {
+    "s1": { "p": "Paste your lesson text, upload a PDF, a picture or a text file, or describe what your class should practise, in your own words." },
+    "s2": { "p": "It writes the game, then playtests it by itself on phone, tablet and computer sizes. Ask for changes in plain words: “make it harder”, “add a timer”." }
+  },
+  "builder": {
+    "msg": "Make a game from this lesson for my Year 5 class. Ten minutes, three levels, and end with the exit ticket questions."
+  },
+  "courses": {
+    "nq": { "tag": "Maths · ages 8 to 11" },
+    "cs": { "tag": "Computing · ages 8 to 14", "p": "A full programme a teacher with no computing background can run: 45-minute lessons, each with a plan, a game chapter, a live warm-up and an exit ticket. CSTA levels 1B and 2." }
+  },
+  "why": {
+    "b3": { "p": "“One more round” feels like play, not a worksheet, so pupils practise more, without the weight of a mark." }
+  },
+  "faq": {
+    "a1": "A game-based learning platform for ages 8 to 14. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in maths, computing and online safety.",
+    "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a game around it."
+  }
+}

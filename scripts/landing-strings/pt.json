@@ -1,0 +1,208 @@
+{
+  "meta": {
+    "title": "Transforme seus planos de aula em jogos · Oomba Academy",
+    "description": "Aprendizagem baseada em jogos para professores: cole uma aula ou envie um PDF e o Construtor IA cria um jogo interativo para a turma. 14 dias grátis, sem cartão.",
+    "imageAlt": "Oomba Academy para professores: transforme seus planos de aula em jogos que a turma vai pedir para jogar."
+  },
+  "nav": {
+    "label": "Site para professores",
+    "home": "Início da Oomba Academy",
+    "skip": "Ir para o conteúdo",
+    "how": "Como funciona",
+    "builder": "Construtor",
+    "courses": "Cursos",
+    "live": "Jogos ao vivo",
+    "pricing": "Preços",
+    "faq": "Dúvidas",
+    "signIn": "Entrar",
+    "justPlay": "Só jogar",
+    "trial": "Teste grátis",
+    "trialShort": "Teste grátis"
+  },
+  "hero": {
+    "kicker": "Para professores · do 3º ao 8º ano",
+    "h1": "Transforme seus planos de aula em jogos que a turma vai pedir para jogar",
+    "lead": "Cole uma aula, envie um PDF ou só descreva uma ideia. O Construtor IA da Oomba transforma tudo num jogo interativo para jogar ao vivo no projetor ou passar para a turma.",
+    "cta": "Comece seu teste grátis de 14 dias",
+    "how": "Veja como funciona",
+    "trustCard": "Sem cartão",
+    "trustCancel": "Cancele quando quiser",
+    "trustStudents": "Alunos ilimitados"
+  },
+  "facts": {
+    "games": "jogos educativos prontos",
+    "courses": "cursos completos com planos de aula",
+    "languages": "idiomas para alunos e professores",
+    "installs": "instalações: funciona no navegador"
+  },
+  "demo": {
+    "label": "Ilustração: uma aula virando jogo",
+    "lessonTag": "Sua aula",
+    "lessonTitle": "Frações equivalentes · 4º ano",
+    "lessonBody": "Os alunos mostram que 1/2, 2/4 e 4/8 representam a mesma quantidade, com pizzas, barras e retas numéricas. Tíquete de saída: três perguntas rápidas.",
+    "file": "aula-fracoes.pdf",
+    "builderTag": "Construtor IA",
+    "step1": "Lendo sua aula",
+    "step2": "Criando as fases",
+    "step3": "Testando no celular, tablet e computador",
+    "step4": "Pronto para jogar",
+    "gameTag": "Seu jogo",
+    "gameMeta": "Pronto para jogar ao vivo ou passar para a turma",
+    "host": "Jogar ao vivo",
+    "assign": "Passar",
+    "credit": "Arte do jogo Fraction Factory, um dos jogos prontos da Oomba."
+  },
+  "how": {
+    "kicker": "Como funciona",
+    "h": "Do plano de aula ao jogo em três passos",
+    "lead": "Sem programar e sem saber design. Se você consegue descrever sua aula, consegue transformá-la em jogo.",
+    "s1": { "h": "Traga sua aula", "p": "Cole o texto da aula, envie um PDF, uma imagem ou um arquivo de texto, ou descreva com suas palavras o que a turma precisa praticar." },
+    "s2": { "h": "O Construtor cria o jogo", "p": "Ele escreve o jogo e depois testa sozinho nos tamanhos de celular, tablet e computador. Peça mudanças com palavras simples: “deixa mais difícil”, “coloca um cronômetro”." },
+    "s3": { "h": "Jogue do seu jeito", "p": "Jogue ao vivo no projetor, compartilhe só com suas turmas ou coloque numa aula com prazo de entrega e acompanhe o progresso de cada aluno." }
+  },
+  "builder": {
+    "kicker": "O Construtor IA",
+    "h": "Entra sua aula, sai um jogo de verdade",
+    "lead": "Converse com o Construtor como com um assistente que também cria jogos. Ele guarda cada versão, então dá sempre para voltar atrás.",
+    "you": "Você",
+    "msg": "Faça um jogo com esta aula para minha turma do 4º ano. Dez minutos, três fases, e termine com as perguntas do tíquete de saída.",
+    "bot": "Pronto! A versão 1 está pronta: três fases, da mais fácil para a mais difícil, com o tíquete de saída no final. Toque em Jogar para testar.",
+    "li1": "Entende o texto da aula e os PDFs, imagens e arquivos de texto que você envia",
+    "li2": "Responde no seu idioma, e no de cada aluno",
+    "li3": "Testa cada versão nos tamanhos de celular, tablet e computador",
+    "li4": "Privado até você compartilhar: só você, suas turmas ou, depois da revisão de uma pessoa da nossa equipe, todo mundo",
+    "li5": "Os alunos também podem criar: descrever, testar e consertar um jogo é planejar, escrever e depurar, sem programar",
+    "shotAlt": "O Estúdio da Oomba: à esquerda, o chat do Construtor avisa que a versão 2 está pronta; à direita, o jogo roda numa prévia do tamanho de um celular.",
+    "caption": "O Estúdio de verdade: o Construtor à esquerda, seu jogo à direita."
+  },
+  "courses": {
+    "kicker": "Cursos prontos",
+    "h": "Cursos completos, prontos desde o primeiro dia",
+    "lead": "Apresentações curtas, verificações rápidas e missões de jogo num só caminho. Cada aluno avança no seu ritmo; você acompanha o progresso no boletim.",
+    "nq": { "name": "Number Quest", "tag": "Matemática · 3º ao 5º ano", "p": "Valor posicional, frações, medidas, formas e dados pelo Numberworks de Netville com a gata Tally. Cada passo está alinhado aos Common Core State Standards de matemática." },
+    "cs": { "name": "CS Quest", "tag": "Computação · 3º ao 8º ano", "p": "Um programa completo que um professor sem formação em computação consegue dar: aulas de 45 minutos, cada uma com plano, capítulo de jogo, aquecimento ao vivo e tíquete de saída. Níveis 1B e 2 da CSTA." },
+    "cd": { "name": "Cyber Defenders", "tag": "Segurança na internet", "p": "Como as mensagens viajam, como os códigos as protegem, o que fica privado e como perceber um golpe, com a coruja Pim no correio de Netville. Cada passo está alinhado aos padrões da CYBER.ORG." },
+    "link": "Guia do professor"
+  },
+  "live": {
+    "kicker": "Jogos de turma ao vivo",
+    "h": "Acenda o projetor",
+    "lead": "Aquecimentos e tíquetes de saída que a turma espera ansiosa. Os alunos entram pelos próprios aparelhos com um código de 7 dígitos.",
+    "li1": "Quest Race, Question Battle, Brain Board, Tug of Math e mais",
+    "li2": "Use um conjunto de perguntas pronto, escreva o seu ou deixe a IA fazer um rascunho para você editar",
+    "li3": "As pontuações vão direto para o seu boletim",
+    "li4": "Só alunos com login: sem chat, sem digitação, sem apelidos inventados",
+    "shotAlt": "A sala de espera de um Question Battle ao vivo: cinco avatares de alunos esperam enquanto a tela grande mostra o código do jogo e um QR code.",
+    "link": "Como funcionam os jogos ao vivo"
+  },
+  "why": {
+    "kicker": "Por que os jogos funcionam",
+    "h": "A diversão é o caminho. A aprendizagem é o destino.",
+    "lead": "Bons jogos educativos se apoiam em algumas ideias bem estudadas da ciência da aprendizagem.",
+    "b1": { "h": "Prática de recordação", "p": "Responder para ganhar puxa o conhecimento de volta da memória, e lembrar de algo é uma das formas mais confiáveis de fixá-lo." },
+    "b2": { "h": "Retorno imediato", "p": "Cada resposta recebe uma reação na hora, então os erros são corrigidos enquanto o raciocínio ainda está fresco." },
+    "b3": { "h": "Repetição sem pressão", "p": "“Mais uma rodada” parece brincadeira, não lista de exercícios, então os alunos praticam mais, sem o peso de uma nota." },
+    "b4": { "h": "Todo mundo participa", "p": "Um jogo dá a vez a cada aluno, inclusive aos que quase nunca levantam a mão." },
+    "b5": { "h": "Criar é aprender", "p": "Para construir um jogo sobre um assunto, é preciso entendê-lo bem o bastante para ensiná-lo a um computador." },
+    "sources": "Para saber mais"
+  },
+  "safety": {
+    "kicker": "Segurança e privacidade",
+    "h": "Feito para a sala de aula, seguro desde a origem",
+    "lead": "Pensado para crianças de 8 a 14 anos, com as turmas sob o seu controle.",
+    "li1": "Sem anúncios e sem cookies de publicidade ou rastreamento",
+    "li2": "Os alunos nunca precisam de e-mail, e nunca perguntamos idade ou endereço",
+    "li3": "O nome real de um aluno, se você colocar, só é visto pela equipe da sua escola",
+    "li4": "Você aprova quem entra nas suas turmas, e nenhum aluno conversa com desconhecidos",
+    "li5": "Cada jogo roda num ambiente isolado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público",
+    "li6": "O que os alunos digitam passa por filtros, e as imagens que enviam são verificadas e perdem os dados de localização",
+    "links": "Leia <a href=\"{safety}\">como protegemos as crianças</a> e nosso <a href=\"{privacy}\">aviso de privacidade</a>."
+  },
+  "everywhere": {
+    "h": "Funciona onde a turma estiver",
+    "devices": "Chromebooks, iPads, notebooks, celulares e a lousa digital, direto no navegador. Nada para instalar.",
+    "languages": "{count} idiomas, entre eles espanhol, árabe, português e francês. Cada aluno escolhe o seu.",
+    "voicesH": "Leitura em voz alta",
+    "voices": "Vozes de IA naturais leem em voz alta todos os jogos oficiais."
+  },
+  "pricing": {
+    "kicker": "Preços",
+    "h": "Um preço simples por professor. Todos os alunos incluídos.",
+    "lead": "Nunca cobramos por aluno. Teste tudo grátis por 14 dias.",
+    "teacher": {
+      "name": "Professor",
+      "price": "Um preço anual simples",
+      "priceShown": "{price} por ano",
+      "trial": "14 dias grátis · sem cartão",
+      "li1": "Alunos ilimitados, sem cobrança por aluno",
+      "li2": "300 jogos criados com IA por dia para sua turma",
+      "li3": "Todos os cursos, mais de 30 jogos prontos e jogos de turma ao vivo",
+      "li4": "Turmas, aulas, progresso e boletim",
+      "li5": "Todos os idiomas, todos os aparelhos",
+      "cta": "Comece seu teste grátis",
+      "plans": "Ver planos e preços"
+    },
+    "schools": {
+      "name": "Escolas e redes",
+      "price": "O mesmo preço por professor",
+      "priceShown": "{price} por professor por ano",
+      "li1": "Cada professor tem o plano Professor completo",
+      "li2": "Pagamento por fatura ou ordem de compra",
+      "li3": "Contas escolares e cartões de acesso para imprimir",
+      "li4": "Ajudamos a configurar sua escola",
+      "cta": "Fale com a gente",
+      "form": "Configure sua escola",
+      "subject": "Oomba Academy para a nossa escola"
+    }
+  },
+  "faq": {
+    "h": "Perguntas de professores",
+    "q1": "O que é a Oomba Academy?",
+    "a1": "Uma plataforma de aprendizagem baseada em jogos do 3º ao 8º ano. Os professores transformam as próprias aulas em jogos interativos com um Construtor IA, fazem jogos de turma ao vivo e usam cursos prontos de matemática, computação e segurança na internet.",
+    "q2": "Como funciona o teste grátis?",
+    "a2": "Comece um teste grátis de 14 dias sem cartão. Tudo do plano Professor está incluído durante o teste, e quando ele acaba você decide se quer assinar.",
+    "q3": "Eu pago por aluno?",
+    "a3": "Não. Um preço anual por professor cobre todos os seus alunos. Não há cobrança por aluno.",
+    "q4": "O que posso transformar em jogo?",
+    "a4": "Quase qualquer aula: cole o texto, envie um PDF, uma imagem ou um arquivo de texto, ou descreva o tema e o que a turma precisa praticar. O Construtor usa seu material como referência e cria um jogo em volta dele.",
+    "q5": "Os alunos precisam de e-mail?",
+    "a5": "Não. Você pode criar contas escolares para a turma e imprimir cartões de acesso, sem e-mail de aluno. E qualquer um pode jogar os jogos grátis na hora.",
+    "q6": "Funciona em Chromebooks e iPads?",
+    "a6": "Sim. Funciona em qualquer navegador atualizado em Chromebooks, iPads e outros tablets, notebooks, celulares e lousas digitais, sem instalar nada.",
+    "q7": "É seguro para meus alunos?",
+    "a7": "É feito para crianças de 8 a 14 anos: sem anúncios, sem cookies de rastreamento, sem e-mail de alunos, sem chat com desconhecidos, com texto filtrado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público.",
+    "q8": "Nossa escola pode pagar por fatura ou ordem de compra?",
+    "a8": "Sim. As escolas pagam o mesmo preço por professor por ano, por fatura ou ordem de compra. Mande um e-mail e a gente organiza tudo.",
+    "q9": "Quais idiomas existem?",
+    "a9": "{count} idiomas, entre eles inglês, espanhol, português, francês, alemão, árabe, hebraico e japonês. Cada aluno escolhe o seu, e o Construtor responde nele."
+  },
+  "final": {
+    "h": "Sua próxima aula pode ser aquela que eles pedem para jogar de novo",
+    "p": "Grátis por 14 dias. Sem cartão, sem cobrança por aluno.",
+    "cta": "Comece seu teste grátis de 14 dias"
+  },
+  "play": {
+    "h": "Veio jogar?",
+    "p": "Mais de 30 jogos educativos, grátis e sem cadastro.",
+    "cta": "Só jogar"
+  },
+  "footer": {
+    "tagline": "Jogos educativos para crianças de 8 a 14 anos, e um Construtor IA que transforma aulas em jogos.",
+    "teachers": "Para professores",
+    "product": "Explore",
+    "about": "Sobre",
+    "parents": "Para famílias",
+    "guide": "Guia do professor",
+    "learn": "Jogos educativos por matéria",
+    "safety": "Segurança",
+    "privacy": "Privacidade",
+    "terms": "Termos",
+    "refunds": "Reembolsos",
+    "plans": "Planos e preços",
+    "contact": "Contato",
+    "languages": "Idiomas",
+    "theme": "Tema",
+    "dark": "Escuro",
+    "light": "Claro"
+  }
+}

@@ -6683,5 +6683,249 @@
       "new": "{count, plural, one {# nieuw bericht van het Oomba-team} other {# nieuwe berichten van het Oomba-team}}",
       "open": "Berichten van het Oomba-team"
     }
+  },
+  "landing": {
+    "meta": {
+      "title": "Maak van je lesplannen klassengames · Oomba Academy",
+      "description": "Spelend leren voor leerkrachten: plak een les of upload een pdf en de AI-Bouwer maakt er een interactieve game voor de klas van. 14 dagen gratis, zonder creditcard.",
+      "imageAlt": "Oomba Academy voor leerkrachten: maak van je lesplannen games die je klas wil spelen."
+    },
+    "nav": {
+      "label": "Site voor leerkrachten",
+      "home": "Oomba Academy home",
+      "skip": "Naar de inhoud",
+      "how": "Zo werkt het",
+      "builder": "Bouwer",
+      "courses": "Cursussen",
+      "live": "Live games",
+      "pricing": "Prijzen",
+      "faq": "Vragen",
+      "signIn": "Inloggen",
+      "justPlay": "Gewoon spelen",
+      "trial": "Gratis proberen",
+      "trialShort": "Gratis proberen"
+    },
+    "hero": {
+      "kicker": "Voor leerkrachten · groep 5 tot en met de tweede klas",
+      "h1": "Maak van je lesplannen games die je klas steeds weer wil spelen",
+      "lead": "Plak een les, upload een pdf of beschrijf gewoon een idee. De AI-Bouwer van Oomba maakt er een interactieve game van die je live op het digibord speelt of aan je klas geeft.",
+      "cta": "Start je gratis proef van 14 dagen",
+      "how": "Bekijk hoe het werkt",
+      "trustCard": "Geen creditcard nodig",
+      "trustCancel": "Altijd opzegbaar",
+      "trustStudents": "Onbeperkt leerlingen"
+    },
+    "facts": {
+      "games": "kant-en-klare leergames",
+      "courses": "complete cursussen met lesplannen",
+      "languages": "talen voor leerlingen en leerkrachten",
+      "installs": "installaties: het werkt in de browser"
+    },
+    "demo": {
+      "label": "Illustratie: een les die een game wordt",
+      "lessonTag": "Jouw les",
+      "lessonTitle": "Gelijkwaardige breuken · groep 6",
+      "lessonBody": "Leerlingen laten met pizza’s, stroken en getallenlijnen zien dat 1/2, 2/4 en 4/8 evenveel zijn. Exit ticket: drie korte vragen.",
+      "file": "les-breuken.pdf",
+      "builderTag": "AI-Bouwer",
+      "step1": "Leest je les",
+      "step2": "Ontwerpt de levels",
+      "step3": "Test op telefoon, tablet en computer",
+      "step4": "Klaar om te spelen",
+      "gameTag": "Jouw game",
+      "gameMeta": "Klaar om live te spelen of klaar te zetten",
+      "host": "Live spelen",
+      "assign": "Klaarzetten",
+      "credit": "Beeld uit Fraction Factory, een van de kant-en-klare games van Oomba."
+    },
+    "how": {
+      "kicker": "Zo werkt het",
+      "h": "Van lesplan naar game in drie stappen",
+      "lead": "Geen programmeren, geen ontwerpen. Als je je les kunt beschrijven, kun je hem speelbaar maken.",
+      "s1": {
+        "h": "Neem je les mee",
+        "p": "Plak de tekst van je les, upload een pdf, een afbeelding of een tekstbestand, of beschrijf in je eigen woorden wat je klas moet oefenen."
+      },
+      "s2": {
+        "h": "De Bouwer maakt de game",
+        "p": "Hij schrijft de game en test hem daarna zelf op telefoon-, tablet- en computerformaat. Vraag om wijzigingen in gewone woorden: ‘maak het moeilijker’, ‘voeg een timer toe’."
+      },
+      "s3": {
+        "h": "Speel het op jouw manier",
+        "p": "Speel hem live op het digibord, deel hem alleen met je eigen klassen of zet hem in een les met een inleverdatum en zie de voortgang van elke leerling."
+      }
+    },
+    "builder": {
+      "kicker": "De AI-Bouwer",
+      "h": "Je les erin, een echte game eruit",
+      "lead": "Praat met de Bouwer zoals met een onderwijsassistent die toevallig games maakt. Elke versie wordt bewaard, dus je kunt altijd terug.",
+      "you": "Jij",
+      "msg": "Maak van deze les een game voor mijn groep 6. Tien minuten, drie levels, en eindig met de vragen van het exit ticket.",
+      "bot": "Klaar! Versie 1 staat klaar: drie levels, makkelijkste eerst, met het exit ticket aan het eind. Druk op Spelen om hem te proberen.",
+      "li1": "Begrijpt lesteksten en de pdf’s, afbeeldingen en tekstbestanden die je uploadt",
+      "li2": "Antwoordt in jouw taal, en in die van elke leerling",
+      "li3": "Test elke versie op telefoon-, tablet- en computerformaat",
+      "li4": "Privé tot je hem deelt: alleen jij, je klassen of, nadat iemand van ons team hem heeft bekeken, iedereen",
+      "li5": "Leerlingen kunnen ook bouwen: een game beschrijven, testen en verbeteren is plannen, schrijven en debuggen, zonder code",
+      "shotAlt": "De Oomba Studio: links meldt de chat van de Bouwer dat versie 2 klaar is, rechts draait de game in een voorbeeld op telefoonformaat.",
+      "caption": "De echte Studio: links de Bouwer, rechts jouw game."
+    },
+    "courses": {
+      "kicker": "Kant-en-klare cursussen",
+      "h": "Complete cursussen, vanaf dag één klaar",
+      "lead": "Korte dia’s, snelle checks en gamemissies op één pad. Leerlingen werken in hun eigen tempo; jij ziet de voortgang in het cijferoverzicht.",
+      "nq": {
+        "name": "Number Quest",
+        "tag": "Rekenen · groep 5 tot en met 7",
+        "p": "Plaatswaarde, breuken, meten, vormen en data in het Numberworks van Netville, met Tally de kat. Elke stap is gekoppeld aan de Common Core State Standards voor wiskunde."
+      },
+      "cs": {
+        "name": "CS Quest",
+        "tag": "Informatica · groep 5 tot en met de tweede klas",
+        "p": "Een compleet programma dat ook een leerkracht zonder informaticakennis kan geven: lessen van 45 minuten, elk met een plan, een gamehoofdstuk, een live warming-up en een exit ticket. CSTA-niveaus 1B en 2."
+      },
+      "cd": {
+        "name": "Cyber Defenders",
+        "tag": "Online veiligheid",
+        "p": "Hoe berichten reizen, hoe codes ze beschermen, wat privé blijft en hoe je een truc herkent, met Pim de uil op het postkantoor van Netville. Elke stap is gekoppeld aan de CYBER.ORG-standaarden."
+      },
+      "link": "Handleiding voor leerkrachten"
+    },
+    "live": {
+      "kicker": "Live klassengames",
+      "h": "Zet het digibord aan",
+      "lead": "Warming-ups en exit tickets waar je klas echt naar uitkijkt. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
+      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math en meer",
+      "li2": "Gebruik een kant-en-klare vragenset, typ je eigen of laat AI een concept maken dat je aanpast",
+      "li3": "Scores komen direct in je cijferoverzicht",
+      "li4": "Alleen ingelogde leerlingen: geen chat, geen typen, geen verzonnen namen",
+      "shotAlt": "De wachtruimte van een live Question Battle: vijf leerling-avatars wachten terwijl het grote scherm de spelcode en een QR-code toont.",
+      "link": "Zo werken live games"
+    },
+    "why": {
+      "kicker": "Waarom games werken",
+      "h": "Plezier is de route. Leren is het doel.",
+      "lead": "Goede leergames leunen op een paar goed onderzochte ideeën uit de leerwetenschap.",
+      "b1": {
+        "h": "Ophalen uit het geheugen",
+        "p": "Antwoorden om te winnen haalt kennis terug uit het geheugen, en iets ophalen is een van de betrouwbaarste manieren om het te onthouden."
+      },
+      "b2": {
+        "h": "Directe feedback",
+        "p": "Elk antwoord krijgt meteen een reactie, zodat fouten worden hersteld terwijl het denkwerk nog vers is."
+      },
+      "b3": {
+        "h": "Herhalen zonder druk",
+        "p": "‘Nog één rondje’ voelt als spelen, niet als een werkblad, dus leerlingen oefenen meer, zonder de druk van een cijfer."
+      },
+      "b4": {
+        "h": "Iedereen doet mee",
+        "p": "Een game geeft elke leerling een beurt, ook wie zelden een vinger opsteekt."
+      },
+      "b5": {
+        "h": "Maken is leren",
+        "p": "Wie een game over een onderwerp bouwt, moet het goed genoeg snappen om het aan een computer uit te leggen."
+      },
+      "sources": "Verder lezen"
+    },
+    "safety": {
+      "kicker": "Veiligheid en privacy",
+      "h": "Gemaakt voor de klas, veilig vanaf het ontwerp",
+      "lead": "Voor kinderen van 8 tot 14, met jouw klassen onder jouw controle.",
+      "li1": "Geen advertenties en geen advertentie- of trackingcookies",
+      "li2": "Leerlingen hebben nooit een e-mailadres nodig, en we vragen nooit naar leeftijd of adres",
+      "li3": "De echte naam van een leerling, als je die toevoegt, ziet alleen het personeel van je school",
+      "li4": "Jij keurt goed wie bij je klassen komt, en geen leerling kan chatten met vreemden",
+      "li5": "Elke game draait in een afgesloten sandbox, en iemand van ons team bekijkt elke game voordat die openbaar wordt",
+      "li6": "Wat leerlingen typen wordt gefilterd, en afbeeldingen die ze uploaden worden gecontroleerd en ontdaan van locatiegegevens",
+      "links": "Lees <a href=\"{safety}\">hoe we kinderen beschermen</a> en onze <a href=\"{privacy}\">privacyverklaring</a>."
+    },
+    "everywhere": {
+      "h": "Werkt waar je klas ook is",
+      "devices": "Chromebooks, iPads, laptops, telefoons en het digibord, gewoon in de browser. Niets te installeren.",
+      "languages": "{count} talen, waaronder Spaans, Arabisch, Portugees en Frans. Elke leerling kiest zijn eigen taal.",
+      "voicesH": "Voorlezen",
+      "voices": "Natuurlijke AI-stemmen lezen elke officiële game voor."
+    },
+    "pricing": {
+      "kicker": "Prijzen",
+      "h": "Eén eenvoudige prijs per leerkracht. Alle leerlingen inbegrepen.",
+      "lead": "Nooit kosten per leerling. Probeer alles 14 dagen gratis.",
+      "teacher": {
+        "name": "Leerkracht",
+        "price": "Eén eenvoudige jaarprijs",
+        "priceShown": "{price} per jaar",
+        "trial": "14 dagen gratis · geen creditcard nodig",
+        "li1": "Onbeperkt leerlingen, geen kosten per leerling",
+        "li2": "300 AI-gamebouwsels per dag voor je klas",
+        "li3": "Alle cursussen, meer dan 30 kant-en-klare games en live klassengames",
+        "li4": "Klassen, lessen, voortgang en het cijferoverzicht",
+        "li5": "Elke taal, elk apparaat",
+        "cta": "Start je gratis proef",
+        "plans": "Bekijk abonnementen en prijzen"
+      },
+      "schools": {
+        "name": "Scholen en besturen",
+        "price": "Dezelfde prijs per leerkracht",
+        "priceShown": "{price} per leerkracht per jaar",
+        "li1": "Elke leerkracht krijgt het volledige Leerkracht-abonnement",
+        "li2": "Betalen per factuur of inkooporder",
+        "li3": "Schoolaccounts en inlogkaarten om te printen",
+        "li4": "We helpen je je school in te richten",
+        "cta": "Neem contact op",
+        "form": "Richt je school in",
+        "subject": "Oomba Academy voor onze school"
+      }
+    },
+    "faq": {
+      "h": "Vragen van leerkrachten",
+      "q1": "Wat is Oomba Academy?",
+      "a1": "Een platform voor spelend leren voor kinderen van 8 tot 14. Leerkrachten maken met een AI-Bouwer van hun eigen lessen interactieve games, spelen live klassengames en gebruiken kant-en-klare cursussen rekenen, informatica en online veiligheid.",
+      "q2": "Hoe werkt de gratis proef?",
+      "a2": "Start een gratis proef van 14 dagen zonder creditcard. Alles van het Leerkracht-abonnement zit erin zolang de proef loopt, en daarna beslis jij of je een abonnement neemt.",
+      "q3": "Betaal ik per leerling?",
+      "a3": "Nee. Eén jaarprijs per leerkracht dekt al je leerlingen. Er zijn geen kosten per leerling.",
+      "q4": "Wat kan ik in een game veranderen?",
+      "a4": "Bijna elke les: plak de tekst, upload een pdf, een afbeelding of een tekstbestand, of beschrijf het onderwerp en wat je klas moet oefenen. De Bouwer gebruikt je materiaal als basis en bouwt er een game omheen.",
+      "q5": "Hebben leerlingen een e-mailadres nodig?",
+      "a5": "Nee. Je kunt schoolaccounts voor je klas maken en inlogkaarten printen, zonder e-mail van leerlingen. En iedereen kan de gratis games meteen spelen.",
+      "q6": "Werkt het op Chromebooks en iPads?",
+      "a6": "Ja. Het werkt in elke actuele browser op Chromebooks, iPads en andere tablets, laptops, telefoons en digiborden, zonder iets te installeren.",
+      "q7": "Is het veilig voor mijn leerlingen?",
+      "a7": "Het is gemaakt voor kinderen van 8 tot 14: geen advertenties, geen trackingcookies, geen e-mail van leerlingen, geen chat met vreemden, gefilterde tekst, en iemand van ons team bekijkt elke game voordat die openbaar wordt.",
+      "q8": "Kan onze school betalen per factuur of inkooporder?",
+      "a8": "Ja. Scholen betalen dezelfde prijs per leerkracht per jaar, per factuur of inkooporder. Mail ons en we regelen het.",
+      "q9": "Welke talen zijn er?",
+      "a9": "{count} talen, waaronder Engels, Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest zijn eigen taal, en de Bouwer antwoordt daarin."
+    },
+    "final": {
+      "h": "Je volgende les kan de les zijn die ze nog een keer willen spelen",
+      "p": "14 dagen gratis. Geen creditcard, geen kosten per leerling.",
+      "cta": "Start je gratis proef van 14 dagen"
+    },
+    "play": {
+      "h": "Kom je spelen?",
+      "p": "Meer dan 30 leergames, gratis en zonder account.",
+      "cta": "Gewoon spelen"
+    },
+    "footer": {
+      "tagline": "Leergames voor kinderen van 8 tot 14, en een AI-Bouwer die lessen in games verandert.",
+      "teachers": "Voor leerkrachten",
+      "product": "Ontdek",
+      "about": "Over ons",
+      "parents": "Voor ouders",
+      "guide": "Handleiding voor leerkrachten",
+      "learn": "Leergames per vak",
+      "safety": "Veiligheid",
+      "privacy": "Privacy",
+      "terms": "Voorwaarden",
+      "refunds": "Terugbetalingen",
+      "plans": "Abonnementen en prijzen",
+      "contact": "Contact",
+      "languages": "Talen",
+      "theme": "Thema",
+      "dark": "Donker",
+      "light": "Licht"
+    }
   }
 }

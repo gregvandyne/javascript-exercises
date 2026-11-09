@@ -6683,5 +6683,249 @@
       "new": "{count, plural, one {# neue Nachricht vom Oomba-Team} other {# neue Nachrichten vom Oomba-Team}}",
       "open": "Nachrichten vom Oomba-Team"
     }
+  },
+  "landing": {
+    "meta": {
+      "title": "Unterrichtsentwürfe in Klassenspiele verwandeln · Oomba Academy",
+      "description": "Spielbasiertes Lernen für Lehrkräfte: Stunde einfügen oder PDF hochladen, und der KI-Baumeister macht daraus ein interaktives Spiel für die Klasse. 14 Tage gratis, ohne Karte.",
+      "imageAlt": "Oomba Academy für Lehrkräfte: Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse spielen will."
+    },
+    "nav": {
+      "label": "Seite für Lehrkräfte",
+      "home": "Oomba Academy Startseite",
+      "skip": "Zum Inhalt",
+      "how": "So funktioniert’s",
+      "builder": "Baumeister",
+      "courses": "Kurse",
+      "live": "Live-Spiele",
+      "pricing": "Preise",
+      "faq": "FAQ",
+      "signIn": "Anmelden",
+      "justPlay": "Einfach spielen",
+      "trial": "Gratis testen",
+      "trialShort": "Gratis testen"
+    },
+    "hero": {
+      "kicker": "Für Lehrkräfte · Klasse 3 bis 8",
+      "h1": "Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse unbedingt spielen will",
+      "lead": "Füge eine Stunde ein, lade ein PDF hoch oder beschreib einfach eine Idee. Der KI-Baumeister von Oomba macht daraus ein interaktives Spiel, das du live am Beamer spielst oder deiner Klasse zuweist.",
+      "cta": "14 Tage kostenlos testen",
+      "how": "So funktioniert’s",
+      "trustCard": "Keine Karte nötig",
+      "trustCancel": "Jederzeit kündbar",
+      "trustStudents": "Unbegrenzt viele Schüler"
+    },
+    "facts": {
+      "games": "fertige Lernspiele",
+      "courses": "komplette Kurse mit Stundenplänen",
+      "languages": "Sprachen für Schüler und Lehrkräfte",
+      "installs": "Installationen: läuft im Browser"
+    },
+    "demo": {
+      "label": "Illustration: Eine Unterrichtsstunde wird zum Spiel",
+      "lessonTag": "Deine Stunde",
+      "lessonTitle": "Gleichwertige Brüche · Klasse 4",
+      "lessonBody": "Die Kinder zeigen mit Pizzen, Streifen und Zahlenstrahlen, dass 1/2, 2/4 und 4/8 dieselbe Menge sind. Abschluss: drei kurze Kontrollfragen.",
+      "file": "stunde-brueche.pdf",
+      "builderTag": "KI-Baumeister",
+      "step1": "Liest deine Stunde",
+      "step2": "Entwirft die Level",
+      "step3": "Testet auf Handy, Tablet und Computer",
+      "step4": "Bereit zum Spielen",
+      "gameTag": "Dein Spiel",
+      "gameMeta": "Bereit für live oder als Aufgabe",
+      "host": "Live spielen",
+      "assign": "Zuweisen",
+      "credit": "Spielbild aus Fraction Factory, einem der fertigen Spiele von Oomba."
+    },
+    "how": {
+      "kicker": "So funktioniert’s",
+      "h": "Vom Unterrichtsentwurf zum Spiel in drei Schritten",
+      "lead": "Kein Programmieren, kein Design. Wenn du deine Stunde beschreiben kannst, kannst du sie spielbar machen.",
+      "s1": {
+        "h": "Bring deine Stunde mit",
+        "p": "Füge den Text deiner Stunde ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreib mit eigenen Worten, was die Klasse üben soll."
+      },
+      "s2": {
+        "h": "Der Baumeister baut das Spiel",
+        "p": "Er schreibt das Spiel und testet es dann selbst in Handy-, Tablet- und Computergröße. Wünsch dir Änderungen in einfachen Worten: „mach es schwerer“, „füg einen Timer hinzu“."
+      },
+      "s3": {
+        "h": "Spiel es, wie du willst",
+        "p": "Spiel es live am Beamer, teile es nur mit deinen Klassen oder füg es mit Abgabetermin in eine Unterrichtseinheit ein und sieh den Fortschritt jedes Kindes."
+      }
+    },
+    "builder": {
+      "kicker": "Der KI-Baumeister",
+      "h": "Deine Stunde rein, ein echtes Spiel raus",
+      "lead": "Sprich mit dem Baumeister wie mit einer Assistenz, die zufällig Spiele baut. Er speichert jede Version, du kannst also immer zurück.",
+      "you": "Du",
+      "msg": "Mach aus dieser Stunde ein Spiel für meine 4. Klasse. Zehn Minuten, drei Level, und am Ende die Kontrollfragen.",
+      "bot": "Fertig! Version 1 steht: drei Level, das leichteste zuerst, mit den Kontrollfragen am Ende. Tippe auf Spielen, um es auszuprobieren.",
+      "li1": "Versteht Unterrichtstexte und die PDFs, Bilder und Textdateien, die du hochlädst",
+      "li2": "Antwortet in deiner Sprache und in der jedes Kindes",
+      "li3": "Testet jede Version in Handy-, Tablet- und Computergröße",
+      "li4": "Privat, bis du es teilst: nur du, deine Klassen oder, nach Prüfung durch einen Menschen aus unserem Team, alle",
+      "li5": "Auch Schüler können bauen: Ein Spiel beschreiben, testen und verbessern heißt planen, schreiben und Fehler suchen, ganz ohne Code",
+      "shotAlt": "Das Oomba-Studio: Links meldet der Baumeister-Chat, dass Version 2 fertig ist, rechts läuft das Spiel in einer Vorschau in Handygröße.",
+      "caption": "Das echte Studio: links der Baumeister, rechts dein Spiel."
+    },
+    "courses": {
+      "kicker": "Fertige Kurse",
+      "h": "Komplette Kurse, vom ersten Tag an bereit",
+      "lead": "Kurze Foliensätze, schnelle Checks und Spielmissionen auf einem Weg. Jedes Kind lernt im eigenen Tempo; du siehst den Fortschritt in der Notenübersicht.",
+      "nq": {
+        "name": "Number Quest",
+        "tag": "Mathe · Klasse 3 bis 5",
+        "p": "Stellenwerte, Brüche, Messen, Formen und Daten im Numberworks von Netville mit Katze Tally. Jeder Schritt ist den Common Core State Standards für Mathematik zugeordnet."
+      },
+      "cs": {
+        "name": "CS Quest",
+        "tag": "Informatik · Klasse 3 bis 8",
+        "p": "Ein komplettes Programm, das auch Lehrkräfte ohne Informatik-Hintergrund unterrichten können: 45-Minuten-Stunden mit Plan, Spielkapitel, Live-Aufwärmrunde und Abschlussfragen. CSTA-Stufen 1B und 2."
+      },
+      "cd": {
+        "name": "Cyber Defenders",
+        "tag": "Sicher im Netz",
+        "p": "Wie Nachrichten reisen, wie Codes sie schützen, was privat bleibt und wie man einen Trick erkennt, mit Eule Pim im Postamt von Netville. Jeder Schritt ist den CYBER.ORG-Standards zugeordnet."
+      },
+      "link": "Leitfaden für Lehrkräfte"
+    },
+    "live": {
+      "kicker": "Live-Klassenspiele",
+      "h": "Bring den Beamer zum Leuchten",
+      "lead": "Aufwärmrunden und Abschlussfragen, auf die sich deine Klasse wirklich freut. Die Kinder steigen mit einem 7-stelligen Code auf ihrem eigenen Gerät ein.",
+      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math und mehr",
+      "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
+      "li3": "Punkte landen direkt in deiner Notenübersicht",
+      "li4": "Nur angemeldete Schüler: kein Chat, kein Tippen, keine ausgedachten Namen",
+      "shotAlt": "Die Lobby eines Live-Question-Battle: Fünf Schüler-Avatare warten, während der große Bildschirm den Spielcode und einen QR-Code zeigt.",
+      "link": "So funktionieren Live-Spiele"
+    },
+    "why": {
+      "kicker": "Warum Spiele wirken",
+      "h": "Spaß ist der Weg. Lernen ist das Ziel.",
+      "lead": "Gute Lernspiele stützen sich auf ein paar gut erforschte Ideen aus der Lernforschung.",
+      "b1": {
+        "h": "Abrufen üben",
+        "p": "Wer antwortet, um zu gewinnen, holt Wissen aus dem Gedächtnis, und Erinnern ist einer der verlässlichsten Wege, damit etwas hängen bleibt."
+      },
+      "b2": {
+        "h": "Sofortige Rückmeldung",
+        "p": "Jede Antwort bekommt sofort eine Reaktion, so werden Fehler korrigiert, solange der Gedanke noch frisch ist."
+      },
+      "b3": {
+        "h": "Üben ohne Druck",
+        "p": "„Noch eine Runde“ fühlt sich nach Spiel an, nicht nach Arbeitsblatt, also üben die Kinder mehr, ohne das Gewicht einer Note."
+      },
+      "b4": {
+        "h": "Alle machen mit",
+        "p": "Ein Spiel gibt jedem Kind einen Zug, auch denen, die sich selten melden."
+      },
+      "b5": {
+        "h": "Bauen ist Lernen",
+        "p": "Wer ein Spiel zu einem Thema baut, muss es gut genug verstehen, um es einem Computer beizubringen."
+      },
+      "sources": "Zum Weiterlesen"
+    },
+    "safety": {
+      "kicker": "Sicherheit und Datenschutz",
+      "h": "Für die Schule gemacht, sicher von Grund auf",
+      "lead": "Für Kinder von 8 bis 14, und du behältst die Kontrolle über deine Klassen.",
+      "li1": "Keine Werbung und keine Werbe- oder Tracking-Cookies",
+      "li2": "Schüler brauchen nie eine E-Mail-Adresse, und wir fragen nie nach Alter oder Wohnadresse",
+      "li3": "Den echten Namen eines Kindes, falls du ihn einträgst, sieht nur das Personal deiner Schule",
+      "li4": "Du bestätigst, wer deinen Klassen beitritt, und kein Kind kann mit Fremden chatten",
+      "li5": "Jedes Spiel läuft in einer abgeschlossenen Sandbox, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird",
+      "li6": "Was Kinder tippen, wird gefiltert, und hochgeladene Bilder werden geprüft und von Standortdaten befreit",
+      "links": "Lies, <a href=\"{safety}\">wie wir Kinder schützen</a>, und unsere <a href=\"{privacy}\">Datenschutzhinweise</a>."
+    },
+    "everywhere": {
+      "h": "Funktioniert überall, wo deine Klasse ist",
+      "devices": "Chromebooks, iPads, Laptops, Handys und die digitale Tafel, direkt im Browser. Nichts zu installieren.",
+      "languages": "{count} Sprachen, darunter Spanisch, Arabisch, Portugiesisch und Französisch. Jedes Kind wählt seine eigene.",
+      "voicesH": "Vorlesen",
+      "voices": "Natürliche KI-Stimmen lesen jedes offizielle Spiel vor."
+    },
+    "pricing": {
+      "kicker": "Preise",
+      "h": "Ein einfacher Preis pro Lehrkraft. Alle Schüler inklusive.",
+      "lead": "Nie Gebühren pro Kind. Teste alles 14 Tage lang kostenlos.",
+      "teacher": {
+        "name": "Lehrkraft",
+        "price": "Ein einfacher Jahrespreis",
+        "priceShown": "{price} pro Jahr",
+        "trial": "14 Tage gratis · keine Karte nötig",
+        "li1": "Unbegrenzt viele Schüler, keine Gebühr pro Kind",
+        "li2": "300 KI-Spielbauten pro Tag für deine Klasse",
+        "li3": "Alle Kurse, über 30 fertige Spiele und Live-Klassenspiele",
+        "li4": "Klassen, Unterrichtseinheiten, Fortschritt und Notenübersicht",
+        "li5": "Jede Sprache, jedes Gerät",
+        "cta": "Kostenlos testen",
+        "plans": "Tarife und Preise ansehen"
+      },
+      "schools": {
+        "name": "Schulen und Schulträger",
+        "price": "Derselbe Preis pro Lehrkraft",
+        "priceShown": "{price} pro Lehrkraft und Jahr",
+        "li1": "Jede Lehrkraft bekommt den vollen Lehrkraft-Tarif",
+        "li2": "Zahlung per Rechnung oder Bestellschein",
+        "li3": "Schulkonten und Anmeldekarten zum Ausdrucken",
+        "li4": "Wir helfen beim Einrichten deiner Schule",
+        "cta": "Schreib uns",
+        "form": "Schule einrichten",
+        "subject": "Oomba Academy für unsere Schule"
+      }
+    },
+    "faq": {
+      "h": "Fragen von Lehrkräften",
+      "q1": "Was ist Oomba Academy?",
+      "a1": "Eine Plattform für spielbasiertes Lernen für die Klassen 3 bis 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
+      "q2": "Wie funktioniert der kostenlose Test?",
+      "a2": "Starte einen 14-tägigen kostenlosen Test ohne Karte. Während des Tests ist alles aus dem Lehrkraft-Tarif dabei, und am Ende entscheidest du, ob du ein Abo abschließt.",
+      "q3": "Zahle ich für jedes Kind?",
+      "a3": "Nein. Ein Jahrespreis pro Lehrkraft deckt alle deine Schüler ab. Es gibt keine Gebühren pro Kind.",
+      "q4": "Was kann ich in ein Spiel verwandeln?",
+      "a4": "Fast jede Stunde: Füge den Text ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreib das Thema und was die Klasse üben soll. Der Baumeister nutzt dein Material als Vorlage und baut ein Spiel darum herum.",
+      "q5": "Brauchen Schüler eine E-Mail-Adresse?",
+      "a5": "Nein. Du kannst Schulkonten für deine Klasse anlegen und Anmeldekarten drucken, ganz ohne E-Mail der Kinder. Und die kostenlosen Spiele kann jeder sofort spielen.",
+      "q6": "Funktioniert es auf Chromebooks und iPads?",
+      "a6": "Ja. Es läuft in jedem aktuellen Browser auf Chromebooks, iPads und anderen Tablets, Laptops, Handys und digitalen Tafeln, ohne Installation.",
+      "q7": "Ist es sicher für meine Schüler?",
+      "a7": "Es ist für Kinder von 8 bis 14 gemacht: keine Werbung, keine Tracking-Cookies, keine E-Mails der Kinder, kein Chat mit Fremden, gefilterter Text, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird.",
+      "q8": "Kann unsere Schule per Rechnung oder Bestellschein zahlen?",
+      "a8": "Ja. Schulen zahlen denselben Preis pro Lehrkraft und Jahr, per Rechnung oder Bestellschein. Schreib uns, und wir richten es ein.",
+      "q9": "Welche Sprachen gibt es?",
+      "a9": "{count} Sprachen, darunter Englisch, Spanisch, Portugiesisch, Französisch, Deutsch, Arabisch, Hebräisch und Japanisch. Jedes Kind wählt seine eigene, und der Baumeister antwortet darin."
+    },
+    "final": {
+      "h": "Deine nächste Stunde könnte die sein, die sie nochmal spielen wollen",
+      "p": "14 Tage kostenlos. Keine Karte, keine Gebühr pro Kind.",
+      "cta": "14 Tage kostenlos testen"
+    },
+    "play": {
+      "h": "Nur zum Spielen hier?",
+      "p": "Über 30 Lernspiele, kostenlos und ohne Anmeldung.",
+      "cta": "Einfach spielen"
+    },
+    "footer": {
+      "tagline": "Lernspiele für Kinder von 8 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
+      "teachers": "Für Lehrkräfte",
+      "product": "Entdecken",
+      "about": "Über uns",
+      "parents": "Für Eltern",
+      "guide": "Leitfaden für Lehrkräfte",
+      "learn": "Lernspiele nach Fach",
+      "safety": "Sicherheit",
+      "privacy": "Datenschutz",
+      "terms": "Nutzungsbedingungen",
+      "refunds": "Erstattungen",
+      "plans": "Tarife und Preise",
+      "contact": "Kontakt",
+      "languages": "Sprachen",
+      "theme": "Design",
+      "dark": "Dunkel",
+      "light": "Hell"
+    }
   }
 }

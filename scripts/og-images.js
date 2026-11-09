@@ -65,6 +65,22 @@ const CARDS = [
   ].map(c => ({ file: c.file, html: page(`<div class="card"><div>${brand()}<span class="kicker">${esc(c.kicker)}</span><h1 style="font-size:58px">${esc(c.h1)}</h1><div class="pills">${c.pills.map(p => `<span>${esc(p)}</span>`).join('')}</div></div>
     <div class="stack">${c.covers.map(s => `<img src="${cover(s)}">`).join('')}</div><p class="url">${esc(c.url)}</p></div>`) })),
 ];
+// The teacher landing page at "/" (server/routes/landing.js): its own dark, deep-space card, like the page.
+const LANDING_CSS = `.lp{position:relative;width:1200px;height:630px;overflow:hidden;color:#F3F6FF;padding:56px 64px;
+  background:radial-gradient(60% 70% at 15% 0%,rgba(92,242,176,.32),transparent 70%),radial-gradient(55% 70% at 100% 20%,rgba(91,200,255,.28),transparent 70%),radial-gradient(50% 60% at 60% 110%,rgba(176,140,255,.3),transparent 70%),#060914}
+.lp::before{content:"";position:absolute;inset:auto -10% -40% -10%;height:70%;transform:perspective(500px) rotateX(62deg);transform-origin:50% 0;
+  background:linear-gradient(rgba(92,242,176,.35) 2px,transparent 2px) 0 0/70px 70px,linear-gradient(90deg,rgba(92,242,176,.35) 2px,transparent 2px) 0 0/70px 70px;-webkit-mask-image:linear-gradient(transparent,#000 60%)}
+.lp .brand .wordmark{color:#F3F6FF} .lp .brand b{color:#7DF0BE} .lp .wordmark .spark{stroke:transparent}
+.lp h1{position:relative;width:600px;font-size:60px;line-height:1;letter-spacing:-.035em;background:linear-gradient(100deg,#fff 0%,#E8FFF4 35%,#7DF0BE 70%,#7CD3FF 100%);-webkit-background-clip:text;color:transparent}
+.lp .pills span{background:rgba(255,255,255,.08);border:2px solid rgba(190,205,255,.35);color:#F3F6FF}
+.lp .kicker{background:#5CF2B0;color:#03140B}
+.lp .stack{position:absolute;right:20px;top:70px;width:470px;height:500px}
+.lp .stack img{border-color:rgba(190,205,255,.5);box-shadow:0 0 50px -6px rgba(92,242,176,.55),0 20px 40px rgba(0,0,0,.6)}
+.lp .url{color:#7DF0BE}`;
+CARDS.push({ file: 'landing.jpg', html: page(`<style>${LANDING_CSS}</style><div class="lp">${brand()}<span class="kicker">For teachers · 14 days free</span><h1>Turn your lesson plans into games your class begs to play</h1>
+  <div class="pills" style="position:relative;width:600px"><span>AI game Builder</span><span>Live class games</span><span>Unlimited students</span></div>
+  <div class="stack"><img src="${cover('fraction-factory')}"><img src="${cover('quest-race')}"><img src="${cover('robo-route')}"></div><p class="url">oomba.ai</p></div>`) });
+
 const KICKER = { learning: 'Free learning game', words: 'Free word game', board: 'Free board game', music: 'Free music game', puzzle: 'Free puzzle game', arcade: 'Free arcade game', sports: 'Free sports game', adventure: 'Free adventure game', silly: 'Free silly game' };
 for (const f of fs.readdirSync(COVERS).filter(f => f.endsWith('.jpg'))) {
   const slug = f.slice(0, -4); let g; try { g = seed(slug); } catch { continue; }
