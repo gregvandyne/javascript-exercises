@@ -19,6 +19,7 @@ import { legacyHosts, hostOnly } from '../site.js';
 import { state as domainState } from '../domain.js';
 import { abs, origin, localeUrl, localizable, pageLangs, langsWithKey } from '../seo.js';
 import { COURSES } from '../services/course-catalog.js';
+import { landingAtRoot } from './landing.js';
 
 export const router = Router();
 
@@ -46,7 +47,8 @@ export function sitemapEntries() {
   const list = launchGames();
   const newest = list.reduce((m, g) => Math.max(m, g.updated_at || 0, g.published_at || 0), 0);
   const out = [
-    { path: '/', langs: langsWithKey('home.intro.heading'), lastmod: newest ? day(newest) : null, images: ['/og/site.jpg'] },
+    // "/" is the teacher landing page for search engines (routes/landing.js); its words are under landing.*.
+    { path: '/', langs: landingAtRoot() ? langsWithKey('landing.hero.h1') : langsWithKey('home.intro.heading'), lastmod: landingAtRoot() ? CONTENT_UPDATED : newest ? day(newest) : null, images: landingAtRoot() ? ['/og/landing.jpg'] : ['/og/site.jpg'] },
     { path: '/teachers', langs: langsWithKey('teachers.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] },
     ...(liveOn() ? [{ path: '/teachers/live', langs: langsWithKey('teachersLive.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-live.jpg', import.meta.url)) ? '/og/teachers-live.jpg' : '/og/teachers.jpg'] }] : []),
     // The CS Quest program page (routes/cs-quest.js): English-first copy under teachers.cs.*, so hreflang lists only the languages that have it.

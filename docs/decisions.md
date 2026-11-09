@@ -3020,3 +3020,41 @@ Four simulated sessions (a new teacher, a school admin, a student, a live class)
   (a subscription is read with its Price's Product). The panel's admin-only test now also tries a grown-up, a guest, a
   school admin, a teacher and a student. `billing-checkout.test.js`'s Pro-weight check runs with `BUILDER_FULL_FOR_ALL`
   off, as the other regular-maker tests do (it failed since #257 made the flag default on).
+
+## Teacher landing page at "/" (9 Nov 2026)
+Owner: "build me an absolutely killer marketing website … top right a button that says Just Play … target teachers …
+geared towards conversion … 14 day free trial … very futuristic … parallax … optimized for SEO."
+- **Who sees it:** `GET /` with **no session at all** (first visits, search engines, link previews) gets the teacher
+  landing page (server/routes/landing.js). Everyone with a session (kids, students, teachers, grown-ups, and a guest
+  who already played) gets the home page they had, unchanged. The hook is one router mounted just before the home
+  route in app.js (search "LANDING HOOK"); `renderLanding(req, res)` is exported for whoever reworks the home route
+  (the Play/Learn homes). `LANDING_AT_ROOT=0` turns it off; the unit tests (tests/unit/_setup.js) and Playwright
+  (playwright.config.js) set it off by default because their older specs describe the signed-out home, now at /play.
+- **Just Play:** `JUST_PLAY_URL = '/play'`. `GET /play` hands the request on to today's home route, so the arcade (doors,
+  featured game, rows) is reachable without touching its renderer. /play is private to search engines (`PRIVATE_RE`:
+  `X-Robots-Tag: noindex`); its canonical still names "/", whose indexed content is now the landing. Old links to
+  `/#play` (the app's "▶ Play now", `/go/kid`) reach the landing's `#play` band, and landing.js sends them on to /play.
+- **Self-contained:** its own header, footer, public/css/landing.css and public/js/landing.js (vanilla; no app.css or
+  app.js). Dark by design (deep space, aurora, mint/cyan/violet neon); an explicit Light choice (`theme` cookie,
+  footer links) gets a light variant with the same layout; "same as my device" stays dark.
+- **Motion:** parallax on fixed star/aurora layers and in-page elements (`data-sky`, `data-depth`), transforms only,
+  one requestAnimationFrame per scroll burst, passive listeners; the hero's lesson → Builder → game loop runs only
+  while on screen. With `prefers-reduced-motion` nothing moves and the hero shows its finished picture. Without
+  JavaScript every word is there (reveal-on-scroll only hides what starts below the first screen).
+- **Words:** under `landing.*`, written in all 13 languages (`landing.` is outside the readiness share, like `teachers.`),
+  inserted as text by scripts/i18n-add-landing.mjs from scripts/landing-strings/. Only true features: the Builder takes
+  lesson text, PDFs, pictures and text files (server/builder/uploads.js), playtests on phone/tablet/desktop sizes, keeps
+  versions, and a person reviews anything public; the three courses with their real standards claims; live games;
+  safety as /teachers states it. "Why games work" is qualitative, with two real citations (Roediger & Karpicke 2006;
+  Hattie & Timperley 2007). **No testimonials, logos, ratings or user counts** (a test guards it).
+- **Prices:** none on "/" (kids are never sold to; amounts live on /plans). The pricing section says "one simple yearly
+  price per teacher", unlimited students, 14 days free, no card, 300 AI game builds a day, and links to /plans;
+  `LANDING_SHOW_PRICE` (off) would show the Teacher price and add an `Offer` to the structured data. Every trial button
+  is `/trial` (the Teacher plan's trial, feature/teacher-plan); schools: mailto Greg@oomba.ai and /teachers#start.
+- **SEO:** title/description aimed at teacher searches, canonical, hreflang for every language, Open Graph/Twitter with
+  /og/landing.jpg (scripts/og-images.js), one JSON-LD graph (Organization, WebSite, WebPage, SoftwareApplication without
+  price/rating, FAQPage matching the visible FAQ); the sitemap's "/" entry lists the landing's languages and picture.
+- **Counting:** funnel tally "Teacher landing (signed out)": views (people only) and the beacon `POST /landing/count/<cta>`
+  for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
+- **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
+  parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.

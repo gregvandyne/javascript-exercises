@@ -1,0 +1,208 @@
+{
+  "meta": {
+    "title": "Transformez vos cours en jeux pour la classe · Oomba Academy",
+    "description": "L’apprentissage par le jeu pour les enseignants : collez une leçon ou envoyez un PDF, le Constructeur IA en fait un jeu interactif pour la classe. 14 jours gratuits, sans carte.",
+    "imageAlt": "Oomba Academy pour les enseignants : transformez vos cours en jeux que votre classe réclamera."
+  },
+  "nav": {
+    "label": "Site enseignants",
+    "home": "Accueil d’Oomba Academy",
+    "skip": "Aller au contenu",
+    "how": "Comment ça marche",
+    "builder": "Constructeur",
+    "courses": "Parcours",
+    "live": "Jeux en direct",
+    "pricing": "Tarifs",
+    "faq": "FAQ",
+    "signIn": "Connexion",
+    "justPlay": "Juste jouer",
+    "trial": "Essai gratuit",
+    "trialShort": "Essai gratuit"
+  },
+  "hero": {
+    "kicker": "Pour les enseignants · du CE2 à la 4e",
+    "h1": "Transformez vos préparations de cours en jeux que votre classe réclamera",
+    "lead": "Collez une leçon, envoyez un PDF ou décrivez simplement une idée. Le Constructeur IA d’Oomba en fait un jeu interactif à lancer en direct au vidéoprojecteur ou à donner à votre classe.",
+    "cta": "Commencer l’essai gratuit de 14 jours",
+    "how": "Voir comment ça marche",
+    "trustCard": "Sans carte bancaire",
+    "trustCancel": "Sans engagement",
+    "trustStudents": "Élèves illimités"
+  },
+  "facts": {
+    "games": "jeux éducatifs prêts à l’emploi",
+    "courses": "parcours complets avec fiches de préparation",
+    "languages": "langues pour les élèves et les enseignants",
+    "installs": "installation : tout se passe dans le navigateur"
+  },
+  "demo": {
+    "label": "Illustration : une leçon qui devient un jeu",
+    "lessonTag": "Votre leçon",
+    "lessonTitle": "Fractions égales · CM1",
+    "lessonBody": "Les élèves montrent que 1/2, 2/4 et 4/8 désignent la même quantité, avec des pizzas, des bandes et des droites graduées. Bilan de sortie : trois questions rapides.",
+    "file": "lecon-fractions.pdf",
+    "builderTag": "Constructeur IA",
+    "step1": "Lecture de votre leçon",
+    "step2": "Conception des niveaux",
+    "step3": "Tests sur téléphone, tablette et ordinateur",
+    "step4": "Prêt à jouer",
+    "gameTag": "Votre jeu",
+    "gameMeta": "Prêt à lancer en direct ou à donner",
+    "host": "Lancer en direct",
+    "assign": "Donner",
+    "credit": "Visuel du jeu Fraction Factory, l’un des jeux prêts à l’emploi d’Oomba."
+  },
+  "how": {
+    "kicker": "Comment ça marche",
+    "h": "De la préparation de cours au jeu en trois étapes",
+    "lead": "Ni code ni graphisme. Si vous savez décrire votre leçon, vous pouvez la rendre jouable.",
+    "s1": { "h": "Apportez votre leçon", "p": "Collez le texte de votre leçon, envoyez un PDF, une image ou un fichier texte, ou décrivez avec vos mots ce que votre classe doit travailler." },
+    "s2": { "h": "Le Constructeur crée le jeu", "p": "Il écrit le jeu, puis le teste tout seul aux formats téléphone, tablette et ordinateur. Demandez des changements avec des mots simples : « plus difficile », « ajoute un chrono »." },
+    "s3": { "h": "Jouez comme vous voulez", "p": "Lancez-le en direct au vidéoprojecteur, partagez-le avec vos classes seulement, ou ajoutez-le à une leçon avec une date limite et suivez la progression de chaque élève." }
+  },
+  "builder": {
+    "kicker": "Le Constructeur IA",
+    "h": "Votre leçon en entrée, un vrai jeu en sortie",
+    "lead": "Parlez au Constructeur comme à un assistant pédagogique qui sait faire des jeux. Il garde chaque version : vous pouvez toujours revenir en arrière.",
+    "you": "Vous",
+    "msg": "Fais un jeu à partir de cette leçon pour mes CM1. Dix minutes, trois niveaux, et termine par les questions du bilan de sortie.",
+    "bot": "C’est fait ! La version 1 est prête : trois niveaux, du plus facile au plus dur, avec le bilan de sortie à la fin. Appuie sur Jouer pour l’essayer.",
+    "li1": "Comprend le texte de vos leçons et les PDF, images et fichiers texte que vous envoyez",
+    "li2": "Répond dans votre langue, et dans celle de chaque élève",
+    "li3": "Teste chaque version aux formats téléphone, tablette et ordinateur",
+    "li4": "Privé jusqu’à ce que vous le partagiez : vous seul, vos classes ou, après vérification par une personne de notre équipe, tout le monde",
+    "li5": "Les élèves peuvent créer aussi : décrire, tester et corriger un jeu, c’est planifier, écrire et déboguer, sans code",
+    "shotAlt": "Le Studio Oomba : à gauche, le Constructeur annonce que la version 2 est prête ; à droite, le jeu tourne dans un aperçu au format téléphone.",
+    "caption": "Le vrai Studio : le Constructeur à gauche, votre jeu à droite."
+  },
+  "courses": {
+    "kicker": "Parcours prêts à l’emploi",
+    "h": "Des parcours complets, prêts dès le premier jour",
+    "lead": "Courts diaporamas, vérifications rapides et missions de jeu sur un même chemin. Chaque élève avance à son rythme ; vous suivez la progression dans le carnet de notes.",
+    "nq": { "name": "Number Quest", "tag": "Maths · du CE2 au CM2", "p": "Numération, fractions, mesures, géométrie et données à travers le Numberworks de Netville avec Tally la chatte. Chaque étape est reliée aux Common Core State Standards de mathématiques." },
+    "cs": { "name": "CS Quest", "tag": "Informatique · du CE2 à la 4e", "p": "Un programme complet qu’un enseignant sans formation en informatique peut mener : des séances de 45 minutes, chacune avec une fiche, un chapitre de jeu, un échauffement en direct et un bilan de sortie. Niveaux 1B et 2 du CSTA." },
+    "cd": { "name": "Cyber Defenders", "tag": "Sécurité en ligne", "p": "Comment voyagent les messages, comment les codes les protègent, ce qui reste privé et comment repérer une arnaque, avec Pim la chouette à la poste de Netville. Chaque étape est reliée aux standards CYBER.ORG." },
+    "link": "Guide enseignant"
+  },
+  "live": {
+    "kicker": "Jeux de classe en direct",
+    "h": "Allumez le vidéoprojecteur",
+    "lead": "Des échauffements et des bilans de sortie que votre classe attend avec impatience. Les élèves rejoignent la partie sur leur propre appareil avec un code à 7 chiffres.",
+    "li1": "Quest Race, Question Battle, Brain Board, Tug of Math et d’autres",
+    "li2": "Utilisez une série de questions toute prête, écrivez la vôtre ou laissez l’IA en proposer une à modifier",
+    "li3": "Les scores arrivent directement dans votre carnet de notes",
+    "li4": "Élèves connectés uniquement : pas de chat, pas de saisie libre, pas de pseudos inventés",
+    "shotAlt": "Le salon d’attente de Question Battle en direct : cinq avatars d’élèves attendent pendant que le grand écran affiche le code de la partie et un QR code.",
+    "link": "Comment marchent les jeux en direct"
+  },
+  "why": {
+    "kicker": "Pourquoi les jeux marchent",
+    "h": "Le plaisir est le moyen. L’apprentissage est le but.",
+    "lead": "Les bons jeux éducatifs s’appuient sur quelques idées bien étudiées des sciences de l’apprentissage.",
+    "b1": { "h": "Récupération en mémoire", "p": "Répondre pour gagner oblige à aller chercher ce qu’on sait, et se rappeler une chose est l’un des moyens les plus sûrs de la retenir." },
+    "b2": { "h": "Retour immédiat", "p": "Chaque réponse reçoit une réaction sur le moment : les erreurs sont corrigées tant que le raisonnement est encore frais." },
+    "b3": { "h": "Répétition sans pression", "p": "« Encore une partie » ressemble à un jeu, pas à une fiche d’exercices : les élèves s’entraînent davantage, sans le poids d’une note." },
+    "b4": { "h": "Tout le monde participe", "p": "Un jeu donne son tour à chaque élève, y compris à ceux qui lèvent rarement la main." },
+    "b5": { "h": "Créer, c’est apprendre", "p": "Pour créer un jeu sur un sujet, il faut le comprendre assez bien pour l’expliquer à un ordinateur." },
+    "sources": "Pour aller plus loin"
+  },
+  "safety": {
+    "kicker": "Sécurité et confidentialité",
+    "h": "Pensé pour la classe, sûr dès la conception",
+    "lead": "Conçu pour les 8 à 14 ans, et vous gardez la main sur vos classes.",
+    "li1": "Pas de publicité, ni de cookies publicitaires ou de suivi",
+    "li2": "Les élèves n’ont jamais besoin d’adresse e-mail, et nous ne demandons jamais leur âge ni leur adresse",
+    "li3": "Le vrai nom d’un élève, si vous l’ajoutez, n’est visible que par le personnel de votre école",
+    "li4": "Vous validez qui rejoint vos classes, et aucun élève ne peut discuter avec des inconnus",
+    "li5": "Chaque jeu tourne dans un bac à sable verrouillé, et une personne de notre équipe vérifie tout jeu avant qu’il devienne public",
+    "li6": "Ce que les élèves écrivent est filtré, et les images qu’ils envoient sont vérifiées et débarrassées de leurs données de localisation",
+    "links": "Lisez <a href=\"{safety}\">comment nous protégeons les enfants</a> et notre <a href=\"{privacy}\">politique de confidentialité</a>."
+  },
+  "everywhere": {
+    "h": "Fonctionne partout où est votre classe",
+    "devices": "Chromebooks, iPad, ordinateurs portables, téléphones et tableau interactif, directement dans le navigateur. Rien à installer.",
+    "languages": "{count} langues, dont l’espagnol, l’arabe, le portugais et le français. Chaque élève choisit la sienne.",
+    "voicesH": "Lecture à voix haute",
+    "voices": "Des voix IA naturelles lisent à voix haute tous les jeux officiels."
+  },
+  "pricing": {
+    "kicker": "Tarifs",
+    "h": "Un prix simple par enseignant. Tous les élèves inclus.",
+    "lead": "Jamais de frais par élève. Essayez tout gratuitement pendant 14 jours.",
+    "teacher": {
+      "name": "Enseignant",
+      "price": "Un prix annuel simple",
+      "priceShown": "{price} par an",
+      "trial": "14 jours gratuits · sans carte",
+      "li1": "Élèves illimités, aucun frais par élève",
+      "li2": "300 créations de jeux par IA par jour pour votre classe",
+      "li3": "Tous les parcours, plus de 30 jeux prêts à l’emploi et les jeux de classe en direct",
+      "li4": "Classes, leçons, progression et carnet de notes",
+      "li5": "Toutes les langues, tous les appareils",
+      "cta": "Commencer l’essai gratuit",
+      "plans": "Voir les offres et les tarifs"
+    },
+    "schools": {
+      "name": "Écoles et réseaux",
+      "price": "Le même prix par enseignant",
+      "priceShown": "{price} par enseignant et par an",
+      "li1": "Chaque enseignant a l’offre Enseignant complète",
+      "li2": "Paiement sur facture ou bon de commande",
+      "li3": "Comptes scolaires et cartes de connexion à imprimer",
+      "li4": "Nous vous aidons à installer votre école",
+      "cta": "Nous contacter",
+      "form": "Installer votre école",
+      "subject": "Oomba Academy pour notre école"
+    }
+  },
+  "faq": {
+    "h": "Les questions des enseignants",
+    "q1": "Qu’est-ce qu’Oomba Academy ?",
+    "a1": "Une plateforme d’apprentissage par le jeu pour les 8 à 14 ans. Les enseignants transforment leurs propres leçons en jeux interactifs avec un Constructeur IA, animent des jeux de classe en direct et utilisent des parcours prêts à l’emploi en maths, informatique et sécurité en ligne.",
+    "q2": "Comment marche l’essai gratuit ?",
+    "a2": "Commencez un essai gratuit de 14 jours sans carte. Toute l’offre Enseignant est incluse pendant l’essai, et à la fin, vous décidez de vous abonner ou non.",
+    "q3": "Est-ce que je paie pour chaque élève ?",
+    "a3": "Non. Un prix annuel par enseignant couvre tous vos élèves. Il n’y a aucun frais par élève.",
+    "q4": "Que puis-je transformer en jeu ?",
+    "a4": "Presque n’importe quelle leçon : collez le texte, envoyez un PDF, une image ou un fichier texte, ou décrivez le sujet et ce que votre classe doit travailler. Le Constructeur s’appuie sur votre document et construit un jeu autour.",
+    "q5": "Les élèves ont-ils besoin d’une adresse e-mail ?",
+    "a5": "Non. Vous pouvez créer des comptes scolaires pour votre classe et imprimer des cartes de connexion, sans e-mail d’élève. Et tout le monde peut jouer tout de suite aux jeux gratuits.",
+    "q6": "Ça marche sur Chromebook et iPad ?",
+    "a6": "Oui. Tout fonctionne dans un navigateur à jour sur Chromebook, iPad et autres tablettes, ordinateurs portables, téléphones et tableaux interactifs, sans rien installer.",
+    "q7": "Est-ce sûr pour mes élèves ?",
+    "a7": "C’est conçu pour les 8 à 14 ans : pas de publicité, pas de cookies de suivi, pas d’e-mail d’élève, pas de discussion avec des inconnus, du texte filtré, et une personne de notre équipe vérifie tout jeu avant qu’il devienne public.",
+    "q8": "Notre école peut-elle payer sur facture ou bon de commande ?",
+    "a8": "Oui. Les écoles paient le même prix par enseignant et par an, sur facture ou bon de commande. Écrivez-nous et nous nous en occupons.",
+    "q9": "Quelles langues sont disponibles ?",
+    "a9": "{count} langues, dont l’anglais, l’espagnol, le portugais, le français, l’allemand, l’arabe, l’hébreu et le japonais. Chaque élève choisit la sienne, et le Constructeur lui répond dans cette langue."
+  },
+  "final": {
+    "h": "Votre prochaine leçon sera peut-être celle qu’ils voudront rejouer",
+    "p": "Gratuit pendant 14 jours. Sans carte, sans frais par élève.",
+    "cta": "Commencer l’essai gratuit de 14 jours"
+  },
+  "play": {
+    "h": "Tu viens pour jouer ?",
+    "p": "Plus de 30 jeux éducatifs, gratuits et sans inscription.",
+    "cta": "Juste jouer"
+  },
+  "footer": {
+    "tagline": "Des jeux éducatifs pour les 8 à 14 ans, et un Constructeur IA qui transforme les leçons en jeux.",
+    "teachers": "Enseignants",
+    "product": "Découvrir",
+    "about": "À propos",
+    "parents": "Pour les parents",
+    "guide": "Guide enseignant",
+    "learn": "Jeux éducatifs par matière",
+    "safety": "Sécurité",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "refunds": "Remboursements",
+    "plans": "Offres et tarifs",
+    "contact": "Contact",
+    "languages": "Langues",
+    "theme": "Thème",
+    "dark": "Sombre",
+    "light": "Clair"
+  }
+}

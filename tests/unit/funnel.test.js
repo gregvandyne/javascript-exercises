@@ -48,7 +48,7 @@ test('bump: known steps only, adds up per day; weekly compares the last 7 days w
   const r = funnel.weekly(end);
   assert.deepEqual(r.last, { from: '2026-10-22', to: '2026-10-28' });
   assert.deepEqual(r.prev, { from: '2026-10-15', to: '2026-10-21' });
-  assert.deepEqual(r.funnels.map(f => f.key), ['parent', 'teacher', 'guardrail', 'doors', 'who']);
+  assert.deepEqual(r.funnels.map(f => f.key), ['parent', 'teacher', 'guardrail', 'doors', 'who', 'landing']);
   const step = (f, s) => r.funnels.find(x => x.key === f).steps.find(x => x.key === s);
   assert.deepEqual(step('parent', 'parent.view'), { key: 'parent.view', label: 'Parent page views', last: 150, prev: 80, change: 88, rate: null });
   assert.equal(step('parent', 'parent.signup').last, 30); assert.equal(step('parent', 'parent.signup').change, -25);
@@ -58,7 +58,7 @@ test('bump: known steps only, adds up per day; weekly compares the last 7 days w
   assert.equal(step('teacher', 'teacher.request').change, null, 'nothing the week before: no percentage');
   assert.equal(step('guardrail', 'kid.play').change, -20);
   assert.equal(step('guardrail', 'kid.play').rate, null, 'guardrail steps are not a funnel');
-  assert.equal(funnel.STEPS.length, 19);
+  assert.equal(funnel.STEPS.length, 24);
   funnel.bump('door.kid', 9, '2026-10-27'); funnel.bump('door.parent', 3, '2026-10-27');
   const doors = funnel.weekly(end).funnels.find(f => f.key === 'doors');
   assert.equal(doors.tally, true);
