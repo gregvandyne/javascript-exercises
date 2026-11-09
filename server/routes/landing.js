@@ -124,6 +124,7 @@ export function renderLanding(req, res) {
       <ul class="lp-trust">
         <li>${check}${t('landing.hero.trustCard')}</li><li>${check}${t('landing.hero.trustCancel')}</li><li>${check}${t('landing.hero.trustStudents')}</li>
       </ul>
+      <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${HERO_FAN.map(s => cover(s, { eager: true }))}</span><span><b>30+</b> ${t('landing.facts.games')} ${ARROW}</span></a>
     </div>
     ${demo(t, fb)}
   </div>
@@ -162,13 +163,13 @@ export function renderLanding(req, res) {
   </div>
 </section>`;
 
-  const COURSES = [['nq', '/teachers/number-quest', 'tally', 'lp-c-nq', 219, 353], ['cs', '/teachers/cs-quest', 'bolt', 'lp-c-cs', 432, 442], ['cd', '/teachers/cyber-defenders', 'pim', 'lp-c-cd', 270, 282]];
+  const COURSES = [['nq', '/teachers/number-quest', 'lp-c-nq', ['sum-racer', 'fraction-factory', 'quest-race']], ['cs', '/teachers/cs-quest', 'lp-c-cs', ['data-detective', 'robo-route', 'packet-post']], ['cd', '/teachers/cyber-defenders', 'lp-c-cd', ['escape-the-post-office', 'trick-inbox', 'packet-post']]];
   const courses = html`<section class="lp-sec" id="courses" aria-labelledby="courses-h">
   <div class="lp-wrap">
     <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.courses.kicker')}</p><h2 id="courses-h">${t('landing.courses.h')}</h2><p>${t('landing.courses.lead')}</p></header>
     <div class="lp-courses">
-      ${COURSES.map(([k, href, art, cls, w, h]) => html`<article class="lp-card lp-course ${cls} rv">
-        <div class="lp-course-art" aria-hidden="true"><img src="/img/csq/chars/${art}.webp" width="${w}" height="${h}" alt="" loading="lazy" decoding="async"></div>
+      ${COURSES.map(([k, href, cls, games]) => html`<article class="lp-card lp-course ${cls} rv">
+        <div class="lp-course-art" aria-hidden="true">${games.map(s => cover(s))}</div>
         <p class="lp-tag">${t(`landing.courses.${k}.tag`)}</p>
         <h3>${t(`landing.courses.${k}.name`)}</h3>
         <p>${t(`landing.courses.${k}.p`)}</p>
@@ -206,7 +207,7 @@ export function renderLanding(req, res) {
 
   const safety = html`<section class="lp-sec" id="safety" aria-labelledby="safety-h">
   <div class="lp-wrap lp-safety">
-    <div class="lp-shield rv" aria-hidden="true"><svg viewBox="0 0 120 140"><defs><linearGradient id="lp-sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7CF2C0"/><stop offset=".55" stop-color="#5BC8FF"/><stop offset="1" stop-color="#B28CFF"/></linearGradient></defs><path d="M60 6l48 18v38c0 32-20 58-48 72C32 120 12 94 12 62V24z" fill="none" stroke="url(#lp-sg)" stroke-width="5"/><path d="M40 70l14 14 28-32" fill="none" stroke="url(#lp-sg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="lp-shield rv" aria-hidden="true"><svg viewBox="0 0 120 140"><defs><linearGradient id="lp-sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7DD2A4"/><stop offset=".6" stop-color="#66C792"/><stop offset="1" stop-color="#FFD23F"/></linearGradient></defs><path d="M60 6l48 18v38c0 32-20 58-48 72C32 120 12 94 12 62V24z" fill="none" stroke="url(#lp-sg)" stroke-width="5"/><path d="M40 70l14 14 28-32" fill="none" stroke="url(#lp-sg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="rv">
       <p class="lp-eyebrow">${t('landing.safety.kicker')}</p><h2 id="safety-h">${t('landing.safety.h')}</h2><p>${t('landing.safety.lead')}</p>
       <ul class="lp-list lp-list-2">${[1, 2, 3, 4, 5, 6].map(i => html`<li>${check}<span>${t(`landing.safety.li${i}`)}</span></li>`)}</ul>
@@ -316,7 +317,7 @@ export function renderLanding(req, res) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 ${head}
-<meta name="theme-color" content="${theme === 'light' ? BAR_COLORS.light : '#070B16'}">
+<meta name="theme-color" content="${theme === 'light' ? BAR_COLORS.light : BAR_COLORS.dark}">
 <link rel="icon" href="/favicon.ico?v=${ICONS_V}" sizes="32x32">
 <link rel="icon" href="/icons/icon.svg?v=${ICONS_V}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=${ICONS_V}">
@@ -331,6 +332,8 @@ ${body}
 </html>`);
 }
 
+/** The covers fanned out in the hero (every size: the floating ones only fit very wide screens). */
+const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest', 'word-trail'];
 /** The games in the moving row under the courses. */
 const MARQUEE = ['sum-racer', 'atlas-quest', 'doodle-hoot', 'trick-inbox', 'code-isle', 'data-detective', 'fraction-factory', 'quest-race', 'brain-board', 'word-trail'];
 
