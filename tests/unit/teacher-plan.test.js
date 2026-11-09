@@ -441,6 +441,13 @@ test('pricing copy: Teacher $119/year, 14-day trial, no card, unlimited students
   const teachers = decode((await call(null, '/teachers')).text);
   assert.match(teachers, /Try the Teacher plan free for 14 days, no card needed: unlimited students and 300 AI builds a day/);
   assert.match(teachers, /href="\/trial">Start free trial</);
+  // The FAQ: what is free, what the Teacher plan adds, and no price outside the plans pages.
+  assert.match(teachers, /The optional Teacher plan adds a shared daily pool of AI builds for your classes[\s\S]*Try it free for 14 days, no card needed/);
+  assert.doesNotMatch(teachers, /\$\d/);
+  config.billingPublic = false;
+  const off = decode((await call(null, '/teachers')).text);
+  assert.match(off, /Playing, classes, lessons and progress are free/); assert.doesNotMatch(off, /Teacher plan/);
+  config.billingPublic = true;
   const terms = decode((await call(null, '/terms')).text);
   assert.match(terms, /priced <b>per teacher per year<\/b>, with no charge per student/);
   assert.match(terms, /14-day free trial<\/b> that needs no card/);

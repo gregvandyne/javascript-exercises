@@ -4155,7 +4155,9 @@
       "a8": "Ja. Lektionen speichern den Fortschritt, die Spielpunkte und die schriftlichen Antworten jedes Schülers. Sie sehen sie in der Klasse unter „Fortschritt“ und können den Lektionsfortschritt jedes Schülers als Tabelle (CSV) herunterladen.",
       "q9": "Welche Sprachen gibt es?",
       "a9": "{count} Sprachen, darunter Englisch, Spanisch, Französisch, Arabisch, Russisch, Hebräisch und Japanisch. Jeder Schüler wählt seine eigene.",
-      "a4google": "Schüler tippen nie eine E-Mail-Adresse ein, und wir fragen nie nach ihrem Alter oder ihrer Wohnadresse. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Es gibt keine Werbung und keine Tracking-Cookies. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern."
+      "a4google": "Schüler tippen nie eine E-Mail-Adresse ein, und wir fragen nie nach ihrem Alter oder ihrer Wohnadresse. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Es gibt keine Werbung und keine Tracking-Cookies. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
+      "q1paid": "Ist Oomba Academy für Lehrkräfte kostenlos?",
+      "a1paid": "Spielen, Klassen, Lektionen, Lernfortschritt und Oomba Live sind kostenlos, und alle Schülerinnen und Schüler bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Der optionale Lehrkraft-Plan fügt für deine Klassen einen gemeinsamen täglichen Vorrat an KI-Spielbauten hinzu, mit unbegrenzt vielen Schülerinnen und Schülern. Teste ihn 14 Tage kostenlos, ohne Karte. Die Preise stehen auf der Seite mit den Plänen."
     },
     "setup": {
       "lead": "Erzählen Sie uns kurz von Ihrer Schule. Wir richten sie innerhalb von 1 Schultag ein und antworten Ihnen per E-Mail mit den nächsten Schritten. Das Einrichten einer Schule ist kostenlos.",

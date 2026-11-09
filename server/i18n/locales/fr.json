@@ -4154,7 +4154,9 @@
       "a8": "Oui. Les leçons enregistrent la progression, les scores aux jeux et les réponses écrites de chaque élève. Vous les retrouvez dans l’onglet Progression de la classe, et vous pouvez télécharger la progression de chaque élève dans les leçons sous forme de tableur (CSV).",
       "q9": "Quelles langues sont disponibles ?",
       "a9": "{count} langues, dont l’espagnol, le portugais, le français, l’allemand, l’arabe, l’hébreu et le japonais. Chaque élève choisit la sienne.",
-      "a4google": "Les élèves ne saisissent jamais d’adresse e-mail, et nous ne leur demandons jamais leur âge ni leur adresse postale. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Il n’y a ni publicité ni cookies de suivi. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons."
+      "a4google": "Les élèves ne saisissent jamais d’adresse e-mail, et nous ne leur demandons jamais leur âge ni leur adresse postale. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Il n’y a ni publicité ni cookies de suivi. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons.",
+      "q1paid": "Oomba Academy est-il gratuit pour les enseignants ?",
+      "a1paid": "Jouer, les classes, les leçons, le suivi des progrès et Oomba Live sont gratuits, et chaque élève reçoit chaque jour des messages gratuits pour le Constructeur. La formule Enseignant, facultative, ajoute pour vos classes une réserve quotidienne partagée de créations IA, avec des élèves illimités. Essayez-la gratuitement pendant 14 jours, sans carte. Les prix sont sur la page des formules."
     },
     "setup": {
       "lead": "Parlez-nous un peu de votre école. Nous l’inscrirons en 1 jour d’école maximum et répondrons à votre e-mail en indiquant la marche à suivre. Inscrire une école est gratuit.",

@@ -4155,7 +4155,9 @@
       "a8": "Ja. Lessen houden de voortgang, scores in games en geschreven antwoorden van elke leerling bij. Je ziet ze op het tabblad Voortgang van de klas, en je kunt de lesvoortgang van elke leerling downloaden als spreadsheet (CSV).",
       "q9": "Welke talen zijn er?",
       "a9": "{count} talen, waaronder Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest een eigen taal.",
-      "a4google": "Leerlingen typen nooit een e-mailadres, en we vragen nooit naar hun leeftijd of woonadres. Als je school Inloggen met Google gebruikt, bewaren we het Google-mailadres van school van elke leerling alleen om het account te herkennen. Er is geen reclame en er zijn geen trackingcookies. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren."
+      "a4google": "Leerlingen typen nooit een e-mailadres, en we vragen nooit naar hun leeftijd of woonadres. Als je school Inloggen met Google gebruikt, bewaren we het Google-mailadres van school van elke leerling alleen om het account te herkennen. Er is geen reclame en er zijn geen trackingcookies. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren.",
+      "q1paid": "Is Oomba Academy gratis voor leerkrachten?",
+      "a1paid": "Spelen, klassen, lessen, voortgang en Oomba Live zijn gratis, en elke leerling krijgt elke dag gratis berichten aan de Bouwer. Het optionele Leerkracht-abonnement geeft je klassen een gedeelde dagelijkse voorraad AI-bouwsels, met onbeperkt leerlingen. Probeer het 14 dagen gratis, zonder kaart. De prijzen staan op de pagina met abonnementen."
     },
     "setup": {
       "lead": "Vertel ons iets over je school. We zetten hem binnen 1 schooldag op en sturen je per e-mail wat je daarna moet doen. Een school opzetten is gratis.",
