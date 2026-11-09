@@ -7027,5 +7027,146 @@
       "allGames": "Alles ansehen, was Schüler spielen können",
       "openLive": "Live-Spiel öffnen"
     }
+  },
+  "rubrics": {
+    "title": "Bewertungsraster",
+    "intro": "Wiederverwendbare Bewertungsraster: Kriterien in den Zeilen, Stufen in den Spalten. Verknüpfen Sie ein Raster mit einer schriftlichen Antwort, einem gebauten Spiel oder einer ganzen Lektion und bewerten Sie jedes Kind mit einem Tipp auf eine Stufe.",
+    "mine": "Meine Raster",
+    "shared": "Vom Kollegium geteilt",
+    "new": "Neues Raster",
+    "newPlaceholder": "Titel des Rasters, z. B. Argumentierender Absatz",
+    "untitled": "Neues Raster",
+    "empty": "Noch keine Raster",
+    "emptyText": "Erstellen Sie ein neues Raster, lassen Sie die KI einen Entwurf schreiben, oder fügen Sie ein Startraster aus CS Quest hinzu.",
+    "sharedEmpty": "Noch keine geteilten Raster",
+    "sharedEmptyText": "Wenn jemand aus dem Kollegium ein Raster mit der Schule teilt, erscheint es hier zum Kopieren.",
+    "criterion": "Kriterium",
+    "criteriaN": "{count, plural, one {# Kriterium} other {# Kriterien}}",
+    "levelsN": "{count, plural, one {# Stufe} other {# Stufen}}",
+    "pointsN": "{count, plural, one {# Punkt} other {# Punkte}}",
+    "maxPoints": "Von {points}",
+    "usedN": "{count, plural, one {In # Lektion verwendet} other {In # Lektionen verwendet}}",
+    "usedIn": "Verwendet in",
+    "notUsed": "Noch mit keiner Lektion verknüpft. Verknüpfen Sie es bei einem Schritt einer Lektion oder in ihren Angaben.",
+    "wholeLesson": "Ganze Lektion",
+    "stepsN": "{count, plural, one {# Schritt} other {# Schritte}}",
+    "print": "Drucken",
+    "printName": "Name:",
+    "printPoints": "Punkte: ____ / {max}",
+    "backToRubric": "Zurück zum Raster",
+    "preview": "Raster ansehen",
+    "copy": "Kopie erstellen",
+    "copyMine": "In meine Raster kopieren",
+    "copyTitle": "{title} (Kopie)",
+    "copiedNotice": "Das ist Ihre Kopie. Ändern Sie sie nach Belieben: Das Original bleibt, wie es war.",
+    "share": "Mit meiner Schule teilen",
+    "unshare": "Nicht mehr teilen",
+    "sharedStatus": "Mit Ihrer Schule geteilt",
+    "sharedToast": "Mit dem Kollegium Ihrer Schule geteilt",
+    "unsharedToast": "Wird nicht mehr geteilt",
+    "delete": "Raster löschen",
+    "deleteConfirm": "Das Raster {title} löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.",
+    "deleteUsedConfirm": "{count, plural, one {{title} ist mit # Lektion verknüpft. Dort entfernen und das Raster löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.} other {{title} ist mit # Lektionen verknüpft. Dort entfernen und das Raster löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.}}",
+    "deletedToast": "Raster gelöscht",
+    "levelNames": {
+      "notYet": "Noch nicht",
+      "beginning": "Anfänge",
+      "developing": "Auf dem Weg",
+      "secure": "Sicher",
+      "excellent": "Hervorragend"
+    },
+    "template": {
+      "understanding": "Verständnis",
+      "explaining": "Erklärt die eigenen Gedanken",
+      "care": "Sorgfalt und Einsatz",
+      "level0": "Noch nicht zu sehen",
+      "level1": "Teilweise, mit Hilfe",
+      "level2": "Deutlich zu sehen",
+      "level3": "Mit Tiefe und vielen Details"
+    },
+    "editor": {
+      "title": "Titel des Rasters",
+      "description": "Notizen für Lehrkräfte",
+      "levels": "Stufen",
+      "levelsHint": "Die Spalten: ein Name und die Punkte, die jede Stufe wert ist.",
+      "levelLabel": "Stufe {n}",
+      "points": "Punkte",
+      "newLevel": "Neue Stufe",
+      "addLevel": "Stufe hinzufügen",
+      "removeLevel": "Stufe {name} entfernen",
+      "criteria": "Kriterien",
+      "criteriaHint": "Die Zeilen: worauf Sie achten und was die Arbeit auf jeder Stufe zeigt.",
+      "criterionN": "Kriterium {n}",
+      "descPlaceholder": "Was die Arbeit auf dieser Stufe zeigt",
+      "addCriterion": "Kriterium hinzufügen",
+      "removeCriterion": "Kriterium {name} entfernen"
+    },
+    "ai": {
+      "button": "Raster mit KI entwerfen",
+      "task": "Was machen die Kinder?",
+      "taskPlaceholder": "z. B. einen Absatz schreiben, der erklärt, warum ihr Spiel fair ist",
+      "levels": "Stufen",
+      "make": "Mein Raster entwerfen",
+      "note": "Nur was Sie hier eingeben, geht an die KI, niemals die Arbeiten oder Namen Ihrer Klasse. Sie können danach alles ändern.",
+      "done": "Hier ist der Entwurf der KI. Lesen Sie ihn durch und ändern Sie, was Sie möchten, bevor Sie ihn verwenden.",
+      "template": "Die KI ist gerade nicht verfügbar. Hier ist ein einfaches Startraster zum Bearbeiten."
+    },
+    "starters": {
+      "title": "Startraster",
+      "intro": "Zu jedem Exit-Ticket einer CS-Quest-Lektion gehört ein Raster (Stufen 0 bis 3, auf Englisch). Fügen Sie eines Ihren Rastern hinzu, um es mit jeder Lektion zu nutzen, oder passen Sie es an.",
+      "add": "Zu meinen Rastern",
+      "addFor": "{title} zu meinen Rastern hinzufügen",
+      "added": "Zu Ihren Rastern hinzugefügt. Ändern Sie es nach Belieben.",
+      "fromLesson": "Aus der CS-Quest-Lektion {title}."
+    },
+    "attach": {
+      "step": "Bewertungsraster",
+      "lesson": "Raster für die ganze Lektion",
+      "lessonTitle": "Raster für die ganze Lektion",
+      "lessonHint": "Bewerten Sie jedes Kind für die ganze Lektion auf ihrer Fortschrittsseite.",
+      "none": "Kein Raster",
+      "hint": "Bewerten Sie damit die Antworten oder Spiele dieses Schritts.",
+      "noneYet": "Sie haben noch keine Raster.",
+      "library": "Bewertungsraster"
+    },
+    "score": {
+      "label": "Mit {title} bewerten",
+      "total": "{points} Punkte",
+      "notScored": "Nicht bewertet",
+      "partial": "{n} von {total} bewertet",
+      "comment": "Kommentar hinzufügen",
+      "commentFor": "Kommentar zu {name}",
+      "given": "die vergebene Stufe",
+      "changed": "Das Raster wurde seit dieser Bewertung geändert. Bewerten Sie neu, um die neue Fassung zu nutzen.",
+      "scored": "Bewertet",
+      "lessonHint": "Tippen Sie für jedes Kriterium auf eine Stufe, fügen Sie bei Bedarf Kommentare hinzu und speichern Sie. Jedes Kind sieht nur das eigene Ergebnis."
+    },
+    "student": {
+      "fromTeacherLesson": "Von deiner Lehrkraft: die ganze Lektion"
+    },
+    "gradebook": {
+      "key": "Rasterpunkte",
+      "cellTitle": "Raster: {points} Punkte ({pct} %)"
+    },
+    "csv": {
+      "points": "{title} (Rasterpunkte)",
+      "percent": "{title} (Raster-%)",
+      "totalPoints": "Rasterpunkte",
+      "totalPercent": "Raster-%"
+    },
+    "errors": {
+      "notFound": "Dieses Raster haben wir nicht gefunden.",
+      "rubricTitle": "Geben Sie dem Raster einen Titel.",
+      "rubricLevels": "Ein Raster hat 2 bis 6 Stufen.",
+      "rubricCriteria": "Ein Raster hat 1 bis 12 Kriterien.",
+      "rubricLabel": "Geben Sie jeder Stufe einen Namen.",
+      "rubricPoints": "Punkte sind eine Zahl von 0 bis 100.",
+      "rubricName": "Geben Sie jedem Kriterium einen Namen.",
+      "tooManyRubrics": "Sie haben die höchste Zahl an Rastern in dieser Schule. Löschen Sie eines, das Sie nicht mehr brauchen.",
+      "inUse": "{count, plural, one {Dieses Raster ist mit # Lektion verknüpft.} other {Dieses Raster ist mit # Lektionen verknüpft.}}",
+      "task": "Sagen Sie, was die Kinder machen.",
+      "aiFailed": "Die KI konnte gerade kein Raster entwerfen. Bitte versuchen Sie es in einer Minute noch einmal.",
+      "pick": "Wählen Sie eines Ihrer eigenen Raster (das eines Kollegen erst kopieren)."
+    }
   }
 }

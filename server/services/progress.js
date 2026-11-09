@@ -13,6 +13,7 @@ import * as S from './schools.js';
 import * as L from './lessons.js';
 import * as games from './games.js';
 import { MODES } from './classlive-access.js';
+import * as R from './rubrics.js';
 
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
@@ -215,7 +216,7 @@ export function review(u, clId, stepId, userId, feedback, { marks, alsoMark = []
 }
 
 /** Steps that count for a lesson (all its steps, in order). */
-const stepsOf = lessonId => q.all('SELECT id, kind, title, game_id, position, rubric, standards FROM lesson_steps WHERE lesson_id=? ORDER BY position, created_at', lessonId);
+const stepsOf = lessonId => q.all('SELECT id, kind, title, game_id, position, rubric, rubric_id, standards FROM lesson_steps WHERE lesson_id=? ORDER BY position, created_at', lessonId);
 const studentsOf = classId => S.roster(classId).filter(p => p.role === 'student');
 
 /** One assigned lesson: its steps, the class's students, and every student's progress on every step. */
@@ -247,18 +248,30 @@ export function classProgress(classId, t = now()) {
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
   const by = new Map(counts.map(r => [`${r.u}:${r.cl}`, r]));
+  // Rubric scores (services/rubrics.js): points / most possible per lesson, on lessons with a rubric (hasRubric).
+  const pts = R.classTotals(classId), withRubric = R.lessonsWithRubrics([...new Set(lessons.map(cl => cl.lesson_id))]);
+  for (const cl of lessons) cl.hasRubric = withRubric.has(cl.lesson_id);
   const rows = students.map(p => ({ ...p, cells: lessons.map(cl => {
     const r = by.get(`${p.id}:${cl.id}`); const done = r ? Math.min(r.done, cl.steps) : 0;
-    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: r ? r.last : null, locked: cl.locked, late: !cl.locked && cl.due === 'late' && done < cl.steps };
+    const sc = pts.get(`${p.id}:${cl.id}`) || null;
+    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: r ? r.last : null, locked: cl.locked, late: !cl.locked && cl.due === 'late' && done < cl.steps,
+      points: sc ? sc.points : null, maxPoints: sc ? sc.max : null, scored: sc ? sc.scored : 0, criteria: sc ? sc.of : 0 };
   }) }));
-  for (const p of rows) p.overall = overall(p.cells);
-  return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0) };
+  for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); }
+  return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0), anyRubric: lessons.some(cl => cl.hasRubric) || rows.some(p => p.rubric) };
 }
 /** Percentage of steps done across the lessons that are open (one rule for the page and the CSV). */
 export function overall(cells) {
   const open = cells.filter(x => !x.locked);
   const total = open.reduce((n, x) => n + x.total, 0);
   return total ? Math.round((100 * open.reduce((n, x) => n + Math.min(x.done, x.total), 0)) / total) : 0;
+}
+/** Rubric points across every scored lesson: { points, max, pct } or null when nothing is scored yet. */
+export function rubricOverall(cells) {
+  const sc = cells.filter(x => x.maxPoints > 0);
+  if (!sc.length) return null;
+  const points = sc.reduce((n, x) => n + x.points, 0), max = sc.reduce((n, x) => n + x.maxPoints, 0);
+  return { points, max, pct: R.percent(points, max) };
 }
 /** Answers waiting for a teacher to review, per class (for My classes). Only answers to question steps count: a step
  *  changed to another type keeps its old answers, but there is nothing left to review. */
