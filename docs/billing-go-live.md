@@ -1,8 +1,13 @@
 # Turning on paid plans: the owner's checklist
 
-Paid plans (Basic, Family, School, Spark Packs) are built and tested against Stripe's sandbox and a fake Stripe. On the
-real site they are **off**: nobody can pay until you do the steps below. Everything here is something only you can do
-(a Stripe Dashboard setting, a Render setting, a decision or a signature). The code side is finished.
+Paid plans (Basic, Family, School, Spark Packs) are built and tested against Stripe's sandbox and a fake Stripe.
+Everything here is something only you can do (a Stripe Dashboard setting, a Render setting, a decision or a signature).
+The code side is finished.
+
+**Where oomba.ai stands (9 Nov 2026):** the server has run on live Stripe keys since at least 7 Nov (its startup log
+says `"billing":"live"`), so some steps below are already done. The startup log also warns that no live Price has the
+Spark Pack lookup keys `oomba_spark_25`, `oomba_spark_60` and `oomba_spark_150`, so Spark Packs can't be bought until
+those are set. Use the "Ready to go live?" panel to see which of the remaining steps are still red.
 
 **Your progress is on the site:** sign in as admin and open **/admin/billing**. The first panel, **"Ready to go
 live?"**, shows one row per check, green or red, with what to do. It reads settings by name only and never shows a key.
