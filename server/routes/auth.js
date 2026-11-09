@@ -2,7 +2,7 @@
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
-import { page, landingFor } from '../views/layout.js';
+import { page, landingFor, VERSION } from '../views/layout.js';
 import { avatar, notYou, makeGameBtn } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
@@ -18,6 +18,7 @@ import { buildStatus } from '../builder/turns.js';
 import { publicHost } from '../site.js';
 import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
 import { meFamilyPanel, nextFor } from './family.js';
+import { digestPanel } from './digest.js';
 import { familiesOn } from '../services/family.js';
 import * as funnel from '../services/funnel.js';
 import * as courses from '../services/courses.js';
@@ -463,6 +464,7 @@ router.get('/me', auth.requireUser, (req, res) => {
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
+  ${staff ? digestPanel(req) : ''}
   <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
-  page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js', '/js/character.js'] });
+  page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js', '/js/character.js'], ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/digest.css?v=${VERSION}">`) } : {}) });
 });
