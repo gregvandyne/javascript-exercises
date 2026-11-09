@@ -96,3 +96,51 @@ document.querySelectorAll('.settingsform').forEach(form => {
 // A fold that is open on wider screens (data-open-wide): the class's "📌 Assign a lesson" form and the gradebook's
 // "How to read it" stay folded on phones, where space is short, and start open on a desk-sized screen, as before.
 if (matchMedia('(min-width: 901px)').matches) document.querySelectorAll('details[data-open-wide]').forEach(d => { d.open = true; });
+
+// ---- School › Settings: say when something is changed but not saved, and ask before leaving it unsaved (another tab,
+// a link, closing the page); the chat hint follows the choice; with no time zone yet, offer this computer's.
+const setForm = document.getElementById('school-settings');
+if (setForm) {
+  const start = new FormData(setForm), note = document.getElementById('set-unsaved');
+  const changed = () => [...new FormData(setForm).entries()].some(([k, v]) => start.get(k) !== v);
+  let dirty = false, saving = false;
+  const sync = () => { dirty = changed(); if (note) note.hidden = !dirty; setForm.classList.toggle('is-dirty', dirty); };
+  setForm.addEventListener('input', sync); setForm.addEventListener('change', sync);
+  setForm.addEventListener('submit', () => { saving = true; });
+  window.addEventListener('beforeunload', e => { if (dirty && !saving) { e.preventDefault(); e.returnValue = ''; } });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]'); if (!a || !dirty || saving || a.target === '_blank' || a.getAttribute('href').startsWith('#')) return;
+    if (!confirm(setForm.dataset.unsaved)) { e.preventDefault(); return; }
+    saving = true;   // they chose to leave: no second question from the browser
+  }, true);
+  const chat = document.getElementById('set-chat'), chatHint = document.getElementById('set-chat-hint');
+  if (chat && chatHint) chat.addEventListener('change', () => { chatHint.textContent = chat.value === 'off' ? chat.dataset.hintOff : chat.dataset.hintClassmates; });
+  const tzBtn = document.getElementById('tz-suggest'), tzSel = document.getElementById('set-timeZone');
+  let mine = ''; try { mine = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* old browser */ }
+  if (tzBtn && tzSel && mine && [...tzSel.options].some(o => o.value === mine)) {
+    tzBtn.textContent = tzBtn.dataset.tpl.replace('{zone}', mine.replace(/_/g, ' ')); tzBtn.hidden = false;
+    tzBtn.addEventListener('click', () => { tzSel.value = mine; tzSel.dispatchEvent(new Event('change', { bubbles: true })); tzBtn.hidden = true; });
+  }
+}
+
+// "Select all shown": ticks every checkbox in a pick list that the filter leaves in view (or unticks them, if all are).
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-select-all]'); if (!b) return;
+  const list = document.getElementById(b.dataset.selectAll); if (!list) return;
+  const boxes = [...list.querySelectorAll('label:not([hidden]) input[type=checkbox]')];
+  const all = boxes.length && boxes.every(x => x.checked);
+  for (const x of boxes) x.checked = !all;
+});
+
+// School › Billing: the total for the number of students typed ("25 students × $20.00 = $500.00 a year").
+document.querySelectorAll('input[data-total-tpl]').forEach(inp => {
+  const out = document.getElementById(`${inp.id}-total`); if (!out) return;
+  const money = new Intl.NumberFormat(inp.dataset.lang || undefined, { style: 'currency', currency: 'USD' });
+  const num = new Intl.NumberFormat(inp.dataset.lang || undefined);
+  const show = () => {
+    const n = Math.floor(+inp.value || 0), unit = +inp.dataset.unit || 0;
+    out.hidden = !(n > 0);
+    if (n > 0) out.textContent = inp.dataset.totalTpl.replace('{seats}', num.format(n)).replace('{price}', money.format(unit / 100)).replace('{total}', money.format((unit * n) / 100));
+  };
+  inp.addEventListener('input', show);
+});

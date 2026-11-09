@@ -22,7 +22,7 @@ import { kitSrc, KIT_VERSIONS, KIT_LATEST } from '../services/kit.js';
 const KIT = () => ({ src: kitSrc(), sri: KIT_VERSIONS[KIT_LATEST] });
 
 /** Codes the join and play pages may need to explain, with their messages in the page's language. */
-export const JOIN_CODES = ['notFound', 'badCode', 'locked', 'full', 'ended', 'signIn', 'notMember', 'removed', 'slowDown', 'takenDown', 'off'];
+export const JOIN_CODES = ['notFound', 'badCode', 'locked', 'full', 'ended', 'signIn', 'notMember', 'removed', 'slowDown', 'takenDown', 'off', 'onlyYou'];
 export const PLAY_CODES = ['removed', 'ended', 'full', 'locked', 'replaced', 'expired', 'restart', 'flood', 'takenDown', 'reconnecting', 'gone'];
 const msgs = (t, prefix, codes) => Object.fromEntries(codes.map(c => [c, t(`${prefix}.${c}`)]));
 /** A 7-digit code shown as two groups ("482 9137"), always left to right. */
@@ -214,7 +214,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     </form>
   </dialog>
   ${shapesSprite()}
-  ${jsonData('lv-play-data', { ...ttsPart(), sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), place: rawT(t)('live.play.place'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
+  ${jsonData('lv-play-data', { ...ttsPart(), sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), place: rawT(t)('live.play.place'), placeTied: rawT(t)('live.play.placeTied'), placeZero: rawT(t)('live.play.placeZero'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
     presets: presetsFor(t), say: sayList(t), bonus: bonusList(t),
     text: { team: rawT(t)('live.play.team'), you: rawT(t)('live.team.you'), moved: rawT(t)('live.play.moved'), rank: rawT(t)('live.team.rank'), full: rawT(t)('live.team.full'), locked: rawT(t)('live.team.locked'), size: rawT(t)('live.team.size'), toastSeat: rawT(t)('live.bonus.toastSeat'), toastTeam: rawT(t)('live.bonus.toastTeam'), read: rawT(t)('live.play.read'), readAgain: rawT(t)('live.play.readAgain'), eyes: rawT(t)('live.play.eyes'), again: rawT(t)('live.play.again'), perPlayer: rawT(t)('live.team.perPlayer') } })}
 </div>`;
@@ -314,6 +314,8 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       <div class="lv-qr">${raw(qrSvg(dashUrl, { title: t('live.dash.qrTitle') }))}</div>
       <p class="small" dir="ltr"><a href="/live/host/${s.id}/dash" target="_blank" rel="noopener">${dashUrl.replace(/^https?:\/\//, '')}</a></p>
       <p class="small muted">${t('live.dash.qrHint')}</p>
+      <a class="btn" id="lv-dash-window" href="/live/host/${s.id}/dash" target="_blank" rel="noopener">🖥️ ${t('live.dash.openWindow')}</a>
+      <p class="small muted">${t('live.dash.openWindowHint')}</p>
       <button class="btn" type="submit">${t('live.play.cancel')}</button>
     </form>
   </dialog>
@@ -345,7 +347,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     actions: HOST_ACTIONS, results: `/live/results/${s.id}`, kit: KIT(),
     quiz: !!s.quiz, teamsOn, hasLast, presets, say: sayList(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY, dashUrl, podiumHoldMs: 6000,
     ctl: { role: me.role, tier: me.tier, cohosts: !!me.cohosts }, ...(me.cohosts || me.role === 'cohost' ? { cohost: cohostText(t) } : {}),
-    text: { removeConfirm: rawT(t)('live.host.removeConfirm'), ready: rawT(t)('live.host.ready'), late: rawT(t)('live.host.late'), watching: rawT(t)('live.host.watching'), offline: rawT(t)('live.host.offline'), showCode: rawT(t)('live.host.showCode'), hideCode: rawT(t)('live.host.hideCode'), locked: rawT(t)('live.host.locked'), count: rawT(t)('live.host.count'), answers: rawT(t)('live.host.answers'), phases: phaseText(t),
+    text: { removeConfirm: rawT(t)('live.host.removeConfirm'), ready: rawT(t)('live.host.ready'), late: rawT(t)('live.host.late'), watching: rawT(t)('live.host.watching'), offline: rawT(t)('live.host.offline'), showCode: rawT(t)('live.host.showCode'), hideCode: rawT(t)('live.host.hideCode'), locked: rawT(t)('live.host.locked'), count: rawT(t)('live.host.count'), away: rawT(t)('live.host.away'), answers: rawT(t)('live.host.answers'), phases: phaseText(t),
       revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t), copied: rawT(t)('live.host.copied'), hidCount: rawT(t)('live.host.hidCount') },
   })}
 </div>`;
@@ -484,6 +486,9 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
   const atlasSel = (k, dflt) => (at ? at[k] : dflt);
   // Tug of Math Live: the starter's grade and length, else grade 3 for 90 seconds (the page may fill in the last choice).
   const tg = st && st.kind === 'tug' ? st.tug : null;
+  // Opened from a class with a grade (a number 1-8 in it: "4", "Grade 4", "4th"): Tug's grade starts there.
+  const clsGrade = (() => { const m = forClass && /\d+/.exec(String(forClass.grade || '')); const g = m ? +m[0] : 0; return tug && tug.grades.includes(g) ? g : 0; })();
+  const tugGrade = tg ? tg.grade : clsGrade || 3;
   // Doodle Hoot Live: the starter's language, level, rounds and time, else the page's language, Easy, 2 rounds, 80 s.
   const dd = st && st.kind === 'doodle' ? st.doodle : null;
   const ddLang = dd ? dd.lang : doodle ? doodle.lang : 'en', ddLvl = dd ? dd.lvl : 1;
@@ -517,9 +522,9 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
       <div class="field"><label for="lv-atlas-secs">${t('live.atlasUi.secs')}</label><select id="lv-atlas-secs" name="atlasSecs">${atlas.secs.map(n => html`<option value="${n}"${n === atlasSel('secs', 20) ? raw(' selected') : ''}>${t('live.wyrUi.secsN', { n })}</option>`)}</select></div>
       <p class="small muted">${t('live.atlasUi.hint')}</p>
     </fieldset>` : ''}
-    ${tug ? html`<fieldset class="lv-group lv-own" id="lv-tug-opts" data-own-mode="tug" data-preset="${tg ? '1' : ''}" hidden><legend>${t('live.tugUi.legend')}</legend>
-      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === (tg ? tg.grade : 3) ? raw(' selected') : ''}>${tug.names[g]}</option>`)}</select></div>
-      <p class="small muted" id="lv-tug-like" dir="auto">${t('live.tugUi.like')} <span id="lv-tug-sample" dir="ltr">${tug.samples[tg ? tg.grade : 3]}</span></p>
+    ${tug ? html`<fieldset class="lv-group lv-own" id="lv-tug-opts" data-own-mode="tug" data-preset="${tg ? '1' : ''}" data-class-grade="${clsGrade || ''}" hidden><legend>${t('live.tugUi.legend')}</legend>
+      <div class="field"><label for="lv-tug-grade">${t('live.tugUi.grade')}</label><select id="lv-tug-grade" name="tugGrade">${tug.grades.map(g => html`<option value="${g}"${g === tugGrade ? raw(' selected') : ''}>${tug.names[g]}</option>`)}</select>${clsGrade ? html`<span class="hint" id="lv-tug-class-grade">${t('live.tugUi.classGrade', { grade: tug.names[clsGrade] })}</span>` : ''}</div>
+      <p class="small muted" id="lv-tug-like" dir="auto">${t('live.tugUi.like')} <span id="lv-tug-sample" dir="ltr">${tug.samples[tugGrade]}</span></p>
       <div class="field"><label for="lv-tug-len">${t('live.tugUi.len')}</label><select id="lv-tug-len" name="tugLen">${tug.lens.map(n => html`<option value="${n}"${n === (tg ? tg.len : 90) ? raw(' selected') : ''}>${n ? t('live.tugUi.secsN', { n }) : t('live.tugUi.toLine')}</option>`)}</select></div>
       <p class="small muted">${t('live.tugUi.hint')}</p>
       ${jsonData('lv-tug-samples', tug.samples)}
@@ -571,6 +576,8 @@ export function landingBody(req, { forClass = null, modes, groups, sets, starter
     </details>
     ${pre.clId ? html`<input type="hidden" name="clId" value="${pre.clId}"><input type="hidden" name="stepId" value="${pre.stepId || ''}">` : ''}
     <p class="err form-err" aria-live="polite"></p>
+    <div class="notice lv-open-old" id="lv-open-old" role="alert" hidden><p id="lv-open-old-text"></p>
+      <div class="row"><a class="btn" id="lv-open-back" href="#">${t('js.live-sets.openOld.back')}</a> <button class="btn btn-primary" type="button" id="lv-open-replace">${t('js.live-sets.openOld.replace')}</button></div></div>
     <button class="btn btn-primary btn-big" type="submit">${t('live.landing.open')}</button>
   </form>
   ${recent.length ? html`<section class="lv-group"><h2>${t('live.landing.recent')}</h2><ul class="lv-recent">${recent.map(r => html`<li><a href="/live/results/${r.id}">${r.title || t('live.results.title')}</a> <span class="small muted">${t('live.results.playersCount', { count: r.players })}</span></li>`)}</ul></section>` : ''}

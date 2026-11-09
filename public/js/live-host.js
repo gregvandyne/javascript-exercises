@@ -25,7 +25,8 @@ const pics = portraits(D.kit);
 const nm = n => nameOf(D.nicks || [], n);
 const SHOW = {
   lobby: ['start', 'lock', 'unlock', 'end'], loading: ['end'], countdown: ['end'],
-  playing: ['pause', 'next', 'skip', 'clear', 'end'], paused: ['resume', 'clear', 'end'], between: ['next', 'end'], ended: [],
+  // Lock / Unlock room stay in reach during the game: a late student is told to ask the host to unlock it.
+  playing: ['pause', 'next', 'skip', 'clear', 'lock', 'unlock', 'end'], paused: ['resume', 'clear', 'lock', 'unlock', 'end'], between: ['next', 'lock', 'unlock', 'end'], ended: [],
 };
 const ALWAYS = new Set(['eyes', 'settings', 'sound', 'dash', 'cohosts']);
 const CTL = D.ctl || { role: 'host', tier: 'full' }, TC = D.cohost || null;
@@ -148,9 +149,12 @@ function setLocked(on) {
   $('lv-joinbox').classList.toggle('is-locked', locked);
 }
 function count() {
-  const n = [...players.values()].length;
-  const el = $('lv-count'); if (el) el.textContent = fill(D.text.count, { count: n, max });
+  const n = [...players.values()].length, on = [...players.values()].filter(p => p.connected).length;
+  // Players whose device is gone (closed, offline) are counted apart: "5 of 60 players · 1 disconnected"
+  const el = $('lv-count'); if (el) el.textContent = fill(D.text.count, { count: on, max }) + (n > on && D.text.away ? ` · ${fill(D.text.away, { count: n - on })}` : '');
   const empty = $('lv-empty'); if (empty) empty.hidden = n > 0;
+  // a big class: the roster in two compact columns, so more of it fits the projector without scrolling
+  const ros = $('lv-roster'); if (ros) ros.classList.toggle('is-many', n > 12);
   // Doodle Hoot Live needs two players before it can start
   if (D.mode === 'doodle') { const st = document.querySelector('#lv-controls [data-lv-act="start"]'); if (st) st.disabled = n < 2; const two = $('lv-need-two'); if (two) two.hidden = n >= 2 || phase !== 'lobby'; }
 }

@@ -74,6 +74,18 @@ export function memberClasses(schoolId) {
 }
 /** Staff of a school (not only the platform admin's all-access). */
 export const isSchoolStaff = u => !!u && !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role!='student'", u.id);
+/** A staff member's real name as their school knows it (the People tab), for their own header: never shown on public
+ *  pages. '' when they have none. */
+/** A school this person runs that has no classes yet, while they teach none either: its slug (they land on the school's
+ *  page and its setup checklist after signing in, not on an empty My classes). null otherwise. */
+export function schoolToSetUp(u) {
+  if (!u) return null;
+  const r = q.get(`SELECT s.slug FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND m.role='admin' AND s.archived_at IS NULL
+    AND NOT EXISTS (SELECT 1 FROM classrooms c WHERE c.school_id=s.id) AND NOT EXISTS (SELECT 1 FROM class_members cm WHERE cm.user_id=m.user_id AND cm.status='active' AND cm.role='teacher')
+    ORDER BY m.joined_at LIMIT 1`, u.id);
+  return r ? r.slug : null;
+}
+export const staffName = u => (u ? (q.get("SELECT roster_name n FROM school_members WHERE user_id=? AND status='active' AND role!='student' AND roster_name!='' ORDER BY joined_at LIMIT 1", u.id) || {}).n || '' : '');
 export function listSchools() {
   return q.all(`SELECT s.*, (SELECT COUNT(*) FROM school_members m WHERE m.school_id=s.id AND m.status='active' AND m.role='student') students,
       (SELECT COUNT(*) FROM school_members m WHERE m.school_id=s.id AND m.status='active' AND m.role!='student') staff,
@@ -164,12 +176,43 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   if (role !== 'student') staffJoined(u.id);
   return ok({ user: u });
 }
+// ---- Staff invites: a school admin adds someone's own account; they become staff only when they accept (they see it on
+// My classes / Me). The platform admin's adds are immediate (appointing a new school's admin). Never a grown-up account
+// or one that belongs to another school (addMember's rules, checked again on accept).
+export const getInvite = (schoolId, userId) => q.get('SELECT * FROM staff_invites WHERE school_id=? AND user_id=?', schoolId, userId) || null;
+export const invitesOf = schoolId => q.all('SELECT i.*, u.username FROM staff_invites i JOIN users u ON u.id=i.user_id WHERE i.school_id=? ORDER BY i.created_at', schoolId);
+export const invitesFor = userId => (userId ? q.all('SELECT i.school_id, i.role, s.name school_name FROM staff_invites i JOIN schools s ON s.id=i.school_id WHERE i.user_id=? AND s.archived_at IS NULL ORDER BY i.created_at', userId) : []);
+export function inviteStaff(by, schoolId, userId, role, { rosterName = '' } = {}) {
+  if (!['teacher', 'admin'].includes(role)) return fail('badRole');
+  const s = getSchool(schoolId), u = getUser(userId);
+  if (!s) return fail('notFound');
+  if (!u || u.is_guest || u.account_type === 'grownup') return fail('noAccount');
+  if (u.managed_school && u.managed_school !== s.id) return fail('otherSchoolAccount');
+  q.run('INSERT OR REPLACE INTO staff_invites(school_id, user_id, role, roster_name, invited_by, created_at) VALUES (?,?,?,?,?,?)', s.id, u.id, role, clip(rosterName, 60), by.id, now());
+  audit(by.id, 'school.staff_invite', s.id, { user: u.id, role });
+  return ok({ user: u });
+}
+export function cancelInvite(by, schoolId, userId) {
+  if (!getInvite(schoolId, userId)) return fail('notFound');
+  q.run('DELETE FROM staff_invites WHERE school_id=? AND user_id=?', schoolId, userId);
+  audit(by.id, 'school.staff_invite_cancel', schoolId, { user: userId });
+  return ok();
+}
+/** The invited person says yes (they become staff with the role and name the school gave) or no. */
+export function answerInvite(u, schoolId, accept) {
+  const i = getInvite(schoolId, u && u.id); if (!i) return fail('notFound');
+  q.run('DELETE FROM staff_invites WHERE school_id=? AND user_id=?', schoolId, u.id);
+  audit(u.id, accept ? 'school.staff_invite_accept' : 'school.staff_invite_decline', schoolId, { role: i.role });
+  if (!accept) return ok();
+  const r = addMember(getUser(i.invited_by) || u, schoolId, u.id, i.role, { rosterName: i.roster_name });
+  return r.ok ? ok({ school: getSchool(schoolId), role: i.role }) : r;
+}
 export function updateMember(by, schoolId, userId, { rosterName, grade, role } = {}) {
   const m = membership(schoolId, userId); if (!m) return fail('notFound');
   if (role !== undefined && !ROLES.includes(role)) return fail('badRole');
   q.run('UPDATE school_members SET roster_name=?, grade=?, role=? WHERE school_id=? AND user_id=?',
     rosterName !== undefined ? clip(rosterName, 60) : m.roster_name, grade !== undefined ? clip(grade, 12) : m.grade, role || m.role, schoolId, userId);
-  audit(by.id, 'school.member_update', schoolId, { user: userId, role, grade });
+  audit(by.id, 'school.member_update', schoolId, { user: userId, role, grade, ...(rosterName !== undefined && clip(rosterName, 60) !== m.roster_name ? { renamed: true } : {}) });
   if (role && role !== 'student' && m.role === 'student') staffJoined(userId);
   return ok();
 }

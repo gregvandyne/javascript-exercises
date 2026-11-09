@@ -82,6 +82,8 @@ export const get = sid => sessions.get(String(sid || '')) || null;
 export const byJoinCode = code => { const sid = byCode.get(String(code || '')); return sid ? get(sid) : null; };
 export const openSessions = () => [...sessions.values()].filter(open);
 export const openCount = () => openSessions().length;
+/** The open live room of a class (a "My class" room), if its teacher has one: its students are told on the class page. */
+export const openForClass = classId => (classId ? openSessions().find(s => s.audience === 'class' && s.classId === classId) || null : null);
 export const hostSession = userId => get(hostOpen.get(userId));
 /** Connected seats in every open session (LIVE_MAX_SEATS). */
 export function connectedSeats() { let n = 0; for (const s of openSessions()) for (const seat of s.seats.values()) if (seat.conn) n++; return n; }
@@ -1386,7 +1388,13 @@ export function endSession(sid, why = 'ended') {
   toPlayers(s, { ...ph, top: top.slice(0, rows) });
   for (const seat of s.seats.values()) {
     const me = summary && summary.players.find(p => p.seat === seat.no);
-    if (me) sendTo(seat.conn, { t: 'you', rank: rows ? me.rank : 0, score: me.total ?? me.score, of: summary.players.length });
+    // tied: how many others share this place; zero: nobody scored; team: a team game (players see the team's place)
+    if (me) {
+      const sc = p => p.total ?? p.score;
+      const tied = summary.players.filter(p => p !== me && p.rank === me.rank).length;
+      const zero = summary.players.length > 1 && summary.players.every(p => p.rank === 1 && !(sc(p) > 0));
+      sendTo(seat.conn, { t: 'you', rank: rows ? me.rank : 0, score: sc(me), of: summary.players.length, ...(tied ? { tied } : {}), ...(zero ? { zero: 1 } : {}), ...(s.tug || T.isOn(s) ? { team: 1 } : {}) });
+    }
   }
   // Play again: the seats as they ended (account, nickname, avatar, team) and the bans, kept only while the players'
   // sockets linger (hooks.lingerMs, 2 minutes), then wiped. Removed seats were freed at removal: never in it.

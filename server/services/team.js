@@ -70,9 +70,14 @@ const insert = (from, to, kind, body, sentBy = null, at = now()) => {
   q.run('INSERT INTO chat_messages(id, from_id, to_id, body, kind, status, created_at, sent_by) VALUES (?,?,?,?,?,?,?,?)', id, from, to, body, kind, 'ok', at, sentBy);
   return id;
 };
-const copyTo = (guardians, child, dir, text, sentBy) => {
+const copyTo = (guardians, child, dir, text, sentBy, { seen = false } = {}) => {
   const team = teamUser();
-  for (const g of guardians) insert(team.id, g.id, 'copy', JSON.stringify({ child: child.id, name: child.display_name, dir, text }), sentBy);
+  for (const g of guardians) {
+    const id = insert(team.id, g.id, 'copy', JSON.stringify({ child: child.id, name: child.display_name, dir, text }), sentBy);
+    // seen: kept in the grown-up's team thread as always, but not counted as new (the automatic welcome: a teacher who
+    // makes 25 login cards would otherwise see "9+" on Me, and wonder whether students are writing to them)
+    if (seen) q.run('UPDATE chat_messages SET read_at=? WHERE id=?', now(), id);
+  }
 };
 const fail = (code, error) => ({ ok: false, code, error });
 
@@ -413,7 +418,9 @@ export function sendWelcome(user, audience = 'kid', at = now()) {
   let id = '';
   tx(() => {
     id = insert(team.id, u.id, 'team', body, null, at);
-    if (guardians.length) copyTo(guardians, u, 'to', body, null);
+    // A school account's welcome isn't a new-message badge either: it pulls a student away from class work.
+    if (a === 'kid' && u.managed_school) q.run('UPDATE chat_messages SET read_at=? WHERE id=?', at, id);
+    if (guardians.length) copyTo(guardians, u, 'to', body, null, { seen: true });
     setRow(u.id, a, 'sent', id, at);
   });
   audit(null, 'team.welcome', u.id, { audience: a, message: id, child: a === 'kid', copiedTo: guardians.map(g => g.id), text: body.slice(0, 500) });

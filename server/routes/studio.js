@@ -29,6 +29,16 @@ import { isBusy, cancel as cancelBuild, life as builderLife, submit, publicTurn,
 import * as live from '../builder/live.js';
 import * as turns from '../builder/turns.js';
 import { allowanceFor, counter, familyOf, trustedMaker } from '../builder/usage.js';
+import { isSchoolStaff, classesOf as classesOfUser } from '../services/schools.js';
+import { q } from '../db.js';
+/** Pro quality only because the server gives it to everyone (BUILDER_FULL_FOR_ALL), not as a teacher. */
+const isTrustedOnlyAsAll = u => !!config.builderFullForAll && !classesOfUser(u.id, 'teacher').length;
+/** The lesson build step this game is a student's work for (their own): its title and the way back to it, or null. */
+function lessonStepOf(u, gameId) {
+  const r = q.get(`SELECT p.class_lesson_id cl, p.step_id sid, s.title, c.class_id cid FROM step_progress p JOIN lesson_steps s ON s.id=p.step_id
+    JOIN class_lessons c ON c.id=p.class_lesson_id WHERE p.user_id=? AND p.game_id=? AND c.removed_at IS NULL ORDER BY p.updated_at DESC LIMIT 1`, u.id, gameId);
+  return r ? { title: r.title || '', href: `/class/${r.cid}/lessons/${r.cl}#step-${r.sid}` } : null;
+}
 import { upsellFor, askTarget } from '../builder/upsell.js';
 import * as sparks from '../services/sparks.js';
 import { loadChat } from '../builder/chat.js';
@@ -201,6 +211,10 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
   const g = loadEditable(req, res, { api: false }); if (!g) return;
   if (req.user.id === g.owner_id) turns.markSeen(g.id);   // the owner sees how the last build ended: no more "Ready" news
   const state = studioState(req.user, g.id, t, req);
+  // Pro quality for everyone (a student included): "for teachers" only when they are one.
+  const proKey = isSchoolStaff(req.user) || !isTrustedOnlyAsAll(req.user) ? 'studio.chat.proIncluded' : 'studio.chat.proIncludedAll';
+  // Opened from a lesson's build step: a strip back to that lesson (where Hand in is).
+  const step = lessonStepOf(req.user, g.id);
   // The microphone is allowed on this page only, and only while speech to text is on (the game frame never gets it).
   if (state.mic) res.set('Permissions-Policy', 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()');
   const body = html`
@@ -217,6 +231,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
         <button class="btn btn-hot st-publish" type="button" id="st-publish">🚀 ${t('studio.top.publish')}</button>
       </div>
     </div>
+    ${step ? html`<div class="st-lesson" id="st-lesson">📚 ${t('studio.lesson.step', { title: step.title || t('lessons.kinds.build') })} <a class="btn btn-sm" href="${step.href}">← ${t('studio.lesson.back')}</a> <a class="btn btn-sm" href="${step.href}">📤 ${t('studio.lesson.handIn')}</a></div>` : ''}
     <div class="st-live" id="st-live" aria-live="polite"></div>
     <p class="sr-only" id="st-steps-live" aria-live="polite" aria-atomic="true"></p>
     <div class="st-main">
@@ -225,7 +240,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
           <span class="st-bot" aria-hidden="true">🤖</span><b>${t('studio.chat.builder')}</b>
           <span class="st-turns" id="st-turns"${t.own('js.studio.turnsLeftToday') ? '' : html` data-class-en`}></span>
           ${trustedMaker(req.user)
-            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t('studio.chat.proIncluded')}"><span aria-hidden="true">✨</span> ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t('studio.chat.proIncluded')}</span></span>`
+            ? html`<span class="st-pro st-pro-incl" id="st-pro-incl" title="${t(proKey)}"><span aria-hidden="true">✨</span> ${t('studio.chat.pro')} <span aria-hidden="true">✓</span><span class="sr-only">: ${t(proKey)}</span></span>`
             : html`<button class="st-pro" type="button" id="st-pro" aria-pressed="false" title="${t('studio.chat.proTitle')}">✨ ${t('studio.chat.pro')}</button>`}
         </div>
         <div class="st-log" id="st-log" role="log" aria-live="polite"></div>

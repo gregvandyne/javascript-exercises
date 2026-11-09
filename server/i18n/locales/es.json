@@ -38,7 +38,8 @@
       "builders": "Para creadores",
       "terms": "Términos",
       "privacy": "Privacidad",
-      "teachers": "Para docentes"
+      "teachers": "Para docentes",
+      "schools": "Para escuelas"
     },
     "build": {
       "ready": "✨ ¡Tu juego “{title}” está listo! <a href=\"{href}\">Ábrelo</a>",
@@ -159,15 +160,19 @@
       "whoHeading": "¿Para quién es?",
       "whoGrownup": "Para mí (un adulto)",
       "whoGrownupSub": "Su propia cuenta, vinculada con la cuenta de su hijo o hija",
-      "whoKid": "Para mi hijo o hija",
-      "whoKidSub": "Un nombre inventado y una contraseña, sin correo. Los niños que entran solos también empiezan aquí.",
+      "whoKid": "Un niño (yo o mi hijo)",
+      "whoKidSub": "Un nombre inventado y una contraseña, sin correo. Los niños solos y los padres empiezan aquí.",
       "whoTeacher": "Soy docente",
       "whoTeacherSub": "Configure su escuela y sus clases",
       "whoBack": "¿Para quién es? Elegir de nuevo",
       "soonHeading": "Las cuentas de adulto llegarán pronto",
       "soonText": "Pronto podrá crear su propia cuenta, vinculada con la cuenta de su hijo o hija. Mientras tanto, su hijo o hija puede empezar gratis con un nombre inventado y una contraseña (sin correo), y la página para familias explica cómo funciona Oomba Academy y cómo protege a los niños.",
       "soonParents": "Oomba Academy para familias",
-      "soonKid": "Crear la cuenta de mi hijo o hija"
+      "soonKid": "Crear la cuenta de mi hijo o hija",
+      "showPassword": "Mostrar",
+      "hidePassword": "Ocultar",
+      "cardHint": "¿Tarjeta de acceso? Escribe la contraseña igual que en tu tarjeta, con las rayitas (-).",
+      "forgotSchoolAdmin": "Administradores escolares: escríbannos a {email}."
     },
     "api": {
       "tooManyGuests": "Hay demasiados invitados desde aquí. Inténtalo más tarde.",
@@ -194,7 +199,10 @@
       "favorites": "Mis favoritos",
       "classes": "Mis clases",
       "building": "{count, plural, one {# juego en construcción} other {# juegos en construcción}}",
-      "ready": "{count, plural, one {# juego listo} other {# juegos listos}}"
+      "ready": "{count, plural, one {# juego listo} other {# juegos listos}}",
+      "invites": "{count, plural, one {# invitación por responder} other {# invitaciones por responder}}",
+      "requests": "{count, plural, one {# solicitud de amistad} other {# solicitudes de amistad}}",
+      "unread": "{count, plural, one {# mensaje nuevo} other {# mensajes nuevos}}"
     },
     "look": {
       "heading": "Elige tu estilo",
@@ -525,6 +533,12 @@
       "parentSub": "¿Es seguro? Configure gratis la cuenta de su hijo o hija",
       "teacher": "Soy docente",
       "teacherSub": "Clases, lecciones y progreso gratis"
+    },
+    "class": {
+      "h": "Tu clase",
+      "todo": "{count, plural, one {# lección por hacer} other {# lecciones por hacer}}",
+      "continue": "Continuar",
+      "open": "Abrir mi clase"
     }
   },
   "search": {
@@ -1242,7 +1256,8 @@
     },
     "safety": {
       "heading": "Chat seguro",
-      "text": "Chatea solo con amigos que conoces en la vida real. Nunca compartas tu dirección, tu escuela ni tu número de teléfono. Si algo te parece raro, cuéntaselo a un adulto."
+      "text": "Chatea solo con amigos que conoces en la vida real. Nunca compartas tu dirección, tu escuela ni tu número de teléfono. Si algo te parece raro, cuéntaselo a un adulto.",
+      "staff": "Aquí llegan los mensajes del equipo de Oomba, con una copia de todo lo que el equipo escribe a tus estudiantes, para que siempre sepas qué recibieron."
     },
     "inbox": {
       "label": "Chats con amigos",
@@ -1380,7 +1395,8 @@
       "attach": "Agregar una imagen o un archivo",
       "inputLabel": "Mensaje para el Constructor",
       "placeholder": "Cuéntale tu idea al Constructor…",
-      "placeholderShort": "Tu idea…"
+      "placeholderShort": "Tu idea…",
+      "proIncludedAll": "Cada mensaje usa calidad pro 🎉"
     },
     "preview": {
       "label": "Vista previa del juego",
@@ -1486,6 +1502,11 @@
         "autumn": "Otoño",
         "city": "Ciudad"
       }
+    },
+    "lesson": {
+      "step": "Paso de la lección: {title}",
+      "back": "Volver a la lección",
+      "handIn": "Entregar"
     }
   },
   "publish": {
@@ -2261,7 +2282,9 @@
       "saved": "¡Tu personaje está guardado!"
     },
     "live-join": {
-      "signIn": "Iniciar sesión"
+      "signIn": "Iniciar sesión",
+      "classCode": "¡Ese es un código de clase, no un código de juego! Los códigos de clase se escriben en tu página Mis clases.",
+      "classCodeLink": "Unirme a mi clase"
     },
     "live-play": {
       "right": "¡Correcto! +{points}",
@@ -2324,7 +2347,15 @@
       "categoryHint": "Para Tablero Cerebro, p. ej. Planetas",
       "categoryColumn": "Categoría",
       "pasteCats": "Para Tablero Cerebro, añade categorías: una primera columna con el título «Categoría» en la hoja de cálculo, o una línea como «# Planetas» antes de sus preguntas.",
-      "aiBoard": "Un Tablero Cerebro (5 categorías × 5)"
+      "aiBoard": "Un Tablero Cerebro (5 categorías × 5)",
+      "openOld": {
+        "what": "Todavía tienes {title} abierto desde las {time}.",
+        "started": "Ya ha empezado.",
+        "lobby": "Todavía está en la sala de espera.",
+        "players": "{count, plural, =0 {No hay jugadores conectados.} one {Hay # jugador conectado.} other {Hay # jugadores conectados.}}",
+        "back": "Volver a ese juego",
+        "replace": "Terminarlo y abrir el juego nuevo"
+      }
     },
     "match": {
       "title": "Jugar a {title} online",
@@ -2400,6 +2431,13 @@
       "emptyTitle": "Todavía no hay juegos de la clase",
       "emptyText": "Crea un juego y compártelo con tu clase cuando lo publiques.",
       "emptyAction": "Crear un juego"
+    },
+    "gameCode": "¡Ese es un código de juego! Vamos a unirnos al juego.",
+    "joinAnother": "Unirme a otra clase",
+    "live": {
+      "title": "¡Tu maestro empezó un juego en vivo!",
+      "join": "Unirme ahora",
+      "chip": "Juego en vivo ahora"
     }
   },
   "school": {
@@ -2434,7 +2472,8 @@
         "billing": "Pagos",
         "settling": "Estamos activando su plan…"
       },
-      "tools": "Herramientas para enseñar"
+      "tools": "Herramientas para enseñar",
+      "hostLive": "Dirigir un juego en vivo"
     },
     "class": {
       "new": "Nueva clase",
@@ -2510,7 +2549,9 @@
       "archivedToast": "Clase {name} archivada",
       "lessons": "Lecciones",
       "lastActivity": "Última actividad",
-      "noActivity": "nada aún"
+      "noActivity": "nada aún",
+      "noStudentsPick": "Elige abajo estudiantes que ya están en {school}, o crea cuentas y tarjetas de acceso para estudiantes nuevos.",
+      "selectShown": "Seleccionar todos los visibles"
     },
     "requests": {
       "title": "{count, plural, one {# estudiante quiere unirse} other {# estudiantes quieren unirse}}",
@@ -2562,7 +2603,18 @@
       "addToSchool": "Agregar a la escuela",
       "added": "{name} se agregó como {role}",
       "putInClass": "Clase",
-      "changeGrade": "Cambiar el grado de {name}"
+      "changeGrade": "Cambiar el grado de {name}",
+      "invited": "Invitación enviada a @{name}. Será {role} aquí cuando la acepte en su página Mis clases.",
+      "invitesH": "Invitados, en espera",
+      "invitesText": "Se unen al personal solo cuando aceptan la invitación en su propia página Mis clases.",
+      "invitedWaiting": "esperando que acepte",
+      "inviteCancel": "Cancelar invitación",
+      "inviteCancelled": "Invitación cancelada.",
+      "inviteNote": "Le enviamos una invitación: se une al personal solo cuando la acepta. Nadie se agrega sin decir que sí.",
+      "sendInvite": "Enviar invitación",
+      "existingShort": "Su nombre de usuario",
+      "addToClassFor": "Poner a {name} en una clase",
+      "changeName": "Cambiar el nombre real"
     },
     "settings": {
       "name": "Nombre de la escuela",
@@ -2588,7 +2640,11 @@
       "timeZoneUnset": "Establezca la zona horaria de su escuela para que las lecciones se abran a medianoche y las fechas de entrega terminen a medianoche donde esté. Hasta entonces, nadie va con retraso hasta 36 horas después de que empieza el día de entrega.",
       "timeZoneHint": "Las lecciones se abren y las fechas de entrega terminan a medianoche en esta zona. Allí ahora son las {time}.",
       "groupSchool": "Escuela",
-      "groupClasses": "Clases e ingreso"
+      "groupClasses": "Clases e ingreso",
+      "chatHintOff": "Las cuentas escolares no pueden chatear con nadie. Pueden seguir jugando y creando.",
+      "unsaved": "Tienes cambios que aún no se han guardado.",
+      "unsavedLeave": "Los cambios de la configuración no se han guardado. ¿Salir sin guardarlos?",
+      "timeZoneUse": "Usar {zone} (la zona horaria de esta computadora)"
     },
     "cards": {
       "title": "Tarjetas de acceso",
@@ -2601,7 +2657,10 @@
       "backPeople": "Volver a Personas",
       "backClass": "Volver a {name}",
       "skipped": "{count, plural, one {# estudiante usa su propia cuenta y conserva su contraseña} other {# estudiantes usan su propia cuenta y conservan su contraseña}}: {names}.",
-      "count": "{count, plural, one {# tarjeta de acceso} other {# tarjetas de acceso}}"
+      "count": "{count, plural, one {# tarjeta de acceso} other {# tarjetas de acceso}}",
+      "later": "¿En un teléfono? Estas tarjetas se quedan aquí para ti (solo para ti) durante 24 horas: vuelve a abrirlas desde la pestaña Estudiantes de la clase en una computadora de la escuela e imprímelas, o usa Compartir › Imprimir › Guardar como PDF en tu teléfono.",
+      "again": "{count, plural, one {Tarjeta de acceso que hiciste hoy: sigue aquí para imprimir.} other {# tarjetas de acceso que hiciste hoy: siguen aquí para imprimir.}}",
+      "open": "Abrir las tarjetas"
     },
     "errors": {
       "notFound": "No pudimos encontrarlo, o no se puede abrir.",
@@ -2636,7 +2695,8 @@
       "isStudent": "{name} es estudiante aquí, así que no se puede agregar al personal.",
       "tickStudents": "Marque al menos a un estudiante.",
       "badZone": "Elija una zona horaria de la lista.",
-      "badCap": "Escriba un número entero del {min} al {max}."
+      "badCap": "Escriba un número entero del {min} al {max}.",
+      "otherSchoolNext": "Esa cuenta pertenece a otra escuela. Pídele que primero deje esa escuela, o elige «Crearle una cuenta escolar»."
     },
     "classTabs": {
       "lessons": "Lecciones",
@@ -2735,7 +2795,9 @@
         "requested": "Factura solicitada el {date} para {seats}. La enviaremos a {email}.",
         "cancel": "Retirar la solicitud",
         "cancelConfirm": "¿Retirar esta solicitud de factura?",
-        "cancelled": "Solicitud retirada."
+        "cancelled": "Solicitud retirada.",
+        "region": "Provincia o región",
+        "postcode": "Código postal"
       },
       "cap": {
         "heading": "Mensajes para el Constructor al día",
@@ -2764,7 +2826,13 @@
         "noRequest": "No hay ninguna solicitud abierta.",
         "noCustomer": "Su escuela todavía no tiene una cuenta de facturación."
       },
-      "legal": "Los planes escolares se rigen por nuestros <a href=\"/terms\">Términos del servicio</a>, nuestra <a href=\"/refunds\">Política de reembolsos y cancelaciones</a> y nuestra <a href=\"/privacy#schoolBilling\">Política de privacidad</a>."
+      "legal": "Los planes escolares se rigen por nuestros <a href=\"/terms\">Términos del servicio</a>, nuestra <a href=\"/refunds\">Política de reembolsos y cancelaciones</a> y nuestra <a href=\"/privacy#schoolBilling\">Política de privacidad</a>.",
+      "total": "{seats} estudiantes × {price} = {total} al año (más impuestos, si los hay)",
+      "seatsWho": "Cuenta a los estudiantes que usarán el Builder: puedes agregar más después.",
+      "freeH": "Gratis para todas las escuelas",
+      "free": "Todos los juegos, clases, lecciones y cursos, las tarjetas de acceso, el progreso y los juegos en vivo en clase, y {free} mensajes gratis del Builder al día para cada estudiante, como para todos en Oomba Academy.",
+      "addsH": "Un plan escolar agrega",
+      "adds": "Más mensajes del Builder: cada estudiante pagado agrega {perSeat} al año a una reserva que comparte toda la escuela. Nada más cambia, y nunca se pide a los estudiantes que paguen."
     },
     "pick": {
       "title": "Sus escuelas",
@@ -2796,6 +2864,23 @@
       "classes": "{count, plural, one {# clase} other {# clases}}",
       "unplaced": "{count, plural, one {# estudiante sin clase} other {# estudiantes sin clase}}",
       "staff": "{count, plural, one {# miembro del personal} other {# miembros del personal}}"
+    },
+    "invite": {
+      "h": "Te invitaron a unirte a una escuela",
+      "text": "{school} quiere agregarte como {role}.",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "accepted": "Ahora eres parte del personal de {school}.",
+      "declined": "Invitación rechazada."
+    },
+    "setup": {
+      "h": "Configura tu escuela",
+      "teachers": "Agregar a tus maestros (Personas)",
+      "classes": "Crear clases y elegir su maestro (Clases)",
+      "students": "Agregar estudiantes y ponerlos en clases (Personas)",
+      "rules": "Revisar las reglas de la escuela y configurar la zona horaria (Configuración)",
+      "billing": "Ver qué agrega un plan escolar (Pagos)",
+      "done": "Hecho"
     }
   },
   "lessons": {
@@ -2824,7 +2909,8 @@
       "empty": "Todavía no hay lecciones aquí",
       "emptyText": "Cree una lección nueva, deje que la IA prepare un borrador o copie una lección que compartió un colega.",
       "find": "Buscar una lección",
-      "readyMade": "Listos para usar"
+      "readyMade": "Listos para usar",
+      "numberQuest": "Number Quest (matemáticas, grados 3–5)"
     },
     "folder": {
       "name": "Nombre de la carpeta",
@@ -2886,7 +2972,9 @@
       "bodyGame": "Instrucciones (opcional)",
       "buildHint": "p. ej., “un quiz con 8 preguntas sobre los planetas”",
       "newGameLink": "Crear un juego nuevo para que jueguen los estudiantes",
-      "deleteWorkConfirm": "¿Eliminar este paso? {n, plural, one {Se eliminará el trabajo de # estudiante en este paso.} other {Se eliminará el trabajo de # estudiantes en este paso.}} Esta acción no se puede deshacer."
+      "deleteWorkConfirm": "¿Eliminar este paso? {n, plural, one {Se eliminará el trabajo de # estudiante en este paso.} other {Se eliminará el trabajo de # estudiantes en este paso.}} Esta acción no se puede deshacer.",
+      "liveGames": "Juegos en vivo para la clase (tú los diriges)",
+      "otherGames": "Más juegos"
     },
     "ai": {
       "button": "Crear borrador con IA",
@@ -2910,7 +2998,12 @@
       "restored": "Asignada de nuevo a {class}. Se recuperó el trabajo anterior de los estudiantes.",
       "changeDates": "Cambiar fechas",
       "allClasses": "Esta lección ya está en todas sus clases.",
-      "zoneNote": "{zone, select, none {Los días se cuentan en UTC y nadie va con retraso hasta 36 horas después de que empieza el día de entrega. Un admin de la escuela puede establecer la zona horaria de la escuela en Configuración.} other {Las lecciones se abren y las fechas de entrega terminan a medianoche en {zone}.}}"
+      "zoneNote": "{zone, select, none {Los días se cuentan en UTC y nadie va con retraso hasta 36 horas después de que empieza el día de entrega. Un admin de la escuela puede establecer la zona horaria de la escuela en Configuración.} other {Las lecciones se abren y las fechas de entrega terminan a medianoche en {zone}.}}",
+      "zoneUnset": "Por ahora, las fechas de entrega terminan a la medianoche UTC, porque la zona horaria de tu escuela no está configurada.",
+      "zoneSet": "Configurar la zona horaria",
+      "zoneAsk": "Un administrador de la escuela puede configurarla en la Configuración de la escuela.",
+      "doneHere": "Asignada a {class}. Los estudiantes ya la ven.",
+      "seeStarted": "Ver quién ha empezado"
     },
     "class": {
       "title": "Lecciones",
@@ -2937,7 +3030,8 @@
       "toReview": "{count} por revisar",
       "dueToday": "Para hoy",
       "late": "Con retraso",
-      "removedGroup": "Quitadas de esta clase"
+      "removedGroup": "Quitadas de esta clase",
+      "readyMade": "Usar una lección lista"
     },
     "view": {
       "teacherPreview": "Vista del estudiante. Los botones que guardan el trabajo están desactivados para usted.",
@@ -3042,7 +3136,10 @@
       "send": "Guardar y marcar como revisada",
       "update": "Actualizar comentario",
       "noAnswers": "Todavía no hay respuestas.",
-      "attention": "Primero quien necesita atención"
+      "attention": "Primero quien necesita atención",
+      "selfMarked": "Marcado como hecho por el estudiante, sin jugar aquí",
+      "minutes": "{count, plural, one {# min} other {# min}}",
+      "swipe": "Desliza la tabla hacia un lado para ver todos los pasos"
     },
     "student": {
       "doneOf": "{done} de {total} hechos",
@@ -3064,7 +3161,9 @@
       "updateAnswer": "Cambiar mi respuesta",
       "sentAgo": "Enviada {when}",
       "feedback": "De tu profe",
-      "readNoFeedback": "Tu profe vio tu respuesta."
+      "readNoFeedback": "Tu profe vio tu respuesta.",
+      "about": "Sobre esta lección",
+      "readToMe": "Léemelo"
     },
     "courses": {
       "started": "{started} de {total} empezaron"
@@ -3911,8 +4010,12 @@
       "kid": "Aquí un docente o un directivo de la escuela puede pedirnos dar de alta una escuela. ¡Muéstrale esta página a tu profe!",
       "thanks": {
         "h": "¡Gracias! Recibimos su solicitud.",
-        "p1": "Configuraremos su escuela en 1 día escolar y le responderemos al correo que nos dio.",
-        "p2": "Mientras tanto, pruebe un juego con su clase: los estudiantes pueden jugar enseguida, sin registrarse."
+        "p1": "Configuraremos tu escuela antes del final del próximo día escolar y responderemos al correo que nos diste, con tu acceso y los siguientes pasos.",
+        "p2": "Mientras tanto, pruebe un juego con su clase: los estudiantes pueden jugar enseguida, sin registrarse.",
+        "todayH": "Lo que puedes hacer hoy mientras esperas",
+        "todayLive": "<a href=\"{href}\">Dirigir un juego en vivo con tu clase</a>: los estudiantes se unen desde cualquier dispositivo con un código, sin cuentas.",
+        "todayPlay": "<a href=\"{href}\">Jugar un juego con tu clase</a>: los estudiantes pueden jugar enseguida, sin registrarse.",
+        "todayHow": "<a href=\"{href}\">Ver cómo funcionan las clases, las tarjetas de acceso y las lecciones</a>, para estar listo cuando tu escuela esté configurada."
       },
       "errors": {
         "school": "Escriba el nombre de su escuela (de 2 a 100 caracteres).",
@@ -3924,7 +4027,8 @@
         "busyToday": "Hoy recibimos muchas solicitudes. Vuelva a intentarlo mañana, o escríbanos.",
         "full": "Ahora no podemos recibir más solicitudes. Por favor, escríbanos.",
         "again": "Hay algo en el formulario que se debe corregir. Revíselo y envíelo de nuevo."
-      }
+      },
+      "name": "Tu nombre"
     },
     "live": {
       "h": "Juegos en vivo en clase",
@@ -3936,7 +4040,8 @@
     },
     "cs": {
       "cstaNote": "Estándares: CSTA K-12 Computer Science Standards (2017), niveles 1B y 2. Este programa no ha sido creado, revisado ni respaldado por la CSTA."
-    }
+    },
+    "leaderLine": "¿Dirección o informática? <a href=\"{href}\">Configura tu escuela</a>: es gratis."
   },
   "learn": {
     "crumbs": "Ruta de navegación",
@@ -4595,7 +4700,8 @@
       "removed": "No puedes unirte a este juego.",
       "slowDown": "Demasiados intentos. Espera unos minutos e inténtalo otra vez.",
       "takenDown": "Este juego no está disponible ahora.",
-      "off": "Los juegos en vivo están desactivados ahora."
+      "off": "Los juegos en vivo están desactivados ahora.",
+      "onlyYou": "Este juego es solo para tu clase, así que juegas como tú: pulsa el botón Unirse de arriba. ¿No eres tú? Cierra sesión primero."
     },
     "play": {
       "title": "Juego en vivo",
@@ -4639,8 +4745,10 @@
       "pickTeam": "Elige tu equipo",
       "eyes": "Mira a tu docente",
       "moved": "Ahora estás en {team}",
-      "again": "Puede que tu docente empiece otro juego. ¡Quédate en esta página!",
-      "aiVoice": "Leer usa una voz de IA hecha por ordenador ({provider})."
+      "again": "Esperando a tu maestro… Puede que empiece otro juego con todos los que están aquí.",
+      "aiVoice": "Leer usa una voz de IA hecha por ordenador ({provider}).",
+      "placeTied": "{others, plural, one {¡Empataste en el puesto {rank} con # jugador más!} other {¡Empataste en el puesto {rank} con # jugadores más!}}",
+      "placeZero": "¡Todos empatados! Esta vez nadie sumó puntos."
     },
     "emote": {
       "wave": "Saludar",
@@ -4693,7 +4801,8 @@
       "soundOn": "Sonido activado",
       "soundOff": "Sonido apagado",
       "seeResultsNow": "Ver resultados ya",
-      "read": "Leer pregunta"
+      "read": "Leer pregunta",
+      "away": "{count} desconectados"
     },
     "landing": {
       "title": "Dirigir un juego en vivo",
@@ -5358,7 +5467,9 @@
       "supportPrivate": "Solo este alumno y tú pueden verlo.",
       "supportWaits": "La respuesta espera a este alumno. Siempre puedes elegir Mostrar ya.",
       "saved": "Guardado.",
-      "tabCohosts": "Coanfitriones"
+      "tabCohosts": "Coanfitriones",
+      "openWindow": "Abrirla en una ventana nueva en esta computadora",
+      "openWindowHint": "En una sala de clase muestra los nombres reales de los estudiantes: mantén esa ventana fuera de la pantalla grande."
     },
     "support": {
       "count": "{count, plural, one {# alumno tiene apoyos guardados.} other {# alumnos tienen apoyos guardados.}}",
@@ -5533,7 +5644,8 @@
       "toLine": "Hasta que alguien gane (3 minutos como máximo)",
       "of": "de",
       "hint": "Los jugadores se reparten solos en dos equipos iguales. Cada uno recibe sus propias preguntas, así nadie copia, y un equipo más pequeño tira igual de fuerte.",
-      "teamsAuto": "Dos equipos hechos para ti: Ballenas Azules y Zorros Rojos. Puedes equilibrar, mezclar o mover jugadores."
+      "teamsAuto": "Dos equipos hechos para ti: Ballenas Azules y Zorros Rojos. Puedes equilibrar, mezclar o mover jugadores.",
+      "classGrade": "Tu clase: {grade}"
     },
     "doodleUi": {
       "legend": "Doodle Hoot (En vivo)",

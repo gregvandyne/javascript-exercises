@@ -331,3 +331,13 @@ if (FIRST && document.body.dataset.user && !document.body.dataset.guest && !page
   };
   setTimeout(check, 1500); setInterval(check, 25000);
 }
+
+// Show / hide a password (sign-in): a login card's long password can be checked letter by letter before sending.
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-pw-toggle]'); if (!b) return;
+  const f = document.getElementById(b.dataset.pwToggle); if (!f) return;
+  const show = f.type === 'password';
+  f.type = show ? 'text' : 'password';
+  b.setAttribute('aria-pressed', String(show));
+  const label = b.querySelector('span'); if (label) label.textContent = show ? b.dataset.hide : b.dataset.show;
+});

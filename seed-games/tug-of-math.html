@@ -1059,15 +1059,19 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     return b;
   }
   /** Taps: pointerdown (every finger counts, so two players can tap at the same moment on a smartboard); a click with
-   *  no pointer (Enter or Space on a focused key) presses it too. */
+   *  no pointer (Enter or Space on a focused key) presses it too. A click just after a pointer press is the browser's
+   *  follow-up to that tap (on some touch screens it lands on another key): never a second press. */
+  var lastPtr = -1e9;
+  function afterTap() { return performance.now() - lastPtr < 800; }
   function wireKeys(s, sec) {
     sec.addEventListener('pointerdown', function (e) {
       var b = e.target.closest && e.target.closest('button.key'); if (!b || b.disabled) return;
+      lastPtr = performance.now();
       e.preventDefault(); b.classList.add('down'); press(s, b.dataset.k);
       var up = function () { b.classList.remove('down'); b.removeEventListener('pointerup', up); b.removeEventListener('pointercancel', up); b.removeEventListener('pointerleave', up); };
       b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up); b.addEventListener('pointerleave', up);
     });
-    sec.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button.key'); if (b && e.detail === 0 && !b.disabled) press(s, b.dataset.k); });
+    sec.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button.key'); if (b && e.detail === 0 && !afterTap() && !b.disabled) press(s, b.dataset.k); });
   }
   /** The keyboard. One player: digits, Backspace, Enter (and - in grades 7-8). Two players: Blue on the number row with
    *  Enter and Backspace, Red on the number pad with its Enter, - and . (delete). */
@@ -1400,10 +1404,11 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
       P = { band: band, tn: tn, nb: nb, nr: nr, track: track, clock: ck, wait: wait, big: big, wh: wh, wp: wp, wg: wg, play: play, qc: qc, q: q, sub: sub, pm: pm, ans: ans, say: say, keys: keys };
       play.addEventListener('pointerdown', function (e) {
         var b = e.target.closest && e.target.closest('button.key'); if (!b || b.disabled) return;
+        lastPtr = performance.now();
         e.preventDefault(); b.classList.add('down'); livePress(b.dataset.k);
         var up = function () { b.classList.remove('down'); }; b.addEventListener('pointerup', up, { once: true }); b.addEventListener('pointercancel', up, { once: true }); b.addEventListener('pointerleave', up, { once: true });
       });
-      play.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button.key'); if (b && e.detail === 0 && !b.disabled) livePress(b.dataset.k); });
+      play.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button.key'); if (b && e.detail === 0 && !afterTap() && !b.disabled) livePress(b.dataset.k); });
       window.addEventListener('keydown', function (e) {
         var c = e.code || '', k = e.key, act = null;
         if (/^(Digit|Numpad)[0-9]$/.test(c)) act = c.slice(-1); else if (!c && /^[0-9]$/.test(k)) act = k;

@@ -10,6 +10,9 @@ import * as chat from '../services/chat.js';
 import * as games from '../services/games.js';
 import { COMMUNITY_CSS } from './social.js';
 import { tHtml } from '../i18n/index.js';
+import { isSchoolStaff } from '../services/schools.js';
+/** The chat safety line: kids' words for kids; a teacher or grown-up reads one written for adults. */
+const safetyKey = u => (isSchoolStaff(u) || isGrownup(u) ? 'chat.safety.staff' : 'chat.safety.text');
 
 export const router = Router();
 
@@ -34,7 +37,7 @@ router.get('/chat', (req, res) => {
   <div class="chatcol">
   <div class="pagehead"><h1>${t('chat.title')}</h1><a class="btn" href="/friends"><span aria-hidden="true">👫</span> ${t('nav.friends')}</a></div>
   ${!u.chat_enabled ? html`<p class="notice warn">${tHtml(t, 'chat.offNotice', { link: html`<a href="/me">${t('nav.me')}</a>` })}</p>` : ''}
-  <p class="notice small chatsafety"><span aria-hidden="true">🛡️</span> ${t('chat.safety.text')}</p>
+  <p class="notice small chatsafety"><span aria-hidden="true">🛡️</span> ${t(safetyKey(u))}</p>
   ${list.length ? html`<ul class="plain inbox panel" id="inbox" aria-label="${t('chat.inbox.label')}">${list.map(th => inboxRow(req, th))}</ul>`
     : emptyState({ emoji: '🤝', title: t('chat.inbox.emptyTitle'), text: t('chat.inbox.emptyText'), action: { href: '/friends', label: t('friends.add.heading') } })}
   </div>
@@ -107,7 +110,7 @@ router.get('/chat/:username', (req, res) => {
       ${blockedByMe ? html`<button class="btn" type="button" id="unblockbtn">${t('friends.blocked.unblock')}</button>`
         : can.code !== 'not_friends' ? html`<button class="btn btn-ghost btn-danger" type="button" id="blockbtn"><span aria-hidden="true">🚫</span> ${t('chat.block')}</button>` : ''}
     </div>
-    <details class="chatsafety notice small" ${msgs.length ? '' : 'open'}><summary><span aria-hidden="true">🛡️</span> ${t('chat.safety.heading')}</summary><p>${t('chat.safety.text')}</p></details>
+    <details class="chatsafety notice small" ${msgs.length ? '' : 'open'}><summary><span aria-hidden="true">🛡️</span> ${t('chat.safety.heading')}</summary><p>${t(safetyKey(u))}</p></details>
     <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="${t('chat.thread.label', { name })}" tabindex="0">
       <p class="msgs-empty muted center" id="msgs-empty" ${msgs.length ? 'hidden' : ''}>${t('chat.thread.empty')}</p>
     </div>

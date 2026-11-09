@@ -13,7 +13,7 @@ import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '..
 import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
-import { inAnySchool, isSchoolStaff, isPlatformAdmin, adminSchools } from '../services/schools.js';
+import { inAnySchool, isSchoolStaff, isPlatformAdmin, adminSchools, staffName } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
@@ -160,6 +160,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const out = shell.role === 'out', grownup = shell.role === 'grownup';
   const staff = shell.role === 'schoolAdmin' || shell.role === 'teacher';
   const meHref = shell.meHref;
+  // School staff see the real name their school gave them (their own header only), not a made-up sign-in name.
+  const myName = u ? (staff && staffName(u)) || u.display_name : '';
   const badges = u ? { ...navBadges(u) } : { friends: 0 };
   // Staff have no Friends tab: friend requests and unread chat count on Me (/me links to /friends).
   if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
@@ -203,7 +205,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </nav>
     ${langPicker(req)}
     ${themePicker(req)}
-    <a class="me-btn" href="${meHref}" ${cur(grownup ? 'account' : 'me')} aria-label="${u ? t('layout.meLabel', { name: u.display_name }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? u.display_name : signIn}</span>${badge('me')}</a>
+    <a class="me-btn" href="${meHref}" ${cur(grownup ? 'account' : 'me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>
     ${joinNow}${playNow}
   </header>
   <nav class="tabbar" aria-label="${t('layout.mainNav')}">
@@ -212,7 +214,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family/account#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
+  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a><a href="${grownup ? '/family/account#language' : '/me#language'}" class="foot-lang"><span aria-hidden="true">🌐</span> ${info.name}</a></footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.

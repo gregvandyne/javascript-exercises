@@ -53,7 +53,8 @@ test('signed out, /signup asks "Who’s this for?" with three plain links, inste
   assert.deepEqual(hrefs(c), ['/signup/for/grownup', '/signup/for/kid', '/signup/for/teacher']);
   assert.match(c, /role="group" aria-labelledby="who-h"/);
   assert.match(c, /👪.*?Me \(a grown-up\)<\/span><span class="door-s">Your own account, linked to your child’s account</);
-  assert.match(c, /🧒.*?My child<\/span><span class="door-s">A made-up name and a password, no email\. Kids on their own start here too\./);
+  // a kid on their own reads this door as theirs too ("A kid (me or my child)"), not only "My child"
+  assert.match(c, /🧒.*?A kid \(me or my child\)<\/span><span class="door-s">A made-up name and a password, no email\. Kids on their own and parents both start here\./);
   assert.match(c, /🍎.*?I’m a teacher<\/span><span class="door-s">Set up your school and your classes/);
   assert.ok(!form(r.text), 'the kid form waits one tap away');
   assert.doesNotMatch(r.text, /grownup-line/, 'the chooser replaces the "Grown-up or teacher?" line (no duplicate)');
@@ -170,7 +171,7 @@ test('a translated /signup asks in its own language; the coming-soon page and th
   assert.equal(form(r.text), false, 'the question first');
   const c = chooser(r.text);
   assert.match(r.text, /<h1 class="center" id="who-h">Für wen ist das Konto\?<\/h1>/);
-  assert.match(c, /Für mich \(Erwachsene\/r\)/); assert.match(c, /Für mein Kind/); assert.match(c, /Ich bin Lehrkraft/);
+  assert.match(c, /Für mich \(Erwachsene\/r\)/); assert.match(c, /Ein Kind \(ich oder mein Kind\)/); assert.match(c, /Ich bin Lehrkraft/);
   const box = h => h.slice(h.indexOf('<div class="authbox">'));   // the page itself (the language picker names English in English)
   assert.doesNotMatch(r.text, /Who’s this for/); assert.doesNotMatch(box(r.text), /lang="en"/, 'nothing marked English on the German page');
   config.stripeApiKey = '';

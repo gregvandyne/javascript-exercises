@@ -273,6 +273,13 @@ export function studentSummary(classId, userId) {
   return Object.fromEntries(rows.map(r => [r.cl, r.done]));
 }
 
+/** A student's open lessons not finished yet in one class, soonest due first: [{ id, title, due_at, left }]. */
+export function toDoFor(classId, userId, t = now()) {
+  const done = studentSummary(classId, userId);
+  return L.classLessons(classId).filter(cl => cl.steps > 0 && L.isOpen(cl, t) && (done[cl.id] || 0) < cl.steps)
+    .map(cl => ({ id: cl.id, title: cl.title, due_at: cl.due_at || null, left: cl.steps - (done[cl.id] || 0), cl }))
+    .sort((a, z) => (a.due_at || Infinity) - (z.due_at || Infinity));
+}
 /** Answers waiting to be reviewed in a class, per assigned lesson (current students only): [{ cl, title, n }]. */
 export function toReadByLesson(classId) {
   return q.all(`SELECT c.id cl, l.title, COUNT(*) n FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL

@@ -767,3 +767,20 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .csq-std .csq-std-id .small.more.open{display:block}
   .csq-std .csq-std-id .small.more:focus-visible{outline:3px solid var(--text);outline-offset:2px}
 }
+
+/* A gradebook wider than a phone: say it scrolls sideways, and shade the edge that has more (the shadow moves with the
+   scroll: background-attachment local covers it at each end). */
+.gb-swipe{display:none;margin:0 0 var(--s1)}
+@media (max-width:600px){
+  .gb-swipe{display:block}
+  .gbwrap{background:linear-gradient(to right,var(--card) 30%,transparent),linear-gradient(to left,var(--card) 30%,transparent) 100% 0,
+    radial-gradient(farthest-side at 100% 50%,rgba(0,0,0,.18),transparent) 100% 0;background-repeat:no-repeat;background-size:40px 100%,40px 100%,14px 100%;background-attachment:local,local,scroll}
+}
+
+/* A class's name in the school's Classes table: a full-size touch target. */
+.cl-name-link{display:inline-flex;align-items:center;min-height:44px}
+/* A new school's setup checklist (School page). */
+.setup-steps{display:grid;gap:var(--s1);margin:0}
+.setup-steps li{display:flex;align-items:center;gap:var(--s2);min-height:44px}
+.setup-steps .setup-n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--hover);font-weight:800;flex:none}
+.setup-steps li.is-done a{color:var(--muted);text-decoration:line-through}

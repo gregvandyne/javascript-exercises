@@ -1615,3 +1615,24 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .ajump .chip:hover{border-style:solid}
 .ajump .badge.quiet{background:var(--card-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
 
+
+/* Me page header: the name and handle never run under a button beside them (it wraps below on a phone). */
+.mehead{flex-wrap:wrap}
+.mehead .muted bdi{overflow-wrap:break-word}
+@media (max-width:480px){.mehead>.btn,.mehead>a.btn{flex:1 1 100%}}
+
+/* Sign in: the password box with its Show button beside it. */
+.pw-row{display:flex;gap:var(--s2);align-items:stretch}
+.pw-row .input{flex:1 1 auto;min-width:0}
+.pw-toggle{flex:none;white-space:nowrap}
+/* A lesson step's "Read to me" sits at the end of the step's heading row. */
+.sc-read{margin-inline-start:auto}
+.lp-about{font-size:1rem;margin:0 0 var(--s1)}
+/* Home for a student in a class: "Your class" (the next lesson to do, or the live game their teacher opened). */
+.home-class{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin-bottom:var(--s3)}
+.home-class h2{flex:1 1 100%;margin:0;font-size:1.1rem}
+.home-class p{margin:0;flex:1 1 auto}
+/* A student's class page while their teacher's live game is open. */
+.class-live{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font-size:1.1rem}
+.class-live .btn{margin-inline-start:auto}
+.lp-open-old .row,.lv-open-old .row{margin-top:var(--s2)}

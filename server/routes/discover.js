@@ -14,7 +14,28 @@ import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { liveGameOf } from '../live/live-games.js';
-import { isStaff } from '../services/schools.js';
+import { isStaff, classesOf } from '../services/schools.js';
+import { toDoFor } from '../services/progress.js';
+import { openForClass } from '../services/classlive-sessions.js';
+/** A student in a class: "Your class" at the top of Home: a live game their teacher just opened, else the next lesson to
+ *  do (soonest due) with Continue, so Home never pulls them away from what's assigned. '' for everyone else. */
+function classStrip(req) {
+  const t = req.t, f = req.fmt, u = req.user;
+  if (!u || u.is_guest || isStaff(u)) return '';
+  const mine = classesOf(u.id, 'student'); if (!mine.length) return '';
+  for (const c of mine) {
+    const s = liveOn() ? openForClass(c.id) : null;
+    if (s && s.phase !== 'ended') return html`<section class="notice good home-class" id="home-class" aria-label="${t('home.class.h')}"><b>📡 ${t('classes.live.title')}</b> <span>${s.title}</span> <a class="btn btn-primary" href="/join#${s.code}">${t('classes.live.join')}</a></section>`;
+  }
+  for (const c of mine) {
+    const todo = toDoFor(c.id, u.id); if (!todo.length) continue;
+    const n = todo[0];
+    return html`<section class="panel home-class" id="home-class" aria-labelledby="home-class-h"><h2 id="home-class-h">🏫 ${t('home.class.h')} <span class="small muted">${c.name}</span></h2>
+      <p><b dir="auto">${n.title}</b>${n.due_at ? html` · <span class="chip-s">📅 ${t('lessons.class.dueOn', { date: f.day(n.due_at) })}</span>` : ''} <span class="small muted">${t('home.class.todo', { count: todo.length })}</span></p>
+      <a class="btn btn-primary" href="/class/${c.id}/lessons/${n.id}">▶ ${t('home.class.continue')}</a> <a class="btn" href="/class/${c.id}">${t('home.class.open')}</a></section>`;
+  }
+  return '';
+}
 import * as courses from '../services/courses.js';
 import { log } from '../services/log.js';
 import { courseRow } from '../views/courses.js';
@@ -73,7 +94,7 @@ router.get('/', (req, res) => {
   // "Join a game" (Oomba Live): a code on the class's big screen. Signed out it sits under the doors; signed in, players
   // (not school staff, who host) get it above the featured game.
   const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
-  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${isStaff(u) ? '' : html`<div class="home-join-in">${joinDoor}</div>`}`
+  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}${isStaff(u) ? '' : html`<div class="home-join-in">${joinDoor}</div>`}`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
       ${joinDoor}

@@ -154,18 +154,24 @@ function announceResult(m) {
 }
 function place(m) {
   // the leaderboard off: no place, just the end
-  const text = m.rank ? fill(D.place, { rank: m.rank, count: m.of }) : (D.phases || {}).ended || '';
+  // a team game says the team's place (drawEndTeams), never "You came 1 out of 6" next to it; a tie says so; nobody
+  // scoring at all is "Everyone tied!" rather than a first place
+  const text = m.team ? '' : m.rank && m.zero ? D.placeZero || '' : m.rank && m.tied ? fill(D.placeTied, { rank: m.rank, others: m.tied })
+    : m.rank ? fill(D.place, { rank: m.rank, count: m.of }) : (D.phases || {}).ended || '';
   const p = $('lv-place'); if (p) p.textContent = text;
   says(text);
 }
 function ended() {
   if (endBox) endBox.hidden = false;
+  // While the room is still open the teacher can start a rematch with the same players: no "Play again" button that
+  // would take this player out of the room, only "Waiting for your teacher…". The button comes back once it closes.
   lingering = true; const w = $('lv-again-wait'); if (w) w.hidden = false;
+  const ag = $('lv-again'); if (ag) ag.hidden = true;
   drawEndTeams();
 }
 function bye(why) {
   if (why === 'removed') { try { sessionStorage.setItem(`lv:removed:${sid}`, '1'); sessionStorage.removeItem(`lv:${sid}`); } catch { /* ignore */ } }
-  if (why === 'ended') { ended(); lingering = false; const w = $('lv-again-wait'); if (w) w.hidden = true; return; }
+  if (why === 'ended') { ended(); lingering = false; const w = $('lv-again-wait'); if (w) w.hidden = true; const ag = $('lv-again'); if (ag) ag.hidden = false; return; }
   stop((D.msgs && D.msgs[why]) || D.msgs.gone);
   if (why === 'removed' && endBox) { endBox.hidden = false; $('lv-end-title').textContent = D.msgs.removed; $('lv-place').textContent = ''; $('lv-again').hidden = true; }
 }

@@ -172,7 +172,7 @@ test('the key layouts: jump chips, cards with labels, the name filter, the folde
   await expect(page.locator('#lessons .assigndrop')).not.toHaveAttribute('open', '');
   // Lesson library and New unit share a row; Assign opens where its button is (the button stays under the finger)
   const top = sel => page.locator(sel).evaluate(e => Math.round(e.getBoundingClientRect().top));
-  expect(await top('#lessons .cl-more > a.btn')).toBe(await top('#lessons .unitdrop > summary'));
+  expect(await top('#lessons .cl-more > a.btn:first-of-type')).toBe(await top('#lessons .unitdrop > summary'));
   const before = await top('#lessons .assigndrop > summary');
   await page.click('#lessons .assigndrop > summary');
   await expect(page.locator('#lessons .assigndrop')).toHaveAttribute('open', '');

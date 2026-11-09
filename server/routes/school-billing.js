@@ -13,7 +13,7 @@
 // Also the plan card at the top of a school admin's My classes (teachPlanCard) and a teacher's "Ask my admin" panel
 // (askPanel), both drawn on /teach (routes/schools.js).
 import { Router } from 'express';
-import { html, raw } from '../views/html.js';
+import { html, raw, esc } from '../views/html.js';
 import { isGrownup } from '../auth.js';
 import { config } from '../config.js';
 import { tHtml } from '../i18n/index.js';
@@ -26,6 +26,29 @@ import * as SB from '../services/school-billing.js';
 import * as B from '../services/billing.js';
 import * as PA from '../services/plan-asks.js';
 import { stepUp, passwordField, stripeTrouble } from './family.js';
+import { q } from '../db.js';
+
+/** The two-letter country of a school's "Set up my school" request ("United Kingdom" -> 'GB'), for the invoice form;
+ *  '' when there is no request or the name isn't one we recognise. */
+let REGIONS = null;
+export function requestCountry(schoolId) {
+  const r = q.get("SELECT country FROM school_requests WHERE school_id=? ORDER BY created_at DESC LIMIT 1", schoolId);
+  const name = r && String(r.country || '').trim().toLowerCase().replace(/[.]/g, '');
+  if (!name) return '';
+  if (/^[a-z]{2}$/.test(name)) return name.toUpperCase();
+  if (!REGIONS) {
+    REGIONS = new Map([['uk', 'GB'], ['england', 'GB'], ['scotland', 'GB'], ['wales', 'GB'], ['northern ireland', 'GB'], ['usa', 'US'], ['united states of america', 'US'], ['america', 'US']]);
+    try {
+      const dn = new Intl.DisplayNames(['en'], { type: 'region' });
+      for (let a = 65; a <= 90; a++) for (let b = 65; b <= 90; b++) {
+        const code = String.fromCharCode(a, b); let n = '';
+        try { n = dn.of(code); } catch { continue; }
+        if (n && n !== code) REGIONS.set(n.toLowerCase().replace(/[.]/g, ''), code);
+      }
+    } catch { /* no Intl region names: the aliases only */ }
+  }
+  return REGIONS.get(name) || '';
+}
 
 export const router = Router();
 const LESSONS_PER_SEAT = () => Math.floor(config.schoolTurnsPerSeat / SB.LESSON_MESSAGES);
@@ -164,9 +187,13 @@ export async function schoolBillingTab(req, s) {
   const checkoutId = typeof req.query.checkout === 'string' ? req.query.checkout.slice(0, 200) : '';
   const contact = config.contactEmail ? html`<p class="small muted">${tHtml(t, 'school.billing.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p>` : '';
   const err = html`<p class="err form-err" aria-live="polite"></p>`;
+  // Under the number, the total it makes as it is typed ("25 students × $20.00 = $500.00 a year"), and who to count.
   const seatsField = (id, value, hint) => html`<div class="field"><label for="${id}">${t('school.billing.seatsLabel')}</label>
-    <input class="input" id="${id}" name="seats" type="number" inputmode="numeric" min="${config.schoolMinSeats}" max="${SB.MAX_SEATS}" step="1" value="${value}" required dir="ltr" aria-describedby="${id}-hint">
-    <span class="hint" id="${id}-hint">${hint}</span><span class="err" id="${id}-err" aria-live="polite"></span></div>`;
+    <input class="input" id="${id}" name="seats" type="number" inputmode="numeric" min="${config.schoolMinSeats}" max="${SB.MAX_SEATS}" step="1" value="${value}" required dir="ltr" aria-describedby="${id}-hint ${id}-total"${price ? raw(` data-unit="${+price.unitAmount || 0}" data-total-tpl="${esc(t('school.billing.total', { seats: '{seats}', price: '{price}', total: '{total}' }))}" data-lang="${f.intl}"`) : ''}>
+    <span class="hint" id="${id}-hint">${hint} ${t('school.billing.seatsWho')}</span>${price ? html`<b class="seat-total" id="${id}-total" aria-live="polite">${t('school.billing.total', { seats: f.int(value), price: f.money(price.unitAmount), total: f.money(price.unitAmount * value) })}</b>` : ''}<span class="err" id="${id}-err" aria-live="polite"></span></div>`;
+  // What every school gets free, and what a School plan adds: one answer for the head teacher.
+  const freeVsPaid = html`<div class="cols2 billing-free" id="free-vs-plan"><div class="panel"><h3>✅ ${t('school.billing.freeH')}</h3><p class="small">${t('school.billing.free', { free: config.builderDailyTurns })}</p></div>
+    <div class="panel"><h3>✨ ${t('school.billing.addsH')}</h3><p class="small">${t('school.billing.adds', { perSeat: config.schoolTurnsPerSeat })}</p></div></div>`;
   const studentsNow = plural(t, 'school.billing.studentsN', v.students);
   const parts = [];
 
@@ -236,6 +263,7 @@ export async function schoolBillingTab(req, s) {
           ${passwordField(req, 'pw-seats')}${err}
           <button class="btn btn-primary" type="submit">${t('school.billing.change.button')}</button></form></section>`);
     } else if (!v.unsettled && price) {
+      actions.push(freeVsPaid);
       actions.push(html`<section class="panel" aria-labelledby="pay-h" id="pay"><h3 id="pay-h">${t('school.billing.pay.heading')}</h3>
         <form data-api="${api}/checkout" class="planform" novalidate>
           ${seatsField('seats-pay', Math.max(config.schoolMinSeats, v.students), t('school.billing.seatsHint', { min: config.schoolMinSeats, students: studentsNow }))}
@@ -258,6 +286,8 @@ export async function schoolBillingTab(req, s) {
         <p>${tHtml(t, 'school.billing.invoice.requested', { date: f.date(v.request.created_at), seats: plural(t, 'school.billing.studentsN', v.request.seats), email: who })}</p>
         <form data-api="${api}/invoice-request/cancel" data-reload data-confirm="${t('school.billing.invoice.cancelConfirm')}"><button class="btn" type="submit">${t('school.billing.invoice.cancel')}</button></form></section>`);
     } else if (!(plan.entitled && plan.via === 'subscription') && !v.unsettled && price) {
+      // The country from the school's set-up request (a UK school: GB, "Postcode", "County / region"), else US.
+      const country = requestCountry(s.id) || 'US', us = country === 'US';
       const fld = (name, label, { type = 'text', req: required = true, max = 100, auto = '', ltr = false, wide = false, value = '' } = {}) => html`<div class="field${wide ? ' wide' : ''}"><label for="inv-${name}">${label}${required ? '' : html` <span class="muted">${t('school.optional')}</span>`}</label>
         <input class="input" id="inv-${name}" name="${name}" type="${type}" maxlength="${max}" ${required ? 'required' : ''} ${auto ? html`autocomplete="${auto}"` : ''} ${ltr ? html`dir="ltr"` : ''} value="${value}"><span class="err" id="inv-${name}-err" aria-live="polite"></span></div>`;
       actions.push(html`<section class="panel" aria-labelledby="inv-h" id="invoice"><details><summary><h3 id="inv-h" style="display:inline">${t('school.billing.invoice.heading')}</h3></summary>
@@ -271,9 +301,9 @@ export async function schoolBillingTab(req, s) {
           ${fld('line1', t('school.billing.invoice.line1'), { auto: 'address-line1', wide: true })}
           ${fld('line2', t('school.billing.invoice.line2'), { req: false, auto: 'address-line2', wide: true })}
           ${fld('city', t('school.billing.invoice.city'), { max: 60, auto: 'address-level2' })}
-          ${fld('state', t('school.billing.invoice.state'), { req: false, max: 60, auto: 'address-level1' })}
-          ${fld('postalCode', t('school.billing.invoice.postal'), { max: 20, auto: 'postal-code', ltr: true })}
-          ${fld('country', t('school.billing.invoice.country'), { max: 2, auto: 'country', ltr: true, value: 'US' })}
+          ${fld('state', t(us ? 'school.billing.invoice.state' : 'school.billing.invoice.region'), { req: false, max: 60, auto: 'address-level1' })}
+          ${fld('postalCode', t(us ? 'school.billing.invoice.postal' : 'school.billing.invoice.postcode'), { max: 20, auto: 'postal-code', ltr: true })}
+          ${fld('country', t('school.billing.invoice.country'), { max: 2, auto: 'country', ltr: true, value: country })}
           <div class="field wide"><label class="checkline"><input type="checkbox" name="taxExempt" value="1"> <span>${t('school.billing.invoice.taxExempt')}</span></label></div>
           <div class="field wide"><label for="inv-note">${t('school.billing.invoice.note')} <span class="muted">${t('school.optional')}</span></label><textarea class="input" id="inv-note" name="note" rows="2" maxlength="500"></textarea></div>
           <p class="err form-err wide" aria-live="polite"></p>

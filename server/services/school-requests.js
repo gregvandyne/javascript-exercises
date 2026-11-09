@@ -14,7 +14,7 @@ const DAY = 86400e3;
 export const KEEP_MS = 365 * DAY;
 /** The roles a person may pick (their labels are teachers.setup.roles.<key>). */
 export const ROLES = ['teacher', 'leader', 'it', 'district', 'other'];
-export const LIMITS = { school: 100, email: 254, country: 60, studentsMax: 100000 };
+export const LIMITS = { school: 100, name: 60, email: 254, country: 60, studentsMax: 100000 };
 /** Open requests at most (a flood stops at the door; the admin's queue stays readable). */
 export const MAX_OPEN = 500;
 export const STATUSES = ['open', 'done', 'declined'];
@@ -37,8 +37,10 @@ export function validate(body = {}) {
   if (!Number.isInteger(students) || students < 1 || students > LIMITS.studentsMax) bad.push('students');
   const country = text(body.country, LIMITS.country);
   if (country.length < 2 || country.length > LIMITS.country) bad.push('country');
+  // Their name (optional): the platform admin types it as the school admin's real name, so it is asked for here.
+  const name = text(body.name, LIMITS.name).slice(0, LIMITS.name);
   if (bad.length) return { ok: false, field: bad[0], fields: bad };
-  return { ok: true, value: { school, role, email, students, country } };
+  return { ok: true, value: { school, role, email, students, country, name } };
 }
 
 /** Stores a request. by: the adult account that sent it (a grown-up, school staff, the platform admin), or null for a
@@ -50,8 +52,8 @@ export function createRequest(body, { by = null, locale = '' } = {}) {
   if (!v.ok) return v;
   if (openCount() >= MAX_OPEN) return { ok: false, code: 'full' };
   const id = uid(12); const r = v.value;
-  q.run(`INSERT INTO school_requests(id, school_name, role, email, students, country, locale, user_id, status, created_at)
-    VALUES (?,?,?,?,?,?,?,?,'open',?)`, id, r.school, r.role, r.email, r.students, r.country, String(locale || '').slice(0, 12), by ? by.id : null, now());
+  q.run(`INSERT INTO school_requests(id, school_name, role, email, students, country, locale, user_id, status, created_at, contact_name)
+    VALUES (?,?,?,?,?,?,?,?,'open',?,?)`, id, r.school, r.role, r.email, r.students, r.country, String(locale || '').slice(0, 12), by ? by.id : null, now(), r.name);
   funnel.bump('teacher.request');
   return { ok: true, id };
 }

@@ -186,7 +186,8 @@
       "noActivity": "none yet"
     },
     "people": {
-      "grade": "Year"
+      "grade": "Year",
+      "inviteCancelled": "Invite cancelled."
     },
     "settings": {
       "timeZone": "Time zone",
@@ -215,6 +216,9 @@
     },
     "kinds": {
       "quiz": "Answer quiz questions"
+    },
+    "library": {
+      "numberQuest": "Number Quest (maths, grades 3–5)"
     }
   },
   "family": {
