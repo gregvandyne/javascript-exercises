@@ -3,7 +3,7 @@
   "layout": {
     "titleHome": "Leuke leerspellen voor kinderen: spelen en maken · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Gratis, leuke leerspellen voor kinderen van 8 tot 14. Speel direct in je browser en maak je eigen spellen met de AI-Bouwer.",
+    "description": "Gratis, leuke leerspellen voor kinderen van 5 tot 14. Speel direct in je browser en maak je eigen spellen met de AI-Bouwer.",
     "skip": "Ga naar de games",
     "mainNav": "Hoofdmenu",
     "signIn": "Inloggen",
@@ -531,7 +531,7 @@
     },
     "intro": {
       "heading": "Leuke, interactieve leerspelletjes voor kinderen",
-      "text": "Gratis games voor kinderen van 8 tot 14 jaar, voor in de klas of thuis, en een Bouwer die je eigen idee in een game verandert.",
+      "text": "Gratis games voor kinderen van 5 tot 14 jaar, voor in de klas of thuis, en een Bouwer die je eigen idee in een game verandert.",
       "teachers": "Voor leerkrachten",
       "parents": "Voor ouders"
     },
@@ -3902,7 +3902,7 @@
       "print": {
         "title": "Schoolabonnement: een pagina voor de administratie van je school",
         "heading": "Schoolabonnement Oomba Academy",
-        "intro": "Een leerkracht van je school wil graag een schoolabonnement op Oomba Academy: leerspelletjes voor 8 tot 14 jaar, en een Bouwer waarmee leerlingen hun eigen games maken. Hier lees je wat het kost en hoe je het opzet.",
+        "intro": "Een leerkracht van je school wil graag een schoolabonnement op Oomba Academy: leerspelletjes voor 5 tot 14 jaar, en een Bouwer waarmee leerlingen hun eigen games maken. Hier lees je wat het kost en hoe je het opzet.",
         "printButton": "Printen of als pdf bewaren",
         "back": "Terug naar schoolabonnementen",
         "cost": "Wat het kost",
@@ -4022,7 +4022,7 @@
   },
   "seo": {
     "home": {
-      "description": "Gratis leerspelletjes zonder reclame voor 8 tot 14 jaar: rekenen, Engels, schaken en muziek. Speel in elke browser en bouw eigen games met een AI-Bouwer.",
+      "description": "Gratis leerspelletjes zonder reclame voor 5 tot 14 jaar: rekenen, Engels, schaken en muziek. Speel in elke browser en bouw eigen games met een AI-Bouwer.",
       "imageAlt": "Oomba Academy: leuke leerspelletjes voor kinderen"
     },
     "teachers": {
@@ -4056,16 +4056,16 @@
   },
   "teachers": {
     "title": "Leuke, interactieve leerspelletjes voor de klas",
-    "description": "Gratis leerspelletjes zonder reclame voor 8 tot 14 jaar, in elke browser en op Chromebooks: rekenen, Engels, schaken, muziek en een AI-Bouwer voor games.",
+    "description": "Gratis leerspelletjes zonder reclame voor 5 tot 14 jaar, in elke browser en op Chromebooks: rekenen, Engels, schaken, muziek en een AI-Bouwer voor games.",
     "kicker": "🍎 Voor leerkrachten",
     "h1": "Leuke, interactieve leerspelletjes waar je klas om vraagt",
-    "lead": "Oomba Academy is een gratis website met leerspelletjes voor kinderen van 8 tot 14 jaar. Leerlingen spelen direct in de browser, en je klas kan eigen games maken door ze te beschrijven aan onze AI-Bouwer.",
+    "lead": "Oomba Academy is een gratis website met leerspelletjes voor kinderen van 5 tot 14 jaar. Leerlingen spelen direct in de browser, en je klas kan eigen games maken door ze te beschrijven aan onze AI-Bouwer.",
     "badges": {
       "free": "Gratis om te beginnen",
       "ads": "Geen reclame",
       "browser": "Werkt in elke browser, ook op Chromebooks",
       "google": "Inloggen met Google",
-      "ages": "Gemaakt voor 8 tot 14 jaar"
+      "ages": "Gemaakt voor 5 tot 14 jaar"
     },
     "cta": {
       "start": "Vraag een gratis schoolaccount aan",
@@ -4166,7 +4166,7 @@
       "q4": "Hoe beschermen jullie de privacy van leerlingen?",
       "a4": "We vragen leerlingen nooit om een e-mailadres, leeftijd of woonadres. Er is geen reclame en er zijn geen trackingcookies, en de echte naam van een leerling is alleen zichtbaar voor medewerkers van de school. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren.",
       "q5": "Voor welke leeftijden en groepen is het?",
-      "a5": "Oomba Academy is gemaakt voor kinderen van 8 tot 14 jaar, ongeveer groep 5 tot en met de tweede klas van de middelbare school. Sommige games, zoals Shark Plank en de eerste circuits van Sum Racer, zijn ook geschikt voor jongere lezers.",
+      "a5": "Oomba Academy is gemaakt voor groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Games zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten, en de volledige cursussen beginnen in groep 5.",
       "q6": "Hoe voeg ik mijn klas toe?",
       "a6": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten.",
       "a6google": "Mail ons eerst om je school op te zetten (dat is gratis). Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten. Scholen die Google gebruiken, kunnen leerlingen laten inloggen met Google.",
@@ -4305,7 +4305,7 @@
         "name": "Engelse woordspelletjes",
         "short": "Woordzoekers, galgje en een dagelijkse woordpuzzel in het Engels",
         "title": "Gratis Engelse woordspelletjes voor kinderen",
-        "description": "Woordzoekers, galgje en een dagelijkse woordpuzzel om Engels te leren, voor 8 tot 14 jaar, met voorgelezen woorden. Gratis, zonder reclame, in de browser.",
+        "description": "Woordzoekers, galgje en een dagelijkse woordpuzzel om Engels te leren, voor 5 tot 14 jaar, met voorgelezen woorden. Gratis, zonder reclame, in de browser.",
         "h1": "Engelse woordspelletjes voor beginnende en gevorderde lezers",
         "lead": "Drie Engelse woordspelletjes voor spelling en woordenschat. Shark Plank en Word Hunt lezen de woorden voor, dus ze zijn ook geschikt voor beginners. Word Peek is een dagelijkse woordpuzzel voor leerlingen die al goed kunnen spellen.",
         "tips": "Gebruik een thema van Word Hunt als opwarmer voor een onderwerp, los samen het Woord van de dag op op het digibord en bespreek elke poging, of zet Shark Plank klaar voor snelle werkers.",
@@ -4325,7 +4325,7 @@
         "name": "Schaken en strategiespellen",
         "short": "Schaaklessen en -puzzels, vier op een rij, blokkenpuzzels",
         "title": "Gratis schaken en strategiespellen voor kinderen",
-        "description": "Leer schaken met korte lessen en puzzels en speel daarna tegen een vriend of een robot. Plus vier op een rij en blokkenpuzzels, gratis voor 8 tot 14 jaar.",
+        "description": "Leer schaken met korte lessen en puzzels en speel daarna tegen een vriend of een robot. Plus vier op een rij en blokkenpuzzels, gratis voor 5 tot 14 jaar.",
         "h1": "Schaken en strategiespellen die het denken trainen",
         "lead": "Bij strategiespellen moeten leerlingen vooruitdenken, patronen zien en bedenken wat de ander gaat doen. Castle Clash leert schaken vanaf de eerste zet. Drop Four en Brick Drop zijn snelle spellen vol plannen en patronen.",
         "tips": "Begin een schaakclub in de klas met de lessen en puzzels van Castle Clash, of zet twee leerlingen aan één apparaat voor een potje Drop Four.",
@@ -4345,7 +4345,7 @@
         "name": "Muziekspelletjes",
         "short": "Beats maken en meespelen met liedjes",
         "title": "Muziekspelletjes voor kinderen: beats en ritme",
-        "description": "Maak je eigen beats in Loop Lab en tik mee met negen liedjes in Beat Lanes. Gratis muziekspelletjes voor 8 tot 14 jaar, zonder reclame, in elke browser.",
+        "description": "Maak je eigen beats in Loop Lab en tik mee met negen liedjes in Beat Lanes. Gratis muziekspelletjes voor 5 tot 14 jaar, zonder reclame, in elke browser.",
         "h1": "Muziekspelletjes: maak beats en speel mee",
         "lead": "Loop Lab is een beatmaker: leerlingen tikken op vakjes om een loop van drums, bas en melodie te bouwen en horen hem meteen. Beat Lanes is een ritmespel met negen liedjes, van Twinkel, twinkel, kleine ster tot de Cancan.",
         "tips": "Gebruik de muziekuitdagingen van Loop Lab om patronen en herhaling te ontdekken, of speel een liedje van Beat Lanes als snelle energizer. In een drukke klas helpen koptelefoons.",
@@ -4378,7 +4378,7 @@
         "name": "Maak je eigen game",
         "short": "Kinderen ontwerpen games met de AI-Bouwer",
         "title": "Zelf een game maken met AI, voor kinderen",
-        "description": "Kinderen beschrijven een game in gewone woorden, de Bouwer maakt hem en toont de stappen. Zonder programmeren of reclame, 8-14 jaar, privé tot je hem deelt.",
+        "description": "Kinderen beschrijven een game in gewone woorden, de Bouwer maakt hem en toont de stappen. Zonder programmeren of reclame, 5-14 jaar, privé tot je hem deelt.",
         "h1": "Maak je eigen game, zonder te programmeren",
         "lead": "Op Oomba Academy beschrijven leerlingen de game die ze willen en de AI-Bouwer maakt hem. Daarna spelen ze hem, testen ze hem en vragen ze om aanpassingen, één idee tegelijk.",
         "how": {
@@ -4404,7 +4404,7 @@
           "q2": "Wie kan de games zien die leerlingen maken?",
           "a2": "Alleen de leerling zelf, totdat die de game deelt. Die kan hem delen met vrienden of de klas, en een game voor iedereen wordt gecontroleerd voordat anderen hem kunnen spelen.",
           "q3": "Voor welke leeftijden is het?",
-          "a3": "Voor 8 tot 14 jaar.",
+          "a3": "Voor 5 tot 14 jaar.",
           "q4": "Mijn kind wil zelf games maken. Waar begint het?",
           "a4": "Met een klein idee, zoals een doolhof of een vangspel. Je kind beschrijft het, speelt het en vraagt dan om één aanpassing tegelijk. Later proberen veel kinderen ook programmeertools zoals Scratch.",
           "q5": "Is dit echt programmeren?",
@@ -4506,7 +4506,7 @@
         "description": "Gratis browserspelletjes zonder reclame voor kinderen van 10 en 11: tafels en delen, een dagelijkse woordpuzzel, schaakpuzzels, muziek en zelf games maken.",
         "h1": "Leerspelletjes voor kinderen van 10 en 11 jaar",
         "lead": "Met 10 en 11 jaar willen kinderen een echte uitdaging en zelf meebeslissen over wat ze spelen. Deze spelletjes gaan door tot alle tafels en delen, schaakpuzzels en een dagelijkse woordpuzzel, en met de Bouwer maken ze zelf een game.",
-        "abcya": "Uitgekeken op spelletjessites voor kleuters? Oomba Academy is gemaakt voor kinderen van 8 tot 14.",
+        "abcya": "Uitgekeken op spelletjessites voor kleuters? Oomba Academy is gemaakt voor kinderen van 5 tot 14.",
         "make": {
           "p": "Kinderen van deze leeftijd vinden het geweldig om zelf games te maken. Ze beschrijven er een in gewone woorden, zoals “een quiz over vulkanen” of “een doolhof met een robot”, en de Bouwer maakt hem. Daarna testen ze hem en vragen ze om aanpassingen. Het is elke dag gratis."
         },
@@ -4551,7 +4551,7 @@
         },
         "faq": {
           "q2": "Is Oomba Academy te kinderachtig voor een kind van 13?",
-          "a2": "Het is gemaakt voor 8 tot 14 jaar. Oudere kinderen komen vooral voor de Bouwer, echt schaken en muziek maken, en die groeien met ze mee.",
+          "a2": "Het is gemaakt voor 5 tot 14 jaar. Oudere kinderen komen vooral voor de Bouwer, echt schaken en muziek maken, en die groeien met ze mee.",
           "q3": "Kan mijn tiener zelf games maken?",
           "a3": "Ja. Ze beschrijven de game in woorden en de Bouwer maakt hem. Een nieuwe game is privé tot ze hem delen, en een game voor iedereen wordt eerst beoordeeld door Claude, waarna ons team de games bekijkt waarover Claude twijfelt.",
           "q4": "Is er een chat met vreemden?",
@@ -4562,9 +4562,9 @@
     "index": {
       "crumb": "Leren",
       "title": "Leerspelletjes per vak en leeftijd",
-      "description": "Gratis leerspelletjes voor kinderen van 8 tot 14 jaar, per vak (rekenen, woorden, strategie, muziek, breinpauzes, games maken) en per leeftijd. Speel in de browser, op school of thuis.",
+      "description": "Gratis leerspelletjes voor kinderen van 5 tot 14 jaar, per vak (rekenen, woorden, strategie, muziek, breinpauzes, games maken) en per leeftijd. Speel in de browser, op school of thuis.",
       "h1": "Leerspelletjes per vak en leeftijd",
-      "lead": "Gratis spelletjes voor 8 tot 14 jaar die in de browser werken. Kies een vak of een leeftijd om te zien welke games passen en wat ze oefenen.",
+      "lead": "Gratis spelletjes voor 5 tot 14 jaar die in de browser werken. Kies een vak of een leeftijd om te zien welke games passen en wat ze oefenen.",
       "subjects": "Per vak",
       "ages": "Per leeftijd",
       "who": "Voor leerkrachten en ouders"
@@ -4620,9 +4620,9 @@
   },
   "parents": {
     "title": "Veilige, gratis leerspelletjes voor kinderen",
-    "description": "Leuke, gratis leerspelletjes voor 8 tot 14 jaar in de browser: rekenen, woorden, schaken en muziek. Geen reclame, geen chat met vreemden, en zelf games maken.",
+    "description": "Leuke, gratis leerspelletjes voor 5 tot 14 jaar in de browser: rekenen, woorden, schaken en muziek. Geen reclame, geen chat met vreemden, en zelf games maken.",
     "kicker": "👪 Voor ouders",
-    "h1": "Leuke leerspelletjes voor 8 tot 14 jaar, veilig vanaf het begin",
+    "h1": "Leuke leerspelletjes voor 5 tot 14 jaar, veilig vanaf het begin",
     "lead": "Oomba Academy is een website met korte leerspelletjes die kinderen direct in de browser spelen: rekenraces, woordpuzzels, schaken en muziek. Als ze eraan toe zijn, kunnen ze hun eigen games maken door ze te beschrijven aan onze AI-Bouwer.",
     "badges": {
       "free": "Gratis te spelen",
@@ -4735,7 +4735,7 @@
       "a1": "Ja. Elk spel is gratis te spelen, en elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer om eigen games te maken. Er is geen reclame en er valt niets te kopen voor kinderen.",
       "a1paid": "Ja. Elk spel is gratis te spelen, en elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer. Gezinnen kunnen kiezen voor een optioneel abonnement met extra berichten aan de Bouwer, en kinderen wordt nooit gevraagd om te betalen. <a href=\"{plans}\">Bekijk de abonnementen</a>.",
       "q2": "Voor welke leeftijden is het?",
-      "a2": "Voor kinderen van 8 tot 14 jaar. Sommige spelletjes, zoals Shark Plank en de eerste circuits van Sum Racer, zijn ook geschikt voor jongere lezers.",
+      "a2": "Voor kinderen van groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Spelletjes zoals Shark Plank en de eerste circuits van Sum Racer passen bij de jongsten.",
       "q3": "Heeft mijn kind een account of e-mailadres nodig?",
       "a3": "Nee. Iedereen kan meteen spelen, zonder account. Om hun games en scores te bewaren, kunnen kinderen een account maken met alleen een verzonnen naam en een wachtwoord. We vragen nooit om een e-mailadres.",
       "q4": "Zijn er reclame of in-app-aankopen?",
@@ -4762,7 +4762,7 @@
       "name": "Is de AI-Bouwer veilig?",
       "short": "Wat de AI ziet, wat hij nooit krijgt en welke regels hij volgt",
       "title": "Is AI veilig voor kinderen? Zo werkt de Bouwer",
-      "description": "Wat de AI ziet, wat hij nooit krijgt en welke regels hij volgt: een heldere gids voor ouders van kinderen van 8 tot 14 over de AI-Bouwer van Oomba Academy.",
+      "description": "Wat de AI ziet, wat hij nooit krijgt en welke regels hij volgt: een heldere gids voor ouders van kinderen van 5 tot 14 over de AI-Bouwer van Oomba Academy.",
       "h1": "Is de AI-Bouwer veilig voor mijn kind?",
       "lead": "De Bouwer van Oomba Academy gebruikt AI om het idee van je kind in een game te veranderen. Hier lees je in gewone woorden wat hij ziet, wat hij nooit krijgt, welke regels hij volgt en wat we niet kunnen beloven.",
       "what": {
@@ -4826,7 +4826,7 @@
       "short": "Een checklist om games en apps te kiezen, en hoe je limieten instelt",
       "title": "Goede schermtijd voor kinderen: een oudergids",
       "description": "Hoe herken je goede schermtijd? Reclame, aankopen, chat, gegevens, en maken of scrollen. Een checklist voor ouders, met wat wij wel en niet doen.",
-      "h1": "Goede schermtijd: zo kies je games voor kinderen van 8 tot 14",
+      "h1": "Goede schermtijd: zo kies je games voor kinderen van 5 tot 14",
       "lead": "Er bestaat geen perfect aantal minuten. Wat kinderen op een scherm doen, met wie en waar het ze naartoe duwt, is net zo belangrijk. Met deze checklist beoordeel je elke game of app, ook die van ons.",
       "experts": {
         "h": "Wat de experts zeggen",
@@ -4849,7 +4849,7 @@
         "li2": "<b>Aankopen:</b> niets te koop voor kinderen, geen lootboxen en geen spelgeld dat echt geld kost.",
         "li3": "<b>Vreemden:</b> chatten alleen met vrienden die met een code zijn toegevoegd, gefilterd en te melden.",
         "li4": "<b>Gegevens:</b> we vragen kinderen nooit om een e-mailadres, leeftijd, adres of locatie. Foto's zijn optioneel: een profielfoto of afbeeldingen voor de Bouwer, waarbij verborgen locatiegegevens worden verwijderd en profielfoto's worden gecontroleerd voordat iemand ze ziet.",
-        "li5": "<b>Past bij de leeftijd:</b> gemaakt voor 8 tot 14 jaar.",
+        "li5": "<b>Past bij de leeftijd:</b> gemaakt voor 5 tot 14 jaar.",
         "li6": "<b>Maken:</b> kinderen kunnen hun eigen games maken met de AI-Bouwer.",
         "li7": "<b>Samen:</b> verschillende spelletjes hebben een modus voor twee spelers op één scherm.",
         "p": "Wat we niet hebben: tijdslimieten, activiteitenoverzichten of een ouderdashboard. Gebruik voor limieten de tools van je eigen apparaat."
@@ -6783,7 +6783,7 @@
       "trialShort": "Gratis proberen"
     },
     "hero": {
-      "kicker": "Voor leerkrachten · groep 5 tot en met de tweede klas",
+      "kicker": "Voor leerkrachten · groep 2 tot en met de tweede klas",
       "h1": "Maak van je lesplannen games die je klas steeds weer wil spelen",
       "lead": "Plak een les, upload een pdf of beschrijf gewoon een idee. De AI-Bouwer van Oomba maakt er een interactieve game van die je live op het digibord speelt of aan je klas geeft.",
       "cta": "Start je gratis proef van 14 dagen",
@@ -6908,7 +6908,7 @@
     "safety": {
       "kicker": "Veiligheid en privacy",
       "h": "Gemaakt voor de klas, veilig vanaf het ontwerp",
-      "lead": "Voor kinderen van 8 tot 14, met jouw klassen onder jouw controle.",
+      "lead": "Voor kinderen van 5 tot 14, met jouw klassen onder jouw controle.",
       "li1": "Geen advertenties en geen advertentie- of trackingcookies",
       "li2": "Leerlingen hebben nooit een e-mailadres nodig, en we vragen nooit naar leeftijd of adres",
       "li3": "De echte naam van een leerling, als je die toevoegt, ziet alleen het personeel van je school",
@@ -6957,7 +6957,7 @@
     "faq": {
       "h": "Vragen van leerkrachten",
       "q1": "Wat is Oomba Academy?",
-      "a1": "Een platform voor spelend leren voor kinderen van 8 tot 14. Leerkrachten maken met een AI-Bouwer van hun eigen lessen interactieve games, spelen live klassengames en gebruiken kant-en-klare cursussen rekenen, informatica en online veiligheid.",
+      "a1": "Een platform voor spelend leren voor kinderen van 5 tot 14. Leerkrachten maken met een AI-Bouwer van hun eigen lessen interactieve games, spelen live klassengames en gebruiken kant-en-klare cursussen rekenen, informatica en online veiligheid.",
       "q2": "Hoe werkt de gratis proef?",
       "a2": "Start een gratis proef van 14 dagen zonder creditcard. Alles van het Leerkracht-abonnement zit erin zolang de proef loopt, en daarna beslis jij of je een abonnement neemt.",
       "q3": "Betaal ik per leerling?",
@@ -6969,7 +6969,7 @@
       "q6": "Werkt het op Chromebooks en iPads?",
       "a6": "Ja. Het werkt in elke actuele browser op Chromebooks, iPads en andere tablets, laptops, telefoons en digiborden, zonder iets te installeren.",
       "q7": "Is het veilig voor mijn leerlingen?",
-      "a7": "Het is gemaakt voor kinderen van 8 tot 14: geen advertenties, geen trackingcookies, geen e-mail van leerlingen, geen chat met vreemden, gefilterde tekst, en iemand van ons team bekijkt elke game voordat die openbaar wordt.",
+      "a7": "Het is gemaakt voor kinderen van 5 tot 14: geen advertenties, geen trackingcookies, geen e-mail van leerlingen, geen chat met vreemden, gefilterde tekst, en iemand van ons team bekijkt elke game voordat die openbaar wordt.",
       "q8": "Kan onze school betalen per factuur of inkooporder?",
       "a8": "Ja. Scholen betalen dezelfde prijs per leerkracht per jaar, per factuur of inkooporder. Mail ons en we regelen het.",
       "q9": "Welke talen zijn er?",
@@ -6986,7 +6986,7 @@
       "cta": "Gewoon spelen"
     },
     "footer": {
-      "tagline": "Leergames voor kinderen van 8 tot 14, en een AI-Bouwer die lessen in games verandert.",
+      "tagline": "Leergames voor kinderen van 5 tot 14, en een AI-Bouwer die lessen in games verandert.",
       "teachers": "Voor leerkrachten",
       "product": "Ontdek",
       "about": "Over ons",

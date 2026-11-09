@@ -20,7 +20,7 @@
     "trialShort": "Gratis testen"
   },
   "hero": {
-    "kicker": "Für Lehrkräfte · Klasse 3 bis 8",
+    "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
     "h1": "Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse unbedingt spielen will",
     "lead": "Füge eine Stunde ein, lade ein PDF hoch oder beschreib einfach eine Idee. Der KI-Baumeister von Oomba macht daraus ein interaktives Spiel, das du live am Beamer spielst oder deiner Klasse zuweist.",
     "cta": "14 Tage kostenlos testen",
@@ -109,7 +109,7 @@
   "safety": {
     "kicker": "Sicherheit und Datenschutz",
     "h": "Für die Schule gemacht, sicher von Grund auf",
-    "lead": "Für Kinder von 8 bis 14, und du behältst die Kontrolle über deine Klassen.",
+    "lead": "Für Kinder von 5 bis 14, und du behältst die Kontrolle über deine Klassen.",
     "li1": "Keine Werbung und keine Werbe- oder Tracking-Cookies",
     "li2": "Schüler brauchen nie eine E-Mail-Adresse, und wir fragen nie nach Alter oder Wohnadresse",
     "li3": "Den echten Namen eines Kindes, falls du ihn einträgst, sieht nur das Personal deiner Schule",
@@ -158,7 +158,7 @@
   "faq": {
     "h": "Fragen von Lehrkräften",
     "q1": "Was ist Oomba Academy?",
-    "a1": "Eine Plattform für spielbasiertes Lernen für die Klassen 3 bis 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
+    "a1": "Eine Plattform für spielbasiertes Lernen von der Vorschule bis Klasse 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
     "q2": "Wie funktioniert der kostenlose Test?",
     "a2": "Starte einen 14-tägigen kostenlosen Test ohne Karte. Während des Tests ist alles aus dem Lehrkraft-Tarif dabei, und am Ende entscheidest du, ob du ein Abo abschließt.",
     "q3": "Zahle ich für jedes Kind?",
@@ -170,7 +170,7 @@
     "q6": "Funktioniert es auf Chromebooks und iPads?",
     "a6": "Ja. Es läuft in jedem aktuellen Browser auf Chromebooks, iPads und anderen Tablets, Laptops, Handys und digitalen Tafeln, ohne Installation.",
     "q7": "Ist es sicher für meine Schüler?",
-    "a7": "Es ist für Kinder von 8 bis 14 gemacht: keine Werbung, keine Tracking-Cookies, keine E-Mails der Kinder, kein Chat mit Fremden, gefilterter Text, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird.",
+    "a7": "Es ist für Kinder von 5 bis 14 gemacht: keine Werbung, keine Tracking-Cookies, keine E-Mails der Kinder, kein Chat mit Fremden, gefilterter Text, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird.",
     "q8": "Kann unsere Schule per Rechnung oder Bestellschein zahlen?",
     "a8": "Ja. Schulen zahlen denselben Preis pro Lehrkraft und Jahr, per Rechnung oder Bestellschein. Schreib uns, und wir richten es ein.",
     "q9": "Welche Sprachen gibt es?",
@@ -187,7 +187,7 @@
     "cta": "Einfach spielen"
   },
   "footer": {
-    "tagline": "Lernspiele für Kinder von 8 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
+    "tagline": "Lernspiele für Kinder von 5 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
     "teachers": "Für Lehrkräfte",
     "product": "Entdecken",
     "about": "Über uns",

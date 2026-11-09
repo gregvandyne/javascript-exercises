@@ -20,7 +20,7 @@ import { HUBS, AGES, PARENT_GUIDES } from './learn.js';
 
 export const OG_W = 1200, OG_H = 630;
 /** Kids aged 8 to 14 (docs/decisions.md): the site's audience, in structured data. */
-export const AGE = { min: 8, max: 14 };
+export const AGE = { min: 5, max: 14 };   // K–8
 
 /** The site's address: PUBLIC_URL, else this request's scheme and host (tests, a server without PUBLIC_URL). */
 export const origin = req => config.publicUrl || `${req.protocol}://${req.get('host')}`;

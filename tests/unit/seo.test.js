@@ -145,10 +145,10 @@ test('structured data parses: Organization and WebSite, VideoGame + LearningReso
 
   const sr = ofType((await get('/g/sum-racer')).text, 'VideoGame')[0];
   assert.deepEqual(sr['@type'], ['VideoGame', 'LearningResource']);
-  assert.equal(sr.name, 'Sum Racer'); assert.equal(sr.typicalAgeRange, '8-14'); assert.equal(sr.isAccessibleForFree, true);
+  assert.equal(sr.name, 'Sum Racer'); assert.equal(sr.typicalAgeRange, '5-14'); assert.equal(sr.isAccessibleForFree, true);
   assert.equal(sr.educationalLevel, 'Grades 1-5'); assert.ok(sr.teaches.includes('Times tables'));
   assert.deepEqual(sr.audience.map(a => a['@type']), ['PeopleAudience', 'EducationalAudience']);
-  assert.equal(sr.audience[0].suggestedMinAge, 8); assert.equal(sr.audience[0].suggestedMaxAge, 14);
+  assert.equal(sr.audience[0].suggestedMinAge, 5); assert.equal(sr.audience[0].suggestedMaxAge, 14);
   assert.equal(sr.offers.price, 0);
   assert.ok(sr.inLanguage.includes('fr'));
   assert.equal(sr.aggregateRating, undefined, 'no rating until there are enough real ones');

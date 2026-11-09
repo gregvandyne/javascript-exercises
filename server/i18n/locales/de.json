@@ -3,7 +3,7 @@
   "layout": {
     "titleHome": "Lernspiele für Kinder: spielen und bauen · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Kostenlose, lustige Lernspiele für Kinder von 8 bis 14. Direkt im Browser spielen und mit dem KI-Baumeister eigene Spiele bauen.",
+    "description": "Kostenlose, lustige Lernspiele für Kinder von 5 bis 14. Direkt im Browser spielen und mit dem KI-Baumeister eigene Spiele bauen.",
     "skip": "Direkt zu den Spielen",
     "mainNav": "Hauptmenü",
     "signIn": "Anmelden",
@@ -531,7 +531,7 @@
     },
     "intro": {
       "heading": "Interaktive Lernspiele für Kinder, die Spaß machen",
-      "text": "Kostenlose Spiele für 8- bis 14-Jährige, für den Unterricht oder zu Hause, und ein Baumeister, der aus deiner eigenen Idee ein Spiel macht.",
+      "text": "Kostenlose Spiele für 5- bis 14-Jährige, für den Unterricht oder zu Hause, und ein Baumeister, der aus deiner eigenen Idee ein Spiel macht.",
       "teachers": "Für Lehrkräfte",
       "parents": "Für Eltern"
     },
@@ -3902,7 +3902,7 @@
       "print": {
         "title": "Schulabo: eine Seite für den Schuladmin",
         "heading": "Oomba Academy Schulabo",
-        "intro": "Eine Lehrkraft an Ihrer Schule wünscht sich ein Schulabo bei Oomba Academy: Lernspiele für 8- bis 14-Jährige und ein Baumeister, mit dem Schüler eigene Spiele bauen. Hier steht, was es kostet und wie Sie es einrichten.",
+        "intro": "Eine Lehrkraft an Ihrer Schule wünscht sich ein Schulabo bei Oomba Academy: Lernspiele für 5- bis 14-Jährige und ein Baumeister, mit dem Schüler eigene Spiele bauen. Hier steht, was es kostet und wie Sie es einrichten.",
         "printButton": "Drucken oder als PDF speichern",
         "back": "Zurück zu den Schulabos",
         "cost": "Was es kostet",
@@ -4022,7 +4022,7 @@
   },
   "seo": {
     "home": {
-      "description": "Kostenlose, werbefreie Lernspiele für Kinder von 8 bis 14: Mathe, Lesen, Schach und Musik. Im Browser spielen, mit dem KI-Baumeister eigene Spiele bauen.",
+      "description": "Kostenlose, werbefreie Lernspiele für Kinder von 5 bis 14: Mathe, Lesen, Schach und Musik. Im Browser spielen, mit dem KI-Baumeister eigene Spiele bauen.",
       "imageAlt": "Oomba Academy: Lernspiele für Kinder, die Spaß machen"
     },
     "teachers": {
@@ -4056,16 +4056,16 @@
   },
   "teachers": {
     "title": "Interaktive Lernspiele für den Unterricht",
-    "description": "Kostenlose, werbefreie Lernspiele für 8- bis 14-Jährige, im Browser und auf Chromebooks: Mathe, Lesen, Schach und Musik, dazu ein KI-Baumeister.",
+    "description": "Kostenlose, werbefreie Lernspiele für 5- bis 14-Jährige, im Browser und auf Chromebooks: Mathe, Lesen, Schach und Musik, dazu ein KI-Baumeister.",
     "kicker": "🍎 Für Lehrkräfte",
     "h1": "Interaktive Lernspiele, die Ihre Klasse lieben wird",
-    "lead": "Oomba Academy ist eine kostenlose Website mit Lernspielen für 8- bis 14-Jährige. Die Schüler spielen direkt im Browser, und Ihre Klasse kann eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreibt.",
+    "lead": "Oomba Academy ist eine kostenlose Website mit Lernspielen für 5- bis 14-Jährige. Die Schüler spielen direkt im Browser, und Ihre Klasse kann eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreibt.",
     "badges": {
       "free": "Kostenlos starten",
       "ads": "Keine Werbung",
       "browser": "Läuft in jedem Browser, auch auf Chromebooks",
       "google": "Über Google anmelden",
-      "ages": "Für 8- bis 14-Jährige"
+      "ages": "Für 5- bis 14-Jährige"
     },
     "cta": {
       "start": "Kostenloses Schulkonto anfragen",
@@ -4166,7 +4166,7 @@
       "q4": "Wie schützen Sie die Daten der Schüler?",
       "a4": "Wir fragen Schüler nie nach E-Mail-Adresse, Alter oder Wohnadresse. Es gibt keine Werbung und keine Tracking-Cookies, und den echten Namen eines Schülers sieht nur das Personal seiner Schule. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
       "q5": "Für welches Alter und welche Klassen ist es gedacht?",
-      "a5": "Oomba Academy ist für 8- bis 14-Jährige gemacht, also ungefähr für die 3. bis 8. Klasse. Einige Spiele, etwa Shark Plank und die ersten Strecken von Sum Racer, passen auch für jüngere Leseanfänger.",
+      "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten, die ganzen Kurse beginnen ab Klasse 3.",
       "q6": "Wie füge ich meine Klasse hinzu?",
       "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
       "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten (das ist kostenlos). Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
@@ -4305,7 +4305,7 @@
         "name": "Lese- und Rechtschreibspiele",
         "short": "Wortsuchrätsel, Galgenmännchen und ein tägliches Worträtsel",
         "title": "Kostenlose Lese- und Rechtschreibspiele für Kinder",
-        "description": "Wortsuchrätsel, Galgenmännchen und ein tägliches Worträtsel für 8- bis 14-Jährige, mit vorgelesenen Wörtern für Leseanfänger. Kostenlos und werbefrei.",
+        "description": "Wortsuchrätsel, Galgenmännchen und ein tägliches Worträtsel für 5- bis 14-Jährige, mit vorgelesenen Wörtern für Leseanfänger. Kostenlos und werbefrei.",
         "h1": "Lese- und Rechtschreibspiele für Leseanfänger und Fortgeschrittene",
         "lead": "Drei Wortspiele, die Rechtschreibung und Wortschatz fördern. Shark Plank und Word Hunt lesen Wörter vor und passen deshalb gut für Leseanfänger. Word Peek ist ein tägliches Worträtsel für sichere Rechtschreiber.",
         "tips": "Nutzen Sie ein Thema aus Word Hunt zum Einstieg, lösen Sie das Tageswort von Word Peek gemeinsam an der Tafel und besprechen Sie jeden Rateversuch, oder geben Sie Shark Plank allen, die früher fertig sind.",
@@ -4325,7 +4325,7 @@
         "name": "Schach- und Strategiespiele",
         "short": "Schachlektionen und -rätsel, Vier in einer Reihe, Blockpuzzles",
         "title": "Kostenlose Schach- und Strategiespiele für Kinder",
-        "description": "Schach lernen mit kurzen Lektionen und Rätseln, dann gegen Freunde oder einen Roboter spielen. Dazu Vier in einer Reihe und Blockpuzzles, gratis für 8–14.",
+        "description": "Schach lernen mit kurzen Lektionen und Rätseln, dann gegen Freunde oder einen Roboter spielen. Dazu Vier in einer Reihe und Blockpuzzles, gratis für 5–14.",
         "h1": "Schach- und Strategiespiele, die das Denken fördern",
         "lead": "Bei Strategiespielen planen die Schüler voraus, erkennen Muster und überlegen, was der andere Spieler vorhat. Castle Clash bringt Schach vom ersten Zug an bei. Drop Four und Brick Drop sind schnelle Spiele rund um Planen und Muster.",
         "tips": "Gründen Sie mit den Lektionen und Rätseln von Castle Clash eine Schach-AG, oder lassen Sie zwei Schüler an einem Gerät Drop Four spielen.",
@@ -4345,7 +4345,7 @@
         "name": "Musikspiele",
         "short": "Beats bauen und zu Liedern mitspielen",
         "title": "Musikspiele für Kinder: Beats und Rhythmus",
-        "description": "Eigene Beats bauen in Loop Lab und im Takt zu neun Liedern tippen in Beat Lanes. Kostenlose Musikspiele für 8- bis 14-Jährige, werbefrei, im Browser.",
+        "description": "Eigene Beats bauen in Loop Lab und im Takt zu neun Liedern tippen in Beat Lanes. Kostenlose Musikspiele für 5- bis 14-Jährige, werbefrei, im Browser.",
         "h1": "Musikspiele: Beats bauen und mitspielen",
         "lead": "Loop Lab ist ein Beat-Baukasten: Die Schüler tippen auf Kästchen, bauen einen Loop aus Schlagzeug, Bass und Melodie und hören ihn sofort. Beat Lanes ist ein Rhythmusspiel mit neun Liedern, von „Funkel, funkel, kleiner Stern“ bis zum Cancan.",
         "tips": "Erkunden Sie mit den Musik-Challenges von Loop Lab Muster und Wiederholung, oder spielen Sie ein Lied in Beat Lanes als kurze Pause zwischendurch. In einem lauten Raum helfen Kopfhörer.",
@@ -4378,7 +4378,7 @@
         "name": "Eigene Spiele bauen",
         "short": "Kinder entwerfen Spiele mit dem KI-Baumeister",
         "title": "Eigene Videospiele machen: KI für Kinder",
-        "description": "Kinder beschreiben ein Spiel, und der Baumeister baut es und zeigt seine Schritte. Ohne Programmieren, werbefrei, für 8–14 Jahre, privat bis zum Teilen.",
+        "description": "Kinder beschreiben ein Spiel, und der Baumeister baut es und zeigt seine Schritte. Ohne Programmieren, werbefrei, für 5–14 Jahre, privat bis zum Teilen.",
         "h1": "Eigene Spiele bauen, ganz ohne Programmieren",
         "lead": "Bei Oomba Academy beschreiben die Schüler das Spiel, das sie sich wünschen, und der KI-Baumeister baut es. Dann spielen sie es, testen es und wünschen sich Änderungen, eine Idee nach der anderen.",
         "how": {
@@ -4404,7 +4404,7 @@
           "q2": "Wer sieht die Spiele, die Schüler bauen?",
           "a2": "Nur der Schüler selbst, bis er es teilt. Er kann es mit Freunden oder seiner Klasse teilen, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
           "q3": "Für welches Alter ist es?",
-          "a3": "Für 8- bis 14-Jährige.",
+          "a3": "Für 5- bis 14-Jährige.",
           "q4": "Mein Kind möchte Videospiele machen. Wie fängt es an?",
           "a4": "Mit einer kleinen Idee, etwa einem Labyrinth oder einem Fangspiel. Es beschreibt die Idee, spielt das Spiel und wünscht sich dann eine Änderung nach der anderen. Später probieren viele Kinder auch Programmierwerkzeuge wie Scratch aus.",
           "q5": "Ist das echtes Programmieren?",
@@ -4506,7 +4506,7 @@
         "description": "Kostenlose, werbefreie Browserspiele für 10- und 11-Jährige: Einmaleins und Teilen, ein tägliches Worträtsel, Schachrätsel, Musik und eigene Spiele bauen.",
         "h1": "Lernspiele für 10- und 11-Jährige",
         "lead": "Mit 10 und 11 wollen Kinder eine echte Herausforderung und mitbestimmen, was sie spielen. Diese Spiele reichen bis zum ganzen Einmaleins und zum Teilen, mit Schachrätseln und einem täglichen Worträtsel, und mit dem Baumeister können sie ein eigenes Spiel bauen.",
-        "abcya": "Zu groß für Lernspiele für Kindergarten und Grundschule? Oomba Academy ist für 8- bis 14-Jährige gemacht.",
+        "abcya": "Zu groß für Lernspiele für Kindergarten und Grundschule? Oomba Academy ist für 5- bis 14-Jährige gemacht.",
         "make": {
           "p": "Kinder in diesem Alter lieben es, eigene Spiele zu bauen. Sie beschreiben eines in einfachen Worten, etwa „ein Quiz über Vulkane“ oder „ein Labyrinth mit einem Roboter“, und der Baumeister baut es. Dann testen sie es und wünschen sich Änderungen. Das ist jeden Tag kostenlos."
         },
@@ -4551,7 +4551,7 @@
         },
         "faq": {
           "q2": "Ist Oomba Academy zu kindisch für 13-Jährige?",
-          "a2": "Es ist für 8- bis 14-Jährige gemacht. Ältere Kinder kommen vor allem wegen des Baumeisters, des echten Schachs und des Musikmachens, und das wächst mit ihnen mit.",
+          "a2": "Es ist für 5- bis 14-Jährige gemacht. Ältere Kinder kommen vor allem wegen des Baumeisters, des echten Schachs und des Musikmachens, und das wächst mit ihnen mit.",
           "q3": "Kann mein Teenager eigene Spiele bauen?",
           "a3": "Ja. Er beschreibt das Spiel mit Worten, und der Baumeister baut es. Ein neues Spiel bleibt privat, bis er es teilt, und ein Spiel für alle wird zuerst von Claude geprüft; bei Unsicherheit sieht sich unser Team das Spiel an.",
           "q4": "Gibt es Chat mit Fremden?",
@@ -4562,9 +4562,9 @@
     "index": {
       "crumb": "Lernen",
       "title": "Lernspiele nach Fach und Alter",
-      "description": "Kostenlose Lernspiele für 8- bis 14-Jährige, nach Fach (Mathe, Wörter, Strategie, Musik, Pausen, Spiele bauen) und Alter. Im Browser, in der Schule oder zu Hause.",
+      "description": "Kostenlose Lernspiele für 5- bis 14-Jährige, nach Fach (Mathe, Wörter, Strategie, Musik, Pausen, Spiele bauen) und Alter. Im Browser, in der Schule oder zu Hause.",
       "h1": "Lernspiele nach Fach und Alter",
-      "lead": "Kostenlose Spiele für 8- bis 14-Jährige, direkt im Browser. Wählen Sie ein Fach oder ein Alter und sehen Sie, welche Spiele passen und was damit geübt wird.",
+      "lead": "Kostenlose Spiele für 5- bis 14-Jährige, direkt im Browser. Wählen Sie ein Fach oder ein Alter und sehen Sie, welche Spiele passen und was damit geübt wird.",
       "subjects": "Nach Fach",
       "ages": "Nach Alter",
       "who": "Für Lehrkräfte und Eltern"
@@ -4619,10 +4619,10 @@
     }
   },
   "parents": {
-    "title": "Sichere Lernspiele für Kinder 8–14, kostenlos",
-    "description": "Lernspiele für Kinder von 8 bis 14, kostenlos im Browser: Mathe, Wörter, Schach und Musik. Keine Werbung, kein Chat mit Fremden, und eigene Spiele bauen.",
+    "title": "Sichere Lernspiele für Kinder 5–14, kostenlos",
+    "description": "Lernspiele für Kinder von 5 bis 14, kostenlos im Browser: Mathe, Wörter, Schach und Musik. Keine Werbung, kein Chat mit Fremden, und eigene Spiele bauen.",
     "kicker": "👪 Für Eltern",
-    "h1": "Lernspiele für 8- bis 14-Jährige: mit Spaß und von Grund auf sicher",
+    "h1": "Lernspiele für 5- bis 14-Jährige: mit Spaß und von Grund auf sicher",
     "lead": "Oomba Academy ist eine Website mit kurzen Lernspielen, die Kinder direkt im Browser spielen: Matherennen, Worträtsel, Schach und Musik. Wenn sie so weit sind, können sie eigene Spiele bauen, indem sie sie unserem KI-Baumeister beschreiben.",
     "badges": {
       "free": "Kostenlos spielen",
@@ -4735,7 +4735,7 @@
       "a1": "Ja. Alle Spiele sind kostenlos, und alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort) bekommen jeden Tag kostenlose Nachrichten an den Baumeister, um eigene Spiele zu bauen. Es gibt keine Werbung und nichts, was Kinder kaufen können.",
       "a1paid": "Ja. Alle Spiele sind kostenlos, und alle Spieler mit Konto (nur ein ausgedachter Name und ein Passwort) bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Familien können ein freiwilliges Abo für zusätzliche Nachrichten an den Baumeister wählen, und Kinder werden nie zum Bezahlen aufgefordert. <a href=\"{plans}\">Abos ansehen</a>.",
       "q2": "Für welches Alter ist es gedacht?",
-      "a2": "Für Kinder von 8 bis 14. Einige Spiele, etwa Shark Plank und die ersten Strecken von Sum Racer, passen auch für jüngere Leseanfänger.",
+      "a2": "Für Kinder von der Vorschule bis Klasse 8, also etwa 5 bis 14 Jahre. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten.",
       "q3": "Braucht mein Kind ein Konto oder eine E-Mail-Adresse?",
       "a3": "Nein. Alle können sofort spielen, ohne Anmeldung. Um ihre Spiele und Punkte zu behalten, können Kinder ein Konto mit nur einem ausgedachten Namen und einem Passwort erstellen. Wir fragen nie nach einer E-Mail-Adresse.",
       "q4": "Gibt es Werbung oder In-App-Käufe?",
@@ -4762,7 +4762,7 @@
       "name": "Ist der KI-Baumeister sicher?",
       "short": "Was die KI sieht, was sie nie bekommt und welche Regeln sie befolgt",
       "title": "Ist KI für Kinder sicher? Unser Baumeister",
-      "description": "Was die KI sieht, was sie nie bekommt und welche Regeln sie befolgt: ein Ratgeber für Eltern von 8- bis 14-Jährigen zum KI-Baumeister von Oomba Academy.",
+      "description": "Was die KI sieht, was sie nie bekommt und welche Regeln sie befolgt: ein Ratgeber für Eltern von 5- bis 14-Jährigen zum KI-Baumeister von Oomba Academy.",
       "h1": "Ist der KI-Baumeister sicher für mein Kind?",
       "lead": "Der Baumeister von Oomba Academy macht mit KI aus der Idee Ihres Kindes ein Spiel. Hier lesen Sie in einfachen Worten, was er sieht, was er nie bekommt, welche Regeln er befolgt und was wir nicht versprechen können.",
       "what": {
@@ -4826,7 +4826,7 @@
       "short": "Eine Checkliste für die Wahl von Spielen und Apps, und wie man Grenzen setzt",
       "title": "Gute Bildschirmzeit für Kinder: ein Ratgeber",
       "description": "Gute und schlechte Bildschirmzeit erkennen: Werbung, Käufe, Chat, Daten, Selbermachen statt Scrollen. Checkliste für Eltern, mit dem, was wir tun und lassen.",
-      "h1": "Gute Bildschirmzeit: So wählen Sie Spiele für 8- bis 14-Jährige aus",
+      "h1": "Gute Bildschirmzeit: So wählen Sie Spiele für 5- bis 14-Jährige aus",
       "lead": "Die perfekte Minutenzahl gibt es nicht. Was Kinder am Bildschirm tun, mit wem sie es tun und wozu es sie bringt, zählt genauso. Mit dieser Checkliste können Sie jedes Spiel und jede App beurteilen, auch unsere.",
       "experts": {
         "h": "Was Fachleute sagen",
@@ -4849,7 +4849,7 @@
         "li2": "<b>Käufe:</b> nichts, was Kinder kaufen können, keine Lootboxen und kein Spielgeld, das echtes Geld kostet.",
         "li3": "<b>Fremde:</b> Chat nur mit Freunden, die per Code hinzugefügt wurden, gefiltert und meldbar.",
         "li4": "<b>Daten:</b> Wir fragen Kinder nie nach E-Mail-Adresse, Alter, Adresse oder Standort. Fotos sind freiwillig: ein Profilfoto oder Bilder für den Baumeister. Versteckte Standortdaten werden entfernt, und Profilfotos werden geprüft, bevor jemand sie sieht.",
-        "li5": "<b>Altersgerecht:</b> gemacht für 8- bis 14-Jährige.",
+        "li5": "<b>Altersgerecht:</b> gemacht für 5- bis 14-Jährige.",
         "li6": "<b>Selbermachen:</b> Kinder können mit dem KI-Baumeister eigene Spiele bauen.",
         "li7": "<b>Gemeinsam:</b> Mehrere Spiele haben einen Modus für zwei Spieler an einem Bildschirm.",
         "p": "Was wir nicht haben: Zeitlimits, Aktivitätsberichte oder ein Eltern-Dashboard. Für Grenzen nutzen Sie die Werkzeuge Ihres Geräts."
@@ -6783,7 +6783,7 @@
       "trialShort": "Gratis testen"
     },
     "hero": {
-      "kicker": "Für Lehrkräfte · Klasse 3 bis 8",
+      "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
       "h1": "Verwandle deine Unterrichtsentwürfe in Spiele, die deine Klasse unbedingt spielen will",
       "lead": "Füge eine Stunde ein, lade ein PDF hoch oder beschreib einfach eine Idee. Der KI-Baumeister von Oomba macht daraus ein interaktives Spiel, das du live am Beamer spielst oder deiner Klasse zuweist.",
       "cta": "14 Tage kostenlos testen",
@@ -6908,7 +6908,7 @@
     "safety": {
       "kicker": "Sicherheit und Datenschutz",
       "h": "Für die Schule gemacht, sicher von Grund auf",
-      "lead": "Für Kinder von 8 bis 14, und du behältst die Kontrolle über deine Klassen.",
+      "lead": "Für Kinder von 5 bis 14, und du behältst die Kontrolle über deine Klassen.",
       "li1": "Keine Werbung und keine Werbe- oder Tracking-Cookies",
       "li2": "Schüler brauchen nie eine E-Mail-Adresse, und wir fragen nie nach Alter oder Wohnadresse",
       "li3": "Den echten Namen eines Kindes, falls du ihn einträgst, sieht nur das Personal deiner Schule",
@@ -6957,7 +6957,7 @@
     "faq": {
       "h": "Fragen von Lehrkräften",
       "q1": "Was ist Oomba Academy?",
-      "a1": "Eine Plattform für spielbasiertes Lernen für die Klassen 3 bis 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
+      "a1": "Eine Plattform für spielbasiertes Lernen von der Vorschule bis Klasse 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
       "q2": "Wie funktioniert der kostenlose Test?",
       "a2": "Starte einen 14-tägigen kostenlosen Test ohne Karte. Während des Tests ist alles aus dem Lehrkraft-Tarif dabei, und am Ende entscheidest du, ob du ein Abo abschließt.",
       "q3": "Zahle ich für jedes Kind?",
@@ -6969,7 +6969,7 @@
       "q6": "Funktioniert es auf Chromebooks und iPads?",
       "a6": "Ja. Es läuft in jedem aktuellen Browser auf Chromebooks, iPads und anderen Tablets, Laptops, Handys und digitalen Tafeln, ohne Installation.",
       "q7": "Ist es sicher für meine Schüler?",
-      "a7": "Es ist für Kinder von 8 bis 14 gemacht: keine Werbung, keine Tracking-Cookies, keine E-Mails der Kinder, kein Chat mit Fremden, gefilterter Text, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird.",
+      "a7": "Es ist für Kinder von 5 bis 14 gemacht: keine Werbung, keine Tracking-Cookies, keine E-Mails der Kinder, kein Chat mit Fremden, gefilterter Text, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird.",
       "q8": "Kann unsere Schule per Rechnung oder Bestellschein zahlen?",
       "a8": "Ja. Schulen zahlen denselben Preis pro Lehrkraft und Jahr, per Rechnung oder Bestellschein. Schreib uns, und wir richten es ein.",
       "q9": "Welche Sprachen gibt es?",
@@ -6986,7 +6986,7 @@
       "cta": "Einfach spielen"
     },
     "footer": {
-      "tagline": "Lernspiele für Kinder von 8 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
+      "tagline": "Lernspiele für Kinder von 5 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
       "teachers": "Für Lehrkräfte",
       "product": "Entdecken",
       "about": "Über uns",

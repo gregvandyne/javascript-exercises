@@ -20,7 +20,7 @@
     "trialShort": "Teste grátis"
   },
   "hero": {
-    "kicker": "Para professores · do 3º ao 8º ano",
+    "kicker": "Para professores · da educação infantil ao 8º ano",
     "h1": "Transforme seus planos de aula em jogos que a turma vai pedir para jogar",
     "lead": "Cole uma aula, envie um PDF ou só descreva uma ideia. O Construtor IA da Oomba transforma tudo num jogo interativo para jogar ao vivo no projetor ou passar para a turma.",
     "cta": "Comece seu teste grátis de 14 dias",
@@ -109,7 +109,7 @@
   "safety": {
     "kicker": "Segurança e privacidade",
     "h": "Feito para a sala de aula, seguro desde a origem",
-    "lead": "Pensado para crianças de 8 a 14 anos, com as turmas sob o seu controle.",
+    "lead": "Pensado para crianças de 5 a 14 anos, com as turmas sob o seu controle.",
     "li1": "Sem anúncios e sem cookies de publicidade ou rastreamento",
     "li2": "Os alunos nunca precisam de e-mail, e nunca perguntamos idade ou endereço",
     "li3": "O nome real de um aluno, se você colocar, só é visto pela equipe da sua escola",
@@ -158,7 +158,7 @@
   "faq": {
     "h": "Perguntas de professores",
     "q1": "O que é a Oomba Academy?",
-    "a1": "Uma plataforma de aprendizagem baseada em jogos do 3º ao 8º ano. Os professores transformam as próprias aulas em jogos interativos com um Construtor IA, fazem jogos de turma ao vivo e usam cursos prontos de matemática, computação e segurança na internet.",
+    "a1": "Uma plataforma de aprendizagem baseada em jogos da educação infantil ao 8º ano. Os professores transformam as próprias aulas em jogos interativos com um Construtor IA, fazem jogos de turma ao vivo e usam cursos prontos de matemática, computação e segurança na internet.",
     "q2": "Como funciona o teste grátis?",
     "a2": "Comece um teste grátis de 14 dias sem cartão. Tudo do plano Professor está incluído durante o teste, e quando ele acaba você decide se quer assinar.",
     "q3": "Eu pago por aluno?",
@@ -170,7 +170,7 @@
     "q6": "Funciona em Chromebooks e iPads?",
     "a6": "Sim. Funciona em qualquer navegador atualizado em Chromebooks, iPads e outros tablets, notebooks, celulares e lousas digitais, sem instalar nada.",
     "q7": "É seguro para meus alunos?",
-    "a7": "É feito para crianças de 8 a 14 anos: sem anúncios, sem cookies de rastreamento, sem e-mail de alunos, sem chat com desconhecidos, com texto filtrado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público.",
+    "a7": "É feito para crianças de 5 a 14 anos: sem anúncios, sem cookies de rastreamento, sem e-mail de alunos, sem chat com desconhecidos, com texto filtrado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público.",
     "q8": "Nossa escola pode pagar por fatura ou ordem de compra?",
     "a8": "Sim. As escolas pagam o mesmo preço por professor por ano, por fatura ou ordem de compra. Mande um e-mail e a gente organiza tudo.",
     "q9": "Quais idiomas existem?",
@@ -187,7 +187,7 @@
     "cta": "Só jogar"
   },
   "footer": {
-    "tagline": "Jogos educativos para crianças de 8 a 14 anos, e um Construtor IA que transforma aulas em jogos.",
+    "tagline": "Jogos educativos para crianças de 5 a 14 anos, e um Construtor IA que transforma aulas em jogos.",
     "teachers": "Para professores",
     "product": "Explore",
     "about": "Sobre",

@@ -20,7 +20,7 @@
     "trialShort": "Gratis proberen"
   },
   "hero": {
-    "kicker": "Voor leerkrachten · groep 5 tot en met de tweede klas",
+    "kicker": "Voor leerkrachten · groep 2 tot en met de tweede klas",
     "h1": "Maak van je lesplannen games die je klas steeds weer wil spelen",
     "lead": "Plak een les, upload een pdf of beschrijf gewoon een idee. De AI-Bouwer van Oomba maakt er een interactieve game van die je live op het digibord speelt of aan je klas geeft.",
     "cta": "Start je gratis proef van 14 dagen",
@@ -109,7 +109,7 @@
   "safety": {
     "kicker": "Veiligheid en privacy",
     "h": "Gemaakt voor de klas, veilig vanaf het ontwerp",
-    "lead": "Voor kinderen van 8 tot 14, met jouw klassen onder jouw controle.",
+    "lead": "Voor kinderen van 5 tot 14, met jouw klassen onder jouw controle.",
     "li1": "Geen advertenties en geen advertentie- of trackingcookies",
     "li2": "Leerlingen hebben nooit een e-mailadres nodig, en we vragen nooit naar leeftijd of adres",
     "li3": "De echte naam van een leerling, als je die toevoegt, ziet alleen het personeel van je school",
@@ -158,7 +158,7 @@
   "faq": {
     "h": "Vragen van leerkrachten",
     "q1": "Wat is Oomba Academy?",
-    "a1": "Een platform voor spelend leren voor kinderen van 8 tot 14. Leerkrachten maken met een AI-Bouwer van hun eigen lessen interactieve games, spelen live klassengames en gebruiken kant-en-klare cursussen rekenen, informatica en online veiligheid.",
+    "a1": "Een platform voor spelend leren voor kinderen van 5 tot 14. Leerkrachten maken met een AI-Bouwer van hun eigen lessen interactieve games, spelen live klassengames en gebruiken kant-en-klare cursussen rekenen, informatica en online veiligheid.",
     "q2": "Hoe werkt de gratis proef?",
     "a2": "Start een gratis proef van 14 dagen zonder creditcard. Alles van het Leerkracht-abonnement zit erin zolang de proef loopt, en daarna beslis jij of je een abonnement neemt.",
     "q3": "Betaal ik per leerling?",
@@ -170,7 +170,7 @@
     "q6": "Werkt het op Chromebooks en iPads?",
     "a6": "Ja. Het werkt in elke actuele browser op Chromebooks, iPads en andere tablets, laptops, telefoons en digiborden, zonder iets te installeren.",
     "q7": "Is het veilig voor mijn leerlingen?",
-    "a7": "Het is gemaakt voor kinderen van 8 tot 14: geen advertenties, geen trackingcookies, geen e-mail van leerlingen, geen chat met vreemden, gefilterde tekst, en iemand van ons team bekijkt elke game voordat die openbaar wordt.",
+    "a7": "Het is gemaakt voor kinderen van 5 tot 14: geen advertenties, geen trackingcookies, geen e-mail van leerlingen, geen chat met vreemden, gefilterde tekst, en iemand van ons team bekijkt elke game voordat die openbaar wordt.",
     "q8": "Kan onze school betalen per factuur of inkooporder?",
     "a8": "Ja. Scholen betalen dezelfde prijs per leerkracht per jaar, per factuur of inkooporder. Mail ons en we regelen het.",
     "q9": "Welke talen zijn er?",
@@ -187,7 +187,7 @@
     "cta": "Gewoon spelen"
   },
   "footer": {
-    "tagline": "Leergames voor kinderen van 8 tot 14, en een AI-Bouwer die lessen in games verandert.",
+    "tagline": "Leergames voor kinderen van 5 tot 14, en een AI-Bouwer die lessen in games verandert.",
     "teachers": "Voor leerkrachten",
     "product": "Ontdek",
     "about": "Over ons",

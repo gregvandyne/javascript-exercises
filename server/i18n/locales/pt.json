@@ -3,7 +3,7 @@
   "layout": {
     "titleHome": "Jogos educativos para crianças: jogue e crie · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Jogos educativos grátis e divertidos para crianças de 8 a 14 anos. Jogue no navegador e crie seus próprios jogos com o Construtor com IA.",
+    "description": "Jogos educativos grátis e divertidos para crianças de 5 a 14 anos. Jogue no navegador e crie seus próprios jogos com o Construtor com IA.",
     "skip": "Pular para os jogos",
     "mainNav": "Principal",
     "signIn": "Entrar",
@@ -531,7 +531,7 @@
     },
     "intro": {
       "heading": "Jogos educativos divertidos e interativos",
-      "text": "Jogos grátis para crianças de 8 a 14 anos jogarem na sala de aula ou em casa, e um Construtor que transforma a sua ideia em um jogo.",
+      "text": "Jogos grátis para crianças de 5 a 14 anos jogarem na sala de aula ou em casa, e um Construtor que transforma a sua ideia em um jogo.",
       "teachers": "Para professores",
       "parents": "Para pais"
     },
@@ -3903,7 +3903,7 @@
       "print": {
         "title": "Plano escolar: uma página para a administração da sua escola",
         "heading": "Plano escolar da Oomba Academy",
-        "intro": "Um professor da sua escola gostaria de um plano escolar na Oomba Academy: jogos educativos para 8 a 14 anos e um Construtor em que os alunos criam os próprios jogos. Veja aqui quanto custa e como configurar.",
+        "intro": "Um professor da sua escola gostaria de um plano escolar na Oomba Academy: jogos educativos para 5 a 14 anos e um Construtor em que os alunos criam os próprios jogos. Veja aqui quanto custa e como configurar.",
         "printButton": "Imprimir ou salvar em PDF",
         "back": "Voltar para os planos escolares",
         "cost": "Quanto custa",
@@ -4023,7 +4023,7 @@
   },
   "seo": {
     "home": {
-      "description": "Jogos educativos grátis e sem anúncios para crianças de 8 a 14 anos: matemática, leitura, xadrez e música. Jogue no navegador e crie jogos com IA.",
+      "description": "Jogos educativos grátis e sem anúncios para crianças de 5 a 14 anos: matemática, leitura, xadrez e música. Jogue no navegador e crie jogos com IA.",
       "imageAlt": "Oomba Academy: jogos educativos divertidos para crianças"
     },
     "teachers": {
@@ -4057,16 +4057,16 @@
   },
   "teachers": {
     "title": "Jogos educativos interativos para a sala de aula",
-    "description": "Jogos educativos grátis e sem anúncios para 8 a 14 anos, em qualquer navegador e no Chromebook: matemática, leitura, xadrez, música e um Construtor com IA.",
+    "description": "Jogos educativos grátis e sem anúncios para 5 a 14 anos, em qualquer navegador e no Chromebook: matemática, leitura, xadrez, música e um Construtor com IA.",
     "kicker": "🍎 Para professores",
     "h1": "Jogos educativos divertidos e interativos que a turma vai pedir para jogar",
-    "lead": "A Oomba Academy é um site grátis de jogos educativos para crianças de 8 a 14 anos. Os alunos jogam direto no navegador, e a turma pode criar os próprios jogos descrevendo-os para o nosso Construtor com IA.",
+    "lead": "A Oomba Academy é um site grátis de jogos educativos para crianças de 5 a 14 anos. Os alunos jogam direto no navegador, e a turma pode criar os próprios jogos descrevendo-os para o nosso Construtor com IA.",
     "badges": {
       "free": "Grátis para começar",
       "ads": "Sem anúncios",
       "browser": "Funciona em qualquer navegador, até no Chromebook",
       "google": "Login com o Google",
-      "ages": "Feito para 8 a 14 anos"
+      "ages": "Feito para 5 a 14 anos"
     },
     "cta": {
       "start": "Peça uma conta grátis para a escola",
@@ -4167,7 +4167,7 @@
       "q4": "Como vocês protegem a privacidade dos alunos?",
       "a4": "Nunca pedimos e-mail, idade nem endereço aos alunos. Não há anúncios nem cookies de rastreamento, e o nome real de um aluno só é visto pela equipe da escola dele. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q5": "Para quais idades e anos escolares ela é indicada?",
-      "a5": "A Oomba Academy é feita para crianças de 8 a 14 anos, mais ou menos do 3º ao 9º ano. Alguns jogos, como Shark Plank e as primeiras pistas do Sum Racer, também servem para leitores mais novos.",
+      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos, e os cursos completos começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
       "a6": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
       "a6google": "Primeiro, escreva para nós para cadastrar a sua escola (é grátis). Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
@@ -4306,7 +4306,7 @@
         "name": "Jogos de leitura e ortografia em inglês",
         "short": "Caça-palavras, jogo da forca e um desafio de palavras do dia",
         "title": "Jogos de inglês grátis: leitura e ortografia",
-        "description": "Caça-palavras, jogo da forca e palavra do dia em inglês para 8 a 14 anos, com as palavras lidas em voz alta. Grátis, sem anúncios, em qualquer navegador.",
+        "description": "Caça-palavras, jogo da forca e palavra do dia em inglês para 5 a 14 anos, com as palavras lidas em voz alta. Grátis, sem anúncios, em qualquer navegador.",
         "h1": "Jogos de leitura e ortografia em inglês para quem está aprendendo a ler",
         "lead": "Três jogos de palavras em inglês que desenvolvem a ortografia e o vocabulário. Shark Plank e Word Hunt leem as palavras em voz alta, então servem para quem está começando a ler. Word Peek é um desafio diário para quem já escreve com confiança.",
         "tips": "Use um tema do Word Hunt como aquecimento para um assunto, resolvam juntos a Palavra do dia do Word Peek na lousa conversando sobre cada palpite, ou deixe o Shark Plank para quem termina antes.",
@@ -4326,7 +4326,7 @@
         "name": "Jogos de xadrez e estratégia",
         "short": "Lições e desafios de xadrez, quatro em linha, quebra-cabeças de blocos",
         "title": "Jogos de xadrez e estratégia grátis para crianças",
-        "description": "Aprenda xadrez com lições curtas e desafios, depois jogue contra um amigo ou um robô. E ainda quatro em linha e blocos que caem, grátis para 8 a 14 anos.",
+        "description": "Aprenda xadrez com lições curtas e desafios, depois jogue contra um amigo ou um robô. E ainda quatro em linha e blocos que caem, grátis para 5 a 14 anos.",
         "h1": "Jogos de xadrez e estratégia que desenvolvem o raciocínio",
         "lead": "Jogos de estratégia pedem que os alunos planejem as jogadas, percebam padrões e pensem no que o outro jogador vai fazer. Castle Clash ensina xadrez desde o primeiro movimento. Drop Four e Brick Drop são jogos rápidos de planejamento e padrões.",
         "tips": "Monte um clube de xadrez da turma com as lições e os desafios do Castle Clash, ou coloque dois alunos no mesmo aparelho para uma partida de Drop Four.",
@@ -4346,7 +4346,7 @@
         "name": "Jogos de música",
         "short": "Crie batidas e toque junto com as músicas",
         "title": "Jogos de música para crianças: batidas e ritmo",
-        "description": "Crie suas batidas no Loop Lab e toque no ritmo de nove músicas no Beat Lanes. Jogos de música grátis para 8 a 14 anos, sem anúncios, em qualquer navegador.",
+        "description": "Crie suas batidas no Loop Lab e toque no ritmo de nove músicas no Beat Lanes. Jogos de música grátis para 5 a 14 anos, sem anúncios, em qualquer navegador.",
         "h1": "Jogos de música: crie batidas e toque junto",
         "lead": "Loop Lab é um criador de batidas: os alunos tocam nos quadrados para montar um loop de bateria, baixo e melodia e ouvem na hora. Beat Lanes é um jogo de ritmo com nove músicas, de Brilha, brilha, estrelinha ao Can-can.",
         "tips": "Use os desafios musicais do Loop Lab para explorar padrões e repetição, ou toque uma música do Beat Lanes como uma pausa rápida. Fones de ouvido ajudam numa sala barulhenta.",
@@ -4379,7 +4379,7 @@
         "name": "Crie o seu próprio jogo",
         "short": "As crianças criam jogos com o Construtor com IA",
         "title": "Crie seu próprio jogo: criador de jogos com IA",
-        "description": "As crianças descrevem o jogo e o Construtor cria, mostrando os passos. Sem programar, sem anúncios, para 8 a 14 anos e privado até ser compartilhado.",
+        "description": "As crianças descrevem o jogo e o Construtor cria, mostrando os passos. Sem programar, sem anúncios, para 5 a 14 anos e privado até ser compartilhado.",
         "h1": "Crie o seu próprio jogo, sem precisar programar",
         "lead": "Na Oomba Academy, os alunos descrevem o jogo que querem e o Construtor com IA cria o jogo. Depois eles jogam, testam e pedem mudanças, uma ideia de cada vez.",
         "how": {
@@ -4405,7 +4405,7 @@
           "q2": "Quem pode ver os jogos que os alunos criam?",
           "a2": "Só o aluno, até ele compartilhar. Ele pode compartilhar com os amigos ou com a turma, e um jogo para todos é revisado antes que outras pessoas possam jogar.",
           "q3": "Para quais idades é indicado?",
-          "a3": "De 8 a 14 anos.",
+          "a3": "De 5 a 14 anos.",
           "q4": "Meu filho quer criar videogames. Por onde começar?",
           "a4": "Por uma ideia pequena, como um labirinto ou um jogo de pegar coisas. A criança descreve, joga e depois pede uma mudança de cada vez. Mais tarde, muitas crianças também experimentam ferramentas de programação como o Scratch.",
           "q5": "Isso é programação de verdade?",
@@ -4507,7 +4507,7 @@
         "description": "Jogos educativos grátis e sem anúncios para 10 e 11 anos: tabuada e divisão, palavra do dia, desafios de xadrez, música e criar os próprios jogos.",
         "h1": "Jogos educativos para crianças de 10 e 11 anos",
         "lead": "Aos 10 e 11 anos, as crianças querem um desafio de verdade e opinar no que jogam. Estes jogos vão até todas as tabuadas e a divisão, desafios de xadrez e uma palavra do dia, e o Construtor deixa a criança criar um jogo só dela.",
-        "abcya": "Seu filho já cresceu demais para os sites de joguinhos infantis? A maioria é feita para os pequenos dos primeiros anos. A Oomba Academy é feita para 8 a 14 anos.",
+        "abcya": "Seu filho já cresceu demais para os sites de joguinhos infantis? A maioria é feita para os pequenos dos primeiros anos. A Oomba Academy é feita para 5 a 14 anos.",
         "make": {
           "p": "Crianças dessa idade adoram criar os próprios jogos. Elas descrevem um com palavras simples, como “um quiz sobre vulcões” ou “um labirinto com um robô”, e o Construtor cria. Depois, testam e pedem mudanças. É grátis todos os dias."
         },
@@ -4552,7 +4552,7 @@
         },
         "faq": {
           "q2": "A Oomba Academy é infantil demais para quem tem 13 anos?",
-          "a2": "Ela é feita para 8 a 14 anos. Os mais velhos vêm principalmente pelo Construtor, pelo xadrez de verdade e pela criação musical, que crescem junto com eles.",
+          "a2": "Ela é feita para 5 a 14 anos. Os mais velhos vêm principalmente pelo Construtor, pelo xadrez de verdade e pela criação musical, que crescem junto com eles.",
           "q3": "Meu filho adolescente pode criar os próprios jogos?",
           "a3": "Sim. Ele descreve o jogo com palavras e o Construtor cria. Um jogo novo fica privado até ser compartilhado, e um jogo para todos é revisado primeiro pelo Claude, e a nossa equipe confere os jogos sobre os quais ele tem dúvida.",
           "q4": "Tem chat com desconhecidos?",
@@ -4563,9 +4563,9 @@
     "index": {
       "crumb": "Aprender",
       "title": "Jogos educativos por matéria e idade",
-      "description": "Jogos educativos grátis para 8 a 14 anos, por matéria (matemática, palavras, estratégia, música, pausas e criação de jogos) e por idade. No navegador, na escola ou em casa.",
+      "description": "Jogos educativos grátis para 5 a 14 anos, por matéria (matemática, palavras, estratégia, música, pausas e criação de jogos) e por idade. No navegador, na escola ou em casa.",
       "h1": "Jogos educativos por matéria e idade",
-      "lead": "Jogos grátis para 8 a 14 anos que rodam no navegador. Escolha uma matéria ou uma idade para ver quais jogos combinam e o que eles treinam.",
+      "lead": "Jogos grátis para 5 a 14 anos que rodam no navegador. Escolha uma matéria ou uma idade para ver quais jogos combinam e o que eles treinam.",
       "subjects": "Por matéria",
       "ages": "Por idade",
       "who": "Para professores e pais"
@@ -4620,10 +4620,10 @@
     }
   },
   "parents": {
-    "title": "Jogos educativos seguros e grátis (8–14 anos)",
-    "description": "Jogos educativos grátis no navegador para 8 a 14 anos: matemática, palavras, xadrez e música. Sem anúncios, sem chat com estranhos e com criação de jogos.",
+    "title": "Jogos educativos seguros e grátis (5–14 anos)",
+    "description": "Jogos educativos grátis no navegador para 5 a 14 anos: matemática, palavras, xadrez e música. Sem anúncios, sem chat com estranhos e com criação de jogos.",
     "kicker": "👪 Para pais",
-    "h1": "Jogos educativos divertidos para 8 a 14 anos, seguros desde o início",
+    "h1": "Jogos educativos divertidos para 5 a 14 anos, seguros desde o início",
     "lead": "A Oomba Academy é um site de jogos educativos curtos que as crianças jogam direto no navegador: corridas de matemática, desafios de palavras, xadrez e música. Quando estiverem prontas, elas podem criar os próprios jogos descrevendo-os para o nosso Construtor com IA.",
     "badges": {
       "free": "Grátis para jogar",
@@ -4736,7 +4736,7 @@
       "a1": "Sim. Todos os jogos são grátis, e todo jogador com conta (só um nome inventado e uma senha) recebe mensagens grátis para o Construtor todos os dias para criar os próprios jogos. Não há anúncios nem nada para a criança comprar.",
       "a1paid": "Sim. Todos os jogos são grátis, e todo jogador com conta (só um nome inventado e uma senha) recebe mensagens grátis para o Construtor todos os dias. As famílias podem escolher um plano opcional para ter mensagens extras para o Construtor, e as crianças nunca são convidadas a pagar. <a href=\"{plans}\">Ver os planos</a>.",
       "q2": "Para quais idades é indicado?",
-      "a2": "Crianças de 8 a 14 anos. Alguns jogos, como o Shark Plank e as primeiras pistas do Sum Racer, também servem para crianças menores que estão começando a ler.",
+      "a2": "Crianças da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como o Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos.",
       "q3": "Meu filho precisa de conta ou de e-mail?",
       "a3": "Não. Qualquer pessoa pode jogar na hora, sem cadastro. Para guardar os jogos e as pontuações, a criança pode criar uma conta só com um nome inventado e uma senha. Nunca pedimos e-mail.",
       "q4": "Tem anúncios ou compras dentro do app?",
@@ -4763,7 +4763,7 @@
       "name": "O Construtor com IA é seguro?",
       "short": "O que a IA vê, o que ela nunca recebe e as regras que segue",
       "title": "IA é segura para crianças? O nosso Construtor",
-      "description": "O que a IA vê, o que nunca recebe e as regras que segue: um guia simples para pais de crianças de 8 a 14 anos sobre o Construtor com IA da Oomba Academy.",
+      "description": "O que a IA vê, o que nunca recebe e as regras que segue: um guia simples para pais de crianças de 5 a 14 anos sobre o Construtor com IA da Oomba Academy.",
       "h1": "O Construtor com IA é seguro para meu filho?",
       "lead": "O Construtor da Oomba Academy usa IA para transformar a ideia do seu filho em um jogo. Aqui está o que ele vê, o que nunca recebe, as regras que segue e o que não podemos prometer, em palavras simples.",
       "what": {
@@ -4827,7 +4827,7 @@
       "short": "Um checklist para escolher jogos e apps, e como definir limites",
       "title": "Tempo de tela infantil: um guia para os pais",
       "description": "Tempo de tela bom ou ruim? Anúncios, compras, chat, dados e criar em vez de só rolar a tela: um checklist para pais, com o que fazemos e o que não.",
-      "h1": "Tempo de tela saudável: como escolher jogos para crianças de 8 a 14 anos",
+      "h1": "Tempo de tela saudável: como escolher jogos para crianças de 5 a 14 anos",
       "lead": "Não existe um número perfeito de minutos. O que a criança faz na tela, com quem faz e para onde aquilo a leva importam tanto quanto. Este checklist ajuda você a avaliar qualquer jogo ou app, inclusive o nosso.",
       "experts": {
         "h": "O que dizem os especialistas",
@@ -4850,7 +4850,7 @@
         "li2": "<b>Compras:</b> nada para a criança comprar, sem caixas de recompensa e sem moedas virtuais compradas com dinheiro de verdade.",
         "li3": "<b>Desconhecidos:</b> chat só com amigos adicionados por código, com filtro e opção de denúncia.",
         "li4": "<b>Dados:</b> nunca pedimos às crianças e-mail, idade, endereço ou localização. Fotos são opcionais: uma foto de perfil ou imagens para o Construtor, com os dados de localização escondidos removidos e as fotos de perfil verificadas antes que alguém as veja.",
-        "li5": "<b>Idade certa:</b> feita para 8 a 14 anos.",
+        "li5": "<b>Idade certa:</b> feita para 5 a 14 anos.",
         "li6": "<b>Criar:</b> as crianças podem criar os próprios jogos com o Construtor com IA.",
         "li7": "<b>Juntos:</b> vários jogos têm modo para dois jogadores na mesma tela.",
         "p": "O que não temos: limites de tempo, relatórios de atividades ou painel para os pais. Para limites, use as ferramentas do próprio aparelho."
@@ -6784,7 +6784,7 @@
       "trialShort": "Teste grátis"
     },
     "hero": {
-      "kicker": "Para professores · do 3º ao 8º ano",
+      "kicker": "Para professores · da educação infantil ao 8º ano",
       "h1": "Transforme seus planos de aula em jogos que a turma vai pedir para jogar",
       "lead": "Cole uma aula, envie um PDF ou só descreva uma ideia. O Construtor IA da Oomba transforma tudo num jogo interativo para jogar ao vivo no projetor ou passar para a turma.",
       "cta": "Comece seu teste grátis de 14 dias",
@@ -6909,7 +6909,7 @@
     "safety": {
       "kicker": "Segurança e privacidade",
       "h": "Feito para a sala de aula, seguro desde a origem",
-      "lead": "Pensado para crianças de 8 a 14 anos, com as turmas sob o seu controle.",
+      "lead": "Pensado para crianças de 5 a 14 anos, com as turmas sob o seu controle.",
       "li1": "Sem anúncios e sem cookies de publicidade ou rastreamento",
       "li2": "Os alunos nunca precisam de e-mail, e nunca perguntamos idade ou endereço",
       "li3": "O nome real de um aluno, se você colocar, só é visto pela equipe da sua escola",
@@ -6958,7 +6958,7 @@
     "faq": {
       "h": "Perguntas de professores",
       "q1": "O que é a Oomba Academy?",
-      "a1": "Uma plataforma de aprendizagem baseada em jogos do 3º ao 8º ano. Os professores transformam as próprias aulas em jogos interativos com um Construtor IA, fazem jogos de turma ao vivo e usam cursos prontos de matemática, computação e segurança na internet.",
+      "a1": "Uma plataforma de aprendizagem baseada em jogos da educação infantil ao 8º ano. Os professores transformam as próprias aulas em jogos interativos com um Construtor IA, fazem jogos de turma ao vivo e usam cursos prontos de matemática, computação e segurança na internet.",
       "q2": "Como funciona o teste grátis?",
       "a2": "Comece um teste grátis de 14 dias sem cartão. Tudo do plano Professor está incluído durante o teste, e quando ele acaba você decide se quer assinar.",
       "q3": "Eu pago por aluno?",
@@ -6970,7 +6970,7 @@
       "q6": "Funciona em Chromebooks e iPads?",
       "a6": "Sim. Funciona em qualquer navegador atualizado em Chromebooks, iPads e outros tablets, notebooks, celulares e lousas digitais, sem instalar nada.",
       "q7": "É seguro para meus alunos?",
-      "a7": "É feito para crianças de 8 a 14 anos: sem anúncios, sem cookies de rastreamento, sem e-mail de alunos, sem chat com desconhecidos, com texto filtrado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público.",
+      "a7": "É feito para crianças de 5 a 14 anos: sem anúncios, sem cookies de rastreamento, sem e-mail de alunos, sem chat com desconhecidos, com texto filtrado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público.",
       "q8": "Nossa escola pode pagar por fatura ou ordem de compra?",
       "a8": "Sim. As escolas pagam o mesmo preço por professor por ano, por fatura ou ordem de compra. Mande um e-mail e a gente organiza tudo.",
       "q9": "Quais idiomas existem?",
@@ -6987,7 +6987,7 @@
       "cta": "Só jogar"
     },
     "footer": {
-      "tagline": "Jogos educativos para crianças de 8 a 14 anos, e um Construtor IA que transforma aulas em jogos.",
+      "tagline": "Jogos educativos para crianças de 5 a 14 anos, e um Construtor IA que transforma aulas em jogos.",
       "teachers": "Para professores",
       "product": "Explore",
       "about": "Sobre",
