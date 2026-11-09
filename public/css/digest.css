@@ -1,0 +1,43 @@
+/* The weekly class summary: "See this week's summary" (/teach/summary) and its panel on the Me page.
+   Spacing on the shared scale (--s1 … --s6); nothing touches (tests/e2e/touching.js); 44 px tap targets on phones. */
+.dg-stats,.dg-list,.dg-namelist{list-style:none;padding:0}
+.dg-sched>p{margin:0 0 var(--s2)}
+.dg-sched>.dg-acts{margin-top:var(--s3)}
+.dg-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.dg-class{display:flex;flex-direction:column;gap:var(--s3)}
+.dg-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3)}
+.dg-head h2{margin:0;font-size:1.25rem;min-width:0;overflow-wrap:anywhere}
+.dg-head h2 a{color:inherit;text-decoration:none}
+.dg-head h2 a:hover{text-decoration:underline}
+.dg-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2);margin:0}
+.dg-stat{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card-2);min-width:0}
+.dg-stat>a,.dg-stat>.dg-v{color:inherit;text-decoration:none}
+.dg-stat>a,.dg-stat:not(.dg-go){display:flex;flex-direction:column;gap:2px;padding:var(--s3);min-height:44px}
+.dg-stat.dg-go:hover{border-color:var(--accent-line)}
+.dg-stat.dg-go>a:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:var(--r-sm)}
+.dg-v{font-size:1.5rem;font-weight:800;line-height:1.1}
+.dg-l{font-size:.8125rem;color:var(--muted);line-height:1.3;overflow-wrap:anywhere}
+.dg-sub{margin:0;font-size:1rem}
+.dg-list{display:flex;flex-direction:column;gap:var(--s2);margin:0}
+.dg-list>li{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);align-items:baseline;min-width:0;overflow-wrap:anywhere}
+.dg-names>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.dg-namelist{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s2) 0 0}
+.dg-namelist>li{padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card-2)}
+.dg-quiet>h2{margin-top:0}
+/* The Me page panel */
+#digest .dg-form{display:flex;flex-direction:column;gap:var(--s3)}
+#digest .dg-on{display:flex;align-items:center;gap:var(--s2);font-weight:700;min-height:44px}
+#digest .dg-on>input{width:24px;height:24px;flex:none}
+#digest .dg-when{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}
+#digest .dg-when .field{margin:0;min-width:0}
+#digest .dg-when select{width:100%;min-height:44px}
+#digest .form-err:empty{display:none}
+#digest>.notice{margin:0 0 var(--s3)}
+@media (max-width:760px){
+  .dg-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dg-stat:last-child:nth-child(odd){grid-column:1/-1}
+  #digest .dg-when{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .dg-acts>.btn{flex:1 1 auto;justify-content:center;min-height:44px}
+}

@@ -3,6 +3,9 @@
 //  - 'nudge': marketing (the trial sequence). Needs EMAIL_POSTAL_ADDRESS (CAN-SPAM): while it is empty none is sent at
 //    all (logged once; /admin/emails and /admin/billing warn). Never to someone who unsubscribed.
 //  - 'transactional' (a thank-you for a purchase, later receipts): unsubscribing doesn't stop these.
+//  - 'digest': the weekly class summary for teachers (services/digest.js). Its own off switch (digest_off_at, the
+//    "Stop these summaries" link and the Me page), separate from the nudges'; no postal address needed (it is about
+//    the teacher's own classes, not marketing), though the footer carries it when it is set.
 // Every email goes only to a grown-up, teacher or staff account (never a kid's: kid accounts have no email anyway), at
 // the address we know for it: a Google sign-in's verified address, else the one the trial's checkout gave us. No
 // address: skipped and logged. Each send carries an Idempotency-Key (Resend keeps it 24 hours, so a retry or a restart
@@ -71,6 +74,12 @@ export function rememberAddress(userId, email, source = 'checkout') {
 }
 export const prefsOf = userId => q.get('SELECT * FROM email_prefs WHERE user_id=?', userId) || null;
 export const nudgesOff = userId => !!prefsOf(userId)?.nudges_off_at;
+export const digestOff = userId => !!prefsOf(userId)?.digest_off_at;
+/** The weekly class summary off (off = true) or on again: only that email; nothing else changes. */
+export function setDigestOff(userId, off = true) {
+  q.run(`INSERT INTO email_prefs(user_id, digest_off_at, updated_at) VALUES (?,?,?)
+    ON CONFLICT(user_id) DO UPDATE SET digest_off_at=excluded.digest_off_at, updated_at=excluded.updated_at`, userId, off ? now() : null, now());
+}
 /** Unsubscribe (off = true) or subscribe again: trial nudges and any later marketing; transactional email is unaffected. */
 export function setNudgesOff(userId, off = true) {
   q.run(`INSERT INTO email_prefs(user_id, nudges_off_at, updated_at) VALUES (?,?,?)
@@ -91,7 +100,10 @@ export function readUnsubToken(t) {
 }
 export const siteBase = () => config.publicUrl || 'https://oomba.ai';
 export const UNSUBSCRIBE_PATH = '/email/unsubscribe';
-export const unsubscribeUrl = userId => `${siteBase()}${UNSUBSCRIBE_PATH}?t=${encodeURIComponent(unsubToken(userId))}`;
+/** The one-click link. scope 'digest': it stops only the weekly class summary (the same signed token; c only picks
+ *  which switch the account's own link turns off). */
+export const UNSUB_SCOPES = ['digest'];
+export const unsubscribeUrl = (userId, scope = '') => `${siteBase()}${UNSUBSCRIBE_PATH}?t=${encodeURIComponent(unsubToken(userId))}${UNSUB_SCOPES.includes(scope) ? `&c=${scope}` : ''}`;
 
 // ---- Sending ----
 const clip = (s, n) => String(s || '').replace(/\s+/g, ' ').slice(0, n);
@@ -105,7 +117,7 @@ const retryable = (st, data) => st === 429 || st >= 500 || (st === 409 && data?.
 
 /**
  * Sends one email to an account.
- * { userId, template, category: 'nudge'|'transactional'|'test', subject, html, text, idemKey, to? (test sends only) }
+ * { userId, template, category: 'nudge'|'transactional'|'digest'|'test', subject, html, text, idemKey, to? (test sends only) }
  * -> { status: 'sent'|'skipped'|'failed'|'off', reason?, id? }
  * 'off' (sending is off, or a nudge while EMAIL_POSTAL_ADDRESS is empty) leaves no log row: the caller may try again
  * later. Every other outcome leaves one.
@@ -120,9 +132,10 @@ export async function send({ userId, template, category, subject, html, text, id
   const u = getUser(userId);
   if (!adultRecipient(u)) { logRow({ ...base, status: 'skipped', error: 'not_adult' }); return { status: 'skipped', reason: 'not_adult' }; }
   if (category === 'nudge' && nudgesOff(userId)) { logRow({ ...base, status: 'skipped', error: 'unsubscribed' }); return { status: 'skipped', reason: 'unsubscribed' }; }
+  if (category === 'digest' && digestOff(userId)) { logRow({ ...base, status: 'skipped', error: 'unsubscribed' }); return { status: 'skipped', reason: 'unsubscribed' }; }
   const address = to ? normEmail(to) : addressOf(userId)?.email;
   if (!address) { logRow({ ...base, status: 'skipped', error: 'no_address' }); log('info', 'email skipped: no address', { user: userId, template }); return { status: 'skipped', reason: 'no_address' }; }
-  const unsub = unsubscribeUrl(userId);
+  const unsub = unsubscribeUrl(userId, category === 'digest' ? 'digest' : '');
   const body = {
     from: config.emailFrom, to: [address], reply_to: config.emailReplyTo, subject, html, text,
     headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },

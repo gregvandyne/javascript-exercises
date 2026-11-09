@@ -7027,5 +7027,88 @@
       "allGames": "Alles ansehen, was Schüler spielen können",
       "openLive": "Live-Spiel öffnen"
     }
+  },
+  "digest": {
+    "when": "{day} um {time} ({zone})",
+    "email": {
+      "subject": "Ihre wöchentliche Klassenübersicht vom {date}",
+      "preview": "{count, plural, one {Zahlen für # Klasse, mit Links zu mehr auf Oomba Academy.} other {Zahlen für # Klassen, mit Links zu mehr auf Oomba Academy.}}",
+      "heading": "Woche vom {date}",
+      "greeting": "Hallo {name},",
+      "greetingNoName": "Hallo,",
+      "intro": "So stehen Ihre Klassen. Namen und Antworten bleiben auf der Website, wo nur Sie und das Personal Ihrer Schule sie sehen.",
+      "due": "{count, plural, =0 {Diese Woche ist keine Lektion fällig} one {# Lektion diese Woche fällig} other {# Lektionen diese Woche fällig}}",
+      "pct": "{pct} % der Arbeit in offenen Lektionen erledigt",
+      "noWork": "Noch keine offenen Lektionen mit Schritten",
+      "toRead": "{count, plural, =0 {Keine Antworten zum Durchsehen} one {# Antwort wartet auf Durchsicht} other {# Antworten warten auf Durchsicht}}",
+      "notStarted": "{count, plural, =0 {Alle Schülerinnen und Schüler haben angefangen} one {# Schüler:in hat noch nicht angefangen} other {# Schüler:innen haben noch nicht angefangen}}",
+      "live": "{count, plural, =0 {Keine Live-Spiele in den letzten 7 Tagen} one {# Live-Spiel in den letzten 7 Tagen} other {# Live-Spiele in den letzten 7 Tagen}}",
+      "openClass": "Klasse öffnen",
+      "review": "Antworten durchsehen",
+      "progress": "Fortschritt ansehen",
+      "quiet": "{count, plural, one {# Klasse hatte nichts Neues und fehlt hier.} other {# Klassen hatten nichts Neues und fehlen hier.}}",
+      "cta": "Übersicht dieser Woche ansehen",
+      "classroom": "Zum Klassenraum",
+      "why": "Sie erhalten diese wöchentliche Übersicht, weil Sie auf Oomba Academy eine Klasse unterrichten.",
+      "change": "Tag oder Uhrzeit ändern",
+      "stop": "Diese Übersichten abbestellen"
+    },
+    "unsub": {
+      "title": "Wöchentliche Klassenübersicht",
+      "askTitle": "Wöchentliche Klassenübersicht abbestellen?",
+      "askText": "Sie bekommen dann keine wöchentliche E-Mail zu Ihren Klassen mehr. Alles bleibt auf der Website, und Sie können sie auf Ihrer Seite „Ich“ wieder einschalten.",
+      "button": "Übersichten abbestellen",
+      "offTitle": "Die wöchentliche Übersicht ist aus",
+      "offText": "Sie bekommen keine wöchentliche E-Mail zu Ihren Klassen mehr. Andere E-Mails zu Ihrem Konto sind nicht betroffen.",
+      "again": "Wieder einschalten",
+      "againTitle": "Die wöchentliche Übersicht ist wieder an",
+      "againText": "Sie bekommen sie wieder an dem Tag und zu der Uhrzeit auf Ihrer Seite „Ich“.",
+      "badTitle": "Dieser Link funktioniert nicht",
+      "badText": "Der Link wurde beim Kopieren vielleicht abgeschnitten. Sie können die Übersicht auch auf Ihrer Seite „Ich“ ausschalten."
+    },
+    "me": {
+      "heading": "Wöchentliche Klassenübersicht",
+      "text": "Einmal pro Woche schicken wir Ihnen Zahlen zu jeder Ihrer Klassen: fällige Lektionen, erledigte Arbeit, Antworten zum Durchsehen, wer noch nicht angefangen hat und Live-Spiele. Nie den Namen oder die Antwort eines Kindes.",
+      "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen. Verbinden Sie Google auf dieser Seite, dann geht die Übersicht an diese Adresse.",
+      "on": "Wöchentliche Übersicht per E-Mail",
+      "day": "Tag",
+      "hour": "Uhrzeit",
+      "zone": "Zeitzone",
+      "zoneSchool": "Zeitzone meiner Schule ({zone})",
+      "zoneDefault": "Standard ({zone})",
+      "save": "Speichern",
+      "saved": "Gespeichert."
+    },
+    "page": {
+      "link": "Übersicht dieser Woche",
+      "title": "Übersicht dieser Woche",
+      "sub": "Jede Ihrer Klassen: die letzten 7 Tage und die Lektionen, die in den nächsten 7 fällig sind.",
+      "next": "Ihre Übersicht kommt jeden {when} per E-Mail.",
+      "off": "Die wöchentliche Übersicht per E-Mail ist aus. Diese Seite können Sie trotzdem jederzeit ansehen.",
+      "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen, daher geht keine Übersicht raus. Verbinden Sie Google auf Ihrer Seite „Ich“.",
+      "privacy": "Namen von Schülerinnen und Schülern stehen nur auf dieser Seite, nie in der E-Mail.",
+      "seeEmail": "E-Mail ansehen",
+      "change": "Versandzeit ändern",
+      "statDue": "Diese Woche fällig",
+      "statDone": "Erledigt",
+      "statToRead": "Durchsehen",
+      "statNotStarted": "Nicht angefangen",
+      "statLive": "Live-Spiele",
+      "dueHeading": "Diese Woche fällig",
+      "finished": "{done} von {count} fertig",
+      "toReadHeading": "Antworten zum Durchsehen",
+      "notStartedHeading": "{count, plural, one {# Schüler:in hat nicht angefangen} other {# Schüler:innen haben nicht angefangen}}",
+      "noClasses": "Noch keine Klassen",
+      "noClassesText": "Legen Sie im Klassenraum eine Klasse an, dann erscheint ihre Übersicht hier.",
+      "quietAll": "Eine ruhige Woche",
+      "quietAllText": "In den letzten 7 Tagen gab es nichts Neues in Ihren Klassen, daher kommt diese Woche keine E-Mail.",
+      "quietHeading": "Nichts Neues",
+      "quietText": "In diesen Klassen gab es in den letzten 7 Tagen nichts Neues. Sie fehlen in der E-Mail."
+    },
+    "errors": {
+      "badDay": "Wählen Sie einen Tag.",
+      "badHour": "Wählen Sie eine Uhrzeit.",
+      "badZone": "Wählen Sie eine Zeitzone aus der Liste."
+    }
   }
 }

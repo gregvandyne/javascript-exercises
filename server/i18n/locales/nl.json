@@ -7027,5 +7027,88 @@
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen"
     }
+  },
+  "digest": {
+    "when": "{day} om {time} ({zone})",
+    "email": {
+      "subject": "Je wekelijkse klassenoverzicht van {date}",
+      "preview": "{count, plural, one {Cijfers voor # klas, met links naar meer op Oomba Academy.} other {Cijfers voor # klassen, met links naar meer op Oomba Academy.}}",
+      "heading": "Week van {date}",
+      "greeting": "Hoi {name},",
+      "greetingNoName": "Hoi,",
+      "intro": "Zo gaat het met je klassen. Namen en antwoorden blijven op de site, waar alleen jij en het personeel van je school ze kunnen zien.",
+      "due": "{count, plural, =0 {Geen lessen die deze week af moeten} one {# les moet deze week af} other {# lessen moeten deze week af}}",
+      "pct": "{pct}% van het werk in open lessen gedaan",
+      "noWork": "Nog geen open lessen met stappen",
+      "toRead": "{count, plural, =0 {Geen antwoorden om na te kijken} one {# antwoord wacht op nakijken} other {# antwoorden wachten op nakijken}}",
+      "notStarted": "{count, plural, =0 {Alle leerlingen zijn begonnen} one {# leerling is nog niet begonnen} other {# leerlingen zijn nog niet begonnen}}",
+      "live": "{count, plural, =0 {Geen live spellen in de afgelopen 7 dagen} one {# live spel in de afgelopen 7 dagen} other {# live spellen in de afgelopen 7 dagen}}",
+      "openClass": "Klas openen",
+      "review": "Antwoorden nakijken",
+      "progress": "Voortgang bekijken",
+      "quiet": "{count, plural, one {# klas had niets nieuws en staat er niet in.} other {# klassen hadden niets nieuws en staan er niet in.}}",
+      "cta": "Overzicht van deze week bekijken",
+      "classroom": "Naar je Klaslokaal",
+      "why": "Je krijgt dit wekelijkse overzicht omdat je les geeft aan een klas op Oomba Academy.",
+      "change": "Dag of tijd wijzigen",
+      "stop": "Stoppen met deze overzichten"
+    },
+    "unsub": {
+      "title": "Wekelijks klassenoverzicht",
+      "askTitle": "Stoppen met het wekelijkse klassenoverzicht?",
+      "askText": "Je krijgt dan geen wekelijkse e-mail meer over je klassen. Alles blijft op de site, en je kunt het weer aanzetten op je Ik-pagina.",
+      "button": "Stoppen met de overzichten",
+      "offTitle": "Het wekelijkse overzicht staat uit",
+      "offText": "Je krijgt geen wekelijkse e-mail meer over je klassen. Andere e-mails over je account blijven gewoon komen.",
+      "again": "Weer aanzetten",
+      "againTitle": "Het wekelijkse overzicht staat weer aan",
+      "againText": "Je krijgt het weer op de dag en het tijdstip op je Ik-pagina.",
+      "badTitle": "Deze link werkt niet",
+      "badText": "De link is misschien afgekapt bij het kopiëren. Je kunt het overzicht ook uitzetten op je Ik-pagina."
+    },
+    "me": {
+      "heading": "Wekelijks klassenoverzicht",
+      "text": "Eén keer per week mailen we je cijfers voor elke klas die je lesgeeft: lessen die af moeten, gedaan werk, antwoorden om na te kijken, leerlingen die nog niet begonnen zijn en live spellen. Nooit de naam of het antwoord van een leerling.",
+      "noAddress": "We hebben nog geen e-mailadres van je. Koppel Google op deze pagina, dan gaat het overzicht naar dat adres.",
+      "on": "Mail me het wekelijkse overzicht",
+      "day": "Dag",
+      "hour": "Tijd",
+      "zone": "Tijdzone",
+      "zoneSchool": "De tijdzone van mijn school ({zone})",
+      "zoneDefault": "Standaard ({zone})",
+      "save": "Opslaan",
+      "saved": "Opgeslagen."
+    },
+    "page": {
+      "link": "Overzicht van deze week",
+      "title": "Overzicht van deze week",
+      "sub": "Elke klas die je lesgeeft: de afgelopen 7 dagen en de lessen die de komende 7 dagen af moeten.",
+      "next": "Je overzicht wordt elke {when} gemaild.",
+      "off": "De wekelijkse overzichtsmail staat uit. Je kunt deze pagina altijd bekijken.",
+      "noAddress": "We hebben nog geen e-mailadres van je, dus er gaat geen overzicht uit. Koppel Google op je Ik-pagina.",
+      "privacy": "Namen van leerlingen staan alleen op deze pagina, nooit in de e-mail.",
+      "seeEmail": "E-mail bekijken",
+      "change": "Wijzigen wanneer hij komt",
+      "statDue": "Deze week af",
+      "statDone": "Gedaan werk",
+      "statToRead": "Nakijken",
+      "statNotStarted": "Niet begonnen",
+      "statLive": "Live spellen",
+      "dueHeading": "Moet deze week af",
+      "finished": "{done} van {count} klaar",
+      "toReadHeading": "Antwoorden om na te kijken",
+      "notStartedHeading": "{count, plural, one {# leerling is niet begonnen} other {# leerlingen zijn niet begonnen}}",
+      "noClasses": "Nog geen klassen",
+      "noClassesText": "Maak een klas in je Klaslokaal, dan verschijnt het overzicht hier.",
+      "quietAll": "Een rustige week",
+      "quietAllText": "Niets nieuws in je klassen in de afgelopen 7 dagen, dus deze week gaat er geen e-mail uit.",
+      "quietHeading": "Niets nieuws",
+      "quietText": "Deze klassen hadden niets nieuws in de afgelopen 7 dagen. Ze staan niet in de e-mail."
+    },
+    "errors": {
+      "badDay": "Kies een dag.",
+      "badHour": "Kies een tijd.",
+      "badZone": "Kies een tijdzone uit de lijst."
+    }
   }
 }

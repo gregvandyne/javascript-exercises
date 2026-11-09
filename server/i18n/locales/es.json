@@ -7026,5 +7026,88 @@
       "allGames": "Ver todo lo que pueden jugar los alumnos",
       "openLive": "Abrir el juego en vivo"
     }
+  },
+  "digest": {
+    "when": "{day} a las {time} ({zone})",
+    "email": {
+      "subject": "Tu resumen semanal de clases del {date}",
+      "preview": "{count, plural, one {Los números de # clase, con enlaces para ver más en Oomba Academy.} other {Los números de # clases, con enlaces para ver más en Oomba Academy.}}",
+      "heading": "Semana del {date}",
+      "greeting": "Hola, {name}:",
+      "greetingNoName": "Hola:",
+      "intro": "Así van tus clases. Los nombres y las respuestas se quedan en el sitio, donde solo tú y el personal de tu escuela pueden verlos.",
+      "due": "{count, plural, =0 {Ninguna lección para entregar esta semana} one {# lección para entregar esta semana} other {# lecciones para entregar esta semana}}",
+      "pct": "{pct} % del trabajo de las lecciones abiertas hecho",
+      "noWork": "Todavía no hay lecciones abiertas con pasos",
+      "toRead": "{count, plural, =0 {Ninguna respuesta por revisar} one {# respuesta por revisar} other {# respuestas por revisar}}",
+      "notStarted": "{count, plural, =0 {Todos los alumnos han empezado} one {# alumno aún no ha empezado} other {# alumnos aún no han empezado}}",
+      "live": "{count, plural, =0 {Ningún juego en vivo en los últimos 7 días} one {# juego en vivo en los últimos 7 días} other {# juegos en vivo en los últimos 7 días}}",
+      "openClass": "Abrir la clase",
+      "review": "Revisar respuestas",
+      "progress": "Ver el progreso",
+      "quiet": "{count, plural, one {# clase no tuvo nada nuevo y no aparece.} other {# clases no tuvieron nada nuevo y no aparecen.}}",
+      "cta": "Ver el resumen de esta semana",
+      "classroom": "Ir a Mi aula",
+      "why": "Recibes este resumen semanal porque das una clase en Oomba Academy.",
+      "change": "Cambiar el día o la hora",
+      "stop": "Dejar de recibir estos resúmenes"
+    },
+    "unsub": {
+      "title": "Resumen semanal de clases",
+      "askTitle": "¿Dejar de recibir el resumen semanal de clases?",
+      "askText": "Dejarás de recibir el correo semanal sobre tus clases. Todo sigue en el sitio, y puedes volver a activarlo desde tu página Yo.",
+      "button": "Dejar de recibir los resúmenes",
+      "offTitle": "El resumen semanal está desactivado",
+      "offText": "Ya no recibirás el correo semanal sobre tus clases. Los demás correos sobre tu cuenta no cambian.",
+      "again": "Volver a activarlo",
+      "againTitle": "El resumen semanal está activado de nuevo",
+      "againText": "Lo recibirás otra vez el día y a la hora que aparecen en tu página Yo.",
+      "badTitle": "Este enlace no funciona",
+      "badText": "Puede que el enlace se cortara al copiarlo. También puedes desactivar el resumen en tu página Yo."
+    },
+    "me": {
+      "heading": "Resumen semanal de clases",
+      "text": "Una vez por semana te enviamos por correo los números de cada clase que das: lecciones para entregar, trabajo hecho, respuestas por revisar, alumnos que no han empezado y juegos en vivo. Nunca el nombre ni la respuesta de un alumno.",
+      "noAddress": "Aún no tenemos tu dirección de correo. Conecta Google en esta página y el resumen irá a esa dirección.",
+      "on": "Enviarme el resumen semanal",
+      "day": "Día",
+      "hour": "Hora",
+      "zone": "Zona horaria",
+      "zoneSchool": "La zona horaria de mi escuela ({zone})",
+      "zoneDefault": "Predeterminada ({zone})",
+      "save": "Guardar",
+      "saved": "Guardado."
+    },
+    "page": {
+      "link": "Resumen de esta semana",
+      "title": "Resumen de esta semana",
+      "sub": "Cada clase que das: los últimos 7 días y las lecciones para entregar en los próximos 7.",
+      "next": "Tu correo de resumen sale cada {when}.",
+      "off": "El correo de resumen semanal está desactivado. Puedes consultar esta página cuando quieras.",
+      "noAddress": "Aún no tenemos tu dirección de correo, así que no se envía ningún resumen. Conecta Google en tu página Yo.",
+      "privacy": "Los nombres de los alumnos solo aparecen en esta página, nunca en el correo.",
+      "seeEmail": "Ver el correo",
+      "change": "Cambiar cuándo se envía",
+      "statDue": "Para esta semana",
+      "statDone": "Trabajo hecho",
+      "statToRead": "Por revisar",
+      "statNotStarted": "Sin empezar",
+      "statLive": "Juegos en vivo",
+      "dueHeading": "Para entregar esta semana",
+      "finished": "{done} de {count} terminaron",
+      "toReadHeading": "Respuestas por revisar",
+      "notStartedHeading": "{count, plural, one {# alumno no ha empezado} other {# alumnos no han empezado}}",
+      "noClasses": "Aún no hay clases",
+      "noClassesText": "Crea una clase en Mi aula y su resumen aparecerá aquí.",
+      "quietAll": "Una semana tranquila",
+      "quietAllText": "Nada nuevo en tus clases en los últimos 7 días, así que esta semana no se envía ningún correo.",
+      "quietHeading": "Nada nuevo",
+      "quietText": "Estas clases no tuvieron nada nuevo en los últimos 7 días. No aparecen en el correo."
+    },
+    "errors": {
+      "badDay": "Elige un día.",
+      "badHour": "Elige una hora.",
+      "badZone": "Elige una zona horaria de la lista."
+    }
   }
 }

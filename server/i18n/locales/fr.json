@@ -7026,5 +7026,88 @@
       "allGames": "Voir tout ce que les élèves peuvent jouer",
       "openLive": "Ouvrir le jeu en direct"
     }
+  },
+  "digest": {
+    "when": "{day} à {time} ({zone})",
+    "email": {
+      "subject": "Votre résumé hebdomadaire des classes du {date}",
+      "preview": "{count, plural, one {Les chiffres de # classe, avec des liens pour en voir plus sur Oomba Academy.} other {Les chiffres de # classes, avec des liens pour en voir plus sur Oomba Academy.}}",
+      "heading": "Semaine du {date}",
+      "greeting": "Bonjour {name},",
+      "greetingNoName": "Bonjour,",
+      "intro": "Voici comment vont vos classes. Les noms et les réponses restent sur le site, où seuls vous et l'équipe de votre école pouvez les voir.",
+      "due": "{count, plural, =0 {Aucune leçon à rendre cette semaine} one {# leçon à rendre cette semaine} other {# leçons à rendre cette semaine}}",
+      "pct": "{pct} % du travail des leçons ouvertes est fait",
+      "noWork": "Pas encore de leçon ouverte avec des étapes",
+      "toRead": "{count, plural, =0 {Aucune réponse à corriger} one {# réponse à corriger} other {# réponses à corriger}}",
+      "notStarted": "{count, plural, =0 {Tous les élèves ont commencé} one {# élève n'a pas encore commencé} other {# élèves n'ont pas encore commencé}}",
+      "live": "{count, plural, =0 {Aucun jeu en direct ces 7 derniers jours} one {# jeu en direct ces 7 derniers jours} other {# jeux en direct ces 7 derniers jours}}",
+      "openClass": "Ouvrir la classe",
+      "review": "Corriger les réponses",
+      "progress": "Voir la progression",
+      "quiet": "{count, plural, one {# classe n'a rien de nouveau et n'est pas incluse.} other {# classes n'ont rien de nouveau et ne sont pas incluses.}}",
+      "cta": "Voir le résumé de la semaine",
+      "classroom": "Aller à Ma classe",
+      "why": "Vous recevez ce résumé hebdomadaire parce que vous enseignez une classe sur Oomba Academy.",
+      "change": "Changer le jour ou l'heure",
+      "stop": "Arrêter ces résumés"
+    },
+    "unsub": {
+      "title": "Résumé hebdomadaire des classes",
+      "askTitle": "Arrêter le résumé hebdomadaire des classes ?",
+      "askText": "Vous ne recevrez plus l'e-mail hebdomadaire sur vos classes. Tout reste sur le site, et vous pouvez le réactiver depuis votre page Moi.",
+      "button": "Arrêter les résumés",
+      "offTitle": "Le résumé hebdomadaire est désactivé",
+      "offText": "Vous ne recevrez plus l'e-mail hebdomadaire sur vos classes. Les autres e-mails concernant votre compte ne changent pas.",
+      "again": "Le réactiver",
+      "againTitle": "Le résumé hebdomadaire est réactivé",
+      "againText": "Vous le recevrez de nouveau le jour et à l'heure indiqués sur votre page Moi.",
+      "badTitle": "Ce lien ne fonctionne pas",
+      "badText": "Le lien a peut-être été coupé lors du copier-coller. Vous pouvez aussi désactiver le résumé sur votre page Moi."
+    },
+    "me": {
+      "heading": "Résumé hebdomadaire des classes",
+      "text": "Une fois par semaine, nous vous envoyons par e-mail les chiffres de chaque classe : leçons à rendre, travail fait, réponses à corriger, élèves qui n'ont pas commencé et jeux en direct. Jamais le nom ni la réponse d'un élève.",
+      "noAddress": "Nous n'avons pas encore d'adresse e-mail pour vous. Connectez Google sur cette page et le résumé sera envoyé à cette adresse.",
+      "on": "M'envoyer le résumé hebdomadaire",
+      "day": "Jour",
+      "hour": "Heure",
+      "zone": "Fuseau horaire",
+      "zoneSchool": "Le fuseau horaire de mon école ({zone})",
+      "zoneDefault": "Par défaut ({zone})",
+      "save": "Enregistrer",
+      "saved": "Enregistré."
+    },
+    "page": {
+      "link": "Résumé de la semaine",
+      "title": "Résumé de la semaine",
+      "sub": "Chaque classe que vous enseignez : les 7 derniers jours et les leçons à rendre dans les 7 prochains.",
+      "next": "Votre e-mail de résumé part chaque {when}.",
+      "off": "L'e-mail de résumé hebdomadaire est désactivé. Vous pouvez toujours consulter cette page.",
+      "noAddress": "Nous n'avons pas encore d'adresse e-mail pour vous, donc aucun résumé n'est envoyé. Connectez Google sur votre page Moi.",
+      "privacy": "Les noms des élèves apparaissent uniquement sur cette page, jamais dans l'e-mail.",
+      "seeEmail": "Voir l'e-mail",
+      "change": "Changer le moment de l'envoi",
+      "statDue": "À rendre cette semaine",
+      "statDone": "Travail fait",
+      "statToRead": "À corriger",
+      "statNotStarted": "Pas commencé",
+      "statLive": "Jeux en direct",
+      "dueHeading": "À rendre cette semaine",
+      "finished": "{done} sur {count} ont fini",
+      "toReadHeading": "Réponses à corriger",
+      "notStartedHeading": "{count, plural, one {# élève n'a pas commencé} other {# élèves n'ont pas commencé}}",
+      "noClasses": "Pas encore de classe",
+      "noClassesText": "Créez une classe dans Ma classe et son résumé s'affichera ici.",
+      "quietAll": "Une semaine calme",
+      "quietAllText": "Rien de nouveau dans vos classes ces 7 derniers jours, donc aucun e-mail n'est envoyé cette semaine.",
+      "quietHeading": "Rien de nouveau",
+      "quietText": "Ces classes n'ont rien de nouveau ces 7 derniers jours. Elles ne figurent pas dans l'e-mail."
+    },
+    "errors": {
+      "badDay": "Choisissez un jour.",
+      "badHour": "Choisissez une heure.",
+      "badZone": "Choisissez un fuseau horaire dans la liste."
+    }
   }
 }
