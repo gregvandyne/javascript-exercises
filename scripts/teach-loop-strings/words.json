@@ -52,6 +52,7 @@
       "h": "Your teaching loop",
       "lead": "Try each step once with {class}. Each one ticks itself off as you go.",
       "leadNoClass": "Make your first class, then try each step once. Each one ticks itself off as you go.",
+      "makeClass": "Make your first class",
       "count": "{done} of {total} done",
       "done": "Done",
       "todo": "Not done yet",
@@ -69,11 +70,11 @@
   "de": {
     "kicker": "So passt Oomba in deine Woche",
     "h": "Planen → Spielen → Prüfen → Rückmelden",
-    "lead": "Ein Kreislauf für jede Stunde: planen, mit der Klasse spielen, sehen, wer dich braucht, und jedem Kind sagen, wie es weitergeht. Jeder Schritt ist ein Werkzeug, das es in Oomba schon gibt.",
+    "lead": "Ein Kreislauf für jede Lektion: planen, mit der Klasse spielen, sehen, wer dich braucht, und jedem Kind sagen, wie es weitergeht. Jeder Schritt ist ein Werkzeug, das es in Oomba schon gibt.",
     "steps": {
       "plan": {
         "name": "Planen",
-        "benefit": "Starte mit einer fertigen Stunde oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
+        "benefit": "Starte mit einer fertigen Lektion oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
       },
       "play": {
         "name": "Spielen",
@@ -85,11 +86,11 @@
       },
       "feedback": {
         "name": "Rückmelden",
-        "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Stunde sieht."
+        "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Lektion sieht."
       }
     },
     "tools": {
-      "builder": "Aus einer Stunde ein Spiel machen",
+      "builder": "Aus einer Lektion ein Spiel machen",
       "assign": "Einer Klasse aufgeben",
       "gradebook": "Notenübersicht",
       "gradebookCsv": "Notenübersicht mit CSV-Download",
@@ -99,16 +100,16 @@
     },
     "shots": {
       "gradebook": {
-        "alt": "Die Notenübersicht: Kinder untereinander, Stunden nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
+        "alt": "Die Notenübersicht: Kinder untereinander, Lektionen nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
         "caption": "Notenübersicht: die ganze Klasse auf einen Blick, als CSV-Datei herunterladbar."
       },
       "attention": {
-        "alt": "Der Fortschritt einer Stunde, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
+        "alt": "Der Fortschritt einer Lektion, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
         "caption": "Zuerst, wer Aufmerksamkeit braucht: Antworten zum Lesen, Verspätetes und halb Fertiges oben."
       },
       "feedback": {
         "alt": "Die schriftliche Antwort eines Kindes mit dem Rückmeldefeld der Lehrkraft und dem Speichern-Knopf",
-        "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Stunde."
+        "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Lektion."
       },
       "standards": {
         "alt": "Der Tab „Standards“ der Klasse: Informatik-Standards und wie weit jedes Kind ist",
@@ -119,6 +120,7 @@
       "h": "Dein Unterrichtskreislauf",
       "lead": "Probiere jeden Schritt einmal mit {class} aus. Jeder hakt sich von selbst ab.",
       "leadNoClass": "Lege deine erste Klasse an und probiere dann jeden Schritt einmal aus. Jeder hakt sich von selbst ab.",
+      "makeClass": "Erste Klasse anlegen",
       "count": "{done} von {total} erledigt",
       "done": "Erledigt",
       "todo": "Noch nicht erledigt",
@@ -127,7 +129,7 @@
     },
     "page": {
       "title": "So passt Oomba in deine Woche",
-      "lead": "Stunde planen, spielen, prüfen, wer dich braucht, und Rückmeldung geben: die Werkzeuge für jeden Schritt, bereit für deine Klasse.",
+      "lead": "Lektion planen, spielen, prüfen, wer dich braucht, und Rückmeldung geben: die Werkzeuge für jeden Schritt, bereit für deine Klasse.",
       "link": "So passt Oomba in deine Woche",
       "show": "Checkliste wieder in „{classroom}“ zeigen",
       "shown": "Die Checkliste ist wieder in „{classroom}“."
@@ -186,6 +188,7 @@
       "h": "Tu ciclo de enseñanza",
       "lead": "Prueba cada paso una vez con {class}. Cada uno se marca solo a medida que avanzas.",
       "leadNoClass": "Crea tu primera clase y luego prueba cada paso una vez. Cada uno se marca solo a medida que avanzas.",
+      "makeClass": "Crea tu primera clase",
       "count": "{done} de {total} hechos",
       "done": "Hecho",
       "todo": "Aún no hecho",
@@ -253,6 +256,7 @@
       "h": "Votre boucle d'enseignement",
       "lead": "Essayez chaque étape une fois avec {class}. Chacune se coche toute seule au fil de l'eau.",
       "leadNoClass": "Créez votre première classe, puis essayez chaque étape une fois. Chacune se coche toute seule au fil de l'eau.",
+      "makeClass": "Créez votre première classe",
       "count": "{done} sur {total} faites",
       "done": "Fait",
       "todo": "Pas encore fait",
@@ -320,6 +324,7 @@
       "h": "Il tuo ciclo didattico",
       "lead": "Prova ogni passo una volta con {class}. Ognuno si spunta da solo man mano.",
       "leadNoClass": "Crea la tua prima classe, poi prova ogni passo una volta. Ognuno si spunta da solo man mano.",
+      "makeClass": "Crea la tua prima classe",
       "count": "{done} di {total} fatti",
       "done": "Fatto",
       "todo": "Non ancora fatto",
@@ -387,6 +392,7 @@
       "h": "Jouw lesrondje",
       "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
       "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
+      "makeClass": "Maak je eerste klas",
       "count": "{done} van {total} gedaan",
       "done": "Gedaan",
       "todo": "Nog niet gedaan",
@@ -454,6 +460,7 @@
       "h": "Seu ciclo de ensino",
       "lead": "Experimente cada passo uma vez com {class}. Cada um se marca sozinho conforme você avança.",
       "leadNoClass": "Crie sua primeira turma e experimente cada passo uma vez. Cada um se marca sozinho conforme você avança.",
+      "makeClass": "Crie sua primeira turma",
       "count": "{done} de {total} feitos",
       "done": "Feito",
       "todo": "Ainda não feito",
@@ -521,6 +528,7 @@
       "h": "Ваш учебный цикл",
       "lead": "Попробуйте каждый шаг один раз с классом {class}. Каждый отмечается сам.",
       "leadNoClass": "Создайте первый класс и попробуйте каждый шаг один раз. Каждый отмечается сам.",
+      "makeClass": "Создайте первый класс",
       "count": "Готово {done} из {total}",
       "done": "Готово",
       "todo": "Ещё не сделано",
@@ -588,6 +596,7 @@
       "h": "あなたの授業サイクル",
       "lead": "{class}で各ステップを一度ずつ試してみましょう。終わると自動でチェックが付きます。",
       "leadNoClass": "まず最初のクラスを作り、各ステップを一度ずつ試してみましょう。終わると自動でチェックが付きます。",
+      "makeClass": "最初のクラスを作る",
       "count": "{total}つ中{done}つ完了",
       "done": "完了",
       "todo": "まだ",
@@ -655,6 +664,7 @@
       "h": "你的教學循環",
       "lead": "和 {class} 把每個步驟各試一次。完成後會自動打勾。",
       "leadNoClass": "先建立你的第一個班級，再把每個步驟各試一次。完成後會自動打勾。",
+      "makeClass": "建立第一個班級",
       "count": "已完成 {done}/{total}",
       "done": "已完成",
       "todo": "尚未完成",
@@ -722,6 +732,7 @@
       "h": "מעגל ההוראה שלך",
       "lead": "נסו כל שלב פעם אחת עם {class}. כל שלב מסומן מעצמו כשמסיימים.",
       "leadNoClass": "צרו את הכיתה הראשונה שלכם, ואז נסו כל שלב פעם אחת. כל שלב מסומן מעצמו כשמסיימים.",
+      "makeClass": "צרו את הכיתה הראשונה",
       "count": "{done} מתוך {total} הושלמו",
       "done": "הושלם",
       "todo": "עוד לא הושלם",
@@ -789,6 +800,7 @@
       "h": "دورة التدريس الخاصة بك",
       "lead": "جرّب كل خطوة مرة واحدة مع {class}. تُعلَّم كل خطوة تلقائيًا عند إنجازها.",
       "leadNoClass": "أنشئ فصلك الأول، ثم جرّب كل خطوة مرة واحدة. تُعلَّم كل خطوة تلقائيًا عند إنجازها.",
+      "makeClass": "أنشئ فصلك الأول",
       "count": "أُنجز {done} من {total}",
       "done": "تم",
       "todo": "لم يتم بعد",

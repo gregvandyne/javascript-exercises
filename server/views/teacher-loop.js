@@ -60,11 +60,15 @@ function landing(t, { live, cta, id }) {
 /** A tool: a button to the real page, or (no links) the tool's name. */
 function tool(t, k, links) {
   const href = links && links[k];
-  if (!href) return links ? '' : html`<li class="tl-tool">${check}<span>${plainName(t, k)}</span></li>`;
+  // No link: "Host a live game" for a teacher who can't host is left out; any other tool (no class yet, or a visitor) is
+  // its name in plain words.
+  if (!href) return links && k === 'live' ? '' : html`<li class="tl-tool">${check}<span>${plainName(t, k)}</span></li>`;
   const label = t(`teach.loop.tools.${k}`);
   const extra = k === 'gradebook' && links.csv ? html`<a class="btn btn-sm tl-csv" href="${links.csv}" download>⬇️ ${t('teach.loop.tools.csv')}</a>` : '';
   return html`<li class="tl-tool"><a class="btn btn-sm" href="${href}">${label}</a>${extra}</li>`;
 }
+/** No class yet: one button to make it, instead of class tools that would all go to the same place. */
+const makeClass = (t, links) => links && links.makeClass ? html`<p class="tl-make"><a class="btn btn-primary" href="${links.makeClass}">🍎 ${t('teach.loop.home.makeClass')}</a></p>` : '';
 const tick = (t, on) => html`<span class="tl-tick${on ? ' on' : ''}" aria-hidden="true">${on ? check : ''}</span><span class="sr-only">${on ? t('teach.loop.home.done') : t('teach.loop.home.todo')}</span>`;
 
 /** /teach/loop and /teachers: four panels in the app's look, then the screenshots. */
@@ -73,6 +77,7 @@ function pageLook(t, { links, state, live, shots, id, headingTag, cls }) {
   return html`<section class="tl tl-page${cls ? ` ${cls}` : ''}" id="${id}" aria-labelledby="${id}-h">
   <${H} id="${id}-h" class="tl-h">🔁 ${t('teach.loop.h')}</${H}>
   <p class="tl-lead">${t('teach.loop.lead')}</p>
+  ${makeClass(t, links)}
   <ol class="plain tl-steps">${LOOP.map((s, i) => { const on = !!(state && state.done[s.step]);
     return html`<li class="panel tl-step${on ? ' is-done' : ''}" id="${id}-${s.step}">
       <div class="tl-step-head"><span class="tl-e" aria-hidden="true">${s.emoji}</span><h3 class="tl-step-t"><span class="tl-n" aria-hidden="true">${i + 1}</span> ${t(`teach.loop.steps.${s.step}.name`)}</h3>${state ? tick(t, on) : ''}</div>
@@ -86,13 +91,16 @@ function pageLook(t, { links, state, live, shots, id, headingTag, cls }) {
  *  and Hide (it comes back from /teach/loop). */
 function compact(t, { links, state, live, id }) {
   const st = state || { done: {}, count: 0 };
+  // On a phone only the next step to do shows its words and tools (public/css/teach-loop.css), so My classes stays near the top.
+  const nextStep = (LOOP.find(s => !st.done[s.step]) || {}).step;
   const lead = links && links.class ? t('teach.loop.home.lead', { class: links.class.name }) : t('teach.loop.home.leadNoClass');
   return html`<section class="panel tl tl-compact" id="${id}" aria-labelledby="${id}-h">
   <div class="tl-top"><h2 id="${id}-h">🔁 ${t('teach.loop.home.h')}</h2><span class="chip-s tl-count">${t('teach.loop.home.count', { done: st.count, total: LOOP.length })}</span>
     <form class="tl-hide" data-api="/api/teach/loop/hide" data-reload data-toast="${t('teach.loop.home.hidden')}"><button class="btn btn-sm" type="submit">${t('teach.loop.home.hide')}</button></form></div>
   <p class="small muted tl-sub">${lead}</p>
-  <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step];
-    return html`<li class="tl-mstep${on ? ' is-done' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${s.emoji} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
+  ${makeClass(t, links)}
+  <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step], next = s.step === nextStep;
+    return html`<li class="tl-mstep${on ? ' is-done' : ''}${next ? ' is-next' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${s.emoji} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
       <span class="tl-mtools">${toolsOf(s, live).filter(k => links && links[k]).map(k => html`<a class="chip" href="${links[k]}">${t(`teach.loop.tools.${k}`)}</a>`)}</span></span></li>`; })}</ol>
   <p class="small tl-more"><a href="/teach/loop">${t('teach.loop.page.link')}</a></p>
 </section>`;

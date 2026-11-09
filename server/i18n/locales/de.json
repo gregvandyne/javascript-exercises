@@ -7030,11 +7030,11 @@
     "loop": {
       "kicker": "So passt Oomba in deine Woche",
       "h": "Planen → Spielen → Prüfen → Rückmelden",
-      "lead": "Ein Kreislauf für jede Stunde: planen, mit der Klasse spielen, sehen, wer dich braucht, und jedem Kind sagen, wie es weitergeht. Jeder Schritt ist ein Werkzeug, das es in Oomba schon gibt.",
+      "lead": "Ein Kreislauf für jede Lektion: planen, mit der Klasse spielen, sehen, wer dich braucht, und jedem Kind sagen, wie es weitergeht. Jeder Schritt ist ein Werkzeug, das es in Oomba schon gibt.",
       "steps": {
         "plan": {
           "name": "Planen",
-          "benefit": "Starte mit einer fertigen Stunde oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
+          "benefit": "Starte mit einer fertigen Lektion oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
         },
         "play": {
           "name": "Spielen",
@@ -7046,11 +7046,11 @@
         },
         "feedback": {
           "name": "Rückmelden",
-          "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Stunde sieht."
+          "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Lektion sieht."
         }
       },
       "tools": {
-        "builder": "Aus einer Stunde ein Spiel machen",
+        "builder": "Aus einer Lektion ein Spiel machen",
         "assign": "Einer Klasse aufgeben",
         "gradebook": "Notenübersicht",
         "gradebookCsv": "Notenübersicht mit CSV-Download",
@@ -7065,16 +7065,16 @@
       },
       "shots": {
         "gradebook": {
-          "alt": "Die Notenübersicht: Kinder untereinander, Stunden nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
+          "alt": "Die Notenübersicht: Kinder untereinander, Lektionen nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
           "caption": "Notenübersicht: die ganze Klasse auf einen Blick, als CSV-Datei herunterladbar."
         },
         "attention": {
-          "alt": "Der Fortschritt einer Stunde, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
+          "alt": "Der Fortschritt einer Lektion, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
           "caption": "Zuerst, wer Aufmerksamkeit braucht: Antworten zum Lesen, Verspätetes und halb Fertiges oben."
         },
         "feedback": {
           "alt": "Die schriftliche Antwort eines Kindes mit dem Rückmeldefeld der Lehrkraft und dem Speichern-Knopf",
-          "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Stunde."
+          "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Lektion."
         },
         "standards": {
           "alt": "Der Tab „Standards“ der Klasse: Informatik-Standards und wie weit jedes Kind ist",
@@ -7085,6 +7085,7 @@
         "h": "Dein Unterrichtskreislauf",
         "lead": "Probiere jeden Schritt einmal mit {class} aus. Jeder hakt sich von selbst ab.",
         "leadNoClass": "Lege deine erste Klasse an und probiere dann jeden Schritt einmal aus. Jeder hakt sich von selbst ab.",
+        "makeClass": "Erste Klasse anlegen",
         "count": "{done} von {total} erledigt",
         "done": "Erledigt",
         "todo": "Noch nicht erledigt",
@@ -7093,7 +7094,7 @@
       },
       "page": {
         "title": "So passt Oomba in deine Woche",
-        "lead": "Stunde planen, spielen, prüfen, wer dich braucht, und Rückmeldung geben: die Werkzeuge für jeden Schritt, bereit für deine Klasse.",
+        "lead": "Lektion planen, spielen, prüfen, wer dich braucht, und Rückmeldung geben: die Werkzeuge für jeden Schritt, bereit für deine Klasse.",
         "link": "So passt Oomba in deine Woche",
         "show": "Checkliste wieder in „{classroom}“ zeigen",
         "shown": "Die Checkliste ist wieder in „{classroom}“."

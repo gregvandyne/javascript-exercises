@@ -55,7 +55,7 @@ export function setHidden(u, hide) { save(u.id, { hidden: hide ? now() : null })
 /** Show the compact card on /teach? Until every step is done once, and not after the teacher hid it. */
 export const showCard = st => !!st && !st.all && !st.hidden;
 
-/** Links to the real tools for this teacher, for their first class (null when they have none yet). Every link opens a
+/** Links to the real tools for this teacher, for their first class (the class tools are null when they have none yet). Every link opens a
  *  page that checks the teacher's own access again; nothing here grants anything. */
 export function loopLinks(u) {
   const mine = S.classesOf(u.id, 'teacher');
@@ -69,19 +69,21 @@ export function loopLinks(u) {
   // "Turn a lesson into a game": the Builder from their latest lesson (its "New game for this lesson"), or a new lesson first.
   const own = school ? q.get('SELECT id FROM lessons WHERE owner_id=? AND school_id=? AND archived_at IS NULL ORDER BY updated_at DESC LIMIT 1', u.id, school) : null;
   const host = liveOn() && liveCanHost(u);
-  const make = '/teach#my-classes';
+  // No class yet: the class tools have nowhere to go, so they are left out (the view lists them as plain words) and one
+  // "Make your first class" button goes to the form on the Classroom home.
   return {
     class: c ? { id: c.id, name: c.name } : null,
+    makeClass: c ? null : '/teach#my-classes',
     library: lib,
     draftAi: `${withClass}${school ? '&' : '?'}open=ai`,
     builder: own ? `/teach/lessons/${own.id}#new-game` : `${withClass}${school ? '&' : '?'}open=new`,
-    assign: withClass,
+    assign: c ? withClass : null,
     live: host ? (c ? `/live?class=${encodeURIComponent(c.id)}` : '/live') : null,
-    gradebook: c ? `/class/${c.id}/progress` : make,
+    gradebook: c ? `/class/${c.id}/progress` : null,
     csv: c ? `/class/${c.id}/progress.csv` : null,
-    attention: c ? (latest ? `/class/${c.id}/progress/${latest.id}#needs-attention` : `/class/${c.id}/progress`) : make,
-    standards: c ? `/class/${c.id}/standards` : make,
-    review: c ? `/class/${c.id}/progress#to-review` : make,
-    written: c ? (latest ? `/class/${c.id}/progress/${latest.id}#answers` : `/class/${c.id}/progress`) : make,
+    attention: c ? (latest ? `/class/${c.id}/progress/${latest.id}#needs-attention` : `/class/${c.id}/progress`) : null,
+    standards: c ? `/class/${c.id}/standards` : null,
+    review: c ? `/class/${c.id}/progress#to-review` : null,
+    written: c ? (latest ? `/class/${c.id}/progress/${latest.id}#answers` : `/class/${c.id}/progress`) : null,
   };
 }

@@ -6898,6 +6898,7 @@
         "h": "Your teaching loop",
         "lead": "Try each step once with {class}. Each one ticks itself off as you go.",
         "leadNoClass": "Make your first class, then try each step once. Each one ticks itself off as you go.",
+        "makeClass": "Make your first class",
         "count": "{done} of {total} done",
         "done": "Done",
         "todo": "Not done yet",

@@ -82,6 +82,12 @@ test('a new teacher\'s Classroom: the card above My classes, nothing done, Hide 
   await expect(card.locator(`a.chip[href="/class/${classId}/standards"]`)).toHaveText('Standards tab');
   const [cardY, classesY] = await Promise.all([card.boundingBox(), t.locator('#my-classes').boundingBox()]).then(b => b.map(x => x.y));
   expect(cardY).toBeLessThan(classesY);
+  // On a phone only the next step (Plan) is open, so My classes starts on the first screen.
+  await expect(card.locator('.tl-mstep.is-next')).toHaveCount(1);
+  await expect(card.locator('.tl-mstep.is-next')).toContainText('Plan');
+  await expect(card.locator('.tl-mstep.is-next .tl-mtools a.chip').first()).toBeVisible();
+  await expect(card.locator(`a.chip[href="/class/${classId}/standards"]`)).toBeHidden();
+  expect(classesY).toBeLessThan(844 - 60);
 
   // Hide: the card goes and the small link takes its place; Show again from /teach/loop brings it back.
   await card.locator('.tl-hide button').click();

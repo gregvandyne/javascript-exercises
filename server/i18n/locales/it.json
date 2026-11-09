@@ -7085,6 +7085,7 @@
         "h": "Il tuo ciclo didattico",
         "lead": "Prova ogni passo una volta con {class}. Ognuno si spunta da solo man mano.",
         "leadNoClass": "Crea la tua prima classe, poi prova ogni passo una volta. Ognuno si spunta da solo man mano.",
+        "makeClass": "Crea la tua prima classe",
         "count": "{done} di {total} fatti",
         "done": "Fatto",
         "todo": "Non ancora fatto",

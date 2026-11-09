@@ -23,6 +23,7 @@
 .tl-mtools{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s2)}
 .tl-more{margin:var(--s4) 0 0}
 .tl-more a{display:inline-flex;align-items:center;min-height:44px}
+.tl-make{margin:0 0 var(--s4)}
 .tl-week{margin:calc(-1 * var(--s2)) 0 var(--s4)}
 .tl-week a{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
 
@@ -52,7 +53,8 @@
 .tl-shot figcaption{margin:var(--s2) var(--s1) var(--s1)}
 .tl-foot{flex-wrap:wrap;gap:var(--s2);margin-top:var(--s5)}
 .tl-foot>form{margin:0}
-/* On a phone a step already done shows its name only, so the card stays short; side by side, every step keeps its line. */
-@media (max-width:639px){.tl-mstep.is-done .tl-mtext>.small,.tl-mstep.is-done .tl-mtools{display:none}.tl-mstep.is-done{align-items:center}}
+/* On a phone only the next step to do shows its words and tools; the others (done or later) show their name, so the card
+   stays short and My classes stays near the top. Side by side, every step keeps its line. */
+@media (max-width:639px){.tl-mstep:not(.is-next) .tl-mtext>.small,.tl-mstep:not(.is-next) .tl-mtools{display:none}.tl-mstep:not(.is-next){align-items:center;padding-block:var(--s2)}.tl-mini{gap:var(--s2)}}
 /* In a grid the cards line up: no stacked-panel gap (app.css .panel+.panel) on the later ones. */
 .tl-steps>.tl-step,.tl-shots>.tl-shot{margin:0}

@@ -57,7 +57,10 @@ test('a new teacher: the card near the top of /teach, nothing ticked, links to t
   assert.match(c, /Your teaching loop/);
   assert.match(c, /0 of 4 done/);
   assert.match(c, /Try each step once with Loop 4C\./);
-  assert.equal((c.match(/class="tl-mstep"/g) || []).length, 4, 'four steps, none done');
+  assert.equal((c.match(/class="tl-mstep(?: is-next)?"/g) || []).length, 4, 'four steps, none done');
+  assert.equal((c.match(/class="tl-mstep is-next"/g) || []).length, 1, 'one next step (the only one open on a phone)');
+  assert.match(c, /class="tl-mstep is-next"><span class="tl-tick"[^]*?Plan/, 'Plan is next');
+  assert.doesNotMatch(c, /teach\.loop\.home\.makeClass|Make your first class/, 'they have a class');
   for (const href of [`/teach/lessons?school=${school.id}`, `/teach/lessons?school=${school.id}&amp;class=${cls.id}&amp;open=ai`, `/teach/lessons?school=${school.id}&amp;class=${cls.id}&amp;open=new`,
     `/class/${cls.id}/progress`, `/class/${cls.id}/standards`, `/class/${cls.id}/progress#to-review`]) assert.ok(c.includes(`href="${href}"`), href);
   assert.match(c, /data-api="\/api\/teach\/loop\/hide"/);
@@ -102,6 +105,8 @@ test('Check from the Standards tab, the CSV and one lesson\'s progress too (and 
   const r = await get(`/class/${cls.id}/progress/${cl.id}`, teacher);
   assert.equal(r.status, 200);
   assert.ok(TL.loopLinks(auth.getUser(teacher.id)).attention.endsWith(`/progress/${cl.id}#needs-attention`));
+  // The link's anchor and sort chip are there for any class size (this class has one student).
+  assert.match(r.text, /id="needs-attention" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">/);
 });
 
 test('Hide and Show again: per teacher, staff only; the card stays hidden until shown', async () => {
@@ -194,4 +199,29 @@ test('words: teach.loop in every language, the same placeholders, tool names the
     assert.equal(loop.tools.library, d.lessons.library.title, `${c}: the library's own name`);
     assert.equal(loop.tools.attention, d.progress.lesson.attention, `${c}: the button's own name`);
   }
+});
+
+test('no class yet: the class tools are plain words and one "Make your first class" button, not links that all go to /teach', async () => {
+  const solo = SC.createSchoolAccount(head, school.id, { rosterName: 'Nell Noclass', role: 'teacher' }).user;
+  const links = TL.loopLinks(auth.getUser(solo.id));
+  assert.equal(links.class, null);
+  assert.equal(links.makeClass, '/teach#my-classes');
+  for (const k of ['assign', 'gradebook', 'csv', 'attention', 'standards', 'review', 'written']) assert.equal(links[k], null, k);
+  for (const p of ['/teach', '/teach/loop']) {
+    const r = await get(p, solo); assert.equal(r.status, 200, p);
+    const c = p === '/teach' ? card(r.text) : r.text.slice(r.text.indexOf('id="teach-loop"'));
+    assert.equal((c.match(/href="\/teach#my-classes"/g) || []).length, 1, `${p}: one Make your first class button`);
+    assert.match(c, /class="btn btn-primary" href="\/teach#my-classes">🍎 Make your first class<\/a>/, p);
+    assert.doesNotMatch(c, /href="\/class\//, `${p}: no class links`);
+    if (p === '/teach/loop') for (const w of ['Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Standards tab', 'Answers to review', 'Written feedback students see']) assert.ok(c.includes(`<span>${w}</span></li>`), `${w}: plain words`);
+  }
+});
+
+test('deleting an account removes its teaching-loop row', async () => {
+  const { deleteAccount } = await import('../../server/services/account-delete.js');
+  const u = auth.createUser({ username: 'LoopLeaver', password: 'leaver-pass-123', accountType: 'grownup' });
+  setting(`teach.loop:${u.id}`, JSON.stringify({ check: Date.now() }));
+  assert.ok(setting(`teach.loop:${u.id}`));
+  assert.equal(deleteAccount(u.id, null, { by: 'admin', parentMade: false }).ok, true);
+  assert.equal(setting(`teach.loop:${u.id}`), null);
 });

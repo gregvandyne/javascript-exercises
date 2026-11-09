@@ -3350,3 +3350,11 @@ story visible: every tool a teacher needs already exists, so the loop names them
 - **Checks:** tests/unit/teach-loop.test.js (ticks, hide/show, staff-only and per-teacher authorization, landing and
   /teachers sections, images, words); tests/e2e/teach-loop.spec.js (360/390/1280, light/dark, he; the landing too when
   run with `LANDING_AT_ROOT=1`).
+- **After review (9 Nov 2026):** a teacher with no class yet gets one "🍎 Make your first class" button
+  (`teach.loop.home.makeClass`, to `/teach#my-classes`) and the class tools (Assign, Gradebook, Needs attention first,
+  Standards, Answers to review, Written feedback) as plain words, not six links that all went back to /teach. On a phone
+  only the next step to do (`.is-next`) shows its benefit and tools on the Classroom home's card; the others show their
+  name, so My classes stays near the top. One lesson's progress now always draws the "Needs attention first" chip and its
+  `#needs-attention` anchor (it was only drawn for more than 3 students, so the loop's link landed on an unsorted page).
+  Deleting an account removes the `teach.loop:<user id>` settings row (services/account-delete.js). German says
+  "Lektion", as the app's lesson strings do, not "Stunde".

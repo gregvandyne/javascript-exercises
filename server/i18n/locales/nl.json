@@ -7085,6 +7085,7 @@
         "h": "Jouw lesrondje",
         "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
         "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
+        "makeClass": "Maak je eerste klas",
         "count": "{done} van {total} gedaan",
         "done": "Gedaan",
         "todo": "Nog niet gedaan",

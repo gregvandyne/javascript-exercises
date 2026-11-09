@@ -7084,6 +7084,7 @@
         "h": "Votre boucle d'enseignement",
         "lead": "Essayez chaque étape une fois avec {class}. Chacune se coche toute seule au fil de l'eau.",
         "leadNoClass": "Créez votre première classe, puis essayez chaque étape une fois. Chacune se coche toute seule au fil de l'eau.",
+        "makeClass": "Créez votre première classe",
         "count": "{done} sur {total} faites",
         "done": "Fait",
         "todo": "Pas encore fait",
