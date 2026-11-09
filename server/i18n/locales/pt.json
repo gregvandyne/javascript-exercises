@@ -796,10 +796,10 @@
         "li10": "Para evitar que uma criança use o mês inteiro em um dia, há um limite de quantas mensagens extras uma criança pode usar por dia, e um limite para uso excepcionalmente caro.",
         "li11": "Uma criança de uma escola com um plano escolar pago cria na aula usando a cota da escola, nunca as extras da família.",
         "li12": "<b>Por enquanto, os planos família são só para famílias dos Estados Unidos.</b> Você precisa de um endereço de cobrança nos Estados Unidos e de um cartão de pagamento dos Estados Unidos (ou Apple Pay ou Google Pay).",
-        "s3": "7.3 Plano escolar",
-        "li13": "Cobrado <b>por aluno por ano</b>, com um <b>mínimo de 25 alunos</b>. O preço é mostrado aos admins da escola na aba Cobrança da escola.",
-        "li14": "A escola recebe a cada ano uma cota compartilhada de mensagens para o Construtor para seus alunos e professores. O tamanho aparece na aba Cobrança da escola. Os alunos sempre recebem pelo menos a quantidade grátis diária. Quando a cota acaba, os alunos usam a cota grátis até o começo do próximo ano.",
-        "li15": "As vagas pagas contam os alunos ativos. Se você adicionar alunos durante o ano, pode adicionar vagas: você paga na hora um valor proporcional pelo resto do ano. Você pode diminuir o número de vagas para o próximo ano; a mudança vale na renovação, nunca abaixo de 25.",
+        "s3": "7.3 Plano Professor e planos de escola",
+        "li13": "O <b>plano Professor</b> é cobrado <b>por professor ao ano</b>, sem cobrança por aluno. Ele vale para todas as turmas e todos os alunos desse professor. Começa com um <b>teste grátis de 14 dias</b> que não precisa de cartão. Se nenhum cartão for adicionado até o fim do teste, o plano simplesmente para. Cada professor, e-mail e escola pode ter um teste grátis.",
+        "li14": "Um professor com o plano e os alunos das turmas dele compartilham um número diário de mensagens para o Construtor, mostrado antes de começar e na página Minhas turmas do professor. Quando elas acabam, todos usam a cota grátis até o dia seguinte (UTC).",
+        "li15": "As <b>escolas</b> compram planos Professor pelo mesmo preço por professor e os dão aos seus professores na aba Cobrança da escola. Professores a mais são cobrados na hora pelo resto do ano; professores a menos passam a valer na renovação. Uma escola que comprou antes um plano cobrado por aluno mantém esse plano, pelo preço dele, quando ele renova.",
         "li16": "<b>Pagamento:</b> com cartão on-line, ou por fatura (uma ordem de compra serve). As faturas vencem <b>30 dias</b> depois de enviadas (net 30) e podem ser pagas com cartão, transferência bancária ou ACH, ou com cheque (escreva para nós para saber o endereço postal).",
         "li17": "Escolas isentas de impostos podem nos enviar o certificado de isenção.",
         "s4": "7.4 Pagamentos, Stripe e impostos",
@@ -886,7 +886,7 @@
       "intro": {
         "h": "Sobre esta política",
         "p1": "Esta página explica como cancelar um plano da Oomba Academy e quando você pode receber seu dinheiro de volta. Ela faz parte dos nossos <a href=\"/terms\">Termos de Serviço</a>.",
-        "p2": "Jogar e as mensagens grátis diárias para o Construtor são sempre grátis. Esta política trata apenas dos planos pagos <b>família</b> e <b>escolar</b>, que adicionam mais mensagens para o Construtor.",
+        "p2": "Jogar e as mensagens diárias grátis para o Construtor são sempre grátis. Esta política trata só dos planos pagos <b>Família</b>, <b>Professor</b> e <b>Escola</b>, que dão mais mensagens para o Construtor.",
         "p3": "Os Pacotes Faísca, recargas avulsas de mensagens para o Construtor para uma família com um plano, têm a sua própria seção abaixo."
       },
       "cancel": {
@@ -905,7 +905,8 @@
         "p4": "<b>O que um reembolso faz:</b> um reembolso encerra o plano imediatamente (primeiro cancelamos, depois reembolsamos), então as mensagens extras param na hora.",
         "p5": "<b>Como pedir:</b> escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> de qualquer endereço. Informe o nome da sua conta de adulto (ou da escola) e a data e o valor que aparecem no seu recibo da Stripe. Respondemos em até 3 dias úteis.",
         "p6": "<b>Quando você recebe o dinheiro:</b> o reembolso volta para o cartão ou a conta que você usou para pagar. Os bancos costumam levar de 5 a 10 dias úteis para mostrá-lo.",
-        "p7": "<b>Escolas que pagam por fatura:</b> os 14 dias começam na data em que o pagamento chega até nós. Pagou com cheque? Reembolsamos com cheque ou transferência bancária."
+        "p7": "<b>Escolas que pagam por fatura:</b> os 14 dias começam na data em que o pagamento chega até nós. Pagou com cheque? Reembolsamos com cheque ou transferência bancária.",
+        "p8": "<b>Testes grátis:</b> o teste grátis de um plano Professor não custa nada e termina sozinho se nenhum cartão for adicionado. Se você adicionar um cartão, o primeiro pagamento é cobrado no fim do teste, e os 14 dias começam a contar então."
       },
       "sparks": {
         "h": "Pacotes Faísca",
@@ -987,7 +988,7 @@
         "li2": "<b>O que guardamos quando uma escola pede uma fatura:</b> o número de vagas, o número da ordem de compra, o nome e o e-mail do contato de cobrança, o endereço de cobrança da escola, se a escola diz que é isenta de impostos e qualquer observação.",
         "li3": "<b>O que vai para a Stripe:</b> quando criamos as faturas da escola, o nome da escola, o e-mail do contato de cobrança, o endereço de cobrança e o número da ordem de compra são salvos na Stripe, que envia as faturas. O nome do contato, a observação e a resposta sobre isenção de impostos ficam só com a gente. Nada é enviado até criarmos as faturas. Uma escola que paga com cartão digita o nome e o endereço de cobrança na página da Stripe.",
         "li4": "<b>Por quanto tempo:</b> o nome e o e-mail do contato, o endereço, a observação e o número da ordem de compra no nosso banco de dados são apagados <b>2 anos</b> depois que o pedido é encerrado. A Stripe guarda o endereço da escola e o número da ordem de compra junto com as faturas (veja abaixo).",
-        "li5": "<b>As vagas</b> são contadas pelo número de alunos ativos. A cobrança não usa os nomes nem os trabalhos dos alunos.",
+        "li5": "As <b>vagas</b> são contadas em professores: os administradores da escola escolhem quais professores têm uma. A cobrança não usa os nomes nem os trabalhos dos alunos.",
         "li6": "<b>As famílias nunca veem as atividades da turma:</b> um adulto vinculado a um aluno vê apenas as mensagens extras da família usadas por esse aluno.",
         "li7": "<b>Pedido de um plano Escola:</b> um professor pode pedir aos admins da escola um plano Escola. Guardamos qual professor pediu, para qual escola e quando, nunca uma mensagem. Os admins da escola veem quem pediu até dispensarem o pedido ou até a escola ter um plano, e o apagamos <b>90 dias</b> depois disso. Os professores só veem se a escola tem um plano."
       },
@@ -2264,7 +2265,8 @@
         "classText": "O Construtor da sua turma está descansando por hoje. Pergunte ao seu professor quando você pode construir de novo.",
         "resting": "O Construtor está descansando para todo mundo agora. Seu jogo está salvo.",
         "getSpark": "Pegar um Pacote Faísca",
-        "back": "Chegaram mais mensagens do Construtor. Boa construção!"
+        "back": "Chegaram mais mensagens do Construtor. Boa construção!",
+        "teacherText": "Você e suas turmas usaram as mensagens para o Construtor de hoje do seu plano Professor. Amanhã tem mais!"
       },
       "mic": {
         "start": "Falar em vez de digitar",
@@ -2844,7 +2846,61 @@
       "freeH": "Grátis para toda escola",
       "free": "Todos os jogos, turmas, aulas e cursos, cartões de acesso, progresso e jogos ao vivo em sala, e {free} mensagens grátis do Builder por dia para cada aluno, como para todos na Oomba Academy.",
       "addsH": "Um plano escolar acrescenta",
-      "adds": "Mais mensagens do Builder: cada aluno pago acrescenta {perSeat} por ano a uma reserva que a escola toda compartilha. Nada mais muda, e nunca se pede aos alunos que paguem."
+      "adds": "Mais mensagens do Builder: cada aluno pago acrescenta {perSeat} por ano a uma reserva que a escola toda compartilha. Nada mais muda, e nunca se pede aos alunos que paguem.",
+      "tp": {
+        "teachersN": "{count, plural, one {# professor} other {# professores}}",
+        "active": "{count, plural, one {Plano Professor para # professor.} other {Planos Professor para # professores.}}",
+        "trialing": "Teste grátis até {date}. Adicione um cartão em Gerenciar cobrança para manter as vagas. Sem cartão, o teste simplesmente termina.",
+        "waits": "As novas vagas podem ser dadas assim que o pagamento delas for concluído.",
+        "grant": "Um plano grátis da Oomba Academy até {date}.",
+        "price": "{price} por professor ao ano, sem cobrança por aluno. Cada professor com uma vaga recebe o plano Professor: alunos ilimitados e {daily} mensagens para o Construtor por dia para as turmas dele.",
+        "seatsLabel": "Número de professores",
+        "seatsHint": "Vocês têm {teachers} agora.",
+        "total": "{seats} professores × {price} = {total} por ano (mais impostos, se houver)",
+        "trial": "Começar com o teste grátis de {days} dias (sem cartão)",
+        "renewal": "Seu plano renova em {date} para {seats}. Vocês têm {teachers} agora.",
+        "renewalButton": "Definir os professores do próximo ano",
+        "adds": "Cada professor com uma vaga recebe alunos ilimitados e {daily} mensagens para o Construtor por dia para as turmas dele. Os alunos nunca precisam pagar.",
+        "legacyH": "Plano antigo.",
+        "legacy": "O plano da sua escola é cobrado por aluno. Ele mantém esse preço ao renovar. Escreva para nós se quiser mudar para vagas de professores.",
+        "pay": {
+          "heading": "Planos Professor para seus professores",
+          "button": "Continuar"
+        },
+        "change": {
+          "heading": "Mudar o número de professores",
+          "text": "Professores a mais são cobrados agora, pelo resto deste ano. Professores a menos passam a valer na renovação.",
+          "button": "Mudar professores"
+        },
+        "seats": {
+          "h": "Quem tem uma vaga",
+          "text": "{used} de {seats} vagas dadas. Um professor com uma vaga recebe o plano Professor para todas as suas turmas.",
+          "own": "(tem o próprio plano Professor)",
+          "waiting": "(esperando uma vaga livre)",
+          "give": "Dar uma vaga",
+          "take": "Retirar",
+          "full": "Todas as vagas foram dadas. Adicione vagas acima para dar mais."
+        },
+        "seat": {
+          "given": "Vaga dada.",
+          "taken": "Vaga retirada."
+        },
+        "seatsDone": {
+          "raised": "Pronto: {count, plural, one {# professor} other {# professores}}.",
+          "pending": "O pagamento com cartão não foi aprovado, então o número de professores continua o mesmo. Atualize o cartão em Gerenciar cobrança e tente de novo.",
+          "scheduled": "No próximo ano: {count, plural, one {# professor} other {# professores}}.",
+          "cleared": "O próximo ano continua com {count, plural, one {# professor} other {# professores}}."
+        },
+        "errors": {
+          "notStaff": "Só professores e administradores desta escola podem ter uma vaga.",
+          "noSeats": "Sua escola ainda não tem vagas para professores.",
+          "full": "Todas as vagas foram dadas. Adicione vagas primeiro.",
+          "noSeat": "Esse professor não tem vaga.",
+          "minSeats": "Digite um número inteiro de 1 a {max}.",
+          "entitled": "Sua escola já tem um plano. Mude o número de professores em vez disso.",
+          "trialUsed": "Sua escola já teve o teste grátis."
+        }
+      }
     },
     "pick": {
       "title": "Suas escolas",
@@ -3716,7 +3772,7 @@
   },
   "plans": {
     "title": "Planos e preços",
-    "description": "Planos da Oomba Academy: Grátis, Básico, Família e Escola. Jogar todos os jogos é sempre grátis.",
+    "description": "Planos da Oomba Academy: Grátis, Basic, Família, Professor e Escola. Jogar todos os jogos é sempre grátis.",
     "heading": "Planos",
     "intro": "Jogar todos os jogos é grátis, e criar com as mensagens grátis diárias para o Construtor também. Um plano adiciona mensagens extras para o Construtor todo mês.",
     "interval": {
@@ -3765,12 +3821,12 @@
     },
     "school": {
       "name": "Escola",
-      "tagline": "Para turmas e escolas inteiras",
-      "per": "por aluno por ano",
-      "min": "Para no mínimo {min} alunos",
-      "li1": "{perSeat, plural, one {# mensagem para o Construtor} other {# mensagens para o Construtor}} por ano para cada aluno com vaga paga, compartilhadas por toda a escola",
-      "li2": "As turmas criam com a cota da própria escola",
-      "li3": "Pague com cartão ou peça uma fatura",
+      "tagline": "Planos Professor para uma escola inteira",
+      "per": "por professor ao ano",
+      "min": "Fatura ou ordem de compra disponível",
+      "li1": "Um plano Professor para cada professor: alunos ilimitados e {daily} criações com IA por dia para as turmas dele",
+      "li2": "Os administradores da escola dão as vagas aos professores",
+      "li3": "Pague com cartão, ou peça uma fatura ou ordem de compra",
       "get": "Contratar um plano escolar",
       "manage": "Gerenciar plano escolar"
     },
@@ -3783,8 +3839,8 @@
     "staff": {
       "button": "Para famílias",
       "heading": "Básico e Família são para famílias",
-      "text": "Um pai, uma mãe ou um responsável compra esses planos com uma conta de adulto. Para as suas turmas, um plano escolar cobre todos os alunos.",
-      "toSchool": "Ver o plano escolar"
+      "text": "Quem compra é um responsável, com uma conta de adulto. Para as suas turmas, existe o plano Professor.",
+      "toSchool": "Ver o plano Professor"
     },
     "fine": {
       "h": "Bom saber",
@@ -3793,12 +3849,12 @@
     },
     "schools": {
       "title": "Planos escolares",
-      "description": "Planos escolares na Oomba Academy: uma cota compartilhada de mensagens para o Construtor para seus alunos e professores, paga com cartão ou por fatura.",
+      "description": "Oomba Academy para escolas: o plano Professor para cada um dos seus professores, um preço por professor ao ano, no cartão ou por fatura.",
       "heading": "Oomba Academy para escolas",
-      "intro": "Um plano escolar dá aos seus alunos e professores uma cota compartilhada de mensagens para o Construtor, para que as turmas nunca precisem esperar pelas mensagens grátis.",
+      "intro": "As escolas compram o plano Professor para os seus professores: um preço por professor ao ano, com alunos ilimitados e sem cobrança por aluno.",
       "what": {
         "h": "O que a escola recebe",
-        "p1": "Os admins da escola veem o plano, os alunos com vaga paga e a cota na aba Cobrança da escola. As famílias nunca veem nada da turma."
+        "p1": "Os administradores da escola veem o plano e dão as vagas aos professores na aba Cobrança da escola. As famílias nunca veem nada da turma."
       },
       "how": {
         "h": "Como configurar uma escola",
@@ -3815,9 +3871,9 @@
       },
       "calc": {
         "h": "Quanto custaria?",
-        "label": "Número de alunos",
+        "label": "Número de professores",
         "button": "Calcular",
-        "result": "{seats, plural, one {# aluno} other {# alunos}} × {price} = {total} por ano",
+        "result": "{seats, plural, one {# professor} other {# professores}} × {price} = {total} por ano",
         "min": "Um plano escolar é para pelo menos {min} alunos, então uma escola menor paga por {min}.",
         "tax": "Os preços são em dólares americanos e não incluem impostos sobre vendas.",
         "print": "Enviar para a administração",
@@ -3830,15 +3886,117 @@
         "printButton": "Imprimir ou salvar em PDF",
         "back": "Voltar para os planos escolares",
         "cost": "Quanto custa",
-        "perStudent": "Preço por aluno, por ano",
+        "perStudent": "Preço por professor, por ano",
         "minimum": "Menor plano",
         "minimumN": "{min, plural, one {# aluno} other {# alunos}}",
-        "students": "Alunos",
+        "students": "Professores",
         "total": "Total por ano",
         "estimate": "Esta é uma estimativa de {date}, não uma fatura. Os preços são em dólares americanos e não incluem impostos sobre vendas.",
         "setup": "Como configurar",
         "li1": "Configure a escola (grátis): preencha o formulário curto em {url}.",
         "contact": "Dúvidas? Escreva para {email}."
+      }
+    },
+    "teacher": {
+      "name": "Professor",
+      "tagline": "Para um professor e todas as suas turmas",
+      "per": "por professor ao ano",
+      "trial": "Teste grátis de {days} dias, sem cartão",
+      "li1": "Alunos ilimitados, sem cobrança por aluno",
+      "li2": "{daily} criações com IA por dia para a turma",
+      "li3": "Vale para todas as suas turmas",
+      "li4": "Cancele quando quiser",
+      "start": "Começar o teste grátis",
+      "manage": "Meu plano Professor"
+    },
+    "trial": {
+      "title": "Plano Professor",
+      "heading": "Teste o plano Professor grátis por {days} dias",
+      "lead": "Tudo o que as suas turmas precisam: alunos ilimitados e {daily} criações com IA por dia para a turma. Não precisa de cartão para começar.",
+      "price": "Depois do teste, {price} por ano por professor. Sem cobrança por aluno.",
+      "li1": "Alunos ilimitados em todas as suas turmas",
+      "li2": "{daily} mensagens para o Construtor por dia, compartilhadas por você e suas turmas",
+      "li3": "Não precisa de cartão. Se você não adicionar um, o plano simplesmente para no fim do teste: suas turmas e o trabalho delas continuam.",
+      "li4": "Um preço por professor, cancele quando quiser",
+      "email": "Seu e-mail de trabalho",
+      "emailHint": "A Stripe, nossa empresa de pagamentos, envia aqui o lembrete do fim do teste e os recibos.",
+      "cancelled": "Nada foi iniciado. Você pode começar o teste quando quiser.",
+      "notOpen": "O plano Professor ainda não está disponível. Volte em breve.",
+      "subscribe": "Assinar o plano Professor",
+      "already": "Você já tem o plano Professor.",
+      "welcome": "🎉 Seu plano Professor está ativo. Crie uma turma e adicione seus alunos: você e suas turmas compartilham {daily} mensagens para o Construtor por dia.",
+      "teachersN": "{count, plural, one {# professor} other {# professores}}",
+      "forTeachers": {
+        "h": "O plano Professor é para professores",
+        "p": "Ele é para professores e suas turmas, e precisa de uma conta de professor. As famílias têm planos próprios.",
+        "link": "Ver os planos para famílias"
+      },
+      "school": {
+        "h": "Um teste grátis para a sua escola",
+        "p": "Comece um teste grátis de {days} dias dos planos Professor para {school}: {seats}. Não precisa de cartão. Depois do teste, {price} por professor ao ano.",
+        "start": "Começar o teste grátis da escola",
+        "billing": "Ir para a aba Cobrança"
+      },
+      "used": {
+        "h": "Você já teve seu teste grátis",
+        "p": "Cada professor, e-mail e escola pode testar o plano uma vez. Você ainda pode assinar por {price} ao ano.",
+        "school": "Sua escola já teve o teste grátis. Você pode comprar vagas para professores na aba Cobrança da escola."
+      },
+      "start": {
+        "h": "Comece seu teste grátis de {days} dias",
+        "button": "Começar meu teste grátis",
+        "note": "Você confirma na página da Stripe. O teste não precisa de cartão."
+      },
+      "signup": {
+        "h": "Crie sua conta de professor",
+        "lead": "Sua conta, sua sala de aula e seu teste grátis de uma vez só. Já tem uma conta de professor? <a href=\"{login}\">Entre</a>.",
+        "name": "Seu nome, como seus alunos vão ver",
+        "nameHint": "Por exemplo: Profa. Ribeiro",
+        "school": "O nome da sua escola",
+        "username": "Escolha um nome de usuário",
+        "password": "Escolha uma senha",
+        "passwordHint": "Pelo menos {min} caracteres.",
+        "adult": "Sou professor ou trabalho em uma escola, e tenho 18 anos ou mais.",
+        "submit": "Criar minha conta e começar o teste",
+        "privacy": "Não guardamos seu e-mail de trabalho na sua conta: ele vai para a Stripe, para o seu plano. <a href=\"{privacy}\">Política de Privacidade</a>"
+      },
+      "errors": {
+        "signedIn": "Você já entrou.",
+        "name": "Digite seu nome (de 2 a 60 caracteres).",
+        "school": "Digite o nome da sua escola.",
+        "email": "Digite seu e-mail de trabalho.",
+        "password": "Use pelo menos {min} caracteres.",
+        "adult": "Confirme que você é professor ou trabalha em uma escola, e que tem 18 anos ou mais.",
+        "notTeacher": "O plano Professor precisa de uma conta de professor.",
+        "entitled": "Você já tem o plano Professor.",
+        "fixPayment": "Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, em Minhas turmas.",
+        "trialUsed": "Este teste grátis já foi usado.",
+        "noPrice": "O plano Professor não está à venda agora. Tente de novo mais tarde.",
+        "paying": "Já tem um pagamento a caminho. Espere um minuto.",
+        "minSeats": "Digite um número inteiro de professores de 1 a {max}.",
+        "noCustomer": "Ainda não há cobrança para gerenciar."
+      },
+      "thanks": {
+        "wait": "⏳ Ativando seu plano Professor…",
+        "slow": "Está demorando mais que o normal. Seu plano vai aparecer em Minhas turmas em um minuto.",
+        "back": "Ir para Minhas turmas"
+      },
+      "card": {
+        "heading": "Plano Professor",
+        "grant": "Um plano Professor grátis da Oomba Academy até {date}.",
+        "trial": "Teste grátis até {date}.",
+        "ends": "Termina em {date}.",
+        "renews": "Renova em {date}.",
+        "seat": "Uma vaga de {school}.",
+        "pool": "Restam {left} de {size} mensagens para o Construtor hoje, para você e suas turmas.",
+        "ending": "{count, plural, =0 {Seu teste grátis termina hoje.} one {Seu teste grátis termina em # dia.} other {Seu teste grátis termina em # dias.}} Adicione um cartão para manter o plano Professor. Sem cartão, ele simplesmente para, e suas turmas continuam.",
+        "addCard": "Adicionar um cartão",
+        "manage": "Gerenciar cobrança",
+        "pending": "Seu pagamento está a caminho. O plano começa assim que ele chegar.",
+        "fix": "Seu plano Professor está esperando um pagamento. Atualize seu cartão em Gerenciar cobrança.",
+        "tryText": "Alunos ilimitados e {daily} criações com IA por dia para suas turmas. Grátis por {days} dias, sem cartão.",
+        "getText": "Alunos ilimitados e {daily} criações com IA por dia para suas turmas.",
+        "try": "Teste grátis por {days} dias"
       }
     }
   },
@@ -3972,7 +4130,7 @@
       "h": "Cadastre a sua escola (grátis)",
       "p1": "Jogar é grátis para todos, e os alunos podem experimentar qualquer jogo na hora, sem cadastro.",
       "p2": "Para turmas, aulas e contas da escola, escreva para {email} com o nome da sua escola e quem vai cuidar dela. Nós cadastramos a sua escola e a conta do admin da escola, que adiciona os professores e os alunos. Cadastrar uma escola é grátis.",
-      "plans": "Quer mais mensagens para o Construtor nas suas turmas? Um plano escolar adiciona uma cota compartilhada para os seus alunos e professores.",
+      "plans": "Quer mais para suas turmas? Teste o plano Professor grátis por {days} dias, sem cartão: alunos ilimitados e {daily} criações com IA por dia para a turma.",
       "email": "Escreva para cadastrar a sua escola",
       "subject": "Cadastrar minha escola na Oomba Academy",
       "plansLink": "Planos escolares"
@@ -6515,7 +6673,10 @@
     },
     "notice": {
       "approved": "Boa notícia! “{title}” passou na conferência da equipe Oomba, então mais pessoas já podem jogar.",
-      "sentBack": "“{title}” precisa de algumas mudanças antes que todo mundo possa jogar."
+      "sentBack": "“{title}” precisa de algumas mudanças antes que todo mundo possa jogar.",
+      "trialEnding": "O teste grátis do seu plano Professor termina em {days, plural, =0 {menos de um dia} one {# dia} other {# dias}}. Para manter o plano, adicione um cartão aqui: {href} Sem cartão, o plano simplesmente para e suas turmas continuam.",
+      "trialEnded": "O teste grátis do seu plano Professor terminou. Suas turmas, seus alunos e os jogos deles continuam aqui. Você pode assinar o plano de novo aqui: {href}",
+      "trialConverted": "Obrigado! Seu plano Professor está ativo por um ano."
     },
     "link": {
       "new": "{count, plural, one {# mensagem nova da equipe Oomba} other {# mensagens novas da equipe Oomba}}",

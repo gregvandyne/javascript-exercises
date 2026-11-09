@@ -707,6 +707,25 @@ export const MIGRATIONS = [
       roster_name TEXT NOT NULL DEFAULT '', invited_by TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (school_id, user_id));
     CREATE INDEX IF NOT EXISTS staff_invites_user ON staff_invites(user_id);
     ALTER TABLE school_requests ADD COLUMN contact_name TEXT NOT NULL DEFAULT '';`],
+  // The Teacher plan (services/teacher-plan.js; docs/decisions.md "Teacher plan"). billing_subscriptions.trial_end: a
+  // free trial's end (ms). trial_notice_at: when the teacher was told their trial is ending (customer.subscription.
+  // trial_will_end), so the notice goes once. teacher_trials: one row per free trial ever started, by a teacher (owner
+  // 'teacher') or a school (owner 'school'): a teacher, an email (an HMAC of it, never the address) and a school each
+  // get one trial ever, per Stripe mode. teacher_seats: which staff a school with teacher seats gave a seat to.
+  // billing_requests.unit: what an invoice request counts ('teacher' seats; 'student' for requests made before).
+  ['0060_teacher_plan', `
+    ALTER TABLE billing_subscriptions ADD COLUMN trial_end INTEGER;
+    ALTER TABLE billing_subscriptions ADD COLUMN trial_notice_at INTEGER;
+    CREATE TABLE IF NOT EXISTS teacher_trials (id TEXT PRIMARY KEY, owner_kind TEXT NOT NULL, owner_id TEXT NOT NULL,
+      user_id TEXT, school_id TEXT, email_hash TEXT, stripe_subscription_id TEXT UNIQUE, livemode INTEGER NOT NULL,
+      created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS teacher_trials_user ON teacher_trials(user_id, livemode);
+    CREATE INDEX IF NOT EXISTS teacher_trials_email ON teacher_trials(email_hash, livemode);
+    CREATE INDEX IF NOT EXISTS teacher_trials_school ON teacher_trials(school_id, livemode);
+    CREATE TABLE IF NOT EXISTS teacher_seats (school_id TEXT NOT NULL, user_id TEXT NOT NULL, assigned_by TEXT NOT NULL,
+      assigned_at INTEGER NOT NULL, PRIMARY KEY (school_id, user_id));
+    CREATE INDEX IF NOT EXISTS teacher_seats_user ON teacher_seats(user_id);
+    ALTER TABLE billing_requests ADD COLUMN unit TEXT NOT NULL DEFAULT 'student';`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

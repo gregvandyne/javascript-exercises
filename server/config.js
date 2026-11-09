@@ -380,6 +380,12 @@ export const config = {
   schoolMinSeats: Math.max(1, Math.floor(num(process.env.SCHOOL_MIN_SEATS, 25))),
   schoolDailyCapDefault: Math.max(1, Math.floor(num(process.env.SCHOOL_DAILY_CAP_DEFAULT, 30))),
   schoolSeatAiUsd: posNum(process.env.SCHOOL_SEAT_AI_USD, 10),
+  // The Teacher plan (server/services/teacher-plan.js; docs/decisions.md "Teacher plan"): Builder messages a UTC day
+  // one teacher's classes share (the teacher and every student of their classes), the free trial's days, and the AI
+  // cost (US dollars) one teacher with a plan adds to the paid AI pool's ceiling a month.
+  teacherDailyMessages: Math.max(0, Math.floor(num(process.env.TEACHER_DAILY_MESSAGES, 300))),
+  teacherTrialDays: Math.min(730, Math.max(1, Math.floor(num(process.env.TEACHER_TRIAL_DAYS, 14)))),
+  teacherMonthlyAiUsd: posNum(process.env.TEACHER_MONTHLY_AI_USD, 10),
   aiPaidMonthlyBudgetUsd: process.env.AI_PAID_MONTHLY_BUDGET_USD ? posNum(process.env.AI_PAID_MONTHLY_BUDGET_USD, null) : null,
   aiHardMonthlyUsd: process.env.AI_HARD_MONTHLY_USD ? posNum(process.env.AI_HARD_MONTHLY_USD, null) : null,
 };

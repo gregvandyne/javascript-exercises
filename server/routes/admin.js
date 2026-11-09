@@ -17,6 +17,7 @@ import { COMMUNITY_CSS } from './social.js';
 import { tEn } from '../i18n/index.js';
 import { schoolsOf, getSchool, isStaff } from '../services/schools.js';
 import * as schoolBilling from '../services/school-billing.js';
+import * as teacherPlan from '../services/teacher-plan.js';
 import * as family from '../services/family.js';
 import * as schoolRequests from '../services/school-requests.js';
 import * as funnel from '../services/funnel.js';
@@ -750,8 +751,36 @@ function ownerCell(r) {
     const o = q.get('SELECT u.username FROM families f JOIN users u ON u.id=f.owner_id WHERE f.id=?', r.owner_id);
     return o ? html`Family of <a href="/admin?tab=users&amp;username=${encodeURIComponent(o.username)}">@${o.username}</a>` : html`Family ${r.owner_id} (gone)`;
   }
+  if (r.owner_kind === 'teacher') {
+    const o = q.get('SELECT username FROM users WHERE id=?', r.owner_id);
+    return o ? html`Teacher <a href="/admin?tab=users&amp;username=${encodeURIComponent(o.username)}">@${o.username}</a>` : html`Teacher ${r.owner_id} (gone)`;
+  }
   const sc = getSchool(r.owner_id);
   return sc ? html`School <a href="/school/${sc.slug}">${sc.name}</a>` : html`${r.owner_kind} ${r.owner_id}`;
+}
+/** The Teacher plan on /admin/billing (services/teacher-plan.js): teachers' own plans and schools' teacher seats, their
+ *  trials (trialing / converted / ended, trial end dates) and the legacy per-student school plans still running. */
+function teacherSection(lm) {
+  const rows = q.all("SELECT * FROM billing_subscriptions WHERE livemode=? AND plan='teacher' ORDER BY COALESCE(trial_end, current_period_end) DESC LIMIT 300", lm);
+  const legacy = q.all("SELECT * FROM billing_subscriptions WHERE livemode=? AND plan='school' AND status NOT IN ('canceled','incomplete_expired') ORDER BY current_period_end", lm);
+  const st = teacherPlan.trialStats();
+  const count = s => rows.filter(r => r.status === s).length;
+  const rate = st.converted + st.ended ? Math.round((st.converted / (st.converted + st.ended)) * 100) : null;
+  return html`<section class="panel" id="teachers"><h2>Teacher plans</h2>
+    <div class="kpis" style="margin-bottom:var(--s3)">
+      ${tile('🍎 Trialing', int(count('trialing')))}${tile('✅ Active', int(count('active') + count('past_due')))}${tile('🚫 Canceled', int(count('canceled')))}
+      ${tile('🧪 Trials started', int(st.total), rate === null ? '' : `${rate}% of ended trials converted`)}${tile('🔁 Converted', int(st.converted))}${tile('⌛ Ended without a card', int(st.ended))}
+    </div>
+    ${rows.length ? html`<div class="tblwrap"><table class="tbl small atable wide"><thead><tr><th>Owner</th><th>Seats</th><th>Status</th><th>Trial ends</th><th>Period end</th><th>Stripe</th></tr></thead><tbody>
+      ${rows.map(r => html`<tr><td>${ownerCell(r)}</td><td data-label="Seats">${r.owner_kind === 'school' ? `${r.quantity} teacher seat${r.quantity === 1 ? '' : 's'}` : 'own plan'}</td>
+        <td data-label="Status">${r.status}${billing.entitledRow(r) ? ' ✅' : ''}${r.cancel_at_period_end ? ' · ends at period end' : ''}${r.trial_notice_at ? ' · told the trial ends' : ''}</td>
+        <td data-label="Trial ends">${day(r.trial_end)}</td><td data-label="Period end">${day(r.current_period_end)}</td>
+        <td data-label="Stripe" class="full"><a href="${dash(`subscriptions/${r.stripe_subscription_id}`)}" rel="noopener noreferrer" target="_blank"><code>${r.stripe_subscription_id}</code></a></td></tr>`)}
+    </tbody></table></div>` : html`<p class="muted">No Teacher plans yet.</p>`}
+    <h3>Legacy per-student school plans</h3>
+    ${legacy.length ? html`<ul>${legacy.map(r => html`<li>${ownerCell(r)} · ${r.quantity} students · ${r.status} · renews ${day(r.current_period_end)} <span class="chip-s warn">legacy plan</span></li>`)}</ul>` : html`<p class="muted">None.</p>`}
+    ${foldNote('About the Teacher plan', html`$119 a year per teacher (lookup key oomba_teacher_yearly), ${config.teacherTrialDays}-day free trial with no card (a trial that ends without a card is cancelled by Stripe; nothing is deleted). One trial per teacher, email and school. Each teacher with the plan shares ${config.teacherDailyMessages} Builder messages a day with their classes. Legacy per-student school plans keep their price at renewal; nothing moves them automatically.`)}
+  </section>`;
 }
 /** Spark Packs on /admin/billing (services/sparks.js): this month's sales, messages left, the latest packs with Revoke,
  *  and the grant form (a grown-up's username, or a linked child's, names the family). Refunds are made in Stripe: the
@@ -809,6 +838,7 @@ router.get('/admin/billing', async (req, res) => {
   const open = q.get('SELECT COUNT(*) n FROM billing_checkouts WHERE livemode=?', lm).n;
   const tax = stripe.lastTaxReadiness();
   const families = billing.entitledOwnerCount('family');
+  const teachers = billing.entitledOwnerCount('teacher');
   const schools = billing.entitledOwnerCount('school');
   const requests = schoolBilling.openRequests();
   const unpaid = q.all("SELECT * FROM billing_subscriptions WHERE livemode=? AND owner_kind='school' AND collection_method='send_invoice' AND open_invoices IS NOT NULL AND open_invoices != '[]' ORDER BY updated_at DESC", lm)
@@ -822,15 +852,16 @@ router.get('/admin/billing', async (req, res) => {
   <div class="kpis" style="margin-bottom:var(--s4)">
     ${tile('👪 Families with a plan', int(families), mode === 'test' ? 'test mode: billing testers only' : '')}
     ${tile('🏫 Schools with a plan', int(schools), requests.length ? html`<a href="#requests">${int(requests.length)} invoice request${requests.length === 1 ? '' : 's'}</a>` : '')}
+    ${tile('🍎 Teachers with their own plan', int(teachers), html`<a href="#teachers">Teacher plans</a>`)}
     ${tile('🛒 Open checkouts', int(open))}
     ${tile('⚠️ Flagged', int(q.get('SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND flag IS NOT NULL', lm).n), html`<a href="/admin/billing?flag=any">Show</a>`)}
     ${tile('📨 Event problems', int(problems.length), 'unlinked, other mode or version, failed')}
   </div>
-  ${jumpNav([['ready', 'Go-live checks', ready.total - ready.ready, 'need'], ['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['sparks', 'Spark Packs', sparks.recentPacks(50).length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
+  ${jumpNav([['ready', 'Go-live checks', ready.total - ready.ready, 'need'], ['requests', 'Invoice requests', requests.length, 'need'], ['unpaid', 'Unpaid', unpaid.length, 'need'], ['teachers', 'Teacher plans', q.get("SELECT COUNT(*) n FROM billing_subscriptions WHERE livemode=? AND plan='teacher'", lm).n, 'info'], ['b-subs', 'Subscriptions', subs.length, 'info'], ['sparks', 'Spark Packs', sparks.recentPacks(50).length, 'info'], ['b-problems', 'Event problems', problems.length, 'need'], ['b-webhooks', 'Webhooks', events.length, 'info']])}
   ${readyPanel(ready)}
   <section class="panel" id="requests"><h2>School invoice requests</h2>
     ${requests.length ? html`<div class="stack">${requests.map(r => html`<div class="panel" style="margin:0">
-      <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} students · asked ${when(r.created_at)}</p>
+      <p style="margin-top:0"><b><a href="/school/${r.school_slug}?tab=billing">${r.school_name}</a></b> · ${int(r.seats)} ${r.unit === 'student' ? 'students (asked before teacher seats: type the number of teachers below)' : 'teachers'} · asked ${when(r.created_at)}</p>
       <div class="tblwrap"><table class="tbl small afacts"><tbody>
         <tr><th scope="row">PO number</th><td>${r.po || '–'}</td></tr>
         <tr><th scope="row">Billing contact</th><td>${r.contact_name || '–'} · <span dir="ltr">${r.contact_email || '–'}</span></td></tr>
@@ -839,12 +870,12 @@ router.get('/admin/billing', async (req, res) => {
         ${r.note ? html`<tr><th scope="row">Note</th><td>${r.note}</td></tr>` : ''}
       </tbody></table></div>
       <form class="row binv" data-api="/api/admin/billing/requests/${r.id}/invoice-subscription" data-reload data-toast="Invoice subscription created. Stripe sends the invoice to the contact." data-confirm="Create a yearly invoice subscription (net 30) for ${r.school_name}?" style="margin-top:12px">
-        <span class="binv-seats"><label for="seats-${r.id}">Students</label><input class="input" id="seats-${r.id}" name="seats" type="number" min="${config.schoolMinSeats}" step="1" value="${r.seats}" style="max-width:8em"></span>
+        <span class="binv-seats"><label for="seats-${r.id}">Teacher seats</label><input class="input" id="seats-${r.id}" name="seats" type="number" min="1" step="1" value="${r.unit === 'student' ? '' : r.seats}" style="max-width:8em"></span>
         <label class="checkline"><input type="checkbox" name="exempt" value="1"> <span>Exemption certificate received: mark the customer tax-exempt</span></label>
         <button class="btn btn-primary" type="submit">Create invoice subscription</button></form>
       <form data-api="/api/admin/billing/requests/${r.id}/close" data-reload data-confirm="Close this request without an invoice?" style="margin-top:8px"><button class="btn btn-sm" type="submit">Close without invoice</button></form>
     </div>`)}</div>
-    ${foldNote('About invoice subscriptions', html`Create invoice subscription: the school's Stripe Customer gets the school's name, the contact's email (Stripe emails the invoice there), the address and the PO number; then a yearly send_invoice subscription, due in 30 days${config.stripeTax ? ', with Stripe Tax' : ''}. How a school may pay an invoice (card, ACH, bank transfer) is set in the Stripe Dashboard.`)}` : html`<p class="muted">No open requests.</p>`}
+    ${foldNote('About invoice subscriptions', html`Create invoice subscription: the school's Stripe Customer gets the school's name, the contact's email (Stripe emails the invoice there), the address and the PO number; then a yearly send_invoice subscription of teacher seats at the Teacher price (oomba_teacher_yearly × teachers), due in 30 days${config.stripeTax ? ', with Stripe Tax' : ''}. How a school may pay an invoice (card, ACH, bank transfer) is set in the Stripe Dashboard.`)}` : html`<p class="muted">No open requests.</p>`}
   </section>
   <section class="panel" id="unpaid"><h2>Unpaid school invoices</h2>
     ${unpaid.length ? html`<div class="tblwrap"><table class="tbl small atable"><thead><tr><th>School</th><th>Invoice</th><th>Amount</th><th>Due</th><th></th></tr></thead><tbody>
@@ -862,7 +893,7 @@ router.get('/admin/billing', async (req, res) => {
     ${subs.length ? html`<div class="tblwrap"><table class="tbl small atable wide" style="margin-top:12px"><thead><tr><th>Owner</th><th>Plan</th><th>Status</th><th>Period end</th><th>Last payment</th><th>Refund window</th><th>Flag</th><th>Stripe</th></tr></thead><tbody>
       ${subs.map(r => { const rw = billing.refundWindow(r); return html`<tr>
         <td>${ownerCell(r)}</td>
-        <td data-label="Plan">${r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}${r.plan === 'school' ? html`<div class="small muted">${r.collection_method === 'send_invoice' ? 'invoice' : 'card'} · pool ${r.pool_quantity || 0} paid${r.next_quantity ? ` · next year ${r.next_quantity}` : ''}</div>` : ''}</td>
+        <td data-label="Plan">${r.plan === 'school' ? 'school (legacy per-student)' : r.plan === 'teacher' && r.owner_kind === 'school' ? 'teacher seats' : r.plan}${r.interval ? ` · ${r.interval}ly` : ''}${r.quantity > 1 ? ` × ${r.quantity}` : ''}${r.trial_end ? html` <span class="chip-s">trial to ${day(r.trial_end)}</span>` : ''}${r.owner_kind === 'school' ? html`<div class="small muted">${r.collection_method === 'send_invoice' ? 'invoice' : 'card'} · pool ${r.pool_quantity || 0} paid${r.next_quantity ? ` · next year ${r.next_quantity}` : ''}</div>` : ''}</td>
         <td data-label="Status">${r.status}${billing.entitledRow(r) ? ' ✅' : ''}${r.cancel_at_period_end ? ' · ends at period end' : ''}${r.grace_until ? ` · grace to ${day(r.grace_until)}` : ''}${r.payment_pending ? ' · payment pending' : ''}${r.orphaned_at ? ' · not at Stripe' : ''}</td>
         <td data-label="Period end">${day(r.current_period_end)}</td>
         <td data-label="Last payment">${r.latest_paid_at ? html`${day(r.latest_paid_at)} · $${((r.latest_amount_paid || 0) / 100).toFixed(2)}${r.latest_billing_reason ? html` <span class="muted">(${r.latest_billing_reason.replace('subscription_', '')})</span>` : ''}` : '–'}</td>
@@ -872,6 +903,7 @@ router.get('/admin/billing', async (req, res) => {
     </tbody></table></div>` : html`<p class="muted">No subscriptions${status || flag ? ' match' : ' yet'}.</p>`}
     ${foldNote('Refund rules', html`Refunds (D10): a full refund on request within ${billing.REFUND_DAYS} days of a payment that started a plan or renewed a yearly plan; monthly renewals are not refunded. Cancel first, then refund, in the Stripe Dashboard: a full refund of the latest payment also ends the plan here.`)}
   </section>
+  ${teacherSection(lm)}
   ${sparkSection()}
   <section class="panel" id="b-problems"><h2>Event problems</h2>
     ${problems.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Event</th><th>Result</th><th>Customer</th><th>Subscription</th></tr></thead><tbody>
@@ -967,7 +999,7 @@ const billingTrouble = (res, e) => {
   if (e instanceof stripe.StripeCallError) return res.status(502).json({ error: `Stripe refused or couldn't be reached (${e.type}${e.code ? ` ${e.code}` : ''}).` });
   throw e;
 };
-const REQUEST_ERRORS = { noRequest: 'That request is not open any more.', noSchool: 'The school is gone.', entitled: 'This school already has a plan (or one waiting for a payment).', noPrice: 'No active Stripe Price has the lookup key oomba_school_seat_yearly.', minSeats: `At least ${config.schoolMinSeats} students.`, noInvoice: 'No open invoice of a school plan has that id.' };
+const REQUEST_ERRORS = { noRequest: 'That request is not open any more.', noSchool: 'The school is gone.', entitled: 'This school already has a plan (or one waiting for a payment).', noPrice: 'No active Stripe Price has the lookup key oomba_teacher_yearly.', minSeats: 'Type a number of teacher seats (at least 1).', seatsNeeded: 'This request counted students: type the number of teachers.', noInvoice: 'No open invoice of a school plan has that id.' };
 const requestFail = (res, r) => res.status(r.code === 'noRequest' || r.code === 'noInvoice' ? 404 : 409).json({ error: REQUEST_ERRORS[r.code] || r.code, ...(r.field ? { field: r.field } : {}) });
 router.post('/api/admin/billing/requests/:id/invoice-subscription', async (req, res) => {
   if (!stripe.billingOn()) return res.status(409).json({ error: 'Billing is off.' });

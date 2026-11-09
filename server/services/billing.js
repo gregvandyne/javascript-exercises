@@ -20,12 +20,13 @@ import * as funnel from './funnel.js';
 const DAY = 86400e3;
 export const WEBHOOK_PATH = '/api/billing/webhook';
 
-/** The 14 events the Stripe webhook endpoint subscribes to (docs/decisions.md "Paid plans" §6.4). Anything else is
- *  stored as 'ignored' and answered 200. */
+/** The 15 events the Stripe webhook endpoint subscribes to (docs/decisions.md "Paid plans" §6.4; trial_will_end since
+ *  the Teacher plan's free trial). Anything else is stored as 'ignored' and answered 200. */
 export const WEBHOOK_EVENTS = Object.freeze([
   'checkout.session.completed', 'checkout.session.async_payment_succeeded', 'checkout.session.async_payment_failed',
   'checkout.session.expired',
   'customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.deleted',
+  'customer.subscription.trial_will_end',
   'invoice.paid', 'invoice.payment_failed', 'invoice.finalized', 'invoice.overdue',
   'charge.refunded', 'charge.dispute.created', 'radar.early_fraud_warning.created',
 ]);
@@ -34,6 +35,7 @@ const HANDLED = new Set(WEBHOOK_EVENTS);
 const EVENT_AUDIT = {
   'checkout.session.completed': 'billing.checkout.done', 'checkout.session.async_payment_failed': 'billing.checkout.failed',
   'invoice.paid': 'billing.invoice.paid', 'invoice.payment_failed': 'billing.invoice.failed', 'invoice.overdue': 'billing.invoice.overdue',
+  'customer.subscription.trial_will_end': 'billing.trial.will_end',
   'charge.refunded': 'billing.refund', 'charge.dispute.created': 'billing.dispute', 'radar.early_fraud_warning.created': 'billing.fraud_warning',
 };
 
@@ -45,6 +47,8 @@ const ownerKinds = new Map();
 export function registerOwnerKind(kind, exists) { ownerKinds.set(kind, exists); }
 export const ownerKindExists = (kind, id) => { const f = ownerKinds.get(kind); return !!(f && id && f(String(id))); };
 registerOwnerKind('school', id => !!q.get('SELECT 1 FROM schools WHERE id=?', id));
+// A teacher's own Teacher plan (services/teacher-plan.js): the owner is the teacher's account.
+registerOwnerKind('teacher', id => !!q.get('SELECT 1 FROM users WHERE id=? AND is_guest=0', id));
 
 const idOf = v => (v && typeof v === 'object' ? v.id : v) || null;
 /** The owner named in metadata (owner_kind + owner_id, or family_id / school_id), checked against the database. */
@@ -69,7 +73,7 @@ export function linkCustomer(customerId, kind, id, livemode = S.currentLivemode(
 /** The plans an owner kind can hold. A family (a grown-up's account) holds one plan at a time, Basic (one child) or
  *  Family (up to FAMILY_MAX_CHILDREN); switching between them in the Customer Portal changes the price of the same
  *  subscription, and the sync below picks up the new plan. */
-export const PLANS_OF = Object.freeze({ family: Object.freeze(['basic', 'family']), school: Object.freeze(['school']) });
+export const PLANS_OF = Object.freeze({ family: Object.freeze(['basic', 'family']), school: Object.freeze(['school', 'teacher']), teacher: Object.freeze(['teacher']) });
 const plansOf = kind => PLANS_OF[kind] || [kind];
 const inPlans = kind => plansOf(kind).map(() => '?').join(',');
 /** Everything a family-type plan gives (docs/decisions.md "Paid plans" §17): extra messages a UTC month, how many linked
@@ -175,6 +179,9 @@ function insertEvent(event, result, extra = {}) {
 }
 /** Records a verified event once (idempotent on its id; inside the caller's transaction). -> true when it is new. */
 export const recordEvent = (event, result, extra = {}) => insertEvent(event, result, extra);
+/** Told after each synced subscription row is written ({ row, prev, event, owner, sub }), inside its transaction. */
+const syncHooks = [];
+export function registerSyncHook(fn) { if (!syncHooks.includes(fn)) syncHooks.push(fn); }
 /** Other billing kinds that read some events first (Spark Packs: one-time payments, services/sparks.js). Each handler
  *  gets a verified event of a handled type and answers null (not mine) or a result like processEvent's. */
 const eventHandlers = [];
@@ -205,7 +212,7 @@ export function planOfPrice(price, productPlans = null) {
   const byKey = S.planOfLookupKey(price.lookup_key);
   if (byKey) return byKey;
   const meta = price.product && typeof price.product === 'object' ? price.product.metadata?.oomba_plan : null;
-  if (meta === 'basic' || meta === 'family' || meta === 'school') return meta;
+  if (meta === 'basic' || meta === 'family' || meta === 'school' || meta === 'teacher') return meta;
   return productPlans?.[idOf(price.product)] || null;
 }
 /** { productId: plan } from our lookup-keyed prices (cached by stripe.js). Only read when a price has no lookup key. */
@@ -234,7 +241,8 @@ async function productPlansFor(price) {
  * keeps only what was left of last year's pool. -> { quantity, periodStart }
  */
 export function poolFor({ plan, sub, li, quantity, periodStart, prev }) {
-  if (plan !== 'school') return { quantity: prev?.pool_quantity ?? 0, periodStart: prev?.pool_period_start ?? null };
+  // A school's seats (students on the legacy plan, teachers on teacher seats) and a teacher's own plan (quantity 1).
+  if (plan !== 'school' && plan !== 'teacher') return { quantity: prev?.pool_quantity ?? 0, periodStart: prev?.pool_period_start ?? null };
   const samePeriod = prev && prev.pool_period_start != null && prev.pool_period_start === periodStart;
   const carried = samePeriod ? (prev.pool_quantity || 0) : Math.min(prev?.pool_quantity || 0, quantity);
   const invoiced = sub.collection_method === 'send_invoice' ? ['open', 'paid'].includes(li?.status) : li?.status === 'paid';
@@ -275,7 +283,7 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   const resolved = planOfPrice(price, productPlans);
   const plan = resolved || (prev?.plan && prev.plan !== 'unknown' ? prev.plan : 'unknown');
   if (!resolved) {
-    log('warn', 'billing: a subscription\'s price sells no known plan; set the lookup keys (oomba_basic_monthly, oomba_basic_yearly, oomba_family_monthly, oomba_family_yearly, oomba_school_seat_yearly) on the Prices, or oomba_plan metadata on the Product', { subscription: sub.id, price: price.id || null, product: idOf(price.product), kept: plan });
+    log('warn', 'billing: a subscription\'s price sells no known plan; set the lookup keys (oomba_basic_monthly, oomba_basic_yearly, oomba_family_monthly, oomba_family_yearly, oomba_school_seat_yearly, oomba_teacher_yearly) on the Prices, or oomba_plan metadata on the Product', { subscription: sub.id, price: price.id || null, product: idOf(price.product), kept: plan });
     if (!prev || prev.price_id !== (price.id || null) || prev.price_lookup_key !== lookupKey || (plan === 'unknown' && prev.flag !== 'unknown_price')) audit(null, 'billing.unknown_price', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, price: price.id || null, plan });
   }
   const li = sub.latest_invoice && typeof sub.latest_invoice === 'object' ? sub.latest_invoice : null;
@@ -316,6 +324,8 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
     risk_payment_intent: risk?.paymentIntent || prev?.risk_payment_intent || null,
     pool_quantity: pool.quantity, pool_period_start: pool.periodStart,
     latest_invoice_status: li?.status || (li ? null : prev?.latest_invoice_status ?? null),
+    // A free trial's end (the Teacher plan's 14 days), null without one.
+    trial_end: sub.trial_end ? sub.trial_end * 1000 : null,
     // What an invoice school still owes (the Billing tab and /admin/billing's "Mark paid by check").
     open_invoices: sub.collection_method === 'send_invoice' ? JSON.stringify(openInvoices.filter(i => i.status === 'open')
       .map(i => ({ id: i.id, amount_due: i.amount_due ?? 0, due_date: i.due_date ? i.due_date * 1000 : null, number: i.number || null, url: i.hosted_invoice_url || null }))) : null,
@@ -323,11 +333,11 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   q.run(`INSERT INTO billing_subscriptions(stripe_subscription_id, stripe_customer_id, owner_kind, owner_id, plan, price_id,
       price_lookup_key, interval, quantity, status, collection_method, current_period_start, current_period_end,
       cancel_at_period_end, grace_until, payment_pending, flag, livemode, latest_invoice_id, latest_paid_at, latest_billing_reason,
-      latest_amount_paid, risk_payment_intent, pool_quantity, pool_period_start, latest_invoice_status, open_invoices, created_at, updated_at)
+      latest_amount_paid, risk_payment_intent, pool_quantity, pool_period_start, latest_invoice_status, open_invoices, trial_end, created_at, updated_at)
     VALUES (@stripe_subscription_id, @stripe_customer_id, @owner_kind, @owner_id, @plan, @price_id, @price_lookup_key, @interval,
       @quantity, @status, @collection_method, @current_period_start, @current_period_end, @cancel_at_period_end, @grace_until,
       @payment_pending, @flag, @livemode, @latest_invoice_id, @latest_paid_at, @latest_billing_reason, @latest_amount_paid,
-      @risk_payment_intent, @pool_quantity, @pool_period_start, @latest_invoice_status, @open_invoices, @t, @t)
+      @risk_payment_intent, @pool_quantity, @pool_period_start, @latest_invoice_status, @open_invoices, @trial_end, @t, @t)
     ON CONFLICT(stripe_subscription_id) DO UPDATE SET stripe_customer_id=excluded.stripe_customer_id, owner_kind=excluded.owner_kind,
       owner_id=excluded.owner_id, plan=excluded.plan, price_id=excluded.price_id, price_lookup_key=excluded.price_lookup_key,
       interval=excluded.interval, quantity=excluded.quantity, status=excluded.status, collection_method=excluded.collection_method,
@@ -336,9 +346,9 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
       flag=excluded.flag, livemode=excluded.livemode, latest_invoice_id=excluded.latest_invoice_id, latest_paid_at=excluded.latest_paid_at,
       latest_billing_reason=excluded.latest_billing_reason, latest_amount_paid=excluded.latest_amount_paid,
       risk_payment_intent=excluded.risk_payment_intent, pool_quantity=excluded.pool_quantity, pool_period_start=excluded.pool_period_start,
-      latest_invoice_status=excluded.latest_invoice_status, open_invoices=excluded.open_invoices, orphaned_at=NULL, updated_at=excluded.updated_at`, { ...row, t });
+      latest_invoice_status=excluded.latest_invoice_status, open_invoices=excluded.open_invoices, trial_end=excluded.trial_end, orphaned_at=NULL, updated_at=excluded.updated_at`, { ...row, t });
   // A school whose pool grew (seats paid for, or a new year): audited with ids and numbers only.
-  if (plan === 'school' && pool.quantity !== (prev?.pool_quantity ?? 0)) audit(null, 'billing.school.pool', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, seats: pool.quantity, from: prev?.pool_quantity ?? 0 });
+  if (owner.owner_kind === 'school' && (plan === 'school' || plan === 'teacher') && pool.quantity !== (prev?.pool_quantity ?? 0)) audit(null, 'billing.school.pool', `${owner.owner_kind}:${owner.owner_id}`, { subscription: sub.id, seats: pool.quantity, from: prev?.pool_quantity ?? 0 });
   const target = `${owner.owner_kind}:${owner.owner_id}`;
   if (!prev || prev.status !== row.status) audit(null, `billing.subscription.${row.status}`, target, { subscription: sub.id, from: prev?.status || null, event: event?.id || null });
   // A switch in the Customer Portal (Basic <-> Family): the same subscription, a new price.
@@ -354,10 +364,15 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   // so a retried event can't count it twice.
   const firstPaid = !!saved.latest_paid_at && saved.latest_billing_reason === 'subscription_create' && saved.status !== 'trialing'
     && !(prev && prev.latest_paid_at && prev.latest_invoice_id === saved.latest_invoice_id);
-  if (firstPaid && entitledRow(saved, t)) {
+  // A free trial that turned into a paid plan (the card was added and the first invoice paid) counts the same way.
+  const converted = !!prev && prev.status === 'trialing' && saved.status === 'active' && !!saved.latest_paid_at && (saved.latest_amount_paid || 0) > 0;
+  if ((firstPaid || converted) && entitledRow(saved, t)) {
     if (owner.owner_kind === 'family' && PLANS_OF.family.includes(plan)) funnel.bump('parent.paid');
-    else if (owner.owner_kind === 'school' && plan === 'school') funnel.bump('teacher.plan');
+    else if ((owner.owner_kind === 'school' || owner.owner_kind === 'teacher') && (plan === 'school' || plan === 'teacher')) funnel.bump('teacher.plan');
   }
+  // Other billing kinds that act on a synced row (the Teacher plan's trial bookkeeping and notices): in this
+  // transaction, so a retried event can't act twice. A hook that throws never loses the sync.
+  for (const h of syncHooks) { try { h({ row: saved, prev, event, owner, sub }); } catch (e) { log('warn', 'billing: a sync hook failed', { subscription: sub.id, error: e.message }); } }
   return { result: 'ok', row: saved };
 }
 
@@ -447,6 +462,7 @@ async function resolveEvent(event) {
       return { subId: idOf(session.subscription), session };
     }
     case 'customer.subscription.created': case 'customer.subscription.updated': case 'customer.subscription.deleted':
+    case 'customer.subscription.trial_will_end':
       return { subId: o.id };
     case 'invoice.paid': case 'invoice.payment_failed': case 'invoice.finalized': case 'invoice.overdue': {
       // The payload has the endpoint's API version, which may not be ours (no invoice.parent before basil): read the

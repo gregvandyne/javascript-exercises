@@ -177,9 +177,9 @@ router.get('/teachers', (req, res) => {
     ${el(t, 'h2', 'teachers.start.h', {}, ' id="start-h"')}
     ${el(t, 'p', 'teachers.start.p1')}
     ${setupBlock(req, { sent, failed })}
-    ${plans ? el(t, 'p', 'teachers.start.plans') : ''}
+    ${plans ? el(t, 'p', 'teachers.start.plans', { days: config.teacherTrialDays, daily: req.fmt.int(config.teacherDailyMessages) }) : ''}
     <div class="row">
-      ${plans ? html`<a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
+      ${plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a> <a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
       ${list[0] ? html`<a class="btn" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}

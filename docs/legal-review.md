@@ -448,3 +448,21 @@ Owner decisions for parent-made accounts (no lawyer needed):
       date in tests/unit/legal.test.js and tests/e2e/legal.spec.js).
     - **Sign-off:** _owner: not yet_ · _lawyer: not yet_. Packs stay off sale until both are recorded here (the Spark
       Pack Prices are not created in live mode before then: docs/billing-go-live.md step 3).
+
+### Teacher plan and free trial (2026-11-09; needs the lawyer's sign-off with the rest before `TERMS_PUBLISHED`)
+
+The Teacher plan replaced the per-student School plan in the live text (docs/decisions.md "Teacher plan"). Changed:
+terms 7.3 (`info.terms.plans.s3`, `li13`–`li15`: $ per teacher per year, the 14-day free trial with no card that
+simply stops without one, one trial per teacher / email / school, the class's shared daily messages, schools buying
+teacher seats, grandfathered per-student plans keeping their price at renewal), the privacy policy's school billing
+(`info.privacy.schoolBilling.li5`: seats are teachers) and /refunds (`info.refunds.intro.p2`, new
+`info.refunds.refunds.p8`: a trial costs nothing; the 14-day refund window starts at the first payment after it).
+Questions for the lawyer:
+
+1. Free-trial disclosures: the trial needs no card, so nothing auto-renews into a charge unless the teacher adds one.
+   Is the Checkout page (Stripe's) plus the 7-day reminder email (a Stripe setting) and our own notice 3 days before
+   enough for state automatic-renewal laws when a card *is* added during the trial?
+2. The trial sign-up keeps an HMAC of the work email (never the address) to allow one trial per email. Fine as
+   described in the privacy policy, or does it need its own line?
+3. The self-serve teacher sign-up makes a school with the teacher as its admin (no "Set up my school" review): the
+   terms' section 3 (the school confirms its authority) now also binds a single teacher. Is that wording still right?

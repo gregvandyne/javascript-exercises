@@ -50,7 +50,8 @@ test('today\'s state (test key, nothing else set): the live-only checks are red,
   assert.equal(c.secret.ok, true); assert.equal(c.pmcSchool.ok, true, 'optional');
   assert.equal(c.i18n.ok, true, 'every paid-plan word is translated');
   assert.match(c.key.now, /test restricted key/);
-  assert.match(c.prices.now, /all 8 found \(with the test key\)/); assert.match(c.prices.fix, /live mode/);
+  assert.match(c.prices.now, /all 9 found \(with the test key\)/);
+  assert.equal(c.teacherPrice.ok, false, 'live only'); assert.match(c.teacherPrice.now, /found \(with the test key\)/); assert.match(c.teacherPrice.fix, /oomba_teacher_yearly/); assert.match(c.teacherPrice.fix, /reminder email 7 days before a free trial ends/); assert.match(c.prices.fix, /live mode/);
   assert.equal(c.webhook.now, 'none yet');
   assert.equal(r.ready, r.rows.filter(x => x.ok).length); assert.equal(r.total, r.rows.length); assert.equal(r.live, false);
 });

@@ -58,7 +58,7 @@ test('bump: known steps only, adds up per day; weekly compares the last 7 days w
   assert.equal(step('teacher', 'teacher.request').change, null, 'nothing the week before: no percentage');
   assert.equal(step('guardrail', 'kid.play').change, -20);
   assert.equal(step('guardrail', 'kid.play').rate, null, 'guardrail steps are not a funnel');
-  assert.equal(funnel.STEPS.length, 19);
+  assert.equal(funnel.STEPS.length, 20);
   funnel.bump('door.kid', 9, '2026-10-27'); funnel.bump('door.parent', 3, '2026-10-27');
   const doors = funnel.weekly(end).funnels.find(f => f.key === 'doors');
   assert.equal(doors.tally, true);

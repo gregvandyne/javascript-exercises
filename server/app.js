@@ -33,6 +33,7 @@ import { router as googleRoutes } from './routes/google.js';
 import { router as familyRoutes, grownupGuard } from './routes/family.js';
 import { router as schoolBillingRoutes } from './routes/school-billing.js';
 import { router as plansRoutes } from './routes/plans.js';
+import { router as teacherPlanRoutes } from './routes/teacher-plan.js';
 import { router as teacherRoutes } from './routes/teachers.js';
 import { router as parentRoutes } from './routes/parents.js';
 import { router as seoRoutes } from './routes/seo.js';
@@ -189,7 +190,7 @@ export function createApp() {
   app.use(grownupGuard);
 
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
-  for (const r of [authRoutes, familyRoutes, plansRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

@@ -3020,3 +3020,71 @@ Four simulated sessions (a new teacher, a school admin, a student, a live class)
   (a subscription is read with its Price's Product). The panel's admin-only test now also tries a grown-up, a guest, a
   school admin, a teacher and a student. `billing-checkout.test.js`'s Pro-weight check runs with `BUILDER_FULL_FOR_ALL`
   off, as the other regular-maker tests do (it failed since #257 made the flag default on).
+
+## Teacher plan: $119 a year per teacher, 14-day free trial (9 Nov 2026)
+
+The owner decided a new **Teacher plan**: **$119 per teacher per year, no per-student charge**, covering all of that
+teacher's classes and students, with a **14-day free trial that needs no card**. It **replaces the per-student School
+plan** (D6) for new purchases: schools buy N Teacher plans ("teacher seats") on one subscription. Stripe is set up in
+live mode: Product "Oomba Teacher plan" (`prod_Vb0YSjk70xhUar`), Price `price_1UZoXC3TnSduDqoY3sZfm1IK`, $119/year,
+tax behavior exclusive, lookup key **`oomba_teacher_yearly`** (`PRICE_LOOKUP_KEYS.teacherYearly`; the price list is
+read with `limit: 100` so every key fits in one page).
+
+- **Owners.** A teacher's own plan is owner `teacher` (the teacher's account id), quantity 1. A school's teacher seats
+  are owner `school`, plan `teacher`, quantity = teachers, bought by card Checkout or the existing invoice / purchase
+  order path (`createInvoiceSubscription`, send_invoice, now at the Teacher price × teachers). The school's admins give
+  the seats to teachers on the Billing tab (`teacher_seats`); seats given beyond the paid ones (fewer seats at a
+  renewal) count in the order they were given. A teacher is a non-grown-up account that is a teacher or school admin
+  of a live school (`TP.isTeacher`); only they can hold the plan.
+- **Free trial.** Checkout `mode=subscription` with `subscription_data.trial_period_days` (`TEACHER_TRIAL_DAYS`, 14),
+  `payment_method_collection: 'if_required'` and `subscription_data.trial_settings.end_behavior.missing_payment_method:
+  'cancel'`. **We chose `cancel`, not `pause`:** a paused subscription stays around as something to "fix" (it would block
+  a new Checkout as unsettled and look like an unpaid plan), while a canceled one is a clean end: the plan's extras stop,
+  nothing is deleted or locked, and the teacher can buy the plan later at /trial (with a card, since the trial is used).
+  Teachers in a trial get the full plan (`trialing` entitles, as before). Stripe sends its own trial reminder email
+  only if the owner turns it on (docs/billing-go-live.md 3.5a).
+- **One trial ever** per teacher, per email (an HMAC of the work email with the server secret, `teacher_trials.
+  email_hash`: the address itself is never stored by us; it is on the teacher's Stripe Customer, where the reminder and
+  receipts go) and per school (a school's seat trial), per Stripe mode. A colleague at the same school can still have
+  their own teacher trial: "per school" limits the school's seat trial, not each teacher. The trial is recorded when its
+  subscription is first synced as trialing (the sync hook in services/teacher-plan.js), and checked before Checkout.
+  Two Checkouts started at the same moment with the same email from two accounts could both trial (one open Checkout
+  per owner prevents it for one account); accepted.
+- **Webhooks.** `customer.subscription.trial_will_end` is the 15th handled event (add it to the live endpoint). It sets
+  `trial_notice_at` and sends one Team inbox message (services/team.js `notify`, kind `trialEnding`) with the link to
+  add a card; My classes shows the notice (also from 7 days before the end). trialing → active (a card added, the first
+  year paid) sends a thank-you and counts as a paid plan in the funnel (`teacher.plan`); trialing → canceled sends
+  "your trial ended, your classes are still here" with the link to /trial. School seat trials tell the school's admins.
+  New funnel step `teacher.trial` (trials started).
+- **AI for the class.** The teacher and every active student of their classes share `TEACHER_DAILY_MESSAGES` (300)
+  Builder messages a UTC day, charged to `teacher:<id>` and paid by the paid AI pool, so the site's caps still apply;
+  each teacher with the plan adds `TEACHER_MONTHLY_AI_USD` (10) to the paid pool's ceiling. builder/usage.js: a legacy
+  school pool first, then the Teacher plan, then the free messages. **A student in several paid teachers' classes**
+  builds from the first class they joined whose teacher has the plan and messages left, then the next: the Builder has
+  no notion of which class a build is for, so "the class in use" can't be known today. A student of a paid teacher
+  never uses the family's extras or Spark Packs (no family money in class); Spark Packs stay family-only. At the cap the
+  limit card says "ask your teacher" to a student and "you and your classes used today's messages" to the teacher
+  (builder/upsell.js `teacher`), never a family upsell; a teacher without a plan is pointed to /trial.
+  **Open:** 300 messages a day used every school day costs far more than $119 a year at today's cost per message; the
+  paid pool ceiling ($10 a teacher a month) stops it first. The owner may want a per-student daily cap (as schools have)
+  or a lower default; the setting is there.
+- **Legacy per-student plans (grandfathered).** A school already on `oomba_school_seat_yearly` keeps it, renewals
+  included, with its shared pool and per-student seats; nothing migrates it automatically, and no new school can buy
+  it (the price only stays active in Stripe for those renewals). Its Billing tab says "Legacy plan" and /admin/billing
+  lists it. Moving one to teacher seats is done by hand (cancel at period end, then teacher seats). Invoice requests
+  made before carry `unit = 'student'`: the owner types the number of teachers when creating the invoice subscription.
+- **`/trial`** (the marketing site's link; `/trial?seats=N` for a school): signed out → the teacher sign-up on the same
+  page (name as students see it, school name, work email, username, a staff-length password, "I'm a teacher, 18+"),
+  which makes an ordinary account, **their own school with them as its school admin** (so they can make a class at
+  once: a self-serve school, new — before, only the platform admin made schools) and starts Checkout with the trial; a
+  teacher with no plan → the work email and "Start my free trial" (or, trial used, "Get the Teacher plan" with the card
+  and the password again); a teacher in a trial or paid → My classes with a notice; a school admin with ?seats=N → the
+  school's seat trial; kids, school students and grown-ups → a page saying it's for teachers, with the families' plans.
+  `/trial/thanks` (Checkout's success URL) confirms the session itself (`syncCheckoutReturn`), so the trial starts even
+  when the webhook is slow. While the key is a test key, only billing testers may start a trial (D14): it is real AI
+  money. Off with paid-plan pages (`BILLING_PUBLIC` / preview cookie): /trial goes to /teachers.
+- **Copy.** /plans has a Teacher card ($119 per teacher a year, 14-day free trial, no card, unlimited students, 300 AI
+  builds a day for the class) and the School card is per teacher with invoice / PO; /plans/schools' calculator counts
+  teachers; the terms (7.3), the privacy policy (seats are teachers), /refunds (trials) and /teachers changed. New
+  strings are in all 13 languages. Some keys keep their old names with new meanings (`plans.schools.print.perStudent`
+  is now "Price per teacher"); the legal text changes need the lawyer's look with the rest of docs/legal-review.md.
