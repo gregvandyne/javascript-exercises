@@ -752,5 +752,26 @@
       "a1": "A game-based learning platform for ages 5 to 14. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in maths, computing and online safety.",
       "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a game around it."
     }
+  },
+  "standards": {
+    "cols": {
+      "practiced": "Practised"
+    },
+    "status": {
+      "practiced": "Practised"
+    },
+    "level": {
+      "practiced": "Practised"
+    },
+    "legend": {
+      "sources": "Covered by: the assigned lessons tagged with the standard (or with a step or a Learn game that practises it), live games that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
+      "practiced": "Practised: students who finished an activity that practises the standard. It means they did it, not mastery."
+    },
+    "csvCols": {
+      "practiced": "Practised (students)"
+    },
+    "lesson": {
+      "gameCodes": "{framework} standards this game practises"
+    }
   }
 }

@@ -780,6 +780,12 @@ export const MIGRATIONS = [
       feedback TEXT NOT NULL DEFAULT '', points REAL NOT NULL DEFAULT 0, max_points REAL NOT NULL DEFAULT 0, scored_by TEXT,
       scored_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id, user_id)) WITHOUT ROWID;
     CREATE INDEX IF NOT EXISTS rubric_scores_user ON rubric_scores(user_id);`],
+  // Standards beyond computer science (docs/decisions.md, 9 Nov 2026): a teacher's Common Core tags on their own lessons
+  // and steps (step_id '' = the whole lesson). framework 'ccss-math' | 'ccss-ela'; code checked against
+  // server/standards/ccss-*.json before it is stored. Deleted and copied with the lesson (services/lessons.js).
+  ['0064_lesson_standards', `CREATE TABLE IF NOT EXISTS lesson_standards (lesson_id TEXT NOT NULL, step_id TEXT NOT NULL DEFAULT '',
+      framework TEXT NOT NULL, code TEXT NOT NULL, added_by TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (lesson_id, step_id, framework, code)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS lesson_standards_code ON lesson_standards(framework, code);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

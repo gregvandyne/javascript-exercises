@@ -177,6 +177,7 @@ export function deleteLesson(u, lessonId) {
     q.run('DELETE FROM step_progress WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id);
     R.forgetLesson(l.id);
     q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
+    q.run('DELETE FROM lesson_standards WHERE lesson_id=?', l.id);
   });
   audit(u.id, 'lesson.delete', l.id, { title: l.title });
   return ok();
@@ -227,7 +228,7 @@ function quizItemsFor(step) {
   return step.items || '';
 }
 /** Copy a lesson (own, or shared by a colleague) into the user's library: every step with its lesson parameters,
- *  standards, Studio template and rubric; quiz steps keep their set and get fresh items from it (P8). The copy remembers
+ *  standards (CSTA and Common Core tags), Studio template and rubric; quiz steps keep their set and get fresh items from it (P8). The copy remembers
  *  the catalogue lesson the original came from (template_key / template_version). */
 export function copyLesson(u, lessonId, { folderId } = {}) {
   const l = getLesson(lessonId);
@@ -246,11 +247,18 @@ export function copyLesson(u, lessonId, { folderId } = {}) {
   };
   tx(() => {
     q.run('UPDATE lessons SET copied_from=?, rubric_id=? WHERE id=?', l.id, rubricFor(l.rubric_id), r.lesson.id);
+    const stepIds = new Map([['', '']]);
     for (const s of steps(l.id)) {
+      const id = uid(10); stepIds.set(s.id, id);
       q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric, rubric_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-        uid(10), r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
+        id, r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
         s.kind === QUIZ_KIND ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
         R.STEP_KINDS.includes(s.kind) ? rubricFor(s.rubric_id) : null);
+    }
+    // Common Core tags (lesson_standards, services/standards-ccss.js) come along, on the copied steps.
+    for (const t of q.all('SELECT step_id, framework, code FROM lesson_standards WHERE lesson_id=?', l.id)) {
+      if (!stepIds.has(t.step_id)) continue;
+      q.run('INSERT OR IGNORE INTO lesson_standards(lesson_id, step_id, framework, code, added_by, created_at) VALUES (?,?,?,?,?,?)', r.lesson.id, stepIds.get(t.step_id), t.framework, t.code, u.id, now());
     }
   });
   audit(u.id, 'lesson.copy', r.lesson.id, { from: l.id });
@@ -359,7 +367,7 @@ export function updateStep(u, stepId, input) {
 }
 export function deleteStep(u, stepId) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
-  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
+  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_standards WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
   return ok();
 }
 export function reorderStep(u, stepId, dir) {

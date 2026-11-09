@@ -38,9 +38,13 @@ function siteGroups(t, site) {
 
 import * as T from '../services/lesson-templates.js';
 import { editorBanner } from '../views/cs-quest.js';
+import { lessonTags } from '../services/standards-ccss.js';
+import { stepGameCodes, stepGameCover, lessonGrade } from '../standards/official-tags.js';
+import { codeChips, fwName } from '../views/standards.js';
+import { CCSS_IDS } from '../standards/frameworks.js';
 
 export const router = Router();
-const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
+const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}"><link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const err = (req, res, code, status = 400, field) => res.status(status).json({ error: req.t(`lessons.errors.${code}`), ...(field ? { field } : {}) });
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400));
@@ -283,6 +287,16 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const preselect = String(req.query.class || '');
   const from = managedClass(u, req.query.from);
   const started = L.startedIn(assigned.map(a => a.id));
+  // Common Core tags (services/standards-ccss.js): the lesson's own, each step's, and what an official game practises.
+  const ccTags = lessonTags(l.id);
+  const ccOf = stepId => CCSS_IDS.map(fw => [fw, ccTags.filter(x => x.framework === fw && x.step_id === stepId).map(x => x.code)]).filter(([, c]) => c.length);
+  const ccChips = list => list.map(([fw, codes]) => codeChips(t, fw, codes));
+  // What a game step practises, as the class Standards tab counts it (a levelled game: the lesson's grade or the track
+  // the step is locked to), and whether it only covers codes until the lesson has a grade.
+  const lg = lessonGrade(l.grade);
+  const seedGame = s => s.kind === 'game' && s.game_slug && s.game_source === 'seed';
+  const gameOf = s => (seedGame(s) ? CCSS_IDS.map(fw => [fw, stepGameCodes(s.game_slug, fw, lg, s.options)]).filter(([, c]) => c.length) : []);
+  const needsGrade = s => seedGame(s) && !gameOf(s).length && CCSS_IDS.some(fw => stepGameCover(s.game_slug, fw, lg, s.options).length);
   const stepView = (s, i) => {
     const playable = L.playableBy(s, l.school_id);
     // A game the viewer can't open (a colleague's class game, say): no title and no link, just that it is there.
@@ -297,6 +311,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
           : html`${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${classOnly ? html` <span class="chip-s">🎒 ${t('lessons.step.classOnly')}</span>` : playable ? '' : html` <span class="chip-s warn">⚠️ ${t('lessons.step.notShared')}</span>`}`}</p>
         ${!playable && !classOnly && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">🏫 ${t('lessons.step.shareGame')}</button></form>` : ''}
         ${!playable && !classOnly && s.game_owner === u.id ? html`<p class="small muted">${t('lessons.step.notSharedHint')} <a href="/studio/${s.game_id}">${t('lessons.step.openStudio')}</a></p>` : ''}` : ''}
+      ${ccOf(s.id).length || gameOf(s).length || needsGrade(s) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${gameOf(s).map(([fw, codes]) => codeChips(t, fw, codes, { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) }))}${needsGrade(s) ? html`<p class="small muted">${t('standards.lesson.gameNeedsGrade')}</p>` : ''}</div>` : ''}
       ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
       ${R.STEP_KINDS.includes(s.kind) ? rubricChip(s.rubric_id) : ''}
       ${edit ? html`<details><summary class="small">✏️ ${t('lessons.step.edit')}</summary>
@@ -330,6 +345,9 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   ${l.summary ? html`<div class="panel">${paras(l.summary)}</div>` : ''}
   ${lessonRubric ? html`<section class="panel lessonrubric"><h2>📏 ${t('rubrics.attach.lessonTitle')}</h2>${rubricChip(lessonRubric.id)}</section>` : ''}
   ${l.objectives ? html`<section class="panel"><h2>🎯 ${t('lessons.lesson.objectives')}</h2><ul>${l.objectives.split('\n').filter(Boolean).map(o => html`<li>${o.replace(/^[-•*]\s*/, '')}</li>`)}</ul></section>` : ''}
+  <section class="panel std-lessonpanel" id="standards" aria-labelledby="std-h"><div class="std-lessonhead"><h2 id="std-h">🎯 ${t('standards.lesson.title')}</h2>
+    <a class="btn btn-sm" href="/teach/lessons/${l.id}/standards">${edit ? `＋ ${t('standards.lesson.open')}` : t('standards.lesson.view')}</a></div>
+    ${ccOf('').length ? ccChips(ccOf('')) : html`<p class="small muted">${ccTags.length ? t('standards.lesson.onSteps', { count: ccTags.length }) : t('standards.lesson.editorNone')}</p>`}</section>
   ${edit && st.length > 2 ? jumpNav(t, [['steps', `🪜 ${t('lessons.lesson.steps')}`, st.length], ['add-step', `➕ ${t('lessons.step.add')}`], ['assign', `📌 ${t('lessons.assign.title')}`]]) : ''}
   <h2 class="sec-h" id="steps">🪜 ${t('lessons.lesson.steps')}</h2>
   ${st.length ? html`<ol class="plain steplist">${st.map(stepView)}</ol>` : html`<p class="muted">${t('lessons.lesson.noSteps')}</p>`}

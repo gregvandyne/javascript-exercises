@@ -9,8 +9,8 @@ import { Router } from 'express';
 import { requireUser } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { config } from '../config.js';
-import { html } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { html, raw } from '../views/html.js';
+import { page, notFound, VERSION } from '../views/layout.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as T from '../services/lesson-templates.js';
@@ -27,6 +27,7 @@ import { printBody, sheetBody, projectorBody } from '../views/cs-quest-sheets.js
 import * as STD from '../services/standards.js';
 import { classBody as standardsBody, classCsv as standardsCsv, reportBody as standardsReport } from '../views/cs-quest-standards.js';
 import { classHeader, classBack } from './schools.js';
+import { frameworkPicker } from '../views/standards.js';
 
 export const router = Router();
 const b = req => req.body || {};
@@ -403,8 +404,9 @@ router.get('/class/:id/standards', requireUser, (req, res) => {
   const c = stdClass(req, res); if (!c) return;
   const data = STD.classStandards(c.id, { all });
   const student = req.query.student ? data.students.find(p => p.id === String(req.query.student)) || null : null;
-  const body = html`${classHeader(req, c, 'standards')}<p class="muted csq-std-lead">${t('cs.standards.lead')}</p>${standardsBody(req, { c, data, all, student })}`;
-  page(req, res, { title: `${t('cs.standards.title')} · ${c.name}`, active: 'classes', body, head: V.CSS, scripts: ['/js/schools.js'], ...classBack(req, c) });
+  // The framework chips (CSTA here; Common Core in routes/standards.js, ?fw=): the CSTA table below is unchanged.
+  const body = html`${classHeader(req, c, 'standards')}${frameworkPicker(req, c, 'csta')}<p class="muted csq-std-lead">${t('cs.standards.lead')}</p>${standardsBody(req, { c, data, all, student })}`;
+  page(req, res, { title: `${t('cs.standards.title')} · ${c.name}`, active: 'classes', body, head: raw(`${V.CSS}<link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`), scripts: ['/js/schools.js'], ...classBack(req, c) });
 });
 router.get('/class/:id/standards.csv', requireUser, (req, res) => {
   const c = stdClass(req, res); if (!c) return;

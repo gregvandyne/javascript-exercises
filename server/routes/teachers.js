@@ -11,7 +11,7 @@ import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
-import { page, notFound, parentsLabel, signedOut } from '../views/layout.js';
+import { page, notFound, parentsLabel, signedOut, VERSION } from '../views/layout.js';
 import { coverArt, gameCard, rail } from '../views/components.js';
 import { courseRow } from '../views/courses.js';
 import * as courses from '../services/courses.js';
@@ -29,6 +29,9 @@ import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
 import { howArt, howSteps, howHead, HOW_SCRIPT } from '../views/how.js';
+import * as OT from '../standards/official-tags.js';
+import { normId as stdNorm } from '../standards/ccss.js';
+import { codeChips, attribution as stdNotice } from '../views/standards.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand, SUBJECTS, SHELF_INFO, shelfGrades, TWO_PLAYER } from '../learn.js';
 
 export const router = Router();
@@ -431,7 +434,12 @@ router.get('/learn', (req, res) => {
 
   // The official Learn-shelf games anyone may open (course-owned games are reached through their course).
   const all = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 60 }).filter(g => SHELF_INFO[g.slug]);
-  const pass = all.filter(g => fits(SHELF_INFO[g.slug], f));
+  // Staff only: the Common Core codes each official game practises (server/standards/official-tags.js), and ?std= to
+  // keep the games that practise a code or a code's start ("3.OA", "RF.K"). Never shown to kids or visitors.
+  const std = staff ? stdNorm(String(req.query.std || '').slice(0, 24)).replace(/\.$/, '') : '';
+  const codesOf = slug => ['ccss-math', 'ccss-ela'].map(fw => [fw, OT.gameCodes(slug, fw)]).filter(([, c]) => c.length);
+  const hasStd = slug => codesOf(slug).some(([, c]) => c.some(x => x === std || x.startsWith(`${std}.`) || x.startsWith(std)));
+  const pass = all.filter(g => fits(SHELF_INFO[g.slug], f) && (!std || hasStd(g.slug)));
   // Live class games: the Oomba Live modes (while Live is on), in their own section; the rest in the grid.
   const liveList = live && f.how !== 'solo' && f.how !== 'two' ? pass.filter(g => liveGameOf(g)) : [];
   const grid = f.how === 'live' ? [] : pass.filter(g => !liveList.includes(g) && !(live && liveOnly(g))).filter(g => f.how !== 'two' || isTwo(g));
@@ -441,12 +449,13 @@ router.get('/learn', (req, res) => {
     const l = liveGameOf(g);
     const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>`
       : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
-    return html`<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
+    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c))}<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
   let courseMarkup = '';
-  if (f.how !== 'two' && f.how !== 'live') {
+  // A ?std= filter applies to games only: the course cards (whose codes are by step, not by course) are left out then.
+  if (f.how !== 'two' && f.how !== 'live' && !std) {
     try {
       // Each course card carries the same "Subject · Grades" line as the game cards.
       const courseMeta = c => { const i = COURSE_INFO[c.slug]; return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', { from: String(i.from), to: String(i.to) }) }) : null; };
@@ -492,6 +501,8 @@ router.get('/learn', (req, res) => {
       <div class="learn-filter-row">
         <label class="learn-grade"><span>${t('learn.tab.grade')}</span>
           <select class="input" name="grade" data-autosubmit>${[[defGrade ? 'any' : '', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}"${(f.grade || (defGrade ? 'any' : '')) === v ? raw(' selected') : ''}>${l}</option>`)}</select></label>
+        ${staff ? html`<span class="learn-std-row"><label class="learn-std"><span>${t('standards.learn.label')}</span><input class="input" name="std" value="${std}" maxlength="24" placeholder="${t('standards.learn.hint')}" dir="ltr" autocomplete="off"></label>
+          <button class="btn learn-std-go" type="submit">${t('learn.tab.filter')}</button></span>` : ''}
         ${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}${f.how ? html`<input type="hidden" name="how" value="${f.how}">` : ''}
         <button class="btn" type="submit" data-nojs>${t('learn.tab.filter')}</button>
       </div>
@@ -505,7 +516,8 @@ router.get('/learn', (req, res) => {
     ${courseMarkup}
     ${liveFirst ? liveSec : ''}
     <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">🎓 ${t('learn.tab.games')}</h2>
-      ${grid.length ? cards(grid) : liveList.length ? '' : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}#filters">${t('learn.tab.clear')}</a></p>`}</section>
+      ${grid.length ? cards(grid) : liveList.length ? '' : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}#filters">${t('learn.tab.clear')}</a></p>`}
+      ${staff && [...grid, ...liveList].some(g => codesOf(g.slug).length) ? stdNotice(t) : ''}</section>
     ${liveFirst ? '' : liveSec}
     ${kidEnd ? '' : joinDoor}
     ${players.length ? rail({ title: t('learn.tab.players'), emoji: '🛠️', games: players, id: 'learn-players', more: '/search?cat=learning' }) : ''}
@@ -525,6 +537,7 @@ router.get('/learn', (req, res) => {
   if (!out) res.set('Cache-Control', 'private, no-store');
   page(req, res, {
     title: t('learn.index.title'), description: t('learn.index.description'), body, bodyClass: 'lp-page learn-page', active: 'learn', scripts: ['/js/learn.js'],
+    ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`) } : {}),
     // A filtered view (or anything with a query) is not a page of its own for search engines: /learn is.
     seo: filtered || Object.keys(req.query).length ? null : {
       index: true, path: '/learn', langs: seo.langsWithKey('learn.index.h1'), image: '/og/teachers.jpg', imageAlt: t('learn.index.h1'),
