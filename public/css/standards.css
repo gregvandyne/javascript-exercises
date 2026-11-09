@@ -38,3 +38,11 @@
   .std-tag form,.std-result form{align-self:flex-start}
   .std-result.std-sub{margin-inline-start:var(--s3)}
 }
+/* group headings: in RTL the English domain name sits on its own line under the grade */
+[dir="rtl"] .std-gname>.std-gsep{display:none}
+[dir="rtl"] .std-gname>.std-gdom{display:block}
+/* Learn (staff): the Standard box keeps its own visible Filter button (learn.js hides the form's no-JS one) */
+.learn-std-row{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;max-width:100%}
+.learn-std{display:flex;align-items:center;gap:var(--s2);font-weight:700;min-width:0}
+.learn-std .input{width:9rem;max-width:100%;min-height:44px}
+.learn-std-go{min-height:44px}

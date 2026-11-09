@@ -7081,7 +7081,10 @@
       "checked": "Preguntas: respuestas correctas de las respondidas sobre el estándar (cuestionarios de lecciones, juegos en vivo, comprobaciones de Number Quest).",
       "rubric": "Rúbrica: puntuaciones de rúbrica sobre el estándar, como parte de la puntuación máxima. Aparecen cuando las rúbricas llevan estándares Common Core.",
       "meets": "Logrado: un estudiante logra un estándar con al menos un 80% de aciertos en 3 o más preguntas, o una puntuación de rúbrica de al menos dos tercios. La clase lo logra cuando lo logra el 80% de sus estudiantes.",
-      "needs": "Necesita atención: estudiantes que respondieron 2 o más preguntas sobre el estándar y no acertaron ninguna. Solo lo ven los docentes."
+      "needs": "Necesita atención: estudiantes que respondieron 2 o más preguntas sobre el estándar y no acertaron ninguna. Solo lo ven los docentes.",
+      "games": "Los juegos con niveles para varios grados (Sum Racer, Fraction Factory, Word Trail, Tug of Math) cuentan como práctica solo para el grado de la lección o para el nivel en que está fijado el paso. En una lección sin grado solo aparecen en «Cubierto por».",
+      "live": "Los juegos en vivo como Tug of Math Live no guardan qué pregunta era de qué estándar, así que las respuestas de cada estudiante se reparten entre los estándares del juego. Esas cifras son estimaciones.",
+      "courses": "Number Quest cuenta el trabajo hecho con una cuenta escolar, o desde que el estudiante se unió a esta clase. Una sola comprobación (3 preguntas) no basta para cumplir un estándar."
     },
     "empty": {
       "title": "Aún no hay estándares Common Core",
@@ -7134,7 +7137,8 @@
       "view": "Ver estándares",
       "editorNone": "Aún no hay estándares Common Core etiquetados.",
       "onSteps": "Estándares etiquetados en pasos: {count}",
-      "gameCodes": "Estándares de {framework} que practica este juego"
+      "gameCodes": "Estándares de {framework} que practica este juego",
+      "gameNeedsGrade": "Este juego tiene niveles para varios grados. Pon un grado a la lección (o fija el paso en un nivel) para que sus estándares cuenten como práctica."
     },
     "errors": {
       "badCode": "Ese no es un código Common Core.",

@@ -7489,7 +7489,10 @@
       "checked": "Questions: right answers out of answered questions about the standard (lesson quizzes, live games, Number Quest checks).",
       "rubric": "Rubric: rubric scores on the standard, as a share of the top score. Shown once rubrics are tagged with Common Core standards.",
       "meets": "Meets: a student meets a standard with at least 80% right over 3 or more questions, or a rubric score of at least two thirds. The class meets it when 80% of its students do.",
-      "needs": "Needs a look: students who answered 2 or more questions about the standard and got none right. Only teachers see this."
+      "needs": "Needs a look: students who answered 2 or more questions about the standard and got none right. Only teachers see this.",
+      "games": "Games with levels for several grades (Sum Racer, Fraction Factory, Word Trail, Tug of Math) count as practice only for the lesson's grade, or for the level the step is locked to. For a lesson with no grade they show under Covered by only.",
+      "live": "Live games such as Tug of Math Live don't record which question was about which standard, so a student's answers are shared out across the game's standards. Those numbers are estimates.",
+      "courses": "Number Quest counts work done with a school account, or since the student joined this class. One check (3 questions) alone is not enough to meet a standard."
     },
     "empty": {
       "title": "No Common Core standards yet",
@@ -7542,7 +7545,8 @@
       "view": "See standards",
       "editorNone": "No Common Core standards tagged yet.",
       "onSteps": "{count, plural, one {# standard tagged on steps} other {# standards tagged on steps}}",
-      "gameCodes": "{framework} standards this game practices"
+      "gameCodes": "{framework} standards this game practices",
+      "gameNeedsGrade": "This game has levels for several grades. Give the lesson a grade (or lock the step to one level) to count its standards as practice."
     },
     "errors": {
       "badCode": "That is not a Common Core code.",

@@ -7081,7 +7081,10 @@
       "checked": "Questions : bonnes réponses sur les questions répondues à propos du standard (quiz de leçon, jeux en direct, contrôles de Number Quest).",
       "rubric": "Grille : notes de grille sur le standard, en part de la note maximale. Visibles quand des grilles portent des standards Common Core.",
       "meets": "Atteint : un élève atteint un standard avec au moins 80 % de bonnes réponses sur 3 questions ou plus, ou une note de grille d’au moins deux tiers. La classe l’atteint quand 80 % de ses élèves l’atteignent.",
-      "needs": "À regarder : élèves qui ont répondu à 2 questions ou plus sur le standard sans aucune bonne réponse. Seuls les enseignants le voient."
+      "needs": "À regarder : élèves qui ont répondu à 2 questions ou plus sur le standard sans aucune bonne réponse. Seuls les enseignants le voient.",
+      "games": "Les jeux avec des niveaux pour plusieurs classes (Sum Racer, Fraction Factory, Word Trail, Tug of Math) comptent comme pratique seulement pour la classe de la leçon, ou pour le niveau sur lequel l'étape est fixée. Pour une leçon sans classe, ils apparaissent seulement dans « Couvert par ».",
+      "live": "Les jeux en direct comme Tug of Math Live n'enregistrent pas quelle question portait sur quel standard : les réponses d'un élève sont donc réparties entre les standards du jeu. Ces chiffres sont des estimations.",
+      "courses": "Number Quest compte le travail fait avec un compte d'école, ou depuis que l'élève a rejoint cette classe. Une seule vérification (3 questions) ne suffit pas pour atteindre un standard."
     },
     "empty": {
       "title": "Pas encore de standards Common Core",
@@ -7134,7 +7137,8 @@
       "view": "Voir les standards",
       "editorNone": "Aucun standard Common Core étiqueté pour l’instant.",
       "onSteps": "Standards étiquetés sur des étapes : {count}",
-      "gameCodes": "Standards {framework} travaillés par ce jeu"
+      "gameCodes": "Standards {framework} travaillés par ce jeu",
+      "gameNeedsGrade": "Ce jeu a des niveaux pour plusieurs classes. Indiquez la classe de la leçon (ou fixez l'étape sur un niveau) pour que ses standards comptent comme pratiqués."
     },
     "errors": {
       "badCode": "Ce n’est pas un code Common Core.",

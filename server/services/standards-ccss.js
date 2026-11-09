@@ -5,16 +5,21 @@
 // students are in hit) and per-student mastery from work that is already recorded. Nothing new is stored about students.
 // The CSTA view (services/standards.js) is untouched.
 //
-// Evidence, per student and code (only the class's active students, only work in this class):
+// Evidence, per student and code (only the class's active students; lesson work and live runs only in this class; Number
+// Quest, which is not tied to a class, as described below):
 //   practiced   a finished step (status 'done') of an assigned lesson whose step or lesson is tagged with the code, or
-//               a finished game step playing an official game that practises it; a Number Quest step completed.
+//               a finished game step playing an official game that practises it (a levelled game: only the lesson's
+//               grade or the track the step is locked to); a Number Quest step completed (see courses below).
 //   checked     right / answered questions about the code: lesson quiz items (an item's own `cat` when it is a code of
 //               the framework, else the quiz step's / lesson's tags), live-run items the same way, a whole live run's
 //               correct / answered when the run's mode practises the code (Tug of Math Live at its grade) or the run
-//               plays a tagged step, and a Number Quest step's 3-question check (check_score of 3).
+//               plays a tagged step (shared out across the run's codes: an estimate), and a Number Quest step's
+//               3-question check (check_score of 3). Number Quest is not tied to a class: it counts for a school account,
+//               or for a student with their own account only from when they joined this class.
 //   rubric      scores from rubric sources (registerRubricSource below): none are built in. The rubrics work plugs in
 //               here without this module knowing its tables.
-// A student meets a code with >= 80% right over >= 3 answered questions, or a best rubric score >= 2/3 of its maximum.
+// A student meets a code with >= 80% right over >= 3 answered questions (not from a single course check alone), or a
+// best rubric score >= 2/3 of its maximum.
 // The class row reads "Meets" when >= 80% of the class's students meet it (the CSTA tab's rule).
 import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
@@ -82,7 +87,7 @@ const rubricSources = [];
 export const registerRubricSource = fn => { if (typeof fn === 'function' && !rubricSources.includes(fn)) rubricSources.push(fn); return () => { const i = rubricSources.indexOf(fn); if (i >= 0) rubricSources.splice(i, 1); }; };
 
 // ---------------------------------------------------------------- the class view
-const blank = () => ({ practiced: false, right: 0, answered: 0, rubric: [], last: 0 });
+const blank = () => ({ practiced: false, right: 0, answered: 0, rubric: [], last: 0, courseChecks: 0, courseAnswered: 0 });
 
 /**
  * The class's Common Core picture in one framework:
@@ -101,22 +106,25 @@ export function classView(classId, framework, { grade = '' } = {}) {
   const sid = new Set(students.map(p => p.id));
   const seen = new Set();
   const lessonIds = [...new Set(lessons.map(cl => cl.lesson_id))];
-  const steps = lessonIds.length ? q.all(`SELECT s.id, s.lesson_id, s.kind, s.items, g.slug game_slug, g.source game_source FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id
+  const steps = lessonIds.length ? q.all(`SELECT s.id, s.lesson_id, s.kind, s.items, s.options, g.slug game_slug, g.source game_source FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id
     WHERE s.lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds) : [];
   const tags = tagsOfLessons(lessonIds, framework);
   const valid = c => (fw.isId(c) ? fw.byId(c).id : null);
-  // A lesson's grade ("3", "Grade 3", "K"): Tug of Math is played at a grade, so its step practises that grade's codes.
-  const gradeOf = new Map(lessons.map(cl => { const m = /^\s*(?:grade\s*)?(k|[1-8])\b/i.exec(String(cl.grade || '')); return [cl.lesson_id, m ? m[1].toUpperCase() : '']; }));
+  // A lesson's grade ("3", "Grade 3", "K"): a levelled game (Tug of Math, Sum Racer, Fraction Factory, Word Trail) is
+  // credited only with that grade's codes, or the track its step is locked to (official-tags.js stepGameCodes).
+  const gradeOf = new Map(lessons.map(cl => [cl.lesson_id, OT.lessonGrade(cl.grade)]));
   // Per step: practice codes, quiz item codes, run codes (a live run that plays the step), and its official game.
   const stepInfo = new Map();
   for (const s of steps) {
     const t = tags.get(s.lesson_id) || [];
     const own = t.filter(x => x.step_id === s.id).map(x => x.code), whole = t.filter(x => !x.step_id).map(x => x.code);
-    const game = s.kind === 'game' && s.game_source === 'seed' ? OT.stepGameCodes(s.game_slug, framework, gradeOf.get(s.lesson_id)) : [];
+    const official = s.kind === 'game' && s.game_source === 'seed';
+    const game = official ? OT.stepGameCodes(s.game_slug, framework, gradeOf.get(s.lesson_id), s.options) : [];
+    const gameCover = official ? OT.stepGameCover(s.game_slug, framework, gradeOf.get(s.lesson_id), s.options) : [];
     const practice = [...new Set([...own, ...(LESSON_TAG_KINDS.has(s.kind) ? whole : []), ...game])];
     const fallback = [...new Set([...own, ...whole])];
     const items = s.kind === L.QUIZ_KIND ? L.quizItemsOf(s).map(it => { const c = it && typeof it.cat === 'string' ? valid(it.cat) : null; return c ? [c] : fallback; }) : [];
-    stepInfo.set(s.id, { ...s, practice, items, run: [...new Set([...own, ...whole, ...game])], game: game.length ? s.game_slug : null });
+    stepInfo.set(s.id, { ...s, practice, items, run: [...new Set([...own, ...whole, ...game])], gameCover, game: gameCover.length ? s.game_slug : null });
   }
   // Coverage: which assigned lessons / official games / live runs / courses hit each code.
   const src = new Map();
@@ -124,8 +132,8 @@ export function classView(classId, framework, { grade = '' } = {}) {
   const clOf = new Map(lessons.map(cl => [cl.lesson_id, cl.id]));
   for (const s of stepInfo.values()) {
     const clId = clOf.get(s.lesson_id);
-    for (const c of new Set([...s.practice, ...s.items.flat(), ...s.run])) cover(c).lessons.add(clId);
-    if (s.game) for (const c of OT.stepGameCodes(s.game, framework, gradeOf.get(s.lesson_id))) cover(c).games.add(s.game);
+    for (const c of new Set([...s.practice, ...s.items.flat(), ...s.run, ...s.gameCover])) cover(c).lessons.add(clId);
+    if (s.game) for (const c of s.gameCover) cover(c).games.add(s.game);
   }
   for (const r of tags.values()) for (const x of r) if (!x.step_id) for (const cl of lessons.filter(y => y.lesson_id === x.lesson_id)) cover(x.code).lessons.add(cl.id);
 
@@ -165,20 +173,30 @@ export function classView(classId, framework, { grade = '' } = {}) {
       const ms = String(r.marks || '');
       itemCodes.forEach((c, i) => { if (c && (ms[i] === '1' || ms[i] === '0')) mark(c, r.user_id, ms[i] === '1' ? 1 : 0, 1, r.ended_at); });
     } else if (whole.length && r.answered > 0) {
-      for (const c of whole) mark(c, r.user_id, Math.min(r.correct || 0, r.answered), r.answered, r.ended_at);
+      // The run doesn't record which question was about which code, so its answers are shared out across the codes
+      // (20 answers over 2 codes: 10 each, right answers likewise) rather than counted in full for each: an estimate.
+      const k = whole.length, a = r.answered, right = Math.max(0, Math.min(r.correct || 0, a));
+      whole.forEach((c, i) => { const ai = Math.floor(a / k) + (i < a % k ? 1 : 0), ri = Math.floor(right / k) + (i < right % k ? 1 : 0);
+        if (ai) mark(c, r.user_id, Math.min(ri, ai), ai, r.ended_at); });
     }
   }
-  // Courses the class's students are in (Number Quest: Math).
+  // Courses the class's students are in (Number Quest: Math). Course progress is not tied to a class, so a student's
+  // course work counts here only when it belongs with the school: a school account's (the school owns the account),
+  // or, for a student who joined with their own account, work done since joining this class (not their home work).
+  const since = new Map(students.map(p => [p.id, p.managed_school ? 0 : p.joined_at || 0]));
   for (const [slug, info] of Object.entries(OT.COURSES)) {
     if (info.framework !== framework || !students.length) continue;
     const map = info.steps();
     const rows = q.all(`SELECT user_id, step, read_at, checked_at, check_score, completed_at, played_at FROM course_progress WHERE course=? AND user_id IN (${students.map(() => '?').join(',')})`, slug, ...students.map(p => p.id));
     for (const r of rows) {
       const codes = map.get(r.step); if (!codes) continue;
+      const from = since.get(r.user_id) || 0, after = t => !!t && t >= from;
+      const done = after(r.completed_at) || (after(r.read_at) && after(r.checked_at)), checked = after(r.checked_at);
+      if (!done && !checked) continue;
       for (const c of codes) cover(c).courses.add(slug);
       const at = Math.max(r.completed_at || 0, r.checked_at || 0, r.read_at || 0, r.played_at || 0);
-      if (r.completed_at || (r.read_at && r.checked_at)) for (const c of codes) { const x = cell(c, r.user_id); x.practiced = true; x.last = Math.max(x.last, at); }
-      if (r.checked_at) for (const c of codes) mark(c, r.user_id, Math.max(0, Math.min(3, r.check_score || 0)), 3, r.checked_at);
+      if (done) for (const c of codes) { const x = cell(c, r.user_id); x.practiced = true; x.last = Math.max(x.last, at); }
+      if (checked) for (const c of codes) { mark(c, r.user_id, Math.max(0, Math.min(3, r.check_score || 0)), 3, r.checked_at); const x = cell(c, r.user_id); x.courseChecks++; x.courseAnswered += 3; }
     }
   }
   // Rubric sources.
@@ -210,7 +228,9 @@ export function classView(classId, framework, { grade = '' } = {}) {
       const pct = c.answered ? Math.round((100 * c.right) / c.answered) : null;
       const rubric = c.rubric.length ? { best: Math.max(...c.rubric), n: c.rubric.length } : null;
       if (rubric) { rubricSum += c.rubric.reduce((a, b) => a + b, 0); rubricN += c.rubric.length; }
-      const yes = (c.answered >= MIN_ANSWERED && pct >= MEETS_PCT) || (rubric && rubric.best >= RUBRIC_MEETS - 1e-9);
+      // One course check (3 questions) alone is not enough to meet a code: it takes a second check or other questions.
+      const enough = c.answered >= MIN_ANSWERED && !(c.courseChecks === 1 && c.answered === c.courseAnswered);
+      const yes = (enough && pct >= MEETS_PCT) || (rubric && rubric.best >= RUBRIC_MEETS - 1e-9);
       const level = yes ? 'meets' : c.answered || rubric ? 'developing' : c.practiced ? 'practiced' : 'none';
       if (yes) meets++;
       last = Math.max(last, c.last);

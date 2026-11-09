@@ -454,7 +454,8 @@ router.get('/learn', (req, res) => {
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
   let courseMarkup = '';
-  if (f.how !== 'two' && f.how !== 'live') {
+  // A ?std= filter applies to games only: the course cards (whose codes are by step, not by course) are left out then.
+  if (f.how !== 'two' && f.how !== 'live' && !std) {
     try {
       // Each course card carries the same "Subject · Grades" line as the game cards.
       const courseMeta = c => { const i = COURSE_INFO[c.slug]; return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', { from: String(i.from), to: String(i.to) }) }) : null; };
@@ -500,7 +501,8 @@ router.get('/learn', (req, res) => {
       <div class="learn-filter-row">
         <label class="learn-grade"><span>${t('learn.tab.grade')}</span>
           <select class="input" name="grade" data-autosubmit>${[[defGrade ? 'any' : '', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}"${(f.grade || (defGrade ? 'any' : '')) === v ? raw(' selected') : ''}>${l}</option>`)}</select></label>
-        ${staff ? html`<label class="learn-std"><span>${t('standards.learn.label')}</span><input class="input" name="std" value="${std}" maxlength="24" placeholder="${t('standards.learn.hint')}" dir="ltr" autocomplete="off"></label>` : ''}
+        ${staff ? html`<span class="learn-std-row"><label class="learn-std"><span>${t('standards.learn.label')}</span><input class="input" name="std" value="${std}" maxlength="24" placeholder="${t('standards.learn.hint')}" dir="ltr" autocomplete="off"></label>
+          <button class="btn learn-std-go" type="submit">${t('learn.tab.filter')}</button></span>` : ''}
         ${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}${f.how ? html`<input type="hidden" name="how" value="${f.how}">` : ''}
         <button class="btn" type="submit" data-nojs>${t('learn.tab.filter')}</button>
       </div>

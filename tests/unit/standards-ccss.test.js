@@ -116,7 +116,7 @@ test('official tags: every code exists; Number Quest locked codes are in the fil
 });
 
 // ---------------------------------------------------------------- tags
-const lesson = L.createLesson(ana, elm.id, { title: 'Times tables' }).lesson;
+const lesson = L.createLesson(ana, elm.id, { title: 'Times tables', grade: 'Grade 3' }).lesson;
 const play = L.addStep(ana, lesson.id, { kind: 'game', title: 'Race', gameId: sumRacer.id }).step;
 const write = L.addStep(ana, lesson.id, { kind: 'question', title: 'Explain', body: 'How do you know 6 x 7?' }).step;
 const quiz = L.addQuizStep(ana, lesson.id, { title: 'Exit ticket', items: [
@@ -171,7 +171,8 @@ test('before any work: coverage from the lesson, its tags and its game; every st
   assert.deepEqual(r7.sources.lessons, [cl.id]);
   assert.deepEqual(r7.sources.games, ['sum-racer'], 'Sum Racer practises it');
   assert.equal(row(v, '3.OA.B.5').status, 'covered', 'a whole-lesson tag');
-  assert.equal(row(v, '1.OA.C.6').sources.games[0], 'sum-racer', 'every code the game practises');
+  assert.deepEqual(row(v, '3.NBT.A.1').sources.games, ['sum-racer'], 'the grade 3 codes Sum Racer practises');
+  assert.ok(!row(v, '1.OA.C.6') && !row(v, '4.NBT.B.4'), 'never the codes of the other grades Sum Racer spans');
   assert.ok(!row(v, '6.EE.A.1'), 'nothing hits it');
   assert.ok(v.students.every(p => p.noData));
   const g3 = v.summary.find(s => s.grade === '3');
@@ -229,7 +230,8 @@ test('live runs: Tug of Math Live at its grade, and items with codes; Number Que
   const v = CC.classView(cls.id, 'ccss-math');
   const pct = row(v, '6.RP.A.3c');
   assert.equal(pct.sources.live, 1, 'the other class\'s run is not this class\'s');
-  assert.deepEqual([pct.by.get(nora.id).right, pct.by.get(nora.id).answered], [9, 10]);
+  // 9 of 10 over grade 6's three codes: shared out (4/3/3 answered, 3/3/3 right), never 10 answers for each.
+  assert.deepEqual(OT.TUG_GRADES[6].map(c => [row(v, c).by.get(nora.id).right, row(v, c).by.get(nora.id).answered]), [[3, 4], [3, 3], [3, 3]]);
   assert.equal(pct.by.get(nora.id).level, 'meets');
   const nbt = row(v, '4.NBT.A.1');
   assert.deepEqual([nbt.by.get(nora.id).right, nbt.by.get(nora.id).answered], [2, 2], 'item by item, the ELA item left out');
@@ -361,6 +363,68 @@ test('a Tug of Math step practises its lesson\'s grade only (never all eight gra
   assert.deepEqual(v.rows.map(r => r.id).sort(), [...OT.TUG_GRADES[6]].sort());
   assert.deepEqual(OT.stepGameCodes('tug-of-math', 'ccss-math', ''), []);
   assert.deepEqual(OT.stepGameCodes('tug-of-math', 'ccss-ela', '6'), []);
+});
+
+test('levelled games: a step practises only its lesson\'s grade or its locked track; otherwise coverage only', async () => {
+  const ff = seed('fraction-factory', 'Fraction Factory');
+  const c4 = S.createClass(ana, elm.id, { name: 'Ana 4L' }).class;
+  const sam = S.createSchoolAccount(ana, elm.id, { rosterName: 'Sam Pupil' }).user; S.addToClass(ana, c4.id, sam.id);
+  const mk = (title, grade, gameId, options) => { const l = L.createLesson(ana, elm.id, { title, grade }).lesson;
+    const st = L.addStep(ana, l.id, { kind: 'game', title, gameId, options }).step; return { l, st, cl: L.assign(ana, c4.id, l.id).classLesson }; };
+  const g4 = mk('Race at grade 4', 'Grade 4', sumRacer.id);
+  const plain = mk('Race, no grade', '', sumRacer.id);
+  const locked = mk('Race, track 9', '', sumRacer.id, 'level=9&lock=1');
+  const fr = mk('Fractions', '3', ff.id);
+  for (const x of [g4, plain, locked, fr]) assert.ok(P.gameScore(sam, x.cl.id, x.st.id, 5, '5').ok);
+  const v = CC.classView(c4.id, 'ccss-math');
+  const at = id => row(v, id) && row(v, id).by.get(sam.id);
+  // A grade 4 lesson with a Sum Racer step never marks grade 1 codes as practised.
+  assert.equal(at('4.NBT.B.4').practiced, true);
+  assert.equal(at('1.OA.C.6').practiced, false, 'grade 1: not practised');
+  assert.equal(at('2.NBT.B.5').practiced, false);
+  assert.ok(!row(v, '1.OA.C.6').sources.lessons.includes(g4.cl.id), 'nor covered by the grade 4 lesson');
+  assert.ok(row(v, '1.OA.C.6').sources.lessons.includes(plain.cl.id), 'the ungraded lesson covers it (coverage only)');
+  assert.equal(row(v, '1.OA.C.6').practiced, 0);
+  assert.equal(at('3.NBT.A.1').practiced, true, 'the step locked to track 9 practises its code');
+  assert.equal(at('3.OA.C.7').practiced, false, 'no step plays a grade 3 times-table track');
+  assert.equal(at('3.NF.A.1').practiced, true, 'Fraction Factory at grade 3');
+  assert.ok(!row(v, '4.NF.B.3'), 'not its grade 4 chapters (not even covered: the lesson has a grade)');
+  assert.ok(!row(v, '2.G.A.3'), 'nor its grade 2 chapter');
+  assert.deepEqual(OT.stepGameCodes('fraction-factory', 'ccss-math', '', 'chapter=recipe&lock=1'), ['4.NF.B.3']);
+  assert.deepEqual(OT.stepGameCodes('fraction-factory', 'ccss-math', '', 'chapter=recipe'), [], 'not locked: not known');
+  assert.deepEqual(OT.stepGameCodes('word-trail', 'ccss-ela', '2'), ['RF.2.3f']);
+  assert.deepEqual(OT.stepGameCodes('word-trail', 'ccss-ela', ''), []);
+  assert.deepEqual(OT.stepGameCover('word-trail', 'ccss-ela', ''), OT.gameCodes('word-trail', 'ccss-ela'));
+  assert.deepEqual(OT.stepGameCodes('shark-plank', 'ccss-ela', ''), OT.gameCodes('shark-plank', 'ccss-ela'), 'a one-level game: all its codes');
+  // The lesson editor shows the same codes as the Standards tab: the grade's, or a hint to set a grade.
+  const ed4 = await req(ana, `/teach/lessons/${g4.l.id}`);
+  assert.ok(ed4.text.includes('4.NBT.B.4') && !ed4.text.includes('1.OA.C.6'), 'grade 4 only in the editor');
+  const edPlain = await req(ana, `/teach/lessons/${plain.l.id}`);
+  assert.ok(!edPlain.text.includes('1.OA.C.6'), 'no codes until the lesson has a grade');
+  assert.ok(edPlain.text.includes('Give the lesson a grade'), 'and a hint to give it one');
+});
+
+test('Number Quest: own-account students count from when they joined; one check alone never meets', () => {
+  const c5 = S.createClass(ana, elm.id, { name: 'Ana NQ' }).class;
+  const own = S.createSchoolAccount(ana, elm.id, { rosterName: 'Olu Pupil' }).user; S.addToClass(ana, c5.id, own.id);
+  const sch = S.createSchoolAccount(ana, elm.id, { rosterName: 'Sol Pupil' }).user; S.addToClass(ana, c5.id, sch.id);
+  // Olu stands for a student who joined with their own account (no school owns it), on day 1000.
+  q.run("UPDATE users SET managed_school='' WHERE id=?", own.id);
+  q.run('UPDATE class_members SET joined_at=? WHERE class_id=? AND user_id=?', 1000, c5.id, own.id);
+  const nq = (u, step, at, score) => q.run('INSERT INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?,?,?,?,?,?,?,?,?)', u.id, 'number-quest', step, 'explorer', at, at, score, at, at);
+  nq(own, 'explorer-2.1', 500, 3);   // home work before joining: not this class's
+  nq(own, 'explorer-3.3', 2000, 3);  // after joining: counts
+  nq(sch, 'explorer-2.1', 5, 3);     // a school account: counts whenever
+  const v = CC.classView(c5.id, 'ccss-math');
+  const at = (id, u) => row(v, id) && row(v, id).by.get(u.id);
+  assert.equal(at('3.NBT.A.2', own).answered, 0, 'home work before joining is left out');
+  assert.equal(at('3.NBT.A.2', own).practiced, false);
+  assert.deepEqual([at('3.OA.C.7', own).right, at('3.OA.C.7', own).answered], [3, 3]);
+  assert.equal(at('3.OA.C.7', own).level, 'developing', 'one 3/3 check alone is not enough to meet');
+  assert.equal(at('3.NBT.A.2', sch).level, 'developing');
+  nq(sch, 'explorer-2.2', 6, 3);     // a second check on 3.NBT.A.2
+  const v2 = CC.classView(c5.id, 'ccss-math');
+  assert.equal(row(v2, '3.NBT.A.2').by.get(sch.id).level, 'meets', 'two checks do');
 });
 
 test('Learn: staff see each official game\'s codes and can filter by a code; kids and visitors never see codes', async () => {

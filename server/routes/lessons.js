@@ -37,7 +37,7 @@ function siteGroups(t, site) {
 import * as T from '../services/lesson-templates.js';
 import { editorBanner } from '../views/cs-quest.js';
 import { lessonTags } from '../services/standards-ccss.js';
-import { gameCodes } from '../standards/official-tags.js';
+import { stepGameCodes, stepGameCover, lessonGrade } from '../standards/official-tags.js';
 import { codeChips, fwName } from '../views/standards.js';
 import { CCSS_IDS } from '../standards/frameworks.js';
 
@@ -277,6 +277,12 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const ccTags = lessonTags(l.id);
   const ccOf = stepId => CCSS_IDS.map(fw => [fw, ccTags.filter(x => x.framework === fw && x.step_id === stepId).map(x => x.code)]).filter(([, c]) => c.length);
   const ccChips = list => list.map(([fw, codes]) => codeChips(t, fw, codes));
+  // What a game step practises, as the class Standards tab counts it (a levelled game: the lesson's grade or the track
+  // the step is locked to), and whether it only covers codes until the lesson has a grade.
+  const lg = lessonGrade(l.grade);
+  const seedGame = s => s.kind === 'game' && s.game_slug && s.game_source === 'seed';
+  const gameOf = s => (seedGame(s) ? CCSS_IDS.map(fw => [fw, stepGameCodes(s.game_slug, fw, lg, s.options)]).filter(([, c]) => c.length) : []);
+  const needsGrade = s => seedGame(s) && !gameOf(s).length && CCSS_IDS.some(fw => stepGameCover(s.game_slug, fw, lg, s.options).length);
   const stepView = (s, i) => {
     const playable = L.playableBy(s, l.school_id);
     // A game the viewer can't open (a colleague's class game, say): no title and no link, just that it is there.
@@ -291,7 +297,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
           : html`${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${classOnly ? html` <span class="chip-s">🎒 ${t('lessons.step.classOnly')}</span>` : playable ? '' : html` <span class="chip-s warn">⚠️ ${t('lessons.step.notShared')}</span>`}`}</p>
         ${!playable && !classOnly && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">🏫 ${t('lessons.step.shareGame')}</button></form>` : ''}
         ${!playable && !classOnly && s.game_owner === u.id ? html`<p class="small muted">${t('lessons.step.notSharedHint')} <a href="/studio/${s.game_id}">${t('lessons.step.openStudio')}</a></p>` : ''}` : ''}
-      ${ccOf(s.id).length || (s.kind === 'game' && s.game_slug && CCSS_IDS.some(fw => gameCodes(s.game_slug, fw).length)) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${s.kind === 'game' && s.game_slug ? CCSS_IDS.map(fw => codeChips(t, fw, gameCodes(s.game_slug, fw), { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) })) : ''}</div>` : ''}
+      ${ccOf(s.id).length || gameOf(s).length || needsGrade(s) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${gameOf(s).map(([fw, codes]) => codeChips(t, fw, codes, { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) }))}${needsGrade(s) ? html`<p class="small muted">${t('standards.lesson.gameNeedsGrade')}</p>` : ''}</div>` : ''}
       ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
       ${edit ? html`<details><summary class="small">✏️ ${t('lessons.step.edit')}</summary>
         <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`)}

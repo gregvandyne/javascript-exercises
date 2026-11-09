@@ -7081,7 +7081,10 @@
       "checked": "題目：關於這項標準的作答中答對的比例（課程小測驗、即時遊戲、Number Quest 檢核）。",
       "rubric": "評分規準：這項標準的評分規準分數，以滿分的比例呈現。評分規準標上 Common Core 標準後才會顯示。",
       "meets": "達成：學生在 3 題以上答對至少 80%，或評分規準得分至少三分之二，就算達成。班上 80% 的學生達成時，班級就算達成。",
-      "needs": "需要關注：關於這項標準作答 2 題以上卻沒有答對的學生。只有老師看得到。"
+      "needs": "需要關注：關於這項標準作答 2 題以上卻沒有答對的學生。只有老師看得到。",
+      "games": "有多個年級關卡的遊戲（Sum Racer、Fraction Factory、Word Trail、Tug of Math）只會按課程的年級，或步驟固定的關卡算作練習。沒有年級的課程只會把它們列在「涵蓋來源」中。",
+      "live": "Tug of Math Live 等即時遊戲不會記錄每題屬於哪個標準，所以學生的答題會平均分到遊戲的各個標準。這些數字是估計值。",
+      "courses": "Number Quest 只計算用學校帳號完成的學習，或學生加入這個班級之後的學習。只有一次檢查（3 題）還不足以達成標準。"
     },
     "empty": {
       "title": "還沒有 Common Core 標準",
@@ -7134,7 +7137,8 @@
       "view": "查看標準",
       "editorNone": "還沒有標記 Common Core 標準。",
       "onSteps": "步驟上標記的標準 {count} 項",
-      "gameCodes": "這個遊戲練習的 {framework} 標準"
+      "gameCodes": "這個遊戲練習的 {framework} 標準",
+      "gameNeedsGrade": "這個遊戲有多個年級的關卡。為課程設定年級（或把步驟固定在一個關卡），它的標準才會算作練習。"
     },
     "errors": {
       "badCode": "這不是 Common Core 代碼。",

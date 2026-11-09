@@ -92,13 +92,26 @@ test('a teacher tags a lesson with Common Core standards and sees the class\'s c
   await hit.locator('button', { hasText: 'Add' }).click();
   await expect(t.locator('#tagged .std-tag', { hasText: '4.NF.B.3' })).toBeVisible();
   await expect(t.locator('.std-result', { hasText: '4.NF.B.3' }).first().locator('.chip-s')).toContainText('Tagged');
-  // A step: pick it in "Add to" and search again.
+  // A step: pick it in "Add to" (the page reloads with ?to=) and search again.
   const stepOpt = await t.locator('#sf-t option').nth(1).getAttribute('value');
   await t.selectOption('#sf-t', stepOpt);
+  await expect(t).toHaveURL(new RegExp(`to=${stepOpt}`));
   await t.fill('#sf-q', '4.NF.A.1');
   await Promise.all([t.waitForURL(/q=4\.NF\.A\.1/), t.locator('.std-filters button[type=submit]').click()]);
   await t.locator('.std-result', { hasText: '4.NF.A.1' }).first().locator('button').click();
   await expect(t.locator('#tagged h3', { hasText: /^Step 1/ })).toBeVisible();
+  // Another step picked in "Add to", then "+ Add" straight away (no Search): the tag goes on that step, not the lesson.
+  const opts = t.locator('#sf-t option');
+  const lastIx = (await opts.count()) - 1;
+  const lastOpt = await opts.nth(lastIx).getAttribute('value');
+  const lastName = (await opts.nth(lastIx).innerText()).trim();
+  await t.selectOption('#sf-t', lastOpt);
+  await expect(t).toHaveURL(new RegExp(`to=${lastOpt}`));
+  expect(await t.locator('.std-results input[name="stepId"]').evaluateAll(l => [...new Set(l.map(i => i.value))])).toEqual([lastOpt]);
+  await t.locator('.std-result', { hasText: '4.NF.A.1' }).first().locator('button', { hasText: 'Add' }).click();
+  const onLast = t.locator('#tagged li', { has: t.locator('h3', { hasText: lastName }) });
+  await expect(onLast.locator('.std-tag', { hasText: '4.NF.A.1' })).toBeVisible();
+  await expect(t.locator('#tagged li', { has: t.locator('h3', { hasText: 'Whole lesson' }) }).locator('.std-tag', { hasText: '4.NF.A.1' })).toHaveCount(0);
   await expect(t.locator('.std-notice')).toContainText(NOTICE);
   // ELA tab of the picker
   await t.locator('.std-fw .chip', { hasText: 'Common Core ELA' }).click();
@@ -123,6 +136,11 @@ test('a teacher tags a lesson with Common Core standards and sees the class\'s c
   // Learn: staff see the codes
   await t.goto('/learn?std=3.OA');
   await expect(t.locator('.lcard .std-code', { hasText: '3.OA.C.7' }).first()).toBeVisible();
+  await expect(t.locator('.learn-std-go')).toBeVisible();   // its own Filter button, with JS on
+  await expect(t.locator('section.courses')).toHaveCount(0); // courses are not filtered by code, so they are left out
+  await t.fill('input[name="std"]', 'RF.K');
+  await Promise.all([t.waitForURL(/std=RF\.K/), t.locator('.learn-std-go').click()]);
+  await expect(t.locator('.lcard .std-code', { hasText: /^RF\.K\./ }).first()).toBeVisible();
   await ctx.close();
 
   // A student: 404 everywhere, and no codes on Learn.

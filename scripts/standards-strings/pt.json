@@ -52,7 +52,10 @@
     "checked": "Perguntas: respostas certas entre as perguntas respondidas sobre o padrão (quizzes das lições, jogos ao vivo, verificações do Number Quest).",
     "rubric": "Rubrica: pontuações de rubrica no padrão, como parte da pontuação máxima. Aparecem quando as rubricas levam padrões Common Core.",
     "meets": "Atingido: um estudante atinge um padrão com pelo menos 80% de acertos em 3 ou mais perguntas, ou uma pontuação de rubrica de pelo menos dois terços. A turma atinge quando 80% dos estudantes atingem.",
-    "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso."
+    "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso.",
+    "games": "Jogos com níveis para várias séries (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contam como prática só para a série da aula, ou para o nível em que o passo está fixado. Numa aula sem série, aparecem só em «Coberto por».",
+    "live": "Jogos ao vivo como o Tug of Math Live não guardam qual pergunta era de qual padrão, por isso as respostas de um aluno são divididas entre os padrões do jogo. Esses números são estimativas.",
+    "courses": "O Number Quest conta o trabalho feito com uma conta da escola, ou desde que o aluno entrou nesta turma. Uma única verificação (3 perguntas) não basta para atingir um padrão."
   },
   "empty": {
     "title": "Ainda não há padrões Common Core",
@@ -105,7 +108,8 @@
     "view": "Ver padrões",
     "editorNone": "Ainda não há padrões Common Core marcados.",
     "onSteps": "Padrões marcados em etapas: {count}",
-    "gameCodes": "Padrões de {framework} que este jogo pratica"
+    "gameCodes": "Padrões de {framework} que este jogo pratica",
+    "gameNeedsGrade": "Este jogo tem níveis para várias séries. Dê uma série à aula (ou fixe o passo num nível) para que seus padrões contem como prática."
   },
   "errors": {
     "badCode": "Esse não é um código Common Core.",

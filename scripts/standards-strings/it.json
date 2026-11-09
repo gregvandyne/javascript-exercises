@@ -52,7 +52,10 @@
     "checked": "Domande: risposte giuste sulle domande risposte sullo standard (quiz delle lezioni, giochi dal vivo, verifiche di Number Quest).",
     "rubric": "Rubrica: punteggi di rubrica sullo standard, come parte del punteggio massimo. Compaiono quando le rubriche portano standard Common Core.",
     "meets": "Raggiunto: uno studente raggiunge uno standard con almeno l'80% di risposte giuste su 3 o più domande, o un punteggio di rubrica di almeno due terzi. La classe lo raggiunge quando lo raggiunge l'80% dei suoi studenti.",
-    "needs": "Da guardare: studenti che hanno risposto a 2 o più domande sullo standard senza nessuna giusta. Lo vedono solo i docenti."
+    "needs": "Da guardare: studenti che hanno risposto a 2 o più domande sullo standard senza nessuna giusta. Lo vedono solo i docenti.",
+    "games": "I giochi con livelli per più classi (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contano come esercizio solo per la classe della lezione o per il livello su cui è bloccato il passaggio. In una lezione senza classe compaiono solo in «Coperto da».",
+    "live": "I giochi dal vivo come Tug of Math Live non registrano quale domanda riguardava quale standard, quindi le risposte di uno studente vengono suddivise tra gli standard del gioco. Questi numeri sono stime.",
+    "courses": "Number Quest conta il lavoro fatto con un account scolastico, o da quando lo studente è entrato in questa classe. Una sola verifica (3 domande) non basta per raggiungere uno standard."
   },
   "empty": {
     "title": "Ancora nessuno standard Common Core",
@@ -105,7 +108,8 @@
     "view": "Vedi gli standard",
     "editorNone": "Ancora nessuno standard Common Core assegnato.",
     "onSteps": "Standard assegnati ai passi: {count}",
-    "gameCodes": "Standard {framework} che questo gioco esercita"
+    "gameCodes": "Standard {framework} che questo gioco esercita",
+    "gameNeedsGrade": "Questo gioco ha livelli per più classi. Indica la classe della lezione (o blocca il passaggio su un livello) perché i suoi standard contino come esercizio."
   },
   "errors": {
     "badCode": "Questo non è un codice Common Core.",

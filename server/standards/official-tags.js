@@ -41,12 +41,46 @@ export const GAMES = Object.freeze({
 });
 /** Codes of an official game (by slug) in a framework ([] when none). */
 export const gameCodes = (slug, framework) => [...(((GAMES[slug] || {})[framework]) || [])];
-/** The codes a lesson's game step practises: the game's, except Tug of Math, which is played at one grade: the lesson's
- *  grade ("3", "K"), or nothing when the lesson has none (a step never claims all eight grades at once). */
-export function stepGameCodes(slug, framework, grade = '') {
+/** Fraction Factory's chapters (seed-games/fraction-factory.html CHAPTERS), for a step locked to one. */
+export const FRACTION_CHAPTERS = Object.freeze({
+  folds: ['2.G.A.3'], 'first-cuts': ['3.NF.A.1', '3.NF.A.2'], 're-slice': ['3.NF.A.3', '4.NF.A.1', '4.NF.A.2'], recipe: ['4.NF.B.3'],
+});
+/** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail']);
+/** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
+const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
+const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
+/** The track a step is locked to (lesson_steps.options, services/play-params.js), as codes, or null when not known. */
+function lockedCodes(slug, framework, options) {
+  const p = optionsOf(options);
+  if (p.get('lock') !== '1' || framework !== 'ccss-math') return null;
+  if (slug === 'sum-racer') { const n = /^\d{1,2}$/.test(p.get('level') || '') ? +p.get('level') : 0; return SUM_RACER_TRACKS[n] ? [...SUM_RACER_TRACKS[n]] : null; }
+  if (slug === 'fraction-factory') { const ch = p.get('chapter') || ''; return Object.hasOwn(FRACTION_CHAPTERS, ch) ? [...FRACTION_CHAPTERS[ch]] : null; }
+  return null;
+}
+/** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one
+ *  level (Shark Plank, Word Peek) gives all its codes. A levelled game (LEVELLED) gives only what the step is known to
+ *  play: the track or chapter the step is locked to (options "lock=1&level=4", "lock=1&chapter=recipe"), else its codes
+ *  of the lesson's grade ("3", "K"; Tug of Math: that grade's question kinds), else nothing: a step never claims every
+ *  grade a game spans, because it does not record which track the student played. */
+export function stepGameCodes(slug, framework, grade = '', options = '') {
+  if (!LEVELLED.includes(slug)) return gameCodes(slug, framework);
+  const locked = lockedCodes(slug, framework, options);
+  if (locked) return locked;
+  if (!grade) return [];
   if (slug === 'tug-of-math') return framework === 'ccss-math' && TUG_GRADES[grade] ? [...TUG_GRADES[grade]] : [];
+  return gameCodes(slug, framework).filter(c => codeGrade(c) === grade);
+}
+/** The codes a lesson's game step covers (the "Covered by" column and the grade summary, never practice): what it
+ *  practises, or, for a levelled game whose step says nothing either way (no grade, no lock), all the game's codes as
+ *  coverage only. Tug of Math is the exception: it spans all eight grades, so an ungraded step covers nothing. */
+export function stepGameCover(slug, framework, grade = '', options = '') {
+  const practice = stepGameCodes(slug, framework, grade, options);
+  if (practice.length || !LEVELLED.includes(slug) || slug === 'tug-of-math' || grade || lockedCodes(slug, framework, options)) return practice;
   return gameCodes(slug, framework);
 }
+/** A lesson's grade field ("3", "Grade 3", "K", "grade k") as a CCSS grade, or '' when it names none. */
+export const lessonGrade = g => { const m = /^\s*(?:grade\s*)?(k|[1-8])\b/i.exec(String(g || '')); return m ? m[1].toUpperCase() : ''; };
 /** Every framework a game has codes in. */
 export const gameFrameworks = slug => Object.keys(GAMES[slug] || {}).filter(f => (GAMES[slug][f] || []).length);
 

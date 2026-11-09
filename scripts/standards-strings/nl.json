@@ -52,7 +52,10 @@
     "checked": "Vragen: goede antwoorden van de beantwoorde vragen over de standaard (lesquizzen, live spellen, Number Quest-checks).",
     "rubric": "Rubric: rubricscores op de standaard, als deel van de hoogste score. Zichtbaar zodra rubrics Common Core-standaarden dragen.",
     "meets": "Behaald: een leerling behaalt een standaard met minstens 80% goed bij 3 of meer vragen, of een rubricscore van minstens twee derde. De klas behaalt hem als 80% van de leerlingen hem behaalt.",
-    "needs": "Even kijken: leerlingen die 2 of meer vragen over de standaard beantwoordden en er geen goed hadden. Alleen leraren zien dit."
+    "needs": "Even kijken: leerlingen die 2 of meer vragen over de standaard beantwoordden en er geen goed hadden. Alleen leraren zien dit.",
+    "games": "Spellen met levels voor meerdere groepen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) tellen alleen als oefening voor de groep van de les, of voor het level waarop de stap vastgezet is. Bij een les zonder groep staan ze alleen onder Gedekt door.",
+    "live": "Live-spellen zoals Tug of Math Live slaan niet op welke vraag over welke standaard ging, dus de antwoorden van een leerling worden verdeeld over de standaarden van het spel. Die getallen zijn schattingen.",
+    "courses": "Number Quest telt werk gedaan met een schoolaccount, of sinds de leerling bij deze klas kwam. Eén check (3 vragen) is alleen niet genoeg om een standaard te halen."
   },
   "empty": {
     "title": "Nog geen Common Core-standaarden",
@@ -105,7 +108,8 @@
     "view": "Standaarden bekijken",
     "editorNone": "Nog geen Common Core-standaarden gekoppeld.",
     "onSteps": "Standaarden op stappen: {count}",
-    "gameCodes": "{framework}-standaarden die dit spel oefent"
+    "gameCodes": "{framework}-standaarden die dit spel oefent",
+    "gameNeedsGrade": "Dit spel heeft levels voor meerdere groepen. Geef de les een groep (of zet de stap vast op één level) zodat de standaarden als geoefend tellen."
   },
   "errors": {
     "badCode": "Dat is geen Common Core-code.",

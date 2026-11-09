@@ -3355,3 +3355,23 @@ Owner: "Build all of those suggestions" (teacher portal: grading and curriculum 
 - **No new env vars, no owner action needed.**
 - **Checks:** tests/unit/standards-ccss.test.js (data, tags, coverage, mastery, rubric sources, authorization),
   tests/e2e/teach-standards.spec.js (flow, a student's 404s, 360/390/1280, light/dark, Hebrew).
+- **Review fixes (9 Nov 2026):**
+  - The picker's "Add to" (#sf-t) is a `data-autosubmit` select: choosing a step reloads with `?to=`, and
+    public/js/standards.js also copies its value into every "+ Add" form, so an Add never goes to the last searched
+    target. e2e: pick a step, press "+ Add" without Search, the tag is on that step.
+  - **Levelled games** (official-tags.js `LEVELLED`: Tug of Math, Sum Racer, Fraction Factory, Word Trail) are no
+    longer credited with every grade they span. `stepGameCodes(slug, fw, grade, options)` (practice) gives the track
+    or chapter the step is locked to (`lock=1&level=N` for Sum Racer, `lock=1&chapter=…` for Fraction Factory,
+    `FRACTION_CHAPTERS`), else the codes of the lesson's grade, else nothing. `stepGameCover` (coverage only, never
+    practice): the same, or for an ungraded, unlocked step of Sum Racer / Fraction Factory / Word Trail all the game's
+    codes; Tug of Math still covers nothing without a grade (eight grades would swamp the summary). The lesson editor's
+    step chips use the same function and show a hint to give the lesson a grade when only coverage is known.
+  - **Tug of Math Live** (a run with no per-item codes): a student's correct/answered is shared out across the grade's
+    codes (20 answers over 2 codes: 10 each), not counted in full for each; the legend says these are estimates.
+  - **Number Quest** progress is not tied to a class. It counts for a school account (the school owns it), or for a
+    student who joined with their own account only from their class `joined_at` (their home work before joining is
+    left out). One course check (3 questions) alone no longer makes a student "meets": it takes a second check or other
+    questions on the code. Both are in the legend.
+  - Learn (staff): the Standard box has its own visible Filter button (learn.js hides the form's no-JS one), and the
+    course cards are left out while `?std=` is on (courses are tagged by step, not by course).
+  - RTL: the group headings put the English domain name on its own line under the grade (standards.css).

@@ -29,11 +29,13 @@ export function codeChips(t, framework, codes, { label = null } = {}) {
 }
 
 const groupBy = (rows, key) => { const m = new Map(); for (const r of rows) { const k = key(r); if (!m.has(k)) m.set(k, []); m.get(k).push(r); } return [...m]; };
-const groupName = (t, fw, r) => html`<bdi>${gradeName(t, r.grade)}</bdi> · <bdi lang="en" dir="ltr">${fw.domains[r.domain] || r.domain}</bdi>`;
+// Grade and domain: one line ("Grade 3 · Operations and Algebraic Thinking"); in RTL the English domain goes on its own
+// line (standards.css) so it never splits across two right-aligned lines.
+const groupName = (t, fw, r) => html`<span class="std-gname"><bdi>${gradeName(t, r.grade)}</bdi><span class="std-gsep" aria-hidden="true"> · </span><bdi class="std-gdom" lang="en" dir="ltr">${fw.domains[r.domain] || r.domain}</bdi></span>`;
 
 function legend(t) {
   return html`<details class="csq-std-legend panel"><summary><b>${t('standards.legend.h')}</b></summary><ul class="plain small">
-    ${['sources', 'practiced', 'checked', 'rubric', 'meets', 'needs'].map(k => html`<li>${t(`standards.legend.${k}`)}</li>`)}
+    ${['sources', 'practiced', 'games', 'checked', 'live', 'courses', 'rubric', 'meets', 'needs'].map(k => html`<li>${t(`standards.legend.${k}`)}</li>`)}
   </ul><p class="small muted">${t('cs.standards.privacy')}</p></details>`;
 }
 const chip = (t, s) => html`<span class="csq-std-status st-${s}">${t(`standards.status.${s}`)}</span>`;
@@ -146,7 +148,7 @@ export function lessonBody(req, { l, steps, tags, framework, filters, results, e
       <div class="field"><label for="sf-g">${t('standards.class.grade')}</label><select class="input" id="sf-g" name="grade" data-autosubmit><option value="">${t('standards.lesson.gradeAny')}</option>${fw.grades.map(g => html`<option value="${g}" ${filters.grade === g ? 'selected' : ''}>${gradeName(t, g)}</option>`)}</select></div>
       <div class="field"><label for="sf-d">${t('standards.lesson.domain')}</label><select class="input" id="sf-d" name="domain" data-autosubmit><option value="">${t('standards.lesson.domainAll')}</option>${domains.map(d => html`<option value="${d}" ${filters.domain === d ? 'selected' : ''}>${d} · ${fw.domains[d]}</option>`)}</select></div>
       <div class="field wide"><label for="sf-q">${t('standards.lesson.search')}</label><input class="input" id="sf-q" name="q" type="search" value="${filters.q}" maxlength="80" placeholder="${framework === 'ccss-ela' ? t('standards.lesson.searchHintEla') : t('standards.lesson.searchHint')}"></div>
-      <div class="field"><label for="sf-t">${t('standards.lesson.addTo')}</label><select class="input" id="sf-t" name="to">${targets.map(([id, name]) => html`<option value="${id}" ${filters.to === id ? 'selected' : ''}>${name}</option>`)}</select></div>
+      <div class="field"><label for="sf-t">${t('standards.lesson.addTo')}</label><select class="input" id="sf-t" name="to" data-autosubmit data-addto>${targets.map(([id, name]) => html`<option value="${id}" ${filters.to === id ? 'selected' : ''}>${name}</option>`)}</select></div>
       <div class="formacts wide"><button class="btn btn-primary" type="submit">🔎 ${t('standards.lesson.search')}</button></div>
     </form>
     <p class="small muted" role="status">${t('standards.lesson.results', { count: results.total })}${results.total > results.list.length ? html` ${t('standards.lesson.more', { shown: results.list.length })}` : ''}</p>
