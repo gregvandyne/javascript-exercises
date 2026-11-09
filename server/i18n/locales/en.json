@@ -4183,7 +4183,9 @@
       "a8": "Yes. Lessons record each student’s progress, game scores and written answers. You see them on the class’s Progress tab, and can download each student’s lesson progress as a spreadsheet (CSV).",
       "q9": "Which languages are there?",
       "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own.",
-      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
+      "q1paid": "Is Oomba Academy free for teachers?",
+      "a1paid": "Playing, classes, lessons, progress and Oomba Live are free, and every student gets free Builder messages each day. The optional Teacher plan adds a shared daily pool of AI builds for your classes, with unlimited students. Try it free for 14 days, no card needed. Prices are on the plans page."
     },
     "setup": {
       "lead": "Tell us a little about your school. We'll set it up within 1 school day and reply to your email with what to do next. Setting up a school is free.",

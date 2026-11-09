@@ -4156,7 +4156,9 @@
       "a8": "Sim. As aulas registram o progresso, as pontuações nos jogos e as respostas escritas de cada aluno. Você vê tudo na aba Progresso da turma e pode baixar o progresso de cada aluno nas aulas como planilha (CSV).",
       "q9": "Quais idiomas existem?",
       "a9": "{count} idiomas, entre eles espanhol, português, francês, alemão, árabe, hebraico e japonês. Cada aluno escolhe o seu.",
-      "a4google": "Os alunos nunca digitam um e-mail, e nunca pedimos a idade nem o endereço deles. Se a sua escola usa o login com o Google, guardamos o e-mail Google escolar de cada aluno só para reconhecer a conta dele. Não há anúncios nem cookies de rastreamento. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos."
+      "a4google": "Os alunos nunca digitam um e-mail, e nunca pedimos a idade nem o endereço deles. Se a sua escola usa o login com o Google, guardamos o e-mail Google escolar de cada aluno só para reconhecer a conta dele. Não há anúncios nem cookies de rastreamento. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
+      "q1paid": "A Oomba Academy é grátis para professores?",
+      "a1paid": "Jogar, as turmas, as aulas, o progresso e o Oomba Live são grátis, e cada aluno ganha mensagens grátis para o Construtor todos os dias. O plano Professor, opcional, adiciona para as suas turmas uma reserva diária compartilhada de criações com IA, com alunos ilimitados. Teste grátis por 14 dias, sem cartão. Os preços estão na página de planos."
     },
     "setup": {
       "lead": "Conte um pouco sobre a sua escola. Vamos configurá-la em até 1 dia letivo e responder ao seu e-mail com os próximos passos. Configurar uma escola é grátis.",

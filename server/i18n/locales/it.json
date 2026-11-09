@@ -4155,7 +4155,9 @@
       "a8": "Sì. Le lezioni registrano i progressi, i punteggi nei giochi e le risposte scritte di ogni studente. Li trova nella sezione Progressi della classe, e può scaricare i progressi di ogni studente nelle lezioni come foglio di calcolo (CSV).",
       "q9": "In quali lingue è disponibile?",
       "a9": "In {count} lingue, tra cui spagnolo, portoghese, francese, tedesco, arabo, ebraico e giapponese. Ogni studente sceglie la sua.",
-      "a4google": "Gli studenti non scrivono mai un indirizzo email, e non chiediamo mai la loro età o il loro indirizzo di casa. Se la sua scuola usa l'accesso con Google, conserviamo l'email Google scolastica di ogni studente solo per riconoscere il suo account. Non ci sono pubblicità né cookie di tracciamento. La nostra <a href=\"{href}\">informativa sulla privacy</a> elenca esattamente cosa conserviamo."
+      "a4google": "Gli studenti non scrivono mai un indirizzo email, e non chiediamo mai la loro età o il loro indirizzo di casa. Se la sua scuola usa l'accesso con Google, conserviamo l'email Google scolastica di ogni studente solo per riconoscere il suo account. Non ci sono pubblicità né cookie di tracciamento. La nostra <a href=\"{href}\">informativa sulla privacy</a> elenca esattamente cosa conserviamo.",
+      "q1paid": "Oomba Academy è gratis per gli insegnanti?",
+      "a1paid": "Giocare, le classi, le lezioni, i progressi e Oomba Live sono gratis, e ogni studente riceve ogni giorno messaggi gratuiti al Costruttore. Il piano Insegnante, facoltativo, aggiunge per le tue classi una scorta giornaliera condivisa di creazioni con l'IA, con studenti illimitati. Provalo gratis per 14 giorni, senza carta. I prezzi sono nella pagina dei piani."
     },
     "setup": {
       "lead": "Ci racconti qualcosa della sua scuola. La attiveremo entro 1 giorno di scuola e le risponderemo via email con i passaggi successivi. Attivare una scuola è gratis.",
