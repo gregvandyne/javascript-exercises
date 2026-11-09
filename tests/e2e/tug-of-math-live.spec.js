@@ -77,6 +77,9 @@ test('a live room: host and four players on phones, two teams, keypads and keybo
   await expect(host.locator('#lv-tug-sample')).toContainText(/[+−]/);
   await host.selectOption('#lv-tug-len', '120');
   await host.locator('input[name="audience"][value="open"]').check();
+  // DemoTeacher may still host a game an earlier spec left open (tts.spec.js): "Replace it?" yes, as a teacher starting
+  // a new game would answer (Playwright's default answer is no, which goes back to that old game).
+  host.on('dialog', d => d.accept());
   await host.locator('#lv-new button[type=submit]').click();
   await host.waitForURL(/\/live\/host\//);
   const code = (await host.locator('#lv-code').textContent()).replace(/\s/g, '');

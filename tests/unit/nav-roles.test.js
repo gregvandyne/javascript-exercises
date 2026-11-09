@@ -110,6 +110,14 @@ test('every role\'s phone tab bar and desktop top bar on the page, plans on and 
 });
 
 test('the kid\'s tab bar and top bar are byte for byte as before (Home · Search · Build · Friends · Plans · Me)', async () => {
+  // A new kid's first sign-in brings the team's automatic welcome (services/team.js, docs/decisions.md "Automatic
+  // welcome"): their one unread message, so a badge on Friends. Read, the bars are exactly as before.
+  const official = auth.getUserByName(auth.OFFICIAL);
+  await get(kid, '/');
+  const unread = q.all('SELECT from_id FROM chat_messages WHERE to_id=? AND read_at IS NULL', kid.id);
+  assert.deepEqual(unread.map(m => m.from_id), [official.id], 'the team\'s welcome is the kid\'s only unread message');
+  assert.match(tabbar((await get(kid, '/')).text), /<span class="tab-t">Friends<\/span><span class="badge" aria-label="1 new">1<\/span>/);
+  q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND read_at IS NULL', Date.now(), kid.id);
   const page = (await get(kid, '/')).text;
   assert.equal(tabbar(page), KID_TAB);
   assert.equal(topnav(page), KID_TOP);

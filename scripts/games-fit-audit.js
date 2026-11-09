@@ -4,7 +4,8 @@
 // top of something else or squashed (tests/e2e/frame-fit.js), and that the page never scrolls sideways. Saves a
 // screenshot of every check. Tablets in both orientations are a required check for every game (docs/decisions.md).
 //
-//   BASE=http://localhost:3000 OUT=/tmp/games-fit [GAMES=atlas-quest,castle-clash] node scripts/games-fit-audit.js
+//   BASE=http://localhost:3000 OUT=/tmp/games-fit [GAMES=atlas-quest,castle-clash] [ADMIN_USER=admin ADMIN_PASS=...] node scripts/games-fit-audit.js
+//   (the admin's sign-in opens the course games, which a guest can't open on their own)
 //   (npm run layout:games; tests/e2e/games-fit.spec.js runs it). Exit code 1 when anything is wrong.
 import { chromium } from '@playwright/test';
 import fs from 'node:fs';
@@ -36,7 +37,9 @@ async function check(page, slug, size, stage, report) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  // BRB_CHROMIUM, else the repo's pinned browser (playwright.config.js) where it is installed, else Playwright's own.
+  const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p));
+  const browser = await chromium.launch(exe ? { executablePath: exe } : {});
   const report = [];
   for (const slug of GAMES) {
     for (const [size, s] of Object.entries(SIZES)) {
@@ -44,6 +47,14 @@ async function check(page, slug, size, stage, report) {
       const page = await ctx.newPage();
       try {
         await page.goto(`${B}/play/${slug}`, { waitUntil: 'domcontentloaded' });
+        // A course game has no page of its own (docs/decisions.md: course games are played only inside their course), so
+        // a guest lands on the course page; the platform admin may open it directly, and it is checked the same way.
+        if (new URL(page.url()).pathname.startsWith('/courses/')) {
+          if (!process.env.ADMIN_PASS) throw new Error('a course game: set ADMIN_USER and ADMIN_PASS to check it');
+          const r = await page.request.post(`${B}/api/auth/login`, { data: { username: process.env.ADMIN_USER || 'admin', password: process.env.ADMIN_PASS }, headers: { 'sec-fetch-site': 'same-origin' } });
+          if (!r.ok()) throw new Error(`admin sign-in for a course game: ${r.status()}`);
+          await page.goto(`${B}/play/${slug}`, { waitUntil: 'domcontentloaded' });
+        }
         await page.waitForSelector('#gameframe', { timeout: 20000 });
         // Fonts, the kit and 3D scenes take a moment; a game is judged once it has settled.
         for (let i = 0; i < 40 && !(gameFrame(page) && await gameFrame(page).evaluate(() => document.readyState === 'complete').catch(() => false)); i++) await sleep(250);

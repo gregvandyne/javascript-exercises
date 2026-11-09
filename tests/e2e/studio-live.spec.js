@@ -32,8 +32,12 @@ async function routeLive(page, serve) {
 /** Route the Studio state: fn(json) changes what the page reads. */
 const routeState = (page, id, fn) => page.route(u => u.pathname === `/api/studio/${id}`, async route => {
   if (route.request().method() !== 'GET') return route.continue();
-  const res = await route.fetch(); const json = await res.json();
-  await route.fulfill({ response: res, json: (await fn(json)) || json });
+  // A state read the page dropped (a reload while it was on its way) has nobody left to answer: Playwright disposes its
+  // response, and reading it would fail the test for a request no page is waiting for.
+  let res, json;
+  try { res = await route.fetch(); json = await res.json(); }
+  catch (e) { if (/disposed/.test(e.message)) return; throw e; }
+  await route.fulfill({ response: res, json: (await fn(json)) || json }).catch(e => { if (!/disposed|already handled|closed/i.test(e.message)) throw e; });
 });
 const hello = turn => [['hello', { now: Date.now(), turn }], ['caughtup', {}]];
 const live = page => page.locator('.stp[data-state="live"]');

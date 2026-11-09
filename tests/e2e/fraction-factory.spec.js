@@ -28,7 +28,7 @@ const T = (f, fn, ...a) => f.evaluate(([fn, a]) => window.__brbTest[fn](...a), [
 test('Fraction Factory runs on the kit: pinned tags, Tally, a First Cuts order served in lesson mode, the label grammar, the quest code', async ({ page }) => {
   const { f, errors } = await open(page);
   const t = await tags(f);
-  expect(t.map(x => x[0]).filter(s => s.startsWith('/vendor/oomba-kit/'))).toEqual(['/vendor/oomba-kit/1.1.2/oomba-kit.js', '/vendor/oomba-kit/1.1.2/packs/art-props.js', '/vendor/oomba-kit/1.1.2/packs/art-animals.js', '/vendor/oomba-kit/1.1.2/packs/art-school.js', '/vendor/oomba-kit/1.1.2/packs/style-bold.js']);
+  expect(t.map(x => x[0]).filter(s => s.startsWith('/vendor/oomba-kit/'))).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-props.js', '/vendor/oomba-kit/1.1.5/packs/art-animals.js', '/vendor/oomba-kit/1.1.5/packs/art-school.js', '/vendor/oomba-kit/1.1.5/packs/style-bold.js']);
   for (const x of t) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
   await expect(f.locator('.ok-title-screen .ok-hot')).toBeVisible();
   await T(f, 'skipAnimations');

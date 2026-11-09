@@ -379,3 +379,21 @@ test('account deletion removes course progress and the band', () => {
   assert.equal(q.get('SELECT 1 FROM course_progress WHERE user_id=?', kid.id), undefined);
   assert.equal(q.get('SELECT 1 FROM course_bands WHERE user_id=?', kid.id), undefined);
 });
+
+test('a grown-up reads a course page Home links to, with nothing to pick; a step goes back to it (no 404)', async () => {
+  const mum = auth.createUser({ username: 'CourseMum', password: 'a-long-password-1', accountType: 'grownup' });
+  const page = await get('/courses/cs-quest', mum);
+  assert.equal(page.status, 200);
+  assert.doesNotMatch(page.text, /action="\/courses\/cs-quest\/band"/, 'no band to pick');
+  const step = await get('/courses/cs-quest/1b-1.1', mum);
+  assert.equal(step.status, 302); assert.equal(step.location, '/courses/cs-quest');
+  assert.equal(q.get('SELECT COUNT(*) n FROM course_bands WHERE user_id=?', mum.id).n, 0);
+  assert.equal(q.get('SELECT COUNT(*) n FROM course_progress WHERE user_id=?', mum.id).n, 0);
+  // A win the guest they signed in from left pending (login hands it over: routes/auth.js) never becomes a grown-up's
+  // progress, on either course page.
+  const won = C.getStep(course, '1b-1.1');
+  q.run('INSERT INTO course_pending_wins(user_id, course, step, kind, score, created_at) VALUES (?,?,?,?,?,?)', mum.id, 'cs-quest', won.key, 'win', null, now());
+  for (const slug of C.COURSES.map(c => c.slug)) assert.equal((await get(`/courses/${slug}`, mum)).status, 200, slug);
+  assert.equal(q.get('SELECT COUNT(*) n FROM course_progress WHERE user_id=?', mum.id).n, 0);
+  assert.equal(q.get('SELECT COUNT(*) n FROM course_bands WHERE user_id=?', mum.id).n, 0);
+});

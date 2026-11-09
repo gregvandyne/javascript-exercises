@@ -151,9 +151,11 @@ test('Quest Race, open room: guests join with generated names, see each other mo
 test('Question Battle from the landing page: questions on the projector, answers on devices, ended early by the host', async ({ browser }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
-  await host.goto('/live?mode=battle');
+  // The maths starter (questions the test can answer): since #120 the landing's default is the mixed question bank.
+  await host.goto('/live?mode=battle&starter=math-8');
   await expect(host.locator('input[name="pick"][value="mode:battle"]')).toBeChecked();
   await expect(host.locator('#lv-sets')).toBeVisible();
+  await expect(host.locator('#lv-set')).toHaveValue('starter:math-8');
   await host.locator('input[name="audience"][value="open"]').check();
   host.on('dialog', d => d.accept());
   await host.click('#lv-new button[type=submit]');
@@ -337,13 +339,15 @@ test('phone 360px and right to left: the join card, the play page and the code f
   for (const p of [he, ar, host]) await p.context().close();
 });
 
-test('40 bot seats moving and a low-tier device: positions arrive, the crowd stays within its draw-call budget', async ({ browser, baseURL, request }) => {
+// A full Quest Race room: 39 bots and the player make 40, the game's cap since #141 (docs/live-capacity.md); a 41st seat
+// is refused as "This game is full".
+test('a full room (39 bot seats moving and a low-tier device): positions arrive, the crowd stays within its draw-call budget', async ({ browser, baseURL, request }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
   const code = await openRoom(host, { pick: 'mode:quest-race', items: ITEMS });
   const origin = new URL(baseURL).origin, wsUrl = origin.replace(/^http/, 'ws') + '/api/live/ws';
   const bots = [];
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 39; i++) {
     const r = await request.post('/api/live/join', { data: { code }, headers: { Origin: origin, 'X-Forwarded-For': `10.9.${i}.1` } });
     expect(r.status()).toBe(200);
     const { tok } = await r.json();
@@ -354,6 +358,11 @@ test('40 bot seats moving and a low-tier device: positions arrive, the crowd sta
     bots.push(ws);
   }
   const me = await player(browser, code);
+  // The room is full now: a 41st player is told so, with the number.
+  const late = await (await browser.newContext()).newPage(); await ownIp(late);
+  await late.goto(`/join#${code}`); await late.click('#lv-join button[type=submit]');
+  await expect(late.locator('#lv-err')).toHaveText('This game is full (40 players).');
+  await late.context().close();
   await me.goto(me.url() + '?okTier=low');
   const f = await liveFrame(me, s => s.started3d);
   const START = await f.evaluate(() => window.QR.START);

@@ -115,7 +115,9 @@ test('admin pages keep every item: shortcuts, all tabs, filters, CSV, forms and 
     await page.goto('/admin?tab=messages');
     const order = await page.evaluate(() => ['#conv-h', '#ann-h', '#wel-h'].map(s => document.querySelector(s).getBoundingClientRect().top));
     expect(order).toEqual([...order].sort((a, b) => a - b));
-    await has('#announce'); await has('.inboxrow', 1);
+    // The conversation this spec started is a row; specs that ran earlier on the same server add their new accounts'
+    // automatic welcomes (services/team.js) as rows too, so the count depends on the run, the DemoStudent row does not.
+    await has('#announce'); await has('.inboxrow[href="/admin/messages/DemoStudent"]', 1);
     for (const w of ['kid', 'grownup', 'teacher']) { await has(`#wel-${w} textarea[name="text"]`); await has(`#wel-${w} input[name="on"]`); }
     await text('Welcome message for new kids', 'Welcome message for new parents', 'Welcome message for new teachers and school staff');
 

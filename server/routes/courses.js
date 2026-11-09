@@ -174,7 +174,9 @@ function nqReaction(step, itemId, choice, right) {
  *  nothing. Called wherever the student meets their course state; a no-op for guests and for students
  *  with nothing pending. */
 function honourPendingWins(u) {
-  if (!u || u.is_guest) return;
+  // A grown-up has no course progress (they read the course pages Home links to: routes/family.js): a win stashed by the
+  // guest they signed in from stays unapplied rather than becoming a grown-up's progress.
+  if (!u || u.is_guest || isGrownup(u)) return;
   for (const w of C.applyPendingWins(u)) {
     const c = C.getCourse(w.course); const step = c && C.getStep(c, w.step);
     if (!step || !NQ.isNumberQuest(c)) continue;

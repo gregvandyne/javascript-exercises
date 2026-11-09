@@ -52,8 +52,15 @@ async function signIn(s, name) {
   const u = auth.createUser({ username: name + Math.floor(Math.random() * 1e5), password: 'secret123' });
   return { u, cookie: sessionOf(await s.post('/api/auth/login', { username: u.username, password: 'secret123' })) };
 }
-// Consonants only: sign-up refuses long digit runs (they look like phone numbers).
-const uniq = p => p + Array.from({ length: 6 }, () => 'bcdfghjkmnpqrstvwxz'[Math.floor(Math.random() * 19)]).join('');
+// Consonants only: sign-up refuses long digit runs (they look like phone numbers). About 1 random run in 100 is a name
+// the name filter refuses (a slur's letters, a link-code look: auth.cleanName), which made the sign-up test fail now and
+// then; draw again until sign-up's own name check takes it, so the test is only ever about the theme.
+const uniq = p => {
+  for (;;) {
+    const n = p + Array.from({ length: 6 }, () => 'bcdfghjkmnpqrstvwxz'[Math.floor(Math.random() * 19)]).join('');
+    if (auth.cleanName(n, k => k).ok && !auth.getUserByName(n)) return n;
+  }
+};
 const savedTheme = id => q.get('SELECT theme FROM users WHERE id=?', id).theme;
 
 test('HTTP: data-theme and color-scheme only follow an explicit choice', async () => {
@@ -174,7 +181,7 @@ test('a theme picked before signing up (or playing as a guest) comes along to th
     assert.equal(r.status, 200);
     assert.equal(auth.getUserByName(name).theme, 'dark');
     const plain = uniq('ThemeNo');
-    await s.post('/api/auth/signup', { username: plain, password: 'secret123' });
+    assert.equal((await s.post('/api/auth/signup', { username: plain, password: 'secret123' })).status, 200);
     assert.equal(auth.getUserByName(plain).theme, '', 'no choice made: nothing saved');
     const g = await s.post('/api/auth/guest', {}, { Cookie: 'theme=light' });
     assert.equal(auth.getUser((await g.json()).user.id).theme, 'light');
