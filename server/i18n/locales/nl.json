@@ -872,7 +872,8 @@
       "intro": {
         "h": "Over dit beleid",
         "p1": "Op deze pagina lees je hoe je een abonnement op Oomba Academy opzegt en wanneer je je geld terugkrijgt. Deze pagina hoort bij onze <a href=\"/terms\">Servicevoorwaarden</a>.",
-        "p2": "Spelen en de gratis dagelijkse berichten aan de Bouwer zijn altijd gratis. Dit beleid gaat alleen over de betaalde abonnementen <b>Gezin</b> en <b>School</b>, die meer berichten aan de Bouwer geven."
+        "p2": "Spelen en de gratis dagelijkse berichten aan de Bouwer zijn altijd gratis. Dit beleid gaat alleen over de betaalde abonnementen <b>Gezin</b> en <b>School</b>, die meer berichten aan de Bouwer geven.",
+        "p3": "Vonkpakketten, eenmalige aanvullingen van berichten aan de Bouwer voor een gezin met een abonnement, hebben hieronder een eigen deel."
       },
       "cancel": {
         "h": "Opzeggen",
@@ -891,6 +892,15 @@
         "p5": "<b>Zo vraag je het aan:</b> mail naar <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> vanaf elk willekeurig adres. Vermeld de naam van je ouderaccount (of school), en de datum en het bedrag van je betaalbewijs van Stripe. We reageren binnen 3 werkdagen.",
         "p6": "<b>Wanneer je het geld krijgt:</b> de terugbetaling gaat terug naar de kaart of rekening waarmee je hebt betaald. Banken hebben meestal 5 tot 10 werkdagen nodig om het te laten zien.",
         "p7": "<b>Scholen die op factuur betalen:</b> de 14 dagen beginnen op de datum waarop de betaling bij ons binnenkomt. Betaald met een cheque? Dan betalen we terug per cheque of bankoverschrijving."
+      },
+      "sparks": {
+        "h": "Vonkpakketten",
+        "p1": "Een <b>Vonkpakket</b> is één betaling voor extra berichten aan de Bouwer, voor een gezin met een Basis- of Gezinsabonnement. Het wordt niet verlengd, dus er is niets op te zeggen.",
+        "li1": "<b>Ongebruikt pakket, binnen 14 dagen:</b> vraag je erom binnen <b>14 dagen</b> na het kopen van een pakket en is er nog geen enkel bericht uit gebruikt, dan betalen we het volledig terug. Vraag het op dezelfde manier als voor een abonnement (zie <b>Zo vraag je het aan</b> hierboven).",
+        "li2": "<b>Verder worden pakketten niet terugbetaald:</b> zodra er berichten uit een pakket zijn gebruikt, of na 14 dagen, betalen we het niet terug, tenzij de wet waar je woont dat verplicht.",
+        "li3": "<b>Wat een terugbetaling doet:</b> zodra de terugbetaling rond is, worden de overgebleven berichten in het pakket weggehaald. Een volledige terugbetaling beëindigt het pakket; een gedeeltelijke haalt dat deel van de berichten weg. Berichten die al gebruikt zijn, blijven gebruikt.",
+        "li4": "<b>Wanneer pakketten aflopen:</b> de berichten van een pakket lopen een jaar na aankoop af. Tot dan blijft het pakket werken, ook als je abonnement stopt. Berichten die over zijn als een pakket afloopt, worden niet terugbetaald.",
+        "li5": "<b>De afschrijving bij je bank betwist?</b> Het pakket stopt meteen, net als een abonnement."
       },
       "special": {
         "h": "Bijzondere gevallen",

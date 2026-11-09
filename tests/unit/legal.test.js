@@ -60,6 +60,20 @@ test('refunds: 14 days for the first payment and yearly renewals only; monthly r
   assert.match(decode((await get('/terms')).text).replace(/<[^>]+>/g, ''), /Monthly renewals are not refunded/);
 });
 
+test('/refunds: Spark Packs have their own section, matching what the webhook does (it takes back what is left)', async () => {
+  const r = decode((await get('/refunds')).text);
+  assert.match(r, /<section class="panel" id="refunds">[\s\S]*<section class="panel" id="sparks">[\s\S]*<section class="panel" id="special">/, 'after Refunds, before Special cases');
+  const t = r.replace(/<[^>]+>/g, '');
+  assert.match(t, /Spark Packs, one-time top-ups of Builder messages/);
+  assert.match(t, /within 14 days of buying a pack and none of its messages have been used, we refund it in full/);
+  assert.match(t, /the messages left in the pack are taken back\. A full refund ends the pack; a partial refund takes back that share of its messages\. Messages already used stay used\./);
+  assert.match(t, /The pack ends straight away, like a plan/);
+  assert.doesNotMatch(mainOf(r), /\$\d/, 'no price');
+  // A translated page has it in its own language, not marked as English.
+  const fr = decode((await get('/refunds', { cookie: 'lang=fr' })).text);
+  assert.match(fr, /<section class="panel" id="sparks"><h2>Packs Étincelle<\/h2>/);
+});
+
 test('/privacy is the site\'s privacy text (the /parents sections) plus grown-up accounts, payments and school billing', async () => {
   const r = decode((await get('/privacy?for=grownups')).text);
   for (const k of ['info.parents.stored.p1', 'info.parents.stored.p2', 'info.parents.never.p1', 'info.parents.ai.p1', 'info.parents.keep.p1', 'info.parents.keep.p2']) {

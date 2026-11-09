@@ -2940,3 +2940,36 @@ card only; every other D16 / §17 rule stays (no prices, plan names or links to 
   receipts. On Render nothing is required (the defaults above); optional `SPARK_PACK_EXPIRY_DAYS`,
   `SPARK_PACK_DAILY_MAX`, `SPARK_PACK_AI_USD_PER_MESSAGE`. Until the Prices exist the picker says "Spark Packs aren't on
   sale yet" and the reconcile job logs the missing lookup keys.
+
+## Billing ready to switch on (8 Nov 2026)
+
+- **What is left is the owner's:** docs/billing-go-live.md lists every Stripe Dashboard and Render step, the decisions
+  still open (Step 0's cost data, D0/D3/D4/D6, the Basic and Family prices, the Spark Pack confirmations, D9's Radar
+  rule, D15's legal sign-off) with the answer the design already assumes, one real purchase and refund, and how to
+  turn billing off again (`BILLING_PUBLIC` off hides plans and keeps existing ones; no Stripe key stops billing). No
+  price or open decision was changed.
+- **"Ready to go live?" on /admin/billing** (`services/billing-ready.js`): one row per check, green or red, each with
+  what to do, read by setting name only (never a key, secret, `pmc_` id or a prefix of one; the test greps the page
+  for them): a live restricted key and `STRIPE_LIVE_OK`, the webhook secret, a signed **live-mode** event received
+  (only verified events are stored; a live event while the key is a test key is named), every Price by lookup key for
+  the current key (a test key with every Price says to make them in live mode), `STRIPE_PMC_FAMILY` (and
+  `STRIPE_PMC_SCHOOL`, optional), Stripe Tax collecting (D9), `TERMS_PUBLISHED`, `CONTACT_EMAIL`, an https
+  `PUBLIC_URL`, the AI key, `PRO_TURN_WEIGHT=2` (D5), every paid-plan word translated, and `BILLING_PUBLIC` last.
+  Prices are read from the cache; **Check again** (`?recheck=1`) reads prices and Stripe Tax again. All green folds
+  the list. Phone layout: each check a card, its chip above the words (admin.css, "Ready to go live?").
+- **Translations:** the paid-plan keys were already in all 12 locales (status.md's "English only" line was stale);
+  `server/i18n/billing-keys.js` names them (prefixes plus the `paidN` items of /parents and /safety) and
+  `tests/unit/billing-i18n.test.js` fails on a gap, naming the keys.
+- **/refunds and Spark Packs:** a "Spark Packs" section between Refunds and Special cases, in 13 languages, worded from
+  what sparks.js does: no renewal; a full refund of an unused pack within 14 days; a refund takes back what is left (a
+  full refund ends the pack, a partial one its share; used messages stay used); a dispute ends it; messages end a
+  year after purchase and still work after the plan ends. Marked for the owner's and the lawyer's sign-off
+  (docs/legal-review.md item 45). `LEGAL_UPDATED` was left alone: it is also the parent-made accounts' notice version,
+  so it moves on sign-off.
+- **Review fixes:** `BUILDER_FULL_FOR_ALL` (on by default, "Everyone builds like a teacher") makes every signed-in maker
+  build with Pro at one message each, so `PRO_TURN_WEIGHT` changes nothing while it is on: the panel's Pro row says so
+  (green) instead of asking for a setting that does nothing, and docs/billing-go-live.md's D5 row says to measure Step 0
+  and price on Pro messages, or turn `BUILDER_FULL_FOR_ALL` off. The restricted key's permissions gain Products (read)
+  (a subscription is read with its Price's Product). The panel's admin-only test now also tries a grown-up, a guest, a
+  school admin, a teacher and a student. `billing-checkout.test.js`'s Pro-weight check runs with `BUILDER_FULL_FOR_ALL`
+  off, as the other regular-maker tests do (it failed since #257 made the flag default on).

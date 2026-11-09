@@ -421,3 +421,30 @@ Owner decisions for parent-made accounts (no lawyer needed):
       `TTS_CACHE_MB`), a `tts_cache` row per line (hash, sizes, voice, locale, role; no text, no user) and `tts_usage`
       per day (counts and characters only; 90 days). Logs carry a short hash, sizes and timings, never the text or who
       asked. The cost goes into the AI spending caps. Nothing is sold; there are no ads.
+
+### Spark Packs on /refunds (2026-11-08; needs the owner's and the lawyer's sign-off before packs go live)
+
+45. **Refund and cancellation text for Spark Packs** (`info.refunds.intro.p3` and the new `info.refunds.sparks.*`
+    section on /refunds, between "Refunds" and "Special cases"; all 13 languages; docs/decisions.md "Spark Packs").
+    **Status: written, not signed off.** The text says what the code does (server/services/sparks.js):
+    - One payment, no renewal, nothing to cancel.
+    - **A full refund within 14 days of buying a pack if none of its messages were used** (the owner's proposed rule,
+      "refunds of unused packs on request within 14 days"; the same words as the pack picker on /family,
+      `family.sparks.terms.refund`). After that, or once some messages are used, no refund "unless the law where you
+      live says we must". Is a no-refund rule for partly used packs acceptable (state law, and EU/UK rules if packs are
+      ever sold outside the US: there a consumer may lose the withdrawal right only with express consent at purchase)?
+    - **A refund takes back what is left:** the webhook (`charge.refunded`) removes the refunded share of the pack's
+      messages from what is left; a full refund ends the pack; messages already used stay used. A dispute or an early
+      fraud warning ends the pack at once (`charge.dispute.created`, `radar.early_fraud_warning.created`).
+    - **Expiry:** messages end one year after purchase (`SPARK_PACK_EXPIRY_DAYS`, 365: if the owner changes it, this
+      sentence must change too); a pack keeps working after the plan ends; what is left at expiry is not refunded.
+      Questions for counsel: do state gift-card / stored-value laws (some forbid expiry, e.g. California) reach a
+      prepaid bundle of Builder messages? Is writing off unused messages at expiry fine, or must it be refundable?
+    - The intro's sentence "This policy is only about the paid Family and School plans" (`info.refunds.intro.p2`) was
+      left as it was (now followed by the pointer to the packs section). It also doesn't name the Basic plan: please
+      reword it at the same pass (and re-translate it).
+    - **`LEGAL_UPDATED` was not moved** for this change: it is also the version parents acknowledge for parent-made
+      accounts (`notice_version`), so the owner moves it to the sign-off date when approving the text (and updates the
+      date in tests/unit/legal.test.js and tests/e2e/legal.spec.js).
+    - **Sign-off:** _owner: not yet_ · _lawyer: not yet_. Packs stay off sale until both are recorded here (the Spark
+      Pack Prices are not created in live mode before then: docs/billing-go-live.md step 3).

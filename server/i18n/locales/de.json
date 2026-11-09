@@ -872,7 +872,8 @@
       "intro": {
         "h": "Über diese Richtlinie",
         "p1": "Diese Seite erklärt, wie Sie ein Abo bei Oomba Academy kündigen und wann Sie Ihr Geld zurückbekommen. Sie ist Teil unserer <a href=\"/terms\">Nutzungsbedingungen</a>.",
-        "p2": "Spielen und die kostenlosen täglichen Nachrichten an den Baumeister sind immer kostenlos. Diese Richtlinie betrifft nur die bezahlten <b>Familienabos</b> und <b>Schulabos</b>, die mehr Nachrichten an den Baumeister bieten."
+        "p2": "Spielen und die kostenlosen täglichen Nachrichten an den Baumeister sind immer kostenlos. Diese Richtlinie betrifft nur die bezahlten <b>Familienabos</b> und <b>Schulabos</b>, die mehr Nachrichten an den Baumeister bieten.",
+        "p3": "Funkenpakete, einmalige Aufstockungen der Nachrichten an den Baumeister für eine Familie mit Abo, haben unten einen eigenen Abschnitt."
       },
       "cancel": {
         "h": "Kündigen",
@@ -891,6 +892,15 @@
         "p5": "<b>So beantragen Sie eine Erstattung:</b> Schreiben Sie von einer beliebigen Adresse an <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a>. Nennen Sie uns den Namen Ihres Erwachsenenkontos (oder der Schule) sowie Datum und Betrag von Ihrem Stripe-Beleg. Wir antworten innerhalb von 3 Werktagen.",
         "p6": "<b>Wann Sie das Geld bekommen:</b> Die Erstattung geht zurück auf die Karte oder das Konto, mit dem Sie bezahlt haben. Banken brauchen meist 5 bis 10 Werktage, bis sie angezeigt wird.",
         "p7": "<b>Schulen, die auf Rechnung zahlen:</b> Die 14 Tage beginnen an dem Tag, an dem die Zahlung bei uns eingeht. Per Scheck bezahlt? Dann erstatten wir per Scheck oder Banküberweisung."
+      },
+      "sparks": {
+        "h": "Funkenpakete",
+        "p1": "Ein <b>Funkenpaket</b> ist eine einmalige Zahlung für zusätzliche Nachrichten an den Baumeister, für eine Familie mit Basis- oder Familienabo. Es verlängert sich nicht, es gibt also nichts zu kündigen.",
+        "li1": "<b>Ungenutztes Paket, innerhalb von 14 Tagen:</b> Wenn Sie innerhalb von <b>14 Tagen</b> nach dem Kauf eines Pakets darum bitten und noch keine seiner Nachrichten genutzt wurde, erstatten wir es vollständig. Bitten Sie darum wie bei einem Abo (siehe <b>So beantragen Sie eine Erstattung</b> oben).",
+        "li2": "<b>Sonst werden Pakete nicht erstattet:</b> Sobald Nachrichten eines Pakets genutzt wurden oder nach 14 Tagen erstatten wir es nicht, außer das Recht Ihres Wohnorts verlangt es.",
+        "li3": "<b>Was eine Erstattung bewirkt:</b> Sobald die Erstattung durch ist, werden die übrigen Nachrichten des Pakets entfernt. Eine volle Erstattung beendet das Paket; eine Teilerstattung entfernt den entsprechenden Anteil seiner Nachrichten. Bereits genutzte Nachrichten bleiben genutzt.",
+        "li4": "<b>Wann Pakete enden:</b> Die Nachrichten eines Pakets enden ein Jahr nach dem Kauf. Bis dahin funktioniert das Paket auch, wenn Ihr Abo endet. Nachrichten, die beim Ende eines Pakets übrig sind, werden nicht erstattet.",
+        "li5": "<b>Die Abbuchung bei Ihrer Bank angefochten?</b> Das Paket endet sofort, wie ein Abo."
       },
       "special": {
         "h": "Sonderfälle",
