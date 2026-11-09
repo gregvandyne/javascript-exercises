@@ -47,7 +47,18 @@ export async function findTouching(page, { gap = 8, controlGap = 4 } = {}) {
       if (cs.display === 'none' || cs.visibility !== 'visible' || +cs.opacity === 0 || cs.display === 'contents') continue;
       if (/^(HTML|BODY|MAIN|SCRIPT|STYLE|OPTION|OPTGROUP|SVG|IMG|VIDEO|CANVAS|IFRAME|TD|TH|TR|TBODY|THEAD|LABEL)$/.test(el.tagName)) continue;
       if (!looksBoxed(el, cs) || layered(el)) continue;
-      boxes.push({ el, r: { l: r.left + scrollX, t: r.top + scrollY, rt: r.right + scrollX, b: r.bottom + scrollY }, control: el.matches(CONTROL) });
+      // Inside a box that scrolls (or clips) its contents, only the part in view counts: what is scrolled out of sight
+      // can't touch anything outside that box (a card that scrolls past a set height, like the Builder's limit card).
+      let l = r.left, t = r.top, rt = r.right, b = r.bottom;
+      for (let e = el.parentElement; e && e !== document.body && e !== document.documentElement; e = e.parentElement) {
+        const ps = getComputedStyle(e);
+        if (ps.overflowX === 'visible' && ps.overflowY === 'visible') continue;
+        const pr = e.getBoundingClientRect();
+        if (ps.overflowX !== 'visible') { l = Math.max(l, pr.left); rt = Math.min(rt, pr.right); }
+        if (ps.overflowY !== 'visible') { t = Math.max(t, pr.top); b = Math.min(b, pr.bottom); }
+      }
+      if (rt - l < 2 || b - t < 2) continue;
+      boxes.push({ el, r: { l: l + scrollX, t: t + scrollY, rt: rt + scrollX, b: b + scrollY }, control: el.matches(CONTROL) });
     }
     const out = [];
     for (let i = 0; i < boxes.length; i++) {

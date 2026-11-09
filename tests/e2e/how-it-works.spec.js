@@ -16,12 +16,14 @@ const VIEWS = [
 ];
 test.describe.configure({ timeout: 240_000 });
 
-/** Scroll to the bottom a screen at a time (so every section is revealed and every picture loads), then wait. */
+/** Scroll to the bottom a screen at a time (so every section is revealed and every picture loads), then wait. The page
+ *  scrolls smoothly (app.css html{scroll-behavior:smooth}, for anchor jumps), so each jump here is instant: a smooth one
+ *  is still on its way 60 ms later and the next one cuts it short. */
 async function scrollThrough(page) {
   await page.evaluate(async () => {
     const wait = ms => new Promise(r => setTimeout(r, ms));
-    for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.6) { scrollTo(0, y); await wait(60); }
-    scrollTo(0, 0); await wait(60);
+    for (let y = 0; y < document.documentElement.scrollHeight; y += innerHeight * 0.6) { scrollTo({ top: y, behavior: 'instant' }); await wait(60); }
+    scrollTo({ top: 0, behavior: 'instant' }); await wait(60);
   });
   await page.waitForTimeout(800);   // reveal transitions are 0.55 s
 }
@@ -102,7 +104,7 @@ test('1280: the sticky screen shows the step in the middle of the view', async (
     await expect(stage).toHaveAttribute('data-step', '1');
     const n = await page.locator('.how-step').count();
     for (const step of [3, n, 2]) {
-      await page.locator(`#how-${step}`).evaluate(el => { const r = el.getBoundingClientRect(); scrollTo(0, scrollY + r.top + r.height / 2 - innerHeight / 2); });
+      await page.locator(`#how-${step}`).evaluate(el => { const r = el.getBoundingClientRect(); scrollTo({ top: scrollY + r.top + r.height / 2 - innerHeight / 2, behavior: 'instant' }); });
       await expect(stage).toHaveAttribute('data-step', String(step));
       await expect(page.locator(`#how-${step}`)).toHaveAttribute('aria-current', 'step');
       expect(await page.locator('.how-step[aria-current]').count()).toBe(1);
@@ -131,7 +133,7 @@ test('the hero layers move at different speeds as the page scrolls', async ({ br
   await page.goto('/parents');
   const y = () => page.locator('.how-l').evaluateAll(ls => ls.map(l => new DOMMatrix(getComputedStyle(l).transform).m42));
   const before = await y();
-  await page.evaluate(() => scrollTo(0, 400)); await page.waitForTimeout(300);
+  await page.evaluate(() => scrollTo({ top: 400, behavior: 'instant' })); await page.waitForTimeout(300);
   const after = await y();
   expect(before.every(v => Math.abs(v) < 1)).toBe(true);
   // Further back moves less: shapes < wide screen < phone, all upward.
@@ -146,7 +148,7 @@ test('browsers without scroll-driven animations get the parallax from how.js', a
   await page.goto('/teachers');
   const art = page.locator('.how-art');
   await expect(art).toHaveClass(/how-par-js/);
-  await page.evaluate(() => scrollTo(0, 344)); await page.waitForTimeout(200);
+  await page.evaluate(() => scrollTo({ top: 344, behavior: 'instant' })); await page.waitForTimeout(200);
   const p = await art.evaluate(a => +a.style.getPropertyValue('--how-p'));
   expect(p).toBeCloseTo(344 / (860 * 0.8), 2);
   expect(errs).toEqual([]);

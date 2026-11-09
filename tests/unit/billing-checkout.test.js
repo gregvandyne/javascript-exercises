@@ -40,7 +40,10 @@ test.before(async () => {
   fake.webhookUrl = base + B.WEBHOOK_PATH;
 });
 test.after(async () => { server.close(); await fake.close(); });
-const defaults = { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: SECRET, stripeApiBase: fake.url, stripeTax: false, stripePmcFamily: 'pmc_fakefamily', termsPublished: false, billingPublic: true, builderDailyTurns: 3, familyExtraMessages: 5, familyChildDailyMax: 4, familyMonthlyAiUsd: 4, proTurnWeight: 1, anthropicKey: '', aiPaidMonthlyBudgetUsd: null, aiHardMonthlyUsd: null };
+const defaults = { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: SECRET, stripeApiBase: fake.url, stripeTax: false, stripePmcFamily: 'pmc_fakefamily', termsPublished: false, billingPublic: true, builderDailyTurns: 3, familyExtraMessages: 5, familyChildDailyMax: 4, familyMonthlyAiUsd: 4, proTurnWeight: 1, anthropicKey: '', aiPaidMonthlyBudgetUsd: null, aiHardMonthlyUsd: null,
+  // A regular maker's Pro weight (BUILDER_FULL_FOR_ALL, on in production, makes every Pro message one message:
+  // builder-trusted.test.js, and checked once below).
+  builderFullForAll: false };
 test.beforeEach(() => { Object.assign(config, defaults); resetLimits(); fake.violations.length = 0; });
 
 // ---------------------------------------------------------------- helpers
@@ -432,8 +435,12 @@ test('a family child: the free daily messages first, then the family\'s extras (
   // A failed build gives its extra back.
   build(a.child, { refund: true });
   assert.equal(usage.allowanceFor(a.child).extraLeft, 4);
-  // Pro counts with its weight.
+  // Pro counts with its weight (for a regular maker; everyone building like a teacher, a Pro message is one message).
   config.proTurnWeight = 2;
+  config.builderFullForAll = true;
+  assert.equal(usage.allowanceFor(a.child).proWeight, 1);
+  config.builderFullForAll = false;
+  assert.equal(usage.allowanceFor(a.child).proWeight, 2);
   assert.equal(build(a.child, { pro: true }).weight, 2);
   assert.equal(usage.allowanceFor(a.child).extraLeft, 2);
   // The per-child daily ceiling (4 extras a day here): this child has used 3, so one more today.

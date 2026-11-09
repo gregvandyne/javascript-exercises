@@ -67,7 +67,9 @@ router.get('/', (req, res) => {
   /** Links stay in the language address the page was opened at (/es -> /es/teachers). */
   const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
   const u = req.user;
-  const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 24 });   // every launch game fits; the rail scrolls
+  // Every launch game fits (25 open featured games after the course-only ones; 24 left the least played one off Home);
+  // the rail scrolls.
+  const featured = games.listVisible(u, { featured: true, order: 'plays', limit: 48 });
   const hero = featured[0];
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
   const rails = [

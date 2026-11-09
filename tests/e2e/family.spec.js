@@ -177,7 +177,12 @@ test('the Builder\'s daily-limit card: stays after a reload, things to do, Me â€
       await expect(card.locator('a[href="/"]')).toBeVisible();
       await expect(card.locator('a[href="/search?sort=new"]')).toBeVisible();
       await expect(card.locator('a[href="/me#grownups"]')).toHaveText('Me â€º For grown-ups');
-      const text = await card.innerText();
+      // A kid with no grown-up linked is shown where a grown-up can find out more, as text (never a link: docs/decisions.md
+      // "Spark Packs: the Builder's limit card offers a way on"); the test server's address has a port number in it.
+      const shown = card.locator('.st-limit-show bdi');
+      await expect(shown).toHaveText(/\/parents$/);
+      expect(await card.locator('.st-limit-show a').count()).toBe(0);
+      const text = (await card.innerText()).replace(await shown.innerText(), '');
       expect(text).not.toMatch(/\$|plan|price|upgrade|\d/i);   // no price, plan name or countdown
       expect(await card.innerHTML()).not.toMatch(/\/plans|\/grown-ups|\/family/);
       await expect(kidPage.locator('#st-send')).toBeDisabled();

@@ -886,7 +886,8 @@
       "intro": {
         "h": "Sobre esta política",
         "p1": "Esta página explica como cancelar um plano da Oomba Academy e quando você pode receber seu dinheiro de volta. Ela faz parte dos nossos <a href=\"/terms\">Termos de Serviço</a>.",
-        "p2": "Jogar e as mensagens grátis diárias para o Construtor são sempre grátis. Esta política trata apenas dos planos pagos <b>família</b> e <b>escolar</b>, que adicionam mais mensagens para o Construtor."
+        "p2": "Jogar e as mensagens grátis diárias para o Construtor são sempre grátis. Esta política trata apenas dos planos pagos <b>família</b> e <b>escolar</b>, que adicionam mais mensagens para o Construtor.",
+        "p3": "Os Pacotes Faísca, recargas avulsas de mensagens para o Construtor para uma família com um plano, têm a sua própria seção abaixo."
       },
       "cancel": {
         "h": "Cancelamento",
@@ -905,6 +906,15 @@
         "p5": "<b>Como pedir:</b> escreva para <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> de qualquer endereço. Informe o nome da sua conta de adulto (ou da escola) e a data e o valor que aparecem no seu recibo da Stripe. Respondemos em até 3 dias úteis.",
         "p6": "<b>Quando você recebe o dinheiro:</b> o reembolso volta para o cartão ou a conta que você usou para pagar. Os bancos costumam levar de 5 a 10 dias úteis para mostrá-lo.",
         "p7": "<b>Escolas que pagam por fatura:</b> os 14 dias começam na data em que o pagamento chega até nós. Pagou com cheque? Reembolsamos com cheque ou transferência bancária."
+      },
+      "sparks": {
+        "h": "Pacotes Faísca",
+        "p1": "Um <b>Pacote Faísca</b> é um pagamento único por mensagens extras para o Construtor, para uma família com um plano Básico ou família. Ele não é renovado, então não há nada para cancelar.",
+        "li1": "<b>Pacote não usado, em até 14 dias:</b> se você pedir em até <b>14 dias</b> após comprar um pacote e nenhuma das mensagens dele tiver sido usada, reembolsamos o pacote integralmente. Peça do mesmo jeito que para um plano (veja <b>Como pedir</b> acima).",
+        "li2": "<b>Fora isso, pacotes não são reembolsados:</b> depois que algumas mensagens de um pacote forem usadas, ou depois de 14 dias, não o reembolsamos, a menos que a lei do lugar onde você mora exija.",
+        "li3": "<b>O que um reembolso faz:</b> assim que o reembolso é concluído, as mensagens que sobraram no pacote são retiradas. Um reembolso total encerra o pacote; um reembolso parcial retira a parte correspondente das mensagens. As mensagens já usadas continuam usadas.",
+        "li4": "<b>Quando os pacotes terminam:</b> as mensagens de um pacote terminam um ano depois da compra. Até lá, o pacote continua funcionando mesmo depois que o seu plano termina. As mensagens que sobram quando um pacote termina não são reembolsadas.",
+        "li5": "<b>Contestou a cobrança no seu banco?</b> O pacote termina imediatamente, como um plano."
       },
       "special": {
         "h": "Casos especiais",

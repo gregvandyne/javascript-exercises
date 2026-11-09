@@ -3,6 +3,13 @@
   /* Escape the Post Office: the Cyber Defenders finale, on the Oomba Kit. Only the game's own DOM pieces are
      styled here, with the kit's variables (accents set from Oomba.color at start, like Packet Post). */
   .ep, .ep * { box-sizing: border-box; }
+  /* The one kit screen restyled here: on a phone held sideways the how-to card was taller than the screen and its Go!
+     button sat below the fold. There the card is wider (shorter steps) and a little tighter (tests/e2e/games-fit.spec.js). */
+  @media (orientation: landscape) and (max-height: 480px) {
+    .ok-modal.ok-howto .ok-card { width: min(640px, 100%); padding: 16px 20px 14px; gap: 10px; }
+    .ok-modal.ok-howto .ok-howcard { padding: 8px; gap: 4px; }
+    .ok-modal.ok-howto .ok-howcard svg { width: 30px; height: 30px; }
+  }
   .ep { position: fixed; left: 0; right: 0; top: var(--ok-safe-top); bottom: 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
     padding: 0 10px calc(8px + env(safe-area-inset-bottom)); pointer-events: none; font-size: 1em; line-height: 1.25; }
   .ep > * { pointer-events: auto; }

@@ -115,7 +115,9 @@ test('admin pages keep every item: shortcuts, all tabs, filters, CSV, forms and 
     await page.goto('/admin?tab=messages');
     const order = await page.evaluate(() => ['#conv-h', '#ann-h', '#wel-h'].map(s => document.querySelector(s).getBoundingClientRect().top));
     expect(order).toEqual([...order].sort((a, b) => a - b));
-    await has('#announce'); await has('.inboxrow', 1);
+    // The conversation this spec started is a row; specs that ran earlier on the same server add their new accounts'
+    // automatic welcomes (services/team.js) as rows too, so the count depends on the run, the DemoStudent row does not.
+    await has('#announce'); await has('.inboxrow[href="/admin/messages/DemoStudent"]', 1);
     for (const w of ['kid', 'grownup', 'teacher']) { await has(`#wel-${w} textarea[name="text"]`); await has(`#wel-${w} input[name="on"]`); }
     await text('Welcome message for new kids', 'Welcome message for new parents', 'Welcome message for new teachers and school staff');
 
@@ -151,6 +153,43 @@ test('admin pages keep every item: shortcuts, all tabs, filters, CSV, forms and 
     await has('.tv-roles select', 5); await has('#tv-form button[type=submit]'); await has('#tv-game-add'); await has('#tv-warm');
     if (viewport.width < 600) await expect(page.locator('table.tv-grid [data-play-narrator]').first()).toBeVisible();
     else await expect(page.locator('table.tv-grid [data-play]').first()).toBeVisible();
+    await ctx.close();
+  }
+});
+
+// "Ready to go live?" (server/services/billing-ready.js): this server has billing off, so the Stripe rows are red, each
+// saying what to do; on a phone each check is a card with its chip above the words, on a desktop beside them.
+test('/admin/billing: "Ready to go live?" lists every check with what to do, by setting name only', async ({ browser }) => {
+  for (const viewport of [{ width: 360, height: 640 }, { width: 1280, height: 800 }]) {
+    const ctx = await browser.newContext({ viewport, storageState: state });
+    const page = await ctx.newPage();
+    await page.goto('/admin/billing');
+    const panel = page.locator('section#ready');
+    await expect(panel.locator('h2')).toHaveText('🚦 Ready to go live?');
+    // It is the first section, and the jump chips lead to it.
+    const top = s => page.locator(s).evaluate(e => e.getBoundingClientRect().top);
+    expect(await top('#ready')).toBeLessThan(await top('#requests'));
+    await expect(page.locator('nav.ajump a[href="#ready"]')).toContainText('Go-live checks');
+    expect(await panel.locator('li.ready-row').count()).toBeGreaterThanOrEqual(14);
+    for (const id of ['key', 'secret', 'webhook', 'prices', 'public']) {
+      const row = panel.locator(`li.ready-row[data-check="${id}"]`);
+      await expect(row, id).toHaveClass(/is-bad/);
+      await expect(row.locator('.ready-chip'), id).toContainText('To do');
+      await expect(row.locator('.ready-fix'), id).toBeVisible();
+    }
+    await expect(panel.locator('li[data-check="key"] .ready-now')).toHaveText('Now: not set');
+    await expect(panel.locator('li[data-check="prices"] .ready-now')).toHaveText('Now: not checked: billing is off');
+    await expect(panel.locator('li[data-check="i18n"]')).toHaveClass(/is-ok/);
+    await expect(panel.locator('li[data-check="i18n"] .ready-chip')).toContainText('Ready');
+    // Chip above the words on a phone, beside them on a desktop.
+    const box = async s => panel.locator(`li[data-check="webhook"] ${s}`).boundingBox();
+    const chip = await box('.ready-chip'), main = await box('.ready-main');
+    if (viewport.width < 600) expect(chip.y + chip.height).toBeLessThanOrEqual(main.y + 1);
+    else expect(chip.x + chip.width).toBeLessThanOrEqual(main.x + 1);
+    // Check again reloads the page at the panel.
+    await panel.getByRole('link', { name: 'Check again' }).click();
+    await expect(page).toHaveURL(/\/admin\/billing\?recheck=1#ready$/);
+    await expect(page.locator('section#ready li.ready-row').first()).toBeVisible();
     await ctx.close();
   }
 });

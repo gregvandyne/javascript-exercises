@@ -32,8 +32,9 @@ test('student works through a lesson; teacher reads the answer and gives feedbac
   await t.goto('/teach'); await t.click('a.cc-link');
   await expect(t.locator('.classtabs a[href$="/progress"] .tabbadge')).toBeVisible();
   await t.click('.classtabs a[href$="/progress"]');
-  await expect(t.locator('.gradebook')).toContainText('Demo Student');
-  await t.click('.gradebook thead a:has-text("Adding fractions")');
+  // The lessons gradebook (the course progress tables below it are gradebooks too, class "cptable").
+  await expect(t.locator('#gb-lessons')).toContainText('Demo Student');
+  await t.click('#gb-lessons thead a:has-text("Adding fractions")');
   const card = t.locator('.answercard:has-text("2 + 3 = 5 eighths")');
   await expect(card).toContainText('Demo Student');
   // The long German and Russian "Save and mark reviewed" labels wrap inside the card on small phones.

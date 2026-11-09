@@ -885,7 +885,8 @@
       "intro": {
         "h": "Sobre esta política",
         "p1": "Esta página explica cómo cancelar un plan de Oomba Academy y cuándo puede recuperar su dinero. Forma parte de nuestros <a href=\"/terms\">Términos del servicio</a>.",
-        "p2": "Jugar y los mensajes gratis diarios para el Constructor siempre son gratis. Esta política solo trata de los planes de pago <b>familiar</b> y <b>escolar</b>, que agregan más mensajes para el Constructor."
+        "p2": "Jugar y los mensajes gratis diarios para el Constructor siempre son gratis. Esta política solo trata de los planes de pago <b>familiar</b> y <b>escolar</b>, que agregan más mensajes para el Constructor.",
+        "p3": "Los Paquetes Chispa, recargas únicas de mensajes para el Constructor para una familia con un plan, tienen su propia sección más abajo."
       },
       "cancel": {
         "h": "Cancelación",
@@ -904,6 +905,15 @@
         "p5": "<b>Cómo pedirlo:</b> escriba a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> desde cualquier dirección. Díganos el nombre de su cuenta de adulto (o de la escuela), y la fecha y el importe que aparecen en su recibo de Stripe. Respondemos en un plazo de 3 días hábiles.",
         "p6": "<b>Cuándo recibe el dinero:</b> el reembolso vuelve a la tarjeta o cuenta con la que pagó. Los bancos suelen tardar de 5 a 10 días hábiles en mostrarlo.",
         "p7": "<b>Escuelas que pagan con factura:</b> los 14 días empiezan en la fecha en que nos llega el pago. ¿Pagó con cheque? Reembolsamos con cheque o transferencia bancaria."
+      },
+      "sparks": {
+        "h": "Paquetes Chispa",
+        "p1": "Un <b>Paquete Chispa</b> es un pago único por mensajes extra para el Constructor, para una familia con un plan Básico o familiar. No se renueva, así que no hay nada que cancelar.",
+        "li1": "<b>Paquete sin usar, dentro de los 14 días:</b> si lo pide dentro de los <b>14 días</b> posteriores a la compra de un paquete y no se ha usado ninguno de sus mensajes, se lo reembolsamos completo. Pídalo igual que para un plan (vea <b>Cómo pedirlo</b> más arriba).",
+        "li2": "<b>Si no, los paquetes no se reembolsan:</b> una vez que se ha usado algún mensaje de un paquete, o pasados 14 días, no lo reembolsamos, salvo que la ley del lugar donde vive lo exija.",
+        "li3": "<b>Qué hace un reembolso:</b> en cuanto se completa el reembolso, se retiran los mensajes que queden en el paquete. Un reembolso completo termina el paquete; uno parcial retira esa parte de sus mensajes. Los mensajes ya usados siguen usados.",
+        "li4": "<b>Cuándo terminan los paquetes:</b> los mensajes de un paquete terminan un año después de comprarlo. Hasta entonces, el paquete sigue funcionando aunque su plan termine. Los mensajes que queden cuando termina un paquete no se reembolsan.",
+        "li5": "<b>¿Disputó el cargo con su banco?</b> El paquete termina de inmediato, igual que un plan."
       },
       "special": {
         "h": "Casos especiales",

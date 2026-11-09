@@ -886,7 +886,8 @@
       "intro": {
         "h": "Informazioni su questa politica",
         "p1": "Questa pagina spiega come disdire un piano di Oomba Academy e quando potete riavere i vostri soldi. Fa parte dei nostri <a href=\"/terms\">Termini di servizio</a>.",
-        "p2": "Giocare e i messaggi gratuiti giornalieri al Costruttore sono sempre gratis. Questa politica riguarda solo i piani a pagamento <b>Famiglia</b> e <b>Scuola</b>, che aggiungono altri messaggi al Costruttore."
+        "p2": "Giocare e i messaggi gratuiti giornalieri al Costruttore sono sempre gratis. Questa politica riguarda solo i piani a pagamento <b>Famiglia</b> e <b>Scuola</b>, che aggiungono altri messaggi al Costruttore.",
+        "p3": "I Pacchetti Scintilla, ricariche una tantum di messaggi al Costruttore per una famiglia con un piano, hanno una sezione dedicata più sotto."
       },
       "cancel": {
         "h": "Disdetta",
@@ -905,6 +906,15 @@
         "p5": "<b>Come chiederlo:</b> scrivete a <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> da qualsiasi indirizzo. Indicateci il nome del vostro account genitore (o della scuola) e la data e l'importo riportati sulla ricevuta di Stripe. Vi risponderemo entro 3 giorni lavorativi.",
         "p6": "<b>Quando ricevete i soldi:</b> il rimborso torna sulla carta o sul conto con cui avete pagato. Di solito le banche impiegano da 5 a 10 giorni lavorativi per mostrarlo.",
         "p7": "<b>Scuole che pagano tramite fattura:</b> i 14 giorni partono dalla data in cui il pagamento ci arriva. Avete pagato con assegno? Rimborsiamo con assegno o bonifico bancario."
+      },
+      "sparks": {
+        "h": "Pacchetti Scintilla",
+        "p1": "Un <b>Pacchetto Scintilla</b> è un pagamento unico per messaggi extra al Costruttore, per una famiglia con un piano Base o Famiglia. Non si rinnova, quindi non c'è niente da disdire.",
+        "li1": "<b>Pacchetto non usato, entro 14 giorni:</b> se lo chiedete entro <b>14 giorni</b> dall'acquisto di un pacchetto e nessuno dei suoi messaggi è stato usato, ve lo rimborsiamo per intero. Chiedetelo come per un piano (vedi <b>Come chiederlo</b> qui sopra).",
+        "li2": "<b>Altrimenti i pacchetti non si rimborsano:</b> una volta usati alcuni messaggi di un pacchetto, o dopo 14 giorni, non lo rimborsiamo, a meno che la legge del luogo in cui vivete non lo richieda.",
+        "li3": "<b>Cosa comporta un rimborso:</b> appena il rimborso va a buon fine, i messaggi rimasti nel pacchetto vengono tolti. Un rimborso totale termina il pacchetto; uno parziale toglie la quota corrispondente dei suoi messaggi. I messaggi già usati restano usati.",
+        "li4": "<b>Quando finiscono i pacchetti:</b> i messaggi di un pacchetto scadono un anno dopo l'acquisto. Fino ad allora il pacchetto funziona anche dopo la fine del vostro piano. I messaggi rimasti alla scadenza di un pacchetto non si rimborsano.",
+        "li5": "<b>Avete contestato l'addebito con la vostra banca?</b> Il pacchetto termina subito, come un piano."
       },
       "special": {
         "h": "Casi particolari",

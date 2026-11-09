@@ -226,7 +226,9 @@ async function run(browser, cookie, mode, n, tag) {
 
 (async () => {
   let browser = null;
-  { const { chromium } = await import('@playwright/test'); browser = await chromium.launch(process.env.BRB_CHROMIUM ? { executablePath: process.env.BRB_CHROMIUM } : {}); }
+  // BRB_CHROMIUM: a Chromium of its own; else the repo's pinned browser (playwright.config.js) where it is installed, so
+  // the run works wherever the e2e tests do; else Playwright's own build.
+  { const { chromium } = await import('@playwright/test'); const exe = [process.env.BRB_CHROMIUM, '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => p && fs.existsSync(p)); browser = await chromium.launch(exe ? { executablePath: exe } : {}); }
   const cookie = await login();
   const results = []; let tag = 0;
   for (const mode of MODES) for (const n of SIZES) {

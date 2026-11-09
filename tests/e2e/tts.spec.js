@@ -6,7 +6,8 @@
 //   3. on: a line of Hero of Sunvale goes to our server, the MP3 plays in the game frame and onend comes once, and a toast
 //      says once that the voices are AI-made; text that isn't the game's own is refused and the device's voice reads it;
 //      when the server fails the device's voice takes over (onend still once); "This device's voice" in the Voices sheet
-//      stops the requests. Official games not written for AI voices (word-peek) never get them.
+//      stops the requests. Every official game has them (docs/decisions.md "AI voices for every official game"): word-peek
+//      too (only its own lines: text that isn't the game's own is refused, as above).
 //   3b. a teacher's Builder game the admin switched on (its page's "AI voices for this game", then /admin/voices "Add a
 //      game" by link): the game itself speaks a line from its own source (the quiz host's hello) and it plays, a
 //      made-up line falls back to the device; switched off again
@@ -117,10 +118,10 @@ test('on: a game line is read by the server voice in the frame; a failing server
   await setLocales(browser, ['en']);
   const asked = []; page.on('request', r => { if (r.url().endsWith('/api/tts')) asked.push(r.postDataJSON()); });
   const { username } = await signup(page);
-  // An official game not written for AI voices: nothing, even with English on.
+  // Every official game has AI voices (owner's rule, 5 Nov 2026), the word games too: English on, Word Peek offers them.
   await page.goto('/play/word-peek');
-  expect(JSON.parse(await page.locator('#page-data').textContent()).tts).toBeUndefined();
-  await expect(page.locator('#p-voices')).toHaveCount(0);
+  expect(JSON.parse(await page.locator('#page-data').textContent()).tts.langs).toEqual(['en']);
+  await expect(page.locator('#p-voices')).toContainText('AI voices');
   await page.goto('/play/hero-of-sunvale');
   const f = await gameFrame(page);
   const pd = JSON.parse(await page.locator('#page-data').textContent());
@@ -307,7 +308,9 @@ test('Oomba Live: Read on a player\'s device and on the projector asks for the o
   });
   const [res] = await Promise.all([p.waitForResponse(x => x.url().endsWith('/api/tts')), p.locator('#lv-read').click()]);
   expect(res.status()).toBe(200);
-  await expect.poll(() => p.evaluate(() => window.__tapPlays.length)).toBeGreaterThan(1);
+  // The tap plays the silent unlock (the page's first-tap unlock and Read's own: one or two, both inside the tap); the
+  // question's audio comes after two fetches, so wait for that play itself, not for a count of plays.
+  await expect.poll(() => p.evaluate(() => window.__tapPlays.some(([src]) => src.startsWith('blob:')))).toBe(true);
   const plays = await p.evaluate(() => window.__tapPlays);
   expect(plays[0]).toEqual(['data:audio/wav', true]);       // the unlock, inside the tap
   expect(plays.filter(([src]) => src.startsWith('data:')).every(([, inTap]) => inTap)).toBe(true);

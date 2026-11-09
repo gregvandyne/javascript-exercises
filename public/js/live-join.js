@@ -19,9 +19,10 @@ function show(step) {
   const first = steps[step] && steps[step].querySelector('h1, h2, button');
   if (first && step !== 'code') { if (!first.hasAttribute('tabindex') && /^H/.test(first.tagName)) first.setAttribute('tabindex', '-1'); first.focus(); }
 }
-function say(el, code2, extra) {
+function say(el, code2, extra, vars = null) {
   if (!el) return;
-  el.textContent = (D.msgs && D.msgs[code2]) || t('js.app.wentWrong');
+  // vars: the server's answer, for the numbers a message names ("This game is full ({max} players).")
+  el.textContent = ((D.msgs && D.msgs[code2]) || t('js.app.wentWrong')).replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null ? String(vars[k]) : m));
   if (code2 === 'signIn' && D.signInHref) { const a = document.createElement('a'); a.href = D.signInHref; a.className = 'btn btn-sm lv-signin'; a.textContent = t('js.live-join.signIn'); el.append(' ', a); }
   if (extra) el.append(' ', extra);
 }
@@ -74,7 +75,7 @@ async function join(opts, errEl = err) {
     // a class room: no guest seat for a signed-in player. Stay on "Join as me", without the guest button.
     if (c === 'onlyYou') { const g = $('lv-as-guest'); if (g) g.hidden = true; say(errEl, c); return; }
     show('code');
-    if (c) say(err, c); else err.textContent = e.message;
+    if (c) say(err, c, null, e.data); else err.textContent = e.message;
     input && input.focus();
   } finally { busy = false; }
 }

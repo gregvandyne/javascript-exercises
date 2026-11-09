@@ -886,7 +886,8 @@
       "intro": {
         "h": "About this policy",
         "p1": "This page explains how to cancel an Oomba Academy plan and when you can get your money back. It is part of our <a href=\"/terms\">Terms of Service</a>.",
-        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b> and <b>School</b> plans, which add more Builder messages."
+        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b> and <b>School</b> plans, which add more Builder messages.",
+        "p3": "Spark Packs, one-time top-ups of Builder messages for a family with a plan, have their own section below."
       },
       "cancel": {
         "h": "Cancelling",
@@ -905,6 +906,15 @@
         "p5": "<b>How to ask:</b> email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> from any address. Tell us the name of your grown-up account (or school), and the date and amount from your Stripe receipt. We'll reply within 3 business days.",
         "p6": "<b>When you get the money:</b> the refund goes back to the card or account you paid with. Banks usually take 5 to 10 business days to show it.",
         "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by check? We refund by check or bank transfer."
+      },
+      "sparks": {
+        "h": "Spark Packs",
+        "p1": "A <b>Spark Pack</b> is one payment for extra Builder messages, for a family with a Basic or Family plan. It doesn't renew, so there is nothing to cancel.",
+        "li1": "<b>Unused pack, within 14 days:</b> if you ask within <b>14 days</b> of buying a pack and none of its messages have been used, we refund it in full. Ask the same way as for a plan (see <b>How to ask</b> above).",
+        "li2": "<b>Otherwise, packs are not refunded:</b> once some of a pack's messages are used, or after 14 days, we don't refund it, unless the law where you live says we must.",
+        "li3": "<b>What a refund does:</b> as soon as the refund goes through, the messages left in the pack are taken back. A full refund ends the pack; a partial refund takes back that share of its messages. Messages already used stay used.",
+        "li4": "<b>When packs end:</b> a pack's messages end one year after you buy it. A pack keeps working after your plan ends, until then. Messages left when a pack ends are not refunded.",
+        "li5": "<b>Disputed the charge with your bank?</b> The pack ends straight away, like a plan."
       },
       "special": {
         "h": "Special cases",
