@@ -314,7 +314,7 @@ export function renderLanding(req, res) {
   const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${builder}${courses}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
-<html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html">
+<html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">

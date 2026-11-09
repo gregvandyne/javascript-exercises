@@ -1,5 +1,5 @@
 /* The teacher landing page at "/" (server/routes/landing.js). Self-contained: it does not load app.css.
-   Dark by design (deep space, aurora, neon in Oomba's mint); an explicit Light choice (theme toggle, html[data-theme=light])
+   Dark by design (deep space, aurora, neon in Oomba's mint); an explicit Light choice (theme toggle, the server adds html.lp-light)
    gets a light variant with the same layout. Motion: parallax and loops run only without prefers-reduced-motion
    (public/js/landing.js), and everything reads and works without JavaScript. Colours are tokens; text pairs meet WCAG AA. */
 @font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:200 800;font-display:swap;src:url(/fonts/bricolage-grotesque-latin-opsz-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -21,7 +21,7 @@
   --r:24px; --wrap:1200px; --gut:16px; --bar:64px;
   color-scheme:dark;
 }
-:root[data-theme="light"]{
+:root.lp-light{
   --bg:#F5F7FC; --bg-2:#EAF0FA; --text:#0B1020; --text-2:#2B3350; --muted:#4A5371;
   --accent-text:#0B6B42; --link:#0B6B42;
   --card:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.78)); --card-solid:#FFFFFF;
@@ -52,18 +52,18 @@ main{position:relative;z-index:1}
 /* ---------------------------------------------------------------- the sky (parallax layers, fixed behind everything) */
 .lp-sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
   background:radial-gradient(120% 80% at 50% -10%,#14204A 0%,transparent 60%),radial-gradient(90% 60% at 100% 100%,#0D1D33 0%,transparent 60%),var(--bg)}
-:root[data-theme="light"] .lp-sky{background:radial-gradient(120% 80% at 50% -10%,#DDE8FF 0%,transparent 60%),radial-gradient(90% 60% at 100% 100%,#DDF5EA 0%,transparent 60%),var(--bg)}
+:root.lp-light .lp-sky{background:radial-gradient(120% 80% at 50% -10%,#DDE8FF 0%,transparent 60%),radial-gradient(90% 60% at 100% 100%,#DDF5EA 0%,transparent 60%),var(--bg)}
 .lp-stars{position:absolute;inset:0 0 auto;height:calc(100% + 800px);background-repeat:repeat}
 .lp-s1{background-size:260px 260px;opacity:.55;background-image:radial-gradient(1px 1px at 20px 30px,var(--star),transparent 100%),radial-gradient(1px 1px at 140px 90px,var(--star),transparent 100%),radial-gradient(1px 1px at 90px 200px,var(--star),transparent 100%),radial-gradient(1px 1px at 230px 160px,var(--star),transparent 100%),radial-gradient(1px 1px at 200px 240px,var(--star),transparent 100%)}
 .lp-s2{background-size:400px 400px;opacity:.7;background-image:radial-gradient(1.5px 1.5px at 60px 80px,var(--star),transparent 100%),radial-gradient(1.5px 1.5px at 300px 40px,var(--star),transparent 100%),radial-gradient(1.5px 1.5px at 180px 320px,var(--star),transparent 100%),radial-gradient(1.2px 1.2px at 360px 260px,#9FFFD6,transparent 100%)}
 .lp-s3{background-size:800px 800px;opacity:.9;background-image:radial-gradient(2px 2px at 120px 160px,#fff,transparent 100%),radial-gradient(2.4px 2.4px at 610px 90px,#B9F7FF,transparent 100%),radial-gradient(2px 2px at 420px 520px,#FFF3C4,transparent 100%),radial-gradient(2.2px 2.2px at 720px 700px,#D6C8FF,transparent 100%)}
-:root[data-theme="light"] .lp-s3{opacity:.35}
+:root.lp-light .lp-s3{opacity:.35}
 .lp-aurora{position:absolute;inset:-10% -10% auto;height:120vh}
 .lp-aurora i{position:absolute;border-radius:50%;opacity:.55;mix-blend-mode:screen}
 .lp-aurora i:nth-child(1){width:70vw;height:50vh;left:-10vw;top:-8vh;background:radial-gradient(closest-side,rgba(92,242,176,.38),transparent)}
 .lp-aurora i:nth-child(2){width:60vw;height:55vh;right:-15vw;top:5vh;background:radial-gradient(closest-side,rgba(91,200,255,.32),transparent)}
 .lp-aurora i:nth-child(3){width:55vw;height:45vh;left:25vw;top:35vh;background:radial-gradient(closest-side,rgba(176,140,255,.24),transparent)}
-:root[data-theme="light"] .lp-aurora i{mix-blend-mode:multiply;opacity:.35}
+:root.lp-light .lp-aurora i{mix-blend-mode:multiply;opacity:.35}
 @media (prefers-reduced-motion:no-preference){
   .lp-aurora i{animation:lp-drift 26s ease-in-out infinite alternate}
   .lp-aurora i:nth-child(2){animation-duration:32s;animation-delay:-8s}
@@ -106,7 +106,7 @@ main{position:relative;z-index:1}
 .lp-btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(92,242,176,.5),0 16px 50px -8px rgba(92,242,176,.7)}
 .lp-btn-ghost{background:rgba(127,140,180,.08);color:var(--text);border-color:var(--line-2)}
 .lp-btn-ghost:hover{border-color:var(--neon);transform:translateY(-2px)}
-:root[data-theme="light"] .lp-btn-ghost:hover{border-color:#1F9D63}
+:root.lp-light .lp-btn-ghost:hover{border-color:#1F9D63}
 .lp-btn-spark{background:var(--spark);color:#141414;box-shadow:0 10px 30px -10px rgba(255,210,63,.7)}
 .lp-btn-spark:hover{transform:translateY(-2px)}
 .lp-arrow{transition:transform .2s ease}
@@ -120,7 +120,7 @@ main{position:relative;z-index:1}
 .lp-kicker{display:inline-flex;align-items:center;gap:10px;padding:7px 14px 7px 12px;border-radius:999px;border:1px solid var(--line-2);background:rgba(127,140,180,.1);
   color:var(--text-2);font-weight:700;font-size:14px;letter-spacing:.02em;margin-bottom:22px}
 .lp-pulse{width:8px;height:8px;border-radius:50%;background:var(--neon);box-shadow:0 0 0 0 rgba(92,242,176,.6)}
-:root[data-theme="light"] .lp-pulse{background:#1F9D63}
+:root.lp-light .lp-pulse{background:#1F9D63}
 @media (prefers-reduced-motion:no-preference){.lp-pulse{animation:lp-ping 2.2s ease-out infinite}}
 @keyframes lp-ping{0%{box-shadow:0 0 0 0 rgba(92,242,176,.6)}80%,100%{box-shadow:0 0 0 10px rgba(92,242,176,0)}}
 .lp-h1{overflow-wrap:break-word;hyphens:auto;font-size:clamp(2.35rem,1.2rem + 4.6vw,4.6rem);line-height:1.02;letter-spacing:-.035em;background:var(--h-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -133,7 +133,7 @@ main{position:relative;z-index:1}
 .lp-trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;color:var(--text-2);font-weight:600;font-size:15px}
 .lp-trust li{display:inline-flex;align-items:center;gap:8px}
 .lp-check{width:18px;height:18px;flex:none;color:var(--neon)}
-:root[data-theme="light"] .lp-check{color:#14804F}
+:root.lp-light .lp-check{color:#14804F}
 
 /* the floor grid and the floating covers */
 .lp-floor{position:absolute;inset:auto -10% 0;height:48%;perspective:520px;overflow:hidden;z-index:0;pointer-events:none;
@@ -167,7 +167,7 @@ main{position:relative;z-index:1}
 .lp-d-lesson{width:82%}
 .lp-d-build{width:80%;margin-inline-start:12%}
 .lp-d-game{width:84%;margin-inline-start:16%;display:flex;gap:16px;align-items:center;border-color:rgba(92,242,176,.55);box-shadow:var(--shadow),0 0 50px -12px rgba(92,242,176,.6)}
-:root[data-theme="light"] .lp-d-game{border-color:rgba(31,157,99,.45)}
+:root.lp-light .lp-d-game{border-color:rgba(31,157,99,.45)}
 .lp-d-tag{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-text);margin-bottom:6px}
 .lp-d-title{font-weight:800;font-size:18px;line-height:1.2}
 .lp-d-body{margin-top:6px;color:var(--text-2);font-size:14.5px;line-height:1.45}
@@ -260,7 +260,7 @@ main{position:relative;z-index:1}
 .lp-device-live{padding-bottom:40px;padding-inline-end:clamp(40px,8vw,90px)}
 .lp-phone{position:absolute;width:clamp(120px,24%,170px);inset-inline-end:0;bottom:0;border-radius:26px;overflow:hidden;border:5px solid #1B2238;background:#000;
   box-shadow:var(--shadow),0 0 60px -10px rgba(176,140,255,.65)}
-:root[data-theme="light"] .lp-phone{border-color:#0B1020}
+:root.lp-light .lp-phone{border-color:#0B1020}
 .lp-phone img{width:100%;aspect-ratio:390/844;object-fit:cover}
 
 /* glows behind sections (parallax) */
@@ -268,7 +268,7 @@ main{position:relative;z-index:1}
 .lp-glow-a{inset-inline-end:-20%;top:5%;background:radial-gradient(closest-side,rgba(92,242,176,.35),transparent)}
 .lp-glow-b{inset-inline-start:-22%;top:0;background:radial-gradient(closest-side,rgba(176,140,255,.33),transparent)}
 .lp-glow-c{left:50%;top:-30%;margin-left:min(-35vw,-390px);background:radial-gradient(closest-side,rgba(91,200,255,.35),transparent)}
-:root[data-theme="light"] .lp-glow{opacity:.35}
+:root.lp-light .lp-glow{opacity:.35}
 
 /* courses */
 .lp-courses{display:grid;gap:18px}
@@ -347,7 +347,7 @@ main{position:relative;z-index:1}
 /* footer */
 .lp-foot{position:relative;z-index:1;border-top:1px solid var(--line);background:rgba(3,5,12,.55);padding:0 0 28px;font-size:15px}
 .lp-foot-in{margin-top:56px}
-:root[data-theme="light"] .lp-foot{background:rgba(255,255,255,.6)}
+:root.lp-light .lp-foot{background:rgba(255,255,255,.6)}
 .lp-foot-in{display:grid;gap:32px 24px;grid-template-columns:1fr 1fr}
 .lp-foot-brand{grid-column:1/-1;display:grid;gap:14px;justify-items:start}
 .lp-foot-brand p{color:var(--text-2);max-width:32em}
