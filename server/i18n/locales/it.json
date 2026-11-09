@@ -7026,6 +7026,78 @@
       "breaksText": "Giochi brevi e divertenti da Gioca, scelti per una pausa di 5 minuti sul grande schermo.",
       "allGames": "Vedi tutto ciò a cui possono giocare gli studenti",
       "openLive": "Apri il gioco dal vivo"
+    },
+    "loop": {
+      "kicker": "Come Oomba si inserisce nella tua settimana",
+      "h": "Pianifica → Gioca → Verifica → Commenta",
+      "lead": "Un ciclo per ogni lezione: pianificala, giocala con la classe, guarda chi ha bisogno di te e di' a ogni studente cosa fare dopo. Ogni passo è uno strumento che è già in Oomba.",
+      "steps": {
+        "plan": {
+          "name": "Pianifica",
+          "benefit": "Parti da una lezione pronta o da un argomento, poi trasformala in un gioco a cui la tua classe vorrà giocare."
+        },
+        "play": {
+          "name": "Gioca",
+          "benefit": "Assegnala con date di apertura e di consegna, oppure giocala dal vivo sul grande schermo con tutta la classe."
+        },
+        "check": {
+          "name": "Verifica",
+          "benefit": "Vedi i progressi di ogni studente a colpo d'occhio, e chi ha bisogno del tuo aiuto per primo."
+        },
+        "feedback": {
+          "name": "Commenta",
+          "benefit": "Leggi ogni risposta e scrivi un commento che lo studente vede nella propria lezione."
+        }
+      },
+      "tools": {
+        "builder": "Trasforma una lezione in un gioco",
+        "assign": "Assegna a una classe",
+        "gradebook": "Registro",
+        "gradebookCsv": "Registro con download CSV",
+        "standards": "Scheda Standard",
+        "review": "Risposte da leggere",
+        "written": "Commenti scritti visti dagli studenti",
+        "library": "Biblioteca delle lezioni",
+        "draftAi": "Bozza con l'IA",
+        "attention": "Prima chi ha bisogno di attenzione",
+        "csv": "Scarica (CSV)",
+        "live": "Conduci un gioco dal vivo"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "Il registro: studenti sulle righe, lezioni sulle colonne, con i passi fatti e le risposte da leggere",
+          "caption": "Registro: tutta la classe a colpo d'occhio, pronta da scaricare in CSV."
+        },
+        "attention": {
+          "alt": "I progressi di una lezione, ordinati in modo che chi ha bisogno di attenzione venga per primo",
+          "caption": "Prima chi ha bisogno di attenzione: risposte da leggere, lavori in ritardo e lezioni a metà in cima."
+        },
+        "feedback": {
+          "alt": "La risposta scritta di uno studente con il riquadro per il commento dell'insegnante e il pulsante per salvare",
+          "caption": "Commenta: scrivi una nota, salvala e lo studente la vede nella sua lezione."
+        },
+        "standards": {
+          "alt": "La scheda Standard della classe: gli standard di informatica e quanto è avanti ogni studente",
+          "caption": "Standard: gli standard di informatica che la tua classe ha affrontato, studente per studente."
+        }
+      },
+      "home": {
+        "h": "Il tuo ciclo didattico",
+        "lead": "Prova ogni passo una volta con {class}. Ognuno si spunta da solo man mano.",
+        "leadNoClass": "Crea la tua prima classe, poi prova ogni passo una volta. Ognuno si spunta da solo man mano.",
+        "count": "{done} di {total} fatti",
+        "done": "Fatto",
+        "todo": "Non ancora fatto",
+        "hide": "Nascondi",
+        "hidden": "Nascosto. Lo trovi sempre in «Come Oomba si inserisce nella tua settimana»."
+      },
+      "page": {
+        "title": "Come Oomba si inserisce nella tua settimana",
+        "lead": "Pianifica una lezione, giocala, verifica chi ha bisogno di te e commenta: gli strumenti di ogni passo, pronti per la tua classe.",
+        "link": "Come Oomba si inserisce nella tua settimana",
+        "show": "Mostra di nuovo la lista in {classroom}",
+        "shown": "La lista è tornata in {classroom}."
+      }
     }
   }
 }

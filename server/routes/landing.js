@@ -26,6 +26,7 @@ import * as seo from '../seo.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
+import { teacherLoop } from '../views/teacher-loop.js';
 import { rateLimit } from '../services/ratelimit.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
@@ -144,6 +145,10 @@ export function renderLanding(req, res) {
     </ol>
   </div>
 </section>`;
+
+  // The teaching loop, Plan → Play → Check → Feedback, with the four real screens (views/teacher-loop.js, docs/decisions.md
+  // "The teaching loop"): right after how it works.
+  const loopSec = teacherLoop(t, { variant: 'landing', id: 'loop', live, cta: cta(TRIAL_URL, t('landing.hero.cta'), { big: true }) });
 
   const builder = html`<section class="lp-sec lp-split" id="builder" aria-labelledby="builder-h">
   <div class="lp-glow lp-glow-a" aria-hidden="true" data-depth=".25"></div>
@@ -305,7 +310,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${builder}${courses}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${courses}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">

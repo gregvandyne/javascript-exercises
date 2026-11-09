@@ -3307,3 +3307,46 @@ geared towards conversion … 14 day free trial … very futuristic … parallax
   for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
 - **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
   parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.
+
+## The teaching loop: Plan → Play → Check → Feedback (9 Nov 2026)
+Owner: "Build all of those suggestions" (lean into the teacher portal's grading and curriculum tools). This part makes the
+story visible: every tool a teacher needs already exists, so the loop names them in order and links to them.
+- **One partial, three looks:** `server/views/teacher-loop.js` exports `teacherLoop(t, opts)` with the four steps (an
+  emoji, a one-line benefit, the tools): Plan (Lesson library, Draft with AI, Turn a lesson into a game), Play (Assign to
+  a class, Host a live game: only while live games are on), Check (Gradebook with its CSV, Needs attention first,
+  Standards tab), Feedback (Answers to review, Written feedback students see). `variant: 'landing'` uses the landing's own
+  lp-* classes (public/css/landing.css, one marked block at the end); `'page'` and `'compact'` use the app's tokens
+  (public/css/teach-loop.css). With `links` (services/teach-loop.js `loopLinks`, built for the teacher's first class)
+  each tool is a button to the real page; without them (visitors, kids, grown-ups) the tools are plain words.
+- **Classroom home (/teach):** the compact card sits under the tools row, above My classes, until every step is done
+  once or the teacher hides it; then a small "🗓️ How Oomba fits your week" button in the tools row opens `/teach/loop`
+  (the full loop with ticks, the screenshots, and "Show the checklist on Classroom" while hidden). On a phone a step
+  already done shows its name only.
+- **Ticks from real data, no migration:** Plan = a lesson (`lessons.owner_id`) or a game (`games.owner_id`); Play = an
+  assignment (`class_lessons.assigned_by`, not removed) or a hosted live game (`live_runs.host_id`); Check = the teacher
+  opened their class's gradebook, its CSV, one lesson's progress or the Standards tab (`markCheck`, called after those
+  routes' own class check); Feedback = an answer reviewed (`step_progress.reviewed_by`). The only thing stored is one
+  `settings` row per teacher, key `teach.loop:<user id>`, JSON `{ check, hidden }` (times).
+- **Who:** `/teach/loop`, `POST /api/teach/loop/hide` and `/show` are for school staff only (`S.isSchoolStaff`); anyone
+  else gets 404 (signed out: sign in / 401). Each teacher only reads and changes their own state; a 404 on another
+  teacher's class never ticks anything. The card names only the teacher's own class.
+- **"Turn a lesson into a game" link:** the teacher's latest lesson at `#new-game` (the editor's "New game for this
+  lesson", which opens on arrival), or the library's New lesson form when they have none yet.
+- **"Needs attention first" link:** `/class/<id>/progress/<latest assignment>#needs-attention`; public/js/schools.js
+  presses the sort button when the page opens with that hash.
+- **Landing ("/") and /teachers:** one section each. On the landing it comes right after "How it works" (`id="loop"`),
+  numbered cards like the steps above it, the four screenshots in the device frame, then the trial button. On /teachers
+  it sits after Subjects (the "How it works" headings test stops at #play). No prices, and nothing about tools that are
+  not built yet (rubrics, Common Core, Google Classroom sync, a weekly summary email: another stream; a test guards it).
+- **Screenshots:** `node scripts/teach-loop-shots.js` makes public/img/teach-loop/{gradebook,attention,feedback,
+  standards}.webp from a throwaway database with the seeded demo school (made-up names only, checked; prices checked),
+  plus one CS Quest lesson with some work so the Standards tab shows Practiced rows. Captured at 2x from a 960x600
+  window and scaled to 1280x800, 25-35 KB each (limit 80 KB, tested). Alt text and captions are in i18n
+  (`teach.loop.shots.*`); the screens themselves are the English UI.
+- **Words:** `teach.loop.*` in all 13 languages (scripts/i18n-add-teach-loop.mjs from scripts/teach-loop-strings/
+  words.json); tool names the app already has (Lesson library, Draft with AI, Needs attention first, Download (CSV),
+  Host a live game) are copied from each language's own keys. en-GB needs nothing (no spelling differs). In Hebrew and
+  Arabic the arrows point left.
+- **Checks:** tests/unit/teach-loop.test.js (ticks, hide/show, staff-only and per-teacher authorization, landing and
+  /teachers sections, images, words); tests/e2e/teach-loop.spec.js (360/390/1280, light/dark, he; the landing too when
+  run with `LANDING_AT_ROOT=1`).

@@ -7027,6 +7027,78 @@
       "breaksText": "Jogos curtos e divertidos de Jogar, escolhidos para uma pausa de 5 minutos no ecrã grande.",
       "allGames": "Ver tudo o que os alunos podem jogar",
       "openLive": "Abrir o jogo ao vivo"
+    },
+    "loop": {
+      "kicker": "Como o Oomba se encaixa na sua semana",
+      "h": "Planejar → Jogar → Acompanhar → Comentar",
+      "lead": "Um ciclo para cada aula: planeje, jogue com a turma, veja quem precisa de você e diga a cada aluno o que fazer em seguida. Cada passo é uma ferramenta que já existe no Oomba.",
+      "steps": {
+        "plan": {
+          "name": "Planejar",
+          "benefit": "Comece com uma aula pronta ou um tema e transforme-a num jogo que a sua turma vai querer jogar."
+        },
+        "play": {
+          "name": "Jogar",
+          "benefit": "Atribua com datas de abertura e de entrega, ou jogue ao vivo no telão com a turma toda."
+        },
+        "check": {
+          "name": "Acompanhar",
+          "benefit": "Veja o progresso de cada aluno num relance, e quem precisa da sua ajuda primeiro."
+        },
+        "feedback": {
+          "name": "Comentar",
+          "benefit": "Leia cada resposta e escreva um comentário que o aluno vê na própria aula."
+        }
+      },
+      "tools": {
+        "builder": "Transformar uma aula em jogo",
+        "assign": "Atribuir a uma turma",
+        "gradebook": "Diário de notas",
+        "gradebookCsv": "Diário de notas com download em CSV",
+        "standards": "Aba Padrões",
+        "review": "Respostas para ler",
+        "written": "Comentários escritos que os alunos veem",
+        "library": "Biblioteca de aulas",
+        "draftAi": "Criar rascunho com IA",
+        "attention": "Quem precisa de atenção primeiro",
+        "csv": "Baixar (CSV)",
+        "live": "Conduzir um jogo ao vivo"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "O diário de notas: alunos nas linhas, aulas nas colunas, com passos feitos e respostas para ler",
+          "caption": "Diário de notas: a turma toda num relance, pronta para baixar em CSV."
+        },
+        "attention": {
+          "alt": "O progresso de uma aula, ordenado para que os alunos que precisam de atenção venham primeiro",
+          "caption": "Primeiro quem precisa de atenção: respostas para ler, atrasos e aulas pela metade no topo."
+        },
+        "feedback": {
+          "alt": "A resposta escrita de um aluno com a caixa de comentário do professor e o botão de salvar",
+          "caption": "Comentar: escreva uma nota, salve, e o aluno a vê na aula dele."
+        },
+        "standards": {
+          "alt": "A aba Padrões da turma: padrões de ciência da computação e o avanço de cada aluno",
+          "caption": "Padrões: os padrões de ciência da computação que a sua turma já trabalhou, aluno por aluno."
+        }
+      },
+      "home": {
+        "h": "Seu ciclo de ensino",
+        "lead": "Experimente cada passo uma vez com {class}. Cada um se marca sozinho conforme você avança.",
+        "leadNoClass": "Crie sua primeira turma e experimente cada passo uma vez. Cada um se marca sozinho conforme você avança.",
+        "count": "{done} de {total} feitos",
+        "done": "Feito",
+        "todo": "Ainda não feito",
+        "hide": "Ocultar",
+        "hidden": "Oculto. Você sempre encontra em “Como o Oomba se encaixa na sua semana”."
+      },
+      "page": {
+        "title": "Como o Oomba se encaixa na sua semana",
+        "lead": "Planeje uma aula, jogue, veja quem precisa de você e comente: as ferramentas de cada passo, prontas para a sua turma.",
+        "link": "Como o Oomba se encaixa na sua semana",
+        "show": "Mostrar a lista de novo em {classroom}",
+        "shown": "A lista voltou para {classroom}."
+      }
     }
   }
 }

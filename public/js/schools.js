@@ -80,6 +80,8 @@ document.querySelectorAll('[data-sort]').forEach(btn => {
     order.forEach(r => body.appendChild(r));
   });
   btn.closest('[hidden]')?.removeAttribute('hidden');
+  // From the teaching loop's "Needs attention first" link (views/teacher-loop.js): arrive sorted.
+  if (location.hash === '#needs-attention' && btn.closest('#needs-attention')) btn.click();
 });
 
 // A link to a folded section from another page (People's #add-staff from a class's Settings) opens it on arrival.

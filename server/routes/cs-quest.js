@@ -27,6 +27,7 @@ import { printBody, sheetBody, projectorBody } from '../views/cs-quest-sheets.js
 import * as STD from '../services/standards.js';
 import { classBody as standardsBody, classCsv as standardsCsv, reportBody as standardsReport } from '../views/cs-quest-standards.js';
 import { classHeader, classBack } from './schools.js';
+import { markCheck } from '../services/teach-loop.js';
 
 export const router = Router();
 const b = req => req.body || {};
@@ -401,6 +402,7 @@ router.get('/class/:id/standards', requireUser, (req, res) => {
     return page(req, res, { title: `${t('cs.standards.reportH.title')} · ${school.name}`, body: html`<div class="printdoc csq-print">${body}</div>`, head: V.CSS, bare: true, bodyClass: 'printpage', scripts: ['/js/print.js'] });
   }
   const c = stdClass(req, res); if (!c) return;
+  markCheck(req.user);   // the teaching loop's Check step (services/teach-loop.js)
   const data = STD.classStandards(c.id, { all });
   const student = req.query.student ? data.students.find(p => p.id === String(req.query.student)) || null : null;
   const body = html`${classHeader(req, c, 'standards')}<p class="muted csq-std-lead">${t('cs.standards.lead')}</p>${standardsBody(req, { c, data, all, student })}`;

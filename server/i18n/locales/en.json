@@ -6839,6 +6839,78 @@
       "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
       "allGames": "See everything students can play",
       "openLive": "Open live game"
+    },
+    "loop": {
+      "kicker": "How Oomba fits your week",
+      "h": "Plan → Play → Check → Feedback",
+      "lead": "One loop for every lesson: plan it, play it with your class, see who needs you, and tell each student what to do next. Every step is a tool that is already in Oomba.",
+      "steps": {
+        "plan": {
+          "name": "Plan",
+          "benefit": "Start from a ready-made lesson or a topic, then turn it into a game your class will want to play."
+        },
+        "play": {
+          "name": "Play",
+          "benefit": "Assign it with open and due dates, or play it live on the big screen with the whole class."
+        },
+        "check": {
+          "name": "Check",
+          "benefit": "See every student's progress at a glance, and who needs your help first."
+        },
+        "feedback": {
+          "name": "Feedback",
+          "benefit": "Read each answer and write feedback that the student sees on their own lesson."
+        }
+      },
+      "tools": {
+        "builder": "Turn a lesson into a game",
+        "assign": "Assign to a class",
+        "gradebook": "Gradebook",
+        "gradebookCsv": "Gradebook with CSV download",
+        "standards": "Standards tab",
+        "review": "Answers to review",
+        "written": "Written feedback students see",
+        "library": "Lesson library",
+        "draftAi": "Draft with AI",
+        "attention": "Needs attention first",
+        "csv": "Download (CSV)",
+        "live": "Host a live game"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "The gradebook: students down the side, lessons across the top, with steps done and answers to read",
+          "caption": "Gradebook: the whole class at a glance, ready to download as a CSV file."
+        },
+        "attention": {
+          "alt": "One lesson's progress, sorted so the students who need attention come first",
+          "caption": "Needs attention first: answers to read, late work and half-done lessons on top."
+        },
+        "feedback": {
+          "alt": "A student's written answer with the teacher's feedback box and the save button",
+          "caption": "Feedback: write a note, save it, and the student sees it on their lesson."
+        },
+        "standards": {
+          "alt": "The class Standards tab: computer science standards with how far each student has got",
+          "caption": "Standards: the computer science standards your class has covered, student by student."
+        }
+      },
+      "home": {
+        "h": "Your teaching loop",
+        "lead": "Try each step once with {class}. Each one ticks itself off as you go.",
+        "leadNoClass": "Make your first class, then try each step once. Each one ticks itself off as you go.",
+        "count": "{done} of {total} done",
+        "done": "Done",
+        "todo": "Not done yet",
+        "hide": "Hide",
+        "hidden": "Hidden. You can always find it under How Oomba fits your week."
+      },
+      "page": {
+        "title": "How Oomba fits your week",
+        "lead": "Plan a lesson, play it, check who needs you and give feedback: the tools for each step, ready for your class.",
+        "link": "How Oomba fits your week",
+        "show": "Show the checklist on {classroom}",
+        "shown": "The checklist is back on {classroom}."
+      }
     }
   },
   "courses": {

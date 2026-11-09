@@ -7025,6 +7025,78 @@
       "breaksText": "Des jeux courts et amusants de Jouer, choisis pour une pause de 5 minutes sur le grand écran.",
       "allGames": "Voir tout ce que les élèves peuvent jouer",
       "openLive": "Ouvrir le jeu en direct"
+    },
+    "loop": {
+      "kicker": "Comment Oomba s'intègre à votre semaine",
+      "h": "Préparer → Jouer → Suivre → Commenter",
+      "lead": "Une boucle pour chaque leçon : préparez-la, jouez-la avec votre classe, voyez qui a besoin de vous et dites à chaque élève quoi faire ensuite. Chaque étape est un outil déjà présent dans Oomba.",
+      "steps": {
+        "plan": {
+          "name": "Préparer",
+          "benefit": "Partez d'une leçon toute prête ou d'un thème, puis transformez-la en un jeu auquel votre classe voudra jouer."
+        },
+        "play": {
+          "name": "Jouer",
+          "benefit": "Donnez-la avec des dates d'ouverture et de rendu, ou jouez-la en direct sur grand écran avec toute la classe."
+        },
+        "check": {
+          "name": "Suivre",
+          "benefit": "Voyez la progression de chaque élève d'un coup d'œil, et qui a besoin de votre aide en premier."
+        },
+        "feedback": {
+          "name": "Commenter",
+          "benefit": "Lisez chaque réponse et écrivez un commentaire que l'élève voit dans sa propre leçon."
+        }
+      },
+      "tools": {
+        "builder": "Transformer une leçon en jeu",
+        "assign": "Donner à une classe",
+        "gradebook": "Carnet de suivi",
+        "gradebookCsv": "Carnet de suivi avec téléchargement CSV",
+        "standards": "Onglet Normes",
+        "review": "Réponses à lire",
+        "written": "Commentaires écrits vus par les élèves",
+        "library": "Bibliothèque de leçons",
+        "draftAi": "Rédiger avec l’IA",
+        "attention": "À suivre en premier",
+        "csv": "Télécharger (CSV)",
+        "live": "Animer un jeu en direct"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "Le carnet de suivi : les élèves en lignes, les leçons en colonnes, avec les étapes faites et les réponses à lire",
+          "caption": "Carnet de suivi : toute la classe d'un coup d'œil, à télécharger en CSV."
+        },
+        "attention": {
+          "alt": "La progression d'une leçon, triée pour que les élèves qui ont besoin d'attention viennent en premier",
+          "caption": "D'abord ceux qui ont besoin d'attention : réponses à lire, retards et leçons à moitié faites en haut."
+        },
+        "feedback": {
+          "alt": "La réponse écrite d'un élève avec la zone de commentaire de l'enseignant et le bouton d'enregistrement",
+          "caption": "Commenter : écrivez une note, enregistrez-la, et l'élève la voit dans sa leçon."
+        },
+        "standards": {
+          "alt": "L'onglet Normes de la classe : les normes d'informatique et l'avancement de chaque élève",
+          "caption": "Normes : les normes d'informatique couvertes par votre classe, élève par élève."
+        }
+      },
+      "home": {
+        "h": "Votre boucle d'enseignement",
+        "lead": "Essayez chaque étape une fois avec {class}. Chacune se coche toute seule au fil de l'eau.",
+        "leadNoClass": "Créez votre première classe, puis essayez chaque étape une fois. Chacune se coche toute seule au fil de l'eau.",
+        "count": "{done} sur {total} faites",
+        "done": "Fait",
+        "todo": "Pas encore fait",
+        "hide": "Masquer",
+        "hidden": "Masqué. Vous le retrouverez toujours sous « Comment Oomba s'intègre à votre semaine »."
+      },
+      "page": {
+        "title": "Comment Oomba s'intègre à votre semaine",
+        "lead": "Préparez une leçon, jouez-la, voyez qui a besoin de vous et commentez : les outils de chaque étape, prêts pour votre classe.",
+        "link": "Comment Oomba s'intègre à votre semaine",
+        "show": "Afficher de nouveau la liste dans {classroom}",
+        "shown": "La liste est de retour dans {classroom}."
+      }
     }
   }
 }
