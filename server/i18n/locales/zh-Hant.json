@@ -7036,10 +7036,10 @@
         "courses": "把這個班級連結到你在 Classroom 的其中一個課程",
         "roster": "匯入該課程的學生，讓他們用 Google 登入",
         "post": "在那裡發布課程，附上回到這裡的連結和繳交期限",
-        "grades": "把每位學生的課程分數傳送到 Classroom"
+        "grades": "把每位學生的課程完成度成績傳送到 Classroom"
       },
       "button": "連結 Google Classroom",
-      "privacy": "只有你看得到這個連結。Oomba Academy 只會傳給 Classroom 課程標題、一個連結、繳交期限，以及每位學生的分數（滿分 100）。其他都不會傳：沒有姓名、答案或遊戲。",
+      "privacy": "只有你看得到這個連結。Oomba Academy 只會傳給 Classroom 課程標題、一個連結、繳交期限，以及每位學生的完成度成績（滿分 100）。其他都不會傳：沒有姓名、答案或遊戲。",
       "connectedAs": "已用 {email} 連結",
       "connectedHint": "這是你自己的連結：其他協同老師要各自連結。",
       "connectedToast": "已連結 Google Classroom。",
@@ -7059,11 +7059,12 @@
       "unlink": "取消連結",
       "unlinkConfirm": "要取消與 {course} 的連結嗎？學生和課程都會保留。",
       "unlinked": "已取消連結。",
-      "connectFirst": "請先在上方連結 Google Classroom 才能同步。"
+      "connectFirst": "請先在上方連結 Google Classroom 才能同步。",
+      "refresh": "重新整理清單"
     },
     "roster": {
       "heading": "來自 Classroom 的學生",
-      "text": "匯入已連結的 Classroom 課程中的學生。已經在這裡的學生會依 Google 帳號比對。新學生會得到學校帳號，並用 Google 登入。他們的真實姓名只有老師看得到。",
+      "text": "匯入已連結的 Classroom 課程中的學生。已經在這裡的學生會依 Google 帳號比對。第一次使用 Oomba Academy 的學生，會在第一次用學校網域的 Google 帳號登入時加入，並在那時得到學校帳號。他們的真實姓名只有老師看得到。",
       "button": "匯入學生",
       "last": "上次匯入：{when}",
       "noDomains": "你的學校還沒有加入 Google 網域，所以無法加入新學生。請洽學校管理員。",
@@ -7076,7 +7077,9 @@
       "resultOwn": "{count, plural, other {# 位使用個人帳號：可以用班級代碼加入}}",
       "resultOther": "{count, plural, other {# 位屬於其他學校}}",
       "resultStaff": "{count, plural, other {# 位是本校教職員}}",
-      "resultDomains": "{count, plural, other {# 位未加入：請先加入學校的 Google 網域}}"
+      "resultDomains": "{count, plural, other {# 位未加入：請先加入學校的 Google 網域}}",
+      "resultWaiting": "{count, plural, other {# 位會在第一次用學校網域的 Google 帳號登入時加入}}",
+      "waitingNow": "{count, plural, other {Classroom 的 # 位學生還沒登入。他們第一次用學校網域的 Google 帳號登入時就會加入這個班級（30 天內；再匯入一次可延長）。}}"
     },
     "post": {
       "heading": "Classroom 中的課程",
@@ -7091,17 +7094,18 @@
       "noDue": "沒有繳交期限",
       "posted": "已發布",
       "open": "在 Classroom 開啟",
-      "noLessons": "這個班級還沒有課程。請在「課程」分頁指派一堂。"
+      "noLessons": "這個班級還沒有課程。請在「課程」分頁指派一堂。",
+      "doneScheduled": "已在 Google Classroom 排程：學生會在 {date} 課程開放時看到。"
     },
     "grades": {
-      "text": "課程分數是學生完成的步驟比例（滿分 100）。還沒開始的學生不會傳送。",
+      "text": "這是完成度成績：學生完成的課程步驟比例（滿分 100），不計算答對幾題。還沒開始的學生不會傳送。",
       "as": "傳送方式",
       "draft": "草稿成績（由你在 Classroom 發還）",
       "assigned": "正式成績",
-      "button": "傳送成績",
-      "lastDraft": "草稿成績已傳送：{when}",
-      "lastAssigned": "正式成績已傳送：{when}",
-      "resultSent": "{count, plural, other {已傳送 # 筆成績}}",
+      "button": "傳送完成度成績",
+      "lastDraft": "草稿完成度成績已傳送：{when}",
+      "lastAssigned": "正式完成度成績已傳送：{when}",
+      "resultSent": "{count, plural, other {已傳送 # 筆完成度成績}}",
       "resultNotStarted": "{count, plural, other {# 位還沒開始}}",
       "resultNotMatched": "{count, plural, other {# 位不在這個班級}}",
       "resultFailed": "{count, plural, other {# 筆未能傳送}}"

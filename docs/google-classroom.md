@@ -11,9 +11,9 @@ Decisions: docs/decisions.md "Google Classroom sync".
 
 - On a class's **Lessons** tab: a **🎓 Google Classroom** button (school staff only). It opens
   `/class/<id>/google-classroom`: Connect, pick the Classroom class, **Import students**, then each lesson with
-  **Post to Google Classroom** and, once posted, **Send grades** (draft or assigned), and a list of recent syncs with
+  **Post to Google Classroom** and, once posted, **Send completion grades** (draft or assigned), and a list of recent syncs with
   plain-language errors.
-- The **Assign a lesson** form gets "Also post to Google Classroom" (ticked) once the teacher is connected and the class
+- The **Assign a lesson** form gets "Also post to Google Classroom" (unticked) once the teacher is connected and the class
   linked.
 - The **Students** tab has a one-line link to the import.
 - Each teacher connects their own Google account. Co-teachers connect theirs. Students never see any of it.
@@ -79,14 +79,16 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
 
 - **To Google:** the lesson's title, a fixed one line ("Open this lesson on Oomba Academy."), the link to the lesson,
   its due date (end of the due day in the school's time zone; left off when it has passed), maximum points 100, and for
-  each student on the teacher's own Classroom roster who is in the Oomba class and has started the lesson, a score out
-  of 100 (steps done of the lesson's steps). Never names, written answers, feedback, games or drawings.
+  each student on the teacher's own Classroom roster who is in the Oomba class and has started the lesson, a completion
+  grade out of 100 (steps done of the lesson's steps, not right answers). A lesson that opens later is sent as a draft
+  scheduled for its opening day. Never names, written answers, feedback, games or drawings.
 - **From Google:** the teacher's Google account id and email (to show "Connected as"), their active classes' names, and
   for the linked class each student's Google account id and full name.
 - **Kept:** the refresh token, encrypted (`gc_connections`); the link class ↔ course (`gc_links`); posted assignments
   and when grades were last sent, with counts (`gc_posts`); a sync log of counts and error codes (`gc_syncs`, deleted
-  after 180 days), plus the audit log. A student's full name from Classroom becomes the staff-only roster name of a
-  new school account; the public name is a generated username, as with login cards.
+  after 180 days), plus the audit log. A student new to Oomba waits (`gc_pending`: Google account id and full name, 30
+  days) until they first sign in with Google on the school's domain; then their full name becomes the staff-only roster
+  name of a new school account, and the public name is a generated username, as with login cards.
 - **Disconnect** revokes the token at Google and deletes it. Deleting a teacher's account does the same.
 
 ## Limits
@@ -95,7 +97,10 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
   card, an own account) isn't matched: connect Google on their account first, or they join with the class code.
 - Students who use their own Oomba account outside the school, other schools' accounts and staff are left out and
   counted.
-- New students need the school's Google domain (school Settings tab), like invites by school email.
+- New students need the school's Google domain (school Settings tab), like invites by school email. They join the
+  class the first time they sign in with Google on that domain (within 30 days of the import; import again to renew).
+  A personal Gmail on the Classroom roster never gets a school account.
+- Linking a different Classroom class drops the old posts: post the lessons again to the new class.
 - A lesson is posted once. Changing its due date in Oomba later doesn't move the Classroom one.
 - Assignments made by Oomba can be graded by Oomba; Google doesn't let any app grade coursework another app made.
 - At most 300 students per import, 20 imports an hour per class, 60 syncs an hour per teacher.

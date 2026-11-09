@@ -7,10 +7,10 @@
       "courses": "deze klas koppelen aan een van je Classroom-klassen",
       "roster": "de leerlingen ervan hierheen halen, die inloggen met Google",
       "post": "lessen daar plaatsen, met een link hierheen en de inleverdatum",
-      "grades": "de score van elke leerling voor een les naar Classroom sturen"
+      "grades": "het voltooiingscijfer van elke leerling voor een les naar Classroom sturen"
     },
     "button": "Google Classroom koppelen",
-    "privacy": "Alleen jij ziet deze koppeling. Oomba Academy stuurt Classroom de titel van de les, een link, de inleverdatum en de score van elke leerling op 100. Verder niets: geen namen, antwoorden of games.",
+    "privacy": "Alleen jij ziet deze koppeling. Oomba Academy stuurt Classroom de titel van de les, een link, de inleverdatum en het voltooiingscijfer van elke leerling op 100. Verder niets: geen namen, antwoorden of games.",
     "connectedAs": "Gekoppeld als {email}",
     "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
     "connectedToast": "Google Classroom is gekoppeld.",
@@ -30,11 +30,12 @@
     "unlink": "Ontkoppelen",
     "unlinkConfirm": "{course} ontkoppelen? Leerlingen en lessen blijven waar ze zijn.",
     "unlinked": "Ontkoppeld.",
-    "connectFirst": "Koppel hierboven je Google Classroom om te synchroniseren."
+    "connectFirst": "Koppel hierboven je Google Classroom om te synchroniseren.",
+    "refresh": "Lijst vernieuwen"
   },
   "roster": {
     "heading": "Leerlingen uit Classroom",
-    "text": "Haalt de leerlingen van de gekoppelde Classroom-klas hierheen. Wie al hier is, wordt herkend aan zijn Google-account. Nieuwe leerlingen krijgen een schoolaccount en loggen in met Google. Hun echte namen zien alleen leraren.",
+    "text": "Haalt de leerlingen van de gekoppelde Classroom-klas hierheen. Wie al hier is, wordt herkend aan zijn Google-account. Wie nieuw is bij Oomba Academy, komt erbij zodra die voor het eerst inlogt met Google op het domein van je school, en krijgt dan een schoolaccount. Hun echte namen zien alleen leraren.",
     "button": "Leerlingen importeren",
     "last": "Laatst geïmporteerd {when}",
     "noDomains": "Je school heeft haar Google-domein nog niet toegevoegd, dus nieuwe leerlingen kunnen er niet bij. Vraag het de schoolbeheerder.",
@@ -47,7 +48,9 @@
     "resultOwn": "{count, plural, one {# gebruikt een eigen account: kan meedoen met de klascode} other {# gebruiken een eigen account: kunnen meedoen met de klascode}}",
     "resultOther": "{count, plural, one {# hoort bij een andere school} other {# horen bij een andere school}}",
     "resultStaff": "{count, plural, one {# is hier personeel} other {# zijn hier personeel}}",
-    "resultDomains": "{count, plural, one {# niet toegevoegd: voeg eerst het Google-domein van de school toe} other {# niet toegevoegd: voeg eerst het Google-domein van de school toe}}"
+    "resultDomains": "{count, plural, one {# niet toegevoegd: voeg eerst het Google-domein van de school toe} other {# niet toegevoegd: voeg eerst het Google-domein van de school toe}}",
+    "resultWaiting": "{count, plural, one {# komt erbij bij de eerste keer inloggen met Google op het schooldomein} other {# komen erbij bij de eerste keer inloggen met Google op het schooldomein}}",
+    "waitingNow": "{count, plural, one {# leerling uit Classroom heeft nog niet ingelogd. Die komt in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).} other {# leerlingen uit Classroom hebben nog niet ingelogd. Ze komen in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).}}"
   },
   "post": {
     "heading": "Lessen in Classroom",
@@ -62,17 +65,18 @@
     "noDue": "Geen inleverdatum",
     "posted": "Geplaatst",
     "open": "Openen in Classroom",
-    "noLessons": "Nog geen lessen in deze klas. Wijs er een toe op het tabblad Lessen."
+    "noLessons": "Nog geen lessen in deze klas. Wijs er een toe op het tabblad Lessen.",
+    "doneScheduled": "Ingepland in Google Classroom: leerlingen zien het op {date}, als de les opengaat."
   },
   "grades": {
-    "text": "De score van een les is het aantal stappen dat een leerling deed, op 100. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
+    "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
     "as": "Versturen als",
     "draft": "Voorlopig cijfer (jij geeft het terug in Classroom)",
     "assigned": "Toegekend cijfer",
-    "button": "Cijfers versturen",
-    "lastDraft": "Voorlopige cijfers verstuurd {when}",
-    "lastAssigned": "Toegekende cijfers verstuurd {when}",
-    "resultSent": "{count, plural, one {# cijfer verstuurd} other {# cijfers verstuurd}}",
+    "button": "Voltooiingscijfers versturen",
+    "lastDraft": "Voorlopige voltooiingscijfers verstuurd {when}",
+    "lastAssigned": "Toegekende voltooiingscijfers verstuurd {when}",
+    "resultSent": "{count, plural, one {# voltooiingscijfer verstuurd} other {# voltooiingscijfers verstuurd}}",
     "resultNotStarted": "{count, plural, one {# is nog niet begonnen} other {# zijn nog niet begonnen}}",
     "resultNotMatched": "{count, plural, one {# niet in deze klas} other {# niet in deze klas}}",
     "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}"

@@ -7,10 +7,10 @@
       "courses": "このクラスを Classroom のクラスのひとつとリンクする",
       "roster": "そのクラスの生徒を取り込み、Google でログインできるようにする",
       "post": "ここへのリンクと提出期限つきでレッスンを投稿する",
-      "grades": "レッスンでの各生徒のスコアを Classroom に送る"
+      "grades": "レッスンでの各生徒の完了度の成績を Classroom に送る"
     },
     "button": "Google Classroom を接続",
-    "privacy": "この接続はあなただけに表示されます。Oomba Academy が Classroom に送るのは、レッスンのタイトル、リンク、提出期限、各生徒の 100 点満点のスコアだけです。名前、回答、ゲームは送りません。",
+    "privacy": "この接続はあなただけに表示されます。Oomba Academy が Classroom に送るのは、レッスンのタイトル、リンク、提出期限、各生徒の 100 点満点の完了度の成績だけです。名前、回答、ゲームは送りません。",
     "connectedAs": "{email} で接続中",
     "connectedHint": "この接続はあなた専用です。ほかの先生はそれぞれ自分で接続します。",
     "connectedToast": "Google Classroom を接続しました。",
@@ -30,11 +30,12 @@
     "unlink": "リンクを解除",
     "unlinkConfirm": "{course} とのリンクを解除しますか? 生徒とレッスンはそのまま残ります。",
     "unlinked": "リンクを解除しました。",
-    "connectFirst": "同期するには、上で Google Classroom を接続してください。"
+    "connectFirst": "同期するには、上で Google Classroom を接続してください。",
+    "refresh": "一覧を更新"
   },
   "roster": {
     "heading": "Classroom の生徒",
-    "text": "リンクした Classroom のクラスの生徒を取り込みます。すでにいる生徒は Google アカウントで照合します。新しい生徒には学校アカウントが作られ、Google でログインします。本名は先生だけが見られます。",
+    "text": "リンクした Classroom のクラスの生徒を取り込みます。すでにいる生徒は Google アカウントで照合します。Oomba Academy が初めての生徒は、学校のドメインで初めて Google ログインしたときにクラスに入り、そのとき学校アカウントが作られます。本名は先生だけが見られます。",
     "button": "生徒を取り込む",
     "last": "前回の取り込み: {when}",
     "noDomains": "学校の Google ドメインがまだ登録されていないため、新しい生徒は追加できません。学校の管理者に頼んでください。",
@@ -47,7 +48,9 @@
     "resultOwn": "{count, plural, other {# 人は個人アカウント: クラスコードで参加できます}}",
     "resultOther": "{count, plural, other {# 人は別の学校のアカウント}}",
     "resultStaff": "{count, plural, other {# 人はこの学校のスタッフ}}",
-    "resultDomains": "{count, plural, other {# 人は未追加: 先に学校の Google ドメインを追加してください}}"
+    "resultDomains": "{count, plural, other {# 人は未追加: 先に学校の Google ドメインを追加してください}}",
+    "resultWaiting": "{count, plural, other {# 人は学校のドメインで初めて Google ログインしたときに参加}}",
+    "waitingNow": "{count, plural, other {Classroom の生徒 # 人がまだログインしていません。学校のドメインで初めて Google ログインしたときにこのクラスに入ります (30 日以内。もう一度取り込むと延長されます)。}}"
   },
   "post": {
     "heading": "Classroom のレッスン",
@@ -62,17 +65,18 @@
     "noDue": "提出期限なし",
     "posted": "投稿済み",
     "open": "Classroom で開く",
-    "noLessons": "このクラスにはまだレッスンがありません。「レッスン」タブで割り当ててください。"
+    "noLessons": "このクラスにはまだレッスンがありません。「レッスン」タブで割り当ててください。",
+    "doneScheduled": "Google Classroom に予約投稿しました。レッスンが開く {date} に生徒に表示されます。"
   },
   "grades": {
-    "text": "レッスンのスコアは、生徒が終えたステップの割合 (100 点満点) です。まだ始めていない生徒は送りません。",
+    "text": "これは完了度の成績です。生徒が終えたレッスンのステップの割合 (100 点満点) で、正解の数は数えません。まだ始めていない生徒は送りません。",
     "as": "送り方",
     "draft": "下書きの成績 (Classroom であなたが返却)",
     "assigned": "確定した成績",
-    "button": "成績を送る",
-    "lastDraft": "下書きの成績を送信: {when}",
-    "lastAssigned": "確定した成績を送信: {when}",
-    "resultSent": "{count, plural, other {# 件の成績を送信}}",
+    "button": "完了度の成績を送る",
+    "lastDraft": "下書きの完了度の成績を送信: {when}",
+    "lastAssigned": "確定した完了度の成績を送信: {when}",
+    "resultSent": "{count, plural, other {# 件の完了度の成績を送信}}",
     "resultNotStarted": "{count, plural, other {# 人は未着手}}",
     "resultNotMatched": "{count, plural, other {# 人はこのクラスにいません}}",
     "resultFailed": "{count, plural, other {# 件は送れませんでした}}"

@@ -51,6 +51,8 @@ export async function startFakeClassroom({ port = 0, host = '127.0.0.1' } = {}) 
       if (!c.teachers.has('me')) return gErr(res, 403, 'PERMISSION_DENIED');
       if (!body.title || body.workType !== 'ASSIGNMENT') return gErr(res, 400, 'INVALID_ARGUMENT');
       if (!!body.dueDate !== !!body.dueTime) return gErr(res, 400, 'INVALID_ARGUMENT', 'dueDate and dueTime go together');
+      if (!['PUBLISHED', 'DRAFT'].includes(body.state)) return gErr(res, 400, 'INVALID_ARGUMENT', 'state');
+      if (body.scheduledTime && (body.state !== 'DRAFT' || !(Date.parse(body.scheduledTime) > Date.now()))) return gErr(res, 400, 'INVALID_ARGUMENT', 'scheduledTime needs DRAFT and a time ahead');
       const cwId = id();
       courseWork.set(cwId, { courseId: c.id, body, submissions: c.students.map(s => ({ id: 'Cg' + id(), userId: s.userId, state: 'CREATED' })) });
       return send(res, 200, { id: cwId, courseId: c.id, ...body, alternateLink: `https://classroom.google.com/c/${c.id}/a/${cwId}/details`, creationTime: new Date().toISOString() });

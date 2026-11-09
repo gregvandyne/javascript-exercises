@@ -141,7 +141,7 @@ router.post('/api/class-lessons/:id/google-classroom/post', on, auth.requireAcco
   const x = staffLesson(req, res); if (!x) return;
   const r = await GC.postLesson(req.user, x.cl, { origin: origin(req), description: req.t('gclassroom.post.description') });
   if (!r.ok) return fail(req, res, r.code);
-  res.json({ ok: true, toast: req.t(r.pastDue ? 'gclassroom.post.donePastDue' : 'gclassroom.post.done') });
+  res.json({ ok: true, toast: postText(req, r) });
 });
 router.post('/api/class-lessons/:id/google-classroom/grades', on, auth.requireAccount, syncLimit, async (req, res) => {
   const x = staffLesson(req, res); if (!x) return;
@@ -151,8 +151,15 @@ router.post('/api/class-lessons/:id/google-classroom/grades', on, auth.requireAc
 });
 
 // ================================================================ text for results
+/** After a post: done, done without the passed due date, or scheduled for the day the lesson opens. */
+function postText(req, r) {
+  if (r.scheduled) return req.t('gclassroom.post.doneScheduled', { date: req.fmt.day(r.scheduled) });
+  return req.t(r.pastDue ? 'gclassroom.post.donePastDue' : 'gclassroom.post.done');
+}
 function rosterText(t, k) {
-  return [t('gclassroom.roster.resultAdded', { count: (k.added || 0) + (k.created || 0) }), k.already && t('gclassroom.roster.resultAlready', { count: k.already }),
+  // (created: accounts made at import by the first version of this feature, before students waited to sign in.)
+  return [t('gclassroom.roster.resultAdded', { count: (k.added || 0) + (k.created || 0) }), k.waiting && t('gclassroom.roster.resultWaiting', { count: k.waiting }),
+    k.already && t('gclassroom.roster.resultAlready', { count: k.already }),
     k.ownAccount && t('gclassroom.roster.resultOwn', { count: k.ownAccount }), k.otherSchool && t('gclassroom.roster.resultOther', { count: k.otherSchool }),
     k.staff && t('gclassroom.roster.resultStaff', { count: k.staff }), k.needDomains && t('gclassroom.roster.resultDomains', { count: k.needDomains })].filter(Boolean).join(' · ');
 }
@@ -200,24 +207,30 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
     coursePanel = html`<section class="panel" id="gc-course"><h2>🎓 ${t('gclassroom.course.heading')}</h2><p><b>${t('gclassroom.course.linkedTo', { course: lk.course_name })}</b></p>
       <form data-api="/api/classes/${c.id}/google-classroom/unlink" data-reload data-confirm="${t('gclassroom.course.unlinkConfirm', { course: lk.course_name })}"><button class="btn btn-sm" type="submit">${t('gclassroom.course.unlink')}</button></form></section>`;
   } else {
-    const r = await GC.courses(u, { fresh: true });
+    // The five-minute cached list unless the teacher asks for a fresh one ("Refresh the list"); linking always checks a
+    // fresh one. Every call to Google from here is rate limited per teacher.
+    const fresh = req.query.fresh === '1';
+    const r = (!fresh && GC.hasCourses(u)) || allow(`gc-courses:${u.id}`, 30, 3600e3) ? await GC.courses(u, { fresh }) : { ok: false, code: 'tooManyTries' };
     coursePanel = html`<section class="panel" id="gc-course"><h2>🎓 ${t('gclassroom.course.heading')}</h2><p class="small muted">${t('gclassroom.course.text', { class: c.name })}</p>
       ${!r.ok ? html`<p class="notice warn" role="alert">${errText(t, r.code)}</p>`
         : !r.courses.length ? html`<p class="small muted">${t('gclassroom.course.none')}</p>`
         : html`<form class="row gc-linkform" data-api="/api/classes/${c.id}/google-classroom/link" data-reload novalidate>
           <label class="sr-only" for="gc-course-pick">${t('gclassroom.course.pick')}</label>
           <select class="input grow" id="gc-course-pick" name="courseId" required><option value="">${t('gclassroom.course.pick')}</option>${r.courses.map(x => html`<option value="${x.id}">${x.name}${x.section ? ` · ${x.section}` : ''}</option>`)}</select>
-          <button class="btn btn-primary" type="submit">${t('gclassroom.course.link')}</button><span class="err" id="gc-course-pick-err" aria-live="polite"></span></form>`}</section>`;
+          <button class="btn btn-primary" type="submit">${t('gclassroom.course.link')}</button><span class="err" id="gc-course-pick-err" aria-live="polite"></span></form>`}
+      <p class="small"><a class="btn btn-sm" href="${pagePath(c.id)}?fresh=1#gc-course">🔄 ${t('gclassroom.course.refresh')}</a></p></section>`;
   }
 
   // 3. Roster and 4. lessons: only once connected and linked.
   const ready = state === 'ok' && !!lk && staff;
   const domains = G.schoolDomains(s);
   const lastRoster = lk && lk.roster_at ? html`<p class="small muted">${t('gclassroom.roster.last', { when: f.ago(lk.roster_at) })} · ${rosterText(t, JSON.parse(lk.roster_counts || '{}'))}</p>` : '';
+  const waiting = lk ? GC.pendingCount(c.id) : 0;
+  const waitingLine = waiting ? html`<p class="small" id="gc-waiting">⏳ ${t('gclassroom.roster.waitingNow', { count: waiting })}</p>` : '';
   const rosterPanel = ready ? html`<section class="panel" id="gc-roster"><h2>👩‍🎓 ${t('gclassroom.roster.heading')}</h2>
     <p class="small muted">${t('gclassroom.roster.text')}</p>
     ${domains.length ? '' : html`<p class="notice warn small">${S.canManageSchool(u, s.id) ? tHtml(t, 'gclassroom.roster.noDomainsAdmin', { link: html`<a href="/school/${s.slug}?tab=settings#google">${t('google.invites.settingsLink')}</a>` }) : t('gclassroom.roster.noDomains')}</p>`}
-    <form data-api="/api/classes/${c.id}/google-classroom/roster" data-reload><button class="btn btn-primary" type="submit">⬇️ ${t('gclassroom.roster.button')}</button></form>${lastRoster}</section>` : '';
+    <form data-api="/api/classes/${c.id}/google-classroom/roster" data-reload><button class="btn btn-primary" type="submit">⬇️ ${t('gclassroom.roster.button')}</button></form>${lastRoster}${waitingLine}</section>` : '';
 
   const posts = GC.postsOfClass(c.id);
   const lessons = L.classPlan(c.id).flatMap(g => g.lessons);
@@ -261,7 +274,8 @@ export function gcRosterHint(req, c) {
 /** The assign form: "Also post to Google Classroom", when this teacher is connected and the class linked. */
 export function gcAssignField(req, c) {
   if (!GC.enabled() || !GC.mayConnect(req.user) || !GC.linkOf(c.id) || GC.connectionState(req.user.id) !== 'ok') return '';
-  return html`<label class="field gc-also wide"><span class="gc-check"><input type="checkbox" name="gcPost" value="1" checked> <span>🎓 ${req.t('gclassroom.post.also')}</span></span></label>`;
+  // Unticked: a post reaches real students in Classroom and can't be taken back from here, so the teacher asks for it.
+  return html`<label class="field gc-also wide"><span class="gc-check"><input type="checkbox" name="gcPost" value="1"> <span>🎓 ${req.t('gclassroom.post.also')}</span></span></label>`;
 }
 /** After an assign from that form: post it too. -> a line for the toast ('' when not asked). */
 export async function gcAfterAssign(req, classLesson) {
@@ -271,5 +285,5 @@ export async function gcAfterAssign(req, classLesson) {
   if (!c || !S.canManageClass(req.user, c) || !GC.linkOf(c.id)) return '';
   if (!allow(`gc-sync:${req.user.id}`, 60, 3600e3)) return errText(req.t, 'tooManyTries');
   const r = await GC.postLesson(req.user, classLesson, { origin: origin(req), description: req.t('gclassroom.post.description') });
-  return r.ok ? req.t(r.pastDue ? 'gclassroom.post.donePastDue' : 'gclassroom.post.done') : `${req.t('gclassroom.post.failed')} ${errText(req.t, r.code)}`;
+  return r.ok ? postText(req, r) : `${req.t('gclassroom.post.failed')} ${errText(req.t, r.code)}`;
 }

@@ -157,7 +157,7 @@ test('connect: consent, an encrypted refresh token, the page says so; disconnect
   assert.match(pg, /Google Classroom is connected/); assert.match(pg, /Connected as ⁦teach@dwes\.test⁩/);
   // The page lists the teacher's courses to link.
   const id = course([], { name: 'Maths 4B' });
-  assert.match(await (await get(`/class/${c.id}/google-classroom`, tc)).text(), new RegExp(`<option value="${id}">Maths 4B</option>`));
+  assert.match(await (await get(`/class/${c.id}/google-classroom?fresh=1`, tc)).text(), new RegExp(`<option value="${id}">Maths 4B</option>`));
 
   const before = fake.stats.revoke;
   const d = await post('/api/google-classroom/disconnect', {}, tc);
@@ -202,7 +202,79 @@ test('link: only a course the teacher teaches; courses come page by page', async
   assert.equal(GC.linkOf(c.id), null);
 });
 
-test('roster import: matched by Google account, new ones get a school account (real name staff-only), the rest counted', async () => {
+test('unlink then link another Classroom class: posts to the old one stop counting, the lesson can be posted again, grades go to the new one', async () => {
+  const { c, cl, steps, kid, tc } = school();
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '220000000000000000001', kid.id, 'kid2@dwes.test', 'dwes.test', Date.now());
+  const first = course([{ userId: '220000000000000000001', fullName: 'Kid Here' }], { name: 'Class 4B (old)' });
+  const second = course([{ userId: '220000000000000000001', fullName: 'Kid Here' }], { name: 'Science club' });
+  await connect(tc, c.id);
+  await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: first }, tc);
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc)).status, 200);
+  const oldCw = GC.postOf(cl.id).coursework_id;
+  assert.equal(room.courseWork.get(oldCw).courseId, first);
+  // Unlink, then relink the same class: the post is still there.
+  await post(`/api/classes/${c.id}/google-classroom/unlink`, {}, tc);
+  await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: first }, tc);
+  assert.equal(GC.postOf(cl.id).coursework_id, oldCw);
+  // Unlink, then link another class: the old post doesn't count.
+  await post(`/api/classes/${c.id}/google-classroom/unlink`, {}, tc);
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).status, 400, 'not linked: no grades anywhere');
+  await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: second }, tc);
+  assert.equal(GC.postOf(cl.id), null);
+  assert.equal(GC.postsOfClass(c.id).size, 0);
+  let pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.doesNotMatch(pg, new RegExp(`classroom\\.google\\.com/c/${first}`), 'no link to the old class');
+  assert.match(pg, new RegExp(`/api/class-lessons/${cl.id}/google-classroom/post`), 'the Post button is back');
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).status, 400, 'post it to the new class first');
+  const r = await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  assert.equal(r.status, 200);
+  const p = GC.postOf(cl.id);
+  assert.equal(p.course_id, second); assert.notEqual(p.coursework_id, oldCw);
+  assert.equal(room.courseWork.get(p.coursework_id).courseId, second);
+  assert.ok(P.markDone(kid, cl.id, steps[0].id).ok);
+  const before = room.calls.length;
+  await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc);
+  const gradeCalls = room.calls.slice(before).filter(z => /studentSubmissions/.test(z.path));
+  assert.ok(gradeCalls.length >= 2);
+  assert.ok(gradeCalls.every(z => z.path.startsWith(`/v1/courses/${second}/courseWork/${p.coursework_id}/`)), 'grades only to the new class');
+  pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.match(pg, new RegExp(`classroom\\.google\\.com/c/${second}/a/${p.coursework_id}`));
+});
+
+test('deleting a class or a lesson takes its Classroom link, posts and log with it; the sweep clears leftovers', async () => {
+  const { c, s, teacher, lesson, cl, tc } = school();
+  const id = course([]);
+  await connect(tc, c.id); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+  await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  assert.ok(GC.postOf(cl.id));
+  assert.ok(L.deleteLesson(teacher, lesson.id).ok);
+  assert.equal(q.get('SELECT COUNT(*) n FROM gc_posts WHERE class_lesson_id=?', cl.id).n, 0);
+  // A class with no students ever can be deleted: a fresh one.
+  const c2 = S.createClass({ id: teacher.id }, s.id, { name: 'Club' }).class;
+  await post(`/api/classes/${c2.id}/google-classroom/link`, { courseId: id }, tc);
+  const l2 = L.createLesson(teacher, s.id, { title: 'Club day' }).lesson;
+  const cl2 = L.assign(teacher, c2.id, l2.id, {}).classLesson;
+  await post(`/api/class-lessons/${cl2.id}/google-classroom/post`, {}, tc);
+  assert.ok(S.deleteClass(teacher, c2.id).ok);
+  for (const t of ['gc_links', 'gc_posts', 'gc_syncs', 'gc_pending']) assert.equal(q.get(`SELECT COUNT(*) n FROM ${t} WHERE class_id=?`, c2.id).n, 0, t);
+  // Rows left by some other way of removing a class: the sweep takes them.
+  q.run("INSERT INTO gc_links(class_id, course_id, course_name, linked_by, linked_at) VALUES ('gone-class', '1', 'Gone', ?, ?)", teacher.id, Date.now());
+  q.run("INSERT INTO gc_posts(class_lesson_id, class_id, course_id, coursework_id, posted_by, posted_at) VALUES ('gone-cl', 'gone-class', '1', '2', ?, ?)", teacher.id, Date.now());
+  GC.sweepSyncs();
+  assert.equal(q.get("SELECT COUNT(*) n FROM gc_links WHERE class_id='gone-class'").n, 0);
+  assert.equal(q.get("SELECT COUNT(*) n FROM gc_posts WHERE class_lesson_id='gone-cl'").n, 0);
+});
+
+/** Sign in with Google as this account (fake Google) -> the callback reply. */
+async function googleSignIn(email, sub, hd) {
+  const st = await get('/auth/google/start');
+  const to = new URL(loc(st)); to.searchParams.set('fake_auto', '1'); to.searchParams.set('fake_email', email); to.searchParams.set('fake_sub', sub);
+  if (hd !== undefined) to.searchParams.set('fake_hd', hd);
+  const cb = new URL(loc(await fetch(to, { redirect: 'manual' })));
+  return get(cb.pathname + cb.search, cookieOf(st, 'brb_gflow'));
+}
+
+test('roster import: matched by Google account; new ones wait and get a school account (real name staff-only) when they sign in on the school domain', async () => {
   const x = school();
   const { c, s, admin, tc } = x;
   // Already signed in with Google once (a school account of this school, not in the class yet).
@@ -213,35 +285,67 @@ test('roster import: matched by Google account, new ones get a school account (r
   q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '200000000000000000002', own.id, 'own@gmail.test', '', Date.now());
   q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '200000000000000000003', x.other.id, 'oth@dwes.test', 'dwes.test', Date.now());
   const id = course([{ userId: '200000000000000000001', fullName: 'Dee Known' }, { userId: '200000000000000000002', fullName: 'Owen Own' },
-    { userId: '200000000000000000003', fullName: 'Mx Other' }, { userId: '200000000000000000004', fullName: 'Eve Newcomer' }, { userId: '200000000000000000004', fullName: 'Eve Newcomer' }]);
+    { userId: '200000000000000000003', fullName: 'Mx Other' }, { userId: '200000000000000000004', fullName: 'Eve Newcomer' }, { userId: '200000000000000000004', fullName: 'Eve Newcomer' },
+    { userId: '200000000000000000005', fullName: 'Pat Personal' }]);
   await connect(tc, c.id);
   await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
   const users = q.get('SELECT COUNT(*) n FROM users').n;
   const r = await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc);
   assert.equal(r.status, 200);
-  assert.match((await r.json()).toast, /2 students added · 1 uses their own account.*· 1 is staff here/);
-  assert.equal(q.get('SELECT COUNT(*) n FROM users').n, users + 1, 'one new account, for the newcomer only');
+  assert.match((await r.json()).toast, /^1 student added · 2 will join when they first sign in with Google on your school's domain · 1 uses their own account.*· 1 is staff here$/);
+  assert.equal(q.get('SELECT COUNT(*) n FROM users').n, users, 'no account is made before the student signs in (their domain is unknown)');
+  assert.equal(G.identityBySub('200000000000000000004'), null, 'their Google id stays free');
+  assert.equal(GC.pendingCount(c.id), 2);
   assert.ok(S.classMember(c.id, known.id));
   assert.ok(!S.classMember(c.id, own.id)); assert.ok(!S.classMember(c.id, x.other.id) || S.classMember(c.id, x.other.id).role !== 'student');
+  // Again: nothing new.
+  const again = await (await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).json();
+  assert.match(again.toast, /^0 students added · 2 will join .* · 1 already here/);
+  // The page says who's waiting (a count); the sync log shows counts, never names.
+  const pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.match(pg, /2 students from Classroom haven(&#39;|')t signed in yet/);
+  assert.match(pg, /Imported students/); assert.doesNotMatch(pg.split('id="gc-log"')[1], /Eve|Owen|Dee|Pat/);
+  // Pat signs in with a personal Google account (not the school's domain): no school account, no class, the id stays free.
+  const pat = await googleSignIn('pat@gmail.test', '200000000000000000005', '');
+  assert.equal(cookieOf(pat, 'brb_session'), '', `not signed in: ${loc(pat)}`);
+  assert.equal(G.identityBySub('200000000000000000005'), null);
+  assert.equal(q.get('SELECT COUNT(*) n FROM users').n, users);
+  // Eve signs in with Google on the school's domain: her school account is made then, and she lands in the class.
+  const done = await googleSignIn('eve@dwes.test', '200000000000000000004');
+  assert.ok(cookieOf(done, 'brb_session'), `signed in: ${loc(done)}`);
+  assert.equal(loc(done), `/class/${c.id}`);
   const eve = getUser(G.identityBySub('200000000000000000004').user_id);
   assert.equal(eve.managed_school, s.id); assert.equal(eve.password_hash, null);
   assert.doesNotMatch(eve.display_name, /Eve/, 'the Google name is never the public name');
   assert.equal(S.membership(s.id, eve.id).roster_name, 'Eve Newcomer', 'the real name is the staff-only roster name');
+  assert.equal(S.membership(s.id, eve.id).role, 'student');
   assert.ok(S.classMember(c.id, eve.id));
-  // Again: nothing new.
-  const again = await (await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).json();
-  assert.match(again.toast, /0 students added · 2 already here/);
-  // The Students tab says Eve hasn't signed in yet; the sync log shows counts, never names.
-  assert.match(await (await get(`/class/${c.id}?tab=students`, tc)).text(), /from Classroom, not signed in yet/);
-  const pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
-  assert.match(pg, /Imported students/); assert.doesNotMatch(pg.split('id="gc-log"')[1], /Eve|Owen|Dee/);
-  // Eve signs in with Google (same account id, the school's domain) and lands in that account.
-  const st = await get('/auth/google/start');
-  const to = new URL(loc(st)); to.searchParams.set('fake_auto', '1'); to.searchParams.set('fake_email', 'eve@dwes.test'); to.searchParams.set('fake_sub', '200000000000000000004');
-  const cb = new URL(loc(await fetch(to, { redirect: 'manual' })));
-  const done = await get(cb.pathname + cb.search, cookieOf(st, 'brb_gflow'));
-  assert.ok(cookieOf(done, 'brb_session'), `signed in: ${loc(done)}`);
   assert.equal(G.identityBySub('200000000000000000004').email, 'eve@dwes.test');
+  assert.equal(GC.pendingCount(c.id), 1, 'only Pat still waits');
+  // Pat leaves the Classroom class: the next import stops waiting for them. Unlinking clears the rest.
+  room.courses.get(id).students = room.courses.get(id).students.filter(z => z.userId !== '200000000000000000005');
+  await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc);
+  assert.equal(GC.pendingCount(c.id), 0);
+  room.addStudent(id, { userId: '200000000000000000006', fullName: 'Sam Later' });
+  await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc);
+  assert.equal(GC.pendingCount(c.id), 1);
+  await post(`/api/classes/${c.id}/google-classroom/unlink`, {}, tc);
+  assert.equal(GC.pendingCount(c.id), 0);
+});
+
+test('a waiting student who signs in after 30 days, or whose school is on another domain, gets no account', async () => {
+  const { c, tc } = school();
+  const id = course([{ userId: '210000000000000000001', fullName: 'Old Wait' }, { userId: '210000000000000000002', fullName: 'Wrong Dom' }]);
+  await connect(tc, c.id); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+  await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc);
+  q.run('UPDATE gc_pending SET created_at=? WHERE sub=?', Date.now() - 31 * DAY, '210000000000000000001');
+  GC.sweepSyncs();
+  assert.equal(GC.pendingCount(c.id), 1);
+  const old = await googleSignIn('old@dwes.test', '210000000000000000001');
+  assert.equal(cookieOf(old, 'brb_session'), ''); assert.equal(G.identityBySub('210000000000000000001'), null);
+  const wrong = await googleSignIn('wd@elsewhere.test', '210000000000000000002');
+  assert.equal(cookieOf(wrong, 'brb_session'), ''); assert.equal(G.identityBySub('210000000000000000002'), null);
+  assert.equal(GC.pendingCount(c.id), 1, 'still waiting for the right domain');
 });
 
 test('roster import without the school\'s Google domains adds known students only, and says why', async () => {
@@ -271,7 +375,8 @@ test('post a lesson: coursework with the title, a link back and the due date, ne
   assert.equal(twice.status, 400); assert.match((await twice.json()).error, /already in Google Classroom/);
   // The Lessons tab's assign form has "Also post"; assigning with it posts the new lesson (a past due date is left off).
   const l2 = L.createLesson(teacher, s.id, { title: 'Decimals' }).lesson;
-  assert.match(await (await get(`/class/${c.id}`, tc)).text(), /name="gcPost"/);
+  const tab = await (await get(`/class/${c.id}`, tc)).text();
+  assert.match(tab, /name="gcPost" value="1">/, 'the box is there, unticked');
   const a = await (await post(`/api/classes/${c.id}/lessons`, { lessonId: l2.id, dueAt: new Date(Date.now() - 5 * DAY).toISOString().slice(0, 10), gcPost: '1' }, tc)).json();
   assert.match(a.toast, /Assigned to Class 4B · Posted to Google Classroom \(without a due date/);
   assert.equal(room.calls.findLast(x => x.method === 'POST').body.dueDate, undefined);
@@ -280,6 +385,17 @@ test('post a lesson: coursework with the title, a link back and the due date, ne
   const posts = room.calls.filter(x => x.method === 'POST').length;
   await post(`/api/classes/${c.id}/lessons`, { lessonId: l3.id }, tc);
   assert.equal(room.calls.filter(x => x.method === 'POST').length, posts);
+  // A lesson that opens later: a Classroom draft scheduled for the day it opens, not published straight away.
+  const l4 = L.createLesson(teacher, s.id, { title: 'Later on' }).lesson;
+  const opens = new Date(Date.now() + 3 * DAY).toISOString().slice(0, 10);
+  const later = await (await post(`/api/classes/${c.id}/lessons`, { lessonId: l4.id, opensAt: opens, dueAt: new Date(Date.now() + 9 * DAY).toISOString().slice(0, 10), gcPost: '1' }, tc)).json();
+  assert.match(later.toast, /Scheduled in Google Classroom: students see it on/);
+  const body = room.calls.findLast(x => x.method === 'POST').body;
+  assert.equal(body.state, 'DRAFT');
+  assert.ok(Date.parse(body.scheduledTime) > Date.now() + 2 * DAY, body.scheduledTime);
+  assert.ok(body.dueDate);
+  // One that is already open: published now.
+  assert.equal(room.calls.filter(x => x.method === 'POST').find(x => x.body.title === 'Fractions day').body.state, 'PUBLISHED');
 });
 
 test('send grades: each matched student\'s score as a draft or assigned grade; not started and unmatched are counted', async () => {
@@ -296,7 +412,7 @@ test('send grades: each matched student\'s score as a draft or assigned grade; n
   assert.ok(P.markDone(kid, cl.id, steps[0].id).ok);
   assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'nope' }, tc)).status, 400);
   const r = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
-  assert.match(r.toast, /1 grade sent · 1 hasn't started · 1 not in this class/);
+  assert.match(r.toast, /1 completion grade sent · 1 hasn't started · 1 not in this class/);
   const cw = room.courseWork.get(GC.postOf(cl.id).coursework_id);
   const kidSub = cw.submissions.find(z => z.userId === '400000000000000000001');
   assert.equal(kidSub.draftGrade, 50); assert.equal(kidSub.assignedGrade, undefined);
@@ -305,11 +421,11 @@ test('send grades: each matched student\'s score as a draft or assigned grade; n
   assert.equal(kidSub.draftGrade, 100); assert.equal(kidSub.assignedGrade, 100);
   assert.match(room.calls.findLast(z => z.method === 'PATCH').query.updateMask, /^draftGrade,assignedGrade$/);
   const pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
-  assert.match(pg, /Assigned grades sent/); assert.match(pg, /Sent grades/);
+  assert.match(pg, /Assigned completion grades sent/); assert.match(pg, /Sent grades/); assert.match(pg, /Send completion grades/);
   // One grade Google won't take: the rest still go, and the page says so.
   room.failNext(500, { match: /PATCH/ });
   const part = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
-  assert.match(part.toast, /0 grades sent.*1 didn't go through/);
+  assert.match(part.toast, /0 completion grades sent.*1 didn't go through/);
   assert.equal(syncs(c.id, 'grades').at(-1).status, 'partial');
 });
 
@@ -351,6 +467,26 @@ test('rate limits: 20 roster imports an hour per class; the sync log is audited 
   q.run('UPDATE gc_syncs SET created_at=? WHERE class_id=?', Date.now() - 181 * DAY, c.id);
   assert.ok(GC.sweepSyncs() >= 20);
   assert.equal(GC.recentSyncs(c.id).length, 0);
+});
+
+test('the page uses the cached course list; only linking asks Google for a fresh one', async () => {
+  const { c, tc } = school();
+  const id = course([], { name: 'Cached course' });
+  await connect(tc, c.id);
+  const lists = () => room.calls.filter(x => x.method === 'GET' && x.path === '/v1/courses' && !x.query.pageToken).length;
+  const n0 = lists();
+  for (let i = 0; i < 5; i++) assert.equal((await get(`/class/${c.id}/google-classroom`, tc)).status, 200);
+  assert.equal(lists(), n0 + 1, 'one fetch for five page views');
+  // "Refresh the list" asks Google again (rate limited per teacher).
+  const pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.match(pg, new RegExp(`href="/class/${c.id}/google-classroom\\?fresh=1#gc-course"`));
+  await get(`/class/${c.id}/google-classroom?fresh=1`, tc);
+  assert.equal(lists(), n0 + 2);
+  for (let i = 0; i < 40; i++) await get(`/class/${c.id}/google-classroom?fresh=1`, tc);
+  assert.ok(lists() <= n0 + 31, 'at most 30 fresh lists an hour');
+  const n1 = lists();
+  await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+  assert.equal(lists(), n1 + 1, 'linking checks a fresh list');
 });
 
 test('account deletion takes the stored token with it', async () => {

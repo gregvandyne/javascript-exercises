@@ -1,7 +1,8 @@
 // Google Classroom sync in a real browser. This spec runs its own server on E2E_PORT + 3 with GOOGLE_CLASSROOM=1, the
 // fake Google from playwright.config.js (E2E_PORT + 1) for the consent screen and tokens, and the fake Classroom API
 // (tests/support/fake-classroom.js) in this process. DemoTeacher connects Classroom, links Demo Class to a course,
-// imports its students, posts a lesson and sends grades; DemoStudent can't open the page. Then the page on a 360 and
+// imports its students (one signs in with Google and joins), posts a lesson, sends grades, then relinks to another
+// Classroom class and posts there; DemoStudent can't open the page. Then the page on a 360 and
 // 390 phone and at 1280, light and dark, and in Hebrew: nothing sideways, nothing touching, tap targets 44px.
 // Screenshots go to GC_SHOTS (default /dev/shm/teach-gclassroom).
 import { test, expect } from '@playwright/test';
@@ -102,12 +103,22 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   await Promise.all([page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
   await expect(page.locator('#gc-course')).toContainText('Linked to Class 4B (Classroom)');
 
-  // Import its students: three new school accounts; their real names only on the staff roster.
+  // Import its students: all three are new to Oomba, so they wait to sign in (no accounts yet).
   await Promise.all([page.waitForLoadState('load'), page.click('#gc-roster button[type=submit]')]);
-  await expect(page.locator('#gc-roster')).toContainText('3 students added');
+  await expect(page.locator('#gc-roster')).toContainText("3 will join when they first sign in with Google on your school's domain");
+  await expect(page.locator('#gc-waiting')).toContainText("3 students from Classroom haven't signed in yet");
+  // Rosa signs in with Google on the school's domain: her school account is made and she lands in the class.
+  const rosa = await (await browser.newContext()).newPage();
+  await rosa.goto(`${BASE}/auth/google/start`);
+  await expect(rosa.locator('h1')).toHaveText('Fake Google: choose an account');
+  await rosa.fill('input[name=email]', 'rosa@dwes.test'); await rosa.fill('input[name=sub]', '510000000000000000001');
+  await Promise.all([rosa.waitForURL(new RegExp(`${classUrl}$`)), rosa.click('button:has-text("Continue")')]);
+  await rosa.context().close();
+  // Her real name is only on the staff roster.
   await page.goto(`${BASE}${classUrl}?tab=students`);
   await expect(page.locator('#roster')).toContainText('Rosa Diaz');
-  await expect(page.locator('#roster')).toContainText('from Classroom, not signed in yet');
+  await page.goto(`${BASE}${classUrl}/google-classroom`);
+  await expect(page.locator('#gc-waiting')).toContainText("2 students from Classroom haven't signed in yet");
 
   // Post the first lesson, then send draft grades.
   await page.goto(`${BASE}${classUrl}/google-classroom`);
@@ -116,9 +127,20 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   await expect(page.locator('.gc-lesson').first()).toContainText('Posted');
   expect(room.calls.some(c => c.method === 'POST' && /courseWork$/.test(c.path))).toBe(true);
   await Promise.all([page.waitForLoadState('load'), page.locator('.gc-lesson').first().locator('.gc-gradeform button[type=submit]').click()]);
-  await expect(page.locator('.gc-lesson').first()).toContainText('Draft grades sent');
+  await expect(page.locator('.gc-lesson').first()).toContainText('Draft completion grades sent');
   await expect(page.locator('#gc-log')).toContainText('Sent grades');
   await expect(page.locator('#gc-log')).not.toContainText('Rosa');
+
+  // Unlink and link another Classroom class: the lesson isn't "Posted" there, and can be posted to it.
+  page.once('dialog', d => d.accept());
+  await Promise.all([page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
+  await page.selectOption('#gc-course-pick', '700000000002');
+  await Promise.all([page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
+  await expect(page.locator('#gc-course')).toContainText('Linked to Science club');
+  await expect(page.locator('.gc-lesson').first()).not.toContainText('Posted');
+  await expect(page.locator('.gc-lesson').first().locator('a[href*="classroom.google.com"]')).toHaveCount(0);
+  await Promise.all([page.waitForLoadState('load'), page.locator('.gc-lesson').first().locator('button:has-text("Post to Google Classroom")').click()]);
+  await expect(page.locator('.gc-lesson').first().locator('a[href*="classroom.google.com/c/700000000002/"]')).toHaveCount(1);
   await ctx.storageState({ path: path.join(DATA, 'teacher.json') });
   await ctx.close();
 
@@ -146,7 +168,7 @@ for (const v of [{ w: 360, scheme: 'light' }, { w: 360, scheme: 'dark' }, { w: 3
       // The Lessons tab with its button and the assign form's "Also post" box.
       await page.goto(`${BASE}${classUrl}`);
       const drop = page.locator('details.assigndrop');
-      if (await drop.count()) { if (!(await drop.evaluate(d => d.open))) await drop.locator('summary').click(); await expect(page.locator('input[name=gcPost]')).toBeChecked(); }
+      if (await drop.count()) { if (!(await drop.evaluate(d => d.open))) await drop.locator('summary').click(); await expect(page.locator('input[name=gcPost]')).not.toBeChecked(); }
       await page.screenshot({ path: `${SHOTS}/3-lessons-tab-${v.w}-${v.scheme}.png`, fullPage: true });
     }
     await ctx.close();

@@ -3354,3 +3354,29 @@ the Google Classroom sync). Setup for the owner: docs/google-classroom.md.
   writes `gc_syncs` (kind, status, counts, error code: never names or grades; swept after 180 days, shown as "Recent
   syncs") and the audit log (`gclassroom.*`). Migration 0065.
 - **Privacy:** listed in docs/legal-review.md ("Google Classroom sync") for the owner's legal review.
+
+## Google Classroom sync: review fixes (9 Nov 2026)
+A review of the sync found these; what changed:
+- **Relinking (major):** a post now counts only for the Classroom class it was posted to (`gc_posts.course_id` equal to
+  the class's current `gc_links.course_id`; `postOf` / `postsOfClass` join on it). Linking a *different* Classroom class
+  deletes the old posts (and waiting students) in the same transaction, so the lesson shows **Post** again, "Open in
+  Classroom" never points at the old class, and grades can't go to the old assignment (`sendGrades` also needs a live
+  link). Unlink keeps posts, so unlinking and relinking the *same* class finds them again. Reposting replaces the row.
+- **Roster import makes no accounts any more:** the import can't see emails (we don't ask for `profile.emails`), so it
+  can't check a new student's domain. A student Oomba doesn't know yet now waits in `gc_pending` (class, Google id,
+  staff-only roster name; added to migration 0065, which hasn't shipped) for 30 days. The first time they sign in with
+  Google on one of the school's domains, `services/google.js` makes their school account and puts them in the class
+  (also for a known account linking Google later, if it's this school's student). A personal or out-of-domain Google
+  account gets nothing and its Google id stays free. Results say "N will join when they first sign in with Google on
+  your school's domain"; the page shows how many still wait. Re-importing renews them and drops students no longer on
+  the Classroom roster; unlinking clears them.
+- **Deletes:** deleting a class removes its `gc_links`, `gc_posts`, `gc_pending` and `gc_syncs`; deleting a lesson removes
+  the posts of its class lessons. The 12-hourly gclassroom sweep also removes rows whose class or class lesson is gone.
+- **Lessons that open later** go to Classroom as `DRAFT` with `scheduledTime` = local midnight of the opening day where
+  the school is, so they appear in Classroom when the lesson unlocks here. The toast says when.
+- **"Also post to Google Classroom" starts unticked:** a post reaches real students and can't be undone from Oomba.
+- **Completion grade, said plainly:** the button is "Send completion grades", results say "completion grades sent", and
+  the page explains it's the share of steps done, not right answers. (Sending quiz scores instead is a later choice.)
+- **RTL:** he/ar strings carry an RLM after Latin words such as "Classroom" so brackets sit on the right side.
+- **Course list:** the page uses the five-minute cache; "Refresh the list" asks Google again; any fetch from the page
+  is limited to 30 an hour per teacher. Linking still checks a fresh list.

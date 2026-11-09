@@ -7,10 +7,10 @@
       "courses": "diese Klasse mit einem deiner Classroom-Kurse verknüpfen",
       "roster": "seine Schülerinnen und Schüler holen, die sich mit Google anmelden",
       "post": "Lektionen dort posten, mit einem Link hierher und dem Abgabedatum",
-      "grades": "die Punktzahl jedes Kindes für eine Lektion an Classroom senden"
+      "grades": "die Abschlussnote jedes Kindes für eine Lektion an Classroom senden"
     },
     "button": "Google Classroom verbinden",
-    "privacy": "Nur du siehst diese Verbindung. Oomba Academy sendet an Classroom den Titel der Lektion, einen Link, das Abgabedatum und die Punktzahl jedes Kindes von 100. Sonst nichts: keine Namen, Antworten oder Spiele.",
+    "privacy": "Nur du siehst diese Verbindung. Oomba Academy sendet an Classroom den Titel der Lektion, einen Link, das Abgabedatum und die Abschlussnote jedes Kindes von 100. Sonst nichts: keine Namen, Antworten oder Spiele.",
     "connectedAs": "Verbunden als {email}",
     "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
     "connectedToast": "Google Classroom ist verbunden.",
@@ -30,11 +30,12 @@
     "unlink": "Verknüpfung lösen",
     "unlinkConfirm": "Verknüpfung mit {course} lösen? Kinder und Lektionen bleiben, wo sie sind.",
     "unlinked": "Verknüpfung gelöst.",
-    "connectFirst": "Verbinde oben dein Google Classroom, um ihn zu synchronisieren."
+    "connectFirst": "Verbinde oben dein Google Classroom, um ihn zu synchronisieren.",
+    "refresh": "Liste aktualisieren"
   },
   "roster": {
     "heading": "Kinder aus Classroom",
-    "text": "Holt die Schülerinnen und Schüler des verknüpften Classroom-Kurses. Wer schon hier ist, wird an seinem Google-Konto erkannt. Neue bekommen ein Schulkonto und melden sich mit Google an. Ihre echten Namen sehen nur Lehrkräfte.",
+    "text": "Holt die Schülerinnen und Schüler des verknüpften Classroom-Kurses. Wer schon hier ist, wird an seinem Google-Konto erkannt. Wer neu bei Oomba Academy ist, kommt dazu, sobald er sich zum ersten Mal mit Google auf der Domain eurer Schule anmeldet, und bekommt dann ein Schulkonto. Ihre echten Namen sehen nur Lehrkräfte.",
     "button": "Kinder importieren",
     "last": "Letzter Import {when}",
     "noDomains": "Deine Schule hat ihre Google-Domain noch nicht eingetragen, daher können keine neuen Kinder dazukommen. Frag die Schuladministration.",
@@ -47,7 +48,9 @@
     "resultOwn": "{count, plural, one {# nutzt ein eigenes Konto: kann mit dem Klassencode beitreten} other {# nutzen eigene Konten: können mit dem Klassencode beitreten}}",
     "resultOther": "{count, plural, one {# gehört zu einer anderen Schule} other {# gehören zu einer anderen Schule}}",
     "resultStaff": "{count, plural, one {# gehört hier zum Personal} other {# gehören hier zum Personal}}",
-    "resultDomains": "{count, plural, one {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen} other {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen}}"
+    "resultDomains": "{count, plural, one {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen} other {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen}}",
+    "resultWaiting": "{count, plural, one {# kommt dazu, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet} other {# kommen dazu, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden}}",
+    "waitingNow": "{count, plural, one {# Kind aus Classroom hat sich noch nicht angemeldet. Es kommt in diese Klasse, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet (innerhalb von 30 Tagen; neu importieren verlängert).} other {# Kinder aus Classroom haben sich noch nicht angemeldet. Sie kommen in diese Klasse, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden (innerhalb von 30 Tagen; neu importieren verlängert).}}"
   },
   "post": {
     "heading": "Lektionen in Classroom",
@@ -62,17 +65,18 @@
     "noDue": "Kein Abgabedatum",
     "posted": "Gepostet",
     "open": "In Classroom öffnen",
-    "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu."
+    "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu.",
+    "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet."
   },
   "grades": {
-    "text": "Die Punktzahl einer Lektion sind die erledigten Schritte, von 100. Wer noch nicht angefangen hat, wird ausgelassen.",
+    "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
     "as": "Senden als",
     "draft": "Vorläufige Note (du gibst sie in Classroom zurück)",
     "assigned": "Zugewiesene Note",
-    "button": "Noten senden",
-    "lastDraft": "Vorläufige Noten gesendet {when}",
-    "lastAssigned": "Zugewiesene Noten gesendet {when}",
-    "resultSent": "{count, plural, one {# Note gesendet} other {# Noten gesendet}}",
+    "button": "Abschlussnoten senden",
+    "lastDraft": "Vorläufige Abschlussnoten gesendet {when}",
+    "lastAssigned": "Zugewiesene Abschlussnoten gesendet {when}",
+    "resultSent": "{count, plural, one {# Abschlussnote gesendet} other {# Abschlussnoten gesendet}}",
     "resultNotStarted": "{count, plural, one {# hat noch nicht angefangen} other {# haben noch nicht angefangen}}",
     "resultNotMatched": "{count, plural, one {# nicht in dieser Klasse} other {# nicht in dieser Klasse}}",
     "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}"

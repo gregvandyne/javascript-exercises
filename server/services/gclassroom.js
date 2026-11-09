@@ -141,7 +141,18 @@ export function syncLog(userId, classId, kind, status, counts = null, error = nu
 }
 export const recentSyncs = (classId, n = 10) => q.all('SELECT s.*, u.username FROM gc_syncs s LEFT JOIN users u ON u.id=s.user_id WHERE s.class_id=? ORDER BY s.created_at DESC LIMIT ?', classId, n)
   .map(r => ({ ...r, counts: r.counts ? JSON.parse(r.counts) : {} }));
-export function sweepSyncs(t = now()) { return q.run('DELETE FROM gc_syncs WHERE created_at<?', t - SYNC_KEEP_DAYS * DAY).changes; }
+export const PENDING_DAYS = 30;
+/** The sync log after 180 days; roster students still waiting to sign in after 30; and rows whose class, class lesson or
+ *  link has gone (a class or lesson deleted some other way than services/schools.js / lessons.js, which delete their own). */
+export function sweepSyncs(t = now()) {
+  const n = q.run('DELETE FROM gc_syncs WHERE created_at<?', t - SYNC_KEEP_DAYS * DAY).changes;
+  q.run('DELETE FROM gc_pending WHERE created_at<?', t - PENDING_DAYS * DAY);
+  q.run('DELETE FROM gc_links WHERE class_id NOT IN (SELECT id FROM classrooms)');
+  q.run('DELETE FROM gc_posts WHERE class_lesson_id NOT IN (SELECT id FROM class_lessons)');
+  q.run('DELETE FROM gc_pending WHERE class_id NOT IN (SELECT class_id FROM gc_links)');
+  q.run('DELETE FROM gc_syncs WHERE class_id IS NOT NULL AND class_id NOT IN (SELECT id FROM classrooms)');
+  return n;
+}
 register('gclassroom-sync-sweep', 12 * 3600e3, () => sweepSyncs());
 
 // ------------------------------------------------------------------ courses and links
@@ -158,6 +169,10 @@ export async function courses(u, { fresh = false } = {}) {
     return ok({ courses: list });
   } catch (e) { return asFail(e); }
 }
+/** Students from the Classroom roster still waiting to sign in for the first time. */
+export const pendingCount = classId => q.get('SELECT COUNT(*) n FROM gc_pending WHERE class_id=?', classId).n;
+/** A course list in the cache (no call to Google needed)? */
+export const hasCourses = u => { const hit = coursesCache.get(u.id); return !!hit && hit.exp > Date.now(); };
 export const linkOf = classId => q.get('SELECT * FROM gc_links WHERE class_id=?', classId) || null;
 export async function link(u, c, courseId) {
   const id = safeId(String(courseId || ''));
@@ -165,15 +180,24 @@ export async function link(u, c, courseId) {
   const r = await courses(u, { fresh: true }); if (!r.ok) return r;
   const course = r.courses.find(x => x.id === id);
   if (!course) return fail('courseNotYours');
-  q.run(`INSERT INTO gc_links(class_id, course_id, course_name, linked_by, linked_at) VALUES (?,?,?,?,?)
+  let dropped = 0;
+  tx(() => {
+    // Posts and waiting students belong to the Classroom class they came from: linking another one drops them (so a lesson
+    // can be posted to the new class, and grades never go to the old one). Relinking the same class keeps them.
+    dropped = q.run('DELETE FROM gc_posts WHERE class_id=? AND course_id<>?', c.id, course.id).changes;
+    q.run('DELETE FROM gc_pending WHERE class_id=? AND course_id<>?', c.id, course.id);
+    q.run(`INSERT INTO gc_links(class_id, course_id, course_name, linked_by, linked_at) VALUES (?,?,?,?,?)
     ON CONFLICT(class_id) DO UPDATE SET course_id=excluded.course_id, course_name=excluded.course_name, linked_by=excluded.linked_by, linked_at=excluded.linked_at, roster_at=NULL, roster_counts=NULL`,
   c.id, course.id, course.name, u.id, now());
-  syncLog(u.id, c.id, 'link', 'ok');
+  });
+  syncLog(u.id, c.id, 'link', 'ok', dropped ? { droppedPosts: dropped } : null);
   return ok({ course });
 }
 export function unlink(u, c) {
   if (!linkOf(c.id)) return fail('notLinked');
-  q.run('DELETE FROM gc_links WHERE class_id=?', c.id);
+  // Posts stay (relinking the same Classroom class finds them again; linking another drops them). Students still waiting
+  // to sign in came from this link, so they go.
+  tx(() => { q.run('DELETE FROM gc_links WHERE class_id=?', c.id); q.run('DELETE FROM gc_pending WHERE class_id=?', c.id); });
   syncLog(u.id, c.id, 'unlink', 'ok');
   return ok();
 }
@@ -183,9 +207,11 @@ export function unlink(u, c) {
  * Students of the linked course into this class, matched the way Sign in with Google matches: by the Google account id
  * (Classroom's userId is the same id Sign in with Google calls sub). A known account that belongs to this school joins
  * the class; one that doesn't (an own account outside the school, another school's account, staff) is left out and
- * counted. Someone new gets a school account bound to that Google account (generated username; the Google name only as
- * the staff-only roster name), which needs the school's Google domains so they can sign in. No email is read.
- * -> { ok, counts: { added, created, already, ownAccount, otherSchool, staff, needDomains } }
+ * counted. Someone new waits (gc_pending, 30 days): no account is made yet, because no email is read here and so their
+ * domain is unknown. The first time they sign in with Google on one of the school's domains, services/google.js makes
+ * their school account (generated username; the Google name only as the staff-only roster name) and puts them in the
+ * class. A personal or out-of-domain Google account is never given a school account and its Google id stays free.
+ * -> { ok, counts: { added, waiting, already, ownAccount, otherSchool, staff, needDomains } }
  */
 export async function importRoster(u, c) {
   const lk = linkOf(c.id); if (!lk) return fail('notLinked');
@@ -195,7 +221,7 @@ export async function importRoster(u, c) {
   catch (e) { const f = asFail(e); syncLog(u.id, c.id, 'roster', 'error', null, f.code); return f; }
   if (students.length > MAX_STUDENTS) { syncLog(u.id, c.id, 'roster', 'error', null, 'tooMany'); return fail('tooMany', { max: MAX_STUDENTS }); }
   const domains = G.schoolDomains(s);
-  const counts = { added: 0, created: 0, already: 0, ownAccount: 0, otherSchool: 0, staff: 0, needDomains: 0 };
+  const counts = { added: 0, waiting: 0, already: 0, ownAccount: 0, otherSchool: 0, staff: 0, needDomains: 0 };
   tx(() => {
     const seen = new Set();
     for (const st of students) {
@@ -208,14 +234,20 @@ export async function importRoster(u, c) {
         if (m && m.role !== 'student') { counts.staff++; continue; }
         if (user.banned) { counts.otherSchool++; continue; }
         if (!m) { if (user.managed_school && user.managed_school !== s.id) counts.otherSchool++; else counts.ownAccount++; continue; }
+        q.run('DELETE FROM gc_pending WHERE class_id=? AND sub=?', c.id, sub);
         if (S.classMember(c.id, user.id)) { counts.already++; continue; }
         if (S.addToClass(u, c.id, user.id, 'student').ok) counts.added++;
         continue;
       }
       if (!domains.length) { counts.needDomains++; continue; }
-      const made = G.newSchoolAccount(u, s.id, { role: 'student', rosterName: fullName, grade: c.grade || '', claims: { sub, email: '', hd: '', name: fullName }, via: 'classroom' });
-      if (S.addToClass(u, c.id, made.id, 'student').ok) counts.created++;
+      q.run(`INSERT INTO gc_pending(class_id, sub, school_id, course_id, roster_name, grade, created_by, created_at) VALUES (?,?,?,?,?,?,?,?)
+        ON CONFLICT(class_id, sub) DO UPDATE SET course_id=excluded.course_id, roster_name=excluded.roster_name, grade=excluded.grade, created_by=excluded.created_by, created_at=excluded.created_at`,
+      c.id, sub, s.id, lk.course_id, fullName, c.grade || '', u.id, now());
+      counts.waiting++;
     }
+    // Waiting students no longer on the Classroom roster go.
+    const keep = [...seen];
+    q.run(`DELETE FROM gc_pending WHERE class_id=?${keep.length ? ` AND sub NOT IN (${keep.map(() => '?').join(',')})` : ''}`, c.id, ...keep);
     q.run('UPDATE gc_links SET roster_at=?, roster_counts=? WHERE class_id=?', now(), JSON.stringify(counts), c.id);
   });
   syncLog(u.id, c.id, 'roster', 'ok', counts);
@@ -223,8 +255,10 @@ export async function importRoster(u, c) {
 }
 
 // ------------------------------------------------------------------ posting a lesson as coursework
-export const postOf = clId => q.get('SELECT * FROM gc_posts WHERE class_lesson_id=?', clId) || null;
-export const postsOfClass = classId => new Map(q.all('SELECT * FROM gc_posts WHERE class_id=?', classId).map(r => [r.class_lesson_id, r]));
+/** A class lesson's post in the Classroom class its class is linked to now (a post to another, earlier linked Classroom
+ *  class doesn't count: it can't be graded from here and the lesson can be posted again). */
+export const postOf = clId => q.get('SELECT p.* FROM gc_posts p JOIN gc_links k ON k.class_id=p.class_id AND k.course_id=p.course_id WHERE p.class_lesson_id=?', clId) || null;
+export const postsOfClass = classId => new Map(q.all('SELECT p.* FROM gc_posts p JOIN gc_links k ON k.class_id=p.class_id AND k.course_id=p.course_id WHERE p.class_id=?', classId).map(r => [r.class_lesson_id, r]));
 /** Classroom's due date and time (UTC) for a lesson due at the end of its due day where the school is. Classroom refuses
  *  a due date in the past, so a past one is left off. -> { dueDate, dueTime } or null */
 export function classroomDue(cl, t = now()) {
@@ -235,28 +269,42 @@ export function classroomDue(cl, t = now()) {
   const d = new Date(end);
   return { dueDate: { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() }, dueTime: { hours: d.getUTCHours(), minutes: d.getUTCMinutes() } };
 }
-/** origin: the site's address for the link back; description: the one line (in the teacher's language). */
+/** When a lesson that opens later opens where the school is (Classroom then publishes it at that time). -> ms or null */
+export function classroomOpens(cl, t = now()) {
+  if (!cl.opens_at) return null;
+  const tz = typeof cl.tz === 'string' && S.isZone(cl.tz) ? cl.tz : null;
+  const start = tz ? L.dayBounds(cl.opens_at, tz).start : cl.opens_at;
+  return start > t + 60e3 ? start : null;
+}
+/** origin: the site's address for the link back; description: the one line (in the teacher's language). A lesson that
+ *  opens later goes in as a draft scheduled for its opening, so students don't see it in Classroom while it's locked here. */
 export async function postLesson(u, cl, { origin, description }) {
   const lk = linkOf(cl.class_id); if (!lk) return fail('notLinked');
   if (postOf(cl.id)) return fail('alreadyPosted');
   const lesson = L.getLesson(cl.lesson_id);
   const url = `${origin}/class/${cl.class_id}/lessons/${cl.id}`;
   const due = classroomDue(cl);
-  const body = { title: clip(lesson.title, 300) || 'Lesson', description: clip(description, 300), materials: [{ link: { url } }], workType: 'ASSIGNMENT', state: 'PUBLISHED', maxPoints: 100, ...(due || {}) };
+  const opens = classroomOpens(cl);
+  const when = opens ? { state: 'DRAFT', scheduledTime: new Date(opens).toISOString() } : { state: 'PUBLISHED' };
+  const body = { title: clip(lesson.title, 300) || 'Lesson', description: clip(description, 300), materials: [{ link: { url } }], workType: 'ASSIGNMENT', ...when, maxPoints: 100, ...(due || {}) };
   let cw;
   try { cw = await withToken(u.id, tk => C.api(tk, 'POST', `/v1/courses/${encodeURIComponent(lk.course_id)}/courseWork`, { body })); }
   catch (e) { const f = asFail(e); syncLog(u.id, cl.class_id, 'post', 'error', null, f.code); return f; }
   const cwId = safeId(String(cw && cw.id || ''));
   if (!cwId) { syncLog(u.id, cl.class_id, 'post', 'error', null, 'googleDown'); return fail('googleDown'); }
   const alt = typeof cw.alternateLink === 'string' && /^https:\/\/classroom\.google\.com\//.test(cw.alternateLink) ? cw.alternateLink.slice(0, 500) : '';
-  q.run('INSERT INTO gc_posts(class_lesson_id, class_id, course_id, coursework_id, link, posted_by, posted_at) VALUES (?,?,?,?,?,?,?)', cl.id, cl.class_id, lk.course_id, cwId, alt, u.id, now());
-  syncLog(u.id, cl.class_id, 'post', 'ok', { lesson: cl.id, due: !!due, pastDue: !!cl.due_at && !due });
-  return ok({ due: !!due, pastDue: !!cl.due_at && !due, link: alt });
+  // A post to an earlier linked Classroom class (it no longer counts) is replaced.
+  q.run(`INSERT INTO gc_posts(class_lesson_id, class_id, course_id, coursework_id, link, posted_by, posted_at) VALUES (?,?,?,?,?,?,?)
+    ON CONFLICT(class_lesson_id) DO UPDATE SET class_id=excluded.class_id, course_id=excluded.course_id, coursework_id=excluded.coursework_id, link=excluded.link,
+      posted_by=excluded.posted_by, posted_at=excluded.posted_at, grades_at=NULL, grades_mode=NULL, grades_counts=NULL`, cl.id, cl.class_id, lk.course_id, cwId, alt, u.id, now());
+  syncLog(u.id, cl.class_id, 'post', 'ok', { lesson: cl.id, due: !!due, pastDue: !!cl.due_at && !due, scheduled: !!opens });
+  return ok({ due: !!due, pastDue: !!cl.due_at && !due, scheduled: opens ? cl.opens_at : null, link: alt });
 }
 
 // ------------------------------------------------------------------ grades
 export const GRADE_MODES = ['draft', 'assigned'];
-/** A student's lesson score out of 100: steps done of the lesson's steps (the gradebook's figure). */
+/** A student's completion grade out of 100: steps done of the lesson's steps (the gradebook's figure), not how many
+ *  answers were right. The page and the results call it a completion grade. */
 export const scoreOf = p => (p.total ? Math.round((100 * Math.min(p.done, p.total)) / p.total) : 0);
 /**
  * Each student's score for this lesson to its coursework, as a draft grade (the teacher returns it in Classroom) or as
@@ -265,6 +313,7 @@ export const scoreOf = p => (p.total ? Math.round((100 * Math.min(p.done, p.tota
  */
 export async function sendGrades(u, cl, mode) {
   if (!GRADE_MODES.includes(mode)) return fail('badMode');
+  if (!linkOf(cl.class_id)) return fail('notLinked');
   const post = postOf(cl.id); if (!post) return fail('notPosted');
   const lp = P.lessonProgress(cl.id);
   const byUser = new Map(lp.students.map(p => [p.id, p]));

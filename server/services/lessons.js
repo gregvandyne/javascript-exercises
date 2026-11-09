@@ -171,6 +171,7 @@ export function deleteLesson(u, lessonId) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
   tx(() => {
     q.run('DELETE FROM step_progress WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id);
+    q.run('DELETE FROM gc_posts WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id); // Google Classroom posts
     q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
   });
   audit(u.id, 'lesson.delete', l.id, { title: l.title });

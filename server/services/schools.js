@@ -374,6 +374,8 @@ export function deleteClass(by, classId) {
     q.run('DELETE FROM class_members WHERE class_id=?', c.id); q.run('DELETE FROM join_requests WHERE class_id=?', c.id);
     q.run('DELETE FROM class_lessons WHERE class_id=?', c.id); q.run('DELETE FROM class_units WHERE class_id=?', c.id);
     q.run('DELETE FROM game_classes WHERE class_id=?', c.id);
+    // Its Google Classroom link, posts, waiting students and sync log (services/gclassroom.js).
+    for (const t of ['gc_posts', 'gc_pending', 'gc_links', 'gc_syncs']) q.run(`DELETE FROM ${t} WHERE class_id=?`, c.id);
     classLeft({ classId: c.id });
     q.run('DELETE FROM classrooms WHERE id=?', c.id);
   });

@@ -7,10 +7,10 @@
       "courses": "link this class to one of your Classroom classes",
       "roster": "bring its students in, so they sign in with Google",
       "post": "post lessons there, with a link back here and the due date",
-      "grades": "send each student's lesson score to Classroom"
+      "grades": "send each student's lesson completion grade to Classroom"
     },
     "button": "Connect Google Classroom",
-    "privacy": "Only you see this connection. Oomba Academy sends Classroom the lesson title, a link, the due date and each student's score out of 100. Nothing else: no names, answers or games.",
+    "privacy": "Only you see this connection. Oomba Academy sends Classroom the lesson title, a link, the due date and each student's completion grade out of 100. Nothing else: no names, answers or games.",
     "connectedAs": "Connected as {email}",
     "connectedHint": "This connection is yours: your co-teachers connect their own.",
     "connectedToast": "Google Classroom is connected.",
@@ -30,11 +30,12 @@
     "unlink": "Unlink",
     "unlinkConfirm": "Unlink {course}? Students and lessons stay where they are.",
     "unlinked": "Unlinked.",
-    "connectFirst": "Connect your Google Classroom above to sync it."
+    "connectFirst": "Connect your Google Classroom above to sync it.",
+    "refresh": "Refresh the list"
   },
   "roster": {
     "heading": "Students from Classroom",
-    "text": "Brings in the students of the linked Classroom class. Students already here are matched by their Google account. New students get a school account and sign in with Google. Their real names stay with teachers.",
+    "text": "Brings in the students of the linked Classroom class. Students already here are matched by their Google account. Students new to Oomba Academy join the first time they sign in with Google on your school's domain, and get a school account then. Their real names stay with teachers.",
     "button": "Import students",
     "last": "Last import {when}",
     "noDomains": "Your school hasn't added its Google domain yet, so new students can't be added. Ask your school admin.",
@@ -47,7 +48,9 @@
     "resultOwn": "{count, plural, one {# uses their own account: they can join with the class code} other {# use their own accounts: they can join with the class code}}",
     "resultOther": "{count, plural, one {# belongs to another school} other {# belong to another school}}",
     "resultStaff": "{count, plural, one {# is staff here} other {# are staff here}}",
-    "resultDomains": "{count, plural, one {# not added: add your school's Google domain first} other {# not added: add your school's Google domain first}}"
+    "resultDomains": "{count, plural, one {# not added: add your school's Google domain first} other {# not added: add your school's Google domain first}}",
+    "resultWaiting": "{count, plural, one {# will join when they first sign in with Google on your school's domain} other {# will join when they first sign in with Google on your school's domain}}",
+    "waitingNow": "{count, plural, one {# student from Classroom hasn't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).} other {# students from Classroom haven't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).}}"
   },
   "post": {
     "heading": "Lessons in Classroom",
@@ -62,17 +65,18 @@
     "noDue": "No due date",
     "posted": "Posted",
     "open": "Open in Classroom",
-    "noLessons": "No lessons in this class yet. Assign one on the Lessons tab."
+    "noLessons": "No lessons in this class yet. Assign one on the Lessons tab.",
+    "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens."
   },
   "grades": {
-    "text": "A lesson's score is the steps a student has done, out of 100. Students who haven't started it are left out.",
+    "text": "This is a completion grade: the share of the lesson's steps a student has done, out of 100. It doesn't count right answers. Students who haven't started are left out.",
     "as": "Send as",
     "draft": "Draft grade (you return it in Classroom)",
     "assigned": "Assigned grade",
-    "button": "Send grades",
-    "lastDraft": "Draft grades sent {when}",
-    "lastAssigned": "Assigned grades sent {when}",
-    "resultSent": "{count, plural, one {# grade sent} other {# grades sent}}",
+    "button": "Send completion grades",
+    "lastDraft": "Draft completion grades sent {when}",
+    "lastAssigned": "Assigned completion grades sent {when}",
+    "resultSent": "{count, plural, one {# completion grade sent} other {# completion grades sent}}",
     "resultNotStarted": "{count, plural, one {# hasn't started} other {# haven't started}}",
     "resultNotMatched": "{count, plural, one {# not in this class} other {# not in this class}}",
     "resultFailed": "{count, plural, one {# didn't go through} other {# didn't go through}}"

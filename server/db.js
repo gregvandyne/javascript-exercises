@@ -763,7 +763,9 @@ export const MIGRATIONS = [
   // with GOOGLE_TOKEN_KEY (AES-256-GCM; key_tag names the key, so a new key asks teachers to connect again). Access
   // tokens are never stored. gc_links: an Oomba class linked to one Classroom course. gc_posts: a class lesson posted as
   // Classroom coursework, and the last grades sent for it. gc_syncs: what each sync did (counts and a short error code,
-  // never names or grades), shown on the class's Google Classroom page; kept 180 days.
+  // never names or grades), shown on the class's Google Classroom page; kept 180 days. gc_pending: a student from the
+  // Classroom roster that Oomba doesn't know yet, waiting (30 days) to sign in with Google on the school's domain, when
+  // their school account is made.
   ['0065_google_classroom', `
     CREATE TABLE IF NOT EXISTS gc_connections (user_id TEXT PRIMARY KEY, sub TEXT NOT NULL, email TEXT NOT NULL DEFAULT '',
       scopes TEXT NOT NULL DEFAULT '', token_enc TEXT NOT NULL, key_tag TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'ok',
@@ -776,7 +778,11 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS gc_posts_class ON gc_posts(class_id);
     CREATE TABLE IF NOT EXISTS gc_syncs (id TEXT PRIMARY KEY, class_id TEXT, user_id TEXT NOT NULL, kind TEXT NOT NULL,
       status TEXT NOT NULL, counts TEXT, error TEXT, created_at INTEGER NOT NULL);
-    CREATE INDEX IF NOT EXISTS gc_syncs_class ON gc_syncs(class_id, created_at);`],
+    CREATE INDEX IF NOT EXISTS gc_syncs_class ON gc_syncs(class_id, created_at);
+    CREATE TABLE IF NOT EXISTS gc_pending (class_id TEXT NOT NULL, sub TEXT NOT NULL, school_id TEXT NOT NULL, course_id TEXT NOT NULL,
+      roster_name TEXT NOT NULL DEFAULT '', grade TEXT NOT NULL DEFAULT '', created_by TEXT NOT NULL, created_at INTEGER NOT NULL,
+      PRIMARY KEY(class_id, sub)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS gc_pending_sub ON gc_pending(sub);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
