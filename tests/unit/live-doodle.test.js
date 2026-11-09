@@ -27,6 +27,10 @@ Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300,
 // (a long turn, so no hint lands between working out a guess and sending it; the hints test sets a short one)
 
 const seatOf = c => c.wel.seat;
+/** A message (or record) as JSON for the "no word here" checks, without the players' avatars: an avatar's parts are names
+ *  from the avatar maker (body "ball", species "fox"), and a word can be one of them by chance ("ball" is a level-1 word),
+ *  which made those checks fail now and then though no word was sent. Every other field is still searched. */
+const words = o => JSON.stringify(o, (k, v) => (k === 'avatar' ? undefined : v));
 /** Wait (up to 3 s) until fn() is true. */
 async function until(fn, ms = 3000) { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) throw new Error(`timed out: ${fn}`); await sleep(20); } }
 const ev = (c, k, d) => c.send({ t: 'ev', k, d, to: 'host' });
@@ -112,7 +116,7 @@ test('a full turn (letter tiles): words to the drawer alone, strokes relayed and
   const ch = await a.next('ev', m => m.k === 'ch');
   assert.equal(ch.f, 0); assert.equal(ch.d.w.length, 3); assert.equal(new Set(ch.d.w).size, 3); assert.equal(ch.d.e.length, 3);
   for (const o of [b, c, h]) assert.equal(evs(o, 'ch').length, 0);
-  assert.ok(!JSON.stringify(h.msgs).includes(`"${ch.d.w[0]}"`) && !JSON.stringify(b.msgs).includes(`"${ch.d.w[1]}"`));
+  assert.ok(!words(h.msgs).includes(`"${ch.d.w[0]}"`) && !words(b.msgs).includes(`"${ch.d.w[1]}"`));
   // a pick from someone else, or for another turn, is dropped
   ev(b, 'pk', { n: 1, i: 0 }); ev(a, 'pk', { n: 2, i: 0 }); ev(a, 'pk', { n: 1, i: 5 });
   await sleep(40); assert.equal(dd(s).ph, 'pick');
@@ -123,7 +127,7 @@ test('a full turn (letter tiles): words to the drawer alone, strokes relayed and
   assert.deepEqual(tb.d.t, tc.d.t, 'everyone gets the same tray'); assert.equal(evs(a, 'tray').length, 0, 'never the drawer');
   assert.equal(tb.d.t.length, dd(s).tray.length); assert.deepEqual(tb.d.g, dd(s).word.groups);
   const st = await h.next('st', m => m.d.dd && m.d.dd.ph === 'draw');
-  assert.equal(st.d.dd.rv, null); assert.ok(!JSON.stringify(st).includes(`"${wd.d.w}"`), 'the shared state never has the word while drawing');
+  assert.equal(st.d.dd.rv, null); assert.ok(!words(st).includes(`"${wd.d.w}"`), 'the shared state never has the word while drawing');
   // a stroke: relayed once to the others and the projector, never back to the drawer
   ev(a, 'ln', { s: 0, c: 3, w: 1, e: 0, p: [100, 100, 10, 0, 10, 5] });
   const lb = await b.next('ev', m => m.k === 'ln'), lh = await h.next('ev', m => m.k === 'ln');
@@ -165,7 +169,7 @@ test('a full turn (letter tiles): words to the drawer alone, strokes relayed and
   assert.ok(gr1.d.p >= 50 && gr1.d.p <= 120);
   assert.equal((await b.next('ev', m => m.k === 'wd')).d.w, wd.d.w, 'a guesser who got it sees the word');
   const got = await c.next('st', m => m.d.dd && m.d.dd.got.length === 1);
-  assert.deepEqual(got.d.dd.got, [seatOf(b)]); assert.ok(!JSON.stringify(c.msgs).includes(`"${wd.d.w}"`), 'the others see only who');
+  assert.deepEqual(got.d.dd.got, [seatOf(b)]); assert.ok(!words(c.msgs).includes(`"${wd.d.w}"`), 'the others see only who');
   const sb = s.seats.get(seatOf(b));
   assert.equal(sb.score, gr1.d.p); assert.equal(sb.correct, 1);
   // a score or item a device reports is ignored
@@ -321,7 +325,7 @@ test('the end: the podium, then the results; nothing of a drawing or a word is k
   const sum = s.summary;
   assert.equal(sum.scoredBy, 'server'); assert.equal(sum.settings.doodle, 'doodle:en:1:1:60:t');
   assert.equal(sum.players[0].rank, 1);
-  const kept = JSON.stringify(sum) + JSON.stringify(R.persisted(teacher, s.id) || {});
+  const kept = words(sum) + words(R.persisted(teacher, s.id) || {});
   for (const w of [w1, w2]) assert.ok(!kept.includes(`"${w}"`), `no word in the results: ${w} in ${kept}`);
   assert.ok(!/123,321|"pts"|"canvas"|"tray"/.test(kept), 'no stroke in the results');
   const logged = JSON.stringify(logs);
