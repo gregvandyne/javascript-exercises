@@ -27,10 +27,12 @@ Object.assign(DG.hooks, { pickMs: 400, revealMs: 150, holdMs: 120, graceMs: 300,
 // (a long turn, so no hint lands between working out a guess and sending it; the hints test sets a short one)
 
 const seatOf = c => c.wel.seat;
-/** A message (or record) as JSON for the "no word here" checks, without the players' avatars: an avatar's parts are names
- *  from the avatar maker (body "ball", species "fox"), and a word can be one of them by chance ("ball" is a level-1 word),
- *  which made those checks fail now and then though no word was sent. Every other field is still searched. */
-const words = o => JSON.stringify(o, (k, v) => (k === 'avatar' ? undefined : v));
+/** A message (or record) as JSON for the "no word here" checks, without the players' avatars (an object with a species and
+ *  a body: a player's "avatar" field, and the one inside a join's "pj" row): an avatar's parts are names from the avatar
+ *  maker (body "ball", species "fox"), and a word can be one of them by chance ("ball" is a level-1 word), which made
+ *  those checks fail now and then though no word was sent. Every other field is still searched. */
+const isAvatar = v => !!v && typeof v === 'object' && !Array.isArray(v) && 'species' in v && 'body' in v;
+const words = o => JSON.stringify(o, (k, v) => (isAvatar(v) ? undefined : v));
 /** Wait (up to 3 s) until fn() is true. */
 async function until(fn, ms = 3000) { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) throw new Error(`timed out: ${fn}`); await sleep(20); } }
 const ev = (c, k, d) => c.send({ t: 'ev', k, d, to: 'host' });
