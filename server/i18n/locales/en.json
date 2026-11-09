@@ -796,10 +796,10 @@
         "li10": "To stop one child using the whole month in a day, there is a limit on how many extra messages one child can use in a day, and a limit on unusually expensive use.",
         "li11": "A child in a school with a paid School plan builds from the school's allowance in class, never from the family's extras.",
         "li12": "<b>Family plans are for US families for now.</b> You need a US billing address and a US payment card (or Apple Pay or Google Pay).",
-        "s3": "7.3 School plan",
-        "li13": "Priced <b>per student per year</b>, with a <b>minimum of 25 students</b>. The price is shown to the school's admins on the school's Billing tab.",
-        "li14": "The school gets a shared pool of Builder messages for its students and teachers each year. The size is shown on the school's Billing tab. Students always get at least the free daily amount. When the pool runs out, students use the free allowance until the next year starts.",
-        "li15": "Paid seats count active students. If you add students during the year, you can add seats: you pay a prorated amount for the rest of the year right away. You can lower the number of seats for the next year; the change applies at renewal, never below 25.",
+        "s3": "7.3 Teacher plan and school plans",
+        "li13": "The <b>Teacher plan</b> is priced <b>per teacher per year</b>, with no charge per student. It covers all of that teacher's classes and students. It starts with a <b>14-day free trial</b> that needs no card. If no card is added by the end of the trial, the plan simply stops. Each teacher, email address and school can have one free trial.",
+        "li14": "A teacher with the plan and the students in their classes share a daily number of Builder messages, shown before you start and on the teacher's My classes page. When they run out, everyone uses the free allowance until the next day (UTC).",
+        "li15": "<b>Schools</b> buy Teacher plans at the same price per teacher and give them to their teachers on the school's Billing tab. Added teachers are billed straight away for the rest of the year; fewer teachers take effect at renewal. A school that bought a plan priced per student before keeps that plan, at its price, when it renews.",
         "li16": "<b>Paying:</b> by card online, or by invoice (a purchase order is fine). Invoices are due <b>30 days</b> after they are sent (net 30) and can be paid by card, bank transfer or ACH, or by check (email us for the mailing address).",
         "li17": "Tax-exempt schools can send us their exemption certificate.",
         "s4": "7.4 Payments, Stripe and taxes",
@@ -886,7 +886,7 @@
       "intro": {
         "h": "About this policy",
         "p1": "This page explains how to cancel an Oomba Academy plan and when you can get your money back. It is part of our <a href=\"/terms\">Terms of Service</a>.",
-        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b> and <b>School</b> plans, which add more Builder messages.",
+        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b>, <b>Teacher</b> and <b>School</b> plans, which add more Builder messages.",
         "p3": "Spark Packs, one-time top-ups of Builder messages for a family with a plan, have their own section below."
       },
       "cancel": {
@@ -905,7 +905,8 @@
         "p4": "<b>What a refund does:</b> a refund ends the plan straight away (we cancel it first, then refund), so the extra messages stop at once.",
         "p5": "<b>How to ask:</b> email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> from any address. Tell us the name of your grown-up account (or school), and the date and amount from your Stripe receipt. We'll reply within 3 business days.",
         "p6": "<b>When you get the money:</b> the refund goes back to the card or account you paid with. Banks usually take 5 to 10 business days to show it.",
-        "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by check? We refund by check or bank transfer."
+        "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by check? We refund by check or bank transfer.",
+        "p8": "<b>Free trials:</b> a Teacher plan's free trial costs nothing, and ends by itself if no card is added. If you add a card, the first payment is taken when the trial ends, and the 14 days start then."
       },
       "sparks": {
         "h": "Spark Packs",
@@ -987,7 +988,7 @@
         "li2": "<b>What we keep when a school asks for an invoice:</b> the number of seats, purchase order number, the billing contact's name and email, the school's billing address, whether the school says it is tax-exempt, and any note.",
         "li3": "<b>What goes to Stripe:</b> when we create the school's invoices, the school's name, the billing contact's email, the billing address and the purchase order number are saved with Stripe, which sends the invoices. The contact's name, the note and the tax-exempt answer stay only with us. Nothing is sent until we create the invoices. A school that pays by card types its name and billing address on Stripe's page instead.",
         "li4": "<b>How long:</b> the contact's name and email, the address, the note and the purchase order number in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address and purchase order number with its invoices (see below).",
-        "li5": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
+        "li5": "<b>Seats</b> are counted in teachers: the school admins choose which teachers have one. Billing does not use students' names or work.",
         "li6": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages.",
         "li7": "<b>Asking for a School plan:</b> a teacher can ask their school's admins for a School plan. We keep which teacher asked, for which school and when, never a message. The school's admins see who asked until they dismiss it or the school gets a plan, and we delete it <b>90 days</b> after that. Teachers only see whether their school has a plan."
       },
@@ -2276,7 +2277,8 @@
         "classText": "Your class's Builder is resting for today. Ask your teacher when you can build again.",
         "resting": "The Builder is resting for everyone right now. Your game is saved.",
         "getSpark": "Get a Spark Pack",
-        "back": "More Builder messages are here. Happy building!"
+        "back": "More Builder messages are here. Happy building!",
+        "teacherText": "You and your classes have used today's Builder messages from your Teacher plan. More tomorrow!"
       },
       "mic": {
         "start": "Speak instead of typing",
@@ -2862,7 +2864,61 @@
       "freeH": "Free for every school",
       "free": "All the games, classes, lessons and courses, login cards, progress and live class games, and {free} free Builder messages a day for every student, like everyone on Oomba Academy.",
       "addsH": "A School plan adds",
-      "adds": "More Builder messages: each paid student adds {perSeat} a year to a pool your whole school shares. Nothing else changes, and students are never asked to pay."
+      "adds": "More Builder messages: each paid student adds {perSeat} a year to a pool your whole school shares. Nothing else changes, and students are never asked to pay.",
+      "tp": {
+        "teachersN": "{count, plural, one {# teacher} other {# teachers}}",
+        "active": "{count, plural, one {Teacher plan for # teacher.} other {Teacher plans for # teachers.}}",
+        "trialing": "Free trial until {date}. Add a card in Manage billing to keep the seats. Without one, the trial simply ends.",
+        "waits": "The new seats can be given once their payment goes through.",
+        "grant": "A free plan from Oomba Academy until {date}.",
+        "price": "{price} per teacher per year, with no per-student charge. Each teacher with a seat gets the Teacher plan: unlimited students and {daily} Builder messages a day for their classes.",
+        "seatsLabel": "Number of teachers",
+        "seatsHint": "You have {teachers} now.",
+        "total": "{seats} teachers × {price} = {total} a year (plus tax, if any)",
+        "trial": "Start with the {days}-day free trial (no card needed)",
+        "renewal": "Your plan renews on {date} for {seats}. You have {teachers} now.",
+        "renewalButton": "Set next year's teachers",
+        "adds": "Each teacher with a seat gets unlimited students and {daily} Builder messages a day for their classes. Students are never asked to pay.",
+        "legacyH": "Legacy plan.",
+        "legacy": "Your school's plan is priced per student. It keeps that price when it renews. Write to us if you'd like to move to teacher seats.",
+        "pay": {
+          "heading": "Get Teacher plans for your teachers",
+          "button": "Continue"
+        },
+        "change": {
+          "heading": "Change the number of teachers",
+          "text": "More teachers are billed now, for the rest of this year. Fewer teachers take effect when the plan renews.",
+          "button": "Change teachers"
+        },
+        "seats": {
+          "h": "Who has a seat",
+          "text": "{used} of {seats} seats given. A teacher with a seat gets the Teacher plan for all their classes.",
+          "own": "(has their own Teacher plan)",
+          "waiting": "(waiting for a free seat)",
+          "give": "Give a seat",
+          "take": "Take back",
+          "full": "Every seat is given. Add seats above to give more."
+        },
+        "seat": {
+          "given": "Seat given.",
+          "taken": "Seat taken back."
+        },
+        "seatsDone": {
+          "raised": "Done: {count, plural, one {# teacher} other {# teachers}}.",
+          "pending": "The card payment didn't go through, so the number of teachers stays the same. Update the card in Manage billing and try again.",
+          "scheduled": "Next year: {count, plural, one {# teacher} other {# teachers}}.",
+          "cleared": "Next year stays at {count, plural, one {# teacher} other {# teachers}}."
+        },
+        "errors": {
+          "notStaff": "Only teachers and school admins of this school can have a seat.",
+          "noSeats": "Your school has no teacher seats yet.",
+          "full": "Every seat is given. Add seats first.",
+          "noSeat": "That teacher has no seat.",
+          "minSeats": "Type a whole number from 1 to {max}.",
+          "entitled": "Your school already has a plan. Change the number of teachers instead.",
+          "trialUsed": "Your school has had its free trial."
+        }
+      }
     },
     "pick": {
       "title": "Your schools",
@@ -3743,7 +3799,7 @@
   },
   "plans": {
     "title": "Plans and prices",
-    "description": "Oomba Academy plans: Free, Basic, Family and School. Playing every game is always free.",
+    "description": "Oomba Academy plans: Free, Basic, Family, Teacher and School. Playing every game is always free.",
     "heading": "Plans",
     "intro": "Playing every game is free, and so is building with the free daily Builder messages. A plan adds extra Builder messages every month.",
     "interval": {
@@ -3792,12 +3848,12 @@
     },
     "school": {
       "name": "School",
-      "tagline": "For classes and whole schools",
-      "per": "per student a year",
-      "min": "For at least {min} students",
-      "li1": "{perSeat, plural, one {# Builder message} other {# Builder messages}} a year for each paid student, shared by the whole school",
-      "li2": "Classes build from the school's own pool",
-      "li3": "Pay by card, or ask for an invoice",
+      "tagline": "Teacher plans for a whole school",
+      "per": "per teacher a year",
+      "min": "Invoice or purchase order available",
+      "li1": "A Teacher plan for each teacher: unlimited students and {daily} AI builds a day for their classes",
+      "li2": "School admins give the seats to teachers",
+      "li3": "Pay by card, or ask for an invoice or purchase order",
       "get": "Get a school plan",
       "manage": "Manage school plan"
     },
@@ -3810,8 +3866,8 @@
     "staff": {
       "button": "For families",
       "heading": "Basic and Family are for families",
-      "text": "A parent or guardian buys them with a grown-up account. For your classes, a school plan covers every student.",
-      "toSchool": "See the School plan"
+      "text": "A parent or guardian buys them with a grown-up account. For your classes, there is the Teacher plan.",
+      "toSchool": "See the Teacher plan"
     },
     "fine": {
       "h": "Good to know",
@@ -3820,12 +3876,12 @@
     },
     "schools": {
       "title": "School plans",
-      "description": "School plans on Oomba Academy: a shared pool of Builder messages for your students and teachers, paid by card or invoice.",
+      "description": "Oomba Academy for schools: the Teacher plan for each of your teachers, at one price per teacher a year, paid by card or invoice.",
       "heading": "Oomba Academy for schools",
-      "intro": "A school plan gives your students and teachers a shared pool of Builder messages, so classes never wait for the free ones.",
+      "intro": "Schools buy the Teacher plan for their teachers: one price per teacher a year, with unlimited students and no per-student charge.",
       "what": {
         "h": "What a school gets",
-        "p1": "School admins see the plan, the paid students and the pool on the school's Billing tab. Families never see anything from class."
+        "p1": "School admins see the plan and give the seats to teachers on the school's Billing tab. Families never see anything from class."
       },
       "how": {
         "h": "How to set up a school",
@@ -3842,9 +3898,9 @@
       },
       "calc": {
         "h": "What would it cost?",
-        "label": "Number of students",
+        "label": "Number of teachers",
         "button": "Work it out",
-        "result": "{seats, plural, one {# student} other {# students}} × {price} = {total} a year",
+        "result": "{seats, plural, one {# teacher} other {# teachers}} × {price} = {total} a year",
         "min": "A school plan is for at least {min} students, so a smaller school pays for {min}.",
         "tax": "Prices are in US dollars and don't include sales tax.",
         "print": "Send this to my admin",
@@ -3857,15 +3913,117 @@
         "printButton": "Print or save as PDF",
         "back": "Back to school plans",
         "cost": "What it costs",
-        "perStudent": "Price per student, per year",
+        "perStudent": "Price per teacher, per year",
         "minimum": "Smallest plan",
         "minimumN": "{min, plural, one {# student} other {# students}}",
-        "students": "Students",
+        "students": "Teachers",
         "total": "Total per year",
         "estimate": "This is an estimate for {date}, not an invoice. Prices are in US dollars and don't include sales tax.",
         "setup": "How to set it up",
         "li1": "Set up the school (free): fill in the short form at {url}.",
         "contact": "Questions? Write to {email}."
+      }
+    },
+    "teacher": {
+      "name": "Teacher",
+      "tagline": "For one teacher and all their classes",
+      "per": "per teacher a year",
+      "trial": "{days}-day free trial, no card required",
+      "li1": "Unlimited students, no per-student charge",
+      "li2": "{daily} AI builds a day for the class",
+      "li3": "Covers all your classes",
+      "li4": "Cancel anytime",
+      "start": "Start free trial",
+      "manage": "My Teacher plan"
+    },
+    "trial": {
+      "title": "Teacher plan",
+      "heading": "Try the Teacher plan free for {days} days",
+      "lead": "Everything your classes need: unlimited students and {daily} AI builds a day for the class. No card needed to start.",
+      "price": "After the trial, {price} a year per teacher. No per-student charge.",
+      "li1": "Unlimited students in all your classes",
+      "li2": "{daily} Builder messages a day, shared by you and your classes",
+      "li3": "No card needed. If you don't add one, the plan simply stops when the trial ends: your classes and their work stay.",
+      "li4": "One price per teacher, cancel anytime",
+      "email": "Your work email",
+      "emailHint": "Stripe, our payment provider, sends your trial reminder and receipts here.",
+      "cancelled": "Nothing was started. You can start your trial whenever you are ready.",
+      "notOpen": "The Teacher plan isn't open yet. Please check back soon.",
+      "subscribe": "Get the Teacher plan",
+      "already": "You already have the Teacher plan.",
+      "welcome": "🎉 Your Teacher plan is on. Make a class and add your students: you and your classes share {daily} Builder messages a day.",
+      "teachersN": "{count, plural, one {# teacher} other {# teachers}}",
+      "forTeachers": {
+        "h": "The Teacher plan is for teachers",
+        "p": "It is for teachers and their classes, and needs a teacher account. Families have their own plans.",
+        "link": "See the plans for families"
+      },
+      "school": {
+        "h": "A free trial for your school",
+        "p": "Start a {days}-day free trial of Teacher plans for {school}: {seats}. No card needed. After the trial, {price} per teacher a year.",
+        "start": "Start the school's free trial",
+        "billing": "Go to the Billing tab"
+      },
+      "used": {
+        "h": "You have had your free trial",
+        "p": "Each teacher, email and school can try the plan once. You can still get it for {price} a year.",
+        "school": "Your school has had its free trial. You can get teacher seats on the school's Billing tab."
+      },
+      "start": {
+        "h": "Start your {days}-day free trial",
+        "button": "Start my free trial",
+        "note": "You go to Stripe's page to confirm. No card is needed for the trial."
+      },
+      "signup": {
+        "h": "Create your teacher account",
+        "lead": "Your account, your classroom and your free trial in one go. Already have a teacher account? <a href=\"{login}\">Sign in</a>.",
+        "name": "Your name, as your students will see it",
+        "nameHint": "For example: Ms Rivera",
+        "school": "Your school's name",
+        "username": "Pick a username",
+        "password": "Pick a password",
+        "passwordHint": "At least {min} characters.",
+        "adult": "I am a teacher or school staff member, and 18 or older.",
+        "submit": "Create my account and start the trial",
+        "privacy": "We don't keep your work email on your account: it goes to Stripe for your plan. <a href=\"{privacy}\">Privacy Policy</a>"
+      },
+      "errors": {
+        "signedIn": "You are already signed in.",
+        "name": "Type your name (2 to 60 characters).",
+        "school": "Type your school's name.",
+        "email": "Type your work email.",
+        "password": "Use at least {min} characters.",
+        "adult": "Please confirm you are a teacher or school staff member, 18 or older.",
+        "notTeacher": "The Teacher plan needs a teacher account.",
+        "entitled": "You already have the Teacher plan.",
+        "fixPayment": "Your plan is waiting for a payment. Fix it in Manage billing on My classes.",
+        "trialUsed": "This free trial has been used already.",
+        "noPrice": "The Teacher plan isn't on sale right now. Please try again later.",
+        "paying": "A payment is already on its way. Please wait a minute.",
+        "minSeats": "Type a whole number of teachers from 1 to {max}.",
+        "noCustomer": "There is no billing to manage yet."
+      },
+      "thanks": {
+        "wait": "⏳ Starting your Teacher plan…",
+        "slow": "This is taking longer than usual. Your plan will show on My classes in a minute.",
+        "back": "Go to My classes"
+      },
+      "card": {
+        "heading": "Teacher plan",
+        "grant": "A free Teacher plan from Oomba Academy until {date}.",
+        "trial": "Free trial until {date}.",
+        "ends": "Ends on {date}.",
+        "renews": "Renews on {date}.",
+        "seat": "A seat from {school}.",
+        "pool": "{left} of {size} Builder messages left today for you and your classes.",
+        "ending": "{count, plural, =0 {Your free trial ends today.} one {Your free trial ends in # day.} other {Your free trial ends in # days.}} Add a card to keep the Teacher plan. Without one it simply stops, and your classes stay.",
+        "addCard": "Add a card",
+        "manage": "Manage billing",
+        "pending": "Your payment is on its way. The plan starts as soon as it arrives.",
+        "fix": "Your Teacher plan is waiting for a payment. Update your card in Manage billing.",
+        "tryText": "Unlimited students and {daily} AI builds a day for your classes. Free for {days} days, no card needed.",
+        "getText": "Unlimited students and {daily} AI builds a day for your classes.",
+        "try": "Try it free for {days} days"
       }
     }
   },
@@ -3999,7 +4157,7 @@
       "h": "Set up your school (free)",
       "p1": "Playing is free for everyone, and students can try any game straight away, without signing up.",
       "p2": "For classes, lessons and school accounts, write to {email} with your school’s name and who will look after it. We set up your school and your school admin’s account, and they add teachers and students. Setting up a school is free.",
-      "plans": "Want more Builder messages for your classes? A school plan adds a shared pool for your students and teachers.",
+      "plans": "Want more for your classes? Try the Teacher plan free for {days} days, no card needed: unlimited students and {daily} AI builds a day for the class.",
       "email": "Email us to set up your school",
       "subject": "Setting up my school on Oomba Academy",
       "plansLink": "School plans"
@@ -6889,7 +7047,10 @@
     },
     "notice": {
       "approved": "Good news! “{title}” passed the Oomba team's check, so more people can play it now.",
-      "sentBack": "“{title}” needs a few changes before everyone can play it."
+      "sentBack": "“{title}” needs a few changes before everyone can play it.",
+      "trialEnding": "Your Teacher plan's free trial ends in {days, plural, =0 {less than a day} one {# day} other {# days}}. To keep it, add a card here: {href} Without one, the plan simply stops and your classes stay.",
+      "trialEnded": "Your Teacher plan's free trial has ended. Your classes, students and their games are all still here. You can get the plan again at {href}",
+      "trialConverted": "Thank you! Your Teacher plan is on for the year."
     },
     "link": {
       "new": "{count, plural, one {# new message from the Oomba team} other {# new messages from the Oomba team}}",

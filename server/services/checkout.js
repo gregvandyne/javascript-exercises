@@ -34,8 +34,9 @@ export const baseUrl = req => config.publicUrl || `${req.protocol}://${req.get('
 export const FAMILY_PLANS = Object.freeze(['basic', 'family']);
 /**
  * Every price we sell, read from Stripe's Price objects by lookup key (cached by stripe.js; the reconcile job refreshes
- * the cache), so what a page shows always matches what Checkout charges. -> { basic, family, school } where basic and
- * family are { month: { id, unitAmount }, year: {…} } (null when either is missing) and school is { year } or null; or
+ * the cache), so what a page shows always matches what Checkout charges. -> { basic, family, teacher, school } where basic
+ * and family are { month: { id, unitAmount }, year: {…} } (null when either is missing), and teacher and school (a
+ * school buys teacher seats at the same price) are { year } or null; or
  * null when billing is off or Stripe can't be read.
  */
 export async function planPrices() {
@@ -44,8 +45,10 @@ export async function planPrices() {
     const p = await S.prices();
     const one = k => (p[k] ? { id: p[k].id, unitAmount: p[k].unitAmount } : null);
     const pair = plan => { const m = one(S.lookupKeyFor(plan, 'month')), y = one(S.lookupKeyFor(plan, 'year')); return m && y ? { month: m, year: y } : null; };
-    const seat = one(S.PRICE_LOOKUP_KEYS.schoolSeatYearly);
-    return { basic: pair('basic'), family: pair('family'), school: seat ? { year: seat } : null };
+    // Schools buy Teacher seats now: the school's price is the Teacher plan's, per teacher (the legacy per-student price
+    // is only for grandfathered renewals and is never shown as a price to buy).
+    const teacher = one(S.PRICE_LOOKUP_KEYS.teacherYearly);
+    return { basic: pair('basic'), family: pair('family'), teacher: teacher ? { year: teacher } : null, school: teacher ? { year: teacher } : null };
   } catch (e) {
     log('warn', 'billing: prices not read', e instanceof S.StripeCallError ? e.fields : { error: e.message });
     return null;

@@ -3,8 +3,11 @@
 // paid-plan pages are on for this request (billing on, and BILLING_PUBLIC=1 or the preview cookie), like the family
 // pages; everyone else gets a 404, as if the address weren't there. While the Stripe key is a test key only billing
 // testers (and the platform admin) may pay. Paying, changing students and Manage billing need the password typed again.
-//   /api/billing/school/:id/checkout        Pay by card (Stripe-hosted Checkout, quantity = students)
-//   /api/billing/school/:id/seats           more students now, or next year's students
+//   /api/billing/school/:id/checkout        Pay by card (Stripe-hosted Checkout, quantity = teachers; trial: '1' for
+//                                           the 14-day free trial with no card, once per school)
+//   /api/billing/school/:id/seats           more seats now, or next year's seats (teachers; students on a legacy plan)
+// The tab shows teacher seats (the Teacher plan per teacher; who has a seat, given on the tab: routes/teacher-plan.js),
+// or, for a school still on the grandfathered per-student plan, that plan marked "Legacy plan".
 //   /api/billing/school/:id/portal          Manage billing (Stripe's Customer Portal)
 //   /api/billing/school/:id/invoice-request ask for an invoice (D7); .../cancel withdraws it
 //   /api/billing/school/:id/status          the return page's poll after Checkout
@@ -25,6 +28,7 @@ import * as C from '../services/checkout.js';
 import * as SB from '../services/school-billing.js';
 import * as B from '../services/billing.js';
 import * as PA from '../services/plan-asks.js';
+import * as TP from '../services/teacher-plan.js';
 import { stepUp, passwordField, stripeTrouble } from './family.js';
 import { q } from '../db.js';
 
@@ -66,15 +70,16 @@ function schoolGate(req, res, next) {
 }
 /** With a test key only billing testers and the platform admin may pay (D14). */
 const testerGate = (req, res, next) => (C.mayBill(req.user) ? next() : res.status(403).json({ error: req.t('school.billing.notOpen') }));
-const fail = (req, res, r, status = 409) => res.status(status).json({
-  error: req.t(`school.billing.errors.${r.code}`, { min: config.schoolMinSeats, max: SB.MAX_SEATS }), ...(r.field ? { field: r.field } : {}),
+const fail = (req, res, r, status = 409, legacy = false) => res.status(status).json({
+  error: legacy || !['minSeats', 'entitled', 'trialUsed'].includes(r.code) ? req.t(`school.billing.errors.${r.code}`, { min: config.schoolMinSeats, max: SB.MAX_SEATS })
+    : req.t(`school.billing.tp.errors.${r.code}`, { max: TP.MAX_TEACHER_SEATS }), ...(r.field ? { field: r.field } : {}),
 });
 const tabUrl = s => `/school/${encodeURIComponent(s.slug)}?tab=billing`;
 
 router.post('/api/billing/school/:id/checkout', schoolGate, rateLimit('billing-checkout', 10, 600e3), testerGate, stepUp, async (req, res) => {
   const seats = SB.seatsFrom((req.body || {}).seats);
   try {
-    const r = await SB.startSchoolCheckout({ school: req.school, user: req.user, seats, base: C.baseUrl(req) });
+    const r = await SB.startSchoolCheckout({ school: req.school, user: req.user, seats, base: C.baseUrl(req), trial: (req.body || {}).trial === '1' });
     if (!r.ok) return fail(req, res, r, r.code === 'minSeats' ? 400 : 409);
     res.json({ ok: true, redirect: r.url });
   } catch (e) { stripeTrouble(req, res, e); }
@@ -85,8 +90,9 @@ router.post('/api/billing/school/:id/seats', schoolGate, rateLimit('billing-seat
   const when = b.when === 'renewal' ? 'renewal' : 'now';
   try {
     const r = await SB.changeSeats({ school: req.school, user: req.user, seats, when });
-    if (!r.ok) return fail(req, res, r, r.code === 'minSeats' || r.code === 'sameSeats' ? 400 : 409);
-    res.json({ ok: true, toast: req.t(`school.billing.seats.${r.did}`, { seats: r.seats }) });
+    const legacy = SB.isLegacy(B.ownerPlan('school', req.school.id));
+    if (!r.ok) return fail(req, res, r, r.code === 'minSeats' || r.code === 'sameSeats' ? 400 : 409, legacy);
+    res.json({ ok: true, toast: req.t(legacy ? `school.billing.seats.${r.did}` : `school.billing.tp.seatsDone.${r.did}`, { seats: r.seats, count: r.seats }) });
   } catch (e) { stripeTrouble(req, res, e); }
 });
 router.post('/api/billing/school/:id/portal', schoolGate, rateLimit('billing-portal', 20, 600e3), testerGate, stepUp, async (req, res) => {
@@ -176,13 +182,162 @@ export function askPanel(req, s) {
 // ---------------------------------------------------------------- the Billing tab
 const plural = (t, key, n) => t(key, { count: n });
 
-/** The Billing tab of /school/:slug (school admins). Async: it reads the seat price from Stripe (cached). */
+/** The Billing tab of /school/:slug (school admins). Async: it reads the seat price from Stripe (cached). A school on
+ *  the grandfathered per-student plan sees that plan (legacySchoolTab); every other school, teacher seats. */
 export async function schoolBillingTab(req, s) {
-  const t = req.t, f = req.fmt, u = req.user;
   const v = SB.schoolBilling(s);
-  const { plan, sub, pool } = v;
+  return v.legacy ? legacySchoolTab(req, s, v) : teacherSeatsTab(req, s, v);
+}
+
+/** Teacher seats: the Teacher plan per teacher, given to teachers here. */
+async function teacherSeatsTab(req, s, v) {
+  const t = req.t, f = req.fmt, u = req.user;
+  const { plan, sub } = v;
   const may = C.mayBill(u);
   const price = await SB.schoolPrice();
+  const api = `/api/billing/school/${s.id}`;
+  const checkoutId = typeof req.query.checkout === 'string' ? req.query.checkout.slice(0, 200) : '';
+  const daily = f.int(config.teacherDailyMessages);
+  const E = (tag, key, vars = {}, attrs = '') => raw(`<${tag}${attrs}${t.own(key) ? '' : ' lang="en" dir="ltr"'}>${tHtml(t, key, vars)}</${tag}>`);
+  const contact = config.contactEmail ? html`<p class="small muted">${tHtml(t, 'school.billing.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p>` : '';
+  const err = html`<p class="err form-err" aria-live="polite"></p>`;
+  const teachersNow = t('school.billing.tp.teachersN', { count: v.teachers });
+  const seatsField = (id, value, hint) => html`<div class="field"><label for="${id}">${t('school.billing.tp.seatsLabel')}</label>
+    <input class="input" id="${id}" name="seats" type="number" inputmode="numeric" min="1" max="${TP.MAX_TEACHER_SEATS}" step="1" value="${value}" required dir="ltr" aria-describedby="${id}-hint ${id}-total"${price ? raw(` data-unit="${+price.unitAmount || 0}" data-total-tpl="${esc(t('school.billing.tp.total', { seats: '{seats}', price: '{price}', total: '{total}' }))}" data-lang="${f.intl}"`) : ''}>
+    <span class="hint" id="${id}-hint">${hint}</span>${price ? html`<b class="seat-total" id="${id}-total" aria-live="polite">${t('school.billing.tp.total', { seats: f.int(value), price: f.money(price.unitAmount), total: f.money(price.unitAmount * value) })}</b>` : ''}<span class="err" id="${id}-err" aria-live="polite"></span></div>`;
+  const parts = [];
+  if (checkoutId && !plan.entitled) {
+    return html`<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>
+      <div class="notice" role="status" data-checkout-wait="${checkoutId}" data-status-url="${api}/status" data-back="${tabUrl(s)}" data-done="${t('school.billing.welcome')}">
+        <p style="margin:0"><span aria-hidden="true">⏳</span> ${t('school.billing.waiting')}</p>
+        <div data-slow hidden><p class="small" style="margin:.5em 0 0">${t('school.billing.slow')}</p>
+          <p class="small" style="margin:.5em 0 0"><a href="${tabUrl(s)}">${t('school.billing.back')}</a></p></div></div></section>`;
+  }
+  if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('school.billing.welcome')}</p>`);
+  const seatsPaid = v.seats.seats;
+  if (plan.entitled) {
+    let state;
+    if (plan.via === 'grant') state = '';
+    else if (sub.status === 'trialing') state = E('span', 'school.billing.tp.trialing', { date: f.date(sub.trial_end) });
+    else if (sub.status === 'past_due' && sub.collection_method !== 'send_invoice') state = t('school.billing.pastDue', { date: f.date(sub.grace_until) });
+    else if (sub.cancel_at_period_end) state = t('school.billing.ends', { date: f.date(sub.current_period_end) });
+    else state = t('school.billing.renews', { date: f.date(sub.current_period_end) });
+    parts.push(html`<p><b>${t('school.billing.tp.active', { count: plan.via === 'grant' ? seatsPaid : sub.quantity })}</b> ${plan.via === 'grant' ? t('school.billing.tp.grant', { date: f.date(plan.grant.until) }) : state}</p>`);
+    if (sub && sub.collection_method === 'send_invoice' && sub.grace_until) parts.push(html`<p class="notice warn" role="status">${t('school.billing.overdue', { date: f.date(sub.grace_until) })}</p>`);
+    for (const i of v.invoices) {
+      parts.push(html`<p class="small">${t('school.billing.invoiceOpen', { amount: f.money(i.amount_due), date: i.due_date ? f.date(i.due_date) : '–' })}
+        ${i.url ? html` <a href="${i.url}" rel="noopener noreferrer" target="_blank">${t('school.billing.invoiceView')}</a>` : ''}</p>`);
+    }
+    if (sub && sub.quantity > seatsPaid) parts.push(html`<p class="small">${t('school.billing.tp.waits')}</p>`);
+  } else {
+    parts.push(html`<p>${t('school.billing.none')}</p>`);
+    if (sub && sub.flag === 'async_failed') parts.push(html`<p class="notice warn">${t('school.billing.asyncFailed')}</p>`);
+    else if (v.unsettled && v.unsettled.payment_pending) parts.push(html`<p class="notice">${t('school.billing.pending')}</p>`);
+    else if (v.unsettled) parts.push(html`<p class="notice warn">${t('school.billing.errors.fixPayment')}</p>`);
+  }
+  if (price) parts.push(E('p', 'school.billing.tp.price', { price: f.money(price.unitAmount), daily }, ' class="small muted"'));
+  const asks = PA.openAsks(s.id);
+  const head = html`${asks.length ? html`<section class="panel" id="plan-asks">${asksList(req, s, asks)}</section>` : ''}<section class="panel" aria-labelledby="bill-h" id="plan"><h2 id="bill-h">${t('school.billing.heading')}</h2>${parts}
+    ${!may ? html`<p class="small muted">${t('school.billing.notOpen')}</p>` : ''}</section>`;
+
+  // Who has a seat (a plan with teacher seats).
+  let seatList = '';
+  if (plan.entitled) {
+    const staff = TP.staffSeats(s.id);
+    const given = v.seats.assigned.length;
+    seatList = html`<section class="panel" aria-labelledby="seat-h" id="seat-list"><h3 id="seat-h">${t('school.billing.tp.seats.h')}</h3>
+      ${E('p', 'school.billing.tp.seats.text', { used: f.int(Math.min(given, seatsPaid)), seats: f.int(seatsPaid) }, ' class="small"')}
+      <ul class="plain archlist">${staff.map(m => html`<li><span><bdi>${m.name}</bdi>${m.own ? html` <span class="small muted">${t('school.billing.tp.seats.own')}</span>` : ''}${m.given && !m.seat ? html` <span class="small muted">${t('school.billing.tp.seats.waiting')}</span>` : ''}</span>
+        ${m.given ? html`<form data-api="${api}/seat-take" data-reload><input type="hidden" name="user" value="${m.user_id}"><button class="btn btn-sm" type="submit">${t('school.billing.tp.seats.take')}</button></form>`
+          : html`<form data-api="${api}/seat-give" data-reload><input type="hidden" name="user" value="${m.user_id}"><button class="btn btn-sm btn-primary" type="submit"${given >= seatsPaid ? raw(' disabled') : ''}>${t('school.billing.tp.seats.give')}</button></form>`}</li>`)}</ul>
+      ${given >= seatsPaid && staff.some(m => !m.given) ? html`<p class="small muted" style="margin-bottom:0">${t('school.billing.tp.seats.full')}</p>` : ''}</section>`;
+  }
+
+  const actions = [];
+  if (may) {
+    if (v.renewing) {
+      actions.push(html`<section class="panel" aria-labelledby="renew-h" id="renewal"><h3 id="renew-h">${t('school.billing.renewal.heading')}</h3>
+        <p>${t('school.billing.tp.renewal', { date: f.date(sub.current_period_end), seats: t('school.billing.tp.teachersN', { count: sub.quantity }), teachers: teachersNow })}</p>
+        ${sub.next_quantity ? html`<p><b>${t('school.billing.renewal.next', { seats: t('school.billing.tp.teachersN', { count: sub.next_quantity }) })}</b></p>` : ''}
+        <form data-api="${api}/seats" data-reload class="planform" novalidate><input type="hidden" name="when" value="renewal">
+          ${seatsField('seats-next', sub.next_quantity || Math.max(1, v.teachers), t('school.billing.tp.seatsHint', { teachers: teachersNow }))}
+          ${passwordField(req, 'pw-next')}${err}
+          <button class="btn" type="submit">${t('school.billing.tp.renewalButton')}</button></form></section>`);
+    }
+    if (plan.entitled && plan.via === 'subscription') {
+      actions.push(html`<section class="panel" aria-labelledby="seats-h" id="seats"><h3 id="seats-h">${t('school.billing.tp.change.heading')}</h3>
+        <p class="small muted">${t('school.billing.tp.change.text')}</p>
+        ${sub.next_quantity && !v.renewing ? html`<p class="small"><b>${t('school.billing.renewal.next', { seats: t('school.billing.tp.teachersN', { count: sub.next_quantity }) })}</b></p>` : ''}
+        <form data-api="${api}/seats" data-reload class="planform" novalidate>
+          ${seatsField('seats-change', Math.max(sub.quantity, v.teachers), t('school.billing.tp.seatsHint', { teachers: teachersNow }))}
+          ${passwordField(req, 'pw-seats')}${err}
+          <button class="btn btn-primary" type="submit">${t('school.billing.tp.change.button')}</button></form></section>`);
+    } else if (!v.unsettled && price) {
+      actions.push(html`<div class="cols2 billing-free" id="free-vs-plan"><div class="panel"><h3>✅ ${t('school.billing.freeH')}</h3><p class="small">${t('school.billing.free', { free: config.builderDailyTurns })}</p></div>
+        <div class="panel"><h3>✨ ${t('school.billing.addsH')}</h3>${E('p', 'school.billing.tp.adds', { daily }, ' class="small"')}</div></div>`);
+      actions.push(html`<section class="panel" aria-labelledby="pay-h" id="pay"><h3 id="pay-h">${t('school.billing.tp.pay.heading')}</h3>
+        <form data-api="${api}/checkout" class="planform" novalidate>
+          ${seatsField('seats-pay', Math.max(1, v.teachers), t('school.billing.tp.seatsHint', { teachers: teachersNow }))}
+          ${v.trialUsed ? '' : html`<div class="field"><label class="checkline"><input type="checkbox" name="trial" value="1" checked> ${E('span', 'school.billing.tp.trial', { days: config.teacherTrialDays })}</label></div>`}
+          <ul class="small planterms"><li>${t('school.billing.pay.renew')}</li><li>${t('school.billing.pay.cancel')}</li><li>${t('school.billing.pay.tax')}</li></ul>
+          <p class="small">${tHtml(t, 'school.billing.legal')}</p>
+          ${passwordField(req, 'pw-pay')}${err}
+          <button class="btn btn-primary" type="submit">${t('school.billing.tp.pay.button')}</button>
+          <p class="small muted" style="margin-bottom:0">${t('school.billing.pay.stripe')}</p></form></section>`);
+    }
+    if (v.customer) {
+      actions.push(html`<section class="panel" aria-labelledby="manage-h" id="manage"><h3 id="manage-h">${t('school.billing.manage.heading')}</h3>
+        <p class="small muted">${t('school.billing.manage.text')}</p>
+        <form data-api="${api}/portal" class="planform">${passwordField(req, 'pw-portal')}${err}
+          <button class="btn" type="submit">${t('school.billing.manage.button')}</button></form></section>`);
+    }
+    if (v.request) {
+      const who = html`<bdi dir="ltr">${v.request.contact_email}</bdi>`;
+      const n = v.request.unit === 'student' ? t('school.billing.studentsN', { count: v.request.seats }) : t('school.billing.tp.teachersN', { count: v.request.seats });
+      actions.push(html`<section class="panel" aria-labelledby="inv-h" id="invoice"><h3 id="inv-h">${t('school.billing.invoice.heading')}</h3>
+        <p>${tHtml(t, 'school.billing.invoice.requested', { date: f.date(v.request.created_at), seats: n, email: who })}</p>
+        <form data-api="${api}/invoice-request/cancel" data-reload data-confirm="${t('school.billing.invoice.cancelConfirm')}"><button class="btn" type="submit">${t('school.billing.invoice.cancel')}</button></form></section>`);
+    } else if (!(plan.entitled && plan.via === 'subscription') && !v.unsettled && price) {
+      actions.push(invoiceForm(req, s, api, seatsField('inv-seats', Math.max(1, v.teachers), t('school.billing.tp.seatsHint', { teachers: teachersNow }))));
+    }
+  }
+  const out = html`${head}${seatList}${actions}${contact}`;
+  return t.own('school.billing.heading') ? out : html`<div lang="en" dir="ltr" style="display:contents">${out}</div>`;
+}
+
+/** The invoice / purchase-order request form (seats: the seats field to put in it). */
+function invoiceForm(req, s, api, seats) {
+  const t = req.t;
+  const country = requestCountry(s.id) || 'US', us = country === 'US';
+  const fld = (name, label, { type = 'text', req: required = true, max = 100, auto = '', ltr = false, wide = false, value = '' } = {}) => html`<div class="field${wide ? ' wide' : ''}"><label for="inv-${name}">${label}${required ? '' : html` <span class="muted">${t('school.optional')}</span>`}</label>
+    <input class="input" id="inv-${name}" name="${name}" type="${type}" maxlength="${max}" ${required ? 'required' : ''} ${auto ? html`autocomplete="${auto}"` : ''} ${ltr ? html`dir="ltr"` : ''} value="${value}"><span class="err" id="inv-${name}-err" aria-live="polite"></span></div>`;
+  return html`<section class="panel" aria-labelledby="inv-h" id="invoice"><details><summary><h3 id="inv-h" style="display:inline">${t('school.billing.invoice.heading')}</h3></summary>
+    <p class="small muted">${t('school.billing.invoice.text')}</p>
+    <p class="small">${tHtml(t, 'school.billing.legal')}</p>
+    <form class="formgrid" data-api="${api}/invoice-request" data-reload novalidate>
+      ${seats}
+      ${fld('po', t('school.billing.invoice.po'), { req: false, max: 60, ltr: true })}
+      ${fld('contactName', t('school.billing.invoice.contactName'), { max: 80, auto: 'name' })}
+      ${fld('contactEmail', t('school.billing.invoice.contactEmail'), { type: 'email', max: 120, auto: 'email', ltr: true })}
+      ${fld('line1', t('school.billing.invoice.line1'), { auto: 'address-line1', wide: true })}
+      ${fld('line2', t('school.billing.invoice.line2'), { req: false, auto: 'address-line2', wide: true })}
+      ${fld('city', t('school.billing.invoice.city'), { max: 60, auto: 'address-level2' })}
+      ${fld('state', t(us ? 'school.billing.invoice.state' : 'school.billing.invoice.region'), { req: false, max: 60, auto: 'address-level1' })}
+      ${fld('postalCode', t(us ? 'school.billing.invoice.postal' : 'school.billing.invoice.postcode'), { max: 20, auto: 'postal-code', ltr: true })}
+      ${fld('country', t('school.billing.invoice.country'), { max: 2, auto: 'country', ltr: true, value: country })}
+      <div class="field wide"><label class="checkline"><input type="checkbox" name="taxExempt" value="1"> <span>${t('school.billing.invoice.taxExempt')}</span></label></div>
+      <div class="field wide"><label for="inv-note">${t('school.billing.invoice.note')} <span class="muted">${t('school.optional')}</span></label><textarea class="input" id="inv-note" name="note" rows="2" maxlength="500"></textarea></div>
+      <p class="err form-err wide" aria-live="polite"></p>
+      <div class="formacts"><button class="btn btn-primary" type="submit">${t('school.billing.invoice.button')}</button></div>
+    </form></details></section>`;
+}
+
+/** A school on the grandfathered per-student plan (kept as it was; marked "Legacy plan"). */
+async function legacySchoolTab(req, s, v) {
+  const t = req.t, f = req.fmt, u = req.user;
+  const { plan, sub, pool } = v;
+  const may = C.mayBill(u);
+  const price = await SB.legacyPrice();
   const api = `/api/billing/school/${s.id}`;
   const checkoutId = typeof req.query.checkout === 'string' ? req.query.checkout.slice(0, 200) : '';
   const contact = config.contactEmail ? html`<p class="small muted">${tHtml(t, 'school.billing.help', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p>` : '';
@@ -208,6 +363,7 @@ export async function schoolBillingTab(req, s) {
   if (checkoutId && plan.entitled) parts.push(html`<p class="notice good" role="status"><span aria-hidden="true">🎉</span> ${t('school.billing.welcome')}</p>`);
 
   // ---- the plan's state
+  parts.push(raw(`<p class="notice"${t.own('school.billing.tp.legacy') ? '' : ' lang="en" dir="ltr"'}><b>${esc(t('school.billing.tp.legacyH'))}</b> ${esc(t('school.billing.tp.legacy'))}</p>`));
   if (plan.entitled) {
     let state;
     if (plan.via === 'grant') state = t('school.billing.grant', { date: f.date(plan.grant.until), count: plan.grant.seats || 0 });

@@ -1,9 +1,16 @@
-// School plans (docs/decisions.md "Paid plans" §5, D6, D7, D11, D12; chunk 5). Only school admins (and the platform
-// admin) see or change a school's plan, on the school page's Billing tab; teachers and students never see billing.
+// School plans (docs/decisions.md "Paid plans" §5, D6, D7, D11, D12; chunk 5; "Teacher plan" since 2026-11-09). Only
+// school admins (and the platform admin) see or change a school's plan, on the school page's Billing tab; teachers and
+// students never see billing.
 //
-//   Price: one Stripe Price per student per year (lookup key oomba_school_seat_yearly), at least SCHOOL_MIN_SEATS.
-//   Card: Stripe-hosted Checkout with the number of students as the quantity (the optional "School" payment method
-//         configuration, flexible billing mode). What a payment grants is decided by the webhook, as for families.
+//   Price: new school plans are Teacher seats: the Teacher plan's Price (lookup key oomba_teacher_yearly) per teacher
+//         per year, quantity = teachers (at least 1), and the school admins give the seats to teachers
+//         (services/teacher-plan.js). The legacy per-student plan (lookup key oomba_school_seat_yearly, at least
+//         SCHOOL_MIN_SEATS students, plan 'school') is grandfathered: a school already on it keeps it, renewals
+//         included; nothing moves it automatically, and no new school can buy it. Everything below about a shared
+//         pool, students as seats and SCHOOL_MIN_SEATS is about the legacy plan.
+//   Card: Stripe-hosted Checkout with the number of teachers as the quantity (the optional "School" payment method
+//         configuration, flexible billing mode), with the 14-day free trial (no card) once per school. What a payment
+//         grants is decided by the webhook, as for families.
 //   Invoice: the school admin asks for one (seats, PO number, a billing contact, the billing address, "we are
 //         tax-exempt"); the owner clicks "Create invoice subscription" on /admin/billing (send_invoice, net 30) and can
 //         mark an invoice paid by check (paid out of band).
@@ -22,6 +29,7 @@ import * as B from './billing.js';
 import * as C from './checkout.js';
 import { register } from './jobs.js';
 import { registerPaidBudget } from './ai-budget.js';
+import * as TP from './teacher-plan.js';
 
 const DAY = 86400e3;
 const YEAR = 365 * DAY;
@@ -61,7 +69,8 @@ export function poolUsedSince(schoolId, from) {
  */
 export function poolOf(schoolId, t = now()) {
   const plan = B.ownerPlan('school', schoolId, t);
-  if (!plan.entitled) return null;
+  // Only the legacy per-student plan has a school pool: teacher seats give each seated teacher's classes their own.
+  if (!plan.entitled || plan.plan !== 'school') return null;
   let seats, from, until;
   if (plan.via === 'subscription') {
     const r = plan.subscription;
@@ -91,9 +100,9 @@ export function schoolSide(userId) {
   const student = rows.some(r => r.role === 'student');
   let best = null, entitled = false;
   for (const r of rows) {
+    if (B.ownerPlan('school', r.id).entitled) entitled = true;
     const pool = poolOf(r.id);
     if (!pool) continue;
-    entitled = true;
     if (pool.left > 0 && (!best || pool.left > best.pool.left)) best = { id: r.id, cap: effectiveCap(r), pool };
   }
   return { school: best, entitled, student };
@@ -120,6 +129,10 @@ const parseJson = (s, d) => { try { return s ? JSON.parse(s) : d; } catch { retu
 /** The unpaid invoices of a school's subscription row: [{ id, amount_due, due_date, number, url }]. */
 export const openInvoicesOf = row => parseJson(row && row.open_invoices, []);
 
+/** Active teachers and school admins of a school (the teacher seats it needs). */
+export const staffCount = schoolId => q.get("SELECT COUNT(*) n FROM school_members WHERE school_id=? AND role IN ('teacher','admin') AND status='active'", schoolId).n;
+/** Is this school's plan the grandfathered per-student one? */
+export const isLegacy = plan => !!plan && plan.entitled && plan.plan === 'school';
 /** Everything the Billing tab needs about one school. */
 export function schoolBilling(school, t = now()) {
   const plan = B.ownerPlan('school', school.id, t);
@@ -132,12 +145,17 @@ export function schoolBilling(school, t = now()) {
     request: openRequestOf(school.id), invoices: sub ? openInvoicesOf(sub) : [],
     unsettled: C.unsettledPlanOf('school', school.id), customer: B.customerOf('school', school.id),
     lessons: pool && pool.seats ? Math.floor(pool.left / (pool.seats * LESSON_MESSAGES)) : 0,
+    legacy: isLegacy(plan), teachers: staffCount(school.id), seats: TP.seatState(school.id, t),
+    trialUsed: TP.trialUsed({ schoolId: school.id }),
   };
 }
 
 // ---------------------------------------------------------------- card Checkout
-/** The seat price, found by lookup key: { id, unitAmount } or null (billing off, missing, or Stripe unreadable). */
-export async function schoolPrice() {
+/** The price a school buys now: the Teacher plan's, per teacher seat. { id, unitAmount } or null (billing off, missing,
+ *  or Stripe unreadable). */
+export const schoolPrice = () => TP.teacherPrice();
+/** The legacy per-student price (grandfathered schools' renewals; shown on their Billing tab). */
+export async function legacyPrice() {
   if (!S.billingOn()) return null;
   try {
     const p = (await S.prices())[S.PRICE_LOOKUP_KEYS.schoolSeatYearly];
@@ -152,33 +170,41 @@ export function seatsFrom(v) {
   const n = Number(String(v ?? '').trim());
   return Number.isInteger(n) ? n : null;
 }
-const seatsOk = n => n != null && n >= config.schoolMinSeats && n <= MAX_SEATS;
+/** Seats a plan may have: teachers (1 to MAX_TEACHER_SEATS) on teacher seats, students (SCHOOL_MIN_SEATS to MAX_SEATS)
+ *  on the legacy plan. */
+export const minSeats = plan => (plan === 'school' ? config.schoolMinSeats : 1);
+export const maxSeats = plan => (plan === 'school' ? MAX_SEATS : TP.MAX_TEACHER_SEATS);
+const seatsOk = (n, plan = 'teacher') => n != null && n >= minSeats(plan) && n <= maxSeats(plan);
 
 /**
- * A Checkout Session for a school plan paid by card. One at a time per school (an earlier open session is expired
- * first). A school with a plan changes its seats instead; one whose plan waits for a payment fixes it in Manage billing.
- * -> { ok: true, url } | { ok: false, code: 'entitled'|'fixPayment'|'paying'|'noPrice'|'minSeats' }
+ * A Checkout Session for teacher seats (quantity = teachers). One at a time per school (an earlier open session is
+ * expired first). A school with a plan changes its seats instead; one whose plan waits for a payment fixes it in Manage
+ * billing. trial: the 14-day free trial with no card, once per school ('trialUsed' after that).
+ * -> { ok: true, url, trial } | { ok: false, code: 'entitled'|'fixPayment'|'paying'|'noPrice'|'minSeats'|'trialUsed' }
  */
-export function startSchoolCheckout({ school, user, seats, base }) {
+export function startSchoolCheckout({ school, user, seats, base, trial = false }) {
   const sid = school.id;
   return B.serialize(`checkout-start:school:${sid}`, async () => {
     if (!seatsOk(seats)) return fail('minSeats', 'seats');
     const plan = B.ownerPlan('school', sid);
     if (plan.entitled && plan.via === 'subscription') return fail('entitled');
     if (C.unsettledPlanOf('school', sid)) return fail('fixPayment');
+    if (trial && TP.trialUsed({ schoolId: sid })) return fail('trialUsed');
     const price = await schoolPrice();
     if (!price) return fail('noPrice');
     if (await C.endOpenSession(sid, 'school') === 'paid') return fail('paying');
     const customer = await C.ownerCustomer('school', sid);
     const meta = { owner_kind: 'school', owner_id: sid };
     const back = `${base}/school/${encodeURIComponent(school.slug)}?tab=billing`;
+    const tp = trial ? TP.trialParams() : { subscription_data: {} };
     const params = {
       mode: 'subscription',
       customer,
       line_items: [{ price: price.id, quantity: seats }],
       client_reference_id: sid,
       metadata: meta,
-      subscription_data: { metadata: meta, billing_mode: { type: 'flexible' } },
+      subscription_data: { ...tp.subscription_data, metadata: { ...meta, ...(trial ? { started_by: user.id } : {}) }, billing_mode: { type: 'flexible' } },
+      ...(tp.payment_method_collection ? { payment_method_collection: tp.payment_method_collection } : {}),
       billing_address_collection: 'required',
       customer_update: { address: 'auto', name: 'auto' },
       allow_promotion_codes: true,
@@ -197,8 +223,8 @@ export function startSchoolCheckout({ school, user, seats, base }) {
     }
     const session = await S.createCheckoutSession(params, `checkout-school-${sid}-${uid(12)}`);
     C.rememberSession('school', sid, session.id);
-    audit(user.id, 'billing.checkout.start', `school:${sid}`, { session: session.id, seats });
-    return { ok: true, url: session.url };
+    audit(user.id, 'billing.checkout.start', `school:${sid}`, { session: session.id, seats, trial: !!trial });
+    return { ok: true, url: session.url, trial: !!trial };
   });
 }
 
@@ -216,7 +242,7 @@ export function changeSeats({ school, user, seats, when = 'now' }) {
     const plan = B.ownerPlan('school', sid);
     if (!plan.entitled || plan.via !== 'subscription') return fail('noPlan');
     const row = plan.subscription;
-    if (!seatsOk(seats)) return fail('minSeats', 'seats');
+    if (!seatsOk(seats, row.plan)) return fail('minSeats', 'seats');
     const target = `school:${sid}`;
     if (when === 'renewal' || seats < row.quantity) {
       const next = seats === row.quantity ? null : seats;
@@ -248,14 +274,14 @@ export async function renewalJob(t = now()) {
   q.run(`UPDATE billing_requests SET contact_name=NULL, contact_email=NULL, address_json=NULL, note='', po='' WHERE closed_at IS NOT NULL AND closed_at < ?
     AND (contact_name IS NOT NULL OR contact_email IS NOT NULL OR address_json IS NOT NULL OR COALESCE(note, '') != '' OR COALESCE(po, '') != '')`, t - KEEP_REQUESTS);
   if (!S.billingOn()) return { skipped: true };
-  const rows = q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind='school' AND plan='school' AND livemode=? AND next_quantity IS NOT NULL
+  const rows = q.all(`SELECT * FROM billing_subscriptions WHERE owner_kind='school' AND plan IN ('school','teacher') AND livemode=? AND next_quantity IS NOT NULL
     AND status IN ('active','trialing','past_due') AND cancel_at_period_end=0 AND current_period_end IS NOT NULL AND current_period_end - ? <= ? AND current_period_end > ?`,
   S.currentLivemode(), t, RENEWAL_APPLY_MS, t);
   const out = { applied: 0, errors: 0 };
   for (const r of rows) {
     try {
       await B.serialize(`seats:school:${r.owner_id}`, async () => {
-        const next = Math.max(config.schoolMinSeats, r.next_quantity);
+        const next = Math.max(minSeats(r.plan), r.next_quantity);
         const sub = await S.getSubscription(r.stripe_subscription_id);
         if ((sub.items?.data?.[0]?.quantity ?? 0) !== next) await S.updateSeats(sub, next, { when: 'renewal', key: String(r.current_period_end) });
         q.run('UPDATE billing_subscriptions SET next_quantity=NULL WHERE stripe_subscription_id=?', r.stripe_subscription_id);
@@ -294,8 +320,8 @@ export function requestInvoice(user, school, input = {}) {
   if (openRequestOf(school.id)) return fail('requestOpen');
   const id = uid(12);
   const tax = input.taxExempt === true || input.taxExempt === '1' || input.taxExempt === 'on' ? 1 : 0;
-  q.run(`INSERT INTO billing_requests(id, school_id, requested_by, seats, po, contact_name, contact_email, address_json, tax_exempt_claimed, note, livemode, created_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`, id, school.id, user.id, seats, clip(input.po, 60), contactName, contactEmail, JSON.stringify(address), tax, clip(input.note, 500), S.currentLivemode(), now());
+  q.run(`INSERT INTO billing_requests(id, school_id, requested_by, seats, po, contact_name, contact_email, address_json, tax_exempt_claimed, note, livemode, created_at, unit)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'teacher')`, id, school.id, user.id, seats, clip(input.po, 60), contactName, contactEmail, JSON.stringify(address), tax, clip(input.note, 500), S.currentLivemode(), now());
   // Ids and numbers only: never the contact's name, email or the address.
   audit(user.id, 'billing.school.request', `school:${school.id}`, { request: id, seats, taxExemptClaimed: !!tax });
   return { ok: true, request: q.get('SELECT * FROM billing_requests WHERE id=?', id) };
@@ -326,7 +352,9 @@ export function closeRequest(admin, id) {
  * field; tax_exempt only when the owner ticks that an exemption certificate arrived. Then a send_invoice subscription,
  * net 30, in flexible billing mode, with automatic_tax only when STRIPE_TAX=1 and never payment method types (how a
  * school pays an invoice is set in the Dashboard).
- * -> { ok: true, subscription } | { ok: false, code: 'noRequest'|'noSchool'|'entitled'|'noPrice'|'minSeats' }
+ * Always teacher seats at the Teacher price; a request made before teacher seats (unit 'student') counted students, so
+ * the owner types the number of teachers for it ('seatsNeeded' until they do).
+ * -> { ok: true, subscription } | { ok: false, code: 'noRequest'|'noSchool'|'entitled'|'noPrice'|'minSeats'|'seatsNeeded' }
  */
 export function createInvoiceSubscription(admin, requestId, { seats = null, exempt = false } = {}) {
   return B.serialize(`invoice-sub:${requestId}`, async () => {
@@ -334,6 +362,7 @@ export function createInvoiceSubscription(admin, requestId, { seats = null, exem
     if (!r) return fail('noRequest');
     const school = q.get('SELECT * FROM schools WHERE id=?', r.school_id);
     if (!school) return fail('noSchool');
+    if (r.unit === 'student' && seats == null) return fail('seatsNeeded', 'seats');
     const n = seats ?? r.seats;
     if (!seatsOk(n)) return fail('minSeats', 'seats');
     const plan = B.ownerPlan('school', school.id);

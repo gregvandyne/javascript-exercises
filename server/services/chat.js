@@ -178,6 +178,10 @@ export function teamText(m, t = tEn) {
   if (m.kind === 'announce') return `📣 ${o.text || ''}`;
   if (m.kind === 'copy') return `📋 ${t(o.dir === 'from' ? 'team.copy.from' : 'team.copy.to', { name: o.name || '' })} ${o.text || ''}`;
   if (o.k === 'approved') return `🎉 ${t('team.notice.approved', { title: o.title || '' })}`;
+  // The Teacher plan's free trial (services/teacher-plan.js): its end is near, it ended without a card, it turned paid.
+  if (o.k === 'trialEnding') return `⏳ ${t('team.notice.trialEnding', { days: Number(o.days) || 0, href: String(o.href || '') })}`;
+  if (o.k === 'trialEnded') return `📒 ${t('team.notice.trialEnded', { href: String(o.href || '') })}`;
+  if (o.k === 'trialConverted') return `🎉 ${t('team.notice.trialConverted')}`;
   if (o.k === 'sentBack') {
     const why = [REVIEW_REASONS.includes(o.reason) ? t(`review.reasons.${o.reason}`) : '', o.note || ''].filter(Boolean).join(' ');
     return `✏️ ${t('team.notice.sentBack', { title: o.title || '' })}${why ? ` ${why}` : ''}`;

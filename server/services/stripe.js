@@ -13,15 +13,19 @@ export const PRICE_LOOKUP_KEYS = Object.freeze({
   basicYearly: 'oomba_basic_yearly',
   familyMonthly: 'oomba_family_monthly',
   familyYearly: 'oomba_family_yearly',
+  // The legacy per-student School plan: kept active in Stripe only so grandfathered school subscriptions renew on it.
+  // New school purchases buy Teacher seats (teacherYearly, quantity = teachers).
   schoolSeatYearly: 'oomba_school_seat_yearly',
+  // The Teacher plan (services/teacher-plan.js): one teacher a year, all their classes; a school buys N of them.
+  teacherYearly: 'oomba_teacher_yearly',
   // Spark Packs (services/sparks.js): one-time Prices (no recurring), one per pack size.
   spark25: 'oomba_spark_25',
   spark60: 'oomba_spark_60',
   spark150: 'oomba_spark_150',
 });
 /** Which plan a lookup key sells: 'basic' (one child) and 'family' are both plans of a family (a grown-up's account),
- *  'school' of a school. */
-export const planOfLookupKey = k => (/^oomba_basic_/.test(k || '') ? 'basic' : /^oomba_family_/.test(k || '') ? 'family' : /^oomba_school_/.test(k || '') ? 'school' : null);
+ *  'school' (the legacy per-student plan) of a school, 'teacher' of a teacher (quantity 1) or of a school (teacher seats). */
+export const planOfLookupKey = k => (/^oomba_basic_/.test(k || '') ? 'basic' : /^oomba_family_/.test(k || '') ? 'family' : /^oomba_school_/.test(k || '') ? 'school' : /^oomba_teacher_/.test(k || '') ? 'teacher' : null);
 /** The lookup key of a family-type plan's price: plan 'basic' | 'family', interval 'month' | 'year'. */
 export const lookupKeyFor = (plan, interval) => `oomba_${plan}_${interval === 'year' ? 'yearly' : 'monthly'}`;
 
@@ -115,7 +119,7 @@ export const subscriptionOfInvoice = inv => {
 
 /** integration_identifier of each Checkout flow (API dahlia and later), so the Dashboard can compare them: made once,
  *  with 8 random letters as Stripe asks. Never change them (the Dashboard groups sessions by them). */
-export const INTEGRATION_IDS = Object.freeze({ family: 'oomba_family_qhzvtrkm', school: 'oomba_school_wbnxjfpd', spark: 'oomba_spark_tmzqbwhe' });
+export const INTEGRATION_IDS = Object.freeze({ family: 'oomba_family_qhzvtrkm', school: 'oomba_school_wbnxjfpd', spark: 'oomba_spark_tmzqbwhe', teacher: 'oomba_teacher_kvrnzdqa' });
 
 /** A Customer for an owner, with no name or email from us (Checkout asks for the email; Stripe keeps it). */
 export const createCustomer = (params, idempotencyKey) => call(s => s.customers.create(params, { idempotencyKey }));
@@ -162,7 +166,8 @@ export const payInvoiceOutOfBand = id => call(s => s.invoices.pay(id, { paid_out
 let priceCache = null;
 export async function prices({ refresh = false } = {}) {
   if (priceCache && !refresh) return priceCache;
-  const list = await call(s => s.prices.list({ lookup_keys: Object.values(PRICE_LOOKUP_KEYS), active: true, limit: 10 }));
+  // Stripe returns at most `limit` prices (100 is its maximum); every lookup key must fit in one page.
+  const list = await call(s => s.prices.list({ lookup_keys: Object.values(PRICE_LOOKUP_KEYS), active: true, limit: 100 }));
   const out = {};
   for (const p of list.data) if (p.lookup_key) out[p.lookup_key] = { id: p.id, interval: p.recurring?.interval || null, unitAmount: p.unit_amount, currency: p.currency, product: typeof p.product === 'object' ? p.product?.id : p.product };
   priceCache = out;

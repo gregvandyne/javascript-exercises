@@ -14,7 +14,7 @@ export const FUNNELS = Object.freeze([
     ['parent.checkout', 'Checkout started'], ['parent.paid', 'Paid (webhook)']] },
   { key: 'teacher', title: 'Teachers', steps: [
     ['teacher.view', 'Teacher page views'], ['teacher.request', 'School requests'], ['teacher.school', 'Schools set up'],
-    ['teacher.class', 'First class with students'], ['teacher.plan', 'School plan']] },
+    ['teacher.class', 'First class with students'], ['teacher.trial', 'Teacher trials started'], ['teacher.plan', 'Paid plan (teacher or school)']] },
   { key: 'guardrail', title: 'Guardrail (must not drop)', guardrail: true, steps: [
     ['kid.signup', 'Kid sign-ups'], ['kid.play', 'Games played']] },
   // Which door signed-out visitors and guests take on the home page (routes/discover.js /go/<door>), and the top bar's

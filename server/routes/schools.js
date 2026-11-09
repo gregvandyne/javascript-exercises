@@ -18,6 +18,7 @@ import * as P from '../services/progress.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
 import { billingTabOn, schoolBillingTab, teachPlanCard, askPanel } from './school-billing.js';
+import { teacherPlanCard } from './teacher-plan.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn, openForClass } from '../services/classlive-sessions.js';
@@ -462,6 +463,7 @@ router.get('/teach', requireUser, (req, res) => {
       <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
     ${teachPlanCard(req, x)}</section>`)}
   ${staffInvitesPanel(req)}
+  ${teacherPlanCard(req)}
   ${schools.map(x => askPanel(req, x))}
   ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<div class="panel classcard">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>

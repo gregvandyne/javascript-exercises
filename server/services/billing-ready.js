@@ -50,7 +50,7 @@ export async function readiness({ refresh = false } = {}) {
   row('liveok', 'STRIPE_LIVE_OK is 1', config.stripeLiveOk, config.stripeLiveOk ? 'set to 1' : 'not set',
     'Set STRIPE_LIVE_OK=1 on Render together with the live key (the server refuses to start with a live key without it).');
   row('secret', 'STRIPE_WEBHOOK_SECRET is set', !!config.stripeWebhookSecret, config.stripeWebhookSecret ? `set${config.stripeWebhookSecretOld ? ' (and STRIPE_WEBHOOK_SECRET_OLD)' : ''}` : 'not set',
-    `In Stripe (live mode): Developers → Webhooks → add the endpoint ${site()}/api/billing/webhook with the 14 events in docs/billing-go-live.md, then copy its signing secret (whsec_…) into STRIPE_WEBHOOK_SECRET.`);
+    `In Stripe (live mode): Developers → Webhooks → add the endpoint ${site()}/api/billing/webhook with the 15 events in docs/billing-go-live.md (customer.subscription.trial_will_end included), then copy its signing secret (whsec_…) into STRIPE_WEBHOOK_SECRET.`);
 
   const good = lastLiveGoodEvent(), last = lastLiveEvent();
   const wrongMode = last && last.result === 'mode_mismatch';
@@ -69,6 +69,12 @@ export async function readiness({ refresh = false } = {}) {
       : !live && !pr.missing.length && !pr.error ? 'Found in test mode. Create the same Prices with the same lookup keys in live mode (docs/billing-go-live.md), then check again with the live key.'
         : 'Create the missing Prices in live mode with these lookup keys (Product catalog → Price → Lookup key). Amounts are the owner\'s decision (docs/billing-go-live.md).');
 
+  // The Teacher plan (services/teacher-plan.js): its own row, so a missing teacher price is plain to see.
+  const teacherKey = S.PRICE_LOOKUP_KEYS.teacherYearly;
+  const teacherOk = live && !pr.error && !pr.missing.includes(teacherKey);
+  row('teacherPrice', `The Teacher plan's price exists (lookup key ${teacherKey})`, teacherOk,
+    pr.error === 'off' ? 'not checked: billing is off' : pr.error ? `not checked: Stripe answered ${pr.error}` : pr.missing.includes(teacherKey) ? 'missing' : `found${live ? '' : ' (with the test key)'}`,
+    `In Stripe (live mode): Product "Oomba Teacher plan" → its $119/year Price → set the lookup key ${teacherKey}. Also: Settings → Billing → Subscriptions and emails → "Send a reminder email 7 days before a free trial ends" on, and the Customer portal lets customers update their payment method (docs/billing-go-live.md).`);
   row('pmcFamily', 'STRIPE_PMC_FAMILY names the "Family" payment methods', !!config.stripePmcFamily, config.stripePmcFamily ? 'set' : 'not set: family plans and Spark Packs are not on sale',
     'In Stripe (live mode): Settings → Payment methods → create a configuration "Family" (cards, Apple Pay, Google Pay on; Link off) and put its pmc_… id in STRIPE_PMC_FAMILY.');
   row('pmcSchool', 'STRIPE_PMC_SCHOOL (optional)', true, config.stripePmcSchool ? 'set' : 'not set: school card Checkout uses the account\'s default payment methods', '');

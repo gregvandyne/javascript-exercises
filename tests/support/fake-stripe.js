@@ -47,12 +47,14 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
   // ---- Catalogue: the five prices, found by lookup key (like the sandbox) ----
   const addPrice = (lookup, amount, interval, product) => st.prices.set(lookup, { id: 'price_fake_' + lookup.replace(/^oomba_/, ''), object: 'price', active: true, currency: 'usd', lookup_key: lookup, product, recurring: interval ? { interval, interval_count: 1, usage_type: 'licensed' } : null, tax_behavior: 'exclusive', type: interval ? 'recurring' : 'one_time', unit_amount: amount, livemode });
   // Products carry oomba_plan metadata (docs/decisions.md "Paid plans": the plan survives a new Price).
-  for (const [id, plan] of [['prod_fake_basic', 'basic'], ['prod_fake_family', 'family'], ['prod_fake_school', 'school'], ['prod_fake_other', null]]) st.products.set(id, { id, object: 'product', active: true, livemode, metadata: plan ? { oomba_plan: plan } : {}, name: id });
+  for (const [id, plan] of [['prod_fake_basic', 'basic'], ['prod_fake_family', 'family'], ['prod_fake_school', 'school'], ['prod_fake_teacher', 'teacher'], ['prod_fake_other', null]]) st.products.set(id, { id, object: 'product', active: true, livemode, metadata: plan ? { oomba_plan: plan } : {}, name: id });
   addPrice('oomba_basic_monthly', 499, 'month', 'prod_fake_basic');
   addPrice('oomba_basic_yearly', 4500, 'year', 'prod_fake_basic');
   addPrice('oomba_family_monthly', 799, 'month', 'prod_fake_family');
   addPrice('oomba_family_yearly', 6900, 'year', 'prod_fake_family');
   addPrice('oomba_school_seat_yearly', 2000, 'year', 'prod_fake_school');
+  // The Teacher plan: per teacher a year (a teacher buys 1, a school N seats).
+  addPrice('oomba_teacher_yearly', 11900, 'year', 'prod_fake_teacher');
   // Spark Packs: one-time Prices (no recurring).
   st.products.set('prod_fake_spark', { id: 'prod_fake_spark', object: 'product', active: true, livemode, metadata: {}, name: 'Spark Pack' });
   addPrice('oomba_spark_25', 499, null, 'prod_fake_spark');
@@ -129,19 +131,35 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     return s;
   };
   /** A subscription with one item and a latest invoice. invoice: 'paid' | 'open' | 'draft' | null; dueDate (ms) for open send_invoice ones. */
-  fake.subscription = ({ description = null, customer = null, lookupKey = 'oomba_family_monthly', status = 'active', collectionMethod = 'charge_automatically', metadata = {}, quantity = 1, cancelAtPeriodEnd = false, periodStart = Date.now(), invoice = 'paid', dueDate = null, customerMetadata = {} } = {}) => {
+  fake.subscription = ({ description = null, customer = null, lookupKey = 'oomba_family_monthly', status = 'active', collectionMethod = 'charge_automatically', metadata = {}, quantity = 1, cancelAtPeriodEnd = false, periodStart = Date.now(), invoice = 'paid', dueDate = null, customerMetadata = {}, trialDays = 0, trialEnd = null } = {}) => {
     const cus = customer || fake.customer({ metadata: customerMetadata }).id;
     const price = st.prices.get(lookupKey) || { id: 'price_fake_other', object: 'price', lookup_key: null, product: 'prod_fake_other', recurring: { interval: 'month', interval_count: 1 }, unit_amount: 100, currency: 'usd', livemode };
-    const start = sec(periodStart); const end = start + (price.recurring.interval === 'year' ? 365 : 30) * DAY;
+    const start = sec(periodStart);
+    // A free trial: the first period is the trial (status trialing, a $0 invoice paid), like Stripe does it.
+    const tEnd = trialEnd ? sec(trialEnd) : trialDays ? start + trialDays * DAY : null;
+    const end = tEnd || start + (price.recurring.interval === 'year' ? 365 : 30) * DAY;
+    if (tEnd && status === 'active') status = 'trialing';
     const sub = {
       id: rid('sub_'), object: 'subscription', billing_mode: { type: 'flexible' }, description, pending_update: null, cancel_at: cancelAtPeriodEnd ? end : null, cancel_at_period_end: cancelAtPeriodEnd,
-      canceled_at: null, collection_method: collectionMethod, created: start, currency: 'usd', customer: cus,
+      canceled_at: null, collection_method: collectionMethod, created: start, currency: 'usd', customer: cus, trial_start: tEnd ? start : null, trial_end: tEnd,
       days_until_due: collectionMethod === 'send_invoice' ? 30 : null, ended_at: null, latest_invoice: null, livemode, metadata: { ...metadata },
       status, items: { object: 'list', data: [{ id: rid('si_'), object: 'subscription_item', current_period_start: start, current_period_end: end, price, quantity, metadata: {} }], has_more: false, url: '/v1/subscription_items' },
     };
     st.subscriptions.set(sub.id, sub);
-    if (invoice) sub.latest_invoice = fake.invoice({ subscription: sub.id, customer: cus, status: invoice, collectionMethod, dueDate, amount: price.unit_amount * quantity }).id;
+    if (invoice) sub.latest_invoice = fake.invoice({ subscription: sub.id, customer: cus, status: invoice, collectionMethod, dueDate, amount: tEnd ? 0 : price.unit_amount * quantity }).id;
     return sub;
+  };
+  /** A free trial ends. card: a payment method was added, so Stripe charges the first year (status active, a paid
+   *  subscription_cycle invoice); without one (missing_payment_method: cancel) the subscription is canceled. Sends the
+   *  event Stripe would (customer.subscription.updated / .deleted). */
+  fake.endTrial = (subId, { card = false, emit = true } = {}) => {
+    const s = st.subscriptions.get(subId); const item = s.items.data[0];
+    if (card) {
+      item.current_period_start = item.current_period_end; item.current_period_end += 365 * DAY;
+      s.status = 'active';
+      s.latest_invoice = fake.invoice({ subscription: s.id, customer: s.customer, status: 'paid', amount: (item.price.unit_amount || 0) * item.quantity, billingReason: 'subscription_cycle' }).id;
+    } else fake.update(s.id, { status: 'canceled' });
+    return emit ? fake.emit(card ? 'customer.subscription.updated' : 'customer.subscription.deleted', s.id) : s;
   };
   fake.update = (subId, patch) => {
     const s = st.subscriptions.get(subId);
@@ -289,8 +307,9 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         if (hook && late) setTimeout(send, 1500);
         res.writeHead(302, { location: String(x.successUrl || '/').replace('{CHECKOUT_SESSION_ID}', s.id) }); return res.end();
       }
-      const sub = fake.subscription({ customer: s.customer, lookupKey: x.lookupKey, metadata: x.subscriptionMetadata || {}, quantity: x.quantity || 1 });
-      Object.assign(s, { status: 'complete', payment_status: 'paid', subscription: sub.id });
+      const sub = fake.subscription({ customer: s.customer, lookupKey: x.lookupKey, metadata: x.subscriptionMetadata || {}, quantity: x.quantity || 1, trialDays: x.trialDays || 0 });
+      // A trial with no card to collect: Stripe says no payment was required.
+      Object.assign(s, { status: 'complete', payment_status: x.trialDays ? 'no_payment_required' : 'paid', subscription: sub.id });
       await fake.emit('customer.subscription.created', sub.id);
       await fake.emit('checkout.session.completed', s.id);
       res.writeHead(302, { location: String(x.successUrl || '/').replace('{CHECKOUT_SESSION_ID}', s.id) }); return res.end();
@@ -351,7 +370,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
         const s = fake.session({ customer: params.customer || fake.customer().id, status: 'open', paymentStatus: 'unpaid', metadata: params.metadata || {}, clientReferenceId: params.client_reference_id || null, mode: params.mode });
         Object.assign(s, { subscription: null, success_url: params.success_url, cancel_url: params.cancel_url || null, integration_identifier: params.integration_identifier || null,
           amount_total: price.unit_amount * (Number(item.quantity) || 1), currency: price.currency, payment_intent: null });
-        sessionExtra.set(s.id, { successUrl: params.success_url, paymentMethodConfiguration: params.payment_method_configuration || null, subscriptionMetadata: params.subscription_data?.metadata || {}, lookupKey: price.lookup_key, quantity: Number(item.quantity) || 1 });
+        sessionExtra.set(s.id, { successUrl: params.success_url, paymentMethodConfiguration: params.payment_method_configuration || null, subscriptionMetadata: params.subscription_data?.metadata || {}, lookupKey: price.lookup_key, quantity: Number(item.quantity) || 1,
+          trialDays: Number(params.subscription_data?.trial_period_days) || 0, paymentMethodCollection: params.payment_method_collection || 'always' });
         return ok(res, s);
       }
       if ((m = p.match(/^\/v1\/checkout\/sessions\/([\w]+)\/expire$/))) { const s = st.sessions.get(m[1]); if (!s) return missing(res, 'checkout.session', m[1]); if (s.status !== 'open') return err(res, 400, 'invalid_request_error', 'checkout_session_not_open', `This Checkout Session is ${s.status}`); s.status = 'expired'; return ok(res, s); }

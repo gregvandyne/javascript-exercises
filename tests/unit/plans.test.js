@@ -127,14 +127,19 @@ test('/plans and the menu\'s Plans link: on for everyone while paid-plan pages a
   assert.equal(viewerOf(null), 'out'); assert.equal(viewerOf(g), 'grownup'); assert.equal(viewerOf(teacher), 'staff'); assert.equal(viewerOf(k), 'kid'); assert.equal(viewerOf(student), 'kid');
 });
 
-test('four cards like a pricing page: Free, Basic, Family (recommended), School, with prices from Stripe and a monthly / yearly switch', async () => {
+test('five cards like a pricing page: Free, Basic, Family (recommended), Teacher, School, with prices from Stripe and a monthly / yearly switch', async () => {
   let r = decode((await call(null, '/plans')).text);
   let m = main(r);
-  assert.deepEqual([...m.matchAll(/<section class="plan-card[^"]*" id="plan-(\w+)"/g)].map(x => x[1]), ['free', 'basic', 'family', 'school']);
+  assert.deepEqual([...m.matchAll(/<section class="plan-card[^"]*" id="plan-(\w+)"/g)].map(x => x[1]), ['free', 'basic', 'family', 'teacher', 'school']);
   assert.match(m, /<h2 id="plan-free-h">Free<\/h2>[\s\S]*\$0</);
   assert.match(m, /<h2 id="plan-basic-h">Basic<\/h2><p class="plan-tag muted">For one young builder<\/p>[\s\S]*\$4\.99<\/span> <span class="per">a month/);
   assert.match(m, /<h2 id="plan-family-h">Family<\/h2><p class="plan-tag muted">For up to 4 children<\/p>[\s\S]*\$7\.99<\/span> <span class="per">a month/);
-  assert.match(m, /\$20\.00<\/span> <span class="per">per student a year[\s\S]*For at least 25 students/);
+  // Teacher: $119 a year per teacher, a 14-day free trial with no card, unlimited students, 300 AI builds a day.
+  assert.match(m, /<h2 id="plan-teacher-h">Teacher<\/h2>[\s\S]*\$119\.00<\/span> <span class="per">per teacher a year[\s\S]*14-day free trial, no card required/);
+  assert.match(m, /id="plan-teacher"[\s\S]*Unlimited students, no per-student charge[\s\S]*300 AI builds a day for the class[\s\S]*href="\/trial">Start free trial</);
+  // School: $119 per teacher a year, invoice / PO; never a per-student price.
+  assert.match(m, /id="plan-school"[\s\S]*\$119\.00<\/span> <span class="per">per teacher a year[\s\S]*Invoice or purchase order available/);
+  assert.doesNotMatch(m, /per student|\$20\.00|at least 25 students/);
   // Recommended: the Family card only.
   assert.equal((m.match(/class="plan-badge"/g) || []).length, 1);
   assert.match(m, /<section class="plan-card recommended" id="plan-family"/);
@@ -142,7 +147,7 @@ test('four cards like a pricing page: Free, Basic, Family (recommended), School,
   assert.match(m, /2 extra Builder messages a month/);
   assert.match(m, /5 extra Builder messages a month, shared by up to 4 children/);
   assert.match(m, /Play every game/); assert.match(m, /Build games with the free daily Builder messages/);
-  assert.match(m, /100 Builder messages a year for each paid student/);
+  assert.match(m, /A Teacher plan for each teacher: unlimited students and 300 AI builds a day for their classes/);
   // The disclosed limits, tax and the policies.
   assert.match(m, /One child can use up to 4 extra messages a day\./);
   assert.match(m, /unusually expensive to run/);
@@ -221,8 +226,9 @@ test('a kid sees the plans but can\'t buy: a calm "a grown-up buys plans" panel,
   m = main(decode((await call(signIn(teacher), '/plans?ask=basic')).text));
   assert.match(m, /Basic and Family are for families/);
   assert.doesNotMatch(m, /plan-badge|Recommended/);
-  assert.match(m, /href="#plan-school">See the School plan</);
+  assert.match(m, /href="#plan-teacher">See the Teacher plan</);
   assert.match(m, /href="\/plans\/schools">Get a school plan</);
+  assert.match(m, /id="plan-teacher"[\s\S]*href="\/trial">Start free trial</);
 });
 
 test('School: a school admin goes to their Billing tab; everyone else to the "for schools" page with the contact email', async () => {
@@ -232,7 +238,8 @@ test('School: a school admin goes to their Billing tab; everyone else to the "fo
   assert.match(main(decode((await call(signIn(boss), '/plans')).text)), /href="\/admin\/billing">Get a school plan</);
   const page = decode((await call(signIn(teacher), '/plans/schools')).text);
   assert.match(page, /Oomba Academy for schools/);
-  assert.match(page, /\$20\.00 per student per year, for at least 25 students/);
+  assert.match(page, /\$119\.00 per teacher per year, with no per-student charge/);
+  assert.match(page, /href="\/trial\?seats=1">Start free trial</);
   assert.match(page, /How to set up a school/);
   assert.match(page, /<a href="mailto:help@example\.com" dir="ltr">help@example\.com<\/a>/, 'Questions? still names the address');
   assert.match(page, /href="\/teachers#start"/, 'setting up is the form on the teacher page');
@@ -467,7 +474,7 @@ test('/plans without the "Family" payment method configuration: Basic and Family
   assert.match(m, /id="soon"[\s\S]*Basic and Family plans can't be bought yet\.[\s\S]*id="plan-free"/);
   assert.match(m, /id="plan-basic"[\s\S]*Price coming soon[\s\S]*Coming soon[\s\S]*id="plan-family"[\s\S]*Price coming soon[\s\S]*Coming soon[\s\S]*id="plan-school"/);
   assert.doesNotMatch(m, /Choose Basic|Choose Family|\$4\.99|\$7\.99/);
-  assert.match(m, /\$20\.00/, 'the School price stays');
+  assert.match(m, /\$119\.00/, 'the Teacher and School prices stay');
   // With it, a tester can buy: no notice.
   config.stripePmcFamily = defaults.stripePmcFamily;
   assert.doesNotMatch(main(decode((await call(p.who, '/plans')).text)), /id="soon"|Coming soon/);

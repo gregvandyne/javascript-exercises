@@ -144,12 +144,12 @@ test('the limit card offer per account: free kid (with and without a grown-up), 
   config.stripePmcFamily = '';
   assert.equal(upsellFor(paid.child, req), null); assert.equal(upsellFor(paid.g, req), null);
   config.stripePmcFamily = 'pmc_fakefamily';
-  // School staff: /plans (it points them at the School card). A student: "ask your teacher", never an offer.
+  // School staff: /trial (the Teacher plan's free trial). A student: "ask your teacher", never an offer.
   const boss = auth.createUser({ username: `Boss${uid(4)}`, password: 'boss-password-1', role: 'admin' });
   const school = SC.createSchool(boss, { name: `Spk School ${uid(4)}` }).school;
   const teacher = SC.createSchoolAccount(boss, school.id, { rosterName: 'Ms Spk', role: 'teacher' }).user;
   const student = SC.createSchoolAccount(teacher, school.id, { rosterName: 'Stu Spk' }).user;
-  assert.deepEqual(upsellFor(auth.getUser(teacher.id), req), { kind: 'plan', who: 'staff', href: '/plans' });
+  assert.deepEqual(upsellFor(auth.getUser(teacher.id), req), { kind: 'plan', who: 'staff', href: '/trial' });
   assert.deepEqual(upsellFor(auth.getUser(student.id), req), { kind: 'class' });
   // A family child who is also a student (school without a plan): class wins, no family offer in class.
   q.run("INSERT INTO school_members(school_id, user_id, role, status, joined_at) VALUES (?,?,'student','active',?)", school.id, paid.child.id, Date.now());
