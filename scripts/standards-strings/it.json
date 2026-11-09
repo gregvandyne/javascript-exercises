@@ -1,0 +1,120 @@
+{
+  "fw": {
+    "csta": "Informatica (CSTA)",
+    "math": "Common Core Matematica",
+    "ela": "Common Core Inglese (ELA)"
+  },
+  "picker": "Quadro di standard",
+  "notice": "Common Core State Standards, usati con la licenza pubblica CCSS.",
+  "class": {
+    "lead": "Quali standard Common Core copre questa classe con le lezioni assegnate, i giochi di Impara che contengono, i giochi dal vivo e i corsi, e come va ogni studente. Calcolato dal lavoro già registrato: non si raccoglie nulla di nuovo.",
+    "grade": "Classe",
+    "covered": "Solo gli standard coperti",
+    "allOf": "Tutti gli standard di {grade}",
+    "summaryH": "Copertura per classe",
+    "summary": "{covered} standard coperti su {total}"
+  },
+  "cols": {
+    "standard": "Standard",
+    "sources": "Coperto da",
+    "practiced": "Esercitato",
+    "checked": "Domande",
+    "rubric": "Rubrica",
+    "needsLook": "Da guardare",
+    "last": "Ultimo",
+    "status": "Stato",
+    "level": "Livello"
+  },
+  "status": {
+    "notYet": "Non ancora",
+    "covered": "Coperto",
+    "practiced": "Esercitato",
+    "checked": "Verificato",
+    "meets": "Raggiunto"
+  },
+  "level": {
+    "none": "Nessuna prova",
+    "practiced": "Esercitato",
+    "developing": "In sviluppo",
+    "meets": "Raggiunto"
+  },
+  "checkedVal": "{pct}% · risposte: {answered} · studenti: {students}",
+  "rubricVal": "{pct}% · {count} valutati",
+  "rubricBest": "migliore {pct}% · {count} valutati",
+  "mine": "{right} giuste su {answered}",
+  "src": {
+    "live": "giochi dal vivo: {count}"
+  },
+  "legend": {
+    "h": "Come leggerlo",
+    "sources": "Coperto da: le lezioni assegnate con lo standard (o con un passo o un gioco di Impara che lo esercita), i giochi dal vivo che lo hanno chiesto (Tug of Math Live alla sua classe, serie di domande che portano il codice) e i corsi in cui sono i tuoi studenti.",
+    "practiced": "Esercitato: studenti che hanno finito un'attività che esercita lo standard. Vuol dire che l'hanno fatta, non che lo padroneggiano.",
+    "checked": "Domande: risposte giuste sulle domande risposte sullo standard (quiz delle lezioni, giochi dal vivo, verifiche di Number Quest).",
+    "rubric": "Rubrica: punteggi di rubrica sullo standard, come parte del punteggio massimo. Compaiono quando le rubriche portano standard Common Core.",
+    "meets": "Raggiunto: uno studente raggiunge uno standard con almeno l'80% di risposte giuste su 3 o più domande, o un punteggio di rubrica di almeno due terzi. La classe lo raggiunge quando lo raggiunge l'80% dei suoi studenti.",
+    "needs": "Da guardare: studenti che hanno risposto a 2 o più domande sullo standard senza nessuna giusta. Lo vedono solo i docenti."
+  },
+  "empty": {
+    "title": "Ancora nessuno standard Common Core",
+    "text": "Assegna standard alle tue lezioni, o assegna lezioni con giochi di Impara come Sum Racer, Fraction Factory o Word Trail, e compariranno qui."
+  },
+  "csvCols": {
+    "code": "Codice",
+    "grade": "Classe",
+    "domain": "Dominio",
+    "statement": "Enunciato",
+    "sources": "Coperto da",
+    "practiced": "Esercitato (studenti)",
+    "students": "Studenti nella classe",
+    "pct": "% giuste",
+    "answered": "Domande risposte",
+    "checkedStudents": "Studenti con risposte",
+    "rubric": "% rubrica",
+    "meets": "Studenti che lo raggiungono",
+    "needsLook": "Da guardare (studenti)",
+    "last": "Ultima attività",
+    "status": "Stato"
+  },
+  "lesson": {
+    "title": "Standard",
+    "lead": "Assegna a questa lezione, o a uno dei suoi passi, gli standard Common Core su cui lavora. Compaiono nella scheda Standard di ogni classe a cui è assegnata.",
+    "back": "Torna alla lezione",
+    "current": "Standard assegnati",
+    "none": "Ancora nessuno standard assegnato.",
+    "whole": "Tutta la lezione",
+    "stepN": "Passo {n}: {title}",
+    "remove": "Togli",
+    "removeLabel": "Togli {code}",
+    "removed": "{code} tolto",
+    "add": "Aggiungi",
+    "addLabel": "Aggiungi {code}",
+    "added": "{code} aggiunto",
+    "addTo": "Aggiungi a",
+    "find": "Trova standard",
+    "search": "Cerca",
+    "searchHint": "Un codice come 3.OA.C.7, o parole come fractions",
+    "searchHintEla": "Un codice come RL.3.2, o parole come main idea",
+    "domain": "Dominio",
+    "domainAll": "Tutti i domini",
+    "gradeAny": "Tutte le classi",
+    "results": "Standard: {count}",
+    "more": "Sono mostrati i primi {shown}: restringi la ricerca per vedere il resto.",
+    "noResults": "Nessuno standard corrisponde. Prova un'altra classe, un altro dominio o un'altra parola.",
+    "tagged": "Assegnato",
+    "open": "Assegna standard",
+    "view": "Vedi gli standard",
+    "editorNone": "Ancora nessuno standard Common Core assegnato.",
+    "onSteps": "Standard assegnati ai passi: {count}",
+    "gameCodes": "Standard {framework} che questo gioco esercita"
+  },
+  "errors": {
+    "badCode": "Questo non è un codice Common Core.",
+    "badStep": "Questo passo non è in questa lezione.",
+    "tooMany": "Una lezione può avere fino a 60 standard.",
+    "badFramework": "Scegli Common Core Matematica o Inglese."
+  },
+  "learn": {
+    "label": "Standard",
+    "hint": "es. 3.OA o RF.K"
+  }
+}

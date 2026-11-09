@@ -7026,5 +7026,125 @@
       "allGames": "Ver todo lo que pueden jugar los alumnos",
       "openLive": "Abrir el juego en vivo"
     }
+  },
+  "standards": {
+    "fw": {
+      "csta": "Informática (CSTA)",
+      "math": "Common Core Matemáticas",
+      "ela": "Common Core Lengua (ELA)"
+    },
+    "picker": "Marco de estándares",
+    "notice": "Common Core State Standards, usados bajo la licencia pública de CCSS.",
+    "class": {
+      "lead": "Qué estándares Common Core cubre esta clase con sus lecciones asignadas, los juegos de Aprender que incluyen, los juegos en vivo y los cursos, y cómo va cada estudiante. Se calcula con el trabajo ya registrado: no se recoge nada nuevo.",
+      "grade": "Grado",
+      "covered": "Solo los estándares cubiertos",
+      "allOf": "Todos los estándares de {grade}",
+      "summaryH": "Cobertura por grado",
+      "summary": "{covered} de {total} estándares cubiertos"
+    },
+    "cols": {
+      "standard": "Estándar",
+      "sources": "Cubierto por",
+      "practiced": "Practicado",
+      "checked": "Preguntas",
+      "rubric": "Rúbrica",
+      "needsLook": "Necesita atención",
+      "last": "Último",
+      "status": "Estado",
+      "level": "Nivel"
+    },
+    "status": {
+      "notYet": "Aún no",
+      "covered": "Cubierto",
+      "practiced": "Practicado",
+      "checked": "Comprobado",
+      "meets": "Logrado"
+    },
+    "level": {
+      "none": "Sin evidencia",
+      "practiced": "Practicado",
+      "developing": "En desarrollo",
+      "meets": "Logrado"
+    },
+    "checkedVal": "{pct}% · respuestas: {answered} · estudiantes: {students}",
+    "rubricVal": "{pct}% · {count} evaluados",
+    "rubricBest": "mejor {pct}% · {count} evaluados",
+    "mine": "{right} de {answered} bien",
+    "src": {
+      "live": "juegos en vivo: {count}"
+    },
+    "legend": {
+      "h": "Cómo leerlo",
+      "sources": "Cubierto por: las lecciones asignadas etiquetadas con el estándar (o con un paso o un juego de Aprender que lo practica), los juegos en vivo que preguntaron sobre él (Tug of Math Live en su grado, conjuntos de preguntas cuyas preguntas llevan el código) y los cursos en los que están tus estudiantes.",
+      "practiced": "Practicado: estudiantes que terminaron una actividad que practica el estándar. Significa que la hicieron, no que lo dominan.",
+      "checked": "Preguntas: respuestas correctas de las respondidas sobre el estándar (cuestionarios de lecciones, juegos en vivo, comprobaciones de Number Quest).",
+      "rubric": "Rúbrica: puntuaciones de rúbrica sobre el estándar, como parte de la puntuación máxima. Aparecen cuando las rúbricas llevan estándares Common Core.",
+      "meets": "Logrado: un estudiante logra un estándar con al menos un 80% de aciertos en 3 o más preguntas, o una puntuación de rúbrica de al menos dos tercios. La clase lo logra cuando lo logra el 80% de sus estudiantes.",
+      "needs": "Necesita atención: estudiantes que respondieron 2 o más preguntas sobre el estándar y no acertaron ninguna. Solo lo ven los docentes."
+    },
+    "empty": {
+      "title": "Aún no hay estándares Common Core",
+      "text": "Etiqueta tus lecciones con estándares, o asigna lecciones con juegos de Aprender como Sum Racer, Fraction Factory o Word Trail, y aparecerán aquí."
+    },
+    "csvCols": {
+      "code": "Código",
+      "grade": "Grado",
+      "domain": "Dominio",
+      "statement": "Enunciado",
+      "sources": "Cubierto por",
+      "practiced": "Practicado (estudiantes)",
+      "students": "Estudiantes en la clase",
+      "pct": "% de aciertos",
+      "answered": "Preguntas respondidas",
+      "checkedStudents": "Estudiantes con respuestas",
+      "rubric": "% de rúbrica",
+      "meets": "Estudiantes que lo logran",
+      "needsLook": "Necesita atención (estudiantes)",
+      "last": "Última actividad",
+      "status": "Estado"
+    },
+    "lesson": {
+      "title": "Estándares",
+      "lead": "Etiqueta esta lección, o uno de sus pasos, con los estándares Common Core que trabaja. Aparecen en la pestaña Estándares de cada clase a la que está asignada.",
+      "back": "Volver a la lección",
+      "current": "Estándares etiquetados",
+      "none": "Aún no hay estándares etiquetados.",
+      "whole": "Toda la lección",
+      "stepN": "Paso {n}: {title}",
+      "remove": "Quitar",
+      "removeLabel": "Quitar {code}",
+      "removed": "{code} quitado",
+      "add": "Añadir",
+      "addLabel": "Añadir {code}",
+      "added": "{code} añadido",
+      "addTo": "Añadir a",
+      "find": "Buscar estándares",
+      "search": "Buscar",
+      "searchHint": "Un código como 3.OA.C.7, o palabras como fractions",
+      "searchHintEla": "Un código como RL.3.2, o palabras como main idea",
+      "domain": "Dominio",
+      "domainAll": "Todos los dominios",
+      "gradeAny": "Todos los grados",
+      "results": "Estándares: {count}",
+      "more": "Se muestran los primeros {shown}: afina la búsqueda para ver el resto.",
+      "noResults": "Ningún estándar coincide. Prueba otro grado, dominio o palabra.",
+      "tagged": "Etiquetado",
+      "open": "Etiquetar estándares",
+      "view": "Ver estándares",
+      "editorNone": "Aún no hay estándares Common Core etiquetados.",
+      "onSteps": "Estándares etiquetados en pasos: {count}",
+      "gameCodes": "Estándares de {framework} que practica este juego"
+    },
+    "errors": {
+      "badCode": "Ese no es un código Common Core.",
+      "badStep": "Ese paso no está en esta lección.",
+      "tooMany": "Una lección puede tener hasta 60 estándares.",
+      "badFramework": "Elige Common Core Matemáticas o Lengua."
+    },
+    "learn": {
+      "label": "Estándar",
+      "hint": "p. ej. 3.OA o RF.K"
+    }
   }
 }

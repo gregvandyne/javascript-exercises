@@ -7026,5 +7026,125 @@
       "allGames": "生徒が遊べるものをすべて見る",
       "openLive": "開いているライブゲームへ"
     }
+  },
+  "standards": {
+    "fw": {
+      "csta": "コンピュータサイエンス（CSTA）",
+      "math": "Common Core 算数・数学",
+      "ela": "Common Core 英語（ELA）"
+    },
+    "picker": "基準の種類",
+    "notice": "Common Core State Standards は CCSS パブリックライセンスのもとで使用しています。",
+    "class": {
+      "lead": "このクラスが、割り当てたレッスンとその中の学習ゲーム、ライブゲーム、コースで、どの Common Core 基準をカバーしているか、生徒一人ひとりがどうかを示します。すでに記録された学習から計算し、新しいデータは集めません。",
+      "grade": "学年",
+      "covered": "カバー済みの基準のみ",
+      "allOf": "{grade}のすべての基準",
+      "summaryH": "学年ごとのカバー",
+      "summary": "{total} 件中 {covered} 件をカバー"
+    },
+    "cols": {
+      "standard": "基準",
+      "sources": "カバーしたもの",
+      "practiced": "練習",
+      "checked": "問題",
+      "rubric": "ルーブリック",
+      "needsLook": "要確認",
+      "last": "最終",
+      "status": "状況",
+      "level": "レベル"
+    },
+    "status": {
+      "notYet": "まだ",
+      "covered": "カバー済み",
+      "practiced": "練習済み",
+      "checked": "確認済み",
+      "meets": "達成"
+    },
+    "level": {
+      "none": "記録なし",
+      "practiced": "練習済み",
+      "developing": "発展中",
+      "meets": "達成"
+    },
+    "checkedVal": "{pct}% · 回答 {answered} · 生徒 {students}",
+    "rubricVal": "{pct}% · 採点 {count}",
+    "rubricBest": "最高 {pct}% · 採点 {count}",
+    "mine": "{answered} 問中 {right} 問正解",
+    "src": {
+      "live": "ライブゲーム {count}"
+    },
+    "legend": {
+      "h": "見かた",
+      "sources": "カバーしたもの：その基準のタグが付いた割り当て済みレッスン（または基準を練習するステップや学習ゲーム）、その基準について出題したライブゲーム（学年に合わせた Tug of Math Live、問題にコードが付いた問題セット）、生徒が受けているコース。",
+      "practiced": "練習：その基準を練習する活動を終えた生徒。やったという意味で、習得したという意味ではありません。",
+      "checked": "問題：その基準についての問題のうち正解した数（レッスンのクイズ、ライブゲーム、Number Quest のチェック）。",
+      "rubric": "ルーブリック：その基準のルーブリック得点（満点に対する割合）。ルーブリックに Common Core 基準が付くと表示されます。",
+      "meets": "達成：3 問以上で 80% 以上正解するか、ルーブリックで 3 分の 2 以上を取ると、その生徒は基準を達成です。生徒の 80% が達成するとクラスとして達成です。",
+      "needs": "要確認：その基準の問題に 2 問以上答えて 1 問も正解しなかった生徒。先生だけに表示されます。"
+    },
+    "empty": {
+      "title": "Common Core 基準はまだありません",
+      "text": "レッスンに基準のタグを付けるか、Sum Racer、Fraction Factory、Word Trail などの学習ゲームが入ったレッスンを割り当てると、ここに表示されます。"
+    },
+    "csvCols": {
+      "code": "コード",
+      "grade": "学年",
+      "domain": "領域",
+      "statement": "内容",
+      "sources": "カバーしたもの",
+      "practiced": "練習（生徒数）",
+      "students": "クラスの生徒数",
+      "pct": "正解率 %",
+      "answered": "回答した問題数",
+      "checkedStudents": "回答した生徒数",
+      "rubric": "ルーブリック %",
+      "meets": "達成した生徒数",
+      "needsLook": "要確認（生徒数）",
+      "last": "最終の活動",
+      "status": "状況"
+    },
+    "lesson": {
+      "title": "基準",
+      "lead": "このレッスン、またはそのステップに、取り組む Common Core 基準のタグを付けます。割り当てたすべてのクラスの「基準」タブに表示されます。",
+      "back": "レッスンにもどる",
+      "current": "タグ付けした基準",
+      "none": "まだ基準のタグはありません。",
+      "whole": "レッスン全体",
+      "stepN": "ステップ {n}：{title}",
+      "remove": "外す",
+      "removeLabel": "{code} を外す",
+      "removed": "{code} を外しました",
+      "add": "追加",
+      "addLabel": "{code} を追加",
+      "added": "{code} を追加しました",
+      "addTo": "追加先",
+      "find": "基準をさがす",
+      "search": "検索",
+      "searchHint": "3.OA.C.7 のようなコード、または fractions などの単語",
+      "searchHintEla": "RL.3.2 のようなコード、または main idea などの単語",
+      "domain": "領域",
+      "domainAll": "すべての領域",
+      "gradeAny": "すべての学年",
+      "results": "基準 {count} 件",
+      "more": "最初の {shown} 件を表示しています。検索をしぼると残りが見られます。",
+      "noResults": "合う基準がありません。別の学年、領域、単語で試してください。",
+      "tagged": "タグ付け済み",
+      "open": "基準のタグを付ける",
+      "view": "基準を見る",
+      "editorNone": "まだ Common Core 基準のタグはありません。",
+      "onSteps": "ステップに付けた基準 {count} 件",
+      "gameCodes": "このゲームで練習する {framework} の基準"
+    },
+    "errors": {
+      "badCode": "Common Core のコードではありません。",
+      "badStep": "そのステップはこのレッスンにありません。",
+      "tooMany": "1 つのレッスンに付けられる基準は 60 件までです。",
+      "badFramework": "Common Core の算数・数学か英語を選んでください。"
+    },
+    "learn": {
+      "label": "基準",
+      "hint": "例：3.OA、RF.K"
+    }
   }
 }

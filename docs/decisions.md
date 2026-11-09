@@ -3307,3 +3307,51 @@ geared towards conversion … 14 day free trial … very futuristic … parallax
   for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
 - **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
   parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.
+
+## Standards beyond computer science: Common Core Math and ELA (9 Nov 2026)
+Owner: "Build all of those suggestions" (teacher portal: grading and curriculum tools). This stream: standards.
+- **Data:** server/standards/ccss-math.json (Mathematics K-8: 229 standards + sub-standards, codes in the form Number
+  Quest already cites, `3.OA.C.7`, `3.MD.C.7a`) and ccss-ela.json (ELA K-8: RL, RI, RF (K-5), W, SL, L; `RL.3.1`,
+  `RF.K.3c`). Official statements, built once by scripts/build-ccss.js from the npm package @weo-edu/standards 0.1.6
+  (MIT; the corestandards.org text). Cluster letters come from Number Quest's cluster registry. Dropped on purpose: W.2.4
+  and W.2.10 ("begins in grade 3"; the source filled them with grade 3's text), anchor (CCR) and 6-12 literacy
+  (RH/RST/WHST) standards. server/standards/ccss.js reads them (normId accepts `CCSS.MATH.CONTENT.…` and `3.MD.C.7.A`);
+  frameworks.js lists CSTA, CCSS Math, CCSS ELA (the ids never overlap).
+- **License notice:** "© Copyright 2010. National Governors Association Center for Best Practices and Council of Chief
+  State School Officers. All rights reserved." is shown (in English) wherever Common Core standards are listed: the
+  class tab, the lesson's standards page, staff Learn cards, the CSV's last line and the JSON (`notice`).
+- **Official tags** (server/standards/official-tags.js, accurate and conservative): Sum Racer by track (1.OA.C.6,
+  2.NBT.B.5, 3.OA.C.7, 3.NBT.A.1, 4.NBT.B.4); Tug of Math by grade (the game's own TugGen kinds; grade 4's mixed
+  expressions and grade 8's powers of 2 left untagged); Fraction Factory (2.G.A.3, 3.NF.A.1-3, 4.NF.A.1-2, 4.NF.B.3);
+  Word Trail (RF.K.3c, RF.1.3g, RF.2.3f, RF.3.3d); Shark Plank (RF.K.1d, RF.K.3a); Word Peek (L.3.2f, L.4.2d). No codes
+  for Word Hunt, Doodle Hoot or the any-subject quiz games (their questions' own `cat` decides). Number Quest: each
+  step's **primary** codes from units.json. Tug of Math Live: the grade in the run's starter id. A lesson's Tug of Math
+  step counts only its lesson's grade (never all eight). Maths starter sets in Oomba Live are not saved with the run,
+  so they are not counted.
+- **Teacher tags:** table `lesson_standards` (migration 0064: lesson_id, step_id '' = whole lesson, framework, code,
+  added_by, created_at), only Common Core (CSTA tags stay on lesson_steps.standards as before); up to 60 per lesson;
+  only whoever can edit the lesson (owner, school admins); copied with the lesson (onto the copy's steps), deleted with
+  the step or lesson. Page `/teach/lessons/:id/standards` (picker by framework, grade, domain and words; "Add to" the
+  whole lesson or a step) linked from the lesson editor's new 🎯 Standards panel; step cards show their codes and the
+  codes their official game practises. Colleagues who can see a shared lesson see its tags read-only.
+- **Class tab:** framework chips on `/class/:id/standards` (no `fw` = the CSTA tab, unchanged below the chips;
+  `?fw=ccss-math|ccss-ela` = services/standards-ccss.js `classView`). Coverage per code: assigned lessons (their tags,
+  their official games), live runs in the class, courses the class's students are in; a summary of top-level codes
+  covered per grade; "every grade N standard" view; one student's levels; CSV (counts only, no names);
+  `GET /api/classes/:id/standards?fw=`. Mastery from work already recorded, nothing new stored: practised (a finished
+  tagged step / official game / Number Quest step), questions (quiz items by their `cat` code, else the step's or
+  lesson's tags; live items the same; a whole Tug run's correct/answered; Number Quest's 3-question check), rubric.
+  A student meets with ≥ 80% right over ≥ 3 answers or a rubric score ≥ 2/3 of its maximum; the class with 80% of its
+  students (the CSTA rule). Levels: none / practised / developing / meets.
+- **Rubrics interface:** `registerRubricSource(fn)` in services/standards-ccss.js. fn({ classId, framework, studentIds })
+  returns [{ userId, code, score, max, at }]; bad rows, unknown codes and other students are ignored, a throwing source
+  is skipped. The rubrics stream registers one; this module reads none of its tables.
+- **Learn (staff only):** the codes under each official game card and `?std=` (a code or its start, e.g. `3.OA`,
+  `RF.K`) to filter; kids and visitors never see codes and the parameter is ignored for them.
+- **Who may see what:** class pages / CSV / JSON: the class's teachers and school admins (S.canManageClass); tag APIs:
+  L.canEditLesson; search and game-codes APIs: school staff. Everyone else 404 (signed out: sign-in page / 401).
+  Students see nothing new. Words under `standards.*` in all 13 languages (scripts/i18n-add-standards.mjs from
+  scripts/standards-strings/); codes and statements stay in English (`lang="en"`).
+- **No new env vars, no owner action needed.**
+- **Checks:** tests/unit/standards-ccss.test.js (data, tags, coverage, mastery, rubric sources, authorization),
+  tests/e2e/teach-standards.spec.js (flow, a student's 404s, 360/390/1280, light/dark, Hebrew).

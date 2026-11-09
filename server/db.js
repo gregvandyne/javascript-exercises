@@ -758,6 +758,12 @@ export const MIGRATIONS = [
     conn.exec(`UPDATE games SET shelf='play' WHERE source='seed' AND slug NOT IN (${list})`);
     conn.exec("UPDATE games SET featured=2 WHERE source='seed' AND slug='jungle-cup' AND featured>0");
   }],
+  // Standards beyond computer science (docs/decisions.md, 9 Nov 2026): a teacher's Common Core tags on their own lessons
+  // and steps (step_id '' = the whole lesson). framework 'ccss-math' | 'ccss-ela'; code checked against
+  // server/standards/ccss-*.json before it is stored. Deleted and copied with the lesson (services/lessons.js).
+  ['0064_lesson_standards', `CREATE TABLE IF NOT EXISTS lesson_standards (lesson_id TEXT NOT NULL, step_id TEXT NOT NULL DEFAULT '',
+      framework TEXT NOT NULL, code TEXT NOT NULL, added_by TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (lesson_id, step_id, framework, code)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS lesson_standards_code ON lesson_standards(framework, code);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

@@ -1,0 +1,120 @@
+{
+  "fw": {
+    "csta": "Computação (CSTA)",
+    "math": "Common Core Matemática",
+    "ela": "Common Core Inglês (ELA)"
+  },
+  "picker": "Conjunto de padrões",
+  "notice": "Common Core State Standards, usados sob a licença pública CCSS.",
+  "class": {
+    "lead": "Quais padrões Common Core esta turma cobre com as lições atribuídas, os jogos de Aprender que elas têm, os jogos ao vivo e os cursos, e como cada estudante está indo. Calculado a partir do trabalho já registrado: nada novo é coletado.",
+    "grade": "Ano",
+    "covered": "Só os padrões cobertos",
+    "allOf": "Todos os padrões de {grade}",
+    "summaryH": "Cobertura por ano",
+    "summary": "{covered} de {total} padrões cobertos"
+  },
+  "cols": {
+    "standard": "Padrão",
+    "sources": "Coberto por",
+    "practiced": "Praticado",
+    "checked": "Perguntas",
+    "rubric": "Rubrica",
+    "needsLook": "Precisa de atenção",
+    "last": "Último",
+    "status": "Situação",
+    "level": "Nível"
+  },
+  "status": {
+    "notYet": "Ainda não",
+    "covered": "Coberto",
+    "practiced": "Praticado",
+    "checked": "Verificado",
+    "meets": "Atingido"
+  },
+  "level": {
+    "none": "Sem evidência",
+    "practiced": "Praticado",
+    "developing": "Em desenvolvimento",
+    "meets": "Atingido"
+  },
+  "checkedVal": "{pct}% · respostas: {answered} · estudantes: {students}",
+  "rubricVal": "{pct}% · {count} avaliados",
+  "rubricBest": "melhor {pct}% · {count} avaliados",
+  "mine": "{right} de {answered} certas",
+  "src": {
+    "live": "jogos ao vivo: {count}"
+  },
+  "legend": {
+    "h": "Como ler",
+    "sources": "Coberto por: as lições atribuídas marcadas com o padrão (ou com uma etapa ou um jogo de Aprender que o pratica), os jogos ao vivo que perguntaram sobre ele (Tug of Math Live no seu ano, conjuntos de perguntas que levam o código) e os cursos em que seus estudantes estão.",
+    "practiced": "Praticado: estudantes que terminaram uma atividade que pratica o padrão. Quer dizer que fizeram, não que dominam.",
+    "checked": "Perguntas: respostas certas entre as perguntas respondidas sobre o padrão (quizzes das lições, jogos ao vivo, verificações do Number Quest).",
+    "rubric": "Rubrica: pontuações de rubrica no padrão, como parte da pontuação máxima. Aparecem quando as rubricas levam padrões Common Core.",
+    "meets": "Atingido: um estudante atinge um padrão com pelo menos 80% de acertos em 3 ou mais perguntas, ou uma pontuação de rubrica de pelo menos dois terços. A turma atinge quando 80% dos estudantes atingem.",
+    "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso."
+  },
+  "empty": {
+    "title": "Ainda não há padrões Common Core",
+    "text": "Marque suas lições com padrões, ou atribua lições com jogos de Aprender como Sum Racer, Fraction Factory ou Word Trail, e eles aparecem aqui."
+  },
+  "csvCols": {
+    "code": "Código",
+    "grade": "Ano",
+    "domain": "Domínio",
+    "statement": "Enunciado",
+    "sources": "Coberto por",
+    "practiced": "Praticado (estudantes)",
+    "students": "Estudantes na turma",
+    "pct": "% de acertos",
+    "answered": "Perguntas respondidas",
+    "checkedStudents": "Estudantes com respostas",
+    "rubric": "% da rubrica",
+    "meets": "Estudantes que atingem",
+    "needsLook": "Precisa de atenção (estudantes)",
+    "last": "Última atividade",
+    "status": "Situação"
+  },
+  "lesson": {
+    "title": "Padrões",
+    "lead": "Marque esta lição, ou uma das etapas, com os padrões Common Core que ela trabalha. Eles aparecem na aba Padrões de cada turma a que ela foi atribuída.",
+    "back": "Voltar à lição",
+    "current": "Padrões marcados",
+    "none": "Ainda não há padrões marcados.",
+    "whole": "A lição toda",
+    "stepN": "Etapa {n}: {title}",
+    "remove": "Remover",
+    "removeLabel": "Remover {code}",
+    "removed": "{code} removido",
+    "add": "Adicionar",
+    "addLabel": "Adicionar {code}",
+    "added": "{code} adicionado",
+    "addTo": "Adicionar a",
+    "find": "Encontrar padrões",
+    "search": "Buscar",
+    "searchHint": "Um código como 3.OA.C.7, ou palavras como fractions",
+    "searchHintEla": "Um código como RL.3.2, ou palavras como main idea",
+    "domain": "Domínio",
+    "domainAll": "Todos os domínios",
+    "gradeAny": "Todos os anos",
+    "results": "Padrões: {count}",
+    "more": "Mostrando os primeiros {shown}: refine a busca para ver o resto.",
+    "noResults": "Nenhum padrão corresponde. Tente outro ano, domínio ou palavra.",
+    "tagged": "Marcado",
+    "open": "Marcar padrões",
+    "view": "Ver padrões",
+    "editorNone": "Ainda não há padrões Common Core marcados.",
+    "onSteps": "Padrões marcados em etapas: {count}",
+    "gameCodes": "Padrões de {framework} que este jogo pratica"
+  },
+  "errors": {
+    "badCode": "Esse não é um código Common Core.",
+    "badStep": "Essa etapa não está nesta lição.",
+    "tooMany": "Uma lição pode ter até 60 padrões.",
+    "badFramework": "Escolha Common Core Matemática ou Inglês."
+  },
+  "learn": {
+    "label": "Padrão",
+    "hint": "ex.: 3.OA ou RF.K"
+  }
+}

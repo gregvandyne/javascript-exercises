@@ -7027,5 +7027,125 @@
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen"
     }
+  },
+  "standards": {
+    "fw": {
+      "csta": "Informatica (CSTA)",
+      "math": "Common Core Rekenen",
+      "ela": "Common Core Engels (ELA)"
+    },
+    "picker": "Standaardenkader",
+    "notice": "Common Core State Standards, gebruikt onder de openbare CCSS-licentie.",
+    "class": {
+      "lead": "Welke Common Core-standaarden deze klas dekt met de toegewezen lessen, de Leer-spellen daarin, live spellen en cursussen, en hoe elke leerling ervoor staat. Berekend uit werk dat al is vastgelegd: er wordt niets nieuws verzameld.",
+      "grade": "Leerjaar",
+      "covered": "Alleen gedekte standaarden",
+      "allOf": "Alle standaarden van {grade}",
+      "summaryH": "Dekking per leerjaar",
+      "summary": "{covered} van {total} standaarden gedekt"
+    },
+    "cols": {
+      "standard": "Standaard",
+      "sources": "Gedekt door",
+      "practiced": "Geoefend",
+      "checked": "Vragen",
+      "rubric": "Rubric",
+      "needsLook": "Even kijken",
+      "last": "Laatst",
+      "status": "Status",
+      "level": "Niveau"
+    },
+    "status": {
+      "notYet": "Nog niet",
+      "covered": "Gedekt",
+      "practiced": "Geoefend",
+      "checked": "Gecontroleerd",
+      "meets": "Behaald"
+    },
+    "level": {
+      "none": "Geen bewijs",
+      "practiced": "Geoefend",
+      "developing": "In ontwikkeling",
+      "meets": "Behaald"
+    },
+    "checkedVal": "{pct}% · antwoorden: {answered} · leerlingen: {students}",
+    "rubricVal": "{pct}% · {count} beoordeeld",
+    "rubricBest": "beste {pct}% · {count} beoordeeld",
+    "mine": "{right} van {answered} goed",
+    "src": {
+      "live": "live spellen: {count}"
+    },
+    "legend": {
+      "h": "Zo lees je het",
+      "sources": "Gedekt door: de toegewezen lessen met de standaard (of met een stap of Leer-spel dat hem oefent), live spellen die ernaar vroegen (Tug of Math Live op zijn leerjaar, vragensets waarvan de vragen de code dragen) en de cursussen waarin je leerlingen zitten.",
+      "practiced": "Geoefend: leerlingen die een activiteit hebben afgemaakt die de standaard oefent. Dat betekent dat ze hem deden, niet dat ze hem beheersen.",
+      "checked": "Vragen: goede antwoorden van de beantwoorde vragen over de standaard (lesquizzen, live spellen, Number Quest-checks).",
+      "rubric": "Rubric: rubricscores op de standaard, als deel van de hoogste score. Zichtbaar zodra rubrics Common Core-standaarden dragen.",
+      "meets": "Behaald: een leerling behaalt een standaard met minstens 80% goed bij 3 of meer vragen, of een rubricscore van minstens twee derde. De klas behaalt hem als 80% van de leerlingen hem behaalt.",
+      "needs": "Even kijken: leerlingen die 2 of meer vragen over de standaard beantwoordden en er geen goed hadden. Alleen leraren zien dit."
+    },
+    "empty": {
+      "title": "Nog geen Common Core-standaarden",
+      "text": "Geef je lessen standaarden, of wijs lessen toe met Leer-spellen zoals Sum Racer, Fraction Factory of Word Trail, en ze verschijnen hier."
+    },
+    "csvCols": {
+      "code": "Code",
+      "grade": "Leerjaar",
+      "domain": "Domein",
+      "statement": "Omschrijving",
+      "sources": "Gedekt door",
+      "practiced": "Geoefend (leerlingen)",
+      "students": "Leerlingen in de klas",
+      "pct": "% goed",
+      "answered": "Beantwoorde vragen",
+      "checkedStudents": "Leerlingen met antwoorden",
+      "rubric": "Rubric %",
+      "meets": "Leerlingen die hem behalen",
+      "needsLook": "Even kijken (leerlingen)",
+      "last": "Laatste activiteit",
+      "status": "Status"
+    },
+    "lesson": {
+      "title": "Standaarden",
+      "lead": "Geef deze les, of een van de stappen, de Common Core-standaarden waaraan ze werkt. Ze verschijnen op het tabblad Standaarden van elke klas waaraan de les is toegewezen.",
+      "back": "Terug naar de les",
+      "current": "Gekoppelde standaarden",
+      "none": "Nog geen standaarden gekoppeld.",
+      "whole": "Hele les",
+      "stepN": "Stap {n}: {title}",
+      "remove": "Weghalen",
+      "removeLabel": "{code} weghalen",
+      "removed": "{code} weggehaald",
+      "add": "Toevoegen",
+      "addLabel": "{code} toevoegen",
+      "added": "{code} toegevoegd",
+      "addTo": "Toevoegen aan",
+      "find": "Standaarden zoeken",
+      "search": "Zoeken",
+      "searchHint": "Een code zoals 3.OA.C.7, of woorden zoals fractions",
+      "searchHintEla": "Een code zoals RL.3.2, of woorden zoals main idea",
+      "domain": "Domein",
+      "domainAll": "Alle domeinen",
+      "gradeAny": "Alle leerjaren",
+      "results": "Standaarden: {count}",
+      "more": "De eerste {shown} worden getoond: verfijn de zoekopdracht voor de rest.",
+      "noResults": "Geen standaard past. Probeer een ander leerjaar, domein of woord.",
+      "tagged": "Gekoppeld",
+      "open": "Standaarden koppelen",
+      "view": "Standaarden bekijken",
+      "editorNone": "Nog geen Common Core-standaarden gekoppeld.",
+      "onSteps": "Standaarden op stappen: {count}",
+      "gameCodes": "{framework}-standaarden die dit spel oefent"
+    },
+    "errors": {
+      "badCode": "Dat is geen Common Core-code.",
+      "badStep": "Die stap hoort niet bij deze les.",
+      "tooMany": "Een les kan tot 60 standaarden hebben.",
+      "badFramework": "Kies Common Core Rekenen of Engels."
+    },
+    "learn": {
+      "label": "Standaard",
+      "hint": "bijv. 3.OA of RF.K"
+    }
   }
 }

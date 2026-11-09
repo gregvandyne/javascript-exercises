@@ -1,0 +1,120 @@
+{
+  "fw": {
+    "csta": "Computer science (CSTA)",
+    "math": "Common Core Math",
+    "ela": "Common Core ELA"
+  },
+  "picker": "Standards framework",
+  "notice": "Common Core State Standards, used under the CCSS public license.",
+  "class": {
+    "lead": "Which Common Core standards this class covers through its assigned lessons, the Learn games in them, live games and courses, and how each student is doing. Built from work already recorded: nothing new is collected.",
+    "grade": "Grade",
+    "covered": "Covered standards only",
+    "allOf": "Every {grade} standard",
+    "summaryH": "Coverage by grade",
+    "summary": "{covered} of {total} standards covered"
+  },
+  "cols": {
+    "standard": "Standard",
+    "sources": "Covered by",
+    "practiced": "Practiced",
+    "checked": "Questions",
+    "rubric": "Rubric",
+    "needsLook": "Needs a look",
+    "last": "Last",
+    "status": "Status",
+    "level": "Level"
+  },
+  "status": {
+    "notYet": "Not yet",
+    "covered": "Covered",
+    "practiced": "Practiced",
+    "checked": "Checked",
+    "meets": "Meets"
+  },
+  "level": {
+    "none": "No evidence",
+    "practiced": "Practiced",
+    "developing": "Developing",
+    "meets": "Meets"
+  },
+  "checkedVal": "{pct}% · {answered, plural, one {# answer} other {# answers}} · {students, plural, one {# student} other {# students}}",
+  "rubricVal": "{pct}% · {count} scored",
+  "rubricBest": "best {pct}% · {count} scored",
+  "mine": "{right} of {answered} right",
+  "src": {
+    "live": "{count, plural, one {# live game} other {# live games}}"
+  },
+  "legend": {
+    "h": "How to read it",
+    "sources": "Covered by: the assigned lessons tagged with the standard (or with a step or a Learn game that practices it), live games that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
+    "practiced": "Practiced: students who finished an activity that practices the standard. It means they did it, not mastery.",
+    "checked": "Questions: right answers out of answered questions about the standard (lesson quizzes, live games, Number Quest checks).",
+    "rubric": "Rubric: rubric scores on the standard, as a share of the top score. Shown once rubrics are tagged with Common Core standards.",
+    "meets": "Meets: a student meets a standard with at least 80% right over 3 or more questions, or a rubric score of at least two thirds. The class meets it when 80% of its students do.",
+    "needs": "Needs a look: students who answered 2 or more questions about the standard and got none right. Only teachers see this."
+  },
+  "empty": {
+    "title": "No Common Core standards yet",
+    "text": "Tag your lessons with standards, or assign lessons with Learn games like Sum Racer, Fraction Factory or Word Trail, and they show up here."
+  },
+  "csvCols": {
+    "code": "Code",
+    "grade": "Grade",
+    "domain": "Domain",
+    "statement": "Statement",
+    "sources": "Covered by",
+    "practiced": "Practiced (students)",
+    "students": "Students in class",
+    "pct": "Right %",
+    "answered": "Questions answered",
+    "checkedStudents": "Students with answers",
+    "rubric": "Rubric %",
+    "meets": "Students meeting",
+    "needsLook": "Needs a look (students)",
+    "last": "Last activity",
+    "status": "Status"
+  },
+  "lesson": {
+    "title": "Standards",
+    "lead": "Tag this lesson, or one of its steps, with the Common Core standards it works on. They show up on the Standards tab of every class it is assigned to.",
+    "back": "Back to the lesson",
+    "current": "Tagged standards",
+    "none": "No standards tagged yet.",
+    "whole": "Whole lesson",
+    "stepN": "Step {n}: {title}",
+    "remove": "Remove",
+    "removeLabel": "Remove {code}",
+    "removed": "{code} removed",
+    "add": "Add",
+    "addLabel": "Add {code}",
+    "added": "{code} added",
+    "addTo": "Add to",
+    "find": "Find standards",
+    "search": "Search",
+    "searchHint": "A code like 3.OA.C.7, or words like fractions",
+    "searchHintEla": "A code like RL.3.2, or words like main idea",
+    "domain": "Domain",
+    "domainAll": "All domains",
+    "gradeAny": "All grades",
+    "results": "{count, plural, one {# standard} other {# standards}}",
+    "more": "Showing the first {shown}: narrow the search to see the rest.",
+    "noResults": "No standards match. Try another grade, domain or word.",
+    "tagged": "Tagged",
+    "open": "Tag standards",
+    "view": "See standards",
+    "editorNone": "No Common Core standards tagged yet.",
+    "onSteps": "{count, plural, one {# standard tagged on steps} other {# standards tagged on steps}}",
+    "gameCodes": "{framework} standards this game practices"
+  },
+  "errors": {
+    "badCode": "That is not a Common Core code.",
+    "badStep": "That step is not in this lesson.",
+    "tooMany": "A lesson can have up to 60 standards.",
+    "badFramework": "Pick Common Core Math or ELA."
+  },
+  "learn": {
+    "label": "Standard",
+    "hint": "e.g. 3.OA or RF.K"
+  }
+}
