@@ -131,11 +131,11 @@ test('everyone with a session keeps the home page they have today: kids, student
   assert.match((await call(auth.createGuest(), '/')).text, /class="doors"/, 'a guest still gets the doors');
 });
 
-test('Just Play: /play is today\'s guest home (the game rows), private to search engines; "/" without the switch is unchanged', async () => {
+test('Just Play: /play is the Play page (the game rows, no doors: the landing is the front door), private to search engines; "/" without the switch is unchanged', async () => {
   const p = await call(null, '/play');
   assert.equal(p.status, 200);
   assert.ok(!isLanding(p.text));
-  assert.match(p.text, /class="doors"/); assert.match(p.text, /<div id="play" class="home-play">/); assert.match(p.text, /class="rail/);
+  assert.doesNotMatch(p.text, /class="doors"/, 'Play has no doors: "/" is the front door'); assert.match(p.text, /<div id="play" class="home-play">/); assert.match(p.text, /class="rail/);
   assert.match(p.headers.get('x-robots-tag') || '', /noindex/, '/play is never indexed (seo.js PRIVATE_RE)');
   assert.equal((await call(null, '/play?x=1')).status, 200);
   assert.equal((await call(kid(), '/play')).status, 200, 'a kid with an account too');
