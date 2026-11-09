@@ -7026,5 +7026,145 @@
       "allGames": "Ver todo lo que pueden jugar los alumnos",
       "openLive": "Abrir el juego en vivo"
     }
+  },
+  "rubrics": {
+    "title": "Rúbricas",
+    "intro": "Rúbricas reutilizables: criterios en filas y niveles en columnas. Asigne una a una respuesta escrita, a un juego creado o a una lección entera, y evalúe a cada estudiante tocando un nivel.",
+    "mine": "Mis rúbricas",
+    "shared": "Compartidas por colegas",
+    "new": "Nueva rúbrica",
+    "newPlaceholder": "Título de la rúbrica, p. ej. Párrafo argumentativo",
+    "untitled": "Nueva rúbrica",
+    "empty": "Aún no hay rúbricas",
+    "emptyText": "Cree una rúbrica, deje que la IA redacte una o añada una rúbrica inicial de CS Quest.",
+    "sharedEmpty": "Aún no hay rúbricas compartidas",
+    "sharedEmptyText": "Cuando sus colegas compartan una rúbrica con la escuela, aparecerá aquí para que la copie.",
+    "criterion": "Criterio",
+    "criteriaN": "{count, plural, one {# criterio} other {# criterios}}",
+    "levelsN": "{count, plural, one {# nivel} other {# niveles}}",
+    "pointsN": "{count, plural, one {# punto} other {# puntos}}",
+    "maxPoints": "Sobre {points}",
+    "usedN": "{count, plural, one {Usada en # lección} other {Usada en # lecciones}}",
+    "usedIn": "Usada en",
+    "notUsed": "Todavía no está en ninguna lección. Asígnela desde un paso de una lección o desde sus detalles.",
+    "wholeLesson": "Lección entera",
+    "stepsN": "{count, plural, one {# paso} other {# pasos}}",
+    "print": "Imprimir",
+    "printName": "Nombre:",
+    "printPoints": "Puntos: ____ / {max}",
+    "backToRubric": "Volver a la rúbrica",
+    "preview": "Vista previa de la tabla",
+    "copy": "Hacer una copia",
+    "copyMine": "Copiar a mis rúbricas",
+    "copyTitle": "{title} (copia)",
+    "copiedNotice": "Esta es su copia. Cámbiela como quiera: la original no cambia.",
+    "share": "Compartir con mi escuela",
+    "unshare": "Dejar de compartir",
+    "sharedStatus": "Compartida con su escuela",
+    "sharedToast": "Compartida con el personal de su escuela",
+    "unsharedToast": "Ya no está compartida",
+    "delete": "Eliminar rúbrica",
+    "deleteConfirm": "¿Eliminar la rúbrica {title}? Las evaluaciones ya hechas se quedan como estaban.",
+    "deleteUsedConfirm": "{count, plural, one {{title} está en # lección. ¿Quitarla y eliminar la rúbrica? Las evaluaciones ya hechas se quedan como estaban.} other {{title} está en # lecciones. ¿Quitarla de ellas y eliminar la rúbrica? Las evaluaciones ya hechas se quedan como estaban.}}",
+    "deletedToast": "Rúbrica eliminada",
+    "levelNames": {
+      "notYet": "Todavía no",
+      "beginning": "Inicial",
+      "developing": "En desarrollo",
+      "secure": "Logrado",
+      "excellent": "Excelente"
+    },
+    "template": {
+      "understanding": "Comprensión",
+      "explaining": "Explica su razonamiento",
+      "care": "Cuidado y esfuerzo",
+      "level0": "Todavía no se ve",
+      "level1": "Se ve en parte, con ayuda",
+      "level2": "Se ve con claridad",
+      "level3": "Se ve con profundidad y detalle"
+    },
+    "editor": {
+      "title": "Título de la rúbrica",
+      "description": "Notas para docentes",
+      "levels": "Niveles",
+      "levelsHint": "Las columnas: un nombre y los puntos que vale cada una.",
+      "levelLabel": "Nivel {n}",
+      "points": "Puntos",
+      "newLevel": "Nuevo nivel",
+      "addLevel": "Añadir un nivel",
+      "removeLevel": "Quitar el nivel {name}",
+      "criteria": "Criterios",
+      "criteriaHint": "Las filas: lo que busca y lo que muestra el trabajo en cada nivel.",
+      "criterionN": "Criterio {n}",
+      "descPlaceholder": "Lo que muestra el trabajo en este nivel",
+      "addCriterion": "Añadir un criterio",
+      "removeCriterion": "Quitar el criterio {name}"
+    },
+    "ai": {
+      "button": "Redactar una rúbrica con IA",
+      "task": "¿Qué hacen los estudiantes?",
+      "taskPlaceholder": "p. ej. escribir un párrafo que explique por qué su juego es justo",
+      "levels": "Niveles",
+      "make": "Redactar mi rúbrica",
+      "note": "Solo se envía a la IA lo que escribe aquí, nunca el trabajo ni los nombres de sus estudiantes. Después puede cambiarlo todo.",
+      "done": "Aquí está el borrador de la IA. Léalo y cambie lo que quiera antes de usarlo.",
+      "template": "La IA no está disponible ahora, así que aquí tiene una rúbrica sencilla para editar."
+    },
+    "starters": {
+      "title": "Rúbricas iniciales",
+      "intro": "El ticket de salida de cada lección de CS Quest trae una rúbrica (niveles 0 a 3, en inglés). Añada una a sus rúbricas para usarla con cualquier lección, o adáptela.",
+      "add": "Añadir a mis rúbricas",
+      "addFor": "Añadir {title} a mis rúbricas",
+      "added": "Añadida a sus rúbricas. Cámbiela como quiera.",
+      "fromLesson": "De la lección de CS Quest {title}."
+    },
+    "attach": {
+      "step": "Rúbrica",
+      "lesson": "Rúbrica para toda la lección",
+      "lessonTitle": "Rúbrica de toda la lección",
+      "lessonHint": "Evalúe a cada estudiante en toda la lección desde su página de progreso.",
+      "none": "Sin rúbrica",
+      "hint": "Evalúe con ella las respuestas o los juegos de este paso.",
+      "noneYet": "Todavía no tiene rúbricas.",
+      "library": "Rúbricas"
+    },
+    "score": {
+      "label": "Evaluar con {title}",
+      "total": "{points} puntos",
+      "notScored": "Sin evaluar",
+      "comment": "Añadir un comentario",
+      "commentFor": "Comentario sobre {name}",
+      "given": "el nivel dado",
+      "changed": "La rúbrica cambió desde esta evaluación. Vuelva a evaluar para usar la nueva versión.",
+      "scored": "Evaluado",
+      "lessonHint": "Toque un nivel en cada criterio, añada comentarios si quiere y guarde. Cada estudiante ve solo su propio resultado."
+    },
+    "student": {
+      "fromTeacherLesson": "De tu profe: toda la lección"
+    },
+    "gradebook": {
+      "key": "puntos de rúbrica",
+      "cellTitle": "Rúbrica: {points} puntos ({pct} %)"
+    },
+    "csv": {
+      "points": "{title} (puntos de rúbrica)",
+      "percent": "{title} (% de rúbrica)",
+      "totalPoints": "Puntos de rúbrica",
+      "totalPercent": "% de rúbrica"
+    },
+    "errors": {
+      "notFound": "No encontramos esa rúbrica.",
+      "rubricTitle": "Póngale un título a la rúbrica.",
+      "rubricLevels": "Una rúbrica tiene de 2 a 6 niveles.",
+      "rubricCriteria": "Una rúbrica tiene de 1 a 12 criterios.",
+      "rubricLabel": "Póngale nombre a cada nivel.",
+      "rubricPoints": "Los puntos son un número de 0 a 100.",
+      "rubricName": "Póngale nombre a cada criterio.",
+      "tooManyRubrics": "Tiene el máximo de rúbricas en esta escuela. Elimine una que ya no use.",
+      "inUse": "{count, plural, one {Esta rúbrica está en # lección.} other {Esta rúbrica está en # lecciones.}}",
+      "task": "Diga qué hacen los estudiantes.",
+      "aiFailed": "La IA no pudo redactar una rúbrica ahora. Inténtelo de nuevo en un minuto.",
+      "pick": "Elija una de sus propias rúbricas (copie antes la de un colega)."
+    }
   }
 }

@@ -7026,5 +7026,145 @@
       "allGames": "Voir tout ce que les élèves peuvent jouer",
       "openLive": "Ouvrir le jeu en direct"
     }
+  },
+  "rubrics": {
+    "title": "Grilles d'évaluation",
+    "intro": "Des grilles réutilisables : les critères en lignes, les niveaux en colonnes. Associez-en une à une réponse écrite, à un jeu créé ou à toute une leçon, puis évaluez chaque élève en touchant un niveau.",
+    "mine": "Mes grilles",
+    "shared": "Partagées par des collègues",
+    "new": "Nouvelle grille",
+    "newPlaceholder": "Titre de la grille, p. ex. Paragraphe argumentatif",
+    "untitled": "Nouvelle grille",
+    "empty": "Pas encore de grille",
+    "emptyText": "Créez une grille, laissez l'IA en rédiger une, ou ajoutez une grille de départ de CS Quest.",
+    "sharedEmpty": "Pas encore de grille partagée",
+    "sharedEmptyText": "Quand des collègues partagent une grille avec l'école, elle apparaît ici pour que vous puissiez la copier.",
+    "criterion": "Critère",
+    "criteriaN": "{count, plural, one {# critère} other {# critères}}",
+    "levelsN": "{count, plural, one {# niveau} other {# niveaux}}",
+    "pointsN": "{count, plural, one {# point} other {# points}}",
+    "maxPoints": "Sur {points}",
+    "usedN": "{count, plural, one {Utilisée dans # leçon} other {Utilisée dans # leçons}}",
+    "usedIn": "Utilisée dans",
+    "notUsed": "Associée à aucune leçon pour l'instant. Associez-la depuis une étape d'une leçon ou ses détails.",
+    "wholeLesson": "Toute la leçon",
+    "stepsN": "{count, plural, one {# étape} other {# étapes}}",
+    "print": "Imprimer",
+    "printName": "Nom :",
+    "printPoints": "Points : ____ / {max}",
+    "backToRubric": "Retour à la grille",
+    "preview": "Aperçu de la grille",
+    "copy": "Faire une copie",
+    "copyMine": "Copier dans mes grilles",
+    "copyTitle": "{title} (copie)",
+    "copiedNotice": "Voici votre copie. Modifiez-la comme vous voulez : l'original ne change pas.",
+    "share": "Partager avec mon école",
+    "unshare": "Ne plus partager",
+    "sharedStatus": "Partagée avec votre école",
+    "sharedToast": "Partagée avec l'équipe de votre école",
+    "unsharedToast": "N'est plus partagée",
+    "delete": "Supprimer la grille",
+    "deleteConfirm": "Supprimer la grille {title} ? Les évaluations déjà données restent telles quelles.",
+    "deleteUsedConfirm": "{count, plural, one {{title} est associée à # leçon. La retirer et supprimer la grille ? Les évaluations déjà données restent telles quelles.} other {{title} est associée à # leçons. La retirer de ces leçons et supprimer la grille ? Les évaluations déjà données restent telles quelles.}}",
+    "deletedToast": "Grille supprimée",
+    "levelNames": {
+      "notYet": "Pas encore",
+      "beginning": "Débutant",
+      "developing": "En progrès",
+      "secure": "Acquis",
+      "excellent": "Excellent"
+    },
+    "template": {
+      "understanding": "Compréhension",
+      "explaining": "Explication du raisonnement",
+      "care": "Soin et effort",
+      "level0": "Pas encore visible",
+      "level1": "En partie, avec de l'aide",
+      "level2": "Clairement montré",
+      "level3": "Montré avec profondeur et précision"
+    },
+    "editor": {
+      "title": "Titre de la grille",
+      "description": "Notes pour les enseignants",
+      "levels": "Niveaux",
+      "levelsHint": "Les colonnes : un nom et le nombre de points de chacune.",
+      "levelLabel": "Niveau {n}",
+      "points": "Points",
+      "newLevel": "Nouveau niveau",
+      "addLevel": "Ajouter un niveau",
+      "removeLevel": "Retirer le niveau {name}",
+      "criteria": "Critères",
+      "criteriaHint": "Les lignes : ce que vous observez, et ce que le travail montre à chaque niveau.",
+      "criterionN": "Critère {n}",
+      "descPlaceholder": "Ce que le travail montre à ce niveau",
+      "addCriterion": "Ajouter un critère",
+      "removeCriterion": "Retirer le critère {name}"
+    },
+    "ai": {
+      "button": "Rédiger une grille avec l'IA",
+      "task": "Que font les élèves ?",
+      "taskPlaceholder": "p. ex. écrire un paragraphe expliquant pourquoi leur jeu est juste",
+      "levels": "Niveaux",
+      "make": "Rédiger ma grille",
+      "note": "Seul ce que vous tapez ici est envoyé à l'IA, jamais le travail ni les noms de vos élèves. Vous pourrez tout modifier ensuite.",
+      "done": "Voici le brouillon de l'IA. Relisez-le et modifiez ce que vous voulez avant de l'utiliser.",
+      "template": "L'IA n'est pas disponible pour le moment : voici une grille simple à modifier."
+    },
+    "starters": {
+      "title": "Grilles de départ",
+      "intro": "Le ticket de sortie de chaque leçon CS Quest a sa grille (niveaux 0 à 3, en anglais). Ajoutez-en une à vos grilles pour l'utiliser avec n'importe quelle leçon, ou adaptez-la.",
+      "add": "Ajouter à mes grilles",
+      "addFor": "Ajouter {title} à mes grilles",
+      "added": "Ajoutée à vos grilles. Modifiez-la comme vous voulez.",
+      "fromLesson": "Tirée de la leçon CS Quest {title}."
+    },
+    "attach": {
+      "step": "Grille",
+      "lesson": "Grille pour toute la leçon",
+      "lessonTitle": "Grille de toute la leçon",
+      "lessonHint": "Évaluez chaque élève sur toute la leçon depuis sa page de progression.",
+      "none": "Pas de grille",
+      "hint": "Évaluez avec elle les réponses ou les jeux de cette étape.",
+      "noneYet": "Vous n'avez pas encore de grille.",
+      "library": "Grilles"
+    },
+    "score": {
+      "label": "Évaluer avec {title}",
+      "total": "{points} points",
+      "notScored": "Pas évalué",
+      "comment": "Ajouter un commentaire",
+      "commentFor": "Commentaire sur {name}",
+      "given": "le niveau donné",
+      "changed": "La grille a changé depuis cette évaluation. Évaluez à nouveau pour utiliser la nouvelle version.",
+      "scored": "Évalué",
+      "lessonHint": "Touchez un niveau pour chaque critère, ajoutez des commentaires si vous voulez, puis enregistrez. Chaque élève ne voit que son propre résultat."
+    },
+    "student": {
+      "fromTeacherLesson": "De ton prof : toute la leçon"
+    },
+    "gradebook": {
+      "key": "points de la grille",
+      "cellTitle": "Grille : {points} points ({pct} %)"
+    },
+    "csv": {
+      "points": "{title} (points de la grille)",
+      "percent": "{title} (% de la grille)",
+      "totalPoints": "Points des grilles",
+      "totalPercent": "% des grilles"
+    },
+    "errors": {
+      "notFound": "Nous n'avons pas trouvé cette grille.",
+      "rubricTitle": "Donnez un titre à la grille.",
+      "rubricLevels": "Une grille a de 2 à 6 niveaux.",
+      "rubricCriteria": "Une grille a de 1 à 12 critères.",
+      "rubricLabel": "Donnez un nom à chaque niveau.",
+      "rubricPoints": "Les points sont un nombre de 0 à 100.",
+      "rubricName": "Donnez un nom à chaque critère.",
+      "tooManyRubrics": "Vous avez le nombre maximum de grilles dans cette école. Supprimez-en une que vous n'utilisez plus.",
+      "inUse": "{count, plural, one {Cette grille est associée à # leçon.} other {Cette grille est associée à # leçons.}}",
+      "task": "Dites ce que font les élèves.",
+      "aiFailed": "L'IA n'a pas pu rédiger de grille pour l'instant. Réessayez dans une minute.",
+      "pick": "Choisissez une de vos propres grilles (copiez d'abord celle d'un collègue)."
+    }
   }
 }

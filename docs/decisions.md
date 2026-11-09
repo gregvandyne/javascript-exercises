@@ -3307,3 +3307,56 @@ geared towards conversion … 14 day free trial … very futuristic … parallax
   for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
 - **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
   parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.
+
+## Rubrics: reusable rubrics, scoring by tapping a level, points in the gradebook (9 Nov 2026)
+
+Teachers asked for proper grading tools: a rubric they write once and use on many lessons, scored quickly on a phone,
+with the points in the gradebook and the CSV, and the result shown to the student.
+
+**What a rubric is.** Levels (columns: a name and points, 2 to 6) × criteria (rows: a name and one descriptor per
+level, 1 to 12). Points are 0 to 100 in halves; the most a student can get is the top level's points for every
+criterion. Rubrics live in the school's lesson library (`/teach/rubrics`, the third tab of the library), in the
+teacher's own list, like lessons: `rubrics` table (migration `0063_rubrics`), `services/rubrics.js`,
+`routes/rubrics.js`, `views/rubrics.js`.
+
+**Library.** New rubric (three criteria × Beginning 1 · Developing 2 · Secure 3 · Excellent 4 to start from), an
+editor whose row buttons (add / remove a level or criterion, move a criterion) save what was typed and come back to the
+same row, a preview grid, a print view (`/teach/rubrics/:id/print`, black on white, name and points lines), copy,
+share with the school (colleagues see it in "Shared by colleagues" and copy it; they never edit it), delete.
+**Delete while in use** is refused (409 `inUse`) unless the request says `detach=1`; the page's Delete button says how
+many lessons it is on and sends `detach=1` after that confirm. Scores already given keep a snapshot of the rubric, so
+neither editing nor deleting a rubric ever changes a result (an edited rubric bumps `version`; a score from an older
+version is shown with "the rubric has changed since this was scored").
+
+**Starters.** CS Quest's exit-ticket rubric lines (`seed-lessons/cs-quest/lessons/*.json`, `exit.rubric` and step
+rubrics; 46 lessons) are offered as starter rubrics: "Add to my rubrics" makes a library rubric with levels Not yet 0 ·
+Beginning 1 · Developing 2 · Secure 3 and the lines' English descriptors. The CS Quest inline step rubric
+(`lesson_steps.rubric`, 0-3 marks that feed the Standards tab) is unchanged and works alongside: a step can carry both.
+
+**Draft with AI** (`services/rubric-ai.js`) uses the same path as the lesson "Draft with AI": the builder model through
+`builder/anthropic.js`, counted in the AI budget, JSON schema output. Only the task and grade the teacher typed are
+sent: never a student's name, answer, drawing or game. Without a key (or when the AI is resting) a template rubric in
+the teacher's language is made. Staff of the school only, 30 an hour.
+
+**Attaching.** `lesson_steps.rubric_id` on steps that collect work (a written question / exit ticket, a Studio build
+hand-in) and `lessons.rubric_id` for the whole lesson. A teacher attaches their own rubrics (school admins: any of the
+school's); a colleague's shared rubric is copied first. Copying a lesson keeps the copier's own rubrics attached and
+copies a colleague's rubric into the copier's library once (`copyLesson`).
+
+**Scoring.** On the lesson's progress page the review form of an answer or handed-in build shows the rubric: tap a
+level for each criterion (cards that wrap on phones; "Not scored" too), an optional comment per criterion, the written
+feedback, "Save and mark reviewed" (the existing review, then `rubric_scores`). The whole-lesson rubric gets its own
+section, one folded card per student, with feedback. The score is checked before anything is saved; the teachers of
+the class and school admins only, for students of the class only. `rubric_scores` keeps the picks, comments, points,
+most possible, the scorer and the snapshot.
+
+**Gradebook and CSV.** Each lesson cell shows "📏 points/most  %" for scored work, Overall shows the rubric percentage
+across scored lessons; the CSV adds "<lesson> (rubric points)" and "(rubric %)" columns for lessons with a rubric, then
+"Rubric points" and "Rubric %" totals (only when the class has rubrics, so CSVs without rubrics are as before). The
+percentage is of the work scored so far (unscored criteria count 0 in a score that exists; unscored work is left out).
+
+**Students** see their own result on the lesson page under "From your teacher": the feedback, the level given per
+criterion with its descriptor, the teacher's comments and the points; the whole lesson's result in its own panel. A
+student only ever gets their own rows (`scoresFor(classLesson, own id)`); nobody else (other teachers, other schools,
+students, kids, grown-ups, guests) can open a rubric page or API (404). Deleting a step, a lesson or a class deletes its
+scores; account merges move them.

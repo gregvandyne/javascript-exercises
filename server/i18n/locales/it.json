@@ -7027,5 +7027,145 @@
       "allGames": "Vedi tutto ciò a cui possono giocare gli studenti",
       "openLive": "Apri il gioco dal vivo"
     }
+  },
+  "rubrics": {
+    "title": "Rubriche di valutazione",
+    "intro": "Rubriche riutilizzabili: i criteri nelle righe, i livelli nelle colonne. Ne colleghi una a una risposta scritta, a un gioco costruito o a un'intera lezione, poi valuti ogni studente toccando un livello.",
+    "mine": "Le mie rubriche",
+    "shared": "Condivise dai colleghi",
+    "new": "Nuova rubrica",
+    "newPlaceholder": "Titolo della rubrica, es. Paragrafo argomentativo",
+    "untitled": "Nuova rubrica",
+    "empty": "Ancora nessuna rubrica",
+    "emptyText": "Crei una nuova rubrica, lasci che l'IA ne prepari una bozza, oppure aggiunga una rubrica di partenza da CS Quest.",
+    "sharedEmpty": "Ancora nessuna rubrica condivisa",
+    "sharedEmptyText": "Quando un collega condivide una rubrica con la scuola, comparirà qui e potrà copiarla.",
+    "criterion": "Criterio",
+    "criteriaN": "{count, plural, one {# criterio} other {# criteri}}",
+    "levelsN": "{count, plural, one {# livello} other {# livelli}}",
+    "pointsN": "{count, plural, one {# punto} other {# punti}}",
+    "maxPoints": "Su {points}",
+    "usedN": "{count, plural, one {Usata in # lezione} other {Usata in # lezioni}}",
+    "usedIn": "Usata in",
+    "notUsed": "Non ancora collegata a una lezione. La colleghi da un passaggio di una lezione o dai suoi dettagli.",
+    "wholeLesson": "Lezione intera",
+    "stepsN": "{count, plural, one {# passaggio} other {# passaggi}}",
+    "print": "Stampa",
+    "printName": "Nome:",
+    "printPoints": "Punti: ____ / {max}",
+    "backToRubric": "Torna alla rubrica",
+    "preview": "Anteprima della tabella",
+    "copy": "Crea una copia",
+    "copyMine": "Copia nelle mie rubriche",
+    "copyTitle": "{title} (copia)",
+    "copiedNotice": "Questa è la sua copia. La modifichi come vuole: l'originale resta com'era.",
+    "share": "Condividi con la mia scuola",
+    "unshare": "Non condividere più",
+    "sharedStatus": "Condivisa con la sua scuola",
+    "sharedToast": "Condivisa con il personale della scuola",
+    "unsharedToast": "Non più condivisa",
+    "delete": "Elimina rubrica",
+    "deleteConfirm": "Eliminare la rubrica {title}? Le valutazioni già date restano come erano.",
+    "deleteUsedConfirm": "{count, plural, one {{title} è collegata a # lezione. Toglierla ed eliminare la rubrica? Le valutazioni già date restano come erano.} other {{title} è collegata a # lezioni. Toglierla da queste ed eliminare la rubrica? Le valutazioni già date restano come erano.}}",
+    "deletedToast": "Rubrica eliminata",
+    "levelNames": {
+      "notYet": "Non ancora",
+      "beginning": "Iniziale",
+      "developing": "In via di sviluppo",
+      "secure": "Raggiunto",
+      "excellent": "Eccellente"
+    },
+    "template": {
+      "understanding": "Comprensione",
+      "explaining": "Spiega il proprio ragionamento",
+      "care": "Cura e impegno",
+      "level0": "Non ancora visibile",
+      "level1": "In parte, con aiuto",
+      "level2": "Mostrato chiaramente",
+      "level3": "Mostrato con profondità e dettagli"
+    },
+    "editor": {
+      "title": "Titolo della rubrica",
+      "description": "Note per gli insegnanti",
+      "levels": "Livelli",
+      "levelsHint": "Le colonne: un nome e i punti che vale ciascuna.",
+      "levelLabel": "Livello {n}",
+      "points": "Punti",
+      "newLevel": "Nuovo livello",
+      "addLevel": "Aggiungi un livello",
+      "removeLevel": "Togli il livello {name}",
+      "criteria": "Criteri",
+      "criteriaHint": "Le righe: cosa osserva e cosa mostra il lavoro a ogni livello.",
+      "criterionN": "Criterio {n}",
+      "descPlaceholder": "Cosa mostra il lavoro a questo livello",
+      "addCriterion": "Aggiungi un criterio",
+      "removeCriterion": "Togli il criterio {name}"
+    },
+    "ai": {
+      "button": "Prepara una rubrica con l'IA",
+      "task": "Cosa fanno gli studenti?",
+      "taskPlaceholder": "es. scrivere un paragrafo che spieghi perché il loro gioco è equo",
+      "levels": "Livelli",
+      "make": "Prepara la mia rubrica",
+      "note": "All'IA viene inviato solo ciò che scrive qui, mai il lavoro o i nomi dei suoi studenti. Potrà poi modificare tutto.",
+      "done": "Ecco la bozza dell'IA. La legga e cambi ciò che vuole prima di usarla.",
+      "template": "L'IA non è disponibile in questo momento: ecco una rubrica semplice da modificare."
+    },
+    "starters": {
+      "title": "Rubriche di partenza",
+      "intro": "Il biglietto di uscita di ogni lezione CS Quest ha la sua rubrica (livelli da 0 a 3, in inglese). Ne aggiunga una alle sue rubriche per usarla con qualsiasi lezione, o la adatti.",
+      "add": "Aggiungi alle mie rubriche",
+      "addFor": "Aggiungi {title} alle mie rubriche",
+      "added": "Aggiunta alle sue rubriche. La modifichi come vuole.",
+      "fromLesson": "Dalla lezione CS Quest {title}."
+    },
+    "attach": {
+      "step": "Rubrica",
+      "lesson": "Rubrica per tutta la lezione",
+      "lessonTitle": "Rubrica dell'intera lezione",
+      "lessonHint": "Valuti ogni studente sull'intera lezione dalla sua pagina dei progressi.",
+      "none": "Nessuna rubrica",
+      "hint": "Valuti con questa le risposte o i giochi di questo passaggio.",
+      "noneYet": "Non ha ancora rubriche.",
+      "library": "Rubriche"
+    },
+    "score": {
+      "label": "Valuta con {title}",
+      "total": "{points} punti",
+      "notScored": "Non valutato",
+      "comment": "Aggiungi un commento",
+      "commentFor": "Commento su {name}",
+      "given": "il livello assegnato",
+      "changed": "La rubrica è cambiata da questa valutazione. Valuti di nuovo per usare la nuova versione.",
+      "scored": "Valutato",
+      "lessonHint": "Tocchi un livello per ogni criterio, aggiunga commenti se vuole, poi salvi. Ogni studente vede solo il proprio risultato."
+    },
+    "student": {
+      "fromTeacherLesson": "Dal tuo insegnante: tutta la lezione"
+    },
+    "gradebook": {
+      "key": "punti della rubrica",
+      "cellTitle": "Rubrica: {points} punti ({pct}%)"
+    },
+    "csv": {
+      "points": "{title} (punti rubrica)",
+      "percent": "{title} (% rubrica)",
+      "totalPoints": "Punti rubrica",
+      "totalPercent": "% rubrica"
+    },
+    "errors": {
+      "notFound": "Non abbiamo trovato questa rubrica.",
+      "rubricTitle": "Dia un titolo alla rubrica.",
+      "rubricLevels": "Una rubrica ha da 2 a 6 livelli.",
+      "rubricCriteria": "Una rubrica ha da 1 a 12 criteri.",
+      "rubricLabel": "Dia un nome a ogni livello.",
+      "rubricPoints": "I punti sono un numero da 0 a 100.",
+      "rubricName": "Dia un nome a ogni criterio.",
+      "tooManyRubrics": "Ha il numero massimo di rubriche in questa scuola. Ne elimini una che non usa più.",
+      "inUse": "{count, plural, one {Questa rubrica è collegata a # lezione.} other {Questa rubrica è collegata a # lezioni.}}",
+      "task": "Dica cosa fanno gli studenti.",
+      "aiFailed": "L'IA non è riuscita a preparare una rubrica ora. Riprovi tra un minuto.",
+      "pick": "Scelga una delle sue rubriche (copi prima quella di un collega)."
+    }
   }
 }

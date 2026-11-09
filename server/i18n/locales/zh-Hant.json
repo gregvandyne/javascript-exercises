@@ -7026,5 +7026,145 @@
       "allGames": "看看學生能玩的所有遊戲",
       "openLive": "進入即時遊戲"
     }
+  },
+  "rubrics": {
+    "title": "評分規準",
+    "intro": "可重複使用的評分規準：每一列是評分項目，每一欄是表現等級。把規準連到書面回答、學生做的遊戲或整堂課，再點選等級為每位學生評分。",
+    "mine": "我的評分規準",
+    "shared": "同事分享的",
+    "new": "新增評分規準",
+    "newPlaceholder": "規準名稱，例如：說服性段落",
+    "untitled": "新評分規準",
+    "empty": "還沒有評分規準",
+    "emptyText": "新增一份規準、讓 AI 擬一份草稿，或從 CS Quest 加入入門規準。",
+    "sharedEmpty": "還沒有分享的評分規準",
+    "sharedEmptyText": "同事和學校分享評分規準後，會出現在這裡，你可以複製使用。",
+    "criterion": "評分項目",
+    "criteriaN": "{count, plural, other {# 個評分項目}}",
+    "levelsN": "{count, plural, other {# 個等級}}",
+    "pointsN": "{count, plural, other {# 分}}",
+    "maxPoints": "滿分 {points}",
+    "usedN": "{count, plural, other {用於 # 堂課}}",
+    "usedIn": "使用的課程",
+    "notUsed": "還沒有連到任何課程。可以從課程的步驟或課程詳細資料中連結。",
+    "wholeLesson": "整堂課",
+    "stepsN": "{count, plural, other {# 個步驟}}",
+    "print": "列印",
+    "printName": "姓名：",
+    "printPoints": "得分：____ / {max}",
+    "backToRubric": "回到評分規準",
+    "preview": "預覽表格",
+    "copy": "建立副本",
+    "copyMine": "複製到我的評分規準",
+    "copyTitle": "{title}（副本）",
+    "copiedNotice": "這是你的副本，可以隨意修改；原本的規準不會改變。",
+    "share": "與我的學校分享",
+    "unshare": "停止分享",
+    "sharedStatus": "已與你的學校分享",
+    "sharedToast": "已與學校的教職員分享",
+    "unsharedToast": "已停止分享",
+    "delete": "刪除評分規準",
+    "deleteConfirm": "要刪除評分規準「{title}」嗎？已經給出的評分會保持不變。",
+    "deleteUsedConfirm": "{count, plural, other {「{title}」連到 # 堂課。要移除並刪除這份規準嗎？已經給出的評分會保持不變。}}",
+    "deletedToast": "已刪除評分規準",
+    "levelNames": {
+      "notYet": "尚未達到",
+      "beginning": "起步",
+      "developing": "發展中",
+      "secure": "穩定",
+      "excellent": "優秀"
+    },
+    "template": {
+      "understanding": "理解",
+      "explaining": "說明自己的想法",
+      "care": "用心與努力",
+      "level0": "還看不出來",
+      "level1": "在協助下部分做到",
+      "level2": "清楚做到",
+      "level3": "深入且詳細地做到"
+    },
+    "editor": {
+      "title": "規準名稱",
+      "description": "給老師的備註",
+      "levels": "等級",
+      "levelsHint": "欄位：每個等級的名稱和分數。",
+      "levelLabel": "等級 {n}",
+      "points": "分數",
+      "newLevel": "新等級",
+      "addLevel": "新增等級",
+      "removeLevel": "移除等級「{name}」",
+      "criteria": "評分項目",
+      "criteriaHint": "列：你要看的重點，以及作品在每個等級的表現。",
+      "criterionN": "評分項目 {n}",
+      "descPlaceholder": "作品在這個等級的表現",
+      "addCriterion": "新增評分項目",
+      "removeCriterion": "移除評分項目「{name}」"
+    },
+    "ai": {
+      "button": "用 AI 擬評分規準",
+      "task": "學生要做什麼？",
+      "taskPlaceholder": "例如：寫一段話說明他們的遊戲為什麼公平",
+      "levels": "等級",
+      "make": "擬我的評分規準",
+      "note": "只會把你在這裡輸入的內容傳給 AI，絕不會傳送學生的作品或姓名。之後你可以修改所有內容。",
+      "done": "這是 AI 擬的草稿。使用前請先看過，並修改你想改的地方。",
+      "template": "目前無法使用 AI，這裡先提供一份簡單的規準讓你編輯。"
+    },
+    "starters": {
+      "title": "入門評分規準",
+      "intro": "每堂 CS Quest 課程的出場券都附有評分規準（0 到 3 級，英文）。把它加入你的規準，就能用在任何課程，也可以自行修改。",
+      "add": "加入我的評分規準",
+      "addFor": "把「{title}」加入我的評分規準",
+      "added": "已加入你的評分規準，可以隨意修改。",
+      "fromLesson": "出自 CS Quest 課程「{title}」。"
+    },
+    "attach": {
+      "step": "評分規準",
+      "lesson": "整堂課的評分規準",
+      "lessonTitle": "整堂課的評分規準",
+      "lessonHint": "在課程的進度頁面上，為每位學生的整堂課表現評分。",
+      "none": "不使用評分規準",
+      "hint": "用它來評這個步驟的回答或遊戲。",
+      "noneYet": "你還沒有評分規準。",
+      "library": "評分規準"
+    },
+    "score": {
+      "label": "用「{title}」評分",
+      "total": "{points} 分",
+      "notScored": "未評分",
+      "comment": "加上評語",
+      "commentFor": "對「{name}」的評語",
+      "given": "給出的等級",
+      "changed": "這次評分之後，評分規準有變動。請重新評分以使用新版本。",
+      "scored": "已評分",
+      "lessonHint": "為每個評分項目點選一個等級，需要的話加上評語，然後儲存。每位學生只會看到自己的結果。"
+    },
+    "student": {
+      "fromTeacherLesson": "老師給你的：整堂課"
+    },
+    "gradebook": {
+      "key": "評分規準分數",
+      "cellTitle": "評分規準：{points} 分（{pct}%）"
+    },
+    "csv": {
+      "points": "{title}（規準分數）",
+      "percent": "{title}（規準 %）",
+      "totalPoints": "規準分數",
+      "totalPercent": "規準 %"
+    },
+    "errors": {
+      "notFound": "找不到這份評分規準。",
+      "rubricTitle": "請為評分規準命名。",
+      "rubricLevels": "評分規準有 2 到 6 個等級。",
+      "rubricCriteria": "評分規準有 1 到 12 個評分項目。",
+      "rubricLabel": "請為每個等級命名。",
+      "rubricPoints": "分數是 0 到 100 之間的數字。",
+      "rubricName": "請為每個評分項目命名。",
+      "tooManyRubrics": "你在這所學校的評分規準已達上限。請刪除一份不再使用的。",
+      "inUse": "{count, plural, other {這份評分規準連到 # 堂課。}}",
+      "task": "請說明學生要做什麼。",
+      "aiFailed": "AI 目前無法擬出評分規準。請一分鐘後再試。",
+      "pick": "請選擇你自己的評分規準（同事的請先複製）。"
+    }
   }
 }

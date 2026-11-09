@@ -758,6 +758,28 @@ export const MIGRATIONS = [
     conn.exec(`UPDATE games SET shelf='play' WHERE source='seed' AND slug NOT IN (${list})`);
     conn.exec("UPDATE games SET featured=2 WHERE source='seed' AND slug='jungle-cup' AND featured>0");
   }],
+  // Rubrics (services/rubrics.js; docs/decisions.md "Rubrics"). rubrics: a teacher's reusable rubric in a school's lesson
+  // library: levels (JSON [{ label, points }], 2-6 columns) and criteria (JSON [{ name, descs: [one per level] }], 1-12
+  // rows); shared=1 lets the school's staff see and copy it; source says where it came from ('', 'ai', 'csq:<key>',
+  // 'copy:<id>'); version goes up on every edit. lessons.rubric_id / lesson_steps.rubric_id attach one to a whole lesson
+  // or to a step that collects work (question, build). rubric_scores: one row per assigned lesson, step ('' = the whole
+  // lesson) and student: the level picked per criterion (picks, JSON), per-criterion comments, the points and the most
+  // possible, and a snapshot of the rubric as it was scored (so editing or deleting the rubric never changes a result).
+  ['0063_rubrics', `
+    CREATE TABLE IF NOT EXISTS rubrics (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, owner_id TEXT NOT NULL, title TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '', levels TEXT NOT NULL, criteria TEXT NOT NULL, shared INTEGER NOT NULL DEFAULT 0,
+      source TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS rubrics_owner ON rubrics(owner_id, school_id);
+    CREATE INDEX IF NOT EXISTS rubrics_school ON rubrics(school_id, shared);
+    ALTER TABLE lessons ADD COLUMN rubric_id TEXT;
+    ALTER TABLE lesson_steps ADD COLUMN rubric_id TEXT;
+    CREATE INDEX IF NOT EXISTS lessons_rubric ON lessons(rubric_id);
+    CREATE INDEX IF NOT EXISTS lesson_steps_rubric ON lesson_steps(rubric_id);
+    CREATE TABLE IF NOT EXISTS rubric_scores (class_lesson_id TEXT NOT NULL, step_id TEXT NOT NULL DEFAULT '', user_id TEXT NOT NULL,
+      rubric_id TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1, snapshot TEXT NOT NULL, picks TEXT NOT NULL, comments TEXT NOT NULL DEFAULT '[]',
+      feedback TEXT NOT NULL DEFAULT '', points REAL NOT NULL DEFAULT 0, max_points REAL NOT NULL DEFAULT 0, scored_by TEXT,
+      scored_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id, user_id)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS rubric_scores_user ON rubric_scores(user_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

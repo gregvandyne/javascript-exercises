@@ -7026,5 +7026,145 @@
       "allGames": "生徒が遊べるものをすべて見る",
       "openLive": "開いているライブゲームへ"
     }
+  },
+  "rubrics": {
+    "title": "ルーブリック",
+    "intro": "くり返し使えるルーブリックです。行が評価の観点、列が段階です。記述式の回答、作ったゲーム、レッスン全体のいずれかに付けて、段階をタップして生徒一人ひとりを評価します。",
+    "mine": "自分のルーブリック",
+    "shared": "同僚が共有したもの",
+    "new": "新しいルーブリック",
+    "newPlaceholder": "ルーブリック名（例：意見文の段落）",
+    "untitled": "新しいルーブリック",
+    "empty": "まだルーブリックがありません",
+    "emptyText": "新しく作るか、AIに下書きを作らせるか、CS Quest のスターター ルーブリックを追加してください。",
+    "sharedEmpty": "共有されたルーブリックはまだありません",
+    "sharedEmptyText": "同僚が学校とルーブリックを共有すると、ここに表示され、コピーできます。",
+    "criterion": "観点",
+    "criteriaN": "{count, plural, other {観点 # 個}}",
+    "levelsN": "{count, plural, other {# 段階}}",
+    "pointsN": "{count, plural, other {# 点}}",
+    "maxPoints": "{points}満点",
+    "usedN": "{count, plural, other {# 件のレッスンで使用中}}",
+    "usedIn": "使用しているレッスン",
+    "notUsed": "まだどのレッスンにも付いていません。レッスンのステップか、レッスンの詳細から付けてください。",
+    "wholeLesson": "レッスン全体",
+    "stepsN": "{count, plural, other {# ステップ}}",
+    "print": "印刷",
+    "printName": "名前：",
+    "printPoints": "得点：____ / {max}",
+    "backToRubric": "ルーブリックに戻る",
+    "preview": "表をプレビュー",
+    "copy": "コピーを作る",
+    "copyMine": "自分のルーブリックにコピー",
+    "copyTitle": "{title}（コピー）",
+    "copiedNotice": "これはあなたのコピーです。自由に変更できます。元のルーブリックは変わりません。",
+    "share": "学校と共有",
+    "unshare": "共有をやめる",
+    "sharedStatus": "学校と共有中",
+    "sharedToast": "学校の教職員と共有しました",
+    "unsharedToast": "共有をやめました",
+    "delete": "ルーブリックを削除",
+    "deleteConfirm": "ルーブリック「{title}」を削除しますか？すでに付けた評価はそのまま残ります。",
+    "deleteUsedConfirm": "{count, plural, other {「{title}」は # 件のレッスンに付いています。外して削除しますか？すでに付けた評価はそのまま残ります。}}",
+    "deletedToast": "ルーブリックを削除しました",
+    "levelNames": {
+      "notYet": "まだ",
+      "beginning": "はじめ",
+      "developing": "成長中",
+      "secure": "できている",
+      "excellent": "とてもよい"
+    },
+    "template": {
+      "understanding": "理解",
+      "explaining": "考えの説明",
+      "care": "ていねいさと努力",
+      "level0": "まだ見られない",
+      "level1": "助けがあれば一部できる",
+      "level2": "はっきりできている",
+      "level3": "深く、くわしくできている"
+    },
+    "editor": {
+      "title": "ルーブリック名",
+      "description": "先生向けのメモ",
+      "levels": "段階",
+      "levelsHint": "列：段階の名前と、それぞれの点数。",
+      "levelLabel": "段階 {n}",
+      "points": "点数",
+      "newLevel": "新しい段階",
+      "addLevel": "段階を追加",
+      "removeLevel": "段階「{name}」を削除",
+      "criteria": "観点",
+      "criteriaHint": "行：見るポイントと、各段階で作品に見られること。",
+      "criterionN": "観点 {n}",
+      "descPlaceholder": "この段階で作品に見られること",
+      "addCriterion": "観点を追加",
+      "removeCriterion": "観点「{name}」を削除"
+    },
+    "ai": {
+      "button": "AIでルーブリックを下書き",
+      "task": "生徒は何をしますか？",
+      "taskPlaceholder": "例：自分のゲームが公平な理由を説明する段落を書く",
+      "levels": "段階",
+      "make": "ルーブリックを下書き",
+      "note": "AIに送られるのはここに入力した内容だけで、生徒の作品や名前は決して送られません。あとですべて変更できます。",
+      "done": "AIの下書きです。使う前に読んで、必要なところを変更してください。",
+      "template": "今はAIを使えないため、編集用のシンプルなルーブリックを用意しました。"
+    },
+    "starters": {
+      "title": "スターター ルーブリック",
+      "intro": "CS Quest の各レッスンの出口チケットにはルーブリックがあります（0〜3の段階、英語）。自分のルーブリックに追加すれば、どのレッスンでも使えます。自由に変更もできます。",
+      "add": "自分のルーブリックに追加",
+      "addFor": "「{title}」を自分のルーブリックに追加",
+      "added": "自分のルーブリックに追加しました。自由に変更できます。",
+      "fromLesson": "CS Quest のレッスン「{title}」より。"
+    },
+    "attach": {
+      "step": "ルーブリック",
+      "lesson": "レッスン全体のルーブリック",
+      "lessonTitle": "レッスン全体のルーブリック",
+      "lessonHint": "レッスンの進捗ページで、レッスン全体について生徒一人ひとりを評価します。",
+      "none": "ルーブリックなし",
+      "hint": "このステップの回答やゲームをこれで評価します。",
+      "noneYet": "まだルーブリックがありません。",
+      "library": "ルーブリック"
+    },
+    "score": {
+      "label": "「{title}」で評価",
+      "total": "{points} 点",
+      "notScored": "未評価",
+      "comment": "コメントを追加",
+      "commentFor": "「{name}」へのコメント",
+      "given": "付けた段階",
+      "changed": "この評価のあとでルーブリックが変わりました。新しい版を使うには評価し直してください。",
+      "scored": "評価済み",
+      "lessonHint": "観点ごとに段階をタップし、必要ならコメントを書いて保存します。生徒は自分の結果だけを見られます。"
+    },
+    "student": {
+      "fromTeacherLesson": "先生から：レッスン全体"
+    },
+    "gradebook": {
+      "key": "ルーブリックの点数",
+      "cellTitle": "ルーブリック：{points} 点（{pct}%）"
+    },
+    "csv": {
+      "points": "{title}（ルーブリック点数）",
+      "percent": "{title}（ルーブリック %）",
+      "totalPoints": "ルーブリック点数",
+      "totalPercent": "ルーブリック %"
+    },
+    "errors": {
+      "notFound": "そのルーブリックは見つかりませんでした。",
+      "rubricTitle": "ルーブリック名を入力してください。",
+      "rubricLevels": "ルーブリックの段階は2〜6個です。",
+      "rubricCriteria": "ルーブリックの観点は1〜12個です。",
+      "rubricLabel": "すべての段階に名前を付けてください。",
+      "rubricPoints": "点数は0〜100の数字です。",
+      "rubricName": "すべての観点に名前を付けてください。",
+      "tooManyRubrics": "この学校で作れるルーブリックの上限に達しました。使わなくなったものを削除してください。",
+      "inUse": "{count, plural, other {このルーブリックは # 件のレッスンに付いています。}}",
+      "task": "生徒が何をするか入力してください。",
+      "aiFailed": "今はAIがルーブリックを下書きできませんでした。1分後にもう一度お試しください。",
+      "pick": "自分のルーブリックを選んでください（同僚のものは先にコピーしてください）。"
+    }
   }
 }

@@ -21,6 +21,7 @@ function syncStepKind(sel) {
   const form = sel.closest('.stepgrid'); if (!form) return;
   form.dataset.kind = sel.value;
   form.querySelectorAll('[data-for-kind]').forEach(el => { el.hidden = el.dataset.forKind !== sel.value; });
+  form.querySelectorAll('[data-for-kinds]').forEach(el => { el.hidden = !el.dataset.forKinds.split(' ').includes(sel.value); });
 }
 document.addEventListener('change', e => { if (e.target.matches('.stepgrid select[name="kind"]')) syncStepKind(e.target); });
 document.querySelectorAll('.stepgrid select[name="kind"]').forEach(syncStepKind);

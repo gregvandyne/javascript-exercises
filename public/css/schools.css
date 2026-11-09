@@ -883,3 +883,97 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .th-breaks{grid-template-columns:repeat(2,minmax(0,1fr))}
   .th-breaks .th-tile{flex-direction:column;align-items:flex-start;text-align:start}
 }
+
+/* ---------- Rubrics (routes/rubrics.js, views/rubrics.js; docs/decisions.md "Rubrics") ---------- */
+.rb-intro{margin:0 0 var(--s3)}
+.rb-subtabs{margin-bottom:var(--s4)}
+.rb-subtabs>.chip[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.rb-subtabs+.libtools{margin-bottom:var(--s4)}
+#rubric-list{margin-top:var(--s4)}
+/* The read-only grid: criteria × levels. It scrolls inside its box when wide (phones), the page never does. */
+.rb-wrap{overflow-x:auto;max-width:100%}
+.rb-grid{min-width:min(100%,520px)}
+.rb-grid th,.rb-grid td{overflow-wrap:anywhere;min-width:7rem}
+.rb-grid thead th{text-transform:none;letter-spacing:0;font-size:.9rem;color:var(--text)}
+.rb-grid tbody th{text-transform:none;letter-spacing:0;font-size:.95rem;color:var(--text);font-weight:800}
+.rb-pts{display:block;font-weight:600;color:var(--muted);font-size:.82rem}
+.rb-grid td.rb-on{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.rb-mark{font-weight:800;color:var(--accent-ink);margin-inline-end:4px}
+/* Scoring: tap a level for each criterion (a card per level, wrapping on phones). */
+.rb-score{display:grid;gap:var(--s3);padding:var(--s3);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
+.rb-score-h{margin:0;display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.rb-crit{border:0;padding:0;margin:0;min-width:0;display:grid;gap:var(--s2)}
+.rb-crit>legend{padding:0;margin-bottom:var(--s2);font-weight:800;overflow-wrap:anywhere}
+.rb-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9.5rem),1fr));gap:var(--s2)}
+.rb-level{position:relative;display:flex;flex-direction:column;gap:4px;min-height:44px;padding:10px 12px;border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer;background:var(--card);min-width:0}
+.rb-level:hover{box-shadow:inset 0 0 0 2px var(--accent-line)}
+.rb-level input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.rb-level:has(input:checked){background:var(--accent-soft);box-shadow:inset 0 0 0 3px var(--accent-line)}
+.rb-level:has(input:focus-visible){outline:2px solid var(--accent-line);outline-offset:2px}
+.rb-lh{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;justify-content:space-between}
+.rb-lh .rb-pts{display:inline}
+.rb-ld{color:var(--text-2);overflow-wrap:anywhere}
+.rb-none{justify-content:center}
+.rb-cmt>summary{min-height:44px;display:inline-flex;align-items:center;cursor:pointer;font-weight:700;color:var(--text-2)}
+.rb-cmt[open]>summary{margin-bottom:var(--s2)}
+.rb-cmt textarea{width:100%}
+.ac-form>.rb-score+.input,.ac-form>.rb-score+label+.input{margin-top:var(--s2)}
+.st-pts{font-variant-numeric:tabular-nums}
+.gb-pts{display:block;margin-top:4px;font-size:.82rem;font-weight:700;color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+/* A student's result ("From your teacher"). */
+.fromteacher{gap:var(--s2)}
+.rb-result{display:grid;gap:var(--s2)}
+.rb-result-h{margin:0;display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.rb-result-list{display:grid;gap:var(--s2);margin:0}
+.rb-result-list>li{display:grid;gap:2px;padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card)}
+.rb-rn{font-weight:800;overflow-wrap:anywhere}
+.rb-rl{color:var(--accent-ink)}
+.rb-rc{white-space:pre-wrap;overflow-wrap:anywhere}
+#from-teacher>.feedback+.rb-result{margin-top:var(--s3)}
+/* The lesson editor: the step's rubric, and the Rubric select (question and build steps). */
+.sc-rubric{margin:0;font-weight:600}
+.stepgrid [data-for-kinds][hidden]{display:none!important}
+.f-rub{display:flex;flex-direction:column;gap:6px;margin-top:var(--s3)}
+.f-rub>label{font-weight:700}
+.f-rub .hint{font-size:.9rem;color:var(--muted)}
+.f-rub .hint a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+/* The rubric editor: levels (label + points), then a card per criterion with one descriptor per level. */
+.rb-editor{display:grid;gap:var(--s3)}
+.rb-editor>.formgrid{margin:0}
+.rb-h{margin:var(--s3) 0 0;font-size:1.15rem}
+.rb-h+p{margin:0}
+.rb-lvlist,.rb-crlist{display:grid;gap:var(--s3);margin:0}
+.rb-lvrow{display:grid;grid-template-columns:minmax(0,1fr) 6.5rem auto;gap:var(--s3);align-items:end;padding:var(--s3);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line)}
+.rb-lvrow>.field,.rb-crhead .field,.rb-descs .field{margin:0;min-width:0}
+.rb-x{width:44px;padding:0}
+.rb-crrow{display:grid;gap:var(--s3);padding:var(--s3);border-radius:var(--r-sm);box-shadow:inset 0 0 0 2px var(--line);scroll-margin-top:calc(var(--top) + var(--s4))}
+.rb-crhead{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:end}
+.rb-crhead>.grow{flex:1 1 220px}
+.rb-crhead>.acts{display:flex;gap:var(--s2);margin-inline-start:auto}
+.rb-descs{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}
+.rb-descs textarea{width:100%}
+.rb-editor>.btn{justify-self:start}
+.rb-save{display:flex;flex-wrap:wrap;gap:var(--s3);align-items:center;margin-top:var(--s2)}
+#levels{scroll-margin-top:calc(var(--top) + var(--s4))}
+.rb-preview>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:800}
+.rb-preview[open]>summary{margin-bottom:var(--s3)}
+.rb-danger{margin-top:var(--s4)}
+@media (max-width:520px){.rb-lvrow{grid-template-columns:minmax(0,1fr) 5.5rem}.rb-lvrow>.rb-x{grid-column:1/-1;justify-self:end}}
+/* Starters (CS Quest exit-ticket rubrics). */
+.rb-starter-list{display:grid;gap:var(--s2);margin:0}
+.rb-starter{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);align-items:center;justify-content:space-between;padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+.rb-starter:last-child{border-bottom:0}
+.rb-st-name{display:flex;flex-direction:column;gap:2px;flex:1 1 220px;min-width:0}
+.rb-starters+.rb-starters{margin-top:var(--s4)}
+/* Print view. */
+.rb-print h1{font-size:1.5rem;margin:0 0 var(--s2)}
+.rb-print-lines{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);justify-content:space-between;margin:var(--s3) 0}
+
+@media print{.rb-print .rb-wrap{overflow:visible}.rb-print .rb-grid{min-width:0;font-size:.85rem}.rb-print .rb-grid th,.rb-print .rb-grid td{border:1px solid #777;padding:6px;min-width:0}.rb-print .rb-pts{color:#333}}
+.lr-det>summary{min-height:44px;cursor:pointer;list-style-position:inside}
+.lr-det[open]>summary{margin-bottom:var(--s3)}
+.lr-det>summary::after{content:"▾";margin-inline-start:auto;color:var(--muted)}.lr-det[open]>summary::after{content:"▴"}
+.fromteacher,.rb-result,.rb-result-list,.rb-result-list>li,.rb-result-h{min-width:0;max-width:100%}.rb-result-list>li>*{min-width:0;overflow-wrap:anywhere}
+/* The student step header on small phones: the "Read it to me" button goes under the title when the row is full. */
+@media (max-width:420px){.sc-head:has(>.sc-read:not([hidden])){flex-wrap:wrap}.sc-head>.sc-title{min-width:0;flex:1 1 8rem}.sc-head>.sc-read{margin-inline-start:auto}}
+.rb-crhead>.acts .btn,.rb-lvrow>.rb-x{min-height:44px;height:44px;min-width:44px;width:44px;padding:0}

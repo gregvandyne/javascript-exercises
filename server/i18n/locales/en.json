@@ -7434,5 +7434,145 @@
       "dark": "Dark",
       "light": "Light"
     }
+  },
+  "rubrics": {
+    "title": "Rubrics",
+    "intro": "Reusable rubrics: criteria down the side, levels across the top. Attach one to a written answer, a build or a whole lesson, then score each student by tapping a level.",
+    "mine": "My rubrics",
+    "shared": "Shared by colleagues",
+    "new": "New rubric",
+    "newPlaceholder": "Rubric title, e.g. Persuasive paragraph",
+    "untitled": "New rubric",
+    "empty": "No rubrics yet",
+    "emptyText": "Make a new rubric, let the AI draft one, or add a starter rubric from CS Quest.",
+    "sharedEmpty": "No shared rubrics yet",
+    "sharedEmptyText": "When colleagues share a rubric with the school, it shows up here for you to copy.",
+    "criterion": "Criterion",
+    "criteriaN": "{count, plural, one {# criterion} other {# criteria}}",
+    "levelsN": "{count, plural, one {# level} other {# levels}}",
+    "pointsN": "{count, plural, one {# point} other {# points}}",
+    "maxPoints": "Out of {points}",
+    "usedN": "{count, plural, one {Used in # lesson} other {Used in # lessons}}",
+    "usedIn": "Used in",
+    "notUsed": "Not attached to a lesson yet. Attach it from a lesson's step or its details.",
+    "wholeLesson": "Whole lesson",
+    "stepsN": "{count, plural, one {# step} other {# steps}}",
+    "print": "Print",
+    "printName": "Name:",
+    "printPoints": "Points: ____ / {max}",
+    "backToRubric": "Back to the rubric",
+    "preview": "Preview the grid",
+    "copy": "Make a copy",
+    "copyMine": "Copy to my rubrics",
+    "copyTitle": "{title} (copy)",
+    "copiedNotice": "This is your copy. Change it as you like: the original stays as it was.",
+    "share": "Share with my school",
+    "unshare": "Stop sharing",
+    "sharedStatus": "Shared with your school",
+    "sharedToast": "Shared with your school's staff",
+    "unsharedToast": "Not shared any more",
+    "delete": "Delete rubric",
+    "deleteConfirm": "Delete the rubric {title}? Scores already given keep what they showed.",
+    "deleteUsedConfirm": "{count, plural, one {{title} is attached to # lesson. Take it off and delete the rubric? Scores already given keep what they showed.} other {{title} is attached to # lessons. Take it off them and delete the rubric? Scores already given keep what they showed.}}",
+    "deletedToast": "Rubric deleted",
+    "levelNames": {
+      "notYet": "Not yet",
+      "beginning": "Beginning",
+      "developing": "Developing",
+      "secure": "Secure",
+      "excellent": "Excellent"
+    },
+    "template": {
+      "understanding": "Understanding",
+      "explaining": "Explaining their thinking",
+      "care": "Care and effort",
+      "level0": "Not shown yet",
+      "level1": "Partly shown, with help",
+      "level2": "Clearly shown",
+      "level3": "Shown with depth and detail"
+    },
+    "editor": {
+      "title": "Rubric title",
+      "description": "Notes for teachers",
+      "levels": "Levels",
+      "levelsHint": "The columns: a name and the points each one is worth.",
+      "levelLabel": "Level {n}",
+      "points": "Points",
+      "newLevel": "New level",
+      "addLevel": "Add a level",
+      "removeLevel": "Remove the level {name}",
+      "criteria": "Criteria",
+      "criteriaHint": "The rows: what you look for, and what the work shows at each level.",
+      "criterionN": "Criterion {n}",
+      "descPlaceholder": "What the work shows at this level",
+      "addCriterion": "Add a criterion",
+      "removeCriterion": "Remove the criterion {name}"
+    },
+    "ai": {
+      "button": "Draft a rubric with AI",
+      "task": "What do the students do?",
+      "taskPlaceholder": "e.g. write a paragraph explaining why their game is fair",
+      "levels": "Levels",
+      "make": "Draft my rubric",
+      "note": "Only what you type here is sent to the AI, never your students' work or names. You can change everything afterwards.",
+      "done": "Here is your AI draft. Read it through and change anything before you use it.",
+      "template": "The AI is not available right now, so here is a simple starting rubric to edit."
+    },
+    "starters": {
+      "title": "Starter rubrics",
+      "intro": "Every CS Quest lesson's exit ticket comes with a rubric (levels 0 to 3, in English). Add one to your rubrics to use it with any lesson, or change it to fit.",
+      "add": "Add to my rubrics",
+      "addFor": "Add {title} to my rubrics",
+      "added": "Added to your rubrics. Change it as you like.",
+      "fromLesson": "From the CS Quest lesson {title}."
+    },
+    "attach": {
+      "step": "Rubric",
+      "lesson": "Rubric for the whole lesson",
+      "lessonTitle": "Whole-lesson rubric",
+      "lessonHint": "Score each student on the whole lesson from its progress page.",
+      "none": "No rubric",
+      "hint": "Score the answers or builds for this step with it.",
+      "noneYet": "You have no rubrics yet.",
+      "library": "Rubrics"
+    },
+    "score": {
+      "label": "Score with {title}",
+      "total": "{points} points",
+      "notScored": "Not scored",
+      "comment": "Add a comment",
+      "commentFor": "Comment on {name}",
+      "given": "the level given",
+      "changed": "The rubric has changed since this was scored. Score it again to use the new version.",
+      "scored": "Scored",
+      "lessonHint": "Tap a level for each criterion, add comments if you like, then save. Each student sees only their own result."
+    },
+    "student": {
+      "fromTeacherLesson": "From your teacher: the whole lesson"
+    },
+    "gradebook": {
+      "key": "rubric points",
+      "cellTitle": "Rubric: {points} points ({pct}%)"
+    },
+    "csv": {
+      "points": "{title} (rubric points)",
+      "percent": "{title} (rubric %)",
+      "totalPoints": "Rubric points",
+      "totalPercent": "Rubric %"
+    },
+    "errors": {
+      "notFound": "We couldn't find that rubric.",
+      "rubricTitle": "Give the rubric a title.",
+      "rubricLevels": "A rubric has 2 to 6 levels.",
+      "rubricCriteria": "A rubric has 1 to 12 criteria.",
+      "rubricLabel": "Give every level a name.",
+      "rubricPoints": "Points are a number from 0 to 100.",
+      "rubricName": "Give every criterion a name.",
+      "tooManyRubrics": "You have the most rubrics allowed in this school. Delete one you no longer use.",
+      "inUse": "{count, plural, one {This rubric is attached to # lesson.} other {This rubric is attached to # lessons.}}",
+      "task": "Say what the students do.",
+      "aiFailed": "The AI could not draft a rubric just now. Please try again in a minute.",
+      "pick": "Pick one of your own rubrics (copy a colleague's first)."
+    }
   }
 }

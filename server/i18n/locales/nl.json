@@ -7027,5 +7027,145 @@
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen"
     }
+  },
+  "rubrics": {
+    "title": "Beoordelingsrubrics",
+    "intro": "Herbruikbare rubrics: criteria in de rijen, niveaus in de kolommen. Koppel er een aan een geschreven antwoord, een gebouwde game of een hele les en beoordeel elke leerling door op een niveau te tikken.",
+    "mine": "Mijn rubrics",
+    "shared": "Gedeeld door collega's",
+    "new": "Nieuwe rubric",
+    "newPlaceholder": "Titel van de rubric, bijv. Betogende alinea",
+    "untitled": "Nieuwe rubric",
+    "empty": "Nog geen rubrics",
+    "emptyText": "Maak een nieuwe rubric, laat de AI een opzet maken, of voeg een startrubric uit CS Quest toe.",
+    "sharedEmpty": "Nog geen gedeelde rubrics",
+    "sharedEmptyText": "Als collega's een rubric met de school delen, verschijnt die hier zodat je hem kunt kopiëren.",
+    "criterion": "Criterium",
+    "criteriaN": "{count, plural, one {# criterium} other {# criteria}}",
+    "levelsN": "{count, plural, one {# niveau} other {# niveaus}}",
+    "pointsN": "{count, plural, one {# punt} other {# punten}}",
+    "maxPoints": "Van de {points}",
+    "usedN": "{count, plural, one {Gebruikt in # les} other {Gebruikt in # lessen}}",
+    "usedIn": "Gebruikt in",
+    "notUsed": "Nog aan geen enkele les gekoppeld. Koppel hem bij een stap van een les of in de gegevens van de les.",
+    "wholeLesson": "Hele les",
+    "stepsN": "{count, plural, one {# stap} other {# stappen}}",
+    "print": "Afdrukken",
+    "printName": "Naam:",
+    "printPoints": "Punten: ____ / {max}",
+    "backToRubric": "Terug naar de rubric",
+    "preview": "Bekijk de tabel",
+    "copy": "Kopie maken",
+    "copyMine": "Kopiëren naar mijn rubrics",
+    "copyTitle": "{title} (kopie)",
+    "copiedNotice": "Dit is je kopie. Pas hem aan zoals je wilt: het origineel blijft zoals het was.",
+    "share": "Delen met mijn school",
+    "unshare": "Niet meer delen",
+    "sharedStatus": "Gedeeld met je school",
+    "sharedToast": "Gedeeld met het team van je school",
+    "unsharedToast": "Niet meer gedeeld",
+    "delete": "Rubric verwijderen",
+    "deleteConfirm": "De rubric {title} verwijderen? Beoordelingen die al gegeven zijn, blijven zoals ze waren.",
+    "deleteUsedConfirm": "{count, plural, one {{title} is gekoppeld aan # les. Daar weghalen en de rubric verwijderen? Beoordelingen die al gegeven zijn, blijven zoals ze waren.} other {{title} is gekoppeld aan # lessen. Daar weghalen en de rubric verwijderen? Beoordelingen die al gegeven zijn, blijven zoals ze waren.}}",
+    "deletedToast": "Rubric verwijderd",
+    "levelNames": {
+      "notYet": "Nog niet",
+      "beginning": "Beginnend",
+      "developing": "Op weg",
+      "secure": "Beheerst",
+      "excellent": "Uitstekend"
+    },
+    "template": {
+      "understanding": "Begrip",
+      "explaining": "Legt het eigen denken uit",
+      "care": "Zorg en inzet",
+      "level0": "Nog niet te zien",
+      "level1": "Deels, met hulp",
+      "level2": "Duidelijk te zien",
+      "level3": "Met diepgang en details"
+    },
+    "editor": {
+      "title": "Titel van de rubric",
+      "description": "Notities voor leerkrachten",
+      "levels": "Niveaus",
+      "levelsHint": "De kolommen: een naam en hoeveel punten elk niveau waard is.",
+      "levelLabel": "Niveau {n}",
+      "points": "Punten",
+      "newLevel": "Nieuw niveau",
+      "addLevel": "Niveau toevoegen",
+      "removeLevel": "Niveau {name} weghalen",
+      "criteria": "Criteria",
+      "criteriaHint": "De rijen: waar je op let en wat het werk op elk niveau laat zien.",
+      "criterionN": "Criterium {n}",
+      "descPlaceholder": "Wat het werk op dit niveau laat zien",
+      "addCriterion": "Criterium toevoegen",
+      "removeCriterion": "Criterium {name} weghalen"
+    },
+    "ai": {
+      "button": "Rubric laten opzetten door AI",
+      "task": "Wat doen de leerlingen?",
+      "taskPlaceholder": "bijv. een alinea schrijven die uitlegt waarom hun game eerlijk is",
+      "levels": "Niveaus",
+      "make": "Mijn rubric opzetten",
+      "note": "Alleen wat je hier typt gaat naar de AI, nooit het werk of de namen van je leerlingen. Daarna kun je alles aanpassen.",
+      "done": "Hier is de opzet van de AI. Lees hem door en pas aan wat je wilt voordat je hem gebruikt.",
+      "template": "De AI is nu niet beschikbaar, dus hier is een eenvoudige startrubric om aan te passen."
+    },
+    "starters": {
+      "title": "Startrubrics",
+      "intro": "Bij het exit ticket van elke CS Quest-les hoort een rubric (niveaus 0 tot 3, in het Engels). Voeg er een toe aan je rubrics om hem bij elke les te gebruiken, of pas hem aan.",
+      "add": "Toevoegen aan mijn rubrics",
+      "addFor": "{title} toevoegen aan mijn rubrics",
+      "added": "Toegevoegd aan je rubrics. Pas hem aan zoals je wilt.",
+      "fromLesson": "Uit de CS Quest-les {title}."
+    },
+    "attach": {
+      "step": "Rubric",
+      "lesson": "Rubric voor de hele les",
+      "lessonTitle": "Rubric voor de hele les",
+      "lessonHint": "Beoordeel elke leerling op de hele les via de voortgangspagina van de les.",
+      "none": "Geen rubric",
+      "hint": "Beoordeel er de antwoorden of games van deze stap mee.",
+      "noneYet": "Je hebt nog geen rubrics.",
+      "library": "Rubrics"
+    },
+    "score": {
+      "label": "Beoordelen met {title}",
+      "total": "{points} punten",
+      "notScored": "Niet beoordeeld",
+      "comment": "Opmerking toevoegen",
+      "commentFor": "Opmerking bij {name}",
+      "given": "het gegeven niveau",
+      "changed": "De rubric is veranderd sinds deze beoordeling. Beoordeel opnieuw om de nieuwe versie te gebruiken.",
+      "scored": "Beoordeeld",
+      "lessonHint": "Tik voor elk criterium op een niveau, voeg eventueel opmerkingen toe en sla op. Elke leerling ziet alleen het eigen resultaat."
+    },
+    "student": {
+      "fromTeacherLesson": "Van je leerkracht: de hele les"
+    },
+    "gradebook": {
+      "key": "rubricpunten",
+      "cellTitle": "Rubric: {points} punten ({pct}%)"
+    },
+    "csv": {
+      "points": "{title} (rubricpunten)",
+      "percent": "{title} (rubric %)",
+      "totalPoints": "Rubricpunten",
+      "totalPercent": "Rubric %"
+    },
+    "errors": {
+      "notFound": "We konden die rubric niet vinden.",
+      "rubricTitle": "Geef de rubric een titel.",
+      "rubricLevels": "Een rubric heeft 2 tot 6 niveaus.",
+      "rubricCriteria": "Een rubric heeft 1 tot 12 criteria.",
+      "rubricLabel": "Geef elk niveau een naam.",
+      "rubricPoints": "Punten zijn een getal van 0 tot 100.",
+      "rubricName": "Geef elk criterium een naam.",
+      "tooManyRubrics": "Je hebt het maximale aantal rubrics in deze school. Verwijder er een die je niet meer gebruikt.",
+      "inUse": "{count, plural, one {Deze rubric is gekoppeld aan # les.} other {Deze rubric is gekoppeld aan # lessen.}}",
+      "task": "Zeg wat de leerlingen doen.",
+      "aiFailed": "De AI kon nu geen rubric opzetten. Probeer het over een minuut opnieuw.",
+      "pick": "Kies een van je eigen rubrics (kopieer die van een collega eerst)."
+    }
   }
 }
