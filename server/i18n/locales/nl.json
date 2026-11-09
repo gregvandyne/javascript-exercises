@@ -4453,7 +4453,9 @@
       "assignCourse": "Aan een klas toewijzen",
       "guide": "Handleiding voor leraren",
       "host": "Live starten",
-      "try": "Proberen"
+      "try": "Proberen",
+      "also": "Ook op Oomba",
+      "hubNamed": "{subject}: {hub}"
     }
   },
   "parents": {
@@ -6615,7 +6617,8 @@
       "live": "Livespellen voor de hele klas",
       "breaks": "Beweegpauzes",
       "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
-      "allGames": "Alles bekijken wat leerlingen kunnen spelen"
+      "allGames": "Alles bekijken wat leerlingen kunnen spelen",
+      "openLive": "Live spel openen"
     }
   }
 }

@@ -4453,7 +4453,9 @@
       "assignCourse": "Assegna a una classe",
       "guide": "Guida per insegnanti",
       "host": "Conduci dal vivo",
-      "try": "Prova"
+      "try": "Prova",
+      "also": "Anche su Oomba",
+      "hubNamed": "{subject}: {hub}"
     }
   },
   "parents": {
@@ -6615,7 +6617,8 @@
       "live": "Giochi dal vivo per tutta la classe",
       "breaks": "Pause attive",
       "breaksText": "Giochi brevi e divertenti da Gioca, scelti per una pausa di 5 minuti sul grande schermo.",
-      "allGames": "Vedi tutto ciò a cui possono giocare gli studenti"
+      "allGames": "Vedi tutto ciò a cui possono giocare gli studenti",
+      "openLive": "Apri il gioco dal vivo"
     }
   }
 }

@@ -165,10 +165,12 @@ export const NOT_COURSE = () => ` AND g.course_only=0${COURSE_GAME_SLUGS.length 
 // ---------------------------------------------------------------- the two shelves (docs/decisions.md "Play and Learn")
 export const SHELVES = ['play', 'learn'];
 /** A game's shelf: the one its row carries (official games: seed JSON "shelf"), else 'learn' for a player's game in the
- *  Learning category and 'play' for every other player's game (they stay on Play and search as before). */
-export const SHELF_SQL = "(CASE WHEN g.shelf<>'' THEN g.shelf WHEN g.category='learning' THEN 'learn' ELSE 'play' END)";
+ *  Learning or Words category (Play has no chips or rows for those) and 'play' for every other player's game (they stay
+ *  on Play and search as before). */
+export const LEARN_CATEGORIES = ['learning', 'words'];
+export const SHELF_SQL = `(CASE WHEN g.shelf<>'' THEN g.shelf WHEN g.category IN (${LEARN_CATEGORIES.map(c => `'${c}'`).join(',')}) THEN 'learn' ELSE 'play' END)`;
 /** The JS twin of SHELF_SQL. */
-export const shelfOf = g => (g && (g.shelf === 'play' || g.shelf === 'learn') ? g.shelf : g && g.category === 'learning' ? 'learn' : 'play');
+export const shelfOf = g => (g && (g.shelf === 'play' || g.shelf === 'learn') ? g.shelf : g && LEARN_CATEGORIES.includes(g.category) ? 'learn' : 'play');
 const shelfWhere = (shelf, params) => { if (!SHELVES.includes(shelf)) return ''; params.push(shelf); return ` AND ${SHELF_SQL}=?`; };
 /** shelf: 'play' | 'learn' (SHELF_SQL); minPlayers: only games for at least that many players on one screen (2 to 8). */
 export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0, official = false, shelf = null, minPlayers = 0 } = {}) {

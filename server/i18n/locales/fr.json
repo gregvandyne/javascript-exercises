@@ -4430,7 +4430,7 @@
       "gradeK": "Maternelle",
       "gradeN": "Grade US {n}",
       "filter": "Afficher",
-      "how": "Comment tu joues",
+      "how": "Façon de jouer",
       "howAll": "Peu importe",
       "hows": {
         "solo": "Tout seul",
@@ -4452,7 +4452,9 @@
       "assignCourse": "Assigner à une classe",
       "guide": "Guide de l’enseignant",
       "host": "Animer en direct",
-      "try": "Essayer"
+      "try": "Essayer",
+      "also": "Aussi sur Oomba",
+      "hubNamed": "{subject} : {hub}"
     }
   },
   "parents": {
@@ -6614,7 +6616,8 @@
       "live": "Jeux en direct pour toute la classe",
       "breaks": "Pauses actives",
       "breaksText": "Des jeux courts et amusants de Jouer, choisis pour une pause de 5 minutes sur le grand écran.",
-      "allGames": "Voir tout ce que les élèves peuvent jouer"
+      "allGames": "Voir tout ce que les élèves peuvent jouer",
+      "openLive": "Ouvrir le jeu en direct"
     }
   }
 }

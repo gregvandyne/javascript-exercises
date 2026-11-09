@@ -1059,6 +1059,10 @@ ol.steps li{margin-bottom:var(--s2)}
    always peeks at the rail's end edge on desktop; .course-rail adds a soft end-edge fade while the rail can scroll. */
 .course-rail{position:relative}
 .course-track{grid-auto-columns:min(460px,86vw);align-items:start}
+/* Wide screens: the three courses side by side, all in view (no carousel). */
+@media (min-width:1100px){.course-track{grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}}
+/* A course's "Subject · Grades" line, as on the game cards. */
+.course-ht p.course-meta{margin-top:4px;font-size:.9rem;font-weight:700;color:var(--text-2)}
 .course-rail.has-more::after{content:"";position:absolute;top:0;bottom:0;inset-inline-end:-16px;width:56px;pointer-events:none;z-index:2;background:linear-gradient(to right,transparent,var(--bg))}
 [dir="rtl"] .course-rail.has-more::after{background:linear-gradient(to left,transparent,var(--bg))}
 .course-card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:12px;align-content:start}
@@ -1068,6 +1072,8 @@ a.course-head{min-height:48px;color:inherit;text-decoration:none;border-radius:1
 a.course-head:hover h3,a.course-head:focus-visible h3{text-decoration:underline}
 .course-head .course-ht{flex:1;min-width:0}
 .course-go{font-size:1.6rem;font-weight:800;color:var(--muted);flex:none}
+/* The door and course chevrons (›): the display font draws › tiny, so they use the system font at a size that reads as an arrow. */
+.door-go,.course-go{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:2.2rem;font-weight:600;line-height:1;margin-top:-.15em}
 .course-progline{display:grid;gap:4px}
 .course-units>summary{display:flex;align-items:center;min-height:44px;font-weight:700;color:var(--text-2);cursor:pointer;width:max-content;max-width:100%}
 .course-units[open]>summary{margin-bottom:8px}
@@ -1683,7 +1689,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .lcards{list-style:none;padding:0;margin:0}
 .lcard{display:flex;flex-direction:column;gap:var(--s2);min-width:0}
 .lcard-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
-.lcard-acts{align-items:center;justify-content:center}
+.lcard-acts{align-items:center;justify-content:center;margin-top:auto}
 .lcard-acts .btn{flex:1 1 auto;justify-content:center}
 .lcard-try{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font-weight:700;font-size:.95rem;color:var(--text-2)}
 .learn-how{row-gap:8px}

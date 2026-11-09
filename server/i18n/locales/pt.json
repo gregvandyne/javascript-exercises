@@ -4454,7 +4454,9 @@
       "assignCourse": "Passar para uma turma",
       "guide": "Guia do professor",
       "host": "Conduzir ao vivo",
-      "try": "Experimentar"
+      "try": "Experimentar",
+      "also": "Também no Oomba",
+      "hubNamed": "{subject}: {hub}"
     }
   },
   "parents": {
@@ -6616,7 +6618,8 @@
       "live": "Jogos ao vivo para a turma toda",
       "breaks": "Pausas ativas",
       "breaksText": "Jogos curtos e divertidos de Jogar, escolhidos para uma pausa de 5 minutos no ecrã grande.",
-      "allGames": "Ver tudo o que os alunos podem jogar"
+      "allGames": "Ver tudo o que os alunos podem jogar",
+      "openLive": "Abrir o jogo ao vivo"
     }
   }
 }

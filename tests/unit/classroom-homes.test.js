@@ -11,6 +11,7 @@ const { seed } = await import('../../scripts/seed.js');
 const auth = await import('../../server/auth.js');
 const SC = await import('../../server/services/schools.js');
 const { BRAIN_BREAKS } = await import('../../server/learn.js');
+const LS = await import('../../server/services/classlive-sessions.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
 
 seed({ quiet: true });
@@ -63,6 +64,28 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   assert.doesNotMatch(r.text, PRICE);
   // The school admin's Classroom tab is the same page (with their school's card).
   const h = await get('/teach', head); assert.equal(h.status, 200); assert.match(h.text, /Hello, Mrs Homeshead/); assert.match(h.text, /Manage Homes School/);
+});
+
+test('the Classroom while a class\'s live room is open: its host gets "Open live game", never a second Host button', async () => {
+  const hostBtn = id => new RegExp(`href="/live\\?class=${id}">📡 Host a live game`);
+  let r = await get('/teach', teacher);
+  assert.match(r.text, hostBtn(busy.id)); assert.match(r.text, hostBtn(quiet.id));
+  const items = [{ q: 'What is 2 + 3?', choices: ['5', '4', '6', '7'], answer: 0, secs: 30 }, { q: 'What is 6 + 1?', choices: ['7', '8', '5', '6'], answer: 0, secs: 30 }];
+  const made = await post('/api/live/sessions', teacher, { pick: 'mode:battle', items, audience: 'class', classId: busy.id, replace: true });
+  assert.equal(made.status, 200, JSON.stringify(made.json));
+  r = await get('/teach', teacher);
+  assert.match(r.text, new RegExp(`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${made.json.sid}">📡 Open live game</a>`));
+  assert.doesNotMatch(r.text, hostBtn(busy.id), 'no second room for the class');
+  assert.match(r.text, hostBtn(quiet.id), 'the other class can still host');
+  LS.endSession(made.json.sid, 'ended');
+  assert.match((await get('/teach', teacher)).text, hostBtn(busy.id), 'ended: Host a live game again');
+});
+
+test('the School tab of a school\'s own admin has no back link (it is a first tab); the platform admin\'s has one to Schools', async () => {
+  const h = await get(`/school/${school.slug}`, head); assert.equal(h.status, 200);
+  assert.doesNotMatch(h.text, /class="backlink"/);
+  const b = await get(`/school/${school.slug}`, boss); assert.equal(b.status, 200);
+  assert.match(b.text, /<a class="backlink" href="\/admin\/schools">/);
 });
 
 test('the Class tab: To do with due date, progress, next step and Start; games; picker and one banner per class; no classmates', async () => {

@@ -4452,7 +4452,9 @@
       "assignCourse": "Asignar a una clase",
       "guide": "Guía para docentes",
       "host": "Presentar en vivo",
-      "try": "Probar"
+      "try": "Probar",
+      "also": "También en Oomba",
+      "hubNamed": "{subject}: {hub}"
     }
   },
   "parents": {
@@ -6614,7 +6616,8 @@
       "live": "Juegos en vivo para toda la clase",
       "breaks": "Pausas activas",
       "breaksText": "Juegos cortos y divertidos de Jugar, elegidos para una pausa de 5 minutos en la pantalla grande.",
-      "allGames": "Ver todo lo que pueden jugar los alumnos"
+      "allGames": "Ver todo lo que pueden jugar los alumnos",
+      "openLive": "Abrir el juego en vivo"
     }
   }
 }

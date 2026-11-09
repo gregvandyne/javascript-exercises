@@ -4800,7 +4800,9 @@
       "assignCourse": "Assign to a class",
       "guide": "Teacher guide",
       "host": "Host live",
-      "try": "Try it"
+      "try": "Try it",
+      "also": "Also on Oomba",
+      "hubNamed": "{subject}: {hub}"
     }
   },
   "parents": {
@@ -6675,7 +6677,8 @@
       "live": "Live games for the whole class",
       "breaks": "Brain breaks",
       "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
-      "allGames": "See everything students can play"
+      "allGames": "See everything students can play",
+      "openLive": "Open live game"
     }
   },
   "courses": {

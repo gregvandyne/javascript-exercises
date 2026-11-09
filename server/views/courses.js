@@ -21,6 +21,12 @@ export function subLine(text) {
   return html`<span class="sub-a">${text.slice(0, at)}</span> <span class="sub-b"><span class="sub-dot">· </span>${text.slice(at + 3)}</span>`;
 }
 
+/** The first half of a course's line ("Computer science in four games"), when its grades are shown on a line of their own. */
+export function subHead(text) {
+  const m = /^(.*?)\s*(?: · |・)[^·・]*$/.exec(String(text));
+  return m ? m[1] : text;
+}
+
 /** The home page's "Courses" row: the wide course cards side by side in one snap-scrolled rail (the shared .rail-track,
  *  at course-card width), each card's games nested in order as the unit overview (links to the course map's units),
  *  progress in steps, and Start / Keep going to the next open step (or the band picker). The track is a labelled,
@@ -37,7 +43,7 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
       <div class="rail-arrows" data-railnav="courses-track" hidden><button type="button" data-rail="courses-track" data-dir="-1" aria-label="${t('cards.scrollBack', { title })}"><span class="flip" aria-hidden="true">←</span></button><button type="button" data-rail="courses-track" data-dir="1" aria-label="${t('cards.scrollForward', { title })}"><span class="flip" aria-hidden="true">→</span></button></div>
     </div>
     <div class="course-rail"><div class="rail-track course-track" id="courses-track" role="region" aria-label="${title}" tabindex="0">
-    ${items.filter(it => it.games.length).map(({ course: c, games, ov }) => {
+    ${items.filter(it => it.games.length).map(({ course: c, games, ov, meta = null }) => {
       const go = ov.next ? `/courses/${c.slug}/${ov.next.step.key}` : `/courses/${c.slug}`;
       const begun = ov.list.some(s => s.read || s.checked);
       const assign = staff && STAFF_COURSE_PAGE[c.slug];
@@ -45,7 +51,7 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
       return html`<article class="course-card" aria-labelledby="course-${c.slug}-h">
         <a class="course-head" href="/courses/${c.slug}">
           <span class="course-emo" aria-hidden="true">${c.emoji}</span>
-          <div class="course-ht"><h3 id="course-${c.slug}-h">${t(`${c.key}.title`)}</h3><p>${subLine(t(`${c.key}.sub`))}</p></div>
+          <div class="course-ht"><h3 id="course-${c.slug}-h">${t(`${c.key}.title`)}</h3>${meta ? html`<p>${subHead(t(`${c.key}.sub`))}</p><p class="gmeta course-meta">${meta}</p>` : html`<p>${subLine(t(`${c.key}.sub`))}</p>`}</div>
           <span class="course-go flip" aria-hidden="true">›</span>
         </a>
         ${ov.band && !staff ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div><span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span></div>` : ''}

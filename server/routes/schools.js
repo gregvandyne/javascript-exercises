@@ -164,8 +164,10 @@ router.get('/school/:slug', requireUser, async (req, res) => {
   ${content}`;
   // The School tab is current for the school's own admins; a teacher on a school page keeps Classes.
   const active = member ? (S.membership(s.id, req.user.id).role === 'admin' ? 'school' : 'classes') : S.isSchoolStaff(req.user) ? 'me' : 'schools';
+  // The school's own admins are on their first tab (School): no back arrow to Classroom, which is one tab away.
+  const back = active === 'school' ? null : member ? '/teach' : '/admin/schools';
   page(req, res, { title: s.name, active, body, head: CSS, scripts: tab === 'billing' ? ['/js/schools.js', '/js/family.js'] : ['/js/schools.js'],
-    back: member ? '/teach' : '/admin/schools', backLabel: member ? t('school.teach.title') : t('nav.schools') });
+    back, backLabel: member ? t('school.teach.title') : t('nav.schools') });
 });
 
 /** A new school's setup, in order, ticking itself off: ① teachers ② classes with their teacher ③ students in classes
@@ -489,11 +491,15 @@ function classroomHome(req) {
       // The next lesson due: its title cut short on one line, the date on a line of its own.
       due ? html`<a class="chip-s th-due" href="/class/${c.id}"><span class="th-due-t">📚 <bdi>${due.title}</bdi></span><span class="th-due-d">📅 ${L.dueState(due) === 'today' ? t('lessons.class.dueToday') : t('lessons.class.dueOn', { date: req.fmt.day(due.due_at) })}</span></a>` : '',
     ].filter(Boolean);
+    // While a room is open for the class: its host gets back to it (never a second room); a co-teacher's room has the chip only.
+    const open = room && room.phase !== 'ended';
+    const liveBtn = !hostLive ? '' : mineRoom ? html`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${room.id}">📡 ${t('teach.home.openLive')}</a>`
+      : open ? '' : html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>`;
     return html`<div class="panel classcard th-class">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: c.students })].filter(Boolean).join(' · ')}</span>
       <span class="cc-meta th-chips">${chips.length ? chips : html`<span class="chip-s ok">✅ ${t('teach.home.caughtUp')}</span>`}</span>
-      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${hostLive ? html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>` : ''}</span></div>`;
+      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span></div>`;
   };
   // Ready-made: the three courses (their staff pages assign units), the live modes (host on the big screen), brain breaks.
   const courseTiles = COURSES.map(c => tile(STAFF_COURSE_PAGE[c.slug] || c.teacherPath, c.emoji, t(`${c.key}.title`), t(`${c.key}.sub`), `teach-course-${c.slug}`));

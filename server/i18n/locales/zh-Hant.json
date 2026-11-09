@@ -4452,7 +4452,9 @@
       "assignCourse": "指派給班級",
       "guide": "教師指南",
       "host": "直播主持",
-      "try": "試玩"
+      "try": "試玩",
+      "also": "Oomba 上還有",
+      "hubNamed": "{subject}：{hub}"
     }
   },
   "parents": {
@@ -6614,7 +6616,8 @@
       "live": "全班一起玩的即時遊戲",
       "breaks": "課間小休息",
       "breaksText": "從「玩」挑出的有趣小遊戲，適合在大螢幕上休息 5 分鐘。",
-      "allGames": "看看學生能玩的所有遊戲"
+      "allGames": "看看學生能玩的所有遊戲",
+      "openLive": "進入即時遊戲"
     }
   }
 }

@@ -1391,8 +1391,9 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
   (teaches something: math, words, maps, coding, thinking, music, courses, live class modes): seed JSON `"shelf"` is the
   source of truth, stored in `games.shelf` (migration `0060_game_shelf` backfills older databases;
   `scripts/import-game.js` writes it). 13 Play, 23 Learn (`tests/unit/shelves.test.js` holds the list). Players' games
-  keep `''`: `SHELF_SQL` / `shelfOf` (services/games.js) put a player's `learning`-category game on Learn and every
-  other one on Play, so they stay on Play and in search as before. Search lists both shelves.
+  keep `''`: `SHELF_SQL` / `shelfOf` (services/games.js) put a player's `learning`- or `words`-category game on Learn
+  (`LEARN_CATEGORIES`: Play has no chips or rows for those) and every other one on Play, so they stay on Play and in
+  search as before. Search lists both shelves; Learn's "learning games by players" row links to it (See all).
 - **Learn data** (server/learn.js): `SHELF_INFO` (each Learn game's subject and grades), `SUBJECTS` (chips, with the
   subject page each links to: maps has none), `LEARN_FUN` (Play's "From Learn: fun ones"), `BRAIN_BREAKS` (for the
   Classroom home, part 2), `CLASS_TOOLS` (Remi's Quiet Meadow: never Play's hero or featured row, still in search).
@@ -1418,10 +1419,14 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
   the grade on change, the Show button works without it); a filtered view is noindex and names the subject page
   ("More about Math games →"). Then Courses (compact cards: the whole head opens the course, progress, the units behind
   a tap, one main button; "My courses" once a player has picked a band, "Courses" before), Live class games (the Oomba
-  Live modes, while Live is on) and Learning games (each card "Math · Grades 1–5"): live first for staff and students
-  in a class, learning games first for everyone else. Then the kids' join door ("Got a game code from your teacher?":
-  not for staff or grown-ups, who have Join in the top bar), learning games by players (signed in only: an indexed
-  page never carries a child's name), and the old subject, age and "for teachers and parents" lists. A school student
+  Live modes, while Live is on) and Learning games (each card "Math · Grades 1–5", course cards too; card buttons sit
+  at the card's foot so a row lines up; on screens 1100px and wider the three courses sit side by side, no carousel):
+  live first for staff and students in a class, learning games first for everyone else. Then learning games by
+  players (signed in only: an indexed page never carries a child's name), the subject pages in chip order (a page
+  whose name doesn't say its chip's says both: "Thinking: Chess and strategy games"), "Also on Oomba" (brain breaks,
+  make a game: not Learn subjects), and the age pages and "for teachers and parents" for the signed out, staff and
+  grown-ups only. The kids' join door ("Got a game code from your teacher?": not for staff or grown-ups, who have Join
+  in the top bar) comes under the games signed out and ends the page for a signed-in kid or student. A school student
   starts on their roster grade (`rosterGrade`); "Any grade" is `?grade=any`, kept as they filter. The how-you-play chips
   wrap (never scroll the chosen one out of sight); learn.js scrolls the chosen subject chip into view. `/learn/<hub>`
   and `/learn/<age>` are unchanged and make Learn current. **Breadcrumbs** follow the tabs: Home › Learn › Math games
@@ -1462,8 +1467,11 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
   classes: each class card shows what needs attention as chips (✋ requests, ✍️ answers to review, 📡 Live game now,
   linking the host to their room, 📅 the soonest open lesson due in the next 7 days) or "All caught up", with Open
   class, Assign a lesson (`/teach/lessons?school=&class=`) and Host a live game (`/live?class=`) in a row on a laptop;
-  the due lesson's title is cut short on one line with the date under it. + New class is a dashed tile in the class
-  grid (open, its form takes the whole row); the archived list follows. On phones the live modes and brain breaks are
+  while the class's room is open the last one is "Open live game" (`/live/host/<sid>`) for its host and gone for a
+  co-teacher, so nobody opens a second room. The class name is the card's title (tight under the school's name); the
+  due lesson's title is cut short on one line with the date under it. + New class is a compact dashed tile at the top
+  of its row (open, its form takes the whole row); the School tab (`/school/<slug>`) of a school's own admin has no
+  back link (it is a first tab); the archived list follows. On phones the live modes and brain breaks are
   one sideways row each. Then Teach with a course (the three courses' staff pages), Live games for the whole class
   (`LIVE_GAMES` -> `/live?mode=`, only while the teacher may host), Brain breaks (`BRAIN_BREAKS` -> `/play/<slug>`),
   and links to everything students can play (`/play`) and Learn.

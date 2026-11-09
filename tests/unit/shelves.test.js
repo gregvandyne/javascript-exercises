@@ -83,8 +83,8 @@ test('every Learn game has a known subject and grades; the lists the pages use a
   for (const s of L.SUBJECTS) if (s.hub) assert.ok(L.hubBySlug(s.hub), s.hub);
 });
 
-test('players\' games: Learning category -> Learn, anything else -> Play; a row\'s own shelf wins (SHELF_SQL = shelfOf)', () => {
-  const cases = [[{ shelf: '', category: 'learning' }, 'learn'], [{ shelf: '', category: 'arcade' }, 'play'], [{ shelf: 'play', category: 'learning' }, 'play'], [{ shelf: 'learn', category: 'arcade' }, 'learn']];
+test('players\' games: Learning and Words categories -> Learn, anything else -> Play; a row\'s own shelf wins (SHELF_SQL = shelfOf)', () => {
+  const cases = [[{ shelf: '', category: 'learning' }, 'learn'], [{ shelf: '', category: 'words' }, 'learn'], [{ shelf: '', category: 'arcade' }, 'play'], [{ shelf: 'play', category: 'words' }, 'play'], [{ shelf: 'play', category: 'learning' }, 'play'], [{ shelf: 'learn', category: 'arcade' }, 'learn']];
   for (const [g, want] of cases) {
     assert.equal(G.shelfOf(g), want, JSON.stringify(g));
     assert.equal(db.prepare(`SELECT ${G.SHELF_SQL} AS s FROM (SELECT ? AS shelf, ? AS category) g`).get(g.shelf, g.category).s, want);
@@ -146,17 +146,20 @@ test('a player\'s Learning game leaves Play for Learn (signed in only); other pl
     q.run("UPDATE games SET status='published', visibility='public', published_version_id=?, plays=999999 WHERE id=?", v.id, g.id);
     return G.getGame(g.id);
   };
-  const quiz = mk('Shelf Quiz Builder', 'learning'), arc = mk('Shelf Arcade Builder', 'arcade');
+  const quiz = mk('Shelf Quiz Builder', 'learning'), arc = mk('Shelf Arcade Builder', 'arcade'), word = mk('Shelf Word Builder', 'words');
   const pal = auth.createUser({ username: 'ShelfPal', password: 'rainbow-77' });
   const play = (await get('/', pal)).text;
   assert.ok(slugsIn(section(play, 'popular')).includes(arc.slug)); assert.ok(!slugsIn(play).includes(quiz.slug));
+  assert.ok(!slugsIn(play).includes(word.slug), 'a Words game is on Learn (Play has no Words chip or row)');
   const learn = (await get('/learn', pal)).text;
   assert.ok(slugsIn(section(learn, 'learn-players')).includes(quiz.slug), 'by players, signed in');
+  assert.ok(slugsIn(section(learn, 'learn-players')).includes(word.slug), 'a player\'s Words game too');
+  assert.match(learn, /<a class="more" href="\/search\?cat=learning" rel="nofollow">See all<\/a>/, 'the rest are one tap away in search');
   const out = (await get('/learn', null)).text;
   assert.ok(!slugsIn(out).includes(quiz.slug), 'never on the signed-out (indexed) page');
   assert.doesNotMatch(out, /ShelfKid|href="\/u\//, 'no child\'s name signed out');
   assert.match((await get(`/search?q=Shelf+Quiz`, kid)).text, new RegExp(`href="/g/${quiz.slug}"`), 'still in search');
-  q.run("UPDATE games SET status='deleted' WHERE id IN (?, ?)", quiz.id, arc.id);
+  q.run("UPDATE games SET status='deleted' WHERE id IN (?, ?, ?)", quiz.id, arc.id, word.id);
 });
 
 // ---------------------------------------------------------------- Learn
@@ -179,10 +182,24 @@ test('Learn lists every open Learn game (course games through their course) with
   assert.ok(s.indexOf('id="live-games"') < s.indexOf('id="learn-join"'), 'the join door under the games');
   assert.match(s, /id="learn-join" href="\/join"|href="\/join" id="learn-join"/);
   assert.match(s, /Got a game code from your teacher\?/);
+  // A course card has the same "Subject · Grades" line as the game cards (and its description without the grades).
+  assert.match(s, /<p>Computer science in four games<\/p><p class="gmeta course-meta">Coding · Grades 3–8<\/p>/);
+  // Subject pages in chip order, named like their chip; brain breaks (Play) and make a game (Build) apart, under "Also on Oomba".
+  const subj = section(s, 'subjects'), also = s.slice(s.indexOf('id="also"'));
+  assert.deepEqual([...subj.matchAll(/href="\/learn\/([a-z-]+)"/g)].map(m => m[1]), L.SUBJECTS.filter(x => x.hub).map(x => x.hub));
+  assert.match(subj, /Thinking: Chess and strategy games/); assert.match(subj, /Coding: Computer science games/);
+  assert.doesNotMatch(subj, /brain-break-games|make-a-game/);
+  assert.match(also, /<h2 id="also-h">Also on Oomba<\/h2>/); assert.match(also, /href="\/learn\/brain-break-games"/); assert.match(also, /href="\/learn\/make-a-game"/);
+  // A kid's Learn ends at the join door: no age pages, no marketing links for teachers and parents.
+  const main = s.slice(s.indexOf('<main'), s.indexOf('</main>'));
+  assert.doesNotMatch(main, /id="ages"|id="who"|href="\/teachers"|href="\/parents"/, 'visitor content is for the signed out (the footer keeps its links)');
+  assert.ok(s.indexOf('id="learn-join"') > s.indexOf('id="also"'), 'the join door ends a kid\'s Learn');
   C.setBand(kid, C.getCourse('cs-quest'), '1b');
   assert.match((await get('/learn', kid)).text, /<h2 id="courses-h">📚 My courses<\/h2>/, 'My courses once begun');
   // A student in a class: live class games first. A grown-up: Join is in their top bar, not a kid's door on Learn.
   const st = (await get('/learn', pupil)).text;
+  assert.doesNotMatch(st, /id="ages"|id="who"/, 'nor a student\'s');
+  for (const u of [teacher, mum]) assert.match((await get('/learn', u)).text, /id="ages"[\s\S]*id="who"/, 'staff and grown-ups keep them');
   assert.ok(st.indexOf('id="live-games"') > 0 && st.indexOf('id="live-games"') < st.indexOf('id="learn-games"'), 'live first in a class');
   assert.doesNotMatch((await get('/learn', mum)).text, /id="learn-join"/);
   // Signed out: the indexed page keeps its heading, lead, structured data, every subject and age page; "Courses".
@@ -192,6 +209,8 @@ test('Learn lists every open Learn game (course games through their course) with
   assert.match(out.text, /"@type":"CollectionPage"/);
   for (const h of L.HUBS) assert.match(out.text, new RegExp(`href="/learn/${h.slug}"`), h.slug);
   for (const a of L.AGES) assert.match(out.text, new RegExp(`href="/learn/${a.slug}"`), a.slug);
+  assert.match(out.text, /id="who"[\s\S]*href="\/teachers"/);
+  assert.ok(out.text.indexOf('id="learn-join"') < out.text.indexOf('id="subjects"'), 'signed out, the join door comes under the games');
   assert.match(out.text, /<h2 id="courses-h">📚 Courses<\/h2>/);
   assert.ok(slugsIn(out.text).every(x => G.getGameBySlug(x).source === 'seed'), 'only official games signed out');
 });

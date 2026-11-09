@@ -805,6 +805,12 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 /* My classes on /teach: wider cards, so a card's buttons sit in a row on a laptop; the name is a full tap target. */
 .th-classes{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr))}
 .th-class .cc-link{display:flex;align-items:center;min-height:44px}
+/* A tight card: the school's name over the class name (the card's title), then grade and students; no stacked margins. */
+.classgrid>.th-class{gap:2px}
+.classgrid>.th-class>*{margin-top:0}
+.th-class>.cc-name{font-size:1.35rem;font-weight:800;line-height:1.2;min-height:0}
+.th-class>.cc-name+.small{margin-bottom:var(--s2)}
+.classgrid>.th-class>.cc-acts{margin-top:auto;padding-top:var(--s3)}
 @media (min-width:601px){.th-class>.cc-acts>.btn{flex:0 1 auto}}
 /* The next lesson due: title cut short on one line, the date under it; no underline across the whole pill. */
 .classcard a.chip-s.th-due{display:inline-grid;gap:2px;max-width:100%;border-radius:14px;padding:6px 12px;white-space:nowrap}
@@ -813,10 +819,11 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .th-due-t{overflow:hidden;text-overflow:ellipsis;min-width:0}
 .th-due-d{font-weight:600}
 /* + New class: a dashed tile beside the classes; open, the form takes the whole row. */
-.th-newclass{display:flex;min-width:0}
+/* Closed, a compact tile at the top of its row (not a card-high empty box). */
+.th-newclass{display:flex;min-width:0;align-self:start}
 .th-newclass>.libtools{flex:1;display:flex;align-items:stretch}
 .th-newclass .libdrop:not([open]){flex:1;display:flex}
-.th-newclass .libdrop:not([open])>summary{flex:1;display:flex;align-items:center;justify-content:center;min-height:128px;border:2px dashed var(--edge);border-radius:var(--r);background:transparent;box-shadow:none;color:var(--text-2);font-size:1.05rem}
+.th-newclass .libdrop:not([open])>summary{flex:1;display:flex;align-items:center;justify-content:center;min-height:96px;border:2px dashed var(--edge);border-radius:var(--r);background:transparent;box-shadow:none;color:var(--text-2);font-size:1.05rem}
 .th-newclass .libdrop:not([open])>summary:hover{background:var(--hover);transform:none}
 .classgrid:has(.th-newclass .libdrop[open]){grid-auto-rows:auto}
 .th-newclass:has(.libdrop[open]){grid-column:1/-1}
@@ -833,6 +840,7 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 @media (max-width:600px){
   .th-head>.btn,.th-more>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
   .cc-acts>.btn,.teachtools>.btn{min-height:44px}
+  .th-class>.cc-name{min-height:44px}
   .classcard a.chip-s:not(.warn):not(.th-due){display:inline-flex;align-items:center;min-height:44px;padding:0 12px}
   .classcard a.chip-s.th-due{min-height:44px}
   /* Phones: one class per row, so New class is a short dashed bar, not a card-high box. */

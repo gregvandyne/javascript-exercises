@@ -4431,7 +4431,7 @@
       "gradeK": "Vorschule",
       "gradeN": "Klassenstufe {n}",
       "filter": "Zeigen",
-      "how": "Wie du spielst",
+      "how": "Spielart",
       "howAll": "Egal wie",
       "hows": {
         "solo": "Allein",
@@ -4453,7 +4453,9 @@
       "assignCourse": "Einer Klasse zuweisen",
       "guide": "Leitfaden für Lehrkräfte",
       "host": "Live starten",
-      "try": "Ausprobieren"
+      "try": "Ausprobieren",
+      "also": "Außerdem auf Oomba",
+      "hubNamed": "{subject}: {hub}"
     }
   },
   "parents": {
@@ -6615,7 +6617,8 @@
       "live": "Live-Spiele für die ganze Klasse",
       "breaks": "Bewegungspausen",
       "breaksText": "Kurze, lustige Spiele aus „Spielen“, ausgesucht für eine 5-Minuten-Pause auf dem großen Bildschirm.",
-      "allGames": "Alles ansehen, was Schüler spielen können"
+      "allGames": "Alles ansehen, was Schüler spielen können",
+      "openLive": "Live-Spiel öffnen"
     }
   }
 }

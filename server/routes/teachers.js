@@ -445,7 +445,9 @@ router.get('/learn', (req, res) => {
   let courseMarkup = '';
   if (f.how !== 'two' && f.how !== 'live') {
     try {
-      const items = courses.COURSES.filter(c => fits(COURSE_INFO[c.slug], f)).map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c) }));
+      // Each course card carries the same "Subject · Grades" line as the game cards.
+      const courseMeta = c => { const i = COURSE_INFO[c.slug]; return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', { from: String(i.from), to: String(i.to) }) }) : null; };
+      const items = courses.COURSES.filter(c => fits(COURSE_INFO[c.slug], f)).map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c), meta: courseMeta(c) }));
       // "My courses" once a player has begun one (picked a band); "Courses" until then.
       const mine = !out && !staff && !isGrownup(u) && items.some(it => it.ov && it.ov.band);
       courseMarkup = items.length ? courseRow(items, { staff, title: mine ? t('learn.tab.myCourses') : null }) : '';
@@ -460,6 +462,17 @@ router.get('/learn', (req, res) => {
   // Live class games: first for staff (they host them) and for students in a class; under the learning games for
   // everyone else (a kid at home plays the learning games; live modes need a class).
   const liveFirst = staff || (!out && classesOf(u.id, 'student').length > 0);
+  // The subject pages are the subject chips' "More about…" pages; brain breaks (Play) and making a game (Build) are not
+  // Learn subjects, so they sit apart under "Also on Oomba". The age pages and the teacher/parent links are for visitors,
+  // staff and grown-ups (the signed-out page search engines see); a kid's Learn ends at the join door.
+  const subjectHub = h => SUBJECTS.some(x => x.hub === h.slug);
+  // A subject page whose name doesn't say its chip's name says both ("Thinking: Chess and strategy games").
+  const NAMED = ['thinking', 'code'];
+  const hubCard = h => { const sx = SUBJECTS.find(x => x.hub === h.slug);
+    if (!sx || !NAMED.includes(sx.key)) return card(`/learn/${h.slug}`, h.emoji, `learn.hubs.${h.key}.name`, `learn.hubs.${h.key}.short`);
+    return html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span><span class="lp-hub-t">${t('learn.tab.hubNamed', { subject: subjName(sx.key), hub: t(`learn.hubs.${h.key}.name`) })}</span>${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`; };
+  const forVisitors = out || staff || isGrownup(u);
+  const kidEnd = !out && !staff && !isGrownup(u);
   const liveSec = liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('learn.tab.live')}</h2>
       <p class="small muted">${staff ? t('learn.tab.liveStaff') : t('learn.tab.liveText')}</p>${cards(liveList)}</section>` : '';
   const body = html`<div class="lp learn-tab">
@@ -491,15 +504,18 @@ router.get('/learn', (req, res) => {
     <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">🎓 ${t('learn.tab.games')}</h2>
       ${grid.length ? cards(grid) : liveList.length ? '' : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}#filters">${t('learn.tab.clear')}</a></p>`}</section>
     ${liveFirst ? '' : liveSec}
-    ${joinDoor}
-    ${players.length ? rail({ title: t('learn.tab.players'), emoji: '🛠️', games: players, id: 'learn-players' }) : ''}
+    ${kidEnd ? '' : joinDoor}
+    ${players.length ? rail({ title: t('learn.tab.players'), emoji: '🛠️', games: players, id: 'learn-players', more: '/search?cat=learning' }) : ''}
     <section class="lp-sec" id="subjects" aria-labelledby="subj-h">${el(t, 'h2', 'learn.index.subjects', {}, ' id="subj-h"')}
-      <ul class="lp-hubs">${HUBS.map(h => card(`/learn/${h.slug}`, h.emoji, `learn.hubs.${h.key}.name`, `learn.hubs.${h.key}.short`))}</ul></section>
-    <section class="lp-sec" id="ages" aria-labelledby="ages-h">${el(t, 'h2', 'learn.index.ages', {}, ' id="ages-h"')}
+      <ul class="lp-hubs">${SUBJECTS.map(x => HUBS.find(h => h.slug === x.hub)).filter(Boolean).map(hubCard)}</ul></section>
+    <section class="lp-sec" id="also" aria-labelledby="also-h"><h2 id="also-h">${t('learn.tab.also')}</h2>
+      <ul class="lp-hubs">${HUBS.filter(h => !subjectHub(h)).map(hubCard)}</ul></section>
+    ${forVisitors ? html`<section class="lp-sec" id="ages" aria-labelledby="ages-h">${el(t, 'h2', 'learn.index.ages', {}, ' id="ages-h"')}
       <ul class="lp-hubs">${AGES.map(a => card(`/learn/${a.slug}`, a.emoji, `learn.ages.${a.key}.name`, `learn.ages.${a.key}.short`))}</ul></section>
-    <section class="lp-sec" aria-labelledby="who-h">${el(t, 'h2', 'learn.index.who', {}, ' id="who-h"')}
+    <section class="lp-sec" id="who" aria-labelledby="who-h">${el(t, 'h2', 'learn.index.who', {}, ' id="who-h"')}
       <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/teachers')}"><span aria-hidden="true">🍎</span>${t('learn.teachersLink')}</a></li>
-        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${parentsLabel(t, 'learn.parentsLink')}</a></li></ul></section>
+        <li><a class="chip" href="${lp(req, '/parents')}"><span aria-hidden="true">👪</span>${parentsLabel(t, 'learn.parentsLink')}</a></li></ul></section>` : ''}
+    ${kidEnd ? joinDoor : ''}
   </div>`;
   const items = [...HUBS.map(h => [`/learn/${h.slug}`, t(`learn.hubs.${h.key}.name`)]), ...AGES.map(a => [`/learn/${a.slug}`, t(`learn.ages.${a.key}.name`)])]
     .map(([p, name], i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, p), name }));
