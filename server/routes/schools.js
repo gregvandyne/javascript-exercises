@@ -28,6 +28,9 @@ import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, google
 import { gcRosterHint } from './gclassroom.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn, openForClass } from '../services/classlive-sessions.js';
+import * as TL from '../services/teach-loop.js';
+import { teacherLoop } from '../views/teacher-loop.js';
+import { LOOP_CSS } from './teach-loop.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -508,11 +511,15 @@ function classroomHome(req) {
   const liveTiles = hostLive ? Object.entries(LIVE_GAMES).map(([slug, l]) => { const g = officialGame(slug); const i = SHELF_INFO[slug], gr = shelfGrades(slug);
     return g ? tile(`/live?mode=${l.mode}`, tileArt(g), g.title, i ? t('learn.tab.meta', { subject: t(`learn.tab.subjects.${i.subject}`), grades: t('learn.grades', gr) }) : '') : ''; }).filter(Boolean) : [];
   const breakTiles = BRAIN_BREAKS.map(officialGame).filter(Boolean).map(g => tile(`/play/${g.slug}`, tileArt(g), g.title, ''));
+  // The teaching loop (docs/decisions.md "The teaching loop"): the card until each step is done once (or it is hidden),
+  // then a small "How Oomba fits your week" link under the tools row.
+  const loop = TL.loopState(u), showLoop = TL.showCard(loop);
   const summary = [t('teach.home.classesN', { count: mine.length }), answers ? t('teach.home.waitingN', { count: answers }) : ''].filter(Boolean).join(' · ');
   return html`
   <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
     ${mine.length ? html`<a class="btn" href="/teach/summary" id="teach-summary">📬 ${t('digest.page.link')}</a>` : ''}${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
   <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${makeGameBtn(t)}</nav>
+  ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>`}
   ${admins.map(x => html`<section class="panel schoolcard"><a class="sc-link" href="/school/${x.slug}"><b>🏫 ${t('school.teach.manage', { school: x.name })}</b>
       <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
     ${teachPlanCard(req, x)}</section>`)}
@@ -539,7 +546,7 @@ router.get('/teach', requireUser, (req, res) => {
   const t = req.t; const u = req.user;
   // The platform admin who isn't staff of a school works from Schools, not from an empty teacher page.
   if (!S.isSchoolStaff(u)) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
-  page(req, res, { title: t('nav.classroom'), active: 'classes', body: classroomHome(req), head: CSS });
+  page(req, res, { title: t('nav.classroom'), active: 'classes', body: classroomHome(req), head: html`${CSS}${LOOP_CSS}` });
 });
 router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (req, res) => {
   const t = req.t; const { schoolId, name, subject, grade, teacherId } = b(req);

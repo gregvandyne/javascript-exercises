@@ -393,3 +393,18 @@ main{position:relative;z-index:1}
   .rv-wait{opacity:1;transform:none}
 }
 @media print{.lp-sky,.lp-floats,.lp-floor,.lp-bar,.lp-marquee{display:none}body.lp{background:#fff;color:#000}}
+
+/* The teaching loop, Plan → Play → Check → Feedback (server/views/teacher-loop.js, docs/decisions.md "The teaching loop"):
+   numbered cards like "How it works", each with its tools, then the four real screens in the device frame. */
+.lp-loop-steps{display:grid;gap:18px}
+@media (min-width:680px){.lp-loop-steps{grid-template-columns:1fr 1fr}}
+@media (min-width:1100px){.lp-loop-steps{grid-template-columns:repeat(4,1fr);gap:20px}}
+.lp-loop-step{display:flex;flex-direction:column}
+.lp-loop-step>p{flex:none}
+.lp-loop-tools{display:grid;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.lp-loop-tools li{display:flex;gap:10px;align-items:flex-start;color:var(--text);font-weight:600;font-size:15px}
+.lp-loop-tools .lp-check{margin-top:3px}
+.lp-loop-shots{display:grid;gap:clamp(22px,3vw,36px);margin-top:clamp(40px,5vw,64px)}
+@media (min-width:760px){.lp-loop-shots{grid-template-columns:1fr 1fr}}
+.lp-loop-shot .lp-screen img{height:auto}
+.lp-loop-cta{margin-top:clamp(36px,5vw,56px)}

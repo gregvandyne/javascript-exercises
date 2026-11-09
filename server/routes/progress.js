@@ -26,6 +26,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { onLocales as ttsOnLocales } from '../services/tts.js';
 import { config } from '../config.js';
+import { markCheck } from '../services/teach-loop.js';
 import { liveGameOf } from '../live/live-games.js';
 import { templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js';
 import { scanVersion } from '../services/scanner.js';
@@ -95,6 +96,9 @@ router.post('/api/progress/:clid/:sid/hand-in', requireUser, rateLimit('progress
 
 // ================================================================ teachers
 const loadClass = (req, res) => { const c = S.getClass(req.params.id || req.params.cid); if (!c || !S.canManageClass(req.user, c)) { no(req, res); return null; } return c; };
+/** A teacher's Check pages (the gradebook, its CSV, one lesson's progress): the class is theirs, so the teaching loop's
+ *  Check step ticks itself off (services/teach-loop.js). */
+const checkPage = (req, res) => { const c = loadClass(req, res); if (c) markCheck(req.user); return c; };
 const pct = (d, t) => (t ? Math.round((100 * d) / t) : 0);
 function bar(d, t) {
   const p = pct(d, t);
@@ -119,7 +123,7 @@ const overallOf = p => (p.cells.some(x => !x.locked && x.total) ? `${p.overall}%
 /** The gradebook: students down the side, assigned lessons across the top. Lessons that haven't opened are greyed out
  *  and left out of Overall; cells with answers to review go straight to the student's first one. */
 router.get('/class/:id/progress', requireUser, (req, res) => {
-  const c = loadClass(req, res); if (!c) return;
+  const c = checkPage(req, res); if (!c) return;
   const t = req.t, f = req.fmt;
   const gb = P.classProgress(c.id);
   const firstNew = P.firstNewAnswers(c.id);
@@ -208,7 +212,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Overall (the same
  *  figure as the page: lessons that haven't opened are left out). */
 router.get('/class/:id/progress.csv', requireUser, (req, res) => {
-  const c = loadClass(req, res); if (!c) return;
+  const c = checkPage(req, res); if (!c) return;
   const t = req.t;
   const gb = P.classProgress(c.id);
   const cell = v => { const s = String(v == null ? '' : v); return /[",\n;]/.test(s) || /^[=+\-@]/.test(s) ? `"${s.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""')}"` : s; };
@@ -227,7 +231,7 @@ router.get('/class/:id/progress.csv', requireUser, (req, res) => {
 
 /** One lesson, under the class tabs: every student × every step, then the written answers with feedback forms. */
 router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
-  const c = loadClass(req, res); if (!c) return;
+  const c = checkPage(req, res); if (!c) return;
   const lp = P.lessonProgress(req.params.clid);
   if (!lp || lp.cl.class_id !== c.id) return no(req, res);
   const t = req.t, f = req.fmt;
@@ -337,7 +341,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   ${toRead ? html`<p class="notice" id="to-review">✍️ ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
   ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : !lp.steps.length ? html`<section class="panel"><p class="muted">${t('lessons.lesson.noSteps')}</p></section>`
-    : html`<section class="panel">${lp.students.length > 3 ? html`<div class="row gb-sort" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">⚠️ ${t('progress.lesson.attention')}</button></div>` : ''}<p class="small muted gb-swipe" aria-hidden="true">${t('progress.lesson.swipe')} →</p><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps" id="lp-steps">
+    : html`<section class="panel"><div class="row gb-sort" id="needs-attention" hidden><button class="chip" type="button" aria-pressed="false" data-sort="lp-steps">⚠️ ${t('progress.lesson.attention')}</button></div><p class="small muted gb-swipe" aria-hidden="true">${t('progress.lesson.swipe')} →</p><div class="gbwrap" tabindex="0" role="region" aria-label="${l.title}"><table class="tbl gradebook steps" id="lp-steps">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>${lp.steps.map((s, i) => html`<th scope="col" title="${s.title || t(`lessons.kinds.${s.kind}`)}"><span aria-hidden="true">${KIND_ICON[s.kind]}</span> ${i + 1}<span class="gb-step">${s.title || t(`lessons.kinds.${s.kind}`)}</span></th>`)}<th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>
       <tbody>${lp.students.map(p => html`<tr id="s-${p.id}" data-attn="${(p.toRead ? 4 : 0) + (lateFor(p) ? 2 : 0) + (p.done && p.done < p.total ? 1 : 0)}"><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted gb-sub"><span>${p.done}/${p.total}</span>${lateFor(p) ? html`<span class="gb-late-mark" title="${t('lessons.class.late')}"><span aria-hidden="true">⏰</span><span class="sr-only">${t('lessons.class.late')}</span></span>` : ''}${p.toRead && p.firstNew ? html`<a class="chip-s warn" href="#a-${p.firstNew}-${p.id}" title="${t('progress.gradebook.toRead', { count: p.toRead })}">✍️ ${p.toRead}<span class="sr-only"> ${t('progress.gradebook.toRead', { count: p.toRead })}</span></a>` : ''}</span></th>
         ${lp.steps.map((s, i) => { const x = p.cells[i]; const g = s.kind === 'build' && x && x.game_id ? games_.get(x.game_id) : null;

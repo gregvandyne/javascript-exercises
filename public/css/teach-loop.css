@@ -1,0 +1,60 @@
+/* The teaching loop, Plan → Play → Check → Feedback (server/views/teacher-loop.js, docs/decisions.md "The teaching loop"),
+   in the app's look: the Classroom home's card (.tl-compact), /teach/loop and the section on /teachers (.tl-page).
+   Colours are app.css tokens only, so light, dark and the device theme all follow; logical properties for RTL. */
+.tl .chip{white-space:normal;text-align:start;line-height:1.2;padding-block:6px}
+.tl-tick{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px dashed var(--edge);color:var(--on-accent);background:transparent}
+.tl-tick.on{border:2px solid var(--accent-line);background:var(--accent)}
+.tl-check{width:18px;height:18px}
+
+/* ------------------------------------------------ the Classroom home's card */
+.tl-compact{margin:0 0 var(--s5)}
+.tl-top{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
+.tl-top>h2{margin:0;font-size:1.25rem;flex:1 1 auto;min-width:0}
+.tl-count{flex:none}
+.tl-hide{margin:0;flex:none}
+.tl-sub{margin:var(--s2) 0 var(--s4)}
+.tl-mini{display:grid;gap:var(--s3);margin:0;padding:0}
+@media (min-width:640px){.tl-mini{grid-template-columns:1fr 1fr}}
+@media (min-width:1100px){.tl-mini{grid-template-columns:repeat(4,1fr)}}
+.tl-mstep{display:flex;gap:var(--s3);align-items:flex-start;min-width:0;padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2);border:1px solid var(--line)}
+.tl-mstep.is-done{background:var(--accent-soft);border-color:var(--accent-line)}
+.tl-mtext{display:grid;gap:var(--s1);min-width:0}
+.tl-mtext>b{line-height:1.25}
+.tl-mtools{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s2)}
+.tl-more{margin:var(--s4) 0 0}
+.tl-more a{display:inline-flex;align-items:center;min-height:44px}
+.tl-make{margin:0 0 var(--s4)}
+.tl-week{margin:calc(-1 * var(--s2)) 0 var(--s4)}
+.tl-week a{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+
+/* ------------------------------------------------ /teach/loop and /teachers */
+.tl-page{margin:var(--s5) 0}
+.tl-page>.tl-h{margin:0 0 var(--s2)}
+.tl-lead{margin:0 0 var(--s5);color:var(--text-2);max-width:70ch}
+.tl-steps{display:grid;gap:var(--s4);margin:0;padding:0;counter-reset:none}
+@media (min-width:720px){.tl-steps{grid-template-columns:1fr 1fr}}
+@media (min-width:1200px){.tl-steps{grid-template-columns:repeat(4,1fr)}}
+.tl-step{display:flex;flex-direction:column;gap:var(--s3);margin:0;min-width:0}
+.tl-step.is-done{box-shadow:var(--shadow),inset 0 0 0 2px var(--accent-line)}
+.tl-step>p{margin:0;color:var(--text-2)}
+.tl-step-head{display:flex;align-items:center;gap:var(--s3)}
+.tl-step-head>h3{margin:0;flex:1;min-width:0;font-size:1.2rem}
+.tl-e{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:var(--r-sm);background:var(--accent-soft);font-size:1.5rem}
+.tl-n{display:inline-grid;place-items:center;min-width:1.6em;height:1.6em;margin-inline-end:4px;border-radius:999px;background:var(--current);color:var(--on-current);font-size:.8em}
+.tl-tools{display:grid;gap:var(--s2);margin:auto 0 0;padding:0}
+.tl-tool{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;color:var(--text-2);font-weight:600}
+.tl-tool>.tl-check{color:var(--accent-press)}
+.tl-tool>.btn{white-space:normal;text-align:start;flex:1 1 auto;justify-content:flex-start}
+.tl-tool>.tl-csv{flex:0 1 auto}
+.tl-shots{display:grid;gap:var(--s4);margin-top:var(--s5)}
+@media (min-width:700px){.tl-shots{grid-template-columns:1fr 1fr}}
+.tl-shot{margin:0;padding:var(--s2);overflow:hidden}
+.tl-shot img{display:block;width:100%;height:auto;aspect-ratio:16/10;border-radius:calc(var(--r) - 8px);border:1px solid var(--line)}
+.tl-shot figcaption{margin:var(--s2) var(--s1) var(--s1)}
+.tl-foot{flex-wrap:wrap;gap:var(--s2);margin-top:var(--s5)}
+.tl-foot>form{margin:0}
+/* On a phone only the next step to do shows its words and tools; the others (done or later) show their name, so the card
+   stays short and My classes stays near the top. Side by side, every step keeps its line. */
+@media (max-width:639px){.tl-mstep:not(.is-next) .tl-mtext>.small,.tl-mstep:not(.is-next) .tl-mtools{display:none}.tl-mstep:not(.is-next){align-items:center;padding-block:var(--s2)}.tl-mini{gap:var(--s2)}}
+/* In a grid the cards line up: no stacked-panel gap (app.css .panel+.panel) on the later ones. */
+.tl-steps>.tl-step,.tl-shots>.tl-shot{margin:0}

@@ -33,6 +33,9 @@ import * as OT from '../standards/official-tags.js';
 import { normId as stdNorm } from '../standards/ccss.js';
 import { codeChips, attribution as stdNotice } from '../views/standards.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand, SUBJECTS, SHELF_INFO, shelfGrades, TWO_PLAYER } from '../learn.js';
+import { teacherLoop } from '../views/teacher-loop.js';
+import { loopLinks } from '../services/teach-loop.js';
+import { LOOP_CSS } from './teach-loop.js';
 
 export const router = Router();
 export const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
@@ -225,6 +228,8 @@ router.get('/teachers', (req, res) => {
     <ul class="lp-hubs">${HUBS.map(h => html`<li><a class="lp-hub panel" href="${lp(req, `/learn/${h.slug}`)}"><span class="lp-hub-e" aria-hidden="true">${h.emoji}</span><span>${el(t, 'span', `learn.hubs.${h.key}.name`, {}, ' class="lp-hub-t"')}${el(t, 'span', `learn.hubs.${h.key}.short`, {}, ' class="lp-hub-d"')}</span></a></li>`)}</ul>
   </section>
 
+  ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn() })}
+
   <div class="lp-cols">
     <section class="panel" id="build" aria-labelledby="build-h">
       ${el(t, 'h2', 'teachers.build.h', {}, ' id="build-h"')}${el(t, 'p', 'teachers.build.p1')}${el(t, 'p', 'teachers.build.p2')}
@@ -258,7 +263,7 @@ router.get('/teachers', (req, res) => {
   const items = list.map((g, i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, `/g/${g.slug}`), name: g.title }));
   page(req, res, {
     title: t('teachers.title'), description: t('teachers.description'), body, bodyClass: 'lp-page',
-    head: howHead(), scripts: [HOW_SCRIPT],
+    head: html`${howHead()}${LOOP_CSS}`, scripts: [HOW_SCRIPT],
     seo: {
       index: true, path: '/teachers', langs: seo.langsWithKey('teachers.h1'), image: '/og/teachers.jpg', imageAlt: t('seo.teachers.imageAlt'),
       jsonld: [seo.graph([

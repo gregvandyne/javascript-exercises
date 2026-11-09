@@ -356,7 +356,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   <section class="panel" id="add-step"><h2>➕ ${t('lessons.step.add')}</h2>
     <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true, rubrics })}
       <div class="formacts"><button class="btn btn-primary" type="submit">➕ ${t('lessons.step.addButton')}</button></div></form>
-    <details class="newgame"><summary class="small">➕ ${t('lessons.step.newGameLink')}</summary>
+    <details class="newgame" id="new-game"><summary class="small">➕ ${t('lessons.step.newGameLink')}</summary>
       <form class="formgrid" data-api="/api/lessons/${l.id}/new-game" novalidate>
         <div class="field"><label for="ng-i">${t('lessons.step.newGameIdea')}</label><input class="input" id="ng-i" name="idea" maxlength="300" required placeholder="${t('lessons.step.newGamePlaceholder')}"><span class="err" id="ng-i-err"></span></div>
         <div class="field end"><button class="btn" type="submit">🛠️ ${t('lessons.step.newGameButton')}</button></div>

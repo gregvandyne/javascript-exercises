@@ -17,7 +17,7 @@
 //      reports they filed are kept without their user id;
 //   7. Builder turns keep only what the family and AI-spend totals add up from (id, user, charged to, day, weight,
 //      refunded); their request text goes. The per-day counters (builder_usage, ai_usage) hold no content and stay;
-//   8. the profile photo; 9. Google sign-in rows, invites and class join requests;
+//   8. the profile photo; 9. Google sign-in rows, invites and class join requests, and the teaching loop's settings row;
 //   10. the user row becomes a tombstone (like an account merge): deleted_<id>, no password, no friend code, banned.
 //       made_by / made_by_family / made_at stay, so the yearly limit and the admin's "accounts this family made" count it;
 //   11. the old username is reserved for RESERVE_DAYS (reserved_names), so nobody can sign up as the child;
@@ -89,6 +89,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // 9. Google and class join requests
     for (const tbl of ['google_identities', 'google_invites', 'join_requests']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
     forgetClassroom(u.id);   // Google Classroom: the stored token (revoked at Google best-effort)
+    // the teaching loop's row for a teacher (services/teach-loop.js: when they first opened a Check page or hid the card)
+    q.run('DELETE FROM settings WHERE key=?', `teach.loop:${u.id}`);
     // 10. the tombstone (8: the photo's file goes after the commit, its flag here)
     q.run(`UPDATE users SET username=?, display_name='deleted', password_hash=NULL, friend_code=NULL, bio='', banned=1, photo_at=0, avatar=?, color=?,
       chat_enabled=0, lang='', theme='', character_spec=NULL, password_short=0, made_note_seen_at=NULL, pw_reset_note_at=NULL WHERE id=?`, `deleted_${u.id}`, TOMB.avatar, TOMB.color, u.id);

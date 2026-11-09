@@ -7026,6 +7026,79 @@
       "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen"
+    },
+    "loop": {
+      "kicker": "Zo past Oomba in je week",
+      "h": "Plannen → Spelen → Volgen → Feedback",
+      "lead": "Eén kringloop voor elke les: plan hem, speel hem met je klas, zie wie je nodig heeft en vertel elke leerling wat de volgende stap is. Elke stap is een hulpmiddel dat al in Oomba zit.",
+      "steps": {
+        "plan": {
+          "name": "Plannen",
+          "benefit": "Begin met een kant-en-klare les of een onderwerp en maak er een spel van dat je klas wil spelen."
+        },
+        "play": {
+          "name": "Spelen",
+          "benefit": "Geef hem op met een begin- en inleverdatum, of speel hem live op het grote scherm met de hele klas."
+        },
+        "check": {
+          "name": "Volgen",
+          "benefit": "Zie in één oogopslag hoe ver elke leerling is, en wie je hulp het eerst nodig heeft."
+        },
+        "feedback": {
+          "name": "Feedback",
+          "benefit": "Lees elk antwoord en schrijf feedback die de leerling in de eigen les ziet."
+        }
+      },
+      "tools": {
+        "builder": "Een les omzetten in een spel",
+        "assign": "Opgeven aan een klas",
+        "gradebook": "Cijferoverzicht",
+        "gradebookCsv": "Cijferoverzicht met CSV-download",
+        "standards": "Tabblad Standaarden",
+        "review": "Antwoorden om te lezen",
+        "written": "Geschreven feedback die leerlingen zien",
+        "library": "Lessenbibliotheek",
+        "draftAi": "Opzet met AI",
+        "attention": "Wie aandacht nodig heeft eerst",
+        "csv": "Downloaden (CSV)",
+        "live": "Een live spel leiden"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "Het cijferoverzicht: leerlingen onder elkaar, lessen naast elkaar, met gedane stappen en antwoorden om te lezen",
+          "caption": "Cijferoverzicht: de hele klas in één oogopslag, te downloaden als CSV."
+        },
+        "attention": {
+          "alt": "De voortgang van één les, gesorteerd zodat leerlingen die aandacht nodig hebben bovenaan staan",
+          "caption": "Eerst wie aandacht nodig heeft: antwoorden om te lezen, te laat werk en halve lessen bovenaan."
+        },
+        "feedback": {
+          "alt": "Het geschreven antwoord van een leerling met het feedbackvak van de leraar en de knop om op te slaan",
+          "caption": "Feedback: schrijf een notitie, sla hem op, en de leerling ziet hem in de les."
+        },
+        "standards": {
+          "alt": "Het tabblad Standaarden van de klas: informaticastandaarden en hoe ver elke leerling is",
+          "caption": "Standaarden: de informaticastandaarden die je klas heeft behandeld, per leerling."
+        }
+      },
+      "home": {
+        "h": "Jouw lesrondje",
+        "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
+        "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
+        "makeClass": "Maak je eerste klas",
+        "count": "{done} van {total} gedaan",
+        "done": "Gedaan",
+        "todo": "Nog niet gedaan",
+        "hide": "Verbergen",
+        "hidden": "Verborgen. Je vindt het altijd onder ‘Zo past Oomba in je week’."
+      },
+      "page": {
+        "title": "Zo past Oomba in je week",
+        "lead": "Plan een les, speel hem, zie wie je nodig heeft en geef feedback: de hulpmiddelen voor elke stap, klaar voor je klas.",
+        "link": "Zo past Oomba in je week",
+        "show": "Toon de checklist weer in {classroom}",
+        "shown": "De checklist staat weer in {classroom}."
+      }
     }
   },
   "rubrics": {
