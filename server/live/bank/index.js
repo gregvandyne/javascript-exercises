@@ -8,6 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { tFor, availableLocales } from '../../i18n/index.js';
+import { cleanText } from '../../services/textfilter.js';
 const CODES = () => availableLocales().map(l => l.code);
 import { makeBank, SUBJECTS, LEVELS, COUNTS } from './engine.js';
 
@@ -52,7 +53,22 @@ export function stringsFor(lang = 'en') {
   };
 }
 const rand = () => crypto.randomInt(1 << 30) / (1 << 30);
-export const bankFor = lang => makeBank(dataFor(lang), stringsFor(lang), rand);
+// Generated maths can, by chance, spell something the text filter refuses once digits are read as letters (Japanese
+// "2x + 5 = 23 のとき" reads as a rude word), and a refused question can't be saved or hosted (cleanItems). Such an item
+// is drawn again; the hand-written subjects are reviewed and pass as they are. The games' solo packs keep the plain engine.
+const passes = it => cleanText(it.q, 300).ok;
+export function redraw(bank, items) {
+  return items.map(it => {
+    if (passes(it) || !String(it.id).startsWith('math:')) return it;
+    const level = String(it.id).split(':')[1];
+    for (let i = 0; i < 50; i++) { const again = bank.mathItem(level); if (passes(again)) return { ...again, cat: it.cat }; }
+    return it;
+  });
+}
+export const bankFor = lang => {
+  const bank = makeBank(dataFor(lang), stringsFor(lang), rand);
+  return { ...bank, pick: o => redraw(bank, bank.pick(o)), board: o => redraw(bank, bank.board(o)) };
+};
 
 /** A bank starter id: 'bank:<subject|mixed>:<level>:<count>' or, for a board, 'bank:board:<level>:<subject>+<subject>…'. */
 export function parseBankId(id) {
