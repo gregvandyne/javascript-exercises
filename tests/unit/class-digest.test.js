@@ -30,7 +30,7 @@ function fakeResend(url, init) {
   return Promise.resolve({ status: st, json: async () => (st === 200 ? { id: `re_dg_${sent.length}` } : { name: 'internal_server_error', message: 'nope' }) });
 }
 E._hooks({ fetch: fakeResend, wait: () => Promise.resolve() });
-const ON = { resendApiKey: 're_test_key', emailEnabled: true, emailPostalAddress: '', publicUrl: 'https://oomba.example' };
+const ON = { resendApiKey: 're_test_key', emailEnabled: true, emailPostalAddress: 'Oomba Academy, PO Box 1, Springfield, IL 62701, USA', publicUrl: 'https://oomba.example' };
 test.beforeEach(() => { Object.assign(config, ON); sent.length = 0; replies = []; q.run('DELETE FROM settings WHERE key=?', D.SWITCH_KEY); });
 
 let server, base = '';
@@ -187,6 +187,11 @@ test('sending: too late after downtime, the teacher\'s off switch, no address, t
   await D.runDue(s.at + 60e3);
   assert.equal(rows(ana.id).length, 0, 'sending off: nothing claimed');
   config.resendApiKey = ON.resendApiKey;
+  // No postal address (CAN-SPAM): nothing is claimed or sent; the summary goes once it is set.
+  config.emailPostalAddress = '';
+  await D.runDue(s.at + 60e3);
+  assert.equal(rows(ana.id).length, 0, 'no postal address: nothing claimed'); assert.equal(sent.length, 0);
+  config.emailPostalAddress = ON.emailPostalAddress;
   E.setDigestOff(ana.id, true);
   await D.runDue(s.at + 60e3);
   assert.equal(rows(ana.id).length, 0); assert.equal(sent.length, 0);

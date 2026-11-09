@@ -3432,7 +3432,10 @@
       },
       "privacy": {
         "h": "Privacidade",
-        "p1": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e nunca usamos a conta para ler mais nada do Google."
+        "p1": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e nunca usamos a conta para ler mais nada do Google.",
+        "p1c": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e não lemos mais nada de uma conta Google, a não ser que um professor conecte o Google Classroom.",
+        "classroom": "Quando um professor conecta o Google Classroom, lemos apenas os nomes das turmas em que ele dá aula e, da turma que ele vincula, o ID da conta Google e o nome de cada aluno, para adicioná-los à turma correspondente na Oomba Academy. Enviamos ao Google apenas o que o professor pede: uma atividade (o título da aula, um link para ela e a data de entrega) e a nota de cada aluno na aula, de 0 a 100. Nunca enviamos respostas, comentários, jogos ou desenhos dos alunos. A conexão do professor fica guardada de forma criptografada até que ele a desconecte ou exclua a conta; ao desconectar, ela também é revogada no Google.",
+        "limitedUse": "O uso e a transferência, pela Oomba Academy, de informações recebidas das APIs do Google seguem a Google API Services User Data Policy (Política de Dados do Usuário dos Serviços de API do Google), incluindo os requisitos de Limited Use (uso limitado). Nunca vendemos essas informações, nunca as usamos para publicidade nem para treinar modelos de IA, e nossa equipe só as consulta quando necessário para suporte, segurança ou por exigência legal."
       }
     }
   },

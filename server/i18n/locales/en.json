@@ -3459,7 +3459,10 @@
       },
       "privacy": {
         "h": "Privacy",
-        "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google."
+        "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google.",
+        "p1c": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and read nothing else from a Google account unless a teacher connects Google Classroom.",
+        "classroom": "When a teacher connects Google Classroom, we read only the names of the classes they teach and, for the class they link, each student's Google account id and name, to add them to the matching Oomba Academy class. We send Google only what the teacher asks for: an assignment (the lesson's title, a link to it and its due date) and each student's lesson score out of 100. We never send students' answers, feedback, games or drawings. The teacher's connection is stored encrypted until they disconnect or delete their account; disconnecting also revokes it at Google.",
+        "limitedUse": "Oomba Academy's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements. We never sell this information, use it for advertising, or use it to train AI models, and our team looks at it only when needed for support, security or the law."
       }
     }
   },

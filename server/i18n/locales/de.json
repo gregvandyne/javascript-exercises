@@ -3431,7 +3431,10 @@
       },
       "privacy": {
         "h": "Datenschutz",
-        "p1": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und nutzen das Konto nie, um sonst etwas von Google abzurufen."
+        "p1": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und nutzen das Konto nie, um sonst etwas von Google abzurufen.",
+        "p1c": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und rufen sonst nichts aus einem Google-Konto ab, außer eine Lehrkraft verbindet Google Classroom.",
+        "classroom": "Wenn eine Lehrkraft Google Classroom verbindet, lesen wir nur die Namen der Kurse, die sie unterrichtet, und für den Kurs, den sie verknüpft, die Google-Konto-ID und den Namen jedes Schülers, um sie der passenden Klasse in Oomba Academy hinzuzufügen. Wir senden an Google nur, was die Lehrkraft anfordert: eine Aufgabe (den Titel der Lektion, einen Link dazu und das Abgabedatum) und die Punktzahl jedes Schülers in der Lektion (von 100). Wir senden nie Antworten, Feedback, Spiele oder Zeichnungen von Schülern. Die Verbindung der Lehrkraft wird verschlüsselt gespeichert, bis sie die Verbindung trennt oder ihr Konto löscht; beim Trennen wird sie auch bei Google widerrufen.",
+        "limitedUse": "Die Nutzung und Weitergabe von Informationen, die Oomba Academy von Google-APIs erhält, entspricht der Google API Services User Data Policy, einschließlich der Limited-Use-Anforderungen (Anforderungen zur eingeschränkten Nutzung). Wir verkaufen diese Informationen nie, nutzen sie nie für Werbung und nie zum Trainieren von KI-Modellen, und unser Team sieht sie sich nur an, wenn es für Support, Sicherheit oder aus rechtlichen Gründen nötig ist."
       }
     }
   },

@@ -3430,7 +3430,10 @@
       },
       "privacy": {
         "h": "Privacidad",
-        "p1": "Mientras la cuenta de Google está conectada, guardamos su ID, su dirección de correo y el dominio de la escuela, para reconocerla al iniciar sesión. Nunca guardamos la foto de Google, nunca mostramos el nombre de Google de un estudiante en el sitio de juegos y nunca usamos la cuenta para leer nada más de Google."
+        "p1": "Mientras la cuenta de Google está conectada, guardamos su ID, su dirección de correo y el dominio de la escuela, para reconocerla al iniciar sesión. Nunca guardamos la foto de Google, nunca mostramos el nombre de Google de un estudiante en el sitio de juegos y nunca usamos la cuenta para leer nada más de Google.",
+        "p1c": "Mientras la cuenta de Google está conectada, guardamos su ID, su dirección de correo y el dominio de la escuela, para reconocerla al iniciar sesión. Nunca guardamos la foto de Google, nunca mostramos el nombre de Google de un estudiante en el sitio de juegos y no leemos nada más de una cuenta de Google, salvo que un docente conecte Google Classroom.",
+        "classroom": "Cuando un docente conecta Google Classroom, leemos solo los nombres de las clases que imparte y, de la clase que vincula, el ID de la cuenta de Google y el nombre de cada estudiante, para añadirlos a la clase correspondiente de Oomba Academy. Solo enviamos a Google lo que el docente pide: una tarea (el título de la lección, un enlace a ella y su fecha de entrega) y la puntuación de cada estudiante en la lección, sobre 100. Nunca enviamos las respuestas, los comentarios, los juegos ni los dibujos de los estudiantes. La conexión del docente se guarda cifrada hasta que la desconecte o elimine su cuenta; al desconectarla, también se revoca en Google.",
+        "limitedUse": "El uso y la transferencia que hace Oomba Academy de la información recibida de las API de Google cumplen la Google API Services User Data Policy (Política de Datos de Usuario de los Servicios de API de Google), incluidos los requisitos de Limited Use (uso limitado). Nunca vendemos esta información, nunca la usamos para publicidad ni para entrenar modelos de IA, y nuestro equipo solo la consulta cuando es necesario por motivos de soporte, seguridad o legales."
       }
     }
   },

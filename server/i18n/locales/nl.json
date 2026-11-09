@@ -3431,7 +3431,10 @@
       },
       "privacy": {
         "h": "Privacy",
-        "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen."
+        "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen.",
+        "p1c": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en lezen verder niets uit een Google-account, tenzij een leerkracht Google Classroom koppelt.",
+        "classroom": "Als een leerkracht Google Classroom koppelt, lezen we alleen de namen van de klassen waaraan die lesgeeft en, voor de klas die gekoppeld wordt, de Google-account-id en naam van elke leerling, om ze toe te voegen aan de bijbehorende klas in Oomba Academy. We sturen Google alleen wat de leerkracht vraagt: een opdracht (de titel van de les, een link ernaartoe en de inleverdatum) en de score van elke leerling voor de les, op 100. We sturen nooit antwoorden, feedback, games of tekeningen van leerlingen. De koppeling van de leerkracht wordt versleuteld bewaard tot die de koppeling verbreekt of het account verwijdert; bij het verbreken wordt de toegang ook bij Google ingetrokken.",
+        "limitedUse": "Het gebruik en de overdracht door Oomba Academy van informatie die via Google-API's wordt ontvangen, voldoen aan het Google API Services User Data Policy (beleid voor gebruikersgegevens van Google API-services), inclusief de Limited Use-vereisten (vereisten voor beperkt gebruik). We verkopen deze informatie nooit, gebruiken ze nooit voor advertenties of om AI-modellen te trainen, en ons team bekijkt ze alleen als dat nodig is voor support, beveiliging of de wet."
       }
     }
   },

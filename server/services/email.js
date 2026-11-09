@@ -119,13 +119,16 @@ const retryable = (st, data) => st === 429 || st >= 500 || (st === 409 && data?.
  * Sends one email to an account.
  * { userId, template, category: 'nudge'|'transactional'|'digest'|'test', subject, html, text, idemKey, to? (test sends only) }
  * -> { status: 'sent'|'skipped'|'failed'|'off', reason?, id? }
- * 'off' (sending is off, or a nudge while EMAIL_POSTAL_ADDRESS is empty) leaves no log row: the caller may try again
+ * 'off' (sending is off, or a nudge or digest while EMAIL_POSTAL_ADDRESS is empty) leaves no log row: the caller may try again
  * later. Every other outcome leaves one.
  */
 export async function send({ userId, template, category, subject, html, text, idemKey, to = null }) {
   if (!sendingOn()) return { status: 'off', reason: config.resendApiKey ? 'disabled' : 'no_key' };
-  if (category === 'nudge' && !config.emailPostalAddress) {
-    warnOnce('postal', 'Trial emails are not sent: EMAIL_POSTAL_ADDRESS is not set (CAN-SPAM needs a postal address in their footer).');
+  // Everything but receipts and admin test sends (nudges, the weekly digest, any later kind) needs the postal address
+  // (CAN-SPAM). The trial unsubscribe stops nudges; the weekly digest has its own switch (digest_off_at).
+  const marketing = category !== 'transactional' && category !== 'test';
+  if (marketing && !config.emailPostalAddress) {
+    warnOnce('postal', 'Trial and summary emails are not sent: EMAIL_POSTAL_ADDRESS is not set (CAN-SPAM needs a postal address in their footer).');
     return { status: 'off', reason: 'no_postal_address' };
   }
   const base = { userId, template, category, idemKey };

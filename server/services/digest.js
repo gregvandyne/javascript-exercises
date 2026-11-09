@@ -186,7 +186,8 @@ function claim(userId, slot, at) {
 export async function runDue(at = now()) {
   const out = { sent: 0, skipped: 0, failed: 0, waiting: 0 };
   out.failed += closeLate(at);
-  if (!switchOn() || !E.sendingOn()) return out;
+  // No postal address yet (CAN-SPAM, services/email.js): nothing is claimed, so this week's summaries go once it is set.
+  if (!switchOn() || !E.nudgesAllowed()) return out;
   for (const id of teacherIds()) {
     const u = getUser(id);
     if (!E.adultRecipient(u) || !S.isStaff(u)) continue;

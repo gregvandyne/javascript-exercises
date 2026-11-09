@@ -17,6 +17,17 @@ server/routes/info.js; change it with every change to the text).
 - Owner steps that remain: Stripe Dashboard → Settings → Business → Public details, Terms of service URL
   `https://oomba.ai/terms`; then Render `TERMS_PUBLISHED=1`.
 
+### After the sign-off: Google Classroom on /privacy (2026-11-09, needs the lawyer's sign-off)
+
+With `GOOGLE_CLASSROOM` on, the "Privacy" section about Google accounts on /privacy (`google.setup.privacy`, all 13
+languages) changes: `p1c` replaces `p1` (it no longer says we read nothing else from Google), and two paragraphs are
+added: `classroom` (what a teacher's Classroom connection reads: class names, the linked class's students' Google ids
+and names; what it sends: the assignment's title, link and due date and each student's score out of 100; never answers,
+feedback, games or drawings; stored encrypted until disconnect, revoked at Google) and `limitedUse` (Google's required
+statement that use of Google API data follows the API Services User Data Policy including Limited Use, plus: never sold,
+never for ads, never to train AI). Text written by us, not yet reviewed: **owner: not yet · lawyer: not yet.**
+`LEGAL_UPDATED` is already 2026-11-09, so it did not move; move it to the sign-off date if the lawyer changes the text.
+
 ## Turning on TERMS_PUBLISHED
 
 `TERMS_PUBLISHED=1` makes family Checkout ask the buyer to agree to /terms (Stripe's own checkbox; set the Terms URL in

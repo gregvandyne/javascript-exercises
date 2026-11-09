@@ -3431,7 +3431,10 @@
       },
       "privacy": {
         "h": "Privacy",
-        "p1": "Finché l'account Google è collegato, conserviamo il suo id, l'indirizzo email e il dominio della scuola, per riconoscerlo all'accesso. Non salviamo mai la foto Google, non mostriamo mai il nome Google di uno studente sul sito dei giochi e non usiamo mai l'account per leggere altro da Google."
+        "p1": "Finché l'account Google è collegato, conserviamo il suo id, l'indirizzo email e il dominio della scuola, per riconoscerlo all'accesso. Non salviamo mai la foto Google, non mostriamo mai il nome Google di uno studente sul sito dei giochi e non usiamo mai l'account per leggere altro da Google.",
+        "p1c": "Finché l'account Google è collegato, conserviamo il suo id, l'indirizzo email e il dominio della scuola, per riconoscerlo all'accesso. Non salviamo mai la foto Google, non mostriamo mai il nome Google di uno studente sul sito dei giochi e non leggiamo nient'altro da un account Google, a meno che un insegnante non colleghi Google Classroom.",
+        "classroom": "Quando un insegnante collega Google Classroom, leggiamo solo i nomi dei corsi in cui insegna e, per il corso che collega, l'id dell'account Google e il nome di ogni studente, per aggiungerli alla classe corrispondente su Oomba Academy. Inviamo a Google solo ciò che l'insegnante richiede: un compito (il titolo della lezione, un link alla lezione e la scadenza) e il punteggio di ogni studente nella lezione, su 100. Non inviamo mai le risposte, i feedback, i giochi o i disegni degli studenti. Il collegamento dell'insegnante viene conservato in forma cifrata finché non lo scollega o non elimina il proprio account; scollegandolo, viene revocato anche presso Google.",
+        "limitedUse": "L'uso e il trasferimento da parte di Oomba Academy delle informazioni ricevute dalle API di Google rispettano la Google API Services User Data Policy (Norme sui dati utente dei servizi API di Google), inclusi i requisiti di Limited Use (uso limitato). Non vendiamo mai queste informazioni, non le usiamo mai per la pubblicità né per addestrare modelli di IA, e il nostro team le consulta solo quando è necessario per assistenza, sicurezza o obblighi di legge."
       }
     }
   },

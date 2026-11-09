@@ -104,7 +104,11 @@ export const contact = (req, level = 2) => (config.contactEmail ? html`<section 
 // With Sign in with Google on, what the site keeps from a school Google account (nothing while it is off).
 export function googlePrivacy(req, level = 2, { fold = false } = {}) {
   if (!googleEnabled()) return '';
-  const head = html`${raw(`<h${level}>`)}${req.t('google.setup.privacy.h')}${raw(`</h${level}>`)}`, body = html`<p>${req.t('google.setup.privacy.p1')}</p>`;
+  // Google Classroom (GOOGLE_CLASSROOM, services/gclassroom.js): what a teacher's connection reads and sends, and the
+  // Limited Use statement Google's API Services User Data Policy asks for.
+  const classroom = !!config.googleClassroom;
+  const head = html`${raw(`<h${level}>`)}${req.t('google.setup.privacy.h')}${raw(`</h${level}>`)}`;
+  const body = html`<p>${req.t(classroom ? 'google.setup.privacy.p1c' : 'google.setup.privacy.p1')}</p>${classroom ? html`<p>${req.t('google.setup.privacy.classroom')}</p><p>${req.t('google.setup.privacy.limitedUse')}</p>` : ''}`;
   return html`<section class="panel" id="google">${fold ? folded(head, body) : html`${head}${body}`}</section>`;
 }
 // /parents itself is in routes/parents.js: a page for parents with these sections under "Safety and privacy, in detail".
