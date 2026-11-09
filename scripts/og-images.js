@@ -51,14 +51,14 @@ const brand = () => `<div class="brand">${appMark()}${wordmark()}<b>Academy</b><
 const page = inner => `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body>${inner}</body></html>`;
 
 const CARDS = [
-  { file: 'site.jpg', html: page(`<div class="card"><div>${brand()}<h1>Fun learning games for kids</h1><p class="sub">Play free in the browser, and build your own games with AI.</p><div class="pills"><span>Ages 8–14</span><span>No ads</span><span>Free</span></div></div>
+  { file: 'site.jpg', html: page(`<div class="card"><div>${brand()}<h1>Fun learning games for kids</h1><p class="sub">Play free in the browser, and build your own games with AI.</p><div class="pills"><span>Grades K–8</span><span>No ads</span><span>Free</span></div></div>
     <div class="stack"><img src="${cover('castle-clash')}"><img src="${cover('sum-racer')}"><img src="${cover('word-hunt')}"></div><p class="url">oomba.ai</p></div>`) },
-  { file: 'teachers.jpg', html: page(`<div class="card"><div>${brand()}<span class="kicker">For teachers</span><h1 style="font-size:58px">Fun, interactive learning games for the classroom</h1><div class="pills"><span>Free to start</span><span>No ads</span><span>Ages 8–14</span></div></div>
+  { file: 'teachers.jpg', html: page(`<div class="card"><div>${brand()}<span class="kicker">For teachers</span><h1 style="font-size:58px">Fun, interactive learning games for the classroom</h1><div class="pills"><span>Free to start</span><span>No ads</span><span>Grades K–8</span></div></div>
     <div class="stack"><img src="${cover('loop-lab')}"><img src="${cover('sum-racer')}"><img src="${cover('word-peek')}"></div><p class="url">oomba.ai/teachers</p></div>`) },
   ...[
-    { file: 'parents.jpg', kicker: 'For parents', h1: 'Fun learning games for kids 8–14, safe by design', pills: ['Free', 'No ads', 'No stranger chat'], covers: ['word-hunt', 'sum-racer', 'castle-clash'], url: 'oomba.ai/parents' },
+    { file: 'parents.jpg', kicker: 'For parents', h1: 'Fun learning games for K–8 kids, safe by design', pills: ['Free', 'No ads', 'No stranger chat'], covers: ['word-hunt', 'sum-racer', 'castle-clash'], url: 'oomba.ai/parents' },
     { file: 'parents-ai-builder-safety.jpg', kicker: 'For parents', h1: 'Is the AI Builder safe for my child?', pills: ['What it sees', 'The rules it follows'], covers: ['hero-of-sunvale', 'loop-lab', 'munch-maze'], url: 'oomba.ai/parents' },
-    { file: 'parents-safety-and-screen-time.jpg', kicker: 'A parent’s guide', h1: 'Good screen time for kids 8–14', pills: ['No ads', 'Nothing to buy', 'A checklist'], covers: ['shark-plank', 'word-peek', 'beat-lanes'], url: 'oomba.ai/parents' },
+    { file: 'parents-safety-and-screen-time.jpg', kicker: 'A parent’s guide', h1: 'Good screen time for kids 5–14', pills: ['No ads', 'Nothing to buy', 'A checklist'], covers: ['shark-plank', 'word-peek', 'beat-lanes'], url: 'oomba.ai/parents' },
     { file: 'ages-8-9.jpg', kicker: 'Ages 8 and 9', h1: 'Free learning games for 8 and 9 year olds', pills: ['Times tables', 'Spelling', 'Chess'], covers: ['shark-plank', 'sum-racer', 'word-hunt'], url: 'oomba.ai' },
     { file: 'ages-10-11.jpg', kicker: 'Ages 10 and 11', h1: 'Free learning games for 10 and 11 year olds', pills: ['Division', 'Word puzzles', 'Make a game'], covers: ['word-peek', 'castle-clash', 'brick-drop'], url: 'oomba.ai' },
     { file: 'ages-12-14.jpg', kicker: 'Ages 12 to 14', h1: 'Games for 12 to 14 year olds that aren’t babyish', pills: ['Strategy', 'Music', 'Make a game'], covers: ['loop-lab', 'hero-of-sunvale', 'castle-clash'], url: 'oomba.ai' },
@@ -84,7 +84,7 @@ CARDS.push({ file: 'landing.jpg', html: page(`<style>${LANDING_CSS}</style><div 
 const KICKER = { learning: 'Free learning game', words: 'Free word game', board: 'Free board game', music: 'Free music game', puzzle: 'Free puzzle game', arcade: 'Free arcade game', sports: 'Free sports game', adventure: 'Free adventure game', silly: 'Free silly game' };
 for (const f of fs.readdirSync(COVERS).filter(f => f.endsWith('.jpg'))) {
   const slug = f.slice(0, -4); let g; try { g = seed(slug); } catch { continue; }
-  CARDS.push({ file: `${slug}.jpg`, html: page(`<div class="card"><div>${brand()}<span class="kicker">${esc(KICKER[g.category] || 'Free game')}</span><h1>${esc(g.title)}</h1><p class="sub">Free in any browser · Ages 8–14</p></div>
+  CARDS.push({ file: `${slug}.jpg`, html: page(`<div class="card"><div>${brand()}<span class="kicker">${esc(KICKER[g.category] || 'Free game')}</span><h1>${esc(g.title)}</h1><p class="sub">Free in any browser · Grades K–8</p></div>
     <div class="one"><img src="${cover(slug)}"></div><p class="url">oomba.ai</p></div>`) });
 }
 

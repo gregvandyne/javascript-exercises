@@ -3,7 +3,7 @@
   "layout": {
     "titleHome": "Fun learning games for kids: play and build · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
-    "description": "Free, fun learning games for kids aged 8 to 14. Play right in the browser, and build your own games with an AI Builder.",
+    "description": "Free, fun learning games for kids aged 5 to 14. Play right in the browser, and build your own games with an AI Builder.",
     "skip": "Skip to the games",
     "mainNav": "Main",
     "signIn": "Sign in",
@@ -531,7 +531,7 @@
     },
     "intro": {
       "heading": "Fun, interactive learning games for kids",
-      "text": "Free games for ages 8 to 14 to play in class or at home, and a Builder that turns your own idea into a game.",
+      "text": "Free games for ages 5 to 14 to play in class or at home, and a Builder that turns your own idea into a game.",
       "teachers": "For teachers",
       "parents": "For parents"
     },
@@ -3930,7 +3930,7 @@
       "print": {
         "title": "School plan: a page for your school's admin",
         "heading": "Oomba Academy school plan",
-        "intro": "A teacher at your school would like a school plan on Oomba Academy: learning games for ages 8 to 14, and a Builder where students make their own games. Here is what it costs and how to set it up.",
+        "intro": "A teacher at your school would like a school plan on Oomba Academy: learning games for ages 5 to 14, and a Builder where students make their own games. Here is what it costs and how to set it up.",
         "printButton": "Print or save as PDF",
         "back": "Back to school plans",
         "cost": "What it costs",
@@ -4050,7 +4050,7 @@
   },
   "seo": {
     "home": {
-      "description": "Free, ad-free learning games for kids aged 8 to 14: math, reading, chess and music. Play in any browser, and build your own games with an AI Builder.",
+      "description": "Free, ad-free learning games for kids aged 5 to 14: math, reading, chess and music. Play in any browser, and build your own games with an AI Builder.",
       "imageAlt": "Oomba Academy: fun learning games for kids"
     },
     "teachers": {
@@ -4084,16 +4084,16 @@
   },
   "teachers": {
     "title": "Fun interactive learning games for classrooms",
-    "description": "Free, ad-free learning games for ages 8 to 14 that run in any browser, Chromebooks too: math, reading, chess and music, plus an AI game Builder.",
+    "description": "Free, ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too: math, reading, chess and music, plus an AI game Builder.",
     "kicker": "🍎 For teachers",
     "h1": "Fun, interactive learning games your class will ask for",
-    "lead": "Oomba Academy is a free website of learning games for ages 8 to 14. Students play right in the browser, and your class can make its own games by describing them to our AI Builder.",
+    "lead": "Oomba Academy is a free website of learning games for ages 5 to 14. Students play right in the browser, and your class can make its own games by describing them to our AI Builder.",
     "badges": {
       "free": "Free to start",
       "ads": "No ads",
       "browser": "Runs in any browser, Chromebooks too",
       "google": "Sign in with Google",
-      "ages": "Made for ages 8 to 14"
+      "ages": "Made for ages 5 to 14"
     },
     "cta": {
       "start": "Get a free school account",
@@ -4194,7 +4194,7 @@
       "q4": "How do you protect student privacy?",
       "a4": "We never ask students for an email address, age or home address. There are no ads and no tracking cookies, and a student's real name is seen only by their school's staff. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
       "q5": "What ages and grades is it for?",
-      "a5": "Oomba Academy is made for ages 8 to 14, roughly grades 3 to 8. Some games, such as Shark Plank and the first Sum Racer tracks, also suit younger readers.",
+      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players, and the full courses start in grade 3.",
       "q6": "How do I add my class?",
       "a6": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
       "a6google": "First, email us to set up your school (it’s free). Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
@@ -4633,7 +4633,7 @@
         "name": "Reading and spelling games",
         "short": "Word searches, hangman and a daily word puzzle",
         "title": "Free reading and spelling games for kids",
-        "description": "Word searches, hangman and a daily word puzzle for ages 8 to 14, with words read aloud for early readers. Free, no ads, in any browser.",
+        "description": "Word searches, hangman and a daily word puzzle for ages 5 to 14, with words read aloud for early readers. Free, no ads, in any browser.",
         "h1": "Reading and spelling games for early and growing readers",
         "lead": "Three word games that build spelling and vocabulary. Shark Plank and Word Hunt read words aloud, so they suit early readers. Word Peek is a daily word puzzle for confident spellers.",
         "tips": "Use a Word Hunt theme as a warm-up for a topic, solve the Daily Peek together on the board and talk about each guess, or set Shark Plank for early finishers.",
@@ -4653,7 +4653,7 @@
         "name": "Chess and strategy games",
         "short": "Chess lessons and puzzles, four in a row, block puzzles",
         "title": "Free chess and strategy games for kids",
-        "description": "Learn chess with short lessons and puzzles, then play a friend or a robot. Plus four in a row and falling-block puzzles, free for ages 8 to 14.",
+        "description": "Learn chess with short lessons and puzzles, then play a friend or a robot. Plus four in a row and falling-block puzzles, free for ages 5 to 14.",
         "h1": "Chess and strategy games that build thinking skills",
         "lead": "Strategy games ask students to plan ahead, spot patterns and think about what the other player will do. Castle Clash teaches chess from the first move. Drop Four and Brick Drop are quick games of planning and patterns.",
         "tips": "Run a class chess club with Castle Clash's lessons and puzzles, or pair students on one device for a game of Drop Four.",
@@ -4673,7 +4673,7 @@
         "name": "Music games",
         "short": "Make beats and play along to songs",
         "title": "Music games for kids: make beats and play in rhythm",
-        "description": "Make your own beats in Loop Lab and tap along to nine songs in Beat Lanes. Free music games for ages 8 to 14, with no ads, in any browser.",
+        "description": "Make your own beats in Loop Lab and tap along to nine songs in Beat Lanes. Free music games for ages 5 to 14, with no ads, in any browser.",
         "h1": "Music games: make beats and play along",
         "lead": "Loop Lab is a beat maker: students tap squares to build a loop of drums, bass and melody and hear it straight away. Beat Lanes is a rhythm game with nine songs, from Twinkle Twinkle to the Can-Can.",
         "tips": "Use Loop Lab's music challenges to explore patterns and repetition, or play a Beat Lanes song as a quick brain break. Headphones help in a busy room.",
@@ -4706,7 +4706,7 @@
         "name": "Make your own game",
         "short": "Kids design games with the AI Builder",
         "title": "Make your own video game: AI game maker for kids",
-        "description": "Kids describe a game in plain words and the Builder makes it, showing its steps. No coding needed, ad-free, for ages 8 to 14, and private until shared.",
+        "description": "Kids describe a game in plain words and the Builder makes it, showing its steps. No coding needed, ad-free, for ages 5 to 14, and private until shared.",
         "h1": "Make your own game, no coding needed",
         "lead": "On Oomba Academy, students describe the game they want and the AI Builder makes it. Then they play it, test it and ask for changes, one idea at a time.",
         "how": {
@@ -4732,7 +4732,7 @@
           "q2": "Who can see the games students make?",
           "a2": "Only the student, until they share it. They can share it with friends or their class, and a game for everyone is reviewed before anyone else can play it.",
           "q3": "What ages is it for?",
-          "a3": "Ages 8 to 14.",
+          "a3": "Ages 5 to 14.",
           "q4": "My child wants to make video games. Where do they start?",
           "a4": "With a small idea, like a maze or a catching game. They describe it, play it, then ask for one change at a time. Later, many kids also try coding tools like Scratch.",
           "q5": "Is this real coding?",
@@ -4853,7 +4853,7 @@
         "description": "Free, ad-free browser games for 10 and 11 year olds: times tables and division, a daily word puzzle, chess puzzles, music, and making their own games.",
         "h1": "Learning games for 10 and 11 year olds",
         "lead": "At 10 and 11, kids want a real challenge and a say in what they play. These games go up to all the times tables and division, chess puzzles and a daily word puzzle, and the Builder lets them make a game of their own.",
-        "abcya": "Outgrowing ABCya? Its games are for PreK to grade 6. Oomba Academy is made for ages 8 to 14.",
+        "abcya": "Outgrowing ABCya? Its games are for PreK to grade 6. Oomba Academy is made for ages 5 to 14.",
         "make": {
           "p": "Kids this age love making their own games. They describe one in plain words, like “a quiz about volcanoes” or “a maze with a robot”, and the Builder makes it. Then they test it and ask for changes. It’s free every day."
         },
@@ -4898,7 +4898,7 @@
         },
         "faq": {
           "q2": "Is Oomba Academy too young for a 13 year old?",
-          "a2": "It’s made for ages 8 to 14. Older kids mostly come for the Builder, real chess and music making, which grow with them.",
+          "a2": "It’s made for ages 5 to 14. Older kids mostly come for the Builder, real chess and music making, which grow with them.",
           "q3": "Can my teen make their own games?",
           "a3": "Yes. They describe the game in words and the Builder makes it. A new game is private until they share it, and a game for everyone is reviewed by Claude first, with our team checking any it is unsure about.",
           "q4": "Is there chat with strangers?",
@@ -4909,9 +4909,9 @@
     "index": {
       "crumb": "Learn",
       "title": "Learning games by subject and age",
-      "description": "Free learning games for kids aged 8 to 14, by subject (math, words, strategy, music, brain breaks, making games) and by age. Play in the browser, at school or at home.",
+      "description": "Free learning games for kids aged 5 to 14, by subject (math, words, strategy, music, brain breaks, making games) and by age. Play in the browser, at school or at home.",
       "h1": "Learning games by subject and age",
-      "lead": "Free games for ages 8 to 14 that play in the browser. Pick a subject or an age to see which games fit and what they practice.",
+      "lead": "Free games for ages 5 to 14 that play in the browser. Pick a subject or an age to see which games fit and what they practice.",
       "subjects": "By subject",
       "ages": "By age",
       "who": "For teachers and parents"
@@ -4966,10 +4966,10 @@
     }
   },
   "parents": {
-    "title": "Safe, free learning games for kids 8–14",
-    "description": "Fun learning games for kids 8–14 that play free in the browser: math, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
+    "title": "Safe, free learning games for kids 5–14",
+    "description": "Fun learning games for kids 5–14 that play free in the browser: math, words, chess and music. No ads, no stranger chat, and kids can build their own games.",
     "kicker": "👪 For parents",
-    "h1": "Fun learning games for kids 8–14, safe by design",
+    "h1": "Fun learning games for kids 5–14, safe by design",
     "lead": "Oomba Academy is a website of short learning games that kids play right in the browser: math races, word puzzles, chess and music. When they’re ready, they can make their own games by describing them to our AI Builder.",
     "badges": {
       "free": "Free to play",
@@ -5082,7 +5082,7 @@
       "a1": "Yes. Every game is free to play, and every player with an account (just a made-up name and a password) gets free Builder messages each day to make their own games. There are no ads and nothing for kids to buy.",
       "a1paid": "Yes. Every game is free to play, and every player with an account (just a made-up name and a password) gets free Builder messages each day. Families can choose an optional plan for extra Builder messages, and kids are never asked to pay. <a href=\"{plans}\">See the plans</a>.",
       "q2": "What ages is it for?",
-      "a2": "Kids aged 8 to 14. Some games, like Shark Plank and the first Sum Racer tracks, also suit younger readers.",
+      "a2": "Kids from kindergarten to grade 8, about ages 5 to 14. Games like Shark Plank and the first Sum Racer tracks suit the youngest players.",
       "q3": "Does my child need an account or an email address?",
       "a3": "No. Anyone can play straight away, without signing up. To keep their games and scores, kids can make an account with just a made-up name and a password. We never ask for an email address.",
       "q4": "Are there ads or in-app purchases?",
@@ -5109,7 +5109,7 @@
       "name": "Is the AI Builder safe?",
       "short": "What the AI sees, what it never gets, and the rules it follows",
       "title": "Is AI safe for kids? Our Builder, explained",
-      "description": "What the AI sees, what it never gets, and the rules it follows: a plain-words guide for parents of kids 8–14 using Oomba Academy’s AI game Builder.",
+      "description": "What the AI sees, what it never gets, and the rules it follows: a plain-words guide for parents of kids 5–14 using Oomba Academy’s AI game Builder.",
       "h1": "Is the AI Builder safe for my child?",
       "lead": "Oomba Academy’s Builder uses AI to turn your child’s idea into a game. Here is what it sees, what it never gets, the rules it follows and what we can’t promise, in plain words.",
       "what": {
@@ -5173,7 +5173,7 @@
       "short": "A checklist for choosing games and apps, and how to set limits",
       "title": "Good screen time for kids: a parent’s guide",
       "description": "How to tell good screen time from bad: ads, purchases, chat, data, and making vs scrolling. A checklist for parents, with what we do and don’t do.",
-      "h1": "Good screen time: how to choose games for kids 8–14",
+      "h1": "Good screen time: how to choose games for kids 5–14",
       "lead": "There’s no perfect number of minutes. What kids do on a screen, who they do it with and what it pushes them toward matter just as much. This checklist helps you judge any game or app, including ours.",
       "experts": {
         "h": "What the experts say",
@@ -5196,7 +5196,7 @@
         "li2": "<b>Purchases:</b> nothing for kids to buy, no loot boxes and no in-game money that costs money.",
         "li3": "<b>Strangers:</b> chat only with friends added by a code, filtered and reportable.",
         "li4": "<b>Data:</b> we never ask kids for an email address, age, address or location. Photos are optional: a profile photo or pictures for the Builder, with hidden location data removed and profile photos checked before anyone sees them.",
-        "li5": "<b>Age fit:</b> made for ages 8 to 14.",
+        "li5": "<b>Age fit:</b> made for ages 5 to 14.",
         "li6": "<b>Making:</b> kids can make their own games with the AI Builder.",
         "li7": "<b>Together:</b> several games have a two-player mode on one screen.",
         "p": "What we don’t have: time limits, activity reports or a parent dashboard. For limits, use your device’s own tools."
@@ -7213,7 +7213,7 @@
       "trialShort": "Free trial"
     },
     "hero": {
-      "kicker": "For teachers · grades 3–8",
+      "kicker": "For teachers · grades K–8",
       "h1": "Turn your lesson plans into games your class begs to play",
       "lead": "Paste a lesson, upload a PDF or just describe an idea. Oomba’s AI Builder turns it into an interactive game you can run live on the projector or assign to your class.",
       "cta": "Start your free 14-day trial",
@@ -7338,7 +7338,7 @@
     "safety": {
       "kicker": "Safety and privacy",
       "h": "Built for classrooms, safe by design",
-      "lead": "Made for ages 8 to 14, with you in control of your classes.",
+      "lead": "Made for ages 5 to 14, with you in control of your classes.",
       "li1": "No ads, and no advertising or tracking cookies",
       "li2": "Students never need an email address, and we never ask their age or home address",
       "li3": "A student’s real name, if you add one, is seen only by your school’s staff",
@@ -7387,7 +7387,7 @@
     "faq": {
       "h": "Questions teachers ask",
       "q1": "What is Oomba Academy?",
-      "a1": "A game-based learning platform for grades 3 to 8. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in math, computer science and online safety.",
+      "a1": "A game-based learning platform for grades K to 8. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in math, computer science and online safety.",
       "q2": "How does the free trial work?",
       "a2": "Start a 14-day free trial with no card. Everything in the Teacher plan is included while it runs, and when it ends you decide whether to subscribe.",
       "q3": "Do I pay for each student?",
@@ -7399,7 +7399,7 @@
       "q6": "Does it work on Chromebooks and iPads?",
       "a6": "Yes. It runs in any up-to-date browser on Chromebooks, iPads and other tablets, laptops, phones and interactive boards, with nothing to install.",
       "q7": "Is it safe for my students?",
-      "a7": "It is made for ages 8 to 14: no ads, no tracking cookies, no student emails, no chat with strangers, filtered text, and a person on our team reviews any game before it goes public.",
+      "a7": "It is made for ages 5 to 14: no ads, no tracking cookies, no student emails, no chat with strangers, filtered text, and a person on our team reviews any game before it goes public.",
       "q8": "Can our school pay by invoice or purchase order?",
       "a8": "Yes. Schools pay the same price per teacher per year, by invoice or purchase order. Email us and we will set it up.",
       "q9": "Which languages are there?",
@@ -7416,7 +7416,7 @@
       "cta": "Just Play"
     },
     "footer": {
-      "tagline": "Learning games for ages 8 to 14, and an AI Builder that turns lessons into games.",
+      "tagline": "Learning games for ages 5 to 14, and an AI Builder that turns lessons into games.",
       "teachers": "For teachers",
       "product": "Explore",
       "about": "About",

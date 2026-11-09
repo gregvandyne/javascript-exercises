@@ -20,7 +20,7 @@
     "trialShort": "Essai gratuit"
   },
   "hero": {
-    "kicker": "Pour les enseignants · du CE2 à la 4e",
+    "kicker": "Pour les enseignants · de la maternelle à la 4e",
     "h1": "Transformez vos préparations de cours en jeux que votre classe réclamera",
     "lead": "Collez une leçon, envoyez un PDF ou décrivez simplement une idée. Le Constructeur IA d’Oomba en fait un jeu interactif à lancer en direct au vidéoprojecteur ou à donner à votre classe.",
     "cta": "Commencer l’essai gratuit de 14 jours",
@@ -109,7 +109,7 @@
   "safety": {
     "kicker": "Sécurité et confidentialité",
     "h": "Pensé pour la classe, sûr dès la conception",
-    "lead": "Conçu pour les 8 à 14 ans, et vous gardez la main sur vos classes.",
+    "lead": "Conçu pour les 5 à 14 ans, et vous gardez la main sur vos classes.",
     "li1": "Pas de publicité, ni de cookies publicitaires ou de suivi",
     "li2": "Les élèves n’ont jamais besoin d’adresse e-mail, et nous ne demandons jamais leur âge ni leur adresse",
     "li3": "Le vrai nom d’un élève, si vous l’ajoutez, n’est visible que par le personnel de votre école",
@@ -158,7 +158,7 @@
   "faq": {
     "h": "Les questions des enseignants",
     "q1": "Qu’est-ce qu’Oomba Academy ?",
-    "a1": "Une plateforme d’apprentissage par le jeu pour les 8 à 14 ans. Les enseignants transforment leurs propres leçons en jeux interactifs avec un Constructeur IA, animent des jeux de classe en direct et utilisent des parcours prêts à l’emploi en maths, informatique et sécurité en ligne.",
+    "a1": "Une plateforme d’apprentissage par le jeu pour les 5 à 14 ans. Les enseignants transforment leurs propres leçons en jeux interactifs avec un Constructeur IA, animent des jeux de classe en direct et utilisent des parcours prêts à l’emploi en maths, informatique et sécurité en ligne.",
     "q2": "Comment marche l’essai gratuit ?",
     "a2": "Commencez un essai gratuit de 14 jours sans carte. Toute l’offre Enseignant est incluse pendant l’essai, et à la fin, vous décidez de vous abonner ou non.",
     "q3": "Est-ce que je paie pour chaque élève ?",
@@ -170,7 +170,7 @@
     "q6": "Ça marche sur Chromebook et iPad ?",
     "a6": "Oui. Tout fonctionne dans un navigateur à jour sur Chromebook, iPad et autres tablettes, ordinateurs portables, téléphones et tableaux interactifs, sans rien installer.",
     "q7": "Est-ce sûr pour mes élèves ?",
-    "a7": "C’est conçu pour les 8 à 14 ans : pas de publicité, pas de cookies de suivi, pas d’e-mail d’élève, pas de discussion avec des inconnus, du texte filtré, et une personne de notre équipe vérifie tout jeu avant qu’il devienne public.",
+    "a7": "C’est conçu pour les 5 à 14 ans : pas de publicité, pas de cookies de suivi, pas d’e-mail d’élève, pas de discussion avec des inconnus, du texte filtré, et une personne de notre équipe vérifie tout jeu avant qu’il devienne public.",
     "q8": "Notre école peut-elle payer sur facture ou bon de commande ?",
     "a8": "Oui. Les écoles paient le même prix par enseignant et par an, sur facture ou bon de commande. Écrivez-nous et nous nous en occupons.",
     "q9": "Quelles langues sont disponibles ?",
@@ -187,7 +187,7 @@
     "cta": "Juste jouer"
   },
   "footer": {
-    "tagline": "Des jeux éducatifs pour les 8 à 14 ans, et un Constructeur IA qui transforme les leçons en jeux.",
+    "tagline": "Des jeux éducatifs pour les 5 à 14 ans, et un Constructeur IA qui transforme les leçons en jeux.",
     "teachers": "Enseignants",
     "product": "Découvrir",
     "about": "À propos",

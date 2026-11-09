@@ -68,7 +68,7 @@ test('parent pages: indexed, own canonical, one H1, unique titles and descriptio
       assert.deepEqual([buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)], [1200, 630], `${img} is 1200x630`);
     }
   }
-  assert.match((await get('/parents')).text, /<title>Safe, free learning games for kids 8–14 · Oomba Academy<\/title>/);
+  assert.match((await get('/parents')).text, /<title>Safe, free learning games for kids 5–14 · Oomba Academy<\/title>/);
   assert.match((await get('/learn/games-for-10-and-11-year-olds')).text, /<h1 id="lp-h1"><span aria-hidden="true">🚀<\/span> Learning games for 10 and 11 year olds<\/h1>/);
   assert.equal((await get('/parents/nope')).status, 404);
   assert.equal((await get('/learn/games-for-99-year-olds')).status, 404);
@@ -108,7 +108,7 @@ test('structured data: FAQPage matches the questions on the page, breadcrumbs, i
   }
   const par = (await get('/parents')).text;
   const pg = ofType(par, 'WebPage')[0];
-  assert.deepEqual(pg.audience, { '@type': 'ParentAudience', childMinAge: 8, childMaxAge: 14 });
+  assert.deepEqual(pg.audience, { '@type': 'ParentAudience', childMinAge: 5, childMaxAge: 14 });
   const list = ofType(par, 'ItemList')[0].itemListElement.map(i => i.url.slice(base.length));
   assert.ok(list.includes('/g/sum-racer') && list.includes('/g/castle-clash'));
   const a8 = ofType((await get('/learn/games-for-8-and-9-year-olds')).text, 'CollectionPage')[0];
