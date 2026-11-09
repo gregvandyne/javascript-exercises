@@ -29,10 +29,14 @@ const inline = s => esc(s)
   .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   .replace(EMAIL_IN_TEXT, m => `<a href="mailto:${m}" style="color:#1d4ed8;text-decoration:underline">${m}</a>`);
 const plain = s => String(s).replace(/\*\*(.+?)\*\*/g, '$1');
-/** The first name to greet: the first word of the display name (never the username alone if it looks like one). */
-export function firstNameOf(u) {
-  const w = String(u?.display_name || '').trim().split(/\s+/)[0] || '';
-  return /^[\p{L}][\p{L}'’-]{0,39}$/u.test(w) ? w : '';
+const TITLE = /^(mr|mrs|ms|miss|mx|dr|prof|sr|sra|mme|mlle|herr|frau)\.?$/i;
+/** The name to greet: the first word of the name (a teacher's school roster name, else the display name), or the
+ *  whole name when it starts with a title ("Ms Owl"). '' when it doesn't look like a name (then "Hi there,"). */
+export function firstNameOf(u, rosterName = '') {
+  const words = String(rosterName || u?.display_name || '').trim().split(/\s+/).filter(Boolean);
+  const ok = w => /^[\p{L}][\p{L}'’.-]{0,39}$/u.test(w);
+  if (words.length > 1 && TITLE.test(words[0]) && words.slice(1, 3).every(ok)) return words.slice(0, 3).join(' ');
+  return words[0] && ok(words[0]) && !TITLE.test(words[0]) && !/\./.test(words[0]) ? words[0] : '';
 }
 /** A date in words in the copy's language, e.g. "Monday, November 23". In US Eastern time (most teachers are in the
  *  US, and the earliest US date is the safe one to promise). */
@@ -44,7 +48,7 @@ const P = `margin:0 0 16px;font-size:16px;line-height:1.55;color:#1f2937;font-fa
 
 /**
  * One email of the trial sequence.
- * vars: { firstName, trialEnd (ms), base (the site's origin), unsubscribeUrl, postalAddress, locale }
+ * vars: { firstName, trialStart, trialEnd (ms), base (the site's origin), unsubscribeUrl, postalAddress, locale }
  * -> { subject, preview, html, text, locale }
  */
 export function renderTrial(step, vars = {}) {
@@ -52,7 +56,8 @@ export function renderTrial(step, vars = {}) {
   const s = c.steps[step];
   if (!s) throw new Error(`no trial email called ${step}`);
   const base = vars.base || 'https://oomba.ai';
-  const v = { firstName: vars.firstName || '', trialEndDate: vars.trialEnd ? dateWords(vars.trialEnd, c.dateLocale) : '' };
+  const days = vars.trialStart && vars.trialEnd ? Math.round((vars.trialEnd - vars.trialStart) / 864e5) : 0;
+  const v = { firstName: vars.firstName || '', trialEndDate: vars.trialEnd ? dateWords(vars.trialEnd, c.dateLocale) : '', trialDays: days > 0 ? days : 14 };
   const greet = v.firstName ? fill(c.greeting, v) : c.greetingNoName;
   const sign = s.sign === 'full' ? c.signFull : c.signShort;
   const htmlBlocks = [], textBlocks = [];

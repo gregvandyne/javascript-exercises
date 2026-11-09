@@ -27,6 +27,7 @@ import { registerPaidBudget } from './ai-budget.js';
 import * as funnel from './funnel.js';
 import { sign } from '../auth.js';
 import { notify } from './team.js';
+import * as nudges from './nudges.js';
 
 const DAY = 86400e3;
 /** The trial notice shows on My classes this many days before the trial ends (and from trial_will_end on). */
@@ -289,6 +290,8 @@ function listeners(row) {
 }
 const tell = (row, notice) => { for (const uidTo of listeners(row)) { try { notify(uidTo, notice); } catch { /* a notice never blocks a sync */ } } };
 
+/** A subscription that will be paid at its trial's end: a default card on it or on its (expanded) customer. */
+const hasCard = sub => !!(sub && (sub.default_payment_method || (typeof sub.customer === 'object' && sub.customer?.invoice_settings?.default_payment_method)));
 B.registerSyncHook(({ row, prev, event, owner, sub }) => {
   if (row.plan !== 'teacher' || !['teacher', 'school'].includes(owner.owner_kind)) return;
   const target = `${owner.owner_kind}:${owner.owner_id}`;
@@ -300,6 +303,9 @@ B.registerSyncHook(({ row, prev, event, owner, sub }) => {
       VALUES (?,?,?,?,?,?,?,?,?)`, uid(12), owner.owner_kind, owner.owner_id, isTeacherOwner ? owner.owner_id : (meta.started_by || null),
     isTeacherOwner ? (meta.school_id || homeSchool(owner.owner_id)?.id || null) : owner.owner_id, meta.trial_key || null, row.stripe_subscription_id, row.livemode, now()).changes;
     if (added) { funnel.bump('teacher.trial'); audit(null, 'billing.trial.start', target, { subscription: row.stripe_subscription_id, until: row.trial_end }); }
+    // The trial emails (services/nudges.js; idempotent): a teacher's own trial only (a school's seat trial has no one
+    // teacher). Also for a trial that began before the emails existed: its late emails are skipped by their own rules.
+    if (isTeacherOwner && row.status === 'trialing') nudges.onTrialStarted({ userId: owner.owner_id, trialStart: sub?.trial_start ? sub.trial_start * 1000 : now(), trialEnd: row.trial_end, email: typeof sub?.customer === 'object' ? sub.customer?.email : '' });
   }
   const days = row.trial_end ? Math.max(0, Math.ceil((row.trial_end - now()) / DAY)) : 0;
   const href = `${site()}${owner.owner_kind === 'school' ? `/school/${encodeURIComponent(q.get('SELECT slug FROM schools WHERE id=?', owner.owner_id)?.slug || '')}?tab=billing` : PLAN_PATH}`;
@@ -308,11 +314,16 @@ B.registerSyncHook(({ row, prev, event, owner, sub }) => {
     q.run('UPDATE billing_subscriptions SET trial_notice_at=? WHERE stripe_subscription_id=?', now(), row.stripe_subscription_id);
     tell(row, { k: 'trialEnding', days, href });
   }
+  // A card added during the trial (it will be paid at the end): the trial emails stop and say thank you. Read from this
+  // sync's subscription (its customer is expanded), e.g. at trial_will_end, before "Your trial ends in 3 days" is due.
+  if (owner.owner_kind === 'teacher' && row.status === 'trialing' && hasCard(sub)) nudges.onTrialConverted(owner.owner_id);
   if (prev && prev.status === 'trialing' && row.status === 'canceled') {
+    if (owner.owner_kind === 'teacher') nudges.onTrialEnded(owner.owner_id);
     tell(row, { k: 'trialEnded', href: `${site()}/trial` });
     audit(null, 'billing.trial.ended', target, { subscription: row.stripe_subscription_id });
   }
   if (prev && prev.status === 'trialing' && row.status === 'active') {
+    if (owner.owner_kind === 'teacher') nudges.onTrialConverted(owner.owner_id);
     tell(row, { k: 'trialConverted' });
     audit(null, 'billing.trial.converted', target, { subscription: row.stripe_subscription_id });
   }

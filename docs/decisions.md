@@ -3088,3 +3088,83 @@ read with `limit: 100` so every key fits in one page).
   teachers; the terms (7.3), the privacy policy (seats are teachers), /refunds (trials) and /teachers changed. New
   strings are in all 13 languages. Some keys keep their old names with new meanings (`plans.schools.print.perStudent`
   is now "Price per teacher"); the legal text changes need the lawyer's look with the rest of docs/legal-review.md.
+
+## Trial emails: Resend, one-click unsubscribe and the Teacher plan trial sequence (9 Nov 2026)
+
+The site sent no email before this. The owner chose **Resend** and approved a five-email sequence for the Teacher plan's
+14-day free trial (no card), plus a thank-you on conversion.
+
+- **Sending** (`server/services/email.js`): Resend's HTTP API (`POST https://api.resend.com/emails`, bearer key), no
+  SDK. Settings: `RESEND_API_KEY`, `EMAIL_ENABLED` (default on; `0` stops everything), `EMAIL_FROM` (default
+  `Greg at Oomba Academy <greg@oomba.ai>`), `EMAIL_REPLY_TO` (default `Greg@oomba.ai`), `EMAIL_POSTAL_ADDRESS` (CAN-SPAM,
+  **no default**). Each send has an `Idempotency-Key` (Resend keeps it 24 hours) and is retried twice with backoff
+  (1 s, 4 s) on network errors, 429, 5xx and Resend's "concurrent idempotent request" 409; other 4xx are not retried.
+  Every send leaves one `email_log` row (to, template, category, status, Resend's id, a short error, tries): never the
+  body. Kept a year (job `email-log-retention`), deleted with the account.
+- **Two kinds of email.** `nudge` (marketing: the trial sequence) needs `EMAIL_POSTAL_ADDRESS`: while it is empty **no
+  nudge is sent at all** (logged once at start-up and at the first due email; red notice on `/admin/emails` and
+  `/admin/billing`), and never to someone who unsubscribed. `transactional` (the thank-you for a purchase, later
+  receipts) ignores the unsubscribe.
+- **Who and where.** Only to a grown-up account, a teacher / school staff, or the platform admin; never a guest, a banned
+  account or a kid's (asserted in `send()` and in `onTrialStarted`; kid accounts have no address anyway). The address:
+  the account's **Google sign-in address** (verified by Google) if it has one, else the **work email the teacher gave
+  the Teacher plan's Checkout** (the Stripe Customer's email, where Stripe also sends receipts), kept in `email_prefs`
+  (source `checkout`) for these emails. School-request emails (`school_requests`) are **not** used: they were given for
+  the request only. No address: the email is skipped and logged (`no_address`).
+- **Unsubscribe** (`server/routes/email.js`): every email has a signed link (HMAC of the account id under the session
+  secret, labelled `email-unsubscribe:v1`, no expiry) and `List-Unsubscribe` + `List-Unsubscribe-Post:
+  List-Unsubscribe=One-Click` headers (RFC 8058). `GET /email/unsubscribe?t=…` only shows a page with one button (mail
+  scanners open links); `POST` unsubscribes (the button, or the mail app's one-click from its own servers: the route is
+  mounted before the CSRF check and the grown-up guard; the token is the check). The page offers "Subscribe again".
+  It sets `email_prefs.nudges_off_at`; transactional email is unaffected. English page for now.
+- **The sequence** (`server/services/nudges.js`). Interface for billing: `onTrialStarted({ userId, trialEnd,
+  trialStart, email })`, `onTrialConverted(userId)`, `onTrialEnded(userId)`; each idempotent, never throws. One
+  sequence per account (the first trial). Rows in `trial_nudges` (`due_at`, `latest_at`, `status`, `sent_at`):
+  welcome at the start (may go up to 48 h late); class on day 2 (24 h; **skipped if the teacher already has a class**);
+  ideas on day 5 (48 h); ending 3 days before the end **plus 2 hours** (24 h; the 2 hours let Stripe's
+  `trial_will_end` sync land first, so a teacher who already added a card never gets "add a card"); ended when the
+  trial ends without converting (24 h); thanks on conversion (72 h, transactional). Conversion cancels what is left.
+  The job `trial-nudges` runs every 15 minutes (the jobs.js loop, like billing-reconcile) and right after each event.
+  **No double sends:** a row is claimed (`sending`) before the call and marked after; a row left `sending` by a restart
+  is retried after 10 minutes with the **same** Idempotency-Key (Resend drops the copy), and after 23 hours it is marked
+  `failed` instead of risking a second copy. **Late rule:** past `latest_at` a row is `skipped` (`too_late`). Failures
+  retry on later runs, up to 5 tries. The admin switch (`settings` `emails.trial_nudges`, on by default) and missing
+  settings make due rows wait; the late rule still applies.
+- **Copy** (`server/emails/trial-en.js`, rendered by `server/services/email-templates.js`): the owner's approved words,
+  HTML (tables, inline CSS, 560 px, dark-mode overrides, `lang`, hidden preheader with the preview text, a real button)
+  and a plain-text part. Links carry `utm_source=oomba&utm_medium=email&utm_campaign=teacher_trial&utm_content=<email>`.
+  Footer: "You're getting this because you started a free trial on Oomba Academy · Unsubscribe · {EMAIL_POSTAL_ADDRESS}".
+  Signed "Greg / Founder, Oomba Academy" on #1, "Greg" after. Greeting: the first name (a teacher's school roster name
+  first; "Ms Rivera" stays whole), else "Hi there,". The trial end date is in US Eastern time. Changes from the approved
+  copy:
+  - **Owner's request:** the walkthrough-call offer ("Want a quick tour? I'm happy to hop on a 15-minute call…") in
+    #1, #2 and #5, and a short line in #3 ("Prefer a guided tour? Reply and we'll find 15 minutes.").
+  - **Accuracy, #2:** "It's the moment most teachers tell us the room lights up" → "It's often the moment the room
+    lights up" (no data behind "most teachers tell us").
+  - **Accuracy, #3:** "each with lesson plans" → "CS Quest comes with full 45-minute lesson plans, and the other two
+    with teacher notes" (Number Quest and Cyber Defenders have teacher notes, not lesson plans).
+  - **#1:** "14-day" is filled from the trial's own length (`TEACHER_TRIAL_DAYS` can change it).
+  - **#5** ("Your classes and games are saved") checked against the Teacher plan: a trial that ends without a card is
+    cancelled by Stripe and only the plan's extras stop; nothing is deleted or locked (teacher-plan.js, and its test
+    "nothing is lost"). Kept as approved.
+  - **#4** "one yearly price for unlimited students, with no per-student fees" and "pay by invoice or purchase order"
+    match the Teacher plan ($119 per teacher per year, no per-student charge; schools' invoice / PO path).
+  - New: the thank-you ("You're all set!"), short, transactional.
+  CTAs: #1 `/build`, #2 `/teach`, #3 `/teach/lessons` (the ready-made courses), #4 `/teach#teacher-plan` (Add a card),
+  #5 `/trial`, thanks `/teach`. **i18n:** a language is a `trial-<locale>.js` file registered in `COPY`; English only
+  for now (translating approved marketing copy would be guesswork), so every teacher gets English.
+- **Wiring to the Teacher plan** (`services/teacher-plan.js`'s subscription sync hook; one line each): a teacher-owned
+  subscription that is `trialing` → `onTrialStarted` (start from Stripe's `trial_start`, end from the row, email from
+  the expanded Customer); `trialing` with a default card on the subscription or its Customer → `onTrialConverted`;
+  `trialing → active` → `onTrialConverted`; `trialing → canceled` → `onTrialEnded`. A school's seat trial has no one
+  teacher and gets no sequence. Stripe's own trial reminder email and the Team inbox notices stay as they are.
+- **Admin** (`/admin/emails`, linked from /admin): the switch, sent / failed / skipped counts (30 days) and per email,
+  preview of each email (HTML and text, a sample teacher) and "Send me a test" (to the admin's Google address, else
+  `CONTACT_EMAIL`, else `EMAIL_REPLY_TO`; "[Test]" subject), the last 50 sends (addresses shortened), the settings by
+  name (never the key) and the CAN-SPAM warning. Go-live steps: `docs/emails-go-live.md`.
+- **Tables** (migration `0061_trial_emails`, after the Teacher plan's `0060_teacher_plan`): `email_prefs`,
+  `email_log`, `trial_emails`, `trial_nudges`; all deleted with the account.
+- **Tests:** `tests/unit/trial-emails.test.js` (templates, gates, kid accounts, retries, unsubscribe, the scheduler's due
+  times, skip rules, conversion, the end without a card, restarts, late catch-up, admin only) and
+  `tests/unit/trial-emails-wiring.test.js` (the Teacher plan's trial through the fake Stripe). Resend is never called:
+  `email.js` takes a fetch stand-in.

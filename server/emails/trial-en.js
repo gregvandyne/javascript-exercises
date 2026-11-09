@@ -4,7 +4,7 @@
 // language has one, its teachers get English.
 //
 // Blocks: { p } a paragraph, { ol } / { ul } a list, { cta: { label, path } } a button to a page of the site (UTM
-// parameters are added), { tour } the walkthrough-call offer. Inside text: **bold**, and {firstName} / {trialEndDate}.
+// parameters are added), { tour } the walkthrough-call offer. Inside text: **bold**, and {firstName} / {trialEndDate} / {trialDays}.
 // An email address in the text becomes a mailto link in the HTML part.
 
 // Owner's request (November 2026): offer a walkthrough call in #1, #2 and #5, and a short line in #3.
@@ -25,7 +25,7 @@ export default {
       preview: 'Paste a lesson, get a game your class will beg to play.',
       sign: 'full',
       blocks: [
-        { p: "Welcome to Oomba Academy! Your 14-day free trial is on. There's no card on file, so nothing happens unless you decide to stay." },
+        { p: "Welcome to Oomba Academy! Your {trialDays}-day free trial is on. There's no card on file, so nothing happens unless you decide to stay." },
         { p: 'The fastest way to see what Oomba can do:' },
         { ol: [
           '**Make a class:** it takes a minute, and students join with a code. No student emails needed.',
@@ -76,7 +76,7 @@ export default {
         { p: 'Your free trial ends on **{trialEndDate}**.' },
         { p: "To keep everything (your classes, the games you've made, your students' progress) add a card and stay on the Teacher plan. It's one yearly price for unlimited students, with no per-student fees." },
         { p: "If your school would rather pay by invoice or purchase order, just reply and I'll set it up." },
-        { cta: { label: 'Keep my classes →', path: '/plans' } },
+        { cta: { label: 'Keep my classes →', path: '/teach#teacher-plan' } },
         { p: "Not the right fit? No problem. Nothing is charged, and I'd love to hear what was missing (just hit reply)." },
       ],
     },
@@ -86,7 +86,7 @@ export default {
       sign: 'short',
       blocks: [
         { p: "Your Oomba trial has ended. Nothing was charged. Your classes and games are saved, so if you come back, everything's right where you left it." },
-        { cta: { label: 'Reactivate my classes →', path: '/plans' } },
+        { cta: { label: 'Reactivate my classes →', path: '/trial' } },
         { tour: TOUR },
         { p: 'And if something got in the way, reply and tell me. I read every message.' },
       ],

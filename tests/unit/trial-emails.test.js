@@ -104,7 +104,10 @@ test('templates: every email renders with its approved subject and preview, no p
   assert.match(T.renderTrial('ending', { trialEnd: end }).text, /Your free trial ends on Monday, November 23\./);
   assert.match(T.renderTrial('ending', {}).text, /\nGreg\n/); assert.doesNotMatch(T.renderTrial('ending', {}).text, /Founder/);
   assert.equal(T.copyFor('fr').locale, 'en', 'no French copy yet: English');
-  assert.equal(T.firstNameOf({ display_name: 'Ms. Owl' }), '', 'not a name: no greeting by name');
+  assert.equal(T.firstNameOf({ display_name: 'Ms. Owl' }), 'Ms. Owl', 'a title keeps the whole name');
+  assert.equal(T.firstNameOf({ display_name: 'Mr' }), '');
+  assert.equal(T.firstNameOf({ display_name: 'cool_kid99' }), '', 'not a name: no greeting by name');
+  assert.equal(T.firstNameOf({ display_name: 'TeachX' }, 'Ms Rivera'), 'Ms Rivera', 'a teacher\'s school roster name first');
   assert.equal(T.firstNameOf({ display_name: 'María José' }), 'María');
 });
 

@@ -18,6 +18,7 @@ import { getUser } from '../auth.js';
 import { log } from './log.js';
 import { register, job, runJob } from './jobs.js';
 import * as E from './email.js';
+import { staffName } from './schools.js';
 import { renderTrial, firstNameOf, TRIAL_STEPS } from './email-templates.js';
 export { TRIAL_STEPS };
 
@@ -117,7 +118,7 @@ function skipReason(row, t, at) {
 }
 /** The email for one row, rendered for its teacher. */
 export function renderFor(step, u, t) {
-  return renderTrial(step, { locale: u?.lang || 'en', firstName: firstNameOf(u), trialEnd: t?.trial_end, base: E.siteBase(),
+  return renderTrial(step, { locale: u?.lang || 'en', firstName: firstNameOf(u, u?.id ? staffName(u) : ''), trialStart: t?.trial_start, trialEnd: t?.trial_end, base: E.siteBase(),
     unsubscribeUrl: E.unsubscribeUrl(u?.id || ''), postalAddress: E.emailStatus().postalAddress });
 }
 const mark = (row, status, extra = {}) => q.run('UPDATE trial_nudges SET status=?, reason=?, sent_at=?, claimed_at=? WHERE user_id=? AND step=?',
