@@ -59,8 +59,15 @@ test('every 2D template is a kit game that plays in the Studio preview with no e
   ({ f } = await open(page, 'quiz'));
   await tap(f, '.ok-bubble');
   await expect(f.locator('.ok-ask .ok-tile')).toHaveCount(4, { timeout: 15_000 });
-  // the round is unseeded (a fresh shuffle each time): keep answering, tapping the host's fact bubbles away, until a right answer scores
-  for (let i = 0; i < 16 && !(await S(f)).score; i++) { if (!(await tap(f, '.ok-ask .ok-tile:not([disabled])'))) await tap(f, '.ok-bubble'); await page.waitForTimeout(500); }
+  // the round is unseeded (a fresh shuffle each time), so tap the right answer to the question on the card, read from the
+  // template's own QUESTIONS (tapping blindly scored only now and then: two wrong picks end a question with no score)
+  const pickRight = () => f.evaluate(() => {
+    const q = document.querySelector('.ok-ask .ok-q'); if (!q) return false;
+    const item = Object.values(QUESTIONS).flat().find(x => x.q === q.textContent.trim()); if (!item) return false;
+    const tile = [...document.querySelectorAll('.ok-ask .ok-tile')].find(t => t.textContent.trim().replace(/^\d/, '') === item.a);
+    if (!tile) return false; tile.click(); return true;
+  });
+  expect(await pickRight()).toBe(true);
   await expect.poll(async () => (await S(f)).score, { timeout: 10_000 }).toBeGreaterThan(0);
 
   // Memory: twelve cards, flipping two turns them up.

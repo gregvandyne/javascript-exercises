@@ -985,8 +985,9 @@ Object.assign(window.__brbTest, {
     game.start(); return true;
   },
   async solve() {
+    // a card that opens on the way closes; the one the finished order opens (served, or the lesson check) stays up
     S.fast = true; let guard = 0;
-    while (S.run && !S.run.s.done && guard++ < 200) { const a = S.run.advice(); if (!a) break; doAction(a); if (cardPause) { closeCards(); } await O.time.real.wait(5); }
+    while (S.run && !S.run.s.done && guard++ < 200) { const a = S.run.advice(); if (!a) break; doAction(a); if (cardPause && S.run && !S.run.s.done) { closeCards(); } await O.time.real.wait(5); }
     return S.run ? S.run.snapshot() : null;
   },
   closeCards() { closeCards(); return true; },

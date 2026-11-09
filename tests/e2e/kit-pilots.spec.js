@@ -50,7 +50,9 @@ test('Word Peek runs on the kit: pinned tags, Pip the kit owl, a round played wi
 test('Sum Racer runs on the kit: the kit title, a track, taps, the kit pause, the podium world and the results card', async ({ page }) => {
   const { f, errors } = await open(page, 'sum-racer');
   const t = await tags(f);
-  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-animals.js', '/vendor/oomba-kit/1.1.5/packs/art-school.js', '/vendor/oomba-kit/1.1.5/packs/art-biomes.js', '/vendor/oomba-kit/1.1.5/packs/dress.js']);
+  expect(t.map(x => x[0])).toEqual(['/vendor/oomba-kit/1.1.5/oomba-kit.js', '/vendor/oomba-kit/1.1.5/packs/art-animals.js', '/vendor/oomba-kit/1.1.5/packs/art-school.js', '/vendor/oomba-kit/1.1.5/packs/art-biomes.js', '/vendor/oomba-kit/1.1.5/packs/dress.js',
+    // the pixel-art look (?style=pixel, #231)
+    '/vendor/oomba-kit/1.1.5/packs/style-pixel.js', '/vendor/oomba-kit/1.1.5/packs/art-pixel.js']);
   for (const x of t) expect([x[1], x[2]]).toEqual([true, 'anonymous']);
   await expect(f.locator('.ok-title-screen #playBtn')).toBeVisible();
   await f.locator('#playBtn').click();

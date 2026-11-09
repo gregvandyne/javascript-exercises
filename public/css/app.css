@@ -180,6 +180,9 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 @media (min-width:821px) and (max-width:1000px){.topbar:has(.navlink:nth-child(4)) .topsearch{display:none}.topbar:has(.navlink:nth-child(4)) .topsearch-btn{display:flex}}
 @media (min-width:1001px) and (max-width:1100px){.topbar:has(.navlink:nth-child(5)) .topsearch{display:none}.topbar:has(.navlink:nth-child(5)) .topsearch-btn{display:flex}}
 @media (min-width:1181px) and (max-width:1300px){.topbar:has(.navlink:nth-child(5)) .me-btn .name{display:none}}
+/* A new-message badge on Friends (a new kid's welcome from the team is one) takes the room the search words need in
+   Russian: with five items and a badge, the items drop their emoji there too, as on the smallest laptops. */
+@media (min-width:1101px) and (max-width:1300px){.topbar:has(.navlink:nth-child(5)):has(.navlink .badge) .navlink .emo{display:none}}
 /* Phones: a little more room for the search words (app.js also swaps in the short placeholder when the long one won't fit). */
 @media (max-width:420px){.topbar{gap:8px}.topsearch input{padding-inline:36px 10px}.topsearch .ico{inset-inline-start:11px}}
 /* Long nav labels (Russian, French, Dutch) can squeeze the search box to nothing just above 820px: then it hides
