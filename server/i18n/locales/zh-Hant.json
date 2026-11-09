@@ -7132,6 +7132,7 @@
       "label": "用「{title}」評分",
       "total": "{points} 分",
       "notScored": "未評分",
+      "partial": "已評分 {n}/{total} 項",
       "comment": "加上評語",
       "commentFor": "對「{name}」的評語",
       "given": "給出的等級",

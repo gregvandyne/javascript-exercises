@@ -31,7 +31,7 @@ import { templateHtml, templateInfo, TEMPLATE_KEYS } from '../builder/catalog.js
 import { scanVersion } from '../services/scanner.js';
 import { sanitizeGameHtml } from '../services/sanitize.js';
 import * as R from '../services/rubrics.js';
-import { scoreFields, scoreInput, resultView } from '../views/rubrics.js';
+import { scoreFields, scoreInput, resultView, totalText } from '../views/rubrics.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -142,7 +142,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
           return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
           <span class="gb-num">${full ? '✅' : `${x.done}/${x.total}`}</span>${bar(x.done, x.total)}
           ${x.toRead ? html`<span class="chip-s warn">✍️ ${x.toRead}</span>` : ''}${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}
-          ${x.maxPoints > 0 ? html`<span class="gb-pts" title="${t('rubrics.gradebook.cellTitle', { points: R.pointsText(x.points, x.maxPoints), pct: R.percent(x.points, x.maxPoints) })}">📏 ${R.pointsText(x.points, x.maxPoints)} <span class="muted">${R.percent(x.points, x.maxPoints)}%</span></span>` : ''}</a></td>`;
+          ${x.maxPoints > 0 ? html`<span class="gb-pts" title="${t('rubrics.gradebook.cellTitle', { points: R.pointsText(x.points, x.maxPoints), pct: R.percent(x.points, x.maxPoints) })}">📏 ${R.pointsText(x.points, x.maxPoints)} <span class="muted">${R.percent(x.points, x.maxPoints)}%</span></span>${x.scored < x.criteria ? html`<span class="gb-part small muted">${t('rubrics.score.partial', { n: x.scored, total: x.criteria })}</span>` : ''}` : ''}</a></td>`;
         })}
         <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}${p.rubric ? html`<span class="gb-pts">📏 ${p.rubric.pct}%</span>` : ''}</td></tr>`;
     })}</tbody></table></div>`;
@@ -244,7 +244,9 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const stepRubric = s => (R.STEP_KINDS.includes(s.kind) ? libRubric(s.rubric_id) : null);
   const scores = R.scoresIn(lp.cl.id);
   const scoreOf = (p, stepId) => scores.get(`${p.id}:${stepId}`) || null;
-  const pointsChip = sc => (sc ? html`<span class="chip-s st-pts" dir="ltr">📏 ${R.pointsText(sc.points, sc.max_points)}</span>` : '');
+  // A score shows its points only while it counts (the step still has the rubric it was given with) and has a level picked.
+  const shown = (sc, stepOrNull) => (sc && R.scoreCounts(sc, R.rubricIdFor(l, stepOrNull)) && R.scoredOf(sc).n ? sc : null);
+  const pointsChip = (sc, stepOrNull = null) => { const x = shown(sc, stepOrNull); return x ? html`<span class="chip-s st-pts" dir="ltr" title="${totalText(t, x)}">📏 ${R.pointsText(x.points, x.max_points)}</span>` : ''; };
   const marksChip = x => html`<span class="chip-s st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">📏 ${marksText(x.marks)}</span>`;
   const icon = (s, x) => {
     if (!x) return html`<span class="st-none" title="${t('progress.status.none')}">–</span><span class="sr-only">${t('progress.status.none')}</span>`;
@@ -258,13 +260,15 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const selfMarked = isDone && s.kind === 'game' && !P.hostedLive(s) && x.score === null && !(x.seconds > 0);
     const played = s.kind === 'game' && x.seconds >= 60 ? html`<span class="st-time small muted">${t('progress.lesson.minutes', { count: Math.round(x.seconds / 60) })}</span>` : '';
     if (selfMarked) return html`<span class="st-done st-self" title="${t('progress.lesson.selfMarked')}">☑️</span><span class="sr-only">${t('progress.lesson.selfMarked')}</span>${marks}`;
-    const sc = stepRubric(s) ? scoreOf({ id: x.user_id }, s.id) : null;
+    const sc = stepRubric(s) ? shown(scoreOf({ id: x.user_id }, s.id), s) : null;
     return html`<span class="${isDone ? 'st-done' : 'st-started'}" title="${isDone ? t('progress.status.done') : t('progress.status.started')}">${isDone ? '✅' : '◐'}</span><span class="sr-only">${isDone ? t('progress.status.done') : t('progress.status.started')}</span>${extra}${played}${marks}${sc ? html`<span class="st-marks" dir="ltr">${R.pointsText(sc.points, sc.max_points)}</span>` : ''}`;
   };
   const hasGame = lp.steps.some(s => s.kind === 'game' && !P.hostedLive(s));
   const games_ = new Map(lp.steps.filter(s => s.kind === 'build').flatMap(s => lp.students.map(p => p.cells[lp.steps.indexOf(s)])).filter(x => x && x.game_id).map(x => [x.game_id, games.getGame(x.game_id)]));
   const questions = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === 'question');
   const fullSteps = L.steps(l.id);
+  /** Is p the first student in a step's sorted list whose work still needs reviewing? (Their rubric fields start open.) */
+  const firstOpen = (list, p) => { const f0 = list.find(({ x }) => !x.reviewed_at); return !!f0 && f0.p.id === p.id; };
   const byReview = (a, b) => (!!a.x.reviewed_at - !!b.x.reviewed_at) || (b.x.updated_at - a.x.updated_at);
   // The rubric's radios (one row per line, '–' = not marked) and "Also mark these teammates" (the other students of the class).
   const rubricFields = (s, x, p) => {
@@ -277,9 +281,17 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
       ${mates.length ? html`<details class="rubric-also"><summary class="small">👥 ${t('cs.review.alsoMark')}</summary><p class="small muted">${t('cs.review.alsoMarkHint')}</p>
         <div class="rubric-mates">${mates.map(o => html`<label class="chk"><input type="checkbox" name="alsoMark" value="${o.id}"> ${nameOf(o)}</label>`)}</div></details>` : ''}</div>`;
   };
-  const reviewForm = (s, x, p) => html`<form class="ac-form" data-api="/api/progress/${lp.cl.id}/${s.id}/${p.id}/review" data-reload novalidate>
+  // A library rubric's scoring fields fold away per card (a class of 30 × criteria × levels is very long on a phone): open
+  // on the first card of the step that still needs review (open), and on a score from an older or other rubric.
+  const stepScore = (s, p, open) => {
+    const rb = stepRubric(s); if (!rb) return '';
+    const sc = scoreOf(p, s.id), stale = sc && !R.sameRubric(sc, rb);
+    return html`<details class="rb-fold" ${open || stale ? raw('open') : ''}><summary class="small"><b>📏 ${t('rubrics.score.label', { title: rb.title })}</b>${R.sameRubric(sc, rb) ? html` <span class="chip-s">${totalText(t, sc)}</span>` : ''}</summary>
+      ${scoreFields(t, rb, sc, `rs-${s.id}-${p.id}`)}</details>`;
+  };
+  const reviewForm = (s, x, p, open = false) => html`<form class="ac-form" data-api="/api/progress/${lp.cl.id}/${s.id}/${p.id}/review" data-reload novalidate>
     ${rubricFields(s, x, p)}
-    ${stepRubric(s) ? scoreFields(t, stepRubric(s), scoreOf(p, s.id), `rs-${s.id}-${p.id}`) : ''}
+    ${stepScore(s, p, open)}
     <label class="sr-only" for="fb-${s.id}-${p.id}">${t('progress.lesson.feedback')}</label>
     <textarea class="input" id="fb-${s.id}-${p.id}" name="feedback" rows="2" maxlength="2000" placeholder="${t('progress.lesson.feedbackPlaceholder')}">${x.feedback}</textarea>
     <div class="row"><button class="btn btn-primary btn-sm" type="submit">${x.reviewed_at ? `💬 ${t('progress.lesson.update')}` : `✔️ ${t('progress.lesson.send')}`}</button></div>
@@ -290,9 +302,9 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     return html`<section class="panel answers" aria-labelledby="q-${s.id}"><h2 id="q-${s.id}">✍️ ${t('progress.lesson.question', { n: i + 1 })}</h2>
       <p class="q-text" dir="auto">${q ? q.body : ''}</p>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">✔️ ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}${x.marks && rubricOf(s).length ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id))}</div>
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.reviewed_at ? html`<span class="chip-s">✔️ ${t('progress.lesson.read')}</span>` : html`<span class="chip-s warn">✍️ ${t('progress.lesson.new')}</span>`}${x.marks && rubricOf(s).length ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
         <p class="ac-answer" dir="auto">${x.answer}</p>
-        ${reviewForm(s, x, p)}</li>`)}</ul>` : html`<p class="muted">${t('progress.lesson.noAnswers')}</p>`}
+        ${reviewForm(s, x, p, firstOpen(list, p))}</li>`)}</ul>` : html`<p class="muted">${t('progress.lesson.noAnswers')}</p>`}
     </section>`;
   });
   // Build steps with a rubric (the capstone): every student with a row (started, handed in, or marked as a teammate).
@@ -300,9 +312,9 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x).sort(byReview);
     return html`<section class="panel answers" aria-labelledby="b-${s.id}"><h2 id="b-${s.id}">🛠️ ${s.title || t('lessons.kinds.build')}</h2>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => { const g = x.game_id ? games_.get(x.game_id) : null; return html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.status === 'done' ? html`<span class="chip-s">📤 ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id))}</div>
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.status === 'done' ? html`<span class="chip-s">📤 ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
         ${g && g.status === 'published' && games.canView(req.user, g) ? html`<p><a href="/g/${g.slug}">🎮 ${t('progress.lesson.openGame')}</a></p>` : ''}
-        ${reviewForm(s, x, p)}</li>`; })}</ul>` : html`<p class="muted">${t('cs.review.noHandIns')}</p>`}
+        ${reviewForm(s, x, p, firstOpen(list, p))}</li>`; })}</ul>` : html`<p class="muted">${t('cs.review.noHandIns')}</p>`}
     </section>`;
   });
   // The whole lesson's rubric: one card per student, scored with the levels, a comment per criterion and feedback.
@@ -310,7 +322,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const whole = lessonRb && lp.students.length ? html`<section class="panel answers" id="lesson-rubric" aria-labelledby="lr-h"><h2 id="lr-h">📏 ${t('rubrics.attach.lessonTitle')}</h2>
     <p class="small muted">${t('rubrics.score.lessonHint')}</p>
     <ul class="plain answerlist">${lp.students.map(p => { const sc = scoreOf(p, ''); return html`<li class="answercard ${sc ? 'is-read' : ''}" id="lr-${p.id}"><details class="lr-det">
-      <summary class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${t('progress.student.doneOf', { done: p.done, total: p.total })}</span>${sc ? html`<span class="chip-s">✔️ ${t('rubrics.score.scored')}</span>` : ''}${pointsChip(sc)}</summary>
+      <summary class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${t('progress.student.doneOf', { done: p.done, total: p.total })}</span>${sc ? html`<span class="chip-s">✔️ ${t('rubrics.score.scored')}</span>` : ''}${pointsChip(sc, null)}</summary>
       <form class="ac-form" data-api="/api/rubric-scores/${lp.cl.id}/${p.id}" data-reload novalidate>
         ${scoreFields(t, lessonRb, sc, `lr-${p.id}`)}
         <label class="sr-only" for="lrf-${p.id}">${t('progress.lesson.feedback')}</label>
@@ -382,7 +394,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const student = !teacher && S.classMember(c.id, u.id)?.role === 'student';
   const mine = student ? P.forStudent(cl.id, u.id) : {};
   // Rubric results (services/rubrics.js): this student's own, never anyone else's.
-  const myScores = student ? R.scoresFor(cl.id, u.id) : {};
+  // A score left behind when the step or lesson was switched to another rubric is not shown (R.scoreCounts).
+  const myScores = student ? Object.fromEntries(Object.entries(R.scoresFor(cl.id, u.id)).filter(([sid, sc]) => R.scoreCounts(sc, R.rubricIdFor(l, sid ? st.find(s => s.id === sid) || { kind: '' } : null)))) : {};
   /** "From your teacher": the written feedback and, when the work was scored with a rubric, the result. */
   const fromTeacher = (s, x, { feedback, none = '' }) => {
     const sc = myScores[s.id] || null;

@@ -5,6 +5,14 @@ import { html, raw } from './html.js';
 import * as R from '../services/rubrics.js';
 
 const pts = (t, p) => t('rubrics.pointsN', { count: +(+p).toFixed(1) });
+/** A saved score's total as a chip text: "7 points", "3 points · 1 of 3 scored" while some criteria have no level yet,
+ *  "Not scored" with feedback or comments only. */
+export function totalText(t, score) {
+  const so = R.scoredOf(score);
+  if (!so.n) return t('rubrics.score.notScored');
+  const total = t('rubrics.score.total', { points: R.pointsText(score.points, score.max_points) });
+  return so.n < so.of ? `${total} · ${t('rubrics.score.partial', { n: so.n, total: so.of })}` : total;
+}
 
 /** The rubric as a table: criteria down the side, levels across the top with their points. picks (optional) marks the
  *  level given per criterion. Wide rubrics scroll inside their box on phones. */
@@ -21,14 +29,14 @@ export function rubricGrid(t, r, { picks = null, caption = '' } = {}) {
 /**
  * The scoring fields inside a review form: for each criterion a group of levels to tap (label, points, descriptor) and
  * "Not scored", and a comment box. Field names: lvl-<i> (level index or '-'), cmt-<i>. score: the saved row (picks are
- * shown only when it was given with this version of the rubric). idp keeps ids unique on the page.
+ * shown only when it was given with this rubric at this version, else a "changed" notice). idp keeps ids unique on the page.
  */
 export function scoreFields(t, r, score, idp) {
-  const same = score && score.version === r.version;
+  const same = R.sameRubric(score, r);
   const pick = i => (same && score.picks[i] !== null && score.picks[i] !== undefined ? score.picks[i] : '-');
   const comment = i => (same ? score.comments[i] || '' : '');
   return html`<div class="rb-score" role="group" aria-label="${t('rubrics.score.label', { title: r.title })}">
-    <p class="rb-score-h"><b>📏 <span dir="auto">${r.title}</span></b>${score ? html` <span class="chip-s">${t('rubrics.score.total', { points: R.pointsText(score.points, score.max_points) })}</span>` : ''}</p>
+    <p class="rb-score-h"><b>📏 <span dir="auto">${r.title}</span></b>${same ? html` <span class="chip-s">${totalText(t, score)}</span>` : ''}</p>
     ${score && !same ? html`<p class="small notice warn">${t('rubrics.score.changed')}</p>` : ''}
     ${r.criteria.map((c, i) => html`<fieldset class="rb-crit"><legend dir="auto">${c.name}</legend>
       <div class="rb-levels">
@@ -55,8 +63,9 @@ export function scoreInput(body) {
  *  From the score's snapshot (the rubric as it was when the teacher scored). */
 export function resultView(t, score) {
   const r = score && score.snapshot; if (!r || !Array.isArray(r.criteria)) return '';
+  if (!R.scoredOf(score).n && !(score.comments || []).some(Boolean)) return '';   // feedback only: no grid of "Not scored"
   return html`<div class="rb-result">
-    <p class="rb-result-h"><b>📏 <span dir="auto">${r.title}</span></b> <span class="chip-s rb-total">${t('rubrics.score.total', { points: R.pointsText(score.points, score.max_points) })}</span></p>
+    <p class="rb-result-h"><b>📏 <span dir="auto">${r.title}</span></b> <span class="chip-s rb-total">${totalText(t, score)}</span></p>
     <ul class="plain rb-result-list">${r.criteria.map((c, i) => { const j = score.picks[i]; const l = j !== null && j !== undefined ? r.levels[j] : null; return html`<li>
       <span class="rb-rn" dir="auto">${c.name}</span>
       ${l ? html`<span class="rb-rl"><b dir="auto">${l.label}</b> · ${pts(t, l.points)}</span>${c.descs[j] ? html`<span class="small muted" dir="auto">${c.descs[j]}</span>` : ''}` : html`<span class="muted">${t('rubrics.score.notScored')}</span>`}

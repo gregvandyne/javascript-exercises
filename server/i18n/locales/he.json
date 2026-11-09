@@ -7134,6 +7134,7 @@
       "label": "הערכה לפי {title}",
       "total": "{points} נקודות",
       "notScored": "לא הוערך",
+      "partial": "{n} מתוך {total} קיבלו ציון",
       "comment": "הוספת הערה",
       "commentFor": "הערה על {name}",
       "given": "הרמה שניתנה",

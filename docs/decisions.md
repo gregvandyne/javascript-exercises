@@ -3353,10 +3353,31 @@ most possible, the scorer and the snapshot.
 **Gradebook and CSV.** Each lesson cell shows "📏 points/most  %" for scored work, Overall shows the rubric percentage
 across scored lessons; the CSV adds "<lesson> (rubric points)" and "(rubric %)" columns for lessons with a rubric, then
 "Rubric points" and "Rubric %" totals (only when the class has rubrics, so CSVs without rubrics are as before). The
-percentage is of the work scored so far (unscored criteria count 0 in a score that exists; unscored work is left out).
+percentage is of the criteria scored so far: a criterion with no level adds nothing to the points or the most possible,
+and feedback or comments alone are not a score at all (see "Review fixes" below).
 
 **Students** see their own result on the lesson page under "From your teacher": the feedback, the level given per
 criterion with its descriptor, the teacher's comments and the points; the whole lesson's result in its own panel. A
 student only ever gets their own rows (`scoresFor(classLesson, own id)`); nobody else (other teachers, other schools,
 students, kids, grown-ups, guests) can open a rubric page or API (404). Deleting a step, a lesson or a class deletes its
 scores; account merges move them.
+
+**Review fixes (9 Nov 2026).** A review of the first build found two scoring bugs and three polish items:
+- *A score is "the same rubric" only when `rubric_id` and `version` both match* (`R.sameRubric`). Before, a step switched
+  to another rubric that was also version 1 kept the old picks, a form with no level tapped carried an out-of-range pick
+  into the points and the save failed with a 500 after the feedback was already saved. Now the review form shows "the
+  rubric has changed" and checks nothing, carried picks are bound-checked (an impossible one becomes "not scored"), and
+  saveScore refuses an out-of-range pick before writing. A score left behind by a rubric swap does not count
+  (`R.scoreCounts`): the gradebook, the CSV and the student's page leave it out until the teacher scores again. A
+  rubric taken off (detached or deleted) keeps its scores, as before.
+- *Only scored criteria count.* `max_points` is the top level's points × the criteria with a level, so whole-lesson
+  feedback or a comment with no level stores 0/0 and is left out of every total and percentage (the student still sees
+  the feedback and comments). A partial score says so: "3/4 points · 1 of 3 scored" on the review page and the
+  student's page, and "1 of 3 scored" under the gradebook cell (`R.scoredOf`; the cell adds up the scores in it).
+- The library's "Used in N lessons" counts distinct lessons (a rubric on three steps of one lesson is one lesson), the
+  same number as the editor's `usage()` and the delete confirm.
+- On the review page each answer card's rubric fields fold away ("📏 Score with …", with the total once scored); the
+  first card of each step that still needs review, and a card whose score came from another rubric, start open. A
+  class of 30 on a phone is no longer several metres of radio buttons.
+- Every sideways-scrolling tab row (`nav.tabs`, app.js) scrolls its current tab into view on load, so the active
+  "Rubrics" tab is not cut off in Hebrew / Arabic on a phone.

@@ -305,3 +305,82 @@ test('template draft: levels and criteria in the teacher\'s language', () => {
   assert.ok(d.criteria.every(c => c.descs.length === 5 && c.descs.every(Boolean)));
   assert.ok(R.cleanRubric(d).ok);
 });
+
+test('a score from another rubric is never carried over: swap the step\'s rubric (same version) and post a partial form', async () => {
+  const four = R.createRubric(ana, oak.id, { title: 'Four levels', levels, criteria }).rubric;
+  const three = R.createRubric(ana, oak.id, { title: 'Three levels', levels: levels.slice(0, 3), criteria }).rubric;
+  assert.equal(four.version, three.version, 'both version 1');
+  const c3 = S.createClass(ana, oak.id, { name: 'Ana Swap' }).class; S.addToClass(ana, c3.id, mia.id);
+  const ls = L.createLesson(ana, oak.id, { title: 'Swap lesson' }).lesson;
+  const q1 = L.addStep(ana, ls.id, { kind: 'question', body: 'Why?', rubricId: four.id }).step;
+  const a3 = L.assign(ana, c3.id, ls.id, {}).classLesson;
+  assert.ok(P.answer(mia, a3.id, q1.id, 'Because.').ok);
+  const path = `/api/progress/${a3.id}/${q1.id}/${mia.id}/review`;
+  assert.equal((await as(ana)(path, { method: 'POST', body: { feedback: 'Fine', 'lvl-0': '3', 'lvl-1': '3' } })).json.points, 8);
+  assert.ok(L.updateStep(ana, q1.id, { rubricId: three.id }).ok);
+  // the review page: no level checked from the old rubric, and the "changed" notice
+  const page = await as(ana)(`/class/${c3.id}/progress/${a3.id}`);
+  assert.match(page.text, /The rubric has changed since this was scored/);
+  assert.doesNotMatch(page.text, /name="lvl-\d" value="\d" checked/);
+  // the gradebook and the student page leave the old rubric's score out until it is scored again
+  const gb = P.classProgress(c3.id), cell = gb.students.find(p => p.id === mia.id).cells[0];
+  assert.equal(cell.maxPoints, null); assert.equal(gb.students.find(p => p.id === mia.id).rubric, null);
+  assert.doesNotMatch((await as(mia)(`/class/${c3.id}/lessons/${a3.id}`)).text, /8\/8 points/);
+  // a form with no level tapped (only feedback) saves and never uses the old picks
+  let r = await as(ana)(path, { method: 'POST', body: { feedback: 'Fine again', 'cmt-0': '' } });
+  assert.equal(r.status, 200);
+  assert.equal(R.getScore(a3.id, q1.id, mia.id), null, 'nothing picked on the new rubric: the old score goes, the feedback stays');
+  assert.equal(P.get(a3.id, q1.id, mia.id).feedback, 'Fine again');
+  r = await as(ana)(path, { method: 'POST', body: { feedback: 'Fine again', 'lvl-0': '2' } });
+  assert.equal(r.json.points, 3);
+  // a stale pick out of range never reaches the points (bound check), even through the service
+  q.run('UPDATE rubric_scores SET picks=?, rubric_id=?, version=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', '[3,3]', three.id, three.version, a3.id, q1.id, mia.id);
+  const kept = R.saveScore(ana, a3.id, q1.id, mia.id, { comments: ['x'] });
+  assert.ok(kept.ok); assert.deepEqual(kept.score.picks, [null, null]); assert.equal(kept.score.points, 0); assert.equal(kept.score.max_points, 0);
+  assert.equal((await as(ana)(path, { method: 'POST', body: { feedback: 'Fine again', 'cmt-0': 'x' } })).status, 200);
+});
+
+test('feedback or comments alone score nothing; a partial score counts only the criteria scored and says so', async () => {
+  const three = R.createRubric(ana, oak.id, { title: 'Three criteria', levels, criteria: [...criteria, { name: 'Care' }] }).rubric;
+  const c4 = S.createClass(ana, oak.id, { name: 'Ana Partial' }).class; S.addToClass(ana, c4.id, mia.id); S.addToClass(ana, c4.id, leo.id);
+  const ls = L.createLesson(ana, oak.id, { title: 'Partial lesson' }).lesson;
+  assert.ok(L.updateLesson(ana, ls.id, { rubricId: three.id }).ok);
+  L.addStep(ana, ls.id, { kind: 'text', body: 'Read' });
+  const a4 = L.assign(ana, c4.id, ls.id, {}).classLesson;
+  // Leo: whole-lesson feedback only, then a comment on one criterion with no level
+  let r = await as(ana)(`/api/rubric-scores/${a4.id}/${leo.id}`, { method: 'POST', body: { feedback: 'Nice work today' } });
+  assert.equal(r.status, 200);
+  assert.equal(R.getScore(a4.id, '', leo.id).max_points, 0);
+  await as(ana)(`/api/rubric-scores/${a4.id}/${leo.id}`, { method: 'POST', body: { 'cmt-0': 'Good idea', feedback: 'Nice work today' } });
+  assert.equal(R.getScore(a4.id, '', leo.id).max_points, 0);
+  // Mia: one level of three
+  r = await as(ana)(`/api/rubric-scores/${a4.id}/${mia.id}`, { method: 'POST', body: { 'lvl-0': '2' } });
+  assert.equal(r.json.points, 3);
+  assert.equal(R.getScore(a4.id, '', mia.id).max_points, 4);
+  assert.deepEqual(R.scoredOf(R.getScore(a4.id, '', mia.id)), { n: 1, of: 3 });
+  const gb = P.classProgress(c4.id);
+  const leoRow = gb.students.find(p => p.id === leo.id), miaRow = gb.students.find(p => p.id === mia.id);
+  assert.equal(leoRow.cells[0].maxPoints, null, 'feedback only: no points, no percent'); assert.equal(leoRow.rubric, null);
+  assert.equal(miaRow.cells[0].points, 3); assert.equal(miaRow.cells[0].maxPoints, 4);
+  assert.equal(miaRow.cells[0].scored, 1); assert.equal(miaRow.cells[0].criteria, 3);
+  assert.deepEqual(miaRow.rubric, { points: 3, max: 4, pct: 75 });
+  const page = await as(ana)(`/class/${c4.id}/progress`);
+  assert.match(page.text, /📏 3\/4/); assert.match(page.text, /1 of 3 scored/);
+  const csv = (await as(ana)(`/class/${c4.id}/progress.csv`)).text.replace(/^﻿/, '').trim().split('\r\n');
+  assert.match(csv.find(l => l.startsWith('Leo Pupil')), /,,$/, 'Leo has no rubric total');
+  assert.match(csv.find(l => l.startsWith('Mia Pupil')), /,3\/4,75%$/);
+  // what each student sees
+  const mine = (await as(mia)(`/class/${c4.id}/lessons/${a4.id}`)).text;
+  assert.match(mine, /3\/4 points · 1 of 3 scored/);
+  const his = (await as(leo)(`/class/${c4.id}/lessons/${a4.id}`)).text;
+  assert.match(his, /Nice work today/); assert.match(his, /Good idea/); assert.doesNotMatch(his, /0\/12|0\/4|0 points/);
+});
+
+test('the library counts each lesson once, as the editor does', async () => {
+  const r = R.createRubric(ana, oak.id, { title: 'Counted once', levels, criteria }).rubric;
+  const ls = L.createLesson(ana, oak.id, { title: 'Three steps' }).lesson;
+  for (let i = 0; i < 3; i++) L.addStep(ana, ls.id, { kind: 'question', body: `Q${i}`, rubricId: r.id });
+  assert.ok(L.updateLesson(ana, ls.id, { rubricId: r.id }).ok);
+  assert.equal(R.usage(r.id).length, 1);
+  assert.equal(R.rubricsOf(ana.id, oak.id).find(x => x.id === r.id).uses, 1);
+});

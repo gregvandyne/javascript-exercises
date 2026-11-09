@@ -76,7 +76,8 @@ export const canEditRubric = (u, r) => !!(u && r && (S.canManageSchool(u, r.scho
 export const canSeeRubric = (u, r) => !!(u && r && (canEditRubric(u, r) || (r.shared && isStaffOf(u, r.school_id))));
 
 // ---------------------------------------------------------------- library
-const COLS = `r.*, (SELECT COUNT(*) FROM lessons l WHERE l.rubric_id=r.id AND l.archived_at IS NULL) + (SELECT COUNT(*) FROM lesson_steps s WHERE s.rubric_id=r.id) uses`;
+// uses: the lessons (not archived) with the rubric on the whole lesson or on any of their steps, each counted once (as usage()).
+const COLS = `r.*, (SELECT COUNT(*) FROM lessons l WHERE l.archived_at IS NULL AND (l.rubric_id=r.id OR EXISTS (SELECT 1 FROM lesson_steps s WHERE s.lesson_id=l.id AND s.rubric_id=r.id))) uses`;
 /** The teacher's own rubrics in a school, newest first. */
 export const rubricsOf = (ownerId, schoolId) => q.all(`SELECT ${COLS} FROM rubrics r WHERE r.owner_id=? AND r.school_id=? ORDER BY r.updated_at DESC`, ownerId, schoolId).map(withData);
 /** Rubrics colleagues shared with the school (not the viewer's own), with the owner's school name. */
@@ -177,8 +178,21 @@ export function attachId(u, schoolId, rubricId, current = null) {
 // ---------------------------------------------------------------- scores
 /** The rubric scoring a step ('' = the whole lesson) of an assigned lesson, or null. */
 export function rubricFor(lesson, step) {
-  const id = step ? (STEP_KINDS.includes(step.kind) ? step.rubric_id : null) : lesson && lesson.rubric_id;
+  const id = rubricIdFor(lesson, step);
   return id ? getRubric(id) : null;
+}
+/** The id of the rubric on a step ('' / null step = the whole lesson), or null. */
+export const rubricIdFor = (lesson, step) => (step ? (STEP_KINDS.includes(step.kind) ? step.rubric_id || null : null) : (lesson && lesson.rubric_id) || null);
+/** Was this score given with rubric r as it is now (same rubric, same version)? Only then do its picks fill the form. */
+export const sameRubric = (score, r) => !!(score && r && score.rubric_id === r.id && score.version === r.version);
+/** Does a saved score still count (gradebook, CSV, the student's page)? Yes while the step or lesson still carries the
+ *  rubric it was given with, or carries none (detached or deleted: the snapshot stands). A step switched to another
+ *  rubric leaves the old score out until the teacher scores again. rubricId: what the step / lesson carries now. */
+export const scoreCounts = (score, rubricId) => !!score && (!rubricId || score.rubric_id === rubricId);
+/** How many criteria a score has a level for, out of how many: { n, of }. A partial score is n < of. */
+export function scoredOf(score) {
+  const of = score && score.snapshot && Array.isArray(score.snapshot.criteria) ? score.snapshot.criteria.length : 0;
+  return { n: score && Array.isArray(score.picks) ? score.picks.filter(p => p !== null && p !== undefined).length : 0, of };
 }
 const rowOut = r => (r ? { ...r, snapshot: parse(r.snapshot, null), picks: parse(r.picks, []), comments: parse(r.comments, []) } : null);
 export const getScore = (clId, stepId, userId) => rowOut(q.get('SELECT * FROM rubric_scores WHERE class_lesson_id=? AND step_id=? AND user_id=?', clId, stepId || '', userId));
@@ -189,12 +203,13 @@ export const scoresIn = clId => new Map(q.all('SELECT * FROM rubric_scores WHERE
 
 /**
  * The picks and comments a teacher sent, checked against the rubric: picks one level index (or null) per criterion,
- * comments one string per criterion. A criterion left out keeps what `old` has when old was given with the same version.
+ * comments one string per criterion. A criterion left out keeps what `old` has when old was given with the same rubric
+ * at the same version (sameRubric); a score from another rubric, or an older version, is never carried over.
  * -> { ok, picks, comments } | { ok:false, code:'badScore' }
  */
 export function cleanScore(r, { picks, comments } = {}, old = null) {
-  const n = r.criteria.length, same = old && old.version === r.version;
-  const was = i => (same ? old.picks[i] ?? null : null), wasC = i => (same ? old.comments[i] || '' : '');
+  const n = r.criteria.length, same = sameRubric(old, r);
+  const was = i => { const k = same ? old.picks[i] : null; return Number.isInteger(k) && k >= 0 && k < r.levels.length ? k : null; }, wasC = i => (same ? old.comments[i] || '' : '');
   const pIn = picks === undefined ? [] : Array.isArray(picks) ? picks : null;
   const cIn = comments === undefined ? [] : Array.isArray(comments) ? comments : null;
   if (!pIn || !cIn || pIn.length > n || cIn.length > n) return fail('badScore');
@@ -243,23 +258,38 @@ export function saveScore(u, clId, stepId, userId, { picks, comments, feedback }
     return ok({ score: null });
   }
   const r = x.rubric;
+  // Points and the most possible count only the criteria with a level: feedback or comments alone score nothing (max 0,
+  // left out of every total), and a partial score is points out of the criteria scored so far (scoredOf says how many).
+  if (c.picks.some(p => p !== null && !(Number.isInteger(p) && p >= 0 && p < r.levels.length))) return fail('badScore');
+  const top = r.levels.length ? Math.max(...r.levels.map(l => +l.points || 0)) : 0;
   const points = c.picks.reduce((n, p) => n + (p === null ? 0 : +r.levels[p].points || 0), 0);
+  const maxScored = c.picks.filter(p => p !== null).length * top;
   const snapshot = JSON.stringify({ title: r.title, levels: r.levels, criteria: r.criteria });
   q.run(`INSERT INTO rubric_scores(class_lesson_id, step_id, user_id, rubric_id, version, snapshot, picks, comments, feedback, points, max_points, scored_by, scored_at)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(class_lesson_id, step_id, user_id) DO UPDATE SET rubric_id=excluded.rubric_id, version=excluded.version, snapshot=excluded.snapshot,
     picks=excluded.picks, comments=excluded.comments, feedback=excluded.feedback, points=excluded.points, max_points=excluded.max_points, scored_by=excluded.scored_by, scored_at=excluded.scored_at`,
-    ...key, r.id, r.version, snapshot, JSON.stringify(c.picks), JSON.stringify(c.comments), fb, points, maxPoints(r), u.id, now());
+    ...key, r.id, r.version, snapshot, JSON.stringify(c.picks), JSON.stringify(c.comments), fb, points, maxScored, u.id, now());
   audit(u.id, 'rubric.score', clId, { step: stepId || '', user: userId, points });
   return ok({ score: getScore(clId, stepId || '', userId) });
 }
 
-/** Rubric points per student and assigned lesson in a class (current assignments, steps still in the lesson):
- *  Map 'userId:classLessonId' -> { points, max, n }. */
+/** Rubric points per student and assigned lesson in a class (current assignments, steps still in the lesson, scores that
+ *  still count: scoreCounts). Only scores with a level picked add up (max_points > 0).
+ *  Map 'userId:classLessonId' -> { points, max, n: scores, scored: criteria with a level, of: criteria in those scores }. */
 export function classTotals(classId) {
-  const rows = q.all(`SELECT r.user_id u, r.class_lesson_id cl, SUM(r.points) points, SUM(r.max_points) max, COUNT(*) n FROM rubric_scores r
-    JOIN class_lessons c ON c.id=r.class_lesson_id AND c.removed_at IS NULL
-    WHERE c.class_id=? AND (r.step_id='' OR EXISTS (SELECT 1 FROM lesson_steps s WHERE s.id=r.step_id AND s.lesson_id=c.lesson_id)) GROUP BY r.user_id, r.class_lesson_id`, classId);
-  return new Map(rows.map(r => [`${r.u}:${r.cl}`, { points: r.points, max: r.max, n: r.n }]));
+  const rows = q.all(`SELECT r.user_id u, r.class_lesson_id cl, r.points, r.max_points, r.picks, r.snapshot FROM rubric_scores r
+    JOIN class_lessons c ON c.id=r.class_lesson_id AND c.removed_at IS NULL JOIN lessons l ON l.id=c.lesson_id
+    LEFT JOIN lesson_steps s ON r.step_id!='' AND s.id=r.step_id AND s.lesson_id=c.lesson_id
+    WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL)
+      AND COALESCE(CASE WHEN r.step_id='' THEN l.rubric_id WHEN s.kind IN ('question','build') THEN s.rubric_id END, r.rubric_id)=r.rubric_id`, classId);
+  const out = new Map();
+  for (const row of rows) {
+    const k = `${row.u}:${row.cl}`, x = out.get(k) || { points: 0, max: 0, n: 0, scored: 0, of: 0 };
+    const so = scoredOf(rowOut(row));
+    x.points += row.points; x.max += row.max_points; x.n += 1; x.scored += so.n; x.of += so.of;
+    out.set(k, x);
+  }
+  return out;
 }
 /** Lessons (ids) with a rubric on the lesson or any of its steps. */
 export function lessonsWithRubrics(lessonIds) {

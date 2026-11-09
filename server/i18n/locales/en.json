@@ -7540,6 +7540,7 @@
       "label": "Score with {title}",
       "total": "{points} points",
       "notScored": "Not scored",
+      "partial": "{n} of {total} scored",
       "comment": "Add a comment",
       "commentFor": "Comment on {name}",
       "given": "the level given",

@@ -341,3 +341,13 @@ document.addEventListener('click', e => {
   b.setAttribute('aria-pressed', String(show));
   const label = b.querySelector('span'); if (label) label.textContent = show ? b.dataset.hide : b.dataset.show;
 });
+
+// A row of tabs that scrolls sideways on a phone (.tabs): the current tab is scrolled into view on load, so a long row
+// (or one read right to left) never opens with the tab you are on cut off at the edge. Only the row moves, never the page.
+if (FIRST) for (const nav of $$('nav.tabs')) {
+  const cur = nav.querySelector('[aria-current="page"],[aria-selected="true"]');
+  if (!cur || nav.scrollWidth <= nav.clientWidth) continue;
+  const a = cur.getBoundingClientRect(), n = nav.getBoundingClientRect(), pad = 12;
+  if (a.left < n.left) nav.scrollLeft -= n.left - a.left + pad;
+  else if (a.right > n.right) nav.scrollLeft += a.right - n.right + pad;
+}

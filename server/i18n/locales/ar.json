@@ -7133,6 +7133,7 @@
       "label": "التقييم بـ {title}",
       "total": "النقاط: {points}",
       "notScored": "لم يُقيَّم",
+      "partial": "تم تقييم {n} من {total}",
       "comment": "إضافة تعليق",
       "commentFor": "تعليق على {name}",
       "given": "المستوى المعطى",

@@ -7132,6 +7132,7 @@
       "label": "「{title}」で評価",
       "total": "{points} 点",
       "notScored": "未評価",
+      "partial": "{total}項目中{n}項目を採点",
       "comment": "コメントを追加",
       "commentFor": "「{name}」へのコメント",
       "given": "付けた段階",

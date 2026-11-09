@@ -7132,6 +7132,7 @@
       "label": "Évaluer avec {title}",
       "total": "{points} points",
       "notScored": "Pas évalué",
+      "partial": "{n} sur {total} notés",
       "comment": "Ajouter un commentaire",
       "commentFor": "Commentaire sur {name}",
       "given": "le niveau donné",

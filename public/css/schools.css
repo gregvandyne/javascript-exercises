@@ -920,6 +920,10 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .ac-form>.rb-score+.input,.ac-form>.rb-score+label+.input{margin-top:var(--s2)}
 .st-pts{font-variant-numeric:tabular-nums}
 .gb-pts{display:block;margin-top:4px;font-size:.82rem;font-weight:700;color:var(--text-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.gb-part{display:block;margin-top:2px;font-size:.78rem;white-space:nowrap}
+.rb-fold>summary{min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);cursor:pointer;list-style-position:inside}
+.rb-fold[open]>summary{margin-bottom:var(--s2)}
+.rb-fold>summary::after{content:"▾";margin-inline-start:auto;color:var(--muted)}.rb-fold[open]>summary::after{content:"▴"}
 /* A student's result ("From your teacher"). */
 .fromteacher{gap:var(--s2)}
 .rb-result{display:grid;gap:var(--s2)}

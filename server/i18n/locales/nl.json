@@ -7133,6 +7133,7 @@
       "label": "Beoordelen met {title}",
       "total": "{points} punten",
       "notScored": "Niet beoordeeld",
+      "partial": "{n} van {total} beoordeeld",
       "comment": "Opmerking toevoegen",
       "commentFor": "Opmerking bij {name}",
       "given": "het gegeven niveau",

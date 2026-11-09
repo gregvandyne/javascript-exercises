@@ -7133,6 +7133,7 @@
       "label": "Mit {title} bewerten",
       "total": "{points} Punkte",
       "notScored": "Nicht bewertet",
+      "partial": "{n} von {total} bewertet",
       "comment": "Kommentar hinzufügen",
       "commentFor": "Kommentar zu {name}",
       "given": "die vergebene Stufe",

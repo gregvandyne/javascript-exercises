@@ -166,6 +166,27 @@ test('rubrics: make, attach, score, gradebook and the student\'s own result', as
       await ctx.close();
     }
   }
+  // Hebrew at 360: the library's current tab ("Rubrics") is scrolled into view in its sideways tab row, not cut off
+  {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, storageState: teacherState });
+    await ctx.addCookies([{ name: 'lang', value: 'he', url: new URL('/', t.url()).href }]);
+    const p = await ctx.newPage(); await p.goto('/teach/rubrics');
+    await expect.poll(() => p.evaluate(() => {
+      const nav = document.querySelector('nav.tabs'), a = nav.querySelector('[aria-current="page"]');
+      const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect();
+      return r.left >= n.left - 1 && r.right <= n.right + 1;
+    })).toBe(true);
+    await ctx.close();
+  }
+  // the review page: once reviewed, an answer card's rubric fields are folded away, with the total on the fold
+  {
+    const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, storageState: teacherState });
+    const p = await ctx.newPage(); await p.goto(`/class/${classId}/progress/${clId}`);
+    const fold = p.locator('.answercard:has-text("same turns") details.rb-fold');
+    await expect(fold).not.toHaveAttribute('open', '');
+    await expect(fold.locator(':scope > summary')).toContainText('9/12');
+    await ctx.close();
+  }
 });
 
 test('rubric pages are for the school\'s staff only', async ({ browser }) => {

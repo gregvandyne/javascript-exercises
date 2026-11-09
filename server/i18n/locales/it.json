@@ -7133,6 +7133,7 @@
       "label": "Valuta con {title}",
       "total": "{points} punti",
       "notScored": "Non valutato",
+      "partial": "{n} di {total} valutati",
       "comment": "Aggiungi un commento",
       "commentFor": "Commento su {name}",
       "given": "il livello assegnato",
