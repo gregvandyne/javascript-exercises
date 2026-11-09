@@ -7292,5 +7292,124 @@
       "label": "Standard",
       "hint": "z. B. 3.OA oder RF.K"
     }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Dein Google Classroom",
+      "text": "Verbinde das Google-Konto, mit dem du in Google Classroom unterrichtest. Dann kannst du:",
+      "what": {
+        "courses": "diese Klasse mit einem deiner Classroom-Kurse verknüpfen",
+        "roster": "seine Schülerinnen und Schüler holen, die sich mit Google anmelden",
+        "post": "Lektionen dort posten, mit einem Link hierher und dem Abgabedatum",
+        "grades": "die Abschlussnote jedes Kindes für eine Lektion an Classroom senden"
+      },
+      "button": "Google Classroom verbinden",
+      "privacy": "Nur du siehst diese Verbindung. Oomba Academy sendet an Classroom den Titel der Lektion, einen Link, das Abgabedatum und die Abschlussnote jedes Kindes von 100. Sonst nichts: keine Namen, Antworten oder Spiele.",
+      "connectedAs": "Verbunden als {email}",
+      "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
+      "connectedToast": "Google Classroom ist verbunden.",
+      "disconnect": "Trennen",
+      "disconnectConfirm": "Google Classroom trennen? Oomba Academy synchronisiert dann nicht mehr für dich und löscht seinen Schlüssel zu deinem Classroom. Schon gepostete Lektionen bleiben in Classroom.",
+      "disconnected": "Google Classroom ist getrennt.",
+      "reconnect": "Neu verbinden"
+    },
+    "course": {
+      "heading": "Verknüpfter Classroom-Kurs",
+      "text": "Wähle den Google-Classroom-Kurs, der zu {class} passt.",
+      "none": "Keine aktiven Google-Classroom-Kurse, in denen du unterrichtest.",
+      "pick": "Classroom-Kurs wählen",
+      "link": "Verknüpfen",
+      "linked": "Verknüpft mit {course}.",
+      "linkedTo": "Verknüpft mit {course}",
+      "unlink": "Verknüpfung lösen",
+      "unlinkConfirm": "Verknüpfung mit {course} lösen? Kinder und Lektionen bleiben, wo sie sind.",
+      "unlinked": "Verknüpfung gelöst.",
+      "connectFirst": "Verbinde oben dein Google Classroom, um ihn zu synchronisieren.",
+      "refresh": "Liste aktualisieren"
+    },
+    "roster": {
+      "heading": "Kinder aus Classroom",
+      "text": "Holt die Schülerinnen und Schüler des verknüpften Classroom-Kurses. Wer schon hier ist, wird an seinem Google-Konto erkannt. Wer neu bei Oomba Academy ist, kommt dazu, sobald er sich zum ersten Mal mit Google auf der Domain eurer Schule anmeldet, und bekommt dann ein Schulkonto. Ihre echten Namen sehen nur Lehrkräfte.",
+      "button": "Kinder importieren",
+      "last": "Letzter Import {when}",
+      "noDomains": "Deine Schule hat ihre Google-Domain noch nicht eingetragen, daher können keine neuen Kinder dazukommen. Frag die Schuladministration.",
+      "noDomainsAdmin": "Trag zuerst die Google-Domain deiner Schule ein, damit neue Kinder sich anmelden können: {link}",
+      "hint": "Du nutzt Google Classroom? {link}",
+      "hintLink": "Kinder von dort importieren",
+      "notYet": "Google: aus Classroom, noch nicht angemeldet",
+      "resultAdded": "{count, plural, one {# Kind hinzugefügt} other {# Kinder hinzugefügt}}",
+      "resultAlready": "{count, plural, one {# schon hier} other {# schon hier}}",
+      "resultOwn": "{count, plural, one {# nutzt ein eigenes Konto: kann mit dem Klassencode beitreten} other {# nutzen eigene Konten: können mit dem Klassencode beitreten}}",
+      "resultOther": "{count, plural, one {# gehört zu einer anderen Schule} other {# gehören zu einer anderen Schule}}",
+      "resultStaff": "{count, plural, one {# gehört hier zum Personal} other {# gehören hier zum Personal}}",
+      "resultDomains": "{count, plural, one {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen} other {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen}}",
+      "resultWaiting": "{count, plural, one {# kommt dazu, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet} other {# kommen dazu, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden}}",
+      "waitingNow": "{count, plural, one {# Kind aus Classroom hat sich noch nicht angemeldet. Es kommt in diese Klasse, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet (innerhalb von 30 Tagen; neu importieren verlängert).} other {# Kinder aus Classroom haben sich noch nicht angemeldet. Sie kommen in diese Klasse, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden (innerhalb von 30 Tagen; neu importieren verlängert).}}"
+    },
+    "post": {
+      "heading": "Lektionen in Classroom",
+      "text": "Eine Lektion posten erstellt in Classroom eine Aufgabe mit ihrem Titel, einem Link zur Lektion hier und ihrem Abgabedatum.",
+      "button": "In Google Classroom posten",
+      "also": "Auch in Google Classroom posten",
+      "description": "Öffne diese Lektion auf Oomba Academy.",
+      "done": "In Google Classroom gepostet.",
+      "donePastDue": "In Google Classroom gepostet (ohne Abgabedatum: es ist schon vorbei).",
+      "failed": "Nicht in Google Classroom gepostet:",
+      "due": "Abgabe am {date}",
+      "noDue": "Kein Abgabedatum",
+      "posted": "Gepostet",
+      "open": "In Classroom öffnen",
+      "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu.",
+      "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet."
+    },
+    "grades": {
+      "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
+      "as": "Senden als",
+      "draft": "Vorläufige Note (du gibst sie in Classroom zurück)",
+      "assigned": "Zugewiesene Note",
+      "button": "Abschlussnoten senden",
+      "lastDraft": "Vorläufige Abschlussnoten gesendet {when}",
+      "lastAssigned": "Zugewiesene Abschlussnoten gesendet {when}",
+      "resultSent": "{count, plural, one {# Abschlussnote gesendet} other {# Abschlussnoten gesendet}}",
+      "resultNotStarted": "{count, plural, one {# hat noch nicht angefangen} other {# haben noch nicht angefangen}}",
+      "resultNotMatched": "{count, plural, one {# nicht in dieser Klasse} other {# nicht in dieser Klasse}}",
+      "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}"
+    },
+    "log": {
+      "heading": "Letzte Synchronisierungen",
+      "kinds": {
+        "connect": "Verbunden",
+        "disconnect": "Getrennt",
+        "link": "Kurs verknüpft",
+        "unlink": "Verknüpfung gelöst",
+        "roster": "Kinder importiert",
+        "post": "Lektion gepostet",
+        "grades": "Noten gesendet"
+      }
+    },
+    "errors": {
+      "notSetUp": "Google Classroom ist auf dieser Seite noch nicht eingerichtet. Bitte den Betreiber der Seite, die Einrichtung abzuschließen.",
+      "notConnected": "Verbinde zuerst dein Google Classroom.",
+      "reconnect": "Deine Verbindung zu Google Classroom funktioniert nicht mehr. Bitte verbinde neu.",
+      "notLinked": "Verknüpfe diese Klasse zuerst mit einem Classroom-Kurs.",
+      "pickCourse": "Wähle einen Classroom-Kurs.",
+      "courseNotYours": "In diesem Classroom-Kurs unterrichtest du nicht.",
+      "courseGone": "Google Classroom findet diesen Kurs oder diese Aufgabe nicht mehr.",
+      "denied": "Google Classroom hat abgelehnt. Vielleicht unterrichtest du diesen Kurs nicht, oder deine Schule schränkt diese App ein.",
+      "rateLimited": "Google Classroom ist ausgelastet. Versuch es in ein paar Minuten wieder.",
+      "googleDown": "Google Classroom hat nicht geantwortet. Bitte versuch es noch einmal.",
+      "badRequest": "Google Classroom hat das nicht angenommen.",
+      "tooMany": "Dieser Classroom-Kurs hat mehr als {max} Kinder.",
+      "alreadyPosted": "Diese Lektion ist schon in Google Classroom.",
+      "notPosted": "Poste diese Lektion zuerst in Google Classroom.",
+      "badMode": "Wähle, wie die Noten gesendet werden.",
+      "scopesMissing": "Setz bitte auf Googles Seite alle Häkchen, damit Oomba Academy deine Kurse sehen und Aufgaben posten kann.",
+      "noRefresh": "Google hat keinen Schlüssel geschickt, den wir behalten können. Bitte verbinde neu.",
+      "expired": "Das hat zu lange gedauert. Bitte versuch es noch einmal.",
+      "cancelled": "Du hast auf Googles Seite abgebrochen. Nichts wurde verbunden.",
+      "staffOnly": "Hier können nur Lehrkräfte und Schuladmins Google Classroom nutzen.",
+      "tooManyTries": "Gerade zu viele Synchronisierungen. Versuch es in einer Stunde wieder."
+    }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "errors": {
+    "cancelled": "You cancelled on Google's screen. Nothing was connected.",
+    "scopesMissing": "Please tick every box on Google's screen, so Oomba Academy can see your classes and post work."
+  }
+}

@@ -477,3 +477,38 @@ Questions for the lawyer:
    described in the privacy policy, or does it need its own line?
 3. The self-serve teacher sign-up makes a school with the teacher as its admin (no "Set up my school" review): the
    terms' section 3 (the school confirms its authority) now also binds a single teacher. Is that wording still right?
+
+### Google Classroom sync (2026-11-09; behind `GOOGLE_CLASSROOM`, off; FLAGGED for the owner's legal review)
+
+A teacher can connect their own Google Classroom and sync one Oomba class with one Classroom class
+(docs/google-classroom.md, docs/decisions.md "Google Classroom sync"). This is a new flow of student data between Oomba
+and Google, directed by the teacher. Data-protection notes (DPIA-style):
+
+- **Purpose:** the school's own teaching: put Oomba lessons into the class's Classroom stream and its grades into the
+  teacher's Classroom gradebook. No other use; nothing goes to Google for advertising or analytics.
+- **Sent to Google** (only when the teacher presses Post or Send grades, or ticks "Also post"): the lesson's title, a
+  fixed one-line description, the link to the lesson, its due date and 100 points; then, for each student who is on the
+  teacher's own Classroom roster, in the Oomba class and has started the lesson, a completion grade out of 100 (steps done). Never names,
+  written answers, feedback, games, drawings, audio or anything from other classes. The score is a draft grade unless
+  the teacher chooses "assigned".
+- **Received from Google:** the teacher's Google account id, email and active Classroom class names; for the linked
+  class each student's Google account id and full name. No student emails (we don't request that scope). A student
+  new to Oomba is held (Google account id and full name, 30 days) until they first sign in with Google on the school's
+  domain; only then is a school account made, with the full name as its staff-only roster name (never public; the
+  public name stays a generated username), as invites by school email do. A personal account never gets one.
+- **Stored:** the teacher's refresh token, encrypted (AES-256-GCM, key in an env var); the class ↔ course link; which
+  lessons were posted and when grades were sent (counts only); a sync log of counts and error codes kept 180 days; the
+  audit log. Disconnect revokes the token at Google and deletes it; deleting the teacher's account does too.
+- **Who:** only the class's teachers and the school's admins; students never see it.
+
+Questions for the lawyer:
+
+1. Is sending scores to the school's own Google Workspace for Education a disclosure *to the school* (FERPA school
+   official; COPPA school authorization) that our school terms and privacy policy already cover, or does the privacy
+   policy need a line naming Google Classroom as a teacher-chosen integration?
+2. Holding a Classroom roster entry (name + Google account id, 30 days) until the student first signs in, then making
+   their school account: is that covered by the school's authorization, as with login cards and email invites?
+3. Google's API Services User Data Policy and the Workspace "Limited Use" requirements for these sensitive scopes: do
+   the privacy policy and a public "how we use Google data" statement need wording before Google verifies the app?
+4. State laws (NY Ed Law 2-d, SOPIPA, SOPPA): does a teacher-initiated sync to Google need to appear in the school DPA
+   template or the published list of subprocessors? (Google is the school's own processor here, not ours.)

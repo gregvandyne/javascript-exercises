@@ -7292,5 +7292,124 @@
       "label": "Standaard",
       "hint": "bijv. 3.OA of RF.K"
     }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Jouw Google Classroom",
+      "text": "Koppel het Google-account waarmee je lesgeeft in Google Classroom. Dan kun je:",
+      "what": {
+        "courses": "deze klas koppelen aan een van je Classroom-klassen",
+        "roster": "de leerlingen ervan hierheen halen, die inloggen met Google",
+        "post": "lessen daar plaatsen, met een link hierheen en de inleverdatum",
+        "grades": "het voltooiingscijfer van elke leerling voor een les naar Classroom sturen"
+      },
+      "button": "Google Classroom koppelen",
+      "privacy": "Alleen jij ziet deze koppeling. Oomba Academy stuurt Classroom de titel van de les, een link, de inleverdatum en het voltooiingscijfer van elke leerling op 100. Verder niets: geen namen, antwoorden of games.",
+      "connectedAs": "Gekoppeld als {email}",
+      "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
+      "connectedToast": "Google Classroom is gekoppeld.",
+      "disconnect": "Ontkoppelen",
+      "disconnectConfirm": "Google Classroom ontkoppelen? Oomba Academy synchroniseert dan niet meer voor je en wist zijn sleutel tot je Classroom. Lessen die al geplaatst zijn, blijven in Classroom.",
+      "disconnected": "Google Classroom is ontkoppeld.",
+      "reconnect": "Opnieuw koppelen"
+    },
+    "course": {
+      "heading": "Gekoppelde Classroom-klas",
+      "text": "Kies de Google Classroom-klas die bij {class} hoort.",
+      "none": "Geen actieve Google Classroom-klassen waar jij lesgeeft.",
+      "pick": "Kies een Classroom-klas",
+      "link": "Koppelen",
+      "linked": "Gekoppeld aan {course}.",
+      "linkedTo": "Gekoppeld aan {course}",
+      "unlink": "Ontkoppelen",
+      "unlinkConfirm": "{course} ontkoppelen? Leerlingen en lessen blijven waar ze zijn.",
+      "unlinked": "Ontkoppeld.",
+      "connectFirst": "Koppel hierboven je Google Classroom om te synchroniseren.",
+      "refresh": "Lijst vernieuwen"
+    },
+    "roster": {
+      "heading": "Leerlingen uit Classroom",
+      "text": "Haalt de leerlingen van de gekoppelde Classroom-klas hierheen. Wie al hier is, wordt herkend aan zijn Google-account. Wie nieuw is bij Oomba Academy, komt erbij zodra die voor het eerst inlogt met Google op het domein van je school, en krijgt dan een schoolaccount. Hun echte namen zien alleen leraren.",
+      "button": "Leerlingen importeren",
+      "last": "Laatst geïmporteerd {when}",
+      "noDomains": "Je school heeft haar Google-domein nog niet toegevoegd, dus nieuwe leerlingen kunnen er niet bij. Vraag het de schoolbeheerder.",
+      "noDomainsAdmin": "Voeg eerst het Google-domein van je school toe, zodat nieuwe leerlingen kunnen inloggen: {link}",
+      "hint": "Gebruik je Google Classroom? {link}",
+      "hintLink": "Importeer de leerlingen",
+      "notYet": "Google: uit Classroom, nog niet ingelogd",
+      "resultAdded": "{count, plural, one {# leerling toegevoegd} other {# leerlingen toegevoegd}}",
+      "resultAlready": "{count, plural, one {# was er al} other {# waren er al}}",
+      "resultOwn": "{count, plural, one {# gebruikt een eigen account: kan meedoen met de klascode} other {# gebruiken een eigen account: kunnen meedoen met de klascode}}",
+      "resultOther": "{count, plural, one {# hoort bij een andere school} other {# horen bij een andere school}}",
+      "resultStaff": "{count, plural, one {# is hier personeel} other {# zijn hier personeel}}",
+      "resultDomains": "{count, plural, one {# niet toegevoegd: voeg eerst het Google-domein van de school toe} other {# niet toegevoegd: voeg eerst het Google-domein van de school toe}}",
+      "resultWaiting": "{count, plural, one {# komt erbij bij de eerste keer inloggen met Google op het schooldomein} other {# komen erbij bij de eerste keer inloggen met Google op het schooldomein}}",
+      "waitingNow": "{count, plural, one {# leerling uit Classroom heeft nog niet ingelogd. Die komt in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).} other {# leerlingen uit Classroom hebben nog niet ingelogd. Ze komen in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).}}"
+    },
+    "post": {
+      "heading": "Lessen in Classroom",
+      "text": "Een les plaatsen maakt in Classroom een opdracht met de titel, een link naar de les hier en de inleverdatum.",
+      "button": "Plaatsen in Google Classroom",
+      "also": "Ook plaatsen in Google Classroom",
+      "description": "Open deze les op Oomba Academy.",
+      "done": "Geplaatst in Google Classroom.",
+      "donePastDue": "Geplaatst in Google Classroom (zonder inleverdatum: die is voorbij).",
+      "failed": "Niet geplaatst in Google Classroom:",
+      "due": "Inleveren {date}",
+      "noDue": "Geen inleverdatum",
+      "posted": "Geplaatst",
+      "open": "Openen in Classroom",
+      "noLessons": "Nog geen lessen in deze klas. Wijs er een toe op het tabblad Lessen.",
+      "doneScheduled": "Ingepland in Google Classroom: leerlingen zien het op {date}, als de les opengaat."
+    },
+    "grades": {
+      "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
+      "as": "Versturen als",
+      "draft": "Voorlopig cijfer (jij geeft het terug in Classroom)",
+      "assigned": "Toegekend cijfer",
+      "button": "Voltooiingscijfers versturen",
+      "lastDraft": "Voorlopige voltooiingscijfers verstuurd {when}",
+      "lastAssigned": "Toegekende voltooiingscijfers verstuurd {when}",
+      "resultSent": "{count, plural, one {# voltooiingscijfer verstuurd} other {# voltooiingscijfers verstuurd}}",
+      "resultNotStarted": "{count, plural, one {# is nog niet begonnen} other {# zijn nog niet begonnen}}",
+      "resultNotMatched": "{count, plural, one {# niet in deze klas} other {# niet in deze klas}}",
+      "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}"
+    },
+    "log": {
+      "heading": "Recente synchronisaties",
+      "kinds": {
+        "connect": "Gekoppeld",
+        "disconnect": "Ontkoppeld",
+        "link": "Klas gekoppeld",
+        "unlink": "Klas ontkoppeld",
+        "roster": "Leerlingen geïmporteerd",
+        "post": "Les geplaatst",
+        "grades": "Cijfers verstuurd"
+      }
+    },
+    "errors": {
+      "notSetUp": "Google Classroom is op deze site nog niet ingesteld. Vraag de eigenaar van de site de instelling af te maken.",
+      "notConnected": "Koppel eerst je Google Classroom.",
+      "reconnect": "Je koppeling met Google Classroom werkt niet meer. Koppel opnieuw.",
+      "notLinked": "Koppel deze klas eerst aan een Classroom-klas.",
+      "pickCourse": "Kies een Classroom-klas.",
+      "courseNotYours": "In die Classroom-klas geef jij geen les.",
+      "courseGone": "Google Classroom kan die klas of opdracht niet meer vinden.",
+      "denied": "Google Classroom weigerde. Misschien geef je geen les in die klas, of beperkt je school deze app.",
+      "rateLimited": "Google Classroom heeft het druk. Probeer het over een paar minuten opnieuw.",
+      "googleDown": "Google Classroom gaf geen antwoord. Probeer het opnieuw.",
+      "badRequest": "Google Classroom nam dat niet aan.",
+      "tooMany": "Die Classroom-klas heeft meer dan {max} leerlingen.",
+      "alreadyPosted": "Deze les staat al in Google Classroom.",
+      "notPosted": "Plaats deze les eerst in Google Classroom.",
+      "badMode": "Kies hoe je de cijfers verstuurt.",
+      "scopesMissing": "Vink op het scherm van Google alle vakjes aan, zodat Oomba Academy je klassen kan zien en opdrachten kan plaatsen.",
+      "noRefresh": "Google stuurde geen sleutel die we kunnen bewaren. Koppel opnieuw.",
+      "expired": "Dat duurde te lang. Probeer het opnieuw.",
+      "cancelled": "Je hebt op het scherm van Google geannuleerd. Er is niets gekoppeld.",
+      "staffOnly": "Hier kunnen alleen leraren en schoolbeheerders Google Classroom gebruiken.",
+      "tooManyTries": "Te veel synchronisaties voor nu. Probeer het over een uur opnieuw."
+    }
   }
 }

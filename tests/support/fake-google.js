@@ -1,4 +1,6 @@
-// A small stand-in for Google's sign-in (OpenID Connect) for tests. It never talks to Google and imports nothing from
+// A small stand-in for Google's sign-in (OpenID Connect) for tests. It also does the OAuth parts Google Classroom sync
+// needs (tests/support/fake-classroom.js is the API): access_type=offline gives a refresh token, the refresh_token grant,
+// /revoke, and the granted scope (next({ dropScope }) leaves one out, as when a teacher unticks a box). It never talks to Google and imports nothing from
 // server/. Unit tests start it in-process; Playwright runs it as `node tests/support/fake-google.js --port 5932`.
 // The values here (client id and secret) are fake test values, not secrets.
 import http from 'node:http';
@@ -14,7 +16,8 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
   const keys = []; let n = 0;
   const rotateKey = () => { const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 }); const kid = `fake-${++n}`; keys.push({ kid, publicKey, privateKey }); return kid; };
   rotateKey();
-  const codes = new Map(); const stats = { jwks: 0, token: 0, authorize: 0 }; const issued = []; let pending = {};
+  const codes = new Map(); const stats = { jwks: 0, token: 0, authorize: 0, refresh: 0, revoke: 0 }; const issued = []; let pending = {};
+  const refreshTokens = new Map(); // refresh token -> { scope, sub }
   let url = '';
 
   function idToken(c, tamper) {
@@ -47,7 +50,8 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
 
   function issue(p, who) {
     const code = crypto.randomBytes(24).toString('base64url');
-    const c = { ...who, nonce: p.get('nonce'), challenge: p.get('code_challenge'), redirect: p.get('redirect_uri'), at: Date.now(), used: false, tamper: pending.tamper };
+    const c = { ...who, nonce: p.get('nonce'), challenge: p.get('code_challenge'), redirect: p.get('redirect_uri'), at: Date.now(), used: false, tamper: pending.tamper,
+      scope: String(p.get('scope') || '').split(' ').filter(s => s && s !== pending.dropScope).join(' '), offline: p.get('access_type') === 'offline', noRefresh: !!pending.noRefresh };
     pending = {}; codes.set(code, c); issued.push(code); return code;
   }
   const back = (res, redirect, params) => { const u = new URL(redirect); for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v); res.writeHead(302, { location: u.href }); res.end(); };
@@ -108,20 +112,36 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
       if (c?.tamper === 'status500') return bad(res, 500, { error: 'internal' }, true);
       if (c?.tamper === 'slow') await new Promise(r => setTimeout(r, 15_000));
       if (c?.tamper === 'huge') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ id_token: 'x'.repeat(70_000) })); }
+      if (p.get('grant_type') === 'refresh_token') {
+        stats.refresh++;
+        if (p.get('client_id') !== clientId || p.get('client_secret') !== clientSecret) return bad(res, 401, { error: 'invalid_client' }, true);
+        const rt = refreshTokens.get(p.get('refresh_token') || '');
+        if (!rt) return bad(res, 400, { error: 'invalid_grant', error_description: 'Token has been expired or revoked.' }, true);
+        res.writeHead(200, { 'content-type': 'application/json' });
+        return res.end(JSON.stringify({ access_token: 'fake-at-' + crypto.randomBytes(8).toString('hex'), token_type: 'Bearer', expires_in: 3599, scope: rt.scope }));
+      }
       if (p.get('grant_type') !== 'authorization_code') return bad(res, 400, { error: 'unsupported_grant_type' }, true);
       if (p.get('client_id') !== clientId || p.get('client_secret') !== clientSecret) return bad(res, 401, { error: 'invalid_client' }, true);
       if (!c || c.used || Date.now() - c.at > 60e3 || p.get('redirect_uri') !== c.redirect) return bad(res, 400, { error: 'invalid_grant' }, true);
       if (sha(String(p.get('code_verifier') || '')).toString('base64url') !== c.challenge) return bad(res, 400, { error: 'invalid_grant' }, true);
       c.used = true;
+      let refresh = {};
+      if (c.offline && !c.noRefresh) { const rt = 'fake-rt-' + crypto.randomBytes(12).toString('hex'); refreshTokens.set(rt, { scope: c.scope, sub: c.sub }); refresh = { refresh_token: rt }; }
       res.writeHead(200, { 'content-type': 'application/json' });
-      return res.end(JSON.stringify({ access_token: 'fake-at-' + crypto.randomBytes(8).toString('hex'), token_type: 'Bearer', expires_in: 3599, scope: 'openid email profile', ...(c.tamper === 'noIdToken' ? {} : { id_token: idToken(c, c.tamper) }) }));
+      return res.end(JSON.stringify({ access_token: 'fake-at-' + crypto.randomBytes(8).toString('hex'), token_type: 'Bearer', expires_in: 3599, scope: c.offline ? c.scope : 'openid email profile', ...refresh, ...(c.tamper === 'noIdToken' ? {} : { id_token: idToken(c, c.tamper) }) }));
+    }
+    if (u.pathname === '/revoke' && req.method === 'POST') {
+      stats.revoke++;
+      const p = await readBody(req); const tk = p.get('token') || '';
+      if (!refreshTokens.delete(tk)) return bad(res, 400, { error: 'invalid_token' }, true);
+      res.writeHead(200, { 'content-type': 'application/json' }); return res.end('{}');
     }
     bad(res, 404, 'not found');
   });
   await new Promise(r => server.listen(port, host, r));
   url = `http://${host}:${server.address().port}`;
   return {
-    get url() { return url; }, stats, issued, rotateKey,
+    get url() { return url; }, stats, issued, rotateKey, refreshTokens,
     next(o = {}) { pending = o; },
     close: () => new Promise(r => { server.closeAllConnections?.(); server.close(() => r()); }),
   };

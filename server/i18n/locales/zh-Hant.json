@@ -7291,5 +7291,124 @@
       "label": "標準",
       "hint": "例如 3.OA 或 RF.K"
     }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "你的 Google Classroom",
+      "text": "連結你在 Google Classroom 授課用的 Google 帳號。連結後你可以：",
+      "what": {
+        "courses": "把這個班級連結到你在 Classroom 的其中一個課程",
+        "roster": "匯入該課程的學生，讓他們用 Google 登入",
+        "post": "在那裡發布課程，附上回到這裡的連結和繳交期限",
+        "grades": "把每位學生的課程完成度成績傳送到 Classroom"
+      },
+      "button": "連結 Google Classroom",
+      "privacy": "只有你看得到這個連結。Oomba Academy 只會傳給 Classroom 課程標題、一個連結、繳交期限，以及每位學生的完成度成績（滿分 100）。其他都不會傳：沒有姓名、答案或遊戲。",
+      "connectedAs": "已用 {email} 連結",
+      "connectedHint": "這是你自己的連結：其他協同老師要各自連結。",
+      "connectedToast": "已連結 Google Classroom。",
+      "disconnect": "中斷連結",
+      "disconnectConfirm": "要中斷 Google Classroom 的連結嗎？Oomba Academy 會停止為你同步，並刪除存取你 Classroom 的金鑰。已發布的課程會留在 Classroom。",
+      "disconnected": "已中斷 Google Classroom 的連結。",
+      "reconnect": "重新連結"
+    },
+    "course": {
+      "heading": "已連結的 Classroom 課程",
+      "text": "選擇與 {class} 對應的 Google Classroom 課程。",
+      "none": "沒有你正在授課的 Google Classroom 課程。",
+      "pick": "選擇 Classroom 課程",
+      "link": "連結",
+      "linked": "已連結到 {course}。",
+      "linkedTo": "已連結到 {course}",
+      "unlink": "取消連結",
+      "unlinkConfirm": "要取消與 {course} 的連結嗎？學生和課程都會保留。",
+      "unlinked": "已取消連結。",
+      "connectFirst": "請先在上方連結 Google Classroom 才能同步。",
+      "refresh": "重新整理清單"
+    },
+    "roster": {
+      "heading": "來自 Classroom 的學生",
+      "text": "匯入已連結的 Classroom 課程中的學生。已經在這裡的學生會依 Google 帳號比對。第一次使用 Oomba Academy 的學生，會在第一次用學校網域的 Google 帳號登入時加入，並在那時得到學校帳號。他們的真實姓名只有老師看得到。",
+      "button": "匯入學生",
+      "last": "上次匯入：{when}",
+      "noDomains": "你的學校還沒有加入 Google 網域，所以無法加入新學生。請洽學校管理員。",
+      "noDomainsAdmin": "請先加入學校的 Google 網域，新學生才能登入：{link}",
+      "hint": "在用 Google Classroom 嗎？{link}",
+      "hintLink": "匯入它的學生",
+      "notYet": "Google：來自 Classroom，尚未登入",
+      "resultAdded": "{count, plural, other {已加入 # 位學生}}",
+      "resultAlready": "{count, plural, other {# 位已經在班上}}",
+      "resultOwn": "{count, plural, other {# 位使用個人帳號：可以用班級代碼加入}}",
+      "resultOther": "{count, plural, other {# 位屬於其他學校}}",
+      "resultStaff": "{count, plural, other {# 位是本校教職員}}",
+      "resultDomains": "{count, plural, other {# 位未加入：請先加入學校的 Google 網域}}",
+      "resultWaiting": "{count, plural, other {# 位會在第一次用學校網域的 Google 帳號登入時加入}}",
+      "waitingNow": "{count, plural, other {Classroom 的 # 位學生還沒登入。他們第一次用學校網域的 Google 帳號登入時就會加入這個班級（30 天內；再匯入一次可延長）。}}"
+    },
+    "post": {
+      "heading": "Classroom 中的課程",
+      "text": "發布課程會在 Classroom 建立一份作業，包含標題、回到這裡課程的連結和繳交期限。",
+      "button": "發布到 Google Classroom",
+      "also": "同時發布到 Google Classroom",
+      "description": "在 Oomba Academy 打開這堂課。",
+      "done": "已發布到 Google Classroom。",
+      "donePastDue": "已發布到 Google Classroom（沒有繳交期限：期限已過）。",
+      "failed": "未發布到 Google Classroom：",
+      "due": "{date} 截止",
+      "noDue": "沒有繳交期限",
+      "posted": "已發布",
+      "open": "在 Classroom 開啟",
+      "noLessons": "這個班級還沒有課程。請在「課程」分頁指派一堂。",
+      "doneScheduled": "已在 Google Classroom 排程：學生會在 {date} 課程開放時看到。"
+    },
+    "grades": {
+      "text": "這是完成度成績：學生完成的課程步驟比例（滿分 100），不計算答對幾題。還沒開始的學生不會傳送。",
+      "as": "傳送方式",
+      "draft": "草稿成績（由你在 Classroom 發還）",
+      "assigned": "正式成績",
+      "button": "傳送完成度成績",
+      "lastDraft": "草稿完成度成績已傳送：{when}",
+      "lastAssigned": "正式完成度成績已傳送：{when}",
+      "resultSent": "{count, plural, other {已傳送 # 筆完成度成績}}",
+      "resultNotStarted": "{count, plural, other {# 位還沒開始}}",
+      "resultNotMatched": "{count, plural, other {# 位不在這個班級}}",
+      "resultFailed": "{count, plural, other {# 筆未能傳送}}"
+    },
+    "log": {
+      "heading": "最近的同步",
+      "kinds": {
+        "connect": "已連結",
+        "disconnect": "已中斷連結",
+        "link": "已連結課程",
+        "unlink": "已取消連結",
+        "roster": "已匯入學生",
+        "post": "已發布課程",
+        "grades": "已傳送成績"
+      }
+    },
+    "errors": {
+      "notSetUp": "這個網站還沒有設定 Google Classroom。請網站負責人完成設定。",
+      "notConnected": "請先連結 Google Classroom。",
+      "reconnect": "你和 Google Classroom 的連結已失效。請重新連結。",
+      "notLinked": "請先把這個班級連結到 Classroom 課程。",
+      "pickCourse": "請選擇 Classroom 課程。",
+      "courseNotYours": "你沒有在那個 Classroom 課程授課。",
+      "courseGone": "Google Classroom 已找不到那個課程或作業。",
+      "denied": "Google Classroom 拒絕了。你可能不是那個課程的老師，或學校限制了這個應用程式。",
+      "rateLimited": "Google Classroom 忙碌中。請幾分鐘後再試。",
+      "googleDown": "Google Classroom 沒有回應。請再試一次。",
+      "badRequest": "Google Classroom 不接受這個要求。",
+      "tooMany": "那個 Classroom 課程有超過 {max} 位學生。",
+      "alreadyPosted": "這堂課已經在 Google Classroom 了。",
+      "notPosted": "請先把這堂課發布到 Google Classroom。",
+      "badMode": "請選擇成績的傳送方式。",
+      "scopesMissing": "請在 Google 的畫面勾選所有方塊，Oomba Academy 才能看到你的課程並發布作業。",
+      "noRefresh": "Google 沒有傳來我們能保存的金鑰。請重新連結。",
+      "expired": "花太久時間了。請再試一次。",
+      "cancelled": "你在 Google 的畫面取消了。沒有連結任何東西。",
+      "staffOnly": "這裡只有老師和學校管理員可以使用 Google Classroom。",
+      "tooManyTries": "目前同步次數太多。請一小時後再試。"
+    }
   }
 }

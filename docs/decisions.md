@@ -3448,3 +3448,75 @@ Owner: "Build all of those suggestions" (teacher portal: grading and curriculum 
   - Learn (staff): the Standard box has its own visible Filter button (learn.js hides the form's no-JS one), and the
     course cards are left out while `?std=` is on (courses are tagged by step, not by course).
   - RTL: the group headings put the English domain name on its own line under the grade (standards.css).
+## Google Classroom sync (9 Nov 2026)
+Owner: "Build all of those suggestions" (leaning into the teacher portal's grading and curriculum tools; this stream is
+the Google Classroom sync). Setup for the owner: docs/google-classroom.md.
+- **Behind config:** on only with Sign in with Google (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`) and
+  `GOOGLE_CLASSROOM=1`; every route answers like an unknown page while off, and the pieces other pages show render ''.
+  `GOOGLE_TOKEN_KEY` (32 bytes, hex or base64; a malformed one stops startup, never echoed) is needed to store anything:
+  without it the page says Classroom isn't set up and Connect is refused.
+- **One client module:** `services/gclassroom-client.js` is the only code that talks to Google (token exchange,
+  refresh, revoke, the Classroom API at `CLASSROOM_API_BASE`, default https://classroom.googleapis.com, refused in
+  production when changed). Tests use tests/support/fake-classroom.js and the OAuth parts added to fake-google.js.
+  Replies are capped (2 MB), 15 s timeouts, lists paged with a page cap; Google errors become a short code
+  (`reconnect`, `denied`, `notFound` → "courseGone", `rateLimited`, `badRequest`, `googleDown`) shown in plain words.
+- **Connect = incremental authorization:** a POST hands back a 5-minute signed start link bound to the session (as
+  the Me page's Google connect does), the start writes the same PKCE/state/nonce flow cookie, and Google is asked for
+  `openid email` + `classroom.courses.readonly`, `classroom.rosters.readonly`, `classroom.coursework.students` with
+  `access_type=offline`, `include_granted_scopes=true`, `prompt=consent` (so a refresh token always comes back) and a
+  `login_hint` of their sign-in email. Callback: `/auth/google/classroom/callback` (a second redirect URI). A box left
+  unticked on Google's screen ("granular consent") is refused (`scopesMissing`); nothing is stored. Not
+  `classroom.coursework.me` (only students' own work needs it), not `profile.emails`: no email is read.
+- **Tokens:** the refresh token is sealed with AES-256-GCM (random 12-byte nonce, the teacher's user id as associated
+  data, `key_tag` = a hash prefix of the key) in `gc_connections`. Access tokens live in memory under an hour; a 401
+  refreshes once and retries; `invalid_grant` (revoked at Google) or a changed key marks the connection
+  "connect again". Disconnect revokes at Google (best effort) and deletes the row; account deletion does the same.
+- **Who:** school staff (`S.isSchoolStaff`) who manage the class (`S.canManageClass`: its teachers and school admins).
+  Other teachers, students, guests: 404 on the page and APIs; students and guests can't start a connection (403); a
+  platform admin who isn't staff sees the page but has nothing to connect. The connection is per teacher.
+- **Link:** a class links to one course from the teacher's own active courses (`teacherId=me`), checked again on save.
+- **Roster import, matched like Sign in with Google:** Classroom's `userId` is the Google account id that sign-in calls
+  `sub`, so a student whose Oomba account already has that Google account joins the class (if they belong to this
+  school); own accounts outside the school, other schools' accounts and staff are left out and counted (own accounts
+  can use the class code). Someone new gets a school account bound to that Google account (generated username, the
+  Classroom full name only as the staff-only roster name, no password; `google_identities` row with an empty email
+  until their first sign-in, which then checks the school's domains as usual), so the school needs its Google domains
+  first (`needDomains` otherwise). Nothing is shown to other students. At most 300 per import.
+- **Post:** one CourseWork per class lesson (`gc_posts`): the lesson title, one fixed line, a link material to
+  `/class/:cid/lessons/:clid`, `maxPoints` 100, and the due date as the end of the due day in the school's time zone
+  (UTC to Google; left off when past, since Classroom refuses a past due date). From the class page or "Also post to
+  Google Classroom" in the assign form (the assignment stands whatever Google says; the toast carries both lines).
+- **Grades:** a lesson's score is the gradebook's done/total steps × 100. Sent to each submission of the teacher's
+  coursework whose `userId` maps to a student in this class who has started; not started / not in this class / failed
+  are counted. Draft (`updateMask=draftGrade`; the teacher returns it in Classroom) or assigned
+  (`draftGrade,assignedGrade`). We never return work or touch coursework we didn't create (Google forbids it anyway).
+- **Limits and audit:** 60 syncs an hour per teacher, 20 imports an hour per class, 20 connects an hour; every sync
+  writes `gc_syncs` (kind, status, counts, error code: never names or grades; swept after 180 days, shown as "Recent
+  syncs") and the audit log (`gclassroom.*`). Migration 0065.
+- **Privacy:** listed in docs/legal-review.md ("Google Classroom sync") for the owner's legal review.
+
+## Google Classroom sync: review fixes (9 Nov 2026)
+A review of the sync found these; what changed:
+- **Relinking (major):** a post now counts only for the Classroom class it was posted to (`gc_posts.course_id` equal to
+  the class's current `gc_links.course_id`; `postOf` / `postsOfClass` join on it). Linking a *different* Classroom class
+  deletes the old posts (and waiting students) in the same transaction, so the lesson shows **Post** again, "Open in
+  Classroom" never points at the old class, and grades can't go to the old assignment (`sendGrades` also needs a live
+  link). Unlink keeps posts, so unlinking and relinking the *same* class finds them again. Reposting replaces the row.
+- **Roster import makes no accounts any more:** the import can't see emails (we don't ask for `profile.emails`), so it
+  can't check a new student's domain. A student Oomba doesn't know yet now waits in `gc_pending` (class, Google id,
+  staff-only roster name; added to migration 0065, which hasn't shipped) for 30 days. The first time they sign in with
+  Google on one of the school's domains, `services/google.js` makes their school account and puts them in the class
+  (also for a known account linking Google later, if it's this school's student). A personal or out-of-domain Google
+  account gets nothing and its Google id stays free. Results say "N will join when they first sign in with Google on
+  your school's domain"; the page shows how many still wait. Re-importing renews them and drops students no longer on
+  the Classroom roster; unlinking clears them.
+- **Deletes:** deleting a class removes its `gc_links`, `gc_posts`, `gc_pending` and `gc_syncs`; deleting a lesson removes
+  the posts of its class lessons. The 12-hourly gclassroom sweep also removes rows whose class or class lesson is gone.
+- **Lessons that open later** go to Classroom as `DRAFT` with `scheduledTime` = local midnight of the opening day where
+  the school is, so they appear in Classroom when the lesson unlocks here. The toast says when.
+- **"Also post to Google Classroom" starts unticked:** a post reaches real students and can't be undone from Oomba.
+- **Completion grade, said plainly:** the button is "Send completion grades", results say "completion grades sent", and
+  the page explains it's the share of steps done, not right answers. (Sending quiz scores instead is a later choice.)
+- **RTL:** he/ar strings carry an RLM after Latin words such as "Classroom" so brackets sit on the right side.
+- **Course list:** the page uses the five-minute cache; "Refresh the list" asks Google again; any fetch from the page
+  is limited to 30 an hour per teacher. Linking still checks a fresh list.
