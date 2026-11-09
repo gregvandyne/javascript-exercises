@@ -1,0 +1,48 @@
+/* Standards beyond computer science (routes/standards.js, views/standards.js): the framework chips on the class
+   Standards tab, the Common Core coverage summary, the lesson's standards picker and the small code chips. The class
+   table itself reuses the CSTA tab's .csq-std rules (cs-quest.css, schools.css), phone cards included. */
+.std-fw{margin:var(--s3) 0}
+.std-fw .chip{white-space:normal;text-align:center;line-height:1.2}
+.std-notice{margin:var(--s4) 0 var(--s2);line-height:1.4}
+.std-notice span[lang]{display:inline}
+.std-tools{margin-top:var(--s2)}
+.std-tools .csq-std-pick>select.input-sm{max-width:none;width:auto}
+.std-summary{list-style:none;margin:var(--s3) 0;padding:0;display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.std-summary>li,.std-summary>li.panel+li.panel{margin:0;display:flex;flex-direction:column;gap:6px;padding:var(--s3)}
+.std-summary span{font-size:.9rem}
+.std-bar{display:block;height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.std-bar>span{display:block;height:100%;background:var(--accent-line);border-radius:999px}
+.std-ccss th.std-sub b::before{content:"↳ ";color:var(--muted)}
+/* the lesson page */
+.std-tagged{display:grid;gap:var(--s3);margin:var(--s2) 0 0}
+.std-tagged h3{margin:0 0 var(--s2);color:var(--muted)}
+.std-taglist,.std-results{display:grid;gap:var(--s2);margin:0}
+.std-tag,.std-result{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card-2)}
+.std-result.std-sub{margin-inline-start:var(--s4)}
+.std-tag-t{display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere}
+.std-tag-t .chip-s{align-self:flex-start}
+.std-tag form,.std-result form{margin:0;flex:none}
+.std-tag .btn,.std-result .btn{min-height:44px}
+.std-filters{margin-top:var(--s2)}
+.std-lessonhead{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);flex-wrap:wrap}
+.std-lessonhead h2{margin:0}
+.std-lessonhead .btn{min-height:44px}
+.std-lessonpanel>p,.std-lessonpanel>.std-codes{margin-top:var(--s2)}
+/* code chips (lesson editor, step cards) */
+.std-codes{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:var(--s2) 0 0;padding:0}
+.std-codes>li{margin:0}
+.std-code{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.std-stepcodes{margin:var(--s2) 0}
+@media (max-width:600px){
+  .std-tag,.std-result{flex-direction:column;align-items:stretch}
+  .std-tag form,.std-result form{align-self:flex-start}
+  .std-result.std-sub{margin-inline-start:var(--s3)}
+}
+/* group headings: in RTL the English domain name sits on its own line under the grade */
+[dir="rtl"] .std-gname>.std-gsep{display:none}
+[dir="rtl"] .std-gname>.std-gdom{display:block}
+/* Learn (staff): the Standard box keeps its own visible Filter button (learn.js hides the form's no-JS one) */
+.learn-std-row{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;max-width:100%}
+.learn-std{display:flex;align-items:center;gap:var(--s2);font-weight:700;min-width:0}
+.learn-std .input{width:9rem;max-width:100%;min-height:44px}
+.learn-std-go{min-height:44px}

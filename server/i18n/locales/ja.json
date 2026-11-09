@@ -3430,7 +3430,10 @@
       },
       "privacy": {
         "h": "プライバシー",
-        "p1": "Googleアカウントが連携されている間、ログイン時に識別するため、そのアカウントのID、メールアドレス、学校のドメインを保存します。Googleのプロフィール写真は保存せず、生徒のGoogle上の名前をゲームサイトに表示することもありません。また、このアカウントを使ってGoogleからほかの情報を読み取ることもありません。"
+        "p1": "Googleアカウントが連携されている間、ログイン時に識別するため、そのアカウントのID、メールアドレス、学校のドメインを保存します。Googleのプロフィール写真は保存せず、生徒のGoogle上の名前をゲームサイトに表示することもありません。また、このアカウントを使ってGoogleからほかの情報を読み取ることもありません。",
+        "p1c": "Googleアカウントが連携されている間、ログイン時に識別するため、そのアカウントのID、メールアドレス、学校のドメインを保存します。Googleのプロフィール写真は保存せず、生徒のGoogle上の名前をゲームサイトに表示することもありません。また、先生がGoogle Classroomを接続しない限り、Googleアカウントからほかの情報を読み取ることはありません。",
+        "classroom": "先生がGoogle Classroomを接続すると、その先生が担当するクラスの名前と、リンクしたクラスについては各生徒のGoogleアカウントIDと名前だけを読み取り、Oomba Academyの対応するクラスに生徒を追加します。Googleに送るのは、先生が求めたものだけです。つまり、課題（レッスンのタイトル、レッスンへのリンク、提出期限）と、各生徒のレッスンの得点（100点満点）です。生徒の回答、フィードバック、ゲーム、絵を送ることはありません。先生の接続情報は、先生が接続を解除するかアカウントを削除するまで暗号化して保存されます。接続を解除すると、Google側でもアクセス権が取り消されます。",
+        "limitedUse": "Oomba AcademyによるGoogle APIから受け取った情報の使用および転送は、Limited Use（限定的使用）の要件を含め、Google API Services User Data Policy（Google API サービスのユーザーデータに関するポリシー）に準拠します。この情報を販売したり、広告に使用したり、AIモデルのトレーニングに使用したりすることはありません。また、当社のチームがこの情報を閲覧するのは、サポート、セキュリティ、または法令上必要な場合に限られます。"
       }
     }
   },
@@ -7025,6 +7028,547 @@
       "breaksText": "「あそぶ」から選んだ、大きな画面で5分間楽しめる短いゲームです。",
       "allGames": "生徒が遊べるものをすべて見る",
       "openLive": "開いているライブゲームへ"
+    },
+    "loop": {
+      "kicker": "Oombaを毎週の授業に",
+      "h": "計画 → プレイ → 確認 → フィードバック",
+      "lead": "どの授業にも使える1つのサイクル：計画して、クラスでプレイし、助けが必要な子を見つけ、一人ひとりに次にやることを伝えます。どのステップも、Oombaにすでにある機能です。",
+      "steps": {
+        "plan": {
+          "name": "計画",
+          "benefit": "用意された授業やテーマから始めて、クラスが遊びたくなるゲームに変えましょう。"
+        },
+        "play": {
+          "name": "プレイ",
+          "benefit": "公開日と締め切りを決めて課題にするか、クラス全員で大きな画面でライブで遊びます。"
+        },
+        "check": {
+          "name": "確認",
+          "benefit": "全員の進み具合がひと目でわかり、先に助けが必要な子もわかります。"
+        },
+        "feedback": {
+          "name": "フィードバック",
+          "benefit": "一つひとつの答えを読み、生徒が自分の授業で見られるコメントを書きます。"
+        }
+      },
+      "tools": {
+        "builder": "授業をゲームにする",
+        "assign": "クラスに出す",
+        "gradebook": "成績一覧",
+        "gradebookCsv": "成績一覧（CSVダウンロード付き）",
+        "standards": "「スタンダード」タブ",
+        "review": "読む答え",
+        "written": "生徒が見る書き込みコメント",
+        "library": "レッスンライブラリ",
+        "draftAi": "AIで下書き",
+        "attention": "対応が必要な順",
+        "csv": "ダウンロード（CSV）",
+        "live": "ライブゲームを開く"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "成績一覧：縦に生徒、横に授業。終わったステップと読む答えが表示されている",
+          "caption": "成績一覧：クラス全体がひと目でわかり、CSVでダウンロードできます。"
+        },
+        "attention": {
+          "alt": "1つの授業の進み具合。注意が必要な生徒が先に来るように並べ替えたところ",
+          "caption": "注意が必要な子を先に：読む答え、遅れている課題、途中の授業が上に来ます。"
+        },
+        "feedback": {
+          "alt": "生徒の書いた答えと、先生のコメント欄と保存ボタン",
+          "caption": "フィードバック：メモを書いて保存すると、生徒が自分の授業で見られます。"
+        },
+        "standards": {
+          "alt": "クラスの「スタンダード」タブ：情報科学のスタンダードと、生徒一人ひとりの進み具合",
+          "caption": "スタンダード：クラスが学んだ情報科学のスタンダードを、生徒ごとに確認できます。"
+        }
+      },
+      "home": {
+        "h": "あなたの授業サイクル",
+        "lead": "{class}で各ステップを一度ずつ試してみましょう。終わると自動でチェックが付きます。",
+        "leadNoClass": "まず最初のクラスを作り、各ステップを一度ずつ試してみましょう。終わると自動でチェックが付きます。",
+        "makeClass": "最初のクラスを作る",
+        "count": "{total}つ中{done}つ完了",
+        "done": "完了",
+        "todo": "まだ",
+        "hide": "隠す",
+        "hidden": "隠しました。「Oombaを毎週の授業に」からいつでも見られます。"
+      },
+      "page": {
+        "title": "Oombaを毎週の授業に",
+        "lead": "授業を計画し、プレイし、助けが必要な子を確認して、フィードバックする。各ステップの機能が、あなたのクラスのために用意されています。",
+        "link": "Oombaを毎週の授業に",
+        "show": "「{classroom}」にチェックリストを再表示",
+        "shown": "チェックリストを「{classroom}」に戻しました。"
+      }
+    }
+  },
+  "rubrics": {
+    "title": "ルーブリック",
+    "intro": "くり返し使えるルーブリックです。行が評価の観点、列が段階です。記述式の回答、作ったゲーム、レッスン全体のいずれかに付けて、段階をタップして生徒一人ひとりを評価します。",
+    "mine": "自分のルーブリック",
+    "shared": "同僚が共有したもの",
+    "new": "新しいルーブリック",
+    "newPlaceholder": "ルーブリック名（例：意見文の段落）",
+    "untitled": "新しいルーブリック",
+    "empty": "まだルーブリックがありません",
+    "emptyText": "新しく作るか、AIに下書きを作らせるか、CS Quest のスターター ルーブリックを追加してください。",
+    "sharedEmpty": "共有されたルーブリックはまだありません",
+    "sharedEmptyText": "同僚が学校とルーブリックを共有すると、ここに表示され、コピーできます。",
+    "criterion": "観点",
+    "criteriaN": "{count, plural, other {観点 # 個}}",
+    "levelsN": "{count, plural, other {# 段階}}",
+    "pointsN": "{count, plural, other {# 点}}",
+    "maxPoints": "{points}満点",
+    "usedN": "{count, plural, other {# 件のレッスンで使用中}}",
+    "usedIn": "使用しているレッスン",
+    "notUsed": "まだどのレッスンにも付いていません。レッスンのステップか、レッスンの詳細から付けてください。",
+    "wholeLesson": "レッスン全体",
+    "stepsN": "{count, plural, other {# ステップ}}",
+    "print": "印刷",
+    "printName": "名前：",
+    "printPoints": "得点：____ / {max}",
+    "backToRubric": "ルーブリックに戻る",
+    "preview": "表をプレビュー",
+    "copy": "コピーを作る",
+    "copyMine": "自分のルーブリックにコピー",
+    "copyTitle": "{title}（コピー）",
+    "copiedNotice": "これはあなたのコピーです。自由に変更できます。元のルーブリックは変わりません。",
+    "share": "学校と共有",
+    "unshare": "共有をやめる",
+    "sharedStatus": "学校と共有中",
+    "sharedToast": "学校の教職員と共有しました",
+    "unsharedToast": "共有をやめました",
+    "delete": "ルーブリックを削除",
+    "deleteConfirm": "ルーブリック「{title}」を削除しますか？すでに付けた評価はそのまま残ります。",
+    "deleteUsedConfirm": "{count, plural, other {「{title}」は # 件のレッスンに付いています。外して削除しますか？すでに付けた評価はそのまま残ります。}}",
+    "deletedToast": "ルーブリックを削除しました",
+    "levelNames": {
+      "notYet": "まだ",
+      "beginning": "はじめ",
+      "developing": "成長中",
+      "secure": "できている",
+      "excellent": "とてもよい"
+    },
+    "template": {
+      "understanding": "理解",
+      "explaining": "考えの説明",
+      "care": "ていねいさと努力",
+      "level0": "まだ見られない",
+      "level1": "助けがあれば一部できる",
+      "level2": "はっきりできている",
+      "level3": "深く、くわしくできている"
+    },
+    "editor": {
+      "title": "ルーブリック名",
+      "description": "先生向けのメモ",
+      "levels": "段階",
+      "levelsHint": "列：段階の名前と、それぞれの点数。",
+      "levelLabel": "段階 {n}",
+      "points": "点数",
+      "newLevel": "新しい段階",
+      "addLevel": "段階を追加",
+      "removeLevel": "段階「{name}」を削除",
+      "criteria": "観点",
+      "criteriaHint": "行：見るポイントと、各段階で作品に見られること。",
+      "criterionN": "観点 {n}",
+      "descPlaceholder": "この段階で作品に見られること",
+      "addCriterion": "観点を追加",
+      "removeCriterion": "観点「{name}」を削除"
+    },
+    "ai": {
+      "button": "AIでルーブリックを下書き",
+      "task": "生徒は何をしますか？",
+      "taskPlaceholder": "例：自分のゲームが公平な理由を説明する段落を書く",
+      "levels": "段階",
+      "make": "ルーブリックを下書き",
+      "note": "AIに送られるのはここに入力した内容だけで、生徒の作品や名前は決して送られません。あとですべて変更できます。",
+      "done": "AIの下書きです。使う前に読んで、必要なところを変更してください。",
+      "template": "今はAIを使えないため、編集用のシンプルなルーブリックを用意しました。"
+    },
+    "starters": {
+      "title": "スターター ルーブリック",
+      "intro": "CS Quest の各レッスンの出口チケットにはルーブリックがあります（0〜3の段階、英語）。自分のルーブリックに追加すれば、どのレッスンでも使えます。自由に変更もできます。",
+      "add": "自分のルーブリックに追加",
+      "addFor": "「{title}」を自分のルーブリックに追加",
+      "added": "自分のルーブリックに追加しました。自由に変更できます。",
+      "fromLesson": "CS Quest のレッスン「{title}」より。"
+    },
+    "attach": {
+      "step": "ルーブリック",
+      "lesson": "レッスン全体のルーブリック",
+      "lessonTitle": "レッスン全体のルーブリック",
+      "lessonHint": "レッスンの進捗ページで、レッスン全体について生徒一人ひとりを評価します。",
+      "none": "ルーブリックなし",
+      "hint": "このステップの回答やゲームをこれで評価します。",
+      "noneYet": "まだルーブリックがありません。",
+      "library": "ルーブリック"
+    },
+    "score": {
+      "label": "「{title}」で評価",
+      "total": "{points} 点",
+      "notScored": "未評価",
+      "partial": "{total}項目中{n}項目を採点",
+      "comment": "コメントを追加",
+      "commentFor": "「{name}」へのコメント",
+      "given": "付けた段階",
+      "changed": "この評価のあとでルーブリックが変わりました。新しい版を使うには評価し直してください。",
+      "scored": "評価済み",
+      "lessonHint": "観点ごとに段階をタップし、必要ならコメントを書いて保存します。生徒は自分の結果だけを見られます。"
+    },
+    "student": {
+      "fromTeacherLesson": "先生から：レッスン全体"
+    },
+    "gradebook": {
+      "key": "ルーブリックの点数",
+      "cellTitle": "ルーブリック：{points} 点（{pct}%）"
+    },
+    "csv": {
+      "points": "{title}（ルーブリック点数）",
+      "percent": "{title}（ルーブリック %）",
+      "totalPoints": "ルーブリック点数",
+      "totalPercent": "ルーブリック %"
+    },
+    "errors": {
+      "notFound": "そのルーブリックは見つかりませんでした。",
+      "rubricTitle": "ルーブリック名を入力してください。",
+      "rubricLevels": "ルーブリックの段階は2〜6個です。",
+      "rubricCriteria": "ルーブリックの観点は1〜12個です。",
+      "rubricLabel": "すべての段階に名前を付けてください。",
+      "rubricPoints": "点数は0〜100の数字です。",
+      "rubricName": "すべての観点に名前を付けてください。",
+      "tooManyRubrics": "この学校で作れるルーブリックの上限に達しました。使わなくなったものを削除してください。",
+      "inUse": "{count, plural, other {このルーブリックは # 件のレッスンに付いています。}}",
+      "task": "生徒が何をするか入力してください。",
+      "aiFailed": "今はAIがルーブリックを下書きできませんでした。1分後にもう一度お試しください。",
+      "pick": "自分のルーブリックを選んでください（同僚のものは先にコピーしてください）。"
+    }
+  },
+  "standards": {
+    "fw": {
+      "csta": "コンピュータサイエンス（CSTA）",
+      "math": "Common Core 算数・数学",
+      "ela": "Common Core 英語（ELA）"
+    },
+    "picker": "基準の種類",
+    "notice": "Common Core State Standards は CCSS パブリックライセンスのもとで使用しています。",
+    "class": {
+      "lead": "このクラスが、割り当てたレッスンとその中の学習ゲーム、ライブゲーム、コースで、どの Common Core 基準をカバーしているか、生徒一人ひとりがどうかを示します。すでに記録された学習から計算し、新しいデータは集めません。",
+      "grade": "学年",
+      "covered": "カバー済みの基準のみ",
+      "allOf": "{grade}のすべての基準",
+      "summaryH": "学年ごとのカバー",
+      "summary": "{total} 件中 {covered} 件をカバー"
+    },
+    "cols": {
+      "standard": "基準",
+      "sources": "カバーしたもの",
+      "practiced": "練習",
+      "checked": "問題",
+      "rubric": "ルーブリック",
+      "needsLook": "要確認",
+      "last": "最終",
+      "status": "状況",
+      "level": "レベル"
+    },
+    "status": {
+      "notYet": "まだ",
+      "covered": "カバー済み",
+      "practiced": "練習済み",
+      "checked": "確認済み",
+      "meets": "達成"
+    },
+    "level": {
+      "none": "記録なし",
+      "practiced": "練習済み",
+      "developing": "発展中",
+      "meets": "達成"
+    },
+    "checkedVal": "{pct}% · 回答 {answered} · 生徒 {students}",
+    "rubricVal": "{pct}% · 採点 {count}",
+    "rubricBest": "最高 {pct}% · 採点 {count}",
+    "mine": "{answered} 問中 {right} 問正解",
+    "src": {
+      "live": "ライブゲーム {count}"
+    },
+    "legend": {
+      "h": "見かた",
+      "sources": "カバーしたもの：その基準のタグが付いた割り当て済みレッスン（または基準を練習するステップや学習ゲーム）、その基準について出題したライブゲーム（学年に合わせた Tug of Math Live、問題にコードが付いた問題セット）、生徒が受けているコース。",
+      "practiced": "練習：その基準を練習する活動を終えた生徒。やったという意味で、習得したという意味ではありません。",
+      "checked": "問題：その基準についての問題のうち正解した数（レッスンのクイズ、ライブゲーム、Number Quest のチェック）。",
+      "rubric": "ルーブリック：その基準のルーブリック得点（満点に対する割合）。ルーブリックに Common Core 基準が付くと表示されます。",
+      "meets": "達成：3 問以上で 80% 以上正解するか、ルーブリックで 3 分の 2 以上を取ると、その生徒は基準を達成です。生徒の 80% が達成するとクラスとして達成です。",
+      "needs": "要確認：その基準の問題に 2 問以上答えて 1 問も正解しなかった生徒。先生だけに表示されます。",
+      "games": "複数の学年のレベルがあるゲーム（Sum Racer、Fraction Factory、Word Trail、Tug of Math）は、レッスンの学年、またはステップが固定されたレベルの分だけ練習として数えます。学年のないレッスンでは「カバー元」にだけ表示されます。",
+      "live": "Tug of Math Live などのライブゲームは、どの問題がどの基準のものかを記録しません。そのため、児童の解答はゲームの基準に分けて数えます。これらの数は推定値です。",
+      "courses": "Number Quest は、学校アカウントでの取り組み、またはこのクラスに参加してからの取り組みを数えます。チェック1回（3問）だけでは基準の達成になりません。"
+    },
+    "empty": {
+      "title": "Common Core 基準はまだありません",
+      "text": "レッスンに基準のタグを付けるか、Sum Racer、Fraction Factory、Word Trail などの学習ゲームが入ったレッスンを割り当てると、ここに表示されます。"
+    },
+    "csvCols": {
+      "code": "コード",
+      "grade": "学年",
+      "domain": "領域",
+      "statement": "内容",
+      "sources": "カバーしたもの",
+      "practiced": "練習（生徒数）",
+      "students": "クラスの生徒数",
+      "pct": "正解率 %",
+      "answered": "回答した問題数",
+      "checkedStudents": "回答した生徒数",
+      "rubric": "ルーブリック %",
+      "meets": "達成した生徒数",
+      "needsLook": "要確認（生徒数）",
+      "last": "最終の活動",
+      "status": "状況"
+    },
+    "lesson": {
+      "title": "基準",
+      "lead": "このレッスン、またはそのステップに、取り組む Common Core 基準のタグを付けます。割り当てたすべてのクラスの「基準」タブに表示されます。",
+      "back": "レッスンにもどる",
+      "current": "タグ付けした基準",
+      "none": "まだ基準のタグはありません。",
+      "whole": "レッスン全体",
+      "stepN": "ステップ {n}：{title}",
+      "remove": "外す",
+      "removeLabel": "{code} を外す",
+      "removed": "{code} を外しました",
+      "add": "追加",
+      "addLabel": "{code} を追加",
+      "added": "{code} を追加しました",
+      "addTo": "追加先",
+      "find": "基準をさがす",
+      "search": "検索",
+      "searchHint": "3.OA.C.7 のようなコード、または fractions などの単語",
+      "searchHintEla": "RL.3.2 のようなコード、または main idea などの単語",
+      "domain": "領域",
+      "domainAll": "すべての領域",
+      "gradeAny": "すべての学年",
+      "results": "基準 {count} 件",
+      "more": "最初の {shown} 件を表示しています。検索をしぼると残りが見られます。",
+      "noResults": "合う基準がありません。別の学年、領域、単語で試してください。",
+      "tagged": "タグ付け済み",
+      "open": "基準のタグを付ける",
+      "view": "基準を見る",
+      "editorNone": "まだ Common Core 基準のタグはありません。",
+      "onSteps": "ステップに付けた基準 {count} 件",
+      "gameCodes": "このゲームで練習する {framework} の基準",
+      "gameNeedsGrade": "このゲームには複数の学年のレベルがあります。レッスンに学年を設定する（またはステップを1つのレベルに固定する）と、その基準が練習として数えられます。"
+    },
+    "errors": {
+      "badCode": "Common Core のコードではありません。",
+      "badStep": "そのステップはこのレッスンにありません。",
+      "tooMany": "1 つのレッスンに付けられる基準は 60 件までです。",
+      "badFramework": "Common Core の算数・数学か英語を選んでください。"
+    },
+    "learn": {
+      "label": "基準",
+      "hint": "例：3.OA、RF.K"
+    }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "あなたの Google Classroom",
+      "text": "Google Classroom で授業に使っている Google アカウントを接続します。接続すると次のことができます:",
+      "what": {
+        "courses": "このクラスを Classroom のクラスのひとつとリンクする",
+        "roster": "そのクラスの生徒を取り込み、Google でログインできるようにする",
+        "post": "ここへのリンクと提出期限つきでレッスンを投稿する",
+        "grades": "レッスンでの各生徒の完了度の成績を Classroom に送る"
+      },
+      "button": "Google Classroom を接続",
+      "privacy": "この接続はあなただけに表示されます。Oomba Academy が Classroom に送るのは、レッスンのタイトル、リンク、提出期限、各生徒の 100 点満点の完了度の成績だけです。名前、回答、ゲームは送りません。",
+      "connectedAs": "{email} で接続中",
+      "connectedHint": "この接続はあなた専用です。ほかの先生はそれぞれ自分で接続します。",
+      "connectedToast": "Google Classroom を接続しました。",
+      "disconnect": "接続を解除",
+      "disconnectConfirm": "Google Classroom の接続を解除しますか? Oomba Academy は同期をやめ、あなたの Classroom へのアクセスキーを削除します。投稿済みのレッスンは Classroom に残ります。",
+      "disconnected": "Google Classroom の接続を解除しました。",
+      "reconnect": "もう一度接続"
+    },
+    "course": {
+      "heading": "リンクした Classroom のクラス",
+      "text": "{class} に合う Google Classroom のクラスを選んでください。",
+      "none": "あなたが教えている有効な Google Classroom のクラスはありません。",
+      "pick": "Classroom のクラスを選ぶ",
+      "link": "リンク",
+      "linked": "{course} とリンクしました。",
+      "linkedTo": "{course} とリンク中",
+      "unlink": "リンクを解除",
+      "unlinkConfirm": "{course} とのリンクを解除しますか? 生徒とレッスンはそのまま残ります。",
+      "unlinked": "リンクを解除しました。",
+      "connectFirst": "同期するには、上で Google Classroom を接続してください。",
+      "refresh": "一覧を更新"
+    },
+    "roster": {
+      "heading": "Classroom の生徒",
+      "text": "リンクした Classroom のクラスの生徒を取り込みます。すでにいる生徒は Google アカウントで照合します。Oomba Academy が初めての生徒は、学校のドメインで初めて Google ログインしたときにクラスに入り、そのとき学校アカウントが作られます。本名は先生だけが見られます。",
+      "button": "生徒を取り込む",
+      "last": "前回の取り込み: {when}",
+      "noDomains": "学校の Google ドメインがまだ登録されていないため、新しい生徒は追加できません。学校の管理者に頼んでください。",
+      "noDomainsAdmin": "新しい生徒がログインできるよう、先に学校の Google ドメインを追加してください: {link}",
+      "hint": "Google Classroom を使っていますか? {link}",
+      "hintLink": "生徒を取り込む",
+      "notYet": "Google: Classroom から追加、まだログインしていません",
+      "resultAdded": "{count, plural, other {生徒 # 人を追加}}",
+      "resultAlready": "{count, plural, other {# 人はすでに在籍}}",
+      "resultOwn": "{count, plural, other {# 人は個人アカウント: クラスコードで参加できます}}",
+      "resultOther": "{count, plural, other {# 人は別の学校のアカウント}}",
+      "resultStaff": "{count, plural, other {# 人はこの学校のスタッフ}}",
+      "resultDomains": "{count, plural, other {# 人は未追加: 先に学校の Google ドメインを追加してください}}",
+      "resultWaiting": "{count, plural, other {# 人は学校のドメインで初めて Google ログインしたときに参加}}",
+      "waitingNow": "{count, plural, other {Classroom の生徒 # 人がまだログインしていません。学校のドメインで初めて Google ログインしたときにこのクラスに入ります (30 日以内。もう一度取り込むと延長されます)。}}"
+    },
+    "post": {
+      "heading": "Classroom のレッスン",
+      "text": "レッスンを投稿すると、タイトル、ここのレッスンへのリンク、提出期限つきの課題が Classroom に作られます。",
+      "button": "Google Classroom に投稿",
+      "also": "Google Classroom にも投稿する",
+      "description": "このレッスンを Oomba Academy で開きましょう。",
+      "done": "Google Classroom に投稿しました。",
+      "donePastDue": "Google Classroom に投稿しました(提出期限は過ぎているため付けていません)。",
+      "failed": "Google Classroom に投稿できませんでした:",
+      "due": "提出期限 {date}",
+      "noDue": "提出期限なし",
+      "posted": "投稿済み",
+      "open": "Classroom で開く",
+      "noLessons": "このクラスにはまだレッスンがありません。「レッスン」タブで割り当ててください。",
+      "doneScheduled": "Google Classroom に予約投稿しました。レッスンが開く {date} に生徒に表示されます。"
+    },
+    "grades": {
+      "text": "これは完了度の成績です。生徒が終えたレッスンのステップの割合 (100 点満点) で、正解の数は数えません。まだ始めていない生徒は送りません。",
+      "as": "送り方",
+      "draft": "下書きの成績 (Classroom であなたが返却)",
+      "assigned": "確定した成績",
+      "button": "完了度の成績を送る",
+      "lastDraft": "下書きの完了度の成績を送信: {when}",
+      "lastAssigned": "確定した完了度の成績を送信: {when}",
+      "resultSent": "{count, plural, other {# 件の完了度の成績を送信}}",
+      "resultNotStarted": "{count, plural, other {# 人は未着手}}",
+      "resultNotMatched": "{count, plural, other {# 人はこのクラスにいません}}",
+      "resultFailed": "{count, plural, other {# 件は送れませんでした}}"
+    },
+    "log": {
+      "heading": "最近の同期",
+      "kinds": {
+        "connect": "接続",
+        "disconnect": "接続解除",
+        "link": "クラスをリンク",
+        "unlink": "リンク解除",
+        "roster": "生徒を取り込み",
+        "post": "レッスンを投稿",
+        "grades": "成績を送信"
+      }
+    },
+    "errors": {
+      "notSetUp": "このサイトではまだ Google Classroom が設定されていません。サイトの運営者に設定の完了を頼んでください。",
+      "notConnected": "まず Google Classroom を接続してください。",
+      "reconnect": "Google Classroom との接続が使えなくなりました。もう一度接続してください。",
+      "notLinked": "まずこのクラスを Classroom のクラスとリンクしてください。",
+      "pickCourse": "Classroom のクラスを選んでください。",
+      "courseNotYours": "その Classroom のクラスはあなたが教えているクラスではありません。",
+      "courseGone": "Google Classroom でそのクラスまたは課題が見つからなくなりました。",
+      "denied": "Google Classroom に断られました。そのクラスの先生でないか、学校がこのアプリを制限している可能性があります。",
+      "rateLimited": "Google Classroom が混み合っています。数分後にもう一度お試しください。",
+      "googleDown": "Google Classroom から応答がありません。もう一度お試しください。",
+      "badRequest": "Google Classroom に受け付けられませんでした。",
+      "tooMany": "その Classroom のクラスには {max} 人を超える生徒がいます。",
+      "alreadyPosted": "このレッスンはすでに Google Classroom にあります。",
+      "notPosted": "まずこのレッスンを Google Classroom に投稿してください。",
+      "badMode": "成績の送り方を選んでください。",
+      "scopesMissing": "Oomba Academy がクラスを見て課題を投稿できるよう、Google の画面ですべてのボックスにチェックを入れてください。",
+      "noRefresh": "Google から保存できるキーが届きませんでした。もう一度接続してください。",
+      "expired": "時間がかかりすぎました。もう一度お試しください。",
+      "cancelled": "Google の画面でキャンセルしました。何も接続されていません。",
+      "staffOnly": "ここで Google Classroom を使えるのは先生と学校の管理者だけです。",
+      "tooManyTries": "同期が多すぎます。1 時間後にもう一度お試しください。"
+    }
+  },
+  "digest": {
+    "when": "{day} {time}（{zone}）",
+    "email": {
+      "subject": "{date}のクラス週間まとめ",
+      "preview": "{count, plural, other {#クラスの数字と、Oomba Academyで詳しく見るためのリンクです。}}",
+      "heading": "{date}の週",
+      "greeting": "{name}さん、こんにちは。",
+      "greetingNoName": "こんにちは。",
+      "intro": "クラスの様子をお知らせします。名前と回答はサイトだけに表示され、あなたと学校のスタッフだけが見られます。",
+      "due": "{count, plural, =0 {今週が期限のレッスンはありません} other {今週が期限のレッスン：#件}}",
+      "pct": "公開中のレッスンの課題の{pct}%が完了",
+      "noWork": "ステップのある公開中のレッスンはまだありません",
+      "toRead": "{count, plural, =0 {確認待ちの回答はありません} other {確認待ちの回答：#件}}",
+      "notStarted": "{count, plural, =0 {全員が始めています} other {まだ始めていない生徒：#人}}",
+      "live": "{count, plural, =0 {過去7日間のライブゲームはありません} other {過去7日間のライブゲーム：#回}}",
+      "openClass": "クラスを開く",
+      "review": "回答を確認する",
+      "progress": "進み具合を見る",
+      "quiet": "{count, plural, other {#クラスは新しい動きがなかったため省いています。}}",
+      "cta": "今週のまとめを見る",
+      "classroom": "教室へ",
+      "why": "Oomba Academyでクラスを担当しているため、この週間まとめをお送りしています。",
+      "change": "曜日や時刻を変える",
+      "stop": "このまとめを停止する"
+    },
+    "unsub": {
+      "title": "クラス週間まとめ",
+      "askTitle": "クラス週間まとめを停止しますか？",
+      "askText": "クラスについての週1回のメールが届かなくなります。サイトの内容はそのままで、マイページからいつでも再開できます。",
+      "button": "まとめを停止する",
+      "offTitle": "週間まとめは停止中です",
+      "offText": "クラスについての週1回のメールは届かなくなりました。アカウントに関するほかのメールには影響しません。",
+      "again": "再開する",
+      "againTitle": "週間まとめを再開しました",
+      "againText": "マイページに表示されている曜日と時刻に、また届きます。",
+      "badTitle": "このリンクは使えません",
+      "badText": "コピーのときにリンクが途中で切れたのかもしれません。マイページからもまとめを停止できます。"
+    },
+    "me": {
+      "heading": "クラス週間まとめ",
+      "text": "週に1回、担当する各クラスの数字をメールでお送りします：期限のレッスン、完了した課題、確認待ちの回答、まだ始めていない生徒、ライブゲーム。生徒の名前や回答は決して含みません。",
+      "noAddress": "まだメールアドレスがありません。このページでGoogleを連携すると、そのアドレスにまとめが届きます。",
+      "on": "週間まとめをメールで受け取る",
+      "day": "曜日",
+      "hour": "時刻",
+      "zone": "タイムゾーン",
+      "zoneSchool": "学校のタイムゾーン（{zone}）",
+      "zoneDefault": "標準（{zone}）",
+      "save": "保存",
+      "saved": "保存しました。"
+    },
+    "page": {
+      "link": "今週のまとめ",
+      "title": "今週のまとめ",
+      "sub": "担当する各クラスの過去7日間と、これから7日以内が期限のレッスンです。",
+      "next": "まとめのメールは毎週{when}に届きます。",
+      "off": "週間まとめのメールは停止中です。このページはいつでも見られます。",
+      "noAddress": "まだメールアドレスがないため、まとめのメールは送られません。マイページでGoogleを連携してください。",
+      "noAddressPlain": "まだメールアドレスがないため、まとめのメールは送られません。",
+      "privacy": "生徒の名前はこのページにだけ表示され、メールには決して含まれません。",
+      "seeEmail": "メールを見る",
+      "change": "送信日時を変える",
+      "statDue": "今週が期限",
+      "statDone": "完了した課題",
+      "statToRead": "確認待ち",
+      "statNotStarted": "未着手",
+      "statLive": "ライブゲーム",
+      "dueHeading": "今週が期限",
+      "finished": "{count}人中{done}人が完了",
+      "toReadHeading": "確認待ちの回答",
+      "notStartedHeading": "{count, plural, other {まだ始めていない生徒：#人}}",
+      "noClasses": "まだクラスがありません",
+      "noClassesText": "教室でクラスを作ると、ここにまとめが表示されます。",
+      "quietAll": "静かな1週間",
+      "quietAllText": "過去7日間、クラスに新しい動きがなかったため、今週はメールを送りません。",
+      "quietHeading": "新しい動きなし",
+      "quietText": "これらのクラスは過去7日間に新しい動きがありませんでした。メールには含まれません。"
+    },
+    "errors": {
+      "badDay": "曜日を選んでください。",
+      "badHour": "時刻を選んでください。",
+      "badZone": "リストからタイムゾーンを選んでください。"
     }
   }
 }

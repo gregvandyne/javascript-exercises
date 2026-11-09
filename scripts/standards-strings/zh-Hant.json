@@ -1,0 +1,124 @@
+{
+  "fw": {
+    "csta": "電腦科學（CSTA）",
+    "math": "Common Core 數學",
+    "ela": "Common Core 英語（ELA）"
+  },
+  "picker": "標準架構",
+  "notice": "Common Core State Standards 依 CCSS 公開授權使用。",
+  "class": {
+    "lead": "這個班級透過指派的課程、課程裡的學習遊戲、即時遊戲和課程系列涵蓋了哪些 Common Core 標準，以及每位學生的情況。依據已記錄的學習計算，不會收集任何新資料。",
+    "grade": "年級",
+    "covered": "只顯示已涵蓋的標準",
+    "allOf": "{grade}的所有標準",
+    "summaryH": "各年級的涵蓋情況",
+    "summary": "已涵蓋 {covered} / {total} 項標準"
+  },
+  "cols": {
+    "standard": "標準",
+    "sources": "涵蓋來源",
+    "practiced": "已練習",
+    "checked": "題目",
+    "rubric": "評分規準",
+    "needsLook": "需要關注",
+    "last": "最近",
+    "status": "狀態",
+    "level": "程度"
+  },
+  "status": {
+    "notYet": "尚未",
+    "covered": "已涵蓋",
+    "practiced": "已練習",
+    "checked": "已檢核",
+    "meets": "達成"
+  },
+  "level": {
+    "none": "沒有紀錄",
+    "practiced": "已練習",
+    "developing": "發展中",
+    "meets": "達成"
+  },
+  "checkedVal": "{pct}% · 作答 {answered} · 學生 {students}",
+  "rubricVal": "{pct}% · 已評 {count}",
+  "rubricBest": "最佳 {pct}% · 已評 {count}",
+  "mine": "{answered} 題答對 {right} 題",
+  "src": {
+    "live": "即時遊戲 {count} 場"
+  },
+  "legend": {
+    "h": "如何閱讀",
+    "sources": "涵蓋來源：標上這項標準的已指派課程（或練習它的步驟、學習遊戲）、問過它的即時遊戲（依年級的 Tug of Math Live、題目帶有代碼的題組），以及學生正在上的課程系列。",
+    "practiced": "已練習：完成練習這項標準之活動的學生。表示做過，不代表已精熟。",
+    "checked": "題目：關於這項標準的作答中答對的比例（課程小測驗、即時遊戲、Number Quest 檢核）。",
+    "rubric": "評分規準：這項標準的評分規準分數，以滿分的比例呈現。評分規準標上 Common Core 標準後才會顯示。",
+    "meets": "達成：學生在 3 題以上答對至少 80%，或評分規準得分至少三分之二，就算達成。班上 80% 的學生達成時，班級就算達成。",
+    "needs": "需要關注：關於這項標準作答 2 題以上卻沒有答對的學生。只有老師看得到。",
+    "games": "有多個年級關卡的遊戲（Sum Racer、Fraction Factory、Word Trail、Tug of Math）只會按課程的年級，或步驟固定的關卡算作練習。沒有年級的課程只會把它們列在「涵蓋來源」中。",
+    "live": "Tug of Math Live 等即時遊戲不會記錄每題屬於哪個標準，所以學生的答題會平均分到遊戲的各個標準。這些數字是估計值。",
+    "courses": "Number Quest 只計算用學校帳號完成的學習，或學生加入這個班級之後的學習。只有一次檢查（3 題）還不足以達成標準。"
+  },
+  "empty": {
+    "title": "還沒有 Common Core 標準",
+    "text": "為課程標上標準，或指派含有 Sum Racer、Fraction Factory、Word Trail 等學習遊戲的課程，就會顯示在這裡。"
+  },
+  "csvCols": {
+    "code": "代碼",
+    "grade": "年級",
+    "domain": "領域",
+    "statement": "敘述",
+    "sources": "涵蓋來源",
+    "practiced": "已練習（學生）",
+    "students": "班級學生數",
+    "pct": "答對 %",
+    "answered": "作答題數",
+    "checkedStudents": "有作答的學生",
+    "rubric": "評分規準 %",
+    "meets": "達成的學生",
+    "needsLook": "需要關注（學生）",
+    "last": "最近活動",
+    "status": "狀態"
+  },
+  "lesson": {
+    "title": "標準",
+    "lead": "為這堂課或其中一個步驟標上它所處理的 Common Core 標準。它們會顯示在每個被指派這堂課之班級的「標準」分頁。",
+    "back": "回到課程",
+    "current": "已標記的標準",
+    "none": "還沒有標記標準。",
+    "whole": "整堂課",
+    "stepN": "步驟 {n}：{title}",
+    "remove": "移除",
+    "removeLabel": "移除 {code}",
+    "removed": "已移除 {code}",
+    "add": "加入",
+    "addLabel": "加入 {code}",
+    "added": "已加入 {code}",
+    "addTo": "加入到",
+    "find": "尋找標準",
+    "search": "搜尋",
+    "searchHint": "像 3.OA.C.7 的代碼，或像 fractions 的字詞",
+    "searchHintEla": "像 RL.3.2 的代碼，或像 main idea 的字詞",
+    "domain": "領域",
+    "domainAll": "所有領域",
+    "gradeAny": "所有年級",
+    "results": "標準 {count} 項",
+    "more": "顯示前 {shown} 項：縮小搜尋範圍以查看其餘項目。",
+    "noResults": "沒有符合的標準。試試其他年級、領域或字詞。",
+    "tagged": "已標記",
+    "open": "標記標準",
+    "view": "查看標準",
+    "editorNone": "還沒有標記 Common Core 標準。",
+    "onSteps": "步驟上標記的標準 {count} 項",
+    "gameCodes": "這個遊戲練習的 {framework} 標準",
+    "gameNeedsGrade": "這個遊戲有多個年級的關卡。為課程設定年級（或把步驟固定在一個關卡），它的標準才會算作練習。"
+  },
+  "errors": {
+    "badCode": "這不是 Common Core 代碼。",
+    "badStep": "這個步驟不在這堂課裡。",
+    "tooMany": "一堂課最多可標記 60 項標準。",
+    "badFramework": "請選擇 Common Core 數學或英語。"
+  },
+  "learn": {
+    "label": "標準",
+    "hint": "例如 3.OA 或 RF.K"
+  }
+}

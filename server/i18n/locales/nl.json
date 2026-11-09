@@ -3431,7 +3431,10 @@
       },
       "privacy": {
         "h": "Privacy",
-        "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen."
+        "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen.",
+        "p1c": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en lezen verder niets uit een Google-account, tenzij een leerkracht Google Classroom koppelt.",
+        "classroom": "Als een leerkracht Google Classroom koppelt, lezen we alleen de namen van de klassen waaraan die lesgeeft en, voor de klas die gekoppeld wordt, de Google-account-id en naam van elke leerling, om ze toe te voegen aan de bijbehorende klas in Oomba Academy. We sturen Google alleen wat de leerkracht vraagt: een opdracht (de titel van de les, een link ernaartoe en de inleverdatum) en de score van elke leerling voor de les, op 100. We sturen nooit antwoorden, feedback, games of tekeningen van leerlingen. De koppeling van de leerkracht wordt versleuteld bewaard tot die de koppeling verbreekt of het account verwijdert; bij het verbreken wordt de toegang ook bij Google ingetrokken.",
+        "limitedUse": "Het gebruik en de overdracht door Oomba Academy van informatie die via Google-API's wordt ontvangen, voldoen aan het Google API Services User Data Policy (beleid voor gebruikersgegevens van Google API-services), inclusief de Limited Use-vereisten (vereisten voor beperkt gebruik). We verkopen deze informatie nooit, gebruiken ze nooit voor advertenties of om AI-modellen te trainen, en ons team bekijkt ze alleen als dat nodig is voor support, beveiliging of de wet."
       }
     }
   },
@@ -7026,6 +7029,547 @@
       "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen"
+    },
+    "loop": {
+      "kicker": "Zo past Oomba in je week",
+      "h": "Plannen → Spelen → Volgen → Feedback",
+      "lead": "Eén kringloop voor elke les: plan hem, speel hem met je klas, zie wie je nodig heeft en vertel elke leerling wat de volgende stap is. Elke stap is een hulpmiddel dat al in Oomba zit.",
+      "steps": {
+        "plan": {
+          "name": "Plannen",
+          "benefit": "Begin met een kant-en-klare les of een onderwerp en maak er een spel van dat je klas wil spelen."
+        },
+        "play": {
+          "name": "Spelen",
+          "benefit": "Geef hem op met een begin- en inleverdatum, of speel hem live op het grote scherm met de hele klas."
+        },
+        "check": {
+          "name": "Volgen",
+          "benefit": "Zie in één oogopslag hoe ver elke leerling is, en wie je hulp het eerst nodig heeft."
+        },
+        "feedback": {
+          "name": "Feedback",
+          "benefit": "Lees elk antwoord en schrijf feedback die de leerling in de eigen les ziet."
+        }
+      },
+      "tools": {
+        "builder": "Een les omzetten in een spel",
+        "assign": "Opgeven aan een klas",
+        "gradebook": "Cijferoverzicht",
+        "gradebookCsv": "Cijferoverzicht met CSV-download",
+        "standards": "Tabblad Standaarden",
+        "review": "Antwoorden om te lezen",
+        "written": "Geschreven feedback die leerlingen zien",
+        "library": "Lessenbibliotheek",
+        "draftAi": "Opzet met AI",
+        "attention": "Wie aandacht nodig heeft eerst",
+        "csv": "Downloaden (CSV)",
+        "live": "Een live spel leiden"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "Het cijferoverzicht: leerlingen onder elkaar, lessen naast elkaar, met gedane stappen en antwoorden om te lezen",
+          "caption": "Cijferoverzicht: de hele klas in één oogopslag, te downloaden als CSV."
+        },
+        "attention": {
+          "alt": "De voortgang van één les, gesorteerd zodat leerlingen die aandacht nodig hebben bovenaan staan",
+          "caption": "Eerst wie aandacht nodig heeft: antwoorden om te lezen, te laat werk en halve lessen bovenaan."
+        },
+        "feedback": {
+          "alt": "Het geschreven antwoord van een leerling met het feedbackvak van de leraar en de knop om op te slaan",
+          "caption": "Feedback: schrijf een notitie, sla hem op, en de leerling ziet hem in de les."
+        },
+        "standards": {
+          "alt": "Het tabblad Standaarden van de klas: informaticastandaarden en hoe ver elke leerling is",
+          "caption": "Standaarden: de informaticastandaarden die je klas heeft behandeld, per leerling."
+        }
+      },
+      "home": {
+        "h": "Jouw lesrondje",
+        "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
+        "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
+        "makeClass": "Maak je eerste klas",
+        "count": "{done} van {total} gedaan",
+        "done": "Gedaan",
+        "todo": "Nog niet gedaan",
+        "hide": "Verbergen",
+        "hidden": "Verborgen. Je vindt het altijd onder ‘Zo past Oomba in je week’."
+      },
+      "page": {
+        "title": "Zo past Oomba in je week",
+        "lead": "Plan een les, speel hem, zie wie je nodig heeft en geef feedback: de hulpmiddelen voor elke stap, klaar voor je klas.",
+        "link": "Zo past Oomba in je week",
+        "show": "Toon de checklist weer in {classroom}",
+        "shown": "De checklist staat weer in {classroom}."
+      }
+    }
+  },
+  "rubrics": {
+    "title": "Beoordelingsrubrics",
+    "intro": "Herbruikbare rubrics: criteria in de rijen, niveaus in de kolommen. Koppel er een aan een geschreven antwoord, een gebouwde game of een hele les en beoordeel elke leerling door op een niveau te tikken.",
+    "mine": "Mijn rubrics",
+    "shared": "Gedeeld door collega's",
+    "new": "Nieuwe rubric",
+    "newPlaceholder": "Titel van de rubric, bijv. Betogende alinea",
+    "untitled": "Nieuwe rubric",
+    "empty": "Nog geen rubrics",
+    "emptyText": "Maak een nieuwe rubric, laat de AI een opzet maken, of voeg een startrubric uit CS Quest toe.",
+    "sharedEmpty": "Nog geen gedeelde rubrics",
+    "sharedEmptyText": "Als collega's een rubric met de school delen, verschijnt die hier zodat je hem kunt kopiëren.",
+    "criterion": "Criterium",
+    "criteriaN": "{count, plural, one {# criterium} other {# criteria}}",
+    "levelsN": "{count, plural, one {# niveau} other {# niveaus}}",
+    "pointsN": "{count, plural, one {# punt} other {# punten}}",
+    "maxPoints": "Van de {points}",
+    "usedN": "{count, plural, one {Gebruikt in # les} other {Gebruikt in # lessen}}",
+    "usedIn": "Gebruikt in",
+    "notUsed": "Nog aan geen enkele les gekoppeld. Koppel hem bij een stap van een les of in de gegevens van de les.",
+    "wholeLesson": "Hele les",
+    "stepsN": "{count, plural, one {# stap} other {# stappen}}",
+    "print": "Afdrukken",
+    "printName": "Naam:",
+    "printPoints": "Punten: ____ / {max}",
+    "backToRubric": "Terug naar de rubric",
+    "preview": "Bekijk de tabel",
+    "copy": "Kopie maken",
+    "copyMine": "Kopiëren naar mijn rubrics",
+    "copyTitle": "{title} (kopie)",
+    "copiedNotice": "Dit is je kopie. Pas hem aan zoals je wilt: het origineel blijft zoals het was.",
+    "share": "Delen met mijn school",
+    "unshare": "Niet meer delen",
+    "sharedStatus": "Gedeeld met je school",
+    "sharedToast": "Gedeeld met het team van je school",
+    "unsharedToast": "Niet meer gedeeld",
+    "delete": "Rubric verwijderen",
+    "deleteConfirm": "De rubric {title} verwijderen? Beoordelingen die al gegeven zijn, blijven zoals ze waren.",
+    "deleteUsedConfirm": "{count, plural, one {{title} is gekoppeld aan # les. Daar weghalen en de rubric verwijderen? Beoordelingen die al gegeven zijn, blijven zoals ze waren.} other {{title} is gekoppeld aan # lessen. Daar weghalen en de rubric verwijderen? Beoordelingen die al gegeven zijn, blijven zoals ze waren.}}",
+    "deletedToast": "Rubric verwijderd",
+    "levelNames": {
+      "notYet": "Nog niet",
+      "beginning": "Beginnend",
+      "developing": "Op weg",
+      "secure": "Beheerst",
+      "excellent": "Uitstekend"
+    },
+    "template": {
+      "understanding": "Begrip",
+      "explaining": "Legt het eigen denken uit",
+      "care": "Zorg en inzet",
+      "level0": "Nog niet te zien",
+      "level1": "Deels, met hulp",
+      "level2": "Duidelijk te zien",
+      "level3": "Met diepgang en details"
+    },
+    "editor": {
+      "title": "Titel van de rubric",
+      "description": "Notities voor leerkrachten",
+      "levels": "Niveaus",
+      "levelsHint": "De kolommen: een naam en hoeveel punten elk niveau waard is.",
+      "levelLabel": "Niveau {n}",
+      "points": "Punten",
+      "newLevel": "Nieuw niveau",
+      "addLevel": "Niveau toevoegen",
+      "removeLevel": "Niveau {name} weghalen",
+      "criteria": "Criteria",
+      "criteriaHint": "De rijen: waar je op let en wat het werk op elk niveau laat zien.",
+      "criterionN": "Criterium {n}",
+      "descPlaceholder": "Wat het werk op dit niveau laat zien",
+      "addCriterion": "Criterium toevoegen",
+      "removeCriterion": "Criterium {name} weghalen"
+    },
+    "ai": {
+      "button": "Rubric laten opzetten door AI",
+      "task": "Wat doen de leerlingen?",
+      "taskPlaceholder": "bijv. een alinea schrijven die uitlegt waarom hun game eerlijk is",
+      "levels": "Niveaus",
+      "make": "Mijn rubric opzetten",
+      "note": "Alleen wat je hier typt gaat naar de AI, nooit het werk of de namen van je leerlingen. Daarna kun je alles aanpassen.",
+      "done": "Hier is de opzet van de AI. Lees hem door en pas aan wat je wilt voordat je hem gebruikt.",
+      "template": "De AI is nu niet beschikbaar, dus hier is een eenvoudige startrubric om aan te passen."
+    },
+    "starters": {
+      "title": "Startrubrics",
+      "intro": "Bij het exit ticket van elke CS Quest-les hoort een rubric (niveaus 0 tot 3, in het Engels). Voeg er een toe aan je rubrics om hem bij elke les te gebruiken, of pas hem aan.",
+      "add": "Toevoegen aan mijn rubrics",
+      "addFor": "{title} toevoegen aan mijn rubrics",
+      "added": "Toegevoegd aan je rubrics. Pas hem aan zoals je wilt.",
+      "fromLesson": "Uit de CS Quest-les {title}."
+    },
+    "attach": {
+      "step": "Rubric",
+      "lesson": "Rubric voor de hele les",
+      "lessonTitle": "Rubric voor de hele les",
+      "lessonHint": "Beoordeel elke leerling op de hele les via de voortgangspagina van de les.",
+      "none": "Geen rubric",
+      "hint": "Beoordeel er de antwoorden of games van deze stap mee.",
+      "noneYet": "Je hebt nog geen rubrics.",
+      "library": "Rubrics"
+    },
+    "score": {
+      "label": "Beoordelen met {title}",
+      "total": "{points} punten",
+      "notScored": "Niet beoordeeld",
+      "partial": "{n} van {total} beoordeeld",
+      "comment": "Opmerking toevoegen",
+      "commentFor": "Opmerking bij {name}",
+      "given": "het gegeven niveau",
+      "changed": "De rubric is veranderd sinds deze beoordeling. Beoordeel opnieuw om de nieuwe versie te gebruiken.",
+      "scored": "Beoordeeld",
+      "lessonHint": "Tik voor elk criterium op een niveau, voeg eventueel opmerkingen toe en sla op. Elke leerling ziet alleen het eigen resultaat."
+    },
+    "student": {
+      "fromTeacherLesson": "Van je leerkracht: de hele les"
+    },
+    "gradebook": {
+      "key": "rubricpunten",
+      "cellTitle": "Rubric: {points} punten ({pct}%)"
+    },
+    "csv": {
+      "points": "{title} (rubricpunten)",
+      "percent": "{title} (rubric %)",
+      "totalPoints": "Rubricpunten",
+      "totalPercent": "Rubric %"
+    },
+    "errors": {
+      "notFound": "We konden die rubric niet vinden.",
+      "rubricTitle": "Geef de rubric een titel.",
+      "rubricLevels": "Een rubric heeft 2 tot 6 niveaus.",
+      "rubricCriteria": "Een rubric heeft 1 tot 12 criteria.",
+      "rubricLabel": "Geef elk niveau een naam.",
+      "rubricPoints": "Punten zijn een getal van 0 tot 100.",
+      "rubricName": "Geef elk criterium een naam.",
+      "tooManyRubrics": "Je hebt het maximale aantal rubrics in deze school. Verwijder er een die je niet meer gebruikt.",
+      "inUse": "{count, plural, one {Deze rubric is gekoppeld aan # les.} other {Deze rubric is gekoppeld aan # lessen.}}",
+      "task": "Zeg wat de leerlingen doen.",
+      "aiFailed": "De AI kon nu geen rubric opzetten. Probeer het over een minuut opnieuw.",
+      "pick": "Kies een van je eigen rubrics (kopieer die van een collega eerst)."
+    }
+  },
+  "standards": {
+    "fw": {
+      "csta": "Informatica (CSTA)",
+      "math": "Common Core Rekenen",
+      "ela": "Common Core Engels (ELA)"
+    },
+    "picker": "Standaardenkader",
+    "notice": "Common Core State Standards, gebruikt onder de openbare CCSS-licentie.",
+    "class": {
+      "lead": "Welke Common Core-standaarden deze klas dekt met de toegewezen lessen, de Leer-spellen daarin, live spellen en cursussen, en hoe elke leerling ervoor staat. Berekend uit werk dat al is vastgelegd: er wordt niets nieuws verzameld.",
+      "grade": "Leerjaar",
+      "covered": "Alleen gedekte standaarden",
+      "allOf": "Alle standaarden van {grade}",
+      "summaryH": "Dekking per leerjaar",
+      "summary": "{covered} van {total} standaarden gedekt"
+    },
+    "cols": {
+      "standard": "Standaard",
+      "sources": "Gedekt door",
+      "practiced": "Geoefend",
+      "checked": "Vragen",
+      "rubric": "Rubric",
+      "needsLook": "Even kijken",
+      "last": "Laatst",
+      "status": "Status",
+      "level": "Niveau"
+    },
+    "status": {
+      "notYet": "Nog niet",
+      "covered": "Gedekt",
+      "practiced": "Geoefend",
+      "checked": "Gecontroleerd",
+      "meets": "Behaald"
+    },
+    "level": {
+      "none": "Geen bewijs",
+      "practiced": "Geoefend",
+      "developing": "In ontwikkeling",
+      "meets": "Behaald"
+    },
+    "checkedVal": "{pct}% · antwoorden: {answered} · leerlingen: {students}",
+    "rubricVal": "{pct}% · {count} beoordeeld",
+    "rubricBest": "beste {pct}% · {count} beoordeeld",
+    "mine": "{right} van {answered} goed",
+    "src": {
+      "live": "live spellen: {count}"
+    },
+    "legend": {
+      "h": "Zo lees je het",
+      "sources": "Gedekt door: de toegewezen lessen met de standaard (of met een stap of Leer-spel dat hem oefent), live spellen die ernaar vroegen (Tug of Math Live op zijn leerjaar, vragensets waarvan de vragen de code dragen) en de cursussen waarin je leerlingen zitten.",
+      "practiced": "Geoefend: leerlingen die een activiteit hebben afgemaakt die de standaard oefent. Dat betekent dat ze hem deden, niet dat ze hem beheersen.",
+      "checked": "Vragen: goede antwoorden van de beantwoorde vragen over de standaard (lesquizzen, live spellen, Number Quest-checks).",
+      "rubric": "Rubric: rubricscores op de standaard, als deel van de hoogste score. Zichtbaar zodra rubrics Common Core-standaarden dragen.",
+      "meets": "Behaald: een leerling behaalt een standaard met minstens 80% goed bij 3 of meer vragen, of een rubricscore van minstens twee derde. De klas behaalt hem als 80% van de leerlingen hem behaalt.",
+      "needs": "Even kijken: leerlingen die 2 of meer vragen over de standaard beantwoordden en er geen goed hadden. Alleen leraren zien dit.",
+      "games": "Spellen met levels voor meerdere groepen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) tellen alleen als oefening voor de groep van de les, of voor het level waarop de stap vastgezet is. Bij een les zonder groep staan ze alleen onder Gedekt door.",
+      "live": "Live-spellen zoals Tug of Math Live slaan niet op welke vraag over welke standaard ging, dus de antwoorden van een leerling worden verdeeld over de standaarden van het spel. Die getallen zijn schattingen.",
+      "courses": "Number Quest telt werk gedaan met een schoolaccount, of sinds de leerling bij deze klas kwam. Eén check (3 vragen) is alleen niet genoeg om een standaard te halen."
+    },
+    "empty": {
+      "title": "Nog geen Common Core-standaarden",
+      "text": "Geef je lessen standaarden, of wijs lessen toe met Leer-spellen zoals Sum Racer, Fraction Factory of Word Trail, en ze verschijnen hier."
+    },
+    "csvCols": {
+      "code": "Code",
+      "grade": "Leerjaar",
+      "domain": "Domein",
+      "statement": "Omschrijving",
+      "sources": "Gedekt door",
+      "practiced": "Geoefend (leerlingen)",
+      "students": "Leerlingen in de klas",
+      "pct": "% goed",
+      "answered": "Beantwoorde vragen",
+      "checkedStudents": "Leerlingen met antwoorden",
+      "rubric": "Rubric %",
+      "meets": "Leerlingen die hem behalen",
+      "needsLook": "Even kijken (leerlingen)",
+      "last": "Laatste activiteit",
+      "status": "Status"
+    },
+    "lesson": {
+      "title": "Standaarden",
+      "lead": "Geef deze les, of een van de stappen, de Common Core-standaarden waaraan ze werkt. Ze verschijnen op het tabblad Standaarden van elke klas waaraan de les is toegewezen.",
+      "back": "Terug naar de les",
+      "current": "Gekoppelde standaarden",
+      "none": "Nog geen standaarden gekoppeld.",
+      "whole": "Hele les",
+      "stepN": "Stap {n}: {title}",
+      "remove": "Weghalen",
+      "removeLabel": "{code} weghalen",
+      "removed": "{code} weggehaald",
+      "add": "Toevoegen",
+      "addLabel": "{code} toevoegen",
+      "added": "{code} toegevoegd",
+      "addTo": "Toevoegen aan",
+      "find": "Standaarden zoeken",
+      "search": "Zoeken",
+      "searchHint": "Een code zoals 3.OA.C.7, of woorden zoals fractions",
+      "searchHintEla": "Een code zoals RL.3.2, of woorden zoals main idea",
+      "domain": "Domein",
+      "domainAll": "Alle domeinen",
+      "gradeAny": "Alle leerjaren",
+      "results": "Standaarden: {count}",
+      "more": "De eerste {shown} worden getoond: verfijn de zoekopdracht voor de rest.",
+      "noResults": "Geen standaard past. Probeer een ander leerjaar, domein of woord.",
+      "tagged": "Gekoppeld",
+      "open": "Standaarden koppelen",
+      "view": "Standaarden bekijken",
+      "editorNone": "Nog geen Common Core-standaarden gekoppeld.",
+      "onSteps": "Standaarden op stappen: {count}",
+      "gameCodes": "{framework}-standaarden die dit spel oefent",
+      "gameNeedsGrade": "Dit spel heeft levels voor meerdere groepen. Geef de les een groep (of zet de stap vast op één level) zodat de standaarden als geoefend tellen."
+    },
+    "errors": {
+      "badCode": "Dat is geen Common Core-code.",
+      "badStep": "Die stap hoort niet bij deze les.",
+      "tooMany": "Een les kan tot 60 standaarden hebben.",
+      "badFramework": "Kies Common Core Rekenen of Engels."
+    },
+    "learn": {
+      "label": "Standaard",
+      "hint": "bijv. 3.OA of RF.K"
+    }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Jouw Google Classroom",
+      "text": "Koppel het Google-account waarmee je lesgeeft in Google Classroom. Dan kun je:",
+      "what": {
+        "courses": "deze klas koppelen aan een van je Classroom-klassen",
+        "roster": "de leerlingen ervan hierheen halen, die inloggen met Google",
+        "post": "lessen daar plaatsen, met een link hierheen en de inleverdatum",
+        "grades": "het voltooiingscijfer van elke leerling voor een les naar Classroom sturen"
+      },
+      "button": "Google Classroom koppelen",
+      "privacy": "Alleen jij ziet deze koppeling. Oomba Academy stuurt Classroom de titel van de les, een link, de inleverdatum en het voltooiingscijfer van elke leerling op 100. Verder niets: geen namen, antwoorden of games.",
+      "connectedAs": "Gekoppeld als {email}",
+      "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
+      "connectedToast": "Google Classroom is gekoppeld.",
+      "disconnect": "Ontkoppelen",
+      "disconnectConfirm": "Google Classroom ontkoppelen? Oomba Academy synchroniseert dan niet meer voor je en wist zijn sleutel tot je Classroom. Lessen die al geplaatst zijn, blijven in Classroom.",
+      "disconnected": "Google Classroom is ontkoppeld.",
+      "reconnect": "Opnieuw koppelen"
+    },
+    "course": {
+      "heading": "Gekoppelde Classroom-klas",
+      "text": "Kies de Google Classroom-klas die bij {class} hoort.",
+      "none": "Geen actieve Google Classroom-klassen waar jij lesgeeft.",
+      "pick": "Kies een Classroom-klas",
+      "link": "Koppelen",
+      "linked": "Gekoppeld aan {course}.",
+      "linkedTo": "Gekoppeld aan {course}",
+      "unlink": "Ontkoppelen",
+      "unlinkConfirm": "{course} ontkoppelen? Leerlingen en lessen blijven waar ze zijn.",
+      "unlinked": "Ontkoppeld.",
+      "connectFirst": "Koppel hierboven je Google Classroom om te synchroniseren.",
+      "refresh": "Lijst vernieuwen"
+    },
+    "roster": {
+      "heading": "Leerlingen uit Classroom",
+      "text": "Haalt de leerlingen van de gekoppelde Classroom-klas hierheen. Wie al hier is, wordt herkend aan zijn Google-account. Wie nieuw is bij Oomba Academy, komt erbij zodra die voor het eerst inlogt met Google op het domein van je school, en krijgt dan een schoolaccount. Hun echte namen zien alleen leraren.",
+      "button": "Leerlingen importeren",
+      "last": "Laatst geïmporteerd {when}",
+      "noDomains": "Je school heeft haar Google-domein nog niet toegevoegd, dus nieuwe leerlingen kunnen er niet bij. Vraag het de schoolbeheerder.",
+      "noDomainsAdmin": "Voeg eerst het Google-domein van je school toe, zodat nieuwe leerlingen kunnen inloggen: {link}",
+      "hint": "Gebruik je Google Classroom? {link}",
+      "hintLink": "Importeer de leerlingen",
+      "notYet": "Google: uit Classroom, nog niet ingelogd",
+      "resultAdded": "{count, plural, one {# leerling toegevoegd} other {# leerlingen toegevoegd}}",
+      "resultAlready": "{count, plural, one {# was er al} other {# waren er al}}",
+      "resultOwn": "{count, plural, one {# gebruikt een eigen account: kan meedoen met de klascode} other {# gebruiken een eigen account: kunnen meedoen met de klascode}}",
+      "resultOther": "{count, plural, one {# hoort bij een andere school} other {# horen bij een andere school}}",
+      "resultStaff": "{count, plural, one {# is hier personeel} other {# zijn hier personeel}}",
+      "resultDomains": "{count, plural, one {# niet toegevoegd: voeg eerst het Google-domein van de school toe} other {# niet toegevoegd: voeg eerst het Google-domein van de school toe}}",
+      "resultWaiting": "{count, plural, one {# komt erbij bij de eerste keer inloggen met Google op het schooldomein} other {# komen erbij bij de eerste keer inloggen met Google op het schooldomein}}",
+      "waitingNow": "{count, plural, one {# leerling uit Classroom heeft nog niet ingelogd. Die komt in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).} other {# leerlingen uit Classroom hebben nog niet ingelogd. Ze komen in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).}}"
+    },
+    "post": {
+      "heading": "Lessen in Classroom",
+      "text": "Een les plaatsen maakt in Classroom een opdracht met de titel, een link naar de les hier en de inleverdatum.",
+      "button": "Plaatsen in Google Classroom",
+      "also": "Ook plaatsen in Google Classroom",
+      "description": "Open deze les op Oomba Academy.",
+      "done": "Geplaatst in Google Classroom.",
+      "donePastDue": "Geplaatst in Google Classroom (zonder inleverdatum: die is voorbij).",
+      "failed": "Niet geplaatst in Google Classroom:",
+      "due": "Inleveren {date}",
+      "noDue": "Geen inleverdatum",
+      "posted": "Geplaatst",
+      "open": "Openen in Classroom",
+      "noLessons": "Nog geen lessen in deze klas. Wijs er een toe op het tabblad Lessen.",
+      "doneScheduled": "Ingepland in Google Classroom: leerlingen zien het op {date}, als de les opengaat."
+    },
+    "grades": {
+      "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
+      "as": "Versturen als",
+      "draft": "Voorlopig cijfer (jij geeft het terug in Classroom)",
+      "assigned": "Toegekend cijfer",
+      "button": "Voltooiingscijfers versturen",
+      "lastDraft": "Voorlopige voltooiingscijfers verstuurd {when}",
+      "lastAssigned": "Toegekende voltooiingscijfers verstuurd {when}",
+      "resultSent": "{count, plural, one {# voltooiingscijfer verstuurd} other {# voltooiingscijfers verstuurd}}",
+      "resultNotStarted": "{count, plural, one {# is nog niet begonnen} other {# zijn nog niet begonnen}}",
+      "resultNotMatched": "{count, plural, one {# niet in deze klas} other {# niet in deze klas}}",
+      "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}"
+    },
+    "log": {
+      "heading": "Recente synchronisaties",
+      "kinds": {
+        "connect": "Gekoppeld",
+        "disconnect": "Ontkoppeld",
+        "link": "Klas gekoppeld",
+        "unlink": "Klas ontkoppeld",
+        "roster": "Leerlingen geïmporteerd",
+        "post": "Les geplaatst",
+        "grades": "Cijfers verstuurd"
+      }
+    },
+    "errors": {
+      "notSetUp": "Google Classroom is op deze site nog niet ingesteld. Vraag de eigenaar van de site de instelling af te maken.",
+      "notConnected": "Koppel eerst je Google Classroom.",
+      "reconnect": "Je koppeling met Google Classroom werkt niet meer. Koppel opnieuw.",
+      "notLinked": "Koppel deze klas eerst aan een Classroom-klas.",
+      "pickCourse": "Kies een Classroom-klas.",
+      "courseNotYours": "In die Classroom-klas geef jij geen les.",
+      "courseGone": "Google Classroom kan die klas of opdracht niet meer vinden.",
+      "denied": "Google Classroom weigerde. Misschien geef je geen les in die klas, of beperkt je school deze app.",
+      "rateLimited": "Google Classroom heeft het druk. Probeer het over een paar minuten opnieuw.",
+      "googleDown": "Google Classroom gaf geen antwoord. Probeer het opnieuw.",
+      "badRequest": "Google Classroom nam dat niet aan.",
+      "tooMany": "Die Classroom-klas heeft meer dan {max} leerlingen.",
+      "alreadyPosted": "Deze les staat al in Google Classroom.",
+      "notPosted": "Plaats deze les eerst in Google Classroom.",
+      "badMode": "Kies hoe je de cijfers verstuurt.",
+      "scopesMissing": "Vink op het scherm van Google alle vakjes aan, zodat Oomba Academy je klassen kan zien en opdrachten kan plaatsen.",
+      "noRefresh": "Google stuurde geen sleutel die we kunnen bewaren. Koppel opnieuw.",
+      "expired": "Dat duurde te lang. Probeer het opnieuw.",
+      "cancelled": "Je hebt op het scherm van Google geannuleerd. Er is niets gekoppeld.",
+      "staffOnly": "Hier kunnen alleen leraren en schoolbeheerders Google Classroom gebruiken.",
+      "tooManyTries": "Te veel synchronisaties voor nu. Probeer het over een uur opnieuw."
+    }
+  },
+  "digest": {
+    "when": "{day} om {time} ({zone})",
+    "email": {
+      "subject": "Je wekelijkse klassenoverzicht van {date}",
+      "preview": "{count, plural, one {Cijfers voor # klas, met links naar meer op Oomba Academy.} other {Cijfers voor # klassen, met links naar meer op Oomba Academy.}}",
+      "heading": "Week van {date}",
+      "greeting": "Hoi {name},",
+      "greetingNoName": "Hoi,",
+      "intro": "Zo gaat het met je klassen. Namen en antwoorden blijven op de site, waar alleen jij en het personeel van je school ze kunnen zien.",
+      "due": "{count, plural, =0 {Geen lessen die deze week af moeten} one {# les moet deze week af} other {# lessen moeten deze week af}}",
+      "pct": "{pct}% van het werk in open lessen gedaan",
+      "noWork": "Nog geen open lessen met stappen",
+      "toRead": "{count, plural, =0 {Geen antwoorden om na te kijken} one {# antwoord wacht op nakijken} other {# antwoorden wachten op nakijken}}",
+      "notStarted": "{count, plural, =0 {Alle leerlingen zijn begonnen} one {# leerling is nog niet begonnen} other {# leerlingen zijn nog niet begonnen}}",
+      "live": "{count, plural, =0 {Geen live spellen in de afgelopen 7 dagen} one {# live spel in de afgelopen 7 dagen} other {# live spellen in de afgelopen 7 dagen}}",
+      "openClass": "Klas openen",
+      "review": "Antwoorden nakijken",
+      "progress": "Voortgang bekijken",
+      "quiet": "{count, plural, one {# klas had niets nieuws en staat er niet in.} other {# klassen hadden niets nieuws en staan er niet in.}}",
+      "cta": "Overzicht van deze week bekijken",
+      "classroom": "Naar je Klaslokaal",
+      "why": "Je krijgt dit wekelijkse overzicht omdat je les geeft aan een klas op Oomba Academy.",
+      "change": "Dag of tijd wijzigen",
+      "stop": "Stoppen met deze overzichten"
+    },
+    "unsub": {
+      "title": "Wekelijks klassenoverzicht",
+      "askTitle": "Stoppen met het wekelijkse klassenoverzicht?",
+      "askText": "Je krijgt dan geen wekelijkse e-mail meer over je klassen. Alles blijft op de site, en je kunt het weer aanzetten op je Ik-pagina.",
+      "button": "Stoppen met de overzichten",
+      "offTitle": "Het wekelijkse overzicht staat uit",
+      "offText": "Je krijgt geen wekelijkse e-mail meer over je klassen. Andere e-mails over je account blijven gewoon komen.",
+      "again": "Weer aanzetten",
+      "againTitle": "Het wekelijkse overzicht staat weer aan",
+      "againText": "Je krijgt het weer op de dag en het tijdstip op je Ik-pagina.",
+      "badTitle": "Deze link werkt niet",
+      "badText": "De link is misschien afgekapt bij het kopiëren. Je kunt het overzicht ook uitzetten op je Ik-pagina."
+    },
+    "me": {
+      "heading": "Wekelijks klassenoverzicht",
+      "text": "Eén keer per week mailen we je cijfers voor elke klas die je lesgeeft: lessen die af moeten, gedaan werk, antwoorden om na te kijken, leerlingen die nog niet begonnen zijn en live spellen. Nooit de naam of het antwoord van een leerling.",
+      "noAddress": "We hebben nog geen e-mailadres van je. Koppel Google op deze pagina, dan gaat het overzicht naar dat adres.",
+      "on": "Mail me het wekelijkse overzicht",
+      "day": "Dag",
+      "hour": "Tijd",
+      "zone": "Tijdzone",
+      "zoneSchool": "De tijdzone van mijn school ({zone})",
+      "zoneDefault": "Standaard ({zone})",
+      "save": "Opslaan",
+      "saved": "Opgeslagen."
+    },
+    "page": {
+      "link": "Overzicht van deze week",
+      "title": "Overzicht van deze week",
+      "sub": "Elke klas die je lesgeeft: de afgelopen 7 dagen en de lessen die de komende 7 dagen af moeten.",
+      "next": "Je overzicht wordt elke {when} gemaild.",
+      "off": "De wekelijkse overzichtsmail staat uit. Je kunt deze pagina altijd bekijken.",
+      "noAddress": "We hebben nog geen e-mailadres van je, dus er gaat geen overzicht uit. Koppel Google op je Ik-pagina.",
+      "noAddressPlain": "We hebben nog geen e-mailadres van je, dus er gaat geen overzicht uit.",
+      "privacy": "Namen van leerlingen staan alleen op deze pagina, nooit in de e-mail.",
+      "seeEmail": "E-mail bekijken",
+      "change": "Wijzigen wanneer hij komt",
+      "statDue": "Deze week af",
+      "statDone": "Gedaan werk",
+      "statToRead": "Nakijken",
+      "statNotStarted": "Niet begonnen",
+      "statLive": "Live spellen",
+      "dueHeading": "Moet deze week af",
+      "finished": "{done} van {count} klaar",
+      "toReadHeading": "Antwoorden om na te kijken",
+      "notStartedHeading": "{count, plural, one {# leerling is niet begonnen} other {# leerlingen zijn niet begonnen}}",
+      "noClasses": "Nog geen klassen",
+      "noClassesText": "Maak een klas in je Klaslokaal, dan verschijnt het overzicht hier.",
+      "quietAll": "Een rustige week",
+      "quietAllText": "Niets nieuws in je klassen in de afgelopen 7 dagen, dus deze week gaat er geen e-mail uit.",
+      "quietHeading": "Niets nieuws",
+      "quietText": "Deze klassen hadden niets nieuws in de afgelopen 7 dagen. Ze staan niet in de e-mail."
+    },
+    "errors": {
+      "badDay": "Kies een dag.",
+      "badHour": "Kies een tijd.",
+      "badZone": "Kies een tijdzone uit de lijst."
     }
   }
 }

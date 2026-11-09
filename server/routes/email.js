@@ -6,6 +6,8 @@
 // Mounted before the CSRF check and the grown-up guard (app.js): a mail provider's one-click POST comes from its own
 // servers, and the token alone is the check. It only turns marketing on or off for the account it names; transactional
 // email (receipts) is unaffected. The page is English for now, like the emails (server/emails/trial-en.js).
+// &c=digest (the weekly class summary's link, services/digest.js): the same token turns off only that email, on a page
+// in the visitor's language (the summary is written in all 13).
 import { Router } from 'express';
 import { html } from '../views/html.js';
 import { page } from '../views/layout.js';
@@ -32,15 +34,37 @@ function view(req, res, { state, token, status = 200 }) {
 }
 const userOf = t => { const id = E.readUnsubToken(t); return id && getUser(id) ? id : null; };
 
+/** The weekly summary's page: "Stop these summaries?", "They're off", "They're back". */
+function digestView(req, res, { state, token, status = 200 }) {
+  const t = req.t;
+  res.set({ 'X-Robots-Tag': 'noindex', 'Cache-Control': 'no-store' });
+  const action = `${E.UNSUBSCRIBE_PATH}?t=${encodeURIComponent(token || '')}&c=digest`;
+  const body = state === 'bad'
+    ? html`<section class="panel"><h1>${t('digest.unsub.badTitle')}</h1><p>${t('digest.unsub.badText')}</p></section>`
+    : state === 'off'
+      ? html`<section class="panel"><h1>${t('digest.unsub.offTitle')}</h1><p>${t('digest.unsub.offText')}</p>
+        <form method="post" action="${action}&again=1"><button class="btn" type="submit">${t('digest.unsub.again')}</button></form></section>`
+      : html`<section class="panel"><h1>${state === 'again' ? t('digest.unsub.againTitle') : t('digest.unsub.askTitle')}</h1>
+        <p>${state === 'again' ? t('digest.unsub.againText') : t('digest.unsub.askText')}</p>
+        <form method="post" action="${action}"><button class="btn btn-primary" type="submit">${t('digest.unsub.button')}</button></form></section>`;
+  page(req, res, { title: t('digest.unsub.title'), body, mid: true }, status);
+}
+const isDigest = req => req.query.c === 'digest';
+
 router.get(E.UNSUBSCRIBE_PATH, (req, res) => {
   const id = userOf(req.query.t);
+  if (isDigest(req)) return id ? digestView(req, res, { state: E.digestOff(id) ? 'off' : 'ask', token: req.query.t }) : digestView(req, res, { state: 'bad', status: 400 });
   if (!id) return view(req, res, { state: 'bad', status: 400 });
   view(req, res, { state: E.nudgesOff(id) ? 'off' : 'ask', token: req.query.t });
 });
 router.post(E.UNSUBSCRIBE_PATH, (req, res) => {
   const id = userOf(req.query.t);
-  if (!id) return view(req, res, { state: 'bad', status: 400 });
+  if (!id) return (isDigest(req) ? digestView : view)(req, res, { state: 'bad', status: 400 });
   const again = req.query.again === '1';
+  if (isDigest(req)) {
+    if (E.digestOff(id) === again) { E.setDigestOff(id, !again); audit(id, again ? 'email.digest.on' : 'email.digest.off', id); }
+    return digestView(req, res, { state: again ? 'again' : 'off', token: req.query.t });
+  }
   if (E.nudgesOff(id) === again) { E.setNudgesOff(id, !again); audit(id, again ? 'email.resubscribe' : 'email.unsubscribe', id); }
   view(req, res, { state: again ? 'again' : 'off', token: req.query.t });
 });

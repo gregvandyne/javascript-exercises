@@ -284,6 +284,34 @@ export function applyInvites(user, claims, list = validInvites(claims)) {
   return joined;
 }
 
+// ------------------------------------------------------------------ students waiting from a Google Classroom roster
+// services/gclassroom.js importRoster leaves a student Oomba doesn't know yet in gc_pending (by Google account id): their
+// school account is made here, the first time they sign in with Google on one of that school's domains. (Plain SQL, so
+// this file doesn't import the Classroom service.)
+/** Waiting rows for this Google account whose school and class are live and whose school lists the account's domain. */
+function classroomPending(claims) {
+  return q.all('SELECT * FROM gc_pending WHERE sub=? ORDER BY created_at', String(claims.sub || '')).filter(p => {
+    const s = S.getSchool(p.school_id); if (!s || s.archived_at || !inSchoolDomains(schoolDomains(s), claims)) return false;
+    const c = S.getClass(p.class_id); return !!c && !c.archived_at && c.school_id === s.id;
+  });
+}
+/** Puts this account in the classes it waits for (only a school's own student: its account, or a student member). */
+function applyClassroomPending(user, claims, list = classroomPending(claims)) {
+  const joined = [];
+  for (const p of list) {
+    user = getUser(user.id);
+    const m = S.membership(p.school_id, user.id);
+    if (m ? m.role !== 'student' : user.managed_school !== p.school_id) continue;
+    if (!m && !S.addMember({ id: p.created_by }, p.school_id, user.id, 'student', { rosterName: p.roster_name, grade: p.grade }).ok) continue;
+    if (S.classMember(p.class_id, user.id) || S.addToClass({ id: p.created_by }, p.class_id, user.id, 'student').ok) {
+      q.run('DELETE FROM gc_pending WHERE class_id=? AND sub=?', p.class_id, p.sub);
+      audit(p.created_by, 'school.gclassroom_joined', p.class_id, { user: user.id });
+      joined.push(p.class_id);
+    }
+  }
+  return joined;
+}
+
 // ------------------------------------------------------------------ new school accounts
 /** A school account made through Google: generated username, no password (the login card is the fallback). */
 export function newSchoolAccount(actor, schoolId, { role, rosterName, grade = '', claims, via }) {
@@ -356,7 +384,7 @@ function decide({ claims, flow, currentUser, ip }) {
     if (identityOf(u.id)) return fail('alreadyLinked');
     const can = canConnectWith(u, claims); if (!can.ok) return can;
     insertIdentity(u.id, claims, u.id);
-    applyInvites(u, claims);
+    applyInvites(u, claims); applyClassroomPending(u, claims);
     audit(u.id, 'user.google_link', u.id, { hd: claims.hd });
     return ok({ user: getUser(u.id), via: 'link', landing: '/me?google=connected#google' });
   }
@@ -371,7 +399,7 @@ function decide({ claims, flow, currentUser, ip }) {
       if (!inSchoolDomains(domains, claims)) return fail('wrongDomain');
     }
     touchIdentity(claims.sub, claims);
-    const joined = applyInvites(user, claims);
+    const joined = [...applyInvites(user, claims), ...applyClassroomPending(user, claims)];
     if (joined.length) landing = `/class/${joined[0]}`;
     via = 'sub';
   } else {
@@ -382,6 +410,7 @@ function decide({ claims, flow, currentUser, ip }) {
     const attach = list.find(i => i.user_id);
     const staff = list.find(i => !i.user_id && !i.class_id);
     const student = list.find(i => !i.user_id && i.class_id);
+    const pending = attach || staff || student ? [] : classroomPending(claims);
     if (attach) {
       user = getUser(attach.user_id);
       const old = identityOf(user.id);
@@ -395,6 +424,13 @@ function decide({ claims, flow, currentUser, ip }) {
     } else if (student) {
       user = newSchoolAccount(actorOf(student), student.school_id, { role: 'student', rosterName: student.roster_name, grade: student.grade, claims, via: 'invite' });
       via = 'invite';
+    } else if (pending.length) {
+      // From a teacher's Google Classroom roster: the first waiting school decides, as with invites.
+      const p = pending[0], mine = pending.filter(x => x.school_id === p.school_id);
+      user = newSchoolAccount({ id: p.created_by }, p.school_id, { role: 'student', rosterName: p.roster_name, grade: p.grade, claims, via: 'classroom' });
+      const joined = applyClassroomPending(user, claims, mine);
+      if (joined.length) landing = `/class/${joined[0]}`;
+      via = 'classroom';
     } else if (intent === 'join') {
       const found = liveClassByCode(flow.c);
       if (!googleJoinOpen(found, claims)) return fail('joinNoWay');
@@ -404,8 +440,8 @@ function decide({ claims, flow, currentUser, ip }) {
       audit(user.id, 'class.google_join', found.c.id, { user: user.id, created: true });
       return ok({ user, via: 'class_code', created: true, landing: `/class/${found.c.id}` });
     } else return fail('unknown');
-    const joined = applyInvites(user, claims, list.filter(i => !i.user_id || i.user_id === user.id));
-    if (joined.length) landing = `/class/${joined[0]}`;
+    const joined = [...applyInvites(user, claims, list.filter(i => !i.user_id || i.user_id === user.id)), ...(pending.length ? [] : applyClassroomPending(user, claims))];
+    if (joined.length) landing = landing || `/class/${joined[0]}`;
   }
   if (intent === 'join' && flow.c) {
     const r = joinWithCode(getUser(user.id), flow.c, claims);

@@ -14,6 +14,7 @@ import * as games from './games.js';
 import * as CSTA from '../standards/csta.js';
 import { cleanOptions } from './play-params.js';
 import { TEMPLATE_KEYS } from '../builder/catalog.js';
+import * as R from './rubrics.js';
 
 export const STEP_KINDS = ['game', 'build', 'text', 'question'];
 /** Step kinds that may carry CSTA standards (lesson_steps.standards): a game step evidences them when played, a question
@@ -161,8 +162,11 @@ export function updateLesson(u, lessonId, fields = {}) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
   const c = cleanLesson(fields, l); if (!c.ok) return c;
   const v = c.v;
-  q.run('UPDATE lessons SET title=?, summary=?, subject=?, grade=?, objectives=?, shared=?, template_key=?, template_version=?, updated_at=? WHERE id=?',
-    v.title, v.summary, v.subject, v.grade, v.objectives, v.shared, v.template_key, v.template_version, now(), l.id);
+  // A rubric for the whole lesson (services/rubrics.js): one the teacher can edit, from the lesson's school; '' takes it off.
+  const rubricId = R.attachId(u, l.school_id, fields.rubricId, l.rubric_id || null);
+  if (rubricId === false) return fail('rubricPick');
+  q.run('UPDATE lessons SET title=?, summary=?, subject=?, grade=?, objectives=?, shared=?, template_key=?, template_version=?, rubric_id=?, updated_at=? WHERE id=?',
+    v.title, v.summary, v.subject, v.grade, v.objectives, v.shared, v.template_key, v.template_version, rubricId, now(), l.id);
   return ok({ lesson: getLesson(l.id) });
 }
 const touch = lessonId => q.run('UPDATE lessons SET updated_at=? WHERE id=?', now(), lessonId);
@@ -171,7 +175,10 @@ export function deleteLesson(u, lessonId) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
   tx(() => {
     q.run('DELETE FROM step_progress WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id);
+    R.forgetLesson(l.id);
+    q.run('DELETE FROM gc_posts WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id); // Google Classroom posts
     q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
+    q.run('DELETE FROM lesson_standards WHERE lesson_id=?', l.id);
   });
   audit(u.id, 'lesson.delete', l.id, { title: l.title });
   return ok();
@@ -222,7 +229,7 @@ function quizItemsFor(step) {
   return step.items || '';
 }
 /** Copy a lesson (own, or shared by a colleague) into the user's library: every step with its lesson parameters,
- *  standards, Studio template and rubric; quiz steps keep their set and get fresh items from it (P8). The copy remembers
+ *  standards (CSTA and Common Core tags), Studio template and rubric; quiz steps keep their set and get fresh items from it (P8). The copy remembers
  *  the catalogue lesson the original came from (template_key / template_version). */
 export function copyLesson(u, lessonId, { folderId } = {}) {
   const l = getLesson(lessonId);
@@ -232,12 +239,27 @@ export function copyLesson(u, lessonId, { folderId } = {}) {
   const r = createLesson(u, l.school_id, { title: l.owner_id === u.id ? `${l.title} (2)` : l.title, folderId, summary: l.summary, subject: l.subject, grade: l.grade, objectives: l.objectives,
     templateKey: l.template_key || '', templateVersion: l.template_version || 0 });
   if (!r.ok) return r;
+  // Library rubrics come along: one the copier can edit stays attached; a colleague's is copied into their library once.
+  const rubricMap = new Map();
+  const rubricFor = id => {
+    if (!id) return null;
+    if (!rubricMap.has(id)) { const rb = R.getRubric(id); rubricMap.set(id, !rb ? null : R.canEditRubric(u, rb) ? rb.id : (R.copyRubric(u, rb.id, { force: true }).rubric || {}).id || null); }
+    return rubricMap.get(id);
+  };
   tx(() => {
-    q.run('UPDATE lessons SET copied_from=? WHERE id=?', l.id, r.lesson.id);
+    q.run('UPDATE lessons SET copied_from=?, rubric_id=? WHERE id=?', l.id, rubricFor(l.rubric_id), r.lesson.id);
+    const stepIds = new Map([['', '']]);
     for (const s of steps(l.id)) {
-      q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-        uid(10), r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
-        s.kind === QUIZ_KIND ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : '', s.options || '', s.standards || '', s.template || '', s.rubric || '');
+      const id = uid(10); stepIds.set(s.id, id);
+      q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric, rubric_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        id, r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
+        s.kind === QUIZ_KIND ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
+        R.STEP_KINDS.includes(s.kind) ? rubricFor(s.rubric_id) : null);
+    }
+    // Common Core tags (lesson_standards, services/standards-ccss.js) come along, on the copied steps.
+    for (const t of q.all('SELECT step_id, framework, code FROM lesson_standards WHERE lesson_id=?', l.id)) {
+      if (!stepIds.has(t.step_id)) continue;
+      q.run('INSERT OR IGNORE INTO lesson_standards(lesson_id, step_id, framework, code, added_by, created_at) VALUES (?,?,?,?,?,?)', r.lesson.id, stepIds.get(t.step_id), t.framework, t.code, u.id, now());
     }
   });
   audit(u.id, 'lesson.copy', r.lesson.id, { from: l.id });
@@ -276,7 +298,7 @@ export function cleanRubric(input) {
 export const rubricOf = step => { try { const x = JSON.parse((step && step.rubric) || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
 /** The step's quiz items ([{ q, choices, answer, cat?, secs? }]; [] when none). */
 export const quizItemsOf = step => { try { const x = JSON.parse((step && step.items) || '[]'); return Array.isArray(x) ? x : []; } catch { return []; } };
-function cleanStep(u, input, old = {}) {
+function cleanStep(u, input, old = {}, schoolId = null) {
   const kind = input.kind !== undefined ? input.kind : old.kind;
   if (!STEP_KINDS.includes(kind) && !(kind === QUIZ_KIND && old.kind === QUIZ_KIND)) return fail('stepKind');
   const v = {
@@ -290,6 +312,8 @@ function cleanStep(u, input, old = {}) {
     standards: input.standards !== undefined ? cleanStandards(input.standards) : old.standards || '',
     template: input.template !== undefined ? clip(input.template, 20).toLowerCase() : old.template || '',
     rubric: input.rubric !== undefined ? cleanRubric(input.rubric) : old.rubric || '',
+    // A library rubric (services/rubrics.js) the teacher scores this step's work with: question and build steps only.
+    rubric_id: R.attachId(u, schoolId, input.rubricId, old.rubric_id || null),
   };
   // A field that does not belong to this kind is dropped before it is checked (a text step sent a template is not refused);
   // on the kinds that keep it, a bad value refuses the step so a catalogue mistake shows up.
@@ -297,6 +321,8 @@ function cleanStep(u, input, old = {}) {
   if (kind !== 'build') v.template = '';
   if (!STANDARDS_KINDS.includes(kind)) v.standards = '';
   if (!RUBRIC_KINDS.includes(kind)) v.rubric = '';
+  if (!R.STEP_KINDS.includes(kind)) v.rubric_id = null;
+  if (v.rubric_id === false) return fail('rubricPick');
   if (v.options === null) return fail('stepOptions');
   if (v.standards === null) return fail('stepStandards');
   if (v.rubric === null) return fail('stepRubric');
@@ -314,10 +340,10 @@ function cleanStep(u, input, old = {}) {
 export function addStep(u, lessonId, input) {
   const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
   if (q.get('SELECT COUNT(*) n FROM lesson_steps WHERE lesson_id=?', l.id).n >= 40) return fail('tooManySteps');
-  const c = cleanStep(u, input || {}); if (!c.ok) return c;
+  const c = cleanStep(u, input || {}, {}, l.school_id); if (!c.ok) return c;
   const id = uid(10);
-  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, options, standards, template, rubric) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, now(), c.v.options, c.v.standards, c.v.template, c.v.rubric);
+  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, options, standards, template, rubric, rubric_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, now(), c.v.options, c.v.standards, c.v.template, c.v.rubric, c.v.rubric_id);
   touch(l.id);
   return ok({ step: getStep(id) });
 }
@@ -334,15 +360,15 @@ export function addQuizStep(u, lessonId, { title = '', setId, items, minutes = 0
 }
 export function updateStep(u, stepId, input) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
-  const c = cleanStep(u, input || {}, s); if (!c.ok) return c;
-  q.run('UPDATE lesson_steps SET kind=?, title=?, body=?, game_id=?, minutes=?, options=?, standards=?, template=?, rubric=? WHERE id=?',
-    c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, c.v.options, c.v.standards, c.v.template, c.v.rubric, s.id);
+  const c = cleanStep(u, input || {}, s, l.school_id); if (!c.ok) return c;
+  q.run('UPDATE lesson_steps SET kind=?, title=?, body=?, game_id=?, minutes=?, options=?, standards=?, template=?, rubric=?, rubric_id=? WHERE id=?',
+    c.v.kind, c.v.title, c.v.body, c.v.game_id, c.v.minutes, c.v.options, c.v.standards, c.v.template, c.v.rubric, c.v.rubric_id, s.id);
   touch(l.id);
   return ok();
 }
 export function deleteStep(u, stepId) {
   const s = getStep(stepId); const l = s && getLesson(s.lesson_id); if (!canEditLesson(u, l)) return fail('notFound');
-  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
+  tx(() => { q.run('DELETE FROM step_progress WHERE step_id=?', s.id); R.forgetStep(s.id); q.run('DELETE FROM lesson_standards WHERE step_id=?', s.id); q.run('DELETE FROM lesson_steps WHERE id=?', s.id); }); touch(l.id);
   return ok();
 }
 export function reorderStep(u, stepId, dir) {

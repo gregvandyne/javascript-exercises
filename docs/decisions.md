@@ -3307,3 +3307,345 @@ geared towards conversion … 14 day free trial … very futuristic … parallax
   for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
 - **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
   parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.
+
+## Rubrics: reusable rubrics, scoring by tapping a level, points in the gradebook (9 Nov 2026)
+
+Teachers asked for proper grading tools: a rubric they write once and use on many lessons, scored quickly on a phone,
+with the points in the gradebook and the CSV, and the result shown to the student.
+
+**What a rubric is.** Levels (columns: a name and points, 2 to 6) × criteria (rows: a name and one descriptor per
+level, 1 to 12). Points are 0 to 100 in halves; the most a student can get is the top level's points for every
+criterion. Rubrics live in the school's lesson library (`/teach/rubrics`, the third tab of the library), in the
+teacher's own list, like lessons: `rubrics` table (migration `0063_rubrics`), `services/rubrics.js`,
+`routes/rubrics.js`, `views/rubrics.js`.
+
+**Library.** New rubric (three criteria × Beginning 1 · Developing 2 · Secure 3 · Excellent 4 to start from), an
+editor whose row buttons (add / remove a level or criterion, move a criterion) save what was typed and come back to the
+same row, a preview grid, a print view (`/teach/rubrics/:id/print`, black on white, name and points lines), copy,
+share with the school (colleagues see it in "Shared by colleagues" and copy it; they never edit it), delete.
+**Delete while in use** is refused (409 `inUse`) unless the request says `detach=1`; the page's Delete button says how
+many lessons it is on and sends `detach=1` after that confirm. Scores already given keep a snapshot of the rubric, so
+neither editing nor deleting a rubric ever changes a result (an edited rubric bumps `version`; a score from an older
+version is shown with "the rubric has changed since this was scored").
+
+**Starters.** CS Quest's exit-ticket rubric lines (`seed-lessons/cs-quest/lessons/*.json`, `exit.rubric` and step
+rubrics; 46 lessons) are offered as starter rubrics: "Add to my rubrics" makes a library rubric with levels Not yet 0 ·
+Beginning 1 · Developing 2 · Secure 3 and the lines' English descriptors. The CS Quest inline step rubric
+(`lesson_steps.rubric`, 0-3 marks that feed the Standards tab) is unchanged and works alongside: a step can carry both.
+
+**Draft with AI** (`services/rubric-ai.js`) uses the same path as the lesson "Draft with AI": the builder model through
+`builder/anthropic.js`, counted in the AI budget, JSON schema output. Only the task and grade the teacher typed are
+sent: never a student's name, answer, drawing or game. Without a key (or when the AI is resting) a template rubric in
+the teacher's language is made. Staff of the school only, 30 an hour.
+
+**Attaching.** `lesson_steps.rubric_id` on steps that collect work (a written question / exit ticket, a Studio build
+hand-in) and `lessons.rubric_id` for the whole lesson. A teacher attaches their own rubrics (school admins: any of the
+school's); a colleague's shared rubric is copied first. Copying a lesson keeps the copier's own rubrics attached and
+copies a colleague's rubric into the copier's library once (`copyLesson`).
+
+**Scoring.** On the lesson's progress page the review form of an answer or handed-in build shows the rubric: tap a
+level for each criterion (cards that wrap on phones; "Not scored" too), an optional comment per criterion, the written
+feedback, "Save and mark reviewed" (the existing review, then `rubric_scores`). The whole-lesson rubric gets its own
+section, one folded card per student, with feedback. The score is checked before anything is saved; the teachers of
+the class and school admins only, for students of the class only. `rubric_scores` keeps the picks, comments, points,
+most possible, the scorer and the snapshot.
+
+**Gradebook and CSV.** Each lesson cell shows "📏 points/most  %" for scored work, Overall shows the rubric percentage
+across scored lessons; the CSV adds "<lesson> (rubric points)" and "(rubric %)" columns for lessons with a rubric, then
+"Rubric points" and "Rubric %" totals (only when the class has rubrics, so CSVs without rubrics are as before). The
+percentage is of the criteria scored so far: a criterion with no level adds nothing to the points or the most possible,
+and feedback or comments alone are not a score at all (see "Review fixes" below).
+
+**Students** see their own result on the lesson page under "From your teacher": the feedback, the level given per
+criterion with its descriptor, the teacher's comments and the points; the whole lesson's result in its own panel. A
+student only ever gets their own rows (`scoresFor(classLesson, own id)`); nobody else (other teachers, other schools,
+students, kids, grown-ups, guests) can open a rubric page or API (404). Deleting a step, a lesson or a class deletes its
+scores; account merges move them.
+
+**Review fixes (9 Nov 2026).** A review of the first build found two scoring bugs and three polish items:
+- *A score is "the same rubric" only when `rubric_id` and `version` both match* (`R.sameRubric`). Before, a step switched
+  to another rubric that was also version 1 kept the old picks, a form with no level tapped carried an out-of-range pick
+  into the points and the save failed with a 500 after the feedback was already saved. Now the review form shows "the
+  rubric has changed" and checks nothing, carried picks are bound-checked (an impossible one becomes "not scored"), and
+  saveScore refuses an out-of-range pick before writing. A score left behind by a rubric swap does not count
+  (`R.scoreCounts`): the gradebook, the CSV and the student's page leave it out until the teacher scores again. A
+  rubric taken off (detached or deleted) keeps its scores, as before.
+- *Only scored criteria count.* `max_points` is the top level's points × the criteria with a level, so whole-lesson
+  feedback or a comment with no level stores 0/0 and is left out of every total and percentage (the student still sees
+  the feedback and comments). A partial score says so: "3/4 points · 1 of 3 scored" on the review page and the
+  student's page, and "1 of 3 scored" under the gradebook cell (`R.scoredOf`; the cell adds up the scores in it).
+- The library's "Used in N lessons" counts distinct lessons (a rubric on three steps of one lesson is one lesson), the
+  same number as the editor's `usage()` and the delete confirm.
+- On the review page each answer card's rubric fields fold away ("📏 Score with …", with the total once scored); the
+  first card of each step that still needs review, and a card whose score came from another rubric, start open. A
+  class of 30 on a phone is no longer several metres of radio buttons.
+- Every sideways-scrolling tab row (`nav.tabs`, app.js) scrolls its current tab into view on load, so the active
+  "Rubrics" tab is not cut off in Hebrew / Arabic on a phone.
+## Standards beyond computer science: Common Core Math and ELA (9 Nov 2026)
+Owner: "Build all of those suggestions" (teacher portal: grading and curriculum tools). This stream: standards.
+- **Data:** server/standards/ccss-math.json (Mathematics K-8: 229 standards + sub-standards, codes in the form Number
+  Quest already cites, `3.OA.C.7`, `3.MD.C.7a`) and ccss-ela.json (ELA K-8: RL, RI, RF (K-5), W, SL, L; `RL.3.1`,
+  `RF.K.3c`). Official statements, built once by scripts/build-ccss.js from the npm package @weo-edu/standards 0.1.6
+  (MIT; the corestandards.org text). Cluster letters come from Number Quest's cluster registry. Dropped on purpose: W.2.4
+  and W.2.10 ("begins in grade 3"; the source filled them with grade 3's text), anchor (CCR) and 6-12 literacy
+  (RH/RST/WHST) standards. server/standards/ccss.js reads them (normId accepts `CCSS.MATH.CONTENT.…` and `3.MD.C.7.A`);
+  frameworks.js lists CSTA, CCSS Math, CCSS ELA (the ids never overlap).
+- **License notice:** "© Copyright 2010. National Governors Association Center for Best Practices and Council of Chief
+  State School Officers. All rights reserved." is shown (in English) wherever Common Core standards are listed: the
+  class tab, the lesson's standards page, staff Learn cards, the CSV's last line and the JSON (`notice`).
+- **Official tags** (server/standards/official-tags.js, accurate and conservative): Sum Racer by track (1.OA.C.6,
+  2.NBT.B.5, 3.OA.C.7, 3.NBT.A.1, 4.NBT.B.4); Tug of Math by grade (the game's own TugGen kinds; grade 4's mixed
+  expressions and grade 8's powers of 2 left untagged); Fraction Factory (2.G.A.3, 3.NF.A.1-3, 4.NF.A.1-2, 4.NF.B.3);
+  Word Trail (RF.K.3c, RF.1.3g, RF.2.3f, RF.3.3d); Shark Plank (RF.K.1d, RF.K.3a); Word Peek (L.3.2f, L.4.2d). No codes
+  for Word Hunt, Doodle Hoot or the any-subject quiz games (their questions' own `cat` decides). Number Quest: each
+  step's **primary** codes from units.json. Tug of Math Live: the grade in the run's starter id. A lesson's Tug of Math
+  step counts only its lesson's grade (never all eight). Maths starter sets in Oomba Live are not saved with the run,
+  so they are not counted.
+- **Teacher tags:** table `lesson_standards` (migration 0064: lesson_id, step_id '' = whole lesson, framework, code,
+  added_by, created_at), only Common Core (CSTA tags stay on lesson_steps.standards as before); up to 60 per lesson;
+  only whoever can edit the lesson (owner, school admins); copied with the lesson (onto the copy's steps), deleted with
+  the step or lesson. Page `/teach/lessons/:id/standards` (picker by framework, grade, domain and words; "Add to" the
+  whole lesson or a step) linked from the lesson editor's new 🎯 Standards panel; step cards show their codes and the
+  codes their official game practises. Colleagues who can see a shared lesson see its tags read-only.
+- **Class tab:** framework chips on `/class/:id/standards` (no `fw` = the CSTA tab, unchanged below the chips;
+  `?fw=ccss-math|ccss-ela` = services/standards-ccss.js `classView`). Coverage per code: assigned lessons (their tags,
+  their official games), live runs in the class, courses the class's students are in; a summary of top-level codes
+  covered per grade; "every grade N standard" view; one student's levels; CSV (counts only, no names);
+  `GET /api/classes/:id/standards?fw=`. Mastery from work already recorded, nothing new stored: practised (a finished
+  tagged step / official game / Number Quest step), questions (quiz items by their `cat` code, else the step's or
+  lesson's tags; live items the same; a whole Tug run's correct/answered; Number Quest's 3-question check), rubric.
+  A student meets with ≥ 80% right over ≥ 3 answers or a rubric score ≥ 2/3 of its maximum; the class with 80% of its
+  students (the CSTA rule). Levels: none / practised / developing / meets.
+- **Rubrics interface:** `registerRubricSource(fn)` in services/standards-ccss.js. fn({ classId, framework, studentIds })
+  returns [{ userId, code, score, max, at }]; bad rows, unknown codes and other students are ignored, a throwing source
+  is skipped. The rubrics stream registers one; this module reads none of its tables.
+- **Learn (staff only):** the codes under each official game card and `?std=` (a code or its start, e.g. `3.OA`,
+  `RF.K`) to filter; kids and visitors never see codes and the parameter is ignored for them.
+- **Who may see what:** class pages / CSV / JSON: the class's teachers and school admins (S.canManageClass); tag APIs:
+  L.canEditLesson; search and game-codes APIs: school staff. Everyone else 404 (signed out: sign-in page / 401).
+  Students see nothing new. Words under `standards.*` in all 13 languages (scripts/i18n-add-standards.mjs from
+  scripts/standards-strings/); codes and statements stay in English (`lang="en"`).
+- **No new env vars, no owner action needed.**
+- **Checks:** tests/unit/standards-ccss.test.js (data, tags, coverage, mastery, rubric sources, authorization),
+  tests/e2e/teach-standards.spec.js (flow, a student's 404s, 360/390/1280, light/dark, Hebrew).
+- **Review fixes (9 Nov 2026):**
+  - The picker's "Add to" (#sf-t) is a `data-autosubmit` select: choosing a step reloads with `?to=`, and
+    public/js/standards.js also copies its value into every "+ Add" form, so an Add never goes to the last searched
+    target. e2e: pick a step, press "+ Add" without Search, the tag is on that step.
+  - **Levelled games** (official-tags.js `LEVELLED`: Tug of Math, Sum Racer, Fraction Factory, Word Trail) are no
+    longer credited with every grade they span. `stepGameCodes(slug, fw, grade, options)` (practice) gives the track
+    or chapter the step is locked to (`lock=1&level=N` for Sum Racer, `lock=1&chapter=…` for Fraction Factory,
+    `FRACTION_CHAPTERS`), else the codes of the lesson's grade, else nothing. `stepGameCover` (coverage only, never
+    practice): the same, or for an ungraded, unlocked step of Sum Racer / Fraction Factory / Word Trail all the game's
+    codes; Tug of Math still covers nothing without a grade (eight grades would swamp the summary). The lesson editor's
+    step chips use the same function and show a hint to give the lesson a grade when only coverage is known.
+  - **Tug of Math Live** (a run with no per-item codes): a student's correct/answered is shared out across the grade's
+    codes (20 answers over 2 codes: 10 each), not counted in full for each; the legend says these are estimates.
+  - **Number Quest** progress is not tied to a class. It counts for a school account (the school owns it), or for a
+    student who joined with their own account only from their class `joined_at` (their home work before joining is
+    left out). One course check (3 questions) alone no longer makes a student "meets": it takes a second check or other
+    questions on the code. Both are in the legend.
+  - Learn (staff): the Standard box has its own visible Filter button (learn.js hides the form's no-JS one), and the
+    course cards are left out while `?std=` is on (courses are tagged by step, not by course).
+  - RTL: the group headings put the English domain name on its own line under the grade (standards.css).
+## Google Classroom sync (9 Nov 2026)
+Owner: "Build all of those suggestions" (leaning into the teacher portal's grading and curriculum tools; this stream is
+the Google Classroom sync). Setup for the owner: docs/google-classroom.md.
+- **Behind config:** on only with Sign in with Google (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`) and
+  `GOOGLE_CLASSROOM=1`; every route answers like an unknown page while off, and the pieces other pages show render ''.
+  `GOOGLE_TOKEN_KEY` (32 bytes, hex or base64; a malformed one stops startup, never echoed) is needed to store anything:
+  without it the page says Classroom isn't set up and Connect is refused.
+- **One client module:** `services/gclassroom-client.js` is the only code that talks to Google (token exchange,
+  refresh, revoke, the Classroom API at `CLASSROOM_API_BASE`, default https://classroom.googleapis.com, refused in
+  production when changed). Tests use tests/support/fake-classroom.js and the OAuth parts added to fake-google.js.
+  Replies are capped (2 MB), 15 s timeouts, lists paged with a page cap; Google errors become a short code
+  (`reconnect`, `denied`, `notFound` → "courseGone", `rateLimited`, `badRequest`, `googleDown`) shown in plain words.
+- **Connect = incremental authorization:** a POST hands back a 5-minute signed start link bound to the session (as
+  the Me page's Google connect does), the start writes the same PKCE/state/nonce flow cookie, and Google is asked for
+  `openid email` + `classroom.courses.readonly`, `classroom.rosters.readonly`, `classroom.coursework.students` with
+  `access_type=offline`, `include_granted_scopes=true`, `prompt=consent` (so a refresh token always comes back) and a
+  `login_hint` of their sign-in email. Callback: `/auth/google/classroom/callback` (a second redirect URI). A box left
+  unticked on Google's screen ("granular consent") is refused (`scopesMissing`); nothing is stored. Not
+  `classroom.coursework.me` (only students' own work needs it), not `profile.emails`: no email is read.
+- **Tokens:** the refresh token is sealed with AES-256-GCM (random 12-byte nonce, the teacher's user id as associated
+  data, `key_tag` = a hash prefix of the key) in `gc_connections`. Access tokens live in memory under an hour; a 401
+  refreshes once and retries; `invalid_grant` (revoked at Google) or a changed key marks the connection
+  "connect again". Disconnect revokes at Google (best effort) and deletes the row; account deletion does the same.
+- **Who:** school staff (`S.isSchoolStaff`) who manage the class (`S.canManageClass`: its teachers and school admins).
+  Other teachers, students, guests: 404 on the page and APIs; students and guests can't start a connection (403); a
+  platform admin who isn't staff sees the page but has nothing to connect. The connection is per teacher.
+- **Link:** a class links to one course from the teacher's own active courses (`teacherId=me`), checked again on save.
+- **Roster import, matched like Sign in with Google:** Classroom's `userId` is the Google account id that sign-in calls
+  `sub`, so a student whose Oomba account already has that Google account joins the class (if they belong to this
+  school); own accounts outside the school, other schools' accounts and staff are left out and counted (own accounts
+  can use the class code). Someone new gets a school account bound to that Google account (generated username, the
+  Classroom full name only as the staff-only roster name, no password; `google_identities` row with an empty email
+  until their first sign-in, which then checks the school's domains as usual), so the school needs its Google domains
+  first (`needDomains` otherwise). Nothing is shown to other students. At most 300 per import.
+- **Post:** one CourseWork per class lesson (`gc_posts`): the lesson title, one fixed line, a link material to
+  `/class/:cid/lessons/:clid`, `maxPoints` 100, and the due date as the end of the due day in the school's time zone
+  (UTC to Google; left off when past, since Classroom refuses a past due date). From the class page or "Also post to
+  Google Classroom" in the assign form (the assignment stands whatever Google says; the toast carries both lines).
+- **Grades:** a lesson's score is the gradebook's done/total steps × 100. Sent to each submission of the teacher's
+  coursework whose `userId` maps to a student in this class who has started; not started / not in this class / failed
+  are counted. Draft (`updateMask=draftGrade`; the teacher returns it in Classroom) or assigned
+  (`draftGrade,assignedGrade`). We never return work or touch coursework we didn't create (Google forbids it anyway).
+- **Limits and audit:** 60 syncs an hour per teacher, 20 imports an hour per class, 20 connects an hour; every sync
+  writes `gc_syncs` (kind, status, counts, error code: never names or grades; swept after 180 days, shown as "Recent
+  syncs") and the audit log (`gclassroom.*`). Migration 0065.
+- **Privacy:** listed in docs/legal-review.md ("Google Classroom sync") for the owner's legal review.
+
+## Google Classroom sync: review fixes (9 Nov 2026)
+A review of the sync found these; what changed:
+- **Relinking (major):** a post now counts only for the Classroom class it was posted to (`gc_posts.course_id` equal to
+  the class's current `gc_links.course_id`; `postOf` / `postsOfClass` join on it). Linking a *different* Classroom class
+  deletes the old posts (and waiting students) in the same transaction, so the lesson shows **Post** again, "Open in
+  Classroom" never points at the old class, and grades can't go to the old assignment (`sendGrades` also needs a live
+  link). Unlink keeps posts, so unlinking and relinking the *same* class finds them again. Reposting replaces the row.
+- **Roster import makes no accounts any more:** the import can't see emails (we don't ask for `profile.emails`), so it
+  can't check a new student's domain. A student Oomba doesn't know yet now waits in `gc_pending` (class, Google id,
+  staff-only roster name; added to migration 0065, which hasn't shipped) for 30 days. The first time they sign in with
+  Google on one of the school's domains, `services/google.js` makes their school account and puts them in the class
+  (also for a known account linking Google later, if it's this school's student). A personal or out-of-domain Google
+  account gets nothing and its Google id stays free. Results say "N will join when they first sign in with Google on
+  your school's domain"; the page shows how many still wait. Re-importing renews them and drops students no longer on
+  the Classroom roster; unlinking clears them.
+- **Deletes:** deleting a class removes its `gc_links`, `gc_posts`, `gc_pending` and `gc_syncs`; deleting a lesson removes
+  the posts of its class lessons. The 12-hourly gclassroom sweep also removes rows whose class or class lesson is gone.
+- **Lessons that open later** go to Classroom as `DRAFT` with `scheduledTime` = local midnight of the opening day where
+  the school is, so they appear in Classroom when the lesson unlocks here. The toast says when.
+- **"Also post to Google Classroom" starts unticked:** a post reaches real students and can't be undone from Oomba.
+- **Completion grade, said plainly:** the button is "Send completion grades", results say "completion grades sent", and
+  the page explains it's the share of steps done, not right answers. (Sending quiz scores instead is a later choice.)
+- **RTL:** he/ar strings carry an RLM after Latin words such as "Classroom" so brackets sit on the right side.
+- **Course list:** the page uses the five-minute cache; "Refresh the list" asks Google again; any fetch from the page
+  is limited to 30 an hour per teacher. Linking still checks a fresh list.
+## Weekly class summary email (9 Nov 2026)
+
+Teachers get one email a week with counts for each class they teach, so they know where to look without opening the
+site. The full picture, with names, stays on the site.
+
+- **Who gets it:** active school staff who teach a class that isn't archived, at the address services/email.js
+  already uses (their Google sign-in's verified address, else the one their trial checkout gave). Never students, kids,
+  grown-up accounts or guests (`adultRecipient` + `isStaff`). With no address: a `skipped / no_address` row, no email.
+- **What's in it (services/digest-email.js):** for each class, counts only: lessons due in the next 7 days, % of the
+  work in open lessons done (the gradebook's `overall` rule), answers waiting for review, students who haven't
+  started any open lesson, and live games played in the last 7 days. Links go to the class, its progress (or the
+  review list) and "See this week's summary". **Never a student's name or answer.** Class names are in it, since
+  teachers write them. Classes with nothing going on (no progress or live game in 7 days, nothing to review, nothing
+  due) are left out, with one line saying how many. A week where every class is quiet sends nothing (`skipped / empty`).
+  The HTML and plain-text parts use the same layout as the trial emails, are written in all 13 languages
+  (`digest.email.*`, the teacher's site language) and read right to left in Hebrew and Arabic.
+- **When:** at the day and hour the teacher picks on the Me page (panel `#digest`, `POST /api/me/digest`). The default
+  is Monday at 7:00 in their school's time zone, else their own choice of zone, else America/New_York. A job runs every
+  15 minutes (services/jobs.js). For each teacher it works out this week's slot, using the local date as the week key and
+  handling daylight saving. It **claims** a `digest_sends` row (teacher, week) before sending and marks it after.
+  Every try uses the Idempotency-Key `digest-<user>-<week>`, so a restart, a second process or a retry never sends a
+  week twice. A row left mid-send is tried again after 10 minutes and marked failed after 23 hours (while Resend still
+  remembers the key). A summary more than 12 hours late (downtime) is not sent, because it would read as last week's.
+  A failed send is retried on later runs and given up after 5 tries.
+- **Switches:** the teacher's own (`email_prefs.digest_off_at`): the Me page checkbox, and "Stop these summaries" in
+  the email, which is the same signed one-click link as the trial emails plus `&c=digest` (with
+  `List-Unsubscribe` and one-click POST support). It turns off only this email. Unsubscribing from the trial emails
+  doesn't stop it, and this switch doesn't stop those. The admin's switch is the "Weekly class summary" row on
+  /admin/emails (setting `emails.class_digest`), with counts, the skip reasons, a preview with made-up classes and
+  "Send me a test".
+- **Category `digest`, no postal address needed:** this email is about the teacher's own classes (a relationship
+  message, not marketing), so unlike the trial nudges it doesn't wait for `EMAIL_POSTAL_ADDRESS`. The footer still
+  carries the address when it's set. If counsel disagrees, adding `category === 'digest'` to the postal check in
+  `send()` is a one-line change.
+- **On the site: /teach/summary** ("This week's summary", linked from the Classroom header and the Me panel). This is
+  the same counts plus what only the site may show: who hasn't started (real roster names, staff only), the lessons due
+  with how many finished, and links to the answers to review. Answers themselves are not shown there either.
+  `/teach/summary/email` shows the email as it would go this week (`?format=text` for the text part). School staff only:
+  everyone else gets 404, a signed-out visitor goes to sign in, and only classes the teacher teaches are listed.
+- **Data (migration 0066_class_digest):** `email_prefs` gains `digest_off_at`, `digest_day` (0 = Sunday, default
+  1), `digest_hour` (default 7) and `digest_tz` ('' = the school's). The new `digest_sends` table holds one row per
+  teacher per week: status, reason, the number of classes in it, attempts and times. It stores counts only, never a
+  student's name or answer; the rendered email is held only while a send waits for a retry (see the review fixes
+  below), and rows are kept six months. Sends are logged in `email_log` as template `class_digest`.
+- **No new env vars:** it uses RESEND_API_KEY / EMAIL_ENABLED / EMAIL_FROM / EMAIL_REPLY_TO / PUBLIC_URL like the
+  trial emails.
+- **Checks:** tests/unit/class-digest.test.js (schedule and DST, counts, every language, no names, one send per week
+  across restarts and concurrent runs, retries, every switch, the one-click link, and who may open each page and API,
+  with the email provider faked); tests/e2e/teach-digest.spec.js (360/390/1280, light/dark, Hebrew, nothing touches,
+  44 px targets, students 404).
+
+## Weekly class summary: review fixes (9 Nov 2026)
+
+A review of the weekly summary found no major problems and six small ones, all fixed:
+
+- **Empty values:** `POST /api/me/digest` with `{"hour":""}` or `{"day":null}` was saved as midnight / Sunday
+  (`Number('') === 0`). Day and hour must now be digits only (`/^\d{1,2}$/` on a string or number) and anything else is
+  a 400 (`badDay` / `badHour`), with the saved value unchanged.
+- **One a week, even after moving the day:** the week key is still the slot's local date, but a teacher is skipped when
+  a summary for a slot less than 6 days earlier was already sent (`sentRecently`). Moving Monday to Wednesday after
+  Monday's went out means the next one is the following Wednesday, not a second one that week.
+- **Retries send the same bytes:** the first try stores the rendered email (subject, HTML, text) on its
+  `digest_sends.message`, and every retry sends exactly that, so the shared Idempotency-Key never meets a different
+  body (Resend would answer 409 `invalid_idempotent_request`, and a first try that did go out would be counted as
+  failed). The message holds counts, class names and the teacher's first name, never a student's name or answer, and
+  it's cleared as soon as the row is sent, skipped or failed.
+- **Rows that can never go are closed:** each run (even with sending switched off) marks a `pending` or stuck `sending`
+  row more than 12 hours after its slot as `failed / late`, so nothing waits forever under "Waiting" on /admin/emails.
+- **Same language in the preview and the email:** the email goes in `users.lang`, else `email_prefs.digest_lang`, else
+  English (`mailLocale`). `digest_lang` is the site language the teacher is reading in, remembered when they save the
+  settings or open /teach/summary (or its preview), but not from a cross-site link's `?lang=`. The preview uses the
+  same rule, so a teacher reading in German through their browser's language sees, and gets, German.
+- **Active classes count only current students:** the "recent activity" count joins `class_members` (active students),
+  like the review counts, so a teacher's own preview or a student who left doesn't make a class active.
+- **The no-address notice:** it says "Connect Google" only where Google sign-in is set up (`googleEnabled()`);
+  otherwise it says only that we don't have an address yet (`digest.page.noAddressPlain`, 13 languages).
+- **Migration:** 0066_class_digest itself gains `email_prefs.digest_lang` and `digest_sends.message` (it hasn't shipped
+  yet, so no new migration number).
+
+## The teaching loop: Plan → Play → Check → Feedback (9 Nov 2026)
+Owner: "Build all of those suggestions" (lean into the teacher portal's grading and curriculum tools). This part makes the
+story visible: every tool a teacher needs already exists, so the loop names them in order and links to them.
+- **One partial, three looks:** `server/views/teacher-loop.js` exports `teacherLoop(t, opts)` with the four steps (an
+  emoji, a one-line benefit, the tools): Plan (Lesson library, Draft with AI, Turn a lesson into a game), Play (Assign to
+  a class, Host a live game: only while live games are on), Check (Gradebook with its CSV, Needs attention first,
+  Standards tab), Feedback (Answers to review, Written feedback students see). `variant: 'landing'` uses the landing's own
+  lp-* classes (public/css/landing.css, one marked block at the end); `'page'` and `'compact'` use the app's tokens
+  (public/css/teach-loop.css). With `links` (services/teach-loop.js `loopLinks`, built for the teacher's first class)
+  each tool is a button to the real page; without them (visitors, kids, grown-ups) the tools are plain words.
+- **Classroom home (/teach):** the compact card sits under the tools row, above My classes, until every step is done
+  once or the teacher hides it; then a small "🗓️ How Oomba fits your week" button in the tools row opens `/teach/loop`
+  (the full loop with ticks, the screenshots, and "Show the checklist on Classroom" while hidden). On a phone a step
+  already done shows its name only.
+- **Ticks from real data, no migration:** Plan = a lesson (`lessons.owner_id`) or a game (`games.owner_id`); Play = an
+  assignment (`class_lessons.assigned_by`, not removed) or a hosted live game (`live_runs.host_id`); Check = the teacher
+  opened their class's gradebook, its CSV, one lesson's progress or the Standards tab (`markCheck`, called after those
+  routes' own class check); Feedback = an answer reviewed (`step_progress.reviewed_by`). The only thing stored is one
+  `settings` row per teacher, key `teach.loop:<user id>`, JSON `{ check, hidden }` (times).
+- **Who:** `/teach/loop`, `POST /api/teach/loop/hide` and `/show` are for school staff only (`S.isSchoolStaff`); anyone
+  else gets 404 (signed out: sign in / 401). Each teacher only reads and changes their own state; a 404 on another
+  teacher's class never ticks anything. The card names only the teacher's own class.
+- **"Turn a lesson into a game" link:** the teacher's latest lesson at `#new-game` (the editor's "New game for this
+  lesson", which opens on arrival), or the library's New lesson form when they have none yet.
+- **"Needs attention first" link:** `/class/<id>/progress/<latest assignment>#needs-attention`; public/js/schools.js
+  presses the sort button when the page opens with that hash.
+- **Landing ("/") and /teachers:** one section each. On the landing it comes right after "How it works" (`id="loop"`),
+  numbered cards like the steps above it, the four screenshots in the device frame, then the trial button. On /teachers
+  it sits after Subjects (the "How it works" headings test stops at #play). No prices, and nothing about tools that are
+  not built yet (rubrics, Common Core, Google Classroom sync, a weekly summary email: another stream; a test guards it).
+- **Screenshots:** `node scripts/teach-loop-shots.js` makes public/img/teach-loop/{gradebook,attention,feedback,
+  standards}.webp from a throwaway database with the seeded demo school (made-up names only, checked; prices checked),
+  plus one CS Quest lesson with some work so the Standards tab shows Practiced rows. Captured at 2x from a 960x600
+  window and scaled to 1280x800, 25-35 KB each (limit 80 KB, tested). Alt text and captions are in i18n
+  (`teach.loop.shots.*`); the screens themselves are the English UI.
+- **Words:** `teach.loop.*` in all 13 languages (scripts/i18n-add-teach-loop.mjs from scripts/teach-loop-strings/
+  words.json); tool names the app already has (Lesson library, Draft with AI, Needs attention first, Download (CSV),
+  Host a live game) are copied from each language's own keys. en-GB needs nothing (no spelling differs). In Hebrew and
+  Arabic the arrows point left.
+- **Checks:** tests/unit/teach-loop.test.js (ticks, hide/show, staff-only and per-teacher authorization, landing and
+  /teachers sections, images, words); tests/e2e/teach-loop.spec.js (360/390/1280, light/dark, he; the landing too when
+  run with `LANDING_AT_ROOT=1`).
+- **After review (9 Nov 2026):** a teacher with no class yet gets one "🍎 Make your first class" button
+  (`teach.loop.home.makeClass`, to `/teach#my-classes`) and the class tools (Assign, Gradebook, Needs attention first,
+  Standards, Answers to review, Written feedback) as plain words, not six links that all went back to /teach. On a phone
+  only the next step to do (`.is-next`) shows its benefit and tools on the Classroom home's card; the others show their
+  name, so My classes stays near the top. One lesson's progress now always draws the "Needs attention first" chip and its
+  `#needs-attention` anchor (it was only drawn for more than 3 students, so the loop's link landed on an unsorted page).
+  Deleting an account removes the `teach.loop:<user id>` settings row (services/account-delete.js). German says
+  "Lektion", as the app's lesson strings do, not "Stunde".

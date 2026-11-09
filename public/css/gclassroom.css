@@ -1,0 +1,32 @@
+/* Google Classroom sync: the class's Google Classroom page (server/routes/gclassroom.js). Phone first; logical
+   properties so Hebrew and Arabic mirror; colours from the theme tokens so light and dark both work. */
+.gc-page{display:flex;flex-direction:column;gap:var(--s3)}
+.gc-page>.panel{margin:0}
+.gc-title{margin:var(--s2) 0 0}
+.gc-what{margin:var(--s1) 0 var(--s3);padding-inline-start:1.25em}
+.gc-what li{margin:4px 0}
+.gc-linkform{flex-wrap:wrap;gap:var(--s2)}
+.gc-linkform select{min-width:0;flex:1 1 220px;min-height:44px}
+.gc-linkform .btn{min-height:44px}
+.gc-linkform .err{flex-basis:100%}
+.gc-lessons{display:flex;flex-direction:column;gap:var(--s3);margin:var(--s3) 0 0;padding:0}
+.gc-lesson{border:1px solid var(--line);border-radius:var(--r-sm);padding:var(--s3);display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.gc-lesson-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px var(--s2)}
+.gc-lesson-head b{overflow-wrap:anywhere;flex:1 1 100%}
+.gc-lesson-acts{display:flex;flex-direction:column;gap:var(--s2);align-items:flex-start}
+.gc-lesson .btn-sm{min-height:44px}
+.gc-gradeform{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s2)}
+.gc-modes{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px var(--s3)}
+.gc-modes legend{padding:0;margin-bottom:4px;color:var(--text-2)}
+.gc-mode{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.gc-mode input{width:20px;height:20px;margin:0;flex:none}
+.gc-log{display:flex;flex-direction:column;gap:var(--s2);margin:0;padding:0}
+.gc-log-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px var(--s3);padding-block:var(--s2);border-top:1px solid var(--line)}
+.gc-log-row:first-child{border-top:0;padding-top:0}
+.gc-log-what{display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere}
+.gc-err{color:var(--bad-ink,var(--text))}
+@media (min-width:720px){
+  .gc-lesson{flex-direction:row;align-items:flex-start;justify-content:space-between}
+  .gc-lesson-head{flex:1 1 40%}
+  .gc-lesson-acts{flex:0 1 auto;align-items:flex-end}
+}

@@ -12,6 +12,7 @@ services:
     # Moving to your own domain (oomba.ai): add the domain under Settings → Custom Domains, wait for "Verified",
     # then set PUBLIC_URL=https://oomba.ai in the dashboard. Old names move over once the server checks it can be reached
     # there (README: PUBLIC_URL). Sign in with Google later needs GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET (dashboard).
+    # Google Classroom sync: GOOGLE_CLASSROOM=1 and the secret GOOGLE_TOKEN_KEY (dashboard; docs/google-classroom.md).
     envVars:
       - key: NODE_ENV
         value: production

@@ -1,0 +1,4884 @@
+{
+ "framework": "ccss-ela",
+ "name": "Common Core State Standards for English Language Arts",
+ "short": "CCSS ELA",
+ "grades": [
+  "K",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8"
+ ],
+ "notice": "© Copyright 2010. National Governors Association Center for Best Practices and Council of Chief State School Officers. All rights reserved.",
+ "source": "Common Core State Standards for English Language Arts & Literacy (2010), grades K-8, strands RL, RI, RF, W, SL and L: codes and official statements (corestandards.org), via the npm package @weo-edu/standards 0.1.6 (MIT). Built by scripts/build-ccss.js.",
+ "domains": {
+  "RL": "Reading: Literature",
+  "RI": "Reading: Informational Text",
+  "RF": "Reading: Foundational Skills",
+  "W": "Writing",
+  "SL": "Speaking and Listening",
+  "L": "Language"
+ },
+ "standards": [
+  {
+   "id": "RL.K.1",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "With prompting and support, ask and answer questions about key details in a text."
+  },
+  {
+   "id": "RL.K.2",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "With prompting and support, retell familiar stories, including key details."
+  },
+  {
+   "id": "RL.K.3",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "With prompting and support, identify characters, settings, and major events in a story."
+  },
+  {
+   "id": "RL.K.4",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "Ask and answer questions about unknown words in a text. (See grade K Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.K.5",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "Recognize common types of texts (e.g., storybooks, poems, fantasy, realistic text)."
+  },
+  {
+   "id": "RL.K.6",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "With prompting and support, name the author and illustrator of a story and define the role of each in telling the story."
+  },
+  {
+   "id": "RL.K.7",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "With prompting and support, describe the relationship between illustrations and the story in which they appear (e.g., what moment in a story an illustration depicts)."
+  },
+  {
+   "id": "RL.K.9",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "With prompting and support, compare and contrast the adventures and experiences of characters in familiar stories."
+  },
+  {
+   "id": "RL.K.10",
+   "grade": "K",
+   "domain": "RL",
+   "statement": "Actively engage in group reading activities with purpose and understanding."
+  },
+  {
+   "id": "RL.K.10a",
+   "grade": "K",
+   "domain": "RL",
+   "parent": "RL.K.10",
+   "statement": "Activate prior knowledge related to the information and events in texts."
+  },
+  {
+   "id": "RL.K.10b",
+   "grade": "K",
+   "domain": "RL",
+   "parent": "RL.K.10",
+   "statement": "Use illustrations and context to make predictions about text."
+  },
+  {
+   "id": "RI.K.1",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, ask and answer questions about key details in a text."
+  },
+  {
+   "id": "RI.K.2",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, identify the main topic and retell key details of a text."
+  },
+  {
+   "id": "RI.K.3",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, describe the connection between two individuals, events, ideas, or pieces of information in a text."
+  },
+  {
+   "id": "RI.K.4",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, ask and answer questions about unknown words in a text.(See grade K Language standards 4–6 additional expectations.)"
+  },
+  {
+   "id": "RI.K.5",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "Identify the front cover, back cover, and title page of a book."
+  },
+  {
+   "id": "RI.K.6",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "Name the author and illustrator of a text and define the role of each in presenting the ideas or information in a text."
+  },
+  {
+   "id": "RI.K.7",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, describe the relationship between illustrations and the text in which they appear (e.g., what person, place, thing, or idea in the text an illustration depicts)."
+  },
+  {
+   "id": "RI.K.8",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, identify the reasons an author gives to support points in a text."
+  },
+  {
+   "id": "RI.K.9",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "With prompting and support, identify basic similarities in and differences between two texts on the same topic (e.g., in illustrations, descriptions, or procedures)."
+  },
+  {
+   "id": "RI.K.10",
+   "grade": "K",
+   "domain": "RI",
+   "statement": "Actively engage in group reading activities with purpose and understanding."
+  },
+  {
+   "id": "RI.K.10a",
+   "grade": "K",
+   "domain": "RI",
+   "parent": "RI.K.10",
+   "statement": "Activate prior knowledge related to the information and events in texts."
+  },
+  {
+   "id": "RI.K.10b",
+   "grade": "K",
+   "domain": "RI",
+   "parent": "RI.K.10",
+   "statement": "Use illustrations and context to make predictions about text."
+  },
+  {
+   "id": "RF.K.1",
+   "grade": "K",
+   "domain": "RF",
+   "statement": "Demonstrate understanding of the organization and basic features of print."
+  },
+  {
+   "id": "RF.K.1a",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.1",
+   "statement": "Follow words from left to right, top to bottom, and page by page."
+  },
+  {
+   "id": "RF.K.1b",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.1",
+   "statement": "Recognize that spoken words are represented in written language by specific sequences of letters."
+  },
+  {
+   "id": "RF.K.1c",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.1",
+   "statement": "Understand that words are separated by spaces in print."
+  },
+  {
+   "id": "RF.K.1d",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.1",
+   "statement": "Recognize and name all upper- and lowercase letters of the alphabet."
+  },
+  {
+   "id": "RF.K.2",
+   "grade": "K",
+   "domain": "RF",
+   "statement": "Demonstrate understanding of spoken words, syllables, and sounds (phonemes)."
+  },
+  {
+   "id": "RF.K.2a",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.2",
+   "statement": "Recognize and produce rhyming words."
+  },
+  {
+   "id": "RF.K.2b",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.2",
+   "statement": "Count, pronounce, blend, and segment syllables in spoken words."
+  },
+  {
+   "id": "RF.K.2c",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.2",
+   "statement": "Blend and segment onsets and rimes of single-syllable spoken words."
+  },
+  {
+   "id": "RF.K.2d",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.2",
+   "statement": "Isolate and pronounce the initial, medial vowel, and final sounds (phonemes) in three-phoneme (consonent-vowel-consonent, or CVC) words. (This does not include CVCs ending with /l/, /r/, or /x/.)"
+  },
+  {
+   "id": "RF.K.2e",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.2",
+   "statement": "Add or substitute individual sounds (phonemes) in simple, one-syllable words to make new words."
+  },
+  {
+   "id": "RF.K.2f",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.2",
+   "statement": "Blend two to three phonemes into recognizable words."
+  },
+  {
+   "id": "RF.K.3",
+   "grade": "K",
+   "domain": "RF",
+   "statement": "Know and apply grade-level phonics and word analysis skills in decoding words both in isolation and in text."
+  },
+  {
+   "id": "RF.K.3a",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.3",
+   "statement": "Demonstrate basic knowledge of one-to-one letter-sound correspondences by producing the primary or many of the most frequent sound for each consonant."
+  },
+  {
+   "id": "RF.K.3b",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.3",
+   "statement": "Associate the long and short sounds with common spellings (graphemes) for the five major vowels. (Identify which letters represent the five major vowels [Aa, Ee, Ii, Oo, and Uu] and know the long and short sound of each vowel. More complex long vowel graphemes and spellings are targeted in the grade 1 phonics standards.)"
+  },
+  {
+   "id": "RF.K.3c",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.3",
+   "statement": "Read common high-frequency words by sight (e.g., the, of, to, you, she, my, is, are, do, does)."
+  },
+  {
+   "id": "RF.K.3d",
+   "grade": "K",
+   "domain": "RF",
+   "parent": "RF.K.3",
+   "statement": "Distinguish between similarly spelled words by identifying the sounds of the letters that differ."
+  },
+  {
+   "id": "RF.K.4",
+   "grade": "K",
+   "domain": "RF",
+   "statement": "Read emergent-reader texts with purpose and understanding."
+  },
+  {
+   "id": "W.K.1",
+   "grade": "K",
+   "domain": "W",
+   "statement": "Use a combination of drawing, dictating, and writing to compose opinion pieces in which they tell a reader the topic or the name of the book they are writing about and state an opinion or preference about the topic or book (e.g., My favorite book is…)."
+  },
+  {
+   "id": "W.K.2",
+   "grade": "K",
+   "domain": "W",
+   "statement": "Use a combination of drawing, dictating, and writing to compose informative/explanatory texts in which they name what they are writing about and supply some information about the topic."
+  },
+  {
+   "id": "W.K.3",
+   "grade": "K",
+   "domain": "W",
+   "statement": "Use a combination of drawing, dictating, and writing to narrate a single event or several loosely linked events, tell about the events in the order in which they occurred, and provide a reaction to what happened."
+  },
+  {
+   "id": "W.K.5",
+   "grade": "K",
+   "domain": "W",
+   "statement": "With guidance and support from adults, respond to questions and suggestions from peers and add details to strengthen writing as needed."
+  },
+  {
+   "id": "W.K.6",
+   "grade": "K",
+   "domain": "W",
+   "statement": "With guidance and support from adults, explore a variety of digital tools to produce and publish writing, including in collaboration with peers."
+  },
+  {
+   "id": "W.K.7",
+   "grade": "K",
+   "domain": "W",
+   "statement": "Participate in shared research and writing projects (e.g., explore a number of books by a favorite author and express opinions about them)."
+  },
+  {
+   "id": "W.K.8",
+   "grade": "K",
+   "domain": "W",
+   "statement": "With guidance and support from adults, recall information from experiences or gather information from provided sources to answer a question."
+  },
+  {
+   "id": "SL.K.1",
+   "grade": "K",
+   "domain": "SL",
+   "statement": "Participate in collaborative conversations with diverse partners about kindergarten topics and texts with peers and adults in small and larger groups."
+  },
+  {
+   "id": "SL.K.1a",
+   "grade": "K",
+   "domain": "SL",
+   "parent": "SL.K.1",
+   "statement": "Follow agreed-upon rules for discussions (e.g., listening to others and taking turns speaking about the topics and texts under discussion)."
+  },
+  {
+   "id": "SL.K.1b",
+   "grade": "K",
+   "domain": "SL",
+   "parent": "SL.K.1",
+   "statement": "Continue a conversation through multiple exchanges."
+  },
+  {
+   "id": "SL.K.2",
+   "grade": "K",
+   "domain": "SL",
+   "statement": "Confirm understanding of a text read aloud or information presented orally or through other media by asking and answering questions about key details and requesting clarification if something is not understood."
+  },
+  {
+   "id": "SL.K.2a",
+   "grade": "K",
+   "domain": "SL",
+   "parent": "SL.K.2",
+   "statement": "Understand and follow one- and two-step oral directions."
+  },
+  {
+   "id": "SL.K.3",
+   "grade": "K",
+   "domain": "SL",
+   "statement": "Ask and answer questions in order to seek help, get information, or clarify something that is not understood."
+  },
+  {
+   "id": "SL.K.4",
+   "grade": "K",
+   "domain": "SL",
+   "statement": "Describe familiar people, places, things, and events and, with prompting and support, provide additional detail."
+  },
+  {
+   "id": "SL.K.5",
+   "grade": "K",
+   "domain": "SL",
+   "statement": "Add drawings or other visual displays to descriptions as desired to provide additional detail."
+  },
+  {
+   "id": "SL.K.6",
+   "grade": "K",
+   "domain": "SL",
+   "statement": "Speak audibly and express thoughts, feelings, and ideas clearly."
+  },
+  {
+   "id": "L.K.1",
+   "grade": "K",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.K.1a",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.1",
+   "statement": "Print many upper- and lowercase letters."
+  },
+  {
+   "id": "L.K.1b",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.1",
+   "statement": "Use frequently occurring nouns and verbs."
+  },
+  {
+   "id": "L.K.1c",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.1",
+   "statement": "Form regular plural nouns orally by adding /s/ or /es/ (e.g., dog, dogs; wish, wishes)."
+  },
+  {
+   "id": "L.K.1d",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.1",
+   "statement": "Understand and use question words (interrogatives) (e.g., who, what, where, when, why, how)."
+  },
+  {
+   "id": "L.K.1e",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.1",
+   "statement": "Use the most frequently occurring prepositions (e.g., to, from, in, out, on, off, for, of, by, with)."
+  },
+  {
+   "id": "L.K.1f",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.1",
+   "statement": "Produce and expand complete sentences in shared language activities."
+  },
+  {
+   "id": "L.K.2",
+   "grade": "K",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.K.2a",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.2",
+   "statement": "Capitalize the first word in a sentence and the pronoun I."
+  },
+  {
+   "id": "L.K.2b",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.2",
+   "statement": "Recognize and name end punctuation."
+  },
+  {
+   "id": "L.K.2c",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.2",
+   "statement": "Write a letter or letters for most consonant and short-vowel sounds (phonemes)."
+  },
+  {
+   "id": "L.K.2d",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.2",
+   "statement": "Spell simple words phonetically, drawing on knowledge of sound-letter relationships."
+  },
+  {
+   "id": "L.K.4",
+   "grade": "K",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on kindergarten reading and content."
+  },
+  {
+   "id": "L.K.4a",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.4",
+   "statement": "Identify new meanings for familiar words and apply them accurately (e.g., knowing duck is a bird and learning the verb to duck)."
+  },
+  {
+   "id": "L.K.4b",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.4",
+   "statement": "Use the most frequently occurring inflections and affixes (e.g., -ed, -s, re-, un-, pre-, -ful, -less) as a clue to the meaning of an unknown word."
+  },
+  {
+   "id": "L.K.5",
+   "grade": "K",
+   "domain": "L",
+   "statement": "With guidance and support from adults, explore word relationships and nuances in word meanings."
+  },
+  {
+   "id": "L.K.5a",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.5",
+   "statement": "Sort common objects into categories (e.g., shapes, foods) to gain a sense of the concepts the categories represent."
+  },
+  {
+   "id": "L.K.5b",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.5",
+   "statement": "Demonstrate understanding of frequently occurring verbs and adjectives by relating them to their opposites (antonyms)."
+  },
+  {
+   "id": "L.K.5c",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.5",
+   "statement": "Identify real-life connections between words and their use (e.g., note places at school that are colorful)."
+  },
+  {
+   "id": "L.K.5d",
+   "grade": "K",
+   "domain": "L",
+   "parent": "L.K.5",
+   "statement": "Distinguish shades of meaning among verbs describing the same general action (e.g., walk, march, strut, prance) by acting out the meanings."
+  },
+  {
+   "id": "L.K.6",
+   "grade": "K",
+   "domain": "L",
+   "statement": "Use words and phrases acquired through conversations, reading and being read to, and responding to texts."
+  },
+  {
+   "id": "RL.1.1",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Ask and answer questions about key details in a text."
+  },
+  {
+   "id": "RL.1.2",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Retell stories, including key details, and demonstrate understanding of their central message or lesson."
+  },
+  {
+   "id": "RL.1.3",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Describe characters, settings, and major events in a story, using key details."
+  },
+  {
+   "id": "RL.1.4",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Identify words and phrases in stories or poems that suggest feelings or appeal to the senses. (See grade 1 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.1.5",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Explain major differences between books that tell stories and books that give information, drawing on a wide reading of a range of text types."
+  },
+  {
+   "id": "RL.1.6",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Identify who is telling the story at various points in a text."
+  },
+  {
+   "id": "RL.1.7",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Use illustrations and details in a story to describe its characters, setting, or events."
+  },
+  {
+   "id": "RL.1.9",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "Compare and contrast the adventures and experiences of characters in stories."
+  },
+  {
+   "id": "RL.1.10",
+   "grade": "1",
+   "domain": "RL",
+   "statement": "With prompting and support, read prose and poetry of appropriate complexity for grade 1."
+  },
+  {
+   "id": "RL.1.10a",
+   "grade": "1",
+   "domain": "RL",
+   "parent": "RL.1.10",
+   "statement": "Activate prior knowledge related to the information and events in a text."
+  },
+  {
+   "id": "RL.1.10b",
+   "grade": "1",
+   "domain": "RL",
+   "parent": "RL.1.10",
+   "statement": "Confirm predictions about what will happen next in a text."
+  },
+  {
+   "id": "RI.1.1",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Ask and answer questions about key details in a text."
+  },
+  {
+   "id": "RI.1.2",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Identify the main topic and retell key details of a text."
+  },
+  {
+   "id": "RI.1.3",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Describe the connection between two individuals, events, ideas, or pieces of information in a text."
+  },
+  {
+   "id": "RI.1.4",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Ask and answer questions to help determine or clarify the meaning of words and phrases in a text.(See grade 1 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.1.5",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Know and use various text structures (e.g., sequence) and text features (e.g., headings, tables of contents, glossaries, electronic menus, icons) to locate key facts or information in a text."
+  },
+  {
+   "id": "RI.1.6",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Distinguish between information provided by pictures or other illustrations and information provided by the words in a text."
+  },
+  {
+   "id": "RI.1.7",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Use the illustrations and details in a text to describe its key ideas."
+  },
+  {
+   "id": "RI.1.8",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Identify the reasons an author gives to support points in a text."
+  },
+  {
+   "id": "RI.1.9",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "Identify basic similarities in and differences between two texts on the same topic (e.g., in illustrations, descriptions, or procedures)."
+  },
+  {
+   "id": "RI.1.10",
+   "grade": "1",
+   "domain": "RI",
+   "statement": "With prompting and support, read informational texts appropriately complex for grade 1."
+  },
+  {
+   "id": "RI.1.10a",
+   "grade": "1",
+   "domain": "RI",
+   "parent": "RI.1.10",
+   "statement": "Activate prior knowledge related to the information and events in a text."
+  },
+  {
+   "id": "RI.1.10b",
+   "grade": "1",
+   "domain": "RI",
+   "parent": "RI.1.10",
+   "statement": "Confirm predictions about what will happen next in a text."
+  },
+  {
+   "id": "RF.1.1",
+   "grade": "1",
+   "domain": "RF",
+   "statement": "Demonstrate understanding of the organization and basic features of print."
+  },
+  {
+   "id": "RF.1.1a",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.1",
+   "statement": "Recognize the distinguishing features of a sentence (e.g., first word, capitalization, ending punctuation)."
+  },
+  {
+   "id": "RF.1.2",
+   "grade": "1",
+   "domain": "RF",
+   "statement": "Demonstrate understanding of spoken words, syllables, and sounds (phonemes)."
+  },
+  {
+   "id": "RF.1.2a",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.2",
+   "statement": "Distinguish long from short vowel sounds in spoken single-syllable words."
+  },
+  {
+   "id": "RF.1.2b",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.2",
+   "statement": "Orally produce single-syllable words by blending sounds (phonemes), including consonant blends."
+  },
+  {
+   "id": "RF.1.2c",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.2",
+   "statement": "Isolate and pronounce initial, medial vowel, and final sounds (phonemes) in spoken single-syllable words."
+  },
+  {
+   "id": "RF.1.2d",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.2",
+   "statement": "Segment spoken single-syllable words into their complete sequence of individual sounds (phonemes)."
+  },
+  {
+   "id": "RF.1.3",
+   "grade": "1",
+   "domain": "RF",
+   "statement": "Know and apply grade-level phonics and word analysis skills in decoding words both in isolation and in text."
+  },
+  {
+   "id": "RF.1.3a",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Know the spelling-sound correspondences for common consonant digraphs."
+  },
+  {
+   "id": "RF.1.3b",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Decode regularly spelled one-syllable words."
+  },
+  {
+   "id": "RF.1.3c",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Know final -e and common vowel team conventions for representing long vowel sounds."
+  },
+  {
+   "id": "RF.1.3d",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Use knowledge that every syllable must have a vowel sound to determine the number of syllables in a printed word."
+  },
+  {
+   "id": "RF.1.3e",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Decode two-syllable words following basic patterns by breaking the words into syllables."
+  },
+  {
+   "id": "RF.1.3f",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Read words with inflectional endings."
+  },
+  {
+   "id": "RF.1.3g",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.3",
+   "statement": "Recognize and read grade-appropriate irregularly spelled words."
+  },
+  {
+   "id": "RF.1.4",
+   "grade": "1",
+   "domain": "RF",
+   "statement": "Read with sufficient accuracy and fluency to support comprehension."
+  },
+  {
+   "id": "RF.1.4a",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.4",
+   "statement": "Read on-level text with purpose and understanding."
+  },
+  {
+   "id": "RF.1.4b",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.4",
+   "statement": "Read on-level text orally with accuracy, appropriate rate, and expression on successive readings."
+  },
+  {
+   "id": "RF.1.4c",
+   "grade": "1",
+   "domain": "RF",
+   "parent": "RF.1.4",
+   "statement": "Use context to confirm or self-correct word recognition and understanding, rereading as necessary."
+  },
+  {
+   "id": "W.1.1",
+   "grade": "1",
+   "domain": "W",
+   "statement": "Write opinion pieces in which they introduce the topic or name the book they are writing about, state an opinion, supply a reason for the opinion, and provide some sense of closure."
+  },
+  {
+   "id": "W.1.2",
+   "grade": "1",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts in which they name a topic, supply some facts about the topic, and provide some sense of closure."
+  },
+  {
+   "id": "W.1.3",
+   "grade": "1",
+   "domain": "W",
+   "statement": "Write narratives in which they recount two or more appropriately sequenced events, include some details regarding what happened, use temporal words to signal event order, and provide some sense of closure."
+  },
+  {
+   "id": "W.1.5",
+   "grade": "1",
+   "domain": "W",
+   "statement": "With guidance and support from adults, focus on a topic, respond to questions and suggestions from peers, and add details to strengthen writing as needed."
+  },
+  {
+   "id": "W.1.6",
+   "grade": "1",
+   "domain": "W",
+   "statement": "With guidance and support from adults, use a variety of digital tools to produce and publish writing, including in collaboration with peers."
+  },
+  {
+   "id": "W.1.7",
+   "grade": "1",
+   "domain": "W",
+   "statement": "Participate in shared research and writing projects (e.g., explore a number of \"how-to\" books on a given topic and use them to write a sequence of instructions)."
+  },
+  {
+   "id": "W.1.8",
+   "grade": "1",
+   "domain": "W",
+   "statement": "With guidance and support from adults, recall information from experiences or gather information from provided sources to answer a question."
+  },
+  {
+   "id": "SL.1.1",
+   "grade": "1",
+   "domain": "SL",
+   "statement": "Participate in collaborative conversations with diverse partners about grade 1 topics and texts with peers and adults in small and larger groups"
+  },
+  {
+   "id": "SL.1.1a",
+   "grade": "1",
+   "domain": "SL",
+   "parent": "SL.1.1",
+   "statement": "Follow agreed-upon rules for discussions (e.g., listening to others with care, speaking one at a time about the topics and texts under discussion)."
+  },
+  {
+   "id": "SL.1.1b",
+   "grade": "1",
+   "domain": "SL",
+   "parent": "SL.1.1",
+   "statement": "Build on others' talk in conversations by responding to the comments of others through multiple exchanges."
+  },
+  {
+   "id": "SL.1.1c",
+   "grade": "1",
+   "domain": "SL",
+   "parent": "SL.1.1",
+   "statement": "Ask questions to clear up any confusion about the topics and texts under discussion."
+  },
+  {
+   "id": "SL.1.2",
+   "grade": "1",
+   "domain": "SL",
+   "statement": "Ask and answer questions about key details in a text read aloud or information presented orally or through other media."
+  },
+  {
+   "id": "SL.1.2a",
+   "grade": "1",
+   "domain": "SL",
+   "parent": "SL.1.2",
+   "statement": "Give, restate, and follow simple two-step directions."
+  },
+  {
+   "id": "SL.1.3",
+   "grade": "1",
+   "domain": "SL",
+   "statement": "Ask and answer questions about what a speaker says in order to gather additional information or clarify something that is not understood."
+  },
+  {
+   "id": "SL.1.4",
+   "grade": "1",
+   "domain": "SL",
+   "statement": "Describe people, places, things, and events with relevant details, expressing ideas and feelings clearly."
+  },
+  {
+   "id": "SL.1.4a",
+   "grade": "1",
+   "domain": "SL",
+   "parent": "SL.1.4",
+   "statement": "Memorize and recite poems, rhymes, and songs with expression."
+  },
+  {
+   "id": "SL.1.5",
+   "grade": "1",
+   "domain": "SL",
+   "statement": "Add drawings or other visual displays to descriptions when appropriate to clarify ideas, thoughts, and feelings."
+  },
+  {
+   "id": "SL.1.6",
+   "grade": "1",
+   "domain": "SL",
+   "statement": "Produce complete sentences when appropriate to task and situation."
+  },
+  {
+   "id": "L.1.1",
+   "grade": "1",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.1.1a",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Print all upper- and lowercase letters."
+  },
+  {
+   "id": "L.1.1b",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use common, proper, and possessive nouns."
+  },
+  {
+   "id": "L.1.1c",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use singular and plural nouns with matching verbs in basic sentences (e.g., He hops; We hop)."
+  },
+  {
+   "id": "L.1.1d",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use personal (subject, object), possessive, and indefinite pronouns (e.g., I, me, my; they, them, their; anyone, everything)."
+  },
+  {
+   "id": "L.1.1e",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use verbs to convey a sense of past, present, and future (e.g., Yesterday I walked home; Today I walk home; Tomorrow I will walk home)."
+  },
+  {
+   "id": "L.1.1f",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use frequently occurring adjectives."
+  },
+  {
+   "id": "L.1.1g",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use frequently occurring conjunctions (e.g., and, but, or, so, because)."
+  },
+  {
+   "id": "L.1.1h",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use determiners (e.g., articles, demonstratives)."
+  },
+  {
+   "id": "L.1.1i",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Use frequently occurring prepositions (e.g., during, beyond, toward)."
+  },
+  {
+   "id": "L.1.1j",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.1",
+   "statement": "Produce and expand complete simple and compound declarative, interrogative, imperative, and exclamatory sentences in response to prompts."
+  },
+  {
+   "id": "L.1.2",
+   "grade": "1",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.1.2a",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.2",
+   "statement": "Capitalize dates and names of people."
+  },
+  {
+   "id": "L.1.2b",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.2",
+   "statement": "Use end punctuation for sentences."
+  },
+  {
+   "id": "L.1.2c",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.2",
+   "statement": "Use commas in dates and to separate single words in a series."
+  },
+  {
+   "id": "L.1.2d",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.2",
+   "statement": "Use conventional spelling for words with common spelling patterns and for frequently occurring irregular words."
+  },
+  {
+   "id": "L.1.2e",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.2",
+   "statement": "Spell untaught words phonetically, drawing on phonemic awareness and spelling conventions."
+  },
+  {
+   "id": "L.1.4",
+   "grade": "1",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on grade 1 reading and content, choosing flexibly from an array of strategies."
+  },
+  {
+   "id": "L.1.4a",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.4",
+   "statement": "Use sentence-level context as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.1.4b",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.4",
+   "statement": "Use frequently occurring affixes as a clue to the meaning of a word."
+  },
+  {
+   "id": "L.1.4c",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.4",
+   "statement": "Identify frequently occurring root words (e.g., look) and their inflectional forms (e.g., looks, looked, looking)."
+  },
+  {
+   "id": "L.1.5",
+   "grade": "1",
+   "domain": "L",
+   "statement": "With guidance and support from adults, demonstrate understanding of word relationships and nuances in word meanings."
+  },
+  {
+   "id": "L.1.5a",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.5",
+   "statement": "Sort words into categories (e.g., colors, clothing) to gain a sense of the concepts the categories represent."
+  },
+  {
+   "id": "L.1.5b",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.5",
+   "statement": "Define words by category and by one or more key attributes (e.g., a duck is a bird that swims; a tiger is a large cat with stripes)."
+  },
+  {
+   "id": "L.1.5c",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.5",
+   "statement": "Identify real-life connections between words and their use (e.g., note places at home that are cozy)."
+  },
+  {
+   "id": "L.1.5d",
+   "grade": "1",
+   "domain": "L",
+   "parent": "L.1.5",
+   "statement": "Distinguish shades of meaning among verbs differing in manner (e.g., look, peek, glance, stare, glare, scowl) and adjectives differing in intensity (e.g., large, gigantic) by defining or choosing them or by acting out the meanings."
+  },
+  {
+   "id": "L.1.6",
+   "grade": "1",
+   "domain": "L",
+   "statement": "Use words and phrases acquired through conversations, reading and being read to, and responding to texts, including using frequently occurring conjunctions to signal simple relationships (e.g., because)."
+  },
+  {
+   "id": "RL.2.1",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Ask and answer such questions as who, what, where, when, why, and how to demonstrate understanding of key details in a text."
+  },
+  {
+   "id": "RL.2.2",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Recount stories, including fables and folktales from diverse cultures, and determine their central message, lesson, or moral."
+  },
+  {
+   "id": "RL.2.3",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Describe how characters in a story respond to major events and challenges."
+  },
+  {
+   "id": "RL.2.4",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Describe how words and phrases (e.g., regular beats, alliteration, rhymes, repeated lines) supply rhythm and meaning in a story, poem, or song."
+  },
+  {
+   "id": "RL.2.5",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Describe the overall structure of a story, including describing how the beginning introduces the story and the ending concludes the action."
+  },
+  {
+   "id": "RL.2.6",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Acknowledge differences in the points of view of characters, including by speaking in a different voice for each character when reading dialogue aloud."
+  },
+  {
+   "id": "RL.2.7",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Use information gained from the illustrations and words in a print or digital text to demonstrate understanding of its characters, setting, or plot."
+  },
+  {
+   "id": "RL.2.9",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "Compare and contrast two or more versions of the same story (e.g., Cinderella stories) by different authors or from different cultures."
+  },
+  {
+   "id": "RL.2.10",
+   "grade": "2",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literature, including stories and poetry, in the grades 2—3 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "RI.2.1",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Ask and answer such questions as who, what, where, when, why, and how to demonstrate understanding of key details in a text."
+  },
+  {
+   "id": "RI.2.2",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Identify the main topic of a multiparagraph text as well as the focus of specific paragraphs within the text."
+  },
+  {
+   "id": "RI.2.3",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Describe the connection between a series of historical events, scientific ideas or concepts, or steps in technical procedures in a text."
+  },
+  {
+   "id": "RI.2.4",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Determine the meaning of words and phrases in a text relevant to a grade 2 topic or subject area.(See grade 2 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.2.5",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Know and use various text features (e.g., captions, bold print, subheadings, glossaries, indexes, electronic menus, icons) to locate key facts or information in a text efficiently."
+  },
+  {
+   "id": "RI.2.6",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Identify the main purpose of a text, including what the author wants to answer, explain, or describe."
+  },
+  {
+   "id": "RI.2.7",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Explain how specific images (e.g., a diagram showing how a machine works) contribute to and clarify a text."
+  },
+  {
+   "id": "RI.2.8",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Describe how reasons support specific points the author makes in a text."
+  },
+  {
+   "id": "RI.2.9",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "Compare and contrast the most important points presented by two texts on the same topic."
+  },
+  {
+   "id": "RI.2.10",
+   "grade": "2",
+   "domain": "RI",
+   "statement": "By the end of year, read and comprehend informational texts, including history/social studies, science, and technical texts, in the grades 2—3 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "RF.2.3",
+   "grade": "2",
+   "domain": "RF",
+   "statement": "Know and apply grade-level phonics and word analysis skills in decoding words both in isolation and in text."
+  },
+  {
+   "id": "RF.2.3a",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.3",
+   "statement": "Distinguish long and short vowels when reading regularly spelled one-syllable words."
+  },
+  {
+   "id": "RF.2.3b",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.3",
+   "statement": "Know spelling-sound correspondences for additional common vowel teams."
+  },
+  {
+   "id": "RF.2.3c",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.3",
+   "statement": "Decode regularly spelled two-syllable words with long vowels."
+  },
+  {
+   "id": "RF.2.3d",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.3",
+   "statement": "Decode words with common prefixes and suffixes."
+  },
+  {
+   "id": "RF.2.3e",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.3",
+   "statement": "Identify words with inconsistent but common spelling-sound correspondences."
+  },
+  {
+   "id": "RF.2.3f",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.3",
+   "statement": "Recognize and read grade-appropriate irregularly spelled words."
+  },
+  {
+   "id": "RF.2.4",
+   "grade": "2",
+   "domain": "RF",
+   "statement": "Read with sufficient accuracy and fluency to support comprehension."
+  },
+  {
+   "id": "RF.2.4a",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.4",
+   "statement": "Read on-level text with purpose and understanding."
+  },
+  {
+   "id": "RF.2.4b",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.4",
+   "statement": "Read on-level text orally with accuracy, appropriate rate, and expression on successive readings."
+  },
+  {
+   "id": "RF.2.4c",
+   "grade": "2",
+   "domain": "RF",
+   "parent": "RF.2.4",
+   "statement": "Use context to confirm or self-correct word recognition and understanding, rereading as necessary."
+  },
+  {
+   "id": "W.2.1",
+   "grade": "2",
+   "domain": "W",
+   "statement": "Write opinion pieces in which they introduce the topic or book they are writing about, state an opinion, supply reasons that support the opinion, use linking words (e.g., because, and, also) to connect opinion and reasons, and provide a concluding statement or section."
+  },
+  {
+   "id": "W.2.2",
+   "grade": "2",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts in which they introduce a topic, use facts and definitions to develop points, and provide a concluding statement or section."
+  },
+  {
+   "id": "W.2.3",
+   "grade": "2",
+   "domain": "W",
+   "statement": "Write narratives in which they recount a well-elaborated event or short sequence of events, include details to describe actions, thoughts, and feelings, use temporal words to signal event order, and provide a sense of closure."
+  },
+  {
+   "id": "W.2.5",
+   "grade": "2",
+   "domain": "W",
+   "statement": "With guidance and support from adults and peers, focus on a topic and strengthen writing as needed by revising and editing."
+  },
+  {
+   "id": "W.2.6",
+   "grade": "2",
+   "domain": "W",
+   "statement": "With guidance and support from adults, use a variety of digital tools to produce and publish writing, including in collaboration with peers."
+  },
+  {
+   "id": "W.2.7",
+   "grade": "2",
+   "domain": "W",
+   "statement": "Participate in shared research and writing projects (e.g., read a number of books on a single topic to produce a report; record science observations)."
+  },
+  {
+   "id": "W.2.8",
+   "grade": "2",
+   "domain": "W",
+   "statement": "Recall information from experiences or gather information from provided sources to answer a question."
+  },
+  {
+   "id": "SL.2.1",
+   "grade": "2",
+   "domain": "SL",
+   "statement": "Participate in collaborative conversations with diverse partners about grade 2 topics and texts with peers and adults in small and larger groups."
+  },
+  {
+   "id": "SL.2.1a",
+   "grade": "2",
+   "domain": "SL",
+   "parent": "SL.2.1",
+   "statement": "Follow agreed-upon rules for discussions (e.g., gaining the floor in respectful ways, listening to others with care, speaking one at a time about the topics and texts under discussion)."
+  },
+  {
+   "id": "SL.2.1b",
+   "grade": "2",
+   "domain": "SL",
+   "parent": "SL.2.1",
+   "statement": "Build on others' talk in conversations by linking their comments to the remarks of others."
+  },
+  {
+   "id": "SL.2.1c",
+   "grade": "2",
+   "domain": "SL",
+   "parent": "SL.2.1",
+   "statement": "Ask for clarification and further explanation as needed about the topics and texts under discussion."
+  },
+  {
+   "id": "SL.2.2",
+   "grade": "2",
+   "domain": "SL",
+   "statement": "Recount or describe key ideas or details from a text read aloud or information presented orally or through other media."
+  },
+  {
+   "id": "SL.2.2a",
+   "grade": "2",
+   "domain": "SL",
+   "parent": "SL.2.2",
+   "statement": "Give and follow three- and four-step oral directions."
+  },
+  {
+   "id": "SL.2.3",
+   "grade": "2",
+   "domain": "SL",
+   "statement": "Ask and answer questions about what a speaker says in order to clarify comprehension, gather additional information, or deepen understanding of a topic or issue."
+  },
+  {
+   "id": "SL.2.4",
+   "grade": "2",
+   "domain": "SL",
+   "statement": "Tell a story or recount an experience with appropriate facts and relevant, descriptive details, speaking audibly in coherent sentences."
+  },
+  {
+   "id": "SL.2.4a",
+   "grade": "2",
+   "domain": "SL",
+   "parent": "SL.2.4",
+   "statement": "Plan and deliver a narrative presentation that: recounts a well-elaborated event, includes details, reflects a logical sequence, and provides a conclusion."
+  },
+  {
+   "id": "SL.2.5",
+   "grade": "2",
+   "domain": "SL",
+   "statement": "Create audio recordings of stories or poems; add drawings or other visual displays to stories or recounts of experiences when appropriate to clarify ideas, thoughts, and feelings."
+  },
+  {
+   "id": "SL.2.6",
+   "grade": "2",
+   "domain": "SL",
+   "statement": "Produce complete sentences when appropriate to task and situation in order to provide requested detail or clarification."
+  },
+  {
+   "id": "L.2.1",
+   "grade": "2",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.2.1a",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Use collective nouns (e.g., group)."
+  },
+  {
+   "id": "L.2.1b",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Form and use frequently occurring irregular plural nouns (e.g., feet, children, teeth, mice, fish)."
+  },
+  {
+   "id": "L.2.1c",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Use reflexive pronouns (e.g., myself, ourselves)."
+  },
+  {
+   "id": "L.2.1d",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Form and use the past tense of frequently occurring irregular verbs (e.g., sat, hid, told)."
+  },
+  {
+   "id": "L.2.1e",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Use adjectives and adverbs, and choose between them depending on what is to be modified."
+  },
+  {
+   "id": "L.2.1f",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Produce, expand, and rearrange complete simple and compound sentences (e.g., The boy watched the movie; The little boy watched the movie; The action movie was watched by the little boy)."
+  },
+  {
+   "id": "L.2.1g",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.1",
+   "statement": "Create readable documents with legible print."
+  },
+  {
+   "id": "L.2.2",
+   "grade": "2",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.2.2a",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.2",
+   "statement": "Capitalize holidays, product names, and geographic names."
+  },
+  {
+   "id": "L.2.2b",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.2",
+   "statement": "Use commas in greetings and closings of letters."
+  },
+  {
+   "id": "L.2.2c",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.2",
+   "statement": "Use an apostrophe to form contractions and frequently occurring possessives."
+  },
+  {
+   "id": "L.2.2d",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.2",
+   "statement": "Generalize learned spelling patterns when writing words (e.g., cage → badge; boy → boil)."
+  },
+  {
+   "id": "L.2.2e",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.2",
+   "statement": "Consult reference materials, including beginning dictionaries, as needed to check and correct spellings."
+  },
+  {
+   "id": "L.2.3",
+   "grade": "2",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.2.3a",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.3",
+   "statement": "Compare formal and informal uses of English."
+  },
+  {
+   "id": "L.2.4",
+   "grade": "2",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on grade 2 reading and content, choosing flexibly from an array of strategies."
+  },
+  {
+   "id": "L.2.4a",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.4",
+   "statement": "Use sentence-level context as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.2.4b",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.4",
+   "statement": "Determine the meaning of the new word formed when a known prefix is added to a known word (e.g., happy/unhappy, tell/retell)."
+  },
+  {
+   "id": "L.2.4c",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.4",
+   "statement": "Use a known root word as a clue to the meaning of an unknown word with the same root (e.g., addition, additional)."
+  },
+  {
+   "id": "L.2.4d",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.4",
+   "statement": "Use knowledge of the meaning of individual words to predict the meaning of compound words (e.g., birdhouse, lighthouse, housefly; bookshelf, notebook, bookmark)."
+  },
+  {
+   "id": "L.2.4e",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.4",
+   "statement": "Use glossaries and beginning dictionaries, both print and digital, to determine or clarify the meaning of words and phrases in all content areas."
+  },
+  {
+   "id": "L.2.5",
+   "grade": "2",
+   "domain": "L",
+   "statement": "Demonstrate understanding of word relationships and nuances in word meanings."
+  },
+  {
+   "id": "L.2.5a",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.5",
+   "statement": "Identify real-life connections between words and their use (e.g., describe foods that are spicy or juicy)."
+  },
+  {
+   "id": "L.2.5b",
+   "grade": "2",
+   "domain": "L",
+   "parent": "L.2.5",
+   "statement": "Distinguish shades of meaning among closely related verbs (e.g., toss, throw, hurl) and closely related adjectives (e.g., thin, slender, skinny, scrawny)."
+  },
+  {
+   "id": "L.2.6",
+   "grade": "2",
+   "domain": "L",
+   "statement": "Use words and phrases acquired through conversations, reading and being read to, and responding to texts, including using adjectives and adverbs to describe (e.g., When other kids are happy that makes me happy)."
+  },
+  {
+   "id": "RL.3.1",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Ask and answer questions to demonstrate understanding of a text, referring explicitly to the text as the basis for the answers."
+  },
+  {
+   "id": "RL.3.2",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Recount stories, including fables, folktales, and myths from diverse cultures; determine the central message, lesson, or moral and explain how it is conveyed through key details in the text."
+  },
+  {
+   "id": "RL.3.3",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Describe characters in a story (e.g., their traits, motivations, or feelings) and explain how their actions contribute to the sequence of events."
+  },
+  {
+   "id": "RL.3.4",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, distinguishing literal from nonliteral language. (See grade 3 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.3.5",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Refer to parts of stories, dramas, and poems when writing or speaking about a text, using terms such as chapter, scene, and stanza; describe how each successive part builds on earlier sections."
+  },
+  {
+   "id": "RL.3.6",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Distinguish their own point of view from that of the narrator or those of the characters."
+  },
+  {
+   "id": "RL.3.7",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Explain how specific aspects of a text's illustrations contribute to what is conveyed by the words in a story (e.g., create mood, emphasize aspects of a character or setting)."
+  },
+  {
+   "id": "RL.3.9",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "Compare and contrast the themes, settings, and plots of stories written by the same author about the same or similar characters (e.g., in books from a series)."
+  },
+  {
+   "id": "RL.3.10",
+   "grade": "3",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literature, including stories, dramas, and poetry, at the high end of the grades 2—3 text complexity band independently and proficiently."
+  },
+  {
+   "id": "RI.3.1",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Ask and answer questions to demonstrate understanding of a text, referring explicitly to the text as the basis for the answers."
+  },
+  {
+   "id": "RI.3.2",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Determine the main idea of a text; recount the key details and explain how they support the main idea."
+  },
+  {
+   "id": "RI.3.3",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Describe the relationship between a series of historical events, scientific ideas or concepts, or steps in technical procedures in a text, using language that pertains to time, sequence, and cause/effect."
+  },
+  {
+   "id": "RI.3.4",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Determine the meaning of general academic and domain-specific words and phrases in a text relevant to a grade 3 topic or subject area. (See grade 3 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.3.5",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Use text features and search tools (e.g., key words, sidebars, hyperlinks) to locate information relevant to a given topic efficiently."
+  },
+  {
+   "id": "RI.3.6",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Distinguish their own point of view from that of the author of a text."
+  },
+  {
+   "id": "RI.3.7",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Use information gained from illustrations (e.g., maps, photographs) and the words in a text to demonstrate understanding of the text (e.g., where, when, why, and how key events occur)."
+  },
+  {
+   "id": "RI.3.8",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Describe the logical connection between particular sentences and paragraphs in a text (e.g., comparison, cause/effect, first/second/third in a sequence)."
+  },
+  {
+   "id": "RI.3.9",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "Compare and contrast the most important points and key details presented in two texts on the same topic."
+  },
+  {
+   "id": "RI.3.10",
+   "grade": "3",
+   "domain": "RI",
+   "statement": "By the end of the year, read and comprehend informational texts, including history/social studies, science, and technical texts, at the high end of the grades 2—3 text complexity band independently and proficiently."
+  },
+  {
+   "id": "RF.3.3",
+   "grade": "3",
+   "domain": "RF",
+   "statement": "Know and apply grade-level phonics and word analysis skills in decoding words both in isolation and in text."
+  },
+  {
+   "id": "RF.3.3a",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.3",
+   "statement": "Identify and know the meaning of the most common prefixes and derivational suffixes."
+  },
+  {
+   "id": "RF.3.3b",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.3",
+   "statement": "Decode words with common Latin suffixes."
+  },
+  {
+   "id": "RF.3.3c",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.3",
+   "statement": "Decode multisyllable words."
+  },
+  {
+   "id": "RF.3.3d",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.3",
+   "statement": "Read grade-appropriate irregularly spelled words."
+  },
+  {
+   "id": "RF.3.4",
+   "grade": "3",
+   "domain": "RF",
+   "statement": "Read with sufficient accuracy and fluency to support comprehension."
+  },
+  {
+   "id": "RF.3.4a",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.4",
+   "statement": "Read on-level text with purpose and understanding."
+  },
+  {
+   "id": "RF.3.4b",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.4",
+   "statement": "Read on-level prose and poetry orally with accuracy, appropriate rate, and expression on successive readings"
+  },
+  {
+   "id": "RF.3.4c",
+   "grade": "3",
+   "domain": "RF",
+   "parent": "RF.3.4",
+   "statement": "Use context to confirm or self-correct word recognition and understanding, rereading as necessary."
+  },
+  {
+   "id": "W.3.1",
+   "grade": "3",
+   "domain": "W",
+   "statement": "Write opinion pieces on topics or texts, supporting a point of view with reasons."
+  },
+  {
+   "id": "W.3.1a",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.1",
+   "statement": "Introduce the topic or text they are writing about, state an opinion, and create an organizational structure that lists reasons."
+  },
+  {
+   "id": "W.3.1b",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.1",
+   "statement": "Provide reasons that support the opinion."
+  },
+  {
+   "id": "W.3.1c",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.1",
+   "statement": "Use linking words and phrases (e.g., because, therefore, since, for example) to connect opinion and reasons."
+  },
+  {
+   "id": "W.3.1d",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.1",
+   "statement": "Provide a concluding statement or section."
+  },
+  {
+   "id": "W.3.2",
+   "grade": "3",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts to examine a topic and convey ideas and information clearly."
+  },
+  {
+   "id": "W.3.2a",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.2",
+   "statement": "Introduce a topic and group related information together; include illustrations when useful to aiding comprehension."
+  },
+  {
+   "id": "W.3.2b",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.2",
+   "statement": "Develop the topic with facts, definitions, and details."
+  },
+  {
+   "id": "W.3.2c",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.2",
+   "statement": "Use linking words and phrases (e.g., also, another, and, more, but) to connect ideas within categories of information."
+  },
+  {
+   "id": "W.3.2d",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.2",
+   "statement": "Provide a concluding statement or section."
+  },
+  {
+   "id": "W.3.3",
+   "grade": "3",
+   "domain": "W",
+   "statement": "Write narratives to develop real or imagined experiences or events using effective technique, descriptive details, and clear event sequences."
+  },
+  {
+   "id": "W.3.3a",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.3",
+   "statement": "Establish a situation and introduce a narrator and/or characters; organize an event sequence that unfolds naturally."
+  },
+  {
+   "id": "W.3.3b",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.3",
+   "statement": "Use dialogue and descriptions of actions, thoughts, and feelings to develop experiences and events or show the response of characters to situations."
+  },
+  {
+   "id": "W.3.3c",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.3",
+   "statement": "Use temporal words and phrases to signal event order."
+  },
+  {
+   "id": "W.3.3d",
+   "grade": "3",
+   "domain": "W",
+   "parent": "W.3.3",
+   "statement": "Provide a sense of closure."
+  },
+  {
+   "id": "W.3.4",
+   "grade": "3",
+   "domain": "W",
+   "statement": "With guidance and support from adults, produce writing in which the development and organization are appropriate to task and purpose."
+  },
+  {
+   "id": "W.3.5",
+   "grade": "3",
+   "domain": "W",
+   "statement": "With guidance and support from peers and adults, develop and strengthen writing as needed by planning, revising, and editing."
+  },
+  {
+   "id": "W.3.6",
+   "grade": "3",
+   "domain": "W",
+   "statement": "With guidance and support from adults, use technology to produce and publish writing (using keyboarding skills) as well as to interact and collaborate with others."
+  },
+  {
+   "id": "W.3.7",
+   "grade": "3",
+   "domain": "W",
+   "statement": "Conduct short research projects that build knowledge about a topic."
+  },
+  {
+   "id": "W.3.8",
+   "grade": "3",
+   "domain": "W",
+   "statement": "Recall information from experiences or gather information from print and digital sources; take brief notes on sources and sort evidence into provided categories."
+  },
+  {
+   "id": "W.3.10",
+   "grade": "3",
+   "domain": "W",
+   "statement": "Write routinely over extended time frames (time for research, reflection, and revision) and shorter time frames (a single sitting or a day or two) for a range of discipline-specific tasks, purposes, and audiences."
+  },
+  {
+   "id": "SL.3.1",
+   "grade": "3",
+   "domain": "SL",
+   "statement": "Engage effectively in a range of collaborative discussions (one-on-one, in groups, and teacher-led) with diverse partners on grade 3 topics and texts, building on others' ideas and expressing their own clearly."
+  },
+  {
+   "id": "SL.3.1a",
+   "grade": "3",
+   "domain": "SL",
+   "parent": "SL.3.1",
+   "statement": "Come to discussions prepared, having read or studied required material; explicitly draw on that preparation and other information known about the topic to explore ideas under discussion."
+  },
+  {
+   "id": "SL.3.1b",
+   "grade": "3",
+   "domain": "SL",
+   "parent": "SL.3.1",
+   "statement": "Follow agreed-upon rules for discussions (e.g., gaining the floor in respectful ways, listening to others with care, speaking one at a time about the topics and texts under discussion)."
+  },
+  {
+   "id": "SL.3.1c",
+   "grade": "3",
+   "domain": "SL",
+   "parent": "SL.3.1",
+   "statement": "Ask questions to check understanding of information presented, stay on topic, and link their comments to the remarks of others."
+  },
+  {
+   "id": "SL.3.1d",
+   "grade": "3",
+   "domain": "SL",
+   "parent": "SL.3.1",
+   "statement": "Explain their own ideas and understanding in light of the discussion."
+  },
+  {
+   "id": "SL.3.2",
+   "grade": "3",
+   "domain": "SL",
+   "statement": "Determine the main ideas and supporting details of a text read aloud or information presented in diverse media and formats, including visually, quantitatively, and orally."
+  },
+  {
+   "id": "SL.3.3",
+   "grade": "3",
+   "domain": "SL",
+   "statement": "Ask and answer questions about information from a speaker, offering appropriate elaboration and detail."
+  },
+  {
+   "id": "SL.3.4",
+   "grade": "3",
+   "domain": "SL",
+   "statement": "Report on a topic or text, tell a story, or recount an experience with appropriate facts and relevant, descriptive details, speaking clearly at an understandable pace."
+  },
+  {
+   "id": "SL.3.4a",
+   "grade": "3",
+   "domain": "SL",
+   "parent": "SL.3.4",
+   "statement": "Plan and deliver an informative/explanatory presentation on a topic that: organizes ideas around major points of information, follows a logical sequence, includes supporting details, uses clear and specific vocabulary, and provides a strong conclusion."
+  },
+  {
+   "id": "SL.3.5",
+   "grade": "3",
+   "domain": "SL",
+   "statement": "Create engaging audio recordings of stories or poems that demonstrate fluid reading at an understandable pace; add visual displays when appropriate to emphasize or enhance certain facts or details."
+  },
+  {
+   "id": "SL.3.6",
+   "grade": "3",
+   "domain": "SL",
+   "statement": "Speak in complete sentences when appropriate to task and situation in order to provide requested detail or clarification."
+  },
+  {
+   "id": "L.3.1",
+   "grade": "3",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.3.1a",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Explain the function of nouns, pronouns, verbs, adjectives, and adverbs in general and their functions in particular sentences."
+  },
+  {
+   "id": "L.3.1b",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Form and use regular and irregular plural nouns."
+  },
+  {
+   "id": "L.3.1c",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Use abstract nouns (e.g., childhood)."
+  },
+  {
+   "id": "L.3.1d",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Form and use regular and irregular verbs."
+  },
+  {
+   "id": "L.3.1e",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Form and use the simple (e.g., I walked; I walk; I will walk) verb tenses."
+  },
+  {
+   "id": "L.3.1f",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Ensure subject-verb and pronoun-antecedent agreement."
+  },
+  {
+   "id": "L.3.1g",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Form and use comparative and superlative adjectives and adverbs, and choose between them depending on what is to be modified."
+  },
+  {
+   "id": "L.3.1h",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Use coordinating and subordinating conjunctions."
+  },
+  {
+   "id": "L.3.1i",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Produce simple, compound, and complex sentences."
+  },
+  {
+   "id": "L.3.1j",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Write legibly in cursive or joined italics, allowing margins and correct spacing between letters in a word and words in a sentence."
+  },
+  {
+   "id": "L.3.1k",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.1",
+   "statement": "Use reciprocal pronouns correctly."
+  },
+  {
+   "id": "L.3.2",
+   "grade": "3",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.3.2a",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Capitalize appropriate words in titles."
+  },
+  {
+   "id": "L.3.2b",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Use commas in addresses."
+  },
+  {
+   "id": "L.3.2c",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Use commas and quotation marks in dialogue."
+  },
+  {
+   "id": "L.3.2d",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Form and use possessives."
+  },
+  {
+   "id": "L.3.2e",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Use conventional spelling for high-frequency and other studied words and for adding suffixes to base words (e.g., sitting, smiled, cries, happiness)."
+  },
+  {
+   "id": "L.3.2f",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Use spelling patterns and generalizations (e.g., word families, position-based spellings, syllable patterns, ending rules, meaningful word parts) in writing words."
+  },
+  {
+   "id": "L.3.2g",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.2",
+   "statement": "Consult reference materials, including beginning dictionaries, as needed to check and correct spellings."
+  },
+  {
+   "id": "L.3.3",
+   "grade": "3",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.3.3a",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.3",
+   "statement": "Choose words and phrases for effect."
+  },
+  {
+   "id": "L.3.3b",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.3",
+   "statement": "Recognize and observe differences between the conventions of spoken and written standard English."
+  },
+  {
+   "id": "L.3.4",
+   "grade": "3",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning word and phrases based on grade 3 reading and content, choosing flexibly from a range of strategies."
+  },
+  {
+   "id": "L.3.4a",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.4",
+   "statement": "Use sentence-level context as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.3.4b",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.4",
+   "statement": "Determine the meaning of the new word formed when a known affix is added to a known word (e.g., agreeable/disagreeable, comfortable/uncomfortable, care/careless, heat/preheat)."
+  },
+  {
+   "id": "L.3.4c",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.4",
+   "statement": "Use a known root word as a clue to the meaning of an unknown word with the same root (e.g., company, companion)."
+  },
+  {
+   "id": "L.3.4d",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.4",
+   "statement": "Use glossaries or beginning dictionaries, both print and digital, to determine or clarify the precise meaning of key words and phrases in all content areas."
+  },
+  {
+   "id": "L.3.5",
+   "grade": "3",
+   "domain": "L",
+   "statement": "Demonstrate understanding of word relationships and nuances in word meanings."
+  },
+  {
+   "id": "L.3.5a",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.5",
+   "statement": "Distinguish the literal and nonliteral meanings of words and phrases in context (e.g., take steps)."
+  },
+  {
+   "id": "L.3.5b",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.5",
+   "statement": "Identify real-life connections between words and their use (e.g., describe people who are friendly or helpful)."
+  },
+  {
+   "id": "L.3.5c",
+   "grade": "3",
+   "domain": "L",
+   "parent": "L.3.5",
+   "statement": "Distinguish shades of meaning among related words that describe states of mind or degrees of certainty (e.g., knew, believed, suspected, heard, wondered)."
+  },
+  {
+   "id": "L.3.6",
+   "grade": "3",
+   "domain": "L",
+   "statement": "Acquire and use accurately grade-appropriate conversational, general academic, and domain-specific words and phrases, including those that signal spatial and temporal relationships (e.g., After dinner that night we went looking for them)."
+  },
+  {
+   "id": "RL.4.1",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Refer to details and examples in a text when explaining what the text says explicitly and when drawing inferences from the text."
+  },
+  {
+   "id": "RL.4.2",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Determine a theme of a story, drama, or poem from details in the text; summarize the text."
+  },
+  {
+   "id": "RL.4.3",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Describe in depth a character, setting, or event in a story or drama, drawing on specific details in the text (e.g., a character's thoughts, words, or actions)."
+  },
+  {
+   "id": "RL.4.4",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including those that allude to significant characters found in mythology (e.g., Herculean). (See grade 4 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.4.5",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Explain major differences between poems, drama, and prose, and refer to the structural elements of poems (e.g., verse, rhythm, meter) and drama (e.g., casts of characters, settings, descriptions, dialogue, stage directions) when writing or speaking about a text."
+  },
+  {
+   "id": "RL.4.6",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Compare and contrast the point of view from which different stories are narrated, including the difference between first- and third-person narrations."
+  },
+  {
+   "id": "RL.4.7",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Make connections between the text of a story or drama and a visual or oral presentation of the text, identifying where each version reflects specific descriptions and directions in the text."
+  },
+  {
+   "id": "RL.4.9",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "Compare and contrast the treatment of similar themes and topics (e.g., opposition of good and evil) and patterns of events (e.g., the quest) in stories, myths, and traditional literature from different cultures."
+  },
+  {
+   "id": "RL.4.10",
+   "grade": "4",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literature, including stories, dramas, and poetry, in the grades 4—5 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "RI.4.1",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Refer to details and examples in a text when explaining what the text says explicitly and when drawing inferences from the text."
+  },
+  {
+   "id": "RI.4.2",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Determine the main idea of a text and explain how it is supported by key details; summarize the text."
+  },
+  {
+   "id": "RI.4.3",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Explain events, procedures, ideas, or concepts in a historical, scientific, or technical text, including what happened and why, based on specific information in the text."
+  },
+  {
+   "id": "RI.4.4",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Determine the meaning of general academic and domain-specific words or phrases in a text relevant to a grade 4 topic or subject area. (See grade 4 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.4.5",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Describe the overall structure (e.g., chronology, comparison, cause/effect, problem/solution) of events, ideas, concepts, or information in a text or part of a text."
+  },
+  {
+   "id": "RI.4.6",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Compare and contrast a firsthand and secondhand account of the same event or topic; describe the differences in focus and the information provided."
+  },
+  {
+   "id": "RI.4.7",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Interpret information presented visually, orally, or quantitatively (e.g., in charts, graphs, diagrams, time lines, animations, or interactive elements on Web pages) and explain how the information contributes to an understanding of the text in which it appears."
+  },
+  {
+   "id": "RI.4.8",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Explain how an author uses reasons and evidence to support particular points in a text."
+  },
+  {
+   "id": "RI.4.9",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "Integrate information from two texts on the same topic in order to write or speak about the subject knowledgeably."
+  },
+  {
+   "id": "RI.4.10",
+   "grade": "4",
+   "domain": "RI",
+   "statement": "By the end of year, read and comprehend informational texts, including history/social studies, science, and technical texts, in the grades 4—5 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "RF.4.3",
+   "grade": "4",
+   "domain": "RF",
+   "statement": "Know and apply grade-level phonics and word analysis skills in decoding words."
+  },
+  {
+   "id": "RF.4.3a",
+   "grade": "4",
+   "domain": "RF",
+   "parent": "RF.4.3",
+   "statement": "Use combined knowledge of all letter-sound correspondences, syllabication patterns, and morphology (e.g., roots and affixes) to read accurately unfamiliar multisyllabic words in context and out of context."
+  },
+  {
+   "id": "RF.4.4",
+   "grade": "4",
+   "domain": "RF",
+   "statement": "Read with sufficient accuracy and fluency to support comprehension."
+  },
+  {
+   "id": "RF.4.4a",
+   "grade": "4",
+   "domain": "RF",
+   "parent": "RF.4.4",
+   "statement": "Read on-level text with purpose and understanding."
+  },
+  {
+   "id": "RF.4.4b",
+   "grade": "4",
+   "domain": "RF",
+   "parent": "RF.4.4",
+   "statement": "Read on-level prose and poetry orally with accuracy, appropriate rate, and expression on successive readings"
+  },
+  {
+   "id": "RF.4.4c",
+   "grade": "4",
+   "domain": "RF",
+   "parent": "RF.4.4",
+   "statement": "Use context to confirm or self-correct word recognition and understanding, rereading as necessary."
+  },
+  {
+   "id": "W.4.1",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Write opinion pieces on topics or texts, supporting a point of view with reasons and information"
+  },
+  {
+   "id": "W.4.1a",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.1",
+   "statement": "Introduce a topic or text clearly, state an opinion, and create an organizational structure in which related ideas are grouped to support the writer's purpose."
+  },
+  {
+   "id": "W.4.1b",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.1",
+   "statement": "Provide reasons that are supported by facts and details."
+  },
+  {
+   "id": "W.4.1c",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.1",
+   "statement": "Link opinion and reasons using words and phrases (e.g., for instance, in order to, in addition)."
+  },
+  {
+   "id": "W.4.1d",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.1",
+   "statement": "Provide a concluding statement or section related to the opinion presented."
+  },
+  {
+   "id": "W.4.2",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts to examine a topic and convey ideas and information clearly."
+  },
+  {
+   "id": "W.4.2a",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.2",
+   "statement": "Introduce a topic clearly and group related information in paragraphs and sections; include formatting (e.g., headings), illustrations, and multimedia when useful to aiding comprehension."
+  },
+  {
+   "id": "W.4.2b",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.2",
+   "statement": "Develop the topic with facts, definitions, concrete details, quotations, or other information and examples related to the topic."
+  },
+  {
+   "id": "W.4.2c",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.2",
+   "statement": "Link ideas within categories of information using words and phrases (e.g., another, for example, also, because)."
+  },
+  {
+   "id": "W.4.2d",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.2",
+   "statement": "Use precise language and domain-specific vocabulary to inform about or explain the topic."
+  },
+  {
+   "id": "W.4.2e",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.2",
+   "statement": "Provide a concluding statement or section related to the information or explanation presented"
+  },
+  {
+   "id": "W.4.3",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Write narratives to develop real or imagined experiences or events using effective technique, descriptive details, and clear event sequences."
+  },
+  {
+   "id": "W.4.3a",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.3",
+   "statement": "Orient the reader by establishing a situationand introducing a narrator and/or characters; organize an event sequence that unfolds naturally."
+  },
+  {
+   "id": "W.4.3b",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.3",
+   "statement": "Use dialogue and description to develop experiences and events or show the responses of characters to situations."
+  },
+  {
+   "id": "W.4.3c",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.3",
+   "statement": "Use a variety of transitional words and phrases to manage the sequence of events."
+  },
+  {
+   "id": "W.4.3d",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.3",
+   "statement": "Use concrete words and phrases and sensory details to convey experiences and events precisely."
+  },
+  {
+   "id": "W.4.3e",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.3",
+   "statement": "Provide a conclusion that follows from the narrated experiences or events."
+  },
+  {
+   "id": "W.4.4",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Produce clear and coherent writing (including multiple-paragraph texts) in which the development and organization are appropriate to task, purpose, and audience."
+  },
+  {
+   "id": "W.4.5",
+   "grade": "4",
+   "domain": "W",
+   "statement": "With guidance and support from peers and adults, develop and strengthen writing as needed by planning, revising, and editing."
+  },
+  {
+   "id": "W.4.6",
+   "grade": "4",
+   "domain": "W",
+   "statement": "With some guidance and support from adults, use technology, including the Internet, to produce and publish writing as well as to interact and collaborate with others; demonstrate sufficient command of keyboarding skills to type a minimum of one page in a single sitting."
+  },
+  {
+   "id": "W.4.7",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Conduct short research projects that build knowledge through investigation of different aspects of a topic."
+  },
+  {
+   "id": "W.4.8",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Recall relevant information from experiences or gather relevant information from print and digital sources; take notes, paraphrase, and categorize information, and provide a list of sources."
+  },
+  {
+   "id": "W.4.9",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Draw evidence from literary or informational texts to support analysis, reflection, and research."
+  },
+  {
+   "id": "W.4.9a",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.9",
+   "statement": "Apply grade 4 Reading standards to literature (e.g., \"Describe in depth a character, setting, or event in a story or drama, drawing on specific details in the text [e.g., a character's thoughts, words, or actions].\")."
+  },
+  {
+   "id": "W.4.9b",
+   "grade": "4",
+   "domain": "W",
+   "parent": "W.4.9",
+   "statement": "Apply grade 4 Reading standards to informational texts (e.g., \"Explain how an author uses reasons and evidence to support particular points in a text\")."
+  },
+  {
+   "id": "W.4.10",
+   "grade": "4",
+   "domain": "W",
+   "statement": "Write routinely over extended time frames (time for research, reflection, and revision) and shorter time frames (a single sitting or a day or two) for a range of discipline-specific tasks, purposes, and audiences."
+  },
+  {
+   "id": "SL.4.1",
+   "grade": "4",
+   "domain": "SL",
+   "statement": "Engage effectively in a range of collaborative discussions (one-on-one, in groups, and teacher-led) with diverse partners on grade 4 topics and texts, building on others' ideas and expressing their own clearly."
+  },
+  {
+   "id": "SL.4.1a",
+   "grade": "4",
+   "domain": "SL",
+   "parent": "SL.4.1",
+   "statement": "Come to discussions prepared, having read or studied required material; explicitly draw on that preparation and other information known about the topic to explore ideas under discussion."
+  },
+  {
+   "id": "SL.4.1b",
+   "grade": "4",
+   "domain": "SL",
+   "parent": "SL.4.1",
+   "statement": "Follow agreed-upon rules for discussions and carry out assigned roles."
+  },
+  {
+   "id": "SL.4.1c",
+   "grade": "4",
+   "domain": "SL",
+   "parent": "SL.4.1",
+   "statement": "Pose and respond to specific questions to clarify or follow up on information, and make comments that contribute to the discussion and link to the remarks of others."
+  },
+  {
+   "id": "SL.4.1d",
+   "grade": "4",
+   "domain": "SL",
+   "parent": "SL.4.1",
+   "statement": "Review the key ideas expressed and explain their own ideas and understanding in light of the discussion."
+  },
+  {
+   "id": "SL.4.2",
+   "grade": "4",
+   "domain": "SL",
+   "statement": "Paraphrase portions of a text read aloud or information presented in diverse media and formats, including visually, quantitatively, and orally."
+  },
+  {
+   "id": "SL.4.3",
+   "grade": "4",
+   "domain": "SL",
+   "statement": "Identify the reasons and evidence a speaker or media source provides to support particular points."
+  },
+  {
+   "id": "SL.4.4",
+   "grade": "4",
+   "domain": "SL",
+   "statement": "Report on a topic or text, tell a story, or recount an experience in an organized manner, using appropriate facts and relevant, descriptive details to support main ideas or themes; speak clearly at an understandable pace."
+  },
+  {
+   "id": "SL.4.4a",
+   "grade": "4",
+   "domain": "SL",
+   "parent": "SL.4.4",
+   "statement": "Plan and deliver a narrative presentation that: relates ideas, observations, or recollections; provides a clear context; and includes clear insight into why the event or experience is memorable."
+  },
+  {
+   "id": "SL.4.5",
+   "grade": "4",
+   "domain": "SL",
+   "statement": "Add audio recordings and visual displays to presentations when appropriate to enhance the development of main ideas or themes."
+  },
+  {
+   "id": "SL.4.6",
+   "grade": "4",
+   "domain": "SL",
+   "statement": "Differentiate between contexts that call for formal English (e.g., presenting ideas) and situations where informal discourse is appropriate (e.g., small-group discussion); use formal English when appropriate to task and situation."
+  },
+  {
+   "id": "L.4.1",
+   "grade": "4",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.4.1a",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Use interrogative, relative pronouns (who, whose, whom, which, that) and relative adverbs (where, when, why)."
+  },
+  {
+   "id": "L.4.1b",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Form and use the progressive (e.g., I was walking; I am walking; I will be walking) verb tenses."
+  },
+  {
+   "id": "L.4.1c",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Use modal auxiliaries (e.g., can, may, must) to convey various conditions."
+  },
+  {
+   "id": "L.4.1d",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Order adjectives within sentences according to conventional patterns (e.g., a small red bag rather than a red small bag)."
+  },
+  {
+   "id": "L.4.1e",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Form and use prepositional phrases."
+  },
+  {
+   "id": "L.4.1f",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Produce complete sentences, recognizing and correcting inappropriate fragments and run-ons."
+  },
+  {
+   "id": "L.4.1g",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Correctly use frequently confused words (e.g., to, too, two; there, their)."
+  },
+  {
+   "id": "L.4.1h",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.1",
+   "statement": "Write fluidly and legibly in cursive or joined italics."
+  },
+  {
+   "id": "L.4.2",
+   "grade": "4",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.4.2a",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.2",
+   "statement": "Use correct capitalization."
+  },
+  {
+   "id": "L.4.2b",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.2",
+   "statement": "Use commas and quotation marks to mark direct speech and quotations from a text."
+  },
+  {
+   "id": "L.4.2c",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.2",
+   "statement": "Use a comma before a coordinating conjunction in a compound sentence."
+  },
+  {
+   "id": "L.4.2d",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.2",
+   "statement": "Spell grade-appropriate words correctly, consulting references as needed."
+  },
+  {
+   "id": "L.4.3",
+   "grade": "4",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.4.3a",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.3",
+   "statement": "Choose words and phrases to convey ideas precisely."
+  },
+  {
+   "id": "L.4.3b",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.3",
+   "statement": "Choose punctuation for effect."
+  },
+  {
+   "id": "L.4.3c",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.3",
+   "statement": "Differentiate between contexts that call for formal English (e.g., presenting ideas) and situations where informal discourse is appropriate (e.g., small-group discussion)."
+  },
+  {
+   "id": "L.4.4",
+   "grade": "4",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on grade 4 reading and content, choosing flexibly from a range of strategies."
+  },
+  {
+   "id": "L.4.4a",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.4",
+   "statement": "Use context (e.g., definitions, examples, or restatements in text) as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.4.4b",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.4",
+   "statement": "Use common, grade-appropriate Greek and Latin affixes and roots as clues to the meaning of a word (e.g., telegraph, photograph, autograph)."
+  },
+  {
+   "id": "L.4.4c",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.4",
+   "statement": "Consult reference materials (e.g., dictionaries, glossaries, thesauruses), both print and digital, to find the pronunciation and determine or clarify the precise meaning of key words and phrases and to identify alternate word choices in all content areas."
+  },
+  {
+   "id": "L.4.5",
+   "grade": "4",
+   "domain": "L",
+   "statement": "Demonstrate understanding of figurative language, word relationships, and nuances in word meanings."
+  },
+  {
+   "id": "L.4.5a",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.5",
+   "statement": "Explain the meaning of simple similes and metaphors (e.g., as pretty as a picture) in context."
+  },
+  {
+   "id": "L.4.5b",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.5",
+   "statement": "Recognize and explain the meaning of common idioms, adages, and proverbs."
+  },
+  {
+   "id": "L.4.5c",
+   "grade": "4",
+   "domain": "L",
+   "parent": "L.4.5",
+   "statement": "Demonstrate understanding of words by relating them to their opposites (antonyms) and to words with similar but not identical meanings (synonyms)."
+  },
+  {
+   "id": "L.4.6",
+   "grade": "4",
+   "domain": "L",
+   "statement": "Acquire and use accurately grade-appropriate general academic and domain-specific words and phrases, including those that signal precise actions, emotions, or states of being (e.g., quizzed, whined, stammered) and that are basic to a particular topic (e.g., wildlife, conservation, and endangered when discussing animal preservation)."
+  },
+  {
+   "id": "RL.5.1",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Quote accurately from a text when explaining what the text says explicitly and when drawing inferences from the text."
+  },
+  {
+   "id": "RL.5.2",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Determine a theme of a story, drama, or poem from details in the text, including how characters in a story or drama respond to challenges or how the speaker in a poem reflects upon a topic; summarize the text."
+  },
+  {
+   "id": "RL.5.3",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Compare and contrast two or more characters, settings, or events in a story or drama, drawing on specific details in the text (e.g., how characters interact)."
+  },
+  {
+   "id": "RL.5.4",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative language such as metaphors and similes. (See grade 5 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.5.5",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Explain how a series of chapters, scenes, or stanzas fits together to provide the overall structure of a particular story, drama, or poem."
+  },
+  {
+   "id": "RL.5.6",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Describe how a narrator's or speaker's point of view influences how events are described."
+  },
+  {
+   "id": "RL.5.7",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Analyze how visual and multimedia elements contribute to the meaning, tone, or beauty of a text (e.g., graphic novel, multimedia presentation of fiction, folktale, myth, poem)."
+  },
+  {
+   "id": "RL.5.9",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "Compare and contrast stories in the same genre (e.g., mysteries and adventure stories) on their approaches to similar themes and topics."
+  },
+  {
+   "id": "RL.5.10",
+   "grade": "5",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literature, including stories, dramas, and poetry, at the high end of the grades 4—5 text complexity band independently and proficiently."
+  },
+  {
+   "id": "RI.5.1",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Quote accurately from a text when explaining what the text says explicitly and when drawing inferences from the text."
+  },
+  {
+   "id": "RI.5.2",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Determine two or more main ideas of a text and explain how they are supported by key details; summarize the text."
+  },
+  {
+   "id": "RI.5.3",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Explain the relationships or interactions between two or more individuals, events, ideas, or concepts in a historical, scientific, or technical text based on specific information in the text."
+  },
+  {
+   "id": "RI.5.4",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Determine the meaning of general academic and domain-specific words and phrases in a text relevant to a grade 5 topic or subject area. (See grade 5 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.5.5",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Compare and contrast the overall structure (e.g., chronology, comparison, cause/effect, problem/solution) of events, ideas, concepts, or information in two or more texts."
+  },
+  {
+   "id": "RI.5.6",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Analyze multiple accounts of the same event or topic, noting important similarities and differences in the point of view they represent."
+  },
+  {
+   "id": "RI.5.7",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Draw on information from multiple print or digital sources, demonstrating the ability to locate an answer to a question quickly or to solve a problem efficiently."
+  },
+  {
+   "id": "RI.5.8",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Explain how an author uses reasons and evidence to support particular points in a text, identifying which reasons and evidence support which point(s)."
+  },
+  {
+   "id": "RI.5.9",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "Integrate information from several texts on the same topic in order to write or speak about the subject knowledgeably."
+  },
+  {
+   "id": "RI.5.10",
+   "grade": "5",
+   "domain": "RI",
+   "statement": "By the end of the year, read and comprehend informational texts, including history/social studies, science, and technical texts, at the high end of the grades 4—5 text complexity band independently and proficiently."
+  },
+  {
+   "id": "RF.5.3",
+   "grade": "5",
+   "domain": "RF",
+   "statement": "Know and apply grade-level phonics and word analysis skills in decoding words."
+  },
+  {
+   "id": "RF.5.3a",
+   "grade": "5",
+   "domain": "RF",
+   "parent": "RF.5.3",
+   "statement": "Use combined knowledge of all letter-sound correspondences, syllabication patterns, and morphology (e.g., roots and affixes) to read accurately unfamiliar multisyllabic words in context and out of context."
+  },
+  {
+   "id": "RF.5.4",
+   "grade": "5",
+   "domain": "RF",
+   "statement": "Read with sufficient accuracy and fluency to support comprehension."
+  },
+  {
+   "id": "RF.5.4a",
+   "grade": "5",
+   "domain": "RF",
+   "parent": "RF.5.4",
+   "statement": "Read on-level text with purpose and understanding."
+  },
+  {
+   "id": "RF.5.4b",
+   "grade": "5",
+   "domain": "RF",
+   "parent": "RF.5.4",
+   "statement": "Read on-level prose and poetry orally with accuracy, appropriate rate, and expression on successive readings"
+  },
+  {
+   "id": "RF.5.4c",
+   "grade": "5",
+   "domain": "RF",
+   "parent": "RF.5.4",
+   "statement": "Use context to confirm or self-correct word recognition and understanding, rereading as necessary."
+  },
+  {
+   "id": "W.5.1",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Write opinion pieces on topics or texts, supporting a point of view with reasons and information"
+  },
+  {
+   "id": "W.5.1a",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.1",
+   "statement": "Introduce a topic or text clearly, state an opinion, and create an organizational structure in which ideas are logically grouped to support the writer's purpose."
+  },
+  {
+   "id": "W.5.1b",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.1",
+   "statement": "Provide logically ordered reasons that are supported by facts and details."
+  },
+  {
+   "id": "W.5.1c",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.1",
+   "statement": "Link opinion and reasons using words, phrases, and clauses (e.g., consequently, specifically)."
+  },
+  {
+   "id": "W.5.1d",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.1",
+   "statement": "Provide a concluding statement or section related to the opinion presented."
+  },
+  {
+   "id": "W.5.2",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts to examine a topic and convey ideas and information clearly."
+  },
+  {
+   "id": "W.5.2a",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.2",
+   "statement": "Introduce a topic clearly, provide a general observation and focus, and group related information logically; include formatting (e.g., headings), illustrations, and multimedia when useful to aiding comprehension."
+  },
+  {
+   "id": "W.5.2b",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.2",
+   "statement": "Develop the topic with facts, definitions, concrete details, quotations, or other information and examples related to the topic."
+  },
+  {
+   "id": "W.5.2c",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.2",
+   "statement": "Link ideas within and across categories of information using words, phrases, and clauses (e.g., in contrast, especially)."
+  },
+  {
+   "id": "W.5.2d",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.2",
+   "statement": "Use precise language and domain-specific vocabulary to inform about or explain the topic."
+  },
+  {
+   "id": "W.5.2e",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.2",
+   "statement": "Provide a concluding statement or section related to the information or explanation presented"
+  },
+  {
+   "id": "W.5.3",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Write narratives to develop real or imagined experiences or events using effective technique, descriptive details, and clear event sequences."
+  },
+  {
+   "id": "W.5.3a",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.3",
+   "statement": "Orient the reader by establishing a situation and introducing a narrator and/or characters; organize an event sequence that unfolds naturally."
+  },
+  {
+   "id": "W.5.3b",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.3",
+   "statement": "Use narrative techniques, such as dialogue, description, and pacing, to develop experiences and events or show the responses of characters to situations."
+  },
+  {
+   "id": "W.5.3c",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.3",
+   "statement": "Use a variety of transitional words, phrases, and clauses to manage the sequence of events."
+  },
+  {
+   "id": "W.5.3d",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.3",
+   "statement": "Use concrete words and phrases and sensory details to convey experiences and events precisely."
+  },
+  {
+   "id": "W.5.3e",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.3",
+   "statement": "Provide a conclusion that follows from the narrated experiences or events."
+  },
+  {
+   "id": "W.5.4",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Produce clear and coherent writing (including multiple paragraph texts) in which the development and organization are appropriate to task, purpose, and audience."
+  },
+  {
+   "id": "W.5.5",
+   "grade": "5",
+   "domain": "W",
+   "statement": "With guidance and support from peers and adults, develop and strengthen writing as needed by planning, revising, editing, rewriting, or trying a new approach."
+  },
+  {
+   "id": "W.5.6",
+   "grade": "5",
+   "domain": "W",
+   "statement": "With some guidance and support from adults, use technology, including the Internet, to produce and publish writing as well as to interact and collaborate with others; demonstrate sufficient command of keyboarding skills to type a minimum of two pages in a single sitting."
+  },
+  {
+   "id": "W.5.7",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Conduct short research projects that use several sources to build knowledge through investigation of different aspects of a topic."
+  },
+  {
+   "id": "W.5.8",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Recall relevant information from experiences or gather relevant information from print and digital sources; summarize or paraphrase information in notes and finished work, and provide a list of sources."
+  },
+  {
+   "id": "W.5.9",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Draw evidence from literary or informational texts to support analysis, reflection, and research."
+  },
+  {
+   "id": "W.5.9a",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.9",
+   "statement": "Apply grade 5 Reading standards to literature (e.g., \"Compare and contrast two or more characters, settings, or events in a story or a drama, drawing on specific details in the text [e.g., how characters interact]\")."
+  },
+  {
+   "id": "W.5.9b",
+   "grade": "5",
+   "domain": "W",
+   "parent": "W.5.9",
+   "statement": "Apply grade 5 Reading standards to informational texts (e.g., \"Explain how an author uses reasons and evidence to support particular points in a text, identifying which reasons and evidence support which point[s]\")."
+  },
+  {
+   "id": "W.5.10",
+   "grade": "5",
+   "domain": "W",
+   "statement": "Write routinely over extended time frames (time for research, reflection, and revision) and shorter time frames (a single sitting or a day or two) for a range of discipline-specific tasks, purposes, and audiences."
+  },
+  {
+   "id": "SL.5.1",
+   "grade": "5",
+   "domain": "SL",
+   "statement": "Engage effectively in a range of collaborative discussions (one-on-one, in groups, and teacher-led) with diverse partners on grade 5 topics and texts, building on others' ideas and expressing their own clearly."
+  },
+  {
+   "id": "SL.5.1a",
+   "grade": "5",
+   "domain": "SL",
+   "parent": "SL.5.1",
+   "statement": "Come to discussions prepared, having read or studied required material; explicitly draw on that preparation and other information known about the topic to explore ideas under discussion."
+  },
+  {
+   "id": "SL.5.1b",
+   "grade": "5",
+   "domain": "SL",
+   "parent": "SL.5.1",
+   "statement": "Follow agreed-upon rules for discussions and carry out assigned roles."
+  },
+  {
+   "id": "SL.5.1c",
+   "grade": "5",
+   "domain": "SL",
+   "parent": "SL.5.1",
+   "statement": "Pose and respond to specific questions by making comments that contribute to the discussion and elaborate on the remarks of others."
+  },
+  {
+   "id": "SL.5.1d",
+   "grade": "5",
+   "domain": "SL",
+   "parent": "SL.5.1",
+   "statement": "Review the key ideas expressed and draw conclusions in light of information and knowledge gained from the discussions."
+  },
+  {
+   "id": "SL.5.2",
+   "grade": "5",
+   "domain": "SL",
+   "statement": "Summarize a written text read aloud or information presented in diverse media and formats, including visually, quantitatively, and orally."
+  },
+  {
+   "id": "SL.5.3",
+   "grade": "5",
+   "domain": "SL",
+   "statement": "Summarize the points a speaker or media source makes and explain how each claim is supported by reasons and evidence, and identify and analyze any logical fallacies."
+  },
+  {
+   "id": "SL.5.4",
+   "grade": "5",
+   "domain": "SL",
+   "statement": "Report on a topic or text or present an opinion, sequencing ideas logically and using appropriate facts and relevant, descriptive details to support main ideas or themes; speak clearly at an understandable pace."
+  },
+  {
+   "id": "SL.5.4a",
+   "grade": "5",
+   "domain": "SL",
+   "parent": "SL.5.4",
+   "statement": "Plan and deliver an opinion speech that: states an opinion, logically sequences evidence to support the speaker's position, uses transition words to effectively link opinions and evidence (e.g., consequently and therefore), and provides a concluding statement related to the speaker's position."
+  },
+  {
+   "id": "SL.5.4b",
+   "grade": "5",
+   "domain": "SL",
+   "parent": "SL.5.4",
+   "statement": "Memorize and recite a poem or section of a speech or historical document using rate, expression, and gestures appropriate to the selection."
+  },
+  {
+   "id": "SL.5.5",
+   "grade": "5",
+   "domain": "SL",
+   "statement": "Include multimedia components (e.g., graphics, sound) and visual displays in presentations when appropriate to enhance the development of main ideas or themes."
+  },
+  {
+   "id": "SL.5.6",
+   "grade": "5",
+   "domain": "SL",
+   "statement": "Adapt speech to a variety of contexts and tasks, using formal English when appropriate to task and situation."
+  },
+  {
+   "id": "L.5.1",
+   "grade": "5",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.5.1a",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.1",
+   "statement": "Explain the function of conjunctions, prepositions, and interjections in general and their function in particular sentences."
+  },
+  {
+   "id": "L.5.1b",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.1",
+   "statement": "Form and use the perfect (e.g., I had walked; I have walked; I will have walked) verb tenses."
+  },
+  {
+   "id": "L.5.1c",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.1",
+   "statement": "Use verb tense to convey various times, sequences, states, and conditions."
+  },
+  {
+   "id": "L.5.1d",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.1",
+   "statement": "Recognize and correct inappropriate shifts in verb tense."
+  },
+  {
+   "id": "L.5.1e",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.1",
+   "statement": "Use correlative conjunctions (e.g., either/or, neither/nor)."
+  },
+  {
+   "id": "L.5.2",
+   "grade": "5",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.5.2a",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.2",
+   "statement": "Use punctuation to separate items in a series."
+  },
+  {
+   "id": "L.5.2b",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.2",
+   "statement": "Use a comma to separate an introductory element from the rest of the sentence."
+  },
+  {
+   "id": "L.5.2c",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.2",
+   "statement": "Use a comma to set off the words yes and no (e.g., Yes, thank you), to set off a tag question from the rest of the sentence (e.g., It's true, isn't it?), and to indicate direct address (e.g., Is that you, Steve?)."
+  },
+  {
+   "id": "L.5.2d",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.2",
+   "statement": "Use underlining, quotation marks, or italics to indicate titles of works."
+  },
+  {
+   "id": "L.5.2e",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.2",
+   "statement": "Spell grade-appropriate words correctly, consulting references as needed."
+  },
+  {
+   "id": "L.5.3",
+   "grade": "5",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.5.3a",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.3",
+   "statement": "Expand, combine, and reduce sentences for meaning, reader/listener interest, and style."
+  },
+  {
+   "id": "L.5.3b",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.3",
+   "statement": "Compare and contrast the varieties of English (e.g., dialects, registers) used in stories, dramas, or poems."
+  },
+  {
+   "id": "L.5.4",
+   "grade": "5",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on grade 5 reading and content, choosing flexibly from a range of strategies."
+  },
+  {
+   "id": "L.5.4a",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.4",
+   "statement": "Use context (e.g., cause/effect relationships and comparisons in text) as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.5.4b",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.4",
+   "statement": "Use common, grade-appropriate Greek and Latin affixes and roots as clues to the meaning of a word (e.g., photograph, photosynthesis)."
+  },
+  {
+   "id": "L.5.4c",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.4",
+   "statement": "Consult reference materials (e.g., dictionaries, glossaries, thesauruses), both print and digital, to find the pronunciation and determine or clarify the precise meaning of key words and phrases and to identify alternate word choices in all content areas."
+  },
+  {
+   "id": "L.5.5",
+   "grade": "5",
+   "domain": "L",
+   "statement": "Demonstrate understanding of figurative language, word relationships, and nuances in word meanings."
+  },
+  {
+   "id": "L.5.5a",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.5",
+   "statement": "Interpret figurative language, including similes and metaphors, in context."
+  },
+  {
+   "id": "L.5.5b",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.5",
+   "statement": "Recognize and explain the meaning of common idioms, adages, and proverbs."
+  },
+  {
+   "id": "L.5.5c",
+   "grade": "5",
+   "domain": "L",
+   "parent": "L.5.5",
+   "statement": "Use the relationship between particular words (e.g., synonyms, antonyms, homographs) to better understand each of the words."
+  },
+  {
+   "id": "L.5.6",
+   "grade": "5",
+   "domain": "L",
+   "statement": "Acquire and use accurately grade-appropriate general academic and domain-specific words and phrases, including those that signal contrast, addition, and other logical relationships (e.g., however, although, nevertheless, similarly, moreover, in addition)."
+  },
+  {
+   "id": "RL.6.1",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Cite textual evidence to support analysis of what the text says explicitly as well as inferences drawn from the text."
+  },
+  {
+   "id": "RL.6.2",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Determine a theme or central idea of a text and how it is conveyed through particular details; provide a summary of the text distinct from personal opinions or judgments."
+  },
+  {
+   "id": "RL.6.3",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Describe how a particular story's or drama's plot unfolds in a series of episodes as well as how the characters respond or change as the plot moves toward a resolution."
+  },
+  {
+   "id": "RL.6.4",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative and connotative meanings; analyze the impact of a specific word choice on meaning and tone. (See grade 6 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.6.5",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Analyze how a particular sentence, chapter, scene, or stanza fits into the overall structure of a text and contributes to the development of the theme, setting, or plot."
+  },
+  {
+   "id": "RL.6.6",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Explain how an author develops the point of view of the narrator or speaker in a text."
+  },
+  {
+   "id": "RL.6.7",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Compare and contrast the experience of reading a story, drama, or poem to listening to or viewing an audio, video, or live version of the text, including contrasting what they \"see\" and \"hear\" when reading the text to what they perceive when they listen or watch."
+  },
+  {
+   "id": "RL.6.9",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "Compare and contrast texts in different forms or genres (e.g., stories and poems; historical novels and fantasy stories) in terms of their approaches to similar themes and topics."
+  },
+  {
+   "id": "RL.6.10",
+   "grade": "6",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literature, including stories, dramas, and poems, in the grades 6—8 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "RI.6.1",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Cite textual evidence to support analysis of what the text says explicitly as well as inferences drawn from the text."
+  },
+  {
+   "id": "RI.6.2",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Determine a central idea of a text and how it is conveyed through particular details; provide a summary of the text distinct from personal opinions or judgments."
+  },
+  {
+   "id": "RI.6.3",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Analyze in detail how a key individual, event, or idea is introduced, illustrated, and elaborated in a text (e.g., through examples or anecdotes)."
+  },
+  {
+   "id": "RI.6.4",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative, connotative, and technical meanings. (See grade 6 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.6.5",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Analyze how a particular sentence, paragraph, chapter, or section fits into the overall structure of a text and contributes to the development of the ideas."
+  },
+  {
+   "id": "RI.6.5a",
+   "grade": "6",
+   "domain": "RI",
+   "parent": "RI.6.5",
+   "statement": "Analyze the use of text features (e.g., graphics, headers, captions) in popular media."
+  },
+  {
+   "id": "RI.6.6",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Determine an author's point of view or purpose in a text and explain how it is conveyed in the text."
+  },
+  {
+   "id": "RI.6.7",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Integrate information presented in different media or formats (e.g., visually, quantitatively) as well as in words to develop a coherent understanding of a topic or issue."
+  },
+  {
+   "id": "RI.6.8",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Trace and evaluate the argument and specific claims in a text, distinguishing claims that are supported by reasons and evidence from claims that are not."
+  },
+  {
+   "id": "RI.6.9",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "Compare and contrast one author's presentation of events with that of another (e.g., a memoir written by and a biography on the same person)."
+  },
+  {
+   "id": "RI.6.10",
+   "grade": "6",
+   "domain": "RI",
+   "statement": "By the end of the year, read and comprehend literary nonfiction in the grades 6—8 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "W.6.1",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Write arguments to support claims with clear reasons and relevant evidence."
+  },
+  {
+   "id": "W.6.1a",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.1",
+   "statement": "Introduce claim(s) and organize the reasons and evidence clearly."
+  },
+  {
+   "id": "W.6.1b",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.1",
+   "statement": "Support claim(s) with clear reasons and relevant evidence, using credible sources and demonstrating an understanding of the topic or text."
+  },
+  {
+   "id": "W.6.1c",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.1",
+   "statement": "Use words, phrases, and clauses to clarify the relationships among claim(s) and reasons."
+  },
+  {
+   "id": "W.6.1d",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.1",
+   "statement": "Establish and maintain a formal style."
+  },
+  {
+   "id": "W.6.1e",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.1",
+   "statement": "Provide a concluding statement or section that follows from the argument presented."
+  },
+  {
+   "id": "W.6.2",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts to examine a topic and convey ideas, concepts, and information through the selection, organization, and analysis of relevant content"
+  },
+  {
+   "id": "W.6.2a",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.2",
+   "statement": "Introduce a topic or thesis statement; organize ideas, concepts, and information, using strategies such as definition, classification, comparison/contrast, and cause/effect; include formatting (e.g., headings), graphics (e.g., charts, tables), and multimedia when useful to aiding comprehension."
+  },
+  {
+   "id": "W.6.2b",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.2",
+   "statement": "Develop the topic with relevant facts, definitions, concrete details, quotations, or other information and examples."
+  },
+  {
+   "id": "W.6.2c",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.2",
+   "statement": "Use appropriate transitions to clarify the relationships among ideas and concepts."
+  },
+  {
+   "id": "W.6.2d",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.2",
+   "statement": "Use precise language and domain-specific vocabulary to inform about or explain the topic."
+  },
+  {
+   "id": "W.6.2e",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.2",
+   "statement": "Establish and maintain a formal style."
+  },
+  {
+   "id": "W.6.2f",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.2",
+   "statement": "Provide a concluding statement or section that follows from the information or explanation presented."
+  },
+  {
+   "id": "W.6.3",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Write narratives to develop real or imagined experiences or events using effective technique, relevant descriptive details, and well-structured event sequences."
+  },
+  {
+   "id": "W.6.3a",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.3",
+   "statement": "Engage and orient the reader by establishing a context and introducing a narrator and/or characters; organize an event sequence that unfolds naturally and logically."
+  },
+  {
+   "id": "W.6.3b",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.3",
+   "statement": "Use narrative techniques, such as dialogue, pacing, and description, to develop experiences, events, and/or characters."
+  },
+  {
+   "id": "W.6.3c",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.3",
+   "statement": "Use a variety of transition words, phrases, and clauses to convey sequence and signal shifts from one time frame or setting to another."
+  },
+  {
+   "id": "W.6.3d",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.3",
+   "statement": "Use precise words and phrases, relevant descriptive details, and sensory language to convey experiences and events."
+  },
+  {
+   "id": "W.6.3e",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.3",
+   "statement": "Provide a conclusion that follows from the narrated experiences or events."
+  },
+  {
+   "id": "W.6.4",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Produce clear and coherent writing in which the development, organization, and style are appropriate to task, purpose, and audience."
+  },
+  {
+   "id": "W.6.5",
+   "grade": "6",
+   "domain": "W",
+   "statement": "With some guidance and support from peers and adults, develop and strengthen writing as needed by planning, revising, editing, rewriting, or trying a new approach."
+  },
+  {
+   "id": "W.6.6",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Use technology, including the Internet, to produce and publish writing as well as to interact and collaborate with others; demonstrate sufficient command of keyboarding skills to type a minimum of three pages in a single sitting."
+  },
+  {
+   "id": "W.6.7",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Conduct short research projects to answer a question, drawing on several sources and refocusing the inquiry when appropriate."
+  },
+  {
+   "id": "W.6.8",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Gather relevant information from multiple print and digital sources; assess the credibility of each source; and quote or paraphrase the data and conclusions of others while avoiding plagiarism and providing basic bibliographic information for sources."
+  },
+  {
+   "id": "W.6.9",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Draw evidence from literary or informational texts to support analysis, reflection, and research."
+  },
+  {
+   "id": "W.6.9a",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.9",
+   "statement": "Apply grade 6 Reading standards to literature (e.g., \"Compare and contrast texts in different forms or genres [e.g., stories and poems; historical novels and fantasy stories] in terms of their approaches to similar themes and topics\")."
+  },
+  {
+   "id": "W.6.9b",
+   "grade": "6",
+   "domain": "W",
+   "parent": "W.6.9",
+   "statement": "Apply grade 6 Reading standards to literary nonfiction (e.g., \"Trace and evaluate the argument and specific claims in a text, distinguishing claims that are supported by reasons and evidence from claims that are not\")."
+  },
+  {
+   "id": "W.6.10",
+   "grade": "6",
+   "domain": "W",
+   "statement": "Write routinely over extended time frames (time for research, reflection, and revision) and shorter time frames (a single sitting or a day or two) for a range of discipline-specific tasks, purposes, and audiences."
+  },
+  {
+   "id": "SL.6.1",
+   "grade": "6",
+   "domain": "SL",
+   "statement": "Engage effectively in a range of collaborative discussions (one-on-one, in groups, and teacher-led) with diverse partners on grade 6 topics, texts, and issues, building on others' ideas and expressing their own clearly."
+  },
+  {
+   "id": "SL.6.1a",
+   "grade": "6",
+   "domain": "SL",
+   "parent": "SL.6.1",
+   "statement": "Come to discussions prepared, having read or studied required material; explicitly draw on that preparation by referring to evidence on the topic, text, or issue to probe and reflect on ideas under discussion."
+  },
+  {
+   "id": "SL.6.1b",
+   "grade": "6",
+   "domain": "SL",
+   "parent": "SL.6.1",
+   "statement": "Follow rules for collegial discussions, set specific goals and deadlines, and define individual roles as needed."
+  },
+  {
+   "id": "SL.6.1c",
+   "grade": "6",
+   "domain": "SL",
+   "parent": "SL.6.1",
+   "statement": "Pose and respond to specific questions with elaboration and detail by making comments that contribute to the topic, text, or issue under discussion."
+  },
+  {
+   "id": "SL.6.1d",
+   "grade": "6",
+   "domain": "SL",
+   "parent": "SL.6.1",
+   "statement": "Review the key ideas expressed and demonstrate understanding of multiple perspectives through reflection and paraphrasing."
+  },
+  {
+   "id": "SL.6.2",
+   "grade": "6",
+   "domain": "SL",
+   "statement": "Interpret information presented in diverse media and formats (e.g., visually, quantitatively, orally) and explain how it contributes to a topic, text, or issue under study."
+  },
+  {
+   "id": "SL.6.3",
+   "grade": "6",
+   "domain": "SL",
+   "statement": "Delineate a speaker's argument and specific claims, distinguishing claims that are supported by reasons and evidence from claims that are not."
+  },
+  {
+   "id": "SL.6.4",
+   "grade": "6",
+   "domain": "SL",
+   "statement": "Present claims and findings (e.g., argument, narrative, informative, response to literature presentations), sequencing ideas logically and using pertinent descriptions, facts, and details to accentuate main ideas or themes; use appropriate eye contact, adequate volume, and clear pronunciation."
+  },
+  {
+   "id": "SL.6.4a",
+   "grade": "6",
+   "domain": "SL",
+   "parent": "SL.6.4",
+   "statement": "Plan and deliver an informative/explanatory presentation that: develops a topic with relevant facts, definitions, and concrete details; uses appropriate transitions to clarify relationships; uses precise language and domain specific vocabulary; and provides a strong conclusion."
+  },
+  {
+   "id": "SL.6.5",
+   "grade": "6",
+   "domain": "SL",
+   "statement": "Include multimedia components (e.g., graphics, images, music, sound) and visual displays in presentations to clarify information."
+  },
+  {
+   "id": "SL.6.6",
+   "grade": "6",
+   "domain": "SL",
+   "statement": "Adapt speech to a variety of contexts and tasks, demonstrating command of formal English when indicated or appropriate."
+  },
+  {
+   "id": "L.6.1",
+   "grade": "6",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.6.1a",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.1",
+   "statement": "Ensure that pronouns are in the proper case (subjective, objective, possessive)."
+  },
+  {
+   "id": "L.6.1b",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.1",
+   "statement": "Use all pronouns, including intensive pronouns (e.g., myself, ourselves) correctly."
+  },
+  {
+   "id": "L.6.1c",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.1",
+   "statement": "Recognize and correct inappropriate shifts in pronoun number and person."
+  },
+  {
+   "id": "L.6.1d",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.1",
+   "statement": "Recognize and correct vague pronouns (i.e., ones with unclear or ambiguous antecedents)."
+  },
+  {
+   "id": "L.6.1e",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.1",
+   "statement": "Recognize variations from standard English in their own and others' writing and speaking, and identify and use strategies to improve expression in conventional language."
+  },
+  {
+   "id": "L.6.2",
+   "grade": "6",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.6.2a",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.2",
+   "statement": "Use punctuation (commas, parentheses, dashes) to set off nonrestrictive/parenthetical elements."
+  },
+  {
+   "id": "L.6.2b",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.2",
+   "statement": "Spell correctly."
+  },
+  {
+   "id": "L.6.3",
+   "grade": "6",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.6.3a",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.3",
+   "statement": "Vary sentence patterns for meaning, reader/listener interest, and style."
+  },
+  {
+   "id": "L.6.3b",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.3",
+   "statement": "Maintain consistency in style and tone."
+  },
+  {
+   "id": "L.6.4",
+   "grade": "6",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on grade 6 reading and content, choosing flexibly from a range of strategies."
+  },
+  {
+   "id": "L.6.4a",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.4",
+   "statement": "Use context (e.g., the overall meaning of a sentence or paragraph; a word's position or function in a sentence) as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.6.4b",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.4",
+   "statement": "Use common, grade-appropriate Greek or Latin affixes and roots as clues to the meaning of a word (e.g., audience, auditory, audible)."
+  },
+  {
+   "id": "L.6.4c",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.4",
+   "statement": "Consult reference materials (e.g., dictionaries, glossaries, thesauruses), both print and digital, to find the pronunciation of a word or determine or clarify its precise meaning or its part of speech."
+  },
+  {
+   "id": "L.6.4d",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.4",
+   "statement": "Verify the preliminary determination of the meaning of a word or phrase (e.g., by checking the inferred meaning in context or in a dictionary)."
+  },
+  {
+   "id": "L.6.5",
+   "grade": "6",
+   "domain": "L",
+   "statement": "Demonstrate understanding of figurative language, word relationships, and nuances in word meanings."
+  },
+  {
+   "id": "L.6.5a",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.5",
+   "statement": "Interpret figures of speech (e.g., personification) in context."
+  },
+  {
+   "id": "L.6.5b",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.5",
+   "statement": "Use the relationship between particular words (e.g., cause/effect, part/whole, item/category) to better understand each of the words."
+  },
+  {
+   "id": "L.6.5c",
+   "grade": "6",
+   "domain": "L",
+   "parent": "L.6.5",
+   "statement": "Distinguish among the connotations (associations) of words with similar denotations (definitions) (e.g., stingy, scrimping, economical, unwasteful, thrifty)."
+  },
+  {
+   "id": "L.6.6",
+   "grade": "6",
+   "domain": "L",
+   "statement": "Acquire and use accurately grade-appropriate general academic and domain-specific words and phrases; gather vocabulary knowledge when considering a word or phrase important to comprehension or expression."
+  },
+  {
+   "id": "RL.7.1",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Cite several pieces of textual evidence to support analysis of what the text says explicitly as well as inferences drawn from the text."
+  },
+  {
+   "id": "RL.7.2",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Determine a theme or central idea of a text and analyze its development over the course of the text; provide an objective summary of the text."
+  },
+  {
+   "id": "RL.7.3",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Analyze how particular elements of a story or drama interact (e.g., how setting shapes the characters or plot)."
+  },
+  {
+   "id": "RL.7.4",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative and connotative meanings; analyze the impact of rhymes and other repetitions of sounds (e.g., alliteration) on a specific verse or stanza of a poem or section of a story or drama. (See grade 7 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.7.5",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Analyze how a drama's or poem's form or structure (e.g., soliloquy, sonnet) contributes to its meaning."
+  },
+  {
+   "id": "RL.7.6",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Analyze how an author develops and contrasts the points of view of different characters or narrators in a text."
+  },
+  {
+   "id": "RL.7.7",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Compare and contrast a written story, drama, or poem to its audio, filmed, staged, or multimedia version, analyzing the effects of techniques unique to each medium (e.g., lighting, sound, color, or camera focus and angles in a film)."
+  },
+  {
+   "id": "RL.7.9",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "Compare and contrast a fictional portrayal of a time, place, or character and a historical account of the same period as a means of understanding how authors of fiction use or alter history."
+  },
+  {
+   "id": "RL.7.10",
+   "grade": "7",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literary nonfiction in the grades 6–8 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "RI.7.1",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Cite several pieces of textual evidence to support analysis of what the text says explicitly as well as inferences drawn from the text."
+  },
+  {
+   "id": "RI.7.2",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Determine two or more central ideas in a text and analyze their development over the course of the text; provide an objective summary of the text."
+  },
+  {
+   "id": "RI.7.3",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Analyze the interactions between individuals, events, and ideas in a text (e.g., how ideas influence individuals or events, or how individuals influence ideas or events)."
+  },
+  {
+   "id": "RI.7.4",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative, connotative, and technical meanings; analyze the impact of a specific word choice on meaning and tone. (See grade 7 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.7.5",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Analyze the structure an author uses to organize a text, including how the major sections contribute to the whole and to the development of the ideas."
+  },
+  {
+   "id": "RI.7.5a",
+   "grade": "7",
+   "domain": "RI",
+   "parent": "RI.7.5",
+   "statement": "Analyze the use of text features (e.g., graphics, headers, captions) in public documents."
+  },
+  {
+   "id": "RI.7.6",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Determine an author's point of view or purpose in a text and analyze how the author distinguishes his or her position from that of others."
+  },
+  {
+   "id": "RI.7.7",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Compare and contrast a text to an audio, video, or multimedia version of the text, analyzing each medium's portrayal of the subject (e.g., how the delivery of a speech affects the impact of the words)."
+  },
+  {
+   "id": "RI.7.8",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Trace and evaluate the argument and specific claims in a text, assessing whether the reasoning is sound and the evidence is relevant and sufficient to support the claims."
+  },
+  {
+   "id": "RI.7.9",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "Analyze how two or more authors writing about the same topic shape their presentations of key information by emphasizing different evidence or advancing different interpretations of facts."
+  },
+  {
+   "id": "RI.7.10",
+   "grade": "7",
+   "domain": "RI",
+   "statement": "By the end of the year, read and comprehend literary nonfiction in the grades 6–8 text complexity band proficiently, with scaffolding as needed at the high end of the range."
+  },
+  {
+   "id": "W.7.1",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Write arguments to support claims with clear reasons and relevant evidence."
+  },
+  {
+   "id": "W.7.1a",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.1",
+   "statement": "Introduce claim(s), acknowledge and address alternate or opposing claims, and organize the reasons and evidence logically."
+  },
+  {
+   "id": "W.7.1b",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.1",
+   "statement": "Support claim(s) or counterarguments with logical reasoning and relevant evidence, using accurate, credible sources and demonstrating an understanding of the topic or text."
+  },
+  {
+   "id": "W.7.1c",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.1",
+   "statement": "Use words, phrases, and clauses to create cohesion and clarify the relationships among claim(s), reasons, and evidence."
+  },
+  {
+   "id": "W.7.1d",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.1",
+   "statement": "Establish and maintain a formal style."
+  },
+  {
+   "id": "W.7.1e",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.1",
+   "statement": "Provide a concluding statement or section that follows from and supports the argument presented."
+  },
+  {
+   "id": "W.7.2",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts to examine a topic and convey ideas, concepts, and information through the selection, organization, and analysis of relevant content"
+  },
+  {
+   "id": "W.7.2a",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.2",
+   "statement": "Introduce a topic or thesis statement clearly, previewing what is to follow; organize ideas, concepts, and information, using strategies such as definition, classification, comparison/contrast, and cause/effect; include formatting (e.g., headings), graphics (e.g., charts, tables), and multimedia when useful to aiding comprehension."
+  },
+  {
+   "id": "W.7.2b",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.2",
+   "statement": "Develop the topic with relevant facts, definitions, concrete details, quotations, or other information and examples."
+  },
+  {
+   "id": "W.7.2c",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.2",
+   "statement": "Use appropriate transitions to create cohesion and clarify the relationships among ideas and concepts."
+  },
+  {
+   "id": "W.7.2d",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.2",
+   "statement": "Use precise language and domain-specific vocabulary to inform about or explain the topic."
+  },
+  {
+   "id": "W.7.2e",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.2",
+   "statement": "Establish and maintain a formal style."
+  },
+  {
+   "id": "W.7.2f",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.2",
+   "statement": "Provide a concluding statement or section that follows from and supports the information or explanation presented"
+  },
+  {
+   "id": "W.7.3",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Write narratives to develop real or imagined experiences or events using effective technique, relevant descriptive details, and well-structured event sequences."
+  },
+  {
+   "id": "W.7.3a",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.3",
+   "statement": "Engage and orient the reader by establishing a context and point of view and introducing a narrator and/or characters; organize an event sequence that unfolds naturally and logically."
+  },
+  {
+   "id": "W.7.3b",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.3",
+   "statement": "Use narrative techniques, such as dialogue, pacing, and description, to develop experiences, events, and/or characters."
+  },
+  {
+   "id": "W.7.3c",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.3",
+   "statement": "Use a variety of transition words, phrases, and clauses to convey sequence and signal shifts from one time frame or setting to another."
+  },
+  {
+   "id": "W.7.3d",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.3",
+   "statement": "Use precise words and phrases, relevant descriptive details, and sensory language to capture the action and convey experiences and events."
+  },
+  {
+   "id": "W.7.3e",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.3",
+   "statement": "Provide a conclusion that follows from and reflects on the narrated experiences or events."
+  },
+  {
+   "id": "W.7.4",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Produce clear and coherent writing in which the development, organization, and style are appropriate to task, purpose, and audience."
+  },
+  {
+   "id": "W.7.5",
+   "grade": "7",
+   "domain": "W",
+   "statement": "With some guidance and support from peers and adults, develop and strengthen writing as needed by planning, revising, editing, rewriting, or trying a new approach, focusing on how well purpose and audience have been addressed."
+  },
+  {
+   "id": "W.7.6",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Use technology, including the Internet, to produce and publish writing and link to and cite sources as well as to interact and collaborate with others, including linking to and citing sources."
+  },
+  {
+   "id": "W.7.7",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Conduct short research projects to answer a question, drawing on several sources and generating additional related, focused questions for further research and investigation."
+  },
+  {
+   "id": "W.7.8",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Gather relevant information from multiple print and digital sources, using search terms effectively; assess the credibility and accuracy of each source; and quote or paraphrase the data and conclusions of others while avoiding plagiarism and following a standard format for citation."
+  },
+  {
+   "id": "W.7.9",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Draw evidence from literary or informational texts to support analysis, reflection, and research."
+  },
+  {
+   "id": "W.7.9a",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.9",
+   "statement": "Apply grade 7 Reading standards to literature (e.g., \"Compare and contrast a fictional portrayal of a time, place, or character and a historical account of the same period as a means of understanding how authors of fiction use or alter history\")."
+  },
+  {
+   "id": "W.7.9b",
+   "grade": "7",
+   "domain": "W",
+   "parent": "W.7.9",
+   "statement": "Apply grade 7 Reading standards to literary nonfiction (e.g. \"Trace and evaluate the argument and specific claims in a text, assessing whether the reasoning is sound and the evidence is relevant and sufficient to support the claims\")."
+  },
+  {
+   "id": "W.7.10",
+   "grade": "7",
+   "domain": "W",
+   "statement": "Write routinely over extended time frames (time for research, reflection, and revision) and shorter time frames (a single sitting or a day or two) for a range of discipline-specific tasks, purposes, and audiences."
+  },
+  {
+   "id": "SL.7.1",
+   "grade": "7",
+   "domain": "SL",
+   "statement": "Engage effectively in a range of collaborative discussions (one-on-one, in groups, and teacher-led) with diverse partners on grade 7 topics, texts, and issues, building on others' ideas and expressing their own clearly."
+  },
+  {
+   "id": "SL.7.1a",
+   "grade": "7",
+   "domain": "SL",
+   "parent": "SL.7.1",
+   "statement": "Come to discussions prepared, having read or researched material under study; explicitly draw on that preparation by referring to evidence on the topic, text, or issue to probe and reflect on ideas under discussion."
+  },
+  {
+   "id": "SL.7.1b",
+   "grade": "7",
+   "domain": "SL",
+   "parent": "SL.7.1",
+   "statement": "Follow rules for collegial discussions, track progress toward specific goals and deadlines, and define individual roles as needed."
+  },
+  {
+   "id": "SL.7.1c",
+   "grade": "7",
+   "domain": "SL",
+   "parent": "SL.7.1",
+   "statement": "Pose questions that elicit elaboration and respond to others' questions and comments with relevant observations and ideas that bring the discussion back on topic as needed."
+  },
+  {
+   "id": "SL.7.1d",
+   "grade": "7",
+   "domain": "SL",
+   "parent": "SL.7.1",
+   "statement": "Acknowledge new information expressed by others and, when warranted, modify their own views."
+  },
+  {
+   "id": "SL.7.2",
+   "grade": "7",
+   "domain": "SL",
+   "statement": "Analyze the main ideas and supporting details presented in diverse media and formats (e.g., visually, quantitatively, orally) and explain how the ideas clarify a topic, text, or issue under study."
+  },
+  {
+   "id": "SL.7.3",
+   "grade": "7",
+   "domain": "SL",
+   "statement": "Delineate a speaker's argument and specific claims, and attitude toward the subject, evaluating the soundness of the reasoning and the relevance and sufficiency of the evidence."
+  },
+  {
+   "id": "SL.7.4",
+   "grade": "7",
+   "domain": "SL",
+   "statement": "Present claims and findings (e.g., argument, narrative, summary presentations), emphasizing salient points in a focused, coherent manner with pertinent descriptions, facts, details, and examples; use appropriate eye contact, adequate volume, and clear pronunciation."
+  },
+  {
+   "id": "SL.7.4a",
+   "grade": "7",
+   "domain": "SL",
+   "parent": "SL.7.4",
+   "statement": "Plan and present an argument that: supports a claim, acknowledges counterarguments, organizes evidence logically, uses words and phrases to create cohesion, and provides a concluding statement that supports the argument presented."
+  },
+  {
+   "id": "SL.7.5",
+   "grade": "7",
+   "domain": "SL",
+   "statement": "Include multimedia components and visual displays in presentations to clarify claims and findings and emphasize salient points."
+  },
+  {
+   "id": "SL.7.6",
+   "grade": "7",
+   "domain": "SL",
+   "statement": "Adapt speech to a variety of contexts and tasks, demonstrating command of formal English when indicated or appropriate."
+  },
+  {
+   "id": "L.7.1",
+   "grade": "7",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.7.1a",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.1",
+   "statement": "Explain the function of phrases and clauses in general and their function in specific sentences."
+  },
+  {
+   "id": "L.7.1b",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.1",
+   "statement": "Choose among simple, compound, complex, and compound-complex sentences to signal differing relationships among ideas."
+  },
+  {
+   "id": "L.7.1c",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.1",
+   "statement": "Place phrases and clauses within a sentence, recognizing and correcting misplaced and dangling modifiers."
+  },
+  {
+   "id": "L.7.2",
+   "grade": "7",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.7.2a",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.2",
+   "statement": "Use a comma to separate coordinate adjectives (e.g., It was a fascinating, enjoyable movie but not He wore an old[,] green shirt)."
+  },
+  {
+   "id": "L.7.2b",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.2",
+   "statement": "Spell correctly."
+  },
+  {
+   "id": "L.7.3",
+   "grade": "7",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.7.3a",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.3",
+   "statement": "Choose language that expresses ideas precisely and concisely, recognizing and eliminating wordiness and redundancy."
+  },
+  {
+   "id": "L.7.4",
+   "grade": "7",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words and phrases based on grade 7 reading and content, choosing flexibly from a range of strategies."
+  },
+  {
+   "id": "L.7.4a",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.4",
+   "statement": "Use context (e.g., the overall meaning of a sentence or paragraph; a word's position or function in a sentence) as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.7.4b",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.4",
+   "statement": "Use common, grade-appropriate Greek or Latin affixes and roots as clues to the meaning of a word (e.g., belligerent, bellicose, rebel)."
+  },
+  {
+   "id": "L.7.4c",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.4",
+   "statement": "Consult general and specialized reference materials (e.g., dictionaries, glossaries, thesauruses), both print and digital, to find the pronunciation of a word or determine or clarify its precise meaning or its part of speech or trace the etymology of words."
+  },
+  {
+   "id": "L.7.4d",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.4",
+   "statement": "Verify the preliminary determination of the meaning of a word or phrase (e.g., by checking the inferred meaning in context or in a dictionary)."
+  },
+  {
+   "id": "L.7.5",
+   "grade": "7",
+   "domain": "L",
+   "statement": "Demonstrate understanding of figurative language, word relationships, and nuances in word meanings."
+  },
+  {
+   "id": "L.7.5a",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.5",
+   "statement": "Interpret figures of speech (e.g., literary, biblical, and mythological allusions) in context."
+  },
+  {
+   "id": "L.7.5b",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.5",
+   "statement": "Use the relationship between particular words (e.g., synonym/antonym, analogy) to better understand each of the words."
+  },
+  {
+   "id": "L.7.5c",
+   "grade": "7",
+   "domain": "L",
+   "parent": "L.7.5",
+   "statement": "Distinguish among the connotations (associations) of words with similar denotations (definitions) (e.g., refined, respectful, polite, diplomatic, condescending)."
+  },
+  {
+   "id": "L.7.6",
+   "grade": "7",
+   "domain": "L",
+   "statement": "Acquire and use accurately grade-appropriate general academic and domain-specific words and phrases; gather vocabulary knowledge when considering a word or phrase important to comprehension or expression."
+  },
+  {
+   "id": "RL.8.1",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Cite the textual evidence that most strongly supports an analysis of what the text says explicitly as well as inferences drawn from the text."
+  },
+  {
+   "id": "RL.8.2",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Determine a theme or central idea of a text and analyze its development over the course of the text, including its relationship to the characters, setting, and plot; provide an objective summary of the text."
+  },
+  {
+   "id": "RL.8.3",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Analyze how particular lines of dialogue or incidents in a story or drama propel the action, reveal aspects of a character, or provoke a decision."
+  },
+  {
+   "id": "RL.8.4",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative and connotative meanings; analyze the impact of specific word choices on meaning and tone, including analogies or allusions to other texts. (See grade 8 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RL.8.5",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Compare and contrast the structure of two or more texts and analyze how the differing structure of each text contributes to its meaning and style."
+  },
+  {
+   "id": "RL.8.6",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Analyze how differences in the points of view of the characters and the audience or reader (e.g., created through the use of dramatic irony) create such effects as suspense or humor."
+  },
+  {
+   "id": "RL.8.7",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Analyze the extent to which a filmed or live production of a story or drama stays faithful to or departs from the text or script, evaluating the choices made by the director or actors."
+  },
+  {
+   "id": "RL.8.9",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "Analyze how a modern work of fiction draws on themes, patterns of events, or character types from myths, traditional stories, or religious works such as the Bible, including describing how the material is rendered new."
+  },
+  {
+   "id": "RL.8.10",
+   "grade": "8",
+   "domain": "RL",
+   "statement": "By the end of the year, read and comprehend literature, including stories, dramas, and poems, at the high end of grades 6—8 text complexity band independently and proficiently."
+  },
+  {
+   "id": "RI.8.1",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Cite the textual evidence that most strongly supports an analysis of what the text says explicitly as well as inferences drawn from the text."
+  },
+  {
+   "id": "RI.8.2",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Determine a central idea of a text and analyze its development over the course of the text, including its relationship to supporting ideas; provide an objective summary of the text."
+  },
+  {
+   "id": "RI.8.3",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Analyze how a text makes connections among and distinctions between individuals, ideas, or events (e.g., through comparisons, analogies, or categories)."
+  },
+  {
+   "id": "RI.8.4",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Determine the meaning of words and phrases as they are used in a text, including figurative, connotative, and technical meanings; analyze the impact of specific word choices on meaning and tone, including analogies or allusions to other texts. (See grade 8 Language standards 4–6 for additional expectations.)"
+  },
+  {
+   "id": "RI.8.5",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Analyze in detail the structure of a specific paragraph in a text, including the role of particular sentences in developing and refining a key concept."
+  },
+  {
+   "id": "RI.8.5a",
+   "grade": "8",
+   "domain": "RI",
+   "parent": "RI.8.5",
+   "statement": "Analyze the use of text features (e.g., graphics, headers, captions) in consumer materials."
+  },
+  {
+   "id": "RI.8.6",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Determine an author's point of view or purpose in a text and analyze how the author acknowledges and responds to conflicting evidence or viewpoints."
+  },
+  {
+   "id": "RI.8.7",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Evaluate the advantages and disadvantages of using different mediums (e.g., print or digital text, video, multimedia) to present a particular topic or idea."
+  },
+  {
+   "id": "RI.8.8",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Delineate and evaluate the argument and specific claims in a text, assessing whether the reasoning is sound and the evidence is relevant and sufficient; recognize when irrelevant evidence is introduced."
+  },
+  {
+   "id": "RI.8.9",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "Analyze a case in which two or more texts provide conflicting information on the same topic and identify where the texts disagree on matters of fact or interpretation."
+  },
+  {
+   "id": "RI.8.10",
+   "grade": "8",
+   "domain": "RI",
+   "statement": "By the end of the year, read and comprehend literary nonfiction at the high end of the grades 6—8 text complexity band independently and proficiently."
+  },
+  {
+   "id": "W.8.1",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Write arguments to support claims with clear reasons and relevant evidence."
+  },
+  {
+   "id": "W.8.1a",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.1",
+   "statement": "Introduce claim(s), acknowledge and distinguish the claim(s) from alternate or opposing claims, and organize the reasons and evidence logically."
+  },
+  {
+   "id": "W.8.1b",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.1",
+   "statement": "Support claim(s) with logical reasoning and relevant evidence, using accurate, credible sources and demonstrating an understanding of the topic or text."
+  },
+  {
+   "id": "W.8.1c",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.1",
+   "statement": "Use words, phrases, and clauses to create cohesion and clarify the relationships among claim(s), counterclaims, reasons, and evidence."
+  },
+  {
+   "id": "W.8.1d",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.1",
+   "statement": "Establish and maintain a formal style."
+  },
+  {
+   "id": "W.8.1e",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.1",
+   "statement": "Provide a concluding statement or section that follows from and supports the argument presented."
+  },
+  {
+   "id": "W.8.2",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Write informative/explanatory texts including career development documents (e.g., simple business letters and job applications), to examine a topic and convey ideas, concepts, and information through the selection, organization, and analysis of relevant content"
+  },
+  {
+   "id": "W.8.2a",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.2",
+   "statement": "Introduce a topic or thesis statement clearly, previewing what is to follow; organize ideas, concepts, and information into broader categories; include formatting (e.g., headings), graphics (e.g., charts, tables), and multimedia when useful to aiding comprehension."
+  },
+  {
+   "id": "W.8.2b",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.2",
+   "statement": "Develop the topic with relevant, well-chosen facts, definitions, concrete details, quotations, or other information and examples."
+  },
+  {
+   "id": "W.8.2c",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.2",
+   "statement": "Use appropriate and varied transitions to create cohesion and clarify the relationships among ideas and concepts."
+  },
+  {
+   "id": "W.8.2d",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.2",
+   "statement": "Use precise language and domain-specific vocabulary to inform about or explain the topic."
+  },
+  {
+   "id": "W.8.2e",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.2",
+   "statement": "Establish and maintain a formal style."
+  },
+  {
+   "id": "W.8.2f",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.2",
+   "statement": "Provide a concluding statement or section that follows from and supports the information or explanation presented"
+  },
+  {
+   "id": "W.8.3",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Write narratives to develop real or imagined experiences or events using effective technique, relevant descriptive details, and well-structured event sequences."
+  },
+  {
+   "id": "W.8.3a",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.3",
+   "statement": "Engage and orient the reader by establishing a context and point of view and introducing a narrator and/or characters; organize an event sequence that unfolds naturally and logically."
+  },
+  {
+   "id": "W.8.3b",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.3",
+   "statement": "Use narrative techniques, such as dialogue, pacing, description, and reflection, to develop experiences, events, and/or characters."
+  },
+  {
+   "id": "W.8.3c",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.3",
+   "statement": "Use a variety of transition words, phrases, and clauses to convey sequence, signal shifts from one time frame or setting to another, and show the relationships among experiences and events."
+  },
+  {
+   "id": "W.8.3d",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.3",
+   "statement": "Use precise words and phrases, relevant descriptive details, and sensory language to capture the action and convey experiences and events."
+  },
+  {
+   "id": "W.8.3e",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.3",
+   "statement": "Provide a conclusion that follows from and reflects on the narrated experiences or events."
+  },
+  {
+   "id": "W.8.4",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Produce clear and coherent writing in which the development, organization, and style are appropriate to task, purpose, and audience."
+  },
+  {
+   "id": "W.8.5",
+   "grade": "8",
+   "domain": "W",
+   "statement": "With some guidance and support from peers and adults, develop and strengthen writing as needed by planning, revising, editing, rewriting, or trying a new approach, focusing on how well purpose and audience have been addressed."
+  },
+  {
+   "id": "W.8.6",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Use technology, including the Internet, to produce and publish writing and present the relationships between information and ideas efficiently as well as to interact and collaborate with others."
+  },
+  {
+   "id": "W.8.7",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Conduct short research projects to answer a question (including a self-generated question), drawing on several sources and generating additional related, focused questions that allow for multiple avenues of exploration."
+  },
+  {
+   "id": "W.8.8",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Gather relevant information from multiple print and digital sources, using search terms effectively; assess the credibility and accuracy of each source; and quote or paraphrase the data and conclusions of others while avoiding plagiarism and following a standard format for citation."
+  },
+  {
+   "id": "W.8.9",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Draw evidence from literary or informational texts to support analysis, reflection, and research."
+  },
+  {
+   "id": "W.8.9a",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.9",
+   "statement": "Apply grade 8 Reading standards to literature (e.g., \"Analyze how a modern work of fiction draws on themes, patterns of events, or character types from myths, traditional stories, or religious works such as the Bible, including describing how the material is rendered new\")."
+  },
+  {
+   "id": "W.8.9b",
+   "grade": "8",
+   "domain": "W",
+   "parent": "W.8.9",
+   "statement": "Apply grade 8 Reading standards to literary nonfiction (e.g., \"Delineate and evaluate the argument and specific claims in a text, assessing whether the reasoning is sound and the evidence is relevant and sufficient; recognize when irrelevant evidence is introduced\")."
+  },
+  {
+   "id": "W.8.10",
+   "grade": "8",
+   "domain": "W",
+   "statement": "Write routinely over extended time frames (time for research, reflection, and revision) and shorter time frames (a single sitting or a day or two) for a range of discipline-specific tasks, purposes, and audiences."
+  },
+  {
+   "id": "SL.8.1",
+   "grade": "8",
+   "domain": "SL",
+   "statement": "Engage effectively in a range of collaborative discussions (one-on-one, in groups, and teacher-led) with diverse partners on grade 8 topics, texts, and issues, building on others' ideas and expressing their own clearly."
+  },
+  {
+   "id": "SL.8.1a",
+   "grade": "8",
+   "domain": "SL",
+   "parent": "SL.8.1",
+   "statement": "Come to discussions prepared, having read or researched material under study; explicitly draw on that preparation by referring to evidence on the topic, text, or issue to probe and reflect on ideas under discussion."
+  },
+  {
+   "id": "SL.8.1b",
+   "grade": "8",
+   "domain": "SL",
+   "parent": "SL.8.1",
+   "statement": "Follow rules for collegial discussions and decision-making, track progress toward specific goals and deadlines, and define individual roles as needed."
+  },
+  {
+   "id": "SL.8.1c",
+   "grade": "8",
+   "domain": "SL",
+   "parent": "SL.8.1",
+   "statement": "Pose questions that connect the ideas of several speakers and respond to others' questions and comments with relevant evidence, observations, and ideas."
+  },
+  {
+   "id": "SL.8.1d",
+   "grade": "8",
+   "domain": "SL",
+   "parent": "SL.8.1",
+   "statement": "Acknowledge new information expressed by others, and, when warranted, qualify or justify their own views in light of the evidence presented."
+  },
+  {
+   "id": "SL.8.2",
+   "grade": "8",
+   "domain": "SL",
+   "statement": "Analyze the purpose of information presented in diverse media and formats (e.g., visually, quantitatively, orally) and evaluate the motives (e.g., social, commercial, political) behind its presentation."
+  },
+  {
+   "id": "SL.8.3",
+   "grade": "8",
+   "domain": "SL",
+   "statement": "Delineate a speaker's argument and specific claims, evaluating the soundness of the reasoning and relevance and sufficiency of the evidence and identifying when irrelevant evidence is introduced."
+  },
+  {
+   "id": "SL.8.4",
+   "grade": "8",
+   "domain": "SL",
+   "statement": "Present claims and findings (e.g., argument, narrative, response to literature presentations), emphasizing salient points in a focused, coherent manner with relevant evidence, sound valid reasoning, and well-chosen details; use appropriate eye contact, adequate volume, and clear pronunciation."
+  },
+  {
+   "id": "SL.8.4a",
+   "grade": "8",
+   "domain": "SL",
+   "parent": "SL.8.4",
+   "statement": "Plan and present a narrative that: establishes a context and point of view, presents a logical sequence, uses narrative techniques (e.g., dialogue, pacing, description, sensory language), uses a variety of transitions, and provides a conclusion that reflects the experience."
+  },
+  {
+   "id": "SL.8.5",
+   "grade": "8",
+   "domain": "SL",
+   "statement": "Integrate multimedia and visual displays into presentations to clarify information, strengthen claims and evidence, and add interest."
+  },
+  {
+   "id": "SL.8.6",
+   "grade": "8",
+   "domain": "SL",
+   "statement": "Adapt speech to a variety of contexts and tasks, demonstrating command of formal English when indicated or appropriate."
+  },
+  {
+   "id": "L.8.1",
+   "grade": "8",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English grammar and usage when writing or speaking."
+  },
+  {
+   "id": "L.8.1a",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.1",
+   "statement": "Explain the function of verbals (gerunds, participles, infinitives) in general and their function in particular sentences."
+  },
+  {
+   "id": "L.8.1b",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.1",
+   "statement": "Form and use verbs in the active and passive voice."
+  },
+  {
+   "id": "L.8.1c",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.1",
+   "statement": "Form and use verbs in the indicative, imperative, interrogative, conditional, and subjunctive mood."
+  },
+  {
+   "id": "L.8.1d",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.1",
+   "statement": "Recognize and correct inappropriate shifts in verb voice and mood."
+  },
+  {
+   "id": "L.8.2",
+   "grade": "8",
+   "domain": "L",
+   "statement": "Demonstrate command of the conventions of standard English capitalization, punctuation, and spelling when writing."
+  },
+  {
+   "id": "L.8.2a",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.2",
+   "statement": "Use punctuation (comma, ellipsis, dash) to indicate a pause or break."
+  },
+  {
+   "id": "L.8.2b",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.2",
+   "statement": "Use an ellipsis to indicate an omission."
+  },
+  {
+   "id": "L.8.2c",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.2",
+   "statement": "Spell correctly."
+  },
+  {
+   "id": "L.8.3",
+   "grade": "8",
+   "domain": "L",
+   "statement": "Use knowledge of language and its conventions when writing, speaking, reading, or listening."
+  },
+  {
+   "id": "L.8.3a",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.3",
+   "statement": "Use verbs in the active and passive voice and in the conditional and subjunctive mood to achieve particular effects (e.g., emphasizing the actor or the action; expressing uncertainty or describing a state contrary to fact)."
+  },
+  {
+   "id": "L.8.4",
+   "grade": "8",
+   "domain": "L",
+   "statement": "Determine or clarify the meaning of unknown and multiple-meaning words or phrases based on grade 8 reading and content, choosing flexibly from a range of strategies."
+  },
+  {
+   "id": "L.8.4a",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.4",
+   "statement": "Use context (e.g., the overall meaning of a sentence or paragraph; a word's position or function in a sentence) as a clue to the meaning of a word or phrase."
+  },
+  {
+   "id": "L.8.4b",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.4",
+   "statement": "Use common, grade-appropriate Greek or Latin affixes and roots as clues to the meaning of a word (e.g., precede, recede, secede)."
+  },
+  {
+   "id": "L.8.4c",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.4",
+   "statement": "Consult general and specialized reference materials (e.g., dictionaries, glossaries, thesauruses), both print and digital, to find the pronunciation of a word or determine or clarify its precise meaning or its part of speech or trace the etymology of words."
+  },
+  {
+   "id": "L.8.4d",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.4",
+   "statement": "Verify the preliminary determination of the meaning of a word or phrase (e.g., by checking the inferred meaning in context or in a dictionary)."
+  },
+  {
+   "id": "L.8.5",
+   "grade": "8",
+   "domain": "L",
+   "statement": "Demonstrate understanding of figurative language, word relationships, and nuances in word meanings."
+  },
+  {
+   "id": "L.8.5a",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.5",
+   "statement": "Interpret figures of speech (e.g. verbal irony, puns) in context."
+  },
+  {
+   "id": "L.8.5b",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.5",
+   "statement": "Use the relationship between particular words to better understand each of the words."
+  },
+  {
+   "id": "L.8.5c",
+   "grade": "8",
+   "domain": "L",
+   "parent": "L.8.5",
+   "statement": "Distinguish among the connotations (associations) of words with similar denotations (definitions) (e.g., bullheaded, willful, firm, persistent, resolute)."
+  },
+  {
+   "id": "L.8.6",
+   "grade": "8",
+   "domain": "L",
+   "statement": "Acquire and use accurately grade-appropriate general academic and domain-specific words and phrases; gather vocabulary knowledge when considering a word or phrase important to comprehension or expression."
+  }
+ ]
+}

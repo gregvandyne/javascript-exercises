@@ -385,6 +385,8 @@ export function googleRosterInfo(ids) {
 export function googleRosterLine(req, info, p) {
   if (!info) return '';
   const ident = info.ids.get(p.id); const w = info.waiting.get(p.id);
+  // An account made from a Google Classroom roster (routes/gclassroom.js) has no email until its first sign-in.
+  if (ident && !ident.email) return html`<span class="gline small muted">${req.t('gclassroom.roster.notYet')}</span>`;
   if (ident) return html`<span class="gline small muted">${req.t('google.roster.connected', { email: ltr(ident.email) })}</span>`;
   if (w) return html`<span class="gline small muted">${req.t('google.roster.waiting', { email: ltr(w) })}</span>`;
   return '';

@@ -3459,7 +3459,10 @@
       },
       "privacy": {
         "h": "Privacy",
-        "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google."
+        "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google.",
+        "p1c": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and read nothing else from a Google account unless a teacher connects Google Classroom.",
+        "classroom": "When a teacher connects Google Classroom, we read only the names of the classes they teach and, for the class they link, each student's Google account id and name, to add them to the matching Oomba Academy class. We send Google only what the teacher asks for: an assignment (the lesson's title, a link to it and its due date) and each student's lesson score out of 100. We never send students' answers, feedback, games or drawings. The teacher's connection is stored encrypted until they disconnect or delete their account; disconnecting also revokes it at Google.",
+        "limitedUse": "Oomba Academy's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements. We never sell this information, use it for advertising, or use it to train AI models, and our team looks at it only when needed for support, security or the law."
       }
     }
   },
@@ -6839,6 +6842,79 @@
       "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
       "allGames": "See everything students can play",
       "openLive": "Open live game"
+    },
+    "loop": {
+      "kicker": "How Oomba fits your week",
+      "h": "Plan → Play → Check → Feedback",
+      "lead": "One loop for every lesson: plan it, play it with your class, see who needs you, and tell each student what to do next. Every step is a tool that is already in Oomba.",
+      "steps": {
+        "plan": {
+          "name": "Plan",
+          "benefit": "Start from a ready-made lesson or a topic, then turn it into a game your class will want to play."
+        },
+        "play": {
+          "name": "Play",
+          "benefit": "Assign it with open and due dates, or play it live on the big screen with the whole class."
+        },
+        "check": {
+          "name": "Check",
+          "benefit": "See every student's progress at a glance, and who needs your help first."
+        },
+        "feedback": {
+          "name": "Feedback",
+          "benefit": "Read each answer and write feedback that the student sees on their own lesson."
+        }
+      },
+      "tools": {
+        "builder": "Turn a lesson into a game",
+        "assign": "Assign to a class",
+        "gradebook": "Gradebook",
+        "gradebookCsv": "Gradebook with CSV download",
+        "standards": "Standards tab",
+        "review": "Answers to review",
+        "written": "Written feedback students see",
+        "library": "Lesson library",
+        "draftAi": "Draft with AI",
+        "attention": "Needs attention first",
+        "csv": "Download (CSV)",
+        "live": "Host a live game"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "The gradebook: students down the side, lessons across the top, with steps done and answers to read",
+          "caption": "Gradebook: the whole class at a glance, ready to download as a CSV file."
+        },
+        "attention": {
+          "alt": "One lesson's progress, sorted so the students who need attention come first",
+          "caption": "Needs attention first: answers to read, late work and half-done lessons on top."
+        },
+        "feedback": {
+          "alt": "A student's written answer with the teacher's feedback box and the save button",
+          "caption": "Feedback: write a note, save it, and the student sees it on their lesson."
+        },
+        "standards": {
+          "alt": "The class Standards tab: computer science standards with how far each student has got",
+          "caption": "Standards: the computer science standards your class has covered, student by student."
+        }
+      },
+      "home": {
+        "h": "Your teaching loop",
+        "lead": "Try each step once with {class}. Each one ticks itself off as you go.",
+        "leadNoClass": "Make your first class, then try each step once. Each one ticks itself off as you go.",
+        "makeClass": "Make your first class",
+        "count": "{done} of {total} done",
+        "done": "Done",
+        "todo": "Not done yet",
+        "hide": "Hide",
+        "hidden": "Hidden. You can always find it under How Oomba fits your week."
+      },
+      "page": {
+        "title": "How Oomba fits your week",
+        "lead": "Plan a lesson, play it, check who needs you and give feedback: the tools for each step, ready for your class.",
+        "link": "How Oomba fits your week",
+        "show": "Show the checklist on {classroom}",
+        "shown": "The checklist is back on {classroom}."
+      }
     }
   },
   "courses": {
@@ -7433,6 +7509,474 @@
       "theme": "Theme",
       "dark": "Dark",
       "light": "Light"
+    }
+  },
+  "rubrics": {
+    "title": "Rubrics",
+    "intro": "Reusable rubrics: criteria down the side, levels across the top. Attach one to a written answer, a build or a whole lesson, then score each student by tapping a level.",
+    "mine": "My rubrics",
+    "shared": "Shared by colleagues",
+    "new": "New rubric",
+    "newPlaceholder": "Rubric title, e.g. Persuasive paragraph",
+    "untitled": "New rubric",
+    "empty": "No rubrics yet",
+    "emptyText": "Make a new rubric, let the AI draft one, or add a starter rubric from CS Quest.",
+    "sharedEmpty": "No shared rubrics yet",
+    "sharedEmptyText": "When colleagues share a rubric with the school, it shows up here for you to copy.",
+    "criterion": "Criterion",
+    "criteriaN": "{count, plural, one {# criterion} other {# criteria}}",
+    "levelsN": "{count, plural, one {# level} other {# levels}}",
+    "pointsN": "{count, plural, one {# point} other {# points}}",
+    "maxPoints": "Out of {points}",
+    "usedN": "{count, plural, one {Used in # lesson} other {Used in # lessons}}",
+    "usedIn": "Used in",
+    "notUsed": "Not attached to a lesson yet. Attach it from a lesson's step or its details.",
+    "wholeLesson": "Whole lesson",
+    "stepsN": "{count, plural, one {# step} other {# steps}}",
+    "print": "Print",
+    "printName": "Name:",
+    "printPoints": "Points: ____ / {max}",
+    "backToRubric": "Back to the rubric",
+    "preview": "Preview the grid",
+    "copy": "Make a copy",
+    "copyMine": "Copy to my rubrics",
+    "copyTitle": "{title} (copy)",
+    "copiedNotice": "This is your copy. Change it as you like: the original stays as it was.",
+    "share": "Share with my school",
+    "unshare": "Stop sharing",
+    "sharedStatus": "Shared with your school",
+    "sharedToast": "Shared with your school's staff",
+    "unsharedToast": "Not shared any more",
+    "delete": "Delete rubric",
+    "deleteConfirm": "Delete the rubric {title}? Scores already given keep what they showed.",
+    "deleteUsedConfirm": "{count, plural, one {{title} is attached to # lesson. Take it off and delete the rubric? Scores already given keep what they showed.} other {{title} is attached to # lessons. Take it off them and delete the rubric? Scores already given keep what they showed.}}",
+    "deletedToast": "Rubric deleted",
+    "levelNames": {
+      "notYet": "Not yet",
+      "beginning": "Beginning",
+      "developing": "Developing",
+      "secure": "Secure",
+      "excellent": "Excellent"
+    },
+    "template": {
+      "understanding": "Understanding",
+      "explaining": "Explaining their thinking",
+      "care": "Care and effort",
+      "level0": "Not shown yet",
+      "level1": "Partly shown, with help",
+      "level2": "Clearly shown",
+      "level3": "Shown with depth and detail"
+    },
+    "editor": {
+      "title": "Rubric title",
+      "description": "Notes for teachers",
+      "levels": "Levels",
+      "levelsHint": "The columns: a name and the points each one is worth.",
+      "levelLabel": "Level {n}",
+      "points": "Points",
+      "newLevel": "New level",
+      "addLevel": "Add a level",
+      "removeLevel": "Remove the level {name}",
+      "criteria": "Criteria",
+      "criteriaHint": "The rows: what you look for, and what the work shows at each level.",
+      "criterionN": "Criterion {n}",
+      "descPlaceholder": "What the work shows at this level",
+      "addCriterion": "Add a criterion",
+      "removeCriterion": "Remove the criterion {name}"
+    },
+    "ai": {
+      "button": "Draft a rubric with AI",
+      "task": "What do the students do?",
+      "taskPlaceholder": "e.g. write a paragraph explaining why their game is fair",
+      "levels": "Levels",
+      "make": "Draft my rubric",
+      "note": "Only what you type here is sent to the AI, never your students' work or names. You can change everything afterwards.",
+      "done": "Here is your AI draft. Read it through and change anything before you use it.",
+      "template": "The AI is not available right now, so here is a simple starting rubric to edit."
+    },
+    "starters": {
+      "title": "Starter rubrics",
+      "intro": "Every CS Quest lesson's exit ticket comes with a rubric (levels 0 to 3, in English). Add one to your rubrics to use it with any lesson, or change it to fit.",
+      "add": "Add to my rubrics",
+      "addFor": "Add {title} to my rubrics",
+      "added": "Added to your rubrics. Change it as you like.",
+      "fromLesson": "From the CS Quest lesson {title}."
+    },
+    "attach": {
+      "step": "Rubric",
+      "lesson": "Rubric for the whole lesson",
+      "lessonTitle": "Whole-lesson rubric",
+      "lessonHint": "Score each student on the whole lesson from its progress page.",
+      "none": "No rubric",
+      "hint": "Score the answers or builds for this step with it.",
+      "noneYet": "You have no rubrics yet.",
+      "library": "Rubrics"
+    },
+    "score": {
+      "label": "Score with {title}",
+      "total": "{points} points",
+      "notScored": "Not scored",
+      "partial": "{n} of {total} scored",
+      "comment": "Add a comment",
+      "commentFor": "Comment on {name}",
+      "given": "the level given",
+      "changed": "The rubric has changed since this was scored. Score it again to use the new version.",
+      "scored": "Scored",
+      "lessonHint": "Tap a level for each criterion, add comments if you like, then save. Each student sees only their own result."
+    },
+    "student": {
+      "fromTeacherLesson": "From your teacher: the whole lesson"
+    },
+    "gradebook": {
+      "key": "rubric points",
+      "cellTitle": "Rubric: {points} points ({pct}%)"
+    },
+    "csv": {
+      "points": "{title} (rubric points)",
+      "percent": "{title} (rubric %)",
+      "totalPoints": "Rubric points",
+      "totalPercent": "Rubric %"
+    },
+    "errors": {
+      "notFound": "We couldn't find that rubric.",
+      "rubricTitle": "Give the rubric a title.",
+      "rubricLevels": "A rubric has 2 to 6 levels.",
+      "rubricCriteria": "A rubric has 1 to 12 criteria.",
+      "rubricLabel": "Give every level a name.",
+      "rubricPoints": "Points are a number from 0 to 100.",
+      "rubricName": "Give every criterion a name.",
+      "tooManyRubrics": "You have the most rubrics allowed in this school. Delete one you no longer use.",
+      "inUse": "{count, plural, one {This rubric is attached to # lesson.} other {This rubric is attached to # lessons.}}",
+      "task": "Say what the students do.",
+      "aiFailed": "The AI could not draft a rubric just now. Please try again in a minute.",
+      "pick": "Pick one of your own rubrics (copy a colleague's first)."
+    }
+  },
+  "standards": {
+    "fw": {
+      "csta": "Computer science (CSTA)",
+      "math": "Common Core Math",
+      "ela": "Common Core ELA"
+    },
+    "picker": "Standards framework",
+    "notice": "Common Core State Standards, used under the CCSS public license.",
+    "class": {
+      "lead": "Which Common Core standards this class covers through its assigned lessons, the Learn games in them, live games and courses, and how each student is doing. Built from work already recorded: nothing new is collected.",
+      "grade": "Grade",
+      "covered": "Covered standards only",
+      "allOf": "Every {grade} standard",
+      "summaryH": "Coverage by grade",
+      "summary": "{covered} of {total} standards covered"
+    },
+    "cols": {
+      "standard": "Standard",
+      "sources": "Covered by",
+      "practiced": "Practiced",
+      "checked": "Questions",
+      "rubric": "Rubric",
+      "needsLook": "Needs a look",
+      "last": "Last",
+      "status": "Status",
+      "level": "Level"
+    },
+    "status": {
+      "notYet": "Not yet",
+      "covered": "Covered",
+      "practiced": "Practiced",
+      "checked": "Checked",
+      "meets": "Meets"
+    },
+    "level": {
+      "none": "No evidence",
+      "practiced": "Practiced",
+      "developing": "Developing",
+      "meets": "Meets"
+    },
+    "checkedVal": "{pct}% · {answered, plural, one {# answer} other {# answers}} · {students, plural, one {# student} other {# students}}",
+    "rubricVal": "{pct}% · {count} scored",
+    "rubricBest": "best {pct}% · {count} scored",
+    "mine": "{right} of {answered} right",
+    "src": {
+      "live": "{count, plural, one {# live game} other {# live games}}"
+    },
+    "legend": {
+      "h": "How to read it",
+      "sources": "Covered by: the assigned lessons tagged with the standard (or with a step or a Learn game that practices it), live games that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
+      "practiced": "Practiced: students who finished an activity that practices the standard. It means they did it, not mastery.",
+      "checked": "Questions: right answers out of answered questions about the standard (lesson quizzes, live games, Number Quest checks).",
+      "rubric": "Rubric: rubric scores on the standard, as a share of the top score. Shown once rubrics are tagged with Common Core standards.",
+      "meets": "Meets: a student meets a standard with at least 80% right over 3 or more questions, or a rubric score of at least two thirds. The class meets it when 80% of its students do.",
+      "needs": "Needs a look: students who answered 2 or more questions about the standard and got none right. Only teachers see this.",
+      "games": "Games with levels for several grades (Sum Racer, Fraction Factory, Word Trail, Tug of Math) count as practice only for the lesson's grade, or for the level the step is locked to. For a lesson with no grade they show under Covered by only.",
+      "live": "Live games such as Tug of Math Live don't record which question was about which standard, so a student's answers are shared out across the game's standards. Those numbers are estimates.",
+      "courses": "Number Quest counts work done with a school account, or since the student joined this class. One check (3 questions) alone is not enough to meet a standard."
+    },
+    "empty": {
+      "title": "No Common Core standards yet",
+      "text": "Tag your lessons with standards, or assign lessons with Learn games like Sum Racer, Fraction Factory or Word Trail, and they show up here."
+    },
+    "csvCols": {
+      "code": "Code",
+      "grade": "Grade",
+      "domain": "Domain",
+      "statement": "Statement",
+      "sources": "Covered by",
+      "practiced": "Practiced (students)",
+      "students": "Students in class",
+      "pct": "Right %",
+      "answered": "Questions answered",
+      "checkedStudents": "Students with answers",
+      "rubric": "Rubric %",
+      "meets": "Students meeting",
+      "needsLook": "Needs a look (students)",
+      "last": "Last activity",
+      "status": "Status"
+    },
+    "lesson": {
+      "title": "Standards",
+      "lead": "Tag this lesson, or one of its steps, with the Common Core standards it works on. They show up on the Standards tab of every class it is assigned to.",
+      "back": "Back to the lesson",
+      "current": "Tagged standards",
+      "none": "No standards tagged yet.",
+      "whole": "Whole lesson",
+      "stepN": "Step {n}: {title}",
+      "remove": "Remove",
+      "removeLabel": "Remove {code}",
+      "removed": "{code} removed",
+      "add": "Add",
+      "addLabel": "Add {code}",
+      "added": "{code} added",
+      "addTo": "Add to",
+      "find": "Find standards",
+      "search": "Search",
+      "searchHint": "A code like 3.OA.C.7, or words like fractions",
+      "searchHintEla": "A code like RL.3.2, or words like main idea",
+      "domain": "Domain",
+      "domainAll": "All domains",
+      "gradeAny": "All grades",
+      "results": "{count, plural, one {# standard} other {# standards}}",
+      "more": "Showing the first {shown}: narrow the search to see the rest.",
+      "noResults": "No standards match. Try another grade, domain or word.",
+      "tagged": "Tagged",
+      "open": "Tag standards",
+      "view": "See standards",
+      "editorNone": "No Common Core standards tagged yet.",
+      "onSteps": "{count, plural, one {# standard tagged on steps} other {# standards tagged on steps}}",
+      "gameCodes": "{framework} standards this game practices",
+      "gameNeedsGrade": "This game has levels for several grades. Give the lesson a grade (or lock the step to one level) to count its standards as practice."
+    },
+    "errors": {
+      "badCode": "That is not a Common Core code.",
+      "badStep": "That step is not in this lesson.",
+      "tooMany": "A lesson can have up to 60 standards.",
+      "badFramework": "Pick Common Core Math or ELA."
+    },
+    "learn": {
+      "label": "Standard",
+      "hint": "e.g. 3.OA or RF.K"
+    }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Your Google Classroom",
+      "text": "Connect the Google account you teach with in Google Classroom. Then you can:",
+      "what": {
+        "courses": "link this class to one of your Classroom classes",
+        "roster": "bring its students in, so they sign in with Google",
+        "post": "post lessons there, with a link back here and the due date",
+        "grades": "send each student's lesson completion grade to Classroom"
+      },
+      "button": "Connect Google Classroom",
+      "privacy": "Only you see this connection. Oomba Academy sends Classroom the lesson title, a link, the due date and each student's completion grade out of 100. Nothing else: no names, answers or games.",
+      "connectedAs": "Connected as {email}",
+      "connectedHint": "This connection is yours: your co-teachers connect their own.",
+      "connectedToast": "Google Classroom is connected.",
+      "disconnect": "Disconnect",
+      "disconnectConfirm": "Disconnect Google Classroom? Oomba Academy will stop syncing for you and delete its key to your Classroom. Lessons already posted stay in Classroom.",
+      "disconnected": "Google Classroom is disconnected.",
+      "reconnect": "Connect again"
+    },
+    "course": {
+      "heading": "Linked Classroom class",
+      "text": "Pick the Google Classroom class that matches {class}.",
+      "none": "No active Google Classroom classes where you teach.",
+      "pick": "Choose a Classroom class",
+      "link": "Link",
+      "linked": "Linked to {course}.",
+      "linkedTo": "Linked to {course}",
+      "unlink": "Unlink",
+      "unlinkConfirm": "Unlink {course}? Students and lessons stay where they are.",
+      "unlinked": "Unlinked.",
+      "connectFirst": "Connect your Google Classroom above to sync it.",
+      "refresh": "Refresh the list"
+    },
+    "roster": {
+      "heading": "Students from Classroom",
+      "text": "Brings in the students of the linked Classroom class. Students already here are matched by their Google account. Students new to Oomba Academy join the first time they sign in with Google on your school's domain, and get a school account then. Their real names stay with teachers.",
+      "button": "Import students",
+      "last": "Last import {when}",
+      "noDomains": "Your school hasn't added its Google domain yet, so new students can't be added. Ask your school admin.",
+      "noDomainsAdmin": "Add your school's Google domain first, so new students can sign in: {link}",
+      "hint": "Using Google Classroom? {link}",
+      "hintLink": "Import its students",
+      "notYet": "Google: from Classroom, not signed in yet",
+      "resultAdded": "{count, plural, one {# student added} other {# students added}}",
+      "resultAlready": "{count, plural, one {# already here} other {# already here}}",
+      "resultOwn": "{count, plural, one {# uses their own account: they can join with the class code} other {# use their own accounts: they can join with the class code}}",
+      "resultOther": "{count, plural, one {# belongs to another school} other {# belong to another school}}",
+      "resultStaff": "{count, plural, one {# is staff here} other {# are staff here}}",
+      "resultDomains": "{count, plural, one {# not added: add your school's Google domain first} other {# not added: add your school's Google domain first}}",
+      "resultWaiting": "{count, plural, one {# will join when they first sign in with Google on your school's domain} other {# will join when they first sign in with Google on your school's domain}}",
+      "waitingNow": "{count, plural, one {# student from Classroom hasn't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).} other {# students from Classroom haven't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).}}"
+    },
+    "post": {
+      "heading": "Lessons in Classroom",
+      "text": "Posting a lesson makes an assignment in Classroom with its title, a link to the lesson here and its due date.",
+      "button": "Post to Google Classroom",
+      "also": "Also post to Google Classroom",
+      "description": "Open this lesson on Oomba Academy.",
+      "done": "Posted to Google Classroom.",
+      "donePastDue": "Posted to Google Classroom (without a due date: it has passed).",
+      "failed": "Not posted to Google Classroom:",
+      "due": "Due {date}",
+      "noDue": "No due date",
+      "posted": "Posted",
+      "open": "Open in Classroom",
+      "noLessons": "No lessons in this class yet. Assign one on the Lessons tab.",
+      "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens."
+    },
+    "grades": {
+      "text": "This is a completion grade: the share of the lesson's steps a student has done, out of 100. It doesn't count right answers. Students who haven't started are left out.",
+      "as": "Send as",
+      "draft": "Draft grade (you return it in Classroom)",
+      "assigned": "Assigned grade",
+      "button": "Send completion grades",
+      "lastDraft": "Draft completion grades sent {when}",
+      "lastAssigned": "Assigned completion grades sent {when}",
+      "resultSent": "{count, plural, one {# completion grade sent} other {# completion grades sent}}",
+      "resultNotStarted": "{count, plural, one {# hasn't started} other {# haven't started}}",
+      "resultNotMatched": "{count, plural, one {# not in this class} other {# not in this class}}",
+      "resultFailed": "{count, plural, one {# didn't go through} other {# didn't go through}}"
+    },
+    "log": {
+      "heading": "Recent syncs",
+      "kinds": {
+        "connect": "Connected",
+        "disconnect": "Disconnected",
+        "link": "Linked a class",
+        "unlink": "Unlinked",
+        "roster": "Imported students",
+        "post": "Posted a lesson",
+        "grades": "Sent grades"
+      }
+    },
+    "errors": {
+      "notSetUp": "Google Classroom isn't set up on this site yet. Ask the site's owner to finish the setup.",
+      "notConnected": "Connect your Google Classroom first.",
+      "reconnect": "Your Google Classroom connection stopped working. Please connect again.",
+      "notLinked": "Link this class to a Classroom class first.",
+      "pickCourse": "Choose a Classroom class.",
+      "courseNotYours": "That Classroom class isn't one you teach.",
+      "courseGone": "Google Classroom can't find that class or assignment any more.",
+      "denied": "Google Classroom said no. You may not be a teacher of that class, or your school limits this app.",
+      "rateLimited": "Google Classroom is busy. Please try again in a few minutes.",
+      "googleDown": "Google Classroom didn't answer. Please try again.",
+      "badRequest": "Google Classroom didn't accept that.",
+      "tooMany": "That Classroom class has more than {max} students.",
+      "alreadyPosted": "This lesson is already in Google Classroom.",
+      "notPosted": "Post this lesson to Google Classroom first.",
+      "badMode": "Choose how to send the grades.",
+      "scopesMissing": "Please check every box on Google's screen, so Oomba Academy can see your classes and post work.",
+      "noRefresh": "Google didn't send a key we can keep. Please connect again.",
+      "expired": "That took too long. Please try again.",
+      "cancelled": "You canceled on Google's screen. Nothing was connected.",
+      "staffOnly": "Only teachers and school admins can use Google Classroom here.",
+      "tooManyTries": "Too many syncs for now. Please try again in an hour."
+    }
+  },
+  "digest": {
+    "when": "{day} at {time} ({zone})",
+    "email": {
+      "subject": "Your weekly class summary for {date}",
+      "preview": "{count, plural, one {Counts for # class, with links to see more on Oomba Academy.} other {Counts for # classes, with links to see more on Oomba Academy.}}",
+      "heading": "Week of {date}",
+      "greeting": "Hi {name},",
+      "greetingNoName": "Hi there,",
+      "intro": "Here's how your classes are doing. Names and answers stay on the site, where only you and your school's staff can see them.",
+      "due": "{count, plural, =0 {No lessons due this week} one {# lesson due this week} other {# lessons due this week}}",
+      "pct": "{pct}% of the work in open lessons done",
+      "noWork": "No open lessons with steps yet",
+      "toRead": "{count, plural, =0 {No answers waiting for review} one {# answer waiting for review} other {# answers waiting for review}}",
+      "notStarted": "{count, plural, =0 {Every student has started} one {# student hasn't started yet} other {# students haven't started yet}}",
+      "live": "{count, plural, =0 {No live games in the last 7 days} one {# live game in the last 7 days} other {# live games in the last 7 days}}",
+      "openClass": "Open the class",
+      "review": "Review answers",
+      "progress": "See progress",
+      "quiet": "{count, plural, one {# class had nothing new and is left out.} other {# classes had nothing new and are left out.}}",
+      "cta": "See this week's summary",
+      "classroom": "Go to your Classroom",
+      "why": "You get this weekly summary because you teach a class on Oomba Academy.",
+      "change": "Change the day or time",
+      "stop": "Stop these summaries"
+    },
+    "unsub": {
+      "title": "Weekly class summary",
+      "askTitle": "Stop the weekly class summary?",
+      "askText": "You'll stop getting the weekly email about your classes. Everything stays on the site, and you can turn it back on from your Me page.",
+      "button": "Stop the summaries",
+      "offTitle": "The weekly summary is off",
+      "offText": "You won't get the weekly email about your classes any more. Other emails about your account aren't affected.",
+      "again": "Turn it back on",
+      "againTitle": "The weekly summary is back on",
+      "againText": "You'll get it again on the day and at the time shown on your Me page.",
+      "badTitle": "This link doesn't work",
+      "badText": "The link may have been cut short when it was copied. You can also turn the summary off on your Me page."
+    },
+    "me": {
+      "heading": "Weekly class summary",
+      "text": "Once a week we email you counts for each class you teach: lessons due, work done, answers to review, students who haven't started and live games. Never a student's name or answer.",
+      "noAddress": "We don't have an email address for you yet. Connect Google on this page and the summary goes to that address.",
+      "on": "Email me the weekly summary",
+      "day": "Day",
+      "hour": "Time",
+      "zone": "Time zone",
+      "zoneSchool": "My school's time zone ({zone})",
+      "zoneDefault": "Default ({zone})",
+      "save": "Save",
+      "saved": "Saved."
+    },
+    "page": {
+      "link": "This week's summary",
+      "title": "This week's summary",
+      "sub": "Each class you teach: the last 7 days, and lessons due in the next 7.",
+      "next": "Your summary email goes out every {when}.",
+      "off": "The weekly summary email is off. You can still check this page any time.",
+      "noAddress": "We don't have an email address for you yet, so no summary email goes out. Connect Google on your Me page.",
+      "noAddressPlain": "We don't have an email address for you yet, so no summary email goes out.",
+      "privacy": "Student names are shown on this page only, never in the email.",
+      "seeEmail": "See the email",
+      "change": "Change when it's sent",
+      "statDue": "Due this week",
+      "statDone": "Work done",
+      "statToRead": "To review",
+      "statNotStarted": "Not started",
+      "statLive": "Live games",
+      "dueHeading": "Due this week",
+      "finished": "{done} of {count} finished",
+      "toReadHeading": "Answers to review",
+      "notStartedHeading": "{count, plural, one {# student hasn't started} other {# students haven't started}}",
+      "noClasses": "No classes yet",
+      "noClassesText": "Make a class in your Classroom and its summary shows here.",
+      "quietAll": "A quiet week",
+      "quietAllText": "Nothing new in your classes in the last 7 days, so no email goes out this week.",
+      "quietHeading": "Nothing new",
+      "quietText": "These classes had nothing new in the last 7 days. They're left out of the email."
+    },
+    "errors": {
+      "badDay": "Pick a day.",
+      "badHour": "Pick a time.",
+      "badZone": "Pick a time zone from the list."
     }
   }
 }

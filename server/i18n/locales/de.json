@@ -3431,7 +3431,10 @@
       },
       "privacy": {
         "h": "Datenschutz",
-        "p1": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und nutzen das Konto nie, um sonst etwas von Google abzurufen."
+        "p1": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und nutzen das Konto nie, um sonst etwas von Google abzurufen.",
+        "p1c": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und rufen sonst nichts aus einem Google-Konto ab, außer eine Lehrkraft verbindet Google Classroom.",
+        "classroom": "Wenn eine Lehrkraft Google Classroom verbindet, lesen wir nur die Namen der Kurse, die sie unterrichtet, und für den Kurs, den sie verknüpft, die Google-Konto-ID und den Namen jedes Schülers, um sie der passenden Klasse in Oomba Academy hinzuzufügen. Wir senden an Google nur, was die Lehrkraft anfordert: eine Aufgabe (den Titel der Lektion, einen Link dazu und das Abgabedatum) und die Punktzahl jedes Schülers in der Lektion (von 100). Wir senden nie Antworten, Feedback, Spiele oder Zeichnungen von Schülern. Die Verbindung der Lehrkraft wird verschlüsselt gespeichert, bis sie die Verbindung trennt oder ihr Konto löscht; beim Trennen wird sie auch bei Google widerrufen.",
+        "limitedUse": "Die Nutzung und Weitergabe von Informationen, die Oomba Academy von Google-APIs erhält, entspricht der Google API Services User Data Policy, einschließlich der Limited-Use-Anforderungen (Anforderungen zur eingeschränkten Nutzung). Wir verkaufen diese Informationen nie, nutzen sie nie für Werbung und nie zum Trainieren von KI-Modellen, und unser Team sieht sie sich nur an, wenn es für Support, Sicherheit oder aus rechtlichen Gründen nötig ist."
       }
     }
   },
@@ -7026,6 +7029,547 @@
       "breaksText": "Kurze, lustige Spiele aus „Spielen“, ausgesucht für eine 5-Minuten-Pause auf dem großen Bildschirm.",
       "allGames": "Alles ansehen, was Schüler spielen können",
       "openLive": "Live-Spiel öffnen"
+    },
+    "loop": {
+      "kicker": "So passt Oomba in deine Woche",
+      "h": "Planen → Spielen → Prüfen → Rückmelden",
+      "lead": "Ein Kreislauf für jede Lektion: planen, mit der Klasse spielen, sehen, wer dich braucht, und jedem Kind sagen, wie es weitergeht. Jeder Schritt ist ein Werkzeug, das es in Oomba schon gibt.",
+      "steps": {
+        "plan": {
+          "name": "Planen",
+          "benefit": "Starte mit einer fertigen Lektion oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
+        },
+        "play": {
+          "name": "Spielen",
+          "benefit": "Gib sie mit Start- und Abgabedatum auf oder spiele sie live mit der ganzen Klasse auf dem großen Bildschirm."
+        },
+        "check": {
+          "name": "Prüfen",
+          "benefit": "Sieh den Fortschritt aller Kinder auf einen Blick und wer deine Hilfe zuerst braucht."
+        },
+        "feedback": {
+          "name": "Rückmelden",
+          "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Lektion sieht."
+        }
+      },
+      "tools": {
+        "builder": "Aus einer Lektion ein Spiel machen",
+        "assign": "Einer Klasse aufgeben",
+        "gradebook": "Notenübersicht",
+        "gradebookCsv": "Notenübersicht mit CSV-Download",
+        "standards": "Tab „Standards“",
+        "review": "Antworten zum Lesen",
+        "written": "Schriftliche Rückmeldung für die Kinder",
+        "library": "Lektionsbibliothek",
+        "draftAi": "Mit KI entwerfen",
+        "attention": "Wer Hilfe braucht, zuerst",
+        "csv": "Herunterladen (CSV)",
+        "live": "Live-Spiel leiten"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "Die Notenübersicht: Kinder untereinander, Lektionen nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
+          "caption": "Notenübersicht: die ganze Klasse auf einen Blick, als CSV-Datei herunterladbar."
+        },
+        "attention": {
+          "alt": "Der Fortschritt einer Lektion, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
+          "caption": "Zuerst, wer Aufmerksamkeit braucht: Antworten zum Lesen, Verspätetes und halb Fertiges oben."
+        },
+        "feedback": {
+          "alt": "Die schriftliche Antwort eines Kindes mit dem Rückmeldefeld der Lehrkraft und dem Speichern-Knopf",
+          "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Lektion."
+        },
+        "standards": {
+          "alt": "Der Tab „Standards“ der Klasse: Informatik-Standards und wie weit jedes Kind ist",
+          "caption": "Standards: welche Informatik-Standards deine Klasse schon abgedeckt hat, Kind für Kind."
+        }
+      },
+      "home": {
+        "h": "Dein Unterrichtskreislauf",
+        "lead": "Probiere jeden Schritt einmal mit {class} aus. Jeder hakt sich von selbst ab.",
+        "leadNoClass": "Lege deine erste Klasse an und probiere dann jeden Schritt einmal aus. Jeder hakt sich von selbst ab.",
+        "makeClass": "Erste Klasse anlegen",
+        "count": "{done} von {total} erledigt",
+        "done": "Erledigt",
+        "todo": "Noch nicht erledigt",
+        "hide": "Ausblenden",
+        "hidden": "Ausgeblendet. Du findest es jederzeit unter „So passt Oomba in deine Woche“."
+      },
+      "page": {
+        "title": "So passt Oomba in deine Woche",
+        "lead": "Lektion planen, spielen, prüfen, wer dich braucht, und Rückmeldung geben: die Werkzeuge für jeden Schritt, bereit für deine Klasse.",
+        "link": "So passt Oomba in deine Woche",
+        "show": "Checkliste wieder in „{classroom}“ zeigen",
+        "shown": "Die Checkliste ist wieder in „{classroom}“."
+      }
+    }
+  },
+  "rubrics": {
+    "title": "Bewertungsraster",
+    "intro": "Wiederverwendbare Bewertungsraster: Kriterien in den Zeilen, Stufen in den Spalten. Verknüpfen Sie ein Raster mit einer schriftlichen Antwort, einem gebauten Spiel oder einer ganzen Lektion und bewerten Sie jedes Kind mit einem Tipp auf eine Stufe.",
+    "mine": "Meine Raster",
+    "shared": "Vom Kollegium geteilt",
+    "new": "Neues Raster",
+    "newPlaceholder": "Titel des Rasters, z. B. Argumentierender Absatz",
+    "untitled": "Neues Raster",
+    "empty": "Noch keine Raster",
+    "emptyText": "Erstellen Sie ein neues Raster, lassen Sie die KI einen Entwurf schreiben, oder fügen Sie ein Startraster aus CS Quest hinzu.",
+    "sharedEmpty": "Noch keine geteilten Raster",
+    "sharedEmptyText": "Wenn jemand aus dem Kollegium ein Raster mit der Schule teilt, erscheint es hier zum Kopieren.",
+    "criterion": "Kriterium",
+    "criteriaN": "{count, plural, one {# Kriterium} other {# Kriterien}}",
+    "levelsN": "{count, plural, one {# Stufe} other {# Stufen}}",
+    "pointsN": "{count, plural, one {# Punkt} other {# Punkte}}",
+    "maxPoints": "Von {points}",
+    "usedN": "{count, plural, one {In # Lektion verwendet} other {In # Lektionen verwendet}}",
+    "usedIn": "Verwendet in",
+    "notUsed": "Noch mit keiner Lektion verknüpft. Verknüpfen Sie es bei einem Schritt einer Lektion oder in ihren Angaben.",
+    "wholeLesson": "Ganze Lektion",
+    "stepsN": "{count, plural, one {# Schritt} other {# Schritte}}",
+    "print": "Drucken",
+    "printName": "Name:",
+    "printPoints": "Punkte: ____ / {max}",
+    "backToRubric": "Zurück zum Raster",
+    "preview": "Raster ansehen",
+    "copy": "Kopie erstellen",
+    "copyMine": "In meine Raster kopieren",
+    "copyTitle": "{title} (Kopie)",
+    "copiedNotice": "Das ist Ihre Kopie. Ändern Sie sie nach Belieben: Das Original bleibt, wie es war.",
+    "share": "Mit meiner Schule teilen",
+    "unshare": "Nicht mehr teilen",
+    "sharedStatus": "Mit Ihrer Schule geteilt",
+    "sharedToast": "Mit dem Kollegium Ihrer Schule geteilt",
+    "unsharedToast": "Wird nicht mehr geteilt",
+    "delete": "Raster löschen",
+    "deleteConfirm": "Das Raster {title} löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.",
+    "deleteUsedConfirm": "{count, plural, one {{title} ist mit # Lektion verknüpft. Dort entfernen und das Raster löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.} other {{title} ist mit # Lektionen verknüpft. Dort entfernen und das Raster löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.}}",
+    "deletedToast": "Raster gelöscht",
+    "levelNames": {
+      "notYet": "Noch nicht",
+      "beginning": "Anfänge",
+      "developing": "Auf dem Weg",
+      "secure": "Sicher",
+      "excellent": "Hervorragend"
+    },
+    "template": {
+      "understanding": "Verständnis",
+      "explaining": "Erklärt die eigenen Gedanken",
+      "care": "Sorgfalt und Einsatz",
+      "level0": "Noch nicht zu sehen",
+      "level1": "Teilweise, mit Hilfe",
+      "level2": "Deutlich zu sehen",
+      "level3": "Mit Tiefe und vielen Details"
+    },
+    "editor": {
+      "title": "Titel des Rasters",
+      "description": "Notizen für Lehrkräfte",
+      "levels": "Stufen",
+      "levelsHint": "Die Spalten: ein Name und die Punkte, die jede Stufe wert ist.",
+      "levelLabel": "Stufe {n}",
+      "points": "Punkte",
+      "newLevel": "Neue Stufe",
+      "addLevel": "Stufe hinzufügen",
+      "removeLevel": "Stufe {name} entfernen",
+      "criteria": "Kriterien",
+      "criteriaHint": "Die Zeilen: worauf Sie achten und was die Arbeit auf jeder Stufe zeigt.",
+      "criterionN": "Kriterium {n}",
+      "descPlaceholder": "Was die Arbeit auf dieser Stufe zeigt",
+      "addCriterion": "Kriterium hinzufügen",
+      "removeCriterion": "Kriterium {name} entfernen"
+    },
+    "ai": {
+      "button": "Raster mit KI entwerfen",
+      "task": "Was machen die Kinder?",
+      "taskPlaceholder": "z. B. einen Absatz schreiben, der erklärt, warum ihr Spiel fair ist",
+      "levels": "Stufen",
+      "make": "Mein Raster entwerfen",
+      "note": "Nur was Sie hier eingeben, geht an die KI, niemals die Arbeiten oder Namen Ihrer Klasse. Sie können danach alles ändern.",
+      "done": "Hier ist der Entwurf der KI. Lesen Sie ihn durch und ändern Sie, was Sie möchten, bevor Sie ihn verwenden.",
+      "template": "Die KI ist gerade nicht verfügbar. Hier ist ein einfaches Startraster zum Bearbeiten."
+    },
+    "starters": {
+      "title": "Startraster",
+      "intro": "Zu jedem Exit-Ticket einer CS-Quest-Lektion gehört ein Raster (Stufen 0 bis 3, auf Englisch). Fügen Sie eines Ihren Rastern hinzu, um es mit jeder Lektion zu nutzen, oder passen Sie es an.",
+      "add": "Zu meinen Rastern",
+      "addFor": "{title} zu meinen Rastern hinzufügen",
+      "added": "Zu Ihren Rastern hinzugefügt. Ändern Sie es nach Belieben.",
+      "fromLesson": "Aus der CS-Quest-Lektion {title}."
+    },
+    "attach": {
+      "step": "Bewertungsraster",
+      "lesson": "Raster für die ganze Lektion",
+      "lessonTitle": "Raster für die ganze Lektion",
+      "lessonHint": "Bewerten Sie jedes Kind für die ganze Lektion auf ihrer Fortschrittsseite.",
+      "none": "Kein Raster",
+      "hint": "Bewerten Sie damit die Antworten oder Spiele dieses Schritts.",
+      "noneYet": "Sie haben noch keine Raster.",
+      "library": "Bewertungsraster"
+    },
+    "score": {
+      "label": "Mit {title} bewerten",
+      "total": "{points} Punkte",
+      "notScored": "Nicht bewertet",
+      "partial": "{n} von {total} bewertet",
+      "comment": "Kommentar hinzufügen",
+      "commentFor": "Kommentar zu {name}",
+      "given": "die vergebene Stufe",
+      "changed": "Das Raster wurde seit dieser Bewertung geändert. Bewerten Sie neu, um die neue Fassung zu nutzen.",
+      "scored": "Bewertet",
+      "lessonHint": "Tippen Sie für jedes Kriterium auf eine Stufe, fügen Sie bei Bedarf Kommentare hinzu und speichern Sie. Jedes Kind sieht nur das eigene Ergebnis."
+    },
+    "student": {
+      "fromTeacherLesson": "Von deiner Lehrkraft: die ganze Lektion"
+    },
+    "gradebook": {
+      "key": "Rasterpunkte",
+      "cellTitle": "Raster: {points} Punkte ({pct} %)"
+    },
+    "csv": {
+      "points": "{title} (Rasterpunkte)",
+      "percent": "{title} (Raster-%)",
+      "totalPoints": "Rasterpunkte",
+      "totalPercent": "Raster-%"
+    },
+    "errors": {
+      "notFound": "Dieses Raster haben wir nicht gefunden.",
+      "rubricTitle": "Geben Sie dem Raster einen Titel.",
+      "rubricLevels": "Ein Raster hat 2 bis 6 Stufen.",
+      "rubricCriteria": "Ein Raster hat 1 bis 12 Kriterien.",
+      "rubricLabel": "Geben Sie jeder Stufe einen Namen.",
+      "rubricPoints": "Punkte sind eine Zahl von 0 bis 100.",
+      "rubricName": "Geben Sie jedem Kriterium einen Namen.",
+      "tooManyRubrics": "Sie haben die höchste Zahl an Rastern in dieser Schule. Löschen Sie eines, das Sie nicht mehr brauchen.",
+      "inUse": "{count, plural, one {Dieses Raster ist mit # Lektion verknüpft.} other {Dieses Raster ist mit # Lektionen verknüpft.}}",
+      "task": "Sagen Sie, was die Kinder machen.",
+      "aiFailed": "Die KI konnte gerade kein Raster entwerfen. Bitte versuchen Sie es in einer Minute noch einmal.",
+      "pick": "Wählen Sie eines Ihrer eigenen Raster (das eines Kollegen erst kopieren)."
+    }
+  },
+  "standards": {
+    "fw": {
+      "csta": "Informatik (CSTA)",
+      "math": "Common Core Mathe",
+      "ela": "Common Core Englisch (ELA)"
+    },
+    "picker": "Standard-Rahmenwerk",
+    "notice": "Common Core State Standards, verwendet unter der öffentlichen CCSS-Lizenz.",
+    "class": {
+      "lead": "Welche Common-Core-Standards diese Klasse mit ihren zugewiesenen Lektionen, den Lernspielen darin, Live-Spielen und Kursen abdeckt, und wo jedes Kind steht. Berechnet aus bereits gespeicherter Arbeit: Es wird nichts Neues erfasst.",
+      "grade": "Klassenstufe",
+      "covered": "Nur abgedeckte Standards",
+      "allOf": "Alle Standards: {grade}",
+      "summaryH": "Abdeckung nach Klassenstufe",
+      "summary": "{covered} von {total} Standards abgedeckt"
+    },
+    "cols": {
+      "standard": "Standard",
+      "sources": "Abgedeckt durch",
+      "practiced": "Geübt",
+      "checked": "Fragen",
+      "rubric": "Bewertungsraster",
+      "needsLook": "Genauer ansehen",
+      "last": "Zuletzt",
+      "status": "Status",
+      "level": "Stufe"
+    },
+    "status": {
+      "notYet": "Noch nicht",
+      "covered": "Abgedeckt",
+      "practiced": "Geübt",
+      "checked": "Geprüft",
+      "meets": "Erreicht"
+    },
+    "level": {
+      "none": "Keine Belege",
+      "practiced": "Geübt",
+      "developing": "Im Aufbau",
+      "meets": "Erreicht"
+    },
+    "checkedVal": "{pct} % · Antworten: {answered} · Kinder: {students}",
+    "rubricVal": "{pct} % · {count} bewertet",
+    "rubricBest": "bestes {pct} % · {count} bewertet",
+    "mine": "{right} von {answered} richtig",
+    "src": {
+      "live": "Live-Spiele: {count}"
+    },
+    "legend": {
+      "h": "So liest du es",
+      "sources": "Abgedeckt durch: die zugewiesenen Lektionen mit dem Standard (oder mit einem Schritt oder Lernspiel, das ihn übt), Live-Spiele, die danach gefragt haben (Tug of Math Live in seiner Klassenstufe, Fragensets, deren Fragen den Code tragen) und die Kurse, in denen deine Kinder sind.",
+      "practiced": "Geübt: Kinder, die eine Aktivität beendet haben, die den Standard übt. Das heißt, sie haben sie gemacht, nicht, dass sie ihn beherrschen.",
+      "checked": "Fragen: richtige Antworten von den beantworteten Fragen zum Standard (Lektions-Quiz, Live-Spiele, Number-Quest-Checks).",
+      "rubric": "Bewertungsraster: Rasterpunkte zum Standard, als Anteil der Höchstpunktzahl. Erscheint, sobald Raster Common-Core-Standards tragen.",
+      "meets": "Erreicht: Ein Kind erreicht einen Standard mit mindestens 80 % richtig bei 3 oder mehr Fragen oder mit mindestens zwei Dritteln der Rasterpunkte. Die Klasse erreicht ihn, wenn 80 % ihrer Kinder ihn erreichen.",
+      "needs": "Genauer ansehen: Kinder, die 2 oder mehr Fragen zum Standard beantwortet und keine richtig haben. Nur Lehrkräfte sehen das.",
+      "games": "Spiele mit Leveln für mehrere Klassenstufen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) zählen nur für die Klassenstufe der Lektion als Übung oder für das Level, auf das der Schritt festgelegt ist. Bei einer Lektion ohne Klassenstufe erscheinen sie nur unter „Abgedeckt durch“.",
+      "live": "Live-Spiele wie Tug of Math Live speichern nicht, welche Frage zu welchem Standard gehörte. Darum werden die Antworten eines Kindes auf die Standards des Spiels aufgeteilt. Diese Zahlen sind Schätzungen.",
+      "courses": "Number Quest zählt Arbeit mit einem Schulkonto oder seit das Kind dieser Klasse beigetreten ist. Ein einzelner Check (3 Fragen) reicht nicht, um einen Standard zu erfüllen."
+    },
+    "empty": {
+      "title": "Noch keine Common-Core-Standards",
+      "text": "Versieh deine Lektionen mit Standards oder weise Lektionen mit Lernspielen wie Sum Racer, Fraction Factory oder Word Trail zu, dann erscheinen sie hier."
+    },
+    "csvCols": {
+      "code": "Code",
+      "grade": "Klassenstufe",
+      "domain": "Bereich",
+      "statement": "Formulierung",
+      "sources": "Abgedeckt durch",
+      "practiced": "Geübt (Kinder)",
+      "students": "Kinder in der Klasse",
+      "pct": "Richtig %",
+      "answered": "Beantwortete Fragen",
+      "checkedStudents": "Kinder mit Antworten",
+      "rubric": "Raster %",
+      "meets": "Kinder, die ihn erreichen",
+      "needsLook": "Genauer ansehen (Kinder)",
+      "last": "Letzte Aktivität",
+      "status": "Status"
+    },
+    "lesson": {
+      "title": "Standards",
+      "lead": "Versieh diese Lektion oder einen ihrer Schritte mit den Common-Core-Standards, an denen sie arbeitet. Sie erscheinen im Reiter Standards jeder Klasse, der sie zugewiesen ist.",
+      "back": "Zurück zur Lektion",
+      "current": "Zugeordnete Standards",
+      "none": "Noch keine Standards zugeordnet.",
+      "whole": "Ganze Lektion",
+      "stepN": "Schritt {n}: {title}",
+      "remove": "Entfernen",
+      "removeLabel": "{code} entfernen",
+      "removed": "{code} entfernt",
+      "add": "Hinzufügen",
+      "addLabel": "{code} hinzufügen",
+      "added": "{code} hinzugefügt",
+      "addTo": "Hinzufügen zu",
+      "find": "Standards finden",
+      "search": "Suchen",
+      "searchHint": "Ein Code wie 3.OA.C.7 oder Wörter wie fractions",
+      "searchHintEla": "Ein Code wie RL.3.2 oder Wörter wie main idea",
+      "domain": "Bereich",
+      "domainAll": "Alle Bereiche",
+      "gradeAny": "Alle Klassenstufen",
+      "results": "Standards: {count}",
+      "more": "Die ersten {shown} werden gezeigt: Grenze die Suche ein, um den Rest zu sehen.",
+      "noResults": "Kein Standard passt. Versuch eine andere Klassenstufe, einen anderen Bereich oder ein anderes Wort.",
+      "tagged": "Zugeordnet",
+      "open": "Standards zuordnen",
+      "view": "Standards ansehen",
+      "editorNone": "Noch keine Common-Core-Standards zugeordnet.",
+      "onSteps": "Standards an Schritten: {count}",
+      "gameCodes": "{framework}-Standards, die dieses Spiel übt",
+      "gameNeedsGrade": "Dieses Spiel hat Level für mehrere Klassenstufen. Gib der Lektion eine Klassenstufe (oder lege den Schritt auf ein Level fest), damit seine Standards als geübt zählen."
+    },
+    "errors": {
+      "badCode": "Das ist kein Common-Core-Code.",
+      "badStep": "Dieser Schritt gehört nicht zu dieser Lektion.",
+      "tooMany": "Eine Lektion kann bis zu 60 Standards haben.",
+      "badFramework": "Wähle Common Core Mathe oder Englisch."
+    },
+    "learn": {
+      "label": "Standard",
+      "hint": "z. B. 3.OA oder RF.K"
+    }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Dein Google Classroom",
+      "text": "Verbinde das Google-Konto, mit dem du in Google Classroom unterrichtest. Dann kannst du:",
+      "what": {
+        "courses": "diese Klasse mit einem deiner Classroom-Kurse verknüpfen",
+        "roster": "seine Schülerinnen und Schüler holen, die sich mit Google anmelden",
+        "post": "Lektionen dort posten, mit einem Link hierher und dem Abgabedatum",
+        "grades": "die Abschlussnote jedes Kindes für eine Lektion an Classroom senden"
+      },
+      "button": "Google Classroom verbinden",
+      "privacy": "Nur du siehst diese Verbindung. Oomba Academy sendet an Classroom den Titel der Lektion, einen Link, das Abgabedatum und die Abschlussnote jedes Kindes von 100. Sonst nichts: keine Namen, Antworten oder Spiele.",
+      "connectedAs": "Verbunden als {email}",
+      "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
+      "connectedToast": "Google Classroom ist verbunden.",
+      "disconnect": "Trennen",
+      "disconnectConfirm": "Google Classroom trennen? Oomba Academy synchronisiert dann nicht mehr für dich und löscht seinen Schlüssel zu deinem Classroom. Schon gepostete Lektionen bleiben in Classroom.",
+      "disconnected": "Google Classroom ist getrennt.",
+      "reconnect": "Neu verbinden"
+    },
+    "course": {
+      "heading": "Verknüpfter Classroom-Kurs",
+      "text": "Wähle den Google-Classroom-Kurs, der zu {class} passt.",
+      "none": "Keine aktiven Google-Classroom-Kurse, in denen du unterrichtest.",
+      "pick": "Classroom-Kurs wählen",
+      "link": "Verknüpfen",
+      "linked": "Verknüpft mit {course}.",
+      "linkedTo": "Verknüpft mit {course}",
+      "unlink": "Verknüpfung lösen",
+      "unlinkConfirm": "Verknüpfung mit {course} lösen? Kinder und Lektionen bleiben, wo sie sind.",
+      "unlinked": "Verknüpfung gelöst.",
+      "connectFirst": "Verbinde oben dein Google Classroom, um ihn zu synchronisieren.",
+      "refresh": "Liste aktualisieren"
+    },
+    "roster": {
+      "heading": "Kinder aus Classroom",
+      "text": "Holt die Schülerinnen und Schüler des verknüpften Classroom-Kurses. Wer schon hier ist, wird an seinem Google-Konto erkannt. Wer neu bei Oomba Academy ist, kommt dazu, sobald er sich zum ersten Mal mit Google auf der Domain eurer Schule anmeldet, und bekommt dann ein Schulkonto. Ihre echten Namen sehen nur Lehrkräfte.",
+      "button": "Kinder importieren",
+      "last": "Letzter Import {when}",
+      "noDomains": "Deine Schule hat ihre Google-Domain noch nicht eingetragen, daher können keine neuen Kinder dazukommen. Frag die Schuladministration.",
+      "noDomainsAdmin": "Trag zuerst die Google-Domain deiner Schule ein, damit neue Kinder sich anmelden können: {link}",
+      "hint": "Du nutzt Google Classroom? {link}",
+      "hintLink": "Kinder von dort importieren",
+      "notYet": "Google: aus Classroom, noch nicht angemeldet",
+      "resultAdded": "{count, plural, one {# Kind hinzugefügt} other {# Kinder hinzugefügt}}",
+      "resultAlready": "{count, plural, one {# schon hier} other {# schon hier}}",
+      "resultOwn": "{count, plural, one {# nutzt ein eigenes Konto: kann mit dem Klassencode beitreten} other {# nutzen eigene Konten: können mit dem Klassencode beitreten}}",
+      "resultOther": "{count, plural, one {# gehört zu einer anderen Schule} other {# gehören zu einer anderen Schule}}",
+      "resultStaff": "{count, plural, one {# gehört hier zum Personal} other {# gehören hier zum Personal}}",
+      "resultDomains": "{count, plural, one {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen} other {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen}}",
+      "resultWaiting": "{count, plural, one {# kommt dazu, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet} other {# kommen dazu, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden}}",
+      "waitingNow": "{count, plural, one {# Kind aus Classroom hat sich noch nicht angemeldet. Es kommt in diese Klasse, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet (innerhalb von 30 Tagen; neu importieren verlängert).} other {# Kinder aus Classroom haben sich noch nicht angemeldet. Sie kommen in diese Klasse, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden (innerhalb von 30 Tagen; neu importieren verlängert).}}"
+    },
+    "post": {
+      "heading": "Lektionen in Classroom",
+      "text": "Eine Lektion posten erstellt in Classroom eine Aufgabe mit ihrem Titel, einem Link zur Lektion hier und ihrem Abgabedatum.",
+      "button": "In Google Classroom posten",
+      "also": "Auch in Google Classroom posten",
+      "description": "Öffne diese Lektion auf Oomba Academy.",
+      "done": "In Google Classroom gepostet.",
+      "donePastDue": "In Google Classroom gepostet (ohne Abgabedatum: es ist schon vorbei).",
+      "failed": "Nicht in Google Classroom gepostet:",
+      "due": "Abgabe am {date}",
+      "noDue": "Kein Abgabedatum",
+      "posted": "Gepostet",
+      "open": "In Classroom öffnen",
+      "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu.",
+      "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet."
+    },
+    "grades": {
+      "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
+      "as": "Senden als",
+      "draft": "Vorläufige Note (du gibst sie in Classroom zurück)",
+      "assigned": "Zugewiesene Note",
+      "button": "Abschlussnoten senden",
+      "lastDraft": "Vorläufige Abschlussnoten gesendet {when}",
+      "lastAssigned": "Zugewiesene Abschlussnoten gesendet {when}",
+      "resultSent": "{count, plural, one {# Abschlussnote gesendet} other {# Abschlussnoten gesendet}}",
+      "resultNotStarted": "{count, plural, one {# hat noch nicht angefangen} other {# haben noch nicht angefangen}}",
+      "resultNotMatched": "{count, plural, one {# nicht in dieser Klasse} other {# nicht in dieser Klasse}}",
+      "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}"
+    },
+    "log": {
+      "heading": "Letzte Synchronisierungen",
+      "kinds": {
+        "connect": "Verbunden",
+        "disconnect": "Getrennt",
+        "link": "Kurs verknüpft",
+        "unlink": "Verknüpfung gelöst",
+        "roster": "Kinder importiert",
+        "post": "Lektion gepostet",
+        "grades": "Noten gesendet"
+      }
+    },
+    "errors": {
+      "notSetUp": "Google Classroom ist auf dieser Seite noch nicht eingerichtet. Bitte den Betreiber der Seite, die Einrichtung abzuschließen.",
+      "notConnected": "Verbinde zuerst dein Google Classroom.",
+      "reconnect": "Deine Verbindung zu Google Classroom funktioniert nicht mehr. Bitte verbinde neu.",
+      "notLinked": "Verknüpfe diese Klasse zuerst mit einem Classroom-Kurs.",
+      "pickCourse": "Wähle einen Classroom-Kurs.",
+      "courseNotYours": "In diesem Classroom-Kurs unterrichtest du nicht.",
+      "courseGone": "Google Classroom findet diesen Kurs oder diese Aufgabe nicht mehr.",
+      "denied": "Google Classroom hat abgelehnt. Vielleicht unterrichtest du diesen Kurs nicht, oder deine Schule schränkt diese App ein.",
+      "rateLimited": "Google Classroom ist ausgelastet. Versuch es in ein paar Minuten wieder.",
+      "googleDown": "Google Classroom hat nicht geantwortet. Bitte versuch es noch einmal.",
+      "badRequest": "Google Classroom hat das nicht angenommen.",
+      "tooMany": "Dieser Classroom-Kurs hat mehr als {max} Kinder.",
+      "alreadyPosted": "Diese Lektion ist schon in Google Classroom.",
+      "notPosted": "Poste diese Lektion zuerst in Google Classroom.",
+      "badMode": "Wähle, wie die Noten gesendet werden.",
+      "scopesMissing": "Setz bitte auf Googles Seite alle Häkchen, damit Oomba Academy deine Kurse sehen und Aufgaben posten kann.",
+      "noRefresh": "Google hat keinen Schlüssel geschickt, den wir behalten können. Bitte verbinde neu.",
+      "expired": "Das hat zu lange gedauert. Bitte versuch es noch einmal.",
+      "cancelled": "Du hast auf Googles Seite abgebrochen. Nichts wurde verbunden.",
+      "staffOnly": "Hier können nur Lehrkräfte und Schuladmins Google Classroom nutzen.",
+      "tooManyTries": "Gerade zu viele Synchronisierungen. Versuch es in einer Stunde wieder."
+    }
+  },
+  "digest": {
+    "when": "{day} um {time} ({zone})",
+    "email": {
+      "subject": "Ihre wöchentliche Klassenübersicht vom {date}",
+      "preview": "{count, plural, one {Zahlen für # Klasse, mit Links zu mehr auf Oomba Academy.} other {Zahlen für # Klassen, mit Links zu mehr auf Oomba Academy.}}",
+      "heading": "Woche vom {date}",
+      "greeting": "Hallo {name},",
+      "greetingNoName": "Hallo,",
+      "intro": "So stehen Ihre Klassen. Namen und Antworten bleiben auf der Website, wo nur Sie und das Personal Ihrer Schule sie sehen.",
+      "due": "{count, plural, =0 {Diese Woche ist keine Lektion fällig} one {# Lektion diese Woche fällig} other {# Lektionen diese Woche fällig}}",
+      "pct": "{pct} % der Arbeit in offenen Lektionen erledigt",
+      "noWork": "Noch keine offenen Lektionen mit Schritten",
+      "toRead": "{count, plural, =0 {Keine Antworten zum Durchsehen} one {# Antwort wartet auf Durchsicht} other {# Antworten warten auf Durchsicht}}",
+      "notStarted": "{count, plural, =0 {Alle Schülerinnen und Schüler haben angefangen} one {# Schüler:in hat noch nicht angefangen} other {# Schüler:innen haben noch nicht angefangen}}",
+      "live": "{count, plural, =0 {Keine Live-Spiele in den letzten 7 Tagen} one {# Live-Spiel in den letzten 7 Tagen} other {# Live-Spiele in den letzten 7 Tagen}}",
+      "openClass": "Klasse öffnen",
+      "review": "Antworten durchsehen",
+      "progress": "Fortschritt ansehen",
+      "quiet": "{count, plural, one {# Klasse hatte nichts Neues und fehlt hier.} other {# Klassen hatten nichts Neues und fehlen hier.}}",
+      "cta": "Übersicht dieser Woche ansehen",
+      "classroom": "Zum Klassenraum",
+      "why": "Sie erhalten diese wöchentliche Übersicht, weil Sie auf Oomba Academy eine Klasse unterrichten.",
+      "change": "Tag oder Uhrzeit ändern",
+      "stop": "Diese Übersichten abbestellen"
+    },
+    "unsub": {
+      "title": "Wöchentliche Klassenübersicht",
+      "askTitle": "Wöchentliche Klassenübersicht abbestellen?",
+      "askText": "Sie bekommen dann keine wöchentliche E-Mail zu Ihren Klassen mehr. Alles bleibt auf der Website, und Sie können sie auf Ihrer Seite „Ich“ wieder einschalten.",
+      "button": "Übersichten abbestellen",
+      "offTitle": "Die wöchentliche Übersicht ist aus",
+      "offText": "Sie bekommen keine wöchentliche E-Mail zu Ihren Klassen mehr. Andere E-Mails zu Ihrem Konto sind nicht betroffen.",
+      "again": "Wieder einschalten",
+      "againTitle": "Die wöchentliche Übersicht ist wieder an",
+      "againText": "Sie bekommen sie wieder an dem Tag und zu der Uhrzeit auf Ihrer Seite „Ich“.",
+      "badTitle": "Dieser Link funktioniert nicht",
+      "badText": "Der Link wurde beim Kopieren vielleicht abgeschnitten. Sie können die Übersicht auch auf Ihrer Seite „Ich“ ausschalten."
+    },
+    "me": {
+      "heading": "Wöchentliche Klassenübersicht",
+      "text": "Einmal pro Woche schicken wir Ihnen Zahlen zu jeder Ihrer Klassen: fällige Lektionen, erledigte Arbeit, Antworten zum Durchsehen, wer noch nicht angefangen hat und Live-Spiele. Nie den Namen oder die Antwort eines Kindes.",
+      "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen. Verbinden Sie Google auf dieser Seite, dann geht die Übersicht an diese Adresse.",
+      "on": "Wöchentliche Übersicht per E-Mail",
+      "day": "Tag",
+      "hour": "Uhrzeit",
+      "zone": "Zeitzone",
+      "zoneSchool": "Zeitzone meiner Schule ({zone})",
+      "zoneDefault": "Standard ({zone})",
+      "save": "Speichern",
+      "saved": "Gespeichert."
+    },
+    "page": {
+      "link": "Übersicht dieser Woche",
+      "title": "Übersicht dieser Woche",
+      "sub": "Jede Ihrer Klassen: die letzten 7 Tage und die Lektionen, die in den nächsten 7 fällig sind.",
+      "next": "Ihre Übersicht kommt jeden {when} per E-Mail.",
+      "off": "Die wöchentliche Übersicht per E-Mail ist aus. Diese Seite können Sie trotzdem jederzeit ansehen.",
+      "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen, daher geht keine Übersicht raus. Verbinden Sie Google auf Ihrer Seite „Ich“.",
+      "noAddressPlain": "Wir haben noch keine E-Mail-Adresse von Ihnen, daher geht keine Übersicht raus.",
+      "privacy": "Namen von Schülerinnen und Schülern stehen nur auf dieser Seite, nie in der E-Mail.",
+      "seeEmail": "E-Mail ansehen",
+      "change": "Versandzeit ändern",
+      "statDue": "Diese Woche fällig",
+      "statDone": "Erledigt",
+      "statToRead": "Durchsehen",
+      "statNotStarted": "Nicht angefangen",
+      "statLive": "Live-Spiele",
+      "dueHeading": "Diese Woche fällig",
+      "finished": "{done} von {count} fertig",
+      "toReadHeading": "Antworten zum Durchsehen",
+      "notStartedHeading": "{count, plural, one {# Schüler:in hat nicht angefangen} other {# Schüler:innen haben nicht angefangen}}",
+      "noClasses": "Noch keine Klassen",
+      "noClassesText": "Legen Sie im Klassenraum eine Klasse an, dann erscheint ihre Übersicht hier.",
+      "quietAll": "Eine ruhige Woche",
+      "quietAllText": "In den letzten 7 Tagen gab es nichts Neues in Ihren Klassen, daher kommt diese Woche keine E-Mail.",
+      "quietHeading": "Nichts Neues",
+      "quietText": "In diesen Klassen gab es in den letzten 7 Tagen nichts Neues. Sie fehlen in der E-Mail."
+    },
+    "errors": {
+      "badDay": "Wählen Sie einen Tag.",
+      "badHour": "Wählen Sie eine Uhrzeit.",
+      "badZone": "Wählen Sie eine Zeitzone aus der Liste."
     }
   }
 }

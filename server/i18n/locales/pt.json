@@ -3432,7 +3432,10 @@
       },
       "privacy": {
         "h": "Privacidade",
-        "p1": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e nunca usamos a conta para ler mais nada do Google."
+        "p1": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e nunca usamos a conta para ler mais nada do Google.",
+        "p1c": "Enquanto a conta Google estiver conectada, guardamos o ID, o endereço de e-mail e o domínio da escola dela, para reconhecê-la no login. Nunca guardamos a foto do Google, nunca mostramos o nome do Google de um aluno no site de jogos e não lemos mais nada de uma conta Google, a não ser que um professor conecte o Google Classroom.",
+        "classroom": "Quando um professor conecta o Google Classroom, lemos apenas os nomes das turmas em que ele dá aula e, da turma que ele vincula, o ID da conta Google e o nome de cada aluno, para adicioná-los à turma correspondente na Oomba Academy. Enviamos ao Google apenas o que o professor pede: uma atividade (o título da aula, um link para ela e a data de entrega) e a nota de cada aluno na aula, de 0 a 100. Nunca enviamos respostas, comentários, jogos ou desenhos dos alunos. A conexão do professor fica guardada de forma criptografada até que ele a desconecte ou exclua a conta; ao desconectar, ela também é revogada no Google.",
+        "limitedUse": "O uso e a transferência, pela Oomba Academy, de informações recebidas das APIs do Google seguem a Google API Services User Data Policy (Política de Dados do Usuário dos Serviços de API do Google), incluindo os requisitos de Limited Use (uso limitado). Nunca vendemos essas informações, nunca as usamos para publicidade nem para treinar modelos de IA, e nossa equipe só as consulta quando necessário para suporte, segurança ou por exigência legal."
       }
     }
   },
@@ -7027,6 +7030,547 @@
       "breaksText": "Jogos curtos e divertidos de Jogar, escolhidos para uma pausa de 5 minutos no ecrã grande.",
       "allGames": "Ver tudo o que os alunos podem jogar",
       "openLive": "Abrir o jogo ao vivo"
+    },
+    "loop": {
+      "kicker": "Como o Oomba se encaixa na sua semana",
+      "h": "Planejar → Jogar → Acompanhar → Comentar",
+      "lead": "Um ciclo para cada aula: planeje, jogue com a turma, veja quem precisa de você e diga a cada aluno o que fazer em seguida. Cada passo é uma ferramenta que já existe no Oomba.",
+      "steps": {
+        "plan": {
+          "name": "Planejar",
+          "benefit": "Comece com uma aula pronta ou um tema e transforme-a num jogo que a sua turma vai querer jogar."
+        },
+        "play": {
+          "name": "Jogar",
+          "benefit": "Atribua com datas de abertura e de entrega, ou jogue ao vivo no telão com a turma toda."
+        },
+        "check": {
+          "name": "Acompanhar",
+          "benefit": "Veja o progresso de cada aluno num relance, e quem precisa da sua ajuda primeiro."
+        },
+        "feedback": {
+          "name": "Comentar",
+          "benefit": "Leia cada resposta e escreva um comentário que o aluno vê na própria aula."
+        }
+      },
+      "tools": {
+        "builder": "Transformar uma aula em jogo",
+        "assign": "Atribuir a uma turma",
+        "gradebook": "Diário de notas",
+        "gradebookCsv": "Diário de notas com download em CSV",
+        "standards": "Aba Padrões",
+        "review": "Respostas para ler",
+        "written": "Comentários escritos que os alunos veem",
+        "library": "Biblioteca de aulas",
+        "draftAi": "Criar rascunho com IA",
+        "attention": "Quem precisa de atenção primeiro",
+        "csv": "Baixar (CSV)",
+        "live": "Conduzir um jogo ao vivo"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "O diário de notas: alunos nas linhas, aulas nas colunas, com passos feitos e respostas para ler",
+          "caption": "Diário de notas: a turma toda num relance, pronta para baixar em CSV."
+        },
+        "attention": {
+          "alt": "O progresso de uma aula, ordenado para que os alunos que precisam de atenção venham primeiro",
+          "caption": "Primeiro quem precisa de atenção: respostas para ler, atrasos e aulas pela metade no topo."
+        },
+        "feedback": {
+          "alt": "A resposta escrita de um aluno com a caixa de comentário do professor e o botão de salvar",
+          "caption": "Comentar: escreva uma nota, salve, e o aluno a vê na aula dele."
+        },
+        "standards": {
+          "alt": "A aba Padrões da turma: padrões de ciência da computação e o avanço de cada aluno",
+          "caption": "Padrões: os padrões de ciência da computação que a sua turma já trabalhou, aluno por aluno."
+        }
+      },
+      "home": {
+        "h": "Seu ciclo de ensino",
+        "lead": "Experimente cada passo uma vez com {class}. Cada um se marca sozinho conforme você avança.",
+        "leadNoClass": "Crie sua primeira turma e experimente cada passo uma vez. Cada um se marca sozinho conforme você avança.",
+        "makeClass": "Crie sua primeira turma",
+        "count": "{done} de {total} feitos",
+        "done": "Feito",
+        "todo": "Ainda não feito",
+        "hide": "Ocultar",
+        "hidden": "Oculto. Você sempre encontra em “Como o Oomba se encaixa na sua semana”."
+      },
+      "page": {
+        "title": "Como o Oomba se encaixa na sua semana",
+        "lead": "Planeje uma aula, jogue, veja quem precisa de você e comente: as ferramentas de cada passo, prontas para a sua turma.",
+        "link": "Como o Oomba se encaixa na sua semana",
+        "show": "Mostrar a lista de novo em {classroom}",
+        "shown": "A lista voltou para {classroom}."
+      }
+    }
+  },
+  "rubrics": {
+    "title": "Rubricas",
+    "intro": "Rubricas reutilizáveis: critérios nas linhas, níveis nas colunas. Associe uma a uma resposta escrita, a um jogo criado ou a uma aula inteira e avalie cada aluno tocando em um nível.",
+    "mine": "Minhas rubricas",
+    "shared": "Compartilhadas por colegas",
+    "new": "Nova rubrica",
+    "newPlaceholder": "Título da rubrica, ex.: Parágrafo argumentativo",
+    "untitled": "Nova rubrica",
+    "empty": "Ainda não há rubricas",
+    "emptyText": "Crie uma rubrica, deixe a IA fazer um rascunho ou adicione uma rubrica inicial do CS Quest.",
+    "sharedEmpty": "Ainda não há rubricas compartilhadas",
+    "sharedEmptyText": "Quando colegas compartilharem uma rubrica com a escola, ela aparece aqui para você copiar.",
+    "criterion": "Critério",
+    "criteriaN": "{count, plural, one {# critério} other {# critérios}}",
+    "levelsN": "{count, plural, one {# nível} other {# níveis}}",
+    "pointsN": "{count, plural, one {# ponto} other {# pontos}}",
+    "maxPoints": "De {points}",
+    "usedN": "{count, plural, one {Usada em # aula} other {Usada em # aulas}}",
+    "usedIn": "Usada em",
+    "notUsed": "Ainda não está em nenhuma aula. Associe-a em uma etapa de uma aula ou nos detalhes da aula.",
+    "wholeLesson": "Aula inteira",
+    "stepsN": "{count, plural, one {# etapa} other {# etapas}}",
+    "print": "Imprimir",
+    "printName": "Nome:",
+    "printPoints": "Pontos: ____ / {max}",
+    "backToRubric": "Voltar à rubrica",
+    "preview": "Ver a tabela",
+    "copy": "Fazer uma cópia",
+    "copyMine": "Copiar para minhas rubricas",
+    "copyTitle": "{title} (cópia)",
+    "copiedNotice": "Esta é a sua cópia. Mude como quiser: a original continua como estava.",
+    "share": "Compartilhar com minha escola",
+    "unshare": "Parar de compartilhar",
+    "sharedStatus": "Compartilhada com a sua escola",
+    "sharedToast": "Compartilhada com a equipe da sua escola",
+    "unsharedToast": "Não está mais compartilhada",
+    "delete": "Excluir rubrica",
+    "deleteConfirm": "Excluir a rubrica {title}? As avaliações já feitas continuam como estavam.",
+    "deleteUsedConfirm": "{count, plural, one {{title} está em # aula. Tirar e excluir a rubrica? As avaliações já feitas continuam como estavam.} other {{title} está em # aulas. Tirar delas e excluir a rubrica? As avaliações já feitas continuam como estavam.}}",
+    "deletedToast": "Rubrica excluída",
+    "levelNames": {
+      "notYet": "Ainda não",
+      "beginning": "Inicial",
+      "developing": "Em desenvolvimento",
+      "secure": "Consolidado",
+      "excellent": "Excelente"
+    },
+    "template": {
+      "understanding": "Compreensão",
+      "explaining": "Explica o raciocínio",
+      "care": "Cuidado e esforço",
+      "level0": "Ainda não aparece",
+      "level1": "Aparece em parte, com ajuda",
+      "level2": "Aparece com clareza",
+      "level3": "Aparece com profundidade e detalhes"
+    },
+    "editor": {
+      "title": "Título da rubrica",
+      "description": "Notas para professores",
+      "levels": "Níveis",
+      "levelsHint": "As colunas: um nome e quantos pontos cada uma vale.",
+      "levelLabel": "Nível {n}",
+      "points": "Pontos",
+      "newLevel": "Novo nível",
+      "addLevel": "Adicionar um nível",
+      "removeLevel": "Tirar o nível {name}",
+      "criteria": "Critérios",
+      "criteriaHint": "As linhas: o que você observa e o que o trabalho mostra em cada nível.",
+      "criterionN": "Critério {n}",
+      "descPlaceholder": "O que o trabalho mostra neste nível",
+      "addCriterion": "Adicionar um critério",
+      "removeCriterion": "Tirar o critério {name}"
+    },
+    "ai": {
+      "button": "Criar uma rubrica com IA",
+      "task": "O que os alunos fazem?",
+      "taskPlaceholder": "ex.: escrever um parágrafo explicando por que o jogo deles é justo",
+      "levels": "Níveis",
+      "make": "Criar minha rubrica",
+      "note": "Só o que você digita aqui vai para a IA, nunca o trabalho nem os nomes dos seus alunos. Depois você pode mudar tudo.",
+      "done": "Aqui está o rascunho da IA. Leia e mude o que quiser antes de usar.",
+      "template": "A IA não está disponível agora, então aqui está uma rubrica simples para editar."
+    },
+    "starters": {
+      "title": "Rubricas iniciais",
+      "intro": "O ticket de saída de cada aula do CS Quest vem com uma rubrica (níveis 0 a 3, em inglês). Adicione uma às suas rubricas para usar em qualquer aula, ou adapte.",
+      "add": "Adicionar às minhas rubricas",
+      "addFor": "Adicionar {title} às minhas rubricas",
+      "added": "Adicionada às suas rubricas. Mude como quiser.",
+      "fromLesson": "Da aula do CS Quest {title}."
+    },
+    "attach": {
+      "step": "Rubrica",
+      "lesson": "Rubrica para a aula inteira",
+      "lessonTitle": "Rubrica da aula inteira",
+      "lessonHint": "Avalie cada aluno na aula inteira pela página de progresso dela.",
+      "none": "Sem rubrica",
+      "hint": "Avalie com ela as respostas ou os jogos desta etapa.",
+      "noneYet": "Você ainda não tem rubricas.",
+      "library": "Rubricas"
+    },
+    "score": {
+      "label": "Avaliar com {title}",
+      "total": "{points} pontos",
+      "notScored": "Não avaliado",
+      "partial": "{n} de {total} pontuados",
+      "comment": "Adicionar um comentário",
+      "commentFor": "Comentário sobre {name}",
+      "given": "o nível dado",
+      "changed": "A rubrica mudou depois desta avaliação. Avalie de novo para usar a nova versão.",
+      "scored": "Avaliado",
+      "lessonHint": "Toque em um nível para cada critério, adicione comentários se quiser e salve. Cada aluno vê só o próprio resultado."
+    },
+    "student": {
+      "fromTeacherLesson": "Do seu professor: a aula inteira"
+    },
+    "gradebook": {
+      "key": "pontos da rubrica",
+      "cellTitle": "Rubrica: {points} pontos ({pct}%)"
+    },
+    "csv": {
+      "points": "{title} (pontos da rubrica)",
+      "percent": "{title} (% da rubrica)",
+      "totalPoints": "Pontos das rubricas",
+      "totalPercent": "% das rubricas"
+    },
+    "errors": {
+      "notFound": "Não encontramos essa rubrica.",
+      "rubricTitle": "Dê um título à rubrica.",
+      "rubricLevels": "Uma rubrica tem de 2 a 6 níveis.",
+      "rubricCriteria": "Uma rubrica tem de 1 a 12 critérios.",
+      "rubricLabel": "Dê um nome a cada nível.",
+      "rubricPoints": "Os pontos são um número de 0 a 100.",
+      "rubricName": "Dê um nome a cada critério.",
+      "tooManyRubrics": "Você tem o máximo de rubricas nesta escola. Exclua uma que não usa mais.",
+      "inUse": "{count, plural, one {Esta rubrica está em # aula.} other {Esta rubrica está em # aulas.}}",
+      "task": "Diga o que os alunos fazem.",
+      "aiFailed": "A IA não conseguiu criar uma rubrica agora. Tente de novo em um minuto.",
+      "pick": "Escolha uma das suas rubricas (copie antes a de um colega)."
+    }
+  },
+  "standards": {
+    "fw": {
+      "csta": "Computação (CSTA)",
+      "math": "Common Core Matemática",
+      "ela": "Common Core Inglês (ELA)"
+    },
+    "picker": "Conjunto de padrões",
+    "notice": "Common Core State Standards, usados sob a licença pública CCSS.",
+    "class": {
+      "lead": "Quais padrões Common Core esta turma cobre com as lições atribuídas, os jogos de Aprender que elas têm, os jogos ao vivo e os cursos, e como cada estudante está indo. Calculado a partir do trabalho já registrado: nada novo é coletado.",
+      "grade": "Ano",
+      "covered": "Só os padrões cobertos",
+      "allOf": "Todos os padrões de {grade}",
+      "summaryH": "Cobertura por ano",
+      "summary": "{covered} de {total} padrões cobertos"
+    },
+    "cols": {
+      "standard": "Padrão",
+      "sources": "Coberto por",
+      "practiced": "Praticado",
+      "checked": "Perguntas",
+      "rubric": "Rubrica",
+      "needsLook": "Precisa de atenção",
+      "last": "Último",
+      "status": "Situação",
+      "level": "Nível"
+    },
+    "status": {
+      "notYet": "Ainda não",
+      "covered": "Coberto",
+      "practiced": "Praticado",
+      "checked": "Verificado",
+      "meets": "Atingido"
+    },
+    "level": {
+      "none": "Sem evidência",
+      "practiced": "Praticado",
+      "developing": "Em desenvolvimento",
+      "meets": "Atingido"
+    },
+    "checkedVal": "{pct}% · respostas: {answered} · estudantes: {students}",
+    "rubricVal": "{pct}% · {count} avaliados",
+    "rubricBest": "melhor {pct}% · {count} avaliados",
+    "mine": "{right} de {answered} certas",
+    "src": {
+      "live": "jogos ao vivo: {count}"
+    },
+    "legend": {
+      "h": "Como ler",
+      "sources": "Coberto por: as lições atribuídas marcadas com o padrão (ou com uma etapa ou um jogo de Aprender que o pratica), os jogos ao vivo que perguntaram sobre ele (Tug of Math Live no seu ano, conjuntos de perguntas que levam o código) e os cursos em que seus estudantes estão.",
+      "practiced": "Praticado: estudantes que terminaram uma atividade que pratica o padrão. Quer dizer que fizeram, não que dominam.",
+      "checked": "Perguntas: respostas certas entre as perguntas respondidas sobre o padrão (quizzes das lições, jogos ao vivo, verificações do Number Quest).",
+      "rubric": "Rubrica: pontuações de rubrica no padrão, como parte da pontuação máxima. Aparecem quando as rubricas levam padrões Common Core.",
+      "meets": "Atingido: um estudante atinge um padrão com pelo menos 80% de acertos em 3 ou mais perguntas, ou uma pontuação de rubrica de pelo menos dois terços. A turma atinge quando 80% dos estudantes atingem.",
+      "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso.",
+      "games": "Jogos com níveis para várias séries (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contam como prática só para a série da aula, ou para o nível em que o passo está fixado. Numa aula sem série, aparecem só em «Coberto por».",
+      "live": "Jogos ao vivo como o Tug of Math Live não guardam qual pergunta era de qual padrão, por isso as respostas de um aluno são divididas entre os padrões do jogo. Esses números são estimativas.",
+      "courses": "O Number Quest conta o trabalho feito com uma conta da escola, ou desde que o aluno entrou nesta turma. Uma única verificação (3 perguntas) não basta para atingir um padrão."
+    },
+    "empty": {
+      "title": "Ainda não há padrões Common Core",
+      "text": "Marque suas lições com padrões, ou atribua lições com jogos de Aprender como Sum Racer, Fraction Factory ou Word Trail, e eles aparecem aqui."
+    },
+    "csvCols": {
+      "code": "Código",
+      "grade": "Ano",
+      "domain": "Domínio",
+      "statement": "Enunciado",
+      "sources": "Coberto por",
+      "practiced": "Praticado (estudantes)",
+      "students": "Estudantes na turma",
+      "pct": "% de acertos",
+      "answered": "Perguntas respondidas",
+      "checkedStudents": "Estudantes com respostas",
+      "rubric": "% da rubrica",
+      "meets": "Estudantes que atingem",
+      "needsLook": "Precisa de atenção (estudantes)",
+      "last": "Última atividade",
+      "status": "Situação"
+    },
+    "lesson": {
+      "title": "Padrões",
+      "lead": "Marque esta lição, ou uma das etapas, com os padrões Common Core que ela trabalha. Eles aparecem na aba Padrões de cada turma a que ela foi atribuída.",
+      "back": "Voltar à lição",
+      "current": "Padrões marcados",
+      "none": "Ainda não há padrões marcados.",
+      "whole": "A lição toda",
+      "stepN": "Etapa {n}: {title}",
+      "remove": "Remover",
+      "removeLabel": "Remover {code}",
+      "removed": "{code} removido",
+      "add": "Adicionar",
+      "addLabel": "Adicionar {code}",
+      "added": "{code} adicionado",
+      "addTo": "Adicionar a",
+      "find": "Encontrar padrões",
+      "search": "Buscar",
+      "searchHint": "Um código como 3.OA.C.7, ou palavras como fractions",
+      "searchHintEla": "Um código como RL.3.2, ou palavras como main idea",
+      "domain": "Domínio",
+      "domainAll": "Todos os domínios",
+      "gradeAny": "Todos os anos",
+      "results": "Padrões: {count}",
+      "more": "Mostrando os primeiros {shown}: refine a busca para ver o resto.",
+      "noResults": "Nenhum padrão corresponde. Tente outro ano, domínio ou palavra.",
+      "tagged": "Marcado",
+      "open": "Marcar padrões",
+      "view": "Ver padrões",
+      "editorNone": "Ainda não há padrões Common Core marcados.",
+      "onSteps": "Padrões marcados em etapas: {count}",
+      "gameCodes": "Padrões de {framework} que este jogo pratica",
+      "gameNeedsGrade": "Este jogo tem níveis para várias séries. Dê uma série à aula (ou fixe o passo num nível) para que seus padrões contem como prática."
+    },
+    "errors": {
+      "badCode": "Esse não é um código Common Core.",
+      "badStep": "Essa etapa não está nesta lição.",
+      "tooMany": "Uma lição pode ter até 60 padrões.",
+      "badFramework": "Escolha Common Core Matemática ou Inglês."
+    },
+    "learn": {
+      "label": "Padrão",
+      "hint": "ex.: 3.OA ou RF.K"
+    }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Seu Google Classroom",
+      "text": "Conecte a conta Google com que você dá aula no Google Classroom. Depois você pode:",
+      "what": {
+        "courses": "vincular esta turma a uma das suas turmas do Classroom",
+        "roster": "trazer os alunos dela, que entram com o Google",
+        "post": "publicar aulas lá, com um link para cá e a data de entrega",
+        "grades": "enviar ao Classroom a nota de conclusão de cada aluno numa aula"
+      },
+      "button": "Conectar o Google Classroom",
+      "privacy": "Só você vê esta conexão. A Oomba Academy envia ao Classroom o título da aula, um link, a data de entrega e a nota de conclusão de cada aluno de 0 a 100. Nada mais: nem nomes, nem respostas, nem jogos.",
+      "connectedAs": "Conectado como {email}",
+      "connectedHint": "Esta conexão é sua: seus colegas professores conectam a deles.",
+      "connectedToast": "O Google Classroom está conectado.",
+      "disconnect": "Desconectar",
+      "disconnectConfirm": "Desconectar o Google Classroom? A Oomba Academy vai parar de sincronizar por você e apagar a chave de acesso ao seu Classroom. As aulas já publicadas ficam no Classroom.",
+      "disconnected": "O Google Classroom foi desconectado.",
+      "reconnect": "Conectar de novo"
+    },
+    "course": {
+      "heading": "Turma do Classroom vinculada",
+      "text": "Escolha a turma do Google Classroom que corresponde a {class}.",
+      "none": "Nenhuma turma ativa do Google Classroom em que você dá aula.",
+      "pick": "Escolha uma turma do Classroom",
+      "link": "Vincular",
+      "linked": "Vinculada a {course}.",
+      "linkedTo": "Vinculada a {course}",
+      "unlink": "Desvincular",
+      "unlinkConfirm": "Desvincular {course}? Os alunos e as aulas ficam onde estão.",
+      "unlinked": "Desvinculada.",
+      "connectFirst": "Conecte seu Google Classroom acima para sincronizar.",
+      "refresh": "Atualizar a lista"
+    },
+    "roster": {
+      "heading": "Alunos do Classroom",
+      "text": "Traz os alunos da turma do Classroom vinculada. Quem já está aqui é reconhecido pela conta Google. Quem é novo na Oomba Academy entra na primeira vez que fizer login com o Google no domínio da sua escola, e recebe então uma conta da escola. Os nomes reais ficam só com os professores.",
+      "button": "Importar alunos",
+      "last": "Última importação {when}",
+      "noDomains": "Sua escola ainda não adicionou o domínio Google dela, então não dá para adicionar alunos novos. Fale com o administrador da escola.",
+      "noDomainsAdmin": "Adicione primeiro o domínio Google da escola, para os alunos novos poderem entrar: {link}",
+      "hint": "Usa o Google Classroom? {link}",
+      "hintLink": "Importe os alunos de lá",
+      "notYet": "Google: veio do Classroom, ainda não entrou",
+      "resultAdded": "{count, plural, one {# aluno adicionado} other {# alunos adicionados}}",
+      "resultAlready": "{count, plural, one {# já estava aqui} other {# já estavam aqui}}",
+      "resultOwn": "{count, plural, one {# usa conta própria: pode entrar com o código da turma} other {# usam conta própria: podem entrar com o código da turma}}",
+      "resultOther": "{count, plural, one {# é de outra escola} other {# são de outra escola}}",
+      "resultStaff": "{count, plural, one {# é da equipe da escola} other {# são da equipe da escola}}",
+      "resultDomains": "{count, plural, one {# não adicionado: adicione primeiro o domínio Google da escola} other {# não adicionados: adicione primeiro o domínio Google da escola}}",
+      "resultWaiting": "{count, plural, one {# vai entrar no primeiro login com o Google no domínio da escola} other {# vão entrar no primeiro login com o Google no domínio da escola}}",
+      "waitingNow": "{count, plural, one {# aluno do Classroom ainda não fez login. Ele entra nesta turma no primeiro login com o Google no domínio da escola (em até 30 dias; importe de novo para renovar).} other {# alunos do Classroom ainda não fizeram login. Eles entram nesta turma no primeiro login com o Google no domínio da escola (em até 30 dias; importe de novo para renovar).}}"
+    },
+    "post": {
+      "heading": "Aulas no Classroom",
+      "text": "Publicar uma aula cria uma atividade no Classroom com o título, um link para a aula aqui e a data de entrega.",
+      "button": "Publicar no Google Classroom",
+      "also": "Publicar também no Google Classroom",
+      "description": "Abra esta aula na Oomba Academy.",
+      "done": "Publicada no Google Classroom.",
+      "donePastDue": "Publicada no Google Classroom (sem data de entrega: ela já passou).",
+      "failed": "Não foi publicada no Google Classroom:",
+      "due": "Entrega em {date}",
+      "noDue": "Sem data de entrega",
+      "posted": "Publicada",
+      "open": "Abrir no Classroom",
+      "noLessons": "Ainda não há aulas nesta turma. Atribua uma na aba Aulas.",
+      "doneScheduled": "Agendada no Google Classroom: os alunos a verão em {date}, quando a aula abrir."
+    },
+    "grades": {
+      "text": "É uma nota de conclusão: a parte das etapas da aula que o aluno fez, de 0 a 100. Não conta respostas certas. Quem ainda não começou fica de fora.",
+      "as": "Enviar como",
+      "draft": "Nota provisória (você devolve no Classroom)",
+      "assigned": "Nota atribuída",
+      "button": "Enviar notas de conclusão",
+      "lastDraft": "Notas de conclusão provisórias enviadas {when}",
+      "lastAssigned": "Notas de conclusão atribuídas enviadas {when}",
+      "resultSent": "{count, plural, one {# nota de conclusão enviada} other {# notas de conclusão enviadas}}",
+      "resultNotStarted": "{count, plural, one {# não começou} other {# não começaram}}",
+      "resultNotMatched": "{count, plural, one {# não está nesta turma} other {# não estão nesta turma}}",
+      "resultFailed": "{count, plural, one {# não foi enviada} other {# não foram enviadas}}"
+    },
+    "log": {
+      "heading": "Sincronizações recentes",
+      "kinds": {
+        "connect": "Conectado",
+        "disconnect": "Desconectado",
+        "link": "Turma vinculada",
+        "unlink": "Turma desvinculada",
+        "roster": "Alunos importados",
+        "post": "Aula publicada",
+        "grades": "Notas enviadas"
+      }
+    },
+    "errors": {
+      "notSetUp": "O Google Classroom ainda não está configurado neste site. Peça ao responsável pelo site para terminar a configuração.",
+      "notConnected": "Conecte primeiro seu Google Classroom.",
+      "reconnect": "Sua conexão com o Google Classroom parou de funcionar. Conecte de novo.",
+      "notLinked": "Vincule primeiro esta turma a uma turma do Classroom.",
+      "pickCourse": "Escolha uma turma do Classroom.",
+      "courseNotYours": "Você não dá aula nessa turma do Classroom.",
+      "courseGone": "O Google Classroom não encontra mais essa turma ou atividade.",
+      "denied": "O Google Classroom recusou. Talvez você não seja professor dessa turma, ou sua escola limita este app.",
+      "rateLimited": "O Google Classroom está ocupado. Tente de novo em alguns minutos.",
+      "googleDown": "O Google Classroom não respondeu. Tente de novo.",
+      "badRequest": "O Google Classroom não aceitou isso.",
+      "tooMany": "Essa turma do Classroom tem mais de {max} alunos.",
+      "alreadyPosted": "Esta aula já está no Google Classroom.",
+      "notPosted": "Publique primeiro esta aula no Google Classroom.",
+      "badMode": "Escolha como enviar as notas.",
+      "scopesMissing": "Marque todas as caixas na tela do Google, para a Oomba Academy poder ver suas turmas e publicar atividades.",
+      "noRefresh": "O Google não enviou uma chave que possamos guardar. Conecte de novo.",
+      "expired": "Demorou demais. Tente de novo.",
+      "cancelled": "Você cancelou na tela do Google. Nada foi conectado.",
+      "staffOnly": "Aqui só professores e administradores da escola podem usar o Google Classroom.",
+      "tooManyTries": "Sincronizações demais por agora. Tente de novo daqui a uma hora."
+    }
+  },
+  "digest": {
+    "when": "{day} às {time} ({zone})",
+    "email": {
+      "subject": "Seu resumo semanal das turmas de {date}",
+      "preview": "{count, plural, one {Os números de # turma, com links para ver mais na Oomba Academy.} other {Os números de # turmas, com links para ver mais na Oomba Academy.}}",
+      "heading": "Semana de {date}",
+      "greeting": "Olá, {name},",
+      "greetingNoName": "Olá,",
+      "intro": "Veja como estão suas turmas. Nomes e respostas ficam no site, onde só você e a equipe da sua escola podem vê-los.",
+      "due": "{count, plural, =0 {Nenhuma lição para entregar esta semana} one {# lição para entregar esta semana} other {# lições para entregar esta semana}}",
+      "pct": "{pct}% do trabalho das lições abertas feito",
+      "noWork": "Ainda não há lições abertas com etapas",
+      "toRead": "{count, plural, =0 {Nenhuma resposta para revisar} one {# resposta esperando revisão} other {# respostas esperando revisão}}",
+      "notStarted": "{count, plural, =0 {Todos os alunos já começaram} one {# aluno ainda não começou} other {# alunos ainda não começaram}}",
+      "live": "{count, plural, =0 {Nenhum jogo ao vivo nos últimos 7 dias} one {# jogo ao vivo nos últimos 7 dias} other {# jogos ao vivo nos últimos 7 dias}}",
+      "openClass": "Abrir a turma",
+      "review": "Revisar respostas",
+      "progress": "Ver o progresso",
+      "quiet": "{count, plural, one {# turma não teve nada novo e ficou de fora.} other {# turmas não tiveram nada novo e ficaram de fora.}}",
+      "cta": "Ver o resumo desta semana",
+      "classroom": "Ir para Minha sala",
+      "why": "Você recebe este resumo semanal porque dá aula para uma turma na Oomba Academy.",
+      "change": "Mudar o dia ou a hora",
+      "stop": "Parar estes resumos"
+    },
+    "unsub": {
+      "title": "Resumo semanal das turmas",
+      "askTitle": "Parar o resumo semanal das turmas?",
+      "askText": "Você vai deixar de receber o e-mail semanal sobre suas turmas. Tudo continua no site, e você pode ligá-lo de novo na sua página Eu.",
+      "button": "Parar os resumos",
+      "offTitle": "O resumo semanal está desligado",
+      "offText": "Você não vai mais receber o e-mail semanal sobre suas turmas. Os outros e-mails sobre sua conta continuam iguais.",
+      "again": "Ligar de novo",
+      "againTitle": "O resumo semanal está ligado de novo",
+      "againText": "Você vai recebê-lo de novo no dia e na hora mostrados na sua página Eu.",
+      "badTitle": "Este link não funciona",
+      "badText": "O link pode ter sido cortado ao ser copiado. Você também pode desligar o resumo na sua página Eu."
+    },
+    "me": {
+      "heading": "Resumo semanal das turmas",
+      "text": "Uma vez por semana enviamos por e-mail os números de cada turma: lições para entregar, trabalho feito, respostas para revisar, alunos que não começaram e jogos ao vivo. Nunca o nome ou a resposta de um aluno.",
+      "noAddress": "Ainda não temos seu endereço de e-mail. Conecte o Google nesta página e o resumo vai para esse endereço.",
+      "on": "Enviar o resumo semanal por e-mail",
+      "day": "Dia",
+      "hour": "Hora",
+      "zone": "Fuso horário",
+      "zoneSchool": "Fuso horário da minha escola ({zone})",
+      "zoneDefault": "Padrão ({zone})",
+      "save": "Salvar",
+      "saved": "Salvo."
+    },
+    "page": {
+      "link": "Resumo desta semana",
+      "title": "Resumo desta semana",
+      "sub": "Cada turma sua: os últimos 7 dias e as lições para entregar nos próximos 7.",
+      "next": "Seu e-mail de resumo sai toda semana: {when}.",
+      "off": "O e-mail de resumo semanal está desligado. Você ainda pode ver esta página quando quiser.",
+      "noAddress": "Ainda não temos seu endereço de e-mail, então nenhum resumo é enviado. Conecte o Google na sua página Eu.",
+      "noAddressPlain": "Ainda não temos seu endereço de e-mail, então nenhum resumo é enviado.",
+      "privacy": "Os nomes dos alunos aparecem só nesta página, nunca no e-mail.",
+      "seeEmail": "Ver o e-mail",
+      "change": "Mudar quando é enviado",
+      "statDue": "Para esta semana",
+      "statDone": "Trabalho feito",
+      "statToRead": "Para revisar",
+      "statNotStarted": "Não começaram",
+      "statLive": "Jogos ao vivo",
+      "dueHeading": "Para entregar esta semana",
+      "finished": "{done} de {count} terminaram",
+      "toReadHeading": "Respostas para revisar",
+      "notStartedHeading": "{count, plural, one {# aluno não começou} other {# alunos não começaram}}",
+      "noClasses": "Ainda não há turmas",
+      "noClassesText": "Crie uma turma em Minha sala e o resumo dela aparece aqui.",
+      "quietAll": "Uma semana tranquila",
+      "quietAllText": "Nada de novo nas suas turmas nos últimos 7 dias, então nenhum e-mail sai esta semana.",
+      "quietHeading": "Nada de novo",
+      "quietText": "Estas turmas não tiveram nada de novo nos últimos 7 dias. Elas ficam de fora do e-mail."
+    },
+    "errors": {
+      "badDay": "Escolha um dia.",
+      "badHour": "Escolha uma hora.",
+      "badZone": "Escolha um fuso horário da lista."
     }
   }
 }

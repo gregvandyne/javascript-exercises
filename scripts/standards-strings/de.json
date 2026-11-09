@@ -1,0 +1,124 @@
+{
+  "fw": {
+    "csta": "Informatik (CSTA)",
+    "math": "Common Core Mathe",
+    "ela": "Common Core Englisch (ELA)"
+  },
+  "picker": "Standard-Rahmenwerk",
+  "notice": "Common Core State Standards, verwendet unter der öffentlichen CCSS-Lizenz.",
+  "class": {
+    "lead": "Welche Common-Core-Standards diese Klasse mit ihren zugewiesenen Lektionen, den Lernspielen darin, Live-Spielen und Kursen abdeckt, und wo jedes Kind steht. Berechnet aus bereits gespeicherter Arbeit: Es wird nichts Neues erfasst.",
+    "grade": "Klassenstufe",
+    "covered": "Nur abgedeckte Standards",
+    "allOf": "Alle Standards: {grade}",
+    "summaryH": "Abdeckung nach Klassenstufe",
+    "summary": "{covered} von {total} Standards abgedeckt"
+  },
+  "cols": {
+    "standard": "Standard",
+    "sources": "Abgedeckt durch",
+    "practiced": "Geübt",
+    "checked": "Fragen",
+    "rubric": "Bewertungsraster",
+    "needsLook": "Genauer ansehen",
+    "last": "Zuletzt",
+    "status": "Status",
+    "level": "Stufe"
+  },
+  "status": {
+    "notYet": "Noch nicht",
+    "covered": "Abgedeckt",
+    "practiced": "Geübt",
+    "checked": "Geprüft",
+    "meets": "Erreicht"
+  },
+  "level": {
+    "none": "Keine Belege",
+    "practiced": "Geübt",
+    "developing": "Im Aufbau",
+    "meets": "Erreicht"
+  },
+  "checkedVal": "{pct} % · Antworten: {answered} · Kinder: {students}",
+  "rubricVal": "{pct} % · {count} bewertet",
+  "rubricBest": "bestes {pct} % · {count} bewertet",
+  "mine": "{right} von {answered} richtig",
+  "src": {
+    "live": "Live-Spiele: {count}"
+  },
+  "legend": {
+    "h": "So liest du es",
+    "sources": "Abgedeckt durch: die zugewiesenen Lektionen mit dem Standard (oder mit einem Schritt oder Lernspiel, das ihn übt), Live-Spiele, die danach gefragt haben (Tug of Math Live in seiner Klassenstufe, Fragensets, deren Fragen den Code tragen) und die Kurse, in denen deine Kinder sind.",
+    "practiced": "Geübt: Kinder, die eine Aktivität beendet haben, die den Standard übt. Das heißt, sie haben sie gemacht, nicht, dass sie ihn beherrschen.",
+    "checked": "Fragen: richtige Antworten von den beantworteten Fragen zum Standard (Lektions-Quiz, Live-Spiele, Number-Quest-Checks).",
+    "rubric": "Bewertungsraster: Rasterpunkte zum Standard, als Anteil der Höchstpunktzahl. Erscheint, sobald Raster Common-Core-Standards tragen.",
+    "meets": "Erreicht: Ein Kind erreicht einen Standard mit mindestens 80 % richtig bei 3 oder mehr Fragen oder mit mindestens zwei Dritteln der Rasterpunkte. Die Klasse erreicht ihn, wenn 80 % ihrer Kinder ihn erreichen.",
+    "needs": "Genauer ansehen: Kinder, die 2 oder mehr Fragen zum Standard beantwortet und keine richtig haben. Nur Lehrkräfte sehen das.",
+    "games": "Spiele mit Leveln für mehrere Klassenstufen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) zählen nur für die Klassenstufe der Lektion als Übung oder für das Level, auf das der Schritt festgelegt ist. Bei einer Lektion ohne Klassenstufe erscheinen sie nur unter „Abgedeckt durch“.",
+    "live": "Live-Spiele wie Tug of Math Live speichern nicht, welche Frage zu welchem Standard gehörte. Darum werden die Antworten eines Kindes auf die Standards des Spiels aufgeteilt. Diese Zahlen sind Schätzungen.",
+    "courses": "Number Quest zählt Arbeit mit einem Schulkonto oder seit das Kind dieser Klasse beigetreten ist. Ein einzelner Check (3 Fragen) reicht nicht, um einen Standard zu erfüllen."
+  },
+  "empty": {
+    "title": "Noch keine Common-Core-Standards",
+    "text": "Versieh deine Lektionen mit Standards oder weise Lektionen mit Lernspielen wie Sum Racer, Fraction Factory oder Word Trail zu, dann erscheinen sie hier."
+  },
+  "csvCols": {
+    "code": "Code",
+    "grade": "Klassenstufe",
+    "domain": "Bereich",
+    "statement": "Formulierung",
+    "sources": "Abgedeckt durch",
+    "practiced": "Geübt (Kinder)",
+    "students": "Kinder in der Klasse",
+    "pct": "Richtig %",
+    "answered": "Beantwortete Fragen",
+    "checkedStudents": "Kinder mit Antworten",
+    "rubric": "Raster %",
+    "meets": "Kinder, die ihn erreichen",
+    "needsLook": "Genauer ansehen (Kinder)",
+    "last": "Letzte Aktivität",
+    "status": "Status"
+  },
+  "lesson": {
+    "title": "Standards",
+    "lead": "Versieh diese Lektion oder einen ihrer Schritte mit den Common-Core-Standards, an denen sie arbeitet. Sie erscheinen im Reiter Standards jeder Klasse, der sie zugewiesen ist.",
+    "back": "Zurück zur Lektion",
+    "current": "Zugeordnete Standards",
+    "none": "Noch keine Standards zugeordnet.",
+    "whole": "Ganze Lektion",
+    "stepN": "Schritt {n}: {title}",
+    "remove": "Entfernen",
+    "removeLabel": "{code} entfernen",
+    "removed": "{code} entfernt",
+    "add": "Hinzufügen",
+    "addLabel": "{code} hinzufügen",
+    "added": "{code} hinzugefügt",
+    "addTo": "Hinzufügen zu",
+    "find": "Standards finden",
+    "search": "Suchen",
+    "searchHint": "Ein Code wie 3.OA.C.7 oder Wörter wie fractions",
+    "searchHintEla": "Ein Code wie RL.3.2 oder Wörter wie main idea",
+    "domain": "Bereich",
+    "domainAll": "Alle Bereiche",
+    "gradeAny": "Alle Klassenstufen",
+    "results": "Standards: {count}",
+    "more": "Die ersten {shown} werden gezeigt: Grenze die Suche ein, um den Rest zu sehen.",
+    "noResults": "Kein Standard passt. Versuch eine andere Klassenstufe, einen anderen Bereich oder ein anderes Wort.",
+    "tagged": "Zugeordnet",
+    "open": "Standards zuordnen",
+    "view": "Standards ansehen",
+    "editorNone": "Noch keine Common-Core-Standards zugeordnet.",
+    "onSteps": "Standards an Schritten: {count}",
+    "gameCodes": "{framework}-Standards, die dieses Spiel übt",
+    "gameNeedsGrade": "Dieses Spiel hat Level für mehrere Klassenstufen. Gib der Lektion eine Klassenstufe (oder lege den Schritt auf ein Level fest), damit seine Standards als geübt zählen."
+  },
+  "errors": {
+    "badCode": "Das ist kein Common-Core-Code.",
+    "badStep": "Dieser Schritt gehört nicht zu dieser Lektion.",
+    "tooMany": "Eine Lektion kann bis zu 60 Standards haben.",
+    "badFramework": "Wähle Common Core Mathe oder Englisch."
+  },
+  "learn": {
+    "label": "Standard",
+    "hint": "z. B. 3.OA oder RF.K"
+  }
+}

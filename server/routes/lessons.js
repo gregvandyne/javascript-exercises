@@ -19,6 +19,8 @@ import { liveGameOf } from '../live/live-games.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { HUBS } from '../learn.js';
+import * as R from '../services/rubrics.js';
+import { libraryTabs } from './rubrics.js';
 /** The site's games for a step's Game picker, grouped by subject (Math, Words, CS, Music, Strategy, Brain breaks) in
  *  title order, then live class games (hosted by the teacher), then the rest. -> [{ label, games }] */
 const SUBJECT_HUBS = HUBS.filter(h => h.games.length && h.key !== 'brainBreaks').concat(HUBS.filter(h => h.key === 'brainBreaks'));
@@ -36,9 +38,14 @@ function siteGroups(t, site) {
 
 import * as T from '../services/lesson-templates.js';
 import { editorBanner } from '../views/cs-quest.js';
+import { lessonTags } from '../services/standards-ccss.js';
+import { stepGameCodes, stepGameCover, lessonGrade } from '../standards/official-tags.js';
+import { codeChips, fwName } from '../views/standards.js';
+import { CCSS_IDS } from '../standards/frameworks.js';
+import { gcLessonsButton, gcAssignField, gcAfterAssign } from './gclassroom.js';
 
 export const router = Router();
-const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
+const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}"><link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`);
 const b = req => req.body || {};
 const err = (req, res, code, status = 400, field) => res.status(status).json({ error: req.t(`lessons.errors.${code}`), ...(field ? { field } : {}) });
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400));
@@ -172,7 +179,7 @@ router.get('/teach/lessons', requireUser, (req, res) => {
   const body = html`
   <div class="pagehead"><h1>📚 ${t('lessons.library.title')}</h1></div>
   ${schools.length > 1 ? html`<nav class="seg schoolpick" aria-label="${t('school.class.school')}">${schools.map(s => html`<a class="btn btn-sm ${s.id === school.id ? 'btn-primary' : ''}" href="/teach/lessons?school=${s.id}">${s.name}</a>`)}</nav>` : ''}
-  <nav class="tabs" aria-label="${t('lessons.library.title')}"><a href="${q()}" ${tab === 'mine' ? raw('aria-current="page"') : ''}>${t('lessons.library.mine')}</a><a href="${q('&tab=shared')}" ${tab === 'shared' ? raw('aria-current="page"') : ''}>${t('lessons.library.shared')}</a></nav>
+  ${libraryTabs(t, school.id, tab)}
   ${tab === 'mine' ? mine : shared}`;
   page(req, res, { title: t('lessons.library.title'), active: 'classes', mid: true, body, head: CSS, scripts: ['/js/schools.js'], back: '/teach', backLabel: t('school.teach.title') });
 });
@@ -235,7 +242,14 @@ router.post('/api/lessons/:id/delete', requireUser, (req, res) => {
 // step with the Type select, and the CSS hides the Game field for other types (it also follows the select without JS).
 const KIND_ORDER = ['text', 'question', 'game', 'build'];
 const BODY_LABEL = { text: 'lessons.step.bodyText', question: 'lessons.step.bodyQuestion', build: 'lessons.step.bodyBuild', game: 'lessons.step.bodyGame' };
-function stepFields(t, pick, s = {}, idp, { newGameLink = false } = {}) {
+/** The step form's Rubric select (question and build steps): the teacher's rubrics, and the one on the step now. */
+function rubricField(t, rubrics, current, idp, kinds, forKind) {
+  const has = rubrics.some(r => r.id === current), cur = current && !has ? R.getRubric(current) : null;
+  return html`<div class="f-rub" data-for-kinds="${kinds.join(' ')}" ${forKind}><label for="${idp}-r">${t('rubrics.attach.step')} <span class="muted">${t('school.optional')}</span></label>
+    <select class="input" id="${idp}-r" name="rubricId"><option value="">${t('rubrics.attach.none')}</option>${cur ? html`<option value="${cur.id}" selected>📏 ${cur.title}</option>` : ''}${rubrics.map(r => html`<option value="${r.id}" ${r.id === current ? raw('selected') : ''}>📏 ${r.title}</option>`)}</select>
+    <span class="hint">${rubrics.length ? t('rubrics.attach.hint') : t('rubrics.attach.noneYet')} <a href="/teach/rubrics">${t('rubrics.attach.library')}</a></span></div>`;
+}
+function stepFields(t, pick, s = {}, idp, { newGameLink = false, rubrics = [] } = {}) {
   const kind = s.kind || 'text';
   const opt = g => html`<option value="${g.id}" ${g.id === s.game_id ? raw('selected') : ''}>${g.icon} ${g.title}</option>`;
   const forKind = k => (k === kind ? '' : raw('hidden'));
@@ -249,7 +263,8 @@ function stepFields(t, pick, s = {}, idp, { newGameLink = false } = {}) {
       ${siteGroups(t, pick.site).map(gr => html`<optgroup label="${gr.label}">${gr.games.map(opt)}</optgroup>`)}</select><span class="err" id="${idp}-g-err"></span>
       ${newGameLink ? html`<a class="small f-glink" href="#ng-i">➕ ${t('lessons.step.newGameLink')}</a>` : ''}</div>
     <div class="field f-m"><label for="${idp}-m">${t('lessons.step.minutes')}</label><input class="input" id="${idp}-m" name="minutes" type="number" min="0" max="240" value="${s.minutes || ''}"></div>
-    <div class="field f-b"><label for="${idp}-b">${KIND_ORDER.map(k => html`<span data-for-kind="${k}" ${forKind(k)}>${t(BODY_LABEL[k])}</span>`)}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint" data-for-kind="build" ${forKind('build')}>${t('lessons.step.buildHint')}</span><span class="err" id="${idp}-b-err"></span></div>`;
+    <div class="field f-b"><label for="${idp}-b">${KIND_ORDER.map(k => html`<span data-for-kind="${k}" ${forKind(k)}>${t(BODY_LABEL[k])}</span>`)}</label><textarea class="input" id="${idp}-b" name="body" rows="3" maxlength="4000">${s.body || ''}</textarea><span class="hint" data-for-kind="build" ${forKind('build')}>${t('lessons.step.buildHint')}</span><span class="err" id="${idp}-b-err"></span>
+      ${rubricField(t, rubrics, s.rubric_id || null, idp, R.STEP_KINDS, R.STEP_KINDS.includes(kind) ? '' : raw('hidden'))}</div>`;
 }
 router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const t = req.t, f = req.fmt, u = req.user;
@@ -260,6 +275,10 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const st = L.steps(l.id);
   const total = st.reduce((n, s) => n + (s.minutes || 0), 0);
   const pick = edit ? L.gamesForPicker(u, l.school_id) : null;
+  // Rubrics (services/rubrics.js): the ones this teacher can attach, and the whole lesson's.
+  const rubrics = edit ? R.attachable(u, l.school_id) : [];
+  const lessonRubric = l.rubric_id ? R.getRubric(l.rubric_id) : null;
+  const rubricChip = id => { const rb = id && R.getRubric(id); if (!rb) return ''; return html`<p class="sc-rubric">📏 ${R.canSeeRubric(u, rb) ? html`<a href="/teach/rubrics/${rb.id}" dir="auto">${rb.title}</a>` : html`<span dir="auto">${rb.title}</span>`} <span class="small muted">${t('rubrics.maxPoints', { points: t('rubrics.pointsN', { count: R.maxPoints(rb) }) })}</span></p>`; };
   // Where the lesson is now (live classes the viewer manages: one line each), and the classes it can still go to.
   const assigned = edit ? L.assignedClasses(l.id).filter(a => !a.archived_at && S.canManageClass(u, S.getClass(a.class_id))) : [];
   const justAssigned = req.query.assigned ? assigned.find(a => a.id === String(req.query.assigned)) || null : null;
@@ -269,6 +288,16 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   const preselect = String(req.query.class || '');
   const from = managedClass(u, req.query.from);
   const started = L.startedIn(assigned.map(a => a.id));
+  // Common Core tags (services/standards-ccss.js): the lesson's own, each step's, and what an official game practises.
+  const ccTags = lessonTags(l.id);
+  const ccOf = stepId => CCSS_IDS.map(fw => [fw, ccTags.filter(x => x.framework === fw && x.step_id === stepId).map(x => x.code)]).filter(([, c]) => c.length);
+  const ccChips = list => list.map(([fw, codes]) => codeChips(t, fw, codes));
+  // What a game step practises, as the class Standards tab counts it (a levelled game: the lesson's grade or the track
+  // the step is locked to), and whether it only covers codes until the lesson has a grade.
+  const lg = lessonGrade(l.grade);
+  const seedGame = s => s.kind === 'game' && s.game_slug && s.game_source === 'seed';
+  const gameOf = s => (seedGame(s) ? CCSS_IDS.map(fw => [fw, stepGameCodes(s.game_slug, fw, lg, s.options)]).filter(([, c]) => c.length) : []);
+  const needsGrade = s => seedGame(s) && !gameOf(s).length && CCSS_IDS.some(fw => stepGameCover(s.game_slug, fw, lg, s.options).length);
   const stepView = (s, i) => {
     const playable = L.playableBy(s, l.school_id);
     // A game the viewer can't open (a colleague's class game, say): no title and no link, just that it is there.
@@ -283,9 +312,11 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
           : html`${s.game_icon} <a href="/g/${s.game_slug}">${s.game_title}</a>${classOnly ? html` <span class="chip-s">🎒 ${t('lessons.step.classOnly')}</span>` : playable ? '' : html` <span class="chip-s warn">⚠️ ${t('lessons.step.notShared')}</span>`}`}</p>
         ${!playable && !classOnly && edit && s.game_owner === u.id ? html`<form data-api="/api/lesson-steps/${s.id}/share-game" data-reload><button class="btn btn-sm" type="submit">🏫 ${t('lessons.step.shareGame')}</button></form>` : ''}
         ${!playable && !classOnly && s.game_owner === u.id ? html`<p class="small muted">${t('lessons.step.notSharedHint')} <a href="/studio/${s.game_id}">${t('lessons.step.openStudio')}</a></p>` : ''}` : ''}
+      ${ccOf(s.id).length || gameOf(s).length || needsGrade(s) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${gameOf(s).map(([fw, codes]) => codeChips(t, fw, codes, { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) }))}${needsGrade(s) ? html`<p class="small muted">${t('standards.lesson.gameNeedsGrade')}</p>` : ''}</div>` : ''}
       ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">💬 “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
+      ${R.STEP_KINDS.includes(s.kind) ? rubricChip(s.rubric_id) : ''}
       ${edit ? html`<details><summary class="small">✏️ ${t('lessons.step.edit')}</summary>
-        <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`)}
+        <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`, { rubrics })}
           <div class="formacts"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="sd-${s.id}">${t('lessons.step.delete')}</button></div></form>
         <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}
     </li>`;
@@ -309,18 +340,23 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       <div class="field"><label for="ld-g">${optional(t, t('school.class.grade'))}</label><input class="input" id="ld-g" name="grade" value="${l.grade}" maxlength="12"></div>
       <div class="field wide"><label for="ld-su">${t('lessons.lesson.summary')}</label><textarea class="input" id="ld-su" name="summary" rows="3" maxlength="600">${l.summary}</textarea></div>
       <div class="field wide"><label for="ld-o">${t('lessons.lesson.objectives')}</label><textarea class="input" id="ld-o" name="objectives" rows="3" maxlength="1000" placeholder="${t('lessons.lesson.objectivesHint')}">${l.objectives}</textarea></div>
+      <div class="field wide"><label for="ld-r">${t('rubrics.attach.lesson')} <span class="muted">${t('school.optional')}</span></label><select class="input" id="ld-r" name="rubricId"><option value="">${t('rubrics.attach.none')}</option>${lessonRubric && !rubrics.some(r => r.id === lessonRubric.id) ? html`<option value="${lessonRubric.id}" selected>📏 ${lessonRubric.title}</option>` : ''}${rubrics.map(r => html`<option value="${r.id}" ${r.id === l.rubric_id ? raw('selected') : ''}>📏 ${r.title}</option>`)}</select><span class="hint">${t('rubrics.attach.lessonHint')} <a href="/teach/rubrics?school=${l.school_id}">${t('rubrics.attach.library')}</a></span><span class="err" id="ld-r-err"></span></div>
       <div class="formacts wide"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="ldel-${l.id}">${t('lessons.lesson.delete')}</button></div>
     </form></details>` : ''}
   ${l.summary ? html`<div class="panel">${paras(l.summary)}</div>` : ''}
+  ${lessonRubric ? html`<section class="panel lessonrubric"><h2>📏 ${t('rubrics.attach.lessonTitle')}</h2>${rubricChip(lessonRubric.id)}</section>` : ''}
   ${l.objectives ? html`<section class="panel"><h2>🎯 ${t('lessons.lesson.objectives')}</h2><ul>${l.objectives.split('\n').filter(Boolean).map(o => html`<li>${o.replace(/^[-•*]\s*/, '')}</li>`)}</ul></section>` : ''}
+  <section class="panel std-lessonpanel" id="standards" aria-labelledby="std-h"><div class="std-lessonhead"><h2 id="std-h">🎯 ${t('standards.lesson.title')}</h2>
+    <a class="btn btn-sm" href="/teach/lessons/${l.id}/standards">${edit ? `＋ ${t('standards.lesson.open')}` : t('standards.lesson.view')}</a></div>
+    ${ccOf('').length ? ccChips(ccOf('')) : html`<p class="small muted">${ccTags.length ? t('standards.lesson.onSteps', { count: ccTags.length }) : t('standards.lesson.editorNone')}</p>`}</section>
   ${edit && st.length > 2 ? jumpNav(t, [['steps', `🪜 ${t('lessons.lesson.steps')}`, st.length], ['add-step', `➕ ${t('lessons.step.add')}`], ['assign', `📌 ${t('lessons.assign.title')}`]]) : ''}
   <h2 class="sec-h" id="steps">🪜 ${t('lessons.lesson.steps')}</h2>
   ${st.length ? html`<ol class="plain steplist">${st.map(stepView)}</ol>` : html`<p class="muted">${t('lessons.lesson.noSteps')}</p>`}
   ${edit ? html`
   <section class="panel" id="add-step"><h2>➕ ${t('lessons.step.add')}</h2>
-    <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true })}
+    <form class="formgrid stepgrid" data-kind="text" data-api="/api/lessons/${l.id}/steps" data-reload novalidate>${stepFields(t, pick, {}, 'ns', { newGameLink: true, rubrics })}
       <div class="formacts"><button class="btn btn-primary" type="submit">➕ ${t('lessons.step.addButton')}</button></div></form>
-    <details class="newgame"><summary class="small">➕ ${t('lessons.step.newGameLink')}</summary>
+    <details class="newgame" id="new-game"><summary class="small">➕ ${t('lessons.step.newGameLink')}</summary>
       <form class="formgrid" data-api="/api/lessons/${l.id}/new-game" novalidate>
         <div class="field"><label for="ng-i">${t('lessons.step.newGameIdea')}</label><input class="input" id="ng-i" name="idea" maxlength="300" required placeholder="${t('lessons.step.newGamePlaceholder')}"><span class="err" id="ng-i-err"></span></div>
         <div class="field end"><button class="btn" type="submit">🛠️ ${t('lessons.step.newGameButton')}</button></div>
@@ -347,14 +383,17 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
 // ---- editor APIs
 const bool = v => v === true || v === '1' || v === 'true';
 router.post('/api/lessons/:id', requireUser, (req, res) => {
-  const { title, summary, subject, grade, objectives, shared } = b(req);
+  const { title, summary, subject, grade, objectives, shared, rubricId } = b(req);
   if (title !== undefined && !String(title).trim()) return err(req, res, 'lessonTitle', 400, 'title');
-  send(req, res, L.updateLesson(req.user, req.params.id, { title, summary, subject, grade, objectives, shared: shared !== undefined ? bool(shared) : undefined }));
+  const r = L.updateLesson(req.user, req.params.id, { title, summary, subject, grade, objectives, shared: shared !== undefined ? bool(shared) : undefined, rubricId });
+  if (!r.ok && r.code === 'rubricPick') return res.status(400).json({ error: req.t('rubrics.errors.pick'), field: 'rubricId' });
+  send(req, res, r);
 });
 // options / standards / template / rubric: CS Quest fields (docs/cs-quest.md), set by the catalogue materialiser and APIs, not the editor form.
-const stepInput = x => ({ kind: x.kind, title: x.title, body: x.body, minutes: x.minutes, gameId: x.gameId, options: x.options, standards: x.standards, template: x.template, rubric: x.rubric });
+const stepInput = x => ({ kind: x.kind, title: x.title, body: x.body, minutes: x.minutes, gameId: x.gameId, options: x.options, standards: x.standards, template: x.template, rubric: x.rubric, rubricId: x.rubricId });
 const CS_CODES = ['stepOptions', 'stepStandards', 'stepTemplate', 'stepRubric'];
 const stepErr = (req, res, r) => (r.code === 'buildPrompt' || r.code === 'stepText' || r.code === 'questionText' ? err(req, res, r.code, 400, 'body') : r.code === 'pickGame' ? err(req, res, r.code, 400, 'gameId')
+  : r.code === 'rubricPick' ? res.status(400).json({ error: req.t('rubrics.errors.pick'), field: 'rubricId' })
   : CS_CODES.includes(r.code) ? res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code }) : send(req, res, r));
 router.post('/api/lessons/:id/steps', requireUser, (req, res) => { const r = L.addStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r); });
 router.post('/api/lesson-steps/:id', requireUser, (req, res) => { const r = L.updateStep(req.user, req.params.id, stepInput(b(req))); return r.ok ? res.json({ ok: true }) : stepErr(req, res, r); });
@@ -382,12 +421,13 @@ router.post('/api/lessons/:id/new-game', requireAccount, rateLimit('studio-new',
 });
 /** Assigning (from the editor or the class's Lessons tab): stay on the page, with "Assigned to {class}" after the reload.
  *  A lesson is in a class at most once; assigning one that was removed brings it back with the students' work. */
-function assignReply(req, res, r) {
+function assignReply(req, res, r, also = '') {
   if (r.ok) {
     const c = S.getClass(r.classLesson.class_id);
     // From the lesson page: back to its Assign section with "Assigned to … · See who's started" next to the form.
     const back = String((req.body && req.body.from) || '') === 'lesson' ? { redirect: `/teach/lessons/${r.classLesson.lesson_id}?assigned=${encodeURIComponent(r.classLesson.id)}#assign` } : {};
-    return res.json({ ok: true, toast: req.t(r.workBack ? 'lessons.assign.restored' : 'lessons.assign.done', { class: c.name }), ...back });
+    const toast = req.t(r.workBack ? 'lessons.assign.restored' : 'lessons.assign.done', { class: c.name });
+    return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...back });
   }
   if (r.code === 'alreadyAssigned') return res.status(400).json({ error: req.t('lessons.errors.alreadyAssigned', { class: r.className }) });
   return err(req, res, r.code, r.code === 'notFound' ? 404 : 400);
@@ -446,9 +486,11 @@ export function teacherLessonsPanel(req, c) {
         ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}
         <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
         <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
+        ${gcAssignField(req, c)}
         <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
         <p class="small muted wide">${zoneNote(t, c.school_id, req.user)}</p></form></details>` : ''}
         ${libOk ? html`<a class="btn" href="${lib}">📚 ${t('lessons.class.library')}</a>` : ''}
+        ${gcLessonsButton(req, c)}
         <details class="libdrop unitdrop"><summary class="btn">🗂️ ${t('lessons.class.newUnit')}</summary>
           <form class="row unitform" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input grow" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn btn-primary" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form>
           <p class="small muted">${t('lessons.class.unitHint')}</p></details>
@@ -482,9 +524,11 @@ export function studentLessonsPanel(req, c) {
 }
 
 // ---- class lesson APIs
-router.post('/api/classes/:id/lessons', requireUser, (req, res) => {
+router.post('/api/classes/:id/lessons', requireUser, async (req, res) => {
   const { lessonId, unitId, opensAt, dueAt } = b(req);
-  assignReply(req, res, L.assign(req.user, req.params.id, lessonId, { unitId: unitId || null, opensAt, dueAt }));
+  const r = L.assign(req.user, req.params.id, lessonId, { unitId: unitId || null, opensAt, dueAt });
+  // "Also post to Google Classroom" (routes/gclassroom.js): the assignment stands whatever Google says; its line joins the toast.
+  assignReply(req, res, r, r.ok ? await gcAfterAssign(req, r.classLesson) : '');
 });
 router.post('/api/classes/:id/units', requireUser, (req, res) => { if (!String(b(req).name || '').trim()) return err(req, res, 'unitName', 400, 'name'); send(req, res, L.createUnit(req.user, req.params.id, b(req).name)); });
 router.post('/api/class-units/:id', requireUser, (req, res) => send(req, res, L.renameUnit(req.user, req.params.id, b(req).name)));

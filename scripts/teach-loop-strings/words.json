@@ -1,0 +1,818 @@
+{
+  "en": {
+    "kicker": "How Oomba fits your week",
+    "h": "Plan → Play → Check → Feedback",
+    "lead": "One loop for every lesson: plan it, play it with your class, see who needs you, and tell each student what to do next. Every step is a tool that is already in Oomba.",
+    "steps": {
+      "plan": {
+        "name": "Plan",
+        "benefit": "Start from a ready-made lesson or a topic, then turn it into a game your class will want to play."
+      },
+      "play": {
+        "name": "Play",
+        "benefit": "Assign it with open and due dates, or play it live on the big screen with the whole class."
+      },
+      "check": {
+        "name": "Check",
+        "benefit": "See every student's progress at a glance, and who needs your help first."
+      },
+      "feedback": {
+        "name": "Feedback",
+        "benefit": "Read each answer and write feedback that the student sees on their own lesson."
+      }
+    },
+    "tools": {
+      "builder": "Turn a lesson into a game",
+      "assign": "Assign to a class",
+      "gradebook": "Gradebook",
+      "gradebookCsv": "Gradebook with CSV download",
+      "standards": "Standards tab",
+      "review": "Answers to review",
+      "written": "Written feedback students see"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "The gradebook: students down the side, lessons across the top, with steps done and answers to read",
+        "caption": "Gradebook: the whole class at a glance, ready to download as a CSV file."
+      },
+      "attention": {
+        "alt": "One lesson's progress, sorted so the students who need attention come first",
+        "caption": "Needs attention first: answers to read, late work and half-done lessons on top."
+      },
+      "feedback": {
+        "alt": "A student's written answer with the teacher's feedback box and the save button",
+        "caption": "Feedback: write a note, save it, and the student sees it on their lesson."
+      },
+      "standards": {
+        "alt": "The class Standards tab: computer science standards with how far each student has got",
+        "caption": "Standards: the computer science standards your class has covered, student by student."
+      }
+    },
+    "home": {
+      "h": "Your teaching loop",
+      "lead": "Try each step once with {class}. Each one ticks itself off as you go.",
+      "leadNoClass": "Make your first class, then try each step once. Each one ticks itself off as you go.",
+      "makeClass": "Make your first class",
+      "count": "{done} of {total} done",
+      "done": "Done",
+      "todo": "Not done yet",
+      "hide": "Hide",
+      "hidden": "Hidden. You can always find it under How Oomba fits your week."
+    },
+    "page": {
+      "title": "How Oomba fits your week",
+      "lead": "Plan a lesson, play it, check who needs you and give feedback: the tools for each step, ready for your class.",
+      "link": "How Oomba fits your week",
+      "show": "Show the checklist on {classroom}",
+      "shown": "The checklist is back on {classroom}."
+    }
+  },
+  "de": {
+    "kicker": "So passt Oomba in deine Woche",
+    "h": "Planen → Spielen → Prüfen → Rückmelden",
+    "lead": "Ein Kreislauf für jede Lektion: planen, mit der Klasse spielen, sehen, wer dich braucht, und jedem Kind sagen, wie es weitergeht. Jeder Schritt ist ein Werkzeug, das es in Oomba schon gibt.",
+    "steps": {
+      "plan": {
+        "name": "Planen",
+        "benefit": "Starte mit einer fertigen Lektion oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
+      },
+      "play": {
+        "name": "Spielen",
+        "benefit": "Gib sie mit Start- und Abgabedatum auf oder spiele sie live mit der ganzen Klasse auf dem großen Bildschirm."
+      },
+      "check": {
+        "name": "Prüfen",
+        "benefit": "Sieh den Fortschritt aller Kinder auf einen Blick und wer deine Hilfe zuerst braucht."
+      },
+      "feedback": {
+        "name": "Rückmelden",
+        "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Lektion sieht."
+      }
+    },
+    "tools": {
+      "builder": "Aus einer Lektion ein Spiel machen",
+      "assign": "Einer Klasse aufgeben",
+      "gradebook": "Notenübersicht",
+      "gradebookCsv": "Notenübersicht mit CSV-Download",
+      "standards": "Tab „Standards“",
+      "review": "Antworten zum Lesen",
+      "written": "Schriftliche Rückmeldung für die Kinder"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "Die Notenübersicht: Kinder untereinander, Lektionen nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
+        "caption": "Notenübersicht: die ganze Klasse auf einen Blick, als CSV-Datei herunterladbar."
+      },
+      "attention": {
+        "alt": "Der Fortschritt einer Lektion, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
+        "caption": "Zuerst, wer Aufmerksamkeit braucht: Antworten zum Lesen, Verspätetes und halb Fertiges oben."
+      },
+      "feedback": {
+        "alt": "Die schriftliche Antwort eines Kindes mit dem Rückmeldefeld der Lehrkraft und dem Speichern-Knopf",
+        "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Lektion."
+      },
+      "standards": {
+        "alt": "Der Tab „Standards“ der Klasse: Informatik-Standards und wie weit jedes Kind ist",
+        "caption": "Standards: welche Informatik-Standards deine Klasse schon abgedeckt hat, Kind für Kind."
+      }
+    },
+    "home": {
+      "h": "Dein Unterrichtskreislauf",
+      "lead": "Probiere jeden Schritt einmal mit {class} aus. Jeder hakt sich von selbst ab.",
+      "leadNoClass": "Lege deine erste Klasse an und probiere dann jeden Schritt einmal aus. Jeder hakt sich von selbst ab.",
+      "makeClass": "Erste Klasse anlegen",
+      "count": "{done} von {total} erledigt",
+      "done": "Erledigt",
+      "todo": "Noch nicht erledigt",
+      "hide": "Ausblenden",
+      "hidden": "Ausgeblendet. Du findest es jederzeit unter „So passt Oomba in deine Woche“."
+    },
+    "page": {
+      "title": "So passt Oomba in deine Woche",
+      "lead": "Lektion planen, spielen, prüfen, wer dich braucht, und Rückmeldung geben: die Werkzeuge für jeden Schritt, bereit für deine Klasse.",
+      "link": "So passt Oomba in deine Woche",
+      "show": "Checkliste wieder in „{classroom}“ zeigen",
+      "shown": "Die Checkliste ist wieder in „{classroom}“."
+    }
+  },
+  "es": {
+    "kicker": "Cómo encaja Oomba en tu semana",
+    "h": "Planificar → Jugar → Revisar → Comentar",
+    "lead": "Un ciclo para cada clase: planifícala, juégala con tu grupo, mira quién te necesita y dile a cada estudiante qué hacer después. Cada paso es una herramienta que ya está en Oomba.",
+    "steps": {
+      "plan": {
+        "name": "Planificar",
+        "benefit": "Empieza con una lección lista o un tema y conviértela en un juego que tu clase querrá jugar."
+      },
+      "play": {
+        "name": "Jugar",
+        "benefit": "Asígnala con fechas de apertura y entrega, o juégala en directo en la pantalla grande con toda la clase."
+      },
+      "check": {
+        "name": "Revisar",
+        "benefit": "Mira el progreso de cada estudiante de un vistazo y quién necesita tu ayuda primero."
+      },
+      "feedback": {
+        "name": "Comentar",
+        "benefit": "Lee cada respuesta y escribe comentarios que el estudiante ve en su propia lección."
+      }
+    },
+    "tools": {
+      "builder": "Convertir una lección en un juego",
+      "assign": "Asignar a una clase",
+      "gradebook": "Libro de calificaciones",
+      "gradebookCsv": "Libro de calificaciones con descarga CSV",
+      "standards": "Pestaña Estándares",
+      "review": "Respuestas por revisar",
+      "written": "Comentarios escritos que ven los estudiantes"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "El libro de calificaciones: estudiantes en filas, lecciones en columnas, con pasos hechos y respuestas por leer",
+        "caption": "Libro de calificaciones: toda la clase de un vistazo, lista para descargar en CSV."
+      },
+      "attention": {
+        "alt": "El progreso de una lección, ordenado para que primero salgan quienes necesitan atención",
+        "caption": "Primero quien necesita atención: respuestas por leer, trabajo atrasado y lecciones a medias arriba."
+      },
+      "feedback": {
+        "alt": "La respuesta escrita de un estudiante con el cuadro de comentarios del docente y el botón de guardar",
+        "caption": "Comentarios: escribe una nota, guárdala y el estudiante la ve en su lección."
+      },
+      "standards": {
+        "alt": "La pestaña Estándares de la clase: estándares de informática y cuánto ha avanzado cada estudiante",
+        "caption": "Estándares: los estándares de informática que ha cubierto tu clase, estudiante por estudiante."
+      }
+    },
+    "home": {
+      "h": "Tu ciclo de enseñanza",
+      "lead": "Prueba cada paso una vez con {class}. Cada uno se marca solo a medida que avanzas.",
+      "leadNoClass": "Crea tu primera clase y luego prueba cada paso una vez. Cada uno se marca solo a medida que avanzas.",
+      "makeClass": "Crea tu primera clase",
+      "count": "{done} de {total} hechos",
+      "done": "Hecho",
+      "todo": "Aún no hecho",
+      "hide": "Ocultar",
+      "hidden": "Oculto. Siempre lo encontrarás en «Cómo encaja Oomba en tu semana»."
+    },
+    "page": {
+      "title": "Cómo encaja Oomba en tu semana",
+      "lead": "Planifica una lección, juégala, revisa quién te necesita y da comentarios: las herramientas de cada paso, listas para tu clase.",
+      "link": "Cómo encaja Oomba en tu semana",
+      "show": "Mostrar de nuevo la lista en {classroom}",
+      "shown": "La lista ha vuelto a {classroom}."
+    }
+  },
+  "fr": {
+    "kicker": "Comment Oomba s'intègre à votre semaine",
+    "h": "Préparer → Jouer → Suivre → Commenter",
+    "lead": "Une boucle pour chaque leçon : préparez-la, jouez-la avec votre classe, voyez qui a besoin de vous et dites à chaque élève quoi faire ensuite. Chaque étape est un outil déjà présent dans Oomba.",
+    "steps": {
+      "plan": {
+        "name": "Préparer",
+        "benefit": "Partez d'une leçon toute prête ou d'un thème, puis transformez-la en un jeu auquel votre classe voudra jouer."
+      },
+      "play": {
+        "name": "Jouer",
+        "benefit": "Donnez-la avec des dates d'ouverture et de rendu, ou jouez-la en direct sur grand écran avec toute la classe."
+      },
+      "check": {
+        "name": "Suivre",
+        "benefit": "Voyez la progression de chaque élève d'un coup d'œil, et qui a besoin de votre aide en premier."
+      },
+      "feedback": {
+        "name": "Commenter",
+        "benefit": "Lisez chaque réponse et écrivez un commentaire que l'élève voit dans sa propre leçon."
+      }
+    },
+    "tools": {
+      "builder": "Transformer une leçon en jeu",
+      "assign": "Donner à une classe",
+      "gradebook": "Carnet de suivi",
+      "gradebookCsv": "Carnet de suivi avec téléchargement CSV",
+      "standards": "Onglet Normes",
+      "review": "Réponses à lire",
+      "written": "Commentaires écrits vus par les élèves"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "Le carnet de suivi : les élèves en lignes, les leçons en colonnes, avec les étapes faites et les réponses à lire",
+        "caption": "Carnet de suivi : toute la classe d'un coup d'œil, à télécharger en CSV."
+      },
+      "attention": {
+        "alt": "La progression d'une leçon, triée pour que les élèves qui ont besoin d'attention viennent en premier",
+        "caption": "D'abord ceux qui ont besoin d'attention : réponses à lire, travaux en retard et leçons à moitié faites en haut."
+      },
+      "feedback": {
+        "alt": "La réponse écrite d'un élève avec la zone de commentaire de l'enseignant et le bouton d'enregistrement",
+        "caption": "Commenter : écrivez une note, enregistrez-la, et l'élève la voit dans sa leçon."
+      },
+      "standards": {
+        "alt": "L'onglet Normes de la classe : les normes d'informatique et l'avancement de chaque élève",
+        "caption": "Normes : les normes d'informatique couvertes par votre classe, élève par élève."
+      }
+    },
+    "home": {
+      "h": "Votre boucle d'enseignement",
+      "lead": "Essayez chaque étape une fois avec {class}. Chacune se coche toute seule au fil de l'eau.",
+      "leadNoClass": "Créez votre première classe, puis essayez chaque étape une fois. Chacune se coche toute seule au fil de l'eau.",
+      "makeClass": "Créez votre première classe",
+      "count": "{done} sur {total} faites",
+      "done": "Fait",
+      "todo": "Pas encore fait",
+      "hide": "Masquer",
+      "hidden": "Masqué. Vous le retrouverez toujours sous « Comment Oomba s'intègre à votre semaine »."
+    },
+    "page": {
+      "title": "Comment Oomba s'intègre à votre semaine",
+      "lead": "Préparez une leçon, jouez-la, voyez qui a besoin de vous et commentez : les outils de chaque étape, prêts pour votre classe.",
+      "link": "Comment Oomba s'intègre à votre semaine",
+      "show": "Afficher de nouveau la liste dans {classroom}",
+      "shown": "La liste est de retour dans {classroom}."
+    }
+  },
+  "it": {
+    "kicker": "Come Oomba si inserisce nella tua settimana",
+    "h": "Pianifica → Gioca → Verifica → Commenta",
+    "lead": "Un ciclo per ogni lezione: pianificala, giocala con la classe, guarda chi ha bisogno di te e di' a ogni studente cosa fare dopo. Ogni passo è uno strumento che è già in Oomba.",
+    "steps": {
+      "plan": {
+        "name": "Pianifica",
+        "benefit": "Parti da una lezione pronta o da un argomento, poi trasformala in un gioco a cui la tua classe vorrà giocare."
+      },
+      "play": {
+        "name": "Gioca",
+        "benefit": "Assegnala con date di apertura e di consegna, oppure giocala dal vivo sul grande schermo con tutta la classe."
+      },
+      "check": {
+        "name": "Verifica",
+        "benefit": "Vedi i progressi di ogni studente a colpo d'occhio, e chi ha bisogno del tuo aiuto per primo."
+      },
+      "feedback": {
+        "name": "Commenta",
+        "benefit": "Leggi ogni risposta e scrivi un commento che lo studente vede nella propria lezione."
+      }
+    },
+    "tools": {
+      "builder": "Trasforma una lezione in un gioco",
+      "assign": "Assegna a una classe",
+      "gradebook": "Registro",
+      "gradebookCsv": "Registro con download CSV",
+      "standards": "Scheda Standard",
+      "review": "Risposte da leggere",
+      "written": "Commenti scritti visti dagli studenti"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "Il registro: studenti sulle righe, lezioni sulle colonne, con i passi fatti e le risposte da leggere",
+        "caption": "Registro: tutta la classe a colpo d'occhio, pronta da scaricare in CSV."
+      },
+      "attention": {
+        "alt": "I progressi di una lezione, ordinati in modo che chi ha bisogno di attenzione venga per primo",
+        "caption": "Prima chi ha bisogno di attenzione: risposte da leggere, lavori in ritardo e lezioni a metà in cima."
+      },
+      "feedback": {
+        "alt": "La risposta scritta di uno studente con il riquadro per il commento dell'insegnante e il pulsante per salvare",
+        "caption": "Commenta: scrivi una nota, salvala e lo studente la vede nella sua lezione."
+      },
+      "standards": {
+        "alt": "La scheda Standard della classe: gli standard di informatica e quanto è avanti ogni studente",
+        "caption": "Standard: gli standard di informatica che la tua classe ha affrontato, studente per studente."
+      }
+    },
+    "home": {
+      "h": "Il tuo ciclo didattico",
+      "lead": "Prova ogni passo una volta con {class}. Ognuno si spunta da solo man mano.",
+      "leadNoClass": "Crea la tua prima classe, poi prova ogni passo una volta. Ognuno si spunta da solo man mano.",
+      "makeClass": "Crea la tua prima classe",
+      "count": "{done} di {total} fatti",
+      "done": "Fatto",
+      "todo": "Non ancora fatto",
+      "hide": "Nascondi",
+      "hidden": "Nascosto. Lo trovi sempre in «Come Oomba si inserisce nella tua settimana»."
+    },
+    "page": {
+      "title": "Come Oomba si inserisce nella tua settimana",
+      "lead": "Pianifica una lezione, giocala, verifica chi ha bisogno di te e commenta: gli strumenti di ogni passo, pronti per la tua classe.",
+      "link": "Come Oomba si inserisce nella tua settimana",
+      "show": "Mostra di nuovo la lista in {classroom}",
+      "shown": "La lista è tornata in {classroom}."
+    }
+  },
+  "nl": {
+    "kicker": "Zo past Oomba in je week",
+    "h": "Plannen → Spelen → Volgen → Feedback",
+    "lead": "Eén kringloop voor elke les: plan hem, speel hem met je klas, zie wie je nodig heeft en vertel elke leerling wat de volgende stap is. Elke stap is een hulpmiddel dat al in Oomba zit.",
+    "steps": {
+      "plan": {
+        "name": "Plannen",
+        "benefit": "Begin met een kant-en-klare les of een onderwerp en maak er een spel van dat je klas wil spelen."
+      },
+      "play": {
+        "name": "Spelen",
+        "benefit": "Geef hem op met een begin- en inleverdatum, of speel hem live op het grote scherm met de hele klas."
+      },
+      "check": {
+        "name": "Volgen",
+        "benefit": "Zie in één oogopslag hoe ver elke leerling is, en wie je hulp het eerst nodig heeft."
+      },
+      "feedback": {
+        "name": "Feedback",
+        "benefit": "Lees elk antwoord en schrijf feedback die de leerling in de eigen les ziet."
+      }
+    },
+    "tools": {
+      "builder": "Een les omzetten in een spel",
+      "assign": "Opgeven aan een klas",
+      "gradebook": "Cijferoverzicht",
+      "gradebookCsv": "Cijferoverzicht met CSV-download",
+      "standards": "Tabblad Standaarden",
+      "review": "Antwoorden om te lezen",
+      "written": "Geschreven feedback die leerlingen zien"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "Het cijferoverzicht: leerlingen onder elkaar, lessen naast elkaar, met gedane stappen en antwoorden om te lezen",
+        "caption": "Cijferoverzicht: de hele klas in één oogopslag, te downloaden als CSV."
+      },
+      "attention": {
+        "alt": "De voortgang van één les, gesorteerd zodat leerlingen die aandacht nodig hebben bovenaan staan",
+        "caption": "Eerst wie aandacht nodig heeft: antwoorden om te lezen, te laat werk en halve lessen bovenaan."
+      },
+      "feedback": {
+        "alt": "Het geschreven antwoord van een leerling met het feedbackvak van de leraar en de knop om op te slaan",
+        "caption": "Feedback: schrijf een notitie, sla hem op, en de leerling ziet hem in de les."
+      },
+      "standards": {
+        "alt": "Het tabblad Standaarden van de klas: informaticastandaarden en hoe ver elke leerling is",
+        "caption": "Standaarden: de informaticastandaarden die je klas heeft behandeld, per leerling."
+      }
+    },
+    "home": {
+      "h": "Jouw lesrondje",
+      "lead": "Probeer elke stap één keer met {class}. Elke stap vinkt zichzelf af.",
+      "leadNoClass": "Maak je eerste klas en probeer dan elke stap één keer. Elke stap vinkt zichzelf af.",
+      "makeClass": "Maak je eerste klas",
+      "count": "{done} van {total} gedaan",
+      "done": "Gedaan",
+      "todo": "Nog niet gedaan",
+      "hide": "Verbergen",
+      "hidden": "Verborgen. Je vindt het altijd onder ‘Zo past Oomba in je week’."
+    },
+    "page": {
+      "title": "Zo past Oomba in je week",
+      "lead": "Plan een les, speel hem, zie wie je nodig heeft en geef feedback: de hulpmiddelen voor elke stap, klaar voor je klas.",
+      "link": "Zo past Oomba in je week",
+      "show": "Toon de checklist weer in {classroom}",
+      "shown": "De checklist staat weer in {classroom}."
+    }
+  },
+  "pt": {
+    "kicker": "Como o Oomba se encaixa na sua semana",
+    "h": "Planejar → Jogar → Acompanhar → Comentar",
+    "lead": "Um ciclo para cada aula: planeje, jogue com a turma, veja quem precisa de você e diga a cada aluno o que fazer em seguida. Cada passo é uma ferramenta que já existe no Oomba.",
+    "steps": {
+      "plan": {
+        "name": "Planejar",
+        "benefit": "Comece com uma aula pronta ou um tema e transforme-a num jogo que a sua turma vai querer jogar."
+      },
+      "play": {
+        "name": "Jogar",
+        "benefit": "Atribua com datas de abertura e de entrega, ou jogue ao vivo no telão com a turma toda."
+      },
+      "check": {
+        "name": "Acompanhar",
+        "benefit": "Veja o progresso de cada aluno num relance, e quem precisa da sua ajuda primeiro."
+      },
+      "feedback": {
+        "name": "Comentar",
+        "benefit": "Leia cada resposta e escreva um comentário que o aluno vê na própria aula."
+      }
+    },
+    "tools": {
+      "builder": "Transformar uma aula em jogo",
+      "assign": "Atribuir a uma turma",
+      "gradebook": "Diário de notas",
+      "gradebookCsv": "Diário de notas com download em CSV",
+      "standards": "Aba Padrões",
+      "review": "Respostas para ler",
+      "written": "Comentários escritos que os alunos veem"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "O diário de notas: alunos nas linhas, aulas nas colunas, com passos feitos e respostas para ler",
+        "caption": "Diário de notas: a turma toda num relance, pronta para baixar em CSV."
+      },
+      "attention": {
+        "alt": "O progresso de uma aula, ordenado para que os alunos que precisam de atenção venham primeiro",
+        "caption": "Primeiro quem precisa de atenção: respostas para ler, atrasos e aulas pela metade no topo."
+      },
+      "feedback": {
+        "alt": "A resposta escrita de um aluno com a caixa de comentário do professor e o botão de salvar",
+        "caption": "Comentar: escreva uma nota, salve, e o aluno a vê na aula dele."
+      },
+      "standards": {
+        "alt": "A aba Padrões da turma: padrões de ciência da computação e o avanço de cada aluno",
+        "caption": "Padrões: os padrões de ciência da computação que a sua turma já trabalhou, aluno por aluno."
+      }
+    },
+    "home": {
+      "h": "Seu ciclo de ensino",
+      "lead": "Experimente cada passo uma vez com {class}. Cada um se marca sozinho conforme você avança.",
+      "leadNoClass": "Crie sua primeira turma e experimente cada passo uma vez. Cada um se marca sozinho conforme você avança.",
+      "makeClass": "Crie sua primeira turma",
+      "count": "{done} de {total} feitos",
+      "done": "Feito",
+      "todo": "Ainda não feito",
+      "hide": "Ocultar",
+      "hidden": "Oculto. Você sempre encontra em “Como o Oomba se encaixa na sua semana”."
+    },
+    "page": {
+      "title": "Como o Oomba se encaixa na sua semana",
+      "lead": "Planeje uma aula, jogue, veja quem precisa de você e comente: as ferramentas de cada passo, prontas para a sua turma.",
+      "link": "Como o Oomba se encaixa na sua semana",
+      "show": "Mostrar a lista de novo em {classroom}",
+      "shown": "A lista voltou para {classroom}."
+    }
+  },
+  "ru": {
+    "kicker": "Как Oomba вписывается в вашу неделю",
+    "h": "План → Игра → Проверка → Отзыв",
+    "lead": "Один цикл для каждого урока: спланируйте его, сыграйте с классом, посмотрите, кому нужна ваша помощь, и подскажите каждому ученику, что делать дальше. Каждый шаг — инструмент, который уже есть в Oomba.",
+    "steps": {
+      "plan": {
+        "name": "План",
+        "benefit": "Начните с готового урока или темы и превратите его в игру, в которую классу захочется играть."
+      },
+      "play": {
+        "name": "Игра",
+        "benefit": "Задайте его с датами начала и сдачи или сыграйте вживую на большом экране всем классом."
+      },
+      "check": {
+        "name": "Проверка",
+        "benefit": "Видно успехи каждого ученика сразу и кому ваша помощь нужна в первую очередь."
+      },
+      "feedback": {
+        "name": "Отзыв",
+        "benefit": "Прочитайте каждый ответ и напишите отзыв, который ученик увидит в своём уроке."
+      }
+    },
+    "tools": {
+      "builder": "Превратить урок в игру",
+      "assign": "Задать классу",
+      "gradebook": "Журнал",
+      "gradebookCsv": "Журнал с выгрузкой в CSV",
+      "standards": "Вкладка «Стандарты»",
+      "review": "Ответы для проверки",
+      "written": "Письменные отзывы для учеников"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "Журнал: ученики по строкам, уроки по столбцам, с выполненными шагами и ответами для проверки",
+        "caption": "Журнал: весь класс с первого взгляда, можно скачать в CSV."
+      },
+      "attention": {
+        "alt": "Ход одного урока, отсортированный так, чтобы ученики, которым нужно внимание, были сверху",
+        "caption": "Сначала те, кому нужно внимание: ответы для проверки, просрочки и недоделанные уроки сверху."
+      },
+      "feedback": {
+        "alt": "Письменный ответ ученика с полем для отзыва учителя и кнопкой сохранения",
+        "caption": "Отзыв: напишите заметку, сохраните, и ученик увидит её в своём уроке."
+      },
+      "standards": {
+        "alt": "Вкладка «Стандарты» класса: стандарты по информатике и продвижение каждого ученика",
+        "caption": "Стандарты: какие стандарты по информатике прошёл класс, по каждому ученику."
+      }
+    },
+    "home": {
+      "h": "Ваш учебный цикл",
+      "lead": "Попробуйте каждый шаг один раз с классом {class}. Каждый отмечается сам.",
+      "leadNoClass": "Создайте первый класс и попробуйте каждый шаг один раз. Каждый отмечается сам.",
+      "makeClass": "Создайте первый класс",
+      "count": "Готово {done} из {total}",
+      "done": "Готово",
+      "todo": "Ещё не сделано",
+      "hide": "Скрыть",
+      "hidden": "Скрыто. Это всегда можно найти в разделе «Как Oomba вписывается в вашу неделю»."
+    },
+    "page": {
+      "title": "Как Oomba вписывается в вашу неделю",
+      "lead": "Спланируйте урок, сыграйте, проверьте, кому нужна помощь, и дайте отзыв: инструменты для каждого шага, готовые для вашего класса.",
+      "link": "Как Oomba вписывается в вашу неделю",
+      "show": "Снова показать список в разделе «{classroom}»",
+      "shown": "Список снова в разделе «{classroom}»."
+    }
+  },
+  "ja": {
+    "kicker": "Oombaを毎週の授業に",
+    "h": "計画 → プレイ → 確認 → フィードバック",
+    "lead": "どの授業にも使える1つのサイクル：計画して、クラスでプレイし、助けが必要な子を見つけ、一人ひとりに次にやることを伝えます。どのステップも、Oombaにすでにある機能です。",
+    "steps": {
+      "plan": {
+        "name": "計画",
+        "benefit": "用意された授業やテーマから始めて、クラスが遊びたくなるゲームに変えましょう。"
+      },
+      "play": {
+        "name": "プレイ",
+        "benefit": "公開日と締め切りを決めて課題にするか、クラス全員で大きな画面でライブで遊びます。"
+      },
+      "check": {
+        "name": "確認",
+        "benefit": "全員の進み具合がひと目でわかり、先に助けが必要な子もわかります。"
+      },
+      "feedback": {
+        "name": "フィードバック",
+        "benefit": "一つひとつの答えを読み、生徒が自分の授業で見られるコメントを書きます。"
+      }
+    },
+    "tools": {
+      "builder": "授業をゲームにする",
+      "assign": "クラスに出す",
+      "gradebook": "成績一覧",
+      "gradebookCsv": "成績一覧（CSVダウンロード付き）",
+      "standards": "「スタンダード」タブ",
+      "review": "読む答え",
+      "written": "生徒が見る書き込みコメント"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "成績一覧：縦に生徒、横に授業。終わったステップと読む答えが表示されている",
+        "caption": "成績一覧：クラス全体がひと目でわかり、CSVでダウンロードできます。"
+      },
+      "attention": {
+        "alt": "1つの授業の進み具合。注意が必要な生徒が先に来るように並べ替えたところ",
+        "caption": "注意が必要な子を先に：読む答え、遅れている課題、途中の授業が上に来ます。"
+      },
+      "feedback": {
+        "alt": "生徒の書いた答えと、先生のコメント欄と保存ボタン",
+        "caption": "フィードバック：メモを書いて保存すると、生徒が自分の授業で見られます。"
+      },
+      "standards": {
+        "alt": "クラスの「スタンダード」タブ：情報科学のスタンダードと、生徒一人ひとりの進み具合",
+        "caption": "スタンダード：クラスが学んだ情報科学のスタンダードを、生徒ごとに確認できます。"
+      }
+    },
+    "home": {
+      "h": "あなたの授業サイクル",
+      "lead": "{class}で各ステップを一度ずつ試してみましょう。終わると自動でチェックが付きます。",
+      "leadNoClass": "まず最初のクラスを作り、各ステップを一度ずつ試してみましょう。終わると自動でチェックが付きます。",
+      "makeClass": "最初のクラスを作る",
+      "count": "{total}つ中{done}つ完了",
+      "done": "完了",
+      "todo": "まだ",
+      "hide": "隠す",
+      "hidden": "隠しました。「Oombaを毎週の授業に」からいつでも見られます。"
+    },
+    "page": {
+      "title": "Oombaを毎週の授業に",
+      "lead": "授業を計画し、プレイし、助けが必要な子を確認して、フィードバックする。各ステップの機能が、あなたのクラスのために用意されています。",
+      "link": "Oombaを毎週の授業に",
+      "show": "「{classroom}」にチェックリストを再表示",
+      "shown": "チェックリストを「{classroom}」に戻しました。"
+    }
+  },
+  "zh-Hant": {
+    "kicker": "Oomba 如何融入你的每一週",
+    "h": "規劃 → 遊戲 → 檢視 → 回饋",
+    "lead": "每堂課都適用的一個循環：規劃課程、和全班一起玩、看看誰需要你，並告訴每位學生下一步該做什麼。每個步驟都是 Oomba 裡已經有的工具。",
+    "steps": {
+      "plan": {
+        "name": "規劃",
+        "benefit": "從現成的課程或一個主題開始，把它變成全班都想玩的遊戲。"
+      },
+      "play": {
+        "name": "遊戲",
+        "benefit": "設定開放和截止日期指派出去，或在大螢幕上和全班一起即時玩。"
+      },
+      "check": {
+        "name": "檢視",
+        "benefit": "一眼看出每位學生的進度，以及誰最需要你的幫忙。"
+      },
+      "feedback": {
+        "name": "回饋",
+        "benefit": "閱讀每個回答，寫下學生能在自己課程裡看到的回饋。"
+      }
+    },
+    "tools": {
+      "builder": "把課程變成遊戲",
+      "assign": "指派給班級",
+      "gradebook": "成績簿",
+      "gradebookCsv": "成績簿（可下載 CSV）",
+      "standards": "「標準」分頁",
+      "review": "待閱讀的回答",
+      "written": "學生看得到的書面回饋"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "成績簿：直列是學生，橫列是課程，顯示完成的步驟和待閱讀的回答",
+        "caption": "成績簿：全班進度一目了然，可下載成 CSV 檔。"
+      },
+      "attention": {
+        "alt": "一堂課的進度，排序後需要關注的學生排在最前面",
+        "caption": "需要關注的先看：待閱讀的回答、遲交的作業和做到一半的課程排在最上面。"
+      },
+      "feedback": {
+        "alt": "學生的書面回答，以及老師的回饋欄和儲存按鈕",
+        "caption": "回饋：寫下說明並儲存，學生就能在自己的課程裡看到。"
+      },
+      "standards": {
+        "alt": "班級的「標準」分頁：資訊科學標準，以及每位學生的進展",
+        "caption": "標準：全班已涵蓋的資訊科學標準，逐一列出每位學生。"
+      }
+    },
+    "home": {
+      "h": "你的教學循環",
+      "lead": "和 {class} 把每個步驟各試一次。完成後會自動打勾。",
+      "leadNoClass": "先建立你的第一個班級，再把每個步驟各試一次。完成後會自動打勾。",
+      "makeClass": "建立第一個班級",
+      "count": "已完成 {done}/{total}",
+      "done": "已完成",
+      "todo": "尚未完成",
+      "hide": "隱藏",
+      "hidden": "已隱藏。隨時可以在「Oomba 如何融入你的每一週」找到。"
+    },
+    "page": {
+      "title": "Oomba 如何融入你的每一週",
+      "lead": "規劃課程、一起玩、檢視誰需要你、給予回饋：每個步驟的工具都已為你的班級準備好。",
+      "link": "Oomba 如何融入你的每一週",
+      "show": "在「{classroom}」重新顯示清單",
+      "shown": "清單已回到「{classroom}」。"
+    }
+  },
+  "he": {
+    "kicker": "איך Oomba משתלב בשבוע שלך",
+    "h": "תכנון ← משחק ← בדיקה ← משוב",
+    "lead": "מעגל אחד לכל שיעור: מתכננים, משחקים עם הכיתה, רואים מי צריך אותך ואומרים לכל תלמיד מה הצעד הבא. כל שלב הוא כלי שכבר קיים ב-Oomba.",
+    "steps": {
+      "plan": {
+        "name": "תכנון",
+        "benefit": "מתחילים משיעור מוכן או מנושא, והופכים אותו למשחק שהכיתה תרצה לשחק."
+      },
+      "play": {
+        "name": "משחק",
+        "benefit": "מטילים אותו עם תאריך פתיחה ותאריך הגשה, או משחקים בשידור חי על המסך הגדול עם כל הכיתה."
+      },
+      "check": {
+        "name": "בדיקה",
+        "benefit": "רואים במבט אחד את ההתקדמות של כל תלמיד, ומי צריך את עזרתך קודם."
+      },
+      "feedback": {
+        "name": "משוב",
+        "benefit": "קוראים כל תשובה וכותבים משוב שהתלמיד רואה בשיעור שלו."
+      }
+    },
+    "tools": {
+      "builder": "להפוך שיעור למשחק",
+      "assign": "להטיל על כיתה",
+      "gradebook": "יומן ציונים",
+      "gradebookCsv": "יומן ציונים עם הורדה ל-CSV",
+      "standards": "לשונית התקנים",
+      "review": "תשובות לקריאה",
+      "written": "משוב כתוב שהתלמידים רואים"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "יומן הציונים: התלמידים בשורות, השיעורים בעמודות, עם השלבים שהושלמו והתשובות לקריאה",
+        "caption": "יומן ציונים: כל הכיתה במבט אחד, מוכן להורדה כקובץ CSV."
+      },
+      "attention": {
+        "alt": "ההתקדמות בשיעור אחד, ממוינת כך שהתלמידים שצריכים תשומת לב מופיעים ראשונים",
+        "caption": "קודם מי שצריך תשומת לב: תשובות לקריאה, עבודות באיחור ושיעורים חצי גמורים למעלה."
+      },
+      "feedback": {
+        "alt": "תשובה כתובה של תלמיד עם תיבת המשוב של המורה וכפתור השמירה",
+        "caption": "משוב: כותבים הערה, שומרים, והתלמיד רואה אותה בשיעור שלו."
+      },
+      "standards": {
+        "alt": "לשונית התקנים של הכיתה: תקנים במדעי המחשב וכמה כל תלמיד התקדם",
+        "caption": "תקנים: התקנים במדעי המחשב שהכיתה כיסתה, תלמיד אחר תלמיד."
+      }
+    },
+    "home": {
+      "h": "מעגל ההוראה שלך",
+      "lead": "נסו כל שלב פעם אחת עם {class}. כל שלב מסומן מעצמו כשמסיימים.",
+      "leadNoClass": "צרו את הכיתה הראשונה שלכם, ואז נסו כל שלב פעם אחת. כל שלב מסומן מעצמו כשמסיימים.",
+      "makeClass": "צרו את הכיתה הראשונה",
+      "count": "{done} מתוך {total} הושלמו",
+      "done": "הושלם",
+      "todo": "עוד לא הושלם",
+      "hide": "הסתרה",
+      "hidden": "הוסתר. תמיד אפשר למצוא את זה תחת „איך Oomba משתלב בשבוע שלך”."
+    },
+    "page": {
+      "title": "איך Oomba משתלב בשבוע שלך",
+      "lead": "מתכננים שיעור, משחקים, בודקים מי צריך אותך ונותנים משוב: הכלים לכל שלב, מוכנים לכיתה שלך.",
+      "link": "איך Oomba משתלב בשבוע שלך",
+      "show": "הצגת הרשימה שוב ב„{classroom}”",
+      "shown": "הרשימה חזרה ל„{classroom}”."
+    }
+  },
+  "ar": {
+    "kicker": "كيف يناسب Oomba أسبوعك",
+    "h": "خطّط ← العب ← تابع ← علّق",
+    "lead": "دورة واحدة لكل درس: خطّط له، والعبه مع فصلك، واعرف من يحتاجك، وأخبر كل طالب بما يفعله بعد ذلك. كل خطوة أداة موجودة بالفعل في Oomba.",
+    "steps": {
+      "plan": {
+        "name": "خطّط",
+        "benefit": "ابدأ بدرس جاهز أو بموضوع، ثم حوّله إلى لعبة يرغب فصلك في لعبها."
+      },
+      "play": {
+        "name": "العب",
+        "benefit": "كلّف به الفصل بتاريخ فتح وتاريخ تسليم، أو العبه مباشرة على الشاشة الكبيرة مع الفصل كله."
+      },
+      "check": {
+        "name": "تابع",
+        "benefit": "شاهد تقدّم كل طالب بنظرة واحدة، ومن يحتاج مساعدتك أولًا."
+      },
+      "feedback": {
+        "name": "علّق",
+        "benefit": "اقرأ كل إجابة واكتب ملاحظة يراها الطالب في درسه."
+      }
+    },
+    "tools": {
+      "builder": "تحويل درس إلى لعبة",
+      "assign": "التكليف لفصل",
+      "gradebook": "سجل الدرجات",
+      "gradebookCsv": "سجل الدرجات مع تنزيل CSV",
+      "standards": "تبويب المعايير",
+      "review": "إجابات للقراءة",
+      "written": "ملاحظات مكتوبة يراها الطلاب"
+    },
+    "shots": {
+      "gradebook": {
+        "alt": "سجل الدرجات: الطلاب في الصفوف والدروس في الأعمدة، مع الخطوات المنجزة والإجابات التي تنتظر القراءة",
+        "caption": "سجل الدرجات: الفصل كله بنظرة واحدة، جاهز للتنزيل كملف CSV."
+      },
+      "attention": {
+        "alt": "تقدّم درس واحد، مرتّب بحيث يظهر أولًا الطلاب الذين يحتاجون إلى اهتمام",
+        "caption": "من يحتاج إلى اهتمام أولًا: إجابات للقراءة وأعمال متأخرة ودروس لم تكتمل في الأعلى."
+      },
+      "feedback": {
+        "alt": "إجابة مكتوبة لطالب مع خانة ملاحظات المعلم وزر الحفظ",
+        "caption": "علّق: اكتب ملاحظة واحفظها، فيراها الطالب في درسه."
+      },
+      "standards": {
+        "alt": "تبويب المعايير للفصل: معايير علوم الحاسوب ومدى تقدّم كل طالب",
+        "caption": "المعايير: معايير علوم الحاسوب التي غطّاها فصلك، طالبًا طالبًا."
+      }
+    },
+    "home": {
+      "h": "دورة التدريس الخاصة بك",
+      "lead": "جرّب كل خطوة مرة واحدة مع {class}. تُعلَّم كل خطوة تلقائيًا عند إنجازها.",
+      "leadNoClass": "أنشئ فصلك الأول، ثم جرّب كل خطوة مرة واحدة. تُعلَّم كل خطوة تلقائيًا عند إنجازها.",
+      "makeClass": "أنشئ فصلك الأول",
+      "count": "أُنجز {done} من {total}",
+      "done": "تم",
+      "todo": "لم يتم بعد",
+      "hide": "إخفاء",
+      "hidden": "تم الإخفاء. تجدها دائمًا تحت «كيف يناسب Oomba أسبوعك»."
+    },
+    "page": {
+      "title": "كيف يناسب Oomba أسبوعك",
+      "lead": "خطّط لدرس، والعبه، وتابع من يحتاجك، وقدّم ملاحظاتك: أدوات كل خطوة جاهزة لفصلك.",
+      "link": "كيف يناسب Oomba أسبوعك",
+      "show": "إظهار القائمة مجددًا في «{classroom}»",
+      "shown": "عادت القائمة إلى «{classroom}»."
+    }
+  }
+}

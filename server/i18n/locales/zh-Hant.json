@@ -3430,7 +3430,10 @@
       },
       "privacy": {
         "h": "隱私權",
-        "p1": "Google 帳戶連結期間，我們會保存帳戶的 ID、電子郵件地址和學校網域，以便在登入時辨識。我們絕不保存 Google 相片，絕不在遊戲網站上顯示學生的 Google 名稱，也絕不使用該帳戶讀取 Google 上的任何其他資料。"
+        "p1": "Google 帳戶連結期間，我們會保存帳戶的 ID、電子郵件地址和學校網域，以便在登入時辨識。我們絕不保存 Google 相片，絕不在遊戲網站上顯示學生的 Google 名稱，也絕不使用該帳戶讀取 Google 上的任何其他資料。",
+        "p1c": "Google 帳戶連結期間，我們會保存帳戶的 ID、電子郵件地址和學校網域，以便在登入時辨識。我們絕不保存 Google 相片，絕不在遊戲網站上顯示學生的 Google 名稱，而且除非老師連結 Google Classroom，否則不會從 Google 帳戶讀取任何其他資料。",
+        "classroom": "老師連結 Google Classroom 時，我們只會讀取老師任教班級的名稱，以及老師所連結班級中每位學生的 Google 帳戶 ID 和姓名，以便將學生加入 Oomba Academy 中對應的班級。我們只會傳送老師要求的內容給 Google：一份作業（課程標題、課程連結和繳交期限），以及每位學生在該課程的分數（滿分 100）。我們絕不傳送學生的答案、回饋、遊戲或繪圖。老師的連結會加密保存，直到老師中斷連結或刪除帳戶為止；中斷連結時，也會在 Google 端撤銷授權。",
+        "limitedUse": "Oomba Academy 對於從 Google API 取得之資訊的使用和傳輸，均遵守 Google API Services User Data Policy（Google API 服務使用者資料政策），包括 Limited Use（限制使用）的規定。我們絕不出售這些資訊，絕不將其用於廣告或訓練 AI 模型，而且我們的團隊只會在支援、安全或法律所需時才查看這些資訊。"
       }
     }
   },
@@ -7025,6 +7028,547 @@
       "breaksText": "從「玩」挑出的有趣小遊戲，適合在大螢幕上休息 5 分鐘。",
       "allGames": "看看學生能玩的所有遊戲",
       "openLive": "進入即時遊戲"
+    },
+    "loop": {
+      "kicker": "Oomba 如何融入你的每一週",
+      "h": "規劃 → 遊戲 → 檢視 → 回饋",
+      "lead": "每堂課都適用的一個循環：規劃課程、和全班一起玩、看看誰需要你，並告訴每位學生下一步該做什麼。每個步驟都是 Oomba 裡已經有的工具。",
+      "steps": {
+        "plan": {
+          "name": "規劃",
+          "benefit": "從現成的課程或一個主題開始，把它變成全班都想玩的遊戲。"
+        },
+        "play": {
+          "name": "遊戲",
+          "benefit": "設定開放和截止日期指派出去，或在大螢幕上和全班一起即時玩。"
+        },
+        "check": {
+          "name": "檢視",
+          "benefit": "一眼看出每位學生的進度，以及誰最需要你的幫忙。"
+        },
+        "feedback": {
+          "name": "回饋",
+          "benefit": "閱讀每個回答，寫下學生能在自己課程裡看到的回饋。"
+        }
+      },
+      "tools": {
+        "builder": "把課程變成遊戲",
+        "assign": "指派給班級",
+        "gradebook": "成績簿",
+        "gradebookCsv": "成績簿（可下載 CSV）",
+        "standards": "「標準」分頁",
+        "review": "待閱讀的回答",
+        "written": "學生看得到的書面回饋",
+        "library": "課程庫",
+        "draftAi": "用 AI 擬草稿",
+        "attention": "需要關注的優先",
+        "csv": "下載（CSV）",
+        "live": "主持即時遊戲"
+      },
+      "shots": {
+        "gradebook": {
+          "alt": "成績簿：直列是學生，橫列是課程，顯示完成的步驟和待閱讀的回答",
+          "caption": "成績簿：全班進度一目了然，可下載成 CSV 檔。"
+        },
+        "attention": {
+          "alt": "一堂課的進度，排序後需要關注的學生排在最前面",
+          "caption": "需要關注的先看：待閱讀的回答、遲交的作業和做到一半的課程排在最上面。"
+        },
+        "feedback": {
+          "alt": "學生的書面回答，以及老師的回饋欄和儲存按鈕",
+          "caption": "回饋：寫下說明並儲存，學生就能在自己的課程裡看到。"
+        },
+        "standards": {
+          "alt": "班級的「標準」分頁：資訊科學標準，以及每位學生的進展",
+          "caption": "標準：全班已涵蓋的資訊科學標準，逐一列出每位學生。"
+        }
+      },
+      "home": {
+        "h": "你的教學循環",
+        "lead": "和 {class} 把每個步驟各試一次。完成後會自動打勾。",
+        "leadNoClass": "先建立你的第一個班級，再把每個步驟各試一次。完成後會自動打勾。",
+        "makeClass": "建立第一個班級",
+        "count": "已完成 {done}/{total}",
+        "done": "已完成",
+        "todo": "尚未完成",
+        "hide": "隱藏",
+        "hidden": "已隱藏。隨時可以在「Oomba 如何融入你的每一週」找到。"
+      },
+      "page": {
+        "title": "Oomba 如何融入你的每一週",
+        "lead": "規劃課程、一起玩、檢視誰需要你、給予回饋：每個步驟的工具都已為你的班級準備好。",
+        "link": "Oomba 如何融入你的每一週",
+        "show": "在「{classroom}」重新顯示清單",
+        "shown": "清單已回到「{classroom}」。"
+      }
+    }
+  },
+  "rubrics": {
+    "title": "評分規準",
+    "intro": "可重複使用的評分規準：每一列是評分項目，每一欄是表現等級。把規準連到書面回答、學生做的遊戲或整堂課，再點選等級為每位學生評分。",
+    "mine": "我的評分規準",
+    "shared": "同事分享的",
+    "new": "新增評分規準",
+    "newPlaceholder": "規準名稱，例如：說服性段落",
+    "untitled": "新評分規準",
+    "empty": "還沒有評分規準",
+    "emptyText": "新增一份規準、讓 AI 擬一份草稿，或從 CS Quest 加入入門規準。",
+    "sharedEmpty": "還沒有分享的評分規準",
+    "sharedEmptyText": "同事和學校分享評分規準後，會出現在這裡，你可以複製使用。",
+    "criterion": "評分項目",
+    "criteriaN": "{count, plural, other {# 個評分項目}}",
+    "levelsN": "{count, plural, other {# 個等級}}",
+    "pointsN": "{count, plural, other {# 分}}",
+    "maxPoints": "滿分 {points}",
+    "usedN": "{count, plural, other {用於 # 堂課}}",
+    "usedIn": "使用的課程",
+    "notUsed": "還沒有連到任何課程。可以從課程的步驟或課程詳細資料中連結。",
+    "wholeLesson": "整堂課",
+    "stepsN": "{count, plural, other {# 個步驟}}",
+    "print": "列印",
+    "printName": "姓名：",
+    "printPoints": "得分：____ / {max}",
+    "backToRubric": "回到評分規準",
+    "preview": "預覽表格",
+    "copy": "建立副本",
+    "copyMine": "複製到我的評分規準",
+    "copyTitle": "{title}（副本）",
+    "copiedNotice": "這是你的副本，可以隨意修改；原本的規準不會改變。",
+    "share": "與我的學校分享",
+    "unshare": "停止分享",
+    "sharedStatus": "已與你的學校分享",
+    "sharedToast": "已與學校的教職員分享",
+    "unsharedToast": "已停止分享",
+    "delete": "刪除評分規準",
+    "deleteConfirm": "要刪除評分規準「{title}」嗎？已經給出的評分會保持不變。",
+    "deleteUsedConfirm": "{count, plural, other {「{title}」連到 # 堂課。要移除並刪除這份規準嗎？已經給出的評分會保持不變。}}",
+    "deletedToast": "已刪除評分規準",
+    "levelNames": {
+      "notYet": "尚未達到",
+      "beginning": "起步",
+      "developing": "發展中",
+      "secure": "穩定",
+      "excellent": "優秀"
+    },
+    "template": {
+      "understanding": "理解",
+      "explaining": "說明自己的想法",
+      "care": "用心與努力",
+      "level0": "還看不出來",
+      "level1": "在協助下部分做到",
+      "level2": "清楚做到",
+      "level3": "深入且詳細地做到"
+    },
+    "editor": {
+      "title": "規準名稱",
+      "description": "給老師的備註",
+      "levels": "等級",
+      "levelsHint": "欄位：每個等級的名稱和分數。",
+      "levelLabel": "等級 {n}",
+      "points": "分數",
+      "newLevel": "新等級",
+      "addLevel": "新增等級",
+      "removeLevel": "移除等級「{name}」",
+      "criteria": "評分項目",
+      "criteriaHint": "列：你要看的重點，以及作品在每個等級的表現。",
+      "criterionN": "評分項目 {n}",
+      "descPlaceholder": "作品在這個等級的表現",
+      "addCriterion": "新增評分項目",
+      "removeCriterion": "移除評分項目「{name}」"
+    },
+    "ai": {
+      "button": "用 AI 擬評分規準",
+      "task": "學生要做什麼？",
+      "taskPlaceholder": "例如：寫一段話說明他們的遊戲為什麼公平",
+      "levels": "等級",
+      "make": "擬我的評分規準",
+      "note": "只會把你在這裡輸入的內容傳給 AI，絕不會傳送學生的作品或姓名。之後你可以修改所有內容。",
+      "done": "這是 AI 擬的草稿。使用前請先看過，並修改你想改的地方。",
+      "template": "目前無法使用 AI，這裡先提供一份簡單的規準讓你編輯。"
+    },
+    "starters": {
+      "title": "入門評分規準",
+      "intro": "每堂 CS Quest 課程的出場券都附有評分規準（0 到 3 級，英文）。把它加入你的規準，就能用在任何課程，也可以自行修改。",
+      "add": "加入我的評分規準",
+      "addFor": "把「{title}」加入我的評分規準",
+      "added": "已加入你的評分規準，可以隨意修改。",
+      "fromLesson": "出自 CS Quest 課程「{title}」。"
+    },
+    "attach": {
+      "step": "評分規準",
+      "lesson": "整堂課的評分規準",
+      "lessonTitle": "整堂課的評分規準",
+      "lessonHint": "在課程的進度頁面上，為每位學生的整堂課表現評分。",
+      "none": "不使用評分規準",
+      "hint": "用它來評這個步驟的回答或遊戲。",
+      "noneYet": "你還沒有評分規準。",
+      "library": "評分規準"
+    },
+    "score": {
+      "label": "用「{title}」評分",
+      "total": "{points} 分",
+      "notScored": "未評分",
+      "partial": "已評分 {n}/{total} 項",
+      "comment": "加上評語",
+      "commentFor": "對「{name}」的評語",
+      "given": "給出的等級",
+      "changed": "這次評分之後，評分規準有變動。請重新評分以使用新版本。",
+      "scored": "已評分",
+      "lessonHint": "為每個評分項目點選一個等級，需要的話加上評語，然後儲存。每位學生只會看到自己的結果。"
+    },
+    "student": {
+      "fromTeacherLesson": "老師給你的：整堂課"
+    },
+    "gradebook": {
+      "key": "評分規準分數",
+      "cellTitle": "評分規準：{points} 分（{pct}%）"
+    },
+    "csv": {
+      "points": "{title}（規準分數）",
+      "percent": "{title}（規準 %）",
+      "totalPoints": "規準分數",
+      "totalPercent": "規準 %"
+    },
+    "errors": {
+      "notFound": "找不到這份評分規準。",
+      "rubricTitle": "請為評分規準命名。",
+      "rubricLevels": "評分規準有 2 到 6 個等級。",
+      "rubricCriteria": "評分規準有 1 到 12 個評分項目。",
+      "rubricLabel": "請為每個等級命名。",
+      "rubricPoints": "分數是 0 到 100 之間的數字。",
+      "rubricName": "請為每個評分項目命名。",
+      "tooManyRubrics": "你在這所學校的評分規準已達上限。請刪除一份不再使用的。",
+      "inUse": "{count, plural, other {這份評分規準連到 # 堂課。}}",
+      "task": "請說明學生要做什麼。",
+      "aiFailed": "AI 目前無法擬出評分規準。請一分鐘後再試。",
+      "pick": "請選擇你自己的評分規準（同事的請先複製）。"
+    }
+  },
+  "standards": {
+    "fw": {
+      "csta": "電腦科學（CSTA）",
+      "math": "Common Core 數學",
+      "ela": "Common Core 英語（ELA）"
+    },
+    "picker": "標準架構",
+    "notice": "Common Core State Standards 依 CCSS 公開授權使用。",
+    "class": {
+      "lead": "這個班級透過指派的課程、課程裡的學習遊戲、即時遊戲和課程系列涵蓋了哪些 Common Core 標準，以及每位學生的情況。依據已記錄的學習計算，不會收集任何新資料。",
+      "grade": "年級",
+      "covered": "只顯示已涵蓋的標準",
+      "allOf": "{grade}的所有標準",
+      "summaryH": "各年級的涵蓋情況",
+      "summary": "已涵蓋 {covered} / {total} 項標準"
+    },
+    "cols": {
+      "standard": "標準",
+      "sources": "涵蓋來源",
+      "practiced": "已練習",
+      "checked": "題目",
+      "rubric": "評分規準",
+      "needsLook": "需要關注",
+      "last": "最近",
+      "status": "狀態",
+      "level": "程度"
+    },
+    "status": {
+      "notYet": "尚未",
+      "covered": "已涵蓋",
+      "practiced": "已練習",
+      "checked": "已檢核",
+      "meets": "達成"
+    },
+    "level": {
+      "none": "沒有紀錄",
+      "practiced": "已練習",
+      "developing": "發展中",
+      "meets": "達成"
+    },
+    "checkedVal": "{pct}% · 作答 {answered} · 學生 {students}",
+    "rubricVal": "{pct}% · 已評 {count}",
+    "rubricBest": "最佳 {pct}% · 已評 {count}",
+    "mine": "{answered} 題答對 {right} 題",
+    "src": {
+      "live": "即時遊戲 {count} 場"
+    },
+    "legend": {
+      "h": "如何閱讀",
+      "sources": "涵蓋來源：標上這項標準的已指派課程（或練習它的步驟、學習遊戲）、問過它的即時遊戲（依年級的 Tug of Math Live、題目帶有代碼的題組），以及學生正在上的課程系列。",
+      "practiced": "已練習：完成練習這項標準之活動的學生。表示做過，不代表已精熟。",
+      "checked": "題目：關於這項標準的作答中答對的比例（課程小測驗、即時遊戲、Number Quest 檢核）。",
+      "rubric": "評分規準：這項標準的評分規準分數，以滿分的比例呈現。評分規準標上 Common Core 標準後才會顯示。",
+      "meets": "達成：學生在 3 題以上答對至少 80%，或評分規準得分至少三分之二，就算達成。班上 80% 的學生達成時，班級就算達成。",
+      "needs": "需要關注：關於這項標準作答 2 題以上卻沒有答對的學生。只有老師看得到。",
+      "games": "有多個年級關卡的遊戲（Sum Racer、Fraction Factory、Word Trail、Tug of Math）只會按課程的年級，或步驟固定的關卡算作練習。沒有年級的課程只會把它們列在「涵蓋來源」中。",
+      "live": "Tug of Math Live 等即時遊戲不會記錄每題屬於哪個標準，所以學生的答題會平均分到遊戲的各個標準。這些數字是估計值。",
+      "courses": "Number Quest 只計算用學校帳號完成的學習，或學生加入這個班級之後的學習。只有一次檢查（3 題）還不足以達成標準。"
+    },
+    "empty": {
+      "title": "還沒有 Common Core 標準",
+      "text": "為課程標上標準，或指派含有 Sum Racer、Fraction Factory、Word Trail 等學習遊戲的課程，就會顯示在這裡。"
+    },
+    "csvCols": {
+      "code": "代碼",
+      "grade": "年級",
+      "domain": "領域",
+      "statement": "敘述",
+      "sources": "涵蓋來源",
+      "practiced": "已練習（學生）",
+      "students": "班級學生數",
+      "pct": "答對 %",
+      "answered": "作答題數",
+      "checkedStudents": "有作答的學生",
+      "rubric": "評分規準 %",
+      "meets": "達成的學生",
+      "needsLook": "需要關注（學生）",
+      "last": "最近活動",
+      "status": "狀態"
+    },
+    "lesson": {
+      "title": "標準",
+      "lead": "為這堂課或其中一個步驟標上它所處理的 Common Core 標準。它們會顯示在每個被指派這堂課之班級的「標準」分頁。",
+      "back": "回到課程",
+      "current": "已標記的標準",
+      "none": "還沒有標記標準。",
+      "whole": "整堂課",
+      "stepN": "步驟 {n}：{title}",
+      "remove": "移除",
+      "removeLabel": "移除 {code}",
+      "removed": "已移除 {code}",
+      "add": "加入",
+      "addLabel": "加入 {code}",
+      "added": "已加入 {code}",
+      "addTo": "加入到",
+      "find": "尋找標準",
+      "search": "搜尋",
+      "searchHint": "像 3.OA.C.7 的代碼，或像 fractions 的字詞",
+      "searchHintEla": "像 RL.3.2 的代碼，或像 main idea 的字詞",
+      "domain": "領域",
+      "domainAll": "所有領域",
+      "gradeAny": "所有年級",
+      "results": "標準 {count} 項",
+      "more": "顯示前 {shown} 項：縮小搜尋範圍以查看其餘項目。",
+      "noResults": "沒有符合的標準。試試其他年級、領域或字詞。",
+      "tagged": "已標記",
+      "open": "標記標準",
+      "view": "查看標準",
+      "editorNone": "還沒有標記 Common Core 標準。",
+      "onSteps": "步驟上標記的標準 {count} 項",
+      "gameCodes": "這個遊戲練習的 {framework} 標準",
+      "gameNeedsGrade": "這個遊戲有多個年級的關卡。為課程設定年級（或把步驟固定在一個關卡），它的標準才會算作練習。"
+    },
+    "errors": {
+      "badCode": "這不是 Common Core 代碼。",
+      "badStep": "這個步驟不在這堂課裡。",
+      "tooMany": "一堂課最多可標記 60 項標準。",
+      "badFramework": "請選擇 Common Core 數學或英語。"
+    },
+    "learn": {
+      "label": "標準",
+      "hint": "例如 3.OA 或 RF.K"
+    }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "你的 Google Classroom",
+      "text": "連結你在 Google Classroom 授課用的 Google 帳號。連結後你可以：",
+      "what": {
+        "courses": "把這個班級連結到你在 Classroom 的其中一個課程",
+        "roster": "匯入該課程的學生，讓他們用 Google 登入",
+        "post": "在那裡發布課程，附上回到這裡的連結和繳交期限",
+        "grades": "把每位學生的課程完成度成績傳送到 Classroom"
+      },
+      "button": "連結 Google Classroom",
+      "privacy": "只有你看得到這個連結。Oomba Academy 只會傳給 Classroom 課程標題、一個連結、繳交期限，以及每位學生的完成度成績（滿分 100）。其他都不會傳：沒有姓名、答案或遊戲。",
+      "connectedAs": "已用 {email} 連結",
+      "connectedHint": "這是你自己的連結：其他協同老師要各自連結。",
+      "connectedToast": "已連結 Google Classroom。",
+      "disconnect": "中斷連結",
+      "disconnectConfirm": "要中斷 Google Classroom 的連結嗎？Oomba Academy 會停止為你同步，並刪除存取你 Classroom 的金鑰。已發布的課程會留在 Classroom。",
+      "disconnected": "已中斷 Google Classroom 的連結。",
+      "reconnect": "重新連結"
+    },
+    "course": {
+      "heading": "已連結的 Classroom 課程",
+      "text": "選擇與 {class} 對應的 Google Classroom 課程。",
+      "none": "沒有你正在授課的 Google Classroom 課程。",
+      "pick": "選擇 Classroom 課程",
+      "link": "連結",
+      "linked": "已連結到 {course}。",
+      "linkedTo": "已連結到 {course}",
+      "unlink": "取消連結",
+      "unlinkConfirm": "要取消與 {course} 的連結嗎？學生和課程都會保留。",
+      "unlinked": "已取消連結。",
+      "connectFirst": "請先在上方連結 Google Classroom 才能同步。",
+      "refresh": "重新整理清單"
+    },
+    "roster": {
+      "heading": "來自 Classroom 的學生",
+      "text": "匯入已連結的 Classroom 課程中的學生。已經在這裡的學生會依 Google 帳號比對。第一次使用 Oomba Academy 的學生，會在第一次用學校網域的 Google 帳號登入時加入，並在那時得到學校帳號。他們的真實姓名只有老師看得到。",
+      "button": "匯入學生",
+      "last": "上次匯入：{when}",
+      "noDomains": "你的學校還沒有加入 Google 網域，所以無法加入新學生。請洽學校管理員。",
+      "noDomainsAdmin": "請先加入學校的 Google 網域，新學生才能登入：{link}",
+      "hint": "在用 Google Classroom 嗎？{link}",
+      "hintLink": "匯入它的學生",
+      "notYet": "Google：來自 Classroom，尚未登入",
+      "resultAdded": "{count, plural, other {已加入 # 位學生}}",
+      "resultAlready": "{count, plural, other {# 位已經在班上}}",
+      "resultOwn": "{count, plural, other {# 位使用個人帳號：可以用班級代碼加入}}",
+      "resultOther": "{count, plural, other {# 位屬於其他學校}}",
+      "resultStaff": "{count, plural, other {# 位是本校教職員}}",
+      "resultDomains": "{count, plural, other {# 位未加入：請先加入學校的 Google 網域}}",
+      "resultWaiting": "{count, plural, other {# 位會在第一次用學校網域的 Google 帳號登入時加入}}",
+      "waitingNow": "{count, plural, other {Classroom 的 # 位學生還沒登入。他們第一次用學校網域的 Google 帳號登入時就會加入這個班級（30 天內；再匯入一次可延長）。}}"
+    },
+    "post": {
+      "heading": "Classroom 中的課程",
+      "text": "發布課程會在 Classroom 建立一份作業，包含標題、回到這裡課程的連結和繳交期限。",
+      "button": "發布到 Google Classroom",
+      "also": "同時發布到 Google Classroom",
+      "description": "在 Oomba Academy 打開這堂課。",
+      "done": "已發布到 Google Classroom。",
+      "donePastDue": "已發布到 Google Classroom（沒有繳交期限：期限已過）。",
+      "failed": "未發布到 Google Classroom：",
+      "due": "{date} 截止",
+      "noDue": "沒有繳交期限",
+      "posted": "已發布",
+      "open": "在 Classroom 開啟",
+      "noLessons": "這個班級還沒有課程。請在「課程」分頁指派一堂。",
+      "doneScheduled": "已在 Google Classroom 排程：學生會在 {date} 課程開放時看到。"
+    },
+    "grades": {
+      "text": "這是完成度成績：學生完成的課程步驟比例（滿分 100），不計算答對幾題。還沒開始的學生不會傳送。",
+      "as": "傳送方式",
+      "draft": "草稿成績（由你在 Classroom 發還）",
+      "assigned": "正式成績",
+      "button": "傳送完成度成績",
+      "lastDraft": "草稿完成度成績已傳送：{when}",
+      "lastAssigned": "正式完成度成績已傳送：{when}",
+      "resultSent": "{count, plural, other {已傳送 # 筆完成度成績}}",
+      "resultNotStarted": "{count, plural, other {# 位還沒開始}}",
+      "resultNotMatched": "{count, plural, other {# 位不在這個班級}}",
+      "resultFailed": "{count, plural, other {# 筆未能傳送}}"
+    },
+    "log": {
+      "heading": "最近的同步",
+      "kinds": {
+        "connect": "已連結",
+        "disconnect": "已中斷連結",
+        "link": "已連結課程",
+        "unlink": "已取消連結",
+        "roster": "已匯入學生",
+        "post": "已發布課程",
+        "grades": "已傳送成績"
+      }
+    },
+    "errors": {
+      "notSetUp": "這個網站還沒有設定 Google Classroom。請網站負責人完成設定。",
+      "notConnected": "請先連結 Google Classroom。",
+      "reconnect": "你和 Google Classroom 的連結已失效。請重新連結。",
+      "notLinked": "請先把這個班級連結到 Classroom 課程。",
+      "pickCourse": "請選擇 Classroom 課程。",
+      "courseNotYours": "你沒有在那個 Classroom 課程授課。",
+      "courseGone": "Google Classroom 已找不到那個課程或作業。",
+      "denied": "Google Classroom 拒絕了。你可能不是那個課程的老師，或學校限制了這個應用程式。",
+      "rateLimited": "Google Classroom 忙碌中。請幾分鐘後再試。",
+      "googleDown": "Google Classroom 沒有回應。請再試一次。",
+      "badRequest": "Google Classroom 不接受這個要求。",
+      "tooMany": "那個 Classroom 課程有超過 {max} 位學生。",
+      "alreadyPosted": "這堂課已經在 Google Classroom 了。",
+      "notPosted": "請先把這堂課發布到 Google Classroom。",
+      "badMode": "請選擇成績的傳送方式。",
+      "scopesMissing": "請在 Google 的畫面勾選所有方塊，Oomba Academy 才能看到你的課程並發布作業。",
+      "noRefresh": "Google 沒有傳來我們能保存的金鑰。請重新連結。",
+      "expired": "花太久時間了。請再試一次。",
+      "cancelled": "你在 Google 的畫面取消了。沒有連結任何東西。",
+      "staffOnly": "這裡只有老師和學校管理員可以使用 Google Classroom。",
+      "tooManyTries": "目前同步次數太多。請一小時後再試。"
+    }
+  },
+  "digest": {
+    "when": "{day} {time}（{zone}）",
+    "email": {
+      "subject": "{date} 的班級每週摘要",
+      "preview": "{count, plural, other {# 個班級的數字，以及到 Oomba Academy 查看更多的連結。}}",
+      "heading": "{date} 這一週",
+      "greeting": "{name}，您好：",
+      "greetingNoName": "您好：",
+      "intro": "這是您各班級的近況。名字和答案只留在網站上，只有您和學校的教職員看得到。",
+      "due": "{count, plural, =0 {本週沒有到期的課程} other {本週到期的課程：# 堂}}",
+      "pct": "開放中的課程已完成 {pct}% 的作業",
+      "noWork": "還沒有含步驟的開放課程",
+      "toRead": "{count, plural, =0 {沒有等待批改的答案} other {等待批改的答案：# 則}}",
+      "notStarted": "{count, plural, =0 {每位學生都已開始} other {還沒開始的學生：# 位}}",
+      "live": "{count, plural, =0 {過去 7 天沒有直播遊戲} other {過去 7 天的直播遊戲：# 場}}",
+      "openClass": "打開班級",
+      "review": "批改答案",
+      "progress": "查看進度",
+      "quiet": "{count, plural, other {有 # 個班級沒有新動態，未列入。}}",
+      "cta": "查看本週摘要",
+      "classroom": "前往教室",
+      "why": "因為您在 Oomba Academy 教授班級，所以會收到這封每週摘要。",
+      "change": "更改日期或時間",
+      "stop": "停止這些摘要"
+    },
+    "unsub": {
+      "title": "班級每週摘要",
+      "askTitle": "要停止班級每週摘要嗎？",
+      "askText": "您將不再收到關於班級的每週電子郵件。網站上的內容都還在，您可以在「我的」頁面重新開啟。",
+      "button": "停止摘要",
+      "offTitle": "每週摘要已關閉",
+      "offText": "您將不再收到關於班級的每週電子郵件。關於您帳號的其他郵件不受影響。",
+      "again": "重新開啟",
+      "againTitle": "每週摘要已重新開啟",
+      "againText": "您會在「我的」頁面上顯示的日期與時間再次收到它。",
+      "badTitle": "這個連結無法使用",
+      "badText": "連結可能在複製時被截斷了。您也可以在「我的」頁面關閉摘要。"
+    },
+    "me": {
+      "heading": "班級每週摘要",
+      "text": "每週一次，我們會以電子郵件寄給您每個班級的數字：到期的課程、完成的作業、待批改的答案、還沒開始的學生，以及直播遊戲。絕不包含學生的名字或答案。",
+      "noAddress": "我們還沒有您的電子郵件地址。在此頁面連結 Google，摘要就會寄到那個地址。",
+      "on": "以電子郵件寄給我每週摘要",
+      "day": "日期",
+      "hour": "時間",
+      "zone": "時區",
+      "zoneSchool": "我學校的時區（{zone}）",
+      "zoneDefault": "預設（{zone}）",
+      "save": "儲存",
+      "saved": "已儲存。"
+    },
+    "page": {
+      "link": "本週摘要",
+      "title": "本週摘要",
+      "sub": "您教的每個班級：過去 7 天，以及未來 7 天內到期的課程。",
+      "next": "摘要郵件每週寄出：{when}。",
+      "off": "每週摘要郵件已關閉。您隨時都能查看這個頁面。",
+      "noAddress": "我們還沒有您的電子郵件地址，所以不會寄出摘要。請在「我的」頁面連結 Google。",
+      "noAddressPlain": "我們還沒有您的電子郵件地址，所以不會寄出摘要。",
+      "privacy": "學生的名字只會顯示在這個頁面，絕不會出現在郵件裡。",
+      "seeEmail": "查看郵件",
+      "change": "更改寄送時間",
+      "statDue": "本週到期",
+      "statDone": "已完成作業",
+      "statToRead": "待批改",
+      "statNotStarted": "未開始",
+      "statLive": "直播遊戲",
+      "dueHeading": "本週到期",
+      "finished": "{count} 位中有 {done} 位完成",
+      "toReadHeading": "待批改的答案",
+      "notStartedHeading": "{count, plural, other {還沒開始的學生：# 位}}",
+      "noClasses": "還沒有班級",
+      "noClassesText": "在教室建立班級，它的摘要就會顯示在這裡。",
+      "quietAll": "平靜的一週",
+      "quietAllText": "過去 7 天您的班級沒有新動態，所以本週不會寄出郵件。",
+      "quietHeading": "沒有新動態",
+      "quietText": "這些班級過去 7 天沒有新動態，不會列在郵件中。"
+    },
+    "errors": {
+      "badDay": "請選擇日期。",
+      "badHour": "請選擇時間。",
+      "badZone": "請從清單中選擇時區。"
     }
   }
 }

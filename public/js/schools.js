@@ -21,6 +21,7 @@ function syncStepKind(sel) {
   const form = sel.closest('.stepgrid'); if (!form) return;
   form.dataset.kind = sel.value;
   form.querySelectorAll('[data-for-kind]').forEach(el => { el.hidden = el.dataset.forKind !== sel.value; });
+  form.querySelectorAll('[data-for-kinds]').forEach(el => { el.hidden = !el.dataset.forKinds.split(' ').includes(sel.value); });
 }
 document.addEventListener('change', e => { if (e.target.matches('.stepgrid select[name="kind"]')) syncStepKind(e.target); });
 document.querySelectorAll('.stepgrid select[name="kind"]').forEach(syncStepKind);
@@ -80,6 +81,8 @@ document.querySelectorAll('[data-sort]').forEach(btn => {
     order.forEach(r => body.appendChild(r));
   });
   btn.closest('[hidden]')?.removeAttribute('hidden');
+  // From the teaching loop's "Needs attention first" link (views/teacher-loop.js): arrive sorted.
+  if (location.hash === '#needs-attention' && btn.closest('#needs-attention')) btn.click();
 });
 
 // A link to a folded section from another page (People's #add-staff from a class's Settings) opens it on arrival.

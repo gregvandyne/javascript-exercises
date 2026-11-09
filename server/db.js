@@ -758,6 +758,78 @@ export const MIGRATIONS = [
     conn.exec(`UPDATE games SET shelf='play' WHERE source='seed' AND slug NOT IN (${list})`);
     conn.exec("UPDATE games SET featured=2 WHERE source='seed' AND slug='jungle-cup' AND featured>0");
   }],
+  // Rubrics (services/rubrics.js; docs/decisions.md "Rubrics"). rubrics: a teacher's reusable rubric in a school's lesson
+  // library: levels (JSON [{ label, points }], 2-6 columns) and criteria (JSON [{ name, descs: [one per level] }], 1-12
+  // rows); shared=1 lets the school's staff see and copy it; source says where it came from ('', 'ai', 'csq:<key>',
+  // 'copy:<id>'); version goes up on every edit. lessons.rubric_id / lesson_steps.rubric_id attach one to a whole lesson
+  // or to a step that collects work (question, build). rubric_scores: one row per assigned lesson, step ('' = the whole
+  // lesson) and student: the level picked per criterion (picks, JSON), per-criterion comments, the points and the most
+  // possible, and a snapshot of the rubric as it was scored (so editing or deleting the rubric never changes a result).
+  ['0063_rubrics', `
+    CREATE TABLE IF NOT EXISTS rubrics (id TEXT PRIMARY KEY, school_id TEXT NOT NULL, owner_id TEXT NOT NULL, title TEXT NOT NULL,
+      description TEXT NOT NULL DEFAULT '', levels TEXT NOT NULL, criteria TEXT NOT NULL, shared INTEGER NOT NULL DEFAULT 0,
+      source TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS rubrics_owner ON rubrics(owner_id, school_id);
+    CREATE INDEX IF NOT EXISTS rubrics_school ON rubrics(school_id, shared);
+    ALTER TABLE lessons ADD COLUMN rubric_id TEXT;
+    ALTER TABLE lesson_steps ADD COLUMN rubric_id TEXT;
+    CREATE INDEX IF NOT EXISTS lessons_rubric ON lessons(rubric_id);
+    CREATE INDEX IF NOT EXISTS lesson_steps_rubric ON lesson_steps(rubric_id);
+    CREATE TABLE IF NOT EXISTS rubric_scores (class_lesson_id TEXT NOT NULL, step_id TEXT NOT NULL DEFAULT '', user_id TEXT NOT NULL,
+      rubric_id TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1, snapshot TEXT NOT NULL, picks TEXT NOT NULL, comments TEXT NOT NULL DEFAULT '[]',
+      feedback TEXT NOT NULL DEFAULT '', points REAL NOT NULL DEFAULT 0, max_points REAL NOT NULL DEFAULT 0, scored_by TEXT,
+      scored_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, step_id, user_id)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS rubric_scores_user ON rubric_scores(user_id);`],
+  // Standards beyond computer science (docs/decisions.md, 9 Nov 2026): a teacher's Common Core tags on their own lessons
+  // and steps (step_id '' = the whole lesson). framework 'ccss-math' | 'ccss-ela'; code checked against
+  // server/standards/ccss-*.json before it is stored. Deleted and copied with the lesson (services/lessons.js).
+  ['0064_lesson_standards', `CREATE TABLE IF NOT EXISTS lesson_standards (lesson_id TEXT NOT NULL, step_id TEXT NOT NULL DEFAULT '',
+      framework TEXT NOT NULL, code TEXT NOT NULL, added_by TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (lesson_id, step_id, framework, code)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS lesson_standards_code ON lesson_standards(framework, code);`],
+  // Google Classroom sync (services/gclassroom.js; docs/google-classroom.md). gc_connections: one per teacher who
+  // connected Classroom: their Google account id and email, the scopes Google granted, and the refresh token encrypted
+  // with GOOGLE_TOKEN_KEY (AES-256-GCM; key_tag names the key, so a new key asks teachers to connect again). Access
+  // tokens are never stored. gc_links: an Oomba class linked to one Classroom course. gc_posts: a class lesson posted as
+  // Classroom coursework, and the last grades sent for it. gc_syncs: what each sync did (counts and a short error code,
+  // never names or grades), shown on the class's Google Classroom page; kept 180 days. gc_pending: a student from the
+  // Classroom roster that Oomba doesn't know yet, waiting (30 days) to sign in with Google on the school's domain, when
+  // their school account is made.
+  ['0065_google_classroom', `
+    CREATE TABLE IF NOT EXISTS gc_connections (user_id TEXT PRIMARY KEY, sub TEXT NOT NULL, email TEXT NOT NULL DEFAULT '',
+      scopes TEXT NOT NULL DEFAULT '', token_enc TEXT NOT NULL, key_tag TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'ok',
+      last_error TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS gc_links (class_id TEXT PRIMARY KEY, course_id TEXT NOT NULL, course_name TEXT NOT NULL DEFAULT '',
+      linked_by TEXT NOT NULL, linked_at INTEGER NOT NULL, roster_at INTEGER, roster_counts TEXT) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS gc_posts (class_lesson_id TEXT PRIMARY KEY, class_id TEXT NOT NULL, course_id TEXT NOT NULL,
+      coursework_id TEXT NOT NULL, link TEXT NOT NULL DEFAULT '', posted_by TEXT NOT NULL, posted_at INTEGER NOT NULL,
+      grades_at INTEGER, grades_mode TEXT, grades_counts TEXT) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS gc_posts_class ON gc_posts(class_id);
+    CREATE TABLE IF NOT EXISTS gc_syncs (id TEXT PRIMARY KEY, class_id TEXT, user_id TEXT NOT NULL, kind TEXT NOT NULL,
+      status TEXT NOT NULL, counts TEXT, error TEXT, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS gc_syncs_class ON gc_syncs(class_id, created_at);
+    CREATE TABLE IF NOT EXISTS gc_pending (class_id TEXT NOT NULL, sub TEXT NOT NULL, school_id TEXT NOT NULL, course_id TEXT NOT NULL,
+      roster_name TEXT NOT NULL DEFAULT '', grade TEXT NOT NULL DEFAULT '', created_by TEXT NOT NULL, created_at INTEGER NOT NULL,
+      PRIMARY KEY(class_id, sub)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS gc_pending_sub ON gc_pending(sub);`],
+  // The weekly class summary email (services/digest.js; docs/decisions.md "Weekly class summary email"). email_prefs
+  // gains the teacher's own switch and schedule: digest_off_at (their off switch, separate from the trial nudges'),
+  // digest_day (0 Sunday … 6 Saturday, default Monday), digest_hour (0-23, default 7) and digest_tz ('' = their
+  // school's time zone), digest_lang (the site language in effect when the teacher last saved or opened the summary;
+  // the email goes in users.lang, else this, else English). digest_sends: one row per teacher per week (week = the local
+  // date of that week's send slot), claimed before it is sent and marked after, so a restart never sends a week twice.
+  // It keeps counts only (classes in the email), never a name or an answer; message holds the rendered email (counts,
+  // class names, the teacher's first name) only while a send is being retried, so every try sends the same bytes under
+  // the same Idempotency-Key, and is cleared once the row is done. status: sending | pending | sent | skipped | failed.
+  ['0066_class_digest', `
+    ALTER TABLE email_prefs ADD COLUMN digest_off_at INTEGER;
+    ALTER TABLE email_prefs ADD COLUMN digest_day INTEGER NOT NULL DEFAULT 1;
+    ALTER TABLE email_prefs ADD COLUMN digest_hour INTEGER NOT NULL DEFAULT 7;
+    ALTER TABLE email_prefs ADD COLUMN digest_tz TEXT NOT NULL DEFAULT '';
+    ALTER TABLE email_prefs ADD COLUMN digest_lang TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS digest_sends (user_id TEXT NOT NULL, week TEXT NOT NULL, slot_at INTEGER NOT NULL,
+      status TEXT NOT NULL, reason TEXT, classes INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0,
+      claimed_at INTEGER, sent_at INTEGER, message TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, week)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS digest_sends_status ON digest_sends(status, claimed_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

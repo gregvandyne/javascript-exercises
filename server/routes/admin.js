@@ -36,6 +36,8 @@ import { getUserByName, OFFICIAL } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as email from '../services/email.js';
 import * as nudges from '../services/nudges.js';
+import * as digest from '../services/digest.js';
+import { renderDigest } from '../services/digest-email.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
@@ -953,6 +955,7 @@ router.get('/admin/emails', (req, res) => {
       ${nudges.TRIAL_STEPS.map(st => { const x = seq[st] || {}; return html`<tr><td>${STEP_LABEL[st]}</td><td data-label="Waiting">${int((x.pending || 0) + (x.sending || 0))}</td><td data-label="Sent">${int(x.sent)}</td><td data-label="Skipped / canceled">${int((x.skipped || 0) + (x.canceled || 0))}</td><td data-label="Failed">${int(x.failed)}</td></tr>`; })}
     </tbody></table></div>
   </section>
+  ${digestSection(s, to)}
   <section class="panel" id="e-preview"><h2>Preview and test</h2>
     <p class="small muted">Previews use a sample teacher ("Alex") and a trial starting today. A test goes to ${to ? html`<b dir="ltr">${email.maskEmail(to)}</b> (your Google address, else CONTACT_EMAIL, else EMAIL_REPLY_TO)` : 'nobody: no address is known'}, with "[Test]" in the subject.</p>
     <ul class="stack" style="list-style:none;padding:0">${nudges.TRIAL_STEPS.map(st => html`<li class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><span style="min-width:16em">${STEP_LABEL[st]}</span>
@@ -975,6 +978,49 @@ router.get('/admin/emails', (req, res) => {
     <p class="small muted">Kept a year. Addresses are shortened here; bodies are never stored.</p>
   </section>`;
   page(req, res, { title: 'Emails', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin', backLabel: 'Admin' });
+});
+// The weekly class summary (services/digest.js; docs/decisions.md "Weekly class summary email").
+const DIGEST_REASON = { empty: 'nothing new in any class', no_address: 'no address', unsubscribed: 'turned off', not_adult: 'not an adult account' };
+/** A made-up week for the preview and the test send: counts only, like the real one. */
+const sampleDigest = () => ({ active: [
+  { id: 'sample-a', name: 'Room 12 Science', school: 'Sample School', due: 2, pct: 64, toRead: 5, notStarted: 3, live: 1 },
+  { id: 'sample-b', name: 'Coding Club', school: 'Sample School', due: 0, pct: null, toRead: 0, notStarted: 0, live: 2 },
+], quiet: [{ id: 'sample-c', name: 'Art' }] });
+const sampleSlot = () => { const p = { day: 1, hour: 7, zone: digest.FALLBACK_TZ }; return digest.slotFor(p); };
+function digestSection(s, to) {
+  const on = digest.switchOn();
+  const c = digest.sendCounts();
+  const n = k => int(c.status[k] || 0);
+  const why = Object.entries(c.reasons).map(([k, v]) => `${DIGEST_REASON[k] || k}: ${v}`).join(' · ');
+  return html`<section class="panel" id="e-digest"><h2>Weekly class summary</h2>
+    <p>${on ? 'On: each teacher gets one email a week at the day and hour they picked (default Monday 7:00 in their school\'s time zone), with counts per class and no student names or answers. Weeks with nothing new send nothing.' : 'Switched off: no weekly summary is sent. A week missed while it is off is not sent later.'}${s.sending ? '' : ' Sending is off, so nothing goes either way.'}</p>
+    <form data-api="/api/admin/emails/digest" data-reload data-toast="${on ? 'Weekly summary switched off.' : 'Weekly summary switched on.'}" ${on ? raw('data-confirm="Stop sending the weekly class summary?"') : ''}><input type="hidden" name="on" value="${on ? '0' : '1'}"><button class="btn ${on ? '' : 'btn-primary'}" type="submit">${on ? 'Switch off' : 'Switch on'}</button></form>
+    <div class="tblwrap"><table class="tbl small atable" style="margin-top:12px"><thead><tr><th>Email</th><th>Sent (30 days)</th><th>Skipped</th><th>Waiting</th><th>Failed</th></tr></thead><tbody>
+      <tr id="e-digest-row"><td>📬 Weekly class summary (teachers)</td><td data-label="Sent (30 days)">${n('sent')}</td><td data-label="Skipped">${n('skipped')}${why ? html` <span class="muted">(${why})</span>` : ''}</td><td data-label="Waiting">${int((c.status.pending || 0) + (c.status.sending || 0))}</td><td data-label="Failed">${n('failed')}</td></tr>
+    </tbody></table></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px"><a class="btn btn-sm" href="/admin/emails/preview-digest" target="_blank" rel="noopener">Preview</a><a class="btn btn-sm" href="/admin/emails/preview-digest?format=text" target="_blank" rel="noopener">Text</a>
+      <form data-api="/api/admin/emails/digest-test" data-toast="Test sent."><button class="btn btn-sm" type="submit" ${s.sending && to ? '' : raw('disabled')}>Send me a test</button></form></div>
+  </section>`;
+}
+router.get('/admin/emails/preview-digest', (req, res) => {
+  const m = renderDigest(sampleUser(req.user), sampleDigest(), sampleSlot(), { firstName: 'Alex' });
+  res.set('Cache-Control', 'no-store');
+  if (req.query.format === 'text') return res.type('text/plain; charset=utf-8').send(`Subject: ${m.subject}\nPreview: ${m.preview}\n\n${m.text}`);
+  res.type('html').send(m.html);
+});
+router.post('/api/admin/emails/digest', (req, res) => {
+  const v = (req.body || {}).on;
+  res.json({ ok: true, on: digest.setSwitch(req.user, v === true || v === '1') });
+});
+router.post('/api/admin/emails/digest-test', rateLimit('admin-email-test', 10, 10 * 60e3), async (req, res) => {
+  if (!email.sendingOn()) return res.status(409).json({ error: 'Sending is off: set RESEND_API_KEY (and EMAIL_ENABLED not 0).' });
+  const to = testAddress(req.user);
+  if (!to) return res.status(409).json({ error: 'No address to send to: sign in with Google, or set CONTACT_EMAIL.' });
+  const m = renderDigest(req.user, sampleDigest(), sampleSlot());
+  const r = await email.send({ userId: req.user.id, template: 'class_digest', category: 'test', subject: `[Test] ${m.subject}`, html: m.html, text: m.text, to });
+  audit(req.user.id, 'admin.emails.test', 'class_digest', { status: r.status });
+  if (r.status !== 'sent') return res.status(502).json({ error: `Not sent (${r.reason || r.status}).` });
+  res.json({ ok: true, toast: `Test sent to ${email.maskEmail(to)}.` });
 });
 router.get('/admin/emails/preview/:step', (req, res) => {
   if (!nudges.TRIAL_STEPS.includes(req.params.step)) return res.status(404).type('text').send('No such email.');
