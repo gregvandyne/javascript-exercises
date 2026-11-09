@@ -389,4 +389,11 @@ test('a grown-up reads a course page Home links to, with nothing to pick; a step
   assert.equal(step.status, 302); assert.equal(step.location, '/courses/cs-quest');
   assert.equal(q.get('SELECT COUNT(*) n FROM course_bands WHERE user_id=?', mum.id).n, 0);
   assert.equal(q.get('SELECT COUNT(*) n FROM course_progress WHERE user_id=?', mum.id).n, 0);
+  // A win the guest they signed in from left pending (login hands it over: routes/auth.js) never becomes a grown-up's
+  // progress, on either course page.
+  const won = C.getStep(course, '1b-1.1');
+  q.run('INSERT INTO course_pending_wins(user_id, course, step, kind, score, created_at) VALUES (?,?,?,?,?,?)', mum.id, 'cs-quest', won.key, 'win', null, now());
+  for (const slug of C.COURSES.map(c => c.slug)) assert.equal((await get(`/courses/${slug}`, mum)).status, 200, slug);
+  assert.equal(q.get('SELECT COUNT(*) n FROM course_progress WHERE user_id=?', mum.id).n, 0);
+  assert.equal(q.get('SELECT COUNT(*) n FROM course_bands WHERE user_id=?', mum.id).n, 0);
 });
