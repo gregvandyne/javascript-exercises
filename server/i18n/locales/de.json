@@ -67,7 +67,12 @@
     "playNow": "Jetzt spielen",
     "games": "Spiele",
     "account": "Konto",
-    "school": "Schule"
+    "school": "Schule",
+    "play": "Spielen",
+    "learn": "Lernen",
+    "class": "Klasse",
+    "classroom": "Klassenraum",
+    "live": "Live"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -505,7 +510,11 @@
       "rated": "Am besten bewertet",
       "new": "Neu",
       "mine": "Meine Spiele",
-      "favorites": "Meine Favoriten"
+      "favorites": "Meine Favoriten",
+      "keep": "Weiterspielen",
+      "two": "Zu zweit",
+      "fromLearn": "Aus Lernen: die lustigsten",
+      "openLearn": "Lernen öffnen"
     },
     "hero": {
       "label": "Empfohlenes Spiel",
@@ -540,6 +549,9 @@
       "todo": "{count, plural, one {# Stunde zu erledigen} other {# Stunden zu erledigen}}",
       "continue": "Weiter",
       "open": "Meine Klasse öffnen"
+    },
+    "chips": {
+      "two": "Zu zweit"
     }
   },
   "search": {
@@ -4388,7 +4400,52 @@
       "ages": "Nach Alter",
       "who": "Für Lehrkräfte und Eltern"
     },
-    "inClass": "Im Unterricht im Einsatz? <a href=\"{href}\">Oomba Academy für Lehrkräfte ansehen</a>."
+    "inClass": "Im Unterricht im Einsatz? <a href=\"{href}\">Oomba Academy für Lehrkräfte ansehen</a>.",
+    "tab": {
+      "h1": "Lernen",
+      "lead": "Spiele und Kurse, bei denen du etwas lernst. Wähle ein Fach oder einfach ein Spiel.",
+      "leadStaff": "Dieselbe Bibliothek, die Ihre Schüler sehen, mit Knöpfen zum Zuweisen und Live-Spielen.",
+      "filters": "Spiele filtern",
+      "subject": "Fach",
+      "subjects": {
+        "all": "Alle",
+        "math": "Mathe",
+        "words": "Wörter",
+        "maps": "Karten",
+        "code": "Programmieren",
+        "thinking": "Denken",
+        "music": "Musik",
+        "any": "Jedes Fach"
+      },
+      "grade": "Klassenstufe",
+      "gradeAny": "Jede Stufe",
+      "gradeK": "Vorschule",
+      "gradeN": "Klassenstufe {n}",
+      "filter": "Zeigen",
+      "how": "Wie du spielst",
+      "howAll": "Egal wie",
+      "hows": {
+        "solo": "Allein",
+        "two": "Zu zweit",
+        "live": "Live mit meiner Klasse"
+      },
+      "moreAbout": "Mehr über {subject}-Spiele",
+      "joinH": "Hast du einen Spielcode von deiner Lehrkraft?",
+      "myCourses": "Meine Kurse",
+      "live": "Live-Spiele für die Klasse",
+      "liveText": "Deine Lehrkraft startet eins auf dem großen Bildschirm, und alle machen mit einem Code mit.",
+      "liveStaff": "Starten Sie eins auf dem großen Bildschirm: Ihre Klasse macht mit einem Code mit.",
+      "games": "Lernspiele",
+      "none": "Noch keine Spiele für diese Filter.",
+      "clear": "Alle Spiele zeigen",
+      "players": "Lernspiele von Spielern",
+      "meta": "{subject} · {grades}",
+      "assign": "Zuweisen",
+      "assignCourse": "Einer Klasse zuweisen",
+      "guide": "Leitfaden für Lehrkräfte",
+      "host": "Live starten",
+      "try": "Ausprobieren"
+    }
   },
   "parents": {
     "title": "Sichere Lernspiele für Kinder 8–14, kostenlos",
@@ -6519,6 +6576,16 @@
     "link": {
       "new": "{count, plural, one {# neue Nachricht vom Oomba-Team} other {# neue Nachrichten vom Oomba-Team}}",
       "open": "Nachrichten vom Oomba-Team"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "{game} zuweisen",
+      "pickClass": "Klasse",
+      "submit": "Zuweisen",
+      "note": "Ihre Klasse bekommt eine Lektion mit einem Schritt, die dieses Spiel startet. Sie können sie später in der Lektionsbibliothek ändern.",
+      "none": "Sie haben noch keine Klasse. Legen Sie zuerst im Klassenraum eine an.",
+      "liveOnly": "Das ist ein Live-Spiel für die Klasse: Starten Sie es auf dem großen Bildschirm, statt es zuzuweisen."
     }
   }
 }

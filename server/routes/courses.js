@@ -56,7 +56,7 @@ router.get('/courses/:slug', (req, res) => {
       const startState = ov.list.find(s => s.step.key === placement.startNode);
       if (startState && !startState.complete) ov.next = startState;
     }
-    return page(req, res, { title: t(`${c.key}.title`), active: 'home', head: NQ_CSS,
+    return page(req, res, { title: t(`${c.key}.title`), active: 'learn', head: NQ_CSS,
       body: pathPage({ course: c, ov, units: C.numberQuestCatalogue().units, marks: NQ.totalMarks(user, c),
         daily: NQ.dailyStatus(user, c), laps: Object.fromEntries(NQ.lapsForTier(user, c, 'explorer').map(l => [l.unit, l])),
         placement: placement && placement.startNode ? { ...placement, workshop: NQP.nodeInfo(placement.startNode).workshop } : placement,
@@ -65,7 +65,7 @@ router.get('/courses/:slug', (req, res) => {
       description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
   }
   honourPendingWins(u); // a win earned as a guest lands before the map is drawn
-  page(req, res, { title: t(`${c.key}.title`), active: 'home', body: coursePage({ course: c, games: C.courseGames(u, c), ov: C.overview(u, c), canPick: !isGrownup(u), preview: preview(u), locked: lockedKey(req) }),
+  page(req, res, { title: t(`${c.key}.title`), active: 'learn', body: coursePage({ course: c, games: C.courseGames(u, c), ov: C.overview(u, c), canPick: !isGrownup(u), preview: preview(u), locked: lockedKey(req) }),
     description: t(`${c.key}.sub`), seo: { index: true, path: `/courses/${c.slug}`, langs: seo.langsWithKey(`${c.key}.about`) } });
 });
 
@@ -102,7 +102,7 @@ router.get('/courses/:slug/:step', (req, res) => {
   // The result of a check sent without the page script (?r=<score>).
   const r = /^[0-3]$/.test(String(req.query.r || '')) && !s.checked ? +req.query.r : null;
   const result = r === null ? null : { score: r, passed: r >= C.PASS, results: lastWrong(req, step) };
-  page(req, res, { title: `${step.title} · ${req.t(`${c.key}.title`)}`, active: 'home', mid: true,
+  page(req, res, { title: `${step.title} · ${req.t(`${c.key}.title`)}`, active: 'learn', mid: true,
     head: c.slug === NQ.COURSE_SLUG ? NQ_CSS : '',
     body: stepPage({ course: c, s, total: all.length, next: all[step.index + 1] || null, seed: seedOf(u), result, signedIn: !!u, slides: C.slidesFor(u, c, step) }), scripts: ['/js/course.js'] });
 });

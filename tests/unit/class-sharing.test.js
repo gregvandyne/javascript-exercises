@@ -188,15 +188,15 @@ test('every listing respects it: rails, categories, profiles, playing now, favor
   assert.ok(has(games.favorites(kidA, kidA.id))); assert.ok(!has(games.favorites(kidB, kidA.id))); assert.ok(!has(games.favorites(null, kidA.id)));
   // HTTP: home, search, the API, profiles.
   const slug = new RegExp(`/g/${g.slug}"`);
-  assert.match((await as(kidA)('/')).text, slug, 'a classmate gets it on Home');
-  assert.doesNotMatch((await as(kidB)('/')).text, slug); assert.doesNotMatch((await as(null)('/')).text, slug);
+  assert.match((await as(kidA)('/play')).text, slug, 'a classmate gets it on Home');
+  assert.doesNotMatch((await as(kidB)('/play')).text, slug); assert.doesNotMatch((await as(null)('/')).text, slug);
   assert.match((await as(kidA)('/search?q=Zebra%20Dash%20Xq')).text, slug);
   assert.doesNotMatch((await as(kidB)('/search?q=Zebra%20Dash%20Xq')).text, slug); assert.doesNotMatch((await as(null)('/search?q=Zebra%20Dash%20Xq')).text, slug);
   const api = async u => JSON.stringify((await as(u)('/api/search?q=Zebra%20Dash%20Xq')).json);
   assert.match(await api(kidA), new RegExp(g.id)); assert.doesNotMatch(await api(kidB), new RegExp(g.id)); assert.doesNotMatch(await api(null), new RegExp(g.id));
   assert.match((await as(kidA)(`/u/${cleo.username}`)).text, slug);
   assert.doesNotMatch((await as(kidB)(`/u/${cleo.username}`)).text, slug); assert.doesNotMatch((await as(null)(`/u/${cleo.username}`)).text, slug);
-  assert.match((await as(kidA)('/')).text, /Class only/, 'cards say it is a class game');
+  assert.match((await as(kidA)('/play')).text, /Class only/, 'cards say it is a class game');
   // Friends page and chat: a friend outside the class never gets it.
   const og = mkGame(O, 'class', { classes: [[A]], title: 'Olly Class Xq' });
   assert.doesNotMatch((await as(F)('/friends')).text, new RegExp(`/g/${og.slug}"`));

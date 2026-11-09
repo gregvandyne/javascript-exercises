@@ -2,10 +2,13 @@
 import { test, expect } from '@playwright/test';
 import { gameFrame, signup, uniq, ownIp } from './helpers.js';
 
-test('home shows the three featured seed games', async ({ page }) => {
+test('Play (home) shows featured Play games; a learning game is on Learn', async ({ page }) => {
   await page.goto('/');
   const featured = page.locator('#featured');
-  for (const t of ['Shark Plank', 'Ring Rumble', 'Footy Tycoon']) await expect(featured.getByText(t, { exact: true })).toBeVisible();
+  for (const t of ['Ring Rumble', 'Footy Tycoon', 'Jungle Cup']) await expect(featured.getByText(t, { exact: true })).toBeVisible();
+  await expect(featured.getByText('Shark Plank', { exact: true })).toHaveCount(0);
+  await page.goto('/learn');
+  await expect(page.locator('#learn-games').getByText('Shark Plank', { exact: true })).toBeVisible();
 });
 
 test('guest plays Shark Plank in one tap and a save round-trips', async ({ page }) => {

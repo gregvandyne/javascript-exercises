@@ -4,6 +4,7 @@
   "icon": "🌍",
   "cover": "space",
   "category": "learning",
+  "shelf": "learn",
   "tags": "live,class,geography,map,countries,flags,capitals,world,atlas,teams",
   "description": "A live class map challenge: everyone taps the country on their own world map. Find it, its flag, its capital or what it is famous for. Quick and right scores most, close guesses still score a little, and the big screen shows where the whole class tapped. Played alone, it is a five-country practice round.",
   "orientation": "any",

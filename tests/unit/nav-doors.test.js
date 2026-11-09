@@ -49,8 +49,10 @@ test('signed out and guests get the same doors: Grown-ups tab, no Friends, Paren
     assert.equal(home.status, 200);
     const tabs = tabbar(home.text);
     const order = [...tabs.matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]);
-    assert.deepEqual(order, ['/', '/search', '/build', '/parents', '/plans', '/login'], `${who}: Home · Search · Build · Grown-ups · Plans · Sign in`);
+    assert.deepEqual(order, ['/', '/learn', '/build', '/parents', '/plans', '/login'], `${who}: Play · Learn · Build · Grown-ups · Plans · Sign in`);
+    assert.match(tabs, /🎮<\/span><span class="tab-t">Play<\/span>/, who); assert.match(tabs, /📚<\/span><span class="tab-t">Learn<\/span>/, who);
     assert.match(tabs, /👪<\/span><span class="tab-t">Grown-ups<\/span>/, who);
+    assert.doesNotMatch(tabs, /href="\/search"/, `${who}: search is the top bar's field, not a tab`);
     assert.doesNotMatch(tabs + topnav(home.text), /href="\/friends"/, `${who}: no Friends before an account`);
     assert.match(topnav(home.text), /href="\/parents"/, who); assert.match(topnav(home.text), /href="\/teachers"/, who);
     assert.match(home.text, /class="home-intro"/, `${who}: the home intro with its parent and teacher buttons`);
@@ -72,13 +74,13 @@ test('a kid with an account keeps their tab bar (Friends, Me) and no grown-up do
   const k = kid();
   const home = await as(k)('/');
   const order = [...tabbar(home.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(order, ['/', '/search', '/build', '/friends', '/plans', '/me']);
+  assert.deepEqual(order, ['/', '/learn', '/build', '/friends', '/plans', '/me']);
   assert.doesNotMatch(topnav(home.text), /href="\/(parents|teachers)"/);
   assert.doesNotMatch(home.text, /class="home-intro"/);
   assert.doesNotMatch(footer(home.text), /href="\/teachers"/);
   config.stripeApiKey = '';
   const off = await call(null, '/');
-  assert.deepEqual([...tabbar(off.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]), ['/', '/search', '/build', '/parents', '/login']);
+  assert.deepEqual([...tabbar(off.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]), ['/', '/learn', '/build', '/parents', '/login']);
 });
 
 test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game" at the top; before plans are public, the child sign-up', async () => {

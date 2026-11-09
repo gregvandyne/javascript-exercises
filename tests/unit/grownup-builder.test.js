@@ -221,7 +221,7 @@ test('connections: two grown-ups connect by code; the page has no chat and no pr
   // The Family tab counts waiting connection requests.
   const C = grownup();
   await as(C)('/api/friends/add', { method: 'POST', body: { code: A.friend_code } });
-  const home = await as(A)('/');
+  const home = await as(A)('/play');
   assert.match(home.text, /class="tab" href="\/family"[^>]*>(?:(?!<\/a>)[\s\S])*class="badge"/);
 });
 
@@ -362,7 +362,7 @@ test('which children belong to a grown-up is never shown on a public surface', a
   const secret = /GbSecretChild|Wilhelmina|Bartholomew/;
   const viewers = [['signed out', null], ['unrelated kid', kid()], ['another grown-up', grownup()]];
   for (const [who, u] of viewers) {
-    for (const path of [`/g/${live.slug}`, `/play/${live.slug}`, '/', '/search?q=Quiet', '/api/search?q=Quiet', `/search?q=${g.username}`]) {
+    for (const path of [`/g/${live.slug}`, `/play/${live.slug}`, '/', '/play', '/learn', '/search?q=Quiet', '/api/search?q=Quiet', `/search?q=${g.username}`]) {
       const r = await as(u)(path);
       assert.doesNotMatch(r.text, secret, `${who}: ${path}`);
     }

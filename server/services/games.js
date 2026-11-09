@@ -132,7 +132,7 @@ export function visibleWhere(user) {
     params: [user.id, user.id, user.id, user.id, user.id, user.id]
   };
 }
-const COLS = `g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.course_only, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
+const COLS = `g.id, g.slug, g.owner_id, g.title, g.description, g.icon, g.cover, g.category, g.tags, g.visibility, g.status, g.plays, g.likes, g.rating_sum, g.rating_count, g.featured, g.course_only, g.shelf, g.players_max, g.orientation, g.source, g.published_at, g.updated_at, g.created_at, g.current_version_id, g.published_version_id, g.pending_version_id, g.review_note, g.hidden_reason, g.l10n,
   u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar, u.color AS owner_color, u.photo_at AS owner_photo_at, u.account_type AS owner_type`;
 export const SELECT = `SELECT ${COLS} FROM games g JOIN users u ON u.id=g.owner_id`;
 
@@ -162,23 +162,42 @@ const ORDERS = {
  *  games built solely as a course's modules, e.g. Cyber Defenders' Trick Inbox and Escape the Post Office).
  *  Every public catalogue surface (rails, search, similar, playing now, the sitemap) must apply this fragment. */
 export const NOT_COURSE = () => ` AND g.course_only=0${COURSE_GAME_SLUGS.length ? ` AND g.slug NOT IN (${COURSE_GAME_SLUGS.map(x => `'${x.replace(/'/g, '')}'`).join(',')})` : ''}`;
-export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0, official = false } = {}) {
+// ---------------------------------------------------------------- the two shelves (docs/decisions.md "Play and Learn")
+export const SHELVES = ['play', 'learn'];
+/** A game's shelf: the one its row carries (official games: seed JSON "shelf"), else 'learn' for a player's game in the
+ *  Learning category and 'play' for every other player's game (they stay on Play and search as before). */
+export const SHELF_SQL = "(CASE WHEN g.shelf<>'' THEN g.shelf WHEN g.category='learning' THEN 'learn' ELSE 'play' END)";
+/** The JS twin of SHELF_SQL. */
+export const shelfOf = g => (g && (g.shelf === 'play' || g.shelf === 'learn') ? g.shelf : g && g.category === 'learning' ? 'learn' : 'play');
+const shelfWhere = (shelf, params) => { if (!SHELVES.includes(shelf)) return ''; params.push(shelf); return ` AND ${SHELF_SQL}=?`; };
+/** shelf: 'play' | 'learn' (SHELF_SQL); minPlayers: only games for at least that many players on one screen (2 to 8). */
+export function listVisible(user, { order = 'popular', limit = 24, category = null, ownerId = null, featured = false, offset = 0, official = false, shelf = null, minPlayers = 0 } = {}) {
   const v = visibleWhere(user); const params = [...v.params]; let where = v.sql + NOT_COURSE();
   if (official) { where += " AND g.source='seed' AND u.username=?"; params.push(OFFICIAL); }   // launch games only
   if (category) { where += ' AND g.category=?'; params.push(category); }
+  where += shelfWhere(shelf, params);
+  if (minPlayers) { where += ' AND g.players_max BETWEEN ? AND 8'; params.push(minPlayers); }
   if (ownerId) { where += ' AND g.owner_id=?'; params.push(ownerId); }
   if (featured) where += ' AND g.featured>0';   // 1 = featured, 2 = also the home-page hero (seed JSON "hero": true)
   return decorate(q.all(`${SELECT} WHERE ${where} ORDER BY ${ORDERS[order] || ORDERS.popular} LIMIT ? OFFSET ?`, ...params, limit, offset));
 }
-export function playingNow(user, limit = 12) {
+export function playingNow(user, limit = 12, { shelf = null } = {}) {
   const top = presence.top(60); if (!top.length) return [];
-  const ids = top.map(t => t[0]); const v = visibleWhere(user);
-  const rows = q.all(`${SELECT} WHERE ${v.sql}${NOT_COURSE()} AND g.id IN (${ids.map(() => '?').join(',')})`, ...v.params, ...ids);
+  const ids = top.map(t => t[0]); const v = visibleWhere(user); const sp = []; const sw = shelfWhere(shelf, sp);
+  const rows = q.all(`${SELECT} WHERE ${v.sql}${NOT_COURSE()}${sw} AND g.id IN (${ids.map(() => '?').join(',')})`, ...v.params, ...sp, ...ids);
   const order = new Map(top); return decorate(rows).sort((a, b) => (order.get(b.id) || 0) - (order.get(a.id) || 0)).slice(0, limit);
 }
-export function fromFriends(user, limit = 12) {
+export function fromFriends(user, limit = 12, { shelf = null } = {}) {
   if (!user) return [];
-  return decorate(q.all(`${SELECT} WHERE g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason=''${NOT_COURSE()} AND g.visibility IN ('public','friends') AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted') ORDER BY g.published_at DESC LIMIT ?`, user.id, limit));
+  const sp = []; const sw = shelfWhere(shelf, sp);
+  return decorate(q.all(`${SELECT} WHERE g.status='published' AND g.published_version_id IS NOT NULL AND g.hidden_reason=''${NOT_COURSE()}${sw} AND g.visibility IN ('public','friends') AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted') ORDER BY g.published_at DESC LIMIT ?`, ...sp, user.id, limit));
+}
+/** "Keep playing": the games this player opened most recently (one row per game), that they may still see. */
+export function recentlyPlayed(user, limit = 12, { shelf = null } = {}) {
+  if (!user || user.is_guest) return [];
+  const v = visibleWhere(user); const sp = []; const sw = shelfWhere(shelf, sp);
+  return decorate(q.all(`${SELECT} JOIN (SELECT game_id, MAX(started_at) AS last_at FROM plays WHERE user_id=? GROUP BY game_id) p ON p.game_id=g.id
+    WHERE ${v.sql}${NOT_COURSE()}${sw} ORDER BY p.last_at DESC LIMIT ?`, user.id, ...v.params, ...sp, limit));
 }
 /** A player's favorites (the games they tapped ❤️ on), newest first. Only games this viewer may still see. */
 export function favorites(viewer, userId, limit = 24, offset = 0) {

@@ -67,7 +67,12 @@
     "playNow": "Speel nu",
     "games": "Games",
     "account": "Account",
-    "school": "School"
+    "school": "School",
+    "play": "Spelen",
+    "learn": "Leren",
+    "class": "Klas",
+    "classroom": "Klaslokaal",
+    "live": "Live"
   },
   "errors": {
     "goHome": "Naar de start",
@@ -505,7 +510,11 @@
       "rated": "Top",
       "new": "Nieuw",
       "mine": "Mijn games",
-      "favorites": "Mijn favorieten"
+      "favorites": "Mijn favorieten",
+      "keep": "Verder spelen",
+      "two": "Met z’n tweeën",
+      "fromLearn": "Uit Leren: de leukste",
+      "openLearn": "Leren openen"
     },
     "hero": {
       "label": "Uitgelichte game",
@@ -540,6 +549,9 @@
       "todo": "{count, plural, one {# les te doen} other {# lessen te doen}}",
       "continue": "Verder",
       "open": "Open mijn klas"
+    },
+    "chips": {
+      "two": "Met z’n tweeën"
     }
   },
   "search": {
@@ -4388,7 +4400,52 @@
       "ages": "Per leeftijd",
       "who": "Voor leerkrachten en ouders"
     },
-    "inClass": "Gebruik je dit in de klas? <a href=\"{href}\">Bekijk Oomba Academy voor leerkrachten</a>."
+    "inClass": "Gebruik je dit in de klas? <a href=\"{href}\">Bekijk Oomba Academy voor leerkrachten</a>.",
+    "tab": {
+      "h1": "Leren",
+      "lead": "Games en cursussen waar je iets van leert. Kies een vak, of gewoon een game.",
+      "leadStaff": "Dezelfde bibliotheek die je leerlingen zien, met knoppen om toe te wijzen en live te spelen.",
+      "filters": "Games filteren",
+      "subject": "Vak",
+      "subjects": {
+        "all": "Alles",
+        "math": "Rekenen",
+        "words": "Woorden",
+        "maps": "Kaarten",
+        "code": "Programmeren",
+        "thinking": "Nadenken",
+        "music": "Muziek",
+        "any": "Elk vak"
+      },
+      "grade": "Grade",
+      "gradeAny": "Elke grade",
+      "gradeK": "Kleuterklas",
+      "gradeN": "Grade {n}",
+      "filter": "Tonen",
+      "how": "Hoe je speelt",
+      "howAll": "Maakt niet uit",
+      "hows": {
+        "solo": "Alleen",
+        "two": "Met z’n tweeën",
+        "live": "Live met mijn klas"
+      },
+      "moreAbout": "Meer over {subject}-games",
+      "joinH": "Heb je een gamecode van je leraar?",
+      "myCourses": "Mijn cursussen",
+      "live": "Live klassengames",
+      "liveText": "Je leraar start er een op het grote scherm en iedereen doet mee met een code.",
+      "liveStaff": "Start er een op het grote scherm: je klas doet mee met een code.",
+      "games": "Leergames",
+      "none": "Er zijn nog geen games voor deze filters.",
+      "clear": "Alle games tonen",
+      "players": "Leergames van spelers",
+      "meta": "{subject} · {grades}",
+      "assign": "Toewijzen",
+      "assignCourse": "Aan een klas toewijzen",
+      "guide": "Handleiding voor leraren",
+      "host": "Live starten",
+      "try": "Proberen"
+    }
   },
   "parents": {
     "title": "Veilige, gratis leerspelletjes voor kinderen",
@@ -6519,6 +6576,16 @@
     "link": {
       "new": "{count, plural, one {# nieuw bericht van het Oomba-team} other {# nieuwe berichten van het Oomba-team}}",
       "open": "Berichten van het Oomba-team"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "{game} toewijzen",
+      "pickClass": "Klas",
+      "submit": "Toewijzen",
+      "note": "Je klas krijgt een les van één stap die deze game speelt. Je kunt die later aanpassen in de lessenbibliotheek.",
+      "none": "Je hebt nog geen klassen. Maak er eerst een in Klaslokaal.",
+      "liveOnly": "Dit is een live klassengame: start hem op het grote scherm in plaats van hem toe te wijzen."
     }
   }
 }

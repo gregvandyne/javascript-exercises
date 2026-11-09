@@ -4,6 +4,7 @@
   "icon": "📮",
   "cover": "gold",
   "category": "learning",
+  "shelf": "learn",
   "tags": "networks,internet,packets,routers,protocols,cybersecurity,passphrase,phishing,ciphers,computer science,learning,kids,class",
   "description": "Run Netville's post office with Pim the owl and learn how the internet really works. Cut a picture into numbered packets, send each one down a road, reroute when a road closes, and put the pieces back in order at the other end. Say got it, ask again for lost packets, throw away extra copies and count the dots to check for damage. Then lock it up: sort what to share, build a strong passphrase from word tiles, spot trick messages in the inbox, and send secret messages with the cipher wheel. Six chapters for grades 3 to 8, with a class quest mode for teachers.",
   "orientation": "any",

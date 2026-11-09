@@ -4,6 +4,7 @@
  "icon": "🛤️",
  "cover": "mint",
  "category": "learning",
+ "shelf": "learn",
  "tags": "coding,blocks,robot,loops,conditionals,variables,functions,debugging,algorithms,learning,class",
  "description": "Snap blocks together and drive Bolt the robot across the board to the goal. Eight chapters build up real programming ideas one at a time: sequences, loops, conditionals and events, variables, functions, a Debug Lab, Best Route and a Level Maker. Two bands, Explorer (grades 3-5) and Pro (grades 6-8), with learn cards, hints, stars for short programs and a Class quest mode for lessons. Tap only: nothing to type.",
  "orientation": "any",

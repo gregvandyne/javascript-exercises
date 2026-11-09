@@ -191,8 +191,8 @@ test('guided focus renders on a Cyber Defenders unit 1 step page (shared rendere
   assert.match(page.text, /<button class="gf-replay" type="button" hidden>/, 'the replay button');
 });
 
-test('the home page shows both course cards', async () => {
-  const r = await get('/');
+test('the Learn tab shows both course cards', async () => {
+  const r = await get('/learn');
   assert.equal(r.status, 200);
   assert.match(r.text, /id="course-cs-quest-go"/);
   assert.match(r.text, /id="course-cyber-defenders-go"/);

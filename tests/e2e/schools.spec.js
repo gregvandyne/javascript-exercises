@@ -61,11 +61,11 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await expect(kid.locator('main')).toContainText('Maria Rivera');      // their teacher's name
   await expect(kid.locator('main')).not.toContainText('Ana Silva');     // never classmates' real names
   await expect(kid.locator('.tabbar a[href="/classes"]')).toHaveCount(1);
-  // The teacher's menu (navigation weeks 3–4): Classes · Games · Me; no School tab for a plain teacher, no Friends or
-  // Build tab, and "Make a game" on My classes instead.
+  // The teacher's menu (docs/decisions.md "Play and Learn"): Classroom · Learn · Play · Live · Me; no School tab for a
+  // plain teacher, no Friends or Build tab, and "Make a game" on My classes instead.
   await teacher.setViewportSize({ width: 360, height: 760 });
   await teacher.goto('/teach');
-  expect(await teacher.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/', '/me']);
+  expect(await teacher.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/me']);
   await expect(teacher.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
   await expect(teacher.locator('main a[href="/build"]')).toContainText('Make a game');
   expect((await teacher.goto('/school')).status()).toBe(404);
@@ -77,21 +77,24 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   const hctx = await browser.newContext({ viewport: { width: 360, height: 760 } }); const head = await hctx.newPage();
   const { username } = await signup(head, uniq('Head'), 'head-pass-123');
   const school = await schoolWithAdmin(admin, username);
+  // '/' is their first tab, School (one school: its People tab); Play is /play, current there.
   await head.goto('/');
-  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/', '/school', '/me']);
-  // No Home tab: the game home is the Games tab, current on the home page.
-  await expect(head.locator('.tabbar .tab[href="/"]')).toHaveAttribute('aria-current', 'page');
-  await expect(head.locator('.tabbar .tab[href="/"] .tab-t')).toHaveText('Games');
+  expect(new URL(head.url()).pathname).toBe(`/school/${school.slug}`);
+  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/me']);
+  await expect(head.locator('.tabbar .tab[href="/school"]')).toHaveAttribute('aria-current', 'page');
+  await head.goto('/play');
+  await expect(head.locator('.tabbar .tab[href="/play"]')).toHaveAttribute('aria-current', 'page');
+  await expect(head.locator('.tabbar .tab[href="/play"] .tab-t')).toHaveText('Play');
   await Promise.all([head.waitForURL(new RegExp(`/school/${school.slug}\\?tab=people$`)), head.locator('.tabbar .tab[href="/school"]').click()]);
   await expect(head.locator('h1')).toContainText(school.name);
   await expect(head.locator('.tabbar .tab[href="/school"]')).toHaveAttribute('aria-current', 'page');
   await head.goto('/me');
   await expect(head.locator('.pagehead a[href="/build"]')).toContainText('Make a game');
   await Promise.all([head.waitForURL(/\/build$/), head.locator('.pagehead a[href="/build"]').click()]);
-  // Desktop: Classes · Games · School, and the avatar button is Me.
+  // Desktop: School · Classroom · Learn · Play · Live, and the avatar button is Me.
   await head.setViewportSize({ width: 1280, height: 800 });
   await head.goto('/teach');
-  expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/', '/school']);
+  expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/live']);
   await expect(head.locator('.topbar .me-btn')).toHaveAttribute('href', '/me');
   await hctx.close(); await admin.context().close();
 });

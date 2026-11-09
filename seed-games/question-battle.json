@@ -4,6 +4,7 @@
   "icon": "⚡",
   "cover": "space",
   "category": "learning",
+  "shelf": "learn",
   "tags": "live,quiz,class,questions,leaderboard,boss battle,teamwork",
   "description": "A live class quiz played as a co-op boss battle: the whole class answers together to beat a silly boss (a grumpy storm cloud, a cheeky robot or a sleepy dragon). Every right answer fires a star, faster answers and streaks hit harder, and a top five with overtakes after each question. Played alone, it is a quick practice round against the boss.",
   "orientation": "any",

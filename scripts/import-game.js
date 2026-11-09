@@ -25,8 +25,8 @@ export function importGame(htmlPath, metaPath, ownerId) {
   if (!cur || cur.html !== html) v = games.addVersion(g.id, html, { notes: meta.notes ? 'Imported. ' + meta.notes.slice(0, 300) : 'Imported', createdBy: ownerId, safetyStatus: report.status, safetyReport: report });
   // Seed games are reviewed by the team: mark approved and publish publicly.
   q.run("UPDATE game_versions SET review_status='approved', review_report=? WHERE id=?", JSON.stringify({ verdict: 'allowed', by: 'seed-import' }), v.id);
-  q.run("UPDATE games SET visibility='public', status='published', published_version_id=?, pending_version_id=NULL, featured=?, course_only=?, age_rating=?, published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?",
-    v.id, meta.hero ? 2 : meta.featured ? 1 : 0, meta.course_only ? 1 : 0, meta.age_rating || 'everyone', now(), now(), g.id);
+  q.run("UPDATE games SET visibility='public', status='published', published_version_id=?, pending_version_id=NULL, featured=?, course_only=?, shelf=?, age_rating=?, published_at=COALESCE(published_at, ?), updated_at=? WHERE id=?",
+    v.id, meta.hero ? 2 : meta.featured ? 1 : 0, meta.course_only ? 1 : 0, meta.shelf === 'learn' || meta.shelf === 'play' ? meta.shelf : '', meta.age_rating || 'everyone', now(), now(), g.id);
   audit(ownerId, 'game.import', g.id, { version: v.number });
   return games.getGame(g.id);
 }

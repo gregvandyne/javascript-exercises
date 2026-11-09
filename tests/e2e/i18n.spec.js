@@ -19,15 +19,17 @@ test('the picker lists every language by its own name; choosing French translate
   await expect(picker.locator('a[aria-current="true"]')).toHaveText('✓English');
   await Promise.all([page.waitForURL(u => u.pathname === '/' && !u.search.includes('lang')), picker.getByText('Français', { exact: true }).click()]);
   await expect(html(page)).toHaveAttribute('lang', 'fr');
-  await expect(page.locator('.topnav .navlink').first()).toContainText('Accueil');
+  await expect(page.locator('.topnav .navlink').first()).toContainText('Jouer (stub)');
+  await expect(page.locator('.topnav .navlink').nth(1)).toContainText('Apprendre (stub)');
   await expect(page.locator('.hero .btn-big')).toContainText('Jouer');
   await expect(page.locator('.topnav'), 'the real fr.json fills the keys the stub leaves out (fallback itself is unit-tested)').toContainText('Créer');
   await expect(page.locator('.topbar .langpick summary')).toHaveAttribute('aria-label', 'Langue\u00a0: Français');
   // The choice persists across pages (cookie), including client-side strings.
   await page.goto('/search');
   await expect(html(page)).toHaveAttribute('lang', 'fr');
-  // Signed out, the wide top bar has the search field instead of a Search link (the home doors, Week 2); the tab is current.
-  await expect(page.locator('.tabbar .tab[aria-current="page"]')).toContainText('Recherche');
+  // Search is the top bar's field for everyone, not a tab: a search is browsing the library, so Play is current.
+  await expect(page.locator('.tabbar .tab[aria-current="page"]')).toContainText('Jouer (stub)');
+  await expect(page.locator('.tabbar .tab[href="/search"]')).toHaveCount(0);
   await page.locator('.topbar .langpick summary').click();
   await expect(page.locator('.topbar .lang-list a[aria-current="true"]')).toContainText('Français');
   await expect(page.locator('#i18n')).toHaveCount(1);
@@ -45,7 +47,7 @@ test('Arabic switches the page to right-to-left everywhere and the game gets BRB
     await expect(html(page), path).toHaveAttribute('dir', 'rtl');
   }
   await page.goto('/');
-  await expect(page.locator('.topnav .navlink').first()).toContainText('الرئيسية');
+  await expect(page.locator('.topnav .navlink').first()).toContainText('لعب (stub)');
   await expect(page.locator('.hero .btn-big')).toContainText('العب');
   // right-to-left really is applied: the logo sits on the right of the header
   const logo = await page.locator('.topbar .logo').boundingBox(); const me = await page.locator('.topbar .me-btn').boundingBox();
@@ -90,7 +92,7 @@ test('a signed-in player\'s choice is saved to the account and follows them to a
   await login(other, username, password);
   await other.goto('/');
   await expect(html(other)).toHaveAttribute('lang', 'fr');
-  await expect(other.locator('.topnav .navlink').first()).toContainText('Accueil');
+  await expect(other.locator('.topnav .navlink').first()).toContainText('Jouer (stub)');
   await ctx.close();
 });
 

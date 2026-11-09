@@ -67,7 +67,12 @@
     "playNow": "Jogar agora",
     "games": "Jogos",
     "account": "Conta",
-    "school": "Escola"
+    "school": "Escola",
+    "play": "Jogar",
+    "learn": "Aprender",
+    "class": "Turma",
+    "classroom": "Minha sala",
+    "live": "Ao vivo"
   },
   "errors": {
     "goHome": "Ir para o início",
@@ -505,7 +510,11 @@
       "rated": "Mais bem avaliados",
       "new": "Novos",
       "mine": "Meus jogos",
-      "favorites": "Meus favoritos"
+      "favorites": "Meus favoritos",
+      "keep": "Continue jogando",
+      "two": "Dois jogadores",
+      "fromLearn": "De Aprender: os mais divertidos",
+      "openLearn": "Abrir Aprender"
     },
     "hero": {
       "label": "Jogo em destaque",
@@ -540,6 +549,9 @@
       "todo": "{count, plural, one {# aula para fazer} other {# aulas para fazer}}",
       "continue": "Continuar",
       "open": "Abrir minha turma"
+    },
+    "chips": {
+      "two": "2 jogadores"
     }
   },
   "search": {
@@ -4389,7 +4401,52 @@
       "ages": "Por idade",
       "who": "Para professores e pais"
     },
-    "inClass": "Vai usar na sala de aula? <a href=\"{href}\">Veja a Oomba Academy para professores</a>."
+    "inClass": "Vai usar na sala de aula? <a href=\"{href}\">Veja a Oomba Academy para professores</a>.",
+    "tab": {
+      "h1": "Aprender",
+      "lead": "Jogos e cursos que ensinam alguma coisa. Escolha uma matéria ou só um jogo.",
+      "leadStaff": "A mesma biblioteca que seus alunos veem, com botões para passar atividades e conduzir ao vivo.",
+      "filters": "Filtrar os jogos",
+      "subject": "Matéria",
+      "subjects": {
+        "all": "Tudo",
+        "math": "Matemática",
+        "words": "Palavras",
+        "maps": "Mapas",
+        "code": "Programação",
+        "thinking": "Raciocínio",
+        "music": "Música",
+        "any": "Qualquer matéria"
+      },
+      "grade": "Ano",
+      "gradeAny": "Qualquer ano",
+      "gradeK": "Pré-escola",
+      "gradeN": "{n}º ano",
+      "filter": "Mostrar",
+      "how": "Como você joga",
+      "howAll": "De qualquer jeito",
+      "hows": {
+        "solo": "Sozinho",
+        "two": "2 jogadores",
+        "live": "Ao vivo com a turma"
+      },
+      "moreAbout": "Mais sobre jogos de {subject}",
+      "joinH": "Ganhou um código de jogo do seu professor?",
+      "myCourses": "Meus cursos",
+      "live": "Jogos ao vivo para a turma",
+      "liveText": "Seu professor começa um na tela grande e todo mundo entra com um código.",
+      "liveStaff": "Comece um na tela grande e sua turma entra com um código.",
+      "games": "Jogos para aprender",
+      "none": "Ainda não há jogos com esses filtros.",
+      "clear": "Ver todos os jogos",
+      "players": "Jogos para aprender feitos por jogadores",
+      "meta": "{subject} · {grades}",
+      "assign": "Passar",
+      "assignCourse": "Passar para uma turma",
+      "guide": "Guia do professor",
+      "host": "Conduzir ao vivo",
+      "try": "Experimentar"
+    }
   },
   "parents": {
     "title": "Jogos educativos seguros e grátis (8–14 anos)",
@@ -6520,6 +6577,16 @@
     "link": {
       "new": "{count, plural, one {# mensagem nova da equipe Oomba} other {# mensagens novas da equipe Oomba}}",
       "open": "Mensagens da equipe Oomba"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "Passar {game}",
+      "pickClass": "Turma",
+      "submit": "Passar",
+      "note": "Sua turma recebe uma aula de uma etapa que abre este jogo. Você pode mudá-la depois na biblioteca de aulas.",
+      "none": "Você ainda não tem turmas. Crie uma primeiro em Minha sala.",
+      "liveOnly": "Este é um jogo ao vivo para a turma: conduza na tela grande em vez de passar como atividade."
     }
   }
 }

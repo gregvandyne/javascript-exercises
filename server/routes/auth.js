@@ -2,7 +2,7 @@
 import express, { Router } from 'express';
 import fs from 'node:fs';
 import { html, raw } from '../views/html.js';
-import { page } from '../views/layout.js';
+import { page, landingFor } from '../views/layout.js';
 import { avatar, notYou, makeGameBtn } from '../views/components.js';
 import * as auth from '../auth.js';
 import { q, audit } from '../db.js';
@@ -33,10 +33,11 @@ export const wantedNext = n => { const s = safeNext(n); return s === '/' ? null 
 export function homeFor(u) {
   if (!u || u.is_guest) return '/';
   if (auth.isGrownup(u)) return '/family';
-  if (isSchoolStaff(u)) { const slug = schoolToSetUp(u); return slug ? `/school/${slug}` : '/teach'; }
+  // Everyone else lands on their first tab (layout.js landingFor, the same rule as '/'): a school still to set up first.
+  if (isSchoolStaff(u)) { const slug = schoolToSetUp(u); return slug ? `/school/${slug}` : landingFor(u); }
   if (isPlatformAdmin(u)) return '/admin';
   if (u.managed_school) return '/classes';
-  return '/';
+  return landingFor(u) || '/';
 }
 
 /** "Grown-up or teacher?" under the kid form's heading: parents to the grown-up sign-in or sign-up (while paid-plan

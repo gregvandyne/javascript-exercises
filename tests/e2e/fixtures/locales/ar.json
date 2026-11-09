@@ -1,5 +1,5 @@
 {
   "_about": "e2e stub: merged over the real ar.json by playwright.config.js.",
-  "nav": { "home": "الرئيسية" },
+  "nav": { "home": "الرئيسية", "play": "لعب (stub)" },
   "home": { "hero": { "play": "العب" } }
 }

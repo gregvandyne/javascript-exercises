@@ -214,20 +214,20 @@ test('"Ask my admin": a teacher asks; the admin sees who asked on My classes (no
   const { username: teachName } = await signup(teach, uniq('Teach'), 'teach-pass-123');
   const school = await schoolWithAdmin(a, headName, { teacher: teachName });
   await makeTester(browser, headName);
-  // The teacher: Classes · Games · Plans · Me, and the panel on My classes.
+  // The teacher: Classroom · Learn · Play · Live · Plans · Me, and the panel on My classes.
   await teach.setViewportSize({ width: 360, height: 780 });
   await teach.goto('/teach');
-  expect(await teach.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/', '/plans', '/me']);
+  expect(await teach.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/plans', '/me']);
   const panel = teach.locator('section.askplan');
   await expect(panel).toContainText("Your school doesn't have a School plan.");
   await panel.locator('button', { hasText: 'Ask my admin' }).click();
   await expect(teach.locator('#toasts')).toContainText("We told your school's admin.");
   await expect(panel).toContainText('You asked on');
   await expect(panel.locator('button')).toHaveCount(0);
-  // The admin: Classes · Games · School · Plans · Me; the plan card names who asked, with no amounts.
+  // The admin: School · Classroom · Learn · Play · Plans · Me; the plan card names who asked, with no amounts.
   await head.setViewportSize({ width: 360, height: 780 });
   await head.goto('/teach');
-  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/', '/school', '/plans', '/me']);
+  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/plans', '/me']);
   const card = head.locator('section.teachplan');
   await expect(card).toContainText('No school plan · students on free Builder messages');
   await expect(card.locator(`a[href="/school/${school.slug}?tab=billing"]`)).toContainText('Set up School plan');

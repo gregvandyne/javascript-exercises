@@ -62,7 +62,7 @@ router.get('/number-quest/sorting-game', (req, res) => {
   if (isGrownup(req.user)) return notFound(req, res);
   if (req.headers['sec-fetch-mode'] === 'navigate') ensureUser(req, res);
   const placement = P.getPlacement(req.user);
-  page(req, res, { title: "Tally's Sorting Game · Number Quest", active: 'home', head: CSS,
+  page(req, res, { title: "Tally's Sorting Game · Number Quest", active: 'learn', head: CSS,
     body: sortingGamePage({ placement, ttsLangs: tts.onLocales() }), scripts: ['/js/number-quest-placement.js'] });
 });
 
@@ -139,7 +139,7 @@ router.get('/number-quest/starting-point', (req, res) => {
   if (!student || self) return notFound(req, res); // the note is a grown-up view, never the child's
   const placement = P.getPlacement(student);
   const note = placement && placement.rungs && Object.keys(placement.rungs).length ? rebuildNote(placement) : null;
-  page(req, res, { title: 'Starting Point note · Number Quest', active: 'home', head: CSS,
+  page(req, res, { title: 'Starting Point note · Number Quest', active: 'learn', head: CSS,
     body: startingPointPage({ child: student, placement, note, canManage: true }) });
 });
 /** The note's words are rebuilt from the stored rungs with the same plain-words builder the game used. */

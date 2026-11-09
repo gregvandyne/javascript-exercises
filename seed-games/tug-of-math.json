@@ -4,6 +4,7 @@
   "icon": "🪢",
   "cover": "meadow",
   "category": "learning",
+  "shelf": "learn",
   "tags": "math,maths,tug of war,two player,2 player,addition,subtraction,times tables,division,order of operations,percent,negative numbers,equations,mental math,learning,live,class game,teams",
   "description": "Two teams, one rope: every right answer pulls the flag your way. Pick your grade from 1 to 8 so the questions fit, from adding within 20 to equations. Take on the computer on Easy, Normal or Hard, or tug a friend on one screen with a keypad each. Or host it live: the class splits into two teams and everyone answers on their own device.",
   "orientation": "any",

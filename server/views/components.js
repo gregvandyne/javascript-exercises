@@ -83,7 +83,8 @@ export function coverArt(g, extra = '', { draft = false, eager = false } = {}) {
 }
 /** classPill: false inside a list that is all class games (the class page), where the "Class only" tag is just noise.
  *  byName: a name to credit instead of the owner's display name (the class page shows a teacher's real name). */
-export function gameCard(g, { showVis = false, classPill = true, byName = null } = {}) {
+/** meta: a short extra line under the title (the Learn tab's "Math · Grades 1–5"). */
+export function gameCard(g, { showVis = false, classPill = true, byName = null, meta = null } = {}) {
   const { t, fmt, anon } = current();
   // Signed out (search engines included): no child's name. Only the official account's name is shown.
   const by = anon && g.owner_name !== OFFICIAL ? '' : byName || g.owner_display || g.owner_name || '';
@@ -95,6 +96,7 @@ export function gameCard(g, { showVis = false, classPill = true, byName = null }
   return html`<a class="gcard${liveMode ? ' gcard-live' : ''}" href="/g/${g.slug}" aria-label="${aria}">
     <div style="position:relative">${coverArt(g)}${livePill(g)}${liveMode ? html`<span class="live-badge" aria-hidden="true">📡 ${t('live.entry.badge')}</span>` : ''}${showVis ? html`<span class="vis-pill">${statusLabel(g)}</span>` : pill ? html`<span class="vis-pill vis-class">🎒 ${t('cards.classOnly')}</span>` : ''}</div>
     <div class="t">${g.title}</div>
+    ${meta ? html`<div class="by gmeta">${meta}</div>` : ''}
     ${by ? html`<div class="by">${t('cards.by', { name: by })}</div>` : ''}
     <div class="meta">${stars(g.rating, g.rating_count)}<span class="muted">· ${t('cards.plays', { count: +g.plays || 0, n: fmt.num(g.plays) })}</span></div>
   </a>`;
@@ -108,14 +110,15 @@ export function statusLabel(g, t = current().t, count = 1, grownup = g.owner_typ
   if (g.status !== 'published') return `📝 ${t('status.draft')}`;
   return visLabel(g.visibility, t, count, { grownup });
 }
-export function rail({ title, games, more = null, id = null, emoji = '' }) {
+/** moreLabel: the words of the "more" link (default "See all"). */
+export function rail({ title, games, more = null, id = null, emoji = '', moreLabel = null }) {
   if (!games || !games.length) return '';
   const { t } = current();
   const rid = id || `rail${++railN}`;
   const cards = games.map(g => gameCard(g));
   return html`<section class="rail" aria-labelledby="${rid}-h">
     <div class="rail-head"><h2 id="${rid}-h">${emoji ? emoji + ' ' : ''}${title}</h2>
-      ${more ? html`<a class="more" href="${more}"${more.startsWith('/search') ? raw(' rel="nofollow"') : ''}>${t('cards.seeAll')}</a>` : ''}
+      ${more ? html`<a class="more" href="${more}"${more.startsWith('/search') ? raw(' rel="nofollow"') : ''}>${moreLabel || t('cards.seeAll')}</a>` : ''}
       <div class="rail-arrows"><button type="button" data-rail="${rid}" data-dir="-1" aria-label="${t('cards.scrollBack', { title })}"><span class="flip" aria-hidden="true">←</span></button><button type="button" data-rail="${rid}" data-dir="1" aria-label="${t('cards.scrollForward', { title })}"><span class="flip" aria-hidden="true">→</span></button></div>
     </div>
     <div class="rail-track" id="${rid}" role="list">${cards.map(c => html`<div role="listitem">${c}</div>`)}</div>

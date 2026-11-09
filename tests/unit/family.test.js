@@ -173,18 +173,20 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
   }
   assert.equal((await go('/me')).location, '/family', '/me sends a grown-up to their family page');
   const slug = q.get("SELECT slug FROM games WHERE status='published' LIMIT 1")?.slug;
-  for (const p of ['/', '/search', '/parents', '/safety', '/family', '/family/link', ...(slug ? [`/g/${slug}`, `/play/${slug}`] : [])]) {
+  for (const p of ['/play', '/learn', '/search', '/parents', '/safety', '/family', '/family/link', ...(slug ? [`/g/${slug}`, `/play/${slug}`] : [])]) {
     const r = await go(p); assert.equal(r.status, 200, `${p} -> ${r.status}`);
   }
+  assert.equal((await go('/')).location, '/family', '\'/\' takes a grown-up to their first tab, Family');
   assert.equal((await go('/grown-ups')).location, '/parents#families', 'the old grown-ups page moves to the one parent page');
   // The Builder and the Studio are open (a Studio for a game that isn't theirs is the Studio's own 404).
   const build = await go('/build');
   assert.equal(build.status, 200); assert.match(build.text, /id="newgame"/); assert.match(build.text, /data-template=/);
   assert.equal((await go('/api/studio/abc')).json.error, 'Game not found.', 'the Studio API answers, not the fence');
   assert.equal((await go('/api/friends')).status, 200, 'grown-up connections');
-  // Nav: Family, Build, Games (and Plans), Account; no Friends or Me tab (tests/unit/nav-roles.test.js has every role's).
-  const home = await go('/');
+  // Nav: Family, Play, Learn, Build (and Plans), Account; no Friends or Me tab (tests/unit/nav-roles.test.js has every role's).
+  const home = await go('/play');
   assert.match(home.text, /class="tab" href="\/family"/); assert.match(home.text, /class="tab" href="\/family\/account"/);
+  assert.match(home.text, /class="tab" href="\/play" aria-current="page"/); assert.match(home.text, /class="tab" href="\/learn"/);
   assert.match(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
   assert.doesNotMatch(home.text, /class="tab" href="\/friends"/);
 });
@@ -527,7 +529,7 @@ test('grown-up pages only show what a grown-up can use: the Builder, but no prof
   const g = grownup(); const owner = kid();
   const gm = publicGame(owner);
   const go = as(g);
-  const home = await go('/');
+  const home = await go('/play');
   assert.match(home.text, /class="btn btn-hot" href="\/build"/, 'the Open my Studio banner (grown-ups can build)');
   assert.match(home.text, /href="\/family\/account#language"/, 'the footer language link goes to their own Account page');
   const gp = await go(`/g/${gm.slug}`);

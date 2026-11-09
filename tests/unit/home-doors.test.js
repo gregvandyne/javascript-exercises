@@ -72,9 +72,11 @@ test('signed out and as a guest: the promise, then three doors (kid first, the b
 });
 
 test('nobody with an account sees the doors or Play now: kids, students, teachers, grown-ups', async () => {
-  for (const [who, u] of [['kid', kid()], ['student', inSchool('student')], ['teacher', inSchool('teacher')], ['grown-up', grownup()]]) {
-    const home = await call(u, '/');
+  // A kid's '/' is Play; the others land on their first tab, and their Play is /play (no doors there either).
+  for (const [who, u, path] of [['kid', kid(), '/'], ['student', inSchool('student'), '/play'], ['teacher', inSchool('teacher'), '/play'], ['grown-up', grownup(), '/play']]) {
+    const home = await call(u, path);
     assert.equal(home.status, 200, who);
+    assert.match(home.text, /<div id="play" class="home-play">/, who);
     assert.doesNotMatch(home.text, /class="doors"|href="\/go\//, who);
     assert.doesNotMatch(home.text, /class="btn btn-hot playnow"/, who);
   }
@@ -176,20 +178,21 @@ test('a translated home page shows its own doors; until a language has them, its
   assert.doesNotMatch(doors((await call(null, '/de')).text), /Für Eltern/, 'the words are back');
 });
 
-test('the wide top bar, signed out and as a guest: Home · Build · Plans · Parents · Teachers, then Sign in and ▶ Play now', async () => {
+test('the wide top bar, signed out and as a guest: Play · Learn · Build · Plans · Parents · Teachers, then Sign in and ▶ Play now', async () => {
   for (const [who, u] of [['signed out', null], ['guest', auth.createGuest()]]) {
     const page = (await call(u, '/safety')).text;
-    assert.deepEqual(hrefs(topnav(page)), ['/', '/build', '/plans', '/parents', '/teachers'], who);
+    assert.deepEqual(hrefs(topnav(page)), ['/', '/learn', '/build', '/plans', '/parents', '/teachers'], who);
     assert.match(page, /class="me-btn" href="\/(login|me)"[\s\S]*?<\/a>\s*<a class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Play now<\/span><\/a>\s*<\/header>/, `${who}: Play now ends the bar`);
     assert.match(page, /<form class="topsearch" role="search"/, `${who}: the search field stays`);
   }
-  // A kid keeps their menu (Search and Friends in it) and no Play now.
+  // A kid keeps their menu (Friends in it; search is the field) and no Play now.
   const k = (await call(kid(), '/safety')).text;
-  assert.deepEqual(hrefs(topnav(k)), ['/', '/search', '/build', '/friends', '/plans']);
+  assert.deepEqual(hrefs(topnav(k)), ['/', '/learn', '/build', '/friends', '/plans']);
+  assert.doesNotMatch(k, /class="btn btn-hot playnow"/);
   // Plans off (billing not public): no Plans for anyone, the doors and Play now unchanged.
   config.stripeApiKey = '';
   const off = (await call(null, '/')).text;
-  assert.deepEqual(hrefs(topnav(off)), ['/', '/build', '/parents', '/teachers']);
+  assert.deepEqual(hrefs(topnav(off)), ['/', '/learn', '/build', '/parents', '/teachers']);
   assert.deepEqual(hrefs(doors(off)), ['#play', '/parents', '/teachers']);
   assert.match(off, /class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"/);
 });

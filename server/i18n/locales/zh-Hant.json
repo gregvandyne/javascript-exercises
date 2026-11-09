@@ -66,7 +66,12 @@
     "playNow": "馬上玩",
     "games": "遊戲",
     "account": "帳號",
-    "school": "學校"
+    "school": "學校",
+    "play": "玩",
+    "learn": "學習",
+    "class": "班級",
+    "classroom": "教室",
+    "live": "直播"
   },
   "errors": {
     "goHome": "回首頁",
@@ -504,7 +509,11 @@
       "rated": "評分最高",
       "new": "最新",
       "mine": "我的遊戲",
-      "favorites": "我的最愛"
+      "favorites": "我的最愛",
+      "keep": "繼續玩",
+      "two": "雙人",
+      "fromLearn": "來自學習：最好玩的",
+      "openLearn": "打開學習"
     },
     "hero": {
       "label": "精選遊戲",
@@ -539,6 +548,9 @@
       "todo": "{count, plural, other {有 # 堂課要做}}",
       "continue": "繼續",
       "open": "打開我的班級"
+    },
+    "chips": {
+      "two": "雙人"
     }
   },
   "search": {
@@ -4387,7 +4399,52 @@
       "ages": "依年齡",
       "who": "給老師和家長"
     },
-    "inClass": "要在課堂上使用嗎？<a href=\"{href}\">看看給老師的 Oomba Academy</a>。"
+    "inClass": "要在課堂上使用嗎？<a href=\"{href}\">看看給老師的 Oomba Academy</a>。",
+    "tab": {
+      "h1": "學習",
+      "lead": "能學到東西的遊戲和課程。選一個科目，或直接選一個遊戲。",
+      "leadStaff": "和學生看到的是同一個遊戲庫，另有指派和直播主持的按鈕。",
+      "filters": "篩選遊戲",
+      "subject": "科目",
+      "subjects": {
+        "all": "全部",
+        "math": "數學",
+        "words": "文字",
+        "maps": "地圖",
+        "code": "程式",
+        "thinking": "思考",
+        "music": "音樂",
+        "any": "任何科目"
+      },
+      "grade": "年級",
+      "gradeAny": "任何年級",
+      "gradeK": "幼兒園",
+      "gradeN": "{n} 年級",
+      "filter": "顯示",
+      "how": "怎麼玩",
+      "howAll": "都可以",
+      "hows": {
+        "solo": "自己玩",
+        "two": "雙人",
+        "live": "和全班直播"
+      },
+      "moreAbout": "更多{subject}遊戲",
+      "joinH": "老師給了你遊戲代碼嗎？",
+      "myCourses": "我的課程",
+      "live": "全班直播遊戲",
+      "liveText": "老師在大螢幕上開始遊戲，大家用代碼加入。",
+      "liveStaff": "在大螢幕上主持，全班用代碼加入。",
+      "games": "學習遊戲",
+      "none": "還沒有符合這些條件的遊戲。",
+      "clear": "顯示所有遊戲",
+      "players": "玩家做的學習遊戲",
+      "meta": "{subject}・{grades}",
+      "assign": "指派",
+      "assignCourse": "指派給班級",
+      "guide": "教師指南",
+      "host": "直播主持",
+      "try": "試玩"
+    }
   },
   "parents": {
     "title": "安全、免費的兒童學習遊戲（8–14 歲）",
@@ -6518,6 +6575,16 @@
     "link": {
       "new": "{count, plural, other {Oomba 團隊有 # 則新訊息}}",
       "open": "Oomba 團隊的訊息"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "指派 {game}",
+      "pickClass": "班級",
+      "submit": "指派",
+      "note": "班級會收到一個只有一步的課，內容就是玩這個遊戲。之後可以在課程庫裡修改。",
+      "none": "你還沒有班級。請先在教室建立一個。",
+      "liveOnly": "這是全班直播遊戲：請在大螢幕上主持，而不是指派。"
     }
   }
 }

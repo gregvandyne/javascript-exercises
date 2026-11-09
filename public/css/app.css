@@ -183,6 +183,21 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
 /* A new-message badge on Friends (a new kid's welcome from the team is one) takes the room the search words need in
    Russian: with five items and a badge, the items drop their emoji there too, as on the smallest laptops. */
 @media (min-width:1101px) and (max-width:1300px){.topbar:has(.navlink:nth-child(5)):has(.navlink .badge) .navlink .emo{display:none}}
+/* Six menu items (Play and Learn shared by every role: a student's Class · Play · Learn · Build · Friends · Plans, the
+   platform admin's and a school admin's six): on small laptops the round 🔎 button up to 1180px, the items without their
+   emoji and closer together; on wider screens up to 1500px the avatar's name and the language code step aside (and, with
+   a new-message badge, the items' emoji), so Russian and German still fit (tests/e2e/plans.spec.js). */
+@media (min-width:821px) and (max-width:1180px){
+  .topbar:has(.navlink:nth-child(6)){gap:6px}
+  .topbar:has(.navlink:nth-child(6)) .topsearch{display:none}
+  .topbar:has(.navlink:nth-child(6)) .topsearch-btn{display:flex}
+  .topbar:has(.navlink:nth-child(6)) .navlink{padding:0 6px}
+  .topbar:has(.navlink:nth-child(6)) .navlink .emo{display:none}
+}
+@media (min-width:1181px) and (max-width:1500px){
+  .topbar:has(.navlink:nth-child(6)) .me-btn .name,.topbar:has(.navlink:nth-child(6)) .langpick .lang-code{display:none}
+  .topbar:has(.navlink:nth-child(6)):has(.navlink .badge) .navlink .emo{display:none}
+}
 /* Phones: a little more room for the search words (app.js also swaps in the short placeholder when the long one won't fit). */
 @media (max-width:420px){.topbar{gap:8px}.topsearch input{padding-inline:36px 10px}.topsearch .ico{inset-inline-start:11px}}
 /* Long nav labels (Russian, French, Dutch) can squeeze the search box to nothing just above 820px: then it hides
@@ -1639,3 +1654,18 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .class-live{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font-size:1.1rem}
 .class-live .btn{margin-inline-start:auto}
 .lp-open-old .row,.lv-open-old .row{margin-top:var(--s2)}
+/* ---- The Learn tab (routes/teachers.js GET /learn): filters, cards with a subject line, staff buttons under a card ---- */
+.learn-head{margin-bottom:0}
+.learn-head p{margin:0;flex-basis:100%}
+.learn-filters{display:flex;flex-direction:column;gap:var(--s3);min-width:0}
+.learn-filter-row{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.learn-grade{display:flex;align-items:center;gap:var(--s2);font-weight:700}
+.learn-grade .input{width:auto;min-width:10rem;min-height:44px}
+.learn-how-l{align-self:center;font-weight:700;flex:none}
+.learn-more{margin:0;font-weight:700}
+.learn-join{margin:0}
+.lcards{list-style:none;padding:0;margin:0}
+.lcard{display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.lcard-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.lcard-acts .btn{flex:1 1 auto;justify-content:center}
+.gcard .gmeta{font-weight:700;color:var(--text-2)}

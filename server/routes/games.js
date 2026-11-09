@@ -1,7 +1,7 @@
 // Game page, play page, the sandboxed frame, and the game APIs the SDK talks to (via the parent page).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { page, notFound, landingFor } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
@@ -147,7 +147,8 @@ router.get('/g/:slug', (req, res) => {
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
   const title = official && written(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && written(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
-  page(req, res, { title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
+  const learnShelf = games.shelfOf(g) === 'learn';
+  page(req, res, { title, active: learnShelf ? 'learn' : 'play', back: learnShelf ? '/learn' : landingFor(u) ? '/play' : '/', backLabel: t(learnShelf ? 'nav.learn' : 'nav.play'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
     seo: official ? gameSeo(req, g, d, owner) : null });
 });
 

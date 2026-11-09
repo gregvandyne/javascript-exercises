@@ -67,7 +67,7 @@ export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainB
 export const HOME_TIPS = ['math', 'words', 'strategy', 'music'];
 export const TEACHER_FAQ = 9;
 /** Last change to the teacher and subject pages' text (sitemap lastmod). Change it with the text. */
-export const CONTENT_UPDATED = '2026-11-06';
+export const CONTENT_UPDATED = '2026-11-09';
 
 // ---------------------------------------------------------------------------------------------------- parents
 // The parent pages (routes/parents.js): /parents, the guides under /parents/<guide>, and the age pages
@@ -103,3 +103,37 @@ export function ageBand(slug) {
   const from = Math.max(8, (b.from === 'K' ? 0 : +b.from) + 5), to = Math.min(14, +b.to + 6);
   return to > from ? { from: String(from), to: String(to) } : null;
 }
+
+// ---------------------------------------------------------------------------------------------------- Play and Learn
+// The game library's two shelves (docs/decisions.md "Play and Learn"): every official game is on Play (fun first) or
+// Learn (teaches something); seed JSON "shelf" is the source of truth (services/games.js SHELF_SQL). The Learn tab's
+// filters read this: each Learn game's subject and grades (from, to: 0 = Kindergarten). live: hosted for a whole class
+// (live/live-games.js LIVE_GAMES), two: two players on one screen.
+/** The Learn tab's subjects, in chip order. hub: the subject page with more about it (/learn/<hub>), if there is one. */
+export const SUBJECTS = [
+  { key: 'math', emoji: '➗', hub: 'math-games' },
+  { key: 'words', emoji: '🔤', hub: 'word-games' },
+  { key: 'maps', emoji: '🌍', hub: null },
+  { key: 'code', emoji: '💻', hub: 'computer-science' },
+  { key: 'thinking', emoji: '♟️', hub: 'strategy-games' },
+  { key: 'music', emoji: '🎵', hub: 'music-games' },
+];
+const band = s => { const m = /^(K|\d+)-(\d+)$/.exec(s); return { from: m[1] === 'K' ? 0 : +m[1], to: +m[2] }; };
+/** Each Learn-shelf launch game: subject ('any' = live quizzes for any subject) and grades. */
+export const SHELF_INFO = Object.fromEntries(Object.entries({
+  'shark-plank': ['words', 'K-3'], 'word-hunt': ['words', '1-5'], 'word-peek': ['words', '3-8'], 'word-trail': ['words', 'K-3'], 'doodle-hoot': ['words', '1-8'],
+  'sum-racer': ['math', '1-5'], 'fraction-factory': ['math', '3-5'], 'tug-of-math': ['math', '1-8'],
+  'castle-clash': ['thinking', '2-8'], 'loop-lab': ['music', '2-8'],
+  'atlas-quest': ['maps', '3-8'], 'atlas-quest-live': ['maps', '3-8'],
+  'code-isle': ['code', '4-8'], 'packet-post': ['code', '3-8'], 'inside-the-machine': ['code', '3-8'], 'data-detective': ['code', '3-8'], 'robo-route': ['code', '3-8'],
+  'trick-inbox': ['code', '3-6'], 'escape-the-post-office': ['code', '3-6'],
+  'quest-race': ['any', 'K-8'], 'question-battle': ['any', 'K-8'], 'brain-board': ['any', 'K-8'], 'would-you-rather-live': ['any', 'K-8'],
+}).map(([slug, [subject, grades]]) => [slug, { subject, ...band(grades) }]));
+/** Fun Play games a teacher can put on the big screen for a few minutes (the Classroom home's "Brain breaks"). */
+export const BRAIN_BREAKS = ['swish-flick', 'beat-lanes', 'would-you-rather', 'brick-drop', 'remis-quiet-meadow'];
+/** Learn games kids pick for fun: Play's "From Learn: fun ones" shelf. */
+export const LEARN_FUN = ['atlas-quest', 'sum-racer', 'code-isle', 'tug-of-math'];
+/** Classroom tools on the Play shelf (Remi's noise meter): never Play's hero or featured, still in search. */
+export const CLASS_TOOLS = ['remis-quiet-meadow'];
+/** Grades for display ({ from: 'K' | '1'.., to }) of a Learn game, or null. */
+export const shelfGrades = slug => { const i = SHELF_INFO[slug]; return i ? { from: i.from === 0 ? 'K' : String(i.from), to: String(i.to) } : null; };

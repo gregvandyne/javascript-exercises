@@ -1383,6 +1383,64 @@ Shipped from the navigation proposal's Option 2. Not behind a new flag: Plans sh
   en/de/he/ar), `schools.spec.js` (School tab), `school-billing.spec.js` (Ask my admin), `family.spec.js` (the split and
   the old anchors).
 
+## Play and Learn (one library, two shelves; a first tab per role)
+The owner's "B + A" choice: one game library everyone shares, split into two shelves, and a first tab built for each
+role. Part 1 (this entry): the shelves, the Play and Learn pages, the bars, and where `/` goes. Part 2 rebuilds the
+teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
+- **Shelves.** Every official game is `play` (fun first: arcade, sports, adventure, music, silly, board fun) or `learn`
+  (teaches something: math, words, maps, coding, thinking, music, courses, live class modes): seed JSON `"shelf"` is the
+  source of truth, stored in `games.shelf` (migration `0060_game_shelf` backfills older databases;
+  `scripts/import-game.js` writes it). 13 Play, 23 Learn (`tests/unit/shelves.test.js` holds the list). Players' games
+  keep `''`: `SHELF_SQL` / `shelfOf` (services/games.js) put a player's `learning`-category game on Learn and every
+  other one on Play, so they stay on Play and in search as before. Search lists both shelves.
+- **Learn data** (server/learn.js): `SHELF_INFO` (each Learn game's subject and grades), `SUBJECTS` (chips, with the
+  subject page each links to: maps has none), `LEARN_FUN` (Play's "From Learn: fun ones"), `BRAIN_BREAKS` (for the
+  Classroom home, part 2), `CLASS_TOOLS` (Remi's Quiet Meadow: never Play's hero or featured row, still in search).
+- **Heroes.** Jungle Cup (`"hero": true`) is Play's hero; Code Isle keeps its flag for Learn. Each page picks its hero
+  within its own shelf.
+- **`/`**: Play for the signed out, guests, kids and the platform admin; everyone else gets a 302 to their first tab
+  (`landingFor`, views/layout.js: student `/classes`, teacher `/teach`, school admin `/school`, grown-up `/family`),
+  sent `Cache-Control: private, no-store`. Signed out it keeps its heading, doors, join door, subject chips and
+  structured data. `auth.js homeFor` uses `landingFor` too (staff with a school to set up still go there first; the
+  platform admin to `/admin`). **`/play`** is the Play page for everyone, never indexed (`/` is the page search
+  engines see); grown-ups may open it (`GROWNUP_GET`), traffic counts it as `home`.
+- **Play page** (routes/discover.js `playPage`): hero, Play genre chips (no Learning or Words) and a "👥 2 players" chip
+  to the row, Favorites, Keep playing (`games.recentlyPlayed`), Featured, Two players, From Learn, the Build banner,
+  Playing now, Friends, Popular, Top rated, New, My games and the genre rows: all on the Play shelf. No course row.
+- **Learn tab** (`/learn`, routes/teachers.js): signed out it keeps the indexed hub (heading, lead, CollectionPage,
+  every subject and age page, sitemap and hreflang unchanged); signed in a short "📚 Learn" heading. Filters are plain
+  links (`?subject=`, `rel="nofollow"`) and a GET form (`?grade=`, `?how=solo|two|live`; `public/js/learn.js` submits
+  the grade on change, the Show button works without it); a filtered view is noindex and names the subject page
+  ("More about Math games →"). Then the join door (not for staff), Courses ("My courses" with progress for players),
+  Live class games (the Oomba Live modes, while Live is on), Learning games (each card "Math · Grades 1–5"), learning
+  games by players (signed in only: an indexed page never carries a child's name), and the old subject, age and
+  "for teachers and parents" lists. `/learn/<hub>` and `/learn/<age>` are unchanged and make Learn current.
+- **Staff on Learn** (`isSchoolStaff`, server-rendered only for them): Assign (`/teach/assign?game=`), Host live
+  (`/live?mode=`, the existing host flow) and Try it on each card; on courses "Assign to a class" (the course's own
+  teacher page: `/teach/cs-quest`, `/teach/cyber-defenders`, `/teachers/number-quest`) and "Teacher guide". Kids,
+  students, grown-ups and guests see none of them. **`/teach/assign`** + **`POST /api/teach/assign-game`** (staff only,
+  `lesson-new` rate limit): pick one of your classes (classes you teach, and those of schools you run) and a due date;
+  the class gets a one-step lesson that plays the game (`L.createLesson` + `L.addStep` + `L.assign`, so `cleanStep`'s
+  canView check and the class gate apply). Live-only modes are refused (they are hosted); assigning the same game to
+  the same class twice is refused.
+- **Bars** (`shellFor`): signed out Play · Learn · Build · Grown-ups · (Plans) · Sign in (top: Play · Learn · Build ·
+  (Plans) · Parents · Teachers); kid Play · Learn · Build · Friends · (Plans) · Me; student Class · Play · Learn · Build
+  · (Plans) · Me (Friends in the top bar and on Me; their friend badges count on Me); teacher Classroom · Learn · Play ·
+  (Live) · (Plans) · Me; school admin School · Classroom · Learn · Play · (Plans) · Me (Live in the top bar); grown-up
+  Family · Play · Learn · Build · (Plans) · Account; platform admin Play · Learn · Build · Friends · Schools · (Plans) ·
+  Me. Search is the top bar's field (or round button) for everyone, never a tab. Live (`/live`) shows only while Oomba
+  Live is on; the /live pages pass `active: 'live'` (Classroom where there is no Live link). Stories (flag) and Plans
+  behave as before; the Join button as before.
+- **Current tab:** home, play and search -> Play; learn (the Learn tab, subject and age pages, courses, a Learn game's
+  page) -> Learn; classes -> Classroom for staff, Class for students, Schools for the platform admin. **Labels** with
+  stand-ins (`tabKey`): `nav.play` -> `nav.games` -> `nav.home`, `nav.classroom` and `nav.class` -> `nav.classes`; all 13
+  languages have the new words.
+- **Child safety:** no prices on Play or Learn (only /plans has them); Assign and Host only for staff, checked again by
+  the APIs; no chat or free text added; real names nowhere new.
+- Tests: `tests/unit/shelves.test.js`, `nav-roles.test.js` (bars, `/` per role), `nav-doors.test.js`,
+  `home-doors.test.js`; e2e `tests/e2e/play-learn.spec.js` (Play and Learn at 360/390/1280, light/dark, he; filters;
+  staff buttons; no sideways scroll, nothing touching, 44px targets).
+
 ## "Add your kids" (the step after sign-up and after paying)
 The owner asked that parents can add their children during sign-up: make the child's account there, or link one the
 child already has. `/family/add` (routes/family.js) is that step.

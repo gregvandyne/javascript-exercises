@@ -263,14 +263,15 @@ test('/plans/schools: the seat calculator (Stripe\'s seat price, at least 25) an
 
 // Navigation weeks 3–4: a tab bar for each role, with Plans in every one. Each signed-in role's top bar fits from small
 // laptops to wide screens (en, de, ru), and its phone tab bar's labels fit at 360px (en, de, he, ar; light and dark).
-// The platform admin has the most menu items (Home · Search · Build · Friends · Schools · Plans).
+// The platform admin, the student and the school admin have the most menu items (six with Plans). Play is '/' where '/'
+// is Play and /play for everyone whose first tab is another one; Live (hosting) while Oomba Live is on.
 const ROLE_BARS = {
-  kid: { tabs: ['/', '/search', '/build', '/friends', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/plans'] },
-  student: { tabs: ['/', '/classes', '/build', '/friends', '/plans', '/me'], top: ['/', '/classes', '/build', '/friends', '/plans'] },
-  teacher: { tabs: ['/teach', '/', '/plans', '/me'], top: ['/teach', '/', '/plans'] },
-  'school admin': { tabs: ['/teach', '/', '/school', '/plans', '/me'], top: ['/teach', '/', '/school', '/plans'] },
-  'grown-up': { tabs: ['/family', '/build', '/', '/plans', '/family/account'], top: ['/family', '/build', '/', '/plans'] },
-  'platform admin': { tabs: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/search', '/build', '/friends', '/admin/schools', '/plans'] },
+  kid: { tabs: ['/', '/learn', '/build', '/friends', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/plans'] },
+  student: { tabs: ['/classes', '/play', '/learn', '/build', '/plans', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends', '/plans'] },
+  teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/plans', '/me'], top: ['/teach', '/learn', '/play', '/live', '/plans'] },
+  'school admin': { tabs: ['/school', '/teach', '/learn', '/play', '/plans', '/me'], top: ['/school', '/teach', '/learn', '/play', '/live', '/plans'] },
+  'grown-up': { tabs: ['/family', '/play', '/learn', '/build', '/plans', '/family/account'], top: ['/family', '/play', '/learn', '/build', '/plans'] },
+  'platform admin': { tabs: ['/', '/learn', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/admin/schools', '/plans'] },
 };
 let roleStates = null;
 async function roles(browser) {
@@ -352,7 +353,7 @@ test('every signed-in role\'s phone tab bar at 360px: the right tabs, labels on 
   expect([...new Set(problems)]).toEqual([]);
 });
 
-test('signed out with Plans on: Home · Build · Plans · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark)', async ({ browser }) => {
+test('signed out with Plans on: Play · Learn · Build · Plans · Parents · Teachers, Sign in and ▶ Play now fit (en, de, ru; light, dark)', async ({ browser }) => {
   const problems = [];
   for (const width of [821, 900, 1000, 1001, 1100, 1101, 1180, 1181, 1280, 1400, 1440, 1920]) {
     for (const [lang, scheme] of [['en', 'light'], ['de', 'dark'], ['ru', 'light']]) {
@@ -360,7 +361,7 @@ test('signed out with Plans on: Home · Build · Plans · Parents · Teachers, S
       await ctx.addCookies([{ name: 'lang', value: lang, url: APP }]);
       const page = await ctx.newPage();
       await page.goto('/'); await page.evaluate(() => document.fonts.ready);
-      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/build', '/plans', '/parents', '/teachers']);
+      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/learn', '/build', '/plans', '/parents', '/teachers']);
       const r = await page.evaluate(topbarFit);
       if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${width}/${lang}: ${JSON.stringify(r)}`);
       for (const t of await findTouching(page)) problems.push(`${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);

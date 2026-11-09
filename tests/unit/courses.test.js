@@ -51,8 +51,8 @@ test('19 steps per band, in lesson order, decks from the fixtures, the rest from
   assert.equal(C.getStep(course, '2-6.2').game.slug, 'inside-the-machine');
 });
 
-test('the home card: games link to the course map units, Start goes to the band picker, then to the next step', async () => {
-  const r = await get('/');
+test('the course card (on Learn): games link to the course map units, Start goes to the band picker, then to the next step', async () => {
+  const r = await get('/learn');
   assert.equal(r.status, 200);
   const card = r.text.slice(r.text.indexOf('class="course-card"'), r.text.indexOf('</article>', r.text.indexOf('class="course-card"')));
   const at = ORDER.map(s => card.indexOf(`href="/courses/cs-quest#${s}"`));
@@ -60,10 +60,12 @@ test('the home card: games link to the course map units, Start goes to the band 
   assert.deepEqual([...at].sort((a, b) => a - b), at, 'in course order');
   assert.doesNotMatch(card, /href="\/play\//, 'nothing goes straight into a game');
   assert.match(card, /id="course-cs-quest-go" href="\/courses\/cs-quest"|href="\/courses\/cs-quest" id="course-cs-quest-go"/);
-  assert.ok(r.text.indexOf('id="courses-h"') > r.text.indexOf('id="featured'), 'after the featured row');
+  assert.ok(r.text.indexOf('id="courses-h"') < r.text.indexOf('id="learn-games"'), 'before the learning games');
+  for (const u of [null, newKid()]) for (const p of ['/', '/play']) assert.doesNotMatch((await get(p, u)).text, /id="courses-h"|course-card/, `no course row on Play (${p})`);
 
   const kid = newKid(); C.setBand(kid, course, '1b');
-  const home = await get('/', kid);
+  const home = await get('/learn', kid);
+  assert.match(home.text, /<h2 id="courses-h">📚 My courses<\/h2>/);
   assert.match(home.text, /href="\/courses\/cs-quest\/1b-1\.1" id="course-cs-quest-go">▶ Start the course/);
   assert.match(home.text, /0 of 19 steps done/);
 });
@@ -187,7 +189,7 @@ test('read -> check (graded on the server) -> game module -> the next step opens
   assert.match(map.text, /class="cmap-step is-done" id="step-1b-1\.1"/);
   assert.match(map.text, /class="cmap-step is-next" id="step-1b-1\.2"/);
   assert.match(map.text, /1 of 19 steps done/);
-  const home = await get('/', kid);
+  const home = await get('/learn', kid);
   assert.match(home.text, /href="\/courses\/cs-quest\/1b-1\.2" id="course-cs-quest-go">▶ Keep going/);
 });
 

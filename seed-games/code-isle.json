@@ -4,6 +4,7 @@
   "icon": "🤖",
   "cover": "ocean",
   "category": "learning",
+  "shelf": "learn",
   "tags": "coding,code,javascript,programming,3d,adventure,robot,loops,functions,learning,building",
   "description": "Write real JavaScript to help Pip the robot rebuild a foggy 3D island. 48 coding adventures teach commands, loops, variables, functions, if and else, while loops, arrays and objects, and everything you build stays in the world. Finish a chapter to open its extra-hard gold challenge. Walk Pip round the village between levels, chat with villagers, find hidden sparkles and dress Pip up with what you unlock. Plus a Free Build meadow and a Code Book to look things up.",
   "orientation": "any",

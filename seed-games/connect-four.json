@@ -4,6 +4,7 @@
   "icon": "🔴",
   "cover": "candy",
   "category": "board",
+  "shelf": "play",
   "tags": "connect four,four in a row,2 player,strategy,robot,board game,drop four,classic",
   "description": "The classic connect-four game with candy colors. Drop your discs and get four in a row across, down or diagonal before the other player does. Play with a friend on one phone, or take on the robot at Easy, Normal or Hard and earn robot points.",
   "orientation": "any",

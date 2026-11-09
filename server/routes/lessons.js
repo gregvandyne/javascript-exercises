@@ -14,7 +14,8 @@ import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { draftLesson } from '../services/lesson-ai.js';
 import * as P from '../services/progress.js';
-import { audit } from '../db.js';
+import { audit, q } from '../db.js';
+import { liveGameOf } from '../live/live-games.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { HUBS } from '../learn.js';
@@ -495,3 +496,65 @@ router.post('/api/class-lessons/:id/up', requireUser, (req, res) => send(req, re
 router.post('/api/class-lessons/:id/down', requireUser, (req, res) => send(req, res, L.reorderAssignment(req.user, req.params.id, 1)));
 router.post('/api/class-lessons/:id/delete', requireUser, (req, res) => send(req, res, L.unassign(req.user, req.params.id)));
 // The lesson page students work through (/class/:cid/lessons/:clid) and its step actions live in routes/progress.js.
+
+// ================================================================ "Assign" a game from the Learn tab (school staff only)
+// docs/decisions.md "Play and Learn": a teacher on /learn taps Assign on a game, picks one of their classes (and a due
+// date), and the class gets a one-step lesson that plays it. Nothing new underneath: L.createLesson + L.addStep (a game
+// step: cleanStep checks the teacher may open the game) + L.assign, answered like any other assign. Live modes are hosted
+// (/live?mode=), never assigned.
+/** The live classes this staff member may assign to: the ones they teach, then every class of a school they run. */
+function assignClasses(u) {
+  const mine = S.classesOf(u.id, 'teacher');
+  const more = S.adminSchools(u).flatMap(s => S.classesOfSchool(s.id)).filter(c => !mine.some(m => m.id === c.id));
+  return [...mine, ...more].filter(c => S.canManageClass(u, c));
+}
+/** The official Learn or Play game a teacher may assign by slug (never a live-only mode), or null. */
+function assignableGame(u, slug) {
+  const g = games.getGameBySlug(String(slug || ''));
+  if (!g || g.source !== 'seed' || !games.canView(u, g) || g.course_only) return null;
+  const lg = liveGameOf(g);
+  return lg && !lg.play ? { game: g, liveOnly: true } : { game: games.localizeGame(g), liveOnly: false };
+}
+router.get('/teach/assign', requireUser, (req, res) => {
+  const t = req.t, u = req.user;
+  if (!S.isSchoolStaff(u)) return notFound(req, res);
+  const found = assignableGame(u, req.query.game);
+  if (!found) return notFound(req, res);
+  const g = found.game;
+  const classes = assignClasses(u);
+  const body = html`<div class="pagehead"><h1>📌 ${t('teach.assign.title', { game: g.title })}</h1></div>
+  <section class="panel assign-game" aria-labelledby="ag-h">
+    <h2 id="ag-h" class="sr-only">${t('teach.assign.pickClass')}</h2>
+    ${found.liveOnly ? html`<p class="notice">${t('teach.assign.liveOnly')}</p>${liveOn() && liveCanHost(u) ? html`<p><a class="btn btn-primary" href="/live?mode=${liveGameOf(g).mode}">📡 ${t('live.entry.hostLive')}</a></p>` : ''}`
+      : classes.length ? html`<form class="formgrid assigngrid" data-api="/api/teach/assign-game" novalidate><input type="hidden" name="game" value="${g.slug}">
+      <div class="field"><label for="ag-c">${t('teach.assign.pickClass')}</label><select class="input" id="ag-c" name="classId">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
+      <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
+      <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">📌 ${t('teach.assign.submit')}</button></div>
+      <p class="small muted wide">${t('teach.assign.note')}</p><p class="form-err err wide" role="alert"></p></form>`
+      : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
+    <p class="row"><a class="btn" href="/play/${g.slug}">▶ ${t('learn.tab.try')}</a><a class="btn btn-ghost" href="/g/${g.slug}">${t('learn.about')}</a></p>
+  </section>`;
+  page(req, res, { title: t('teach.assign.title', { game: g.title }), active: 'learn', back: '/learn', backLabel: t('nav.learn'), body });
+});
+router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 3600e3), (req, res) => {
+  const u = req.user; const { game, classId, dueAt } = b(req);
+  if (!S.isSchoolStaff(u)) return err(req, res, 'notFound', 404);
+  const found = assignableGame(u, game);
+  if (!found) return err(req, res, 'pickGame');
+  if (found.liveOnly) return res.status(400).json({ error: req.t('teach.assign.liveOnly') });
+  const c = S.getClass(String(classId || ''));
+  if (!c || !S.canManageClass(u, c)) return err(req, res, 'notFound', 404);
+  const g = found.game;
+  // The same game assigned again to the same class: the lesson made last time, never a second copy.
+  const prior = q.get(`SELECT l.id FROM lessons l JOIN lesson_steps s ON s.lesson_id=l.id JOIN class_lessons cl ON cl.lesson_id=l.id
+    WHERE l.owner_id=? AND l.school_id=? AND s.kind='game' AND s.game_id=? AND cl.class_id=? AND cl.removed_at IS NULL LIMIT 1`, u.id, c.school_id, g.id, c.id);
+  if (prior) return res.status(400).json({ error: req.t('lessons.errors.alreadyAssigned', { class: c.name }) });
+  const made = L.createLesson(u, c.school_id, { title: g.title });
+  if (!made.ok) return err(req, res, made.code);
+  const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title: g.title });
+  if (!step.ok) { L.deleteLesson(u, made.lesson.id); return err(req, res, step.code); }
+  const r = L.assign(u, c.id, made.lesson.id, { dueAt });
+  if (!r.ok) { L.deleteLesson(u, made.lesson.id); return assignReply(req, res, r); }
+  audit(u.id, 'lesson.assignGame', made.lesson.id, { game: g.slug, class: c.id });
+  res.json({ ok: true, toast: req.t('lessons.assign.done', { class: c.name }), redirect: `/class/${c.id}` });
+});

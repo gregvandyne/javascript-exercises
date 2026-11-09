@@ -70,11 +70,11 @@ test('a switch: the grown-up\'s session row is gone and its cookie replaced; a f
   // The old grown-up cookie does nothing now.
   const old = await call(gc, '/family');
   assert.equal(old.status, 302); assert.match(old.location, /^\/grown-ups\/login/);
-  // The child's side: the normal kid shell (Home · Search · Build · Friends · Plans · Me), no switch-back anywhere.
+  // The child's side: the normal kid shell (Play · Learn · Build · Friends · Plans · Me), no switch-back anywhere.
   const home = await call(r.cookie, '/');
   assert.equal(home.status, 200);
   const tabs = [...home.text.match(/<nav class="tabbar"[\s\S]*?<\/nav>/)[0].matchAll(/<a class="tab" href="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(tabs, ['/', '/search', '/build', '/friends', '/plans', '/me']);
+  assert.deepEqual(tabs, ['/', '/learn', '/build', '/friends', '/plans', '/me']);
   assert.doesNotMatch(home.text, /switch back|back to (your )?grown-up|href="\/family|href="\/grown-ups/i);
 });
 

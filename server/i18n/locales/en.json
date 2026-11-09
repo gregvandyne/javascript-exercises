@@ -67,7 +67,12 @@
     "playNow": "Play now",
     "games": "Games",
     "account": "Account",
-    "school": "School"
+    "school": "School",
+    "play": "Play",
+    "learn": "Learn",
+    "class": "Class",
+    "classroom": "Classroom",
+    "live": "Live"
   },
   "errors": {
     "goHome": "Go home",
@@ -505,7 +510,11 @@
       "rated": "Top rated",
       "new": "New",
       "mine": "My games",
-      "favorites": "My favorites"
+      "favorites": "My favorites",
+      "keep": "Keep playing",
+      "two": "Two players",
+      "fromLearn": "From Learn: fun ones",
+      "openLearn": "Open Learn"
     },
     "hero": {
       "label": "Featured game",
@@ -540,6 +549,9 @@
       "todo": "{count, plural, one {# lesson to do} other {# lessons to do}}",
       "continue": "Continue",
       "open": "Open my class"
+    },
+    "chips": {
+      "two": "2 players"
     }
   },
   "search": {
@@ -4693,7 +4705,52 @@
       "ages": "By age",
       "who": "For teachers and parents"
     },
-    "inClass": "Using this in class? <a href=\"{href}\">See Oomba Academy for teachers</a>."
+    "inClass": "Using this in class? <a href=\"{href}\">See Oomba Academy for teachers</a>.",
+    "tab": {
+      "h1": "Learn",
+      "lead": "Games and courses that teach something. Pick a subject, or just pick a game.",
+      "leadStaff": "The same library your students see, with buttons to assign and host.",
+      "filters": "Filter the games",
+      "subject": "Subject",
+      "subjects": {
+        "all": "All",
+        "math": "Math",
+        "words": "Words",
+        "maps": "Maps",
+        "code": "Coding",
+        "thinking": "Thinking",
+        "music": "Music",
+        "any": "Any subject"
+      },
+      "grade": "Grade",
+      "gradeAny": "Any grade",
+      "gradeK": "Kindergarten",
+      "gradeN": "Grade {n}",
+      "filter": "Show",
+      "how": "How you play",
+      "howAll": "Any way",
+      "hows": {
+        "solo": "On my own",
+        "two": "2 players",
+        "live": "Live with my class"
+      },
+      "moreAbout": "More about {subject} games",
+      "joinH": "Got a game code from your teacher?",
+      "myCourses": "My courses",
+      "live": "Live class games",
+      "liveText": "Your teacher starts one on the big screen and everyone joins with a code.",
+      "liveStaff": "Host one on the big screen and your class joins with a code.",
+      "games": "Learning games",
+      "none": "No games match these filters yet.",
+      "clear": "Show all games",
+      "players": "Learning games by players",
+      "meta": "{subject} · {grades}",
+      "assign": "Assign",
+      "assignCourse": "Assign to a class",
+      "guide": "Teacher guide",
+      "host": "Host live",
+      "try": "Try it"
+    }
   },
   "parents": {
     "title": "Safe, free learning games for kids 8–14",
@@ -6548,6 +6605,14 @@
         "h": "The games"
       },
       "note": "The full standards map (CYBER.ORG and Common Sense, step by step) and the per-unit teacher notes are on the teacher page; the two print buttons above open them ready to print."
+    },
+    "assign": {
+      "title": "Assign {game}",
+      "pickClass": "Class",
+      "submit": "Assign",
+      "note": "Your class gets a one-step lesson that plays this game. You can change it later in the Lessons library.",
+      "none": "You have no classes yet. Make one in Classroom first.",
+      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it."
     }
   },
   "courses": {

@@ -1,8 +1,8 @@
 // Page layout. Contract for every route:
 //   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, mid, i18n }))
 //   mid: true = a medium-width page (reading pages like lessons)
-//   active: 'home'|'search'|'build'|'friends'|'me'|'plans'|'family'|'account'|'classes'|'school'|null   (the tab it makes
-//           current: shellFor/currentTab)   back: href for the Back link on inner pages
+//   active: 'home'|'play'|'search'|'learn'|'build'|'friends'|'me'|'plans'|'family'|'account'|'classes'|'school'|'live'|null
+//           (the tab it makes current: shellFor/currentTab)   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 //   seo: { index: true, path, langs, image, imageAlt, type, jsonld } to let search engines index the page (server/seo.js).
@@ -41,71 +41,95 @@ export const parentsLabel = (t, key) => t(parentsKey(t, key));
 export const signedOut = u => !u || !!u.is_guest;
 /** Labels with a translated stand-in until a language has their own: Grown-ups -> Parents (the tab opens the parent
  *  page), Games -> Home (both open /), Account -> Me, School -> Schools. A translated page never shows them in English. */
-const STAND_IN = { grownups: 'parents', games: 'home', account: 'me', school: 'schools' };
+const STAND_IN = { grownups: ['parents'], games: ['home'], play: ['games', 'home'], account: ['me'], school: ['schools'], classroom: ['classes'], class: ['classes'] };
 /** A menu item's label key (tab bar and top bar). */
 export function tabKey(t, k) {
   if (k === 'parents') return parentsKey(t);
   if (k === 'signin') return 'layout.signIn';
-  const own = `nav.${k}`, alt = STAND_IN[k] && `nav.${STAND_IN[k]}`;
-  return alt && !t.own(own) && t.own(alt) ? alt : own;
+  const own = `nav.${k}`;
+  if (t.own(own)) return own;
+  const alt = (STAND_IN[k] || []).map(x => `nav.${x}`).find(x => t.own(x));
+  return alt || own;
 }
 /** Pages the signed-out "Grown-ups" tab stands for (it is current on them). */
 const GROWNUP_PAGES = ['parents', 'teachers', 'grownups'];
 export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatformAdmin(u) || isSchoolStaff(u));
 
+/** Where '/' takes a signed-in person whose first tab is not Play (docs/decisions.md "Play and Learn"): a student to
+ *  their Class tab, a teacher to their Classroom, a school admin to their School, a grown-up to Family; null for everyone
+ *  who lands on Play (signed out, guests, kids, the platform admin). auth.js homeFor uses it too, so sign-in and '/'
+ *  agree. */
+export function landingFor(u) {
+  if (signedOut(u)) return null;
+  if (isGrownup(u)) return '/family';
+  if (isSchoolStaff(u)) return adminSchools(u).length ? '/school' : '/teach';
+  if (isPlatformAdmin(u)) return null;
+  if (inAnySchool(u)) return '/classes';
+  return null;
+}
+
 /**
- * The menus for one person (the navigation proposal's Option 2, "a tab bar per role"; docs/decisions.md "Navigation
- * shells"): -> { role, tabs, top, meHref }. tabs is the phone tab bar, last item the Me / Account / Sign in tab; top is the
- * desktop top bar's links (the avatar button, meHref, stands for Me or Account there). Each item is [key, href, emoji].
- * Plans is in every list exactly while paid-plan pages are on (familiesOn), kids' and students' too (owner, 27 Oct).
- * The first matching row wins:
- *   signed out or a guest   Home · Search · Build · Grown-ups · (Plans) · Sign in   (top: Home · Build · (Plans) · Parents · Teachers)
- *   grown-up                Family · Build · Games · (Plans) · Account             (top: Family · Build · Games · (Plans))
- *   school staff, admin     Classes · Games · School · (Plans) · Me                (top: the same without Me)
- *   school staff            Classes · Games · (Plans) · Me
- *   platform admin          Home · Search · Build · Friends · Schools · (Plans) · Me   (unchanged)
- *   student                 Home · Classes · Build · Friends · (Plans) · Me         (top: the same without Me)
- *   kid                     Home · Search · Build · Friends · (Plans) · Me          (unchanged)
- * With STORY_BUILDER=1 every signed-in shell also has Stories (🌙, /stories) after Build (or after Games).
- * Everyone signed in also has the search field (or, below 360px, the round 🔎 button) in the top bar.
+ * The menus for one person (docs/decisions.md "Navigation shells" and "Play and Learn": one library on two shelves, Play
+ * and Learn, that everyone shares, and a first tab built for each role) -> { role, tabs, top, meHref }. tabs is the phone
+ * tab bar, last item the Me / Account / Sign in tab; top is the desktop top bar's links (the avatar button, meHref,
+ * stands for Me or Account there). Each item is [key, href, emoji]. Search is the top bar's field (or round 🔎 button)
+ * for everyone, not a tab. Play is '/' where '/' shows Play (landingFor null) and /play everywhere else. Plans is in every
+ * list exactly while paid-plan pages are on (familiesOn). The first matching row wins:
+ *   signed out or a guest   Play · Learn · Build · Grown-ups · (Plans) · Sign in   (top: Play · Learn · Build · (Plans) · Parents · Teachers)
+ *   grown-up                Family · Play · Learn · Build · (Plans) · Account      (top: the same without Account)
+ *   school admin            School · Classroom · Learn · Play · (Plans) · Me       (top: the same with (Live), without Me)
+ *   school staff            Classroom · Learn · Play · (Live) · (Plans) · Me       (top: the same without Me)
+ *   platform admin          Play · Learn · Build · Friends · Schools · (Plans) · Me
+ *   student                 Class · Play · Learn · Build · (Plans) · Me            (top: the same with Friends, without Me)
+ *   kid                     Play · Learn · Build · Friends · (Plans) · Me          (top: the same without Me)
+ * Live (📡 /live, hosting) is there only while Oomba Live is on (liveOn). With STORY_BUILDER=1 every signed-in shell also
+ * has Stories (🌙, /stories) after Build (or after Play where there is no Build).
  */
 export function shellFor(u, req) {
   const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
-  const [home, search, build, friends] = NAV;
-  const games = ['games', '/', '🎮'];
+  const [, , build, friends] = NAV;
+  const play = ['play', landingFor(u) ? '/play' : '/', '🎮'];
+  const learn = ['learn', '/learn', '📚'];
+  const classroom = ['classroom', '/teach', '🍎'];
+  const live = liveOn() ? [['live', '/live', '📡']] : [];
   const me = ['me', '/me', '🙂'];
   // The Story Builder (routes/stories.js) for everyone signed in, only while STORY_BUILDER is on.
   const stories = config.storyBuilder ? [['stories', '/stories', '🌙']] : [];
   if (signedOut(u)) {
-    return { role: 'out', tabs: [home, search, build, ['grownups', '/parents', '👪'], ...plans, ['signin', '/login', '🙂']],
-      top: [home, build, ...plans, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
+    return { role: 'out', tabs: [play, learn, build, ['grownups', '/parents', '👪'], ...plans, ['signin', '/login', '🙂']],
+      top: [play, learn, build, ...plans, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
   }
   if (isGrownup(u)) {
-    const top = [['family', '/family', '👪'], build, ...stories, games, ...plans];
+    const top = [['family', '/family', '👪'], play, learn, build, ...stories, ...plans];
     return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
-    const admin = adminSchools(u).length > 0;
-    const top = [['classes', '/teach', '🏫'], games, ...stories, ...(admin ? [['school', '/school', '🏛️']] : []), ...plans];
-    return { role: admin ? 'schoolAdmin' : 'teacher', tabs: [...top, me], top, meHref: '/me' };
+    if (adminSchools(u).length > 0) {
+      const head = [['school', '/school', '🏛️'], classroom, learn, play, ...stories];
+      return { role: 'schoolAdmin', tabs: [...head, ...plans, me], top: [...head, ...live, ...plans], meHref: '/me' };
+    }
+    const top = [classroom, learn, play, ...stories, ...live, ...plans];
+    return { role: 'teacher', tabs: [...top, me], top, meHref: '/me' };
   }
   if (isPlatformAdmin(u)) {
-    const top = [home, search, build, ...stories, friends, ['schools', '/admin/schools', '🏫'], ...plans];
+    const top = [play, learn, build, ...stories, friends, ['schools', '/admin/schools', '🏫'], ...plans];
     return { role: 'admin', tabs: [...top, me], top, meHref: '/me' };
   }
   if (inAnySchool(u)) {
-    const top = [home, ['classes', '/classes', '🏫'], build, ...stories, friends, ...plans];
-    return { role: 'student', tabs: [...top, me], top, meHref: '/me' };
+    const head = [['class', '/classes', '🏫'], play, learn, build, ...stories];
+    return { role: 'student', tabs: [...head, ...plans, me], top: [...head, friends, ...plans], meHref: '/me' };
   }
-  const top = [home, search, build, ...stories, friends, ...plans];
+  const top = [play, learn, build, ...stories, friends, ...plans];
   return { role: 'kid', tabs: [...top, me], top, meHref: '/me' };
 }
-/** The tab a page's `active` makes current in this shell: the game pages (home, search) are Games where there is no Home
- *  or Search tab; the Classes area is Schools for the platform admin; the parent and teacher pages are Grown-ups. */
+/** The tab a page's `active` makes current in this shell: the game pages (home, play, search) are Play; the class pages
+ *  are Classroom for staff, Class for students and Schools for the platform admin; hosting (live) is Live where there is
+ *  a Live link, else Classroom; the parent and teacher pages are Grown-ups. */
 export function currentTab(shell, active) {
   const has = k => shell.tabs.some(([x]) => x === k) || shell.top.some(([x]) => x === k);
-  if ((active === 'home' || active === 'search') && !has(active) && has('games')) return 'games';
-  if (active === 'classes' && !has('classes') && has('schools')) return 'schools';
+  if (active === 'home' || active === 'search' || active === 'play') return has('play') ? 'play' : active;
+  if (active === 'classes') return ['classroom', 'class', 'schools'].find(has) || active;
+  if (active === 'live') return has('live') ? 'live' : has('classroom') ? 'classroom' : active;
   return active;
 }
 
@@ -164,7 +188,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const myName = u ? (staff && staffName(u)) || u.display_name : '';
   const badges = u ? { ...navBadges(u) } : { friends: 0 };
   // Staff have no Friends tab: friend requests and unread chat count on Me (/me links to /friends).
-  if (staff) badges.me = (badges.me || 0) + (badges.friends || 0);
+  // Students have Friends in the top bar but not in their tab bar: theirs count on Me too.
+  if (staff || shell.role === 'student') badges.me = (badges.me || 0) + (badges.friends || 0);
   // Grown-ups have no Friends tab (and no chat): connection requests count on Family (/family links to them).
   // Their only chat is the Oomba team thread (/chat/OombaAcademy, linked from /family): its unread messages count there too.
   // A child's "Ask my grown-up" (services/sparks.js) counts there too until the grown-up sees it on /family.

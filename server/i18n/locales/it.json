@@ -67,7 +67,12 @@
     "playNow": "Gioca ora",
     "games": "Giochi",
     "account": "Account",
-    "school": "Scuola"
+    "school": "Scuola",
+    "play": "Gioca",
+    "learn": "Impara",
+    "class": "Classe",
+    "classroom": "La mia classe",
+    "live": "Live"
   },
   "errors": {
     "goHome": "Torna alla home",
@@ -505,7 +510,11 @@
       "rated": "I più votati",
       "new": "Nuovi",
       "mine": "I miei giochi",
-      "favorites": "I miei preferiti"
+      "favorites": "I miei preferiti",
+      "keep": "Continua a giocare",
+      "two": "In due",
+      "fromLearn": "Da Impara: i più divertenti",
+      "openLearn": "Apri Impara"
     },
     "hero": {
       "label": "Gioco in evidenza",
@@ -540,6 +549,9 @@
       "todo": "{count, plural, one {# lezione da fare} other {# lezioni da fare}}",
       "continue": "Continua",
       "open": "Apri la mia classe"
+    },
+    "chips": {
+      "two": "In due"
     }
   },
   "search": {
@@ -4388,7 +4400,52 @@
       "ages": "Per età",
       "who": "Per insegnanti e genitori"
     },
-    "inClass": "Lo usa in classe? <a href=\"{href}\">Scopra Oomba Academy per gli insegnanti</a>."
+    "inClass": "Lo usa in classe? <a href=\"{href}\">Scopra Oomba Academy per gli insegnanti</a>.",
+    "tab": {
+      "h1": "Impara",
+      "lead": "Giochi e corsi che insegnano qualcosa. Scegli una materia, o semplicemente un gioco.",
+      "leadStaff": "La stessa biblioteca che vedono i tuoi studenti, con i pulsanti per assegnare e condurre dal vivo.",
+      "filters": "Filtra i giochi",
+      "subject": "Materia",
+      "subjects": {
+        "all": "Tutti",
+        "math": "Matematica",
+        "words": "Parole",
+        "maps": "Mappe",
+        "code": "Programmazione",
+        "thinking": "Ragionamento",
+        "music": "Musica",
+        "any": "Ogni materia"
+      },
+      "grade": "Classe",
+      "gradeAny": "Ogni classe",
+      "gradeK": "Materna",
+      "gradeN": "Classe {n}",
+      "filter": "Mostra",
+      "how": "Come giochi",
+      "howAll": "In qualsiasi modo",
+      "hows": {
+        "solo": "Da solo",
+        "two": "In due",
+        "live": "Dal vivo con la classe"
+      },
+      "moreAbout": "Altro sui giochi di {subject}",
+      "joinH": "Hai un codice di gioco dal tuo insegnante?",
+      "myCourses": "I miei corsi",
+      "live": "Giochi dal vivo per la classe",
+      "liveText": "Il tuo insegnante ne avvia uno sul grande schermo e tutti entrano con un codice.",
+      "liveStaff": "Avviane uno sul grande schermo e la classe entra con un codice.",
+      "games": "Giochi per imparare",
+      "none": "Nessun gioco corrisponde ancora a questi filtri.",
+      "clear": "Mostra tutti i giochi",
+      "players": "Giochi per imparare creati dai giocatori",
+      "meta": "{subject} · {grades}",
+      "assign": "Assegna",
+      "assignCourse": "Assegna a una classe",
+      "guide": "Guida per insegnanti",
+      "host": "Conduci dal vivo",
+      "try": "Prova"
+    }
   },
   "parents": {
     "title": "Giochi educativi gratis e sicuri per bambini",
@@ -6519,6 +6576,16 @@
     "link": {
       "new": "{count, plural, one {# nuovo messaggio dal team Oomba} other {# nuovi messaggi dal team Oomba}}",
       "open": "Messaggi dal team Oomba"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "Assegna {game}",
+      "pickClass": "Classe",
+      "submit": "Assegna",
+      "note": "La classe riceve una lezione di un passo che avvia questo gioco. Puoi modificarla poi nella biblioteca delle lezioni.",
+      "none": "Non hai ancora classi. Creane prima una in La mia classe.",
+      "liveOnly": "È un gioco dal vivo per la classe: conducilo sul grande schermo invece di assegnarlo."
     }
   }
 }
