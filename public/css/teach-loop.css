@@ -11,7 +11,7 @@
 .tl-top{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3)}
 .tl-top>h2{margin:0;font-size:1.25rem;flex:1 1 auto;min-width:0}
 .tl-count{flex:none}
-.tl-hide{margin:0;flex:none}
+.tl-hide{margin:0;flex:none;margin-inline-start:auto}
 .tl-sub{margin:var(--s2) 0 var(--s4)}
 .tl-mini{display:grid;gap:var(--s3);margin:0;padding:0}
 @media (min-width:640px){.tl-mini{grid-template-columns:1fr 1fr}}
@@ -21,7 +21,8 @@
 .tl-mtext{display:grid;gap:var(--s1);min-width:0}
 .tl-mtext>b{line-height:1.25}
 .tl-mtools{display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:var(--s2)}
-.tl-more{margin:var(--s4) 0 0}
+/* The foot: the /teach/loop link, and Hide at the other end. */
+.tl-more{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3);margin:var(--s4) 0 0}
 .tl-more a{display:inline-flex;align-items:center;min-height:44px}
 .tl-make{margin:0 0 var(--s4)}
 .tl-week{margin:calc(-1 * var(--s2)) 0 var(--s4)}
@@ -53,8 +54,25 @@
 .tl-shot figcaption{margin:var(--s2) var(--s1) var(--s1)}
 .tl-foot{flex-wrap:wrap;gap:var(--s2);margin-top:var(--s5)}
 .tl-foot>form{margin:0}
-/* On a phone only the next step to do shows its words and tools; the others (done or later) show their name, so the card
-   stays short and My classes stays near the top. Side by side, every step keeps its line. */
-@media (max-width:639px){.tl-mstep:not(.is-next) .tl-mtext>.small,.tl-mstep:not(.is-next) .tl-mtools{display:none}.tl-mstep:not(.is-next){align-items:center;padding-block:var(--s2)}.tl-mini{gap:var(--s2)}}
+/* On a phone only the next step to do shows its words and tools, across the card's width, its tools in one sideways row;
+   the others (done or later) are small tiles, three to a row, with their tick and name. So the card stays short and My
+   classes starts on the first screen (tests/e2e/teach-loop.spec.js). Side by side, every step keeps its line. */
+@media (max-width:639px){
+  .tl-compact{padding:var(--s4)}
+  .tl-top>h2{font-size:1.1rem}
+  .tl-sub{margin:var(--s2) 0 var(--s3)}
+  .tl-mini{gap:var(--s2);grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tl-mstep.is-next{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s3);align-items:center}
+  .tl-mstep.is-next>.tl-mtext{display:contents}
+  .tl-mstep.is-next .tl-mtext>.small,.tl-mstep.is-next .tl-mtools{grid-column:1/-1}
+  .tl-mstep.is-next .tl-mtools{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--s3));padding:2px var(--s3);scroll-padding-inline:var(--s3)}
+  .tl-mstep.is-next .tl-mtools::-webkit-scrollbar{display:none}
+  .tl-mstep.is-next .tl-mtools>.chip{flex:none;white-space:nowrap}
+  .tl-mstep:not(.is-next) .tl-mtext>.small,.tl-mstep:not(.is-next) .tl-mtools{display:none}
+  .tl-mstep:not(.is-next){flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 4px;text-align:center}
+  .tl-mstep:not(.is-next) .tl-tick{width:24px;height:24px}
+  .tl-mstep:not(.is-next) .tl-mtext>b{font-size:.85rem;overflow-wrap:anywhere}
+  .tl-more{margin-top:var(--s2)}
+}
 /* In a grid the cards line up: no stacked-panel gap (app.css .panel+.panel) on the later ones. */
 .tl-steps>.tl-step,.tl-shots>.tl-shot{margin:0}

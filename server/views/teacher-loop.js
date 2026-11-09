@@ -88,20 +88,20 @@ function pageLook(t, { links, state, live, shots, id, headingTag, cls }) {
 }
 
 /** The Classroom home's card for new teachers: four small steps that tick themselves off, links for their first class,
- *  and Hide (it comes back from /teach/loop). */
+ *  and, at the foot next to the /teach/loop link, Hide (it comes back from /teach/loop). */
 function compact(t, { links, state, live, id }) {
   const st = state || { done: {}, count: 0 };
   // On a phone only the next step to do shows its words and tools (public/css/teach-loop.css), so My classes stays near the top.
   const nextStep = (LOOP.find(s => !st.done[s.step]) || {}).step;
   const lead = links && links.class ? t('teach.loop.home.lead', { class: links.class.name }) : t('teach.loop.home.leadNoClass');
   return html`<section class="panel tl tl-compact" id="${id}" aria-labelledby="${id}-h">
-  <div class="tl-top"><h2 id="${id}-h">🔁 ${t('teach.loop.home.h')}</h2><span class="chip-s tl-count">${t('teach.loop.home.count', { done: st.count, total: LOOP.length })}</span>
-    <form class="tl-hide" data-api="/api/teach/loop/hide" data-reload data-toast="${t('teach.loop.home.hidden')}"><button class="btn btn-sm" type="submit">${t('teach.loop.home.hide')}</button></form></div>
+  <div class="tl-top"><h2 id="${id}-h">🔁 ${t('teach.loop.home.h')}</h2><span class="chip-s tl-count">${t('teach.loop.home.count', { done: st.count, total: LOOP.length })}</span></div>
   <p class="small muted tl-sub">${lead}</p>
   ${makeClass(t, links)}
   <ol class="plain tl-mini">${LOOP.map(s => { const on = !!st.done[s.step], next = s.step === nextStep;
     return html`<li class="tl-mstep${on ? ' is-done' : ''}${next ? ' is-next' : ''}">${tick(t, on)}<span class="tl-mtext"><b>${s.emoji} ${t(`teach.loop.steps.${s.step}.name`)}</b><span class="small muted">${t(`teach.loop.steps.${s.step}.benefit`)}</span>
       <span class="tl-mtools">${toolsOf(s, live).filter(k => links && links[k]).map(k => html`<a class="chip" href="${links[k]}">${t(`teach.loop.tools.${k}`)}</a>`)}</span></span></li>`; })}</ol>
-  <p class="small tl-more"><a href="/teach/loop">${t('teach.loop.page.link')}</a></p>
+  <div class="small tl-more"><a href="/teach/loop">${t('teach.loop.page.link')}</a>
+    <form class="tl-hide" data-api="/api/teach/loop/hide" data-reload data-toast="${t('teach.loop.home.hidden')}"><button class="btn btn-sm" type="submit">${t('teach.loop.home.hide')}</button></form></div>
 </section>`;
 }

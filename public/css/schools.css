@@ -839,6 +839,9 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .th-more{flex-wrap:wrap;gap:var(--s2);margin:var(--s6) 0 0}
 @media (max-width:600px){
   .th-head>.btn,.th-more>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
+  /* The Classroom home's heading: hello on its own line, then its buttons (This week's summary, Host a live game) side by side. */
+  .th-head>div:first-child{flex:1 1 100%}
+  .th-head>.btn{flex:1 1 0;min-width:0;padding-inline:10px}
   .cc-acts>.btn,.teachtools>.btn{min-height:44px}
   .th-class>.cc-name{min-height:44px}
   .classcard a.chip-s:not(.warn):not(.th-due){display:inline-flex;align-items:center;min-height:44px;padding:0 12px}

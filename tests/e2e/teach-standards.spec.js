@@ -107,6 +107,8 @@ test('a teacher tags a lesson with Common Core standards and sees the class\'s c
   const lastName = (await opts.nth(lastIx).innerText()).trim();
   await t.selectOption('#sf-t', lastOpt);
   await expect(t).toHaveURL(new RegExp(`to=${lastOpt}`));
+  // The URL changes when the new page commits, before it is all parsed: read its Add forms once it is.
+  await t.waitForLoadState('domcontentloaded');
   expect(await t.locator('.std-results input[name="stepId"]').evaluateAll(l => [...new Set(l.map(i => i.value))])).toEqual([lastOpt]);
   await t.locator('.std-result', { hasText: '4.NF.A.1' }).first().locator('button', { hasText: 'Add' }).click();
   const onLast = t.locator('#tagged li', { has: t.locator('h3', { hasText: lastName }) });

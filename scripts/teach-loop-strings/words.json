@@ -241,7 +241,7 @@
       },
       "attention": {
         "alt": "La progression d'une leçon, triée pour que les élèves qui ont besoin d'attention viennent en premier",
-        "caption": "D'abord ceux qui ont besoin d'attention : réponses à lire, retards et leçons à moitié faites en haut."
+        "caption": "D'abord ceux qui ont besoin d'attention : réponses à lire, travaux en retard et leçons à moitié faites en haut."
       },
       "feedback": {
         "alt": "La réponse écrite d'un élève avec la zone de commentaire de l'enseignant et le bouton d'enregistrement",
