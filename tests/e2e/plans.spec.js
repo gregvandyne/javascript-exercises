@@ -357,8 +357,9 @@ test('signed out with Plans on: Play · Learn · Build · Plans · Parents · Te
       const ctx = await browser.newContext({ baseURL: APP, viewport: { width, height: 800 }, colorScheme: scheme });
       await ctx.addCookies([{ name: 'lang', value: lang, url: APP }]);
       const page = await ctx.newPage();
-      await page.goto('/'); await page.evaluate(() => document.fonts.ready);
-      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/learn', '/build', '/plans', '/parents', '/teachers']);
+      // "/" is the teacher landing page for signed-out visitors (routes/landing.js); the app's top bar is on /play.
+      await page.goto('/play'); await page.evaluate(() => document.fonts.ready);
+      expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/play', '/learn', '/build', '/plans', '/parents', '/teachers']);
       const r = await page.evaluate(topbarFit);
       if (r.tight || r.off || r.wide > 0 || r.cut || r.missing.length) problems.push(`${width}/${lang}: ${JSON.stringify(r)}`);
       for (const t of await findTouching(page)) problems.push(`${width}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
