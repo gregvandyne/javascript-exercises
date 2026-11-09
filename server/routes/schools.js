@@ -25,6 +25,7 @@ import { siteHost } from '../site.js';
 import { billingTabOn, schoolBillingTab, teachPlanCard, askPanel } from './school-billing.js';
 import { teacherPlanCard } from './teacher-plan.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
+import { gcRosterHint } from './gclassroom.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn, openForClass } from '../services/classlive-sessions.js';
 
@@ -686,6 +687,7 @@ function teacherClass(req, res, c) {
     </tbody></table></div></section>`
     : emptyState({ emoji: '👩‍🎓', title: t('school.class.noStudents'), text: `${pickFirst ? t('school.class.noStudentsPick', { school: s.name }) : t('school.class.noStudentsText')}${st.allowOwnAccounts ? ` ${t('school.class.noStudentsCode')}` : ''}` })}
   ${classInvitesPanel(req, c, s)}
+  ${gcRosterHint(req, c)}
   ${pickFirst ? pickPanel : ''}
   <section class="panel" id="add-students"><h2>🪪 ${t('school.class.newAccounts')}</h2>
     <form class="formgrid" data-api="/api/classes/${c.id}/students" novalidate>

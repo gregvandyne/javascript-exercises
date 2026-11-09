@@ -30,6 +30,7 @@ import { router as progressRoutes } from './routes/progress.js';
 import { router as infoRoutes } from './routes/info.js';
 import { router as handoffRoutes } from './routes/handoff.js';
 import { router as googleRoutes } from './routes/google.js';
+import { router as gclassroomRoutes } from './routes/gclassroom.js';
 import { router as familyRoutes, grownupGuard } from './routes/family.js';
 import { router as schoolBillingRoutes } from './routes/school-billing.js';
 import { router as plansRoutes } from './routes/plans.js';
@@ -196,7 +197,7 @@ export function createApp() {
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and
   // /play is today's guest home ("Just Play"). Everyone with a session gets the home route below, unchanged.
-  for (const r of [authRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, studioRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, schoolRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, progressRoutes, lessonRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

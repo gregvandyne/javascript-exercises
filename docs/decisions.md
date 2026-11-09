@@ -3307,3 +3307,50 @@ geared towards conversion … 14 day free trial … very futuristic … parallax
   for trial, Just Play, pricing and "see how it works" (daily totals, same rules as the home doors). No PostHog.
 - **Checks:** tests/unit/teacher-landing.test.js; `BASE=… node scripts/landing-audit.js` (LCP, CLS, sideways scroll,
   parallax, reduced motion, at six sizes, dark and light); scripts/layout-audit.js with `MAX_PAGES=1`.
+
+## Google Classroom sync (9 Nov 2026)
+Owner: "Build all of those suggestions" (leaning into the teacher portal's grading and curriculum tools; this stream is
+the Google Classroom sync). Setup for the owner: docs/google-classroom.md.
+- **Behind config:** on only with Sign in with Google (`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`) and
+  `GOOGLE_CLASSROOM=1`; every route answers like an unknown page while off, and the pieces other pages show render ''.
+  `GOOGLE_TOKEN_KEY` (32 bytes, hex or base64; a malformed one stops startup, never echoed) is needed to store anything:
+  without it the page says Classroom isn't set up and Connect is refused.
+- **One client module:** `services/gclassroom-client.js` is the only code that talks to Google (token exchange,
+  refresh, revoke, the Classroom API at `CLASSROOM_API_BASE`, default https://classroom.googleapis.com, refused in
+  production when changed). Tests use tests/support/fake-classroom.js and the OAuth parts added to fake-google.js.
+  Replies are capped (2 MB), 15 s timeouts, lists paged with a page cap; Google errors become a short code
+  (`reconnect`, `denied`, `notFound` → "courseGone", `rateLimited`, `badRequest`, `googleDown`) shown in plain words.
+- **Connect = incremental authorization:** a POST hands back a 5-minute signed start link bound to the session (as
+  the Me page's Google connect does), the start writes the same PKCE/state/nonce flow cookie, and Google is asked for
+  `openid email` + `classroom.courses.readonly`, `classroom.rosters.readonly`, `classroom.coursework.students` with
+  `access_type=offline`, `include_granted_scopes=true`, `prompt=consent` (so a refresh token always comes back) and a
+  `login_hint` of their sign-in email. Callback: `/auth/google/classroom/callback` (a second redirect URI). A box left
+  unticked on Google's screen ("granular consent") is refused (`scopesMissing`); nothing is stored. Not
+  `classroom.coursework.me` (only students' own work needs it), not `profile.emails`: no email is read.
+- **Tokens:** the refresh token is sealed with AES-256-GCM (random 12-byte nonce, the teacher's user id as associated
+  data, `key_tag` = a hash prefix of the key) in `gc_connections`. Access tokens live in memory under an hour; a 401
+  refreshes once and retries; `invalid_grant` (revoked at Google) or a changed key marks the connection
+  "connect again". Disconnect revokes at Google (best effort) and deletes the row; account deletion does the same.
+- **Who:** school staff (`S.isSchoolStaff`) who manage the class (`S.canManageClass`: its teachers and school admins).
+  Other teachers, students, guests: 404 on the page and APIs; students and guests can't start a connection (403); a
+  platform admin who isn't staff sees the page but has nothing to connect. The connection is per teacher.
+- **Link:** a class links to one course from the teacher's own active courses (`teacherId=me`), checked again on save.
+- **Roster import, matched like Sign in with Google:** Classroom's `userId` is the Google account id that sign-in calls
+  `sub`, so a student whose Oomba account already has that Google account joins the class (if they belong to this
+  school); own accounts outside the school, other schools' accounts and staff are left out and counted (own accounts
+  can use the class code). Someone new gets a school account bound to that Google account (generated username, the
+  Classroom full name only as the staff-only roster name, no password; `google_identities` row with an empty email
+  until their first sign-in, which then checks the school's domains as usual), so the school needs its Google domains
+  first (`needDomains` otherwise). Nothing is shown to other students. At most 300 per import.
+- **Post:** one CourseWork per class lesson (`gc_posts`): the lesson title, one fixed line, a link material to
+  `/class/:cid/lessons/:clid`, `maxPoints` 100, and the due date as the end of the due day in the school's time zone
+  (UTC to Google; left off when past, since Classroom refuses a past due date). From the class page or "Also post to
+  Google Classroom" in the assign form (the assignment stands whatever Google says; the toast carries both lines).
+- **Grades:** a lesson's score is the gradebook's done/total steps × 100. Sent to each submission of the teacher's
+  coursework whose `userId` maps to a student in this class who has started; not started / not in this class / failed
+  are counted. Draft (`updateMask=draftGrade`; the teacher returns it in Classroom) or assigned
+  (`draftGrade,assignedGrade`). We never return work or touch coursework we didn't create (Google forbids it anyway).
+- **Limits and audit:** 60 syncs an hour per teacher, 20 imports an hour per class, 20 connects an hour; every sync
+  writes `gc_syncs` (kind, status, counts, error code: never names or grades; swept after 180 days, shown as "Recent
+  syncs") and the audit log (`gclassroom.*`). Migration 0065.
+- **Privacy:** listed in docs/legal-review.md ("Google Classroom sync") for the owner's legal review.

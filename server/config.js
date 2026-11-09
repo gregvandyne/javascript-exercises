@@ -146,6 +146,22 @@ const GOOGLE_ID_RE = /^[0-9a-z-]+\.apps\.googleusercontent\.com$/i;
 const googleClientId = (process.env.GOOGLE_CLIENT_ID || '').trim();
 const oidcBase = parsePublicUrl(process.env.GOOGLE_OIDC_BASE, 'GOOGLE_OIDC_BASE');
 const stripe = parseStripe(process.env);
+/**
+ * GOOGLE_TOKEN_KEY: the key that encrypts Google Classroom refresh tokens at rest (AES-256-GCM, services/gclassroom.js).
+ * 32 bytes as 64 hex characters or base64 (make one with: openssl rand -hex 32). Never echoed. -> { key: Buffer|null, error }
+ */
+export function parseTokenKey(v) {
+  const s = String(v || '').trim();
+  if (!s) return { key: null };
+  let key = null;
+  if (/^[0-9a-f]{64}$/i.test(s)) key = Buffer.from(s, 'hex');
+  else if (/^[A-Za-z0-9+/_-]{43}=?$/.test(s)) { const b = Buffer.from(s.replace(/-/g, '+').replace(/_/g, '/'), 'base64'); if (b.length === 32) key = b; }
+  return key ? { key } : { key: null, error: 'GOOGLE_TOKEN_KEY must be 32 bytes as 64 hex characters or base64 (make one with: openssl rand -hex 32)' };
+}
+// Google Classroom sync (docs/google-classroom.md): on only with Sign in with Google and GOOGLE_CLASSROOM=1.
+const googleClassroom = parseFlag(process.env.GOOGLE_CLASSROOM, 'GOOGLE_CLASSROOM');
+const tokenKey = parseTokenKey(process.env.GOOGLE_TOKEN_KEY);
+const classroomBase = parsePublicUrl(process.env.CLASSROOM_API_BASE, 'CLASSROOM_API_BASE');
 /** The default sender of Oomba's emails (server/services/email.js) and where replies go. */
 export const EMAIL_FROM_DEFAULT = 'Greg at Oomba Academy <greg@oomba.ai>';
 export const EMAIL_REPLY_TO_DEFAULT = 'Greg@oomba.ai';
@@ -191,10 +207,16 @@ export const config = {
   googleClientId,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
   googleOidcBase: oidcBase.url, // tests only: a local fake Google (tests/support/fake-google.js)
+  // Google Classroom sync (services/gclassroom.js): GOOGLE_CLASSROOM=1, plus GOOGLE_TOKEN_KEY to store teachers' tokens.
+  googleClassroom: googleClassroom.on,
+  googleTokenKey: tokenKey.key, // a Buffer; never logged or shown
+  classroomApiBase: classroomBase.url || 'https://classroom.googleapis.com', // tests: tests/support/fake-classroom.js
   // Startup refuses a malformed setting instead of silently ignoring it (server/index.js).
   configErrors: [
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
+    googleClassroom.error, tokenKey.error, classroomBase.error,
+    classroomBase.url && classroomBase.url !== 'https://classroom.googleapis.com' && (process.env.NODE_ENV || 'development') === 'production' && "CLASSROOM_API_BASE is for tests and can't be used in production",
     ...stripe.errors,
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,

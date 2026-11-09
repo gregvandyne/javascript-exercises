@@ -36,6 +36,7 @@ function siteGroups(t, site) {
 
 import * as T from '../services/lesson-templates.js';
 import { editorBanner } from '../views/cs-quest.js';
+import { gcLessonsButton, gcAssignField, gcAfterAssign } from './gclassroom.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -382,12 +383,13 @@ router.post('/api/lessons/:id/new-game', requireAccount, rateLimit('studio-new',
 });
 /** Assigning (from the editor or the class's Lessons tab): stay on the page, with "Assigned to {class}" after the reload.
  *  A lesson is in a class at most once; assigning one that was removed brings it back with the students' work. */
-function assignReply(req, res, r) {
+function assignReply(req, res, r, also = '') {
   if (r.ok) {
     const c = S.getClass(r.classLesson.class_id);
     // From the lesson page: back to its Assign section with "Assigned to … · See who's started" next to the form.
     const back = String((req.body && req.body.from) || '') === 'lesson' ? { redirect: `/teach/lessons/${r.classLesson.lesson_id}?assigned=${encodeURIComponent(r.classLesson.id)}#assign` } : {};
-    return res.json({ ok: true, toast: req.t(r.workBack ? 'lessons.assign.restored' : 'lessons.assign.done', { class: c.name }), ...back });
+    const toast = req.t(r.workBack ? 'lessons.assign.restored' : 'lessons.assign.done', { class: c.name });
+    return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...back });
   }
   if (r.code === 'alreadyAssigned') return res.status(400).json({ error: req.t('lessons.errors.alreadyAssigned', { class: r.className }) });
   return err(req, res, r.code, r.code === 'notFound' ? 404 : 400);
@@ -446,9 +448,11 @@ export function teacherLessonsPanel(req, c) {
         ${units.length ? html`<div class="field"><label for="al-u">${t('lessons.class.unit')}</label><select class="input" id="al-u" name="unitId"><option value="">–</option>${units.map(un => html`<option value="${un.id}">${un.name}</option>`)}</select></div>` : ''}
         <div class="field"><label for="al-o">${t('lessons.assign.opens')}</label><input class="input" id="al-o" name="opensAt" type="date"></div>
         <div class="field"><label for="al-d">${t('lessons.assign.due')}</label><input class="input" id="al-d" name="dueAt" type="date"></div>
+        ${gcAssignField(req, c)}
         <div class="field end"><button class="btn btn-primary" type="submit">📌 ${t('lessons.assign.button')}</button></div>
         <p class="small muted wide">${zoneNote(t, c.school_id, req.user)}</p></form></details>` : ''}
         ${libOk ? html`<a class="btn" href="${lib}">📚 ${t('lessons.class.library')}</a>` : ''}
+        ${gcLessonsButton(req, c)}
         <details class="libdrop unitdrop"><summary class="btn">🗂️ ${t('lessons.class.newUnit')}</summary>
           <form class="row unitform" data-api="/api/classes/${c.id}/units" data-reload novalidate><label class="sr-only" for="nu">${t('lessons.class.unitName')}</label><input class="input grow" id="nu" name="name" maxlength="60" placeholder="${t('lessons.class.newUnitPlaceholder')}" required><button class="btn btn-primary" type="submit">🗂️ ${t('lessons.class.newUnit')}</button></form>
           <p class="small muted">${t('lessons.class.unitHint')}</p></details>
@@ -482,9 +486,11 @@ export function studentLessonsPanel(req, c) {
 }
 
 // ---- class lesson APIs
-router.post('/api/classes/:id/lessons', requireUser, (req, res) => {
+router.post('/api/classes/:id/lessons', requireUser, async (req, res) => {
   const { lessonId, unitId, opensAt, dueAt } = b(req);
-  assignReply(req, res, L.assign(req.user, req.params.id, lessonId, { unitId: unitId || null, opensAt, dueAt }));
+  const r = L.assign(req.user, req.params.id, lessonId, { unitId: unitId || null, opensAt, dueAt });
+  // "Also post to Google Classroom" (routes/gclassroom.js): the assignment stands whatever Google says; its line joins the toast.
+  assignReply(req, res, r, r.ok ? await gcAfterAssign(req, r.classLesson) : '');
 });
 router.post('/api/classes/:id/units', requireUser, (req, res) => { if (!String(b(req).name || '').trim()) return err(req, res, 'unitName', 400, 'name'); send(req, res, L.createUnit(req.user, req.params.id, b(req).name)); });
 router.post('/api/class-units/:id', requireUser, (req, res) => send(req, res, L.renameUnit(req.user, req.params.id, b(req).name)));

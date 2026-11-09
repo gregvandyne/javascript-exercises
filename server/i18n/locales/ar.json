@@ -7027,5 +7027,120 @@
       "allGames": "شاهد كل ما يمكن للطلاب لعبه",
       "openLive": "افتح اللعبة المباشرة"
     }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "Google Classroom الخاص بك",
+      "text": "اربط حساب Google الذي تدرّس به في Google Classroom. بعدها يمكنك:",
+      "what": {
+        "courses": "ربط هذا الفصل بأحد فصولك في Classroom",
+        "roster": "إحضار طلابه إلى هنا، ليسجّلوا الدخول باستخدام Google",
+        "post": "نشر الدروس هناك، مع رابط إلى هنا وموعد التسليم",
+        "grades": "إرسال درجة كل طالب في الدرس إلى Classroom"
+      },
+      "button": "ربط Google Classroom",
+      "privacy": "أنت وحدك ترى هذا الربط. ترسل Oomba Academy إلى Classroom عنوان الدرس ورابطًا وموعد التسليم ودرجة كل طالب من 100. لا شيء غير ذلك: لا أسماء ولا إجابات ولا ألعاب.",
+      "connectedAs": "مرتبط باسم {email}",
+      "connectedHint": "هذا الربط خاص بك: زملاؤك المعلمون يربطون حساباتهم.",
+      "connectedToast": "تم ربط Google Classroom.",
+      "disconnect": "إلغاء الربط",
+      "disconnectConfirm": "إلغاء ربط Google Classroom؟ ستتوقف Oomba Academy عن المزامنة لك وستحذف مفتاحها إلى Classroom الخاص بك. تبقى الدروس المنشورة في Classroom.",
+      "disconnected": "تم إلغاء ربط Google Classroom.",
+      "reconnect": "الربط من جديد"
+    },
+    "course": {
+      "heading": "فصل Classroom المرتبط",
+      "text": "اختر فصل Google Classroom الذي يطابق {class}.",
+      "none": "لا توجد فصول نشطة في Google Classroom تدرّس فيها.",
+      "pick": "اختر فصلًا في Classroom",
+      "link": "ربط",
+      "linked": "مرتبط بـ {course}.",
+      "linkedTo": "مرتبط بـ {course}",
+      "unlink": "فك الارتباط",
+      "unlinkConfirm": "فك الارتباط بـ {course}؟ يبقى الطلاب والدروس في أماكنهم.",
+      "unlinked": "تم فك الارتباط.",
+      "connectFirst": "اربط Google Classroom في الأعلى للمزامنة."
+    },
+    "roster": {
+      "heading": "طلاب من Classroom",
+      "text": "يحضر طلاب فصل Classroom المرتبط إلى هنا. من هو هنا بالفعل نتعرّف عليه من حساب Google. الطلاب الجدد يحصلون على حساب مدرسي ويسجّلون الدخول باستخدام Google. أسماؤهم الحقيقية تبقى لدى المعلمين فقط.",
+      "button": "استيراد الطلاب",
+      "last": "آخر استيراد {when}",
+      "noDomains": "لم تُضف مدرستك نطاق Google الخاص بها بعد، لذلك لا يمكن إضافة طلاب جدد. اطلب ذلك من مسؤول المدرسة.",
+      "noDomainsAdmin": "أضف أولًا نطاق Google الخاص بمدرستك، ليتمكن الطلاب الجدد من تسجيل الدخول: {link}",
+      "hint": "تستخدم Google Classroom؟ {link}",
+      "hintLink": "استورد طلابه",
+      "notYet": "Google: من Classroom، لم يسجّل الدخول بعد",
+      "resultAdded": "{count, plural, one {أُضيف طالب واحد} other {أُضيف # من الطلاب}}",
+      "resultAlready": "{count, plural, one {واحد موجود بالفعل} other {# موجودون بالفعل}}",
+      "resultOwn": "{count, plural, one {واحد يستخدم حسابه الخاص: يمكنه الانضمام برمز الفصل} other {# يستخدمون حساباتهم الخاصة: يمكنهم الانضمام برمز الفصل}}",
+      "resultOther": "{count, plural, one {واحد من مدرسة أخرى} other {# من مدرسة أخرى}}",
+      "resultStaff": "{count, plural, one {واحد من طاقم المدرسة} other {# من طاقم المدرسة}}",
+      "resultDomains": "{count, plural, one {لم يُضف واحد: أضف أولًا نطاق Google للمدرسة} other {لم يُضف #: أضف أولًا نطاق Google للمدرسة}}"
+    },
+    "post": {
+      "heading": "الدروس في Classroom",
+      "text": "نشر درس يُنشئ مهمة في Classroom بعنوانه ورابط إلى الدرس هنا وموعد تسليمه.",
+      "button": "نشر في Google Classroom",
+      "also": "انشره أيضًا في Google Classroom",
+      "description": "افتح هذا الدرس على Oomba Academy.",
+      "done": "تم النشر في Google Classroom.",
+      "donePastDue": "تم النشر في Google Classroom (بدون موعد تسليم: لقد فات).",
+      "failed": "لم يُنشر في Google Classroom:",
+      "due": "التسليم {date}",
+      "noDue": "لا يوجد موعد تسليم",
+      "posted": "منشور",
+      "open": "فتح في Classroom",
+      "noLessons": "لا توجد دروس في هذا الفصل بعد. عيّن درسًا من تبويب الدروس."
+    },
+    "grades": {
+      "text": "درجة الدرس هي الخطوات التي أنجزها الطالب، من 100. الطلاب الذين لم يبدؤوه لا يُحتسبون.",
+      "as": "الإرسال كـ",
+      "draft": "درجة مبدئية (تعيدها أنت في Classroom)",
+      "assigned": "درجة نهائية",
+      "button": "إرسال الدرجات",
+      "lastDraft": "أُرسلت الدرجات المبدئية {when}",
+      "lastAssigned": "أُرسلت الدرجات النهائية {when}",
+      "resultSent": "{count, plural, one {أُرسلت درجة واحدة} other {أُرسلت # من الدرجات}}",
+      "resultNotStarted": "{count, plural, one {واحد لم يبدأ} other {# لم يبدؤوا}}",
+      "resultNotMatched": "{count, plural, one {واحد ليس في هذا الفصل} other {# ليسوا في هذا الفصل}}",
+      "resultFailed": "{count, plural, one {واحدة لم تُرسل} other {# لم تُرسل}}"
+    },
+    "log": {
+      "heading": "آخر عمليات المزامنة",
+      "kinds": {
+        "connect": "تم الربط",
+        "disconnect": "أُلغي الربط",
+        "link": "رُبط فصل",
+        "unlink": "فُك الارتباط",
+        "roster": "استُورد الطلاب",
+        "post": "نُشر درس",
+        "grades": "أُرسلت الدرجات"
+      }
+    },
+    "errors": {
+      "notSetUp": "لم يُعدّ Google Classroom على هذا الموقع بعد. اطلب من صاحب الموقع إكمال الإعداد.",
+      "notConnected": "اربط Google Classroom أولًا.",
+      "reconnect": "توقف ربطك بـ Google Classroom عن العمل. يُرجى الربط من جديد.",
+      "notLinked": "اربط هذا الفصل بفصل في Classroom أولًا.",
+      "pickCourse": "اختر فصلًا في Classroom.",
+      "courseNotYours": "أنت لا تدرّس في فصل Classroom هذا.",
+      "courseGone": "لم يعد Google Classroom يجد ذلك الفصل أو تلك المهمة.",
+      "denied": "رفض Google Classroom. ربما لست معلمًا في ذلك الفصل، أو أن مدرستك تقيّد هذا التطبيق.",
+      "rateLimited": "Google Classroom مشغول. حاول مرة أخرى بعد بضع دقائق.",
+      "googleDown": "لم يردّ Google Classroom. حاول مرة أخرى.",
+      "badRequest": "لم يقبل Google Classroom ذلك.",
+      "tooMany": "في فصل Classroom هذا أكثر من {max} طالب.",
+      "alreadyPosted": "هذا الدرس موجود بالفعل في Google Classroom.",
+      "notPosted": "انشر هذا الدرس في Google Classroom أولًا.",
+      "badMode": "اختر طريقة إرسال الدرجات.",
+      "scopesMissing": "يُرجى تحديد كل المربعات في شاشة Google، لتتمكن Oomba Academy من رؤية فصولك ونشر المهام.",
+      "noRefresh": "لم يرسل Google مفتاحًا يمكننا الاحتفاظ به. يُرجى الربط من جديد.",
+      "expired": "استغرق ذلك وقتًا طويلًا. حاول مرة أخرى.",
+      "cancelled": "ألغيت في شاشة Google. لم يُربط شيء.",
+      "staffOnly": "هنا فقط المعلمون ومسؤولو المدرسة يمكنهم استخدام Google Classroom.",
+      "tooManyTries": "عمليات مزامنة كثيرة جدًا الآن. حاول مرة أخرى بعد ساعة."
+    }
   }
 }

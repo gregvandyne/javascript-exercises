@@ -752,5 +752,11 @@
       "a1": "A game-based learning platform for ages 8 to 14. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in maths, computing and online safety.",
       "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a game around it."
     }
+  },
+  "gclassroom": {
+    "errors": {
+      "cancelled": "You cancelled on Google's screen. Nothing was connected.",
+      "scopesMissing": "Please tick every box on Google's screen, so Oomba Academy can see your classes and post work."
+    }
   }
 }

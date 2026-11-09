@@ -7028,5 +7028,120 @@
       "allGames": "לראות את כל מה שתלמידים יכולים לשחק",
       "openLive": "לפתוח את המשחק החי"
     }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "ה-Google Classroom שלך",
+      "text": "חברו את חשבון Google שאיתו אתם מלמדים ב-Google Classroom. אחר כך תוכלו:",
+      "what": {
+        "courses": "לקשר את הכיתה הזאת לאחת הכיתות שלכם ב-Classroom",
+        "roster": "להביא לכאן את התלמידים שלה, שייכנסו עם Google",
+        "post": "לפרסם שם שיעורים, עם קישור לכאן ותאריך הגשה",
+        "grades": "לשלוח ל-Classroom את הציון של כל תלמיד בשיעור"
+      },
+      "button": "חיבור Google Classroom",
+      "privacy": "רק אתם רואים את החיבור הזה. Oomba Academy שולחת ל-Classroom את שם השיעור, קישור, תאריך ההגשה והציון של כל תלמיד מתוך 100. שום דבר אחר: לא שמות, לא תשובות ולא משחקים.",
+      "connectedAs": "מחובר בתור {email}",
+      "connectedHint": "החיבור הזה שלכם: עמיתים למורים מחברים את שלהם.",
+      "connectedToast": "Google Classroom מחובר.",
+      "disconnect": "ניתוק",
+      "disconnectConfirm": "לנתק את Google Classroom? Oomba Academy תפסיק לסנכרן עבורכם ותמחק את המפתח שלה ל-Classroom שלכם. שיעורים שכבר פורסמו נשארים ב-Classroom.",
+      "disconnected": "Google Classroom נותק.",
+      "reconnect": "חיבור מחדש"
+    },
+    "course": {
+      "heading": "כיתת Classroom מקושרת",
+      "text": "בחרו את הכיתה ב-Google Classroom שמתאימה ל{class}.",
+      "none": "אין כיתות פעילות ב-Google Classroom שבהן אתם מלמדים.",
+      "pick": "בחירת כיתה ב-Classroom",
+      "link": "קישור",
+      "linked": "מקושרת אל {course}.",
+      "linkedTo": "מקושרת אל {course}",
+      "unlink": "ביטול קישור",
+      "unlinkConfirm": "לבטל את הקישור אל {course}? התלמידים והשיעורים נשארים במקומם.",
+      "unlinked": "הקישור בוטל.",
+      "connectFirst": "חברו למעלה את Google Classroom כדי לסנכרן."
+    },
+    "roster": {
+      "heading": "תלמידים מ-Classroom",
+      "text": "מביא לכאן את התלמידים של כיתת ה-Classroom המקושרת. מי שכבר כאן מזוהה לפי חשבון Google שלו. תלמידים חדשים מקבלים חשבון בית ספר ונכנסים עם Google. השמות האמיתיים שלהם נשארים אצל המורים.",
+      "button": "ייבוא תלמידים",
+      "last": "ייבוא אחרון {when}",
+      "noDomains": "בית הספר עוד לא הוסיף את הדומיין שלו ב-Google, ולכן אי אפשר להוסיף תלמידים חדשים. בקשו ממנהל בית הספר.",
+      "noDomainsAdmin": "הוסיפו קודם את הדומיין של בית הספר ב-Google, כדי שתלמידים חדשים יוכלו להיכנס: {link}",
+      "hint": "משתמשים ב-Google Classroom? {link}",
+      "hintLink": "ייבוא התלמידים משם",
+      "notYet": "Google: מ-Classroom, עוד לא נכנס/ה",
+      "resultAdded": "{count, plural, one {תלמיד אחד נוסף} other {# תלמידים נוספו}}",
+      "resultAlready": "{count, plural, one {אחד כבר כאן} other {# כבר כאן}}",
+      "resultOwn": "{count, plural, one {אחד משתמש בחשבון אישי: יכול להצטרף עם קוד הכיתה} other {# משתמשים בחשבון אישי: יכולים להצטרף עם קוד הכיתה}}",
+      "resultOther": "{count, plural, one {אחד שייך לבית ספר אחר} other {# שייכים לבית ספר אחר}}",
+      "resultStaff": "{count, plural, one {אחד מהצוות כאן} other {# מהצוות כאן}}",
+      "resultDomains": "{count, plural, one {אחד לא נוסף: הוסיפו קודם את הדומיין של בית הספר ב-Google} other {# לא נוספו: הוסיפו קודם את הדומיין של בית הספר ב-Google}}"
+    },
+    "post": {
+      "heading": "שיעורים ב-Classroom",
+      "text": "פרסום שיעור יוצר מטלה ב-Classroom עם שם השיעור, קישור לשיעור כאן ותאריך ההגשה.",
+      "button": "פרסום ב-Google Classroom",
+      "also": "לפרסם גם ב-Google Classroom",
+      "description": "פתחו את השיעור הזה ב-Oomba Academy.",
+      "done": "פורסם ב-Google Classroom.",
+      "donePastDue": "פורסם ב-Google Classroom (בלי תאריך הגשה: הוא כבר עבר).",
+      "failed": "לא פורסם ב-Google Classroom:",
+      "due": "להגשה עד {date}",
+      "noDue": "אין תאריך הגשה",
+      "posted": "פורסם",
+      "open": "פתיחה ב-Classroom",
+      "noLessons": "עוד אין שיעורים בכיתה הזאת. הקצו שיעור בלשונית שיעורים."
+    },
+    "grades": {
+      "text": "הציון בשיעור הוא השלבים שהתלמיד השלים, מתוך 100. תלמידים שעוד לא התחילו לא נכללים.",
+      "as": "לשלוח בתור",
+      "draft": "ציון טיוטה (אתם מחזירים אותו ב-Classroom)",
+      "assigned": "ציון סופי",
+      "button": "שליחת ציונים",
+      "lastDraft": "ציוני טיוטה נשלחו {when}",
+      "lastAssigned": "ציונים סופיים נשלחו {when}",
+      "resultSent": "{count, plural, one {ציון אחד נשלח} other {# ציונים נשלחו}}",
+      "resultNotStarted": "{count, plural, one {אחד עוד לא התחיל} other {# עוד לא התחילו}}",
+      "resultNotMatched": "{count, plural, one {אחד לא בכיתה הזאת} other {# לא בכיתה הזאת}}",
+      "resultFailed": "{count, plural, one {אחד לא עבר} other {# לא עברו}}"
+    },
+    "log": {
+      "heading": "סנכרונים אחרונים",
+      "kinds": {
+        "connect": "חובר",
+        "disconnect": "נותק",
+        "link": "כיתה קושרה",
+        "unlink": "הקישור בוטל",
+        "roster": "תלמידים יובאו",
+        "post": "שיעור פורסם",
+        "grades": "ציונים נשלחו"
+      }
+    },
+    "errors": {
+      "notSetUp": "Google Classroom עוד לא הוגדר באתר הזה. בקשו מבעל האתר להשלים את ההגדרה.",
+      "notConnected": "חברו קודם את Google Classroom.",
+      "reconnect": "החיבור ל-Google Classroom הפסיק לעבוד. חברו אותו מחדש.",
+      "notLinked": "קשרו קודם את הכיתה הזאת לכיתה ב-Classroom.",
+      "pickCourse": "בחרו כיתה ב-Classroom.",
+      "courseNotYours": "אתם לא מלמדים בכיתת ה-Classroom הזאת.",
+      "courseGone": "Google Classroom כבר לא מוצא את הכיתה או המטלה הזאת.",
+      "denied": "Google Classroom סירב. אולי אתם לא מורים בכיתה הזאת, או שבית הספר מגביל את האפליקציה.",
+      "rateLimited": "Google Classroom עמוס. נסו שוב בעוד כמה דקות.",
+      "googleDown": "Google Classroom לא ענה. נסו שוב.",
+      "badRequest": "Google Classroom לא קיבל את זה.",
+      "tooMany": "בכיתת ה-Classroom הזאת יש יותר מ-{max} תלמידים.",
+      "alreadyPosted": "השיעור הזה כבר נמצא ב-Google Classroom.",
+      "notPosted": "פרסמו קודם את השיעור ב-Google Classroom.",
+      "badMode": "בחרו איך לשלוח את הציונים.",
+      "scopesMissing": "סמנו את כל התיבות במסך של Google, כדי ש-Oomba Academy תוכל לראות את הכיתות שלכם ולפרסם מטלות.",
+      "noRefresh": "Google לא שלח מפתח שאפשר לשמור. חברו מחדש.",
+      "expired": "זה לקח יותר מדי זמן. נסו שוב.",
+      "cancelled": "ביטלתם במסך של Google. שום דבר לא חובר.",
+      "staffOnly": "כאן רק מורים ומנהלי בית ספר יכולים להשתמש ב-Google Classroom.",
+      "tooManyTries": "יותר מדי סנכרונים כרגע. נסו שוב בעוד שעה."
+    }
   }
 }

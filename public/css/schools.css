@@ -883,3 +883,9 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .th-breaks{grid-template-columns:repeat(2,minmax(0,1fr))}
   .th-breaks .th-tile{flex-direction:column;align-items:flex-start;text-align:start}
 }
+/* Google Classroom sync (server/routes/gclassroom.js): the Lessons tab's button, the assign form's checkbox, the Students tab's hint. */
+.chip-s.good{background:var(--ok-bg);color:var(--ok)}
+.gc-also{display:flex;align-items:center}
+.gc-check{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
+.gc-check input{width:20px;height:20px;margin:0;flex:none}
+.gc-hint{margin:0 var(--s1)}

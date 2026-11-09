@@ -34,6 +34,7 @@ import * as shots from './shots.js';
 import { uploadDir } from '../builder/uploads.js';
 import { forgetUser as forgetLive } from './classlive-results.js';
 import { storyDir } from './story-jobs.js';
+import { forgetUser as forgetClassroom } from './gclassroom.js';
 
 const DAY = 86400e3;
 /** How long a deleted child's old username can't be taken. */
@@ -87,6 +88,7 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run("UPDATE builder_turns SET request='{}' WHERE user_id=?", u.id);
     // 9. Google and class join requests
     for (const tbl of ['google_identities', 'google_invites', 'join_requests']) q.run(`DELETE FROM ${tbl} WHERE user_id=?`, u.id);
+    forgetClassroom(u.id);   // Google Classroom: the stored token (revoked at Google best-effort)
     // 10. the tombstone (8: the photo's file goes after the commit, its flag here)
     q.run(`UPDATE users SET username=?, display_name='deleted', password_hash=NULL, friend_code=NULL, bio='', banned=1, photo_at=0, avatar=?, color=?,
       chat_enabled=0, lang='', theme='', character_spec=NULL, password_short=0, made_note_seen_at=NULL, pw_reset_note_at=NULL WHERE id=?`, `deleted_${u.id}`, TOMB.avatar, TOMB.color, u.id);

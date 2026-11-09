@@ -7026,5 +7026,120 @@
       "allGames": "生徒が遊べるものをすべて見る",
       "openLive": "開いているライブゲームへ"
     }
+  },
+  "gclassroom": {
+    "title": "Google Classroom",
+    "connect": {
+      "heading": "あなたの Google Classroom",
+      "text": "Google Classroom で授業に使っている Google アカウントを接続します。接続すると次のことができます:",
+      "what": {
+        "courses": "このクラスを Classroom のクラスのひとつとリンクする",
+        "roster": "そのクラスの生徒を取り込み、Google でログインできるようにする",
+        "post": "ここへのリンクと提出期限つきでレッスンを投稿する",
+        "grades": "レッスンでの各生徒のスコアを Classroom に送る"
+      },
+      "button": "Google Classroom を接続",
+      "privacy": "この接続はあなただけに表示されます。Oomba Academy が Classroom に送るのは、レッスンのタイトル、リンク、提出期限、各生徒の 100 点満点のスコアだけです。名前、回答、ゲームは送りません。",
+      "connectedAs": "{email} で接続中",
+      "connectedHint": "この接続はあなた専用です。ほかの先生はそれぞれ自分で接続します。",
+      "connectedToast": "Google Classroom を接続しました。",
+      "disconnect": "接続を解除",
+      "disconnectConfirm": "Google Classroom の接続を解除しますか? Oomba Academy は同期をやめ、あなたの Classroom へのアクセスキーを削除します。投稿済みのレッスンは Classroom に残ります。",
+      "disconnected": "Google Classroom の接続を解除しました。",
+      "reconnect": "もう一度接続"
+    },
+    "course": {
+      "heading": "リンクした Classroom のクラス",
+      "text": "{class} に合う Google Classroom のクラスを選んでください。",
+      "none": "あなたが教えている有効な Google Classroom のクラスはありません。",
+      "pick": "Classroom のクラスを選ぶ",
+      "link": "リンク",
+      "linked": "{course} とリンクしました。",
+      "linkedTo": "{course} とリンク中",
+      "unlink": "リンクを解除",
+      "unlinkConfirm": "{course} とのリンクを解除しますか? 生徒とレッスンはそのまま残ります。",
+      "unlinked": "リンクを解除しました。",
+      "connectFirst": "同期するには、上で Google Classroom を接続してください。"
+    },
+    "roster": {
+      "heading": "Classroom の生徒",
+      "text": "リンクした Classroom のクラスの生徒を取り込みます。すでにいる生徒は Google アカウントで照合します。新しい生徒には学校アカウントが作られ、Google でログインします。本名は先生だけが見られます。",
+      "button": "生徒を取り込む",
+      "last": "前回の取り込み: {when}",
+      "noDomains": "学校の Google ドメインがまだ登録されていないため、新しい生徒は追加できません。学校の管理者に頼んでください。",
+      "noDomainsAdmin": "新しい生徒がログインできるよう、先に学校の Google ドメインを追加してください: {link}",
+      "hint": "Google Classroom を使っていますか? {link}",
+      "hintLink": "生徒を取り込む",
+      "notYet": "Google: Classroom から追加、まだログインしていません",
+      "resultAdded": "{count, plural, other {生徒 # 人を追加}}",
+      "resultAlready": "{count, plural, other {# 人はすでに在籍}}",
+      "resultOwn": "{count, plural, other {# 人は個人アカウント: クラスコードで参加できます}}",
+      "resultOther": "{count, plural, other {# 人は別の学校のアカウント}}",
+      "resultStaff": "{count, plural, other {# 人はこの学校のスタッフ}}",
+      "resultDomains": "{count, plural, other {# 人は未追加: 先に学校の Google ドメインを追加してください}}"
+    },
+    "post": {
+      "heading": "Classroom のレッスン",
+      "text": "レッスンを投稿すると、タイトル、ここのレッスンへのリンク、提出期限つきの課題が Classroom に作られます。",
+      "button": "Google Classroom に投稿",
+      "also": "Google Classroom にも投稿する",
+      "description": "このレッスンを Oomba Academy で開きましょう。",
+      "done": "Google Classroom に投稿しました。",
+      "donePastDue": "Google Classroom に投稿しました(提出期限は過ぎているため付けていません)。",
+      "failed": "Google Classroom に投稿できませんでした:",
+      "due": "提出期限 {date}",
+      "noDue": "提出期限なし",
+      "posted": "投稿済み",
+      "open": "Classroom で開く",
+      "noLessons": "このクラスにはまだレッスンがありません。「レッスン」タブで割り当ててください。"
+    },
+    "grades": {
+      "text": "レッスンのスコアは、生徒が終えたステップの割合 (100 点満点) です。まだ始めていない生徒は送りません。",
+      "as": "送り方",
+      "draft": "下書きの成績 (Classroom であなたが返却)",
+      "assigned": "確定した成績",
+      "button": "成績を送る",
+      "lastDraft": "下書きの成績を送信: {when}",
+      "lastAssigned": "確定した成績を送信: {when}",
+      "resultSent": "{count, plural, other {# 件の成績を送信}}",
+      "resultNotStarted": "{count, plural, other {# 人は未着手}}",
+      "resultNotMatched": "{count, plural, other {# 人はこのクラスにいません}}",
+      "resultFailed": "{count, plural, other {# 件は送れませんでした}}"
+    },
+    "log": {
+      "heading": "最近の同期",
+      "kinds": {
+        "connect": "接続",
+        "disconnect": "接続解除",
+        "link": "クラスをリンク",
+        "unlink": "リンク解除",
+        "roster": "生徒を取り込み",
+        "post": "レッスンを投稿",
+        "grades": "成績を送信"
+      }
+    },
+    "errors": {
+      "notSetUp": "このサイトではまだ Google Classroom が設定されていません。サイトの運営者に設定の完了を頼んでください。",
+      "notConnected": "まず Google Classroom を接続してください。",
+      "reconnect": "Google Classroom との接続が使えなくなりました。もう一度接続してください。",
+      "notLinked": "まずこのクラスを Classroom のクラスとリンクしてください。",
+      "pickCourse": "Classroom のクラスを選んでください。",
+      "courseNotYours": "その Classroom のクラスはあなたが教えているクラスではありません。",
+      "courseGone": "Google Classroom でそのクラスまたは課題が見つからなくなりました。",
+      "denied": "Google Classroom に断られました。そのクラスの先生でないか、学校がこのアプリを制限している可能性があります。",
+      "rateLimited": "Google Classroom が混み合っています。数分後にもう一度お試しください。",
+      "googleDown": "Google Classroom から応答がありません。もう一度お試しください。",
+      "badRequest": "Google Classroom に受け付けられませんでした。",
+      "tooMany": "その Classroom のクラスには {max} 人を超える生徒がいます。",
+      "alreadyPosted": "このレッスンはすでに Google Classroom にあります。",
+      "notPosted": "まずこのレッスンを Google Classroom に投稿してください。",
+      "badMode": "成績の送り方を選んでください。",
+      "scopesMissing": "Oomba Academy がクラスを見て課題を投稿できるよう、Google の画面ですべてのボックスにチェックを入れてください。",
+      "noRefresh": "Google から保存できるキーが届きませんでした。もう一度接続してください。",
+      "expired": "時間がかかりすぎました。もう一度お試しください。",
+      "cancelled": "Google の画面でキャンセルしました。何も接続されていません。",
+      "staffOnly": "ここで Google Classroom を使えるのは先生と学校の管理者だけです。",
+      "tooManyTries": "同期が多すぎます。1 時間後にもう一度お試しください。"
+    }
   }
 }
