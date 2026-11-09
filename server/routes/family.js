@@ -71,6 +71,9 @@ const GROWNUP_GET = [/^\/$/, /^\/search$/, /^\/api\/(search|live|me|billing\/sta
   /^\/api\/match\/(people|inbox|[^/]+\/wait)$/,
   // Number Quest: a grown-up reads their linked child's Starting Point note (routes/number-quest.js checks the link).
   /^\/number-quest\/starting-point$/,
+  // The courses Home links to (routes/courses.js): a grown-up reads a course page with nothing to pick (canPick is off),
+  // and a step's address takes them back to it (no band, no progress of their own).
+  /^\/courses\/[^/]+(\/[^/]+)?$/,
   // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
   // children said to each other. No friends' chat: /chat itself stays closed.
   /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
