@@ -26,8 +26,8 @@ export function subLine(text) {
  *  progress in steps, and Start / Keep going to the next open step (or the band picker). The track is a labelled,
  *  focusable scroll region; the arrows ride the shared rail-arrow wiring and hide when the rail has nothing to scroll. */
 /** staff: school staff on the Learn tab: each card's foot is "Assign to a class" (the course's own teacher page, where its
- *  units are assigned) and "Teacher guide" instead of Start and progress. title: the row's heading (default "Courses"). */
-export const STAFF_COURSE_PAGE = { 'cs-quest': '/teach/cs-quest', 'cyber-defenders': '/teach/cyber-defenders', 'number-quest': '/teachers/number-quest' };
+ *  units are assigned; Number Quest has none yet, so only its guide) and "Teacher guide" instead of Start and progress. title: the row's heading (default "Courses"). */
+export const STAFF_COURSE_PAGE = { 'cs-quest': '/teach/cs-quest', 'cyber-defenders': '/teach/cyber-defenders' };
 export function courseRow(items, { staff = false, title: heading = null } = {}) {
   const { t } = current();
   if (!items.some(it => it.games.length)) return '';
@@ -40,24 +40,26 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
     ${items.filter(it => it.games.length).map(({ course: c, games, ov }) => {
       const go = ov.next ? `/courses/${c.slug}/${ov.next.step.key}` : `/courses/${c.slug}`;
       const begun = ov.list.some(s => s.read || s.checked);
+      const assign = staff && STAFF_COURSE_PAGE[c.slug];
+      // A compact card: the whole head opens the course; progress; the units behind a tap; one main button.
       return html`<article class="course-card" aria-labelledby="course-${c.slug}-h">
-        <div class="course-head">
+        <a class="course-head" href="/courses/${c.slug}">
           <span class="course-emo" aria-hidden="true">${c.emoji}</span>
-          <div class="course-ht"><h3 id="course-${c.slug}-h"><a href="/courses/${c.slug}">${t(`${c.key}.title`)}</a></h3><p>${subLine(t(`${c.key}.sub`))}</p></div>
-        </div>
+          <div class="course-ht"><h3 id="course-${c.slug}-h">${t(`${c.key}.title`)}</h3><p>${subLine(t(`${c.key}.sub`))}</p></div>
+          <span class="course-go flip" aria-hidden="true">›</span>
+        </a>
+        ${ov.band && !staff ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div><span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span></div>` : ''}
+        <details class="course-units"><summary>${t('courses.unitsN', { count: games.length })}</summary>
         <ol class="course-steps">${games.map(g => html`<li class="course-step"><a href="/courses/${c.slug}#${g.slug}" class="course-game">
           <span class="course-n" aria-hidden="true">${g.step}</span>
           <span class="course-cover">${coverArt(g)}</span>
           <span class="course-gt"><span class="course-gname">${g.title}</span><span class="course-topic">${t(`courses.topics.${g.topic}`)}</span></span>
-        </a></li>`)}</ol>
-        ${ov.band && !staff ? html`<div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>` : ''}
+        </a></li>`)}</ol></details>
         ${staff ? html`<div class="course-foot">
-          <a class="btn btn-primary" href="${STAFF_COURSE_PAGE[c.slug] || c.teacherPath}" id="course-${c.slug}-assign">📌 ${t('learn.tab.assignCourse')}</a>
-          <a class="btn btn-ghost" href="${c.teacherPath}">${t('learn.tab.guide')}</a>
+          ${assign ? html`<a class="btn btn-primary" href="${assign}" id="course-${c.slug}-assign">📌 ${t('learn.tab.assignCourse')}</a>` : ''}
+          <a class="btn${assign ? ' btn-ghost' : ' btn-primary'}" href="${c.teacherPath}">${t('learn.tab.guide')}</a>
         </div>` : html`<div class="course-foot">
           <a class="btn btn-primary" href="${go}" id="course-${c.slug}-go">▶ ${begun ? t('courses.continue') : t('courses.start')}</a>
-          <a class="btn btn-ghost" href="/courses/${c.slug}">${t('courses.about')}</a>
-          ${ov.band ? html`<span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span>` : ''}
         </div>`}
       </article>`;
     })}

@@ -546,7 +546,7 @@
     },
     "class": {
       "h": "Deine Klasse",
-      "todo": "{count, plural, one {# Stunde zu erledigen} other {# Stunden zu erledigen}}",
+      "todo": "{count, plural, one {# Lektion offen} other {# Lektionen offen}}",
       "continue": "Weiter",
       "open": "Meine Klasse öffnen"
     },
@@ -6315,9 +6315,18 @@
       "about": "Programmiere einen Roboter, löse Rätsel mit Daten, schicke Nachrichten durch eine Stadt und schau in die Geräte, die wir jeden Tag benutzen. Jeder Schritt ist eine kurze Lektion, ein kurzer Test und dann ein Spielmodul.",
       "teachers": "Zu jedem Spiel gibt es Unterrichtspläne für eine 45-Minuten-Stunde, mit Live-Aufwärmrunden, Abschlussfragen und einer Standards-Übersicht für deine Klasse."
     },
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cybersicherheit und sicher im Netz · Klassen 3 bis 8"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Mathe in den Numberworks · Klassen 3 bis 5"
+    },
     "back": "Zurück zu {course}",
     "step": "{course} · Spiel {n} von {total}",
     "stepsDone": "{n} von {total} Schritten geschafft",
+    "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}",
     "band": {
       "h": "Wähl dein Level",
       "text": "Du kannst es später auf dieser Seite ändern.",

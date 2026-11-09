@@ -59,6 +59,8 @@ router.get('/favorites', requireUser, (req, res) => {
   page(req, res, { title: t('favorites.title'), active: 'me', body, back: '/me', backLabel: t('nav.me') });
 });
 
+/** A description's first sentence (the hero's line): up to the first full stop, in any script (。 ！ in Japanese and Chinese). */
+export const firstSentence = d => { const m = /^[\s\S]*?(?:[.!?](?=\s|$)|[。！？])/.exec(String(d || '').trim()); return m ? m[0] : String(d || ''); };
 /** The Play shelf's genres: every category but the learning ones (those games are on Learn). */
 export const PLAY_CATEGORIES = games.CATEGORIES.filter(([k]) => k !== 'learning' && k !== 'words');
 
@@ -67,7 +69,8 @@ export const PLAY_CATEGORIES = games.CATEGORIES.filter(([k]) => k !== 'learning'
 // served to anyone else. /play is the Play page for everyone, always (the Play tab of those who land elsewhere).
 router.get('/', (req, res) => {
   const to = landingFor(req.user);
-  if (to) { res.set('Cache-Control', 'private, no-store'); return res.redirect(302, to); }
+  // The query string goes along (?utm_source=…, a ?code= from a poster); the page they land on reads it or ignores it.
+  if (to) { const qs = req.originalUrl.indexOf('?'); res.set('Cache-Control', 'private, no-store'); return res.redirect(302, to + (qs >= 0 ? req.originalUrl.slice(qs) : '')); }
   playPage(req, res, { landing: true });
 });
 router.get('/play', (req, res) => playPage(req, res, { landing: false }));
@@ -83,20 +86,22 @@ function playPage(req, res, { landing }) {
   // Every featured Play game fits; the rail scrolls. Class tools (Remi's noise meter) are never the hero or featured.
   const featured = games.listVisible(u, { ...play, featured: true, order: 'plays', limit: 48 }).filter(g => !CLASS_TOOLS.includes(g.slug));
   const hero = featured[0];
+  // The hero is not repeated in the rails right under it (Featured, Popular, Top rated, New).
+  const notHero = list => (hero ? list.filter(g => g.id !== hero.id) : list);
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
   const fromLearn = LEARN_FUN.map(s => games.getGameBySlug(s)).filter(g => g && games.canView(u, g)).map(g => games.decorate([g])[0]);
   const rails = [
     u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
     u ? rail({ title: t('home.rails.keep'), emoji: '⏯️', games: games.recentlyPlayed(u, 12, play), user: u, id: 'keep' }) : '',
-    rail({ title: t('home.rails.featured'), emoji: '⭐', games: featured, user: u, id: 'featured' }),
+    rail({ title: t('home.rails.featured'), emoji: '⭐', games: notHero(featured), user: u, id: 'featured' }),
     rail({ title: t('home.rails.two'), emoji: '👥', games: games.listVisible(u, { ...play, minPlayers: 2, order: 'plays', limit: 16 }), user: u, id: 'two' }),
-    rail({ title: t('home.rails.fromLearn'), emoji: '📚', games: fromLearn, user: u, id: 'from-learn', more: lp('/learn'), moreLabel: t('home.rails.openLearn') }),
+    rail({ title: t('home.rails.fromLearn'), emoji: '📚', games: fromLearn, user: u, id: 'from-learn', more: lp('/learn') }),
     buildBanner(req),
     rail({ title: t('home.rails.playing'), emoji: '🟢', games: games.playingNow(u, 12, play), user: u, id: 'playing', more: '/search?sort=playing' }),
     rail({ title: t('home.rails.friends'), emoji: '👫', games: games.fromFriends(u, 12, play), user: u, id: 'friends' }),
-    rail({ title: t('home.rails.popular'), emoji: '🔥', games: games.listVisible(u, { ...play, order: 'popular', limit: 16 }), user: u, id: 'popular', more: '/search?sort=popular' }),
-    rail({ title: t('home.rails.rated'), emoji: '🏆', games: games.listVisible(u, { ...play, order: 'rated', limit: 16 }), user: u, id: 'rated', more: '/search?sort=rated' }),
-    rail({ title: t('home.rails.new'), emoji: '✨', games: games.listVisible(u, { ...play, order: 'new', limit: 16 }), user: u, id: 'new', more: '/search?sort=new' }),
+    rail({ title: t('home.rails.popular'), emoji: '🔥', games: notHero(games.listVisible(u, { ...play, order: 'popular', limit: 17 })).slice(0, 16), user: u, id: 'popular', more: '/search?sort=popular' }),
+    rail({ title: t('home.rails.rated'), emoji: '🏆', games: notHero(games.listVisible(u, { ...play, order: 'rated', limit: 17 })).slice(0, 16), user: u, id: 'rated', more: '/search?sort=rated' }),
+    rail({ title: t('home.rails.new'), emoji: '✨', games: notHero(games.listVisible(u, { ...play, order: 'new', limit: 17 })).slice(0, 16), user: u, id: 'new', more: '/search?sort=new' }),
     mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : '',
     ...PLAY_CATEGORIES.map(([k, e]) => rail({ title: categoryLabel(k, t), emoji: e, games: games.listVisible(u, { ...play, category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
   ];
@@ -107,10 +112,10 @@ function playPage(req, res, { landing }) {
   // as signed out: a parent who tried a game keeps their door.
   // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  // "Join a game" (Oomba Live): a code on the class's big screen. Signed out it sits under the doors; signed in, players
-  // (not school staff, who host) get it above the featured game.
+  // "Join a game" (Oomba Live): a code on the class's big screen. Signed out it sits under the doors.
   const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
-  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}${isStaff(u) ? '' : html`<div class="home-join-in">${joinDoor}</div>`}`
+  // Signed in, Join is the 🎟️ button in the top bar (and the door on Learn): Play opens straight on its featured game.
+  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}`
     : !landing ? html`<h1 class="sr-only">${t('nav.play')}</h1>`
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
@@ -122,7 +127,7 @@ function playPage(req, res, { landing }) {
     <div>
       <span class="hero-kicker"><span class="emo" aria-hidden="true">⭐</span> ${t('home.hero.kicker')}</span>
       <h2 class="hero-title">${hero.title}</h2>
-      <p>${hero.description.split('. ')[0] + '.'}</p>
+      <p>${firstSentence(hero.description)}</p>
       <div class="row">
         <a class="btn btn-big" href="${liveOn() && liveGameOf(hero) ? `/g/${hero.slug}` : `/play/${hero.slug}`}">▶ ${t('home.hero.play')}</a>
         <a class="btn btn-ghost" href="/g/${hero.slug}">${t('home.hero.more')}</a>

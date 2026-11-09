@@ -17,6 +17,7 @@ const L = await import('../../server/learn.js');
 const { LIVE_GAMES } = await import('../../server/live/live-games.js');
 const { COURSE_GAME_SLUGS } = await import('../../server/services/course-catalog.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const C = await import('../../server/services/courses.js');
 
 seed({ quiet: true });
 let server, base;
@@ -117,7 +118,9 @@ test('Play (\'/\' and /play): only Play games in its rails, Jungle Cup the hero,
     assert.doesNotMatch(s, /id="courses-h"/, 'no course row on Play');
     assert.doesNotMatch(s, /id="cat-learning"|id="cat-words"/, 'no learning rails on Play');
     assert.deepEqual(slugsIn(section(s, 'from-learn')), L.LEARN_FUN, 'From Learn: fun ones');
-    assert.match(section(s, 'from-learn'), /<a class="more" href="\/learn">Open Learn<\/a>/);
+    assert.match(section(s, 'from-learn'), /<a class="more" href="\/learn">See all<\/a>/);
+    // The hero is not repeated in the rails right under it.
+    for (const id of ['featured', 'popular', 'rated', 'new']) assert.ok(!slugsIn(section(s, id)).includes('jungle-cup'), `no hero in #${id}`);
     const two = slugsIn(section(s, 'two'));
     assert.ok(two.length && two.every(x => G.getGameBySlug(x).players_max >= 2), 'two-player row');
     assert.match(s, /<a class="chip" role="listitem" href="#two">/, 'the 2 players chip jumps to the row');
@@ -166,10 +169,22 @@ test('Learn lists every open Learn game (course games through their course) with
   assert.match(s, /href="\/g\/sum-racer"[^>]*>[\s\S]*?<div class="by gmeta">Math · Grades 1–5<\/div>/);
   assert.match(s, /href="\/g\/atlas-quest"[^>]*>[\s\S]*?<div class="by gmeta">Maps · Grades 3–8<\/div>/);
   assert.match(s, /href="\/g\/quest-race"[^>]*>[\s\S]*?<div class="by gmeta">Any subject · Grades K–8<\/div>/);
-  assert.match(s, /<h2 id="courses-h">📚 My courses<\/h2>/); assert.match(s, /id="course-cs-quest-go"/);
+  // Courses: compact cards (the whole head opens the course, the units behind a tap); "Courses" until a kid begins one.
+  assert.match(s, /<h2 id="courses-h">📚 Courses<\/h2>/); assert.match(s, /id="course-cs-quest-go"/);
+  assert.match(s, /<a class="course-head" href="\/courses\/cs-quest">/);
+  assert.match(s, /<details class="course-units"><summary>See the 4 units<\/summary>/);
   assert.ok(s.indexOf('id="course-cs-quest-go"') < s.indexOf('id="learn-games"'), 'courses before the games');
+  // A kid who is not in a class: the learning games first, then the live class games, then the join door.
+  assert.ok(s.indexOf('id="learn-games"') < s.indexOf('id="live-games"'), 'learning games before live games (not in a class)');
+  assert.ok(s.indexOf('id="live-games"') < s.indexOf('id="learn-join"'), 'the join door under the games');
   assert.match(s, /id="learn-join" href="\/join"|href="\/join" id="learn-join"/);
   assert.match(s, /Got a game code from your teacher\?/);
+  C.setBand(kid, C.getCourse('cs-quest'), '1b');
+  assert.match((await get('/learn', kid)).text, /<h2 id="courses-h">📚 My courses<\/h2>/, 'My courses once begun');
+  // A student in a class: live class games first. A grown-up: Join is in their top bar, not a kid's door on Learn.
+  const st = (await get('/learn', pupil)).text;
+  assert.ok(st.indexOf('id="live-games"') > 0 && st.indexOf('id="live-games"') < st.indexOf('id="learn-games"'), 'live first in a class');
+  assert.doesNotMatch((await get('/learn', mum)).text, /id="learn-join"/);
   // Signed out: the indexed page keeps its heading, lead, structured data, every subject and age page; "Courses".
   const out = await get('/learn', null);
   assert.match(out.text, /<h1 id="lp-h1">Learning games by subject and age<\/h1>/);
@@ -204,6 +219,20 @@ test('Learn filters: plain links (no script needed), exactly the games that fit,
   assert.doesNotMatch(bad, /<b>/); assert.match(bad, /<a class="chip on" href="\/learn#filters"/);
 });
 
+test('Learn: a student starts on their roster grade and can clear it (grade=any); kids and staff start on Any grade', async () => {
+  const g4 = SC.createSchoolAccount(head, school.id, { rosterName: 'Gina Four', grade: 'Grade 4' }).user;
+  const s = (await get('/learn', g4)).text;
+  assert.match(s, /<option value="4" selected>Grade 4<\/option>/);
+  for (const x of slugsIn(section(s, 'learn-games'))) assert.ok(L.SHELF_INFO[x].from <= 4 && L.SHELF_INFO[x].to >= 4, `${x} fits grade 4`);
+  assert.match(s, /<option value="any">Any grade<\/option>/);
+  assert.match(s, /<a class="chip" href="\/learn\?subject=math&amp;grade=4#filters"|href="\/learn\?subject=math&grade=4#filters"/);
+  const any = (await get('/learn?grade=any', g4)).text;
+  assert.match(any, /<option value="any" selected>Any grade<\/option>/);
+  assert.match(any, /href="\/learn\?subject=math&amp;grade=any#filters"|href="\/learn\?subject=math&grade=any#filters"/, 'the choice stays as you filter');
+  assert.deepEqual(slugsIn(section(any, 'learn-games')).sort(), slugsIn(section((await get('/learn', kid)).text, 'learn-games')).sort());
+  for (const u of [kid, teacher]) assert.match((await get('/learn', u)).text, /<option value="" selected>Any grade<\/option>/);
+});
+
 test('staff see Assign, Host live and Try it on Learn; kids, students, grown-ups, guests and the signed out never do', async () => {
   for (const u of [teacher, head]) {
     const s = (await get('/learn', u)).text;
@@ -211,9 +240,13 @@ test('staff see Assign, Host live and Try it on Learn; kids, students, grown-ups
     assert.match(s, /href="\/teach\/assign\?game=sum-racer">📌 Assign<\/a>/);
     assert.match(s, /href="\/live\?mode=quest-race">📡 Host live<\/a>/);
     assert.doesNotMatch(s, /href="\/teach\/assign\?game=quest-race"/, 'a live mode is hosted, not assigned');
-    assert.match(s, /href="\/play\/sum-racer">▶ Try it<\/a>/);
+    assert.match(s, /<a class="lcard-try" href="\/play\/sum-racer">▶ Try it<\/a>/);
+    // One main button per card (Host live for a live mode, else Assign), Try it as a small link.
+    for (const acts of s.match(/<div class="lcard-acts">[\s\S]*?<\/div>/g)) assert.equal((acts.match(/class="btn /g) || []).length, 1, acts);
     assert.match(s, /id="course-cs-quest-assign" href="\/teach\/cs-quest"|href="\/teach\/cs-quest" id="course-cs-quest-assign"/);
     assert.match(s, /href="\/teachers\/cs-quest">Teacher guide<\/a>/);
+    // Number Quest has no assign page yet: its guide only, never an Assign button that cannot assign.
+    assert.doesNotMatch(s, /id="course-number-quest-assign"/); assert.match(s, /href="\/teachers\/number-quest">Teacher guide<\/a>/);
     assert.doesNotMatch(s, /id="learn-join"/, 'staff host; they are not given codes');
   }
   for (const u of [kid, pupil, mum, guest, null]) {

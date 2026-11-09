@@ -325,7 +325,10 @@ test('structured data: no Software App fields without a rating; game pages show 
   const sr = ofType(page, 'VideoGame')[0];
   assert.equal(sr.applicationCategory, undefined); assert.equal(sr.operatingSystem, undefined);
   assert.equal(sr.gamePlatform, 'Web browser');
-  assert.match(page, /<nav class="crumbs small"[^>]*><ol><li><a href="\/">Home<\/a><\/li><li><a href="\/teachers">/);
+  // Home › Learn › Math games › Sum Racer, signed out; signed in, the trail starts at Learn (Home is another tab).
+  assert.match(page, /<nav class="crumbs small"[^>]*><ol><li><a href="\/">Home<\/a><\/li><li><a href="\/learn">Learn<\/a><\/li><li><a href="\/learn\/math-games">Math games<\/a><\/li><li><span aria-current="page">Sum Racer<\/span>/);
+  assert.deepEqual(ofType(page, 'BreadcrumbList')[0].itemListElement.map(x => x.name), ['Home', 'Learn', 'Math games', 'Sum Racer']);
+  assert.match((await get('/g/sum-racer', { cookie: cookieOf(kid) })).text, /<nav class="crumbs small"[^>]*><ol><li><a href="\/learn">Learn<\/a><\/li><li><a href="\/learn\/math-games">/);
   assert.ok(page.includes('href="/learn/math-games"'), 'links to its subject page');
   assert.match(page, /What it practices:/);
   assert.match(page, /Grades 1–5/);

@@ -6315,9 +6315,18 @@
       "about": "Programma un robot, risolvi misteri con i dati, manda messaggi in giro per una città e scopri cosa c’è dentro le macchine che usiamo ogni giorno. Ogni passo è una breve lezione, un mini quiz e poi un modulo di gioco.",
       "teachers": "Ogni gioco ha piani di lezione per un’ora di 45 minuti, con riscaldamenti dal vivo, domande di uscita e una vista degli standard della tua classe."
     },
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cybersicurezza e sicurezza online · dalla 3ª elementare alla 2ª media"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "La matematica nei Numberworks · dalla 3ª alla 5ª elementare"
+    },
     "back": "Torna a {course}",
     "step": "{course} · gioco {n} di {total}",
     "stepsDone": "{n} passi su {total} completati",
+    "unitsN": "{count, plural, one {Vedi l’unità} other {Vedi le # unità}}",
     "band": {
       "h": "Scegli il tuo livello",
       "text": "Puoi cambiarlo più tardi da questa pagina.",

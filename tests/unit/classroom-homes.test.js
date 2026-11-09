@@ -45,7 +45,7 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   assert.match(r.text, /<h1>👋 Hello, Mr Rowan Teach<\/h1>/);
   assert.match(r.text, /class="muted th-sum">2 classes</);
   const card = name => r.text.slice(r.text.indexOf(`<b>${name}</b>`), r.text.indexOf('</div>', r.text.indexOf('cc-acts', r.text.indexOf(`<b>${name}</b>`))));
-  assert.match(card('Homes 4B'), /📅 <bdi>Word Hunt<\/bdi> · Due /, 'the next lesson due');
+  assert.match(card('Homes 4B'), /<span class="th-due-t">📚 <bdi>Word Hunt<\/bdi><\/span><span class="th-due-d">📅 Due /, 'the next lesson due: its title, the date on its own line');
   assert.doesNotMatch(card('Homes 4B'), /All caught up/);
   assert.match(card('Homes 5A'), /✅ All caught up/);
   assert.match(card('Homes 4B'), new RegExp(`href="/teach/lessons\\?school=${school.id}&amp;class=${busy.id}">📚 Assign a lesson`));
@@ -54,8 +54,12 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   const breaks = r.text.slice(r.text.indexOf('id="brain-breaks"'), r.text.indexOf('</section>', r.text.indexOf('id="brain-breaks"')));
   assert.deepEqual([...breaks.matchAll(/href="\/play\/([^"]+)"/g)].map(m => m[1]), BRAIN_BREAKS);
   assert.match(r.text, /href="\/play" id="teach-all-games"/);
-  for (const h of ['/teach/lessons', '/teach/cs-quest', '/teach/cyber-defenders', '/build']) assert.match(r.text, new RegExp(`class="row teachtools"[\\s\\S]*href="${h}"`), h);
-  assert.match(r.text, /id="nc-n"/, 'New class');
+  // The tools row: Lesson library and Make a game; CS Quest and Cyber Defenders are under "Teach with a course".
+  const tools = r.text.slice(r.text.indexOf('class="row teachtools"'), r.text.indexOf('</nav>', r.text.indexOf('class="row teachtools"')));
+  assert.deepEqual([...tools.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['/teach/lessons', '/build']);
+  // + New class: a tile in the class grid, after the classes.
+  const grid = r.text.slice(r.text.indexOf('class="classgrid th-classes"'), r.text.indexOf('</section>', r.text.indexOf('class="classgrid th-classes"')));
+  assert.ok(grid.indexOf('<b>Homes 5A</b>') < grid.indexOf('class="th-newclass"') && grid.includes('id="nc-n"'), 'New class');
   assert.doesNotMatch(r.text, PRICE);
   // The school admin's Classroom tab is the same page (with their school's card).
   const h = await get('/teach', head); assert.equal(h.status, 200); assert.match(h.text, /Hello, Mrs Homeshead/); assert.match(h.text, /Manage Homes School/);

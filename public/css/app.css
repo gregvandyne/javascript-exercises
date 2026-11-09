@@ -194,6 +194,15 @@ a:not([class]):focus-visible{outline-offset:1px;border-radius:4px}
   .topbar:has(.navlink:nth-child(6)) .navlink{padding:0 6px}
   .topbar:has(.navlink:nth-child(6)) .navlink .emo{display:none}
 }
+/* Signed out with Plans on: six items (Play · Learn · Build · Plans · Parents · Teachers) and ▶ just above the phone
+   width are the tightest bar; Russian needs the items a touch smaller and closer there (tests/e2e/plans.spec.js, 821px). */
+@media (min-width:821px) and (max-width:940px){
+  .topbar:has(.playnow):has(.navlink:nth-child(6)){gap:4px;padding-inline:12px}
+  .topbar:has(.playnow) .topnav:has(.navlink:nth-child(6)){gap:2px}
+  .topbar:has(.playnow):has(.navlink:nth-child(6)) .navlink{padding:0 5px;font-size:.94rem}
+  .topbar:has(.playnow):has(.navlink:nth-child(6)) .navlink[aria-current="page"]{padding:0 9px}
+  .topbar:has(.playnow):has(.navlink:nth-child(6)) .langpick > summary,.topbar:has(.playnow):has(.navlink:nth-child(6)) .themepick > summary{padding:0 4px}
+}
 @media (min-width:1181px) and (max-width:1500px){
   .topbar:has(.navlink:nth-child(6)) .me-btn .name,.topbar:has(.navlink:nth-child(6)) .langpick .lang-code{display:none}
   .topbar:has(.navlink:nth-child(6)):has(.navlink .badge) .navlink .emo{display:none}
@@ -993,8 +1002,6 @@ ol.steps li{margin-bottom:var(--s2)}
 @media (max-width:360px){.topbar:has(.joinnow:not(.joinnow-out)){gap:4px;padding-inline:10px}}
 @media (max-width:600px){.topbar:has(.joinnow:not(.joinnow-out)) .topsearch{display:none}.topbar:has(.joinnow:not(.joinnow-out)) .topsearch-btn{display:flex}}
 @media (min-width:1500px){.joinnow-out{display:inline-flex;width:auto;padding:0 14px;font-size:1rem}.joinnow-out .joinnow-t{position:static;width:auto;height:auto;overflow:visible;clip:auto}}
-.home-join-in{display:grid;margin:0 0 var(--s3)}
-.home-join-in .home-join{margin:0}
 /* An Oomba Live mode's card: a "Live" badge (top end of the cover) */
 .live-badge{position:absolute;z-index:2;inset-inline-end:8px;top:8px;padding:3px 9px;border-radius:999px;background:#d93a4a;color:#fff;font-size:.75rem;font-weight:900;letter-spacing:.02em;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 /* An Oomba Live mode's game page: join with a code, host it, practise alone */
@@ -1051,11 +1058,19 @@ ol.steps li{margin-bottom:var(--s2)}
    each card's games nested in order. The card width is fixed (never shrunk or wrapped) and sized so the next card
    always peeks at the rail's end edge on desktop; .course-rail adds a soft end-edge fade while the rail can scroll. */
 .course-rail{position:relative}
-.course-track{grid-auto-columns:min(660px,88vw)}
+.course-track{grid-auto-columns:min(460px,86vw);align-items:start}
 .course-rail.has-more::after{content:"";position:absolute;top:0;bottom:0;inset-inline-end:-16px;width:56px;pointer-events:none;z-index:2;background:linear-gradient(to right,transparent,var(--bg))}
 [dir="rtl"] .course-rail.has-more::after{background:linear-gradient(to left,transparent,var(--bg))}
-.course-card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:14px}
+.course-card{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:16px;display:grid;gap:12px;align-content:start}
 .course-head{display:flex;gap:12px;align-items:center}
+/* Learn's compact course card: the whole head opens the course (a full tap target), the units fold behind a tap. */
+a.course-head{min-height:48px;color:inherit;text-decoration:none;border-radius:14px}
+a.course-head:hover h3,a.course-head:focus-visible h3{text-decoration:underline}
+.course-head .course-ht{flex:1;min-width:0}
+.course-go{font-size:1.6rem;font-weight:800;color:var(--muted);flex:none}
+.course-progline{display:grid;gap:4px}
+.course-units>summary{display:flex;align-items:center;min-height:44px;font-weight:700;color:var(--text-2);cursor:pointer;width:max-content;max-width:100%}
+.course-units[open]>summary{margin-bottom:8px}
 .course-emo{font-size:2rem;line-height:1;flex:none}
 .course-emo.big{font-size:3rem}
 .course-ht h3{margin:0;font-size:1.25rem}
@@ -1663,9 +1678,13 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .learn-grade .input{width:auto;min-width:10rem;min-height:44px}
 .learn-how-l{align-self:center;font-weight:700;flex:none}
 .learn-more{margin:0;font-weight:700}
+.learn-more>a{display:inline-flex;align-items:center;gap:4px;min-height:44px}
 .learn-join{margin:0}
 .lcards{list-style:none;padding:0;margin:0}
 .lcard{display:flex;flex-direction:column;gap:var(--s2);min-width:0}
 .lcard-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.lcard-acts{align-items:center;justify-content:center}
 .lcard-acts .btn{flex:1 1 auto;justify-content:center}
+.lcard-try{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font-weight:700;font-size:.95rem;color:var(--text-2)}
+.learn-how{row-gap:8px}
 .gcard .gmeta{font-weight:700;color:var(--text-2)}

@@ -6314,9 +6314,18 @@
       "about": "Programa un robot, resuelve misterios con datos, envía mensajes por una ciudad y descubre por dentro las máquinas que usamos cada día. Cada paso es una lección corta, una prueba rápida y luego un módulo de juego.",
       "teachers": "Cada juego tiene planes de clase para una sesión de 45 minutos, con calentamientos en vivo, tickets de salida y una vista de estándares de tu clase."
     },
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Ciberseguridad y seguridad en internet · de 3.º a 8.º grado"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Matemáticas en los Numberworks · de 3.º a 5.º grado"
+    },
     "back": "Volver a {course}",
     "step": "{course} · juego {n} de {total}",
     "stepsDone": "{n} de {total} pasos hechos",
+    "unitsN": "{count, plural, one {Ver la # unidad} other {Ver las # unidades}}",
     "band": {
       "h": "Elige tu nivel",
       "text": "Puedes cambiarlo después en esta página.",

@@ -253,13 +253,13 @@ test('staff and students have no Friends tab: friend requests and unread chat co
   q.run('DELETE FROM friends WHERE user_id=?', pal.id);
 });
 
-test('/school: one school -> its People tab; several -> a chooser; anyone else -> 404', async () => {
-  assert.equal((await get(head, '/school')).location, `/school/${oak.slug}?tab=people`);
+test('/school: one school -> its overview (setup checklist and classes); several -> a chooser; anyone else -> 404', async () => {
+  assert.equal((await get(head, '/school')).location, `/school/${oak.slug}`);
   const both = auth.createUser({ username: 'RolesTwoSchools', password: 'a-long-password-1' });
   assert.ok(SC.addMember(boss, oak.id, both.id, 'admin').ok); assert.ok(SC.addMember(boss, elm.id, both.id, 'admin').ok);
   const two = await get(both, '/school');
   assert.equal(two.status, 200);
-  assert.match(two.text, new RegExp(`href="/school/${oak.slug}\\?tab=people"`)); assert.match(two.text, new RegExp(`href="/school/${elm.slug}\\?tab=people"`));
+  assert.match(two.text, new RegExp(`href="/school/${oak.slug}"`)); assert.match(two.text, new RegExp(`href="/school/${elm.slug}"`));
   assert.deepEqual([...tabbar(two.text).matchAll(/href="([^"]+)" aria-current="page"/g)].map(m => m[1]), ['/school']);
   SC.removeMember(boss, elm.id, both.id); SC.removeMember(boss, oak.id, both.id);
   for (const u of [teacher, pupil, kid, boss]) assert.equal((await get(u, '/school')).status, 404, u.username);

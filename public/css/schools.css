@@ -802,6 +802,24 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .cc-acts{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:var(--s2);margin-top:auto;padding-top:var(--s3)}
 .cc-acts>.btn{flex:1 1 auto;justify-content:center;white-space:normal;text-align:center;line-height:1.2}
 .classgrid>.th-class>.cc-meta{margin-top:0}
+/* My classes on /teach: wider cards, so a card's buttons sit in a row on a laptop; the name is a full tap target. */
+.th-classes{grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr))}
+.th-class .cc-link{display:flex;align-items:center;min-height:44px}
+@media (min-width:601px){.th-class>.cc-acts>.btn{flex:0 1 auto}}
+/* The next lesson due: title cut short on one line, the date under it; no underline across the whole pill. */
+.classcard a.chip-s.th-due{display:inline-grid;gap:2px;max-width:100%;border-radius:14px;padding:6px 12px;white-space:nowrap}
+.classcard a.chip-s.th-due:hover{text-decoration:none}
+.classcard a.chip-s.th-due:hover .th-due-t{text-decoration:underline}
+.th-due-t{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.th-due-d{font-weight:600}
+/* + New class: a dashed tile beside the classes; open, the form takes the whole row. */
+.th-newclass{display:flex;min-width:0}
+.th-newclass>.libtools{flex:1;display:flex;align-items:stretch}
+.th-newclass .libdrop:not([open]){flex:1;display:flex}
+.th-newclass .libdrop:not([open])>summary{flex:1;display:flex;align-items:center;justify-content:center;min-height:128px;border:2px dashed var(--edge);border-radius:var(--r);background:transparent;box-shadow:none;color:var(--text-2);font-size:1.05rem}
+.th-newclass .libdrop:not([open])>summary:hover{background:var(--hover);transform:none}
+.classgrid:has(.th-newclass .libdrop[open]){grid-auto-rows:auto}
+.th-newclass:has(.libdrop[open]){grid-column:1/-1}
 /* Courses, live games and brain breaks: small tiles (picture or emoji, name, one line). */
 .th-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:var(--s3);margin:0;padding:0}
 .th-tiles>li{display:flex;min-width:0}
@@ -815,7 +833,18 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 @media (max-width:600px){
   .th-head>.btn,.th-more>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
   .cc-acts>.btn,.teachtools>.btn{min-height:44px}
-  .classcard a.chip-s:not(.warn){display:inline-flex;align-items:center;min-height:44px;padding:0 12px}
+  .classcard a.chip-s:not(.warn):not(.th-due){display:inline-flex;align-items:center;min-height:44px;padding:0 12px}
+  .classcard a.chip-s.th-due{min-height:44px}
+  /* Phones: one class per row, so New class is a short dashed bar, not a card-high box. */
+  .th-classes{grid-auto-rows:auto}
+  .th-newclass .libdrop:not([open])>summary{min-height:64px}
+  /* Live games and brain breaks: one sideways row of picture-over-name tiles each (seven live modes are not seven rows). */
+  .th-tiles.th-grid2{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(150px,44%);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:-16px;padding:2px 16px 6px;scroll-padding-inline:16px}
+  .th-grid2::-webkit-scrollbar{display:none}
+  .th-grid2>li{scroll-snap-align:start}
+  .th-grid2 .th-tile{flex-direction:column;align-items:flex-start;text-align:start;min-height:0;padding:var(--s3)}
+  .th-grid2 .th-art{width:100%;height:auto;aspect-ratio:16/10}
+  .teachtools>.btn{flex:1 1 auto;justify-content:center}
 }
 
 /* The Class tab: one section per class. */

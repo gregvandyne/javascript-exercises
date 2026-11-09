@@ -7,6 +7,55 @@
   "shelf": "play",
   "tags": "sports,pixel art,adventure,island,capybara,table tennis,climbing,canoe,rhythm,football,tricks,retro",
   "description": "Float down the river with Cappy the capybara to Delta Isle and take on seven rainforest champions in seven sports. Win each champion's Feather, light up the Cup Totem, and ride the vine lift up the Great Kapok to win the Jungle Cup. Explore the island, help its people, and find new styles for Cappy.",
+  "l10n": {
+    "en-GB": {
+      "description": "Float down the river with Cappy the capybara to Delta Isle and take on seven rainforest champions in seven sports. Win each champion's Feather, light up the Cup Totem, and ride the vine lift up the Great Kapok to win the Jungle Cup. Explore the island, help its people, and find new styles for Cappy."
+    },
+    "de": {
+      "description": "Treib mit Cappy dem Wasserschwein den Fluss hinunter zur Delta-Insel und tritt gegen sieben Regenwald-Champions in sieben Sportarten an. Gewinn die Feder jedes Champions, bring den Pokal-Totem zum Leuchten und fahr mit dem Lianenaufzug den Großen Kapokbaum hinauf, um den Dschungel-Pokal zu gewinnen. Erkunde die Insel, hilf ihren Bewohnern und finde neue Looks für Cappy.",
+      "tags": "Sport,Pixel-Art,Abenteuer,Insel,Wasserschwein,Tischtennis,Klettern,Kanu,Rhythmus,Fußball,Tricks,Retro"
+    },
+    "he": {
+      "description": "שטו במורד הנהר עם קאפי הקפיברה אל אי הדלתא והתמודדו מול שבעה אלופי יער גשם בשבעה ענפי ספורט. זכו בנוצה של כל אלוף, הדליקו את טוטם הגביע ועלו במעלית הגפנים אל צמרת עץ הקפוק הגדול כדי לזכות בגביע הג׳ונגל. חקרו את האי, עזרו לתושביו ומצאו סגנונות חדשים לקאפי.",
+      "tags": "ספורט,פיקסל ארט,הרפתקה,אי,קפיברה,טניס שולחן,טיפוס,קאנו,קצב,כדורגל,טריקים,רטרו"
+    },
+    "ar": {
+      "description": "انزل النهر مع كابي حيوان الكابيبارا إلى جزيرة الدلتا، وتحدَّ سبعة أبطال من الغابة المطيرة في سبع رياضات. اربح ريشة كل بطل، وأضئ طوطم الكأس، واصعد بمصعد الكروم إلى قمة شجرة الكابوك العظيمة لتفوز بكأس الأدغال. استكشف الجزيرة، وساعد أهلها، واعثر على أزياء جديدة لكابي.",
+      "tags": "رياضة,فن البكسل,مغامرة,جزيرة,كابيبارا,تنس الطاولة,تسلق,كانو,إيقاع,كرة القدم,حركات,ريترو"
+    },
+    "es": {
+      "description": "Baja por el río con Cappy el capibara hasta la Isla Delta y enfréntate a siete campeones de la selva en siete deportes. Gana la Pluma de cada campeón, ilumina el Tótem de la Copa y sube en el ascensor de lianas por la Gran Ceiba para ganar la Copa de la Selva. Explora la isla, ayuda a su gente y encuentra nuevos estilos para Cappy.",
+      "tags": "deportes,pixel art,aventura,isla,capibara,tenis de mesa,escalada,canoa,ritmo,fútbol,trucos,retro"
+    },
+    "fr": {
+      "description": "Descends la rivière avec Cappy le capybara jusqu'à l'Île Delta et affronte sept champions de la forêt tropicale dans sept sports. Gagne la Plume de chaque champion, allume le Totem de la Coupe et prends l'ascenseur de lianes jusqu'en haut du Grand Kapokier pour remporter la Coupe de la Jungle. Explore l'île, aide ses habitants et trouve de nouveaux styles pour Cappy.",
+      "tags": "sport,pixel art,aventure,île,capybara,tennis de table,escalade,canoë,rythme,football,figures,rétro"
+    },
+    "it": {
+      "description": "Scendi lungo il fiume con Cappy il capibara fino all'Isola Delta e sfida sette campioni della foresta pluviale in sette sport. Vinci la Piuma di ogni campione, accendi il Totem della Coppa e sali con l'ascensore di liane fino in cima al Grande Kapok per vincere la Coppa della Giungla. Esplora l'isola, aiuta i suoi abitanti e trova nuovi stili per Cappy.",
+      "tags": "sport,pixel art,avventura,isola,capibara,ping pong,arrampicata,canoa,ritmo,calcio,trick,retro"
+    },
+    "ja": {
+      "description": "カピバラのキャピーといっしょに川をくだってデルタじまへ。7人のジャングルのチャンピオンと7つのスポーツでたたかおう。チャンピオンのハネをあつめてカップのトーテムに光をともし、ツルのリフトでおおきなカポックの木をのぼって、ジャングルカップをめざそう。島をたんけんして、島のみんなを助けて、キャピーの新しいスタイルも見つけよう。",
+      "tags": "スポーツ,ドット絵,ぼうけん,島,カピバラ,卓球,クライミング,カヌー,リズム,サッカー,トリック,レトロ"
+    },
+    "nl": {
+      "description": "Drijf met Cappy de capibara de rivier af naar het Delta-eiland en neem het op tegen zeven regenwoudkampioenen in zeven sporten. Win de Veer van elke kampioen, laat de Bekertotem oplichten en neem de lianenlift omhoog in de Grote Kapokboom om de Junglebeker te winnen. Ontdek het eiland, help de bewoners en vind nieuwe looks voor Cappy.",
+      "tags": "sport,pixelart,avontuur,eiland,capibara,tafeltennis,klimmen,kano,ritme,voetbal,trucs,retro"
+    },
+    "pt": {
+      "description": "Desça o rio com Cappy, a capivara, até a Ilha Delta e enfrente sete campeões da floresta tropical em sete esportes. Ganhe a Pena de cada campeão, acenda o Totem da Taça e suba no elevador de cipós até o alto da Grande Sumaúma para ganhar a Taça da Selva. Explore a ilha, ajude seus moradores e encontre novos estilos para Cappy.",
+      "tags": "esportes,pixel art,aventura,ilha,capivara,tênis de mesa,escalada,canoa,ritmo,futebol,manobras,retrô"
+    },
+    "ru": {
+      "description": "Сплавься по реке с капибарой Каппи до Острова Дельта и сразись с семью чемпионами тропического леса в семи видах спорта. Завоюй Перо каждого чемпиона, зажги Тотем Кубка и поднимись на лифте из лиан на Великое капоковое дерево, чтобы выиграть Кубок Джунглей. Исследуй остров, помогай его жителям и находи новые образы для Каппи.",
+      "tags": "спорт,пиксель-арт,приключения,остров,капибара,настольный теннис,скалолазание,каноэ,ритм,футбол,трюки,ретро"
+    },
+    "zh-Hant": {
+      "description": "和水豚卡皮一起順著河漂流到三角洲島，在七種運動裡挑戰七位雨林冠軍。贏得每位冠軍的羽毛，點亮獎盃圖騰，再搭藤蔓升降梯爬上巨大木棉樹，贏得叢林盃。探索小島、幫助島上的居民，還能為卡皮找到新造型。",
+      "tags": "運動,像素藝術,冒險,島嶼,水豚,桌球,攀爬,獨木舟,節奏,足球,花式動作,復古"
+    }
+  },
   "orientation": "any",
   "players_max": 1,
   "age_rating": "everyone",

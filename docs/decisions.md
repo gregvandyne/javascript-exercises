@@ -1397,10 +1397,15 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
   subject page each links to: maps has none), `LEARN_FUN` (Play's "From Learn: fun ones"), `BRAIN_BREAKS` (for the
   Classroom home, part 2), `CLASS_TOOLS` (Remi's Quiet Meadow: never Play's hero or featured row, still in search).
 - **Heroes.** Jungle Cup (`"hero": true`) is Play's hero; Code Isle keeps its flag for Learn. Each page picks its hero
-  within its own shelf.
+  within its own shelf. The hero is left out of the rails right under it (Featured, Popular, Top rated, New); its line
+  is the first sentence of the description in the page's language (Jungle Cup's seed JSON has `l10n` for every
+  language). Signed in, Play has no big Join door (Join is the 🎟️ in the top bar), so the hero's Play button is on the
+  first screen at 360×640.
 - **`/`**: Play for the signed out, guests, kids and the platform admin; everyone else gets a 302 to their first tab
   (`landingFor`, views/layout.js: student `/classes`, teacher `/teach`, school admin `/school`, grown-up `/family`),
-  sent `Cache-Control: private, no-store`. Signed out it keeps its heading, doors, join door, subject chips and
+  sent `Cache-Control: private, no-store`, with the query string kept (`?utm_source=`; a path language such as /es is
+  not, as those pages have no language addresses). `/school` with one school opens its overview (setup checklist and
+  Classes), People one tap away. Signed out it keeps its heading, doors, join door, subject chips and
   structured data. `auth.js homeFor` uses `landingFor` too (staff with a school to set up still go there first; the
   platform admin to `/admin`). **`/play`** is the Play page for everyone, never indexed (`/` is the page search
   engines see); grown-ups may open it (`GROWNUP_GET`), traffic counts it as `home`.
@@ -1411,13 +1416,21 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
   every subject and age page, sitemap and hreflang unchanged); signed in a short "📚 Learn" heading. Filters are plain
   links (`?subject=`, `rel="nofollow"`) and a GET form (`?grade=`, `?how=solo|two|live`; `public/js/learn.js` submits
   the grade on change, the Show button works without it); a filtered view is noindex and names the subject page
-  ("More about Math games →"). Then the join door (not for staff), Courses ("My courses" with progress for players),
-  Live class games (the Oomba Live modes, while Live is on), Learning games (each card "Math · Grades 1–5"), learning
-  games by players (signed in only: an indexed page never carries a child's name), and the old subject, age and
-  "for teachers and parents" lists. `/learn/<hub>` and `/learn/<age>` are unchanged and make Learn current.
+  ("More about Math games →"). Then Courses (compact cards: the whole head opens the course, progress, the units behind
+  a tap, one main button; "My courses" once a player has picked a band, "Courses" before), Live class games (the Oomba
+  Live modes, while Live is on) and Learning games (each card "Math · Grades 1–5"): live first for staff and students
+  in a class, learning games first for everyone else. Then the kids' join door ("Got a game code from your teacher?":
+  not for staff or grown-ups, who have Join in the top bar), learning games by players (signed in only: an indexed
+  page never carries a child's name), and the old subject, age and "for teachers and parents" lists. A school student
+  starts on their roster grade (`rosterGrade`); "Any grade" is `?grade=any`, kept as they filter. The how-you-play chips
+  wrap (never scroll the chosen one out of sight); learn.js scrolls the chosen subject chip into view. `/learn/<hub>`
+  and `/learn/<age>` are unchanged and make Learn current. **Breadcrumbs** follow the tabs: Home › Learn › Math games
+  (› a game) signed out, also in BreadcrumbList; signed in the trail starts at Learn (Home is another tab), and the
+  Learn tab itself has none.
 - **Staff on Learn** (`isSchoolStaff`, server-rendered only for them): Assign (`/teach/assign?game=`), Host live
-  (`/live?mode=`, the existing host flow) and Try it on each card; on courses "Assign to a class" (the course's own
-  teacher page: `/teach/cs-quest`, `/teach/cyber-defenders`, `/teachers/number-quest`) and "Teacher guide". Kids,
+  (`/live?mode=`, the existing host flow) and Try it on each card: one main button (Host live for a live mode, else
+  Assign) and Try it as a smaller link. On courses "Assign to a class" (the course's own teacher page: `/teach/cs-quest`,
+  `/teach/cyber-defenders`; Number Quest has no assign page yet, so only its guide) and "Teacher guide". Kids,
   students, grown-ups and guests see none of them. **`/teach/assign`** + **`POST /api/teach/assign-game`** (staff only,
   `lesson-new` rate limit): pick one of your classes (classes you teach, and those of schools you run) and a due date;
   the class gets a one-step lesson that plays the game (`L.createLesson` + `L.addStep` + `L.assign`, so `cleanStep`'s
@@ -1444,11 +1457,14 @@ teacher Classroom (`/teach`) and the student Class tab (`/classes`) themselves.
 ### Part 2: the Classroom tab and the Class tab
 - **Classroom (`/teach`, teachers and school admins):** "Hello, {name}" (the staff member's own roster name: staff
   only, it is their own page) with "N classes · N answers waiting" and Host a live game; the tools row (Lesson library,
-  CS Quest, Cyber Defenders, Make a game), school cards with the plan card, staff invites and plan asks stay. My
+  Make a game; CS Quest and Cyber Defenders are under Teach with a course), school cards with the plan card, staff
+  invites and plan asks stay. My
   classes: each class card shows what needs attention as chips (✋ requests, ✍️ answers to review, 📡 Live game now,
   linking the host to their room, 📅 the soonest open lesson due in the next 7 days) or "All caught up", with Open
-  class, Assign a lesson (`/teach/lessons?school=&class=`) and Host a live game (`/live?class=`). New class and the
-  archived list follow. Then Teach with a course (the three courses' staff pages), Live games for the whole class
+  class, Assign a lesson (`/teach/lessons?school=&class=`) and Host a live game (`/live?class=`) in a row on a laptop;
+  the due lesson's title is cut short on one line with the date under it. + New class is a dashed tile in the class
+  grid (open, its form takes the whole row); the archived list follows. On phones the live modes and brain breaks are
+  one sideways row each. Then Teach with a course (the three courses' staff pages), Live games for the whole class
   (`LIVE_GAMES` -> `/live?mode=`, only while the teacher may host), Brain breaks (`BRAIN_BREAKS` -> `/play/<slug>`),
   and links to everything students can play (`/play`) and Learn.
 - **Class (`/classes`, school students):** one section per class (several: a picker of the classes first). Each has

@@ -77,7 +77,7 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   const hctx = await browser.newContext({ viewport: { width: 360, height: 760 } }); const head = await hctx.newPage();
   const { username } = await signup(head, uniq('Head'), 'head-pass-123');
   const school = await schoolWithAdmin(admin, username);
-  // '/' is their first tab, School (one school: its People tab); Play is /play, current there.
+  // '/' is their first tab, School (one school: its overview, the Classes tab); Play is /play, current there.
   await head.goto('/');
   expect(new URL(head.url()).pathname).toBe(`/school/${school.slug}`);
   expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/me']);
@@ -85,8 +85,9 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   await head.goto('/play');
   await expect(head.locator('.tabbar .tab[href="/play"]')).toHaveAttribute('aria-current', 'page');
   await expect(head.locator('.tabbar .tab[href="/play"] .tab-t')).toHaveText('Play');
-  await Promise.all([head.waitForURL(new RegExp(`/school/${school.slug}\\?tab=people$`)), head.locator('.tabbar .tab[href="/school"]').click()]);
+  await Promise.all([head.waitForURL(new RegExp(`/school/${school.slug}$`)), head.locator('.tabbar .tab[href="/school"]').click()]);
   await expect(head.locator('h1')).toContainText(school.name);
+  await expect(head.locator('nav.tabs a[aria-current="page"]')).toHaveAttribute('href', `/school/${school.slug}?tab=classes`);
   await expect(head.locator('.tabbar .tab[href="/school"]')).toHaveAttribute('aria-current', 'page');
   await head.goto('/me');
   await expect(head.locator('.pagehead a[href="/build"]')).toContainText('Make a game');

@@ -141,11 +141,12 @@ router.get('/school', requireUser, (req, res) => {
   const t = req.t;
   const list = S.adminSchools(req.user);
   if (!list.length) return no(req, res);
-  if (list.length === 1) return res.redirect(302, `/school/${encodeURIComponent(list[0].slug)}?tab=people`);
+  // The School tab opens on the overview: the setup checklist and the classes (People is one tap away).
+  if (list.length === 1) return res.redirect(302, `/school/${encodeURIComponent(list[0].slug)}`);
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const body = html`<div class="pagehead"><h1${en('school.pick.title')}>🏛️ ${t('school.pick.title')}</h1></div>
     <p class="muted"${en('school.pick.text')}>${t('school.pick.text')}</p>
-    <div class="classgrid">${list.map(x => html`<div class="panel classcard"><a class="cc-name cc-link" href="/school/${x.slug}?tab=people"><b>${x.name}</b></a></div>`)}</div>`;
+    <div class="classgrid">${list.map(x => html`<div class="panel classcard"><a class="cc-name cc-link" href="/school/${x.slug}"><b>${x.name}</b></a></div>`)}</div>`;
   page(req, res, { title: t(t.own('school.pick.title') ? 'school.pick.title' : 'nav.schools'), active: 'school', body, head: CSS });
 });
 router.get('/school/:slug', requireUser, async (req, res) => {
@@ -454,7 +455,8 @@ export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x
 // docs/decisions.md "Play and Learn": a teacher's (and a school admin's) first tab. Hello and what needs doing, then each
 // class as a card with what needs attention (requests, answers to read, the next lesson due, a live room that is open)
 // and its buttons, then ready-made ways to teach: courses, live games for the whole class and short brain breaks from
-// Play. Everything the page had before stays (the tools row, school cards, invites, plan asks, New class, archived).
+// Play. Everything the page had before stays (the tools row: Lesson library and Make a game, with CS Quest and Cyber Defenders
+// now under "Teach with a course"; school cards, invites, plan asks, New class as a tile beside the classes, archived).
 const DAY_MS = 864e5;
 /** An official game anyone may open, in the page's language (for the Classroom home's tiles). */
 const officialGame = slug => { const g = games.getGameBySlug(slug); return g && g.source === 'seed' && games.canView(null, g) ? games.localizeGame(g) : null; };
@@ -484,7 +486,8 @@ function classroomHome(req) {
       c.requests ? html`<a class="chip-s warn" href="/class/${c.id}?tab=students#requests">✋ ${t('school.class.requestsN', { count: c.requests })}</a>` : '',
       toRead[c.id] ? html`<a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : '',
       room && room.phase !== 'ended' ? (mineRoom ? html`<a class="chip-s good" href="/live/host/${room.id}">📡 ${t('classes.live.chip')}</a>` : html`<span class="chip-s good">📡 ${t('classes.live.chip')}</span>`) : '',
-      due ? html`<a class="chip-s" href="/class/${c.id}">📅 <bdi>${due.title}</bdi> · ${L.dueState(due) === 'today' ? t('lessons.class.dueToday') : t('lessons.class.dueOn', { date: req.fmt.day(due.due_at) })}</a>` : '',
+      // The next lesson due: its title cut short on one line, the date on a line of its own.
+      due ? html`<a class="chip-s th-due" href="/class/${c.id}"><span class="th-due-t">📚 <bdi>${due.title}</bdi></span><span class="th-due-d">📅 ${L.dueState(due) === 'today' ? t('lessons.class.dueToday') : t('lessons.class.dueOn', { date: req.fmt.day(due.due_at) })}</span></a>` : '',
     ].filter(Boolean);
     return html`<div class="panel classcard th-class">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
@@ -501,16 +504,16 @@ function classroomHome(req) {
   return html`
   <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
     ${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
-  <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a><a class="btn" href="/teach/cs-quest">💻 ${t('cs.program.title')}</a><a class="btn" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a>${makeGameBtn(t)}</nav>
+  <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${makeGameBtn(t)}</nav>
   ${admins.map(x => html`<section class="panel schoolcard"><a class="sc-link" href="/school/${x.slug}"><b>🏫 ${t('school.teach.manage', { school: x.name })}</b>
       <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
     ${teachPlanCard(req, x)}</section>`)}
   ${staffInvitesPanel(req)}
   ${schools.map(x => askPanel(req, x))}
   <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>
-  ${mine.length ? html`<div class="classgrid">${mine.map(card)}</div>`
+  ${mine.length ? html`<div class="classgrid th-classes">${mine.map(card)}${canCreate.length ? html`<div class="th-newclass">${newClassForm(t, { schools: canCreate, me: u })}</div>` : ''}</div>`
     : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: admins.length ? t('school.teach.noneAdminText', { school: admins[0].name }) : canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
-  ${canCreate.length ? newClassForm(t, { schools: canCreate, me: u, open: !mine.length && !admins.length }) : ''}
+  ${canCreate.length && !mine.length ? newClassForm(t, { schools: canCreate, me: u, open: !admins.length }) : ''}
   ${old.length ? html`<details class="panel archived"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>
     <ul class="plain archlist">${old.map(c => html`<li><a href="/class/${c.id}"><b>${c.name}</b></a> <span class="small muted">${c.school_name}</span>
       <form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></li>`)}</ul></details>` : ''}
@@ -518,9 +521,9 @@ function classroomHome(req) {
   <section class="th-sec" id="teach-courses" aria-labelledby="teach-courses-h"><h2 id="teach-courses-h">🎓 ${t('teach.home.courses')}</h2>
     <ul class="plain th-tiles">${courseTiles}</ul></section>
   ${liveTiles.length ? html`<section class="th-sec" id="teach-live" aria-labelledby="teach-live-h"><h2 id="teach-live-h">📡 ${t('teach.home.live')}</h2>
-    <p class="small muted">${t('learn.tab.liveStaff')}</p><ul class="plain th-tiles">${liveTiles}</ul></section>` : ''}
+    <p class="small muted">${t('learn.tab.liveStaff')}</p><ul class="plain th-tiles th-grid2" tabindex="0" aria-labelledby="teach-live-h">${liveTiles}</ul></section>` : ''}
   ${breakTiles.length ? html`<section class="th-sec" id="brain-breaks" aria-labelledby="brain-breaks-h"><h2 id="brain-breaks-h">⏱️ ${t('teach.home.breaks')}</h2>
-    <p class="small muted">${t('teach.home.breaksText')}</p><ul class="plain th-tiles th-breaks">${breakTiles}</ul></section>` : ''}
+    <p class="small muted">${t('teach.home.breaksText')}</p><ul class="plain th-tiles th-breaks th-grid2" tabindex="0" aria-labelledby="brain-breaks-h">${breakTiles}</ul></section>` : ''}
   <p class="th-more row"><a class="btn" href="/play" id="teach-all-games">🎮 ${t('teach.home.allGames')}</a><a class="btn" href="/learn">📚 ${t('home.rails.openLearn')}</a></p>`;
 }
 router.get('/teach', requireUser, (req, res) => {

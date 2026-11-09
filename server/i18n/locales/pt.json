@@ -6316,9 +6316,18 @@
       "about": "Programe um robô, resolva mistérios com dados, envie mensagens por uma cidade e descubra por dentro as máquinas que usamos todo dia. Cada etapa é uma lição curta, um teste rápido e depois um módulo de jogo.",
       "teachers": "Cada jogo tem planos de aula para uma aula de 45 minutos, com aquecimentos ao vivo, tickets de saída e uma visão dos padrões da sua turma."
     },
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cibersegurança e segurança on-line · do 3º ao 8º ano"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Matemática nos Numberworks · do 3º ao 5º ano"
+    },
     "back": "Voltar para {course}",
     "step": "{course} · jogo {n} de {total}",
     "stepsDone": "{n} de {total} etapas feitas",
+    "unitsN": "{count, plural, one {Ver a # unidade} other {Ver as # unidades}}",
     "band": {
       "h": "Escolha seu nível",
       "text": "Você pode trocar depois nesta página.",

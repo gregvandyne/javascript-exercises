@@ -22,7 +22,7 @@ import { config } from '../config.js';
 import { googleEnabled } from '../oidc.js';
 import { familiesOn } from '../services/family.js';
 import { isGrownup, noteTeacherWay } from '../auth.js';
-import { isSchoolStaff, isPlatformAdmin } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolsOf, classesOf } from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
 import { allow, count, ipOf } from '../services/ratelimit.js';
 import { siteHost } from '../site.js';
@@ -383,13 +383,26 @@ const HOWS = ['solo', 'two', 'live'];
 /** Each course's subject and grades, for the filters. */
 const COURSE_INFO = { 'cs-quest': { subject: 'code', from: 3, to: 8 }, 'cyber-defenders': { subject: 'code', from: 3, to: 6 }, 'number-quest': { subject: 'math', from: 3, to: 5 } };
 /** The filters asked for in the address, each one only when it is a known value. */
-export function learnFilters(query = {}) {
+export function learnFilters(query = {}, defaultGrade = '') {
   const subject = SUBJECTS.some(x => x.key === query.subject) ? query.subject : '';
-  const grade = GRADES.includes(String(query.grade)) ? String(query.grade) : '';
+  // A student's roster grade is picked until they choose another (or "Any grade": grade=any).
+  const asked = query.grade === undefined ? defaultGrade : String(query.grade);
+  const grade = GRADES.includes(asked) ? asked : '';
   const how = HOWS.includes(query.how) ? query.how : '';
   return { subject, grade, how };
 }
 const gradeNum = g => (g === 'K' ? 0 : +g);
+/** A student's grade from their school roster ("4", "Grade 4", "k"), as a Learn filter value, or ''. */
+export function rosterGrade(u) {
+  if (!u || u.is_guest) return '';
+  for (const s of schoolsOf(u.id)) {
+    if (s.role !== 'student') continue;
+    const m = /^\s*(?:grade\s*)?(k|\d{1,2})\b/i.exec(String(s.grade || ''));
+    const g = m ? m[1].toUpperCase().replace(/^0+(?=\d)/, '') : '';
+    if (GRADES.includes(g)) return g;
+  }
+  return '';
+}
 /** Does a game or course with this info pass the subject and grade filters? */
 const fits = (info, f) => !!info && (!f.subject || info.subject === f.subject) && (!f.grade || (info.from <= gradeNum(f.grade) && gradeNum(f.grade) <= info.to));
 const isTwo = g => TWO_PLAYER.includes(g.slug) || (g.players_max >= 2 && g.players_max <= 8);
@@ -399,14 +412,19 @@ router.get('/learn', (req, res) => {
   const t = req.t, u = req.user;
   const out = signedOut(u);
   const staff = !out && isSchoolStaff(u);
-  const f = learnFilters(req.query);
+  const defGrade = out || staff ? '' : rosterGrade(u);
+  const f = learnFilters(req.query, defGrade);
   const filtered = !!(f.subject || f.grade || f.how);
+  // With a roster grade, "Any grade" has to say so in the address (grade=any), or the default would come back.
+  const gradeQ = g => g || (defGrade ? 'any' : '');
   const live = liveOn();
   const subjName = k => t(`learn.tab.subjects.${k}`);
   const meta = g => { const i = SHELF_INFO[g.slug]; const gr = shelfGrades(g.slug); return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', gr) }) : null; };
-  const href = over => { const p = { ...f, ...over }; const qs = new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString(); return lp(req, '/learn') + (qs ? `?${qs}` : '') + '#filters'; };
+  const href = over => { const p = { ...f, ...over }; p.grade = gradeQ(p.grade); const qs = new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString(); return lp(req, '/learn') + (qs ? `?${qs}` : '') + '#filters'; };
   const card = (href, emoji, name, short) => html`<li><a class="lp-hub panel" href="${lp(req, href)}"><span class="lp-hub-e" aria-hidden="true">${emoji}</span><span>${el(t, 'span', name, {}, ' class="lp-hub-t"')}${el(t, 'span', short, {}, ' class="lp-hub-d"')}</span></a></li>`;
   const crumbs = [[t('nav.home'), '/'], [t('learn.index.crumb'), '/learn']];
+  // Learn is a tab: signed in, it needs no breadcrumb ("Home" is another tab, or another first page, for them).
+  const seenCrumbs = out ? crumbs : [];
 
   // The official Learn-shelf games anyone may open (course-owned games are reached through their course).
   const all = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 60 }).filter(g => SHELF_INFO[g.slug]);
@@ -414,12 +432,13 @@ router.get('/learn', (req, res) => {
   // Live class games: the Oomba Live modes (while Live is on), in their own section; the rest in the grid.
   const liveList = live && f.how !== 'solo' && f.how !== 'two' ? pass.filter(g => liveGameOf(g)) : [];
   const grid = f.how === 'live' ? [] : pass.filter(g => !liveList.includes(g) && !(live && liveOnly(g))).filter(g => f.how !== 'two' || isTwo(g));
+  // One main action per card for staff (Host live for a live mode, else Assign), and Try it as a smaller link.
   const acts = g => {
     if (!staff) return '';
     const l = liveGameOf(g);
-    const host = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>` : '';
-    const assign = l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
-    return html`<div class="lcard-acts">${host}${assign}<a class="btn btn-sm" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
+    const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>`
+      : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
+    return html`<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
@@ -427,17 +446,24 @@ router.get('/learn', (req, res) => {
   if (f.how !== 'two' && f.how !== 'live') {
     try {
       const items = courses.COURSES.filter(c => fits(COURSE_INFO[c.slug], f)).map(c => ({ course: c, games: courses.courseGames(u, c), ov: courses.overview(u, c) }));
-      const mine = !out && !staff && !isGrownup(u);
+      // "My courses" once a player has begun one (picked a band); "Courses" until then.
+      const mine = !out && !staff && !isGrownup(u) && items.some(it => it.ov && it.ov.band);
       courseMarkup = items.length ? courseRow(items, { staff, title: mine ? t('learn.tab.myCourses') : null }) : '';
     } catch (e) { log('error', 'learn courses', { error: e.message }); }
   }
   // Games other players made for learning: signed in only (an indexed page never carries a child's name or words).
-  const players = out || filtered ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
+  const players = out || (filtered && !(f.grade === defGrade && !f.subject && !f.how)) ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
   const subj = SUBJECTS.find(x => x.key === f.subject);
   const chip = (on, link, label, emoji = '') => html`<a class="chip${on ? ' on' : ''}" href="${link}" rel="nofollow"${on ? raw(' aria-current="true"') : ''}>${emoji ? html`<span aria-hidden="true">${emoji}</span>` : ''}${label}</a>`;
-  const joinDoor = live && !staff ? html`<div class="home-join learn-join"><a class="door door-join" href="/join" id="learn-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h">${t('learn.tab.joinH')}</span><span class="door-s">${t('live.entry.join')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
+  // Kids' "Got a game code from your teacher?" (grown-ups and staff have Join in the top bar), under the games.
+  const joinDoor = live && !staff && !isGrownup(u) ? html`<div class="home-join learn-join"><a class="door door-join" href="/join" id="learn-join"><span class="door-e" aria-hidden="true">🎟️</span><span class="door-t"><span class="door-h">${t('learn.tab.joinH')}</span><span class="door-s">${t('live.entry.join')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
+  // Live class games: first for staff (they host them) and for students in a class; under the learning games for
+  // everyone else (a kid at home plays the learning games; live modes need a class).
+  const liveFirst = staff || (!out && classesOf(u.id, 'student').length > 0);
+  const liveSec = liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('learn.tab.live')}</h2>
+      <p class="small muted">${staff ? t('learn.tab.liveStaff') : t('learn.tab.liveText')}</p>${cards(liveList)}</section>` : '';
   const body = html`<div class="lp learn-tab">
-    <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
+    ${seenCrumbs.length ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${seenCrumbs.map(([name, p], i) => html`<li>${i < seenCrumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
     ${out ? html`<section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
       ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
       ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
@@ -449,23 +475,23 @@ router.get('/learn', (req, res) => {
       </div>
       <div class="learn-filter-row">
         <label class="learn-grade"><span>${t('learn.tab.grade')}</span>
-          <select class="input" name="grade" data-autosubmit>${[['', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}"${f.grade === v ? raw(' selected') : ''}>${l}</option>`)}</select></label>
+          <select class="input" name="grade" data-autosubmit>${[[defGrade ? 'any' : '', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}"${(f.grade || (defGrade ? 'any' : '')) === v ? raw(' selected') : ''}>${l}</option>`)}</select></label>
         ${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}${f.how ? html`<input type="hidden" name="how" value="${f.how}">` : ''}
         <button class="btn" type="submit" data-nojs>${t('learn.tab.filter')}</button>
       </div>
-      <div class="chips scroll" role="group" aria-label="${t('learn.tab.how')}">
+      <div class="chips learn-how" role="group" aria-label="${t('learn.tab.how')}">
         <span class="small muted learn-how-l" aria-hidden="true">${t('learn.tab.how')}</span>
         ${chip(!f.how, href({ how: '' }), t('learn.tab.howAll'))}
         ${HOWS.filter(h => h !== 'live' || live).map(h => chip(f.how === h, href({ how: h }), t(`learn.tab.hows.${h}`), { solo: '🙂', two: '👥', live: '📡' }[h]))}
       </div>
     </form>
     ${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
-    ${joinDoor}
     ${courseMarkup}
-    ${liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">📡 ${t('learn.tab.live')}</h2>
-      <p class="small muted">${staff ? t('learn.tab.liveStaff') : t('learn.tab.liveText')}</p>${cards(liveList)}</section>` : ''}
+    ${liveFirst ? liveSec : ''}
     <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">🎓 ${t('learn.tab.games')}</h2>
       ${grid.length ? cards(grid) : liveList.length ? '' : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}#filters">${t('learn.tab.clear')}</a></p>`}</section>
+    ${liveFirst ? '' : liveSec}
+    ${joinDoor}
     ${players.length ? rail({ title: t('learn.tab.players'), emoji: '🛠️', games: players, id: 'learn-players' }) : ''}
     <section class="lp-sec" id="subjects" aria-labelledby="subj-h">${el(t, 'h2', 'learn.index.subjects', {}, ' id="subj-h"')}
       <ul class="lp-hubs">${HUBS.map(h => card(`/learn/${h.slug}`, h.emoji, `learn.hubs.${h.key}.name`, `learn.hubs.${h.key}.short`))}</ul></section>
@@ -512,9 +538,11 @@ router.get('/learn/:hub', (req, res) => {
   const pairs = Array.from({ length: HUB_FAQ[hub.key] }, (_, i) => [`${k}.faq.q${i + 1}`, paidKey(i + 1)]).filter(([qk, ak]) => t.own(qk) && t.own(ak));
   const faq = faqBlock(req, pairs, 'learn.faqHeading', { plans: '/plans', ai: lp(req, '/parents/ai-builder-safety') });
   const others = HUBS.filter(h => h !== hub);
-  const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t(`${k}.name`), path]];
+  // Subject pages sit under the Learn tab (Home › Learn › Math games); signed in, Home is another tab, so it is left out.
+  const crumbs = [[t('nav.home'), '/'], [t('learn.index.crumb'), '/learn'], [t(`${k}.name`), path]];
+  const seenCrumbs = signedOut(req.user) ? crumbs : crumbs.slice(1);
   const body = html`<div class="lp">
-    <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
+    <nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${seenCrumbs.map(([name, p], i) => html`<li>${i < seenCrumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>
     <section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
       ${raw(`<h1 id="lp-h1"${fb(t, `${k}.h1`)}><span aria-hidden="true">${hub.emoji}</span> ${tHtml(t, `${k}.h1`)}</h1>`)}
       ${el(t, 'p', `${k}.lead`, {}, ' class="lead"')}

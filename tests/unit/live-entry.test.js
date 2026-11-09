@@ -68,10 +68,10 @@ test('a teacher gets "Host a live game" with the mode picked', async () => {
   assert.match(page, /href="\/live\?mode=wyr" id="hostlive"/);
 });
 
-test('"Join a game" is in the top bar for players, on the signed-in home page, and not for school staff', async () => {
+test('"Join a game" is in the top bar for players (Play has no second, big Join door signed in), and not for school staff', async () => {
   const kidHome = await (await get('/', kid)).text();
   assert.match(kidHome, /class="btn joinnow" href="\/join"/);
-  assert.match(kidHome, /class="home-join-in"[\s\S]*id="home-join"/);
+  assert.doesNotMatch(kidHome, /class="home-join-in"|id="home-join"/, 'the featured game comes first on Play');
   const kidGame = await (await get('/g/sum-racer', kid)).text();
   assert.match(kidGame, /class="btn joinnow" href="\/join"/, 'on every page');
   const out = await (await get('/')).text();

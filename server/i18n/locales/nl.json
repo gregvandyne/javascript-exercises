@@ -6315,9 +6315,18 @@
       "about": "Programmeer een robot, los raadsels op met data, stuur berichten door een stad en kijk in de apparaten die we elke dag gebruiken. Elke stap is een korte les, een snelle check en dan een spelmodule.",
       "teachers": "Bij elk spel horen lesplannen voor een les van 45 minuten, met live opwarmers, exitvragen en een overzicht van de standaarden voor je klas."
     },
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cyberveiligheid en veilig online · groep 5 tot en met klas 2"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Rekenen in de Numberworks · groep 5 tot en met 7"
+    },
     "back": "Terug naar {course}",
     "step": "{course} · spel {n} van {total}",
     "stepsDone": "{n} van {total} stappen klaar",
+    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}",
     "band": {
       "h": "Kies je niveau",
       "text": "Je kunt het later op deze pagina veranderen.",

@@ -6719,6 +6719,7 @@
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",
     "stepsDone": "{n} of {total} steps done",
+    "unitsN": "{count, plural, one {See the # unit} other {See the # units}}",
     "band": {
       "h": "Pick your level",
       "text": "You can switch later from this page.",
