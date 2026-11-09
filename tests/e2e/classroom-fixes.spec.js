@@ -104,7 +104,10 @@ test('a student waiting on the class page sees the live game open, and codes typ
   // My classes and Home say so too
   await kid.goto('/classes');
   await expect(kid.locator('.classcard').first()).toContainText('Live game now');
+  // '/' is the student's Class tab; their Play page has the banner too.
   await kid.goto('/');
+  expect(new URL(kid.url()).pathname).toBe('/classes');
+  await kid.goto('/play');
   await expect(kid.locator('#home-class')).toContainText('Your teacher started a live game');
   // a game code in the class-code box: on to Join a game with it
   await kid.goto('/classes');

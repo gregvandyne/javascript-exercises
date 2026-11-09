@@ -119,7 +119,7 @@ test('staff who sign in with a short password are asked for a longer one until t
   const signIn = async (username, password) => { const r = await post('/api/auth/login', { username, password }); assert.equal(r.status, 200, username); return cookieOf(r); };
   const c = await signIn('ShortStaff', 'tulip-42');
   assert.equal(auth.getUser(shorty.id).password_short, 1);
-  for (const path of ['/me', '/teach', '/']) {
+  for (const path of ['/me', '/teach', '/play', '/learn']) {
     const h = await (await get(path, c)).text();
     assert.match(h, /Your password is shorter than 12 characters\. Staff accounts can see children's work, so please <a href="\/me#password">choose a longer one<\/a>\./, path);
   }

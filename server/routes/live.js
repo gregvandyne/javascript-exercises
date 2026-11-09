@@ -186,7 +186,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
   // Opened from a class (its "Host a live game" or a lesson): a way back to it, and its name under the heading.
   const forClass = pre.classId ? teaching.find(c => c.id === pre.classId) : null;
-  page(req, res, { title: t('live.landing.title'), active: 'classes', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
+  page(req, res, { title: t('live.landing.title'), active: 'live', head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     ...(forClass ? { back: `/class/${forClass.id}`, backLabel: forClass.name } : {}),
     body: V.landingBody(req, { forClass, modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
       prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req), tug: LS.teamsOn() ? tugPicker(req) : null, doodle: doodlePicker(req),
@@ -676,7 +676,7 @@ function resultsCsv(req, res, id) {
 const setErr = (req, res, r) => res.status(r.code === 'notFound' ? 404 : 400).json({ error: req.t(`live.api.set.${r.code}`, { n: (r.at || 0) + 1 }), code: r.code, ...(r.at !== undefined ? { at: r.at } : {}) });
 router.get('/live/sets', on, requireAnyAccount, hostOnly, (req, res) => {
   noStore(res);
-  page(req, res, { title: req.t('live.sets.title'), active: 'classes', back: '/live', head: '<link rel="stylesheet" href="/css/live.css">', body: V.setsBody(req, { sets: SETS.listFor(req.user) }), scripts: ['/js/live-sets.js'] });
+  page(req, res, { title: req.t('live.sets.title'), active: 'live', back: '/live', head: '<link rel="stylesheet" href="/css/live.css">', body: V.setsBody(req, { sets: SETS.listFor(req.user) }), scripts: ['/js/live-sets.js'] });
 });
 router.get('/api/live/sets', on, requireAnyAccount, hostOnly, (req, res) => res.json(SETS.listFor(req.user)));
 router.get('/api/live/sets/:id', on, requireAnyAccount, hostOnly, (req, res) => {

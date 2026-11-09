@@ -105,7 +105,8 @@ function school() {
 test('/plans and the menu\'s Plans link: on for everyone while paid-plan pages are on, gone otherwise', async () => {
   const k = kid(), g = grownup(), { teacher, student } = school();
   for (const who of [null, signIn(k), signIn(g), signIn(teacher), signIn(student), signIn(auth.createGuest())]) {
-    const home = await call(who, '/');
+    // Play: '/' for the signed out and kids, /play for those whose first tab is another one.
+    const home = await call(who, '/play');
     assert.match(home.text, /<a class="navlink" href="\/plans"[^>]*><span class="emo" aria-hidden="true">⭐<\/span>Plans<\/a>/);
     assert.match(home.text, /<a class="tab" href="\/plans"/, 'also in the phone tab bar');
     const r = await call(who, '/plans');

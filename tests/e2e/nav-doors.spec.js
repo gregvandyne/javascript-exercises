@@ -43,7 +43,7 @@ test('signed out and as a guest: Grown-ups tab, no Friends; the labels fit at 36
             footTeachers: !!document.querySelector('footer.foot a[href="/teachers"]'),
           };
         });
-        const want = ['/', '/search', '/build', '/parents', '/login'];
+        const want = ['/', '/learn', '/build', '/parents', '/login'];
         if (JSON.stringify(r.hrefs.filter(h => h !== '/plans')) !== JSON.stringify(want)) problems.push(`${who} ${lang} ${p}: tabs ${r.hrefs.join(' ')}`);
         if (r.cut.length) problems.push(`${who} ${lang} ${p}: cut off ${r.cut.join(', ')}`);
         if (r.wrapped.length) problems.push(`${who} ${lang} ${p}: label on two lines ${r.wrapped.join(', ')}`);
@@ -73,8 +73,8 @@ test('desktop, signed out and as a guest: Parents and Teachers in the top bar, n
     await expect(page.locator('.topnav a[href="/teachers"]')).toBeVisible();
     await expect(page.locator('.topnav a[href="/friends"]')).toHaveCount(0);
     await expect(page.locator('.home-intro')).toBeVisible();
-    // Week 2: Home · Build · Parents · Teachers (Plans when billing is public), Sign in, then ▶ Play now; the search field stays.
-    expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/build', '/parents', '/teachers']);
+    // Play · Learn · Build · Parents · Teachers (Plans when billing is public), Sign in, then ▶ Play now; the search field stays.
+    expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/learn', '/build', '/parents', '/teachers']);
     await expect(page.locator('.topbar .playnow')).toBeVisible();
     await expect(page.locator('#topq')).toBeVisible();
     const doors = page.locator('.home-intro .doors .door');

@@ -66,7 +66,12 @@
     "playNow": "Jugar ya",
     "games": "Juegos",
     "account": "Cuenta",
-    "school": "Escuela"
+    "school": "Escuela",
+    "play": "Jugar",
+    "learn": "Aprender",
+    "class": "Clase",
+    "classroom": "Mi aula",
+    "live": "En vivo"
   },
   "errors": {
     "goHome": "Ir al inicio",
@@ -504,7 +509,11 @@
       "rated": "Mejor calificados",
       "new": "Nuevos",
       "mine": "Mis juegos",
-      "favorites": "Mis favoritos"
+      "favorites": "Mis favoritos",
+      "keep": "Sigue jugando",
+      "two": "Dos jugadores",
+      "fromLearn": "De Aprender: los más divertidos",
+      "openLearn": "Abrir Aprender"
     },
     "hero": {
       "label": "Juego destacado",
@@ -539,6 +548,9 @@
       "todo": "{count, plural, one {# lección por hacer} other {# lecciones por hacer}}",
       "continue": "Continuar",
       "open": "Abrir mi clase"
+    },
+    "chips": {
+      "two": "2 jugadores"
     }
   },
   "search": {
@@ -2412,11 +2424,11 @@
       "passed": "¡Lo lograste! {score} de {total} bien.",
       "failed": "{score} de {total} bien. Necesitas {pass}. ¡Inténtalo otra vez!"
     },
-  "loudness": {
-    "listening": "Escuchando",
-    "stop": "Parar",
-    "tap": "Toca para empezar a escuchar"
-  }
+    "loudness": {
+      "listening": "Escuchando",
+      "stop": "Parar",
+      "tap": "Toca para empezar a escuchar"
+    }
   },
   "favorites": {
     "title": "Mis favoritos",
@@ -2450,6 +2462,15 @@
       "title": "¡Tu maestro empezó un juego en vivo!",
       "join": "Unirme ahora",
       "chip": "Juego en vivo ahora"
+    },
+    "tab": {
+      "todo": "Por hacer",
+      "next": "Siguiente: {step}",
+      "continue": "Continuar",
+      "start": "Empezar",
+      "allDone": "¡Todo hecho! No hay nada pendiente ahora.",
+      "more": "¿Terminaste por hoy?",
+      "pick": "Tus clases"
     }
   },
   "school": {
@@ -4547,7 +4568,54 @@
       "ages": "Por edad",
       "who": "Para docentes y familias"
     },
-    "inClass": "¿Lo usa en clase? <a href=\"{href}\">Vea Oomba Academy para docentes</a>."
+    "inClass": "¿Lo usa en clase? <a href=\"{href}\">Vea Oomba Academy para docentes</a>.",
+    "tab": {
+      "h1": "Aprender",
+      "lead": "Juegos y cursos que enseñan algo. Elige una materia o simplemente un juego.",
+      "leadStaff": "La misma biblioteca que ven tus estudiantes, con botones para asignar y presentar en vivo.",
+      "filters": "Filtrar los juegos",
+      "subject": "Materia",
+      "subjects": {
+        "all": "Todo",
+        "math": "Matemáticas",
+        "words": "Palabras",
+        "maps": "Mapas",
+        "code": "Programación",
+        "thinking": "Pensar",
+        "music": "Música",
+        "any": "Cualquier materia"
+      },
+      "grade": "Grado",
+      "gradeAny": "Cualquier grado",
+      "gradeK": "Kínder",
+      "gradeN": "Grado {n}",
+      "filter": "Mostrar",
+      "how": "Cómo juegas",
+      "howAll": "De cualquier forma",
+      "hows": {
+        "solo": "Yo solo",
+        "two": "2 jugadores",
+        "live": "En vivo con mi clase"
+      },
+      "moreAbout": "Más sobre juegos de {subject}",
+      "joinH": "¿Tu maestro te dio un código de juego?",
+      "myCourses": "Mis cursos",
+      "live": "Juegos en vivo para la clase",
+      "liveText": "Tu maestro empieza uno en la pantalla grande y todos entran con un código.",
+      "liveStaff": "Preséntalo en la pantalla grande y tu clase entra con un código.",
+      "games": "Juegos para aprender",
+      "none": "Todavía no hay juegos con estos filtros.",
+      "clear": "Ver todos los juegos",
+      "players": "Juegos para aprender hechos por jugadores",
+      "meta": "{subject} · {grades}",
+      "assign": "Asignar",
+      "assignCourse": "Asignar a una clase",
+      "guide": "Guía para docentes",
+      "host": "Presentar en vivo",
+      "try": "Probar",
+      "also": "También en Oomba",
+      "hubNamed": "{subject}: {hub}"
+    }
   },
   "parents": {
     "title": "Juegos educativos gratis y seguros para niños",
@@ -6473,7 +6541,16 @@
       "passed": "¡Lo lograste! {score} de {total} bien.",
       "failed": "{score} de {total} bien. Mira las respuestas correctas y vuelve a intentarlo."
     },
-    "play": "Jugar: {game} · {chapter}"
+    "play": "Jugar: {game} · {chapter}",
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Ciberseguridad y seguridad en internet · de 3.º a 8.º grado"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Matemáticas en los Numberworks · de 3.º a 5.º grado"
+    },
+    "unitsN": "{count, plural, one {Ver la # unidad} other {Ver las # unidades}}"
   },
   "move": {
     "title": "Pausas activas",
@@ -6925,6 +7002,29 @@
       "theme": "Tema",
       "dark": "Oscuro",
       "light": "Claro"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "Asignar {game}",
+      "pickClass": "Clase",
+      "submit": "Asignar",
+      "note": "Tu clase recibe una lección de un paso que juega este juego. Puedes cambiarla después en la biblioteca de lecciones.",
+      "none": "Todavía no tienes clases. Primero crea una en Mi aula.",
+      "liveOnly": "Es un juego en vivo para la clase: preséntalo en la pantalla grande en lugar de asignarlo."
+    },
+    "home": {
+      "hello": "Hola, {name}",
+      "classesN": "{count, plural, one {# clase} other {# clases}}",
+      "waitingN": "{count, plural, one {# respuesta pendiente} other {# respuestas pendientes}}",
+      "caughtUp": "Todo al día",
+      "openClass": "Abrir la clase",
+      "courses": "Enseña con un curso",
+      "live": "Juegos en vivo para toda la clase",
+      "breaks": "Pausas activas",
+      "breaksText": "Juegos cortos y divertidos de Jugar, elegidos para una pausa de 5 minutos en la pantalla grande.",
+      "allGames": "Ver todo lo que pueden jugar los alumnos",
+      "openLive": "Abrir el juego en vivo"
     }
   }
 }

@@ -67,16 +67,17 @@ test('catalogue queries: flagged games are out of rails, featured, category and 
   assert.ok(!G.similar(null, wyr, 6).some(g => FLAGGED.includes(g.slug)), 'similar games never suggest a course-only game');
 });
 
-test('the home page: no catalogue cards for the flagged games, and the course card shows a real topic label', async () => {
-  const home = await get('/');
-  assert.equal(home.status, 200);
-  for (const slug of FLAGGED) {
-    assert.ok(!home.text.includes(`href="/g/${slug}"`), `no /g link for ${slug}`);
-    assert.ok(!home.text.includes(`href="/play/${slug}"`), `no bare /play link for ${slug}`);
+test('Play and Learn: no catalogue cards for the flagged games, and the course card (on Learn) shows a real topic label', async () => {
+  const home = await get('/'), learn = await get('/learn');
+  assert.equal(home.status, 200); assert.equal(learn.status, 200);
+  for (const page of [home, learn]) for (const slug of FLAGGED) {
+    assert.ok(!page.text.includes(`href="/g/${slug}"`), `no /g link for ${slug}`);
+    assert.ok(!page.text.includes(`href="/play/${slug}"`), `no bare /play link for ${slug}`);
   }
-  assert.ok(home.text.includes('href="/courses/cyber-defenders#trick-inbox"'), 'the course card still lists Trick Inbox inside the course');
-  assert.ok(home.text.includes('Online safety'), 'the Cyber Defenders games render their topic label');
-  assert.ok(!home.text.includes('courses.topics.cybersecurity'), 'never the raw i18n key');
+  assert.ok(!home.text.includes('id="courses-h"'), 'the courses live on Learn, not on Play');
+  assert.ok(learn.text.includes('href="/courses/cyber-defenders#trick-inbox"'), 'the course card still lists Trick Inbox inside the course');
+  assert.ok(learn.text.includes('Online safety'), 'the Cyber Defenders games render their topic label');
+  assert.ok(!learn.text.includes('courses.topics.cybersecurity'), 'never the raw i18n key');
   const search = await get('/search?q=Trick');
   assert.equal(search.status, 200);
   assert.ok(!search.text.includes('href="/g/trick-inbox"'), 'search results carry no Trick Inbox card');

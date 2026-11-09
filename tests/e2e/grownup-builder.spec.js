@@ -89,22 +89,22 @@ async function shots(page, name, url, { prepare } = {}) {
 test('a grown-up builds a game for their family; their child plays it, another child can\'t; then Everyone, approved; no contact for kids', async ({ browser }) => {
   const mum = await person(browser, { viewport: PHONE });
   const mumName = await grownupSignup(mum);
-  // The five tabs: Family · Build · Games · Plans · Account, and they fit at phone width.
-  await mum.goto('/');
+  // The tabs: Family · Play · Learn · Build · Plans · Account, and they fit at phone width.
+  await mum.goto('/play');
   const tabs = await mum.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')));
-  expect(tabs).toEqual(['/family', '/build', '/', '/plans', '/family/account']);
+  expect(tabs).toEqual(['/family', '/play', '/learn', '/build', '/plans', '/family/account']);
   const fit = await mum.evaluate(() => {
     const t = [...document.querySelectorAll('.tabbar .tab')].map(a => a.getBoundingClientRect());
     return { wide: document.documentElement.scrollWidth - innerWidth, off: t.some(b => b.left < 0 || b.right > innerWidth + 0.5), overlap: t.slice(1).some((b, i) => b.left < t[i].right - 0.5) };
   });
   expect(fit, JSON.stringify(fit)).toEqual({ wide: 0, off: false, overlap: false });
   for (const width of [360, 390]) {
-    await mum.setViewportSize({ width, height: 800 }); await mum.goto('/');
+    await mum.setViewportSize({ width, height: 800 }); await mum.goto('/play');
     const w = await mum.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     expect(w, `no sideways scroll at ${width}`).toBe(0);
   }
   await mum.setViewportSize(PHONE);
-  await shots(mum, 'grownup-home', '/');
+  await shots(mum, 'grownup-home', '/play');
 
   // A linked child, and a child of nobody here.
   const child = await person(browser); const childName = (await signup(child, uniq('Kid'))).username;
@@ -189,10 +189,10 @@ test('a grown-up builds a game for their family; their child plays it, another c
       await ctx.close();
     }
   }
-  // Desktop: Family · Build · Games · Plans fits in the top bar.
+  // Desktop: Family · Play · Learn · Build · Plans fits in the top bar.
   for (const width of [821, 1000, 1280]) {
     await mum.setViewportSize({ width, height: 800 }); await mum.goto('/family'); await mum.evaluate(() => document.fonts.ready);
-    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/build', '/', '/plans']);
+    expect(await mum.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/family', '/play', '/learn', '/build', '/plans']);
     const r = await mum.evaluate(topbarFit);
     expect(r.tight || r.off || r.wide > 0 || r.cut || r.missing.length, `@${width}: ${JSON.stringify(r)}`).toBeFalsy();
   }

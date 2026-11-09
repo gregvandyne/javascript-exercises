@@ -341,7 +341,7 @@ router.get('/learn/:slug', (req, res, next) => {
   </div>`;
   const image = `/og/ages-${age.min}-${age.max}.jpg`;
   page(req, res, {
-    title: t(`${k}.title`), description: t(`${k}.description`), body, bodyClass: 'lp-page',
+    title: t(`${k}.title`), description: t(`${k}.description`), body, bodyClass: 'lp-page', active: 'learn',
     seo: {
       index: true, path, langs: seo.langsWithKey(`${k}.h1`), image, imageAlt: seo.plainText(t(`${k}.h1`)),
       jsonld: [seo.graph([

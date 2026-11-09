@@ -67,7 +67,12 @@
     "playNow": "Jetzt spielen",
     "games": "Spiele",
     "account": "Konto",
-    "school": "Schule"
+    "school": "Schule",
+    "play": "Spielen",
+    "learn": "Lernen",
+    "class": "Klasse",
+    "classroom": "Klassenraum",
+    "live": "Live"
   },
   "errors": {
     "goHome": "Zur Startseite",
@@ -505,7 +510,11 @@
       "rated": "Am besten bewertet",
       "new": "Neu",
       "mine": "Meine Spiele",
-      "favorites": "Meine Favoriten"
+      "favorites": "Meine Favoriten",
+      "keep": "Weiterspielen",
+      "two": "Zu zweit",
+      "fromLearn": "Aus Lernen: die lustigsten",
+      "openLearn": "Lernen öffnen"
     },
     "hero": {
       "label": "Empfohlenes Spiel",
@@ -537,9 +546,12 @@
     },
     "class": {
       "h": "Deine Klasse",
-      "todo": "{count, plural, one {# Stunde zu erledigen} other {# Stunden zu erledigen}}",
+      "todo": "{count, plural, one {# Lektion offen} other {# Lektionen offen}}",
       "continue": "Weiter",
       "open": "Meine Klasse öffnen"
+    },
+    "chips": {
+      "two": "Zu zweit"
     }
   },
   "search": {
@@ -2413,11 +2425,11 @@
       "passed": "Bestanden! {score} von {total} richtig.",
       "failed": "{score} von {total} richtig. Du brauchst {pass}. Versuch es noch mal!"
     },
-  "loudness": {
-    "listening": "Hört zu",
-    "stop": "Stopp",
-    "tap": "Tippen, um zuzuhören"
-  }
+    "loudness": {
+      "listening": "Hört zu",
+      "stop": "Stopp",
+      "tap": "Tippen, um zuzuhören"
+    }
   },
   "favorites": {
     "title": "Meine Favoriten",
@@ -2451,6 +2463,15 @@
       "title": "Deine Lehrkraft hat ein Live-Spiel gestartet!",
       "join": "Jetzt mitmachen",
       "chip": "Jetzt live"
+    },
+    "tab": {
+      "todo": "Zu erledigen",
+      "next": "Als Nächstes: {step}",
+      "continue": "Weiter",
+      "start": "Starten",
+      "allDone": "Alles erledigt! Gerade gibt es nichts zu tun.",
+      "more": "Fertig für heute?",
+      "pick": "Deine Klassen"
     }
   },
   "school": {
@@ -4548,7 +4569,54 @@
       "ages": "Nach Alter",
       "who": "Für Lehrkräfte und Eltern"
     },
-    "inClass": "Im Unterricht im Einsatz? <a href=\"{href}\">Oomba Academy für Lehrkräfte ansehen</a>."
+    "inClass": "Im Unterricht im Einsatz? <a href=\"{href}\">Oomba Academy für Lehrkräfte ansehen</a>.",
+    "tab": {
+      "h1": "Lernen",
+      "lead": "Spiele und Kurse, bei denen du etwas lernst. Wähle ein Fach oder einfach ein Spiel.",
+      "leadStaff": "Dieselbe Bibliothek, die Ihre Schüler sehen, mit Knöpfen zum Zuweisen und Live-Spielen.",
+      "filters": "Spiele filtern",
+      "subject": "Fach",
+      "subjects": {
+        "all": "Alle",
+        "math": "Mathe",
+        "words": "Wörter",
+        "maps": "Karten",
+        "code": "Programmieren",
+        "thinking": "Denken",
+        "music": "Musik",
+        "any": "Jedes Fach"
+      },
+      "grade": "Klassenstufe",
+      "gradeAny": "Jede Stufe",
+      "gradeK": "Vorschule",
+      "gradeN": "Klassenstufe {n}",
+      "filter": "Zeigen",
+      "how": "Spielart",
+      "howAll": "Egal wie",
+      "hows": {
+        "solo": "Allein",
+        "two": "Zu zweit",
+        "live": "Live mit meiner Klasse"
+      },
+      "moreAbout": "Mehr über {subject}-Spiele",
+      "joinH": "Hast du einen Spielcode von deiner Lehrkraft?",
+      "myCourses": "Meine Kurse",
+      "live": "Live-Spiele für die Klasse",
+      "liveText": "Deine Lehrkraft startet eins auf dem großen Bildschirm, und alle machen mit einem Code mit.",
+      "liveStaff": "Starten Sie eins auf dem großen Bildschirm: Ihre Klasse macht mit einem Code mit.",
+      "games": "Lernspiele",
+      "none": "Noch keine Spiele für diese Filter.",
+      "clear": "Alle Spiele zeigen",
+      "players": "Lernspiele von Spielern",
+      "meta": "{subject} · {grades}",
+      "assign": "Zuweisen",
+      "assignCourse": "Einer Klasse zuweisen",
+      "guide": "Leitfaden für Lehrkräfte",
+      "host": "Live starten",
+      "try": "Ausprobieren",
+      "also": "Außerdem auf Oomba",
+      "hubNamed": "{subject}: {hub}"
+    }
   },
   "parents": {
     "title": "Sichere Lernspiele für Kinder 8–14, kostenlos",
@@ -6474,7 +6542,16 @@
       "passed": "Bestanden! {score} von {total} richtig.",
       "failed": "{score} von {total} richtig. Schau dir die richtigen Antworten an und versuch es noch mal."
     },
-    "play": "Spielen: {game} · {chapter}"
+    "play": "Spielen: {game} · {chapter}",
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cybersicherheit und sicher im Netz · Klassen 3 bis 8"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Mathe in den Numberworks · Klassen 3 bis 5"
+    },
+    "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}"
   },
   "move": {
     "title": "Bewegungspausen",
@@ -6926,6 +7003,29 @@
       "theme": "Design",
       "dark": "Dunkel",
       "light": "Hell"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "{game} zuweisen",
+      "pickClass": "Klasse",
+      "submit": "Zuweisen",
+      "note": "Ihre Klasse bekommt eine Lektion mit einem Schritt, die dieses Spiel startet. Sie können sie später in der Lektionsbibliothek ändern.",
+      "none": "Sie haben noch keine Klasse. Legen Sie zuerst im Klassenraum eine an.",
+      "liveOnly": "Das ist ein Live-Spiel für die Klasse: Starten Sie es auf dem großen Bildschirm, statt es zuzuweisen."
+    },
+    "home": {
+      "hello": "Hallo, {name}",
+      "classesN": "{count, plural, one {# Klasse} other {# Klassen}}",
+      "waitingN": "{count, plural, one {# Antwort wartet} other {# Antworten warten}}",
+      "caughtUp": "Alles erledigt",
+      "openClass": "Klasse öffnen",
+      "courses": "Mit einem Kurs unterrichten",
+      "live": "Live-Spiele für die ganze Klasse",
+      "breaks": "Bewegungspausen",
+      "breaksText": "Kurze, lustige Spiele aus „Spielen“, ausgesucht für eine 5-Minuten-Pause auf dem großen Bildschirm.",
+      "allGames": "Alles ansehen, was Schüler spielen können",
+      "openLive": "Live-Spiel öffnen"
     }
   }
 }

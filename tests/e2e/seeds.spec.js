@@ -34,8 +34,11 @@ for (const [slug, title] of COURSE) {
   });
 }
 
+// Each launch game's shelf (docs/decisions.md "Play and Learn"): Play games are featured on Play ('/'), Learn games are in
+// Learn's games (or its live class games). Remi's noise meter is a class tool: on neither row, found by search.
+const LEARN = new Set(['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'atlas-quest', 'tug-of-math', 'doodle-hoot', 'word-trail']);
 for (const [slug, title] of SEEDS) {
-  test(`${slug} loads in the sandbox and shows up on Home`, async ({ page }) => {
+  test(`${slug} loads in the sandbox and shows up on its shelf (Play or Learn)`, async ({ page }) => {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     const r = await page.goto(`/g/${slug}`);
@@ -48,8 +51,20 @@ for (const [slug, title] of SEEDS) {
     expect(await f.evaluate(() => document.title.length > 0)).toBe(true);
     await page.waitForTimeout(800);
     expect(errors).toEqual([]);
-    await page.goto('/');
-    await expect(page.locator('#featured').getByText(heading, { exact: true })).toBeVisible();
+    if (slug === 'remis-quiet-meadow') {
+      await page.goto('/');
+      await expect(page.locator('#featured').getByText(heading, { exact: true })).toHaveCount(0);
+      await page.goto(`/search?q=${encodeURIComponent('Quiet Meadow')}`);
+      await expect(page.locator('#results').getByText(heading, { exact: true })).toBeVisible();
+    } else if (LEARN.has(slug)) {
+      await page.goto('/learn');
+      await expect(page.locator('#learn-games, #live-games').getByText(heading, { exact: true }).first()).toBeVisible();
+      await page.goto('/');
+      await expect(page.locator('#featured').getByText(heading, { exact: true })).toHaveCount(0);
+    } else {
+      await page.goto('/');
+      await expect(page.locator('#featured').getByText(heading, { exact: true })).toBeVisible();
+    }
   });
 }
 

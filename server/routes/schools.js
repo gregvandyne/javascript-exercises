@@ -13,8 +13,13 @@ import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.j
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
-import { teacherLessonsPanel, studentLessonsPanel } from './lessons.js';
+import { teacherLessonsPanel, studentLessonsPanel, dueChip } from './lessons.js';
 import * as P from '../services/progress.js';
+import * as L from '../services/lessons.js';
+import { COURSES } from '../services/course-catalog.js';
+import { STAFF_COURSE_PAGE } from '../views/courses.js';
+import { LIVE_GAMES } from '../live/live-games.js';
+import { BRAIN_BREAKS, SHELF_INFO, shelfGrades } from '../learn.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
 import { billingTabOn, schoolBillingTab, teachPlanCard, askPanel } from './school-billing.js';
@@ -137,11 +142,12 @@ router.get('/school', requireUser, (req, res) => {
   const t = req.t;
   const list = S.adminSchools(req.user);
   if (!list.length) return no(req, res);
-  if (list.length === 1) return res.redirect(302, `/school/${encodeURIComponent(list[0].slug)}?tab=people`);
+  // The School tab opens on the overview: the setup checklist and the classes (People is one tap away).
+  if (list.length === 1) return res.redirect(302, `/school/${encodeURIComponent(list[0].slug)}`);
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const body = html`<div class="pagehead"><h1${en('school.pick.title')}>🏛️ ${t('school.pick.title')}</h1></div>
     <p class="muted"${en('school.pick.text')}>${t('school.pick.text')}</p>
-    <div class="classgrid">${list.map(x => html`<div class="panel classcard"><a class="cc-name cc-link" href="/school/${x.slug}?tab=people"><b>${x.name}</b></a></div>`)}</div>`;
+    <div class="classgrid">${list.map(x => html`<div class="panel classcard"><a class="cc-name cc-link" href="/school/${x.slug}"><b>${x.name}</b></a></div>`)}</div>`;
   page(req, res, { title: t(t.own('school.pick.title') ? 'school.pick.title' : 'nav.schools'), active: 'school', body, head: CSS });
 });
 router.get('/school/:slug', requireUser, async (req, res) => {
@@ -159,8 +165,10 @@ router.get('/school/:slug', requireUser, async (req, res) => {
   ${content}`;
   // The School tab is current for the school's own admins; a teacher on a school page keeps Classes.
   const active = member ? (S.membership(s.id, req.user.id).role === 'admin' ? 'school' : 'classes') : S.isSchoolStaff(req.user) ? 'me' : 'schools';
+  // The school's own admins are on their first tab (School): no back arrow to Classroom, which is one tab away.
+  const back = active === 'school' ? null : member ? '/teach' : '/admin/schools';
   page(req, res, { title: s.name, active, body, head: CSS, scripts: tab === 'billing' ? ['/js/schools.js', '/js/family.js'] : ['/js/schools.js'],
-    back: member ? '/teach' : '/admin/schools', backLabel: member ? t('school.teach.title') : t('nav.schools') });
+    back, backLabel: member ? t('school.teach.title') : t('nav.schools') });
 });
 
 /** A new school's setup, in order, ticking itself off: ① teachers ② classes with their teacher ③ students in classes
@@ -446,36 +454,91 @@ router.post('/api/schools/:id/members/:uid/remove', requireUser, (req, res) => {
 /** One name per line (or separated by commas/semicolons), at most 60 at a time. */
 export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
 
-// ================================================================ teachers: My classes (/teach)
-router.get('/teach', requireUser, (req, res) => {
-  const t = req.t; const u = req.user;
-  // The platform admin who isn't staff of a school works from Schools, not from an empty teacher page.
-  if (!S.isSchoolStaff(u)) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
+// ================================================================ teachers: the Classroom tab (/teach)
+// docs/decisions.md "Play and Learn": a teacher's (and a school admin's) first tab. Hello and what needs doing, then each
+// class as a card with what needs attention (requests, answers to read, the next lesson due, a live room that is open)
+// and its buttons, then ready-made ways to teach: courses, live games for the whole class and short brain breaks from
+// Play. Everything the page had before stays (the tools row: Lesson library and Make a game, with CS Quest and Cyber Defenders
+// now under "Teach with a course"; school cards, invites, plan asks, New class as a tile beside the classes, archived).
+const DAY_MS = 864e5;
+/** An official game anyone may open, in the page's language (for the Classroom home's tiles). */
+const officialGame = slug => { const g = games.getGameBySlug(slug); return g && g.source === 'seed' && games.canView(null, g) ? games.localizeGame(g) : null; };
+/** The soonest open lesson due in the next 7 days (not late yet), or null. */
+function nextDue(classId, t = Date.now()) {
+  return L.classLessons(classId).filter(cl => cl.due_at && L.isOpen(cl, t) && ['today', 'upcoming'].includes(L.dueState(cl, t)) && cl.due_at - t < 7 * DAY_MS)
+    .sort((a, z) => a.due_at - z.due_at)[0] || null;
+}
+/** One tile (course, live game, brain break): picture or emoji, name, a short line. */
+const tile = (href, art, name, meta, id = '') => html`<li><a class="panel th-tile" href="${href}"${id ? raw(` id="${id}"`) : ''}><span class="th-art" aria-hidden="true">${art}</span><span class="th-t"><b>${name}</b>${meta ? html`<span class="small muted">${meta}</span>` : ''}</span></a></li>`;
+const tileArt = g => (g.source === 'seed' && g.slug ? raw(`<img src="/covers/${g.slug}.jpg" alt="" loading="lazy" decoding="async" width="56" height="56">`) : g.icon || '🎮');
+function classroomHome(req) {
+  const t = req.t, u = req.user;
   const schools = S.schoolsOf(u.id).filter(x => x.role !== 'student');
   const mine = S.classesOf(u.id, 'teacher'), old = S.classesOf(u.id, 'teacher', { archived: true });
   const toRead = P.toReadByClass(mine.map(c => c.id));
+  const answers = Object.values(toRead).reduce((n, x) => n + x, 0);
   const canCreate = schools.filter(x => S.canCreateClass(u, x.id));
   const admins = schools.filter(x => S.canManageSchool(u, x.id));
   const hostLive = liveOn() && liveCanHost(u);
-  const body = html`
-  <div class="pagehead"><h1>🍎 ${t('school.teach.title')}</h1><nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a><a class="btn" href="/teach/cs-quest">💻 ${t('cs.program.title')}</a><a class="btn" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a>${makeGameBtn(t)}</nav></div>
+  // Their own name (staff see real names; this is their own page).
+  const name = S.staffName(u) || u.display_name || u.username;
+  const card = c => {
+    const due = nextDue(c.id), room = liveOn() ? openForClass(c.id) : null;
+    const mineRoom = room && room.phase !== 'ended' && room.host && (room.host.userId === u.id || (room.cohosts && room.cohosts.has(u.id)));
+    const chips = [
+      c.requests ? html`<a class="chip-s warn" href="/class/${c.id}?tab=students#requests">✋ ${t('school.class.requestsN', { count: c.requests })}</a>` : '',
+      toRead[c.id] ? html`<a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : '',
+      room && room.phase !== 'ended' ? (mineRoom ? html`<a class="chip-s good" href="/live/host/${room.id}">📡 ${t('classes.live.chip')}</a>` : html`<span class="chip-s good">📡 ${t('classes.live.chip')}</span>`) : '',
+      // The next lesson due: its title cut short on one line, the date on a line of its own.
+      due ? html`<a class="chip-s th-due" href="/class/${c.id}"><span class="th-due-t">📚 <bdi>${due.title}</bdi></span><span class="th-due-d">📅 ${L.dueState(due) === 'today' ? t('lessons.class.dueToday') : t('lessons.class.dueOn', { date: req.fmt.day(due.due_at) })}</span></a>` : '',
+    ].filter(Boolean);
+    // While a room is open for the class: its host gets back to it (never a second room); a co-teacher's room has the chip only.
+    const open = room && room.phase !== 'ended';
+    const liveBtn = !hostLive ? '' : mineRoom ? html`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${room.id}">📡 ${t('teach.home.openLive')}</a>`
+      : open ? '' : html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>`;
+    return html`<div class="panel classcard th-class">
+      <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
+      <span class="small">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: c.students })].filter(Boolean).join(' · ')}</span>
+      <span class="cc-meta th-chips">${chips.length ? chips : html`<span class="chip-s ok">✅ ${t('teach.home.caughtUp')}</span>`}</span>
+      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span></div>`;
+  };
+  // Ready-made: the three courses (their staff pages assign units), the live modes (host on the big screen), brain breaks.
+  const courseTiles = COURSES.map(c => tile(STAFF_COURSE_PAGE[c.slug] || c.teacherPath, c.emoji, t(`${c.key}.title`), t(`${c.key}.sub`), `teach-course-${c.slug}`));
+  const liveTiles = hostLive ? Object.entries(LIVE_GAMES).map(([slug, l]) => { const g = officialGame(slug); const i = SHELF_INFO[slug], gr = shelfGrades(slug);
+    return g ? tile(`/live?mode=${l.mode}`, tileArt(g), g.title, i ? t('learn.tab.meta', { subject: t(`learn.tab.subjects.${i.subject}`), grades: t('learn.grades', gr) }) : '') : ''; }).filter(Boolean) : [];
+  const breakTiles = BRAIN_BREAKS.map(officialGame).filter(Boolean).map(g => tile(`/play/${g.slug}`, tileArt(g), g.title, ''));
+  const summary = [t('teach.home.classesN', { count: mine.length }), answers ? t('teach.home.waitingN', { count: answers }) : ''].filter(Boolean).join(' · ');
+  return html`
+  <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
+    ${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
+  <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${makeGameBtn(t)}</nav>
   ${admins.map(x => html`<section class="panel schoolcard"><a class="sc-link" href="/school/${x.slug}"><b>🏫 ${t('school.teach.manage', { school: x.name })}</b>
       <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
     ${teachPlanCard(req, x)}</section>`)}
   ${staffInvitesPanel(req)}
   ${teacherPlanCard(req)}
   ${schools.map(x => askPanel(req, x))}
-  ${mine.length ? html`<div class="classgrid">${mine.map(c => html`<div class="panel classcard">
-      <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
-      <span class="small">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</span>
-      <span class="cc-meta">👩‍🎓 ${t('school.class.studentsN', { count: c.students })}${c.requests ? html` <a class="chip-s warn" href="/class/${c.id}?tab=students#requests">✋ ${t('school.class.requestsN', { count: c.requests })}</a>` : ''}${toRead[c.id] ? html` <a class="chip-s warn" href="/class/${c.id}/progress#to-review">✍️ ${t('progress.teach.toRead', { count: toRead[c.id] })}</a>` : ''}</span>
-      ${hostLive ? html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>`)}</div>`
+  <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>
+  ${mine.length ? html`<div class="classgrid th-classes">${mine.map(card)}${canCreate.length ? html`<div class="th-newclass">${newClassForm(t, { schools: canCreate, me: u })}</div>` : ''}</div>`
     : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: admins.length ? t('school.teach.noneAdminText', { school: admins[0].name }) : canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
-  ${canCreate.length ? newClassForm(t, { schools: canCreate, me: u, open: !mine.length && !admins.length }) : ''}
+  ${canCreate.length && !mine.length ? newClassForm(t, { schools: canCreate, me: u, open: !admins.length }) : ''}
   ${old.length ? html`<details class="panel archived"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>
     <ul class="plain archlist">${old.map(c => html`<li><a href="/class/${c.id}"><b>${c.name}</b></a> <span class="small muted">${c.school_name}</span>
-      <form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></li>`)}</ul></details>` : ''}`;
-  page(req, res, { title: t('school.teach.title'), active: 'classes', body, head: CSS });
+      <form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></li>`)}</ul></details>` : ''}
+  </section>
+  <section class="th-sec" id="teach-courses" aria-labelledby="teach-courses-h"><h2 id="teach-courses-h">🎓 ${t('teach.home.courses')}</h2>
+    <ul class="plain th-tiles">${courseTiles}</ul></section>
+  ${liveTiles.length ? html`<section class="th-sec" id="teach-live" aria-labelledby="teach-live-h"><h2 id="teach-live-h">📡 ${t('teach.home.live')}</h2>
+    <p class="small muted">${t('learn.tab.liveStaff')}</p><ul class="plain th-tiles th-grid2" tabindex="0" aria-labelledby="teach-live-h">${liveTiles}</ul></section>` : ''}
+  ${breakTiles.length ? html`<section class="th-sec" id="brain-breaks" aria-labelledby="brain-breaks-h"><h2 id="brain-breaks-h">⏱️ ${t('teach.home.breaks')}</h2>
+    <p class="small muted">${t('teach.home.breaksText')}</p><ul class="plain th-tiles th-breaks th-grid2" tabindex="0" aria-labelledby="brain-breaks-h">${breakTiles}</ul></section>` : ''}
+  <p class="th-more row"><a class="btn" href="/play" id="teach-all-games">🎮 ${t('teach.home.allGames')}</a><a class="btn" href="/learn">📚 ${t('home.rails.openLearn')}</a></p>`;
+}
+router.get('/teach', requireUser, (req, res) => {
+  const t = req.t; const u = req.user;
+  // The platform admin who isn't staff of a school works from Schools, not from an empty teacher page.
+  if (!S.isSchoolStaff(u)) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
+  page(req, res, { title: t('nav.classroom'), active: 'classes', body: classroomHome(req), head: CSS });
 });
 router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (req, res) => {
   const t = req.t; const { schoolId, name, subject, grade, teacherId } = b(req);
@@ -684,11 +747,12 @@ function studentClass(req, res, c) {
 /** A class's open live room, for its students: "Your teacher started a live game · Join now" (to /join with the code in
  *  the #fragment). The page checks again every few seconds (class-live.js), so a student waiting here sees it appear. */
 const liveRoomOf = c => { const s = liveOn() ? openForClass(c.id) : null; return s && s.phase !== 'ended' ? { title: s.title, code: s.code } : null; };
-function classLiveBanner(req, c) {
-  const t = req.t, r = liveRoomOf(c);
-  return html`<div class="notice good class-live" id="class-live" data-class="${c.id}" role="status" aria-live="polite"${r ? '' : raw(' hidden')}>
-    <b>📡 ${t('classes.live.title')}</b> <span id="class-live-game">${r ? r.title : ''}</span>
-    <a class="btn btn-primary" id="class-live-join" href="${r ? `/join#${r.code}` : '/join'}">${t('classes.live.join')}</a></div>`;
+function classLiveBanner(req, c, n = 0) {
+  // The first banner on a page has the ids class-live.js and the tests know; more (one per class on the Class tab) get -n.
+  const t = req.t, r = liveRoomOf(c), x = n ? `-${n}` : '';
+  return html`<div class="notice good class-live" id="class-live${x}" data-class="${c.id}" role="status" aria-live="polite"${r ? '' : raw(' hidden')}>
+    <b>📡 ${t('classes.live.title')}</b> <span id="class-live-game${x}" data-live-game>${r ? r.title : ''}</span>
+    <a class="btn btn-primary" id="class-live-join${x}" data-live-join href="${r ? `/join#${r.code}` : '/join'}">${t('classes.live.join')}</a></div>`;
 }
 router.get('/api/classes/:id/live', requireUser, (req, res) => {
   const c = S.getClass(req.params.id);
@@ -846,7 +910,41 @@ router.get('/cards/:k', requireUser, (req, res) => {
   page(req, res, { title: t('school.cards.title'), active: 'classes', body, head: CSS, scripts: ['/js/schools.js'] });
 });
 
-// ================================================================ students: My classes (/classes)
+// ================================================================ students: the Class tab (/classes)
+// docs/decisions.md "Play and Learn": a school student's first tab. For each class: the live-game banner while the
+// teacher has a room open, the class (its card opens the class page), To do (open lessons not finished, soonest due
+// first, with progress, the next step and Continue), and games shared with the class. Several classes: a picker on top.
+// Joining a class, the waiting list and "Not you?" stay. Only the teachers' names are shown (as on the class page),
+// never classmates.
+/** A student's next step in a class lesson (the first not done), for "Next: …". */
+function nextStep(cl, userId) {
+  const done = P.forStudent(cl.id, userId);
+  const s = L.steps(cl.lesson_id).find(x => !done[x.id] || done[x.id].status !== 'done');
+  return s ? (s.title || s.game_title || '') : '';
+}
+function classSection(req, c, i, many) {
+  const t = req.t, u = req.user;
+  const todo = P.toDoFor(c.id, u.id), live = liveRoomOf(c);
+  const list = games.classGames(c.id, { limit: 9 });
+  const row = x => {
+    const total = x.cl.steps, doneN = total - x.left, step = nextStep(x.cl, u.id);
+    const pct = Math.round(doneN / Math.max(1, total) * 100);
+    return html`<li class="ct-todo"><div class="ct-todo-t"><b dir="auto">${x.title}</b>${dueChip(t, req.fmt, x.cl)}</div>
+      <div class="cprog" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${doneN}" aria-label="${t('progress.student.doneOf', { done: doneN, total })}"><span style="width:${pct}%"></span></div>
+      <p class="small muted">${t('progress.student.doneOf', { done: doneN, total })}${step ? html` · <bdi>${t('classes.tab.next', { step })}</bdi>` : ''}</p>
+      <a class="btn btn-primary btn-sm" href="/class/${c.id}/lessons/${x.id}">▶ ${doneN ? t('classes.tab.continue') : t('classes.tab.start')}</a></li>`;
+  };
+  return html`<section class="ct-class" id="class-${c.id}" aria-labelledby="ct-${c.id}-h">
+    ${classLiveBanner(req, c, i)}
+    <a class="panel classcard ct-head" href="/class/${c.id}"><span class="cc-school small muted">${c.school_name}</span>
+      <${raw(many ? 'h2' : 'h1')} class="cc-name" id="ct-${c.id}-h">${c.name}</${raw(many ? 'h2' : 'h1')}>${c.teachers ? html`<span class="cc-meta">🍎 ${c.teachers}</span>` : ''}
+      ${live || todo.length ? html`<span class="cc-meta">${live ? html`<span class="chip-s warn">📡 ${t('classes.live.chip')}</span> ` : ''}${todo.length ? html`<span class="chip-s">📚 ${t('home.class.todo', { count: todo.length })}</span>` : ''}</span>` : ''}</a>
+    <section class="panel ct-todos" aria-labelledby="ct-${c.id}-todo"><h3 id="ct-${c.id}-todo">✅ ${t('classes.tab.todo')}</h3>
+      ${todo.length ? html`<ol class="plain ct-list">${todo.map(row)}</ol>` : html`<p class="ct-done">🎉 ${t('classes.tab.allDone')}</p>`}</section>
+    <section class="ct-games" aria-labelledby="ct-${c.id}-games"><div class="rail-head"><h3 id="ct-${c.id}-games">🎮 ${t('classes.games.heading')}</h3>${list.length > 8 ? html`<a class="more" href="/class/${c.id}">${t('cards.seeAll')}</a>` : ''}</div>
+      ${list.length ? cardGrid(list.slice(0, 8), { classPill: false }) : html`<p class="small muted">${t('classes.games.emptyText')}</p>`}</section>
+  </section>`;
+}
 router.get('/classes', requireUser, (req, res) => {
   const t = req.t; const u = req.user;
   const mine = S.classesOf(u.id, 'student'), waiting = S.myPendingRequests(u.id);
@@ -855,12 +953,14 @@ router.get('/classes', requireUser, (req, res) => {
     if (S.isSchoolStaff(u)) return res.redirect('/teach');
     if (S.isPlatformAdmin(u)) return res.redirect('/admin/schools');
   }
+  const many = mine.length > 1;
   const body = html`
-  <div class="pagehead"><h1>🏫 ${t('classes.title')}</h1>${studentNotYou(req, mine.length > 0)}</div>
+  ${many || !mine.length ? html`<div class="pagehead"><h1>🏫 ${t('classes.title')}</h1>${studentNotYou(req, mine.length > 0)}</div>` : html`<div class="pagehead ct-top">${studentNotYou(req, true)}</div>`}
   ${staffInvitesPanel(req)}
-  ${mine.length ? html`<div class="classgrid">${mine.map(c => { const todo = P.toDoFor(c.id, u.id), live = liveRoomOf(c); return html`<a class="panel classcard" href="/class/${c.id}"><span class="cc-school small muted">${c.school_name}</span><b class="cc-name">${c.name}</b>${c.teachers ? html`<span class="cc-meta">🍎 ${c.teachers}</span>` : ''}
-      ${live || todo.length ? html`<span class="cc-meta">${live ? html`<span class="chip-s warn">📡 ${t('classes.live.chip')}</span> ` : ''}${todo.length ? html`<span class="chip-s">📚 ${t('home.class.todo', { count: todo.length })}${todo[0].due_at ? ` · ${t('lessons.class.dueOn', { date: req.fmt.day(todo[0].due_at) })}` : ''}</span>` : ''}</span>` : ''}</a>`; })}</div>`
+  ${many ? html`<nav class="chips ajump ct-pick" aria-label="${t('classes.tab.pick')}"><span class="ajump-l" aria-hidden="true">${t('classes.tab.pick')}</span>${mine.map(c => html`<a class="chip" href="#class-${c.id}">${c.name}</a>`)}</nav>` : ''}
+  ${mine.length ? mine.map((c, i) => classSection(req, c, i, many))
     : waiting.length ? '' : emptyState({ emoji: '🏫', title: t('classes.none'), text: u.is_guest ? t('classes.guest') : t('classes.noneText') })}
+  ${mine.length ? html`<p class="ct-more">${t('classes.tab.more')} <a class="btn btn-sm" href="/play">🎮 ${t('nav.play')}</a> <a class="btn btn-sm" href="/learn">📚 ${t('nav.learn')}</a></p>` : ''}
   ${waiting.length || !u.is_guest ? html`<div class="cols2">
   ${waiting.length ? html`<section class="panel"><h2>⏳ ${t('classes.waiting')}</h2><ul class="plain">${waiting.map(w => html`<li>${w.class_name} <span class="muted small">· ${w.school_name}</span></li>`)}</ul></section>` : ''}
   ${u.is_guest ? '' : mine.length && !req.query.code ? html`<details class="panel classes-join-more"><summary>${t('classes.joinAnother')}</summary><p class="small muted">${t('classes.joinText')}</p>
@@ -870,5 +970,5 @@ router.get('/classes', requireUser, (req, res) => {
     <form class="row" data-api="/api/classes/join" novalidate><label class="sr-only" for="jc">${t('classes.code')}</label>
       <input class="input code-input" id="jc" name="code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" dir="ltr" placeholder="ABC123" required value="${/^[A-Za-z0-9]{6}$/.test(String(req.query.code || '')) ? String(req.query.code).toUpperCase() : ''}">
       <button class="btn btn-primary" type="submit">${t('classes.joinButton')}</button><span class="err form-err" role="alert"></span></form></section>`}</div>` : ''}`;
-  page(req, res, { title: t('classes.title'), active: 'classes', body, head: CSS });
+  page(req, res, { title: mine.length === 1 ? mine[0].name : t('classes.title'), active: 'classes', body, head: CSS, scripts: liveOn() && mine.length ? ['/js/class-live.js'] : [] });
 });

@@ -4,6 +4,7 @@
   "icon": "🔎",
   "cover": "ocean",
   "category": "learning",
+  "shelf": "learn",
   "tags": "data,charts,tables,graphs,sorting,claims,evidence,detective,science,math,learning",
   "description": "Solve mysteries with data! Dot the fox detective hands you case files: sort and group a table until the answer pops out, pick the chart that answers the question, judge whether a claim is supported or too early to tell, clean up messy lists, compare fairly with percent, refine a model until it fits the trials (and balance a runner game), spot biased surveys and who was left out, and tally your own class survey into a chart and a fair claim. The Show-me rule: pin a claim only when the view supports it, then tap the evidence. Explorer and Pro cases, stars, a daily challenge, no typing.",
   "orientation": "any",

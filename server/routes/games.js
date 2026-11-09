@@ -1,7 +1,7 @@
 // Game page, play page, the sandboxed frame, and the game APIs the SDK talks to (via the parent page).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
-import { page, notFound } from '../views/layout.js';
+import { page, notFound, landingFor, signedOut } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
@@ -78,6 +78,8 @@ router.get('/g/:slug', (req, res) => {
   // indexed: its page carries the builder's name.
   const official = g.source === 'seed' && owner && owner.username === OFFICIAL && g.visibility === 'public' && g.status === 'published' && !g.hidden_reason;
   const crumbs = official ? gameCrumbs(req, g) : null;
+  // Signed in, Home is another tab (or another first page): the trail starts at Learn (Learn › Math games › Tug of Math).
+  const seenCrumbs = crumbs && (signedOut(req.user) ? crumbs : crumbs.slice(1));
   const fbl = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const learn = official && LEARNING[g.slug];
   const hub = official && hubOfGame(g.slug);
@@ -88,7 +90,7 @@ router.get('/g/:slug', (req, res) => {
   const liveEntry = liveOn() && official ? liveGameOf(g) : null;
   const body = html`
   <article>
-    ${crumbs ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${crumbs.map(([name, p], i) => html`<li>${i < crumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
+    ${seenCrumbs && seenCrumbs.length > 1 ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}" style="margin-bottom:var(--s3)"><ol>${seenCrumbs.map(([name, p], i) => html`<li>${i < seenCrumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
     <div class="gamehero">
       <div class="gh-cover" style="position:relative">${coverArt(d, '', { eager: true })}</div>
       <div>
@@ -147,7 +149,8 @@ router.get('/g/:slug', (req, res) => {
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
   const title = official && written(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && written(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
-  page(req, res, { title, active: 'home', back: '/', backLabel: t('nav.home'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
+  const learnShelf = games.shelfOf(g) === 'learn';
+  page(req, res, { title, active: learnShelf ? 'learn' : 'play', back: learnShelf ? '/learn' : landingFor(u) ? '/play' : '/', backLabel: t(learnShelf ? 'nav.learn' : 'nav.play'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
     seo: official ? gameSeo(req, g, d, owner) : null });
 });
 
@@ -192,7 +195,7 @@ const lp = (req, p) => (req.pathLocale && seo.localizable(p) ? seo.localeUrl(p, 
 /** An official launch game's breadcrumb, shown on the page and in its structured data: [[name, path], …]. */
 function gameCrumbs(req, g) {
   const t = req.t; const hub = hubOfGame(g.slug);
-  return [[t('nav.home'), '/'], ...(hub ? [[t('nav.teachers'), '/teachers'], [t(`learn.hubs.${hub.key}.name`), `/learn/${hub.slug}`]] : []), [g.title, `/g/${g.slug}`]];
+  return [[t('nav.home'), '/'], ...(hub ? [[t('learn.index.crumb'), '/learn'], [t(`learn.hubs.${hub.key}.name`), `/learn/${hub.slug}`]] : []), [g.title, `/g/${g.slug}`]];
 }
 
 /** Search and sharing data of an official launch game's page: its languages, its picture, and VideoGame (plus

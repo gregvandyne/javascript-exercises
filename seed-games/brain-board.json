@@ -4,6 +4,7 @@
   "icon": "🌟",
   "cover": "space",
   "category": "learning",
+  "shelf": "learn",
   "tags": "live,quiz,class,board,categories,questions,teams",
   "description": "A live class quiz board: pick a tile from a category, and its question opens on every device at once. Bigger tiles are harder and worth more, and a hidden Lucky Star doubles the points. Played alone, it is a practice board of sums.",
   "orientation": "any",

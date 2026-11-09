@@ -15,7 +15,7 @@ import { isBot } from '../seo.js';
 // Oomba Live (/live, /join) is never counted: guests' visits leave nothing behind (docs/safety.md §12).
 const SKIP = /^\/(api|frame|shots|covers|sdk|js|css|fonts|img|health|admin|favicon|robots|manifest|live|join)/;
 const BOTS = /bot|crawl|spider|slurp|preview|monitor|uptime|curl|wget|python|node-fetch|headless|lighthouse|render/i;
-const AREAS = [[/^\/$/, 'home'], [/^\/g\//, 'game'], [/^\/play\//, 'play'], [/^\/(build|studio)/, 'build'], [/^\/search/, 'search'],
+const AREAS = [[/^\/(play)?$/, 'home'], [/^\/g\//, 'game'], [/^\/play\//, 'play'], [/^\/(build|studio)/, 'build'], [/^\/search/, 'search'],
   [/^\/favorites/, 'favorites'], [/^\/(friends|chat)/, 'friends'], [/^\/u\//, 'profile'], [/^\/me/, 'me'], [/^\/(signup|login)/, 'signup'],
   [/^\/(teach|class|school|classes)\b/, 'school']]; // teacher, class and school pages (lessons and progress live under /teach and /class)
 /** A person's browser, not a robot, a link preview or a script (the same rule as visits; the home doors use it too). */

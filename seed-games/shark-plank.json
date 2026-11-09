@@ -4,6 +4,7 @@
   "icon": "🦈",
   "cover": "ocean",
   "category": "words",
+  "shelf": "learn",
   "tags": "hangman,spelling,reading,early readers,shark,letters",
   "description": "A hangman game for kids who are just learning to read. Pick a letter, hear the word read aloud, and keep your explorer off the plank. Guess wrong too many times and the shark jumps out of the water! Earn stars for every word you solve.",
   "l10n": {

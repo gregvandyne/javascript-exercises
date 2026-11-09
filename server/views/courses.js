@@ -21,38 +21,52 @@ export function subLine(text) {
   return html`<span class="sub-a">${text.slice(0, at)}</span> <span class="sub-b"><span class="sub-dot">· </span>${text.slice(at + 3)}</span>`;
 }
 
+/** The first half of a course's line ("Computer science in four games"), when its grades are shown on a line of their own. */
+export function subHead(text) {
+  const m = /^(.*?)\s*(?: · |・)[^·・]*$/.exec(String(text));
+  return m ? m[1] : text;
+}
+
 /** The home page's "Courses" row: the wide course cards side by side in one snap-scrolled rail (the shared .rail-track,
  *  at course-card width), each card's games nested in order as the unit overview (links to the course map's units),
  *  progress in steps, and Start / Keep going to the next open step (or the band picker). The track is a labelled,
  *  focusable scroll region; the arrows ride the shared rail-arrow wiring and hide when the rail has nothing to scroll. */
-export function courseRow(items) {
+/** staff: school staff on the Learn tab: each card's foot is "Assign to a class" (the course's own teacher page, where its
+ *  units are assigned; Number Quest has none yet, so only its guide) and "Teacher guide" instead of Start and progress. title: the row's heading (default "Courses"). */
+export const STAFF_COURSE_PAGE = { 'cs-quest': '/teach/cs-quest', 'cyber-defenders': '/teach/cyber-defenders' };
+export function courseRow(items, { staff = false, title: heading = null } = {}) {
   const { t } = current();
   if (!items.some(it => it.games.length)) return '';
-  const title = t('courses.row');
+  const title = heading || t('courses.row');
   return html`<section class="rail courses">
     <div class="rail-head"><h2 id="courses-h">📚 ${title}</h2>
       <div class="rail-arrows" data-railnav="courses-track" hidden><button type="button" data-rail="courses-track" data-dir="-1" aria-label="${t('cards.scrollBack', { title })}"><span class="flip" aria-hidden="true">←</span></button><button type="button" data-rail="courses-track" data-dir="1" aria-label="${t('cards.scrollForward', { title })}"><span class="flip" aria-hidden="true">→</span></button></div>
     </div>
     <div class="course-rail"><div class="rail-track course-track" id="courses-track" role="region" aria-label="${title}" tabindex="0">
-    ${items.filter(it => it.games.length).map(({ course: c, games, ov }) => {
+    ${items.filter(it => it.games.length).map(({ course: c, games, ov, meta = null }) => {
       const go = ov.next ? `/courses/${c.slug}/${ov.next.step.key}` : `/courses/${c.slug}`;
       const begun = ov.list.some(s => s.read || s.checked);
+      const assign = staff && STAFF_COURSE_PAGE[c.slug];
+      // A compact card: the whole head opens the course; progress; the units behind a tap; one main button.
       return html`<article class="course-card" aria-labelledby="course-${c.slug}-h">
-        <div class="course-head">
+        <a class="course-head" href="/courses/${c.slug}">
           <span class="course-emo" aria-hidden="true">${c.emoji}</span>
-          <div class="course-ht"><h3 id="course-${c.slug}-h"><a href="/courses/${c.slug}">${t(`${c.key}.title`)}</a></h3><p>${subLine(t(`${c.key}.sub`))}</p></div>
-        </div>
+          <div class="course-ht"><h3 id="course-${c.slug}-h">${t(`${c.key}.title`)}</h3>${meta ? html`<p>${subHead(t(`${c.key}.sub`))}</p><p class="gmeta course-meta">${meta}</p>` : html`<p>${subLine(t(`${c.key}.sub`))}</p>`}</div>
+          <span class="course-go flip" aria-hidden="true">›</span>
+        </a>
+        ${ov.band && !staff ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div><span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span></div>` : ''}
+        <details class="course-units"><summary>${t('courses.unitsN', { count: games.length })}</summary>
         <ol class="course-steps">${games.map(g => html`<li class="course-step"><a href="/courses/${c.slug}#${g.slug}" class="course-game">
           <span class="course-n" aria-hidden="true">${g.step}</span>
           <span class="course-cover">${coverArt(g)}</span>
           <span class="course-gt"><span class="course-gname">${g.title}</span><span class="course-topic">${t(`courses.topics.${g.topic}`)}</span></span>
-        </a></li>`)}</ol>
-        ${ov.band ? html`<div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div>` : ''}
-        <div class="course-foot">
+        </a></li>`)}</ol></details>
+        ${staff ? html`<div class="course-foot">
+          ${assign ? html`<a class="btn btn-primary" href="${assign}" id="course-${c.slug}-assign">📌 ${t('learn.tab.assignCourse')}</a>` : ''}
+          <a class="btn${assign ? ' btn-ghost' : ' btn-primary'}" href="${c.teacherPath}">${t('learn.tab.guide')}</a>
+        </div>` : html`<div class="course-foot">
           <a class="btn btn-primary" href="${go}" id="course-${c.slug}-go">▶ ${begun ? t('courses.continue') : t('courses.start')}</a>
-          <a class="btn btn-ghost" href="/courses/${c.slug}">${t('courses.about')}</a>
-          ${ov.band ? html`<span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span>` : ''}
-        </div>
+        </div>`}
       </article>`;
     })}
     </div></div>

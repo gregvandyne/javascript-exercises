@@ -67,7 +67,12 @@
     "playNow": "Play now",
     "games": "Games",
     "account": "Account",
-    "school": "School"
+    "school": "School",
+    "play": "Play",
+    "learn": "Learn",
+    "class": "Class",
+    "classroom": "Classroom",
+    "live": "Live"
   },
   "errors": {
     "goHome": "Go home",
@@ -505,7 +510,11 @@
       "rated": "Top rated",
       "new": "New",
       "mine": "My games",
-      "favorites": "My favorites"
+      "favorites": "My favorites",
+      "keep": "Keep playing",
+      "two": "Two players",
+      "fromLearn": "From Learn: fun ones",
+      "openLearn": "Open Learn"
     },
     "hero": {
       "label": "Featured game",
@@ -540,6 +549,9 @@
       "todo": "{count, plural, one {# lesson to do} other {# lessons to do}}",
       "continue": "Continue",
       "open": "Open my class"
+    },
+    "chips": {
+      "two": "2 players"
     }
   },
   "search": {
@@ -2431,11 +2443,11 @@
       "guestSave": "You finished this step! Guests can play everything, but a finished step only counts with a free account. Make one now and we will count this finish — we kept it for you.",
       "guestSaveAction": "Make my free account"
     },
-  "loudness": {
-    "listening": "Listening",
-    "stop": "Stop",
-    "tap": "Tap to start listening"
-  }
+    "loudness": {
+      "listening": "Listening",
+      "stop": "Stop",
+      "tap": "Tap to start listening"
+    }
   },
   "favorites": {
     "title": "My favorites",
@@ -2469,6 +2481,15 @@
       "title": "Your teacher started a live game!",
       "join": "Join now",
       "chip": "Live game now"
+    },
+    "tab": {
+      "todo": "To do",
+      "next": "Next: {step}",
+      "continue": "Continue",
+      "start": "Start",
+      "allDone": "All done! Nothing to do right now.",
+      "more": "Done for today?",
+      "pick": "Your classes"
     }
   },
   "school": {
@@ -4352,7 +4373,9 @@
         "minutes": "About 15 minutes a step",
         "free": "Free · no ads"
       },
-      "cta": { "open": "Open the course" },
+      "cta": {
+        "open": "Open the course"
+      },
       "promise": {
         "h": "What you get",
         "li1": "One story all the way through: Pim's post office, a magpie who slips fake letters into the post, and a stamp to earn in every unit.",
@@ -4380,11 +4403,21 @@
       "map": {
         "h": "The standards map",
         "p": "Every step, mapped. CYBER.ORG codes are shown per band; each step also carries its Common Sense Education topic, and an inherited CSTA code where the step re-frames a CS Quest lesson.",
-        "cols": { "step": "Step", "title": "Title", "cyberorg": "CYBER.ORG v1.0", "cs": "Common Sense topic", "csta": "CSTA (inherited)" },
+        "cols": {
+          "step": "Step",
+          "title": "Title",
+          "cyberorg": "CYBER.ORG v1.0",
+          "cs": "Common Sense topic",
+          "csta": "CSTA (inherited)"
+        },
         "v1": "This map is published on CYBER.ORG K-12 Cybersecurity Learning Standards v1.0 (August 2021). CYBER.ORG has since released a Version 2.0 (the National K-12 Cybersecurity and AI Learning Standards, September 2026); this course has not been re-mapped to it, and this page will say so plainly if that changes.",
         "rename": "Common Sense Education's newer Digital Literacy & Well-Being Curriculum renames the same six areas: Healthy Habits; Privacy & Safety; Digital Footprint; Relationships & Communication; Cyberbullying & Online Harm; Information & Media Literacy. The map uses the classic six names; each matches the new name in the same order."
       },
-      "standards": { "b1": "CYBER.ORG codes · Explorer (3-5)", "b2": "CYBER.ORG codes · Pro (6-8)", "topics": "Common Sense topics" },
+      "standards": {
+        "b1": "CYBER.ORG codes · Explorer (3-5)",
+        "b2": "CYBER.ORG codes · Pro (6-8)",
+        "topics": "Common Sense topics"
+      },
       "notes": {
         "h": "Teacher notes",
         "p": "One short note per unit, written to print: say this first, watch for this. The same notes print with the standards map."
@@ -4442,8 +4475,16 @@
       "kicker": "For teachers · grades 3–5",
       "h1": "Number Quest: math with a map you can show anyone",
       "lead": "A winding path through Netville's Numberworks with Tally the cat: place value, joining and splitting, groups and shares, fractions at the Bakery, measuring at the Measure Shop, shapes at the Building Yard, data at the Fairground, and the Vault of Measures at the street's end. Students read a short deck, pass a three-question check, play the game mission, and earn Tally Marks and mastery laps as they go. No hearts, no timers that punish, no leaderboards: mistakes are part of the lesson, and the Jumble is there to make them.",
-      "badges": { "steps": "23 steps", "units": "An intro and 7 units", "games": "Six games", "minutes": "About 10 minutes a step", "free": "Free · no ads" },
-      "cta": { "open": "Open the course" },
+      "badges": {
+        "steps": "23 steps",
+        "units": "An intro and 7 units",
+        "games": "Six games",
+        "minutes": "About 10 minutes a step",
+        "free": "Free · no ads"
+      },
+      "cta": {
+        "open": "Open the course"
+      },
       "promise": {
         "h": "What you get",
         "li1": "One street all the way through: the Numberworks, where every number has a job to do, Tally the cat counting at your side, and the Jumble mixing numbers up so students learn to spot how.",
@@ -4464,17 +4505,31 @@
         "try": "Try it",
         "inCourse": "Play it in the course"
       },
-      "units": { "h": "The intro and seven units", "p": "Twenty-three steps, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done, and the street ends inside Unit 7, at the Vault of Measures finale.", "stamp": "{stamp}" },
+      "units": {
+        "h": "The intro and seven units",
+        "p": "Twenty-three steps, in order, each ending in its game mission or its classroom talk. A unit's stone is planted when its steps are done, and the street ends inside Unit 7, at the Vault of Measures finale.",
+        "stamp": "{stamp}"
+      },
       "map": {
         "h": "The standards map",
         "p": "Every step, mapped. “Primary” is what the step teaches and its check assesses. “Also covers” is practiced inside the step but taught as primary elsewhere. “Builds toward” is preparation only: the course names it so you can see the road ahead, and never counts it as coverage. The practice named is the step's Mathematical Practice spotlight.",
-        "cols": { "step": "Step", "title": "Title", "primary": "Primary (CCSS-M)", "also": "Also covers", "toward": "Builds toward", "mp": "Practice" },
+        "cols": {
+          "step": "Step",
+          "title": "Title",
+          "primary": "Primary (CCSS-M)",
+          "also": "Also covers",
+          "toward": "Builds toward",
+          "mp": "Practice"
+        },
         "codes": "locked CCSS-M statements, Units 1–7 + the finale",
         "statSteps": "steps in the map",
         "statUnits": "stones to plant",
         "lock": "This map publishes the Phase 0 standards lock (2026-11-04) and the Phase 2 lock (2026-11-05): the Explorer Units 1–7 and finale statement codes, verified against the published Common Core State Standards for Mathematics (NGA Center & CCSSO, 2010). Step 7.3 cites no code anywhere: chance language has no CCSS home before grade 6, so it is published as enrichment, plainly flagged. The Launchpad and Pro tiers are specced but not built yet, and their codes are not cited here until their own locks land."
       },
-      "notes": { "h": "Teacher notes", "p": "One short note per unit, written to print: the habit to open with and the trap to watch for. The same notes print with the standards map." },
+      "notes": {
+        "h": "Teacher notes",
+        "p": "One short note per unit, written to print: the habit to open with and the trap to watch for. The same notes print with the standards map."
+      },
       "safety": {
         "h": "Gentle by design",
         "li1": "No hearts and no mistake tax: a wrong answer names the mix-up kindly and the student tries again, free, as many times as they need.",
@@ -4482,7 +4537,11 @@
         "li3": "The daily goal is the student's own choice of 1, 2 or 3 activities, and missing it costs nothing: there is no streak to break.",
         "li4": "The course collects nothing new. Progress, checks and marks use the same kid-safe machinery as the rest of Oomba Academy: no chat, no ads, no third parties."
       },
-      "print": { "h": "Printed materials", "p": "The standards map and the teacher notes are the printed pack for this course: one map to file with your planning, and one short note per unit to read before the lesson. They print on their own page, without the site around them.", "button": "Print the map and notes" },
+      "print": {
+        "h": "Printed materials",
+        "p": "The standards map and the teacher notes are the printed pack for this course: one map to file with your planning, and one short note per unit to read before the lesson. They print on their own page, without the site around them.",
+        "button": "Print the map and notes"
+      },
       "faq": {
         "h": "Questions teachers ask",
         "q1": "Do I need to be a math specialist?",
@@ -4496,7 +4555,11 @@
         "q5": "Is it really free?",
         "a5": "Yes: free for classrooms, with no ads and nothing to install. It runs in the browser on any device, including Chromebooks."
       },
-      "start": { "h": "Start when you are ready", "p": "Open the course and walk the first step with your class. The teacher note for the intro is above.", "staff": "Open the course and walk the first step with your class. The teacher note for the intro is above." }
+      "start": {
+        "h": "Start when you are ready",
+        "p": "Open the course and walk the first step with your class. The teacher note for the intro is above.",
+        "staff": "Open the course and walk the first step with your class. The teacher note for the intro is above."
+      }
     },
     "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>: it's free."
   },
@@ -4853,7 +4916,54 @@
       "ages": "By age",
       "who": "For teachers and parents"
     },
-    "inClass": "Using this in class? <a href=\"{href}\">See Oomba Academy for teachers</a>."
+    "inClass": "Using this in class? <a href=\"{href}\">See Oomba Academy for teachers</a>.",
+    "tab": {
+      "h1": "Learn",
+      "lead": "Games and courses that teach something. Pick a subject, or just pick a game.",
+      "leadStaff": "The same library your students see, with buttons to assign and host.",
+      "filters": "Filter the games",
+      "subject": "Subject",
+      "subjects": {
+        "all": "All",
+        "math": "Math",
+        "words": "Words",
+        "maps": "Maps",
+        "code": "Coding",
+        "thinking": "Thinking",
+        "music": "Music",
+        "any": "Any subject"
+      },
+      "grade": "Grade",
+      "gradeAny": "Any grade",
+      "gradeK": "Kindergarten",
+      "gradeN": "Grade {n}",
+      "filter": "Show",
+      "how": "How you play",
+      "howAll": "Any way",
+      "hows": {
+        "solo": "On my own",
+        "two": "2 players",
+        "live": "Live with my class"
+      },
+      "moreAbout": "More about {subject} games",
+      "joinH": "Got a game code from your teacher?",
+      "myCourses": "My courses",
+      "live": "Live class games",
+      "liveText": "Your teacher starts one on the big screen and everyone joins with a code.",
+      "liveStaff": "Host one on the big screen and your class joins with a code.",
+      "games": "Learning games",
+      "none": "No games match these filters yet.",
+      "clear": "Show all games",
+      "players": "Learning games by players",
+      "meta": "{subject} · {grades}",
+      "assign": "Assign",
+      "assignCourse": "Assign to a class",
+      "guide": "Teacher guide",
+      "host": "Host live",
+      "try": "Try it",
+      "also": "Also on Oomba",
+      "hubNamed": "{subject}: {hub}"
+    }
   },
   "parents": {
     "title": "Safe, free learning games for kids 8–14",
@@ -6708,6 +6818,27 @@
         "h": "The games"
       },
       "note": "The full standards map (CYBER.ORG and Common Sense, step by step) and the per-unit teacher notes are on the teacher page; the two print buttons above open them ready to print."
+    },
+    "assign": {
+      "title": "Assign {game}",
+      "pickClass": "Class",
+      "submit": "Assign",
+      "note": "Your class gets a one-step lesson that plays this game. You can change it later in the Lessons library.",
+      "none": "You have no classes yet. Make one in Classroom first.",
+      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it."
+    },
+    "home": {
+      "hello": "Hello, {name}",
+      "classesN": "{count, plural, one {# class} other {# classes}}",
+      "waitingN": "{count, plural, one {# answer waiting} other {# answers waiting}}",
+      "caughtUp": "All caught up",
+      "openClass": "Open class",
+      "courses": "Teach with a course",
+      "live": "Live games for the whole class",
+      "breaks": "Brain breaks",
+      "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
+      "allGames": "See everything students can play",
+      "openLive": "Open live game"
     }
   },
   "courses": {
@@ -6751,6 +6882,7 @@
     "back": "Back to {course}",
     "step": "{course} · game {n} of {total}",
     "stepsDone": "{n} of {total} steps done",
+    "unitsN": "{count, plural, one {See the # unit} other {See the # units}}",
     "band": {
       "h": "Pick your level",
       "text": "You can switch later from this page.",
@@ -6816,7 +6948,7 @@
     },
     "play": "Play: {game} · {chapter}"
   },
-  "move":   {
+  "move": {
     "title": "Brain Breaks",
     "h": "Brain Breaks: Oomba Breathe & Bend",
     "sub": "Five minute yoga breaks with Remy the Red Panda. Stand up, breathe, stretch, and come back ready to learn. No mats, no special clothes, just a little space.",

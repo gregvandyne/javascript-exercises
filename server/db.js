@@ -747,6 +747,17 @@ export const MIGRATIONS = [
       status TEXT NOT NULL DEFAULT 'pending', reason TEXT, attempts INTEGER NOT NULL DEFAULT 0, claimed_at INTEGER, sent_at INTEGER,
       created_at INTEGER NOT NULL, PRIMARY KEY (user_id, step)) WITHOUT ROWID;
     CREATE INDEX IF NOT EXISTS trial_nudges_due ON trial_nudges(status, due_at);`],
+  // The two shelves of the game library (docs/decisions.md "Play and Learn"): each official game is 'play' (fun first)
+  // or 'learn' (teaches something). Set from the seed JSONs ("shelf", scripts/import-game.js) for fresh databases and
+  // here for existing ones; players' games keep '' and services/games.js SHELF_SQL derives theirs from the category.
+  ['0062_game_shelf', '', conn => {
+    if (!conn.prepare('PRAGMA table_info(games)').all().some(c => c.name === 'shelf')) conn.exec("ALTER TABLE games ADD COLUMN shelf TEXT NOT NULL DEFAULT '';");
+    const learn = ['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live', 'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail'];
+    const list = learn.map(s => `'${s}'`).join(',');
+    conn.exec(`UPDATE games SET shelf='learn' WHERE source='seed' AND slug IN (${list})`);
+    conn.exec(`UPDATE games SET shelf='play' WHERE source='seed' AND slug NOT IN (${list})`);
+    conn.exec("UPDATE games SET featured=2 WHERE source='seed' AND slug='jungle-cup' AND featured>0");
+  }],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

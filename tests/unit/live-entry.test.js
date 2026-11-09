@@ -40,9 +40,11 @@ test('every built-in live mode is a live game, with its mode and a solo game tha
 });
 
 test('a live mode\'s card says Live and opens its game page; the page leads with joining, hosting and solo practice', async () => {
-  const home = await (await get('/')).text();
+  // The live modes are on the Learn shelf ("Live class games"), never in Play's rails.
+  const home = await (await get('/learn')).text();
   assert.match(home, /class="gcard gcard-live" href="\/g\/(quest-race|question-battle|brain-board|would-you-rather-live|atlas-quest-live)"/);
   assert.match(home, /class="live-badge"/);
+  assert.doesNotMatch(await (await get('/')).text(), /class="gcard gcard-live" href="\/g\/(quest-race|question-battle|brain-board|would-you-rather-live|atlas-quest-live)"/);
   for (const [slug, e] of Object.entries(LIVE_GAMES)) {
     const page = await (await get(`/g/${slug}`)).text();
     assert.match(page, /class="livepanel"/, slug);
@@ -66,17 +68,21 @@ test('a teacher gets "Host a live game" with the mode picked', async () => {
   assert.match(page, /href="\/live\?mode=wyr" id="hostlive"/);
 });
 
-test('"Join a game" is in the top bar for players, on the signed-in home page, and not for school staff', async () => {
+test('"Join a game" is in the top bar for players (Play has no second, big Join door signed in), and not for school staff', async () => {
   const kidHome = await (await get('/', kid)).text();
   assert.match(kidHome, /class="btn joinnow" href="\/join"/);
-  assert.match(kidHome, /class="home-join-in"[\s\S]*id="home-join"/);
+  assert.doesNotMatch(kidHome, /class="home-join-in"|id="home-join"/, 'the featured game comes first on Play');
   const kidGame = await (await get('/g/sum-racer', kid)).text();
   assert.match(kidGame, /class="btn joinnow" href="\/join"/, 'on every page');
   const out = await (await get('/')).text();
   assert.match(out, /class="btn joinnow joinnow-out" href="\/join"/);
-  const tHome = await (await get('/', teacher)).text();
-  assert.doesNotMatch(tHome, /class="btn joinnow/);
-  assert.doesNotMatch(tHome, /class="home-join-in"/);
+  for (const p of ['/play', '/learn']) {
+    const r = await get(p, teacher); assert.equal(r.status, 200, p);
+    const tHome = await r.text();
+    assert.doesNotMatch(tHome, /class="btn joinnow/, p);
+    assert.doesNotMatch(tHome, /class="home-join-in"|id="learn-join"/, p);
+  }
+  assert.match(await (await get('/learn', kid)).text(), /id="learn-join"/, 'a kid gets the join door on Learn too');
 });
 
 test('the game page\'s Join box: /join?code=…&go=1 goes on to the join page, which joins at once', async () => {

@@ -66,7 +66,12 @@
     "playNow": "Jouer",
     "games": "Jeux",
     "account": "Compte",
-    "school": "École"
+    "school": "École",
+    "play": "Jouer",
+    "learn": "Apprendre",
+    "class": "Classe",
+    "classroom": "Ma classe",
+    "live": "En direct"
   },
   "errors": {
     "goHome": "Retour à l’accueil",
@@ -504,7 +509,11 @@
       "rated": "Les mieux notés",
       "new": "Nouveautés",
       "mine": "Mes jeux",
-      "favorites": "Mes favoris"
+      "favorites": "Mes favoris",
+      "keep": "Continuer à jouer",
+      "two": "À deux",
+      "fromLearn": "D’Apprendre : les plus amusants",
+      "openLearn": "Ouvrir Apprendre"
     },
     "hero": {
       "label": "Jeu à la une",
@@ -539,6 +548,9 @@
       "todo": "{count, plural, one {# leçon à faire} other {# leçons à faire}}",
       "continue": "Continuer",
       "open": "Ouvrir ma classe"
+    },
+    "chips": {
+      "two": "À deux"
     }
   },
   "search": {
@@ -2412,11 +2424,11 @@
       "passed": "Réussi ! {score} bonnes réponses sur {total}.",
       "failed": "{score} bonnes réponses sur {total}. Il en faut {pass}. Réessaie !"
     },
-  "loudness": {
-    "listening": "À l’écoute",
-    "stop": "Arrêter",
-    "tap": "Touche pour commencer l’écoute"
-  }
+    "loudness": {
+      "listening": "À l’écoute",
+      "stop": "Arrêter",
+      "tap": "Touche pour commencer l’écoute"
+    }
   },
   "favorites": {
     "title": "Mes favoris",
@@ -2450,6 +2462,15 @@
       "title": "Ton enseignant a lancé un jeu en direct !",
       "join": "Rejoindre maintenant",
       "chip": "Jeu en direct"
+    },
+    "tab": {
+      "todo": "À faire",
+      "next": "Ensuite : {step}",
+      "continue": "Continuer",
+      "start": "Commencer",
+      "allDone": "Tout est fait ! Rien à faire pour le moment.",
+      "more": "Fini pour aujourd’hui ?",
+      "pick": "Tes classes"
     }
   },
   "school": {
@@ -4547,7 +4568,54 @@
       "ages": "Par âge",
       "who": "Pour les enseignants et les parents"
     },
-    "inClass": "Vous l’utilisez en classe ? <a href=\"{href}\">Découvrez Oomba Academy pour les enseignants</a>."
+    "inClass": "Vous l’utilisez en classe ? <a href=\"{href}\">Découvrez Oomba Academy pour les enseignants</a>.",
+    "tab": {
+      "h1": "Apprendre",
+      "lead": "Des jeux et des cours qui t’apprennent quelque chose. Choisis une matière, ou simplement un jeu.",
+      "leadStaff": "La même bibliothèque que vos élèves, avec des boutons pour assigner et animer en direct.",
+      "filters": "Filtrer les jeux",
+      "subject": "Matière",
+      "subjects": {
+        "all": "Tout",
+        "math": "Maths",
+        "words": "Mots",
+        "maps": "Cartes",
+        "code": "Code",
+        "thinking": "Réflexion",
+        "music": "Musique",
+        "any": "Toutes matières"
+      },
+      "grade": "Niveau",
+      "gradeAny": "Tous niveaux",
+      "gradeK": "Maternelle",
+      "gradeN": "Grade US {n}",
+      "filter": "Afficher",
+      "how": "Façon de jouer",
+      "howAll": "Peu importe",
+      "hows": {
+        "solo": "Tout seul",
+        "two": "À deux",
+        "live": "En direct avec ma classe"
+      },
+      "moreAbout": "En savoir plus sur les jeux de {subject}",
+      "joinH": "Ton enseignant t’a donné un code de jeu ?",
+      "myCourses": "Mes cours",
+      "live": "Jeux en direct pour la classe",
+      "liveText": "Ton enseignant en lance un sur le grand écran et tout le monde rejoint avec un code.",
+      "liveStaff": "Lancez-en un sur le grand écran : votre classe rejoint avec un code.",
+      "games": "Jeux pour apprendre",
+      "none": "Aucun jeu ne correspond encore à ces filtres.",
+      "clear": "Voir tous les jeux",
+      "players": "Jeux pour apprendre créés par des joueurs",
+      "meta": "{subject} · {grades}",
+      "assign": "Assigner",
+      "assignCourse": "Assigner à une classe",
+      "guide": "Guide de l’enseignant",
+      "host": "Animer en direct",
+      "try": "Essayer",
+      "also": "Aussi sur Oomba",
+      "hubNamed": "{subject} : {hub}"
+    }
   },
   "parents": {
     "title": "Jeux éducatifs gratuits et sûrs, 8-14 ans",
@@ -6473,7 +6541,16 @@
       "passed": "Réussi ! {score} bonnes réponses sur {total}.",
       "failed": "{score} bonnes réponses sur {total}. Regarde les bonnes réponses, puis réessaie."
     },
-    "play": "Jouer : {game} · {chapter}"
+    "play": "Jouer : {game} · {chapter}",
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cybersécurité et sécurité en ligne · du CE2 à la 4e"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Les maths dans les Numberworks · du CE2 au CM2"
+    },
+    "unitsN": "{count, plural, one {Voir l’unité} other {Voir les # unités}}"
   },
   "move": {
     "title": "Pauses actives",
@@ -6925,6 +7002,29 @@
       "theme": "Thème",
       "dark": "Sombre",
       "light": "Clair"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "Assigner {game}",
+      "pickClass": "Classe",
+      "submit": "Assigner",
+      "note": "Votre classe reçoit une leçon d’une étape qui lance ce jeu. Vous pourrez la modifier ensuite dans la bibliothèque de leçons.",
+      "none": "Vous n’avez pas encore de classe. Créez-en une d’abord dans Ma classe.",
+      "liveOnly": "C’est un jeu en direct pour la classe : animez-le sur le grand écran au lieu de l’assigner."
+    },
+    "home": {
+      "hello": "Bonjour, {name}",
+      "classesN": "{count, plural, one {# classe} other {# classes}}",
+      "waitingN": "{count, plural, one {# réponse en attente} other {# réponses en attente}}",
+      "caughtUp": "Tout est à jour",
+      "openClass": "Ouvrir la classe",
+      "courses": "Enseigner avec un cours",
+      "live": "Jeux en direct pour toute la classe",
+      "breaks": "Pauses actives",
+      "breaksText": "Des jeux courts et amusants de Jouer, choisis pour une pause de 5 minutes sur le grand écran.",
+      "allGames": "Voir tout ce que les élèves peuvent jouer",
+      "openLive": "Ouvrir le jeu en direct"
     }
   }
 }

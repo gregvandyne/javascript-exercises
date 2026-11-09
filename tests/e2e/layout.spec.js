@@ -140,12 +140,12 @@ test('every role\'s tab bar (360) and top bar (1280): the right items, labels fi
   await signup(kidPage, uniq('Kid')); const kidState = await kidCtx.storageState(); await kidCtx.close();
   const state = async (u, pw) => { const x = await signIn(browser, u, pw); await x.ctx.close(); return x.state; };
   const ROLES = [
-    ['signed out', undefined, ['/', '/search', '/build', '/parents', '/login'], ['/', '/build', '/parents', '/teachers'], ['/', '/login']],
-    ['kid', kidState, ['/', '/search', '/build', '/friends', '/me'], ['/', '/search', '/build', '/friends'], ['/', '/me']],
-    ['student', await state('DemoStudent', DEMO), ['/', '/classes', '/build', '/friends', '/me'], ['/', '/classes', '/build', '/friends'], ['/classes', '/me']],
-    ['teacher', await state('DemoTeacher', DEMO), ['/teach', '/', '/me'], ['/teach', '/'], ['/teach', '/me']],
-    ['school admin', headState, ['/teach', '/', '/school', '/me'], ['/teach', '/', '/school'], ['/teach', `/school/${school.slug}?tab=people`, '/me']],
-    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/search', '/build', '/friends', '/admin/schools', '/me'], ['/', '/search', '/build', '/friends', '/admin/schools'], ['/', '/me']],
+    ['signed out', undefined, ['/', '/learn', '/build', '/parents', '/login'], ['/', '/learn', '/build', '/parents', '/teachers'], ['/', '/learn', '/login']],
+    ['kid', kidState, ['/', '/learn', '/build', '/friends', '/me'], ['/', '/learn', '/build', '/friends'], ['/', '/learn', '/me']],
+    ['student', await state('DemoStudent', DEMO), ['/classes', '/play', '/learn', '/build', '/me'], ['/classes', '/play', '/learn', '/build', '/friends'], ['/classes', '/play', '/learn', '/me']],
+    ['teacher', await state('DemoTeacher', DEMO), ['/teach', '/learn', '/play', '/live', '/me'], ['/teach', '/learn', '/play', '/live'], ['/teach', '/learn', '/play', '/me']],
+    ['school admin', headState, ['/school', '/teach', '/learn', '/play', '/me'], ['/school', '/teach', '/learn', '/play', '/live'], ['/teach', `/school/${school.slug}?tab=people`, '/learn', '/me']],
+    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/learn', '/build', '/friends', '/admin/schools', '/me'], ['/', '/learn', '/build', '/friends', '/admin/schools'], ['/', '/learn', '/me']],
   ];
   const problems = [];
   for (const [who, st, tabs, top, pages] of ROLES) {

@@ -9,8 +9,8 @@
 // here; anyone with a session (kids, students, teachers, grown-ups, and a guest who already played) falls through to the
 // home page they have today, unchanged. renderLanding(req, res) is exported for whoever merges a new home route.
 //
-// "Just Play" (JUST_PLAY_URL): GET /play renders today's guest home (the arcade) by handing the request on to the existing
-// home route, so kids have a front door while "/" belongs to teachers. /play is private (server/seo.js PRIVATE_RE:
+// "Just Play" (JUST_PLAY_URL): GET /play is the Play page (routes/discover.js), for every role,
+// so kids have a front door while "/" belongs to teachers. /play is private (server/seo.js PRIVATE_RE:
 // X-Robots-Tag noindex), so it never competes with "/" in search.
 //
 // Prices: kids are never sold to, and amounts appear only on /plans (tests/unit/billing*.test.js). The landing says "one
@@ -49,15 +49,9 @@ const CTAS = new Map([['trial', 'landing.trial'], ['play', 'landing.play'], ['pr
 
 export const router = Router();
 
-// LANDING HOOK, part 1: /play is today's guest home. The request goes on to the home route (routes/discover.js GET /)
-// as "/", with a mark so part 2 below lets it through. The address stays /play (noindex by server/seo.js PRIVATE_RE).
-router.get(JUST_PLAY_URL, (req, res, next) => {
-  req.justPlay = true;
-  req.url = '/' + req.url.slice(JUST_PLAY_URL.length).replace(/^\/?/, '');
-  next();
-});
+// LANDING HOOK, part 1: GET /play is the Play page for everyone (routes/discover.js), so "Just Play" lands there.
 // LANDING HOOK, part 2: "/" with no session is the teacher landing; everyone else gets the home page as before.
-router.get('/', (req, res, next) => (!req.justPlay && wantsLanding(req) ? renderLanding(req, res) : next()));
+router.get('/', (req, res, next) => (wantsLanding(req) ? renderLanding(req, res) : next()));
 
 router.post('/landing/count/:cta', rateLimit('landing', 30, 60e3, undefined, { byIp: true }), (req, res) => {
   const step = CTAS.get(req.params.cta);

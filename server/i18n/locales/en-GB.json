@@ -351,6 +351,11 @@
     "index": {
       "description": "Free learning games for kids aged 8 to 14, by subject (maths, words, strategy, music, brain breaks, making games) and by age. Play in the browser, at school or at home.",
       "lead": "Free games for ages 8 to 14 that play in the browser. Pick a subject or an age to see which games fit and what they practise."
+    },
+    "tab": {
+      "subjects": {
+        "math": "Maths"
+      }
     }
   },
   "parents": {

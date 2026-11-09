@@ -105,7 +105,7 @@ test('footer: Privacy on every page; Terms only for grown-ups and school staff (
     // Kids, students, guests and the signed-out: Privacy, never Terms, on every page.
     for (const who of [null, kid, student, guest]) {
       const h = who ? cookieOf(who) : {};
-      for (const p of ['/', '/safety', '/parents', ...(who ? ['/me'] : ['/login']), '/terms', '/refunds', '/privacy']) {
+      for (const p of ['/', '/play', '/learn', '/safety', '/parents', ...(who ? ['/me'] : ['/login']), '/terms', '/refunds', '/privacy'].filter(p => !(p === '/' && who === student))) {
         const foot = footOf((await get(p, h)).text);
         assert.match(foot, /<a href="\/privacy">Privacy<\/a>/, `${who ? who.username : 'signed out'} ${p}: Privacy`);
         assert.doesNotMatch(foot, /href="\/terms"/, `${who ? who.username : 'signed out'} ${p}: no Terms`);

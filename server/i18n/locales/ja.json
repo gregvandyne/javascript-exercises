@@ -66,7 +66,12 @@
     "playNow": "今すぐあそぶ",
     "games": "ゲーム",
     "account": "アカウント",
-    "school": "学校"
+    "school": "学校",
+    "play": "あそぶ",
+    "learn": "まなぶ",
+    "class": "クラス",
+    "classroom": "教室",
+    "live": "ライブ"
   },
   "errors": {
     "goHome": "ホームへもどる",
@@ -504,7 +509,11 @@
       "rated": "ひょうかが高い",
       "new": "新着",
       "mine": "マイゲーム",
-      "favorites": "わたしのお気に入り"
+      "favorites": "わたしのお気に入り",
+      "keep": "つづきから",
+      "two": "ふたりで",
+      "fromLearn": "まなぶから：たのしいゲーム",
+      "openLearn": "まなぶを開く"
     },
     "hero": {
       "label": "おすすめのゲーム",
@@ -539,6 +548,9 @@
       "todo": "{count, plural, other {やるレッスン #件}}",
       "continue": "つづける",
       "open": "自分のクラスを開く"
+    },
+    "chips": {
+      "two": "ふたりで"
     }
   },
   "search": {
@@ -2412,11 +2424,11 @@
       "passed": "合格！{total}問中{score}問正解。",
       "failed": "{total}問中{score}問正解。合格は{pass}問から。もう一度やってみよう！"
     },
-  "loudness": {
-    "listening": "きいています",
-    "stop": "止める",
-    "tap": "タップしてきき始める"
-  }
+    "loudness": {
+      "listening": "きいています",
+      "stop": "止める",
+      "tap": "タップしてきき始める"
+    }
   },
   "favorites": {
     "title": "わたしのお気に入り",
@@ -2450,6 +2462,15 @@
       "title": "先生がライブゲームを始めました！",
       "join": "今すぐさんか",
       "chip": "ライブゲーム中"
+    },
+    "tab": {
+      "todo": "やること",
+      "next": "次：{step}",
+      "continue": "続ける",
+      "start": "はじめる",
+      "allDone": "ぜんぶできたよ！今やることはありません。",
+      "more": "今日はおしまい？",
+      "pick": "あなたのクラス"
     }
   },
   "school": {
@@ -4547,7 +4568,54 @@
       "ages": "年齢別",
       "who": "先生・保護者の方へ"
     },
-    "inClass": "授業で使いますか？<a href=\"{href}\">先生のためのOomba Academyはこちら</a>。"
+    "inClass": "授業で使いますか？<a href=\"{href}\">先生のためのOomba Academyはこちら</a>。",
+    "tab": {
+      "h1": "まなぶ",
+      "lead": "何かを学べるゲームとコース。教科をえらぶか、ゲームをえらぼう。",
+      "leadStaff": "生徒が見るのと同じライブラリに、課題の配布とライブ開催のボタンがついています。",
+      "filters": "ゲームをしぼりこむ",
+      "subject": "教科",
+      "subjects": {
+        "all": "すべて",
+        "math": "算数",
+        "words": "ことば",
+        "maps": "地図",
+        "code": "プログラミング",
+        "thinking": "考える",
+        "music": "音楽",
+        "any": "どの教科でも"
+      },
+      "grade": "学年",
+      "gradeAny": "すべての学年",
+      "gradeK": "幼稚園",
+      "gradeN": "{n}年生",
+      "filter": "表示",
+      "how": "あそびかた",
+      "howAll": "どれでも",
+      "hows": {
+        "solo": "ひとりで",
+        "two": "ふたりで",
+        "live": "クラスでライブ"
+      },
+      "moreAbout": "{subject}のゲームをもっと見る",
+      "joinH": "先生からゲームコードをもらった？",
+      "myCourses": "わたしのコース",
+      "live": "クラスのライブゲーム",
+      "liveText": "先生が大きな画面でゲームを始めて、みんなはコードで参加します。",
+      "liveStaff": "大きな画面で開催すると、クラスはコードで参加します。",
+      "games": "学べるゲーム",
+      "none": "この条件に合うゲームはまだありません。",
+      "clear": "すべてのゲームを表示",
+      "players": "プレイヤーが作った学べるゲーム",
+      "meta": "{subject}・{grades}",
+      "assign": "配布",
+      "assignCourse": "クラスに配布",
+      "guide": "先生向けガイド",
+      "host": "ライブで開催",
+      "try": "ためす",
+      "also": "Oombaでほかにも",
+      "hubNamed": "{subject}：{hub}"
+    }
   },
   "parents": {
     "title": "安全で無料の子ども向け学習ゲーム（8〜14歳）",
@@ -6473,7 +6541,16 @@
       "passed": "合格！{total}問中{score}問正解。",
       "failed": "{total}問中{score}問正解。正しい答えを見てから、もう一度やってみよう。"
     },
-    "play": "プレイ：{game}・{chapter}"
+    "play": "プレイ：{game}・{chapter}",
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "サイバーセキュリティとネットの安全・小3〜中2"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "ナンバーワークスで学ぶ算数・小3〜小5"
+    },
+    "unitsN": "{count, plural, other {#つのユニットを見る}}"
   },
   "move": {
     "title": "からだリフレッシュ",
@@ -6925,6 +7002,29 @@
       "theme": "テーマ",
       "dark": "ダーク",
       "light": "ライト"
+    }
+  },
+  "teach": {
+    "assign": {
+      "title": "{game}を配布",
+      "pickClass": "クラス",
+      "submit": "配布",
+      "note": "このゲームをあそぶ1ステップのレッスンがクラスに届きます。あとでレッスンライブラリで変更できます。",
+      "none": "まだクラスがありません。先に教室でクラスを作ってください。",
+      "liveOnly": "これはクラスのライブゲームです。配布するのではなく、大きな画面で開催してください。"
+    },
+    "home": {
+      "hello": "こんにちは、{name}さん",
+      "classesN": "{count, plural, other {#クラス}}",
+      "waitingN": "{count, plural, other {#件の回答が待っています}}",
+      "caughtUp": "すべて完了",
+      "openClass": "クラスを開く",
+      "courses": "コースで教える",
+      "live": "クラス全員のライブゲーム",
+      "breaks": "ひと休みゲーム",
+      "breaksText": "「あそぶ」から選んだ、大きな画面で5分間楽しめる短いゲームです。",
+      "allGames": "生徒が遊べるものをすべて見る",
+      "openLive": "開いているライブゲームへ"
     }
   }
 }
