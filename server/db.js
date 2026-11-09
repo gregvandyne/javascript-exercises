@@ -707,6 +707,27 @@ export const MIGRATIONS = [
       roster_name TEXT NOT NULL DEFAULT '', invited_by TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (school_id, user_id));
     CREATE INDEX IF NOT EXISTS staff_invites_user ON staff_invites(user_id);
     ALTER TABLE school_requests ADD COLUMN contact_name TEXT NOT NULL DEFAULT '';`],
+  // Trial emails (services/email.js, services/nudges.js; docs/decisions.md "Trial emails"). email_prefs: one row per
+  // grown-up or teacher account we may email: the address a trial gave us (email_source 'checkout'; a Google sign-in's
+  // verified address is read from google_identities and wins) and nudges_off_at (the one-click unsubscribe; receipts and
+  // other transactional emails still go). email_log: one row per send attempt (to, template, status, the provider's id,
+  // a short error): never a body. trial_emails: one row per account's trial (the first one only: a second trial gets
+  // no second sequence). trial_nudges: one row per email of the sequence with due_at / latest_at (never sent after it)
+  // and sent_at, so a restart never sends one twice. status: pending | sending | sent | skipped | failed | canceled.
+  ['0060_trial_emails', `
+    CREATE TABLE IF NOT EXISTS email_prefs (user_id TEXT PRIMARY KEY, email TEXT NOT NULL DEFAULT '', email_source TEXT NOT NULL DEFAULT '',
+      nudges_off_at INTEGER, updated_at INTEGER NOT NULL) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS email_log (id TEXT PRIMARY KEY, user_id TEXT, to_email TEXT NOT NULL DEFAULT '', template TEXT NOT NULL,
+      category TEXT NOT NULL, status TEXT NOT NULL, provider_id TEXT, error TEXT, idem_key TEXT, attempts INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS email_log_at ON email_log(created_at);
+    CREATE INDEX IF NOT EXISTS email_log_user ON email_log(user_id);
+    CREATE TABLE IF NOT EXISTS trial_emails (user_id TEXT PRIMARY KEY, trial_start INTEGER NOT NULL, trial_end INTEGER NOT NULL,
+      state TEXT NOT NULL DEFAULT 'trialing', converted_at INTEGER, ended_at INTEGER, created_at INTEGER NOT NULL) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS trial_nudges (user_id TEXT NOT NULL, step TEXT NOT NULL, due_at INTEGER NOT NULL, latest_at INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending', reason TEXT, attempts INTEGER NOT NULL DEFAULT 0, claimed_at INTEGER, sent_at INTEGER,
+      created_at INTEGER NOT NULL, PRIMARY KEY (user_id, step)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS trial_nudges_due ON trial_nudges(status, due_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

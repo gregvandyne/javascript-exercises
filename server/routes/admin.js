@@ -33,6 +33,8 @@ import * as AU from '../services/admin-users.js';
 import * as AA from '../services/admin-analytics.js';
 import { getUserByName, OFFICIAL } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
+import * as email from '../services/email.js';
+import * as nudges from '../services/nudges.js';
 
 export const router = Router();
 router.use('/admin', requireAdmin);
@@ -505,7 +507,7 @@ router.get('/admin', (req, res) => {
   const waiting = Object.values(n).reduce((a, b) => a + (b || 0), 0);
   const tabLink = ([k, e, l]) => html`<a href="/admin?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}><span aria-hidden="true">${e}</span>&nbsp;${l}${n[k] ? html`&nbsp;<span class="badge">${n[k]}</span>` : ''}</a>`;
   const body = html`
-  <div class="ahead"><div class="pagehead adminhead"><h1>🛡️ Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
+  <div class="ahead"><div class="pagehead adminhead"><h1>🛡️ Admin</h1><div class="row ashort"><a class="btn${c.queue ? ' btn-hot' : ''}" href="/admin?tab=queue" aria-label="Review queue: ${c.queue} game${c.queue === 1 ? '' : 's'} waiting"><span aria-hidden="true">⏳</span> Review${c.queue ? html`&nbsp;<span class="badge">${c.queue}</span>` : ''}</a><a class="btn" href="/admin/stats"><span aria-hidden="true">📊</span> Stats</a><a class="btn" href="/admin/schools"><span aria-hidden="true">🏫</span> Schools${n.schoolreq ? html`&nbsp;<span class="badge" aria-label="${n.schoolreq} school request${n.schoolreq === 1 ? '' : 's'} waiting">${n.schoolreq}</span>` : ''}</a><a class="btn" href="/admin/billing"><span aria-hidden="true">💳</span> Billing</a><a class="btn" href="/admin/emails"><span aria-hidden="true">📧</span> Emails</a><a class="btn" href="/admin/voices"><span aria-hidden="true">🔊</span> Voices</a></div></div>
   ${aiSpendPanel()}
   <nav class="tabs adminnav" aria-label="Admin sections">
     <input type="checkbox" id="adminnav-t" class="adminnav-t" aria-controls="adminnav-groups">
@@ -817,6 +819,7 @@ router.get('/admin/billing', async (req, res) => {
   const body = html`
   <div class="pagehead"><h1>💳 Billing</h1><span class="chip-s ${mode === 'live' ? 'good' : mode === 'test' ? 'warn' : ''}">Stripe: ${mode}</span></div>
   ${mode === 'off' ? html`<p class="notice">Billing is off: set STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET (see the README). Rows from an earlier key still show below.</p>` : ''}
+  ${emailWarning()}
   ${mode !== 'off' && !config.stripePmcFamily ? html`<p class="notice bad" role="alert"><b>Family checkout is off: STRIPE_PMC_FAMILY is not set.</b> Create the "Family" payment method configuration in Stripe (cards, Apple Pay, Google Pay on; Link off) and put its pmc_… id in STRIPE_PMC_FAMILY. Until then family plans are not on sale.</p>` : ''}
   ${tax && tax.on && !tax.ok ? html`<p class="notice bad" role="alert"><b>${tax.problem === 'settings_pending' ? 'Stripe Tax is on but its settings are pending' : 'Stripe Tax is on but is collecting in no state'}.</b> No tax is collected. ${tax.problem === 'settings_pending' ? 'Set the head office address in Stripe (Tax → Settings).' : 'Add a registration in Stripe (Tax → Registrations).'} Checked ${timeAgo(tax.checkedAt)}.</p>` : ''}
   <div class="kpis" style="margin-bottom:var(--s4)">
@@ -885,6 +888,84 @@ router.get('/admin/billing', async (req, res) => {
     </tbody></table></div>` : html`<p class="muted">No webhook events yet.</p>`}
   </section>`;
   page(req, res, { title: 'Billing', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin', backLabel: 'Admin' });
+});
+
+// ---- Emails (services/email.js, services/nudges.js; docs/decisions.md "Trial emails") ----
+const STEP_LABEL = { welcome: '#1 Welcome (at once)', class: '#2 Set up a class (day 2, skipped if they have one)', ideas: '#3 Three ideas (day 5)', ending: '#4 Trial ends in 3 days (day 11)', ended: '#5 Trial ended (day 14, not converted)', thanks: 'Thank-you (on conversion)' };
+/** Where the admin's test emails go: their own address (Google), else CONTACT_EMAIL, else EMAIL_REPLY_TO. */
+const testAddress = u => email.addressOf(u.id)?.email || email.normEmail(config.contactEmail) || email.normEmail(config.emailReplyTo.replace(/^.*<([^>]+)>.*$/, '$1'));
+const sampleTrial = () => ({ trial_start: Date.now(), trial_end: Date.now() + 14 * 864e5 });
+const sampleUser = u => ({ id: u.id, display_name: 'Alex Rivera', lang: 'en' });
+/** The CAN-SPAM / settings warning, for /admin/emails and /admin/billing. */
+const emailWarning = () => {
+  const s = email.emailStatus();
+  return s.nudges ? '' : html`<p class="notice bad" role="alert" id="email-warning"><b>Trial emails are not being sent.</b> ${s.problems.join(' ')} <a href="/admin/emails">Emails</a> has the details and the go-live checklist is in <code>docs/emails-go-live.md</code>.</p>`;
+};
+router.get('/admin/emails', (req, res) => {
+  const s = email.emailStatus();
+  const on = nudges.switchOn();
+  const c = email.logCounts();
+  const seq = nudges.sequenceCounts();
+  const log = email.recentLog(50);
+  const to = testAddress(req.user);
+  const body = html`
+  <div class="pagehead"><h1>📧 Emails</h1><span class="chip-s ${s.sending ? 'good' : 'warn'}">Sending: ${s.sending ? 'on' : 'off'}</span> <span class="chip-s ${on && s.nudges ? 'good' : 'warn'}">Trial emails: ${!on ? 'switched off' : s.nudges ? 'on' : 'waiting for settings'}</span></div>
+  ${emailWarning()}
+  <div class="kpis" style="margin-bottom:var(--s4)">
+    ${tile('✅ Sent (30 days)', int(c.total.sent))}${tile('❌ Failed (30 days)', int(c.total.failed), '', c.total.failed ? 'bad' : '')}${tile('⏭️ Skipped (30 days)', int(c.total.skipped), 'no address, unsubscribed, not an adult')}
+  </div>
+  <section class="panel" id="e-switch"><h2>Trial email sequence</h2>
+    <p>${on ? 'On: due emails go out (checked every 15 minutes).' : 'Switched off: nothing is sent. Due emails wait, and any that would then be more than their allowed lateness are skipped.'}</p>
+    <form data-api="/api/admin/emails/nudges" data-reload data-toast="${on ? 'Trial emails switched off.' : 'Trial emails switched on.'}" ${on ? raw('data-confirm="Stop sending trial emails?"') : ''}><input type="hidden" name="on" value="${on ? '0' : '1'}"><button class="btn ${on ? '' : 'btn-primary'}" type="submit">${on ? 'Switch off' : 'Switch on'}</button></form>
+    <div class="tblwrap"><table class="tbl small atable" style="margin-top:12px"><thead><tr><th>Email</th><th>Waiting</th><th>Sent</th><th>Skipped / canceled</th><th>Failed</th></tr></thead><tbody>
+      ${nudges.TRIAL_STEPS.map(st => { const x = seq[st] || {}; return html`<tr><td>${STEP_LABEL[st]}</td><td data-label="Waiting">${int((x.pending || 0) + (x.sending || 0))}</td><td data-label="Sent">${int(x.sent)}</td><td data-label="Skipped / canceled">${int((x.skipped || 0) + (x.canceled || 0))}</td><td data-label="Failed">${int(x.failed)}</td></tr>`; })}
+    </tbody></table></div>
+  </section>
+  <section class="panel" id="e-preview"><h2>Preview and test</h2>
+    <p class="small muted">Previews use a sample teacher ("Alex") and a trial starting today. A test goes to ${to ? html`<b dir="ltr">${email.maskEmail(to)}</b> (your Google address, else CONTACT_EMAIL, else EMAIL_REPLY_TO)` : 'nobody: no address is known'}, with "[Test]" in the subject.</p>
+    <ul class="stack" style="list-style:none;padding:0">${nudges.TRIAL_STEPS.map(st => html`<li class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><span style="min-width:16em">${STEP_LABEL[st]}</span>
+      <a class="btn btn-sm" href="/admin/emails/preview/${st}" target="_blank" rel="noopener">Preview</a><a class="btn btn-sm" href="/admin/emails/preview/${st}?format=text" target="_blank" rel="noopener">Text</a>
+      <form data-api="/api/admin/emails/test" data-toast="Test sent."><input type="hidden" name="step" value="${st}"><button class="btn btn-sm" type="submit" ${s.sending && to ? '' : raw('disabled')}>Send me a test</button></form></li>`)}</ul>
+  </section>
+  <section class="panel" id="e-settings"><h2>Settings</h2>
+    <div class="tblwrap"><table class="tbl small afacts"><tbody>
+      <tr><th scope="row">RESEND_API_KEY</th><td>${s.key ? 'set' : 'not set'}</td></tr>
+      <tr><th scope="row">EMAIL_ENABLED</th><td>${s.enabled ? 'on' : 'off (0)'}</td></tr>
+      <tr><th scope="row">EMAIL_FROM</th><td dir="ltr">${s.from}</td></tr>
+      <tr><th scope="row">EMAIL_REPLY_TO</th><td dir="ltr">${s.replyTo}</td></tr>
+      <tr><th scope="row">EMAIL_POSTAL_ADDRESS</th><td>${s.postal ? s.postalAddress : html`<b>not set</b>: trial emails are not sent`}</td></tr>
+    </tbody></table></div>
+  </section>
+  <section class="panel" id="e-log"><h2>Recent sends</h2>
+    ${log.length ? html`<div class="tblwrap"><table class="tbl small atable wide alog"><thead><tr><th>When</th><th>Email</th><th>To</th><th>Status</th><th>Detail</th></tr></thead><tbody>
+      ${log.map(r => html`<tr><td data-label="When">${when(r.created_at)}</td><td class="at"><code>${r.template}</code></td><td data-label="To" dir="ltr">${email.maskEmail(r.to_email) || '–'}</td><td data-label="Status">${r.status}${r.attempts > 1 ? ` (${r.attempts} tries)` : ''}</td><td data-label="Detail" class="full">${r.error || (r.provider_id ? html`<code>${r.provider_id}</code>` : '')}</td></tr>`)}
+    </tbody></table></div>` : html`<p class="muted">Nothing sent yet.</p>`}
+    <p class="small muted">Kept a year. Addresses are shortened here; bodies are never stored.</p>
+  </section>`;
+  page(req, res, { title: 'Emails', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin', backLabel: 'Admin' });
+});
+router.get('/admin/emails/preview/:step', (req, res) => {
+  if (!nudges.TRIAL_STEPS.includes(req.params.step)) return res.status(404).type('text').send('No such email.');
+  const m = nudges.renderFor(req.params.step, sampleUser(req.user), sampleTrial());
+  res.set('Cache-Control', 'no-store');
+  if (req.query.format === 'text') return res.type('text/plain; charset=utf-8').send(`Subject: ${m.subject}\nPreview: ${m.preview}\n\n${m.text}`);
+  res.type('html').send(m.html);
+});
+router.post('/api/admin/emails/nudges', (req, res) => {
+  const v = (req.body || {}).on;
+  res.json({ ok: true, on: nudges.setSwitch(req.user, v === true || v === '1') });
+});
+router.post('/api/admin/emails/test', rateLimit('admin-email-test', 10, 10 * 60e3), async (req, res) => {
+  const step = String((req.body || {}).step || '');
+  if (!nudges.TRIAL_STEPS.includes(step)) return res.status(404).json({ error: 'No such email.' });
+  if (!email.sendingOn()) return res.status(409).json({ error: 'Sending is off: set RESEND_API_KEY (and EMAIL_ENABLED not 0).' });
+  const to = testAddress(req.user);
+  if (!to) return res.status(409).json({ error: 'No address to send to: sign in with Google, or set CONTACT_EMAIL.' });
+  const m = nudges.renderFor(step, req.user, sampleTrial());
+  const r = await email.send({ userId: req.user.id, template: `trial_${step}`, category: 'test', subject: `[Test] ${m.subject}`, html: m.html, text: m.text, to });
+  audit(req.user.id, 'admin.emails.test', step, { status: r.status });
+  if (r.status !== 'sent') return res.status(502).json({ error: `Not sent (${r.reason || r.status}).` });
+  res.json({ ok: true, toast: `Test sent to ${email.maskEmail(to)}.` });
 });
 
 // ---- APIs ----

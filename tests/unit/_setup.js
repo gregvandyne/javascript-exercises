@@ -6,3 +6,5 @@ process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
 // Billing off unless a test turns it on against the fake Stripe: exported STRIPE_* settings never reach a test.
 for (const k of Object.keys(NO_STRIPE_ENV)) delete process.env[k];
+// Email off unless a test turns it on with a fake Resend (services/email.js _hooks): exported keys never reach a test.
+for (const k of ['RESEND_API_KEY', 'EMAIL_ENABLED', 'EMAIL_FROM', 'EMAIL_REPLY_TO', 'EMAIL_POSTAL_ADDRESS']) delete process.env[k];

@@ -182,6 +182,21 @@ Stripe webhook events to send (14): `checkout.session.completed`, `checkout.sess
 `invoice.finalized`, `invoice.overdue`, `charge.refunded`, `charge.dispute.created`,
 `radar.early_fraud_warning.created`.
 
+**Email (trial emails via Resend)**
+
+The Teacher plan's trial emails (`server/services/nudges.js`) go out through Resend's HTTP API
+(`server/services/email.js`). Nothing is sent without `RESEND_API_KEY`; the trial emails also wait for
+`EMAIL_POSTAL_ADDRESS`. `/admin/emails` switches the sequence on or off, previews each email, sends the admin a test
+and shows the send log. Setting it up: `docs/emails-go-live.md`.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `RESEND_API_KEY` | – | Resend API key (`re_…`, "Sending access" for the oomba.ai domain). Unset: no email is sent. Never echoed. |
+| `EMAIL_ENABLED` | `1` | `0` stops every email at once (the sequence waits; late ones are then skipped by its rules). |
+| `EMAIL_FROM` | `Greg at Oomba Academy <greg@oomba.ai>` | The sender. Its domain must be verified in Resend. |
+| `EMAIL_REPLY_TO` | `Greg@oomba.ai` | Where replies go. |
+| `EMAIL_POSTAL_ADDRESS` | – (no default) | The postal address CAN-SPAM requires in a marketing email's footer (one line; line breaks become " · "). **While it is empty, trial emails are not sent at all**; start-up logs it once and /admin/emails and /admin/billing warn. Transactional emails don't need it. |
+
 **Screenshots (headless Chromium)**
 
 | Variable | Default | What it does |

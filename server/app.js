@@ -44,6 +44,7 @@ import { router as moveRoutes } from './routes/move.js';
 import { router as cyberRoutes } from './routes/cyber-defenders.js';
 import { router as numberQuestRoutes } from './routes/number-quest.js';
 import { router as storyRoutes } from './routes/stories.js';
+import { router as emailRoutes } from './routes/email.js';
 import { pathLocale, privateNoindex } from './seo.js';
 import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
@@ -184,6 +185,8 @@ export function createApp() {
   app.use(countVisits);
   app.use(i18n);
   app.use(theme);
+  // One-click unsubscribe (routes/email.js): a mail provider's POST comes from its own servers; the signed token is the check.
+  app.use(emailRoutes);
   app.use(csrfCheck);
   // Grown-up accounts may only play games and look after their family: everything else is a 404 for them.
   app.use(grownupGuard);
