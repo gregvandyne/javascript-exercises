@@ -32,7 +32,7 @@ in code.
 | D3 | Free daily messages | Keep 60. If you lower it, ship that change on its own, weeks before paid plans, never in the same release. | `BUILDER_DAILY_TURNS` |
 | D4 | Family extra messages a month | Start at 40 (about half the family plan's net price ÷ cost per message); Basic 25. Recompute with Step 0's cost. | `FAMILY_EXTRA_MESSAGES`, `BASIC_EXTRA_MESSAGES` |
 | D5 | Pro message weight | Switch to 2 in the same release that opens plans (approved). **But** while `BUILDER_FULL_FOR_ALL` is on (the default since "Everyone builds like a teacher", November 2026) every signed-in maker builds with Pro and each message counts as one, so `PRO_TURN_WEIGHT` changes nothing and every message costs a Pro message: measure Step 0 that way and price on it, or set `BUILDER_FULL_FOR_ALL=0` (then the weight of 2 applies to kids and grown-ups; teachers and staff still count one). The panel's row shows which applies. | `PRO_TURN_WEIGHT=2`, `BUILDER_FULL_FOR_ALL` |
-| D6 | School price | $20 per student per year, at least 25 students, 100 messages per paid student a year: keep, then check that 100 × Step 0's cost per message stays well under $20. | Stripe Price `oomba_school_seat_yearly`; `SCHOOL_TURNS_PER_SEAT`, `SCHOOL_MIN_SEATS` |
+| D6 | School price | **Replaced (2026-11-09) by the Teacher plan:** $119 per teacher per year, no per-student charge; schools buy N teacher seats. The per-student price stays only for grandfathered schools' renewals (docs/decisions.md "Teacher plan"). | Stripe Price `oomba_teacher_yearly` (and `oomba_school_seat_yearly`, renewals only); `TEACHER_DAILY_MESSAGES`, `TEACHER_TRIAL_DAYS`, `TEACHER_MONTHLY_AI_USD` |
 | Prices | Basic and Family, monthly and yearly | **Your decision; not fixed anywhere in the design.** The Spark Pack design calls 20¢ a message "the Basic plan's rate" (25 messages ≈ $4.99 a month). Set them only after Step 0. | Stripe Prices `oomba_basic_monthly`, `oomba_basic_yearly`, `oomba_family_monthly`, `oomba_family_yearly` |
 | Spark Packs | The three prices | As designed: 25 messages $4.99, 60 messages $9.99, 150 messages $19.99 (each keeps a margin at ~10¢ of AI cost a message). | Stripe Prices `oomba_spark_25`, `oomba_spark_60`, `oomba_spark_150` |
 | Spark Packs | Who may buy, how long they last, refunds | Only families with a plan; 365 days, still usable after the plan ends; a full refund of an **unused** pack within 14 days (what /refunds now says). | `SPARK_PACK_EXPIRY_DAYS`; docs/legal-review.md item 45 |
@@ -62,12 +62,22 @@ Do these in the Stripe Dashboard with **Test mode switched off**. They mirror wh
    `oomba_basic_yearly`, `oomba_family_monthly`, `oomba_family_yearly`, `oomba_school_seat_yearly` (recurring), and
    `oomba_spark_25`, `oomba_spark_60`, `oomba_spark_150` (one-time). USD, tax behavior as in the sandbox. The site
    finds prices only by lookup key, so a missing one shows "Price coming soon" (the panel names it).
+   **Teacher plan** (done in live mode on 2026-11-09): Product "Oomba Teacher plan" (`prod_Vb0YSjk70xhUar`), Price
+   `price_1UZoXC3TnSduDqoY3sZfm1IK`, $119/year, tax behavior exclusive, lookup key **`oomba_teacher_yearly`**. Add
+   metadata `oomba_plan` = `teacher` on that Product, so a future Price that takes over the lookup key keeps the plan.
+   Keep `oomba_school_seat_yearly` **active**: grandfathered per-student schools renew on it. New schools never buy it.
+   Do the same in the sandbox (test mode) so the panel's "with the test key" check passes.
 2. **Payment methods.** Settings → Payment methods → create a configuration named "Family" (cards, Apple Pay, Google
    Pay on; **Link off**). Copy its `pmc_…` id. Optionally a "School" one (cards, Link, ACH Direct Debit).
 3. **Stripe Tax** (D9). Tax → Settings: head office address. Tax → Registrations: add the states where you must collect.
 4. **Radar rule** (D9): block cards from outside the US, e.g. `Block if :card_country: != 'US'`.
-5. **Customer Portal.** Settings → Billing → Customer portal: allow cancelling (at period end), updating payment
-   methods, and switching between Basic and Family (prorated). Turn on the portal's link to /terms and /privacy.
+5. **Customer Portal.** Settings → Billing → Customer portal: allow cancelling (at period end), **updating payment
+   methods** (a teacher adds a card to their free trial there: "Add a card" on My classes opens the portal), and
+   switching between Basic and Family (prorated). Turn on the portal's link to /terms and /privacy.
+5a. **Free trial reminder (Teacher plan).** Settings → Billing → Subscriptions and emails → Manage free trial messaging:
+   turn on **"Send a reminder email 7 days before a free trial ends"** (Stripe sends it to the teacher's work email;
+   the site also shows its own notice and a Team inbox message when Stripe sends `customer.subscription.trial_will_end`,
+   3 days before). Also set a link to your Terms there (Stripe asks for it before it sends trial reminders).
 6. **Customer emails.** Settings → Customer emails: turn on "Successful payments" and "Refunds" (receipts; the site
    sends no email). Set the support email to greg@oomba.ai.
 7. **Card retries.** Settings → Billing → Subscriptions and emails: make retries end within 7 days (the grace period,
@@ -77,9 +87,10 @@ Do these in the Stripe Dashboard with **Test mode switched off**. They mirror wh
    settings, Tax registrations (**read**). Products (read) is needed because the site reads a subscription with its
    Price's Product. If a panel row says "Stripe answered" a permission error, add the permission it names. Never use the `sk_live_` secret key: the site refuses to start with it.
 9. **Webhook.** Developers → Webhooks → Add endpoint `https://oomba.ai/api/billing/webhook`, API version
-   `2026-09-30.endive` (the same as `STRIPE_API_VERSION`), with these 14 events: `checkout.session.completed`,
+   `2026-09-30.endive` (the same as `STRIPE_API_VERSION`), with these 15 events: `checkout.session.completed`,
    `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`,
-   `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`,
+   `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`,
+   `customer.subscription.trial_will_end` (new with the Teacher plan: **add it to an endpoint made before**), `invoice.paid`,
    `invoice.payment_failed`, `invoice.finalized`, `invoice.overdue`, `charge.refunded`, `charge.dispute.created`,
    `radar.early_fraud_warning.created`. Copy its signing secret (`whsec_…`).
 
@@ -150,5 +161,6 @@ Stripe Tax collecting, `TERMS_PUBLISHED`, `CONTACT_EMAIL`, `PUBLIC_URL`, the AI 
 paid-plan word is translated in all 13 languages (tests/unit/billing-i18n.test.js checks the same), and
 `BILLING_PUBLIC`.
 
-It can't check: the lawyer's sign-off (Step 2), the Radar rule, the Customer Portal and email settings, card retries,
-and the webhook's event list (Step 3). Tick those off here by hand.
+It can't check: the lawyer's sign-off (Step 2), the Radar rule, the Customer Portal and email settings, the free
+trial reminder email (3.5a), card retries, and the webhook's event list (Step 3, `trial_will_end` included). Tick
+those off here by hand. The Teacher plan's price has its own row (`oomba_teacher_yearly`).

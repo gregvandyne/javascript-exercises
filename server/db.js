@@ -707,10 +707,50 @@ export const MIGRATIONS = [
       roster_name TEXT NOT NULL DEFAULT '', invited_by TEXT NOT NULL, created_at INTEGER NOT NULL, PRIMARY KEY (school_id, user_id));
     CREATE INDEX IF NOT EXISTS staff_invites_user ON staff_invites(user_id);
     ALTER TABLE school_requests ADD COLUMN contact_name TEXT NOT NULL DEFAULT '';`],
+  // The Teacher plan (services/teacher-plan.js; docs/decisions.md "Teacher plan"). billing_subscriptions.trial_end: a
+  // free trial's end (ms). trial_notice_at: when the teacher was told their trial is ending (customer.subscription.
+  // trial_will_end), so the notice goes once. teacher_trials: one row per free trial ever started, by a teacher (owner
+  // 'teacher') or a school (owner 'school'): a teacher, an email (an HMAC of it, never the address) and a school each
+  // get one trial ever, per Stripe mode. teacher_seats: which staff a school with teacher seats gave a seat to.
+  // billing_requests.unit: what an invoice request counts ('teacher' seats; 'student' for requests made before).
+  ['0060_teacher_plan', `
+    ALTER TABLE billing_subscriptions ADD COLUMN trial_end INTEGER;
+    ALTER TABLE billing_subscriptions ADD COLUMN trial_notice_at INTEGER;
+    CREATE TABLE IF NOT EXISTS teacher_trials (id TEXT PRIMARY KEY, owner_kind TEXT NOT NULL, owner_id TEXT NOT NULL,
+      user_id TEXT, school_id TEXT, email_hash TEXT, stripe_subscription_id TEXT UNIQUE, livemode INTEGER NOT NULL,
+      created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS teacher_trials_user ON teacher_trials(user_id, livemode);
+    CREATE INDEX IF NOT EXISTS teacher_trials_email ON teacher_trials(email_hash, livemode);
+    CREATE INDEX IF NOT EXISTS teacher_trials_school ON teacher_trials(school_id, livemode);
+    CREATE TABLE IF NOT EXISTS teacher_seats (school_id TEXT NOT NULL, user_id TEXT NOT NULL, assigned_by TEXT NOT NULL,
+      assigned_at INTEGER NOT NULL, PRIMARY KEY (school_id, user_id));
+    CREATE INDEX IF NOT EXISTS teacher_seats_user ON teacher_seats(user_id);
+    ALTER TABLE billing_requests ADD COLUMN unit TEXT NOT NULL DEFAULT 'student';`],
+  // Trial emails (services/email.js, services/nudges.js; docs/decisions.md "Trial emails"). email_prefs: one row per
+  // grown-up or teacher account we may email: the address a trial gave us (email_source 'checkout'; a Google sign-in's
+  // verified address is read from google_identities and wins) and nudges_off_at (the one-click unsubscribe; receipts and
+  // other transactional emails still go). email_log: one row per send attempt (to, template, status, the provider's id,
+  // a short error): never a body. trial_emails: one row per account's trial (the first one only: a second trial gets
+  // no second sequence). trial_nudges: one row per email of the sequence with due_at / latest_at (never sent after it)
+  // and sent_at, so a restart never sends one twice. status: pending | sending | sent | skipped | failed | canceled.
+  ['0061_trial_emails', `
+    CREATE TABLE IF NOT EXISTS email_prefs (user_id TEXT PRIMARY KEY, email TEXT NOT NULL DEFAULT '', email_source TEXT NOT NULL DEFAULT '',
+      nudges_off_at INTEGER, updated_at INTEGER NOT NULL) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS email_log (id TEXT PRIMARY KEY, user_id TEXT, to_email TEXT NOT NULL DEFAULT '', template TEXT NOT NULL,
+      category TEXT NOT NULL, status TEXT NOT NULL, provider_id TEXT, error TEXT, idem_key TEXT, attempts INTEGER NOT NULL DEFAULT 0,
+      created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS email_log_at ON email_log(created_at);
+    CREATE INDEX IF NOT EXISTS email_log_user ON email_log(user_id);
+    CREATE TABLE IF NOT EXISTS trial_emails (user_id TEXT PRIMARY KEY, trial_start INTEGER NOT NULL, trial_end INTEGER NOT NULL,
+      state TEXT NOT NULL DEFAULT 'trialing', converted_at INTEGER, ended_at INTEGER, created_at INTEGER NOT NULL) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS trial_nudges (user_id TEXT NOT NULL, step TEXT NOT NULL, due_at INTEGER NOT NULL, latest_at INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'pending', reason TEXT, attempts INTEGER NOT NULL DEFAULT 0, claimed_at INTEGER, sent_at INTEGER,
+      created_at INTEGER NOT NULL, PRIMARY KEY (user_id, step)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS trial_nudges_due ON trial_nudges(status, due_at);`],
   // The two shelves of the game library (docs/decisions.md "Play and Learn"): each official game is 'play' (fun first)
   // or 'learn' (teaches something). Set from the seed JSONs ("shelf", scripts/import-game.js) for fresh databases and
   // here for existing ones; players' games keep '' and services/games.js SHELF_SQL derives theirs from the category.
-  ['0060_game_shelf', '', conn => {
+  ['0062_game_shelf', '', conn => {
     if (!conn.prepare('PRAGMA table_info(games)').all().some(c => c.name === 'shelf')) conn.exec("ALTER TABLE games ADD COLUMN shelf TEXT NOT NULL DEFAULT '';");
     const learn = ['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live', 'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail'];
     const list = learn.map(s => `'${s}'`).join(',');

@@ -14,7 +14,7 @@ export const FUNNELS = Object.freeze([
     ['parent.checkout', 'Checkout started'], ['parent.paid', 'Paid (webhook)']] },
   { key: 'teacher', title: 'Teachers', steps: [
     ['teacher.view', 'Teacher page views'], ['teacher.request', 'School requests'], ['teacher.school', 'Schools set up'],
-    ['teacher.class', 'First class with students'], ['teacher.plan', 'School plan']] },
+    ['teacher.class', 'First class with students'], ['teacher.trial', 'Teacher trials started'], ['teacher.plan', 'Paid plan (teacher or school)']] },
   { key: 'guardrail', title: 'Guardrail (must not drop)', guardrail: true, steps: [
     ['kid.signup', 'Kid sign-ups'], ['kid.play', 'Games played']] },
   // Which door signed-out visitors and guests take on the home page (routes/discover.js /go/<door>), and the top bar's
@@ -25,6 +25,11 @@ export const FUNNELS = Object.freeze([
   // "Who's this for?" on Start free (routes/auth.js /signup/for/<who>). Choices, not a funnel: no "of step before".
   { key: 'who', title: 'Who’s this for? (sign-up)', tally: true, steps: [
     ['who.grownup', 'Me (a grown-up)'], ['who.kid', 'My child'], ['who.teacher', 'I’m a teacher']] },
+  // The teacher landing page at "/" (routes/landing.js): signed-out views and its buttons' clicks (a beacon, POST
+  // /landing/count/<cta>). Clicks, not a funnel: no "of step before".
+  { key: 'landing', title: 'Teacher landing (signed out)', tally: true, steps: [
+    ['landing.view', 'Landing views'], ['landing.trial', 'Start free trial'], ['landing.play', 'Just Play'],
+    ['landing.how', 'See how it works'], ['landing.pricing', 'Plans & pricing']] },
 ]);
 export const STEPS = Object.freeze(FUNNELS.flatMap(f => f.steps.map(s => s[0])));
 const KNOWN = new Set(STEPS);

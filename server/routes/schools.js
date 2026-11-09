@@ -23,6 +23,7 @@ import { BRAIN_BREAKS, SHELF_INFO, shelfGrades } from '../learn.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
 import { billingTabOn, schoolBillingTab, teachPlanCard, askPanel } from './school-billing.js';
+import { teacherPlanCard } from './teacher-plan.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn, openForClass } from '../services/classlive-sessions.js';
@@ -515,6 +516,7 @@ function classroomHome(req) {
       <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
     ${teachPlanCard(req, x)}</section>`)}
   ${staffInvitesPanel(req)}
+  ${teacherPlanCard(req)}
   ${schools.map(x => askPanel(req, x))}
   <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>
   ${mine.length ? html`<div class="classgrid th-classes">${mine.map(card)}${canCreate.length ? html`<div class="th-newclass">${newClassForm(t, { schools: canCreate, me: u })}</div>` : ''}</div>`

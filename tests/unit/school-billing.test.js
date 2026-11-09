@@ -23,6 +23,7 @@ const C = await import('../../server/services/checkout.js');
 const S = await import('../../server/services/stripe.js');
 const SC = await import('../../server/services/schools.js');
 const SB = await import('../../server/services/school-billing.js');
+const TP = await import('../../server/services/teacher-plan.js');
 const usage = await import('../../server/builder/usage.js');
 const turns = await import('../../server/builder/turns.js');
 const aiBudget = await import('../../server/services/ai-budget.js');
@@ -75,12 +76,14 @@ async function pay(url) {
   assert.equal(r.status, 302, await r.text());
   return r.headers.get('location');
 }
-/** A school that paid by card for `seats` students. */
+/** A school on the grandfathered per-student plan (lookup key oomba_school_seat_yearly), paid by card for `seats`
+ *  students. New schools can't buy it any more (they buy teacher seats), so it is made at the fake Stripe the way an
+ *  existing subscription is, then synced like any webhook would. */
 async function cardSchool(opts = {}) {
   const x = school(opts);
-  const r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: opts.seats || 25 } });
-  assert.equal(r.status, 200, r.text);
-  await pay(r.json.redirect);
+  const customer = await C.ownerCustomer('school', x.s.id);
+  const sub = fake.subscription({ customer, lookupKey: 'oomba_school_seat_yearly', quantity: opts.seats || 25, metadata: { owner_kind: 'school', owner_id: x.s.id } });
+  await B.syncSubscription(sub.id);
   const plan = B.ownerPlan('school', x.s.id);
   assert.equal(plan.entitled, true);
   return { ...x, subId: plan.subscription.stripe_subscription_id };
@@ -155,17 +158,18 @@ test('test mode: only billing testers (and the platform admin) may pay; paying n
 });
 
 // ---------------------------------------------------------------- card Checkout
-test('card Checkout: quantity = students, the seat price by lookup key, flexible billing, our ids, never payment_method_types', async () => {
+test('card Checkout: quantity = teachers, the Teacher price by lookup key, flexible billing, our ids, never payment_method_types', async () => {
   const x = school();
-  let r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 24 } });
-  assert.equal(r.status, 400); assert.equal(r.json.field, 'seats'); assert.match(r.json.error, /25/);
+  let r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 0 } });
+  assert.equal(r.status, 400); assert.equal(r.json.field, 'seats'); assert.match(r.json.error, /from 1 to 1,000/);
   assert.equal((await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 'lots' } })).status, 400);
   r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 32 } });
   assert.equal(r.status, 200, r.text);
   assert.match(r.json.redirect, new RegExp(`^${fake.url}/pay/cs_test_`));
   const p = lastPost('/v1/checkout/sessions').params;
   assert.equal(p.mode, 'subscription');
-  assert.deepEqual(p.line_items, [{ price: 'price_fake_school_seat_yearly', quantity: '32' }]);
+  assert.deepEqual(p.line_items, [{ price: 'price_fake_teacher_yearly', quantity: '32' }], 'new school purchases are teacher seats, never the legacy per-student price');
+  assert.equal(p.payment_method_collection, undefined, 'no trial: the card is asked for');
   assert.equal(p.client_reference_id, x.s.id);
   assert.deepEqual(p.metadata, { owner_kind: 'school', owner_id: x.s.id });
   assert.deepEqual(p.subscription_data, { metadata: { owner_kind: 'school', owner_id: x.s.id }, billing_mode: { type: 'flexible' } });
@@ -192,40 +196,62 @@ test('card Checkout: quantity = students, the seat price by lookup key, flexible
   assert.deepEqual(p2.automatic_tax, { enabled: 'true' });
   assert.equal(fake.st.sessions.get(first).status, 'expired');
   assert.equal(audits('billing.checkout.start', `school:${x.s.id}`).length, 2);
+  // The school's free trial: 14 days, no card, cancelled by Stripe when it ends without one.
+  r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 4, trial: '1' } });
+  assert.equal(r.status, 200, r.text);
+  const p3 = lastPost('/v1/checkout/sessions').params;
+  assert.deepEqual(p3.line_items, [{ price: 'price_fake_teacher_yearly', quantity: '4' }]);
+  assert.equal(p3.subscription_data.trial_period_days, '14');
+  assert.deepEqual(p3.subscription_data.trial_settings, { end_behavior: { missing_payment_method: 'cancel' } });
+  assert.equal(p3.payment_method_collection, 'if_required');
+  assert.equal(p3.subscription_data.metadata.started_by, x.admin.id);
   assert.deepEqual(fake.violations, []);
   assert.equal(parseStripe({ STRIPE_PMC_SCHOOL: 'card' }).errors.some(e => /STRIPE_PMC_SCHOOL/.test(e)), true);
   assert.equal(parseStripe({ STRIPE_PMC_SCHOOL: 'pmc_abc123' }).pmcSchool, 'pmc_abc123');
 });
 
-test('paying by card: the webhook turns the plan on; the pool is the paid students; the return page waits, then shows it', async () => {
+test('paying by card for teacher seats: the webhook turns the plan on; seats are given to teachers; the return page waits, then shows it', async () => {
   const x = school({ students: 4 });
-  const r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 25 } });
+  const r = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 2 } });
   const back = await pay(r.json.redirect);
   assert.match(back, /tab=billing&checkout=cs_test_/);
   const plan = B.ownerPlan('school', x.s.id);
   assert.equal(plan.entitled, true);
   const row = plan.subscription;
-  assert.equal(row.plan, 'school'); assert.equal(row.quantity, 25); assert.equal(row.pool_quantity, 25);
-  assert.equal(row.pool_period_start, row.current_period_start);
-  assert.deepEqual(SB.poolOf(x.s.id), { seats: 25, size: 100, used: 0, left: 100, from: row.current_period_start, until: row.current_period_end, via: 'subscription' });
-  assert.equal(audits('billing.school.pool', `school:${x.s.id}`).length, 1);
+  assert.equal(row.plan, 'teacher'); assert.equal(row.quantity, 2); assert.equal(row.pool_quantity, 2);
+  assert.equal(SB.poolOf(x.s.id), null, 'teacher seats have no school pool: each seated teacher\'s classes have their own');
   // The return page and its poll.
   const sid = new URL(back).searchParams.get('checkout');
   const st = await call(x.who, `/api/billing/school/${x.s.id}/status?checkout=${sid}`);
   assert.deepEqual(st.json, { state: 'active' });
   const page = await tab(x.who, x.s, `&checkout=${sid}`);
   assert.match(page.text, /Your school plan is active/);
-  assert.match(page.text, /School plan for 25 students/);
-  assert.match(page.text, /100 of 100 Builder messages left until/);
-  assert.match(page.text, /Change students/);
+  assert.match(page.text, /Teacher plans for 2 teachers/);
+  assert.match(page.text, /Who has a seat/);
+  assert.match(page.text, /0 of 2 seats given/);
+  assert.match(page.text, /Change teachers/);
   assert.match(page.text, /Manage billing/);
+  assert.doesNotMatch(page.text, /Legacy plan/);
   assert.doesNotMatch(page.text, /data-api="[^"]+\/checkout"/, 'no second Checkout');
-  assert.doesNotMatch(page.text, /About 0 Builder lessons|about 0 Builder/, 'no lesson count below one lesson');
-  config.schoolTurnsPerSeat = 100;
-  const t100 = (await tab(x.who, x.s)).text;
-  assert.match(t100, /about 10 Builder lessons a year for each paid student/);
-  assert.match(t100, /About 10 Builder lessons for your paid students/);
-  config.schoolTurnsPerSeat = 4;
+  // Seats: the school admin gives one to the teacher; their class builds from the teacher's pool.
+  const give = await call(x.who, `/api/billing/school/${x.s.id}/seat-give`, { method: 'POST', body: { user: x.teacher.id } });
+  assert.equal(give.status, 200, give.text);
+  assert.equal((await call(x.who, `/api/billing/school/${x.s.id}/seat-give`, { method: 'POST', body: { user: x.kids[0].id } })).status, 409, 'students never hold a seat');
+  assert.equal(TP.teacherPlan(x.teacher.id).via, 'seat');
+  assert.equal(usage.allowanceFor(x.teacher).source, `teacher:${x.teacher.id}`);
+  assert.match((await tab(x.who, x.s)).text, /1 of 2 seats given/);
+  // The other teacher, a third seat beyond the paid two: refused.
+  const t2 = SC.createSchoolAccount(boss, x.s.id, { rosterName: 'Ms Two', role: 'teacher' }).user;
+  const t3 = SC.createSchoolAccount(boss, x.s.id, { rosterName: 'Mr Three', role: 'teacher' }).user;
+  assert.equal((await call(x.who, `/api/billing/school/${x.s.id}/seat-give`, { method: 'POST', body: { user: t2.id } })).status, 200);
+  const full = await call(x.who, `/api/billing/school/${x.s.id}/seat-give`, { method: 'POST', body: { user: t3.id } });
+  assert.equal(full.status, 409); assert.match(full.json.error, /Every seat is given/);
+  // Taken back: the teacher is off the plan; nobody else is touched.
+  assert.equal((await call(x.who, `/api/billing/school/${x.s.id}/seat-take`, { method: 'POST', body: { user: x.teacher.id } })).status, 200);
+  assert.equal(TP.teacherPlan(x.teacher.id).entitled, false);
+  assert.equal(TP.teacherPlan(t2.id).entitled, true);
+  // Teachers can't give seats.
+  assert.equal((await call(signIn(t2), `/api/billing/school/${x.s.id}/seat-give`, { method: 'POST', body: { user: t3.id } })).status, 404);
   // A second Checkout is refused while the plan is on.
   const again = await call(x.who, `/api/billing/school/${x.s.id}/checkout`, { method: 'POST', body: { seats: 25 } });
   assert.equal(again.status, 409); assert.match(again.json.error, /already has a plan/);
@@ -477,7 +503,7 @@ test('the renewal reminder: 30 days ahead, next year\'s students proposed from t
 test('an invoice request: checked, stored, audited without the contact\'s details, one open at a time, can be withdrawn', async () => {
   const x = school();
   const api = `/api/billing/school/${x.s.id}/invoice-request`;
-  for (const [over, field] of [[{ seats: 3 }, 'seats'], [{ contactName: '' }, 'contactName'], [{ contactEmail: 'nope' }, 'contactEmail'], [{ line1: '' }, 'line1'], [{ city: '' }, 'city'], [{ postalCode: '' }, 'postalCode'], [{ country: 'USA' }, 'country']]) {
+  for (const [over, field] of [[{ seats: 0 }, 'seats'], [{ contactName: '' }, 'contactName'], [{ contactEmail: 'nope' }, 'contactEmail'], [{ line1: '' }, 'line1'], [{ city: '' }, 'city'], [{ postalCode: '' }, 'postalCode'], [{ country: 'USA' }, 'country']]) {
     const r = await call(x.who, api, { method: 'POST', body: requestBody(over) });
     assert.equal(r.status, 400, JSON.stringify(over)); assert.equal(r.json.field, field);
   }
@@ -490,7 +516,8 @@ test('an invoice request: checked, stored, audited without the contact\'s detail
   assert.equal(a.length, 1); assert.doesNotMatch(a[0].details, /bursar|Pat|Lane/);
   assert.equal((await call(x.who, api, { method: 'POST', body: requestBody() })).status, 409, 'one open request');
   const page = (await tab(x.who, x.s)).text;
-  assert.match(page, /Invoice requested on .* for 30 students\. We will send it to/);
+  assert.match(page, /Invoice requested on .* for 30 teachers\. We will send it to/);
+  assert.equal(req.unit, 'teacher');
   r = await call(x.who, `${api}/cancel`, { method: 'POST', body: {} });
   assert.equal(r.status, 200);
   assert.equal(SB.openRequestOf(x.s.id), null);
@@ -521,23 +548,23 @@ test('Create invoice subscription (owner): the Customer with address, contact an
   assert.deepEqual(cusPost.metadata, { owner_kind: 'school', owner_id: x.s.id, school_id: x.s.id });
   const p = lastPost('/v1/subscriptions').params;
   assert.equal(p.collection_method, 'send_invoice'); assert.equal(p.days_until_due, '30');
-  assert.deepEqual(p.items, [{ price: 'price_fake_school_seat_yearly', quantity: '30' }]);
+  assert.deepEqual(p.items, [{ price: 'price_fake_teacher_yearly', quantity: '30' }], 'invoices are teacher seats at the Teacher price');
   assert.equal(p.metadata.school_id, x.s.id); assert.equal(p.metadata.owner_kind, 'school'); assert.equal(p.metadata.po, 'PO-7781'); assert.equal(p.metadata.billing_request, req.id);
   assert.deepEqual(p.billing_mode, { type: 'flexible' });
   assert.equal(p.automatic_tax, undefined, 'no STRIPE_TAX');
   assert.equal(p.payment_settings, undefined, 'how to pay an invoice is set in the Dashboard');
-  assert.equal(lastPost('/v1/subscriptions').idempotencyKey, `invoice-sub-${req.id}-30`, 'the key carries the students');
+  assert.equal(lastPost('/v1/subscriptions').idempotencyKey, `invoice-sub-${req.id}-30`, 'the key carries the seats');
   assert.equal(fake.requests.filter(q2 => q2.method === 'POST' && q2.path === '/v1/customers').at(-1).idempotencyKey, `customer-invoice-create-${req.id}-0`, 'and the exemption box');
-  // The plan is on (invoice sent, net 30); the pool is the invoiced students.
+  // The plan is on (invoice sent, net 30); the seats are the invoiced teachers.
   const plan = B.ownerPlan('school', x.s.id);
   assert.equal(plan.entitled, true); assert.equal(plan.subscription.collection_method, 'send_invoice');
-  assert.equal(plan.subscription.pool_quantity, 30);
-  assert.equal(usage.allowanceFor(x.kids[0]).source, `school:${x.s.id}`);
+  assert.equal(plan.subscription.plan, 'teacher'); assert.equal(plan.subscription.pool_quantity, 30);
+  assert.equal(TP.seatState(x.s.id).seats, 30);
   assert.equal(q.get('SELECT status FROM billing_requests WHERE id=?', req.id).status, 'done');
   assert.equal(JSON.parse(audits('admin.billing.invoice_create', `school:${x.s.id}`)[0].details).subscription, plan.subscription.stripe_subscription_id);
   // The school sees it, with the open invoice.
   const t = (await tab(x.who, x.s)).text;
-  assert.match(t, /School plan for 30 students/); assert.match(t, /Invoice for \$600\.00, due on/);
+  assert.match(t, /Teacher plans for 30 teachers/); assert.match(t, /Invoice for \$3,570\.00, due on/);
   // /admin/billing: the unpaid invoice with "Mark paid by check"; the request is gone.
   page = await call(admin, '/admin/billing');
   assert.doesNotMatch(page.text, new RegExp(`requests/${req.id}/`));

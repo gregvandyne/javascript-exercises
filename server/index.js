@@ -54,6 +54,7 @@ else if (config.googleClientId && config.env === 'production' && !config.publicU
 // The messages never include a key. With STRIPE_TAX=1, check that Stripe Tax really collects somewhere; warn when a
 // Price lookup key has no active Price (e.g. live Prices made without them).
 for (const w of config.stripeWarnings) log('warn', w);
+if (config.resendApiKey && !config.emailPostalAddress) log('warn', 'EMAIL_POSTAL_ADDRESS is not set: trial emails are not sent until it holds the postal address CAN-SPAM requires (docs/emails-go-live.md)');
 if (billingMode() !== 'off') { checkTax().catch(() => {}); checkPrices().catch(() => {}); }
 // The site tells grown-ups they can contact us (deletion, export, a lost password); without an address that leads nowhere.
 if (config.env === 'production' && !config.contactEmail) log('warn', 'CONTACT_EMAIL is not set: /parents has no way to contact the team');

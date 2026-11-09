@@ -17,6 +17,11 @@
 //            comes from the school's pool (paid AI pool), up to the school's daily cap per person (never below the free
 //            daily messages), so they never "rest" with free users. With the pool empty: the free messages, never the
 //            family's extras (no family money in class).
+//   teacher  a teacher with the Teacher plan (their own, or a seat of their school's teacher seats), and every active
+//            student of their classes: every message comes from the teacher's pool, TEACHER_DAILY_MESSAGES a UTC day
+//            shared by the teacher and all their classes (paid AI pool). A student of several paid teachers builds from
+//            the first one with messages left, in the order they joined the classes (services/teacher-plan.js). With
+//            the pool empty: the free messages, never the family's extras or Spark Packs (no family money in class).
 //   spark    the family's Spark Packs (services/sparks.js): one-time top-ups a grown-up bought, shared by the family's
 //            grown-up and its first FAMILY_MAX_CHILDREN linked children, plan or no plan. Used last: after the free
 //            daily messages and the plan's extras (or while the free pool rests, after the extras), up to
@@ -29,6 +34,7 @@ import { config } from '../config.js';
 import * as aiBudget from '../services/ai-budget.js';
 import { ownerPlan, planLimits } from '../services/billing.js';
 import { schoolSide } from '../services/school-billing.js';
+import { teacherSide } from '../services/teacher-plan.js';
 import { resting } from './anthropic.js';
 import { isStaff, classesOf } from '../services/schools.js';
 import { getUser } from '../auth.js';
@@ -69,7 +75,7 @@ export function coveredChildren(familyId, plan) {
  *  but as a class context sees only "{left} left today" (no "+N extra" counter). */
 export function familyOf(userId, side = null) {
   if (!userId) return null;
-  if ((side || schoolSide(userId)).entitled) return null;
+  if ((side || classSide(userId)).entitled) return null;
   // A grown-up builder: their own family's plan covers them while it is entitled (Basic too), outside maxChildren.
   const own = q.get('SELECT id FROM families WHERE owner_id=?', userId);
   if (own) return ownerPlan('family', own.id).entitled ? own.id : null;
@@ -86,6 +92,12 @@ export function familyMonth(familyId, day = today(), { beforeDay = false } = {})
   const r = q.get(`SELECT COALESCE(SUM(CASE WHEN refunded=0 THEN weight ELSE 0 END), 0) used, COALESCE(SUM(usd), 0) usd FROM builder_turns
     WHERE charged_to=? AND charged_day BETWEEN ? AND ? AND charged_day < ?`, `family:${familyId}`, from, to, beforeDay ? day : '9999');
   return { used: r.used, usd: r.usd };
+}
+/** The school and Teacher plan sides of a user together: { school, teacher, entitled (either has a plan: no family
+ *  money in class), student }. */
+export function classSide(userId, day = today()) {
+  const side = schoolSide(userId), ts = teacherSide(userId, day);
+  return { ...side, teacher: ts.teacher, entitled: side.entitled || ts.entitled };
 }
 /** Extra messages of one family a child used on one UTC day. */
 const childExtrasOn = (userId, familyId, day) => q.get('SELECT COALESCE(SUM(weight), 0) n FROM builder_turns WHERE user_id=? AND charged_to=? AND charged_day=? AND refunded=0',
@@ -110,13 +122,18 @@ const childExtrasOn = (userId, familyId, day) => q.get('SELECT COALESCE(SUM(weig
 export function allowanceFor(user, day = today()) {
   const id = idOf(user), daily = dailyTurns(), proWeight = trustedMaker(user) ? 1 : weightOf(true);
   const used = id ? turnsUsed(id, day) : 0;
-  const side = schoolSide(id);
-  const classContext = side.student || !!side.school;
+  const side = classSide(id, day);
+  const classContext = side.student || !!side.school || !!side.teacher;
   // 1. A school with a plan pays every message (its pool and the paid AI pool permitting), up to its daily cap.
   if (side.school && aiBudget.ok('paid')) {
     const cap = side.school.cap;
     const left = Math.min(Math.max(0, cap - used), side.school.pool.left);
-    return { source: `school:${side.school.id}`, pool: 'paid', daily: cap, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: side.school.id, classContext: true, sparkFamilyId: null, sparkLeft: null, sparkToday: 0 };
+    return { source: `school:${side.school.id}`, pool: 'paid', daily: cap, proWeight, left, freeLeft: left, familyId: null, extraLeft: null, extraToday: 0, schoolId: side.school.id, teacherId: null, classContext: true, sparkFamilyId: null, sparkLeft: null, sparkToday: 0 };
+  }
+  // 2. The Teacher plan: the teacher's classes share its daily pool (the paid AI pool permitting).
+  if (side.teacher && aiBudget.ok('paid')) {
+    const p = side.teacher.pool;
+    return { source: `teacher:${side.teacher.id}`, pool: 'paid', daily: p.size, proWeight, left: p.left, freeLeft: p.left, familyId: null, extraLeft: null, extraToday: 0, schoolId: null, teacherId: side.teacher.id, classContext: true, sparkFamilyId: null, sparkLeft: null, sparkToday: 0 };
   }
   const fam = familyOf(id, side);
   // Spark Packs: the last source, after the free messages and the plan's extras (the paid pool permitting).

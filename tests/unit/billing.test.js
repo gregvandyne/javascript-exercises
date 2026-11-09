@@ -488,13 +488,16 @@ test('a subscription to a price of the other plan never entitles (a family plan 
 
 test('prices are found by lookup key', async () => {
   const p = await S.prices({ refresh: true });
-  assert.deepEqual(Object.keys(p).sort(), ['oomba_basic_monthly', 'oomba_basic_yearly', 'oomba_family_monthly', 'oomba_family_yearly', 'oomba_school_seat_yearly', 'oomba_spark_150', 'oomba_spark_25', 'oomba_spark_60']);
+  assert.deepEqual(Object.keys(p).sort(), ['oomba_basic_monthly', 'oomba_basic_yearly', 'oomba_family_monthly', 'oomba_family_yearly', 'oomba_school_seat_yearly', 'oomba_spark_150', 'oomba_spark_25', 'oomba_spark_60', 'oomba_teacher_yearly']);
+  assert.equal(p.oomba_teacher_yearly.unitAmount, 11900); assert.equal(p.oomba_teacher_yearly.interval, 'year');
   assert.equal(p.oomba_spark_60.interval, null, 'Spark Packs are one-time Prices');
   assert.equal(p.oomba_basic_monthly.unitAmount, 499); assert.equal(p.oomba_basic_yearly.interval, 'year');
   assert.equal(p.oomba_family_yearly.interval, 'year');
   assert.equal(p.oomba_school_seat_yearly.unitAmount, 2000);
   const req = fake.requests.findLast(r => r.path === '/v1/prices');
   assert.deepEqual(req.params.lookup_keys, Object.values(S.PRICE_LOOKUP_KEYS));
+  assert.equal(req.params.limit, '100', 'every lookup key fits in one page (Stripe returns at most `limit`)');
+  assert.ok(Object.keys(S.PRICE_LOOKUP_KEYS).length <= 100);
 });
 
 test('tax readiness: STRIPE_TAX=1 with pending settings or no registration is a problem (and a warning)', async () => {

@@ -226,22 +226,22 @@ test('a flood stops at MAX_OPEN', () => {
   assert.deepEqual(SR.createRequest(good()), { ok: false, code: 'full' });
 });
 
-test('seat calculator: students × Stripe\'s seat price, at least SCHOOL_MIN_SEATS', async () => {
-  assert.deepEqual(seatQuote('40', 2000), { students: 40, seats: 40, min: 25, unit: 2000, total: 80000 });
-  assert.deepEqual(seatQuote('10', 2000), { students: 10, seats: 25, min: 25, unit: 2000, total: 50000 });
-  assert.equal(seatQuote('abc', 2000).students, null);
+test('seat calculator: teachers × the Teacher price (no per-student price, no minimum but 1)', async () => {
+  assert.deepEqual(seatQuote('4', 11900), { students: 4, seats: 4, min: 1, unit: 11900, total: 47600 });
+  assert.deepEqual(seatQuote('1', 11900), { students: 1, seats: 1, min: 1, unit: 11900, total: 11900 });
+  assert.equal(seatQuote('abc', 11900).students, null);
   assert.equal(seatQuote('3', null).total, null, 'no price, no total');
-  const r = await call(null, '/plans/schools?students=40');
+  const r = await call(null, '/plans/schools?students=4');
   assert.equal(r.status, 200);
   assert.match(r.text, /id="calc"/);
-  assert.match(r.text, /40 students × \$20\.00 = <b>\$800\.00<\/b> a year/);
-  assert.match(r.text, /href="\/plans\/schools\/print\?students=40"[^>]*>🖨️ Send this to my admin/);
+  assert.match(r.text, /Number of teachers/);
+  assert.match(r.text, /4 teachers × \$119\.00 = <b>\$476\.00<\/b> a year/);
+  assert.match(r.text, /href="\/plans\/schools\/print\?students=4"[^>]*>🖨️ Send this to my admin/);
+  assert.match(r.text, /href="\/trial\?seats=4"/, 'the school\'s free trial for that many teachers');
   assert.match(r.text, /href="\/teachers#start"/, 'set up through the form, not an email');
-  const small = await call(null, '/plans/schools?students=10');
-  assert.match(small.text, /25 students × \$20\.00 = <b>\$500\.00<\/b> a year/);
-  assert.match(small.text, /at least 25 students, so a smaller school pays for 25/);
-  config.schoolMinSeats = 5;
-  assert.match((await call(null, '/plans/schools?students=10')).text, /10 students × \$20\.00 = <b>\$200\.00<\/b>/, 'the minimum comes from config');
+  assert.doesNotMatch(r.text, /per student|\$20\.00|at least 25/);
+  const one = await call(null, '/plans/schools?students=1');
+  assert.match(one.text, /1 teacher × \$119\.00 = <b>\$119\.00<\/b> a year/);
 });
 
 test('"Send this to my admin": a printable page with the price and total, never indexed; off with billing like /plans/schools', async () => {
@@ -249,8 +249,10 @@ test('"Send this to my admin": a printable page with the price and total, never 
   assert.equal(r.status, 200);
   assert.match(r.text, /<meta name="robots" content="noindex/);
   assert.match(r.text, /data-print/); assert.match(r.text, /\/js\/print\.js/);
-  assert.match(r.text, /Price per student, per year<\/th><td dir="ltr">\$20\.00/);
-  assert.match(r.text, /Total per year<\/th><td dir="ltr"><b>\$2,400\.00<\/b>/);
+  assert.match(r.text, /Price per teacher, per year<\/th><td dir="ltr">\$119\.00/);
+  assert.match(r.text, /Teachers<\/th><td dir="ltr">120/);
+  assert.match(r.text, /Total per year<\/th><td dir="ltr"><b>\$14,280\.00<\/b>/);
+  assert.doesNotMatch(r.text, /Smallest plan|per student/);
   assert.match(r.text, /fill in the short form at <bdi dir="ltr"><b>[^<]+\/teachers<\/b><\/bdi>/);
   assert.equal((await as(grownup())('/plans/schools/print')).status, 200, 'a grown-up may open it');
   config.stripeApiKey = '';

@@ -807,10 +807,10 @@
         "li10": "Pour éviter qu’un enfant utilise tout le mois en une journée, il existe une limite au nombre de messages supplémentaires qu’un enfant peut utiliser par jour, ainsi qu’une limite en cas d’utilisation inhabituellement coûteuse.",
         "li11": "Un enfant dont l’école a un abonnement école payant crée en classe avec les messages de l’école, jamais avec les messages supplémentaires de la famille.",
         "li12": "<b>Pour l’instant, les abonnements famille sont réservés aux familles des États-Unis.</b> Vous avez besoin d’une adresse de facturation aux États-Unis et d’une carte de paiement américaine (ou d’Apple Pay ou de Google Pay).",
-        "s3": "7.3 Abonnement école",
-        "li13": "Prix <b>par élève et par an</b>, avec un <b>minimum de 25 élèves</b>. Le prix est affiché aux admins de l’école dans l’onglet Facturation de l’école.",
-        "li14": "L’école reçoit chaque année une réserve commune de messages pour le Constructeur pour ses élèves et ses enseignants. Sa taille est affichée dans l’onglet Facturation de l’école. Les élèves reçoivent toujours au moins le nombre quotidien gratuit. Quand la réserve est épuisée, les élèves utilisent les messages gratuits jusqu’au début de l’année suivante.",
-        "li15": "Les places payées correspondent aux élèves actifs. Si vous ajoutez des élèves en cours d’année, vous pouvez ajouter des places : vous payez immédiatement un montant au prorata pour le reste de l’année. Vous pouvez réduire le nombre de places pour l’année suivante ; le changement s’applique au renouvellement, jamais en dessous de 25.",
+        "s3": "7.3 Formule Enseignant et formules École",
+        "li13": "La <b>formule Enseignant</b> est facturée <b>par enseignant et par an</b>, sans frais par élève. Elle couvre toutes les classes et tous les élèves de cet enseignant. Elle commence par un <b>essai gratuit de 14 jours</b> sans carte. Si aucune carte n’est ajoutée avant la fin de l’essai, la formule s’arrête simplement. Chaque enseignant, adresse e-mail et école peut avoir un essai gratuit.",
+        "li14": "Un enseignant qui a la formule et les élèves de ses classes partagent un nombre quotidien de messages pour le Constructeur, indiqué avant de commencer et sur la page Mes classes de l’enseignant. Une fois épuisés, chacun utilise l’allocation gratuite jusqu’au lendemain (UTC).",
+        "li15": "Les <b>écoles</b> achètent des formules Enseignant au même prix par enseignant et les attribuent à leurs enseignants dans l’onglet Facturation de l’école. Les enseignants ajoutés sont facturés tout de suite pour le reste de l’année ; une baisse s’applique au renouvellement. Une école qui avait acheté une formule facturée par élève la garde, à son prix, quand elle se renouvelle.",
         "li16": "<b>Paiement :</b> par carte en ligne, ou sur facture (un bon de commande est accepté). Les factures sont payables <b>30 jours</b> après leur envoi (net 30) et peuvent être réglées par carte, par virement bancaire ou ACH, ou par chèque (écrivez-nous pour obtenir l’adresse postale).",
         "li17": "Les écoles exonérées de taxe peuvent nous envoyer leur certificat d’exonération.",
         "s4": "7.4 Paiements, Stripe et taxes",
@@ -897,7 +897,7 @@
       "intro": {
         "h": "À propos de cette politique",
         "p1": "Cette page explique comment résilier un abonnement Oomba Academy et quand vous pouvez être remboursé. Elle fait partie de nos <a href=\"/terms\">Conditions d’utilisation</a>.",
-        "p2": "Jouer et les messages gratuits quotidiens pour le Constructeur sont toujours gratuits. Cette politique concerne uniquement les abonnements payants <b>famille</b> et <b>école</b>, qui ajoutent des messages pour le Constructeur.",
+        "p2": "Jouer et les messages quotidiens gratuits pour le Constructeur sont toujours gratuits. Cette politique concerne uniquement les formules payantes <b>Famille</b>, <b>Enseignant</b> et <b>École</b>, qui ajoutent des messages pour le Constructeur.",
         "p3": "Les Packs Étincelle, des recharges ponctuelles de messages pour le Constructeur destinées à une famille abonnée, ont leur propre section ci-dessous."
       },
       "cancel": {
@@ -916,7 +916,8 @@
         "p4": "<b>Effet d’un remboursement :</b> un remboursement met fin à l’abonnement immédiatement (nous le résilions d’abord, puis nous remboursons) ; les messages supplémentaires s’arrêtent donc aussitôt.",
         "p5": "<b>Comment demander :</b> écrivez à <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> depuis n’importe quelle adresse. Indiquez-nous le nom de votre compte adulte (ou de l’école), ainsi que la date et le montant figurant sur votre reçu Stripe. Nous répondons sous 3 jours ouvrés.",
         "p6": "<b>Quand vous recevez l’argent :</b> le remboursement est versé sur la carte ou le compte utilisé pour payer. Les banques mettent généralement 5 à 10 jours ouvrés pour l’afficher.",
-        "p7": "<b>Écoles payant sur facture :</b> les 14 jours commencent à la date à laquelle le paiement nous parvient. Payé par chèque ? Nous remboursons par chèque ou par virement bancaire."
+        "p7": "<b>Écoles payant sur facture :</b> les 14 jours commencent à la date à laquelle le paiement nous parvient. Payé par chèque ? Nous remboursons par chèque ou par virement bancaire.",
+        "p8": "<b>Essais gratuits :</b> l’essai gratuit d’une formule Enseignant ne coûte rien et se termine tout seul si aucune carte n’est ajoutée. Si vous ajoutez une carte, le premier paiement a lieu à la fin de l’essai, et les 14 jours commencent à ce moment-là."
       },
       "sparks": {
         "h": "Packs Étincelle",
@@ -998,7 +999,7 @@
         "li2": "<b>Ce que nous conservons quand une école demande une facture :</b> le nombre de places, le numéro de bon de commande, le nom et l’e-mail du contact de facturation, l’adresse de facturation de l’école, si l’école indique être exonérée de taxe, et toute remarque.",
         "li3": "<b>Ce qui est transmis à Stripe :</b> lorsque nous créons les factures de l’école, le nom de l’école, l’e-mail du contact de facturation, l’adresse de facturation et le numéro de bon de commande sont enregistrés chez Stripe, qui envoie les factures. Le nom du contact, la remarque et la réponse sur l’exonération de taxe restent uniquement chez nous. Rien n’est transmis avant que nous créions les factures. Une école qui paie par carte saisit plutôt son nom et son adresse de facturation sur la page de Stripe.",
         "li4": "<b>Durée de conservation :</b> le nom et l’e-mail du contact, l’adresse, la remarque et le numéro de bon de commande figurant dans notre base de données sont supprimés <b>2 ans</b> après la clôture de la demande. Stripe conserve l’adresse de l’école et le numéro de bon de commande avec ses factures (voir ci-dessous).",
-        "li5": "<b>Les places</b> sont calculées à partir du nombre d’élèves actifs. La facturation n’utilise ni les noms ni le travail des élèves.",
+        "li5": "Les <b>places</b> sont comptées en enseignants : les administrateurs de l’école choisissent quels enseignants en ont une. La facturation n’utilise ni les noms ni le travail des élèves.",
         "li6": "<b>Les familles ne voient jamais l’activité en classe :</b> un adulte relié à un élève voit uniquement les messages supplémentaires de la famille utilisés par cet élève.",
         "li7": "<b>Demander un abonnement école :</b> un enseignant peut demander un abonnement école aux admins de son école. Nous conservons quel enseignant a fait la demande, pour quelle école et quand, jamais de message. Les admins de l’école voient qui a fait la demande jusqu’à ce qu’ils l’écartent ou que l’école prenne un abonnement, et nous la supprimons <b>90 jours</b> après. Les enseignants voient seulement si leur école a un abonnement."
       },
@@ -2275,7 +2276,8 @@
         "classText": "Le Constructeur de ta classe se repose pour aujourd’hui. Demande à ton enseignant quand tu pourras construire de nouveau.",
         "resting": "Le Constructeur se repose pour tout le monde en ce moment. Ton jeu est enregistré.",
         "getSpark": "Prendre un Pack Étincelle",
-        "back": "De nouveaux messages pour le Constructeur sont arrivés. Bonne construction !"
+        "back": "De nouveaux messages pour le Constructeur sont arrivés. Bonne construction !",
+        "teacherText": "Vous et vos classes avez utilisé les messages pour le Constructeur du jour de votre formule Enseignant. Il y en aura d’autres demain !"
       },
       "mic": {
         "start": "Parler au lieu d’écrire",
@@ -2863,7 +2865,61 @@
       "freeH": "Gratuit pour toutes les écoles",
       "free": "Tous les jeux, classes, leçons et cours, les cartes de connexion, la progression et les jeux en direct en classe, plus {free} messages Builder gratuits par jour pour chaque élève, comme pour tout le monde sur Oomba Academy.",
       "addsH": "Une offre École ajoute",
-      "adds": "Plus de messages Builder : chaque élève payé ajoute {perSeat} par an à une réserve partagée par toute l'école. Rien d'autre ne change, et on ne demande jamais aux élèves de payer."
+      "adds": "Plus de messages Builder : chaque élève payé ajoute {perSeat} par an à une réserve partagée par toute l'école. Rien d'autre ne change, et on ne demande jamais aux élèves de payer.",
+      "tp": {
+        "teachersN": "{count, plural, one {# enseignant} other {# enseignants}}",
+        "active": "{count, plural, one {Formule Enseignant pour # enseignant.} other {Formules Enseignant pour # enseignants.}}",
+        "trialing": "Essai gratuit jusqu’au {date}. Ajoutez une carte dans Gérer la facturation pour garder les places. Sans carte, l’essai se termine simplement.",
+        "waits": "Les nouvelles places pourront être attribuées dès que leur paiement sera passé.",
+        "grant": "Une formule offerte par Oomba Academy jusqu’au {date}.",
+        "price": "{price} par enseignant et par an, sans frais par élève. Chaque enseignant qui a une place reçoit la formule Enseignant : élèves illimités et {daily} messages pour le Constructeur par jour pour ses classes.",
+        "seatsLabel": "Nombre d’enseignants",
+        "seatsHint": "Vous en avez {teachers} aujourd’hui.",
+        "total": "{seats} enseignants × {price} = {total} par an (plus les taxes éventuelles)",
+        "trial": "Commencer par l’essai gratuit de {days} jours (sans carte)",
+        "renewal": "Votre formule se renouvelle le {date} pour {seats}. Vous en avez {teachers} aujourd’hui.",
+        "renewalButton": "Fixer les enseignants de l’an prochain",
+        "adds": "Chaque enseignant qui a une place reçoit des élèves illimités et {daily} messages pour le Constructeur par jour pour ses classes. Les élèves n’ont jamais à payer.",
+        "legacyH": "Ancienne formule.",
+        "legacy": "La formule de votre école est facturée par élève. Elle garde ce prix à son renouvellement. Écrivez-nous si vous souhaitez passer aux places enseignant.",
+        "pay": {
+          "heading": "Des formules Enseignant pour vos enseignants",
+          "button": "Continuer"
+        },
+        "change": {
+          "heading": "Changer le nombre d’enseignants",
+          "text": "Les enseignants en plus sont facturés tout de suite, pour le reste de l’année. Une baisse s’applique au renouvellement.",
+          "button": "Changer les enseignants"
+        },
+        "seats": {
+          "h": "Qui a une place",
+          "text": "{used} places attribuées sur {seats}. Un enseignant qui a une place reçoit la formule Enseignant pour toutes ses classes.",
+          "own": "(a sa propre formule Enseignant)",
+          "waiting": "(attend une place libre)",
+          "give": "Attribuer une place",
+          "take": "Reprendre",
+          "full": "Toutes les places sont attribuées. Ajoutez des places ci-dessus pour en attribuer d’autres."
+        },
+        "seat": {
+          "given": "Place attribuée.",
+          "taken": "Place reprise."
+        },
+        "seatsDone": {
+          "raised": "C’est fait : {count, plural, one {# enseignant} other {# enseignants}}.",
+          "pending": "Le paiement par carte n’est pas passé, le nombre d’enseignants reste donc le même. Mettez à jour la carte dans Gérer la facturation et réessayez.",
+          "scheduled": "L’an prochain : {count, plural, one {# enseignant} other {# enseignants}}.",
+          "cleared": "L’an prochain reste à {count, plural, one {# enseignant} other {# enseignants}}."
+        },
+        "errors": {
+          "notStaff": "Seuls les enseignants et administrateurs de cette école peuvent avoir une place.",
+          "noSeats": "Votre école n’a pas encore de places enseignant.",
+          "full": "Toutes les places sont attribuées. Ajoutez d’abord des places.",
+          "noSeat": "Cet enseignant n’a pas de place.",
+          "minSeats": "Indiquez un nombre entier de 1 à {max}.",
+          "entitled": "Votre école a déjà une formule. Changez plutôt le nombre d’enseignants.",
+          "trialUsed": "Votre école a déjà eu son essai gratuit."
+        }
+      }
     },
     "pick": {
       "title": "Vos écoles",
@@ -3735,7 +3791,7 @@
   },
   "plans": {
     "title": "Offres et tarifs",
-    "description": "Les offres d’Oomba Academy : Gratuit, Essentiel, Famille et École. Jouer à tous les jeux est toujours gratuit.",
+    "description": "Les formules d’Oomba Academy : Gratuit, Basic, Famille, Enseignant et École. Jouer à tous les jeux est toujours gratuit.",
     "heading": "Offres",
     "intro": "Jouer à tous les jeux est gratuit, tout comme créer avec les messages gratuits du jour pour le Constructeur. Un abonnement ajoute des messages supplémentaires pour le Constructeur chaque mois.",
     "interval": {
@@ -3784,12 +3840,12 @@
     },
     "school": {
       "name": "École",
-      "tagline": "Pour les classes et les écoles entières",
-      "per": "par élève et par an",
-      "min": "Pour au moins {min} élèves",
-      "li1": "{perSeat, plural, one {# message pour le Constructeur} other {# messages pour le Constructeur}} par an pour chaque élève payé, à partager entre toute l’école",
-      "li2": "Les classes créent avec la réserve propre à l’école",
-      "li3": "Paiement par carte ou sur facture",
+      "tagline": "Des formules Enseignant pour toute une école",
+      "per": "par enseignant et par an",
+      "min": "Facture ou bon de commande possible",
+      "li1": "Une formule Enseignant pour chaque enseignant : élèves illimités et {daily} créations IA par jour pour ses classes",
+      "li2": "Les administrateurs de l’école attribuent les places aux enseignants",
+      "li3": "Payez par carte, ou demandez une facture ou un bon de commande",
       "get": "Obtenir un abonnement école",
       "manage": "Gérer l’abonnement école"
     },
@@ -3802,8 +3858,8 @@
     "staff": {
       "button": "Pour les familles",
       "heading": "Essentiel et Famille sont pour les familles",
-      "text": "Un parent ou un tuteur les achète avec un compte adulte. Pour vos classes, un abonnement école couvre tous les élèves.",
-      "toSchool": "Voir l’abonnement école"
+      "text": "Un parent ou un tuteur les achète avec un compte adulte. Pour vos classes, il y a la formule Enseignant.",
+      "toSchool": "Voir la formule Enseignant"
     },
     "fine": {
       "h": "Bon à savoir",
@@ -3812,12 +3868,12 @@
     },
     "schools": {
       "title": "Abonnements école",
-      "description": "Les abonnements école d’Oomba Academy : une réserve commune de messages pour le Constructeur pour vos élèves et vos enseignants, payée par carte ou sur facture.",
+      "description": "Oomba Academy pour les écoles : la formule Enseignant pour chacun de vos enseignants, un prix par enseignant et par an, payé par carte ou sur facture.",
       "heading": "Oomba Academy pour les écoles",
-      "intro": "Un abonnement école donne à vos élèves et à vos enseignants une réserve commune de messages pour le Constructeur : les classes n’ont jamais à attendre les messages gratuits.",
+      "intro": "Les écoles achètent la formule Enseignant pour leurs enseignants : un prix par enseignant et par an, avec des élèves illimités et aucun frais par élève.",
       "what": {
         "h": "Ce que reçoit une école",
-        "p1": "Les admins de l’école voient l’abonnement, les élèves payés et la réserve dans l’onglet Facturation de l’école. Les familles ne voient jamais rien de ce qui se passe en classe."
+        "p1": "Les administrateurs de l’école voient la formule et attribuent les places aux enseignants dans l’onglet Facturation de l’école. Les familles ne voient jamais rien de la classe."
       },
       "how": {
         "h": "Comment inscrire une école",
@@ -3834,9 +3890,9 @@
       },
       "calc": {
         "h": "Combien cela coûterait-il ?",
-        "label": "Nombre d’élèves",
+        "label": "Nombre d’enseignants",
         "button": "Calculer",
-        "result": "{seats, plural, one {# élève} other {# élèves}} × {price} = {total} par an",
+        "result": "{seats, plural, one {# enseignant} other {# enseignants}} × {price} = {total} par an",
         "min": "Une offre école couvre au moins {min} élèves : une école plus petite paie donc pour {min}.",
         "tax": "Les prix sont en dollars américains, hors taxes.",
         "print": "Envoyer à l’administration",
@@ -3849,15 +3905,117 @@
         "printButton": "Imprimer ou enregistrer en PDF",
         "back": "Retour aux offres écoles",
         "cost": "Ce que cela coûte",
-        "perStudent": "Prix par élève et par an",
+        "perStudent": "Prix par enseignant et par an",
         "minimum": "Offre minimale",
         "minimumN": "{min, plural, one {# élève} other {# élèves}}",
-        "students": "Élèves",
+        "students": "Enseignants",
         "total": "Total par an",
         "estimate": "Ceci est une estimation au {date}, pas une facture. Les prix sont en dollars américains, hors taxes.",
         "setup": "Comment la mettre en place",
         "li1": "Inscrire l’école (gratuit) : remplissez le court formulaire sur {url}.",
         "contact": "Des questions ? Écrivez à {email}."
+      }
+    },
+    "teacher": {
+      "name": "Enseignant",
+      "tagline": "Pour un enseignant et toutes ses classes",
+      "per": "par enseignant et par an",
+      "trial": "Essai gratuit de {days} jours, sans carte",
+      "li1": "Élèves illimités, aucun frais par élève",
+      "li2": "{daily} créations IA par jour pour la classe",
+      "li3": "Couvre toutes vos classes",
+      "li4": "Résiliable à tout moment",
+      "start": "Commencer l’essai gratuit",
+      "manage": "Ma formule Enseignant"
+    },
+    "trial": {
+      "title": "Formule Enseignant",
+      "heading": "Essayez la formule Enseignant gratuitement pendant {days} jours",
+      "lead": "Tout ce qu’il faut à vos classes : des élèves illimités et {daily} créations IA par jour pour la classe. Aucune carte n’est demandée pour commencer.",
+      "price": "Après l’essai, {price} par an et par enseignant. Aucun frais par élève.",
+      "li1": "Élèves illimités dans toutes vos classes",
+      "li2": "{daily} messages pour le Constructeur par jour, partagés entre vous et vos classes",
+      "li3": "Aucune carte n’est demandée. Si vous n’en ajoutez pas, la formule s’arrête simplement à la fin de l’essai : vos classes et leur travail restent.",
+      "li4": "Un prix par enseignant, résiliable à tout moment",
+      "email": "Votre adresse e-mail professionnelle",
+      "emailHint": "Stripe, notre prestataire de paiement, y envoie le rappel de fin d’essai et vos reçus.",
+      "cancelled": "Rien n’a été lancé. Vous pouvez commencer votre essai quand vous voulez.",
+      "notOpen": "La formule Enseignant n’est pas encore ouverte. Revenez bientôt.",
+      "subscribe": "Prendre la formule Enseignant",
+      "already": "Vous avez déjà la formule Enseignant.",
+      "welcome": "🎉 Votre formule Enseignant est active. Créez une classe et ajoutez vos élèves : vous et vos classes partagez {daily} messages pour le Constructeur par jour.",
+      "teachersN": "{count, plural, one {# enseignant} other {# enseignants}}",
+      "forTeachers": {
+        "h": "La formule Enseignant est faite pour les enseignants",
+        "p": "Elle est conçue pour les enseignants et leurs classes, et demande un compte enseignant. Les familles ont leurs propres formules.",
+        "link": "Voir les formules pour les familles"
+      },
+      "school": {
+        "h": "Un essai gratuit pour votre école",
+        "p": "Lancez un essai gratuit de {days} jours des formules Enseignant pour {school} : {seats}. Aucune carte n’est demandée. Après l’essai, {price} par enseignant et par an.",
+        "start": "Lancer l’essai gratuit de l’école",
+        "billing": "Aller à l’onglet Facturation"
+      },
+      "used": {
+        "h": "Vous avez déjà eu votre essai gratuit",
+        "p": "Chaque enseignant, adresse e-mail et école peut essayer la formule une fois. Vous pouvez toujours la prendre pour {price} par an.",
+        "school": "Votre école a déjà eu son essai gratuit. Vous pouvez prendre des places enseignant dans l’onglet Facturation de l’école."
+      },
+      "start": {
+        "h": "Commencez votre essai gratuit de {days} jours",
+        "button": "Commencer mon essai gratuit",
+        "note": "Vous confirmez sur la page de Stripe. Aucune carte n’est demandée pour l’essai."
+      },
+      "signup": {
+        "h": "Créez votre compte enseignant",
+        "lead": "Votre compte, votre classe et votre essai gratuit en une seule fois. Vous avez déjà un compte enseignant ? <a href=\"{login}\">Connectez-vous</a>.",
+        "name": "Votre nom, tel que vos élèves le verront",
+        "nameHint": "Par exemple : Mme Rivière",
+        "school": "Le nom de votre école",
+        "username": "Choisissez un nom d’utilisateur",
+        "password": "Choisissez un mot de passe",
+        "passwordHint": "Au moins {min} caractères.",
+        "adult": "Je suis enseignant ou membre du personnel d’une école, et j’ai 18 ans ou plus.",
+        "submit": "Créer mon compte et commencer l’essai",
+        "privacy": "Nous ne gardons pas votre adresse e-mail professionnelle sur votre compte : elle est transmise à Stripe pour votre formule. <a href=\"{privacy}\">Politique de confidentialité</a>"
+      },
+      "errors": {
+        "signedIn": "Vous êtes déjà connecté.",
+        "name": "Indiquez votre nom (2 à 60 caractères).",
+        "school": "Indiquez le nom de votre école.",
+        "email": "Indiquez votre adresse e-mail professionnelle.",
+        "password": "Utilisez au moins {min} caractères.",
+        "adult": "Merci de confirmer que vous êtes enseignant ou membre du personnel d’une école, et que vous avez 18 ans ou plus.",
+        "notTeacher": "La formule Enseignant demande un compte enseignant.",
+        "entitled": "Vous avez déjà la formule Enseignant.",
+        "fixPayment": "Votre formule attend un paiement. Réglez-le dans Gérer la facturation, sur Mes classes.",
+        "trialUsed": "Cet essai gratuit a déjà été utilisé.",
+        "noPrice": "La formule Enseignant n’est pas en vente pour le moment. Réessayez plus tard.",
+        "paying": "Un paiement est déjà en cours. Patientez une minute.",
+        "minSeats": "Indiquez un nombre entier d’enseignants, de 1 à {max}.",
+        "noCustomer": "Il n’y a pas encore de facturation à gérer."
+      },
+      "thanks": {
+        "wait": "⏳ Activation de votre formule Enseignant…",
+        "slow": "Cela prend plus de temps que d’habitude. Votre formule apparaîtra sur Mes classes d’ici une minute.",
+        "back": "Aller à Mes classes"
+      },
+      "card": {
+        "heading": "Formule Enseignant",
+        "grant": "Une formule Enseignant offerte par Oomba Academy jusqu’au {date}.",
+        "trial": "Essai gratuit jusqu’au {date}.",
+        "ends": "Se termine le {date}.",
+        "renews": "Se renouvelle le {date}.",
+        "seat": "Une place de {school}.",
+        "pool": "Il reste {left} messages pour le Constructeur sur {size} aujourd’hui, pour vous et vos classes.",
+        "ending": "{count, plural, =0 {Votre essai gratuit se termine aujourd’hui.} one {Votre essai gratuit se termine dans # jour.} other {Votre essai gratuit se termine dans # jours.}} Ajoutez une carte pour garder la formule Enseignant. Sans carte, elle s’arrête simplement, et vos classes restent.",
+        "addCard": "Ajouter une carte",
+        "manage": "Gérer la facturation",
+        "pending": "Votre paiement est en cours. La formule démarre dès qu’il arrive.",
+        "fix": "Votre formule Enseignant attend un paiement. Mettez à jour votre carte dans Gérer la facturation.",
+        "tryText": "Élèves illimités et {daily} créations IA par jour pour vos classes. Gratuit pendant {days} jours, sans carte.",
+        "getText": "Élèves illimités et {daily} créations IA par jour pour vos classes.",
+        "try": "Essayer gratuitement pendant {days} jours"
       }
     }
   },
@@ -3991,7 +4149,7 @@
       "h": "Inscrire votre école (gratuit)",
       "p1": "Jouer est gratuit pour tout le monde, et les élèves peuvent essayer n’importe quel jeu tout de suite, sans inscription.",
       "p2": "Pour les classes, les leçons et les comptes école, écrivez à {email} en indiquant le nom de votre école et la personne qui s’en occupera. Nous créons votre école et le compte de son admin, qui ajoute ensuite les enseignants et les élèves. L’inscription d’une école est gratuite.",
-      "plans": "Besoin de plus de messages pour le Constructeur pour vos classes ? Un abonnement école ajoute une réserve partagée entre vos élèves et vos enseignants.",
+      "plans": "Envie de plus pour vos classes ? Essayez la formule Enseignant gratuitement pendant {days} jours, sans carte : élèves illimités et {daily} créations IA par jour pour la classe.",
       "email": "Écrivez-nous pour inscrire votre école",
       "subject": "Inscrire mon école sur Oomba Academy",
       "plansLink": "Abonnements école"
@@ -4017,7 +4175,9 @@
       "a8": "Oui. Les leçons enregistrent la progression, les scores aux jeux et les réponses écrites de chaque élève. Vous les retrouvez dans l’onglet Progression de la classe, et vous pouvez télécharger la progression de chaque élève dans les leçons sous forme de tableur (CSV).",
       "q9": "Quelles langues sont disponibles ?",
       "a9": "{count} langues, dont l’espagnol, le portugais, le français, l’allemand, l’arabe, l’hébreu et le japonais. Chaque élève choisit la sienne.",
-      "a4google": "Les élèves ne saisissent jamais d’adresse e-mail, et nous ne leur demandons jamais leur âge ni leur adresse postale. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Il n’y a ni publicité ni cookies de suivi. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons."
+      "a4google": "Les élèves ne saisissent jamais d’adresse e-mail, et nous ne leur demandons jamais leur âge ni leur adresse postale. Si votre école utilise Se connecter avec Google, nous conservons l’adresse Google scolaire de chaque élève uniquement pour reconnaître son compte. Il n’y a ni publicité ni cookies de suivi. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons.",
+      "q1paid": "Oomba Academy est-il gratuit pour les enseignants ?",
+      "a1paid": "Jouer, les classes, les leçons, le suivi des progrès et Oomba Live sont gratuits, et chaque élève reçoit chaque jour des messages gratuits pour le Constructeur. La formule Enseignant, facultative, ajoute pour vos classes une réserve quotidienne partagée de créations IA, avec des élèves illimités. Essayez-la gratuitement pendant 14 jours, sans carte. Les prix sont sur la page des formules."
     },
     "setup": {
       "lead": "Parlez-nous un peu de votre école. Nous l’inscrirons en 1 jour d’école maximum et répondrons à votre e-mail en indiquant la marche à suivre. Inscrire une école est gratuit.",
@@ -6316,18 +6476,9 @@
       "about": "Programme un robot, résous des mystères avec des données, envoie des messages à travers une ville et découvre l’intérieur des machines de tous les jours. Chaque étape, c’est une courte leçon, un petit quiz, puis un module de jeu.",
       "teachers": "Chaque jeu a des plans de cours pour une séance de 45 minutes, avec des échauffements en direct, des tickets de sortie et une vue des standards pour ta classe."
     },
-    "cd": {
-      "title": "Cyber Defenders",
-      "sub": "Cybersécurité et sécurité en ligne · du CE2 à la 4e"
-    },
-    "nq": {
-      "title": "Number Quest",
-      "sub": "Les maths dans les Numberworks · du CE2 au CM2"
-    },
     "back": "Retour à {course}",
     "step": "{course} · jeu {n} sur {total}",
     "stepsDone": "{n} étapes finies sur {total}",
-    "unitsN": "{count, plural, one {Voir l’unité} other {Voir les # unités}}",
     "band": {
       "h": "Choisis ton niveau",
       "text": "Tu pourras changer plus tard sur cette page.",
@@ -6390,7 +6541,16 @@
       "passed": "Réussi ! {score} bonnes réponses sur {total}.",
       "failed": "{score} bonnes réponses sur {total}. Regarde les bonnes réponses, puis réessaie."
     },
-    "play": "Jouer : {game} · {chapter}"
+    "play": "Jouer : {game} · {chapter}",
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cybersécurité et sécurité en ligne · du CE2 à la 4e"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Les maths dans les Numberworks · du CE2 au CM2"
+    },
+    "unitsN": "{count, plural, one {Voir l’unité} other {Voir les # unités}}"
   },
   "move": {
     "title": "Pauses actives",
@@ -6590,11 +6750,258 @@
     },
     "notice": {
       "approved": "Bonne nouvelle ! « {title} » a passé la vérification de l'équipe Oomba : plus de monde peut y jouer maintenant.",
-      "sentBack": "« {title} » a besoin de quelques changements avant que tout le monde puisse y jouer."
+      "sentBack": "« {title} » a besoin de quelques changements avant que tout le monde puisse y jouer.",
+      "trialEnding": "L’essai gratuit de votre formule Enseignant se termine dans {days, plural, =0 {moins d’un jour} one {# jour} other {# jours}}. Pour la garder, ajoutez une carte ici : {href} Sans carte, la formule s’arrête simplement et vos classes restent.",
+      "trialEnded": "L’essai gratuit de votre formule Enseignant est terminé. Vos classes, vos élèves et leurs jeux sont toujours là. Vous pouvez reprendre la formule ici : {href}",
+      "trialConverted": "Merci ! Votre formule Enseignant est active pour l’année."
     },
     "link": {
       "new": "{count, plural, one {# nouveau message de l'équipe Oomba} other {# nouveaux messages de l'équipe Oomba}}",
       "open": "Messages de l'équipe Oomba"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "Transformez vos cours en jeux pour la classe · Oomba Academy",
+      "description": "L’apprentissage par le jeu pour les enseignants : collez une leçon ou envoyez un PDF, le Constructeur IA en fait un jeu interactif pour la classe. 14 jours gratuits, sans carte.",
+      "imageAlt": "Oomba Academy pour les enseignants : transformez vos cours en jeux que votre classe réclamera."
+    },
+    "nav": {
+      "label": "Site enseignants",
+      "home": "Accueil d’Oomba Academy",
+      "skip": "Aller au contenu",
+      "how": "Comment ça marche",
+      "builder": "Constructeur",
+      "courses": "Parcours",
+      "live": "Jeux en direct",
+      "pricing": "Tarifs",
+      "faq": "FAQ",
+      "signIn": "Connexion",
+      "justPlay": "Juste jouer",
+      "trial": "Essai gratuit",
+      "trialShort": "Essai gratuit"
+    },
+    "hero": {
+      "kicker": "Pour les enseignants · du CE2 à la 4e",
+      "h1": "Transformez vos préparations de cours en jeux que votre classe réclamera",
+      "lead": "Collez une leçon, envoyez un PDF ou décrivez simplement une idée. Le Constructeur IA d’Oomba en fait un jeu interactif à lancer en direct au vidéoprojecteur ou à donner à votre classe.",
+      "cta": "Commencer l’essai gratuit de 14 jours",
+      "how": "Voir comment ça marche",
+      "trustCard": "Sans carte bancaire",
+      "trustCancel": "Sans engagement",
+      "trustStudents": "Élèves illimités"
+    },
+    "facts": {
+      "games": "jeux éducatifs prêts à l’emploi",
+      "courses": "parcours complets avec fiches de préparation",
+      "languages": "langues pour les élèves et les enseignants",
+      "installs": "installation : tout se passe dans le navigateur"
+    },
+    "demo": {
+      "label": "Illustration : une leçon qui devient un jeu",
+      "lessonTag": "Votre leçon",
+      "lessonTitle": "Fractions égales · CM1",
+      "lessonBody": "Les élèves montrent que 1/2, 2/4 et 4/8 désignent la même quantité, avec des pizzas, des bandes et des droites graduées. Bilan de sortie : trois questions rapides.",
+      "file": "lecon-fractions.pdf",
+      "builderTag": "Constructeur IA",
+      "step1": "Lecture de votre leçon",
+      "step2": "Conception des niveaux",
+      "step3": "Tests sur téléphone, tablette et ordinateur",
+      "step4": "Prêt à jouer",
+      "gameTag": "Votre jeu",
+      "gameMeta": "Prêt à lancer en direct ou à donner",
+      "host": "Lancer en direct",
+      "assign": "Donner",
+      "credit": "Visuel du jeu Fraction Factory, l’un des jeux prêts à l’emploi d’Oomba."
+    },
+    "how": {
+      "kicker": "Comment ça marche",
+      "h": "De la préparation de cours au jeu en trois étapes",
+      "lead": "Ni code ni graphisme. Si vous savez décrire votre leçon, vous pouvez la rendre jouable.",
+      "s1": {
+        "h": "Apportez votre leçon",
+        "p": "Collez le texte de votre leçon, envoyez un PDF, une image ou un fichier texte, ou décrivez avec vos mots ce que votre classe doit travailler."
+      },
+      "s2": {
+        "h": "Le Constructeur crée le jeu",
+        "p": "Il écrit le jeu, puis le teste tout seul aux formats téléphone, tablette et ordinateur. Demandez des changements avec des mots simples : « plus difficile », « ajoute un chrono »."
+      },
+      "s3": {
+        "h": "Jouez comme vous voulez",
+        "p": "Lancez-le en direct au vidéoprojecteur, partagez-le avec vos classes seulement, ou ajoutez-le à une leçon avec une date limite et suivez la progression de chaque élève."
+      }
+    },
+    "builder": {
+      "kicker": "Le Constructeur IA",
+      "h": "Votre leçon en entrée, un vrai jeu en sortie",
+      "lead": "Parlez au Constructeur comme à un assistant pédagogique qui sait faire des jeux. Il garde chaque version : vous pouvez toujours revenir en arrière.",
+      "you": "Vous",
+      "msg": "Fais un jeu à partir de cette leçon pour mes CM1. Dix minutes, trois niveaux, et termine par les questions du bilan de sortie.",
+      "bot": "C’est fait ! La version 1 est prête : trois niveaux, du plus facile au plus dur, avec le bilan de sortie à la fin. Appuie sur Jouer pour l’essayer.",
+      "li1": "Comprend le texte de vos leçons et les PDF, images et fichiers texte que vous envoyez",
+      "li2": "Répond dans votre langue, et dans celle de chaque élève",
+      "li3": "Teste chaque version aux formats téléphone, tablette et ordinateur",
+      "li4": "Privé jusqu’à ce que vous le partagiez : vous seul, vos classes ou, après vérification par une personne de notre équipe, tout le monde",
+      "li5": "Les élèves peuvent créer aussi : décrire, tester et corriger un jeu, c’est planifier, écrire et déboguer, sans code",
+      "shotAlt": "Le Studio Oomba : à gauche, le Constructeur annonce que la version 2 est prête ; à droite, le jeu tourne dans un aperçu au format téléphone.",
+      "caption": "Le vrai Studio : le Constructeur à gauche, votre jeu à droite."
+    },
+    "courses": {
+      "kicker": "Parcours prêts à l’emploi",
+      "h": "Des parcours complets, prêts dès le premier jour",
+      "lead": "Courts diaporamas, vérifications rapides et missions de jeu sur un même chemin. Chaque élève avance à son rythme ; vous suivez la progression dans le carnet de notes.",
+      "nq": {
+        "name": "Number Quest",
+        "tag": "Maths · du CE2 au CM2",
+        "p": "Numération, fractions, mesures, géométrie et données à travers le Numberworks de Netville avec Tally la chatte. Chaque étape est reliée aux Common Core State Standards de mathématiques."
+      },
+      "cs": {
+        "name": "CS Quest",
+        "tag": "Informatique · du CE2 à la 4e",
+        "p": "Un programme complet qu’un enseignant sans formation en informatique peut mener : des séances de 45 minutes, chacune avec une fiche, un chapitre de jeu, un échauffement en direct et un bilan de sortie. Niveaux 1B et 2 du CSTA."
+      },
+      "cd": {
+        "name": "Cyber Defenders",
+        "tag": "Sécurité en ligne",
+        "p": "Comment voyagent les messages, comment les codes les protègent, ce qui reste privé et comment repérer une arnaque, avec Pim la chouette à la poste de Netville. Chaque étape est reliée aux standards CYBER.ORG."
+      },
+      "link": "Guide enseignant"
+    },
+    "live": {
+      "kicker": "Jeux de classe en direct",
+      "h": "Allumez le vidéoprojecteur",
+      "lead": "Des échauffements et des bilans de sortie que votre classe attend avec impatience. Les élèves rejoignent la partie sur leur propre appareil avec un code à 7 chiffres.",
+      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math et d’autres",
+      "li2": "Utilisez une série de questions toute prête, écrivez la vôtre ou laissez l’IA en proposer une à modifier",
+      "li3": "Les scores arrivent directement dans votre carnet de notes",
+      "li4": "Élèves connectés uniquement : pas de chat, pas de saisie libre, pas de pseudos inventés",
+      "shotAlt": "Le salon d’attente de Question Battle en direct : cinq avatars d’élèves attendent pendant que le grand écran affiche le code de la partie et un QR code.",
+      "link": "Comment marchent les jeux en direct"
+    },
+    "why": {
+      "kicker": "Pourquoi les jeux marchent",
+      "h": "Le plaisir est le moyen. L’apprentissage est le but.",
+      "lead": "Les bons jeux éducatifs s’appuient sur quelques idées bien étudiées des sciences de l’apprentissage.",
+      "b1": {
+        "h": "Récupération en mémoire",
+        "p": "Répondre pour gagner oblige à aller chercher ce qu’on sait, et se rappeler une chose est l’un des moyens les plus sûrs de la retenir."
+      },
+      "b2": {
+        "h": "Retour immédiat",
+        "p": "Chaque réponse reçoit une réaction sur le moment : les erreurs sont corrigées tant que le raisonnement est encore frais."
+      },
+      "b3": {
+        "h": "Répétition sans pression",
+        "p": "« Encore une partie » ressemble à un jeu, pas à une fiche d’exercices : les élèves s’entraînent davantage, sans le poids d’une note."
+      },
+      "b4": {
+        "h": "Tout le monde participe",
+        "p": "Un jeu donne son tour à chaque élève, y compris à ceux qui lèvent rarement la main."
+      },
+      "b5": {
+        "h": "Créer, c’est apprendre",
+        "p": "Pour créer un jeu sur un sujet, il faut le comprendre assez bien pour l’expliquer à un ordinateur."
+      },
+      "sources": "Pour aller plus loin"
+    },
+    "safety": {
+      "kicker": "Sécurité et confidentialité",
+      "h": "Pensé pour la classe, sûr dès la conception",
+      "lead": "Conçu pour les 8 à 14 ans, et vous gardez la main sur vos classes.",
+      "li1": "Pas de publicité, ni de cookies publicitaires ou de suivi",
+      "li2": "Les élèves n’ont jamais besoin d’adresse e-mail, et nous ne demandons jamais leur âge ni leur adresse",
+      "li3": "Le vrai nom d’un élève, si vous l’ajoutez, n’est visible que par le personnel de votre école",
+      "li4": "Vous validez qui rejoint vos classes, et aucun élève ne peut discuter avec des inconnus",
+      "li5": "Chaque jeu tourne dans un bac à sable verrouillé, et une personne de notre équipe vérifie tout jeu avant qu’il devienne public",
+      "li6": "Ce que les élèves écrivent est filtré, et les images qu’ils envoient sont vérifiées et débarrassées de leurs données de localisation",
+      "links": "Lisez <a href=\"{safety}\">comment nous protégeons les enfants</a> et notre <a href=\"{privacy}\">politique de confidentialité</a>."
+    },
+    "everywhere": {
+      "h": "Fonctionne partout où est votre classe",
+      "devices": "Chromebooks, iPad, ordinateurs portables, téléphones et tableau interactif, directement dans le navigateur. Rien à installer.",
+      "languages": "{count} langues, dont l’espagnol, l’arabe, le portugais et le français. Chaque élève choisit la sienne.",
+      "voicesH": "Lecture à voix haute",
+      "voices": "Des voix IA naturelles lisent à voix haute tous les jeux officiels."
+    },
+    "pricing": {
+      "kicker": "Tarifs",
+      "h": "Un prix simple par enseignant. Tous les élèves inclus.",
+      "lead": "Jamais de frais par élève. Essayez tout gratuitement pendant 14 jours.",
+      "teacher": {
+        "name": "Enseignant",
+        "price": "Un prix annuel simple",
+        "priceShown": "{price} par an",
+        "trial": "14 jours gratuits · sans carte",
+        "li1": "Élèves illimités, aucun frais par élève",
+        "li2": "300 créations de jeux par IA par jour pour votre classe",
+        "li3": "Tous les parcours, plus de 30 jeux prêts à l’emploi et les jeux de classe en direct",
+        "li4": "Classes, leçons, progression et carnet de notes",
+        "li5": "Toutes les langues, tous les appareils",
+        "cta": "Commencer l’essai gratuit",
+        "plans": "Voir les offres et les tarifs"
+      },
+      "schools": {
+        "name": "Écoles et réseaux",
+        "price": "Le même prix par enseignant",
+        "priceShown": "{price} par enseignant et par an",
+        "li1": "Chaque enseignant a l’offre Enseignant complète",
+        "li2": "Paiement sur facture ou bon de commande",
+        "li3": "Comptes scolaires et cartes de connexion à imprimer",
+        "li4": "Nous vous aidons à installer votre école",
+        "cta": "Nous contacter",
+        "form": "Installer votre école",
+        "subject": "Oomba Academy pour notre école"
+      }
+    },
+    "faq": {
+      "h": "Les questions des enseignants",
+      "q1": "Qu’est-ce qu’Oomba Academy ?",
+      "a1": "Une plateforme d’apprentissage par le jeu pour les 8 à 14 ans. Les enseignants transforment leurs propres leçons en jeux interactifs avec un Constructeur IA, animent des jeux de classe en direct et utilisent des parcours prêts à l’emploi en maths, informatique et sécurité en ligne.",
+      "q2": "Comment marche l’essai gratuit ?",
+      "a2": "Commencez un essai gratuit de 14 jours sans carte. Toute l’offre Enseignant est incluse pendant l’essai, et à la fin, vous décidez de vous abonner ou non.",
+      "q3": "Est-ce que je paie pour chaque élève ?",
+      "a3": "Non. Un prix annuel par enseignant couvre tous vos élèves. Il n’y a aucun frais par élève.",
+      "q4": "Que puis-je transformer en jeu ?",
+      "a4": "Presque n’importe quelle leçon : collez le texte, envoyez un PDF, une image ou un fichier texte, ou décrivez le sujet et ce que votre classe doit travailler. Le Constructeur s’appuie sur votre document et construit un jeu autour.",
+      "q5": "Les élèves ont-ils besoin d’une adresse e-mail ?",
+      "a5": "Non. Vous pouvez créer des comptes scolaires pour votre classe et imprimer des cartes de connexion, sans e-mail d’élève. Et tout le monde peut jouer tout de suite aux jeux gratuits.",
+      "q6": "Ça marche sur Chromebook et iPad ?",
+      "a6": "Oui. Tout fonctionne dans un navigateur à jour sur Chromebook, iPad et autres tablettes, ordinateurs portables, téléphones et tableaux interactifs, sans rien installer.",
+      "q7": "Est-ce sûr pour mes élèves ?",
+      "a7": "C’est conçu pour les 8 à 14 ans : pas de publicité, pas de cookies de suivi, pas d’e-mail d’élève, pas de discussion avec des inconnus, du texte filtré, et une personne de notre équipe vérifie tout jeu avant qu’il devienne public.",
+      "q8": "Notre école peut-elle payer sur facture ou bon de commande ?",
+      "a8": "Oui. Les écoles paient le même prix par enseignant et par an, sur facture ou bon de commande. Écrivez-nous et nous nous en occupons.",
+      "q9": "Quelles langues sont disponibles ?",
+      "a9": "{count} langues, dont l’anglais, l’espagnol, le portugais, le français, l’allemand, l’arabe, l’hébreu et le japonais. Chaque élève choisit la sienne, et le Constructeur lui répond dans cette langue."
+    },
+    "final": {
+      "h": "Votre prochaine leçon sera peut-être celle qu’ils voudront rejouer",
+      "p": "Gratuit pendant 14 jours. Sans carte, sans frais par élève.",
+      "cta": "Commencer l’essai gratuit de 14 jours"
+    },
+    "play": {
+      "h": "Tu viens pour jouer ?",
+      "p": "Plus de 30 jeux éducatifs, gratuits et sans inscription.",
+      "cta": "Juste jouer"
+    },
+    "footer": {
+      "tagline": "Des jeux éducatifs pour les 8 à 14 ans, et un Constructeur IA qui transforme les leçons en jeux.",
+      "teachers": "Enseignants",
+      "product": "Découvrir",
+      "about": "À propos",
+      "parents": "Pour les parents",
+      "guide": "Guide enseignant",
+      "learn": "Jeux éducatifs par matière",
+      "safety": "Sécurité",
+      "privacy": "Confidentialité",
+      "terms": "Conditions",
+      "refunds": "Remboursements",
+      "plans": "Offres et tarifs",
+      "contact": "Contact",
+      "languages": "Langues",
+      "theme": "Thème",
+      "dark": "Sombre",
+      "light": "Clair"
     }
   },
   "teach": {

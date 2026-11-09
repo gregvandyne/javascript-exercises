@@ -95,7 +95,7 @@ test('the migration backfills an older database, and a re-import writes the shel
   q.run("UPDATE games SET shelf='' WHERE slug IN ('sum-racer', 'ring-rumble')");
   const mig = (await import('../../server/db.js')).MIGRATIONS;
   if (mig) {
-    const step = mig.find(m => m[0] === '0060_game_shelf'); assert.ok(step);
+    const step = mig.find(m => m[0] === '0062_game_shelf'); assert.ok(step);
     step[2](db);
     assert.equal(G.getGameBySlug('sum-racer').shelf, 'learn'); assert.equal(G.getGameBySlug('ring-rumble').shelf, 'play');
   }

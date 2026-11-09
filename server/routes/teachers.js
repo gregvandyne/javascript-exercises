@@ -171,7 +171,10 @@ router.get('/teachers', (req, res) => {
   const badges = [['✅', 'teachers.badges.free'], ['🚫', 'teachers.badges.ads'], ['💻', 'teachers.badges.browser'], ...(google ? [['🔑', 'teachers.badges.google']] : []), ['🎒', 'teachers.badges.ages']];
   const classItems = ['li1', 'li2', ...(google ? ['li3'] : []), 'li4', 'li5'];
   // With Sign in with Google on, a student's school Google email is kept: answers that say otherwise have a Google version.
-  const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}`]);
+  // With paid-plan pages on, the first question says what is free and what the Teacher plan adds (no prices: those are
+  // on /plans); off, the plain "yes, it's free" stays.
+  const paidFaq = familiesOn(req);
+  const faqPairs = Array.from({ length: TEACHER_FAQ }, (_, i) => [`teachers.faq.q${i + 1}${i === 0 && paidFaq ? 'paid' : ''}`, `teachers.faq.a${i + 1}${(i === 3 || i === 5) && google ? 'google' : ''}${i === 0 && paidFaq ? 'paid' : ''}`]);
   const faq = faqBlock(req, faqPairs, 'teachers.faq.h', { href: '/privacy', count: langCount, host: siteHost(req) });
   const plans = familiesOn(req);
   // ?sent=1: the thank-you after the form (nothing it said is shown back); ?failed=1: a form sent without JavaScript
@@ -181,9 +184,9 @@ router.get('/teachers', (req, res) => {
     ${el(t, 'h2', 'teachers.start.h', {}, ' id="start-h"')}
     ${el(t, 'p', 'teachers.start.p1')}
     ${setupBlock(req, { sent, failed })}
-    ${plans ? el(t, 'p', 'teachers.start.plans') : ''}
+    ${plans ? el(t, 'p', 'teachers.start.plans', { days: config.teacherTrialDays, daily: req.fmt.int(config.teacherDailyMessages) }) : ''}
     <div class="row">
-      ${plans ? html`<a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
+      ${plans ? html`<a class="btn btn-primary" href="/trial">${t('plans.teacher.start')}</a> <a class="btn" href="/plans/schools">${t('teachers.start.plansLink')}</a>` : ''}
       ${list[0] ? html`<a class="btn" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${el(t, 'p', 'teachers.setup.questions', { email: mail }, ' class="small muted"')}

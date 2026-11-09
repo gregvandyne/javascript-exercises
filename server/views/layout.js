@@ -88,7 +88,9 @@ export function landingFor(u) {
 export function shellFor(u, req) {
   const plans = familiesOn(req) ? [['plans', '/plans', '⭐']] : [];
   const [, , build, friends] = NAV;
-  const play = ['play', landingFor(u) ? '/play' : '/', '🎮'];
+  // Signed out, '/' is the teacher landing page (routes/landing.js, on unless LANDING_AT_ROOT=0), so Play goes to /play.
+  const landingAtRoot = !u && process.env.LANDING_AT_ROOT !== '0';
+  const play = ['play', landingFor(u) || landingAtRoot ? '/play' : '/', '🎮'];
   const learn = ['learn', '/learn', '📚'];
   const classroom = ['classroom', '/teach', '🍎'];
   const live = liveOn() ? [['live', '/live', '📡']] : [];

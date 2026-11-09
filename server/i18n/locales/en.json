@@ -808,10 +808,10 @@
         "li10": "To stop one child using the whole month in a day, there is a limit on how many extra messages one child can use in a day, and a limit on unusually expensive use.",
         "li11": "A child in a school with a paid School plan builds from the school's allowance in class, never from the family's extras.",
         "li12": "<b>Family plans are for US families for now.</b> You need a US billing address and a US payment card (or Apple Pay or Google Pay).",
-        "s3": "7.3 School plan",
-        "li13": "Priced <b>per student per year</b>, with a <b>minimum of 25 students</b>. The price is shown to the school's admins on the school's Billing tab.",
-        "li14": "The school gets a shared pool of Builder messages for its students and teachers each year. The size is shown on the school's Billing tab. Students always get at least the free daily amount. When the pool runs out, students use the free allowance until the next year starts.",
-        "li15": "Paid seats count active students. If you add students during the year, you can add seats: you pay a prorated amount for the rest of the year right away. You can lower the number of seats for the next year; the change applies at renewal, never below 25.",
+        "s3": "7.3 Teacher plan and school plans",
+        "li13": "The <b>Teacher plan</b> is priced <b>per teacher per year</b>, with no charge per student. It covers all of that teacher's classes and students. It starts with a <b>14-day free trial</b> that needs no card. If no card is added by the end of the trial, the plan simply stops. Each teacher, email address and school can have one free trial.",
+        "li14": "A teacher with the plan and the students in their classes share a daily number of Builder messages, shown before you start and on the teacher's My classes page. When they run out, everyone uses the free allowance until the next day (UTC).",
+        "li15": "<b>Schools</b> buy Teacher plans at the same price per teacher and give them to their teachers on the school's Billing tab. Added teachers are billed straight away for the rest of the year; fewer teachers take effect at renewal. A school that bought a plan priced per student before keeps that plan, at its price, when it renews.",
         "li16": "<b>Paying:</b> by card online, or by invoice (a purchase order is fine). Invoices are due <b>30 days</b> after they are sent (net 30) and can be paid by card, bank transfer or ACH, or by check (email us for the mailing address).",
         "li17": "Tax-exempt schools can send us their exemption certificate.",
         "s4": "7.4 Payments, Stripe and taxes",
@@ -898,7 +898,7 @@
       "intro": {
         "h": "About this policy",
         "p1": "This page explains how to cancel an Oomba Academy plan and when you can get your money back. It is part of our <a href=\"/terms\">Terms of Service</a>.",
-        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b> and <b>School</b> plans, which add more Builder messages.",
+        "p2": "Playing and the free daily Builder messages are always free. This policy is only about the paid <b>Family</b>, <b>Teacher</b> and <b>School</b> plans, which add more Builder messages.",
         "p3": "Spark Packs, one-time top-ups of Builder messages for a family with a plan, have their own section below."
       },
       "cancel": {
@@ -917,7 +917,8 @@
         "p4": "<b>What a refund does:</b> a refund ends the plan straight away (we cancel it first, then refund), so the extra messages stop at once.",
         "p5": "<b>How to ask:</b> email <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> from any address. Tell us the name of your grown-up account (or school), and the date and amount from your Stripe receipt. We'll reply within 3 business days.",
         "p6": "<b>When you get the money:</b> the refund goes back to the card or account you paid with. Banks usually take 5 to 10 business days to show it.",
-        "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by check? We refund by check or bank transfer."
+        "p7": "<b>Schools paying by invoice:</b> the 14 days start on the date the payment reaches us. Paid by check? We refund by check or bank transfer.",
+        "p8": "<b>Free trials:</b> a Teacher plan's free trial costs nothing, and ends by itself if no card is added. If you add a card, the first payment is taken when the trial ends, and the 14 days start then."
       },
       "sparks": {
         "h": "Spark Packs",
@@ -999,7 +1000,7 @@
         "li2": "<b>What we keep when a school asks for an invoice:</b> the number of seats, purchase order number, the billing contact's name and email, the school's billing address, whether the school says it is tax-exempt, and any note.",
         "li3": "<b>What goes to Stripe:</b> when we create the school's invoices, the school's name, the billing contact's email, the billing address and the purchase order number are saved with Stripe, which sends the invoices. The contact's name, the note and the tax-exempt answer stay only with us. Nothing is sent until we create the invoices. A school that pays by card types its name and billing address on Stripe's page instead.",
         "li4": "<b>How long:</b> the contact's name and email, the address, the note and the purchase order number in our database are deleted <b>2 years</b> after the request is closed. Stripe keeps the school's address and purchase order number with its invoices (see below).",
-        "li5": "<b>Seats</b> are counted from the number of active students. Billing does not use students' names or work.",
+        "li5": "<b>Seats</b> are counted in teachers: the school admins choose which teachers have one. Billing does not use students' names or work.",
         "li6": "<b>Families never see class activity:</b> a grown-up linked to a student sees only that student's family extra messages.",
         "li7": "<b>Asking for a School plan:</b> a teacher can ask their school's admins for a School plan. We keep which teacher asked, for which school and when, never a message. The school's admins see who asked until they dismiss it or the school gets a plan, and we delete it <b>90 days</b> after that. Teachers only see whether their school has a plan."
       },
@@ -2288,7 +2289,8 @@
         "classText": "Your class's Builder is resting for today. Ask your teacher when you can build again.",
         "resting": "The Builder is resting for everyone right now. Your game is saved.",
         "getSpark": "Get a Spark Pack",
-        "back": "More Builder messages are here. Happy building!"
+        "back": "More Builder messages are here. Happy building!",
+        "teacherText": "You and your classes have used today's Builder messages from your Teacher plan. More tomorrow!"
       },
       "mic": {
         "start": "Speak instead of typing",
@@ -2883,7 +2885,61 @@
       "freeH": "Free for every school",
       "free": "All the games, classes, lessons and courses, login cards, progress and live class games, and {free} free Builder messages a day for every student, like everyone on Oomba Academy.",
       "addsH": "A School plan adds",
-      "adds": "More Builder messages: each paid student adds {perSeat} a year to a pool your whole school shares. Nothing else changes, and students are never asked to pay."
+      "adds": "More Builder messages: each paid student adds {perSeat} a year to a pool your whole school shares. Nothing else changes, and students are never asked to pay.",
+      "tp": {
+        "teachersN": "{count, plural, one {# teacher} other {# teachers}}",
+        "active": "{count, plural, one {Teacher plan for # teacher.} other {Teacher plans for # teachers.}}",
+        "trialing": "Free trial until {date}. Add a card in Manage billing to keep the seats. Without one, the trial simply ends.",
+        "waits": "The new seats can be given once their payment goes through.",
+        "grant": "A free plan from Oomba Academy until {date}.",
+        "price": "{price} per teacher per year, with no per-student charge. Each teacher with a seat gets the Teacher plan: unlimited students and {daily} Builder messages a day for their classes.",
+        "seatsLabel": "Number of teachers",
+        "seatsHint": "You have {teachers} now.",
+        "total": "{seats} teachers × {price} = {total} a year (plus tax, if any)",
+        "trial": "Start with the {days}-day free trial (no card needed)",
+        "renewal": "Your plan renews on {date} for {seats}. You have {teachers} now.",
+        "renewalButton": "Set next year's teachers",
+        "adds": "Each teacher with a seat gets unlimited students and {daily} Builder messages a day for their classes. Students are never asked to pay.",
+        "legacyH": "Legacy plan.",
+        "legacy": "Your school's plan is priced per student. It keeps that price when it renews. Write to us if you'd like to move to teacher seats.",
+        "pay": {
+          "heading": "Get Teacher plans for your teachers",
+          "button": "Continue"
+        },
+        "change": {
+          "heading": "Change the number of teachers",
+          "text": "More teachers are billed now, for the rest of this year. Fewer teachers take effect when the plan renews.",
+          "button": "Change teachers"
+        },
+        "seats": {
+          "h": "Who has a seat",
+          "text": "{used} of {seats} seats given. A teacher with a seat gets the Teacher plan for all their classes.",
+          "own": "(has their own Teacher plan)",
+          "waiting": "(waiting for a free seat)",
+          "give": "Give a seat",
+          "take": "Take back",
+          "full": "Every seat is given. Add seats above to give more."
+        },
+        "seat": {
+          "given": "Seat given.",
+          "taken": "Seat taken back."
+        },
+        "seatsDone": {
+          "raised": "Done: {count, plural, one {# teacher} other {# teachers}}.",
+          "pending": "The card payment didn't go through, so the number of teachers stays the same. Update the card in Manage billing and try again.",
+          "scheduled": "Next year: {count, plural, one {# teacher} other {# teachers}}.",
+          "cleared": "Next year stays at {count, plural, one {# teacher} other {# teachers}}."
+        },
+        "errors": {
+          "notStaff": "Only teachers and school admins of this school can have a seat.",
+          "noSeats": "Your school has no teacher seats yet.",
+          "full": "Every seat is given. Add seats first.",
+          "noSeat": "That teacher has no seat.",
+          "minSeats": "Type a whole number from 1 to {max}.",
+          "entitled": "Your school already has a plan. Change the number of teachers instead.",
+          "trialUsed": "Your school has had its free trial."
+        }
+      }
     },
     "pick": {
       "title": "Your schools",
@@ -3764,7 +3820,7 @@
   },
   "plans": {
     "title": "Plans and prices",
-    "description": "Oomba Academy plans: Free, Basic, Family and School. Playing every game is always free.",
+    "description": "Oomba Academy plans: Free, Basic, Family, Teacher and School. Playing every game is always free.",
     "heading": "Plans",
     "intro": "Playing every game is free, and so is building with the free daily Builder messages. A plan adds extra Builder messages every month.",
     "interval": {
@@ -3813,12 +3869,12 @@
     },
     "school": {
       "name": "School",
-      "tagline": "For classes and whole schools",
-      "per": "per student a year",
-      "min": "For at least {min} students",
-      "li1": "{perSeat, plural, one {# Builder message} other {# Builder messages}} a year for each paid student, shared by the whole school",
-      "li2": "Classes build from the school's own pool",
-      "li3": "Pay by card, or ask for an invoice",
+      "tagline": "Teacher plans for a whole school",
+      "per": "per teacher a year",
+      "min": "Invoice or purchase order available",
+      "li1": "A Teacher plan for each teacher: unlimited students and {daily} AI builds a day for their classes",
+      "li2": "School admins give the seats to teachers",
+      "li3": "Pay by card, or ask for an invoice or purchase order",
       "get": "Get a school plan",
       "manage": "Manage school plan"
     },
@@ -3831,8 +3887,8 @@
     "staff": {
       "button": "For families",
       "heading": "Basic and Family are for families",
-      "text": "A parent or guardian buys them with a grown-up account. For your classes, a school plan covers every student.",
-      "toSchool": "See the School plan"
+      "text": "A parent or guardian buys them with a grown-up account. For your classes, there is the Teacher plan.",
+      "toSchool": "See the Teacher plan"
     },
     "fine": {
       "h": "Good to know",
@@ -3841,12 +3897,12 @@
     },
     "schools": {
       "title": "School plans",
-      "description": "School plans on Oomba Academy: a shared pool of Builder messages for your students and teachers, paid by card or invoice.",
+      "description": "Oomba Academy for schools: the Teacher plan for each of your teachers, at one price per teacher a year, paid by card or invoice.",
       "heading": "Oomba Academy for schools",
-      "intro": "A school plan gives your students and teachers a shared pool of Builder messages, so classes never wait for the free ones.",
+      "intro": "Schools buy the Teacher plan for their teachers: one price per teacher a year, with unlimited students and no per-student charge.",
       "what": {
         "h": "What a school gets",
-        "p1": "School admins see the plan, the paid students and the pool on the school's Billing tab. Families never see anything from class."
+        "p1": "School admins see the plan and give the seats to teachers on the school's Billing tab. Families never see anything from class."
       },
       "how": {
         "h": "How to set up a school",
@@ -3863,9 +3919,9 @@
       },
       "calc": {
         "h": "What would it cost?",
-        "label": "Number of students",
+        "label": "Number of teachers",
         "button": "Work it out",
-        "result": "{seats, plural, one {# student} other {# students}} × {price} = {total} a year",
+        "result": "{seats, plural, one {# teacher} other {# teachers}} × {price} = {total} a year",
         "min": "A school plan is for at least {min} students, so a smaller school pays for {min}.",
         "tax": "Prices are in US dollars and don't include sales tax.",
         "print": "Send this to my admin",
@@ -3878,15 +3934,117 @@
         "printButton": "Print or save as PDF",
         "back": "Back to school plans",
         "cost": "What it costs",
-        "perStudent": "Price per student, per year",
+        "perStudent": "Price per teacher, per year",
         "minimum": "Smallest plan",
         "minimumN": "{min, plural, one {# student} other {# students}}",
-        "students": "Students",
+        "students": "Teachers",
         "total": "Total per year",
         "estimate": "This is an estimate for {date}, not an invoice. Prices are in US dollars and don't include sales tax.",
         "setup": "How to set it up",
         "li1": "Set up the school (free): fill in the short form at {url}.",
         "contact": "Questions? Write to {email}."
+      }
+    },
+    "teacher": {
+      "name": "Teacher",
+      "tagline": "For one teacher and all their classes",
+      "per": "per teacher a year",
+      "trial": "{days}-day free trial, no card required",
+      "li1": "Unlimited students, no per-student charge",
+      "li2": "{daily} AI builds a day for the class",
+      "li3": "Covers all your classes",
+      "li4": "Cancel anytime",
+      "start": "Start free trial",
+      "manage": "My Teacher plan"
+    },
+    "trial": {
+      "title": "Teacher plan",
+      "heading": "Try the Teacher plan free for {days} days",
+      "lead": "Everything your classes need: unlimited students and {daily} AI builds a day for the class. No card needed to start.",
+      "price": "After the trial, {price} a year per teacher. No per-student charge.",
+      "li1": "Unlimited students in all your classes",
+      "li2": "{daily} Builder messages a day, shared by you and your classes",
+      "li3": "No card needed. If you don't add one, the plan simply stops when the trial ends: your classes and their work stay.",
+      "li4": "One price per teacher, cancel anytime",
+      "email": "Your work email",
+      "emailHint": "Stripe, our payment provider, sends your trial reminder and receipts here.",
+      "cancelled": "Nothing was started. You can start your trial whenever you are ready.",
+      "notOpen": "The Teacher plan isn't open yet. Please check back soon.",
+      "subscribe": "Get the Teacher plan",
+      "already": "You already have the Teacher plan.",
+      "welcome": "🎉 Your Teacher plan is on. Make a class and add your students: you and your classes share {daily} Builder messages a day.",
+      "teachersN": "{count, plural, one {# teacher} other {# teachers}}",
+      "forTeachers": {
+        "h": "The Teacher plan is for teachers",
+        "p": "It is for teachers and their classes, and needs a teacher account. Families have their own plans.",
+        "link": "See the plans for families"
+      },
+      "school": {
+        "h": "A free trial for your school",
+        "p": "Start a {days}-day free trial of Teacher plans for {school}: {seats}. No card needed. After the trial, {price} per teacher a year.",
+        "start": "Start the school's free trial",
+        "billing": "Go to the Billing tab"
+      },
+      "used": {
+        "h": "You have had your free trial",
+        "p": "Each teacher, email and school can try the plan once. You can still get it for {price} a year.",
+        "school": "Your school has had its free trial. You can get teacher seats on the school's Billing tab."
+      },
+      "start": {
+        "h": "Start your {days}-day free trial",
+        "button": "Start my free trial",
+        "note": "You go to Stripe's page to confirm. No card is needed for the trial."
+      },
+      "signup": {
+        "h": "Create your teacher account",
+        "lead": "Your account, your classroom and your free trial in one go. Already have a teacher account? <a href=\"{login}\">Sign in</a>.",
+        "name": "Your name, as your students will see it",
+        "nameHint": "For example: Ms Rivera",
+        "school": "Your school's name",
+        "username": "Pick a username",
+        "password": "Pick a password",
+        "passwordHint": "At least {min} characters.",
+        "adult": "I am a teacher or school staff member, and 18 or older.",
+        "submit": "Create my account and start the trial",
+        "privacy": "We don't keep your work email on your account: it goes to Stripe for your plan. <a href=\"{privacy}\">Privacy Policy</a>"
+      },
+      "errors": {
+        "signedIn": "You are already signed in.",
+        "name": "Type your name (2 to 60 characters).",
+        "school": "Type your school's name.",
+        "email": "Type your work email.",
+        "password": "Use at least {min} characters.",
+        "adult": "Please confirm you are a teacher or school staff member, 18 or older.",
+        "notTeacher": "The Teacher plan needs a teacher account.",
+        "entitled": "You already have the Teacher plan.",
+        "fixPayment": "Your plan is waiting for a payment. Fix it in Manage billing on My classes.",
+        "trialUsed": "This free trial has been used already.",
+        "noPrice": "The Teacher plan isn't on sale right now. Please try again later.",
+        "paying": "A payment is already on its way. Please wait a minute.",
+        "minSeats": "Type a whole number of teachers from 1 to {max}.",
+        "noCustomer": "There is no billing to manage yet."
+      },
+      "thanks": {
+        "wait": "⏳ Starting your Teacher plan…",
+        "slow": "This is taking longer than usual. Your plan will show on My classes in a minute.",
+        "back": "Go to My classes"
+      },
+      "card": {
+        "heading": "Teacher plan",
+        "grant": "A free Teacher plan from Oomba Academy until {date}.",
+        "trial": "Free trial until {date}.",
+        "ends": "Ends on {date}.",
+        "renews": "Renews on {date}.",
+        "seat": "A seat from {school}.",
+        "pool": "{left} of {size} Builder messages left today for you and your classes.",
+        "ending": "{count, plural, =0 {Your free trial ends today.} one {Your free trial ends in # day.} other {Your free trial ends in # days.}} Add a card to keep the Teacher plan. Without one it simply stops, and your classes stay.",
+        "addCard": "Add a card",
+        "manage": "Manage billing",
+        "pending": "Your payment is on its way. The plan starts as soon as it arrives.",
+        "fix": "Your Teacher plan is waiting for a payment. Update your card in Manage billing.",
+        "tryText": "Unlimited students and {daily} AI builds a day for your classes. Free for {days} days, no card needed.",
+        "getText": "Unlimited students and {daily} AI builds a day for your classes.",
+        "try": "Try it free for {days} days"
       }
     }
   },
@@ -4020,7 +4178,7 @@
       "h": "Set up your school (free)",
       "p1": "Playing is free for everyone, and students can try any game straight away, without signing up.",
       "p2": "For classes, lessons and school accounts, write to {email} with your school’s name and who will look after it. We set up your school and your school admin’s account, and they add teachers and students. Setting up a school is free.",
-      "plans": "Want more Builder messages for your classes? A school plan adds a shared pool for your students and teachers.",
+      "plans": "Want more for your classes? Try the Teacher plan free for {days} days, no card needed: unlimited students and {daily} AI builds a day for the class.",
       "email": "Email us to set up your school",
       "subject": "Setting up my school on Oomba Academy",
       "plansLink": "School plans"
@@ -4046,7 +4204,9 @@
       "a8": "Yes. Lessons record each student’s progress, game scores and written answers. You see them on the class’s Progress tab, and can download each student’s lesson progress as a spreadsheet (CSV).",
       "q9": "Which languages are there?",
       "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own.",
-      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
+      "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
+      "q1paid": "Is Oomba Academy free for teachers?",
+      "a1paid": "Playing, classes, lessons, progress and Oomba Live are free, and every student gets free Builder messages each day. The optional Teacher plan adds a shared daily pool of AI builds for your classes, with unlimited students. Try it free for 14 days, no card needed. Prices are on the plans page."
     },
     "setup": {
       "lead": "Tell us a little about your school. We'll set it up within 1 school day and reply to your email with what to do next. Setting up a school is free.",
@@ -7021,11 +7181,258 @@
     },
     "notice": {
       "approved": "Good news! “{title}” passed the Oomba team's check, so more people can play it now.",
-      "sentBack": "“{title}” needs a few changes before everyone can play it."
+      "sentBack": "“{title}” needs a few changes before everyone can play it.",
+      "trialEnding": "Your Teacher plan's free trial ends in {days, plural, =0 {less than a day} one {# day} other {# days}}. To keep it, add a card here: {href} Without one, the plan simply stops and your classes stay.",
+      "trialEnded": "Your Teacher plan's free trial has ended. Your classes, students and their games are all still here. You can get the plan again at {href}",
+      "trialConverted": "Thank you! Your Teacher plan is on for the year."
     },
     "link": {
       "new": "{count, plural, one {# new message from the Oomba team} other {# new messages from the Oomba team}}",
       "open": "Messages from the Oomba team"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "Turn lesson plans into classroom games · Oomba Academy",
+      "description": "Game-based learning for teachers: paste a lesson or upload a PDF and the AI Builder turns it into an interactive classroom game. 14-day free trial, no card.",
+      "imageAlt": "Oomba Academy for teachers: turn your lesson plans into games your class begs to play."
+    },
+    "nav": {
+      "label": "Teacher site",
+      "home": "Oomba Academy home",
+      "skip": "Skip to content",
+      "how": "How it works",
+      "builder": "Builder",
+      "courses": "Courses",
+      "live": "Live games",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "signIn": "Sign in",
+      "justPlay": "Just Play",
+      "trial": "Start free trial",
+      "trialShort": "Free trial"
+    },
+    "hero": {
+      "kicker": "For teachers · grades 3–8",
+      "h1": "Turn your lesson plans into games your class begs to play",
+      "lead": "Paste a lesson, upload a PDF or just describe an idea. Oomba’s AI Builder turns it into an interactive game you can run live on the projector or assign to your class.",
+      "cta": "Start your free 14-day trial",
+      "how": "See how it works",
+      "trustCard": "No card needed",
+      "trustCancel": "Cancel anytime",
+      "trustStudents": "Unlimited students"
+    },
+    "facts": {
+      "games": "ready-made learning games",
+      "courses": "full courses with lesson plans",
+      "languages": "languages for students and teachers",
+      "installs": "installs: it runs in the browser"
+    },
+    "demo": {
+      "label": "Illustration: a lesson becoming a game",
+      "lessonTag": "Your lesson",
+      "lessonTitle": "Equivalent fractions · Grade 4",
+      "lessonBody": "Students show that 1/2, 2/4 and 4/8 name the same amount, with pizzas, bars and number lines. Exit ticket: three quick checks.",
+      "file": "fractions-lesson.pdf",
+      "builderTag": "AI Builder",
+      "step1": "Reading your lesson",
+      "step2": "Designing the levels",
+      "step3": "Playtesting on phone, tablet and desktop",
+      "step4": "Ready to play",
+      "gameTag": "Your game",
+      "gameMeta": "Ready to host live or assign",
+      "host": "Host live",
+      "assign": "Assign",
+      "credit": "Game art from Fraction Factory, one of Oomba’s ready-made games."
+    },
+    "how": {
+      "kicker": "How it works",
+      "h": "From lesson plan to game in three steps",
+      "lead": "No coding and no design skills. If you can describe your lesson, you can make it playable.",
+      "s1": {
+        "h": "Bring your lesson",
+        "p": "Paste your lesson text, upload a PDF, a picture or a text file, or describe what your class should practice, in your own words."
+      },
+      "s2": {
+        "h": "The Builder makes the game",
+        "p": "It writes the game, then playtests it by itself on phone, tablet and desktop sizes. Ask for changes in plain words: “make it harder”, “add a timer”."
+      },
+      "s3": {
+        "h": "Play it your way",
+        "p": "Host it live on the projector, share it with only your classes, or add it to a lesson with a due date and see every student’s progress."
+      }
+    },
+    "builder": {
+      "kicker": "The AI Builder",
+      "h": "Your lesson in, a real game out",
+      "lead": "Talk to the Builder like a teaching assistant who happens to make games. It keeps every version, so you can always go back.",
+      "you": "You",
+      "msg": "Make a game from this lesson for my 4th graders. Ten minutes, three levels, and end with the exit ticket questions.",
+      "bot": "Done! Version 1 is ready: three levels, easiest first, with the exit ticket at the end. Press Play to try it.",
+      "li1": "Understands lesson text, PDFs, pictures and text files you upload",
+      "li2": "Answers in your language, and in each student’s",
+      "li3": "Playtests every build on phone, tablet and desktop sizes",
+      "li4": "Private until you share it: just you, your classes or, after a person on our team reviews it, everyone",
+      "li5": "Students can build too: describing, testing and fixing a game is planning, writing and debugging, without code",
+      "shotAlt": "The Oomba Studio: the Builder chat on the left says version 2 is ready, and the game runs in a phone-sized preview on the right.",
+      "caption": "The real Studio: the Builder on the left, your game on the right."
+    },
+    "courses": {
+      "kicker": "Ready-made courses",
+      "h": "Full courses, ready on day one",
+      "lead": "Short slide decks, quick checks and game missions in one path. Students work at their own pace; you see progress in the gradebook.",
+      "nq": {
+        "name": "Number Quest",
+        "tag": "Math · grades 3–5",
+        "p": "Place value, fractions, measuring, shapes and data along Netville’s Numberworks with Tally the cat. Every step is mapped to the Common Core State Standards for Mathematics."
+      },
+      "cs": {
+        "name": "CS Quest",
+        "tag": "Computer science · grades 3–8",
+        "p": "A full program a teacher with no computer science background can run: 45-minute lessons, each with a plan, a game chapter, a live warm-up and an exit ticket. CSTA levels 1B and 2."
+      },
+      "cd": {
+        "name": "Cyber Defenders",
+        "tag": "Online safety",
+        "p": "How messages travel, how codes protect them, what stays private and how to spot a trick, with Pim the owl at the Netville post office. Every step is mapped to CYBER.ORG standards."
+      },
+      "link": "Teacher guide"
+    },
+    "live": {
+      "kicker": "Live class games",
+      "h": "Light up the projector",
+      "lead": "Warm-ups and exit tickets your class actually looks forward to. Students join on their own devices with a 7-digit code.",
+      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math and more",
+      "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
+      "li3": "Scores go straight into your gradebook",
+      "li4": "Signed-in students only: no chat, no typing, no made-up names",
+      "shotAlt": "A live Question Battle lobby: five student avatars wait while the big screen shows the game code and a QR code.",
+      "link": "How live games work"
+    },
+    "why": {
+      "kicker": "Why games work",
+      "h": "Fun is the delivery system. Learning is the point.",
+      "lead": "Good learning games lean on a few well-studied ideas from the science of learning.",
+      "b1": {
+        "h": "Retrieval practice",
+        "p": "Answering to win pulls knowledge back out of memory, and recalling something is one of the most reliable ways to make it stick."
+      },
+      "b2": {
+        "h": "Instant feedback",
+        "p": "Every answer gets a response in the moment, so mistakes are fixed while the thinking is still fresh."
+      },
+      "b3": {
+        "h": "Low-stakes repetition",
+        "p": "“One more round” feels like play, not a worksheet, so students practice more, without the weight of a grade."
+      },
+      "b4": {
+        "h": "Everyone takes part",
+        "p": "A game gives every student a turn, including the ones who rarely raise a hand."
+      },
+      "b5": {
+        "h": "Making is learning",
+        "p": "To build a game about a topic, students have to understand it well enough to teach it to a computer."
+      },
+      "sources": "Further reading"
+    },
+    "safety": {
+      "kicker": "Safety and privacy",
+      "h": "Built for classrooms, safe by design",
+      "lead": "Made for ages 8 to 14, with you in control of your classes.",
+      "li1": "No ads, and no advertising or tracking cookies",
+      "li2": "Students never need an email address, and we never ask their age or home address",
+      "li3": "A student’s real name, if you add one, is seen only by your school’s staff",
+      "li4": "You approve who joins your classes, and no student can chat with strangers",
+      "li5": "Every game runs in a locked sandbox, and a person on our team reviews any game before it goes public",
+      "li6": "What students type is filtered, and pictures they upload are checked and stripped of location data",
+      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and our <a href=\"{privacy}\">privacy notice</a>."
+    },
+    "everywhere": {
+      "h": "Works wherever your class is",
+      "devices": "Chromebooks, iPads, laptops, phones and the classroom board, right in the browser. Nothing to install.",
+      "languages": "{count} languages, including Spanish, Arabic, Portuguese and French. Each student picks their own.",
+      "voicesH": "Read aloud",
+      "voices": "Natural AI voices read every official game aloud."
+    },
+    "pricing": {
+      "kicker": "Pricing",
+      "h": "One simple price per teacher. Every student included.",
+      "lead": "No per-student fees, ever. Try everything free for 14 days.",
+      "teacher": {
+        "name": "Teacher",
+        "price": "One simple yearly price",
+        "priceShown": "{price} per year",
+        "trial": "14 days free · no card needed",
+        "li1": "Unlimited students, no per-student fees",
+        "li2": "300 AI game builds a day for your class",
+        "li3": "All courses, 30+ ready-made games and live class games",
+        "li4": "Classes, lessons, progress and the gradebook",
+        "li5": "Every language, every device",
+        "cta": "Start your free trial",
+        "plans": "See plans & pricing"
+      },
+      "schools": {
+        "name": "Schools & districts",
+        "price": "The same price per teacher",
+        "priceShown": "{price} per teacher per year",
+        "li1": "Every teacher gets the full Teacher plan",
+        "li2": "Pay by invoice or purchase order",
+        "li3": "School accounts and printable login cards",
+        "li4": "We help you set up your school",
+        "cta": "Talk to us",
+        "form": "Set up your school",
+        "subject": "Oomba Academy for our school"
+      }
+    },
+    "faq": {
+      "h": "Questions teachers ask",
+      "q1": "What is Oomba Academy?",
+      "a1": "A game-based learning platform for grades 3 to 8. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in math, computer science and online safety.",
+      "q2": "How does the free trial work?",
+      "a2": "Start a 14-day free trial with no card. Everything in the Teacher plan is included while it runs, and when it ends you decide whether to subscribe.",
+      "q3": "Do I pay for each student?",
+      "a3": "No. One yearly price per teacher covers all of your students. There are no per-student fees.",
+      "q4": "What can I turn into a game?",
+      "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practice. The Builder uses your material as a reference and makes a game around it.",
+      "q5": "Do students need an email address?",
+      "a5": "No. You can make school accounts for your class and print login cards, with no student email needed. Anyone can also play the free games straight away.",
+      "q6": "Does it work on Chromebooks and iPads?",
+      "a6": "Yes. It runs in any up-to-date browser on Chromebooks, iPads and other tablets, laptops, phones and interactive boards, with nothing to install.",
+      "q7": "Is it safe for my students?",
+      "a7": "It is made for ages 8 to 14: no ads, no tracking cookies, no student emails, no chat with strangers, filtered text, and a person on our team reviews any game before it goes public.",
+      "q8": "Can our school pay by invoice or purchase order?",
+      "a8": "Yes. Schools pay the same price per teacher per year, by invoice or purchase order. Email us and we will set it up.",
+      "q9": "Which languages are there?",
+      "a9": "{count} languages, including English, Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own, and the Builder answers in it."
+    },
+    "final": {
+      "h": "Your next lesson could be the one they ask to play again",
+      "p": "Start free for 14 days. No card, no per-student fees.",
+      "cta": "Start your free 14-day trial"
+    },
+    "play": {
+      "h": "Here to play?",
+      "p": "30+ learning games, free and with no sign-up.",
+      "cta": "Just Play"
+    },
+    "footer": {
+      "tagline": "Learning games for ages 8 to 14, and an AI Builder that turns lessons into games.",
+      "teachers": "For teachers",
+      "product": "Explore",
+      "about": "About",
+      "parents": "For parents",
+      "guide": "Teacher guide",
+      "learn": "Learning games by subject",
+      "safety": "Safety",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "refunds": "Refunds",
+      "plans": "Plans & pricing",
+      "contact": "Contact",
+      "languages": "Languages",
+      "theme": "Theme",
+      "dark": "Dark",
+      "light": "Light"
     }
   }
 }

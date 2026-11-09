@@ -808,10 +808,10 @@
         "li10": "Om te voorkomen dat één kind de hele maand op één dag opmaakt, is er een limiet op hoeveel extra berichten één kind per dag kan gebruiken, en een limiet op ongewoon duur gebruik.",
         "li11": "Een kind op een school met een betaald schoolabonnement bouwt in de klas met het tegoed van de school, nooit met de extra berichten van het gezin.",
         "li12": "<b>Gezinsabonnementen zijn voorlopig alleen voor gezinnen in de Verenigde Staten.</b> Je hebt een factuuradres in de VS en een Amerikaanse betaalkaart nodig (of Apple Pay of Google Pay).",
-        "s3": "7.3 Schoolabonnement",
-        "li13": "Prijs <b>per leerling per jaar</b>, met een <b>minimum van 25 leerlingen</b>. De schoolbeheerders zien de prijs op het tabblad Facturatie van de school.",
-        "li14": "De school krijgt elk jaar een gedeelde pot berichten aan de Bouwer voor haar leerlingen en leerkrachten. De grootte staat op het tabblad Facturatie van de school. Leerlingen krijgen altijd minstens het gratis dagelijkse aantal. Is de pot op, dan gebruiken leerlingen het gratis tegoed tot het nieuwe jaar begint.",
-        "li15": "Betaalde plaatsen tellen actieve leerlingen. Voeg je in de loop van het jaar leerlingen toe, dan kun je plaatsen bijkopen: je betaalt meteen een evenredig bedrag voor de rest van het jaar. Je kunt het aantal plaatsen voor het volgende jaar verlagen; die wijziging gaat in bij de verlenging, nooit onder de 25.",
+        "s3": "7.3 Leerkracht-abonnement en schoolabonnementen",
+        "li13": "Het <b>Leerkracht-abonnement</b> kost een bedrag <b>per leerkracht per jaar</b>, zonder kosten per leerling. Het geldt voor alle klassen en leerlingen van die leerkracht. Het begint met een <b>gratis proefperiode van 14 dagen</b> waarvoor geen kaart nodig is. Is er aan het einde van de proefperiode geen kaart toegevoegd, dan stopt het abonnement gewoon. Elke leerkracht, elk e-mailadres en elke school kan één gratis proefperiode hebben.",
+        "li14": "Een leerkracht met het abonnement en de leerlingen in zijn of haar klassen delen een dagelijks aantal berichten aan de Bouwer, dat vooraf wordt getoond en op de pagina Mijn klassen van de leerkracht staat. Zijn ze op, dan gebruikt iedereen het gratis tegoed tot de volgende dag (UTC).",
+        "li15": "<b>Scholen</b> kopen Leerkracht-abonnementen voor dezelfde prijs per leerkracht en geven ze aan hun leerkrachten op het tabblad Facturering van de school. Extra leerkrachten worden meteen gefactureerd voor de rest van het jaar; minder leerkrachten gaan in bij de verlenging. Een school die eerder een abonnement per leerling kocht, houdt dat abonnement, tegen die prijs, als het wordt verlengd.",
         "li16": "<b>Betalen:</b> online met een kaart, of op factuur (een inkooporder is prima). Facturen moeten <b>30 dagen</b> na verzending betaald zijn (net 30) en kunnen worden betaald met een kaart, een bankoverschrijving of ACH, of met een cheque (mail ons voor het postadres).",
         "li17": "Scholen die zijn vrijgesteld van belasting, kunnen ons hun vrijstellingsverklaring sturen.",
         "s4": "7.4 Betalingen, Stripe en belastingen",
@@ -898,7 +898,7 @@
       "intro": {
         "h": "Over dit beleid",
         "p1": "Op deze pagina lees je hoe je een abonnement op Oomba Academy opzegt en wanneer je je geld terugkrijgt. Deze pagina hoort bij onze <a href=\"/terms\">Servicevoorwaarden</a>.",
-        "p2": "Spelen en de gratis dagelijkse berichten aan de Bouwer zijn altijd gratis. Dit beleid gaat alleen over de betaalde abonnementen <b>Gezin</b> en <b>School</b>, die meer berichten aan de Bouwer geven.",
+        "p2": "Spelen en de gratis dagelijkse berichten aan de Bouwer zijn altijd gratis. Dit beleid gaat alleen over de betaalde abonnementen <b>Gezin</b>, <b>Leerkracht</b> en <b>School</b>, die meer berichten aan de Bouwer geven.",
         "p3": "Vonkpakketten, eenmalige aanvullingen van berichten aan de Bouwer voor een gezin met een abonnement, hebben hieronder een eigen deel."
       },
       "cancel": {
@@ -917,7 +917,8 @@
         "p4": "<b>Wat een terugbetaling doet:</b> een terugbetaling beëindigt het abonnement meteen (we zeggen het eerst op en betalen dan terug), dus de extra berichten stoppen direct.",
         "p5": "<b>Zo vraag je het aan:</b> mail naar <a href=\"mailto:{email}\" dir=\"ltr\">{email}</a> vanaf elk willekeurig adres. Vermeld de naam van je ouderaccount (of school), en de datum en het bedrag van je betaalbewijs van Stripe. We reageren binnen 3 werkdagen.",
         "p6": "<b>Wanneer je het geld krijgt:</b> de terugbetaling gaat terug naar de kaart of rekening waarmee je hebt betaald. Banken hebben meestal 5 tot 10 werkdagen nodig om het te laten zien.",
-        "p7": "<b>Scholen die op factuur betalen:</b> de 14 dagen beginnen op de datum waarop de betaling bij ons binnenkomt. Betaald met een cheque? Dan betalen we terug per cheque of bankoverschrijving."
+        "p7": "<b>Scholen die op factuur betalen:</b> de 14 dagen beginnen op de datum waarop de betaling bij ons binnenkomt. Betaald met een cheque? Dan betalen we terug per cheque of bankoverschrijving.",
+        "p8": "<b>Gratis proefperiodes:</b> de gratis proefperiode van een Leerkracht-abonnement kost niets en stopt vanzelf als er geen kaart wordt toegevoegd. Voeg je een kaart toe, dan wordt de eerste betaling aan het einde van de proefperiode afgeschreven, en dan beginnen de 14 dagen."
       },
       "sparks": {
         "h": "Vonkpakketten",
@@ -999,7 +1000,7 @@
         "li2": "<b>Wat we bewaren als een school een factuur aanvraagt:</b> het aantal plaatsen, het inkoopordernummer, de naam en het e-mailadres van de contactpersoon voor facturatie, het factuuradres van de school, of de school zegt dat ze is vrijgesteld van belasting, en een eventuele opmerking.",
         "li3": "<b>Wat naar Stripe gaat:</b> als we de facturen van de school aanmaken, worden de naam van de school, het e-mailadres van de contactpersoon voor facturatie, het factuuradres en het inkoopordernummer opgeslagen bij Stripe, dat de facturen verstuurt. De naam van de contactpersoon, de opmerking en het antwoord over belastingvrijstelling blijven alleen bij ons. Er wordt niets verstuurd totdat we de facturen aanmaken. Een school die met een kaart betaalt, typt haar naam en factuuradres in plaats daarvan op de pagina van Stripe.",
         "li4": "<b>Hoe lang:</b> de naam en het e-mailadres van de contactpersoon, het adres, de opmerking en het inkoopordernummer in onze database worden <b>2 jaar</b> nadat de aanvraag is afgesloten verwijderd. Stripe bewaart het adres van de school en het inkoopordernummer bij de facturen (zie hieronder).",
-        "li5": "<b>Plaatsen</b> worden geteld op basis van het aantal actieve leerlingen. Voor de facturatie worden geen namen of werk van leerlingen gebruikt.",
+        "li5": "<b>Plaatsen</b> worden geteld in leerkrachten: de schoolbeheerders kiezen welke leerkrachten er een hebben. De facturering gebruikt geen namen of werk van leerlingen.",
         "li6": "<b>Gezinnen zien nooit wat er in de klas gebeurt:</b> een volwassene die aan een leerling gekoppeld is, ziet alleen de extra gezinsberichten van die leerling.",
         "li7": "<b>Een schoolabonnement aanvragen:</b> een leerkracht kan de schoolbeheerders om een schoolabonnement vragen. We bewaren welke leerkracht het vroeg, voor welke school en wanneer, nooit een bericht. De schoolbeheerders zien wie het vroeg totdat ze het verzoek wegklikken of de school een abonnement krijgt, en we verwijderen het <b>90 dagen</b> daarna. Leerkrachten zien alleen of hun school een abonnement heeft."
       },
@@ -2276,7 +2277,8 @@
         "classText": "De Bouwer van je klas rust voor vandaag. Vraag je leraar wanneer je weer kunt bouwen.",
         "resting": "De Bouwer rust nu even voor iedereen. Je spel is bewaard.",
         "getSpark": "Neem een Vonkpakket",
-        "back": "Er zijn nieuwe berichten aan de Bouwer. Veel bouwplezier!"
+        "back": "Er zijn nieuwe berichten aan de Bouwer. Veel bouwplezier!",
+        "teacherText": "Jij en je klassen hebben de berichten aan de Bouwer van vandaag uit je Leerkracht-abonnement gebruikt. Morgen komen er nieuwe!"
       },
       "mic": {
         "start": "Praten in plaats van typen",
@@ -2864,7 +2866,61 @@
       "freeH": "Gratis voor elke school",
       "free": "Alle spellen, klassen, lessen en cursussen, inlogkaarten, voortgang en live klassenspellen, plus {free} gratis Builder-berichten per dag voor elke leerling, net als voor iedereen op Oomba Academy.",
       "addsH": "Een schoolabonnement voegt toe",
-      "adds": "Meer Builder-berichten: elke betaalde leerling voegt {perSeat} per jaar toe aan een voorraad die de hele school deelt. Verder verandert er niets, en leerlingen wordt nooit gevraagd te betalen."
+      "adds": "Meer Builder-berichten: elke betaalde leerling voegt {perSeat} per jaar toe aan een voorraad die de hele school deelt. Verder verandert er niets, en leerlingen wordt nooit gevraagd te betalen.",
+      "tp": {
+        "teachersN": "{count, plural, one {# leerkracht} other {# leerkrachten}}",
+        "active": "{count, plural, one {Leerkracht-abonnement voor # leerkracht.} other {Leerkracht-abonnementen voor # leerkrachten.}}",
+        "trialing": "Gratis proefperiode tot {date}. Voeg een kaart toe via Facturering beheren om de plaatsen te houden. Zonder kaart stopt de proefperiode gewoon.",
+        "waits": "De nieuwe plaatsen kunnen worden gegeven zodra de betaling rond is.",
+        "grant": "Een gratis abonnement van Oomba Academy tot {date}.",
+        "price": "{price} per leerkracht per jaar, zonder kosten per leerling. Elke leerkracht met een plaats krijgt het Leerkracht-abonnement: onbeperkt leerlingen en {daily} berichten aan de Bouwer per dag voor hun klassen.",
+        "seatsLabel": "Aantal leerkrachten",
+        "seatsHint": "Jullie hebben er nu {teachers}.",
+        "total": "{seats} leerkrachten × {price} = {total} per jaar (plus eventuele belasting)",
+        "trial": "Begin met de gratis proefperiode van {days} dagen (geen kaart nodig)",
+        "renewal": "Jullie abonnement wordt op {date} verlengd voor {seats}. Jullie hebben er nu {teachers}.",
+        "renewalButton": "Leerkrachten voor volgend jaar instellen",
+        "adds": "Elke leerkracht met een plaats krijgt onbeperkt leerlingen en {daily} berichten aan de Bouwer per dag voor hun klassen. Leerlingen wordt nooit gevraagd te betalen.",
+        "legacyH": "Oud abonnement.",
+        "legacy": "Het abonnement van jullie school wordt per leerling berekend. Het houdt die prijs bij verlenging. Schrijf ons als jullie willen overstappen op plaatsen voor leerkrachten.",
+        "pay": {
+          "heading": "Leerkracht-abonnementen voor jullie leerkrachten",
+          "button": "Doorgaan"
+        },
+        "change": {
+          "heading": "Aantal leerkrachten wijzigen",
+          "text": "Meer leerkrachten worden nu gefactureerd, voor de rest van dit jaar. Minder leerkrachten gaan in bij de verlenging.",
+          "button": "Leerkrachten wijzigen"
+        },
+        "seats": {
+          "h": "Wie een plaats heeft",
+          "text": "{used} van de {seats} plaatsen gegeven. Een leerkracht met een plaats krijgt het Leerkracht-abonnement voor al zijn of haar klassen.",
+          "own": "(heeft een eigen Leerkracht-abonnement)",
+          "waiting": "(wacht op een vrije plaats)",
+          "give": "Plaats geven",
+          "take": "Terugnemen",
+          "full": "Alle plaatsen zijn gegeven. Voeg hierboven plaatsen toe om er meer te geven."
+        },
+        "seat": {
+          "given": "Plaats gegeven.",
+          "taken": "Plaats teruggenomen."
+        },
+        "seatsDone": {
+          "raised": "Klaar: {count, plural, one {# leerkracht} other {# leerkrachten}}.",
+          "pending": "De kaartbetaling is niet gelukt, dus het aantal leerkrachten blijft hetzelfde. Werk de kaart bij via Facturering beheren en probeer het opnieuw.",
+          "scheduled": "Volgend jaar: {count, plural, one {# leerkracht} other {# leerkrachten}}.",
+          "cleared": "Volgend jaar blijft het {count, plural, one {# leerkracht} other {# leerkrachten}}."
+        },
+        "errors": {
+          "notStaff": "Alleen leerkrachten en schoolbeheerders van deze school kunnen een plaats hebben.",
+          "noSeats": "Jullie school heeft nog geen plaatsen voor leerkrachten.",
+          "full": "Alle plaatsen zijn gegeven. Voeg eerst plaatsen toe.",
+          "noSeat": "Die leerkracht heeft geen plaats.",
+          "minSeats": "Typ een heel getal van 1 tot {max}.",
+          "entitled": "Jullie school heeft al een abonnement. Wijzig in plaats daarvan het aantal leerkrachten.",
+          "trialUsed": "Jullie school heeft haar gratis proefperiode al gehad."
+        }
+      }
     },
     "pick": {
       "title": "Je scholen",
@@ -3736,7 +3792,7 @@
   },
   "plans": {
     "title": "Abonnementen en prijzen",
-    "description": "Abonnementen van Oomba Academy: Gratis, Basis, Gezin en School. Alle games spelen is altijd gratis.",
+    "description": "Abonnementen van Oomba Academy: Gratis, Basic, Gezin, Leerkracht en School. Alle spellen spelen is altijd gratis.",
     "heading": "Abonnementen",
     "intro": "Alle games spelen is gratis, en bouwen met de gratis dagelijkse berichten aan de Bouwer ook. Een abonnement geeft elke maand extra berichten aan de Bouwer.",
     "interval": {
@@ -3785,12 +3841,12 @@
     },
     "school": {
       "name": "School",
-      "tagline": "Voor klassen en hele scholen",
-      "per": "per leerling per jaar",
-      "min": "Voor minstens {min} leerlingen",
-      "li1": "{perSeat, plural, one {# bericht aan de Bouwer} other {# berichten aan de Bouwer}} per jaar voor elke betaalde leerling, gedeeld door de hele school",
-      "li2": "Klassen bouwen met de eigen pot van de school",
-      "li3": "Betaal met kaart of vraag een factuur aan",
+      "tagline": "Leerkracht-abonnementen voor een hele school",
+      "per": "per leerkracht per jaar",
+      "min": "Factuur of inkooporder mogelijk",
+      "li1": "Een Leerkracht-abonnement voor elke leerkracht: onbeperkt leerlingen en {daily} AI-bouwsels per dag voor hun klassen",
+      "li2": "Schoolbeheerders geven de plaatsen aan leerkrachten",
+      "li3": "Betaal met een kaart, of vraag een factuur of inkooporder aan",
       "get": "Neem een schoolabonnement",
       "manage": "Schoolabonnement beheren"
     },
@@ -3803,8 +3859,8 @@
     "staff": {
       "button": "Voor gezinnen",
       "heading": "Basis en Gezin zijn voor gezinnen",
-      "text": "Een ouder of verzorger koopt ze met een ouderaccount. Voor je klassen is er een schoolabonnement, dat voor alle leerlingen geldt.",
-      "toSchool": "Bekijk het schoolabonnement"
+      "text": "Een ouder of voogd koopt ze met een account voor volwassenen. Voor je klassen is er het Leerkracht-abonnement.",
+      "toSchool": "Bekijk het Leerkracht-abonnement"
     },
     "fine": {
       "h": "Goed om te weten",
@@ -3813,12 +3869,12 @@
     },
     "schools": {
       "title": "Schoolabonnementen",
-      "description": "Schoolabonnementen op Oomba Academy: een gedeelde pot berichten aan de Bouwer voor je leerlingen en leerkrachten, te betalen met kaart of op factuur.",
+      "description": "Oomba Academy voor scholen: het Leerkracht-abonnement voor elk van je leerkrachten, één prijs per leerkracht per jaar, met een kaart of op factuur.",
       "heading": "Oomba Academy voor scholen",
-      "intro": "Met een schoolabonnement krijgen je leerlingen en leerkrachten een gedeelde pot berichten aan de Bouwer, zodat klassen nooit hoeven te wachten op de gratis berichten.",
+      "intro": "Scholen kopen het Leerkracht-abonnement voor hun leerkrachten: één prijs per leerkracht per jaar, met onbeperkt leerlingen en geen kosten per leerling.",
       "what": {
         "h": "Wat een school krijgt",
-        "p1": "Schoolbeheerders zien het abonnement, de betaalde leerlingen en de pot op het tabblad Facturatie van de school. Gezinnen zien nooit iets uit de klas."
+        "p1": "Schoolbeheerders zien het abonnement en geven de plaatsen aan leerkrachten op het tabblad Facturering van de school. Gezinnen zien nooit iets uit de klas."
       },
       "how": {
         "h": "Zo zet je een school op",
@@ -3835,9 +3891,9 @@
       },
       "calc": {
         "h": "Wat zou het kosten?",
-        "label": "Aantal leerlingen",
+        "label": "Aantal leerkrachten",
         "button": "Reken het uit",
-        "result": "{seats, plural, one {# leerling} other {# leerlingen}} × {price} = {total} per jaar",
+        "result": "{seats, plural, one {# leerkracht} other {# leerkrachten}} × {price} = {total} per jaar",
         "min": "Een schoolabonnement is voor minstens {min} leerlingen, dus een kleinere school betaalt voor {min}.",
         "tax": "Prijzen zijn in Amerikaanse dollars en exclusief btw.",
         "print": "Stuur dit naar mijn schoolbeheerder",
@@ -3850,15 +3906,117 @@
         "printButton": "Printen of als pdf bewaren",
         "back": "Terug naar schoolabonnementen",
         "cost": "Wat het kost",
-        "perStudent": "Prijs per leerling, per jaar",
+        "perStudent": "Prijs per leerkracht, per jaar",
         "minimum": "Kleinste abonnement",
         "minimumN": "{min, plural, one {# leerling} other {# leerlingen}}",
-        "students": "Leerlingen",
+        "students": "Leerkrachten",
         "total": "Totaal per jaar",
         "estimate": "Dit is een schatting op {date}, geen factuur. Prijzen zijn in Amerikaanse dollars en exclusief btw.",
         "setup": "Zo zet je het op",
         "li1": "Zet de school op (gratis): vul het korte formulier in op {url}.",
         "contact": "Vragen? Mail naar {email}."
+      }
+    },
+    "teacher": {
+      "name": "Leerkracht",
+      "tagline": "Voor één leerkracht en al zijn of haar klassen",
+      "per": "per leerkracht per jaar",
+      "trial": "{days} dagen gratis proberen, zonder kaart",
+      "li1": "Onbeperkt leerlingen, geen kosten per leerling",
+      "li2": "{daily} AI-bouwsels per dag voor de klas",
+      "li3": "Geldt voor al je klassen",
+      "li4": "Altijd opzegbaar",
+      "start": "Gratis proberen",
+      "manage": "Mijn Leerkracht-abonnement"
+    },
+    "trial": {
+      "title": "Leerkracht-abonnement",
+      "heading": "Probeer het Leerkracht-abonnement {days} dagen gratis",
+      "lead": "Alles wat je klassen nodig hebben: onbeperkt leerlingen en {daily} AI-bouwsels per dag voor de klas. Je hebt geen kaart nodig om te beginnen.",
+      "price": "Na de proefperiode {price} per jaar per leerkracht. Geen kosten per leerling.",
+      "li1": "Onbeperkt leerlingen in al je klassen",
+      "li2": "{daily} berichten aan de Bouwer per dag, gedeeld door jou en je klassen",
+      "li3": "Geen kaart nodig. Voeg je er geen toe, dan stopt het abonnement gewoon aan het einde van de proefperiode: je klassen en hun werk blijven.",
+      "li4": "Eén prijs per leerkracht, altijd opzegbaar",
+      "email": "Je werk-e-mailadres",
+      "emailHint": "Stripe, onze betaalprovider, stuurt hierheen de herinnering voor het einde van de proefperiode en je bonnen.",
+      "cancelled": "Er is niets gestart. Je kunt je proefperiode beginnen wanneer je wilt.",
+      "notOpen": "Het Leerkracht-abonnement is nog niet beschikbaar. Kom snel terug.",
+      "subscribe": "Leerkracht-abonnement nemen",
+      "already": "Je hebt het Leerkracht-abonnement al.",
+      "welcome": "🎉 Je Leerkracht-abonnement staat aan. Maak een klas en voeg je leerlingen toe: jij en je klassen delen {daily} berichten aan de Bouwer per dag.",
+      "teachersN": "{count, plural, one {# leerkracht} other {# leerkrachten}}",
+      "forTeachers": {
+        "h": "Het Leerkracht-abonnement is voor leerkrachten",
+        "p": "Het is voor leerkrachten en hun klassen, en vraagt een leerkrachtaccount. Gezinnen hebben hun eigen abonnementen.",
+        "link": "Bekijk de abonnementen voor gezinnen"
+      },
+      "school": {
+        "h": "Een gratis proefperiode voor je school",
+        "p": "Start een gratis proefperiode van {days} dagen met Leerkracht-abonnementen voor {school}: {seats}. Geen kaart nodig. Na de proefperiode {price} per leerkracht per jaar.",
+        "start": "Gratis proefperiode van de school starten",
+        "billing": "Naar het tabblad Facturering"
+      },
+      "used": {
+        "h": "Je hebt je gratis proefperiode al gehad",
+        "p": "Elke leerkracht, elk e-mailadres en elke school kan het abonnement één keer proberen. Je kunt het nog steeds nemen voor {price} per jaar.",
+        "school": "Je school heeft haar gratis proefperiode al gehad. Plaatsen voor leerkrachten neem je op het tabblad Facturering van de school."
+      },
+      "start": {
+        "h": "Start je gratis proefperiode van {days} dagen",
+        "button": "Mijn gratis proefperiode starten",
+        "note": "Je bevestigt op de pagina van Stripe. Voor de proefperiode is geen kaart nodig."
+      },
+      "signup": {
+        "h": "Maak je leerkrachtaccount",
+        "lead": "Je account, je klaslokaal en je gratis proefperiode in één keer. Heb je al een leerkrachtaccount? <a href=\"{login}\">Log in</a>.",
+        "name": "Je naam, zoals je leerlingen hem zien",
+        "nameHint": "Bijvoorbeeld: juf Rivera",
+        "school": "De naam van je school",
+        "username": "Kies een gebruikersnaam",
+        "password": "Kies een wachtwoord",
+        "passwordHint": "Minstens {min} tekens.",
+        "adult": "Ik ben leerkracht of werk op een school, en ik ben 18 jaar of ouder.",
+        "submit": "Account maken en proefperiode starten",
+        "privacy": "We bewaren je werk-e-mailadres niet bij je account: het gaat naar Stripe voor je abonnement. <a href=\"{privacy}\">Privacybeleid</a>"
+      },
+      "errors": {
+        "signedIn": "Je bent al ingelogd.",
+        "name": "Typ je naam (2 tot 60 tekens).",
+        "school": "Typ de naam van je school.",
+        "email": "Typ je werk-e-mailadres.",
+        "password": "Gebruik minstens {min} tekens.",
+        "adult": "Bevestig dat je leerkracht bent of op een school werkt, en 18 jaar of ouder bent.",
+        "notTeacher": "Voor het Leerkracht-abonnement heb je een leerkrachtaccount nodig.",
+        "entitled": "Je hebt het Leerkracht-abonnement al.",
+        "fixPayment": "Je abonnement wacht op een betaling. Los het op via Facturering beheren op Mijn klassen.",
+        "trialUsed": "Deze gratis proefperiode is al gebruikt.",
+        "noPrice": "Het Leerkracht-abonnement is nu niet te koop. Probeer het later nog eens.",
+        "paying": "Er is al een betaling onderweg. Wacht even een minuut.",
+        "minSeats": "Typ een heel aantal leerkrachten van 1 tot {max}.",
+        "noCustomer": "Er is nog geen facturering om te beheren."
+      },
+      "thanks": {
+        "wait": "⏳ Je Leerkracht-abonnement wordt gestart…",
+        "slow": "Dit duurt langer dan normaal. Je abonnement verschijnt over een minuut op Mijn klassen.",
+        "back": "Naar Mijn klassen"
+      },
+      "card": {
+        "heading": "Leerkracht-abonnement",
+        "grant": "Een gratis Leerkracht-abonnement van Oomba Academy tot {date}.",
+        "trial": "Gratis proefperiode tot {date}.",
+        "ends": "Stopt op {date}.",
+        "renews": "Wordt verlengd op {date}.",
+        "seat": "Een plaats van {school}.",
+        "pool": "Vandaag nog {left} van de {size} berichten aan de Bouwer voor jou en je klassen.",
+        "ending": "{count, plural, =0 {Je gratis proefperiode eindigt vandaag.} one {Je gratis proefperiode eindigt over # dag.} other {Je gratis proefperiode eindigt over # dagen.}} Voeg een kaart toe om het Leerkracht-abonnement te houden. Zonder kaart stopt het gewoon, en je klassen blijven.",
+        "addCard": "Kaart toevoegen",
+        "manage": "Facturering beheren",
+        "pending": "Je betaling is onderweg. Het abonnement start zodra die binnen is.",
+        "fix": "Je Leerkracht-abonnement wacht op een betaling. Werk je kaart bij via Facturering beheren.",
+        "tryText": "Onbeperkt leerlingen en {daily} AI-bouwsels per dag voor je klassen. {days} dagen gratis, zonder kaart.",
+        "getText": "Onbeperkt leerlingen en {daily} AI-bouwsels per dag voor je klassen.",
+        "try": "{days} dagen gratis proberen"
       }
     }
   },
@@ -3992,7 +4150,7 @@
       "h": "Zet je school op (gratis)",
       "p1": "Spelen is gratis voor iedereen, en leerlingen kunnen meteen elke game proberen, zonder account.",
       "p2": "Voor klassen, lessen en schoolaccounts mail je naar {email} met de naam van je school en wie de school gaat beheren. Wij zetten je school en het account van je schoolbeheerder op, en die voegt leerkrachten en leerlingen toe. Een school opzetten is gratis.",
-      "plans": "Meer berichten aan de Bouwer voor je klassen? Een schoolabonnement geeft je leerlingen en leerkrachten een gedeelde pot.",
+      "plans": "Meer voor je klassen? Probeer het Leerkracht-abonnement {days} dagen gratis, zonder kaart: onbeperkt leerlingen en {daily} AI-bouwsels per dag voor de klas.",
       "email": "Mail ons om je school op te zetten",
       "subject": "Mijn school opzetten op Oomba Academy",
       "plansLink": "Schoolabonnementen"
@@ -4018,7 +4176,9 @@
       "a8": "Ja. Lessen houden de voortgang, scores in games en geschreven antwoorden van elke leerling bij. Je ziet ze op het tabblad Voortgang van de klas, en je kunt de lesvoortgang van elke leerling downloaden als spreadsheet (CSV).",
       "q9": "Welke talen zijn er?",
       "a9": "{count} talen, waaronder Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest een eigen taal.",
-      "a4google": "Leerlingen typen nooit een e-mailadres, en we vragen nooit naar hun leeftijd of woonadres. Als je school Inloggen met Google gebruikt, bewaren we het Google-mailadres van school van elke leerling alleen om het account te herkennen. Er is geen reclame en er zijn geen trackingcookies. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren."
+      "a4google": "Leerlingen typen nooit een e-mailadres, en we vragen nooit naar hun leeftijd of woonadres. Als je school Inloggen met Google gebruikt, bewaren we het Google-mailadres van school van elke leerling alleen om het account te herkennen. Er is geen reclame en er zijn geen trackingcookies. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren.",
+      "q1paid": "Is Oomba Academy gratis voor leerkrachten?",
+      "a1paid": "Spelen, klassen, lessen, voortgang en Oomba Live zijn gratis, en elke leerling krijgt elke dag gratis berichten aan de Bouwer. Het optionele Leerkracht-abonnement geeft je klassen een gedeelde dagelijkse voorraad AI-bouwsels, met onbeperkt leerlingen. Probeer het 14 dagen gratis, zonder kaart. De prijzen staan op de pagina met abonnementen."
     },
     "setup": {
       "lead": "Vertel ons iets over je school. We zetten hem binnen 1 schooldag op en sturen je per e-mail wat je daarna moet doen. Een school opzetten is gratis.",
@@ -6317,18 +6477,9 @@
       "about": "Programmeer een robot, los raadsels op met data, stuur berichten door een stad en kijk in de apparaten die we elke dag gebruiken. Elke stap is een korte les, een snelle check en dan een spelmodule.",
       "teachers": "Bij elk spel horen lesplannen voor een les van 45 minuten, met live opwarmers, exitvragen en een overzicht van de standaarden voor je klas."
     },
-    "cd": {
-      "title": "Cyber Defenders",
-      "sub": "Cyberveiligheid en veilig online · groep 5 tot en met klas 2"
-    },
-    "nq": {
-      "title": "Number Quest",
-      "sub": "Rekenen in de Numberworks · groep 5 tot en met 7"
-    },
     "back": "Terug naar {course}",
     "step": "{course} · spel {n} van {total}",
     "stepsDone": "{n} van {total} stappen klaar",
-    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}",
     "band": {
       "h": "Kies je niveau",
       "text": "Je kunt het later op deze pagina veranderen.",
@@ -6391,7 +6542,16 @@
       "passed": "Gehaald! {score} van de {total} goed.",
       "failed": "{score} van de {total} goed. Bekijk de goede antwoorden en probeer het opnieuw."
     },
-    "play": "Speel: {game} · {chapter}"
+    "play": "Speel: {game} · {chapter}",
+    "cd": {
+      "title": "Cyber Defenders",
+      "sub": "Cyberveiligheid en veilig online · groep 5 tot en met klas 2"
+    },
+    "nq": {
+      "title": "Number Quest",
+      "sub": "Rekenen in de Numberworks · groep 5 tot en met 7"
+    },
+    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}"
   },
   "move": {
     "title": "Beweegpauzes",
@@ -6591,11 +6751,258 @@
     },
     "notice": {
       "approved": "Goed nieuws! ‘{title}’ is goedgekeurd door het Oomba-team, dus nu kunnen meer mensen het spelen.",
-      "sentBack": "‘{title}’ heeft een paar veranderingen nodig voordat iedereen het kan spelen."
+      "sentBack": "‘{title}’ heeft een paar veranderingen nodig voordat iedereen het kan spelen.",
+      "trialEnding": "De gratis proefperiode van je Leerkracht-abonnement eindigt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}}. Om het te houden, voeg je hier een kaart toe: {href} Zonder kaart stopt het abonnement gewoon en blijven je klassen.",
+      "trialEnded": "De gratis proefperiode van je Leerkracht-abonnement is voorbij. Je klassen, leerlingen en hun spellen zijn er allemaal nog. Je kunt het abonnement hier weer nemen: {href}",
+      "trialConverted": "Bedankt! Je Leerkracht-abonnement staat een jaar aan."
     },
     "link": {
       "new": "{count, plural, one {# nieuw bericht van het Oomba-team} other {# nieuwe berichten van het Oomba-team}}",
       "open": "Berichten van het Oomba-team"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "Maak van je lesplannen klassengames · Oomba Academy",
+      "description": "Spelend leren voor leerkrachten: plak een les of upload een pdf en de AI-Bouwer maakt er een interactieve game voor de klas van. 14 dagen gratis, zonder creditcard.",
+      "imageAlt": "Oomba Academy voor leerkrachten: maak van je lesplannen games die je klas wil spelen."
+    },
+    "nav": {
+      "label": "Site voor leerkrachten",
+      "home": "Oomba Academy home",
+      "skip": "Naar de inhoud",
+      "how": "Zo werkt het",
+      "builder": "Bouwer",
+      "courses": "Cursussen",
+      "live": "Live games",
+      "pricing": "Prijzen",
+      "faq": "Vragen",
+      "signIn": "Inloggen",
+      "justPlay": "Gewoon spelen",
+      "trial": "Gratis proberen",
+      "trialShort": "Gratis proberen"
+    },
+    "hero": {
+      "kicker": "Voor leerkrachten · groep 5 tot en met de tweede klas",
+      "h1": "Maak van je lesplannen games die je klas steeds weer wil spelen",
+      "lead": "Plak een les, upload een pdf of beschrijf gewoon een idee. De AI-Bouwer van Oomba maakt er een interactieve game van die je live op het digibord speelt of aan je klas geeft.",
+      "cta": "Start je gratis proef van 14 dagen",
+      "how": "Bekijk hoe het werkt",
+      "trustCard": "Geen creditcard nodig",
+      "trustCancel": "Altijd opzegbaar",
+      "trustStudents": "Onbeperkt leerlingen"
+    },
+    "facts": {
+      "games": "kant-en-klare leergames",
+      "courses": "complete cursussen met lesplannen",
+      "languages": "talen voor leerlingen en leerkrachten",
+      "installs": "installaties: het werkt in de browser"
+    },
+    "demo": {
+      "label": "Illustratie: een les die een game wordt",
+      "lessonTag": "Jouw les",
+      "lessonTitle": "Gelijkwaardige breuken · groep 6",
+      "lessonBody": "Leerlingen laten met pizza’s, stroken en getallenlijnen zien dat 1/2, 2/4 en 4/8 evenveel zijn. Exit ticket: drie korte vragen.",
+      "file": "les-breuken.pdf",
+      "builderTag": "AI-Bouwer",
+      "step1": "Leest je les",
+      "step2": "Ontwerpt de levels",
+      "step3": "Test op telefoon, tablet en computer",
+      "step4": "Klaar om te spelen",
+      "gameTag": "Jouw game",
+      "gameMeta": "Klaar om live te spelen of klaar te zetten",
+      "host": "Live spelen",
+      "assign": "Klaarzetten",
+      "credit": "Beeld uit Fraction Factory, een van de kant-en-klare games van Oomba."
+    },
+    "how": {
+      "kicker": "Zo werkt het",
+      "h": "Van lesplan naar game in drie stappen",
+      "lead": "Geen programmeren, geen ontwerpen. Als je je les kunt beschrijven, kun je hem speelbaar maken.",
+      "s1": {
+        "h": "Neem je les mee",
+        "p": "Plak de tekst van je les, upload een pdf, een afbeelding of een tekstbestand, of beschrijf in je eigen woorden wat je klas moet oefenen."
+      },
+      "s2": {
+        "h": "De Bouwer maakt de game",
+        "p": "Hij schrijft de game en test hem daarna zelf op telefoon-, tablet- en computerformaat. Vraag om wijzigingen in gewone woorden: ‘maak het moeilijker’, ‘voeg een timer toe’."
+      },
+      "s3": {
+        "h": "Speel het op jouw manier",
+        "p": "Speel hem live op het digibord, deel hem alleen met je eigen klassen of zet hem in een les met een inleverdatum en zie de voortgang van elke leerling."
+      }
+    },
+    "builder": {
+      "kicker": "De AI-Bouwer",
+      "h": "Je les erin, een echte game eruit",
+      "lead": "Praat met de Bouwer zoals met een onderwijsassistent die toevallig games maakt. Elke versie wordt bewaard, dus je kunt altijd terug.",
+      "you": "Jij",
+      "msg": "Maak van deze les een game voor mijn groep 6. Tien minuten, drie levels, en eindig met de vragen van het exit ticket.",
+      "bot": "Klaar! Versie 1 staat klaar: drie levels, makkelijkste eerst, met het exit ticket aan het eind. Druk op Spelen om hem te proberen.",
+      "li1": "Begrijpt lesteksten en de pdf’s, afbeeldingen en tekstbestanden die je uploadt",
+      "li2": "Antwoordt in jouw taal, en in die van elke leerling",
+      "li3": "Test elke versie op telefoon-, tablet- en computerformaat",
+      "li4": "Privé tot je hem deelt: alleen jij, je klassen of, nadat iemand van ons team hem heeft bekeken, iedereen",
+      "li5": "Leerlingen kunnen ook bouwen: een game beschrijven, testen en verbeteren is plannen, schrijven en debuggen, zonder code",
+      "shotAlt": "De Oomba Studio: links meldt de chat van de Bouwer dat versie 2 klaar is, rechts draait de game in een voorbeeld op telefoonformaat.",
+      "caption": "De echte Studio: links de Bouwer, rechts jouw game."
+    },
+    "courses": {
+      "kicker": "Kant-en-klare cursussen",
+      "h": "Complete cursussen, vanaf dag één klaar",
+      "lead": "Korte dia’s, snelle checks en gamemissies op één pad. Leerlingen werken in hun eigen tempo; jij ziet de voortgang in het cijferoverzicht.",
+      "nq": {
+        "name": "Number Quest",
+        "tag": "Rekenen · groep 5 tot en met 7",
+        "p": "Plaatswaarde, breuken, meten, vormen en data in het Numberworks van Netville, met Tally de kat. Elke stap is gekoppeld aan de Common Core State Standards voor wiskunde."
+      },
+      "cs": {
+        "name": "CS Quest",
+        "tag": "Informatica · groep 5 tot en met de tweede klas",
+        "p": "Een compleet programma dat ook een leerkracht zonder informaticakennis kan geven: lessen van 45 minuten, elk met een plan, een gamehoofdstuk, een live warming-up en een exit ticket. CSTA-niveaus 1B en 2."
+      },
+      "cd": {
+        "name": "Cyber Defenders",
+        "tag": "Online veiligheid",
+        "p": "Hoe berichten reizen, hoe codes ze beschermen, wat privé blijft en hoe je een truc herkent, met Pim de uil op het postkantoor van Netville. Elke stap is gekoppeld aan de CYBER.ORG-standaarden."
+      },
+      "link": "Handleiding voor leerkrachten"
+    },
+    "live": {
+      "kicker": "Live klassengames",
+      "h": "Zet het digibord aan",
+      "lead": "Warming-ups en exit tickets waar je klas echt naar uitkijkt. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
+      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math en meer",
+      "li2": "Gebruik een kant-en-klare vragenset, typ je eigen of laat AI een concept maken dat je aanpast",
+      "li3": "Scores komen direct in je cijferoverzicht",
+      "li4": "Alleen ingelogde leerlingen: geen chat, geen typen, geen verzonnen namen",
+      "shotAlt": "De wachtruimte van een live Question Battle: vijf leerling-avatars wachten terwijl het grote scherm de spelcode en een QR-code toont.",
+      "link": "Zo werken live games"
+    },
+    "why": {
+      "kicker": "Waarom games werken",
+      "h": "Plezier is de route. Leren is het doel.",
+      "lead": "Goede leergames leunen op een paar goed onderzochte ideeën uit de leerwetenschap.",
+      "b1": {
+        "h": "Ophalen uit het geheugen",
+        "p": "Antwoorden om te winnen haalt kennis terug uit het geheugen, en iets ophalen is een van de betrouwbaarste manieren om het te onthouden."
+      },
+      "b2": {
+        "h": "Directe feedback",
+        "p": "Elk antwoord krijgt meteen een reactie, zodat fouten worden hersteld terwijl het denkwerk nog vers is."
+      },
+      "b3": {
+        "h": "Herhalen zonder druk",
+        "p": "‘Nog één rondje’ voelt als spelen, niet als een werkblad, dus leerlingen oefenen meer, zonder de druk van een cijfer."
+      },
+      "b4": {
+        "h": "Iedereen doet mee",
+        "p": "Een game geeft elke leerling een beurt, ook wie zelden een vinger opsteekt."
+      },
+      "b5": {
+        "h": "Maken is leren",
+        "p": "Wie een game over een onderwerp bouwt, moet het goed genoeg snappen om het aan een computer uit te leggen."
+      },
+      "sources": "Verder lezen"
+    },
+    "safety": {
+      "kicker": "Veiligheid en privacy",
+      "h": "Gemaakt voor de klas, veilig vanaf het ontwerp",
+      "lead": "Voor kinderen van 8 tot 14, met jouw klassen onder jouw controle.",
+      "li1": "Geen advertenties en geen advertentie- of trackingcookies",
+      "li2": "Leerlingen hebben nooit een e-mailadres nodig, en we vragen nooit naar leeftijd of adres",
+      "li3": "De echte naam van een leerling, als je die toevoegt, ziet alleen het personeel van je school",
+      "li4": "Jij keurt goed wie bij je klassen komt, en geen leerling kan chatten met vreemden",
+      "li5": "Elke game draait in een afgesloten sandbox, en iemand van ons team bekijkt elke game voordat die openbaar wordt",
+      "li6": "Wat leerlingen typen wordt gefilterd, en afbeeldingen die ze uploaden worden gecontroleerd en ontdaan van locatiegegevens",
+      "links": "Lees <a href=\"{safety}\">hoe we kinderen beschermen</a> en onze <a href=\"{privacy}\">privacyverklaring</a>."
+    },
+    "everywhere": {
+      "h": "Werkt waar je klas ook is",
+      "devices": "Chromebooks, iPads, laptops, telefoons en het digibord, gewoon in de browser. Niets te installeren.",
+      "languages": "{count} talen, waaronder Spaans, Arabisch, Portugees en Frans. Elke leerling kiest zijn eigen taal.",
+      "voicesH": "Voorlezen",
+      "voices": "Natuurlijke AI-stemmen lezen elke officiële game voor."
+    },
+    "pricing": {
+      "kicker": "Prijzen",
+      "h": "Eén eenvoudige prijs per leerkracht. Alle leerlingen inbegrepen.",
+      "lead": "Nooit kosten per leerling. Probeer alles 14 dagen gratis.",
+      "teacher": {
+        "name": "Leerkracht",
+        "price": "Eén eenvoudige jaarprijs",
+        "priceShown": "{price} per jaar",
+        "trial": "14 dagen gratis · geen creditcard nodig",
+        "li1": "Onbeperkt leerlingen, geen kosten per leerling",
+        "li2": "300 AI-gamebouwsels per dag voor je klas",
+        "li3": "Alle cursussen, meer dan 30 kant-en-klare games en live klassengames",
+        "li4": "Klassen, lessen, voortgang en het cijferoverzicht",
+        "li5": "Elke taal, elk apparaat",
+        "cta": "Start je gratis proef",
+        "plans": "Bekijk abonnementen en prijzen"
+      },
+      "schools": {
+        "name": "Scholen en besturen",
+        "price": "Dezelfde prijs per leerkracht",
+        "priceShown": "{price} per leerkracht per jaar",
+        "li1": "Elke leerkracht krijgt het volledige Leerkracht-abonnement",
+        "li2": "Betalen per factuur of inkooporder",
+        "li3": "Schoolaccounts en inlogkaarten om te printen",
+        "li4": "We helpen je je school in te richten",
+        "cta": "Neem contact op",
+        "form": "Richt je school in",
+        "subject": "Oomba Academy voor onze school"
+      }
+    },
+    "faq": {
+      "h": "Vragen van leerkrachten",
+      "q1": "Wat is Oomba Academy?",
+      "a1": "Een platform voor spelend leren voor kinderen van 8 tot 14. Leerkrachten maken met een AI-Bouwer van hun eigen lessen interactieve games, spelen live klassengames en gebruiken kant-en-klare cursussen rekenen, informatica en online veiligheid.",
+      "q2": "Hoe werkt de gratis proef?",
+      "a2": "Start een gratis proef van 14 dagen zonder creditcard. Alles van het Leerkracht-abonnement zit erin zolang de proef loopt, en daarna beslis jij of je een abonnement neemt.",
+      "q3": "Betaal ik per leerling?",
+      "a3": "Nee. Eén jaarprijs per leerkracht dekt al je leerlingen. Er zijn geen kosten per leerling.",
+      "q4": "Wat kan ik in een game veranderen?",
+      "a4": "Bijna elke les: plak de tekst, upload een pdf, een afbeelding of een tekstbestand, of beschrijf het onderwerp en wat je klas moet oefenen. De Bouwer gebruikt je materiaal als basis en bouwt er een game omheen.",
+      "q5": "Hebben leerlingen een e-mailadres nodig?",
+      "a5": "Nee. Je kunt schoolaccounts voor je klas maken en inlogkaarten printen, zonder e-mail van leerlingen. En iedereen kan de gratis games meteen spelen.",
+      "q6": "Werkt het op Chromebooks en iPads?",
+      "a6": "Ja. Het werkt in elke actuele browser op Chromebooks, iPads en andere tablets, laptops, telefoons en digiborden, zonder iets te installeren.",
+      "q7": "Is het veilig voor mijn leerlingen?",
+      "a7": "Het is gemaakt voor kinderen van 8 tot 14: geen advertenties, geen trackingcookies, geen e-mail van leerlingen, geen chat met vreemden, gefilterde tekst, en iemand van ons team bekijkt elke game voordat die openbaar wordt.",
+      "q8": "Kan onze school betalen per factuur of inkooporder?",
+      "a8": "Ja. Scholen betalen dezelfde prijs per leerkracht per jaar, per factuur of inkooporder. Mail ons en we regelen het.",
+      "q9": "Welke talen zijn er?",
+      "a9": "{count} talen, waaronder Engels, Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest zijn eigen taal, en de Bouwer antwoordt daarin."
+    },
+    "final": {
+      "h": "Je volgende les kan de les zijn die ze nog een keer willen spelen",
+      "p": "14 dagen gratis. Geen creditcard, geen kosten per leerling.",
+      "cta": "Start je gratis proef van 14 dagen"
+    },
+    "play": {
+      "h": "Kom je spelen?",
+      "p": "Meer dan 30 leergames, gratis en zonder account.",
+      "cta": "Gewoon spelen"
+    },
+    "footer": {
+      "tagline": "Leergames voor kinderen van 8 tot 14, en een AI-Bouwer die lessen in games verandert.",
+      "teachers": "Voor leerkrachten",
+      "product": "Ontdek",
+      "about": "Over ons",
+      "parents": "Voor ouders",
+      "guide": "Handleiding voor leerkrachten",
+      "learn": "Leergames per vak",
+      "safety": "Veiligheid",
+      "privacy": "Privacy",
+      "terms": "Voorwaarden",
+      "refunds": "Terugbetalingen",
+      "plans": "Abonnementen en prijzen",
+      "contact": "Contact",
+      "languages": "Talen",
+      "theme": "Thema",
+      "dark": "Donker",
+      "light": "Licht"
     }
   },
   "teach": {
