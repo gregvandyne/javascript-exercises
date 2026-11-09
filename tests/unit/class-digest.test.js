@@ -333,3 +333,114 @@ test('/admin/emails: the weekly summary row, its switch, preview and test; admin
   }
   assert.equal(D.switchOn(), true);
 });
+
+// ---------------------------------------------------------------- review fixes
+test('schedule: empty and null day or hour are refused (400) and the saved value stays', async () => {
+  assert.ok(D.savePrefs(ana.id, { day: 2, hour: 9 }).ok);
+  for (const v of ['', null, ' ', true, '1.0', [], '-1', '07x']) {
+    assert.equal(D.savePrefs(ana.id, { day: v }).code, 'badDay', JSON.stringify(v));
+    assert.equal(D.savePrefs(ana.id, { hour: v }).code, 'badHour', JSON.stringify(v));
+  }
+  assert.deepEqual([D.prefsOf(ana.id).day, D.prefsOf(ana.id).hour], [2, 9]);
+  for (const body of [{ hour: '' }, { day: null }, { hour: null }, { day: '' }]) {
+    const r = await call(ana, '/api/me/digest', { method: 'POST', body });
+    assert.equal(r.status, 400, JSON.stringify(body));
+  }
+  assert.deepEqual([D.prefsOf(ana.id).day, D.prefsOf(ana.id).hour], [2, 9]);
+  assert.ok(D.savePrefs(ana.id, { day: '1', hour: 7 }).ok);
+});
+
+test('sending: moving the day after this week\'s summary went out sends no second one that week', async () => {
+  q.run('DELETE FROM digest_sends'); sent.length = 0;
+  const mon = anaSlot();
+  await D.runDue(mon.at + 60e3);
+  assert.equal(sent.filter(s => s.body.to[0] === 'ana@school.example').length, 1);
+  D.savePrefs(ana.id, { day: 3 });   // Wednesday, two days later
+  const wed = D.slotFor(D.prefsOf(ana.id), mon.at + 2 * DAY + 8 * H);
+  assert.notEqual(wed.week, mon.week);
+  await D.runDue(wed.at + 60e3);
+  assert.equal(sent.filter(s => s.body.to[0] === 'ana@school.example').length, 1, 'no second summary this week');
+  await D.runDue(wed.next + 60e3);
+  assert.equal(sent.filter(s => s.body.to[0] === 'ana@school.example').length, 2, 'the next one goes on the new day');
+  D.savePrefs(ana.id, { day: 1 });
+});
+
+test('sending: a retry sends the email rendered on the first try, byte for byte, even if the counts changed', async () => {
+  q.run('DELETE FROM digest_sends'); sent.length = 0;
+  replies = [500, 500, 500];
+  const a = anaSlot();
+  await D.runDue(a.at + 60e3);
+  assert.equal(rows(ana.id)[0].status, 'pending');
+  assert.ok(rows(ana.id)[0].message, 'kept while it waits');
+  const liveId = uid(10);
+  q.run("INSERT INTO live_runs(id, host_id, class_id, audience, mode, title, started_at, ended_at, players) VALUES (?,?,?,'class','quiz','Second',?,?,2)", liveId, ana.id, room.id, a.at, a.at + 60e3);
+  await D.runDue(a.at + 20 * 60e3);
+  assert.equal(rows(ana.id)[0].status, 'sent');
+  assert.equal(rows(ana.id)[0].message, null, 'cleared once sent');
+  const mine = sent.filter(x => x.body.to[0] === 'ana@school.example');
+  assert.equal(mine.length, 4);
+  assert.equal(new Set(mine.map(x => JSON.stringify([x.headers['Idempotency-Key'], x.body.subject, x.body.html, x.body.text]))).size, 1, 'the same key and the same body');
+  q.run('DELETE FROM live_runs WHERE id=?', liveId);
+});
+
+test('sending: a row still waiting more than 12 hours after its slot is closed as failed (late)', async () => {
+  q.run('DELETE FROM digest_sends'); sent.length = 0;
+  const a = anaSlot();
+  q.run("INSERT INTO digest_sends(user_id, week, slot_at, status, reason, attempts, claimed_at, message, created_at) VALUES (?,?,?,'pending','retry',1,?,'{}',?)", ana.id, a.week, a.at, a.at, a.at);
+  D.setSwitch(boss, false);   // even with sending switched off
+  const r = await D.runDue(a.at + D.LATE_MS + 60e3);
+  assert.deepEqual([rows(ana.id)[0].status, rows(ana.id)[0].reason, rows(ana.id)[0].message], ['failed', 'late', null]);
+  assert.equal(r.failed, 1);
+  assert.equal(D.sendCounts(0).status.pending || 0, 0);
+  D.setSwitch(boss, true);
+  assert.equal(sent.length, 0);
+});
+
+test('language: with no language on the account, the preview and the real email both use the one the teacher reads the site in', async () => {
+  q.run("UPDATE users SET lang='' WHERE id=?", ana.id);
+  q.run("UPDATE email_prefs SET digest_lang='' WHERE user_id=?", ana.id);
+  const de = await fetch(`${base}/teach/summary`, { headers: { cookie: cookieFor(ana.id), 'accept-language': 'de-DE,de;q=0.9' } });
+  assert.equal(de.status, 200);
+  const pv = await fetch(`${base}/teach/summary/email?format=text`, { headers: { cookie: cookieFor(ana.id), 'accept-language': 'de-DE,de;q=0.9' } });
+  const subject = (await pv.text()).split('\n')[0].replace(/^Subject: /, '');
+  assert.equal(D.mailLocale(auth.getUser(ana.id)), 'de');
+  const deSubject = renderDigest({ ...auth.getUser(ana.id) }, D.summaryFor(auth.getUser(ana.id)), anaSlot(), { locale: 'de' }).subject;
+  assert.equal(subject, deSubject);
+  q.run('DELETE FROM digest_sends'); sent.length = 0;
+  await D.runDue(anaSlot().at + 60e3);
+  const m = sent.find(s => s.body.to[0] === 'ana@school.example');
+  assert.equal(m.body.subject, subject, 'the email is in the same language as the preview');
+  // A cross-site link's ?lang= is not remembered.
+  await fetch(`${base}/teach/summary?lang=ja`, { headers: { cookie: cookieFor(ana.id), 'sec-fetch-site': 'cross-site' }, redirect: 'manual' });
+  assert.equal(D.mailLocale(auth.getUser(ana.id)), 'de');
+  q.run("UPDATE users SET lang='' WHERE id=?", ana.id);
+  q.run("UPDATE email_prefs SET digest_lang='' WHERE user_id=?", ana.id);
+});
+
+test('a class counts as active only from its current students\' work (not a teacher preview or a student who left)', () => {
+  const art = L.createLesson(ana, school.id, { title: 'Colour wheel' }).lesson;
+  const st = L.addStep(ana, art.id, { kind: 'text', title: 'Look', body: 'Colours.' }).step;
+  const acl = L.assign(ana, quiet.id, art.id, {}).classLesson;
+  const t0 = Date.now();
+  for (const who of [ana.id, bob.id]) q.run("INSERT INTO step_progress(class_lesson_id, step_id, user_id, status, started_at, updated_at) VALUES (?,?,?,'done',?,?)", acl.id, st.id, who, t0, t0);
+  const c = D.classSummary({ id: quiet.id, name: quiet.name }, t0 + 60e3, 'America/Chicago');
+  assert.equal(c.recent, 0); assert.equal(c.active, false);
+  q.run('DELETE FROM step_progress WHERE class_lesson_id=?', acl.id);
+  L.unassign(ana, acl.id);
+});
+
+test('no address: the notice mentions Google only where Google sign-in is set up', async () => {
+  const dee = S.createSchoolAccount(boss, school.id, { rosterName: 'Dee Teacher', role: 'teacher' }).user;
+  S.createClass(dee, school.id, { name: 'Dee Class' });
+  const saved = [config.googleClientId, config.googleClientSecret];
+  try {
+    config.googleClientId = ''; config.googleClientSecret = '';
+    for (const path of ['/me', '/teach/summary']) {
+      const r = await call(dee, path);
+      assert.ok(!/Connect Google/.test(r.text), path);
+      assert.match(r.text, /We don&#39;t have an email address for you yet, so no summary email goes out\.|We don't have an email address for you yet, so no summary email goes out\./, path);
+    }
+    config.googleClientId = '1234-abc.apps.googleusercontent.com'; config.googleClientSecret = 'x';
+    for (const path of ['/me', '/teach/summary']) assert.match((await call(dee, path)).text, /Connect Google/, path);
+  } finally { [config.googleClientId, config.googleClientSecret] = saved; }
+});

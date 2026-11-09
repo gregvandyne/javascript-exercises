@@ -7087,6 +7087,7 @@
       "next": "Seu e-mail de resumo sai toda semana: {when}.",
       "off": "O e-mail de resumo semanal está desligado. Você ainda pode ver esta página quando quiser.",
       "noAddress": "Ainda não temos seu endereço de e-mail, então nenhum resumo é enviado. Conecte o Google na sua página Eu.",
+      "noAddressPlain": "Ainda não temos seu endereço de e-mail, então nenhum resumo é enviado.",
       "privacy": "Os nomes dos alunos aparecem só nesta página, nunca no e-mail.",
       "seeEmail": "Ver o e-mail",
       "change": "Mudar quando é enviado",

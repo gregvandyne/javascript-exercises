@@ -18,6 +18,7 @@ import * as S from './schools.js';
 import * as L from './lessons.js';
 import * as P from './progress.js';
 import { renderDigest } from './digest-email.js';
+import { CODES } from '../i18n/index.js';
 
 const H = 3600e3, DAY = 24 * H, WEEK = 7 * DAY;
 export const DEFAULTS = Object.freeze({ day: 1, hour: 7 });
@@ -69,16 +70,33 @@ export function prefsOf(userId) {
   const school = tz ? null : schoolZone(userId);
   return { on: !p.digest_off_at, day, hour, tz, zone: tz || school || FALLBACK_TZ, zoneFrom: tz ? 'mine' : school ? 'school' : 'default' };
 }
-/** Saves the teacher's choice: { on, day, hour, tz } (each optional; tz '' = their school's). -> { ok, code? } */
-export function savePrefs(userId, { on, day, hour, tz } = {}) {
+/** A whole number from a form or JSON value (digits only: '', null, true, 1.5 and arrays are not). */
+const wholeNumber = v => ((typeof v === 'number' || typeof v === 'string') && /^\d{1,2}$/.test(String(v)) ? Number(v) : NaN);
+/** Saves the teacher's choice: { on, day, hour, tz, lang } (each optional; tz '' = their school's; lang: the site
+ *  language in effect, which the email uses when the account has none of its own). -> { ok, code? } */
+export function savePrefs(userId, { on, day, hour, tz, lang } = {}) {
   const set = {};
-  if (day !== undefined) { const d = Number(day); if (!Number.isInteger(d) || d < 0 || d > 6) return { ok: false, code: 'badDay' }; set.digest_day = d; }
-  if (hour !== undefined) { const h = Number(hour); if (!Number.isInteger(h) || h < 0 || h > 23) return { ok: false, code: 'badHour' }; set.digest_hour = h; }
+  if (day !== undefined) { const d = wholeNumber(day); if (!Number.isInteger(d) || d < 0 || d > 6) return { ok: false, code: 'badDay' }; set.digest_day = d; }
+  if (hour !== undefined) { const h = wholeNumber(hour); if (!Number.isInteger(h) || h < 0 || h > 23) return { ok: false, code: 'badHour' }; set.digest_hour = h; }
   if (tz !== undefined) { const z = String(tz || ''); if (z && !S.isZone(z)) return { ok: false, code: 'badZone' }; set.digest_tz = z; }
+  if (lang !== undefined && CODES.includes(lang)) set.digest_lang = lang;
   q.run('INSERT INTO email_prefs(user_id, updated_at) VALUES (?,?) ON CONFLICT(user_id) DO NOTHING', userId, now());
   for (const [k, v] of Object.entries(set)) q.run(`UPDATE email_prefs SET ${k}=?, updated_at=? WHERE user_id=?`, v, now(), userId);
   if (on !== undefined && !!on === E.digestOff(userId)) E.setDigestOff(userId, !on);
   return { ok: true };
+}
+/** The language the email goes in: the account's own choice, else the one in effect when the teacher last saved or
+ *  opened the summary, else English. The preview on /teach/summary/email uses the same. */
+export function mailLocale(u) {
+  if (u?.lang && CODES.includes(u.lang)) return u.lang;
+  const l = E.prefsOf(u?.id)?.digest_lang;
+  return l && CODES.includes(l) ? l : 'en';
+}
+/** Remembers the site language a teacher is reading in (for the email when the account has no language of its own). */
+export function rememberLang(userId, lang) {
+  if (!CODES.includes(lang) || E.prefsOf(userId)?.digest_lang === lang) return;
+  q.run(`INSERT INTO email_prefs(user_id, digest_lang, updated_at) VALUES (?,?,?)
+    ON CONFLICT(user_id) DO UPDATE SET digest_lang=excluded.digest_lang, updated_at=excluded.updated_at`, userId, lang, now());
 }
 /** This week's slot for a teacher at instant t: the latest send time at or before t.
  *  -> { week: 'YYYY-MM-DD' (its local date), day (that date at 00:00 UTC), at (ms), next (next week's slot, ms) } */
@@ -110,6 +128,7 @@ export function classSummary(c, t = now(), zone = FALLBACK_TZ, { names = false }
   const toRead = P.toReadByClass([c.id])[c.id] || 0;
   const live = q.get('SELECT COUNT(*) n FROM live_runs WHERE class_id=? AND ended_at>=? AND ended_at<=?', c.id, t - WEEK, t).n;
   const recent = q.get(`SELECT COUNT(*) n FROM step_progress p JOIN class_lessons cl ON cl.id=p.class_lesson_id AND cl.removed_at IS NULL
+    JOIN class_members m ON m.class_id=cl.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
     WHERE cl.class_id=? AND p.updated_at>=? AND p.updated_at<=?`, c.id, t - WEEK, t).n;
   const out = {
     id: c.id, name: c.name, school: c.school_name || '', students: gb.students.length,
@@ -132,8 +151,20 @@ export function summaryFor(u, t = now(), { names = false } = {}) {
 
 // ---- Sending ----
 const rowOf = (userId, week) => q.get('SELECT * FROM digest_sends WHERE user_id=? AND week=?', userId, week) || null;
-const mark = (userId, week, status, extra = {}) => q.run('UPDATE digest_sends SET status=?, reason=?, sent_at=?, classes=COALESCE(?, classes) WHERE user_id=? AND week=?',
+/** Marks a row. The rendered email is kept only while the row waits for another try ('pending'). */
+const mark = (userId, week, status, extra = {}) => q.run(`UPDATE digest_sends SET status=?, reason=?, sent_at=?, classes=COALESCE(?, classes)${status === 'pending' ? '' : ', message=NULL'} WHERE user_id=? AND week=?`,
   status, extra.reason ?? null, extra.sentAt ?? null, extra.classes ?? null, userId, week);
+/** The email a row already rendered (a retry sends exactly that), or null. */
+const storedMessage = row => { try { const m = row?.message ? JSON.parse(row.message) : null; return m && typeof m.subject === 'string' ? m : null; } catch { return null; } };
+/** Rows still waiting (or stuck sending) more than LATE_MS after their slot will never go: failed, reason 'late'. */
+function closeLate(at) {
+  return q.run(`UPDATE digest_sends SET status='failed', reason='late', message=NULL
+    WHERE status IN ('pending','sending') AND slot_at<? AND IFNULL(claimed_at,0)<?`, at - LATE_MS, at - RECLAIM_AFTER).changes;
+}
+/** At most one summary in any 6 days (judged by the slots sent): a teacher who moves their day after this week's went
+ *  out gets the next one at the new day the week after, not a second one now. */
+const sentRecently = (userId, slot) => !!q.get("SELECT 1 FROM digest_sends WHERE user_id=? AND week<>? AND status='sent' AND slot_at>?",
+  userId, slot.week, slot.at - 6 * DAY);
 /** Teachers to look at: active staff who teach a class that isn't archived. */
 const teacherIds = () => q.all(`SELECT DISTINCT m.user_id id FROM class_members m JOIN classrooms c ON c.id=m.class_id
   JOIN school_members sm ON sm.user_id=m.user_id AND sm.school_id=c.school_id AND sm.status='active' AND sm.role!='student'
@@ -154,6 +185,7 @@ function claim(userId, slot, at) {
 /** Sends the summaries that are due. at: the time to judge by (tests). -> { sent, skipped, failed, waiting } */
 export async function runDue(at = now()) {
   const out = { sent: 0, skipped: 0, failed: 0, waiting: 0 };
+  out.failed += closeLate(at);
   if (!switchOn() || !E.sendingOn()) return out;
   for (const id of teacherIds()) {
     const u = getUser(id);
@@ -162,14 +194,22 @@ export async function runDue(at = now()) {
     if (!p.on) continue;
     const slot = slotFor(p, at);
     if (at - slot.at > LATE_MS) continue;
+    if (sentRecently(id, slot)) continue;
     if (!claim(id, slot, at)) continue;
     const row = rowOf(id, slot.week);
     if (!E.addressOf(id)) { mark(id, slot.week, 'skipped', { reason: 'no_address' }); out.skipped++; continue; }
-    const sum = summaryFor(u, at);
-    if (!sum.active.length) { mark(id, slot.week, 'skipped', { reason: 'empty', classes: 0 }); out.skipped++; continue; }
-    const m = renderDigest(u, sum, slot);
+    // A retry sends the email rendered on the first try, byte for byte: the same Idempotency-Key with a different body
+    // would be refused by Resend (409), and a first try that did go out would then be counted as failed.
+    let m = storedMessage(row);
+    const sum = m ? null : summaryFor(u, at);
+    if (!m) {
+      if (!sum.active.length) { mark(id, slot.week, 'skipped', { reason: 'empty', classes: 0 }); out.skipped++; continue; }
+      const r0 = renderDigest(u, sum, slot, { locale: mailLocale(u) });
+      m = { subject: r0.subject, html: r0.html, text: r0.text, classes: sum.active.length };
+      q.run('UPDATE digest_sends SET message=? WHERE user_id=? AND week=?', JSON.stringify(m), id, slot.week);
+    }
     const r = await E.send({ userId: id, template: 'class_digest', category: 'digest', subject: m.subject, html: m.html, text: m.text, idemKey: `digest-${id}-${slot.week}` });
-    if (r.status === 'sent') { mark(id, slot.week, 'sent', { sentAt: now(), classes: sum.active.length }); out.sent++; }
+    if (r.status === 'sent') { mark(id, slot.week, 'sent', { sentAt: now(), classes: m.classes ?? sum?.active.length ?? 0 }); out.sent++; }
     else if (r.status === 'skipped') { mark(id, slot.week, 'skipped', { reason: r.reason }); out.skipped++; }
     else if (r.status === 'off') { mark(id, slot.week, 'pending', { reason: r.reason }); out.waiting++; }
     else if ((row?.attempts || 1) >= MAX_ATTEMPTS) { mark(id, slot.week, 'failed', { reason: 'gave_up' }); out.failed++; }

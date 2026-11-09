@@ -761,17 +761,21 @@ export const MIGRATIONS = [
   // The weekly class summary email (services/digest.js; docs/decisions.md "Weekly class summary email"). email_prefs
   // gains the teacher's own switch and schedule: digest_off_at (their off switch, separate from the trial nudges'),
   // digest_day (0 Sunday … 6 Saturday, default Monday), digest_hour (0-23, default 7) and digest_tz ('' = their
-  // school's time zone). digest_sends: one row per teacher per week (week = the local date of that week's send slot),
-  // claimed before it is sent and marked after, so a restart never sends a week twice. It keeps counts only (classes in
-  // the email), never a name, an answer or the body. status: sending | sent | skipped | failed.
+  // school's time zone), digest_lang (the site language in effect when the teacher last saved or opened the summary;
+  // the email goes in users.lang, else this, else English). digest_sends: one row per teacher per week (week = the local
+  // date of that week's send slot), claimed before it is sent and marked after, so a restart never sends a week twice.
+  // It keeps counts only (classes in the email), never a name or an answer; message holds the rendered email (counts,
+  // class names, the teacher's first name) only while a send is being retried, so every try sends the same bytes under
+  // the same Idempotency-Key, and is cleared once the row is done. status: sending | pending | sent | skipped | failed.
   ['0066_class_digest', `
     ALTER TABLE email_prefs ADD COLUMN digest_off_at INTEGER;
     ALTER TABLE email_prefs ADD COLUMN digest_day INTEGER NOT NULL DEFAULT 1;
     ALTER TABLE email_prefs ADD COLUMN digest_hour INTEGER NOT NULL DEFAULT 7;
     ALTER TABLE email_prefs ADD COLUMN digest_tz TEXT NOT NULL DEFAULT '';
+    ALTER TABLE email_prefs ADD COLUMN digest_lang TEXT NOT NULL DEFAULT '';
     CREATE TABLE IF NOT EXISTS digest_sends (user_id TEXT NOT NULL, week TEXT NOT NULL, slot_at INTEGER NOT NULL,
       status TEXT NOT NULL, reason TEXT, classes INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0,
-      claimed_at INTEGER, sent_at INTEGER, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, week)) WITHOUT ROWID;
+      claimed_at INTEGER, sent_at INTEGER, message TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, week)) WITHOUT ROWID;
     CREATE INDEX IF NOT EXISTS digest_sends_status ON digest_sends(status, claimed_at);`],
 ];
 

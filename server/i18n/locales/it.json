@@ -7086,6 +7086,7 @@
       "next": "L'e-mail di riepilogo parte ogni {when}.",
       "off": "L'e-mail di riepilogo settimanale è disattivata. Puoi comunque consultare questa pagina quando vuoi.",
       "noAddress": "Non abbiamo ancora il tuo indirizzo e-mail, quindi non parte nessun riepilogo. Collega Google dalla tua pagina Io.",
+      "noAddressPlain": "Non abbiamo ancora il tuo indirizzo e-mail, quindi non parte nessun riepilogo.",
       "privacy": "I nomi degli studenti compaiono solo in questa pagina, mai nell'e-mail.",
       "seeEmail": "Vedi l'e-mail",
       "change": "Cambia quando viene inviata",

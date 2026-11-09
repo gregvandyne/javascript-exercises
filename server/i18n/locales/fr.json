@@ -7085,6 +7085,7 @@
       "next": "Votre e-mail de résumé part chaque {when}.",
       "off": "L'e-mail de résumé hebdomadaire est désactivé. Vous pouvez toujours consulter cette page.",
       "noAddress": "Nous n'avons pas encore d'adresse e-mail pour vous, donc aucun résumé n'est envoyé. Connectez Google sur votre page Moi.",
+      "noAddressPlain": "Nous n'avons pas encore d'adresse e-mail pour vous, donc aucun résumé n'est envoyé.",
       "privacy": "Les noms des élèves apparaissent uniquement sur cette page, jamais dans l'e-mail.",
       "seeEmail": "Voir l'e-mail",
       "change": "Changer le moment de l'envoi",

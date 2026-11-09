@@ -7085,6 +7085,7 @@
       "next": "Tu correo de resumen sale cada {when}.",
       "off": "El correo de resumen semanal está desactivado. Puedes consultar esta página cuando quieras.",
       "noAddress": "Aún no tenemos tu dirección de correo, así que no se envía ningún resumen. Conecta Google en tu página Yo.",
+      "noAddressPlain": "Aún no tenemos tu dirección de correo, así que no se envía ningún resumen.",
       "privacy": "Los nombres de los alumnos solo aparecen en esta página, nunca en el correo.",
       "seeEmail": "Ver el correo",
       "change": "Cambiar cuándo se envía",

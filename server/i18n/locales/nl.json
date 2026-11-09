@@ -7086,6 +7086,7 @@
       "next": "Je overzicht wordt elke {when} gemaild.",
       "off": "De wekelijkse overzichtsmail staat uit. Je kunt deze pagina altijd bekijken.",
       "noAddress": "We hebben nog geen e-mailadres van je, dus er gaat geen overzicht uit. Koppel Google op je Ik-pagina.",
+      "noAddressPlain": "We hebben nog geen e-mailadres van je, dus er gaat geen overzicht uit.",
       "privacy": "Namen van leerlingen staan alleen op deze pagina, nooit in de e-mail.",
       "seeEmail": "E-mail bekijken",
       "change": "Wijzigen wanneer hij komt",

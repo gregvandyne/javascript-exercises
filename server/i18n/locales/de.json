@@ -7086,6 +7086,7 @@
       "next": "Ihre Übersicht kommt jeden {when} per E-Mail.",
       "off": "Die wöchentliche Übersicht per E-Mail ist aus. Diese Seite können Sie trotzdem jederzeit ansehen.",
       "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen, daher geht keine Übersicht raus. Verbinden Sie Google auf Ihrer Seite „Ich“.",
+      "noAddressPlain": "Wir haben noch keine E-Mail-Adresse von Ihnen, daher geht keine Übersicht raus.",
       "privacy": "Namen von Schülerinnen und Schülern stehen nur auf dieser Seite, nie in der E-Mail.",
       "seeEmail": "E-Mail ansehen",
       "change": "Versandzeit ändern",

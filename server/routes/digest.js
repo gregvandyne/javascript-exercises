@@ -14,8 +14,15 @@ import * as S from '../services/schools.js';
 import * as E from '../services/email.js';
 import * as D from '../services/digest.js';
 import { renderDigest } from '../services/digest-email.js';
+import { googleEnabled } from '../oidc.js';
+import { sameOrigin } from '../i18n/index.js';
 
 export const router = Router();
+/** The "no address" line: it says to connect Google only where Google sign-in is set up. */
+const noAddressText = (req, where) => (googleEnabled() ? req.t(`digest.${where}.noAddress`) : req.t('digest.page.noAddressPlain'));
+/** The email goes in the account's language, else the one the teacher reads the site in (remembered here; a cross-site
+ *  link's ?lang= is not), so the preview and the real email match. */
+const noteLang = req => { if (!req.user.lang && sameOrigin(req)) D.rememberLang(req.user.id, req.locale); };
 const CSS = raw(`<link rel="stylesheet" href="/css/schools.css?v=${VERSION}"><link rel="stylesheet" href="/css/digest.css?v=${VERSION}">`);
 const staffOnly = (req, res, next) => {
   if (S.isSchoolStaff(req.user)) return next();
@@ -42,7 +49,7 @@ export function digestPanel(req) {
   const address = E.addressOf(u.id);
   return html`<section class="panel" id="digest" aria-labelledby="digest-h"><h2 id="digest-h"><span aria-hidden="true">📬</span> ${t('digest.me.heading')}</h2>
     <p class="muted">${t('digest.me.text')}</p>
-    ${address ? '' : html`<p class="notice warn small" id="digest-noaddr">${t('digest.me.noAddress')}</p>`}
+    ${address ? '' : html`<p class="notice warn small" id="digest-noaddr">${noAddressText(req, 'me')}</p>`}
     <form class="dg-form" data-api="/api/me/digest" data-reload data-toast="${t('digest.me.saved')}" novalidate>
       <input type="hidden" name="on" value="0">
       <label class="dg-on"><input type="checkbox" name="on" value="1" id="digest-on" ${p.on ? raw('checked') : ''}> ${t('digest.me.on')}</label>
@@ -64,7 +71,7 @@ export function digestPanel(req) {
 router.post('/api/me/digest', requireUser, staffOnly, rateLimit('me-digest', 30, 60e3), (req, res) => {
   const b = req.body || {};
   const on = b.on === undefined ? undefined : [].concat(b.on).map(String).includes('1') || b.on === true;
-  const r = D.savePrefs(req.user.id, { on, day: b.day === undefined ? undefined : b.day, hour: b.hour === undefined ? undefined : b.hour, tz: b.tz });
+  const r = D.savePrefs(req.user.id, { on, day: b.day, hour: b.hour, tz: b.tz, lang: req.user.lang ? undefined : req.locale });
   if (!r.ok) return res.status(400).json({ error: req.t(`digest.errors.${r.code}`) });
   res.json({ ok: true, prefs: D.prefsOf(req.user.id) });
 });
@@ -96,6 +103,7 @@ function classPanel(req, c) {
 
 router.get('/teach/summary', requireUser, staffOnly, (req, res) => {
   const t = req.t, u = req.user;
+  noteLang(req);
   const sum = D.summaryFor(u, Date.now(), { names: true });
   const p = sum.prefs;
   const address = E.addressOf(u.id);
@@ -103,7 +111,7 @@ router.get('/teach/summary', requireUser, staffOnly, (req, res) => {
   const body = html`
   <div class="pagehead"><div><h1>📬 ${t('digest.page.title')}</h1><p class="muted">${t('digest.page.sub')}</p></div></div>
   <section class="panel dg-sched" id="dg-sched">
-    <p>${sending ? t('digest.page.next', { when: whenText(req, p) }) : !p.on ? t('digest.page.off') : t('digest.page.noAddress')}</p>
+    <p>${sending ? t('digest.page.next', { when: whenText(req, p) }) : !p.on ? t('digest.page.off') : noAddressText(req, 'page')}</p>
     <p class="small muted">${t('digest.page.privacy')}</p>
     <div class="row dg-acts">${sum.active.length ? html`<a class="btn" href="/teach/summary/email" id="dg-email">📧 ${t('digest.page.seeEmail')}</a>` : ''}<a class="btn" href="/me#digest">⚙️ ${t('digest.page.change')}</a></div>
   </section>
@@ -118,8 +126,9 @@ router.get('/teach/summary', requireUser, staffOnly, (req, res) => {
 
 router.get('/teach/summary/email', requireUser, staffOnly, (req, res) => {
   const u = req.user;
+  noteLang(req);
   const sum = D.summaryFor(u, Date.now());
-  const m = renderDigest({ ...u, lang: req.locale }, sum, D.slotFor(sum.prefs));
+  const m = renderDigest(u, sum, D.slotFor(sum.prefs), { locale: D.mailLocale(u) });
   res.set({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
   if (req.query.format === 'text') return res.type('text/plain; charset=utf-8').send(`Subject: ${m.subject}\n\n${m.text}`);
   res.type('html').send(m.html);

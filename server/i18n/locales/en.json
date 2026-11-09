@@ -7493,6 +7493,7 @@
       "next": "Your summary email goes out every {when}.",
       "off": "The weekly summary email is off. You can still check this page any time.",
       "noAddress": "We don't have an email address for you yet, so no summary email goes out. Connect Google on your Me page.",
+      "noAddressPlain": "We don't have an email address for you yet, so no summary email goes out.",
       "privacy": "Student names are shown on this page only, never in the email.",
       "seeEmail": "See the email",
       "change": "Change when it's sent",

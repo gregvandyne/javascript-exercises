@@ -3350,10 +3350,40 @@ site. The full picture, with names, stays on the site.
 - **Data (migration 0066_class_digest):** `email_prefs` gains `digest_off_at`, `digest_day` (0 = Sunday, default
   1), `digest_hour` (default 7) and `digest_tz` ('' = the school's). The new `digest_sends` table holds one row per
   teacher per week: status, reason, the number of classes in it, attempts and times. It stores counts only, never a
-  name or the body, and rows are kept six months. Sends are logged in `email_log` as template `class_digest`.
+  student's name or answer; the rendered email is held only while a send waits for a retry (see the review fixes
+  below), and rows are kept six months. Sends are logged in `email_log` as template `class_digest`.
 - **No new env vars:** it uses RESEND_API_KEY / EMAIL_ENABLED / EMAIL_FROM / EMAIL_REPLY_TO / PUBLIC_URL like the
   trial emails.
 - **Checks:** tests/unit/class-digest.test.js (schedule and DST, counts, every language, no names, one send per week
   across restarts and concurrent runs, retries, every switch, the one-click link, and who may open each page and API,
   with the email provider faked); tests/e2e/teach-digest.spec.js (360/390/1280, light/dark, Hebrew, nothing touches,
   44 px targets, students 404).
+
+## Weekly class summary: review fixes (9 Nov 2026)
+
+A review of the weekly summary found no major problems and six small ones, all fixed:
+
+- **Empty values:** `POST /api/me/digest` with `{"hour":""}` or `{"day":null}` was saved as midnight / Sunday
+  (`Number('') === 0`). Day and hour must now be digits only (`/^\d{1,2}$/` on a string or number) and anything else is
+  a 400 (`badDay` / `badHour`), with the saved value unchanged.
+- **One a week, even after moving the day:** the week key is still the slot's local date, but a teacher is skipped when
+  a summary for a slot less than 6 days earlier was already sent (`sentRecently`). Moving Monday to Wednesday after
+  Monday's went out means the next one is the following Wednesday, not a second one that week.
+- **Retries send the same bytes:** the first try stores the rendered email (subject, HTML, text) on its
+  `digest_sends.message`, and every retry sends exactly that, so the shared Idempotency-Key never meets a different
+  body (Resend would answer 409 `invalid_idempotent_request`, and a first try that did go out would be counted as
+  failed). The message holds counts, class names and the teacher's first name, never a student's name or answer, and
+  it's cleared as soon as the row is sent, skipped or failed.
+- **Rows that can never go are closed:** each run (even with sending switched off) marks a `pending` or stuck `sending`
+  row more than 12 hours after its slot as `failed / late`, so nothing waits forever under "Waiting" on /admin/emails.
+- **Same language in the preview and the email:** the email goes in `users.lang`, else `email_prefs.digest_lang`, else
+  English (`mailLocale`). `digest_lang` is the site language the teacher is reading in, remembered when they save the
+  settings or open /teach/summary (or its preview), but not from a cross-site link's `?lang=`. The preview uses the
+  same rule, so a teacher reading in German through their browser's language sees, and gets, German.
+- **Active classes count only current students:** the "recent activity" count joins `class_members` (active students),
+  like the review counts, so a teacher's own preview or a student who left doesn't make a class active.
+- **The no-address notice:** it says "Connect Google" only where Google sign-in is set up (`googleEnabled()`);
+  otherwise it says only that we don't have an address yet (`digest.page.noAddressPlain`, 13 languages).
+- **Migration:** 0066_class_digest itself gains `email_prefs.digest_lang` and `digest_sends.message` (it hasn't shipped
+  yet, so no new migration number).
+
