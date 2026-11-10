@@ -2416,7 +2416,8 @@
         "players": "{count, plural, =0 {Nenhum jogador conectado.} one {# jogador conectado.} other {# jogadores conectados.}}",
         "back": "Voltar para ele",
         "replace": "Encerrar e abrir o jogo novo"
-      }
+      },
+      "why": "Da sua aula:"
     },
     "match": {
       "title": "Jogar {title} online",
@@ -2465,6 +2466,16 @@
       "listening": "Escutando",
       "stop": "Parar",
       "tap": "Toque para começar a escutar"
+    },
+    "teach-make": {
+      "pdfBig": "Esse PDF tem mais de 2 MB. Cole o texto ou escolha um arquivo menor.",
+      "pdfReady": "{name} está pronto para enviar.",
+      "textLoaded": "O texto de {name} foi carregado.",
+      "fileKind": "Escolha um PDF ou um arquivo de texto.",
+      "tooShort": "Cole um pouco mais da sua aula primeiro (pelo menos {n} caracteres).",
+      "drafted": "{n} perguntas rascunhadas. Confira cada uma.",
+      "backConfirm": "Começar de novo? As perguntas rascunhadas nesta página serão perdidas.",
+      "assigned": "Atribuído."
     }
   },
   "favorites": {
@@ -5536,7 +5547,8 @@
       "draft": "faltam respostas",
       "school": "Compartilhados na minha escola",
       "schoolHint": "Conjuntos que outros professores da sua escola compartilharam. Faça uma cópia para alterar um deles.",
-      "copy": "Fazer uma cópia"
+      "copy": "Fazer uma cópia",
+      "fromLesson": "A partir da minha aula"
     },
     "api": {
       "off": "Os jogos ao vivo estão desligados agora.",
@@ -5586,7 +5598,15 @@
         "gone": "Este convite terminou.",
         "self": "Você já é o anfitrião."
       },
-      "notForClass": "Este jogo é para diversão, não para a aula. Escolha um modo de perguntas ou um dos seus jogos."
+      "notForClass": "Este jogo é para diversão, não para a aula. Escolha um modo de perguntas ou um dos seus jogos.",
+      "make": {
+        "pdfBad": "Não foi possível ler esse arquivo. Escolha um PDF de até 2 MB.",
+        "lessonShort": "Cole um pouco mais da sua aula primeiro (um parágrafo ou mais).",
+        "lessonLong": "Essa aula é longa demais. Cole uma aula por vez (até 20.000 caracteres).",
+        "lessonThin": "Não havia conteúdo suficiente nessa aula para escrever perguntas. Cole mais e tente de novo.",
+        "aiOff": "O rascunho com IA não está disponível agora. Você ainda pode digitar ou colar suas perguntas em Meus conjuntos de perguntas.",
+        "aiFailed": "A IA não conseguiu escrever perguntas desta vez. Tente de novo daqui a pouco."
+      }
     },
     "nick": {
       "0": "Lontra Corajosa",
@@ -6176,6 +6196,38 @@
     "cs": {
       "sets": "CS Quest",
       "preset": "Preparado a partir do plano da aula. Você ainda pode mudar tudo."
+    },
+    "make": {
+      "title": "Transforme sua aula em um jogo",
+      "heading": "Transforme sua aula em um jogo",
+      "lead": "Cole uma aula que você já dá. A Oomba rascunha as perguntas, você confere cada resposta e depois a turma joga.",
+      "stepsLabel": "Etapas",
+      "step1": "1. Cole sua aula",
+      "step2": "2. Confira as perguntas",
+      "step3": "3. Jogue",
+      "pasteHeading": "Sua aula",
+      "textLabel": "Cole o texto da sua aula",
+      "textHint": "Cole suas anotações, uma leitura, uma folha de atividades ou o roteiro dos slides…",
+      "fileLabel": "Ou escolha um arquivo (PDF ou texto, até 2 MB)",
+      "levelLabel": "Ano ou nível",
+      "levelHint": "Por exemplo: 4º ano",
+      "countLabel": "Quantas perguntas",
+      "privacy": "Sua aula é enviada ao nosso ajudante de IA para escrever as perguntas e não é guardada. Por favor, não inclua nomes de alunos nem nada pessoal.",
+      "go": "Rascunhar as perguntas",
+      "wait": "Lendo sua aula e escrevendo as perguntas. Leva até um minuto.",
+      "checkHeading": "Confira cada pergunta e cada resposta",
+      "checkText": "Isto é um primeiro rascunho. Leia cada pergunta, corrija o que estiver errado ou confuso e remova o que não quiser. Abaixo de cada pergunta você vê o trecho da aula de onde ela veio. Nada chega aos alunos até você salvar.",
+      "back": "Começar de novo",
+      "doneHeading": "Suas perguntas estão salvas",
+      "doneText": "Escolha como a turma vai usá-las.",
+      "host": "Apresentar um jogo ao vivo agora",
+      "assignHeading": "Ou atribua para os alunos fazerem sozinhos",
+      "assignText": "Vira um questionário curto nas aulas da turma, e as notas vão para o seu diário de notas.",
+      "classLabel": "Turma",
+      "dueLabel": "Data de entrega (opcional)",
+      "assign": "Atribuir a esta turma",
+      "mySets": "Meus conjuntos de perguntas",
+      "another": "Fazer outro"
     }
   },
   "match": {
@@ -7272,7 +7324,8 @@
       "breaks": "Pausas ativas",
       "breaksText": "Jogos curtos e divertidos de Jogar, escolhidos para uma pausa de 5 minutos no ecrã grande.",
       "allGames": "Ver tudo o que os alunos podem jogar",
-      "openLive": "Abrir o jogo ao vivo"
+      "openLive": "Abrir o jogo ao vivo",
+      "make": "Transformar uma aula em jogo"
     },
     "loop": {
       "kicker": "Como o Oomba se encaixa na sua semana",
@@ -7324,8 +7377,8 @@
           "caption": "Comentar: escreva uma nota, salve, e o aluno a vê na aula dele."
         },
         "standards": {
-          "alt": "A aba Padrões da turma: padrões de ciência da computação e o avanço de cada aluno",
-          "caption": "Padrões: os padrões de ciência da computação que a sua turma já trabalhou, aluno por aluno."
+          "alt": "A aba Padrões da turma: padrões de matemática do Common Core e até onde cada aluno chegou",
+          "caption": "Padrões: os padrões do Common Core que sua turma já cobriu, aluno por aluno."
         }
       },
       "home": {

@@ -676,11 +676,59 @@ export function setsBody(req, { sets }) {
   const t = req.t;
   return html`<div class="lv lv-sets" data-lv-page="sets">
   <h1>${t('live.sets.heading')}</h1>
-  <p><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button></p>
+  <p class="row"><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button><a class="btn" href="/teach/make" id="lv-set-make">✨ ${t('live.sets.fromLesson')}</a></p>
   ${sets.mine.length ? html`<ul class="lv-setlist" id="lv-setlist">${sets.mine.map(s => html`<li data-set="${s.id}"><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}${s.ready ? '' : ` · ${t('live.sets.draft')}`}</span></li>`)}</ul>` : html`<p class="muted" id="lv-setlist-empty">${t('live.sets.empty')}</p>`}
   ${sets.school.length ? html`<h2 class="lv-h2">${t('live.sets.school')}</h2><p class="small muted">${t('live.sets.schoolHint')}</p>
   <ul class="lv-setlist">${sets.school.map(s => html`<li><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}</span> <button class="btn btn-sm" type="button" data-copy-set="${s.id}">${t('live.sets.copy')}</button></li>`)}</ul>` : ''}
   <section class="lv-panel" id="lv-set-editor" hidden></section>
+</div>`;
+}
+
+/** /teach/make: paste a lesson, check the drafted questions (the set editor, public/js/live-sets.js), then play it. */
+export function makeBody(req, { classes = [], limits }) {
+  const t = req.t;
+  return html`<div class="lv lv-make" data-lv-page="make">
+  <h1>✨ ${t('live.make.heading')}</h1>
+  <p class="muted">${t('live.make.lead')}</p>
+  <ol class="mk-steps" id="mk-steps" aria-label="${t('live.make.stepsLabel')}">
+    <li aria-current="step">${t('live.make.step1')}</li><li>${t('live.make.step2')}</li><li>${t('live.make.step3')}</li></ol>
+  <section class="lv-panel mk-panel" id="mk-1" aria-labelledby="mk-1-h">
+    <h2 class="lv-h2" id="mk-1-h">${t('live.make.pasteHeading')}</h2>
+    <form class="stack" id="mk-form" novalidate data-min="${limits.min}" data-max="${limits.max}" data-pdf="${limits.pdfBytes}">
+      <div class="field"><label for="mk-text">${t('live.make.textLabel')}</label>
+        <textarea class="input" id="mk-text" rows="10" maxlength="${limits.max}" placeholder="${t('live.make.textHint')}" aria-describedby="mk-privacy"></textarea></div>
+      <div class="field"><label for="mk-file">${t('live.make.fileLabel')}</label>
+        <input class="input" type="file" id="mk-file" accept=".pdf,.txt,.md,application/pdf,text/plain"><p class="small muted" id="mk-file-note" aria-live="polite"></p></div>
+      <div class="lv-set-meta">
+        <div class="field"><label for="mk-level">${t('live.make.levelLabel')}</label><input class="input" id="mk-level" maxlength="60" placeholder="${t('live.make.levelHint')}"></div>
+        <div class="field"><label for="mk-count">${t('live.make.countLabel')}</label><select class="input" id="mk-count">${limits.counts.map(n => html`<option${n === 10 ? raw(' selected') : ''}>${n}</option>`)}</select></div>
+      </div>
+      <p class="small muted" id="mk-privacy">🔒 ${t('live.make.privacy')}</p>
+      <p class="err form-err" id="mk-err" role="alert"></p>
+      <div class="lv-controls"><button class="btn btn-primary" type="submit" id="mk-go">✨ ${t('live.make.go')}</button></div>
+      <p class="small muted" id="mk-wait" role="status" hidden>${t('live.make.wait')}</p>
+    </form>
+  </section>
+  <section class="mk-check stack" id="mk-2" hidden aria-labelledby="mk-2-h">
+    <div class="lv-panel mk-panel mk-note"><h2 class="lv-h2" id="mk-2-h" tabindex="-1">✅ ${t('live.make.checkHeading')}</h2>
+      <p>${t('live.make.checkText')}</p>
+      <p class="row"><button class="btn btn-sm" type="button" id="mk-back">← ${t('live.make.back')}</button></p></div>
+    <section class="lv-panel mk-panel" id="lv-set-editor" hidden></section>
+  </section>
+  <section class="lv-panel mk-panel" id="mk-3" hidden aria-labelledby="mk-3-h">
+    <h2 class="lv-h2" id="mk-3-h" tabindex="-1">🎉 ${t('live.make.doneHeading')}</h2>
+    <p>${t('live.make.doneText')}</p>
+    <div class="lv-controls"><a class="btn btn-primary" id="mk-host" href="/live">📡 ${t('live.make.host')}</a></div>
+    ${classes.length ? html`<form class="stack mk-assign" id="mk-assign" novalidate><h3 class="mk-h3">📚 ${t('live.make.assignHeading')}</h3>
+      <p class="small muted">${t('live.make.assignText')}</p>
+      <div class="lv-set-meta">
+        <div class="field"><label for="mk-class">${t('live.make.classLabel')}</label><select class="input" id="mk-class">${classes.map(c => html`<option value="${c.id}">${c.name}</option>`)}</select></div>
+        <div class="field"><label for="mk-due">${t('live.make.dueLabel')}</label><input class="input" type="date" id="mk-due"></div>
+      </div>
+      <p class="err form-err" id="mk-assign-err" role="alert"></p>
+      <div class="lv-controls"><button class="btn" type="submit">${t('live.make.assign')}</button></div></form>` : ''}
+    <p class="row"><a class="btn btn-sm" href="/live/sets">${t('live.make.mySets')}</a><a class="btn btn-sm" href="/teach/make">${t('live.make.another')}</a></p>
+  </section>
 </div>`;
 }
 

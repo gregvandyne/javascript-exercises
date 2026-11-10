@@ -2428,7 +2428,8 @@
         "players": "{count, plural, =0 {No players are connected.} one {# player is connected.} other {# players are connected.}}",
         "back": "Go back to it",
         "replace": "End it and open the new game"
-      }
+      },
+      "why": "From your lesson:"
     },
     "match": {
       "title": "Play {title} online",
@@ -2483,6 +2484,16 @@
       "listening": "Listening",
       "stop": "Stop",
       "tap": "Tap to start listening"
+    },
+    "teach-make": {
+      "pdfBig": "That PDF is bigger than 2 MB. Paste the text instead, or choose a smaller file.",
+      "pdfReady": "{name} is ready to send.",
+      "textLoaded": "Loaded the text from {name}.",
+      "fileKind": "Choose a PDF or a text file.",
+      "tooShort": "Paste a bit more of your lesson first (at least {n} characters).",
+      "drafted": "{n} questions drafted. Check each one.",
+      "backConfirm": "Start again? The drafted questions on this page will be lost.",
+      "assigned": "Assigned."
     }
   },
   "favorites": {
@@ -5882,7 +5893,8 @@
       "draft": "needs answers",
       "school": "Shared at my school",
       "schoolHint": "Sets other teachers at your school shared. Make a copy to change one.",
-      "copy": "Make a copy"
+      "copy": "Make a copy",
+      "fromLesson": "From my lesson"
     },
     "api": {
       "off": "Live games are switched off right now.",
@@ -5932,7 +5944,15 @@
         "gone": "This invite has ended.",
         "self": "You're already the host."
       },
-      "notForClass": "This game is for fun, not for class. Pick a quiz mode or one of your own games."
+      "notForClass": "This game is for fun, not for class. Pick a quiz mode or one of your own games.",
+      "make": {
+        "pdfBad": "That file can't be read. Choose a PDF of up to 2 MB.",
+        "lessonShort": "Paste a bit more of your lesson first (a paragraph or more).",
+        "lessonLong": "That lesson is too long. Paste one lesson at a time (up to 20,000 characters).",
+        "lessonThin": "There wasn't enough in that lesson to write questions from. Paste more of it and try again.",
+        "aiOff": "Drafting with AI isn't available right now. You can still type or paste your questions in My question sets.",
+        "aiFailed": "The AI couldn't write questions this time. Try again in a moment."
+      }
     },
     "nick": {
       "0": "Brave Otter",
@@ -6522,6 +6542,38 @@
     "cs": {
       "sets": "CS Quest",
       "preset": "Set up from the lesson plan. You can still change anything."
+    },
+    "make": {
+      "title": "Turn your lesson into a game",
+      "heading": "Turn your lesson into a game",
+      "lead": "Paste a lesson you already teach. Oomba drafts the questions, you check every answer, then your class plays.",
+      "stepsLabel": "Steps",
+      "step1": "1. Paste your lesson",
+      "step2": "2. Check the questions",
+      "step3": "3. Play it",
+      "pasteHeading": "Your lesson",
+      "textLabel": "Paste your lesson text",
+      "textHint": "Paste your notes, a reading, a worksheet or a slide outline…",
+      "fileLabel": "Or choose a file (PDF or text, up to 2 MB)",
+      "levelLabel": "Grade or level",
+      "levelHint": "For example: Grade 4",
+      "countLabel": "How many questions",
+      "privacy": "Your lesson is sent to our AI helper to write the questions and is not kept. Please leave out students' names and anything personal.",
+      "go": "Draft the questions",
+      "wait": "Reading your lesson and writing questions. This takes up to a minute.",
+      "checkHeading": "Check every question and answer",
+      "checkText": "These are a first draft. Read each one, fix anything that is wrong or unclear, and remove what you don't want. Under each question you can see the part of your lesson it came from. Nothing reaches students until you save.",
+      "back": "Start again",
+      "doneHeading": "Your questions are saved",
+      "doneText": "Choose how your class will use them.",
+      "host": "Host a live game now",
+      "assignHeading": "Or assign it for students to do on their own",
+      "assignText": "It becomes a short quiz in the class's lessons, and the scores go to your gradebook.",
+      "classLabel": "Class",
+      "dueLabel": "Due date (optional)",
+      "assign": "Assign to this class",
+      "mySets": "My question sets",
+      "another": "Make another"
     }
   },
   "match": {
@@ -7070,7 +7122,8 @@
       "breaks": "Brain breaks",
       "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
       "allGames": "See everything students can play",
-      "openLive": "Open live game"
+      "openLive": "Open live game",
+      "make": "Turn a lesson into a game"
     },
     "loop": {
       "kicker": "How Oomba fits your week",
@@ -7122,8 +7175,8 @@
           "caption": "Feedback: write a note, save it, and the student sees it on their lesson."
         },
         "standards": {
-          "alt": "The class Standards tab: computer science standards with how far each student has got",
-          "caption": "Standards: the computer science standards your class has covered, student by student."
+          "alt": "The class Standards tab: Common Core math standards with how far each student has got",
+          "caption": "Standards: the Common Core standards your class has covered, student by student."
         }
       },
       "home": {

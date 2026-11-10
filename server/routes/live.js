@@ -51,7 +51,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { audit } from '../db.js';
-import { draftQuestions, KINDS as SET_AI_KINDS } from '../services/set-ai.js';
+import { draftQuestions, draftFromLesson, LESSON, KINDS as SET_AI_KINDS } from '../services/set-ai.js';
 
 export const router = Router();
 const LOBBY_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../live/lobby.html');
@@ -766,6 +766,45 @@ router.post('/api/live/sets/:id/homework', on, homeworkOn, requireAnyAccount, ho
     return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   }
   res.json({ ok: true, lessonId: r.lesson.id, classLessonId: r.classLesson.id, redirect: `/class/${r.classLesson.class_id}/progress` });
+});
+// ---------------------------------------------------------------- "Turn your lesson into a game" (/teach/make)
+// A grown-up who may host pastes their lesson (or picks a PDF): the AI drafts questions from it (services/set-ai.js
+// draftFromLesson), they check and edit every one in the question-set editor, save, then host it live or assign it to
+// a class as a quiz step. The lesson goes to the AI for that one call and is never stored or logged; a child can never
+// open any of this (hostOnly: kids never host).
+const makeClasses = u => (config.quizSteps && S.isStaff(u) ? S.classesOf(u.id, 'teacher').filter(c => !c.archived_at) : []);
+router.get('/teach/make', on, requireAnyAccount, hostOnly, (req, res) => {
+  noStore(res);
+  page(req, res, { title: req.t('live.make.title'), active: S.isSchoolStaff(req.user) ? 'classes' : 'live', back: S.isSchoolStaff(req.user) ? '/teach' : '/live',
+    head: '<link rel="stylesheet" href="/css/live.css">', body: V.makeBody(req, { classes: makeClasses(req.user), limits: LESSON }), scripts: ['/js/live-sets.js', '/js/teach-make.js'] });
+});
+router.post('/api/teach/make/draft', on, requireAnyAccount, hostOnly, rateLimit('lv-make-ai', 20, 3600e3), async (req, res) => {
+  const b = req.body || {};
+  let pdf = null;
+  if (b.pdf) {
+    // base64 of at most LESSON.pdfBytes (the JSON body limit is above that)
+    if (typeof b.pdf !== 'string' || b.pdf.length > Math.ceil(LESSON.pdfBytes / 3) * 4 + 4 || !/^[A-Za-z0-9+/]+=*$/.test(b.pdf)) return apiErr(req, res, 400, 'make.pdfBad');
+    pdf = Buffer.from(b.pdf, 'base64');
+  }
+  let r;
+  try { r = await draftFromLesson({ text: typeof b.text === 'string' ? b.text : '', pdf, level: b.level, count: b.count, kind: SET_AI_KINDS.includes(b.kind) ? b.kind : 'mixed', locale: req.locale, t: req.t }); }
+  catch { r = { ok: false, code: 'aiFailed' }; }
+  if (!r.ok) return apiErr(req, res, r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400, `make.${r.code}`, { limits: { min: LESSON.min, max: LESSON.max } });
+  // Only how many: never the lesson or the questions.
+  audit(req.user.id, 'live.make.draft', '', { count: r.items.length, pdf: !!pdf });
+  res.json({ title: r.title, items: r.items });
+});
+// Assign the saved set to a class as a lesson with one quiz step (the same as "Set as homework" after a live game).
+router.post('/api/teach/make/assign', on, requireAnyAccount, hostOnly, rateLimit('lv-hw', 60, 3600e3), (req, res) => {
+  if (!config.quizSteps) return apiErr(req, res, 404, 'homeworkOff');
+  const b = req.body || {};
+  const r = SETS.homework(req.user, String(b.setId || ''), b.classId, { opensAt: null, dueAt: b.dueAt || null });
+  if (!r.ok) {
+    if (r.code === 'noClass' || r.code === 'setIncomplete') return apiErr(req, res, 400, r.code);
+    if (r.code === 'notFound') return res.status(404).json({ error: req.t('errors.api.notFound') });
+    return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  }
+  res.json({ ok: true, lessonId: r.lesson.id, classLessonId: r.classLesson.id, redirect: `/class/${r.classLesson.class_id}?tab=lessons` });
 });
 // The student's quiz step: its questions (never the answers) and one answer at a time, checked here.
 router.get('/api/lessons/:clId/steps/:stepId/quiz', on, homeworkOn, requireAnyAccount, (req, res) => {

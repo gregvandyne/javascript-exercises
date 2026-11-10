@@ -57,7 +57,7 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   assert.match(r.text, /href="\/play" id="teach-all-games"/);
   // The tools row: Lesson library and Make a game; CS Quest and Cyber Defenders are under "Teach with a course".
   const tools = r.text.slice(r.text.indexOf('class="row teachtools"'), r.text.indexOf('</nav>', r.text.indexOf('class="row teachtools"')));
-  assert.deepEqual([...tools.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['/teach/lessons', '/build']);
+  assert.deepEqual([...tools.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['/teach/lessons', '/teach/make', '/build']);
   // + New class: a tile in the class grid, after the classes.
   const grid = r.text.slice(r.text.indexOf('class="classgrid th-classes"'), r.text.indexOf('</section>', r.text.indexOf('class="classgrid th-classes"')));
   assert.ok(grid.indexOf('<b>Homes 5A</b>') < grid.indexOf('class="th-newclass"') && grid.includes('id="nc-n"'), 'New class');

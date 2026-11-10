@@ -46,6 +46,9 @@ async function seedMode() {
   }));
   // The fractions lesson (scripts/seed.js): the lesson whose answers and "Needs attention first" the shots show.
   const fr = L.classLessons(cls.id).find(x => x.title.startsWith('Adding fractions'));
+  // The Standards shot shows the same fractions lesson as the others, so tag it with its Common Core standards.
+  const CC = await import('../server/services/standards-ccss.js');
+  for (const code of ['4.NF.A.1', '4.NF.B.3']) must(CC.addTag(teacher, fr.lesson_id, { framework: 'ccss-math', code }), `tag ${code}`);
   process.stdout.write(JSON.stringify({ classId: cls.id, fractions: fr.id }));
 }
 
@@ -100,8 +103,9 @@ async function main() {
         await page.waitForFunction(() => document.querySelector('#needs-attention [aria-pressed="true"]'));
       }),
       feedback: await shot('feedback', lesson, '#answers .answers h2'),
-      // The first standard the class has worked on, with its group's heading and the table's column names above it.
-      standards: await shot('standards', `/class/${ids.classId}/standards`, '.csq-std tr:not(.csq-std-quiet):has(.csq-std-id)', null, 150),
+      // Common Core Math (the subject of the other three shots): the first standard the class has worked on, with its
+      // group's heading and the table's column names above it.
+      standards: await shot('standards', `/class/${ids.classId}/standards?fw=ccss-math`, '.csq-std-id', null, 150),
     };
     await browser.close(); browser = null;
     fs.mkdirSync(OUT, { recursive: true });

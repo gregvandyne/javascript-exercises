@@ -2415,7 +2415,8 @@
         "players": "{count, plural, =0 {No hay jugadores conectados.} one {Hay # jugador conectado.} other {Hay # jugadores conectados.}}",
         "back": "Volver a ese juego",
         "replace": "Terminarlo y abrir el juego nuevo"
-      }
+      },
+      "why": "De tu lección:"
     },
     "match": {
       "title": "Jugar a {title} online",
@@ -2464,6 +2465,16 @@
       "listening": "Escuchando",
       "stop": "Parar",
       "tap": "Toca para empezar a escuchar"
+    },
+    "teach-make": {
+      "pdfBig": "Ese PDF pesa más de 2 MB. Pega el texto o elige un archivo más pequeño.",
+      "pdfReady": "{name} está listo para enviarse.",
+      "textLoaded": "Se cargó el texto de {name}.",
+      "fileKind": "Elige un PDF o un archivo de texto.",
+      "tooShort": "Pega primero un poco más de tu lección (al menos {n} caracteres).",
+      "drafted": "{n} preguntas redactadas. Revisa cada una.",
+      "backConfirm": "¿Empezar de nuevo? Se perderán las preguntas redactadas en esta página.",
+      "assigned": "Asignado."
     }
   },
   "favorites": {
@@ -5534,7 +5545,8 @@
       "draft": "faltan respuestas",
       "school": "Compartidos en mi escuela",
       "schoolHint": "Conjuntos que compartieron otros docentes de tu escuela. Haz una copia para cambiar uno.",
-      "copy": "Hacer una copia"
+      "copy": "Hacer una copia",
+      "fromLesson": "Desde mi lección"
     },
     "api": {
       "off": "Los juegos en vivo están desactivados ahora.",
@@ -5584,7 +5596,15 @@
         "gone": "Esta invitación ya terminó.",
         "self": "Ya eres el anfitrión."
       },
-      "notForClass": "Este juego es para divertirse, no para clase. Elige un modo de preguntas o uno de tus juegos."
+      "notForClass": "Este juego es para divertirse, no para clase. Elige un modo de preguntas o uno de tus juegos.",
+      "make": {
+        "pdfBad": "No se puede leer ese archivo. Elige un PDF de hasta 2 MB.",
+        "lessonShort": "Pega primero un poco más de tu lección (un párrafo o más).",
+        "lessonLong": "Esa lección es demasiado larga. Pega una lección cada vez (hasta 20 000 caracteres).",
+        "lessonThin": "No había suficiente contenido en esa lección para escribir preguntas. Pega más y vuelve a intentarlo.",
+        "aiOff": "La redacción con IA no está disponible ahora. Puedes escribir o pegar tus preguntas en Mis conjuntos de preguntas.",
+        "aiFailed": "La IA no pudo escribir preguntas esta vez. Inténtalo de nuevo en un momento."
+      }
     },
     "nick": {
       "0": "Nutria Valiente",
@@ -6174,6 +6194,38 @@
     "cs": {
       "sets": "CS Quest",
       "preset": "Preparado desde el plan de la lección. Puedes cambiar lo que quieras."
+    },
+    "make": {
+      "title": "Convierte tu lección en un juego",
+      "heading": "Convierte tu lección en un juego",
+      "lead": "Pega una lección que ya enseñas. Oomba redacta las preguntas, tú revisas cada respuesta y después tu clase juega.",
+      "stepsLabel": "Pasos",
+      "step1": "1. Pega tu lección",
+      "step2": "2. Revisa las preguntas",
+      "step3": "3. A jugar",
+      "pasteHeading": "Tu lección",
+      "textLabel": "Pega el texto de tu lección",
+      "textHint": "Pega tus apuntes, una lectura, una ficha o el esquema de unas diapositivas…",
+      "fileLabel": "O elige un archivo (PDF o texto, hasta 2 MB)",
+      "levelLabel": "Curso o nivel",
+      "levelHint": "Por ejemplo: 4.º de primaria",
+      "countLabel": "Cuántas preguntas",
+      "privacy": "Tu lección se envía a nuestro ayudante de IA para escribir las preguntas y no se guarda. Por favor, no incluyas nombres de alumnos ni nada personal.",
+      "go": "Redactar las preguntas",
+      "wait": "Leyendo tu lección y escribiendo las preguntas. Tarda hasta un minuto.",
+      "checkHeading": "Revisa cada pregunta y cada respuesta",
+      "checkText": "Esto es un primer borrador. Lee cada pregunta, corrige lo que esté mal o poco claro y quita lo que no quieras. Debajo de cada pregunta verás la parte de tu lección de la que salió. Nada llega a los alumnos hasta que guardes.",
+      "back": "Empezar de nuevo",
+      "doneHeading": "Tus preguntas están guardadas",
+      "doneText": "Elige cómo las va a usar tu clase.",
+      "host": "Dirigir un juego en vivo ahora",
+      "assignHeading": "O asígnalo para que lo hagan por su cuenta",
+      "assignText": "Se convierte en un cuestionario corto en las lecciones de la clase y las notas van a tu cuaderno de calificaciones.",
+      "classLabel": "Clase",
+      "dueLabel": "Fecha de entrega (opcional)",
+      "assign": "Asignar a esta clase",
+      "mySets": "Mis conjuntos de preguntas",
+      "another": "Hacer otro"
     }
   },
   "match": {
@@ -7270,7 +7322,8 @@
       "breaks": "Pausas activas",
       "breaksText": "Juegos cortos y divertidos de Jugar, elegidos para una pausa de 5 minutos en la pantalla grande.",
       "allGames": "Ver todo lo que pueden jugar los alumnos",
-      "openLive": "Abrir el juego en vivo"
+      "openLive": "Abrir el juego en vivo",
+      "make": "Convertir una lección en un juego"
     },
     "loop": {
       "kicker": "Cómo encaja Oomba en tu semana",
@@ -7322,8 +7375,8 @@
           "caption": "Comentarios: escribe una nota, guárdala y el estudiante la ve en su lección."
         },
         "standards": {
-          "alt": "La pestaña Estándares de la clase: estándares de informática y cuánto ha avanzado cada estudiante",
-          "caption": "Estándares: los estándares de informática que ha cubierto tu clase, estudiante por estudiante."
+          "alt": "La pestaña Estándares de la clase: estándares de matemáticas Common Core y hasta dónde ha llegado cada alumno",
+          "caption": "Estándares: los estándares Common Core que ha cubierto tu clase, alumno por alumno."
         }
       },
       "home": {

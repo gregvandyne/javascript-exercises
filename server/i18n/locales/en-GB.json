@@ -432,6 +432,11 @@
     },
     "doodleUi": {
       "play": "Practise or play on one device"
+    },
+    "make": {
+      "levelLabel": "Year or level",
+      "levelHint": "For example: Year 5",
+      "assignText": "It becomes a short quiz in the class's lessons, and the scores go to your markbook."
     }
   },
   "match": {
