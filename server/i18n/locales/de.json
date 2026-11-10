@@ -7738,6 +7738,78 @@
       "badZone": "Wählen Sie eine Zeitzone aus der Liste."
     }
   },
+  "gradebook": {
+    "workDone": "Erledigt",
+    "score": "Punktzahl",
+    "noScore": "Noch nichts bewertet",
+    "scoreTitle": "{earned} von {possible} Punkten",
+    "scoreWhy": "Ansehen, woraus sich diese Punktzahl ergibt",
+    "doneLate": "Verspätet erledigt",
+    "stepLate": "Nach dem Fälligkeitsdatum erledigt",
+    "lateN": "Verspätet: {count}",
+    "key": {
+      "score": "Punktzahl: erreichte von möglichen Punkten"
+    },
+    "names": {
+      "inGames": "Name in Spielen"
+    },
+    "help": {
+      "workDone": "Der Anteil der Schritte, die ein Kind in den geöffneten Lektionen erledigt hat. Richtige Antworten zählen hier nicht.",
+      "score": "Erreichte von möglichen Punkten: Quiz (1 Punkt pro Frage), Live-Spiele, die Sie für einen Lektionsschritt leiten (1 Punkt pro Frage, das beste Spiel), und Arbeiten, die Sie mit einem Bewertungsraster bewerten (dessen Punkte). Größere Arbeiten zählen mehr. Was nicht erledigt oder noch nicht bewertet ist, bleibt außen vor; ohne Bewertung steht dort –. Tippen Sie auf eine Punktzahl, um zu sehen, woraus sie sich ergibt.",
+      "late": "Arbeit, die nach dem Fälligkeitsdatum noch fehlt. „Verspätet erledigt“ heißt: nach dem Fälligkeitsdatum fertig geworden.",
+      "names": "Der graue Name unter dem Namen eines Kindes ist der Name, den es in Spielen und auf dem Klassenbildschirm hat."
+    },
+    "live": {
+      "title": "Ergebnisse der Live-Spiele",
+      "hint": "Richtige Antworten von den gestellten Fragen, für Kinder, die in dieser Klasse angemeldet sind. Gäste werden nie gespeichert.",
+      "linked": "Teil einer Lektion: zählt für die Punktzahl",
+      "keyRight": "richtige Antworten von den gestellten Fragen",
+      "keyPlayed": "gespielt, nichts zu bewerten",
+      "keyAbsent": "nicht gespielt"
+    },
+    "csv": {
+      "points": "Punktzahl (Punkte)",
+      "lateCount": "Verspätete Lektionen",
+      "scoreCol": "{title} (Punktzahl %)",
+      "lateCol": "{title} (verspätet)",
+      "late": "überfällig",
+      "doneLate": "verspätet erledigt",
+      "live": "Live: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Live-Spiel",
+      "rubric": "Bewertungsraster",
+      "marks": "Rasterpunkte"
+    },
+    "student": {
+      "back": "Fortschritt",
+      "printFull": "Vollen Namen drucken",
+      "print": "Drucken",
+      "printHint": "Der Ausdruck zeigt nur den Vornamen, außer Sie setzen das Häkchen. Der Name aus den Spielen wird nie gedruckt.",
+      "lateLessons": "Verspätete Lektionen",
+      "lesson": "Lektion",
+      "due": "Fällig",
+      "late": "Überfällig",
+      "scoreH": "Woraus sich die Punktzahl ergibt",
+      "work": "Arbeit",
+      "type": "Art",
+      "points": "Punkte",
+      "none": "Noch ist nichts bewertet. Punkte kommen aus Quiz, aus Live-Spielen für einen Lektionsschritt und aus Arbeiten, die mit einem Bewertungsraster bewertet wurden.",
+      "standardsLine": "{meets} erreicht · {developing} im Aufbau · {practiced} geübt",
+      "standardsOpen": "Standards ansehen",
+      "noStandards": "Noch keine Belege zu Standards.",
+      "answers": "Neueste Antworten und Rückmeldungen",
+      "feedback": "Rückmeldung der Lehrkraft",
+      "noAnswers": "Noch keine schriftlichen Antworten.",
+      "noLive": "Noch keine Live-Spiele."
+    },
+    "dash": {
+      "showNames": "Namen aus der Klassenliste zeigen",
+      "hideNames": "Namen aus der Klassenliste ausblenden",
+      "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
+    }
+  },
   "quickLive": {
     "cta": "Jetzt ein Live-Spiel starten",
     "ctaNote": "Keine Schülerkonten nötig. Die Kinder treten mit einem Code bei und bekommen einen sicheren, erfundenen Namen.",

@@ -237,9 +237,12 @@ test('the gradebook and the CSV carry points and percent per lesson and in total
   const csv = await as(ana)(`/class/${cls.id}/progress.csv`);
   const lines = csv.text.replace(/^﻿/, '').trim().split('\r\n');
   assert.match(lines[0], /Fair play \(rubric points\),Fair play \(rubric %\)/);
-  assert.match(lines[0], /Rubric points,Rubric %$/);
+  assert.match(lines[0], /,Work done,Rubric points,Rubric %,Score,Score \(points\),Late lessons,/, 'the rubric total stays where it was; the Score columns follow');
   const row = lines.find(l => l.startsWith('Mia Pupil'));
-  assert.match(row, /,15\/16,94%,/); assert.match(row, /,15\/16,94%$/);
+  const col = name => row.split(',')[lines[0].split(',').indexOf(name)];
+  assert.match(row, /,15\/16,94%,/);
+  assert.equal(col('Rubric points'), '15/16'); assert.equal(col('Rubric %'), '94%');
+  assert.equal(col('Score'), '94%', 'a rubric is the only scored work here, so the Score is its percent'); assert.equal(col('Score (points)'), '15/16');
   for (const u of [ben, mia, kid, guest]) assert.equal((await as(u)(`/class/${cls.id}/progress.csv`)).status, 404, u.username);
 });
 
@@ -367,8 +370,11 @@ test('feedback or comments alone score nothing; a partial score counts only the 
   const page = await as(ana)(`/class/${c4.id}/progress`);
   assert.match(page.text, /📏 3\/4/); assert.match(page.text, /1 of 3 scored/);
   const csv = (await as(ana)(`/class/${c4.id}/progress.csv`)).text.replace(/^﻿/, '').trim().split('\r\n');
-  assert.match(csv.find(l => l.startsWith('Leo Pupil')), /,,$/, 'Leo has no rubric total');
-  assert.match(csv.find(l => l.startsWith('Mia Pupil')), /,3\/4,75%$/);
+  const colOf = (who, name) => csv.find(l => l.startsWith(who)).split(',')[csv[0].split(',').indexOf(name)];
+  assert.equal(colOf('Leo Pupil', 'Rubric points'), '', 'Leo has no rubric total'); assert.equal(colOf('Leo Pupil', 'Rubric %'), '');
+  assert.equal(colOf('Leo Pupil', 'Score'), '–', 'and no Score: feedback alone is not a score');
+  assert.equal(colOf('Mia Pupil', 'Rubric points'), '3/4'); assert.equal(colOf('Mia Pupil', 'Rubric %'), '75%');
+  assert.equal(colOf('Mia Pupil', 'Score'), '75%'); assert.equal(colOf('Mia Pupil', 'Score (points)'), '3/4');
   // what each student sees
   const mine = (await as(mia)(`/class/${c4.id}/lessons/${a4.id}`)).text;
   assert.match(mine, /3\/4 points · 1 of 3 scored/);

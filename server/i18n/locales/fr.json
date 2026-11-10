@@ -7737,6 +7737,78 @@
       "badZone": "Choisissez un fuseau horaire dans la liste."
     }
   },
+  "gradebook": {
+    "workDone": "Travail fait",
+    "score": "Score",
+    "noScore": "Rien de noté pour l’instant",
+    "scoreTitle": "{earned} points sur {possible}",
+    "scoreWhy": "Voir de quoi ce score est fait",
+    "doneLate": "Fait en retard",
+    "stepLate": "Fait après la date limite",
+    "lateN": "En retard : {count}",
+    "key": {
+      "score": "score : points obtenus sur les points possibles"
+    },
+    "names": {
+      "inGames": "Nom dans les jeux"
+    },
+    "help": {
+      "workDone": "La part des étapes que l’élève a terminées dans les leçons ouvertes. Elle ne tient pas compte des bonnes réponses.",
+      "score": "Points obtenus sur les points possibles : les quiz (1 point par question), les jeux en direct que vous animez pour une étape de leçon (1 point par question, la meilleure partie) et les travaux que vous notez avec une grille (ses points). Les travaux plus importants comptent davantage. Ce qui n’est pas fait ou pas encore noté est laissé de côté ; sans rien de noté, on voit –. Touchez un score pour voir de quoi il est fait.",
+      "late": "Travail encore manquant après la date limite. « Fait en retard » veut dire terminé après la date limite.",
+      "names": "Le nom en gris sous le nom d’un élève est celui qu’il porte dans les jeux et sur l’écran de la classe."
+    },
+    "live": {
+      "title": "Résultats des jeux en direct",
+      "hint": "Bonnes réponses sur les questions posées, pour les élèves connectés à cette classe. Les invités ne sont jamais enregistrés.",
+      "linked": "Fait partie d’une leçon : compte dans le score",
+      "keyRight": "bonnes réponses sur les questions posées",
+      "keyPlayed": "a joué, rien à noter",
+      "keyAbsent": "n’a pas joué"
+    },
+    "csv": {
+      "points": "Score (points)",
+      "lateCount": "Leçons en retard",
+      "scoreCol": "{title} (score %)",
+      "lateCol": "{title} (en retard)",
+      "late": "en retard",
+      "doneLate": "fait en retard",
+      "live": "En direct : {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Jeu en direct",
+      "rubric": "Grille",
+      "marks": "Notes de grille"
+    },
+    "student": {
+      "back": "Progression",
+      "printFull": "Imprimer le nom complet",
+      "print": "Imprimer",
+      "printHint": "L’impression montre seulement le prénom, sauf si vous cochez la case. Le nom utilisé dans les jeux n’est jamais imprimé.",
+      "lateLessons": "Leçons en retard",
+      "lesson": "Leçon",
+      "due": "Date limite",
+      "late": "En retard",
+      "scoreH": "De quoi le score est fait",
+      "work": "Travail",
+      "type": "Type",
+      "points": "Points",
+      "none": "Rien n’est encore noté. Les scores viennent des quiz, des jeux en direct animés pour une étape de leçon et des travaux notés avec une grille.",
+      "standardsLine": "{meets} atteints · {developing} en cours · {practiced} pratiqués",
+      "standardsOpen": "Voir les standards",
+      "noStandards": "Pas encore de traces pour les standards.",
+      "answers": "Réponses et commentaires récents",
+      "feedback": "Commentaire de l’enseignant",
+      "noAnswers": "Pas encore de réponses écrites.",
+      "noLive": "Pas encore de jeux en direct."
+    },
+    "dash": {
+      "showNames": "Afficher les noms de la liste de classe",
+      "hideNames": "Masquer les noms de la liste de classe",
+      "namesHint": "Affiche le nom de la liste de classe à côté du nom dans le jeu, sur cet écran seulement. L’écran de la classe garde les noms du jeu."
+    }
+  },
   "quickLive": {
     "cta": "Lancer un jeu en direct maintenant",
     "ctaNote": "Pas besoin de comptes élèves. Les élèves rejoignent avec un code et reçoivent un nom inventé, sans risque.",

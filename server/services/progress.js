@@ -14,6 +14,7 @@ import * as L from './lessons.js';
 import * as games from './games.js';
 import { MODES } from './classlive-access.js';
 import * as R from './rubrics.js';
+import * as SC from './scores.js';
 
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
@@ -229,15 +230,19 @@ export function lessonProgress(clId) {
   const rows = q.all('SELECT * FROM step_progress WHERE class_lesson_id=?', clId);
   const by = new Map(rows.map(r => [`${r.user_id}:${r.step_id}`, r]));
   const ids = new Set(st.map(s => s.id));
+  // Scores (services/scores.js) and work first done after the due day ended (lateFrom: the school's time zone).
+  const items = SC.classItems(cl.class_id), lateFrom = L.lateFrom(cl);
   return {
-    cl, steps: st,
+    cl, steps: st, lateFrom,
     students: students.map(p => {
       const cells = st.map(s => by.get(`${p.id}:${s.id}`) || null);
       const doneN = cells.filter(x => x && x.status === 'done').length;
       const last = rows.filter(r => r.user_id === p.id && ids.has(r.step_id)).reduce((m, r) => Math.max(m, r.updated_at), 0);
       const isNew = (x, i) => !!(x && x.answer && !x.reviewed_at && st[i].kind === 'question');
       const firstNew = cells.findIndex(isNew);
-      return { ...p, cells, done: doneN, total: st.length, last: last || null, toRead: cells.filter(isNew).length, firstNew: firstNew >= 0 ? st[firstNew].id : null };
+      const its = items.get(`${p.id}:${clId}`) || [];
+      const lateSteps = lateFrom === null ? 0 : cells.filter(x => x && x.status === 'done' && x.done_at >= lateFrom).length;
+      return { ...p, cells, done: doneN, total: st.length, items: its, score: SC.total(its), lateSteps, last: last || null, toRead: cells.filter(isNew).length, firstNew: firstNew >= 0 ? st[firstNew].id : null };
     }),
   };
 }
@@ -258,21 +263,33 @@ export function classProgress(classId, t = now()) {
   const lessonIds = [...new Set(lessons.map(cl => cl.lesson_id))];
   const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind='quiz' AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
   for (const cl of lessons) { cl.hasRubric = withRubric.has(cl.lesson_id); cl.hasQuiz = withQuiz.has(cl.lesson_id); }
+  // Scores (services/scores.js): the scored items of each lesson, and steps first done after the due day ended.
+  const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons);
   const rows = students.map(p => ({ ...p, cells: lessons.map(cl => {
     const r = by.get(`${p.id}:${cl.id}`); const done = r ? Math.min(r.done, cl.steps) : 0;
     const sc = pts.get(`${p.id}:${cl.id}`) || null;
+    const its = items.get(`${p.id}:${cl.id}`) || [], lateSteps = lateN.get(`${p.id}:${cl.id}`) || 0;
     return { done, total: cl.steps, toRead: r ? r.toread : 0, last: (r && r.last) || null, locked: cl.locked, late: !cl.locked && cl.due === 'late' && done < cl.steps,
+      // finished, but after the due day (the school's time zone): 'late' above is work still missing after it
+      lateSteps, lateDone: !cl.locked && cl.steps > 0 && done >= cl.steps && lateSteps > 0,
+      items: its, score: SC.total(its),
       quiz: r && r.quizzes ? Math.round(r.quiz) : null, quizzes: r ? r.quizzes || 0 : 0,
       points: sc ? sc.points : null, maxPoints: sc ? sc.max : null, scored: sc ? sc.scored : 0, criteria: sc ? sc.of : 0 };
   }) }));
-  for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); p.quiz = quizOverall(p.cells); }
+  for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); p.quiz = quizOverall(p.cells); p.score = scoreOverall(p.cells); p.lateCount = p.cells.filter(x => x.late || x.lateDone).length; }
   return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0), anyRubric: lessons.some(cl => cl.hasRubric) || rows.some(p => p.rubric), anyQuiz: lessons.some(cl => cl.hasQuiz) };
 }
-/** Percentage of steps done across the lessons that are open (one rule for the page and the CSV). */
+/** "Work done": the percentage of steps done across the lessons that are open (one rule for the page and the CSV).
+ *  It says nothing about right answers: that is the Score (scoreOverall). */
 export function overall(cells) {
   const open = cells.filter(x => !x.locked);
   const total = open.reduce((n, x) => n + x.total, 0);
   return total ? Math.round((100 * open.reduce((n, x) => n + Math.min(x.done, x.total), 0)) / total) : 0;
+}
+/** The Score across the open lessons: points earned of points possible over everything scored (quizzes, live game
+ *  steps, rubrics; services/scores.js), { earned, possible, pct }, or null when nothing is scored yet. */
+export function scoreOverall(cells) {
+  return SC.total(cells.filter(x => !x.locked).flatMap(x => x.items || []));
 }
 /** The mean quiz score (% right) over every finished quiz of the open lessons, or null with none finished. */
 export function quizOverall(cells) {

@@ -7738,6 +7738,78 @@
       "badZone": "Kies een tijdzone uit de lijst."
     }
   },
+  "gradebook": {
+    "workDone": "Werk gedaan",
+    "score": "Score",
+    "noScore": "Nog niets beoordeeld",
+    "scoreTitle": "{earned} van {possible} punten",
+    "scoreWhy": "Bekijk waaruit deze score bestaat",
+    "doneLate": "Te laat af",
+    "stepLate": "Af na de inleverdatum",
+    "lateN": "Te laat: {count}",
+    "key": {
+      "score": "score: behaalde punten van de mogelijke punten"
+    },
+    "names": {
+      "inGames": "Naam in spellen"
+    },
+    "help": {
+      "workDone": "Het deel van de stappen dat een leerling heeft afgerond in de lessen die open zijn. Goede antwoorden tellen hier niet mee.",
+      "score": "Behaalde punten van de mogelijke punten: quizzen (1 punt per vraag), livespellen die je voor een lesstap leidt (1 punt per vraag, het beste spel) en werk dat je met een rubric beoordeelt (de punten ervan). Groter werk telt zwaarder. Werk dat niet af of nog niet beoordeeld is, telt niet mee; zonder beoordeling staat er –. Tik op een score om te zien waaruit die bestaat.",
+      "late": "Werk dat na de inleverdatum nog ontbreekt. ‘Te laat af’ betekent: afgerond na de inleverdatum.",
+      "names": "De grijze naam onder de naam van een leerling is de naam die hij of zij in spellen en op het klassenscherm heeft."
+    },
+    "live": {
+      "title": "Resultaten van livespellen",
+      "hint": "Goede antwoorden van de gestelde vragen, voor leerlingen die bij deze klas zijn ingelogd. Gasten worden nooit opgeslagen.",
+      "linked": "Deel van een les: telt mee voor de score",
+      "keyRight": "goede antwoorden van de gestelde vragen",
+      "keyPlayed": "gespeeld, niets te beoordelen",
+      "keyAbsent": "niet gespeeld"
+    },
+    "csv": {
+      "points": "Score (punten)",
+      "lateCount": "Lessen te laat",
+      "scoreCol": "{title} (score %)",
+      "lateCol": "{title} (te laat)",
+      "late": "te laat",
+      "doneLate": "te laat af",
+      "live": "Live: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Livespel",
+      "rubric": "Rubric",
+      "marks": "Rubricpunten"
+    },
+    "student": {
+      "back": "Voortgang",
+      "printFull": "Volledige naam afdrukken",
+      "print": "Afdrukken",
+      "printHint": "Op de afdruk staat alleen de voornaam, tenzij je het vakje aanvinkt. De naam uit de spellen wordt nooit afgedrukt.",
+      "lateLessons": "Lessen te laat",
+      "lesson": "Les",
+      "due": "Inleveren",
+      "late": "Te laat",
+      "scoreH": "Waaruit de score bestaat",
+      "work": "Werk",
+      "type": "Soort",
+      "points": "Punten",
+      "none": "Er is nog niets beoordeeld. Scores komen uit quizzen, livespellen voor een lesstap en werk dat met een rubric is beoordeeld.",
+      "standardsLine": "{meets} behaald · {developing} in ontwikkeling · {practiced} geoefend",
+      "standardsOpen": "Bekijk de standaarden",
+      "noStandards": "Nog geen bewijs voor standaarden.",
+      "answers": "Recente antwoorden en feedback",
+      "feedback": "Feedback van de leerkracht",
+      "noAnswers": "Nog geen geschreven antwoorden.",
+      "noLive": "Nog geen livespellen."
+    },
+    "dash": {
+      "showNames": "Namen van de klassenlijst tonen",
+      "hideNames": "Namen van de klassenlijst verbergen",
+      "namesHint": "Toont de naam van de klassenlijst naast de naam in het spel, alleen op dit scherm. Het klassenscherm houdt de spelnamen."
+    }
+  },
   "quickLive": {
     "cta": "Start nu een live spel",
     "ctaNote": "Geen leerlingaccounts nodig. Leerlingen doen mee met een code en krijgen een veilige, verzonnen naam.",

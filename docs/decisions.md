@@ -4026,3 +4026,79 @@ A second reviewer walked the path in German and found one real fault and some sm
   (60 names a request) and ask for AI question drafts (30 an hour). Nothing here changes that: a lower room size (the
   grown-ups' 30) would turn away a class of 31 on its first try, and holding back AI drafts or account-making needs a
   way to add an email first. Options are in the report; `docs/status.md` lists it as open.
+## Real scores in the gradebook (10 Nov 2026)
+
+The teacher audit's item 2: "Overall" was steps done ÷ steps open, so a child who answered every question wrong showed
+100 %, and a teacher had to match "CozyLynx25" to a child by hand. A teacher has to stand behind a grade in front of a
+parent.
+
+**Two columns, two meanings.**
+- **Work done** (was "Overall"; same figure, same rule: steps done of steps in the lessons that are open). Renamed on the
+  gradebook and in its CSV. The weekly summary already said "Work done" and the Google Classroom push already calls
+  itself a "completion grade": both are this figure, so neither changed (`server/services/gclassroom*.js` untouched).
+- **Score** (new): points earned ÷ points possible, over everything that has a right answer or a teacher's rubric
+  (`server/services/scores.js`):
+  - a finished **quiz step**: 1 point a question;
+  - a **game step hosted live** for the class: 1 point a question asked, the student's best run (a skipped question is
+    not right);
+  - a **library rubric** scored by the teacher: its points of its maximum (only criteria with a level; a score from a
+    swapped-out rubric is left out, as everywhere);
+  - a step's own **0–3 rubric lines** (CS Quest): 3 points a marked line (not counted twice when the step also has a
+    library rubric score).
+  Weighted by points possible, so a 16-point rubric counts for more than a 5-question quiz. Work not done or not scored
+  is **left out** (Work done shows that), so nothing scored reads "–", never 0 %. Lessons that have not opened are left
+  out, as they are from Work done.
+- **Not in the Score, on purpose:** a game played outside a live run reports a bare number with no maximum (4,200
+  points of what?), so it cannot be a percentage; a quiz still open; feedback without a level; and **live games that are
+  not a lesson step** (a Friday warm-up is practice). Those live games are shown, per student, in the gradebook's
+  "Live game results" table and the CSV. *Owner can decide otherwise:* counting every class live game in the Score is a
+  one-line change in `scores.js`, but it would let a warm-up move a grade.
+- **Every score is explainable.** A score cell links to the student's page at "What makes up the score": each item with
+  its type and points, a subtotal per lesson and the total. "How to read it" states the formula.
+
+**Late.** "Late" stays what it was (work still missing after the due day). New: **"Done late"**: the lesson is finished
+but a step was first done after the due day ended (`lessons.lateFrom`: the local midnight after the due day in the
+school's time zone; without a zone, the old +36 h rule). In the cell, on the lesson's page (the row and the step), on
+the student's page and in the CSV. `done_at` is the first time a step was done, so reopening work later does not make
+it late. No new table and no migration (0070 was reserved and is **not used**).
+
+**Live game results.** A column per saved class game (the last 8) with right ÷ asked per student, "✓" when the game had
+nothing to mark (Would You Rather, drawing), "–" when the student was not there. Only `live_run_scores` is read, which
+only ever holds signed-in students of the run's class: a guest has no row and can never appear.
+
+**Names.** Staff-only screens show the roster name with, in grey beside it, the name the student has in games
+(`views/components.js staffStudentName`): the gradebook, its live table, the course panels, the lesson's progress table,
+the answers and build cards, the whole-lesson rubric cards, the Standards tab's student picker and heading (both
+frameworks) and the student's page. The gradebook CSV already had both (Name, Oomba Academy name); the live results and
+their CSV got roster names in "Teacher quick wins". **The live Teacher view** gets a button, "Show class-list names"
+(off every time the page opens, never remembered): it asks `GET /api/live/host/:sid/roster-names` and shows the roster
+name in brackets beside each game name. The names are not in the session, so they cannot reach the projector
+(`/live/host/:sid`), a player or a game frame; the API answers only a full-tier controller who manages the class.
+Anything a student sees keeps generated names.
+
+**One student's page**, `/class/:id/student/:uid`: Work done, Score, late lessons, each lesson, what makes up the
+score, a standards summary per framework (met / developing / practised, with a link to the Standards tab), the last 10
+written answers with feedback, rubric feedback, and live results. For whoever manages the class (its teachers, the
+school's admins: `S.canManageClass`, the gradebook's rule), only for an active student of that class; everyone else
+gets the 404 page. `Cache-Control: no-store`. **Print:** the first name only unless the teacher ticks "Print the full
+name" (CSS only: `.sp-page:not(:has(#sp-full:checked)) .sp-rest`); the name used in games, the class tabs and the top
+bar are never printed; no other student and no price is on the page. Student names in the gradebook link to it.
+
+**CSV.** Old columns keep their place ("Overall" is now headed "Work done"); new ones are added at the end: Score,
+Score (points), Late lessons, then per lesson "(score %)" and "(late)" (late / done late), then one column per live game.
+
+**Speed.** Three more queries per class (rubric scores, marks, live runs) and one for late steps. Seeded test: 3 classes
+of 28 with 12 lessons of 5 steps, quiz, rubric and live scores: `classProgress` for all three about 20 ms, the three
+gradebook pages over HTTP about 100 ms, one student's page about 30 ms (limit in the test: 300 ms).
+
+**The landing page** says "Scores go straight into your gradebook" beside live games. That is now true for class games
+(signed-in students of the class): each run is a column, and a run hosted for a lesson step counts in the Score. It is
+not true for guest games (nothing is saved for a guest, by design). `landing.js` was left alone (another track edits
+it). Today the line sits beside "Signed-in students only", so it reads true as it is; if the landing page starts
+to offer guest games ("no student accounts"), the line should say "class games".
+
+**Tests.** `tests/unit/gradebook-scores.test.js` (formula, "–", late by time zone, live results, names, the student's
+page and who may open it, the CSV, 13 languages, the 300 ms limit), `tests/unit/live-roster-names.test.js` (the API as
+every kind of account; nothing on the projector page or any socket), `tests/e2e/gradebook-scores.spec.js` (its own
+server on `tests/support/gradebook-seed.js`; 360 / 390 / 1366, light and dark, Hebrew; print). The CSV assertions in
+`progress`, `rubrics` and `teacher-quick-wins` tests now find columns by their heading, as strictly as before.
