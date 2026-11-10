@@ -63,6 +63,8 @@ async function endOpen(t) {
 test('a teacher lands on the Classroom: hello, class cards with what needs attention, courses, live games, brain breaks', async ({ browser }) => {
   const teacher = await stateOf(browser, TEACHER);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: teacher }); const t = await ctx.newPage();
+  // A room another spec left open would show "Open live game" on every card (one room at a time): end it first.
+  await endOpen(t);
   await t.goto('/');
   expect(new URL(t.url()).pathname).toBe('/teach');
   await expect(t.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
