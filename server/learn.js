@@ -71,7 +71,7 @@ export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainB
 export const HOME_TIPS = ['math', 'words', 'strategy', 'music'];
 export const TEACHER_FAQ = 9;
 /** Last change to the teacher and subject pages' text (sitemap lastmod). Change it with the text. */
-export const CONTENT_UPDATED = '2026-11-09';
+export const CONTENT_UPDATED = '2026-11-10';
 
 // ---------------------------------------------------------------------------------------------------- parents
 // The parent pages (routes/parents.js): /parents, the guides under /parents/<guide>, and the age pages

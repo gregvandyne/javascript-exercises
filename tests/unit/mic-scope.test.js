@@ -42,7 +42,7 @@ function publish(owner, body, { slug = null, title = 'G', source = 'studio' } = 
 }
 
 test('Remi\'s play page may listen: microphone=(self) for this page, page-data.mic, the pill\'s words', async () => {
-  assert.deepEqual([...MIC_GAMES], [REMI], 'one game on the list');
+  assert.deepEqual([...MIC_GAMES], [REMI, 'quiet-bounce', 'popcorn-hush'], 'the three official noise meters, nothing else');
   const r = await get(`/play/${REMI}`);
   assert.equal(r.status, 200);
   assert.equal(r.headers.get('permissions-policy'), MIC_POLICY); assert.equal(micOf(r.headers), '(self)');

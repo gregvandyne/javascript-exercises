@@ -2,7 +2,8 @@
 import { test, expect } from '@playwright/test';
 import { gameFrame, adminPage } from './helpers.js';
 
-const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['tug-of-math', 'Tug of Math'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot'], ['word-trail', 'Word Trail'], ['jungle-cup', 'Jungle Cup']];
+const NOISE_METERS = { 'remis-quiet-meadow': 'Quiet Meadow', 'quiet-bounce': 'Quiet Bounce', 'popcorn-hush': 'Popcorn Hush' };
+const SEEDS = [['hero-of-sunvale', 'Hero of Sunvale'], ['shark-plank', 'Shark Plank'], ['ring-rumble', 'Ring Rumble'], ['footy-tycoon', 'Footy Tycoon'], ['connect-four', null], ['happy-putt', null], ['castle-clash', null], ['brick-drop', null], ['word-hunt', null], ['sum-racer', null], ['munch-maze', null], ['word-peek', null], ['swish-flick', null], ['loop-lab', null], ['beat-lanes', null], ['code-isle', 'Code Isle'], ['atlas-quest', 'Atlas Quest'], ['would-you-rather', null], ['gulp-city', 'Gulp City'], ['tug-of-math', 'Tug of Math'], ['quiet-bounce', 'Quiet Bounce'], ['popcorn-hush', 'Popcorn Hush'], ['remis-quiet-meadow', "Remi's Quiet Meadow"], ['doodle-hoot', 'Doodle Hoot'], ['word-trail', 'Word Trail'], ['jungle-cup', 'Jungle Cup']];
 
 // CS Quest's games are played only inside their course (docs/decisions.md "Course games are played only as part of their
 // course"): no page of their own and not on Home for players, who land on the course page; the platform admin still opens
@@ -51,10 +52,10 @@ for (const [slug, title] of SEEDS) {
     expect(await f.evaluate(() => document.title.length > 0)).toBe(true);
     await page.waitForTimeout(800);
     expect(errors).toEqual([]);
-    if (slug === 'remis-quiet-meadow') {
+    if (NOISE_METERS[slug]) {   // class tools: never featured fun, still found by search
       await page.goto('/');
       await expect(page.locator('#featured').getByText(heading, { exact: true })).toHaveCount(0);
-      await page.goto(`/search?q=${encodeURIComponent('Quiet Meadow')}`);
+      await page.goto(`/search?q=${encodeURIComponent(NOISE_METERS[slug])}`);
       await expect(page.locator('#results').getByText(heading, { exact: true })).toBeVisible();
     } else if (LEARN.has(slug)) {
       await page.goto('/learn');

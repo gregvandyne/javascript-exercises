@@ -1,5 +1,5 @@
-// Loudness on the play page (docs/safety.md "Loudness"; docs/decisions.md "Remi's Quiet Meadow"). One official
-// classroom game, Remi's Quiet Meadow, may listen for HOW LOUD the room is: its play page (never its game frame) opens
+// Loudness on the play page (docs/safety.md "Loudness"; docs/decisions.md "Remi's Quiet Meadow"). Three official
+// classroom noise meters (Remi's Quiet Meadow, Quiet Bounce, Popcorn Hush) may listen for HOW LOUD the room is: their play page (never its game frame) opens
 // the microphone after a tap, measures the level on the device and passes the game one number at a time
 // (public/js/loudness.js). Nothing is recorded, stored or sent anywhere.
 //

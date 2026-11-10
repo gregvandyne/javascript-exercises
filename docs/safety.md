@@ -172,8 +172,8 @@ are screened like typed text. The clip lives in memory for that one request and 
 microphone is allowed on the Studio page and on the play page of one official classroom game (below), never in a game
 frame.
 
-**Loudness** (Remi's Quiet Meadow only; `server/services/mic-games.js`, `public/js/loudness.js`; off with
-`MIC_GAMES=0`). The game is a classroom noise meter. Its play page, and only that page (the slug, an official seed
+**Loudness** (the three official noise meters only: Remi's Quiet Meadow, Quiet Bounce and Popcorn Hush;
+`server/services/mic-games.js`, `public/js/loudness.js`; off with `MIC_GAMES=0`). Each game is a classroom noise meter. Its play page, and only that page (the slug, an official seed
 game owned by the official account, published, not hidden, not in an online match), sends `microphone=(self)`. After a
 real tap, the page opens the microphone with the browser's own prompt (no echo cancelling, noise suppression or
 automatic gain), measures the level on the device with an AnalyserNode that is connected to nothing else, and posts
