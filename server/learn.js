@@ -88,6 +88,10 @@ export const TWO_PLAYER = ['sum-racer', 'castle-clash', 'connect-four', 'tug-of-
  *  (learn.ages.<key>.fit.<gameKey>); make: where the "make your own game" panel goes ('first' before the games). Grouped
  *  by two or three years, not one page per age: with 15 launch games, single-age pages would be thin. */
 export const AGES = [
+  // Ages 5 to 7 (kindergarten to grade 2): only games whose own grade band starts at K, 1 or 2 and that a child who is
+  // still learning to read can play (words read aloud, or numbers, music and pictures). The courses start in grade 3,
+  // and the page says so.
+  { slug: 'games-for-5-to-7-year-olds', key: 'a5', min: 5, max: 7, emoji: '🧸', games: ['word-trail', 'shark-plank', 'sum-racer', 'word-hunt', 'tug-of-math', 'beat-lanes', 'connect-four', 'doodle-hoot'], faq: 4 },
   { slug: 'games-for-8-and-9-year-olds', key: 'a8', min: 8, max: 9, emoji: '🎈', games: ['sum-racer', 'word-hunt', 'shark-plank', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'munch-maze', 'tug-of-math', 'doodle-hoot'], faq: 4 },
   { slug: 'games-for-10-and-11-year-olds', key: 'a10', min: 10, max: 11, emoji: '🚀', games: ['sum-racer', 'word-peek', 'castle-clash', 'brick-drop', 'loop-lab', 'hero-of-sunvale', 'swish-flick', 'tug-of-math', 'doodle-hoot'], make: 'after', faq: 4 },
   { slug: 'games-for-12-to-14-year-olds', key: 'a12', min: 12, max: 14, emoji: '🎧', games: ['castle-clash', 'word-peek', 'brick-drop', 'loop-lab', 'beat-lanes', 'hero-of-sunvale', 'tug-of-math'], make: 'first', faq: 4 },
@@ -100,11 +104,11 @@ export const PARENT_GUIDES = [
 ];
 export const guideBySlug = slug => PARENT_GUIDES.find(g => g.slug === slug) || null;
 export const PARENTS_FAQ = 10;
-/** A launch game's ages for the visible "Ages 8–11" line, from its grades (grade N is about age N+5 to N+6), within the
- *  site's 8 to 14: { from, to }, or null. */
+/** A launch game's ages for the visible "Ages 6–11" line, from its grades (grade N is about age N+5 to N+6, so
+ *  kindergarten is about 5), within the site's 5 to 14 (seo.AGE): { from, to }, or null. */
 export function ageBand(slug) {
   const b = gradeBand([slug]); if (!b) return null;
-  const from = Math.max(8, (b.from === 'K' ? 0 : +b.from) + 5), to = Math.min(14, +b.to + 6);
+  const from = Math.max(5, (b.from === 'K' ? 0 : +b.from) + 5), to = Math.min(14, +b.to + 6);
   return to > from ? { from: String(from), to: String(to) } : null;
 }
 
