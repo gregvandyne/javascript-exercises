@@ -67,7 +67,7 @@ with a line-by-line check against the published CCSS-M document — never from m
 | File | What |
 |---|---|
 | `course/explorer/<step>.json` | one slide deck per step for steps 0.1, 1.1–1.3 and 2.1–2.3 (single Explorer band, key `explorer-<step>`): 5–7 slides — story, one worked example opening with a "Rough first" estimate, one flagged skippable Stretch slide, one words slide (four words), mission last. Deck → 3-question check (pass 2 of 3) → mission rhythm, exactly as the other courses |
-| `sets/u<unit>-explorer.json` | the check banks for units 0–2: item ids `nq-explorer-<step>-e<1..3>`, each item's `cat` is one of the step's LOCKED primary codes from `units.json` (the intro's items are `cat: "framing"` — a routing preview, never assessed coverage), and every choice carries a `misconceptions` tag naming what that distractor diagnoses (the key's tag is `"correct"`) |
+| `sets/u<unit>-explorer.json` | the check banks for units 0–2: item ids `nq-explorer-<step>-e<1..3>`, each item's `cat` is one of the step's LOCKED primary codes from `units.json` (the intro's items are `cat: "framing"` — a routing preview, never assessed coverage), and every choice carries a `misconceptions` tag naming what that distractor diagnoses (the key's tag is `"correct"`). Since 2026-11-10 every item in the unit 0 to 4 banks also carries a `why`, so a miss teaches the path to the answer |
 
 Missions wire to the honest reuse carriers named in `units.json`: Brain Board banks
 "Place Value" (1.1) and "Bar Model Problems" (2.3), Sum Racer tracks (1.2 rounding,

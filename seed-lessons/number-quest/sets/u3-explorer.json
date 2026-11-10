@@ -27,7 +27,8 @@
     "counted only 3 trays",
     "correct",
     "counted one tray too many"
-   ]
+   ],
+   "why": "4 trays with 6 rolls on each is 4 equal groups of 6, so multiply: 4 × 6 = 24. Skip-count to check: 6, 12, 18, 24."
   },
   {
    "id": "nq-explorer-3.1-e2",
@@ -50,7 +51,8 @@
     "counted one row too few",
     "counted 8 rows instead of 7",
     "correct"
-   ]
+   ],
+   "why": "7 rows with 8 seeds in each row is 7 equal groups of 8, so multiply: 7 × 8 = 56."
   },
   {
    "id": "nq-explorer-3.1-e3",
@@ -73,7 +75,8 @@
     "wrote the two part answers side by side instead of adding",
     "added 24 and 3 instead of multiplying",
     "multiplied 22 by 3 instead of 24"
-   ]
+   ],
+   "why": "Split 24 into 20 and 4. Then 20 × 3 = 60 and 4 × 3 = 12, and 60 + 12 = 72."
   },
   {
    "id": "nq-explorer-3.2-e1",
@@ -96,7 +99,8 @@
     "took the friends away from the cookies",
     "guessed a share without sharing the cookies out",
     "correct"
-   ]
+   ],
+   "why": "Share the 24 cookies into 6 equal shares. Each friend gets 4, because 6 × 4 = 24."
   },
   {
    "id": "nq-explorer-3.2-e2",
@@ -119,7 +123,8 @@
     "kept a leftover big enough for another round",
     "correct",
     "dropped the leftover"
-   ]
+   ],
+   "why": "4 × 23 = 92, and 95 - 92 leaves 3 over. The 3 left is less than 4, so there is not enough for another round: 23 remainder 3."
   },
   {
    "id": "nq-explorer-3.2-e3",
@@ -142,7 +147,8 @@
     "counted the seats, not the vans",
     "added the students and seats instead of grouping",
     "correct"
-   ]
+   ],
+   "why": "27 students fill 4 vans of 6, which is 24 students, and 3 students are left over. Those 3 still need a ride, so you need a fifth van."
   },
   {
    "id": "nq-explorer-3.3-e1",
@@ -165,7 +171,8 @@
     "correct",
     "grabbed the neighbor fact 6 × 8",
     "grabbed the neighbor fact 8 × 8"
-   ]
+   ],
+   "why": "Use the doubling trick: 7 × 4 = 28, and double 28 is 56. So 7 × 8 = 56."
   },
   {
    "id": "nq-explorer-3.3-e2",
@@ -188,7 +195,8 @@
     "dropped one group of 8",
     "correct",
     "counted only three groups of 6"
-   ]
+   ],
+   "why": "Turning an array changes nothing: 8 rows of 6 hold as many as 6 rows of 8. Both are 48."
   },
   {
    "id": "nq-explorer-3.3-e3",
@@ -211,7 +219,8 @@
     "kept the whole 48 and shared nothing",
     "grabbed a far fact: 4 × 8 is only 32",
     "correct"
-   ]
+   ],
+   "why": "Facts travel in families. If 6 × 8 = 48, then 48 shared by 8 is 6."
   }
  ]
 }

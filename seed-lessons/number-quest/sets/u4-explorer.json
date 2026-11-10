@@ -27,7 +27,8 @@
     "counted one part instead of five",
     "correct",
     "counted the parts but forgot the whole"
-   ]
+   ],
+   "why": "The pie was cut into 6 equal parts, so the bottom number is 6. You took 5 of them, so the top number is 5: 5/6."
   },
   {
    "id": "nq-explorer-4.1-e2",
@@ -50,7 +51,8 @@
     "placed it by feel: halfway is not a third mark",
     "thought 2/3 is bigger than one whole",
     "correct"
-   ]
+   ],
+   "why": "Cutting 0 to 1 into 3 equal parts makes marks at 1/3, 2/3 and 1. Count 2 parts from 0 and you land on the second mark: 2/3."
   },
   {
    "id": "nq-explorer-4.1-e3",
@@ -73,7 +75,8 @@
     "read the bottom number as a count of cakes",
     "correct",
     "made a part bigger than its whole"
-   ]
+   ],
+   "why": "The bottom number says how many equal parts the whole was cut into. In 3/6 the whole was cut into 6 equal parts, and the 3 counts the parts you take."
   },
   {
    "id": "nq-explorer-4.2-e1",
@@ -96,7 +99,8 @@
     "picked a whole instead of a third",
     "correct",
     "changed the numbers without re-slicing evenly"
-   ]
+   ],
+   "why": "Cut each third into 2 smaller pieces and both numbers double: 1/3 becomes 2/6. The pieces shrink, the count grows, and the share stays the same."
   },
   {
    "id": "nq-explorer-4.2-e2",
@@ -119,7 +123,8 @@
     "checked the counts but not the piece sizes",
     "gave up before using the halfway mark",
     "correct"
-   ]
+   ],
+   "why": "Use the halfway mark: half of 8 eighths is 4/8. 3/8 is less than 4/8, so 1/2 is greater."
   },
   {
    "id": "nq-explorer-4.2-e3",
@@ -142,7 +147,8 @@
     "matched the top numbers and stopped",
     "correct",
     "let the cutting order decide"
-   ]
+   ],
+   "why": "Both servings are 2 pieces, but a cake cut into 3 has bigger pieces than one cut into 4. Two bigger pieces make more cake, so 2/3 is more."
   },
   {
    "id": "nq-explorer-4.3-e1",
@@ -165,7 +171,8 @@
     "dropped the piece size",
     "added 2 sixths twice",
     "correct"
-   ]
+   ],
+   "why": "The pieces are the same size, sixths, so just count them: 2 sixths + 3 sixths = 5 sixths, or 5/6. The bottom number stays 6."
   },
   {
    "id": "nq-explorer-4.3-e2",
@@ -188,7 +195,8 @@
     "added the tops but never re-sliced the half",
     "correct",
     "shrank both shares into tenths"
-   ]
+   ],
+   "why": "The pieces do not match, so re-slice the half into eighths: 1/2 = 4/8. Then 4/8 + 1/8 = 5/8."
   },
   {
    "id": "nq-explorer-4.3-e3",
@@ -211,7 +219,8 @@
     "added the tops without re-slicing the third",
     "multiplied the bottoms and guessed the top",
     "correct"
-   ]
+   ],
+   "why": "Re-slice the third into sixths: 1/3 = 2/6. Then 2/6 + 1/6 = 3/6, and 3 sixths is half the pizza: 1/2."
   }
  ]
 }

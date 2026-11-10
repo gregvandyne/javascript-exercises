@@ -27,7 +27,8 @@
     "mixed up the Numberworks with a racetrack",
     "mixed up the Numberworks with a post office",
     "picked one workshop instead of the whole street"
-   ]
+   ],
+   "why": "Tally keeps the Numberworks, the street of workshops in Netville where all the counting gets done. It is a whole street, not just one shop."
   },
   {
    "id": "nq-explorer-0.1-e2",
@@ -50,7 +51,8 @@
     "correct",
     "mixed up a digit with a rounded number",
     "mixed up a digit with a drawing"
-   ]
+   ],
+   "why": "There are ten digits, 0 to 9. Every number, even a big one, is built from them, the way words are built from letters."
   },
   {
    "id": "nq-explorer-0.1-e3",
@@ -73,7 +75,8 @@
     "picked a job with no counting in it",
     "correct",
     "picked the Jumble's own job, not a number's"
-   ]
+   ],
+   "why": "A number is a tool with a job: counting, measuring, sharing or paying. Measuring a ribbon needs a number, and dreaming, singing and giggling do not."
   }
  ]
 }

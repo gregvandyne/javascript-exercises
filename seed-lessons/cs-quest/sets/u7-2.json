@@ -71,7 +71,8 @@
     "set milestones and split the features",
     "let one person do it all"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Milestones split the work across the sessions and say who builds which feature by when, so the team can tick off progress and finish on time."
   },
   {
    "id": "2-7.1-e2",
@@ -88,7 +89,8 @@
     "\"make it fun, make it cool, make it big\"",
     "\"add levels, then add more levels\""
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Decomposition breaks the game into parts that can each be built and tested on their own: start screen, play loop, scoring and end screen."
   },
   {
    "id": "2-7.1-e3",
@@ -105,7 +107,8 @@
     "it is prettier than a list",
     "it replaces testing later"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A flowchart draws each step as a box and each decision as a diamond. Drawing the rule first shows whether it is clear before you spend time building."
   },
   {
    "id": "2-7.2-r1",
@@ -139,7 +142,8 @@
     "to use up more of the messages",
     "so the Builder gets a rest between them"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Test cases written ahead make you check the parts that matter, including edges like zero lives or the last second, not just whatever you happen to notice."
   },
   {
    "id": "2-7.2-e2",
@@ -156,7 +160,8 @@
     "\"Expected the score to stay the same when a life is lost; it goes up by 1. Fix that.\"",
     "\"add a boss and music\""
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "A precise fix names the situation, what you expected and what actually happened. That tells the Builder exactly which rule to change."
   },
   {
    "id": "2-7.2-e3",
@@ -173,7 +178,8 @@
     "start, halfway, and the last second",
     "a random tap"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Testing the start, the middle and the very last second covers the timer's whole range, including the edge where bugs often hide."
   },
   {
    "id": "2-7.3-r1",
@@ -207,7 +213,8 @@
     "testers are smarter than makers",
     "different players find different problems"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "One tester is a story, and many testers are data. Different players run into different problems, so more testers find more of them."
   },
   {
    "id": "2-7.3-e2",
@@ -224,7 +231,8 @@
     "make level 2 easier, then test again",
     "change the title of the game"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Most testers found level 2 too hard, so the data points at level 2. Make it easier, then test again to check that the change worked."
   },
   {
    "id": "2-7.3-e3",
@@ -241,7 +249,8 @@
     "a protocol",
     "decomposition"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Crowdsourcing means collecting input from many people. Pooling every team's tallies gathers feedback from the whole class at once."
   },
   {
    "id": "2-7.4-r1",
@@ -275,7 +284,8 @@
     "encrypt and hide",
     "run much faster"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Documentation explains how the program works, so someone else can follow it, test it and find the bugs in it."
   },
   {
    "id": "2-7.4-e2",
@@ -292,7 +302,8 @@
     "\"score goes up by 10 per star; lives at 0 ends the game\"",
     "\"it is a game\""
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "This line names the real rules: how the score changes and what ends the game. A classmate could use it to test or change the game."
   },
   {
    "id": "2-7.4-e3",
@@ -309,7 +320,8 @@
     "nothing",
     "the template, art and ideas you reused"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Credits name everything you reused, like the template, the art and other people's ideas, written the way each license asks."
   }
  ]
 }
