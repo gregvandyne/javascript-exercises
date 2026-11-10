@@ -7175,8 +7175,8 @@
           "caption": "Feedback: write a note, save it, and the student sees it on their lesson."
         },
         "standards": {
-          "alt": "The class Standards tab: computer science standards with how far each student has got",
-          "caption": "Standards: the computer science standards your class has covered, student by student."
+          "alt": "The class Standards tab: Common Core math standards with how far each student has got",
+          "caption": "Standards: the Common Core standards your class has covered, student by student."
         }
       },
       "home": {

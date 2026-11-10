@@ -7375,8 +7375,8 @@
           "caption": "Commenter : écrivez une note, enregistrez-la, et l'élève la voit dans sa leçon."
         },
         "standards": {
-          "alt": "L'onglet Normes de la classe : les normes d'informatique et l'avancement de chaque élève",
-          "caption": "Normes : les normes d'informatique couvertes par votre classe, élève par élève."
+          "alt": "L'onglet Normes de la classe : les normes de mathématiques Common Core et l'avancée de chaque élève",
+          "caption": "Normes : les normes Common Core couvertes par votre classe, élève par élève."
         }
       },
       "home": {

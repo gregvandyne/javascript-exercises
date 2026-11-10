@@ -22,7 +22,7 @@ export const LOOP = [
 /** The screenshots in public/img/teach-loop (scripts/teach-loop-shots.js): name, the step it shows. 1280x800, 16:10. */
 export const SHOTS = [['gradebook', 'check'], ['attention', 'check'], ['feedback', 'feedback'], ['standards', 'check']];
 export const SHOT_W = 1280, SHOT_H = 800;
-const SHOT_V = '1';
+const SHOT_V = '2';
 
 const svg = cls => raw(`<svg class="${cls}" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
 const check = svg('tl-check'), lpCheck = svg('lp-check');

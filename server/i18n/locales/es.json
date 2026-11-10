@@ -7375,8 +7375,8 @@
           "caption": "Comentarios: escribe una nota, guárdala y el estudiante la ve en su lección."
         },
         "standards": {
-          "alt": "La pestaña Estándares de la clase: estándares de informática y cuánto ha avanzado cada estudiante",
-          "caption": "Estándares: los estándares de informática que ha cubierto tu clase, estudiante por estudiante."
+          "alt": "La pestaña Estándares de la clase: estándares de matemáticas Common Core y hasta dónde ha llegado cada alumno",
+          "caption": "Estándares: los estándares Common Core que ha cubierto tu clase, alumno por alumno."
         }
       },
       "home": {

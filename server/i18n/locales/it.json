@@ -7376,8 +7376,8 @@
           "caption": "Commenta: scrivi una nota, salvala e lo studente la vede nella sua lezione."
         },
         "standards": {
-          "alt": "La scheda Standard della classe: gli standard di informatica e quanto è avanti ogni studente",
-          "caption": "Standard: gli standard di informatica che la tua classe ha affrontato, studente per studente."
+          "alt": "La scheda Standard della classe: gli standard di matematica Common Core e a che punto è ogni studente",
+          "caption": "Standard: gli standard Common Core che la classe ha affrontato, studente per studente."
         }
       },
       "home": {
