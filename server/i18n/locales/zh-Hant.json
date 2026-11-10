@@ -189,6 +189,34 @@
       "pickAvatar": "請選一個頭像。",
       "pickColor": "請選一個顏色。",
       "pickLanguage": "請選一種語言。"
+    },
+    "reset": {
+      "linkLine": "老師、學校教職員或家長？<a href=\"{href}\">用電子郵件重設密碼</a>。",
+      "title": "重設密碼",
+      "lead": "適用於老師、學校教職員和家長的帳號。輸入你的使用者名稱，我們會把連結寄到帳號登記的電子郵件信箱。",
+      "kids": "是學生或小朋友的帳號嗎？請問老師或大人。小朋友的帳號沒有電子郵件。",
+      "username": "使用者名稱",
+      "needUsername": "請先輸入使用者名稱。",
+      "send": "寄連結給我",
+      "sent": "如果這是已登記電子郵件的老師、學校教職員或家長帳號，連結已經寄出。連結只能使用一次，{minutes} 分鐘內有效。",
+      "noEmail": "沒有收到信？這個帳號可能沒有登記電子郵件。請寫信到 {email}，我們會協助你。",
+      "off": "目前無法寄送重設連結。請寫信到 {email}，我們會協助你。",
+      "backToSignIn": "回到登入",
+      "newTitle": "設定新密碼",
+      "forAccount": "帳號 {username}",
+      "newLabel": "新密碼",
+      "newHint": "至少 {min} 個字元。",
+      "save": "儲存新密碼",
+      "bad": "這個連結已過期或已經用過。連結只能使用一次，{minutes} 分鐘內有效。",
+      "again": "寄新的連結",
+      "done": "密碼已經更改。請用新密碼登入。其他裝置都已登出。",
+      "email": {
+        "subject": "重設你的 Oomba Academy 密碼",
+        "intro": "有人要求重設 Oomba Academy 帳號 {username} 的密碼。如果是你本人，請用這個連結設定新密碼：",
+        "button": "設定新密碼",
+        "expires": "連結只能使用一次，{minutes} 分鐘內有效。",
+        "ignore": "如果不是你要求的，可以忽略這封信。你的密碼不會改變。"
+      }
     }
   },
   "me": {
@@ -2693,7 +2721,8 @@
       "count": "{count, plural, other {# 張登入卡}}",
       "later": "用手機嗎？這些卡片會為你（只有你）保留 24 小時：在學校電腦上從班級的「學生」分頁再次打開並列印，或在手機上用 分享 › 列印 › 儲存為 PDF。",
       "again": "{count, plural, other {今天做的 # 張登入卡：還在這裡可以列印。}}",
-      "open": "打開卡片"
+      "open": "打開卡片",
+      "next": "下一步：指派第一個遊戲"
     },
     "errors": {
       "notFound": "找不到該項目，或你沒有權限開啟。",
@@ -3090,7 +3119,8 @@
       "zoneSet": "設定時區",
       "zoneAsk": "學校管理員可以在學校的「設定」中設定。",
       "doneHere": "已指派給 {class}。學生現在就看得到。",
-      "seeStarted": "看看誰已經開始"
+      "seeStarted": "看看誰已經開始",
+      "doneLater": "已指派給 {class}。學生從 {date} 起可以看到。"
     },
     "class": {
       "title": "課程",
@@ -3205,7 +3235,9 @@
       "noStudents": "還沒有學生",
       "noStudentsText": "在「學生」分頁新增學生後，他們的進度就會顯示在這裡。",
       "toReviewList": "待批閱的答案：",
-      "reviewLink": "{title}（{count}）"
+      "reviewLink": "{title}（{count}）",
+      "quizTitle": "測驗成績：答對 {pct}%",
+      "quizOverall": "所有課程的測驗成績：{pct}%"
     },
     "lesson": {
       "finished": "{total} 位學生中有 {done} 位完成",
@@ -3226,7 +3258,8 @@
       "attention": "需要關注的優先",
       "selfMarked": "學生自己標記完成，沒有在這裡玩",
       "minutes": "{count, plural, other {# 分鐘}}",
-      "swipe": "左右滑動表格，看全部步驟"
+      "swipe": "左右滑動表格，看全部步驟",
+      "quizScore": "{total} 題答對 {right} 題（{pct}%）"
     },
     "student": {
       "doneOf": "已完成 {done}/{total}",
@@ -3254,6 +3287,10 @@
     },
     "courses": {
       "started": "{total} 人中有 {started} 人已開始"
+    },
+    "csv": {
+      "quiz": "{title}（測驗 %）",
+      "quizAll": "測驗 %"
     }
   },
   "google": {
@@ -3980,7 +4017,8 @@
         "passwordHint": "至少 {min} 個字元。",
         "adult": "我是老師或學校教職員，而且已滿 18 歲。",
         "submit": "建立帳號並開始試用",
-        "privacy": "我們不會把你的工作電子郵件存在帳號裡：它會為了你的方案傳給 Stripe。<a href=\"{privacy}\">隱私權政策</a>"
+        "privacy": "我們不會把你的工作電子郵件存在帳號裡：它會為了你的方案傳給 Stripe。<a href=\"{privacy}\">隱私權政策</a>",
+        "usernameHint": "3 到 16 個英文字母或數字，不含空格。登入時使用。"
       },
       "errors": {
         "signedIn": "你已經登入了。",
@@ -5045,7 +5083,8 @@
       "soundOff": "聲音關",
       "seeResultsNow": "現在看結果",
       "read": "朗讀題目",
-      "away": "{count} 位已斷線"
+      "away": "{count} 位已斷線",
+      "startEmpty": "還沒有人加入。仍然要開始嗎？"
     },
     "landing": {
       "title": "主持即時遊戲",
@@ -6555,7 +6594,8 @@
       "title": "Number Quest",
       "sub": "在數字工坊學數學・三到五年級"
     },
-    "unitsN": "{count, plural, other {查看 # 個單元}}"
+    "unitsN": "{count, plural, other {查看 # 個單元}}",
+    "gamesN": "{count, plural, other {查看 # 個遊戲}}"
   },
   "move": {
     "title": "活力小休息",

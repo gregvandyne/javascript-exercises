@@ -190,6 +190,34 @@
       "pickAvatar": "Kies een van de avatars.",
       "pickColor": "Kies een van de kleuren.",
       "pickLanguage": "Kies een van de talen."
+    },
+    "reset": {
+      "linkLine": "Leraar, schoolmedewerker of volwassene? <a href=\"{href}\">Stel je wachtwoord opnieuw in via e-mail</a>.",
+      "title": "Wachtwoord opnieuw instellen",
+      "lead": "Voor accounts van leraren, schoolmedewerkers en volwassenen. Typ je gebruikersnaam en we sturen een link naar het e-mailadres dat we voor het account hebben.",
+      "kids": "Een account van een leerling of kind? Vraag het je leraar of een volwassene. Kinderaccounts hebben geen e-mailadres.",
+      "username": "Gebruikersnaam",
+      "needUsername": "Typ eerst je gebruikersnaam.",
+      "send": "Mail me een link",
+      "sent": "Als dit een account van een leraar, schoolmedewerker of volwassene is waarvan we een e-mailadres hebben, is er een link onderweg. Die werkt één keer, {minutes} minuten lang.",
+      "noEmail": "Niets in je inbox? Misschien hebben we geen e-mailadres voor het account. Schrijf naar {email} en we helpen je.",
+      "off": "We kunnen nu geen links mailen om je wachtwoord opnieuw in te stellen. Schrijf naar {email} en we helpen je.",
+      "backToSignIn": "Terug naar inloggen",
+      "newTitle": "Kies een nieuw wachtwoord",
+      "forAccount": "Voor het account {username}",
+      "newLabel": "Nieuw wachtwoord",
+      "newHint": "Minstens {min} tekens.",
+      "save": "Mijn nieuwe wachtwoord opslaan",
+      "bad": "Deze link is verlopen of al gebruikt. Een link werkt één keer, {minutes} minuten lang.",
+      "again": "Stuur een nieuwe link",
+      "done": "Je wachtwoord is veranderd. Log in met het nieuwe. Je bent overal anders uitgelogd.",
+      "email": {
+        "subject": "Stel je wachtwoord voor Oomba Academy opnieuw in",
+        "intro": "Iemand heeft gevraagd om het wachtwoord van het Oomba Academy-account {username} opnieuw in te stellen. Was jij dat? Kies dan een nieuw wachtwoord met deze link:",
+        "button": "Kies een nieuw wachtwoord",
+        "expires": "De link werkt één keer, {minutes} minuten lang.",
+        "ignore": "Heb je hier niet om gevraagd? Dan kun je deze e-mail negeren. Je wachtwoord blijft hetzelfde."
+      }
     }
   },
   "me": {
@@ -2694,7 +2722,8 @@
       "count": "{count, plural, one {# inlogkaart} other {# inlogkaarten}}",
       "later": "Op een telefoon? Deze kaarten blijven 24 uur hier voor jou (alleen voor jou): open ze opnieuw via het tabblad Leerlingen van de klas op een schoolcomputer en print ze, of gebruik Delen › Afdrukken › Opslaan als pdf op je telefoon.",
       "again": "{count, plural, one {Inlogkaart van vandaag: nog hier om te printen.} other {# inlogkaarten van vandaag: nog hier om te printen.}}",
-      "open": "Kaarten openen"
+      "open": "Kaarten openen",
+      "next": "Volgende stap: een eerste spel toewijzen"
     },
     "errors": {
       "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
@@ -3091,7 +3120,8 @@
       "zoneSet": "Tijdzone instellen",
       "zoneAsk": "Een schoolbeheerder kan die instellen bij de Instellingen van de school.",
       "doneHere": "Toegewezen aan {class}. Leerlingen zien het nu.",
-      "seeStarted": "Bekijk wie begonnen is"
+      "seeStarted": "Bekijk wie begonnen is",
+      "doneLater": "Toegewezen aan {class}. Leerlingen zien de les vanaf {date}."
     },
     "class": {
       "title": "Lessen",
@@ -3206,7 +3236,9 @@
       "noStudents": "Nog geen leerlingen",
       "noStudentsText": "Voeg leerlingen toe op het tabblad Leerlingen, dan verschijnt hier hun voortgang.",
       "toReviewList": "Antwoorden om na te kijken:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Quizscore: {pct}% goed",
+      "quizOverall": "Quizscore over alle lessen: {pct}%"
     },
     "lesson": {
       "finished": "{done} van de {total} leerlingen klaar",
@@ -3227,7 +3259,8 @@
       "attention": "Wie aandacht nodig heeft eerst",
       "selfMarked": "Door de leerling als klaar gemarkeerd, hier niet gespeeld",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Veeg de tabel opzij om alle stappen te zien"
+      "swipe": "Veeg de tabel opzij om alle stappen te zien",
+      "quizScore": "{right} van {total} goed ({pct}%)"
     },
     "student": {
       "doneOf": "{done} van {total} klaar",
@@ -3255,6 +3288,10 @@
     },
     "courses": {
       "started": "{started} van {total} begonnen"
+    },
+    "csv": {
+      "quiz": "{title} (quiz %)",
+      "quizAll": "Quiz %"
     }
   },
   "google": {
@@ -3981,7 +4018,8 @@
         "passwordHint": "Minstens {min} tekens.",
         "adult": "Ik ben leerkracht of werk op een school, en ik ben 18 jaar of ouder.",
         "submit": "Account maken en proefperiode starten",
-        "privacy": "We bewaren je werk-e-mailadres niet bij je account: het gaat naar Stripe voor je abonnement. <a href=\"{privacy}\">Privacybeleid</a>"
+        "privacy": "We bewaren je werk-e-mailadres niet bij je account: het gaat naar Stripe voor je abonnement. <a href=\"{privacy}\">Privacybeleid</a>",
+        "usernameHint": "3 tot 16 letters of cijfers, zonder spaties. Hiermee log je in."
       },
       "errors": {
         "signedIn": "Je bent al ingelogd.",
@@ -5046,7 +5084,8 @@
       "soundOff": "Geluid uit",
       "seeResultsNow": "Nu de uitslag bekijken",
       "read": "Vraag voorlezen",
-      "away": "{count} niet verbonden"
+      "away": "{count} niet verbonden",
+      "startEmpty": "Er doet nog niemand mee. Toch starten?"
     },
     "landing": {
       "title": "Een livespel leiden",
@@ -6556,7 +6595,8 @@
       "title": "Number Quest",
       "sub": "Rekenen in de Numberworks · groep 5 tot en met 7"
     },
-    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}"
+    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}",
+    "gamesN": "{count, plural, one {Bekijk het # spel} other {Bekijk de # spellen}}"
   },
   "move": {
     "title": "Beweegpauzes",

@@ -189,6 +189,34 @@
       "pickAvatar": "Choisis un des avatars.",
       "pickColor": "Choisis une des couleurs.",
       "pickLanguage": "Choisis une des langues."
+    },
+    "reset": {
+      "linkLine": "Enseignant, personnel de l’école ou adulte ? <a href=\"{href}\">Réinitialisez votre mot de passe par e-mail</a>.",
+      "title": "Réinitialiser votre mot de passe",
+      "lead": "Pour les comptes d’enseignants, de personnel de l’école et d’adultes. Saisissez votre nom d’utilisateur et nous enverrons un lien à l’adresse e-mail que nous avons pour ce compte.",
+      "kids": "Un compte d’élève ou d’enfant ? Demande à ton enseignant ou à un adulte. Les comptes d’enfants n’ont pas d’e-mail.",
+      "username": "Nom d’utilisateur",
+      "needUsername": "Saisissez d’abord votre nom d’utilisateur.",
+      "send": "M’envoyer un lien par e-mail",
+      "sent": "Si c’est un compte d’enseignant, de personnel de l’école ou d’adulte avec une adresse e-mail enregistrée, un lien est en route. Il fonctionne une seule fois, pendant {minutes} minutes.",
+      "noEmail": "Rien dans votre boîte de réception ? Le compte n’a peut-être pas d’adresse e-mail enregistrée. Écrivez à {email} et nous vous aiderons.",
+      "off": "Nous ne pouvons pas envoyer de lien de réinitialisation pour le moment. Écrivez à {email} et nous vous aiderons.",
+      "backToSignIn": "Retour à la connexion",
+      "newTitle": "Choisissez un nouveau mot de passe",
+      "forAccount": "Pour le compte {username}",
+      "newLabel": "Nouveau mot de passe",
+      "newHint": "Au moins {min} caractères.",
+      "save": "Enregistrer mon nouveau mot de passe",
+      "bad": "Ce lien a expiré ou a déjà été utilisé. Un lien fonctionne une seule fois, pendant {minutes} minutes.",
+      "again": "Envoyer un nouveau lien",
+      "done": "Votre mot de passe est changé. Connectez-vous avec le nouveau. Vous avez été déconnecté partout ailleurs.",
+      "email": {
+        "subject": "Réinitialisez votre mot de passe Oomba Academy",
+        "intro": "Quelqu’un a demandé à réinitialiser le mot de passe du compte Oomba Academy {username}. Si c’était vous, choisissez un nouveau mot de passe avec ce lien :",
+        "button": "Choisir un nouveau mot de passe",
+        "expires": "Le lien fonctionne une seule fois, pendant {minutes} minutes.",
+        "ignore": "Si vous n’avez rien demandé, vous pouvez ignorer cet e-mail. Votre mot de passe reste le même."
+      }
     }
   },
   "me": {
@@ -2693,7 +2721,8 @@
       "count": "{count, plural, one {# carte de connexion} other {# cartes de connexion}}",
       "later": "Sur un téléphone ? Ces cartes restent ici pour toi (seulement toi) pendant 24 heures : rouvre-les depuis l'onglet Élèves de la classe sur un ordinateur de l'école pour les imprimer, ou utilise Partager › Imprimer › Enregistrer en PDF sur ton téléphone.",
       "again": "{count, plural, one {Carte de connexion créée aujourd'hui : encore là pour l'imprimer.} other {# cartes de connexion créées aujourd'hui : encore là pour les imprimer.}}",
-      "open": "Ouvrir les cartes"
+      "open": "Ouvrir les cartes",
+      "next": "Ensuite : assigner un premier jeu"
     },
     "errors": {
       "notFound": "Nous n’avons pas trouvé cette page, ou elle n’est pas accessible.",
@@ -3090,7 +3119,8 @@
       "zoneSet": "Définir le fuseau horaire",
       "zoneAsk": "Un administrateur de l'école peut le définir dans les Paramètres de l'école.",
       "doneHere": "Attribué à {class}. Les élèves le voient maintenant.",
-      "seeStarted": "Voir qui a commencé"
+      "seeStarted": "Voir qui a commencé",
+      "doneLater": "Attribuée à {class}. Les élèves la verront à partir du {date}."
     },
     "class": {
       "title": "Leçons",
@@ -3205,7 +3235,9 @@
       "noStudents": "Pas encore d’élèves",
       "noStudentsText": "Ajoutez des élèves dans l’onglet Élèves, et leur progression s’affichera ici.",
       "toReviewList": "Réponses à corriger :",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Score du quiz : {pct} % de bonnes réponses",
+      "quizOverall": "Score des quiz sur toutes les leçons : {pct} %"
     },
     "lesson": {
       "finished": "Élèves ayant terminé : {done} sur {total}",
@@ -3226,7 +3258,8 @@
       "attention": "À suivre en premier",
       "selfMarked": "Marqué comme fait par l'élève, sans y jouer ici",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Fais glisser le tableau sur le côté pour voir toutes les étapes"
+      "swipe": "Fais glisser le tableau sur le côté pour voir toutes les étapes",
+      "quizScore": "{right} sur {total} justes ({pct} %)"
     },
     "student": {
       "doneOf": "{done} sur {total} terminées",
@@ -3254,6 +3287,10 @@
     },
     "courses": {
       "started": "{started} sur {total} ont commencé"
+    },
+    "csv": {
+      "quiz": "{title} (% du quiz)",
+      "quizAll": "% des quiz"
     }
   },
   "google": {
@@ -3980,7 +4017,8 @@
         "passwordHint": "Au moins {min} caractères.",
         "adult": "Je suis enseignant ou membre du personnel d’une école, et j’ai 18 ans ou plus.",
         "submit": "Créer mon compte et commencer l’essai",
-        "privacy": "Nous ne gardons pas votre adresse e-mail professionnelle sur votre compte : elle est transmise à Stripe pour votre formule. <a href=\"{privacy}\">Politique de confidentialité</a>"
+        "privacy": "Nous ne gardons pas votre adresse e-mail professionnelle sur votre compte : elle est transmise à Stripe pour votre formule. <a href=\"{privacy}\">Politique de confidentialité</a>",
+        "usernameHint": "De 3 à 16 lettres ou chiffres, sans espace. Vous vous connectez avec."
       },
       "errors": {
         "signedIn": "Vous êtes déjà connecté.",
@@ -5045,7 +5083,8 @@
       "soundOff": "Son coupé",
       "seeResultsNow": "Voir les résultats",
       "read": "Lire la question",
-      "away": "{count} déconnecté(s)"
+      "away": "{count} déconnecté(s)",
+      "startEmpty": "Personne n’a encore rejoint la partie. Lancer quand même ?"
     },
     "landing": {
       "title": "Animer une partie en direct",
@@ -6555,7 +6594,8 @@
       "title": "Number Quest",
       "sub": "Les maths dans les Numberworks · du CE2 au CM2"
     },
-    "unitsN": "{count, plural, one {Voir l’unité} other {Voir les # unités}}"
+    "unitsN": "{count, plural, one {Voir l’unité} other {Voir les # unités}}",
+    "gamesN": "{count, plural, one {Voir le jeu} other {Voir les # jeux}}"
   },
   "move": {
     "title": "Pauses actives",

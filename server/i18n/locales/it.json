@@ -190,6 +190,34 @@
       "pickAvatar": "Scegli uno degli avatar.",
       "pickColor": "Scegli uno dei colori.",
       "pickLanguage": "Scegli una delle lingue."
+    },
+    "reset": {
+      "linkLine": "Insegnante, personale della scuola o adulto? <a href=\"{href}\">Reimposta la password via email</a>.",
+      "title": "Reimposta la password",
+      "lead": "Per gli account di insegnanti, personale della scuola e adulti. Scrivi il tuo nome utente e manderemo un link all'indirizzo email che abbiamo per l'account.",
+      "kids": "Un account da studente o da bambino? Chiedi al tuo insegnante o a un adulto. Gli account dei bambini non hanno email.",
+      "username": "Nome utente",
+      "needUsername": "Scrivi prima il tuo nome utente.",
+      "send": "Mandami un link via email",
+      "sent": "Se è un account di un insegnante, del personale della scuola o di un adulto con un indirizzo email registrato, un link è in arrivo. Funziona una volta, per {minutes} minuti.",
+      "noEmail": "Non è arrivato niente? Forse l'account non ha un indirizzo email registrato. Scrivi a {email} e ti aiutiamo.",
+      "off": "In questo momento non possiamo inviare link per reimpostare la password. Scrivi a {email} e ti aiutiamo.",
+      "backToSignIn": "Torna all'accesso",
+      "newTitle": "Scegli una nuova password",
+      "forAccount": "Per l'account {username}",
+      "newLabel": "Nuova password",
+      "newHint": "Almeno {min} caratteri.",
+      "save": "Salva la mia nuova password",
+      "bad": "Questo link è scaduto o è già stato usato. Un link funziona una volta, per {minutes} minuti.",
+      "again": "Invia un nuovo link",
+      "done": "La password è cambiata. Accedi con quella nuova. Sei stato disconnesso da tutti gli altri dispositivi.",
+      "email": {
+        "subject": "Reimposta la tua password di Oomba Academy",
+        "intro": "Qualcuno ha chiesto di reimpostare la password dell'account {username} di Oomba Academy. Se sei stato tu, scegli una nuova password con questo link:",
+        "button": "Scegli una nuova password",
+        "expires": "Il link funziona una volta, per {minutes} minuti.",
+        "ignore": "Se non l'hai chiesto tu, puoi ignorare questa email. La tua password resta la stessa."
+      }
     }
   },
   "me": {
@@ -2694,7 +2722,8 @@
       "count": "{count, plural, one {# scheda di accesso} other {# schede di accesso}}",
       "later": "Sul telefono? Queste schede restano qui per te (solo per te) per 24 ore: riaprile dalla scheda Studenti della classe su un computer della scuola e stampale, oppure usa Condividi › Stampa › Salva come PDF sul telefono.",
       "again": "{count, plural, one {Scheda di accesso creata oggi: ancora qui da stampare.} other {# schede di accesso create oggi: ancora qui da stampare.}}",
-      "open": "Apri le schede"
+      "open": "Apri le schede",
+      "next": "Prossimo passo: assegna un primo gioco"
     },
     "errors": {
       "notFound": "Non l'abbiamo trovato, oppure non è accessibile da questo account.",
@@ -3091,7 +3120,8 @@
       "zoneSet": "Imposta il fuso orario",
       "zoneAsk": "Un amministratore della scuola può impostarlo nelle Impostazioni della scuola.",
       "doneHere": "Assegnata a {class}. Gli studenti la vedono ora.",
-      "seeStarted": "Vedi chi ha iniziato"
+      "seeStarted": "Vedi chi ha iniziato",
+      "doneLater": "Assegnata a {class}. Gli studenti la vedranno dal {date}."
     },
     "class": {
       "title": "Lezioni",
@@ -3206,7 +3236,9 @@
       "noStudents": "Ancora nessuno studente",
       "noStudentsText": "Aggiunga gli studenti nella sezione Studenti e qui compariranno i loro progressi.",
       "toReviewList": "Risposte da controllare:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Punteggio del quiz: {pct}% di risposte giuste",
+      "quizOverall": "Punteggio dei quiz in tutte le lezioni: {pct}%"
     },
     "lesson": {
       "finished": "Studenti che hanno finito: {done} su {total}",
@@ -3227,7 +3259,8 @@
       "attention": "Prima chi ha bisogno di attenzione",
       "selfMarked": "Segnato come fatto dallo studente, senza giocare qui",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Scorri la tabella di lato per vedere tutti i passaggi"
+      "swipe": "Scorri la tabella di lato per vedere tutti i passaggi",
+      "quizScore": "{right} su {total} giuste ({pct}%)"
     },
     "student": {
       "doneOf": "{done} su {total} fatti",
@@ -3255,6 +3288,10 @@
     },
     "courses": {
       "started": "{started} su {total} hanno iniziato"
+    },
+    "csv": {
+      "quiz": "{title} (% quiz)",
+      "quizAll": "% quiz"
     }
   },
   "google": {
@@ -3981,7 +4018,8 @@
         "passwordHint": "Almeno {min} caratteri.",
         "adult": "Sono un insegnante o lavoro in una scuola, e ho almeno 18 anni.",
         "submit": "Crea il mio account e inizia la prova",
-        "privacy": "Non conserviamo la tua email di lavoro nel tuo account: va a Stripe per il tuo piano. <a href=\"{privacy}\">Informativa sulla privacy</a>"
+        "privacy": "Non conserviamo la tua email di lavoro nel tuo account: va a Stripe per il tuo piano. <a href=\"{privacy}\">Informativa sulla privacy</a>",
+        "usernameHint": "Da 3 a 16 lettere o numeri, senza spazi. Lo usi per accedere."
       },
       "errors": {
         "signedIn": "Hai già effettuato l'accesso.",
@@ -5046,7 +5084,8 @@
       "soundOff": "Audio spento",
       "seeResultsNow": "Vedi subito i risultati",
       "read": "Leggi la domanda",
-      "away": "{count} scollegati"
+      "away": "{count} scollegati",
+      "startEmpty": "Non è ancora entrato nessuno. Iniziare lo stesso?"
     },
     "landing": {
       "title": "Guida una partita dal vivo",
@@ -6556,7 +6595,8 @@
       "title": "Number Quest",
       "sub": "La matematica nei Numberworks · dalla 3ª alla 5ª elementare"
     },
-    "unitsN": "{count, plural, one {Vedi l’unità} other {Vedi le # unità}}"
+    "unitsN": "{count, plural, one {Vedi l’unità} other {Vedi le # unità}}",
+    "gamesN": "{count, plural, one {Vedi il gioco} other {Vedi i # giochi}}"
   },
   "move": {
     "title": "Pause attive",

@@ -190,6 +190,34 @@
       "pickAvatar": "Such dir einen der Avatare aus.",
       "pickColor": "Such dir eine der Farben aus.",
       "pickLanguage": "Such dir eine der Sprachen aus."
+    },
+    "reset": {
+      "linkLine": "Lehrkraft, Schulpersonal oder Erwachsener? <a href=\"{href}\">Passwort per E-Mail zurücksetzen</a>.",
+      "title": "Passwort zurücksetzen",
+      "lead": "Für Konten von Lehrkräften, Schulpersonal und Erwachsenen. Geben Sie Ihren Benutzernamen ein, und wir schicken einen Link an die E-Mail-Adresse, die wir für das Konto haben.",
+      "kids": "Ein Schüler- oder Kinderkonto? Frag deine Lehrkraft oder einen Erwachsenen. Kinderkonten haben keine E-Mail-Adresse.",
+      "username": "Benutzername",
+      "needUsername": "Geben Sie zuerst Ihren Benutzernamen ein.",
+      "send": "Link per E-Mail schicken",
+      "sent": "Wenn das ein Konto einer Lehrkraft, von Schulpersonal oder eines Erwachsenen mit hinterlegter E-Mail-Adresse ist, ist ein Link unterwegs. Er funktioniert einmal, {minutes} Minuten lang.",
+      "noEmail": "Nichts im Posteingang? Vielleicht ist für das Konto keine E-Mail-Adresse hinterlegt. Schreiben Sie an {email}, wir helfen weiter.",
+      "off": "Wir können gerade keine Links zum Zurücksetzen verschicken. Schreiben Sie an {email}, wir helfen weiter.",
+      "backToSignIn": "Zurück zur Anmeldung",
+      "newTitle": "Neues Passwort wählen",
+      "forAccount": "Für das Konto {username}",
+      "newLabel": "Neues Passwort",
+      "newHint": "Mindestens {min} Zeichen.",
+      "save": "Neues Passwort speichern",
+      "bad": "Dieser Link ist abgelaufen oder wurde schon benutzt. Ein Link funktioniert einmal, {minutes} Minuten lang.",
+      "again": "Neuen Link schicken",
+      "done": "Ihr Passwort ist geändert. Melden Sie sich mit dem neuen an. Überall sonst wurden Sie abgemeldet.",
+      "email": {
+        "subject": "Ihr Oomba-Academy-Passwort zurücksetzen",
+        "intro": "Jemand möchte das Passwort des Oomba-Academy-Kontos {username} zurücksetzen. Wenn Sie das waren, wählen Sie mit diesem Link ein neues Passwort:",
+        "button": "Neues Passwort wählen",
+        "expires": "Der Link funktioniert einmal, {minutes} Minuten lang.",
+        "ignore": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt, wie es ist."
+      }
     }
   },
   "me": {
@@ -2694,7 +2722,8 @@
       "count": "{count, plural, one {# Anmeldekarte} other {# Anmeldekarten}}",
       "later": "Am Handy? Diese Karten bleiben 24 Stunden für dich (nur für dich) hier: Öffne sie auf einem Schulcomputer wieder über den Tab „Schüler“ der Klasse und drucke sie, oder nutze am Handy Teilen › Drucken › Als PDF sichern.",
       "again": "{count, plural, one {Anmeldekarte von heute: noch hier zum Drucken.} other {# Anmeldekarten von heute: noch hier zum Drucken.}}",
-      "open": "Karten öffnen"
+      "open": "Karten öffnen",
+      "next": "Als Nächstes: ein erstes Spiel zuweisen"
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder es ist für dieses Konto nicht zugänglich.",
@@ -3091,7 +3120,8 @@
       "zoneSet": "Zeitzone einstellen",
       "zoneAsk": "Eine Schuladministration kann sie in den Einstellungen der Schule festlegen.",
       "doneHere": "Zugewiesen an {class}. Die Schüler sehen es jetzt.",
-      "seeStarted": "Sehen, wer schon begonnen hat"
+      "seeStarted": "Sehen, wer schon begonnen hat",
+      "doneLater": "Der Klasse {class} zugewiesen. Die Schüler sehen sie ab dem {date}."
     },
     "class": {
       "title": "Lektionen",
@@ -3206,7 +3236,9 @@
       "noStudents": "Noch keine Schüler",
       "noStudentsText": "Fügen Sie unter „Schüler“ Schüler hinzu, dann erscheint hier ihr Fortschritt.",
       "toReviewList": "Antworten zu prüfen:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Quiz-Ergebnis: {pct} % richtig",
+      "quizOverall": "Quiz-Ergebnis über alle Lektionen: {pct} %"
     },
     "lesson": {
       "finished": "{done} von {total} Schülern fertig",
@@ -3227,7 +3259,8 @@
       "attention": "Wer Hilfe braucht, zuerst",
       "selfMarked": "Vom Schüler als erledigt markiert, nicht hier gespielt",
       "minutes": "{count, plural, one {# Min.} other {# Min.}}",
-      "swipe": "Wische die Tabelle zur Seite, um alle Schritte zu sehen"
+      "swipe": "Wische die Tabelle zur Seite, um alle Schritte zu sehen",
+      "quizScore": "{right} von {total} richtig ({pct} %)"
     },
     "student": {
       "doneOf": "{done} von {total} geschafft",
@@ -3255,6 +3288,10 @@
     },
     "courses": {
       "started": "{started} von {total} begonnen"
+    },
+    "csv": {
+      "quiz": "{title} (Quiz-%)",
+      "quizAll": "Quiz-%"
     }
   },
   "google": {
@@ -3981,7 +4018,8 @@
         "passwordHint": "Mindestens {min} Zeichen.",
         "adult": "Ich bin Lehrkraft oder arbeite an einer Schule und bin mindestens 18 Jahre alt.",
         "submit": "Konto erstellen und Test starten",
-        "privacy": "Wir speichern deine dienstliche E-Mail-Adresse nicht in deinem Konto: Sie geht für deinen Plan an Stripe. <a href=\"{privacy}\">Datenschutzerklärung</a>"
+        "privacy": "Wir speichern deine dienstliche E-Mail-Adresse nicht in deinem Konto: Sie geht für deinen Plan an Stripe. <a href=\"{privacy}\">Datenschutzerklärung</a>",
+        "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit melden Sie sich an."
       },
       "errors": {
         "signedIn": "Du bist schon angemeldet.",
@@ -5046,7 +5084,8 @@
       "soundOff": "Ton aus",
       "seeResultsNow": "Ergebnisse jetzt ansehen",
       "read": "Frage vorlesen",
-      "away": "{count} getrennt"
+      "away": "{count} getrennt",
+      "startEmpty": "Es ist noch niemand beigetreten. Trotzdem starten?"
     },
     "landing": {
       "title": "Live-Spiel leiten",
@@ -6556,7 +6595,8 @@
       "title": "Number Quest",
       "sub": "Mathe in den Numberworks · Klassen 3 bis 5"
     },
-    "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}"
+    "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}",
+    "gamesN": "{count, plural, one {Das # Spiel ansehen} other {Die # Spiele ansehen}}"
   },
   "move": {
     "title": "Bewegungspausen",
