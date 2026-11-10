@@ -103,8 +103,13 @@ test('maths: a game never asks the same question twice (10 and 20 questions, eve
   for (let g = 0; g < 200; g++) {
     const mixed = bank.pick({ subject: 'mixed', level: 'a6', count: 20 }).map(x => x.q);
     assert.equal(new Set(mixed).size, mixed.length, 'mixed');
-    const col = bank.board({ subjects: ['math', 'science'], level: 'a6' }).map(x => x.q);
-    assert.equal(new Set(col).size, col.length, 'a board');
+  }
+  // A board column draws from three levels, and the same sum can be made at two of them: still never twice.
+  for (const level of LEVELS) for (let g = 0; g < 600; g++) {
+    const tiles = bank.board({ subjects: ['math', 'science'], level }).map(x => x.q), maths = tiles.slice(0, 5);
+    assert.equal(tiles.length, 10);
+    assert.equal(new Set(maths).size, 5, `a board's maths column at ${level}: ${maths.join(' | ')}`);
+    assert.equal(new Set(tiles).size, 10, `a board at ${level}`);
   }
   // Questions already played (seen) are not drawn while the level has others.
   const first = bank.pick({ subject: 'math', level: 'a6', count: 20 });

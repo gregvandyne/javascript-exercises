@@ -110,8 +110,11 @@ export function makeBank(data, strings, rand) {
     const rows = [lower, LEVELS[at], LEVELS[at], upper, upper];
     const out = [];
     for (const s of use) {
-      const got = [], ids = new Set(seen || []);
-      for (const l of rows) { const it = pickSubject(s, l, 1, { has: id => ids.has(id) })[0]; if (it) { ids.add(it.id); got.push(it); } }
+      // A column's tiles come from three levels, and a made-up sum can come out the same at two of them ("3 + 4" for
+      // ages 6-7 and 8-9): a maths question already on the column counts as played whatever its level.
+      const got = [], ids = new Set(seen || []), sums = {};
+      const played = { has: id => ids.has(id) || (id.indexOf('math:') === 0 && sums[id.split(':').slice(2).join(':')] === true) };
+      for (const l of rows) { const it = pickSubject(s, l, 1, played)[0]; if (it) { ids.add(it.id); if (s === 'math') sums[it.q] = true; got.push(it); } }
       for (const it of got) out.push(it);
     }
     return out;
