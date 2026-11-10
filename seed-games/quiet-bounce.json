@@ -1,0 +1,72 @@
+{
+  "slug": "quiet-bounce",
+  "title": "Quiet Bounce",
+  "icon": "🔴",
+  "cover": "candy",
+  "category": "learning",
+  "shelf": "play",
+  "tags": "noise meter,classroom noise,quiet,voice level,sound level,calm,classroom management,teacher tool,bouncy balls,balls,jar,brain break,class",
+  "description": "A noise meter for the classroom: a big glass jar of bouncy balls. While the class is quiet the balls rest in a calm pile; near the line they jiggle and rattle, and if it is too loud for too long they jump and bump the lid, then settle back once it is quiet. A clock counts the quiet time up to your goal. The device only measures how loud it is: nothing is recorded or saved. You can also try it without a microphone.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "Built on the Oomba Kit (the same pinned kit 1.1.5 tag as Remi's Quiet Meadow, no packs): the kit's title, pause screen (Space, P, Esc or the pause button), settings (sound, less motion), results card, font, icons and light/dark look. A classroom noise meter, a sister of Remi's Quiet Meadow: a big glass jar of 30 bouncy balls (Oomba's mint, spark yellow and cream with a few warm friendly colours; a shine, an ink outline, a rolling swirl on some and little faces on others) stands on a table. The balls are a real 2D circle simulation in the frame (window.BounceArt between /* bounce-art:begin */ and /* bounce-art:end */: gravity, the jar's walls, floor and lid, ball-to-ball bumps with a rubbery grip, damping, a resting pile; 240 Hz substeps), drawn on a canvas that fills any screen in any orientation. The microphone: the game never opens it. The play page of an allowed official game (server/services/mic-games.js) asks for it after the Start tap and passes the game one loudness number (dBFS) about 20 times a second through BRB.loudness; audio is never recorded, stored or sent, and the page stops the microphone on pause, a hidden page, leaving, a reload or its own Stop pill. Every other page answers 'off', and the game then offers its demo. The level maths, the room calibration and the jar's moods are window.BounceCore (pure ES5 between /* bounce-core:begin */ and /* bounce-core:end */; unit-tested, and the maths is checked to equal Remi's): -70 dBFS is 0 on the gauge and -10 dBFS is 100; smoothing rises fast (0.12 s) and falls slowly (0.5 s); the 'too loud' line is the room's quiet (measured for 3 s with 'Set to the room's quiet', else 30) plus Whisper 10, Quiet work 18 or Group work 30, plus a fine slider of -25 to +25. The jar: rest (a calm pile, sleepy faces, a tiny breathing wobble, Zzz) -> rattle (near the line: the balls jiggle against each other harder the closer it gets, the glass glows yellow, a big '!' and a soft rattle of clicks every 2.5 s: a jiggle, a hop, a roll or a click) -> a big bounce after 1.5 s over the line (leaky, so a single clap only rattles them): they all jump, harder the louder it is, some bump the lid (it lifts and bonks), they clatter down, 'Too loud!' -> bouncy (they keep hopping while it is loud, held 0.9 s so a room at the line doesn't flicker; when it is quieter they drop and their eyelids droop as the room stays calm) -> after 4 s of calm they settle back into the pile. The quiet-time clock runs only while they rest (rattling still counts); one big bounce is counted per loud spell. The goal (2, 5, 10, 15, 20 or 30 min, or no goal) ends with the balls hopping all together, happy faces, a chime and confetti, then the results card beside or under the jar with the quiet time and big bounces as two big numbers, 'Same settings' and 'Another quiet time' (3 stars for 0-1 big bounces, 2 for 2-3, 1 for more). Less motion (the kit setting): gentler pushes (about 40%), no screen shake, no confetti, no sway or jitter; the faces, the glow and the gauge still show the level. The jar's sounds (soft rattle clicks, a boing, the lid's bonk, the clatter, three settling notes, a happy chime) are made with WebAudio in the frame and follow the sound setting; only the story's events make a sound, never each bump of the physics. The feedback guard: while one plays the room is not listened to (the gauge holds its level: BounceCore.feed) until 0.4 s after the soft rattle and settle sounds, 0.8 s after the louder boing, bonk and clatter; a level the page marks as held is honoured too. Moods and the quiet clock move only while the room is really measured (numbers in the last 0.3 s). No mic (blocked, none, busy, an old browser, or a page that can't listen; or the page wants one more tap): a card says how to fix it, with Try again and 'Try it without a mic' side by side (a noise slider, a clap and class chatter). Settings are remembered in BRB.storage key 'quiet-bounce-v1' ({preset, fine, goal}: ids and numbers only; the room's measured quiet level stays in memory for the visit). BRB.gameOver({won: true, score: null}) at the goal; no score, no poll, no text input. All words in 13 languages (the I18N block; the game's name is translated). window.__brbTest: state/setup({preset, fine, goal, base})/closeSetup/demoStart/demo(on)/level(v)/setGoal(sec)/step(ms)/skipAnimations/calibrate(samples)/sounds/pause; state() adds balls, rise (how far the top of the pile is above its resting height), lidHits and face.",
+  "l10n": {
+    "es": {
+      "title": "Pelotas en calma",
+      "description": "Un medidor de ruido para la clase: un gran frasco de cristal lleno de pelotas saltarinas. Mientras la clase está en silencio, las pelotas descansan en un montón tranquilo; cerca de la línea tiemblan y tintinean, y si hay demasiado ruido durante un rato saltan y chocan con la tapa, y luego vuelven a su sitio cuando hay silencio. Un reloj cuenta el tiempo de silencio hasta la meta. El dispositivo solo mide cuánto ruido hay: no se graba ni se guarda nada. También se puede probar sin micrófono.",
+      "tags": "medidor de ruido,ruido en clase,silencio,volumen de voz,nivel de sonido,calma,gestión del aula,herramienta docente,pelotas saltarinas,pelotas,frasco,pausa activa,clase"
+    },
+    "fr": {
+      "title": "Balles au calme",
+      "description": "Un sonomètre pour la classe : un grand bocal en verre rempli de balles rebondissantes. Tant que la classe est calme, les balles se reposent en tas ; près de la ligne, elles s’agitent et cliquettent, et s’il y a trop de bruit trop longtemps, elles sautent et cognent le couvercle, puis se reposent quand le calme revient. Une horloge compte le temps calme jusqu’à l’objectif. L’appareil mesure seulement le niveau de bruit : rien n’est enregistré ni gardé. On peut aussi l’essayer sans micro.",
+      "tags": "sonomètre,bruit en classe,calme,silence,niveau de voix,niveau sonore,gestion de classe,outil enseignant,balles rebondissantes,balles,bocal,pause,classe"
+    },
+    "de": {
+      "title": "Stille Hüpfbälle",
+      "description": "Eine Lärmampel für die Klasse: ein großes Glas voller Hüpfbälle. Solange die Klasse leise ist, liegen die Bälle ruhig auf einem Haufen; nahe der Linie zittern und klappern sie, und ist es zu lange zu laut, springen sie hoch und stoßen an den Deckel. Wird es wieder still, kommen sie zur Ruhe. Eine Uhr zählt die leise Zeit bis zum Ziel. Das Gerät misst nur, wie laut es ist: Nichts wird aufgenommen oder gespeichert. Es geht auch ohne Mikrofon.",
+      "tags": "Lärmampel,Lautstärke,Klassenlärm,Ruhe,leise,Stimmlautstärke,Klassenführung,Lehrer-Tool,Hüpfbälle,Flummis,Bälle,Glas,Pause,Klasse"
+    },
+    "it": {
+      "title": "Palline tranquille",
+      "description": "Un misuratore di rumore per la classe: un grande barattolo di vetro pieno di palline rimbalzine. Finché la classe è in silenzio, le palline riposano in un mucchietto tranquillo; vicino alla linea tremano e tintinnano, e se c’è troppo rumore troppo a lungo saltano e sbattono contro il coperchio, poi tornano a riposare quando torna il silenzio. Un orologio conta il tempo di silenzio fino all’obiettivo. Il dispositivo misura solo quanto rumore c’è: niente viene registrato o salvato. Si può provare anche senza microfono.",
+      "tags": "misuratore di rumore,rumore in classe,silenzio,volume della voce,livello sonoro,calma,gestione della classe,strumento per docenti,palline rimbalzine,palline,barattolo,pausa,classe"
+    },
+    "pt": {
+      "title": "Bolinhas em silêncio",
+      "description": "Um medidor de barulho para a sala: um grande pote de vidro cheio de bolinhas saltitantes. Enquanto a turma está em silêncio, as bolinhas descansam num montinho calmo; perto da linha elas tremem e chacoalham, e se o barulho passa do limite por muito tempo elas pulam e batem na tampa, e depois voltam a descansar quando tudo fica em silêncio. Um relógio conta o tempo de silêncio até a meta. O aparelho só mede o volume do barulho: nada é gravado nem salvo. Também dá para testar sem microfone.",
+      "tags": "medidor de barulho,barulho na sala,silêncio,volume da voz,nível de som,calma,gestão de sala,ferramenta do professor,bolinhas saltitantes,bolinhas,pote,pausa,turma"
+    },
+    "nl": {
+      "title": "Stille stuiterballen",
+      "description": "Een geluidsmeter voor de klas: een grote glazen pot vol stuiterballen. Zolang de klas stil is, liggen de ballen rustig op een hoopje; vlak bij de lijn trillen en rammelen ze, en is het te lang te druk, dan springen ze op en botsen tegen het deksel. Als het weer stil is, komen ze tot rust. Een klok telt de stille tijd tot het doel. Het apparaat meet alleen hoe hard het is: er wordt niets opgenomen of bewaard. Je kunt het ook zonder microfoon proberen.",
+      "tags": "geluidsmeter,lawaai in de klas,stilte,stemvolume,geluidsniveau,rust,klassenmanagement,hulpmiddel leerkracht,stuiterballen,ballen,pot,pauze,klas"
+    },
+    "ru": {
+      "title": "Тихие мячики",
+      "description": "Шумомер для класса: большая стеклянная банка с прыгучими мячиками. Пока в классе тихо, мячики спокойно лежат горкой; у самой линии они дрожат и постукивают, а если долго слишком шумно, подпрыгивают и стучат в крышку, а потом снова успокаиваются, когда становится тихо. Часы считают тихое время до цели. Устройство измеряет только громкость: ничего не записывается и не сохраняется. Можно попробовать и без микрофона.",
+      "tags": "шумомер,шум в классе,тишина,громкость голоса,уровень звука,спокойствие,управление классом,инструмент учителя,прыгучие мячики,мячики,банка,перерыв,класс"
+    },
+    "ja": {
+      "title": "しずかにバウンド",
+      "description": "教室の音量メーター：大きなガラスのびんにスーパーボールがいっぱい。クラスがしずかな間、ボールはおだやかに積み重なってやすんでいます。ラインに近づくとカタカタふるえ、うるさい状態が続くとジャンプしてふたにぶつかり、しずかになるとまたおちつきます。時計が目標までのしずかな時間を数えます。端末は音の大きさだけを測ります。録音も保存もしません。マイクなしでもためせます。",
+      "tags": "音量メーター,教室の騒音,しずかに,声の大きさ,音のレベル,落ち着き,学級経営,先生のツール,スーパーボール,ボール,びん,休憩,クラス"
+    },
+    "zh-Hant": {
+      "title": "安靜彈跳球",
+      "description": "教室噪音計：一個裝滿彈跳球的大玻璃罐。全班安靜時，球會乖乖堆在一起休息；接近線時會晃動、喀啦作響；如果太吵太久，球就會跳起來撞到蓋子，等教室安靜後再慢慢落回去。時鐘會計算到目標為止的安靜時間。裝置只測量聲音有多大：不會錄音，也不會儲存。也可以不用麥克風試試看。",
+      "tags": "噪音計,教室噪音,安靜,說話音量,音量,冷靜,班級經營,教師工具,彈跳球,球,罐子,休息,班級"
+    },
+    "ar": {
+      "title": "الكرات الهادئة",
+      "description": "مقياس ضجيج للصف: برطمان زجاجي كبير مليء بالكرات النطّاطة. ما دام الصف هادئًا ترتاح الكرات في كومة هادئة؛ وقرب الخط تهتز وتطقطق، وإذا بقي الصوت عاليًا مدة طويلة تقفز وتصطدم بالغطاء، ثم تعود إلى الراحة عندما يهدأ المكان. ساعة تعدّ الوقت الهادئ حتى الهدف. الجهاز يقيس فقط مدى ارتفاع الصوت: لا يُسجَّل شيء ولا يُحفَظ. ويمكن التجربة بدون ميكروفون.",
+      "tags": "مقياس الضجيج,ضجيج الصف,هدوء,مستوى الصوت,إدارة الصف,أداة المعلم,كرات نطاطة,كرات,برطمان,استراحة,صف"
+    },
+    "he": {
+      "title": "כדורים שקטים",
+      "description": "מד רעש לכיתה: צנצנת זכוכית גדולה מלאה בכדורים קופצים. כל עוד הכיתה שקטה, הכדורים נחים בערימה רגועה; ליד הקו הם רועדים ומקשקשים, ואם רועש מדי זמן רב הם קופצים ונתקלים במכסה, ואז חוזרים לנוח כשחוזר השקט. שעון סופר את הזמן השקט עד היעד. המכשיר מודד רק כמה רועש: שום דבר לא מוקלט ולא נשמר. אפשר לנסות גם בלי מיקרופון.",
+      "tags": "מד רעש,רעש בכיתה,שקט,עוצמת קול,רמת קול,רוגע,ניהול כיתה,כלי למורה,כדורים קופצים,כדורים,צנצנת,הפסקה,כיתה"
+    }
+  }
+}
