@@ -57,7 +57,7 @@ function onMessage(m) {
     case 'ph': onPhase(m); break;
     case 'lk': setLocked(m.locked); return;
     case 'rp': { const r = $('lv-reports'); if (r) r.hidden = false; return; }
-    case 'st': if (m.d && m.d.dd) doodleState(m.d.dd); break;
+    case 'st': if (m.d && m.d.dd) doodleState(m.d.dd); if (m.d && m.d.bb) boardState(m.d.bb); break;
     case 'ev': if (m.k === 'hid' && m.d) hidCount(m.d); break;
     case 'res': podiumHold(); return;
     case 'bye':
@@ -100,6 +100,7 @@ function welcome(m) {
   question = m.quiz && m.quiz.q ? { i: m.quiz.q.i, q: m.quiz.q.q, choices: m.quiz.q.choices || [] } : null;
   for (const p of players.values()) drawPlayer(p);
   if (m.state && m.state.dd) doodleState(m.state.dd);
+  if (m.state && m.state.bb) boardState(m.state.bb);
   count(); setLocked(m.locked); setEyes(!!m.eyes);
   if (!frame || !frame.el) {
     const kind = m.lobbyFrame && phase === 'lobby' ? 'lobby' : 'game';
@@ -120,13 +121,27 @@ function loadFrame(kind, token) {
   if (wel) { frame.send(track.wel(wel)); frame.clock(sock.serverNow()); }
 }
 
+// Brain Board: between questions the board waits for a tile to be picked, so "Next" has nothing to do (the server
+// ignores it) until the board is cleared, when it ends the game. Until then the button is not shown.
+let boardLeft = -1;
+const nextIdle = () => D.mode === 'board' && phase === 'between' && boardLeft !== 0;
+function syncNext() {
+  const nx = document.querySelector('#lv-controls [data-lv-act="next"]');
+  if (nx && D.mode === 'board') nx.hidden = !(SHOW[phase] || []).includes('next') || nextIdle();
+}
+function boardState(bb) {
+  // left: tiles still to play (services/classlive-board.js publicState); counted from the tiles for an older server.
+  boardLeft = Number.isInteger(bb.left) ? bb.left : Array.isArray(bb.t) ? bb.t.reduce((n, col) => n + col.filter(tile => !(tile[1] >= 2)).length, 0) : -1;
+  syncNext();
+}
+
 async function onPhase(m, first = false) {
   phase = m.phase; if (m.seq) seq = m.seq;
   const show = SHOW[phase] || [];
   for (const b of document.querySelectorAll('#lv-controls [data-lv-act]')) {
     const a = b.dataset.lvAct;
     if (ALWAYS.has(a)) { b.hidden = phase === 'ended'; continue; }
-    b.hidden = !show.includes(a) || (a === 'lock' && locked) || (a === 'unlock' && !locked) || (a === 'skip' && wel && wel.mode === 'game');
+    b.hidden = !show.includes(a) || (a === 'lock' && locked) || (a === 'unlock' && !locked) || (a === 'skip' && wel && wel.mode === 'game') || (a === 'next' && nextIdle());
   }
   // In quiz modes "Next" while a question is open reveals it now.
   const nx = document.querySelector('#lv-controls [data-lv-act="next"]');
@@ -201,6 +216,8 @@ function drawPlayer(p) {
 function act(a, extra = {}) {
   if (a === 'end' && !confirm(document.querySelector('[data-lv-act="end"]').dataset.confirm)) return;
   if (a === 'clear' && !confirm(document.querySelector('[data-lv-act="clear"]').dataset.confirm)) return;
+  // Nobody has joined: starting now is almost always a slip (the class is still typing the code), so ask first.
+  if (a === 'start' && players.size === 0 && D.text.startEmpty && !confirm(D.text.startEmpty)) return;
   if (a === 'eyes') { sock.send('h', { a: 'eyes', on: !eyesOn }); return; }
   if (a === 'settings') { const d = $('lv-settings'); fillSettings(); if (d && d.showModal) d.showModal(); return; }
   if (a === 'sound') { sock.send('cf', { d: { sound: settings.sound === false } }); return; }

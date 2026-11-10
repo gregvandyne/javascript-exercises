@@ -348,7 +348,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     quiz: !!s.quiz, teamsOn, hasLast, presets, say: sayList(t), bonus: bonusList(t), settings: st, quizOnly: QUIZ_ONLY, dashUrl, podiumHoldMs: 6000,
     ctl: { role: me.role, tier: me.tier, cohosts: !!me.cohosts }, ...(me.cohosts || me.role === 'cohost' ? { cohost: cohostText(t) } : {}),
     text: { removeConfirm: rawT(t)('live.host.removeConfirm'), ready: rawT(t)('live.host.ready'), late: rawT(t)('live.host.late'), watching: rawT(t)('live.host.watching'), offline: rawT(t)('live.host.offline'), showCode: rawT(t)('live.host.showCode'), hideCode: rawT(t)('live.host.hideCode'), locked: rawT(t)('live.host.locked'), count: rawT(t)('live.host.count'), away: rawT(t)('live.host.away'), answers: rawT(t)('live.host.answers'), phases: phaseText(t),
-      revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t), copied: rawT(t)('live.host.copied'), hidCount: rawT(t)('live.host.hidCount') },
+      startEmpty: rawT(t)('live.host.startEmpty'), revealNow: rawT(t)('live.time.revealNow'), waiting: rawT(t)('live.time.waiting'), eyesOn: rawT(t)('live.eyes.on'), eyesOff: rawT(t)('live.eyes.off'), soundOn: rawT(t)('live.host.soundOn'), soundOff: rawT(t)('live.host.soundOff'), toastTeam: rawT(t)('live.bonus.toastTeam'), toastSeat: rawT(t)('live.bonus.toastSeat'), team: teamText(t), settings: settingsText(t), copied: rawT(t)('live.host.copied'), hidCount: rawT(t)('live.host.hidCount') },
   })}
 </div>`;
 }
@@ -601,6 +601,9 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   presets = [], still = 0, quiz = false, againRun = false, homework = false, setId = null, classes = [], limited = false, runLog = [], hostActs = true, playerCount = null, logZone = null }) {
   const t = req.t;
   const nameOf = p => (typeof p.name === 'number' ? nicks[p.name] || '' : p.name || '');
+  // The roster name beside the name shown in the game: only in "Student details" (closed, teacher-only), and only when
+  // the route gave one (the viewer manages the class).
+  const rosterOf = p => (p.roster && p.roster !== nameOf(p) ? html` <span class="lv-roster small muted" dir="auto">(${p.roster})</span>` : '');
   const chip = k => { const x = teams.find(r => r.k === k); return x && presets[x.p] ? teamChip(presets, x) : ''; };
   const podium = teams.filter(x => x.rank >= 1 && x.rank <= 3).slice(0, 3);
   // Would You Rather Live is a vote (no right answer: the class's split only); Atlas Quest Live's review lists the
@@ -653,8 +656,8 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
     <summary>${t('live.results.details')}</summary>
     <p class="notice warn">${t('live.results.detailsHint')}</p>
     ${players.length ? html`<div class="lv-table-wrap"><table class="table lv-table" id="lv-student-table"><thead><tr><th scope="col">${t('live.results.rank')}</th><th scope="col">${t('live.results.player')}</th>${teams.length ? html`<th scope="col">${t('live.results.team')}</th>` : ''}<th scope="col">${t('live.results.score')}</th><th scope="col">${t('live.results.bonus')}</th><th scope="col">${t('live.results.correct')}</th>${saved ? '' : html`<th scope="col">${t('live.results.scoredBy')}</th>`}<th scope="col">${t('live.results.marks')}</th></tr></thead>
-      <tbody>${players.map(p => html`<tr><td>${p.rank}</td><td>${nameOf(p)}${p.left ? html` <span class="small muted">(${t('live.results.left')})</span>` : ''}</td>${teams.length ? html`<td>${chip(p.team)}</td>` : ''}<td>${p.score}</td><td>${p.bonus || 0}</td><td>${p.answered ? (vote ? t('live.results.votes', { count: p.answered }) : t('live.results.accuracy', { right: p.correct, answered: p.answered })) : '–'}</td>${saved ? '' : html`<td>${t(p.scoredBy === 'game' ? 'live.results.byGame' : 'live.results.byLive')}</td>`}<td class="lv-marks" dir="ltr">${[...(p.marks || '')].map(mark)}</td></tr>`)}</tbody></table></div>` : ''}
-    ${help.length ? html`<h3>${t('live.results.needsHelp')}</h3><ul class="lv-needs-help" id="lv-needs-help">${help.map(p => html`<li>${nameOf(p)} <span class="small muted">${t(`live.dash.why.${p.help}`)}</span></li>`)}</ul>` : ''}
+      <tbody>${players.map(p => html`<tr><td>${p.rank}</td><td>${nameOf(p)}${rosterOf(p)}${p.left ? html` <span class="small muted">(${t('live.results.left')})</span>` : ''}</td>${teams.length ? html`<td>${chip(p.team)}</td>` : ''}<td>${p.score}</td><td>${p.bonus || 0}</td><td>${p.answered ? (vote ? t('live.results.votes', { count: p.answered }) : t('live.results.accuracy', { right: p.correct, answered: p.answered })) : '–'}</td>${saved ? '' : html`<td>${t(p.scoredBy === 'game' ? 'live.results.byGame' : 'live.results.byLive')}</td>`}<td class="lv-marks" dir="ltr">${[...(p.marks || '')].map(mark)}</td></tr>`)}</tbody></table></div>` : ''}
+    ${help.length ? html`<h3>${t('live.results.needsHelp')}</h3><ul class="lv-needs-help" id="lv-needs-help">${help.map(p => html`<li>${nameOf(p)}${rosterOf(p)} <span class="small muted">${t(`live.dash.why.${p.help}`)}</span></li>`)}</ul>` : ''}
     ${csv ? html`<p><a class="btn" href="${csv}" download>${t('live.results.csv')}</a></p>` : ''}
   </details>`}
   ${runLog.length ? html`<details class="lv-group lv-run-log" id="lv-run-log"><summary>${t('live.cohost.log.title')}</summary>

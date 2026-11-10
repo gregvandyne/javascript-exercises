@@ -37,6 +37,21 @@ if (/^\d{7}$/.test(fromHash) && input) {
   if (goNow && form) queueMicrotask(() => (form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }))));
 }
 
+// Sent to sign in after typing a code (a class game seats signed-in players only): the code waits in this tab
+// (sessionStorage, 30 minutes; never in an address, like the QR's) and is back in the box after signing in, one press
+// from "Join as me".
+const KEEP = 'lv:code', KEEP_MS = 30 * 60e3;
+const keepCode = c => { try { sessionStorage.setItem(KEEP, JSON.stringify({ c, t: Date.now() })); } catch { /* private mode: typed again */ } };
+const dropCode = () => { try { sessionStorage.removeItem(KEEP); } catch { /* nothing kept */ } };
+const keptCode = () => { try { const x = JSON.parse(sessionStorage.getItem(KEEP) || 'null'); return x && LIVE_RE.test(x.c) && Date.now() - x.t < KEEP_MS ? x.c : ''; } catch { return ''; } };
+if (input && !input.value) {
+  const kept = keptCode();
+  if (kept) {
+    input.value = kept;
+    if (D.signedIn && form) { dropCode(); queueMicrotask(() => (form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })))); }
+  } else dropCode();
+}
+
 form && form.addEventListener('submit', e => {
   const v = String(input.value || '').replace(/[\s-]/g, '');
   if (CLASS_RE.test(v) && !LIVE_RE.test(v) && D.googleOn) return;   // a class code: the class flow takes it from here
@@ -69,12 +84,14 @@ async function join(opts, errEl = err) {
     if (sessionStorage.getItem(`lv:removed:${r.sid}`)) { show('code'); say(err, 'removed'); return; }
     joined = r; seat = r;
     try { sessionStorage.setItem(`lv:${r.sid}`, r.tok); } catch { /* private mode: the play page asks again */ }
+    dropCode();
     if (r.canReroll) { card(r); show('card'); } else location.href = r.play;
   } catch (e) {
     const c = e.data && e.data.code;
     // a class room: no guest seat for a signed-in player. Stay on "Join as me", without the guest button.
     if (c === 'onlyYou') { const g = $('lv-as-guest'); if (g) g.hidden = true; say(errEl, c); return; }
     show('code');
+    if (c === 'signIn') keepCode(code);
     if (c) say(err, c, null, e.data); else err.textContent = e.message;
     input && input.focus();
   } finally { busy = false; }

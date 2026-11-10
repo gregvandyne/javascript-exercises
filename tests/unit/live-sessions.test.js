@@ -279,6 +279,33 @@ test('questions: server timing, the answer never sent early, late and second ans
   for (const c of [h, a, b]) c.ws.close();
 });
 
+test('the place a player is told counts only players still in the game: a removed leader takes no place and is not in "of"', async () => {
+  const s = open(teacher, { mode: 'battle', items: [{ q: 'Two plus two?', choices: ['4', '5', '3'], answer: 0, secs: 10 }], audience: 'open' });
+  const h = await hostSocket(s, teacher);
+  const a = await player(s), b = await player(s), c = await player(s);
+  h.send({ t: 'h', a: 'start' });
+  for (const p of [a, b, c]) p.send({ t: 'rdy' });
+  const q0 = await a.next('q');
+  const right = q0.choices.indexOf('4'), wrong = q0.choices.indexOf('5');
+  // b is the fastest and leads; a is right but slower; c is wrong.
+  LS.answer(s, s.seats.get(b.join.seat), { t: 'an', i: 0, c: right, e: 0 }, q0.at + 200);
+  LS.answer(s, s.seats.get(a.join.seat), { t: 'an', i: 0, c: right, e: 0 }, q0.at + 6000);
+  LS.answer(s, s.seats.get(c.join.seat), { t: 'an', i: 0, c: wrong, e: 0 }, q0.at + 6500);
+  const between = await h.next('ph', m => m.phase === 'between');
+  assert.ok(s.seats.get(b.join.seat).score > s.seats.get(a.join.seat).score && s.seats.get(a.join.seat).score > 0, 'b leads a; c has nothing');
+  // The teacher removes the leader, then the game ends.
+  h.send({ t: 'h', a: 'kick', n: b.join.seat });
+  assert.equal((await b.next('bye')).why, 'removed');
+  h.send({ t: 'h', a: 'next', at: between.seq });
+  const ya = await a.next('you', m => m.of !== undefined), yc = await c.next('you', m => m.of !== undefined);
+  assert.deepEqual([ya.rank, ya.of], [1, 2], 'first of the two still playing (it said 2 of 3)');
+  assert.deepEqual([yc.rank, yc.of], [2, 2]);
+  assert.equal(ya.tied, undefined); assert.equal(ya.zero, undefined);
+  // The saved results still hold the removed player's row (marked as left), for the teacher.
+  assert.equal(s.summary.players.length, 3); assert.equal(s.summary.players.find(p => p.seat === b.join.seat).left, true);
+  for (const x of [h, a, c]) x.ws.close();
+});
+
 test('the device\'s own timing is trusted only within one round trip of the server\'s', async () => {
   const s = open(teacher, { mode: 'battle', items: [{ q: 'Hi?', choices: ['a', 'b'], answer: 0, secs: 10 }], audience: 'open' });
   const h = await hostSocket(s, teacher); const a = await player(s);
@@ -343,7 +370,9 @@ test('results: a class run saves scores for the class\'s students only, into the
   const page = await call(`/live/results/${s.id}`, { user: teacher });
   assert.equal(page.status, 200); assert.ok(page.text.includes(mia.display_name), 'names as shown in the session');
   const csv = await call(`/live/results/${s.id}.csv`, { user: teacher });
-  assert.equal(csv.status, 200); assert.match(csv.text, /^rank,student,team,score,bonus,correct,answered,q1\r\n/);
+  // The class's own teacher also gets the roster name beside the name shown in the game (routes/live.js rosterNames).
+  assert.equal(csv.status, 200); assert.match(csv.text, /^rank,student,roster_name,team,score,bonus,correct,answered,q1\r\n/);
+  assert.ok(csv.text.includes(`${mia.display_name},Mia Pupil,`), 'the name in the game, then the roster name');
   assert.equal((await call(`/live/results/${s.id}`, { user: teacher2 })).status, 404);
   for (const c of [h, a, b]) c.ws.close();
 });

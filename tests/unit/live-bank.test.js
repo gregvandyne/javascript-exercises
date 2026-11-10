@@ -94,6 +94,35 @@ test('every site language has its words for the bank, with the same {slots} as E
   }
 });
 
+test('maths: a game never asks the same question twice (10 and 20 questions, every level, a board column, a redraw)', () => {
+  const bank = BANK.bankFor('en');
+  for (const level of LEVELS) for (const count of [10, 20]) for (let g = 0; g < 300; g++) {
+    const qs = bank.pick({ subject: 'math', level, count }).map(x => x.q);
+    assert.equal(new Set(qs).size, count, `${level} x${count}: ${qs.join(' | ')}`);
+  }
+  for (let g = 0; g < 200; g++) {
+    const mixed = bank.pick({ subject: 'mixed', level: 'a6', count: 20 }).map(x => x.q);
+    assert.equal(new Set(mixed).size, mixed.length, 'mixed');
+    const col = bank.board({ subjects: ['math', 'science'], level: 'a6' }).map(x => x.q);
+    assert.equal(new Set(col).size, col.length, 'a board');
+  }
+  // Questions already played (seen) are not drawn while the level has others.
+  const first = bank.pick({ subject: 'math', level: 'a6', count: 20 });
+  const next = bank.pick({ subject: 'math', level: 'a6', count: 20, seen: new Set(first.map(x => x.id)) });
+  assert.equal(next.filter(x => first.some(y => y.q === x.q)).length, 0);
+  // A pick bigger than the level's pool still fills (repeats only then).
+  assert.equal(makeBank(BANK.dataFor('en'), BANK.stringsFor('en'), Math.random).pick({ subject: 'math', level: 'a6', count: 50 }).length, 50);
+  // The server's redraw of a refused sum never puts back a question the set already has.
+  const raw = makeBank(BANK.dataFor('en'), BANK.stringsFor('en'), Math.random);
+  const set = raw.pick({ subject: 'math', level: 'a6', count: 20 });
+  const bad = { ...set[0], q: '2x + 5 = 23 のとき、x は？', id: 'math:a12:x' };
+  assert.equal(textfilterMod.cleanText(bad.q, 300).ok, false);
+  const stuck = { mathItem: () => set[1] };   // only ever offers a question the set already has
+  assert.equal(BANK.redraw(stuck, [bad, ...set.slice(1)])[0], bad, 'nothing new to draw: left as it is, never doubled');
+  const fixed = BANK.redraw(raw, [bad, ...set.slice(1)]);
+  assert.equal(new Set(fixed.map(x => x.q)).size, 20);
+});
+
 test('the games load their packs: right version, checksums match, the pack runs and makes questions', () => {
   const pv = fs.readdirSync('public/vendor/data/live-bank');
   assert.equal(pv.length, 1, 'one pack version');

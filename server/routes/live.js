@@ -608,21 +608,32 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   const tier = memTier(s, u);
   if (tier) {
     const sum = s.summary, limited = tier !== 'full';
+    const rn = limited ? new Map() : rosterNames(u, s.classId), withRoster = p => ({ ...p, roster: (sum.userOf && rn.get(sum.userOf.get(p.seat))) || '' });
     // part 4: a limited controller (not a teacher of the class) gets the class-safe part only (no student details, no CSV)
     return page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
-      body: V.resultsBody(req, { ...common, id, title: sum.title, mode: sum.mode, players: limited ? [] : sum.players, playerCount: sum.players.length, items: sum.items, teams: sum.teams, scoring: sum.scoring, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode,
+      body: V.resultsBody(req, { ...common, id, title: sum.title, mode: sum.mode, players: limited ? [] : sum.players.map(withRoster), playerCount: sum.players.length, items: sum.items, teams: sum.teams, scoring: sum.scoring, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode,
         csv: s.startedAt && !limited ? `/live/results/${id}.csv` : null, gradebook: !!(s.clId && s.stepId && s.audience === 'class'), still: LS.lingering(s), quiz: !!s.quiz, setId: s.setId,
         againRun: s.audience === 'class' && sum.teams.length > 0, limited, hostActs: s.host.userId === u.id, runLog: tier === 'full' && s.cohostEver ? memLog(req, s) : [], logZone: zoneOfClass(s.classId) }) });
   }
   const p = R.persisted(u, id);
   if (!p) return notFound(req, res, t('live.results.gone'));
-  const players = p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, score: r.score, bonus: r.bonus, team: r.team, marks: r.marks, correct: r.correct, answered: r.answered, help: r.answered >= 3 && r.correct / r.answered < 0.5 ? 'lowScore' : '' }));
+  const rn = rosterNames(u, p.run.class_id);
+  const players = p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, roster: rn.get(r.user_id) || '', score: r.score, bonus: r.bonus, team: r.team, marks: r.marks, correct: r.correct, answered: r.answered, help: r.answered >= 3 && r.correct / r.answered < 0.5 ? 'lowScore' : '' }));
   const teams = p.teams ? p.teams.list.map(x => ({ ...x, score: p.teams.scoring === 'sum' ? x.sum : x.avg })) : [];
   page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
     body: V.resultsBody(req, { ...common, id, title: p.run.title, mode: p.run.mode, players, items: p.items, teams, scoring: p.teams ? p.teams.scoring : null, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts',
       quiz: p.run.scored_by === 'server' || p.items.some(it => R.asItem(it)), setId: p.run.set_id, againRun: !!(p.run.class_id && teams.length),
       runLog: R.runLog(p.run).map(x => ({ at: x.at, text: logText(req, x, presets, p.teams ? p.teams.list : []) })), logZone: zoneOfClass(p.run.class_id) }) });
 });
+/** Roster names (the school's real names) by account, for the teacher-only "Student details" and its CSV: only for
+ *  someone who manages the class (its teachers, the school's admins: the people who see the same names on the class's
+ *  Students tab and gradebook). An empty Map for everyone else (a host who does not teach the class, the platform admin).
+ *  Never part of the session, the big screen, the class-safe results or anything a student's device gets. */
+function rosterNames(u, classId) {
+  const c = classId && S.getClass(classId);
+  if (!c || !S.canManageClass(u, c)) return new Map();
+  return new Map(S.roster(c.id).filter(p => p.role === 'student' && p.roster_name).map(p => [p.id, p.roster_name]));
+}
 /** A class's school time zone (IANA) or null. */
 function zoneOfClass(classId) {
   const c = classId && S.getClass(classId);
@@ -660,13 +671,13 @@ function resultsCsv(req, res, id) {
   let body;
   const s = LS.get(id);
   if (s && memTier(s, req.user) === 'full' && s.startedAt) {
-    const sum = s.summary, nicks = nicksFor(req.locale);
-    body = R.csv({ players: sum.players.map(p => ({ ...p, name: typeof p.name === 'number' ? nicks[p.name] : p.name, team: teamName(p.team, sum.teams) })), items: sum.items });
+    const sum = s.summary, nicks = nicksFor(req.locale), rn = rosterNames(req.user, s.classId);
+    body = R.csv({ players: sum.players.map(p => ({ ...p, name: typeof p.name === 'number' ? nicks[p.name] : p.name, roster: (sum.userOf && rn.get(sum.userOf.get(p.seat))) || '', team: teamName(p.team, sum.teams) })), items: sum.items });
   } else {
     const p = R.persisted(req.user, id);
     if (!p) return notFound(req, res, req.t('live.results.gone'));
-    const list = p.teams ? p.teams.list : [];
-    body = R.csv({ players: p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, team: teamName(r.team, list), score: r.score, bonus: r.bonus, correct: r.correct, answered: r.answered, marks: r.marks })), items: p.items });
+    const list = p.teams ? p.teams.list : [], rn = rosterNames(req.user, p.run.class_id);
+    body = R.csv({ players: p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, roster: rn.get(r.user_id) || '', team: teamName(r.team, list), score: r.score, bonus: r.bonus, correct: r.correct, answered: r.answered, marks: r.marks })), items: p.items });
   }
   res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="live-${id}.csv"`, 'Cache-Control': 'no-store' });
   res.send(body);

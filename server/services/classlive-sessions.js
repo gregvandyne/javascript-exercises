@@ -1391,11 +1391,17 @@ export function endSession(sid, why = 'ended') {
     // tied: how many others share this place; zero: nobody scored; team: a team game (players see the team's place)
     if (me) {
       const sc = p => p.total ?? p.score;
-      const tied = summary.players.filter(p => p !== me && p.rank === me.rank).length;
-      const zero = summary.players.length > 1 && summary.players.every(p => p.rank === 1 && !(sc(p) > 0));
+      // The place a player is told ("You came 2nd out of 7") is among the players still in the game: someone the
+      // teacher removed, or who left, is in the saved results but takes no place and is not counted here.
+      const here = summary.players.filter(p => !p.left);
+      const ahead = p => (p.progress || 0) > (me.progress || 0) || ((p.progress || 0) === (me.progress || 0) && sc(p) > sc(me));
+      const same = p => (p.progress || 0) === (me.progress || 0) && sc(p) === sc(me);
+      const myRank = 1 + here.filter(ahead).length;
+      const tied = here.filter(p => p !== me && same(p)).length;
+      const zero = here.length > 1 && here.every(p => !(p.progress > 0) && !(sc(p) > 0));
       // Would You Rather has no right answers and no scores: no place, no "Nobody scored", just the end.
-      if (Q.isVote(s)) { sendTo(seat.conn, { t: 'you', rank: 0, score: 0, of: summary.players.length }); continue; }
-      sendTo(seat.conn, { t: 'you', rank: rows ? me.rank : 0, score: sc(me), of: summary.players.length, ...(tied ? { tied } : {}), ...(zero ? { zero: 1 } : {}), ...(s.tug || T.isOn(s) ? { team: 1 } : {}) });
+      if (Q.isVote(s)) { sendTo(seat.conn, { t: 'you', rank: 0, score: 0, of: here.length }); continue; }
+      sendTo(seat.conn, { t: 'you', rank: rows ? myRank : 0, score: sc(me), of: here.length, ...(tied ? { tied } : {}), ...(zero ? { zero: 1 } : {}), ...(s.tug || T.isOn(s) ? { team: 1 } : {}) });
     }
   }
   // Play again: the seats as they ended (account, nickname, avatar, team) and the bans, kept only while the players'

@@ -530,7 +530,11 @@ window.SoloBank = (function () {
   L.on('end', function (e) {
     clearInterval(ringTimer); phase = 'ended'; Q = null;
     if (e.teams && e.teams.length && !(e.top && e.top.length)) podium(e.teams.filter(function (x) { return x.rank; }).sort(function (a, b) { return a.rank - b.rank; }).map(function (x) { return { seat: 0, name: x.icon + ' ' + x.name, score: x.score }; }), t('teamPodium'));
-    else podium(e.top || [], t('done'));
+    else {
+      // "Board cleared!" only when every tile was played; ended early by the teacher, the heading is "Winners".
+      var eb = bb(), cleared = !eb || !eb.t || eb.t.every(function (col) { return col.every(function (tile) { return tile[1] >= 2; }); });
+      podium(e.top || [], t(cleared ? 'done' : 'podium'));
+    }
     view();
     if (!REDUCED) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
     sfx('win');
