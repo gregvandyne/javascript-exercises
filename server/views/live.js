@@ -222,7 +222,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
 const phaseText = t => ({ lobby: t('live.play.waiting'), loading: t('live.play.loading'), countdown: t('live.play.countdown'), playing: '', paused: t('live.play.paused'), between: t('live.play.between'), ended: t('live.play.ended') });
 
 /** /live/host/:sid: the projector page. Code, QR, address, roster, controls, the game's host view. */
-export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = false, hasLast = false, ctl = null }) {
+export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = false, hasLast = false, ctl = null, gcAnnounce = '' }) {
   const t = req.t;
   // part 4: the controller on this page ({ role, tier, cohosts: the feature is on for this room })
   const me = ctl || { role: 'host', tier: 'full', cohosts: false };
@@ -247,7 +247,8 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
       <p class="lv-count" id="lv-count" aria-live="polite">${t('live.host.count', { count: 0, max: s.settings.maxPlayers })}</p>
       <button class="btn btn-sm" type="button" id="lv-hide-code" aria-pressed="false">${t('live.host.hideCode')}</button>
       <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">🔗 ${t('live.host.copyLink')}</button>
-      ${s.audience === 'class' ? '' : html`<a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">🎮 ${t('live.host.playToo')}</a>`}</span>
+      ${s.audience === 'class' ? '' : html`<a class="btn btn-sm" id="lv-play-too" href="${joinUrl}" target="_blank" rel="noopener">🎮 ${t('live.host.playToo')}</a>`}
+      ${gcAnnounce ? html`<a class="btn btn-sm" id="lv-gc-announce" href="${gcAnnounce}" target="_blank" rel="noopener">📣 ${t('gclassroom.announce.fromLive')}</a>` : ''}</span>
       <p class="small muted" id="lv-copied" role="status" hidden>${t('live.host.copied')}</p>
       ${s.doodle ? html`<p class="small muted" id="lv-need-two" hidden>${t('live.api.needTwo')}</p><p class="small lv-hid" id="lv-hid" role="status" hidden></p>` : ''}
     </div>

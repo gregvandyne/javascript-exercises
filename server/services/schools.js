@@ -372,10 +372,11 @@ export function deleteClass(by, classId) {
   if (everHadStudents(c.id)) return fail('classHasStudents');
   tx(() => {
     q.run('DELETE FROM class_members WHERE class_id=?', c.id); q.run('DELETE FROM join_requests WHERE class_id=?', c.id);
+    q.run('DELETE FROM gc_grades WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE class_id=?)', c.id); // grades sent to Google Classroom
     q.run('DELETE FROM class_lessons WHERE class_id=?', c.id); q.run('DELETE FROM class_units WHERE class_id=?', c.id);
     q.run('DELETE FROM game_classes WHERE class_id=?', c.id);
-    // Its Google Classroom link, posts, waiting students and sync log (services/gclassroom.js).
-    for (const t of ['gc_posts', 'gc_pending', 'gc_links', 'gc_syncs']) q.run(`DELETE FROM ${t} WHERE class_id=?`, c.id);
+    // Its Google Classroom link, posts, waiting students, imported roster and sync log (services/gclassroom.js).
+    for (const t of ['gc_posts', 'gc_pending', 'gc_links', 'gc_syncs', 'gc_roster']) q.run(`DELETE FROM ${t} WHERE class_id=?`, c.id);
     classLeft({ classId: c.id });
     q.run('DELETE FROM classrooms WHERE id=?', c.id);
   });

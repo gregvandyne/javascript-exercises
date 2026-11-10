@@ -1,6 +1,7 @@
 // A small stand-in for Google's sign-in (OpenID Connect) for tests. It also does the OAuth parts Google Classroom sync
 // needs (tests/support/fake-classroom.js is the API): access_type=offline gives a refresh token, the refresh_token grant,
-// /revoke, and the granted scope (next({ dropScope }) leaves one out, as when a teacher unticks a box). It never talks to Google and imports nothing from
+// /revoke, and the granted scope (next({ dropScope }) leaves one or more out, as when a teacher unticks a box; with
+// include_granted_scopes the earlier grants are added, as Google does). It never talks to Google and imports nothing from
 // server/. Unit tests start it in-process; Playwright runs it as `node tests/support/fake-google.js --port 5932`.
 // The values here (client id and secret) are fake test values, not secrets.
 import http from 'node:http';
@@ -18,6 +19,7 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
   rotateKey();
   const codes = new Map(); const stats = { jwks: 0, token: 0, authorize: 0, refresh: 0, revoke: 0 }; const issued = []; let pending = {};
   const refreshTokens = new Map(); // refresh token -> { scope, sub }
+  const granted = new Map();       // sub -> scopes granted so far (include_granted_scopes)
   let url = '';
 
   function idToken(c, tamper) {
@@ -50,8 +52,13 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
 
   function issue(p, who) {
     const code = crypto.randomBytes(24).toString('base64url');
+    // dropScope: one scope or a list left unticked. include_granted_scopes=true adds what this account granted before, as
+    // Google does (incremental authorization).
+    const drop = [].concat(pending.dropScope || []);
+    let scope = String(p.get('scope') || '').split(' ').filter(s => s && !drop.includes(s));
+    if (p.get('include_granted_scopes') === 'true') { scope = [...new Set([...(granted.get(who.sub) || []), ...scope])]; granted.set(who.sub, scope); }
     const c = { ...who, nonce: p.get('nonce'), challenge: p.get('code_challenge'), redirect: p.get('redirect_uri'), at: Date.now(), used: false, tamper: pending.tamper,
-      scope: String(p.get('scope') || '').split(' ').filter(s => s && s !== pending.dropScope).join(' '), offline: p.get('access_type') === 'offline', noRefresh: !!pending.noRefresh };
+      scope: scope.join(' '), offline: p.get('access_type') === 'offline', noRefresh: !!pending.noRefresh };
     pending = {}; codes.set(code, c); issued.push(code); return code;
   }
   const back = (res, redirect, params) => { const u = new URL(redirect); for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v); res.writeHead(302, { location: u.href }); res.end(); };
@@ -133,7 +140,9 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
     if (u.pathname === '/revoke' && req.method === 'POST') {
       stats.revoke++;
       const p = await readBody(req); const tk = p.get('token') || '';
+      const rt = refreshTokens.get(tk);
       if (!refreshTokens.delete(tk)) return bad(res, 400, { error: 'invalid_token' }, true);
+      granted.delete(rt.sub);   // revoking takes back everything this account granted the app
       res.writeHead(200, { 'content-type': 'application/json' }); return res.end('{}');
     }
     bad(res, 404, 'not found');
@@ -141,7 +150,7 @@ export async function startFakeGoogle({ port = 0, clientId = 'test-client.apps.g
   await new Promise(r => server.listen(port, host, r));
   url = `http://${host}:${server.address().port}`;
   return {
-    get url() { return url; }, stats, issued, rotateKey, refreshTokens,
+    get url() { return url; }, stats, issued, rotateKey, refreshTokens, granted,
     next(o = {}) { pending = o; },
     close: () => new Promise(r => { server.closeAllConnections?.(); server.close(() => r()); }),
   };

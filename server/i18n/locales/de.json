@@ -7383,14 +7383,15 @@
         "grades": "die Abschlussnote jedes Kindes für eine Lektion an Classroom senden"
       },
       "button": "Google Classroom verbinden",
-      "privacy": "Nur du siehst diese Verbindung. Oomba Academy sendet an Classroom den Titel der Lektion, einen Link, das Abgabedatum und die Abschlussnote jedes Kindes von 100. Sonst nichts: keine Namen, Antworten oder Spiele.",
+      "privacy": "Nur du siehst diese Verbindung. Mit der Verbindung kann Oomba Academy deine Kurse und ihre Kinder lesen. Nur wenn du das Posten erlaubst, sendet es an Classroom, was du postest: Titel, Link und Abgabedatum einer Lektion, die Abschlussnote jedes Kindes von 100, einen Themennamen und Ankündigungen, die du schreibst. Nie Namen, Antworten oder Spiele der Kinder.",
       "connectedAs": "Verbunden als {email}",
       "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
       "connectedToast": "Google Classroom ist verbunden.",
       "disconnect": "Trennen",
       "disconnectConfirm": "Google Classroom trennen? Oomba Academy synchronisiert dann nicht mehr für dich und löscht seinen Schlüssel zu deinem Classroom. Schon gepostete Lektionen bleiben in Classroom.",
       "disconnected": "Google Classroom ist getrennt.",
-      "reconnect": "Neu verbinden"
+      "reconnect": "Neu verbinden",
+      "later": "Lektionen, Noten und Ankündigungen posten kommt später, nur wenn du es erlaubst."
     },
     "course": {
       "heading": "Verknüpfter Classroom-Kurs",
@@ -7410,7 +7411,6 @@
       "heading": "Kinder aus Classroom",
       "text": "Holt die Schülerinnen und Schüler des verknüpften Classroom-Kurses. Wer schon hier ist, wird an seinem Google-Konto erkannt. Wer neu bei Oomba Academy ist, kommt dazu, sobald er sich zum ersten Mal mit Google auf der Domain eurer Schule anmeldet, und bekommt dann ein Schulkonto. Ihre echten Namen sehen nur Lehrkräfte.",
       "button": "Kinder importieren",
-      "last": "Letzter Import {when}",
       "noDomains": "Deine Schule hat ihre Google-Domain noch nicht eingetragen, daher können keine neuen Kinder dazukommen. Frag die Schuladministration.",
       "noDomainsAdmin": "Trag zuerst die Google-Domain deiner Schule ein, damit neue Kinder sich anmelden können: {link}",
       "hint": "Du nutzt Google Classroom? {link}",
@@ -7423,7 +7423,9 @@
       "resultStaff": "{count, plural, one {# gehört hier zum Personal} other {# gehören hier zum Personal}}",
       "resultDomains": "{count, plural, one {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen} other {# nicht hinzugefügt: zuerst die Google-Domain der Schule eintragen}}",
       "resultWaiting": "{count, plural, one {# kommt dazu, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet} other {# kommen dazu, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden}}",
-      "waitingNow": "{count, plural, one {# Kind aus Classroom hat sich noch nicht angemeldet. Es kommt in diese Klasse, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet (innerhalb von 30 Tagen; neu importieren verlängert).} other {# Kinder aus Classroom haben sich noch nicht angemeldet. Sie kommen in diese Klasse, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden (innerhalb von 30 Tagen; neu importieren verlängert).}}"
+      "waitingNow": "{count, plural, one {# Kind aus Classroom hat sich noch nicht angemeldet. Es kommt in diese Klasse, sobald es sich zum ersten Mal mit Google auf der Schuldomain anmeldet (innerhalb von 30 Tagen; neu importieren verlängert).} other {# Kinder aus Classroom haben sich noch nicht angemeldet. Sie kommen in diese Klasse, sobald sie sich zum ersten Mal mit Google auf der Schuldomain anmelden (innerhalb von 30 Tagen; neu importieren verlängert).}}",
+      "updated": "Liste aktualisiert {when}",
+      "resultLeft": "{count, plural, one {# nicht mehr in Google Classroom} other {# nicht mehr in Google Classroom}}"
     },
     "post": {
       "heading": "Lektionen in Classroom",
@@ -7439,7 +7441,8 @@
       "posted": "Gepostet",
       "open": "In Classroom öffnen",
       "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu.",
-      "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet."
+      "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet.",
+      "locked": "Um Lektionen zu posten, Noten zu senden und Material zu teilen, erlaube Oomba Academy das Posten in Classroom."
     },
     "grades": {
       "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
@@ -7463,7 +7466,15 @@
         "unlink": "Verknüpfung gelöst",
         "roster": "Kinder importiert",
         "post": "Lektion gepostet",
-        "grades": "Noten gesendet"
+        "grades": "Noten gesendet",
+        "autoRoster": "Kinder aktualisiert (automatisch)",
+        "autoGrades": "Noten gesendet (automatisch)",
+        "material": "Material geteilt",
+        "announce": "Im Stream gepostet",
+        "settings": "Automatisches Synchronisieren geändert",
+        "topic": "Thema umbenannt",
+        "removeLeft": "Kind entfernt, das Classroom verlassen hat",
+        "keepLeft": "Kind behalten, das Classroom verlassen hat"
       }
     },
     "errors": {
@@ -7482,12 +7493,107 @@
       "alreadyPosted": "Diese Lektion ist schon in Google Classroom.",
       "notPosted": "Poste diese Lektion zuerst in Google Classroom.",
       "badMode": "Wähle, wie die Noten gesendet werden.",
-      "scopesMissing": "Setz bitte auf Googles Seite alle Häkchen, damit Oomba Academy deine Kurse sehen und Aufgaben posten kann.",
+      "scopesMissing": "Setz bitte auf Googles Seite beide Häkchen (deine Kurse und ihre Kinder sehen): Oomba Academy braucht sie, um eine Klasse zu verknüpfen.",
       "noRefresh": "Google hat keinen Schlüssel geschickt, den wir behalten können. Bitte verbinde neu.",
       "expired": "Das hat zu lange gedauert. Bitte versuch es noch einmal.",
       "cancelled": "Du hast auf Googles Seite abgebrochen. Nichts wurde verbunden.",
       "staffOnly": "Hier können nur Lehrkräfte und Schuladmins Google Classroom nutzen.",
-      "tooManyTries": "Gerade zu viele Synchronisierungen. Versuch es in einer Stunde wieder."
+      "tooManyTries": "Gerade zu viele Synchronisierungen. Versuch es in einer Stunde wieder.",
+      "needsScope": "Oomba Academy darf das in deinem Classroom noch nicht. Nutze zuerst „Oomba Academy das Posten in Classroom erlauben“.",
+      "noneAllowed": "Auf Googles Seite wurde nichts Neues erlaubt, also bleibt das Posten aus.",
+      "alreadyShared": "Diese Lektion ist schon als Material geteilt.",
+      "notLeaver": "Dieses Kind steht nicht mehr auf der Liste.",
+      "badTemplate": "Wähle, was du ankündigen willst.",
+      "noLiveGame": "Für diese Klasse ist gerade kein Live-Spiel offen.",
+      "pickLesson": "Wähle eine Lektion dieser Klasse.",
+      "lessonNotOpen": "Diese Lektion ist noch nicht offen.",
+      "emptyNote": "Schreib zuerst deine Nachricht.",
+      "tooLong": "Ankündigungen haben höchstens {max} Zeichen.",
+      "hasName": "Deine Nachricht enthält den Namen eines Kindes ({name}). Ankündigungen gehen an die ganze Klasse: Nimm ihn bitte heraus.",
+      "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig."
+    },
+    "allow": {
+      "heading": "Was Oomba Academy in deinem Classroom darf",
+      "features": {
+        "read": "Deine Kurse sehen und ihre Kinder holen",
+        "post": "Lektionen als Aufgaben posten und Noten senden",
+        "materials": "Lektionen als Material teilen",
+        "announce": "Ankündigungen im Kurs-Stream posten",
+        "topics": "Seine Beiträge unter einem Thema ablegen"
+      },
+      "on": "erlaubt",
+      "off": "noch nicht erlaubt",
+      "textNone": "Im Moment kann Oomba Academy nur deine Kurse und ihre Kinder lesen. Um in Classroom zu posten, erlaube es auf Googles Seite.",
+      "textSome": "Einiges ist aus, weil die Häkchen auf Googles Seite nicht gesetzt wurden. Du kannst es jetzt erlauben.",
+      "button": "Oomba Academy das Posten in Classroom erlauben",
+      "done": "Fertig: Oomba Academy darf jetzt in deinem Classroom posten."
+    },
+    "leavers": {
+      "heading": "Nicht mehr in Google Classroom",
+      "text": "Diese Kinder standen auf der Liste des Classroom-Kurses und stehen dort nicht mehr. Sie sind noch in dieser Klasse: Entferne sie oder behalte sie hier.",
+      "since": "gegangen {when}",
+      "remove": "Aus der Klasse entfernen",
+      "removeConfirm": "{name} aus dieser Klasse entfernen? Die Arbeiten bleiben bei der Klasse.",
+      "keep": "Behalten",
+      "removed": "Aus der Klasse entfernt.",
+      "kept": "Bleibt in der Klasse."
+    },
+    "auto": {
+      "heading": "Automatisch synchronisieren",
+      "roster": "Die Kinder alle 6 Stunden aus Classroom aktualisieren",
+      "rosterHint": "Neue Kinder kommen dazu. Wer Classroom verlässt, steht oben, damit du entscheidest: Niemand wird von selbst entfernt.",
+      "grades": "Noten automatisch senden",
+      "gradesHint": "Alle 30 Minuten gehen geänderte Abschlussnoten an Classroom, für Lektionen, die von hier gepostet wurden, bis 30 Tage nach dem jeweiligen Abgabedatum.",
+      "by": "Die Noten gehen über die Google-Classroom-Verbindung von {name}.",
+      "save": "Speichern",
+      "saved": "Gespeichert.",
+      "locked": "Um Noten automatisch zu senden, muss das Posten erlaubt sein.",
+      "reconnect": "Classroom neu verbinden",
+      "paused": {
+        "reconnect": "Automatische Noten sind pausiert: Deine Verbindung zu Google Classroom funktioniert nicht mehr.",
+        "needsScope": "Automatische Noten sind pausiert: Oomba Academy darf keine Noten mehr in deinem Classroom posten. Erlaube es oben wieder.",
+        "backoff": "Automatische Noten sind nach einem Fehler pausiert. Sie versuchen es bald wieder.",
+        "other": "Automatische Noten sind pausiert: Die Lehrkraft, die sie eingeschaltet hat, kann diese Klasse gerade nicht synchronisieren. Schalte sie aus und wieder ein, um sie mit deiner Verbindung zu senden."
+      }
+    },
+    "topic": {
+      "default": "Oomba Academy",
+      "label": "Classroom-Thema für diese Beiträge",
+      "save": "Speichern",
+      "saved": "Thema gespeichert.",
+      "hint": "Neue Beiträge landen in Classroom unter diesem Thema. Lass das Feld leer für den Standardnamen."
+    },
+    "material": {
+      "text": "Als Material teilen legt Titel und Link der Lektion in Classroom ab, ohne Note und ohne Abgabedatum.",
+      "button": "Als Material teilen",
+      "done": "In Google Classroom als Material geteilt.",
+      "doneScheduled": "In Google Classroom als Material geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet.",
+      "shared": "Als Material geteilt",
+      "open": "Material öffnen"
+    },
+    "announce": {
+      "heading": "Im Kurs-Stream posten",
+      "text": "Ankündigungen gehen an alle im Classroom-Kurs, als einfacher Text (höchstens {max} Zeichen).",
+      "live": "Ein Live-Spiel beginnt",
+      "lesson": "Eine Lektion ist bereit",
+      "free": "Deine eigene Nachricht",
+      "adds": "Oomba Academy fügt hinzu:",
+      "note": "Notiz hinzufügen (freiwillig)",
+      "message": "Deine Nachricht",
+      "send": "Im Stream posten",
+      "noLive": "Für diese Klasse ist gerade kein Live-Spiel offen. Starte eines und komm dann hierher zurück, oder nutze „In Classroom ankündigen“ auf dem Spielleiter-Bildschirm.",
+      "hostLive": "Live-Spiel starten",
+      "pickLesson": "Lektion",
+      "lessonTitle": "der Titel der Lektion",
+      "noLessons": "In dieser Klasse ist noch keine Lektion offen.",
+      "fixed": {
+        "live": "🎮 Ein Live-Spiel beginnt! Mach mit auf {url} mit dem Code {code}.",
+        "lesson": "📚 Eine neue Lektion ist bereit: {title}\n{url}"
+      },
+      "rule": "Oomba Academy fügt nur die oben gezeigten Wörter hinzu. Es fügt nie Namen oder Ergebnisse von Kindern hinzu und postet keine Nachricht mit dem Namen eines Kindes.",
+      "done": "Im Kurs-Stream gepostet.",
+      "locked": "Um Ankündigungen zu posten, erlaube Oomba Academy das Posten in Classroom.",
+      "fromLive": "In Classroom ankündigen"
     }
   },
   "digest": {

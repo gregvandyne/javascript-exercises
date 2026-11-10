@@ -830,6 +830,39 @@ export const MIGRATIONS = [
       status TEXT NOT NULL, reason TEXT, classes INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0,
       claimed_at INTEGER, sent_at INTEGER, message TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, week)) WITHOUT ROWID;
     CREATE INDEX IF NOT EXISTS digest_sends_status ON digest_sends(status, claimed_at);`],
+  // Google Classroom sync, part 2 (services/gclassroom.js; docs/decisions.md "Google Classroom sync: optional scopes and
+  // automatic sync"). gc_links gains the class's settings and state: auto_grades ('' off, 'draft' or 'assigned') and
+  // auto_by (the teacher whose connection sends them), auto_fails / auto_next_at (back-off after errors), auto_roster
+  // (1 = re-import the roster every 6 hours, the default), roster_next_at, topic_name ('' = the default, in the
+  // teacher's language) and topic_id / topic_course_id (the Classroom topic made once per linked course). gc_posts gains
+  // kind ('assignment' | 'material'): a lesson may be posted once of each kind, so the primary key becomes
+  // (class_lesson_id, kind); auto_at: when automatic grades last looked at it. gc_grades: per posted assignment and
+  // student, the grade and mode last sent (so an unchanged grade is never sent again); deleted with the post.
+  // gc_roster: the students a roster import matched in this class (by Google account id), and gone_at when they left the
+  // Classroom roster: the page lists them for the teacher to remove (nothing is removed automatically).
+  ['0067_gclassroom_auto', `
+    ALTER TABLE gc_links ADD COLUMN auto_grades TEXT NOT NULL DEFAULT '';
+    ALTER TABLE gc_links ADD COLUMN auto_by TEXT;
+    ALTER TABLE gc_links ADD COLUMN auto_fails INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE gc_links ADD COLUMN auto_next_at INTEGER;
+    ALTER TABLE gc_links ADD COLUMN auto_roster INTEGER NOT NULL DEFAULT 1;
+    ALTER TABLE gc_links ADD COLUMN roster_next_at INTEGER;
+    ALTER TABLE gc_links ADD COLUMN topic_name TEXT NOT NULL DEFAULT '';
+    ALTER TABLE gc_links ADD COLUMN topic_id TEXT;
+    ALTER TABLE gc_links ADD COLUMN topic_course_id TEXT;
+    CREATE TABLE gc_posts_new (class_lesson_id TEXT NOT NULL, kind TEXT NOT NULL DEFAULT 'assignment', class_id TEXT NOT NULL, course_id TEXT NOT NULL,
+      coursework_id TEXT NOT NULL, link TEXT NOT NULL DEFAULT '', posted_by TEXT NOT NULL, posted_at INTEGER NOT NULL,
+      grades_at INTEGER, grades_mode TEXT, grades_counts TEXT, auto_at INTEGER, PRIMARY KEY (class_lesson_id, kind)) WITHOUT ROWID;
+    INSERT INTO gc_posts_new(class_lesson_id, kind, class_id, course_id, coursework_id, link, posted_by, posted_at, grades_at, grades_mode, grades_counts)
+      SELECT class_lesson_id, 'assignment', class_id, course_id, coursework_id, link, posted_by, posted_at, grades_at, grades_mode, grades_counts FROM gc_posts;
+    DROP TABLE gc_posts;
+    ALTER TABLE gc_posts_new RENAME TO gc_posts;
+    CREATE INDEX IF NOT EXISTS gc_posts_class ON gc_posts(class_id);
+    CREATE TABLE IF NOT EXISTS gc_grades (class_lesson_id TEXT NOT NULL, user_id TEXT NOT NULL, coursework_id TEXT NOT NULL, grade INTEGER NOT NULL,
+      mode TEXT NOT NULL, sent_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, user_id)) WITHOUT ROWID;
+    CREATE TABLE IF NOT EXISTS gc_roster (class_id TEXT NOT NULL, sub TEXT NOT NULL, user_id TEXT NOT NULL, course_id TEXT NOT NULL,
+      seen_at INTEGER NOT NULL, gone_at INTEGER, PRIMARY KEY (class_id, sub)) WITHOUT ROWID;
+    CREATE INDEX IF NOT EXISTS gc_roster_user ON gc_roster(user_id);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

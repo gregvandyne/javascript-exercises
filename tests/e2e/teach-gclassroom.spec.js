@@ -2,7 +2,9 @@
 // fake Google from playwright.config.js (E2E_PORT + 1) for the consent screen and tokens, and the fake Classroom API
 // (tests/support/fake-classroom.js) in this process. DemoTeacher connects Classroom, links Demo Class to a course,
 // imports its students (one signs in with Google and joins), posts a lesson, sends grades, then relinks to another
-// Classroom class and posts there; DemoStudent can't open the page. Then the page on a 360 and
+// Classroom class and posts there; DemoStudent can't open the page. Connect asks only for the read scopes: the page is
+// checked read-only first, then "Allow Oomba Academy to post to Classroom" adds the write ones; a lesson is shared as a
+// material, automatic grades are turned on, and an announcement is posted. Then the page on a 360 and
 // 390 phone and at 1280, light and dark, and in Hebrew: nothing sideways, nothing touching, tap targets 44px.
 // Screenshots go to GC_SHOTS (default /dev/shm/teach-gclassroom).
 import { test, expect } from '@playwright/test';
@@ -62,7 +64,7 @@ async function checkLayout(page, where) {
   expect(wide, `${where}: sideways scroll`).toBeLessThanOrEqual(0);
   const touching = await findTouching(page);
   expect(touching.map(t => `${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`), `${where}: touching`).toEqual([]);
-  const small = await page.evaluate(() => [...document.querySelectorAll('.gc-page button, .gc-page a.btn, .gc-page select, .gc-page label.gc-mode')]
+  const small = await page.evaluate(() => [...document.querySelectorAll('.gc-page button, .gc-page a.btn, .gc-page select, .gc-page label.gc-mode, .gc-page label.gc-check, .gc-page summary, .gc-page input.input')]
     .filter(el => el.offsetParent).map(el => ({ t: el.textContent.trim().slice(0, 30), h: el.getBoundingClientRect().height })).filter(x => x.h < 44));
   expect(small, `${where}: tap targets under 44px`).toEqual([]);
 }
@@ -103,6 +105,24 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   await Promise.all([page.waitForLoadState('load'), page.click('#gc-course button[type=submit]')]);
   await expect(page.locator('#gc-course')).toContainText('Linked to Class 4B (Classroom)');
 
+  // Connected read-only (the two read scopes): no write controls, a note with "Allow Oomba Academy to post to Classroom".
+  await expect(page.locator('#gc-lessons')).toContainText('allow Oomba Academy to post to Classroom');
+  await expect(page.locator('#gc-lessons button:has-text("Post to Google Classroom")')).toHaveCount(0);
+  await expect(page.locator('#gc-announce')).toContainText('To post announcements');
+  await checkLayout(page, 'read-only 390');
+  await page.screenshot({ path: `${SHOTS}/1b-read-only-390.png`, fullPage: true });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await checkLayout(page, 'read-only 1280');
+  await page.screenshot({ path: `${SHOTS}/1b-read-only-1280.png`, fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  // Allow posting: Google's screen again (incremental authorization), then every write feature shows.
+  await page.click('#gc-connect .gc-allow button[type=submit]');
+  await expect(page.locator('h1')).toHaveText('Fake Google: choose an account');
+  await page.fill('input[name=email]', 'demo.teacher@dwes.test');
+  await Promise.all([page.waitForURL(/gc=allowed/), page.click('button:has-text("Continue")')]);
+  await expect(page.locator('#gc-connect')).toContainText('Oomba Academy may now post to your Classroom');
+  await expect(page.locator('#gc-auto')).toContainText('Send grades automatically');
+
   // Import its students: all three are new to Oomba, so they wait to sign in (no accounts yet).
   await Promise.all([page.waitForLoadState('load'), page.click('#gc-roster button[type=submit]')]);
   await expect(page.locator('#gc-roster')).toContainText("3 will join when they first sign in with Google on your school's domain");
@@ -130,6 +150,35 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   await expect(page.locator('.gc-lesson').first()).toContainText('Draft completion grades sent');
   await expect(page.locator('#gc-log')).toContainText('Sent grades');
   await expect(page.locator('#gc-log')).not.toContainText('Rosa');
+  // Share it as a material too, turn automatic grades on, and post to the class stream.
+  await Promise.all([page.waitForLoadState('load'), page.locator('.gc-lesson').first().locator('button:has-text("Share as material")').click()]);
+  await expect(page.locator('.gc-lesson').first()).toContainText('Shared as material');
+  await page.check('#gc-auto input[name=autoGrades]');
+  await Promise.all([page.waitForLoadState('load'), page.click('#gc-auto button[type=submit]')]);
+  await expect(page.locator('#gc-auto input[name=autoGrades]')).toBeChecked();
+  await page.locator('#gc-announce summary', { hasText: 'Your own message' }).click();
+  await page.fill('#gc-note-free', 'Rosa did great!');
+  await page.locator('#gc-announce form:has(#gc-note-free) button[type=submit]').click();
+  await expect(page.locator('#gc-note-free-err')).toContainText("has a student's name in it");
+  await page.fill('#gc-note-free', 'Bring headphones tomorrow, please.');
+  await page.locator('#gc-announce form:has(#gc-note-free) button[type=submit]').click();
+  await expect(page.locator('#gc-log')).toContainText('Posted to the class stream');
+  expect(room.calls.some(c => c.method === 'POST' && /announcements$/.test(c.path) && c.body.text === 'Bring headphones tomorrow, please.')).toBe(true);
+  // Rosa leaves the Classroom class: the next import lists her for the teacher, and she stays in the class until removed.
+  await page.click('#gc-roster button[type=submit]');
+  await expect(page.locator('#gc-roster-at')).toContainText('1 already here');
+  room.courses.get('700000000001').students = room.courses.get('700000000001').students.filter(s => s.userId !== '510000000000000000001');
+  await page.click('#gc-roster button[type=submit]');
+  await expect(page.locator('#gc-leavers')).toContainText('Rosa Diaz');
+  await checkLayout(page, 'leavers 390');
+  await page.screenshot({ path: `${SHOTS}/2b-full-390.png`, fullPage: true });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await checkLayout(page, 'leavers 1280');
+  await page.screenshot({ path: `${SHOTS}/2b-full-1280.png`, fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  page.once('dialog', d => d.accept());
+  await page.locator('#gc-leavers button', { hasText: 'Remove from class' }).click();
+  await expect(page.locator('#gc-leavers')).toHaveCount(0);
 
   // Unlink and link another Classroom class: the lesson isn't "Posted" there, and can be posted to it.
   page.once('dialog', d => d.accept());
@@ -162,6 +211,8 @@ for (const v of [{ w: 360, scheme: 'light' }, { w: 360, scheme: 'dark' }, { w: 3
     await page.goto(`${BASE}${classUrl}/google-classroom`);
     if (v.lang === 'he') await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     await expect(page.locator('#gc-lessons')).toBeVisible();
+    // The class stream's templates open, so their forms are checked too.
+    for (const d of await page.locator('#gc-announce details').all()) await d.evaluate(el => { el.open = true; });
     await checkLayout(page, `${v.w}/${v.scheme}${v.lang || ''}`);
     await page.screenshot({ path: `${SHOTS}/2-connected-${v.w}-${v.scheme}${v.lang ? `-${v.lang}` : ''}.png`, fullPage: true });
     if (v.w === 390 && !v.lang) {
