@@ -7749,7 +7749,7 @@
       "lessonNotOpen": "那堂課還沒開放。",
       "emptyNote": "請先寫下你的訊息。",
       "tooLong": "公告最多 {max} 個字元。",
-      "hasName": "你的訊息裡有學生的姓名（{name}）。公告會傳給全班，請把它拿掉。",
+      "hasName": "訊息裡的「{name}」和學生的名字相同。公告會傳給全班，請改寫或拿掉它。",
       "tooManyAnnouncements": "這個班級一小時內已有 10 則公告。請稍等一下。"
     },
     "allow": {

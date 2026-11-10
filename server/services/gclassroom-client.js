@@ -27,7 +27,8 @@ export const SCOPES = [...REQUIRED_SCOPES, ...Object.values(OPTIONAL_SCOPES)];
 
 /** A failed call. code: 'reconnect' (the token was revoked or expired for good), 'needsScope' (the token lacks the
  *  scope this call needs: the teacher took it back at Google), 'denied' (Google said no: not this teacher's course, or
- *  coursework another app made), 'notFound', 'rateLimited', 'badRequest', 'googleDown'. */
+ *  coursework another app made), 'notFound', 'rateLimited', 'badRequest', 'googleDown', 'tooMany' (a list longer than
+ *  the caller's cap, listAll). */
 export class GcError extends Error {
   constructor(code, reason = code, status = 0) { super(reason); this.code = code; this.reason = String(reason).slice(0, 120); this.status = status; }
 }
@@ -106,14 +107,25 @@ export async function api(accessToken, method, path, { query, body } = {}) {
   if (r.status === 400 || r.status === 409) throw new GcError('badRequest', why, r.status);
   throw new GcError('googleDown', why, r.status);
 }
-/** Every page of a list call (at most `maxPages` of `pageSize`). -> the concatenated `key` arrays. */
-export async function listAll(accessToken, path, key, query = {}, { pageSize = 100, maxPages = 20 } = {}) {
-  const out = []; let pageToken = '';
+/** A list call page by page: onPage(items) for each page (at most `maxPages` of `pageSize`); onPage returning false
+ *  stops paging. -> 'end' (every page read), 'stopped' (onPage said so) or 'more' (pages left after maxPages). */
+export async function eachPage(accessToken, path, key, query = {}, { pageSize = 100, maxPages = 20 } = {}, onPage = () => true) {
+  let pageToken = '';
   for (let i = 0; i < maxPages; i++) {
     const j = await api(accessToken, 'GET', path, { query: { ...query, pageSize, pageToken } });
-    if (Array.isArray(j[key])) out.push(...j[key]);
     pageToken = typeof j.nextPageToken === 'string' ? j.nextPageToken : '';
-    if (!pageToken) return out;
+    if (onPage(Array.isArray(j[key]) ? j[key] : []) === false) return 'stopped';
+    if (!pageToken) return 'end';
   }
-  throw new GcError('badRequest', 'too many pages');
+  return 'more';
+}
+/** Every page of a list call (at most `maxPages` of `pageSize`). -> the concatenated `key` arrays. cap: more entries
+ *  than this stops paging at once with GcError 'tooMany' (a class too big for Oomba, said plainly), so an oversized list
+ *  is never read to the end. Pages still left after maxPages: GcError 'badRequest'. */
+export async function listAll(accessToken, path, key, query = {}, { pageSize = 100, maxPages = 20, cap = Infinity } = {}) {
+  const out = [];
+  const end = await eachPage(accessToken, path, key, query, { pageSize, maxPages }, items => { out.push(...items); return out.length <= cap; });
+  if (end === 'stopped') throw new GcError('tooMany', 'over the cap');
+  if (end === 'more') throw new GcError('badRequest', 'too many pages');
+  return out;
 }

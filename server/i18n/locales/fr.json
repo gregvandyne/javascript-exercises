@@ -7749,7 +7749,7 @@
       "lessonNotOpen": "Cette leçon n'est pas encore ouverte.",
       "emptyNote": "Écrivez d'abord votre message.",
       "tooLong": "Les annonces font au plus {max} caractères.",
-      "hasName": "Votre message contient le nom d'un élève ({name}). Les annonces vont à toute la classe : retirez-le, s'il vous plaît.",
+      "hasName": "« {name} » dans votre message correspond au nom d'un élève. Les annonces vont à toute la classe : reformulez ou retirez ce mot, s'il vous plaît.",
       "tooManyAnnouncements": "Cette classe a déjà eu 10 annonces en une heure. Patientez un peu."
     },
     "allow": {

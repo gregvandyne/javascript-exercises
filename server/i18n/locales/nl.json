@@ -7750,7 +7750,7 @@
       "lessonNotOpen": "Die les is nog niet open.",
       "emptyNote": "Schrijf eerst je bericht.",
       "tooLong": "Aankondigingen zijn hoogstens {max} tekens lang.",
-      "hasName": "Je bericht bevat de naam van een leerling ({name}). Aankondigingen gaan naar de hele klas: haal de naam er alsjeblieft uit.",
+      "hasName": "‘{name}’ in je bericht is ook de naam van een leerling. Aankondigingen gaan naar de hele klas: formuleer het alsjeblieft anders of haal het eruit.",
       "tooManyAnnouncements": "Deze klas had al 10 aankondigingen in een uur. Wacht even."
     },
     "allow": {

@@ -9,7 +9,8 @@
 // (announcements). The stored scopes are the truth, re-read from Google at every token refresh.
 //
 // Automatic sync (jobs): grades for posted lessons whose progress changed, every 30 minutes, when the teacher turned it
-// on for the class (only grades that changed are sent; it stops 30 days after the due date); the roster every 6 hours
+// on for the class (only grades that changed are sent; grades that didn't go through are tried again later; it stops 30
+// days after the due date); the roster every 6 hours
 // unless turned off (students who left Classroom are listed for the teacher, never removed automatically).
 //
 // What goes to Google: the lesson's title, a fixed one-line description, the link to the lesson, its due date, and a
@@ -341,9 +342,10 @@ export async function importRoster(u, c, { auto = false } = {}) {
   const lk = linkOf(c.id); if (!lk) return fail('notLinked');
   const s = S.getSchool(c.school_id);
   let students;
-  try { students = await withToken(u.id, tk => C.listAll(tk, `/v1/courses/${encodeURIComponent(lk.course_id)}/students`, 'students', {}, { pageSize: 100, maxPages: 5 })); }
-  catch (e) { const f = asFail(e); syncLog(u.id, c.id, kind, 'error', null, f.code); return f; }
-  if (students.length > MAX_STUDENTS) { syncLog(u.id, c.id, kind, 'error', null, 'tooMany'); return fail('tooMany', { max: MAX_STUDENTS }); }
+  // Paging stops as soon as the course is known to be over the cap (listAll cap: 'tooMany'), so a class too big for
+  // Oomba gets the plain "more than 300 students" answer without its whole roster being read.
+  try { students = await withToken(u.id, tk => C.listAll(tk, `/v1/courses/${encodeURIComponent(lk.course_id)}/students`, 'students', {}, { pageSize: 100, maxPages: 10, cap: MAX_STUDENTS })); }
+  catch (e) { const f = asFail(e, e.code === 'tooMany' ? { max: MAX_STUDENTS } : {}); syncLog(u.id, c.id, kind, 'error', null, f.code); return f; }
   const domains = G.schoolDomains(s);
   const counts = { added: 0, waiting: 0, already: 0, ownAccount: 0, otherSchool: 0, staff: 0, needDomains: 0, left: 0 };
   const t = now();
@@ -459,7 +461,7 @@ async function publish(u, cl, kind, { origin, description, topicName = '' }) {
     if (kind === 'assignment') q.run('DELETE FROM gc_grades WHERE class_lesson_id=?', cl.id);
     q.run(`INSERT INTO gc_posts(class_lesson_id, kind, class_id, course_id, coursework_id, link, posted_by, posted_at) VALUES (?,?,?,?,?,?,?,?)
       ON CONFLICT(class_lesson_id, kind) DO UPDATE SET class_id=excluded.class_id, course_id=excluded.course_id, coursework_id=excluded.coursework_id, link=excluded.link,
-        posted_by=excluded.posted_by, posted_at=excluded.posted_at, grades_at=NULL, grades_mode=NULL, grades_counts=NULL, auto_at=NULL`, cl.id, kind, cl.class_id, lk.course_id, cwId, alt, u.id, now());
+        posted_by=excluded.posted_by, posted_at=excluded.posted_at, grades_at=NULL, grades_mode=NULL, grades_counts=NULL, auto_at=NULL, retry_at=NULL, retry_fails=0`, cl.id, kind, cl.class_id, lk.course_id, cwId, alt, u.id, now());
   });
   syncLog(u.id, cl.class_id, k.log, 'ok', { lesson: cl.id, due: !!due, pastDue: kind === 'assignment' && !!cl.due_at && !due, scheduled: !!opens, topic: !!topicId });
   return ok({ due: !!due, pastDue: kind === 'assignment' && !!cl.due_at && !due, scheduled: opens ? cl.opens_at : null, link: alt, topic: !!topicId });
@@ -473,15 +475,23 @@ export const SYNCS_PER_HOUR = 60;
 /** A student's completion grade out of 100: steps done of the lesson's steps (the gradebook's figure), not how many
  *  answers were right. The page and the results call it a completion grade. */
 export const scoreOf = p => (p.total ? Math.round((100 * Math.min(p.done, p.total)) / p.total) : 0);
+/** Submission pages read per send (100 each). Paging stops as soon as every student with a grade to send was found. */
+export const SUBMISSION_PAGES = 10;
 /**
  * Each student's score for this lesson to its coursework, as a draft grade (the teacher returns it in Classroom) or as
  * the assigned grade too. Only students on the teacher's own Classroom roster who are in this class and have started
  * the lesson; the rest are counted. Every grade that goes is remembered (gc_grades).
  * onlyChanged (automatic sync): only grades that differ from the last one sent (or now go as assigned); nothing to send,
  * no call to Google. gate(): asked just before calling Google (the automatic sync's rate limit); false -> tooManyTries.
+ * Submissions are read page by page, and paging stops once every student with a grade to send was found. A course
+ * longer than SUBMISSION_PAGES pages doesn't fail the send: the grades found go, students not reached count as failed,
+ * and the log says the class is too big ('tooMany').
+ * A student whose grade didn't go through is not remembered, so it still counts as changed, and the automatic sync
+ * tries it again (gc_posts.retry_at: 1 h, 2 h, 4 h... at most a day apart) until it goes or the lesson's automatic
+ * grades end (autoEnded). at: the time of this run (the job's clock).
  * -> { ok, counts: { sent, notStarted, notMatched, failed, unchanged? } }
  */
-export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = false, gate = null } = {}) {
+export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = false, gate = null, at = now() } = {}) {
   const kind = auto ? 'autoGrades' : 'grades';
   if (!GRADE_MODES.includes(mode)) return fail('badMode');
   if (!linkOf(cl.class_id)) return fail('notLinked');
@@ -491,17 +501,25 @@ export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = fals
   const last = new Map(q.all('SELECT * FROM gc_grades WHERE class_lesson_id=? AND coursework_id=?', cl.id, post.coursework_id).map(r => [r.user_id, r]));
   const changed = p => { const g = last.get(p.id); return !g || g.grade !== scoreOf(p) || (mode === 'assigned' && g.mode !== 'assigned'); };
   const counts = { sent: 0, notStarted: 0, notMatched: 0, failed: 0, ...(onlyChanged ? { unchanged: 0 } : {}) };
-  if (onlyChanged && !lp.students.some(p => p.done && changed(p))) return ok({ counts, quiet: true });
+  const retry = fails => q.run("UPDATE gc_posts SET retry_fails=?, retry_at=? WHERE class_lesson_id=? AND kind='assignment'", fails, fails ? at + backoff(fails) : null, cl.id);
+  if (onlyChanged && !lp.students.some(p => p.done && changed(p))) { if (post.retry_at) retry(0); return ok({ counts, quiet: true }); }
   if (gate && !gate()) return fail('tooManyTries');
   const byUser = new Map(lp.students.map(p => [p.id, p]));
   const base = `/v1/courses/${encodeURIComponent(post.course_id)}/courseWork/${encodeURIComponent(post.coursework_id)}/studentSubmissions`;
   const remember = (...a) => q.run(`INSERT INTO gc_grades(class_lesson_id, user_id, coursework_id, grade, mode, sent_at) VALUES (?,?,?,?,?,?)
     ON CONFLICT(class_lesson_id, user_id) DO UPDATE SET coursework_id=excluded.coursework_id, grade=excluded.grade, mode=excluded.mode, sent_at=excluded.sent_at`, ...a);
+  const ids = new Map([...G.identitiesOf([...byUser.keys()]).values()].map(r => [r.sub, r.user_id]));
+  // Students with a grade to send who may be on the roster (they signed in with Google): once all are found, stop.
+  const wanted = new Set([...ids.values()].filter(id => { const p = byUser.get(id); return p && p.done && (!onlyChanged || changed(p)); }));
   let firstError = null;
   try {
     await withToken(u.id, async tk => {
-      const subs = await C.listAll(tk, base, 'studentSubmissions', {}, { pageSize: 100, maxPages: 5 });
-      const ids = new Map([...G.identitiesOf([...byUser.keys()]).values()].map(r => [r.sub, r.user_id]));
+      const subs = [];
+      const end = await C.eachPage(tk, base, 'studentSubmissions', {}, { pageSize: 100, maxPages: SUBMISSION_PAGES }, items => {
+        subs.push(...items);
+        for (const sub of items) wanted.delete(ids.get(String(sub && sub.userId || '')));
+        return wanted.size > 0;
+      });
       for (const sub of subs) {
         const sid = safeId(String(sub && sub.id || '')); const p = byUser.get(ids.get(String(sub && sub.userId || '')));
         if (!sid || !p) { counts.notMatched++; continue; }
@@ -517,8 +535,11 @@ export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = fals
           counts.failed++; firstError = firstError || (e.code || 'googleDown');
         }
       }
+      // Submissions left unread after SUBMISSION_PAGES: the students not reached didn't get their grade this time.
+      if (end === 'more' && wanted.size) { counts.failed += wanted.size; firstError = firstError || 'tooMany'; }
     });
   } catch (e) { if (e.code === 'needsScope') dropScope(u.id, 'coursework'); const f = asFail(e, { counts }); syncLog(u.id, cl.class_id, kind, 'error', counts, f.code); return f; }
+  retry(counts.failed ? (post.retry_fails || 0) + 1 : 0);
   // The automatic sync logs only when something went (or didn't): a quiet run leaves no line.
   if (!auto || counts.sent || counts.failed) {
     q.run("UPDATE gc_posts SET grades_at=?, grades_mode=?, grades_counts=? WHERE class_lesson_id=? AND kind='assignment'", now(), mode, JSON.stringify(counts), cl.id);
@@ -558,22 +579,58 @@ export function announceFixed(t, c, { template, code = '', clId = '' }, origin, 
 }
 const NAME_EDGE = '[\\p{L}\\p{N}_]';
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-/** A student's name in the teacher's words? (Their roster name, its first word, their display name or username, as whole
- *  words.) -> the name found, or '' */
+/** One-word first names that are also everyday English words. On their own (a roster name's first word, or a one-word
+ *  display name) they count as a name only when written the way a name is: with a capital letter, not at the start of
+ *  a sentence ("Great job, Will!"), so "we will start" or "bring your art supplies" can be posted. Kept short on
+ *  purpose: every word here is one a teacher writes in ordinary class news. Full names and usernames always count. */
+export const WORD_NAMES = new Set(['may', 'will', 'art', 'bill', 'joy', 'hope', 'faith', 'grace', 'rose', 'june', 'april',
+  'august', 'summer', 'autumn', 'sky', 'rich', 'mark', 'pat', 'sue', 'ray', 'eve', 'guy', 'max', 'jack', 'dawn', 'ivy',
+  'lily', 'amber', 'ruby', 'pearl', 'dean', 'chase', 'hunter', 'page', 'sage', 'river', 'rowan', 'holly', 'daisy', 'iris',
+  'jade', 'crystal', 'honey', 'sunny', 'sandy', 'penny', 'frank', 'drew', 'rob', 'cliff', 'glen', 'miles', 'reed', 'rocky',
+  'rusty', 'skip', 'star', 'storm', 'wade', 'gene', 'don', 'kit', 'robin', 'wren', 'jay', 'brook', 'melody', 'harmony']);
+/** Of those, the months: English capitalizes them anyway, so "in May" or "May 3" is the month, not a student. */
+const MONTHS = new Set(['april', 'may', 'june', 'august']);
+const MONTH_BEFORE = /(?:^|[^\p{L}])(?:in|by|on|of|until|till|before|after|since|from|through|during|early|late|mid|next|last|this|every|each)\s+$/iu;
+/** Where a sentence starts: nothing before, or only opening quotes, brackets or a bullet after . ! ? : ; or a new line. */
+const SENTENCE_START = /(?:^|[.!?…:;\n])[\s"'“‘«(\[¡¿*•-]*$/u;
+/** Is this one-word, everyday-word name written like a name here? (m: a match in text) */
+function usedAsName(text, m, word) {
+  const s = m[0];
+  if (!/^\p{Lu}/u.test(s)) return false;
+  const before = text.slice(0, m.index);
+  if (SENTENCE_START.test(before)) return false;
+  if (MONTHS.has(word) && (MONTH_BEFORE.test(before) || /^[\s,]*\d/.test(text.slice(m.index + s.length)))) return false;
+  return true;
+}
+/**
+ * A student's name in the teacher's words? Checked as whole words, 3+ letters, any case: each student's roster name,
+ * its first word, their display name and username. A first word or one-word display name that is also an everyday
+ * English word (WORD_NAMES) counts only when written like a name (usedAsName). -> the words as the teacher typed them
+ * (shown back so they can reword), or ''
+ */
 export function nameIn(text, classId) {
   if (!text) return '';
-  const names = new Set();
+  const names = new Map(); // name -> true when it is an everyday word (checked by usedAsName)
   for (const r of S.roster(classId).filter(x => x.role === 'student')) {
-    for (const n of [r.roster_name, r.roster_name && r.roster_name.split(/\s+/)[0], r.display_name, r.username]) {
-      const v = clip(n, 60); if (v.length >= 3) names.add(v);
+    const first = r.roster_name && r.roster_name.trim().split(/\s+/)[0];
+    for (const [n, oneWord] of [[r.roster_name, true], [first, true], [r.display_name, true], [r.username, false]]) {
+      const v = clip(n, 60); if (v.length < 3) continue;
+      const word = oneWord && !/\s/.test(v) && WORD_NAMES.has(v.toLowerCase());
+      names.set(v, (names.has(v) ? names.get(v) : true) && word);
     }
   }
-  for (const n of names) if (new RegExp(`(?<!${NAME_EDGE})${escRe(n)}(?!${NAME_EDGE})`, 'iu').test(text)) return n;
+  // Longest first, so a full name is shown whole rather than its first word.
+  for (const [n, word] of [...names].sort((a, b) => b[0].length - a[0].length)) {
+    for (const m of text.matchAll(new RegExp(`(?<!${NAME_EDGE})${escRe(n)}(?!${NAME_EDGE})`, 'giu'))) {
+      if (!word || usedAsName(text, m, n.toLowerCase())) return m[0];
+    }
+  }
   return '';
 }
 /**
  * Post to the class stream: the template's fixed part (announceFixed) and the teacher's note, plain text, at most 500
- * characters, never a student's name (refused, with the name, so the teacher can take it out). 10 an hour per class.
+ * characters, never a student's name (refused, with the words that matched, so the teacher can reword them). 10 an
+ * hour per class.
  * -> { ok, link }
  */
 export async function announce(u, c, { template, fixed = '', note = '' }) {
@@ -616,7 +673,9 @@ export function autoPaused(lk, t = now()) {
 }
 /**
  * Every 30 minutes: for each class with automatic grades on, the posted lessons whose students' progress moved since
- * the last look get their changed grades sent (sendGrades onlyChanged), within the teacher's 60 syncs an hour. An error
+ * the last look get their changed grades sent (sendGrades onlyChanged), within the teacher's 60 syncs an hour. A lesson
+ * where some students' grades didn't go through is looked at again when its retry is due (gc_posts.retry_at, backing
+ * off 1 h, 2 h... at most a day), even if nobody did anything more, until they go or its automatic grades end. An error
  * backs that class off; a connection that needs connecting again pauses it (the page says "Connect again").
  */
 export async function autoGrades(t = now()) {
@@ -629,8 +688,9 @@ export async function autoGrades(t = now()) {
     for (const p of q.all("SELECT * FROM gc_posts WHERE class_id=? AND course_id=? AND kind='assignment' ORDER BY posted_at", lk.class_id, lk.course_id)) {
       const cl = L.getClassLesson(p.class_lesson_id); if (!cl || autoEnded(cl, p, t)) continue;
       const moved = q.get('SELECT MAX(updated_at) m FROM step_progress WHERE class_lesson_id=?', cl.id).m;
-      if (p.auto_at && !(moved > p.auto_at)) continue;
-      const r = await sendGrades(u, cl, lk.auto_grades, { onlyChanged: true, auto: true, gate: () => allow(`gc-sync:${u.id}`, SYNCS_PER_HOUR, 3600e3) });
+      // Looked at again when progress moved, or when grades that didn't go through are due another try (retry_at).
+      if (p.auto_at && !(moved > p.auto_at) && !(p.retry_at && p.retry_at <= t)) continue;
+      const r = await sendGrades(u, cl, lk.auto_grades, { onlyChanged: true, auto: true, at: t, gate: () => allow(`gc-sync:${u.id}`, SYNCS_PER_HOUR, 3600e3) });
       if (!r.ok) { error = r.code; break; }
       if (!r.quiet) out.lessons++;
       out.sent += r.counts.sent;

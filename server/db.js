@@ -903,6 +903,13 @@ export const MIGRATIONS = [
       conn.prepare('UPDATE schools SET settings=? WHERE id=?').run(JSON.stringify(st), row.id);
     }
   }],
+  // Google Classroom automatic grades: retrying students whose grade didn't go through (docs/decisions.md "Google
+  // Classroom sync: hardening"). gc_posts gains retry_at (when the automatic sync tries that assignment's failed grades
+  // again, even if nobody's progress moved) and retry_fails (sends in a row with a failure, for the back-off: 1 h, 2 h,
+  // 4 h... at most a day). Both clear once every grade went.
+  ['0072_gclassroom_retry', `
+    ALTER TABLE gc_posts ADD COLUMN retry_at INTEGER;
+    ALTER TABLE gc_posts ADD COLUMN retry_fails INTEGER NOT NULL DEFAULT 0;`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

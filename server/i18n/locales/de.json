@@ -7750,7 +7750,7 @@
       "lessonNotOpen": "Diese Lektion ist noch nicht offen.",
       "emptyNote": "Schreib zuerst deine Nachricht.",
       "tooLong": "Ankündigungen haben höchstens {max} Zeichen.",
-      "hasName": "Deine Nachricht enthält den Namen eines Kindes ({name}). Ankündigungen gehen an die ganze Klasse: Nimm ihn bitte heraus.",
+      "hasName": "„{name}“ in deiner Nachricht ist auch der Name eines Kindes. Ankündigungen gehen an die ganze Klasse: Formuliere es bitte um oder nimm es heraus.",
       "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig."
     },
     "allow": {
