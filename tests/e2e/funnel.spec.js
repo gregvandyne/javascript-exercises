@@ -26,7 +26,7 @@ test('/admin/stats: funnels, last 7 days vs the 7 before; a parent page view is 
     await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/login')), page.click('button[type=submit]')]);
     await page.goto('/admin/stats');
     await expect(page.locator('#funnels')).toHaveText('Funnels, last 7 days vs the 7 before');
-    await expect(page.locator('.stats-funnels > section')).toHaveCount(5);   // and the home doors and "Who's this for?" under the funnels
+    await expect(page.locator('.stats-funnels > section')).toHaveCount(7);   // the three funnels, then the home doors, "Who's this for?", the teacher landing and the first live game
     const door = page.locator('#funnel-doors ~ .tblwrap tbody tr', { hasText: 'I’m a teacher' }).locator('td').nth(1);
     if (!(Number(await door.textContent()) >= 1)) problems.push(`${lang} ${scheme}: teacher door clicks ${await door.textContent()}`);
     const views = Number(await page.locator('#funnel-parent ~ .tblwrap tbody tr').first().locator('td').nth(1).textContent());

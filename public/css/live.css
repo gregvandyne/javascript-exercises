@@ -431,3 +431,9 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
   .lv-roster.is-many { grid-template-columns: repeat(2, minmax(0, 1fr)); max-block-size: 60vh; }
   .lv-roster.is-many > li { padding-block: 4px; font-size: .9rem; }
 }
+
+/* A guest game's results: what is kept, and "Make a class to keep scores" (server/routes/quick-live.js). */
+.lv-guest-note { display: flex; flex-direction: column; gap: 12px; }
+.lv-guest-note p { margin: 0; }
+.lv-guest-act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+@media print { .lv-guest-act { display: none; } }

@@ -6937,7 +6937,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math y más",
       "li2": "Usa un banco de preguntas inicial, escribe el tuyo o deja que la IA haga un borrador para que lo edites",
       "li3": "Las puntuaciones van directo a tu libro de calificaciones",
-      "li4": "Solo estudiantes con sesión iniciada: sin chat, sin escribir, sin nombres inventados",
+      "li4": "Juegos de clase: solo tus estudiantes con sesión iniciada. Juegos con invitados: nombres inventados y seguros. Sin chat ni texto libre en ninguno",
       "shotAlt": "La sala de espera de Question Battle en vivo: cinco avatares de estudiantes esperan mientras la pantalla grande muestra el código del juego y un código QR.",
       "link": "Cómo funcionan los juegos en vivo"
     },
@@ -7735,6 +7735,66 @@
       "badDay": "Elige un día.",
       "badHour": "Elige una hora.",
       "badZone": "Elige una zona horaria de la lista."
+    }
+  },
+  "quickLive": {
+    "cta": "Organiza un juego en vivo ahora",
+    "ctaNote": "No hacen falta cuentas de estudiantes. Entran con un código y reciben un nombre inventado y seguro.",
+    "haveCode": "¿Tienes un código de juego? Únete",
+    "join": "Unirse a un juego",
+    "host": {
+      "title": "Organiza un juego en vivo ahora",
+      "h": "Organiza un juego en vivo ahora",
+      "lead": "Crea una cuenta de docente, elige un juego y tus estudiantes entran con un código. Sin cuentas de estudiantes, sin correo electrónico y gratis.",
+      "step1": "Crea tu cuenta de docente: tres casillas.",
+      "step2": "Elige un juego y sus preguntas.",
+      "step3": "Pon el código en la pizarra. Los estudiantes entran desde cualquier dispositivo."
+    },
+    "signup": {
+      "h": "Tu cuenta de docente",
+      "submit": "Crear mi cuenta y elegir un juego",
+      "privacy": "Guardamos tu nombre, tu nombre de usuario y una copia cifrada de tu contraseña. <a href=\"{privacy}\">Política de privacidad</a>",
+      "have": "¿Ya tienes una cuenta? <a href=\"{login}\">Inicia sesión</a>",
+      "student": "¿Eres estudiante?",
+      "schoolName": "{name}: mi aula"
+    },
+    "kid": {
+      "h": "Los juegos en vivo los organizan los docentes",
+      "p": "Pide a tu docente el código del juego y únete aquí."
+    },
+    "quick": {
+      "title": "Juego rápido",
+      "h": "Juego rápido",
+      "forClass": "Para {name}. Solo pueden entrar los estudiantes de esta clase, con su propia cuenta.",
+      "open": "Cualquiera con el código puede entrar. Sin cuentas de estudiantes: cada jugador recibe un nombre inventado y seguro.",
+      "hasOpen": "Ya tienes un juego abierto: {title}.",
+      "mode": "Juego",
+      "level": "Nivel",
+      "subject": "Materia",
+      "what": "{count} preguntas ya preparadas, nuevas en cada juego. Tú pulsas Empezar cuando todos han entrado.",
+      "go": "Abrir la sala",
+      "more": "Más juegos y ajustes",
+      "recent": "Tus últimos juegos"
+    },
+    "card": {
+      "button": "Juego rápido",
+      "change": "Cambiar"
+    },
+    "results": {
+      "h": "Este fue un juego con invitados.",
+      "now": "Los jugadores no tenían cuenta, así que nada pasó al cuaderno de notas. El repaso de preguntas de esta página se guarda. Los nombres de juego y las puntuaciones no: puedes verlos aquí solo unos minutos.",
+      "saved": "Los jugadores no tenían cuenta, así que no se guardaron nombres ni puntuaciones y nada pasó al cuaderno de notas. El repaso de preguntas se guarda.",
+      "keep": "Crea una clase para guardar las puntuaciones",
+      "keepHint": "Pega los nombres de tus estudiantes e imprime sus tarjetas de acceso. Así se guardan las puntuaciones de los juegos de tu clase."
+    },
+    "keep": {
+      "title": "Crea una clase para guardar las puntuaciones",
+      "h": "Crea una clase para guardar las puntuaciones",
+      "lead": "Pega los nombres de tus estudiantes. Cada uno recibe una tarjeta de acceso. Desde entonces, las puntuaciones de los juegos de tu clase se guardan con sus nombres, para ti.",
+      "names": "Nombres de los estudiantes",
+      "namesHint": "Un nombre en cada línea. Basta con el nombre de pila.",
+      "go": "Crear la clase y las tarjetas de acceso",
+      "note": "Solo tú y el personal de tu escuela ven los nombres que escribes aquí."
     }
   }
 }

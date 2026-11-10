@@ -137,6 +137,8 @@ main{position:relative;z-index:1}
 .lp-lead{margin-top:22px;font-size:clamp(1.05rem,.95rem + .45vw,1.3rem);line-height:1.55;color:var(--text-2);max-width:40em}
 .lp-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 .lp-ctas-c{justify-content:center}
+.lp-live-ctas{margin-top:24px}
+.lp-note{margin-top:12px;color:var(--text-2);font-size:15px}
 @media (max-width:520px){.lp-hero .lp-ctas .lp-btn{flex:1 1 100%}}
 .lp-trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;color:var(--text-2);font-weight:600;font-size:15px}
 .lp-trust li{display:inline-flex;align-items:center;gap:8px}
