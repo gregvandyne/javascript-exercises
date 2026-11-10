@@ -3649,3 +3649,21 @@ story visible: every tool a teacher needs already exists, so the loop names them
   `#needs-attention` anchor (it was only drawn for more than 3 students, so the loop's link landed on an unsorted page).
   Deleting an account removes the `teach.loop:<user id>` settings row (services/account-delete.js). German says
   "Lektion", as the app's lesson strings do, not "Stunde".
+
+## Quiet Bounce and Popcorn Hush (10 Nov 2026)
+
+The owner asked for "two new quiet time games like the one for Remi": one with balls that jump and rattle, one where
+popcorn pops. Both are official noise meters on exactly Remi's plumbing: the play page measures loudness after a tap
+and passes the game one number (`BRB.loudness`), the frame never asks for the microphone, nothing is recorded.
+
+- **Same level maths, calibration, modes, goals and timings as Remi** (each game's core is unit-tested equal to
+  `RemiCore`), so a teacher gets the same "too loud" line whichever meter they pick.
+- **Quiet Bounce** (`quiet-bounce`): a glass jar of 30 bouncy balls with faces. Calm: a sleepy resting pile. Near the
+  line: they jiggle and rattle. Over the line (leaky 1.5 s, so a single clap only rattles): they jump and hit the lid,
+  the clock pauses and a "big bounce" is counted. Stars by big bounces, like Remi's wake-ups.
+- **Popcorn Hush** (`popcorn-hush`): a popcorn machine whose kernels sizzle near the line and pop when the room is too
+  loud. Popping reads as "too loud" (the machine looks flustered, the clock stops), not as a reward to chase.
+- **Class tools, not fun games:** both are in `CLASS_TOOLS` (never Play's hero or featured, still in search) and on the
+  teacher page's cards (`TEACHER_GAMES`); not in Brain breaks, which stay fun games plus Remi.
+- `MIC_GAMES` lists the three slugs; `tests/unit/mic-scope.test.js` pins that list.
+

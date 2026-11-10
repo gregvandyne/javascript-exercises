@@ -61,6 +61,9 @@ export const GAMES = {
   // Remi's Quiet Meadow: only the title, the setup card, the privacy note and the end lines may be spoken (the game says
   // nothing while it listens to the room).
   'remis-quiet-meadow': { title: "Remi's Quiet Meadow", role: 'friendly', spoken: /^(?:title|tag|setupH|privacy|calibHint|end)/ },
+  // Quiet Bounce and Popcorn Hush: like Remi's, only the title, setup, privacy and end lines are spoken.
+  'quiet-bounce': { title: 'Quiet Bounce', role: 'friendly', spoken: /^(?:title|tag|setupH|privacy|calibHint|end)/ },
+  'popcorn-hush': { title: 'Popcorn Hush', role: 'friendly', spoken: /^(?:title|tag|setupH|privacy|calibHint|end)/ },
   'ring-rumble': { title: 'Ring Rumble', role: 'narrator', spoken: /./ },
   'shark-plank': { title: 'Shark Plank', role: 'deep', spoken: /./ },
   'sum-racer': { title: 'Sum Racer', role: 'bright', spoken: /./ },

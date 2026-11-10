@@ -1,5 +1,5 @@
-// Loudness on the play page (docs/safety.md "Loudness"; docs/decisions.md "Remi's Quiet Meadow"). One official
-// classroom game, Remi's Quiet Meadow, may listen for HOW LOUD the room is: its play page (never its game frame) opens
+// Loudness on the play page (docs/safety.md "Loudness"; docs/decisions.md "Remi's Quiet Meadow"). Three official
+// classroom noise meters (Remi's Quiet Meadow, Quiet Bounce, Popcorn Hush) may listen for HOW LOUD the room is: their play page (never its game frame) opens
 // the microphone after a tap, measures the level on the device and passes the game one number at a time
 // (public/js/loudness.js). Nothing is recorded, stored or sent anywhere.
 //
@@ -15,7 +15,7 @@ import { isOfficial } from './classlive-access.js';
 import { config } from '../config.js';
 
 /** The official games whose play page may listen for loudness. */
-export const MIC_GAMES = Object.freeze(new Set(['remis-quiet-meadow']));
+export const MIC_GAMES = Object.freeze(new Set(['remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush']));
 /** The play page's Permissions-Policy for such a game: the site's usual one with the microphone for this page only
  *  (`self`, never `*`; the game frame keeps its own `microphone=()`). */
 export const MIC_POLICY = 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()';

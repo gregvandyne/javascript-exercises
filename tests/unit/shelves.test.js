@@ -55,13 +55,13 @@ const mum = auth.createUser({ username: 'ShelfMum', password: 'a-long-password-1
 const guest = auth.createGuest();
 
 // ---------------------------------------------------------------- the tags
-const PLAY = ['hero-of-sunvale', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'brick-drop', 'munch-maze', 'swish-flick', 'beat-lanes', 'would-you-rather', 'gulp-city', 'remis-quiet-meadow', 'jungle-cup'];
+const PLAY = ['hero-of-sunvale', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'brick-drop', 'munch-maze', 'swish-flick', 'beat-lanes', 'would-you-rather', 'gulp-city', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'jungle-cup'];
 const LEARN = ['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live',
   'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail'];
 const seedMeta = fs.readdirSync('seed-games').filter(f => f.endsWith('.json')).map(f => JSON.parse(fs.readFileSync(`seed-games/${f}`, 'utf8')));
 
-test('every launch game is on exactly one shelf: 13 on Play, 23 on Learn, as designed; the database agrees', () => {
-  assert.equal(seedMeta.length, 36);
+test('every launch game is on exactly one shelf: 15 on Play, 23 on Learn, as designed; the database agrees', () => {
+  assert.equal(seedMeta.length, 38);
   for (const m of seedMeta) assert.ok(m.shelf === 'play' || m.shelf === 'learn', `${m.slug}: shelf`);
   assert.deepEqual(seedMeta.filter(m => m.shelf === 'play').map(m => m.slug).sort(), [...PLAY].sort());
   assert.deepEqual(seedMeta.filter(m => m.shelf === 'learn').map(m => m.slug).sort(), [...LEARN].sort());
