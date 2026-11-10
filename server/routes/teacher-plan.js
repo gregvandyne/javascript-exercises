@@ -40,7 +40,10 @@ const nope = (req, res) => res.status(404).json({ error: req.t('errors.api.notFo
 const el = (t, tag, key, vars = {}, attrs = '') => raw(`<${tag}${attrs}${t.own(key) ? '' : ' lang="en" dir="ltr"'}>${tHtml(t, key, vars)}</${tag}>`);
 const err = html`<p class="err form-err" aria-live="polite"></p>`;
 const CSS = html`<style>.trial{max-width:640px;margin:0 auto}.trial .plan-list{margin:var(--s3) 0}.trial .lead{margin-bottom:var(--s3)}
-.trial form .field{margin-bottom:var(--s3)}.teacherplan .planchip{margin-inline-end:.4em}</style>`;
+.trial form .field{margin-bottom:var(--s3)}.teacherplan .planchip{margin-inline-end:.4em}
+/* The big buttons ("Create my account and start the trial") wrap inside the screen on a phone, never past its edge. */
+.trial form .btn-big{width:100%;max-width:100%;white-space:normal;text-align:center;line-height:1.2;padding:12px 20px;font-size:1.2rem}
+.trial .panel{min-width:0}.trial .input{max-width:100%}</style>`;
 /** The admin schools of a user (to start a school's seat trial from /trial?seats=N). */
 const adminSchools = u => (u ? SC.adminSchools(u) : []);
 const seatsQuery = v => { const n = SB.seatsFrom(v); return n != null && n >= 1 && n <= TP.MAX_TEACHER_SEATS ? n : null; };
@@ -121,12 +124,14 @@ function signupForm(req, seats) {
     ${el(t, 'p', 'plans.trial.signup.lead', { login: `/login?next=${encodeURIComponent(next)}` })}
     <form data-api="/api/trial/signup" novalidate>
       ${seats ? html`<input type="hidden" name="seats" value="${seats}">` : ''}
+      <input type="hidden" name="tz" data-browser-tz>
       <div class="field">${lab('su-name', 'plans.trial.signup.name')}<input class="input" id="su-name" name="name" required maxlength="60" autocomplete="name" aria-describedby="su-name-hint">
         ${el(t, 'span', 'plans.trial.signup.nameHint', {}, ' class="hint" id="su-name-hint"')}${errs('su-name')}</div>
       <div class="field">${lab('su-school', 'plans.trial.signup.school')}<input class="input" id="su-school" name="school" required maxlength="80" autocomplete="organization">${errs('su-school')}</div>
       <div class="field">${lab('su-email', 'plans.trial.email')}<input class="input" id="su-email" name="email" type="email" dir="ltr" required maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="su-email-hint">
         ${el(t, 'span', 'plans.trial.emailHint', {}, ' class="hint" id="su-email-hint"')}${errs('su-email')}</div>
-      <div class="field">${lab('su-username', 'plans.trial.signup.username')}<input class="input" id="su-username" name="username" required maxlength="20" autocomplete="username" autocapitalize="off" spellcheck="false" dir="ltr">${errs('su-username')}</div>
+      <div class="field">${lab('su-username', 'plans.trial.signup.username')}<input class="input" id="su-username" name="username" required minlength="3" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="su-username-hint">
+        ${el(t, 'span', 'plans.trial.signup.usernameHint', {}, ' class="hint" id="su-username-hint"')}${errs('su-username')}</div>
       <div class="field">${lab('su-password', 'plans.trial.signup.password')}<input class="input" id="su-password" name="password" type="password" required minlength="${auth.STAFF_PASSWORD_MIN}" maxlength="72" autocomplete="new-password" dir="ltr" aria-describedby="su-password-hint">
         ${el(t, 'span', 'plans.trial.signup.passwordHint', { min: auth.STAFF_PASSWORD_MIN }, ' class="hint" id="su-password-hint"')}${errs('su-password')}</div>
       <div class="field"><label class="checkline"><input type="checkbox" id="su-adult" name="adult" value="1" required> ${el(t, 'span', 'plans.trial.signup.adult')}</label>${errs('su-adult')}</div>
@@ -166,6 +171,11 @@ router.post('/api/trial/signup', rateLimit('trial-signup', 30, 3600e3), async (r
   const s = SC.createSchool(u, { name: school });
   if (!s.ok) return res.status(400).json({ error: t('plans.trial.errors.school'), field: 'school' });
   SC.addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
+  // The school's time zone from the teacher's browser (public/js/app.js fills it in), when it is a zone this server
+  // knows: lessons open and due days end at midnight there from day one, not at midnight UTC. Anything else is ignored
+  // (the school's Settings still offer it).
+  const tz = typeof b.tz === 'string' ? b.tz.trim().slice(0, 64) : '';
+  if (SC.isZone(tz)) SC.updateSchool(u, s.school.id, { settings: { timeZone: tz } });
   audit(u.id, 'user.signup', u.id, { via: 'trial' });
   auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay: true });
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);

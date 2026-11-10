@@ -9,7 +9,7 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, invitesFor, staffName } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName } from '../services/schools.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
@@ -24,6 +24,7 @@ import * as funnel from '../services/funnel.js';
 import * as courses from '../services/courses.js';
 import { countable } from '../services/traffic.js';
 import { contactEmail } from './teachers.js';
+import { sendingOn as resetByEmailOn } from '../services/email.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -35,7 +36,9 @@ export function homeFor(u) {
   if (!u || u.is_guest) return '/';
   if (auth.isGrownup(u)) return '/family';
   // Everyone else lands on their first tab (layout.js landingFor, the same rule as '/'): a school still to set up first.
-  if (isSchoolStaff(u)) { const slug = schoolToSetUp(u); return slug ? `/school/${slug}` : landingFor(u); }
+  // Not a solo teacher (the only staff member of their own school, e.g. from /trial): they land on the Classroom home
+  // at every sign-in, with "Make your first class" there; the School tab keeps the setup checklist.
+  if (isSchoolStaff(u)) { const slug = soloSchoolAdmin(u) ? null : schoolToSetUp(u); return slug ? `/school/${slug}` : landingFor(u); }
   if (isPlatformAdmin(u)) return '/admin';
   if (u.managed_school) return '/classes';
   return landingFor(u) || '/';
@@ -134,6 +137,7 @@ function authPage(req, res, mode) {
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
       ${top}
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
+      ${!isSignup && req.query.reset === '1' ? html`<p class="notice good" role="status" id="reset-done">${t('auth.reset.done')}</p>` : ''}
       ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
       ${isSignup ? '' : googleNotice(req)}
       ${isSignup ? '' : loginGoogle(req, next)}
@@ -154,6 +158,7 @@ function authPage(req, res, mode) {
       </form>
       ${isSignup ? '' : html`<div class="forgot small" id="forgot"><h2 class="forgot-h">${t('auth.page.forgotHeading')}</h2>
         <p><span aria-hidden="true">🏫</span> ${t('auth.page.forgotSchool')} ${t('auth.page.forgotSchoolAdmin', { email: contactEmail() })}</p>
+        ${resetByEmailOn() ? html`<p id="forgot-staff"><span aria-hidden="true">🍎</span> ${tHtml(t, 'auth.reset.linkLine', { href: '/forgot' })}</p>` : ''}
         <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></div>`}
       ${!u ? html`<div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>` : ''}
       <p class="center small" style="margin-top:16px">${isSignup ? html`${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a>` : html`${t('auth.page.newHere')} <a href="/signup?next=${encodeURIComponent(next)}">${t('auth.page.signupLink')}</a>`}</p>

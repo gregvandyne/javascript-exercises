@@ -85,6 +85,15 @@ export function schoolToSetUp(u) {
     ORDER BY m.joined_at LIMIT 1`, u.id);
   return r ? r.slug : null;
 }
+/** A school admin who is the only staff member of every school they run (a teacher who signed up on their own, /trial):
+ *  their first page is the Classroom home, not "Set up your school"; the School tab and its checklist stay one tap away.
+ *  false for anyone who runs no school, and from the day a second teacher or admin joins one of them. */
+export function soloSchoolAdmin(u) {
+  if (!u) return false;
+  const r = q.get(`SELECT COUNT(*) n, MAX((SELECT COUNT(*) FROM school_members x WHERE x.school_id=s.id AND x.status='active' AND x.role!='student')) staff
+    FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND m.role='admin' AND s.archived_at IS NULL`, u.id);
+  return !!r && r.n > 0 && r.staff === 1;
+}
 export const staffName = u => (u ? (q.get("SELECT roster_name n FROM school_members WHERE user_id=? AND status='active' AND role!='student' AND roster_name!='' ORDER BY joined_at LIMIT 1", u.id) || {}).n || '' : '');
 export function listSchools() {
   return q.all(`SELECT s.*, (SELECT COUNT(*) FROM school_members m WHERE m.school_id=s.id AND m.status='active' AND m.role='student') students,
