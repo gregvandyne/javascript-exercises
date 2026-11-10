@@ -56,7 +56,7 @@ const list = (t, prefix, keys, vars) => html`<ul class="lp-list">${keys.map(k =>
 /** The pages' own CSS: the research cards' big numbers. Colors are the site's tokens. */
 const CSS = raw(`<style>
 .trust-find{display:grid;gap:var(--gap,16px);grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));list-style:none;padding:0;margin:0}
-.trust-find>li{display:flex;flex-direction:column;gap:8px}
+.trust-find>li{display:flex;flex-direction:column;gap:8px;margin:0}
 .trust-find h3{margin:0;font-size:1rem}
 .trust-big{font-size:clamp(1.25rem,1rem + 1.2vw,1.6rem);font-weight:800;line-height:1.2;margin:0}
 .trust-fine{font-size:.85rem;color:var(--muted);margin:0;overflow-wrap:anywhere}

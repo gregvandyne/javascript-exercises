@@ -4617,6 +4617,32 @@
           "q4": "Y a-t-il un chat avec des inconnus ?",
           "a4": "Non. Les enfants ne discutent qu’avec des amis ajoutés grâce à un code de 6 caractères, jamais en cherchant un nom, et ils peuvent désactiver le chat sur leur page Moi."
         }
+      },
+      "a5": {
+        "name": "De 5 à 7 ans",
+        "short": "Mots courants en anglais, premières additions, rythme et stratégie simple",
+        "title": "Jeux éducatifs gratuits pour les enfants de 5, 6 et 7 ans",
+        "description": "Jeux gratuits et sans publicité pour les 5 à 7 ans : mots anglais lus à voix haute, premières additions, rythme et stratégie. Sans téléchargement, sans inconnus.",
+        "h1": "Jeux éducatifs pour les enfants de 5 à 7 ans",
+        "lead": "De la grande section au CE1, la plupart des enfants apprennent encore à lire. Ces jeux lisent leurs mots à voix haute, ou utilisent des nombres, de la musique et des images, pour qu’un jeune enfant puisse jouer avec un adulte à côté au début. Nos parcours complets commencent au CE2, vers 8 ans.",
+        "fit": {
+          "wordTrail": "Fait pour cet âge : les premiers mots courants en anglais sur un sentier de conte, et chaque mot est lu à voix haute.",
+          "sharkPlank": "Le pendu en anglais pour les enfants qui apprennent tout juste à lire, avec chaque mot lu à voix haute.",
+          "sumRacer": "Commence par la piste des additions jusqu’à 10. On peut toucher la réponse au lieu de la taper.",
+          "wordHunt": "Des mots mêlés à thème pour les jeunes lecteurs, plutôt à partir de 6 ans : touche un mot anglais pour l’entendre.",
+          "tugOfMath": "Choisis le niveau 1 pour les questions les plus faciles, les additions jusqu’à 20, et joue contre l’ordi en Facile.",
+          "beatLanes": "Taper en rythme sur des chansons, en commençant par Ah ! vous dirai-je, maman : plus de rythme que de lecture.",
+          "connectFour": "Quatre à la suite contre un adulte, un frère, une sœur ou le robot en Facile : un premier pas pour apprendre à anticiper.",
+          "doodleHoot": "Dessiner et deviner avec des mots faciles, et des tuiles de lettres pour les petits qui ne savent pas encore taper."
+        },
+        "faq": {
+          "q2": "Mon enfant peut-il jouer s’il ne sait pas encore lire ?",
+          "a2": "Pour certains jeux, oui. Word Trail et Shark Plank lisent chaque mot à voix haute, Word Hunt lit un mot quand on le touche, et Sum Racer et Tug of Math utilisent des nombres. Les menus et les consignes sont écrits, donc un adulte à côté aide au début.",
+          "q3": "Les parcours sont-ils prévus pour cet âge ?",
+          "a3": "Pas encore. Number Quest, CS Quest et Cyber Defenders commencent au CE2, vers 8 ans. De 5 à 7 ans, les jeux de cette page sont le bon point de départ.",
+          "q4": "Un enfant de 6 ans peut-il utiliser le Constructeur IA ?",
+          "a4": "Les enfants tapent leur idée pour le Constructeur, donc à cet âge un adulte devrait s’asseoir avec eux et les aider à l’écrire. Le Constructeur suit des règles de sécurité fixes pour les enfants, et un nouveau jeu reste privé tant qu’il n’est pas partagé."
+        }
       }
     },
     "index": {
@@ -4743,7 +4769,7 @@
     },
     "ages": {
       "h": "Des jeux pour chaque âge",
-      "p": "Les enfants changent beaucoup entre 8 et 14 ans. Ces pages choisissent les jeux adaptés à chaque âge et expliquent pourquoi."
+      "p": "Les enfants changent beaucoup entre 5 et 14 ans. Ces pages choisissent les jeux adaptés à chaque âge et expliquent pourquoi."
     },
     "make": {
       "h": "Du jeu à la création",
@@ -4943,6 +4969,128 @@
     "demo": {
       "h": "Tout voir en moins d’une minute",
       "note": "Une courte vidéo avec musique et sous-titres à l’écran : des enfants jouent à des jeux éducatifs (un globe terrestre, Tu préfères, les échecs et Gulp City), puis un enfant décrit un jeu au Builder, qui le crée et y joue pour vérifier qu’il fonctionne, et l’enfant y joue. Enfin, comment tout reste sûr : un nom inventé sans e-mail, des amis ajoutés uniquement avec un code, et des jeux qui restent privés jusqu’à ce que l’enfant choisisse de les partager."
+    }
+  },
+  "research": {
+    "name": "La recherche",
+    "footer": "Recherche",
+    "title": "Apprendre avec des jeux, ça marche ? Ce que dit la recherche",
+    "description": "Ce que trois grandes synthèses de recherche ont trouvé sur les jeux éducatifs et la ludification, expliqué aux enseignants, avec tailles d’effet et sources.",
+    "kicker": "Pour les enseignants · La recherche",
+    "h1": "Apprendre avec des jeux, ça marche ? Ce que dit la recherche",
+    "lead": "Trois grandes synthèses ont regroupé les résultats de nombreuses études sur les jeux éducatifs et sur les éléments de jeu en classe. Voici ce qu’elles ont trouvé, en mots simples, et ce que cela ne prouve pas.",
+    "findings": {
+      "h": "Ce que les études ont trouvé"
+    },
+    "clark": {
+      "h": "Jeux éducatifs, comparés à un enseignement sans jeux",
+      "stat": "Du 50e à environ le 63e centile",
+      "p": "Dans les études qui comparaient des jeux éducatifs numériques à un enseignement sans jeux, les élèves qui avaient appris avec des jeux réussissaient mieux les tests sur ce qu’ils avaient appris.",
+      "small": "Clark, Tanner-Smith et Killingsworth (2016) : résultats d’apprentissage, jeux comparés à l’absence de jeux, g = 0,33."
+    },
+    "wouters": {
+      "h": "Jeux sérieux, comparés à un enseignement classique",
+      "stat": "Environ le 61e centile pour l’apprentissage, et le 64e pour ce qui est retenu plus tard",
+      "p": "Les élèves qui apprenaient avec des jeux sérieux apprenaient davantage que ceux qui suivaient un enseignement classique, et ils en retenaient davantage quand on les testait de nouveau plus tard.",
+      "small": "Wouters, van Nimwegen, van Oostendorp et van der Spek (2013) : apprentissage d = 0,29, rétention d = 0,36."
+    },
+    "sailer": {
+      "h": "Éléments de jeu dans des cours ordinaires (ludification)",
+      "stat": "Environ le 69e centile",
+      "p": "Ajouter des éléments de jeu comme des points, des badges et des classements à des cours ordinaires a aussi aidé les élèves à apprendre.",
+      "small": "Sailer et Homner (2020) : ludification, résultats d’apprentissage cognitifs, g = 0,49."
+    },
+    "read": {
+      "h": "Comment lire ces chiffres",
+      "p1": "Un centile indique où se placerait l’élève moyen qui a appris avec des jeux parmi les élèves qui ont appris sans. Le 50e centile, c’est le milieu. Passer au 63e centile veut dire que l’élève moyen avec des jeux a fait mieux qu’environ 63 élèves sur 100 sans jeux.",
+      "p2": "Les petits caractères donnent chaque taille d’effet (g de Hedges ou d de Cohen) : l’écart entre les deux groupes, mesuré en écarts-types. Nous les avons convertis en centiles en supposant des scores distribués selon une loi normale."
+    },
+    "limits": {
+      "h": "Ce que cela ne prouve pas",
+      "li1": "Ce sont des moyennes sur de nombreuses études, âges, matières et jeux. Certains jeux ont beaucoup aidé, d’autres pas du tout.",
+      "li2": "Aucune de ces études n’a testé Oomba Academy. Elles décrivent les jeux éducatifs en général, pas une promesse pour un jeu, une classe ou un élève en particulier.",
+      "li3": "Wouters et ses collègues ont trouvé que les jeux sérieux ne motivaient pas davantage que l’enseignement classique, même si les élèves apprenaient plus.",
+      "li4": "La ludification n’est pas un jeu éducatif : elle ajoute des éléments de jeu à des cours ordinaires. Nous l’incluons parce que les points, les étoiles et les classements font partie de nombreux jeux éducatifs, y compris les nôtres."
+    },
+    "use": {
+      "h": "Utiliser les jeux comme le suggère la recherche",
+      "p": "Wouters et ses collègues ont trouvé que les élèves apprenaient davantage avec des jeux sérieux quand le jeu accompagnait d’autres formes d’enseignement, sur plus d’une séance, et quand les élèves jouaient en groupe.",
+      "li1": "Utilisez un jeu en plus de votre leçon, pas à sa place : une courte partie pour pratiquer ce que vous venez d’enseigner.",
+      "li2": "Revenez-y sur plusieurs séances plutôt qu’en une seule longue séance.",
+      "li3": "Faites jouer les élèves ensemble : toute la classe, en équipes, ou à deux sur un même écran."
+    },
+    "sources": {
+      "h": "Sources"
+    },
+    "links": {
+      "teachers": "Oomba Academy pour les enseignants"
+    }
+  },
+  "compliance": {
+    "name": "Confidentialité et conformité",
+    "footer": "Conformité",
+    "title": "Données des élèves et conformité : COPPA, FERPA et RGPD",
+    "description": "La position d’Oomba Academy sur COPPA, FERPA et RGPD, les données d’élèves conservées, qui les reçoit, et comment une école peut demander un accord de données.",
+    "kicker": "Pour les écoles et les académies",
+    "h1": "Données des élèves et conformité",
+    "lead": "Cette page s’adresse aux enseignants, aux directions et aux équipes informatiques qui vérifient des outils au regard des lois sur les données des élèves. Elle résume ce que dit notre <a href=\"{privacy}\">Politique de confidentialité</a> et ce qu’Oomba Academy fait aujourd’hui. Si quelque chose ici diffère de la Politique de confidentialité, c’est la Politique de confidentialité qui fait foi.",
+    "glance": {
+      "h": "En bref",
+      "li1": "Les élèves n’ont jamais besoin d’adresse e-mail, et nous ne demandons jamais leur âge ni leur adresse postale.",
+      "li1google": "Les élèves ne tapent jamais d’adresse e-mail, et nous ne demandons jamais leur âge ni leur adresse postale. Si votre école utilise la connexion avec Google, nous gardons l’e-mail Google scolaire de chaque élève uniquement pour reconnaître son compte.",
+      "li2": "Pas de publicité, pas de cookies publicitaires ni de suivi, et nous ne vendons jamais les données personnelles de qui que ce soit.",
+      "li3": "Les comptes scolaires sont créés par l’école et lui appartiennent. Nous utilisons les informations des élèves uniquement pour fournir Oomba Academy à l’école, jamais pour la publicité.",
+      "li4": "Le vrai nom d’un élève, si l’école en ajoute un, n’est vu que par le personnel de l’école et notre équipe.",
+      "li5": "Les jeux tournent dans un bac à sable verrouillé : pas de réseau, pas de cookies, et aucun accès au reste du site."
+    },
+    "coppa": {
+      "h": "COPPA (enfants de moins de 13 ans aux États-Unis)",
+      "p1": "Oomba Academy est conçu pour les enfants de la maternelle à la 4e, donc beaucoup ont moins de 13 ans. Voici comment leurs informations sont traitées aujourd’hui :",
+      "li1": "Les comptes scolaires sont créés par l’école et lui appartiennent, et les élèves se connectent avec une carte de connexion de l’école. Pour ces comptes, nous agissons pour le compte de l’école et selon ses instructions.",
+      "li2": "Les parents d’un compte scolaire demandent à l’école de voir ou de supprimer les données de leur enfant, et l’école peut nous le demander.",
+      "li3": "Les parents du compte personnel d’un enfant peuvent nous écrire pour voir ce que nous gardons, le faire supprimer ou nous demander d’arrêter d’en collecter. Il n’y a pas encore de bouton pour supprimer ou télécharger, donc nous traitons ces demandes à la main, en vérifiant d’abord que vous êtes bien le parent.",
+      "li4": "Payer un abonnement n’est jamais la façon dont nous demandons l’autorisation d’un parent.",
+      "p2": "Des questions sur le fonctionnement du consentement pour les comptes de votre école : écrivez à {email}."
+    },
+    "ferpa": {
+      "h": "FERPA (dossiers scolaires aux États-Unis)",
+      "li1": "En plus de ce que garde tout compte, un compte scolaire garde le vrai nom de l’élève tel que l’école l’a saisi, ses classes, sa progression dans les leçons, ses réponses écrites et les retours de son enseignant.",
+      "li2": "Le vrai nom d’un élève n’est vu que par le personnel de l’école et notre équipe.",
+      "li3": "Nous utilisons les informations des élèves uniquement pour fournir Oomba Academy à l’école, jamais pour la publicité, et nous ne les vendons pas.",
+      "li4": "Les parents demandent à l’école de voir ou de supprimer les données, et l’école peut nous le demander. Un accord de données que l’école a signé avec nous prime.",
+      "p": "Pour discuter des conditions FERPA de votre école ou de votre district : écrivez à {email}."
+    },
+    "gdpr": {
+      "h": "RGPD et UK GDPR (Europe et Royaume-Uni)",
+      "p1": "Oomba Academy existe en {count} langues, et les écoles hors des États-Unis peuvent l’utiliser. Les mêmes règles s’appliquent partout : pas de publicité, pas de cookies de suivi, pas d’e-mail d’élève, et des informations d’élèves utilisées uniquement pour fournir Oomba Academy.",
+      "p2": "Écoles de l’Union européenne ou du Royaume-Uni : écrivez à {email} avant de déployer Oomba Academy, pour que nous puissions d’abord répondre à vos questions sur le RGPD ou le UK GDPR."
+    },
+    "dpa": {
+      "h": "Accord de traitement des données (DPA)",
+      "p1": "Notre Politique de confidentialité indique qu’un accord de données qu’une école a signé avec nous prime.",
+      "p2": "Pour demander un accord de données pour votre école ou votre district, y compris un accord prévu par une loi d’un État sur les données des élèves, écrivez à {email}."
+    },
+    "keep": {
+      "h": "Combien de temps nous gardons les données",
+      "li1": "Nous gardons les données d’un compte tant que le compte existe. Rien n’est encore supprimé automatiquement après un délai.",
+      "li2": "Un jeu qu’un élève supprime disparaît du site pour tout le monde, mais une copie reste sur notre serveur.",
+      "li3": "Il n’y a pas encore de bouton pour supprimer un compte ou télécharger ses données. Pour un compte scolaire, c’est l’école qui nous le demande."
+    },
+    "others": {
+      "h": "Qui d’autre reçoit des données",
+      "li1": "Anthropic (Claude, l’IA qui fabrique les jeux) : les messages, images et fichiers qu’un élève donne au Constructeur, pour fabriquer le jeu et vérifier qu’il est sûr, sans le nom ni l’identifiant de l’élève. Les discussions entre amis et les réponses aux leçons ne sont jamais envoyées à l’IA.",
+      "li2": "Google, seulement si votre école utilise la connexion avec Google ou si un enseignant connecte Google Classroom. Classroom lit les noms des classes, ainsi que les identifiants et noms Google des élèves de la classe liée. Nous n’envoyons que ce que l’enseignant publie, par exemple un lien vers la leçon avec son titre et sa date limite, et le score de chaque élève sur 100 : jamais les noms, réponses, retours ou jeux des élèves.",
+      "li3": "Les voix IA et la dictée vocale, là où elles sont activées : notre <a href=\"{privacy}\">Politique de confidentialité</a> dit exactement ce que chacune reçoit."
+    },
+    "security": {
+      "h": "Sécurité, l’essentiel",
+      "li1": "Les mots de passe sont enregistrés sous une forme illisible, nous ne pouvons pas les lire.",
+      "li2": "Notre analyseur de sécurité vérifie chaque version de chaque jeu dès qu’elle est créée, et un jeu qui essaie d’aller sur internet ou de lire des cookies ne peut pas être partagé.",
+      "li3": "La connexion Google Classroom d’un enseignant est stockée chiffrée jusqu’à ce qu’il la déconnecte, et la déconnexion la révoque aussi chez Google."
+    },
+    "contact": {
+      "h": "Questions",
+      "p": "Écrivez à {email}. Pour les données d’un compte scolaire, c’est l’école qui nous contacte. Voir aussi notre <a href=\"{privacy}\">Politique de confidentialité</a> et comment nous protégeons les enfants <a href=\"{safety}\">en ligne</a>."
     }
   },
   "connections": {

@@ -4618,6 +4618,32 @@
           "q4": "Is er een chat met vreemden?",
           "a4": "Nee. Kinderen chatten alleen met vrienden die ze met een code van 6 tekens hebben toegevoegd, nooit door op namen te zoeken, en ze kunnen de chat uitzetten op de pagina Ik."
         }
+      },
+      "a5": {
+        "name": "5 tot 7 jaar",
+        "short": "Veelgebruikte Engelse woorden, eerste sommen, ritme en eenvoudige strategie",
+        "title": "Gratis leerspelletjes voor kinderen van 5, 6 en 7 jaar",
+        "description": "Gratis browserspelletjes zonder reclame voor kinderen van 5 tot 7: Engelse woorden voorgelezen, eerste sommen, ritme en strategie. Zonder downloads of chat met vreemden.",
+        "h1": "Leerspelletjes voor kinderen van 5 tot 7 jaar",
+        "lead": "Van groep 2 tot en met groep 4 leren de meeste kinderen nog lezen. Deze spelletjes lezen hun woorden voor, of werken met getallen, muziek en plaatjes, zodat een jong kind in het begin kan spelen met een volwassene in de buurt. Onze volledige cursussen beginnen in groep 5, rond 8 jaar.",
+        "fit": {
+          "wordTrail": "Gemaakt voor deze leeftijd: de eerste veelgebruikte Engelse woorden op een sprookjespad, en elk woord wordt voorgelezen.",
+          "sharkPlank": "Galgje met Engelse woorden voor kinderen die net leren lezen, en elk woord wordt voorgelezen.",
+          "sumRacer": "Begin met de baan Plussommen tot 10. Ze kunnen het antwoord aantikken in plaats van typen.",
+          "wordHunt": "Woordzoekers per thema voor beginnende lezers, het best vanaf ongeveer 6 jaar: tik een Engels woord aan om het te horen.",
+          "tugOfMath": "Kies groep 3 voor de makkelijkste vragen, plussommen tot 20, en speel tegen de computer op Makkelijk.",
+          "beatLanes": "Tikken op de maat van liedjes, te beginnen met Twinkel, twinkel, kleine ster: meer ritme dan lezen.",
+          "connectFour": "Vier op een rij tegen een volwassene, een broer of zus of de robot op Makkelijk: een eerste proefje van vooruitdenken.",
+          "doodleHoot": "Tekenen en raden met makkelijke woorden, en lettertegels voor kleintjes die nog niet kunnen typen."
+        },
+        "faq": {
+          "q2": "Kan mijn kind spelen als het nog niet kan lezen?",
+          "a2": "Bij sommige spelletjes wel. Word Trail en Shark Plank lezen elk woord voor, Word Hunt leest een woord voor als je het aantikt, en Sum Racer en Tug of Math werken met getallen. Menu's en uitleg zijn geschreven, dus in het begin helpt een volwassene in de buurt.",
+          "q3": "Zijn de cursussen voor deze leeftijd?",
+          "a3": "Nog niet. Number Quest, CS Quest en Cyber Defenders beginnen in groep 5, rond 8 jaar. Van 5 tot 7 zijn de spelletjes op deze pagina de plek om te beginnen.",
+          "q4": "Kan een kind van 6 de AI-Bouwer gebruiken?",
+          "a4": "Kinderen typen hun idee voor de Bouwer, dus op deze leeftijd kan een volwassene er het best bij gaan zitten en helpen met schrijven. De bouwer volgt vaste veiligheidsregels voor kinderen, en een nieuw spel blijft privé tot het gedeeld wordt."
+        }
       }
     },
     "index": {
@@ -4744,7 +4770,7 @@
     },
     "ages": {
       "h": "Spelletjes voor elke leeftijd",
-      "p": "Tussen 8 en 14 jaar veranderen kinderen enorm. Deze pagina's kiezen de spelletjes die bij elke leeftijd passen en leggen uit waarom."
+      "p": "Tussen 5 en 14 jaar veranderen kinderen enorm. Deze pagina's kiezen de spelletjes die bij elke leeftijd passen en leggen uit waarom."
     },
     "make": {
       "h": "Van spelen naar maken",
@@ -4944,6 +4970,128 @@
     "demo": {
       "h": "Bekijk het in minder dan een minuut",
       "note": "Een korte video met muziek en ondertiteling in beeld: kinderen spelen leerspellen (een wereldbol, Wat zou je liever, schaken en Gulp City), daarna beschrijft een kind een spel aan de Builder, die het maakt en het speelt om te controleren of het werkt, en het kind speelt het. Tot slot hoe het veilig blijft: een verzonnen naam zonder e-mailadres, vrienden alleen toevoegen met een code, en spellen blijven privé tot het kind ze wil delen."
+    }
+  },
+  "research": {
+    "name": "Het onderzoek",
+    "footer": "Onderzoek",
+    "title": "Werkt leren met spelletjes? Wat het onderzoek zegt",
+    "description": "Wat drie grote onderzoeksoverzichten vonden over leerspellen en gamificatie, uitgelegd voor leerkrachten, met effectgroottes en volledige bronnen.",
+    "kicker": "Voor leerkrachten · Het onderzoek",
+    "h1": "Werkt leren met spelletjes? Wat het onderzoek zegt",
+    "lead": "Drie grote overzichtsstudies brachten de resultaten samen van veel studies naar leerspellen en naar spelelementen in lessen. Dit is wat ze vonden, in gewone woorden, en wat het niet bewijst.",
+    "findings": {
+      "h": "Wat de studies vonden"
+    },
+    "clark": {
+      "h": "Leerspellen, vergeleken met lessen zonder spellen",
+      "stat": "Van het 50e naar ongeveer het 63e percentiel",
+      "p": "In studies die digitale leerspellen vergeleken met lessen zonder spellen, scoorden leerlingen die met spellen leerden beter op toetsen over wat ze geleerd hadden.",
+      "small": "Clark, Tanner-Smith en Killingsworth (2016): leerresultaten, spellen vergeleken met geen spellen, g = 0,33."
+    },
+    "wouters": {
+      "h": "Serious games, vergeleken met gewone lessen",
+      "stat": "Ongeveer het 61e percentiel voor leren, en het 64e voor wat ze later nog wisten",
+      "p": "Leerlingen die met serious games leerden, leerden meer dan leerlingen met gewone lessen, en wisten meer toen ze later opnieuw getoetst werden.",
+      "small": "Wouters, van Nimwegen, van Oostendorp en van der Spek (2013): leren d = 0,29, onthouden d = 0,36."
+    },
+    "sailer": {
+      "h": "Spelelementen in gewone lessen (gamificatie)",
+      "stat": "Ongeveer het 69e percentiel",
+      "p": "Spelelementen zoals punten, badges en ranglijsten toevoegen aan gewone lessen hielp ook bij wat leerlingen leerden.",
+      "small": "Sailer en Homner (2020): gamificatie, cognitieve leerresultaten, g = 0,49."
+    },
+    "read": {
+      "h": "Zo lees je deze getallen",
+      "p1": "Een percentiel zegt waar de gemiddelde leerling die met spellen leerde zou eindigen tussen leerlingen die zonder spellen leerden. Het 50e percentiel is het midden. Naar het 63e percentiel gaan betekent dat de gemiddelde leerling met spellen beter scoorde dan ongeveer 63 van de 100 leerlingen zonder spellen.",
+      "p2": "De kleine letters geven elke effectgrootte (Hedges’ g of Cohens d): het verschil tussen de twee groepen, gemeten in standaarddeviaties. We hebben ze omgerekend naar percentielen, uitgaande van normaal verdeelde scores."
+    },
+    "limits": {
+      "h": "Wat dit niet bewijst",
+      "li1": "Dit zijn gemiddelden over veel studies, leeftijden, vakken en spellen. Sommige spellen hielpen veel, en sommige helemaal niet.",
+      "li2": "Geen van deze studies heeft Oomba Academy getest. Ze beschrijven leerspellen in het algemeen, geen belofte over één spel, klas of leerling.",
+      "li3": "Wouters en collega's vonden dat serious games niet meer motiveerden dan gewone lessen, ook al leerden de leerlingen meer.",
+      "li4": "Gamificatie is niet hetzelfde als een leerspel: het voegt spelelementen toe aan gewone lessen. We nemen het mee omdat punten, sterren en ranglijsten in veel leerspellen zitten, ook in de onze."
+    },
+    "use": {
+      "h": "Spellen gebruiken zoals het onderzoek aanraadt",
+      "p": "Wouters en collega's vonden dat leerlingen meer leerden van serious games als het spel naast andere instructie werd gebruikt, in meer dan één sessie, en als leerlingen in groepjes speelden.",
+      "li1": "Gebruik een spel naast je les, niet in plaats ervan: een korte ronde om te oefenen wat je net hebt uitgelegd.",
+      "li2": "Kom er in meerdere sessies op terug in plaats van één lange sessie.",
+      "li3": "Laat leerlingen samen spelen: met de hele klas, in teams of met z'n tweeën op één scherm."
+    },
+    "sources": {
+      "h": "Bronnen"
+    },
+    "links": {
+      "teachers": "Oomba Academy voor leerkrachten"
+    }
+  },
+  "compliance": {
+    "name": "Privacy en compliance",
+    "footer": "Compliance",
+    "title": "Privacy van leerlingen en compliance: COPPA, FERPA en AVG",
+    "description": "Hoe Oomba Academy staat tegenover COPPA, FERPA en de AVG, welke leerlinggegevens het bewaart, wie ze krijgt en hoe een school naar een verwerkersovereenkomst vraagt.",
+    "kicker": "Voor scholen en schoolbesturen",
+    "h1": "Privacy van leerlingen en compliance",
+    "lead": "Deze pagina is voor leerkrachten, schoolleiders en ICT-medewerkers die hulpmiddelen toetsen aan privacywetten voor leerlingen. Ze vat samen wat ons <a href=\"{privacy}\">privacybeleid</a> zegt en wat Oomba Academy vandaag doet. Wijkt iets hier af van het privacybeleid, dan geldt het privacybeleid.",
+    "glance": {
+      "h": "In het kort",
+      "li1": "Leerlingen hebben nooit een e-mailadres nodig, en we vragen nooit naar hun leeftijd of woonadres.",
+      "li1google": "Leerlingen typen nooit een e-mailadres, en we vragen nooit naar hun leeftijd of woonadres. Als je school Inloggen met Google gebruikt, bewaren we het Google-schoolmailadres van elke leerling alleen om het account te herkennen.",
+      "li2": "Geen reclame, geen advertentie- of trackingcookies, en we verkopen nooit iemands persoonsgegevens.",
+      "li3": "Schoolaccounts worden door de school gemaakt en zijn van de school. We gebruiken leerlinggegevens alleen om Oomba Academy aan de school te leveren, nooit voor reclame.",
+      "li4": "De echte naam van een leerling, als de school die toevoegt, is alleen zichtbaar voor het personeel van de school en ons team.",
+      "li5": "Spellen draaien in een afgesloten sandbox: geen netwerk, geen cookies en geen toegang tot de rest van de site."
+    },
+    "coppa": {
+      "h": "COPPA (kinderen onder de 13 in de VS)",
+      "p1": "Oomba Academy is gemaakt voor kinderen van groep 2 tot en met de tweede klas, dus velen zijn jonger dan 13. Zo gaan we vandaag met hun gegevens om:",
+      "li1": "Schoolaccounts worden door de school gemaakt en zijn van de school, en leerlingen loggen in met een inlogkaart van school. Voor deze accounts handelen we namens de school en volgens haar aanwijzingen.",
+      "li2": "Ouders van een schoolaccount vragen de school om de gegevens van hun kind in te zien of te verwijderen, en de school kan het aan ons vragen.",
+      "li3": "Ouders van een eigen account van een kind kunnen ons mailen om te zien wat we bewaren, het te laten verwijderen of te vragen dat we niet meer verzamelen. Er is nog geen knop om te verwijderen of te downloaden, dus we behandelen zulke verzoeken met de hand en controleren eerst dat je de ouder bent.",
+      "li4": "Betalen voor een abonnement is nooit de manier waarop we een ouder om toestemming vragen.",
+      "p2": "Vragen over hoe toestemming werkt voor de accounts van je school: mail {email}."
+    },
+    "ferpa": {
+      "h": "FERPA (leerlinggegevens in de VS)",
+      "li1": "Naast wat elk account bewaart, bewaart een schoolaccount de echte naam van de leerling zoals de school die invulde, de klassen, de voortgang in lessen, geschreven antwoorden en de feedback van de leerkracht.",
+      "li2": "De echte naam van een leerling is alleen zichtbaar voor het personeel van de school en ons team.",
+      "li3": "We gebruiken leerlinggegevens alleen om Oomba Academy aan de school te leveren, nooit voor reclame, en we verkopen ze niet.",
+      "li4": "Ouders vragen de school om gegevens in te zien of te verwijderen, en de school kan het aan ons vragen. Een gegevensovereenkomst die de school met ons heeft getekend, gaat voor.",
+      "p": "Om FERPA-afspraken voor je school of district te bespreken: mail {email}."
+    },
+    "gdpr": {
+      "h": "AVG en UK GDPR (Europa en het Verenigd Koninkrijk)",
+      "p1": "Oomba Academy is er in {count} talen, en ook scholen buiten de VS kunnen het gebruiken. Overal gelden dezelfde regels: geen reclame, geen trackingcookies, geen e-mail van leerlingen, en leerlinggegevens alleen gebruikt om Oomba Academy te leveren.",
+      "p2": "Scholen in de Europese Unie of het Verenigd Koninkrijk: mail {email} voordat je Oomba Academy invoert, zodat we eerst je vragen over de AVG of de UK GDPR kunnen beantwoorden."
+    },
+    "dpa": {
+      "h": "Verwerkersovereenkomst (DPA)",
+      "p1": "Ons privacybeleid zegt dat een gegevensovereenkomst die een school met ons heeft getekend, voorgaat.",
+      "p2": "Om te vragen naar een verwerkersovereenkomst voor je school of schoolbestuur, ook een overeenkomst onder een privacywet voor leerlingen van een Amerikaanse staat, mail {email}."
+    },
+    "keep": {
+      "h": "Hoe lang we gegevens bewaren",
+      "li1": "We bewaren de gegevens van een account zolang het account bestaat. Er wordt nog niets automatisch na een termijn verwijderd.",
+      "li2": "Een spel dat een leerling verwijdert, verdwijnt voor iedereen van de site, maar er blijft een kopie op onze server.",
+      "li3": "Er is nog geen knop om een account te verwijderen of de gegevens te downloaden. Bij een schoolaccount vraagt de school het aan ons."
+    },
+    "others": {
+      "h": "Wie er nog meer gegevens krijgt",
+      "li1": "Anthropic (Claude, de AI die de spellen maakt): de berichten, plaatjes en bestanden die een leerling aan de Bouwer geeft, om het spel te maken en te controleren of het veilig is, zonder de naam of gebruikersnaam van de leerling. Chats tussen vrienden en antwoorden in lessen gaan nooit naar de AI.",
+      "li2": "Google, alleen als je school Inloggen met Google gebruikt of een leerkracht Google Classroom koppelt. Classroom leest de namen van de klassen en de Google-id's en namen van de leerlingen in de gekoppelde klas. We sturen alleen wat de leerkracht plaatst, zoals een link naar de les met titel en inleverdatum, en de score van elke leerling op 100: nooit namen, antwoorden, feedback of spellen van leerlingen.",
+      "li3": "AI-stemmen en spraak naar tekst, waar ze aanstaan: ons <a href=\"{privacy}\">privacybeleid</a> zegt precies wat elk ervan krijgt."
+    },
+    "security": {
+      "h": "De basis van beveiliging",
+      "li1": "Wachtwoorden worden onleesbaar opgeslagen, dus wij kunnen ze niet lezen.",
+      "li2": "Onze veiligheidsscanner controleert elke versie van elk spel op het moment dat die gemaakt wordt, en een spel dat het internet op wil of cookies wil lezen, kan niet gedeeld worden.",
+      "li3": "De Google Classroom-koppeling van een leerkracht wordt versleuteld bewaard tot die ontkoppelt, en ontkoppelen trekt hem ook bij Google in."
+    },
+    "contact": {
+      "h": "Vragen",
+      "p": "Mail {email}. Voor de gegevens van een schoolaccount neemt de school contact met ons op. Zie ook ons <a href=\"{privacy}\">privacybeleid</a> en hoe we kinderen <a href=\"{safety}\">veilig</a> houden."
     }
   },
   "connections": {

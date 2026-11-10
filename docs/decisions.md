@@ -1141,6 +1141,28 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   /parents/summer-learning-games (publish by mid-May). The guides' external links (healthychildren.org, Common Sense
   Media, Apple, Google, Microsoft) should be checked once from a network that reaches them.
 
+## One age range, and the 5 to 7 guide (2026-11-10)
+- **The site's audience is kindergarten to grade 8, about ages 5 to 14** everywhere a page speaks for the whole site
+  (seo.AGE). Unchanged on purpose: each course's own grade band (Number Quest 3 to 5, CS Quest and Cyber Defenders 3
+  to 8), the per-age pages, live question levels and the Brain Board starter set, and the signed-off Terms (legal text,
+  still "8 to 14" in `info.terms.who.p1` and `info.terms.accounts.p1`: a change needs the lawyer). AI prompts and
+  translator notes that say "8 to 14" were not changed here. tests/unit/research-compliance.test.js keeps en.json clean.
+- **/learn/games-for-5-to-7-year-olds** (AGES `a5`, first): only games whose own grade band starts by grade 2 and that a
+  pre-reader can play (words read aloud, or numbers, music and pictures). It says the full courses start in grade 3 and
+  that a grown-up types for the Builder at this age. `ageBand` (the "Ages 6–11" line on game pages) now starts at 5.
+
+## Research and compliance pages (2026-11-10)
+- **/research** (routes/trust.js): only the three verified reviews (Clark, Tanner-Smith and Killingsworth 2016;
+  Wouters et al. 2013; Sailer and Homner 2020). Percentiles in plain words up front (from the effect size, normal
+  scores), effect sizes in small print, citations with DOIs, and what the numbers don't prove (averages; none tested
+  Oomba). The landing's "Further reading" (Roediger and Karpicke 2006, Hattie and Timperley 2007) stays: no numbers.
+- **/compliance**, a page of its own next to /research (school IT staff look for one address; /safety is written for
+  kids and parents, and the legal pages are signed off): facts only from /privacy, docs/safety.md and the code. Where
+  the legal position is still open (docs/legal-review.md items 1, 6 to 9, 31, 34: COPPA consent model, FERPA "school
+  official", GDPR roles and representative, whether a DPA is offered) the page asks schools to email us, and the
+  sentence that would need sign-off is in `PENDING`, shown only to the platform admin as "Not shown publicly".
+- Both are linked from the site footer (signed out and school staff) and the landing footer, and from each other.
+
 ## Doors for grown-ups (navigation, week 1)
 - **Signed out means signed out or a guest** (`signedOut(u)` in views/layout.js: `!u || u.is_guest`) for the menus, the
   home intro and the footer. One tap on Play makes a guest; before, that hid the intro and both Teachers links.
