@@ -24,6 +24,10 @@ export const LEARNING = {
   // Remi's Quiet Meadow: a classroom noise meter (the play page measures how loud the room is; nothing is recorded). A
   // class tool, so on the teacher page's "Play to learn" cards but in no subject hub or age page.
   'remis-quiet-meadow': { key: 'remisQuietMeadow', teaches: ['Self-regulation', 'Voice levels', 'Classroom routines'], level: 'Grades K-8' },
+  // Quiet Bounce and Popcorn Hush: two more noise meters on the same page-side loudness as Remi's (a box of bouncy balls
+  // that rattle and jump, a popcorn machine whose kernels pop when the room is too loud).
+  'quiet-bounce': { key: 'quietBounce', teaches: ['Self-regulation', 'Voice levels', 'Classroom routines'], level: 'Grades K-8' },
+  'popcorn-hush': { key: 'popcornHush', teaches: ['Self-regulation', 'Voice levels', 'Classroom routines'], level: 'Grades K-8' },
   // The CS Quest games (docs/cs-quest.md): each chapter is a lesson of the program, grades 3-5 (Explorer) and 6-8 (Pro).
   'robo-route': { key: 'roboRoute', teaches: ['Sequences', 'Loops', 'Conditionals', 'Variables', 'Functions', 'Debugging'], level: 'Grades 3-8' },
   'data-detective': { key: 'dataDetective', teaches: ['Organizing data', 'Charts', 'Claims from data', 'Cleaning data', 'Fairness in data'], level: 'Grades 3-8' },
@@ -60,7 +64,7 @@ export const HUBS = [
 ];
 export const hubBySlug = slug => HUBS.find(h => h.slug === slug) || null;
 /** The teacher page's "Play to learn" cards, in order. */
-export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow', 'doodle-hoot', 'word-trail'];
+export const TEACHER_GAMES = ['sum-racer', 'word-hunt', 'shark-plank', 'word-peek', 'castle-clash', 'connect-four', 'loop-lab', 'beat-lanes', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'doodle-hoot', 'word-trail'];
 /** Questions on each page (learn.hubs.<key>.faq.q<n> / a<n>, teachers.faq.q<n> / a<n>). */
 export const HUB_FAQ = { math: 4, words: 4, strategy: 4, music: 3, cs: 3, brainBreaks: 2, makeAGame: 7 };
 /** Subject pages with an "At home" paragraph for parents (learn.hubs.<key>.home). */
@@ -133,7 +137,7 @@ export const SHELF_INFO = Object.fromEntries(Object.entries({
 export const BRAIN_BREAKS = ['swish-flick', 'beat-lanes', 'would-you-rather', 'brick-drop', 'remis-quiet-meadow'];
 /** Learn games kids pick for fun: Play's "From Learn: fun ones" shelf. */
 export const LEARN_FUN = ['atlas-quest', 'sum-racer', 'code-isle', 'tug-of-math'];
-/** Classroom tools on the Play shelf (Remi's noise meter): never Play's hero or featured, still in search. */
-export const CLASS_TOOLS = ['remis-quiet-meadow'];
+/** Classroom tools on the Play shelf (the noise meters: Remi, Quiet Bounce, Popcorn Hush): never Play's hero or featured, still in search. */
+export const CLASS_TOOLS = ['remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush'];
 /** Grades for display ({ from: 'K' | '1'.., to }) of a Learn game, or null. */
 export const shelfGrades = slug => { const i = SHELF_INFO[slug]; return i ? { from: i.from === 0 ? 'K' : String(i.from), to: String(i.to) } : null; };

@@ -15,7 +15,7 @@ import { isOfficial } from './classlive-access.js';
 import { config } from '../config.js';
 
 /** The official games whose play page may listen for loudness. */
-export const MIC_GAMES = Object.freeze(new Set(['remis-quiet-meadow']));
+export const MIC_GAMES = Object.freeze(new Set(['remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush']));
 /** The play page's Permissions-Policy for such a game: the site's usual one with the microphone for this page only
  *  (`self`, never `*`; the game frame keeps its own `microphone=()`). */
 export const MIC_POLICY = 'camera=(), microphone=(self), geolocation=(), payment=(), interest-cohort=()';
