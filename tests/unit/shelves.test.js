@@ -175,7 +175,7 @@ test('Learn lists every open Learn game (course games through their course) with
   // Courses: compact cards (the whole head opens the course, the units behind a tap); "Courses" until a kid begins one.
   assert.match(s, /<h2 id="courses-h">📚 Courses<\/h2>/); assert.match(s, /id="course-cs-quest-go"/);
   assert.match(s, /<a class="course-head" href="\/courses\/cs-quest">/);
-  assert.match(s, /<details class="course-units"><summary>See the 4 units<\/summary>/);
+  assert.match(s, /<details class="course-units"><summary>See the 4 games<\/summary>/);
   assert.ok(s.indexOf('id="course-cs-quest-go"') < s.indexOf('id="learn-games"'), 'courses before the games');
   // A kid who is not in a class: the learning games first, then the live class games, then the join door.
   assert.ok(s.indexOf('id="learn-games"') < s.indexOf('id="live-games"'), 'learning games before live games (not in a class)');

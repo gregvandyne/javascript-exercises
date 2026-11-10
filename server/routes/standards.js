@@ -18,6 +18,8 @@ import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as games from '../services/games.js';
 import * as CC from '../services/standards-ccss.js';
+import * as STD from '../services/standards.js';
+import '../services/rubric-standards.js';   // rubric scores as evidence on the tab (registers the rubric source)
 import * as FW from '../standards/frameworks.js';
 import * as OT from '../standards/official-tags.js';
 import * as V from '../views/standards.js';
@@ -37,7 +39,23 @@ const viewOf = (req, c, fw) => CC.classView(c.id, fw, { grade: String(req.query.
 const gameSlugs = view => view.rows.flatMap(r => r.sources.games);
 
 // ---------------------------------------------------------------- the class tab
+/**
+ * The framework the tab opens on when the address names none: the one the class has work in, not always computer
+ * science. Work the students did (a row practised, checked or met) counts before lessons that are only assigned; a tie,
+ * or a class with nothing yet, keeps the order CSTA, Common Core Math, Common Core ELA. -> 'csta' | 'ccss-math' | 'ccss-ela'
+ */
+export function frameworkFor(classId) {
+  const score = (rows, idle) => { const on = rows.filter(r => !idle.includes(r.status)).length; return on * 1000 + rows.filter(r => r.status !== 'notYet').length - on; };
+  let best = 'csta', top = score(STD.classStandards(classId).rows, ['notYet', 'assigned']);
+  for (const fw of FW.IDS.filter(FW.isCcss)) { const n = score(CC.classView(classId, fw).rows, ['notYet', 'covered']); if (n > top) { best = fw; top = n; } }
+  return best;
+}
 router.get('/class/:id/standards', requireUser, (req, res, next) => {
+  if (req.query.fw === undefined && !Object.keys(req.query).length) {
+    const c = managed(req); const best = c ? frameworkFor(c.id) : 'csta';
+    if (best !== 'csta') return res.redirect(302, `/class/${c.id}/standards?fw=${best}`);
+    return next();
+  }
   const fw = fwOf(req.query.fw); if (!fw || req.query.report === '1') return next();
   const c = managed(req); if (!c) return no(req, res);
   const t = req.t, view = viewOf(req, c, fw);

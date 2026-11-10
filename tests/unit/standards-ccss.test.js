@@ -282,12 +282,16 @@ test('the class tab: teachers of the class and school admins only; everyone else
   assert.equal(ela.status, 200); assert.ok(ela.text.includes('W.3.2'));
 });
 
-test('the CSTA tab is unchanged without a framework (and gets the picker)', async () => {
-  const r = await req(ana, `/class/${cls.id}/standards`);
+test('the CSTA tab is unchanged (and gets the picker); the bare address opens the framework the class has work in', async () => {
+  // This class's work is all Common Core Math, so the tab opens there (docs/decisions.md "Teacher quick wins", m).
+  const bare = await req(ana, `/class/${cls.id}/standards`);
+  assert.equal(bare.status, 302); assert.equal(bare.location, `/class/${cls.id}/standards?fw=ccss-math`);
+  const r = await req(ana, `/class/${cls.id}/standards?fw=csta`);
   assert.equal(r.status, 200);
   assert.ok(r.text.includes('csq-std'), 'the CSTA view');
   assert.ok(!r.text.includes('3.OA.C.7'), 'no Common Core rows in it');
   assert.ok(r.text.includes(`/class/${cls.id}/standards?fw=ccss-math`), 'the picker links to Common Core');
+  assert.ok(r.text.includes(`<a class="chip on" href="/class/${cls.id}/standards?fw=csta" aria-current="page">`), 'and names CSTA itself');
   assert.equal((await req(ana, `/class/${cls.id}/standards?fw=bogus`)).status, 200, 'an unknown framework is the CSTA tab');
   assert.equal((await req(ben, `/class/${cls.id}/standards`)).status, 404);
 });

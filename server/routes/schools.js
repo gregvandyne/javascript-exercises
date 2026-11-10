@@ -216,12 +216,15 @@ function classTable(req, s, list) {
   </tbody></table></div>`;
 }
 /** The New class form. On the school page it asks who teaches the class; on My classes the creator teaches it. */
-function newClassForm(t, { schools, me, staff = null, open = false }) {
+function newClassForm(t, { schools, me, staff = null, open = false, focus = false }) {
   const s = schools[0];
-  return html`<div class="libtools"><details class="libdrop" ${open ? raw('open') : ''}><summary class="btn ${open ? '' : 'btn-primary'}">➕ ${t('school.class.new')}</summary>
+  // focus (the page was asked for with ?new=class, "Make your first class"): open already, with the cursor in the name
+  // box and no script needed (the link carries no #fragment: a browser skips autofocus when the address has one).
+  // id + data-hash-open: a link to #new-class also opens the fold (public/js/app.js openFold).
+  return html`<div class="libtools"><details class="libdrop" id="new-class" data-hash-open ${open || focus ? raw('open') : ''}><summary class="btn ${open ? '' : 'btn-primary'}">➕ ${t('school.class.new')}</summary>
     <form class="formgrid" data-api="/api/classes" novalidate>
       ${schools.length > 1 ? html`<div class="field"><label for="nc-s">${t('school.class.school')}</label><select class="input" id="nc-s" name="schoolId">${schools.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select></div>` : html`<input type="hidden" name="schoolId" value="${s.id}">`}
-      <div class="field"><label for="nc-n">${t('school.class.name')}</label><input class="input" id="nc-n" name="name" maxlength="60" required placeholder="${t('school.class.namePlaceholder')}"><span class="err" id="nc-n-err"></span></div>
+      <div class="field"><label for="nc-n">${t('school.class.name')}</label><input class="input" id="nc-n" name="name" maxlength="60" required placeholder="${t('school.class.namePlaceholder')}" ${focus ? raw('autofocus') : ''}><span class="err" id="nc-n-err"></span></div>
       ${staff ? html`<div class="field"><label for="nc-t">${t('school.class.teacher')}</label><select class="input" id="nc-t" name="teacherId" required><option value="">${t('school.class.teacherChoose')}</option>${staffOptions(t, staff, me)}<option value="none">${t('school.class.teacherNone')}</option></select><span class="err" id="nc-t-err"></span></div>` : ''}
       <div class="field"><label for="nc-sub">${optional(t, t('school.class.subject'))}</label><input class="input" id="nc-sub" name="subject" maxlength="40"></div>
       <div class="field"><label for="nc-g">${optional(t, t('school.class.grade'))}</label><input class="input" id="nc-g" name="grade" maxlength="12"></div>
@@ -484,6 +487,7 @@ function classroomHome(req) {
   const canCreate = schools.filter(x => S.canCreateClass(u, x.id));
   const admins = schools.filter(x => S.canManageSchool(u, x.id));
   const hostLive = liveOn() && liveCanHost(u);
+  const wantNew = req.query.new === 'class';   // from "Make your first class": the New class form open and focused
   // Their own name (staff see real names; this is their own page).
   const name = S.staffName(u) || u.display_name || u.username;
   const card = c => {
@@ -527,9 +531,9 @@ function classroomHome(req) {
   ${teacherPlanCard(req)}
   ${schools.map(x => askPanel(req, x))}
   <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>
-  ${mine.length ? html`<div class="classgrid th-classes">${mine.map(card)}${canCreate.length ? html`<div class="th-newclass">${newClassForm(t, { schools: canCreate, me: u })}</div>` : ''}</div>`
+  ${mine.length ? html`<div class="classgrid th-classes">${mine.map(card)}${canCreate.length ? html`<div class="th-newclass">${newClassForm(t, { schools: canCreate, me: u, focus: wantNew })}</div>` : ''}</div>`
     : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: admins.length ? t('school.teach.noneAdminText', { school: admins[0].name }) : canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
-  ${canCreate.length && !mine.length ? newClassForm(t, { schools: canCreate, me: u, open: !admins.length }) : ''}
+  ${canCreate.length && !mine.length ? newClassForm(t, { schools: canCreate, me: u, open: !admins.length, focus: wantNew }) : ''}
   ${old.length ? html`<details class="panel archived"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>
     <ul class="plain archlist">${old.map(c => html`<li><a href="/class/${c.id}"><b>${c.name}</b></a> <span class="small muted">${c.school_name}</span>
       <form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></li>`)}</ul></details>` : ''}
@@ -906,10 +910,14 @@ router.get('/cards/:k', requireUser, (req, res) => {
   const site = `${siteHost(req).replace(/^www\./, '')}/login`;
   const back = v.back === 'class' && c ? { href: `/class/${c.id}?tab=students`, label: t('school.cards.backClass', { name: c.name }) }
     : s ? { href: `/school/${s.slug}?tab=people`, label: t('school.cards.backPeople') } : { href: '/teach', label: t('school.teach.title') };
+  // A class with students and nothing assigned yet: the next thing to do is one tap away (Learn, where every game and
+  // course has "Assign").
+  const nextGame = !!c && S.canManageClass(req.user, c) && !L.classLessons(c.id).length;
   const body = html`
   <div class="pagehead noprint cardsbar"><div><h1>🪪 ${t('school.cards.title')}</h1><p class="muted">${t('school.cards.count', { count: v.cards.length })}</p></div><div class="row"><button class="btn btn-primary" type="button" data-print>🖨️ ${t('school.cards.print')}</button><a class="btn" href="${back.href}">${back.label}</a></div></div>
   <p class="notice warn noprint">${t('school.cards.once')}</p>
   <p class="notice noprint" id="cards-later">📱 ${t('school.cards.later')}</p>
+  ${nextGame ? html`<p class="notice good noprint" id="cards-next"><a href="/learn"><b>${t('school.cards.next')}</b> <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
   ${v.skipped.length ? html`<p class="notice noprint">${t('school.cards.skipped', { count: v.skipped.length, names: v.skipped.join(', ') })}</p>` : ''}
   <div class="cards">${v.cards.map(x => html`<div class="logincard">
     <div class="lc-top">${appMark('lc-mark appmark')}<span>${[s && s.name.includes(BRAND) ? null : BRAND, s && s.name, c && c.name, x.role && t(`school.roles.${x.role}`)].filter(Boolean).join(' · ')}</span></div>

@@ -236,7 +236,10 @@ section.panel>.csq-code{margin-top:var(--s3)}
 .csq-std-id b{display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
 .csq-std-id .small{display:block;line-height:1.3;margin-top:2px}
 .csq-std-lessons{min-width:140px;max-width:260px}
-.csq-std-quiet td,.csq-std-quiet th{opacity:.7}
+/* A standard with nothing yet is quieter by its ink, never by fading the row: 70% opacity took the small grey text
+   under 4.5:1. --text-2 on the card is 10:1 in light and 13:1 in dark; .muted inside stays --muted (6.5:1 and 8:1). */
+.csq-std-quiet td,.csq-std-quiet th{color:var(--text-2)}
+.csq-std-quiet .csq-std-id b{font-weight:600}
 .csq-std-status{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap;background:var(--chip,rgba(127,127,127,.15))}
 .csq-std-status.st-meets{background:var(--good,#1a7f37);color:#fff}
 .csq-std-status.st-checked{background:rgba(26,127,55,.18)}

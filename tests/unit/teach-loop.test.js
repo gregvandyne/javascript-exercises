@@ -205,13 +205,13 @@ test('no class yet: the class tools are plain words and one "Make your first cla
   const solo = SC.createSchoolAccount(head, school.id, { rosterName: 'Nell Noclass', role: 'teacher' }).user;
   const links = TL.loopLinks(auth.getUser(solo.id));
   assert.equal(links.class, null);
-  assert.equal(links.makeClass, '/teach#my-classes');
+  assert.equal(links.makeClass, '/teach?new=class');
   for (const k of ['assign', 'gradebook', 'csv', 'attention', 'standards', 'review', 'written']) assert.equal(links[k], null, k);
   for (const p of ['/teach', '/teach/loop']) {
     const r = await get(p, solo); assert.equal(r.status, 200, p);
     const c = p === '/teach' ? card(r.text) : r.text.slice(r.text.indexOf('id="teach-loop"'));
-    assert.equal((c.match(/href="\/teach#my-classes"/g) || []).length, 1, `${p}: one Make your first class button`);
-    assert.match(c, /class="btn btn-primary" href="\/teach#my-classes">🍎 Make your first class<\/a>/, p);
+    assert.equal((c.match(/href="\/teach\?new=class"/g) || []).length, 1, `${p}: one Make your first class button`);
+    assert.match(c, /class="btn btn-primary" href="\/teach\?new=class">🍎 Make your first class<\/a>/, p);
     assert.doesNotMatch(c, /href="\/class\//, `${p}: no class links`);
     if (p === '/teach/loop') for (const w of ['Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Standards tab', 'Answers to review', 'Written feedback students see']) assert.ok(c.includes(`<span>${w}</span></li>`), `${w}: plain words`);
   }

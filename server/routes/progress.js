@@ -146,9 +146,10 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
           return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
           <span class="gb-num">${full ? '✅' : `${x.done}/${x.total}`}</span>${bar(x.done, x.total)}
           ${x.toRead ? html`<span class="chip-s warn">✍️ ${x.toRead}</span>` : ''}${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}
+          ${x.quiz !== null ? html`<span class="gb-pts gb-quiz" title="${t('progress.gradebook.quizTitle', { pct: x.quiz, count: x.quizzes })}">🧩 <span dir="ltr">${x.quiz}%</span><span class="sr-only"> ${t('progress.gradebook.quizTitle', { pct: x.quiz, count: x.quizzes })}</span></span>` : ''}
           ${x.maxPoints > 0 ? html`<span class="gb-pts" title="${t('rubrics.gradebook.cellTitle', { points: R.pointsText(x.points, x.maxPoints), pct: R.percent(x.points, x.maxPoints) })}">📏 ${R.pointsText(x.points, x.maxPoints)} <span class="muted">${R.percent(x.points, x.maxPoints)}%</span></span>${x.scored < x.criteria ? html`<span class="gb-part small muted">${t('rubrics.score.partial', { n: x.scored, total: x.criteria })}</span>` : ''}` : ''}</a></td>`;
         })}
-        <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}${p.rubric ? html`<span class="gb-pts">📏 ${p.rubric.pct}%</span>` : ''}</td></tr>`;
+        <td class="gb-all">${all ? html`<b>${all}</b>` : html`<span class="muted">–</span>`}${p.quiz !== null ? html`<span class="gb-pts gb-quiz" title="${t('progress.gradebook.quizOverall', { pct: p.quiz })}">🧩 <span dir="ltr">${p.quiz}%</span></span>` : ''}${p.rubric ? html`<span class="gb-pts">📏 ${p.rubric.pct}%</span>` : ''}</td></tr>`;
     })}</tbody></table></div>`;
   const body = html`
   ${gb.lessons.length && gb.students.length ? html`<div class="row gb-tools" id="gb"><details class="gbhelp" data-open-wide><summary>ⓘ ${t('cs.standards.legend.h')}</summary><p class="small muted">${t('progress.gradebook.text')} ${zoneNote(t, c.school_id)}</p></details><a class="btn btn-sm" href="/class/${c.id}/progress.csv" download>⬇️ ${t('progress.gradebook.csv')}</a></div>` : ''}
@@ -219,11 +220,14 @@ router.get('/class/:id/progress.csv', requireUser, (req, res) => {
   // Rubric points (services/rubrics.js): for each lesson with a rubric, "points/most" and the percentage; then the total.
   const rb = gb.lessons.map(l => !!l.hasRubric || gb.students.some(p => p.cells[gb.lessons.indexOf(l)].maxPoints > 0));
   const anyRb = rb.some(Boolean);
-  const head = gb.lessons.flatMap((l, i) => [l.title, ...(rb[i] ? [t('rubrics.csv.points', { title: l.title }), t('rubrics.csv.percent', { title: l.title })] : [])]);
-  const lines = [[t('school.people.name'), t('school.people.username'), ...head, t('progress.gradebook.overall'), ...(anyRb ? [t('rubrics.csv.totalPoints'), t('rubrics.csv.totalPercent')] : [])].map(cell).join(',')];
+  // Quiz scores (% right, checked by the site): a column after each lesson that has a quiz step, then the mean of all.
+  const qz = gb.lessons.map((l, i) => !!l.hasQuiz || gb.students.some(p => p.cells[i].quiz !== null));
+  const anyQz = qz.some(Boolean);
+  const head = gb.lessons.flatMap((l, i) => [l.title, ...(qz[i] ? [t('progress.csv.quiz', { title: l.title })] : []), ...(rb[i] ? [t('rubrics.csv.points', { title: l.title }), t('rubrics.csv.percent', { title: l.title })] : [])]);
+  const lines = [[t('school.people.name'), t('school.people.username'), ...head, t('progress.gradebook.overall'), ...(anyQz ? [t('progress.csv.quizAll')] : []), ...(anyRb ? [t('rubrics.csv.totalPoints'), t('rubrics.csv.totalPercent')] : [])].map(cell).join(',')];
   for (const p of gb.students) {
-    const cols = p.cells.flatMap((x, i) => [x.locked ? '–' : `${x.done}/${x.total}`, ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
-    lines.push([nameOf(p), p.username, ...cols, overallOf(p) || '', ...(anyRb ? (p.rubric ? [R.pointsText(p.rubric.points, p.rubric.max), `${p.rubric.pct}%`] : ['', '']) : [])].map(cell).join(','));
+    const cols = p.cells.flatMap((x, i) => [x.locked ? '–' : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
+    lines.push([nameOf(p), p.username, ...cols, overallOf(p) || '', ...(anyQz ? [p.quiz !== null ? `${p.quiz}%` : ''] : []), ...(anyRb ? (p.rubric ? [R.pointsText(p.rubric.points, p.rubric.max), `${p.rubric.pct}%`] : ['', '']) : [])].map(cell).join(','));
   }
   const file = `${c.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'class'}-progress.csv`;
   res.set('Content-Type', 'text/csv; charset=utf-8').set('Content-Disposition', `attachment; filename="progress.csv"; filename*=UTF-8''${encodeURIComponent(file)}`).send(`﻿${lines.join('\r\n')}\r\n`);
@@ -256,7 +260,10 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     if (!x) return html`<span class="st-none" title="${t('progress.status.none')}">–</span><span class="sr-only">${t('progress.status.none')}</span>`;
     const isDone = x.status === 'done';
     const reviewed = x.reviewed_at ? t('progress.lesson.read') : t('progress.lesson.new');
-    const extra = s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>`
+    // A quiz the site checked: how many were right and the % (the same figure the student saw).
+    const qz = s.kind === L.QUIZ_KIND ? P.quizResult(x) : null;
+    const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
+      : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
     const marks = x.marks && rubricOf(s).length ? html`<span class="st-marks" title="${t('cs.review.marksTitle', { marks: marksText(x.marks) })}" dir="ltr">${marksText(x.marks)}</span>` : '';
     // A game step ticked "I've played it" with no play recorded here (no time, no score): ☑️ "marked done", never the
@@ -316,7 +323,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const list = lp.students.map(p => ({ p, x: p.cells[i] })).filter(({ x }) => x).sort(byReview);
     return html`<section class="panel answers" aria-labelledby="b-${s.id}"><h2 id="b-${s.id}">🛠️ ${s.title || t('lessons.kinds.build')}</h2>
       ${list.length ? html`<ul class="plain answerlist">${list.map(({ p, x }) => { const g = x.game_id ? games_.get(x.game_id) : null; return html`<li class="answercard ${x.reviewed_at ? 'is-read' : ''}" id="a-${s.id}-${p.id}">
-        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span><span class="small muted">${f.ago(x.updated_at)}</span>${x.status === 'done' ? html`<span class="chip-s">📤 ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
+        <div class="ac-head"><span class="pp">${avatar(p, 28)}<b>${nameOf(p)}</b></span>${x.updated_at ? html`<span class="small muted">${f.ago(x.updated_at)}</span>` : ''}${x.status === 'done' ? html`<span class="chip-s">📤 ${t('progress.student.handedInText')}</span>` : ''}${x.marks ? marksChip(x) : ''}${pointsChip(stepRubric(s) && scoreOf(p, s.id), s)}</div>
         ${g && g.status === 'published' && games.canView(req.user, g) ? html`<p><a href="/g/${g.slug}">🎮 ${t('progress.lesson.openGame')}</a></p>` : ''}
         ${reviewForm(s, x, p, firstOpen(list, p))}</li>`; })}</ul>` : html`<p class="muted">${t('cs.review.noHandIns')}</p>`}
     </section>`;

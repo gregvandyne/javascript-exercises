@@ -3667,3 +3667,89 @@ and passes the game one number (`BRB.loudness`), the frame never asks for the mi
   teacher page's cards (`TEACHER_GAMES`); not in Brain breaks, which stay fun games plus Remi.
 - `MIC_GAMES` lists the three slugs; `tests/unit/mic-scope.test.js` pins that list.
 
+
+## Teacher quick wins (10 Nov 2026)
+
+A teacher audit of the whole product (six reviewers, then a re-run live) found small things that were broken or wrong
+for a teacher on day one. The owner said "go" on the bugs and the quick wins. This is that list, one line per fix, with
+the choices that are not obvious. (The child-safety fix and "classmate chat off by default" are a separate change.)
+
+- **"Turn a lesson into a game" (a).** The Classroom home's first step links to `/teach/lessons/<id>#new-game`, and the
+  form there was `display:none` until the Add form's type was "Play a game". The hide rule now spares the form when it
+  is the link's target, holds the target, or is open; `public/js/schools.js` opens it, scrolls to it and puts the
+  cursor in its first field, on arrival and for links on the page.
+- **Quiz scores (b).** A quiz step is checked by the site (score = % right). The teacher now sees it: "4/5 · 80%" in
+  the lesson's table (`P.quizResult`, from the marks), "🧩 80%" in the gradebook cell (the mean of the lesson's
+  finished quizzes) and under Overall, and in the CSV a "<lesson> (quiz %)" column after each lesson that has a quiz
+  plus "Quiz %". A quiz that is not finished has no score.
+- **Rubric scores on the Standards tab (c).** `registerRubricSource` had no caller. `services/rubric-standards.js`
+  registers one (imported by the Standards routes): a library-rubric score is evidence for the Common Core codes on
+  the scored step, else the codes on the whole lesson (the same fallback quiz items use); a whole-lesson score, for the
+  lesson's codes. Value: points out of the most possible for the criteria scored. Only scores the gradebook counts
+  (current assignment, step still there, the rubric the step or lesson still carries). Nothing new is stored. The CSTA
+  tab keeps its own 0-3 marks, as before.
+- **/trial on a phone (d).** The big buttons wrap inside the screen (they were one 456 px line). The username field
+  says its rules up front ("3 to 16 letters or numbers, no spaces"), like the password's.
+- **Live game code through sign-in (e).** A class room seats signed-in students only. The code a student typed now
+  waits in that tab (`sessionStorage`, 30 minutes) while they sign in, and is back in the box, one press from "Join as
+  me". It is not put in the sign-in address: a code never rides in an address or the history, like the QR's fragment.
+- **No repeated maths questions (f).** `engine.js pickSubject` draws a made-up sum again when the pick already has it
+  (or it was played: `seen`), up to 40 tries, so a pick larger than a level's pool still fills. The server's redraw of
+  a refused sum never puts back a question the set has. **Follow-up:** the games' solo packs
+  (`public/vendor/data/live-bank/<version>`) carry a copy of the engine and are versioned by a hash and cached for a
+  year; they were not rebuilt here (that changes three official games and the pack folder). Run
+  `node scripts/live-bank.js && node scripts/seed.js` with the next change to those games to bring solo practice in line.
+- **"Last active" (g).** `step_progress.updated_at` now means the student's own last action. A teacher's review or
+  marks leave it alone (the teacher's time is `reviewed_at`), and a row a teacher makes for a student who has done
+  nothing (marks for a teammate) starts at 0 = never. So "Last active", "Sent 5 minutes ago", a class's last activity
+  and the weekly summary's active count no longer move when the teacher reads an answer. No migration: rows already
+  bumped by an old review keep that time until the student's next action.
+- **Assigned for later (h).** Assigning a lesson that opens later says "Students will see it from {date}" (the toast
+  and the note on the lesson page), never "Students see it now".
+- **A lost password (i).** A trial teacher is the school admin, so "ask your school admin" locked them out. `/forgot`
+  and `/reset` (`routes/password-reset.js`): for staff and grown-up accounts only (`mayReset`: `accountKind` staff or
+  grownup and `email.adultRecipient`), at the address we already may use (`email.addressOf`: Google's, else the
+  trial checkout's). Never a kid's or a student's account (no email; they keep "ask your teacher" / "ask a
+  grown-up"), never a guest, a banned account or the platform admin. The link is a token signed with the site secret,
+  good for 30 minutes, carrying a fingerprint of the password hash it was made for: a new password retires it and
+  every earlier link (single use, nothing stored, so no migration). The answer to a request is the same, after the
+  same wait, whatever the username; 5 requests an hour per address, 3 emails an hour per account. The reset ends
+  every session of the account, clears the sign-in lock and goes to the sign-in page (no automatic sign-in). The
+  email goes out on the transactional path (`email.send`, logged in `email_log` without the link); requests and
+  resets are in the audit log; pages are no-store, no-referrer, noindex; the link uses the site's own address, never
+  the request's Host. While email sending is off there is no form: the page gives the contact address, and the
+  sign-in pages do not offer the link.
+- **A solo teacher's first page (j).** The only staff member of the school(s) they run (`schools.soloSchoolAdmin`)
+  lands on the Classroom home at every sign-in and at "/", with Classroom as their first tab; the School tab, with
+  the setup checklist, comes second. With a second teacher or admin the school admin lands on School again.
+- **School time zone (k).** The trial sign-up sends the browser's IANA zone (`input[data-browser-tz]`, filled by
+  `app.js`); the server keeps it only when it is a zone it knows (`schools.isZone`). Due dates then end at midnight
+  there, not midnight UTC. Anything else is ignored and Settings still offers it.
+- **Roster names in live results (l).** In "Student details" (closed, teacher-only) and the CSV (`roster_name` after
+  `student`), the school's roster name follows the name shown in the game, only for someone who manages the class
+  (`S.canManageClass`: its teachers, the school's admins). A host who does not teach the class, a co-host with the
+  class-safe view, students, the big screen and the session itself never get them.
+- **The Standards tab's framework (m).** The bare address opens the framework the class has work in (work students
+  did counts before lessons only assigned; a tie or nothing: CSTA, Math, ELA); every chip names its framework
+  (`?fw=csta` too).
+- **The game picker (n).** A Learn-shelf game is under its subject whether or not its subject page lists it (Fraction
+  Factory under "Math games"; Maps has its own group); "More games" is only Play's fun games.
+- **Contrast and labels (o).** The yellow "Just Play" in the landing's footer band keeps dark ink; the header's
+  "Start free trial" link has an `aria-label` (on phones only its short, aria-hidden words showed); the Standards
+  table's "nothing yet" rows are no longer faded to 70% (their small grey text fell under 4.5:1). The contact address
+  stays as the owner chose it.
+- **Small live slips (p).** Brain Board says "Board cleared!" only when every tile was played (ended early: "Winners");
+  the host's "Next" is not shown on a board while tiles wait (the server ignored it); the place a player is told
+  ("2 of 7") counts only players still in the game; Start with nobody in the room asks first (the host page; the
+  server still starts an empty room for a teacher who wants to look at a game alone).
+- **Course cards (q).** The fold over a course's games says "See the N games" (it said "units"); Cyber Defenders'
+  card shows grades 3–8, as its subtitle does.
+- **First class (r).** "Make your first class" goes to `/teach?new=class`: the form open, the cursor in the
+  name box. The login cards of a class with nothing assigned show "Next: assign a first game" (to Learn).
+- **"Hi Ms!" (s).** The welcome greets "Ms Rivera" (a title keeps the next word); a name that is only a title: "there".
+- **Prices (t): not changed.** `/trial` already shows the price Stripe has ("After the trial, $119 a year per
+  teacher"). `/teachers` is a public page children can open and its test says "no amounts on the teacher page", so
+  no price was added there or on "/"; amounts stay on /plans and /trial.
+- **Words:** `scripts/i18n-add-quick-wins.mjs` from `scripts/quick-wins-strings/words.json`, all 13 languages (en-GB
+  needs nothing).
+- **Checks:** tests/unit/teacher-quick-wins.test.js, tests/unit/live-bank.test.js, tests/e2e/teacher-quick-wins.spec.js.
