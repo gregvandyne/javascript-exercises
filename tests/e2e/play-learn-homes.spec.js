@@ -85,9 +85,9 @@ test('a teacher lands on the Classroom: hello, class cards with what needs atten
   await expect(t.locator('#teach-live a[href="/live?mode=tug"]')).toContainText('Tug of Math');
   expect(await t.locator('#brain-breaks a').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/play/swish-flick', '/play/beat-lanes', '/play/would-you-rather', '/play/brick-drop', '/play/remis-quiet-meadow']);
   await expect(t.locator('#teach-all-games')).toHaveAttribute('href', '/play');
-  // The tools /teach always had: Lesson library and Make a game in the tools row; CS Quest and Cyber Defenders under
+  // The tools row: Lesson library, Turn a lesson into a game (for those who may host) and Make a game; CS Quest and Cyber Defenders under
   // Teach with a course (checked above). New class is a tile in the class grid.
-  expect(await t.locator('.teachtools a').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach/lessons', '/build']);
+  expect(await t.locator('.teachtools a').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach/lessons', '/teach/make', '/build']);
   await expect(t.locator('#my-classes .th-classes .th-newclass summary')).toBeVisible();
   // Phones: the live modes are one sideways row (the page does not scroll sideways).
   expect(await t.evaluate(() => { const r = document.querySelector('#teach-live .th-tiles'); return [r.scrollWidth > r.clientWidth, document.documentElement.scrollWidth - innerWidth]; })).toEqual([true, 0]);
