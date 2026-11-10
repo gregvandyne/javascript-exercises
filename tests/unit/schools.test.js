@@ -115,6 +115,9 @@ test('game-site rules: school accounts befriend classmates only, chat can be off
   assert.equal(friends.addByCode(outsider, a.friend_code).ok, false, 'both directions');
   assert.ok(friends.addByCode(a, b2.friend_code).ok); friends.accept(b2, a.id);
   q.run('UPDATE users SET chat_enabled=1 WHERE id IN (?,?)', a.id, b2.id);
+  assert.equal(S.settingsOf(S.getSchool(oak.id)).chat, 'off', 'chat is off until the school switches it on');
+  assert.equal(chat.canChat(a, b2).code, 'school_off_me');
+  S.updateSchool(head, oak.id, { settings: { chat: 'classmates' } });
   assert.ok(chat.canChat(a, b2).ok);
   S.updateSchool(head, oak.id, { settings: { chat: 'off' } });
   assert.equal(chat.canChat(a, b2).code, 'school_off_me');

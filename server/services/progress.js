@@ -45,12 +45,15 @@ export function context(u, clId, stepId) {
   return ok({ cl, step });
 }
 
-function upsert(clId, stepId, userId, fields) {
-  const t = now(); const old = get(clId, stepId, userId);
+/** updated_at is the student's own last action on the step ("Last active", "Sent 5 minutes ago", a class's last
+ *  activity): a teacher's review or marks (byStaff) leave it alone, and a row a teacher makes for a student who has done
+ *  nothing (marks for a teammate) starts at 0 = never. The teacher's time is reviewed_at. */
+function upsert(clId, stepId, userId, fields, { byStaff = false } = {}) {
+  const old = get(clId, stepId, userId); const t = byStaff ? (old ? old.updated_at : 0) : now();
   if (!old) {
     const row = { status: 'started', score: null, label: '', plays: 0, seconds: 0, answer: '', game_id: null, feedback: '', reviewed_at: null, reviewed_by: null, done_at: null, ...fields };
     q.run(`INSERT INTO step_progress(class_lesson_id, step_id, user_id, status, score, label, plays, seconds, answer, game_id, feedback, reviewed_at, reviewed_by, started_at, done_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, clId, stepId, userId, row.status, row.score, row.label, row.plays, row.seconds, row.answer, row.game_id, row.feedback, row.reviewed_at, row.reviewed_by, t, row.done_at, t);
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, clId, stepId, userId, row.status, row.score, row.label, row.plays, row.seconds, row.answer, row.game_id, row.feedback, row.reviewed_at, row.reviewed_by, now(), row.done_at, t);
   } else {
     const row = { ...old, ...fields };
     q.run(`UPDATE step_progress SET status=?, score=?, label=?, plays=?, seconds=?, answer=?, game_id=?, feedback=?, reviewed_at=?, reviewed_by=?, done_at=?, updated_at=?
@@ -200,13 +203,13 @@ export function review(u, clId, stepId, userId, feedback, { marks, alsoMark = []
   const t = now();
   const unread = r => !!(r && r.answer && !r.reviewed_at);
   const seen = { reviewed_at: t, reviewed_by: u.id };
-  upsert(clId, stepId, userId, { ...(feedback !== undefined ? { feedback: clipText(feedback, 2000) } : {}), ...(feedback !== undefined || !unread(row) ? seen : {}) });
+  upsert(clId, stepId, userId, { ...(feedback !== undefined ? { feedback: clipText(feedback, 2000) } : {}), ...(feedback !== undefined || !unread(row) ? seen : {}) }, { byStaff: true });
   if (clean !== null) q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', clean, clId, stepId, userId);
   const also = [];
   if (clean !== null && lines && /[0-3]/.test(clean)) {
     for (const id of [...new Set([].concat(alsoMark || []).map(String))].slice(0, ALSO_MARK_MAX)) {
       if (!id || id === userId || !student(id)) continue;
-      upsert(clId, stepId, id, unread(get(clId, stepId, id)) ? {} : seen);
+      upsert(clId, stepId, id, unread(get(clId, stepId, id)) ? {} : seen, { byStaff: true });
       q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', clean, clId, stepId, id);
       also.push(id);
     }
@@ -244,27 +247,45 @@ export function lessonProgress(clId) {
 export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId);
-  const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last
+  const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
+      AVG(CASE WHEN s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind='quiz' AND p.status='done' AND p.score IS NOT NULL) quizzes
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
   const by = new Map(counts.map(r => [`${r.u}:${r.cl}`, r]));
   // Rubric scores (services/rubrics.js): points / most possible per lesson, on lessons with a rubric (hasRubric).
   const pts = R.classTotals(classId), withRubric = R.lessonsWithRubrics([...new Set(lessons.map(cl => cl.lesson_id))]);
-  for (const cl of lessons) cl.hasRubric = withRubric.has(cl.lesson_id);
+  // Quiz steps (checked by the site: score = % right): the lesson's quiz score is the mean of its finished quizzes.
+  const lessonIds = [...new Set(lessons.map(cl => cl.lesson_id))];
+  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind='quiz' AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
+  for (const cl of lessons) { cl.hasRubric = withRubric.has(cl.lesson_id); cl.hasQuiz = withQuiz.has(cl.lesson_id); }
   const rows = students.map(p => ({ ...p, cells: lessons.map(cl => {
     const r = by.get(`${p.id}:${cl.id}`); const done = r ? Math.min(r.done, cl.steps) : 0;
     const sc = pts.get(`${p.id}:${cl.id}`) || null;
-    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: r ? r.last : null, locked: cl.locked, late: !cl.locked && cl.due === 'late' && done < cl.steps,
+    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: (r && r.last) || null, locked: cl.locked, late: !cl.locked && cl.due === 'late' && done < cl.steps,
+      quiz: r && r.quizzes ? Math.round(r.quiz) : null, quizzes: r ? r.quizzes || 0 : 0,
       points: sc ? sc.points : null, maxPoints: sc ? sc.max : null, scored: sc ? sc.scored : 0, criteria: sc ? sc.of : 0 };
   }) }));
-  for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); }
-  return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0), anyRubric: lessons.some(cl => cl.hasRubric) || rows.some(p => p.rubric) };
+  for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); p.quiz = quizOverall(p.cells); }
+  return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0), anyRubric: lessons.some(cl => cl.hasRubric) || rows.some(p => p.rubric), anyQuiz: lessons.some(cl => cl.hasQuiz) };
 }
 /** Percentage of steps done across the lessons that are open (one rule for the page and the CSV). */
 export function overall(cells) {
   const open = cells.filter(x => !x.locked);
   const total = open.reduce((n, x) => n + x.total, 0);
   return total ? Math.round((100 * open.reduce((n, x) => n + Math.min(x.done, x.total), 0)) / total) : 0;
+}
+/** The mean quiz score (% right) over every finished quiz of the open lessons, or null with none finished. */
+export function quizOverall(cells) {
+  const qz = cells.filter(x => !x.locked && x.quizzes > 0);
+  const n = qz.reduce((a, x) => a + x.quizzes, 0);
+  return n ? Math.round(qz.reduce((a, x) => a + x.quiz * x.quizzes, 0) / n) : null;
+}
+/** A quiz row's result: { right, total, pct } once every question is answered (marks '1'/'0' per question), else null. */
+export function quizResult(row) {
+  const m = String((row && row.marks) || '');
+  if (!row || row.status !== 'done' || !m || /[^01]/.test(m)) return null;
+  const right = [...m].filter(c => c === '1').length;
+  return { right, total: m.length, pct: Math.round((100 * right) / m.length) };
 }
 /** Rubric points across every scored lesson: { points, max, pct } or null when nothing is scored yet. */
 export function rubricOverall(cells) {

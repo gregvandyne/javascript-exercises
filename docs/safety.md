@@ -282,6 +282,25 @@ keep playing the old, approved version; the new one is public only once a person
 There is no public chat, no chat with strangers and no chat inside games.
 Chat exists only between **accepted friends** (added with a 6-character friend code, never by searching names), and only
 when both are real accounts with chat switched on and neither has blocked the other.
+
+**Never with staff.** The platform admin and anyone who is or was a teacher or school admin have no friend code, no
+friends and no friends' chat, with anyone: they cannot send, receive or accept a friend request, and a child typing a
+staff account's old code is told "not found", like a wrong code. The rule lives in `server/services/friends.js` and
+`server/services/chat.js` (`schools.noFriendsAccount`), so every page and API follows it. Friendships such accounts
+held were ended (migration 0068) and end the moment an account becomes staff. A teacher's own parent (grown-up) account
+is a separate account and keeps its grown-up connections. Staff still get messages from the Oomba team (below).
+A staff invite warns before Accept that friends and the friend code are removed for good. If a child accepts one
+anyway, a school admin (or the platform admin) marks the account "Added by mistake" on the school's People tab: it stops
+being a staff account and gets a new friend code; old friendships are not restored. Nothing else ends staff status: a
+former teacher is never turned into a student by a join request.
+
+**Off for school accounts unless the school turns it on.** Accounts a school created cannot chat until a school admin
+chooses "Chat with friends from their classes" in the school's Settings. With it on, they chat only with classmates
+they have added as friends, under every rule in this section. Schools that had the old default (on) were moved to off;
+those whose students had been chatting see a notice on their school page until an admin switches chat on or chooses
+"Keep chat off". (docs/decisions.md "Staff have no friends;
+school chat is off by default".)
+
 Messages are short, filtered for rude words and personal details (phone numbers, emails, links, addresses, other apps,
 schools, meet-ups) and refused messages are never stored. Repeated refusals pause chat for a while, and there are rate
 and daily limits. Anyone can block or report a message, and chat can be switched off on the account's own Me page

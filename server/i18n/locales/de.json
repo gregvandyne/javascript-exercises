@@ -190,6 +190,37 @@
       "pickAvatar": "Such dir einen der Avatare aus.",
       "pickColor": "Such dir eine der Farben aus.",
       "pickLanguage": "Such dir eine der Sprachen aus."
+    },
+    "reset": {
+      "linkLine": "Lehrkraft, Schulpersonal oder Erwachsener? <a href=\"{href}\">Passwort per E-Mail zurücksetzen</a>.",
+      "title": "Passwort zurücksetzen",
+      "lead": "Für Konten von Lehrkräften, Schulpersonal und Erwachsenen. Geben Sie Ihren Benutzernamen ein, und wir schicken einen Link an die E-Mail-Adresse, die wir für das Konto haben.",
+      "kids": "Ein Schüler- oder Kinderkonto? Frag deine Lehrkraft oder einen Erwachsenen. Kinderkonten haben keine E-Mail-Adresse.",
+      "username": "Benutzername",
+      "needUsername": "Geben Sie zuerst Ihren Benutzernamen ein.",
+      "send": "Link per E-Mail schicken",
+      "sent": "Wenn das ein Konto einer Lehrkraft, von Schulpersonal oder eines Erwachsenen mit hinterlegter E-Mail-Adresse ist, ist ein Link unterwegs. Er funktioniert einmal, {minutes} Minuten lang.",
+      "noEmail": "Nichts im Posteingang? Vielleicht ist für das Konto keine E-Mail-Adresse hinterlegt. Schreiben Sie an {email}, wir helfen weiter.",
+      "off": "Wir können gerade keine Links zum Zurücksetzen verschicken. Schreiben Sie an {email}, wir helfen weiter.",
+      "backToSignIn": "Zurück zur Anmeldung",
+      "newTitle": "Neues Passwort wählen",
+      "forAccount": "Für das Konto {username}",
+      "newLabel": "Neues Passwort",
+      "newHint": "Mindestens {min} Zeichen.",
+      "save": "Neues Passwort speichern",
+      "bad": "Dieser Link ist abgelaufen oder wurde schon benutzt. Ein Link funktioniert einmal, {minutes} Minuten lang.",
+      "again": "Neuen Link schicken",
+      "done": "Ihr Passwort ist geändert. Melden Sie sich mit dem neuen an. Überall sonst wurden Sie abgemeldet.",
+      "email": {
+        "subject": "Ihr Oomba-Academy-Passwort zurücksetzen",
+        "intro": "Jemand möchte das Passwort des Oomba-Academy-Kontos {username} zurücksetzen. Wenn Sie das waren, wählen Sie mit diesem Link ein neues Passwort:",
+        "button": "Neues Passwort wählen",
+        "expires": "Der Link funktioniert einmal, {minutes} Minuten lang.",
+        "ignore": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt, wie es ist.",
+        "doneSubject": "Ihr Oomba-Academy-Passwort wurde geändert",
+        "doneIntro": "Das Passwort des Oomba-Academy-Kontos {username} wurde gerade mit einem Link zum Zurücksetzen geändert, der an diese Adresse ging.",
+        "doneNotYou": "Wenn Sie das nicht waren, schreiben Sie bitte sofort an {email}."
+      }
     }
   },
   "me": {
@@ -1215,6 +1246,10 @@
       "alreadyAsked": "Du hast {name} schon gefragt. Warte, bis die Antwort Ja ist.",
       "sent": "Freundschaftsanfrage an {name} geschickt! Jetzt muss nur noch Ja gesagt werden.",
       "classmatesOnly": "Schulkonten können nur mit Klassenkameraden befreundet sein."
+    },
+    "staff": {
+      "title": "Konten von Lehrkräften haben keine Freunde",
+      "text": "Konten von Lehrkräften, Schul-Admins und dem Oomba-Team haben keinen Freundecode, keine Freunde und keinen Chat mit Spielern. So bleiben die Freunde von Kindern unter Kindern. Nachrichten vom Oomba-Team kommen weiterhin bei dir an."
     }
   },
   "profile": {
@@ -1325,7 +1360,8 @@
       "blocked_by_me": "Du hast {name} blockiert. Auf der Seite „Freunde“ kannst du {name} wieder entsperren.",
       "blocked_by_other": "Du kannst gerade nicht mit {name} chatten.",
       "school_off_me": "Deine Schule hat den Chat ausgeschaltet.",
-      "school_off_other": "Die Schule von {name} hat den Chat ausgeschaltet."
+      "school_off_other": "Die Schule von {name} hat den Chat ausgeschaltet.",
+      "staff": "Konten von Lehrkräften können nicht mit Spielern chatten."
     },
     "paused": "Der Chat macht eine kleine Pause. Du kannst in {minutes, plural, one {# Minute} other {# Minuten}} wieder schreiben. Schnelle Nachrichten kannst du weiter senden.",
     "errors": {
@@ -2648,7 +2684,12 @@
       "sendInvite": "Einladung senden",
       "existingShort": "Ihr Benutzername",
       "addToClassFor": "{name} in eine Klasse einteilen",
-      "changeName": "Echten Namen ändern"
+      "changeName": "Echten Namen ändern",
+      "notStaff": "Versehentlich hinzugefügt",
+      "notStaffConfirm": "Wurde {name} versehentlich zum Personal hinzugefügt? Die Person verlässt die Schule, und ihr Konto ist kein Personalkonto mehr. Es kann wieder Freunde und Chat haben, mit einem neuen Freundescode. Frühere Freunde kommen nicht zurück.",
+      "notStaffDone": "{name} hat hier kein Personalkonto mehr.",
+      "formerStaff": "Entferntes Personal",
+      "formerStaffText": "Wer hier zum Personal gehörte, behält ein Personalkonto: keine Freunde und kein Chat mit Spielern. Wenn jemand nie zum Personal hätte gehören sollen (etwa ein Schüler, der eine Einladung angenommen hat), wähle „Versehentlich hinzugefügt“."
     },
     "settings": {
       "name": "Name der Schule",
@@ -2668,17 +2709,20 @@
       "publishPublic": "Auch mit allen teilen",
       "publishingHint": "Schüler in einer Klasse können ein Spiel auch nur mit ihren Klassen teilen.",
       "photos": "Profilfotos von Schulkonten sehen nur Klassenkameraden, Lehrkräfte und Freunde.",
-      "chatHint": "Schulkonten können nur Klassenkameraden als Freunde hinzufügen.",
+      "chatHint": "Schulkonten chatten nur mit Klassenkameraden, die sie als Freunde hinzugefügt haben. Nachrichten werden gefiltert, und Lehrkräfte und Schulpersonal sind nie im Chat.",
       "timeZone": "Zeitzone",
       "timeZoneNone": "Nicht festgelegt (UTC)",
       "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
       "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
       "groupSchool": "Schule",
       "groupClasses": "Klassen und Beitreten",
-      "chatHintOff": "Schulkonten können mit niemandem chatten. Spielen und Bauen geht weiterhin.",
+      "chatHintOff": "Die Voreinstellung. Schulkonten können mit niemandem chatten. Spielen und Bauen geht weiterhin.",
       "unsaved": "Du hast Änderungen, die noch nicht gespeichert sind.",
       "unsavedLeave": "Deine Änderungen an den Einstellungen sind nicht gespeichert. Ohne Speichern verlassen?",
-      "timeZoneUse": "{zone} verwenden (Zeitzone dieses Computers)"
+      "timeZoneUse": "{zone} verwenden (Zeitzone dieses Computers)",
+      "chatNotice": "Der Chat ist für die Konten deiner Schule jetzt aus. Bisher war der Chat zwischen Klassenkameraden an, solange eine Schule ihn nicht ausschaltete. Jetzt ist er aus, solange eine Schule ihn nicht einschaltet, und einige deiner Schülerinnen und Schüler haben ihn genutzt. Um ihn zurückzuholen, wähle unten „Chat mit Freunden aus den eigenen Klassen“ und speichere.",
+      "chatNoticeKeep": "Chat aus lassen",
+      "chatNoticeShort": "Der Chat ist für die Konten deiner Schule jetzt aus, und einige deiner Schülerinnen und Schüler haben ihn genutzt. Hier kannst du ihn wieder einschalten:"
     },
     "cards": {
       "title": "Anmeldekarten",
@@ -2694,7 +2738,8 @@
       "count": "{count, plural, one {# Anmeldekarte} other {# Anmeldekarten}}",
       "later": "Am Handy? Diese Karten bleiben 24 Stunden für dich (nur für dich) hier: Öffne sie auf einem Schulcomputer wieder über den Tab „Schüler“ der Klasse und drucke sie, oder nutze am Handy Teilen › Drucken › Als PDF sichern.",
       "again": "{count, plural, one {Anmeldekarte von heute: noch hier zum Drucken.} other {# Anmeldekarten von heute: noch hier zum Drucken.}}",
-      "open": "Karten öffnen"
+      "open": "Karten öffnen",
+      "next": "Als Nächstes: ein erstes Spiel zuweisen"
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder es ist für dieses Konto nicht zugänglich.",
@@ -2730,7 +2775,8 @@
       "tickStudents": "Haken Sie mindestens einen Schüler an.",
       "badZone": "Wählen Sie eine Zeitzone aus der Liste.",
       "badCap": "Geben Sie eine ganze Zahl von {min} bis {max} ein.",
-      "otherSchoolNext": "Dieses Konto gehört zu einer anderen Schule. Bitte die Person, diese Schule zuerst zu verlassen, oder wähle stattdessen „Ein Schulkonto für sie anlegen“."
+      "otherSchoolNext": "Dieses Konto gehört zu einer anderen Schule. Bitte die Person, diese Schule zuerst zu verlassen, oder wähle stattdessen „Ein Schulkonto für sie anlegen“.",
+      "wasStaff": "Dieses Konto gehörte an dieser Schule zum Personal. Ein Schul-Admin muss es zuerst unter „Personen“ als „Versehentlich hinzugefügt“ markieren."
     },
     "classTabs": {
       "lessons": "Lektionen",
@@ -2959,7 +3005,8 @@
       "accept": "Annehmen",
       "decline": "Ablehnen",
       "accepted": "Du gehörst jetzt zum Personal von {school}.",
-      "declined": "Einladung abgelehnt."
+      "declined": "Einladung abgelehnt.",
+      "warn": "Nimm nur an, wenn du an dieser Schule arbeitest. Konten von Lehrkräften haben keine Freunde und keinen Chat: Wenn du annimmst, werden deine Freunde und dein Freundescode entfernt und kommen nicht zurück."
     },
     "setup": {
       "h": "Richte deine Schule ein",
@@ -3091,7 +3138,8 @@
       "zoneSet": "Zeitzone einstellen",
       "zoneAsk": "Eine Schuladministration kann sie in den Einstellungen der Schule festlegen.",
       "doneHere": "Zugewiesen an {class}. Die Schüler sehen es jetzt.",
-      "seeStarted": "Sehen, wer schon begonnen hat"
+      "seeStarted": "Sehen, wer schon begonnen hat",
+      "doneLater": "Der Klasse {class} zugewiesen. Die Schüler sehen sie ab dem {date}."
     },
     "class": {
       "title": "Lektionen",
@@ -3206,7 +3254,9 @@
       "noStudents": "Noch keine Schüler",
       "noStudentsText": "Fügen Sie unter „Schüler“ Schüler hinzu, dann erscheint hier ihr Fortschritt.",
       "toReviewList": "Antworten zu prüfen:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Quiz-Ergebnis: {pct} % richtig",
+      "quizOverall": "Quiz-Ergebnis über alle Lektionen: {pct} %"
     },
     "lesson": {
       "finished": "{done} von {total} Schülern fertig",
@@ -3227,7 +3277,8 @@
       "attention": "Wer Hilfe braucht, zuerst",
       "selfMarked": "Vom Schüler als erledigt markiert, nicht hier gespielt",
       "minutes": "{count, plural, one {# Min.} other {# Min.}}",
-      "swipe": "Wische die Tabelle zur Seite, um alle Schritte zu sehen"
+      "swipe": "Wische die Tabelle zur Seite, um alle Schritte zu sehen",
+      "quizScore": "{right} von {total} richtig ({pct} %)"
     },
     "student": {
       "doneOf": "{done} von {total} geschafft",
@@ -3255,6 +3306,10 @@
     },
     "courses": {
       "started": "{started} von {total} begonnen"
+    },
+    "csv": {
+      "quiz": "{title} (Quiz-%)",
+      "quizAll": "Quiz-%"
     }
   },
   "google": {
@@ -3981,7 +4036,8 @@
         "passwordHint": "Mindestens {min} Zeichen.",
         "adult": "Ich bin Lehrkraft oder arbeite an einer Schule und bin mindestens 18 Jahre alt.",
         "submit": "Konto erstellen und Test starten",
-        "privacy": "Wir speichern deine dienstliche E-Mail-Adresse nicht in deinem Konto: Sie geht für deinen Plan an Stripe. <a href=\"{privacy}\">Datenschutzerklärung</a>"
+        "privacy": "Wir nutzen deine dienstliche E-Mail-Adresse für deinen Plan (sie geht an Stripe), für E-Mails zu deinem Test und zum Zurücksetzen eines vergessenen Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
+        "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit melden Sie sich an."
       },
       "errors": {
         "signedIn": "Du bist schon angemeldet.",
@@ -5046,7 +5102,8 @@
       "soundOff": "Ton aus",
       "seeResultsNow": "Ergebnisse jetzt ansehen",
       "read": "Frage vorlesen",
-      "away": "{count} getrennt"
+      "away": "{count} getrennt",
+      "startEmpty": "Es ist noch niemand beigetreten. Trotzdem starten?"
     },
     "landing": {
       "title": "Live-Spiel leiten",
@@ -6556,7 +6613,8 @@
       "title": "Number Quest",
       "sub": "Mathe in den Numberworks · Klassen 3 bis 5"
     },
-    "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}"
+    "unitsN": "{count, plural, one {Die # Einheit ansehen} other {Die # Einheiten ansehen}}",
+    "gamesN": "{count, plural, one {Das # Spiel ansehen} other {Die # Spiele ansehen}}"
   },
   "move": {
     "title": "Bewegungspausen",

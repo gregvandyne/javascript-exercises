@@ -137,7 +137,9 @@ test('a school admin invites an existing account: not staff until they accept; t
   const { username: headName } = await signup(head, uniq('Head'), 'head-pass-123');
   const admin = await adminPage(browser);
   const school = await schoolWithAdmin(admin, headName);
-  // the new school's admin lands on the school page (no classes yet), with the setup steps in order
+  // the new school's admin lands on the school page (no classes yet), with the setup steps in order: a head the
+  // platform admin appointed has a school to set up, also while they are its only staff member (the Classroom-first
+  // rule is only for a teacher who made their own school at /trial: docs/decisions.md "Teacher quick wins", j)
   await head.goto('/login?signedout=0');
   await head.request.post('/api/auth/logout', { data: {} });
   await login(head, headName, 'head-pass-123');
@@ -158,6 +160,8 @@ test('a school admin invites an existing account: not staff until they accept; t
   // they see it and accept: now staff, with the name the school gave
   await other.goto('/classes');
   await expect(other.locator('#my-invites')).toContainText(`${school.name} wants to add you as Teacher`);
+  await expect(other.locator('#my-invites .inv-warn')).toContainText('Staff accounts have no friends and no chat');
+  other.once('dialog', d => d.accept());   // Accept asks first: staff accounts lose their friends and friend code
   await Promise.all([other.waitForURL(/\/teach/), other.locator('#my-invites button.btn-primary').click()]);
   await expect(other.locator('.topbar .me-btn .name')).toHaveText('Ana Rivera');
   await head.reload();
@@ -166,8 +170,11 @@ test('a school admin invites an existing account: not staff until they accept; t
   // Settings: a change not saved yet says so
   await head.goto(`/school/${school.slug}?tab=settings`);
   await expect(head.locator('#set-unsaved')).toBeHidden();
-  await head.selectOption('#set-chat', 'off');
+  // (chat starts off: a school turns classmates chat on itself)
+  await expect(head.locator('#set-chat')).toHaveValue('off');
   await expect(head.locator('#set-chat-hint')).toContainText("can't chat with anyone");
+  await head.selectOption('#set-chat', 'classmates');
+  await expect(head.locator('#set-chat-hint')).toContainText('only with classmates they have added as friends');
   await expect(head.locator('#set-unsaved')).toBeVisible();
   for (const p of [head, other, admin]) await p.context().close();
 });

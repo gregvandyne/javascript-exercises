@@ -18,7 +18,8 @@ export const attribution = t => html`<p class="std-notice small muted"><span>${t
 /** Framework chips on the class Standards tab (CSTA is the default: no ?fw=). */
 export function frameworkPicker(req, c, current) {
   const t = req.t;
-  const href = id => (id === 'csta' ? `/class/${c.id}/standards` : `/class/${c.id}/standards?fw=${id}`);
+  // Every chip names its framework: the bare address opens the one the class has work in (routes/standards.js).
+  const href = id => `/class/${c.id}/standards?fw=${id}`;
   return html`<nav class="chips std-fw noprint" aria-label="${t('standards.picker')}">${FW.IDS.map(id => html`<a class="chip${id === current ? ' on' : ''}" href="${href(id)}"${id === current ? html` aria-current="page"` : ''}>${fwName(t, id)}</a>`)}</nav>`;
 }
 

@@ -9,7 +9,7 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, invitesFor, staffName } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount } from '../services/schools.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
@@ -24,6 +24,7 @@ import * as funnel from '../services/funnel.js';
 import * as courses from '../services/courses.js';
 import { countable } from '../services/traffic.js';
 import { contactEmail } from './teachers.js';
+import { sendingOn as resetByEmailOn } from '../services/email.js';
 
 export const router = Router();
 export const safeNext = n => (typeof n === 'string' && /^\/(?!\/)[\w\-/?=&%.#]*$/.test(n) ? n : '/');
@@ -35,7 +36,9 @@ export function homeFor(u) {
   if (!u || u.is_guest) return '/';
   if (auth.isGrownup(u)) return '/family';
   // Everyone else lands on their first tab (layout.js landingFor, the same rule as '/'): a school still to set up first.
-  if (isSchoolStaff(u)) { const slug = schoolToSetUp(u); return slug ? `/school/${slug}` : landingFor(u); }
+  // Not a solo teacher (the only staff member of their own school, e.g. from /trial): they land on the Classroom home
+  // at every sign-in, with "Make your first class" there; the School tab keeps the setup checklist.
+  if (isSchoolStaff(u)) { const slug = soloSchoolAdmin(u) ? null : schoolToSetUp(u); return slug ? `/school/${slug}` : landingFor(u); }
   if (isPlatformAdmin(u)) return '/admin';
   if (u.managed_school) return '/classes';
   return landingFor(u) || '/';
@@ -134,6 +137,7 @@ function authPage(req, res, mode) {
       <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
       ${top}
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
+      ${!isSignup && req.query.reset === '1' ? html`<p class="notice good" role="status" id="reset-done">${t('auth.reset.done')}</p>` : ''}
       ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
       ${isSignup ? '' : googleNotice(req)}
       ${isSignup ? '' : loginGoogle(req, next)}
@@ -154,6 +158,7 @@ function authPage(req, res, mode) {
       </form>
       ${isSignup ? '' : html`<div class="forgot small" id="forgot"><h2 class="forgot-h">${t('auth.page.forgotHeading')}</h2>
         <p><span aria-hidden="true">🏫</span> ${t('auth.page.forgotSchool')} ${t('auth.page.forgotSchoolAdmin', { email: contactEmail() })}</p>
+        ${resetByEmailOn() ? html`<p id="forgot-staff"><span aria-hidden="true">🍎</span> ${tHtml(t, 'auth.reset.linkLine', { href: '/forgot' })}</p>` : ''}
         <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></div>`}
       ${!u ? html`<div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>` : ''}
       <p class="center small" style="margin-top:16px">${isSignup ? html`${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a>` : html`${t('auth.page.newHere')} <a href="/signup?next=${encodeURIComponent(next)}">${t('auth.page.signupLink')}</a>`}</p>
@@ -419,14 +424,18 @@ router.get('/me', auth.requireUser, (req, res) => {
   const nb = [...news.values()].filter(x => x === 'building').length, nr = [...news.values()].filter(x => x === 'ready').length;
   const gamesSub = [nb && t('me.tiles.building', { count: nb }), nr && t('me.tiles.ready', { count: nr })].filter(Boolean).join(' · ');
   const nb_ = u.is_guest ? {} : navBadges(u), invites = u.is_guest ? 0 : invitesFor(u.id).length;
+  const noFriends = !u.is_guest && noFriendsAccount(u);
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
     !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
     ['🛠️', t('me.tiles.games'), '/build', gamesSub],
-    ['👫', t('me.tiles.friends'), '/friends', nb_.requests ? t('me.tiles.requests', { count: nb_.requests }) : ''],
+    // Staff (teachers, school admins, the platform admin) have no friends and no friends' chat: their one inbox is the
+    // Oomba team's messages.
+    !noFriends && ['👫', t('me.tiles.friends'), '/friends', nb_.requests ? t('me.tiles.requests', { count: nb_.requests }) : ''],
     // the Me badge's source, said where it comes from: new messages on the Chat tile
-    ['💬', t('me.tiles.chat'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : ''],
+    noFriends ? ['📬', t('team.name'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : '']
+      : ['💬', t('me.tiles.chat'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : ''],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
   ].filter(Boolean);
   // A kid's "For grown-ups" card (the link code) comes first: the Builder's daily-limit card sends kids here to show a
@@ -460,7 +469,7 @@ router.get('/me', auth.requireUser, (req, res) => {
   </section>
   ${staff ? '' : characterPanel(req)}
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
-  ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
+  ${!u.is_guest && !noFriends ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}

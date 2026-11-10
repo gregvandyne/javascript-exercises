@@ -58,10 +58,12 @@ const rand = () => crypto.randomInt(1 << 30) / (1 << 30);
 // is drawn again; the hand-written subjects are reviewed and pass as they are. The games' solo packs keep the plain engine.
 const passes = it => cleanText(it.q, 300).ok;
 export function redraw(bank, items) {
+  // The question drawn again is never one the set already has (the engine keeps a pick free of repeats).
+  const used = new Set(items.map(it => it.q));
   return items.map(it => {
     if (passes(it) || !String(it.id).startsWith('math:')) return it;
     const level = String(it.id).split(':')[1];
-    for (let i = 0; i < 50; i++) { const again = bank.mathItem(level); if (passes(again)) return { ...again, cat: it.cat }; }
+    for (let i = 0; i < 80; i++) { const again = bank.mathItem(level); if (passes(again) && !used.has(again.q)) { used.add(again.q); return { ...again, cat: it.cat }; } }
     return it;
   });
 }

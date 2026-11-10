@@ -58,7 +58,7 @@ const ON = {
   grownup: { tabs: ['/family', '/play', '/learn', '/build', '/plans', '/family/account'], top: ['/family', '/play', '/learn', '/build', '/plans'] },
   schoolAdmin: { tabs: ['/school', '/teach', '/learn', '/play', '/plans', '/me'], top: ['/school', '/teach', '/learn', '/play', '/live', '/plans'] },
   teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/plans', '/me'], top: ['/teach', '/learn', '/play', '/live', '/plans'] },
-  admin: { tabs: ['/', '/learn', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/admin/schools', '/plans'] },
+  admin: { tabs: ['/', '/learn', '/build', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/admin/schools', '/plans'] },
   student: { tabs: ['/classes', '/play', '/learn', '/build', '/plans', '/me'], top: ['/classes', '/play', '/learn', '/build', '/friends', '/plans'] },
   kid: { tabs: ['/', '/learn', '/build', '/friends', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/plans'] },
 };
@@ -67,7 +67,7 @@ const KEYS = {
   grownup: ['family', 'play', 'learn', 'build', 'plans', 'account'],
   schoolAdmin: ['school', 'classroom', 'learn', 'play', 'plans', 'me'],
   teacher: ['classroom', 'learn', 'play', 'live', 'plans', 'me'],
-  admin: ['play', 'learn', 'build', 'friends', 'schools', 'plans', 'me'],
+  admin: ['play', 'learn', 'build', 'schools', 'plans', 'me'],
   student: ['class', 'play', 'learn', 'build', 'plans', 'me'],
   kid: ['play', 'learn', 'build', 'friends', 'plans', 'me'],
 };
@@ -94,10 +94,10 @@ test('shellFor: every role\'s tab keys, in order, with paid-plan pages on and of
     assert.deepEqual(s.tabs.map(([k]) => k), KEYS[role].filter(k => k !== 'plans'), `${role}, plans off`);
     assert.ok(!s.top.some(([k]) => k === 'plans'), `${role}: no Plans while plans are off`);
   }
-  // With billing off: five tabs for everyone (the design's "first tab per role" bars), seven for the platform admin's six.
+  // With billing off: five tabs for everyone, the platform admin too now that staff have no Friends tab.
   assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 5); assert.equal(shellFor(teacher, req).tabs.length, 5);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
-  assert.equal(shellFor(boss, req).tabs.length, 6);
+  assert.equal(shellFor(boss, req).tabs.length, 5);
   // Search is never a tab: it is the top bar's field (and round button) for everyone.
   for (const [role, u] of PEOPLE) assert.ok(!shellFor(u, req).tabs.some(([k]) => k === 'search') && !shellFor(u, req).top.some(([k]) => k === 'search'), role);
 });
@@ -235,14 +235,19 @@ test('the current tab: Play on the game pages and search, Learn on /learn, Class
   assert.deepEqual(cur((await get(pupil, '/play')).text), ['/play']);
 });
 
-test('staff and students have no Friends tab: friend requests and unread chat count on Me; a kid keeps them on Friends', async () => {
+test('staff have no Friends tab and no friend requests (only unread Oomba team messages count on Me); students count theirs on Me; a kid keeps them on Friends', async () => {
   const pal = auth.createUser({ username: 'RolesPal', password: 'rainbow-77' });
   for (const u of [teacher, kid, ownKid]) q.run("INSERT OR IGNORE INTO friends(user_id, friend_id, status, created_at) VALUES (?,?, 'pending', ?)", pal.id, u.id, Date.now());
   // The team's welcomes (services/team.js) are read, so the badges count the friend request alone.
   for (const u of [teacher, kid, ownKid]) q.run('UPDATE chat_messages SET read_at=? WHERE to_id=? AND read_at IS NULL', Date.now(), u.id);
   const t = tabbar((await get(teacher, '/play')).text);
   assert.doesNotMatch(t, /href="\/friends"/);
-  assert.match(t, /href="\/me" [^>]*>[\s\S]*?<span class="badge" aria-label="[^"]*">1<\/span><\/a>/, 'the teacher\'s Me tab has the badge');
+  assert.doesNotMatch(t, /href="\/me" [^>]*>[\s\S]*?class="badge"/, 'a friend request row for a staff account (it should not exist) lights no badge');
+  assert.doesNotMatch(tabbar((await get(boss, '/play')).text) + topnav((await get(boss, '/play')).text), /href="\/friends"/, 'the platform admin has no Friends tab either');
+  const team = await import('../../server/services/team.js');
+  q.run("INSERT INTO chat_messages(id, from_id, to_id, body, kind, status, created_at) VALUES ('rolesteam1',?,?,'A note','team','ok',?)", team.teamUser().id, teacher.id, Date.now());
+  assert.match(tabbar((await get(teacher, '/play')).text), /href="\/me" [^>]*>[\s\S]*?<span class="badge" aria-label="[^"]*">1<\/span><\/a>/, 'an unread message from the Oomba team is the teacher\'s Me badge');
+  q.run("DELETE FROM chat_messages WHERE id='rolesteam1'");
   const st = (await get(ownKid, '/play')).text;
   assert.doesNotMatch(tabbar(st), /href="\/friends"/, 'a student has no Friends tab');
   assert.match(tabbar(st), /href="\/me" [^>]*>[\s\S]*?<span class="badge" aria-label="[^"]*">1<\/span><\/a>/, 'the student\'s Me tab has the badge');

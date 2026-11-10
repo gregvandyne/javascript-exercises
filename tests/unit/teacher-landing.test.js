@@ -67,7 +67,8 @@ test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial b
   const bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
   assert.equal(L.JUST_PLAY_URL, '/play');
   assert.match(bar, /<a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="\/play" data-cta="play">Just Play /);
-  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/trial" data-cta="trial">/);
+  // The link has a name of its own: on a phone only its short, aria-hidden words show.
+  assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/trial" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
   assert.ok(bar.indexOf('lp-justplay') < bar.indexOf('href="/trial"'), 'Just Play, then the trial, at the right');
   const trials = [...s.matchAll(/<a [^>]*data-cta="trial"[^>]*>/g)].map(m => /href="([^"]+)"/.exec(m[0])[1]);
   assert.ok(trials.length >= 5); assert.ok(trials.every(h => h === '/trial'), trials.join());

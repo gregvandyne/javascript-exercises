@@ -25,7 +25,10 @@ export const ROLES = ['admin', 'teacher', 'student'];
 export const DEFAULT_SETTINGS = {
   teachersCreateClasses: true,   // teachers may create classes (school admins always can)
   allowOwnAccounts: true,        // students may join with their personal account (teacher approves)
-  chat: 'classmates',            // school accounts: 'classmates' (chat with classmate friends) | 'off'
+  chat: 'off',                   // school accounts: 'off' (the default: no chat) | 'classmates' (chat with classmate friends;
+                                 // a school admin has to switch it on). docs/decisions.md "Staff have no friends; school chat is off by default"
+  chatNotice: false,             // set by migration 0068 for a school whose students were chatting when the default became
+                                 // off: its page says so until an admin switches chat on or dismisses the notice
   publishing: 'school',          // school accounts: 'school' (share games within the school) | 'public' (allowed to go public)
   googleDomains: [],             // the school's Google Workspace domains, for Sign in with Google (services/google.js); [] = off
   timeZone: '',                  // IANA zone, e.g. 'Europe/London': lessons open and fall due at the school's midnight; '' = not set
@@ -54,9 +57,13 @@ function uniqueSlug(name) {
 }
 export const getSchool = id => (id ? q.get('SELECT * FROM schools WHERE id=?', id) : null) || null;
 export const getSchoolBySlug = slug => q.get('SELECT * FROM schools WHERE slug=?', String(slug || '')) || null;
-export function settingsOf(school) {
+/** What the school's row holds, without the defaults. */
+function storedSettings(school) {
   let s = {}; try { s = JSON.parse((school && school.settings) || '{}'); } catch { /* bad json */ }
-  return { ...DEFAULT_SETTINGS, ...s };
+  return s && typeof s === 'object' ? s : {};
+}
+export function settingsOf(school) {
+  return { ...DEFAULT_SETTINGS, ...storedSettings(school) };
 }
 /** Each school's admins' real names (for the platform admin's list): { schoolId: 'Ana Silva, Ben Okafor' }. */
 export function schoolAdminNames() {
@@ -84,6 +91,17 @@ export function schoolToSetUp(u) {
     AND NOT EXISTS (SELECT 1 FROM classrooms c WHERE c.school_id=s.id) AND NOT EXISTS (SELECT 1 FROM class_members cm WHERE cm.user_id=m.user_id AND cm.status='active' AND cm.role='teacher')
     ORDER BY m.joined_at LIMIT 1`, u.id);
   return r ? r.slug : null;
+}
+/** A teacher who signed up on their own (/trial): a school admin who made every school they run themselves and is its
+ *  only staff member. Their first page is the Classroom home, not "Set up your school"; the School tab and its checklist
+ *  stay one tap away. false for anyone who runs no school, for a head the platform admin appointed to a school (they
+ *  have a school to set up, even while they are its only staff member), and from the day a second teacher or admin joins. */
+export function soloSchoolAdmin(u) {
+  if (!u) return false;
+  const r = q.get(`SELECT COUNT(*) n, MAX((SELECT COUNT(*) FROM school_members x WHERE x.school_id=s.id AND x.status='active' AND x.role!='student')) staff,
+      MIN(CASE WHEN s.created_by=m.user_id THEN 1 ELSE 0 END) own
+    FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND m.role='admin' AND s.archived_at IS NULL`, u.id);
+  return !!r && r.n > 0 && r.staff === 1 && r.own === 1;
 }
 export const staffName = u => (u ? (q.get("SELECT roster_name n FROM school_members WHERE user_id=? AND status='active' AND role!='student' AND roster_name!='' ORDER BY joined_at LIMIT 1", u.id) || {}).n || '' : '');
 export function listSchools() {
@@ -126,7 +144,15 @@ export function updateSchool(by, schoolId, { name, settings } = {}) {
   if (settings) {
     const cur = settingsOf(s), next = { ...cur };
     for (const k of ['teachersCreateClasses', 'allowOwnAccounts']) if (settings[k] !== undefined) next[k] = !!settings[k];
-    if (['classmates', 'off'].includes(settings.chat)) next.chat = settings.chat;
+    // Until a save carries a chat choice none is stored, so the school keeps following the default: a stored value
+    // always means somebody chose it (the old code wrote the default into every row, which hid who had chosen).
+    // The notice stays until chat is switched on or an admin dismisses it ("Keep chat off"): the Settings form sends the
+    // Chat box with every save, so a save of the time zone alone must not clear it.
+    const choseChat = ['classmates', 'off'].includes(settings.chat);
+    if (choseChat) { if (settings.chat !== 'off') next.chatNotice = false; next.chat = settings.chat; }
+    else if (!('chat' in storedSettings(s))) delete next.chat;
+    if (settings.chatNotice === false) next.chatNotice = false;
+    if (!next.chatNotice) delete next.chatNotice;
     if (['school', 'public'].includes(settings.publishing)) next.publishing = settings.publishing;
     if (Array.isArray(settings.googleDomains)) next.googleDomains = settings.googleDomains.slice(0, MAX_DOMAINS);
     if (settings.timeZone !== undefined) { if (settings.timeZone !== '' && !isZone(settings.timeZone)) return fail('badZone'); next.timeZone = settings.timeZone; }
@@ -166,6 +192,10 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   if (!u || u.is_guest || u.account_type === 'grownup') return fail('noAccount');   // grown-up accounts never join a school
   if (u.managed_school && u.managed_school !== s.id) return fail('otherSchoolAccount');
   const old = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', s.id, u.id);
+  // Someone who is or was staff here never becomes a student by being added again (a teacher approving a join request,
+  // a Google roster): that would quietly end their staff status and give them a friend code. Only notStaff (a school
+  // admin saying "added by mistake") ends it.
+  if (role === 'student' && old && old.role !== 'student') return fail('wasStaff');
   const rn = clip(rosterName, 60) || (old && old.roster_name) || '';
   const gr = clip(grade, 12) || (old && old.grade) || '';
   if (old) q.run("UPDATE school_members SET role=?, roster_name=?, grade=?, status='active', left_at=NULL, joined_at=CASE WHEN status='active' THEN joined_at ELSE ? END WHERE school_id=? AND user_id=?", role, rn, gr, now(), s.id, u.id);
@@ -173,7 +203,7 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   // Now staff here: their old requests to join a class of this school as a student are closed.
   if (role !== 'student') q.run("UPDATE join_requests SET status='declined', decided_by=?, decided_at=? WHERE user_id=? AND status='pending' AND class_id IN (SELECT id FROM classrooms WHERE school_id=?)", by.id, now(), u.id, s.id);
   audit(by.id, 'school.member_add', s.id, { user: u.id, role });
-  if (role !== 'student') staffJoined(u.id);
+  if (role !== 'student') { endFriendships(u.id); staffJoined(u.id); }
   return ok({ user: u });
 }
 // ---- Staff invites: a school admin adds someone's own account; they become staff only when they accept (they see it on
@@ -210,10 +240,12 @@ export function answerInvite(u, schoolId, accept) {
 export function updateMember(by, schoolId, userId, { rosterName, grade, role } = {}) {
   const m = membership(schoolId, userId); if (!m) return fail('notFound');
   if (role !== undefined && !ROLES.includes(role)) return fail('badRole');
+  // Staff are never turned into students in place (see notStaff for a person added as staff by mistake).
+  if (role === 'student' && m.role !== 'student') return fail('badRole');
   q.run('UPDATE school_members SET roster_name=?, grade=?, role=? WHERE school_id=? AND user_id=?',
     rosterName !== undefined ? clip(rosterName, 60) : m.roster_name, grade !== undefined ? clip(grade, 12) : m.grade, role || m.role, schoolId, userId);
   audit(by.id, 'school.member_update', schoolId, { user: userId, role, grade, ...(rosterName !== undefined && clip(rosterName, 60) !== m.roster_name ? { renamed: true } : {}) });
-  if (role && role !== 'student' && m.role === 'student') staffJoined(userId);
+  if (role && role !== 'student' && m.role === 'student') { endFriendships(userId); staffJoined(userId); }
   return ok();
 }
 /** Cleanup hooks for data kept per class student or per class outside this module (Oomba Live's saved teams and
@@ -247,6 +279,29 @@ export function removeMember(by, schoolId, userId) {
   });
   audit(by.id, 'school.member_remove', schoolId, { user: userId });
   return ok();
+}
+/** People who were staff here and were removed (their own accounts only: a removed school account is switched off).
+ *  They still count as staff accounts (noFriendsAccount); the People tab lists them so a mistake can be put right. */
+export const formerStaff = schoolId => q.all(`SELECT u.id, u.username, u.display_name, m.role, m.roster_name, m.left_at FROM school_members m JOIN users u ON u.id=m.user_id
+  WHERE m.school_id=? AND m.status='left' AND m.role!='student' AND COALESCE(u.managed_school,'')='' AND u.banned=0 ORDER BY m.left_at DESC`, schoolId);
+/**
+ * "Added by mistake": this person's OWN account should never have been staff here (a child accepted a staff invite, or
+ * a username was mistyped). A school admin (or the platform admin) says so: the person leaves the school if still in
+ * it, and this school's record of them as staff is deleted, so it no longer makes the account a staff account
+ * (noFriendsAccount). The account can have friends again with a NEW code (friends.codeOf); friendships ended when it
+ * became staff are not brought back. Works on a person already removed (formerStaff). Never for an account the school
+ * made as staff, and still a staff account while another school has them as staff.
+ * Not a way round the staff rule: the account ends up with nothing a brand-new account would not have.
+ */
+export function notStaff(by, schoolId, userId) {
+  const m = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', schoolId, String(userId || ''));
+  if (!m || m.role === 'student') return fail('notFound');
+  const u = getUser(m.user_id);
+  if (!u || u.managed_school) return fail('badRole');
+  if (m.status === 'active') { const r = removeMember(by, schoolId, u.id); if (!r.ok) return r; }
+  q.run("DELETE FROM school_members WHERE school_id=? AND user_id=? AND status='left'", schoolId, u.id);
+  audit(by.id, 'school.member_not_staff', schoolId, { user: u.id, was: m.role });
+  return ok({ user: u, stillStaff: noFriendsAccount(getUser(u.id)) });
 }
 
 // ---------------------------------------------------------------- school accounts
@@ -473,6 +528,8 @@ export function approveRequest(by, requestId, { rosterName = '', sameAs = null }
   // Asked before they became staff here: the old request no longer applies (approving it would make them a student).
   const cur = membership(c.school_id, u.id);
   if (cur && cur.role !== 'student') return fail('notFound');
+  // Was staff here and left: a teacher's approval never makes a former staff account a student (addMember refuses too).
+  if (q.get("SELECT 1 FROM school_members WHERE school_id=? AND user_id=? AND role!='student'", c.school_id, u.id)) return fail('wasStaff');
   let res = ok();
   tx(() => {
     if (sameAs) { res = mergeSchoolAccount(by, c.school_id, sameAs, u.id); if (!res.ok) return; }
@@ -571,6 +628,29 @@ export function canManageStudent(u, schoolId, studentId) {
  *  the School tab and /school (routes/schools.js). */
 export const adminSchools = u => (u ? q.all("SELECT s.id, s.name, s.slug FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active' AND m.role='admin' AND s.archived_at IS NULL ORDER BY s.name COLLATE NOCASE", u.id) : []);
 export const isStaff = u => !!u && (isPlatformAdmin(u) || !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND status='active' AND role!='student'", u.id));
+
+// ---------------------------------------------------------------- staff never have friends or chat
+/** Is this a grown-up who works (or worked) with children here: the platform admin, or anyone who is or has been a
+ *  teacher or school admin of any school? Such an account has no friend code, no friends and no friends' chat, with
+ *  anyone (services/friends.js and services/chat.js ask this; docs/decisions.md "Staff have no friends").
+ *  A teacher who LEFT a school still counts (their member row keeps its staff role, marked 'left'): they are a known
+ *  adult, and nobody becomes a student over a staff row (addMember, updateMember and approveRequest refuse). The one
+ *  way out is notStaff: a school admin (or the platform admin) marks a person's own account "added by mistake" on the
+ *  People tab, which deletes that school's staff record of them. A staff invite not yet accepted does not count. Grown-up (parent) accounts are a separate kind and are
+ *  never school members, so a teacher's own parent account is not touched by this. */
+export const noFriendsAccount = u => !!u && (isPlatformAdmin(u) || !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND role!='student'", u.id));
+/** End every friendship and friend request of an account (both directions), take its friend code away, and clear the
+ *  unread mark on friends' messages to or from it (messages from the Oomba team stay unread). Called at the moment an
+ *  account becomes staff, and again whenever a staff account is seen holding any of these (a platform admin is made by
+ *  the seed, not by a call here). Returns how many friend rows went. */
+export function endFriendships(userId) {
+  if (!userId) return 0;
+  const n = q.run('DELETE FROM friends WHERE user_id=? OR friend_id=?', userId, userId).changes;
+  const c = q.run('UPDATE users SET friend_code=NULL WHERE id=? AND friend_code IS NOT NULL', userId).changes;
+  q.run("UPDATE chat_messages SET read_at=? WHERE read_at IS NULL AND kind IN ('text','quick','game') AND (to_id=? OR from_id=?)", now(), userId, userId);
+  if (n || c) audit(userId, 'friend.staff_closed', userId, { friends: n });
+  return n;
+}
 
 // ---------------------------------------------------------------- school rules for the game site
 /** Do two people share an active class (as students or teacher)? */

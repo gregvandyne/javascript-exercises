@@ -68,8 +68,13 @@ test('a teacher tags a lesson with Common Core standards and sees the class\'s c
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: teacher }); const t = await ctx.newPage();
   const { cls, lesson } = await demo(t);
 
-  // The class tab opens on CSTA as before, with the framework chips above it.
+  // The class tab opens on the framework the class has work in (the demo class plays math games: Common Core Math, not
+  // computer science), with the framework chips above it; the CSTA chip opens the CSTA tab as before.
   await t.goto(`/class/${cls}/standards`);
+  await expect(t).toHaveURL(/\/standards\?fw=ccss-math$/);
+  await expect(t.locator('.std-fw .chip[aria-current="page"]')).toContainText('Common Core Math');
+  await t.locator('.std-fw .chip', { hasText: 'Computer science (CSTA)' }).click();
+  await expect(t).toHaveURL(/fw=csta$/);
   await expect(t.locator('.std-fw .chip[aria-current="page"]')).toContainText('Computer science (CSTA)');
   await expect(t.locator('.csq-std-lead')).toContainText('CSTA');
   await t.locator('.std-fw .chip', { hasText: 'Common Core Math' }).click();
@@ -109,7 +114,7 @@ test('a teacher tags a lesson with Common Core standards and sees the class\'s c
   await expect(t).toHaveURL(new RegExp(`to=${lastOpt}`));
   // The URL changes when the new page commits, before it is all parsed: read its Add forms once it is.
   await t.waitForLoadState('domcontentloaded');
-  expect(await t.locator('.std-results input[name="stepId"]').evaluateAll(l => [...new Set(l.map(i => i.value))])).toEqual([lastOpt]);
+  await expect.poll(() => t.locator('.std-results input[name="stepId"]').evaluateAll(l => [...new Set(l.map(i => i.value))])).toEqual([lastOpt]);
   await t.locator('.std-result', { hasText: '4.NF.A.1' }).first().locator('button', { hasText: 'Add' }).click();
   const onLast = t.locator('#tagged li', { has: t.locator('h3', { hasText: lastName }) });
   await expect(onLast.locator('.std-tag', { hasText: '4.NF.A.1' })).toBeVisible();
@@ -164,7 +169,7 @@ test('the Standards pages on phones and desktop, light and dark, and in Hebrew: 
   const student = (html.match(/<option value="([A-Za-z0-9]+)"/) || [])[1];
   await ctx.close();
   const pages = [
-    ['class-csta', `/class/${cls}/standards`],
+    ['class-csta', `/class/${cls}/standards?fw=csta`],
     ['class-math', `/class/${cls}/standards?fw=ccss-math`],
     ['class-math-grade4', `/class/${cls}/standards?fw=ccss-math&grade=4`],
     ['class-math-student', `/class/${cls}/standards?fw=ccss-math&student=${student}`],

@@ -190,6 +190,37 @@
       "pickAvatar": "Pick one of the avatars.",
       "pickColor": "Pick one of the colors.",
       "pickLanguage": "Pick one of the languages."
+    },
+    "reset": {
+      "linkLine": "Teacher, school staff or grown-up? <a href=\"{href}\">Reset your password by email</a>.",
+      "title": "Reset your password",
+      "lead": "For teacher, school staff and grown-up accounts. Type your username and we will email a link to the address we have for the account.",
+      "kids": "A student's or a kid's account? Ask your teacher or a grown-up. Kids' accounts have no email.",
+      "username": "Username",
+      "needUsername": "Type your username first.",
+      "send": "Email me a link",
+      "sent": "If that is a teacher, school staff or grown-up account with an email address on file, a link is on its way. It works once, for {minutes} minutes.",
+      "noEmail": "Nothing in your inbox? The account may have no email address on file. Write to {email} and we will help.",
+      "off": "We can't email reset links right now. Write to {email} and we will help.",
+      "backToSignIn": "Back to sign in",
+      "newTitle": "Choose a new password",
+      "forAccount": "For the account {username}",
+      "newLabel": "New password",
+      "newHint": "At least {min} characters.",
+      "save": "Save my new password",
+      "bad": "This link has expired or was already used. A link works once, for {minutes} minutes.",
+      "again": "Send a new link",
+      "done": "Your password is changed. Sign in with the new one. You were signed out everywhere else.",
+      "email": {
+        "subject": "Reset your Oomba Academy password",
+        "intro": "Someone asked to reset the password of the Oomba Academy account {username}. If that was you, choose a new password with this link:",
+        "button": "Choose a new password",
+        "expires": "The link works once, for {minutes} minutes.",
+        "ignore": "If you didn't ask for this, you can ignore this email. Your password stays the same.",
+        "doneSubject": "Your Oomba Academy password was changed",
+        "doneIntro": "The password of the Oomba Academy account {username} was just changed with a reset link sent to this address.",
+        "doneNotYou": "If that was not you, write to {email} right away."
+      }
     }
   },
   "me": {
@@ -1215,6 +1246,10 @@
       "alreadyAsked": "You already asked {name}. Wait for them to say yes.",
       "sent": "Friend request sent to {name}! They need to say yes.",
       "classmatesOnly": "School accounts can only be friends with classmates."
+    },
+    "staff": {
+      "title": "Staff accounts don't have friends",
+      "text": "Teacher, school admin and Oomba team accounts have no friend code, no friends and no chat with players. This keeps children's friends for children only. Messages from the Oomba team still reach you."
     }
   },
   "profile": {
@@ -1325,7 +1360,8 @@
       "blocked_by_me": "You blocked {name}. You can unblock them on the Friends page.",
       "blocked_by_other": "You can't chat with {name} right now.",
       "school_off_me": "Your school has turned chat off.",
-      "school_off_other": "{name}'s school has turned chat off."
+      "school_off_other": "{name}'s school has turned chat off.",
+      "staff": "Staff accounts can't chat with players."
     },
     "paused": "Chat is taking a little break. You can type again in {minutes, plural, one {# minute} other {# minutes}}. You can still send quick messages.",
     "errors": {
@@ -2667,7 +2703,12 @@
       "sendInvite": "Send invite",
       "existingShort": "Their username",
       "addToClassFor": "Put {name} in a class",
-      "changeName": "Change real name"
+      "changeName": "Change real name",
+      "notStaff": "Added by mistake",
+      "notStaffConfirm": "Was {name} added as staff by mistake? They leave the school and their account stops being a staff account, so it can have friends and chat again, with a new friend code. Friends it had before are not brought back.",
+      "notStaffDone": "{name} is no longer a staff account here.",
+      "formerStaff": "Removed staff",
+      "formerStaffText": "People who were staff here keep a staff account: no friends and no chat with players. If one of them should never have been staff (a student who accepted an invite, say), choose “Added by mistake”."
     },
     "settings": {
       "name": "School name",
@@ -2687,17 +2728,20 @@
       "publishPublic": "Can also share with everyone",
       "publishingHint": "Students in a class can also share a game with just their classes.",
       "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
-      "chatHint": "School accounts can only add classmates as friends.",
+      "chatHint": "School accounts chat only with classmates they have added as friends. Messages are filtered, and teachers and staff are never in the chat.",
       "timeZone": "Time zone",
       "timeZoneNone": "Not set (UTC)",
       "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
       "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now.",
       "groupSchool": "School",
       "groupClasses": "Classes and joining",
-      "chatHintOff": "School accounts can't chat with anyone. They can still play and build.",
+      "chatHintOff": "The default. School accounts can't chat with anyone. They can still play and build.",
       "unsaved": "You have changes that aren't saved yet.",
       "unsavedLeave": "Your settings changes aren't saved. Leave without saving them?",
-      "timeZoneUse": "Use {zone} (this computer's time zone)"
+      "timeZoneUse": "Use {zone} (this computer's time zone)",
+      "chatNotice": "Chat is now off for your school's accounts. Chat between classmates used to be on unless a school turned it off. Now it is off unless a school turns it on, and some of your students were using it. To bring it back, choose “Chat with friends from their classes” below and save.",
+      "chatNoticeKeep": "Keep chat off",
+      "chatNoticeShort": "Chat is now off for your school's accounts, and some of your students were using it. You can turn it back on here:"
     },
     "cards": {
       "title": "Login cards",
@@ -2713,7 +2757,8 @@
       "count": "{count, plural, one {# login card} other {# login cards}}",
       "later": "On a phone? These cards stay here for you (only you) for 24 hours: open them again from the class's Students tab on a school computer and print, or use your phone's Share › Print › Save as PDF.",
       "again": "{count, plural, one {Login card you made today: still here to print.} other {# login cards you made today: still here to print.}}",
-      "open": "Open the cards"
+      "open": "Open the cards",
+      "next": "Next: assign a first game"
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -2749,7 +2794,8 @@
       "tickStudents": "Tick at least one student.",
       "badZone": "Pick a time zone from the list.",
       "badCap": "Type a whole number from {min} to {max}.",
-      "otherSchoolNext": "That account belongs to another school. Ask them to leave that school first, or choose \"Make a school account for them\" instead."
+      "otherSchoolNext": "That account belongs to another school. Ask them to leave that school first, or choose \"Make a school account for them\" instead.",
+      "wasStaff": "This account was staff at this school. A school admin first has to mark it “Added by mistake” on the People tab."
     },
     "classTabs": {
       "lessons": "Lessons",
@@ -2978,7 +3024,8 @@
       "accept": "Accept",
       "decline": "Decline",
       "accepted": "You're now staff at {school}.",
-      "declined": "Invite declined."
+      "declined": "Invite declined.",
+      "warn": "Only accept if you work at this school. Staff accounts have no friends and no chat: if you accept, your friends and your friend code are removed and do not come back."
     },
     "setup": {
       "h": "Set up your school",
@@ -3110,7 +3157,8 @@
       "zoneSet": "Set the time zone",
       "zoneAsk": "A school admin can set it in the school's Settings.",
       "doneHere": "Assigned to {class}. Students see it now.",
-      "seeStarted": "See who's started"
+      "seeStarted": "See who's started",
+      "doneLater": "Assigned to {class}. Students will see it from {date}."
     },
     "class": {
       "title": "Lessons",
@@ -3237,7 +3285,9 @@
       "noStudents": "No students yet",
       "noStudentsText": "Add students on the Students tab, and their progress shows up here.",
       "toReviewList": "Answers to review:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Quiz score: {pct}% right",
+      "quizOverall": "Quiz score across lessons: {pct}%"
     },
     "lesson": {
       "finished": "{done} of {total} students done",
@@ -3258,7 +3308,8 @@
       "attention": "Needs attention first",
       "selfMarked": "Marked done by the student, not played here",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Swipe the table sideways to see every step"
+      "swipe": "Swipe the table sideways to see every step",
+      "quizScore": "{right} of {total} right ({pct}%)"
     },
     "student": {
       "doneOf": "{done} of {total} done",
@@ -3283,6 +3334,10 @@
       "readNoFeedback": "Your teacher has seen your answer.",
       "about": "About this lesson",
       "readToMe": "Read to me"
+    },
+    "csv": {
+      "quiz": "{title} (quiz %)",
+      "quizAll": "Quiz %"
     }
   },
   "google": {
@@ -4009,7 +4064,8 @@
         "passwordHint": "At least {min} characters.",
         "adult": "I am a teacher or school staff member, and 18 or older.",
         "submit": "Create my account and start the trial",
-        "privacy": "We don't keep your work email on your account: it goes to Stripe for your plan. <a href=\"{privacy}\">Privacy Policy</a>"
+        "privacy": "We use your work email for your plan (it goes to Stripe), for emails about your trial and to reset a lost password. <a href=\"{privacy}\">Privacy Policy</a>",
+        "usernameHint": "3 to 16 letters or numbers, no spaces. You sign in with it."
       },
       "errors": {
         "signedIn": "You are already signed in.",
@@ -5393,7 +5449,8 @@
       "soundOff": "Sound off",
       "seeResultsNow": "See results now",
       "read": "Read question",
-      "away": "{count} disconnected"
+      "away": "{count} disconnected",
+      "startEmpty": "Nobody has joined yet. Start anyway?"
     },
     "landing": {
       "title": "Host a live game",
@@ -7024,7 +7081,8 @@
       "passed": "You passed! {score} of {total} right.",
       "failed": "{score} of {total} right. Look at the right answers, then try again."
     },
-    "play": "Play: {game} · {chapter}"
+    "play": "Play: {game} · {chapter}",
+    "gamesN": "{count, plural, one {See the # game} other {See the # games}}"
   },
   "move": {
     "title": "Brain Breaks",

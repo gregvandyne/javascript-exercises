@@ -438,7 +438,8 @@ test('play the missed questions again; play again with these teams (a saved clas
   assert.ok(details.includes(mia.display_name));
   assert.match(safe, /id="lv-team-podium"/); assert.match(safe, /id="lv-hardest"/); assert.match(safe, /id="lv-review"/);
   const csv = await call(`/live/results/${s.id}.csv`, { user: teacher });
-  assert.match(csv.text, /^rank,student,team,score,bonus,correct,answered,q1,q2,q3\r\n/);
+  assert.match(csv.text, /^rank,student,roster_name,team,score,bonus,correct,answered,q1,q2,q3\r\n/);
+  assert.match(csv.text, /\r\n1,[A-Za-z]+\d*,Mia Pupil,[A-Z][a-z]+ [A-Z][a-z]+,3150,0,3,3,1,1,1\r\n/, 'the class teacher gets the roster name beside the game name');
   assert.match(csv.text, /question,right,answered,choice_a/);
   // Missed: question 2 only.
   const m = await call('/api/live/sessions', { method: 'POST', body: { fromRun: s.id, only: 'missed' }, user: teacher });

@@ -18,22 +18,34 @@ import { audit, q } from '../db.js';
 import { liveGameOf } from '../live/live-games.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
-import { HUBS } from '../learn.js';
+import { HUBS, SUBJECTS, SHELF_INFO } from '../learn.js';
 import * as R from '../services/rubrics.js';
 import { libraryTabs } from './rubrics.js';
-/** The site's games for a step's Game picker, grouped by subject (Math, Words, CS, Music, Strategy, Brain breaks) in
- *  title order, then live class games (hosted by the teacher), then the rest. -> [{ label, games }] */
-const SUBJECT_HUBS = HUBS.filter(h => h.games.length && h.key !== 'brainBreaks').concat(HUBS.filter(h => h.key === 'brainBreaks'));
-function siteGroups(t, site) {
+/** The site's games for a step's Game picker: the Learn shelf first, grouped by subject (Math, Words, CS, Music,
+ *  Strategy, then Learn subjects with no subject page: Maps), then Brain breaks, live class games (hosted by the
+ *  teacher), then the rest ("More games": Play's fun games). A Learn-shelf game is always under its subject (learn.js
+ *  SHELF_INFO), whether or not its subject page lists it: Fraction Factory is a Math game, never a "More games" one.
+ *  Each group in title order. -> [{ label, games }] */
+const SUBJECT_HUBS = HUBS.filter(h => h.games.length && h.key !== 'brainBreaks');
+const BREAK_HUB = HUBS.find(h => h.key === 'brainBreaks');
+export function siteGroups(t, site) {
   const groups = SUBJECT_HUBS.map(h => ({ label: t(`learn.hubs.${h.key}.name`), games: [] }));
+  const loose = SUBJECTS.filter(s => !SUBJECT_HUBS.some(h => h.slug === s.hub)).map(s => ({ key: s.key, label: t(`learn.tab.subjects.${s.key}`), games: [] }));
+  const breaks = { label: BREAK_HUB ? t(`learn.hubs.${BREAK_HUB.key}.name`) : '', games: [] };
   const live = { label: t('lessons.step.liveGames'), games: [] }, other = { label: t('lessons.step.otherGames'), games: [] };
   for (const g of site) {
-    if (g.source === 'seed' && (P.HOSTED_LIVE.has(g.slug) || /-live$/.test(g.slug))) { live.games.push(g); continue; }
-    const i = g.source === 'seed' ? SUBJECT_HUBS.findIndex(h => h.games.includes(g.slug)) : -1;
-    (i >= 0 ? groups[i] : other).games.push(g);
+    if (g.source !== 'seed') { other.games.push(g); continue; }
+    if (P.HOSTED_LIVE.has(g.slug) || /-live$/.test(g.slug)) { live.games.push(g); continue; }
+    // Its subject page's group, else its Learn-shelf subject's (that subject's page, or the subject's own group).
+    let i = SUBJECT_HUBS.findIndex(h => h.games.includes(g.slug));
+    const shelf = SHELF_INFO[g.slug], subj = shelf && SUBJECTS.find(s => s.key === shelf.subject);
+    if (i < 0 && subj) i = SUBJECT_HUBS.findIndex(h => h.slug === subj.hub);
+    if (i >= 0) { groups[i].games.push(g); continue; }
+    const own = subj && loose.find(x => x.key === subj.key);
+    (own || (BREAK_HUB && BREAK_HUB.games.includes(g.slug) ? breaks : other)).games.push(g);
   }
   const byTitle = (a, z) => String(a.title).localeCompare(String(z.title));
-  return [...groups, live, other].filter(x => x.games.length).map(x => ({ ...x, games: [...x.games].sort(byTitle) }));
+  return [...groups, ...loose, breaks, live, other].filter(x => x.games.length).map(x => ({ label: x.label, games: [...x.games].sort(byTitle) }));
 }
 
 import * as T from '../services/lesson-templates.js';
@@ -364,7 +376,10 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   </section>
   <section class="panel" id="assign"><h2>📌 ${t('lessons.assign.title')}</h2>
     ${assigned.length ? html`<ul class="plain assignedlist">${assigned.map(a => html`<li><b dir="auto">${a.name}</b>${a.opens_at ? html` · <span class="nw">${t('lessons.class.opensOn', { date: f.day(a.opens_at) })}</span>` : ''}${a.due_at ? html` · <span class="nw">${t('lessons.class.dueOn', { date: f.day(a.due_at) })}</span>` : ''} · <a class="nw" href="/class/${a.class_id}#cl-${a.id}">${t('lessons.assign.changeDates')}</a></li>`)}</ul>` : ''}
-    ${justAssigned ? html`<p class="notice good" id="assigned-now" role="status">✅ ${t('lessons.assign.doneHere', { class: justAssigned.name })} <a href="/class/${justAssigned.class_id}/progress/${justAssigned.id}">${t('lessons.assign.seeStarted')}</a></p>` : ''}
+    ${justAssigned ? (L.isOpen(justAssigned)
+      ? html`<p class="notice good" id="assigned-now" role="status">✅ ${t('lessons.assign.doneHere', { class: justAssigned.name })} <a href="/class/${justAssigned.class_id}/progress/${justAssigned.id}">${t('lessons.assign.seeStarted')}</a></p>`
+      // It opens later: students do not see it yet, so say when they will (never "Students see it now").
+      : html`<p class="notice good" id="assigned-now" data-opens-later role="status">✅ ${t('lessons.assign.doneLater', { class: justAssigned.name, date: f.day(justAssigned.opens_at) })} <a class="nw" href="/class/${justAssigned.class_id}#cl-${justAssigned.id}">${t('lessons.assign.changeDates')}</a></p>`) : ''}
     ${assignable.length ? html`<form class="formgrid assigngrid" data-api="/api/lessons/${l.id}/assign" data-reload novalidate><input type="hidden" name="from" value="lesson">
       <div class="field"><label for="as-c">${t('lessons.assign.class')}</label><select class="input" id="as-c" name="classId">${assignable.map(c => html`<option value="${c.id}" ${c.id === preselect ? raw('selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="as-o">${t('lessons.assign.opens')}</label><input class="input" id="as-o" name="opensAt" type="date"></div>
@@ -426,7 +441,8 @@ function assignReply(req, res, r, also = '') {
     const c = S.getClass(r.classLesson.class_id);
     // From the lesson page: back to its Assign section with "Assigned to … · See who's started" next to the form.
     const back = String((req.body && req.body.from) || '') === 'lesson' ? { redirect: `/teach/lessons/${r.classLesson.lesson_id}?assigned=${encodeURIComponent(r.classLesson.id)}#assign` } : {};
-    const toast = req.t(r.workBack ? 'lessons.assign.restored' : 'lessons.assign.done', { class: c.name });
+    const later = !L.isOpen(r.classLesson);
+    const toast = later ? req.t('lessons.assign.doneLater', { class: c.name, date: req.fmt.day(r.classLesson.opens_at) }) : req.t(r.workBack ? 'lessons.assign.restored' : 'lessons.assign.done', { class: c.name });
     return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...back });
   }
   if (r.code === 'alreadyAssigned') return res.status(400).json({ error: req.t('lessons.errors.alreadyAssigned', { class: r.className }) });

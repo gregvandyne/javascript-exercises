@@ -13,7 +13,7 @@ import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '..
 import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
-import { inAnySchool, isSchoolStaff, isPlatformAdmin, adminSchools, staffName } from '../services/schools.js';
+import { inAnySchool, isSchoolStaff, noFriendsAccount, isPlatformAdmin, adminSchools, soloSchoolAdmin, staffName } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
@@ -62,7 +62,8 @@ export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatfor
 export function landingFor(u) {
   if (signedOut(u)) return null;
   if (isGrownup(u)) return '/family';
-  if (isSchoolStaff(u)) return adminSchools(u).length ? '/school' : '/teach';
+  // A school admin lands on their School, unless they are its only staff member (a solo teacher: the Classroom home).
+  if (isSchoolStaff(u)) return adminSchools(u).length && !soloSchoolAdmin(u) ? '/school' : '/teach';
   if (isPlatformAdmin(u)) return null;
   if (inAnySchool(u)) return '/classes';
   return null;
@@ -78,6 +79,7 @@ export function landingFor(u) {
  *   signed out or a guest   Play · Learn · Build · Grown-ups · (Plans) · Sign in   (top: Play · Learn · Build · (Plans) · Parents · Teachers)
  *   grown-up                Family · Play · Learn · Build · (Plans) · Account      (top: the same without Account)
  *   school admin            School · Classroom · Learn · Play · (Plans) · Me       (top: the same with (Live), without Me)
+ *     …the only staff member of their school(s): Classroom · School · … (a solo teacher lands on the Classroom home)
  *   school staff            Classroom · Learn · Play · (Live) · (Plans) · Me       (top: the same without Me)
  *   platform admin          Play · Learn · Build · Friends · Schools · (Plans) · Me
  *   student                 Class · Play · Learn · Build · (Plans) · Me            (top: the same with Friends, without Me)
@@ -107,21 +109,26 @@ export function shellFor(u, req) {
   }
   if (isSchoolStaff(u)) {
     if (adminSchools(u).length > 0) {
-      const head = [['school', '/school', '🏛️'], classroom, learn, play, ...stories];
+      // A solo teacher's first tab is Classroom (where they land); School, with its setup checklist, comes next.
+      const school = ['school', '/school', '🏛️'];
+      const head = [...(soloSchoolAdmin(u) ? [classroom, school] : [school, classroom]), learn, play, ...stories];
       return { role: 'schoolAdmin', tabs: [...head, ...plans, me], top: [...head, ...live, ...plans], meHref: '/me' };
     }
     const top = [classroom, learn, play, ...stories, ...live, ...plans];
     return { role: 'teacher', tabs: [...top, me], top, meHref: '/me' };
   }
   if (isPlatformAdmin(u)) {
-    const top = [play, learn, build, ...stories, friends, ['schools', '/admin/schools', '🏫'], ...plans];
+    // No Friends tab: the platform admin is staff, and staff have no friends (services/schools.js noFriendsAccount).
+    const top = [play, learn, build, ...stories, ['schools', '/admin/schools', '🏫'], ...plans];
     return { role: 'admin', tabs: [...top, me], top, meHref: '/me' };
   }
+  // A teacher who left their school is an ordinary account again, but still has no friends (noFriendsAccount).
+  const fr = noFriendsAccount(u) ? [] : [friends];
   if (inAnySchool(u)) {
     const head = [['class', '/classes', '🏫'], play, learn, build, ...stories];
-    return { role: 'student', tabs: [...head, ...plans, me], top: [...head, friends, ...plans], meHref: '/me' };
+    return { role: 'student', tabs: [...head, ...plans, me], top: [...head, ...fr, ...plans], meHref: '/me' };
   }
-  const top = [play, learn, build, ...stories, friends, ...plans];
+  const top = [play, learn, build, ...stories, ...fr, ...plans];
   return { role: 'kid', tabs: [...top, me], top, meHref: '/me' };
 }
 /** The tab a page's `active` makes current in this shell: the game pages (home, play, search) are Play; the class pages
@@ -189,9 +196,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // School staff see the real name their school gave them (their own header only), not a made-up sign-in name.
   const myName = u ? (staff && staffName(u)) || u.display_name : '';
   const badges = u ? { ...navBadges(u) } : { friends: 0 };
-  // Staff have no Friends tab: friend requests and unread chat count on Me (/me links to /friends).
+  // Staff have no Friends tab and no friends: unread Oomba team messages count on Me (/me links to that inbox).
   // Students have Friends in the top bar but not in their tab bar: theirs count on Me too.
-  if (staff || shell.role === 'student') badges.me = (badges.me || 0) + (badges.friends || 0);
+  if (staff || shell.role === 'admin' || shell.role === 'student') badges.me = (badges.me || 0) + (badges.friends || 0);
   // Grown-ups have no Friends tab (and no chat): connection requests count on Family (/family links to them).
   // Their only chat is the Oomba team thread (/chat/OombaAcademy, linked from /family): its unread messages count there too.
   // A child's "Ask my grown-up" (services/sparks.js) counts there too until the grown-up sees it on /family.

@@ -10,9 +10,9 @@ import * as chat from '../services/chat.js';
 import * as games from '../services/games.js';
 import { COMMUNITY_CSS } from './social.js';
 import { tHtml } from '../i18n/index.js';
-import { isSchoolStaff } from '../services/schools.js';
+import { isSchoolStaff, noFriendsAccount } from '../services/schools.js';
 /** The chat safety line: kids' words for kids; a teacher or grown-up reads one written for adults. */
-const safetyKey = u => (isSchoolStaff(u) || isGrownup(u) ? 'chat.safety.staff' : 'chat.safety.text');
+const safetyKey = u => (isSchoolStaff(u) || noFriendsAccount(u) || isGrownup(u) ? 'chat.safety.staff' : 'chat.safety.text');
 
 export const router = Router();
 
@@ -33,16 +33,19 @@ router.get('/chat', (req, res) => {
   const u = req.user;
   if (!u || u.is_guest) return guestPage(req, res);
   const list = withTeam(u, t, chat.inbox(u, t));
+  // Staff: this page is only their Oomba team inbox (no friends, no friends' chat: services/chat.js canChat).
+  const staff = noFriendsAccount(u);
   const body = html`
   <div class="chatcol">
-  <div class="pagehead"><h1>${t('chat.title')}</h1><a class="btn" href="/friends"><span aria-hidden="true">👫</span> ${t('nav.friends')}</a></div>
-  ${!u.chat_enabled ? html`<p class="notice warn">${tHtml(t, 'chat.offNotice', { link: html`<a href="/me">${t('nav.me')}</a>` })}</p>` : ''}
+  <div class="pagehead"><h1>${t(staff ? 'team.name' : 'chat.title')}</h1>${staff ? '' : html`<a class="btn" href="/friends"><span aria-hidden="true">👫</span> ${t('nav.friends')}</a>`}</div>
+  ${!staff && !u.chat_enabled ? html`<p class="notice warn">${tHtml(t, 'chat.offNotice', { link: html`<a href="/me">${t('nav.me')}</a>` })}</p>` : ''}
   <p class="notice small chatsafety"><span aria-hidden="true">🛡️</span> ${t(safetyKey(u))}</p>
   ${list.length ? html`<ul class="plain inbox panel" id="inbox" aria-label="${t('chat.inbox.label')}">${list.map(th => inboxRow(req, th))}</ul>`
+    : staff ? emptyState({ emoji: '📬', title: t('team.name'), text: t('team.empty') })
     : emptyState({ emoji: '🤝', title: t('chat.inbox.emptyTitle'), text: t('chat.inbox.emptyText'), action: { href: '/friends', label: t('friends.add.heading') } })}
   </div>
   ${jsonData('page-data', { mode: 'inbox' })}`;
-  page(req, res, { title: t('chat.title'), active: 'friends', body, head: COMMUNITY_CSS, scripts: ['/js/chat.js'] });
+  page(req, res, { title: t(staff ? 'team.name' : 'chat.title'), active: staff ? 'me' : 'friends', body, head: COMMUNITY_CSS, scripts: ['/js/chat.js'] });
 });
 
 /** The inbox with the Oomba team's thread on top (when the team ever wrote). */
@@ -94,8 +97,11 @@ router.get('/chat/:username', (req, res) => {
   const t = req.t;
   const u = req.user;
   if (!u || u.is_guest) return guestPage(req, res);
+  // A staff account has no friends' threads at all: back to its team inbox, whoever was named.
+  if (noFriendsAccount(u)) return res.redirect('/chat');
   const other = getUserByName(req.params.username);
-  if (!other || other.banned || other.id === u.id) return notFound(req, res, t('chat.notFound'));
+  // A staff account is not on this page for anyone: the same 404 as a name nobody has (no name, no thread header).
+  if (!other || other.banned || other.id === u.id || noFriendsAccount(other)) return notFound(req, res, t('chat.notFound'));
   const can = chat.canChat(u, other, t);
   const blockedByMe = chat.isBlocked(u.id, other.id);
   const msgs = can.ok || can.code === 'chat_off_me' || can.code === 'chat_off_other' ? chat.thread(u, other, {}, t) : [];
@@ -172,11 +178,13 @@ router.post('/api/chat/:username', requireAccount, rateLimit('chatsend', 30, 60e
   res.json({ ok: true, message: r.message });
 });
 router.post('/api/chat/:username/block', requireAccount, rateLimit('chatblock', 30, 60e3), (req, res) => {
+  if (noFriendsAccount(req.user)) return res.status(403).json({ error: req.t('friends.staff.text'), code: 'staff' });
   const o = other(req, res); if (!o) return;
   chat.block(req.user, o.id);
   res.json({ ok: true, message: req.t('chat.blockedToast', { name: o.display_name }) });
 });
 router.post('/api/chat/:username/unblock', requireAccount, rateLimit('chatblock', 30, 60e3), (req, res) => {
+  if (noFriendsAccount(req.user)) return res.status(403).json({ error: req.t('friends.staff.text'), code: 'staff' });
   const o = other(req, res); if (!o) return;
   chat.unblock(req.user, o.id);
   res.json({ ok: true, message: req.t('chat.unblockedToast', { name: o.display_name }) });

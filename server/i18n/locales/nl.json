@@ -190,6 +190,37 @@
       "pickAvatar": "Kies een van de avatars.",
       "pickColor": "Kies een van de kleuren.",
       "pickLanguage": "Kies een van de talen."
+    },
+    "reset": {
+      "linkLine": "Leraar, schoolmedewerker of volwassene? <a href=\"{href}\">Stel je wachtwoord opnieuw in via e-mail</a>.",
+      "title": "Wachtwoord opnieuw instellen",
+      "lead": "Voor accounts van leraren, schoolmedewerkers en volwassenen. Typ je gebruikersnaam en we sturen een link naar het e-mailadres dat we voor het account hebben.",
+      "kids": "Een account van een leerling of kind? Vraag het je leraar of een volwassene. Kinderaccounts hebben geen e-mailadres.",
+      "username": "Gebruikersnaam",
+      "needUsername": "Typ eerst je gebruikersnaam.",
+      "send": "Mail me een link",
+      "sent": "Als dit een account van een leraar, schoolmedewerker of volwassene is waarvan we een e-mailadres hebben, is er een link onderweg. Die werkt één keer, {minutes} minuten lang.",
+      "noEmail": "Niets in je inbox? Misschien hebben we geen e-mailadres voor het account. Schrijf naar {email} en we helpen je.",
+      "off": "We kunnen nu geen links mailen om je wachtwoord opnieuw in te stellen. Schrijf naar {email} en we helpen je.",
+      "backToSignIn": "Terug naar inloggen",
+      "newTitle": "Kies een nieuw wachtwoord",
+      "forAccount": "Voor het account {username}",
+      "newLabel": "Nieuw wachtwoord",
+      "newHint": "Minstens {min} tekens.",
+      "save": "Mijn nieuwe wachtwoord opslaan",
+      "bad": "Deze link is verlopen of al gebruikt. Een link werkt één keer, {minutes} minuten lang.",
+      "again": "Stuur een nieuwe link",
+      "done": "Je wachtwoord is veranderd. Log in met het nieuwe. Je bent overal anders uitgelogd.",
+      "email": {
+        "subject": "Stel je wachtwoord voor Oomba Academy opnieuw in",
+        "intro": "Iemand heeft gevraagd om het wachtwoord van het Oomba Academy-account {username} opnieuw in te stellen. Was jij dat? Kies dan een nieuw wachtwoord met deze link:",
+        "button": "Kies een nieuw wachtwoord",
+        "expires": "De link werkt één keer, {minutes} minuten lang.",
+        "ignore": "Heb je hier niet om gevraagd? Dan kun je deze e-mail negeren. Je wachtwoord blijft hetzelfde.",
+        "doneSubject": "Je wachtwoord voor Oomba Academy is gewijzigd",
+        "doneIntro": "Het wachtwoord van het Oomba Academy-account {username} is zojuist gewijzigd met een herstellink die naar dit adres is gestuurd.",
+        "doneNotYou": "Was jij dat niet? Schrijf dan meteen naar {email}."
+      }
     }
   },
   "me": {
@@ -1215,6 +1246,10 @@
       "alreadyAsked": "Je hebt {name} al gevraagd. Wacht tot er ja wordt gezegd.",
       "sent": "Vriendverzoek naar {name} gestuurd! Nu moet {name} nog ja zeggen.",
       "classmatesOnly": "Schoolaccounts kunnen alleen vrienden zijn met klasgenoten."
+    },
+    "staff": {
+      "title": "Accounts van personeel hebben geen vrienden",
+      "text": "Accounts van leerkrachten, schoolbeheerders en het Oomba-team hebben geen vriendcode, geen vrienden en geen chat met spelers. Zo blijven de vrienden van kinderen alleen kinderen. Berichten van het Oomba-team komen nog steeds bij je aan."
     }
   },
   "profile": {
@@ -1325,7 +1360,8 @@
       "blocked_by_me": "Je hebt {name} geblokkeerd. Je kunt {name} deblokkeren op de pagina Vrienden.",
       "blocked_by_other": "Je kunt nu niet met {name} chatten.",
       "school_off_me": "Je school heeft de chat uitgezet.",
-      "school_off_other": "De school van {name} heeft de chat uitgezet."
+      "school_off_other": "De school van {name} heeft de chat uitgezet.",
+      "staff": "Accounts van personeel kunnen niet met spelers chatten."
     },
     "paused": "De chat neemt even pauze. Je kunt weer typen over {minutes, plural, one {# minuut} other {# minuten}}. Snelle berichten kun je nog wel sturen.",
     "errors": {
@@ -2648,7 +2684,12 @@
       "sendInvite": "Uitnodiging sturen",
       "existingShort": "Hun gebruikersnaam",
       "addToClassFor": "{name} in een klas zetten",
-      "changeName": "Echte naam wijzigen"
+      "changeName": "Echte naam wijzigen",
+      "notStaff": "Per ongeluk toegevoegd",
+      "notStaffConfirm": "Is {name} per ongeluk als personeel toegevoegd? Diegene verlaat de school en het account is geen personeelsaccount meer. Het kan weer vrienden en chat hebben, met een nieuwe vriendcode. Eerdere vrienden komen niet terug.",
+      "notStaffDone": "{name} heeft hier geen personeelsaccount meer.",
+      "formerStaff": "Verwijderd personeel",
+      "formerStaffText": "Wie hier personeel was, houdt een personeelsaccount: geen vrienden en geen chat met spelers. Had iemand nooit personeel mogen zijn (bijvoorbeeld een leerling die een uitnodiging accepteerde), kies dan ‘Per ongeluk toegevoegd’."
     },
     "settings": {
       "name": "Naam van de school",
@@ -2668,17 +2709,20 @@
       "publishPublic": "Ook met iedereen delen",
       "publishingHint": "Leerlingen in een klas kunnen een game ook alleen met hun klassen delen.",
       "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden.",
-      "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen.",
+      "chatHint": "Schoolaccounts chatten alleen met klasgenoten die ze als vriend hebben toegevoegd. Berichten worden gefilterd, en leerkrachten en personeel zitten nooit in de chat.",
       "timeZone": "Tijdzone",
       "timeZoneNone": "Niet ingesteld (UTC)",
       "timeZoneUnset": "Stel de tijdzone van je school in, zodat lessen zichtbaar worden om middernacht en inleverdata om middernacht eindigen waar jij bent. Tot die tijd is niemand te laat tot 36 uur na het begin van de inleverdag.",
       "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}.",
       "groupSchool": "School",
       "groupClasses": "Klassen en aanmelden",
-      "chatHintOff": "Schoolaccounts kunnen met niemand chatten. Spelen en bouwen kan nog steeds.",
+      "chatHintOff": "De standaard. Schoolaccounts kunnen met niemand chatten. Spelen en bouwen kan nog steeds.",
       "unsaved": "Je hebt wijzigingen die nog niet zijn opgeslagen.",
       "unsavedLeave": "Je wijzigingen in de instellingen zijn niet opgeslagen. Weggaan zonder op te slaan?",
-      "timeZoneUse": "{zone} gebruiken (de tijdzone van deze computer)"
+      "timeZoneUse": "{zone} gebruiken (de tijdzone van deze computer)",
+      "chatNotice": "Chat staat nu uit voor de accounts van je school. Eerst stond chat tussen klasgenoten aan, tenzij een school het uitzette. Nu staat het uit, tenzij een school het aanzet, en sommige van je leerlingen gebruikten het. Wil je het terug? Kies hieronder ‘Chatten met vrienden uit hun klassen’ en sla op.",
+      "chatNoticeKeep": "Chat uit laten",
+      "chatNoticeShort": "Chat staat nu uit voor de accounts van je school, en sommige van je leerlingen gebruikten het. Je kunt het hier weer aanzetten:"
     },
     "cards": {
       "title": "Inlogkaarten",
@@ -2694,7 +2738,8 @@
       "count": "{count, plural, one {# inlogkaart} other {# inlogkaarten}}",
       "later": "Op een telefoon? Deze kaarten blijven 24 uur hier voor jou (alleen voor jou): open ze opnieuw via het tabblad Leerlingen van de klas op een schoolcomputer en print ze, of gebruik Delen › Afdrukken › Opslaan als pdf op je telefoon.",
       "again": "{count, plural, one {Inlogkaart van vandaag: nog hier om te printen.} other {# inlogkaarten van vandaag: nog hier om te printen.}}",
-      "open": "Kaarten openen"
+      "open": "Kaarten openen",
+      "next": "Volgende stap: een eerste spel toewijzen"
     },
     "errors": {
       "notFound": "We konden dat niet vinden, of je kunt het niet openen.",
@@ -2730,7 +2775,8 @@
       "tickStudents": "Vink minstens één leerling aan.",
       "badZone": "Kies een tijdzone uit de lijst.",
       "badCap": "Typ een heel getal van {min} tot {max}.",
-      "otherSchoolNext": "Dat account hoort bij een andere school. Vraag diegene eerst die school te verlaten, of kies \"Maak een schoolaccount voor ze\"."
+      "otherSchoolNext": "Dat account hoort bij een andere school. Vraag diegene eerst die school te verlaten, of kies \"Maak een schoolaccount voor ze\".",
+      "wasStaff": "Dit account was personeel op deze school. Een schoolbeheerder moet het eerst op het tabblad Mensen markeren als ‘Per ongeluk toegevoegd’."
     },
     "classTabs": {
       "lessons": "Lessen",
@@ -2959,7 +3005,8 @@
       "accept": "Accepteren",
       "decline": "Weigeren",
       "accepted": "Je hoort nu bij het personeel van {school}.",
-      "declined": "Uitnodiging geweigerd."
+      "declined": "Uitnodiging geweigerd.",
+      "warn": "Accepteer alleen als je op deze school werkt. Accounts van personeel hebben geen vrienden en geen chat: als je accepteert, worden je vrienden en je vriendcode verwijderd en ze komen niet terug."
     },
     "setup": {
       "h": "Richt je school in",
@@ -3091,7 +3138,8 @@
       "zoneSet": "Tijdzone instellen",
       "zoneAsk": "Een schoolbeheerder kan die instellen bij de Instellingen van de school.",
       "doneHere": "Toegewezen aan {class}. Leerlingen zien het nu.",
-      "seeStarted": "Bekijk wie begonnen is"
+      "seeStarted": "Bekijk wie begonnen is",
+      "doneLater": "Toegewezen aan {class}. Leerlingen zien de les vanaf {date}."
     },
     "class": {
       "title": "Lessen",
@@ -3206,7 +3254,9 @@
       "noStudents": "Nog geen leerlingen",
       "noStudentsText": "Voeg leerlingen toe op het tabblad Leerlingen, dan verschijnt hier hun voortgang.",
       "toReviewList": "Antwoorden om na te kijken:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Quizscore: {pct}% goed",
+      "quizOverall": "Quizscore over alle lessen: {pct}%"
     },
     "lesson": {
       "finished": "{done} van de {total} leerlingen klaar",
@@ -3227,7 +3277,8 @@
       "attention": "Wie aandacht nodig heeft eerst",
       "selfMarked": "Door de leerling als klaar gemarkeerd, hier niet gespeeld",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Veeg de tabel opzij om alle stappen te zien"
+      "swipe": "Veeg de tabel opzij om alle stappen te zien",
+      "quizScore": "{right} van {total} goed ({pct}%)"
     },
     "student": {
       "doneOf": "{done} van {total} klaar",
@@ -3255,6 +3306,10 @@
     },
     "courses": {
       "started": "{started} van {total} begonnen"
+    },
+    "csv": {
+      "quiz": "{title} (quiz %)",
+      "quizAll": "Quiz %"
     }
   },
   "google": {
@@ -3981,7 +4036,8 @@
         "passwordHint": "Minstens {min} tekens.",
         "adult": "Ik ben leerkracht of werk op een school, en ik ben 18 jaar of ouder.",
         "submit": "Account maken en proefperiode starten",
-        "privacy": "We bewaren je werk-e-mailadres niet bij je account: het gaat naar Stripe voor je abonnement. <a href=\"{privacy}\">Privacybeleid</a>"
+        "privacy": "We gebruiken je werk-e-mailadres voor je abonnement (het gaat naar Stripe), voor e-mails over je proefperiode en om een vergeten wachtwoord opnieuw in te stellen. <a href=\"{privacy}\">Privacybeleid</a>",
+        "usernameHint": "3 tot 16 letters of cijfers, zonder spaties. Hiermee log je in."
       },
       "errors": {
         "signedIn": "Je bent al ingelogd.",
@@ -5046,7 +5102,8 @@
       "soundOff": "Geluid uit",
       "seeResultsNow": "Nu de uitslag bekijken",
       "read": "Vraag voorlezen",
-      "away": "{count} niet verbonden"
+      "away": "{count} niet verbonden",
+      "startEmpty": "Er doet nog niemand mee. Toch starten?"
     },
     "landing": {
       "title": "Een livespel leiden",
@@ -6556,7 +6613,8 @@
       "title": "Number Quest",
       "sub": "Rekenen in de Numberworks · groep 5 tot en met 7"
     },
-    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}"
+    "unitsN": "{count, plural, one {Bekijk de # unit} other {Bekijk de # units}}",
+    "gamesN": "{count, plural, one {Bekijk het # spel} other {Bekijk de # spellen}}"
   },
   "move": {
     "title": "Beweegpauzes",

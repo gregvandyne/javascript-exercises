@@ -39,8 +39,8 @@ export function replaceMemberGames(officialId, say = () => {}) {
     setting(r.key, JSON.stringify({ at: Date.now(), games: rows.map(g => g.id) }));
   }
 }
-export function seed({ quiet = false } = {}) {
-  const say = (...a) => { if (!quiet) console.log(...a); };
+/** The platform admin (ADMIN_USERNAME): made if missing, promoted if it is an ordinary account. Exported for tests. */
+export function seedAdmin(say = () => {}) {
   let admin = getUserByName(config.adminUsername);
   if (!admin) {
     const pw = config.adminPassword || crypto.randomBytes(9).toString('base64url');
@@ -51,6 +51,14 @@ export function seed({ quiet = false } = {}) {
     if (admin.role !== 'admin') q.run("UPDATE users SET role='admin' WHERE id=?", admin.id);
     if (config.adminPassword && applyAdminPassword(admin, config.adminPassword)) say(`Set the admin's password from ADMIN_PASSWORD`);
   }
+  // The platform admin is staff: no friends, no requests, no friend code (services/schools.js noFriendsAccount). An
+  // account promoted just above may still hold some, so they end here, not the first time someone opens a Friends page.
+  if (admin.friend_code || q.get('SELECT 1 FROM friends WHERE user_id=? OR friend_id=? LIMIT 1', admin.id, admin.id)) schools.endFriendships(admin.id);
+  return getUserByName(config.adminUsername);
+}
+export function seed({ quiet = false } = {}) {
+  const say = (...a) => { if (!quiet) console.log(...a); };
+  const admin = seedAdmin(say);
   const official = seedOfficial(say);
   const dir = path.join(ROOT, 'seed-games');
   for (const f of SEED_GAMES) {

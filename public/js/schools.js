@@ -86,8 +86,24 @@ document.querySelectorAll('[data-sort]').forEach(btn => {
 });
 
 // A link to a folded section from another page (People's #add-staff from a class's Settings) opens it on arrival.
-{ const el = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
-  if (el && el.tagName === 'DETAILS' && !el.open) { el.open = true; el.scrollIntoView(); } }
+// "Turn a lesson into a game" (#new-game, or the Add form's "Make a new game" link to its idea box, #ng-i) also puts
+// the cursor in the form's first field, there and then and when the link is on this page.
+const openHash = () => {
+  let id = ''; try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+  const el = id && document.getElementById(id); if (!el) return;
+  const d = el.tagName === 'DETAILS' ? el : el.closest('details.newgame');
+  if (!d) return;
+  if (!d.open) d.open = true;
+  d.scrollIntoView({ block: 'center' });
+  if (d.classList.contains('newgame')) { const f = d.querySelector('input:not([type=hidden]), textarea, select'); if (f) focusSoon(f); }
+};
+// On arrival the browser's own "go to the #fragment" step runs once the page has loaded and takes the focus back to the
+// page (the fold is not focusable), so the cursor goes in after that.
+const focusSoon = f => {
+  const go = () => setTimeout(() => f.focus({ preventScroll: true }), 60);
+  if (document.readyState === 'complete') go(); else addEventListener('load', go, { once: true });
+};
+openHash(); addEventListener('hashchange', openHash);
 
 // School settings on phones: the Save bar sticks to the bottom of the screen only once the page has been scrolled, so it
 // never sits over the first fields when the page opens.
