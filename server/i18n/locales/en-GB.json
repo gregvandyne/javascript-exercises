@@ -801,5 +801,10 @@
     "allow": {
       "textSome": "Some of these are off because their boxes weren't ticked on Google's screen. You can allow them now."
     }
+  },
+  "gradebook": {
+    "student": {
+      "standardsLine": "{meets} met · {developing} developing · {practiced} practised"
+    }
   }
 }

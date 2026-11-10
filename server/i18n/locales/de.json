@@ -4037,7 +4037,7 @@
         "adult": "Ich bin Lehrkraft oder arbeite an einer Schule und bin mindestens 18 Jahre alt.",
         "submit": "Konto erstellen und Test starten",
         "privacy": "Wir nutzen deine dienstliche E-Mail-Adresse für deinen Plan (sie geht an Stripe), für E-Mails zu deinem Test und zum Zurücksetzen eines vergessenen Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
-        "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit melden Sie sich an."
+        "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit meldest du dich an."
       },
       "errors": {
         "signedIn": "Du bist schon angemeldet.",
@@ -7086,7 +7086,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math und mehr",
       "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
       "li3": "Punkte landen direkt in deiner Notenübersicht",
-      "li4": "Nur angemeldete Schüler: kein Chat, kein Tippen, keine ausgedachten Namen",
+      "li4": "Klassenspiele: nur Ihre angemeldeten Schülerinnen und Schüler. Gästespiele: sichere, erfundene Namen. Kein Chat und kein Freitext, in beiden",
       "shotAlt": "Die Lobby eines Live-Question-Battle: Fünf Schüler-Avatare warten, während der große Bildschirm den Spielcode und einen QR-Code zeigt.",
       "link": "So funktionieren Live-Spiele"
     },
@@ -7884,6 +7884,138 @@
       "badDay": "Wählen Sie einen Tag.",
       "badHour": "Wählen Sie eine Uhrzeit.",
       "badZone": "Wählen Sie eine Zeitzone aus der Liste."
+    }
+  },
+  "gradebook": {
+    "workDone": "Erledigt",
+    "score": "Punktzahl",
+    "noScore": "Noch nichts bewertet",
+    "scoreTitle": "{earned} von {possible} Punkten",
+    "scoreWhy": "Ansehen, woraus sich diese Punktzahl ergibt",
+    "doneLate": "Verspätet erledigt",
+    "stepLate": "Nach dem Fälligkeitsdatum erledigt",
+    "lateN": "Verspätet: {count}",
+    "key": {
+      "score": "Punktzahl: erreichte von möglichen Punkten"
+    },
+    "names": {
+      "inGames": "Name in Spielen"
+    },
+    "help": {
+      "workDone": "Der Anteil der Schritte, die ein Kind in den geöffneten Lektionen erledigt hat. Richtige Antworten zählen hier nicht.",
+      "score": "Erreichte von möglichen Punkten: Quiz (1 Punkt pro Frage), Live-Spiele, die Sie für einen Lektionsschritt leiten (1 Punkt pro Frage, das beste Spiel), und Arbeiten, die Sie mit einem Bewertungsraster bewerten (dessen Punkte). Größere Arbeiten zählen mehr. Was nicht erledigt oder noch nicht bewertet ist, bleibt außen vor; ohne Bewertung steht dort –. Tippen Sie auf eine Punktzahl, um zu sehen, woraus sie sich ergibt.",
+      "late": "Arbeit, die nach dem Fälligkeitsdatum noch fehlt. „Verspätet erledigt“ heißt: nach dem Fälligkeitsdatum fertig geworden.",
+      "names": "Der graue Name unter dem Namen eines Kindes ist der Name, den es in Spielen und auf dem Klassenbildschirm hat."
+    },
+    "live": {
+      "title": "Ergebnisse der Live-Spiele",
+      "hint": "Richtige Antworten von den gestellten Fragen, für Kinder, die in dieser Klasse angemeldet sind. Gäste werden nie gespeichert.",
+      "linked": "Teil einer Lektion: zählt für die Punktzahl",
+      "keyRight": "richtige Antworten von den gestellten Fragen",
+      "keyPlayed": "gespielt, nichts zu bewerten",
+      "keyAbsent": "nicht gespielt"
+    },
+    "csv": {
+      "points": "Punktzahl (Punkte)",
+      "lateCount": "Verspätete Lektionen",
+      "scoreCol": "{title} (Punktzahl %)",
+      "lateCol": "{title} (verspätet)",
+      "late": "überfällig",
+      "doneLate": "verspätet erledigt",
+      "live": "Live: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Live-Spiel",
+      "rubric": "Bewertungsraster",
+      "marks": "Rasterpunkte"
+    },
+    "student": {
+      "back": "Fortschritt",
+      "printFull": "Vollen Namen drucken",
+      "print": "Drucken",
+      "printHint": "Der Ausdruck zeigt nur den Vornamen, außer Sie setzen das Häkchen. Der Name aus den Spielen wird nie gedruckt.",
+      "lateLessons": "Verspätete Lektionen",
+      "lesson": "Lektion",
+      "due": "Fällig",
+      "late": "Überfällig",
+      "scoreH": "Woraus sich die Punktzahl ergibt",
+      "work": "Arbeit",
+      "type": "Art",
+      "points": "Punkte",
+      "none": "Noch ist nichts bewertet. Punkte kommen aus Quiz, aus Live-Spielen für einen Lektionsschritt und aus Arbeiten, die mit einem Bewertungsraster bewertet wurden.",
+      "standardsLine": "{meets} erreicht · {developing} im Aufbau · {practiced} geübt",
+      "standardsOpen": "Standards ansehen",
+      "noStandards": "Noch keine Belege zu Standards.",
+      "answers": "Neueste Antworten und Rückmeldungen",
+      "feedback": "Rückmeldung der Lehrkraft",
+      "noAnswers": "Noch keine schriftlichen Antworten.",
+      "noLive": "Noch keine Live-Spiele."
+    },
+    "dash": {
+      "showNames": "Namen aus der Klassenliste zeigen",
+      "hideNames": "Namen aus der Klassenliste ausblenden",
+      "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
+    }
+  },
+  "quickLive": {
+    "cta": "Jetzt ein Live-Spiel starten",
+    "ctaNote": "Keine Schülerkonten nötig. Die Kinder treten mit einem Code bei und bekommen einen sicheren, erfundenen Namen.",
+    "haveCode": "Spielcode erhalten? Beitreten",
+    "join": "Einem Spiel beitreten",
+    "host": {
+      "title": "Jetzt ein Live-Spiel starten",
+      "h": "Jetzt ein Live-Spiel starten",
+      "lead": "Lehrerkonto anlegen, Spiel wählen, und deine Klasse tritt mit einem Code bei. Keine Schülerkonten, keine E-Mail-Adresse, und es ist kostenlos.",
+      "step1": "Leg dein Lehrerkonto an: drei Felder.",
+      "step2": "Wähle ein Spiel und die Fragen.",
+      "step3": "Zeig den Code an der Tafel. Die Kinder treten mit jedem Gerät bei."
+    },
+    "signup": {
+      "h": "Dein Lehrerkonto",
+      "submit": "Konto anlegen und Spiel wählen",
+      "privacy": "Wir speichern deinen Namen, deinen Benutzernamen und eine verschlüsselte Kopie deines Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
+      "have": "Du hast schon ein Konto? <a href=\"{login}\">Anmelden</a>",
+      "student": "Bist du Schülerin oder Schüler?",
+      "schoolName": "{name}: mein Klassenzimmer"
+    },
+    "kid": {
+      "h": "Live-Spiele werden von Lehrkräften gestartet",
+      "p": "Frag deine Lehrkraft nach dem Spielcode und tritt dann hier bei."
+    },
+    "quick": {
+      "title": "Schnelles Spiel",
+      "h": "Schnelles Spiel",
+      "forClass": "Für {name}. Nur Schülerinnen und Schüler dieser Klasse können beitreten, mit ihrem eigenen Konto.",
+      "open": "Alle mit dem Code können beitreten. Keine Schülerkonten: Alle bekommen einen sicheren, erfundenen Namen.",
+      "hasOpen": "Du hast schon ein Spiel offen: {title}.",
+      "mode": "Spiel",
+      "level": "Stufe",
+      "subject": "Fach",
+      "what": "{count} fertige Fragen, in jedem Spiel neue. Du drückst Start, wenn alle da sind.",
+      "go": "Raum öffnen",
+      "more": "Mehr Spiele und Einstellungen",
+      "recent": "Deine letzten Spiele"
+    },
+    "card": {
+      "button": "Schnelles Spiel",
+      "change": "Ändern"
+    },
+    "results": {
+      "h": "Das war ein Spiel mit Gästen.",
+      "now": "Die Spieler hatten keine Konten, deshalb kam nichts ins Notenbuch. Die Fragenübersicht auf dieser Seite bleibt gespeichert. Spielnamen und Punkte nicht: Du siehst sie hier nur ein paar Minuten.",
+      "saved": "Die Spieler hatten keine Konten, deshalb wurden keine Namen oder Punkte gespeichert und nichts kam ins Notenbuch. Die Fragenübersicht bleibt gespeichert.",
+      "keep": "Klasse anlegen und Punkte behalten",
+      "keepHint": "Füg die Namen deiner Klasse ein und druck die Anmeldekarten. Dann werden die Punkte deiner Klassenspiele gespeichert."
+    },
+    "keep": {
+      "title": "Klasse anlegen und Punkte behalten",
+      "h": "Klasse anlegen und Punkte behalten",
+      "lead": "Füg die Namen deiner Schülerinnen und Schüler ein. Jedes Kind bekommt eine Anmeldekarte. Ab dann werden die Punkte deiner Klassenspiele mit den Namen gespeichert, für dich.",
+      "names": "Namen der Schülerinnen und Schüler",
+      "namesHint": "Ein Name pro Zeile. Vornamen reichen.",
+      "go": "Klasse und Anmeldekarten anlegen",
+      "note": "Nur du und das Personal deiner Schule sehen die Namen, die du hier eingibst."
     }
   }
 }

@@ -7085,7 +7085,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math y más",
       "li2": "Usa un banco de preguntas inicial, escribe el tuyo o deja que la IA haga un borrador para que lo edites",
       "li3": "Las puntuaciones van directo a tu libro de calificaciones",
-      "li4": "Solo estudiantes con sesión iniciada: sin chat, sin escribir, sin nombres inventados",
+      "li4": "Juegos de clase: solo tus estudiantes con sesión iniciada. Juegos con invitados: nombres inventados y seguros. Sin chat ni texto libre en ninguno",
       "shotAlt": "La sala de espera de Question Battle en vivo: cinco avatares de estudiantes esperan mientras la pantalla grande muestra el código del juego y un código QR.",
       "link": "Cómo funcionan los juegos en vivo"
     },
@@ -7883,6 +7883,138 @@
       "badDay": "Elige un día.",
       "badHour": "Elige una hora.",
       "badZone": "Elige una zona horaria de la lista."
+    }
+  },
+  "gradebook": {
+    "workDone": "Trabajo hecho",
+    "score": "Puntuación",
+    "noScore": "Nada puntuado todavía",
+    "scoreTitle": "{earned} de {possible} puntos",
+    "scoreWhy": "Ver de qué se compone esta puntuación",
+    "doneLate": "Hecho con retraso",
+    "stepLate": "Hecho después de la fecha de entrega",
+    "lateN": "Con retraso: {count}",
+    "key": {
+      "score": "puntuación: puntos obtenidos de los puntos posibles"
+    },
+    "names": {
+      "inGames": "Nombre en los juegos"
+    },
+    "help": {
+      "workDone": "La parte de los pasos que el estudiante ha terminado en las lecciones abiertas. No tiene en cuenta las respuestas correctas.",
+      "score": "Puntos obtenidos de los puntos posibles: cuestionarios (1 punto por pregunta), juegos en vivo que diriges para un paso de una lección (1 punto por pregunta, la mejor partida) y trabajos que puntúas con una rúbrica (sus puntos). Los trabajos más grandes cuentan más. Lo que no está hecho o aún no está puntuado queda fuera; sin nada puntuado se muestra –. Toca una puntuación para ver de qué se compone.",
+      "late": "Trabajo que aún falta después de la fecha de entrega. «Hecho con retraso» significa que se terminó después de la fecha de entrega.",
+      "names": "El nombre en gris bajo el nombre de un estudiante es el que tiene en los juegos y en la pantalla de la clase."
+    },
+    "live": {
+      "title": "Resultados de los juegos en vivo",
+      "hint": "Respuestas correctas de las preguntas hechas, para estudiantes que iniciaron sesión en esta clase. Los invitados nunca se guardan.",
+      "linked": "Parte de una lección: cuenta para la puntuación",
+      "keyRight": "respuestas correctas de las preguntas hechas",
+      "keyPlayed": "jugó, nada que puntuar",
+      "keyAbsent": "no jugó"
+    },
+    "csv": {
+      "points": "Puntuación (puntos)",
+      "lateCount": "Lecciones con retraso",
+      "scoreCol": "{title} (puntuación %)",
+      "lateCol": "{title} (retraso)",
+      "late": "con retraso",
+      "doneLate": "hecho con retraso",
+      "live": "En vivo: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Cuestionario",
+      "live": "Juego en vivo",
+      "rubric": "Rúbrica",
+      "marks": "Notas de rúbrica"
+    },
+    "student": {
+      "back": "Progreso",
+      "printFull": "Imprimir el nombre completo",
+      "print": "Imprimir",
+      "printHint": "Al imprimir solo sale el nombre de pila, salvo que marques la casilla. El nombre usado en los juegos nunca se imprime.",
+      "lateLessons": "Lecciones con retraso",
+      "lesson": "Lección",
+      "due": "Entrega",
+      "late": "Con retraso",
+      "scoreH": "De qué se compone la puntuación",
+      "work": "Trabajo",
+      "type": "Tipo",
+      "points": "Puntos",
+      "none": "Todavía no hay nada puntuado. Las puntuaciones vienen de cuestionarios, de juegos en vivo para un paso de una lección y de trabajos puntuados con una rúbrica.",
+      "standardsLine": "{meets} logrados · {developing} en desarrollo · {practiced} practicados",
+      "standardsOpen": "Ver los estándares",
+      "noStandards": "Aún no hay evidencias de estándares.",
+      "answers": "Respuestas y comentarios recientes",
+      "feedback": "Comentario del docente",
+      "noAnswers": "Aún no hay respuestas escritas.",
+      "noLive": "Aún no hay juegos en vivo."
+    },
+    "dash": {
+      "showNames": "Mostrar nombres de la lista de clase",
+      "hideNames": "Ocultar nombres de la lista de clase",
+      "namesHint": "Muestra el nombre de la lista de clase junto al nombre en el juego, solo en esta pantalla. La pantalla de la clase mantiene los nombres del juego."
+    }
+  },
+  "quickLive": {
+    "cta": "Organiza un juego en vivo ahora",
+    "ctaNote": "No hacen falta cuentas de estudiantes. Entran con un código y reciben un nombre inventado y seguro.",
+    "haveCode": "¿Tienes un código de juego? Únete",
+    "join": "Unirse a un juego",
+    "host": {
+      "title": "Organiza un juego en vivo ahora",
+      "h": "Organiza un juego en vivo ahora",
+      "lead": "Crea una cuenta de docente, elige un juego y tus estudiantes entran con un código. Sin cuentas de estudiantes, sin correo electrónico y gratis.",
+      "step1": "Crea tu cuenta de docente: tres casillas.",
+      "step2": "Elige un juego y sus preguntas.",
+      "step3": "Pon el código en la pizarra. Los estudiantes entran desde cualquier dispositivo."
+    },
+    "signup": {
+      "h": "Tu cuenta de docente",
+      "submit": "Crear mi cuenta y elegir un juego",
+      "privacy": "Guardamos tu nombre, tu nombre de usuario y una copia cifrada de tu contraseña. <a href=\"{privacy}\">Política de privacidad</a>",
+      "have": "¿Ya tienes una cuenta? <a href=\"{login}\">Inicia sesión</a>",
+      "student": "¿Eres estudiante?",
+      "schoolName": "{name}: mi aula"
+    },
+    "kid": {
+      "h": "Los juegos en vivo los organizan los docentes",
+      "p": "Pide a tu docente el código del juego y únete aquí."
+    },
+    "quick": {
+      "title": "Juego rápido",
+      "h": "Juego rápido",
+      "forClass": "Para {name}. Solo pueden entrar los estudiantes de esta clase, con su propia cuenta.",
+      "open": "Cualquiera con el código puede entrar. Sin cuentas de estudiantes: cada jugador recibe un nombre inventado y seguro.",
+      "hasOpen": "Ya tienes un juego abierto: {title}.",
+      "mode": "Juego",
+      "level": "Nivel",
+      "subject": "Materia",
+      "what": "{count} preguntas ya preparadas, nuevas en cada juego. Tú pulsas Empezar cuando todos han entrado.",
+      "go": "Abrir la sala",
+      "more": "Más juegos y ajustes",
+      "recent": "Tus últimos juegos"
+    },
+    "card": {
+      "button": "Juego rápido",
+      "change": "Cambiar"
+    },
+    "results": {
+      "h": "Este fue un juego con invitados.",
+      "now": "Los jugadores no tenían cuenta, así que nada pasó al cuaderno de notas. El repaso de preguntas de esta página se guarda. Los nombres de juego y las puntuaciones no: puedes verlos aquí solo unos minutos.",
+      "saved": "Los jugadores no tenían cuenta, así que no se guardaron nombres ni puntuaciones y nada pasó al cuaderno de notas. El repaso de preguntas se guarda.",
+      "keep": "Crea una clase para guardar las puntuaciones",
+      "keepHint": "Pega los nombres de tus estudiantes e imprime sus tarjetas de acceso. Así se guardan las puntuaciones de los juegos de tu clase."
+    },
+    "keep": {
+      "title": "Crea una clase para guardar las puntuaciones",
+      "h": "Crea una clase para guardar las puntuaciones",
+      "lead": "Pega los nombres de tus estudiantes. Cada uno recibe una tarjeta de acceso. Desde entonces, las puntuaciones de los juegos de tu clase se guardan con sus nombres, para ti.",
+      "names": "Nombres de los estudiantes",
+      "namesHint": "Un nombre en cada línea. Basta con el nombre de pila.",
+      "go": "Crear la clase y las tarjetas de acceso",
+      "note": "Solo tú y el personal de tu escuela ven los nombres que escribes aquí."
     }
   }
 }

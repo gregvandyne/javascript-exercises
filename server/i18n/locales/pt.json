@@ -7087,7 +7087,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math e mais",
       "li2": "Use um conjunto de perguntas pronto, escreva o seu ou deixe a IA fazer um rascunho para você editar",
       "li3": "As pontuações vão direto para o seu boletim",
-      "li4": "Só alunos com login: sem chat, sem digitação, sem apelidos inventados",
+      "li4": "Jogos da turma: só os seus alunos com sessão iniciada. Jogos com convidados: nomes inventados e seguros. Sem chat e sem texto livre em ambos",
       "shotAlt": "A sala de espera de um Question Battle ao vivo: cinco avatares de alunos esperam enquanto a tela grande mostra o código do jogo e um QR code.",
       "link": "Como funcionam os jogos ao vivo"
     },
@@ -7885,6 +7885,138 @@
       "badDay": "Escolha um dia.",
       "badHour": "Escolha uma hora.",
       "badZone": "Escolha um fuso horário da lista."
+    }
+  },
+  "gradebook": {
+    "workDone": "Trabalho feito",
+    "score": "Pontuação",
+    "noScore": "Nada pontuado ainda",
+    "scoreTitle": "{earned} de {possible} pontos",
+    "scoreWhy": "Ver de que é feita esta pontuação",
+    "doneLate": "Feito com atraso",
+    "stepLate": "Feito depois da data de entrega",
+    "lateN": "Em atraso: {count}",
+    "key": {
+      "score": "pontuação: pontos obtidos dos pontos possíveis"
+    },
+    "names": {
+      "inGames": "Nome nos jogos"
+    },
+    "help": {
+      "workDone": "A parte dos passos que o aluno terminou nas lições abertas. Não olha para as respostas certas.",
+      "score": "Pontos obtidos dos pontos possíveis: questionários (1 ponto por pergunta), jogos ao vivo que você conduz para um passo de uma lição (1 ponto por pergunta, o melhor jogo) e trabalhos que você pontua com uma rubrica (os pontos dela). Trabalhos maiores contam mais. O que não está feito ou ainda não foi pontuado fica de fora; sem nada pontuado aparece –. Toque numa pontuação para ver de que é feita.",
+      "late": "Trabalho que ainda falta depois da data de entrega. “Feito com atraso” quer dizer terminado depois da data de entrega.",
+      "names": "O nome a cinzento por baixo do nome de um aluno é o que ele tem nos jogos e no ecrã da turma."
+    },
+    "live": {
+      "title": "Resultados dos jogos ao vivo",
+      "hint": "Respostas certas das perguntas feitas, para alunos com sessão iniciada nesta turma. Os convidados nunca são guardados.",
+      "linked": "Parte de uma lição: conta para a pontuação",
+      "keyRight": "respostas certas das perguntas feitas",
+      "keyPlayed": "jogou, nada para pontuar",
+      "keyAbsent": "não jogou"
+    },
+    "csv": {
+      "points": "Pontuação (pontos)",
+      "lateCount": "Lições em atraso",
+      "scoreCol": "{title} (pontuação %)",
+      "lateCol": "{title} (atraso)",
+      "late": "em atraso",
+      "doneLate": "feito com atraso",
+      "live": "Ao vivo: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Questionário",
+      "live": "Jogo ao vivo",
+      "rubric": "Rubrica",
+      "marks": "Notas da rubrica"
+    },
+    "student": {
+      "back": "Progresso",
+      "printFull": "Imprimir o nome completo",
+      "print": "Imprimir",
+      "printHint": "A impressão mostra só o primeiro nome, a não ser que marque a caixa. O nome usado nos jogos nunca é impresso.",
+      "lateLessons": "Lições em atraso",
+      "lesson": "Lição",
+      "due": "Entrega",
+      "late": "Em atraso",
+      "scoreH": "De que é feita a pontuação",
+      "work": "Trabalho",
+      "type": "Tipo",
+      "points": "Pontos",
+      "none": "Ainda não há nada pontuado. As pontuações vêm de questionários, de jogos ao vivo para um passo de uma lição e de trabalhos pontuados com uma rubrica.",
+      "standardsLine": "{meets} atingidos · {developing} em desenvolvimento · {practiced} praticados",
+      "standardsOpen": "Ver os padrões",
+      "noStandards": "Ainda sem evidências de padrões.",
+      "answers": "Respostas e comentários recentes",
+      "feedback": "Comentário do professor",
+      "noAnswers": "Ainda não há respostas escritas.",
+      "noLive": "Ainda não há jogos ao vivo."
+    },
+    "dash": {
+      "showNames": "Mostrar nomes da lista da turma",
+      "hideNames": "Ocultar nomes da lista da turma",
+      "namesHint": "Mostra o nome da lista da turma ao lado do nome no jogo, só neste ecrã. O ecrã da turma mantém os nomes do jogo."
+    }
+  },
+  "quickLive": {
+    "cta": "Comece um jogo ao vivo agora",
+    "ctaNote": "Não é preciso contas de alunos. Os alunos entram com um código e recebem um nome inventado e seguro.",
+    "haveCode": "Tem um código de jogo? Entrar",
+    "join": "Entrar num jogo",
+    "host": {
+      "title": "Comece um jogo ao vivo agora",
+      "h": "Comece um jogo ao vivo agora",
+      "lead": "Crie uma conta de professor, escolha um jogo e os seus alunos entram com um código. Sem contas de alunos, sem endereço de email, e é grátis.",
+      "step1": "Crie a sua conta de professor: três campos.",
+      "step2": "Escolha um jogo e as perguntas.",
+      "step3": "Mostre o código no quadro. Os alunos entram em qualquer dispositivo."
+    },
+    "signup": {
+      "h": "A sua conta de professor",
+      "submit": "Criar a minha conta e escolher um jogo",
+      "privacy": "Guardamos o seu nome, o seu nome de utilizador e uma cópia cifrada da sua palavra-passe. <a href=\"{privacy}\">Política de privacidade</a>",
+      "have": "Já tem uma conta? <a href=\"{login}\">Iniciar sessão</a>",
+      "student": "És aluno?",
+      "schoolName": "{name}: a minha sala"
+    },
+    "kid": {
+      "h": "Os jogos ao vivo são iniciados pelos professores",
+      "p": "Pede o código do jogo ao teu professor e entra aqui."
+    },
+    "quick": {
+      "title": "Jogo rápido",
+      "h": "Jogo rápido",
+      "forClass": "Para {name}. Só os alunos desta turma podem entrar, com a sua própria conta.",
+      "open": "Qualquer pessoa com o código pode entrar. Sem contas de alunos: cada jogador recebe um nome inventado e seguro.",
+      "hasOpen": "Já tem um jogo aberto: {title}.",
+      "mode": "Jogo",
+      "level": "Nível",
+      "subject": "Disciplina",
+      "what": "{count} perguntas prontas, novas em cada jogo. Carrega em Começar quando todos tiverem entrado.",
+      "go": "Abrir a sala",
+      "more": "Mais jogos e definições",
+      "recent": "Os seus últimos jogos"
+    },
+    "card": {
+      "button": "Jogo rápido",
+      "change": "Mudar"
+    },
+    "results": {
+      "h": "Este foi um jogo com convidados.",
+      "now": "Os jogadores não tinham conta, por isso nada foi para a caderneta de notas. A revisão das perguntas desta página fica guardada. Os nomes de jogo e as pontuações não: pode vê-los aqui só durante alguns minutos.",
+      "saved": "Os jogadores não tinham conta, por isso não se guardaram nomes nem pontuações e nada foi para a caderneta de notas. A revisão das perguntas fica guardada.",
+      "keep": "Criar uma turma para guardar as pontuações",
+      "keepHint": "Cole os nomes dos seus alunos e imprima os cartões de acesso. Assim as pontuações dos jogos da sua turma ficam guardadas."
+    },
+    "keep": {
+      "title": "Criar uma turma para guardar as pontuações",
+      "h": "Criar uma turma para guardar as pontuações",
+      "lead": "Cole os nomes dos seus alunos. Cada aluno recebe um cartão de acesso. A partir daí, as pontuações dos jogos da sua turma ficam guardadas com os nomes deles, para si.",
+      "names": "Nomes dos alunos",
+      "namesHint": "Um nome por linha. Basta o primeiro nome.",
+      "go": "Criar a turma e os cartões de acesso",
+      "note": "Só você e o pessoal da sua escola veem os nomes que escreve aqui."
     }
   }
 }

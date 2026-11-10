@@ -166,6 +166,29 @@ export const canChangePassword = u => !!u && !u.is_guest && accountKind(u) !== '
 /** Staff and the platform admin can see children's data, and grown-ups look after a family, so their new passwords are
  *  longer. */
 export const STAFF_PASSWORD_MIN = 12;
+/** A new staff account's password (the teacher sign-ups): the staff length, the rules every password has, and on top
+ *  of them nothing that is only digits, one short piece said again and again ("abcabcabcabc"), or easy passwords put
+ *  end to end ("passwordpassword", "qwerty123456"). These accounts hold students' roster names and login cards.
+ *  -> an error message, or null. short: the caller's own "too short" message. */
+export function checkStaffPassword(p, username = '', t = tEn, short = null) {
+  p = String(p || '');
+  if (p.length < STAFF_PASSWORD_MIN) return short || t('me.password.staffShort', { n: p.length, min: STAFF_PASSWORD_MIN });
+  const basic = checkPassword(p, username, t);
+  if (basic) return basic;
+  const low = p.toLowerCase();
+  const easy = /^\d+$/.test(p) || /^(.{1,6})\1+$/.test(low) || madeOfCommon(low);
+  return easy ? t('auth.password.easy') : null;
+}
+/** Is this text nothing but easy passwords (and runs of digits) end to end? */
+function madeOfCommon(low) {
+  const ok = new Array(low.length + 1).fill(false); ok[0] = true;
+  for (let i = 0; i < low.length; i++) {
+    if (!ok[i]) continue;
+    if (/\d/.test(low[i])) ok[i + 1] = true;
+    for (const w of COMMON) if (low.startsWith(w, i)) ok[i + w.length] = true;
+  }
+  return ok[low.length];
+}
 /** Accounts whose passwords must be at least STAFF_PASSWORD_MIN characters. */
 export const longPasswordKind = u => ['staff', 'grownup'].includes(accountKind(u));
 

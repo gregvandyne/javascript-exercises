@@ -431,3 +431,15 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
   .lv-roster.is-many { grid-template-columns: repeat(2, minmax(0, 1fr)); max-block-size: 60vh; }
   .lv-roster.is-many > li { padding-block: 4px; font-size: .9rem; }
 }
+
+/* A guest game's results: what is kept, and "Make a class to keep scores" (server/routes/quick-live.js). */
+.lv-guest-note { display: flex; flex-direction: column; gap: 12px; }
+.lv-guest-note p { margin: 0; }
+.lv-guest-act { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+/* Long words (German, Spanish, Portuguese, Russian): the buttons wrap inside the page, never past its edge. */
+.lv-guest-act > .btn, .lv-results .lv-inline > .btn { max-inline-size: 100%; min-inline-size: 0; }
+.lv-guest-act > .small { min-inline-size: 0; flex: 1 1 16rem; }
+.lv-results .lv-inline { max-inline-size: 100%; }
+@media print { .lv-guest-act { display: none; } }
+/* Teacher view: the class-list name beside the name in the game ("Show class-list names", staff only, off by default). */
+.lv-p-roster { font-weight: 600; opacity: .75; }

@@ -376,7 +376,10 @@ test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, i
   assert.equal(page.status, 200);
   assert.equal((page.text.match(/<h1/g) || []).length, 1);
   assert.match(page.text, /Live quiz games your whole class plays together/);
-  assert.match(page.text, /href="\/login\?next=%2Flive"/, 'signed out: sign in, then straight to hosting');
+  // Signed out: the short teacher sign-up that goes straight on to hosting (routes/quick-live.js), never the parents'
+  // sign-up and never a bare sign-in page.
+  assert.match(page.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live game<\/a>/, 'signed out: the teacher sign-up, then straight to hosting');
+  assert.doesNotMatch(page.text, /grown-ups\/signup|href="\/login\?next=%2Flive"/);
   assert.match(page.text, /href="\/join"/);
   assert.match(page.text, /Up to 60 in a class room/);
   assert.match((await get('/teachers')).text, /href="\/teachers\/live"/);
@@ -390,7 +393,7 @@ test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, i
   assert.match((await get('/es/teachers/live')).text, /Míralo en un minuto/);
   // A child's account can't host: it is shown the join page instead of a sign-up.
   const k = (await get('/teachers/live', { cookie: cookieOf(kid) })).text;
-  assert.doesNotMatch(k, /next=%2Flive/);
+  assert.doesNotMatch(k, /next=%2Flive|href="\/teachers\/host"/);
   assert.match(k, /Ask your teacher for the code/);
 });
 

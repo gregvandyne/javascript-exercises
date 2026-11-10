@@ -120,6 +120,9 @@ main{position:relative;z-index:1}
 .lp-arrow{transition:transform .2s ease}
 .lp-btn:hover .lp-arrow:not(.flip),.lp-more:hover .lp-arrow:not(.flip){transform:translateX(3px)}
 @media (max-width:420px){.lp-btn-sm{padding:0 12px;font-size:14px}}
+/* Phones: the top bar's two buttons take two lines where the words are long (German, Dutch, Russian, Italian), so the
+   page never scrolls sideways. */
+@media (max-width:479px){.lp-logo{flex:none}.lp-actions{min-width:0}.lp-actions>.lp-btn-sm{flex:0 1 auto;min-width:0;white-space:normal;text-align:center;padding:4px 10px;hyphens:auto;overflow-wrap:anywhere}}
 
 /* ---------------------------------------------------------------- hero */
 .lp-hero{position:relative;overflow:hidden;padding:clamp(40px,7vw,88px) 0 clamp(56px,8vw,104px)}
@@ -137,6 +140,8 @@ main{position:relative;z-index:1}
 .lp-lead{margin-top:22px;font-size:clamp(1.05rem,.95rem + .45vw,1.3rem);line-height:1.55;color:var(--text-2);max-width:40em}
 .lp-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 .lp-ctas-c{justify-content:center}
+.lp-live-ctas{margin-top:24px}
+.lp-note{margin-top:12px;color:var(--text-2);font-size:15px}
 @media (max-width:520px){.lp-hero .lp-ctas .lp-btn{flex:1 1 100%}}
 .lp-trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:22px;color:var(--text-2);font-weight:600;font-size:15px}
 .lp-trust li{display:inline-flex;align-items:center;gap:8px}

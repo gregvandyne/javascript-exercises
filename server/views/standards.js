@@ -54,7 +54,7 @@ export function classBody(req, { c, view, student = null, gameTitles = new Map()
   const tools = html`<div class="row csq-std-tools std-tools noprint">
     <form method="get" action="${base}" class="row csq-std-pick"><input type="hidden" name="fw" value="${view.framework}">${view.grade ? html`<input type="hidden" name="grade" value="${view.grade}">` : ''}
       <label class="small" for="std-student">${t('cs.standards.pick')}</label>
-      <select class="input input-sm" id="std-student" name="student" data-autosubmit><option value="">${t('cs.standards.everyone')}</option>${view.students.map(p => html`<option value="${p.id}" ${student && student.id === p.id ? 'selected' : ''}>${p.name}</option>`)}</select>
+      <select class="input input-sm" id="std-student" name="student" data-autosubmit><option value="">${t('cs.standards.everyone')}</option>${view.students.map(p => html`<option value="${p.id}" ${student && student.id === p.id ? 'selected' : ''}>${p.name}${p.alias ? ` (${p.alias})` : ''}</option>`)}</select>
       <button class="btn btn-sm" type="submit" data-nojs>${t('cs.standards.show')}</button></form>
     <form method="get" action="${base}" class="row csq-std-pick"><input type="hidden" name="fw" value="${view.framework}">${student ? html`<input type="hidden" name="student" value="${student.id}">` : ''}
       <label class="small" for="std-grade">${t('standards.class.grade')}</label>
@@ -81,7 +81,7 @@ export function classBody(req, { c, view, student = null, gameTitles = new Map()
   const m = view.students.length;
   if (student) {
     const nd = html`<span class="muted csq-nodata" title="${t('cs.standards.noDataHint')}">${t('cs.standards.noData')}</span>`;
-    return html`${tools}${jump}<section class="panel"><h2>${student.name}</h2>${student.noData ? html`<p class="notice">${t('cs.standards.noDataHint')}</p>` : ''}
+    return html`${tools}${jump}<section class="panel"><h2><span dir="auto">${student.name}</span>${student.alias ? html` <span class="gname small muted"><bdi>${student.alias}</bdi></span>` : ''}</h2>${student.noData ? html`<p class="notice">${t('cs.standards.noDataHint')}</p>` : ''}
       <div class="gbwrap" tabindex="0" role="region" aria-label="${t('cs.standards.title')}"><table class="tbl csq-std std-ccss">
       <thead><tr>${['standard', 'practiced', 'checked', 'rubric', 'level'].map(k => html`<th scope="col">${L(k)}</th>`)}</tr></thead>
       ${groups.map(([, rows], gi) => html`<tbody id="std-g${gi}"><tr class="csq-std-concept"><th colspan="5" scope="colgroup">${groupName(t, fw, rows[0])}</th></tr>${rows.map(r => { const x = r.by.get(student.id);

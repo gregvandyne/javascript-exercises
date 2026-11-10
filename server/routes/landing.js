@@ -33,6 +33,8 @@ import { rateLimit } from '../services/ratelimit.js';
 export const JUST_PLAY_URL = '/play';
 /** Every "Start free trial" (the Teacher plan's 14-day trial, no card). */
 export const TRIAL_URL = '/trial';
+/** "Host a live game now": the three-field teacher sign-up, then the Quick game chooser (routes/quick-live.js). */
+export const HOST_NOW_URL = '/teachers/host';
 /** Schools: invoices, purchase orders, more than a few teachers. */
 export const SALES_EMAIL = 'Greg@oomba.ai';
 /** Show the Teacher plan's price on the landing (and in its structured data). Off: prices live on /plans only. */
@@ -46,7 +48,7 @@ const COVER = slug => `/img/landing/${slug}`;
 export const wantsLanding = req => landingAtRoot() && !req.user;
 
 /** Clicks counted by the page's beacon (POST /landing/count/<cta>): funnel steps, a daily total each, nothing else. */
-const CTAS = new Map([['trial', 'landing.trial'], ['play', 'landing.play'], ['pricing', 'landing.pricing'], ['how', 'landing.how']]);
+const CTAS = new Map([['host', 'landing.host'], ['trial', 'landing.trial'], ['play', 'landing.play'], ['pricing', 'landing.pricing'], ['how', 'landing.how']]);
 
 export const router = Router();
 
@@ -75,6 +77,9 @@ function words(req) {
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   return { t, fb };
 }
+
+/** A small note under a button row, marked English until this language has it. */
+const el = (fb, t, key) => html`<p class="lp-note"${fb(key)}>${t(key)}</p>`;
 
 export function renderLanding(req, res) {
   const { t, fb } = words(req);
@@ -120,6 +125,7 @@ export function renderLanding(req, res) {
       <p class="lp-lead"${fb('landing.hero.lead')}>${t('landing.hero.lead')}</p>
       <div class="lp-ctas">
         ${cta(TRIAL_URL, t('landing.hero.cta'), { big: true })}
+        ${live ? html`<a class="lp-btn lp-btn-spark lp-btn-big" href="${HOST_NOW_URL}" data-cta="host" id="lp-host-now"${fb('quickLive.cta')}><span aria-hidden="true">📡</span> ${t('quickLive.cta')}</a>` : ''}
         <a class="lp-btn lp-btn-ghost lp-btn-big" href="#how" data-cta="how">${t('landing.hero.how')} <span aria-hidden="true">↓</span></a>
       </div>
       <ul class="lp-trust">
@@ -191,6 +197,11 @@ export function renderLanding(req, res) {
     <div class="lp-split-text rv">
       <p class="lp-eyebrow">${t('landing.live.kicker')}</p><h2 id="live-h">${t('landing.live.h')}</h2><p>${t('landing.live.lead')}</p>
       <ul class="lp-list">${[1, 2, 3, 4].map(i => html`<li>${check}<span>${t(`landing.live.li${i}`)}</span></li>`)}</ul>
+      <div class="lp-ctas lp-live-ctas">
+        <a class="lp-btn lp-btn-spark" href="${HOST_NOW_URL}" data-cta="host"${fb('quickLive.cta')}><span aria-hidden="true">📡</span> ${t('quickLive.cta')}</a>
+        <a class="lp-btn lp-btn-ghost" href="/join" id="lp-join"${fb('quickLive.haveCode')}>${t('quickLive.haveCode')}</a>
+      </div>
+      ${el(fb, t, 'quickLive.ctaNote')}
       <a class="lp-more" href="${lp('/teachers/live')}">${t('landing.live.link')} ${ARROW}</a>
     </div>
     <figure class="lp-device lp-device-live rv">
@@ -284,6 +295,7 @@ export function renderLanding(req, res) {
     </ul></nav>
     <nav aria-labelledby="fe-t"><h2 id="fe-t">${t('landing.footer.product')}</h2><ul>
       <li><a href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')}</a></li>
+      ${live ? html`<li><a href="/join"${fb('quickLive.join')}>${t('quickLive.join')}</a></li>` : ''}
       <li><a href="${lp('/learn')}">${t('landing.footer.learn')}</a></li>
       <li><a href="${lp('/parents')}">${t('landing.footer.parents')}</a></li>
       <li><a href="${lp('/safety')}">${t('landing.footer.safety')}</a></li>

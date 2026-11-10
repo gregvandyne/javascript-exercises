@@ -1,0 +1,72 @@
+{
+  "workDone": "Trabalho feito",
+  "score": "Pontuação",
+  "noScore": "Nada pontuado ainda",
+  "scoreTitle": "{earned} de {possible} pontos",
+  "scoreWhy": "Ver de que é feita esta pontuação",
+  "doneLate": "Feito com atraso",
+  "stepLate": "Feito depois da data de entrega",
+  "lateN": "Em atraso: {count}",
+  "key": {
+    "score": "pontuação: pontos obtidos dos pontos possíveis"
+  },
+  "names": {
+    "inGames": "Nome nos jogos"
+  },
+  "help": {
+    "workDone": "A parte dos passos que o aluno terminou nas lições abertas. Não olha para as respostas certas.",
+    "score": "Pontos obtidos dos pontos possíveis: questionários (1 ponto por pergunta), jogos ao vivo que você conduz para um passo de uma lição (1 ponto por pergunta, o melhor jogo) e trabalhos que você pontua com uma rubrica (os pontos dela). Trabalhos maiores contam mais. O que não está feito ou ainda não foi pontuado fica de fora; sem nada pontuado aparece –. Toque numa pontuação para ver de que é feita.",
+    "late": "Trabalho que ainda falta depois da data de entrega. “Feito com atraso” quer dizer terminado depois da data de entrega.",
+    "names": "O nome a cinzento por baixo do nome de um aluno é o que ele tem nos jogos e no ecrã da turma."
+  },
+  "live": {
+    "title": "Resultados dos jogos ao vivo",
+    "hint": "Respostas certas das perguntas feitas, para alunos com sessão iniciada nesta turma. Os convidados nunca são guardados.",
+    "linked": "Parte de uma lição: conta para a pontuação",
+    "keyRight": "respostas certas das perguntas feitas",
+    "keyPlayed": "jogou, nada para pontuar",
+    "keyAbsent": "não jogou"
+  },
+  "csv": {
+    "points": "Pontuação (pontos)",
+    "lateCount": "Lições em atraso",
+    "scoreCol": "{title} (pontuação %)",
+    "lateCol": "{title} (atraso)",
+    "late": "em atraso",
+    "doneLate": "feito com atraso",
+    "live": "Ao vivo: {title} ({date})"
+  },
+  "kind": {
+    "quiz": "Questionário",
+    "live": "Jogo ao vivo",
+    "rubric": "Rubrica",
+    "marks": "Notas da rubrica"
+  },
+  "student": {
+    "back": "Progresso",
+    "printFull": "Imprimir o nome completo",
+    "print": "Imprimir",
+    "printHint": "A impressão mostra só o primeiro nome, a não ser que marque a caixa. O nome usado nos jogos nunca é impresso.",
+    "lateLessons": "Lições em atraso",
+    "lesson": "Lição",
+    "due": "Entrega",
+    "late": "Em atraso",
+    "scoreH": "De que é feita a pontuação",
+    "work": "Trabalho",
+    "type": "Tipo",
+    "points": "Pontos",
+    "none": "Ainda não há nada pontuado. As pontuações vêm de questionários, de jogos ao vivo para um passo de uma lição e de trabalhos pontuados com uma rubrica.",
+    "standardsLine": "{meets} atingidos · {developing} em desenvolvimento · {practiced} praticados",
+    "standardsOpen": "Ver os padrões",
+    "noStandards": "Ainda sem evidências de padrões.",
+    "answers": "Respostas e comentários recentes",
+    "feedback": "Comentário do professor",
+    "noAnswers": "Ainda não há respostas escritas.",
+    "noLive": "Ainda não há jogos ao vivo."
+  },
+  "dash": {
+    "showNames": "Mostrar nomes da lista da turma",
+    "hideNames": "Ocultar nomes da lista da turma",
+    "namesHint": "Mostra o nome da lista da turma ao lado do nome no jogo, só neste ecrã. O ecrã da turma mantém os nomes do jogo."
+  }
+}
