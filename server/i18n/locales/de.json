@@ -4037,7 +4037,7 @@
         "adult": "Ich bin Lehrkraft oder arbeite an einer Schule und bin mindestens 18 Jahre alt.",
         "submit": "Konto erstellen und Test starten",
         "privacy": "Wir nutzen deine dienstliche E-Mail-Adresse für deinen Plan (sie geht an Stripe), für E-Mails zu deinem Test und zum Zurücksetzen eines vergessenen Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
-        "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit melden Sie sich an."
+        "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit meldest du dich an."
       },
       "errors": {
         "signedIn": "Du bist schon angemeldet.",
@@ -6938,7 +6938,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math und mehr",
       "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
       "li3": "Punkte landen direkt in deiner Notenübersicht",
-      "li4": "Nur angemeldete Schüler: kein Chat, kein Tippen, keine ausgedachten Namen",
+      "li4": "Klassenspiele: nur Ihre angemeldeten Schülerinnen und Schüler. Gästespiele: sichere, erfundene Namen. Kein Chat und kein Freitext, in beiden",
       "shotAlt": "Die Lobby eines Live-Question-Battle: Fünf Schüler-Avatare warten, während der große Bildschirm den Spielcode und einen QR-Code zeigt.",
       "link": "So funktionieren Live-Spiele"
     },
@@ -7808,6 +7808,66 @@
       "showNames": "Namen aus der Klassenliste zeigen",
       "hideNames": "Namen aus der Klassenliste ausblenden",
       "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
+    }
+  },
+  "quickLive": {
+    "cta": "Jetzt ein Live-Spiel starten",
+    "ctaNote": "Keine Schülerkonten nötig. Die Kinder treten mit einem Code bei und bekommen einen sicheren, erfundenen Namen.",
+    "haveCode": "Spielcode erhalten? Beitreten",
+    "join": "Einem Spiel beitreten",
+    "host": {
+      "title": "Jetzt ein Live-Spiel starten",
+      "h": "Jetzt ein Live-Spiel starten",
+      "lead": "Lehrerkonto anlegen, Spiel wählen, und deine Klasse tritt mit einem Code bei. Keine Schülerkonten, keine E-Mail-Adresse, und es ist kostenlos.",
+      "step1": "Leg dein Lehrerkonto an: drei Felder.",
+      "step2": "Wähle ein Spiel und die Fragen.",
+      "step3": "Zeig den Code an der Tafel. Die Kinder treten mit jedem Gerät bei."
+    },
+    "signup": {
+      "h": "Dein Lehrerkonto",
+      "submit": "Konto anlegen und Spiel wählen",
+      "privacy": "Wir speichern deinen Namen, deinen Benutzernamen und eine verschlüsselte Kopie deines Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
+      "have": "Du hast schon ein Konto? <a href=\"{login}\">Anmelden</a>",
+      "student": "Bist du Schülerin oder Schüler?",
+      "schoolName": "{name}: mein Klassenzimmer"
+    },
+    "kid": {
+      "h": "Live-Spiele werden von Lehrkräften gestartet",
+      "p": "Frag deine Lehrkraft nach dem Spielcode und tritt dann hier bei."
+    },
+    "quick": {
+      "title": "Schnelles Spiel",
+      "h": "Schnelles Spiel",
+      "forClass": "Für {name}. Nur Schülerinnen und Schüler dieser Klasse können beitreten, mit ihrem eigenen Konto.",
+      "open": "Alle mit dem Code können beitreten. Keine Schülerkonten: Alle bekommen einen sicheren, erfundenen Namen.",
+      "hasOpen": "Du hast schon ein Spiel offen: {title}.",
+      "mode": "Spiel",
+      "level": "Stufe",
+      "subject": "Fach",
+      "what": "{count} fertige Fragen, in jedem Spiel neue. Du drückst Start, wenn alle da sind.",
+      "go": "Raum öffnen",
+      "more": "Mehr Spiele und Einstellungen",
+      "recent": "Deine letzten Spiele"
+    },
+    "card": {
+      "button": "Schnelles Spiel",
+      "change": "Ändern"
+    },
+    "results": {
+      "h": "Das war ein Spiel mit Gästen.",
+      "now": "Die Spieler hatten keine Konten, deshalb kam nichts ins Notenbuch. Die Fragenübersicht auf dieser Seite bleibt gespeichert. Spielnamen und Punkte nicht: Du siehst sie hier nur ein paar Minuten.",
+      "saved": "Die Spieler hatten keine Konten, deshalb wurden keine Namen oder Punkte gespeichert und nichts kam ins Notenbuch. Die Fragenübersicht bleibt gespeichert.",
+      "keep": "Klasse anlegen und Punkte behalten",
+      "keepHint": "Füg die Namen deiner Klasse ein und druck die Anmeldekarten. Dann werden die Punkte deiner Klassenspiele gespeichert."
+    },
+    "keep": {
+      "title": "Klasse anlegen und Punkte behalten",
+      "h": "Klasse anlegen und Punkte behalten",
+      "lead": "Füg die Namen deiner Schülerinnen und Schüler ein. Jedes Kind bekommt eine Anmeldekarte. Ab dann werden die Punkte deiner Klassenspiele mit den Namen gespeichert, für dich.",
+      "names": "Namen der Schülerinnen und Schüler",
+      "namesHint": "Ein Name pro Zeile. Vornamen reichen.",
+      "go": "Klasse und Anmeldekarten anlegen",
+      "note": "Nur du und das Personal deiner Schule sehen die Namen, die du hier eingibst."
     }
   }
 }

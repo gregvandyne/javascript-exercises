@@ -6937,7 +6937,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math et d’autres",
       "li2": "Utilisez une série de questions toute prête, écrivez la vôtre ou laissez l’IA en proposer une à modifier",
       "li3": "Les scores arrivent directement dans votre carnet de notes",
-      "li4": "Élèves connectés uniquement : pas de chat, pas de saisie libre, pas de pseudos inventés",
+      "li4": "Jeux de classe : seulement vos élèves connectés. Jeux avec invités : des noms inventés, sans risque. Ni chat ni texte libre dans les deux cas",
       "shotAlt": "Le salon d’attente de Question Battle en direct : cinq avatars d’élèves attendent pendant que le grand écran affiche le code de la partie et un QR code.",
       "link": "Comment marchent les jeux en direct"
     },
@@ -7807,6 +7807,66 @@
       "showNames": "Afficher les noms de la liste de classe",
       "hideNames": "Masquer les noms de la liste de classe",
       "namesHint": "Affiche le nom de la liste de classe à côté du nom dans le jeu, sur cet écran seulement. L’écran de la classe garde les noms du jeu."
+    }
+  },
+  "quickLive": {
+    "cta": "Lancer un jeu en direct maintenant",
+    "ctaNote": "Pas besoin de comptes élèves. Les élèves rejoignent avec un code et reçoivent un nom inventé, sans risque.",
+    "haveCode": "Vous avez un code de jeu ? Rejoindre",
+    "join": "Rejoindre un jeu",
+    "host": {
+      "title": "Lancer un jeu en direct maintenant",
+      "h": "Lancer un jeu en direct maintenant",
+      "lead": "Créez un compte enseignant, choisissez un jeu, et vos élèves rejoignent avec un code. Pas de comptes élèves, pas d’adresse e-mail, et c’est gratuit.",
+      "step1": "Créez votre compte enseignant : trois cases.",
+      "step2": "Choisissez un jeu et ses questions.",
+      "step3": "Affichez le code au tableau. Les élèves rejoignent depuis n’importe quel appareil."
+    },
+    "signup": {
+      "h": "Votre compte enseignant",
+      "submit": "Créer mon compte et choisir un jeu",
+      "privacy": "Nous gardons votre nom, votre nom d’utilisateur et une copie chiffrée de votre mot de passe. <a href=\"{privacy}\">Politique de confidentialité</a>",
+      "have": "Vous avez déjà un compte ? <a href=\"{login}\">Se connecter</a>",
+      "student": "Vous êtes élève ?",
+      "schoolName": "{name} : ma classe"
+    },
+    "kid": {
+      "h": "Les jeux en direct sont lancés par les enseignants",
+      "p": "Demande le code du jeu à ton enseignant, puis rejoins ici."
+    },
+    "quick": {
+      "title": "Jeu rapide",
+      "h": "Jeu rapide",
+      "forClass": "Pour {name}. Seuls les élèves de cette classe peuvent rejoindre, connectés à leur compte.",
+      "open": "Toute personne qui a le code peut rejoindre. Pas de comptes élèves : chaque joueur reçoit un nom inventé, sans risque.",
+      "hasOpen": "Vous avez déjà un jeu ouvert : {title}.",
+      "mode": "Jeu",
+      "level": "Niveau",
+      "subject": "Matière",
+      "what": "{count} questions prêtes, nouvelles à chaque jeu. Vous appuyez sur Démarrer quand tout le monde est là.",
+      "go": "Ouvrir la salle",
+      "more": "Plus de jeux et de réglages",
+      "recent": "Vos derniers jeux"
+    },
+    "card": {
+      "button": "Jeu rapide",
+      "change": "Changer"
+    },
+    "results": {
+      "h": "C’était un jeu avec des invités.",
+      "now": "Les joueurs n’avaient pas de compte, donc rien n’est allé dans un carnet de notes. La revue des questions de cette page est gardée. Les noms de jeu et les scores ne le sont pas : vous les voyez ici quelques minutes seulement.",
+      "saved": "Les joueurs n’avaient pas de compte, donc aucun nom ni score n’a été gardé et rien n’est allé dans un carnet de notes. La revue des questions est gardée.",
+      "keep": "Créer une classe pour garder les scores",
+      "keepHint": "Collez les noms de vos élèves et imprimez leurs cartes de connexion. Les scores des jeux de votre classe sont alors enregistrés."
+    },
+    "keep": {
+      "title": "Créer une classe pour garder les scores",
+      "h": "Créer une classe pour garder les scores",
+      "lead": "Collez les noms de vos élèves. Chaque élève reçoit une carte de connexion. Ensuite, les scores des jeux de votre classe sont enregistrés avec leurs noms, pour vous.",
+      "names": "Noms des élèves",
+      "namesHint": "Un nom par ligne. Les prénoms suffisent.",
+      "go": "Créer la classe et les cartes de connexion",
+      "note": "Seuls vous et le personnel de votre école voyez les noms que vous écrivez ici."
     }
   }
 }

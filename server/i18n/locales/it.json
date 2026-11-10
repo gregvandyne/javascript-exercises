@@ -6938,7 +6938,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math e altri",
       "li2": "Usa un set di domande pronto, scrivi il tuo o fai preparare una bozza all’IA da modificare",
       "li3": "I punteggi finiscono direttamente nel tuo registro",
-      "li4": "Solo studenti con accesso: niente chat, niente testo libero, niente nomi inventati",
+      "li4": "Giochi di classe: solo i tuoi studenti che hanno effettuato l’accesso. Giochi con ospiti: nomi inventati e sicuri. Niente chat e niente testo libero in entrambi",
       "shotAlt": "La sala d’attesa di un Question Battle dal vivo: cinque avatar di studenti aspettano mentre lo schermo grande mostra il codice della partita e un codice QR.",
       "link": "Come funzionano i giochi dal vivo"
     },
@@ -7808,6 +7808,66 @@
       "showNames": "Mostra i nomi dell’elenco della classe",
       "hideNames": "Nascondi i nomi dell’elenco della classe",
       "namesHint": "Mostra il nome dell’elenco della classe accanto al nome nel gioco, solo su questo schermo. Lo schermo della classe mantiene i nomi del gioco."
+    }
+  },
+  "quickLive": {
+    "cta": "Avvia subito un gioco dal vivo",
+    "ctaNote": "Non servono account per gli studenti. Entrano con un codice e ricevono un nome inventato e sicuro.",
+    "haveCode": "Hai un codice di gioco? Entra",
+    "join": "Entra in un gioco",
+    "host": {
+      "title": "Avvia subito un gioco dal vivo",
+      "h": "Avvia subito un gioco dal vivo",
+      "lead": "Crea un account insegnante, scegli un gioco e i tuoi studenti entrano con un codice. Niente account per gli studenti, niente indirizzo email, ed è gratis.",
+      "step1": "Crea il tuo account insegnante: tre caselle.",
+      "step2": "Scegli un gioco e le sue domande.",
+      "step3": "Mostra il codice alla lavagna. Gli studenti entrano da qualsiasi dispositivo."
+    },
+    "signup": {
+      "h": "Il tuo account insegnante",
+      "submit": "Crea il mio account e scegli un gioco",
+      "privacy": "Conserviamo il tuo nome, il tuo nome utente e una copia cifrata della tua password. <a href=\"{privacy}\">Informativa sulla privacy</a>",
+      "have": "Hai già un account? <a href=\"{login}\">Accedi</a>",
+      "student": "Sei uno studente?",
+      "schoolName": "{name}: la mia aula"
+    },
+    "kid": {
+      "h": "I giochi dal vivo sono avviati dagli insegnanti",
+      "p": "Chiedi il codice del gioco al tuo insegnante, poi entra qui."
+    },
+    "quick": {
+      "title": "Gioco veloce",
+      "h": "Gioco veloce",
+      "forClass": "Per {name}. Possono entrare solo gli studenti di questa classe, con il proprio account.",
+      "open": "Chiunque abbia il codice può entrare. Niente account per gli studenti: ogni giocatore riceve un nome inventato e sicuro.",
+      "hasOpen": "Hai già un gioco aperto: {title}.",
+      "mode": "Gioco",
+      "level": "Livello",
+      "subject": "Materia",
+      "what": "{count} domande già pronte, nuove a ogni gioco. Premi Inizia quando ci sono tutti.",
+      "go": "Apri la stanza",
+      "more": "Altri giochi e impostazioni",
+      "recent": "I tuoi ultimi giochi"
+    },
+    "card": {
+      "button": "Gioco veloce",
+      "change": "Cambia"
+    },
+    "results": {
+      "h": "Questo era un gioco con ospiti.",
+      "now": "I giocatori non avevano un account, quindi niente è finito nel registro dei voti. Il riepilogo delle domande di questa pagina resta salvato. I nomi di gioco e i punteggi no: li vedi qui solo per pochi minuti.",
+      "saved": "I giocatori non avevano un account, quindi nomi e punteggi non sono stati salvati e niente è finito nel registro dei voti. Il riepilogo delle domande resta salvato.",
+      "keep": "Crea una classe per salvare i punteggi",
+      "keepHint": "Incolla i nomi dei tuoi studenti e stampa le loro schede di accesso. Così i punteggi dei giochi della tua classe vengono salvati."
+    },
+    "keep": {
+      "title": "Crea una classe per salvare i punteggi",
+      "h": "Crea una classe per salvare i punteggi",
+      "lead": "Incolla i nomi dei tuoi studenti. Ogni studente riceve una scheda di accesso. Da quel momento i punteggi dei giochi della tua classe vengono salvati con i loro nomi, per te.",
+      "names": "Nomi degli studenti",
+      "namesHint": "Un nome per riga. Bastano i nomi di battesimo.",
+      "go": "Crea la classe e le schede di accesso",
+      "note": "Solo tu e il personale della tua scuola vedete i nomi che scrivi qui."
     }
   }
 }

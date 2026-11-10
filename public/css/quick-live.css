@@ -1,0 +1,29 @@
+/* A first live game in under three minutes (server/routes/quick-live.js): the short teacher sign-up, the "Quick game"
+   chooser and "Make a class to keep scores". Colours come from the theme tokens in app.css only. */
+.ql{max-width:640px;margin:0 auto;min-width:0}
+.ql .lead{margin-bottom:var(--s4)}
+.ql .panel{min-width:0;margin-bottom:var(--s4)}
+.ql .input{max-width:100%}
+.ql form .field{margin-bottom:var(--s3)}
+.ql .btn-big{width:100%;max-width:100%;white-space:normal;text-align:center;line-height:1.2;padding:12px 20px;font-size:1.2rem}
+.ql .ql-last{margin-top:var(--s4);margin-bottom:0}
+.ql-steps{margin:0 0 var(--s4);padding-inline-start:1.4em;display:grid;gap:var(--s2);color:var(--text-2)}
+.ql-alt{margin:var(--s3) 0 0}
+.ql-alt a{display:inline-flex;align-items:center;min-height:44px}
+.ql-set{border:0;margin:0 0 var(--s4);padding:0;min-width:0}
+.ql-set legend{font-weight:800;margin-bottom:var(--s2);padding:0}
+.ql-opts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.ql-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.ql-opt{position:relative;display:flex;min-width:0;cursor:pointer}
+.ql-opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.ql-opt-in{display:flex;align-items:center;gap:6px;min-height:44px;padding:8px 16px;border-radius:22px;border:2px solid var(--line);background:var(--card);color:var(--text);font-weight:700;line-height:1.2}
+.ql-modes .ql-opt-in{flex:1;flex-direction:column;align-items:flex-start;gap:4px;border-radius:var(--r-sm,14px);padding:12px 16px}
+.ql-modes .ql-opt-in .small{font-weight:400}
+.ql-ico{font-size:1.5rem;line-height:1}
+.ql-opt input:checked+.ql-opt-in{border-color:var(--accent-press);background:var(--hover);box-shadow:inset 0 0 0 1px var(--accent-press)}
+.ql-opt input:focus-visible+.ql-opt-in{outline:3px solid var(--accent-press);outline-offset:2px}
+.ql-opt input:checked+.ql-opt-in::after{content:"✓";margin-inline-start:auto;font-weight:800}
+.ql-modes .ql-opt input:checked+.ql-opt-in::after{position:absolute;inset-block-start:10px;inset-inline-end:14px}
+.ql-recent{display:grid;gap:var(--s2);margin:0;padding:0}
+.ql-recent li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+.ql-recent a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}

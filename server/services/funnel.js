@@ -29,7 +29,11 @@ export const FUNNELS = Object.freeze([
   // /landing/count/<cta>). Clicks, not a funnel: no "of step before".
   { key: 'landing', title: 'Teacher landing (signed out)', tally: true, steps: [
     ['landing.view', 'Landing views'], ['landing.trial', 'Start free trial'], ['landing.play', 'Just Play'],
-    ['landing.how', 'See how it works'], ['landing.pricing', 'Plans & pricing']] },
+    ['landing.how', 'See how it works'], ['landing.pricing', 'Plans & pricing'], ['landing.host', 'Host a live game now']] },
+  // A first live game (routes/quick-live.js): the short teacher sign-up page, the accounts it made, the rooms the
+  // "Quick game" chooser and the class cards' one tap opened. Totals, not a funnel of people.
+  { key: 'quick', title: 'First live game (Host a live game now)', tally: true, steps: [
+    ['quick.view', 'Sign-up page views (signed out)'], ['quick.signup', 'Teacher accounts made'], ['quick.room', 'Quick game rooms opened']] },
 ]);
 export const STEPS = Object.freeze(FUNNELS.flatMap(f => f.steps.map(s => s[0])));
 const KNOWN = new Set(STEPS);

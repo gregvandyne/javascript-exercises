@@ -6938,7 +6938,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math en meer",
       "li2": "Gebruik een kant-en-klare vragenset, typ je eigen of laat AI een concept maken dat je aanpast",
       "li3": "Scores komen direct in je cijferoverzicht",
-      "li4": "Alleen ingelogde leerlingen: geen chat, geen typen, geen verzonnen namen",
+      "li4": "Klasspellen: alleen je ingelogde leerlingen. Gastspellen: veilige, verzonnen namen. Geen chat en geen vrije tekst, in geen van beide",
       "shotAlt": "De wachtruimte van een live Question Battle: vijf leerling-avatars wachten terwijl het grote scherm de spelcode en een QR-code toont.",
       "link": "Zo werken live games"
     },
@@ -7808,6 +7808,66 @@
       "showNames": "Namen van de klassenlijst tonen",
       "hideNames": "Namen van de klassenlijst verbergen",
       "namesHint": "Toont de naam van de klassenlijst naast de naam in het spel, alleen op dit scherm. Het klassenscherm houdt de spelnamen."
+    }
+  },
+  "quickLive": {
+    "cta": "Start nu een live spel",
+    "ctaNote": "Geen leerlingaccounts nodig. Leerlingen doen mee met een code en krijgen een veilige, verzonnen naam.",
+    "haveCode": "Heb je een spelcode? Doe mee",
+    "join": "Meedoen met een spel",
+    "host": {
+      "title": "Start nu een live spel",
+      "h": "Start nu een live spel",
+      "lead": "Maak een lerarenaccount, kies een spel, en je leerlingen doen mee met een code. Geen leerlingaccounts, geen e-mailadres, en het is gratis.",
+      "step1": "Maak je lerarenaccount: drie vakjes.",
+      "step2": "Kies een spel en de vragen.",
+      "step3": "Zet de code op het bord. Leerlingen doen mee op elk apparaat."
+    },
+    "signup": {
+      "h": "Je lerarenaccount",
+      "submit": "Maak mijn account en kies een spel",
+      "privacy": "We bewaren je naam, je gebruikersnaam en een versleutelde kopie van je wachtwoord. <a href=\"{privacy}\">Privacybeleid</a>",
+      "have": "Heb je al een account? <a href=\"{login}\">Inloggen</a>",
+      "student": "Ben je een leerling?",
+      "schoolName": "{name}: mijn klaslokaal"
+    },
+    "kid": {
+      "h": "Leraren starten live spellen",
+      "p": "Vraag je leraar om de spelcode en doe dan hier mee."
+    },
+    "quick": {
+      "title": "Snel spel",
+      "h": "Snel spel",
+      "forClass": "Voor {name}. Alleen leerlingen van deze klas kunnen meedoen, ingelogd met hun eigen account.",
+      "open": "Iedereen met de code kan meedoen. Geen leerlingaccounts: elke speler krijgt een veilige, verzonnen naam.",
+      "hasOpen": "Je hebt al een spel open: {title}.",
+      "mode": "Spel",
+      "level": "Niveau",
+      "subject": "Vak",
+      "what": "{count} kant-en-klare vragen, elk spel nieuwe. Jij drukt op Start als iedereen er is.",
+      "go": "Open de kamer",
+      "more": "Meer spellen en instellingen",
+      "recent": "Je laatste spellen"
+    },
+    "card": {
+      "button": "Snel spel",
+      "change": "Wijzig"
+    },
+    "results": {
+      "h": "Dit was een spel met gasten.",
+      "now": "De spelers hadden geen account, dus er ging niets naar een cijferlijst. Het vragenoverzicht op deze pagina blijft bewaard. De spelnamen en scores niet: je ziet ze hier maar een paar minuten.",
+      "saved": "De spelers hadden geen account, dus er zijn geen namen of scores bewaard en er ging niets naar een cijferlijst. Het vragenoverzicht blijft bewaard.",
+      "keep": "Maak een klas om scores te bewaren",
+      "keepHint": "Plak de namen van je leerlingen en print hun inlogkaarten. Dan worden de scores van je klasspellen bewaard."
+    },
+    "keep": {
+      "title": "Maak een klas om scores te bewaren",
+      "h": "Maak een klas om scores te bewaren",
+      "lead": "Plak de namen van je leerlingen. Elke leerling krijgt een inlogkaart. Vanaf dan worden de scores van je klasspellen bewaard met hun namen, voor jou.",
+      "names": "Namen van de leerlingen",
+      "namesHint": "Eén naam per regel. Voornamen zijn genoeg.",
+      "go": "Maak de klas en de inlogkaarten",
+      "note": "Alleen jij en het personeel van je school zien de namen die je hier typt."
     }
   }
 }

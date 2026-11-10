@@ -623,7 +623,9 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   const s = LS.get(id);
   noStore(res);
   const presets = T.presetsFor(t);
-  const common = { presets, homework: config.liveHomework && S.isStaff(u), sayTeams: LS.teamsOn(), classes: config.liveHomework ? S.classesOf(u.id, 'teacher') : [] };
+  const common = { presets, homework: config.liveHomework && S.isStaff(u), sayTeams: LS.teamsOn(), classes: config.liveHomework ? S.classesOf(u.id, 'teacher') : [],
+    // A guest game's results say what is kept; staff who may make a class are offered "Make a class to keep scores".
+    keepScores: S.schoolsOf(u.id).some(x => x.role !== 'student' && S.canCreateClass(u, x.id)) };
   const tier = memTier(s, u);
   if (tier) {
     const sum = s.summary, limited = tier !== 'full';
@@ -632,7 +634,7 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
     return page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
       body: V.resultsBody(req, { ...common, id, title: sum.title, mode: sum.mode, players: limited ? [] : sum.players.map(withRoster), playerCount: sum.players.length, items: sum.items, teams: sum.teams, scoring: sum.scoring, guests: sum.guests, nicks: nicksFor(req.locale), nameMode: sum.nameMode,
         csv: s.startedAt && !limited ? `/live/results/${id}.csv` : null, gradebook: !!(s.clId && s.stepId && s.audience === 'class'), still: LS.lingering(s), quiz: !!s.quiz, setId: s.setId,
-        againRun: s.audience === 'class' && sum.teams.length > 0, limited, hostActs: s.host.userId === u.id, runLog: tier === 'full' && s.cohostEver ? memLog(req, s) : [], logZone: zoneOfClass(s.classId) }) });
+        againRun: s.audience === 'class' && sum.teams.length > 0, limited, guestRun: s.audience === 'open', hostActs: s.host.userId === u.id, runLog: tier === 'full' && s.cohostEver ? memLog(req, s) : [], logZone: zoneOfClass(s.classId) }) });
   }
   const p = R.persisted(u, id);
   if (!p) return notFound(req, res, t('live.results.gone'));
@@ -640,7 +642,7 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   const players = p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, roster: rn.get(r.user_id) || '', score: r.score, bonus: r.bonus, team: r.team, marks: r.marks, correct: r.correct, answered: r.answered, help: r.answered >= 3 && r.correct / r.answered < 0.5 ? 'lowScore' : '' }));
   const teams = p.teams ? p.teams.list.map(x => ({ ...x, score: p.teams.scoring === 'sum' ? x.sum : x.avg })) : [];
   page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
-    body: V.resultsBody(req, { ...common, id, title: p.run.title, mode: p.run.mode, players, items: p.items, teams, scoring: p.teams ? p.teams.scoring : null, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts',
+    body: V.resultsBody(req, { ...common, id, title: p.run.title, mode: p.run.mode, players, items: p.items, teams, scoring: p.teams ? p.teams.scoring : null, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts', guestRun: p.run.audience === 'open',
       quiz: p.run.scored_by === 'server' || p.items.some(it => R.asItem(it)), setId: p.run.set_id, againRun: !!(p.run.class_id && teams.length),
       runLog: R.runLog(p.run).map(x => ({ at: x.at, text: logText(req, x, presets, p.teams ? p.teams.list : []) })), logZone: zoneOfClass(p.run.class_id) }) });
 });
