@@ -4291,7 +4291,29 @@
     "cs": {
       "cstaNote": "Estándares: CSTA K-12 Computer Science Standards (2017), niveles 1B y 2. Este programa no ha sido creado, revisado ni respaldado por la CSTA."
     },
-    "leaderLine": "¿Dirección o informática? <a href=\"{href}\">Configura tu escuela</a>: es gratis."
+    "leaderLine": "¿Dirección o informática? <a href=\"{href}\">Configura tu escuela</a>: es gratis.",
+    "free": {
+      "line": "Siempre gratis: todos los juegos, sus clases, lecciones, el progreso y el libro de calificaciones, además de mensajes diarios gratis del Builder para usted y sus estudiantes. El plan Docente añade {daily} juegos creados con IA al día, compartidos entre sus clases. <a href=\"{plans}\">Vea los precios en Planes</a>.",
+      "lineOff": "Siempre gratis: todos los juegos, sus clases, lecciones, el progreso y el libro de calificaciones, además de mensajes diarios gratis del Builder para usted y sus estudiantes."
+    },
+    "classroom": {
+      "kicker": "Google Classroom",
+      "h": "Funciona con su Google Classroom",
+      "lead": "Conecte su Google Classroom en unos pocos clics. Al principio, Oomba Academy solo puede ver sus clases y sus estudiantes. No publica nada hasta que usted permita publicar.",
+      "li1": "Importe su lista de estudiantes con un clic, y se actualiza sola cada 6 horas. Los estudiantes se reconocen por su cuenta de Google.",
+      "li2": "Publique una lección como tarea de Classroom, con su enlace y su fecha de entrega, o compártala como material.",
+      "li3": "Las calificaciones de finalización vuelven a Classroom: la nota de cada estudiante, sobre 100, es la parte de los pasos de la lección que completó, no cuántas respuestas acertó. Envíelas usted o active las calificaciones automáticas.",
+      "li4": "Publique en el tablón de la clase cuando empiece un juego en vivo o una lección esté lista, con sus propias palabras.",
+      "li5": "Oomba Academy no pide a Classroom los correos de los estudiantes y nunca envía a Google el nombre, las respuestas ni los juegos de un estudiante.",
+      "note": "Las tareas, los materiales, las calificaciones y los anuncios funcionan cuando usted permite publicar, un paso aparte. Cada docente conecta su propia cuenta de Google, y puede que el administrador de Google de su escuela tenga que autorizar antes a Oomba Academy.",
+      "privacy": "Qué se envía a Google"
+    },
+    "research": {
+      "link": "Lea la investigación sobre los juegos de aprendizaje"
+    },
+    "quotes": {
+      "h": "Lo que dicen los docentes"
+    }
   },
   "learn": {
     "crumbs": "Ruta de navegación",
@@ -4617,6 +4639,32 @@
           "q4": "¿Hay chat con desconocidos?",
           "a4": "No. Los niños solo chatean con amigos que agregaron con un código de 6 caracteres, nunca buscando nombres, y pueden desactivar el chat en su página Yo."
         }
+      },
+      "a5": {
+        "name": "De 5 a 7 años",
+        "short": "Palabras frecuentes en inglés, primeras sumas, ritmo y estrategia sencilla",
+        "title": "Juegos educativos gratis para niños de 5, 6 y 7 años",
+        "description": "Juegos gratis y sin anuncios para niños de 5 a 7 años: palabras en inglés leídas en voz alta, primeras sumas, ritmo y estrategia. Sin descargas ni chat con desconocidos.",
+        "h1": "Juegos educativos para niños de 5 a 7 años",
+        "lead": "De kínder a 2.º grado, la mayoría de los niños todavía está aprendiendo a leer. Estos juegos leen sus palabras en voz alta o usan números, música e imágenes, así que un niño pequeño puede jugar con un adulto cerca al principio. Nuestros cursos completos empiezan en 3.er grado, hacia los 8 años.",
+        "fit": {
+          "wordTrail": "Hecho para esta edad: las primeras palabras frecuentes en inglés en un sendero de cuento, y cada palabra se lee en voz alta.",
+          "sharkPlank": "El ahorcado con palabras en inglés para niños que están empezando a leer, y cada palabra se lee en voz alta.",
+          "sumRacer": "Empieza con la pista de sumas hasta 10. Pueden tocar la respuesta en vez de escribirla.",
+          "wordHunt": "Sopas de letras por temas para lectores nuevos, mejor desde los 6 años: toca cualquier palabra en inglés para oírla.",
+          "tugOfMath": "Elige 1.er grado para las preguntas más fáciles, sumas hasta 20, y juega contra la computadora en Fácil.",
+          "beatLanes": "Toca al ritmo de canciones, empezando por Estrellita, ¿dónde estás?: más ritmo y tiempo que lectura.",
+          "connectFour": "Cuatro en línea contra un adulto, un hermano o el robot en Fácil: una primera idea de cómo planear.",
+          "doodleHoot": "Dibuja y adivina con palabras fáciles, y fichas de letras para los peques que aún no saben escribir en el teclado."
+        },
+        "faq": {
+          "q2": "¿Puede jugar mi hijo si todavía no sabe leer?",
+          "a2": "En algunos juegos, sí. Word Trail y Shark Plank leen cada palabra en voz alta, Word Hunt lee una palabra cuando la tocas, y Sum Racer y Tug of Math usan números. Los menús y las instrucciones están escritos, así que al principio ayuda tener un adulto cerca.",
+          "q3": "¿Los cursos son para esta edad?",
+          "a3": "Todavía no. Number Quest, CS Quest y Cyber Defenders empiezan en 3.er grado, hacia los 8 años. De los 5 a los 7, los juegos de esta página son el lugar para empezar.",
+          "q4": "¿Puede un niño de 6 años usar el Constructor con IA?",
+          "a4": "Los niños escriben su idea para el Constructor, así que a esta edad conviene que un adulto se siente con ellos y les ayude a escribirla. El Constructor sigue reglas fijas de seguridad infantil, y un juego nuevo es privado hasta que se comparte."
+        }
       }
     },
     "index": {
@@ -4743,7 +4791,7 @@
     },
     "ages": {
       "h": "Juegos para cada edad",
-      "p": "Los niños cambian mucho entre los 8 y los 14 años. Estas páginas eligen los juegos que mejor encajan con cada edad y explican por qué."
+      "p": "Los niños cambian mucho entre los 5 y los 14 años. Estas páginas eligen los juegos que mejor encajan con cada edad y explican por qué."
     },
     "make": {
       "h": "De jugar a crear",
@@ -4943,6 +4991,128 @@
     "demo": {
       "h": "Míralo en menos de un minuto",
       "note": "Un video corto con música y subtítulos en pantalla: niños juegan a juegos educativos (un globo terráqueo, ¿Qué prefieres?, ajedrez y Gulp City), luego un niño le describe un juego al Builder, que lo crea y lo juega para comprobar que funciona, y el niño lo juega. Al final, cómo se mantiene seguro: un nombre inventado sin correo electrónico, amigos que se agregan solo con un código y juegos que siguen siendo privados hasta que el niño decide compartirlos."
+    }
+  },
+  "research": {
+    "name": "La investigación",
+    "footer": "Investigación",
+    "title": "¿Funciona aprender con juegos? Lo que dice la investigación",
+    "description": "Lo que tres grandes revisiones de investigación encontraron sobre los juegos educativos y la gamificación, explicado para docentes, con tamaños del efecto y fuentes.",
+    "kicker": "Para docentes · La investigación",
+    "h1": "¿Funciona aprender con juegos? Lo que dice la investigación",
+    "lead": "Tres grandes revisiones reunieron los resultados de muchos estudios sobre juegos educativos y sobre elementos de juego en las clases. Aquí está lo que encontraron, en palabras sencillas, y lo que no demuestra.",
+    "findings": {
+      "h": "Lo que encontraron los estudios"
+    },
+    "clark": {
+      "h": "Juegos educativos frente a clases sin juegos",
+      "stat": "Del percentil 50 a cerca del percentil 63",
+      "p": "En los estudios que compararon juegos educativos digitales con clases sin juegos, los estudiantes que aprendieron con juegos sacaron mejores resultados en las pruebas de lo aprendido.",
+      "small": "Clark, Tanner-Smith y Killingsworth (2016): resultados de aprendizaje, juegos frente a sin juegos, g = 0,33."
+    },
+    "wouters": {
+      "h": "Juegos serios frente a la enseñanza convencional",
+      "stat": "Cerca del percentil 61 en aprendizaje, y del 64 en lo que recordaban después",
+      "p": "Los estudiantes que aprendieron con juegos serios aprendieron más que los que tuvieron clases convencionales, y recordaban más cuando se les volvió a evaluar más tarde.",
+      "small": "Wouters, van Nimwegen, van Oostendorp y van der Spek (2013): aprendizaje d = 0,29, retención d = 0,36."
+    },
+    "sailer": {
+      "h": "Elementos de juego en clases normales (gamificación)",
+      "stat": "Cerca del percentil 69",
+      "p": "Añadir elementos de juego como puntos, insignias y tablas de clasificación a clases normales también ayudó a lo que aprendieron los estudiantes.",
+      "small": "Sailer y Homner (2020): gamificación, resultados de aprendizaje cognitivo, g = 0,49."
+    },
+    "read": {
+      "h": "Cómo leer estas cifras",
+      "p1": "Un percentil indica dónde quedaría el estudiante promedio que aprendió con juegos entre los estudiantes que aprendieron sin ellos. El percentil 50 es la mitad. Pasar al percentil 63 significa que el estudiante promedio con juegos sacó mejor resultado que unos 63 de cada 100 estudiantes sin juegos.",
+      "p2": "La letra pequeña da cada tamaño del efecto (g de Hedges o d de Cohen): la diferencia entre los dos grupos, medida en desviaciones estándar. Convertimos cada uno en un percentil suponiendo que las puntuaciones siguen una distribución normal."
+    },
+    "limits": {
+      "h": "Lo que esto no demuestra",
+      "li1": "Son promedios de muchos estudios, edades, materias y juegos. Algunos juegos ayudaron mucho y otros no ayudaron nada.",
+      "li2": "Ninguno de estos estudios evaluó Oomba Academy. Describen los juegos educativos en general, no son una promesa sobre un juego, una clase o un estudiante concretos.",
+      "li3": "Wouters y sus colegas encontraron que los juegos serios no motivaban más que la enseñanza convencional, aunque los estudiantes aprendían más.",
+      "li4": "La gamificación no es lo mismo que un juego educativo: añade elementos de juego a clases normales. La incluimos porque los puntos, las estrellas y las tablas de clasificación forman parte de muchos juegos educativos, también de los nuestros."
+    },
+    "use": {
+      "h": "Usar los juegos como sugiere la investigación",
+      "p": "Wouters y sus colegas encontraron que los estudiantes aprendían más con juegos serios cuando el juego se usaba junto con otra enseñanza, en más de una sesión, y cuando los estudiantes jugaban en grupo.",
+      "li1": "Usa un juego junto con tu clase, no en su lugar: una ronda corta para practicar lo que acabas de enseñar.",
+      "li2": "Vuelve a él en varias sesiones en vez de una sola sesión larga.",
+      "li3": "Deja que los estudiantes jueguen juntos: toda la clase, en equipos o dos jugadores en una pantalla."
+    },
+    "sources": {
+      "h": "Fuentes"
+    },
+    "links": {
+      "teachers": "Oomba Academy para docentes"
+    }
+  },
+  "compliance": {
+    "name": "Privacidad y cumplimiento",
+    "footer": "Cumplimiento",
+    "title": "Privacidad de los estudiantes: COPPA, FERPA y RGPD",
+    "description": "La postura de Oomba Academy sobre COPPA, FERPA y RGPD, qué datos de estudiantes guarda, quién los recibe y cómo una escuela puede pedir un acuerdo de datos.",
+    "kicker": "Para escuelas y distritos",
+    "h1": "Privacidad de los estudiantes y cumplimiento",
+    "lead": "Esta página es para docentes, directivos y personal de informática que revisan herramientas según las leyes de privacidad estudiantil. Resume lo que dice nuestra <a href=\"{privacy}\">Política de privacidad</a> y lo que Oomba Academy hace hoy. Si algo de aquí difiere de la Política de privacidad, lo que vale es la Política de privacidad.",
+    "glance": {
+      "h": "En resumen",
+      "li1": "Los estudiantes nunca necesitan un correo electrónico, y nunca preguntamos su edad ni su dirección.",
+      "li1google": "Los estudiantes nunca escriben un correo electrónico, y nunca preguntamos su edad ni su dirección. Si tu escuela usa Iniciar sesión con Google, guardamos el correo escolar de Google de cada estudiante solo para reconocer su cuenta.",
+      "li2": "Sin anuncios, sin cookies publicitarias ni de seguimiento, y nunca vendemos los datos personales de nadie.",
+      "li3": "Las cuentas escolares las crea la escuela y son suyas. Usamos la información de los estudiantes solo para ofrecer Oomba Academy a la escuela, nunca para publicidad.",
+      "li4": "El nombre real de un estudiante, si la escuela lo añade, solo lo ven el personal de la escuela y nuestro equipo.",
+      "li5": "Los juegos funcionan dentro de un espacio cerrado: sin red, sin cookies y sin acceso al resto del sitio."
+    },
+    "coppa": {
+      "h": "COPPA (niños menores de 13 años en EE. UU.)",
+      "p1": "Oomba Academy está hecho para niños de kínder a 8.º grado, así que muchos tienen menos de 13 años. Así se trata hoy su información:",
+      "li1": "Las cuentas escolares las crea la escuela y son suyas, y los estudiantes entran con una tarjeta de acceso de la escuela. Con estas cuentas actuamos en nombre de la escuela y siguiendo sus indicaciones.",
+      "li2": "Las familias de una cuenta escolar piden a la escuela ver o borrar los datos de su hijo, y la escuela nos lo puede pedir a nosotros.",
+      "li3": "Las familias de la cuenta propia de un niño pueden escribirnos para ver lo que guardamos, borrarlo o pedirnos que dejemos de recoger más. Todavía no hay botón para borrar ni descargar, así que atendemos estas solicitudes a mano y antes comprobamos que eres el padre, la madre o el tutor.",
+      "li4": "Pagar un plan nunca es la forma en que pedimos permiso a una familia.",
+      "p2": "Preguntas sobre cómo funciona el consentimiento para las cuentas de tu escuela: escribe a {email}."
+    },
+    "ferpa": {
+      "h": "FERPA (expedientes educativos en EE. UU.)",
+      "li1": "Además de lo que guarda cualquier cuenta, una cuenta escolar guarda el nombre real del estudiante tal como lo escribió la escuela, sus clases, su progreso en las lecciones, sus respuestas escritas y los comentarios de su docente.",
+      "li2": "El nombre real de un estudiante solo lo ven el personal de la escuela y nuestro equipo.",
+      "li3": "Usamos la información de los estudiantes solo para ofrecer Oomba Academy a la escuela, nunca para publicidad, y no la vendemos.",
+      "li4": "Las familias piden a la escuela ver o borrar los datos, y la escuela nos lo puede pedir a nosotros. Un acuerdo de datos que la escuela haya firmado con nosotros tiene prioridad.",
+      "p": "Para hablar de las condiciones FERPA de tu escuela o distrito: escribe a {email}."
+    },
+    "gdpr": {
+      "h": "RGPD y UK GDPR (Europa y el Reino Unido)",
+      "p1": "Oomba Academy está en {count} idiomas, y las escuelas fuera de EE. UU. también pueden usarlo. Las mismas reglas valen en todas partes: sin anuncios, sin cookies de seguimiento, sin correos de estudiantes, e información de estudiantes usada solo para ofrecer Oomba Academy.",
+      "p2": "Escuelas de la Unión Europea o del Reino Unido: escriban a {email} antes de implantar Oomba Academy, para que podamos responder primero a sus preguntas sobre el RGPD o el UK GDPR."
+    },
+    "dpa": {
+      "h": "Acuerdo de tratamiento de datos (DPA)",
+      "p1": "Nuestra Política de privacidad dice que un acuerdo de datos que una escuela haya firmado con nosotros tiene prioridad.",
+      "p2": "Para preguntar por un acuerdo de datos para tu escuela o distrito, incluido un acuerdo según una ley estatal de privacidad estudiantil, escribe a {email}."
+    },
+    "keep": {
+      "h": "Cuánto tiempo guardamos los datos",
+      "li1": "Guardamos los datos de una cuenta mientras la cuenta existe. Por ahora nada se borra automáticamente tras un plazo.",
+      "li2": "Un juego que un estudiante borra desaparece del sitio para todos, pero queda una copia en nuestro servidor.",
+      "li3": "Todavía no hay un botón para borrar una cuenta o descargar sus datos. En una cuenta escolar, la escuela nos lo pide."
+    },
+    "others": {
+      "h": "Quién más recibe datos",
+      "li1": "Anthropic (Claude, la IA que crea los juegos): los mensajes, imágenes y archivos que un estudiante da al Constructor, para crear el juego y comprobar que es seguro, sin el nombre ni el usuario del estudiante. Los chats entre amigos y las respuestas de las lecciones nunca se envían a la IA.",
+      "li2": "Google, solo si tu escuela usa Iniciar sesión con Google o un docente conecta Google Classroom. Classroom lee los nombres de las clases y los identificadores y nombres de Google de los estudiantes de la clase vinculada. Solo enviamos lo que publica el docente, como un enlace a la lección con su título y fecha de entrega, y la puntuación de cada estudiante sobre 100: nunca nombres, respuestas, comentarios ni juegos de estudiantes.",
+      "li3": "Las voces de IA y el dictado por voz, donde estén activados: nuestra <a href=\"{privacy}\">Política de privacidad</a> dice exactamente qué recibe cada uno."
+    },
+    "security": {
+      "h": "Seguridad básica",
+      "li1": "Las contraseñas se guardan de forma ilegible, así que no podemos leerlas.",
+      "li2": "Nuestro escáner de seguridad revisa cada versión de cada juego en el momento en que se crea, y un juego que intenta conectarse a internet o leer cookies no se puede compartir.",
+      "li3": "La conexión de Google Classroom de un docente se guarda cifrada hasta que la desconecta, y al desconectarla también se revoca en Google."
+    },
+    "contact": {
+      "h": "Preguntas",
+      "p": "Escribe a {email}. Para los datos de una cuenta escolar, es la escuela quien nos contacta. Consulta también nuestra <a href=\"{privacy}\">Política de privacidad</a> y cómo mantenemos a los niños <a href=\"{safety}\">seguros</a>."
     }
   },
   "connections": {
@@ -6937,7 +7107,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math y más",
       "li2": "Usa un banco de preguntas inicial, escribe el tuyo o deja que la IA haga un borrador para que lo edites",
       "li3": "Las puntuaciones van directo a tu libro de calificaciones",
-      "li4": "Solo estudiantes con sesión iniciada: sin chat, sin escribir, sin nombres inventados",
+      "li4": "Juegos de clase: solo tus estudiantes con sesión iniciada. Juegos con invitados: nombres inventados y seguros. Sin chat ni texto libre en ninguno",
       "shotAlt": "La sala de espera de Question Battle en vivo: cinco avatares de estudiantes esperan mientras la pantalla grande muestra el código del juego y un código QR.",
       "link": "Cómo funcionan los juegos en vivo"
     },
@@ -7001,7 +7171,8 @@
         "li4": "Clases, lecciones, progreso y libro de calificaciones",
         "li5": "Todos los idiomas, todos los dispositivos",
         "cta": "Empieza tu prueba gratis",
-        "plans": "Ver planes y precios"
+        "plans": "Ver planes y precios",
+        "plus": "Todo lo de Gratis, y además:"
       },
       "schools": {
         "name": "Escuelas y distritos",
@@ -7014,6 +7185,16 @@
         "cta": "Habla con nosotros",
         "form": "Configura tu escuela",
         "subject": "Oomba Academy para nuestra escuela"
+      },
+      "leadFree": "Nunca hay tarifas por estudiante. Lo básico es gratis para todo docente, y el plan Docente añade juegos creados con IA para toda tu clase.",
+      "free": {
+        "name": "Gratis",
+        "price": "Siempre gratis",
+        "li1": "Todos los juegos y los tres cursos",
+        "li2": "Clases, lecciones, progreso y libro de calificaciones",
+        "li3": "Mensajes diarios gratis del Builder para ti y tus estudiantes",
+        "li4": "Cuentas escolares y tarjetas de acceso para imprimir",
+        "liLive": "Juegos en vivo para la clase en el proyector"
       }
     },
     "faq": {
@@ -7035,12 +7216,14 @@
       "q8": "¿Puede pagar nuestra escuela con factura u orden de compra?",
       "a8": "Sí. Las escuelas pagan el mismo precio por docente y año, con factura u orden de compra. Escríbenos y lo preparamos.",
       "q9": "¿Qué idiomas hay?",
-      "a9": "{count} idiomas, entre ellos inglés, español, portugués, francés, alemán, árabe, hebreo y japonés. Cada estudiante elige el suyo, y el Constructor le responde en él."
+      "a9": "{count} idiomas, entre ellos inglés, español, portugués, francés, alemán, árabe, hebreo y japonés. Cada estudiante elige el suyo, y el Constructor le responde en él.",
+      "a2free": "Empieza una prueba gratis de 14 días del plan Docente sin tarjeta. Mientras dura, todo el plan está incluido, y al terminar tú decides si te suscribes. Si no lo haces, solo se detienen los juegos con IA extra del plan: los juegos, tus clases, lecciones y el progreso siguen siendo gratis, y no se borra nada."
     },
     "final": {
       "h": "Tu próxima lección puede ser la que te pidan volver a jugar",
       "p": "Empieza gratis durante 14 días. Sin tarjeta y sin pagos por estudiante.",
-      "cta": "Empieza tu prueba gratis de 14 días"
+      "cta": "Empieza tu prueba gratis de 14 días",
+      "pFree": "Los juegos, las clases, las lecciones y el progreso son siempre gratis. Prueba el plan Docente gratis durante 14 días, sin tarjeta y sin tarifas por estudiante."
     },
     "play": {
       "h": "¿Vienes a jugar?",
@@ -7566,7 +7749,7 @@
       "lessonNotOpen": "Esa lección todavía no está abierta.",
       "emptyNote": "Escribe primero tu mensaje.",
       "tooLong": "Los anuncios pueden tener como máximo {max} caracteres.",
-      "hasName": "Tu mensaje tiene el nombre de un alumno ({name}). Los anuncios llegan a toda la clase: quítalo, por favor.",
+      "hasName": "«{name}» en tu mensaje coincide con el nombre de un alumno. Los anuncios llegan a toda la clase: cámbialo o quítalo, por favor.",
       "tooManyAnnouncements": "Ya van 10 anuncios en una hora para esta clase. Espera un poco."
     },
     "allow": {
@@ -7735,6 +7918,141 @@
       "badDay": "Elige un día.",
       "badHour": "Elige una hora.",
       "badZone": "Elige una zona horaria de la lista."
+    }
+  },
+  "brand": {
+    "tagline": "Tiempo de pantalla con el que te puedes sentir bien"
+  },
+  "gradebook": {
+    "workDone": "Trabajo hecho",
+    "score": "Puntuación",
+    "noScore": "Nada puntuado todavía",
+    "scoreTitle": "{earned} de {possible} puntos",
+    "scoreWhy": "Ver de qué se compone esta puntuación",
+    "doneLate": "Hecho con retraso",
+    "stepLate": "Hecho después de la fecha de entrega",
+    "lateN": "Con retraso: {count}",
+    "key": {
+      "score": "puntuación: puntos obtenidos de los puntos posibles"
+    },
+    "names": {
+      "inGames": "Nombre en los juegos"
+    },
+    "help": {
+      "workDone": "La parte de los pasos que el estudiante ha terminado en las lecciones abiertas. No tiene en cuenta las respuestas correctas.",
+      "score": "Puntos obtenidos de los puntos posibles: cuestionarios (1 punto por pregunta), juegos en vivo que diriges para un paso de una lección (1 punto por pregunta, la mejor partida) y trabajos que puntúas con una rúbrica (sus puntos). Los trabajos más grandes cuentan más. Lo que no está hecho o aún no está puntuado queda fuera; sin nada puntuado se muestra –. Toca una puntuación para ver de qué se compone.",
+      "late": "Trabajo que aún falta después de la fecha de entrega. «Hecho con retraso» significa que se terminó después de la fecha de entrega.",
+      "names": "El nombre en gris bajo el nombre de un estudiante es el que tiene en los juegos y en la pantalla de la clase."
+    },
+    "live": {
+      "title": "Resultados de los juegos en vivo",
+      "hint": "Respuestas correctas de las preguntas hechas, para estudiantes que iniciaron sesión en esta clase. Los invitados nunca se guardan.",
+      "linked": "Parte de una lección: cuenta para la puntuación",
+      "keyRight": "respuestas correctas de las preguntas hechas",
+      "keyPlayed": "jugó, nada que puntuar",
+      "keyAbsent": "no jugó"
+    },
+    "csv": {
+      "points": "Puntuación (puntos)",
+      "lateCount": "Lecciones con retraso",
+      "scoreCol": "{title} (puntuación %)",
+      "lateCol": "{title} (retraso)",
+      "late": "con retraso",
+      "doneLate": "hecho con retraso",
+      "live": "En vivo: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Cuestionario",
+      "live": "Juego en vivo",
+      "rubric": "Rúbrica",
+      "marks": "Notas de rúbrica"
+    },
+    "student": {
+      "back": "Progreso",
+      "printFull": "Imprimir el nombre completo",
+      "print": "Imprimir",
+      "printHint": "Al imprimir solo sale el nombre de pila, salvo que marques la casilla. El nombre usado en los juegos nunca se imprime.",
+      "lateLessons": "Lecciones con retraso",
+      "lesson": "Lección",
+      "due": "Entrega",
+      "late": "Con retraso",
+      "scoreH": "De qué se compone la puntuación",
+      "work": "Trabajo",
+      "type": "Tipo",
+      "points": "Puntos",
+      "none": "Todavía no hay nada puntuado. Las puntuaciones vienen de cuestionarios, de juegos en vivo para un paso de una lección y de trabajos puntuados con una rúbrica.",
+      "standardsLine": "{meets} logrados · {developing} en desarrollo · {practiced} practicados",
+      "standardsOpen": "Ver los estándares",
+      "noStandards": "Aún no hay evidencias de estándares.",
+      "answers": "Respuestas y comentarios recientes",
+      "feedback": "Comentario del docente",
+      "noAnswers": "Aún no hay respuestas escritas.",
+      "noLive": "Aún no hay juegos en vivo."
+    },
+    "dash": {
+      "showNames": "Mostrar nombres de la lista de clase",
+      "hideNames": "Ocultar nombres de la lista de clase",
+      "namesHint": "Muestra el nombre de la lista de clase junto al nombre en el juego, solo en esta pantalla. La pantalla de la clase mantiene los nombres del juego."
+    }
+  },
+  "quickLive": {
+    "cta": "Organiza un juego en vivo ahora",
+    "ctaNote": "No hacen falta cuentas de estudiantes. Entran con un código y reciben un nombre inventado y seguro.",
+    "haveCode": "¿Tienes un código de juego? Únete",
+    "join": "Unirse a un juego",
+    "host": {
+      "title": "Organiza un juego en vivo ahora",
+      "h": "Organiza un juego en vivo ahora",
+      "lead": "Crea una cuenta de docente, elige un juego y tus estudiantes entran con un código. Sin cuentas de estudiantes, sin correo electrónico y gratis.",
+      "step1": "Crea tu cuenta de docente: tres casillas.",
+      "step2": "Elige un juego y sus preguntas.",
+      "step3": "Pon el código en la pizarra. Los estudiantes entran desde cualquier dispositivo."
+    },
+    "signup": {
+      "h": "Tu cuenta de docente",
+      "submit": "Crear mi cuenta y elegir un juego",
+      "privacy": "Guardamos tu nombre, tu nombre de usuario y una copia cifrada de tu contraseña. <a href=\"{privacy}\">Política de privacidad</a>",
+      "have": "¿Ya tienes una cuenta? <a href=\"{login}\">Inicia sesión</a>",
+      "student": "¿Eres estudiante?",
+      "schoolName": "{name}: mi aula"
+    },
+    "kid": {
+      "h": "Los juegos en vivo los organizan los docentes",
+      "p": "Pide a tu docente el código del juego y únete aquí."
+    },
+    "quick": {
+      "title": "Juego rápido",
+      "h": "Juego rápido",
+      "forClass": "Para {name}. Solo pueden entrar los estudiantes de esta clase, con su propia cuenta.",
+      "open": "Cualquiera con el código puede entrar. Sin cuentas de estudiantes: cada jugador recibe un nombre inventado y seguro.",
+      "hasOpen": "Ya tienes un juego abierto: {title}.",
+      "mode": "Juego",
+      "level": "Nivel",
+      "subject": "Materia",
+      "what": "{count} preguntas ya preparadas, nuevas en cada juego. Tú pulsas Empezar cuando todos han entrado.",
+      "go": "Abrir la sala",
+      "more": "Más juegos y ajustes",
+      "recent": "Tus últimos juegos"
+    },
+    "card": {
+      "button": "Juego rápido",
+      "change": "Cambiar"
+    },
+    "results": {
+      "h": "Este fue un juego con invitados.",
+      "now": "Los jugadores no tenían cuenta, así que nada pasó al cuaderno de notas. El repaso de preguntas de esta página se guarda. Los nombres de juego y las puntuaciones no: puedes verlos aquí solo unos minutos.",
+      "saved": "Los jugadores no tenían cuenta, así que no se guardaron nombres ni puntuaciones y nada pasó al cuaderno de notas. El repaso de preguntas se guarda.",
+      "keep": "Crea una clase para guardar las puntuaciones",
+      "keepHint": "Pega los nombres de tus estudiantes e imprime sus tarjetas de acceso. Así se guardan las puntuaciones de los juegos de tu clase."
+    },
+    "keep": {
+      "title": "Crea una clase para guardar las puntuaciones",
+      "h": "Crea una clase para guardar las puntuaciones",
+      "lead": "Pega los nombres de tus estudiantes. Cada uno recibe una tarjeta de acceso. Desde entonces, las puntuaciones de los juegos de tu clase se guardan con sus nombres, para ti.",
+      "names": "Nombres de los estudiantes",
+      "namesHint": "Un nombre en cada línea. Basta con el nombre de pila.",
+      "go": "Crear la clase y las tarjetas de acceso",
+      "note": "Solo tú y el personal de tu escuela ven los nombres que escribes aquí."
     }
   }
 }

@@ -1,7 +1,7 @@
 // /robots.txt and /sitemap.xml (server/seo.js has the rules). Registered before the session: no cookie, no database
 // write, the same answer for everyone.
 //
-// The sitemap lists only what may be indexed: the home page, /teachers, the /learn/* subject and age pages, the official launch games
+// The sitemap lists only what may be indexed: the home page, /teachers, /research, /compliance, the /learn/* subject and age pages, the official launch games
 // that are live and public (visibleWhere(null), source='seed', owned by the official account), /safety, /parents and
 // its guides, the legal pages, /sdk/ and, once paid plans are public, /plans. Never a profile, a class, or a game a child made.
 import { Router } from 'express';
@@ -20,6 +20,7 @@ import { state as domainState } from '../domain.js';
 import { abs, origin, localeUrl, localizable, pageLangs, langsWithKey } from '../seo.js';
 import { COURSES } from '../services/course-catalog.js';
 import { landingAtRoot } from './landing.js';
+import { TRUST_UPDATED } from './trust.js';
 
 export const router = Router();
 
@@ -64,6 +65,9 @@ export function sitemapEntries() {
       return { path: `/g/${g.slug}`, langs: Object.keys(l10n), lastmod: day(Math.max(g.updated_at || 0, g.published_at || 0)), images: [`/covers/${g.slug}.jpg`] };
     }),
     { path: '/safety', langs: langsWithKey('info.safety.heading') },
+    // For teachers and schools (routes/trust.js): the research behind learning games, and privacy and compliance.
+    { path: '/research', langs: langsWithKey('research.h1'), lastmod: TRUST_UPDATED, images: ['/og/research.jpg'] },
+    { path: '/compliance', langs: langsWithKey('compliance.h1'), lastmod: TRUST_UPDATED, images: ['/og/compliance.jpg'] },
     { path: '/parents', langs: langsWithKey('parents.h1'), lastmod: CONTENT_UPDATED, images: ['/og/parents.jpg'] },
     ...PARENT_GUIDES.map(g => ({ path: `/parents/${g.slug}`, langs: langsWithKey(`parents.${g.key}.h1`), lastmod: CONTENT_UPDATED, images: [`/og/parents-${g.slug}.jpg`] })),
     ...AGES.map(a => ({ path: `/learn/${a.slug}`, langs: langsWithKey(`learn.ages.${a.key}.h1`), lastmod: CONTENT_UPDATED, images: [`/og/ages-${a.min}-${a.max}.jpg`] })),

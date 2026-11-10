@@ -1141,6 +1141,28 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   /parents/summer-learning-games (publish by mid-May). The guides' external links (healthychildren.org, Common Sense
   Media, Apple, Google, Microsoft) should be checked once from a network that reaches them.
 
+## One age range, and the 5 to 7 guide (2026-11-10)
+- **The site's audience is kindergarten to grade 8, about ages 5 to 14** everywhere a page speaks for the whole site
+  (seo.AGE). Unchanged on purpose: each course's own grade band (Number Quest 3 to 5, CS Quest and Cyber Defenders 3
+  to 8), the per-age pages, live question levels and the Brain Board starter set, and the signed-off Terms (legal text,
+  still "8 to 14" in `info.terms.who.p1` and `info.terms.accounts.p1`: a change needs the lawyer). AI prompts and
+  translator notes that say "8 to 14" were not changed here. tests/unit/research-compliance.test.js keeps en.json clean.
+- **/learn/games-for-5-to-7-year-olds** (AGES `a5`, first): only games whose own grade band starts by grade 2 and that a
+  pre-reader can play (words read aloud, or numbers, music and pictures). It says the full courses start in grade 3 and
+  that a grown-up types for the Builder at this age. `ageBand` (the "Ages 6–11" line on game pages) now starts at 5.
+
+## Research and compliance pages (2026-11-10)
+- **/research** (routes/trust.js): only the three verified reviews (Clark, Tanner-Smith and Killingsworth 2016;
+  Wouters et al. 2013; Sailer and Homner 2020). Percentiles in plain words up front (from the effect size, normal
+  scores), effect sizes in small print, citations with DOIs, and what the numbers don't prove (averages; none tested
+  Oomba). The landing's "Further reading" (Roediger and Karpicke 2006, Hattie and Timperley 2007) stays: no numbers.
+- **/compliance**, a page of its own next to /research (school IT staff look for one address; /safety is written for
+  kids and parents, and the legal pages are signed off): facts only from /privacy, docs/safety.md and the code. Where
+  the legal position is still open (docs/legal-review.md items 1, 6 to 9, 31, 34: COPPA consent model, FERPA "school
+  official", GDPR roles and representative, whether a DPA is offered) the page asks schools to email us, and the
+  sentence that would need sign-off is in `PENDING`, shown only to the platform admin as "Not shown publicly".
+- Both are linked from the site footer (signed out and school staff) and the landing footer, and from each other.
+
 ## Doors for grown-ups (navigation, week 1)
 - **Signed out means signed out or a guest** (`signedOut(u)` in views/layout.js: `!u || u.is_guest`) for the menus, the
   home intro and the footer. One tap on Play makes a guest; before, that hid the intro and both Teachers links.
@@ -3571,6 +3593,43 @@ three (`scopesMissing`), so nothing worked. Decisions (the owner's) and what was
   lesson deletion and the sweep remove the new rows too. Unlinking forgets the class's settings.
 - **Privacy:** the legal pages are not changed here (signed off 9 Nov); the sentences that would need the lawyer are
   listed for the owner (/privacy `google.setup.privacy.classroom`, docs/legal-review.md "Google Classroom sync").
+## Google Classroom sync: hardening (10 Nov 2026)
+An improvement pass (owner-approved plan, Part B) found three edges in the sync. Scopes, the data sent to Google and
+the privacy pages are unchanged.
+- **Grades that didn't go through are retried.** Before: `autoGrades` looked at a posted lesson only when
+  `step_progress` moved after `gc_posts.auto_at`, and set `auto_at` after every run, even when some students' grades
+  failed (a non-fatal error on their PATCH counted in `failed`). A student whose grade failed and who did nothing more
+  was never sent again. Now `sendGrades` keeps per assignment `gc_posts.retry_at` / `retry_fails` (migration
+  **0072_gclassroom_retry**): a send with a failure sets `retry_at` 1 h, 2 h, 4 h... (at most a day, the same back-off
+  curve as the class's) after the run; `autoGrades` also looks at a lesson whose `retry_at` is due. Failed students are
+  not in `gc_grades`, so they still count as changed and are the only ones sent again (`onlyChanged`); students whose
+  grade went are not. A clean send or a quiet one clears the retry. Retries stop with the lesson's existing window
+  (`autoEnded`: 30 days after the due day, 90 days after posting without one), go through the teacher's 60 syncs an
+  hour, and don't back the whole class off (that stays for errors that stop a run). A manual send with a failure also
+  leaves a retry for the automatic sync, if it is on. Reposting clears it.
+- **Big classes get the plain answer.** Before: the roster and submissions were read with `listAll` at 5 pages of 100,
+  so a course over 500 failed with a generic `badRequest` ("too many pages"), and one of 301 to 500 was read in full
+  before the 300 check. Now `listAll` takes a `cap` and stops paging once more than that many entries were seen
+  (`GcError('tooMany')`); the roster import passes 300, so it stops at the fourth page and answers `tooMany` ("more
+  than 300 students"). Classroom gives no student count up front, so paging is the earliest point. Sending grades uses
+  the new `eachPage`: submissions are read 100 at a time and paging stops once every student with a grade to send was
+  found (often the first page), up to `SUBMISSION_PAGES` (10, so 1,000). Past that, the send doesn't fail: the grades
+  found go, students not reached count as failed (so they are retried), and the log line is `partial` with `tooMany`.
+- **Fewer false alarms in the announcement name check, and it says which word.** Before: any roster first name of 3+
+  letters was refused as a whole word in any case, so a class with a May, a Will or an Art couldn't post "we will start
+  in May". Now full roster names, display names of more than one word and usernames still count in any case. A one-word
+  name (a roster name's first word, a one-word display name) that is on a short fixed list of everyday English words
+  (`WORD_NAMES`: may, will, art, grace, mark, rose, max, jack...) counts only when written like a name: starting with a
+  capital, not at the start of a sentence, and, for April, May, June and August, not after a date word such as "in",
+  "by", "on" or before a number. Names off the list are checked as before. Why this rule: capitalization mid-sentence
+  is how English marks a name, and the list only relaxes words a teacher writes in ordinary class news; everything
+  else keeps the old, stricter check, and the list is English only, so other languages keep it too. Known gap,
+  accepted: such a name at the start of a sentence ("Will did great") gets through. Last names alone are not checked
+  (plain-word surnames such as Brown or Young would block much more than they protect; the full name is checked). The
+  error now quotes the words from the teacher's message that matched (`gclassroom.errors.hasName`, 13 languages).
+- **Checks:** tests/unit/gclassroom.test.js (retry, back-off, no resend, the window; the 300 cap after 4 pages; a
+  1,050-entry submission list; the name check), with the existing fake Classroom.
+
 ## Weekly class summary email (9 Nov 2026)
 
 Teachers get one email a week with counts for each class they teach, so they know where to look without opening the
@@ -3932,3 +3991,206 @@ parent account; the migration; the chat default, the notice and its dismissal), 
 
 **Deploy note.** `0067` belongs to the Google Classroom work on another branch; whichever merges second keeps both
 entries in `MIGRATIONS` (they do not depend on each other).
+
+## Teacher marketing: Classroom, free and paid (10 Nov 2026)
+
+Part of the owner-approved website pass (Google Classroom on the marketing pages, one free and paid story, the tagline,
+a place for real teacher quotes).
+
+- **Google Classroom section** on "/" (`#classroom`, after the courses) and on /teachers (a panel after the teaching
+  loop), with the same words (`teachers.classroom.*`). It shows only while Classroom is on for the server
+  (`services/gclassroom.js` `enabled()`: Sign in with Google and `GOOGLE_CLASSROOM=1`), following /teachers' rule that a
+  feature off on this server is left out of the text. Every line matches the code: read-only connect first, posting
+  needs the teacher's separate "allow posting" step, roster import by hand then every 6 hours (`ROSTER_EVERY`),
+  students matched by Google account, assignment with link and due date or a material, completion grades out of 100
+  (`scoreOf`: steps done of the lesson's steps, said in the copy), automatic grades optional, announcements in the
+  teacher's words, no student emails asked for and no names, answers or games sent. Nothing says or implies that Google
+  verified the app. Turn `GOOGLE_CLASSROOM` on in production only once Google has verified the scopes, or the section
+  invites teachers who would meet the "unverified app" screen.
+- **One free and paid line** (`teachers.free.line`), on the landing hero and the /teachers hero: always free (every game,
+  classes, lessons, progress and the gradebook, free daily Builder messages for teachers and students), the Teacher plan
+  adds the class's daily AI builds (`TEACHER_DAILY_MESSAGES`), "See prices on Plans" links to /plans. No amount on "/"
+  or /teachers (the "kids are never sold to" rule above stands; amounts stay on /plans). The landing's pricing section
+  gets a Free card; the Teacher card lists only what the plan adds ("Everything in Free, plus:"), so free features are
+  no longer listed as plan features; the trial FAQ and the closing line say what stays free when a trial ends (nothing
+  is deleted or locked: "Teacher plan" above). /teachers with paid-plan pages off shows the free half only
+  (`teachers.free.lineOff`). The old keys (`landing.pricing.lead`, `landing.faq.a2`, `landing.final.p`) are no longer
+  used.
+- **Tagline** "Screen time you can feel good about" (`brand.tagline`, new; it was only ever in the parents video) in the
+  landing footer and under the /parents heading.
+- **Teacher quotes** on /teachers: `TEACHER_QUOTES` in routes/teachers.js is empty, so the section is not rendered.
+  Only real quotes, given with the teacher's permission, go there; a platform admin sees the layout with owner
+  placeholders at `/teachers?quotes=preview`. "/" keeps its no-testimonials rule.
+- **Research link:** "/" (under "Why games work") and /teachers link to `/research` (the page comes with the research
+  pass).
+- Tests: `tests/unit/teacher-marketing.test.js`.
+
+## A first live game in under 3 minutes (10 Nov 2026)
+
+The teacher audit's slam-dunk item 1 (owner: "Build 1, 2, and 5"; this is 1). Before: the landing's only way in was the
+14-day trial (six fields, an email, Stripe), and "Host a free live game" on /teachers/live sent a teacher to the
+**parents'** sign-up. Guest join already worked in a few taps but nothing led a new teacher to it.
+
+**What a new teacher does now** (counted by `tests/support/fast-live-flow.js`, bounded in `tests/e2e/fast-live.spec.js`):
+8 steps to a started game: tap "Host a live game now" → type name, username, password → tick "teacher, 18 or older" →
+"Make my account and pick a game" → "Open the room" (a game, a level and a subject are already picked) → "Start". Each
+student: type the 7-digit code (or scan the QR, which fills it in), Join, "Let's go", answer: 4 steps, no account. By
+machine the whole path takes about 7 s with instant typing and about 13 s at 150 ms a key
+(`node scripts/fast-live-timing.js <url>`); nobody has timed a real teacher with a real class yet.
+
+**Decisions.**
+
+- **A short teacher sign-up, not a way to host without an account.** Kids never host, and a host must be someone we
+  can limit, audit and ban, so hosting keeps needing an account. `/teachers/host` asks for three boxes (name, username,
+  password) and the same "I am a teacher or school staff member, and 18 or older" box as /trial (a statement, not a
+  check, like the parents' one). No email, no school name, no card, no plan. The password stays at the staff minimum (12).
+- **The account is what /trial makes, minus checkout:** an ordinary account that is the admin and only member of a
+  school of its own ("<name>: my classroom"), so it is staff: it hosts, makes classes and login cards, lands on the
+  Classroom home, and has no friends and no chat (`noFriendsAccount`). It is never a grown-up (parent) account.
+- **Abuse limits kept:** the sign-up shares every other sign-up's per-address limits (30 an hour, 2,000 tries) and has its
+  own route limit; opening rooms shares `/api/live/sessions`' limit (30 an hour per account); the name is refused if it
+  has a phone number, an email or a blocked word (a class sees it as its teacher). Written to the audit log
+  (`user.signup`, `via: quick-live`).
+- **No email means no password reset by email** for these accounts until the teacher starts a trial (which asks for
+  one). The page says "no email address"; the owner may prefer an optional email box (see the report).
+- **"Quick game"** (`/live/quick`): two quiz modes (Question Battle first: questions on the big screen suit a first
+  try; Quest Race), the question bank's four levels and its subjects, 10 questions, one button. The last pick is
+  remembered per teacher (`live_prefs.prefs.quick`; no migration). "More games and settings" is the full `/live`.
+- **Guests are the front door for a first try; a class is for anything that counts.** A quick game with no class is an
+  ordinary open room: every player is a guest with a generated name (never typed), no chat, no cookies. The landing's
+  live section now also has "Have a game code? Join" and its fourth bullet no longer says "signed-in students only".
+- **One tap on a class card:** "⚡ Quick game" on every class card of the Classroom home opens a class room with the
+  last pick (the class's grade picks the level); the line beside it says what will open, with "Change". A class room
+  seats only that class's signed-in students, who see the existing "Your teacher started a live game · Join now" on
+  their class page and Class tab, so they type no code. While a room is open the card shows "Open live game" instead.
+- **A second tap never ends a room:** if the teacher already has a room open, Quick game goes back to it with a note.
+- **After a guest game** the results page says plainly: nothing went into a gradebook; the question review (questions,
+  counts per answer, no player) is kept (as before: `live_runs`, 90 days for runs without a class); game names and
+  scores are in memory for 10 minutes only. Staff who may make a class get "Make a class to keep scores"
+  (`/teach/keep-scores`): class name, pasted names → the class, its school accounts and the login cards in one go.
+- **Prices:** none on "/", /teachers/host, /live/quick or any page here. Nothing is sent to an AI.
+
+**Routes.** `GET /teachers/host`, `POST /api/teachers/host-signup`, `GET /live/quick`, `POST /api/live/quick`
+(`server/routes/quick-live.js`); `GET /teach/keep-scores`, `POST /api/teach/keep-scores` (`server/routes/schools.js`).
+All 404 while `LIVE_CLASSROOM=0`. No new table, no migration (0069 was reserved and is not used), no new env var.
+`/admin/stats` gets "First live game" totals (`quick.view`, `quick.signup`, `quick.room`) and `landing.host` clicks.
+
+**Who gets in** (unit `tests/unit/quick-live.test.js`): the sign-up refuses anyone signed in; the chooser and its API
+are for accounts that may host (kids, students, guests and signed-out visitors get the sign-up, /join or a 404); a
+class id works only for a teacher of that class; keep-scores is for staff who may make a class in their school (404
+for kids, students, guests, grown-ups, and teachers of a school that keeps class-making for admins); login cards open
+for their maker only.
+
+**Words** in 12 languages under `quickLive.*` (`scripts/i18n-add-quick-live.mjs`; en-GB has no differing spelling).
+
+**Not done here:** a real classroom timing; "Sign in with Google" on the short sign-up; Brain Board and the other modes
+in the quick chooser (they need more choices than one screen should ask).
+
+### After the review of the first live game (10 Nov 2026)
+
+A second reviewer walked the path in German and found one real fault and some smaller ones. What changed, and what did not.
+
+- **Buttons wrap on phones in every language.** "Make a class to keep scores" on the guest results page did not wrap,
+  so the page scrolled sideways at 360 px in seven languages (German, French, Spanish, Dutch, Russian, Portuguese,
+  Italian). It and the older "Play the missed questions again" button now wrap (`.btn-wrap`, `public/css/live.css`).
+  The landing's top bar had the same fault before this work (its two buttons, in six languages); they now take two
+  lines on phones where the words are long (`public/css/landing.css`). Russian "Бесплатно" breaks inside the word
+  there; a shorter word would be nicer.
+- **The layout test covers long words.** `tests/e2e/fast-live.spec.js` now runs the touching, overflow and tap-target
+  checks in German and Spanish on every page of the path, checks the guest results at 360 px in all 13 languages, and
+  checks "/" at 360 px in all of them. It fails without the fix.
+- **A staff password must be more than long.** The two teacher sign-ups (`/teachers/host`, `/trial`) refuse a
+  12-character password that is only digits, one short piece repeated, or easy passwords put end to end
+  ("123456789012", "passwordpassword", "qwerty123456"): `auth.checkStaffPassword`. Password changes and resets keep
+  their old rules for now.
+- **German uses "du" on the sign-up.** The new words said "Sie" while the labels reused from /trial said "du". All
+  `quickLive.*` German is now "du", and so is the one "Sie" hint in the /trial sign-up. The rest of the German site
+  still mixes the two (about half and half across all pages); that is a separate clean-up.
+- **One room at a time, said on every card.** While a teacher has a room open, no class card offers "Quick game" or
+  "Host live". The card of the room's class has "Open live game" as before; the other cards have the same button
+  (back to that room) and the line "You already have a game open: <title>". Before, a tap on another class's Quick
+  game silently went to the first class's room.
+- **Keep scores says which school.** `/teach/keep-scores` shows the school's name; staff of more than one school
+  choose it (only schools where they may make a class; any other id is a 404). If no account could be made, the empty
+  class is removed and the names box shows an error, never an empty page of cards.
+- **Left for the owner: what a short sign-up account may do.** It is the first staff account made with no email and
+  no review, only the "teacher, 18 or older" box. It can open rooms at the full player limit, make student accounts
+  (60 names a request) and ask for AI question drafts (30 an hour). Nothing here changes that: a lower room size (the
+  grown-ups' 30) would turn away a class of 31 on its first try, and holding back AI drafts or account-making needs a
+  way to add an email first. Options are in the report; `docs/status.md` lists it as open.
+## Real scores in the gradebook (10 Nov 2026)
+
+The teacher audit's item 2: "Overall" was steps done ÷ steps open, so a child who answered every question wrong showed
+100 %, and a teacher had to match "CozyLynx25" to a child by hand. A teacher has to stand behind a grade in front of a
+parent.
+
+**Two columns, two meanings.**
+- **Work done** (was "Overall"; same figure, same rule: steps done of steps in the lessons that are open). Renamed on the
+  gradebook and in its CSV. The weekly summary already said "Work done" and the Google Classroom push already calls
+  itself a "completion grade": both are this figure, so neither changed (`server/services/gclassroom*.js` untouched).
+- **Score** (new): points earned ÷ points possible, over everything that has a right answer or a teacher's rubric
+  (`server/services/scores.js`):
+  - a finished **quiz step**: 1 point a question;
+  - a **game step hosted live** for the class: 1 point a question asked, the student's best run (a skipped question is
+    not right);
+  - a **library rubric** scored by the teacher: its points of its maximum (only criteria with a level; a score from a
+    swapped-out rubric is left out, as everywhere);
+  - a step's own **0–3 rubric lines** (CS Quest): 3 points a marked line (not counted twice when the step also has a
+    library rubric score).
+  Weighted by points possible, so a 16-point rubric counts for more than a 5-question quiz. Work not done or not scored
+  is **left out** (Work done shows that), so nothing scored reads "–", never 0 %. Lessons that have not opened are left
+  out, as they are from Work done.
+- **Not in the Score, on purpose:** a game played outside a live run reports a bare number with no maximum (4,200
+  points of what?), so it cannot be a percentage; a quiz still open; feedback without a level; and **live games that are
+  not a lesson step** (a Friday warm-up is practice). Those live games are shown, per student, in the gradebook's
+  "Live game results" table and the CSV. *Owner can decide otherwise:* counting every class live game in the Score is a
+  one-line change in `scores.js`, but it would let a warm-up move a grade.
+- **Every score is explainable.** A score cell links to the student's page at "What makes up the score": each item with
+  its type and points, a subtotal per lesson and the total. "How to read it" states the formula.
+
+**Late.** "Late" stays what it was (work still missing after the due day). New: **"Done late"**: the lesson is finished
+but a step was first done after the due day ended (`lessons.lateFrom`: the local midnight after the due day in the
+school's time zone; without a zone, the old +36 h rule). In the cell, on the lesson's page (the row and the step), on
+the student's page and in the CSV. `done_at` is the first time a step was done, so reopening work later does not make
+it late. No new table and no migration (0070 was reserved and is **not used**).
+
+**Live game results.** A column per saved class game (the last 8) with right ÷ asked per student, "✓" when the game had
+nothing to mark (Would You Rather, drawing), "–" when the student was not there. Only `live_run_scores` is read, which
+only ever holds signed-in students of the run's class: a guest has no row and can never appear.
+
+**Names.** Staff-only screens show the roster name with, in grey beside it, the name the student has in games
+(`views/components.js staffStudentName`): the gradebook, its live table, the course panels, the lesson's progress table,
+the answers and build cards, the whole-lesson rubric cards, the Standards tab's student picker and heading (both
+frameworks) and the student's page. The gradebook CSV already had both (Name, Oomba Academy name); the live results and
+their CSV got roster names in "Teacher quick wins". **The live Teacher view** gets a button, "Show class-list names"
+(off every time the page opens, never remembered): it asks `GET /api/live/host/:sid/roster-names` and shows the roster
+name in brackets beside each game name. The names are not in the session, so they cannot reach the projector
+(`/live/host/:sid`), a player or a game frame; the API answers only a full-tier controller who manages the class.
+Anything a student sees keeps generated names.
+
+**One student's page**, `/class/:id/student/:uid`: Work done, Score, late lessons, each lesson, what makes up the
+score, a standards summary per framework (met / developing / practised, with a link to the Standards tab), the last 10
+written answers with feedback, rubric feedback, and live results. For whoever manages the class (its teachers, the
+school's admins: `S.canManageClass`, the gradebook's rule), only for an active student of that class; everyone else
+gets the 404 page. `Cache-Control: no-store`. **Print:** the first name only unless the teacher ticks "Print the full
+name" (CSS only: `.sp-page:not(:has(#sp-full:checked)) .sp-rest`); the name used in games, the class tabs and the top
+bar are never printed; no other student and no price is on the page. Student names in the gradebook link to it.
+
+**CSV.** Old columns keep their place ("Overall" is now headed "Work done"); new ones are added at the end: Score,
+Score (points), Late lessons, then per lesson "(score %)" and "(late)" (late / done late), then one column per live game.
+
+**Speed.** Three more queries per class (rubric scores, marks, live runs) and one for late steps. Seeded test: 3 classes
+of 28 with 12 lessons of 5 steps, quiz, rubric and live scores: `classProgress` for all three about 20 ms, the three
+gradebook pages over HTTP about 100 ms, one student's page about 30 ms (limit in the test: 300 ms).
+
+**The landing page** says "Scores go straight into your gradebook" beside live games. That is now true for class games
+(signed-in students of the class): each run is a column, and a run hosted for a lesson step counts in the Score. It is
+not true for guest games (nothing is saved for a guest, by design). `landing.js` was left alone (another track edits
+it). Today the line sits beside "Signed-in students only", so it reads true as it is; if the landing page starts
+to offer guest games ("no student accounts"), the line should say "class games".
+
+**Tests.** `tests/unit/gradebook-scores.test.js` (formula, "–", late by time zone, live results, names, the student's
+page and who may open it, the CSV, 13 languages, the 300 ms limit), `tests/unit/live-roster-names.test.js` (the API as
+every kind of account; nothing on the projector page or any socket), `tests/e2e/gradebook-scores.spec.js` (its own
+server on `tests/support/gradebook-seed.js`; 360 / 390 / 1366, light and dark, Hebrew; print). The CSV assertions in
+`progress`, `rubrics` and `teacher-quick-wins` tests now find columns by their heading, as strictly as before.

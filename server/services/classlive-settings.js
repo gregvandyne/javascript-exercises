@@ -107,7 +107,8 @@ export function loadPrefs(userId) {
     const t = p.teams || {};
     const teams = { on: !!t.on, n: Number.isInteger(t.n) && t.n >= 2 && t.n <= 6 ? t.n : 2, scoring: t.scoring === 'sum' ? 'sum' : 'avg' };
     const bk = p.bank && typeof p.bank === 'object' ? p.bank : null;
-    return { settings, teams, ...(bk ? { bank: cleanBank(bk) } : {}) };
+    const qk = p.quick && typeof p.quick === 'object' ? p.quick : null;
+    return { settings, teams, ...(bk ? { bank: cleanBank(bk) } : {}), ...(qk ? { quick: cleanQuick(qk) } : {}) };
   } catch { return null; }
 }
 /** Where a host's questions came from last time: the bank (subject, level, count, board subjects) or one of their sets. */
@@ -118,6 +119,20 @@ const cleanBank = b => ({
   count: [5, 10, 15, 20].includes(+b.count) ? +b.count : 10,
   ...(Array.isArray(b.board) ? { board: b.board.filter(x => /^[a-z]{1,20}$/.test(String(x))).slice(0, 6) } : {}),
 });
+/** The "Quick game" pick (routes/quick-live.js): the mode and the question bank's subject and level, last used. */
+export const QUICK_MODES = ['battle', 'quest-race'];
+const cleanQuick = k => ({
+  mode: QUICK_MODES.includes(k.mode) ? k.mode : QUICK_MODES[0],
+  subject: /^[a-z]{1,20}$/.test(String(k.subject)) ? String(k.subject) : 'mixed',
+  level: ['a6', 'a8', 'a10', 'a12'].includes(k.level) ? k.level : 'a8',
+});
+export function saveQuickPref(userId, quick) {
+  const r = q.get('SELECT prefs FROM live_prefs WHERE user_id=?', String(userId || ''));
+  let p = {}; try { p = r ? JSON.parse(r.prefs) : {}; } catch { p = {}; }
+  p.quick = cleanQuick(quick || {});
+  q.run('INSERT INTO live_prefs(user_id, prefs, updated_at) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET prefs=excluded.prefs, updated_at=excluded.updated_at', userId, JSON.stringify(p), Date.now());
+  return p.quick;
+}
 export function saveBankPref(userId, bank) {
   const r = q.get('SELECT prefs FROM live_prefs WHERE user_id=?', String(userId || ''));
   let p = {}; try { p = r ? JSON.parse(r.prefs) : {}; } catch { p = {}; }
@@ -128,7 +143,7 @@ export function saveBankPref(userId, bank) {
 /** Save what the host started with (at start). */
 export function savePrefs(userId, { settings, teams }) {
   const old = loadPrefs(userId);
-  const p = { settings: clean(settings || {}, { lobby: true, nameMode: 'accounts' }), teams: teams ? { on: !!teams.on, n: teams.n, scoring: teams.scoring } : { on: false }, ...(old && old.bank ? { bank: old.bank } : {}) };
+  const p = { settings: clean(settings || {}, { lobby: true, nameMode: 'accounts' }), teams: teams ? { on: !!teams.on, n: teams.n, scoring: teams.scoring } : { on: false }, ...(old && old.bank ? { bank: old.bank } : {}), ...(old && old.quick ? { quick: old.quick } : {}) };
   q.run('INSERT INTO live_prefs(user_id, prefs, updated_at) VALUES (?,?,?) ON CONFLICT(user_id) DO UPDATE SET prefs=excluded.prefs, updated_at=excluded.updated_at', userId, JSON.stringify(p), Date.now());
   return p;
 }

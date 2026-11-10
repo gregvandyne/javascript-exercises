@@ -36,6 +36,7 @@ import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TI
 import { teacherLoop } from '../views/teacher-loop.js';
 import { loopLinks } from '../services/teach-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
+import { enabled as classroomOn } from '../services/gclassroom.js';
 
 export const router = Router();
 export const contactEmail = () => config.contactEmail || 'greg@oomba.ai';
@@ -165,6 +166,43 @@ router.post('/api/teachers/school-request', express.urlencoded({ extended: false
   ok();
 });
 
+// ---------------------------------------------------------------------------------------------------- teacher quotes
+/**
+ * Real teacher quotes for /teachers, supplied by the owner. EMPTY BY DEFAULT, and while it is empty the section is not
+ * rendered at all (no heading, no placeholder, nothing for search engines). Only add a quote a real teacher said and
+ * agreed to have published, never one written for them:
+ *   { quote: 'Their words', name: 'Their name as they want it shown', role: 'Grade 4 teacher', school: 'Their school', lang: 'en' }
+ * lang is the language the quote was given in (it is shown as said, not translated). A platform admin can see where the
+ * section goes, with owner placeholders, at /teachers?quotes=preview; nobody else ever sees the placeholders.
+ */
+export const TEACHER_QUOTES = Object.freeze([]);
+/** The owner's placeholders for the preview (never public, never translated). */
+export const QUOTE_PLACEHOLDER = { quote: '[Owner: add a real teacher quote here, with the teacher\'s written permission]', name: '[Owner: teacher name]', role: '[Owner: role, e.g. Grade 4 teacher]', school: '[Owner: school]', lang: 'en' };
+/** The quotes section: '' with no quotes, unless a platform admin asked for the preview. */
+export function quotesSection(req, quotes = TEACHER_QUOTES) {
+  const t = req.t;
+  const preview = !quotes.length && req.query && req.query.quotes === 'preview' && isPlatformAdmin(req.user);
+  const list = quotes.length ? quotes : preview ? [QUOTE_PLACEHOLDER, QUOTE_PLACEHOLDER, QUOTE_PLACEHOLDER] : [];
+  if (!list.length) return '';
+  return html`<section class="lp-sec lp-quotes${preview ? ' lp-quotes-preview' : ''}" id="teachers-say" aria-labelledby="quotes-h">
+    ${el(t, 'h2', 'teachers.quotes.h', {}, ' id="quotes-h"')}
+    ${preview ? html`<p class="notice" lang="en" dir="ltr">Owner preview: only platform admins see this. The section stays hidden until TEACHER_QUOTES in server/routes/teachers.js has real quotes.</p>` : ''}
+    <ul class="lp-quote-list">${list.map(x => html`<li><figure class="panel lp-quote" lang="${x.lang || 'en'}"><blockquote><p>${x.quote}</p></blockquote>
+      <figcaption><b>${x.name}</b>${x.role ? html`, ${x.role}` : ''}${x.school ? html`, ${x.school}` : ''}</figcaption></figure></li>`)}</ul>
+  </section>`;
+}
+
+/** Google Classroom for teachers (only when it is on here): the words are teachers.classroom.*, the same as "/". */
+function classroomSection(req) {
+  if (!classroomOn()) return '';
+  const t = req.t;
+  return html`<section class="panel lp-gc" id="classroom" aria-labelledby="classroom-h">
+    ${el(t, 'h2', 'teachers.classroom.h', {}, ' id="classroom-h"')}${el(t, 'p', 'teachers.classroom.lead')}
+    <ul class="lp-list">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => el(t, 'li', `teachers.classroom.${k}`))}</ul>
+    <p class="small muted">${el(t, 'span', 'teachers.classroom.note')} <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
+  </section>`;
+}
+
 // ---------------------------------------------------------------------------------------------------- /teachers
 router.get('/teachers', (req, res) => {
   const t = req.t;
@@ -205,8 +243,10 @@ router.get('/teachers', (req, res) => {
     ${el(t, 'p', 'teachers.lead', {}, ' class="lead"')}
     <p class="small lp-leader">🏫 ${tHtml(t, 'teachers.leaderLine', { href: '#start' })}</p>
     <ul class="lp-badges">${badges.map(([e, k]) => html`<li><span aria-hidden="true">${e}</span> ${el(t, 'span', k)}</li>`)}</ul>
+    ${el(t, 'p', plans ? 'teachers.free.line' : 'teachers.free.lineOff', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' }, ' class="lp-freeline"')}
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
+      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">📡 ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
       ${list[0] ? html`<a class="btn btn-big" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${howArt(req, 'teachers')}
@@ -216,6 +256,7 @@ router.get('/teachers', (req, res) => {
   <section class="lp-sec" id="play" aria-labelledby="play-h">
     ${el(t, 'h2', 'teachers.play.h', {}, ' id="play-h"')}${el(t, 'p', 'teachers.play.p')}
     <ul class="lp-games">${list.map(card)}</ul>
+    <p class="lp-research">📚 <a href="/research">${t('teachers.research.link')}</a></p>
   </section>
 
   <section class="lp-sec" id="brain-breaks" aria-labelledby="bb-h">
@@ -229,6 +270,7 @@ router.get('/teachers', (req, res) => {
   </section>
 
   ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn() })}
+  ${classroomSection(req)}
 
   <div class="lp-cols">
     <section class="panel" id="build" aria-labelledby="build-h">
@@ -256,6 +298,7 @@ router.get('/teachers', (req, res) => {
     </section>
   </div>
 
+  ${quotesSection(req)}
   ${sent ? '' : startPanel}
   ${faq.markup}
   </div>`;
@@ -285,7 +328,9 @@ router.get('/teachers/live', (req, res, next) => {
   const host = canHost(u), kid = !!u && !u.is_guest && !host;
   // The way in: hosts go straight to /live; signed-out teachers sign in (or sign up as a grown-up while those pages are on,
   // else set up their school on /teachers); a child's account is told to ask for the code.
-  const hostHref = host ? '/live' : familiesOn(req) ? '/grown-ups/signup?next=%2Flive' : '/login?next=%2Flive';
+  // (Signed out: the three-field teacher sign-up and the Quick game chooser, routes/quick-live.js. It used to be the
+  // parents' sign-up, which made a parent account for a teacher.)
+  const hostHref = host ? '/live' : '/teachers/host';
   const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
   const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
@@ -293,7 +338,7 @@ router.get('/teachers/live', (req, res, next) => {
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
   const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">👥 ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
   const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
-    : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>${!host && !familiesOn(req) ? html`<a class="btn btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a>` : ''}`;
+    : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>`;
   const body = html`<div class="lp">
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'teachersLive.kicker', {}, ' class="lp-kicker"')}
@@ -339,7 +384,7 @@ router.get('/teachers/live', (req, res, next) => {
 
   <section class="panel lp-start" id="start" aria-labelledby="start-h">
     ${el(t, 'h2', 'teachersLive.start.h', {}, ' id="start-h"')}
-    ${el(t, 'p', kid ? 'teachersLive.start.kid' : host ? 'teachersLive.start.signedIn' : familiesOn(req) ? 'teachersLive.start.p' : 'teachersLive.start.pSchool')}
+    ${el(t, 'p', kid ? 'teachersLive.start.kid' : host ? 'teachersLive.start.signedIn' : 'quickLive.ctaNote')}
     <div class="row">${startBtns}</div>
   </section>
   ${faq.markup}

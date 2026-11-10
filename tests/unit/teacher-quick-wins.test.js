@@ -111,10 +111,10 @@ test('b. a quiz score shows in the lesson table, the gradebook cell and the CSV 
   assert.equal((book.text.match(/class="gb-pts gb-quiz" title="Quiz score: /g) || []).length, 1, 'only for the student who finished it');
   // The CSV: a quiz column after the lesson, and the mean of all.
   const csv = (await req(ana, `/class/${cls.id}/progress.csv`)).text.replace(/^﻿/, '').split('\r\n');
-  assert.equal(csv[0], 'Name,Oomba Academy name,Times tables,Times tables (quiz %),Overall,Quiz %');
+  assert.equal(csv[0], 'Name,Oomba Academy name,Times tables,Times tables (quiz %),Work done,Quiz %,Score,Score (points),Late lessons,Times tables (score %)');
   const line = name => csv.find(l => l.startsWith(`${name},`)).split(',');
-  assert.deepEqual(line('Mia Realname').slice(2), ['1/2', '80%', '50%', '80%']);
-  assert.deepEqual(line('Leo Realname').slice(2), ['0/2', '', '0%', '']);
+  assert.deepEqual(line('Mia Realname').slice(2), ['1/2', '80%', '50%', '80%', '80%', '4/5', '0', '80%']);
+  assert.deepEqual(line('Leo Realname').slice(2), ['0/2', '', '0%', '', '–', '', '0', '']);
   // A student never gets the teacher's page.
   assert.equal((await req(mia, `/class/${cls.id}/progress/${cl.id}`)).status, 404);
 });

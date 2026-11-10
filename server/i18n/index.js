@@ -86,7 +86,7 @@ export const READY_SHARE = 0.9;
  *  language has them, those pages show the English, marked as English, and server/seo.js lists only the languages
  *  that have them in hreflang and the sitemap. The parent-made accounts' legal notice (family.made.notice.*, the /parents
  *  fold info.parents.made.*) is legal text too. */
-export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'parents.', 'learn.', 'seo.', 'landing.', 'info.parents.made.', 'family.made.notice.'];
+export const UNCOUNTED_PREFIXES = ['info.terms.', 'info.refunds.', 'info.privacy.', 'teachers.', 'parents.', 'learn.', 'seo.', 'landing.', 'research.', 'compliance.', 'info.parents.made.', 'family.made.notice.'];
 const counted = code => Object.keys(dictionary(code)).filter(k => !UNCOUNTED_PREFIXES.some(p => k.startsWith(p))).length;
 export function availableCodes() {
   if (process.env.BRB_ALL_LOCALES === '1') return CODES.slice();

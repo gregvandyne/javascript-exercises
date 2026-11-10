@@ -145,7 +145,7 @@ export function classStandards(classId, { all = false } = {}) {
       practiced, checkedPct: answered ? Math.round((100 * right) / answered) : null, items: (asked.get(s.id) || new Set()).size, checkedStudents, right, answered,
       appliedMean: marksN ? round1(marksSum / marksN) : null, marked, marksN, marksSum, needsLook, meets, last: last || null, status, by };
   });
-  return { classId, students: students.map(p => ({ id: p.id, name: p.roster_name || p.display_name, username: p.username, noData: !seen.has(p.id) })), lessons, levels, rows: out };
+  return { classId, students: students.map(p => ({ id: p.id, name: p.roster_name || p.display_name, alias: p.roster_name && p.display_name && p.display_name !== p.roster_name ? p.display_name : '', username: p.username, noData: !seen.has(p.id) })), lessons, levels, rows: out };
 }
 
 /**
