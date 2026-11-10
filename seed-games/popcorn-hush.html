@@ -1,0 +1,1853 @@
+<title>Popcorn Hush</title>
+<style>
+/* Popcorn Hush on the Oomba Kit: a classroom noise meter. A cheerful pot full of golden kernels sits on a little stove
+   with a striped bowl beside it. While the class keeps quiet the kernels rest and the quiet-time clock runs; near the
+   line the heat glows and the kernels sizzle; too loud for too long and the popcorn POPS (the pot gets flustered, the
+   clock stops) until the room has been calm for a few seconds. The play page measures how loud the room is and passes
+   the game one number at a time (BRB.loudness); nothing is recorded. Screens: the kit's title (the calm pot behind it)
+   -> the setup card (how quiet, the goal, the room's quiet, the privacy note) -> the kitchen with the gauge and the
+   quiet-time clock -> the kit's results card. Layout: landscape (projector, laptop, tablet on its side) puts the gauge
+   on the right edge; portrait puts it along the bottom and the bowl in front of the stove. Colour is never the only
+   cue: each zone has an icon and the loud zone stripes. */
+html,body{height:100%}
+body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.ok-hud{display:none!important}
+.ph,.ph *,.phs,.phs *{box-sizing:border-box}
+.ph{position:fixed;inset:0;overflow:hidden;color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif);--top:110px;
+  --ink:#141414;--calm:#66C792;--near:#FFD23F;--loud:#E8483C;--card:#FFFDF2;background:#FFF3DC}
+.ok-night .ph{background:#1E2A33}
+.ph button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.ph-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+/* the kitchen, the pot, the bowl and the popcorn: one canvas, drawn every frame by our own loop */
+.ph-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* the top bar: the quiet-time clock in the middle, pause and teacher settings at the end */
+.ph-top{position:absolute;inset-inline:0;top:0;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;gap:10px;
+  padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 0 calc(12px + env(safe-area-inset-left));pointer-events:none}
+.ph-top>*{pointer-events:auto}
+.ph-spacer{pointer-events:none}
+.ph-clock{justify-self:center;display:flex;flex-direction:column;align-items:center;padding:6px 22px 8px;border-radius:24px;background:var(--card);color:var(--ink);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);min-width:min(300px,48vw)}
+.ph-clock .lab{font-weight:800;font-size:clamp(.95rem,min(2.2vw,2.6vh),1.7rem);line-height:1.1;display:flex;align-items:center;gap:6px}
+.ph-clock .lab::before{content:'🤫';font-size:.95em}
+.ph-clock.stopped .lab::before{content:'⏸️'}
+.ph-clock .time{font-weight:900;font-size:clamp(34px,min(8vw,8.4vh),118px);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.ph-clock .sub{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-weight:700;font-size:clamp(.85rem,min(1.8vw,2.2vh),1.5rem);opacity:.85}
+.ph-clock .pops::before{content:'💥 '}.ph-clock .corn::before{content:'🍿 '}
+.ph-clock.run .time{color:#2E8B4A}
+/* popping: the clock visibly stops (grey, a stop badge, a red edge) */
+.ph-clock.stopped{border-color:#C93A2F;box-shadow:0 5px 0 #C93A2F}
+.ph-clock.stopped .time{color:#8A8A8A}
+.ph-clock.stopped .lab{color:#C93A2F}
+/* the way to the goal: a bar that fills while the class keeps the popcorn calm */
+.ph-clock .bar{width:100%;height:clamp(8px,1.2vh,14px);border-radius:999px;border:2.5px solid var(--ink);background:#EDE6D2;overflow:hidden;margin:4px 0 2px}
+.ph-clock .bar i{display:block;height:100%;width:0;background:var(--calm);transition:width .4s}
+.ph-clock.stopped .bar i{background:#B9B9B9}
+.ph-btns{justify-self:end;display:flex;gap:8px}
+/* the kit fills its gear with --ok-icon-card (dark at night): these buttons stay light, so the gear does too */
+.ph-ib{width:clamp(48px,min(6vw,7vh),76px);height:clamp(48px,min(6vw,7vh),76px);border-radius:18px;border:3px solid var(--ink);background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--ink);
+  display:flex;align-items:center;justify-content:center;padding:0;--ok-icon-card:var(--card)}
+/* "Listening (only how loud)": the microphone is on (the page's own pill says so too, with Stop) */
+.ph-chip{display:flex;align-items:center;gap:8px;height:clamp(48px,min(6vw,7vh),76px);padding:0 16px;border-radius:18px;border:3px solid var(--ink);background:#C93A2F;color:#fff;box-shadow:0 4px 0 var(--ink);
+  font-weight:800;font-size:clamp(.85rem,min(1.35vw,2.2vh),1.4rem);white-space:nowrap}
+.ph-chip .dot{flex:none;width:.75em;height:.75em;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.35);animation:phBlink 1.4s ease-in-out infinite}
+@keyframes phBlink{50%{opacity:.35}}
+.ok-rm .ph-chip .dot{animation:none}
+@media (max-width:900px){.ph-chip .tx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.ph-chip{padding:0;width:clamp(48px,min(6vw,7vh),76px);justify-content:center}.ph-chip .dot{display:none}}
+.ph-ib svg{width:55%;height:55%}
+.ph-ib:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.ph button:focus-visible,.ph input:focus-visible{outline:4px solid var(--ok-focus,#2E7CF6);outline-offset:3px}
+.ph:not(.playing) .ph-top,.ph:not(.playing) .ph-gauge,.ph:not(.playing) .ph-demo{visibility:hidden}
+
+/* the gauge (landscape: up the right edge) */
+.ph-gauge{position:absolute;right:calc(18px + env(safe-area-inset-right));top:calc(var(--top) + 30px);bottom:calc(40px + env(safe-area-inset-bottom));width:clamp(56px,6.4vw,124px);
+  display:flex;flex-direction:column;align-items:center;gap:8px}
+.g-track{position:relative;flex:1;width:100%;border-radius:999px;border:4px solid var(--ink);background:#FFFDF5;overflow:hidden;box-shadow:0 5px 0 var(--ink)}
+.g-zone{position:absolute;left:0;right:0;bottom:0;opacity:.38}
+.g-calm{background:var(--calm)}.g-near{background:var(--near)}
+.g-loud{background:var(--loud);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 8px,transparent 8px 16px)}
+.g-fill{position:absolute;left:0;right:0;bottom:0;transition:background-color .2s}
+.g-fill.calm{background:var(--calm)}.g-fill.near{background:var(--near)}
+.g-fill.loud{background:var(--loud);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 8px,transparent 8px 16px)}
+.g-peak{position:absolute;left:0;right:0;height:5px;margin-bottom:-2px;background:var(--ink);opacity:.6}
+.g-line{position:absolute;left:-4px;right:-4px;height:8px;margin-bottom:-4px;background:var(--ink)}
+.g-ic{flex:none;width:clamp(44px,min(5vw,7vh),96px);height:clamp(44px,min(5vw,7vh),96px);line-height:0}.g-ic svg{width:100%;height:100%;display:block;overflow:visible}
+/* the zones named inside the track: Shh, Getting loud (the "Too loud" tag marks the line) */
+.g-lab{position:absolute;left:3px;right:3px;transform:translateY(50%);z-index:2;text-align:center;font-weight:900;font-size:clamp(.7rem,min(1.15vw,1.9vh),1.4rem);line-height:1.05;color:var(--ink);
+  text-shadow:0 0 3px #FFFDF5,0 0 3px #FFFDF5,0 0 2px #FFFDF5;pointer-events:none;overflow-wrap:anywhere;hyphens:auto}
+.g-line{z-index:3}.g-peak{z-index:1}
+.ph-gauge.near .g-line{animation:phLine .6s ease-in-out infinite alternate}
+@keyframes phLine{from{box-shadow:0 0 0 0 rgba(232,72,60,0)}to{box-shadow:0 0 0 7px rgba(232,72,60,.8)}}
+.ok-rm .ph-gauge.near .g-line{animation:none;box-shadow:0 0 0 5px rgba(232,72,60,.8)}
+.g-tag{position:absolute;right:calc(100% + 8px);transform:translateY(-50%);display:flex;align-items:center;gap:4px;white-space:nowrap;padding:4px 12px;border-radius:999px;
+  background:var(--loud);color:#fff;border:3px solid var(--ink);font-weight:800;font-size:clamp(.9rem,min(1.6vw,2.4vh),1.5rem);box-shadow:0 3px 0 var(--ink)}
+/* while the pot's own sounds play the meter is not listening: the note sits where the "Too loud" tag is (the tag hides) */
+.g-held{position:absolute;right:calc(100% + 8px);transform:translateY(-50%);white-space:nowrap;padding:4px 12px;border-radius:999px;background:var(--card);color:var(--ink);border:3px solid var(--ink);font-weight:800;
+  font-size:clamp(.9rem,min(1.6vw,2.4vh),1.5rem);box-shadow:0 3px 0 var(--ink)}
+.ph-gauge.held .g-track{opacity:.55}
+.ph-gauge.loud .g-track{animation:phThrob .8s ease-in-out infinite}
+@keyframes phThrob{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.ok-rm .ph-gauge.loud .g-track{animation:none}
+
+/* portrait: the gauge lies along the bottom */
+.ph.portrait .ph-gauge{left:calc(16px + env(safe-area-inset-left));right:calc(16px + env(safe-area-inset-right));top:auto;bottom:calc(64px + env(safe-area-inset-bottom));width:auto;height:58px;flex-direction:row}
+.ph.portrait .g-track{height:100%;flex:1;width:auto}
+.ph.portrait .g-zone,.ph.portrait .g-fill{top:0;bottom:0;left:0}
+.ph.portrait .g-lab{top:50%;bottom:auto;left:auto;right:auto;transform:translate(-50%,-50%);white-space:nowrap}
+.ph.portrait .g-peak{top:0;bottom:0;width:5px;height:auto;margin:0 -2px}
+.ph.portrait .g-line{top:-4px;bottom:-4px;width:8px;height:auto;margin:0 -4px}
+.ph.portrait .g-tag{right:auto;bottom:calc(100% + 8px);transform:translateX(-50%)}
+.ph.portrait .g-held{right:auto;bottom:calc(100% + 8px);transform:translateX(-50%)}
+.ph.portrait .g-icbot{order:-1}.ph.portrait .g-ictop{order:3}
+.ph.portrait.demo .ph-gauge{bottom:calc(158px + env(safe-area-inset-bottom))}
+
+/* "Too loud!" over the pot while it pops, and the big "!" while the kernels sizzle */
+.ph-bubble{position:absolute;transform:translate(-50%,-100%);padding:10px 22px;border-radius:26px;background:var(--card);color:var(--ink);border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);
+  font-weight:900;font-size:clamp(1.3rem,min(3.4vw,5vh),3.4rem);white-space:nowrap;pointer-events:none}
+.ph-bubble::after{content:'';position:absolute;left:24%;bottom:-18px;border:14px solid transparent;border-top:18px solid var(--ink);border-bottom:0}
+.ph-bubble.pop{animation:phPop .42s cubic-bezier(.34,1.56,.64,1) both}
+/* sizzling, readable from the back of the room: a big "!" over the lid for as long as it sizzles, and a warm tint */
+.ph-mark{position:absolute;transform:translate(-50%,-100%);font-weight:900;font-size:clamp(56px,10vh,124px);line-height:1;color:#FFC83D;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;pointer-events:none}
+.ph-mark.wob{animation:phWob 1.1s ease-in-out infinite}
+@keyframes phWob{0%,100%{transform:translate(-50%,-100%) rotate(-7deg)}50%{transform:translate(-50%,-104%) rotate(7deg)}}
+.ph-tint{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 80% at 50% 70%,rgba(255,190,70,.1),rgba(255,150,30,.34));opacity:0;transition:opacity .6s}
+.ph.stir .ph-tint{opacity:1}
+.ph.hot .ph-tint{opacity:1;background:radial-gradient(ellipse 70% 80% at 50% 70%,rgba(255,120,60,.12),rgba(232,72,60,.38))}
+.ph-mark.pop{animation:phPop .35s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes phPop{from{transform:translate(-50%,-100%) scale(.2);opacity:0}to{transform:translate(-50%,-100%) scale(1);opacity:1}}
+.ok-rm .ph-bubble.pop,.ok-rm .ph-mark.pop,.ok-rm .ph-mark.wob{animation:none}
+
+/* demo mode: the stand-in for the room */
+.ph-demo{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  padding:10px 14px;border-radius:24px;background:var(--card);color:var(--ink);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);max-width:calc(100vw - 32px);width:max-content}
+.ph-ribbon{font-weight:900;padding:4px 12px;border-radius:999px;background:#B27CF0;color:#fff;border:3px solid var(--ink);text-transform:uppercase;letter-spacing:.05em;font-size:.9rem}
+.ph-noise{display:flex;align-items:center;gap:8px;font-weight:800}
+.ph-noise input{width:clamp(140px,22vw,320px);height:44px;accent-color:#E8483C;margin:0}
+.ph-db{min-height:48px;padding:4px 16px;border-radius:16px;border:3px solid var(--ink);background:#FFE7A0;color:var(--ink);font-weight:800;font-size:1rem;display:flex;align-items:center;gap:6px;box-shadow:0 3px 0 var(--ink)}
+.ph-db[aria-pressed="true"]{background:#5DB548;color:#fff}
+.ph-db .em{font-size:1.3em}
+.ph.portrait .ph-demo{width:calc(100vw - 32px);max-width:560px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;padding:8px 10px}
+.ph.portrait .ph-noise .tx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ph.portrait .ph-noise input{width:100%}
+.ph.portrait .ph-demo .ph-db{justify-content:center}
+.ph.portrait .ph-ribbon{align-self:center}
+/* a narrow screen: a smaller clock, the two buttons stacked at the end */
+@media (max-width:600px){
+  .ph-clock{min-width:0;padding:4px 12px 6px;border-radius:18px}
+  .ph-clock .sub{gap:2px 8px;font-size:.8rem}
+  .ph-btns{flex-direction:column}
+}
+
+/* the setup card and the no-mic card */
+.phs{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));background:var(--ok-scrim)}
+.phs-card{width:min(860px,100%);max-height:100%;overflow:auto;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);border-radius:28px;box-shadow:0 6px 0 var(--ok-edge);
+  padding:16px 18px;display:grid;gap:12px 18px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"h h" "l r" "f f"}
+.phs h2{grid-area:h;margin:0;text-align:center;font-size:clamp(1.4rem,4vmin,2.2rem);line-height:1.1}
+.phs .left{grid-area:l}.phs .right{grid-area:r}.phs .foot{grid-area:f}
+.phs .left,.phs .right,.phs .foot{display:flex;flex-direction:column;gap:10px;min-width:0}
+.phs fieldset{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.phs legend{padding:0;font-weight:800;font-size:1rem;margin-bottom:4px}
+.phs .row{display:grid;gap:6px;grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}
+.phs .goals{grid-template-columns:repeat(4,minmax(0,1fr))}
+.phs .opt{min-height:48px;min-width:0;border:3px solid var(--ok-edge);border-radius:16px;background:var(--ok-bg2);color:var(--ok-text);font-weight:800;font-size:1rem;padding:4px 6px;line-height:1.1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+.phs .opt .em{font-size:1.3em}
+.phs .opt[aria-checked="true"]{background:#FFC83D;color:#1D2340;box-shadow:0 3px 0 var(--ok-edge)}
+.phs .opt:focus-visible,.phs button:focus-visible,.phs input:focus-visible{outline:4px solid var(--ok-focus);outline-offset:2px}
+.phs .frow{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.85rem}
+.phs .frow .end{flex:0 0 auto;max-width:28%;line-height:1.1;text-align:center}
+.phs .frow input{flex:1;min-width:0;height:44px;margin:0;accent-color:#E0662A}
+.phs .mini{position:relative;height:14px;border-radius:999px;border:2.5px solid var(--ok-edge);background:linear-gradient(90deg,#4CB86066,#F2C23066,#E8483C66);overflow:hidden}
+.phs .mini .mf{position:absolute;left:0;top:0;bottom:0;background:#4CB860;width:0}
+.phs .mini .ml{position:absolute;top:-3px;bottom:-3px;width:5px;margin-left:-2px;background:var(--ok-edge)}
+.phs .linetx,.phs .calt{margin:0;font-weight:700;font-size:.9rem;opacity:.85;min-height:1.2em}
+.phs .cal{display:flex;flex-direction:column;gap:10px}
+.phs .calb{min-height:52px;border:3px solid var(--ok-edge);border-radius:16px;--p:0%;background:linear-gradient(90deg,#8FD0FF var(--p),#D9F1FF var(--p));color:#1D2340;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 12px;box-shadow:0 3px 0 var(--ok-edge)}
+[dir=rtl] .phs .calb{background:linear-gradient(270deg,#8FD0FF var(--p),#D9F1FF var(--p))}
+.phs .calb[disabled]{cursor:progress}
+.phs .privacy{margin:0;text-align:center;font-weight:700;font-size:.95rem;padding:8px 12px;border-radius:14px;background:var(--ok-bg2)}
+.phs .go{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.phs .go .ok-btn{min-width:min(300px,100%)}
+.phs .go .em{margin-inline-end:6px}
+.phn .phs-card{width:min(780px,100%);display:flex;flex-direction:column;align-items:stretch;text-align:center}
+.phn h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
+.phn .big{font-size:3rem;line-height:1}
+.phn .why{margin:0;font-weight:600;font-size:1.1rem;line-height:1.35}
+.phn .go{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:12px}
+.phn .go .ok-btn{width:100%;min-width:0}
+/* the results: a headline and two big numbers like the clock; the card beside the pot (wide) or under it (tall) */
+.ph-end{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.ph-end .sub{margin:0;font-weight:900;font-size:1.35rem;line-height:1.15}
+.ph-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.ph-stat{border:3px solid var(--ok-edge);border-radius:20px;background:var(--ok-bg2);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.ph-stat .n{font-weight:900;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.ph-stat .l{font-weight:700;font-size:.95rem;line-height:1.15}
+html.ph-ended .ok-win .ok-score,html.ph-ended .ok-win .ok-best{display:none}
+html.ph-ended .ok-win .ok-card{width:min(500px,100%)}
+html.ph-ended.ph-side .ok-win{padding-right:calc(max(3vw,16px) + env(safe-area-inset-right))}
+html.ph-ended.ph-side .ok-win .ok-card{margin-left:auto;margin-right:0}   /* on the right in every language: the pot stands on the left */
+html.ph-ended.ph-side .ok-win.ok-scrim{background:linear-gradient(90deg,rgba(10,12,12,0) 30%,var(--ok-scrim))}
+html.ph-ended.ph-low .ok-win{align-items:flex-end}
+html.ph-ended.ph-low .ok-win.ok-scrim{background:linear-gradient(180deg,rgba(10,12,12,0) 30%,var(--ok-scrim))}
+html.ph-ended.ph-low .ok-win .ok-card{gap:8px;padding-top:18px}
+@media (max-height:560px){
+  html.ph-ended .ok-win .ok-card{padding:12px 16px 14px;gap:6px}
+  html.ph-ended .ok-win .ok-h2{font-size:1.3rem;margin:0}
+  html.ph-ended .ok-win .ok-sparks .ok-slot{width:40px;height:40px}
+  .ph-end{gap:6px}.ph-end .sub{font-size:1.05rem}.ph-stat{padding:4px 6px;border-radius:16px}.ph-stat .n{font-size:1.7rem}.ph-stat .l{font-size:.85rem}
+  html.ph-ended .ok-win .ok-row{flex-wrap:nowrap}html.ph-ended .ok-win .ok-btn{min-height:44px;padding:0 14px;font-size:1rem}
+}
+@media (min-width:1400px) and (min-height:860px){
+  html.ph-ended .ok-win .ok-card{width:min(760px,44vw);padding:34px 34px 30px;gap:20px}
+  html.ph-ended .ok-win .ok-h2{font-size:clamp(2.4rem,4.8vmin,3.8rem)}
+  .ph-end .sub{font-size:clamp(1.8rem,3.6vmin,3rem)}
+  .ph-stat{padding:14px 10px;border-radius:26px}.ph-stat .n{font-size:clamp(3.4rem,7.4vmin,6rem)}.ph-stat .l{font-size:clamp(1.1rem,2.3vmin,1.8rem)}
+  html.ph-ended .ok-win .ok-btn{font-size:clamp(1.2rem,2.6vmin,2.1rem);min-height:clamp(52px,7vmin,86px);padding:0 32px}
+  .ok-pause .ok-card{zoom:1.45}
+}
+@media (orientation:portrait),(max-width:640px){
+  .phs-card{grid-template-columns:1fr;grid-template-areas:"h" "l" "r" "f";gap:10px}
+}
+@media (orientation:landscape) and (max-height:560px){
+  .phs-card{padding:10px 12px;gap:6px 12px}
+  .phs h2{font-size:1.2rem}
+  .phs .opt{min-height:44px;font-size:.92rem;flex-direction:row}
+  .phs .calt,.phs .linetx{font-size:.8rem}
+  .phs .privacy{font-size:.82rem;padding:4px 8px}
+  .phs .goals{grid-template-columns:repeat(7,minmax(0,1fr))}
+  .phs .goals .opt{font-size:.82rem;padding:2px}
+  .phs legend{font-size:.9rem;margin-bottom:0}
+  .phs .calb{min-height:44px}
+}
+@media (min-width:1400px) and (min-height:860px){
+  .phs-card{width:min(1180px,92vw);padding:28px 34px;gap:22px 34px}
+  .phs h2{font-size:clamp(2rem,4.4vmin,3.4rem)}
+  .phs legend{font-size:clamp(1rem,2.4vmin,1.9rem)}
+  .phs .opt{min-height:clamp(48px,7vmin,96px);font-size:clamp(1.05rem,2.4vmin,2rem);border-radius:22px}
+  .phs .frow{font-size:clamp(.9rem,1.8vmin,1.4rem)}
+  .phs .linetx,.phs .calt,.phs .privacy{font-size:clamp(1rem,2vmin,1.5rem)}
+  .phs .calb{min-height:clamp(52px,7vmin,92px);font-size:clamp(1.05rem,2.4vmin,1.9rem)}
+  .phs .go .ok-btn{min-width:min(460px,100%);font-size:clamp(1.3rem,3vmin,2.4rem)}
+  .phn .why{font-size:clamp(1.1rem,2.4vmin,1.9rem)}
+  .phn .phs-card{width:min(1060px,92vw)}
+}
+@media (orientation:landscape) and (max-height:430px){ .ph-clock{flex-direction:row;gap:10px;align-items:center;padding:4px 14px}.ph-clock .lab::before{content:none} .ph-clock .sub{flex-direction:column;gap:0;align-items:flex-start;font-size:.8rem}.ph-clock .bar{display:none} }
+.ph-clock .sub span{white-space:nowrap}
+</style>
+</style>
+<script src="/vendor/oomba-kit/1.1.5/oomba-kit.js" integrity="sha384-V+DAjHbwS6rpkfPgsz73FVr1eAdtaA+kW/Knptl42th5pn5rwU5FUit7Vc/AQYky" crossorigin="anonymous"></script>
+<script>
+/* popcorn-core:begin */
+/* PopcornCore: the level maths and the room calibration (the same as Remi's Quiet Meadow, number for number) and the
+   pot's moods, with no DOM (tests/unit/popcorn-hush.test.js runs this block with node:vm). Every step is deterministic:
+   the same inputs always give the same pot and the same popcorn. */
+window.PopcornCore = (function () {
+  'use strict';
+  var DB_LO = -70, DB_HI = -10;                       // -70 dBFS is 0 on the gauge, -10 dBFS is 100
+  var ATTACK = 0.12, RELEASE = 0.5;                   // seconds: the gauge jumps up fast and settles slowly
+  var PRESETS = { whisper: 10, quiet: 18, group: 30 }; // how far above the room's own quiet the "too loud" line sits
+  var PRESET_IDS = ['whisper', 'quiet', 'group'];
+  var BASE = 30, FINE = 25, LINE_MIN = 15, LINE_MAX = 95;
+  var GOALS = [120, 300, 600, 900, 1200, 1800, 0];   // seconds of quiet time; 0 = no goal
+  var T = {
+    near: 10,        // a level within this of the line counts as "getting warm"
+    sizzleIn: 0.3,   // seconds of near-the-line before the kernels sizzle
+    sizzleOut: 1.2,  // seconds below the near band before sizzling kernels rest again
+    sizzleCool: 2.5, // seconds between two sizzles (a wiggle, a hiss, a hop, a puff of steam)
+    pop: 1.5,        // seconds over the line (leaky) that make the popcorn pop: one clap only makes it sizzle
+    leak: 0.5,       // how fast the over-the-line count drains while it is quieter (x dt)
+    burst: 1.2,      // the first popping the room cannot cut short (the pop-out is always seen)
+    calmBand: 5,     // popping calms down while the level is this far under the line
+    calm: 4,         // seconds of calm before the pot cools
+    cool: 2.0,       // cooling down takes this long
+    reheat: 0.6,     // noise this long while it cools makes it pop again (no extra pop-out)
+    heatUp: 0.25,    // seconds: the heat follows a louder room fast...
+    heatDown: 0.7,   // ...and a quieter one more slowly, so the last few kernels still pop
+    burstHeat: 0.6,  // the heat of the first burst
+    minHeat: 0.08,   // under this heat nothing pops
+    maxRate: 12,     // pops a second at full heat (just over the line it is about 6)
+  };
+  var SIZZLES = ['wiggle', 'hiss', 'hop', 'steam'];
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  /** dBFS (from the play page) -> 0..100, linear in dB. */
+  function levelOf(db) { if (typeof db !== 'number' || db !== db) return 0; return clamp((db - DB_LO) / (DB_HI - DB_LO) * 100, 0, 100); }
+  /** One smoothing step: fast up (attack), slow down (release), using the real dt so any frame rate behaves the same. */
+  function smooth(prev, x, dt) {
+    var tau = x > prev ? ATTACK : RELEASE, a = 1 - Math.exp(-Math.max(0, dt) / tau);
+    return prev + (x - prev) * a;
+  }
+  /** The gauge's next level. held (the pot's own sound is playing, from the speakers into the room's microphone): the
+   *  level stays where it was, so its own pops, sizzles and sighs can never push it over the line. */
+  function feed(prev, x, dt, held) { return held ? prev : smooth(prev, x, dt); }
+  function presetOf(id) { return PRESETS.hasOwnProperty(id) ? id : 'quiet'; }
+  /** The "too loud" line: the room's quiet + the preset's margin + the fine slider, kept on the gauge. */
+  function line(base, preset, fine) {
+    var b = typeof base === 'number' && base === base ? base : BASE;
+    return Math.round(clamp(b + PRESETS[presetOf(preset)] + clamp(+fine || 0, -FINE, FINE), LINE_MIN, LINE_MAX));
+  }
+  function median(xs) {
+    var a = xs.filter(function (x) { return typeof x === 'number' && x === x; }).sort(function (p, q) { return p - q; });
+    if (!a.length) return null;
+    var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+  }
+  /** samples: smoothed levels over ~3 s. -> { ok, base, why: 'noInput' | 'tooLoud' } */
+  function calibrate(samples) {
+    var m = median(samples || []);
+    if (m === null || (samples || []).length < 5) return { ok: false, why: 'noInput' };
+    if (m > 70) return { ok: false, why: 'tooLoud', room: Math.round(m) };
+    return { ok: true, base: Math.round(m), room: Math.round(m) };
+  }
+  /** Stars for a finished session: 3 for 0-1 pop-outs, 2 for 2-3, 1 for more. */
+  function stars(popouts) { return popouts <= 1 ? 3 : popouts <= 3 ? 2 : 1; }
+  /** How hot a room is for the popcorn (0..1): nothing under the near band, a little just under the line, 0.45 at the
+   *  line and full heat 22 over it. */
+  function heatFor(level, line0) {
+    if (level > line0) return clamp(0.45 + (level - line0) / 40, 0, 1);
+    return level > line0 - T.near ? 0.2 : 0;
+  }
+  /** Pops a second at a heat: none when it is (nearly) cool, about 6 just over the line, 12 at full heat. */
+  function rate(heat) { return heat < T.minHeat ? 0 : 1 + heat * (T.maxRate - 1); }
+  /** A fresh session. opts: { goal: seconds of quiet time (0 = none) } */
+  function make(opts) {
+    opts = opts || {};
+    return { state: 'calm', t: 0, over: 0, nearT: 0, lowT: 0, cool: 0, calm: 0, over2: 0, quiet: 0, popouts: 0, popped: 0, sizzles: 0,
+      heat: 0, acc: 0, goal: Math.max(0, +opts.goal || 0), loud: false, done: false, act: null };
+  }
+  function go(s, st, ev, events) { s.state = st; s.t = 0; if (ev) events.push(ev); }
+  function towards(v, to, dt, up, down) { return v + (to - v) * (1 - Math.exp(-dt / (to > v ? up : down))); }
+  /** Pops this step at the pot's heat (the fraction carries over, so the count never depends on the frame rate). */
+  function pops(s, dt, ev) {
+    s.acc += rate(s.heat) * dt;
+    while (s.acc >= 1) { s.acc -= 1; s.popped++; ev.push({ type: 'pop', n: s.popped, heat: Math.round(s.heat * 100) / 100 }); }
+    if (rate(s.heat) === 0) s.acc = 0;
+  }
+  /**
+   * One step. inp: { level (smoothed, 0..100), line, held (the pot's own sound is playing: the room is not listened to),
+   * dt (seconds), rnd (0..1, for the sizzle it picks) }. -> { s, events: [{ type, ... }] }
+   * Events: sizzle {act}, popout {popouts}, pop {n, heat}, cooldown, reheat, calm, goal.
+   */
+  function step(s, inp) {
+    var ev = [], dt = Math.max(0, Math.min(0.25, +inp.dt || 0)), L = clamp(+inp.level || 0, 0, 100), line0 = +inp.line || 50;
+    var held = !!inp.held, rnd = typeof inp.rnd === 'number' ? inp.rnd : 0.5;
+    s.t += dt;
+    if (s.done) return { s: s, events: ev };
+    s.loud = !held && L > line0;
+    var st = s.state;
+    if (st === 'calm' || st === 'sizzle') {
+      s.quiet += dt;   // nothing pops (a sizzle is still calm): the quiet clock runs
+      if (s.goal > 0 && s.quiet >= s.goal) { s.quiet = s.goal; s.done = true; go(s, 'celebrate', { type: 'goal' }, ev); return { s: s, events: ev }; }
+      if (!held) {
+        if (L > line0) s.over += dt; else s.over = Math.max(0, s.over - T.leak * dt);
+        if (L > line0 - T.near) { s.nearT += dt; s.lowT = 0; } else { s.nearT = 0; s.lowT += dt; }
+      }
+      s.cool = Math.max(0, s.cool - dt);
+      if (s.over >= T.pop) {
+        s.popouts++; s.over = 0; s.nearT = 0; s.act = null; s.calm = 0; s.acc = 0; s.heat = Math.max(s.heat, T.burstHeat);
+        go(s, 'popping', { type: 'popout', popouts: s.popouts }, ev); return { s: s, events: ev };
+      }
+      if (st === 'calm') {
+        if (!held && (s.nearT >= T.sizzleIn || s.over > 0)) { go(s, 'sizzle', null, ev); s.lowT = 0; st = 'sizzle'; }
+      }
+      if (st === 'sizzle') {
+        if (s.cool <= 0 && !held && (s.nearT > 0 || s.over > 0)) {
+          var act = SIZZLES[Math.min(SIZZLES.length - 1, Math.floor(rnd * SIZZLES.length))];
+          s.act = act; s.sizzles++; s.cool = T.sizzleCool; ev.push({ type: 'sizzle', act: act });
+        }
+        if (s.lowT >= T.sizzleOut && s.over === 0) { s.act = null; go(s, 'calm', null, ev); }
+      }
+      return { s: s, events: ev };
+    }
+    if (st === 'popping') {
+      // the heat follows the room (louder: hotter, faster pops); while the pot's own sound plays it stays where it was
+      if (!held) s.heat = towards(s.heat, heatFor(L, line0), dt, T.heatUp, T.heatDown);
+      if (s.t <= T.burst) s.heat = Math.max(s.heat, T.burstHeat);
+      pops(s, dt, ev);
+      if (!held && s.t > T.burst) { if (L < line0 - T.calmBand) s.calm += dt; else s.calm = 0; }
+      if (s.calm >= T.calm) { s.over2 = 0; s.acc = 0; go(s, 'cooling', { type: 'cooldown' }, ev); }
+      return { s: s, events: ev };
+    }
+    if (st === 'cooling') {   // nothing pops; the heat fades
+      s.heat = towards(s.heat, 0, dt, T.heatUp, T.heatDown);
+      if (!held) { if (L > line0) s.over2 += dt; else s.over2 = Math.max(0, s.over2 - dt); }
+      if (s.over2 >= T.reheat) {
+        s.calm = 0; s.over2 = 0; s.heat = Math.max(s.heat, heatFor(L, line0)); go(s, 'popping', { type: 'reheat' }, ev);
+        s.t = T.burst;   // no second burst and no extra pop-out: the same pop-out goes on
+        return { s: s, events: ev };
+      }
+      if (s.t >= T.cool) { s.over = 0; s.nearT = 0; s.lowT = 0; s.heat = 0; s.cool = T.sizzleCool; go(s, 'calm', { type: 'calm' }, ev); }
+      return { s: s, events: ev };
+    }
+    return { s: s, events: ev };
+  }
+  return { levelOf: levelOf, smooth: smooth, feed: feed, line: line, median: median, calibrate: calibrate, stars: stars, make: make, step: step,
+    heatFor: heatFor, rate: rate, PRESETS: PRESETS, PRESET_IDS: PRESET_IDS, GOALS: GOALS, BASE: BASE, FINE: FINE, T: T, SIZZLES: SIZZLES,
+    ATTACK: ATTACK, RELEASE: RELEASE, presetOf: presetOf };
+})();
+/* popcorn-core:end */
+</script>
+<script>
+/* The game: the setup card, the kitchen, the pot and its popcorn, the sounds, the gauge, the demo and the test hooks. */
+// ==== I18N START ====
+// The pot has no name: it is "the pot" in every language (la olla, la marmite, der Topf, la pentola, a panela, de pan,
+// кастрюлька, おなべ, 鍋子, القِدر, הסיר). {placeholders} are numbers or a clock ("03:12").
+var I18N = {
+  en: {
+    title: 'Popcorn Hush', tag: 'Shh… keep the popcorn calm!',
+    setupH: 'Quiet time with the popcorn pot', howQuiet: 'How quiet?', whisper: 'Whisper', quietWork: 'Quiet work', groupWork: 'Group work',
+    fine: 'Fine tune', touchier: 'Pops easily', calmer: 'Stays calm',
+    goalH: 'Quiet time goal', min: '{n} min', noGoal: 'No goal',
+    calib: 'Set to the room’s quiet', calibHint: 'Press it while the room is quiet. The pot listens for 3 seconds.', calibListen: 'Shh… listening to the room ({n})',
+    calibDone: 'Room: {room} · Pops above: {line}', calibLoud: 'The room was too loud to measure. Try again when it is quiet.', calibNoMic: 'This needs the microphone.',
+    privacy: 'The pot only listens for how loud it is. Nothing is recorded or saved.',
+    startMic: 'Start listening', tryDemo: 'Try it without a mic', backToPot: 'Back to the pot', startOver: 'Start over',
+    quietTime: 'Quiet time', of: 'of {goal}', popouts: 'Pop-outs: {n}', popped: 'Popcorn: {n}', clockStopped: 'Clock stopped',
+    tooLoud: 'Too loud', bubble: 'Too loud!', ownSound: 'Pot sounds', meterLine: 'Noise level {n}. The popcorn pops above {line}.',
+    potCalm: 'The popcorn is calm. Shh…', potSizzle: 'The kernels are sizzling…', potPop: 'Too loud! The popcorn is popping!', potCool: 'The pot has cooled down.', quietMin: 'Quiet time: {n} min',
+    pause: 'Pause', paused: 'Paused', settings: 'Teacher settings',
+    demo: 'Demo', noise: 'Noise', clap: 'Clap', chatter: 'Class chatter',
+    noMic_denied: 'The microphone is blocked', noMic_denied_p: 'Tap the 🔒 or 🎤 next to the web address, choose Allow for the microphone, then press Try again.',
+    noMic_nodevice: 'No microphone found', noMic_nodevice_p: 'Plug in or turn on a microphone, then press Try again.',
+    noMic_busy: 'The microphone is busy', noMic_busy_p: 'Another app or tab is using it. Close that, then press Try again.',
+    noMic_unavailable: 'This browser can’t listen', noMic_unavailable_p: 'Try Chrome, Edge, Firefox or Safari. Or try it without a mic.',
+    noMic_off: 'No microphone here', noMic_off_p: 'Open Popcorn Hush on Oomba Academy to use a microphone. You can still try it without one.',
+    retry: 'Try again',
+    endTitle: 'You kept it cool!', endSub: 'Popcorn party!', endStats: 'Quiet time {time} · Pop-outs: {n}',
+    listening: 'Listening (only how loud)', zShh: 'Shh', zNear: 'Getting warm', calibNone: 'Room: not set yet · Pops above: {line}', calibOk: 'Done! The pot knows how quiet the room is.',
+    noMic_tap: 'One more tap', noMic_tap_p: 'The browser needs one more tap before the pot can listen. Press Start listening.', another: 'Another quiet time', sameSettings: 'Same settings', popOuts: 'Pop-outs',
+  },
+  'en-GB': {},
+  es: {
+    title: 'Palomitas en silencio', tag: 'Shh… ¡que no exploten las palomitas!',
+    setupH: 'Tiempo de silencio con la olla de palomitas', howQuiet: '¿Cuánto silencio?', whisper: 'Susurros', quietWork: 'Trabajo en silencio', groupWork: 'Trabajo en grupo',
+    fine: 'Ajuste fino', touchier: 'Explota fácil', calmer: 'Aguanta más',
+    goalH: 'Meta de silencio', min: '{n} min', noGoal: 'Sin meta',
+    calib: 'Ajustar al silencio de la clase', calibHint: 'Púlsalo cuando la clase esté en silencio. La olla escucha 3 segundos.', calibListen: 'Shh… escuchando la clase ({n})',
+    calibDone: 'Clase: {room} · Explota por encima de: {line}', calibLoud: 'Había demasiado ruido para medir. Prueba otra vez en silencio.', calibNoMic: 'Esto necesita el micrófono.',
+    privacy: 'La olla solo escucha cuánto ruido hay. No se graba ni se guarda nada.',
+    startMic: 'Empezar a escuchar', tryDemo: 'Probar sin micrófono', backToPot: 'Volver a la olla', startOver: 'Empezar de nuevo',
+    quietTime: 'Tiempo de silencio', of: 'de {goal}', popouts: 'Estallidos: {n}', popped: 'Palomitas: {n}', clockStopped: 'Reloj parado',
+    tooLoud: 'Demasiado ruido', bubble: '¡Demasiado ruido!', ownSound: 'Sonidos de la olla', meterLine: 'Nivel de ruido {n}. Las palomitas explotan por encima de {line}.',
+    potCalm: 'Las palomitas están tranquilas. Shh…', potSizzle: 'Los granos chisporrotean…', potPop: '¡Demasiado ruido! ¡Las palomitas explotan!', potCool: 'La olla se ha enfriado.', quietMin: 'Tiempo de silencio: {n} min',
+    pause: 'Pausa', paused: 'En pausa', settings: 'Ajustes del docente',
+    demo: 'Demo', noise: 'Ruido', clap: 'Aplauso', chatter: 'Charla de la clase',
+    noMic_denied: 'El micrófono está bloqueado', noMic_denied_p: 'Toca el 🔒 o el 🎤 junto a la dirección web, elige Permitir para el micrófono y pulsa Probar otra vez.',
+    noMic_nodevice: 'No se encontró ningún micrófono', noMic_nodevice_p: 'Conecta o enciende un micrófono y pulsa Probar otra vez.',
+    noMic_busy: 'El micrófono está ocupado', noMic_busy_p: 'Otra aplicación o pestaña lo está usando. Ciérrala y pulsa Probar otra vez.',
+    noMic_unavailable: 'Este navegador no puede escuchar', noMic_unavailable_p: 'Prueba con Chrome, Edge, Firefox o Safari. O pruébalo sin micrófono.',
+    noMic_off: 'Aquí no hay micrófono', noMic_off_p: 'Abre Palomitas en silencio en Oomba Academy para usar un micrófono. También puedes probarlo sin él.',
+    retry: 'Probar otra vez',
+    endTitle: '¡Todo en calma!', endSub: '¡Fiesta de palomitas!', endStats: 'Tiempo de silencio {time} · Estallidos: {n}',
+    listening: 'Escuchando (solo el volumen)', zShh: 'Shh', zNear: 'Se calienta', calibNone: 'Clase: sin medir · Explota por encima de: {line}', calibOk: '¡Listo! La olla ya sabe cuánto silencio hay.',
+    noMic_tap: 'Un toque más', noMic_tap_p: 'El navegador necesita un toque más para que la olla pueda escuchar. Pulsa «Empezar a escuchar».', another: 'Otro rato de silencio', sameSettings: 'Mismos ajustes', popOuts: 'Estallidos',
+  },
+  fr: {
+    title: 'Chut, le pop-corn !', tag: 'Chut… gardez le pop-corn bien calme !',
+    setupH: 'Moment calme avec la marmite à pop-corn', howQuiet: 'Quel calme ?', whisper: 'Chuchoter', quietWork: 'Travail calme', groupWork: 'Travail en groupe',
+    fine: 'Réglage fin', touchier: 'Éclate vite', calmer: 'Reste calme',
+    goalH: 'Objectif de calme', min: '{n} min', noGoal: 'Sans objectif',
+    calib: 'Régler sur le calme de la classe', calibHint: 'Appuyez quand la classe est calme. La marmite écoute 3 secondes.', calibListen: 'Chut… la marmite écoute la classe ({n})',
+    calibDone: 'Classe : {room} · Éclate au-dessus de : {line}', calibLoud: 'Il y avait trop de bruit pour mesurer. Réessayez dans le calme.', calibNoMic: 'Il faut le micro pour ça.',
+    privacy: 'La marmite écoute seulement le niveau de bruit. Rien n’est enregistré ni gardé.',
+    startMic: 'Commencer à écouter', tryDemo: 'Essayer sans micro', backToPot: 'Retour à la marmite', startOver: 'Recommencer',
+    quietTime: 'Temps calme', of: 'sur {goal}', popouts: 'Éclatements : {n}', popped: 'Pop-corn : {n}', clockStopped: 'Horloge arrêtée',
+    tooLoud: 'Trop de bruit', bubble: 'Trop de bruit !', ownSound: 'Sons de la marmite', meterLine: 'Niveau de bruit {n}. Le pop-corn éclate au-dessus de {line}.',
+    potCalm: 'Le pop-corn est calme. Chut…', potSizzle: 'Les grains grésillent…', potPop: 'Trop de bruit ! Le pop-corn éclate !', potCool: 'La marmite a refroidi.', quietMin: 'Temps calme : {n} min',
+    pause: 'Pause', paused: 'En pause', settings: 'Réglages enseignant',
+    demo: 'Démo', noise: 'Bruit', clap: 'Applaudir', chatter: 'Bavardages',
+    noMic_denied: 'Le micro est bloqué', noMic_denied_p: 'Touchez le 🔒 ou le 🎤 à côté de l’adresse web, choisissez Autoriser pour le micro, puis appuyez sur « Réessayer ».',
+    noMic_nodevice: 'Aucun micro trouvé', noMic_nodevice_p: 'Branchez ou allumez un micro, puis appuyez sur « Réessayer ».',
+    noMic_busy: 'Le micro est occupé', noMic_busy_p: 'Une autre appli ou un autre onglet l’utilise. Fermez-le, puis appuyez sur « Réessayer ».',
+    noMic_unavailable: 'Ce navigateur ne peut pas écouter', noMic_unavailable_p: 'Essayez Chrome, Edge, Firefox ou Safari. Ou essayez sans micro.',
+    noMic_off: 'Pas de micro ici', noMic_off_p: 'Ouvrez « Chut, le pop-corn ! » sur Oomba Academy pour utiliser un micro. Vous pouvez aussi essayer sans.',
+    retry: 'Réessayer',
+    endTitle: 'Vous êtes restés calmes !', endSub: 'Fête du pop-corn !', endStats: 'Temps calme {time} · Éclatements : {n}',
+    listening: 'À l’écoute (volume seulement)', zShh: 'Chut', zNear: 'Ça chauffe', calibNone: 'Classe : pas encore mesurée · Éclate au-dessus de : {line}', calibOk: 'C’est fait ! La marmite connaît le calme de la classe.',
+    noMic_tap: 'Encore une touche', noMic_tap_p: 'Le navigateur demande encore une touche avant que la marmite puisse écouter. Appuyez sur « Commencer à écouter ».', another: 'Un autre moment calme', sameSettings: 'Mêmes réglages', popOuts: 'Éclatements',
+  },
+  de: {
+    title: 'Psst, Popcorn!', tag: 'Pssst… haltet das Popcorn ruhig!',
+    setupH: 'Leise Zeit mit dem Popcorn-Topf', howQuiet: 'Wie leise?', whisper: 'Flüstern', quietWork: 'Stillarbeit', groupWork: 'Gruppenarbeit',
+    fine: 'Feinabstimmung', touchier: 'Poppt schnell', calmer: 'Bleibt ruhig',
+    goalH: 'Ziel für leise Zeit', min: '{n} Min.', noGoal: 'Kein Ziel',
+    calib: 'Auf die Ruhe im Raum einstellen', calibHint: 'Drückt ihn, wenn es im Raum still ist. Der Topf hört 3 Sekunden lang zu.', calibListen: 'Pssst… der Topf hört in den Raum ({n})',
+    calibDone: 'Raum: {room} · Poppt über: {line}', calibLoud: 'Es war zu laut zum Messen. Versucht es noch einmal, wenn es still ist.', calibNoMic: 'Dafür braucht es das Mikrofon.',
+    privacy: 'Der Topf hört nur, wie laut es ist. Nichts wird aufgenommen oder gespeichert.',
+    startMic: 'Zuhören starten', tryDemo: 'Ohne Mikrofon ausprobieren', backToPot: 'Zurück zum Topf', startOver: 'Neu beginnen',
+    quietTime: 'Leise Zeit', of: 'von {goal}', popouts: 'Ausbrüche: {n}', popped: 'Popcorn: {n}', clockStopped: 'Uhr gestoppt',
+    tooLoud: 'Zu laut', bubble: 'Zu laut!', ownSound: 'Geräusche vom Topf', meterLine: 'Lautstärke {n}. Das Popcorn poppt über {line}.',
+    potCalm: 'Das Popcorn ist ruhig. Pssst…', potSizzle: 'Die Körner brutzeln…', potPop: 'Zu laut! Das Popcorn poppt!', potCool: 'Der Topf ist abgekühlt.', quietMin: 'Leise Zeit: {n} Min.',
+    pause: 'Pause', paused: 'Pausiert', settings: 'Einstellungen für Lehrkräfte',
+    demo: 'Demo', noise: 'Lautstärke', clap: 'Klatschen', chatter: 'Klassengemurmel',
+    noMic_denied: 'Das Mikrofon ist blockiert', noMic_denied_p: 'Tippt auf 🔒 oder 🎤 neben der Webadresse, wählt „Zulassen“ für das Mikrofon und drückt dann „Nochmal“.',
+    noMic_nodevice: 'Kein Mikrofon gefunden', noMic_nodevice_p: 'Schließt ein Mikrofon an oder schaltet es ein und drückt dann „Nochmal“.',
+    noMic_busy: 'Das Mikrofon ist belegt', noMic_busy_p: 'Eine andere App oder ein anderer Tab benutzt es. Schließt sie und drückt dann „Nochmal“.',
+    noMic_unavailable: 'Dieser Browser kann nicht zuhören', noMic_unavailable_p: 'Probiert Chrome, Edge, Firefox oder Safari. Oder probiert es ohne Mikrofon.',
+    noMic_off: 'Hier gibt es kein Mikrofon', noMic_off_p: 'Öffnet „Psst, Popcorn!“ auf Oomba Academy, um ein Mikrofon zu nutzen. Ohne geht es auch.',
+    retry: 'Nochmal',
+    endTitle: 'Ihr habt es ruhig gehalten!', endSub: 'Popcorn-Party!', endStats: 'Leise Zeit {time} · Ausbrüche: {n}',
+    listening: 'Hört zu (nur wie laut)', zShh: 'Pssst', zNear: 'Wird warm', calibNone: 'Raum: noch nicht gemessen · Poppt über: {line}', calibOk: 'Fertig! Der Topf weiß jetzt, wie still es ist.',
+    noMic_tap: 'Noch einmal tippen', noMic_tap_p: 'Der Browser braucht noch einen Tipp, bevor der Topf zuhören kann. Drückt „Zuhören starten“.', another: 'Noch eine leise Zeit', sameSettings: 'Gleiche Einstellungen', popOuts: 'Ausbrüche',
+  },
+  it: {
+    title: 'Popcorn in silenzio', tag: 'Shh… tenete calmi i popcorn!',
+    setupH: 'Momento di silenzio con la pentola dei popcorn', howQuiet: 'Quanto silenzio?', whisper: 'Sussurri', quietWork: 'Lavoro in silenzio', groupWork: 'Lavoro di gruppo',
+    fine: 'Regolazione fine', touchier: 'Scoppia facilmente', calmer: 'Resta calma',
+    goalH: 'Obiettivo di silenzio', min: '{n} min', noGoal: 'Nessun obiettivo',
+    calib: 'Regola sul silenzio della classe', calibHint: 'Premetelo quando la classe è in silenzio. La pentola ascolta per 3 secondi.', calibListen: 'Shh… la pentola ascolta la classe ({n})',
+    calibDone: 'Classe: {room} · Scoppia sopra: {line}', calibLoud: 'C’era troppo rumore per misurare. Riprovate quando c’è silenzio.', calibNoMic: 'Serve il microfono.',
+    privacy: 'La pentola ascolta solo quanto rumore c’è. Niente viene registrato o salvato.',
+    startMic: 'Inizia ad ascoltare', tryDemo: 'Provate senza microfono', backToPot: 'Torna alla pentola', startOver: 'Ricomincia',
+    quietTime: 'Tempo di silenzio', of: 'su {goal}', popouts: 'Scoppi: {n}', popped: 'Popcorn: {n}', clockStopped: 'Orologio fermo',
+    tooLoud: 'Troppo rumore', bubble: 'Troppo rumore!', ownSound: 'Suoni della pentola', meterLine: 'Livello di rumore {n}. I popcorn scoppiano sopra {line}.',
+    potCalm: 'I popcorn sono calmi. Shh…', potSizzle: 'I chicchi sfrigolano…', potPop: 'Troppo rumore! I popcorn scoppiano!', potCool: 'La pentola si è raffreddata.', quietMin: 'Tempo di silenzio: {n} min',
+    pause: 'Pausa', paused: 'In pausa', settings: 'Impostazioni docente',
+    demo: 'Demo', noise: 'Rumore', clap: 'Applauso', chatter: 'Chiacchiere',
+    noMic_denied: 'Il microfono è bloccato', noMic_denied_p: 'Toccate il 🔒 o il 🎤 accanto all’indirizzo web, scegliete Consenti per il microfono, poi premete «Riprova».',
+    noMic_nodevice: 'Nessun microfono trovato', noMic_nodevice_p: 'Collegate o accendete un microfono, poi premete «Riprova».',
+    noMic_busy: 'Il microfono è occupato', noMic_busy_p: 'Un’altra app o scheda lo sta usando. Chiudetela, poi premete «Riprova».',
+    noMic_unavailable: 'Questo browser non può ascoltare', noMic_unavailable_p: 'Provate Chrome, Edge, Firefox o Safari. Oppure provate senza microfono.',
+    noMic_off: 'Qui non c’è un microfono', noMic_off_p: 'Aprite Popcorn in silenzio su Oomba Academy per usare un microfono. Potete anche provarlo senza.',
+    retry: 'Riprova',
+    endTitle: 'Siete rimasti calmi!', endSub: 'Festa dei popcorn!', endStats: 'Tempo di silenzio {time} · Scoppi: {n}',
+    listening: 'In ascolto (solo il volume)', zShh: 'Shh', zNear: 'Si scalda', calibNone: 'Classe: non ancora misurata · Scoppia sopra: {line}', calibOk: 'Fatto! La pentola sa quanto è silenziosa la classe.',
+    noMic_tap: 'Ancora un tocco', noMic_tap_p: 'Il browser ha bisogno di un altro tocco prima che la pentola possa ascoltare. Premete «Inizia ad ascoltare».', another: 'Un altro momento di silenzio', sameSettings: 'Stesse impostazioni', popOuts: 'Scoppi',
+  },
+  pt: {
+    title: 'Pipoca em silêncio', tag: 'Psiu… deixem a pipoca calminha!',
+    setupH: 'Hora do silêncio com a panela de pipoca', howQuiet: 'Quanto silêncio?', whisper: 'Cochichos', quietWork: 'Trabalho em silêncio', groupWork: 'Trabalho em grupo',
+    fine: 'Ajuste fino', touchier: 'Estoura fácil', calmer: 'Fica calma',
+    goalH: 'Meta de silêncio', min: '{n} min', noGoal: 'Sem meta',
+    calib: 'Ajustar ao silêncio da sala', calibHint: 'Toque quando a sala estiver em silêncio. A panela escuta por 3 segundos.', calibListen: 'Psiu… escutando a sala ({n})',
+    calibDone: 'Sala: {room} · Estoura acima de: {line}', calibLoud: 'Estava barulhento demais para medir. Tente de novo em silêncio.', calibNoMic: 'Isso precisa do microfone.',
+    privacy: 'A panela só escuta o volume do barulho. Nada é gravado nem salvo.',
+    startMic: 'Começar a escutar', tryDemo: 'Testar sem microfone', backToPot: 'Voltar à panela', startOver: 'Recomeçar',
+    quietTime: 'Tempo de silêncio', of: 'de {goal}', popouts: 'Estouros: {n}', popped: 'Pipocas: {n}', clockStopped: 'Relógio parado',
+    tooLoud: 'Barulho demais', bubble: 'Barulho demais!', ownSound: 'Sons da panela', meterLine: 'Nível de barulho {n}. A pipoca estoura acima de {line}.',
+    potCalm: 'A pipoca está calminha. Psiu…', potSizzle: 'Os grãos estão chiando…', potPop: 'Barulho demais! A pipoca está estourando!', potCool: 'A panela esfriou.', quietMin: 'Tempo de silêncio: {n} min',
+    pause: 'Pausa', paused: 'Pausado', settings: 'Ajustes do professor',
+    demo: 'Demo', noise: 'Barulho', clap: 'Palma', chatter: 'Conversa da turma',
+    noMic_denied: 'O microfone está bloqueado', noMic_denied_p: 'Toque no 🔒 ou no 🎤 ao lado do endereço do site, escolha Permitir para o microfone e toque em Tentar de novo.',
+    noMic_nodevice: 'Nenhum microfone encontrado', noMic_nodevice_p: 'Conecte ou ligue um microfone e toque em Tentar de novo.',
+    noMic_busy: 'O microfone está ocupado', noMic_busy_p: 'Outro app ou aba está usando. Feche e toque em Tentar de novo.',
+    noMic_unavailable: 'Este navegador não consegue escutar', noMic_unavailable_p: 'Tente o Chrome, Edge, Firefox ou Safari. Ou teste sem microfone.',
+    noMic_off: 'Aqui não há microfone', noMic_off_p: 'Abra Pipoca em silêncio na Oomba Academy para usar um microfone. Também dá para testar sem.',
+    retry: 'Tentar de novo',
+    endTitle: 'Vocês mantiveram a calma!', endSub: 'Festa da pipoca!', endStats: 'Tempo de silêncio {time} · Estouros: {n}',
+    listening: 'Escutando (só o volume)', zShh: 'Psiu', zNear: 'Esquentando', calibNone: 'Sala: ainda não medida · Estoura acima de: {line}', calibOk: 'Pronto! A panela já sabe o silêncio da sala.',
+    noMic_tap: 'Mais um toque', noMic_tap_p: 'O navegador precisa de mais um toque para a panela poder escutar. Toque em “Começar a escutar”.', another: 'Mais um tempo de silêncio', sameSettings: 'Mesmos ajustes', popOuts: 'Estouros',
+  },
+  nl: {
+    title: 'Ssst, popcorn!', tag: 'Ssst… houd de popcorn rustig!',
+    setupH: 'Stille tijd met de popcornpan', howQuiet: 'Hoe stil?', whisper: 'Fluisteren', quietWork: 'Stil werken', groupWork: 'Groepswerk',
+    fine: 'Fijn afstellen', touchier: 'Popt snel', calmer: 'Blijft rustig',
+    goalH: 'Doel voor stille tijd', min: '{n} min', noGoal: 'Geen doel',
+    calib: 'Afstellen op de stilte in de klas', calibHint: 'Druk erop als het stil is in de klas. De pan luistert 3 seconden.', calibListen: 'Ssst… de pan luistert naar de klas ({n})',
+    calibDone: 'Klas: {room} · Popt boven: {line}', calibLoud: 'Het was te druk om te meten. Probeer het opnieuw als het stil is.', calibNoMic: 'Hiervoor is de microfoon nodig.',
+    privacy: 'De pan luistert alleen hoe hard het is. Er wordt niets opgenomen of bewaard.',
+    startMic: 'Begin met luisteren', tryDemo: 'Probeer zonder microfoon', backToPot: 'Terug naar de pan', startOver: 'Opnieuw beginnen',
+    quietTime: 'Stille tijd', of: 'van {goal}', popouts: 'Uitbarstingen: {n}', popped: 'Popcorn: {n}', clockStopped: 'Klok staat stil',
+    tooLoud: 'Te druk', bubble: 'Te druk!', ownSound: 'Geluid van de pan', meterLine: 'Geluid {n}. De popcorn popt boven {line}.',
+    potCalm: 'De popcorn is rustig. Ssst…', potSizzle: 'De maïskorrels sissen…', potPop: 'Te druk! De popcorn popt!', potCool: 'De pan is afgekoeld.', quietMin: 'Stille tijd: {n} min',
+    pause: 'Pauze', paused: 'Gepauzeerd', settings: 'Instellingen leerkracht',
+    demo: 'Demo', noise: 'Geluid', clap: 'Klappen', chatter: 'Geklets',
+    noMic_denied: 'De microfoon is geblokkeerd', noMic_denied_p: 'Tik op het 🔒 of 🎤 naast het webadres, kies Toestaan voor de microfoon en druk dan op Opnieuw.',
+    noMic_nodevice: 'Geen microfoon gevonden', noMic_nodevice_p: 'Sluit een microfoon aan of zet hem aan en druk dan op Opnieuw.',
+    noMic_busy: 'De microfoon is bezet', noMic_busy_p: 'Een andere app of tab gebruikt hem. Sluit die en druk dan op Opnieuw.',
+    noMic_unavailable: 'Deze browser kan niet luisteren', noMic_unavailable_p: 'Probeer Chrome, Edge, Firefox of Safari. Of probeer het zonder microfoon.',
+    noMic_off: 'Hier is geen microfoon', noMic_off_p: 'Open ‘Ssst, popcorn!’ op Oomba Academy om een microfoon te gebruiken. Zonder kan ook.',
+    retry: 'Opnieuw',
+    endTitle: 'Jullie bleven rustig!', endSub: 'Popcornfeest!', endStats: 'Stille tijd {time} · Uitbarstingen: {n}',
+    listening: 'Luistert (alleen hoe hard)', zShh: 'Ssst', zNear: 'Wordt warm', calibNone: 'Klas: nog niet gemeten · Popt boven: {line}', calibOk: 'Klaar! De pan weet hoe stil de klas is.',
+    noMic_tap: 'Nog één keer tikken', noMic_tap_p: 'De browser heeft nog één tik nodig voordat de pan kan luisteren. Druk op ‘Begin met luisteren’.', another: 'Nog een stille tijd', sameSettings: 'Zelfde instellingen', popOuts: 'Uitbarstingen',
+  },
+  ru: {
+    title: 'Тихий попкорн', tag: 'Тсс… пусть попкорн не лопается!',
+    setupH: 'Тихое время с кастрюлькой попкорна', howQuiet: 'Насколько тихо?', whisper: 'Шёпот', quietWork: 'Тихая работа', groupWork: 'Работа в группах',
+    fine: 'Точная настройка', touchier: 'Лопается легко', calmer: 'Держится долго',
+    goalH: 'Цель тихого времени', min: '{n} мин', noGoal: 'Без цели',
+    calib: 'Настроить по тишине в классе', calibHint: 'Нажмите, когда в классе тихо. Кастрюлька слушает 3 секунды.', calibListen: 'Тсс… кастрюлька слушает класс ({n})',
+    calibDone: 'Класс: {room} · Лопается выше: {line}', calibLoud: 'Было слишком шумно, чтобы измерить. Попробуйте снова в тишине.', calibNoMic: 'Для этого нужен микрофон.',
+    privacy: 'Кастрюлька слушает только, насколько громко. Ничего не записывается и не сохраняется.',
+    startMic: 'Начать слушать', tryDemo: 'Попробовать без микрофона', backToPot: 'Назад к кастрюльке', startOver: 'Начать заново',
+    quietTime: 'Тихое время', of: 'из {goal}', popouts: 'Залпы: {n}', popped: 'Попкорн: {n}', clockStopped: 'Часы стоят',
+    tooLoud: 'Слишком шумно', bubble: 'Слишком шумно!', ownSound: 'Звуки кастрюльки', meterLine: 'Уровень шума {n}. Попкорн лопается выше {line}.',
+    potCalm: 'Попкорн спокоен. Тсс…', potSizzle: 'Зёрнышки шипят…', potPop: 'Слишком шумно! Попкорн лопается!', potCool: 'Кастрюлька остыла.', quietMin: 'Тихое время: {n} мин',
+    pause: 'Пауза', paused: 'Пауза', settings: 'Настройки учителя',
+    demo: 'Демо', noise: 'Шум', clap: 'Хлопок', chatter: 'Болтовня в классе',
+    noMic_denied: 'Микрофон заблокирован', noMic_denied_p: 'Нажмите 🔒 или 🎤 рядом с адресом сайта, разрешите микрофон и нажмите «Попробовать снова».',
+    noMic_nodevice: 'Микрофон не найден', noMic_nodevice_p: 'Подключите или включите микрофон и нажмите «Попробовать снова».',
+    noMic_busy: 'Микрофон занят', noMic_busy_p: 'Его использует другое приложение или вкладка. Закройте их и нажмите «Попробовать снова».',
+    noMic_unavailable: 'Этот браузер не может слушать', noMic_unavailable_p: 'Попробуйте Chrome, Edge, Firefox или Safari. Или попробуйте без микрофона.',
+    noMic_off: 'Здесь нет микрофона', noMic_off_p: 'Откройте «Тихий попкорн» на Oomba Academy, чтобы использовать микрофон. Можно попробовать и без него.',
+    retry: 'Попробовать снова',
+    endTitle: 'Вы сохранили тишину!', endSub: 'Праздник попкорна!', endStats: 'Тихое время {time} · Залпы: {n}',
+    listening: 'Слушаю (только громкость)', zShh: 'Тсс', zNear: 'Теплеет', calibNone: 'Класс: ещё не измерен · Лопается выше: {line}', calibOk: 'Готово! Кастрюлька знает, как тихо в классе.',
+    noMic_tap: 'Ещё одно нажатие', noMic_tap_p: 'Браузеру нужно ещё одно нажатие, чтобы кастрюлька могла слушать. Нажмите «Начать слушать».', another: 'Ещё тихое время', sameSettings: 'Те же настройки', popOuts: 'Залпы',
+  },
+  ja: {
+    title: 'しーっ！ポップコーン', tag: 'しーっ… ポップコーンをはじけさせないで！',
+    setupH: 'ポップコーンのおなべとしずかな時間', howQuiet: 'どのくらいしずかに？', whisper: 'ひそひそ', quietWork: 'しずかに作業', groupWork: 'グループ活動',
+    fine: 'こまかく調整', touchier: 'すぐはじける', calmer: 'なかなかはじけない',
+    goalH: 'しずかな時間の目標', min: '{n}分', noGoal: '目標なし',
+    calib: '教室のしずかさに合わせる', calibHint: '教室がしずかなときに押してね。おなべが3秒きくよ。', calibListen: 'しーっ… 教室の音をきいているよ（{n}）',
+    calibDone: '教室：{room}・はじけるライン：{line}', calibLoud: 'うるさくて測れませんでした。しずかなときにもう一度ためしてね。', calibNoMic: 'これにはマイクが必要です。',
+    privacy: 'おなべは音の大きさだけをきいています。録音も保存もしません。',
+    startMic: 'きき始める', tryDemo: 'マイクなしでためす', backToPot: 'おなべにもどる', startOver: 'さいしょから',
+    quietTime: 'しずかな時間', of: '目標 {goal}', popouts: 'はじけた回数：{n}', popped: 'ポップコーン：{n}', clockStopped: '時計ストップ',
+    tooLoud: 'うるさすぎ', bubble: 'うるさすぎ！', ownSound: 'おなべの音', meterLine: '音の大きさ {n}。{line}をこえるとポップコーンがはじけます。',
+    potCalm: 'ポップコーンはしずか。しーっ…', potSizzle: 'つぶがジュージューいっているよ…', potPop: 'うるさすぎ！ポップコーンがはじけてる！', potCool: 'おなべがさめたよ。', quietMin: 'しずかな時間：{n}分',
+    pause: '一時停止', paused: '一時停止中', settings: '先生の設定',
+    demo: 'デモ', noise: '音', clap: '拍手', chatter: 'クラスのおしゃべり',
+    noMic_denied: 'マイクがブロックされています', noMic_denied_p: 'アドレスのとなりの🔒か🎤をタップして、マイクを「許可」にしてから「もう一度」を押してね。',
+    noMic_nodevice: 'マイクが見つかりません', noMic_nodevice_p: 'マイクをつなぐか電源を入れてから「もう一度」を押してね。',
+    noMic_busy: 'マイクが使用中です', noMic_busy_p: 'ほかのアプリやタブが使っています。それをとじてから「もう一度」を押してね。',
+    noMic_unavailable: 'このブラウザでは音をきけません', noMic_unavailable_p: 'Chrome、Edge、Firefox、Safariでためしてね。マイクなしでもためせます。',
+    noMic_off: 'ここではマイクが使えません', noMic_off_p: 'マイクを使うには、Oomba Academyで「しーっ！ポップコーン」をひらいてね。マイクなしでもためせます。',
+    retry: 'もう一度',
+    endTitle: 'しずかにできたね！', endSub: 'ポップコーンパーティー！', endStats: 'しずかな時間 {time}・はじけた回数：{n}',
+    listening: 'きいています（音の大きさだけ）', zShh: 'しーっ', zNear: 'あったまってきた', calibNone: '教室：まだ測っていません・はじけるライン：{line}', calibOk: 'できた！おなべは教室のしずかさをおぼえたよ。',
+    noMic_tap: 'もう一回タップ', noMic_tap_p: 'おなべが音をきくには、もう一回タップが必要です。「きき始める」を押してね。', another: 'もう一度しずかな時間', sameSettings: '同じ設定で', popOuts: 'はじけた回数',
+  },
+  'zh-Hant': {
+    title: '噓！爆米花', tag: '噓……別讓爆米花爆開！',
+    setupH: '和爆米花鍋一起安靜', howQuiet: '要多安靜？', whisper: '悄悄話', quietWork: '安靜作業', groupWork: '小組活動',
+    fine: '微調', touchier: '容易爆開', calmer: '沉得住氣',
+    goalH: '安靜時間目標', min: '{n}分鐘', noGoal: '不設目標',
+    calib: '依教室的安靜程度設定', calibHint: '教室安靜時按下。鍋子會聽3秒。', calibListen: '噓……正在聽教室的聲音（{n}）',
+    calibDone: '教室：{room}・超過這裡會爆：{line}', calibLoud: '太吵了，量不出來。安靜時再試一次。', calibNoMic: '這需要麥克風。',
+    privacy: '鍋子只聽聲音有多大。不會錄音，也不會儲存。',
+    startMic: '開始聆聽', tryDemo: '不用麥克風試試看', backToPot: '回到鍋子', startOver: '重新開始',
+    quietTime: '安靜時間', of: '目標 {goal}', popouts: '爆開次數：{n}', popped: '爆米花：{n}', clockStopped: '時鐘停了',
+    tooLoud: '太吵了', bubble: '太吵了！', ownSound: '鍋子的聲音', meterLine: '音量 {n}。超過{line}，爆米花就會爆開。',
+    potCalm: '爆米花很安靜。噓……', potSizzle: '玉米粒滋滋作響……', potPop: '太吵了！爆米花爆開了！', potCool: '鍋子冷卻了。', quietMin: '安靜時間：{n}分鐘',
+    pause: '暫停', paused: '已暫停', settings: '老師設定',
+    demo: '示範', noise: '音量', clap: '拍手', chatter: '全班聊天',
+    noMic_denied: '麥克風被封鎖了', noMic_denied_p: '點網址旁的🔒或🎤，把麥克風設為「允許」，再按「再試一次」。',
+    noMic_nodevice: '找不到麥克風', noMic_nodevice_p: '接上或開啟麥克風，再按「再試一次」。',
+    noMic_busy: '麥克風正在使用中', noMic_busy_p: '有其他應用程式或分頁在使用。關掉後再按「再試一次」。',
+    noMic_unavailable: '這個瀏覽器無法聆聽', noMic_unavailable_p: '試試Chrome、Edge、Firefox或Safari。也可以不用麥克風試試看。',
+    noMic_off: '這裡沒有麥克風', noMic_off_p: '在Oomba Academy開啟「噓！爆米花」才能使用麥克風。不用麥克風也能試試看。',
+    retry: '再試一次',
+    endTitle: '你們保持安靜了！', endSub: '爆米花派對！', endStats: '安靜時間 {time}・爆開次數：{n}',
+    listening: '聆聽中（只聽音量）', zShh: '噓', zNear: '變熱了', calibNone: '教室：還沒測量・超過這裡會爆：{line}', calibOk: '好了！鍋子知道教室有多安靜了。',
+    noMic_tap: '再點一下', noMic_tap_p: '瀏覽器需要再點一下，鍋子才能聆聽。請按「開始聆聽」。', another: '再來一段安靜時間', sameSettings: '相同設定', popOuts: '爆開次數',
+  },
+  ar: {
+    title: 'فُشار هادئ', tag: 'هُسّ… لا تدعوا الفُشار يفرقع!',
+    setupH: 'وقت هادئ مع قِدر الفُشار', howQuiet: 'ما مقدار الهدوء؟', whisper: 'همس', quietWork: 'عمل بهدوء', groupWork: 'عمل جماعي',
+    fine: 'ضبط دقيق', touchier: 'يفرقع بسهولة', calmer: 'يبقى هادئًا',
+    goalH: 'هدف الوقت الهادئ', min: '{n} د', noGoal: 'بلا هدف',
+    calib: 'اضبط على هدوء الصف', calibHint: 'اضغط عندما يكون الصف هادئًا. يستمع القِدر لمدة 3 ثوانٍ.', calibListen: 'هُسّ… القِدر يستمع إلى الصف ({n})',
+    calibDone: 'الصف: {room} · يفرقع فوق: {line}', calibLoud: 'كان الصوت عاليًا جدًا للقياس. حاولوا مرة أخرى في الهدوء.', calibNoMic: 'يحتاج هذا إلى الميكروفون.',
+    privacy: 'القِدر يستمع فقط إلى مدى ارتفاع الصوت. لا يُسجَّل أي شيء ولا يُحفَظ.',
+    startMic: 'ابدأ الاستماع', tryDemo: 'جرّب بدون ميكروفون', backToPot: 'عودة إلى القِدر', startOver: 'ابدأ من جديد',
+    quietTime: 'الوقت الهادئ', of: 'من {goal}', popouts: 'مرات الفرقعة: {n}', popped: 'حبات الفُشار: {n}', clockStopped: 'توقفت الساعة',
+    tooLoud: 'صوت عالٍ جدًا', bubble: 'صوت عالٍ جدًا!', ownSound: 'أصوات القِدر', meterLine: 'مستوى الضجيج {n}. يفرقع الفُشار فوق {line}.',
+    potCalm: 'الفُشار هادئ. هُسّ…', potSizzle: 'الحبوب تطقطق…', potPop: 'صوت عالٍ جدًا! الفُشار يفرقع!', potCool: 'برد القِدر.', quietMin: 'الوقت الهادئ بالدقائق: {n}',
+    pause: 'إيقاف مؤقت', paused: 'متوقف مؤقتًا', settings: 'إعدادات المعلم',
+    demo: 'تجربة', noise: 'الضجيج', clap: 'تصفيق', chatter: 'ثرثرة الصف',
+    noMic_denied: 'الميكروفون محظور', noMic_denied_p: 'اضغط على 🔒 أو 🎤 بجانب عنوان الموقع، واختر السماح للميكروفون، ثم اضغط «حاول مرة أخرى».',
+    noMic_nodevice: 'لم يُعثر على ميكروفون', noMic_nodevice_p: 'وصّل ميكروفونًا أو شغّله، ثم اضغط «حاول مرة أخرى».',
+    noMic_busy: 'الميكروفون مشغول', noMic_busy_p: 'يستخدمه تطبيق أو تبويب آخر. أغلقه، ثم اضغط «حاول مرة أخرى».',
+    noMic_unavailable: 'لا يستطيع هذا المتصفح الاستماع', noMic_unavailable_p: 'جرّب Chrome أو Edge أو Firefox أو Safari. أو جرّب بدون ميكروفون.',
+    noMic_off: 'لا يوجد ميكروفون هنا', noMic_off_p: 'افتح «فُشار هادئ» على Oomba Academy لاستخدام الميكروفون. ويمكنك التجربة بدونه أيضًا.',
+    retry: 'حاول مرة أخرى',
+    endTitle: 'حافظتم على الهدوء!', endSub: 'حفلة فُشار!', endStats: 'الوقت الهادئ {time} · مرات الفرقعة: {n}',
+    listening: 'يستمع (لمستوى الصوت فقط)', zShh: 'هُسّ', zNear: 'يسخن', calibNone: 'الصف: لم يُقَس بعد · يفرقع فوق: {line}', calibOk: 'تم! صار القِدر يعرف مدى هدوء الصف.',
+    noMic_tap: 'نقرة أخرى', noMic_tap_p: 'يحتاج المتصفح إلى نقرة أخرى قبل أن يستطيع القِدر الاستماع. اضغط «ابدأ الاستماع».', another: 'وقت هادئ آخر', sameSettings: 'الإعدادات نفسها', popOuts: 'مرات الفرقعة',
+  },
+  he: {
+    title: 'פופקורן בשקט', tag: 'ששש… אל תתנו לפופקורן להתפוצץ!',
+    setupH: 'זמן שקט עם סיר הפופקורן', howQuiet: 'כמה שקט?', whisper: 'לחישות', quietWork: 'עבודה שקטה', groupWork: 'עבודה בקבוצות',
+    fine: 'כוונון עדין', touchier: 'מתפוצץ בקלות', calmer: 'נשאר רגוע',
+    goalH: 'יעד זמן שקט', min: '{n} דק׳', noGoal: 'בלי יעד',
+    calib: 'כוונון לפי השקט בכיתה', calibHint: 'לחצו כשהכיתה שקטה. הסיר מקשיב 3 שניות.', calibListen: 'ששש… הסיר מקשיב לכיתה ({n})',
+    calibDone: 'כיתה: {room} · מתפוצץ מעל: {line}', calibLoud: 'היה רועש מדי למדידה. נסו שוב כשיהיה שקט.', calibNoMic: 'בשביל זה צריך מיקרופון.',
+    privacy: 'הסיר מקשיב רק לכמה רועש. שום דבר לא מוקלט ולא נשמר.',
+    startMic: 'להתחיל להקשיב', tryDemo: 'לנסות בלי מיקרופון', backToPot: 'חזרה לסיר', startOver: 'להתחיל מחדש',
+    quietTime: 'זמן שקט', of: 'מתוך {goal}', popouts: 'התפוצצויות: {n}', popped: 'פופקורן: {n}', clockStopped: 'השעון עצר',
+    tooLoud: 'רועש מדי', bubble: 'רועש מדי!', ownSound: 'קולות הסיר', meterLine: 'רמת רעש {n}. הפופקורן מתפוצץ מעל {line}.',
+    potCalm: 'הפופקורן רגוע. ששש…', potSizzle: 'הגרעינים מרחשים…', potPop: 'רועש מדי! הפופקורן מתפוצץ!', potCool: 'הסיר התקרר.', quietMin: 'זמן שקט: {n} דק׳',
+    pause: 'השהיה', paused: 'מושהה', settings: 'הגדרות למורה',
+    demo: 'הדגמה', noise: 'רעש', clap: 'מחיאת כף', chatter: 'פטפוט בכיתה',
+    noMic_denied: 'המיקרופון חסום', noMic_denied_p: 'הקישו על 🔒 או 🎤 ליד כתובת האתר, בחרו לאפשר את המיקרופון, ואז לחצו על "לנסות שוב".',
+    noMic_nodevice: 'לא נמצא מיקרופון', noMic_nodevice_p: 'חברו או הפעילו מיקרופון, ואז לחצו על "לנסות שוב".',
+    noMic_busy: 'המיקרופון תפוס', noMic_busy_p: 'אפליקציה או לשונית אחרת משתמשת בו. סגרו אותה ואז לחצו על "לנסות שוב".',
+    noMic_unavailable: 'הדפדפן הזה לא יכול להקשיב', noMic_unavailable_p: 'נסו Chrome, Edge, Firefox או Safari. או נסו בלי מיקרופון.',
+    noMic_off: 'אין כאן מיקרופון', noMic_off_p: 'פתחו את "פופקורן בשקט" ב-Oomba Academy כדי להשתמש במיקרופון. אפשר לנסות גם בלעדיו.',
+    retry: 'לנסות שוב',
+    endTitle: 'שמרתם על שקט!', endSub: 'מסיבת פופקורן!', endStats: 'זמן שקט {time} · התפוצצויות: {n}',
+    listening: 'מקשיב (רק לעוצמה)', zShh: 'ששש', zNear: 'מתחמם', calibNone: 'כיתה: עוד לא נמדדה · מתפוצץ מעל: {line}', calibOk: 'מוכן! הסיר יודע כמה שקט בכיתה.',
+    noMic_tap: 'עוד הקשה אחת', noMic_tap_p: 'הדפדפן צריך עוד הקשה אחת לפני שהסיר יוכל להקשיב. לחצו על "להתחיל להקשיב".', another: 'עוד זמן שקט', sameSettings: 'אותן הגדרות', popOuts: 'התפוצצויות',
+  },
+};
+I18N['en-GB'] = I18N.en;
+// ==== I18N END ====
+/* popcorn-art:begin */
+/* PopcornArt: the kitchen, the stove, the pot full of kernels with its glass lid and its face, the striped bowl and the
+   popcorn, drawn on one canvas in the Oomba ink style (thick charcoal outlines, flat fills, one shade tone). All original
+   art. The pot and the bowl are drawn in "pot units" (the pot is about 420 wide; 0,0 is the middle of the stove's feet
+   on the worktop); the game places and scales them. A look is a plain set of numbers (heat, flames, lid, face) and the
+   animator blends looks, so the pot moves; it is never swapped for another picture. No kit here: the game wires it. */
+window.PopcornArt = (function () {
+  'use strict';
+  var C = { ink: '#141414', cream: '#FFFDF2', mint: '#66C792', mintD: '#3F9E6B', mintL: '#A8E3C0', spark: '#FFD23F', sparkD: '#E8A317',
+    red: '#E5483B', redD: '#B5302A', redL: '#FF7A66', stove: '#2E3138', stoveL: '#474B55', corn: '#FFF6DA', cornS: '#F2DDA0', hull: '#E39A22',
+    kern: '#FFC23D', kernD: '#E08E1A', kernL: '#FFF0B8', blue: '#5BB5F0', flame: '#FF8A3D', glass: 'rgba(214,244,255,.16)' };
+  var NIGHT = { wall: '#1E2A33', wall2: '#23323D', tile: '#244A3B', tileL: '#2C5A48', top: '#9A7348', topD: '#6E5030', door: '#2F6A4A', doorD: '#245437', grain: 'rgba(0,0,0,.18)' };
+  var DAY = { wall: '#FFF3DC', wall2: '#FFE9C4', tile: '#C9EED7', tileL: '#E3F7EA', top: '#EBB873', topD: '#C98F4A', door: '#66C792', doorD: '#4FAE7B', grain: 'rgba(120,70,20,.18)' };
+  function lerp(a, b, k) { return a + (b - a) * k; }
+  function hex(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+  function mixC(a, b, k) { var x = hex(a), y = hex(b); return 'rgb(' + Math.round(lerp(x[0], y[0], k)) + ',' + Math.round(lerp(x[1], y[1], k)) + ',' + Math.round(lerp(x[2], y[2], k)) + ')'; }
+  function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function ink(ctx, w) { ctx.lineWidth = w; ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+  function ell(ctx, x, y, rx, ry, rot) { ctx.beginPath(); ctx.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), rot || 0, 0, Math.PI * 2); }
+  // a small seeded random (the same pile and the same kernels every time)
+  function rnd(seed) { var s = seed >>> 0 || 1; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+  /* ---------- the kitchen (screen pixels): a warm wall with a window, a tiled splashback, the worktop, the cupboards ---------- */
+  function kitchen(ctx, vw, vh, L, night) {
+    var P = night ? NIGHT : DAY, k = L.k, g = L.back, f = L.front;
+    ctx.fillStyle = P.wall; ctx.fillRect(0, 0, vw, vh);
+    // soft vertical wallpaper stripes
+    ctx.fillStyle = P.wall2; var sw = Math.max(26, 60 * k);
+    for (var x = -sw / 2; x < vw; x += sw * 2) ctx.fillRect(x, 0, sw, g);
+    // the window: over the free wall on the side away from the gauge (only when there is room for it)
+    if (L.win) {
+      var w = L.win;
+      rr(ctx, w.x - 10, w.y - 10, w.w + 20, w.h + 20, 18); ctx.fillStyle = C.cream; ctx.fill(); ink(ctx, 5);
+      ctx.save(); rr(ctx, w.x, w.y, w.w, w.h, 10); ctx.clip();
+      var sky = ctx.createLinearGradient(0, w.y, 0, w.y + w.h);
+      if (night) { sky.addColorStop(0, '#141A3C'); sky.addColorStop(1, '#3B3A78'); } else { sky.addColorStop(0, '#8FD3FF'); sky.addColorStop(1, '#D9F3FF'); }
+      ctx.fillStyle = sky; ctx.fillRect(w.x, w.y, w.w, w.h);
+      if (night) {
+        ctx.fillStyle = '#FFF6D6';
+        for (var i = 0; i < 9; i++) { ell(ctx, w.x + w.w * ((i * 0.37 + 0.11) % 1), w.y + w.h * ((i * 0.53 + 0.17) % 0.7), 2.2, 2.2); ctx.fill(); }
+        ctx.save(); ctx.translate(w.x + w.w * 0.68, w.y + w.h * 0.3); var mr = Math.min(w.w, w.h) * 0.14;
+        ctx.beginPath(); ctx.arc(0, 0, mr, 0, Math.PI * 2); ctx.fillStyle = '#FFF3C4'; ctx.fill(); ink(ctx, 4);
+        ctx.beginPath(); ctx.arc(mr * 0.45, -mr * 0.25, mr * 0.85, 0, Math.PI * 2); ctx.fillStyle = '#141A3C'; ctx.fill(); ctx.restore();
+      } else {
+        ctx.beginPath(); ctx.arc(w.x + w.w * 0.72, w.y + w.h * 0.3, Math.min(w.w, w.h) * 0.13, 0, Math.PI * 2); ctx.fillStyle = '#FFE27A'; ctx.fill(); ink(ctx, 4);
+        ctx.fillStyle = '#fff';
+        ell(ctx, w.x + w.w * 0.3, w.y + w.h * 0.52, w.w * 0.16, w.h * 0.06); ctx.fill(); ell(ctx, w.x + w.w * 0.38, w.y + w.h * 0.46, w.w * 0.11, w.h * 0.07); ctx.fill();
+      }
+      // a green hill far away
+      ctx.beginPath(); ctx.moveTo(w.x, w.y + w.h * 0.82); ctx.quadraticCurveTo(w.x + w.w * 0.45, w.y + w.h * 0.6, w.x + w.w, w.y + w.h * 0.8); ctx.lineTo(w.x + w.w, w.y + w.h); ctx.lineTo(w.x, w.y + w.h); ctx.closePath();
+      ctx.fillStyle = night ? '#2C6B3F' : '#77B24E'; ctx.fill();
+      ctx.restore();
+      // the frame bars and the sill
+      ctx.beginPath(); ctx.moveTo(w.x + w.w / 2, w.y); ctx.lineTo(w.x + w.w / 2, w.y + w.h); ctx.moveTo(w.x, w.y + w.h / 2); ctx.lineTo(w.x + w.w, w.y + w.h / 2);
+      ctx.strokeStyle = C.cream; ctx.lineWidth = 10; ctx.stroke(); ctx.lineWidth = 3; ctx.strokeStyle = C.ink; ctx.stroke();
+      rr(ctx, w.x, w.y, w.w, w.h, 10); ink(ctx, 5);
+      rr(ctx, w.x - 22, w.y + w.h + 6, w.w + 44, 16, 8); ctx.fillStyle = C.cream; ctx.fill(); ink(ctx, 4);
+    }
+    // the tiled splashback behind the worktop
+    var th = Math.max(16, 38 * k), tw = th * 1.6, top = g - th * 6;
+    ctx.fillStyle = P.tile; ctx.fillRect(0, top, vw, g - top);
+    ctx.strokeStyle = P.tileL; ctx.lineWidth = Math.max(1.5, 3 * k);
+    ctx.beginPath();
+    for (var y = g; y > top; y -= th) { ctx.moveTo(0, y); ctx.lineTo(vw, y); }
+    for (var r = 0; r < 6; r++) { var y0 = g - (r + 1) * th, off = r % 2 ? tw / 2 : 0; for (var xx = -off; xx < vw; xx += tw) { ctx.moveTo(xx, y0); ctx.lineTo(xx, y0 + th); } }
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, top); ctx.lineTo(vw, top); ink(ctx, 4);
+    // the worktop (a wooden top seen from a little above) and its front edge
+    ctx.fillStyle = P.top; ctx.fillRect(0, g, vw, f - g);
+    ctx.strokeStyle = P.grain; ctx.lineWidth = Math.max(1.5, 2.5 * k); ctx.beginPath();
+    var gr = rnd(7);
+    for (var j = 0; j < 7; j++) { var gy = g + (f - g) * (0.15 + j * 0.12), gx = gr() * vw; ctx.moveTo(gx, gy); ctx.lineTo(gx + vw * (0.15 + gr() * 0.25), gy); }
+    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, g); ctx.lineTo(vw, g); ink(ctx, 5);
+    var eh = Math.max(12, 26 * k);
+    ctx.fillStyle = P.topD; ctx.fillRect(0, f, vw, eh); ctx.beginPath(); ctx.moveTo(0, f); ctx.lineTo(vw, f); ctx.moveTo(0, f + eh); ctx.lineTo(vw, f + eh); ink(ctx, 5);
+    // the cupboards under it
+    var cy = f + eh, dw = Math.max(150, 330 * k), gap = Math.max(8, 14 * k);
+    if (cy < vh) {
+      ctx.fillStyle = P.doorD; ctx.fillRect(0, cy, vw, vh - cy);
+      for (var dx = (vw / 2) % dw - dw; dx < vw; dx += dw) {
+        rr(ctx, dx + gap, cy + gap, dw - gap * 2, Math.max(10, vh - cy + 40), 14 * k + 4); ctx.fillStyle = P.door; ctx.fill(); ink(ctx, 4);
+        ell(ctx, dx + dw / 2, cy + gap + 30 * k + 10, 9 * k + 4, 9 * k + 4); ctx.fillStyle = C.cream; ctx.fill(); ink(ctx, 3);
+      }
+    }
+  }
+
+  /* ---------- the heat: a warm glow round the bottom of the pot ---------- */
+  function glow(ctx, heat, t) {
+    if (heat <= 0.02) return;
+    var r = 260 + 120 * heat, g = ctx.createRadialGradient(0, -110, 10, 0, -110, r);
+    g.addColorStop(0, 'rgba(255,170,60,' + (0.55 * heat).toFixed(3) + ')'); g.addColorStop(0.5, 'rgba(255,100,50,' + (0.25 * heat).toFixed(3) + ')'); g.addColorStop(1, 'rgba(255,90,40,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, -110, r, 0, Math.PI * 2); ctx.fill();
+  }
+  /* ---------- the flames under the pot: little blue ones when it is calm, tall orange ones when it is too loud ---------- */
+  function flames(ctx, f, t, still) {
+    var n = 7;
+    for (var i = 0; i < n; i++) {
+      var x = -150 + i * 50, wob = still ? 0.9 : 0.82 + 0.18 * Math.sin(t * (13 + i * 1.7) + i * 2.1);
+      var h = (16 + 44 * f) * wob, w = 17 + 9 * f, y = -92;
+      var outer = f < 0.25 ? C.blue : f < 0.45 ? mixC(C.blue, C.flame, (f - 0.25) / 0.2) : mixC(C.flame, C.red, Math.max(0, f - 0.7) / 0.3);
+      ctx.beginPath(); ctx.moveTo(x - w / 2, y); ctx.quadraticCurveTo(x - w / 2, y - h * 0.55, x + (still ? 0 : Math.sin(t * 9 + i) * 3), y - h); ctx.quadraticCurveTo(x + w / 2, y - h * 0.55, x + w / 2, y); ctx.closePath();
+      ctx.fillStyle = outer; ctx.fill(); ink(ctx, 3);
+      if (f > 0.3) { var ih = h * 0.5, iw = w * 0.45; ctx.beginPath(); ctx.moveTo(x - iw / 2, y); ctx.quadraticCurveTo(x - iw / 2, y - ih * 0.6, x, y - ih); ctx.quadraticCurveTo(x + iw / 2, y - ih * 0.6, x + iw / 2, y); ctx.closePath(); ctx.fillStyle = C.spark; ctx.fill(); }
+    }
+  }
+  /* ---------- the little stove: knobs that turn up with the heat and a light (green, yellow, red) ---------- */
+  function stove(ctx, f, light) {
+    rr(ctx, -150, -10, 40, 12, 5); ctx.fillStyle = C.stove; ctx.fill(); ink(ctx, 5);
+    rr(ctx, 110, -10, 40, 12, 5); ctx.fill(); ink(ctx, 5);
+    rr(ctx, -205, -84, 410, 78, 22); ctx.fillStyle = C.stove; ctx.fill(); ink(ctx, 7);
+    rr(ctx, -186, -74, 372, 10, 5); ctx.fillStyle = C.stoveL; ctx.fill();
+    // the grate the pot stands on
+    rr(ctx, -178, -98, 356, 16, 8); ctx.fillStyle = '#1C1E22'; ctx.fill(); ink(ctx, 5);
+    // two knobs and the light between them
+    [-120, 120].forEach(function (kx, i) {
+      ctx.beginPath(); ctx.arc(kx, -44, 21, 0, Math.PI * 2); ctx.fillStyle = C.cream; ctx.fill(); ink(ctx, 5);
+      var a = (-150 + 240 * f) * Math.PI / 180 + (i ? 0.25 : 0);
+      ctx.beginPath(); ctx.moveTo(kx, -44); ctx.lineTo(kx + Math.sin(a) * 15, -44 - Math.cos(a) * 15); ink(ctx, 5);
+    });
+    ctx.beginPath(); ctx.arc(0, -44, 13, 0, Math.PI * 2); ctx.fillStyle = light; ctx.fill(); ink(ctx, 4);
+    ctx.beginPath(); ctx.arc(-4, -48, 4, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fill();
+  }
+
+  /* ---------- the pot: red with a cream stripe, two handles, a face ---------- */
+  var POT = 'M-200 -340 C-216 -280 -216 -205 -204 -168 Q-192 -118 -138 -118 L138 -118 Q192 -118 204 -168 C216 -205 216 -280 200 -340 Z';
+  var potPath = null;
+  function path(d) { try { return new Path2D(d); } catch (e) { return null; } }
+  function pot(ctx, p, t) {
+    if (!potPath) potPath = path(POT);
+    // the handles (behind the body)
+    [-1, 1].forEach(function (s) {
+      ctx.beginPath(); ctx.moveTo(196 * s, -318); ctx.bezierCurveTo(262 * s, -326, 266 * s, -268, 204 * s, -272);
+      ctx.lineWidth = 34; ctx.strokeStyle = C.ink; ctx.lineCap = 'round'; ctx.stroke(); ctx.lineWidth = 20; ctx.strokeStyle = C.stoveL; ctx.stroke();
+    });
+    var body = mixC(C.red, '#FF5A2E', p.flush);
+    ctx.fillStyle = body; ctx.fill(potPath);
+    // shade on one side, a cream band and a shine
+    ctx.save(); ctx.clip(potPath);
+    ctx.fillStyle = mixC(C.redD, '#C8381F', p.flush); ctx.beginPath(); ctx.ellipse(150, -220, 90, 170, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = C.cream; ctx.fillRect(-230, -330, 460, 18);
+    ctx.fillStyle = 'rgba(255,255,255,.28)'; rr(ctx, -176, -300, 26, 120, 13); ctx.fill();
+    if (p.flush > 0.02) { ctx.fillStyle = 'rgba(255,214,90,' + (0.35 * p.flush).toFixed(3) + ')'; ctx.fillRect(-230, -160, 460, 60); }   // red hot at the bottom
+    ctx.restore();
+    ctx.lineWidth = 8; ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.stroke(potPath);
+    ctx.beginPath(); ctx.moveTo(-207, -330); ctx.lineTo(207, -330); ctx.moveTo(-209, -312); ctx.lineTo(209, -312); ctx.lineWidth = 4; ctx.stroke();
+    face(ctx, p, t);
+  }
+  /* the face on the pot: calm (eyes shut, a little smile), worried (round eyes, brows up, a wobbly mouth, a drop of
+     sweat), flustered (squeezed eyes, an open mouth, red cheeks), sleepy (half lids, a sigh) and happy (^ ^, a grin) */
+  function face(ctx, p, t) {
+    var ey = -238, ex = 74;
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = C.ink; ctx.fillStyle = C.ink;
+    // cheeks
+    if (p.blush > 0.02) { ctx.globalAlpha = Math.min(1, p.blush) * 0.75; ctx.fillStyle = '#FF9C8F'; ell(ctx, -128, -198, 26, 14); ctx.fill(); ell(ctx, 128, -198, 26, 14); ctx.fill(); ctx.globalAlpha = 1; ctx.fillStyle = C.ink; }
+    // brows: raised in the middle when worried
+    if (p.worry > 0.02) {
+      ctx.lineWidth = 7; ctx.globalAlpha = Math.min(1, p.worry);
+      [-1, 1].forEach(function (s) { ctx.beginPath(); ctx.moveTo(s * (ex + 26), ey - 36 + 4 * p.worry); ctx.lineTo(s * (ex - 22), ey - 44 - 10 * p.worry); ctx.stroke(); });
+      ctx.globalAlpha = 1;
+    }
+    ctx.lineWidth = 7;
+    [-1, 1].forEach(function (s) {
+      var x = s * ex;
+      if (p.eye === 'rest') { ctx.beginPath(); ctx.moveTo(x - 20, ey - 2); ctx.quadraticCurveTo(x, ey + 14, x + 20, ey - 2); ctx.stroke(); }
+      else if (p.eye === 'happy') { ctx.beginPath(); ctx.moveTo(x - 20, ey + 6); ctx.quadraticCurveTo(x, ey - 18, x + 20, ey + 6); ctx.stroke(); }
+      else if (p.eye === 'squeeze') { ctx.beginPath(); ctx.moveTo(x + 15 * s, ey - 15); ctx.lineTo(x - 15 * s, ey); ctx.lineTo(x + 15 * s, ey + 15); ctx.stroke(); }   // > <
+      else {
+        var open = p.eye === 'half' ? 0.45 : 1;
+        ell(ctx, x, ey, 15, 19 * open); ctx.fill();
+        if (open > 0.6) { ctx.fillStyle = C.cream; ell(ctx, x + 5, ey - 7, 5, 5); ctx.fill(); ctx.fillStyle = C.ink; }
+        if (p.eye === 'half') { ctx.beginPath(); ctx.moveTo(x - 19, ey - 8); ctx.lineTo(x + 19, ey - 8); ctx.stroke(); }
+      }
+    });
+    // the mouth
+    var my = -184; ctx.lineWidth = 7;
+    if (p.mouth === 'smile') { ctx.beginPath(); ctx.moveTo(-22, my); ctx.quadraticCurveTo(0, my + 20, 22, my); ctx.stroke(); }
+    else if (p.mouth === 'wobble') { ctx.beginPath(); ctx.moveTo(-28, my + 4); for (var i = 1; i <= 8; i++) ctx.lineTo(-28 + i * 7, my + 4 + (i % 2 ? -6 : 6) * (0.7 + 0.3 * Math.sin(t * 20))); ctx.stroke(); }
+    else if (p.mouth === 'O') { var o = 1 + 0.12 * Math.sin(t * 17); ell(ctx, 0, my + 8, 20 * o, 26 * o); ctx.fillStyle = '#7A2A2C'; ctx.fill(); ink(ctx, 6); ell(ctx, 0, my + 22, 11, 7); ctx.fillStyle = '#F07C86'; ctx.fill(); }
+    else if (p.mouth === 'sigh') { ell(ctx, 0, my + 6, 10, 8); ctx.fillStyle = '#7A2A2C'; ctx.fill(); ink(ctx, 5); }
+    else if (p.mouth === 'grin') { ctx.beginPath(); ctx.moveTo(-40, my - 4); ctx.quadraticCurveTo(0, my + 52, 40, my - 4); ctx.quadraticCurveTo(0, my + 8, -40, my - 4); ctx.closePath(); ctx.fillStyle = '#7A2A2C'; ctx.fill(); ink(ctx, 6);
+      ctx.beginPath(); ctx.moveTo(-16, my + 22); ctx.quadraticCurveTo(0, my + 36, 16, my + 22); ctx.quadraticCurveTo(0, my + 16, -16, my + 22); ctx.fillStyle = '#F07C86'; ctx.fill(); }
+    // a drop of sweat on its brow
+    if (p.sweat > 0.05) {
+      ctx.globalAlpha = Math.min(1, p.sweat); var sx = 150, sy = -282 + (t * 30 % 26);
+      ctx.beginPath(); ctx.moveTo(sx, sy - 22); ctx.quadraticCurveTo(sx + 14, sy, sx, sy + 8); ctx.quadraticCurveTo(sx - 14, sy, sx, sy - 22); ctx.fillStyle = '#8FD3FF'; ctx.fill(); ink(ctx, 4); ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+  }
+  /* ---------- the inside: the dark rim and a heap of golden kernels (they wiggle and hop when it gets warm) ---------- */
+  var KERN = (function () { var r = rnd(11), out = [];
+    for (var i = 0; i < 34; i++) { var row = i < 13 ? 0 : i < 23 ? 1 : i < 30 ? 2 : 3, hw = [168, 132, 92, 50][row];
+      out.push({ x: -hw + r() * hw * 2, y: -348 - row * 15 - r() * 6, a: (r() - 0.5) * 2.4, s: 1.35 + r() * 0.3, ph: r() * 6.28 }); }
+    return out.sort(function (a, b) { return a.y - b.y; }); })();
+  function kernel(ctx, x, y, a, s) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.scale(s, s);
+    ctx.beginPath(); ctx.moveTo(0, -12); ctx.bezierCurveTo(11, -11, 12, 6, 0, 11); ctx.bezierCurveTo(-12, 6, -11, -11, 0, -12); ctx.closePath();
+    ctx.fillStyle = C.kern; ctx.fill(); ctx.lineWidth = 3.5; ctx.strokeStyle = C.ink; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, 6, 6, 4, 0, 0, Math.PI * 2); ctx.fillStyle = C.kernD; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(-2, -5, 3, 4, 0.3, 0, Math.PI * 2); ctx.fillStyle = C.kernL; ctx.fill();
+    ctx.restore();
+  }
+  function inside(ctx, p, t, still) {
+    ell(ctx, 0, -340, 214, 36); ctx.fillStyle = mixC(C.redL, '#FF8A5C', p.flush); ctx.fill(); ink(ctx, 7);
+    ell(ctx, 0, -340, 192, 25); ctx.fillStyle = '#5A1E18'; ctx.fill();
+    // the heap, clipped to the pot's mouth and the space under the lid
+    ctx.save(); ctx.beginPath(); ctx.ellipse(0, -340, 192, 25, 0, 0, Math.PI); ctx.lineTo(-192, -440); ctx.lineTo(192, -440); ctx.closePath(); ctx.clip();
+    for (var i = 0; i < KERN.length; i++) {
+      var q = KERN[i], jx = 0, jy = 0, ja = 0;
+      if (!still && p.jiggle > 0) { jx = Math.sin(t * 31 + q.ph * 3) * 2.2 * p.jiggle; jy = -Math.abs(Math.sin(t * 23 + q.ph)) * 4 * p.jiggle; ja = Math.sin(t * 27 + q.ph) * 0.3 * p.jiggle; }
+      if (p.hop && i === p.hopI) jy -= p.hop;
+      kernel(ctx, q.x + jx, q.y + jy, q.a + ja, q.s);
+    }
+    ctx.restore();
+  }
+  /* ---------- the glass lid: it rattles and lifts on the bowl side while it pops, and waves like a hat at the end ---------- */
+  function lid(ctx, p, night) {
+    ctx.save(); ctx.translate(0, -p.lift); ctx.translate(-214, -344); ctx.rotate(p.tilt * Math.PI / 180); ctx.translate(214, 344);
+    ctx.beginPath(); ctx.moveTo(-210, -344); ctx.ellipse(0, -344, 210, 126, 0, Math.PI, 0); ctx.closePath();
+    ctx.fillStyle = night ? 'rgba(170,220,240,.12)' : C.glass; ctx.fill();
+    // a shine on the glass
+    ctx.beginPath(); ctx.ellipse(0, -344, 172, 98, 0, Math.PI * 1.08, Math.PI * 1.38); ctx.lineWidth = 12; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, -344, 172, 98, 0, Math.PI * 1.45, Math.PI * 1.52); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-210, -344); ctx.ellipse(0, -344, 210, 126, 0, Math.PI, 0); ink(ctx, 7);
+    // its rim and its mint knob
+    rr(ctx, -222, -354, 444, 20, 10); ctx.fillStyle = C.mint; ctx.fill(); ink(ctx, 6);
+    rr(ctx, -12, -488, 24, 22, 6); ctx.fillStyle = C.stoveL; ctx.fill(); ink(ctx, 5);
+    ell(ctx, 0, -500, 36, 21); ctx.fillStyle = C.mint; ctx.fill(); ink(ctx, 6);
+    ell(ctx, -12, -506, 10, 5); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fill();
+    ctx.restore();
+  }
+
+  /* ---------- the striped bowl (bowl units: 0,0 is the middle of its foot) ---------- */
+  var BOWL = 'M-178 -150 C-170 -70 -132 -18 -92 -18 L92 -18 C132 -18 170 -70 178 -150 A178 30 0 0 1 -178 -150 Z';
+  var bowlPath = null;
+  function bowlBack(ctx) {
+    ell(ctx, 0, -150, 178, 30); ctx.fillStyle = '#F1E3C2'; ctx.fill(); ink(ctx, 6);
+    ell(ctx, 0, -146, 160, 22); ctx.fillStyle = '#E2CFA2'; ctx.fill();
+  }
+  function bowlFront(ctx) {
+    if (!bowlPath) bowlPath = path(BOWL);
+    rr(ctx, -84, -22, 168, 22, 10); ctx.fillStyle = C.red; ctx.fill(); ink(ctx, 6);
+    ctx.fillStyle = C.cream; ctx.fill(bowlPath);
+    ctx.save(); ctx.clip(bowlPath); ctx.fillStyle = C.red;
+    for (var x = -260; x < 260; x += 76) { ctx.beginPath(); ctx.moveTo(x, -190); ctx.lineTo(x + 36, -190); ctx.lineTo(x + 14, 0); ctx.lineTo(x - 22, 0); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle = 'rgba(20,20,20,.12)'; ctx.beginPath(); ctx.ellipse(120, -80, 80, 90, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.lineWidth = 7; ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.stroke(bowlPath);
+    ctx.beginPath(); ctx.ellipse(0, -150, 178, 30, 0, 0, Math.PI); ctx.lineWidth = 10; ctx.strokeStyle = C.cream; ctx.stroke(); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.stroke();
+  }
+  /** Where the popcorn lands, bowl units: a mound in the bowl first (row by row), then the worktop round it. */
+  var SLOTS = (function () {
+    var r = rnd(5), bowl = [], spill = [];
+    for (var row = 0; row < 8; row++) {
+      var hw = 158 - row * 20, n = Math.max(1, Math.floor(2 * hw / 30)), cells = [];
+      for (var i = 0; i < n; i++) cells.push({ x: -hw + (i + 0.5) * (2 * hw / n) + (r() - 0.5) * 8, y: -146 - row * 15 + (r() - 0.5) * 6, a: r() * 6.28, v: Math.floor(r() * 4), row: row });
+      for (var j = cells.length - 1; j > 0; j--) { var m = Math.floor(r() * (j + 1)), tmp = cells[j]; cells[j] = cells[m]; cells[m] = tmp; }
+      bowl = bowl.concat(cells);
+    }
+    for (var k2 = 0; k2 < 52; k2++) {
+      var side = k2 % 3, x, y;
+      if (side === 0) { x = -150 - r() * 120; y = -6 + r() * 30; }
+      else if (side === 1) { x = 150 + r() * 120; y = -6 + r() * 30; }
+      else { x = (r() - 0.5) * 260; y = 14 + r() * 28; }
+      spill.push({ x: x, y: y, a: r() * 6.28, v: Math.floor(r() * 4), spill: true });
+    }
+    spill.sort(function (a, b) { return a.y - b.y; });
+    return { bowl: bowl, spill: spill };
+  })();
+
+  /* ---------- popcorn: fluffy clouds of cream with a golden hull, drawn once per size into little pictures ---------- */
+  var PUFFS = [
+    [[0, 0, 10], [-9, -4, 8], [8, -6, 8.5], [7, 7, 7.5], [-6, 8, 7], [1, -12, 6.5]],
+    [[0, 0, 10.5], [-10, 2, 7.5], [9, -2, 8], [-3, -11, 7.5], [5, 9, 7]],
+    [[0, 0, 9.5], [-8, -8, 8], [9, -6, 7.5], [10, 6, 7], [-9, 7, 7.5], [0, 11, 6]],
+    [[0, 0, 11], [-11, -2, 7], [10, 2, 7.5], [2, -12, 7], [-4, 10, 6.5]],
+  ];
+  function puff(ctx, v) {
+    var P = PUFFS[v % PUFFS.length];
+    ctx.lineWidth = 6.5; ctx.strokeStyle = C.ink;
+    P.forEach(function (c) { ctx.beginPath(); ctx.arc(c[0], c[1], c[2], 0, Math.PI * 2); ctx.stroke(); });
+    P.forEach(function (c, i) { ctx.beginPath(); ctx.arc(c[0], c[1], c[2], 0, Math.PI * 2); ctx.fillStyle = i % 2 ? C.cornS : C.corn; ctx.fill(); });
+    ctx.beginPath(); ctx.arc(P[0][0], P[0][1], P[0][2], 0, Math.PI * 2); ctx.fillStyle = C.corn; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(2, 7, 4.5, 3.2, 0.4, 0, Math.PI * 2); ctx.fillStyle = C.hull; ctx.fill(); ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(-3, -3, 2.6, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+  }
+  /** little pictures of the popcorn at this many device pixels per pot unit (drawImage is much cheaper than paths) */
+  function sprites(px) {
+    var S = 40, out = [];
+    for (var v = 0; v < PUFFS.length; v++) {
+      var c = document.createElement('canvas'); c.width = c.height = Math.max(4, Math.ceil(S * px));
+      var g = c.getContext('2d'); g.scale(c.width / S, c.height / S); g.translate(S / 2, S / 2); puff(g, v); out.push(c);
+    }
+    return { S: S, img: out };
+  }
+  /** a pop: a yellow star of rays where a kernel bursts */
+  function burst(ctx, x, y, k, a) {
+    ctx.save(); ctx.translate(x, y); ctx.globalAlpha = a; ctx.beginPath();
+    for (var i = 0; i < 16; i++) { var r = i % 2 ? 9 * k : 24 * k, an = i / 16 * Math.PI * 2; ctx.lineTo(Math.cos(an) * r, Math.sin(an) * r); }
+    ctx.closePath(); ctx.fillStyle = C.spark; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.restore();
+  }
+
+  /** The pot's face for the ends of the gauge: 'calm' (eyes shut, a smile, little blue flames) or 'pop' (squeezed eyes,
+   *  an open mouth, popcorn flying). */
+  function icon(kind) {
+    var k = kind === 'pop', s = '<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">', st = ' stroke="' + C.ink + '" stroke-linejoin="round" stroke-linecap="round"';
+    if (k) s += '<g' + st + ' stroke-width="4"><circle cx="24" cy="22" r="9" fill="' + C.corn + '"/><circle cx="32" cy="16" r="7" fill="' + C.corn + '"/><circle cx="92" cy="18" r="9" fill="' + C.corn + '"/><circle cx="100" cy="26" r="6" fill="' + C.corn + '"/></g>';
+    s += '<path d="M14 40 L106 40 L100 98 Q98 106 88 106 L32 106 Q22 106 20 98 Z" fill="' + (k ? '#FF5A2E' : C.red) + '"' + st + ' stroke-width="5"/>';
+    s += '<rect x="10" y="34" width="100" height="10" rx="5" fill="' + C.mint + '"' + st + ' stroke-width="4"/>';
+    if (k) s += '<path d="M34 62 L46 68 L34 74 M86 62 L74 68 L86 74" fill="none"' + st + ' stroke-width="5"/><ellipse cx="60" cy="88" rx="9" ry="11" fill="#7A2A2C"' + st + ' stroke-width="4"/>' +
+      '<ellipse cx="26" cy="82" rx="8" ry="5" fill="#FFD0C8"/><ellipse cx="94" cy="82" rx="8" ry="5" fill="#FFD0C8"/>';
+    else s += '<path d="M32 66 Q40 74 48 66 M72 66 Q80 74 88 66" fill="none"' + st + ' stroke-width="5"/><path d="M50 84 Q60 92 70 84" fill="none"' + st + ' stroke-width="4.5"/>';
+    return s + '</svg>';
+  }
+
+  /* ---------- looks: plain numbers the animator blends (the eyes and mouth switch halfway) ---------- */
+  var NUM = ['flame', 'heat', 'lift', 'tilt', 'worry', 'blush', 'flush', 'sweat', 'jiggle'];
+  function look(o) { var p = { flame: 0.15, heat: 0, lift: 0, tilt: 0, worry: 0, blush: 0.45, flush: 0, sweat: 0, jiggle: 0, eye: 'rest', mouth: 'smile' }; for (var k in o) p[k] = o[k]; return p; }
+  var LOOKS = {
+    calm: look({}),
+    sizzle: look({ flame: 0.5, heat: 0.4, lift: 3, worry: 1, blush: 0.6, sweat: 1, jiggle: 1, eye: 'open', mouth: 'wobble' }),
+    popping: look({ flame: 1, heat: 1, lift: 30, tilt: -15, worry: 1, blush: 1, flush: 1, sweat: 1, jiggle: 1, eye: 'squeeze', mouth: 'O' }),
+    cooling: look({ flame: 0.25, heat: 0.3, lift: 6, blush: 0.6, flush: 0.3, eye: 'half', mouth: 'sigh' }),
+    happy: look({ flame: 0.2, heat: 0.1, lift: 46, tilt: 12, blush: 1, eye: 'happy', mouth: 'grin' }),
+  };
+  function mix(a, b, k) { var p = {}; for (var i = 0; i < NUM.length; i++) { var n = NUM[i]; p[n] = a[n] + (b[n] - a[n]) * k; } p.eye = k < 0.5 ? a.eye : b.eye; p.mouth = k < 0.5 ? a.mouth : b.mouth; return p; }
+  function copy(p) { var o = {}; for (var k in p) o[k] = p[k]; return o; }
+  return { C: C, kitchen: kitchen, glow: glow, flames: flames, stove: stove, pot: pot, inside: inside, lid: lid, bowlBack: bowlBack, bowlFront: bowlFront,
+    SLOTS: SLOTS, KERN: KERN, sprites: sprites, burst: burst, icon: icon, LOOKS: LOOKS, NUM: NUM, mix: mix, copy: copy, mixC: mixC, kernel: kernel };
+})();
+/* popcorn-art:end */
+(function () {
+  'use strict';
+  var O = window.Oomba, CORE = window.PopcornCore, ART = window.PopcornArt;
+  var LANG = O.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en, RTL = O.dir === 'rtl';
+  function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
+  document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
+  var reduced = function () { return !!O.settings.reduced; };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  var now = function () { return performance.now(); };
+  var LD = window.BRB && window.BRB.loudness ? window.BRB.loudness : null;
+
+  /* ---------- the teacher's settings, remembered (ids and the fine slider only). The room's quiet level is a number
+     the microphone measured: it stays in memory for this visit and is never saved (docs/safety.md "Loudness"). ---------- */
+  var KEY = 'popcorn-hush-v1';
+  function load() { try { return (window.BRB && BRB.storage && BRB.storage.get(KEY)) || {}; } catch (e) { return {}; } }
+  var saved = load();
+  var CFG = {
+    preset: CORE.PRESET_IDS.indexOf(saved.preset) >= 0 ? saved.preset : 'quiet',
+    fine: typeof saved.fine === 'number' ? Math.max(-CORE.FINE, Math.min(CORE.FINE, Math.round(saved.fine))) : 0,
+    goal: CORE.GOALS.indexOf(saved.goal) >= 0 ? saved.goal : 300,
+    base: CORE.BASE, calibrated: false,
+  };
+  function save() { try { if (window.BRB && BRB.storage) BRB.storage.set(KEY, { preset: CFG.preset, fine: CFG.fine, goal: CFG.goal }); } catch (e) { /* no save */ } }
+  function lineNow() { return CORE.line(CFG.base, CFG.preset, CFG.fine); }
+  function clock(sec) {
+    sec = Math.max(0, Math.floor(sec)); var m = Math.floor(sec / 60), s = sec % 60;
+    return O.num(m, { minimumIntegerDigits: 2 }) + ':' + O.num(s, { minimumIntegerDigits: 2 });
+  }
+
+  /* ---------- the session ---------- */
+  var S = {
+    screen: 'title', core: null, mic: 'idle', demo: false, paused: false,
+    raw: 0, level: 0, peak: 0, db: -100, dbAt: 0, forced: null, heldUntil: 0,
+    demoLevel: 18, clapUntil: 0, chatter: false, ended: false, sounds: [], calib: null, lastAnnounce: 0,
+    gt: 0, loudAt: -99, same: false,
+  };
+
+  /* ---------- the stage: the kitchen canvas, the gauge, the top bar ---------- */
+  var R = {};
+  function build() {
+    if (R.root) return;
+    var root = el('div', 'ph'); root.id = 'ph';
+    var cv = el('canvas', 'ph-cv'); cv.setAttribute('aria-hidden', 'true'); root.appendChild(cv);
+    var tint = el('div', 'ph-tint'); root.appendChild(tint);
+    var bubble = el('div', 'ph-bubble'); bubble.setAttribute('aria-hidden', 'true'); bubble.hidden = true; bubble.appendChild(el('span', '', t('bubble')));
+    var mark = el('div', 'ph-mark', '!'); mark.setAttribute('aria-hidden', 'true'); mark.hidden = true;
+    root.append(bubble, mark);
+
+    // top bar: the quiet-time clock in the middle; pause and teacher settings at the end (the start corner stays clear
+    // for the site's fullscreen Back link)
+    var top = el('div', 'ph-top'); top.dir = 'ltr';   // the buttons stay at the right in every language: the site's fullscreen Back link is at the left
+    var card = el('div', 'ph-clock'); card.dir = O.dir || 'ltr'; card.setAttribute('role', 'timer'); card.setAttribute('aria-live', 'off');
+    var lab = el('div', 'lab', t('quietTime')), time = el('div', 'time', clock(0)), bar = el('div', 'bar'), barI = el('i'), sub = el('div', 'sub');
+    bar.appendChild(barI); bar.setAttribute('aria-hidden', 'true');
+    var goalT = el('span', 'goal'), pops = el('span', 'pops'), corn = el('span', 'corn'); sub.append(goalT, pops, corn);
+    time.dir = 'ltr'; card.append(lab, time, bar, sub);
+    var btns = el('div', 'ph-btns');
+    // the microphone is on: said in the game's own bar too (the page's pill has the Stop button)
+    var chip = el('div', 'ph-chip'); chip.dir = O.dir || 'ltr'; chip.hidden = true; chip.title = t('listening');
+    chip.appendChild(el('span', 'dot')); chip.appendChild(el('span', 'em', '🎤')); chip.appendChild(el('span', 'tx', t('listening')));
+    var pause = el('button', 'ph-ib'); pause.type = 'button'; pause.innerHTML = O.icon('pause'); pause.setAttribute('aria-label', t('pause'));
+    pause.addEventListener('click', function (e) { if (e.detail) pause.blur(); pauseGame('button'); });
+    var gear = el('button', 'ph-ib'); gear.type = 'button'; gear.innerHTML = O.icon('settings'); gear.setAttribute('aria-label', t('settings'));
+    gear.addEventListener('click', function (e) { if (e.detail) gear.blur(); teacherSettings(); });
+    btns.append(chip, pause, gear);
+    top.append(el('div', 'ph-spacer'), card, btns);
+    root.appendChild(top);
+
+    // the gauge: calm (green, "Shh", the calm pot), getting warm (yellow), too loud (red, striped, the popping pot) and
+    // the line the popcorn pops above
+    var g = el('div', 'ph-gauge'); g.dir = 'ltr'; g.setAttribute('role', 'meter');   // the gauge reads left to right (or upwards) in every language
+    g.setAttribute('aria-valuemin', '0'); g.setAttribute('aria-valuemax', '100');
+    var track = el('div', 'g-track'), zg = el('div', 'g-zone g-calm'), zy = el('div', 'g-zone g-near'), zr = el('div', 'g-zone g-loud');
+    var fill = el('div', 'g-fill'), peak = el('div', 'g-peak'), ln = el('div', 'g-line'), tag = el('div', 'g-tag');
+    tag.appendChild(el('span', 'ic', '🍿')); tag.appendChild(el('span', 'tx', t('tooLoud')));
+    var labC = el('div', 'g-lab', t('zShh')), labN = el('div', 'g-lab', t('zNear')); labC.setAttribute('aria-hidden', 'true'); labN.setAttribute('aria-hidden', 'true');
+    track.append(zg, zy, zr, fill, peak, labC, labN, ln);
+    var icTop = el('div', 'g-ic g-ictop'), icBot = el('div', 'g-ic g-icbot'); icTop.innerHTML = ART.icon('pop'); icBot.innerHTML = ART.icon('calm');
+    var held = el('div', 'g-held'); held.appendChild(el('span', '', '🔇 ' + t('ownSound'))); held.hidden = true;
+    g.append(icTop, track, icBot, tag, held);
+    root.appendChild(g);
+
+    // demo mode: a noise slider, a clap and class chatter stand in for the room
+    var demo = el('div', 'ph-demo'); demo.hidden = true; demo.dir = O.dir || 'ltr';
+    var rib = el('div', 'ph-ribbon', t('demo'));
+    var sl = el('label', 'ph-noise'); var slT = el('span', 'tx', t('noise'));
+    var range = el('input'); range.dir = 'ltr'; range.type = 'range'; range.min = '0'; range.max = '100'; range.step = '1'; range.value = String(S.demoLevel); range.setAttribute('aria-label', t('noise'));
+    range.addEventListener('input', function () { S.demoLevel = +range.value || 0; });
+    sl.append(slT, range);
+    var clap = el('button', 'ph-db'); clap.type = 'button'; clap.appendChild(el('span', 'em', '👏')); clap.appendChild(el('span', '', t('clap')));
+    clap.addEventListener('click', function (e) { if (e.detail) clap.blur(); S.clapUntil = now() + 400; });
+    var chat = el('button', 'ph-db'); chat.type = 'button'; chat.setAttribute('aria-pressed', 'false'); chat.appendChild(el('span', 'em', '🗣️')); chat.appendChild(el('span', '', t('chatter')));
+    chat.addEventListener('click', function (e) { if (e.detail) chat.blur(); S.chatter = !S.chatter; chat.setAttribute('aria-pressed', String(S.chatter)); });
+    demo.append(rib, sl, clap, chat);
+    root.appendChild(demo);
+
+    var status = el('p', 'ph-sr'); status.setAttribute('role', 'status'); root.appendChild(status);
+    O.ui.root().appendChild(root);
+    R = { root: root, cv: cv, ctx: cv.getContext('2d'), bubble: bubble, mark: mark, time: time, bar: bar, barI: barI, lab: lab, goalT: goalT, pops: pops, corn: corn, card: card, top: top,
+      g: g, track: track, zg: zg, zy: zy, zr: zr, fill: fill, peak: peak, ln: ln, tag: tag, held: held, demo: demo, range: range, chat: chat, status: status, pauseBtn: pause,
+      chip: chip, labC: labC, labN: labN };
+    layout();
+    window.addEventListener('resize', layout);
+  }
+  function announce(text, force) {
+    var n = now(); if (!force && n - S.lastAnnounce < 2500) return; S.lastAnnounce = n;
+    try { O.ui.announce(text); } catch (e) { if (R.status) R.status.textContent = text; }
+  }
+
+  /* ---------- where the pot and the bowl stand: in the free part of the kitchen, as big as it allows. Wide screens put
+     the bowl beside the pot; tall ones put it in front of the stove, so both stay big on a phone. ---------- */
+  var POS = { x: 0, y: 0, k: 1, tall: false, portrait: false, bowl: { x: 480, y: 0 }, L: { back: 0, front: 0, k: 1, win: null }, dpr: 1, vw: 0, vh: 0 };
+  var COMP = { wide: { l: -268, r: 672, t: -585, b: 26, bowl: { x: 480, y: 0 } }, tall: { l: -268, r: 402, t: -585, b: 146, bowl: { x: 216, y: 124 } } };
+  var SPR = null, sprPx = 0;
+  function layout() {
+    if (!R.root) return;
+    var vw = window.innerWidth || 800, vh = window.innerHeight || 600, dpr = Math.min(2, window.devicePixelRatio || 1);
+    var portrait = vh > vw * 1.05; POS.portrait = portrait;
+    R.root.classList.toggle('portrait', portrait);
+    if (R.cv.width !== Math.round(vw * dpr) || R.cv.height !== Math.round(vh * dpr)) { R.cv.width = Math.round(vw * dpr); R.cv.height = Math.round(vh * dpr); }
+    POS.dpr = dpr; POS.vw = vw; POS.vh = vh;
+    var topB = Math.max(80, R.top.getBoundingClientRect().bottom || 0);
+    R.root.style.setProperty('--top', Math.round(topB - 10) + 'px');
+    var left = 16, right = vw - 16, top = topB + 10, bottom = vh - 14;
+    if (portrait) {
+      var gt = R.g.getBoundingClientRect().top; if (gt > 0) bottom = gt - 30;   // above the gauge (and its "Too loud" tag)
+    } else {
+      var gl = R.g.getBoundingClientRect().left; if (gl > 0) right = gl - Math.min(170, Math.max(110, vw * 0.1));   // clear of the gauge's tag
+      if (S.demo && !R.demo.hidden) { var dt = R.demo.getBoundingClientRect().top; if (dt > 0) bottom = Math.min(bottom, dt - 8); }
+    }
+    // the results card: beside the happy pot on a wide screen (it stands in the part it leaves free), under it on a tall one
+    var html = document.documentElement, card = S.screen === 'end' && html.classList.contains('ph-ended') ? document.querySelector('.ok-win .ok-card') : null;
+    if (S.screen === 'end') { var side = vw >= 700 && vw / vh >= 1.25; html.classList.toggle('ph-side', side); html.classList.toggle('ph-low', !side); }
+    if (card) {
+      var cr = card.getBoundingClientRect();
+      if (html.classList.contains('ph-side')) { left = 16; right = cr.left - 24; top = 24; bottom = vh - 14; }
+      else { left = 16; right = vw - 16; top = 16; bottom = cr.top - 10; }
+    }
+    if (S.screen === 'title' || S.screen === 'setup') top = Math.max(top, vh * 0.44);   // under the kit's title and its Play button
+    var Wd = Math.max(60, right - left), Hd = Math.max(60, bottom - top), cw = COMP.wide, ct = COMP.tall;
+    var kW = Math.min(Wd / (cw.r - cw.l), Hd / (cw.b - cw.t)), kT = Math.min(Wd / (ct.r - ct.l), Hd / (ct.b - ct.t));
+    var tall = kT > kW * 1.08, c = tall ? ct : cw, k = Math.max(0.12, Math.min(1.7, tall ? kT : kW));
+    POS.tall = tall; POS.k = k; POS.bowl = c.bowl;
+    POS.x = left + Wd / 2 - (c.l + c.r) / 2 * k;
+    POS.y = bottom - c.b * k;
+    // the kitchen around them
+    var back = POS.y - 34 * k, front = Math.min(vh - 6, Math.max(back + 60 * k, POS.y + (tall ? 182 : 74) * k));
+    var win = null, compL = POS.x + c.l * k, tileTop = back - Math.max(16, 38 * k) * 6;
+    if (!portrait && !card) {
+      var ww = Math.min(320, compL - 90, vw * 0.24), wh = ww * 0.78, wy = Math.max(topB + 26, tileTop - wh - 50);
+      if (ww >= 120 && wy + wh + 30 < tileTop) win = { x: 40, y: wy, w: ww, h: wh };
+    }
+    POS.L = { back: back, front: front, k: k, win: win };
+    var px = k * dpr; if (!SPR || Math.abs(px - sprPx) > 0.01) { SPR = ART.sprites(px * 1.25); sprPx = px; }
+  }
+
+  /* ---------- the animator: looks blended with ease, plus the popcorn, steam and bursts ---------- */
+  var A = { cur: ART.copy(ART.LOOKS.calm), from: null, to: 'calm', t: 0, dur: 0, time: 0, forced: null, skip: false, celebrate: null,
+    bump: { x: 0, v: 0 }, hopI: -1, hopT: 9, wiggleUntil: 0, night: false, nightAt: 0, flame: 0.15, jig: 0 };
+  var BLEND = { calm: 900, sizzle: 350, popping: 200, cooling: 700, happy: 500 };
+  /** loud in the last 0.9 s (game time): the bubble stays up while the room hovers at the line, instead of flickering */
+  function loudish() { return !!S.core && S.gt - S.loudAt < 0.9; }
+  function ease(k) { return k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; }
+  function want() {
+    if (A.forced) return A.forced;
+    if (A.celebrate != null) return 'happy';
+    var c = S.core; if (!c) return 'calm';
+    return c.state === 'sizzle' ? 'sizzle' : c.state === 'popping' ? 'popping' : c.state === 'cooling' ? 'cooling' : 'calm';
+  }
+  /** how close the room is to the line, 0 (calm, far under it) .. 1 (at it): the flames and the kernels follow it live */
+  function warmth() { var line = lineNow(), lo = line - CORE.T.near - 12; return Math.max(0, Math.min(1, (S.level - lo) / (line - lo))); }
+  function spring(sp, dt, k, d) { sp.v += (-k * sp.x - d * sp.v) * dt; sp.x += sp.v * dt; }
+
+  var FLY = [], PILE = [], STEAM = [], BURSTS = [], CONF = [], extra = 0;
+  function resetPopcorn() { FLY.length = 0; PILE.length = 0; STEAM.length = 0; BURSTS.length = 0; extra = 0; A.bump.x = A.bump.v = 0; }
+  function slotAt(i) { var B = ART.SLOTS; return i < B.bowl.length ? B.bowl[i] : i < B.bowl.length + B.spill.length ? B.spill[i - B.bowl.length] : null; }
+  var taken = 0;   // slots promised to popcorn in the air (and landed)
+  /** a pop: a burst where a kernel bursts and (mostly) a piece of popcorn that bounces off the lid or flies to the bowl */
+  function popOne(ev) {
+    var rm = reduced(), r = Math.random();
+    var bx = -150 + Math.random() * 300; BURSTS.push({ x: bx, y: -372 - Math.random() * 14, t: 0 });
+    if (BURSTS.length > 12) BURSTS.shift();
+    if (!rm) A.bump.v += 60;
+    if (rm && ev.n % 2) return;                 // less motion: half as many pieces, no spin
+    if (FLY.length > 44) return;
+    if (r < 0.32 && !rm) {                      // up against the glass and back into the pot
+      FLY.push({ mode: 'in', x: -150 + Math.random() * 270, y: -362, vx: (Math.random() - 0.5) * 140, vy: -(430 + Math.random() * 260), a: Math.random() * 6, va: (Math.random() - 0.5) * 12, v: ev.n % 4, t: 0 });
+      return;
+    }
+    var slot = slotAt(taken), x0 = 40 + Math.random() * 140, y0 = -386, legs = [];
+    var B = POS.bowl, spin = rm ? 0 : (Math.random() - 0.5) * 14;
+    if (slot) {
+      taken++;
+      if (slot.spill && Math.random() < 0.6) {   // over the top of the heap and down the side onto the worktop
+        var sx = slot.x < 0 ? -110 : 110;
+        legs.push({ x: B.x + sx * (slot.x < 0 ? 1 : 1), y: B.y - 255, tf: 1.05 + Math.random() * 0.2 }, { x: B.x + slot.x, y: B.y + slot.y, tf: 0.45 });
+      } else legs.push({ x: B.x + slot.x, y: B.y + slot.y, tf: 1.0 + Math.random() * 0.3 });
+    } else {
+      extra++;                                    // the bowl and the worktop are full: it lands on the heap and is gone
+      legs.push({ x: B.x + (Math.random() - 0.5) * 120, y: B.y - 262, tf: 1.1, gone: true });
+    }
+    var p = { mode: 'out', x: x0, y: y0, a: Math.random() * 6, va: spin, v: slot ? slot.v : ev.n % 4, t: 0, slot: slot, legs: legs, leg: -1 };
+    nextLeg(p); FLY.push(p);
+  }
+  var G = 1400;
+  function nextLeg(p) {
+    p.leg++; var L = p.legs[p.leg]; p.t = 0; p.tf = L.tf; p.x0 = p.x; p.y0 = p.y;
+    p.vx = (L.x - p.x) / L.tf; p.vy = (L.y - p.y - 0.5 * G * L.tf * L.tf) / L.tf;
+  }
+  function lidY(x, look) {   // the underside of the glass dome where it is now (lifted and tilted)
+    var u = Math.max(0, 1 - (x / 210) * (x / 210)), tilt = -(look.tilt || 0) * Math.PI / 180;
+    return -344 - look.lift - 126 * Math.sqrt(u) - (x + 214) * Math.sin(tilt);
+  }
+  function fly(dt, look) {
+    for (var i = FLY.length - 1; i >= 0; i--) {
+      var p = FLY[i]; p.t += dt; p.a += p.va * dt;
+      if (p.mode === 'in') {
+        p.vy += G * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+        var ly = lidY(p.x, look) + 16;
+        if (p.vy < 0 && p.y < ly) { p.y = ly; p.vy = -p.vy * 0.35; p.va *= -1; }
+        if (p.vy > 0 && p.y > -356) FLY.splice(i, 1);
+        continue;
+      }
+      var L = p.legs[p.leg], k = Math.min(p.t, p.tf);
+      p.x = p.x0 + p.vx * k; p.y = p.y0 + p.vy * k + 0.5 * G * k * k;
+      if (p.t >= p.tf) {
+        if (p.leg < p.legs.length - 1) { nextLeg(p); continue; }
+        FLY.splice(i, 1);
+        if (!L.gone && p.slot) PILE.push({ s: p.slot, a: p.a, v: p.v, t: 0 });
+      }
+    }
+    PILE.forEach(function (q) { if (q.t < 1) q.t += dt; });
+    for (var j = BURSTS.length - 1; j >= 0; j--) { BURSTS[j].t += dt; if (BURSTS[j].t > 0.22) BURSTS.splice(j, 1); }
+    for (var m = STEAM.length - 1; m >= 0; m--) {
+      var s = STEAM[m]; s.life -= dt; if (s.life <= 0) { STEAM.splice(m, 1); continue; }
+      s.x += s.vx * dt; s.y += s.vy * dt; s.vx *= 1 - 0.8 * dt; s.r += 26 * dt;
+    }
+  }
+  function steam(x, y, n, up) {
+    if (reduced() && STEAM.length > 3) return;
+    for (var i = 0; i < n; i++) STEAM.push({ x: x + (Math.random() - 0.5) * 30, y: y, vx: (Math.random() - 0.3) * 60, vy: -(up || 90) - Math.random() * 60, r: 12 + Math.random() * 10, life: 1.2 + Math.random() * 0.6, max: 1.8 });
+  }
+
+  function animate(dt) {
+    A.time += dt;
+    var w = want(), rm = reduced();
+    if (w !== A.to) { A.from = ART.copy(A.cur); A.to = w; A.t = 0; A.dur = A.skip ? 0 : rm ? 300 : (BLEND[w] || 500); }
+    var target = ART.LOOKS[A.to], p;
+    if (A.dur > 0 && A.t < A.dur) { A.t += dt * 1000; p = ART.mix(A.from, target, ease(Math.min(1, A.t / A.dur))); } else p = ART.copy(target);
+    A.cur = ART.copy(p);
+    var c = S.core, st = c ? c.state : 'calm', heat = c ? c.heat : 0, wm = S.screen === 'play' || S.screen === 'end' ? warmth() : 0;
+    // live heat: the flames and the kernels follow the room while it is calm; the pot's own heat while it pops
+    if (A.to === 'calm' || A.to === 'sizzle') { p.flame = Math.max(p.flame, 0.12 + 0.5 * wm); p.heat = Math.max(p.heat, 0.5 * wm * wm); p.jiggle = Math.max(p.jiggle, wm > 0.6 ? (wm - 0.6) * 1.6 : 0); }
+    if (A.to === 'popping' && c) { p.flame = Math.max(0.55, 0.45 + 0.55 * heat); p.heat = Math.max(0.5, heat); }
+    if (now() < A.wiggleUntil) p.jiggle = Math.max(p.jiggle, 1.6);
+    var pot = { dx: 0, dy: 0, rot: 0, sq: 1 };
+    if (!rm) {
+      spring(A.bump, dt, 260, 14);
+      pot.sq = 1 - A.bump.x * 0.0012;
+      if (A.to === 'calm') pot.sq *= 1 + 0.006 * Math.sin(A.time * 1.6);
+      else if (A.to === 'sizzle') pot.dx = Math.sin(A.time * 43) * 1.4 * Math.max(0.3, wm);
+      else if (A.to === 'popping') {
+        var hh = Math.max(0.4, heat); pot.dx = Math.sin(A.time * 47) * 4 * hh; pot.rot = Math.sin(A.time * 31) * 1.4 * hh;
+        p.lift += Math.abs(Math.sin(A.time * 26)) * 16 * hh; p.tilt += Math.sin(A.time * 19) * 3 * hh;
+      } else if (A.to === 'happy') {
+        pot.rot = Math.sin(A.time * 7) * 6; pot.dy = -Math.abs(Math.sin(A.time * 7)) * 22; p.tilt += Math.sin(A.time * 7 + 0.6) * 16;
+      }
+      // steam: lots from the lifted lid while it pops, a little from the knob while it cools or sizzles
+      if (S.screen === 'play' && !S.paused) {
+        if (A.to === 'popping' && Math.random() < dt * 9) steam(200, -470, 1, 120);
+        if (A.to === 'cooling' && Math.random() < dt * 3) steam(0, -520, 1, 70);
+        if (A.to === 'sizzle' && Math.random() < dt * 1.2) steam(170, -380, 1, 60);
+      }
+    }
+    if (A.hopT < 0.45) { A.hopT += dt; p.hop = Math.sin(Math.PI * Math.min(1, A.hopT / 0.45)) * 30; p.hopI = A.hopI; }
+    fly(dt, p);
+    if (now() - A.nightAt > 500) { A.nightAt = now(); A.night = !!document.querySelector('.ok-night'); layout(); }   // and the layout (fonts, the clock's size) twice a second
+    render(p, pot);
+    R.root.classList.toggle('stir', st === 'sizzle' && S.screen === 'play');
+    R.root.classList.toggle('hot', st === 'popping' && S.screen === 'play');
+    bubbleStep();
+    confStep(dt);
+  }
+
+  /* ---------- drawing: the kitchen, then the pot (flames, stove, body, kernels, lid), then the bowl and the popcorn ---------- */
+  function render(p, pot) {
+    var ctx = R.ctx, d = POS.dpr, k = POS.k, B = POS.bowl, tm = A.time, rm = reduced();
+    if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    // the kitchen is drawn once per size and look, then copied (it has hundreds of tile lines)
+    var key = [POS.vw, POS.vh, d, POS.L.back, POS.L.front, POS.L.k, POS.L.win ? POS.L.win.w : 0, A.night].join();
+    if (key !== BG.key) {
+      BG.key = key; BG.c = BG.c || document.createElement('canvas'); BG.c.width = R.cv.width; BG.c.height = R.cv.height;
+      var g = BG.c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); ART.kitchen(g, POS.vw, POS.vh, POS.L, A.night);
+    }
+    ctx.drawImage(BG.c, 0, 0);
+    ctx.setTransform(d * k, 0, 0, d * k, d * POS.x, d * POS.y);
+    // a soft shadow on the worktop
+    ctx.fillStyle = 'rgba(20,20,20,.16)'; ctx.beginPath(); ctx.ellipse(0, 2, 230, 16, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(B.x, B.y + 2, 150, 14, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save();
+    ctx.translate(pot.dx, pot.dy); ctx.rotate(pot.rot * Math.PI / 180); ctx.scale(1, pot.sq);
+    ART.glow(ctx, p.heat, tm);
+    ART.flames(ctx, p.flame, tm, rm);
+    ART.stove(ctx, p.flame, st0() === 'popping' ? '#E8483C' : st0() === 'sizzle' || p.flame > 0.45 ? '#FFD23F' : '#66C792');
+    ART.pot(ctx, p, tm);
+    ART.inside(ctx, p, tm, rm);
+    // inside the glass: bursts and popcorn bouncing off the lid
+    BURSTS.forEach(function (b) { ART.burst(ctx, b.x, b.y, 0.8 + b.t * 2.5, 1 - b.t / 0.22); });
+    FLY.forEach(function (q) { if (q.mode === 'in') piece(ctx, q.x, q.y, q.a, q.v, 1.15); });
+    ART.lid(ctx, p, A.night);
+    ctx.restore();
+    // the bowl: its inside, the heap of popcorn, its striped front; then the popcorn on the worktop and in the air
+    ctx.save(); ctx.translate(B.x, B.y);
+    ART.bowlBack(ctx);
+    var spill = [];
+    PILE.forEach(function (q) { if (q.s.spill) spill.push(q); else piece(ctx, q.s.x, q.s.y - settle(q), q.a, q.v, 1.2); });
+    ART.bowlFront(ctx);
+    spill.forEach(function (q) { piece(ctx, q.s.x, q.s.y - settle(q), q.a, q.v, 1.2); });
+    ctx.restore();
+    FLY.forEach(function (q) { if (q.mode === 'out') piece(ctx, q.x, q.y, q.a, q.v, 1.2); });
+    // steam
+    STEAM.forEach(function (s) { ctx.globalAlpha = Math.max(0, Math.min(1, s.life / s.max)) * 0.6; ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill(); });
+    ctx.globalAlpha = 1;
+    // the happy ending's confetti and popcorn rain (screen pixels)
+    if (CONF.length) {
+      ctx.setTransform(d, 0, 0, d, 0, 0);
+      CONF.forEach(function (c) {
+        ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a);
+        if (c.corn != null) { var s = 40 * k * c.s; ctx.drawImage(SPR.img[c.corn], -s / 2, -s / 2, s, s); }
+        else { ctx.fillStyle = c.col; ctx.fillRect(-8, -5, 16, 10); }
+        ctx.restore();
+      });
+    }
+  }
+  var BG = { key: '', c: null };
+  function st0() { return S.core ? S.core.state : 'calm'; }
+  function settle(q) { return q.t < 0.25 ? Math.sin(Math.PI * q.t / 0.25) * 10 : 0; }
+  function piece(ctx, x, y, a, v, s) { var z = SPR.S * s; ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.drawImage(SPR.img[v % SPR.img.length], -z / 2, -z / 2, z, z); ctx.restore(); }
+
+  /** a sizzle: the kernels wiggle, a kernel hops, a hiss, or a puff of steam */
+  function sizzle(act) {
+    if (act === 'wiggle') A.wiggleUntil = now() + 900;
+    else if (act === 'hop') { A.hopI = Math.floor(Math.random() * ART.KERN.length); A.hopT = 0; }
+    else if (act === 'hiss') { snd('sizzle'); A.wiggleUntil = now() + 500; }
+    else if (act === 'steam') { snd('sizzle'); steam(180, -380, 4, 80); }
+    showMark();
+  }
+  /** the "!" pops on each sizzle; it stays (wobbling) for as long as the kernels sizzle */
+  function showMark() {
+    if (!R.mark) return; R.mark.hidden = false; R.mark.classList.remove('pop', 'wob'); void R.mark.offsetWidth; R.mark.classList.add('pop');
+    clearTimeout(showMark.t); showMark.t = setTimeout(function () { R.mark.classList.remove('pop'); if (!reduced()) R.mark.classList.add('wob'); }, 360);
+  }
+  /** a point in pot units on the screen */
+  function screenAt(dx, dy) { return { x: POS.x + dx * POS.k, y: POS.y + dy * POS.k }; }
+  function bubbleStep() {
+    var c = S.core, on = !!c && S.screen === 'play' && ((c.state === 'popping' && (loudish() || c.t < 2.4 || c.heat > 0.3)));
+    var sizzling = !!c && c.state === 'sizzle' && S.screen === 'play';
+    if (!sizzling && !R.mark.hidden) { R.mark.hidden = true; R.mark.classList.remove('pop', 'wob'); }
+    else if (sizzling && R.mark.hidden) showMark();
+    if (on !== !R.bubble.hidden) { R.bubble.hidden = !on; if (on) { R.bubble.classList.remove('pop'); void R.bubble.offsetWidth; R.bubble.classList.add('pop'); } }
+    var tb = R.top.getBoundingClientRect().bottom;
+    if (on) {
+      // above the lid, but never under the top bar: on a short screen it moves beside the pot instead
+      var p = screenAt(-40, -560), lim = tb + R.bubble.offsetHeight + 14, x = p.x;
+      if (p.y < lim) { var q0 = POS.tall ? screenAt(-40, -330) : screenAt(470, -330); x = q0.x; p.y = Math.max(lim, q0.y); }   // beside the lid, over the bowl
+      x = Math.min(window.innerWidth - R.bubble.offsetWidth / 2 - 8, Math.max(R.bubble.offsetWidth / 2 + 8, x));
+      R.bubble.style.left = Math.round(x) + 'px'; R.bubble.style.top = Math.round(p.y) + 'px';
+    }
+    if (!R.mark.hidden) { var m = screenAt(-200, -470); R.mark.style.left = Math.round(Math.max(40, m.x)) + 'px'; R.mark.style.top = Math.round(Math.max(m.y, tb + R.mark.offsetHeight + 8)) + 'px'; }
+  }
+  /* the happy ending: popcorn and confetti rain down (none with less motion) */
+  function confetti() {
+    if (reduced()) return;
+    var cols = ['#FFD23F', '#66C792', '#E8483C', '#5BB5F0', '#B27CF0', '#FFFDF2'], vw = POS.vw;
+    for (var i = 0; i < 90; i++) {
+      CONF.push({ x: Math.random() * vw, y: -30 - Math.random() * POS.vh * 0.6, vx: (Math.random() - 0.5) * 120, vy: 120 + Math.random() * 220, a: Math.random() * 6, va: (Math.random() - 0.5) * 6,
+        corn: i % 2 ? null : Math.floor(Math.random() * 4), col: cols[i % cols.length], s: 0.9 + Math.random() * 0.6, life: 5 });
+    }
+  }
+  function confStep(dt) {
+    for (var i = CONF.length - 1; i >= 0; i--) {
+      var c = CONF[i]; c.vy = Math.min(c.vy + 300 * dt, 420); c.x += (c.vx + Math.sin(c.y / 40) * 40) * dt; c.y += c.vy * dt; c.a += c.va * dt; c.life -= dt;
+      if (c.life <= 0 || c.y > POS.vh + 40) CONF.splice(i, 1);
+    }
+  }
+
+  /* ---------- the pot's own sounds, made here (WebAudio) and never listened to: while one plays (and 0.4 s after) the
+     gauge holds its level, so the pot's own sounds from the speakers can never reach the meter. Pops come in short
+     clusters with a listening gap after each one, so the room is always heard and the pot can tell when it calms. ---------- */
+  var AC = null, HELD_PAD = 400;
+  function ac() {
+    if (!AC) { try { var K = window.AudioContext || window.webkitAudioContext; AC = K ? new K() : null; } catch (e) { AC = null; } }
+    if (AC && AC.state === 'suspended') { try { AC.resume(); } catch (e) { /* later */ } }
+    return AC;
+  }
+  function muted() { return !!(window.BRB && BRB.sfx && BRB.sfx.muted); }
+  var LEN = { sizzle: 0.55, pop: 0.08, burst: 0.5, cool: 0.8, chime: 1.0 };
+  // Safari keeps an AudioContext made outside a tap asleep: make (and wake) ours on the first taps and keys
+  function unlock() { ac(); }
+  ['pointerdown', 'keydown', 'touchend'].forEach(function (ev) { document.addEventListener(ev, unlock, true); });
+  function noise(ctx, sec) { var n = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; var s = ctx.createBufferSource(); s.buffer = b; return s; }
+  function popAt(ctx, out, t0, pitch, vol) {
+    var n = noise(ctx, 0.06), bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500 * pitch; bp.Q.value = 1.1;
+    var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.5 * vol, t0 + 0.003); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.055);
+    n.connect(bp); bp.connect(g); g.connect(out); n.start(t0); n.stop(t0 + 0.06);
+    var o = ctx.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(620 * pitch, t0); o.frequency.exponentialRampToValueAtTime(170 * pitch, t0 + 0.05);
+    var g2 = ctx.createGain(); g2.gain.setValueAtTime(0.0001, t0); g2.gain.exponentialRampToValueAtTime(0.28 * vol, t0 + 0.004); g2.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.06);
+    o.connect(g2); g2.connect(out); o.start(t0); o.stop(t0 + 0.07);
+  }
+  function snd(name) {
+    S.sounds.push(name);
+    if (muted()) return;   // no sound, nothing for the microphone to hear: nothing to hold
+    var ctx = ac(); if (!ctx) return;
+    S.heldUntil = Math.max(S.heldUntil, now() + (LEN[name] || 0.5) * 1000 + HELD_PAD);   // and 0.4 s after it
+    try {
+      var t0 = ctx.currentTime + 0.02, out = ctx.createGain(); out.gain.value = 0.8; out.connect(ctx.destination);
+      if (name === 'sizzle') {
+        // a soft crackly hiss: high noise whose loudness flickers
+        var d = 0.5, nz = noise(ctx, d + 0.05), hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
+        var bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 4200; bp.Q.value = 0.6;
+        var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t0);
+        for (var i = 0; i < 26; i++) g.gain.setValueAtTime((0.03 + Math.random() * 0.07) * Math.sin(Math.PI * (i + 0.5) / 26), t0 + i * d / 26);
+        g.gain.setValueAtTime(0.0001, t0 + d);
+        nz.connect(hp); hp.connect(bp); bp.connect(g); g.connect(out); nz.start(t0); nz.stop(t0 + d + 0.05);
+      } else if (name === 'pop') popAt(ctx, out, t0, 0.85 + Math.random() * 0.4, 0.55);
+      else if (name === 'burst') { [[0, 1], [0.11, 1.15], [0.2, 0.9], [0.34, 1.25]].forEach(function (b) { popAt(ctx, out, t0 + b[0], b[1], 0.7); }); }
+      else if (name === 'cool') {
+        var n4 = noise(ctx, 0.8), lp4 = ctx.createBiquadFilter(); lp4.type = 'lowpass'; lp4.frequency.setValueAtTime(3200, t0); lp4.frequency.exponentialRampToValueAtTime(500, t0 + 0.75);
+        var g4 = ctx.createGain(); g4.gain.setValueAtTime(0.0001, t0); g4.gain.exponentialRampToValueAtTime(0.16, t0 + 0.12); g4.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.78);
+        n4.connect(lp4); lp4.connect(g4); g4.connect(out); n4.start(t0); n4.stop(t0 + 0.8);
+      } else if (name === 'chime') {
+        [523.25, 659.25, 783.99, 1046.5].forEach(function (f, j) {
+          var a = t0 + j * 0.12, o5 = ctx.createOscillator(); o5.type = 'triangle'; o5.frequency.setValueAtTime(f, a);
+          var g5 = ctx.createGain(); g5.gain.setValueAtTime(0.0001, a); g5.gain.exponentialRampToValueAtTime(0.22, a + 0.02); g5.gain.exponentialRampToValueAtTime(0.0001, a + 0.45);
+          o5.connect(g5); g5.connect(out); o5.start(a); o5.stop(a + 0.5);
+        });
+      }
+    } catch (e) { /* no sound */ }
+  }
+  /* Pops make a sound in clusters of 0.6 s at most (about one pop sound in 80 ms), then 0.9 s of silent popping after the
+     hold ends: the room is heard in that gap, so a class that has calmed down is noticed even while the last kernels pop. */
+  var PC = { end: 0, quiet: 0, last: 0 };
+  function popSound(first) {
+    var n = now();
+    if (n > PC.end && n < PC.quiet) return;              // the listening gap
+    if (n >= PC.quiet) { PC.end = n + 600; PC.quiet = PC.end + HELD_PAD + 900; }
+    if (n - PC.last < 80) return;
+    PC.last = n; snd(first ? 'burst' : 'pop');
+  }
+  function heldNow() { return now() < S.heldUntil; }
+
+  /* ---------- the room: the page's number, the demo, or a test ---------- */
+  function rawLevel() {
+    if (S.forced != null) return S.forced;
+    if (S.demo) {
+      var v = S.demoLevel;
+      if (S.chatter) v = Math.max(v, 52 + 12 * Math.sin(A.time * 3.1) + 9 * Math.sin(A.time * 7.7 + 1) + (Math.random() - 0.5) * 10);
+      if (now() < S.clapUntil) v = Math.max(v, 94);
+      return Math.max(0, Math.min(100, v));
+    }
+    if (S.mic === 'on') return CORE.levelOf(S.db);
+    return 0;
+  }
+  /** Is the room being measured right now? The demo and the tests always; the microphone only while it is on and its
+   *  numbers are fresh (none for 0.3 s: the page is waiting for a tap, or stopped). The pot's moods and the quiet clock
+   *  only move while it is. */
+  function measuring() { return S.forced != null || S.demo || (S.mic === 'on' && now() - S.dbAt < 300); }
+  if (LD) {
+    // a level the page marks as held (it is playing a line aloud) is not the room: it holds the gauge too
+    LD.on(function (db, held) { S.db = db; S.dbAt = now(); if (held) S.heldUntil = Math.max(S.heldUntil, now() + HELD_PAD); });
+    LD.onState(function (st) {
+      if (st === 'stopped' || st === 'idle') { var was = S.mic === 'on' || S.mic === 'needsTap'; S.mic = 'idle'; if (was && S.screen === 'play' && !S.demo && !S.paused) pauseGame('mic'); }
+      else if (st === 'on') S.mic = 'on';
+      else if (st === 'needsTap') S.mic = 'needsTap';   // the page shows its own "Tap to start listening"
+      if (st !== 'on') calibCancel();
+    });
+  }
+  function micStart() { return LD ? LD.start().then(function (st) { S.mic = st === 'on' ? 'on' : st; return st; }, function () { S.mic = 'unavailable'; return 'unavailable'; }) : Promise.resolve('off'); }
+  function micStop() { if (LD && (S.mic === 'on' || S.mic === 'needsTap')) LD.stop(); if (S.mic === 'on' || S.mic === 'needsTap') S.mic = 'idle'; }
+
+  /* ---------- the loop (our own: the kit's loop pauses when the teacher clicks the page around the game) ---------- */
+  var last = 0;
+  function frame(ts) {
+    var dt = last ? Math.min(0.1, (ts - last) / 1000) : 0.016; last = ts;
+    tick(dt);
+    requestAnimationFrame(frame);
+  }
+  function tick(dt) {
+    if (!R.root) return;
+    var raw = rawLevel(), live = measuring();
+    S.gt += dt;
+    // the microphone's level holds still while the pot's own sound plays (it would hear it); the demo and tests never do
+    S.raw = raw; S.level = CORE.feed(S.level, raw, dt, heldNow() && S.forced == null && !S.demo);
+    S.peak = Math.max(S.level, S.peak - 25 * dt);
+    if (S.calib) {
+      if (!live) calibCancel();
+      else { S.calib.samples.push(S.level); S.calib.left -= dt; if (S.calib.left <= 0) calibDone(); else if (S.calib.onTick) S.calib.onTick(S.calib.left); }
+    }
+    if (S.screen === 'play' && !S.paused && S.core && !S.ended && live) {
+      var r = CORE.step(S.core, { level: S.level, line: lineNow(), held: heldNow(), dt: dt, rnd: Math.random() });
+      if (S.core.loud || (heldNow() && loudish())) S.loudAt = S.gt;   // its own sound is not the room going quiet
+      r.events.forEach(onEvent);
+    }
+    animate(dt);
+    meter();
+  }
+  function onEvent(e) {
+    if (e.type === 'sizzle') { sizzle(e.act); if (S.core.sizzles === 1 || S.core.sizzles % 4 === 0) announce(t('potSizzle')); }
+    else if (e.type === 'popout') { announce(t('potPop'), true); popSound(true); if (!reduced()) O.juice && O.juice.shake && O.juice.shake(0.2, R.bubble); }
+    else if (e.type === 'pop') { popOne(e); popSound(false); }
+    else if (e.type === 'reheat') popSound(true);
+    else if (e.type === 'cooldown') snd('cool');
+    else if (e.type === 'calm') announce(t('potCool'), true);
+    else if (e.type === 'goal') celebrate();
+  }
+
+  /* ---------- the gauge and the clock ---------- */
+  var lastMin = 0;
+  function meter() {
+    if (!R.g) return;
+    var line = lineNow(), lv = Math.round(S.level), near = Math.max(0, line - CORE.T.near), vert = !POS.portrait, dim = vert ? 'height' : 'width', pos = vert ? 'bottom' : 'left';
+    R.zg.style[dim] = near + '%'; R.zy.style[dim] = (line - near) + '%'; R.zy.style[pos] = near + '%'; R.zr.style[dim] = (100 - line) + '%'; R.zr.style[pos] = line + '%';
+    ['zg', 'zy', 'zr', 'fill', 'peak', 'ln'].forEach(function (k) { var o = R[k].style; if (vert) { o.left = o.right = ''; o.width = ''; } else { o.bottom = ''; o.height = ''; if (pos === 'left') o.right = ''; else o.left = ''; } });
+    R.zg.style[pos] = '0';
+    R.fill.style[dim] = Math.max(2, S.level) + '%'; R.fill.style[pos] = '0';
+    R.fill.className = 'g-fill ' + (S.level > line ? 'loud' : S.level > near ? 'near' : 'calm');
+    R.peak.style[pos] = S.peak + '%'; R.ln.style[pos] = line + '%';
+    var tr = R.track.getBoundingClientRect(), gr = R.g.getBoundingClientRect();
+    // (while it pops, the "Too loud" tag stays: its pops come in clusters, and the note would blink in and out)
+    var h = heldNow() && S.screen === 'play', note = h && st0() !== 'popping'; R.held.hidden = !note; R.tag.hidden = note; R.g.classList.toggle('held', h);
+    // the tag (or, while the pot makes its own sound, the note in its place) at the line, kept inside the gauge's width when it lies flat
+    [R.tag, R.held].forEach(function (b) {
+      if (b.hidden) return;
+      if (vert) { b.style.top = Math.round(tr.bottom - gr.top - tr.height * line / 100) + 'px'; b.style.left = ''; }
+      else { var w = b.offsetWidth, lx = tr.left - gr.left + tr.width * line / 100; b.style.left = Math.round(Math.max(w / 2, Math.min(gr.width - w / 2, lx))) + 'px'; b.style.top = ''; }
+    });
+    // the zone names, each in the middle of its zone (hidden when the zone is too small for it)
+    [[R.labC, 0, near], [R.labN, near, line]].forEach(function (z) {
+      var b = z[0], mid = (z[1] + z[2]) / 2, size = (z[2] - z[1]) / 100 * (vert ? tr.height : tr.width);
+      b.style.bottom = vert ? mid + '%' : ''; b.style.left = vert ? '' : mid + '%';
+      b.style.visibility = size >= (vert ? b.offsetHeight : b.offsetWidth) + 6 ? '' : 'hidden';
+    });
+    R.g.classList.toggle('near', S.screen === 'play' && S.level > near && S.level <= line);
+    R.chip.hidden = !(S.mic === 'on' && !S.demo && (S.screen === 'play' || S.screen === 'setup'));
+    R.g.setAttribute('aria-valuenow', String(lv)); R.g.setAttribute('aria-label', t('meterLine', { n: lv, line: line }));
+    R.g.classList.toggle('loud', S.level > line);
+    var c = S.core, q = c ? c.quiet : 0, stopped = !!c && (c.state === 'popping' || c.state === 'cooling') && S.screen === 'play';
+    R.time.textContent = clock(q);
+    R.goalT.textContent = CFG.goal ? t('of', { goal: clock(CFG.goal) }) : t('noGoal');
+    R.pops.textContent = t('popouts', { n: c ? c.popouts : 0 });
+    R.corn.textContent = t('popped', { n: c ? c.popped : 0 });
+    R.bar.hidden = !CFG.goal; R.barI.style.width = (CFG.goal ? Math.min(100, 100 * q / CFG.goal) : 0).toFixed(1) + '%';
+    R.card.classList.toggle('run', !!c && (c.state === 'calm' || c.state === 'sizzle') && !S.paused && S.screen === 'play' && measuring());
+    if (stopped !== R.card.classList.contains('stopped')) { R.card.classList.toggle('stopped', stopped); R.lab.textContent = stopped ? t('clockStopped') : t('quietTime'); }
+    var mins = Math.floor(q / 60); if (c && mins > lastMin && S.screen === 'play') { lastMin = mins; announce(t('quietMin', { n: mins }), true); }
+  }
+
+  /* ---------- screens ---------- */
+  function setScreen(s) { S.screen = s; document.documentElement.dataset.ph = s; R.root && R.root.classList.toggle('playing', s === 'play'); layout(); }
+  function newSession() {
+    S.core = CORE.make({ goal: CFG.goal }); S.ended = false; S.paused = false; A.celebrate = null; lastMin = 0; S.heldUntil = 0;
+    resetPopcorn(); taken = 0; CONF.length = 0;
+    document.documentElement.classList.remove('ph-ended');
+  }
+  /** the first Start, from the kit's flow (title -> setup card -> here) */
+  var startP = null;
+  function begin() {
+    build(); newSession(); setScreen('play');
+    var p = startP || Promise.resolve(S.demo ? 'demo' : 'off'); startP = null;
+    layout();
+    S.paused = true;
+    p.then(function (st) {
+      if (st === 'demo') { setDemo(true); S.paused = false; return; }
+      if (st === 'on') { setDemo(false); S.paused = false; announce(t('potCalm'), true); return; }
+      noMic(st);
+    });
+  }
+  function setDemo(on) {
+    S.demo = !!on; R.demo.hidden = !S.demo; R.root.classList.toggle('demo', S.demo); if (S.demo) micStop(); layout();
+  }
+  /* the setup card: how quiet, the fine slider, the goal, the room's quiet, the privacy note, Start */
+  var setupOpen = false, setupApi = null;
+  function setupCard(opt) {
+    opt = opt || {};
+    build(); setScreen('setup');
+    return new Promise(function (resolve) {
+      setupOpen = true;
+      var wrap = el('div', 'phs'); wrap.dir = O.dir || 'ltr';
+      var card = el('div', 'phs-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'phsH');
+      wrap.appendChild(card);
+      var h = el('h2', '', t('setupH')); h.id = 'phsH'; card.appendChild(h);
+      var left = el('div', 'left'), right = el('div', 'right'); card.append(left, right);
+      function group(label, cls, opts, get, set, into) {
+        var fs = el('fieldset'), lg = el('legend', '', label); fs.appendChild(lg);
+        var row = el('div', 'row ' + (cls || '')); row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', label); row.style.setProperty('--n', opts.length);
+        var bs = opts.map(function (o) {
+          var b = el('button', 'opt'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.v = String(o.v);
+          if (o.em) b.appendChild(el('span', 'em', o.em)); b.appendChild(el('span', '', o.label));
+          b.addEventListener('click', function () { set(o.v); sync(); sfx('select'); });
+          b.addEventListener('keydown', function (e) {
+            var i = bs.indexOf(b), d = { ArrowRight: RTL ? -1 : 1, ArrowDown: 1, ArrowLeft: RTL ? 1 : -1, ArrowUp: -1 }[e.key];
+            if (!d) return; e.preventDefault(); e.stopPropagation(); var n = bs[(i + d + bs.length) % bs.length]; n.click(); n.focus();
+          });
+          row.appendChild(b); return b;
+        });
+        function sync() { bs.forEach(function (b) { var on = String(get()) === b.dataset.v; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); }
+        sync(); fs.appendChild(row); into.appendChild(fs);
+        return { fs: fs, sync: sync };
+      }
+      group(t('howQuiet'), 'presets', [{ v: 'whisper', label: t('whisper'), em: '🤫' }, { v: 'quiet', label: t('quietWork'), em: '📚' }, { v: 'group', label: t('groupWork'), em: '💬' }],
+        function () { return CFG.preset; }, function (v) { CFG.preset = v; showLine(); }, left);
+      // the fine slider: the line moves on the little gauge as it slides
+      var fs2 = el('fieldset', 'fine'); fs2.appendChild(el('legend', '', t('fine')));
+      var frow = el('div', 'frow'); frow.dir = 'ltr';
+      var fr = el('input'); fr.type = 'range'; fr.min = String(-CORE.FINE); fr.max = String(CORE.FINE); fr.step = '1'; fr.value = String(CFG.fine); fr.setAttribute('aria-label', t('fine'));
+      fr.addEventListener('input', function () { CFG.fine = +fr.value || 0; showLine(); });
+      var lo = el('span', 'end', t('touchier')), hi = el('span', 'end', t('calmer'));
+      frow.append(lo, fr, hi); fs2.appendChild(frow);
+      var mini = el('div', 'mini'); mini.dir = 'ltr'; var mfill = el('i', 'mf'), mline = el('b', 'ml'); mini.append(mfill, mline); fs2.appendChild(mini);
+      var lineTx = el('p', 'linetx'); fs2.appendChild(lineTx);
+      left.appendChild(fs2);
+      // the line, once, under the slider: "Room: 24 · Pops above: 42", or "Room: not set yet" before the room was measured
+      function showLine() { var l = lineNow(); mline.style.left = l + '%'; mfill.style.width = Math.round(S.level) + '%'; lineTx.textContent = CFG.calibrated ? t('calibDone', { room: CFG.base, line: l }) : t('calibNone', { line: l }); }
+      showLine(); var lineT = setInterval(function () { mfill.style.width = Math.round(S.level) + '%'; }, 120);
+      group(t('goalH'), 'goals', CORE.GOALS.map(function (g) { return { v: g, label: g ? t('min', { n: g / 60 }) : t('noGoal') }; }),
+        function () { return CFG.goal; }, function (v) { CFG.goal = +v; }, right);
+      // "Set to the room's quiet": 3 seconds of the room, then the line sits above it
+      var cal = el('div', 'cal');
+      var cb = el('button', 'calb'); cb.type = 'button'; cb.appendChild(el('span', 'em', '🎚️')); cb.appendChild(el('span', '', t('calib')));
+      var ct = el('p', 'calt', t('calibHint')); ct.setAttribute('role', 'status');
+      cb.addEventListener('click', function () {
+        if (S.calib) return;
+        cb.disabled = true; ct.textContent = t('calibListen', { n: 3 }); cb.style.setProperty('--p', '0%');
+        // the button fills from one end to the other over the 3 seconds
+        var go = function () { startCalib(function (left) { ct.textContent = t('calibListen', { n: Math.ceil(left) }); cb.style.setProperty('--p', Math.round(100 * (1 - left / 3)) + '%'); }, function (r) {
+          cb.disabled = false; cb.style.setProperty('--p', '0%');
+          if (r.ok) { CFG.base = r.base; CFG.calibrated = true; showLine(); ct.textContent = t('calibOk'); }
+          else ct.textContent = r.why === 'tooLoud' ? t('calibLoud') : t('calibNoMic');
+        }); };
+        if (S.demo || S.forced != null) go();
+        else micStart().then(function (st) { if (st === 'on') go(); else { cb.disabled = false; ct.textContent = t('calibNoMic'); } });
+      });
+      cal.append(cb, ct); right.appendChild(cal);
+      var foot = el('div', 'foot'); card.appendChild(foot);
+      foot.appendChild(el('p', 'privacy', '🔒 ' + t('privacy')));
+      var go = el('div', 'go'); foot.appendChild(go);
+      function close(how) {
+        if (!setupOpen) return; setupOpen = false; save(); clearInterval(lineT); wrap.remove(); document.removeEventListener('keydown', keys, true);
+        if (S.calib) { S.calib = null; }
+        resolve(how);
+      }
+      var start = O.ui.button(opt.edit ? t('backToPot') : t('startMic'), { kind: 'hot', big: true, icon: opt.edit ? 'play' : undefined, onPress: function () {
+        // the tap that lets the page open the microphone: asked for right now, inside the tap
+        if (!(opt.edit && S.demo)) startP = micStart();
+        close('start');
+      } });
+      if (!opt.edit) start.insertBefore(el('span', 'em', '🎤'), start.firstChild);
+      start.id = 'phStart'; start.setAttribute('data-start', ''); go.appendChild(start);
+      var demoB = O.ui.button(opt.edit ? t('startOver') : t('tryDemo'), { kind: 'quiet', onPress: function () { if (!opt.edit) { S.demo = true; startP = Promise.resolve('demo'); } close(opt.edit ? 'restart' : 'demo'); } });
+      demoB.id = opt.edit ? 'phRestart' : 'phDemo'; go.appendChild(demoB);
+      function keys(e) {
+        if (e.key === 'Tab') { var f = [].slice.call(card.querySelectorAll('button:not([tabindex="-1"]),input')).filter(function (b) { return b.offsetParent; }), i = f.indexOf(document.activeElement); e.preventDefault(); (f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length] || start).focus(); }
+        if (e.key === ' ' || e.key === 'Escape' || e.key === 'p' || e.key === 'P') e.stopPropagation();
+      }
+      document.addEventListener('keydown', keys, true);
+      O.ui.root().appendChild(wrap);
+      setTimeout(function () { try { start.focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
+      setupApi = { close: function () { if (setupOpen) start.click(); }, demo: function () { if (setupOpen) demoB.click(); } };
+    });
+  }
+  function startCalib(onTick, onDone) { S.calib = { samples: [], left: 3, onTick: onTick, onDone: onDone }; }
+  /** the microphone stopped (or went quiet) mid-measure: nothing is kept, so a half-measured room can't set the line */
+  function calibCancel() {
+    var c = S.calib; if (!c) return; S.calib = null;
+    if (c.onDone) c.onDone({ ok: false, why: 'noInput' });
+  }
+  function calibDone() {
+    var c = S.calib; S.calib = null; if (!c) return;
+    var r = CORE.calibrate(c.samples);
+    if (!S.demo && S.screen === 'setup') micStop();
+    if (c.onDone) c.onDone(r);
+  }
+
+  /* the no-mic card: why, how to fix it, and the demo. 'tap': the page wants one more tap (a tablet that kept audio
+     asleep, or the prompt was left when the tab was hidden), which is not a refusal: Start listening asks again. */
+  function noMic(st) {
+    setScreen('nomic'); S.paused = true;
+    var k = st === 'needsTap' || st === 'stopped' ? 'tap' : ['denied', 'nodevice', 'busy', 'unavailable', 'off'].indexOf(st) >= 0 ? st : 'unavailable';
+    var wrap = el('div', 'phs phn'); wrap.dir = O.dir || 'ltr';
+    var card = el('div', 'phs-card'); wrap.appendChild(card); card.setAttribute('role', 'alertdialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'phnH'); card.setAttribute('aria-describedby', 'phnP');
+    card.appendChild(el('div', 'big', k === 'off' ? '🎧' : '🎤'));
+    var h = el('h2', '', t('noMic_' + k)); h.id = 'phnH'; card.appendChild(h);
+    var p = el('p', 'why', t('noMic_' + k + '_p')); p.id = 'phnP'; card.appendChild(p);
+    card.appendChild(el('p', 'privacy', '🔒 ' + t('privacy')));
+    var go = el('div', 'go'); card.appendChild(go);
+    function done() { wrap.remove(); }
+    var again = O.ui.button(k === 'tap' ? t('startMic') : t('retry'), { kind: 'hot', big: true, icon: k === 'tap' ? 'play' : 'restart', onPress: function () {
+      done(); setScreen('play'); micStart().then(function (s2) { if (s2 === 'on') { setDemo(false); S.paused = false; announce(t('potCalm'), true); } else noMic(s2); });
+    } });
+    again.id = 'phRetry';
+    // in a classroom the demo is often the way forward: the same size as Try again, side by side when there is room
+    var demo = O.ui.button(t('tryDemo'), { kind: 'go', big: true, icon: 'play', onPress: function () { done(); setScreen('play'); setDemo(true); S.paused = false; announce(t('potCalm'), true); } });
+    demo.id = 'phDemo';
+    go.append(again, demo);
+    O.ui.root().appendChild(wrap);
+    setTimeout(function () { try { (k === 'off' ? demo : again).focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
+  }
+
+  /* pause: our button, Space, P or Esc, a hidden page, or the page's Stop. The microphone is off while paused. */
+  var pauseOpen = false;
+  function pauseGame(why) {
+    if (S.screen !== 'play' || S.paused || S.ended) return;
+    S.paused = true; micStop(); setScreen('play'); R.root.classList.add('paused');
+    pauseOpen = true;
+    announce(t('paused'), true);
+    O.ui.pause().then(function (r) {
+      pauseOpen = false; R.root.classList.remove('paused');
+      if (r === 'restart') { newSession(); resume(); }
+      else if (r === 'quit') teacherSettings(true);
+      else resume();
+    });
+  }
+  function resume() {
+    if (S.demo) { S.paused = false; return; }
+    // Resume is a tap: the page may open the microphone again
+    micStart().then(function (st) { if (st === 'on') S.paused = false; else noMic(st); });
+  }
+  function teacherSettings(fromPause) {
+    if (S.screen !== 'play' || S.ended) return;
+    S.paused = true; micStop();
+    setupCard({ edit: true }).then(function (how) {
+      setScreen('play');
+      if (how === 'restart') newSession();
+      if (S.core) S.core.goal = CFG.goal;
+      var p = startP; startP = null;
+      if (S.demo) { S.paused = false; return; }
+      (p || micStart()).then(function (st) { if (st === 'on') S.paused = false; else noMic(st); });
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (setupOpen || pauseOpen || S.screen !== 'play' || S.ended) return;
+    if (O.ui.open) return;
+    var tg = e.target && e.target.tagName;
+    if (e.code === 'Space' && (tg === 'BUTTON' || tg === 'INPUT')) return;
+    if (e.code === 'Space' || e.key === 'p' || e.key === 'P' || e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); pauseGame('key'); }
+  }, true);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) pauseGame('hidden'); });
+
+  /* the happy ending: the pot does a cheerful shimmy and tips its lid, popcorn and confetti rain, a chime, then the results card */
+  function celebrate() {
+    S.ended = true; micStop(); setScreen('end'); A.celebrate = now();
+    R.bubble.hidden = true;
+    announce(t('endTitle'), true);
+    setTimeout(function () { snd('chime'); sfx('win'); confetti(); }, 500);
+    try { if (window.BRB) BRB.gameOver({ won: true, score: null }); } catch (e) { /* offline */ }
+    setTimeout(results, A.skip ? 50 : 3000);
+  }
+  function results() {
+    document.documentElement.classList.add('ph-ended');
+    var c = S.core, stars = CORE.stars(c ? c.popouts : 0);
+    var done = O.ui.win({ stars: stars, title: t('endTitle'), next: false, hero: false });
+    setTimeout(function () {
+      var card = document.querySelector('.ok-win .ok-card');
+      if (card && !card.querySelector('.ph-stats')) {
+        // "Popcorn party!" and the quiet time and pop-outs as two big numbers, like the clock
+        var box = el('div', 'ph-end'), sub = el('p', 'sub', t('endSub')), st = el('div', 'ph-stats');
+        st.setAttribute('role', 'group'); st.setAttribute('aria-label', t('endStats', { time: clock(c ? c.quiet : 0), n: c ? c.popouts : 0 }));
+        [[clock(c ? c.quiet : 0), '🤫 ' + t('quietTime')], [O.num(c ? c.popouts : 0), '💥 ' + t('popOuts')]].forEach(function (x) {
+          var b = el('div', 'ph-stat'), n = el('div', 'n', x[0]); n.dir = 'ltr'; b.append(n, el('div', 'l', x[1])); st.appendChild(b);
+        });
+        box.append(sub, st);
+        var sp = card.querySelector('.ok-sparks'); if (sp && sp.nextSibling) card.insertBefore(box, sp.nextSibling); else card.appendChild(box);
+        // "Another quiet time" (the setup card again) and "Same settings" (straight back to the kitchen)
+        var again = card.querySelector('.ok-row .ok-btn');
+        if (again) {
+          var tx = again.lastChild; if (tx && tx.nodeType === 3) tx.nodeValue = t('another');
+          again.classList.remove('ok-hot'); again.classList.add('ok-quiet'); again.classList.remove('ok-big');
+          var same = O.ui.button(t('sameSettings'), { kind: 'hot', big: true, icon: 'play', onPress: function () {
+            S.same = true; if (!S.demo) startP = micStart();   // inside the tap: the page may listen again
+            again.click();
+          } });
+          same.id = 'phSame'; again.parentNode.insertBefore(same, again);
+          setTimeout(function () { try { same.focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 60);
+        }
+      }
+      layout(); setTimeout(layout, 450);
+    }, 0);
+    Promise.resolve(done).then(function () {
+      document.documentElement.classList.remove('ph-ended', 'ph-side', 'ph-low');
+      A.celebrate = null; S.core = null;
+      if (S.same) { S.same = false; begin(); return; }
+      startP = null; setScreen('setup');
+      setupCard().then(function (how) { begin(); });
+    });
+  }
+
+  /* ---------- the kit game: the title over our calm kitchen, then the setup card ---------- */
+  var SET = ['          ', '          ', '          ', '          ', 'P         ', '##########'];
+  var game = O.game({
+    api: 1, title: t('title'), subtitle: t('tag'), titleHue: 'spark',
+    controls: 'none', camera: 'fixed', hero: 'me', hud: [], countdown: 0,
+    level: O.level.grid(SET, {}),
+    intro: function () { return setupCard(); },
+    setup: function () { build(); },
+    testState: function () { return testState(); },
+    on: { start: function () { begin(); }, title: function () { build(); setScreen('title'); } },
+  });
+  build();
+  requestAnimationFrame(frame);
+
+  /* ---------- test hooks (the covers, the e2e tests, the playtest) ---------- */
+  function testState() {
+    var c = S.core;
+    return { popcorn: true, screen: S.screen, state: c ? c.state : 'calm', look: A.to, popouts: c ? c.popouts : 0, popped: c ? c.popped : 0, heat: c ? Math.round(c.heat * 100) / 100 : 0,
+      pile: PILE.length, flying: FLY.length, quiet: c ? Math.round(c.quiet * 10) / 10 : 0, goal: CFG.goal,
+      line: lineNow(), level: Math.round(S.level * 10) / 10, held: heldNow(), mic: S.mic, demo: S.demo, preset: CFG.preset, fine: CFG.fine, base: CFG.base,
+      paused: S.paused, stars: c ? CORE.stars(c.popouts) : 3, bubble: !!R.bubble && !R.bubble.hidden, mark: !!R.mark && !R.mark.hidden, calibrated: CFG.calibrated,
+      measuring: measuring(), saved: load() };
+  }
+  Object.assign(window.__brbTest, {
+    state: function () { return testState(); },
+    setup: function (o) { o = o || {}; if (CORE.PRESET_IDS.indexOf(o.preset) >= 0) CFG.preset = o.preset; if (o.fine != null) CFG.fine = Math.max(-25, Math.min(25, +o.fine || 0)); if (o.goal != null) CFG.goal = Math.max(0, +o.goal || 0); if (o.base != null) { CFG.base = +o.base; CFG.calibrated = true; } return testState(); },
+    closeSetup: function () { if (setupApi) setupApi.close(); return true; },
+    demoStart: function () { if (setupApi) setupApi.demo(); return true; },
+    demo: function (on) { if (S.screen === 'play' || S.screen === 'nomic') { var n = document.querySelector('.phn'); if (n) n.remove(); setScreen('play'); setDemo(on !== false); S.paused = false; } else S.demo = on !== false; return testState(); },
+    level: function (v) { S.forced = v == null ? null : Math.max(0, Math.min(100, +v)); if (v != null) { S.level = S.forced; S.peak = S.forced; } return testState(); },
+    setGoal: function (sec) { CFG.goal = Math.max(0, +sec || 0); if (S.core) S.core.goal = CFG.goal; return testState(); },
+    step: function (ms) { var n = Math.ceil((+ms || 0) / 50); for (var i = 0; i < n; i++) { if (S.heldUntil > now()) S.heldUntil -= 50; tick(0.05); } return testState(); },
+    pose: function (name) { A.forced = name && ART.LOOKS[name] ? name : null; return testState(); },
+    skipAnimations: function () { A.skip = true; return true; },
+    calibrate: function (samples) { var r = CORE.calibrate(samples || []); if (r.ok) { CFG.base = r.base; CFG.calibrated = true; } return Object.assign({ line: lineNow() }, r); },
+    sounds: function () { return S.sounds.slice(); },
+    pause: function () { pauseGame('test'); return testState(); },
+  });
+})();
+</script>

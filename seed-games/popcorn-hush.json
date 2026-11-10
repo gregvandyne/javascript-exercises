@@ -1,0 +1,72 @@
+{
+  "slug": "popcorn-hush",
+  "title": "Popcorn Hush",
+  "icon": "🍿",
+  "cover": "gold",
+  "category": "learning",
+  "shelf": "play",
+  "tags": "noise meter,classroom noise,quiet,voice level,sound level,calm,classroom management,teacher tool,popcorn,popcorn pot,brain break,class",
+  "description": "A noise meter for the classroom: a cheerful pot full of popcorn kernels sits on a little stove. While the class is quiet the kernels rest and a clock counts the quiet time. Getting louder makes them sizzle; too loud for too long and the popcorn POPS, the pot gets flustered and the clock stops, until the room is calm again. Reach your goal for a popcorn party. The device only measures how loud it is: nothing is recorded or saved. You can also try it without a microphone.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": false,
+  "notes": "A sister to Remi's Quiet Meadow, built on the same skeleton: the Oomba Kit (pinned kit 1.1.5 tag, no packs) for the title, pause screen (Space, P, Esc or the pause button), settings (sound, less motion), results card, font, icons and light/dark look; our own requestAnimationFrame loop (the kit's loop pauses on blur, which happens whenever the teacher clicks the playbar); the same setup card (Whisper / Quiet work / Group work, the fine slider, 'Set to the room's quiet', goals of 2, 5, 10, 15, 20 or 30 minutes or none, the privacy note, Start listening, Try it without a mic), the same no-mic card and demo (a noise slider, a clap and class chatter), the same gauge (calm green 'Shh', yellow 'Getting warm', the striped red loud zone with its 'Too loud' tag, an icon at each end, so colour is never the only cue) and the same pause rules (pause button, Space/P/Esc, a hidden page, the page's Stop; the microphone is off while paused). The microphone: the game never opens it. The play page of an official game on the mic allow-list (server/services/mic-games.js) asks for it after the Start tap and passes the game one loudness number (dBFS) about 20 times a second through BRB.loudness; audio is never recorded, stored or sent. Every other page answers 'off' and the game offers its demo. The level maths and calibration are copied number for number from RemiCore into window.PopcornCore (pure ES5 between /* popcorn-core:begin */ and /* popcorn-core:end */; unit-tested, including a test that the two agree): -70 dBFS is 0 on the gauge and -10 dBFS is 100; smoothing rises fast (0.12 s) and falls slowly (0.5 s); the 'too loud' line is the room's quiet (measured for 3 s, else 30) plus Whisper 10, Quiet work 18 or Group work 30, plus the fine slider (-25..+25). The scene (original art, one canvas, the Oomba ink style: charcoal outlines, flat fills; mint, spark yellow, cream, charcoal and warm reds): a kitchen with a striped wall, a mint tiled splashback, a wooden worktop and mint cupboards (a window with sun or moon when there is room), a little stove whose knobs turn up and whose light goes green, yellow, red, a red pot with a face and a glass lid full of golden kernels, and a red-and-cream striped bowl beside it (in front of the stove on tall screens, so both stay big on a phone). The pot's moods (PopcornCore.step): calm (kernels still, little blue flames, eyes shut and a small smile; the quiet clock runs) -> sizzle (near the line for 0.3 s: the flames grow live with the level, the kernels jiggle, a worried face with a drop of sweat, a big '!' and a warm tint, and every 2.5 s a wiggle, a hiss, a hopping kernel or a puff of steam with a soft WebAudio sizzle; still calm, so the clock runs) -> popping after 1.5 s over the line (leaky, so one clap only makes it sizzle): one pop-out is counted, a first burst of 1.2 s the room cannot cut short, then the heat follows the room (heatFor: 0.45 at the line, full 22 over it) and pops come at 1 + 11 x heat a second (about 6 just over the line, 12 when very loud); each pop is a yellow burst and a fluffy piece of popcorn that either bounces off the inside of the glass lid or flies out of the rattling, lifted lid and tumbles into the bowl, heaping up and at last spilling over onto the worktop (about 45 places in the bowl and 52 on the worktop; then pieces land on the heap and vanish; the count goes on). The clock stops (grey numbers, a red edge, a pause badge and 'Clock stopped'), the gauge says Too loud, a 'Too loud!' bubble shows, the pot is flustered (squeezed > < eyes, an open mouth, red cheeks, red-hot glow, shaking, steam). -> after 4 s of calm (5 under the line) it cools (2 s: a soft steam sigh, half-shut eyes, the flames sink) and is calm again, and the clock resumes. Noise while it cools makes it pop again with no extra pop-out. The incentive: popping must read as 'too loud', never as a prize: the popping pot looks overheated and unhappy, the clock visibly stops and the goal bar stops filling, the popcorn piles up as a mess that spills over the worktop and stays there for the session (a record of the noise, not a reward), and pop-outs cost stars; the calm pot is the content one, its clock ticks green and its goal bar fills, and the treat (a shimmying pot that tips its lid like a hat, popcorn and confetti raining down, a happy chime and 'Popcorn party!') only comes for reaching the quiet goal. The results card shows the quiet time and the pop-outs as two big numbers, with 'Same settings' and 'Another quiet time'; stars: 3 for 0-1 pop-outs, 2 for 2-3, 1 for more; BRB.gameOver({won: true, score: null}) at the goal; no score, no poll, no text input. The feedback guard: the pot's sounds (sizzle, pops, a 4-pop burst, a cooling sigh, a chime; all WebAudio in the frame, following the kit's sound setting) hold the gauge and the moods while they play and for 0.4 s after (PopcornCore.feed and the held flag), and a level the page marks as held is honoured too. Pop sounds come in clusters of at most 0.6 s, then 0.9 s of silent popping after the hold, so the room is always heard and a calm class is noticed even while the last kernels pop; with the sound off nothing is held. Moods and the clock move only while the room is really measured (numbers in the last 0.3 s). Less motion (the kit setting or prefers-reduced-motion): no shaking, rattling, spinning, steam clouds or confetti, half as many flying pieces, looks cross-fade in 0.3 s; the flames, the stove light, the face, the gauge and the clock still show the level. Settings are remembered in BRB.storage key 'popcorn-hush-v1' ({preset, fine, goal}: ids and numbers only; the room's measured quiet level stays in memory for the visit). All words in 13 languages (the I18N block); the pot has no name ('the pot' in each language). window.__brbTest: state/setup({preset, fine, goal, base})/closeSetup/demoStart/demo(on)/level(v)/setGoal(sec)/step(ms)/pose(calm|sizzle|popping|cooling|happy)/skipAnimations/calibrate(samples)/sounds/pause.",
+  "l10n": {
+    "es": {
+      "title": "Palomitas en silencio",
+      "description": "Un medidor de ruido para la clase: una olla alegre llena de granos de maíz está sobre un hornillo. Mientras la clase está en silencio, los granos descansan y un reloj cuenta el tiempo de silencio. Si sube el ruido, chisporrotean; si hay demasiado ruido durante un rato, ¡las palomitas explotan!, la olla se agobia y el reloj se para hasta que vuelve la calma. Al llegar a la meta, ¡fiesta de palomitas! El dispositivo solo mide cuánto ruido hay: no se graba ni se guarda nada. También se puede probar sin micrófono.",
+      "tags": "medidor de ruido,ruido en clase,silencio,volumen de voz,nivel de sonido,calma,gestión del aula,herramienta docente,palomitas,pausa activa,clase"
+    },
+    "fr": {
+      "title": "Chut, le pop-corn !",
+      "description": "Un sonomètre pour la classe : une marmite rigolote pleine de grains de maïs est posée sur un petit réchaud. Tant que la classe est calme, les grains se reposent et une horloge compte le temps calme. Quand le bruit monte, ils grésillent ; trop de bruit trop longtemps et le pop-corn ÉCLATE, la marmite s’affole et l’horloge s’arrête jusqu’au retour du calme. Objectif atteint : fête du pop-corn ! L’appareil mesure seulement le niveau de bruit : rien n’est enregistré ni gardé. On peut aussi l’essayer sans micro.",
+      "tags": "sonomètre,bruit en classe,calme,silence,niveau de voix,niveau sonore,gestion de classe,outil enseignant,pop-corn,pause,classe"
+    },
+    "de": {
+      "title": "Psst, Popcorn!",
+      "description": "Eine Lärmampel für die Klasse: Ein fröhlicher Topf voller Maiskörner steht auf einem kleinen Herd. Solange die Klasse leise ist, ruhen die Körner und eine Uhr zählt die leise Zeit. Wird es lauter, brutzeln sie; ist es zu lange zu laut, POPPT das Popcorn, der Topf gerät ins Schwitzen und die Uhr bleibt stehen, bis es wieder ruhig ist. Am Ziel gibt es eine Popcorn-Party! Das Gerät misst nur, wie laut es ist: Nichts wird aufgenommen oder gespeichert. Es geht auch ohne Mikrofon.",
+      "tags": "Lärmampel,Lautstärke,Klassenlärm,Ruhe,leise,Stimmlautstärke,Klassenführung,Lehrer-Tool,Popcorn,Pause,Klasse"
+    },
+    "it": {
+      "title": "Popcorn in silenzio",
+      "description": "Un misuratore di rumore per la classe: una pentola allegra piena di chicchi di mais sta su un fornellino. Finché la classe è in silenzio, i chicchi riposano e un orologio conta il tempo di silenzio. Se il rumore sale, sfrigolano; troppo rumore troppo a lungo e i popcorn SCOPPIANO, la pentola va in agitazione e l’orologio si ferma finché non torna la calma. Raggiunto l’obiettivo, festa dei popcorn! Il dispositivo misura solo quanto rumore c’è: niente viene registrato o salvato. Si può provare anche senza microfono.",
+      "tags": "misuratore di rumore,rumore in classe,silenzio,volume della voce,livello sonoro,calma,gestione della classe,strumento per docenti,popcorn,pausa,classe"
+    },
+    "pt": {
+      "title": "Pipoca em silêncio",
+      "description": "Um medidor de barulho para a sala: uma panela alegre cheia de grãos de milho está em um fogareiro. Enquanto a turma fica em silêncio, os grãos descansam e um relógio conta o tempo de silêncio. Se o barulho aumenta, eles chiam; barulho demais por muito tempo e a pipoca ESTOURA, a panela fica aflita e o relógio para até a calma voltar. Chegou à meta? Festa da pipoca! O aparelho só mede o volume do barulho: nada é gravado nem salvo. Também dá para testar sem microfone.",
+      "tags": "medidor de barulho,barulho na sala,silêncio,volume da voz,nível de som,calma,gestão de sala,ferramenta do professor,pipoca,pausa,turma"
+    },
+    "nl": {
+      "title": "Ssst, popcorn!",
+      "description": "Een geluidsmeter voor de klas: een vrolijke pan vol maïskorrels staat op een klein fornuis. Zolang de klas stil is, rusten de korrels en telt een klok de stille tijd. Wordt het drukker, dan sissen ze; is het te lang te druk, dan POPT de popcorn, raakt de pan in paniek en staat de klok stil tot het weer rustig is. Doel gehaald: popcornfeest! Het apparaat meet alleen hoe hard het is: er wordt niets opgenomen of bewaard. Je kunt het ook zonder microfoon proberen.",
+      "tags": "geluidsmeter,lawaai in de klas,stilte,stemvolume,geluidsniveau,rust,klassenmanagement,hulpmiddel leerkracht,popcorn,pauze,klas"
+    },
+    "ru": {
+      "title": "Тихий попкорн",
+      "description": "Шумомер для класса: весёлая кастрюлька с кукурузными зёрнышками стоит на маленькой плитке. Пока в классе тихо, зёрнышки отдыхают, а часы считают тихое время. Становится громче — они шипят; слишком долго шумно — попкорн ЛОПАЕТСЯ, кастрюлька волнуется, и часы стоят, пока снова не станет тихо. Дошли до цели — праздник попкорна! Устройство измеряет только громкость: ничего не записывается и не сохраняется. Можно попробовать и без микрофона.",
+      "tags": "шумомер,шум в классе,тишина,громкость голоса,уровень звука,спокойствие,управление классом,инструмент учителя,попкорн,перерыв,класс"
+    },
+    "ja": {
+      "title": "しーっ！ポップコーン",
+      "description": "教室の音量メーター：ポップコーンのつぶがいっぱいの、にこにこおなべが小さなコンロの上にあります。クラスがしずかなあいだ、つぶはおやすみ中で、時計がしずかな時間を数えます。うるさくなるとジュージュー、うるさい状態が続くとポップコーンがはじけて、おなべはあわて、しずかになるまで時計が止まります。目標に届いたらポップコーンパーティー！端末は音の大きさだけを測ります。録音も保存もしません。マイクなしでもためせます。",
+      "tags": "音量メーター,教室の騒音,しずかに,声の大きさ,音のレベル,落ち着き,学級経営,先生のツール,ポップコーン,休憩,クラス"
+    },
+    "zh-Hant": {
+      "title": "噓！爆米花",
+      "description": "教室噪音計：一個開心的鍋子裝滿玉米粒，放在小爐子上。全班安靜時，玉米粒好好休息，時鐘計算安靜時間。變吵時，玉米粒會滋滋作響；太吵太久，爆米花就會爆開，鍋子手忙腳亂，時鐘也會停住，直到教室恢復安靜。達成目標就來開爆米花派對！裝置只測量聲音有多大：不會錄音，也不會儲存。也可以不用麥克風試試看。",
+      "tags": "噪音計,教室噪音,安靜,說話音量,音量,冷靜,班級經營,教師工具,爆米花,休息,班級"
+    },
+    "ar": {
+      "title": "فُشار هادئ",
+      "description": "مقياس ضجيج للصف: قِدر مرح مليء بحبوب الذرة فوق موقد صغير. ما دام الصف هادئًا ترتاح الحبوب وتعدّ ساعة الوقت الهادئ. إذا علا الصوت بدأت تطقطق، وإذا بقي الصوت عاليًا مدة طويلة يفرقع الفُشار ويرتبك القِدر وتتوقف الساعة حتى يعود الهدوء. عند بلوغ الهدف: حفلة فُشار! الجهاز يقيس فقط مدى ارتفاع الصوت: لا يُسجَّل شيء ولا يُحفَظ. ويمكن التجربة بدون ميكروفون.",
+      "tags": "مقياس الضجيج,ضجيج الصف,هدوء,مستوى الصوت,إدارة الصف,أداة المعلم,فشار,استراحة,صف"
+    },
+    "he": {
+      "title": "פופקורן בשקט",
+      "description": "מד רעש לכיתה: סיר עליז מלא גרעיני תירס עומד על כירה קטנה. כל עוד הכיתה שקטה, הגרעינים נחים ושעון סופר את הזמן השקט. כשנהיה רועש יותר הם מרחשים; רועש מדי זמן רב, והפופקורן מתפוצץ, הסיר נלחץ והשעון עוצר עד שחוזר השקט. הגעתם ליעד? מסיבת פופקורן! המכשיר מודד רק כמה רועש: שום דבר לא מוקלט ולא נשמר. אפשר לנסות גם בלי מיקרופון.",
+      "tags": "מד רעש,רעש בכיתה,שקט,עוצמת קול,רמת קול,רוגע,ניהול כיתה,כלי למורה,פופקורן,הפסקה,כיתה"
+    }
+  }
+}
