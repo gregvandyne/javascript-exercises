@@ -3578,7 +3578,7 @@ the privacy pages are unchanged.
   `step_progress` moved after `gc_posts.auto_at`, and set `auto_at` after every run, even when some students' grades
   failed (a non-fatal error on their PATCH counted in `failed`). A student whose grade failed and who did nothing more
   was never sent again. Now `sendGrades` keeps per assignment `gc_posts.retry_at` / `retry_fails` (migration
-  **0069_gclassroom_retry**): a send with a failure sets `retry_at` 1 h, 2 h, 4 h... (at most a day, the same back-off
+  **0072_gclassroom_retry**): a send with a failure sets `retry_at` 1 h, 2 h, 4 h... (at most a day, the same back-off
   curve as the class's) after the run; `autoGrades` also looks at a lesson whose `retry_at` is due. Failed students are
   not in `gc_grades`, so they still count as changed and are the only ones sent again (`onlyChanged`); students whose
   grade went are not. A clean send or a quiet one clears the retry. Retries stop with the lesson's existing window
