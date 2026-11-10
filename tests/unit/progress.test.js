@@ -175,7 +175,12 @@ test('pages and APIs: student lesson page, answers, gradebook, lesson progress, 
   assert.equal(lines.length, 3, 'header + 2 students');
   assert.ok(lines.some(x => x.startsWith('Mia Pupil,') && x.includes('3/4')));
   const miaOverall = P.classProgress(cls.id).students.find(p => p.id === mia.id).overall;
-  assert.ok(lines.find(x => x.startsWith('Mia Pupil,')).endsWith(`,${miaOverall}%`), 'the CSV Overall is the page\'s Overall');
+  // "Work done" (it was called Overall): the page's figure, in its own column; the newer columns follow it.
+  const wd = lines[0].split(',').indexOf('Work done');
+  assert.ok(wd > lines[0].split(',').indexOf('Fractions day'), 'Work done comes after the lessons, where Overall was');
+  assert.doesNotMatch(lines[0], /Overall/);
+  assert.equal(lines.find(x => x.startsWith('Mia Pupil,')).split(',')[wd], `${miaOverall}%`, 'the CSV Work done is the page\'s Work done');
+  assert.deepEqual(lines[0].split(',').slice(wd + 1, wd + 4), ['Score', 'Score (points)', 'Late lessons'], 'new columns go at the end');
 
   r = await teacher(`/class/${cls.id}/progress/${cl.id}`);
   assert.equal(r.status, 200); assert.match(r.text, /Two quarters are one half\./); assert.match(r.text, /Why is 2\/4 the same as 1\/2\?/);
@@ -236,7 +241,7 @@ test('removed lessons leave the gradebook, the CSV and the student\'s lessons; l
   const at = head.split(',').indexOf('Gone soon'); assert.ok(at > 1);
   const csvMia = rows.find(x => x.startsWith('Mia Pupil,')).split(',');
   assert.equal(csvMia[at], '–', 'not open yet');
-  assert.equal(csvMia[csvMia.length - 1], `${row.overall}%`);
+  assert.equal(csvMia[head.split(',').indexOf('Work done')], `${row.overall}%`);
   assert.equal(row.overall, P.overall(row.cells.filter((x, i) => i !== col)), 'left out of Overall');
   assert.doesNotMatch((await kid(`/class/${cls.id}`)).text, /Gone soon/, 'students don\'t see it before it opens');
   L.unassign(ana, soon.id);

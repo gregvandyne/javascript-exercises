@@ -441,3 +441,5 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 .lv-guest-act > .small { min-inline-size: 0; flex: 1 1 16rem; }
 .lv-results .lv-inline { max-inline-size: 100%; }
 @media print { .lv-guest-act { display: none; } }
+/* Teacher view: the class-list name beside the name in the game ("Show class-list names", staff only, off by default). */
+.lv-p-roster { font-weight: 600; opacity: .75; }

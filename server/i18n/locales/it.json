@@ -7738,6 +7738,78 @@
       "badZone": "Scegli un fuso orario dall'elenco."
     }
   },
+  "gradebook": {
+    "workDone": "Lavoro svolto",
+    "score": "Punteggio",
+    "noScore": "Ancora niente di valutato",
+    "scoreTitle": "{earned} punti su {possible}",
+    "scoreWhy": "Vedi da cosa è composto questo punteggio",
+    "doneLate": "Fatto in ritardo",
+    "stepLate": "Fatto dopo la scadenza",
+    "lateN": "In ritardo: {count}",
+    "key": {
+      "score": "punteggio: punti ottenuti sui punti possibili"
+    },
+    "names": {
+      "inGames": "Nome nei giochi"
+    },
+    "help": {
+      "workDone": "La parte dei passi che lo studente ha finito nelle lezioni aperte. Non guarda le risposte giuste.",
+      "score": "Punti ottenuti sui punti possibili: quiz (1 punto a domanda), giochi dal vivo che conduci per un passo di una lezione (1 punto a domanda, la partita migliore) e lavori che valuti con una rubrica (i suoi punti). I lavori più grandi contano di più. Ciò che non è fatto o non è ancora valutato resta fuori; senza niente di valutato compare –. Tocca un punteggio per vedere da cosa è composto.",
+      "late": "Lavoro che manca ancora dopo la scadenza. «Fatto in ritardo» vuol dire finito dopo la scadenza.",
+      "names": "Il nome in grigio sotto il nome di uno studente è quello che ha nei giochi e sullo schermo della classe."
+    },
+    "live": {
+      "title": "Risultati dei giochi dal vivo",
+      "hint": "Risposte giuste sulle domande fatte, per gli studenti che hanno effettuato l’accesso a questa classe. Gli ospiti non vengono mai salvati.",
+      "linked": "Parte di una lezione: conta nel punteggio",
+      "keyRight": "risposte giuste sulle domande fatte",
+      "keyPlayed": "ha giocato, niente da valutare",
+      "keyAbsent": "non ha giocato"
+    },
+    "csv": {
+      "points": "Punteggio (punti)",
+      "lateCount": "Lezioni in ritardo",
+      "scoreCol": "{title} (punteggio %)",
+      "lateCol": "{title} (ritardo)",
+      "late": "in ritardo",
+      "doneLate": "fatto in ritardo",
+      "live": "Dal vivo: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Gioco dal vivo",
+      "rubric": "Rubrica",
+      "marks": "Voti della rubrica"
+    },
+    "student": {
+      "back": "Progressi",
+      "printFull": "Stampa il nome completo",
+      "print": "Stampa",
+      "printHint": "La stampa mostra solo il nome, a meno che tu non spunti la casella. Il nome usato nei giochi non viene mai stampato.",
+      "lateLessons": "Lezioni in ritardo",
+      "lesson": "Lezione",
+      "due": "Scadenza",
+      "late": "In ritardo",
+      "scoreH": "Da cosa è composto il punteggio",
+      "work": "Lavoro",
+      "type": "Tipo",
+      "points": "Punti",
+      "none": "Non c’è ancora niente di valutato. I punteggi vengono dai quiz, dai giochi dal vivo per un passo di una lezione e dai lavori valutati con una rubrica.",
+      "standardsLine": "{meets} raggiunti · {developing} in sviluppo · {practiced} esercitati",
+      "standardsOpen": "Vedi gli standard",
+      "noStandards": "Ancora nessuna prova sugli standard.",
+      "answers": "Risposte e commenti recenti",
+      "feedback": "Commento dell’insegnante",
+      "noAnswers": "Ancora nessuna risposta scritta.",
+      "noLive": "Ancora nessun gioco dal vivo."
+    },
+    "dash": {
+      "showNames": "Mostra i nomi dell’elenco della classe",
+      "hideNames": "Nascondi i nomi dell’elenco della classe",
+      "namesHint": "Mostra il nome dell’elenco della classe accanto al nome nel gioco, solo su questo schermo. Lo schermo della classe mantiene i nomi del gioco."
+    }
+  },
   "quickLive": {
     "cta": "Avvia subito un gioco dal vivo",
     "ctaNote": "Non servono account per gli studenti. Entrano con un codice e ricevono un nome inventato e sicuro.",

@@ -8145,6 +8145,78 @@
       "badZone": "Pick a time zone from the list."
     }
   },
+  "gradebook": {
+    "workDone": "Work done",
+    "score": "Score",
+    "noScore": "Nothing scored yet",
+    "scoreTitle": "{earned} of {possible} points",
+    "scoreWhy": "See what makes up this score",
+    "doneLate": "Done late",
+    "stepLate": "Done after the due date",
+    "lateN": "Late: {count}",
+    "key": {
+      "score": "score: points earned out of points possible"
+    },
+    "names": {
+      "inGames": "Name in games"
+    },
+    "help": {
+      "workDone": "The share of steps a student has finished in the lessons that are open. It does not look at right answers.",
+      "score": "Points earned out of points possible: quizzes (1 point a question), live games you host for a lesson step (1 point a question, the best game) and work you score with a rubric (its points). Bigger pieces of work count for more. Work that is not done or not scored yet is left out, so a student with nothing scored shows –. Tap a score to see what makes it up.",
+      "late": "Work still missing after the due date. \"Done late\" means it was finished after the due date.",
+      "names": "The grey name under a student's name is the one they have in games and on the class screen."
+    },
+    "live": {
+      "title": "Live game results",
+      "hint": "Right answers out of the questions asked, for students signed in to this class. Guests are never saved.",
+      "linked": "Part of a lesson: counts in the Score",
+      "keyRight": "right answers out of questions asked",
+      "keyPlayed": "played, nothing to mark",
+      "keyAbsent": "did not play"
+    },
+    "csv": {
+      "points": "Score (points)",
+      "lateCount": "Late lessons",
+      "scoreCol": "{title} (score %)",
+      "lateCol": "{title} (late)",
+      "late": "late",
+      "doneLate": "done late",
+      "live": "Live: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Live game",
+      "rubric": "Rubric",
+      "marks": "Rubric marks"
+    },
+    "student": {
+      "back": "Progress",
+      "printFull": "Print the full name",
+      "print": "Print",
+      "printHint": "A print shows the first name only unless you tick the box. The name used in games is never printed.",
+      "lateLessons": "Late lessons",
+      "lesson": "Lesson",
+      "due": "Due",
+      "late": "Late",
+      "scoreH": "What makes up the score",
+      "work": "Work",
+      "type": "Type",
+      "points": "Points",
+      "none": "Nothing is scored yet. Scores come from quizzes, live games hosted for a lesson step, and work scored with a rubric.",
+      "standardsLine": "{meets} met · {developing} developing · {practiced} practiced",
+      "standardsOpen": "See the standards",
+      "noStandards": "No standards evidence yet.",
+      "answers": "Recent answers and feedback",
+      "feedback": "Teacher's feedback",
+      "noAnswers": "No written answers yet.",
+      "noLive": "No live games yet."
+    },
+    "dash": {
+      "showNames": "Show class-list names",
+      "hideNames": "Hide class-list names",
+      "namesHint": "Shows each student's class-list name beside their name in the game, on this screen only. The class screen keeps the game names."
+    }
+  },
   "quickLive": {
     "cta": "Host a live game now",
     "ctaNote": "No student accounts needed. Students join with a code and get a safe made-up name.",

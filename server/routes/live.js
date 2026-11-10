@@ -416,7 +416,23 @@ router.get('/live/host/:sid/dash', on, requireAnyAccount, (req, res) => {
   }
   noStore(res);
   page(req, res, { title: req.t('live.dash.title'), bare: true, bodyClass: 'lv-body lv-dashboard', head: '<link rel="stylesheet" href="/css/live.css">',
-    body: V.dashBody(req, { s, token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), presets: T.presetsFor(req.t), saveSupport: LS.supportSaveOn(s), ctl: ctlInfo(s, req.user), origin: requestOrigin(req) }), scripts: ['/js/live-dash.js'] });
+    body: V.dashBody(req, { s, token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), presets: T.presetsFor(req.t), saveSupport: LS.supportSaveOn(s), ctl: ctlInfo(s, req.user), origin: requestOrigin(req),
+      rosterNames: s.audience === 'class' && rosterNames(req.user, s.classId).size > 0 }), scripts: ['/js/live-dash.js'] });
+});
+/** The Teacher view's "Show class-list names": { names: { seat: roster name } } for the seats of a class game, only for a
+ *  full-tier controller who manages the class (rosterNames: its teachers, the school's admins). Asked for by the Teacher
+ *  view when the teacher presses the button (off by default); never part of the session, so it cannot reach the
+ *  projector, a player or a game frame. Everyone else: 404. */
+router.get('/api/live/host/:sid/roster-names', on, requireAnyAccount, (req, res) => {
+  const s = LS.get(req.params.sid);
+  const role = ctlRole(s, req.user);
+  if (!role || s.audience !== 'class' || ctlInfo(s, req.user).tier !== 'full') return res.status(404).json({ error: req.t('errors.api.notFound') });
+  const rn = rosterNames(req.user, s.classId);
+  if (!rn.size) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  const names = {};
+  for (const seat of s.seats.values()) { const n = seat.userId && rn.get(seat.userId); if (n) names[seat.no] = n; }
+  noStore(res);
+  res.json({ names });
 });
 
 // ---------------------------------------------------------------- co-hosts (part 4)

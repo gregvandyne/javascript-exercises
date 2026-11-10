@@ -24,6 +24,7 @@ const store = (k, v) => { try { if (v === undefined) return localStorage.getItem
 let showHelp = store('lv:dash:help') === '1', showAnswer = store('lv:dash:answer') === '1';
 const CTL = D.ctl || { role: 'host', tier: 'full' }, TC = D.cohost || null, FULL = CTL.tier === 'full';
 let adults = new Map(), acts = [], leaving = false, ch = null;
+let rosterOn = false, rosterMap = {}, rosterTimer = 0;   // class-list names beside game names: see "Show class-list names" below
 const shownNames = new Map();   // seat -> the name this page last showed (an act about a removed player still names them)
 
 const sock = connect({ tok: D.tok, view: 'dash', onMessage, onState(st) { document.body.classList.toggle('lv-offline', st === 'retry'); } });
@@ -35,9 +36,9 @@ function onMessage(m) {
     case 'act': onAct(m); break;
     case 'nak': if (TC) line(nakText(m, { names: adults, TX: TC })); break;
     case 'bye': if (m.why === 'cohostOff') cohostOff(); break;
-    case 'pj': case 'pu': { const p = playerOf(m.p); players.set(p.seat, p); drawPlayers(); drawTeams(); break; }
+    case 'pj': case 'pu': { const p = playerOf(m.p); players.set(p.seat, p); drawPlayers(); drawTeams(); rosterSoon(); break; }
     case 'pl': players.delete(m.n); progress.delete(m.n); support.delete(m.n); drawPlayers(); drawTeams(); break;
-    case 'ros': players.clear(); for (const P of m.players || []) { const p = playerOf(P); players.set(p.seat, p); } drawPlayers(); drawTeams(); break;
+    case 'ros': players.clear(); for (const P of m.players || []) { const p = playerOf(P); players.set(p.seat, p); } drawPlayers(); drawTeams(); rosterSoon(); break;
     case 'ph': onPhase(m); break;
     case 'lk': locked = !!m.locked; onPhase({ phase }); break;
     case 'q': q = m; dq = null; answered = new Set(); drawQuestion(); drawPlayers(); break;
@@ -199,6 +200,9 @@ function drawPlayers() {
     const name = nm(p.name) || `#${p.seat}`;
     shownNames.set(p.seat, name);
     li.querySelector('.lv-p-name').textContent = name;
+    // the class-list name beside the name in the game, while the teacher has asked for it (rosterOn)
+    const real = rosterOn && rosterMap[p.seat];
+    if (real && real !== name) { const rn = document.createElement('span'); rn.className = 'lv-p-roster'; rn.dir = 'auto'; rn.textContent = ` (${real})`; li.querySelector('.lv-p-name').append(rn); }
     li.querySelector('.lv-dash-menu').setAttribute('aria-label', `${name}: ⋯`);
     const tm = li.querySelector('.lv-dash-team'); tm.textContent = ''; const pr = teams.on && p.team ? presetOf(p.team) : null;
     if (pr) tm.append(teamChip(pr, p.team)); paintTeam(li, pr, p.team);
@@ -213,6 +217,18 @@ function drawPlayers() {
   for (const li of [...list.children]) if (!seen.has(li.dataset.seat)) li.remove();
 }
 $('lv-dash-help-toggle') && $('lv-dash-help-toggle').addEventListener('click', () => { showHelp = !showHelp; store('lv:dash:help', showHelp ? '1' : '0'); drawPlayers(); });
+// "Show class-list names": the school's roster names beside the names in the game. Off every time this page opens (it
+// is never remembered), asked from the server only when the teacher presses the button, and only answered for someone
+// who manages the class. The names are not in the session: the projector and the players' devices never get them.
+async function loadRoster() {
+  try { const r = await fetch(`/api/live/host/${encodeURIComponent(D.sid)}/roster-names`, { credentials: 'same-origin', headers: { accept: 'application/json' } }); if (r.ok) { rosterMap = (await r.json()).names || {}; drawPlayers(); } } catch { /* keeps the names it has */ }
+}
+function rosterSoon() { if (!rosterOn) return; clearTimeout(rosterTimer); rosterTimer = setTimeout(loadRoster, 500); }
+const rosterBtn = $('lv-dash-roster-toggle');
+if (rosterBtn) rosterBtn.addEventListener('click', () => {
+  rosterOn = !rosterOn; rosterBtn.setAttribute('aria-pressed', String(rosterOn)); rosterBtn.textContent = rosterOn ? rosterBtn.dataset.hide : rosterBtn.dataset.show;
+  if (rosterOn) loadRoster(); else { rosterMap = {}; drawPlayers(); }
+});
 
 // the player menu (a dialog): bonus, move, new nickname, support, remove
 const dlg = $('lv-dash-player');

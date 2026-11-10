@@ -1,0 +1,72 @@
+{
+  "workDone": "完成進度",
+  "score": "得分",
+  "noScore": "尚未評分",
+  "scoreTitle": "{possible} 分中得 {earned} 分",
+  "scoreWhy": "查看這個得分的組成",
+  "doneLate": "逾期完成",
+  "stepLate": "在截止日期後完成",
+  "lateN": "逾期：{count}",
+  "key": {
+    "score": "得分：獲得的分數／可得的分數"
+  },
+  "names": {
+    "inGames": "遊戲中的名稱"
+  },
+  "help": {
+    "workDone": "學生在已開放課程中完成的步驟比例。不看答案對不對。",
+    "score": "獲得的分數除以可得的分數：測驗（每題 1 分）、您為課程步驟主持的即時遊戲（每題 1 分，取最好的一場），以及您用評分量表評分的作業（量表的分數）。份量較大的作業佔比較高。尚未完成或尚未評分的不計入；沒有任何評分時顯示 –。點一下得分可查看組成。",
+    "late": "截止日期後仍未完成的作業。「逾期完成」表示在截止日期後才完成。",
+    "names": "學生姓名下方的灰色名稱，是他們在遊戲和班級螢幕上使用的名稱。"
+  },
+  "live": {
+    "title": "即時遊戲結果",
+    "hint": "已登入本班的學生答對題數／出題數。訪客一律不儲存。",
+    "linked": "屬於課程的一部分：計入得分",
+    "keyRight": "答對題數／出題數",
+    "keyPlayed": "有參加，無需評分",
+    "keyAbsent": "未參加"
+  },
+  "csv": {
+    "points": "得分（分數）",
+    "lateCount": "逾期課程",
+    "scoreCol": "{title}（得分 %）",
+    "lateCol": "{title}（逾期）",
+    "late": "逾期",
+    "doneLate": "逾期完成",
+    "live": "即時：{title}（{date}）"
+  },
+  "kind": {
+    "quiz": "測驗",
+    "live": "即時遊戲",
+    "rubric": "評分量表",
+    "marks": "量表評分"
+  },
+  "student": {
+    "back": "進度",
+    "printFull": "列印全名",
+    "print": "列印",
+    "printHint": "除非勾選此方塊，否則只會印出名字。遊戲中使用的名稱一律不列印。",
+    "lateLessons": "逾期課程",
+    "lesson": "課程",
+    "due": "截止",
+    "late": "逾期",
+    "scoreH": "得分的組成",
+    "work": "作業",
+    "type": "類型",
+    "points": "分數",
+    "none": "目前還沒有任何評分。得分來自測驗、為課程步驟主持的即時遊戲，以及用評分量表評分的作業。",
+    "standardsLine": "達成 {meets} · 發展中 {developing} · 已練習 {practiced}",
+    "standardsOpen": "查看課程標準",
+    "noStandards": "尚無課程標準的紀錄。",
+    "answers": "最近的回答與回饋",
+    "feedback": "老師的回饋",
+    "noAnswers": "尚無書面回答。",
+    "noLive": "尚無即時遊戲。"
+  },
+  "dash": {
+    "showNames": "顯示班級名單上的姓名",
+    "hideNames": "隱藏班級名單上的姓名",
+    "namesHint": "只在這個畫面上，在遊戲名稱旁顯示班級名單上的姓名。班級螢幕仍顯示遊戲名稱。"
+  }
+}

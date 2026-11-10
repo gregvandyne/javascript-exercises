@@ -355,7 +355,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
 }
 
 /** /live/host/:sid/dash: the teacher's dashboard (phone first). The host only; nothing here reaches the projector. */
-export function dashBody(req, { s, token, nicks, presets, saveSupport = false, ctl = null, origin = '' }) {
+export function dashBody(req, { s, token, nicks, presets, saveSupport = false, ctl = null, origin = '', rosterNames = false }) {
   const t = req.t;
   const st = settingsView(s.settings);
   // part 4: who is on this Teacher view ({ role, tier, cohosts }). A limited controller (not a teacher of the class) has
@@ -388,6 +388,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
   </div>
   <section class="lv-tabpanel" role="tabpanel" id="lv-tab-players" aria-labelledby="lv-tab-players-btn">
     ${full ? html`<button class="btn btn-sm" type="button" id="lv-dash-help-toggle" aria-pressed="false">${t('live.dash.showHelp')}</button>` : ''}
+    ${full && rosterNames ? html`<button class="btn btn-sm" type="button" id="lv-dash-roster-toggle" aria-pressed="false" data-show="${t('gradebook.dash.showNames')}" data-hide="${t('gradebook.dash.hideNames')}" title="${t('gradebook.dash.namesHint')}">${t('gradebook.dash.showNames')}</button>` : ''}
     <p class="muted" id="lv-dash-empty">${t('live.host.empty')}</p>
     <ul class="lv-dash-players" id="lv-dash-players"></ul>
     <template id="lv-dash-card-tpl"><li class="lv-dash-card" data-seat=""><span class="lv-p-avatar" aria-hidden="true"></span><span class="lv-p-name"></span><span class="lv-dash-team"></span><span class="lv-dash-status"></span><span class="lv-dash-help" hidden></span><span class="lv-dash-sup" hidden></span><button class="btn btn-sm lv-dash-menu" type="button" aria-haspopup="dialog">⋯</button></li></template>

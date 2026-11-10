@@ -142,6 +142,18 @@ export const makeGameBtn = t => html`<a class="btn" href="/build"${t.own('school
  *  same chips as the admin pages). A count shows only above 0. */
 export const jumpNav = (t, items) => html`<nav class="chips ajump" aria-label="${t('school.jump.aria')}"><span class="ajump-l" aria-hidden="true">${t('school.jump.label')}</span>${items.filter(Boolean).map(([id, label, n]) => html`<a class="chip" href="#${id}">${label}${n ? html`&nbsp;<span class="badge">${n}</span>` : ''}</a>`)}</nav>`;
 
+/** A student's name on a staff-only screen (the gradebook, lesson progress, answers to review, a student's page): the
+ *  roster name with, beside it in grey, the name the student has in games and on the class screen (their Oomba Academy
+ *  name), so a teacher can match the two. Never for a page a student or the projector sees: those keep the generated
+ *  name alone. p: a row from S.roster ({ roster_name, display_name, username }). href: link the name (the student's page). */
+export function staffStudentName(p, { href = null } = {}) {
+  const { t } = current();
+  const real = p.roster_name || '', gen = p.display_name || p.username || '';
+  const main = html`<b dir="auto">${real || gen}</b>`;
+  const alias = real && gen && real !== gen ? html` <span class="gname small muted" title="${t('gradebook.names.inGames')}"><span class="sr-only">${t('gradebook.names.inGames')}: </span><bdi>${gen}</bdi></span>` : '';
+  return html`<span class="sname">${href ? html`<a href="${href}">${main}${alias}</a>` : html`${main}${alias}`}</span>`;
+}
+
 /** A "Find a name" box over a long list (public/js/schools.js hides the rows that don't match; nothing leaves the page).
  *  `target` is the id of the list or table; `toggle` an optional extra filter button ([label, data-only value]). Hidden
  *  until the script shows it, so a page without scripts has no dead control. */
