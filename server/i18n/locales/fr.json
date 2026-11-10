@@ -2415,7 +2415,8 @@
         "players": "{count, plural, =0 {Aucun joueur n'est connecté.} one {# joueur est connecté.} other {# joueurs sont connectés.}}",
         "back": "Y retourner",
         "replace": "La terminer et ouvrir le nouveau jeu"
-      }
+      },
+      "why": "D'après votre leçon :"
     },
     "match": {
       "title": "Jouer à {title} en ligne",
@@ -2464,6 +2465,16 @@
       "listening": "À l’écoute",
       "stop": "Arrêter",
       "tap": "Touche pour commencer l’écoute"
+    },
+    "teach-make": {
+      "pdfBig": "Ce PDF dépasse 2 Mo. Collez plutôt le texte ou choisissez un fichier plus petit.",
+      "pdfReady": "{name} est prêt à être envoyé.",
+      "textLoaded": "Le texte de {name} a été chargé.",
+      "fileKind": "Choisissez un PDF ou un fichier texte.",
+      "tooShort": "Collez d'abord un peu plus de votre leçon (au moins {n} caractères).",
+      "drafted": "{n} questions rédigées. Vérifiez chacune.",
+      "backConfirm": "Recommencer ? Les questions rédigées sur cette page seront perdues.",
+      "assigned": "C'est donné."
     }
   },
   "favorites": {
@@ -5364,7 +5375,8 @@
       "draft": "réponses à ajouter",
       "school": "Partagées dans mon école",
       "schoolHint": "Séries partagées par d’autres enseignants de votre école. Faites-en une copie pour la modifier.",
-      "copy": "Faire une copie"
+      "copy": "Faire une copie",
+      "fromLesson": "À partir de ma leçon"
     },
     "api": {
       "off": "Les parties en direct sont désactivées pour le moment.",
@@ -5414,7 +5426,15 @@
         "gone": "Cette invitation est terminée.",
         "self": "Tu es déjà l’animateur."
       },
-      "notForClass": "Ce jeu est fait pour s’amuser, pas pour la classe. Choisissez un mode quiz ou l’un de vos jeux."
+      "notForClass": "Ce jeu est fait pour s’amuser, pas pour la classe. Choisissez un mode quiz ou l’un de vos jeux.",
+      "make": {
+        "pdfBad": "Ce fichier est illisible. Choisissez un PDF de 2 Mo maximum.",
+        "lessonShort": "Collez d'abord un peu plus de votre leçon (un paragraphe ou plus).",
+        "lessonLong": "Cette leçon est trop longue. Collez une leçon à la fois (20 000 caractères maximum).",
+        "lessonThin": "Il n'y avait pas assez de contenu dans cette leçon pour rédiger des questions. Collez-en davantage et réessayez.",
+        "aiOff": "La rédaction par IA n'est pas disponible pour le moment. Vous pouvez toujours saisir ou coller vos questions dans Mes séries de questions.",
+        "aiFailed": "L'IA n'a pas pu rédiger de questions cette fois. Réessayez dans un instant."
+      }
     },
     "nick": {
       "0": "Loutre Courageuse",
@@ -6004,6 +6024,38 @@
     "cs": {
       "sets": "CS Quest",
       "preset": "Préparé d’après le plan de la leçon. Tu peux encore tout modifier."
+    },
+    "make": {
+      "title": "Transformez votre leçon en jeu",
+      "heading": "Transformez votre leçon en jeu",
+      "lead": "Collez une leçon que vous enseignez déjà. Oomba rédige les questions, vous vérifiez chaque réponse, puis votre classe joue.",
+      "stepsLabel": "Étapes",
+      "step1": "1. Collez votre leçon",
+      "step2": "2. Vérifiez les questions",
+      "step3": "3. Jouez",
+      "pasteHeading": "Votre leçon",
+      "textLabel": "Collez le texte de votre leçon",
+      "textHint": "Collez vos notes, un texte, une fiche d'exercices ou le plan de vos diapositives…",
+      "fileLabel": "Ou choisissez un fichier (PDF ou texte, 2 Mo maximum)",
+      "levelLabel": "Classe ou niveau",
+      "levelHint": "Par exemple : CM1",
+      "countLabel": "Nombre de questions",
+      "privacy": "Votre leçon est envoyée à notre assistant IA pour rédiger les questions et n'est pas conservée. Merci de ne pas y mettre de noms d'élèves ni d'informations personnelles.",
+      "go": "Rédiger les questions",
+      "wait": "Lecture de votre leçon et rédaction des questions. Cela prend jusqu'à une minute.",
+      "checkHeading": "Vérifiez chaque question et chaque réponse",
+      "checkText": "Ceci est un premier jet. Lisez chaque question, corrigez ce qui est faux ou peu clair et supprimez ce que vous ne voulez pas. Sous chaque question, vous voyez le passage de votre leçon dont elle vient. Rien n'arrive aux élèves tant que vous n'avez pas enregistré.",
+      "back": "Recommencer",
+      "doneHeading": "Vos questions sont enregistrées",
+      "doneText": "Choisissez comment votre classe va les utiliser.",
+      "host": "Animer un jeu en direct maintenant",
+      "assignHeading": "Ou donnez-le à faire en autonomie",
+      "assignText": "Cela devient un court quiz dans les leçons de la classe, et les résultats vont dans votre carnet de notes.",
+      "classLabel": "Classe",
+      "dueLabel": "Date limite (facultatif)",
+      "assign": "Donner à cette classe",
+      "mySets": "Mes séries de questions",
+      "another": "En faire un autre"
     }
   },
   "match": {
@@ -7087,7 +7139,8 @@
       "breaks": "Pauses actives",
       "breaksText": "Des jeux courts et amusants de Jouer, choisis pour une pause de 5 minutes sur le grand écran.",
       "allGames": "Voir tout ce que les élèves peuvent jouer",
-      "openLive": "Ouvrir le jeu en direct"
+      "openLive": "Ouvrir le jeu en direct",
+      "make": "Transformer une leçon en jeu"
     },
     "loop": {
       "kicker": "Comment Oomba s'intègre à votre semaine",

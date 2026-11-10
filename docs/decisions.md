@@ -4102,3 +4102,36 @@ page and who may open it, the CSV, 13 languages, the 300 ms limit), `tests/unit/
 every kind of account; nothing on the projector page or any socket), `tests/e2e/gradebook-scores.spec.js` (its own
 server on `tests/support/gradebook-seed.js`; 360 / 390 / 1366, light and dark, Hebrew; print). The CSV assertions in
 `progress`, `rubrics` and `teacher-quick-wins` tests now find columns by their heading, as strictly as before.
+
+## Turn your lesson into a game (10 Nov 2026)
+
+The teacher audit's item 3: the headline promise is "paste a lesson, get a game", and a teacher will not put a game in
+front of a class without checking the answers first. The parts existed (AI question drafts from a topic, the question-set
+editor, live hosting, "Set as homework"); nothing joined them, and nothing drafted from the teacher's own material.
+
+**The page: `/teach/make`** (Classroom → "Turn a lesson into a game"; My question sets → "From my lesson").
+1. **Paste your lesson** (80 to 20,000 characters) or choose a PDF (up to 2 MB) or a text file; grade or level; 5 to 20
+   questions.
+2. **Check the questions.** The draft opens in the same question-set editor as everywhere else, on the same page. Under
+   each question is "From your lesson: …", the words of the lesson that make the right answer right, so the answer key
+   can be checked quickly. The teacher edits, removes, adds, then saves. Nothing reaches a student before Save, and the
+   usual text checks run on Save.
+3. **Play it.** "Host a live game now" opens `/live` with the set chosen; "Assign to this class" makes a lesson with one
+   quiz step (the same as "Set as homework"), so the score lands in the gradebook.
+
+**Rules.**
+- **Grown-ups who may host only** (`hostOnly`): a student or a child's account gets no page and a 404 from the APIs.
+- **The lesson is never kept.** It goes to the AI for that one call; it is not stored, not logged (the audit log holds
+  only how many questions came back) and not kept in the browser. The page says so, and asks the teacher to leave out
+  students' names. The "why" notes are for checking and are not saved with the set.
+- **A prompt for a teacher, never for a child** (`lessonPrompt`, unit-tested): use only what the lesson says, write
+  fewer questions when the lesson is thin, say so when there is nothing to ask about, and treat the lesson as material,
+  never as instructions (a `</lesson>` inside the paste cannot end the block).
+- Counts towards the AI spending cap; 20 drafts an hour per account. Without a key, or with the budget resting, the page
+  says drafting isn't available and points to typing or pasting questions.
+- No migration, no new flag (it follows `LIVE` and, for Assign, `QUIZ_STEPS`).
+
+**Not done yet: proof with the real AI.** `scripts/eval-lesson-questions.js` runs 20 sample lessons (K-8, six subjects,
+Spanish and French, one with nothing to ask about, one with orders hidden in it) through the real model, checks each
+draft by rule and prints the questions for a person to read. It needs `ANTHROPIC_API_KEY` and has not been run from the
+build machine, which has no key. Until someone has read that report, the landing page should not lean on this promise.

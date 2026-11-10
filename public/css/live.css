@@ -443,3 +443,19 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 @media print { .lv-guest-act { display: none; } }
 /* Teacher view: the class-list name beside the name in the game ("Show class-list names", staff only, off by default). */
 .lv-p-roster { font-weight: 600; opacity: .75; }
+
+/* /teach/make: turn a lesson into a game (views/live.js makeBody) */
+.lv-make { display: flex; flex-direction: column; gap: 16px; }
+.lv-make > h1, .lv-make > p { margin: 0; text-align: center; }
+.mk-steps { list-style: none; margin: 0 auto; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.mk-steps li { padding: 8px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--card); font-weight: 700; font-size: .95rem; color: var(--muted); }
+.mk-steps li[aria-current="step"] { border-color: var(--text); color: var(--text); background: var(--accent-soft, var(--card)); }
+.mk-steps li.done { color: var(--text); }
+.lv-make .mk-panel { max-inline-size: 720px; }
+.lv-make .lv-h2 { text-align: start; font-size: 1.25rem; }
+.mk-check { align-items: stretch; }
+.mk-note p { margin: 0; }
+.mk-assign { border-block-start: 1px solid var(--line); padding-block-start: 14px; }
+.mk-h3 { margin: 0; font-size: 1.05rem; }
+.lv-why { margin: 0; padding: 8px 10px; border-inline-start: 4px solid var(--line); background: var(--bg); border-radius: 8px; color: var(--text); }
+#mk-text { min-block-size: 200px; }

@@ -2416,7 +2416,8 @@
         "players": "{count, plural, =0 {Er zijn geen spelers verbonden.} one {# speler is verbonden.} other {# spelers zijn verbonden.}}",
         "back": "Ga ernaar terug",
         "replace": "Beëindig het en open het nieuwe spel"
-      }
+      },
+      "why": "Uit je les:"
     },
     "match": {
       "title": "{title} online spelen",
@@ -2465,6 +2466,16 @@
       "listening": "Luistert",
       "stop": "Stop",
       "tap": "Tik om te beginnen met luisteren"
+    },
+    "teach-make": {
+      "pdfBig": "Die pdf is groter dan 2 MB. Plak de tekst of kies een kleiner bestand.",
+      "pdfReady": "{name} staat klaar om te versturen.",
+      "textLoaded": "De tekst uit {name} is geladen.",
+      "fileKind": "Kies een pdf of een tekstbestand.",
+      "tooShort": "Plak eerst wat meer van je les (minstens {n} tekens).",
+      "drafted": "{n} vragen opgesteld. Controleer ze allemaal.",
+      "backConfirm": "Opnieuw beginnen? De opgestelde vragen op deze pagina gaan verloren.",
+      "assigned": "Opgegeven."
     }
   },
   "favorites": {
@@ -5365,7 +5376,8 @@
       "draft": "antwoorden ontbreken",
       "school": "Gedeeld op mijn school",
       "schoolHint": "Sets die andere leraren op je school hebben gedeeld. Maak een kopie om er een te wijzigen.",
-      "copy": "Kopie maken"
+      "copy": "Kopie maken",
+      "fromLesson": "Uit mijn les"
     },
     "api": {
       "off": "Livespellen staan nu uit.",
@@ -5415,7 +5427,15 @@
         "gone": "Deze uitnodiging is voorbij.",
         "self": "Jij bent al de host."
       },
-      "notForClass": "Dit spel is voor de lol, niet voor de klas. Kies een quizmodus of een van je eigen spellen."
+      "notForClass": "Dit spel is voor de lol, niet voor de klas. Kies een quizmodus of een van je eigen spellen.",
+      "make": {
+        "pdfBad": "Dat bestand kan niet worden gelezen. Kies een pdf tot 2 MB.",
+        "lessonShort": "Plak eerst wat meer van je les (een alinea of meer).",
+        "lessonLong": "Die les is te lang. Plak één les tegelijk (tot 20.000 tekens).",
+        "lessonThin": "Er stond te weinig in die les om vragen van te maken. Plak meer en probeer het opnieuw.",
+        "aiOff": "Opstellen met AI is nu niet beschikbaar. Je kunt je vragen nog steeds typen of plakken bij Mijn vragensets.",
+        "aiFailed": "De AI kon deze keer geen vragen schrijven. Probeer het zo nog eens."
+      }
     },
     "nick": {
       "0": "Dappere Otter",
@@ -6005,6 +6025,38 @@
     "cs": {
       "sets": "CS Quest",
       "preset": "Ingesteld volgens het lesplan. Je kunt alles nog aanpassen."
+    },
+    "make": {
+      "title": "Maak van je les een spel",
+      "heading": "Maak van je les een spel",
+      "lead": "Plak een les die je al geeft. Oomba maakt een eerste versie van de vragen, jij controleert elk antwoord en daarna speelt je klas.",
+      "stepsLabel": "Stappen",
+      "step1": "1. Plak je les",
+      "step2": "2. Controleer de vragen",
+      "step3": "3. Spelen",
+      "pasteHeading": "Je les",
+      "textLabel": "Plak de tekst van je les",
+      "textHint": "Plak je aantekeningen, een leestekst, een werkblad of de opzet van je dia's…",
+      "fileLabel": "Of kies een bestand (pdf of tekst, tot 2 MB)",
+      "levelLabel": "Groep of niveau",
+      "levelHint": "Bijvoorbeeld: groep 6",
+      "countLabel": "Hoeveel vragen",
+      "privacy": "Je les wordt naar onze AI-hulp gestuurd om de vragen te schrijven en wordt niet bewaard. Laat namen van leerlingen en persoonlijke gegevens weg.",
+      "go": "Vragen opstellen",
+      "wait": "Je les wordt gelezen en de vragen worden geschreven. Dit duurt maximaal een minuut.",
+      "checkHeading": "Controleer elke vraag en elk antwoord",
+      "checkText": "Dit is een eerste versie. Lees elke vraag, verbeter wat fout of onduidelijk is en haal weg wat je niet wilt. Onder elke vraag zie je uit welk deel van je les die komt. Leerlingen zien niets totdat je opslaat.",
+      "back": "Opnieuw beginnen",
+      "doneHeading": "Je vragen zijn opgeslagen",
+      "doneText": "Kies hoe je klas ze gaat gebruiken.",
+      "host": "Nu een live spel leiden",
+      "assignHeading": "Of geef het op om zelfstandig te maken",
+      "assignText": "Het wordt een korte quiz bij de lessen van de klas en de scores komen in je cijferoverzicht.",
+      "classLabel": "Klas",
+      "dueLabel": "Inleverdatum (optioneel)",
+      "assign": "Aan deze klas opgeven",
+      "mySets": "Mijn vragensets",
+      "another": "Nog een maken"
     }
   },
   "match": {
@@ -7088,7 +7140,8 @@
       "breaks": "Beweegpauzes",
       "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
-      "openLive": "Live spel openen"
+      "openLive": "Live spel openen",
+      "make": "Van een les een spel maken"
     },
     "loop": {
       "kicker": "Zo past Oomba in je week",

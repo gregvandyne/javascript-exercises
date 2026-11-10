@@ -676,7 +676,7 @@ export function setsBody(req, { sets }) {
   const t = req.t;
   return html`<div class="lv lv-sets" data-lv-page="sets">
   <h1>${t('live.sets.heading')}</h1>
-  <p><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button></p>
+  <p class="row"><button class="btn btn-primary" type="button" id="lv-set-new">${t('live.sets.new')}</button><a class="btn" href="/teach/make" id="lv-set-make">✨ ${t('live.sets.fromLesson')}</a></p>
   ${sets.mine.length ? html`<ul class="lv-setlist" id="lv-setlist">${sets.mine.map(s => html`<li data-set="${s.id}"><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}${s.ready ? '' : ` · ${t('live.sets.draft')}`}</span></li>`)}</ul>` : html`<p class="muted" id="lv-setlist-empty">${t('live.sets.empty')}</p>`}
   ${sets.school.length ? html`<h2 class="lv-h2">${t('live.sets.school')}</h2><p class="small muted">${t('live.sets.schoolHint')}</p>
   <ul class="lv-setlist">${sets.school.map(s => html`<li><span class="lv-set-title">${s.title}</span> <span class="small muted">${t('live.sets.items', { count: s.count })}</span> <button class="btn btn-sm" type="button" data-copy-set="${s.id}">${t('live.sets.copy')}</button></li>`)}</ul>` : ''}
