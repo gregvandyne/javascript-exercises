@@ -181,7 +181,28 @@ test('an account invited as staff loses its friends the moment it accepts; two c
   expect(inv.ok(), await inv.text()).toBe(true);
   await a.goto('/friends');
   await expect(a.locator('.friendcard')).toHaveCount(2);   // an invite alone changes nothing
+  // The invite says what accepting costs, at phone width in light, dark and a right-to-left language, and Accept asks again.
+  const WARN = 'Only accept if you work at this school. Staff accounts have no friends and no chat';
+  const problems = [];
+  for (const [scheme, lang] of [['light', 'en'], ['dark', 'en'], ['light', 'ar']]) {
+    const v = await sameUser(browser, c, { scheme, lang });
+    await v.goto('/classes'); await v.evaluate(() => document.fonts.ready);
+    await expect(v.locator('#my-invites .inv-warn')).toBeVisible();
+    if (lang === 'en') await expect(v.locator('#my-invites .inv-warn')).toContainText(WARN); else await expect(v.locator('#my-invites .inv-warn')).not.toContainText(WARN);
+    const wide = await v.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    if (wide > 1) problems.push(`/classes invite @360/${scheme}/${lang}: scrolls sideways by ${wide}px`);
+    for (const x of await findTouching(v)) problems.push(`/classes invite @360/${scheme}/${lang}: ${x.a} ⟷ ${x.b} (${x.dir} ${x.gap}px)`);
+    for (const btn of await v.locator('#my-invites button').all()) { const box = await btn.boundingBox(); if (box.height < 44) problems.push(`/classes invite ${lang}: a button is ${box.height}px high`); }
+    await v.context().close();
+  }
+  expect([...new Set(problems)]).toEqual([]);
   await c.goto('/classes');
+  await expect(c.locator('#my-invites .inv-warn')).toContainText(WARN);
+  // Saying no to the question leaves everything as it was.
+  c.once('dialog', d => { expect(d.message()).toContain(WARN); d.dismiss(); });
+  await c.locator(`form[data-api="/api/staff-invites/${school.id}/accept"] button`).click();
+  expect((await c.request.get('/api/friends')).status()).toBe(200);
+  c.once('dialog', d => d.accept());
   await c.locator(`form[data-api="/api/staff-invites/${school.id}/accept"] button`).click();
   await expect.poll(async () => (await c.request.get('/api/friends')).status()).toBe(403);
 
@@ -195,5 +216,53 @@ test('an account invited as staff loses its friends the moment it accepts; two c
   expect((await again.json()).error).toBe("We couldn't find that code. Check each letter and try again.");
   await c.goto('/friends');
   await expect(c.locator('main')).toContainText(STAFF_TITLE);
-  for (const p of [a, b, c, head, admin]) await p.context().close();
+
+  // It was a mistake (c is a child). The school admin puts it right on the People tab, on a phone: "Added by mistake".
+  await head.setViewportSize({ width: 360, height: 780 });
+  await head.goto(`/school/${school.slug}?tab=people`);
+  const row = head.locator('#staff-list tr', { hasText: uc.username });
+  await row.locator('details.inline-menu > summary').click();
+  const fix = row.locator('form[data-api$="/not-staff"] button');
+  await expect(fix).toBeVisible(); await expect(fix).toContainText('Added by mistake');
+  expect((await fix.boundingBox()).height).toBeGreaterThanOrEqual(44);
+  expect(await head.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  head.once('dialog', d => { expect(d.message()).toContain('new friend code'); d.accept(); });
+  await fix.click();
+  await expect(head.locator('#staff-list')).not.toContainText(uc.username);
+  await expect(head.locator('#former-staff')).toHaveCount(0);
+  // c is an ordinary account again: a NEW code, no old friends, and can ask a again.
+  await expect.poll(async () => (await c.request.get('/api/friends')).status()).toBe(200);
+  const codeC2 = await codeOf(c);
+  expect(codeC2).toMatch(/^[A-Z0-9]{6}$/); expect(codeC2).not.toBe(codeC);
+  await expect(c.locator('.friendcard')).toHaveCount(0);
+  expect((await post(c, '/api/friends/add', { code: codeA })).ok()).toBe(true);
+  await a.goto('/friends');
+  await expect(a.locator('#inc-h')).toContainText('1');
+
+  // A staff member who was only REMOVED stays a staff account, and is listed under "Removed staff" so it can still be put right.
+  const d = await (await browser.newContext()).newPage();
+  const ud = await signup(d, uniq('Soon'), 'a-long-password-12');
+  expect((await post(head, `/api/schools/${school.id}/staff`, { account: 'existing', username: ud.username, rosterName: 'Mx Later', role: 'teacher' })).ok()).toBe(true);
+  expect((await post(d, `/api/staff-invites/${school.id}/accept`)).ok()).toBe(true);
+  const peopleHtml = await (await head.request.get(`/school/${school.slug}?tab=people`)).text();
+  const idD = peopleHtml.match(new RegExp(`@${ud.username}[\\s\\S]*?/members/([\\w-]+)/not-staff`))[1];
+  expect((await post(head, `/api/schools/${school.id}/members/${idD}/remove`)).ok()).toBe(true);
+  expect((await d.request.get('/api/friends')).status()).toBe(403);
+  for (const scheme of ['light', 'dark']) {
+    const v = await sameUser(browser, head, { scheme });
+    await v.goto(`/school/${school.slug}?tab=people`); await v.evaluate(() => document.fonts.ready);
+    await v.locator('#former-staff > summary').click();
+    await expect(v.locator('#former-staff')).toContainText(ud.username);
+    expect(await v.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+    expect((await v.locator('#former-staff form button').boundingBox()).height).toBeGreaterThanOrEqual(44);
+    expect((await findTouching(v)).map(x => `${x.a} ⟷ ${x.b} (${x.dir} ${x.gap}px)`)).toEqual([]);
+    await v.context().close();
+  }
+  await head.goto(`/school/${school.slug}?tab=people`);
+  await head.locator('#former-staff > summary').click();
+  head.once('dialog', dl => dl.accept());
+  await head.locator('#former-staff form button').click();
+  await expect(head.locator('#former-staff')).toHaveCount(0);
+  await expect.poll(async () => (await d.request.get('/api/friends')).status()).toBe(200);
+  for (const p of [a, b, c, d, head, admin]) await p.context().close();
 });

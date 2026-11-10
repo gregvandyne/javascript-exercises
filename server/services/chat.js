@@ -56,7 +56,8 @@ export function canChat(me, other, t = tEn) {
   if (me.account_type === 'grownup') return no('guest');
   if (me.banned) return no('banned');
   // Staff never chat with anyone here, and nobody chats with staff: checked before friendship, so a friend row that
-  // should not exist opens nothing. To the other person a staff account reads the same as one that isn't there.
+  // should not exist opens nothing. To the other person a staff account reads the same as one that isn't there
+  // (and GET /chat/<staff> is the 404 of a name nobody has; the public profile /u/<name> is a separate page).
   if (noFriendsAccount(me)) return no('staff');
   if (!other || other.banned || noFriendsAccount(other)) return no('missing');
   if (other.id === me.id) return no('self');

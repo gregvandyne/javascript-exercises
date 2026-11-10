@@ -2654,7 +2654,12 @@
       "sendInvite": "Enviar convite",
       "existingShort": "O nome de usuário",
       "addToClassFor": "Colocar {name} numa turma",
-      "changeName": "Mudar o nome real"
+      "changeName": "Mudar o nome real",
+      "notStaff": "Adicionado por engano",
+      "notStaffConfirm": "{name} foi adicionado à equipe por engano? A pessoa sai da escola e a conta deixa de ser uma conta da equipe escolar, então pode voltar a ter amigos e chat, com um novo código de amigo. Os amigos que tinha antes não voltam.",
+      "notStaffDone": "{name} não tem mais uma conta da equipe escolar aqui.",
+      "formerStaff": "Equipe removida",
+      "formerStaffText": "Quem já fez parte da equipe aqui continua com uma conta da equipe escolar: sem amigos e sem chat com jogadores. Se alguém nunca deveria ter feito parte da equipe (um aluno que aceitou um convite, por exemplo), escolha “Adicionado por engano”."
     },
     "settings": {
       "name": "Nome da escola",
@@ -2685,7 +2690,9 @@
       "unsaved": "Você tem alterações que ainda não foram salvas.",
       "unsavedLeave": "Suas alterações nas configurações não foram salvas. Sair sem salvar?",
       "timeZoneUse": "Usar {zone} (o fuso horário deste computador)",
-      "chatNotice": "O chat agora está desativado para as contas da sua escola. Antes, o chat entre colegas de turma ficava ativado, a menos que a escola o desativasse. Agora fica desativado, a menos que a escola o ative, e alguns dos seus alunos o usavam. Para trazê-lo de volta, escolha “Chat com amigos das próprias turmas” abaixo e salve."
+      "chatNotice": "O chat agora está desativado para as contas da sua escola. Antes, o chat entre colegas de turma ficava ativado, a menos que a escola o desativasse. Agora fica desativado, a menos que a escola o ative, e alguns dos seus alunos o usavam. Para trazê-lo de volta, escolha “Chat com amigos das próprias turmas” abaixo e salve.",
+      "chatNoticeKeep": "Manter o chat desativado",
+      "chatNoticeShort": "O chat agora está desativado para as contas da sua escola, e alguns dos seus alunos o usavam. Você pode reativá-lo aqui:"
     },
     "cards": {
       "title": "Cartões de acesso",
@@ -2737,7 +2744,8 @@
       "tickStudents": "Marque pelo menos um aluno.",
       "badZone": "Escolha um fuso horário da lista.",
       "badCap": "Digite um número inteiro de {min} a {max}.",
-      "otherSchoolNext": "Essa conta pertence a outra escola. Peça para a pessoa sair daquela escola primeiro, ou escolha «Criar uma conta escolar para ela»."
+      "otherSchoolNext": "Essa conta pertence a outra escola. Peça para a pessoa sair daquela escola primeiro, ou escolha «Criar uma conta escolar para ela».",
+      "wasStaff": "Esta conta já fez parte da equipe desta escola. Primeiro, um administrador da escola precisa marcá-la como “Adicionado por engano” na aba Pessoas."
     },
     "classTabs": {
       "lessons": "Aulas",
@@ -2966,7 +2974,8 @@
       "accept": "Aceitar",
       "decline": "Recusar",
       "accepted": "Agora você faz parte da equipe de {school}.",
-      "declined": "Convite recusado."
+      "declined": "Convite recusado.",
+      "warn": "Aceite somente se você trabalha nesta escola. Contas da equipe escolar não têm amigos nem chat: se você aceitar, seus amigos e seu código de amigo serão removidos e não voltam."
     },
     "setup": {
       "h": "Configure sua escola",

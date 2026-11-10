@@ -100,7 +100,8 @@ router.get('/chat/:username', (req, res) => {
   // A staff account has no friends' threads at all: back to its team inbox, whoever was named.
   if (noFriendsAccount(u)) return res.redirect('/chat');
   const other = getUserByName(req.params.username);
-  if (!other || other.banned || other.id === u.id) return notFound(req, res, t('chat.notFound'));
+  // A staff account is not on this page for anyone: the same 404 as a name nobody has (no name, no thread header).
+  if (!other || other.banned || other.id === u.id || noFriendsAccount(other)) return notFound(req, res, t('chat.notFound'));
   const can = chat.canChat(u, other, t);
   const blockedByMe = chat.isBlocked(u.id, other.id);
   const msgs = can.ok || can.code === 'chat_off_me' || can.code === 'chat_off_other' ? chat.thread(u, other, {}, t) : [];

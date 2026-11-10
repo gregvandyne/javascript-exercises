@@ -28,7 +28,7 @@ export const DEFAULT_SETTINGS = {
   chat: 'off',                   // school accounts: 'off' (the default: no chat) | 'classmates' (chat with classmate friends;
                                  // a school admin has to switch it on). docs/decisions.md "Staff have no friends; school chat is off by default"
   chatNotice: false,             // set by migration 0068 for a school whose students were chatting when the default became
-                                 // off: its Settings tab says so until an admin saves a chat choice
+                                 // off: its page says so until an admin switches chat on or dismisses the notice
   publishing: 'school',          // school accounts: 'school' (share games within the school) | 'public' (allowed to go public)
   googleDomains: [],             // the school's Google Workspace domains, for Sign in with Google (services/google.js); [] = off
   timeZone: '',                  // IANA zone, e.g. 'Europe/London': lessons open and fall due at the school's midnight; '' = not set
@@ -133,12 +133,14 @@ export function updateSchool(by, schoolId, { name, settings } = {}) {
   if (settings) {
     const cur = settingsOf(s), next = { ...cur };
     for (const k of ['teachersCreateClasses', 'allowOwnAccounts']) if (settings[k] !== undefined) next[k] = !!settings[k];
-    // A saved choice is the school's own from here on, so the "we turned chat off" notice has done its job.
     // Until a save carries a chat choice none is stored, so the school keeps following the default: a stored value
     // always means somebody chose it (the old code wrote the default into every row, which hid who had chosen).
+    // The notice stays until chat is switched on or an admin dismisses it ("Keep chat off"): the Settings form sends the
+    // Chat box with every save, so a save of the time zone alone must not clear it.
     const choseChat = ['classmates', 'off'].includes(settings.chat);
-    if (choseChat) { next.chat = settings.chat; next.chatNotice = false; }
+    if (choseChat) { if (settings.chat !== 'off') next.chatNotice = false; next.chat = settings.chat; }
     else if (!('chat' in storedSettings(s))) delete next.chat;
+    if (settings.chatNotice === false) next.chatNotice = false;
     if (!next.chatNotice) delete next.chatNotice;
     if (['school', 'public'].includes(settings.publishing)) next.publishing = settings.publishing;
     if (Array.isArray(settings.googleDomains)) next.googleDomains = settings.googleDomains.slice(0, MAX_DOMAINS);
@@ -179,6 +181,10 @@ export function addMember(by, schoolId, userId, role, { rosterName = '', grade =
   if (!u || u.is_guest || u.account_type === 'grownup') return fail('noAccount');   // grown-up accounts never join a school
   if (u.managed_school && u.managed_school !== s.id) return fail('otherSchoolAccount');
   const old = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', s.id, u.id);
+  // Someone who is or was staff here never becomes a student by being added again (a teacher approving a join request,
+  // a Google roster): that would quietly end their staff status and give them a friend code. Only notStaff (a school
+  // admin saying "added by mistake") ends it.
+  if (role === 'student' && old && old.role !== 'student') return fail('wasStaff');
   const rn = clip(rosterName, 60) || (old && old.roster_name) || '';
   const gr = clip(grade, 12) || (old && old.grade) || '';
   if (old) q.run("UPDATE school_members SET role=?, roster_name=?, grade=?, status='active', left_at=NULL, joined_at=CASE WHEN status='active' THEN joined_at ELSE ? END WHERE school_id=? AND user_id=?", role, rn, gr, now(), s.id, u.id);
@@ -223,6 +229,8 @@ export function answerInvite(u, schoolId, accept) {
 export function updateMember(by, schoolId, userId, { rosterName, grade, role } = {}) {
   const m = membership(schoolId, userId); if (!m) return fail('notFound');
   if (role !== undefined && !ROLES.includes(role)) return fail('badRole');
+  // Staff are never turned into students in place (see notStaff for a person added as staff by mistake).
+  if (role === 'student' && m.role !== 'student') return fail('badRole');
   q.run('UPDATE school_members SET roster_name=?, grade=?, role=? WHERE school_id=? AND user_id=?',
     rosterName !== undefined ? clip(rosterName, 60) : m.roster_name, grade !== undefined ? clip(grade, 12) : m.grade, role || m.role, schoolId, userId);
   audit(by.id, 'school.member_update', schoolId, { user: userId, role, grade, ...(rosterName !== undefined && clip(rosterName, 60) !== m.roster_name ? { renamed: true } : {}) });
@@ -260,6 +268,29 @@ export function removeMember(by, schoolId, userId) {
   });
   audit(by.id, 'school.member_remove', schoolId, { user: userId });
   return ok();
+}
+/** People who were staff here and were removed (their own accounts only: a removed school account is switched off).
+ *  They still count as staff accounts (noFriendsAccount); the People tab lists them so a mistake can be put right. */
+export const formerStaff = schoolId => q.all(`SELECT u.id, u.username, u.display_name, m.role, m.roster_name, m.left_at FROM school_members m JOIN users u ON u.id=m.user_id
+  WHERE m.school_id=? AND m.status='left' AND m.role!='student' AND COALESCE(u.managed_school,'')='' AND u.banned=0 ORDER BY m.left_at DESC`, schoolId);
+/**
+ * "Added by mistake": this person's OWN account should never have been staff here (a child accepted a staff invite, or
+ * a username was mistyped). A school admin (or the platform admin) says so: the person leaves the school if still in
+ * it, and this school's record of them as staff is deleted, so it no longer makes the account a staff account
+ * (noFriendsAccount). The account can have friends again with a NEW code (friends.codeOf); friendships ended when it
+ * became staff are not brought back. Works on a person already removed (formerStaff). Never for an account the school
+ * made as staff, and still a staff account while another school has them as staff.
+ * Not a way round the staff rule: the account ends up with nothing a brand-new account would not have.
+ */
+export function notStaff(by, schoolId, userId) {
+  const m = q.get('SELECT * FROM school_members WHERE school_id=? AND user_id=?', schoolId, String(userId || ''));
+  if (!m || m.role === 'student') return fail('notFound');
+  const u = getUser(m.user_id);
+  if (!u || u.managed_school) return fail('badRole');
+  if (m.status === 'active') { const r = removeMember(by, schoolId, u.id); if (!r.ok) return r; }
+  q.run("DELETE FROM school_members WHERE school_id=? AND user_id=? AND status='left'", schoolId, u.id);
+  audit(by.id, 'school.member_not_staff', schoolId, { user: u.id, was: m.role });
+  return ok({ user: u, stillStaff: noFriendsAccount(getUser(u.id)) });
 }
 
 // ---------------------------------------------------------------- school accounts
@@ -485,6 +516,8 @@ export function approveRequest(by, requestId, { rosterName = '', sameAs = null }
   // Asked before they became staff here: the old request no longer applies (approving it would make them a student).
   const cur = membership(c.school_id, u.id);
   if (cur && cur.role !== 'student') return fail('notFound');
+  // Was staff here and left: a teacher's approval never makes a former staff account a student (addMember refuses too).
+  if (q.get("SELECT 1 FROM school_members WHERE school_id=? AND user_id=? AND role!='student'", c.school_id, u.id)) return fail('wasStaff');
   let res = ok();
   tx(() => {
     if (sameAs) { res = mergeSchoolAccount(by, c.school_id, sameAs, u.id); if (!res.ok) return; }
@@ -589,8 +622,9 @@ export const isStaff = u => !!u && (isPlatformAdmin(u) || !!q.get("SELECT 1 FROM
  *  teacher or school admin of any school? Such an account has no friend code, no friends and no friends' chat, with
  *  anyone (services/friends.js and services/chat.js ask this; docs/decisions.md "Staff have no friends").
  *  A teacher who LEFT a school still counts (their member row keeps its staff role, marked 'left'): they are a known
- *  adult. Only a school admin changing the person's role to student (the fix for a child added as staff by mistake)
- *  ends it. A staff invite not yet accepted does not count. Grown-up (parent) accounts are a separate kind and are
+ *  adult, and nobody becomes a student over a staff row (addMember, updateMember and approveRequest refuse). The one
+ *  way out is notStaff: a school admin (or the platform admin) marks a person's own account "added by mistake" on the
+ *  People tab, which deletes that school's staff record of them. A staff invite not yet accepted does not count. Grown-up (parent) accounts are a separate kind and are
  *  never school members, so a teacher's own parent account is not touched by this. */
 export const noFriendsAccount = u => !!u && (isPlatformAdmin(u) || !!q.get("SELECT 1 FROM school_members WHERE user_id=? AND role!='student'", u.id));
 /** End every friendship and friend request of an account (both directions), take its friend code away, and clear the

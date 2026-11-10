@@ -2653,7 +2653,12 @@
       "sendInvite": "Uitnodiging sturen",
       "existingShort": "Hun gebruikersnaam",
       "addToClassFor": "{name} in een klas zetten",
-      "changeName": "Echte naam wijzigen"
+      "changeName": "Echte naam wijzigen",
+      "notStaff": "Per ongeluk toegevoegd",
+      "notStaffConfirm": "Is {name} per ongeluk als personeel toegevoegd? Diegene verlaat de school en het account is geen personeelsaccount meer. Het kan weer vrienden en chat hebben, met een nieuwe vriendcode. Eerdere vrienden komen niet terug.",
+      "notStaffDone": "{name} heeft hier geen personeelsaccount meer.",
+      "formerStaff": "Verwijderd personeel",
+      "formerStaffText": "Wie hier personeel was, houdt een personeelsaccount: geen vrienden en geen chat met spelers. Had iemand nooit personeel mogen zijn (bijvoorbeeld een leerling die een uitnodiging accepteerde), kies dan ‘Per ongeluk toegevoegd’."
     },
     "settings": {
       "name": "Naam van de school",
@@ -2684,7 +2689,9 @@
       "unsaved": "Je hebt wijzigingen die nog niet zijn opgeslagen.",
       "unsavedLeave": "Je wijzigingen in de instellingen zijn niet opgeslagen. Weggaan zonder op te slaan?",
       "timeZoneUse": "{zone} gebruiken (de tijdzone van deze computer)",
-      "chatNotice": "Chat staat nu uit voor de accounts van je school. Eerst stond chat tussen klasgenoten aan, tenzij een school het uitzette. Nu staat het uit, tenzij een school het aanzet, en sommige van je leerlingen gebruikten het. Wil je het terug? Kies hieronder ‘Chatten met vrienden uit hun klassen’ en sla op."
+      "chatNotice": "Chat staat nu uit voor de accounts van je school. Eerst stond chat tussen klasgenoten aan, tenzij een school het uitzette. Nu staat het uit, tenzij een school het aanzet, en sommige van je leerlingen gebruikten het. Wil je het terug? Kies hieronder ‘Chatten met vrienden uit hun klassen’ en sla op.",
+      "chatNoticeKeep": "Chat uit laten",
+      "chatNoticeShort": "Chat staat nu uit voor de accounts van je school, en sommige van je leerlingen gebruikten het. Je kunt het hier weer aanzetten:"
     },
     "cards": {
       "title": "Inlogkaarten",
@@ -2736,7 +2743,8 @@
       "tickStudents": "Vink minstens één leerling aan.",
       "badZone": "Kies een tijdzone uit de lijst.",
       "badCap": "Typ een heel getal van {min} tot {max}.",
-      "otherSchoolNext": "Dat account hoort bij een andere school. Vraag diegene eerst die school te verlaten, of kies \"Maak een schoolaccount voor ze\"."
+      "otherSchoolNext": "Dat account hoort bij een andere school. Vraag diegene eerst die school te verlaten, of kies \"Maak een schoolaccount voor ze\".",
+      "wasStaff": "Dit account was personeel op deze school. Een schoolbeheerder moet het eerst op het tabblad Mensen markeren als ‘Per ongeluk toegevoegd’."
     },
     "classTabs": {
       "lessons": "Lessen",
@@ -2965,7 +2973,8 @@
       "accept": "Accepteren",
       "decline": "Weigeren",
       "accepted": "Je hoort nu bij het personeel van {school}.",
-      "declined": "Uitnodiging geweigerd."
+      "declined": "Uitnodiging geweigerd.",
+      "warn": "Accepteer alleen als je op deze school werkt. Accounts van personeel hebben geen vrienden en geen chat: als je accepteert, worden je vrienden en je vriendcode verwijderd en ze komen niet terug."
     },
     "setup": {
       "h": "Richt je school in",

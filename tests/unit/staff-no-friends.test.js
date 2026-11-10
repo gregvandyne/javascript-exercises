@@ -180,7 +180,8 @@ test('chat: no staff account can chat with a child even when friend rows exist, 
     const cp = await as(c)(`/api/chat/${s.username}`, { method: 'POST', body: { kind: 'quick', body: 'hi' } });
     assert.equal(cp.status, 400, label); assert.equal(cp.json.code, 'missing');
     const cPage = await as(c)(`/chat/${s.username}`);
-    assert.equal(cPage.text.includes('old from staff'), false, label); assert.ok(/id="composer"[^>]*hidden/.test(cPage.text), `${label}: no composer`);
+    assert.equal(cPage.status, 404, `${label}: the page is the 404 of a name nobody has`);
+    assert.equal(cPage.text.includes('old from staff'), false, label); assert.equal(cPage.text.includes('id="composer"'), false, `${label}: no composer`);
     // the leftover rows go the next time the staff account is seen by a friends page or API
     friends.closedToFriends(fresh(s));
     assert.deepEqual(friendRows(s.id), [], label);
@@ -248,7 +249,7 @@ test('an account that becomes staff: its friendships, requests and code end at t
   assert.deepEqual(friendRows(seeded.id), []); assert.equal(fresh(seeded).friend_code, null);
 });
 
-test('an account that stops being staff: a teacher who leaves stays closed; one put back as a student gets a NEW code and no old friends', async () => {
+test('an account that stops being staff: a teacher who leaves stays closed; one marked "added by mistake" gets a NEW code and no old friends', async () => {
   const f = mk('StillAKid');
   // leaves the school (removed by the school admin): still a known adult
   const left = mk('LeavingTeacher'); S.addMember(head, oak.id, left.id, 'teacher');
@@ -260,12 +261,16 @@ test('an account that stops being staff: a teacher who leaves stays closed; one 
   assert.equal(friends.codeOf(fresh(left)), null);
   for (const p of ['/me', '/', '/play']) assert.equal(/href="\/friends"/.test((await as(left)(p)).text), false, `${p}: no Friends tab or tile for a former teacher`);
   assert.ok(/href="\/friends"/.test((await as(f)('/')).text), 'a child keeps the Friends tab');
-  // changed back to a student by the school admin (a child added as staff by mistake): an ordinary account again
+  // marked "added by mistake" by the school admin (a child added as staff): an ordinary account again
   const mistake = mk('KidByMistake'); const oldCode = mistake.friend_code;
   friends.addByCode(mistake, f.friend_code); friends.accept(f, mistake.id);
   S.addMember(head, oak.id, mistake.id, 'teacher');
   assert.deepEqual(friendRows(mistake.id), []);
-  assert.ok(S.updateMember(head, oak.id, mistake.id, { role: 'student' }).ok);
+  // never by a role change: neither the service nor the route turns staff into a student in place
+  assert.equal(S.updateMember(head, oak.id, mistake.id, { role: 'student' }).code, 'badRole');
+  assert.equal((await as(head)(`/api/schools/${oak.id}/members/${mistake.id}`, { method: 'POST', body: { role: 'student' } })).status, 400);
+  assert.equal(S.noFriendsAccount(fresh(mistake)), true);
+  assert.ok(S.notStaff(head, oak.id, mistake.id).ok);
   assert.equal(S.noFriendsAccount(fresh(mistake)), false);
   assert.deepEqual(friendRows(mistake.id), [], 'old friendships do not come back');
   const api = await as(mistake)('/api/friends');
@@ -365,13 +370,140 @@ test('migration 0068, schools: a stored "classmates" nobody chose becomes off (w
   assert.equal(st(off).chat, 'off'); assert.equal(st(off).chatNotice, false);
   assert.equal(st(chose).chat, 'classmates', 'saved No chat and later classmates: its own choice, kept');
   assert.equal(st(wentBack).chat, 'off', 'the last save in the log was No chat');
-  // the notice on the Settings tab, until an admin saves a chat choice
+  // the notice on the Settings tab and (short) on the school's other tabs, until an admin switches chat on or dismisses it
   const before = await as(usingAdmin)(`/school/${using.slug}?tab=settings`);
   assert.ok(before.text.includes('id="chat-notice"'), 'the school that was chatting sees the notice');
   assert.ok(inPage(before.text, tEn('school.settings.chatNotice')));
   assert.equal((await as(boss)(`/school/${silent.slug}?tab=settings`)).text.includes('id="chat-notice"'), false);
+  const main = await as(usingAdmin)(`/school/${using.slug}`);
+  assert.ok(main.text.includes('id="chat-off-notice"'), "the school's main page says so too"); assert.ok(inPage(main.text, tEn('school.settings.chatNoticeShort')));
+  assert.ok(main.text.includes(`href="/school/${using.slug}?tab=settings#set-chat"`));
+  assert.equal((await as(boss)(`/school/${silent.slug}`)).text.includes('id="chat-off-notice"'), false);
+  // Saving something else (the form always sends the Chat box, still on "No chat") does not clear the notice
+  const tz = await as(usingAdmin)(`/api/schools/${using.id}/settings`, { method: 'POST', body: { chat: 'off', timeZone: 'Europe/Paris' } });
+  assert.equal(tz.status, 200); assert.equal(st(using).timeZone, 'Europe/Paris'); assert.equal(st(using).chat, 'off');
+  assert.equal(st(using).chatNotice, true, 'a save that leaves chat off keeps the notice');
+  assert.ok((await as(usingAdmin)(`/school/${using.slug}?tab=settings`)).text.includes('id="chat-notice"'));
+  // "Keep chat off" dismisses it and changes nothing else
+  const using2 = mkSchool('Chat In Use Two', { chatNotice: true, publishing: 'public' });
+  assert.ok((await as(boss)(`/school/${using2.slug}?tab=settings`)).text.includes('form="chat-notice-seen"'));
+  assert.equal((await as(boss)(`/api/schools/${using2.id}/settings`, { method: 'POST', body: { chatNotice: 'seen' } })).status, 200);
+  assert.equal(st(using2).chatNotice, false); assert.equal(st(using2).chat, 'off'); assert.equal(stored(using2).publishing, 'public');
+  assert.equal('chat' in stored(using2), false, 'dismissing stores no chat choice');
+  assert.equal((await as(boss)(`/school/${using2.slug}`)).text.includes('id="chat-off-notice"'), false);
   const saved = await as(usingAdmin)(`/api/schools/${using.id}/settings`, { method: 'POST', body: { chat: 'classmates' } });
   assert.equal(saved.status, 200, saved.text.slice(0, 200));
   assert.equal(st(using).chat, 'classmates'); assert.equal(st(using).chatNotice, false);
-  assert.equal((await as(usingAdmin)(`/school/${using.slug}?tab=settings`)).text.includes('id="chat-notice"'), false, 'gone once they have chosen');
+  assert.equal((await as(usingAdmin)(`/school/${using.slug}?tab=settings`)).text.includes('id="chat-notice"'), false, 'gone once they have switched chat on');
+  assert.equal((await as(usingAdmin)(`/school/${using.slug}`)).text.includes('id="chat-off-notice"'), false);
+});
+
+test('a child who accepts a staff invite: warned before Accept, and the school admin can put it right in the product ("Added by mistake")', async () => {
+  const child = mk('InvitedKid'), pal = mk('InvitedKidPal');
+  friends.addByCode(child, pal.friend_code); friends.accept(pal, child.id);
+  const oldCode = child.friend_code;
+  assert.ok(S.inviteStaff(head, oak.id, child.id, 'teacher', { rosterName: 'Sam Real-Name' }).ok);
+  // The prompt says what accepting costs, in the text and again as the Accept button's confirm question
+  const warn = tEn('school.invite.warn');
+  assert.match(warn, /no friends and no chat/); assert.match(warn, /friend code/);
+  const prompt = await as(child)('/classes');
+  assert.ok(prompt.text.includes('id="my-invites"')); assert.ok(inPage(prompt.text, warn));
+  assert.match(prompt.text, new RegExp(`data-api="/api/staff-invites/${oak.id}/accept" data-confirm="[^"]+"`));
+  // The child accepts all the same: friends and code go at once
+  assert.equal((await as(child)(`/api/staff-invites/${oak.id}/accept`, { method: 'POST', body: {} })).status, 200);
+  assert.equal(S.noFriendsAccount(fresh(child)), true); assert.deepEqual(friendRows(child.id), []); assert.equal((await as(child)('/api/friends')).status, 403);
+  // Only this school's admin (or the platform admin) can undo it: not a teacher, not another school's admin, not the person
+  const api = `/api/schools/${oak.id}/members/${child.id}/not-staff`;
+  for (const [who, u] of Object.entries({ teacher: rivera, 'another school\'s admin': critic, 'the person': child, 'a child': pal })) {
+    assert.equal((await as(u)(api, { method: 'POST', body: {} })).status, 404, who);
+    assert.equal(S.noFriendsAccount(fresh(child)), true, who);
+  }
+  assert.equal((await as(head)(`/api/schools/${oak.id}/members/${head.id}/not-staff`, { method: 'POST', body: {} })).status, 400, 'never yourself');
+  assert.equal((await as(head)(`/api/schools/${oak.id}/members/${rivera.id}/not-staff`, { method: 'POST', body: {} })).status, 400, 'never an account the school made as staff');
+  assert.equal(S.noFriendsAccount(fresh(rivera)), true); assert.ok(S.membership(oak.id, rivera.id));
+  assert.equal((await as(head)(`/api/schools/${oak.id}/members/${student.id}/not-staff`, { method: 'POST', body: {} })).status, 404, 'a student is not staff');
+  // The People tab offers it on the person's row
+  const people = await as(head)(`/school/${oak.slug}?tab=people`);
+  assert.ok(people.text.includes(`data-api="${api}"`), 'the button is on the People tab');
+  assert.equal(people.text.includes(`/members/${rivera.id}/not-staff`), false, 'not for school-made staff accounts');
+  const done = await as(head)(api, { method: 'POST', body: {} });
+  assert.equal(done.status, 200, done.text.slice(0, 200));
+  assert.equal(S.noFriendsAccount(fresh(child)), false); assert.equal(S.membership(oak.id, child.id), null);
+  assert.equal(q.get('SELECT 1 FROM school_members WHERE school_id=? AND user_id=?', oak.id, child.id), undefined, "the school's staff record of the child (real name included) is gone");
+  assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='school.member_not_staff' AND target=?", oak.id));
+  const mine = await as(child)('/api/friends');
+  assert.equal(mine.status, 200); assert.match(mine.json.code, /^[A-Z0-9]{6}$/); assert.notEqual(mine.json.code, oldCode); assert.deepEqual(mine.json.friends, []);
+  assert.equal(friends.addByCode(fresh(pal), mine.json.code).state, 'sent', 'and can make friends again');
+  assert.equal(friends.accept(fresh(child), pal.id), true);
+  assert.equal(chat.canChat(fresh(child), fresh(pal)).ok, true);
+
+  // The admin had already REMOVED the child before knowing about the button: the child is listed under "Removed staff"
+  const child2 = mk('InvitedKidTwo');
+  S.inviteStaff(head, oak.id, child2.id, 'teacher'); assert.equal((await as(child2)(`/api/staff-invites/${oak.id}/accept`, { method: 'POST', body: {} })).status, 200);
+  assert.equal((await as(head)(`/api/schools/${oak.id}/members/${child2.id}/remove`, { method: 'POST', body: {} })).status, 200);
+  assert.equal(S.noFriendsAccount(fresh(child2)), true, 'removing alone does not undo it');
+  const after = await as(head)(`/school/${oak.slug}?tab=people`);
+  assert.ok(after.text.includes('id="former-staff"')); assert.ok(after.text.includes(`data-api="/api/schools/${oak.id}/members/${child2.id}/not-staff"`));
+  assert.equal(after.text.includes(`/members/${child.id}/not-staff`), false, 'the first child is no longer listed anywhere');
+  assert.equal((await as(boss)(`/api/schools/${oak.id}/members/${child2.id}/not-staff`, { method: 'POST', body: {} })).status, 200, 'the platform admin can do it too');
+  assert.equal(S.noFriendsAccount(fresh(child2)), false);
+  assert.equal((await as(head)(`/school/${oak.slug}?tab=people`)).text.includes(`/members/${child2.id}/not-staff`), false);
+  // Staff somewhere else as well: still a staff account
+  const two = mk('TwoSchools'); S.addMember(boss, oak.id, two.id, 'teacher'); S.addMember(critic, criticSchool.id, two.id, 'teacher');
+  const r = S.notStaff(head, oak.id, two.id); assert.ok(r.ok); assert.equal(r.stillStaff, true); assert.equal(S.noFriendsAccount(fresh(two)), true);
+});
+
+test('a former teacher never becomes a student by a join request or by being added again: only "Added by mistake" ends staff status', async () => {
+  const ex = mk('ExTeacher'), child = mk('CuriousKid');
+  S.addMember(head, oak.id, ex.id, 'teacher', { rosterName: 'Mr Ex' });
+  assert.ok(S.removeMember(head, oak.id, ex.id).ok);
+  assert.equal(S.addMember(rivera, oak.id, ex.id, 'student').code, 'wasStaff');
+  q.run("INSERT INTO join_requests(id, class_id, user_id, status, created_at) VALUES (?,?,?,'pending',?)", 'jr-ex-teacher', cls.id, ex.id, now());
+  const svc = S.approveRequest(rivera, 'jr-ex-teacher'); assert.equal(svc.ok, false); assert.equal(svc.code, 'wasStaff');
+  const http = await as(rivera)('/api/join-requests/jr-ex-teacher/approve', { method: 'POST', body: { rosterName: 'Mr Ex' } });
+  assert.equal(http.status, 400); assert.equal(http.json.error, tEn('school.errors.wasStaff'));
+  assert.equal(q.get("SELECT status FROM join_requests WHERE id='jr-ex-teacher'").status, 'pending');
+  assert.equal(q.get('SELECT role, status FROM school_members WHERE school_id=? AND user_id=?', oak.id, ex.id).role, 'teacher');
+  assert.equal(S.noFriendsAccount(fresh(ex)), true); assert.equal(friends.codeOf(fresh(ex)), null);
+  assert.equal(friends.addByCode(fresh(ex), child.friend_code).error, STAFF_TEXT);
+  // back as staff is still allowed (re-hired)
+  assert.ok(S.addMember(head, oak.id, ex.id, 'teacher').ok);
+});
+
+test('a staff account that still holds rows (made the platform admin straight in the database): children never see it, and the seed ends the rows', async () => {
+  const promoted = mk('PromotedRaw'), a = mk('SeesNothingA'), b = mk('SeesNothingB'), c = mk('SeesNothingC');
+  friends.addByCode(promoted, a.friend_code);                                        // pending: promoted -> a
+  friends.addByCode(promoted, b.friend_code); friends.accept(b, promoted.id);         // friends with b
+  friends.addByCode(c, promoted.friend_code);                                         // pending: c -> promoted
+  q.run("UPDATE users SET role='admin' WHERE id=?", promoted.id);                     // no clean-up ran
+  assert.equal(friendRows(promoted.id).length, 4, 'the rows are still there');
+  assert.deepEqual(friends.incoming(a.id), []); assert.equal(friends.incomingCount(a.id), 0); assert.equal(navBadges(fresh(a)).requests, 0, 'no badge for a request nobody can see');
+  assert.deepEqual(friends.list(b.id), []); assert.equal(friends.count(b.id), 0);
+  assert.deepEqual(friends.outgoing(c.id), []);
+  assert.equal(friendRows(promoted.id).length, 4, 'and reading the lists was not what hid them');
+  const page = await as(a)('/friends'); assert.equal(page.status, 200); assert.equal(page.text.includes('PromotedRaw'), false);
+  assert.deepEqual((await as(b)('/api/friends')).json.friends, []);
+  // the seed promotes the configured admin username: its rows end there and then
+  const { config } = await import('../../server/config.js');
+  const { seedAdmin } = await import('../../scripts/seed.js');
+  const named = createUser({ username: config.adminUsername, password: 'a-long-password-2' });
+  q.run("UPDATE users SET role='player', friend_code='SEED01' WHERE id=?", named.id);
+  forceFriends(named, a); forceRequest(named, c);
+  seedAdmin();
+  assert.equal(fresh(named).role, 'admin'); assert.deepEqual(friendRows(named.id), []); assert.equal(fresh(named).friend_code, null);
+});
+
+test('a staff account has no chat page for a child: /chat/<staff> is the same 404 as a name nobody has', async () => {
+  for (const [sn, s] of Object.entries(STAFF)) {
+    forceFriends(s, kid);
+    const r = await as(kid)(`/chat/${s.username}`), none = await as(kid)('/chat/NoSuchPlayer99');
+    assert.equal(r.status, 404, sn); assert.equal(none.status, 404);
+    assert.equal(r.text.includes('class="threadhead"'), false, `${sn}: no thread header (it carried the display name and @username)`);
+    assert.equal(r.text.includes(`href="/u/${s.username}"`), false, sn);
+    const strip = (t, name) => t.split(name).join('~');   // the two 404 pages differ only by the address they echo
+    assert.equal(strip(r.text, s.username).length, strip(none.text, 'NoSuchPlayer99').length, `${sn}: the same page as a name nobody has`);
+    assert.equal(r.text.includes('id="msgs"'), false);
+    q.run('DELETE FROM friends WHERE user_id=? OR friend_id=?', s.id, s.id);
+  }
+  assert.equal((await as(kid)(`/chat/${OFFICIAL}`)).status, 200, 'the Oomba team thread is still there');
 });

@@ -33,6 +33,10 @@ export function codeOf(u) {
 }
 
 const USER_COLS = 'u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at, u.is_guest, u.chat_enabled';
+/** SQL: the joined account u is not staff (noFriendsAccount, said in SQL). The lists below leave staff out, so a row
+ *  that should not exist (an account made the platform admin straight in the database) never shows a child a staff
+ *  account as a friend or a request, even before anything has cleaned the row up. */
+const NOT_STAFF = "u.role!='admin' AND NOT EXISTS (SELECT 1 FROM school_members sm WHERE sm.user_id=u.id AND sm.role!='student')";
 
 /** Friend codes are case-insensitive and people type spaces or dashes; keep letters and digits only. */
 export const normCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -98,12 +102,14 @@ export function unfriend(user, otherId) {
 }
 
 /** Requests waiting for me to say yes. */
-export const incoming = userId => q.all(`SELECT ${USER_COLS}, f.created_at FROM friends f JOIN users u ON u.id=f.user_id WHERE f.friend_id=? AND f.status='pending' AND u.banned=0 ORDER BY f.created_at DESC`, userId);
+export const incoming = userId => q.all(`SELECT ${USER_COLS}, f.created_at FROM friends f JOIN users u ON u.id=f.user_id WHERE f.friend_id=? AND f.status='pending' AND u.banned=0 AND ${NOT_STAFF} ORDER BY f.created_at DESC`, userId);
+/** How many of those there are (the Friends tab's badge). */
+export const incomingCount = userId => q.get(`SELECT COUNT(*) n FROM friends f JOIN users u ON u.id=f.user_id WHERE f.friend_id=? AND f.status='pending' AND u.banned=0 AND ${NOT_STAFF}`, userId).n;
 /** Requests I sent that are still waiting. */
-export const outgoing = userId => q.all(`SELECT ${USER_COLS}, f.created_at FROM friends f JOIN users u ON u.id=f.friend_id WHERE f.user_id=? AND f.status='pending' AND u.banned=0 ORDER BY f.created_at DESC`, userId);
+export const outgoing = userId => q.all(`SELECT ${USER_COLS}, f.created_at FROM friends f JOIN users u ON u.id=f.friend_id WHERE f.user_id=? AND f.status='pending' AND u.banned=0 AND ${NOT_STAFF} ORDER BY f.created_at DESC`, userId);
 /** Accepted friends (banned accounts are left out). */
-export const list = userId => q.all(`SELECT ${USER_COLS}, f.created_at FROM friends f JOIN users u ON u.id=f.friend_id WHERE f.user_id=? AND f.status='accepted' AND u.banned=0 ORDER BY u.display_name COLLATE NOCASE`, userId);
-export const count = userId => q.get("SELECT COUNT(*) n FROM friends f JOIN users u ON u.id=f.friend_id WHERE f.user_id=? AND f.status='accepted' AND u.banned=0", userId).n;
+export const list = userId => q.all(`SELECT ${USER_COLS}, f.created_at FROM friends f JOIN users u ON u.id=f.friend_id WHERE f.user_id=? AND f.status='accepted' AND u.banned=0 AND ${NOT_STAFF} ORDER BY u.display_name COLLATE NOCASE`, userId);
+export const count = userId => q.get(`SELECT COUNT(*) n FROM friends f JOIN users u ON u.id=f.friend_id WHERE f.user_id=? AND f.status='accepted' AND u.banned=0 AND ${NOT_STAFF}`, userId).n;
 export const status = (a, b) => {
   const r = q.get('SELECT status FROM friends WHERE user_id=? AND friend_id=?', a, b);
   if (r) return r.status === 'accepted' ? 'friends' : 'sent';

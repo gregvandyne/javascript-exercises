@@ -2653,7 +2653,12 @@
       "sendInvite": "Invia invito",
       "existingShort": "Il suo nome utente",
       "addToClassFor": "Metti {name} in una classe",
-      "changeName": "Cambia il nome vero"
+      "changeName": "Cambia il nome vero",
+      "notStaff": "Aggiunto per errore",
+      "notStaffConfirm": "{name} è stato aggiunto al personale per errore? Uscirà dalla scuola e il suo account non sarà più un account del personale: potrà di nuovo avere amici e chat, con un nuovo codice amico. Gli amici che aveva prima non vengono ripristinati.",
+      "notStaffDone": "{name} non ha più un account del personale qui.",
+      "formerStaff": "Personale rimosso",
+      "formerStaffText": "Chi ha fatto parte del personale qui mantiene un account del personale: niente amici e niente chat con i giocatori. Se qualcuno non avrebbe mai dovuto farne parte (per esempio uno studente che ha accettato un invito), scegli «Aggiunto per errore»."
     },
     "settings": {
       "name": "Nome della scuola",
@@ -2684,7 +2689,9 @@
       "unsaved": "Hai modifiche non ancora salvate.",
       "unsavedLeave": "Le modifiche alle impostazioni non sono salvate. Uscire senza salvarle?",
       "timeZoneUse": "Usa {zone} (il fuso orario di questo computer)",
-      "chatNotice": "La chat ora è disattivata per gli account della tua scuola. Prima la chat tra compagni di classe era attiva, a meno che la scuola non la disattivasse. Ora è disattivata, a meno che la scuola non la attivi, e alcuni dei tuoi studenti la usavano. Per riaverla, scegli «Chat con gli amici delle proprie classi» qui sotto e salva."
+      "chatNotice": "La chat ora è disattivata per gli account della tua scuola. Prima la chat tra compagni di classe era attiva, a meno che la scuola non la disattivasse. Ora è disattivata, a meno che la scuola non la attivi, e alcuni dei tuoi studenti la usavano. Per riaverla, scegli «Chat con gli amici delle proprie classi» qui sotto e salva.",
+      "chatNoticeKeep": "Lascia la chat disattivata",
+      "chatNoticeShort": "La chat ora è disattivata per gli account della tua scuola, e alcuni dei tuoi studenti la usavano. Puoi riattivarla qui:"
     },
     "cards": {
       "title": "Schede di accesso",
@@ -2736,7 +2743,8 @@
       "tickStudents": "Spunti almeno uno studente.",
       "badZone": "Scelga un fuso orario dalla lista.",
       "badCap": "Scriva un numero intero da {min} a {max}.",
-      "otherSchoolNext": "Questo account appartiene a un'altra scuola. Chiedi alla persona di lasciare prima quella scuola, oppure scegli «Crea un account scolastico per lei»."
+      "otherSchoolNext": "Questo account appartiene a un'altra scuola. Chiedi alla persona di lasciare prima quella scuola, oppure scegli «Crea un account scolastico per lei».",
+      "wasStaff": "Questo account ha fatto parte del personale di questa scuola. Prima un amministratore scolastico deve segnarlo come «Aggiunto per errore» nella scheda Persone."
     },
     "classTabs": {
       "lessons": "Lezioni",
@@ -2965,7 +2973,8 @@
       "accept": "Accetta",
       "decline": "Rifiuta",
       "accepted": "Ora fai parte del personale di {school}.",
-      "declined": "Invito rifiutato."
+      "declined": "Invito rifiutato.",
+      "warn": "Accetta solo se lavori in questa scuola. Gli account del personale non hanno amici né chat: se accetti, i tuoi amici e il tuo codice amico vengono rimossi e non tornano."
     },
     "setup": {
       "h": "Configura la tua scuola",

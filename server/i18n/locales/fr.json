@@ -2652,7 +2652,12 @@
       "sendInvite": "Envoyer l'invitation",
       "existingShort": "Son nom d'utilisateur",
       "addToClassFor": "Mettre {name} dans une classe",
-      "changeName": "Modifier le vrai nom"
+      "changeName": "Modifier le vrai nom",
+      "notStaff": "Ajouté par erreur",
+      "notStaffConfirm": "{name} a été ajouté au personnel par erreur ? Cette personne quitte l’école et son compte n’est plus un compte du personnel : il peut de nouveau avoir des amis et le chat, avec un nouveau code ami. Ses anciens amis ne sont pas rétablis.",
+      "notStaffDone": "{name} n’a plus de compte du personnel ici.",
+      "formerStaff": "Personnel retiré",
+      "formerStaffText": "Les personnes qui ont fait partie du personnel ici gardent un compte du personnel : ni amis ni chat avec les joueurs. Si l’une d’elles n’aurait jamais dû en faire partie (un élève qui a accepté une invitation, par exemple), choisissez « Ajouté par erreur »."
     },
     "settings": {
       "name": "Nom de l’école",
@@ -2683,7 +2688,9 @@
       "unsaved": "Tu as des modifications pas encore enregistrées.",
       "unsavedLeave": "Tes modifications des paramètres ne sont pas enregistrées. Partir sans les enregistrer ?",
       "timeZoneUse": "Utiliser {zone} (le fuseau horaire de cet ordinateur)",
-      "chatNotice": "Le chat est maintenant désactivé pour les comptes de votre école. Avant, le chat entre camarades de classe était activé sauf si l’école le désactivait. Désormais, il est désactivé sauf si l’école l’active, et certains de vos élèves l’utilisaient. Pour le rétablir, choisissez « Chat avec les amis de leurs classes » ci-dessous et enregistrez."
+      "chatNotice": "Le chat est maintenant désactivé pour les comptes de votre école. Avant, le chat entre camarades de classe était activé sauf si l’école le désactivait. Désormais, il est désactivé sauf si l’école l’active, et certains de vos élèves l’utilisaient. Pour le rétablir, choisissez « Chat avec les amis de leurs classes » ci-dessous et enregistrez.",
+      "chatNoticeKeep": "Laisser le chat désactivé",
+      "chatNoticeShort": "Le chat est maintenant désactivé pour les comptes de votre école, et certains de vos élèves l’utilisaient. Vous pouvez le réactiver ici :"
     },
     "cards": {
       "title": "Cartes de connexion",
@@ -2735,7 +2742,8 @@
       "tickStudents": "Cochez au moins un élève.",
       "badZone": "Choisissez un fuseau horaire dans la liste.",
       "badCap": "Tapez un nombre entier de {min} à {max}.",
-      "otherSchoolNext": "Ce compte appartient à une autre école. Demande-lui de quitter cette école d'abord, ou choisis plutôt « Lui créer un compte scolaire »."
+      "otherSchoolNext": "Ce compte appartient à une autre école. Demande-lui de quitter cette école d'abord, ou choisis plutôt « Lui créer un compte scolaire ».",
+      "wasStaff": "Ce compte a fait partie du personnel de cette école. Un administrateur de l’école doit d’abord le marquer « Ajouté par erreur » dans l’onglet Personnes."
     },
     "classTabs": {
       "lessons": "Leçons",
@@ -2964,7 +2972,8 @@
       "accept": "Accepter",
       "decline": "Refuser",
       "accepted": "Tu fais maintenant partie du personnel de {school}.",
-      "declined": "Invitation refusée."
+      "declined": "Invitation refusée.",
+      "warn": "N’accepte que si tu travailles dans cette école. Les comptes du personnel n’ont ni amis ni chat : si tu acceptes, tes amis et ton code ami sont supprimés et ne reviennent pas."
     },
     "setup": {
       "h": "Configure ton école",

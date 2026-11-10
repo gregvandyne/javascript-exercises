@@ -140,6 +140,13 @@ const loadSchool = (req, res) => {
   return s;
 };
 const SCHOOL_TABS = ['classes', 'people', 'settings'];
+/** Migration 0068 switched this school's chat off while its students were using it: said on every tab of the school
+ *  page (the Settings tab has the full text beside the Chat box) until an admin switches chat on or keeps it off. */
+function chatOffNotice(req, s, tab) {
+  const t = req.t, st = S.settingsOf(s);
+  if (!st.chatNotice || st.chat !== 'off' || s.archived_at || tab === 'settings') return '';
+  return html`<p class="notice warn" id="chat-off-notice" role="status"><span aria-hidden="true">🛡️</span> ${t('school.settings.chatNoticeShort')} <a class="btn btn-sm" href="/school/${s.slug}?tab=settings#set-chat">${t('school.tabs.settings')}</a></p>`;
+}
 // /school: the School tab of a school admin's menu. An admin of one school goes to its People tab; of several, picks
 // one; anyone else (teachers, students, kids, the platform admin who isn't a school's admin) gets a 404.
 router.get('/school', requireUser, (req, res) => {
@@ -165,6 +172,7 @@ router.get('/school/:slug', requireUser, async (req, res) => {
   const body = html`
   <div class="pagehead"><h1>🏫 ${s.name}</h1></div>
   ${S.canManageSchool(req.user, s.id) && !s.archived_at ? setupChecklist(req, s, tabs) : ''}
+  ${chatOffNotice(req, s, tab)}
   <nav class="tabs" aria-label="${s.name}">${tabs.map(k => html`<a href="/school/${s.slug}?tab=${k}" ${k === tab ? raw('aria-current="page"') : ''}${t.own(`school.tabs.${k}`) ? '' : raw(' lang="en" dir="ltr"')}>${t(`school.tabs.${k}`)}</a>`)}</nav>
   ${content}`;
   // The School tab is current for the school's own admins; a teacher on a school page keeps Classes.
@@ -279,8 +287,18 @@ function personRow(req, s, p, me, classes, ginfo, live = []) {
           <select class="input input-sm" id="ac-${p.id}" name="classId">${live.filter(c => !(classes[p.id] || []).some(x => x.id === c.id)).map(c => html`<option value="${c.id}">${c.name}</option>`)}</select><button class="btn btn-sm" type="submit">➕ ${t('school.class.addToClass')}</button></form>` : ''}
         <form class="inline menu-form" data-api="/api/schools/${s.id}/members/${p.id}" data-reload data-toast="${t('school.settings.saved')}"><label class="small" for="rn-${p.id}">${t('school.people.changeName')}</label>
           <input class="input input-sm" id="rn-${p.id}" name="rosterName" value="${p.roster_name || ''}" maxlength="60" required><button class="btn btn-sm" type="submit">${t('school.save')}</button></form>
+        ${!student && !p.managed_school ? html`<form data-api="/api/schools/${s.id}/members/${p.id}/not-staff" data-reload data-confirm="${t('school.people.notStaffConfirm', { name: nameOf(p) })}"><button class="btn btn-sm" type="submit">↩️ ${t('school.people.notStaff')}</button></form>` : ''}
         <form data-api="/api/schools/${s.id}/members/${p.id}/remove" data-reload data-confirm="${t('school.people.removeConfirm', { name: nameOf(p) })}"><button class="btn btn-sm btn-danger" type="submit">${t('school.people.remove')}</button></form></div></details>`}
     </div></td></tr>`;
+}
+/** People removed from the staff list still have a staff account (no friends, no chat). Listed so that one who was
+ *  added by mistake (a student who accepted a staff invite) can be put right after the event. */
+function formerStaffPanel(req, s) {
+  const t = req.t, list = S.formerStaff(s.id);
+  return list.length ? html`<details class="libdrop" id="former-staff"><summary class="btn btn-sm">${t('school.people.formerStaff')} <span class="count">${list.length}</span></summary><div>
+    <p class="small muted">${t('school.people.formerStaffText')}</p>
+    <ul class="plain">${list.map(p => html`<li class="row inv-row"><span><b>${p.roster_name || p.username}</b> <span class="small muted"><bdi>@${p.username}</bdi> · ${t(`school.roles.${p.role}`)}</span></span>
+      <form data-api="/api/schools/${s.id}/members/${p.id}/not-staff" data-reload data-confirm="${t('school.people.notStaffConfirm', { name: p.roster_name || p.username })}"><button class="btn btn-sm" type="submit">↩️ ${t('school.people.notStaff')}</button></form></li>`)}</ul></div></details>` : '';
 }
 function schoolPeople(req, s) {
   const t = req.t; const staff = S.members(s.id, 'staff'), classes = S.memberClasses(s.id), invites = S.invitesOf(s.id);
@@ -310,6 +328,7 @@ function schoolPeople(req, s) {
       <div class="formacts"><button class="btn btn-primary" type="submit" data-new="🪪 ${t('school.people.createStaff')}" data-existing="${S.isPlatformAdmin(req.user) ? `➕ ${t('school.people.addToSchool')}` : `✉️ ${t('school.people.sendInvite')}`}">🪪 ${t('school.people.createStaff')}</button></div>
     </form></div></details></div>
   ${table(staff, t('school.people.role'), t('school.people.noStaff'), 'staff-list')}
+  ${formerStaffPanel(req, s)}
   ${invites.length ? html`<section class="panel" id="staff-invites" aria-labelledby="si-h"><h3 id="si-h">✉️ ${t('school.people.invitesH')}</h3><p class="small muted">${t('school.people.invitesText')}</p>
     <ul class="plain">${invites.map(i => html`<li class="row inv-row"><span><b>${i.roster_name || i.username}</b> <span class="small muted"><bdi>@${i.username}</bdi> · ${t(`school.roles.${i.role}`)} · ${t('school.people.invitedWaiting')}</span></span>
       <form data-api="/api/schools/${s.id}/invites/${i.user_id}/cancel" data-reload><button class="btn btn-sm" type="submit">${t('school.people.inviteCancel')}</button></form></li>`)}</ul></section>` : ''}
@@ -342,12 +361,14 @@ function schoolSettings(req, s) {
     <div class="field"><label for="set-teachersCreateClasses">${t('school.settings.teachersCreate')}</label>${yn('teachersCreateClasses', st.teachersCreateClasses)}</div>
     <div class="field"><label for="set-allowOwnAccounts">${t('school.settings.ownAccounts')}</label>${yn('allowOwnAccounts', st.allowOwnAccounts)}<span class="hint">${t('school.settings.ownAccountsHint')}</span></div>
     <h3>🎮 ${t('school.settings.gameSite')}</h3><p class="small muted">${t('school.settings.gameSiteText')}</p>
-    ${st.chatNotice && st.chat === 'off' ? html`<p class="notice warn" id="chat-notice" role="status"><span aria-hidden="true">🛡️</span> ${t('school.settings.chatNotice')}</p>` : ''}
+    ${st.chatNotice && st.chat === 'off' ? html`<p class="notice warn" id="chat-notice" role="status"><span aria-hidden="true">🛡️</span> ${t('school.settings.chatNotice')}
+      <button class="btn btn-sm" type="submit" form="chat-notice-seen">${t('school.settings.chatNoticeKeep')}</button></p>` : ''}
     <div class="field"><label for="set-chat">${t('school.settings.chat')}</label><select class="input" id="set-chat" name="chat" data-hint-classmates="${t('school.settings.chatHint')}" data-hint-off="${t('school.settings.chatHintOff')}"><option value="off" ${selected(st.chat === 'off')}>${t('school.settings.chatOff')}</option><option value="classmates" ${selected(st.chat === 'classmates')}>${t('school.settings.chatClassmates')}</option></select><span class="hint" id="set-chat-hint">${t(st.chat === 'off' ? 'school.settings.chatHintOff' : 'school.settings.chatHint')}</span></div>
     <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>
     <p class="small muted">${t('school.settings.photos')}</p>
     <div class="savebar"><span class="small unsaved-note" id="set-unsaved" hidden>⚠️ ${t('school.settings.unsaved')}</span><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
-  </form></section>
+  </form>
+  ${st.chatNotice && st.chat === 'off' ? html`<form id="chat-notice-seen" data-api="/api/schools/${s.id}/settings" data-reload hidden><input type="hidden" name="chatNotice" value="seen"></form>` : ''}</section>
   ${schoolGoogleSettings(req, s)}`;
 }
 
@@ -358,7 +379,7 @@ router.post('/api/schools/:id/settings', requireUser, (req, res) => {
   const x = b(req); const bool = v => v === true || v === '1' || v === 'true';
   // The daily Builder cap (school plans) is set on the Billing tab, so only where that tab is.
   if (x.builderDailyCap !== undefined && !billingTabOn(req, s)) return no(req, res);
-  const r = S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, publishing: x.publishing, timeZone: typeof x.timeZone === 'string' ? x.timeZone : undefined, builderDailyCap: x.builderDailyCap } });
+  const r = S.updateSchool(req.user, s.id, { name: x.name, settings: { teachersCreateClasses: x.teachersCreateClasses !== undefined ? bool(x.teachersCreateClasses) : undefined, allowOwnAccounts: x.allowOwnAccounts !== undefined ? bool(x.allowOwnAccounts) : undefined, chat: x.chat, chatNotice: x.chatNotice === 'seen' ? false : undefined, publishing: x.publishing, timeZone: typeof x.timeZone === 'string' ? x.timeZone : undefined, builderDailyCap: x.builderDailyCap } });
   if (!r.ok && r.code === 'badCap') return fieldErr(res, 'builderDailyCap', req.t('school.errors.badCap', { min: S.minDailyCap(), max: S.MAX_DAILY_CAP }));
   send(req, res, r);
 });
@@ -409,8 +430,8 @@ router.post('/api/staff-invites/:sid/:answer', requireUser, (req, res) => {
 export function staffInvitesPanel(req) {
   const t = req.t, list = S.invitesFor(req.user && req.user.id);
   return list.length ? html`<section class="panel notice" id="my-invites" aria-labelledby="mi-h"><h2 id="mi-h">✉️ ${t('school.invite.h')}</h2>
-    <ul class="plain">${list.map(i => html`<li class="row inv-row"><span>${t('school.invite.text', { school: i.school_name, role: t(`school.roles.${i.role}`) })}</span>
-      <span class="row"><form data-api="/api/staff-invites/${i.school_id}/accept"><button class="btn btn-primary btn-sm" type="submit">✅ ${t('school.invite.accept')}</button></form>
+    <ul class="plain">${list.map(i => html`<li class="row inv-row"><span>${t('school.invite.text', { school: i.school_name, role: t(`school.roles.${i.role}`) })}<br><span class="small inv-warn">⚠️ ${t('school.invite.warn')}</span></span>
+      <span class="row"><form data-api="/api/staff-invites/${i.school_id}/accept" data-confirm="${t('school.invite.warn')}"><button class="btn btn-primary btn-sm" type="submit">✅ ${t('school.invite.accept')}</button></form>
       <form data-api="/api/staff-invites/${i.school_id}/decline" data-reload><button class="btn btn-sm" type="submit">${t('school.invite.decline')}</button></form></span></li>`)}</ul></section>` : '';
 }
 router.post('/api/schools/:id/students', requireUser, rateLimit('school-add', 120, 3600e3), (req, res) => {
@@ -455,6 +476,15 @@ router.post('/api/schools/:id/members/:uid/remove', requireUser, (req, res) => {
   const s = schoolApi(req, res); if (!s) return;
   if (req.params.uid === req.user.id) return err(req, res, 'ownRole');
   send(req, res, S.removeMember(req.user, s.id, req.params.uid));
+});
+// "Added by mistake": a person's own account that should never have been staff here (a child who accepted a staff invite).
+// Works for someone still on the staff list and for someone already removed (services/schools.js notStaff).
+router.post('/api/schools/:id/members/:uid/not-staff', requireUser, (req, res) => {
+  const s = schoolApi(req, res); if (!s) return;
+  if (req.params.uid === req.user.id) return err(req, res, 'ownRole');
+  const r = S.notStaff(req.user, s.id, String(req.params.uid));
+  if (!r.ok) return err(req, res, r.code, r.code === 'notFound' ? 404 : 400);
+  res.json({ ok: true, toast: req.t('school.people.notStaffDone', { name: r.user.username }) });
 });
 /** One name per line (or separated by commas/semicolons), at most 60 at a time. */
 export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);

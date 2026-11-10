@@ -158,6 +158,8 @@ test('a school admin invites an existing account: not staff until they accept; t
   // they see it and accept: now staff, with the name the school gave
   await other.goto('/classes');
   await expect(other.locator('#my-invites')).toContainText(`${school.name} wants to add you as Teacher`);
+  await expect(other.locator('#my-invites .inv-warn')).toContainText('Staff accounts have no friends and no chat');
+  other.once('dialog', d => d.accept());   // Accept asks first: staff accounts lose their friends and friend code
   await Promise.all([other.waitForURL(/\/teach/), other.locator('#my-invites button.btn-primary').click()]);
   await expect(other.locator('.topbar .me-btn .name')).toHaveText('Ana Rivera');
   await head.reload();

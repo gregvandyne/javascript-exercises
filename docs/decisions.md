@@ -3684,9 +3684,10 @@ layer (request `sent`, the child's incoming list shows the teacher, accept `true
   `student`, in any status. This covers the trial teacher, staff school accounts, a person's own account that accepted
   a staff invite, and someone the platform admin appointed.
 - A teacher who **left** a school still counts (the row keeps its staff role, marked `left`): they are a known adult,
-  and "remove me, then add a child" must not work. The one way back is a school admin changing the person's role to
-  **student**, which is how a child added as staff by mistake is put right. That account then gets a **new** friend
-  code the next time it opens Friends; its old code and old friends never come back.
+  and "remove me, then add a child" must not work. Nobody becomes a student over a staff row: a role change to
+  student, a teacher approving a join request and a Google roster are all refused (`wasStaff` / `badRole`). The one
+  way back is **"Added by mistake"** (below). That account then gets a **new** friend code the next time it opens
+  Friends; its old code and old friends never come back.
 - A staff invite that has not been accepted changes nothing.
 - Not staff: students, children's own accounts, guests, the Oomba team account, and grown-up (parent) accounts. Grown-up
   accounts can never join a school, so a teacher who is also a parent keeps their separate grown-up account exactly as
@@ -3701,7 +3702,11 @@ kind of friendship.) Enforced in the services, so every route and API is covered
   staff on either side. `friends.codeOf` gives staff no code.
 - `chat.canChat` refuses before it looks at friendship (`staff` for the staff account; `missing` for the other
   person), so `send`, the thread and the inbox are closed even if a friend row existed. `chat.thread` and `chat.inbox`
-  show nothing with a staff account on either side.
+  show nothing with a staff account on either side. `/chat/<staff>` is the same 404 page as a name nobody has. (A
+  staff account's public profile `/u/<name>` still opens, as every account's does: it shows the display name and
+  public games, with no way to make contact.)
+- `friends.incoming`, `outgoing`, `list`, `count` and the Friends badge leave staff accounts out in SQL, so a row that
+  should not exist is never shown to a child, even before anything has deleted it.
 - `/api/friends*` answers 403 for staff before any work; `/friends` shows a short notice with a link to the Oomba team
   inbox; `/chat/:username` sends staff back to `/chat`, which for them is only the team inbox.
 - UI: no Friends tab for the platform admin (school staff already had none), no Friends or Chat tiles and no chat
@@ -3718,8 +3723,25 @@ kind of friendship.) Enforced in the services, so every route and API is covered
   The messages are kept (a report may need them) but nothing shows them.
 - The same happens the moment an account becomes staff (`schools.addMember` / `updateMember` call
   `schools.endFriendships`, written to the audit log as `friend.staff_closed`), and again whenever a staff account is
-  seen still holding a code or a friend row (`friends.closedToFriends`; the seed can turn an account into the platform
-  admin without going through those calls).
+  seen still holding a code or a friend row (`friends.closedToFriends`). The seed, which can turn an ordinary account
+  into the platform admin, ends that account's rows itself (`scripts/seed.js seedAdmin`).
+
+**"Added by mistake": the way back for a child who accepted a staff invite.** Any school admin (a trial teacher
+included) can invite any username as staff, and a child may tap Accept.
+
+- Before: the invite on My classes now says "Only accept if you work at this school. Staff accounts have no friends and
+  no chat: if you accept, your friends and your friend code are removed and do not come back", and Accept asks the same
+  question again (`school.invite.warn`).
+- After: on the school's People tab, a staff member's own account has **Added by mistake** in its menu, and people
+  already removed from staff are listed under **Removed staff** with the same button
+  (`POST /api/schools/:id/members/:uid/not-staff`, `schools.notStaff`). The person leaves the school and the school's
+  staff record of them is deleted, real name included, so the account stops being a staff account (unless another
+  school has them as staff). Written to the audit log as `school.member_not_staff`.
+- Who: that school's admins and the platform admin. Never on yourself, never for an account the school made as staff.
+- Friendships that ended on Accept are **not** restored (they were deleted, and bringing a friend back without the
+  friend's say is wrong); the child gets a new code and adds friends again.
+- Why this is not a hole in the staff rule: the account ends up with exactly what a brand-new account has, and anyone
+  can make a new account. The rule keeps *known staff accounts* away from children; it never proved who is an adult.
 
 **School chat is off by default.** `DEFAULT_SETTINGS.chat` is `'off'`: accounts a school created cannot chat until a
 school admin chooses "Chat with friends from their classes" on the Settings tab. Classmates can still be friends.
@@ -3730,14 +3752,21 @@ school admin chooses "Chat with friends from their classes" on the Settings tab.
   log does show a choice: a school that saved "No chat" and **later** saved "classmates" keeps it. A stored `'off'` is
   untouched.
 - A school whose own accounts have ever sent a chat message gets `chatNotice`: its Settings tab says chat was turned
-  off and how to turn it back on, until an admin saves a chat choice. Schools where nobody chatted get no notice.
+  off and how to turn it back on, and a short line with a Settings button shows on its other tabs. It stays until an
+  admin switches chat on or presses **Keep chat off**; saving something else (the form always sends the Chat box) does
+  not clear it. Schools where nobody chatted get no notice. Only accounts the school made are counted, because the
+  school chat rule only ever applied to them (`accountRules`); students who joined with their own account were never
+  switched off.
+- **Owner should know:** a school that deliberately saved "classmates" without ever having saved "No chat" looks the
+  same as one that never chose, so it is switched off too. If its students had chatted, it sees the notice.
 - From now on a stored chat value is written only by a save that carries one.
 - No public page said school chat was on for classmates (/safety, /privacy and /parents describe friends-only chat and
   do not mention the school setting), so only the Settings hints changed.
 
 **Tests.** `tests/unit/staff-no-friends.test.js` (every friends and chat route as each kind of staff and each kind of
-child, both directions, with and without leftover rows; becoming staff; leaving; the parent account; the migration; the
-chat default and notice), `tests/unit/teacher-plan.test.js` (the real `/api/trial/signup`),
+child, both directions, with and without leftover rows; becoming staff; leaving; the invite warning and "Added by
+mistake" through the real routes; a former teacher's join request; rows left by a raw promotion and the seed; the
+parent account; the migration; the chat default, the notice and its dismissal), `tests/unit/teacher-plan.test.js` (the real `/api/trial/signup`),
 `tests/e2e/staff-no-friends.spec.js`.
 
 **Deploy note.** `0067` belongs to the Google Classroom work on another branch; whichever merges second keeps both

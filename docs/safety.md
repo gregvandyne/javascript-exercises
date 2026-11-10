@@ -289,11 +289,16 @@ staff account's old code is told "not found", like a wrong code. The rule lives 
 `server/services/chat.js` (`schools.noFriendsAccount`), so every page and API follows it. Friendships such accounts
 held were ended (migration 0068) and end the moment an account becomes staff. A teacher's own parent (grown-up) account
 is a separate account and keeps its grown-up connections. Staff still get messages from the Oomba team (below).
+A staff invite warns before Accept that friends and the friend code are removed for good. If a child accepts one
+anyway, a school admin (or the platform admin) marks the account "Added by mistake" on the school's People tab: it stops
+being a staff account and gets a new friend code; old friendships are not restored. Nothing else ends staff status: a
+former teacher is never turned into a student by a join request.
 
 **Off for school accounts unless the school turns it on.** Accounts a school created cannot chat until a school admin
 chooses "Chat with friends from their classes" in the school's Settings. With it on, they chat only with classmates
 they have added as friends, under every rule in this section. Schools that had the old default (on) were moved to off;
-those whose students had been chatting see a notice on their Settings tab. (docs/decisions.md "Staff have no friends;
+those whose students had been chatting see a notice on their school page until an admin switches chat on or chooses
+"Keep chat off". (docs/decisions.md "Staff have no friends;
 school chat is off by default".)
 
 Messages are short, filtered for rude words and personal details (phone numbers, emails, links, addresses, other apps,

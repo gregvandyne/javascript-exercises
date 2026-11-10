@@ -2672,7 +2672,12 @@
       "sendInvite": "Send invite",
       "existingShort": "Their username",
       "addToClassFor": "Put {name} in a class",
-      "changeName": "Change real name"
+      "changeName": "Change real name",
+      "notStaff": "Added by mistake",
+      "notStaffConfirm": "Was {name} added as staff by mistake? They leave the school and their account stops being a staff account, so it can have friends and chat again, with a new friend code. Friends it had before are not brought back.",
+      "notStaffDone": "{name} is no longer a staff account here.",
+      "formerStaff": "Removed staff",
+      "formerStaffText": "People who were staff here keep a staff account: no friends and no chat with players. If one of them should never have been staff (a student who accepted an invite, say), choose “Added by mistake”."
     },
     "settings": {
       "name": "School name",
@@ -2703,7 +2708,9 @@
       "unsaved": "You have changes that aren't saved yet.",
       "unsavedLeave": "Your settings changes aren't saved. Leave without saving them?",
       "timeZoneUse": "Use {zone} (this computer's time zone)",
-      "chatNotice": "Chat is now off for your school's accounts. Chat between classmates used to be on unless a school turned it off. Now it is off unless a school turns it on, and some of your students were using it. To bring it back, choose “Chat with friends from their classes” below and save."
+      "chatNotice": "Chat is now off for your school's accounts. Chat between classmates used to be on unless a school turned it off. Now it is off unless a school turns it on, and some of your students were using it. To bring it back, choose “Chat with friends from their classes” below and save.",
+      "chatNoticeKeep": "Keep chat off",
+      "chatNoticeShort": "Chat is now off for your school's accounts, and some of your students were using it. You can turn it back on here:"
     },
     "cards": {
       "title": "Login cards",
@@ -2755,7 +2762,8 @@
       "tickStudents": "Tick at least one student.",
       "badZone": "Pick a time zone from the list.",
       "badCap": "Type a whole number from {min} to {max}.",
-      "otherSchoolNext": "That account belongs to another school. Ask them to leave that school first, or choose \"Make a school account for them\" instead."
+      "otherSchoolNext": "That account belongs to another school. Ask them to leave that school first, or choose \"Make a school account for them\" instead.",
+      "wasStaff": "This account was staff at this school. A school admin first has to mark it “Added by mistake” on the People tab."
     },
     "classTabs": {
       "lessons": "Lessons",
@@ -2984,7 +2992,8 @@
       "accept": "Accept",
       "decline": "Decline",
       "accepted": "You're now staff at {school}.",
-      "declined": "Invite declined."
+      "declined": "Invite declined.",
+      "warn": "Only accept if you work at this school. Staff accounts have no friends and no chat: if you accept, your friends and your friend code are removed and do not come back."
     },
     "setup": {
       "h": "Set up your school",
