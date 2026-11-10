@@ -247,7 +247,7 @@ export function classView(classId, framework, { grade = '' } = {}) {
   const hit = new Set(rows.filter(r => r.status !== 'notYet').map(r => r.parent || r.id));
   const grades = fw.grades.filter(g => rows.some(r => r.grade === g && r.status !== 'notYet') || g === G);
   const summary = grades.map(g => { const top = fw.all({ grade: g, top: true }); return { grade: g, covered: top.filter(s => hit.has(s.id)).length, total: top.length }; });
-  return { framework, classId, students: students.map(p => ({ id: p.id, name: p.roster_name || p.display_name, noData: !seen.has(p.id) })), lessons, grades, grade: G, rows, summary };
+  return { framework, classId, students: students.map(p => ({ id: p.id, name: p.roster_name || p.display_name, alias: p.roster_name && p.display_name && p.display_name !== p.roster_name ? p.display_name : '', noData: !seen.has(p.id) })), lessons, grades, grade: G, rows, summary };
 }
 
 /** One student's codes in a class (the drill-down): the rows with only that student's cell. */

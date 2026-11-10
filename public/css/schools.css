@@ -991,3 +991,72 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .gc-check{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}
 .gc-check input{width:20px;height:20px;margin:0;flex:none}
 .gc-hint{margin:0 var(--s1)}
+/* Real scores in the gradebook (routes/progress.js, routes/student-report.js; docs/decisions.md): the roster name with the
+   name used in games under it (staff-only screens), the Score column, "Done late", the live games table and one
+   student's page. Colors from app.css variables only. */
+.sname{align-items:flex-start;text-align:start}
+.sname>a{color:var(--text);text-decoration:none;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-height:44px;line-height:1.3}
+.sname>a:hover b{text-decoration:underline}
+.sname .gname{font-weight:600;overflow-wrap:anywhere}
+.gradebook tbody .gb-name .sname .gname{margin-top:0}
+@media (max-width:640px){
+  .gradebook .gb-name:has(.gname){width:146px}
+  .gradebook .gb-name .gname{font-size:.75rem}
+}
+.gb-sum{min-width:96px}
+.gb-score{min-width:72px}
+.gb-score .gb-pts{margin-top:0}
+.gb-latedone{white-space:nowrap}
+.gb-cell>.chip-s+.chip-s,.gb-sub>.chip-s+.chip-s{margin-top:4px}
+.gb-latecount{color:var(--bad)}
+.st-late{font-size:.85rem}
+.gbhelp-text{margin-top:var(--s1);display:grid;gap:var(--s1)}
+.gbhelp-text p{margin:0}
+.gb-livetbl thead th{min-width:104px}
+.gb-livetbl thead th a{display:flex;align-items:center;justify-content:center;min-height:44px}
+#gb-live-h{margin:var(--s4) 0 var(--s1);font-size:1.05rem}
+.sp-page{max-width:860px;display:grid;gap:var(--s4)}
+.sp-page>.printbar{margin-bottom:0}
+.sp-tools{align-items:center;gap:var(--s2) var(--s3)}
+.sp-tools>.btn{min-height:44px}
+.sp-fullname{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer;margin-inline-start:auto}
+.sp-fullname input{width:20px;height:20px;margin:0;flex:none}
+.sp-printhint{margin:0}
+.sp-head{display:flex;align-items:center;gap:var(--s3);min-width:0}
+.sp-head h2{margin:0;overflow-wrap:anywhere}
+.sp-sub{margin:2px 0 0}
+.sp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--s3)}
+.sp-stat{display:grid;gap:2px;padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 2px var(--line);min-width:0}
+.sp-stat-v{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.sp-stat-l{font-weight:700;color:var(--text-2)}
+.sp-page .panel>h2{margin-top:0}
+.sp-table th,.sp-table td{text-align:start;vertical-align:middle;padding:var(--s2) var(--s3)}
+.sp-table tbody th{font-weight:600;text-transform:none;letter-spacing:0;font-size:1rem;color:var(--text);overflow-wrap:anywhere}
+.sp-table tbody th a{display:inline-flex;align-items:center;min-height:44px}
+.sp-table .sp-lessonrow th,.sp-table .sp-lessonrow td{background:var(--hover);font-weight:800}
+.sp-table tfoot th,.sp-table tfoot td{font-weight:800;border-top:2px solid var(--line);text-transform:none;letter-spacing:0;font-size:1rem;color:var(--text)}
+.sp-std,.sp-live{display:grid;gap:var(--s2)}
+.sp-std li,.sp-live li{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
+.sp-std a,.sp-live a{display:inline-flex;align-items:center;min-height:44px}
+@media (max-width:560px){
+  .sp-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .sp-table,.sp-table tbody,.sp-table tfoot{display:block;width:100%}
+  .sp-table tr{display:flex;flex-wrap:wrap;align-items:center;gap:2px var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+  .sp-table tr>th{flex:1 1 100%;padding:0 var(--s1)}
+  .sp-table tr>td{padding:0 var(--s1);border:0}
+  .sp-table td[data-label]::before{content:attr(data-label);display:inline;margin-inline-end:6px;font-weight:700;color:var(--muted);font-size:.8125rem}
+  .sp-table .sp-lessonrow{padding-inline:var(--s1);background:var(--hover)}
+  .sp-table .sp-lessonrow th,.sp-table .sp-lessonrow td{background:none}
+  .sp-table .sp-lessonrow>th{flex:1 1 60%}
+  .sp-table tfoot tr>th{flex:1 1 60%}
+  .sp-page .gbwrap{overflow:visible;background:none}
+  .sp-fullname{margin-inline-start:0}
+}
+@media print{
+  .sp-page{max-width:none;gap:10px}
+  .sp-page:not(:has(#sp-full:checked)) .sp-rest{display:none}
+  .sp-page .gname{display:none}
+  .sp-stat{box-shadow:none;border:1px solid #999;background:#fff}
+  .sp-table .sp-lessonrow th,.sp-table .sp-lessonrow td{background:#eee}
+  .sp-page .chip-s{border:1px solid #999;background:#fff;color:#000}
+}

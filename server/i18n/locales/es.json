@@ -7736,5 +7736,77 @@
       "badHour": "Elige una hora.",
       "badZone": "Elige una zona horaria de la lista."
     }
+  },
+  "gradebook": {
+    "workDone": "Trabajo hecho",
+    "score": "Puntuación",
+    "noScore": "Nada puntuado todavía",
+    "scoreTitle": "{earned} de {possible} puntos",
+    "scoreWhy": "Ver de qué se compone esta puntuación",
+    "doneLate": "Hecho con retraso",
+    "stepLate": "Hecho después de la fecha de entrega",
+    "lateN": "Con retraso: {count}",
+    "key": {
+      "score": "puntuación: puntos obtenidos de los puntos posibles"
+    },
+    "names": {
+      "inGames": "Nombre en los juegos"
+    },
+    "help": {
+      "workDone": "La parte de los pasos que el estudiante ha terminado en las lecciones abiertas. No tiene en cuenta las respuestas correctas.",
+      "score": "Puntos obtenidos de los puntos posibles: cuestionarios (1 punto por pregunta), juegos en vivo que diriges para un paso de una lección (1 punto por pregunta, la mejor partida) y trabajos que puntúas con una rúbrica (sus puntos). Los trabajos más grandes cuentan más. Lo que no está hecho o aún no está puntuado queda fuera; sin nada puntuado se muestra –. Toca una puntuación para ver de qué se compone.",
+      "late": "Trabajo que aún falta después de la fecha de entrega. «Hecho con retraso» significa que se terminó después de la fecha de entrega.",
+      "names": "El nombre en gris bajo el nombre de un estudiante es el que tiene en los juegos y en la pantalla de la clase."
+    },
+    "live": {
+      "title": "Resultados de los juegos en vivo",
+      "hint": "Respuestas correctas de las preguntas hechas, para estudiantes que iniciaron sesión en esta clase. Los invitados nunca se guardan.",
+      "linked": "Parte de una lección: cuenta para la puntuación",
+      "keyRight": "respuestas correctas de las preguntas hechas",
+      "keyPlayed": "jugó, nada que puntuar",
+      "keyAbsent": "no jugó"
+    },
+    "csv": {
+      "points": "Puntuación (puntos)",
+      "lateCount": "Lecciones con retraso",
+      "scoreCol": "{title} (puntuación %)",
+      "lateCol": "{title} (retraso)",
+      "late": "con retraso",
+      "doneLate": "hecho con retraso",
+      "live": "En vivo: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Cuestionario",
+      "live": "Juego en vivo",
+      "rubric": "Rúbrica",
+      "marks": "Notas de rúbrica"
+    },
+    "student": {
+      "back": "Progreso",
+      "printFull": "Imprimir el nombre completo",
+      "print": "Imprimir",
+      "printHint": "Al imprimir solo sale el nombre de pila, salvo que marques la casilla. El nombre usado en los juegos nunca se imprime.",
+      "lateLessons": "Lecciones con retraso",
+      "lesson": "Lección",
+      "due": "Entrega",
+      "late": "Con retraso",
+      "scoreH": "De qué se compone la puntuación",
+      "work": "Trabajo",
+      "type": "Tipo",
+      "points": "Puntos",
+      "none": "Todavía no hay nada puntuado. Las puntuaciones vienen de cuestionarios, de juegos en vivo para un paso de una lección y de trabajos puntuados con una rúbrica.",
+      "standardsLine": "{meets} logrados · {developing} en desarrollo · {practiced} practicados",
+      "standardsOpen": "Ver los estándares",
+      "noStandards": "Aún no hay evidencias de estándares.",
+      "answers": "Respuestas y comentarios recientes",
+      "feedback": "Comentario del docente",
+      "noAnswers": "Aún no hay respuestas escritas.",
+      "noLive": "Aún no hay juegos en vivo."
+    },
+    "dash": {
+      "showNames": "Mostrar nombres de la lista de clase",
+      "hideNames": "Ocultar nombres de la lista de clase",
+      "namesHint": "Muestra el nombre de la lista de clase junto al nombre en el juego, solo en esta pantalla. La pantalla de la clase mantiene los nombres del juego."
+    }
   }
 }

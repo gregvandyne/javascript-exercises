@@ -431,3 +431,5 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
   .lv-roster.is-many { grid-template-columns: repeat(2, minmax(0, 1fr)); max-block-size: 60vh; }
   .lv-roster.is-many > li { padding-block: 4px; font-size: .9rem; }
 }
+/* Teacher view: the class-list name beside the name in the game ("Show class-list names", staff only, off by default). */
+.lv-p-roster { font-weight: 600; opacity: .75; }
