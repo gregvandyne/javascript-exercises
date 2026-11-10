@@ -3695,7 +3695,8 @@ the choices that are not obvious. (The child-safety fix and "classmate chat off 
   me". It is not put in the sign-in address: a code never rides in an address or the history, like the QR's fragment.
 - **No repeated maths questions (f).** `engine.js pickSubject` draws a made-up sum again when the pick already has it
   (or it was played: `seen`), up to 40 tries, so a pick larger than a level's pool still fills. The server's redraw of
-  a refused sum never puts back a question the set has. **Follow-up:** the games' solo packs
+  a refused sum never puts back a question the set has, and a Brain Board column (tiles from three levels) never
+  repeats a sum that two levels can both make. **Follow-up:** the games' solo packs
   (`public/vendor/data/live-bank/<version>`) carry a copy of the engine and are versioned by a hash and cached for a
   year; they were not rebuilt here (that changes three official games and the pack folder). Run
   `node scripts/live-bank.js && node scripts/seed.js` with the next change to those games to bring solo practice in line.
