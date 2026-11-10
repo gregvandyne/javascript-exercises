@@ -4291,7 +4291,29 @@
     "cs": {
       "cstaNote": "Estándares: CSTA K-12 Computer Science Standards (2017), niveles 1B y 2. Este programa no ha sido creado, revisado ni respaldado por la CSTA."
     },
-    "leaderLine": "¿Dirección o informática? <a href=\"{href}\">Configura tu escuela</a>: es gratis."
+    "leaderLine": "¿Dirección o informática? <a href=\"{href}\">Configura tu escuela</a>: es gratis.",
+    "free": {
+      "line": "Siempre gratis: todos los juegos, sus clases, lecciones, el progreso y el libro de calificaciones, además de mensajes diarios gratis del Builder para usted y sus estudiantes. El plan Docente añade {daily} juegos creados con IA al día, compartidos entre sus clases. <a href=\"{plans}\">Vea los precios en Planes</a>.",
+      "lineOff": "Siempre gratis: todos los juegos, sus clases, lecciones, el progreso y el libro de calificaciones, además de mensajes diarios gratis del Builder para usted y sus estudiantes."
+    },
+    "classroom": {
+      "kicker": "Google Classroom",
+      "h": "Funciona con su Google Classroom",
+      "lead": "Conecte su Google Classroom en unos pocos clics. Al principio, Oomba Academy solo puede ver sus clases y sus estudiantes. No publica nada hasta que usted permita publicar.",
+      "li1": "Importe su lista de estudiantes con un clic, y se actualiza sola cada 6 horas. Los estudiantes se reconocen por su cuenta de Google.",
+      "li2": "Publique una lección como tarea de Classroom, con su enlace y su fecha de entrega, o compártala como material.",
+      "li3": "Las calificaciones de finalización vuelven a Classroom: la nota de cada estudiante, sobre 100, es la parte de los pasos de la lección que completó, no cuántas respuestas acertó. Envíelas usted o active las calificaciones automáticas.",
+      "li4": "Publique en el tablón de la clase cuando empiece un juego en vivo o una lección esté lista, con sus propias palabras.",
+      "li5": "Oomba Academy no pide a Classroom los correos de los estudiantes y nunca envía a Google el nombre, las respuestas ni los juegos de un estudiante.",
+      "note": "Las tareas, los materiales, las calificaciones y los anuncios funcionan cuando usted permite publicar, un paso aparte. Cada docente conecta su propia cuenta de Google, y puede que el administrador de Google de su escuela tenga que autorizar antes a Oomba Academy.",
+      "privacy": "Qué se envía a Google"
+    },
+    "research": {
+      "link": "Lea la investigación sobre los juegos de aprendizaje"
+    },
+    "quotes": {
+      "h": "Lo que dicen los docentes"
+    }
   },
   "learn": {
     "crumbs": "Ruta de navegación",
@@ -7001,7 +7023,8 @@
         "li4": "Clases, lecciones, progreso y libro de calificaciones",
         "li5": "Todos los idiomas, todos los dispositivos",
         "cta": "Empieza tu prueba gratis",
-        "plans": "Ver planes y precios"
+        "plans": "Ver planes y precios",
+        "plus": "Todo lo de Gratis, y además:"
       },
       "schools": {
         "name": "Escuelas y distritos",
@@ -7014,6 +7037,16 @@
         "cta": "Habla con nosotros",
         "form": "Configura tu escuela",
         "subject": "Oomba Academy para nuestra escuela"
+      },
+      "leadFree": "Nunca hay tarifas por estudiante. Lo básico es gratis para todo docente, y el plan Docente añade juegos creados con IA para toda tu clase.",
+      "free": {
+        "name": "Gratis",
+        "price": "Siempre gratis",
+        "li1": "Todos los juegos y los tres cursos",
+        "li2": "Clases, lecciones, progreso y libro de calificaciones",
+        "li3": "Mensajes diarios gratis del Builder para ti y tus estudiantes",
+        "li4": "Cuentas escolares y tarjetas de acceso para imprimir",
+        "liLive": "Juegos en vivo para la clase en el proyector"
       }
     },
     "faq": {
@@ -7035,12 +7068,14 @@
       "q8": "¿Puede pagar nuestra escuela con factura u orden de compra?",
       "a8": "Sí. Las escuelas pagan el mismo precio por docente y año, con factura u orden de compra. Escríbenos y lo preparamos.",
       "q9": "¿Qué idiomas hay?",
-      "a9": "{count} idiomas, entre ellos inglés, español, portugués, francés, alemán, árabe, hebreo y japonés. Cada estudiante elige el suyo, y el Constructor le responde en él."
+      "a9": "{count} idiomas, entre ellos inglés, español, portugués, francés, alemán, árabe, hebreo y japonés. Cada estudiante elige el suyo, y el Constructor le responde en él.",
+      "a2free": "Empieza una prueba gratis de 14 días del plan Docente sin tarjeta. Mientras dura, todo el plan está incluido, y al terminar tú decides si te suscribes. Si no lo haces, solo se detienen los juegos con IA extra del plan: los juegos, tus clases, lecciones y el progreso siguen siendo gratis, y no se borra nada."
     },
     "final": {
       "h": "Tu próxima lección puede ser la que te pidan volver a jugar",
       "p": "Empieza gratis durante 14 días. Sin tarjeta y sin pagos por estudiante.",
-      "cta": "Empieza tu prueba gratis de 14 días"
+      "cta": "Empieza tu prueba gratis de 14 días",
+      "pFree": "Los juegos, las clases, las lecciones y el progreso son siempre gratis. Prueba el plan Docente gratis durante 14 días, sin tarjeta y sin tarifas por estudiante."
     },
     "play": {
       "h": "¿Vienes a jugar?",
@@ -7736,5 +7771,8 @@
       "badHour": "Elige una hora.",
       "badZone": "Elige una zona horaria de la lista."
     }
+  },
+  "brand": {
+    "tagline": "Tiempo de pantalla con el que te puedes sentir bien"
   }
 }

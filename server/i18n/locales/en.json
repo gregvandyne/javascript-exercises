@@ -4620,7 +4620,29 @@
         "staff": "Open the course and walk the first step with your class. The teacher note for the intro is above."
       }
     },
-    "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>: it's free."
+    "leaderLine": "School leader or IT? <a href=\"{href}\">Set up your school</a>: it's free.",
+    "free": {
+      "line": "Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students. The Teacher plan adds {daily} AI game builds a day shared by your classes. <a href=\"{plans}\">See prices on Plans</a>.",
+      "lineOff": "Always free: every game, your classes, lessons, progress and the gradebook, and free daily Builder messages for you and your students."
+    },
+    "classroom": {
+      "kicker": "Google Classroom",
+      "h": "Works with your Google Classroom",
+      "lead": "Connect your Google Classroom in a few clicks. At first Oomba Academy can only see your classes and their students. It posts nothing until you allow posting.",
+      "li1": "Import your roster in one click, and it refreshes itself every 6 hours. Students are matched by their Google account.",
+      "li2": "Post a lesson as a Classroom assignment, with its link and due date, or share it as a material.",
+      "li3": "Completion grades flow back to Classroom: each student’s grade out of 100 is the share of the lesson’s steps they finished, not how many answers were right. Send them yourself, or turn on automatic grades.",
+      "li4": "Post to the class stream when a live game starts or a lesson is ready, in your own words.",
+      "li5": "Oomba Academy doesn’t ask Classroom for student emails, and never sends Google a student’s name, answers or games.",
+      "note": "Assignments, materials, grades and announcements work once you allow posting, a separate step. Each teacher connects their own Google account, and your school’s Google admin may need to allow Oomba Academy first.",
+      "privacy": "What goes to Google"
+    },
+    "research": {
+      "link": "Read the research on learning games"
+    },
+    "quotes": {
+      "h": "What teachers say"
+    }
   },
   "learn": {
     "crumbs": "Breadcrumb",
@@ -7505,7 +7527,8 @@
         "li4": "Classes, lessons, progress and the gradebook",
         "li5": "Every language, every device",
         "cta": "Start your free trial",
-        "plans": "See plans & pricing"
+        "plans": "See plans & pricing",
+        "plus": "Everything in Free, plus:"
       },
       "schools": {
         "name": "Schools & districts",
@@ -7518,6 +7541,16 @@
         "cta": "Talk to us",
         "form": "Set up your school",
         "subject": "Oomba Academy for our school"
+      },
+      "leadFree": "No per-student fees, ever. The basics are free for every teacher, and the Teacher plan adds AI game builds for your whole class.",
+      "free": {
+        "name": "Free",
+        "price": "Always free",
+        "li1": "Every game and all three courses",
+        "li2": "Classes, lessons, progress and the gradebook",
+        "li3": "Free daily Builder messages for you and your students",
+        "li4": "School accounts and printable login cards",
+        "liLive": "Live class games on the projector"
       }
     },
     "faq": {
@@ -7539,12 +7572,14 @@
       "q8": "Can our school pay by invoice or purchase order?",
       "a8": "Yes. Schools pay the same price per teacher per year, by invoice or purchase order. Email us and we will set it up.",
       "q9": "Which languages are there?",
-      "a9": "{count} languages, including English, Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own, and the Builder answers in it."
+      "a9": "{count} languages, including English, Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own, and the Builder answers in it.",
+      "a2free": "Start a 14-day free trial of the Teacher plan with no card. Everything in the plan is included while it runs, and when it ends you decide whether to subscribe. If you don’t, only the plan’s extra AI builds stop: the games, your classes, lessons and progress stay free, and nothing is deleted."
     },
     "final": {
       "h": "Your next lesson could be the one they ask to play again",
       "p": "Start free for 14 days. No card, no per-student fees.",
-      "cta": "Start your free 14-day trial"
+      "cta": "Start your free 14-day trial",
+      "pFree": "Games, classes, lessons and progress are always free. Try the Teacher plan free for 14 days, with no card and no per-student fees."
     },
     "play": {
       "h": "Here to play?",
@@ -8144,5 +8179,8 @@
       "badHour": "Pick a time.",
       "badZone": "Pick a time zone from the list."
     }
+  },
+  "brand": {
+    "tagline": "Screen time you can feel good about"
   }
 }

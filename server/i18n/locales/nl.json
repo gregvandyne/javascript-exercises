@@ -4292,7 +4292,29 @@
     "cs": {
       "cstaNote": "Standaarden: CSTA K-12 Computer Science Standards (2017), niveaus 1B en 2. Dit programma is niet gemaakt, beoordeeld of goedgekeurd door de CSTA."
     },
-    "leaderLine": "Schoolleiding of ICT? <a href=\"{href}\">Richt je school in</a>: het is gratis."
+    "leaderLine": "Schoolleiding of ICT? <a href=\"{href}\">Richt je school in</a>: het is gratis.",
+    "free": {
+      "line": "Altijd gratis: alle games, je klassen, lessen, voortgang en het cijferoverzicht, plus elke dag gratis Builder-berichten voor jou en je leerlingen. Het Leerkracht-abonnement voegt {daily} AI-gamebouwsels per dag toe, gedeeld door je klassen. <a href=\"{plans}\">Bekijk de prijzen bij Abonnementen</a>.",
+      "lineOff": "Altijd gratis: alle games, je klassen, lessen, voortgang en het cijferoverzicht, plus elke dag gratis Builder-berichten voor jou en je leerlingen."
+    },
+    "classroom": {
+      "kicker": "Google Classroom",
+      "h": "Werkt met je Google Classroom",
+      "lead": "Koppel je Google Classroom in een paar klikken. Eerst kan Oomba Academy alleen je klassen en hun leerlingen zien. Er wordt niets geplaatst tot jij plaatsen toestaat.",
+      "li1": "Importeer je klassenlijst met één klik, daarna ververst die zichzelf elke 6 uur. Leerlingen worden herkend aan hun Google-account.",
+      "li2": "Plaats een les als Classroom-opdracht, met de link en de inleverdatum, of deel hem als lesmateriaal.",
+      "li3": "Voltooiingscijfers gaan terug naar Classroom: het cijfer van elke leerling, op 100, is het deel van de stappen van de les dat hij afrondde, niet hoeveel antwoorden goed waren. Stuur ze zelf, of zet automatische cijfers aan.",
+      "li4": "Plaats een bericht in de stream van de klas als een livegame begint of een les klaarstaat, in je eigen woorden.",
+      "li5": "Oomba Academy vraagt Classroom niet om e-mailadressen van leerlingen en stuurt Google nooit de naam, antwoorden of games van een leerling.",
+      "note": "Opdrachten, lesmateriaal, cijfers en mededelingen werken zodra je plaatsen toestaat, een aparte stap. Elke leerkracht koppelt een eigen Google-account, en misschien moet de Google-beheerder van je school Oomba Academy eerst toestaan.",
+      "privacy": "Wat er naar Google gaat"
+    },
+    "research": {
+      "link": "Lees het onderzoek naar leergames"
+    },
+    "quotes": {
+      "h": "Wat leerkrachten zeggen"
+    }
   },
   "learn": {
     "crumbs": "Kruimelpad",
@@ -7002,7 +7024,8 @@
         "li4": "Klassen, lessen, voortgang en het cijferoverzicht",
         "li5": "Elke taal, elk apparaat",
         "cta": "Start je gratis proef",
-        "plans": "Bekijk abonnementen en prijzen"
+        "plans": "Bekijk abonnementen en prijzen",
+        "plus": "Alles van Gratis, plus:"
       },
       "schools": {
         "name": "Scholen en besturen",
@@ -7015,6 +7038,16 @@
         "cta": "Neem contact op",
         "form": "Richt je school in",
         "subject": "Oomba Academy voor onze school"
+      },
+      "leadFree": "Nooit kosten per leerling. De basis is gratis voor elke leerkracht, en het Leerkracht-abonnement voegt AI-gamebouwsels voor je hele klas toe.",
+      "free": {
+        "name": "Gratis",
+        "price": "Altijd gratis",
+        "li1": "Alle games en alle drie de cursussen",
+        "li2": "Klassen, lessen, voortgang en het cijferoverzicht",
+        "li3": "Elke dag gratis Builder-berichten voor jou en je leerlingen",
+        "li4": "Schoolaccounts en inlogkaarten om te printen",
+        "liLive": "Live klassengames op het digibord"
       }
     },
     "faq": {
@@ -7036,12 +7069,14 @@
       "q8": "Kan onze school betalen per factuur of inkooporder?",
       "a8": "Ja. Scholen betalen dezelfde prijs per leerkracht per jaar, per factuur of inkooporder. Mail ons en we regelen het.",
       "q9": "Welke talen zijn er?",
-      "a9": "{count} talen, waaronder Engels, Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest zijn eigen taal, en de Bouwer antwoordt daarin."
+      "a9": "{count} talen, waaronder Engels, Spaans, Portugees, Frans, Duits, Arabisch, Hebreeuws en Japans. Elke leerling kiest zijn eigen taal, en de Bouwer antwoordt daarin.",
+      "a2free": "Start een gratis proefperiode van 14 dagen van het Leerkracht-abonnement, zonder kaart. Zolang die loopt, zit het hele abonnement erbij, en aan het eind beslis jij of je abonneert. Doe je dat niet, dan stoppen alleen de extra AI-gamebouwsels van het abonnement: de games, je klassen, lessen en voortgang blijven gratis, en er wordt niets verwijderd."
     },
     "final": {
       "h": "Je volgende les kan de les zijn die ze nog een keer willen spelen",
       "p": "14 dagen gratis. Geen creditcard, geen kosten per leerling.",
-      "cta": "Start je gratis proef van 14 dagen"
+      "cta": "Start je gratis proef van 14 dagen",
+      "pFree": "Games, klassen, lessen en voortgang zijn altijd gratis. Probeer het Leerkracht-abonnement 14 dagen gratis, zonder kaart en zonder kosten per leerling."
     },
     "play": {
       "h": "Kom je spelen?",
@@ -7737,5 +7772,8 @@
       "badHour": "Kies een tijd.",
       "badZone": "Kies een tijdzone uit de lijst."
     }
+  },
+  "brand": {
+    "tagline": "Schermtijd waar je een goed gevoel over hebt"
   }
 }

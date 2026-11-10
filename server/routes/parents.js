@@ -141,6 +141,7 @@ router.get('/parents', async (req, res) => {
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'parents.kicker', {}, ' class="lp-kicker"')}
     ${el(t, 'h1', 'parents.h1', {}, ' id="lp-h1"')}
+    ${el(t, 'p', 'brand.tagline', {}, ' class="lp-tagline"')}
     ${el(t, 'p', 'parents.lead', {}, ' class="lead"')}
     ${ctaRow(req)}
     ${el(t, 'p', 'parents.teachers', { href: lp(req, '/teachers') }, ' class="lp-aside small"')}

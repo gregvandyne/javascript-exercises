@@ -16,6 +16,14 @@
 // Prices: kids are never sold to, and amounts appear only on /plans (tests/unit/billing*.test.js). The landing says "one
 // simple yearly price per teacher" and links to /plans; LANDING_SHOW_PRICE (off) is the one switch that would show the
 // amount here and add it to the structured data.
+//
+// Free and paid, one story (the same line as /teachers, teachers.free.line): what is always free (the games, classes,
+// lessons, progress, free daily Builder messages) and what the Teacher plan adds (the class's daily AI builds). The hero
+// says it in one line, the pricing section has a Free card beside the Teacher card, and nothing free is listed as a
+// Teacher plan feature.
+//
+// Google Classroom (#classroom): shown only when the connection is on for this server (services/gclassroom.js enabled()),
+// like /teachers; its words are teachers.classroom.*, shared with /teachers, and each one matches what the code does.
 import { Router } from 'express';
 import { html, raw, esc } from '../views/html.js';
 import { appMark, wordmark, BRAND, ICONS_V } from '../views/brand.js';
@@ -28,6 +36,8 @@ import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { teacherLoop } from '../views/teacher-loop.js';
 import { rateLimit } from '../services/ratelimit.js';
+import { enabled as classroomOn } from '../services/gclassroom.js';
+import { config } from '../config.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
@@ -86,7 +96,7 @@ export function renderLanding(req, res) {
   const title = t('landing.meta.title');
   const description = seo.clip(t('landing.meta.description'), 160);
   const langs = seo.langsWithKey('landing.hero.h1');
-  const faq = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => [t(`landing.faq.q${i}`), t(`landing.faq.a${i}`, { count })]);
+  const faq = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => [t(`landing.faq.q${i}`), t(`landing.faq.a${i}${i === 2 ? 'free' : ''}`, { count })]);
   const price = LANDING_SHOW_PRICE ? TEACHER_PRICE.label : null;
   const cta = (href, label, { cls = 'lp-btn-primary', name = 'trial', big = false } = {}) =>
     html`<a class="lp-btn ${cls}${big ? ' lp-btn-big' : ''}" href="${href}" data-cta="${name}">${label}</a>`;
@@ -125,6 +135,7 @@ export function renderLanding(req, res) {
       <ul class="lp-trust">
         <li>${check}${t('landing.hero.trustCard')}</li><li>${check}${t('landing.hero.trustCancel')}</li><li>${check}${t('landing.hero.trustStudents')}</li>
       </ul>
+      <p class="lp-freeline"${fb('teachers.free.line')}>${tHtml(t, 'teachers.free.line', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' })}</p>
       <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${HERO_FAN.map(s => cover(s, { eager: true }))}</span><span><b>30+</b> ${t('landing.facts.games')} ${ARROW}</span></a>
     </div>
     ${demo(t, fb)}
@@ -185,6 +196,17 @@ export function renderLanding(req, res) {
   <div class="lp-marquee" aria-hidden="true"><div class="lp-marquee-track">${[...MARQUEE, ...MARQUEE].map(s => cover(s))}</div></div>
 </section>`;
 
+  // Google Classroom: only when it is on here (every line is teachers.classroom.*, the same words as /teachers).
+  const classroomSec = classroomOn() ? html`<section class="lp-sec" id="classroom" aria-labelledby="classroom-h">
+  <div class="lp-wrap">
+    <header class="lp-sec-head"><p class="lp-eyebrow">${t('teachers.classroom.kicker')}</p><h2 id="classroom-h"${fb('teachers.classroom.h')}>${t('teachers.classroom.h')}</h2><p${fb('teachers.classroom.lead')}>${t('teachers.classroom.lead')}</p></header>
+    <div class="lp-card lp-gc rv">
+      <ul class="lp-list lp-list-2">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => html`<li>${check}<span${fb(`teachers.classroom.${k}`)}>${t(`teachers.classroom.${k}`)}</span></li>`)}</ul>
+      <p class="lp-small"${fb('teachers.classroom.note')}>${t('teachers.classroom.note')} <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
+    </div>
+  </div>
+</section>` : '';
+
   const liveSec = live ? html`<section class="lp-sec lp-split lp-split-rev" id="live" aria-labelledby="live-h">
   <div class="lp-glow lp-glow-b" aria-hidden="true" data-depth="-.2"></div>
   <div class="lp-wrap lp-split-in">
@@ -207,6 +229,7 @@ export function renderLanding(req, res) {
       ${[['b1', '🧠'], ['b2', '⚡'], ['b3', '🔁'], ['b4', '🙋'], ['b5', '🛠️']].map(([k, e]) => html`<article class="lp-card lp-why-card rv"><span class="lp-why-e" aria-hidden="true">${e}</span><h3>${t(`landing.why.${k}.h`)}</h3><p>${t(`landing.why.${k}.p`)}</p></article>`)}
     </div>
     <p class="lp-sources"><span>${t('landing.why.sources')}:</span> <a href="https://doi.org/10.1111/j.1467-9280.2006.01693.x" rel="noopener" lang="en" dir="ltr">Roediger &amp; Karpicke (2006), Test-enhanced learning, <i>Psychological Science</i></a> <a href="https://doi.org/10.3102/003465430298487" rel="noopener" lang="en" dir="ltr">Hattie &amp; Timperley (2007), The power of feedback, <i>Review of Educational Research</i></a></p>
+    <p class="lp-research"><a class="lp-more" href="/research">${t('teachers.research.link')} ${ARROW}</a></p>
   </div>
 </section>`;
 
@@ -229,13 +252,21 @@ export function renderLanding(req, res) {
   const mail = `mailto:${SALES_EMAIL}?subject=${encodeURIComponent(t('landing.pricing.schools.subject'))}`;
   const pricing = html`<section class="lp-sec" id="pricing" aria-labelledby="pricing-h">
   <div class="lp-wrap">
-    <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.pricing.kicker')}</p><h2 id="pricing-h">${t('landing.pricing.h')}</h2><p>${t('landing.pricing.lead')}</p></header>
-    <div class="lp-plans">
+    <header class="lp-sec-head"><p class="lp-eyebrow">${t('landing.pricing.kicker')}</p><h2 id="pricing-h">${t('landing.pricing.h')}</h2><p>${t('landing.pricing.leadFree')}</p></header>
+    <div class="lp-plans lp-plans-3">
+      <article class="lp-card lp-plan rv" aria-labelledby="plan-free">
+        <h3 id="plan-free">${t('landing.pricing.free.name')}</h3>
+        <p class="lp-price">${t('landing.pricing.free.price')}</p>
+        <p class="lp-plan-trial">${t('landing.hero.trustCard')}</p>
+        <ul class="lp-list">${['landing.pricing.free.li1', 'landing.pricing.free.li2', 'landing.pricing.free.li3', 'landing.pricing.free.li4', ...(live ? ['landing.pricing.free.liLive'] : []), 'landing.pricing.teacher.li5'].map(k => html`<li>${check}<span>${t(k)}</span></li>`)}</ul>
+        <a class="lp-btn lp-btn-ghost lp-btn-big" href="${lp('/teachers')}#start">${t('teachers.cta.start')}</a>
+      </article>
       <article class="lp-card lp-plan lp-plan-hot rv" aria-labelledby="plan-teacher">
         <h3 id="plan-teacher">${t('landing.pricing.teacher.name')}</h3>
         <p class="lp-price">${price ? t('landing.pricing.teacher.priceShown', { price }) : t('landing.pricing.teacher.price')}</p>
         <p class="lp-plan-trial">${t('landing.pricing.teacher.trial')}</p>
-        <ul class="lp-list">${[1, 2, 3, 4, 5].map(i => html`<li>${check}<span>${t(`landing.pricing.teacher.li${i}`)}</span></li>`)}</ul>
+        <p class="lp-plan-plus">${t('landing.pricing.teacher.plus')}</p>
+        <ul class="lp-list">${['landing.pricing.teacher.li2', 'landing.pricing.teacher.li1', 'plans.teacher.li3', 'plans.teacher.li4'].map(k => html`<li>${check}<span>${t(k)}</span></li>`)}</ul>
         ${cta(TRIAL_URL, t('landing.pricing.teacher.cta'), { big: true })}
         <a class="lp-more" href="/plans" data-cta="pricing">${t('landing.pricing.teacher.plans')} ${ARROW}</a>
       </article>
@@ -261,7 +292,7 @@ export function renderLanding(req, res) {
   const final = html`<section class="lp-final" aria-labelledby="final-h">
   <div class="lp-glow lp-glow-c" aria-hidden="true" data-depth=".18"></div>
   <div class="lp-wrap lp-final-in rv">
-    <h2 id="final-h">${t('landing.final.h')}</h2><p>${t('landing.final.p')}</p>
+    <h2 id="final-h">${t('landing.final.h')}</h2><p>${t('landing.final.pFree')}</p>
     <div class="lp-ctas lp-ctas-c">${cta(TRIAL_URL, t('landing.final.cta'), { big: true })}<a class="lp-btn lp-btn-ghost lp-btn-big" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
   </div>
 </section>`;
@@ -271,7 +302,7 @@ export function renderLanding(req, res) {
   const footer = html`<footer class="lp-foot">
   ${playBand}
   <div class="lp-wrap lp-foot-in">
-    <div class="lp-foot-brand"><a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a><p>${t('landing.footer.tagline')}</p>
+    <div class="lp-foot-brand"><a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a><p class="lp-tagline">${t('brand.tagline')}</p><p>${t('landing.footer.tagline')}</p>
       <a class="lp-btn lp-btn-ghost lp-btn-sm" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
     <nav aria-labelledby="ft-t"><h2 id="ft-t">${t('landing.footer.teachers')}</h2><ul>
       <li><a href="${lp('/teachers')}">${t('landing.footer.guide')}</a></li>
@@ -311,7 +342,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${courses}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${loopSec}${builder}${courses}${classroomSec}${liveSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
