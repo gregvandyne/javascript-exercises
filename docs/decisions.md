@@ -3520,6 +3520,57 @@ A review of the sync found these; what changed:
 - **RTL:** he/ar strings carry an RLM after Latin words such as "Classroom" so brackets sit on the right side.
 - **Course list:** the page uses the five-minute cache; "Refresh the list" asks Google again; any fetch from the page
   is limited to 30 an hour per teacher. Linking still checks a fresh list.
+## Google Classroom sync: optional scopes and automatic sync (10 Nov 2026)
+The owner's consent screen has only the two read scopes so far, and the first version refused a connection without all
+three (`scopesMissing`), so nothing worked. Decisions (the owner's) and what was built (docs/google-classroom.md):
+- **Required vs optional scopes** (`gclassroom-client.js` `REQUIRED_SCOPES`, `OPTIONAL_SCOPES`): required are
+  `classroom.courses.readonly` and `classroom.rosters.readonly`; `classroom.coursework.students`,
+  `classroom.courseworkmaterials`, `classroom.topics` and `classroom.announcements` are optional. **Connect** asks for
+  the read scopes only; **Allow Oomba Academy to post to Classroom** (`write=1` on the connect start link) asks for the
+  optional ones, again with `include_granted_scopes=true`, `access_type=offline`, `prompt=consent`. Only a missing
+  required scope is refused (`scopesMissing`); optional ones left unticked hide their features (`noneAllowed` when none
+  was ticked). The stored `gc_connections.scopes` (filtered to the Classroom scopes) is the source of truth
+  (`GC.can(userId, feature)`): it is rewritten from Google's answer at every token refresh, a required scope gone makes
+  the connection "connect again", and a call Google refuses with `ACCESS_TOKEN_SCOPE_INSUFFICIENT` forgets that scope
+  (`needsScope`). Every write control is hidden without its scope (page, assign form, APIs answer `needsScope`), and is
+  replaced by a one-line note with the Allow button.
+- **Automatic grades** (needs coursework): per linked class, off by default; the teacher turns it on with the existing
+  draft/assigned modes (`gc_links.auto_grades`, `auto_by` = whose connection sends; a co-teacher saving the roster switch
+  keeps it). Job `gclassroom-auto-grades` every 30 minutes: for each posted assignment whose `step_progress` moved since
+  `gc_posts.auto_at`, `sendGrades(onlyChanged)` compares with `gc_grades` (per class lesson and student: grade and mode
+  last sent, by hand or automatically) and sends only what changed (a switch to assigned sends again); nothing changed,
+  no call to Google. Same roster rule as by hand (only submissions of the teacher's own coursework, i.e. their Classroom
+  roster). Within the teacher's 60 syncs an hour (the same bucket); out of syncs waits for the next run. Errors back off
+  (1 h, 2 h, … at most a day: `auto_fails`, `auto_next_at`); a connection that needs connecting again pauses it and the
+  page says so with **Reconnect Classroom**; connecting again resumes, disconnecting turns it off. A lesson stops 30 days
+  after its due day (90 days after posting when it has no due date). Logged as `autoGrades` only when something went.
+- **Automatic roster** (read scope only, no push notifications): `gc_links.auto_roster`, on by default; job
+  `gclassroom-roster-refresh` hourly re-imports classes whose last import is 6 hours old (only after a first import by
+  hand), with the linking teacher's connection, within the class's 20 imports and the teacher's 60 syncs an hour; an
+  error waits 6 more hours. Same import rules (school domain, 300 cap, `gc_pending`). Matched students are remembered in
+  `gc_roster`; one missing from the Classroom roster gets `gone_at` and is listed as **No longer in Google Classroom**
+  with **Remove from class** / **Keep** (`settleLeaver`). Nobody is removed automatically. The page shows "Roster
+  updated <time>".
+- **Topics** (needs topics): one Classroom topic per linked course, made at the first post and remembered
+  (`topic_id`, `topic_course_id`); checked with a GET before each post and made again when Google says it is gone; a
+  topic of the same name already there is used. Name: the class's own (`topic_name`, renamed in Classroom too) or
+  "Oomba Academy" from the teacher's locale (`gclassroom.topic.default`; direction marks stripped). Without the scope,
+  or when Google won't make one, posts go without a topic.
+- **Materials** (needs courseworkmaterials): "Share as material" posts a `courseWorkMaterial` with the lesson's title,
+  the fixed line and the link, no grade or due date (scheduled like a post for a lesson that opens later).
+  `gc_posts.kind` ('assignment' | 'material'); the primary key became (class_lesson_id, kind): one of each per lesson.
+- **Announcements** (needs announcements): three templates on the class page, each a form: a live game starting now
+  (the code of the live game open for this class, `LS.openForClass`; never a typed code), a lesson that is ready (an open
+  lesson of this class: title and link), and free text. The server builds the fixed part from the template
+  (`announceFixed`) and adds only the teacher's note (`cleanNote`: plain text, line breaks kept); at most 500
+  characters; a note containing a student's roster name, its first word, display name or username (whole words, 3+
+  letters) is refused with the name shown under the field; 10 an hour per class. The log keeps the template and length,
+  never the text. The live host screen of a class game links to it (**📣 Announce in Classroom**, host only, when allowed).
+- **Not done** (owner): student emails, guardians, push notifications / Pub/Sub, a Classroom add-on.
+- Migration **0067_gclassroom_auto** (gc_links columns, gc_posts rebuilt with `kind`, gc_grades, gc_roster). Class and
+  lesson deletion and the sweep remove the new rows too. Unlinking forgets the class's settings.
+- **Privacy:** the legal pages are not changed here (signed off 9 Nov); the sentences that would need the lawyer are
+  listed for the owner (/privacy `google.setup.privacy.classroom`, docs/legal-review.md "Google Classroom sync").
 ## Weekly class summary email (9 Nov 2026)
 
 Teachers get one email a week with counts for each class they teach, so they know where to look without opening the

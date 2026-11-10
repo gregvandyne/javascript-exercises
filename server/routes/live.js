@@ -36,6 +36,7 @@ import * as D from '../services/classlive-dash.js';
 import * as CH from '../services/classlive-cohost.js';
 import { SAY, BONUS_REASONS } from '../services/classlive-protocol.js';
 import { nicksFor } from '../services/classlive-names.js';
+import { gcLiveAnnounce } from './gclassroom.js';
 import { STARTERS } from '../live/starters.js';
 import { pickerFor, parseBankId, SUBJECTS as BANK_SUBJECTS, LEVELS as BANK_LEVELS, COUNTS as BANK_COUNTS } from '../live/bank/index.js';
 import * as WYR from '../live/wyr.js';
@@ -394,7 +395,9 @@ router.get('/live/host/:sid', on, requireAnyAccount, (req, res) => {
   noStore(res);
   page(req, res, { title: req.t('live.host.title'), bare: true, bodyClass: 'lv-body lv-projector', head: '<link rel="stylesheet" href="/css/live.css">',
     body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open',
-      teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId), ctl: ctlInfo(s, req.user) }), scripts: ['/js/live-host.js'] });
+      teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId), ctl: ctlInfo(s, req.user),
+      // Google Classroom (routes/gclassroom.js): the host of a class game can announce it in the linked Classroom stream.
+      gcAnnounce: role === 'host' ? gcLiveAnnounce(req, s) : '' }), scripts: ['/js/live-host.js'] });
 });
 
 // ---------------------------------------------------------------- the teacher's dashboard (part 3)

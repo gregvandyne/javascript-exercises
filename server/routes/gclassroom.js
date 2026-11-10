@@ -1,8 +1,13 @@
 // Google Classroom sync: the class's Google Classroom page (/class/:id/google-classroom), connecting and disconnecting
 // a teacher's Classroom (/auth/google/classroom/*: incremental authorization, offline access), and the sync APIs (link a
-// course, import its roster, post a lesson, send grades). Everything answers like an unknown page while it is off
-// (services/gclassroom.js enabled()), and the pieces other pages show render ''. Teacher tools only: every route checks
-// the class (S.canManageClass) and that the person is school staff. See docs/google-classroom.md.
+// course, import its roster, post a lesson as an assignment or share it as a material, send grades, the class's
+// automatic sync and topic, students who left Classroom, announcements). Everything answers like an unknown page while
+// it is off (services/gclassroom.js enabled()), and the pieces other pages show render ''. Teacher tools only: every
+// route checks the class (S.canManageClass) and that the person is school staff. See docs/google-classroom.md.
+//
+// Connect asks Google for the two read scopes only; "Allow Oomba Academy to post to Classroom" asks again for the optional
+// write scopes (services/gclassroom-client.js). Each write feature shows only once its scope was granted: until then
+// its controls are a short note with that button.
 import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
@@ -17,7 +22,8 @@ import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as G from '../services/google.js';
 import * as GC from '../services/gclassroom.js';
-import { SCOPES, exchangeCode } from '../services/gclassroom-client.js';
+import * as LS from '../services/classlive-sessions.js';
+import { REQUIRED_SCOPES, OPTIONAL_SCOPES, exchangeCode } from '../services/gclassroom-client.js';
 import { classHeader, classBack } from './schools.js';
 
 export const router = Router();
@@ -29,11 +35,14 @@ const ltr = s => `⁦${s}⁩`;
 
 /** Codes a result or ?gcerr= may carry; anything else reads as "Google Classroom didn't answer". */
 export const ERRORS = ['notSetUp', 'notConnected', 'reconnect', 'notLinked', 'pickCourse', 'courseNotYours', 'courseGone', 'denied', 'rateLimited',
-  'googleDown', 'badRequest', 'tooMany', 'alreadyPosted', 'notPosted', 'badMode', 'scopesMissing', 'noRefresh', 'expired', 'cancelled', 'staffOnly', 'tooManyTries'];
+  'googleDown', 'badRequest', 'tooMany', 'alreadyPosted', 'notPosted', 'badMode', 'scopesMissing', 'noRefresh', 'expired', 'cancelled', 'staffOnly', 'tooManyTries',
+  'needsScope', 'noneAllowed', 'alreadyShared', 'notLeaver', 'badTemplate', 'noLiveGame', 'pickLesson', 'lessonNotOpen', 'emptyNote', 'tooLong', 'hasName', 'tooManyAnnouncements'];
 const errKey = code => `gclassroom.errors.${ERRORS.includes(code) ? code : 'googleDown'}`;
-const errText = (t, code) => t(errKey(code), { max: GC.MAX_STUDENTS });
-const STATUS = { rateLimited: 429, tooManyTries: 429 };
-const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: errText(req.t, code === 'notFound' ? 'courseGone' : code), code });
+const errText = (t, code, extra = {}) => t(errKey(code), { max: GC.MAX_STUDENTS, ...extra });
+const STATUS = { rateLimited: 429, tooManyTries: 429, tooManyAnnouncements: 429 };
+// Errors about one field of the form: shown under it.
+const FIELD = { hasName: 'note', tooLong: 'note', emptyNote: 'note', pickLesson: 'clId', lessonNotOpen: 'clId' };
+const fail = (req, res, code, r = {}) => res.status(STATUS[code] || 400).json({ error: errText(req.t, code === 'notFound' ? 'courseGone' : code, { name: r.name, max: r.max || GC.MAX_STUDENTS }), code, ...(FIELD[code] ? { field: FIELD[code] } : {}) });
 const notFoundJson = (req, res) => res.status(404).json({ error: req.t('progress.errors.notFound') });
 
 /** School staff who manage this class (school admins and its teachers). Everyone else: an unknown page. */
@@ -54,13 +63,17 @@ function staffLesson(req, res) {
   if (!GC.mayConnect(req.user)) { res.status(403).json({ error: errText(req.t, 'staffOnly'), code: 'staffOnly' }); return null; }
   return { cl, c };
 }
-// Syncs per teacher: generous for a day of teaching, small enough that a stuck script can't hammer Google.
-const syncLimit = rateLimit('gc-sync', 60, 3600e3, 'gclassroom.errors.tooManyTries');
+// Syncs per teacher: generous for a day of teaching, small enough that a stuck script can't hammer Google. The automatic
+// grades (services/gclassroom.js autoGrades) count against the same 60.
+const syncLimit = rateLimit('gc-sync', GC.SYNCS_PER_HOUR, 3600e3, 'gclassroom.errors.tooManyTries');
 const origin = req => config.publicUrl || `${req.protocol}://${req.get('host')}`;
 const redirectUri = req => `${origin(req)}/auth/google/classroom/callback`;
 const pagePath = classId => `/class/${classId}/google-classroom`;
+/** What a post sends in the teacher's language: the fixed line and the default topic name. */
+const postOpts = req => ({ origin: origin(req), description: req.t('gclassroom.post.description'), topicName: req.t('gclassroom.topic.default') });
 
 // ================================================================ connect / disconnect
+// write=1: "Allow Oomba Academy to post to Classroom" (the optional scopes too); otherwise Connect (the read scopes).
 router.post('/api/google-classroom/connect', on, auth.requireAccount, (req, res) => {
   const u = req.user;
   if (!GC.mayConnect(u)) return res.status(403).json({ error: errText(req.t, 'staffOnly'), code: 'staffOnly' });
@@ -68,7 +81,8 @@ router.post('/api/google-classroom/connect', on, auth.requireAccount, (req, res)
   if (!allow(`gc-connect:${u.id}`, 20, 3600e3)) return fail(req, res, 'tooManyTries');
   const c = S.getClass(String(b(req).back || ''));
   const back = c && S.canManageClass(u, c) ? c.id : '';
-  const tk = auth.signToken({ p: 'gcl', u: u.id, sh: sha16(req.sessionId), b: back }, 300);
+  const write = b(req).write === '1' || b(req).write === true ? 1 : 0;
+  const tk = auth.signToken({ p: 'gcl', u: u.id, sh: sha16(req.sessionId), b: back, w: write }, 300);
   res.json({ ok: true, redirect: `/auth/google/classroom/start?t=${encodeURIComponent(tk)}` });
 });
 router.get('/auth/google/classroom/start', on, auth.requireAccount, (req, res) => {
@@ -76,10 +90,11 @@ router.get('/auth/google/classroom/start', on, auth.requireAccount, (req, res) =
   const tk = auth.readToken(String(req.query.t || ''));
   if (!tk || tk.p !== 'gcl' || tk.u !== req.user.id || tk.sh !== sha16(req.sessionId) || !GC.mayConnect(req.user)) return res.redirect(303, '/teach');
   const f = newFlow(); const redirect = redirectUri(req);
-  writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: 'classroom', u: req.user.id, b: tk.b || '' });
+  writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: 'classroom', u: req.user.id, b: tk.b || '', w: tk.w ? 1 : 0 });
   const url = new URL(endpoints().authorize);
   const ident = G.identityOf(req.user.id);
-  const p = { client_id: config.googleClientId, redirect_uri: redirect, response_type: 'code', scope: ['openid', 'email', ...SCOPES].join(' '),
+  const scopes = ['openid', 'email', ...REQUIRED_SCOPES, ...(tk.w ? Object.values(OPTIONAL_SCOPES) : [])];
+  const p = { client_id: config.googleClientId, redirect_uri: redirect, response_type: 'code', scope: scopes.join(' '),
     state: f.state, nonce: f.nonce, code_challenge: f.challenge, code_challenge_method: 'S256',
     // Incremental authorization: Google adds these scopes to what the person already granted; offline + consent so a
     // refresh token comes back every time (a reconnect replaces the old one).
@@ -101,10 +116,12 @@ router.get('/auth/google/classroom/callback', on, async (req, res) => {
   if (!GC.canStore()) return res.redirect(303, backTo(flow, 'gcerr=notSetUp'));
   try {
     const tok = await exchangeCode({ code, redirect: flow.r, verifier: flow.v });
+    // The read scopes are needed; an optional one left unticked only keeps its feature hidden.
     if (GC.missingScopes(tok.scopes).length) return res.redirect(303, backTo(flow, 'gcerr=scopesMissing'));
     const claims = await verifyIdToken(tok.idToken, { nonce: flow.n });
     const r = GC.saveConnection(req.user, { sub: claims.sub, email: claims.email, scopes: tok.scopes, refreshToken: tok.refreshToken });
     if (!r.ok) return res.redirect(303, backTo(flow, `gcerr=${r.code}`));
+    if (flow.w) return res.redirect(303, backTo(flow, GC.missingOptional(req.user.id).length === Object.keys(OPTIONAL_SCOPES).length ? 'gcerr=noneAllowed' : 'gc=allowed'));
     return res.redirect(303, backTo(flow, 'gc=connected'));
   } catch (e) {
     log('warn', 'google classroom connect failed', { reason: e instanceof OidcError ? e.reason : e.reason || 'error' });
@@ -137,11 +154,51 @@ router.post('/api/classes/:id/google-classroom/roster', on, auth.requireAccount,
   if (!r.ok) return fail(req, res, r.code);
   res.json({ ok: true, toast: rosterText(req.t, r.counts) });
 });
+/** A student who left the Classroom class: action 'remove' takes them out of this class, 'keep' stops listing them. */
+router.post('/api/classes/:id/google-classroom/leavers', on, auth.requireAccount, (req, res) => {
+  const c = staffClass(req, res); if (!c) return;
+  const action = b(req).action === 'remove' ? 'remove' : b(req).action === 'keep' ? 'keep' : '';
+  if (!action) return fail(req, res, 'badRequest');
+  const r = GC.settleLeaver(req.user, c, String(b(req).userId || ''), action);
+  if (!r.ok) return fail(req, res, r.code === 'notFound' ? 'notLeaver' : r.code);
+  res.json({ ok: true, toast: req.t(action === 'remove' ? 'gclassroom.leavers.removed' : 'gclassroom.leavers.kept') });
+});
+/** The class's automatic sync: autoRoster '1' (re-import every 6 hours), autoGrades '1' with mode draft | assigned. */
+router.post('/api/classes/:id/google-classroom/auto', on, auth.requireAccount, (req, res) => {
+  const c = staffClass(req, res); if (!c) return;
+  const on1 = v => v === '1' || v === true || v === 'on';
+  const r = GC.setAuto(req.user, c, { grades: on1(b(req).autoGrades) ? String(b(req).mode || 'draft') : '', roster: on1(b(req).autoRoster) });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, toast: req.t('gclassroom.auto.saved') });
+});
+router.post('/api/classes/:id/google-classroom/topic', on, auth.requireAccount, syncLimit, async (req, res) => {
+  const c = staffClass(req, res); if (!c) return;
+  const r = await GC.setTopicName(req.user, c, b(req).name, req.t('gclassroom.topic.default'));
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, toast: req.t('gclassroom.topic.saved') });
+});
+router.post('/api/classes/:id/google-classroom/announce', on, auth.requireAccount, syncLimit, async (req, res) => {
+  const c = staffClass(req, res); if (!c) return;
+  const template = String(b(req).template || '');
+  // A live game: the code of the one open for this class now (never one typed in).
+  const live = template === 'live' && LS.liveOn() ? LS.openForClass(c.id) : null;
+  const f = GC.announceFixed(req.t, c, { template, code: live ? live.code : '', clId: b(req).clId }, origin(req));
+  if (!f.ok) return fail(req, res, f.code);
+  const r = await GC.announce(req.user, c, { template, fixed: f.fixed, note: b(req).note });
+  if (!r.ok) return fail(req, res, r.code, r);
+  res.json({ ok: true, toast: req.t('gclassroom.announce.done') });
+});
 router.post('/api/class-lessons/:id/google-classroom/post', on, auth.requireAccount, syncLimit, async (req, res) => {
   const x = staffLesson(req, res); if (!x) return;
-  const r = await GC.postLesson(req.user, x.cl, { origin: origin(req), description: req.t('gclassroom.post.description') });
+  const r = await GC.postLesson(req.user, x.cl, postOpts(req));
   if (!r.ok) return fail(req, res, r.code);
   res.json({ ok: true, toast: postText(req, r) });
+});
+router.post('/api/class-lessons/:id/google-classroom/material', on, auth.requireAccount, syncLimit, async (req, res) => {
+  const x = staffLesson(req, res); if (!x) return;
+  const r = await GC.shareMaterial(req.user, x.cl, postOpts(req));
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, toast: r.scheduled ? req.t('gclassroom.material.doneScheduled', { date: req.fmt.day(r.scheduled) }) : req.t('gclassroom.material.done') });
 });
 router.post('/api/class-lessons/:id/google-classroom/grades', on, auth.requireAccount, syncLimit, async (req, res) => {
   const x = staffLesson(req, res); if (!x) return;
@@ -161,7 +218,8 @@ function rosterText(t, k) {
   return [t('gclassroom.roster.resultAdded', { count: (k.added || 0) + (k.created || 0) }), k.waiting && t('gclassroom.roster.resultWaiting', { count: k.waiting }),
     k.already && t('gclassroom.roster.resultAlready', { count: k.already }),
     k.ownAccount && t('gclassroom.roster.resultOwn', { count: k.ownAccount }), k.otherSchool && t('gclassroom.roster.resultOther', { count: k.otherSchool }),
-    k.staff && t('gclassroom.roster.resultStaff', { count: k.staff }), k.needDomains && t('gclassroom.roster.resultDomains', { count: k.needDomains })].filter(Boolean).join(' · ');
+    k.staff && t('gclassroom.roster.resultStaff', { count: k.staff }), k.needDomains && t('gclassroom.roster.resultDomains', { count: k.needDomains }),
+    k.left && t('gclassroom.roster.resultLeft', { count: k.left })].filter(Boolean).join(' · ');
 }
 function gradesText(t, k) {
   return [t('gclassroom.grades.resultSent', { count: k.sent || 0 }), k.notStarted && t('gclassroom.grades.resultNotStarted', { count: k.notStarted }),
@@ -169,7 +227,7 @@ function gradesText(t, k) {
 }
 function syncLine(req, s) {
   const t = req.t, f = req.fmt;
-  const what = s.kind === 'roster' && s.status === 'ok' ? rosterText(t, s.counts) : s.kind === 'grades' && s.status !== 'error' ? gradesText(t, s.counts) : '';
+  const what = ['roster', 'autoRoster'].includes(s.kind) && s.status === 'ok' ? rosterText(t, s.counts) : ['grades', 'autoGrades'].includes(s.kind) && s.status !== 'error' ? gradesText(t, s.counts) : '';
   const bad = s.status === 'error' || s.status === 'partial';
   return html`<li class="gc-log-row${bad ? ' is-bad' : ''}"><span class="gc-log-what"><b>${s.status === 'ok' ? '✅' : s.status === 'partial' ? '⚠️' : '❌'} ${t(`gclassroom.log.kinds.${s.kind}`)}</b>
     ${what ? html`<span class="small">${what}</span>` : ''}${s.error ? html`<span class="small gc-err">${errText(t, s.error)}</span>` : ''}</span>
@@ -177,6 +235,12 @@ function syncLine(req, s) {
 }
 
 // ================================================================ the page
+/** "Allow Oomba Academy to post to Classroom": incremental authorization again, for the optional scopes. */
+const allowForm = (req, c, { primary = true } = {}) => html`<form class="gc-allow" data-api="/api/google-classroom/connect" novalidate><input type="hidden" name="back" value="${c.id}"><input type="hidden" name="write" value="1">
+  <p class="err form-err" aria-live="polite"></p><button class="btn${primary ? ' btn-primary' : ''}" type="submit">✍️ ${req.t('gclassroom.allow.button')}</button></form>`;
+/** A write feature the teacher hasn't allowed yet: one line and the button. */
+const lockedNote = (req, c, key) => html`<div class="gc-locked"><p class="small muted">🔒 ${req.t(key)}</p>${allowForm(req, c, { primary: false })}</div>`;
+
 router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res) => {
   const c = loadClass(req, res); if (!c) return;
   const t = req.t, f = req.fmt, u = req.user;
@@ -184,19 +248,31 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
   const staff = GC.mayConnect(u);
   const state = GC.connectionState(u.id); const conn = GC.connectionOf(u.id);
   const lk = GC.linkOf(c.id);
-  const flash = req.query.gc === 'connected' ? html`<p class="notice good" role="status">✅ ${t('gclassroom.connect.connectedToast')}</p>` : '';
+  const can = k => state === 'ok' && GC.can(u.id, k);
+  const flash = req.query.gc === 'connected' ? html`<p class="notice good" role="status">✅ ${t('gclassroom.connect.connectedToast')}</p>`
+    : req.query.gc === 'allowed' ? html`<p class="notice good" role="status">✅ ${t('gclassroom.allow.done')}</p>` : '';
   const gerr = typeof req.query.gcerr === 'string' && ERRORS.includes(req.query.gcerr) ? html`<p class="notice warn" role="alert">${errText(t, req.query.gcerr)}</p>` : '';
 
-  // 1. The teacher's own connection.
+  // 1. The teacher's own connection, and what it may do.
   const connectForm = label => html`<form data-api="/api/google-classroom/connect" novalidate><input type="hidden" name="back" value="${c.id}"><p class="err form-err" aria-live="polite"></p>
     <button class="btn btn-primary" type="submit" ${GC.canStore() ? '' : raw('disabled')}>🔗 ${label}</button></form>`;
+  const FEATURES = [['coursework', 'post'], ['materials', 'materials'], ['announce', 'announce'], ['topics', 'topics']];
+  const missing = state === 'ok' ? GC.missingOptional(u.id) : [];
+  const allowedList = html`<h3 class="gc-sub">${t('gclassroom.allow.heading')}</h3><ul class="plain gc-allowed small">
+    <li><span aria-hidden="true">✅</span> ${t('gclassroom.allow.features.read')}</li>
+    ${FEATURES.map(([k, key]) => html`<li class="${can(k) ? '' : 'muted'}"><span aria-hidden="true">${can(k) ? '✅' : '➖'}</span> ${t(`gclassroom.allow.features.${key}`)}<span class="sr-only"> · ${t(can(k) ? 'gclassroom.allow.on' : 'gclassroom.allow.off')}</span></li>`)}</ul>
+    ${missing.length ? html`<p class="small muted">${t(missing.length === FEATURES.length ? 'gclassroom.allow.textNone' : 'gclassroom.allow.textSome')}</p>${allowForm(req, c)}` : ''}`;
   const connectPanel = html`<section class="panel" id="gc-connect" aria-labelledby="gc-c-h"><h2 id="gc-c-h">🔗 ${t('gclassroom.connect.heading')}</h2>${flash}${gerr}
     ${!staff ? html`<p class="small muted">${t('gclassroom.errors.staffOnly')}</p>`
       : !GC.canStore() ? html`<p class="notice warn">${t('gclassroom.errors.notSetUp')}</p>`
       : state === 'ok' ? html`<p>${t('gclassroom.connect.connectedAs', { email: ltr(conn.email) })}</p><p class="small muted">${t('gclassroom.connect.connectedHint')}</p>
-          <form data-api="/api/google-classroom/disconnect" data-reload data-confirm="${t('gclassroom.connect.disconnectConfirm')}"><button class="btn" type="submit">${t('gclassroom.connect.disconnect')}</button></form>`
+          ${allowedList}
+          <form class="gc-disconnect" data-api="/api/google-classroom/disconnect" data-reload data-confirm="${t('gclassroom.connect.disconnectConfirm')}"><button class="btn" type="submit">${t('gclassroom.connect.disconnect')}</button></form>`
+      // This class's automatic grades go with this connection: say they're paused until it is connected again.
+      : state === 'reconnect' && lk && lk.auto_grades && lk.auto_by === u.id ? html`<p class="notice warn">⏸️ ${t('gclassroom.auto.paused.reconnect')}</p>${connectForm(t('gclassroom.auto.reconnect'))}`
       : state === 'reconnect' ? html`<p class="notice warn">${t('gclassroom.errors.reconnect')}</p>${connectForm(t('gclassroom.connect.reconnect'))}`
-      : html`<p class="muted">${t('gclassroom.connect.text')}</p><ul class="gc-what small">${['courses', 'roster', 'post', 'grades'].map(k => html`<li>${t(`gclassroom.connect.what.${k}`)}</li>`)}</ul>${connectForm(t('gclassroom.connect.button'))}
+      : html`<p class="muted">${t('gclassroom.connect.text')}</p><ul class="gc-what small">${['courses', 'roster'].map(k => html`<li>${t(`gclassroom.connect.what.${k}`)}</li>`)}</ul>
+          <p class="small muted">${t('gclassroom.connect.later')}</p>${connectForm(t('gclassroom.connect.button'))}
           <p class="small muted">${t('gclassroom.connect.privacy')}</p>`}</section>`;
 
   // 2. The linked course.
@@ -221,42 +297,109 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
       <p class="small"><a class="btn btn-sm" href="${pagePath(c.id)}?fresh=1#gc-course">🔄 ${t('gclassroom.course.refresh')}</a></p></section>`;
   }
 
-  // 3. Roster and 4. lessons: only once connected and linked.
+  // 3. Roster, 4. automatic sync, 5. lessons, 6. the class stream: only once connected and linked.
   const ready = state === 'ok' && !!lk && staff;
   const domains = G.schoolDomains(s);
-  const lastRoster = lk && lk.roster_at ? html`<p class="small muted">${t('gclassroom.roster.last', { when: f.ago(lk.roster_at) })} · ${rosterText(t, JSON.parse(lk.roster_counts || '{}'))}</p>` : '';
+  const lastRoster = lk && lk.roster_at ? html`<p class="small muted" id="gc-roster-at">${t('gclassroom.roster.updated', { when: f.ago(lk.roster_at) })} · ${rosterText(t, JSON.parse(lk.roster_counts || '{}'))}</p>` : '';
   const waiting = lk ? GC.pendingCount(c.id) : 0;
   const waitingLine = waiting ? html`<p class="small" id="gc-waiting">⏳ ${t('gclassroom.roster.waitingNow', { count: waiting })}</p>` : '';
+  const gone = lk ? GC.leavers(c.id) : [];
+  const leaversBox = gone.length ? html`<div class="gc-leavers" id="gc-leavers"><h3 class="gc-sub">👋 ${t('gclassroom.leavers.heading')}</h3><p class="small muted">${t('gclassroom.leavers.text')}</p>
+    <ul class="plain gc-leaver-list">${gone.map(x => {
+      const name = x.roster_name || x.display_name || x.username;
+      return html`<li class="gc-leaver"><span class="gc-leaver-name"><b dir="auto">${name}</b> <span class="small muted">${t('gclassroom.leavers.since', { when: f.ago(x.gone_at) })}</span></span>
+        <span class="gc-leaver-acts"><form data-api="/api/classes/${c.id}/google-classroom/leavers" data-reload data-confirm="${t('gclassroom.leavers.removeConfirm', { name })}"><input type="hidden" name="userId" value="${x.user_id}"><input type="hidden" name="action" value="remove"><button class="btn btn-sm" type="submit">${t('gclassroom.leavers.remove')}<span class="sr-only"> · ${name}</span></button></form>
+        <form data-api="/api/classes/${c.id}/google-classroom/leavers" data-reload><input type="hidden" name="userId" value="${x.user_id}"><input type="hidden" name="action" value="keep"><button class="btn btn-sm" type="submit">${t('gclassroom.leavers.keep')}<span class="sr-only"> · ${name}</span></button></form></span></li>`;
+    })}</ul></div>` : '';
   const rosterPanel = ready ? html`<section class="panel" id="gc-roster"><h2>👩‍🎓 ${t('gclassroom.roster.heading')}</h2>
     <p class="small muted">${t('gclassroom.roster.text')}</p>
     ${domains.length ? '' : html`<p class="notice warn small">${S.canManageSchool(u, s.id) ? tHtml(t, 'gclassroom.roster.noDomainsAdmin', { link: html`<a href="/school/${s.slug}?tab=settings#google">${t('google.invites.settingsLink')}</a>` }) : t('gclassroom.roster.noDomains')}</p>`}
-    <form data-api="/api/classes/${c.id}/google-classroom/roster" data-reload><button class="btn btn-primary" type="submit">⬇️ ${t('gclassroom.roster.button')}</button></form>${lastRoster}${waitingLine}</section>` : '';
+    <form data-api="/api/classes/${c.id}/google-classroom/roster" data-reload><button class="btn btn-primary" type="submit">⬇️ ${t('gclassroom.roster.button')}</button></form>${lastRoster}${waitingLine}${leaversBox}</section>` : '';
+
+  // Automatic sync: the roster switch (read scope only) and grades (needs posting allowed).
+  const paused = lk ? GC.autoPaused(lk) : '';
+  const autoBy = lk && lk.auto_by && lk.auto_by !== u.id ? auth.getUser(lk.auto_by) : null;
+  const pausedNote = !paused ? ''
+    : paused === 'reconnect' && lk.auto_by === u.id ? html`<div class="notice warn small gc-paused" role="status"><p>⏸️ ${t('gclassroom.auto.paused.reconnect')}</p>${connectForm(t('gclassroom.auto.reconnect'))}</div>`
+    : paused === 'needsScope' && lk.auto_by === u.id ? html`<div class="notice warn small gc-paused" role="status"><p>⏸️ ${t('gclassroom.auto.paused.needsScope')}</p></div>`
+    : paused === 'backoff' ? html`<p class="notice warn small gc-paused" role="status">⏸️ ${t('gclassroom.auto.paused.backoff', { when: f.ago(lk.auto_next_at) })}</p>`
+    : html`<p class="notice warn small gc-paused" role="status">⏸️ ${t('gclassroom.auto.paused.other')}</p>`;
+  const autoPanel = ready ? html`<section class="panel" id="gc-auto"><h2>🔁 ${t('gclassroom.auto.heading')}</h2>${pausedNote}
+    <form class="gc-autoform" data-api="/api/classes/${c.id}/google-classroom/auto" data-reload novalidate>
+      <label class="gc-check"><input type="checkbox" name="autoRoster" value="1" ${lk.auto_roster ? raw('checked') : ''}> <span><b>${t('gclassroom.auto.roster')}</b><span class="small muted gc-hint-line">${t('gclassroom.auto.rosterHint')}</span></span></label>
+      ${can('coursework') ? html`<label class="gc-check"><input type="checkbox" name="autoGrades" value="1" ${lk.auto_grades ? raw('checked') : ''}> <span><b>${t('gclassroom.auto.grades')}</b><span class="small muted gc-hint-line">${t('gclassroom.auto.gradesHint')}</span></span></label>
+        <fieldset class="gc-modes gc-auto-modes"><legend class="small">${t('gclassroom.grades.as')}</legend>
+          <label class="gc-mode"><input type="radio" name="mode" value="draft" ${lk.auto_grades !== 'assigned' ? raw('checked') : ''}> <span>${t('gclassroom.grades.draft')}</span></label>
+          <label class="gc-mode"><input type="radio" name="mode" value="assigned" ${lk.auto_grades === 'assigned' ? raw('checked') : ''}> <span>${t('gclassroom.grades.assigned')}</span></label></fieldset>
+        ${autoBy ? html`<p class="small muted">${t('gclassroom.auto.by', { name: `@${autoBy.username}` })}</p>` : ''}`
+      : html`<input type="hidden" name="autoGrades" value="${lk.auto_grades ? '1' : ''}"><input type="hidden" name="mode" value="${lk.auto_grades || 'draft'}">`}
+      <p class="err form-err" aria-live="polite"></p><button class="btn btn-primary" type="submit">${t('gclassroom.auto.save')}</button></form>
+    ${can('coursework') ? '' : html`<p class="small muted gc-auto-locked">🔒 ${t('gclassroom.auto.locked')}</p>`}</section>` : '';
 
   const posts = GC.postsOfClass(c.id);
+  const mats = GC.postsOfClass(c.id, 'material');
   const lessons = L.classPlan(c.id).flatMap(g => g.lessons);
   const lessonRow = cl => {
-    const p = posts.get(cl.id);
+    const p = posts.get(cl.id); const m = mats.get(cl.id);
     const g = p && p.grades_at ? html`<span class="small muted">${t(p.grades_mode === 'assigned' ? 'gclassroom.grades.lastAssigned' : 'gclassroom.grades.lastDraft', { when: f.ago(p.grades_at) })} · ${gradesText(t, JSON.parse(p.grades_counts || '{}'))}</span>` : '';
-    return html`<li class="gc-lesson" id="gc-l-${cl.id}"><div class="gc-lesson-head"><b dir="auto">${cl.title}</b>
-      <span class="small muted">${cl.due_at ? t('gclassroom.post.due', { date: f.day(cl.due_at) }) : t('gclassroom.post.noDue')}</span>
-      ${p ? html`<span class="chip-s good">✅ ${t('gclassroom.post.posted')}</span>` : ''}</div>
-      ${p ? html`<div class="gc-lesson-acts">${p.link ? html`<a class="btn btn-sm" href="${p.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.post.open')}</a>` : ''}
+    const assignment = !can('coursework') ? '' : p ? html`<div class="gc-lesson-acts">${p.link ? html`<a class="btn btn-sm" href="${p.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.post.open')}</a>` : ''}
           <form class="gc-gradeform" data-api="/api/class-lessons/${cl.id}/google-classroom/grades" data-reload novalidate>
             <fieldset class="gc-modes"><legend class="small">${t('gclassroom.grades.as')}</legend>
               <label class="gc-mode"><input type="radio" name="mode" value="draft" checked> <span>${t('gclassroom.grades.draft')}</span></label>
               <label class="gc-mode"><input type="radio" name="mode" value="assigned"> <span>${t('gclassroom.grades.assigned')}</span></label></fieldset>
             <button class="btn btn-sm btn-primary" type="submit">📤 ${t('gclassroom.grades.button')}</button></form>${g}</div>`
-        : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/post" data-reload><button class="btn btn-sm" type="submit">📌 ${t('gclassroom.post.button')}</button></form>`}</li>`;
+      : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/post" data-reload><button class="btn btn-sm" type="submit">📌 ${t('gclassroom.post.button')}</button></form>`;
+    const material = !can('materials') ? '' : m ? html`<span class="gc-mat-done"><span class="chip-s good">📎 ${t('gclassroom.material.shared')}</span>${m.link ? html` <a class="btn btn-sm" href="${m.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.material.open')}</a>` : ''}</span>`
+      : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/material" data-reload><button class="btn btn-sm" type="submit">📎 ${t('gclassroom.material.button')}</button></form>`;
+    return html`<li class="gc-lesson" id="gc-l-${cl.id}"><div class="gc-lesson-head"><b dir="auto">${cl.title}</b>
+      <span class="small muted">${cl.due_at ? t('gclassroom.post.due', { date: f.day(cl.due_at) }) : t('gclassroom.post.noDue')}</span>
+      ${p && can('coursework') ? html`<span class="chip-s good">✅ ${t('gclassroom.post.posted')}</span>` : ''}</div>
+      <div class="gc-lesson-side">${assignment}${material}</div></li>`;
   };
+  const topicForm = ready && can('topics') ? html`<form class="row gc-topicform" data-api="/api/classes/${c.id}/google-classroom/topic" data-reload novalidate>
+      <label class="gc-topic-label" for="gc-topic"><span class="small">${t('gclassroom.topic.label')}</span>
+        <input class="input" id="gc-topic" name="name" maxlength="${GC.TOPIC_MAX}" value="${lk.topic_name}" placeholder="${t('gclassroom.topic.default')}" dir="auto"></label>
+      <button class="btn btn-sm" type="submit">${t('gclassroom.topic.save')}</button><span class="err" id="gc-topic-err" aria-live="polite"></span>
+      <p class="small muted gc-topic-hint">${t('gclassroom.topic.hint')}</p></form>` : '';
+  const anyPost = can('coursework') || can('materials');
   const lessonsPanel = ready ? html`<section class="panel" id="gc-lessons"><h2>📚 ${t('gclassroom.post.heading')}</h2>
-    <p class="small muted">${t('gclassroom.post.text')}</p><p class="small muted">${t('gclassroom.grades.text')}</p>
-    ${lessons.length ? html`<ul class="plain gc-lessons">${lessons.map(lessonRow)}</ul>` : html`<p class="small muted">${t('gclassroom.post.noLessons')}</p>`}</section>` : '';
+    ${anyPost ? html`<p class="small muted">${t('gclassroom.post.text')}</p>${can('materials') ? html`<p class="small muted">${t('gclassroom.material.text')}</p>` : ''}${can('coursework') ? html`<p class="small muted">${t('gclassroom.grades.text')}</p>` : ''}${topicForm}
+      ${lessons.length ? html`<ul class="plain gc-lessons">${lessons.map(lessonRow)}</ul>` : html`<p class="small muted">${t('gclassroom.post.noLessons')}</p>`}`
+      : lockedNote(req, c, 'gclassroom.post.locked')}</section>` : '';
+
+  // The class stream: three templates, each its own form. Oomba Academy adds only the fixed words shown.
+  const live = LS.liveOn() ? LS.openForClass(c.id) : null;
+  const openLessons = lessons.filter(cl => L.isOpen(cl));
+  const noteField = (id, max, { required = false } = {}) => html`<label class="gc-note-label" for="${id}"><span class="small">${t(required ? 'gclassroom.announce.message' : 'gclassroom.announce.note')}</span>
+    <textarea class="input gc-note" id="${id}" name="note" rows="3" maxlength="${max}" dir="auto" ${required ? raw('required') : ''}></textarea></label><span class="err" id="${id}-err" aria-live="polite"></span>`;
+  const liveFixed = live ? GC.announceFixed(t, c, { template: 'live', code: live.code }, origin(req)) : null;
+  const announcePanel = !ready ? '' : html`<section class="panel" id="gc-announce"><h2>📣 ${t('gclassroom.announce.heading')}</h2>
+    ${!can('announce') ? lockedNote(req, c, 'gclassroom.announce.locked') : html`<p class="small muted">${t('gclassroom.announce.text', { max: GC.ANNOUNCE_MAX })}</p>
+      <details class="gc-tpl" ${req.query.live === '1' ? raw('open') : ''}><summary>🎮 ${t('gclassroom.announce.live')}</summary>
+        ${live ? html`<form data-api="/api/classes/${c.id}/google-classroom/announce" data-reload novalidate><input type="hidden" name="template" value="live">
+          <p class="small">${t('gclassroom.announce.adds')}</p><p class="gc-fixed" dir="auto">${liveFixed.fixed}</p>
+          ${noteField('gc-note-live', GC.ANNOUNCE_MAX - liveFixed.fixed.length - 2)}<p class="err form-err" aria-live="polite"></p>
+          <button class="btn btn-primary" type="submit">📣 ${t('gclassroom.announce.send')}</button></form>`
+          : html`<p class="small muted">${t('gclassroom.announce.noLive')}</p>${LS.liveOn() ? html`<a class="btn btn-sm" href="/live?class=${c.id}">🎮 ${t('gclassroom.announce.hostLive')}</a>` : ''}`}</details>
+      <details class="gc-tpl"><summary>📚 ${t('gclassroom.announce.lesson')}</summary>
+        ${openLessons.length ? html`<form data-api="/api/classes/${c.id}/google-classroom/announce" data-reload novalidate><input type="hidden" name="template" value="lesson">
+          <label class="gc-note-label" for="gc-ann-cl"><span class="small">${t('gclassroom.announce.pickLesson')}</span>
+            <select class="input" id="gc-ann-cl" name="clId" required>${openLessons.map(cl => html`<option value="${cl.id}">${cl.title}</option>`)}</select></label><span class="err" id="gc-ann-cl-err" aria-live="polite"></span>
+          <p class="small">${t('gclassroom.announce.adds')}</p><p class="gc-fixed" dir="auto">${t('gclassroom.announce.fixed.lesson', { title: t('gclassroom.announce.lessonTitle'), url: `${origin(req)}/class/${c.id}/lessons/…` })}</p>
+          ${noteField('gc-note-lesson', GC.ANNOUNCE_MAX - 220)}<p class="err form-err" aria-live="polite"></p>
+          <button class="btn btn-primary" type="submit">📣 ${t('gclassroom.announce.send')}</button></form>`
+          : html`<p class="small muted">${t('gclassroom.announce.noLessons')}</p>`}</details>
+      <details class="gc-tpl"><summary>✏️ ${t('gclassroom.announce.free')}</summary>
+        <form data-api="/api/classes/${c.id}/google-classroom/announce" data-reload novalidate><input type="hidden" name="template" value="free">
+          ${noteField('gc-note-free', GC.ANNOUNCE_MAX, { required: true })}<p class="err form-err" aria-live="polite"></p>
+          <button class="btn btn-primary" type="submit">📣 ${t('gclassroom.announce.send')}</button></form></details>
+      <p class="small muted gc-ann-rule">🛡️ ${t('gclassroom.announce.rule')}</p>`}</section>`;
 
   const syncs = GC.recentSyncs(c.id);
   const logPanel = syncs.length ? html`<section class="panel" id="gc-log"><h2>🧾 ${t('gclassroom.log.heading')}</h2><ul class="plain gc-log">${syncs.map(x => syncLine(req, x))}</ul></section>` : '';
 
   page(req, res, { title: `${t('gclassroom.title')} · ${c.name}`, active: 'classes', head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'],
-    body: html`${classHeader(req, c, null)}<div class="gc-page"><h2 class="gc-title">🎓 ${t('gclassroom.title')}</h2>${connectPanel}${coursePanel}${rosterPanel}${lessonsPanel}${logPanel}</div>` });
+    body: html`${classHeader(req, c, null)}<div class="gc-page"><h2 class="gc-title">🎓 ${t('gclassroom.title')}</h2>${connectPanel}${coursePanel}${rosterPanel}${autoPanel}${lessonsPanel}${announcePanel}${logPanel}</div>` });
 });
 
 // ================================================================ pieces for other pages
@@ -271,9 +414,9 @@ export function gcRosterHint(req, c) {
   if (!GC.enabled() || !GC.mayConnect(req.user)) return '';
   return html`<p class="small gc-hint">🎓 ${tHtml(req.t, 'gclassroom.roster.hint', { link: html`<a href="${pagePath(c.id)}#gc-roster">${req.t('gclassroom.roster.hintLink')}</a>` })}</p>`;
 }
-/** The assign form: "Also post to Google Classroom", when this teacher is connected and the class linked. */
+/** The assign form: "Also post to Google Classroom", when this teacher is connected, allowed to post, and the class linked. */
 export function gcAssignField(req, c) {
-  if (!GC.enabled() || !GC.mayConnect(req.user) || !GC.linkOf(c.id) || GC.connectionState(req.user.id) !== 'ok') return '';
+  if (!GC.enabled() || !GC.mayConnect(req.user) || !GC.linkOf(c.id) || GC.connectionState(req.user.id) !== 'ok' || !GC.can(req.user.id, 'coursework')) return '';
   // Unticked: a post reaches real students in Classroom and can't be taken back from here, so the teacher asks for it.
   return html`<label class="field gc-also wide"><span class="gc-check"><input type="checkbox" name="gcPost" value="1"> <span>🎓 ${req.t('gclassroom.post.also')}</span></span></label>`;
 }
@@ -283,7 +426,15 @@ export async function gcAfterAssign(req, classLesson) {
   if (!GC.enabled() || !(v === '1' || v === true || v === 'on') || !classLesson || !GC.mayConnect(req.user)) return '';
   const c = S.getClass(classLesson.class_id);
   if (!c || !S.canManageClass(req.user, c) || !GC.linkOf(c.id)) return '';
-  if (!allow(`gc-sync:${req.user.id}`, 60, 3600e3)) return errText(req.t, 'tooManyTries');
-  const r = await GC.postLesson(req.user, classLesson, { origin: origin(req), description: req.t('gclassroom.post.description') });
+  if (!allow(`gc-sync:${req.user.id}`, GC.SYNCS_PER_HOUR, 3600e3)) return errText(req.t, 'tooManyTries');
+  const r = await GC.postLesson(req.user, classLesson, postOpts(req));
   return r.ok ? postText(req, r) : `${req.t('gclassroom.post.failed')} ${errText(req.t, r.code)}`;
+}
+/** The live host screen (routes/live.js): "Announce in Classroom" for a class game, when the host can post to that
+ *  class's linked Classroom stream. -> the link to the class page's announcement, or '' */
+export function gcLiveAnnounce(req, s) {
+  if (!GC.enabled() || !s || s.audience !== 'class' || !s.classId || !req.user || s.host.userId !== req.user.id || !GC.mayConnect(req.user)) return '';
+  const c = S.getClass(s.classId);
+  if (!c || !S.canManageClass(req.user, c) || !GC.linkOf(c.id) || GC.connectionState(req.user.id) !== 'ok' || !GC.can(req.user.id, 'announce')) return '';
+  return `${pagePath(c.id)}?live=1#gc-announce`;
 }

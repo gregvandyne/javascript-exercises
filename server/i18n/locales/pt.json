@@ -7384,14 +7384,15 @@
         "grades": "enviar ao Classroom a nota de conclusão de cada aluno numa aula"
       },
       "button": "Conectar o Google Classroom",
-      "privacy": "Só você vê esta conexão. A Oomba Academy envia ao Classroom o título da aula, um link, a data de entrega e a nota de conclusão de cada aluno de 0 a 100. Nada mais: nem nomes, nem respostas, nem jogos.",
+      "privacy": "Só você vê esta conexão. Ao conectar, a Oomba Academy pode ler suas turmas e os alunos delas. Só se você permitir publicar ela envia ao Classroom o que você publicar: o título, o link e a data de entrega de uma aula, a nota de conclusão de cada aluno de 0 a 100, o nome de um tópico e os avisos que você escrever. Nunca nomes, respostas ou jogos dos alunos.",
       "connectedAs": "Conectado como {email}",
       "connectedHint": "Esta conexão é sua: seus colegas professores conectam a deles.",
       "connectedToast": "O Google Classroom está conectado.",
       "disconnect": "Desconectar",
       "disconnectConfirm": "Desconectar o Google Classroom? A Oomba Academy vai parar de sincronizar por você e apagar a chave de acesso ao seu Classroom. As aulas já publicadas ficam no Classroom.",
       "disconnected": "O Google Classroom foi desconectado.",
-      "reconnect": "Conectar de novo"
+      "reconnect": "Conectar de novo",
+      "later": "Publicar aulas, notas e avisos vem depois, só se você permitir."
     },
     "course": {
       "heading": "Turma do Classroom vinculada",
@@ -7411,7 +7412,6 @@
       "heading": "Alunos do Classroom",
       "text": "Traz os alunos da turma do Classroom vinculada. Quem já está aqui é reconhecido pela conta Google. Quem é novo na Oomba Academy entra na primeira vez que fizer login com o Google no domínio da sua escola, e recebe então uma conta da escola. Os nomes reais ficam só com os professores.",
       "button": "Importar alunos",
-      "last": "Última importação {when}",
       "noDomains": "Sua escola ainda não adicionou o domínio Google dela, então não dá para adicionar alunos novos. Fale com o administrador da escola.",
       "noDomainsAdmin": "Adicione primeiro o domínio Google da escola, para os alunos novos poderem entrar: {link}",
       "hint": "Usa o Google Classroom? {link}",
@@ -7424,7 +7424,9 @@
       "resultStaff": "{count, plural, one {# é da equipe da escola} other {# são da equipe da escola}}",
       "resultDomains": "{count, plural, one {# não adicionado: adicione primeiro o domínio Google da escola} other {# não adicionados: adicione primeiro o domínio Google da escola}}",
       "resultWaiting": "{count, plural, one {# vai entrar no primeiro login com o Google no domínio da escola} other {# vão entrar no primeiro login com o Google no domínio da escola}}",
-      "waitingNow": "{count, plural, one {# aluno do Classroom ainda não fez login. Ele entra nesta turma no primeiro login com o Google no domínio da escola (em até 30 dias; importe de novo para renovar).} other {# alunos do Classroom ainda não fizeram login. Eles entram nesta turma no primeiro login com o Google no domínio da escola (em até 30 dias; importe de novo para renovar).}}"
+      "waitingNow": "{count, plural, one {# aluno do Classroom ainda não fez login. Ele entra nesta turma no primeiro login com o Google no domínio da escola (em até 30 dias; importe de novo para renovar).} other {# alunos do Classroom ainda não fizeram login. Eles entram nesta turma no primeiro login com o Google no domínio da escola (em até 30 dias; importe de novo para renovar).}}",
+      "updated": "Lista atualizada {when}",
+      "resultLeft": "{count, plural, one {# não está mais no Google Classroom} other {# não estão mais no Google Classroom}}"
     },
     "post": {
       "heading": "Aulas no Classroom",
@@ -7440,7 +7442,8 @@
       "posted": "Publicada",
       "open": "Abrir no Classroom",
       "noLessons": "Ainda não há aulas nesta turma. Atribua uma na aba Aulas.",
-      "doneScheduled": "Agendada no Google Classroom: os alunos a verão em {date}, quando a aula abrir."
+      "doneScheduled": "Agendada no Google Classroom: os alunos a verão em {date}, quando a aula abrir.",
+      "locked": "Para publicar aulas, enviar notas e compartilhar material, permita que a Oomba Academy publique no Classroom."
     },
     "grades": {
       "text": "É uma nota de conclusão: a parte das etapas da aula que o aluno fez, de 0 a 100. Não conta respostas certas. Quem ainda não começou fica de fora.",
@@ -7464,7 +7467,15 @@
         "unlink": "Turma desvinculada",
         "roster": "Alunos importados",
         "post": "Aula publicada",
-        "grades": "Notas enviadas"
+        "grades": "Notas enviadas",
+        "autoRoster": "Alunos atualizados (automático)",
+        "autoGrades": "Notas enviadas (automático)",
+        "material": "Material compartilhado",
+        "announce": "Publicado no mural",
+        "settings": "Sincronização automática alterada",
+        "topic": "Tópico renomeado",
+        "removeLeft": "Removido um aluno que saiu do Classroom",
+        "keepLeft": "Mantido um aluno que saiu do Classroom"
       }
     },
     "errors": {
@@ -7483,12 +7494,107 @@
       "alreadyPosted": "Esta aula já está no Google Classroom.",
       "notPosted": "Publique primeiro esta aula no Google Classroom.",
       "badMode": "Escolha como enviar as notas.",
-      "scopesMissing": "Marque todas as caixas na tela do Google, para a Oomba Academy poder ver suas turmas e publicar atividades.",
+      "scopesMissing": "Marque as duas caixas na tela do Google (ver suas turmas e os alunos delas): a Oomba Academy precisa delas para vincular uma turma.",
       "noRefresh": "O Google não enviou uma chave que possamos guardar. Conecte de novo.",
       "expired": "Demorou demais. Tente de novo.",
       "cancelled": "Você cancelou na tela do Google. Nada foi conectado.",
       "staffOnly": "Aqui só professores e administradores da escola podem usar o Google Classroom.",
-      "tooManyTries": "Sincronizações demais por agora. Tente de novo daqui a uma hora."
+      "tooManyTries": "Sincronizações demais por agora. Tente de novo daqui a uma hora.",
+      "needsScope": "A Oomba Academy ainda não tem permissão para fazer isso no seu Classroom. Use antes “Permitir que a Oomba Academy publique no Classroom”.",
+      "noneAllowed": "Nada novo foi permitido na tela do Google, então publicar continua desligado.",
+      "alreadyShared": "Esta aula já está compartilhada como material.",
+      "notLeaver": "Esse aluno não está mais na lista.",
+      "badTemplate": "Escolha o que avisar.",
+      "noLiveGame": "Nenhum jogo ao vivo está aberto para esta turma agora.",
+      "pickLesson": "Escolha uma aula desta turma.",
+      "lessonNotOpen": "Essa aula ainda não está aberta.",
+      "emptyNote": "Escreva sua mensagem primeiro.",
+      "tooLong": "Os avisos podem ter no máximo {max} caracteres.",
+      "hasName": "Sua mensagem tem o nome de um aluno ({name}). Os avisos vão para a turma toda: tire o nome, por favor.",
+      "tooManyAnnouncements": "Já foram 10 avisos em uma hora para esta turma. Espere um pouco."
+    },
+    "allow": {
+      "heading": "O que a Oomba Academy pode fazer no seu Classroom",
+      "features": {
+        "read": "Ver suas turmas e trazer os alunos delas",
+        "post": "Publicar aulas como atividades e enviar notas",
+        "materials": "Compartilhar aulas como material",
+        "announce": "Publicar avisos no mural da turma",
+        "topics": "Colocar as publicações dela em um tópico"
+      },
+      "on": "permitido",
+      "off": "ainda não permitido",
+      "textNone": "Por enquanto a Oomba Academy só pode ler suas turmas e os alunos delas. Para publicar no Classroom, permita na tela do Google.",
+      "textSome": "Algumas opções estão desligadas porque as caixas não foram marcadas na tela do Google. Você pode permitir agora.",
+      "button": "Permitir que a Oomba Academy publique no Classroom",
+      "done": "Pronto: a Oomba Academy agora pode publicar no seu Classroom."
+    },
+    "leavers": {
+      "heading": "Não estão mais no Google Classroom",
+      "text": "Estes alunos estavam na lista da turma do Classroom e não estão mais. Eles continuam nesta turma: remova ou mantenha aqui.",
+      "since": "saiu {when}",
+      "remove": "Remover da turma",
+      "removeConfirm": "Remover {name} desta turma? Os trabalhos ficam com a turma.",
+      "keep": "Manter",
+      "removed": "Removido da turma.",
+      "kept": "Mantido na turma."
+    },
+    "auto": {
+      "heading": "Sincronização automática",
+      "roster": "Atualizar os alunos do Classroom a cada 6 horas",
+      "rosterHint": "Alunos novos são adicionados. Quem sai do Classroom aparece acima para você remover: ninguém é removido sozinho.",
+      "grades": "Enviar notas automaticamente",
+      "gradesHint": "A cada 30 minutos, as notas de conclusão que mudaram vão para o Classroom nas aulas publicadas daqui, até 30 dias depois de cada data de entrega.",
+      "by": "As notas vão pela conexão do Google Classroom de {name}.",
+      "save": "Salvar",
+      "saved": "Salvo.",
+      "locked": "Para enviar notas automaticamente, é preciso permitir publicar.",
+      "reconnect": "Reconectar o Classroom",
+      "paused": {
+        "reconnect": "As notas automáticas estão pausadas: sua conexão com o Google Classroom parou de funcionar.",
+        "needsScope": "As notas automáticas estão pausadas: a Oomba Academy não pode mais publicar notas no seu Classroom. Permita de novo acima.",
+        "backoff": "As notas automáticas estão pausadas depois de um erro. Elas vão tentar de novo em breve.",
+        "other": "As notas automáticas estão pausadas: o professor que as ligou não pode sincronizar esta turma agora. Desligue e ligue de novo para enviá-las com a sua conexão."
+      }
+    },
+    "topic": {
+      "default": "Oomba Academy",
+      "label": "Tópico do Classroom para estas publicações",
+      "save": "Salvar",
+      "saved": "Tópico salvo.",
+      "hint": "As novas publicações ficam neste tópico no Classroom. Deixe vazio para usar o padrão."
+    },
+    "material": {
+      "text": "Compartilhar como material coloca o título e o link da aula no Classroom, sem nota e sem data de entrega.",
+      "button": "Compartilhar como material",
+      "done": "Compartilhado no Google Classroom como material.",
+      "doneScheduled": "Programado no Google Classroom como material: os alunos veem em {date}, quando a aula abrir.",
+      "shared": "Compartilhado como material",
+      "open": "Abrir material"
+    },
+    "announce": {
+      "heading": "Publicar no mural da turma",
+      "text": "Os avisos vão para todos na turma do Classroom, como texto simples (no máximo {max} caracteres).",
+      "live": "Um jogo ao vivo está começando",
+      "lesson": "Uma aula está pronta",
+      "free": "Sua própria mensagem",
+      "adds": "A Oomba Academy acrescenta:",
+      "note": "Acrescente um recado (opcional)",
+      "message": "Sua mensagem",
+      "send": "Publicar no mural",
+      "noLive": "Nenhum jogo ao vivo está aberto para esta turma agora. Abra um e volte aqui, ou use “Avisar no Classroom” na tela do anfitrião.",
+      "hostLive": "Abrir um jogo ao vivo",
+      "pickLesson": "Aula",
+      "lessonTitle": "o título da aula",
+      "noLessons": "Ainda não há aulas abertas nesta turma.",
+      "fixed": {
+        "live": "🎮 Um jogo ao vivo está começando! Entre em {url} com o código {code}.",
+        "lesson": "📚 Uma aula nova está pronta: {title}\n{url}"
+      },
+      "rule": "A Oomba Academy acrescenta só as palavras mostradas acima. Ela nunca acrescenta nomes ou resultados dos alunos e não publica uma mensagem com o nome de um aluno.",
+      "done": "Publicado no mural da turma.",
+      "locked": "Para publicar avisos, permita que a Oomba Academy publique no Classroom.",
+      "fromLive": "Avisar no Classroom"
     }
   },
   "digest": {

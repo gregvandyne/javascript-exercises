@@ -177,6 +177,7 @@ export function deleteLesson(u, lessonId) {
     q.run('DELETE FROM step_progress WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id);
     R.forgetLesson(l.id);
     q.run('DELETE FROM gc_posts WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id); // Google Classroom posts
+    q.run('DELETE FROM gc_grades WHERE class_lesson_id IN (SELECT id FROM class_lessons WHERE lesson_id=?)', l.id); // and the grades they sent
     q.run('DELETE FROM class_lessons WHERE lesson_id=?', l.id); q.run('DELETE FROM lesson_steps WHERE lesson_id=?', l.id); q.run('DELETE FROM lessons WHERE id=?', l.id);
     q.run('DELETE FROM lesson_standards WHERE lesson_id=?', l.id);
   });

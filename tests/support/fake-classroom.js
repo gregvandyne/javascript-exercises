@@ -1,6 +1,8 @@
 // A small stand-in for the Google Classroom API for tests (like tests/support/fake-stripe.js). It never talks to Google
 // and imports nothing from server/. Point CLASSROOM_API_BASE at it; the OAuth side (tokens, refresh, revoke) is
 // tests/support/fake-google.js. Any "Bearer fake-at-…" token is accepted and acts as the one teacher, `teacherId`.
+// Courses, their students, coursework and its submissions, materials, announcements and topics (a topic deleted from
+// `topics` is gone, as when a teacher deletes it in Classroom).
 // The values here are fake test data, not secrets. Run alone: node tests/support/fake-classroom.js --port 5940
 import http from 'node:http';
 import crypto from 'node:crypto';
@@ -8,6 +10,9 @@ import crypto from 'node:crypto';
 export async function startFakeClassroom({ port = 0, host = '127.0.0.1' } = {}) {
   const courses = new Map();   // id -> { id, name, section, courseState, teachers: Set, students: [{ userId, profile }] }
   const courseWork = new Map(); // id -> { courseId, body, submissions: [{ id, userId, draftGrade, assignedGrade, state }] }
+  const materials = new Map();  // id -> { courseId, body } (courseWorkMaterials)
+  const announcements = new Map(); // id -> { courseId, body }
+  const topics = new Map();     // topicId -> { courseId, name }
   const calls = [];             // { method, path, query, body }
   let failures = [];            // queued { status, body, match }
   let url = '';
@@ -52,10 +57,45 @@ export async function startFakeClassroom({ port = 0, host = '127.0.0.1' } = {}) 
       if (!body.title || body.workType !== 'ASSIGNMENT') return gErr(res, 400, 'INVALID_ARGUMENT');
       if (!!body.dueDate !== !!body.dueTime) return gErr(res, 400, 'INVALID_ARGUMENT', 'dueDate and dueTime go together');
       if (!['PUBLISHED', 'DRAFT'].includes(body.state)) return gErr(res, 400, 'INVALID_ARGUMENT', 'state');
+      if (body.topicId && !topics.has(body.topicId)) return gErr(res, 400, 'INVALID_ARGUMENT', 'topicId');
       if (body.scheduledTime && (body.state !== 'DRAFT' || !(Date.parse(body.scheduledTime) > Date.now()))) return gErr(res, 400, 'INVALID_ARGUMENT', 'scheduledTime needs DRAFT and a time ahead');
       const cwId = id();
       courseWork.set(cwId, { courseId: c.id, body, submissions: c.students.map(s => ({ id: 'Cg' + id(), userId: s.userId, state: 'CREATED' })) });
       return send(res, 200, { id: cwId, courseId: c.id, ...body, alternateLink: `https://classroom.google.com/c/${c.id}/a/${cwId}/details`, creationTime: new Date().toISOString() });
+    }
+    if (req.method === 'POST' && (m = u.pathname.match(/^\/v1\/courses\/([^/]+)\/courseWorkMaterials$/))) {
+      const c = courses.get(decodeURIComponent(m[1])); if (!c) return gErr(res, 404, 'NOT_FOUND');
+      if (!c.teachers.has('me')) return gErr(res, 403, 'PERMISSION_DENIED');
+      if (!body.title || body.workType || body.maxPoints !== undefined || body.dueDate) return gErr(res, 400, 'INVALID_ARGUMENT', 'a material has a title and no grade or due date');
+      if (!['PUBLISHED', 'DRAFT'].includes(body.state)) return gErr(res, 400, 'INVALID_ARGUMENT', 'state');
+      if (body.topicId && !topics.has(body.topicId)) return gErr(res, 400, 'INVALID_ARGUMENT', 'topicId');
+      const mid = id(); materials.set(mid, { courseId: c.id, body });
+      return send(res, 200, { id: mid, courseId: c.id, ...body, alternateLink: `https://classroom.google.com/c/${c.id}/m/${mid}/details` });
+    }
+    if (req.method === 'POST' && (m = u.pathname.match(/^\/v1\/courses\/([^/]+)\/announcements$/))) {
+      const c = courses.get(decodeURIComponent(m[1])); if (!c) return gErr(res, 404, 'NOT_FOUND');
+      if (!c.teachers.has('me')) return gErr(res, 403, 'PERMISSION_DENIED');
+      if (typeof body.text !== 'string' || !body.text.trim()) return gErr(res, 400, 'INVALID_ARGUMENT', 'text');
+      const aid = id(); announcements.set(aid, { courseId: c.id, body });
+      return send(res, 200, { id: aid, courseId: c.id, ...body, alternateLink: `https://classroom.google.com/c/${c.id}/p/${aid}` });
+    }
+    if ((m = u.pathname.match(/^\/v1\/courses\/([^/]+)\/topics(?:\/([^/]+))?$/))) {
+      const c = courses.get(decodeURIComponent(m[1])); if (!c) return gErr(res, 404, 'NOT_FOUND');
+      if (!c.teachers.has('me')) return gErr(res, 403, 'PERMISSION_DENIED');
+      const tid = m[2] && decodeURIComponent(m[2]); const tp = tid && topics.get(tid);
+      if (tid && (!tp || tp.courseId !== c.id)) return gErr(res, 404, 'NOT_FOUND');
+      if (req.method === 'GET' && tid) return send(res, 200, { courseId: c.id, topicId: tid, name: tp.name });
+      if (req.method === 'GET') return send(res, 200, page([...topics].filter(([, x]) => x.courseId === c.id).map(([k, x]) => ({ courseId: c.id, topicId: k, name: x.name })), u, 'topic'));
+      if (req.method === 'POST' && !tid) {
+        if (!body.name || body.name.length > 100) return gErr(res, 400, 'INVALID_ARGUMENT', 'name');
+        if ([...topics.values()].some(x => x.courseId === c.id && x.name === body.name)) return gErr(res, 409, 'ALREADY_EXISTS');
+        const nid = id(); topics.set(nid, { courseId: c.id, name: body.name });
+        return send(res, 200, { courseId: c.id, topicId: nid, name: body.name });
+      }
+      if (req.method === 'PATCH' && tid) {
+        if (u.searchParams.get('updateMask') !== 'name' || !body.name) return gErr(res, 400, 'INVALID_ARGUMENT', 'updateMask');
+        tp.name = body.name; return send(res, 200, { courseId: c.id, topicId: tid, name: tp.name });
+      }
     }
     if (req.method === 'GET' && (m = u.pathname.match(/^\/v1\/courses\/([^/]+)\/courseWork\/([^/]+)\/studentSubmissions$/))) {
       const cw = courseWork.get(decodeURIComponent(m[2])); if (!cw || cw.courseId !== decodeURIComponent(m[1])) return gErr(res, 404, 'NOT_FOUND');
@@ -74,7 +114,7 @@ export async function startFakeClassroom({ port = 0, host = '127.0.0.1' } = {}) 
   await new Promise(r => server.listen(port, host, r));
   url = `http://${host}:${server.address().port}`;
   return {
-    get url() { return url; }, courses, courseWork, calls,
+    get url() { return url; }, courses, courseWork, materials, announcements, topics, calls,
     /** A course the teacher teaches (or not: teaches false). students: [{ userId, fullName }] */
     addCourse({ id: cid = id(), name = 'Class', section = '', state = 'ACTIVE', teaches = true, students = [] } = {}) {
       courses.set(cid, { id: cid, name, section, courseState: state, teachers: new Set(teaches ? ['me'] : []), students: [...students] });
@@ -83,7 +123,7 @@ export async function startFakeClassroom({ port = 0, host = '127.0.0.1' } = {}) 
     addStudent(cid, s) { courses.get(cid).students.push(s); },
     /** The next matching call answers with this status (and body). */
     failNext(status, { match = null, body = null, statusText = '' } = {}) { failures.push({ status, match, body, statusText }); },
-    reset() { courses.clear(); courseWork.clear(); calls.length = 0; failures = []; },
+    reset() { courses.clear(); courseWork.clear(); materials.clear(); announcements.clear(); topics.clear(); calls.length = 0; failures = []; },
     close: () => new Promise(r => { server.closeAllConnections?.(); server.close(() => r()); }),
   };
 }
