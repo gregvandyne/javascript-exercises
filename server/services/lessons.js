@@ -459,6 +459,13 @@ export function dueState(cl, t = now()) {
   if (t >= cl.due_at) return 'today';
   return 'upcoming';
 }
+/** The instant from which work on this lesson is late (the same boundary dueState uses for 'late'): the local midnight
+ *  after the due day in the school's zone; without a zone, the due day + 36 hours. null with no due date. */
+export function lateFrom(cl) {
+  if (!cl || !cl.due_at) return null;
+  const tz = zoneFor(cl);
+  return tz ? dayBounds(cl.due_at, tz).end : cl.due_at + LATE_AFTER;
+}
 /** Units in order, each with its lessons; lessons without a unit come first (unit null). openOnly: what students see. */
 export function classPlan(classId, { openOnly = false } = {}) {
   const ls = classLessons(classId).filter(cl => !openOnly || isOpen(cl));

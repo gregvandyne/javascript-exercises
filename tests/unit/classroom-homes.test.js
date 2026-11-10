@@ -66,7 +66,7 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   const h = await get('/teach', head); assert.equal(h.status, 200); assert.match(h.text, /Hello, Mrs Homeshead/); assert.match(h.text, /Manage Homes School/);
 });
 
-test('the Classroom while a class\'s live room is open: its host gets "Open live game", never a second Host button', async () => {
+test('the Classroom while a class\'s live room is open: its host gets "Open live game" on every class card, never a second Host button', async () => {
   const hostBtn = id => new RegExp(`href="/live\\?class=${id}">📡 Host a live game`);
   let r = await get('/teach', teacher);
   assert.match(r.text, hostBtn(busy.id)); assert.match(r.text, hostBtn(quiet.id));
@@ -76,9 +76,15 @@ test('the Classroom while a class\'s live room is open: its host gets "Open live
   r = await get('/teach', teacher);
   assert.match(r.text, new RegExp(`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${made.json.sid}">📡 Open live game</a>`));
   assert.doesNotMatch(r.text, hostBtn(busy.id), 'no second room for the class');
-  assert.match(r.text, hostBtn(quiet.id), 'the other class can still host');
+  // A host has one room at a time: the other class's card leads back to the open room and says so (no second Host button).
+  assert.doesNotMatch(r.text, hostBtn(quiet.id), 'no Host button on the other class while a room is open');
+  assert.match(r.text, new RegExp(`<a class="btn btn-sm cc-live cc-live-other" href="/live/host/${made.json.sid}">📡 Open live game</a>`));
+  assert.match(r.text, new RegExp(`<p class="small muted cc-quick cc-elsewhere" data-room="${made.json.sid}">You already have a game open: [^<]+</p>`));
+  assert.equal([...r.text.matchAll(/cc-elsewhere/g)].length, 1, 'only on the other class\'s card');
   LS.endSession(made.json.sid, 'ended');
-  assert.match((await get('/teach', teacher)).text, hostBtn(busy.id), 'ended: Host a live game again');
+  r = await get('/teach', teacher);
+  assert.match(r.text, hostBtn(busy.id), 'ended: Host a live game again'); assert.match(r.text, hostBtn(quiet.id), 'and on the other class');
+  assert.doesNotMatch(r.text, /cc-elsewhere|cc-live-other/);
 });
 
 test('the School tab of a school\'s own admin has no back link (it is a first tab); the platform admin\'s has one to Schools', async () => {
