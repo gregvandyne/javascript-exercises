@@ -63,7 +63,18 @@ export function makeBank(data, strings, rand) {
   }
   /** n items of one subject at one level. seen: a Set of item ids already played (they come last; the pool refills). */
   function pickSubject(s, level, n, seen) {
-    if (s === 'math') { const out = []; for (let i = 0; i < n; i++) out.push(mathItem(level)); return out; }
+    if (s === 'math') {
+      // Made-up sums can come out the same twice (ages 6-7 have about 150 different ones): a question already in this
+      // pick, or already played (seen), is drawn again. After 40 tries in a row a repeat is let through, so a pick
+      // bigger than the level's pool still fills.
+      const out = [], used = {};
+      for (let i = 0; i < n; i++) {
+        let it = mathItem(level);
+        for (let k = 0; k < 40 && (used[it.q] || (seen && seen.has(it.id))); k++) it = mathItem(level);
+        used[it.q] = true; out.push(it);
+      }
+      return out;
+    }
     const lv = levelsNear(s, level); if (!lv.length) return [];
     let pool = [];
     for (const l of lv) { const rows = data[s][l]; const idx = shuffle(rows.map((r, i) => i)); for (const i of idx) pool.push([l, i]); if (pool.length >= n * 2 && l !== lv[0]) break; }
@@ -99,8 +110,11 @@ export function makeBank(data, strings, rand) {
     const rows = [lower, LEVELS[at], LEVELS[at], upper, upper];
     const out = [];
     for (const s of use) {
-      const got = [], ids = new Set(seen || []);
-      for (const l of rows) { const it = pickSubject(s, l, 1, { has: id => ids.has(id) })[0]; if (it) { ids.add(it.id); got.push(it); } }
+      // A column's tiles come from three levels, and a made-up sum can come out the same at two of them ("3 + 4" for
+      // ages 6-7 and 8-9): a maths question already on the column counts as played whatever its level.
+      const got = [], ids = new Set(seen || []), sums = {};
+      const played = { has: id => ids.has(id) || (id.indexOf('math:') === 0 && sums[id.split(':').slice(2).join(':')] === true) };
+      for (const l of rows) { const it = pickSubject(s, l, 1, played)[0]; if (it) { ids.add(it.id); if (s === 'math') sums[it.q] = true; got.push(it); } }
       for (const it of got) out.push(it);
     }
     return out;

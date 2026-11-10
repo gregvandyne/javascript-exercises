@@ -190,6 +190,37 @@
       "pickAvatar": "Escolha um dos avatares.",
       "pickColor": "Escolha uma das cores.",
       "pickLanguage": "Escolha um dos idiomas."
+    },
+    "reset": {
+      "linkLine": "Professor, equipe da escola ou adulto? <a href=\"{href}\">Redefina sua senha por e-mail</a>.",
+      "title": "Redefinir a senha",
+      "lead": "Para contas de professores, equipe da escola e adultos. Digite seu nome de usuário e enviaremos um link para o e-mail que temos da conta.",
+      "kids": "Conta de aluno ou de criança? Peça ao seu professor ou a um adulto. Contas de crianças não têm e-mail.",
+      "username": "Nome de usuário",
+      "needUsername": "Digite primeiro seu nome de usuário.",
+      "send": "Enviar um link por e-mail",
+      "sent": "Se essa for uma conta de professor, equipe da escola ou adulto com um e-mail cadastrado, um link está a caminho. Ele funciona uma vez, por {minutes} minutos.",
+      "noEmail": "Não chegou nada? Talvez a conta não tenha e-mail cadastrado. Escreva para {email} e nós ajudamos.",
+      "off": "Não conseguimos enviar links de redefinição agora. Escreva para {email} e nós ajudamos.",
+      "backToSignIn": "Voltar para entrar",
+      "newTitle": "Escolha uma senha nova",
+      "forAccount": "Para a conta {username}",
+      "newLabel": "Senha nova",
+      "newHint": "Pelo menos {min} caracteres.",
+      "save": "Salvar minha senha nova",
+      "bad": "Este link expirou ou já foi usado. Um link funciona uma vez, por {minutes} minutos.",
+      "again": "Enviar um link novo",
+      "done": "Sua senha foi alterada. Entre com a nova. Você saiu da conta em todos os outros lugares.",
+      "email": {
+        "subject": "Redefina sua senha da Oomba Academy",
+        "intro": "Alguém pediu para redefinir a senha da conta {username} da Oomba Academy. Se foi você, escolha uma senha nova com este link:",
+        "button": "Escolher uma senha nova",
+        "expires": "O link funciona uma vez, por {minutes} minutos.",
+        "ignore": "Se você não pediu isso, pode ignorar este e-mail. Sua senha continua a mesma.",
+        "doneSubject": "Sua senha da Oomba Academy foi alterada",
+        "doneIntro": "A senha da conta {username} da Oomba Academy acabou de ser alterada com um link de redefinição enviado para este endereço.",
+        "doneNotYou": "Se não foi você, escreva para {email} imediatamente."
+      }
     }
   },
   "me": {
@@ -2708,7 +2739,8 @@
       "count": "{count, plural, one {# cartão de acesso} other {# cartões de acesso}}",
       "later": "No celular? Estes cartões ficam aqui para você (só você) por 24 horas: abra de novo pela aba Alunos da turma num computador da escola e imprima, ou use Compartilhar › Imprimir › Salvar como PDF no celular.",
       "again": "{count, plural, one {Cartão de acesso feito hoje: ainda aqui para imprimir.} other {# cartões de acesso feitos hoje: ainda aqui para imprimir.}}",
-      "open": "Abrir os cartões"
+      "open": "Abrir os cartões",
+      "next": "Próximo passo: passar um primeiro jogo"
     },
     "errors": {
       "notFound": "Não encontramos isso, ou não é possível abrir.",
@@ -3107,7 +3139,8 @@
       "zoneSet": "Definir o fuso horário",
       "zoneAsk": "Um administrador da escola pode defini-lo nas Configurações da escola.",
       "doneHere": "Atribuída a {class}. Os alunos já estão vendo.",
-      "seeStarted": "Ver quem já começou"
+      "seeStarted": "Ver quem já começou",
+      "doneLater": "Atribuída a {class}. Os alunos vão vê-la a partir de {date}."
     },
     "class": {
       "title": "Aulas",
@@ -3222,7 +3255,9 @@
       "noStudents": "Nenhum aluno ainda",
       "noStudentsText": "Adicione alunos na aba Alunos, e o progresso deles vai aparecer aqui.",
       "toReviewList": "Respostas para revisar:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Nota do quiz: {pct}% de acertos",
+      "quizOverall": "Nota dos quizzes em todas as aulas: {pct}%"
     },
     "lesson": {
       "finished": "{done} de {total} alunos concluíram",
@@ -3243,7 +3278,8 @@
       "attention": "Quem precisa de atenção primeiro",
       "selfMarked": "Marcado como feito pelo aluno, sem jogar aqui",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Deslize a tabela para o lado para ver todas as etapas"
+      "swipe": "Deslize a tabela para o lado para ver todas as etapas",
+      "quizScore": "{right} de {total} certas ({pct}%)"
     },
     "student": {
       "doneOf": "{done} de {total} feitas",
@@ -3271,6 +3307,10 @@
     },
     "courses": {
       "started": "{started} de {total} começaram"
+    },
+    "csv": {
+      "quiz": "{title} (% do quiz)",
+      "quizAll": "% dos quizzes"
     }
   },
   "google": {
@@ -3997,7 +4037,8 @@
         "passwordHint": "Pelo menos {min} caracteres.",
         "adult": "Sou professor ou trabalho em uma escola, e tenho 18 anos ou mais.",
         "submit": "Criar minha conta e começar o teste",
-        "privacy": "Não guardamos seu e-mail de trabalho na sua conta: ele vai para a Stripe, para o seu plano. <a href=\"{privacy}\">Política de Privacidade</a>"
+        "privacy": "Usamos seu e-mail de trabalho para o seu plano (ele vai para a Stripe), para e-mails sobre o seu teste e para redefinir uma senha perdida. <a href=\"{privacy}\">Política de Privacidade</a>",
+        "usernameHint": "De 3 a 16 letras ou números, sem espaços. Você entra com ele."
       },
       "errors": {
         "signedIn": "Você já entrou.",
@@ -5062,7 +5103,8 @@
       "soundOff": "Som desligado",
       "seeResultsNow": "Ver resultados agora",
       "read": "Ler pergunta",
-      "away": "{count} desconectados"
+      "away": "{count} desconectados",
+      "startEmpty": "Ninguém entrou ainda. Começar mesmo assim?"
     },
     "landing": {
       "title": "Conduzir um jogo ao vivo",
@@ -6572,7 +6614,8 @@
       "title": "Number Quest",
       "sub": "Matemática nos Numberworks · do 3º ao 5º ano"
     },
-    "unitsN": "{count, plural, one {Ver a # unidade} other {Ver as # unidades}}"
+    "unitsN": "{count, plural, one {Ver a # unidade} other {Ver as # unidades}}",
+    "gamesN": "{count, plural, one {Ver o # jogo} other {Ver os # jogos}}"
   },
   "move": {
     "title": "Pausas ativas",

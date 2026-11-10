@@ -125,6 +125,8 @@ test('send: off without a key or with EMAIL_ENABLED=0; a nudge needs the postal 
   // A transactional email doesn't need it.
   assert.equal((await E.send({ ...m, category: 'transactional' })).status, 'sent');
   assert.equal(sent.length, 1);
+  // ...and is not a mailing: no one-click unsubscribe headers (a mail client's button would switch the nudges off).
+  assert.equal(sent[0].body.headers, undefined);
   Object.assign(config, ON);
   assert.equal((await E.send(m)).status, 'sent');
   assert.equal(sent.length, 2);

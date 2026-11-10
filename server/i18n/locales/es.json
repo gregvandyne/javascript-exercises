@@ -189,6 +189,37 @@
       "pickAvatar": "Elige uno de los avatares.",
       "pickColor": "Elige uno de los colores.",
       "pickLanguage": "Elige uno de los idiomas."
+    },
+    "reset": {
+      "linkLine": "¿Docente, personal del colegio o adulto? <a href=\"{href}\">Restablece tu contraseña por correo</a>.",
+      "title": "Restablecer la contraseña",
+      "lead": "Para cuentas de docentes, personal del colegio y adultos. Escribe tu nombre de usuario y enviaremos un enlace al correo que tenemos de la cuenta.",
+      "kids": "¿Una cuenta de alumno o de niño? Pregunta a tu docente o a un adulto. Las cuentas de niños no tienen correo.",
+      "username": "Nombre de usuario",
+      "needUsername": "Escribe primero tu nombre de usuario.",
+      "send": "Enviarme un enlace por correo",
+      "sent": "Si es una cuenta de docente, personal del colegio o adulto con un correo registrado, hay un enlace en camino. Funciona una vez, durante {minutes} minutos.",
+      "noEmail": "¿No ha llegado nada? Puede que la cuenta no tenga un correo registrado. Escribe a {email} y te ayudamos.",
+      "off": "Ahora mismo no podemos enviar enlaces para restablecer la contraseña. Escribe a {email} y te ayudamos.",
+      "backToSignIn": "Volver a entrar",
+      "newTitle": "Elige una contraseña nueva",
+      "forAccount": "Para la cuenta {username}",
+      "newLabel": "Contraseña nueva",
+      "newHint": "Al menos {min} caracteres.",
+      "save": "Guardar mi contraseña nueva",
+      "bad": "Este enlace ha caducado o ya se usó. Un enlace funciona una vez, durante {minutes} minutos.",
+      "again": "Enviar un enlace nuevo",
+      "done": "Tu contraseña ha cambiado. Entra con la nueva. Se cerró tu sesión en todos los demás sitios.",
+      "email": {
+        "subject": "Restablece tu contraseña de Oomba Academy",
+        "intro": "Alguien pidió restablecer la contraseña de la cuenta {username} de Oomba Academy. Si fuiste tú, elige una contraseña nueva con este enlace:",
+        "button": "Elegir una contraseña nueva",
+        "expires": "El enlace funciona una vez, durante {minutes} minutos.",
+        "ignore": "Si no lo pediste, puedes ignorar este correo. Tu contraseña sigue siendo la misma.",
+        "doneSubject": "Tu contraseña de Oomba Academy ha cambiado",
+        "doneIntro": "La contraseña de la cuenta {username} de Oomba Academy se acaba de cambiar con un enlace de restablecimiento enviado a esta dirección.",
+        "doneNotYou": "Si no fuiste tú, escribe a {email} cuanto antes."
+      }
     }
   },
   "me": {
@@ -2706,7 +2737,8 @@
       "count": "{count, plural, one {# tarjeta de acceso} other {# tarjetas de acceso}}",
       "later": "¿En un teléfono? Estas tarjetas se quedan aquí para ti (solo para ti) durante 24 horas: vuelve a abrirlas desde la pestaña Estudiantes de la clase en una computadora de la escuela e imprímelas, o usa Compartir › Imprimir › Guardar como PDF en tu teléfono.",
       "again": "{count, plural, one {Tarjeta de acceso que hiciste hoy: sigue aquí para imprimir.} other {# tarjetas de acceso que hiciste hoy: siguen aquí para imprimir.}}",
-      "open": "Abrir las tarjetas"
+      "open": "Abrir las tarjetas",
+      "next": "Siguiente: asignar un primer juego"
     },
     "errors": {
       "notFound": "No pudimos encontrarlo, o no se puede abrir.",
@@ -3105,7 +3137,8 @@
       "zoneSet": "Configurar la zona horaria",
       "zoneAsk": "Un administrador de la escuela puede configurarla en la Configuración de la escuela.",
       "doneHere": "Asignada a {class}. Los estudiantes ya la ven.",
-      "seeStarted": "Ver quién ha empezado"
+      "seeStarted": "Ver quién ha empezado",
+      "doneLater": "Asignada a {class}. Los alumnos la verán a partir del {date}."
     },
     "class": {
       "title": "Lecciones",
@@ -3220,7 +3253,9 @@
       "noStudents": "Todavía no hay estudiantes",
       "noStudentsText": "Agregue estudiantes en la pestaña Estudiantes y aquí aparecerá su progreso.",
       "toReviewList": "Respuestas por revisar:",
-      "reviewLink": "{title} ({count})"
+      "reviewLink": "{title} ({count})",
+      "quizTitle": "Nota del quiz: {pct} % de aciertos",
+      "quizOverall": "Nota de los quiz en todas las lecciones: {pct} %"
     },
     "lesson": {
       "finished": "{done} de {total} estudiantes terminaron",
@@ -3241,7 +3276,8 @@
       "attention": "Primero quien necesita atención",
       "selfMarked": "Marcado como hecho por el estudiante, sin jugar aquí",
       "minutes": "{count, plural, one {# min} other {# min}}",
-      "swipe": "Desliza la tabla hacia un lado para ver todos los pasos"
+      "swipe": "Desliza la tabla hacia un lado para ver todos los pasos",
+      "quizScore": "{right} de {total} correctas ({pct} %)"
     },
     "student": {
       "doneOf": "{done} de {total} hechos",
@@ -3269,6 +3305,10 @@
     },
     "courses": {
       "started": "{started} de {total} empezaron"
+    },
+    "csv": {
+      "quiz": "{title} (% del quiz)",
+      "quizAll": "% de los quiz"
     }
   },
   "google": {
@@ -3995,7 +4035,8 @@
         "passwordHint": "Al menos {min} caracteres.",
         "adult": "Soy docente o personal de una escuela, y tengo 18 años o más.",
         "submit": "Crear mi cuenta y empezar la prueba",
-        "privacy": "No guardamos su correo del trabajo en su cuenta: se envía a Stripe para su plan. <a href=\"{privacy}\">Política de privacidad</a>"
+        "privacy": "Usamos su correo del trabajo para su plan (se envía a Stripe), para los correos sobre su prueba y para restablecer una contraseña perdida. <a href=\"{privacy}\">Política de privacidad</a>",
+        "usernameHint": "De 3 a 16 letras o números, sin espacios. Entras con él."
       },
       "errors": {
         "signedIn": "Ya inició sesión.",
@@ -5060,7 +5101,8 @@
       "soundOff": "Sonido apagado",
       "seeResultsNow": "Ver resultados ya",
       "read": "Leer pregunta",
-      "away": "{count} desconectados"
+      "away": "{count} desconectados",
+      "startEmpty": "Todavía no ha entrado nadie. ¿Empezar de todos modos?"
     },
     "landing": {
       "title": "Dirigir un juego en vivo",
@@ -6570,7 +6612,8 @@
       "title": "Number Quest",
       "sub": "Matemáticas en los Numberworks · de 3.º a 5.º grado"
     },
-    "unitsN": "{count, plural, one {Ver la # unidad} other {Ver las # unidades}}"
+    "unitsN": "{count, plural, one {Ver la # unidad} other {Ver las # unidades}}",
+    "gamesN": "{count, plural, one {Ver el # juego} other {Ver los # juegos}}"
   },
   "move": {
     "title": "Pausas activas",

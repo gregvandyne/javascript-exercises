@@ -2,7 +2,8 @@
 // key; no SDK). Off unless RESEND_API_KEY is set and EMAIL_ENABLED is not 0. Two kinds of email:
 //  - 'nudge': marketing (the trial sequence). Needs EMAIL_POSTAL_ADDRESS (CAN-SPAM): while it is empty none is sent at
 //    all (logged once; /admin/emails and /admin/billing warn). Never to someone who unsubscribed.
-//  - 'transactional' (a thank-you for a purchase, later receipts): unsubscribing doesn't stop these.
+//  - 'transactional' (a thank-you for a purchase, a password reset, later receipts): unsubscribing doesn't stop these,
+//    and they carry no List-Unsubscribe header.
 //  - 'digest': the weekly class summary for teachers (services/digest.js). Its own off switch (digest_off_at, the
 //    "Stop these summaries" link and the Me page), separate from the nudges'; no postal address needed (it is about
 //    the teacher's own classes, not marketing), though the footer carries it when it is set.
@@ -138,10 +139,12 @@ export async function send({ userId, template, category, subject, html, text, id
   if (category === 'digest' && digestOff(userId)) { logRow({ ...base, status: 'skipped', error: 'unsubscribed' }); return { status: 'skipped', reason: 'unsubscribed' }; }
   const address = to ? normEmail(to) : addressOf(userId)?.email;
   if (!address) { logRow({ ...base, status: 'skipped', error: 'no_address' }); log('info', 'email skipped: no address', { user: userId, template }); return { status: 'skipped', reason: 'no_address' }; }
+  // The one-click unsubscribe headers go on everything but transactional mail (a receipt, a password reset): a mail
+  // client's "Unsubscribe" button there would switch off the trial emails, and a security email is not a mailing.
   const unsub = unsubscribeUrl(userId, category === 'digest' ? 'digest' : '');
   const body = {
     from: config.emailFrom, to: [address], reply_to: config.emailReplyTo, subject, html, text,
-    headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
+    ...(category === 'transactional' ? {} : { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } }),
     tags: [{ name: 'template', value: String(template).replace(/[^A-Za-z0-9_-]/g, '_') }, { name: 'category', value: category }],
   };
   const key = idemKey || `${template}-${userId}-${uid(8)}`;

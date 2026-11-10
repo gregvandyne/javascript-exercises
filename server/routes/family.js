@@ -20,6 +20,7 @@ import * as auth from '../auth.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import * as F from '../services/family.js';
+import { sendingOn as emailSendingOn } from '../services/email.js';
 import * as funnel from '../services/funnel.js';
 import * as S from '../services/stripe.js';
 import * as C from '../services/checkout.js';
@@ -64,7 +65,7 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status|billing\/sparks\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/trial$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
+  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/trial$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup|forgot|reset)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
   // Oomba Live: grown-ups host (and join) live games (routes/live.js).
   /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/,
   // Online matches: grown-ups play their own children (and other grown-ups) (routes/match.js).
@@ -77,7 +78,7 @@ const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billi
   // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
   // children said to each other. No friends' chat: /chat itself stays closed.
   /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
-const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
+const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|family\/sparks|portal)$/,
   /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
@@ -319,6 +320,7 @@ function grownupAuthPage(req, res, mode) {
       <p class="err form-err" aria-live="polite"></p>
       <button class="btn btn-primary btn-block btn-big" type="submit">${t('family.login.submit')}</button>
     </form>
+    ${emailSendingOn() ? html`<p class="small" style="margin-top:12px" id="forgot-grownup">${tHtml(t, 'auth.reset.linkLine', { href: '/forgot' })}</p>` : ''}
     ${config.contactEmail ? html`<p class="small muted" style="margin-top:12px">${tHtml(t, 'family.login.forgot', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p>` : ''}
     <p class="center small" style="margin-top:16px">${t('family.login.newHere')} <a href="/grown-ups/signup${nextQuery}">${t('family.landing.signup')}</a></p>`;
   const body = html`<div class="authbox"><div class="panel">

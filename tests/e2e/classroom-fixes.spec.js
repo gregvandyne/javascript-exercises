@@ -137,7 +137,9 @@ test('a school admin invites an existing account: not staff until they accept; t
   const { username: headName } = await signup(head, uniq('Head'), 'head-pass-123');
   const admin = await adminPage(browser);
   const school = await schoolWithAdmin(admin, headName);
-  // the new school's admin lands on the school page (no classes yet), with the setup steps in order
+  // the new school's admin lands on the school page (no classes yet), with the setup steps in order: a head the
+  // platform admin appointed has a school to set up, also while they are its only staff member (the Classroom-first
+  // rule is only for a teacher who made their own school at /trial: docs/decisions.md "Teacher quick wins", j)
   await head.goto('/login?signedout=0');
   await head.request.post('/api/auth/logout', { data: {} });
   await login(head, headName, 'head-pass-123');

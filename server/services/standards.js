@@ -83,7 +83,7 @@ export function classStandards(classId, { all = false } = {}) {
       const c = cell(id, u); c.right += x.right; c.answered += x.answered; c.checks.push({ at, tagged: x.tagged, right: x.right }); c.last = Math.max(c.last, at);
     }
   };
-  const rows = classId ? q.all(`SELECT p.class_lesson_id cl, p.step_id, p.user_id, p.status, p.marks, p.done_at, p.updated_at FROM step_progress p
+  const rows = classId ? q.all(`SELECT p.class_lesson_id cl, p.step_id, p.user_id, p.status, p.marks, p.done_at, p.updated_at, p.reviewed_at FROM step_progress p
     JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=?`, classId) : [];
   for (const r of rows) {
@@ -95,7 +95,7 @@ export function classStandards(classId, { all = false } = {}) {
     if (kind === L.QUIZ_KIND && t.items.length) ticket(r.user_id, `s${r.step_id}@${r.cl}`, t.items, String(r.marks || ''), r.updated_at || at);
     if (t.rubric.length) {
       const ms = String(r.marks || '');
-      t.rubric.forEach((ids, i) => { if (!/^[0-3]$/.test(ms[i] || '')) return; for (const id of ids) { const c = cell(id, r.user_id); c.marks.push(+ms[i]); c.last = Math.max(c.last, r.updated_at || 0); } });
+      t.rubric.forEach((ids, i) => { if (!/^[0-3]$/.test(ms[i] || '')) return; for (const id of ids) { const c = cell(id, r.user_id); c.marks.push(+ms[i]); c.last = Math.max(c.last, r.reviewed_at || r.updated_at || 0); } });
     }
   }
   // Live runs of exit-ticket sets in this class: the saved items keep cat (classlive-results itemRow).

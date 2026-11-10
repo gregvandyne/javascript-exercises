@@ -126,6 +126,10 @@ export async function refreshLive() {
 }
 if (FIRST && document.querySelector('[data-live]')) setInterval(() => { if (!document.hidden) refreshLive(); }, 30000);
 
+// A sign-up form that sets up a school sends this browser's time zone (an IANA name such as "America/Chicago"; the
+// server checks it), so due dates end at midnight where the teacher is.
+try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz) $$('input[data-browser-tz]').forEach(i => { i.value = tz; }); } catch { /* no zone: set in Settings */ }
+
 // ---- Forms with data-api: submit as JSON, show inline errors, then redirect/reload ----
 on(document, 'submit', async e => {
   const f = e.target.closest('form[data-api]'); if (!f) return;

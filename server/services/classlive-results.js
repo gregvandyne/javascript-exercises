@@ -194,13 +194,16 @@ const cell = v => { const s = String(v ?? ''); return /^[=+\-@\t\r]/.test(s) ? `
  * The results as CSV: rank, student, team, score, bonus, correct, answered, q1..qN (marks: 1 right, 0 wrong, - none),
  * then a blank line and one row per question: question, right, answered, choice_a..d (counts). Cells that a spreadsheet
  * would read as a formula are quoted with a leading apostrophe.
- * x: { players: [{ rank, name, team (a name), score, bonus, correct, answered, marks }], items }
+ * x: { players: [{ rank, name, roster?, team (a name), score, bonus, correct, answered, marks }], items }
+ * roster: the school's roster name, which the route gives only to someone who manages the class; when any player has
+ * one, a roster_name column follows student (the name shown in the game).
  */
 export function csv({ players = [], items = [] }) {
   const n = Math.max(0, ...players.map(p => (p.marks || '').length));
   const qs = Array.from({ length: n }, (_, i) => `q${i + 1}`);
-  const rows = [['rank', 'student', 'team', 'score', 'bonus', 'correct', 'answered', ...qs],
-    ...players.map(p => [p.rank, p.name, p.team || '', p.score, p.bonus || 0, p.correct, p.answered, ...Array.from({ length: n }, (_, i) => (p.marks || '')[i] || '-')])];
+  const ro = players.some(p => p.roster);
+  const rows = [['rank', 'student', ...(ro ? ['roster_name'] : []), 'team', 'score', 'bonus', 'correct', 'answered', ...qs],
+    ...players.map(p => [p.rank, p.name, ...(ro ? [p.roster || ''] : []), p.team || '', p.score, p.bonus || 0, p.correct, p.answered, ...Array.from({ length: n }, (_, i) => (p.marks || '')[i] || '-')])];
   if (items.length) {
     rows.push([]);
     rows.push(['question', 'right', 'answered', 'choice_a', 'choice_b', 'choice_c', 'choice_d']);

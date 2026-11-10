@@ -13,7 +13,7 @@ import { accountKind, STAFF_PASSWORD_MIN, isGrownup, longPasswordKind } from '..
 import { config } from '../config.js';
 import { ICONS_V } from './brand.js';
 import { navBadges } from '../services/badges.js';
-import { inAnySchool, isSchoolStaff, noFriendsAccount, isPlatformAdmin, adminSchools, staffName } from '../services/schools.js';
+import { inAnySchool, isSchoolStaff, noFriendsAccount, isPlatformAdmin, adminSchools, soloSchoolAdmin, staffName } from '../services/schools.js';
 import { availableLocales, localeInfo, tReq, tHtml, clientStrings, DEFAULT_LOCALE, localPath } from '../i18n/index.js';
 import { THEMES, THEME_ICONS, BAR_COLORS } from '../theme.js';
 import { notices, markNotified } from '../builder/turns.js';
@@ -62,7 +62,8 @@ export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatfor
 export function landingFor(u) {
   if (signedOut(u)) return null;
   if (isGrownup(u)) return '/family';
-  if (isSchoolStaff(u)) return adminSchools(u).length ? '/school' : '/teach';
+  // A school admin lands on their School, unless they are its only staff member (a solo teacher: the Classroom home).
+  if (isSchoolStaff(u)) return adminSchools(u).length && !soloSchoolAdmin(u) ? '/school' : '/teach';
   if (isPlatformAdmin(u)) return null;
   if (inAnySchool(u)) return '/classes';
   return null;
@@ -78,6 +79,7 @@ export function landingFor(u) {
  *   signed out or a guest   Play · Learn · Build · Grown-ups · (Plans) · Sign in   (top: Play · Learn · Build · (Plans) · Parents · Teachers)
  *   grown-up                Family · Play · Learn · Build · (Plans) · Account      (top: the same without Account)
  *   school admin            School · Classroom · Learn · Play · (Plans) · Me       (top: the same with (Live), without Me)
+ *     …the only staff member of their school(s): Classroom · School · … (a solo teacher lands on the Classroom home)
  *   school staff            Classroom · Learn · Play · (Live) · (Plans) · Me       (top: the same without Me)
  *   platform admin          Play · Learn · Build · Friends · Schools · (Plans) · Me
  *   student                 Class · Play · Learn · Build · (Plans) · Me            (top: the same with Friends, without Me)
@@ -107,7 +109,9 @@ export function shellFor(u, req) {
   }
   if (isSchoolStaff(u)) {
     if (adminSchools(u).length > 0) {
-      const head = [['school', '/school', '🏛️'], classroom, learn, play, ...stories];
+      // A solo teacher's first tab is Classroom (where they land); School, with its setup checklist, comes next.
+      const school = ['school', '/school', '🏛️'];
+      const head = [...(soloSchoolAdmin(u) ? [classroom, school] : [school, classroom]), learn, play, ...stories];
       return { role: 'schoolAdmin', tabs: [...head, ...plans, me], top: [...head, ...live, ...plans], meHref: '/me' };
     }
     const top = [classroom, learn, play, ...stories, ...live, ...plans];

@@ -73,7 +73,7 @@ export function loopLinks(u) {
   // "Make your first class" button goes to the form on the Classroom home.
   return {
     class: c ? { id: c.id, name: c.name } : null,
-    makeClass: c ? null : '/teach#my-classes',
+    makeClass: c ? null : '/teach?new=class',
     library: lib,
     draftAi: `${withClass}${school ? '&' : '?'}open=ai`,
     builder: own ? `/teach/lessons/${own.id}#new-game` : `${withClass}${school ? '&' : '?'}open=new`,

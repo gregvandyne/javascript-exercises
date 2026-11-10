@@ -365,6 +365,15 @@ Would a quick demo or a training session for you or your staff help? Reply here 
 For anything time-sensitive, email me directly at Greg@oomba.ai.
 
 Greg & the Oomba team`;
+/** The name a welcome greets: the first word of the name; a title keeps the word after it ("Ms Rivera", never
+ *  "Hi Ms!"); a name that is only a title, or empty, is greeted as "there". */
+const TITLES = /^(mr|mrs|ms|miss|mx|dr|prof|sr|sra|srta|mme|mlle|m|herr|frau|sig|sra)\.?$/i;
+export function greetName(name) {
+  const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return 'there';
+  if (!TITLES.test(words[0])) return words[0];
+  return words[1] ? `${words[0]} ${words[1]}` : 'there';
+}
 export const DEFAULT_WELCOMES = { kid: DEFAULT_WELCOME, grownup: DEFAULT_WELCOME_GROWNUP, teacher: DEFAULT_WELCOME_TEACHER };
 const DAY = 86400e3;
 const audienceOf = a => (WELCOME_AUDIENCES.includes(a) ? a : 'kid');
@@ -412,7 +421,7 @@ export function sendWelcome(user, audience = 'kid', at = now()) {
   if (row && row.state !== 'wait') return null;
   const w = welcomeSettings(a); if (!w.on) return null;
   const team = teamUser();
-  const first = String(u.display_name || u.username || '').trim().split(/\s+/)[0] || 'there';
+  const first = greetName(u.display_name || u.username);
   const body = cleanBody(w.text.replace(/\{name\}/g, first)).slice(0, MAX_TEAM_LEN);
   const guardians = a === 'kid' ? guardiansOf(u) : [];
   let id = '';

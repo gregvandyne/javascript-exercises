@@ -55,7 +55,7 @@ export function courseRow(items, { staff = false, title: heading = null } = {}) 
           <span class="course-go flip" aria-hidden="true">›</span>
         </a>
         ${ov.band && !staff ? html`<div class="course-progline"><div class="cprog" aria-hidden="true"><span style="width:${Math.round(ov.done / Math.max(1, ov.total) * 100)}%"></span></div><span class="muted course-prog">${t('courses.stepsDone', { n: ov.done, total: ov.total })}</span></div>` : ''}
-        <details class="course-units"><summary>${t('courses.unitsN', { count: games.length })}</summary>
+        <details class="course-units"><summary>${t('courses.gamesN', { count: games.length })}</summary>
         <ol class="course-steps">${games.map(g => html`<li class="course-step"><a href="/courses/${c.slug}#${g.slug}" class="course-game">
           <span class="course-n" aria-hidden="true">${g.step}</span>
           <span class="course-cover">${coverArt(g)}</span>

@@ -451,8 +451,9 @@ fieldset.picklist>label>span{flex:1;min-width:0}
 @media (max-width:600px){.cl-more>.btn{white-space:normal;text-align:center;max-width:100%}}
 /* A visually hidden heading first in a panel doesn't push the first visible item down. */
 :where(section.panel)>.sr-only:first-child+*{margin-top:0}
-/* "Make a new game" only with the Add form's "Play a game" type (no-JS: when that option is picked). */
-.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)) ~ .newgame{display:none}
+/* "Make a new game" only with the Add form's "Play a game" type (no-JS: when that option is picked)… */
+.stepgrid[data-kind]:not([data-kind="game"]):not(:has(>.f-k option[value="game"]:checked)) ~ .newgame:not([open]):not(:target):not(:has(:target)){display:none}
+/* …but never when a link lands on it ("Turn a lesson into a game" on the Classroom home goes to #new-game) or it is open. */
 /* Class Games tab (teachers): games shared only with this class, each with "Take off this class"; the ones taken off
    fold away with "Put back". Rows stack on phones. */
 .cg-list{display:grid;gap:var(--s3)}
