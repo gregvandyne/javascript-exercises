@@ -346,6 +346,12 @@
         "fit": {
           "tugOfMath": "Pick grade 2 or 3: adding, taking away and times tables, with the computer on Easy until they beat it."
         }
+      },
+      "a5": {
+        "lead": "Between 5 and 7, most kids are still learning to read. These games read their words aloud, or use numbers, music and pictures, so a young child can play with a grown-up close by at first. Our full courses start at about age 8 (Year 4).",
+        "faq": {
+          "a3": "Not yet. Number Quest, CS Quest and Cyber Defenders start at about age 8 (Year 4). From 5 to 7, the games on this page are the place to start."
+        }
       }
     },
     "index": {
@@ -387,6 +393,19 @@
         "a1": "There is no single number. Paediatricians suggest consistent limits that leave room for sleep, school, being active and family time, and paying attention to what kids do on screens. A family media plan helps you decide.",
         "a2": "Games can be educational. Look for ones where your child solves, practises or makes something, with no ads or purchases pulling them along."
       }
+    }
+  },
+  "research": {
+    "use": {
+      "li1": "Use a game alongside your lesson, not in place of it: a short round to practise what you just taught."
+    }
+  },
+  "compliance": {
+    "glance": {
+      "li1google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account."
+    },
+    "coppa": {
+      "p1": "Oomba Academy is made for kids aged about 5 to 14, so many of them are under 13. This is how their information is handled today:"
     }
   },
   "live": {

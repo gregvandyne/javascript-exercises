@@ -291,6 +291,7 @@ export function renderLanding(req, res) {
       <li><a href="/teachers/cyber-defenders">${t('landing.courses.cd.name')}</a></li>
       ${live ? html`<li><a href="${lp('/teachers/live')}">${t('landing.nav.live')}</a></li>` : ''}
       <li><a href="/plans" data-cta="pricing">${t('landing.footer.plans')}</a></li>
+      <li><a href="${lp('/research')}">${t('research.footer')}</a></li>
     </ul></nav>
     <nav aria-labelledby="fe-t"><h2 id="fe-t">${t('landing.footer.product')}</h2><ul>
       <li><a href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')}</a></li>
@@ -302,6 +303,7 @@ export function renderLanding(req, res) {
     </ul></nav>
     <nav aria-labelledby="fa-t"><h2 id="fa-t">${t('landing.footer.about')}</h2><ul>
       <li><a href="/privacy">${t('landing.footer.privacy')}</a></li>
+      <li><a href="${lp('/compliance')}">${t('compliance.footer')}</a></li>
       <li><a href="/terms">${t('landing.footer.terms')}</a></li>
       <li><a href="/refunds">${t('landing.footer.refunds')}</a></li>
       <li><a href="mailto:${SALES_EMAIL}">${t('landing.footer.contact')}</a></li>

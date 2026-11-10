@@ -4618,6 +4618,32 @@
           "q4": "C'è una chat con sconosciuti?",
           "a4": "No. I ragazzi chattano solo con amici aggiunti con un codice di 6 caratteri, mai cercando i nomi, e possono spegnere la chat nella pagina Io."
         }
+      },
+      "a5": {
+        "name": "Dai 5 ai 7 anni",
+        "short": "Parole frequenti in inglese, prime somme, ritmo e strategia semplice",
+        "title": "Giochi educativi gratuiti per bambini di 5, 6 e 7 anni",
+        "description": "Giochi gratuiti e senza pubblicità per bambini dai 5 ai 7 anni: parole inglesi lette ad alta voce, prime somme, ritmo e strategia. Niente download né chat con estranei.",
+        "h1": "Giochi educativi per bambini dai 5 ai 7 anni",
+        "lead": "Dall’ultimo anno della scuola dell’infanzia alla seconda elementare, quasi tutti i bambini stanno ancora imparando a leggere. Questi giochi leggono le parole ad alta voce, oppure usano numeri, musica e immagini, così un bambino piccolo può giocare con un adulto vicino all’inizio. I nostri percorsi completi iniziano in terza elementare, verso gli 8 anni.",
+        "fit": {
+          "wordTrail": "Fatto per questa età: le prime parole frequenti in inglese su un sentiero da fiaba, e ogni parola viene letta ad alta voce.",
+          "sharkPlank": "L’impiccato con parole inglesi per chi sta appena imparando a leggere, con ogni parola letta ad alta voce.",
+          "sumRacer": "Si comincia dalla pista delle addizioni fino a 10. Si può toccare la risposta invece di scriverla.",
+          "wordHunt": "Crucipuzzle a tema per chi inizia a leggere, meglio dai 6 anni: tocca una parola inglese per sentirla.",
+          "tugOfMath": "Scegli la classe 1 per le domande più facili, addizioni entro il 20, e gioca contro il computer su Facile.",
+          "beatLanes": "Toccare a tempo sulle canzoni, a cominciare da Brilla brilla la stellina: più ritmo che lettura.",
+          "connectFour": "Forza quattro contro un adulto, un fratello o il robot su Facile: un primo assaggio di come pensare in anticipo.",
+          "doodleHoot": "Disegnare e indovinare con parole facili, e tessere con le lettere per i piccoli che non sanno ancora scrivere sulla tastiera."
+        },
+        "faq": {
+          "q2": "Mio figlio può giocare anche se non sa ancora leggere?",
+          "a2": "Con alcuni giochi, sì. Word Trail e Shark Plank leggono ogni parola ad alta voce, Word Hunt legge una parola quando la tocchi, e Sum Racer e Tug of Math usano i numeri. Menu e istruzioni sono scritti, quindi all’inizio aiuta avere un adulto vicino.",
+          "q3": "I percorsi sono adatti a questa età?",
+          "a3": "Non ancora. Number Quest, CS Quest e Cyber Defenders iniziano in terza elementare, verso gli 8 anni. Dai 5 ai 7 anni, i giochi di questa pagina sono il punto di partenza.",
+          "q4": "Un bambino di 6 anni può usare il Costruttore IA?",
+          "a4": "I bambini scrivono la loro idea al Costruttore, quindi a questa età è meglio che un adulto si sieda con loro e li aiuti a scriverla. Il Costruttore segue regole di sicurezza fisse per bambini, e un gioco nuovo resta privato finché non viene condiviso."
+        }
       }
     },
     "index": {
@@ -4744,7 +4770,7 @@
     },
     "ages": {
       "h": "Giochi per ogni età",
-      "p": "Tra gli 8 e i 14 anni i ragazzi cambiano molto. Queste pagine scelgono i giochi adatti a ogni età e spiegano perché."
+      "p": "Tra gli 5 e i 14 anni i ragazzi cambiano molto. Queste pagine scelgono i giochi adatti a ogni età e spiegano perché."
     },
     "make": {
       "h": "Dal giocare al creare",
@@ -4944,6 +4970,128 @@
     "demo": {
       "h": "Guardalo in meno di un minuto",
       "note": "Un breve video con musica e sottotitoli sullo schermo: dei bambini giocano a giochi educativi (un mappamondo, Preferiresti, gli scacchi e Gulp City), poi un bambino descrive un gioco al Builder, che lo crea e ci gioca per controllare che funzioni, e il bambino ci gioca. Infine, come resta sicuro: un nome inventato senza e-mail, amici aggiunti solo con un codice e giochi che restano privati finché il bambino non sceglie di condividerli."
+    }
+  },
+  "research": {
+    "name": "La ricerca",
+    "footer": "Ricerca",
+    "title": "Imparare con i giochi funziona? Cosa dice la ricerca",
+    "description": "Cosa hanno trovato tre grandi rassegne di ricerca su giochi educativi e gamification, spiegato per gli insegnanti, con dimensioni dell’effetto e fonti.",
+    "kicker": "Per gli insegnanti · La ricerca",
+    "h1": "Imparare con i giochi funziona? Cosa dice la ricerca",
+    "lead": "Tre grandi rassegne hanno messo insieme i risultati di molti studi sui giochi educativi e sugli elementi di gioco nelle lezioni. Ecco cosa hanno trovato, in parole semplici, e cosa non dimostra.",
+    "findings": {
+      "h": "Cosa hanno trovato gli studi"
+    },
+    "clark": {
+      "h": "Giochi educativi, rispetto a lezioni senza giochi",
+      "stat": "Dal 50° a circa il 63° percentile",
+      "p": "Negli studi che confrontavano giochi educativi digitali con lezioni senza giochi, gli studenti che avevano imparato con i giochi andavano meglio nelle verifiche su ciò che avevano imparato.",
+      "small": "Clark, Tanner-Smith e Killingsworth (2016): risultati di apprendimento, giochi rispetto a nessun gioco, g = 0,33."
+    },
+    "wouters": {
+      "h": "Serious game, rispetto all’insegnamento tradizionale",
+      "stat": "Circa il 61° percentile per l’apprendimento, e il 64° per ciò che si ricorda dopo",
+      "p": "Gli studenti che imparavano con i serious game imparavano di più di quelli con lezioni tradizionali, e ricordavano di più quando venivano verificati di nuovo più tardi.",
+      "small": "Wouters, van Nimwegen, van Oostendorp e van der Spek (2013): apprendimento d = 0,29, ritenzione d = 0,36."
+    },
+    "sailer": {
+      "h": "Elementi di gioco nelle lezioni normali (gamification)",
+      "stat": "Circa il 69° percentile",
+      "p": "Aggiungere elementi di gioco come punti, badge e classifiche alle lezioni normali ha aiutato anche l’apprendimento degli studenti.",
+      "small": "Sailer e Homner (2020): gamification, risultati di apprendimento cognitivo, g = 0,49."
+    },
+    "read": {
+      "h": "Come leggere questi numeri",
+      "p1": "Un percentile dice dove si collocherebbe lo studente medio che ha imparato con i giochi tra gli studenti che hanno imparato senza. Il 50° percentile è la metà. Passare al 63° percentile significa che lo studente medio con i giochi ha fatto meglio di circa 63 studenti su 100 senza giochi.",
+      "p2": "Le note in piccolo riportano ogni dimensione dell’effetto (g di Hedges o d di Cohen): la differenza tra i due gruppi, misurata in deviazioni standard. Le abbiamo trasformate in percentili assumendo punteggi distribuiti normalmente."
+    },
+    "limits": {
+      "h": "Cosa questo non dimostra",
+      "li1": "Sono medie su molti studi, età, materie e giochi. Alcuni giochi hanno aiutato molto, altri per niente.",
+      "li2": "Nessuno di questi studi ha testato Oomba Academy. Descrivono i giochi educativi in generale, non una promessa su un singolo gioco, una classe o uno studente.",
+      "li3": "Wouters e colleghi hanno trovato che i serious game non motivavano più dell’insegnamento tradizionale, anche se gli studenti imparavano di più.",
+      "li4": "La gamification non è un gioco educativo: aggiunge elementi di gioco a lezioni normali. La includiamo perché punti, stelle e classifiche fanno parte di molti giochi educativi, anche dei nostri."
+    },
+    "use": {
+      "h": "Usare i giochi come suggerisce la ricerca",
+      "p": "Wouters e colleghi hanno trovato che gli studenti imparavano di più con i serious game quando il gioco era usato insieme ad altro insegnamento, in più di una sessione, e quando gli studenti giocavano in gruppo.",
+      "li1": "Usate un gioco insieme alla lezione, non al suo posto: un breve round per esercitarsi su ciò che avete appena spiegato.",
+      "li2": "Tornateci in più sessioni invece che in una sola sessione lunga.",
+      "li3": "Fate giocare gli studenti insieme: tutta la classe, a squadre o in due su uno schermo."
+    },
+    "sources": {
+      "h": "Fonti"
+    },
+    "links": {
+      "teachers": "Oomba Academy per gli insegnanti"
+    }
+  },
+  "compliance": {
+    "name": "Privacy e conformità",
+    "footer": "Conformità",
+    "title": "Privacy degli studenti e conformità: COPPA, FERPA e GDPR",
+    "description": "La posizione di Oomba Academy su COPPA, FERPA e GDPR, quali dati degli studenti conserva, chi li riceve e come una scuola può chiedere un accordo sui dati.",
+    "kicker": "Per scuole e istituti",
+    "h1": "Privacy degli studenti e conformità",
+    "lead": "Questa pagina è per insegnanti, dirigenti e personale informatico che verificano gli strumenti rispetto alle leggi sulla privacy degli studenti. Riassume cosa dice la nostra <a href=\"{privacy}\">Informativa sulla privacy</a> e cosa fa oggi Oomba Academy. Se qualcosa qui è diverso dall’Informativa sulla privacy, vale l’Informativa sulla privacy.",
+    "glance": {
+      "h": "In breve",
+      "li1": "Gli studenti non hanno mai bisogno di un indirizzo email, e non chiediamo mai la loro età o il loro indirizzo di casa.",
+      "li1google": "Gli studenti non scrivono mai un indirizzo email, e non chiediamo mai la loro età o il loro indirizzo di casa. Se la vostra scuola usa Accedi con Google, conserviamo l’email Google scolastica di ogni studente solo per riconoscerne l’account.",
+      "li2": "Niente pubblicità, niente cookie pubblicitari o di tracciamento, e non vendiamo mai i dati personali di nessuno.",
+      "li3": "Gli account scolastici sono creati dalla scuola e le appartengono. Usiamo le informazioni degli studenti solo per fornire Oomba Academy alla scuola, mai per la pubblicità.",
+      "li4": "Il nome reale di uno studente, se la scuola lo aggiunge, è visto solo dal personale della scuola e dal nostro team.",
+      "li5": "I giochi girano in una sandbox chiusa: niente rete, niente cookie e nessun accesso al resto del sito."
+    },
+    "coppa": {
+      "h": "COPPA (minori di 13 anni negli Stati Uniti)",
+      "p1": "Oomba Academy è fatto per bambini e ragazzi dalla scuola dell’infanzia alla terza media, quindi molti hanno meno di 13 anni. Ecco come vengono trattate oggi le loro informazioni:",
+      "li1": "Gli account scolastici sono creati dalla scuola e le appartengono, e gli studenti accedono con una scheda di accesso della scuola. Per questi account agiamo per conto della scuola e secondo le sue indicazioni.",
+      "li2": "I genitori di un account scolastico chiedono alla scuola di vedere o cancellare i dati del figlio, e la scuola può chiederlo a noi.",
+      "li3": "I genitori dell’account personale di un bambino possono scriverci per vedere cosa conserviamo, cancellarlo o chiederci di smettere di raccoglierne altri. Non c’è ancora un pulsante per cancellare o scaricare, quindi gestiamo queste richieste a mano e prima verifichiamo che siate il genitore.",
+      "li4": "Pagare un piano non è mai il modo in cui chiediamo il permesso a un genitore.",
+      "p2": "Domande su come funziona il consenso per gli account della vostra scuola: scrivete a {email}."
+    },
+    "ferpa": {
+      "h": "FERPA (documenti scolastici negli Stati Uniti)",
+      "li1": "Oltre a ciò che conserva ogni account, un account scolastico conserva il nome reale dello studente come lo ha scritto la scuola, le sue classi, i progressi nelle lezioni, le risposte scritte e il feedback dell’insegnante.",
+      "li2": "Il nome reale di uno studente è visto solo dal personale della scuola e dal nostro team.",
+      "li3": "Usiamo le informazioni degli studenti solo per fornire Oomba Academy alla scuola, mai per la pubblicità, e non le vendiamo.",
+      "li4": "I genitori chiedono alla scuola di vedere o cancellare i dati, e la scuola può chiederlo a noi. Un accordo sui dati che la scuola ha firmato con noi ha la precedenza.",
+      "p": "Per parlare delle condizioni FERPA per la vostra scuola o il vostro distretto: scrivete a {email}."
+    },
+    "gdpr": {
+      "h": "GDPR e UK GDPR (Europa e Regno Unito)",
+      "p1": "Oomba Academy è disponibile in {count} lingue, e anche le scuole fuori dagli Stati Uniti possono usarlo. Le stesse regole valgono ovunque: niente pubblicità, niente cookie di tracciamento, niente email degli studenti, e informazioni degli studenti usate solo per fornire Oomba Academy.",
+      "p2": "Scuole dell’Unione europea o del Regno Unito: scriveteci a {email} prima di adottare Oomba Academy, così potremo rispondere prima alle vostre domande sul GDPR o sul UK GDPR."
+    },
+    "dpa": {
+      "h": "Accordo sul trattamento dei dati (DPA)",
+      "p1": "La nostra Informativa sulla privacy dice che un accordo sui dati che una scuola ha firmato con noi ha la precedenza.",
+      "p2": "Per chiedere un accordo sui dati per la vostra scuola o il vostro distretto, anche secondo una legge statale sulla privacy degli studenti, scrivete a {email}."
+    },
+    "keep": {
+      "h": "Per quanto tempo conserviamo i dati",
+      "li1": "Conserviamo i dati di un account finché l’account esiste. Per ora nulla viene cancellato automaticamente dopo una scadenza.",
+      "li2": "Un gioco che uno studente cancella sparisce dal sito per tutti, ma una copia resta sul nostro server.",
+      "li3": "Non c’è ancora un pulsante per cancellare un account o scaricarne i dati. Per un account scolastico, è la scuola a chiedercelo."
+    },
+    "others": {
+      "h": "Chi altro riceve dati",
+      "li1": "Anthropic (Claude, l’IA che crea i giochi): i messaggi, le immagini e i file che uno studente dà al Costruttore, per creare il gioco e controllare che sia sicuro, senza il nome o il nome utente dello studente. Le chat tra amici e le risposte alle lezioni non vengono mai inviate all’IA.",
+      "li2": "Google, solo se la vostra scuola usa Accedi con Google o un insegnante collega Google Classroom. Classroom legge i nomi dei corsi e gli ID e i nomi Google degli studenti del corso collegato. Inviamo solo ciò che l’insegnante pubblica, per esempio un link alla lezione con titolo e scadenza, e il punteggio di ogni studente su 100: mai nomi, risposte, feedback o giochi degli studenti.",
+      "li3": "Voci IA e dettatura vocale, dove sono attive: la nostra <a href=\"{privacy}\">Informativa sulla privacy</a> dice esattamente cosa riceve ciascuna."
+    },
+    "security": {
+      "h": "Sicurezza di base",
+      "li1": "Le password sono salvate in forma illeggibile, quindi non possiamo leggerle.",
+      "li2": "Il nostro scanner di sicurezza controlla ogni versione di ogni gioco appena viene creata, e un gioco che prova a collegarsi a internet o a leggere cookie non può essere condiviso.",
+      "li3": "Il collegamento a Google Classroom di un insegnante è conservato cifrato finché non lo scollega, e scollegarlo lo revoca anche presso Google."
+    },
+    "contact": {
+      "h": "Domande",
+      "p": "Scrivete a {email}. Per i dati di un account scolastico, è la scuola a contattarci. Vedete anche la nostra <a href=\"{privacy}\">Informativa sulla privacy</a> e come proteggiamo i bambini <a href=\"{safety}\">online</a>."
     }
   },
   "connections": {
