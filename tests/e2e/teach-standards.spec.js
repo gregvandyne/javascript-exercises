@@ -33,7 +33,16 @@ async function demo(page) {
   const cls = href.match(/\/class\/([^/?#]+)/)[1];
   // An assigned lesson: the class page links each one to its editor (?from=<class>).
   const html = await (await page.request.get(`/class/${cls}`)).text();
-  const lesson = html.match(/\/teach\/lessons\/([A-Za-z0-9]+)\?from=/)[1];
+  // Other specs assign their own short lessons to this class: take the first one with two steps or more, so "another
+  // step" below is really another one (its picker lists the whole lesson, then each step).
+  const ids = [...new Set([...html.matchAll(/\/teach\/lessons\/([A-Za-z0-9]+)\?from=/g)].map(m => m[1]))];
+  let lesson = null;
+  for (const id of ids) {
+    const p = await (await page.request.get(`/teach/lessons/${id}/standards`)).text();
+    const sel = (p.match(/<select[^>]*id="sf-t"[\s\S]*?<\/select>/) || [''])[0];
+    if ((sel.match(/<option /g) || []).length >= 3) { lesson = id; break; }
+  }
+  expect(lesson, 'a demo lesson with two steps or more').toBeTruthy();
   return { cls, lesson };
 }
 const smallTargets = page => page.evaluate(() => [...document.querySelectorAll('main .btn, main select, main input:not([type=hidden]), main summary, main .chip, main a.chip-s, .tabbar .tab')]
