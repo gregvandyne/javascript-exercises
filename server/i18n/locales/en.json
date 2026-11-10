@@ -7441,7 +7441,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math and more",
       "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
       "li3": "Scores go straight into your gradebook",
-      "li4": "Signed-in students only: no chat, no typing, no made-up names",
+      "li4": "Class games: your signed-in students only. Guest games: safe made-up names. No chat and no typing in either",
       "shotAlt": "A live Question Battle lobby: five student avatars wait while the big screen shows the game code and a QR code.",
       "link": "How live games work"
     },
@@ -8143,6 +8143,66 @@
       "badDay": "Pick a day.",
       "badHour": "Pick a time.",
       "badZone": "Pick a time zone from the list."
+    }
+  },
+  "quickLive": {
+    "cta": "Host a live game now",
+    "ctaNote": "No student accounts needed. Students join with a code and get a safe made-up name.",
+    "haveCode": "Have a game code? Join",
+    "join": "Join a game",
+    "host": {
+      "title": "Host a live game now",
+      "h": "Host a live game now",
+      "lead": "Make a teacher account, pick a game, and your students join with a code. No student accounts, no email address, and it is free.",
+      "step1": "Make your teacher account: three boxes.",
+      "step2": "Pick a game and its questions.",
+      "step3": "Put the code on the board. Students join on any device."
+    },
+    "signup": {
+      "h": "Your teacher account",
+      "submit": "Make my account and pick a game",
+      "privacy": "We keep your name, your username and a scrambled copy of your password. <a href=\"{privacy}\">Privacy Policy</a>",
+      "have": "Already have an account? <a href=\"{login}\">Sign in</a>",
+      "student": "Are you a student?",
+      "schoolName": "{name}: my classroom"
+    },
+    "kid": {
+      "h": "Teachers host live games",
+      "p": "Ask your teacher for the game code, then join here."
+    },
+    "quick": {
+      "title": "Quick game",
+      "h": "Quick game",
+      "forClass": "For {name}. Only students of this class can join, signed in as themselves.",
+      "open": "Anyone with the code can join. No student accounts: every player gets a safe made-up name.",
+      "hasOpen": "You already have a game open: {title}.",
+      "mode": "Game",
+      "level": "Level",
+      "subject": "Subject",
+      "what": "{count} ready-made questions, new every game. You press Start when everyone is in.",
+      "go": "Open the room",
+      "more": "More games and settings",
+      "recent": "Your last games"
+    },
+    "card": {
+      "button": "Quick game",
+      "change": "Change"
+    },
+    "results": {
+      "h": "This was a guest game.",
+      "now": "Players had no accounts, so nothing went into a gradebook. The question review on this page is kept. The players' game names and scores are not: you can see them here for a few minutes only.",
+      "saved": "Players had no accounts, so no names or scores were kept and nothing went into a gradebook. The question review is kept.",
+      "keep": "Make a class to keep scores",
+      "keepHint": "Paste your students' names and print their login cards. Scores from your class games are then saved."
+    },
+    "keep": {
+      "title": "Make a class to keep scores",
+      "h": "Make a class to keep scores",
+      "lead": "Paste your students' names. Each student gets a login card. From then on, the scores of your class games are saved with their names, for you.",
+      "names": "Students' names",
+      "namesHint": "One name on each line. First names are enough.",
+      "go": "Make the class and the login cards",
+      "note": "Only you and your school's staff see the names you type here."
     }
   }
 }

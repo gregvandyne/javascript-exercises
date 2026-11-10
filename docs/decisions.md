@@ -3932,3 +3932,97 @@ parent account; the migration; the chat default, the notice and its dismissal), 
 
 **Deploy note.** `0067` belongs to the Google Classroom work on another branch; whichever merges second keeps both
 entries in `MIGRATIONS` (they do not depend on each other).
+
+## A first live game in under 3 minutes (10 Nov 2026)
+
+The teacher audit's slam-dunk item 1 (owner: "Build 1, 2, and 5"; this is 1). Before: the landing's only way in was the
+14-day trial (six fields, an email, Stripe), and "Host a free live game" on /teachers/live sent a teacher to the
+**parents'** sign-up. Guest join already worked in a few taps but nothing led a new teacher to it.
+
+**What a new teacher does now** (counted by `tests/support/fast-live-flow.js`, bounded in `tests/e2e/fast-live.spec.js`):
+8 steps to a started game: tap "Host a live game now" → type name, username, password → tick "teacher, 18 or older" →
+"Make my account and pick a game" → "Open the room" (a game, a level and a subject are already picked) → "Start". Each
+student: type the 7-digit code (or scan the QR, which fills it in), Join, "Let's go", answer: 4 steps, no account. By
+machine the whole path takes about 7 s with instant typing and about 13 s at 150 ms a key
+(`node scripts/fast-live-timing.js <url>`); nobody has timed a real teacher with a real class yet.
+
+**Decisions.**
+
+- **A short teacher sign-up, not a way to host without an account.** Kids never host, and a host must be someone we
+  can limit, audit and ban, so hosting keeps needing an account. `/teachers/host` asks for three boxes (name, username,
+  password) and the same "I am a teacher or school staff member, and 18 or older" box as /trial (a statement, not a
+  check, like the parents' one). No email, no school name, no card, no plan. The password stays at the staff minimum (12).
+- **The account is what /trial makes, minus checkout:** an ordinary account that is the admin and only member of a
+  school of its own ("<name>: my classroom"), so it is staff: it hosts, makes classes and login cards, lands on the
+  Classroom home, and has no friends and no chat (`noFriendsAccount`). It is never a grown-up (parent) account.
+- **Abuse limits kept:** the sign-up shares every other sign-up's per-address limits (30 an hour, 2,000 tries) and has its
+  own route limit; opening rooms shares `/api/live/sessions`' limit (30 an hour per account); the name is refused if it
+  has a phone number, an email or a blocked word (a class sees it as its teacher). Written to the audit log
+  (`user.signup`, `via: quick-live`).
+- **No email means no password reset by email** for these accounts until the teacher starts a trial (which asks for
+  one). The page says "no email address"; the owner may prefer an optional email box (see the report).
+- **"Quick game"** (`/live/quick`): two quiz modes (Question Battle first: questions on the big screen suit a first
+  try; Quest Race), the question bank's four levels and its subjects, 10 questions, one button. The last pick is
+  remembered per teacher (`live_prefs.prefs.quick`; no migration). "More games and settings" is the full `/live`.
+- **Guests are the front door for a first try; a class is for anything that counts.** A quick game with no class is an
+  ordinary open room: every player is a guest with a generated name (never typed), no chat, no cookies. The landing's
+  live section now also has "Have a game code? Join" and its fourth bullet no longer says "signed-in students only".
+- **One tap on a class card:** "⚡ Quick game" on every class card of the Classroom home opens a class room with the
+  last pick (the class's grade picks the level); the line beside it says what will open, with "Change". A class room
+  seats only that class's signed-in students, who see the existing "Your teacher started a live game · Join now" on
+  their class page and Class tab, so they type no code. While a room is open the card shows "Open live game" instead.
+- **A second tap never ends a room:** if the teacher already has a room open, Quick game goes back to it with a note.
+- **After a guest game** the results page says plainly: nothing went into a gradebook; the question review (questions,
+  counts per answer, no player) is kept (as before: `live_runs`, 90 days for runs without a class); game names and
+  scores are in memory for 10 minutes only. Staff who may make a class get "Make a class to keep scores"
+  (`/teach/keep-scores`): class name, pasted names → the class, its school accounts and the login cards in one go.
+- **Prices:** none on "/", /teachers/host, /live/quick or any page here. Nothing is sent to an AI.
+
+**Routes.** `GET /teachers/host`, `POST /api/teachers/host-signup`, `GET /live/quick`, `POST /api/live/quick`
+(`server/routes/quick-live.js`); `GET /teach/keep-scores`, `POST /api/teach/keep-scores` (`server/routes/schools.js`).
+All 404 while `LIVE_CLASSROOM=0`. No new table, no migration (0069 was reserved and is not used), no new env var.
+`/admin/stats` gets "First live game" totals (`quick.view`, `quick.signup`, `quick.room`) and `landing.host` clicks.
+
+**Who gets in** (unit `tests/unit/quick-live.test.js`): the sign-up refuses anyone signed in; the chooser and its API
+are for accounts that may host (kids, students, guests and signed-out visitors get the sign-up, /join or a 404); a
+class id works only for a teacher of that class; keep-scores is for staff who may make a class in their school (404
+for kids, students, guests, grown-ups, and teachers of a school that keeps class-making for admins); login cards open
+for their maker only.
+
+**Words** in 12 languages under `quickLive.*` (`scripts/i18n-add-quick-live.mjs`; en-GB has no differing spelling).
+
+**Not done here:** a real classroom timing; "Sign in with Google" on the short sign-up; Brain Board and the other modes
+in the quick chooser (they need more choices than one screen should ask).
+
+### After the review of the first live game (10 Nov 2026)
+
+A second reviewer walked the path in German and found one real fault and some smaller ones. What changed, and what did not.
+
+- **Buttons wrap on phones in every language.** "Make a class to keep scores" on the guest results page did not wrap,
+  so the page scrolled sideways at 360 px in seven languages (German, French, Spanish, Dutch, Russian, Portuguese,
+  Italian). It and the older "Play the missed questions again" button now wrap (`.btn-wrap`, `public/css/live.css`).
+  The landing's top bar had the same fault before this work (its two buttons, in six languages); they now take two
+  lines on phones where the words are long (`public/css/landing.css`). Russian "Бесплатно" breaks inside the word
+  there; a shorter word would be nicer.
+- **The layout test covers long words.** `tests/e2e/fast-live.spec.js` now runs the touching, overflow and tap-target
+  checks in German and Spanish on every page of the path, checks the guest results at 360 px in all 13 languages, and
+  checks "/" at 360 px in all of them. It fails without the fix.
+- **A staff password must be more than long.** The two teacher sign-ups (`/teachers/host`, `/trial`) refuse a
+  12-character password that is only digits, one short piece repeated, or easy passwords put end to end
+  ("123456789012", "passwordpassword", "qwerty123456"): `auth.checkStaffPassword`. Password changes and resets keep
+  their old rules for now.
+- **German uses "du" on the sign-up.** The new words said "Sie" while the labels reused from /trial said "du". All
+  `quickLive.*` German is now "du", and so is the one "Sie" hint in the /trial sign-up. The rest of the German site
+  still mixes the two (about half and half across all pages); that is a separate clean-up.
+- **One room at a time, said on every card.** While a teacher has a room open, no class card offers "Quick game" or
+  "Host live". The card of the room's class has "Open live game" as before; the other cards have the same button
+  (back to that room) and the line "You already have a game open: <title>". Before, a tap on another class's Quick
+  game silently went to the first class's room.
+- **Keep scores says which school.** `/teach/keep-scores` shows the school's name; staff of more than one school
+  choose it (only schools where they may make a class; any other id is a 404). If no account could be made, the empty
+  class is removed and the names box shows an error, never an empty page of cards.
+- **Left for the owner: what a short sign-up account may do.** It is the first staff account made with no email and
+  no review, only the "teacher, 18 or older" box. It can open rooms at the full player limit, make student accounts
+  (60 names a request) and ask for AI question drafts (30 an hour). Nothing here changes that: a lower room size (the
+  grown-ups' 30) would turn away a class of 31 on its first try, and holding back AI drafts or account-making needs a
+  way to add an email first. Options are in the report; `docs/status.md` lists it as open.

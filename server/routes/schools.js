@@ -27,7 +27,8 @@ import { teacherPlanCard } from './teacher-plan.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 import { gcRosterHint } from './gclassroom.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { liveOn, openForClass } from '../services/classlive-sessions.js';
+import { quickPick, pickLine } from './quick-live.js';
+import { liveOn, openForClass, hostSession } from '../services/classlive-sessions.js';
 import * as TL from '../services/teach-loop.js';
 import { teacherLoop } from '../views/teacher-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
@@ -521,6 +522,9 @@ function classroomHome(req) {
   const wantNew = req.query.new === 'class';   // from "Make your first class": the New class form open and focused
   // Their own name (staff see real names; this is their own page).
   const name = S.staffName(u) || u.display_name || u.username;
+  // The room this teacher has open now, if any (a host has one room at a time): while it is open, no card offers a
+  // second one. The cards of other classes lead back to it and say which game it is.
+  const own = hostLive ? hostSession(u.id) : null, ownRoom = own && own.phase !== 'ended' ? own : null;
   const card = c => {
     const due = nextDue(c.id), room = liveOn() ? openForClass(c.id) : null;
     const mineRoom = room && room.phase !== 'ended' && room.host && (room.host.userId === u.id || (room.cohosts && room.cohosts.has(u.id)));
@@ -534,12 +538,19 @@ function classroomHome(req) {
     // While a room is open for the class: its host gets back to it (never a second room); a co-teacher's room has the chip only.
     const open = room && room.phase !== 'ended';
     const liveBtn = !hostLive ? '' : mineRoom ? html`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${room.id}">📡 ${t('teach.home.openLive')}</a>`
-      : open ? '' : html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>`;
+      : open ? '' : ownRoom ? html`<a class="btn btn-sm cc-live cc-live-other" href="/live/host/${ownRoom.id}">📡 ${t('teach.home.openLive')}</a>`
+        : html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>`;
+    const elsewhere = hostLive && !open && ownRoom ? html`<p class="small muted cc-quick cc-elsewhere" data-room="${ownRoom.id}">${t('quickLive.quick.hasOpen', { title: ownRoom.title })}</p>` : '';
+    // One tap: the last quick game again for this class (routes/quick-live.js); "Change" opens the chooser.
+    const quick = hostLive && !open && !ownRoom ? html`<form class="cc-quick" data-api="/api/live/quick"><input type="hidden" name="classId" value="${c.id}"><input type="hidden" name="last" value="1">
+        <button class="btn btn-sm btn-hot" type="submit" data-quick="${c.id}">⚡ ${t('quickLive.card.button')}</button>
+        <span class="small cc-quick-what"><span class="muted">${pickLine(req, quickPick(u, c))}</span> <a class="cc-quick-change" href="/live/quick?class=${c.id}">${t('quickLive.card.change')}</a></span>
+        <span class="err form-err" aria-live="polite"></span></form>` : '';
     return html`<div class="panel classcard th-class">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: c.students })].filter(Boolean).join(' · ')}</span>
       <span class="cc-meta th-chips">${chips.length ? chips : html`<span class="chip-s ok">✅ ${t('teach.home.caughtUp')}</span>`}</span>
-      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span></div>`;
+      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span>${quick}${elsewhere}</div>`;
   };
   // Ready-made: the three courses (their staff pages assign units), the live modes (host on the big screen), brain breaks.
   const courseTiles = COURSES.map(c => tile(STAFF_COURSE_PAGE[c.slug] || c.teacherPath, c.emoji, t(`${c.key}.title`), t(`${c.key}.sub`), `teach-course-${c.slug}`));
@@ -597,6 +608,52 @@ router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (re
   if (fromSchoolPage) return res.json({ ok: true, toast: t('school.class.created', { name: r.class.name }), redirect: `/school/${s.slug}` });
   // A new class has no students yet: open it on the Students tab.
   res.json({ ok: true, redirect: `/class/${r.class.id}?tab=students` });
+});
+
+// "Make a class to keep scores" (after a live game played by guests: routes/quick-live.js, the results page): one page
+// that makes a class and its students' accounts from a pasted list of names, then shows the login cards to print.
+// Staff who may make a class only; everyone else gets a 404.
+const keepSchools = u => S.schoolsOf(u.id).filter(x => x.role !== 'student' && S.canCreateClass(u, x.id));
+/** The school the class goes into: the one asked for (it must be one of theirs), else their first. */
+const keepSchool = (u, id = '') => { const all = keepSchools(u); return (id ? all.find(x => x.id === String(id)) : all[0]) || null; };
+router.get('/teach/keep-scores', requireUser, (req, res) => {
+  const t = req.t, all = keepSchools(req.user), s = all[0];
+  if (!s) return no(req, res);
+  // Staff of one school see its name; staff of more than one choose.
+  const where = all.length > 1
+    ? html`<div class="field"><label for="ks-school">${t('school.class.school')}</label><select class="input" id="ks-school" name="schoolId">${all.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select></div>`
+    : html`<p class="small muted" id="ks-school">🏫 <bdi>${s.name}</bdi></p>`;
+  res.set('Cache-Control', 'no-store');
+  page(req, res, { title: t('quickLive.keep.title'), active: 'classes', head: html`${CSS}<link rel="stylesheet" href="/css/quick-live.css">`, back: '/teach', backLabel: t('nav.classroom'),
+    body: html`<div class="ql"><h1>🪪 ${t('quickLive.keep.h')}</h1><p class="lead">${t('quickLive.keep.lead')}</p>
+    <form class="panel ql-form" data-api="/api/teach/keep-scores" id="ql-keep" novalidate>
+      ${where}
+      <div class="field"><label for="ks-name">${t('school.class.name')}</label><input class="input" id="ks-name" name="name" maxlength="60" required placeholder="${t('school.class.namePlaceholder')}"><span class="err" id="ks-name-err" aria-live="polite"></span></div>
+      <div class="field"><label for="ks-grade">${optional(t, t('school.class.grade'))}</label><input class="input" id="ks-grade" name="grade" maxlength="12"></div>
+      <div class="field"><label for="ks-names">${t('quickLive.keep.names')}</label><textarea class="input" id="ks-names" name="names" rows="8" required aria-describedby="ks-names-hint"></textarea>
+        <span class="hint" id="ks-names-hint">${t('quickLive.keep.namesHint')}</span><span class="err" id="ks-names-err" aria-live="polite"></span></div>
+      <p class="err form-err" aria-live="polite"></p>
+      <button class="btn btn-primary btn-big" type="submit">🪪 ${t('quickLive.keep.go')}</button>
+      <p class="small muted ql-last">${t('quickLive.keep.note')}</p>
+    </form></div>` });
+});
+router.post('/api/teach/keep-scores', requireUser, rateLimit('class-new', 60, 3600e3), (req, res) => {
+  const t = req.t, u = req.user, s = keepSchool(u, b(req).schoolId);
+  if (!s) return no(req, res);
+  const name = String(b(req).name || '').trim();
+  if (!name) return fieldErr(res, 'name', t('school.errors.className'));
+  const names = parseNames(b(req).names);
+  if (!names.length) return fieldErr(res, 'names', t('school.errors.names'));
+  const same = sameNames(s.id, names);
+  if (same.length) return fieldErr(res, 'names', sameNamesError(req, s, same));
+  const grade = String(b(req).grade || '').trim().slice(0, 12);
+  const r = S.createClass(u, s.id, { name, grade });
+  if (!r.ok) return err(req, res, r.code);
+  const made = [];
+  for (const n of names) { const a = S.createSchoolAccount(u, s.id, { rosterName: n, grade }); if (a.ok) { S.addToClass(u, r.class.id, a.user.id, 'student'); made.push(card(a)); } }
+  // No account could be made: no empty class is left behind and no empty page of cards is shown.
+  if (!made.length) { S.deleteClass(u, r.class.id); return fieldErr(res, 'names', t('school.errors.names')); }
+  res.json({ ok: true, redirect: `/cards/${keepCards(u, made, { schoolId: s.id, classId: r.class.id })}` });
 });
 
 // ================================================================ a class
