@@ -943,6 +943,17 @@ ol.steps li{margin-bottom:var(--s2)}
 .lp-detail>p{margin:0 0 var(--s4);color:var(--text-2);max-width:70ch}
 .lp-detail>.panel+.panel{margin-top:var(--s4)}
 .lp-detail h3{font-size:1.15rem}
+/* The tagline (/parents), the free-and-paid line and Google Classroom (/teachers), teacher quotes (hidden until real). */
+.lp-hero .lp-tagline{margin:0 0 var(--s3);font-weight:800;font-size:clamp(1.05rem,2.6vw,1.3rem);color:var(--accent-ink)}
+.lp-freeline{margin:var(--s4) 0 0;max-width:70ch;color:var(--text-2)}
+.lp-freeline a{font-weight:700}
+.lp-research{margin:var(--s4) 0 0;font-weight:700}
+.lp-quote-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s4)}
+.lp-quote{margin:0;height:100%;box-sizing:border-box}
+.lp-quote blockquote{margin:0 0 var(--s3);font-size:1.05rem}
+.lp-quote blockquote p{margin:0}
+.lp-quote figcaption{color:var(--text-2);font-size:.95rem}
+.lp-quotes-preview .lp-quote{border:2px dashed var(--line)}
 /* /parents: the privacy details fold away under their headings (info.js folded), and the grown-ups' questions under
    Family accounts. The whole heading row is the button; + turns to − when open. */
 .lp-fold>summary,.lp-q>summary{display:flex;align-items:center;gap:var(--s3);min-height:44px;cursor:pointer;list-style:none}

@@ -4292,7 +4292,29 @@
     "cs": {
       "cstaNote": "Standards: CSTA K-12 Computer Science Standards (2017), Stufen 1B und 2. Dieses Programm wurde nicht von der CSTA erstellt, geprüft oder empfohlen."
     },
-    "leaderLine": "Schulleitung oder IT? <a href=\"{href}\">Richte deine Schule ein</a>: Es ist kostenlos."
+    "leaderLine": "Schulleitung oder IT? <a href=\"{href}\">Richte deine Schule ein</a>: Es ist kostenlos.",
+    "free": {
+      "line": "Immer kostenlos: alle Spiele, Ihre Klassen, Unterrichtseinheiten, der Fortschritt und die Notenübersicht, dazu täglich kostenlose Builder-Nachrichten für Sie und Ihre Schüler. Das Lehrkraft-Abo bringt {daily} KI-Spielbauten pro Tag, die sich Ihre Klassen teilen. <a href=\"{plans}\">Preise unter Abos ansehen</a>.",
+      "lineOff": "Immer kostenlos: alle Spiele, Ihre Klassen, Unterrichtseinheiten, der Fortschritt und die Notenübersicht, dazu täglich kostenlose Builder-Nachrichten für Sie und Ihre Schüler."
+    },
+    "classroom": {
+      "kicker": "Google Classroom",
+      "h": "Funktioniert mit Ihrem Google Classroom",
+      "lead": "Verbinden Sie Ihr Google Classroom mit wenigen Klicks. Zuerst sieht Oomba Academy nur Ihre Kurse und deren Schüler. Es wird nichts gepostet, bis Sie das Posten erlauben.",
+      "li1": "Importieren Sie Ihre Schülerliste mit einem Klick, danach aktualisiert sie sich alle 6 Stunden von selbst. Schüler werden über ihr Google-Konto erkannt.",
+      "li2": "Posten Sie eine Unterrichtseinheit als Classroom-Aufgabe, mit Link und Abgabetermin, oder teilen Sie sie als Material.",
+      "li3": "Abschlussnoten gehen zurück an Classroom: Die Note jedes Schülers von 100 ist der Anteil der Schritte der Einheit, die er geschafft hat, nicht die Zahl der richtigen Antworten. Senden Sie sie selbst oder schalten Sie automatische Noten ein.",
+      "li4": "Posten Sie im Kurs-Stream, wenn ein Live-Spiel startet oder eine Einheit bereit ist, in Ihren eigenen Worten.",
+      "li5": "Oomba Academy fragt Classroom nicht nach E-Mail-Adressen von Schülern und sendet Google nie den Namen, die Antworten oder die Spiele eines Schülers.",
+      "note": "Aufgaben, Materialien, Noten und Ankündigungen funktionieren, sobald Sie das Posten erlauben, ein eigener Schritt. Jede Lehrkraft verbindet ihr eigenes Google-Konto, und der Google-Admin Ihrer Schule muss Oomba Academy eventuell zuerst zulassen.",
+      "privacy": "Was an Google geht"
+    },
+    "research": {
+      "link": "Die Forschung zu Lernspielen lesen"
+    },
+    "quotes": {
+      "h": "Das sagen Lehrkräfte"
+    }
   },
   "learn": {
     "crumbs": "Brotkrümelnavigation",
@@ -7150,7 +7172,8 @@
         "li4": "Klassen, Unterrichtseinheiten, Fortschritt und Notenübersicht",
         "li5": "Jede Sprache, jedes Gerät",
         "cta": "Kostenlos testen",
-        "plans": "Tarife und Preise ansehen"
+        "plans": "Tarife und Preise ansehen",
+        "plus": "Alles aus Kostenlos, dazu:"
       },
       "schools": {
         "name": "Schulen und Schulträger",
@@ -7163,6 +7186,16 @@
         "cta": "Schreib uns",
         "form": "Schule einrichten",
         "subject": "Oomba Academy für unsere Schule"
+      },
+      "leadFree": "Nie Gebühren pro Schüler. Das Wichtigste ist für jede Lehrkraft kostenlos, und das Lehrkraft-Abo bringt KI-Spielbauten für deine ganze Klasse.",
+      "free": {
+        "name": "Kostenlos",
+        "price": "Immer kostenlos",
+        "li1": "Alle Spiele und alle drei Kurse",
+        "li2": "Klassen, Unterrichtseinheiten, Fortschritt und Notenübersicht",
+        "li3": "Täglich kostenlose Builder-Nachrichten für dich und deine Schüler",
+        "li4": "Schulkonten und Anmeldekarten zum Ausdrucken",
+        "liLive": "Live-Klassenspiele am Beamer"
       }
     },
     "faq": {
@@ -7184,12 +7217,14 @@
       "q8": "Kann unsere Schule per Rechnung oder Bestellschein zahlen?",
       "a8": "Ja. Schulen zahlen denselben Preis pro Lehrkraft und Jahr, per Rechnung oder Bestellschein. Schreib uns, und wir richten es ein.",
       "q9": "Welche Sprachen gibt es?",
-      "a9": "{count} Sprachen, darunter Englisch, Spanisch, Portugiesisch, Französisch, Deutsch, Arabisch, Hebräisch und Japanisch. Jedes Kind wählt seine eigene, und der Baumeister antwortet darin."
+      "a9": "{count} Sprachen, darunter Englisch, Spanisch, Portugiesisch, Französisch, Deutsch, Arabisch, Hebräisch und Japanisch. Jedes Kind wählt seine eigene, und der Baumeister antwortet darin.",
+      "a2free": "Starte eine 14-tägige kostenlose Testphase des Lehrkraft-Abos ohne Karte. Solange sie läuft, ist das ganze Abo enthalten, und am Ende entscheidest du, ob du abonnierst. Wenn nicht, enden nur die zusätzlichen KI-Spielbauten des Abos: Die Spiele, deine Klassen, Unterrichtseinheiten und der Fortschritt bleiben kostenlos, und nichts wird gelöscht."
     },
     "final": {
       "h": "Deine nächste Stunde könnte die sein, die sie nochmal spielen wollen",
       "p": "14 Tage kostenlos. Keine Karte, keine Gebühr pro Kind.",
-      "cta": "14 Tage kostenlos testen"
+      "cta": "14 Tage kostenlos testen",
+      "pFree": "Spiele, Klassen, Unterrichtseinheiten und Fortschritt sind immer kostenlos. Teste das Lehrkraft-Abo 14 Tage kostenlos, ohne Karte und ohne Gebühren pro Schüler."
     },
     "play": {
       "h": "Nur zum Spielen hier?",
@@ -7885,6 +7920,9 @@
       "badHour": "Wählen Sie eine Uhrzeit.",
       "badZone": "Wählen Sie eine Zeitzone aus der Liste."
     }
+  },
+  "brand": {
+    "tagline": "Bildschirmzeit mit gutem Gefühl"
   },
   "gradebook": {
     "workDone": "Erledigt",

@@ -4292,7 +4292,29 @@
     "cs": {
       "cstaNote": "Standard: CSTA K-12 Computer Science Standards (2017), livelli 1B e 2. Questo programma non è creato, revisionato né approvato dalla CSTA."
     },
-    "leaderLine": "Dirigente o informatica? <a href=\"{href}\">Configura la tua scuola</a>: è gratis."
+    "leaderLine": "Dirigente o informatica? <a href=\"{href}\">Configura la tua scuola</a>: è gratis.",
+    "free": {
+      "line": "Sempre gratis: tutti i giochi, le Sue classi, le lezioni, i progressi e il registro, più messaggi gratuiti ogni giorno del Builder per Lei e i Suoi studenti. Il piano Insegnante aggiunge {daily} giochi creati con l’IA al giorno, condivisi tra le Sue classi. <a href=\"{plans}\">Veda i prezzi in Piani</a>.",
+      "lineOff": "Sempre gratis: tutti i giochi, le Sue classi, le lezioni, i progressi e il registro, più messaggi gratuiti ogni giorno del Builder per Lei e i Suoi studenti."
+    },
+    "classroom": {
+      "kicker": "Google Classroom",
+      "h": "Funziona con il Suo Google Classroom",
+      "lead": "Colleghi il Suo Google Classroom in pochi clic. All’inizio Oomba Academy può vedere solo i Suoi corsi e i loro studenti. Non pubblica nulla finché Lei non consente la pubblicazione.",
+      "li1": "Importi l’elenco degli studenti con un clic: poi si aggiorna da solo ogni 6 ore. Gli studenti vengono riconosciuti dal loro account Google.",
+      "li2": "Pubblichi una lezione come compito di Classroom, con il link e la scadenza, oppure la condivida come materiale.",
+      "li3": "I voti di completamento tornano su Classroom: il voto di ogni studente, su 100, è la parte dei passaggi della lezione che ha completato, non quante risposte erano giuste. Li invii Lei o attivi i voti automatici.",
+      "li4": "Pubblichi nello stream del corso quando inizia un gioco dal vivo o una lezione è pronta, con parole Sue.",
+      "li5": "Oomba Academy non chiede a Classroom le email degli studenti e non invia mai a Google il nome, le risposte o i giochi di uno studente.",
+      "note": "Compiti, materiali, voti e annunci funzionano quando Lei consente la pubblicazione, un passaggio a parte. Ogni insegnante collega il proprio account Google, e l’amministratore Google della Sua scuola potrebbe dover prima autorizzare Oomba Academy.",
+      "privacy": "Che cosa va a Google"
+    },
+    "research": {
+      "link": "Legga la ricerca sui giochi educativi"
+    },
+    "quotes": {
+      "h": "Cosa dicono gli insegnanti"
+    }
   },
   "learn": {
     "crumbs": "Percorso di navigazione",
@@ -7150,7 +7172,8 @@
         "li4": "Classi, lezioni, progressi e registro",
         "li5": "Tutte le lingue, tutti i dispositivi",
         "cta": "Inizia la prova gratuita",
-        "plans": "Vedi piani e prezzi"
+        "plans": "Vedi piani e prezzi",
+        "plus": "Tutto quello di Gratis, più:"
       },
       "schools": {
         "name": "Scuole e istituti",
@@ -7163,6 +7186,16 @@
         "cta": "Parla con noi",
         "form": "Configura la tua scuola",
         "subject": "Oomba Academy per la nostra scuola"
+      },
+      "leadFree": "Mai costi per studente. L’essenziale è gratis per ogni insegnante, e il piano Insegnante aggiunge giochi creati con l’IA per tutta la tua classe.",
+      "free": {
+        "name": "Gratis",
+        "price": "Sempre gratis",
+        "li1": "Tutti i giochi e tutti e tre i corsi",
+        "li2": "Classi, lezioni, progressi e registro",
+        "li3": "Messaggi gratuiti ogni giorno del Builder per te e i tuoi studenti",
+        "li4": "Account scolastici e schede di accesso da stampare",
+        "liLive": "Giochi dal vivo per la classe sul proiettore"
       }
     },
     "faq": {
@@ -7184,12 +7217,14 @@
       "q8": "La nostra scuola può pagare con fattura o ordine d’acquisto?",
       "a8": "Sì. Le scuole pagano lo stesso prezzo per insegnante all’anno, con fattura o ordine d’acquisto. Scrivici e lo prepariamo.",
       "q9": "Quali lingue ci sono?",
-      "a9": "{count} lingue, tra cui inglese, spagnolo, portoghese, francese, tedesco, arabo, ebraico e giapponese. Ogni studente sceglie la sua, e il Costruttore risponde in quella lingua."
+      "a9": "{count} lingue, tra cui inglese, spagnolo, portoghese, francese, tedesco, arabo, ebraico e giapponese. Ogni studente sceglie la sua, e il Costruttore risponde in quella lingua.",
+      "a2free": "Inizia una prova gratuita di 14 giorni del piano Insegnante, senza carta. Finché dura è incluso tutto il piano, e alla fine decidi tu se abbonarti. Se non lo fai, si fermano solo i giochi extra creati con l’IA del piano: i giochi, le tue classi, le lezioni e i progressi restano gratis, e non viene cancellato nulla."
     },
     "final": {
       "h": "La tua prossima lezione potrebbe essere quella che ti chiedono di rigiocare",
       "p": "Gratis per 14 giorni. Niente carta, niente costi per studente.",
-      "cta": "Inizia la prova gratuita di 14 giorni"
+      "cta": "Inizia la prova gratuita di 14 giorni",
+      "pFree": "Giochi, classi, lezioni e progressi sono sempre gratis. Prova il piano Insegnante gratis per 14 giorni, senza carta e senza costi per studente."
     },
     "play": {
       "h": "Sei qui per giocare?",
@@ -7885,6 +7920,9 @@
       "badHour": "Scegli un orario.",
       "badZone": "Scegli un fuso orario dall'elenco."
     }
+  },
+  "brand": {
+    "tagline": "Tempo davanti allo schermo che ti fa stare tranquillo"
   },
   "gradebook": {
     "workDone": "Lavoro svolto",

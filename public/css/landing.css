@@ -415,3 +415,16 @@ main{position:relative;z-index:1}
 @media (min-width:760px){.lp-loop-shots{grid-template-columns:1fr 1fr}}
 .lp-loop-shot .lp-screen img{height:auto}
 .lp-loop-cta{margin-top:clamp(36px,5vw,56px)}
+
+/* Free and paid in one line (hero), the Free plan card, the tagline, Google Classroom and the research link. */
+.lp-freeline{margin-top:18px;max-width:40em;font-size:15px;line-height:1.55;color:var(--text-2)}
+.lp-freeline a{color:var(--link);font-weight:700}
+@media (min-width:1000px){.lp-plans-3{max-width:1180px;grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:820px) and (max-width:999px){.lp-plans-3{grid-template-columns:1fr 1fr}.lp-plans-3>:first-child{grid-column:1/-1}}
+.lp-plan-plus{margin-top:22px;font-weight:700;color:var(--text)}
+.lp-plan-plus+.lp-list{margin-top:12px}
+.lp-foot-brand .lp-tagline{font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-.01em}
+.lp-gc{max-width:1000px;margin:0 auto}
+.lp-gc .lp-list{margin-top:0}
+.lp-gc .lp-small a{color:var(--link);font-weight:700}
+.lp-research{text-align:center}

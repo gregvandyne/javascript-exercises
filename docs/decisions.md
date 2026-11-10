@@ -3955,6 +3955,39 @@ parent account; the migration; the chat default, the notice and its dismissal), 
 **Deploy note.** `0067` belongs to the Google Classroom work on another branch; whichever merges second keeps both
 entries in `MIGRATIONS` (they do not depend on each other).
 
+## Teacher marketing: Classroom, free and paid (10 Nov 2026)
+
+Part of the owner-approved website pass (Google Classroom on the marketing pages, one free and paid story, the tagline,
+a place for real teacher quotes).
+
+- **Google Classroom section** on "/" (`#classroom`, after the courses) and on /teachers (a panel after the teaching
+  loop), with the same words (`teachers.classroom.*`). It shows only while Classroom is on for the server
+  (`services/gclassroom.js` `enabled()`: Sign in with Google and `GOOGLE_CLASSROOM=1`), following /teachers' rule that a
+  feature off on this server is left out of the text. Every line matches the code: read-only connect first, posting
+  needs the teacher's separate "allow posting" step, roster import by hand then every 6 hours (`ROSTER_EVERY`),
+  students matched by Google account, assignment with link and due date or a material, completion grades out of 100
+  (`scoreOf`: steps done of the lesson's steps, said in the copy), automatic grades optional, announcements in the
+  teacher's words, no student emails asked for and no names, answers or games sent. Nothing says or implies that Google
+  verified the app. Turn `GOOGLE_CLASSROOM` on in production only once Google has verified the scopes, or the section
+  invites teachers who would meet the "unverified app" screen.
+- **One free and paid line** (`teachers.free.line`), on the landing hero and the /teachers hero: always free (every game,
+  classes, lessons, progress and the gradebook, free daily Builder messages for teachers and students), the Teacher plan
+  adds the class's daily AI builds (`TEACHER_DAILY_MESSAGES`), "See prices on Plans" links to /plans. No amount on "/"
+  or /teachers (the "kids are never sold to" rule above stands; amounts stay on /plans). The landing's pricing section
+  gets a Free card; the Teacher card lists only what the plan adds ("Everything in Free, plus:"), so free features are
+  no longer listed as plan features; the trial FAQ and the closing line say what stays free when a trial ends (nothing
+  is deleted or locked: "Teacher plan" above). /teachers with paid-plan pages off shows the free half only
+  (`teachers.free.lineOff`). The old keys (`landing.pricing.lead`, `landing.faq.a2`, `landing.final.p`) are no longer
+  used.
+- **Tagline** "Screen time you can feel good about" (`brand.tagline`, new; it was only ever in the parents video) in the
+  landing footer and under the /parents heading.
+- **Teacher quotes** on /teachers: `TEACHER_QUOTES` in routes/teachers.js is empty, so the section is not rendered.
+  Only real quotes, given with the teacher's permission, go there; a platform admin sees the layout with owner
+  placeholders at `/teachers?quotes=preview`. "/" keeps its no-testimonials rule.
+- **Research link:** "/" (under "Why games work") and /teachers link to `/research` (the page comes with the research
+  pass).
+- Tests: `tests/unit/teacher-marketing.test.js`.
+
 ## A first live game in under 3 minutes (10 Nov 2026)
 
 The teacher audit's slam-dunk item 1 (owner: "Build 1, 2, and 5"; this is 1). Before: the landing's only way in was the
