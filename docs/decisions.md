@@ -3571,6 +3571,43 @@ three (`scopesMissing`), so nothing worked. Decisions (the owner's) and what was
   lesson deletion and the sweep remove the new rows too. Unlinking forgets the class's settings.
 - **Privacy:** the legal pages are not changed here (signed off 9 Nov); the sentences that would need the lawyer are
   listed for the owner (/privacy `google.setup.privacy.classroom`, docs/legal-review.md "Google Classroom sync").
+## Google Classroom sync: hardening (10 Nov 2026)
+An improvement pass (owner-approved plan, Part B) found three edges in the sync. Scopes, the data sent to Google and
+the privacy pages are unchanged.
+- **Grades that didn't go through are retried.** Before: `autoGrades` looked at a posted lesson only when
+  `step_progress` moved after `gc_posts.auto_at`, and set `auto_at` after every run, even when some students' grades
+  failed (a non-fatal error on their PATCH counted in `failed`). A student whose grade failed and who did nothing more
+  was never sent again. Now `sendGrades` keeps per assignment `gc_posts.retry_at` / `retry_fails` (migration
+  **0069_gclassroom_retry**): a send with a failure sets `retry_at` 1 h, 2 h, 4 h... (at most a day, the same back-off
+  curve as the class's) after the run; `autoGrades` also looks at a lesson whose `retry_at` is due. Failed students are
+  not in `gc_grades`, so they still count as changed and are the only ones sent again (`onlyChanged`); students whose
+  grade went are not. A clean send or a quiet one clears the retry. Retries stop with the lesson's existing window
+  (`autoEnded`: 30 days after the due day, 90 days after posting without one), go through the teacher's 60 syncs an
+  hour, and don't back the whole class off (that stays for errors that stop a run). A manual send with a failure also
+  leaves a retry for the automatic sync, if it is on. Reposting clears it.
+- **Big classes get the plain answer.** Before: the roster and submissions were read with `listAll` at 5 pages of 100,
+  so a course over 500 failed with a generic `badRequest` ("too many pages"), and one of 301 to 500 was read in full
+  before the 300 check. Now `listAll` takes a `cap` and stops paging once more than that many entries were seen
+  (`GcError('tooMany')`); the roster import passes 300, so it stops at the fourth page and answers `tooMany` ("more
+  than 300 students"). Classroom gives no student count up front, so paging is the earliest point. Sending grades uses
+  the new `eachPage`: submissions are read 100 at a time and paging stops once every student with a grade to send was
+  found (often the first page), up to `SUBMISSION_PAGES` (10, so 1,000). Past that, the send doesn't fail: the grades
+  found go, students not reached count as failed (so they are retried), and the log line is `partial` with `tooMany`.
+- **Fewer false alarms in the announcement name check, and it says which word.** Before: any roster first name of 3+
+  letters was refused as a whole word in any case, so a class with a May, a Will or an Art couldn't post "we will start
+  in May". Now full roster names, display names of more than one word and usernames still count in any case. A one-word
+  name (a roster name's first word, a one-word display name) that is on a short fixed list of everyday English words
+  (`WORD_NAMES`: may, will, art, grace, mark, rose, max, jack...) counts only when written like a name: starting with a
+  capital, not at the start of a sentence, and, for April, May, June and August, not after a date word such as "in",
+  "by", "on" or before a number. Names off the list are checked as before. Why this rule: capitalization mid-sentence
+  is how English marks a name, and the list only relaxes words a teacher writes in ordinary class news; everything
+  else keeps the old, stricter check, and the list is English only, so other languages keep it too. Known gap,
+  accepted: such a name at the start of a sentence ("Will did great") gets through. Last names alone are not checked
+  (plain-word surnames such as Brown or Young would block much more than they protect; the full name is checked). The
+  error now quotes the words from the teacher's message that matched (`gclassroom.errors.hasName`, 13 languages).
+- **Checks:** tests/unit/gclassroom.test.js (retry, back-off, no resend, the window; the 300 cap after 4 pages; a
+  1,050-entry submission list; the name check), with the existing fake Classroom.
+
 ## Weekly class summary email (9 Nov 2026)
 
 Teachers get one email a week with counts for each class they teach, so they know where to look without opening the
