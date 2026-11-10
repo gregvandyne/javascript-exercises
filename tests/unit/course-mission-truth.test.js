@@ -1,7 +1,7 @@
 // Playthrough-audit guards (2026-11-05): mission slides must state the TRUE amount of game work a step
 // requires (chapter sizes + Packet Post's chained "bonus" chapters, counted from the games' own level
-// data), duplicate chapter assignments must say so honestly, and every quick-check item in the audited
-// units must carry a `why`, so a miss teaches the path to the answer instead of only naming it.
+// data), duplicate chapter assignments must say so honestly, and every quick-check item in every
+// course step and every exit item in the question sets must carry a `why`, so a miss teaches the path to the answer instead of only naming it.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -80,15 +80,14 @@ test('chained Packet Post chapters are named in the mission with their true size
   }
 });
 
-test('every quick-check item in the audited units carries a why, and a miss returns it', () => {
-  const audited = {
-    'cs-quest': ['0.1', '1.1', '1.2', '1.3', '1.4', '1.5', '2.1', '2.2', '3.1', '3.2', '3.3'],
-    // Cyber Defenders: every step since the 2026-11-07 pass (units 3-6 got their whys too)
-    'cyber-defenders': ['0.1', '1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '3.3', '4.1', '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '6.4'],
-  };
+test('every quick-check item in every course step carries a why, and a miss returns it', () => {
+  // Since the 2026-11-10 pass every step of all three courses is covered: CS Quest units 4-6 already had
+  // their whys (the old audited list just never named them), and Number Quest units 0-4 got theirs then.
+  const nqDir = path.join(ROOT, 'seed-lessons', 'number-quest', 'course', 'explorer');
+  const nq = fs.readdirSync(nqDir).filter(x => x.endsWith('.json')).sort()
+    .map(f => ({ course: 'number-quest', band: 'explorer', deck: JSON.parse(fs.readFileSync(path.join(nqDir, f), 'utf8')) }));
   let checked = 0;
-  for (const { course, band, deck: d } of ALL) {
-    if (!audited[course].includes(d.n)) continue;
+  for (const { course, band, deck: d } of [...ALL, ...nq]) {
     for (const id of d.check) {
       const it = C.item(id);
       assert.ok(it, `${course} ${band} ${d.n}: ${id} exists`);
@@ -100,7 +99,31 @@ test('every quick-check item in the audited units carries a why, and a miss retu
       checked++;
     }
   }
-  assert.equal(checked, 186, 'the audited units hold 186 deck-check items');
+  assert.equal(checked, 318, 'the three courses hold 318 deck-check items (CS Quest 129, Cyber Defenders 120, Number Quest 69)');
+});
+
+test('every exit item in every question-set file carries a why', () => {
+  // Exit items are the ones a course quick check or an exit ticket asks, so each carries a why. Openers
+  // (unit pre-tests) and review items (CS Quest only: warm-ups and the unit review in the live games) are
+  // vocabulary recall that never shows a why, so they are not required to carry one. No exit item is
+  // skipped: the skip list stays empty unless an explanation cannot be verified against its lesson.
+  const SKIP = new Set([]);
+  let files = 0, exits = 0;
+  for (const program of ['cs-quest', 'cyber-defenders', 'number-quest']) {
+    const dir = path.join(ROOT, 'seed-lessons', program, 'sets');
+    for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort()) {
+      const bank = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+      files++;
+      for (const it of bank.items) {
+        if (it.use !== 'exit' || SKIP.has(it.id)) continue;
+        exits++;
+        assert.ok(typeof it.why === 'string' && it.why.length >= 20 && it.why.length <= 240, `${program}/${f} ${it.id}: needs a short why`);
+        assert.ok(!/[\u2013\u2014]/.test(it.why), `${program}/${f} ${it.id}: no long dashes in a why`);
+      }
+    }
+  }
+  assert.equal(files, 36, 'the three programs hold 36 question-set files');
+  assert.equal(exits, 327, 'and 327 exit items, every one with a why');
 });
 
 // Packet Post's lesson chains, read from the game itself (PacketPostLevels.THEN, seed-games/packet-post.html).

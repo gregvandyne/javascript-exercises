@@ -27,7 +27,8 @@
     "traded into the wrong column",
     "missed the trade into the hundreds",
     "correct"
-   ]
+   ],
+   "why": "Ones: 6 + 7 = 13, write 3 and trade 1 ten. Tens: 5 + 8 + 1 = 14, write 4 and trade 1 hundred. Hundreds: 3 + 2 + 1 = 6. That makes 643."
   },
   {
    "id": "nq-explorer-2.1-e2",
@@ -50,7 +51,8 @@
     "dropped the new thousand",
     "forgot the trade from the tens into the hundreds",
     "correct"
-   ]
+   ],
+   "why": "Rough first: about 1,200 + 1,000 = 2,200. Then trade at the ones, tens and hundreds: 8 + 6 = 14, 4 + 7 + 1 = 12, 2 + 9 + 1 = 12, and 1 + 1 = 2 thousands. That is 2,224."
   },
   {
    "id": "nq-explorer-2.1-e3",
@@ -73,7 +75,8 @@
     "correct",
     "forgot the trade from the ones into the tens",
     "slipped in the tens column"
-   ]
+   ],
+   "why": "More boxes arrive, so join: 425 + 268. Ones: 5 + 8 = 13, trade 1 ten. Tens: 2 + 6 + 1 = 9. Hundreds: 4 + 2 = 6. That makes 693."
   },
   {
    "id": "nq-explorer-2.2-e1",
@@ -96,7 +99,8 @@
     "made one hop of ten too many",
     "correct",
     "traded across the zero twice"
-   ]
+   ],
+   "why": "Count up the gap from 458 in friendly hops: 2 to 460, 40 to 500, 200 to 700 and 3 to 703. The hops add to 245."
   },
   {
    "id": "nq-explorer-2.2-e2",
@@ -119,7 +123,8 @@
     "lost a hop of ten",
     "counted a hop of ten twice",
     "correct"
-   ]
+   ],
+   "why": "Hop from 289 to 300, a hop of 11, then from 300 to 500, a hop of 200. The gap is 11 + 200 = 211."
   },
   {
    "id": "nq-explorer-2.2-e3",
@@ -142,7 +147,8 @@
     "forgot the trade in the ones",
     "correct",
     "forgot to take the traded hundred away"
-   ]
+   ],
+   "why": "Count up from 278: a hop of 22 to 300, 300 to 600 and 34 to 634. The hops add to 22 + 300 + 34 = 356."
   },
   {
    "id": "nq-explorer-2.3-e1",
@@ -165,7 +171,8 @@
     "took away both moves",
     "stopped after the first step",
     "correct"
-   ]
+   ],
+   "why": "Two moves, one at a time: 240 - 85 = 155 cards after giving some away, then 155 + 30 = 185 after buying more."
   },
   {
    "id": "nq-explorer-2.3-e2",
@@ -188,7 +195,8 @@
     "counted the gap with hops too big",
     "correct",
     "counted the gap with hops too small"
-   ]
+   ],
+   "why": "The whole is 500 and one part is 175, so the other part is the gap: 500 - 175 = 325. Check: 175 + 325 = 500."
   },
   {
    "id": "nq-explorer-2.3-e3",
@@ -211,7 +219,8 @@
     "counted a hop of ten twice",
     "lost a hop of ten",
     "correct"
-   ]
+   ],
+   "why": "\"How many more\" means find the gap between the scores. Count up from 268: 32 to 300, then 112 to 412. The gap is 32 + 112 = 144."
   }
  ]
 }
