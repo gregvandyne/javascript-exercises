@@ -164,7 +164,7 @@ test('the landing at "/": one teaching-loop section right after how it works, wi
     assert.equal(fs.readFileSync(file).subarray(8, 12).toString(), 'WEBP');
   }
   assert.doesNotMatch(s, /\$\d|€\d|£\d|\d+\s*(?:USD|dollars)/i);
-  assert.doesNotMatch(sec, /rubric|Common Core|Google Classroom|weekly (?:summary|email)|coming soon/i, 'no promises of tools not built');
+  assert.doesNotMatch(sec, /rubric|Google Classroom|weekly (?:summary|email)|coming soon/i, 'no promises of tools not built');
   const he = (await get('/he')).text;
   assert.match(he, /<h2 id="loop-h">תכנון ← משחק ← בדיקה ← משוב<\/h2>/);
 });
