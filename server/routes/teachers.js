@@ -246,6 +246,7 @@ router.get('/teachers', (req, res) => {
     ${el(t, 'p', plans ? 'teachers.free.line' : 'teachers.free.lineOff', { daily: req.fmt.int(config.teacherDailyMessages), plans: '/plans' }, ' class="lp-freeline"')}
     <div class="row lp-cta">
       <a class="btn btn-primary btn-big" href="#start">${t('teachers.cta.start')}</a>
+      ${liveOn() && !(req.user && !req.user.is_guest && !canHost(req.user)) ? html`<a class="btn btn-hot btn-big" href="${canHost(req.user) ? '/live/quick' : '/teachers/host'}" id="host-now">📡 ${el(t, 'span', 'quickLive.cta')}</a>` : ''}
       ${list[0] ? html`<a class="btn btn-big" href="/play/${list[0].slug}" rel="nofollow">▶ ${t('teachers.cta.try')}</a>` : ''}
     </div>
     ${howArt(req, 'teachers')}
@@ -327,7 +328,9 @@ router.get('/teachers/live', (req, res, next) => {
   const host = canHost(u), kid = !!u && !u.is_guest && !host;
   // The way in: hosts go straight to /live; signed-out teachers sign in (or sign up as a grown-up while those pages are on,
   // else set up their school on /teachers); a child's account is told to ask for the code.
-  const hostHref = host ? '/live' : familiesOn(req) ? '/grown-ups/signup?next=%2Flive' : '/login?next=%2Flive';
+  // (Signed out: the three-field teacher sign-up and the Quick game chooser, routes/quick-live.js. It used to be the
+  // parents' sign-up, which made a parent account for a teacher.)
+  const hostHref = host ? '/live' : '/teachers/host';
   const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
   const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
@@ -335,7 +338,7 @@ router.get('/teachers/live', (req, res, next) => {
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
   const mode = (emoji, k) => { const c = capacityFor({ mode: MODE_ID[k] }); return html`<section class="panel lp-mode"><h3><span aria-hidden="true">${emoji}</span> ${el(t, 'span', `teachersLive.modes.${k}.h`)}</h3>${el(t, 'p', `teachersLive.modes.${k}.p`)}<p class="small lp-mode-players">👥 ${t('live.landing.best', { min: c.best[0], max: c.best[1] })}</p></section>`; };
   const startBtns = kid ? html`<a class="btn btn-primary btn-big" href="/join">${t('teachersLive.cta.join')}</a>`
-    : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>${!host && !familiesOn(req) ? html`<a class="btn btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a>` : ''}`;
+    : html`<a class="btn btn-primary btn-big" href="${hostHref}">${t('teachersLive.cta.host')}</a>`;
   const body = html`<div class="lp">
   <section class="lp-hero lp-hero-how" aria-labelledby="lp-h1">
     ${el(t, 'p', 'teachersLive.kicker', {}, ' class="lp-kicker"')}
@@ -381,7 +384,7 @@ router.get('/teachers/live', (req, res, next) => {
 
   <section class="panel lp-start" id="start" aria-labelledby="start-h">
     ${el(t, 'h2', 'teachersLive.start.h', {}, ' id="start-h"')}
-    ${el(t, 'p', kid ? 'teachersLive.start.kid' : host ? 'teachersLive.start.signedIn' : familiesOn(req) ? 'teachersLive.start.p' : 'teachersLive.start.pSchool')}
+    ${el(t, 'p', kid ? 'teachersLive.start.kid' : host ? 'teachersLive.start.signedIn' : 'quickLive.ctaNote')}
     <div class="row">${startBtns}</div>
   </section>
   ${faq.markup}

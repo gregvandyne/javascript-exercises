@@ -1,5 +1,5 @@
 // Share pictures (Open Graph / Twitter cards, 1200x630) for the home page, /teachers, the parent pages and each launch
-// game: public/og/site.jpg, teachers.jpg, parents.jpg, parents-<guide>.jpg, ages-<min>-<max>.jpg and <slug>.jpg. Built from the brand (server/views/brand.js, the
+// game: public/og/site.jpg, teachers.jpg, parents.jpg, parents-<guide>.jpg, ages-<min>-<max>.jpg, research.jpg, compliance.jpg and <slug>.jpg. Built from the brand (server/views/brand.js, the
 // Bricolage font, the brand colours) and the launch games' cover screenshots (public/covers, `npm run covers`).
 // Never made for a game a child built: those pages are not indexed and show no share picture.
 //
@@ -59,6 +59,9 @@ const CARDS = [
     { file: 'parents.jpg', kicker: 'For parents', h1: 'Fun learning games for K–8 kids, safe by design', pills: ['Free', 'No ads', 'No stranger chat'], covers: ['word-hunt', 'sum-racer', 'castle-clash'], url: 'oomba.ai/parents' },
     { file: 'parents-ai-builder-safety.jpg', kicker: 'For parents', h1: 'Is the AI Builder safe for my child?', pills: ['What it sees', 'The rules it follows'], covers: ['hero-of-sunvale', 'loop-lab', 'munch-maze'], url: 'oomba.ai/parents' },
     { file: 'parents-safety-and-screen-time.jpg', kicker: 'A parent’s guide', h1: 'Good screen time for kids 5–14', pills: ['No ads', 'Nothing to buy', 'A checklist'], covers: ['shark-plank', 'word-peek', 'beat-lanes'], url: 'oomba.ai/parents' },
+    { file: 'ages-5-7.jpg', kicker: 'Ages 5 to 7', h1: 'Free learning games for 5, 6 and 7 year olds', pills: ['Read aloud', 'First sums', 'Sight words'], covers: ['word-trail', 'shark-plank', 'sum-racer'], url: 'oomba.ai' },
+    { file: 'research.jpg', kicker: 'For teachers', h1: 'Does game-based learning work? What the research says', pills: ['Three research reviews', 'Plain words'], covers: ['quest-race', 'sum-racer', 'robo-route'], url: 'oomba.ai/research' },
+    { file: 'compliance.jpg', kicker: 'For schools and districts', h1: 'Student privacy and compliance', pills: ['COPPA', 'FERPA', 'GDPR'], covers: ['word-hunt', 'castle-clash', 'data-detective'], url: 'oomba.ai/compliance' },
     { file: 'ages-8-9.jpg', kicker: 'Ages 8 and 9', h1: 'Free learning games for 8 and 9 year olds', pills: ['Times tables', 'Spelling', 'Chess'], covers: ['shark-plank', 'sum-racer', 'word-hunt'], url: 'oomba.ai' },
     { file: 'ages-10-11.jpg', kicker: 'Ages 10 and 11', h1: 'Free learning games for 10 and 11 year olds', pills: ['Division', 'Word puzzles', 'Make a game'], covers: ['word-peek', 'castle-clash', 'brick-drop'], url: 'oomba.ai' },
     { file: 'ages-12-14.jpg', kicker: 'Ages 12 to 14', h1: 'Games for 12 to 14 year olds that aren’t babyish', pills: ['Strategy', 'Music', 'Make a game'], covers: ['loop-lab', 'hero-of-sunvale', 'castle-clash'], url: 'oomba.ai' },

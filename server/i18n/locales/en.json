@@ -4987,6 +4987,32 @@
           "q4": "Is there chat with strangers?",
           "a4": "No. Kids chat only with friends they added with a 6-character code, never by searching names, and they can switch chat off on their Me page."
         }
+      },
+      "a5": {
+        "name": "Ages 5 to 7",
+        "short": "Sight words, first sums, rhythm and simple strategy",
+        "title": "Free learning games for 5, 6 and 7 year olds",
+        "description": "Free, ad-free browser games for 5 to 7 year olds: sight words read aloud, first sums, rhythm and simple strategy. No downloads, no chat with strangers.",
+        "h1": "Learning games for 5 to 7 year olds",
+        "lead": "From kindergarten to grade 2, most kids are still learning to read. These games read their words aloud, or use numbers, music and pictures, so a young child can play with a grown-up close by at first. Our full courses start in grade 3, at about age 8.",
+        "fit": {
+          "wordTrail": "Made for this age: the first sight words on a storybook trail, and every word is read aloud.",
+          "sharkPlank": "Hangman for kids who are just learning to read, with every word read aloud.",
+          "sumRacer": "Start on the Addition to 10 track. Kids can tap the answer instead of typing it.",
+          "wordHunt": "Themed word searches for newer readers, best from about age 6: tap any word to hear it read aloud.",
+          "tugOfMath": "Pick grade 1 for the easiest questions, adding within 20, and play the computer on Easy.",
+          "beatLanes": "Tap in time to songs, starting with Twinkle Twinkle: rhythm and timing more than reading.",
+          "connectFour": "Four in a row against a grown-up, a sibling or the robot on Easy: a first taste of planning ahead.",
+          "doodleHoot": "Draw and guess with Easy words, and letter tiles for little ones who can’t type yet."
+        },
+        "faq": {
+          "q2": "Can my child play if they can’t read yet?",
+          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer and Tug of Math use numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
+          "q3": "Are the courses for this age?",
+          "a3": "Not yet. Number Quest, CS Quest and Cyber Defenders start in grade 3, at about age 8. From 5 to 7, the games on this page are the place to start.",
+          "q4": "Can a 6 year old use the AI Builder?",
+          "a4": "Kids type their idea to the Builder, so at this age a grown-up should sit with them and help write it. The Builder follows fixed kid-safety rules, and a new game stays private until it is shared."
+        }
       }
     },
     "index": {
@@ -5113,7 +5139,7 @@
     },
     "ages": {
       "h": "Games for every age",
-      "p": "Kids change a lot between 8 and 14. These pages pick the games that fit each age and say why."
+      "p": "Kids change a lot between 5 and 14. These pages pick the games that fit each age and say why."
     },
     "make": {
       "h": "From playing to making",
@@ -5313,6 +5339,128 @@
     "demo": {
       "h": "See it in under a minute",
       "note": "A short video with music and captions on screen: children play learning games (a globe of the world, Would You Rather, chess and Gulp City), then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, how it stays safe: a made-up name with no email, friends added only with a code, and games kept private until the child chooses to share."
+    }
+  },
+  "research": {
+    "name": "The research",
+    "footer": "Research",
+    "title": "Does game-based learning work? What the research says",
+    "description": "What three large research reviews found about learning games and gamification, in plain words for teachers, with effect sizes and full citations.",
+    "kicker": "For teachers · The research",
+    "h1": "Does game-based learning work? What the research says",
+    "lead": "Three large reviews pooled the results of many studies on learning games and on game elements in lessons. Here is what they found, in plain words, and what it does not prove.",
+    "findings": {
+      "h": "What the studies found"
+    },
+    "clark": {
+      "h": "Learning games, compared with teaching without games",
+      "stat": "From the 50th to about the 63rd percentile",
+      "p": "Across studies that compared digital learning games with teaching without games, students who learned with games did better on tests of what they learned.",
+      "small": "Clark, Tanner-Smith and Killingsworth (2016): learning outcomes, games compared with no games, g = 0.33."
+    },
+    "wouters": {
+      "h": "Serious games, compared with conventional teaching",
+      "stat": "About the 61st percentile for learning, and the 64th for remembering it later",
+      "p": "Students who learned with serious games learned more than students taught in conventional ways, and they remembered more when they were tested again later.",
+      "small": "Wouters, van Nimwegen, van Oostendorp and van der Spek (2013): learning d = 0.29, retention d = 0.36."
+    },
+    "sailer": {
+      "h": "Game elements in ordinary lessons (gamification)",
+      "stat": "About the 69th percentile",
+      "p": "Adding game elements such as points, badges and leaderboards to ordinary lessons also helped what students learned.",
+      "small": "Sailer and Homner (2020): gamification, cognitive learning outcomes, g = 0.49."
+    },
+    "read": {
+      "h": "How to read these numbers",
+      "p1": "A percentile says where the average student who learned with games would land among students taught without them. The 50th percentile is the middle. Moving to the 63rd percentile means the average student with games scored higher than about 63 out of 100 students taught without them.",
+      "p2": "The small print gives each effect size (Hedges’ g or Cohen’s d): the difference between the two groups, measured in standard deviations. We turned each one into a percentile assuming normally distributed scores."
+    },
+    "limits": {
+      "h": "What this does not prove",
+      "li1": "These are averages across many studies, ages, subjects and games. Some games helped a lot, and some did not help at all.",
+      "li2": "None of these studies tested Oomba Academy. They describe learning games in general, not a promise about any one game, class or student.",
+      "li3": "Wouters and colleagues found that serious games were not more motivating than conventional teaching, even though students learned more.",
+      "li4": "Gamification is not the same as a learning game: it adds game elements to ordinary lessons. We include it because points, stars and leaderboards are part of many learning games, including ours."
+    },
+    "use": {
+      "h": "Using games the way the research suggests",
+      "p": "Wouters and colleagues found that students learned more from serious games when the game was used alongside other teaching, over more than one session, and when students played in groups.",
+      "li1": "Use a game alongside your lesson, not in place of it: a short round to practice what you just taught.",
+      "li2": "Come back to it over several sessions instead of one long session.",
+      "li3": "Let students play together: as a whole class, in teams, or two players on one screen."
+    },
+    "sources": {
+      "h": "Sources"
+    },
+    "links": {
+      "teachers": "Oomba Academy for teachers"
+    }
+  },
+  "compliance": {
+    "name": "Privacy and compliance",
+    "footer": "Compliance",
+    "title": "Student privacy and compliance: COPPA, FERPA and GDPR",
+    "description": "Where Oomba Academy stands on COPPA, FERPA and GDPR, what student data it keeps, who receives it, and how a school can ask about a data agreement.",
+    "kicker": "For schools and districts",
+    "h1": "Student privacy and compliance",
+    "lead": "This page is for teachers, school leaders and IT staff who check tools against student privacy laws. It sums up what our <a href=\"{privacy}\">Privacy Policy</a> says and what Oomba Academy does today. If anything here differs from the Privacy Policy, the Privacy Policy is the one that counts.",
+    "glance": {
+      "h": "At a glance",
+      "li1": "Students never need an email address, and we never ask for their age or home address.",
+      "li1google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account.",
+      "li2": "No ads, no advertising or tracking cookies, and we never sell anyone’s personal information.",
+      "li3": "School accounts are made and owned by the school. We use student information only to provide Oomba Academy to the school, never for advertising.",
+      "li4": "A student’s real name, if the school adds one, is seen only by the school’s staff and our team.",
+      "li5": "Games run in a locked sandbox: no network, no cookies and no access to the rest of the site."
+    },
+    "coppa": {
+      "h": "COPPA (US children under 13)",
+      "p1": "Oomba Academy is made for kids from kindergarten to grade 8, so many of them are under 13. This is how their information is handled today:",
+      "li1": "School accounts are made and owned by the school, and students sign in with a login card from school. For these accounts we act on the school’s behalf and under its direction.",
+      "li2": "Parents of a school account ask the school to see or delete their child’s records, and the school can ask us.",
+      "li3": "Parents of a child’s own account can email us to see what we keep, to delete it, or to stop us collecting more. There is no delete or download button yet, so we handle these requests by hand, and we check that you are the parent first.",
+      "li4": "Paying for a plan is never how we ask a parent for permission.",
+      "p2": "Questions about how consent works for your school’s accounts: email {email}."
+    },
+    "ferpa": {
+      "h": "FERPA (student education records)",
+      "li1": "Beyond what any account keeps, a school account keeps the student’s real name as the school typed it, their classes, lesson progress, written answers and their teacher’s feedback.",
+      "li2": "A student’s real name is seen only by the school’s staff and our team.",
+      "li3": "We use student information only to provide Oomba Academy to the school, never for advertising, and we don’t sell it.",
+      "li4": "Parents ask the school to see or delete records, and the school can ask us. A data agreement the school has signed with us comes first.",
+      "p": "To discuss FERPA terms for your school or district: email {email}."
+    },
+    "gdpr": {
+      "h": "GDPR and UK GDPR (Europe and the UK)",
+      "p1": "Oomba Academy is in {count} languages, and schools outside the US can use it. The same rules apply everywhere: no ads, no tracking cookies, no student emails, and student information used only to provide Oomba Academy.",
+      "p2": "Schools in the European Union or the United Kingdom: please email {email} before you roll Oomba Academy out, so we can answer your questions about the GDPR or the UK GDPR first."
+    },
+    "dpa": {
+      "h": "Data Processing Agreement (DPA)",
+      "p1": "Our Privacy Policy says that a data agreement a school has signed with us comes first.",
+      "p2": "To ask about a data agreement for your school or district, including a state student privacy agreement, email {email}."
+    },
+    "keep": {
+      "h": "How long we keep data",
+      "li1": "We keep an account’s data for as long as the account exists. None of it is deleted on a timer yet.",
+      "li2": "A game a student deletes is taken off the site for everyone, but a copy stays on our server.",
+      "li3": "There is no button yet to delete an account or download its data. For a school account, the school asks us."
+    },
+    "others": {
+      "h": "Who else receives data",
+      "li1": "Anthropic (Claude, the AI that makes games): a student’s Builder messages, pictures and files, to make the game and to check it is safe, without the student’s name or username. Chats between friends and lesson answers are never sent to the AI.",
+      "li2": "Google, only if your school uses Sign in with Google or a teacher connects Google Classroom. Classroom reads class names and the linked class’s students’ Google ids and names. We send only what the teacher posts, such as a lesson link with its title and due date, and each student’s lesson score out of 100: never students’ names, answers, feedback or games.",
+      "li3": "AI voices and speech to text, where they are switched on: our <a href=\"{privacy}\">Privacy Policy</a> says exactly what each one gets."
+    },
+    "security": {
+      "h": "Security basics",
+      "li1": "Passwords are stored scrambled, so we can’t read them.",
+      "li2": "Every version of every game is checked by our safety scanner the moment it is made, and a game that tries to reach the internet or read cookies can’t be shared.",
+      "li3": "A teacher’s Google Classroom connection is stored encrypted until they disconnect, and disconnecting also revokes it at Google."
+    },
+    "contact": {
+      "h": "Questions",
+      "p": "Email {email}. For records of a school account, the school contacts us. See also our <a href=\"{privacy}\">Privacy Policy</a> and how we keep kids <a href=\"{safety}\">safe</a>."
     }
   },
   "connections": {
@@ -7463,7 +7611,7 @@
       "li1": "Quest Race, Question Battle, Brain Board, Tug of Math and more",
       "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
       "li3": "Scores go straight into your gradebook",
-      "li4": "Signed-in students only: no chat, no typing, no made-up names",
+      "li4": "Class games: your signed-in students only. Guest games: safe made-up names. No chat and no typing in either",
       "shotAlt": "A live Question Battle lobby: five student avatars wait while the big screen shows the game code and a QR code.",
       "link": "How live games work"
     },
@@ -8182,5 +8330,137 @@
   },
   "brand": {
     "tagline": "Screen time you can feel good about"
+  },
+  "gradebook": {
+    "workDone": "Work done",
+    "score": "Score",
+    "noScore": "Nothing scored yet",
+    "scoreTitle": "{earned} of {possible} points",
+    "scoreWhy": "See what makes up this score",
+    "doneLate": "Done late",
+    "stepLate": "Done after the due date",
+    "lateN": "Late: {count}",
+    "key": {
+      "score": "score: points earned out of points possible"
+    },
+    "names": {
+      "inGames": "Name in games"
+    },
+    "help": {
+      "workDone": "The share of steps a student has finished in the lessons that are open. It does not look at right answers.",
+      "score": "Points earned out of points possible: quizzes (1 point a question), live games you host for a lesson step (1 point a question, the best game) and work you score with a rubric (its points). Bigger pieces of work count for more. Work that is not done or not scored yet is left out, so a student with nothing scored shows –. Tap a score to see what makes it up.",
+      "late": "Work still missing after the due date. \"Done late\" means it was finished after the due date.",
+      "names": "The grey name under a student's name is the one they have in games and on the class screen."
+    },
+    "live": {
+      "title": "Live game results",
+      "hint": "Right answers out of the questions asked, for students signed in to this class. Guests are never saved.",
+      "linked": "Part of a lesson: counts in the Score",
+      "keyRight": "right answers out of questions asked",
+      "keyPlayed": "played, nothing to mark",
+      "keyAbsent": "did not play"
+    },
+    "csv": {
+      "points": "Score (points)",
+      "lateCount": "Late lessons",
+      "scoreCol": "{title} (score %)",
+      "lateCol": "{title} (late)",
+      "late": "late",
+      "doneLate": "done late",
+      "live": "Live: {title} ({date})"
+    },
+    "kind": {
+      "quiz": "Quiz",
+      "live": "Live game",
+      "rubric": "Rubric",
+      "marks": "Rubric marks"
+    },
+    "student": {
+      "back": "Progress",
+      "printFull": "Print the full name",
+      "print": "Print",
+      "printHint": "A print shows the first name only unless you tick the box. The name used in games is never printed.",
+      "lateLessons": "Late lessons",
+      "lesson": "Lesson",
+      "due": "Due",
+      "late": "Late",
+      "scoreH": "What makes up the score",
+      "work": "Work",
+      "type": "Type",
+      "points": "Points",
+      "none": "Nothing is scored yet. Scores come from quizzes, live games hosted for a lesson step, and work scored with a rubric.",
+      "standardsLine": "{meets} met · {developing} developing · {practiced} practiced",
+      "standardsOpen": "See the standards",
+      "noStandards": "No standards evidence yet.",
+      "answers": "Recent answers and feedback",
+      "feedback": "Teacher's feedback",
+      "noAnswers": "No written answers yet.",
+      "noLive": "No live games yet."
+    },
+    "dash": {
+      "showNames": "Show class-list names",
+      "hideNames": "Hide class-list names",
+      "namesHint": "Shows each student's class-list name beside their name in the game, on this screen only. The class screen keeps the game names."
+    }
+  },
+  "quickLive": {
+    "cta": "Host a live game now",
+    "ctaNote": "No student accounts needed. Students join with a code and get a safe made-up name.",
+    "haveCode": "Have a game code? Join",
+    "join": "Join a game",
+    "host": {
+      "title": "Host a live game now",
+      "h": "Host a live game now",
+      "lead": "Make a teacher account, pick a game, and your students join with a code. No student accounts, no email address, and it is free.",
+      "step1": "Make your teacher account: three boxes.",
+      "step2": "Pick a game and its questions.",
+      "step3": "Put the code on the board. Students join on any device."
+    },
+    "signup": {
+      "h": "Your teacher account",
+      "submit": "Make my account and pick a game",
+      "privacy": "We keep your name, your username and a scrambled copy of your password. <a href=\"{privacy}\">Privacy Policy</a>",
+      "have": "Already have an account? <a href=\"{login}\">Sign in</a>",
+      "student": "Are you a student?",
+      "schoolName": "{name}: my classroom"
+    },
+    "kid": {
+      "h": "Teachers host live games",
+      "p": "Ask your teacher for the game code, then join here."
+    },
+    "quick": {
+      "title": "Quick game",
+      "h": "Quick game",
+      "forClass": "For {name}. Only students of this class can join, signed in as themselves.",
+      "open": "Anyone with the code can join. No student accounts: every player gets a safe made-up name.",
+      "hasOpen": "You already have a game open: {title}.",
+      "mode": "Game",
+      "level": "Level",
+      "subject": "Subject",
+      "what": "{count} ready-made questions, new every game. You press Start when everyone is in.",
+      "go": "Open the room",
+      "more": "More games and settings",
+      "recent": "Your last games"
+    },
+    "card": {
+      "button": "Quick game",
+      "change": "Change"
+    },
+    "results": {
+      "h": "This was a guest game.",
+      "now": "Players had no accounts, so nothing went into a gradebook. The question review on this page is kept. The players' game names and scores are not: you can see them here for a few minutes only.",
+      "saved": "Players had no accounts, so no names or scores were kept and nothing went into a gradebook. The question review is kept.",
+      "keep": "Make a class to keep scores",
+      "keepHint": "Paste your students' names and print their login cards. Scores from your class games are then saved."
+    },
+    "keep": {
+      "title": "Make a class to keep scores",
+      "h": "Make a class to keep scores",
+      "lead": "Paste your students' names. Each student gets a login card. From then on, the scores of your class games are saved with their names, for you.",
+      "names": "Students' names",
+      "namesHint": "One name on each line. First names are enough.",
+      "go": "Make the class and the login cards",
+      "note": "Only you and your school's staff see the names you type here."
+    }
   }
 }
