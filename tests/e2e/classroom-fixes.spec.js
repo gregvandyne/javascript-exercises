@@ -137,11 +137,14 @@ test('a school admin invites an existing account: not staff until they accept; t
   const { username: headName } = await signup(head, uniq('Head'), 'head-pass-123');
   const admin = await adminPage(browser);
   const school = await schoolWithAdmin(admin, headName);
-  // the new school's admin lands on the school page (no classes yet), with the setup steps in order
+  // the new school's admin is its only staff member so far, so they land on the Classroom home (docs/decisions.md
+  // "Teacher quick wins", j); the school page, one tap away on the School tab, has the setup steps in order
   await head.goto('/login?signedout=0');
   await head.request.post('/api/auth/logout', { data: {} });
   await login(head, headName, 'head-pass-123');
-  expect(new URL(head.url()).pathname).toBe(`/school/${school.slug}`);
+  expect(new URL(head.url()).pathname).toBe('/teach');
+  await head.locator('.topnav .navlink[href="/school"], .tabbar .tab[href="/school"]').locator('visible=true').first().click();
+  await head.waitForURL(u => u.pathname === `/school/${school.slug}`);
   await expect(head.locator('#setup-list li')).toHaveCount(4);
   await expect(head.locator('#setup-list')).toContainText('Add your teachers');
   // invite someone's own account

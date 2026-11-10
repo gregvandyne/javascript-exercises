@@ -281,7 +281,9 @@ async function roles(browser) {
   // A school admin: a new own account the platform admin appoints.
   const head = await person(browser); const { username } = await signup(head, uniq('Head'), 'head-pass-123');
   const a = await person(browser); await login(a, ADMIN.username, ADMIN.password);
-  await schoolWithAdmin(a, username);
+  // Their school has a teacher too (a school admin who is the only staff member has Classroom first: layout.spec.js).
+  const tch = await person(browser); const { username: teachName } = await signup(tch, uniq('Tchr'), 'tchr-pass-123'); await tch.context().close();
+  await schoolWithAdmin(a, username, { teacher: teachName });
   out['school admin'] = await head.context().storageState();
   out['platform admin'] = await a.context().storageState();
   const mum = await person(browser);

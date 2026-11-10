@@ -134,7 +134,15 @@ test('every role\'s tab bar (360) and top bar (1280): the right items, labels fi
   const adm = await signIn(browser, ADMIN.username, ADMIN.password);
   const headCtx = await browser.newContext(); const headPage = await headCtx.newPage();
   const { username: headName } = await signup(headPage, uniq('Head'), 'head-pass-123');
-  const school = await schoolWithAdmin(adm.page, headName);
+  // Their school has a teacher too, so School is their first tab. A school admin who is the school's only staff
+  // member (a solo teacher) has Classroom first, then School.
+  const tchCtx = await browser.newContext(); const tchPage = await tchCtx.newPage();
+  const { username: teachName } = await signup(tchPage, uniq('Tchr'), 'tchr-pass-123'); await tchCtx.close();
+  const school = await schoolWithAdmin(adm.page, headName, { teacher: teachName });
+  const soloCtx = await browser.newContext(); const soloPage = await soloCtx.newPage();
+  const { username: soloName } = await signup(soloPage, uniq('Solo'), 'solo-pass-123');
+  const soloSchool = await schoolWithAdmin(adm.page, soloName);
+  const soloState = await soloCtx.storageState(); await soloCtx.close();
   const headState = await headCtx.storageState(); await headCtx.close(); await adm.ctx.close();
   const kidCtx = await browser.newContext(); const kidPage = await kidCtx.newPage();
   await signup(kidPage, uniq('Kid')); const kidState = await kidCtx.storageState(); await kidCtx.close();
@@ -145,6 +153,7 @@ test('every role\'s tab bar (360) and top bar (1280): the right items, labels fi
     ['student', await state('DemoStudent', DEMO), ['/classes', '/play', '/learn', '/build', '/me'], ['/classes', '/play', '/learn', '/build', '/friends'], ['/classes', '/play', '/learn', '/me']],
     ['teacher', await state('DemoTeacher', DEMO), ['/teach', '/learn', '/play', '/live', '/me'], ['/teach', '/learn', '/play', '/live'], ['/teach', '/learn', '/play', '/me']],
     ['school admin', headState, ['/school', '/teach', '/learn', '/play', '/me'], ['/school', '/teach', '/learn', '/play', '/live'], ['/teach', `/school/${school.slug}?tab=people`, '/learn', '/me']],
+    ['solo school admin', soloState, ['/teach', '/school', '/learn', '/play', '/me'], ['/teach', '/school', '/learn', '/play', '/live'], ['/teach', `/school/${soloSchool.slug}?tab=people`, '/learn', '/me']],
     ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/learn', '/build', '/friends', '/admin/schools', '/me'], ['/', '/learn', '/build', '/friends', '/admin/schools'], ['/', '/learn', '/me']],
   ];
   const problems = [];
