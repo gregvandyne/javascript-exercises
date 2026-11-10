@@ -263,7 +263,7 @@ test('a. "Turn a lesson into a game" lands on a form that shows: the hide rule s
 });
 
 // ---------------------------------------------------------------- j. a solo teacher's first page
-test('j. a school with one staff member lands on the Classroom home at every sign-in; the School tab keeps the checklist', async () => {
+test('j. a teacher alone in the school they made lands on the Classroom home at every sign-in; the School tab keeps the checklist; an appointed head does not', async () => {
   const solo = auth.createUser({ username: 'SoloTeach', password: 'a-long-password-1', displayName: 'Ms Solo' });
   const school = S.createSchool(solo, { name: 'Solo Elementary' }).school;
   S.addMember(solo, school.id, solo.id, 'admin', { rosterName: 'Ms Solo' });
@@ -293,6 +293,12 @@ test('j. a school with one staff member lands on the Classroom home at every sig
   // An admin of a new, empty school with other staff still signs in to its setup page.
   const big = S.createSchool(boss, { name: 'Big Oak School' }).school;
   const head = S.createSchoolAccount(boss, big.id, { rosterName: 'Hana Head', role: 'admin' }).user;
+  // Also while they are its only staff member: a head the platform admin appointed has a school to set up (the rule
+  // is for a teacher who made their own school at /trial).
+  assert.equal(S.soloSchoolAdmin(auth.getUser(head.id)), false, 'an appointed head, alone in the school');
+  assert.equal(homeFor(auth.getUser(head.id)), `/school/${big.slug}`);
+  assert.equal(landingFor(auth.getUser(head.id)), '/school');
+  assert.deepEqual(shellFor(auth.getUser(head.id), { headers: {} }).tabs.slice(0, 2).map(x => x[1]), ['/school', '/teach']);
   S.createSchoolAccount(head, big.id, { rosterName: 'Tom Teacher', role: 'teacher' });
   assert.equal(homeFor(auth.getUser(head.id)), `/school/${big.slug}`);
 });
@@ -317,6 +323,12 @@ test('k. the school\'s time zone comes from the browser at the trial sign-up, on
 test('d. /trial on a phone: the big button wraps inside the screen, and the username rules are shown up front like the password\'s', async () => {
   const page = await req(null, '/trial');
   assert.match(page.text, /\.trial form \.btn-big\{width:100%;max-width:100%;white-space:normal;/);
+  // Room between the wrapped button (and its drop shadow) and the small print under it.
+  assert.match(page.text, /\.trial form \.btn-big\+\.small\{margin-top:16px\}/);
+  assert.match(page.text, /<button class="btn btn-primary btn-big" type="submit">[^<]+<\/button>\s*<p class="small muted"/);
+  // The small print says what the work email is used for (a password reset needs the kept address).
+  assert.match(page.text, /We use your work email for your plan \(it goes to Stripe\), for emails about your trial and to reset a lost password\. <a href="\/privacy\?for=grownups">Privacy Policy<\/a>/);
+  assert.doesNotMatch(page.text, /keep your work email/);
   assert.match(page.text, /<input class="input" id="su-username" name="username" required minlength="3" maxlength="16"[^>]*aria-describedby="su-username-hint">\s*<span class="hint" id="su-username-hint">3 to 16 letters or numbers, no spaces\. You sign in with it\.<\/span>/);
   assert.match(page.text, /<span class="hint" id="su-password-hint">At least 12 characters\.<\/span>/);
   // The hint tells the truth: what it allows is accepted, what it rules out is refused with the field's own message.
@@ -451,6 +463,7 @@ test('i. a teacher with an email on file resets a lost password by a signed, sin
   assert.equal(sent.length, 1);
   assert.deepEqual(sent[0].to, ['lost@school.example']); assert.equal(sent[0].subject, 'Reset your Oomba Academy password');
   assert.ok(sent[0].tags.some(x => x.name === 'category' && x.value === 'transactional'));
+  assert.equal(sent[0].headers, undefined, 'no List-Unsubscribe on a password email: it is not a mailing');
   const m = linkOf(sent[0]); assert.ok(m, sent[0].text);
   assert.ok(sent[0].html.includes(`https://oomba.example/reset?t=${m[1]}`) || sent[0].html.includes('/reset?t='), 'the button carries the link');
   assert.match(sent[0].text, /works once, for 30 minutes/); assert.ok(sent[0].text.includes('LostTeach'));
@@ -473,6 +486,15 @@ test('i. a teacher with an email on file resets a lost password by a signed, sin
   assert.deepEqual(done.json, { ok: true, redirect: '/login?reset=1' });
   assert.equal(auth.verifyPassword(auth.getUser(t1.id), 'a-brand-new-password-9'), true); assert.equal(auth.verifyPassword(auth.getUser(t1.id), 'the-old-password-1'), false);
   assert.ok(q.get("SELECT 1 FROM audit_log WHERE action='user.password_reset' AND target=?", t1.id));
+  // The account's owner is told, at the same address: no link, the contact address, and not a mailing.
+  await tick();
+  assert.equal(sent.length, 2);
+  assert.deepEqual(sent[1].to, ['lost@school.example']); assert.equal(sent[1].subject, 'Your Oomba Academy password was changed');
+  assert.match(sent[1].text, /^The password of the Oomba Academy account LostTeach was just changed with a reset link sent to this address\.\n\nIf that was not you, write to \S+@\S+ right away\.\n\nOomba Academy\n$/);
+  assert.doesNotMatch(sent[1].text + sent[1].html, /https?:\/\/|reset\?t=|a-brand-new-password-9/, 'no link and never the password');
+  assert.equal(sent[1].headers, undefined); assert.ok(sent[1].tags.some(x => x.name === 'category' && x.value === 'transactional'));
+  const doneLog = q.get("SELECT * FROM email_log WHERE user_id=? AND template='password_changed'", t1.id);
+  assert.equal(doneLog.status, 'sent'); assert.equal(doneLog.category, 'transactional');
   // Every session of the account ended.
   assert.notEqual((await req(null, '/teach', { cookie: old })).status, 200);
   assert.match((await req(null, '/login?reset=1')).text, /<p class="notice good" role="status" id="reset-done">Your password is changed\./);
@@ -549,18 +571,57 @@ test('i. never for a kid or a student, and the answer is the same whether or not
   // The grown-ups' sign-in page offers it too.
   assert.match((await req(null, '/grown-ups/login')).text, /id="forgot-grownup">[\s\S]*?href="\/forgot"/);
 });
-test('i. limits: 5 requests an hour from one address, 3 emails an hour to one account (silently), and an empty username is asked for', async () => {
+test('i. the whole path: a teacher who signs up at /trial and finishes the checkout can reset a lost password at the email they typed; one who never finished it has no address', async () => {
+  Object.assign(config, EMAIL_ON);
+  const B = await import('../../server/services/billing.js');
+  fake.webhookUrl = base + B.WEBHOOK_PATH;
+  const r = await signup({ username: 'PathTeach', email: 'path.teach@school.example' });
+  assert.equal(r.status, 200, r.text);
+  // Stripe is in test mode here, where only a billing tester may check out: the sign-up lands on /trial and its
+  // "Start my free trial" button starts the same Checkout the sign-up starts by itself in live mode.
+  assert.equal(r.json.redirect, '/trial');
+  let u = auth.getUserByName('PathTeach');
+  q.run('UPDATE users SET billing_tester=1 WHERE id=?', u.id); u = auth.getUser(u.id);
+  const start = await req(u, '/api/trial/start', { method: 'POST', body: { email: 'path.teach@school.example', trial: '1' } });
+  assert.equal(start.status, 200, start.text);
+  assert.ok(start.json.redirect.startsWith(`${fake.url}/pay/cs_test_`), start.json.redirect);
+  assert.equal(E.addressOf(u.id), null, 'nothing is kept before the trial starts');
+  const paid = await fetch(start.json.redirect, { redirect: 'manual' });   // the (fake) Checkout: the trial starts, the webhook arrives
+  assert.equal(paid.status, 302, await paid.text());
+  assert.deepEqual(E.addressOf(u.id), { email: 'path.teach@school.example', source: 'checkout' });
+  await tick(); sent.length = 0;
+  assert.deepEqual((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: 'PathTeach' } })).json, { ok: true, redirect: '/forgot?sent=1' });
+  await tick();
+  const mail = sent.filter(m => m.subject === 'Reset your Oomba Academy password');
+  assert.equal(mail.length, 1); assert.deepEqual(mail[0].to, ['path.teach@school.example']);
+  const token = decodeURIComponent(linkOf(mail[0])[1]);
+  assert.deepEqual((await req(null, '/api/auth/reset', { method: 'POST', body: { token, password: 'a-brand-new-password-7' } })).json, { ok: true, redirect: '/login?reset=1' });
+  assert.equal(auth.verifyPassword(auth.getUser(u.id), 'a-brand-new-password-7'), true);
+  // A sign-up whose checkout was never finished: no address on file, so the same answer and no email (the page's
+  // "Nothing in your inbox?" line gives the contact address).
+  resetLimits();
+  const r2 = await signup({ username: 'HalfTeach', email: 'half.teach@school.example' });
+  assert.equal(r2.status, 200, r2.text);
+  const half = auth.getUserByName('HalfTeach');
+  assert.equal(E.addressOf(half.id), null);
+  await tick(); sent.length = 0;
+  assert.deepEqual((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: 'HalfTeach' } })).json, { ok: true, redirect: '/forgot?sent=1' });
+  await tick();
+  assert.equal(sent.length, 0);
+  assert.match((await req(null, '/forgot?sent=1')).text, /Nothing in your inbox\? The account may have no email address on file\. Write to <a href="mailto:/);
+});
+test('i. limits: 30 requests an hour from one address (a school shares one), 3 emails an hour to one account (silently), and an empty username is asked for', async () => {
   Object.assign(config, EMAIL_ON);
   const t3 = auth.createUser({ username: 'LimitTeach', password: 'the-old-password-1' });
   S.addMember(boss, elm.id, t3.id, 'teacher', { rosterName: 'Lim Teach' }); E.rememberAddress(t3.id, 'lim@school.example');
   assert.equal((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: '  ' } })).json.field, 'username');
   resetLimits();
   const codes = [];
-  for (let i = 0; i < 6; i++) codes.push((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: 'LimitTeach' } })).status);
-  assert.deepEqual(codes, [200, 200, 200, 200, 200, 429], 'the sixth from one address waits');
+  for (let i = 0; i < 31; i++) codes.push((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: 'LimitTeach' } })).status);
+  assert.deepEqual(codes, [...Array(30).fill(200), 429], 'the thirty-first from one address waits');
   await tick();
   assert.equal(sent.length, 3, 'three emails to the account, then the same answer with nothing sent');
-  assert.deepEqual(PR.FORGOT_LIMITS.perIpHour, 5); assert.deepEqual(PR.FORGOT_LIMITS.perUserHour, 3);
+  assert.deepEqual(PR.FORGOT_LIMITS.perIpHour, 30); assert.deepEqual(PR.FORGOT_LIMITS.perUserHour, 3);
 });
 test('i. while email sending is off: no form and no promise, the contact address instead (and the sign-in pages do not offer the link)', async () => {
   config.resendApiKey = '';

@@ -1,7 +1,8 @@
 // One-off: the words of the teacher quick wins (docs/decisions.md "Teacher quick wins", 10 Nov 2026) into every locale
 // file, from scripts/quick-wins-strings/words.json ({ <locale>: { "dotted.key": "text" } }): quiz scores for teachers,
 // "Students will see it from…", the /trial username hint, the password reset by email (auth.reset.*), "Next: assign a
-// first game", "See the N games" on course cards, and the host's "Nobody has joined yet" question.
+// first game", "See the N games" on course cards, the host's "Nobody has joined yet" question, the "Your password was changed"
+// email and the /trial small print about the work email.
 // The locale files are plain JSON.stringify(…, null, 2) output, so they are parsed, changed and written back.
 // en-GB: no spelling differs from en, so it gets nothing. Safe to re-run.
 import fs from 'node:fs';

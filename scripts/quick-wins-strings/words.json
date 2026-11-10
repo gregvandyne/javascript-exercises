@@ -33,7 +33,11 @@
     "auth.reset.email.intro": "Someone asked to reset the password of the Oomba Academy account {username}. If that was you, choose a new password with this link:",
     "auth.reset.email.button": "Choose a new password",
     "auth.reset.email.expires": "The link works once, for {minutes} minutes.",
-    "auth.reset.email.ignore": "If you didn't ask for this, you can ignore this email. Your password stays the same."
+    "auth.reset.email.ignore": "If you didn't ask for this, you can ignore this email. Your password stays the same.",
+    "plans.trial.signup.privacy": "We use your work email for your plan (it goes to Stripe), for emails about your trial and to reset a lost password. <a href=\"{privacy}\">Privacy Policy</a>",
+    "auth.reset.email.doneSubject": "Your Oomba Academy password was changed",
+    "auth.reset.email.doneIntro": "The password of the Oomba Academy account {username} was just changed with a reset link sent to this address.",
+    "auth.reset.email.doneNotYou": "If that was not you, write to {email} right away."
   },
   "pt": {
     "progress.lesson.quizScore": "{right} de {total} certas ({pct}%)",
@@ -69,7 +73,11 @@
     "auth.reset.email.intro": "Alguém pediu para redefinir a senha da conta {username} da Oomba Academy. Se foi você, escolha uma senha nova com este link:",
     "auth.reset.email.button": "Escolher uma senha nova",
     "auth.reset.email.expires": "O link funciona uma vez, por {minutes} minutos.",
-    "auth.reset.email.ignore": "Se você não pediu isso, pode ignorar este e-mail. Sua senha continua a mesma."
+    "auth.reset.email.ignore": "Se você não pediu isso, pode ignorar este e-mail. Sua senha continua a mesma.",
+    "plans.trial.signup.privacy": "Usamos seu e-mail de trabalho para o seu plano (ele vai para a Stripe), para e-mails sobre o seu teste e para redefinir uma senha perdida. <a href=\"{privacy}\">Política de Privacidade</a>",
+    "auth.reset.email.doneSubject": "Sua senha da Oomba Academy foi alterada",
+    "auth.reset.email.doneIntro": "A senha da conta {username} da Oomba Academy acabou de ser alterada com um link de redefinição enviado para este endereço.",
+    "auth.reset.email.doneNotYou": "Se não foi você, escreva para {email} imediatamente."
   },
   "fr": {
     "progress.lesson.quizScore": "{right} sur {total} justes ({pct} %)",
@@ -105,7 +113,11 @@
     "auth.reset.email.intro": "Quelqu’un a demandé à réinitialiser le mot de passe du compte Oomba Academy {username}. Si c’était vous, choisissez un nouveau mot de passe avec ce lien :",
     "auth.reset.email.button": "Choisir un nouveau mot de passe",
     "auth.reset.email.expires": "Le lien fonctionne une seule fois, pendant {minutes} minutes.",
-    "auth.reset.email.ignore": "Si vous n’avez rien demandé, vous pouvez ignorer cet e-mail. Votre mot de passe reste le même."
+    "auth.reset.email.ignore": "Si vous n’avez rien demandé, vous pouvez ignorer cet e-mail. Votre mot de passe reste le même.",
+    "plans.trial.signup.privacy": "Nous utilisons votre adresse e-mail professionnelle pour votre formule (elle est transmise à Stripe), pour les e-mails sur votre essai et pour réinitialiser un mot de passe perdu. <a href=\"{privacy}\">Politique de confidentialité</a>",
+    "auth.reset.email.doneSubject": "Votre mot de passe Oomba Academy a été modifié",
+    "auth.reset.email.doneIntro": "Le mot de passe du compte Oomba Academy {username} vient d’être modifié avec un lien de réinitialisation envoyé à cette adresse.",
+    "auth.reset.email.doneNotYou": "Si ce n’était pas vous, écrivez tout de suite à {email}."
   },
   "es": {
     "progress.lesson.quizScore": "{right} de {total} correctas ({pct} %)",
@@ -141,7 +153,11 @@
     "auth.reset.email.intro": "Alguien pidió restablecer la contraseña de la cuenta {username} de Oomba Academy. Si fuiste tú, elige una contraseña nueva con este enlace:",
     "auth.reset.email.button": "Elegir una contraseña nueva",
     "auth.reset.email.expires": "El enlace funciona una vez, durante {minutes} minutos.",
-    "auth.reset.email.ignore": "Si no lo pediste, puedes ignorar este correo. Tu contraseña sigue siendo la misma."
+    "auth.reset.email.ignore": "Si no lo pediste, puedes ignorar este correo. Tu contraseña sigue siendo la misma.",
+    "plans.trial.signup.privacy": "Usamos su correo del trabajo para su plan (se envía a Stripe), para los correos sobre su prueba y para restablecer una contraseña perdida. <a href=\"{privacy}\">Política de privacidad</a>",
+    "auth.reset.email.doneSubject": "Tu contraseña de Oomba Academy ha cambiado",
+    "auth.reset.email.doneIntro": "La contraseña de la cuenta {username} de Oomba Academy se acaba de cambiar con un enlace de restablecimiento enviado a esta dirección.",
+    "auth.reset.email.doneNotYou": "Si no fuiste tú, escribe a {email} cuanto antes."
   },
   "de": {
     "progress.lesson.quizScore": "{right} von {total} richtig ({pct} %)",
@@ -177,7 +193,11 @@
     "auth.reset.email.intro": "Jemand möchte das Passwort des Oomba-Academy-Kontos {username} zurücksetzen. Wenn Sie das waren, wählen Sie mit diesem Link ein neues Passwort:",
     "auth.reset.email.button": "Neues Passwort wählen",
     "auth.reset.email.expires": "Der Link funktioniert einmal, {minutes} Minuten lang.",
-    "auth.reset.email.ignore": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt, wie es ist."
+    "auth.reset.email.ignore": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt, wie es ist.",
+    "plans.trial.signup.privacy": "Wir nutzen deine dienstliche E-Mail-Adresse für deinen Plan (sie geht an Stripe), für E-Mails zu deinem Test und zum Zurücksetzen eines vergessenen Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
+    "auth.reset.email.doneSubject": "Ihr Oomba-Academy-Passwort wurde geändert",
+    "auth.reset.email.doneIntro": "Das Passwort des Oomba-Academy-Kontos {username} wurde gerade mit einem Link zum Zurücksetzen geändert, der an diese Adresse ging.",
+    "auth.reset.email.doneNotYou": "Wenn Sie das nicht waren, schreiben Sie bitte sofort an {email}."
   },
   "he": {
     "progress.lesson.quizScore": "{right} מתוך {total} נכונות ({pct}%)",
@@ -213,7 +233,11 @@
     "auth.reset.email.intro": "מישהו ביקש לאפס את הסיסמה של החשבון {username} ב-Oomba Academy. אם אלה אתם, בחרו סיסמה חדשה בקישור הזה:",
     "auth.reset.email.button": "בחירת סיסמה חדשה",
     "auth.reset.email.expires": "הקישור פועל פעם אחת, למשך {minutes} דקות.",
-    "auth.reset.email.ignore": "אם לא ביקשתם את זה, אפשר להתעלם מהמייל הזה. הסיסמה נשארת כמו שהיא."
+    "auth.reset.email.ignore": "אם לא ביקשתם את זה, אפשר להתעלם מהמייל הזה. הסיסמה נשארת כמו שהיא.",
+    "plans.trial.signup.privacy": "אנחנו משתמשים באימייל שלך בעבודה בשביל התוכנית (הוא עובר ל-Stripe), בשביל מיילים על תקופת הניסיון ובשביל איפוס סיסמה שאבדה. <a href=\"{privacy}\">מדיניות הפרטיות</a>",
+    "auth.reset.email.doneSubject": "הסיסמה שלכם ב-Oomba Academy שונתה",
+    "auth.reset.email.doneIntro": "הסיסמה של החשבון {username} ב-Oomba Academy שונתה עכשיו בעזרת קישור איפוס שנשלח לכתובת הזאת.",
+    "auth.reset.email.doneNotYou": "אם אלה לא אתם, כתבו מיד אל {email}."
   },
   "ja": {
     "progress.lesson.quizScore": "{total}問中{right}問正解（{pct}%）",
@@ -249,7 +273,11 @@
     "auth.reset.email.intro": "Oomba Academy のアカウント {username} のパスワードの再設定が依頼されました。ご自身で依頼した場合は、次のリンクから新しいパスワードを決めてください。",
     "auth.reset.email.button": "新しいパスワードを決める",
     "auth.reset.email.expires": "リンクは1回だけ、{minutes}分間使えます。",
-    "auth.reset.email.ignore": "依頼した覚えがない場合は、このメールを無視してください。パスワードは変わりません。"
+    "auth.reset.email.ignore": "依頼した覚えがない場合は、このメールを無視してください。パスワードは変わりません。",
+    "plans.trial.signup.privacy": "勤務先のメールアドレスは、プランのため（Stripe に送られます）、トライアルについてのメールのため、そして忘れたパスワードの再設定のために使います。<a href=\"{privacy}\">プライバシーポリシー</a>",
+    "auth.reset.email.doneSubject": "Oomba Academy のパスワードが変更されました",
+    "auth.reset.email.doneIntro": "Oomba Academy のアカウント {username} のパスワードが、このアドレスに送られた再設定リンクで変更されました。",
+    "auth.reset.email.doneNotYou": "心当たりがない場合は、すぐに {email} までご連絡ください。"
   },
   "ar": {
     "progress.lesson.quizScore": "{right} من {total} صحيحة ({pct}%)",
@@ -285,7 +313,11 @@
     "auth.reset.email.intro": "طلب أحدهم إعادة تعيين كلمة المرور لحساب {username} في Oomba Academy. إذا كنت أنت، فاختر كلمة مرور جديدة من هذا الرابط:",
     "auth.reset.email.button": "اختر كلمة مرور جديدة",
     "auth.reset.email.expires": "يعمل الرابط مرة واحدة ولمدة {minutes} دقيقة.",
-    "auth.reset.email.ignore": "إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة. كلمة مرورك تبقى كما هي."
+    "auth.reset.email.ignore": "إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة. كلمة مرورك تبقى كما هي.",
+    "plans.trial.signup.privacy": "نستخدم بريدك الإلكتروني للعمل من أجل باقتك (يذهب إلى Stripe)، ولرسائل عن تجربتك، ولإعادة تعيين كلمة مرور مفقودة. <a href=\"{privacy}\">سياسة الخصوصية</a>",
+    "auth.reset.email.doneSubject": "تم تغيير كلمة مرورك في Oomba Academy",
+    "auth.reset.email.doneIntro": "تم الآن تغيير كلمة المرور لحساب {username} في Oomba Academy باستخدام رابط إعادة تعيين أُرسل إلى هذا العنوان.",
+    "auth.reset.email.doneNotYou": "إذا لم تكن أنت، فاكتب إلى {email} فورًا."
   },
   "ru": {
     "progress.lesson.quizScore": "{right} из {total} верно ({pct}%)",
@@ -321,7 +353,11 @@
     "auth.reset.email.intro": "Кто-то запросил сброс пароля аккаунта {username} на Oomba Academy. Если это были вы, придумайте новый пароль по этой ссылке:",
     "auth.reset.email.button": "Придумать новый пароль",
     "auth.reset.email.expires": "Ссылка работает один раз в течение {minutes} минут.",
-    "auth.reset.email.ignore": "Если вы этого не запрашивали, просто не обращайте внимания на это письмо. Ваш пароль останется прежним."
+    "auth.reset.email.ignore": "Если вы этого не запрашивали, просто не обращайте внимания на это письмо. Ваш пароль останется прежним.",
+    "plans.trial.signup.privacy": "Мы используем вашу рабочую почту для подписки (она передаётся Stripe), для писем о пробном периоде и для сброса забытого пароля. <a href=\"{privacy}\">Политика конфиденциальности</a>",
+    "auth.reset.email.doneSubject": "Пароль Oomba Academy изменён",
+    "auth.reset.email.doneIntro": "Пароль аккаунта {username} на Oomba Academy только что был изменён по ссылке для сброса, отправленной на этот адрес.",
+    "auth.reset.email.doneNotYou": "Если это были не вы, сразу напишите на {email}."
   },
   "it": {
     "progress.lesson.quizScore": "{right} su {total} giuste ({pct}%)",
@@ -357,7 +393,11 @@
     "auth.reset.email.intro": "Qualcuno ha chiesto di reimpostare la password dell'account {username} di Oomba Academy. Se sei stato tu, scegli una nuova password con questo link:",
     "auth.reset.email.button": "Scegli una nuova password",
     "auth.reset.email.expires": "Il link funziona una volta, per {minutes} minuti.",
-    "auth.reset.email.ignore": "Se non l'hai chiesto tu, puoi ignorare questa email. La tua password resta la stessa."
+    "auth.reset.email.ignore": "Se non l'hai chiesto tu, puoi ignorare questa email. La tua password resta la stessa.",
+    "plans.trial.signup.privacy": "Usiamo la tua email di lavoro per il tuo piano (va a Stripe), per le email sulla tua prova e per reimpostare una password persa. <a href=\"{privacy}\">Informativa sulla privacy</a>",
+    "auth.reset.email.doneSubject": "La tua password di Oomba Academy è stata cambiata",
+    "auth.reset.email.doneIntro": "La password dell'account {username} di Oomba Academy è appena stata cambiata con un link di reimpostazione inviato a questo indirizzo.",
+    "auth.reset.email.doneNotYou": "Se non sei stato tu, scrivi subito a {email}."
   },
   "zh-Hant": {
     "progress.lesson.quizScore": "{total} 題答對 {right} 題（{pct}%）",
@@ -393,7 +433,11 @@
     "auth.reset.email.intro": "有人要求重設 Oomba Academy 帳號 {username} 的密碼。如果是你本人，請用這個連結設定新密碼：",
     "auth.reset.email.button": "設定新密碼",
     "auth.reset.email.expires": "連結只能使用一次，{minutes} 分鐘內有效。",
-    "auth.reset.email.ignore": "如果不是你要求的，可以忽略這封信。你的密碼不會改變。"
+    "auth.reset.email.ignore": "如果不是你要求的，可以忽略這封信。你的密碼不會改變。",
+    "plans.trial.signup.privacy": "我們會把你的工作電子郵件用在你的方案（會傳給 Stripe）、試用相關的信件，以及重設忘記的密碼。<a href=\"{privacy}\">隱私權政策</a>",
+    "auth.reset.email.doneSubject": "你的 Oomba Academy 密碼已變更",
+    "auth.reset.email.doneIntro": "Oomba Academy 帳號 {username} 的密碼剛剛已用寄到這個信箱的重設連結變更。",
+    "auth.reset.email.doneNotYou": "如果不是你本人，請立刻寫信到 {email}。"
   },
   "nl": {
     "progress.lesson.quizScore": "{right} van {total} goed ({pct}%)",
@@ -429,6 +473,10 @@
     "auth.reset.email.intro": "Iemand heeft gevraagd om het wachtwoord van het Oomba Academy-account {username} opnieuw in te stellen. Was jij dat? Kies dan een nieuw wachtwoord met deze link:",
     "auth.reset.email.button": "Kies een nieuw wachtwoord",
     "auth.reset.email.expires": "De link werkt één keer, {minutes} minuten lang.",
-    "auth.reset.email.ignore": "Heb je hier niet om gevraagd? Dan kun je deze e-mail negeren. Je wachtwoord blijft hetzelfde."
+    "auth.reset.email.ignore": "Heb je hier niet om gevraagd? Dan kun je deze e-mail negeren. Je wachtwoord blijft hetzelfde.",
+    "plans.trial.signup.privacy": "We gebruiken je werk-e-mailadres voor je abonnement (het gaat naar Stripe), voor e-mails over je proefperiode en om een vergeten wachtwoord opnieuw in te stellen. <a href=\"{privacy}\">Privacybeleid</a>",
+    "auth.reset.email.doneSubject": "Je wachtwoord voor Oomba Academy is gewijzigd",
+    "auth.reset.email.doneIntro": "Het wachtwoord van het Oomba Academy-account {username} is zojuist gewijzigd met een herstellink die naar dit adres is gestuurd.",
+    "auth.reset.email.doneNotYou": "Was jij dat niet? Schrijf dan meteen naar {email}."
   }
 }

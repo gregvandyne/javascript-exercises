@@ -3688,18 +3688,22 @@ the choices that are not obvious. (The child-safety fix and "classmate chat off 
   lesson's codes. Value: points out of the most possible for the criteria scored. Only scores the gradebook counts
   (current assignment, step still there, the rubric the step or lesson still carries). Nothing new is stored. The CSTA
   tab keeps its own 0-3 marks, as before.
-- **/trial on a phone (d).** The big buttons wrap inside the screen (they were one 456 px line). The username field
-  says its rules up front ("3 to 16 letters or numbers, no spaces"), like the password's.
+- **/trial on a phone (d).** The big buttons wrap inside the screen (they were one 456 px line), with room between
+  the button and the small print under it. The username field says its rules up front ("3 to 16 letters or numbers,
+  no spaces"), like the password's (an underscore is accepted too; the hint keeps to the simple rule). The small
+  print no longer says "We don't keep your work email on your account": once the trial starts the address is kept
+  for the trial emails and the password reset, so it says what the email is used for (the plan, through Stripe;
+  emails about the trial; resetting a lost password).
 - **Live game code through sign-in (e).** A class room seats signed-in students only. The code a student typed now
   waits in that tab (`sessionStorage`, 30 minutes) while they sign in, and is back in the box, one press from "Join as
   me". It is not put in the sign-in address: a code never rides in an address or the history, like the QR's fragment.
 - **No repeated maths questions (f).** `engine.js pickSubject` draws a made-up sum again when the pick already has it
   (or it was played: `seen`), up to 40 tries, so a pick larger than a level's pool still fills. The server's redraw of
   a refused sum never puts back a question the set has, and a Brain Board column (tiles from three levels) never
-  repeats a sum that two levels can both make. **Follow-up:** the games' solo packs
-  (`public/vendor/data/live-bank/<version>`) carry a copy of the engine and are versioned by a hash and cached for a
-  year; they were not rebuilt here (that changes three official games and the pack folder). Run
-  `node scripts/live-bank.js && node scripts/seed.js` with the next change to those games to bring solo practice in line.
+  repeats a sum that two levels can both make. The games' solo packs (`public/vendor/data/live-bank/<version>`) carry
+  a copy of the engine, so they were rebuilt with `node scripts/live-bank.js` (a new version folder, and the version
+  and hashes in Quest Race, Question Battle and Brain Board). The site seeds its games at every start
+  (`scripts/entrypoint.sh`), so a deploy brings solo practice and the Brain Board fix (s) live with no extra step.
 - **"Last active" (g).** `step_progress.updated_at` now means the student's own last action. A teacher's review or
   marks leave it alone (the teacher's time is `reviewed_at`), and a row a teacher makes for a student who has done
   nothing (marks for a teammate) starts at 0 = never. So "Last active", "Sent 5 minutes ago", a class's last activity
@@ -3714,15 +3718,23 @@ the choices that are not obvious. (The child-safety fix and "classmate chat off 
   grown-up"), never a guest, a banned account or the platform admin. The link is a token signed with the site secret,
   good for 30 minutes, carrying a fingerprint of the password hash it was made for: a new password retires it and
   every earlier link (single use, nothing stored, so no migration). The answer to a request is the same, after the
-  same wait, whatever the username; 5 requests an hour per address, 3 emails an hour per account. The reset ends
-  every session of the account, clears the sign-in lock and goes to the sign-in page (no automatic sign-in). The
-  email goes out on the transactional path (`email.send`, logged in `email_log` without the link); requests and
+  same wait, whatever the username; 30 requests an hour per address (a school's staff often shares one; it was 5,
+  and the sixth teacher that hour was told to slow down), 3 emails an hour per account. The reset ends
+  every session of the account, clears the sign-in lock and goes to the sign-in page (no automatic sign-in), and the
+  account's address gets a short "Your password was changed" email (no link; "if that was not you, write to" the
+  contact address). Both
+  emails go out on the transactional path (`email.send`, logged in `email_log` without the link), and transactional
+  email no longer carries the `List-Unsubscribe` headers (a mail client's Unsubscribe button on a password email or a
+  receipt would have switched off the trial emails); requests and
   resets are in the audit log; pages are no-store, no-referrer, noindex; the link uses the site's own address, never
   the request's Host. While email sending is off there is no form: the page gives the contact address, and the
   sign-in pages do not offer the link.
-- **A solo teacher's first page (j).** The only staff member of the school(s) they run (`schools.soloSchoolAdmin`)
-  lands on the Classroom home at every sign-in and at "/", with Classroom as their first tab; the School tab, with
-  the setup checklist, comes second. With a second teacher or admin the school admin lands on School again.
+- **A solo teacher's first page (j).** A teacher who made their own school (at /trial) and is its only staff member
+  (`schools.soloSchoolAdmin`: admin of schools they created, one staff member) lands on the Classroom home at every
+  sign-in and at "/", with Classroom as their first tab; the School tab, with the setup checklist, comes second. With
+  a second teacher or admin the school admin lands on School again. A head the platform admin appoints to a school
+  is not a solo teacher, also while they are its only staff member: they still land on "Set up your school" (the
+  audit asked for this for trial teachers only; the first version of the rule caught appointed heads too).
 - **School time zone (k).** The trial sign-up sends the browser's IANA zone (`input[data-browser-tz]`, filled by
   `app.js`); the server keeps it only when it is a zone it knows (`schools.isZone`). Due dates then end at midnight
   there, not midnight UTC. Anything else is ignored and Settings still offers it.
@@ -3754,3 +3766,15 @@ the choices that are not obvious. (The child-safety fix and "classmate chat off 
 - **Words:** `scripts/i18n-add-quick-wins.mjs` from `scripts/quick-wins-strings/words.json`, all 13 languages (en-GB
   needs nothing).
 - **Checks:** tests/unit/teacher-quick-wins.test.js, tests/unit/live-bank.test.js, tests/e2e/teacher-quick-wins.spec.js.
+
+**Left for the owner (the review's open points, 10 Nov 2026).**
+
+- The reset link goes to the address typed at /trial, which was never verified (only a Google sign-in's is). It is
+  the address Stripe's receipts go to; a teacher who mistyped it gets no receipts either. Accepted as is for now;
+  verifying the address at sign-up would close it.
+- A teacher who made the account at /trial but never finished the checkout, a school's seat-trial admin, and a
+  school-made teacher without Google sign-in have no address on file: the reset sends nothing and the page gives the
+  contact address. Keeping the typed email at sign-up would cover the first; it is a privacy choice (an address kept
+  for someone who never started a trial), so it was not made here.
+- The Privacy Policy's payments section still says the site has no email system of its own and does not describe the
+  teacher's kept address; it needs the owner's wording.

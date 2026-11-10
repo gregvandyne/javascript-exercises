@@ -77,17 +77,6 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   const hctx = await browser.newContext({ viewport: { width: 360, height: 760 } }); const head = await hctx.newPage();
   const { username } = await signup(head, uniq('Head'), 'head-pass-123');
   const school = await schoolWithAdmin(admin, username);
-  // The school's only staff member so far (a solo teacher): '/' is the Classroom home, and the tab bar has Classroom
-  // first, then School (docs/decisions.md "Teacher quick wins", j).
-  await head.goto('/');
-  expect(new URL(head.url()).pathname).toBe('/teach');
-  expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/school', '/learn', '/play', '/me']);
-  await expect(head.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
-  // With a second staff member it is a school to run:
-  const tctx = await browser.newContext(); const tpage = await tctx.newPage();
-  const { username: teachName } = await signup(tpage, uniq('Tchr'), 'tchr-pass-123'); await tctx.close();
-  const add = await admin.request.post(`/api/schools/${school.id}/staff`, { data: { account: 'existing', username: teachName, rosterName: 'Mr Teach', role: 'teacher' } });
-  expect(add.ok(), await add.text()).toBe(true);
   // '/' is their first tab, School (one school: its overview, the Classes tab); Play is /play, current there.
   await head.goto('/');
   expect(new URL(head.url()).pathname).toBe(`/school/${school.slug}`);

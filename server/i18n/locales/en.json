@@ -216,7 +216,10 @@
         "intro": "Someone asked to reset the password of the Oomba Academy account {username}. If that was you, choose a new password with this link:",
         "button": "Choose a new password",
         "expires": "The link works once, for {minutes} minutes.",
-        "ignore": "If you didn't ask for this, you can ignore this email. Your password stays the same."
+        "ignore": "If you didn't ask for this, you can ignore this email. Your password stays the same.",
+        "doneSubject": "Your Oomba Academy password was changed",
+        "doneIntro": "The password of the Oomba Academy account {username} was just changed with a reset link sent to this address.",
+        "doneNotYou": "If that was not you, write to {email} right away."
       }
     }
   },
@@ -4046,7 +4049,7 @@
         "passwordHint": "At least {min} characters.",
         "adult": "I am a teacher or school staff member, and 18 or older.",
         "submit": "Create my account and start the trial",
-        "privacy": "We don't keep your work email on your account: it goes to Stripe for your plan. <a href=\"{privacy}\">Privacy Policy</a>",
+        "privacy": "We use your work email for your plan (it goes to Stripe), for emails about your trial and to reset a lost password. <a href=\"{privacy}\">Privacy Policy</a>",
         "usernameHint": "3 to 16 letters or numbers, no spaces. You sign in with it."
       },
       "errors": {

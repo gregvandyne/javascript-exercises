@@ -216,7 +216,10 @@
         "intro": "Jemand möchte das Passwort des Oomba-Academy-Kontos {username} zurücksetzen. Wenn Sie das waren, wählen Sie mit diesem Link ein neues Passwort:",
         "button": "Neues Passwort wählen",
         "expires": "Der Link funktioniert einmal, {minutes} Minuten lang.",
-        "ignore": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt, wie es ist."
+        "ignore": "Wenn Sie das nicht angefordert haben, können Sie diese E-Mail ignorieren. Ihr Passwort bleibt, wie es ist.",
+        "doneSubject": "Ihr Oomba-Academy-Passwort wurde geändert",
+        "doneIntro": "Das Passwort des Oomba-Academy-Kontos {username} wurde gerade mit einem Link zum Zurücksetzen geändert, der an diese Adresse ging.",
+        "doneNotYou": "Wenn Sie das nicht waren, schreiben Sie bitte sofort an {email}."
       }
     }
   },
@@ -4018,7 +4021,7 @@
         "passwordHint": "Mindestens {min} Zeichen.",
         "adult": "Ich bin Lehrkraft oder arbeite an einer Schule und bin mindestens 18 Jahre alt.",
         "submit": "Konto erstellen und Test starten",
-        "privacy": "Wir speichern deine dienstliche E-Mail-Adresse nicht in deinem Konto: Sie geht für deinen Plan an Stripe. <a href=\"{privacy}\">Datenschutzerklärung</a>",
+        "privacy": "Wir nutzen deine dienstliche E-Mail-Adresse für deinen Plan (sie geht an Stripe), für E-Mails zu deinem Test und zum Zurücksetzen eines vergessenen Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
         "usernameHint": "3 bis 16 Buchstaben oder Zahlen, keine Leerzeichen. Damit melden Sie sich an."
       },
       "errors": {

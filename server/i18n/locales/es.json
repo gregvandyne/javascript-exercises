@@ -215,7 +215,10 @@
         "intro": "Alguien pidió restablecer la contraseña de la cuenta {username} de Oomba Academy. Si fuiste tú, elige una contraseña nueva con este enlace:",
         "button": "Elegir una contraseña nueva",
         "expires": "El enlace funciona una vez, durante {minutes} minutos.",
-        "ignore": "Si no lo pediste, puedes ignorar este correo. Tu contraseña sigue siendo la misma."
+        "ignore": "Si no lo pediste, puedes ignorar este correo. Tu contraseña sigue siendo la misma.",
+        "doneSubject": "Tu contraseña de Oomba Academy ha cambiado",
+        "doneIntro": "La contraseña de la cuenta {username} de Oomba Academy se acaba de cambiar con un enlace de restablecimiento enviado a esta dirección.",
+        "doneNotYou": "Si no fuiste tú, escribe a {email} cuanto antes."
       }
     }
   },
@@ -4017,7 +4020,7 @@
         "passwordHint": "Al menos {min} caracteres.",
         "adult": "Soy docente o personal de una escuela, y tengo 18 años o más.",
         "submit": "Crear mi cuenta y empezar la prueba",
-        "privacy": "No guardamos su correo del trabajo en su cuenta: se envía a Stripe para su plan. <a href=\"{privacy}\">Política de privacidad</a>",
+        "privacy": "Usamos su correo del trabajo para su plan (se envía a Stripe), para los correos sobre su prueba y para restablecer una contraseña perdida. <a href=\"{privacy}\">Política de privacidad</a>",
         "usernameHint": "De 3 a 16 letras o números, sin espacios. Entras con él."
       },
       "errors": {

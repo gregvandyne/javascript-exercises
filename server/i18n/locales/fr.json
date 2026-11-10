@@ -215,7 +215,10 @@
         "intro": "Quelqu’un a demandé à réinitialiser le mot de passe du compte Oomba Academy {username}. Si c’était vous, choisissez un nouveau mot de passe avec ce lien :",
         "button": "Choisir un nouveau mot de passe",
         "expires": "Le lien fonctionne une seule fois, pendant {minutes} minutes.",
-        "ignore": "Si vous n’avez rien demandé, vous pouvez ignorer cet e-mail. Votre mot de passe reste le même."
+        "ignore": "Si vous n’avez rien demandé, vous pouvez ignorer cet e-mail. Votre mot de passe reste le même.",
+        "doneSubject": "Votre mot de passe Oomba Academy a été modifié",
+        "doneIntro": "Le mot de passe du compte Oomba Academy {username} vient d’être modifié avec un lien de réinitialisation envoyé à cette adresse.",
+        "doneNotYou": "Si ce n’était pas vous, écrivez tout de suite à {email}."
       }
     }
   },
@@ -4017,7 +4020,7 @@
         "passwordHint": "Au moins {min} caractères.",
         "adult": "Je suis enseignant ou membre du personnel d’une école, et j’ai 18 ans ou plus.",
         "submit": "Créer mon compte et commencer l’essai",
-        "privacy": "Nous ne gardons pas votre adresse e-mail professionnelle sur votre compte : elle est transmise à Stripe pour votre formule. <a href=\"{privacy}\">Politique de confidentialité</a>",
+        "privacy": "Nous utilisons votre adresse e-mail professionnelle pour votre formule (elle est transmise à Stripe), pour les e-mails sur votre essai et pour réinitialiser un mot de passe perdu. <a href=\"{privacy}\">Politique de confidentialité</a>",
         "usernameHint": "De 3 à 16 lettres ou chiffres, sans espace. Vous vous connectez avec."
       },
       "errors": {

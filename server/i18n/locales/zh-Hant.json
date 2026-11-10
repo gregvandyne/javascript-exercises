@@ -215,7 +215,10 @@
         "intro": "有人要求重設 Oomba Academy 帳號 {username} 的密碼。如果是你本人，請用這個連結設定新密碼：",
         "button": "設定新密碼",
         "expires": "連結只能使用一次，{minutes} 分鐘內有效。",
-        "ignore": "如果不是你要求的，可以忽略這封信。你的密碼不會改變。"
+        "ignore": "如果不是你要求的，可以忽略這封信。你的密碼不會改變。",
+        "doneSubject": "你的 Oomba Academy 密碼已變更",
+        "doneIntro": "Oomba Academy 帳號 {username} 的密碼剛剛已用寄到這個信箱的重設連結變更。",
+        "doneNotYou": "如果不是你本人，請立刻寫信到 {email}。"
       }
     }
   },
@@ -4017,7 +4020,7 @@
         "passwordHint": "至少 {min} 個字元。",
         "adult": "我是老師或學校教職員，而且已滿 18 歲。",
         "submit": "建立帳號並開始試用",
-        "privacy": "我們不會把你的工作電子郵件存在帳號裡：它會為了你的方案傳給 Stripe。<a href=\"{privacy}\">隱私權政策</a>",
+        "privacy": "我們會把你的工作電子郵件用在你的方案（會傳給 Stripe）、試用相關的信件，以及重設忘記的密碼。<a href=\"{privacy}\">隱私權政策</a>",
         "usernameHint": "3 到 16 個英文字母或數字，不含空格。登入時使用。"
       },
       "errors": {

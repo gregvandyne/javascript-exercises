@@ -43,6 +43,7 @@ const CSS = html`<style>.trial{max-width:640px;margin:0 auto}.trial .plan-list{m
 .trial form .field{margin-bottom:var(--s3)}.teacherplan .planchip{margin-inline-end:.4em}
 /* The big buttons ("Create my account and start the trial") wrap inside the screen on a phone, never past its edge. */
 .trial form .btn-big{width:100%;max-width:100%;white-space:normal;text-align:center;line-height:1.2;padding:12px 20px;font-size:1.2rem}
+.trial form .btn-big+.small{margin-top:16px}
 .trial .panel{min-width:0}.trial .input{max-width:100%}</style>`;
 /** The admin schools of a user (to start a school's seat trial from /trial?seats=N). */
 const adminSchools = u => (u ? SC.adminSchools(u) : []);
@@ -180,7 +181,8 @@ router.post('/api/trial/signup', rateLimit('trial-signup', 30, 3600e3), async (r
   auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay: true });
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   // A school's seat trial (?seats=N) goes back to /trial to confirm it. A teacher's own trial starts at once from the
-  // email they typed: the email is not kept on the account; it goes to Stripe (the Customer), and here only as an HMAC.
+  // email they typed: it goes to Stripe (the Customer), and here only as an HMAC until Stripe reports the trial started
+  // (then services/nudges.js keeps it for the trial emails and a password reset: email.rememberAddress).
   const seats = seatsQuery(b.seats);
   if (!seats && C.mayBill(u)) {
     try {

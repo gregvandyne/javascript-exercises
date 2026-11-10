@@ -216,7 +216,10 @@
         "intro": "Alguém pediu para redefinir a senha da conta {username} da Oomba Academy. Se foi você, escolha uma senha nova com este link:",
         "button": "Escolher uma senha nova",
         "expires": "O link funciona uma vez, por {minutes} minutos.",
-        "ignore": "Se você não pediu isso, pode ignorar este e-mail. Sua senha continua a mesma."
+        "ignore": "Se você não pediu isso, pode ignorar este e-mail. Sua senha continua a mesma.",
+        "doneSubject": "Sua senha da Oomba Academy foi alterada",
+        "doneIntro": "A senha da conta {username} da Oomba Academy acabou de ser alterada com um link de redefinição enviado para este endereço.",
+        "doneNotYou": "Se não foi você, escreva para {email} imediatamente."
       }
     }
   },
@@ -4019,7 +4022,7 @@
         "passwordHint": "Pelo menos {min} caracteres.",
         "adult": "Sou professor ou trabalho em uma escola, e tenho 18 anos ou mais.",
         "submit": "Criar minha conta e começar o teste",
-        "privacy": "Não guardamos seu e-mail de trabalho na sua conta: ele vai para a Stripe, para o seu plano. <a href=\"{privacy}\">Política de Privacidade</a>",
+        "privacy": "Usamos seu e-mail de trabalho para o seu plano (ele vai para a Stripe), para e-mails sobre o seu teste e para redefinir uma senha perdida. <a href=\"{privacy}\">Política de Privacidade</a>",
         "usernameHint": "De 3 a 16 letras ou números, sem espaços. Você entra com ele."
       },
       "errors": {

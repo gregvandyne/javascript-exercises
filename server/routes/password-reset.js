@@ -7,10 +7,12 @@
 //
 //   GET  /forgot                 the form (a username). While email sending is off: the contact address instead.
 //   POST /api/auth/forgot        always the same answer, after the same wait, whether or not the account exists, may
-//                                be reset or has an address. Limits: 5 an hour per address, 3 an hour per account.
+//                                be reset or has an address. Limits: 30 an hour per address (a whole school can share
+//                                one), 3 emails an hour per account.
 //   GET  /reset?t=<token>        "Choose a new password" (a GET changes nothing: mail scanners open links)
 //   POST /api/auth/reset         { token, password }: sets it, ends every session of the account, clears the sign-in
-//                                lock, and goes to the sign-in page (no automatic sign-in).
+//                                lock, emails "your password was changed" to the account's address, and goes to
+//                                the sign-in page (no automatic sign-in).
 //
 // The link: a token signed with the site secret (auth.signToken), good for 30 minutes, that names the account and
 // carries a fingerprint of the password hash it was made for. Setting a new password changes the hash, so the link (and
@@ -30,7 +32,9 @@ import { contactEmail } from './teachers.js';
 
 export const router = Router();
 export const RESET_MINUTES = 30;
-export const FORGOT_LIMITS = Object.freeze({ perIpHour: 5, perUserHour: 3, minMs: 400 });
+// perIpHour: a school's whole staff often shares one public address, so this is roomy; what stops mail-bombing one
+// account is perUserHour, and guessing is stopped by the signed link, not by these.
+export const FORGOT_LIMITS = Object.freeze({ perIpHour: 30, perUserHour: 3, minMs: 400 });
 const KIND = 'pwreset';
 const fingerprint = u => auth.sign(`pwreset:v1:${u.id}:${u.password_hash || ''}`).slice(0, 22);
 const sleep = ms => new Promise(r => { setTimeout(r, ms); });
@@ -66,6 +70,16 @@ export function resetEmail(t, { username, url }) {
 <p style="${P};color:#4b5563">Oomba Academy</p></body></html>`;
   const text = `${lines[0]}\n\n${url}\n\n${lines[1]}\n\n${lines[2]}\n\nOomba Academy\n`;
   return { subject: t('auth.reset.email.subject'), html: body, text };
+}
+
+/** "Your password was changed": sent to the account's address after a reset, so its owner hears of one they did not make. */
+export function resetDoneEmail(t, { username }) {
+  const lines = [t('auth.reset.email.doneIntro', { username }), t('auth.reset.email.doneNotYou', { email: contactEmail() })];
+  const P = 'margin:0 0 16px;font-size:16px;line-height:1.55;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
+  const body = `<!doctype html><html lang="${esc(t.locale || 'en')}" dir="${t.dir || 'ltr'}"><body style="margin:0;padding:24px;background:#ffffff">
+<p style="${P}">${esc(lines[0])}</p><p style="${P}">${esc(lines[1])}</p>
+<p style="${P};color:#4b5563">Oomba Academy</p></body></html>`;
+  return { subject: t('auth.reset.email.doneSubject'), html: body, text: `${lines[0]}\n\n${lines[1]}\n\nOomba Academy\n` };
 }
 
 const box = (req, res, title, inner, status = 200) => {
@@ -154,6 +168,10 @@ router.post('/api/auth/reset', (req, res) => {
   auth.setPassword(u.id, pw, { signOutEverywhere: true });
   clear(loginLockKey(u.username));
   audit(u.id, 'user.password_reset', u.id, { ip, via: 'email' });
+  // Tell the account's owner (not awaited; its own email_log row). No link in it: nothing to click in a "was this you?".
+  const m = resetDoneEmail(t, { username: u.username });
+  E.send({ userId: u.id, template: 'password_changed', category: 'transactional', subject: m.subject, html: m.html, text: m.text, idemKey: `pwdone-${u.id}-${uid(10)}` })
+    .catch(e => log('warn', 'password changed email failed', { user: u.id, error: String(e && e.message).slice(0, 120) }));
   if (req.user) auth.endSession(req, res);
   res.json({ ok: true, redirect: '/login?reset=1' });
 });

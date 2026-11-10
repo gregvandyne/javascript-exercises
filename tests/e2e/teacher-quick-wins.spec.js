@@ -129,11 +129,15 @@ test('r. "Make your first class" opens the New class form with the cursor in the
   const password = (await admin.locator('.logincard dd b').nth(1).textContent()).trim();
   await admin.context().close();
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const t = await ctx.newPage();
-  // j. the only staff member of the school signs in to the Classroom home, not "Set up your school".
+  // j. a head the platform admin appointed signs in to "Set up your school", also while they are the school's only
+  // staff member (Classroom first is only for a teacher who made their own school at /trial: unit test j). The
+  // Classroom home is one tap away.
   await ownIp(t); await t.goto('/login');
   await t.fill('#username', username); await t.fill('#password', password);
   await Promise.all([t.waitForURL(u => !u.pathname.startsWith('/login')), t.click('button[type=submit]')]);
-  expect(new URL(t.url()).pathname).toBe('/teach');
+  expect(new URL(t.url()).pathname).toMatch(/^\/school\/quick-school-/);
+  expect(await t.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')).slice(0, 2))).toEqual(['/school', '/teach']);
+  await Promise.all([t.waitForURL(u => u.pathname === '/teach'), t.locator('.tabbar .tab[href="/teach"]').click()]);
   await expect(t.locator('#new-class')).not.toHaveAttribute('open', '');
   const make = t.locator('a[href="/teach?new=class"]').first();
   await expect(make).toBeVisible();

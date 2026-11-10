@@ -216,7 +216,10 @@
         "intro": "Iemand heeft gevraagd om het wachtwoord van het Oomba Academy-account {username} opnieuw in te stellen. Was jij dat? Kies dan een nieuw wachtwoord met deze link:",
         "button": "Kies een nieuw wachtwoord",
         "expires": "De link werkt één keer, {minutes} minuten lang.",
-        "ignore": "Heb je hier niet om gevraagd? Dan kun je deze e-mail negeren. Je wachtwoord blijft hetzelfde."
+        "ignore": "Heb je hier niet om gevraagd? Dan kun je deze e-mail negeren. Je wachtwoord blijft hetzelfde.",
+        "doneSubject": "Je wachtwoord voor Oomba Academy is gewijzigd",
+        "doneIntro": "Het wachtwoord van het Oomba Academy-account {username} is zojuist gewijzigd met een herstellink die naar dit adres is gestuurd.",
+        "doneNotYou": "Was jij dat niet? Schrijf dan meteen naar {email}."
       }
     }
   },
@@ -4018,7 +4021,7 @@
         "passwordHint": "Minstens {min} tekens.",
         "adult": "Ik ben leerkracht of werk op een school, en ik ben 18 jaar of ouder.",
         "submit": "Account maken en proefperiode starten",
-        "privacy": "We bewaren je werk-e-mailadres niet bij je account: het gaat naar Stripe voor je abonnement. <a href=\"{privacy}\">Privacybeleid</a>",
+        "privacy": "We gebruiken je werk-e-mailadres voor je abonnement (het gaat naar Stripe), voor e-mails over je proefperiode en om een vergeten wachtwoord opnieuw in te stellen. <a href=\"{privacy}\">Privacybeleid</a>",
         "usernameHint": "3 tot 16 letters of cijfers, zonder spaties. Hiermee log je in."
       },
       "errors": {
