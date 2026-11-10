@@ -195,6 +195,7 @@ if (editor) {
     const n = Math.random().toString(36).slice(2, 8);
     li.innerHTML = `<div class="field lv-cat"><label for="c-${n}">${esc(t('js.live-sets.category'))}</label><input id="c-${n}" class="input" maxlength="${MAX.cat}" placeholder="${esc(t('js.live-sets.categoryHint'))}" value="${esc(it.cat || '')}" data-cat></div>
       <div class="field"><label for="q-${n}">${esc(t('js.live-sets.question'))}</label><textarea id="q-${n}" class="input" rows="2" maxlength="${MAX.q}">${esc(it.q)}</textarea></div>
+      ${it.why ? `<p class="small lv-why" dir="auto"><strong>📖 ${esc(t('js.live-sets.why'))}</strong> ${esc(it.why)}</p>` : ''}
       <fieldset class="lv-group"><legend>${esc(t('js.live-sets.answers'))}</legend><div class="lv-choices"></div>
       <div class="lv-row"><button class="btn btn-sm" type="button" data-add-choice>＋ ${esc(t('js.live-sets.addAnswer'))}</button>
       <button class="btn btn-sm" type="button" data-tf>${esc(t('js.live-sets.makeTf'))}</button></div></fieldset>
@@ -280,9 +281,13 @@ if (editor) {
     try {
       const r = await api(current.id ? `/api/live/sets/${current.id}` : '/api/live/sets', { method: 'POST', body });
       toast(t('js.live-sets.saved'));
-      if (!current.id) { current.id = r.id; history.replaceState(null, '', `/live/sets#${r.id}`); }
+      if (!current.id) { current.id = r.id; if (onSetsPage) history.replaceState(null, '', `/live/sets#${r.id}`); }
+      document.dispatchEvent(new CustomEvent('lv-set-saved', { detail: { id: current.id, title: body.title } }));
     } catch (er) { err.textContent = er.message; }
   }
+  // /teach/make (teach-make.js) hands its drafted questions to this editor, and hears 'lv-set-saved' when they are saved.
+  const onSetsPage = !!document.querySelector('[data-lv-page="sets"]');
+  document.addEventListener('lv-set-draft', e => render({ title: e.detail.title || '', grade: e.detail.grade || '', items: e.detail.items || [] }));
   const open = async id => { try { render(await api(`/api/live/sets/${encodeURIComponent(id)}`)); } catch (er) { toast(er.message, { bad: true }); } };
   $('lv-set-new') && $('lv-set-new').addEventListener('click', () => render({ title: '', items: [] }));
   const list = $('lv-setlist');
@@ -296,5 +301,5 @@ if (editor) {
     try { const r = await api(`/api/live/sets/${encodeURIComponent(b.dataset.copySet)}/copy`, { method: 'POST', body: {} }); location.href = r.redirect; location.reload(); }
     catch (er) { toast(er.message, { bad: true }); b.disabled = false; }
   });
-  if (/^#[\w-]{4,}$/.test(location.hash)) open(location.hash.slice(1));
+  if (onSetsPage && /^#[\w-]{4,}$/.test(location.hash)) open(location.hash.slice(1));
 }
