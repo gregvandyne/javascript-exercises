@@ -19,7 +19,7 @@ import { BRAND } from './views/brand.js';
 import { HUBS, AGES, PARENT_GUIDES } from './learn.js';
 
 export const OG_W = 1200, OG_H = 630;
-/** Kids aged 8 to 14 (docs/decisions.md): the site's audience, in structured data. */
+/** Kids aged 5 to 14, kindergarten to grade 8 (docs/decisions.md): the site's audience, in structured data. */
 export const AGE = { min: 5, max: 14 };   // K–8
 
 /** The site's address: PUBLIC_URL, else this request's scheme and host (tests, a server without PUBLIC_URL). */
@@ -33,7 +33,7 @@ const BY_SEG = new Map(CODES.map(c => [segOf(c), c]));
 const HUB_RE = [...HUBS, ...AGES].map(h => h.slug).join('|');
 const GUIDE_RE = PARENT_GUIDES.map(g => g.slug).join('|');
 /** Pages that have an address per language. */
-const LOCALIZED = new RegExp(`^/(?:|teachers(?:/live|/cs-quest)?|learn(?:/(?:${HUB_RE}))?|g/[a-z0-9-]+|safety|parents(?:/(?:${GUIDE_RE}))?)$`);
+const LOCALIZED = new RegExp(`^/(?:|teachers(?:/live|/cs-quest)?|learn(?:/(?:${HUB_RE}))?|g/[a-z0-9-]+|safety|research|compliance|parents(?:/(?:${GUIDE_RE}))?)$`);
 export const localizable = p => LOCALIZED.test(p);
 /** '/teachers' in a language: English is the plain address (and x-default), others get /<code> in front. */
 export const localeUrl = (path, code) => (code === DEFAULT_LOCALE ? path : `/${segOf(code)}${path === '/' ? '' : path}`);

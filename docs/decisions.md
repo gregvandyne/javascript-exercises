@@ -1141,6 +1141,28 @@ switched to Basic keeps every link, but only the **first linked** child gets the
   /parents/summer-learning-games (publish by mid-May). The guides' external links (healthychildren.org, Common Sense
   Media, Apple, Google, Microsoft) should be checked once from a network that reaches them.
 
+## One age range, and the 5 to 7 guide (2026-11-10)
+- **The site's audience is kindergarten to grade 8, about ages 5 to 14** everywhere a page speaks for the whole site
+  (seo.AGE). Unchanged on purpose: each course's own grade band (Number Quest 3 to 5, CS Quest and Cyber Defenders 3
+  to 8), the per-age pages, live question levels and the Brain Board starter set, and the signed-off Terms (legal text,
+  still "8 to 14" in `info.terms.who.p1` and `info.terms.accounts.p1`: a change needs the lawyer). AI prompts and
+  translator notes that say "8 to 14" were not changed here. tests/unit/research-compliance.test.js keeps en.json clean.
+- **/learn/games-for-5-to-7-year-olds** (AGES `a5`, first): only games whose own grade band starts by grade 2 and that a
+  pre-reader can play (words read aloud, or numbers, music and pictures). It says the full courses start in grade 3 and
+  that a grown-up types for the Builder at this age. `ageBand` (the "Ages 6–11" line on game pages) now starts at 5.
+
+## Research and compliance pages (2026-11-10)
+- **/research** (routes/trust.js): only the three verified reviews (Clark, Tanner-Smith and Killingsworth 2016;
+  Wouters et al. 2013; Sailer and Homner 2020). Percentiles in plain words up front (from the effect size, normal
+  scores), effect sizes in small print, citations with DOIs, and what the numbers don't prove (averages; none tested
+  Oomba). The landing's "Further reading" (Roediger and Karpicke 2006, Hattie and Timperley 2007) stays: no numbers.
+- **/compliance**, a page of its own next to /research (school IT staff look for one address; /safety is written for
+  kids and parents, and the legal pages are signed off): facts only from /privacy, docs/safety.md and the code. Where
+  the legal position is still open (docs/legal-review.md items 1, 6 to 9, 31, 34: COPPA consent model, FERPA "school
+  official", GDPR roles and representative, whether a DPA is offered) the page asks schools to email us, and the
+  sentence that would need sign-off is in `PENDING`, shown only to the platform admin as "Not shown publicly".
+- Both are linked from the site footer (signed out and school staff) and the landing footer, and from each other.
+
 ## Doors for grown-ups (navigation, week 1)
 - **Signed out means signed out or a guest** (`signedOut(u)` in views/layout.js: `!u || u.is_guest`) for the menus, the
   home intro and the footer. One tap on Play makes a guest; before, that hid the intro and both Teachers links.
@@ -3571,6 +3593,43 @@ three (`scopesMissing`), so nothing worked. Decisions (the owner's) and what was
   lesson deletion and the sweep remove the new rows too. Unlinking forgets the class's settings.
 - **Privacy:** the legal pages are not changed here (signed off 9 Nov); the sentences that would need the lawyer are
   listed for the owner (/privacy `google.setup.privacy.classroom`, docs/legal-review.md "Google Classroom sync").
+## Google Classroom sync: hardening (10 Nov 2026)
+An improvement pass (owner-approved plan, Part B) found three edges in the sync. Scopes, the data sent to Google and
+the privacy pages are unchanged.
+- **Grades that didn't go through are retried.** Before: `autoGrades` looked at a posted lesson only when
+  `step_progress` moved after `gc_posts.auto_at`, and set `auto_at` after every run, even when some students' grades
+  failed (a non-fatal error on their PATCH counted in `failed`). A student whose grade failed and who did nothing more
+  was never sent again. Now `sendGrades` keeps per assignment `gc_posts.retry_at` / `retry_fails` (migration
+  **0072_gclassroom_retry**): a send with a failure sets `retry_at` 1 h, 2 h, 4 h... (at most a day, the same back-off
+  curve as the class's) after the run; `autoGrades` also looks at a lesson whose `retry_at` is due. Failed students are
+  not in `gc_grades`, so they still count as changed and are the only ones sent again (`onlyChanged`); students whose
+  grade went are not. A clean send or a quiet one clears the retry. Retries stop with the lesson's existing window
+  (`autoEnded`: 30 days after the due day, 90 days after posting without one), go through the teacher's 60 syncs an
+  hour, and don't back the whole class off (that stays for errors that stop a run). A manual send with a failure also
+  leaves a retry for the automatic sync, if it is on. Reposting clears it.
+- **Big classes get the plain answer.** Before: the roster and submissions were read with `listAll` at 5 pages of 100,
+  so a course over 500 failed with a generic `badRequest` ("too many pages"), and one of 301 to 500 was read in full
+  before the 300 check. Now `listAll` takes a `cap` and stops paging once more than that many entries were seen
+  (`GcError('tooMany')`); the roster import passes 300, so it stops at the fourth page and answers `tooMany` ("more
+  than 300 students"). Classroom gives no student count up front, so paging is the earliest point. Sending grades uses
+  the new `eachPage`: submissions are read 100 at a time and paging stops once every student with a grade to send was
+  found (often the first page), up to `SUBMISSION_PAGES` (10, so 1,000). Past that, the send doesn't fail: the grades
+  found go, students not reached count as failed (so they are retried), and the log line is `partial` with `tooMany`.
+- **Fewer false alarms in the announcement name check, and it says which word.** Before: any roster first name of 3+
+  letters was refused as a whole word in any case, so a class with a May, a Will or an Art couldn't post "we will start
+  in May". Now full roster names, display names of more than one word and usernames still count in any case. A one-word
+  name (a roster name's first word, a one-word display name) that is on a short fixed list of everyday English words
+  (`WORD_NAMES`: may, will, art, grace, mark, rose, max, jack...) counts only when written like a name: starting with a
+  capital, not at the start of a sentence, and, for April, May, June and August, not after a date word such as "in",
+  "by", "on" or before a number. Names off the list are checked as before. Why this rule: capitalization mid-sentence
+  is how English marks a name, and the list only relaxes words a teacher writes in ordinary class news; everything
+  else keeps the old, stricter check, and the list is English only, so other languages keep it too. Known gap,
+  accepted: such a name at the start of a sentence ("Will did great") gets through. Last names alone are not checked
+  (plain-word surnames such as Brown or Young would block much more than they protect; the full name is checked). The
+  error now quotes the words from the teacher's message that matched (`gclassroom.errors.hasName`, 13 languages).
+- **Checks:** tests/unit/gclassroom.test.js (retry, back-off, no resend, the window; the 300 cap after 4 pages; a
+  1,050-entry submission list; the name check), with the existing fake Classroom.
+
 ## Weekly class summary email (9 Nov 2026)
 
 Teachers get one email a week with counts for each class they teach, so they know where to look without opening the
@@ -3932,6 +3991,39 @@ parent account; the migration; the chat default, the notice and its dismissal), 
 
 **Deploy note.** `0067` belongs to the Google Classroom work on another branch; whichever merges second keeps both
 entries in `MIGRATIONS` (they do not depend on each other).
+
+## Teacher marketing: Classroom, free and paid (10 Nov 2026)
+
+Part of the owner-approved website pass (Google Classroom on the marketing pages, one free and paid story, the tagline,
+a place for real teacher quotes).
+
+- **Google Classroom section** on "/" (`#classroom`, after the courses) and on /teachers (a panel after the teaching
+  loop), with the same words (`teachers.classroom.*`). It shows only while Classroom is on for the server
+  (`services/gclassroom.js` `enabled()`: Sign in with Google and `GOOGLE_CLASSROOM=1`), following /teachers' rule that a
+  feature off on this server is left out of the text. Every line matches the code: read-only connect first, posting
+  needs the teacher's separate "allow posting" step, roster import by hand then every 6 hours (`ROSTER_EVERY`),
+  students matched by Google account, assignment with link and due date or a material, completion grades out of 100
+  (`scoreOf`: steps done of the lesson's steps, said in the copy), automatic grades optional, announcements in the
+  teacher's words, no student emails asked for and no names, answers or games sent. Nothing says or implies that Google
+  verified the app. Turn `GOOGLE_CLASSROOM` on in production only once Google has verified the scopes, or the section
+  invites teachers who would meet the "unverified app" screen.
+- **One free and paid line** (`teachers.free.line`), on the landing hero and the /teachers hero: always free (every game,
+  classes, lessons, progress and the gradebook, free daily Builder messages for teachers and students), the Teacher plan
+  adds the class's daily AI builds (`TEACHER_DAILY_MESSAGES`), "See prices on Plans" links to /plans. No amount on "/"
+  or /teachers (the "kids are never sold to" rule above stands; amounts stay on /plans). The landing's pricing section
+  gets a Free card; the Teacher card lists only what the plan adds ("Everything in Free, plus:"), so free features are
+  no longer listed as plan features; the trial FAQ and the closing line say what stays free when a trial ends (nothing
+  is deleted or locked: "Teacher plan" above). /teachers with paid-plan pages off shows the free half only
+  (`teachers.free.lineOff`). The old keys (`landing.pricing.lead`, `landing.faq.a2`, `landing.final.p`) are no longer
+  used.
+- **Tagline** "Screen time you can feel good about" (`brand.tagline`, new; it was only ever in the parents video) in the
+  landing footer and under the /parents heading.
+- **Teacher quotes** on /teachers: `TEACHER_QUOTES` in routes/teachers.js is empty, so the section is not rendered.
+  Only real quotes, given with the teacher's permission, go there; a platform admin sees the layout with owner
+  placeholders at `/teachers?quotes=preview`. "/" keeps its no-testimonials rule.
+- **Research link:** "/" (under "Why games work") and /teachers link to `/research` (the page comes with the research
+  pass).
+- Tests: `tests/unit/teacher-marketing.test.js`.
 
 ## A first live game in under 3 minutes (10 Nov 2026)
 

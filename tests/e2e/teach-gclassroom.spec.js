@@ -159,7 +159,7 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   await page.locator('#gc-announce summary', { hasText: 'Your own message' }).click();
   await page.fill('#gc-note-free', 'Rosa did great!');
   await page.locator('#gc-announce form:has(#gc-note-free) button[type=submit]').click();
-  await expect(page.locator('#gc-note-free-err')).toContainText("has a student's name in it");
+  await expect(page.locator('#gc-note-free-err')).toContainText("“Rosa” in your message matches a student's name");
   await page.fill('#gc-note-free', 'Bring headphones tomorrow, please.');
   await page.locator('#gc-announce form:has(#gc-note-free) button[type=submit]').click();
   await expect(page.locator('#gc-log')).toContainText('Posted to the class stream');

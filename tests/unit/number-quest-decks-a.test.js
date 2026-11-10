@@ -4,7 +4,7 @@
 // rough estimate where the step computes, one words slide with four words, one flagged Stretch slide, the
 // mission last), the quick check is the step's own three bank items whose cat is one of the step's LOCKED
 // primary codes (standards.json explorerCodes; the intro is framing and cites none), every distractor carries
-// a misconception tag, kid-safe text (US spelling, no brands, links, codes or framework names in anything a
+// a misconception tag and every item a `why` (so a miss teaches), kid-safe text (US spelling, no brands, links, codes or framework names in anything a
 // child reads), the unit Jumble beats (1.3 and 2.3), and the media rule (Greg, 2026-11-05;
 // docs/decisions.md): drawn diagrams teach, real pictures carry missions and story — the pictorial step
 // on a TEACHING slide is a DRAWN diagram (slide.visual: the lesson's own numbers as place-value cards, a
@@ -123,7 +123,7 @@ test('5-7 slides: one example, one words slide with four words, one Stretch slid
   }
 });
 
-test('the quick check is the step own three items, tagged with a locked primary code, misconception-tagged distractors', () => {
+test('the quick check is the step own three items, tagged with a locked primary code, misconception-tagged distractors, a why on every item', () => {
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     assert.deepEqual(d.check, [1, 2, 3].map(i => `nq-explorer-${step.n}-e${i}`), `${where}: own item ids`);
@@ -139,6 +139,7 @@ test('the quick check is the step own three items, tagged with a locked primary 
       assert.equal(it.misconceptions.length, 4, `${where}: ${id} tags every choice`);
       assert.equal(it.misconceptions[it.answer], 'correct', `${where}: ${id} the key is tagged correct`);
       for (const [i, m] of it.misconceptions.entries()) if (i !== it.answer) assert.ok(m.length >= 10, `${where}: ${id} distractor ${i + 1} names its misconception`);
+      assert.ok(typeof it.why === 'string' && it.why.length >= 20, `${where}: ${id} carries a why so a miss teaches`);
     }
   }
 });
@@ -173,7 +174,7 @@ test('kid-safe text: no links, brands, framework names or codes in decks or item
     }
   };
   for (const { step, deck: d } of decks) check(stringsOf(d), `explorer-${step.n}`);
-  for (const [id, it] of itemById) check([it.q, ...it.choices], `item ${id}`);
+  for (const [id, it] of itemById) check([it.q, ...it.choices, it.why], `item ${id}`);
 });
 
 test('drawn diagrams (the CPA pictorial step): every deck draws its maths, with guided focus on the parts', () => {

@@ -117,11 +117,17 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
   - **Grades:** for each student on the teacher's own Classroom roster who is in the Oomba class and has started the
     lesson, a completion grade out of 100 (steps done of the lesson's steps, not right answers). Automatic grades send
     only grades that changed since the last one sent, and stop 30 days after the lesson's due date (90 days after it was
-    posted when it has none).
+    posted when it has none). A grade Google didn't take is tried again by the automatic sync, 1 hour later, then 2, 4
+    and so on (at most a day apart), even if the student does nothing more, until it goes or that window ends; grades
+    that went are not sent again.
   - **A topic:** its name ("Oomba Academy", or the teacher's own name for it), made once per linked class.
   - **An announcement:** the template's fixed words (a live game's join code and link, or a lesson's title and link)
     and the teacher's own words, plain text, at most 500 characters. Oomba never adds a name or a result, and refuses
-    to post a message with a student's name (roster name, first name, display name or username) in it.
+    to post a message with a student's name (full roster name, first name, display name or username) in it, quoting
+    the words that matched so the teacher can reword them. A first name that is also an everyday English word (May,
+    Will, Art, Grace, Mark... a short fixed list) counts only when written like a name: capitalized, not at the start
+    of a sentence, and for a month name not as a date ("in May", "May 3"). So "Bring your art supplies, we will start
+    in May" can be posted in a class with a May, a Will and an Art, while "Great job, Will!" is refused.
   - Never names, written answers, feedback, games or drawings.
 - **From Google:** the teacher's Google account id and email (to show "Connected as"), their active classes' names, and
   for the linked class each student's Google account id and full name.
@@ -155,4 +161,12 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
 - The live-game announcement uses the code of the live game open for this class; a code can't be typed in.
 - Assignments made by Oomba can be graded by Oomba; Google doesn't let any app grade coursework another app made.
 - At most 300 students per import, 20 imports an hour per class, 60 syncs an hour per teacher (automatic grades count
-  against the same 60), 10 announcements an hour per class.
+  against the same 60, retries included), 10 announcements an hour per class. A Classroom class over 300 students gets
+  "That Classroom class has more than 300 students" as soon as the fourth page of its roster shows it (the rest is not
+  read).
+- Sending grades reads the assignment's submissions 100 at a time and stops as soon as every student with a grade to
+  send was found, up to 1,000 submissions. Past that, the grades found still go; students not reached count as "didn't
+  go through" and the log says the class is too big.
+- The name check is a guard, not a guarantee: a first name that is also an everyday word is let through at the start
+  of a sentence ("Will you bring...?"), and a last name on its own is not checked. Teachers stay responsible for what
+  they post.

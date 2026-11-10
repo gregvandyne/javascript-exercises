@@ -35,6 +35,7 @@ Checked by `tests/unit/cs-quest-sets.test.js` (`node --test tests/unit/cs-quest-
 | `q` | the question | <= 300 chars |
 | `choices` | 4 answers, the right one's slot varies | each <= 120 chars, all different; 3 wrong ones are real misconceptions of similar length: the right answer is at most 1.6x the longest distractor (or 8 chars longer), except the five "which note / message is best" items where the fuller answer is the point |
 | `answer` | index of the right choice | 0-3 |
+| `why` | one or two plain sentences on why the answer is right, shown after a course quick-check answer | the only field allowed after `answer`; 20-240 chars; every exit item carries one (`tests/unit/course-mission-truth.test.js`), openers and review items need none |
 
 Writing rules the test enforces beyond the schema: one defensible right answer (a sharp student must not be able to refute
 the stem; the stem never states the answer); no markdown (quote a block name: `the block "turn left"`, never `*turn left*`,

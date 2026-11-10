@@ -69,7 +69,8 @@
     "to make it longer",
     "to skip testing"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A game is made for its players. Knowing who will play helps every choice fit them, like simple words for a younger kid."
   },
   {
    "id": "1b-7.1-e2",
@@ -86,7 +87,8 @@
     "do nothing until it is done",
     "play the game and write what happened"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "The tester and note-taker plays the game like a real player and writes down what happens. The designer and typist sends the messages, so the two jobs share the work."
   },
   {
    "id": "1b-7.1-e3",
@@ -103,7 +105,8 @@
     "debugging",
     "decomposition"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Breaking a big job into smaller parts you can build one at a time is called decomposition."
   },
   {
    "id": "1b-7.2-r1",
@@ -137,7 +140,8 @@
     "\"make it cool\"",
     "\"add more rockets and a dog\""
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "A good message says what you expected and what really happened, and asks for one fix. Then the Builder knows exactly what to change."
   },
   {
    "id": "1b-7.2-e2",
@@ -154,7 +158,8 @@
     "to use up more of the messages",
     "so the Builder gets a rest between them"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "If you change one thing and then test, you know that change caused what you see. Change three things at once and you cannot tell which one helped."
   },
   {
    "id": "1b-7.2-e3",
@@ -171,7 +176,8 @@
     "the game's price",
     "things to try and what should happen"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "A test plan says what to try and what should happen each time. Then you can check whether the game really does it."
   },
   {
    "id": "1b-7.3-r1",
@@ -205,7 +211,8 @@
     "it is faster than testing yourself",
     "so nobody has to play it twice"
    ],
-   "answer": 1
+   "answer": 1,
+   "why": "Every player sees the game in their own way, so each tester can spot a problem the others missed."
   },
   {
    "id": "1b-7.3-e2",
@@ -222,7 +229,8 @@
     "change level 2 and test again",
     "add more levels"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "When two testers get stuck in the same place, that part needs work. Change level 2, then test again to see if the change helped."
   },
   {
    "id": "1b-7.3-e3",
@@ -239,7 +247,8 @@
     "leave the room until they finish",
     "watch where they get stuck, without helping"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "If you help, you never see what a new player would really do. Watching quietly shows you exactly where the game is unclear."
   },
   {
    "id": "1b-7.4-r1",
@@ -273,7 +282,8 @@
     "every bug the game ever had",
     "nothing, you just play in silence"
    ],
-   "answer": 0
+   "answer": 0,
+   "why": "A short demo tells people who the game is for and one choice you made, with the reason. The reason helps listeners understand your thinking."
   },
   {
    "id": "1b-7.4-e2",
@@ -290,7 +300,8 @@
     "be longer than the game itself",
     "tell a new player what to do in a few lines"
    ],
-   "answer": 3
+   "answer": 3,
+   "why": "Instructions are for a new player who has never seen your game. A few clear lines about what to do and how to win get them playing fast."
   },
   {
    "id": "1b-7.4-e3",
@@ -307,7 +318,8 @@
     "people, art and ideas you used",
     "nothing at all, it is your game"
    ],
-   "answer": 2
+   "answer": 2,
+   "why": "Credits say who and what helped: the people, the art and the ideas you used. Giving credit is fair to everyone who helped make your game."
   }
  ]
 }

@@ -4,7 +4,7 @@
 // exactly one worked example opening with a rough estimate, one words slide with four words, one flagged
 // Stretch slide, the mission last), the quick check is the step's own three bank items whose cat is one
 // of the step's LOCKED primary codes (standards.json explorerCodes), every distractor carries a
-// misconception tag, kid-safe text (US spelling, no brands, links, codes or framework names in anything
+// misconception tag and every item a `why` (so a miss teaches), kid-safe text (US spelling, no brands, links, codes or framework names in anything
 // a child reads), the unit Jumble beats (3.3 guesses 7 × 8 and the doubling trick fixes it; 4.3 adds the bottoms too; each drawn
 // as a `fix` diagram, the concrete mistake struck through, then the trick), and the media
 // rule (Greg, 2026-11-05; docs/decisions.md): drawn diagrams teach, real pictures carry missions and
@@ -132,7 +132,7 @@ test('5-7 slides: one example, one words slide with four words, one Stretch slid
   }
 });
 
-test('the quick check is the step own three items, tagged with a locked primary code, misconception-tagged distractors', () => {
+test('the quick check is the step own three items, tagged with a locked primary code, misconception-tagged distractors, a why on every item', () => {
   for (const { step, deck: d } of decks) {
     const where = `explorer-${step.n}`;
     assert.deepEqual(d.check, [1, 2, 3].map(i => `nq-explorer-${step.n}-e${i}`), `${where}: own item ids`);
@@ -147,6 +147,7 @@ test('the quick check is the step own three items, tagged with a locked primary 
       assert.equal(it.misconceptions.length, 4, `${where}: ${id} tags every choice`);
       assert.equal(it.misconceptions[it.answer], 'correct', `${where}: ${id} the key is tagged correct`);
       for (const [i, m] of it.misconceptions.entries()) if (i !== it.answer) assert.ok(m.length >= 10, `${where}: ${id} distractor ${i + 1} names its misconception`);
+      assert.ok(typeof it.why === 'string' && it.why.length >= 20, `${where}: ${id} carries a why so a miss teaches`);
     }
   }
 });
@@ -203,7 +204,7 @@ test('kid-safe text: no links, brands, framework names or codes in decks or item
   // Fraction Factory itself - a proper name the mission must quote verbatim, not prose spelling.
   for (const { step, deck: d } of decks) check(stringsOf(d).map(s => s.split(step.game.explorer.chapterTitle).join('CHAPTER')), `explorer-${step.n}`);
   for (const n of ['3.1', '3.2', '3.3', '4.1', '4.2', '4.3']) {
-    for (const id of [1, 2, 3].map(i => `nq-explorer-${n}-e${i}`)) { const it = itemById.get(id); check([it.q, ...it.choices], `item ${id}`); }
+    for (const id of [1, 2, 3].map(i => `nq-explorer-${n}-e${i}`)) { const it = itemById.get(id); check([it.q, ...it.choices, it.why], `item ${id}`); }
   }
 });
 

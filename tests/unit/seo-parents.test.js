@@ -199,7 +199,7 @@ test('calls to action and links: start free, try a game, teachers; menu, footer,
   assert.ok(a12.includes('href="/learn/games-for-8-and-9-year-olds"'));
   assert.match((await get('/learn/games-for-10-and-11-year-olds')).text, /Outgrowing ABCya\?/);
   // Game pages show their ages.
-  assert.match((await get('/g/sum-racer')).text, /Grades 1–5 · Ages 8–11/);
+  assert.match((await get('/g/sum-racer')).text, /Grades 1–5 · Ages 6–11/);
   // The screen-time guide links the device makers' own tools.
   const screen = (await get('/parents/safety-and-screen-time')).text;
   for (const host of ['healthychildren.org', 'families.google', 'microsoft.com', 'apple.com']) assert.ok(screen.includes(host), host);
@@ -280,7 +280,7 @@ test('age pages: "Playing together" names only games on the page; no repeated pr
 test('localized pages stay in one language: no untranslated additions on game, subject, home and teacher pages', async () => {
   const es = (await get('/es/g/sum-racer')).text;
   assert.match(robotsMeta(es), /^index/);
-  assert.doesNotMatch(es, /Ages 8–11/, 'no English age line on a Spanish game page');
+  assert.doesNotMatch(es, /Ages 6–11/, 'no English age line on a Spanish game page');
   const math = (await get('/es/learn/math-games')).text;
   assert.match(robotsMeta(math), /^index/);
   assert.doesNotMatch(main(math), /lang="en"/, '/es/learn/math-games has no English blocks');
@@ -301,7 +301,7 @@ test('localized pages stay in one language: no untranslated additions on game, s
   });
   assert.match((await get('/es/teachers')).text, /<a class="navlink" href="\/parents"[^>]*><span class="emo" aria-hidden="true">👪<\/span>Familias<\/a>/);
   // English keeps all of it.
-  assert.match((await get('/g/sum-racer')).text, /Ages 8–11/);
+  assert.match((await get('/g/sum-racer')).text, /Ages 6–11/);
   assert.match((await get('/learn/math-games')).text, /id="home"/);
 });
 
