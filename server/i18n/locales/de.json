@@ -1215,6 +1215,10 @@
       "alreadyAsked": "Du hast {name} schon gefragt. Warte, bis die Antwort Ja ist.",
       "sent": "Freundschaftsanfrage an {name} geschickt! Jetzt muss nur noch Ja gesagt werden.",
       "classmatesOnly": "Schulkonten können nur mit Klassenkameraden befreundet sein."
+    },
+    "staff": {
+      "title": "Konten von Lehrkräften haben keine Freunde",
+      "text": "Konten von Lehrkräften, Schul-Admins und dem Oomba-Team haben keinen Freundecode, keine Freunde und keinen Chat mit Spielern. So bleiben die Freunde von Kindern unter Kindern. Nachrichten vom Oomba-Team kommen weiterhin bei dir an."
     }
   },
   "profile": {
@@ -1325,7 +1329,8 @@
       "blocked_by_me": "Du hast {name} blockiert. Auf der Seite „Freunde“ kannst du {name} wieder entsperren.",
       "blocked_by_other": "Du kannst gerade nicht mit {name} chatten.",
       "school_off_me": "Deine Schule hat den Chat ausgeschaltet.",
-      "school_off_other": "Die Schule von {name} hat den Chat ausgeschaltet."
+      "school_off_other": "Die Schule von {name} hat den Chat ausgeschaltet.",
+      "staff": "Konten von Lehrkräften können nicht mit Spielern chatten."
     },
     "paused": "Der Chat macht eine kleine Pause. Du kannst in {minutes, plural, one {# Minute} other {# Minuten}} wieder schreiben. Schnelle Nachrichten kannst du weiter senden.",
     "errors": {
@@ -2668,17 +2673,18 @@
       "publishPublic": "Auch mit allen teilen",
       "publishingHint": "Schüler in einer Klasse können ein Spiel auch nur mit ihren Klassen teilen.",
       "photos": "Profilfotos von Schulkonten sehen nur Klassenkameraden, Lehrkräfte und Freunde.",
-      "chatHint": "Schulkonten können nur Klassenkameraden als Freunde hinzufügen.",
+      "chatHint": "Schulkonten chatten nur mit Klassenkameraden, die sie als Freunde hinzugefügt haben. Nachrichten werden gefiltert, und Lehrkräfte und Schulpersonal sind nie im Chat.",
       "timeZone": "Zeitzone",
       "timeZoneNone": "Nicht festgelegt (UTC)",
       "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
       "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
       "groupSchool": "Schule",
       "groupClasses": "Klassen und Beitreten",
-      "chatHintOff": "Schulkonten können mit niemandem chatten. Spielen und Bauen geht weiterhin.",
+      "chatHintOff": "Die Voreinstellung. Schulkonten können mit niemandem chatten. Spielen und Bauen geht weiterhin.",
       "unsaved": "Du hast Änderungen, die noch nicht gespeichert sind.",
       "unsavedLeave": "Deine Änderungen an den Einstellungen sind nicht gespeichert. Ohne Speichern verlassen?",
-      "timeZoneUse": "{zone} verwenden (Zeitzone dieses Computers)"
+      "timeZoneUse": "{zone} verwenden (Zeitzone dieses Computers)",
+      "chatNotice": "Der Chat ist für die Konten deiner Schule jetzt aus. Bisher war der Chat zwischen Klassenkameraden an, solange eine Schule ihn nicht ausschaltete. Jetzt ist er aus, solange eine Schule ihn nicht einschaltet, und einige deiner Schülerinnen und Schüler haben ihn genutzt. Um ihn zurückzuholen, wähle unten „Chat mit Freunden aus den eigenen Klassen“ und speichere."
     },
     "cards": {
       "title": "Anmeldekarten",

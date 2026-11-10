@@ -145,7 +145,7 @@ test('every role\'s tab bar (360) and top bar (1280): the right items, labels fi
     ['student', await state('DemoStudent', DEMO), ['/classes', '/play', '/learn', '/build', '/me'], ['/classes', '/play', '/learn', '/build', '/friends'], ['/classes', '/play', '/learn', '/me']],
     ['teacher', await state('DemoTeacher', DEMO), ['/teach', '/learn', '/play', '/live', '/me'], ['/teach', '/learn', '/play', '/live'], ['/teach', '/learn', '/play', '/me']],
     ['school admin', headState, ['/school', '/teach', '/learn', '/play', '/me'], ['/school', '/teach', '/learn', '/play', '/live'], ['/teach', `/school/${school.slug}?tab=people`, '/learn', '/me']],
-    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/learn', '/build', '/friends', '/admin/schools', '/me'], ['/', '/learn', '/build', '/friends', '/admin/schools'], ['/', '/learn', '/me']],
+    ['platform admin', await state(ADMIN.username, ADMIN.password), ['/', '/learn', '/build', '/admin/schools', '/me'], ['/', '/learn', '/build', '/admin/schools'], ['/', '/learn', '/me']],
   ];
   const problems = [];
   for (const [who, st, tabs, top, pages] of ROLES) {

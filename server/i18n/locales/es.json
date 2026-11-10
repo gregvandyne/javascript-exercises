@@ -1214,6 +1214,10 @@
       "alreadyAsked": "Ya le enviaste una solicitud a {name}. Espera a que diga que sí.",
       "sent": "¡Solicitud de amistad enviada a {name}! Tiene que decir que sí.",
       "classmatesOnly": "Las cuentas escolares solo pueden ser amigas de compañeros de clase."
+    },
+    "staff": {
+      "title": "Las cuentas del personal no tienen amigos",
+      "text": "Las cuentas de docentes, administradores de escuela y del equipo de Oomba no tienen código de amigo, ni amigos, ni chat con los jugadores. Así, los amigos de los niños son solo niños. Los mensajes del equipo de Oomba te siguen llegando."
     }
   },
   "profile": {
@@ -1324,7 +1328,8 @@
       "blocked_by_me": "Bloqueaste a {name}. Puedes desbloquearlo en la página Amigos.",
       "blocked_by_other": "No puedes chatear con {name} ahora.",
       "school_off_me": "Tu escuela desactivó el chat.",
-      "school_off_other": "La escuela de {name} desactivó el chat."
+      "school_off_other": "La escuela de {name} desactivó el chat.",
+      "staff": "Las cuentas del personal no pueden chatear con los jugadores."
     },
     "paused": "El chat se está tomando un descanso. Podrás escribir otra vez en {minutes, plural, one {# minuto} other {# minutos}}. Igual puedes enviar mensajes rápidos.",
     "errors": {
@@ -2667,17 +2672,18 @@
       "publishPublic": "También pueden compartir con todos",
       "publishingHint": "Los estudiantes de una clase también pueden compartir un juego solo con sus clases.",
       "photos": "Las fotos de perfil de las cuentas escolares solo las ven sus compañeros de clase, sus docentes y sus amigos.",
-      "chatHint": "Las cuentas escolares solo pueden agregar compañeros de clase como amigos.",
+      "chatHint": "Las cuentas escolares solo chatean con compañeros de clase que hayan agregado como amigos. Los mensajes se filtran, y los docentes y el personal nunca están en el chat.",
       "timeZone": "Zona horaria",
       "timeZoneNone": "Sin definir (UTC)",
       "timeZoneUnset": "Establezca la zona horaria de su escuela para que las lecciones se abran a medianoche y las fechas de entrega terminen a medianoche donde esté. Hasta entonces, nadie va con retraso hasta 36 horas después de que empieza el día de entrega.",
       "timeZoneHint": "Las lecciones se abren y las fechas de entrega terminan a medianoche en esta zona. Allí ahora son las {time}.",
       "groupSchool": "Escuela",
       "groupClasses": "Clases e ingreso",
-      "chatHintOff": "Las cuentas escolares no pueden chatear con nadie. Pueden seguir jugando y creando.",
+      "chatHintOff": "Opción predeterminada. Las cuentas escolares no pueden chatear con nadie. Pueden seguir jugando y creando.",
       "unsaved": "Tienes cambios que aún no se han guardado.",
       "unsavedLeave": "Los cambios de la configuración no se han guardado. ¿Salir sin guardarlos?",
-      "timeZoneUse": "Usar {zone} (la zona horaria de esta computadora)"
+      "timeZoneUse": "Usar {zone} (la zona horaria de esta computadora)",
+      "chatNotice": "El chat ahora está desactivado para las cuentas de tu escuela. Antes, el chat entre compañeros de clase estaba activado salvo que la escuela lo desactivara. Ahora está desactivado salvo que la escuela lo active, y algunos de tus estudiantes lo usaban. Para recuperarlo, elige «Chat con amigos de sus clases» abajo y guarda."
     },
     "cards": {
       "title": "Tarjetas de acceso",

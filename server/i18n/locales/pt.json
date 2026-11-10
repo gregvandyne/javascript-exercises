@@ -1215,6 +1215,10 @@
       "alreadyAsked": "Você já fez o pedido para {name}. Espere a pessoa dizer sim.",
       "sent": "Pedido de amizade enviado para {name}! Agora a pessoa precisa dizer sim.",
       "classmatesOnly": "Contas da escola só podem fazer amizade com colegas de turma."
+    },
+    "staff": {
+      "title": "Contas da equipe escolar não têm amigos",
+      "text": "Contas de professores, administradores de escola e da equipe Oomba não têm código de amigo, nem amigos, nem chat com jogadores. Assim, os amigos das crianças são só crianças. As mensagens da equipe Oomba continuam chegando para você."
     }
   },
   "profile": {
@@ -1325,7 +1329,8 @@
       "blocked_by_me": "Você bloqueou {name}. Dá para desbloquear na página Amigos.",
       "blocked_by_other": "Você não pode conversar com {name} agora.",
       "school_off_me": "Sua escola desligou o chat.",
-      "school_off_other": "A escola de {name} desligou o chat."
+      "school_off_other": "A escola de {name} desligou o chat.",
+      "staff": "Contas da equipe escolar não podem conversar com jogadores."
     },
     "paused": "O chat está dando uma pausa. Você pode escrever de novo em {minutes, plural, one {# minuto} other {# minutos}}. Você ainda pode mandar mensagens rápidas.",
     "errors": {
@@ -2669,17 +2674,18 @@
       "publishPublic": "Também podem compartilhar com todos",
       "publishingHint": "Alunos de uma turma também podem compartilhar um jogo só com as suas turmas.",
       "photos": "As fotos de perfil das contas da escola só são vistas pelos colegas de turma, professores e amigos.",
-      "chatHint": "As contas da escola só podem adicionar colegas de turma como amigos.",
+      "chatHint": "As contas da escola só conversam com colegas de turma que adicionaram como amigos. As mensagens são filtradas, e professores e funcionários nunca estão no chat.",
       "timeZone": "Fuso horário",
       "timeZoneNone": "Não definido (UTC)",
       "timeZoneUnset": "Defina o fuso horário da sua escola para que as aulas abram à meia-noite e os prazos terminem à meia-noite onde você está. Até lá, ninguém fica em atraso até 36 horas após o início do dia de entrega.",
       "timeZoneHint": "As aulas abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}.",
       "groupSchool": "Escola",
       "groupClasses": "Turmas e entrada",
-      "chatHintOff": "Contas escolares não podem conversar com ninguém. Continuam podendo jogar e criar.",
+      "chatHintOff": "O padrão. Contas escolares não podem conversar com ninguém. Continuam podendo jogar e criar.",
       "unsaved": "Você tem alterações que ainda não foram salvas.",
       "unsavedLeave": "Suas alterações nas configurações não foram salvas. Sair sem salvar?",
-      "timeZoneUse": "Usar {zone} (o fuso horário deste computador)"
+      "timeZoneUse": "Usar {zone} (o fuso horário deste computador)",
+      "chatNotice": "O chat agora está desativado para as contas da sua escola. Antes, o chat entre colegas de turma ficava ativado, a menos que a escola o desativasse. Agora fica desativado, a menos que a escola o ative, e alguns dos seus alunos o usavam. Para trazê-lo de volta, escolha “Chat com amigos das próprias turmas” abaixo e salve."
     },
     "cards": {
       "title": "Cartões de acesso",

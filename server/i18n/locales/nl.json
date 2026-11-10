@@ -1215,6 +1215,10 @@
       "alreadyAsked": "Je hebt {name} al gevraagd. Wacht tot er ja wordt gezegd.",
       "sent": "Vriendverzoek naar {name} gestuurd! Nu moet {name} nog ja zeggen.",
       "classmatesOnly": "Schoolaccounts kunnen alleen vrienden zijn met klasgenoten."
+    },
+    "staff": {
+      "title": "Accounts van personeel hebben geen vrienden",
+      "text": "Accounts van leerkrachten, schoolbeheerders en het Oomba-team hebben geen vriendcode, geen vrienden en geen chat met spelers. Zo blijven de vrienden van kinderen alleen kinderen. Berichten van het Oomba-team komen nog steeds bij je aan."
     }
   },
   "profile": {
@@ -1325,7 +1329,8 @@
       "blocked_by_me": "Je hebt {name} geblokkeerd. Je kunt {name} deblokkeren op de pagina Vrienden.",
       "blocked_by_other": "Je kunt nu niet met {name} chatten.",
       "school_off_me": "Je school heeft de chat uitgezet.",
-      "school_off_other": "De school van {name} heeft de chat uitgezet."
+      "school_off_other": "De school van {name} heeft de chat uitgezet.",
+      "staff": "Accounts van personeel kunnen niet met spelers chatten."
     },
     "paused": "De chat neemt even pauze. Je kunt weer typen over {minutes, plural, one {# minuut} other {# minuten}}. Snelle berichten kun je nog wel sturen.",
     "errors": {
@@ -2668,17 +2673,18 @@
       "publishPublic": "Ook met iedereen delen",
       "publishingHint": "Leerlingen in een klas kunnen een game ook alleen met hun klassen delen.",
       "photos": "Profielfoto’s van schoolaccounts zijn alleen zichtbaar voor klasgenoten, leerkrachten en vrienden.",
-      "chatHint": "Schoolaccounts kunnen alleen klasgenoten als vrienden toevoegen.",
+      "chatHint": "Schoolaccounts chatten alleen met klasgenoten die ze als vriend hebben toegevoegd. Berichten worden gefilterd, en leerkrachten en personeel zitten nooit in de chat.",
       "timeZone": "Tijdzone",
       "timeZoneNone": "Niet ingesteld (UTC)",
       "timeZoneUnset": "Stel de tijdzone van je school in, zodat lessen zichtbaar worden om middernacht en inleverdata om middernacht eindigen waar jij bent. Tot die tijd is niemand te laat tot 36 uur na het begin van de inleverdag.",
       "timeZoneHint": "Lessen worden zichtbaar en inleverdata eindigen om middernacht in deze tijdzone. Daar is het nu {time}.",
       "groupSchool": "School",
       "groupClasses": "Klassen en aanmelden",
-      "chatHintOff": "Schoolaccounts kunnen met niemand chatten. Spelen en bouwen kan nog steeds.",
+      "chatHintOff": "De standaard. Schoolaccounts kunnen met niemand chatten. Spelen en bouwen kan nog steeds.",
       "unsaved": "Je hebt wijzigingen die nog niet zijn opgeslagen.",
       "unsavedLeave": "Je wijzigingen in de instellingen zijn niet opgeslagen. Weggaan zonder op te slaan?",
-      "timeZoneUse": "{zone} gebruiken (de tijdzone van deze computer)"
+      "timeZoneUse": "{zone} gebruiken (de tijdzone van deze computer)",
+      "chatNotice": "Chat staat nu uit voor de accounts van je school. Eerst stond chat tussen klasgenoten aan, tenzij een school het uitzette. Nu staat het uit, tenzij een school het aanzet, en sommige van je leerlingen gebruikten het. Wil je het terug? Kies hieronder ‘Chatten met vrienden uit hun klassen’ en sla op."
     },
     "cards": {
       "title": "Inlogkaarten",

@@ -3667,3 +3667,78 @@ and passes the game one number (`BRB.loudness`), the frame never asks for the mi
   teacher page's cards (`TEACHER_GAMES`); not in Brain breaks, which stay fun games plus Remi.
 - `MIC_GAMES` lists the three slugs; `tests/unit/mic-scope.test.js` pins that list.
 
+
+## Staff have no friends; school chat is off by default (10 Nov 2026)
+
+Owner decision after the teacher audit ("Turn off by default and go"). Two child-safety changes, shipped together.
+
+**The bug (audit bug 0).** A teacher made at `/trial` is an ordinary kid-type account that is its school's admin.
+`friends.samePair` only kept grown-up (parent) accounts apart from children, so that teacher could type a child's friend
+code, the child saw "Friend requests 1", and accepting opened private chat. Reproduced on `origin/main` at the service
+layer (request `sent`, the child's incoming list shows the teacher, accept `true`, `canChat` ok) before the fix.
+
+**What "staff" means** (`services/schools.js noFriendsAccount`):
+
+- the platform admin (`users.role='admin'`), and
+- anyone who **is or was** a teacher or school admin of any school: a `school_members` row whose role is not
+  `student`, in any status. This covers the trial teacher, staff school accounts, a person's own account that accepted
+  a staff invite, and someone the platform admin appointed.
+- A teacher who **left** a school still counts (the row keeps its staff role, marked `left`): they are a known adult,
+  and "remove me, then add a child" must not work. The one way back is a school admin changing the person's role to
+  **student**, which is how a child added as staff by mistake is put right. That account then gets a **new** friend
+  code the next time it opens Friends; its old code and old friends never come back.
+- A staff invite that has not been accepted changes nothing.
+- Not staff: students, children's own accounts, guests, the Oomba team account, and grown-up (parent) accounts. Grown-up
+  accounts can never join a school, so a teacher who is also a parent keeps their separate grown-up account exactly as
+  it was (grown-up connections with other grown-ups only).
+
+**The rule.** A staff account has no friend code, no friends, no friend requests in either direction, and no friends'
+chat, with anyone, staff or not. (There was no staff-to-staff feature to keep; allowing one would have needed a second
+kind of friendship.) Enforced in the services, so every route and API is covered:
+
+- `friends.addByCode`: staff typing any code are refused and told why (`friends.staff.text`). A code that belongs to a
+  staff account is "not found", word for word like a code nobody has. `friends.accept` refuses and drops a request with
+  staff on either side. `friends.codeOf` gives staff no code.
+- `chat.canChat` refuses before it looks at friendship (`staff` for the staff account; `missing` for the other
+  person), so `send`, the thread and the inbox are closed even if a friend row existed. `chat.thread` and `chat.inbox`
+  show nothing with a staff account on either side.
+- `/api/friends*` answers 403 for staff before any work; `/friends` shows a short notice with a link to the Oomba team
+  inbox; `/chat/:username` sends staff back to `/chat`, which for them is only the team inbox.
+- UI: no Friends tab for the platform admin (school staff already had none), no Friends or Chat tiles and no chat
+  switch on a staff Me page (one "Oomba team" tile instead), no "be friends" line on profiles.
+- Staff keep the Oomba team thread (`services/team.js`), which is not friends' chat.
+- Side effect, accepted: `match.js` uses the same pair rule, so a staff account cannot join an online match by code.
+  Class live games are separate and unchanged.
+
+**Existing data.** Ended in the database, not hidden at read time, because other code reads the `friends` table directly
+(friends-only games, badges, family counts):
+
+- Migration `0068_staff_no_friends_chat_off` deletes every friendship and pending request with a staff account on either
+  side, clears those accounts' friend codes, and marks friends' messages to or from them read so no badge stays lit.
+  The messages are kept (a report may need them) but nothing shows them.
+- The same happens the moment an account becomes staff (`schools.addMember` / `updateMember` call
+  `schools.endFriendships`, written to the audit log as `friend.staff_closed`), and again whenever a staff account is
+  seen still holding a code or a friend row (`friends.closedToFriends`; the seed can turn an account into the platform
+  admin without going through those calls).
+
+**School chat is off by default.** `DEFAULT_SETTINGS.chat` is `'off'`: accounts a school created cannot chat until a
+school admin chooses "Chat with friends from their classes" on the Settings tab. Classmates can still be friends.
+
+- **Existing schools: the stored data cannot tell a choice from a default.** Every save of a school's settings (the
+  time zone, say) wrote the whole settings object, old default `chat:'classmates'` included. So the safer reading is
+  used: a stored `'classmates'` is removed and the school follows the new default (off). One exception, where the audit
+  log does show a choice: a school that saved "No chat" and **later** saved "classmates" keeps it. A stored `'off'` is
+  untouched.
+- A school whose own accounts have ever sent a chat message gets `chatNotice`: its Settings tab says chat was turned
+  off and how to turn it back on, until an admin saves a chat choice. Schools where nobody chatted get no notice.
+- From now on a stored chat value is written only by a save that carries one.
+- No public page said school chat was on for classmates (/safety, /privacy and /parents describe friends-only chat and
+  do not mention the school setting), so only the Settings hints changed.
+
+**Tests.** `tests/unit/staff-no-friends.test.js` (every friends and chat route as each kind of staff and each kind of
+child, both directions, with and without leftover rows; becoming staff; leaving; the parent account; the migration; the
+chat default and notice), `tests/unit/teacher-plan.test.js` (the real `/api/trial/signup`),
+`tests/e2e/staff-no-friends.spec.js`.
+
+**Deploy note.** `0067` belongs to the Google Classroom work on another branch; whichever merges second keeps both
+entries in `MIGRATIONS` (they do not depend on each other).

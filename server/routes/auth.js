@@ -9,7 +9,7 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, invitesFor, staffName } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, invitesFor, staffName, noFriendsAccount } from '../services/schools.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
@@ -419,14 +419,18 @@ router.get('/me', auth.requireUser, (req, res) => {
   const nb = [...news.values()].filter(x => x === 'building').length, nr = [...news.values()].filter(x => x === 'ready').length;
   const gamesSub = [nb && t('me.tiles.building', { count: nb }), nr && t('me.tiles.ready', { count: nr })].filter(Boolean).join(' · ');
   const nb_ = u.is_guest ? {} : navBadges(u), invites = u.is_guest ? 0 : invitesFor(u.id).length;
+  const noFriends = !u.is_guest && noFriendsAccount(u);
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
     !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
     ['🛠️', t('me.tiles.games'), '/build', gamesSub],
-    ['👫', t('me.tiles.friends'), '/friends', nb_.requests ? t('me.tiles.requests', { count: nb_.requests }) : ''],
+    // Staff (teachers, school admins, the platform admin) have no friends and no friends' chat: their one inbox is the
+    // Oomba team's messages.
+    !noFriends && ['👫', t('me.tiles.friends'), '/friends', nb_.requests ? t('me.tiles.requests', { count: nb_.requests }) : ''],
     // the Me badge's source, said where it comes from: new messages on the Chat tile
-    ['💬', t('me.tiles.chat'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : ''],
+    noFriends ? ['📬', t('team.name'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : '']
+      : ['💬', t('me.tiles.chat'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : ''],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
   ].filter(Boolean);
   // A kid's "For grown-ups" card (the link code) comes first: the Builder's daily-limit card sends kids here to show a
@@ -460,7 +464,7 @@ router.get('/me', auth.requireUser, (req, res) => {
   </section>
   ${staff ? '' : characterPanel(req)}
   <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
-  ${!u.is_guest ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
+  ${!u.is_guest && !noFriends ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}

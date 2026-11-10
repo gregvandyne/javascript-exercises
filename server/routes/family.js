@@ -805,7 +805,7 @@ router.get('/family/connections', grownupOnly, (req, res) => {
     <p${en('connections.intro')}>${t('connections.intro')}</p>
     <p class="notice"${en('connections.adultsOnly')}><span aria-hidden="true">🛡️</span> ${t('connections.adultsOnly')}</p>
     <h2 id="conn-code-h"${en('connections.yourCode')}>${t('connections.yourCode')}</h2>
-    <p><span class="bigcode" id="mycode" dir="ltr">${u.friend_code || ''}</span></p>
+    <p><span class="bigcode" id="mycode" dir="ltr">${friends.codeOf(u) || ''}</span></p>
     <p class="small muted"${en('connections.codeHelp')}>${t('connections.codeHelp')}</p>
     <form data-api="/api/friends/add" data-reload novalidate class="conn-add">
       <div class="field"><label for="code"${en('connections.addLabel')}>${t('connections.addLabel')}</label>

@@ -1214,6 +1214,10 @@
       "alreadyAsked": "Tu as déjà fait une demande à {name}. Attends sa réponse.",
       "sent": "Demande d’ami envoyée à {name} ! Il faut maintenant que {name} dise oui.",
       "classmatesOnly": "Les comptes école peuvent seulement être amis avec des camarades de classe."
+    },
+    "staff": {
+      "title": "Les comptes du personnel n’ont pas d’amis",
+      "text": "Les comptes d’enseignant, d’administrateur d’école et de l’équipe Oomba n’ont ni code ami, ni amis, ni chat avec les joueurs. Ainsi, les amis des enfants restent entre enfants. Les messages de l’équipe Oomba vous parviennent toujours."
     }
   },
   "profile": {
@@ -1324,7 +1328,8 @@
       "blocked_by_me": "Tu as bloqué {name}. Tu peux le débloquer sur la page Amis.",
       "blocked_by_other": "Tu ne peux pas discuter avec {name} pour le moment.",
       "school_off_me": "Ton école a désactivé le chat.",
-      "school_off_other": "L’école de {name} a désactivé le chat."
+      "school_off_other": "L’école de {name} a désactivé le chat.",
+      "staff": "Les comptes du personnel ne peuvent pas discuter avec les joueurs."
     },
     "paused": "Le chat fait une petite pause. Tu pourras écrire à nouveau dans {minutes, plural, one {# minute} other {# minutes}}. Tu peux quand même envoyer des messages rapides.",
     "errors": {
@@ -2667,17 +2672,18 @@
       "publishPublic": "Peuvent aussi partager avec tout le monde",
       "publishingHint": "Les élèves d’une classe peuvent aussi partager un jeu seulement avec leurs classes.",
       "photos": "Les photos de profil des comptes école ne sont visibles que par leurs camarades de classe, leurs enseignants et leurs amis.",
-      "chatHint": "Les comptes école ne peuvent ajouter comme amis que des camarades de classe.",
+      "chatHint": "Les comptes école ne discutent qu’avec les camarades de classe ajoutés comme amis. Les messages sont filtrés, et les enseignants et le personnel ne sont jamais dans le chat.",
       "timeZone": "Fuseau horaire",
       "timeZoneNone": "Non défini (UTC)",
       "timeZoneUnset": "Définissez le fuseau horaire de votre école pour que les leçons ouvrent à minuit et que les dates limites se terminent à minuit là où vous êtes. En attendant, personne n’est en retard avant 36 heures après le début du jour de l’échéance.",
       "timeZoneHint": "Les leçons ouvrent et les dates limites se terminent à minuit dans ce fuseau. Il est actuellement {time} là-bas.",
       "groupSchool": "École",
       "groupClasses": "Classes et inscriptions",
-      "chatHintOff": "Les comptes scolaires ne peuvent discuter avec personne. Ils peuvent toujours jouer et créer.",
+      "chatHintOff": "Réglage par défaut. Les comptes école ne peuvent discuter avec personne. Ils peuvent toujours jouer et créer.",
       "unsaved": "Tu as des modifications pas encore enregistrées.",
       "unsavedLeave": "Tes modifications des paramètres ne sont pas enregistrées. Partir sans les enregistrer ?",
-      "timeZoneUse": "Utiliser {zone} (le fuseau horaire de cet ordinateur)"
+      "timeZoneUse": "Utiliser {zone} (le fuseau horaire de cet ordinateur)",
+      "chatNotice": "Le chat est maintenant désactivé pour les comptes de votre école. Avant, le chat entre camarades de classe était activé sauf si l’école le désactivait. Désormais, il est désactivé sauf si l’école l’active, et certains de vos élèves l’utilisaient. Pour le rétablir, choisissez « Chat avec les amis de leurs classes » ci-dessous et enregistrez."
     },
     "cards": {
       "title": "Cartes de connexion",

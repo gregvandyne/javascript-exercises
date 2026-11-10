@@ -200,6 +200,8 @@ test('every listing respects it: rails, categories, profiles, playing now, favor
   // Friends page and chat: a friend outside the class never gets it.
   const og = mkGame(O, 'class', { classes: [[A]], title: 'Olly Class Xq' });
   assert.doesNotMatch((await as(F)('/friends')).text, new RegExp(`/g/${og.slug}"`));
+  assert.equal(chat.send(O, F, { kind: 'game', body: og.id }).code, 'school_off_me', 'school chat is off until the school switches it on');
+  S.updateSchool(boss, w.oak.id, { settings: { chat: 'classmates' } });
   assert.equal(chat.send(O, F, { kind: 'game', body: og.id }).code, 'game_hidden');
   assert.doesNotMatch((await as(O)(`/chat/${F.username}`)).text, new RegExp(og.id), 'not offered in the chat share list');
   S.removeFromClass(w.t1, A.id, kidA.id);

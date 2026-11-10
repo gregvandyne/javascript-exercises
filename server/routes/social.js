@@ -8,6 +8,7 @@ import { avatar, cardGrid, emptyState } from '../views/components.js';
 import { requireAccount, requireBuilder, getUserByName, getUser, isOfficialOldName, OFFICIAL, isGrownup } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as friends from '../services/friends.js';
+import { noFriendsAccount } from '../services/schools.js';
 import * as chat from '../services/chat.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
@@ -41,6 +42,12 @@ router.get('/friends', (req, res) => {
   const t = req.t, f = req.fmt;
   const u = req.user;
   if (!u || u.is_guest) return needAccountPage(req, res, { title: t('friends.title'), emoji: '👫', text: t('friends.needAccount.text'), active: 'friends' });
+  // Staff have no friends, no requests and no code (services/friends.js): the page says so and points at the team inbox.
+  if (friends.closedToFriends(u)) {
+    const body = html`<h1>${t('friends.title')}</h1>${emptyState({ emoji: '🛡️', title: t('friends.staff.title'), text: t('friends.staff.text'), action: { href: `/chat/${OFFICIAL}`, label: t('team.name') } })}`;
+    return page(req, res, { title: t('friends.title'), active: 'me', body, head: COMMUNITY_CSS });
+  }
+  const myCode = friends.codeOf(u);
   const inc = friends.incoming(u.id), out = friends.outgoing(u.id), mine = friends.list(u.id), blocked = chat.blockedList(u.id);
   const playing = playingFor(u, mine.map(fr => fr.id));
   const shared = Object.fromEntries(mine.map(fr => [fr.id, games.listVisible(u, { ownerId: fr.id, limit: 8, order: 'new' })]));
@@ -49,7 +56,7 @@ router.get('/friends', (req, res) => {
   <div class="friends-top">
     <section class="panel" aria-labelledby="code-h">
       <h2 id="code-h">${t('friends.code.heading')}</h2>
-      <div class="row"><span class="bigcode" id="mycode" dir="ltr">${u.friend_code}</span><button class="btn btn-primary" type="button" id="copycode" data-code="${u.friend_code}"><span aria-hidden="true">📋</span> ${t('friends.code.copy')}</button></div>
+      <div class="row"><span class="bigcode" id="mycode" dir="ltr">${myCode}</span><button class="btn btn-primary" type="button" id="copycode" data-code="${myCode}"><span aria-hidden="true">📋</span> ${t('friends.code.copy')}</button></div>
       <p class="muted small" style="margin:12px 0 0">${t('friends.code.hint')}</p>
     </section>
     <section class="panel" aria-labelledby="add-h">
@@ -92,11 +99,14 @@ router.get('/friends', (req, res) => {
 
 // ---- APIs (accounts only). Grown-ups use them too, for connections with other grown-ups (/family/connections): a
 // friendship never joins a grown-up and a kid (services/friends.js samePair). ----
+/** Staff accounts have no friends: every friend API answers 403 with the reason, before any work (the service refuses
+ *  them too). */
+router.use('/api/friends', (req, res, next) => (req.user && !req.user.is_guest && friends.closedToFriends(req.user) ? res.status(403).json({ error: req.t('friends.staff.text'), code: 'staff' }) : next()));
 router.get('/api/friends', requireBuilder, (req, res) => {
   const mine = friends.list(req.user.id);
   const playing = playingFor(req.user, mine.map(f => f.id));
   res.set('Cache-Control', 'no-store').json({
-    code: req.user.friend_code,
+    code: friends.codeOf(req.user),
     friends: mine.map(f => ({ id: f.id, username: f.username, displayName: f.display_name, avatar: f.avatar, color: f.color, playing: playing[f.id] || null })),
     incoming: friends.incoming(req.user.id).map(f => ({ id: f.id, username: f.username, displayName: f.display_name })),
     outgoing: friends.outgoing(req.user.id).map(f => ({ id: f.id, username: f.username, displayName: f.display_name })),
@@ -187,6 +197,6 @@ router.get('/u/:username', (req, res) => {
   <section aria-labelledby="fav-h" style="margin-top:28px"><h2 id="fav-h">❤️ ${t('profile.favorites')}</h2>
     ${favs.length ? cardGrid(favs, {}) : html`<p class="muted">${t('profile.noFavorites')}</p>`}
   </section>
-  ${!isMe && viewer && !viewer.is_guest && rel === 'none' ? html`<p class="small muted" style="margin-top:24px">${tHtml(t, 'profile.beFriends', { link: html`<a href="/friends">${t('nav.friends')}</a>` })}</p>` : ''}`;
+  ${!isMe && viewer && !viewer.is_guest && rel === 'none' && !noFriendsAccount(viewer) && !noFriendsAccount(p) ? html`<p class="small muted" style="margin-top:24px">${tHtml(t, 'profile.beFriends', { link: html`<a href="/friends">${t('nav.friends')}</a>` })}</p>` : ''}`;
   page(req, res, { title: p.display_name, active: isMe ? 'me' : null, body, head: COMMUNITY_CSS, back: '/', backLabel: t('nav.home'), description: t('profile.description', { name: p.display_name }), scripts: ['/js/profile.js'] });
 });

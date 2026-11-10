@@ -316,6 +316,15 @@ test('the teacher sign-up: an account, their own classroom (they can make a clas
   // Signed in by the sign-up (a session cookie came back).
   assert.match(r.cookie, /=/);
   const who = { cookie: r.cookie };
+  // Child safety (the audit's bug 0): the teacher this sign-up makes has no friend code and cannot send a friend request
+  // to a child's account, by the API it would use; the child sees no request. (tests/unit/staff-no-friends.test.js)
+  assert.equal(u.friend_code, null, 'a trial teacher has no friend code');
+  const child = auth.createUser({ username: 'TrialChild1', password: 'secret123' });
+  const ask = await call(who, '/api/friends/add', { method: 'POST', body: { code: child.friend_code } });
+  assert.equal(ask.status, 403, ask.text); assert.equal(ask.json.code, 'staff');
+  assert.equal(q.get('SELECT COUNT(*) n FROM friends WHERE user_id=? OR friend_id=?', u.id, u.id).n, 0);
+  assert.equal((await call(who, '/api/friends')).status, 403);
+  assert.doesNotMatch((await call(who, '/friends')).text, /id="mycode"/);
   assert.match(decode((await call(who, '/trial')).text), /isn't open yet/);
   // As a billing tester, the sign-up goes straight to Stripe's Checkout with the trial.
   q.run('UPDATE users SET billing_tester=1 WHERE id=?', u.id);

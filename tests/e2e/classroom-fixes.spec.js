@@ -166,8 +166,11 @@ test('a school admin invites an existing account: not staff until they accept; t
   // Settings: a change not saved yet says so
   await head.goto(`/school/${school.slug}?tab=settings`);
   await expect(head.locator('#set-unsaved')).toBeHidden();
-  await head.selectOption('#set-chat', 'off');
+  // (chat starts off: a school turns classmates chat on itself)
+  await expect(head.locator('#set-chat')).toHaveValue('off');
   await expect(head.locator('#set-chat-hint')).toContainText("can't chat with anyone");
+  await head.selectOption('#set-chat', 'classmates');
+  await expect(head.locator('#set-chat-hint')).toContainText('only with classmates they have added as friends');
   await expect(head.locator('#set-unsaved')).toBeVisible();
   for (const p of [head, other, admin]) await p.context().close();
 });

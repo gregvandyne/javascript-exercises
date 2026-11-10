@@ -1215,6 +1215,10 @@
       "alreadyAsked": "You already asked {name}. Wait for them to say yes.",
       "sent": "Friend request sent to {name}! They need to say yes.",
       "classmatesOnly": "School accounts can only be friends with classmates."
+    },
+    "staff": {
+      "title": "Staff accounts don't have friends",
+      "text": "Teacher, school admin and Oomba team accounts have no friend code, no friends and no chat with players. This keeps children's friends for children only. Messages from the Oomba team still reach you."
     }
   },
   "profile": {
@@ -1325,7 +1329,8 @@
       "blocked_by_me": "You blocked {name}. You can unblock them on the Friends page.",
       "blocked_by_other": "You can't chat with {name} right now.",
       "school_off_me": "Your school has turned chat off.",
-      "school_off_other": "{name}'s school has turned chat off."
+      "school_off_other": "{name}'s school has turned chat off.",
+      "staff": "Staff accounts can't chat with players."
     },
     "paused": "Chat is taking a little break. You can type again in {minutes, plural, one {# minute} other {# minutes}}. You can still send quick messages.",
     "errors": {
@@ -2687,17 +2692,18 @@
       "publishPublic": "Can also share with everyone",
       "publishingHint": "Students in a class can also share a game with just their classes.",
       "photos": "Profile photos of school accounts are seen only by their classmates, teachers and friends.",
-      "chatHint": "School accounts can only add classmates as friends.",
+      "chatHint": "School accounts chat only with classmates they have added as friends. Messages are filtered, and teachers and staff are never in the chat.",
       "timeZone": "Time zone",
       "timeZoneNone": "Not set (UTC)",
       "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
       "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now.",
       "groupSchool": "School",
       "groupClasses": "Classes and joining",
-      "chatHintOff": "School accounts can't chat with anyone. They can still play and build.",
+      "chatHintOff": "The default. School accounts can't chat with anyone. They can still play and build.",
       "unsaved": "You have changes that aren't saved yet.",
       "unsavedLeave": "Your settings changes aren't saved. Leave without saving them?",
-      "timeZoneUse": "Use {zone} (this computer's time zone)"
+      "timeZoneUse": "Use {zone} (this computer's time zone)",
+      "chatNotice": "Chat is now off for your school's accounts. Chat between classmates used to be on unless a school turned it off. Now it is off unless a school turns it on, and some of your students were using it. To bring it back, choose “Chat with friends from their classes” below and save."
     },
     "cards": {
       "title": "Login cards",

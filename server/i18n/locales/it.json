@@ -1215,6 +1215,10 @@
       "alreadyAsked": "Hai già chiesto a {name}. Aspetta che dica di sì.",
       "sent": "Richiesta di amicizia inviata a {name}! Ora deve dire di sì.",
       "classmatesOnly": "Gli account scolastici possono essere amici solo dei compagni di classe."
+    },
+    "staff": {
+      "title": "Gli account del personale non hanno amici",
+      "text": "Gli account di insegnanti, amministratori scolastici e del team Oomba non hanno codice amico, né amici, né chat con i giocatori. Così gli amici dei bambini restano solo bambini. I messaggi del team Oomba continuano ad arrivarti."
     }
   },
   "profile": {
@@ -1325,7 +1329,8 @@
       "blocked_by_me": "Hai bloccato {name}. Puoi sbloccarlo nella pagina Amici.",
       "blocked_by_other": "Ora non puoi chattare con {name}.",
       "school_off_me": "La tua scuola ha spento la chat.",
-      "school_off_other": "La scuola di {name} ha spento la chat."
+      "school_off_other": "La scuola di {name} ha spento la chat.",
+      "staff": "Gli account del personale non possono chattare con i giocatori."
     },
     "paused": "La chat si prende una pausa. Puoi scrivere di nuovo tra {minutes, plural, one {# minuto} other {# minuti}}. Puoi ancora mandare messaggi veloci.",
     "errors": {
@@ -2668,17 +2673,18 @@
       "publishPublic": "Anche con tutti",
       "publishingHint": "Gli studenti di una classe possono anche condividere un gioco solo con le loro classi.",
       "photos": "Le foto del profilo degli account scolastici sono visibili solo ai compagni di classe, agli insegnanti e agli amici.",
-      "chatHint": "Gli account scolastici possono aggiungere come amici solo i compagni di classe.",
+      "chatHint": "Gli account scolastici chattano solo con i compagni di classe che hanno aggiunto come amici. I messaggi sono filtrati, e insegnanti e personale non sono mai nella chat.",
       "timeZone": "Fuso orario",
       "timeZoneNone": "Non impostato (UTC)",
       "timeZoneUnset": "Imposti il fuso orario della sua scuola così le lezioni diventano disponibili a mezzanotte e le scadenze terminano a mezzanotte dove si trova. Fino ad allora, nessuno è in ritardo fino a 36 ore dopo l'inizio del giorno di scadenza.",
       "timeZoneHint": "Le lezioni diventano disponibili e le scadenze terminano a mezzanotte in questo fuso. Lì ora sono le {time}.",
       "groupSchool": "Scuola",
       "groupClasses": "Classi e iscrizioni",
-      "chatHintOff": "Gli account scolastici non possono chattare con nessuno. Possono comunque giocare e creare.",
+      "chatHintOff": "Impostazione predefinita. Gli account scolastici non possono chattare con nessuno. Possono comunque giocare e creare.",
       "unsaved": "Hai modifiche non ancora salvate.",
       "unsavedLeave": "Le modifiche alle impostazioni non sono salvate. Uscire senza salvarle?",
-      "timeZoneUse": "Usa {zone} (il fuso orario di questo computer)"
+      "timeZoneUse": "Usa {zone} (il fuso orario di questo computer)",
+      "chatNotice": "La chat ora è disattivata per gli account della tua scuola. Prima la chat tra compagni di classe era attiva, a meno che la scuola non la disattivasse. Ora è disattivata, a meno che la scuola non la attivi, e alcuni dei tuoi studenti la usavano. Per riaverla, scegli «Chat con gli amici delle proprie classi» qui sotto e salva."
     },
     "cards": {
       "title": "Schede di accesso",

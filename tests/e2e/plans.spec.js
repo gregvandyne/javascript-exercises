@@ -268,7 +268,7 @@ const ROLE_BARS = {
   teacher: { tabs: ['/teach', '/learn', '/play', '/live', '/plans', '/me'], top: ['/teach', '/learn', '/play', '/live', '/plans'] },
   'school admin': { tabs: ['/school', '/teach', '/learn', '/play', '/plans', '/me'], top: ['/school', '/teach', '/learn', '/play', '/live', '/plans'] },
   'grown-up': { tabs: ['/family', '/play', '/learn', '/build', '/plans', '/family/account'], top: ['/family', '/play', '/learn', '/build', '/plans'] },
-  'platform admin': { tabs: ['/', '/learn', '/build', '/friends', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/friends', '/admin/schools', '/plans'] },
+  'platform admin': { tabs: ['/', '/learn', '/build', '/admin/schools', '/plans', '/me'], top: ['/', '/learn', '/build', '/admin/schools', '/plans'] },
 };
 let roleStates = null;
 async function roles(browser) {

@@ -830,6 +830,46 @@ export const MIGRATIONS = [
       status TEXT NOT NULL, reason TEXT, classes INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0,
       claimed_at INTEGER, sent_at INTEGER, message TEXT, created_at INTEGER NOT NULL, PRIMARY KEY (user_id, week)) WITHOUT ROWID;
     CREATE INDEX IF NOT EXISTS digest_sends_status ON digest_sends(status, claimed_at);`],
+  // (0067 belongs to the Google Classroom work.)
+  // Child safety (docs/decisions.md "Staff have no friends; school chat is off by default").
+  // 1. Staff never have friends: the platform admin and everyone who is or was a teacher or school admin (a
+  //    school_members row whose role is not 'student', in any status; services/schools.js noFriendsAccount). Every
+  //    friendship and friend request they hold is ended here, in both directions, their friend code is taken away, and
+  //    unread friends' messages to or from them stop counting. The messages themselves are kept (a report may need them)
+  //    but no page or API shows them any more (services/chat.js canChat).
+  // 2. Classmate chat is off unless a school switches it on. Until now every save of a school's settings wrote
+  //    chat:'classmates' (the old default) into the row whether or not anyone looked at the Chat box, so a stored
+  //    'classmates' does not show a choice. The one trace of a real choice is the audit log: a school that saved "No
+  //    chat" and later saved "classmates" again chose it, and keeps it. Every other school follows the new default
+  //    (the safer reading): its stored 'classmates' is removed. A school whose own accounts have ever chatted gets
+  //    chatNotice, shown on its Settings tab until an admin saves a chat choice. A stored 'off' is left alone.
+  ['0068_staff_no_friends_chat_off', `
+    CREATE TEMP TABLE IF NOT EXISTS _staff68 AS SELECT id FROM users WHERE role='admin'
+      UNION SELECT user_id FROM school_members WHERE role!='student';
+    DELETE FROM friends WHERE user_id IN (SELECT id FROM _staff68) OR friend_id IN (SELECT id FROM _staff68);
+    UPDATE users SET friend_code=NULL WHERE id IN (SELECT id FROM _staff68);
+    UPDATE chat_messages SET read_at=CAST(strftime('%s','now') AS INTEGER)*1000 WHERE read_at IS NULL AND kind IN ('text','quick','game')
+      AND (to_id IN (SELECT id FROM _staff68) OR from_id IN (SELECT id FROM _staff68));
+    DROP TABLE _staff68;`,
+  conn => {
+    const saves = conn.prepare("SELECT details FROM audit_log WHERE action='school.update' AND target=? ORDER BY created_at, rowid");
+    const chatted = conn.prepare(`SELECT 1 FROM chat_messages m WHERE m.kind IN ('text','quick','game')
+      AND (m.from_id IN (SELECT id FROM users WHERE managed_school=?) OR m.to_id IN (SELECT id FROM users WHERE managed_school=?)) LIMIT 1`);
+    for (const row of conn.prepare('SELECT id, settings FROM schools').all()) {
+      let st; try { st = JSON.parse(row.settings || '{}'); } catch { continue; }
+      if (!st || typeof st !== 'object' || st.chat !== 'classmates') continue;
+      // Did this school ever save "No chat" and afterwards "classmates"? Then 'classmates' is its own choice.
+      let sawOff = false, chose = false;
+      for (const a of saves.all(row.id)) {
+        let c; try { c = (JSON.parse(a.details || '{}').settings || {}).chat; } catch { c = undefined; }
+        if (c === 'off') { sawOff = true; chose = false; } else if (c === 'classmates' && sawOff) chose = true;
+      }
+      if (chose) continue;
+      delete st.chat;
+      if (chatted.get(row.id, row.id)) st.chatNotice = true;
+      conn.prepare('UPDATE schools SET settings=? WHERE id=?').run(JSON.stringify(st), row.id);
+    }
+  }],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
