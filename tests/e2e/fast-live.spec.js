@@ -164,7 +164,7 @@ test('who gets in: a child\'s account is never offered hosting; signed-out visit
   await out.context().close();
 });
 
-test('layout: the sign-up, the chooser, keep-scores, the class card and the guest results on phones and desktop, light and dark, Hebrew and Arabic', async ({ browser }) => {
+test('layout: the sign-up, the chooser, keep-scores, the class card and the guest results on phones and desktop, light and dark, Hebrew, Arabic, German and Spanish', async ({ browser }) => {
   test.skip(!made, 'needs the teacher from the first test');
   expect(await layoutProblems(browser, null, ['/teachers/host', '/teachers', '/teachers/live'])).toEqual([]);
   expect(await layoutProblems(browser, null, ['/teachers/host'], { lang: 'he' })).toEqual([]);
@@ -173,6 +173,24 @@ test('layout: the sign-up, the chooser, keep-scores, the class card and the gues
   // 4 px apart by design (public/css/live.css .lv-bars, older than this work), so they are left out here.
   expect((await layoutProblems(browser, made.state, [made.resultsUrl])).filter(x => !x.includes('div.lv-bars > div.lv-bar'))).toEqual([]);
   expect(await layoutProblems(browser, made.state, ['/live/quick', '/teach', '/teach/keep-scores'], { lang: 'ar' })).toEqual([]);
+  // Long-word languages (German and Spanish have the longest buttons of the 13): every page of the path again,
+  // the guest results with "Make a class to keep scores" among them.
+  for (const lang of ['de', 'es']) {
+    expect(await layoutProblems(browser, null, ['/teachers/host'], { lang }), lang).toEqual([]);
+    expect((await layoutProblems(browser, made.state, ['/live/quick', '/teach', '/teach/keep-scores', made.resultsUrl], { lang })).filter(x => !x.includes('div.lv-bars > div.lv-bar')), lang).toEqual([]);
+  }
+  // The results page's buttons stay inside a 360 px phone in all 13 languages.
+  const wide = [];
+  const rctx = await browser.newContext({ storageState: made.state, viewport: { width: 360, height: 740 } }); const rp = await rctx.newPage();
+  for (const lang of ['en', 'en-GB', 'de', 'fr', 'es', 'nl', 'ru', 'pt', 'it', 'he', 'ar', 'ja', 'zh-Hant']) {
+    await rctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
+    await rp.goto(made.resultsUrl);
+    await expect(rp.locator('#lv-keep-scores')).toBeVisible();
+    const over = await rp.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (over > 1) wide.push(`${lang}: ${over}px`);
+  }
+  await rctx.close();
+  expect(wide, 'sideways scroll on the guest results at 360 px').toEqual([]);
   // RTL: the page really is right-to-left
   const ctx = await browser.newContext({ storageState: made.state }); await ctx.addCookies([{ name: 'lang', value: 'he', url: test.info().project.use.baseURL }]);
   const p = await ctx.newPage(); await p.goto('/live/quick');
@@ -191,10 +209,14 @@ test('the landing at "/" (LANDING_AT_ROOT=1): the second button, the join door, 
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   await expect(page.locator('#lp-join')).toHaveAttribute('href', '/join');
   expect(await page.evaluate(() => document.body.innerText)).not.toMatch(/\$\s?\d|\b119\b/);
-  for (const lang of ['he', 'ja']) {
+  // Every language: the new buttons are in the page's own words, and the page does not scroll sideways on a 360 px phone.
+  const wide = [];
+  for (const lang of ['de', 'fr', 'es', 'nl', 'ru', 'pt', 'it', 'he', 'ar', 'ja', 'zh-Hant', 'en-GB']) {
     await page.goto(`/?lang=${lang}`);
     await expect(page.locator('#lp-host-now')).not.toHaveAttribute('lang', 'en');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    const over = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (over > 1) wide.push(`${lang}: ${over}px ` + await page.evaluate(() => [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > innerWidth + 1 && e.getBoundingClientRect().width < innerWidth * 2).slice(0, 4).map(e => e.tagName.toLowerCase() + '.' + String(e.className).slice(0, 40)).join(' | ')));
   }
+  expect(wide, 'sideways scroll on "/" at 360 px').toEqual([]);
   await page.context().close();
 });

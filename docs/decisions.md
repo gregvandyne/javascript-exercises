@@ -3993,3 +3993,36 @@ for their maker only.
 
 **Not done here:** a real classroom timing; "Sign in with Google" on the short sign-up; Brain Board and the other modes
 in the quick chooser (they need more choices than one screen should ask).
+
+### After the review of the first live game (10 Nov 2026)
+
+A second reviewer walked the path in German and found one real fault and some smaller ones. What changed, and what did not.
+
+- **Buttons wrap on phones in every language.** "Make a class to keep scores" on the guest results page did not wrap,
+  so the page scrolled sideways at 360 px in seven languages (German, French, Spanish, Dutch, Russian, Portuguese,
+  Italian). It and the older "Play the missed questions again" button now wrap (`.btn-wrap`, `public/css/live.css`).
+  The landing's top bar had the same fault before this work (its two buttons, in six languages); they now take two
+  lines on phones where the words are long (`public/css/landing.css`). Russian "Бесплатно" breaks inside the word
+  there; a shorter word would be nicer.
+- **The layout test covers long words.** `tests/e2e/fast-live.spec.js` now runs the touching, overflow and tap-target
+  checks in German and Spanish on every page of the path, checks the guest results at 360 px in all 13 languages, and
+  checks "/" at 360 px in all of them. It fails without the fix.
+- **A staff password must be more than long.** The two teacher sign-ups (`/teachers/host`, `/trial`) refuse a
+  12-character password that is only digits, one short piece repeated, or easy passwords put end to end
+  ("123456789012", "passwordpassword", "qwerty123456"): `auth.checkStaffPassword`. Password changes and resets keep
+  their old rules for now.
+- **German uses "du" on the sign-up.** The new words said "Sie" while the labels reused from /trial said "du". All
+  `quickLive.*` German is now "du", and so is the one "Sie" hint in the /trial sign-up. The rest of the German site
+  still mixes the two (about half and half across all pages); that is a separate clean-up.
+- **One room at a time, said on every card.** While a teacher has a room open, no class card offers "Quick game" or
+  "Host live". The card of the room's class has "Open live game" as before; the other cards have the same button
+  (back to that room) and the line "You already have a game open: <title>". Before, a tap on another class's Quick
+  game silently went to the first class's room.
+- **Keep scores says which school.** `/teach/keep-scores` shows the school's name; staff of more than one school
+  choose it (only schools where they may make a class; any other id is a 404). If no account could be made, the empty
+  class is removed and the names box shows an error, never an empty page of cards.
+- **Left for the owner: what a short sign-up account may do.** It is the first staff account made with no email and
+  no review, only the "teacher, 18 or older" box. It can open rooms at the full player limit, make student accounts
+  (60 names a request) and ask for AI question drafts (30 an hour). Nothing here changes that: a lower room size (the
+  grown-ups' 30) would turn away a class of 31 on its first try, and holding back AI drafts or account-making needs a
+  way to add an email first. Options are in the report; `docs/status.md` lists it as open.

@@ -196,7 +196,7 @@ test('a guest game\'s results: the host is told what is kept and offered "Make a
   const now = await call(`/live/results/${s.id}`, { user: teacher });
   assert.equal(now.status, 200);
   assert.match(now.text, /id="lv-guest-note"/); assert.match(now.text, /This was a guest game\./); assert.match(now.text, /nothing went into a gradebook/);
-  assert.match(now.text, /<a class="btn btn-primary" id="lv-keep-scores" href="\/teach\/keep-scores">/);
+  assert.match(now.text, /<a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="\/teach\/keep-scores">/);
   // after the 10 minutes in memory: the saved run keeps the questions and counts, and no player
   const run = q.get('SELECT * FROM live_runs WHERE id=?', s.id);
   assert.ok(run, 'the run is saved'); assert.equal(run.class_id, null);
@@ -293,4 +293,58 @@ test('live games off: every new page and API is a 404', async () => {
 test('levelForGrade: a class\'s grade picks the question level', () => {
   assert.equal(QL.levelForGrade('K'), 'a6'); assert.equal(QL.levelForGrade('1'), 'a6'); assert.equal(QL.levelForGrade('Grade 3'), 'a8');
   assert.equal(QL.levelForGrade('5'), 'a10'); assert.equal(QL.levelForGrade('7B'), 'a12'); assert.equal(QL.levelForGrade(''), null); assert.equal(QL.levelForGrade('Blue group'), null);
+});
+
+test('a staff account\'s password: 12 characters is not enough when it is only digits, one piece repeated, or easy passwords end to end', async () => {
+  for (const password of ['123456789012', 'passwordpassword', 'abcabcabcabc', 'qwerty123456', 'minecraft2024roblox']) {
+    const r = await signup({ password });
+    assert.equal(r.status, 400, password); assert.equal(r.json.field, 'password', password);
+    assert.match(r.json.error, /too easy to guess/, password);
+  }
+  assert.equal(auth.checkStaffPassword('short-pass', '', undefined, 'too short'), 'too short');
+  assert.match(auth.checkStaffPassword('MsRivera-teaches-4B', 'MsRivera'), /name/);
+  for (const ok of ['sunny-meadow-42', 'correct horse battery', 'purple-otter-1234']) assert.equal(auth.checkStaffPassword(ok, 'MsRivera'), null, ok);
+  assert.equal((await signup({ password: 'purple-otter-1234' })).status, 200);
+});
+
+test('a room open for one class: the teacher\'s other class cards lead back to it and say so, and offer no second room', async () => {
+  const other = S.createClass(teacher, school.id, { name: 'Tia 6C' }).class;
+  let home = await call('/teach', { user: teacher });
+  assert.equal([...home.text.matchAll(/<form class="cc-quick"/g)].length, 2, 'no room open: Quick game on both cards');
+  const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
+  assert.equal(r.status, 200, r.text);
+  home = await call('/teach', { user: teacher });
+  assert.doesNotMatch(home.text, /<form class="cc-quick"/, 'no card offers a second room');
+  assert.doesNotMatch(home.text, new RegExp(`href="/live\\?class=${other.id}"`));
+  const back = [...home.text.matchAll(new RegExp(`<a class="btn btn-sm[^"]*cc-live[^"]*" href="/live/host/${r.json.sid}">`, 'g'))];
+  assert.equal(back.length, 2, 'both cards lead to the open room');
+  const note = home.text.match(new RegExp(`<p class="small muted cc-quick cc-elsewhere" data-room="${r.json.sid}">([^<]*)</p>`));
+  assert.ok(note, 'the other class\'s card says a game is open already'); assert.match(note[1], /You already have a game open/);
+  assert.equal([...home.text.matchAll(/cc-elsewhere/g)].length, 1, 'only on the card of the class the room is not for');
+  // another teacher's page is as it was: their own Quick game, nothing about this room
+  const theirs = await call('/teach', { user: teacher2 });
+  assert.match(theirs.text, /<form class="cc-quick"/); assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
+  LS.endSession(r.json.sid, 'ended');
+  S.deleteClass(teacher, other.id);
+});
+
+test('keep-scores says which school; staff of two schools choose, and never get a school that is not theirs', async () => {
+  await signup({ username: 'TwoSchools1' });
+  const u = auth.getUserByName('TwoSchools1'), own = S.schoolsOf(u.id)[0];
+  let page = await call('/teach/keep-scores', { user: u });
+  assert.match(page.text, /<p class="small muted" id="ks-school">🏫 <bdi>Ms Rivera: my classroom<\/bdi><\/p>/);
+  assert.doesNotMatch(page.text, /<select/);
+  S.addMember(boss, school.id, u.id, 'teacher', { rosterName: 'Ms Rivera' });
+  page = await call('/teach/keep-scores', { user: u });
+  const sel = page.text.match(/<select class="input" id="ks-school" name="schoolId">([\s\S]*?)<\/select>/);
+  assert.ok(sel, 'two schools: a picker');
+  assert.deepEqual([...sel[1].matchAll(/<option value="([^"]+)">/g)].map(m => m[1]).sort(), [own.id, school.id].sort());
+  const r = await call('/api/teach/keep-scores', { method: 'POST', user: u, body: { schoolId: school.id, name: 'Room 20', names: 'Nia\nOmar' } });
+  assert.equal(r.status, 200, r.text);
+  assert.equal(S.classesOf(u.id, 'teacher').find(c => c.name === 'Room 20').school_id, school.id);
+  // a school they are not staff of: 404, and nothing is made
+  const far = S.createSchool(boss, { name: 'Far Away' }).school;
+  const no = await call('/api/teach/keep-scores', { method: 'POST', user: u, body: { schoolId: far.id, name: 'Room 21', names: 'Pia' } });
+  assert.equal(no.status, 404); assert.equal(S.classesOf(u.id, 'teacher').some(c => c.name === 'Room 21'), false);
+  assert.equal(q.get('SELECT COUNT(*) AS n FROM classrooms WHERE school_id=?', far.id).n, 0);
 });

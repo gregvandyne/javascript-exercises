@@ -116,7 +116,7 @@ router.post('/api/teachers/host-signup', on, rateLimit('host-signup', 30, 3600e3
   if (!n.ok) errors.username = n.error;
   else if (auth.getUserByName(n.value) || auth.isRetiredName(n.value)) errors.username = t('auth.api.nameTaken');
   const pw = String(b.password ?? '');
-  const pe = pw.length < auth.STAFF_PASSWORD_MIN ? t('plans.trial.errors.password', { min: auth.STAFF_PASSWORD_MIN }) : auth.checkPassword(pw, n.ok ? n.value : '', t);
+  const pe = auth.checkStaffPassword(pw, n.ok ? n.value : '', t, t('plans.trial.errors.password', { min: auth.STAFF_PASSWORD_MIN }));
   if (pe) errors.password = pe;
   if (!(b.adult === '1' || b.adult === true || b.adult === 'on')) errors.adult = t('plans.trial.errors.adult');
   const fields = ['name', 'username', 'password', 'adult'].filter(k => errors[k]);

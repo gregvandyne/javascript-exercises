@@ -625,7 +625,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   <p class="muted">${t('live.results.playersCount', { count: playerCount ?? players.length })}</p>
   ${gradebook ? html`<p class="notice good">${t('live.results.gradebook')}</p>` : ''}
   ${guestRun ? html`<div class="notice lv-guest-note" id="lv-guest-note" role="note"><p><b>${t('quickLive.results.h')}</b> ${t(saved ? 'quickLive.results.saved' : 'quickLive.results.now')}</p>
-    ${keepScores ? html`<p class="lv-guest-act"><a class="btn btn-primary" id="lv-keep-scores" href="/teach/keep-scores">🪪 ${t('quickLive.results.keep')}</a> <span class="small">${t('quickLive.results.keepHint')}</span></p>` : ''}</div>` : ''}
+    ${keepScores ? html`<p class="lv-guest-act"><a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="/teach/keep-scores">🪪 ${t('quickLive.results.keep')}</a> <span class="small">${t('quickLive.results.keepHint')}</span></p>` : ''}</div>` : ''}
   ${teams.length ? html`<section class="lv-group lv-results-teams" aria-labelledby="lv-rt-h">
     <h2 id="lv-rt-h">${t('live.team.podium')}</h2>
     <ol class="lv-team-podium" id="lv-team-podium">${podium.map(x => html`<li class="lv-step lv-step-${x.rank}" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}"><span class="lv-step-rank">${x.rank}</span>${teamChip(presets, x)}<span class="lv-step-score">${x.score}</span></li>`)}</ol>
@@ -641,7 +641,7 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
     </li>`)}</ol></section>` : ''}
   ${guests ? html`<p class="muted">${t('live.results.guests', { count: guests })}</p>` : ''}
   <div class="lv-results-acts" id="lv-results-acts">
-    ${missedOk && hostActs ? html`<form class="lv-inline" data-api="/api/live/sessions"><input type="hidden" name="fromRun" value="${id}"><input type="hidden" name="only" value="missed"><button class="btn" type="submit">${t('live.results.playMissed')}</button><p class="err form-err" aria-live="polite"></p></form>` : ''}
+    ${missedOk && hostActs ? html`<form class="lv-inline" data-api="/api/live/sessions"><input type="hidden" name="fromRun" value="${id}"><input type="hidden" name="only" value="missed"><button class="btn btn-wrap" type="submit">${t('live.results.playMissed')}</button><p class="err form-err" aria-live="polite"></p></form>` : ''}
     ${still && hostActs ? html`<form class="lv-inline" data-api="/api/live/sessions" id="lv-play-again"><input type="hidden" name="again" value="${id}"><button class="btn btn-primary" type="submit">${t('live.results.playAgain')}</button> <span class="small muted" id="lv-still">${t('live.results.stillHere', { count: still })}</span><p class="err form-err" aria-live="polite"></p></form>`
       : againRun && hostActs ? html`<form class="lv-inline" data-api="/api/live/sessions"><input type="hidden" name="againRun" value="${id}"><button class="btn" type="submit">${t('live.results.playAgainTeams')}</button><p class="err form-err" aria-live="polite"></p></form>` : ''}
     <a class="btn" href="/live">${t('live.results.newGame')}</a>
