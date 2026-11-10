@@ -7398,14 +7398,15 @@
         "grades": "het voltooiingscijfer van elke leerling voor een les naar Classroom sturen"
       },
       "button": "Google Classroom koppelen",
-      "privacy": "Alleen jij ziet deze koppeling. Oomba Academy stuurt Classroom de titel van de les, een link, de inleverdatum en het voltooiingscijfer van elke leerling op 100. Verder niets: geen namen, antwoorden of games.",
+      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een les, het voltooiingscijfer van elke leerling op 100, een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of games van leerlingen.",
       "connectedAs": "Gekoppeld als {email}",
       "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
       "connectedToast": "Google Classroom is gekoppeld.",
       "disconnect": "Ontkoppelen",
       "disconnectConfirm": "Google Classroom ontkoppelen? Oomba Academy synchroniseert dan niet meer voor je en wist zijn sleutel tot je Classroom. Lessen die al geplaatst zijn, blijven in Classroom.",
       "disconnected": "Google Classroom is ontkoppeld.",
-      "reconnect": "Opnieuw koppelen"
+      "reconnect": "Opnieuw koppelen",
+      "later": "Lessen, cijfers en aankondigingen plaatsen komt later, alleen als je het toestaat."
     },
     "course": {
       "heading": "Gekoppelde Classroom-klas",
@@ -7425,7 +7426,6 @@
       "heading": "Leerlingen uit Classroom",
       "text": "Haalt de leerlingen van de gekoppelde Classroom-klas hierheen. Wie al hier is, wordt herkend aan zijn Google-account. Wie nieuw is bij Oomba Academy, komt erbij zodra die voor het eerst inlogt met Google op het domein van je school, en krijgt dan een schoolaccount. Hun echte namen zien alleen leraren.",
       "button": "Leerlingen importeren",
-      "last": "Laatst geïmporteerd {when}",
       "noDomains": "Je school heeft haar Google-domein nog niet toegevoegd, dus nieuwe leerlingen kunnen er niet bij. Vraag het de schoolbeheerder.",
       "noDomainsAdmin": "Voeg eerst het Google-domein van je school toe, zodat nieuwe leerlingen kunnen inloggen: {link}",
       "hint": "Gebruik je Google Classroom? {link}",
@@ -7438,7 +7438,9 @@
       "resultStaff": "{count, plural, one {# is hier personeel} other {# zijn hier personeel}}",
       "resultDomains": "{count, plural, one {# niet toegevoegd: voeg eerst het Google-domein van de school toe} other {# niet toegevoegd: voeg eerst het Google-domein van de school toe}}",
       "resultWaiting": "{count, plural, one {# komt erbij bij de eerste keer inloggen met Google op het schooldomein} other {# komen erbij bij de eerste keer inloggen met Google op het schooldomein}}",
-      "waitingNow": "{count, plural, one {# leerling uit Classroom heeft nog niet ingelogd. Die komt in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).} other {# leerlingen uit Classroom hebben nog niet ingelogd. Ze komen in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).}}"
+      "waitingNow": "{count, plural, one {# leerling uit Classroom heeft nog niet ingelogd. Die komt in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).} other {# leerlingen uit Classroom hebben nog niet ingelogd. Ze komen in deze klas bij de eerste keer inloggen met Google op het schooldomein (binnen 30 dagen; importeer opnieuw om te verlengen).}}",
+      "updated": "Lijst bijgewerkt {when}",
+      "resultLeft": "{count, plural, one {# niet meer in Google Classroom} other {# niet meer in Google Classroom}}"
     },
     "post": {
       "heading": "Lessen in Classroom",
@@ -7454,7 +7456,8 @@
       "posted": "Geplaatst",
       "open": "Openen in Classroom",
       "noLessons": "Nog geen lessen in deze klas. Wijs er een toe op het tabblad Lessen.",
-      "doneScheduled": "Ingepland in Google Classroom: leerlingen zien het op {date}, als de les opengaat."
+      "doneScheduled": "Ingepland in Google Classroom: leerlingen zien het op {date}, als de les opengaat.",
+      "locked": "Laat Oomba Academy plaatsen in Classroom om lessen te plaatsen, cijfers te versturen en lesmateriaal te delen."
     },
     "grades": {
       "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
@@ -7478,7 +7481,15 @@
         "unlink": "Klas ontkoppeld",
         "roster": "Leerlingen geïmporteerd",
         "post": "Les geplaatst",
-        "grades": "Cijfers verstuurd"
+        "grades": "Cijfers verstuurd",
+        "autoRoster": "Leerlingen bijgewerkt (automatisch)",
+        "autoGrades": "Cijfers verstuurd (automatisch)",
+        "material": "Lesmateriaal gedeeld",
+        "announce": "Geplaatst in de stream",
+        "settings": "Automatisch bijwerken gewijzigd",
+        "topic": "Onderwerp hernoemd",
+        "removeLeft": "Leerling die Classroom verliet uit de klas gehaald",
+        "keepLeft": "Leerling die Classroom verliet gehouden"
       }
     },
     "errors": {
@@ -7497,12 +7508,107 @@
       "alreadyPosted": "Deze les staat al in Google Classroom.",
       "notPosted": "Plaats deze les eerst in Google Classroom.",
       "badMode": "Kies hoe je de cijfers verstuurt.",
-      "scopesMissing": "Vink op het scherm van Google alle vakjes aan, zodat Oomba Academy je klassen kan zien en opdrachten kan plaatsen.",
+      "scopesMissing": "Vink op het scherm van Google beide vakjes aan (je klassen en hun leerlingen zien): Oomba Academy heeft ze nodig om een klas te koppelen.",
       "noRefresh": "Google stuurde geen sleutel die we kunnen bewaren. Koppel opnieuw.",
       "expired": "Dat duurde te lang. Probeer het opnieuw.",
       "cancelled": "Je hebt op het scherm van Google geannuleerd. Er is niets gekoppeld.",
       "staffOnly": "Hier kunnen alleen leraren en schoolbeheerders Google Classroom gebruiken.",
-      "tooManyTries": "Te veel synchronisaties voor nu. Probeer het over een uur opnieuw."
+      "tooManyTries": "Te veel synchronisaties voor nu. Probeer het over een uur opnieuw.",
+      "needsScope": "Oomba Academy mag dit nog niet in je Classroom. Gebruik eerst ‘Oomba Academy laten plaatsen in Classroom’.",
+      "noneAllowed": "Er is op het scherm van Google niets nieuws toegestaan, dus plaatsen blijft uit.",
+      "alreadyShared": "Deze les is al gedeeld als lesmateriaal.",
+      "notLeaver": "Die leerling staat niet meer op de lijst.",
+      "badTemplate": "Kies wat je wilt aankondigen.",
+      "noLiveGame": "Er is nu geen livegame open voor deze klas.",
+      "pickLesson": "Kies een les van deze klas.",
+      "lessonNotOpen": "Die les is nog niet open.",
+      "emptyNote": "Schrijf eerst je bericht.",
+      "tooLong": "Aankondigingen zijn hoogstens {max} tekens lang.",
+      "hasName": "Je bericht bevat de naam van een leerling ({name}). Aankondigingen gaan naar de hele klas: haal de naam er alsjeblieft uit.",
+      "tooManyAnnouncements": "Deze klas had al 10 aankondigingen in een uur. Wacht even."
+    },
+    "allow": {
+      "heading": "Wat Oomba Academy mag in je Classroom",
+      "features": {
+        "read": "Je klassen zien en hun leerlingen ophalen",
+        "post": "Lessen als opdracht plaatsen en cijfers versturen",
+        "materials": "Lessen delen als lesmateriaal",
+        "announce": "Aankondigingen plaatsen in de stream van de klas",
+        "topics": "Zijn berichten onder een onderwerp zetten"
+      },
+      "on": "toegestaan",
+      "off": "nog niet toegestaan",
+      "textNone": "Op dit moment kan Oomba Academy alleen je klassen en hun leerlingen lezen. Sta het toe op het scherm van Google om in Classroom te plaatsen.",
+      "textSome": "Een paar dingen staan uit, omdat de vakjes op het scherm van Google niet zijn aangevinkt. Je kunt ze nu toestaan.",
+      "button": "Oomba Academy laten plaatsen in Classroom",
+      "done": "Klaar: Oomba Academy mag nu plaatsen in je Classroom."
+    },
+    "leavers": {
+      "heading": "Niet meer in Google Classroom",
+      "text": "Deze leerlingen stonden op de lijst van de Classroom-klas en nu niet meer. Ze zitten nog in deze klas: haal ze eruit of houd ze hier.",
+      "since": "weg {when}",
+      "remove": "Uit de klas halen",
+      "removeConfirm": "{name} uit deze klas halen? Het werk blijft bij de klas.",
+      "keep": "Houden",
+      "removed": "Uit de klas gehaald.",
+      "kept": "Blijft in de klas."
+    },
+    "auto": {
+      "heading": "Automatisch bijwerken",
+      "roster": "De leerlingen elke 6 uur bijwerken uit Classroom",
+      "rosterHint": "Nieuwe leerlingen komen erbij. Wie Classroom verlaat, staat hierboven zodat jij beslist: niemand wordt vanzelf verwijderd.",
+      "grades": "Cijfers automatisch versturen",
+      "gradesHint": "Elke 30 minuten gaan gewijzigde voltooiingscijfers naar Classroom voor lessen die je hier hebt geplaatst, tot 30 dagen na elke inleverdatum.",
+      "by": "De cijfers gaan via de Google Classroom-koppeling van {name}.",
+      "save": "Opslaan",
+      "saved": "Opgeslagen.",
+      "locked": "Om cijfers automatisch te versturen moet plaatsen toegestaan zijn.",
+      "reconnect": "Classroom opnieuw koppelen",
+      "paused": {
+        "reconnect": "Automatische cijfers zijn gepauzeerd: je koppeling met Google Classroom werkt niet meer.",
+        "needsScope": "Automatische cijfers zijn gepauzeerd: Oomba Academy mag geen cijfers meer plaatsen in je Classroom. Sta het hierboven weer toe.",
+        "backoff": "Automatische cijfers zijn gepauzeerd na een fout. Ze proberen het snel opnieuw.",
+        "other": "Automatische cijfers zijn gepauzeerd: de leraar die ze aanzette kan deze klas nu niet bijwerken. Zet ze uit en weer aan om ze via jouw koppeling te versturen."
+      }
+    },
+    "topic": {
+      "default": "Oomba Academy",
+      "label": "Classroom-onderwerp voor deze berichten",
+      "save": "Opslaan",
+      "saved": "Onderwerp opgeslagen.",
+      "hint": "Nieuwe berichten komen onder dit onderwerp in Classroom. Laat het leeg voor de standaardnaam."
+    },
+    "material": {
+      "text": "Delen als lesmateriaal zet de titel en de link van de les in Classroom, zonder cijfer en zonder inleverdatum.",
+      "button": "Delen als lesmateriaal",
+      "done": "Gedeeld in Google Classroom als lesmateriaal.",
+      "doneScheduled": "Ingepland in Google Classroom als lesmateriaal: leerlingen zien het op {date}, als de les opengaat.",
+      "shared": "Gedeeld als lesmateriaal",
+      "open": "Lesmateriaal openen"
+    },
+    "announce": {
+      "heading": "Plaatsen in de stream van de klas",
+      "text": "Aankondigingen gaan naar iedereen in de Classroom-klas, als gewone tekst (hoogstens {max} tekens).",
+      "live": "Er begint een livegame",
+      "lesson": "Er staat een les klaar",
+      "free": "Je eigen bericht",
+      "adds": "Oomba Academy voegt toe:",
+      "note": "Voeg een notitie toe (niet verplicht)",
+      "message": "Je bericht",
+      "send": "Plaatsen in de stream",
+      "noLive": "Er is nu geen livegame open voor deze klas. Start er een en kom dan terug, of gebruik ‘Aankondigen in Classroom’ op het scherm van de spelleider.",
+      "hostLive": "Een livegame starten",
+      "pickLesson": "Les",
+      "lessonTitle": "de titel van de les",
+      "noLessons": "Er zijn nog geen open lessen in deze klas.",
+      "fixed": {
+        "live": "🎮 Er begint nu een livegame! Doe mee op {url} met de code {code}.",
+        "lesson": "📚 Er staat een nieuwe les klaar: {title}\n{url}"
+      },
+      "rule": "Oomba Academy voegt alleen de woorden hierboven toe. Het voegt nooit namen of resultaten van leerlingen toe en plaatst geen bericht met de naam van een leerling.",
+      "done": "Geplaatst in de stream van de klas.",
+      "locked": "Laat Oomba Academy plaatsen in Classroom om aankondigingen te plaatsen.",
+      "fromLive": "Aankondigen in Classroom"
     }
   },
   "digest": {

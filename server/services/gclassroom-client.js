@@ -6,17 +6,28 @@
 import { config } from '../config.js';
 import { endpoints } from '../oidc.js';
 
-/** The Classroom scopes we ask for (incremental authorization, on top of Sign in with Google's openid email profile).
- *  courses.readonly: list the teacher's courses. rosters.readonly: the students of a course. coursework.students: create
- *  coursework in courses they teach and grade it. Nothing else (no emails, no guardians, no Drive). */
-export const SCOPES = [
+/** The Classroom scopes (incremental authorization, on top of Sign in with Google's openid email profile). Required
+ *  (Connect asks for these only; without both nothing works): courses.readonly lists the teacher's courses,
+ *  rosters.readonly reads the students of a course. Optional (the page's "Allow Oomba Academy to post to Classroom" asks
+ *  for them; each feature shows only once its scope was granted): coursework.students creates coursework and grades it,
+ *  announcements posts to the class stream, courseworkmaterials shares a lesson as an ungraded material, topics files
+ *  Oomba's posts under one topic. Nothing else (no emails, no guardians, no Drive, no push notifications). */
+export const REQUIRED_SCOPES = [
   'https://www.googleapis.com/auth/classroom.courses.readonly',
   'https://www.googleapis.com/auth/classroom.rosters.readonly',
-  'https://www.googleapis.com/auth/classroom.coursework.students',
 ];
+export const OPTIONAL_SCOPES = {
+  coursework: 'https://www.googleapis.com/auth/classroom.coursework.students',
+  announce: 'https://www.googleapis.com/auth/classroom.announcements',
+  materials: 'https://www.googleapis.com/auth/classroom.courseworkmaterials',
+  topics: 'https://www.googleapis.com/auth/classroom.topics',
+};
+/** Every Classroom scope we may ask for (what Google says was granted is stored filtered to these). */
+export const SCOPES = [...REQUIRED_SCOPES, ...Object.values(OPTIONAL_SCOPES)];
 
-/** A failed call. code: 'reconnect' (the token was revoked or expired for good), 'denied' (Google said no: not this
- *  teacher's course, or coursework another app made), 'notFound', 'rateLimited', 'badRequest', 'googleDown'. */
+/** A failed call. code: 'reconnect' (the token was revoked or expired for good), 'needsScope' (the token lacks the
+ *  scope this call needs: the teacher took it back at Google), 'denied' (Google said no: not this teacher's course, or
+ *  coursework another app made), 'notFound', 'rateLimited', 'badRequest', 'googleDown'. */
 export class GcError extends Error {
   constructor(code, reason = code, status = 0) { super(reason); this.code = code; this.reason = String(reason).slice(0, 120); this.status = status; }
 }
@@ -85,7 +96,11 @@ export async function api(accessToken, method, path, { query, body } = {}) {
   const status = j?.error?.status || '';
   const why = `${r.status} ${status}`.trim();
   if (r.status === 401) throw new GcError('auth', why, 401);
-  if (r.status === 403) throw new GcError(/RATE_LIMIT|QUOTA/i.test(JSON.stringify(j?.error?.details || '')) || status === 'RESOURCE_EXHAUSTED' ? 'rateLimited' : 'denied', why, 403);
+  if (r.status === 403) {
+    const detail = JSON.stringify(j?.error?.details || '') + String(j?.error?.message || '');
+    if (/ACCESS_TOKEN_SCOPE_INSUFFICIENT|insufficient authentication scopes/i.test(detail)) throw new GcError('needsScope', why, 403);
+    throw new GcError(/RATE_LIMIT|QUOTA/i.test(detail) || status === 'RESOURCE_EXHAUSTED' ? 'rateLimited' : 'denied', why, 403);
+  }
   if (r.status === 404) throw new GcError('notFound', why, 404);
   if (r.status === 429) throw new GcError('rateLimited', why, 429);
   if (r.status === 400 || r.status === 409) throw new GcError('badRequest', why, r.status);

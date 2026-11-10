@@ -1395,5 +1395,9 @@
   "learn.games.popcornHush": "The 'what it practises' line for Popcorn Hush, a classroom noise meter: a popcorn pot whose kernels pop when the class is too loud (popping means too loud, not a reward). Max ~140 chars.",
   "js.loudness.listening": "Pill on the play page of Remi's Quiet Meadow while the page measures how loud the room is (a number only; nothing is recorded). A short status word or two after a 🎤, max ~14 chars.",
   "js.loudness.stop": "Button in that pill that switches the microphone off at once. One short verb, max ~8 chars.",
-  "js.loudness.tap": "Big button over the game when the browser needs one more tap before it can listen (some tablets). Max ~30 chars."
+  "js.loudness.tap": "Big button over the game when the browser needs one more tap before it can listen (some tablets). Max ~30 chars.",
+  "gclassroom.topic.default": "The name of the Google Classroom topic Oomba Academy files its posts under (teachers can rename it). Sent to Google as typed: keep \"Oomba Academy\" in Latin letters, no direction marks, max 100 chars.",
+  "gclassroom.announce.fixed.live": "Sent to Google Classroom as plain text in the class stream (no HTML). {url} is the join link, {code} the 7-digit live code. Keep the emoji.",
+  "gclassroom.announce.fixed.lesson": "Sent to Google Classroom as plain text in the class stream (no HTML). {title} is the lesson title, {url} its link; keep the line break before {url}. Keep the emoji.",
+  "gclassroom.allow.button": "Button that asks Google again for the write permissions. Keep \"Oomba Academy\" and \"Classroom\" as is."
 }

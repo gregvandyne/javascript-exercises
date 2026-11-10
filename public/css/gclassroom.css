@@ -25,8 +25,57 @@
 .gc-log-row:first-child{border-top:0;padding-top:0}
 .gc-log-what{display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere}
 .gc-err{color:var(--bad-ink,var(--text))}
+.gc-sub{font-size:1rem;margin:var(--s4) 0 var(--s2)}
+/* What the connection may do, and the "Allow Oomba Academy to post" button where a feature isn't allowed yet. */
+.gc-allowed{display:flex;flex-direction:column;gap:6px;margin:0 0 var(--s3);padding:0}
+.gc-allowed li{display:flex;gap:8px;align-items:baseline}
+.gc-allow{margin:var(--s2) 0 0}
+.gc-allow .btn{min-height:44px;white-space:normal;text-align:center}
+.gc-disconnect{margin-top:var(--s4)}
+.gc-locked{border:1px dashed var(--line);border-radius:var(--r-sm);padding:var(--s3)}
+.gc-locked p{margin:0}
+/* Automatic sync: two switches, each with a line under it. */
+.gc-autoform{display:flex;flex-direction:column;gap:var(--s3);align-items:flex-start}
+.gc-autoform .gc-check{display:flex;align-items:flex-start;gap:10px}
+.gc-autoform .gc-check input{margin-top:2px}
+.gc-hint-line{display:block;margin-top:2px;font-weight:400}
+.gc-auto-modes{padding-inline-start:30px}
+.gc-autoform .btn,.gc-topicform .btn,.gc-tpl .btn,.gc-leaver .btn{min-height:44px}
+.gc-paused{margin:0 0 var(--s3)}
+.gc-paused p{margin:0 0 var(--s2)}
+.gc-paused form{margin:0}
+/* Students who left Classroom: the teacher removes or keeps each one. */
+.gc-leavers{margin-top:var(--s3);border-top:1px solid var(--line);padding-top:var(--s2)}
+.gc-leaver-list{display:flex;flex-direction:column;gap:var(--s2);margin:0;padding:0}
+.gc-leaver{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3)}
+.gc-leaver-name{min-width:0;overflow-wrap:anywhere}
+.gc-leaver-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.gc-leaver-acts form{margin:0}
+/* A lesson's two ways into Classroom: as an assignment (with grades) and as a material. */
+.gc-lesson-side{display:flex;flex-direction:column;gap:var(--s2);align-items:flex-start;min-width:0}
+.gc-lesson-side form{margin:0}
+.gc-mat-done{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.gc-topicform{flex-wrap:wrap;align-items:flex-end;gap:var(--s2);margin:var(--s3) 0}
+.gc-topic-label{display:flex;flex-direction:column;gap:4px;flex:1 1 220px;min-width:0}
+.gc-topic-label .input{min-height:44px;width:100%}
+.gc-topicform .err,.gc-topic-hint{flex-basis:100%;margin:0}
+/* The class stream: one disclosure per template. */
+.gc-tpl{border:1px solid var(--line);border-radius:var(--r-sm);padding:0 var(--s3);margin:0 0 var(--s2)}
+.gc-tpl>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;gap:6px}
+.gc-tpl[open]>summary{border-bottom:1px solid var(--line);margin-bottom:var(--s2)}
+.gc-tpl form{display:flex;flex-direction:column;gap:var(--s2);align-items:flex-start;padding-bottom:var(--s3)}
+.gc-tpl>p,.gc-tpl>a{margin:0 0 var(--s3)}
+.gc-tpl form>p{margin:0}
+.gc-fixed{white-space:pre-line;overflow-wrap:anywhere;background:var(--card-2);border-radius:var(--r-sm);padding:var(--s2) var(--s3);align-self:stretch}
+.gc-note-label{display:flex;flex-direction:column;gap:4px;align-self:stretch}
+.gc-note-label .input{width:100%;min-height:44px}
+.gc-note{resize:vertical}
+.gc-ann-rule{margin:var(--s3) 0 0}
 @media (min-width:720px){
+  .gc-lesson-side{flex:0 1 auto;align-items:flex-end;max-width:60%}
+  .gc-gradeform,.gc-gradeform .gc-modes{justify-content:flex-end}
   .gc-lesson{flex-direction:row;align-items:flex-start;justify-content:space-between}
   .gc-lesson-head{flex:1 1 40%}
   .gc-lesson-acts{flex:0 1 auto;align-items:flex-end}
 }
+.gc-auto-locked{margin:var(--s3) 0 0}

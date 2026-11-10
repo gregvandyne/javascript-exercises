@@ -2,10 +2,13 @@
 // use it (teachers of the class only: other teachers, students, guests and signed-out visitors get 404/403/401), the
 // connect flow (incremental authorization, refresh token encrypted at rest, scopes checked, disconnect revokes), linking
 // a course, importing its roster, posting a lesson, sending grades, errors shown plainly, rate limits and the sync log.
+// Then the optional write scopes (read-only works, write controls hidden, the "Allow" upgrade, scopes re-read at refresh),
+// automatic grades and roster refresh (the jobs), topics, materials and announcements.
 // Google is the fakes in tests/support (fake-google.js for OAuth, fake-classroom.js for the API).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 
 const { startFakeGoogle } = await import('../support/fake-google.js');
 const { startFakeClassroom } = await import('../support/fake-classroom.js');
@@ -28,7 +31,9 @@ const L = await import('../../server/services/lessons.js');
 const P = await import('../../server/services/progress.js');
 const G = await import('../../server/services/google.js');
 const GC = await import('../../server/services/gclassroom.js');
-const { SCOPES } = await import('../../server/services/gclassroom-client.js');
+const { SCOPES, REQUIRED_SCOPES, OPTIONAL_SCOPES } = await import('../../server/services/gclassroom-client.js');
+const LS = await import('../../server/services/classlive-sessions.js');
+const { gcLiveAnnounce } = await import('../../server/routes/gclassroom.js');
 
 let server, base;
 test.before(async () => { server = createApp().listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -63,16 +68,18 @@ function school({ domains = ['dwes.test'] } = {}) {
   const cl = L.assign(teacher, c.id, lesson.id, { dueAt: new Date(Date.now() + 7 * DAY).toISOString().slice(0, 10) }).classLesson;
   return { s: S.getSchool(s.id), admin, teacher, other, kid, c, lesson, steps, cl, tc: cookieFor(teacher.id), oc: cookieFor(other.id), ac: cookieFor(admin.id), kc: cookieFor(kid.id) };
 }
-/** Connect (POST → start → fake Google auto-consent → callback). -> the callback reply. */
-async function connect(cookie, classId, { email = 'teach@dwes.test', sub, dropScope, cancel, noRefresh } = {}) {
-  const r = await post('/api/google-classroom/connect', { back: classId }, cookie);
+/** Connect (POST → start → fake Google auto-consent → callback). write: the "Allow Oomba Academy to post to Classroom"
+ *  flow (the optional scopes too; most tests need it), else Connect (the two read scopes). The default email (and so
+ *  the Google account) is one per teacher. -> the callback reply. */
+async function connect(cookie, classId, { email = `t${crypto.createHash('sha256').update(cookie).digest('hex').slice(0, 10)}@dwes.test`, sub, dropScope, cancel, noRefresh, write = true } = {}) {
+  const r = await post('/api/google-classroom/connect', { back: classId, ...(write ? { write: '1' } : {}) }, cookie);
   if (r.status !== 200) return r;
   const start = await get((await r.json()).redirect, cookie);
   assert.equal(start.status, 302, `start ${start.status} ${loc(start)}`);
   const flow = cookieOf(start, 'brb_gflow'); const to = new URL(loc(start));
   assert.equal(to.searchParams.get('access_type'), 'offline');
   assert.equal(to.searchParams.get('include_granted_scopes'), 'true');
-  assert.deepEqual(to.searchParams.get('scope').split(' ').sort(), ['openid', 'email', ...SCOPES].sort(), 'only the Classroom scopes we need');
+  assert.deepEqual(to.searchParams.get('scope').split(' ').sort(), ['openid', 'email', ...(write ? SCOPES : REQUIRED_SCOPES)].sort(), 'only the Classroom scopes we need');
   if (dropScope || noRefresh) fake.next({ dropScope, noRefresh });
   to.searchParams.set('fake_auto', '1'); to.searchParams.set('fake_email', email); if (sub) to.searchParams.set('fake_sub', sub);
   if (cancel) to.searchParams.set('fake_error', 'access_denied');
@@ -147,7 +154,7 @@ test('who may use it: the class\'s teachers and school admins; other teachers, s
 
 test('connect: consent, an encrypted refresh token, the page says so; disconnect revokes it at Google and deletes it', async () => {
   const { c, teacher, tc } = school();
-  const r = await connect(tc, c.id, { email: 'teach@dwes.test' });
+  const r = await connect(tc, c.id, { email: 'teach@dwes.test', write: false });
   assert.equal(loc(r), `/class/${c.id}/google-classroom?gc=connected#gc-connect`);
   const row = q.get('SELECT * FROM gc_connections WHERE user_id=?', teacher.id);
   assert.equal(row.email, 'teach@dwes.test'); assert.equal(row.status, 'ok');
@@ -174,11 +181,11 @@ test('connect refuses: no GOOGLE_TOKEN_KEY, a scope left unticked, no refresh to
   assert.equal(off.status, 400); assert.match((await off.json()).error, /isn't set up/);
   assert.match(await (await get(`/class/${c.id}/google-classroom`, tc)).text(), /isn(&#39;|')t set up on this site yet/);
   config.googleTokenKey = ON.googleTokenKey;
-  assert.match(loc(await connect(tc, c.id, { dropScope: SCOPES[2] })), /gcerr=scopesMissing/);
+  assert.match(loc(await connect(tc, c.id, { dropScope: REQUIRED_SCOPES[1] })), /gcerr=scopesMissing/);
   assert.match(loc(await connect(tc, c.id, { noRefresh: true })), /gcerr=noRefresh/);
   assert.match(loc(await connect(tc, c.id, { cancel: true })), /gcerr=cancelled/);
   assert.equal(GC.connectionOf(teacher.id), null, 'nothing stored');
-  assert.match(await (await get(`/class/${c.id}/google-classroom?gcerr=scopesMissing`, tc)).text(), /check every box/);
+  assert.match(await (await get(`/class/${c.id}/google-classroom?gcerr=scopesMissing`, tc)).text(), /check both boxes/);
   // A start link from someone else's session is refused.
   const r = await post('/api/google-classroom/connect', { back: c.id }, tc);
   const other = school();
@@ -495,4 +502,355 @@ test('account deletion takes the stored token with it', async () => {
   assert.ok(GC.connectionOf(teacher.id));
   GC.forgetUser(teacher.id);
   assert.equal(GC.connectionOf(teacher.id), null);
+});
+
+// ---------------------------------------------------------------- optional scopes
+const pageOf = async (c, cookie, q = '') => (await get(`/class/${c.id}/google-classroom${q}`, cookie)).text();
+/** A school, a connected teacher (write: the optional scopes too), the class linked to a course with these students. */
+async function linked(students = [], { write = true, dropScope, ...o } = {}) {
+  const x = school(o);
+  const id = course(students);
+  await connect(x.tc, x.c.id, { write, dropScope });
+  assert.equal((await post(`/api/classes/${x.c.id}/google-classroom/link`, { courseId: id }, x.tc)).status, 200);
+  return { ...x, id };
+}
+
+test('read-only connect works: link and import, and every write control is a note with "Allow Oomba Academy to post to Classroom"', async () => {
+  const { c, s, teacher, cl, tc, kid, id } = await linked([{ userId: '600000000000000000001', fullName: 'Kid Here' }], { write: false });
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '600000000000000000001', kid.id, 'kid6@dwes.test', 'dwes.test', Date.now());
+  assert.deepEqual(GC.grantedScopes(teacher.id).sort(), [...REQUIRED_SCOPES].sort(), 'only the read scopes are stored');
+  assert.equal(GC.connectionState(teacher.id), 'ok');
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).status, 200);
+  assert.ok(id);
+  const pg = await pageOf(c, tc);
+  assert.match(pg, /Allow Oomba Academy to post to Classroom/);
+  assert.match(pg, /name="write" value="1"/);
+  for (const hidden of ['google-classroom/post"', 'google-classroom/grades"', 'google-classroom/material"', 'google-classroom/announce"', 'name="autoGrades" value="1" ', 'gc-topicform']) assert.ok(!pg.includes(hidden), `hidden: ${hidden}`);
+  assert.match(pg, /To post lessons, send grades and share materials/);
+  assert.match(pg, /To post announcements/);
+  assert.match(pg, /Update the students from Classroom every 6 hours/, 'the roster refresh only needs the read scope');
+  // The assign form has no "Also post" box, and the APIs say what's missing; Google is never asked to write.
+  assert.doesNotMatch(await (await get(`/class/${c.id}`, tc)).text(), /name="gcPost"/);
+  const writes = () => room.calls.filter(x => x.method !== 'GET').length;
+  const w0 = writes();
+  for (const p of [`/api/class-lessons/${cl.id}/google-classroom/post`, `/api/class-lessons/${cl.id}/google-classroom/material`]) {
+    const r = await post(p, {}, tc); assert.equal(r.status, 400); assert.equal((await r.json()).code, 'needsScope');
+  }
+  assert.equal((await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json()).code, 'needsScope');
+  assert.equal((await (await post(`/api/classes/${c.id}/google-classroom/announce`, { template: 'free', note: 'Hello' }, tc)).json()).code, 'needsScope');
+  assert.equal((await (await post(`/api/classes/${c.id}/google-classroom/auto`, { autoRoster: '1', autoGrades: '1', mode: 'draft' }, tc)).json()).code, 'needsScope');
+  // Posting from the assign form with the box sent anyway: nothing goes.
+  const l2 = L.createLesson(teacher, s.id, { title: 'Sneaky' }).lesson;
+  const a = await (await post(`/api/classes/${c.id}/lessons`, { lessonId: l2.id, gcPost: '1' }, tc)).json();
+  assert.match(a.toast, /isn't allowed to do this/);
+  assert.equal(writes(), w0, 'no write call reached Google');
+});
+
+test('the upgrade: "Allow" asks for the optional scopes; unticked ones stay off; scopes are re-read at every refresh', async () => {
+  const { c, teacher, tc } = await linked([], { write: false });
+  // Nothing new ticked: posting stays off.
+  assert.match(loc(await connect(tc, c.id, { dropScope: Object.values(OPTIONAL_SCOPES) })), /gcerr=noneAllowed/);
+  assert.equal(GC.can(teacher.id, 'coursework'), false);
+  // Everything but announcements.
+  const r = await connect(tc, c.id, { dropScope: OPTIONAL_SCOPES.announce });
+  assert.equal(loc(r), `/class/${c.id}/google-classroom?gc=allowed#gc-connect`);
+  assert.deepEqual(GC.missingOptional(teacher.id), ['announce']);
+  let pg = await pageOf(c, tc, '?gc=allowed');
+  assert.match(pg, /Oomba Academy may now post to your Classroom/);
+  assert.match(pg, /Post to Google Classroom/); assert.match(pg, /Share as material/); assert.match(pg, /gc-topicform/);
+  assert.match(pg, /To post announcements, allow Oomba Academy/, 'announcements are still a note with the button');
+  assert.match(pg, /Some of these are off/);
+  // Google narrows what the token may do (the teacher took a scope back at Google): the next refresh says so.
+  const row = q.get('SELECT token_enc FROM gc_connections WHERE user_id=?', teacher.id);
+  const rt = fake.refreshTokens.get(GC.unseal(teacher.id, row.token_enc));
+  rt.scope = rt.scope.split(' ').filter(x => x !== OPTIONAL_SCOPES.coursework).join(' ');
+  GC._forget();
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).status, 200);
+  assert.equal(GC.can(teacher.id, 'coursework'), false, 're-read from the refresh');
+  assert.equal(GC.can(teacher.id, 'materials'), true);
+  pg = await pageOf(c, tc);
+  assert.doesNotMatch(pg, /google-classroom\/post"/); assert.match(pg, /Share as material/);
+  // A write Google refuses for a missing scope forgets that scope too.
+  room.failNext(403, { match: /courseWorkMaterials/, body: { error: { code: 403, status: 'PERMISSION_DENIED', message: 'Request had insufficient authentication scopes.', details: [{ reason: 'ACCESS_TOKEN_SCOPE_INSUFFICIENT' }] } } });
+  const cl = L.classPlan(c.id).flatMap(g => g.lessons)[0];
+  const m = await post(`/api/class-lessons/${cl.id}/google-classroom/material`, {}, tc);
+  assert.equal(m.status, 400); assert.equal((await m.json()).code, 'needsScope');
+  assert.equal(GC.can(teacher.id, 'materials'), false);
+  // Without a read scope the connection needs connecting again.
+  rt.scope = rt.scope.split(' ').filter(x => x !== REQUIRED_SCOPES[1]).join(' ');
+  GC._forget();
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).status, 400);
+  assert.equal(GC.connectionState(teacher.id), 'reconnect');
+});
+
+// ---------------------------------------------------------------- automatic grades
+test('automatic grades: only changed grades go, every 30 minutes, within the rate limit; a revoked token pauses them and the page says "Reconnect Classroom"', async () => {
+  const x = await linked([{ userId: '610000000000000000001', fullName: 'Kid Here' }, { userId: '610000000000000000002', fullName: 'Bea Busy' }, { userId: '610000000000000000003', fullName: 'Ned Notours' }]);
+  const { c, s, admin, cl, steps, tc, kid, teacher } = x;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '610000000000000000001', kid.id, 'kid61@dwes.test', 'dwes.test', Date.now());
+  const bea = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Bea Busy' }).user;
+  S.addToClass({ id: admin.id }, c.id, bea.id, 'student');
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '610000000000000000002', bea.id, 'bea@dwes.test', 'dwes.test', Date.now());
+  // In the Oomba class and signed in with Google, but not on the teacher's Classroom roster: never sent.
+  const out = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Olly Outside' }).user;
+  S.addToClass({ id: admin.id }, c.id, out.id, 'student');
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '610000000000000000099', out.id, 'olly@dwes.test', 'dwes.test', Date.now());
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc)).status, 200);
+  // Off by default: nothing happens.
+  assert.equal(GC.linkOf(c.id).auto_grades, '');
+  assert.ok(P.markDone(kid, cl.id, steps[0].id).ok); assert.ok(P.markDone(bea, cl.id, steps[0].id).ok); assert.ok(P.markDone(out, cl.id, steps[0].id).ok);
+  const patches = () => room.calls.filter(z => z.method === 'PATCH');
+  let n0 = patches().length;
+  await GC.autoGrades();
+  assert.equal(patches().length, n0, 'off: nothing sent');
+  // Turned on (draft): the page shows it; the first run sends both started students on the roster.
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/auto`, { autoRoster: '1', autoGrades: '1', mode: 'draft' }, tc)).status, 200);
+  assert.match(await pageOf(c, tc), /name="autoGrades" value="1" checked/);
+  await GC.autoGrades();
+  assert.equal(patches().length, n0 + 2);
+  const cw = room.courseWork.get(GC.postOf(cl.id).coursework_id);
+  const subOf = sub => cw.submissions.find(z => z.userId === sub);
+  assert.equal(subOf('610000000000000000001').draftGrade, 50); assert.equal(subOf('610000000000000000002').draftGrade, 50);
+  assert.ok(!cw.submissions.some(z => z.userId === '610000000000000000099'), 'Olly is not on the roster');
+  assert.equal(syncs(c.id, 'autoGrades').length, 1);
+  // Nothing changed: no call to Google at all.
+  n0 = room.calls.length;
+  await GC.autoGrades();
+  assert.equal(room.calls.length, n0, 'unchanged: Google is not asked');
+  // Kid does the second step: only Kid's grade goes.
+  await new Promise(r => setTimeout(r, 5));
+  assert.ok(P.markDone(kid, cl.id, steps[1].id).ok);
+  n0 = patches().length;
+  await GC.autoGrades();
+  assert.equal(patches().length, n0 + 1, 'only the changed grade');
+  assert.equal(subOf('610000000000000000001').draftGrade, 100);
+  // A sent-by-hand grade counts as sent: the automatic run doesn't send it again.
+  await new Promise(r => setTimeout(r, 5));
+  assert.ok(P.markDone(bea, cl.id, steps[1].id).ok);
+  await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc);
+  n0 = patches().length;
+  await GC.autoGrades();
+  assert.equal(patches().length, n0, 'already sent by hand');
+  // Switching to assigned grades sends them again, as assigned.
+  await post(`/api/classes/${c.id}/google-classroom/auto`, { autoRoster: '1', autoGrades: '1', mode: 'assigned' }, tc);
+  await GC.autoGrades();
+  assert.equal(subOf('610000000000000000001').assignedGrade, 100); assert.equal(subOf('610000000000000000002').assignedGrade, 100);
+  // The teacher's 60 syncs an hour are shared: none left, nothing goes and no back-off.
+  q.run('DELETE FROM gc_grades WHERE class_lesson_id=?', cl.id); q.run('UPDATE gc_posts SET auto_at=NULL WHERE class_lesson_id=?', cl.id);
+  for (let i = 0; i < 60; i++) RL.allow(`gc-sync:${teacher.id}`, 60, 3600e3);
+  n0 = room.calls.length;
+  await GC.autoGrades();
+  assert.equal(room.calls.length, n0); assert.equal(GC.linkOf(c.id).auto_fails, 0);
+  RL._reset();
+  // A lesson due more than 30 days ago gets no more automatic grades.
+  q.run('UPDATE class_lessons SET due_at=? WHERE id=?', Date.now() - 32 * DAY, cl.id);
+  n0 = room.calls.length;
+  await GC.autoGrades();
+  assert.equal(room.calls.length, n0, '30 days after the due date: stopped');
+  q.run('UPDATE class_lessons SET due_at=? WHERE id=?', Date.now() + 7 * DAY, cl.id);
+  // The teacher removed the app at Google: the run stops, the connection asks to reconnect, later runs don't call Google.
+  fake.refreshTokens.clear(); GC._forget();
+  await GC.autoGrades();
+  assert.equal(GC.connectionState(teacher.id), 'reconnect');
+  n0 = room.calls.length;
+  await GC.autoGrades(Date.now() + DAY);
+  assert.equal(room.calls.length, n0, 'paused');
+  const pg = await pageOf(c, tc);
+  assert.match(pg, /Automatic grades are paused: your Google Classroom connection stopped working/);
+  assert.match(pg, /Reconnect Classroom/);
+  // Connecting again resumes them.
+  await connect(tc, c.id);
+  assert.equal(GC.autoPaused(GC.linkOf(c.id)), '');
+  const p0 = patches().length;
+  await GC.autoGrades();
+  assert.ok(patches().length > p0);
+  // Disconnecting turns them off.
+  await post('/api/google-classroom/disconnect', {}, tc);
+  assert.equal(GC.linkOf(c.id).auto_grades, '');
+});
+
+test('automatic grades back off after an error, and someone else saving the roster switch keeps who sends them', async () => {
+  const x = await linked([{ userId: '620000000000000000001', fullName: 'Kid Here' }]);
+  const { c, cl, steps, tc, kid, teacher, ac } = x;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '620000000000000000001', kid.id, 'kid62@dwes.test', 'dwes.test', Date.now());
+  await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  await post(`/api/classes/${c.id}/google-classroom/auto`, { autoRoster: '1', autoGrades: '1', mode: 'draft' }, tc);
+  assert.ok(P.markDone(kid, cl.id, steps[0].id).ok);
+  room.failNext(503, { match: /studentSubmissions/ });
+  const t = Date.now();
+  await GC.autoGrades(t);
+  const lk = GC.linkOf(c.id);
+  assert.equal(lk.auto_fails, 1); assert.ok(lk.auto_next_at >= t + 60 * 60e3, 'an hour before the next try');
+  assert.match(await pageOf(c, tc), /paused after an error/);
+  const n0 = room.calls.length;
+  await GC.autoGrades(t + 10 * 60e3);
+  assert.equal(room.calls.length, n0, 'waits');
+  await GC.autoGrades(t + 2 * 3600e3);
+  assert.equal(GC.linkOf(c.id).auto_fails, 0);
+  // The school admin (Classroom connected read-only) changes only the roster switch: grades keep going with the teacher's.
+  await connect(ac, c.id, { write: false });
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/auto`, { autoGrades: '1', mode: 'draft' }, ac)).status, 200);
+  assert.equal(GC.linkOf(c.id).auto_by, teacher.id); assert.equal(GC.linkOf(c.id).auto_roster, 0);
+});
+
+// ---------------------------------------------------------------- automatic roster
+test('roster refresh: every 6 hours new students are added; students who left Classroom are listed, never removed on their own', async () => {
+  const x = await linked([{ userId: '630000000000000000001', fullName: 'Kid Here' }]);
+  const { c, s, admin, tc, kid } = x;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '630000000000000000001', kid.id, 'kid63@dwes.test', 'dwes.test', Date.now());
+  const imports = () => room.calls.filter(z => z.method === 'GET' && /\/students$/.test(z.path)).length;
+  // Not before a first import by hand.
+  let n0 = imports();
+  await GC.autoRoster(Date.now() + 7 * 3600e3);
+  assert.equal(imports(), n0);
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).status, 200);
+  assert.match(await pageOf(c, tc), /Roster updated just now/);
+  // Not before 6 hours.
+  n0 = imports();
+  await GC.autoRoster();
+  assert.equal(imports(), n0);
+  // A new student (known to Oomba) joins the Classroom class, Kid leaves it.
+  const neu = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Nia New' }).user;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '630000000000000000002', neu.id, 'nia@dwes.test', 'dwes.test', Date.now());
+  room.courses.get(x.id).students = [{ userId: '630000000000000000002', fullName: 'Nia New' }];
+  const r = await GC.autoRoster(Date.now() + 6 * 3600e3 + 60e3);
+  assert.equal(r.imported, 1);
+  assert.ok(S.classMember(c.id, neu.id), 'the new student is added');
+  assert.ok(S.classMember(c.id, kid.id), 'the student who left is NOT removed');
+  assert.deepEqual(GC.leavers(c.id).map(z => z.user_id), [kid.id]);
+  assert.equal(syncs(c.id, 'autoRoster').at(-1).status, 'ok');
+  const pg = await pageOf(c, tc);
+  assert.match(pg, /No longer in Google Classroom/); assert.match(pg, /Kid Here/); assert.match(pg, /Remove from class/);
+  assert.match(pg, /1 no longer in Google Classroom/);
+  // Remove: out of the class, off the list. (Another leaver kept: stays in the class, off the list.)
+  const bad = await post(`/api/classes/${c.id}/google-classroom/leavers`, { userId: neu.id, action: 'remove' }, tc);
+  assert.equal(bad.status, 400, 'only students who left can be removed from here');
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/leavers`, { userId: kid.id, action: 'remove' }, tc)).status, 200);
+  assert.ok(!S.classMember(c.id, kid.id)); assert.equal(GC.leavers(c.id).length, 0);
+  room.courses.get(x.id).students = [];
+  await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc);
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/leavers`, { userId: neu.id, action: 'keep' }, tc)).status, 200);
+  assert.ok(S.classMember(c.id, neu.id)); assert.equal(GC.leavers(c.id).length, 0);
+  // Turned off: the job leaves the class alone.
+  await post(`/api/classes/${c.id}/google-classroom/auto`, {}, tc);
+  assert.equal(GC.linkOf(c.id).auto_roster, 0);
+  n0 = imports();
+  await GC.autoRoster(Date.now() + 13 * 3600e3);
+  assert.equal(imports(), n0);
+});
+
+// ---------------------------------------------------------------- topics and materials
+test('topics: made once per linked course, reused, made again when deleted in Classroom, renamed; none without the scope', async () => {
+  const x = await linked([]);
+  const { c, s, teacher, cl, tc } = x;
+  const made = () => room.calls.filter(z => z.method === 'POST' && /\/topics$/.test(z.path)).length;
+  const n0 = made();
+  await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  assert.equal(made(), n0 + 1);
+  const topicId = GC.linkOf(c.id).topic_id;
+  assert.equal(room.topics.get(topicId).name, 'Oomba Academy');
+  assert.equal(room.calls.findLast(z => z.method === 'POST' && /courseWork$/.test(z.path)).body.topicId, topicId);
+  // A second post (and a material) reuse it.
+  await post(`/api/class-lessons/${cl.id}/google-classroom/material`, {}, tc);
+  const cl2 = L.assign(teacher, c.id, L.createLesson(teacher, s.id, { title: 'Two' }).lesson.id, {}).classLesson;
+  await post(`/api/class-lessons/${cl2.id}/google-classroom/post`, {}, tc);
+  assert.equal(made(), n0 + 1, 'made once');
+  assert.equal(room.calls.findLast(z => z.method === 'POST' && /courseWorkMaterials$/.test(z.path)).body.topicId, topicId);
+  // Renamed here: renamed in Classroom too.
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/topic`, { name: 'Maths games' }, tc)).status, 200);
+  assert.equal(room.topics.get(topicId).name, 'Maths games');
+  // Deleted in Classroom: made again (with the class's name for it).
+  room.topics.delete(topicId);
+  const cl3 = L.assign(teacher, c.id, L.createLesson(teacher, s.id, { title: 'Three' }).lesson.id, {}).classLesson;
+  assert.equal((await post(`/api/class-lessons/${cl3.id}/google-classroom/post`, {}, tc)).status, 200);
+  assert.equal(made(), n0 + 2);
+  const again = GC.linkOf(c.id).topic_id;
+  assert.notEqual(again, topicId); assert.equal(room.topics.get(again).name, 'Maths games');
+  // A topic of that name already there (made by hand): used, not duplicated.
+  q.run('UPDATE gc_links SET topic_id=NULL WHERE class_id=?', c.id);
+  const cl4 = L.assign(teacher, c.id, L.createLesson(teacher, s.id, { title: 'Four' }).lesson.id, {}).classLesson;
+  await post(`/api/class-lessons/${cl4.id}/google-classroom/post`, {}, tc);
+  assert.equal(GC.linkOf(c.id).topic_id, again);
+  assert.equal(GC.topicNameOf({ topic_name: '' }, 'Oomba Academy‏'), 'Oomba Academy', 'no direction marks go to Google');
+  // Without the topics scope: posted without a topic, as before.
+  const y = await linked([], { dropScope: OPTIONAL_SCOPES.topics });
+  const m0 = made();
+  assert.equal((await post(`/api/class-lessons/${y.cl.id}/google-classroom/post`, {}, y.tc)).status, 200);
+  assert.equal(made(), m0);
+  assert.equal(room.calls.findLast(z => z.method === 'POST' && /courseWork$/.test(z.path)).body.topicId, undefined);
+  assert.doesNotMatch(await pageOf(y.c, y.tc), /gc-topicform/);
+});
+
+test('materials: "Share as material" posts the title, the fixed line and the link, no grade or due date; once per lesson, next to the assignment', async () => {
+  const { c, cl, tc } = await linked([]);
+  const r = await post(`/api/class-lessons/${cl.id}/google-classroom/material`, {}, tc);
+  assert.equal(r.status, 200); assert.match((await r.json()).toast, /as a material/);
+  const call = room.calls.findLast(z => z.method === 'POST' && /courseWorkMaterials$/.test(z.path));
+  assert.equal(call.body.title, 'Fractions day'); assert.equal(call.body.description, 'Open this lesson on Oomba Academy.');
+  assert.equal(call.body.materials[0].link.url, `${base}/class/${c.id}/lessons/${cl.id}`);
+  for (const k of ['maxPoints', 'dueDate', 'dueTime', 'workType']) assert.equal(call.body[k], undefined, k);
+  assert.ok(GC.postOf(cl.id, 'material')); assert.equal(GC.postOf(cl.id), null, 'not an assignment');
+  const twice = await post(`/api/class-lessons/${cl.id}/google-classroom/material`, {}, tc);
+  assert.equal(twice.status, 400); assert.match((await twice.json()).error, /already shared as a material/);
+  // The assignment can still be posted: one of each kind.
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc)).status, 200);
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc)).status, 400);
+  assert.equal(q.get('SELECT COUNT(*) n FROM gc_posts WHERE class_lesson_id=?', cl.id).n, 2);
+  const pg = await pageOf(c, tc);
+  assert.match(pg, /Shared as material/); assert.match(pg, /Open material/); assert.match(pg, /Send completion grades/);
+  assert.equal(syncs(c.id, 'material').length, 1);
+});
+
+// ---------------------------------------------------------------- announcements
+test('announcements: only the template\'s fixed words and the teacher\'s note, never a student\'s name, at most 500 characters, 10 an hour', async () => {
+  const x = await linked([]);
+  const { c, s, teacher, cl, tc } = x;
+  const ann = body => post(`/api/classes/${c.id}/google-classroom/announce`, body, tc);
+  const last = () => room.calls.findLast(z => z.method === 'POST' && /announcements$/.test(z.path));
+  // Free text: exactly the teacher's words (anything else in the request is ignored).
+  let r = await ann({ template: 'free', note: '  Bring your  headphones tomorrow!\r\n\r\n\r\nThanks ', text: 'Kid Here scored 100%' });
+  assert.equal(r.status, 200);
+  assert.deepEqual(last().body, { text: 'Bring your headphones tomorrow!\n\nThanks', state: 'PUBLISHED' });
+  // A student's name (full, first name, or username) is refused, and the form shows it under the message.
+  for (const note of ['Well done Kid Here!', 'Well done kid!', `Hi ${x.kid.username}`]) {
+    r = await ann({ template: 'free', note });
+    assert.equal(r.status, 400, note); const j = await r.json(); assert.equal(j.code, 'hasName'); assert.equal(j.field, 'note');
+  }
+  assert.equal((await (await ann({ template: 'free', note: '' })).json()).code, 'emptyNote');
+  assert.equal((await (await ann({ template: 'free', note: 'x'.repeat(501) })).json()).code, 'tooLong');
+  assert.equal((await (await ann({ template: 'grades', note: 'hi' })).json()).code, 'badTemplate');
+  // A lesson: its title and link, plus an optional note. Only an open lesson of this class.
+  r = await ann({ template: 'lesson', clId: cl.id, note: 'Due Friday.' });
+  assert.equal(r.status, 200);
+  assert.equal(last().body.text, `📚 A new lesson is ready: Fractions day\n${base}/class/${c.id}/lessons/${cl.id}\n\nDue Friday.`);
+  const other = school();
+  assert.equal((await (await ann({ template: 'lesson', clId: other.cl.id })).json()).code, 'pickLesson');
+  const later = L.assign(teacher, c.id, L.createLesson(teacher, s.id, { title: 'Later' }).lesson.id, { opensAt: new Date(Date.now() + 3 * DAY).toISOString().slice(0, 10) }).classLesson;
+  assert.equal((await (await ann({ template: 'lesson', clId: later.id })).json()).code, 'lessonNotOpen');
+  // A live game: only the code of a game open for this class (a typed code is never used).
+  config.liveClassroom = true;
+  try {
+    assert.equal((await (await ann({ template: 'live', code: '7654321' })).json()).code, 'noLiveGame');
+    assert.match(await pageOf(c, tc), /No live game is open for this class right now/);
+    const sess = { id: 'gc-test-live', phase: 'lobby', audience: 'class', classId: c.id, code: '1234567', host: { userId: teacher.id }, seats: new Map(), cohosts: new Map() };
+    LS._all().set(sess.id, sess);
+    try {
+      assert.equal(gcLiveAnnounce({ user: teacher }, sess), `/class/${c.id}/google-classroom?live=1#gc-announce`, 'the host screen links here');
+      assert.equal(gcLiveAnnounce({ user: x.other }, sess), '', 'not for someone else');
+      const pg = await pageOf(c, tc, '?live=1');
+      assert.match(pg, /<details class="gc-tpl" open><summary>🎮/);
+      assert.match(pg, /Join at http:\/\/127\.0\.0\.1:\d+\/join#1234567 with the code 1234567/);
+      r = await ann({ template: 'live', code: '7654321', note: "Let's go!" });
+      assert.equal(r.status, 200);
+      assert.equal(last().body.text, `🎮 A live game is starting now! Join at ${base}/join#1234567 with the code 1234567.\n\nLet's go!`);
+    } finally { LS._all().delete(sess.id); }
+  } finally { config.liveClassroom = false; }
+  // The log keeps the template and the length, never the text.
+  const logged = syncs(c.id, 'announce');
+  assert.ok(logged.length >= 3); assert.doesNotMatch(JSON.stringify(logged), /headphones|Friday|Let's go/);
+  // 10 an hour per class (counting the 3 above).
+  let sent = 3;
+  for (let i = 0; i < 9; i++) { const z = await ann({ template: 'free', note: `Reminder ${i}` }); if (z.status === 200) sent++; else { assert.equal(z.status, 429); assert.match((await z.json()).error, /10 announcements in an hour/); } }
+  assert.equal(sent, 10);
+  assert.match(await pageOf(c, tc), /Oomba Academy adds only the words shown above/);
 });

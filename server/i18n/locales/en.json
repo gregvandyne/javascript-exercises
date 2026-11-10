@@ -7805,14 +7805,15 @@
         "grades": "send each student's lesson completion grade to Classroom"
       },
       "button": "Connect Google Classroom",
-      "privacy": "Only you see this connection. Oomba Academy sends Classroom the lesson title, a link, the due date and each student's completion grade out of 100. Nothing else: no names, answers or games.",
+      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson's title, link and due date, each student's completion grade out of 100, a topic name, and announcements you write. Never students' names, answers or games.",
       "connectedAs": "Connected as {email}",
       "connectedHint": "This connection is yours: your co-teachers connect their own.",
       "connectedToast": "Google Classroom is connected.",
       "disconnect": "Disconnect",
       "disconnectConfirm": "Disconnect Google Classroom? Oomba Academy will stop syncing for you and delete its key to your Classroom. Lessons already posted stay in Classroom.",
       "disconnected": "Google Classroom is disconnected.",
-      "reconnect": "Connect again"
+      "reconnect": "Connect again",
+      "later": "Posting lessons, grades and announcements comes later, only if you allow it."
     },
     "course": {
       "heading": "Linked Classroom class",
@@ -7832,7 +7833,6 @@
       "heading": "Students from Classroom",
       "text": "Brings in the students of the linked Classroom class. Students already here are matched by their Google account. Students new to Oomba Academy join the first time they sign in with Google on your school's domain, and get a school account then. Their real names stay with teachers.",
       "button": "Import students",
-      "last": "Last import {when}",
       "noDomains": "Your school hasn't added its Google domain yet, so new students can't be added. Ask your school admin.",
       "noDomainsAdmin": "Add your school's Google domain first, so new students can sign in: {link}",
       "hint": "Using Google Classroom? {link}",
@@ -7845,7 +7845,9 @@
       "resultStaff": "{count, plural, one {# is staff here} other {# are staff here}}",
       "resultDomains": "{count, plural, one {# not added: add your school's Google domain first} other {# not added: add your school's Google domain first}}",
       "resultWaiting": "{count, plural, one {# will join when they first sign in with Google on your school's domain} other {# will join when they first sign in with Google on your school's domain}}",
-      "waitingNow": "{count, plural, one {# student from Classroom hasn't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).} other {# students from Classroom haven't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).}}"
+      "waitingNow": "{count, plural, one {# student from Classroom hasn't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).} other {# students from Classroom haven't signed in yet. They join this class the first time they sign in with Google on your school's domain (within 30 days; import again to renew).}}",
+      "updated": "Roster updated {when}",
+      "resultLeft": "{count, plural, one {# no longer in Google Classroom} other {# no longer in Google Classroom}}"
     },
     "post": {
       "heading": "Lessons in Classroom",
@@ -7861,7 +7863,8 @@
       "posted": "Posted",
       "open": "Open in Classroom",
       "noLessons": "No lessons in this class yet. Assign one on the Lessons tab.",
-      "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens."
+      "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens.",
+      "locked": "To post lessons, send grades and share materials, allow Oomba Academy to post to Classroom."
     },
     "grades": {
       "text": "This is a completion grade: the share of the lesson's steps a student has done, out of 100. It doesn't count right answers. Students who haven't started are left out.",
@@ -7885,7 +7888,15 @@
         "unlink": "Unlinked",
         "roster": "Imported students",
         "post": "Posted a lesson",
-        "grades": "Sent grades"
+        "grades": "Sent grades",
+        "autoRoster": "Updated students (automatic)",
+        "autoGrades": "Sent grades (automatic)",
+        "material": "Shared a material",
+        "announce": "Posted to the class stream",
+        "settings": "Changed automatic sync",
+        "topic": "Renamed the topic",
+        "removeLeft": "Removed a student who left Classroom",
+        "keepLeft": "Kept a student who left Classroom"
       }
     },
     "errors": {
@@ -7904,12 +7915,107 @@
       "alreadyPosted": "This lesson is already in Google Classroom.",
       "notPosted": "Post this lesson to Google Classroom first.",
       "badMode": "Choose how to send the grades.",
-      "scopesMissing": "Please check every box on Google's screen, so Oomba Academy can see your classes and post work.",
+      "scopesMissing": "Please check both boxes on Google's screen (see your classes and their students): Oomba Academy needs them to link a class.",
       "noRefresh": "Google didn't send a key we can keep. Please connect again.",
       "expired": "That took too long. Please try again.",
       "cancelled": "You canceled on Google's screen. Nothing was connected.",
       "staffOnly": "Only teachers and school admins can use Google Classroom here.",
-      "tooManyTries": "Too many syncs for now. Please try again in an hour."
+      "tooManyTries": "Too many syncs for now. Please try again in an hour.",
+      "needsScope": "Oomba Academy isn't allowed to do this in your Classroom yet. Use “Allow Oomba Academy to post to Classroom” first.",
+      "noneAllowed": "Nothing new was allowed on Google's screen, so posting stays off.",
+      "alreadyShared": "This lesson is already shared as a material.",
+      "notLeaver": "That student isn't on the list any more.",
+      "badTemplate": "Choose what to announce.",
+      "noLiveGame": "No live game is open for this class right now.",
+      "pickLesson": "Choose a lesson of this class.",
+      "lessonNotOpen": "That lesson isn't open yet.",
+      "emptyNote": "Write your message first.",
+      "tooLong": "Announcements can be at most {max} characters.",
+      "hasName": "Your message has a student's name in it ({name}). Announcements go to the whole class, so please take it out.",
+      "tooManyAnnouncements": "That's 10 announcements in an hour for this class. Please wait a little."
+    },
+    "allow": {
+      "heading": "What Oomba Academy may do in your Classroom",
+      "features": {
+        "read": "See your classes and bring in their students",
+        "post": "Post lessons as assignments and send grades",
+        "materials": "Share lessons as materials",
+        "announce": "Post announcements to the class stream",
+        "topics": "Put its posts under a topic"
+      },
+      "on": "allowed",
+      "off": "not allowed yet",
+      "textNone": "Right now Oomba Academy can only read your classes and their students. To post to Classroom, allow it on Google's screen.",
+      "textSome": "Some of these are off because their boxes weren't checked on Google's screen. You can allow them now.",
+      "button": "Allow Oomba Academy to post to Classroom",
+      "done": "Done: Oomba Academy may now post to your Classroom."
+    },
+    "leavers": {
+      "heading": "No longer in Google Classroom",
+      "text": "These students were on the Classroom class's roster and aren't any more. They are still in this class: remove them, or keep them here.",
+      "since": "left {when}",
+      "remove": "Remove from class",
+      "removeConfirm": "Remove {name} from this class? Their work stays with the class.",
+      "keep": "Keep",
+      "removed": "Removed from the class.",
+      "kept": "Kept in the class."
+    },
+    "auto": {
+      "heading": "Automatic sync",
+      "roster": "Update the students from Classroom every 6 hours",
+      "rosterHint": "New students are added. Students who leave Classroom are listed above for you to remove: no one is removed on their own.",
+      "grades": "Send grades automatically",
+      "gradesHint": "Every 30 minutes, completion grades that changed go to Classroom for lessons posted from here, until 30 days after each due date.",
+      "by": "Grades go with {name}'s Google Classroom connection.",
+      "save": "Save",
+      "saved": "Saved.",
+      "locked": "Sending grades automatically needs posting to be allowed.",
+      "reconnect": "Reconnect Classroom",
+      "paused": {
+        "reconnect": "Automatic grades are paused: your Google Classroom connection stopped working.",
+        "needsScope": "Automatic grades are paused: Oomba Academy may no longer post grades to your Classroom. Allow it again above.",
+        "backoff": "Automatic grades are paused after an error. They will try again soon.",
+        "other": "Automatic grades are paused: the teacher who turned them on can't sync this class now. Turn them off and on again to send them with your connection."
+      }
+    },
+    "topic": {
+      "default": "Oomba Academy",
+      "label": "Classroom topic for these posts",
+      "save": "Save",
+      "saved": "Topic saved.",
+      "hint": "New posts go under this topic in Classroom. Leave it empty to use the default."
+    },
+    "material": {
+      "text": "Sharing as a material puts the lesson's title and link in Classroom, with no grade and no due date.",
+      "button": "Share as material",
+      "done": "Shared to Google Classroom as a material.",
+      "doneScheduled": "Scheduled in Google Classroom as a material: students see it on {date}, when the lesson opens.",
+      "shared": "Shared as material",
+      "open": "Open material"
+    },
+    "announce": {
+      "heading": "Post to the class stream",
+      "text": "Announcements go to everyone in the Classroom class, as plain text (at most {max} characters).",
+      "live": "A live game is starting now",
+      "lesson": "A lesson is ready",
+      "free": "Your own message",
+      "adds": "Oomba Academy adds:",
+      "note": "Add a note (optional)",
+      "message": "Your message",
+      "send": "Post to the class stream",
+      "noLive": "No live game is open for this class right now. Host one, then come back here or use “Announce in Classroom” on the host screen.",
+      "hostLive": "Host a live game",
+      "pickLesson": "Lesson",
+      "lessonTitle": "the lesson's title",
+      "noLessons": "No open lessons in this class yet.",
+      "fixed": {
+        "live": "🎮 A live game is starting now! Join at {url} with the code {code}.",
+        "lesson": "📚 A new lesson is ready: {title}\n{url}"
+      },
+      "rule": "Oomba Academy adds only the words shown above. It never adds students' names or results, and won't post a message with a student's name in it.",
+      "done": "Posted to the class stream.",
+      "locked": "To post announcements, allow Oomba Academy to post to Classroom.",
+      "fromLive": "Announce in Classroom"
     }
   },
   "digest": {
