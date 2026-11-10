@@ -7568,7 +7568,7 @@
       "lessonNotOpen": "Essa aula ainda não está aberta.",
       "emptyNote": "Escreva sua mensagem primeiro.",
       "tooLong": "Os avisos podem ter no máximo {max} caracteres.",
-      "hasName": "Sua mensagem tem o nome de um aluno ({name}). Os avisos vão para a turma toda: tire o nome, por favor.",
+      "hasName": "“{name}” na sua mensagem é igual ao nome de um aluno. Os avisos vão para a turma toda: reescreva ou tire essa palavra, por favor.",
       "tooManyAnnouncements": "Já foram 10 avisos em uma hora para esta turma. Espere um pouco."
     },
     "allow": {

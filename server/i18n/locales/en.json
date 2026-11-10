@@ -7974,7 +7974,7 @@
       "lessonNotOpen": "That lesson isn't open yet.",
       "emptyNote": "Write your message first.",
       "tooLong": "Announcements can be at most {max} characters.",
-      "hasName": "Your message has a student's name in it ({name}). Announcements go to the whole class, so please take it out.",
+      "hasName": "“{name}” in your message matches a student's name. Announcements go to the whole class, so please reword it or take it out.",
       "tooManyAnnouncements": "That's 10 announcements in an hour for this class. Please wait a little."
     },
     "allow": {

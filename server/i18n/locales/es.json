@@ -7566,7 +7566,7 @@
       "lessonNotOpen": "Esa lección todavía no está abierta.",
       "emptyNote": "Escribe primero tu mensaje.",
       "tooLong": "Los anuncios pueden tener como máximo {max} caracteres.",
-      "hasName": "Tu mensaje tiene el nombre de un alumno ({name}). Los anuncios llegan a toda la clase: quítalo, por favor.",
+      "hasName": "«{name}» en tu mensaje coincide con el nombre de un alumno. Los anuncios llegan a toda la clase: cámbialo o quítalo, por favor.",
       "tooManyAnnouncements": "Ya van 10 anuncios en una hora para esta clase. Espera un poco."
     },
     "allow": {

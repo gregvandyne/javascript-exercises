@@ -1399,5 +1399,6 @@
   "gclassroom.topic.default": "The name of the Google Classroom topic Oomba Academy files its posts under (teachers can rename it). Sent to Google as typed: keep \"Oomba Academy\" in Latin letters, no direction marks, max 100 chars.",
   "gclassroom.announce.fixed.live": "Sent to Google Classroom as plain text in the class stream (no HTML). {url} is the join link, {code} the 7-digit live code. Keep the emoji.",
   "gclassroom.announce.fixed.lesson": "Sent to Google Classroom as plain text in the class stream (no HTML). {title} is the lesson title, {url} its link; keep the line break before {url}. Keep the emoji.",
+  "gclassroom.errors.hasName": "Shown under the announcement box when the teacher's message contains a student's name. {name} is the exact word or words from the teacher's own message that matched (as they typed it), so they can find and reword it. Keep it in quotes.",
   "gclassroom.allow.button": "Button that asks Google again for the write permissions. Keep \"Oomba Academy\" and \"Classroom\" as is."
 }

@@ -854,3 +854,170 @@ test('announcements: only the template\'s fixed words and the teacher\'s note, n
   assert.equal(sent, 10);
   assert.match(await pageOf(c, tc), /Oomba Academy adds only the words shown above/);
 });
+
+// ---------------------------------------------------------------- hardening: retries, big classes, the name check
+test('automatic grades: a grade that didn\'t go through is tried again later (backing off) until it goes; grades that went are not sent again; the retries stop with the lesson\'s window', async () => {
+  const x = await linked([{ userId: '640000000000000000001', fullName: 'Kid Here' }, { userId: '640000000000000000002', fullName: 'Bea Busy' }]);
+  const { c, s, admin, cl, steps, tc, kid } = x;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '640000000000000000001', kid.id, 'kid64@dwes.test', 'dwes.test', Date.now());
+  const bea = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Bea Busy' }).user;
+  S.addToClass({ id: admin.id }, c.id, bea.id, 'student');
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '640000000000000000002', bea.id, 'bea64@dwes.test', 'dwes.test', Date.now());
+  await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  await post(`/api/classes/${c.id}/google-classroom/auto`, { autoRoster: '1', autoGrades: '1', mode: 'draft' }, tc);
+  assert.ok(P.markDone(kid, cl.id, steps[0].id).ok); assert.ok(P.markDone(bea, cl.id, steps[0].id).ok);
+  const cw = room.courseWork.get(GC.postOf(cl.id).coursework_id);
+  const subOf = sub => cw.submissions.find(z => z.userId === sub);
+  const patches = () => room.calls.filter(z => z.method === 'PATCH');
+  // Kid's grade fails (Google answers 500 for that one submission); Bea's goes.
+  room.failNext(500, { match: new RegExp(`PATCH .*/${subOf('640000000000000000001').id}$`) });
+  const t = Date.now();
+  await GC.autoGrades(t);
+  assert.equal(subOf('640000000000000000001').draftGrade, undefined); assert.equal(subOf('640000000000000000002').draftGrade, 50);
+  assert.equal(syncs(c.id, 'autoGrades').at(-1).status, 'partial');
+  let p = GC.postOf(cl.id);
+  assert.equal(p.retry_fails, 1); assert.ok(p.retry_at >= t + 60 * 60e3, 'tried again in an hour');
+  assert.equal(GC.linkOf(c.id).auto_fails, 0, 'one student failing doesn\'t pause the class');
+  // Nobody does anything more. Before the retry is due: no call to Google.
+  let n0 = room.calls.length;
+  await GC.autoGrades(t + 30 * 60e3);
+  assert.equal(room.calls.length, n0, 'waits for the retry');
+  // It fails again: the next try is two hours later.
+  room.failNext(503, { match: /PATCH/ });
+  n0 = patches().length;
+  await GC.autoGrades(t + 61 * 60e3);
+  assert.equal(patches().length, n0 + 1, 'only the failed student is tried, Bea is not sent again');
+  p = GC.postOf(cl.id);
+  assert.equal(p.retry_fails, 2); assert.ok(p.retry_at >= t + 61 * 60e3 + 2 * 3600e3);
+  n0 = room.calls.length;
+  await GC.autoGrades(t + 2 * 3600e3);
+  assert.equal(room.calls.length, n0, 'backing off');
+  // Then it goes: Kid's grade only, and the retry is done.
+  n0 = patches().length;
+  await GC.autoGrades(t + 4 * 3600e3);
+  assert.equal(patches().length, n0 + 1);
+  assert.ok(patches().at(-1).path.endsWith(subOf('640000000000000000001').id));
+  assert.equal(subOf('640000000000000000001').draftGrade, 50);
+  p = GC.postOf(cl.id); assert.equal(p.retry_at, null); assert.equal(p.retry_fails, 0);
+  assert.equal(syncs(c.id, 'autoGrades').at(-1).status, 'ok');
+  n0 = room.calls.length;
+  await GC.autoGrades(t + 30 * 3600e3);
+  assert.equal(room.calls.length, n0, 'nothing left to send: Google is not asked');
+
+  // The retries stop with the lesson's automatic grades: 30 days after its due day...
+  q.run('UPDATE gc_posts SET auto_at=NULL WHERE class_lesson_id=?', cl.id);
+  assert.ok(P.markDone(kid, cl.id, steps[1].id).ok);
+  room.failNext(500, { match: /PATCH/ });
+  const t2 = t + 40 * 3600e3;
+  await GC.autoGrades(t2);
+  assert.ok(GC.postOf(cl.id).retry_at, 'Kid\'s 100 is waiting for a retry');
+  q.run('UPDATE class_lessons SET due_at=? WHERE id=?', t2 - 32 * DAY, cl.id);
+  n0 = room.calls.length;
+  await GC.autoGrades(t2 + 3 * 3600e3);
+  assert.equal(room.calls.length, n0, '30 days after the due date: no more retries');
+  // ...or 90 days after it was posted when it has no due date.
+  q.run('UPDATE class_lessons SET due_at=NULL WHERE id=?', cl.id);
+  q.run("UPDATE gc_posts SET posted_at=? WHERE class_lesson_id=? AND kind='assignment'", t2 - 91 * DAY, cl.id);
+  await GC.autoGrades(t2 + 3 * 3600e3);
+  assert.equal(room.calls.length, n0, '90 days after posting: no more retries');
+  // Inside the window the same retry still goes.
+  q.run("UPDATE gc_posts SET posted_at=? WHERE class_lesson_id=? AND kind='assignment'", t2, cl.id);
+  await GC.autoGrades(t2 + 3 * 3600e3);
+  assert.equal(subOf('640000000000000000001').draftGrade, 100);
+  assert.equal(subOf('640000000000000000002').draftGrade, 50, 'Bea unchanged');
+});
+
+const many = (prefix, count) => Array.from({ length: count }, (_, i) => ({ userId: `${prefix}${String(i).padStart(6, '0')}`, fullName: `Student ${i}` }));
+test('a Classroom class over 300 students gets the plain "more than 300 students" answer without its whole roster being read', async () => {
+  const x = await linked(many('6500000000000', 1200));
+  const { c, tc } = x;
+  const reads = () => room.calls.filter(z => z.method === 'GET' && z.path.endsWith('/students')).length;
+  const n0 = reads();
+  const r = await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc);
+  assert.equal(r.status, 400);
+  const j = await r.json();
+  assert.equal(j.code, 'tooMany'); assert.match(j.error, /more than 300 students/);
+  assert.equal(reads() - n0, 4, 'paging stops as soon as more than 300 were seen (not 12 pages, not "too many pages")');
+  assert.equal(syncs(c.id, 'roster').at(-1).error, 'tooMany');
+  assert.equal(GC.pendingCount(c.id), 0, 'nothing imported');
+  // Exactly 300 is fine.
+  const y = await linked(many('6510000000000', 300));
+  assert.equal((await post(`/api/classes/${y.c.id}/google-classroom/roster`, {}, y.tc)).status, 200);
+  assert.equal(GC.pendingCount(y.c.id), 300);
+});
+
+test('grades for a Classroom class with more than 500 submissions: paging stops once every student was found; past the page limit the rest are counted, not a failed send', async () => {
+  const roster = many('6600000000000', 1050);
+  roster[3] = { userId: '660000000000000000001', fullName: 'Kid Here' };
+  roster[700] = { userId: '660000000000000000002', fullName: 'Bea Busy' };
+  const x = await linked(roster);
+  const { c, s, admin, cl, steps, tc, kid } = x;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '660000000000000000001', kid.id, 'kid66@dwes.test', 'dwes.test', Date.now());
+  const bea = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Bea Busy' }).user;
+  S.addToClass({ id: admin.id }, c.id, bea.id, 'student');
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '660000000000000000002', bea.id, 'bea66@dwes.test', 'dwes.test', Date.now());
+  await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  const cw = room.courseWork.get(GC.postOf(cl.id).coursework_id);
+  const subOf = sub => cw.submissions.find(z => z.userId === sub);
+  const reads = () => room.calls.filter(z => z.method === 'GET' && z.path.endsWith('/studentSubmissions')).length;
+  // Only Kid started: the first page has Kid, so one page is read.
+  assert.ok(P.markDone(kid, cl.id, steps[0].id).ok);
+  let n0 = reads();
+  let r = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
+  assert.equal(reads() - n0, 1, 'stops once Kid was found');
+  assert.match(r.toast, /^1 completion grade sent/);
+  assert.equal(subOf('660000000000000000001').draftGrade, 50);
+  // Bea started too, 700 entries in (more than the old 500-entry limit): 8 pages, and both grades go.
+  assert.ok(P.markDone(bea, cl.id, steps[0].id).ok);
+  n0 = reads();
+  r = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
+  assert.equal(reads() - n0, 8);
+  assert.match(r.toast, /^2 completion grades sent/);
+  assert.equal(subOf('660000000000000000002').draftGrade, 50);
+  assert.equal(syncs(c.id, 'grades').at(-1).status, 'ok');
+  // Bea past the 1,000 entries read (10 pages): Kid's grade still goes; Bea counts as not gone through, with the reason.
+  const [bsub] = cw.submissions.splice(cw.submissions.findIndex(z => z.userId === '660000000000000000002'), 1);
+  cw.submissions.push(bsub);
+  assert.ok(P.markDone(kid, cl.id, steps[1].id).ok); assert.ok(P.markDone(bea, cl.id, steps[1].id).ok);
+  n0 = reads();
+  const res = await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc);
+  assert.equal(res.status, 200, 'not a failed send');
+  r = await res.json();
+  assert.equal(reads() - n0, GC.SUBMISSION_PAGES);
+  assert.match(r.toast, /1 completion grade sent.*1 didn't go through/);
+  assert.equal(subOf('660000000000000000001').draftGrade, 100); assert.equal(subOf('660000000000000000002').draftGrade, 50);
+  const last = syncs(c.id, 'grades').at(-1);
+  assert.equal(last.status, 'partial'); assert.equal(last.error, 'tooMany');
+  assert.match(await pageOf(c, tc), /That Classroom class has more than 300 students/);
+});
+
+test('announcements: everyday words that are also first names (May, Will, Art) pass unless written as a name; full names and usernames never; the error names the word', async () => {
+  const x = await linked([]);
+  const { c, s, admin, tc, kid } = x;
+  for (const rosterName of ['May Lin', 'Will Ortiz', 'Art Bell']) S.addToClass({ id: admin.id }, c.id, S.createSchoolAccount({ id: admin.id }, s.id, { rosterName }).user.id, 'student');
+  const ann = note => post(`/api/classes/${c.id}/google-classroom/announce`, { template: 'free', note }, tc);
+  for (const note of ['Bring your art supplies, we will start in May', 'May I remind you: Will you all bring art supplies? Art starts at 9.',
+    'Field trip on May 3.', 'See you in early May!', 'We will mark the tests tonight.']) {
+    const r = await ann(note);
+    assert.equal(r.status, 200, `${note}: ${r.status === 200 ? '' : (await r.json()).error}`);
+  }
+  const refused = async (note, word) => {
+    const r = await ann(note);
+    assert.equal(r.status, 400, note);
+    const j = await r.json();
+    assert.equal(j.code, 'hasName'); assert.equal(j.field, 'note');
+    assert.equal(j.error, `“${word}” in your message matches a student's name. Announcements go to the whole class, so please reword it or take it out.`);
+  };
+  await refused('Great job, Will!', 'Will');
+  await refused('Thank you May for helping today', 'May');
+  await refused('Well done may lin', 'may lin');
+  await refused('Art Bell won the quiz', 'Art Bell');
+  await refused(`Hi ${kid.username.toLowerCase()}`, kid.username.toLowerCase());
+  await refused('Well done kid!', 'kid');
+  // The check itself, directly.
+  assert.equal(GC.nameIn('the will to win', c.id), '');
+  assert.equal(GC.nameIn('Ask Will, then May.', c.id), 'Will');
+  assert.equal(GC.nameIn('"Will you help?" she asked.', c.id), '');
+  assert.equal(GC.nameIn('Due by May 12', c.id), '');
+  assert.equal(GC.nameIn('Thanks, Ortiz', c.id), '', 'a last name alone is not checked');
+});
