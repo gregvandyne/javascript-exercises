@@ -19,6 +19,7 @@ import { tEn } from '../i18n/index.js';
 import { getGame, canView } from './games.js';
 import { looksLikeLinkCode } from './family.js';
 import { OFFICIAL } from '../auth.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 migrate([['0002_community', 'ALTER TABLE chat_usage ADD COLUMN paused_until INTEGER NOT NULL DEFAULT 0; CREATE INDEX IF NOT EXISTS chat_reports_msg ON chat_reports(message_id, reporter_id);']]);
 
@@ -258,6 +259,7 @@ export function report(me, messageId, reason, t = tEn) {
     q.run('INSERT INTO chat_reports(id, message_id, reporter_id, reason, status, created_at) VALUES (?,?,?,?,?,?)', uid(), m.id, me.id, reason, 'open', now());
     q.run('UPDATE chat_messages SET read_at=COALESCE(read_at, ?) WHERE id=?', now(), m.id);
     audit(me.id, 'chat.report', m.id, { reason, from: m.from_id });
+    adminAlert('report', { ref: m.id, summary: `A chat message was reported (${reason})`, url: '/admin?tab=chat' });   // never the message
   }
   return { ok: true, message: t('chat.report.thanks') };
 }

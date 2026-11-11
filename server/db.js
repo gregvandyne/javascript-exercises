@@ -910,6 +910,23 @@ export const MIGRATIONS = [
   ['0072_gclassroom_retry', `
     ALTER TABLE gc_posts ADD COLUMN retry_at INTEGER;
     ALTER TABLE gc_posts ADD COLUMN retry_fails INTEGER NOT NULL DEFAULT 0;`],
+  // Admin alerts (services/admin-alerts.js; docs/decisions.md "Admin alerts by email"). admin_alerts: one row per thing
+  // that needs the platform admin (a game waiting for review, a new account, a message to the team...): its kind, the
+  // id it is about (ref), a short non-personal note (summary: e.g. 'update', a report reason) and the admin page path.
+  // Never a message's text, a name or an address: the email reads public usernames and titles at send time.
+  // admin_alert_batches: one summary email per run (claimed before it is sent; its rendered message is kept only while
+  // it may be retried), with the addresses it went to (admins' own) for the log on /admin/emails.
+  ['0073_admin_alerts', `
+    CREATE TABLE IF NOT EXISTS admin_alerts (
+      id TEXT PRIMARY KEY, kind TEXT NOT NULL, ref TEXT, summary TEXT NOT NULL DEFAULT '', url TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'pending', batch_id TEXT, created_at INTEGER NOT NULL, sent_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_admin_alerts_status ON admin_alerts(status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_admin_alerts_batch ON admin_alerts(batch_id);
+    CREATE TABLE IF NOT EXISTS admin_alert_batches (
+      id TEXT PRIMARY KEY, status TEXT NOT NULL, test INTEGER NOT NULL DEFAULT 0, items INTEGER NOT NULL DEFAULT 0,
+      kinds TEXT NOT NULL DEFAULT '{}', recipients TEXT NOT NULL DEFAULT '[]', delivered TEXT NOT NULL DEFAULT '[]',
+      message TEXT, attempts INTEGER NOT NULL DEFAULT 0, claimed_at INTEGER, sent_at INTEGER, error TEXT, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_admin_alert_batches_created ON admin_alert_batches(created_at);`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

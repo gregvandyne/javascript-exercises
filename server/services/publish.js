@@ -26,6 +26,7 @@ import { sharingOptions, validateClassPick, setGameClasses, gameClassIds, sharea
 import { getUser, isGrownup } from '../auth.js';
 import * as team from './team.js';
 import { REVIEW_REASONS } from './chat.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 const CLASS_ERRORS = { pickClass: 'studio.api.pickClass', classGone: 'studio.api.classGone', classRemoved: 'studio.api.classRemoved' };
 
@@ -161,6 +162,7 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   });
   if (friendsNow) queueShot(version.id);
   audit(user.id, 'game.submit_review', game.id, { version: version.number, update: wasLive, visibility, ...(friendsNow ? { friendsNow: true } : {}), ...classesLine });
+  adminAlert('review', { ref: game.id, summary: wasLive ? 'update' : 'new' });   // never throws (services/admin-alerts.js)
   const waitMsg = friendsNow ? t(isGrownup(owner) ? 'publish.waitingTeamGrownup' : 'publish.waitingTeam') : wasLive ? t('publish.updateWaiting') : t('publish.waiting');
   return { ok: true, state: 'in_review', message: waitMsg, game: getGame(game.id) };
 }

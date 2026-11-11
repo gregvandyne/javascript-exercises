@@ -17,6 +17,7 @@
 import { q, tx, uid, now, audit, today } from '../db.js';
 import { config } from '../config.js';
 import { log } from './log.js';
+import { alert as adminAlert } from './admin-alerts.js';
 import { register } from './jobs.js';
 import * as S from './stripe.js';
 import * as B from './billing.js';
@@ -272,7 +273,10 @@ export async function handleEvent(event) {
     if (!B.recordEvent(event, null)) return { result: 'duplicate' };
     for (const pack of q.all('SELECT * FROM spark_packs WHERE stripe_payment_intent=?', pi)) {
       if (event.type === 'charge.refunded') refundPack(pack, charge, event.id);
-      else endPack(pack, 'disputed', event.type === 'charge.dispute.created' ? 'dispute' : 'efw', { eventId: event.id });
+      else {
+        endPack(pack, 'disputed', event.type === 'charge.dispute.created' ? 'dispute' : 'efw', { eventId: event.id });
+        adminAlert('billing', { ref: pack.id, summary: event.type === 'charge.dispute.created' ? 'A Spark Pack payment was disputed' : 'Stripe sent an early fraud warning on a Spark Pack' });
+      }
     }
     B.setEventResult(event, 'ok');
     return { result: 'ok' };
