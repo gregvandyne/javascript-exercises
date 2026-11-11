@@ -4312,7 +4312,16 @@
         "full": "Nous ne pouvons pas accepter d’autres demandes pour le moment. Veuillez plutôt nous écrire.",
         "again": "Un élément du formulaire est à corriger. Veuillez le vérifier et l’envoyer à nouveau."
       },
-      "name": "Ton nom"
+      "name": "Ton nom",
+      "leadSignup": "Créez votre compte enseignant et votre école en une seule étape. Vous pouvez l'utiliser tout de suite : créer des classes, ajouter des élèves et jouer. Nous examinerons votre école sous 1 jour d'école et vous enverrons un court guide par e-mail. Créer une école est gratuit.",
+      "leadStaff": "Parlez-nous un peu de votre école. Nous l'examinerons sous 1 jour d'école et vous enverrons par e-mail un court guide pour lancer vos enseignants et vos élèves.",
+      "yourSchool": "Votre école",
+      "accountH": "Votre compte",
+      "accountLead": "Vous vous connecterez avec ces informations. Vous avez déjà un compte enseignant ? <a href=\"{login}\">Connectez-vous</a> d'abord.",
+      "submitSignup": "Créer mon compte et mon école",
+      "submitStaff": "Envoyer",
+      "privacySignup": "Nous utilisons votre e-mail pour vous envoyer le guide de bienvenue, réinitialiser un mot de passe oublié et vous répondre. Consultez notre <a href=\"{privacy}\">Politique de confidentialité</a>.",
+      "emailHintSignup": "L'e-mail de votre école. Nous y envoyons le guide de bienvenue, et nous l'utilisons si vous oubliez votre mot de passe."
     },
     "live": {
       "h": "Jeux en direct en classe",
@@ -7346,7 +7355,8 @@
       "breaksText": "Des jeux courts et amusants de Jouer, choisis pour une pause de 5 minutes sur le grand écran.",
       "allGames": "Voir tout ce que les élèves peuvent jouer",
       "openLive": "Ouvrir le jeu en direct",
-      "make": "Transformer une leçon en jeu"
+      "make": "Transformer une leçon en jeu",
+      "schoolReady": "{school} est prête, et vous en êtes l'administrateur. Créez votre première classe ci-dessous, puis ajoutez vos élèves. Nous examinerons votre école sous 1 jour d'école et vous enverrons un court guide par e-mail."
     },
     "loop": {
       "kicker": "Comment Oomba s'intègre à votre semaine",

@@ -4312,7 +4312,16 @@
         "full": "Ahora no podemos recibir más solicitudes. Por favor, escríbanos.",
         "again": "Hay algo en el formulario que se debe corregir. Revíselo y envíelo de nuevo."
       },
-      "name": "Tu nombre"
+      "name": "Tu nombre",
+      "leadSignup": "Crea tu cuenta de docente y tu colegio en un solo paso. Puedes empezar a usarlo enseguida: crear clases, añadir alumnos y jugar. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo. Configurar un colegio es gratis.",
+      "leadStaff": "Cuéntanos un poco sobre tu colegio. Lo revisaremos en 1 día lectivo y te enviaremos por correo una guía breve para que empiecen tus docentes y alumnos.",
+      "yourSchool": "Tu colegio",
+      "accountH": "Tu cuenta",
+      "accountLead": "Iniciarás sesión con estos datos. ¿Ya tienes una cuenta de docente? <a href=\"{login}\">Inicia sesión</a> primero.",
+      "submitSignup": "Crear mi cuenta y mi colegio",
+      "submitStaff": "Enviar",
+      "privacySignup": "Usamos tu correo para enviarte la guía de bienvenida, restablecer una contraseña olvidada y responderte. Consulta nuestra <a href=\"{privacy}\">Política de privacidad</a>.",
+      "emailHintSignup": "Tu correo del colegio. Te enviamos allí la guía de bienvenida y lo usamos si olvidas tu contraseña."
     },
     "live": {
       "h": "Juegos en vivo en clase",
@@ -7346,7 +7355,8 @@
       "breaksText": "Juegos cortos y divertidos de Jugar, elegidos para una pausa de 5 minutos en la pantalla grande.",
       "allGames": "Ver todo lo que pueden jugar los alumnos",
       "openLive": "Abrir el juego en vivo",
-      "make": "Convertir una lección en un juego"
+      "make": "Convertir una lección en un juego",
+      "schoolReady": "{school} ya está listo y tú eres su administrador. Crea tu primera clase abajo y luego añade a tus alumnos. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo."
     },
     "loop": {
       "kicker": "Cómo encaja Oomba en tu semana",

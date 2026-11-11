@@ -1705,3 +1705,7 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .lcard-try{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font-weight:700;font-size:.95rem;color:var(--text-2)}
 .learn-how{row-gap:8px}
 .gcard .gmeta{font-weight:700;color:var(--text-2)}
+/* "Set up your school", signed out: the account part of the sign-up (routes/teachers.js setupBlock) */
+.sr-account{margin:var(--s4) 0 0;padding:var(--s3) var(--s4) var(--s2);border:1px solid var(--line);border-radius:var(--r-sm)}
+.sr-account legend{padding:0 6px;font-weight:700}
+.sr-account>p{margin:0 0 var(--s3)}

@@ -8,13 +8,14 @@ import { html, raw, jsonData, fmtNum, timeAgo } from '../views/html.js';
 import { page } from '../views/layout.js';
 import { ADMIN_BODY, ADMIN_CSS, jumpNav, note as foldNote } from '../views/admin-ui.js';
 import { avatar, emptyState, statusLabel, coverArt } from '../views/components.js';
-import { requireAdmin, signToken } from '../auth.js';
+import { requireAdmin, signToken, getUser } from '../auth.js';
 import { SANDBOX } from '../services/frame.js';
 import { REPORT_REASONS as GAME_REASONS } from './games.js';
 import * as mod from '../services/moderation.js';
 import * as chat from '../services/chat.js';
 import { COMMUNITY_CSS } from './social.js';
-import { tEn } from '../i18n/index.js';
+import { tEn, tFor, CODES } from '../i18n/index.js';
+import { sendSchoolWelcome } from '../services/school-welcome.js';
 import { schoolsOf, getSchool, isStaff } from '../services/schools.js';
 import * as schoolBilling from '../services/school-billing.js';
 import * as teacherPlan from '../services/teacher-plan.js';
@@ -171,14 +172,15 @@ const REQUEST_ROLE = { teacher: 'Teacher', leader: 'Principal / head', it: 'IT l
  *  request. The site sends no email: reply from your own mail. */
 function schoolRequestsTab() {
   const { open, closed } = schoolRequests.queue();
-  const info = r => html`<p class="small" style="margin:0">${r.contact_name ? html`<b>${r.contact_name}</b> · ` : ''}${REQUEST_ROLE[r.role] || r.role} · <a href="mailto:${r.email}" dir="ltr">${r.email}</a> · about ${int(r.students)} students · ${r.country}${r.locale ? html` · page in <code>${r.locale}</code>` : ''}</p>`;
+  const info = r => html`${r.school_slug && r.user_id ? html`<p class="small" style="margin:0 0 4px">✅ Signed up and already using it: <a href="/school/${r.school_slug}?tab=people">${r.linked_school}</a>${r.username ? html` · <bdi>@${r.username}</bdi>` : ''}</p>` : ''}<p class="small" style="margin:0">${r.contact_name ? html`<b>${r.contact_name}</b> · ` : ''}${REQUEST_ROLE[r.role] || r.role} · <a href="mailto:${r.email}" dir="ltr">${r.email}</a> · about ${int(r.students)} students · ${r.country}${r.locale ? html` · page in <code>${r.locale}</code>` : ''}</p>`;
   const act = (r, what, label, cls = 'btn', confirm = '') => html`<form data-api="/api/admin/school-requests/${r.id}/${what}" data-reload ${confirm ? html`data-confirm="${confirm}"` : ''}><button class="${cls}" type="submit">${label}</button></form>`;
   const openList = open.length ? html`<div class="stack">${open.map(r => html`<article class="panel" aria-label="School request: ${r.school_name}">
       <p class="row small" style="gap:6px"><span class="chip-s warn">Waiting</span> sent ${when(r.created_at)}</p>
       <h2 style="margin:0 0 6px">${r.school_name}</h2>
       ${info(r)}
       <div class="row aacts" style="margin-top:12px">
-        <a class="btn btn-primary" href="/admin/schools/setup?request=${encodeURIComponent(r.id)}">🏫 Set up this school</a>
+        ${r.school_slug && r.user_id ? html`${act(r, 'approve', '✅ Looks good: send the welcome', 'btn btn-primary')}<a class="btn" href="/school/${r.school_slug}?tab=people">🏫 Open the school</a>`
+          : html`<a class="btn btn-primary" href="/admin/schools/setup?request=${encodeURIComponent(r.id)}">🏫 Set up this school</a>`}
         ${act(r, 'declined', 'Decline', 'btn', `Decline the request from ${r.school_name}? Remember to reply by email.`)}
         ${act(r, 'done', 'Close without setting up', 'btn btn-sm', `Close the request from ${r.school_name} without setting it up here? Use this only if you set it up another way.`)}
       </div></article>`)}</div>`
@@ -1105,6 +1107,23 @@ router.post('/api/admin/users/:id/pause-made', (req, res) => {
 router.post('/api/admin/users/:id/unban', (req, res) => { const r = mod.unbanUser(req.user, req.params.id); res.status(r.ok ? 200 : 400).json(r); });
 router.get('/api/admin/audit', (req, res) => res.json({ rows: mod.auditLog(200) }));
 // Family links (services/family.js): a link report done, its grown-up banned (every link of theirs ends), a link broken.
+// "Looks good" on a request whose sender signed up with their school (account first): the welcome email to the
+// request's address (services/school-welcome.js: sign in with their own account, the checklist, how teachers start),
+// then the request is done. Nothing is made: the account and the school already exist.
+router.post('/api/admin/school-requests/:id/approve', async (req, res) => {
+  const r = schoolRequests.getRequest(req.params.id);
+  if (!r || r.status !== 'open' || !r.school_id || !r.user_id) return res.status(404).json({ error: 'That request is not waiting (or has no school yet: use Set up this school).' });
+  const s = getSchool(r.school_id), u = getUser(r.user_id);
+  if (!s || !u) return res.status(404).json({ error: 'That school or account is gone.' });
+  let sent;
+  try {
+    sent = await sendSchoolWelcome(tFor(CODES.includes(r.locale) ? r.locale : 'en'), { user: u, email: r.email, name: r.contact_name || '', school: s.name, setUrl: null,
+      schoolUrl: `${email.siteBase()}/school/${s.slug}`, loginUrl: `${email.siteBase()}/login` });
+  } catch { sent = { status: 'failed', reason: 'error' }; }
+  schoolRequests.close(req.user, r.id, 'done', { schoolId: s.id });
+  audit(req.user.id, 'school.welcome_email', s.id, { user: u.id, status: sent.status, account: 'signup' });
+  res.json({ ok: true, toast: sent.status === 'sent' ? `Welcome email sent to ${email.maskEmail(r.email)}.` : `Marked done, but the email was not sent (${sent.reason || sent.status}). Use Welcome email on the Schools list to try again.` });
+});
 router.post('/api/admin/school-requests/:id/:what', (req, res) => {
   const { id, what } = req.params;
   const ok = what === 'reopen' ? schoolRequests.reopen(req.user, id) : schoolRequests.close(req.user, id, what);

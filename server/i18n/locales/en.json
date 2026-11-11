@@ -4341,7 +4341,16 @@
         "full": "We can't take more requests right now. Please write to us instead.",
         "again": "Something in the form needs fixing. Please check it and send it again."
       },
-      "name": "Your name"
+      "name": "Your name",
+      "leadSignup": "Make your teacher account and your school in one step. You can start using it straight away: make classes, add students and play. We'll look over your school within 1 school day and email you a short guide. Setting up a school is free.",
+      "leadStaff": "Tell us a little about your school. We'll look it over within 1 school day and email you a short guide for getting your teachers and students started.",
+      "yourSchool": "Your school",
+      "accountH": "Your account",
+      "accountLead": "You'll sign in with this. Already have a teacher account? <a href=\"{login}\">Sign in</a> first.",
+      "submitSignup": "Create my account and school",
+      "submitStaff": "Send",
+      "privacySignup": "We use your email to send your welcome guide, to reset a forgotten password and to answer you. See our <a href=\"{privacy}\">Privacy Policy</a>.",
+      "emailHintSignup": "Your school email. We send your welcome guide there, and use it if you forget your password."
     },
     "live": {
       "h": "Live class games",
@@ -7146,7 +7155,8 @@
       "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
       "allGames": "See everything students can play",
       "openLive": "Open live game",
-      "make": "Turn a lesson into a game"
+      "make": "Turn a lesson into a game",
+      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide."
     },
     "loop": {
       "kicker": "How Oomba fits your week",

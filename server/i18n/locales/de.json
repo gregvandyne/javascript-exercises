@@ -4313,7 +4313,16 @@
         "full": "Wir können gerade keine weiteren Anfragen annehmen. Bitte schreiben Sie uns stattdessen.",
         "again": "Im Formular muss noch etwas korrigiert werden. Bitte prüfen Sie es und senden Sie es noch mal."
       },
-      "name": "Dein Name"
+      "name": "Dein Name",
+      "leadSignup": "Lege dein Lehrkräftekonto und deine Schule in einem Schritt an. Du kannst sofort loslegen: Klassen anlegen, Kinder hinzufügen und spielen. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail. Eine Schule einzurichten ist kostenlos.",
+      "leadStaff": "Erzähl uns ein wenig über deine Schule. Wir schauen sie uns innerhalb eines Schultags an und schicken dir per E-Mail eine kurze Anleitung, damit deine Lehrkräfte und Kinder starten können.",
+      "yourSchool": "Deine Schule",
+      "accountH": "Dein Konto",
+      "accountLead": "Damit meldest du dich an. Du hast schon ein Lehrkräftekonto? <a href=\"{login}\">Melde dich</a> zuerst an.",
+      "submitSignup": "Konto und Schule anlegen",
+      "submitStaff": "Senden",
+      "privacySignup": "Wir nutzen deine E-Mail, um dir die Willkommensanleitung zu schicken, ein vergessenes Passwort zurückzusetzen und dir zu antworten. Siehe unsere <a href=\"{privacy}\">Datenschutzerklärung</a>.",
+      "emailHintSignup": "Deine Schul-E-Mail. Dorthin schicken wir die Willkommensanleitung, und wir nutzen sie, falls du dein Passwort vergisst."
     },
     "live": {
       "h": "Live-Spiele in der Klasse",
@@ -7347,7 +7356,8 @@
       "breaksText": "Kurze, lustige Spiele aus „Spielen“, ausgesucht für eine 5-Minuten-Pause auf dem großen Bildschirm.",
       "allGames": "Alles ansehen, was Schüler spielen können",
       "openLive": "Live-Spiel öffnen",
-      "make": "Aus einer Stunde ein Spiel machen"
+      "make": "Aus einer Stunde ein Spiel machen",
+      "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail."
     },
     "loop": {
       "kicker": "So passt Oomba in deine Woche",

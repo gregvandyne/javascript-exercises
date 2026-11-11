@@ -4265,3 +4265,24 @@ never set a name: a kid's username is what others see, and a student's name at s
 The same grown-ups can also change their **username** there (`auth.changeUsername`): the usual username rules, once
 every 7 days, and the old username is held from everyone else for 30 days (`reserved_names`), so nobody can take it to
 pose as them. Kids' and students' usernames never change this way (their login cards and their teachers rely on them).
+
+## Account first: set up your school (11 Nov 2026)
+
+The owner found it confusing that the school (and its admin's account) was made by us before the teacher had an
+account. Now the account comes first, like the Teacher plan and Quick game sign-ups already did.
+
+- **Signed out, /teachers "Set up your school"** is one sign-up: their name, the school's name, role, work email, about
+  how many students, country, then a username, a password and "18 or older". One button makes their account and their
+  school (they are its school admin; the school's time zone from the browser), keeps the email for the account (the
+  welcome guide, password resets), stores the request linked to both, signs them in and opens their Classroom with
+  "{school} is ready". Every mistake is shown at once; nothing is made until all is right. (`createTeacherWithSchool`,
+  shared with the /trial sign-up.)
+- **A teacher or school admin, signed in:** the form becomes "Tell us about your school", for a school they run.
+- **A grown-up (parent) account or the platform admin:** the plain request as before (family accounts never join a
+  school); "Set up this school" makes it.
+- **The platform admin:** a request that came with its school shows "Signed up and already using it" and
+  **"✅ Looks good: send the welcome"**: the welcome email (sign in with their own account, no password link, the
+  checklist, how teachers start), then the request is done. Nothing waits on us: the school works from the start.
+- Not changed: the Privacy Policy's school-request section (signed off by counsel) says the email is used only to set
+  up the school and reply; the form now says it is also kept for the welcome guide and password resets. The owner has
+  the suggested policy wording for counsel.

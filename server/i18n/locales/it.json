@@ -4313,7 +4313,16 @@
         "full": "Al momento non possiamo accettare altre richieste. Ci scriva, per favore.",
         "again": "C'è qualcosa da correggere nel modulo. Lo controlli e lo invii di nuovo."
       },
-      "name": "Il tuo nome"
+      "name": "Il tuo nome",
+      "leadSignup": "Crea il tuo account insegnante e la tua scuola in un solo passaggio. Puoi iniziare subito: creare classi, aggiungere studenti e giocare. Daremo un'occhiata alla tua scuola entro 1 giorno di scuola e ti invieremo una breve guida via email. Configurare una scuola è gratis.",
+      "leadStaff": "Raccontaci qualcosa della tua scuola. La controlleremo entro 1 giorno di scuola e ti invieremo via email una breve guida per far partire insegnanti e studenti.",
+      "yourSchool": "La tua scuola",
+      "accountH": "Il tuo account",
+      "accountLead": "Accederai con questi dati. Hai già un account insegnante? Prima <a href=\"{login}\">accedi</a>.",
+      "submitSignup": "Crea il mio account e la mia scuola",
+      "submitStaff": "Invia",
+      "privacySignup": "Usiamo la tua email per inviarti la guida di benvenuto, reimpostare una password dimenticata e risponderti. Leggi la nostra <a href=\"{privacy}\">Informativa sulla privacy</a>.",
+      "emailHintSignup": "La tua email della scuola. Ti mandiamo lì la guida di benvenuto e la usiamo se dimentichi la password."
     },
     "live": {
       "h": "Giochi dal vivo in classe",
@@ -7347,7 +7356,8 @@
       "breaksText": "Giochi brevi e divertenti da Gioca, scelti per una pausa di 5 minuti sul grande schermo.",
       "allGames": "Vedi tutto ciò a cui possono giocare gli studenti",
       "openLive": "Apri il gioco dal vivo",
-      "make": "Trasforma una lezione in un gioco"
+      "make": "Trasforma una lezione in un gioco",
+      "schoolReady": "{school} è pronta e tu ne sei l'amministratore. Crea qui sotto la tua prima classe, poi aggiungi gli studenti. Daremo un'occhiata alla tua scuola entro 1 giorno di scuola e ti invieremo una breve guida via email."
     },
     "loop": {
       "kicker": "Come Oomba si inserisce nella tua settimana",

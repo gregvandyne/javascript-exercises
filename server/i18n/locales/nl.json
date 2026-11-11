@@ -4313,7 +4313,16 @@
         "full": "We kunnen nu geen aanvragen meer aannemen. Mail ons in plaats daarvan.",
         "again": "Er moet iets in het formulier worden verbeterd. Controleer het en verstuur het opnieuw."
       },
-      "name": "Je naam"
+      "name": "Je naam",
+      "leadSignup": "Maak je leraarsaccount en je school in één stap. Je kunt meteen beginnen: klassen maken, leerlingen toevoegen en spelen. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding. Een school inrichten is gratis.",
+      "leadStaff": "Vertel ons iets over je school. We bekijken die binnen 1 schooldag en mailen je een korte handleiding om je leraren en leerlingen op weg te helpen.",
+      "yourSchool": "Je school",
+      "accountH": "Je account",
+      "accountLead": "Hiermee log je in. Heb je al een leraarsaccount? <a href=\"{login}\">Log</a> dan eerst in.",
+      "submitSignup": "Mijn account en school maken",
+      "submitStaff": "Versturen",
+      "privacySignup": "We gebruiken je e-mail om je de welkomsthandleiding te sturen, een vergeten wachtwoord te herstellen en je te antwoorden. Zie ons <a href=\"{privacy}\">privacybeleid</a>.",
+      "emailHintSignup": "Je school-e-mailadres. Daar sturen we de welkomsthandleiding heen, en we gebruiken het als je je wachtwoord vergeet."
     },
     "live": {
       "h": "Livespellen in de klas",
@@ -7347,7 +7356,8 @@
       "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
       "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen",
-      "make": "Van een les een spel maken"
+      "make": "Van een les een spel maken",
+      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding."
     },
     "loop": {
       "kicker": "Zo past Oomba in je week",
