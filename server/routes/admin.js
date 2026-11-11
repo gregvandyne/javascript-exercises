@@ -178,16 +178,16 @@ function schoolRequestsTab() {
       <h2 style="margin:0 0 6px">${r.school_name}</h2>
       ${info(r)}
       <div class="row aacts" style="margin-top:12px">
-        <a class="btn btn-primary" href="/admin/schools?request=${encodeURIComponent(r.id)}">➕ Create school</a>
-        ${act(r, 'done', '👍 Mark done')}
+        <a class="btn btn-primary" href="/admin/schools/setup?request=${encodeURIComponent(r.id)}">🏫 Set up this school</a>
         ${act(r, 'declined', 'Decline', 'btn', `Decline the request from ${r.school_name}? Remember to reply by email.`)}
+        ${act(r, 'done', 'Close without setting up', 'btn btn-sm', `Close the request from ${r.school_name} without setting it up here? Use this only if you set it up another way.`)}
       </div></article>`)}</div>`
     : emptyState({ emoji: '🏫', title: 'No school requests waiting', text: 'When a teacher fills in "Set up my school" on /teachers, it shows up here. The page promises an answer within 1 school day.' });
   return html`${openList}
-    <p class="small muted">The site sends no email: reply to each request from your own mail. Requests are deleted 1 year after they are closed.</p>
+    <p class="small muted">"Set up this school" makes the school and its admin account and emails them a welcome (how to sign in, the setup checklist, how teachers start); their replies come to you. A decline sends nothing: reply from your own mail. Requests are deleted 1 year after they are closed.</p>
     ${closed.length ? html`<h2 class="stats-h">Recently closed</h2><div class="panel tblwrap"><table class="tbl atable"><thead><tr><th>School</th><th>Answer</th><th>Closed</th><th></th></tr></thead><tbody>
       ${closed.map(r => html`<tr><td><b>${r.school_name}</b> <span class="small muted">· <span dir="ltr">${r.email}</span></span></td>
-        <td data-label="Answer">${r.status === 'done' ? (r.school_slug ? html`✅ <a href="/school/${r.school_slug}?tab=people">${r.linked_school}</a>` : '✅ done') : '✖️ declined'}</td>
+        <td data-label="Answer">${r.status === 'done' ? (r.school_slug ? html`✅ <a href="/school/${r.school_slug}?tab=people">${r.linked_school}</a> <a class="btn btn-sm" href="/admin/schools/setup?request=${encodeURIComponent(r.id)}">✉️ Welcome email</a>` : html`✅ done <a class="btn btn-sm btn-primary" href="/admin/schools/setup?request=${encodeURIComponent(r.id)}">🏫 Set up this school</a>`) : '✖️ declined'}</td>
         <td data-label="Closed">${when(r.closed_at)}</td><td class="acell">${act(r, 'reopen', 'Reopen', 'btn btn-sm')}</td></tr>`)}
     </tbody></table></div>` : ''}`;
 }

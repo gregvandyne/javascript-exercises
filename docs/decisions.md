@@ -4227,3 +4227,41 @@ editor, live hosting, "Set as homework"); nothing joined them, and nothing draft
 Spanish and French, one with nothing to ask about, one with orders hidden in it) through the real model, checks each
 draft by rule and prints the questions for a person to read. It needs `ANTHROPIC_API_KEY` and has not been run from the
 build machine, which has no key. Until someone has read that report, the landing page should not lean on this promise.
+
+## Setting up a school from a request (11 Nov 2026)
+
+Approving a "Set up my school" request took three separate steps (Create school, then appoint its admin on the People
+tab, then email the person by hand with a login card), and nothing told the admin that the site sends no email. The
+owner found it confusing after approving the first real request.
+
+**Now: one page, one button** (`/admin/schools/setup`, from "🏫 Set up this school" on the School requests tab).
+- The page is filled in from the request: school name, the person's real name, their email and the language of the page
+  they used. The platform admin picks the admin account: a new school account (the default), their own Oomba account
+  (by username; never a family account), or one of the school's admins already.
+- One button makes the school (if new) and the admin account, marks the request done and sends the welcome email.
+- The welcome (`services/school-welcome.js`, 13 languages, transactional): how to sign in, the school page's checklist
+  (teachers, classes, students, rules; chat between students is off unless turned on), how teachers start (a live game,
+  "Turn a lesson into a game", Google Classroom), and "reply to this email". Signed "The Oomba Academy team"; replies go
+  to `EMAIL_REPLY_TO`.
+- **No password in any email.** A new school account gets a "Choose my password" link: the password-reset link with a
+  7-day life (`welcomeToken`), single use (it stops working once a password is set), landing on the sign-in page with
+  the username filled in. Their own account gets a sign-in link and keeps its password. The address is kept for the
+  account, so "Forgot your password?" works for them later.
+- The People tab then says whether the email went. If it didn't (sending off, a bounce), it offers the login card and
+  "try the email again".
+- "✉️ Welcome email" on the Schools list and on closed requests sends it again (also for a request closed with the old
+  "Mark done" before its school existed: the school is made then and linked to the request). "Close without setting up"
+  replaces "Mark done" for a request handled some other way.
+- The audit log keeps ids and the outcome only; the address stays in `email_prefs` and `email_log`.
+- **Optional username** on the setup page for a new school account (3 to 16 letters, digits or _; checked against the
+  word lists and taken names before anything is made). It goes in the welcome email, with a line saying the username
+  and name can be changed later on the Me page.
+
+**"Your name" for grown-ups (11 Nov 2026).** Teachers, school staff, the platform admin and grown-up (parent) accounts
+can set their own name on the Me page (parents: their family account page): 2 to 40 letters in any script with spaces,
+hyphens, apostrophes and dots, no digits, nothing on the word lists (`cleanRealName`). It is their display name, and for
+staff also their name at every school where they are staff. The username never changes. Kids' and students' accounts
+never set a name: a kid's username is what others see, and a student's name at school is the teacher's to set.
+The same grown-ups can also change their **username** there (`auth.changeUsername`): the usual username rules, once
+every 7 days, and the old username is held from everyone else for 30 days (`reserved_names`), so nobody can take it to
+pose as them. Kids' and students' usernames never change this way (their login cards and their teachers rely on them).

@@ -123,6 +123,9 @@
     "text": {
       "notAllowed": "That text isn't allowed on Oomba Academy.",
       "personal": "Please keep phone numbers, emails, addresses and links out of Oomba Academy."
+    },
+    "realName": {
+      "chars": "Use 2 to {max} letters: spaces, hyphens, apostrophes and dots are fine, digits are not."
     }
   },
   "auth": {
@@ -220,7 +223,10 @@
         "doneSubject": "Your Oomba Academy password was changed",
         "doneIntro": "The password of the Oomba Academy account {username} was just changed with a reset link sent to this address.",
         "doneNotYou": "If that was not you, write to {email} right away."
-      }
+      },
+      "welcomeTitle": "Choose your password",
+      "welcomeFor": "Welcome to Oomba Academy. Choose a password for the account {username}.",
+      "welcomeDone": "Your password is set. Sign in with it now."
     }
   },
   "me": {
@@ -483,6 +489,23 @@
           "techvest": "Tech vest"
         }
       }
+    },
+    "name": {
+      "heading": "Your name",
+      "textStaff": "How colleagues and students see you at your school, for example \"Ms Gherghinis\" or \"Roxana Gherghinis\".",
+      "textGrownup": "How your family and the Oomba team see you.",
+      "label": "Your name",
+      "save": "Save",
+      "saved": "Name saved."
+    },
+    "username": {
+      "heading": "Username",
+      "note": "What you sign in with: 3 to 16 letters, digits or _. You can change it once every {days} days; your old one is kept from others for {hold} days.",
+      "save": "Change username",
+      "saved": "Username changed. Sign in with the new one from now on.",
+      "same": "That's already your username.",
+      "taken": "That username is taken. Try another one.",
+      "tooSoon": "You changed your username recently. You can change it again {days} days after the last change."
     }
   },
   "cards": {
@@ -8514,6 +8537,34 @@
       "namesHint": "One name on each line. First names are enough.",
       "go": "Make the class and the login cards",
       "note": "Only you and your school's staff see the names you type here."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} is ready on Oomba Academy",
+      "hi": "Hi {name},",
+      "hiNoName": "Hello,",
+      "intro": "Thanks for asking us to set up {school}. It's ready, and you're its school admin.",
+      "signInH": "Sign in",
+      "newAccount": "We made a school account for you. Choose your password with the button below, then sign in with your username.",
+      "setExpires": "The link works once, for {days} days. If it runs out, use \"Forgot your password?\" on the sign-in page.",
+      "ownAccount": "Sign in with your usual Oomba Academy account. Your school is on your Classroom page.",
+      "usernameLabel": "Username:",
+      "setButton": "Choose my password",
+      "signInButton": "Sign in",
+      "firstH": "Your first 10 minutes",
+      "firstText": "Your school page has a short checklist. Work down it:",
+      "step1": "Add your teachers on the People tab, by their real names. Each one gets a school account and a login card to print or pass on.",
+      "step2": "Make your classes and give each one its teacher.",
+      "step3": "Add your students: paste their names, one per line. Each one gets a printable login card.",
+      "step4": "Check your school's rules on the Settings tab. Chat between students is off unless you turn it on.",
+      "teachersH": "How your teachers start",
+      "teachersText": "Teachers sign in and land on their Classroom page. The quickest first win is a live game: tap \"Host a live game\", put the code on the board, and the class joins from any device. They can also turn a lesson they already teach into a quiz with \"Turn a lesson into a game\".",
+      "google": "If your school uses Google Classroom, teachers can connect it from their class page to bring in their rosters and send grades back.",
+      "help": "Questions? Just reply to this email. A real person answers, usually within one school day.",
+      "bye": "Welcome aboard,",
+      "signature": "The Oomba Academy team",
+      "changeLater": "You can change your username and your name later on your Me page."
     }
   }
 }

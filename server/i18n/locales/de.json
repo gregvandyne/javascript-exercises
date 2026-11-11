@@ -123,6 +123,9 @@
     "text": {
       "notAllowed": "Dieser Text ist auf Oomba Academy nicht erlaubt.",
       "personal": "Bitte keine Telefonnummern, E-Mails, Adressen oder Links auf Oomba Academy."
+    },
+    "realName": {
+      "chars": "Verwende 2 bis {max} Buchstaben: Leerzeichen, Bindestriche, Apostrophe und Punkte gehen, Ziffern nicht."
     }
   },
   "auth": {
@@ -220,7 +223,10 @@
         "doneSubject": "Ihr Oomba-Academy-Passwort wurde geändert",
         "doneIntro": "Das Passwort des Oomba-Academy-Kontos {username} wurde gerade mit einem Link zum Zurücksetzen geändert, der an diese Adresse ging.",
         "doneNotYou": "Wenn Sie das nicht waren, schreiben Sie bitte sofort an {email}."
-      }
+      },
+      "welcomeTitle": "Wähle dein Passwort",
+      "welcomeFor": "Willkommen bei Oomba Academy. Wähle ein Passwort für das Konto {username}.",
+      "welcomeDone": "Dein Passwort ist gespeichert. Melde dich jetzt damit an."
     }
   },
   "me": {
@@ -483,6 +489,23 @@
           "techvest": "Tech-Weste"
         }
       }
+    },
+    "name": {
+      "heading": "Dein Name",
+      "textStaff": "So sehen dich Kolleginnen, Kollegen und Kinder an deiner Schule, zum Beispiel „Frau Gherghinis“ oder „Roxana Gherghinis“.",
+      "textGrownup": "So sehen dich deine Familie und das Oomba-Team.",
+      "label": "Dein Name",
+      "save": "Speichern",
+      "saved": "Name gespeichert."
+    },
+    "username": {
+      "heading": "Benutzername",
+      "note": "Damit meldest du dich an: 3 bis 16 Buchstaben, Ziffern oder _. Du kannst ihn alle {days} Tage einmal ändern; der alte bleibt {hold} Tage lang für dich reserviert.",
+      "save": "Benutzernamen ändern",
+      "saved": "Benutzername geändert. Melde dich ab jetzt mit dem neuen an.",
+      "same": "Das ist schon dein Benutzername.",
+      "taken": "Dieser Benutzername ist vergeben. Versuch einen anderen.",
+      "tooSoon": "Du hast deinen Benutzernamen gerade erst geändert. Ändern kannst du ihn wieder {days} Tage nach der letzten Änderung."
     }
   },
   "cards": {
@@ -8107,6 +8130,34 @@
       "namesHint": "Ein Name pro Zeile. Vornamen reichen.",
       "go": "Klasse und Anmeldekarten anlegen",
       "note": "Nur du und das Personal deiner Schule sehen die Namen, die du hier eingibst."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} ist auf Oomba Academy startklar",
+      "hi": "Hallo {name},",
+      "hiNoName": "Hallo,",
+      "intro": "Danke, dass du uns gebeten hast, {school} einzurichten. Alles ist bereit, und du bist die Schuladministration.",
+      "signInH": "Anmelden",
+      "newAccount": "Wir haben ein Schulkonto für dich angelegt. Wähle mit dem Button unten dein Passwort und melde dich dann mit deinem Benutzernamen an.",
+      "setExpires": "Der Link funktioniert einmal, {days} Tage lang. Wenn er abläuft, nutze „Passwort vergessen?“ auf der Anmeldeseite.",
+      "ownAccount": "Melde dich mit deinem gewohnten Oomba-Academy-Konto an. Deine Schule findest du auf deiner Seite Klassenraum.",
+      "usernameLabel": "Benutzername:",
+      "setButton": "Mein Passwort wählen",
+      "signInButton": "Anmelden",
+      "firstH": "Deine ersten 10 Minuten",
+      "firstText": "Die Seite deiner Schule hat eine kurze Checkliste. Arbeite sie der Reihe nach ab:",
+      "step1": "Füge im Tab Personen deine Lehrkräfte mit ihrem echten Namen hinzu. Jede bekommt ein Schulkonto und eine Anmeldekarte zum Ausdrucken oder Weitergeben.",
+      "step2": "Lege deine Klassen an und gib jeder ihre Lehrkraft.",
+      "step3": "Füge deine Schülerinnen und Schüler hinzu: Namen einfügen, einer pro Zeile. Jedes Kind bekommt eine Anmeldekarte zum Ausdrucken.",
+      "step4": "Prüfe die Regeln deiner Schule im Tab Einstellungen. Der Chat zwischen Schülerinnen und Schülern ist aus, solange du ihn nicht einschaltest.",
+      "teachersH": "So starten deine Lehrkräfte",
+      "teachersText": "Lehrkräfte melden sich an und landen auf ihrer Seite Klassenraum. Der schnellste erste Erfolg ist ein Live-Spiel: auf „Live-Spiel leiten“ tippen, den Code an die Tafel bringen, und die Klasse macht von jedem Gerät aus mit. Außerdem können sie mit „Aus einer Stunde ein Spiel machen“ eine Stunde, die sie schon unterrichten, in ein Quiz verwandeln.",
+      "google": "Wenn deine Schule Google Classroom nutzt, können Lehrkräfte es auf der Seite ihrer Klasse verbinden, um ihre Klassenlisten zu übernehmen und Noten zurückzuschicken.",
+      "help": "Fragen? Antworte einfach auf diese E-Mail. Ein echter Mensch antwortet, meist innerhalb eines Schultags.",
+      "bye": "Herzlich willkommen,",
+      "signature": "Dein Oomba-Academy-Team",
+      "changeLater": "Deinen Benutzernamen und deinen Namen kannst du später auf deiner Ich-Seite ändern."
     }
   }
 }

@@ -122,6 +122,9 @@
     "text": {
       "notAllowed": "Ce texte n’est pas autorisé sur Oomba Academy.",
       "personal": "Ne mets pas de numéros de téléphone, d’e-mails, d’adresses ni de liens sur Oomba Academy, s’il te plaît."
+    },
+    "realName": {
+      "chars": "Utilisez de 2 à {max} lettres : espaces, traits d'union, apostrophes et points sont acceptés, pas les chiffres."
     }
   },
   "auth": {
@@ -219,7 +222,10 @@
         "doneSubject": "Votre mot de passe Oomba Academy a été modifié",
         "doneIntro": "Le mot de passe du compte Oomba Academy {username} vient d’être modifié avec un lien de réinitialisation envoyé à cette adresse.",
         "doneNotYou": "Si ce n’était pas vous, écrivez tout de suite à {email}."
-      }
+      },
+      "welcomeTitle": "Choisissez votre mot de passe",
+      "welcomeFor": "Bienvenue sur Oomba Academy. Choisissez un mot de passe pour le compte {username}.",
+      "welcomeDone": "Votre mot de passe est enregistré. Connectez-vous avec dès maintenant."
     }
   },
   "me": {
@@ -482,6 +488,23 @@
           "techvest": "Gilet tech"
         }
       }
+    },
+    "name": {
+      "heading": "Votre nom",
+      "textStaff": "Comment vos collègues et vos élèves vous voient dans votre école, par exemple « Mme Gherghinis » ou « Roxana Gherghinis ».",
+      "textGrownup": "Comment votre famille et l'équipe Oomba vous voient.",
+      "label": "Votre nom",
+      "save": "Enregistrer",
+      "saved": "Nom enregistré."
+    },
+    "username": {
+      "heading": "Nom d'utilisateur",
+      "note": "Ce qui vous sert à vous connecter : 3 à 16 lettres, chiffres ou _. Vous pouvez le changer une fois tous les {days} jours ; l'ancien reste réservé pour vous pendant {hold} jours.",
+      "save": "Changer de nom d'utilisateur",
+      "saved": "Nom d'utilisateur changé. Connectez-vous désormais avec le nouveau.",
+      "same": "C'est déjà votre nom d'utilisateur.",
+      "taken": "Ce nom d'utilisateur est déjà pris. Essayez-en un autre.",
+      "tooSoon": "Vous avez changé votre nom d'utilisateur récemment. Vous pourrez le changer à nouveau {days} jours après le dernier changement."
     }
   },
   "cards": {
@@ -8106,6 +8129,34 @@
       "namesHint": "Un nom par ligne. Les prénoms suffisent.",
       "go": "Créer la classe et les cartes de connexion",
       "note": "Seuls vous et le personnel de votre école voyez les noms que vous écrivez ici."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} est prête sur Oomba Academy",
+      "hi": "Bonjour {name},",
+      "hiNoName": "Bonjour,",
+      "intro": "Merci de nous avoir demandé de configurer {school}. Elle est prête, et vous en êtes l'administrateur.",
+      "signInH": "Se connecter",
+      "newAccount": "Nous vous avons créé un compte d'école. Choisissez votre mot de passe avec le bouton ci-dessous, puis connectez-vous avec votre nom d'utilisateur.",
+      "setExpires": "Le lien ne fonctionne qu'une fois, pendant {days} jours. S'il expire, utilisez « Mot de passe oublié ? » sur la page de connexion.",
+      "ownAccount": "Connectez-vous avec votre compte Oomba Academy habituel. Votre école se trouve sur votre page Ma classe.",
+      "usernameLabel": "Nom d'utilisateur :",
+      "setButton": "Choisir mon mot de passe",
+      "signInButton": "Se connecter",
+      "firstH": "Vos 10 premières minutes",
+      "firstText": "La page de votre école propose une courte liste d'étapes. Suivez-la dans l'ordre :",
+      "step1": "Ajoutez vos enseignants dans l'onglet Personnes, avec leur vrai nom. Chacun reçoit un compte d'école et une carte de connexion à imprimer ou à transmettre.",
+      "step2": "Créez vos classes et attribuez à chacune son enseignant.",
+      "step3": "Ajoutez vos élèves : collez leurs noms, un par ligne. Chacun reçoit une carte de connexion à imprimer.",
+      "step4": "Vérifiez les règles de votre école dans l'onglet Paramètres. Le chat entre élèves est désactivé, sauf si vous l'activez.",
+      "teachersH": "Comment vos enseignants démarrent",
+      "teachersText": "Les enseignants se connectent et arrivent sur leur page Ma classe. La réussite la plus rapide est un jeu en direct : appuyer sur « Animer un jeu en direct », afficher le code au tableau, et la classe rejoint depuis n'importe quel appareil. Ils peuvent aussi transformer une leçon qu'ils enseignent déjà en quiz avec « Transformer une leçon en jeu ».",
+      "google": "Si votre école utilise Google Classroom, les enseignants peuvent le connecter depuis la page de leur classe pour importer leurs listes d'élèves et renvoyer les notes.",
+      "help": "Des questions ? Répondez simplement à cet e-mail. Une vraie personne vous répond, en général sous un jour d'école.",
+      "bye": "Bienvenue !",
+      "signature": "L'équipe Oomba Academy",
+      "changeLater": "Vous pourrez changer votre nom d'utilisateur et votre nom plus tard, sur votre page Moi."
     }
   }
 }

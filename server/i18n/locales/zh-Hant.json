@@ -122,6 +122,9 @@
     "text": {
       "notAllowed": "Oomba Academy 上不能使用這段文字。",
       "personal": "請不要在 Oomba Academy 上寫電話號碼、電子郵件、地址和連結。"
+    },
+    "realName": {
+      "chars": "請使用 2 到 {max} 個字：可以有空格、連字號、撇號和句點，不可有數字。"
     }
   },
   "auth": {
@@ -219,7 +222,10 @@
         "doneSubject": "你的 Oomba Academy 密碼已變更",
         "doneIntro": "Oomba Academy 帳號 {username} 的密碼剛剛已用寄到這個信箱的重設連結變更。",
         "doneNotYou": "如果不是你本人，請立刻寫信到 {email}。"
-      }
+      },
+      "welcomeTitle": "設定您的密碼",
+      "welcomeFor": "歡迎來到 Oomba Academy。請為帳號 {username} 設定密碼。",
+      "welcomeDone": "密碼已設定，現在就用它登入吧。"
     }
   },
   "me": {
@@ -482,6 +488,23 @@
           "techvest": "科技背心"
         }
       }
+    },
+    "name": {
+      "heading": "你的名字",
+      "textStaff": "同事和學生在學校看到的名字，例如「Gherghinis 老師」或「Roxana Gherghinis」。",
+      "textGrownup": "你的家人和 Oomba 團隊看到的名字。",
+      "label": "你的名字",
+      "save": "儲存",
+      "saved": "名字已儲存。"
+    },
+    "username": {
+      "heading": "使用者名稱",
+      "note": "你用來登入的名稱：3 到 16 個英文字母、數字或 _。每 {days} 天可以變更一次；舊名稱會為你保留 {hold} 天，別人無法使用。",
+      "save": "變更使用者名稱",
+      "saved": "使用者名稱已變更。之後請用新的名稱登入。",
+      "same": "這已經是你的使用者名稱。",
+      "taken": "這個使用者名稱已被使用，請換一個。",
+      "tooSoon": "你最近才變更過使用者名稱。距離上次變更 {days} 天後才能再變更。"
     }
   },
   "cards": {
@@ -8106,6 +8129,34 @@
       "namesHint": "每行一個名字。只寫名字就可以。",
       "go": "建立班級和登入卡",
       "note": "只有你和學校的教職員能看到你在這裡輸入的名字。"
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} 已在 Oomba Academy 準備就緒",
+      "hi": "{name} 您好：",
+      "hiNoName": "您好：",
+      "intro": "感謝您請我們設定 {school}。一切已準備就緒，您是學校的管理員。",
+      "signInH": "登入",
+      "newAccount": "我們已為您建立學校帳號。請用下方按鈕設定密碼，然後以您的使用者名稱登入。",
+      "setExpires": "這個連結只能使用一次，有效期 {days} 天。若已過期，請在登入頁點選「忘記密碼？」。",
+      "ownAccount": "請用您平常的 Oomba Academy 帳號登入。您的學校在「教室」頁面上。",
+      "usernameLabel": "使用者名稱：",
+      "setButton": "設定我的密碼",
+      "signInButton": "登入",
+      "firstH": "最初的 10 分鐘",
+      "firstText": "學校頁面上有一份簡短的檢查清單，請依序完成：",
+      "step1": "在「成員」分頁用真實姓名加入老師。每位老師都會有一個學校帳號和一張可列印或轉交的登入卡。",
+      "step2": "建立班級，並為每個班級指定老師。",
+      "step3": "加入學生：貼上姓名，一行一個。每位學生都會有一張可列印的登入卡。",
+      "step4": "在「設定」分頁確認學校的規則。學生之間的聊天預設為關閉，除非您開啟。",
+      "teachersH": "老師如何開始",
+      "teachersText": "老師登入後會進入「教室」頁面。最快的第一個成果是現場遊戲：點「主持即時遊戲」，把代碼投影到黑板上，全班就能用任何裝置加入。老師也可以用「把一堂課變成遊戲」，把平常教的課變成小測驗。",
+      "google": "如果學校使用 Google Classroom，老師可以在班級頁面連接，匯入學生名單並回傳成績。",
+      "help": "有問題嗎？直接回覆這封信即可。真人會回覆您，通常在一個上課日內。",
+      "bye": "歡迎加入！",
+      "signature": "Oomba Academy 團隊",
+      "changeLater": "你之後可以在「我的」頁面變更使用者名稱和名字。"
     }
   }
 }

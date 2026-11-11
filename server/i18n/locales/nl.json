@@ -123,6 +123,9 @@
     "text": {
       "notAllowed": "Die tekst mag niet op Oomba Academy.",
       "personal": "Zet geen telefoonnummers, e-mails, adressen of links op Oomba Academy."
+    },
+    "realName": {
+      "chars": "Gebruik 2 tot {max} letters: spaties, streepjes, apostroffen en punten mogen, cijfers niet."
     }
   },
   "auth": {
@@ -220,7 +223,10 @@
         "doneSubject": "Je wachtwoord voor Oomba Academy is gewijzigd",
         "doneIntro": "Het wachtwoord van het Oomba Academy-account {username} is zojuist gewijzigd met een herstellink die naar dit adres is gestuurd.",
         "doneNotYou": "Was jij dat niet? Schrijf dan meteen naar {email}."
-      }
+      },
+      "welcomeTitle": "Kies je wachtwoord",
+      "welcomeFor": "Welkom bij Oomba Academy. Kies een wachtwoord voor het account {username}.",
+      "welcomeDone": "Je wachtwoord is ingesteld. Log er nu mee in."
     }
   },
   "me": {
@@ -483,6 +489,23 @@
           "techvest": "Techvest"
         }
       }
+    },
+    "name": {
+      "heading": "Je naam",
+      "textStaff": "Hoe collega's en leerlingen je op school zien, bijvoorbeeld \"Juf Gherghinis\" of \"Roxana Gherghinis\".",
+      "textGrownup": "Hoe je gezin en het Oomba-team je zien.",
+      "label": "Je naam",
+      "save": "Opslaan",
+      "saved": "Naam opgeslagen."
+    },
+    "username": {
+      "heading": "Gebruikersnaam",
+      "note": "Waarmee je inlogt: 3 tot 16 letters, cijfers of _. Je kunt hem eens per {days} dagen wijzigen; je oude blijft {hold} dagen voor jou gereserveerd.",
+      "save": "Gebruikersnaam wijzigen",
+      "saved": "Gebruikersnaam gewijzigd. Log voortaan in met de nieuwe.",
+      "same": "Dat is al je gebruikersnaam.",
+      "taken": "Die gebruikersnaam is al bezet. Probeer een andere.",
+      "tooSoon": "Je hebt je gebruikersnaam pas gewijzigd. Je kunt hem weer wijzigen {days} dagen na de laatste wijziging."
     }
   },
   "cards": {
@@ -8107,6 +8130,34 @@
       "namesHint": "Eén naam per regel. Voornamen zijn genoeg.",
       "go": "Maak de klas en de inlogkaarten",
       "note": "Alleen jij en het personeel van je school zien de namen die je hier typt."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} staat klaar op Oomba Academy",
+      "hi": "Hallo {name},",
+      "hiNoName": "Hallo,",
+      "intro": "Bedankt voor je verzoek om {school} in te richten. Alles staat klaar, en jij bent de schoolbeheerder.",
+      "signInH": "Inloggen",
+      "newAccount": "We hebben een schoolaccount voor je gemaakt. Kies je wachtwoord met de knop hieronder en log daarna in met je gebruikersnaam.",
+      "setExpires": "De link werkt één keer, {days} dagen lang. Is hij verlopen? Gebruik dan \"Wachtwoord vergeten?\" op de inlogpagina.",
+      "ownAccount": "Log in met je gewone Oomba Academy-account. Je school staat op je pagina Klaslokaal.",
+      "usernameLabel": "Gebruikersnaam:",
+      "setButton": "Mijn wachtwoord kiezen",
+      "signInButton": "Inloggen",
+      "firstH": "Je eerste 10 minuten",
+      "firstText": "De pagina van je school heeft een korte checklist. Werk die van boven naar beneden af:",
+      "step1": "Voeg je leraren toe op het tabblad Mensen, met hun echte naam. Iedereen krijgt een schoolaccount en een inlogkaart om te printen of door te geven.",
+      "step2": "Maak je klassen en geef elke klas een leraar.",
+      "step3": "Voeg je leerlingen toe: plak hun namen, één per regel. Iedere leerling krijgt een inlogkaart om te printen.",
+      "step4": "Bekijk de regels van je school op het tabblad Instellingen. Chatten tussen leerlingen staat uit, tenzij je het aanzet.",
+      "teachersH": "Zo beginnen je leraren",
+      "teachersText": "Leraren loggen in en komen op hun pagina Klaslokaal. Het snelste eerste succes is een live spel: tik op \"Een live spel leiden\", zet de code op het bord en de klas doet mee vanaf elk apparaat. Ze kunnen ook een les die ze al geven omzetten in een quiz met \"Van een les een spel maken\".",
+      "google": "Gebruikt je school Google Classroom? Dan kunnen leraren het koppelen vanaf de pagina van hun klas om hun klassenlijsten op te halen en cijfers terug te sturen.",
+      "help": "Vragen? Beantwoord gewoon deze e-mail. Een echt mens antwoordt, meestal binnen één schooldag.",
+      "bye": "Welkom aan boord,",
+      "signature": "Het Oomba Academy-team",
+      "changeLater": "Je kunt je gebruikersnaam en je naam later wijzigen op je Ik-pagina."
     }
   }
 }
