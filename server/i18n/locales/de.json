@@ -1060,8 +1060,8 @@
       },
       "schoolSetup": {
         "h": "Anfragen zur Einrichtung von Schulen",
-        "li1": "<b>Was wir speichern, wenn eine Lehrkraft oder Schulleitung uns bittet, eine Schule einzurichten</b> (das Formular auf unserer Seite für Lehrkräfte): den Namen der Schule, ihre Funktion, ihre dienstliche E-Mail-Adresse, die ungefähre Zahl der Schüler, das Land, die Sprache der Seite und wann die Anfrage gesendet wurde. Wenn sie in einem Erwachsenen- oder Schulpersonalkonto angemeldet war, speichern wir auch, von welchem Konto die Anfrage kam. Ein Gastkonto wird nie mit einer Anfrage gespeichert.",
-        "li2": "<b>Wofür wir sie nutzen:</b> nur, um die Schule einzurichten und auf die Anfrage zu antworten. Wir verschicken keine Newsletter und geben die Daten weder an Stripe noch an andere weiter.",
+        "li1": "<b>Was wir speichern, wenn eine Lehrkraft oder Schulleitung uns bittet, eine Schule einzurichten</b> (das Formular auf unserer Seite für Lehrkräfte): den Namen der Schule, ihre Funktion, ihre dienstliche E-Mail-Adresse, die ungefähre Zahl der Schüler, das Land, die Sprache der Seite und wann die Anfrage gesendet wurde. Wenn sie in einem Erwachsenen- oder Schulpersonalkonto angemeldet war, speichern wir auch, von welchem Konto die Anfrage kam. Ein Gastkonto wird nie mit einer Anfrage gespeichert. Wurde das Lehrkräftekonto mit dem Formular angelegt, speichern wir die dienstliche E-Mail auch bei diesem Konto.",
+        "li2": "<b>Wofür wir sie nutzen:</b> um die Schule einzurichten, auf die Anfrage zu antworten, die Willkommensanleitung der Schule zu schicken und einen Link zum Zurücksetzen des Passworts zu senden, wenn die Inhaberin oder der Inhaber des Kontos darum bittet. Wir verschicken keine Newsletter und geben die Daten weder an Stripe noch an andere weiter.",
         "li3": "<b>Wer sie sieht:</b> nur unser Team.",
         "li4": "<b>Wie lange:</b> Sie werden <b>1 Jahr</b> nach Abschluss der Anfrage gelöscht (oder 1 Jahr nach dem Senden, falls die Anfrage nie abgeschlossen wird)."
       },

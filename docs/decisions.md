@@ -4283,6 +4283,6 @@ account. Now the account comes first, like the Teacher plan and Quick game sign-
 - **The platform admin:** a request that came with its school shows "Signed up and already using it" and
   **"✅ Looks good: send the welcome"**: the welcome email (sign in with their own account, no password link, the
   checklist, how teachers start), then the request is done. Nothing waits on us: the school works from the start.
-- Not changed: the Privacy Policy's school-request section (signed off by counsel) says the email is used only to set
-  up the school and reply; the form now says it is also kept for the welcome guide and password resets. The owner has
-  the suggested policy wording for counsel.
+- The Privacy Policy's school-request section now says the email is also kept with the teacher's account and used for
+  the welcome guide and password resets (owner's decision, 2026-11-11; the lawyer's sign-off is pending in
+  docs/legal-review.md).

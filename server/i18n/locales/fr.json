@@ -1059,8 +1059,8 @@
       },
       "schoolSetup": {
         "h": "Demandes d’inscription d’une école",
-        "li1": "<b>Ce que nous conservons quand un enseignant ou un membre de la direction nous demande d’inscrire une école</b> (le formulaire de notre page pour les enseignants) : le nom de l’école, son rôle, son adresse e-mail professionnelle, le nombre approximatif d’élèves, le pays, la langue de la page et la date d’envoi. S’il était connecté à un compte adulte ou à un compte du personnel de l’école, nous conservons aussi le compte qui l’a envoyée. Le compte d’un invité n’est jamais conservé avec une demande.",
-        "li2": "<b>À quoi cela sert :</b> uniquement à inscrire l’école et à répondre à la demande. Nous n’envoyons pas de newsletter, et nous ne la partageons ni avec Stripe ni avec personne d’autre.",
+        "li1": "<b>Ce que nous conservons quand un enseignant ou un membre de la direction nous demande d’inscrire une école</b> (le formulaire de notre page pour les enseignants) : le nom de l’école, son rôle, son adresse e-mail professionnelle, le nombre approximatif d’élèves, le pays, la langue de la page et la date d’envoi. S’il était connecté à un compte adulte ou à un compte du personnel de l’école, nous conservons aussi le compte qui l’a envoyée. Le compte d’un invité n’est jamais conservé avec une demande. Si la personne a créé son compte enseignant avec le formulaire, nous conservons aussi l’e-mail professionnel avec ce compte.",
+        "li2": "<b>À quoi cela sert :</b> à inscrire l’école, à répondre à la demande, à envoyer le guide de bienvenue de l’école, et à envoyer un lien de réinitialisation du mot de passe si le titulaire du compte le demande. Nous n’envoyons pas de newsletter, et nous ne la partageons ni avec Stripe ni avec personne d’autre.",
         "li3": "<b>Qui la voit :</b> uniquement notre équipe.",
         "li4": "<b>Pendant combien de temps :</b> supprimée <b>1 an</b> après la clôture de la demande (ou 1 an après son envoi, si elle n’est jamais clôturée)."
       },

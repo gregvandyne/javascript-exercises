@@ -1060,8 +1060,8 @@
       },
       "schoolSetup": {
         "h": "Richieste di attivazione delle scuole",
-        "li1": "<b>Cosa conserviamo quando un insegnante o un dirigente scolastico ci chiede di attivare una scuola</b> (il modulo nella nostra pagina per gli insegnanti): il nome della scuola, il suo ruolo, la sua email di lavoro, il numero approssimativo di studenti, il paese, la lingua della pagina e quando è stata inviata. Se aveva effettuato l'accesso a un account genitore o del personale scolastico, conserviamo anche quale account l'ha inviata. L'account di un ospite non viene mai conservato insieme a una richiesta.",
-        "li2": "<b>Per cosa la usiamo:</b> solo per attivare la scuola e rispondere alla richiesta. Non mandiamo newsletter e non la condividiamo con Stripe né con nessun altro.",
+        "li1": "<b>Cosa conserviamo quando un insegnante o un dirigente scolastico ci chiede di attivare una scuola</b> (il modulo nella nostra pagina per gli insegnanti): il nome della scuola, il suo ruolo, la sua email di lavoro, il numero approssimativo di studenti, il paese, la lingua della pagina e quando è stata inviata. Se aveva effettuato l'accesso a un account genitore o del personale scolastico, conserviamo anche quale account l'ha inviata. L'account di un ospite non viene mai conservato insieme a una richiesta. Se l’account insegnante è stato creato con il modulo, conserviamo l’email di lavoro anche con quell’account.",
+        "li2": "<b>Per cosa la usiamo:</b> per configurare la scuola, rispondere alla richiesta, inviare la guida di benvenuto della scuola e inviare un link per reimpostare la password se il titolare dell’account lo chiede. Non inviamo newsletter e non la condividiamo con Stripe né con nessun altro.",
         "li3": "<b>Chi la vede:</b> solo il nostro team.",
         "li4": "<b>Per quanto tempo:</b> cancellata <b>1 anno</b> dopo la chiusura della richiesta (oppure 1 anno dopo l'invio, se non viene mai chiusa)."
       },

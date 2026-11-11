@@ -3,7 +3,7 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-11-09** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-11-11** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
 
 ## Sign-off (2026-11-09)
@@ -16,6 +16,16 @@ server/routes/info.js; change it with every change to the text).
 - The checklist below is kept as the record of what was asked. Any later change to the text needs a new sign-off here.
 - Owner steps that remain: Stripe Dashboard → Settings → Business → Public details, Terms of service URL
   `https://oomba.ai/terms`; then Render `TERMS_PUBLISHED=1`.
+
+### After the sign-off: the school set-up email on /privacy (2026-11-11, needs the lawyer's sign-off)
+
+- **Owner: yes, 2026-11-11 · Lawyer: not yet.** /teachers "Set up your school" now makes the teacher's account
+  (docs/decisions.md "Account first: set up your school"), so the work email is also kept with that account.
+  `info.privacy.schoolSetup.li1` adds: "If they made their teacher account with the form, we also keep the work email
+  with that account." `li2` now reads: "What we use it for: to set up the school, to reply to the request, to send the
+  school's welcome guide, and to send a password-reset link if the account's owner asks for one. We don't send
+  newsletters, and we don't share it with Stripe or anyone else." 13 languages. `LEGAL_UPDATED` moved to 2026-11-11
+  (also the notice version new parent acknowledgements carry).
 
 ### After the sign-off: Google Classroom on /privacy (2026-11-09, needs the lawyer's sign-off)
 

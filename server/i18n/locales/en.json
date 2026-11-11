@@ -1060,8 +1060,8 @@
       },
       "schoolSetup": {
         "h": "School set-up requests",
-        "li1": "<b>What we keep when a teacher or school leader asks us to set up a school</b> (the form on our teachers page): the school's name, their role, their work email, about how many students, the country, the language of the page and when it was sent. If they were signed in to a grown-up or school staff account, we also keep which account sent it. A guest's account is never kept with a request.",
-        "li2": "<b>What we use it for:</b> only to set up the school and reply to the request. We don't send newsletters, and we don't share it with Stripe or anyone else.",
+        "li1": "<b>What we keep when a teacher or school leader asks us to set up a school</b> (the form on our teachers page): the school's name, their role, their work email, about how many students, the country, the language of the page and when it was sent. If they were signed in to a grown-up or school staff account, we also keep which account sent it. A guest's account is never kept with a request. If they made their teacher account with the form, we also keep the work email with that account.",
+        "li2": "<b>What we use it for:</b> to set up the school, to reply to the request, to send the school's welcome guide, and to send a password-reset link if the account's owner asks for one. We don't send newsletters, and we don't share it with Stripe or anyone else.",
         "li3": "<b>Who sees it:</b> only our team.",
         "li4": "<b>How long:</b> deleted <b>1 year</b> after we close the request (or 1 year after it was sent, if it is never closed)."
       },
