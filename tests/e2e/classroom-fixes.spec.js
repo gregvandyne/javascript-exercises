@@ -241,17 +241,17 @@ test('sign in: Show password, and a login card password typed with spaces works;
   // the teacher's Me badge doesn't count Oomba's copy of the new student's welcome
   const before = await (await t.request.get('/me')).text();
   expect(before).not.toMatch(/Copy: we wrote to/);
-  // /teachers: "Your name", and after sending, the thank-you is the first thing on the page
+  // /teachers: "Your name", and the account first: the account and the school at once, then their Classroom
+  // (tests/e2e/school-signup.spec.js covers the form itself).
   const v = await page$(browser, { viewport: { width: 390, height: 844 } });
   await ownIp(v);
   await v.goto('/teachers#start');
   await v.fill('#sr-name', 'Ana Rivera'); await v.fill('#sr-school', `${uniq('Oak')} Primary`);
   await v.selectOption('#sr-role', 'teacher'); await v.fill('#sr-email', 'ana@example.org');
   await v.fill('#sr-students', '25'); await v.fill('#sr-country', 'United Kingdom');
-  await Promise.all([v.waitForURL(/sent=1/), v.locator('.sr-form button[type=submit]').click()]);
-  await expect(v.locator('#setup-thanks')).toContainText('Things you can do today');
-  const thanksTop = await v.locator('#setup-thanks').boundingBox(), heroTop = await v.locator('.lp-hero').boundingBox();
-  expect(thanksTop.y).toBeLessThan(heroTop.y);
+  await v.fill('#sr-username', uniq('AnaR').slice(0, 16)); await v.fill('#sr-password', 'blue-otter-fortech-42'); await v.check('#sr-adult');
+  await Promise.all([v.waitForURL(/\/teach\?welcome=school/), v.locator('.sr-form button[type=submit]').click()]);
+  await expect(v.locator('#school-ready')).toContainText('Primary is ready');
   // the platform admin sees the name on the request
   const admin = await adminPage(browser);
   await admin.goto('/admin?tab=schoolreq');

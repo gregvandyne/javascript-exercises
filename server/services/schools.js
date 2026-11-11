@@ -362,6 +362,19 @@ export function setOwnStaffName(userId, name) {
   if (changed) audit(userId, 'school.own_name', userId, { schools: changed });
   return changed;
 }
+/** A teacher's own account and their own school, with them as its school admin (the teacher sign-ups: /trial,
+ *  /teachers "Set up your school"). The caller has checked the name, username and password. -> { user, school } */
+export function createTeacherWithSchool({ name, school, username, password, tz = '' }) {
+  return tx(() => {
+    const u = createUser({ username, password, displayName: name });
+    const s = createSchool(u, { name: school });
+    if (!s.ok) throw Object.assign(new Error('school'), { code: 'school' });
+    addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
+    // Lessons open and due days end at midnight in the teacher's own time zone from day one.
+    if (isZone(tz)) updateSchool(u, s.school.id, { settings: { timeZone: tz } });
+    return { user: getUser(u.id), school: getSchool(s.school.id) };
+  });
+}
 /** New password for a school account (personal accounts keep their own passwords). */
 export function resetSchoolPassword(by, schoolId, userId) {
   const u = getUser(userId);

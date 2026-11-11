@@ -48,13 +48,15 @@ export function validate(body = {}) {
  *  guest or someone signed out: a guest is often a child who tapped Play, and signing up keeps the guest's id, so a
  *  guest's id is never stored next to an email (routes/teachers.js passes null).
  *  -> { ok: true, id } | { ok: false, field } | { ok: false, code: 'full' } */
-export function createRequest(body, { by = null, locale = '' } = {}) {
+export function createRequest(body, { by = null, locale = '', schoolId = null } = {}) {
   const v = validate(body);
   if (!v.ok) return v;
   if (openCount() >= MAX_OPEN) return { ok: false, code: 'full' };
   const id = uid(12); const r = v.value;
-  q.run(`INSERT INTO school_requests(id, school_name, role, email, students, country, locale, user_id, status, created_at, contact_name)
-    VALUES (?,?,?,?,?,?,?,?,'open',?,?)`, id, r.school, r.role, r.email, r.students, r.country, String(locale || '').slice(0, 12), by ? by.id : null, now(), r.name);
+  // schoolId: the school the sender already runs (account first: they signed up with it on /teachers, or a teacher
+  // tells us about theirs). The platform admin then only checks it ("Looks good" sends the welcome).
+  q.run(`INSERT INTO school_requests(id, school_name, role, email, students, country, locale, user_id, status, created_at, contact_name, school_id)
+    VALUES (?,?,?,?,?,?,?,?,'open',?,?,?)`, id, r.school, r.role, r.email, r.students, r.country, String(locale || '').slice(0, 12), by ? by.id : null, now(), r.name, schoolId);
   funnel.bump('teacher.request');
   return { ok: true, id };
 }
@@ -64,7 +66,7 @@ export const openCount = () => q.get("SELECT COUNT(*) n FROM school_requests WHE
 /** The admin's queue: every open request (oldest first, so the longest wait is on top) and the latest closed ones. */
 export function queue({ closed = 20 } = {}) {
   return {
-    open: q.all("SELECT r.*, s.slug school_slug, s.name linked_school FROM school_requests r LEFT JOIN schools s ON s.id=r.school_id WHERE r.status='open' ORDER BY r.created_at"),
+    open: q.all("SELECT r.*, s.slug school_slug, s.name linked_school, u.username FROM school_requests r LEFT JOIN schools s ON s.id=r.school_id LEFT JOIN users u ON u.id=r.user_id WHERE r.status='open' ORDER BY r.created_at"),
     closed: q.all("SELECT r.*, s.slug school_slug, s.name linked_school FROM school_requests r LEFT JOIN schools s ON s.id=r.school_id WHERE r.status!='open' ORDER BY r.closed_at DESC LIMIT ?", closed),
   };
 }

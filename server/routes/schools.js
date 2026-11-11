@@ -701,6 +701,7 @@ function classroomHome(req) {
   ${admins.map(x => html`<section class="panel schoolcard"><a class="sc-link" href="/school/${x.slug}"><b>🏫 ${t('school.teach.manage', { school: x.name })}</b>
       <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
     ${teachPlanCard(req, x)}</section>`)}
+  ${req.query.welcome === 'school' && admins[0] ? html`<p class="notice good" role="status" id="school-ready">🏫 ${t('teach.home.schoolReady', { school: admins[0].name })}</p>` : ''}
   ${staffInvitesPanel(req)}
   ${teacherPlanCard(req)}
   ${schools.map(x => askPanel(req, x))}

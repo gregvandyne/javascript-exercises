@@ -50,8 +50,10 @@ test('/teachers: the "Set up my school" form replaces the email link; it says 1 
   const r = await call(null, '/teachers');
   assert.equal(r.status, 200);
   const s = start(r.text);
-  assert.match(s, /<form class="sr-form" data-api="\/api\/teachers\/school-request" data-next="\/teachers\?sent=1#start" method="post"/);
-  for (const name of ['school', 'role', 'email', 'students', 'country']) assert.match(s, new RegExp(`name="${name}"[^>]*required|<select[^>]*name="${name}" required`), name);
+  // Signed out: account first (the account and the school at once, then their Classroom; tests/unit/school-signup.test.js).
+  assert.match(s, /<form class="sr-form" data-api="\/api\/teachers\/school-request" data-next="\/teach\?welcome=school" method="post"/);
+  for (const name of ['name', 'school', 'role', 'email', 'students', 'country', 'username', 'password', 'adult']) assert.match(s, new RegExp(`name="${name}"[^>]*required|<select[^>]*name="${name}" required`), name);
+  assert.match(s, /<input type="hidden" name="signup" value="1">/);
   assert.match(s, /type="email"/); assert.match(s, /type="number"/);
   assert.match(s, /within 1 school day/);
   assert.doesNotMatch(s, /mailto:[^"]*\?subject=/, 'no "Email us" button any more');

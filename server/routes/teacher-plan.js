@@ -167,16 +167,16 @@ router.post('/api/trial/signup', rateLimit('trial-signup', 30, 3600e3), async (r
   const fields = ['name', 'school', 'email', 'username', 'password', 'adult'].filter(k => errors[k]);
   if (fields.length) return res.status(400).json({ error: errors[fields[0]], field: fields[0], errors });
   let u;
-  try { u = auth.createUser({ username: n.value, password: pw, displayName: name }); }
-  catch (e) { if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' }); throw e; }
-  const s = SC.createSchool(u, { name: school });
-  if (!s.ok) return res.status(400).json({ error: t('plans.trial.errors.school'), field: 'school' });
-  SC.addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
   // The school's time zone from the teacher's browser (public/js/app.js fills it in), when it is a zone this server
   // knows: lessons open and due days end at midnight there from day one, not at midnight UTC. Anything else is ignored
   // (the school's Settings still offer it).
   const tz = typeof b.tz === 'string' ? b.tz.trim().slice(0, 64) : '';
-  if (SC.isZone(tz)) SC.updateSchool(u, s.school.id, { settings: { timeZone: tz } });
+  try { u = SC.createTeacherWithSchool({ name, school, username: n.value, password: pw, tz }).user; }
+  catch (e) {
+    if (/UNIQUE/.test(e.message)) return res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
+    if (e.code === 'school') return res.status(400).json({ error: t('plans.trial.errors.school'), field: 'school' });
+    throw e;
+  }
   audit(u.id, 'user.signup', u.id, { via: 'trial' });
   auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay: true });
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);

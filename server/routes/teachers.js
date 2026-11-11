@@ -21,10 +21,12 @@ import { tHtml, availableLocales } from '../i18n/index.js';
 import { config } from '../config.js';
 import { googleEnabled } from '../oidc.js';
 import { familiesOn } from '../services/family.js';
-import { isGrownup, noteTeacherWay } from '../auth.js';
-import { isSchoolStaff, isPlatformAdmin, schoolsOf, classesOf } from '../services/schools.js';
+import { isGrownup, noteTeacherWay, cleanName, getUserByName, isRetiredName, checkStaffPassword, startSession, STAFF_PASSWORD_MIN } from '../auth.js';
+import { audit } from '../db.js';
+import { rememberAddress, addressOf } from '../services/email.js';
+import { isSchoolStaff, isPlatformAdmin, schoolsOf, classesOf, canManageSchool, createTeacherWithSchool, getSchool, staffName } from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
-import { allow, count, ipOf } from '../services/ratelimit.js';
+import { allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { siteHost } from '../site.js';
 import * as games from '../services/games.js';
 import * as seo from '../seo.js';
@@ -112,29 +114,52 @@ function setupBlock(req, { sent = false, failed = false } = {}) {
   const back = lp(req, '/teachers');
   const lab = (id, key) => el(t, 'label', key, {}, ` for="${id}"`);
   const errs = id => raw(`<span class="err" id="${id}-err" aria-live="polite"></span>`);
-  return html`${el(t, 'p', 'teachers.setup.lead')}
-    <form class="sr-form" data-api="/api/teachers/school-request" data-next="${back}?sent=1#start" method="post" action="/api/teachers/school-request" novalidate>
+  const u = req.user;
+  // Account first (docs/decisions.md "Account first: set up your school"): signed out, the form makes the teacher's
+  // account and their school at once; a teacher who already runs a school tells us about it. A grown-up (parent)
+  // account, or the platform admin, still sends a plain request (family accounts never join a school).
+  const signup = signedOut(u);
+  const mine = !signup && isSchoolStaff(u) ? schoolsOf(u.id).filter(x => x.role !== 'student' && canManageSchool(u, x.id)) : [];
+  const staffForm = mine.length > 0;
+  const knownEmail = staffForm ? ((addressOf(u.id) || {}).email || '') : '';
+  return html`${el(t, 'p', signup ? 'teachers.setup.leadSignup' : staffForm ? 'teachers.setup.leadStaff' : 'teachers.setup.lead')}
+    <form class="sr-form" data-api="/api/teachers/school-request" data-next="${signup ? '/teach?welcome=school' : `${back}?sent=1#start`}" method="post" action="/api/teachers/school-request" novalidate>
       <input type="hidden" name="back" value="${back}">
+      ${signup ? html`<input type="hidden" name="tz" data-browser-tz><input type="hidden" name="signup" value="1">` : ''}
       <div class="sr-grid">
-        <div class="field">${lab('sr-name', 'teachers.setup.name')}
-          <input class="input" id="sr-name" name="name" maxlength="${SR.LIMITS.name}" autocomplete="name">${errs('sr-name')}</div>
+        ${staffForm ? html`<div class="field">${lab('sr-school-id', 'teachers.setup.yourSchool')}
+          <select class="input" id="sr-school-id" name="schoolId">${mine.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>${errs('sr-school-id')}</div>`
+        : html`<div class="field">${lab('sr-name', signup ? 'plans.trial.signup.name' : 'teachers.setup.name')}
+          <input class="input" id="sr-name" name="name" maxlength="${SR.LIMITS.name}" autocomplete="name"${signup ? raw(' required') : ''}>${errs('sr-name')}</div>
         <div class="field">${lab('sr-school', 'teachers.setup.school')}
-          <input class="input" id="sr-school" name="school" required minlength="2" maxlength="${SR.LIMITS.school}" autocomplete="organization">${errs('sr-school')}</div>
+          <input class="input" id="sr-school" name="school" required minlength="2" maxlength="${SR.LIMITS.school}" autocomplete="organization">${errs('sr-school')}</div>`}
         <div class="field">${lab('sr-role', 'teachers.setup.role')}
           <select class="input" id="sr-role" name="role" required><option value="">${t('teachers.setup.rolePick')}</option>${SR.ROLES.map(r => html`<option value="${r}">${t(`teachers.setup.roles.${r}`)}</option>`)}</select>${errs('sr-role')}</div>
         <div class="field">${lab('sr-email', 'teachers.setup.email')}
-          <input class="input" id="sr-email" name="email" type="email" dir="ltr" required maxlength="${SR.LIMITS.email}" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="sr-email-hint">
-          ${el(t, 'span', 'teachers.setup.emailHint', {}, ' class="hint" id="sr-email-hint"')}${errs('sr-email')}</div>
+          <input class="input" id="sr-email" name="email" type="email" dir="ltr" required maxlength="${SR.LIMITS.email}" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="sr-email-hint" value="${knownEmail}">
+          ${el(t, 'span', signup || staffForm ? 'teachers.setup.emailHintSignup' : 'teachers.setup.emailHint', {}, ' class="hint" id="sr-email-hint"')}${errs('sr-email')}</div>
         <div class="field">${lab('sr-students', 'teachers.setup.students')}
           <input class="input" id="sr-students" name="students" type="number" inputmode="numeric" required min="1" max="${SR.LIMITS.studentsMax}" step="1">${errs('sr-students')}</div>
         <div class="field">${lab('sr-country', 'teachers.setup.country')}
           <input class="input" id="sr-country" name="country" required minlength="2" maxlength="${SR.LIMITS.country}" autocomplete="country-name">${errs('sr-country')}</div>
       </div>
+      ${signup ? html`<fieldset class="sr-account"><legend>${t('teachers.setup.accountH')}</legend>
+        <p class="small muted">${tHtml(t, 'teachers.setup.accountLead', { login: `/login?next=${encodeURIComponent(back + '#start')}` })}</p>
+        <div class="sr-grid">
+        <div class="field">${lab('sr-username', 'plans.trial.signup.username')}
+          <input class="input" id="sr-username" name="username" required minlength="3" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="sr-username-hint">
+          ${el(t, 'span', 'plans.trial.signup.usernameHint', {}, ' class="hint" id="sr-username-hint"')}${errs('sr-username')}</div>
+        <div class="field">${lab('sr-password', 'plans.trial.signup.password')}
+          <input class="input" id="sr-password" name="password" type="password" required minlength="${STAFF_PASSWORD_MIN}" maxlength="72" autocomplete="new-password" dir="ltr" aria-describedby="sr-password-hint">
+          ${el(t, 'span', 'plans.trial.signup.passwordHint', { min: STAFF_PASSWORD_MIN }, ' class="hint" id="sr-password-hint"')}${errs('sr-password')}</div>
+        </div>
+        <div class="field"><label class="checkline"><input type="checkbox" id="sr-adult" name="adult" value="1" required> ${el(t, 'span', 'plans.trial.signup.adult')}</label>${errs('sr-adult')}</div>
+      </fieldset>` : ''}
       <div class="sr-hp" aria-hidden="true"><label for="sr-website">Website</label><input id="sr-website" name="website" tabindex="-1" autocomplete="off"></div>
       ${failed ? el(t, 'p', 'teachers.setup.errors.again', {}, ' class="err"') : ''}
       <p class="err form-err" aria-live="polite"></p>
-      <button class="btn btn-primary btn-big" type="submit">${t('teachers.setup.submit')}</button>
-      ${el(t, 'p', 'teachers.setup.privacy', { privacy: '/privacy?for=grownups#schoolSetup' }, ' class="small muted"')}
+      <button class="btn btn-primary btn-big" type="submit">${t(signup ? 'teachers.setup.submitSignup' : staffForm ? 'teachers.setup.submitStaff' : 'teachers.setup.submit')}</button>
+      ${el(t, 'p', signup || staffForm ? 'teachers.setup.privacySignup' : 'teachers.setup.privacy', { privacy: '/privacy?for=grownups#schoolSetup' }, ' class="small muted"')}
     </form>`;
 }
 
@@ -151,6 +176,24 @@ router.post('/api/teachers/school-request', express.urlencoded({ extended: false
   if (String(body.website || '').trim()) return ok();   // a robot filled the hidden field: thanked, not stored
   if (count(`school-request:${ip}`) >= SETUP_LIMITS.perIpHour) return fail(429, t('teachers.setup.errors.slow'));
   if (count('school-request:all') >= SETUP_LIMITS.perDay) return fail(429, t('teachers.setup.errors.busyToday'));
+  // Account first, signed out: their account and their school now, the request linked to both.
+  if (signedOut(req.user) && body.signup === '1') return schoolSignup(req, res, { body, plain, back, ip, fail });
+  // A teacher who runs a school tells us about it: the request is linked to that school.
+  if (body.schoolId !== undefined && req.user && isSchoolStaff(req.user)) {
+    const sc = getSchool(String(body.schoolId));
+    if (!sc || !canManageSchool(req.user, sc.id)) return fail(400, t('teachers.setup.errors.school'), 'schoolId');
+    const r = SR.createRequest({ ...body, school: sc.name, name: staffName(req.user) || req.user.display_name }, { by: req.user, locale: req.locale, schoolId: sc.id });
+    if (!r.ok) {
+      if (!r.field) return fail(503, t('teachers.setup.errors.full'));
+      if (plain) return fail(400);
+      const errors = Object.fromEntries(r.fields.map(f => [f, t(`teachers.setup.errors.${f}`)]));
+      return res.status(400).json({ error: errors[r.field], field: r.field, errors });
+    }
+    rememberAddress(req.user.id, body.email, 'school-request');
+    allow(`school-request:${ip}`, SETUP_LIMITS.perIpHour, 3600e3);
+    allow('school-request:all', SETUP_LIMITS.perDay, 86400e3);
+    return ok();
+  }
   // Only an adult account's id is kept with the request: a guest may be a child (see services/school-requests.js).
   const r = SR.createRequest(body, { by: signedOut(req.user) ? null : req.user, locale: req.locale });
   if (!r.ok) {
@@ -165,6 +208,45 @@ router.post('/api/teachers/school-request', express.urlencoded({ extended: false
   allow('school-request:all', SETUP_LIMITS.perDay, 86400e3);
   ok();
 });
+
+/** "Set up your school", signed out: checks every field at once (school details and the account), makes the
+ *  teacher's account and their school (they are its school admin), keeps the email for the account (password resets,
+ *  the welcome), stores the request linked to both, signs them in and sends them to their Classroom. */
+function schoolSignup(req, res, { body, plain, back, ip, fail }) {
+  const t = req.t;
+  if (count(`signup:${ip}`) >= SIGNUP.perHour) return fail(429, t('auth.api.tooManySignups'));
+  const v = SR.validate(body);
+  const errors = {};
+  if (!v.ok) for (const f of v.fields) errors[f] = t(`teachers.setup.errors.${f}`);
+  const name = String(body.name ?? '').replace(/\s+/g, ' ').trim().slice(0, 60);
+  if (name.length < 2) errors.name = t('plans.trial.errors.name');
+  const n = cleanName(body.username, t);
+  if (!n.ok) errors.username = n.error;
+  else if (getUserByName(n.value) || isRetiredName(n.value)) errors.username = t('auth.api.nameTaken');
+  const pw = String(body.password ?? '');
+  const pe = checkStaffPassword(pw, n.ok ? n.value : '', t, t('plans.trial.errors.password', { min: STAFF_PASSWORD_MIN }));
+  if (pe) errors.password = pe;
+  if (!(body.adult === '1' || body.adult === true || body.adult === 'on')) errors.adult = t('plans.trial.errors.adult');
+  const order = ['name', 'school', 'role', 'email', 'students', 'country', 'username', 'password', 'adult'].filter(k => errors[k]);
+  if (order.length) return plain ? res.redirect(303, `${back}?failed=1#start`) : res.status(400).json({ error: errors[order[0]], field: order[0], errors });
+  if (SR.openCount() >= SR.MAX_OPEN) return fail(503, t('teachers.setup.errors.full'));
+  let made;
+  try { made = createTeacherWithSchool({ name, school: v.value.school, username: n.value, password: pw, tz: typeof body.tz === 'string' ? body.tz.trim().slice(0, 64) : '' }); }
+  catch (e) {
+    if (/UNIQUE/.test(e.message)) return plain ? res.redirect(303, `${back}?failed=1#start`) : res.status(400).json({ error: t('auth.api.nameTaken'), field: 'username' });
+    if (e.code === 'school') return fail(400, t('teachers.setup.errors.school'), 'school');
+    throw e;
+  }
+  const { user, school } = made;
+  rememberAddress(user.id, v.value.email, 'school-request');
+  SR.createRequest({ ...body, name }, { by: user, locale: req.locale, schoolId: school.id });
+  audit(user.id, 'user.signup', user.id, { via: 'school-setup' });
+  startSession(res, user.id, req.headers['user-agent'], { method: 'signup', teacherWay: true });
+  allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
+  allow(`school-request:${ip}`, SETUP_LIMITS.perIpHour, 3600e3);
+  allow('school-request:all', SETUP_LIMITS.perDay, 86400e3);
+  return plain ? res.redirect(303, '/teach?welcome=school') : res.json({ ok: true, redirect: '/teach?welcome=school' });
+}
 
 // ---------------------------------------------------------------------------------------------------- teacher quotes
 /**
