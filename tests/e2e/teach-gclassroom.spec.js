@@ -27,7 +27,8 @@ const env = () => {
     SESSION_SECRET: 'gc-test-secret-0123456789abcdef0123456789', ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: 'admin-pass-123', DEMO_TEACHER_PASSWORD: 'demo-pass-123', ANTHROPIC_API_KEY: '',
     GOOGLE_CLIENT_ID: 'test-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'fake-test-secret', GOOGLE_OIDC_BASE: `http://127.0.0.1:${E2E + 1}`,
     // Fake test values (not secrets): Classroom on, a test-only token key, the fake Classroom API.
-    GOOGLE_CLASSROOM: '1', GOOGLE_TOKEN_KEY: 'b'.repeat(64), CLASSROOM_API_BASE: room.url, LANDING_AT_ROOT: '0' };
+    // The two-step flow (read first, then "Allow") is walked here; the one-consent default (full) is in the unit tests.
+    GOOGLE_CLASSROOM: '1', GOOGLE_CLASSROOM_SCOPES: 'read', GOOGLE_TOKEN_KEY: 'b'.repeat(64), CLASSROOM_API_BASE: room.url, LANDING_AT_ROOT: '0' };
   for (const k of ['PUBLIC_URL', 'REDIRECT_HOSTS', 'RENDER_EXTERNAL_HOSTNAME', 'BRB_DB']) delete e[k];
   return e;
 };
@@ -83,7 +84,7 @@ test('DemoTeacher connects Classroom, links the class, imports students, posts a
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await ctx.newPage();
   await signIn(page, 'DemoTeacher');
-  await page.goto(`${BASE}/teach`);
+  await page.goto(`${BASE}/teach?all=1`);
   await page.locator('a[href^="/class/"]', { hasText: 'Demo Class' }).first().click();
   await page.waitForURL(/\/class\/[^/?]+$/);
   classUrl = new URL(page.url()).pathname;

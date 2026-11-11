@@ -18,7 +18,7 @@ const SLUG = 'magic-cups-demo-school';
 const page$ = async (browser, opts = {}) => (await browser.newContext(opts)).newPage();
 /** The demo class's id (the teacher's My classes). */
 async function demoClass(t) {
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   return (await t.locator('a.cc-link').first().getAttribute('href')).match(/\/class\/([^/?#]+)/)[1];
 }
 /** End the teacher's open live game, if any (so the next test starts clean). */

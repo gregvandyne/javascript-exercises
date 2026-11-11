@@ -135,42 +135,35 @@ test('retention: closed asks go 90 days after they closed; open ones stay', asyn
   assert.equal(PA.KEEP_CLOSED, 90 * DAY);
 });
 
-test('My classes: the teacher\'s "Ask my admin" panel; the admin\'s plan card (no prices) with who asked and Dismiss; the Billing tab lists them too', async () => {
+test('the Me page: the teacher\'s "Ask my admin" panel (account section); the admin\'s My school says who asked; the Billing tab lists them with Dismiss', async () => {
   const x = school();
-  let t = await call(x.t1, '/teach');
+  let t = await call(x.t1, '/me');
   assert.match(t.text, new RegExp(`data-api="/api/schools/${x.s.id}/ask-plan"`));
   assert.match(t.text, /Ask my admin/);
+  assert.doesNotMatch((await call(x.t1, '/teach?all=1')).text, /Ask my admin/, 'no longer on My classes');
   await post(x.t1, `/api/schools/${x.s.id}/ask-plan`);
-  t = await call(x.t1, '/teach');
+  t = await call(x.t1, '/me');
   assert.match(t.text, /You asked on /); assert.doesNotMatch(t.text, /data-api="\/api\/schools\/[^"]+\/ask-plan"/);
-  const h = await call(x.head, '/teach');
-  assert.match(h.text, /School plan · Ask School/);
-  assert.match(h.text, /No school plan · students on free Builder messages/);
-  assert.match(h.text, new RegExp(`href="/school/${x.s.slug}\\?tab=billing">Set up School plan`));
-  assert.match(h.text, /1 teacher asked for a School plan/);
-  assert.match(h.text, /<bdi>Ms Rivera \d+<\/bdi>/);
-  assert.match(h.text, /ask-plan\/[^/"]+\/close/);
+  const h = await call(x.head, '/me');
+  assert.match(h.text, /<a class="panel metile" href="\/school">[\s\S]*?<span>My school<\/span><span class="metile-sub">1 teacher asked for a plan<\/span><\/a>/);
   assert.doesNotMatch(h.text, /data-api="\/api\/schools\/[^"]+\/ask-plan"/, 'the admin has nobody to ask');
-  assert.doesNotMatch(h.text.replace(/<script[\s\S]*?<\/script>/g, ''), /\$\s?\d|€\s?\d|£\s?\d|\/ ?year|per student/i, 'no prices on /teach');
+  assert.doesNotMatch(h.text.replace(/<script[\s\S]*?<\/script>/g, ''), /\$\s?\d|€\s?\d|£\s?\d|\/ ?year|per student/i, 'no prices on /me');
+  assert.doesNotMatch((await call(x.head, '/teach?all=1')).text, /School plan · |planasks/, 'nothing about plans on My classes');
   const bill = await call(x.head, `/school/${x.s.slug}?tab=billing`);
   assert.match(bill.text, /id="plan-asks"[\s\S]*1 teacher asked for a School plan/);
-  // Not a billing tester (a test key): no card at all; families off: no card and no panel.
-  q.run('UPDATE users SET billing_tester=0 WHERE id=?', x.head.id);
-  assert.doesNotMatch((await call(x.head, '/teach')).text, /School plan · /);
-  q.run('UPDATE users SET billing_tester=1 WHERE id=?', x.head.id);
+  assert.match(bill.text, /<bdi>Ms Rivera \d+<\/bdi>/);
+  assert.match(bill.text, /ask-plan\/[^/"]+\/close/);
+  // Families off: no panel.
   config.stripeApiKey = '';
-  assert.doesNotMatch((await call(x.head, '/teach')).text, /School plan · /);
-  assert.doesNotMatch((await call(x.t2, '/teach')).text, /Ask my admin/);
+  assert.doesNotMatch((await call(x.t2, '/me')).text, /Ask my admin/);
   config.stripeApiKey = 'rk_test_fake';
-  // The plan on: "School plan on · Billing" for the admin, and the teacher just reads that the school has one.
+  // The plan on: the teacher just reads that the school has one; the admin's tile says nobody is waiting.
   grantPlan(x.s);
-  const on = await call(x.head, '/teach');
-  assert.match(on.text, /School plan on<\/span> <a href="\/school\/[^"]+\?tab=billing">Billing/);
-  assert.doesNotMatch(on.text, /teacher asked/);
-  assert.match((await call(x.t2, '/teach')).text, /Your school has a School plan\./);
+  assert.match((await call(x.t2, '/me')).text, /Your school has a School plan\./);
+  assert.doesNotMatch((await call(x.head, '/me')).text, /teacher asked/);
   // No admin at the school: no panel.
   const lone = school({ admin: false });
-  assert.doesNotMatch((await call(lone.t1, '/teach')).text, /Ask my admin/);
+  assert.doesNotMatch((await call(lone.t1, '/me')).text, /Ask my admin/);
 });
 
 test('the asks list is in the page\'s language wherever it is drawn (also the Billing tab), and marked as English until a language has its words', async () => {
@@ -179,7 +172,7 @@ test('the asks list is in the page\'s language wherever it is drawn (also the Bi
   q.run("UPDATE users SET lang='he' WHERE id=?", x.head.id);
   const lists = async () => {
     const out = [];
-    for (const path of [`/school/${x.s.slug}?tab=billing`, '/teach']) {
+    for (const path of [`/school/${x.s.slug}?tab=billing`]) {
       const r = await call(auth.getUser(x.head.id), path);
       assert.equal(r.status, 200, path);
       assert.match(r.text, /<html lang="he" dir="rtl"/, path);

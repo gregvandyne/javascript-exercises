@@ -575,12 +575,6 @@ main.wrap>.namefilter{margin-bottom:var(--s3)}
   .pagehead>.teachtools{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s2)}
   .pagehead>.teachtools>.btn{flex:1 1 auto;white-space:nowrap;justify-content:center}
 }
-.schoolcard{display:grid;gap:var(--s3)}
-.sc-link{display:flex;flex-direction:column;gap:2px;min-height:44px;justify-content:center;color:var(--text);text-decoration:none}
-.sc-link>b{font-size:1.15rem;color:var(--accent-ink,var(--text))}
-.sc-link:hover>b{text-decoration:underline}
-.schoolcard>.teachplan{margin:0;padding:var(--s3) 0 0;box-shadow:none;background:transparent;border-top:1px solid var(--line);border-radius:0}
-.schoolcard>.teachplan>h2{font-size:1rem}
 /* School settings: three groups in one form; on phones Save stays in reach at the bottom of the screen once the page is
    scrolled (not on load, where it would sit over the first fields). */
 .settingsform>h3.setgroup-h{margin-top:0;padding-top:0;border-top:0}
@@ -829,17 +823,8 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .classgrid:has(.th-newclass .libdrop[open]){grid-auto-rows:auto}
 .th-newclass:has(.libdrop[open]){grid-column:1/-1}
 /* Courses, live games and brain breaks: small tiles (picture or emoji, name, one line). */
-.th-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:var(--s3);margin:0;padding:0}
-.th-tiles>li{display:flex;min-width:0}
-.th-tile{flex:1;display:flex;align-items:center;gap:var(--s3);margin:0;min-height:72px;color:var(--text);text-decoration:none}
-.th-tile:hover{transform:translateY(-2px)}
-.th-tile b{display:block;line-height:1.25}
-.th-t{min-width:0;display:grid;gap:2px}
-.th-art{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:var(--r-sm);background:var(--card-2);font-size:1.8rem;overflow:hidden}
-.th-art>img{width:100%;height:100%;object-fit:cover}
-.th-more{flex-wrap:wrap;gap:var(--s2);margin:var(--s6) 0 0}
 @media (max-width:600px){
-  .th-head>.btn,.th-more>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
+  .th-head>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
   /* The Classroom home's heading: hello on its own line, then its buttons (This week's summary, Host a live game) side by side. */
   .th-head>div:first-child{flex:1 1 100%}
   .th-head>.btn{flex:1 1 0;min-width:0;padding-inline:10px}
@@ -850,12 +835,6 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   /* Phones: one class per row, so New class is a short dashed bar, not a card-high box. */
   .th-classes{grid-auto-rows:auto}
   .th-newclass .libdrop:not([open])>summary{min-height:64px}
-  /* Live games and brain breaks: one sideways row of picture-over-name tiles each (seven live modes are not seven rows). */
-  .th-tiles.th-grid2{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(150px,44%);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:-16px;padding:2px 16px 6px;scroll-padding-inline:16px}
-  .th-grid2::-webkit-scrollbar{display:none}
-  .th-grid2>li{scroll-snap-align:start}
-  .th-grid2 .th-tile{flex-direction:column;align-items:flex-start;text-align:start;min-height:0;padding:var(--s3)}
-  .th-grid2 .th-art{width:100%;height:auto;aspect-ratio:16/10}
   .teachtools>.btn{flex:1 1 auto;justify-content:center}
 }
 
@@ -882,11 +861,6 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 @media (max-width:600px){.ct-todo>.btn{justify-self:stretch;min-height:44px;justify-content:center}.ct-more>.btn{min-height:44px}}
 /* Chips with a lesson's title wrap instead of pushing a phone's page sideways. */
 .th-chips>.chip-s{white-space:normal;max-width:100%;overflow-wrap:anywhere}
-/* Brain breaks on phones: two small tiles a row (picture above the name). */
-@media (max-width:600px){
-  .th-breaks{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .th-breaks .th-tile{flex-direction:column;align-items:flex-start;text-align:start}
-}
 
 /* ---------- Rubrics (routes/rubrics.js, views/rubrics.js; docs/decisions.md "Rubrics") ---------- */
 .rb-intro{margin:0 0 var(--s3)}
@@ -996,10 +970,6 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .cc-quick{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3);margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--line)}
 .classgrid>.th-class>.cc-quick{margin-top:var(--s3)}
 .cc-quick>.btn{min-height:44px;white-space:normal;text-align:center;line-height:1.2}
-.cc-quick-what{display:flex;flex-wrap:wrap;align-items:center;gap:2px 10px;min-width:0}
-.cc-quick-change{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
-.cc-quick>.form-err:empty{display:none}
-.cc-quick>.form-err{flex:1 1 100%}
 /* Real scores in the gradebook (routes/progress.js, routes/student-report.js; docs/decisions.md): the roster name with the
    name used in games under it (staff-only screens), the Score column, "Done late", the live games table and one
    student's page. Colors from app.css variables only. */
@@ -1069,3 +1039,5 @@ details.coursepanel>summary>.small{flex:1 1 auto}
   .sp-table .sp-lessonrow th,.sp-table .sp-lessonrow td{background:#eee}
   .sp-page .chip-s{border:1px solid #999;background:#fff;color:#000}
 }
+/* What a unit is (class page) and what a folder is (lesson library): one line under the buttons. */
+.unit-why,.folder-why{margin:var(--s3) 0 0;max-width:72ch}

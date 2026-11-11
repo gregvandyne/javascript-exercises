@@ -9,7 +9,7 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName, adminSchools } from '../services/schools.js';
 import { cleanRealName, REAL_NAME_MAX, cleanName } from '../services/textfilter.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
@@ -466,6 +466,12 @@ export function signOutPanel(req) {
   </section>`;
 }
 
+/** The account section's plan for school staff: their Teacher plan (status, today's messages, billing) and, at a school
+ *  they teach in but don't run, "Ask my admin" for one; and who asked a school's admin for a plan (My school's line).
+ *  routes/teacher-plan.js sets both (importing the billing pages from
+ *  here would load them before services/billing.js is ready); '' until then and while paid-plan pages are off. */
+let planPanels = () => '', openAsksOf = () => [];
+export const setMePlanPanels = (panels, asks) => { planPanels = panels; openAsksOf = asks; };
 router.get('/me', auth.requireUser, (req, res) => {
   const t = req.t;
   const u = req.user;
@@ -475,10 +481,16 @@ router.get('/me', auth.requireUser, (req, res) => {
   const gamesSub = [nb && t('me.tiles.building', { count: nb }), nr && t('me.tiles.ready', { count: nr })].filter(Boolean).join(' · ');
   const nb_ = u.is_guest ? {} : navBadges(u), invites = u.is_guest ? 0 : invitesFor(u.id).length;
   const noFriends = !u.is_guest && noFriendsAccount(u);
+  const runs = u.is_guest ? [] : adminSchools(u);
+  const asks = runs.reduce((n, x) => n + openAsksOf(x.id).length, 0);
+  const myschool = runs.length ? ['🏫', t('me.tiles.school'), '/school', asks ? t('me.tiles.asks', { count: asks }) : runs.length === 1 ? runs[0].name : ''] : null;
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
-    !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
+    !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : [isSchoolStaff(u) ? '🍎' : '🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
+    // My school: where a school's admins manage it (/school: its overview, or a pick of their schools). Teachers who
+    // don't run a school have no school pages.
+    myschool,
     ['🛠️', t('me.tiles.games'), '/build', gamesSub],
     // Staff (teachers, school admins, the platform admin) have no friends and no friends' chat: their one inbox is the
     // Oomba team's messages.
@@ -524,6 +536,6 @@ router.get('/me', auth.requireUser, (req, res) => {
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
   ${staff ? digestPanel(req) : ''}
-  <div class="mesettings">${namePanel(req)}${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${staff ? planPanels(req) : ''}${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js', '/js/character.js'], ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/digest.css?v=${VERSION}">`) } : {}) });
 });

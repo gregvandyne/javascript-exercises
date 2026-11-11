@@ -269,7 +269,7 @@ test('school page and class flows: who teaches a new class, adding staff, duplic
 
   // Archived classes stay reachable from My classes, with a banner and Restore on the class.
   S.archiveClass(head, setup.id, true);
-  assert.match((await as(kim)('/teach')).text, /1 archived class/);
+  assert.match((await as(kim)('/teach?all=1')).text, /1 archived class/);
   assert.match((await as(kim)(`/class/${setup.id}`)).text, /This class is archived/);
 
   // The platform admin works from Schools; staff without student classes go to My classes.
@@ -366,14 +366,14 @@ test('review fixes: teachers cannot take over staff accounts, wording and links,
   assert.doesNotMatch(st, new RegExp(`<option value="${A.id}"[^>]*data-confirm`));
   assert.match(st, /id="requests"/);
   // My classes: the requests chip opens the Students tab at the requests, and no chip sits inside the card's link.
-  r = await as(T)('/teach');
+  r = await as(T)('/teach?all=1');
   assert.match(r.text, new RegExp(`<a class="chip-s warn" href="/class/${pc.id}\\?tab=students#requests"`));
   assert.doesNotMatch(r.text.match(new RegExp(`<a class="cc-name cc-link" href="/class/${pc.id}">[\\s\\S]*?</a>`))[0], /chip-s/);
 
   // A school admin who teaches nothing isn't told to "create your first class below".
   const lone = S.createSchoolAccount(boss, pine.id, { rosterName: 'Lone Admin', role: 'admin' }).user;
   const lt = (await as(lone)('/teach')).text;
-  assert.doesNotMatch(lt, /Create your first class below/); assert.match(lt, /Manage Pine Grove/);
+  assert.doesNotMatch(lt, /Create your first class below/); assert.match(lt, /All of Pine Grove[^<]*classes are under My school/); assert.match(lt, new RegExp(`href="/school/${pine.slug}">🏫 My school`));
   // A school admin leaving a class goes back to the school page.
   r = await as(A)(`/api/classes/${pc.id}/students/${A.id}/remove`, { method: 'POST', body: {} });
   assert.equal(r.json.redirect, `/school/${pine.slug}`);

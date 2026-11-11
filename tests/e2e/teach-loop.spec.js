@@ -33,7 +33,7 @@ async function freshTeacher(browser) {
   await admin.context().close();
   const ctx = await browser.newContext(); const t = await ctx.newPage();
   await login(t, username, password);
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await t.fill('#nc-n', 'Loop 4C');
   await Promise.all([t.waitForURL(/\/class\//), t.click('form[data-api="/api/classes"] button[type=submit]')]);
   const classId = t.url().match(/\/class\/([^/?#]+)/)[1];
@@ -72,7 +72,7 @@ async function layoutProblems(browser, state, paths, { lang = null, scope = 'mai
 test('a new teacher\'s Classroom: the card above My classes, nothing done, Hide and Show again, links for their class', async ({ browser }) => {
   const { state, classId } = await freshTeacher(browser);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: state }); const t = await ctx.newPage();
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   const card = t.locator('#teach-loop');
   await expect(card).toBeVisible();
   await expect(card.locator('h2')).toHaveText('🔁 Your teaching loop');
@@ -101,7 +101,7 @@ test('a new teacher\'s Classroom: the card above My classes, nothing done, Hide 
   for (const img of await t.locator('.tl-shot img').all()) { await img.scrollIntoViewIfNeeded(); await expect.poll(() => img.evaluate(i => i.complete && i.naturalWidth)).toBe(1280); }
   await t.click('.tl-foot form button');
   await expect(t.locator('.tl-foot form')).toHaveCount(0);
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await expect(t.locator('#teach-loop')).toBeVisible();
   await ctx.close();
 });
@@ -115,7 +115,7 @@ test('the card and /teach/loop on phones and desktop, light and dark, and in Heb
   expect(problems).toEqual([]);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: state });
   await ctx.addCookies([{ name: 'lang', value: 'he', url: test.info().project.use.baseURL }]);
-  const p = await ctx.newPage(); await p.goto('/teach');
+  const p = await ctx.newPage(); await p.goto('/teach?all=1');
   await expect(p.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(p.locator('#teach-loop h2')).toContainText('מעגל ההוראה שלך');
   await ctx.close();
@@ -124,14 +124,14 @@ test('the card and /teach/loop on phones and desktop, light and dark, and in Heb
 test('the steps tick themselves off: assigning a game (Plan, Play), opening the gradebook from the card (Check)', async ({ browser }) => {
   const { state, classId } = await freshTeacher(browser);
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 }, storageState: state }); const t = await ctx.newPage();
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   const r = await t.request.post('/api/teach/assign-game', { data: { game: 'word-hunt', classId }, headers: { 'sec-fetch-site': 'same-origin' } });
   expect(r.status()).toBe(200);
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await expect(t.locator('#teach-loop .tl-count')).toHaveText('2 of 4 done');
   await t.locator('#teach-loop a.chip', { hasText: 'Gradebook' }).click();
   await expect(t).toHaveURL(new RegExp(`/class/${classId}/progress$`));
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await expect(t.locator('#teach-loop .tl-count')).toHaveText('3 of 4 done');
   await expect(t.locator('#teach-loop .tl-mstep:not(.is-done)')).toContainText('Feedback');
   await t.goto('/teach/loop');

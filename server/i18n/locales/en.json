@@ -245,7 +245,9 @@
       "ready": "{count, plural, one {# game ready} other {# games ready}}",
       "invites": "{count, plural, one {# invite to answer} other {# invites to answer}}",
       "requests": "{count, plural, one {# friend request} other {# friend requests}}",
-      "unread": "{count, plural, one {# new message} other {# new messages}}"
+      "unread": "{count, plural, one {# new message} other {# new messages}}",
+      "school": "My school",
+      "asks": "{count, plural, one {# teacher asked for a plan} other {# teachers asked for a plan}}"
     },
     "look": {
       "heading": "Pick your look",
@@ -567,8 +569,7 @@
       "favorites": "My favorites",
       "keep": "Keep playing",
       "two": "Two players",
-      "fromLearn": "From Learn: fun ones",
-      "openLearn": "Open Learn"
+      "fromLearn": "From Learn: fun ones"
     },
     "hero": {
       "label": "Featured game",
@@ -2583,17 +2584,11 @@
       "none": "No classes yet",
       "noneText": "Create your first class below. You'll get a code to share with students.",
       "noneAsk": "Ask your school admin to add you to a class.",
-      "manage": "Manage {school}",
       "noneAdmin": "You don't teach any classes yet",
-      "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under Manage {school} above.",
+      "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under My school.",
       "makeGame": "Make a game",
       "plan": {
-        "heading": "School plan · {school}",
-        "none": "No school plan · students on free Builder messages",
-        "setUp": "Set up School plan",
-        "on": "School plan on",
-        "billing": "Billing",
-        "settling": "Setting up your plan…"
+        "heading": "School plan · {school}"
       },
       "tools": "Teaching tools",
       "hostLive": "Host a live game"
@@ -3106,7 +3101,8 @@
       "newPlaceholder": "New folder, e.g. Fractions",
       "delete": "Delete folder",
       "deleteConfirm": "Delete the folder {name}? The lessons and folders inside move up one level.",
-      "hint": "Folders are only for you. Students never see them."
+      "hint": "Folders are only for you. Students never see them.",
+      "why": "Folders sort your own lesson library, and their lessons can go to any class. Units, on a class page, set the order students see."
     },
     "lesson": {
       "title": "Lesson title",
@@ -3220,7 +3216,8 @@
       "dueToday": "Due today",
       "late": "Late",
       "removedGroup": "Removed from this class",
-      "readyMade": "Use a ready-made lesson"
+      "readyMade": "Use a ready-made lesson",
+      "unitWhy": "Units group the lessons in this class, in the order students see them. Folders only sort your own lesson library."
     },
     "view": {
       "teacherPreview": "Student view. Buttons that save work are turned off for you.",
@@ -4110,7 +4107,7 @@
         "adult": "Please confirm you are a teacher or school staff member, 18 or older.",
         "notTeacher": "The Teacher plan needs a teacher account.",
         "entitled": "You already have the Teacher plan.",
-        "fixPayment": "Your plan is waiting for a payment. Fix it in Manage billing on My classes.",
+        "fixPayment": "Your plan is waiting for a payment. Fix it in Manage billing on your Me page.",
         "trialUsed": "This free trial has been used already.",
         "noPrice": "The Teacher plan isn't on sale right now. Please try again later.",
         "paying": "A payment is already on its way. Please wait a minute.",
@@ -4119,8 +4116,8 @@
       },
       "thanks": {
         "wait": "⏳ Starting your Teacher plan…",
-        "slow": "This is taking longer than usual. Your plan will show on My classes in a minute.",
-        "back": "Go to My classes"
+        "slow": "This is taking longer than usual. Your plan will show on your Me page in a minute.",
+        "back": "Go to my Teacher plan"
       },
       "card": {
         "heading": "Teacher plan",
@@ -4137,7 +4134,9 @@
         "fix": "Your Teacher plan is waiting for a payment. Update your card in Manage billing.",
         "tryText": "Unlimited students and {daily} AI builds a day for your classes. Free for {days} days, no card needed.",
         "getText": "Unlimited students and {daily} AI builds a day for your classes.",
-        "try": "Try it free for {days} days"
+        "schoolBilling": "Manage school billing",
+        "seatNote": "The admins of {school} look after this plan.",
+        "seePlans": "See the plans"
       }
     }
   },
@@ -7149,14 +7148,10 @@
       "waitingN": "{count, plural, one {# answer waiting} other {# answers waiting}}",
       "caughtUp": "All caught up",
       "openClass": "Open class",
-      "courses": "Teach with a course",
-      "live": "Live games for the whole class",
-      "breaks": "Brain breaks",
-      "breaksText": "Short, fun games from Play, picked for a 5-minute break on the big screen.",
-      "allGames": "See everything students can play",
       "openLive": "Open live game",
       "make": "Turn a lesson into a game",
-      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide."
+      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
+      "allClasses": "All classes"
     },
     "loop": {
       "kicker": "How Oomba fits your week",
@@ -8527,10 +8522,6 @@
       "go": "Open the room",
       "more": "More games and settings",
       "recent": "Your last games"
-    },
-    "card": {
-      "button": "Quick game",
-      "change": "Change"
     },
     "results": {
       "h": "This was a guest game.",

@@ -2,7 +2,7 @@
 // Oomba goes from the first page to three guests answering a question; the steps are counted and bounded
 // (tests/support/fast-live-flow.js; scripts/fast-live-timing.js prints the same numbers for a running server). Then the
 // rest of the path: the guests' results say what is kept and lead to "Make a class to keep scores" (paste names, login
-// cards), the class card's one tap opens a class room, and a signed-in student of that class joins from the "Your
+// cards), My classes opens that one class, the quick chooser for it opens a class room, and a signed-in student joins from the "Your
 // teacher started a live game" banner with no code. At 360, 390 and 1280 px, light and dark, Hebrew and Arabic: no
 // sideways scroll, nothing touches (touching.js), 44 px tap targets on phones.
 import { test, expect } from '@playwright/test';
@@ -86,7 +86,7 @@ test('a new teacher: first page -> three-field sign-up -> Quick game -> three gu
   await r.ctx.close();
 });
 
-test('after the game: "Make a class to keep scores" -> paste names -> login cards; the class card\'s one tap; a student joins from the banner with no code', async ({ browser }) => {
+test('after the game: "Make a class to keep scores" -> paste names -> login cards; My classes opens the one class; the quick chooser for it; a student joins from the banner with no code', async ({ browser }) => {
   test.skip(!made, 'needs the teacher from the first test');
   const ctx = await browser.newContext({ storageState: made.state, viewport: { width: 390, height: 844 } });
   const t = await ctx.newPage(); await ownIp(t);
@@ -100,13 +100,17 @@ test('after the game: "Make a class to keep scores" -> paste names -> login card
   await expect(t.locator('.logincard')).toHaveCount(3);
   const student = { username: (await t.locator('.logincard dd b').nth(0).textContent()).trim(), password: (await t.locator('.logincard dd b').nth(1).textContent()).trim() };
 
-  // The Classroom home: the class card says what one tap opens (the class's grade picks the level, the last game the mode).
+  // My classes with one class opens that class directly (no Quick game on class cards any more: "My classes, simpler").
   await t.goto('/teach');
-  const quick = t.locator('form.cc-quick');
-  await expect(quick).toHaveCount(1);
-  await expect(quick.locator('.cc-quick-what')).toContainText('Question Battle');
-  await expect(quick.locator('.cc-quick-what')).toContainText('Ages 10–11');
-  const classId = await quick.locator('input[name="classId"]').inputValue();
+  await expect.poll(() => new URL(t.url()).pathname).toMatch(/^\/class\/[^/]+$/);
+  const classId = new URL(t.url()).pathname.split('/').pop();
+  await expect(t.locator('.backlink')).toHaveAttribute('href', '/teach?all=1');
+  await t.goto('/teach?all=1');
+  await expect(t.locator('form.cc-quick')).toHaveCount(0);
+  // The quick chooser for the class: the class's grade picks the level, the last game the mode.
+  await t.goto(`/live/quick?class=${classId}`);
+  await expect(t.locator('input[name="mode"][value="battle"]')).toBeChecked();
+  await expect(t.locator('input[name="level"][value="a10"]')).toBeChecked();
 
   // The student signs in first and waits on their class page: no banner yet.
   const sctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const s = await sctx.newPage();
@@ -114,8 +118,8 @@ test('after the game: "Make a class to keep scores" -> paste names -> login card
   await s.goto(`/class/${classId}`);
   await expect(s.locator('#class-live')).toBeHidden();
 
-  // One tap.
-  await Promise.all([t.waitForURL(/\/live\/host\//), quick.locator('button[type=submit]').click()]);
+  // One tap: Open the room.
+  await Promise.all([t.waitForURL(/\/live\/host\//), t.locator('#ql-go').click()]);
   await expect(t.locator('#lv-code')).toBeVisible();
   // The banner appears for the student (a fresh look at the page; class-live.js also polls), and "Join now" needs no code typed.
   await s.goto(`/class/${classId}`);
@@ -129,7 +133,7 @@ test('after the game: "Make a class to keep scores" -> paste names -> login card
   // The host's room now has one player; while it is open the card offers the way back, not a second room.
   await expect(t.locator('#lv-count')).toContainText(/1 of/);
   const home = await ctx.newPage();
-  await home.goto('/teach');
+  await home.goto('/teach?all=1');
   await expect(home.locator('form.cc-quick')).toHaveCount(0);
   await expect(home.locator('a.cc-live.btn-hot')).toBeVisible();
   // "Change" (once the room is ended) opens the chooser for the class with the pick preselected.

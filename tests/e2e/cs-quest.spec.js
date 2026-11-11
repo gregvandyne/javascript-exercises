@@ -18,14 +18,15 @@ test('teacher adds Core 10, opens a plan page, prints, assigns a unit; the stude
 
   const tctx = await browser.newContext(); const t = await tctx.newPage();
   await login(t, tcard.user, tcard.pass);
-  await t.goto('/teach'); await t.fill('#nc-n', 'Robot Class');
+  await t.goto('/teach?all=1'); await t.fill('#nc-n', 'Robot Class');
   await Promise.all([t.waitForURL(/\/class\//), t.click('form[data-api="/api/classes"] button[type=submit]')]);
   await t.fill('#as-n', 'Sam Student');
   await Promise.all([t.waitForURL(/\/cards\//), t.click('form[data-api$="/students"] button[type=submit]')]);
   const scard = await card(t);
 
   // the program page: Core 10 (no Builder) first, one click adds its lessons
-  await t.goto('/teach'); await t.click('a[href="/teach/cs-quest"]');
+  // (My classes no longer lists the courses: Learn's course card has "Assign to a class".)
+  await t.goto('/learn'); await t.click('a[href="/teach/cs-quest"]');
   await expect(t.locator('h1')).toContainText('CS Quest');
   // The Add buttons are data-api forms that app.js (a module script) sends as JSON: wait for the page's scripts, or a
   // click that lands first submits the plain form and only reloads the page.

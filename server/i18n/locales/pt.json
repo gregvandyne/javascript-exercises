@@ -245,7 +245,9 @@
       "ready": "{count, plural, one {# jogo pronto} other {# jogos prontos}}",
       "invites": "{count, plural, one {# convite para responder} other {# convites para responder}}",
       "requests": "{count, plural, one {# pedido de amizade} other {# pedidos de amizade}}",
-      "unread": "{count, plural, one {# mensagem nova} other {# mensagens novas}}"
+      "unread": "{count, plural, one {# mensagem nova} other {# mensagens novas}}",
+      "school": "Minha escola",
+      "asks": "{count, plural, one {# professor pediu um plano} other {# professores pediram um plano}}"
     },
     "look": {
       "heading": "Escolha seu visual",
@@ -567,8 +569,7 @@
       "favorites": "Meus favoritos",
       "keep": "Continue jogando",
       "two": "Dois jogadores",
-      "fromLearn": "De Aprender: os mais divertidos",
-      "openLearn": "Abrir Aprender"
+      "fromLearn": "De Aprender: os mais divertidos"
     },
     "hero": {
       "label": "Jogo em destaque",
@@ -2565,17 +2566,11 @@
       "none": "Nenhuma turma ainda",
       "noneText": "Crie sua primeira turma abaixo. Você vai receber um código para compartilhar com os alunos.",
       "noneAsk": "Peça ao admin da escola para adicionar você a uma turma.",
-      "manage": "Gerenciar {school}",
       "noneAdmin": "Você ainda não dá aula para nenhuma turma",
-      "noneAdminText": "As turmas em que você dá aula aparecem aqui. Todas as turmas de {school} estão em Gerenciar {school}, logo acima.",
+      "noneAdminText": "As turmas em que você dá aula aparecem aqui. Todas as turmas de {school} estão em Minha escola.",
       "makeGame": "Criar um jogo",
       "plan": {
-        "heading": "Plano Escola · {school}",
-        "none": "Sem plano Escola · alunos com as mensagens grátis para o Construtor",
-        "setUp": "Ativar o plano Escola",
-        "on": "Plano Escola ativo",
-        "billing": "Cobrança",
-        "settling": "Ativando o seu plano…"
+        "heading": "Plano Escola · {school}"
       },
       "tools": "Ferramentas para ensinar",
       "hostLive": "Conduzir um jogo ao vivo"
@@ -3088,7 +3083,8 @@
       "newPlaceholder": "Nova pasta, ex.: Frações",
       "delete": "Excluir pasta",
       "deleteConfirm": "Excluir a pasta {name}? As aulas e pastas que estão dentro dela sobem um nível.",
-      "hint": "As pastas são só para você. Os alunos nunca as veem."
+      "hint": "As pastas são só para você. Os alunos nunca as veem.",
+      "why": "As pastas organizam a sua própria biblioteca de aulas, e as aulas delas podem ir para qualquer turma. As unidades, na página de uma turma, definem a ordem que os alunos veem."
     },
     "lesson": {
       "title": "Título da aula",
@@ -3202,7 +3198,8 @@
       "dueToday": "Entregar hoje",
       "late": "Em atraso",
       "removedGroup": "Removidas desta turma",
-      "readyMade": "Usar uma aula pronta"
+      "readyMade": "Usar uma aula pronta",
+      "unitWhy": "As unidades agrupam as aulas desta turma, na ordem em que os alunos as veem. As pastas só organizam a sua própria biblioteca de aulas."
     },
     "view": {
       "teacherPreview": "Visão do aluno. Os botões que salvam trabalhos estão desativados para você.",
@@ -4083,7 +4080,7 @@
         "adult": "Confirme que você é professor ou trabalha em uma escola, e que tem 18 anos ou mais.",
         "notTeacher": "O plano Professor precisa de uma conta de professor.",
         "entitled": "Você já tem o plano Professor.",
-        "fixPayment": "Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, em Minhas turmas.",
+        "fixPayment": "Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, na sua página Eu.",
         "trialUsed": "Este teste grátis já foi usado.",
         "noPrice": "O plano Professor não está à venda agora. Tente de novo mais tarde.",
         "paying": "Já tem um pagamento a caminho. Espere um minuto.",
@@ -4092,8 +4089,8 @@
       },
       "thanks": {
         "wait": "⏳ Ativando seu plano Professor…",
-        "slow": "Está demorando mais que o normal. Seu plano vai aparecer em Minhas turmas em um minuto.",
-        "back": "Ir para Minhas turmas"
+        "slow": "Está demorando mais que o normal. Seu plano vai aparecer na sua página Eu em um minuto.",
+        "back": "Ir para meu plano Professor"
       },
       "card": {
         "heading": "Plano Professor",
@@ -4110,7 +4107,9 @@
         "fix": "Seu plano Professor está esperando um pagamento. Atualize seu cartão em Gerenciar cobrança.",
         "tryText": "Alunos ilimitados e {daily} criações com IA por dia para suas turmas. Grátis por {days} dias, sem cartão.",
         "getText": "Alunos ilimitados e {daily} criações com IA por dia para suas turmas.",
-        "try": "Teste grátis por {days} dias"
+        "schoolBilling": "Gerenciar a cobrança da escola",
+        "seatNote": "Os administradores de {school} cuidam deste plano.",
+        "seePlans": "Ver os planos"
       }
     }
   },
@@ -7351,14 +7350,10 @@
       "waitingN": "{count, plural, one {# resposta à espera} other {# respostas à espera}}",
       "caughtUp": "Tudo em dia",
       "openClass": "Abrir a turma",
-      "courses": "Ensine com um curso",
-      "live": "Jogos ao vivo para a turma toda",
-      "breaks": "Pausas ativas",
-      "breaksText": "Jogos curtos e divertidos de Jogar, escolhidos para uma pausa de 5 minutos no ecrã grande.",
-      "allGames": "Ver tudo o que os alunos podem jogar",
       "openLive": "Abrir o jogo ao vivo",
       "make": "Transformar uma aula em jogo",
-      "schoolReady": "{school} está pronta, e você é o administrador. Crie sua primeira turma abaixo e depois adicione seus alunos. Vamos revisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail."
+      "schoolReady": "{school} está pronta, e você é o administrador. Crie sua primeira turma abaixo e depois adicione seus alunos. Vamos revisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
+      "allClasses": "Todas as turmas"
     },
     "loop": {
       "kicker": "Como o Oomba se encaixa na sua semana",
@@ -8121,10 +8116,6 @@
       "go": "Abrir a sala",
       "more": "Mais jogos e definições",
       "recent": "Os seus últimos jogos"
-    },
-    "card": {
-      "button": "Jogo rápido",
-      "change": "Mudar"
     },
     "results": {
       "h": "Este foi um jogo com convidados.",

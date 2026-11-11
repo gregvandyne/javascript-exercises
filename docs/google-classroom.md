@@ -12,10 +12,12 @@ Decisions: docs/decisions.md "Google Classroom sync".
 
 - On a class's **Lessons** tab: a **🎓 Google Classroom** button (school staff only). It opens
   `/class/<id>/google-classroom`: Connect, pick the Classroom class, **Import students**, then:
-  - **Connect** asks Google only for the two read scopes. The panel lists what Oomba may do in the teacher's Classroom;
-    while a write scope is missing, **✍️ Allow Oomba Academy to post to Classroom** asks Google again for the optional
-    scopes (incremental authorization). Each write control shows only once its scope was granted; until then it is a
-    short note with that button.
+  - **Connect** asks Google for everything Oomba can use in one consent: the two read scopes and the four write scopes
+    (with `GOOGLE_CLASSROOM_SCOPES=full`, the default; with `read`, the two read scopes only). The panel lists what
+    Oomba may do in the teacher's Classroom. If a write scope is missing (a teacher unticked its box on Google's screen,
+    or the setting is `read`), "Some of these are off" and **✍️ Allow Oomba Academy to post to Classroom** ask Google
+    again for the write scopes (incremental authorization). Each write control shows only once its scope was granted;
+    until then it is a short note with that button. With `full` and every box ticked there is no second step.
   - **Students from Classroom:** "Roster updated <time>", students still waiting to sign in, and **No longer in Google
     Classroom**: students who left the Classroom class, each with **Remove from class** and **Keep** (never removed on
     their own).
@@ -45,10 +47,21 @@ Use the same Google Cloud project as Sign in with Google (the one that owns `GOO
 
 ## 2. OAuth consent screen: add the scopes (needs Google's verification)
 
-**APIs & Services → OAuth consent screen → Data access (Scopes) → Add or remove scopes.** The two **required** scopes
-are enough to start: with only those, teachers can connect, link a class and import (and auto-refresh) its students.
-Each **optional** scope turns on its features once you add it here and a teacher allows it ("Allow Oomba Academy to post
-to Classroom"); a teacher who leaves a box unticked on Google's screen just doesn't get that feature.
+**APIs & Services → OAuth consent screen → Data access (Scopes) → Add or remove scopes.** Add **all six** scopes below
+(the two required and the four optional ones), and include all six when you submit the app for verification. With
+`GOOGLE_CLASSROOM_SCOPES=full` (the default, section 3) the teacher's first **Connect** asks for all six in one Google
+screen, so they must be on the consent screen. The two **required** scopes alone are enough to connect, link a class
+and import (and auto-refresh) its students; each **optional** scope turns on its features. A teacher who leaves a box
+unticked on Google's screen just doesn't get that feature, and the page offers "Allow Oomba Academy to post to
+Classroom" to ask again.
+
+**If the four write scopes are not on the consent screen (or not verified) yet:** Google still shows a Connect that
+asks for them, but as an app it hasn't verified for those scopes: teachers see Google's "Google hasn't verified this
+app" warning (and only the test users you listed can go on, while the app is in testing), and a school whose Workspace
+admin blocks unverified apps may refuse it outright, so Connect fails for everyone there. Until the write scopes are
+added and verified, set `GOOGLE_CLASSROOM_SCOPES=read`: Connect then asks for the two read scopes only (as before), and
+posting is a second step, "Allow Oomba Academy to post to Classroom", that teachers use once you have added them.
+Switch to `full` (or remove the variable) after Google has verified all six.
 
 | Scope | Required? | Why |
 |---|---|---|
@@ -64,15 +77,16 @@ Classroom add-on, Drive or anything else: an email is never read, students are m
 
 These are **sensitive scopes**: before the app is used by people outside your own Google Workspace, Google must verify
 it (Publishing status → **Prepare for verification**). Expect to give: the privacy policy URL (`https://oomba.ai/privacy`),
-the home page, a short video of the connect → link → import → allow posting → post → share as material → grade →
-announce flow, and a sentence per scope (the table above). You can verify the two required scopes first and add the
-optional ones later: the site works either way. Verification takes days to weeks. Until it is verified, only test users you list on the consent screen can
+the home page, a short video of the connect → link → import → post → share as material → grade → announce flow, and a
+sentence per scope (the table above). Verify all six together for the one-step Connect; if you verify the two required
+scopes first, run with `GOOGLE_CLASSROOM_SCOPES=read` until the optional ones are verified too. Verification takes days to weeks. Until it is verified, only test users you list on the consent screen can
 connect (up to 100), and they see an "unverified app" warning. Schools whose Workspace admin restricts third-party
 apps must also allow Oomba Academy (the same Admin console step as for sign-in, /google-setup).
 
 The connection is per teacher and asks Google for **offline access** (a refresh token) with **incremental
-authorization**: the teacher signs in to Oomba as usual, Connect asks for the two read scopes, and "Allow Oomba Academy
-to post to Classroom" asks for the optional ones (`include_granted_scopes=true`, so earlier grants are kept). The scopes
+authorization**: the teacher signs in to Oomba as usual and Connect asks for the Classroom scopes on top
+(`include_granted_scopes=true`, so earlier grants are kept): all six with `full`, the two read scopes with `read`, when
+"Allow Oomba Academy to post to Classroom" asks for the optional ones. The scopes
 Google says were granted are stored and read again from Google at every token refresh, so a scope the teacher takes back
 in their Google account hides its feature.
 
@@ -82,6 +96,7 @@ in their Google account hides its feature.
 |---|---|
 | `GOOGLE_CLASSROOM` | `1` turns the feature on (needs `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, i.e. Sign in with Google, on). |
 | `GOOGLE_TOKEN_KEY` | **Secret.** The key that encrypts teachers' Classroom refresh tokens in the database (AES-256-GCM). 32 bytes as 64 hex characters: make one with `openssl rand -hex 32`. Without it the page says Classroom isn't set up and nothing is stored. Keep it out of the repo and logs. |
+| `GOOGLE_CLASSROOM_SCOPES` | `full` (the default when unset): Connect asks for the two read and the four write scopes in one consent; "Allow Oomba Academy to post to Classroom" only shows when a teacher unticked a box. `read`: Connect asks for the two read scopes only and posting is a second "Allow" step (use it until the write scopes are on the consent screen and verified, section 2). Any other value stops startup. No scope beyond the six in section 2 is ever asked for. |
 | `CLASSROOM_API_BASE` | Leave unset (default `https://classroom.googleapis.com`). Tests only; the server refuses another value in production. |
 
 Changing `GOOGLE_TOKEN_KEY` makes every stored token unreadable: each teacher sees "connect again" (nothing else is
@@ -99,9 +114,9 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
 - **The automatic jobs** (services/gclassroom.js, registered with services/jobs.js): grades every 30 minutes
   (`gclassroom-auto-grades`), the roster every hour for classes last imported 6 hours ago (`gclassroom-roster-refresh`),
   each also once a few minutes after a deploy.
-- **Against real Google:** add yourself as a test user on the consent screen, set the three variables on Render,
-  create a test class in classroom.google.com with a test student, then on oomba.ai: Connect → link → Import students
-  → Allow Oomba Academy to post to Classroom → Post a lesson (check it appears in Classroom under the topic "Oomba
+- **Against real Google:** add yourself as a test user on the consent screen, set the variables on Render,
+  create a test class in classroom.google.com with a test student, then on oomba.ai: Connect (all boxes ticked: no
+  Allow step after it; untick one once to see "Some of these are off" and Allow) → link → Import students → Post a lesson (check it appears in Classroom under the topic "Oomba
   Academy", with the link and due date) → Share as material → have the student open the lesson and do a step → Send
   grades (draft) and check the grade in Classroom → turn on "Send grades automatically", have the student do another
   step, and check the grade changes within 30 minutes → Post to the class stream → Disconnect (check the app is gone

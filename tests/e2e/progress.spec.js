@@ -29,7 +29,7 @@ test('student works through a lesson; teacher reads the answer and gives feedbac
 
   const t = await (await browser.newContext()).newPage();
   await login(t, 'DemoTeacher', DEMO);
-  await t.goto('/teach'); await t.click('a.cc-link');
+  await t.goto('/teach?all=1'); await t.click('a.cc-link');
   await expect(t.locator('.classtabs a[href$="/progress"] .tabbadge')).toBeVisible();
   await t.click('.classtabs a[href$="/progress"]');
   // The lessons gradebook (the course progress tables below it are gradebooks too, class "cptable").

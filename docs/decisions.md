@@ -4330,3 +4330,49 @@ approvals, new users, messages, etc."
   (made-up examples to every recipient; works while switched off) and the last 8 emails. `ADMIN_ALERTS=0` stops
   everything, the test included.
 - **Language:** the email and its section are English only, like every admin page.
+
+## My classes, simpler; My school and the Teacher plan on the Me page; one Classroom consent (11 Nov 2026)
+The owner found My classes (/teach) busy, and Google Classroom's two connects confusing. What changed (supersedes the
+parts of "Play and Learn" part 2, "Teacher plan" and "Google Classroom sync: optional scopes" it touches):
+- **/teach** is the hello line (summary, This week's summary, Host a live game), the tools row (Lesson library, Turn a
+  lesson into a game, Make a game), the teaching loop's card while it shows (or the "How Oomba fits your week" link),
+  the "{school} is ready" notice, staff invites, the class cards and New class, and the archived list. **Gone:** the
+  "Manage <school>" box (with the school plan card), the Teacher plan card, "Ask my admin", the class cards' ⚡ Quick
+  game, and everything below the classes (Teach with a course, Live games for the whole class, Brain breaks, "See
+  everything students can play", "Open Learn"). Each still has a home: courses on Learn (course cards with "Assign to
+  a class" for staff) and the lesson library's Ready-made chips; live games on Learn's "Live class games" (Host live)
+  and the Live tab (/live; /live/quick from the teacher sign-up and /teachers stays); brain breaks on Learn's "Also on
+  Oomba" (the brain break games page) and on Play; everything students can play is the Play tab; Learn is a tab. The
+  class card keeps Open class, Assign a lesson and Host a live game / Open live game (one room at a time, as before).
+- **One class opens directly.** A teacher of exactly one class (not archived) who opens /teach (the Classroom tab, "/"
+  after sign-in, the Me tile) gets a 302 to that class. Not with `?all=1` (the list), `?new=class` (the loop's "Make
+  your first class"), a `?welcome=` notice or a staff invite to answer: those show the list. The class page's back
+  link is then "All classes" (`/teach?all=1`), where New class is. No class yet: the list with the create-class prompt,
+  as before. While the teaching loop's card still shows, it comes along on that class's Lessons tab (same partial).
+- **Me page:** "My school" (🏫, `/school`: the school's overview, or a pick of schools) for school admins, beside My
+  classes; its line says how many teachers asked for a plan (or the school's name). Teachers who don't run a school
+  have no school pages, so no tile. In the account section (after Your name): the **Teacher plan card**, moved from
+  /teach, and "Ask my admin" for a school a teacher works at without running it. The card: plan status (trial until,
+  renews on, ends on, a grant), "{left} of {size} Builder messages left today", the trial-ending notice; a teacher who
+  owns the plan gets **Add a card** (trialing) or **Manage billing**, both the existing `/api/trial/card` Stripe customer
+  portal (password first), now returning to `/me#teacher-plan`; a seat says "A seat from <school>", with **Manage
+  school billing** (the school's Billing tab) for its admins and "The admins of <school> look after this plan" for
+  teachers; no plan: one line and **See the plans** (`/plans`; prices only there). Who asked for a plan is on the
+  Billing tab (with Dismiss), as before. `PLAN_PATH`, /trial, /trial/thanks, the portal's return and the trial emails
+  now point to `/me#teacher-plan`; `/teach?plan=…` redirects there, and app.js sends an old `/teach#teacher-plan` link
+  (emails already sent) on to the card. The Terms (info.terms.plans.li14) still say the messages show "on the
+  teacher's My classes page": a legal-text change left for the lawyer's pass.
+- **Units and folders:** one line under the class page's buttons ("Units group the lessons in this class, in the
+  order students see them. Folders only sort your own lesson library.") and one under the lesson library's ("Folders
+  sort your own lesson library, and their lessons can go to any class. Units, on a class page, set the order students
+  see."). The concepts stay separate.
+- **Google Classroom, one consent:** `GOOGLE_CLASSROOM_SCOPES` = `full` (default) or `read` (anything else stops
+  startup). With `full`, Connect asks for the 2 read and 4 write scopes at once (`include_granted_scopes`, offline,
+  consent, as before) and the connect panel lists posting and grades too; all granted, there is no second step. A box
+  unticked on Google's screen leaves that feature off and brings back "Some of these are off" with "Allow Oomba Academy
+  to post to Classroom" (write=1), the fallback. With `read`, today's two-step flow. Same six scopes, still no emails.
+  The owner must add the four write scopes to the consent screen and verification before using `full`
+  (docs/google-classroom.md section 2 says what teachers see if they aren't there yet).
+- Words in 13 languages (`scripts/i18n-add-simpler-classes.mjs`, which also removes the keys of the gone sections);
+  no migration.
+

@@ -710,11 +710,6 @@
   "family.account.heading": "For adults: heading of the grown-up's Account page (language, password, sign out).",
   "school.teach.makeGame": "Teacher button on My classes and on Me: opens the AI game Builder.",
   "school.teach.plan.heading": "For school admins on My classes: heading of a small card about their school's paid plan. {school} is the school's name. No prices.",
-  "school.teach.plan.none": "For school admins: the school has no paid plan, so students have the free daily Builder messages.",
-  "school.teach.plan.setUp": "For school admins: link to the school's Billing tab to start a plan. An arrow follows.",
-  "school.teach.plan.on": "For school admins: the school's plan is active.",
-  "school.teach.plan.billing": "For school admins: link to the school's Billing tab. An arrow follows.",
-  "school.teach.plan.settling": "For school admins: the payment went through and the plan is being switched on (it can take a minute).",
   "school.pick.title": "For school admins who run more than one school: title of the page where they pick one.",
   "school.pick.text": "For school admins: under school.pick.title.",
   "school.asks.text": "For teachers (adults) on My classes: their school has no paid plan. No prices. A button (school.asks.button) follows.",
@@ -1445,5 +1440,13 @@
   "compliance.gdpr.p1": "The /compliance page for schools (routes/trust.js): our position on student privacy laws, written only from the Privacy Policy. Translate exactly, never stronger: do not add or remove a promise. {count} is the number of site languages (13).",
   "compliance.gdpr.p2": "The /compliance page for schools (routes/trust.js): our position on student privacy laws, written only from the Privacy Policy. Translate exactly, never stronger: do not add or remove a promise. {email} is our contact email as a link. It invites schools to ask; it must not claim GDPR compliance.",
   "compliance.dpa.p2": "The /compliance page for schools (routes/trust.js): our position on student privacy laws, written only from the Privacy Policy. Translate exactly, never stronger: do not add or remove a promise. {email} is our contact email as a link. It invites schools to ask; it must not say a DPA is available.",
-  "compliance.contact.p": "The /compliance page for schools (routes/trust.js): our position on student privacy laws, written only from the Privacy Policy. Translate exactly, never stronger: do not add or remove a promise. {email} is our contact email as a link, {privacy} the Privacy Policy's address and {safety} the safety page's."
+  "compliance.contact.p": "The /compliance page for schools (routes/trust.js): our position on student privacy laws, written only from the Privacy Policy. Translate exactly, never stronger: do not add or remove a promise. {email} is our contact email as a link, {privacy} the Privacy Policy's address and {safety} the safety page's.",
+  "teach.home.allClasses": "Back link on a class page for a teacher with only one class (My classes opens that class directly): goes to the list of their classes, where \"New class\" is. Short.",
+  "me.tiles.school": "Tile on the Me page for a school admin: opens the school pages where they manage their school. Short, like \"My classes\" beside it.",
+  "me.tiles.asks": "Small line under the \"My school\" tile: how many teachers asked the admin for a Teacher plan. {count} = number of teachers.",
+  "plans.trial.card.schoolBilling": "Button on the Me page's Teacher plan card for a school admin whose plan is a seat from their school: opens the school's Billing tab.",
+  "plans.trial.card.seatNote": "Teacher plan card on the Me page, for a teacher whose plan is a seat their school pays for: they can't change it, their school's admins do. {school} = the school's name.",
+  "plans.trial.card.seePlans": "Button on the Me page's Teacher plan card for a teacher without a plan: opens the plans page (prices are only there).",
+  "lessons.class.unitWhy": "One line under the class page's buttons (New unit): what a unit is, and how it differs from a folder of the lesson library. Units are part of one class and students see them; folders are only the teacher's.",
+  "lessons.folder.why": "One line under the lesson library's buttons (New folder): what a folder is, and how it differs from a class's unit. Folders are only the teacher's and reusable across classes; units belong to one class and set what students see."
 }

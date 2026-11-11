@@ -163,22 +163,22 @@ test('trial lifecycle: trialing (full plan) → trial_will_end notice → a card
   assert.ok(Math.abs(row.trial_end - (Date.now() + 14 * DAY)) < 60e3);
   assert.equal(q.get("SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step='teacher.trial'").n, before + 1);
   assert.equal(audits('billing.trial.start', `teacher:${x.teacher.id}`).length, 1);
-  // The return page: confirms and goes to My classes with a welcome.
+  // The return page: confirms and goes to the Me page's Teacher plan card with a welcome.
   const sid = new URL(x.back).searchParams.get('checkout');
   const th = await call(x.who, `/trial/thanks?checkout=${sid}`);
-  assert.equal(th.status, 302); assert.equal(th.location, '/teach?plan=welcome#teacher-plan');
-  const teach = decode((await call(x.who, '/teach?plan=welcome')).text);
+  assert.equal(th.status, 302); assert.equal(th.location, '/me?plan=welcome#teacher-plan');
+  const teach = decode((await call(x.who, '/me?plan=welcome')).text);
   assert.match(teach, /id="teacher-plan"/); assert.match(teach, /Your Teacher plan is on/); assert.match(teach, /Free trial until/);
   assert.match(teach, /5 of 5 Builder messages left today for you and your classes/);
   assert.doesNotMatch(teach, /Your free trial ends in/, 'no ending notice two weeks out');
-  // Stripe's trial_will_end (3 days before): the notice on My classes and one Team inbox message with the link.
+  // Stripe's trial_will_end (3 days before): the notice on the Me page and one Team inbox message with the link.
   fake.update(x.subId, {}); fake.st.subscriptions.get(x.subId).trial_end = Math.floor((Date.now() + 3 * DAY) / 1000);
   assert.equal((await fake.emit('customer.subscription.trial_will_end', x.subId)).status, 200);
   assert.ok(TP.teacherPlan(x.teacher.id).subscription.trial_notice_at);
   let msgs = inbox(x.teacher.id);
   assert.equal(msgs.length, 1);
-  assert.match(msgs[0], /free trial ends in 3 days\. To keep it, add a card here: https?:\/\/[^ ]+\/teach#teacher-plan/);
-  const t2 = decode((await call(x.who, '/teach')).text);
+  assert.match(msgs[0], /free trial ends in 3 days\. To keep it, add a card here: https?:\/\/[^ ]+\/me#teacher-plan/);
+  const t2 = decode((await call(x.who, '/me')).text);
   assert.match(t2, /Your free trial ends in 3 days\. Add a card to keep the Teacher plan/);
   assert.match(t2, /data-api="\/api\/trial\/card"[\s\S]*Add a card/);
   // The same event again (Stripe retries with a new id): no second message.
@@ -189,7 +189,7 @@ test('trial lifecycle: trialing (full plan) → trial_will_end notice → a card
   assert.equal(r.status, 403);
   r = await call(x.who, '/api/trial/card', { method: 'POST', body: { password: PW } });
   assert.equal(r.status, 200, r.text); assert.match(r.json.redirect, /\/portal\/bps_/);
-  assert.match(lastPost('/v1/billing_portal/sessions').params.return_url, /\/teach#teacher-plan$/);
+  assert.match(lastPost('/v1/billing_portal/sessions').params.return_url, /\/me#teacher-plan$/);
   // The trial ends with a card: active, paid, counted, thanked.
   const plans0 = q.get("SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step='teacher.plan'").n;
   assert.equal((await fake.endTrial(x.subId, { card: true })).status, 200);
@@ -199,7 +199,7 @@ test('trial lifecycle: trialing (full plan) → trial_will_end notice → a card
   assert.equal(q.get("SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step='teacher.plan'").n, plans0 + 1, 'a converted trial counts as a paid plan');
   msgs = inbox(x.teacher.id);
   assert.match(msgs.at(-1), /Thank you! Your Teacher plan is on for the year/);
-  assert.match(decode((await call(x.who, '/teach')).text), /Renews on/);
+  assert.match(decode((await call(x.who, '/me')).text), /Renews on/);
 
   // Another teacher's trial ends without a card: canceled by Stripe; the plan's extras stop; classes stay.
   const y = await trialTeacher();
@@ -215,7 +215,7 @@ test('trial lifecycle: trialing (full plan) → trial_will_end notice → a card
   // Back on /trial: the trial is used, so it offers the paid plan (card) instead.
   const page = decode((await call(y.who, '/trial')).text);
   assert.match(page, /You have had your free trial/); assert.match(page, /name="trial" value="0"/);
-  assert.match(decode((await call(y.who, '/teach')).text), /href="\/trial">Get the Teacher plan</);
+  assert.match(decode((await call(y.who, '/me')).text), /id="tp-plans" href="\/plans">/);
 });
 
 test('one free trial per teacher, per email and per school, ever (per Stripe mode)', async () => {
@@ -253,7 +253,7 @@ test('one free trial per teacher, per email and per school, ever (per Stripe mod
 });
 
 // ---------------------------------------------------------------- /trial
-test('/trial routing: signed out → teacher sign-up; a teacher → start; trialing or paid → My classes; kid and grown-up → for teachers', async () => {
+test('/trial routing: signed out → teacher sign-up; a teacher → start; trialing or paid → the Me page; kid and grown-up → for teachers', async () => {
   // Signed out: the sign-up form for a teacher account (and the plan, no card).
   let r = await call(null, '/trial');
   assert.equal(r.status, 200);
@@ -270,13 +270,13 @@ test('/trial routing: signed out → teacher sign-up; a teacher → start; trial
   const x = school();
   t = decode((await call(x.who, '/trial?cancelled=1')).text);
   assert.match(t, /Start your 14-day free trial/); assert.match(t, /name="email"/); assert.match(t, /Nothing was started/);
-  // In a trial or paid: straight to My classes with a notice.
+  // In a trial or paid: straight to the Me page's Teacher plan card with a notice.
   const y = await trialTeacher();
   r = await call(y.who, '/trial');
-  assert.equal(r.status, 302); assert.equal(r.location, '/teach?plan=on#teacher-plan');
-  assert.match(decode((await call(y.who, '/teach?plan=on')).text), /You already have the Teacher plan/);
+  assert.equal(r.status, 302); assert.equal(r.location, '/me?plan=on#teacher-plan');
+  assert.match(decode((await call(y.who, '/me?plan=on')).text), /You already have the Teacher plan/);
   await fake.endTrial(y.subId, { card: true });
-  assert.equal((await call(y.who, '/trial')).location, '/teach?plan=on#teacher-plan');
+  assert.equal((await call(y.who, '/trial')).location, '/me?plan=on#teacher-plan');
   // A kid (own account) and a school student: a friendly page for teachers, with the families' plans.
   for (const who of [signIn(kid()), signIn(x.kids[0])]) {
     r = await call(who, '/trial');
@@ -348,12 +348,66 @@ test('Checkout\'s return page starts the trial even when the webhook is slow (it
   const y = school();
   assert.deepEqual((await call(y.who, `/api/trial/status?checkout=${sid}`)).json, { state: 'not_yours' });
   const th = await call(x.who, `/trial/thanks?checkout=${sid}`);
-  assert.equal(th.status, 302); assert.equal(th.location, '/teach?plan=welcome#teacher-plan');
+  assert.equal(th.status, 302); assert.equal(th.location, '/me?plan=welcome#teacher-plan');
   assert.equal(TP.teacherPlan(x.teacher.id).trialing, true);
   assert.equal(TP.trialUsed({ userId: x.teacher.id }), true);
   // Signed out: sign in first, then back here.
   const out = await call(null, `/trial/thanks?checkout=${sid}`);
   assert.equal(out.status, 302); assert.match(out.location, /^\/login\?next=/);
+});
+
+// ---------------------------------------------------------------- the Me page's Teacher plan card
+/** The Teacher plan card on the Me page (the account section), decoded. */
+const meCard = async who => { const t = decode((await call(who, '/me')).text); const i = t.indexOf('id="teacher-plan"'); return i < 0 ? '' : t.slice(i, t.indexOf('</section>', i)); };
+const PRICE = /\$\s?\d|€\s?\d|£\s?\d|\d\s?(USD|EUR|GBP)\b/;
+
+test('the Me page\'s Teacher plan card, a teacher who owns it: trialing (no card yet) with Add a card, then active with Manage billing (the portal)', async () => {
+  const x = await trialTeacher();
+  let c = await meCard(x.who);
+  assert.match(c, /Free trial until /);
+  assert.match(c, /5 of 5 Builder messages left today for you and your classes/);
+  assert.match(c, /<form data-api="\/api\/trial\/card" class="planform">[\s\S]*Add a card<\/button>/, 'Add a card: the trial emails\' link lands here');
+  assert.doesNotMatch(c, PRICE);
+  // The card goes after the name, in the account section, never on My classes.
+  const me = decode((await call(x.who, '/me')).text);
+  assert.ok(me.indexOf('id="your-name"') < me.indexOf('id="teacher-plan"') && me.indexOf('id="teacher-plan"') < me.indexOf('id="password"'));
+  assert.doesNotMatch(decode((await call(x.who, '/teach')).text), /id="teacher-plan"/);
+  // Add a card / Manage billing opens the Stripe customer portal, back to the Me page.
+  const r = await call(x.who, '/api/trial/card', { method: 'POST', body: { password: PW } });
+  assert.equal(r.status, 200, r.text); assert.match(r.json.redirect, /\/portal\/bps_/);
+  assert.match(lastPost('/v1/billing_portal/sessions').params.return_url, /\/me#teacher-plan$/);
+  await fake.endTrial(x.subId, { card: true });
+  c = await meCard(x.who);
+  assert.match(c, /Renews on /); assert.match(c, /Manage billing<\/button>/); assert.doesNotMatch(c, /Add a card/);
+  // Set to end at the period's end: "Ends on".
+  fake.update(x.subId, { cancelAtPeriodEnd: true });
+  await fake.emit('customer.subscription.updated', x.subId);
+  assert.match(await meCard(x.who), /Ends on /);
+});
+
+test('the Me page\'s Teacher plan card: a seat from the school (Manage school billing for its admin, a note for a teacher); no plan: a line and the plans', async () => {
+  const x = school();
+  // No plan: one line and a link to /plans (prices stay there).
+  let c = await meCard(x.who);
+  assert.match(c, /Unlimited students and 5 AI builds a day for your classes/);
+  assert.match(c, /<a class="btn btn-primary" id="tp-plans" href="\/plans">/);
+  assert.doesNotMatch(c, PRICE);
+  // The school buys teacher seats (a seat trial) and gives one to the teacher and one to its admin.
+  const r = await call(x.adminWho, '/api/trial/start', { method: 'POST', body: { school: x.s.id, seats: '2' } });
+  assert.equal(r.status, 200, r.text); await pay(r.json.redirect);
+  assert.ok(TP.assignSeat(x.admin, x.s.id, x.teacher.id).ok);
+  assert.ok(TP.assignSeat(x.admin, x.s.id, x.admin.id).ok);
+  c = await meCard(x.who);
+  assert.match(c, new RegExp(`A seat from ${x.s.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\.`));
+  assert.match(c, /id="tp-seat-note">The admins of [^<]+ look after this plan\./);
+  assert.doesNotMatch(c, /tp-school-billing|data-api="\/api\/trial\/card"/, 'a teacher on a seat has no billing of their own');
+  const a = await meCard(x.adminWho);
+  assert.match(a, /A seat from /);
+  assert.match(a, new RegExp(`<a class="btn" id="tp-school-billing" href="/school/${encodeURIComponent(x.s.slug)}\\?tab=billing">`));
+  assert.doesNotMatch(a, /tp-seat-note/);
+  assert.doesNotMatch(a + c, PRICE);
+  // The admin's Me page also has My school.
+  assert.match(decode((await call(x.adminWho, '/me')).text), /<a class="panel metile" href="\/school">/);
 });
 
 // ---------------------------------------------------------------- the class's Builder messages

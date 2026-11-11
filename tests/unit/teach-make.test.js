@@ -121,7 +121,7 @@ test('the page and its APIs are for grown-ups who may host: a student or a child
   assert.match(html, new RegExp(`<option value="${cls.id}">Class 4M</option>`), 'their class to assign to');
   assert.match(html, /\/js\/live-sets\.js/); assert.match(html, /\/js\/teach-make\.js/);
   assert.doesNotMatch(html, /\$\d|per year|\/plans/, 'no prices on the page');
-  assert.match(await (await get('/teach', teacher)).text(), /id="teach-make" href="\/teach\/make"|href="\/teach\/make" id="teach-make"/);
+  assert.match(await (await get('/teach?all=1', teacher)).text(), /id="teach-make" href="\/teach\/make"|href="\/teach\/make" id="teach-make"/);
   for (const u of [student, kid]) {
     const r = await get('/teach/make', u);
     assert.equal(r.status, 302); assert.equal(r.headers.get('location'), '/join');

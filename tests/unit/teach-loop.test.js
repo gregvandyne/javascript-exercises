@@ -50,7 +50,7 @@ const grownup = (() => { const u = auth.createUser({ username: 'LoopParent', pas
 const guest = auth.createGuest();
 
 test('a new teacher: the card near the top of /teach, nothing ticked, links to the real tools for their first class', async () => {
-  const r = await get('/teach', teacher); assert.equal(r.status, 200);
+  const r = await get('/teach?all=1', teacher); assert.equal(r.status, 200);
   const c = card(r.text);
   assert.ok(c, 'the card is there');
   assert.ok(r.text.indexOf('id="teach-loop"') < r.text.indexOf('id="my-classes"'), 'above My classes');
@@ -88,7 +88,7 @@ test('each step ticks itself off from real data: a lesson, assigning it, opening
   P.review(teacher, cl.id, q.id, pupil.id, 'Good thinking!');
   assert.equal(st().feedback, true, 'Feedback: an answer reviewed');
   // All four done: the card goes, the small "How Oomba fits your week" link stays among the tools.
-  const r = await get('/teach', teacher);
+  const r = await get('/teach?all=1', teacher);
   assert.equal(card(r.text), '');
   assert.match(r.text, /<p class="tl-week"><a href="\/teach\/loop" id="teach-loop-link">🗓️ How Oomba fits your week<\/a><\/p>/);
 });
@@ -116,7 +116,7 @@ test('Hide and Show again: per teacher, staff only; the card stays hidden until 
   const r = await get('/teach', fresh);
   assert.equal(card(r.text), '');
   assert.match(r.text, /id="teach-loop-link"/);
-  assert.ok(card((await get('/teach', teacher)).text) === '', 'another teacher (all done) is unaffected either way');
+  assert.ok(card((await get('/teach?all=1', teacher)).text) === '', 'another teacher (all done) is unaffected either way');
   const lp = await get('/teach/loop', fresh);
   assert.match(lp.text, /data-api="\/api\/teach\/loop\/show"/);
   assert.equal((await post('/api/teach/loop/show', fresh)).status, 200);
@@ -207,9 +207,9 @@ test('no class yet: the class tools are plain words and one "Make your first cla
   assert.equal(links.class, null);
   assert.equal(links.makeClass, '/teach?new=class');
   for (const k of ['assign', 'gradebook', 'csv', 'attention', 'standards', 'review', 'written']) assert.equal(links[k], null, k);
-  for (const p of ['/teach', '/teach/loop']) {
+  for (const p of ['/teach?all=1', '/teach/loop']) {
     const r = await get(p, solo); assert.equal(r.status, 200, p);
-    const c = p === '/teach' ? card(r.text) : r.text.slice(r.text.indexOf('id="teach-loop"'));
+    const c = p !== '/teach/loop' ? card(r.text) : r.text.slice(r.text.indexOf('id="teach-loop"'));
     assert.equal((c.match(/href="\/teach\?new=class"/g) || []).length, 1, `${p}: one Make your first class button`);
     assert.match(c, /class="btn btn-primary" href="\/teach\?new=class">🍎 Make your first class<\/a>/, p);
     assert.doesNotMatch(c, /href="\/class\//, `${p}: no class links`);

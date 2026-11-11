@@ -64,7 +64,7 @@ test('student pages: nothing touches', async ({ browser }) => {
 
 test('teacher pages: nothing touches', async ({ browser }) => {
   const { page, state, ctx } = await signIn(browser, 'DemoTeacher', DEMO);
-  const cls = await href(page, '/teach', 'a.cc-link');
+  const cls = await href(page, '/teach?all=1', 'a.cc-link');
   const folder = await href(page, '/teach/lessons', 'a.fr-name');
   const editor = await href(page, folder, 'a.fr-name').then(sub => href(page, sub, 'a.lr-main'));
   const lesson = await href(page, `${cls}/progress`, '.gradebook thead a');
@@ -72,7 +72,7 @@ test('teacher pages: nothing touches', async ({ browser }) => {
   await ctx.close();
   // Every class tab, one lesson's progress and the student view, the library (both tabs), the editor, the teaching
   // courses and the live start page (tests/e2e/school-teacher-mobile.spec.js checks them at 360 px too).
-  expect(await checkPages(browser, state, ['/teach', cls, `${cls}?tab=games`, `${cls}?tab=students`, `${cls}?tab=settings`, `${cls}/progress`, lesson, preview, `${cls}/standards`,
+  expect(await checkPages(browser, state, ['/teach?all=1', cls, `${cls}?tab=games`, `${cls}?tab=students`, `${cls}?tab=settings`, `${cls}/progress`, lesson, preview, `${cls}/standards`,
     '/teach/lessons', '/teach/lessons?tab=shared', folder, editor, '/teach/cs-quest', '/teach/cs-quest/coverage', '/teach/cyber-defenders', `/live?class=${cls.split('/').pop()}`, '/live/sets'])).toEqual([]);
 });
 

@@ -160,32 +160,27 @@ test('a quick game without a class is an open room: guests with generated names,
   ST.resetPrefs(teacher.id);
 });
 
-test('the class card\'s one tap: the last pick for that class, a class room where only its signed-in students join, and their page says so', async () => {
+test('the class card has no Quick game button any more ("My classes, simpler"); the one-tap API still opens a class room', async () => {
   S.updateClass ? S.updateClass(teacher, cls.id, { grade: '5' }) : q.run('UPDATE classrooms SET grade=? WHERE id=?', '5', cls.id);
-  const home = await call('/teach', { user: teacher });
-  const card = home.text.match(new RegExp(`<form class="cc-quick" data-api="/api/live/quick"><input type="hidden" name="classId" value="${cls.id}">[\\s\\S]*?</form>`));
-  assert.ok(card, 'the Quick game button is on the class card');
-  assert.match(card[0], /<input type="hidden" name="last" value="1">/);
-  assert.match(card[0], /Question Battle · A bit of everything · Ages 10–11/, 'what one tap opens: the class\'s grade picks the level');
-  assert.match(card[0], new RegExp(`href="/live/quick\\?class=${cls.id}"`));
-  assert.doesNotMatch(home.text, new RegExp(`name="classId" value="${cls2.id}"`), 'only the classes they teach');
+  const home = await call('/teach?all=1', { user: teacher });
+  assert.doesNotMatch(home.text, /<form class="cc-quick"|⚡ Quick game/, 'no Quick game on the class card');
+  assert.match(home.text, new RegExp(`href="/live\\?class=${cls.id}">📡 Host a live game`), 'Host a live game stays');
   const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
   assert.equal(r.status, 200, r.text);
   const s = LS.get(r.json.sid);
   assert.equal(s.audience, 'class'); assert.equal(s.classId, cls.id); assert.equal(s.nameMode, 'accounts');
   // a guest and a student of another class cannot take a seat
   assert.equal((await call('/api/live/join', { method: 'POST', body: { code: s.code } })).status, 401);
-  const A = await import('../../server/services/classlive-access.js');
-  assert.ok(A);
   // the student's class page shows "Your teacher started a live game" with the code in the link
   const page = await call(`/class/${cls.id}`, { user: mia });
   assert.match(page.text, new RegExp(`id="class-live"[^>]*data-class="${cls.id}" role="status" aria-live="polite">`));
   assert.match(page.text, new RegExp(`href="/join#${s.code}"`));
   assert.equal((await call(`/api/classes/${cls.id}/live`, { user: mia })).json.live.code, s.code);
   // while the room is open the card offers the way back, not a second room
-  const home2 = await call('/teach', { user: teacher });
-  assert.doesNotMatch(home2.text, new RegExp(`name="classId" value="${cls.id}"`));
+  const home2 = await call('/teach?all=1', { user: teacher });
+  assert.doesNotMatch(home2.text, new RegExp(`cc-live" href="/live\\?class=${cls.id}"`));
   assert.match(home2.text, new RegExp(`href="/live/host/${s.id}"`));
+  LS.endSession(s.id, 'ended');
 });
 
 test('a guest game\'s results: the host is told what is kept and offered "Make a class to keep scores"; a class game is not', async () => {
@@ -286,7 +281,7 @@ test('live games off: every new page and API is a 404', async () => {
     assert.equal((await call('/live/quick', { user: teacher })).status, 404);
     assert.equal((await call('/api/live/quick', { method: 'POST', user: teacher, body: {} })).status, 404);
     assert.doesNotMatch((await call('/teachers')).text, /id="host-now"/);
-    assert.doesNotMatch((await call('/teach', { user: teacher })).text, /cc-quick/);
+    assert.doesNotMatch((await call('/teach?all=1', { user: teacher })).text, /cc-quick|cc-live/);
   } finally { config.liveClassroom = true; }
 });
 
@@ -310,20 +305,20 @@ test('a staff account\'s password: 12 characters is not enough when it is only d
 test('a room open for one class: the teacher\'s other class cards lead back to it and say so, and offer no second room', async () => {
   const other = S.createClass(teacher, school.id, { name: 'Tia 6C' }).class;
   let home = await call('/teach', { user: teacher });
-  assert.equal([...home.text.matchAll(/<form class="cc-quick"/g)].length, 2, 'no room open: Quick game on both cards');
+  assert.equal([...home.text.matchAll(/class="btn btn-sm cc-live" href="\/live\?class=/g)].length, 2, 'no room open: Host a live game on both cards');
   const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
   assert.equal(r.status, 200, r.text);
   home = await call('/teach', { user: teacher });
-  assert.doesNotMatch(home.text, /<form class="cc-quick"/, 'no card offers a second room');
-  assert.doesNotMatch(home.text, new RegExp(`href="/live\\?class=${other.id}"`));
+  assert.doesNotMatch(home.text, /cc-live" href="\/live\?class=/, 'no card offers a second room');
+  assert.doesNotMatch(home.text, new RegExp(`cc-live" href="/live\\?class=${other.id}"`));
   const back = [...home.text.matchAll(new RegExp(`<a class="btn btn-sm[^"]*cc-live[^"]*" href="/live/host/${r.json.sid}">`, 'g'))];
   assert.equal(back.length, 2, 'both cards lead to the open room');
   const note = home.text.match(new RegExp(`<p class="small muted cc-quick cc-elsewhere" data-room="${r.json.sid}">([^<]*)</p>`));
   assert.ok(note, 'the other class\'s card says a game is open already'); assert.match(note[1], /You already have a game open/);
   assert.equal([...home.text.matchAll(/cc-elsewhere/g)].length, 1, 'only on the card of the class the room is not for');
-  // another teacher's page is as it was: their own Quick game, nothing about this room
-  const theirs = await call('/teach', { user: teacher2 });
-  assert.match(theirs.text, /<form class="cc-quick"/); assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
+  // another teacher's page is as it was: their own Host button, nothing about this room
+  const theirs = await call('/teach?all=1', { user: teacher2 });
+  assert.match(theirs.text, /class="btn btn-sm cc-live" href="\/live\?class=/); assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
   LS.endSession(r.json.sid, 'ended');
   S.deleteClass(teacher, other.id);
 });

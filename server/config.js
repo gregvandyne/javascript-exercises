@@ -162,6 +162,17 @@ export function parseTokenKey(v) {
 const googleClassroom = parseFlag(process.env.GOOGLE_CLASSROOM, 'GOOGLE_CLASSROOM');
 const tokenKey = parseTokenKey(process.env.GOOGLE_TOKEN_KEY);
 const classroomBase = parsePublicUrl(process.env.CLASSROOM_API_BASE, 'CLASSROOM_API_BASE');
+/**
+ * GOOGLE_CLASSROOM_SCOPES: what Connect asks Google for. 'full' (the default): the two read scopes and the four write
+ * scopes in one consent; 'read': the read scopes only, posting asked for later with "Allow Oomba Academy to post to
+ * Classroom". -> { value: 'full' | 'read', error }
+ */
+export function parseClassroomScopes(v) {
+  const s = String(v || '').trim().toLowerCase();
+  if (!s) return { value: 'full' };
+  return ['full', 'read'].includes(s) ? { value: s } : { value: 'full', error: 'GOOGLE_CLASSROOM_SCOPES must be full or read' };
+}
+const classroomScopes = parseClassroomScopes(process.env.GOOGLE_CLASSROOM_SCOPES);
 /** The default sender of Oomba's emails (server/services/email.js) and where replies go. */
 export const EMAIL_FROM_DEFAULT = 'Greg at Oomba Academy <greg@oomba.ai>';
 export const EMAIL_REPLY_TO_DEFAULT = 'Greg@oomba.ai';
@@ -217,13 +228,15 @@ export const config = {
   googleOidcBase: oidcBase.url, // tests only: a local fake Google (tests/support/fake-google.js)
   // Google Classroom sync (services/gclassroom.js): GOOGLE_CLASSROOM=1, plus GOOGLE_TOKEN_KEY to store teachers' tokens.
   googleClassroom: googleClassroom.on,
+  // 'full': Connect asks for reading and posting at once; 'read': reading only, posting with a second "Allow" step.
+  googleClassroomScopes: classroomScopes.value,
   googleTokenKey: tokenKey.key, // a Buffer; never logged or shown
   classroomApiBase: classroomBase.url || 'https://classroom.googleapis.com', // tests: tests/support/fake-classroom.js
   // Startup refuses a malformed setting instead of silently ignoring it (server/index.js).
   configErrors: [
     googleClientId && !GOOGLE_ID_RE.test(googleClientId) && 'GOOGLE_CLIENT_ID must look like 1234-abc.apps.googleusercontent.com',
     oidcBase.error, oidcBase.url && (process.env.NODE_ENV || 'development') === 'production' && "GOOGLE_OIDC_BASE is for tests and can't be used in production",
-    googleClassroom.error, tokenKey.error, classroomBase.error,
+    googleClassroom.error, tokenKey.error, classroomBase.error, classroomScopes.error,
     classroomBase.url && classroomBase.url !== 'https://classroom.googleapis.com' && (process.env.NODE_ENV || 'development') === 'production' && "CLASSROOM_API_BASE is for tests and can't be used in production",
     ...stripe.errors,
     ...email.errors,
