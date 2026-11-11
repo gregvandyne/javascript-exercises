@@ -703,7 +703,7 @@ router.get('/teach', requireUser, (req, res) => {
   // The platform admin who isn't staff of a school works from Schools, not from an empty teacher page.
   if (!S.isSchoolStaff(u)) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
   // The Teacher plan card moved to the Me page: old links (?plan=welcome after Checkout, ?plan=on from /trial) follow it.
-  if (['welcome', 'on'].includes(req.query.plan)) return res.redirect(302, `/me?plan=${req.query.plan}#teacher-plan`);
+  if (['welcome', 'on'].includes(req.query.plan)) return res.redirect(302, `/me/settings?plan=${req.query.plan}#teacher-plan`);
   // One class: My classes is that class. Not when the list is asked for (All classes, New class), with a welcome notice,
   // or with a staff invite to answer (those are said on the list).
   const one = onlyClass(u);

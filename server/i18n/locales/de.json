@@ -247,7 +247,8 @@
       "requests": "{count, plural, one {# Freundschaftsanfrage} other {# Freundschaftsanfragen}}",
       "unread": "{count, plural, one {# neue Nachricht} other {# neue Nachrichten}}",
       "school": "Meine Schule",
-      "asks": "{count, plural, one {# Lehrkraft hat nach einem Abo gefragt} other {# Lehrkräfte haben nach einem Abo gefragt}}"
+      "asks": "{count, plural, one {# Lehrkraft hat nach einem Abo gefragt} other {# Lehrkräfte haben nach einem Abo gefragt}}",
+      "settings": "Einstellungen"
     },
     "look": {
       "heading": "Such dir deinen Look aus",
@@ -508,6 +509,11 @@
       "same": "Das ist schon dein Benutzername.",
       "taken": "Dieser Benutzername ist vergeben. Versuch einen anderen.",
       "tooSoon": "Du hast deinen Benutzernamen gerade erst geändert. Ändern kannst du ihn wieder {days} Tage nach der letzten Änderung."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "sections": "Bereiche der Einstellungen",
+      "billing": "Abo und Abrechnung"
     }
   },
   "cards": {
@@ -4079,7 +4085,7 @@
         "adult": "Bitte bestätige, dass du Lehrkraft oder Schulpersonal und mindestens 18 Jahre alt bist.",
         "notTeacher": "Für den Lehrkraft-Plan brauchst du ein Lehrkraft-Konto.",
         "entitled": "Du hast den Lehrkraft-Plan schon.",
-        "fixPayment": "Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ auf deiner Seite „Ich“.",
+        "fixPayment": "Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ in den Einstellungen.",
         "trialUsed": "Dieser kostenlose Test wurde schon genutzt.",
         "noPrice": "Der Lehrkraft-Plan ist gerade nicht erhältlich. Bitte versuche es später noch einmal.",
         "paying": "Eine Zahlung ist schon unterwegs. Bitte warte eine Minute.",
@@ -4088,7 +4094,7 @@
       },
       "thanks": {
         "wait": "⏳ Dein Lehrkraft-Plan wird gestartet …",
-        "slow": "Das dauert länger als sonst. Dein Plan erscheint in einer Minute auf deiner Seite „Ich“.",
+        "slow": "Das dauert länger als sonst. Dein Plan erscheint in einer Minute in den Einstellungen.",
         "back": "Zu meinem Lehrkraft-Abo"
       },
       "card": {

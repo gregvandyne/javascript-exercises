@@ -7,7 +7,7 @@
 //                                                                 with the trial and no card; a teacher whose trial is
 //                                                                 used gets "Get the Teacher plan" (card) instead
 //                               a school admin with ?seats=N    -> the school's free trial of N teacher seats
-//                               a teacher with a plan / trial   -> the Me page (/me?plan=on#teacher-plan)
+//                               a teacher with a plan / trial   -> the Me page (/me/settings?plan=on#teacher-plan)
 //                               a kid or a grown-up account     -> a friendly page: it's for teachers; plans for
 //                                                                 families are on /plans
 //   GET  /trial/thanks        Checkout's success page: confirms the session itself (like the Spark Pack return page),
@@ -99,8 +99,8 @@ router.get('/trial', async (req, res) => {
           <button class="btn btn-primary btn-big" type="submit"${!C.mayBill(u) || !price ? raw(' disabled') : ''}>${t('plans.trial.school.start')}</button></form>`}</section>`);
   }
   const plan = TP.teacherPlan(u.id);
-  if (plan.entitled) return res.redirect(302, '/me?plan=on#teacher-plan');
-  if (C.unsettledPlanOf('teacher', u.id)) return res.redirect(302, '/me#teacher-plan');
+  if (plan.entitled) return res.redirect(302, '/me/settings?plan=on#teacher-plan');
+  if (C.unsettledPlanOf('teacher', u.id)) return res.redirect(302, '/me/settings#teacher-plan');
   const used = TP.trialUsed({ userId: u.id });
   const email = html`<div class="field"><label for="tr-email">${t('plans.trial.email')}</label>
       <input class="input" id="tr-email" name="email" type="email" dir="ltr" required maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="tr-email-hint">
@@ -235,7 +235,7 @@ router.get('/trial/thanks', async (req, res) => {
   if (!TP.isTeacher(u)) return res.redirect(302, '/trial');
   res.set('Cache-Control', 'no-store');
   const state = await C.checkoutReturnFor('teacher', u.id, id);
-  if (state === 'active') return res.redirect(302, '/me?plan=welcome#teacher-plan');
+  if (state === 'active') return res.redirect(302, '/me/settings?plan=welcome#teacher-plan');
   if (state === 'not_yours') {
     // A school's seat trial started from /trial?seats=N.
     for (const s of adminSchools(u)) {
@@ -243,10 +243,10 @@ router.get('/trial/thanks', async (req, res) => {
     }
   }
   const body = html`<div class="trial"><section class="panel" aria-labelledby="th-h"><h1 id="th-h">🍎 ${el(t, 'span', 'plans.trial.title')}</h1>
-    <div class="notice" role="status" data-checkout-wait="${id}" data-status-url="/api/trial/status" data-back="/me?plan=welcome#teacher-plan">
+    <div class="notice" role="status" data-checkout-wait="${id}" data-status-url="/api/trial/status" data-back="/me/settings?plan=welcome#teacher-plan">
       ${el(t, 'p', 'plans.trial.thanks.wait', {}, ' style="margin:0"')}
       <div data-slow hidden>${el(t, 'p', 'plans.trial.thanks.slow', {}, ' class="small" style="margin:.5em 0 0"')}
-        <p class="small" style="margin:.5em 0 0"><a href="/me#teacher-plan">${t('plans.trial.thanks.back')}</a></p></div></div></section></div>`;
+        <p class="small" style="margin:.5em 0 0"><a href="/me/settings#teacher-plan">${t('plans.trial.thanks.back')}</a></p></div></div></section></div>`;
   page(req, res, { title: t('plans.trial.title'), active: 'plans', body, head: CSS, scripts: ['/js/family.js'], seo: { index: false, path: '/trial/thanks' } });
 });
 
@@ -257,7 +257,7 @@ router.post('/api/trial/card', rateLimit('billing-portal', 20, 600e3), (req, res
   next();
 }, stepUp, async (req, res) => {
   try {
-    const r = await C.startPortalFor({ kind: 'teacher', id: req.user.id, user: req.user, returnUrl: `${C.baseUrl(req)}/me#teacher-plan` });
+    const r = await C.startPortalFor({ kind: 'teacher', id: req.user.id, user: req.user, returnUrl: `${C.baseUrl(req)}/me/settings#teacher-plan` });
     if (!r.ok) return res.status(409).json({ error: req.t('plans.trial.errors.noCustomer') });
     res.json({ ok: true, redirect: r.url });
   } catch (e) { stripeTrouble(req, res, e); }
@@ -278,7 +278,7 @@ for (const [verb, fn] of [['give', TP.assignSeat], ['take', TP.unassignSeat]]) {
 }
 
 // ---------------------------------------------------------------- the Me page's Teacher plan card
-/** The Teacher plan on a teacher's Me page (/me#teacher-plan, the account section): the plan and its trial, today's
+/** The Teacher plan on a teacher's Me page (/me/settings#teacher-plan, the account section): the plan and its trial, today's
  *  shared messages, the trial notice with "Add a card", Manage billing (the Stripe customer portal); a seat from a
  *  school says so, with "Manage school billing" for the school's admins; a welcome after Checkout; for a teacher
  *  without one, a line and the plans. Only while paid-plan pages are on for this request. No prices. */

@@ -127,7 +127,8 @@ test('a grown-up signs up, makes their child\'s account and switches; the child 
   await page.goto('/me');
   await expect(page.locator('#grownups')).toContainText('made this account and is linked to it');
   await expect(page.locator('.madecard')).toHaveCount(0);
-  // Signs out (Me › Sign out), like any kid.
+  // Signs out (Me › Settings › Sign out), like any kid.
+  await page.goto('/me/settings');
   await Promise.all([page.waitForURL(u => u.pathname === '/'), page.locator('#signout form[data-api="/api/auth/logout"] button').click()]);
   // The child signs in themselves: the card is back, until they answer it here.
   await page.goto('/login');
@@ -138,6 +139,7 @@ test('a grown-up signs up, makes their child\'s account and switches; the child 
   await expect(page.locator('.madecard')).toHaveCount(0);
   await page.goto('/me');
   await expect(page.locator('.madecard')).toHaveCount(0);
+  await page.goto('/me/settings');
   await Promise.all([page.waitForURL(u => u.pathname === '/'), page.locator('#signout form[data-api="/api/auth/logout"] button').click()]);
   // The grown-up comes back with their own password, on the grown-up sign-in.
   await page.goto('/grown-ups/login');

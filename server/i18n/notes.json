@@ -1444,9 +1444,13 @@
   "teach.home.allClasses": "Back link on a class page for a teacher with only one class (My classes opens that class directly): goes to the list of their classes, where \"New class\" is. Short.",
   "me.tiles.school": "Tile on the Me page for a school admin: opens the school pages where they manage their school. Short, like \"My classes\" beside it.",
   "me.tiles.asks": "Small line under the \"My school\" tile: how many teachers asked the admin for a Teacher plan. {count} = number of teachers.",
-  "plans.trial.card.schoolBilling": "Button on the Me page's Teacher plan card for a school admin whose plan is a seat from their school: opens the school's Billing tab.",
-  "plans.trial.card.seatNote": "Teacher plan card on the Me page, for a teacher whose plan is a seat their school pays for: they can't change it, their school's admins do. {school} = the school's name.",
-  "plans.trial.card.seePlans": "Button on the Me page's Teacher plan card for a teacher without a plan: opens the plans page (prices are only there).",
+  "plans.trial.card.schoolBilling": "Button on the Settings page's Teacher plan card for a school admin whose plan is a seat from their school: opens the school's Billing tab.",
+  "plans.trial.card.seatNote": "Teacher plan card on the Settings page, for a teacher whose plan is a seat their school pays for: they can't change it, their school's admins do. {school} = the school's name.",
+  "plans.trial.card.seePlans": "Button on the Settings page's Teacher plan card for a teacher without a plan: opens the plans page (prices are only there).",
   "lessons.class.unitWhy": "One line under the class page's buttons (New unit): what a unit is, and how it differs from a folder of the lesson library. Units are part of one class and students see them; folders are only the teacher's.",
-  "lessons.folder.why": "One line under the lesson library's buttons (New folder): what a folder is, and how it differs from a class's unit. Folders are only the teacher's and reusable across classes; units belong to one class and set what students see."
+  "lessons.folder.why": "One line under the lesson library's buttons (New folder): what a folder is, and how it differs from a class's unit. Folders are only the teacher's and reusable across classes; units belong to one class and set what students see.",
+  "me.tiles.settings": "Tile on the Me page that opens the Settings page (plan and billing, language, appearance, password, sign out). One short word if you can.",
+  "me.settings.title": "Heading and browser-tab title of the Settings page (/me/settings). Same word as the Me page tile.",
+  "me.settings.sections": "Screen-reader name of the small list of links at the top (phone) or side (laptop) of the Settings page that jump to its sections.",
+  "me.settings.billing": "Link in the Settings page's section list to the Teacher plan card (school staff only). Short: it sits beside Language, Appearance, Password and Sign out."
 }

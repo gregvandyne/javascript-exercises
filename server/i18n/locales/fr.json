@@ -246,7 +246,8 @@
       "requests": "{count, plural, one {# demande d'ami} other {# demandes d'ami}}",
       "unread": "{count, plural, one {# nouveau message} other {# nouveaux messages}}",
       "school": "Mon école",
-      "asks": "{count, plural, one {# enseignant a demandé un abonnement} many {# enseignants ont demandé un abonnement} other {# enseignants ont demandé un abonnement}}"
+      "asks": "{count, plural, one {# enseignant a demandé un abonnement} many {# enseignants ont demandé un abonnement} other {# enseignants ont demandé un abonnement}}",
+      "settings": "Paramètres"
     },
     "look": {
       "heading": "Choisis ton look",
@@ -507,6 +508,11 @@
       "same": "C'est déjà votre nom d'utilisateur.",
       "taken": "Ce nom d'utilisateur est déjà pris. Essayez-en un autre.",
       "tooSoon": "Vous avez changé votre nom d'utilisateur récemment. Vous pourrez le changer à nouveau {days} jours après le dernier changement."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "sections": "Sections des paramètres",
+      "billing": "Abonnement et facturation"
     }
   },
   "cards": {
@@ -4078,7 +4084,7 @@
         "adult": "Merci de confirmer que vous êtes enseignant ou membre du personnel d’une école, et que vous avez 18 ans ou plus.",
         "notTeacher": "La formule Enseignant demande un compte enseignant.",
         "entitled": "Vous avez déjà la formule Enseignant.",
-        "fixPayment": "Votre formule attend un paiement. Réglez-le dans Gérer la facturation, sur votre page Moi.",
+        "fixPayment": "Votre formule attend un paiement. Réglez-le dans Gérer la facturation, dans Paramètres.",
         "trialUsed": "Cet essai gratuit a déjà été utilisé.",
         "noPrice": "La formule Enseignant n’est pas en vente pour le moment. Réessayez plus tard.",
         "paying": "Un paiement est déjà en cours. Patientez une minute.",
@@ -4087,7 +4093,7 @@
       },
       "thanks": {
         "wait": "⏳ Activation de votre formule Enseignant…",
-        "slow": "Cela prend plus de temps que d’habitude. Votre formule apparaîtra sur votre page Moi d’ici une minute.",
+        "slow": "Cela prend plus de temps que d’habitude. Votre formule apparaîtra dans Paramètres d’ici une minute.",
         "back": "Aller à ma formule Enseignant"
       },
       "card": {

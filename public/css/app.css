@@ -663,6 +663,28 @@ code{overflow-wrap:anywhere}
 /* Me page: Language and Appearance side by side when there is room. */
 .mesettings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin-block:16px}
 .mesettings>.panel{margin:0}
+/* /me/settings: a section nav (sticky chips on a phone, a side list on a laptop) beside the panels. */
+.setpage{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin-top:8px}
+.setpage>*{min-width:0}
+.setnav ul{display:flex;gap:8px;margin:0;padding:0;list-style:none}
+nav.setnav a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font-weight:700;text-decoration:none;white-space:nowrap}
+nav.setnav a:hover,nav.setnav a:focus-visible{text-decoration:none;border-color:var(--accent-line,var(--line))}
+.setmain{display:grid;gap:16px;min-width:0}
+.setsec{display:grid;gap:16px;min-width:0;scroll-margin-top:calc(var(--top) + 72px)}
+.setsec>.panel,.setsec>div>.panel{margin:0}
+.setsec .panel{scroll-margin-top:calc(var(--top) + 72px)}
+@media (max-width:759px){
+  .setnav{position:sticky;top:var(--top);z-index:5;margin-inline:-16px;padding:8px 16px;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .setnav ul{overflow-x:auto;scrollbar-width:none}
+  .setnav ul::-webkit-scrollbar{display:none}
+}
+@media (min-width:760px){
+  .setpage{grid-template-columns:220px minmax(0,1fr);align-items:start}
+  .setnav{position:sticky;top:calc(var(--top) + 16px)}
+  .setnav ul{flex-direction:column}
+  .setnav a{border-radius:var(--r-sm,12px);width:100%;white-space:normal}
+  .setsec,.setsec .panel{scroll-margin-top:calc(var(--top) + 16px)}
+}
 .themechoices{display:flex;flex-wrap:wrap;gap:var(--s2);margin:0;padding:0;border:0;min-width:0}
 .themechoice{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding-block:0;padding-inline:12px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--text);font-weight:700;cursor:pointer}
 .themechoice:hover{border-color:var(--accent-line)}

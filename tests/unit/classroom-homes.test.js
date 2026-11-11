@@ -153,7 +153,7 @@ test('one class: /teach opens it; ?all=1, New class, a welcome or an invite keep
   assert.ok(SC.inviteStaff(boss, other.id, solo.id, 'teacher').ok);
   const i = await get('/teach', solo); assert.equal(i.status, 200); assert.match(i.text, /id="my-invites"/); assert.match(i.text, /Inviting School/);
   // Old Teacher plan links follow the card to the Me page.
-  const p = await get('/teach?plan=welcome', solo); assert.equal(p.status, 302); assert.equal(p.location, '/me?plan=welcome#teacher-plan');
+  const p = await get('/teach?plan=welcome', solo); assert.equal(p.status, 302); assert.equal(p.location, '/me/settings?plan=welcome#teacher-plan');
 });
 
 test('two classes: /teach is the list of both', async () => {

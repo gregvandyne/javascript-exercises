@@ -36,7 +36,7 @@ export const TRIAL_NOTICE_DAYS = 7;
 export const MAX_TEACHER_SEATS = 1000;
 const fail = (code, field) => ({ ok: false, code, ...(field ? { field } : {}) });
 /** Where a teacher adds a card / sees their plan (My classes). */
-export const PLAN_PATH = '/me#teacher-plan';
+export const PLAN_PATH = '/me/settings#teacher-plan';
 const site = () => config.publicUrl || 'https://oomba.ai';
 
 // ---------------------------------------------------------------- who

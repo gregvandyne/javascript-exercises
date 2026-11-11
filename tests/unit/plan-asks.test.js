@@ -135,14 +135,14 @@ test('retention: closed asks go 90 days after they closed; open ones stay', asyn
   assert.equal(PA.KEEP_CLOSED, 90 * DAY);
 });
 
-test('the Me page: the teacher\'s "Ask my admin" panel (account section); the admin\'s My school says who asked; the Billing tab lists them with Dismiss', async () => {
+test('Settings: the teacher\'s "Ask my admin" panel; the Me page: the admin\'s My school says who asked; the Billing tab lists them with Dismiss', async () => {
   const x = school();
-  let t = await call(x.t1, '/me');
+  let t = await call(x.t1, '/me/settings');
   assert.match(t.text, new RegExp(`data-api="/api/schools/${x.s.id}/ask-plan"`));
   assert.match(t.text, /Ask my admin/);
   assert.doesNotMatch((await call(x.t1, '/teach?all=1')).text, /Ask my admin/, 'no longer on My classes');
   await post(x.t1, `/api/schools/${x.s.id}/ask-plan`);
-  t = await call(x.t1, '/me');
+  t = await call(x.t1, '/me/settings');
   assert.match(t.text, /You asked on /); assert.doesNotMatch(t.text, /data-api="\/api\/schools\/[^"]+\/ask-plan"/);
   const h = await call(x.head, '/me');
   assert.match(h.text, /<a class="panel metile" href="\/school">[\s\S]*?<span>My school<\/span><span class="metile-sub">1 teacher asked for a plan<\/span><\/a>/);
@@ -155,15 +155,15 @@ test('the Me page: the teacher\'s "Ask my admin" panel (account section); the ad
   assert.match(bill.text, /ask-plan\/[^/"]+\/close/);
   // Families off: no panel.
   config.stripeApiKey = '';
-  assert.doesNotMatch((await call(x.t2, '/me')).text, /Ask my admin/);
+  assert.doesNotMatch((await call(x.t2, '/me/settings')).text, /Ask my admin/);
   config.stripeApiKey = 'rk_test_fake';
   // The plan on: the teacher just reads that the school has one; the admin's tile says nobody is waiting.
   grantPlan(x.s);
-  assert.match((await call(x.t2, '/me')).text, /Your school has a School plan\./);
+  assert.match((await call(x.t2, '/me/settings')).text, /Your school has a School plan\./);
   assert.doesNotMatch((await call(x.head, '/me')).text, /teacher asked/);
   // No admin at the school: no panel.
   const lone = school({ admin: false });
-  assert.doesNotMatch((await call(lone.t1, '/me')).text, /Ask my admin/);
+  assert.doesNotMatch((await call(lone.t1, '/me/settings')).text, /Ask my admin/);
 });
 
 test('the asks list is in the page\'s language wherever it is drawn (also the Billing tab), and marked as English until a language has its words', async () => {

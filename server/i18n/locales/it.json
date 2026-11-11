@@ -247,7 +247,8 @@
       "requests": "{count, plural, one {# richiesta di amicizia} other {# richieste di amicizia}}",
       "unread": "{count, plural, one {# nuovo messaggio} other {# nuovi messaggi}}",
       "school": "La mia scuola",
-      "asks": "{count, plural, one {# insegnante ha chiesto un piano} other {# insegnanti hanno chiesto un piano}}"
+      "asks": "{count, plural, one {# insegnante ha chiesto un piano} other {# insegnanti hanno chiesto un piano}}",
+      "settings": "Impostazioni"
     },
     "look": {
       "heading": "Scegli il tuo look",
@@ -508,6 +509,11 @@
       "same": "Questo è già il tuo nome utente.",
       "taken": "Quel nome utente è già in uso. Provane un altro.",
       "tooSoon": "Hai cambiato il nome utente da poco. Potrai cambiarlo di nuovo {days} giorni dopo l'ultimo cambio."
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "sections": "Sezioni delle impostazioni",
+      "billing": "Piano e fatturazione"
     }
   },
   "cards": {
@@ -4079,7 +4085,7 @@
         "adult": "Conferma di essere un insegnante o di lavorare in una scuola, e di avere almeno 18 anni.",
         "notTeacher": "Il piano Insegnante richiede un account insegnante.",
         "entitled": "Hai già il piano Insegnante.",
-        "fixPayment": "Il tuo piano aspetta un pagamento. Sistemalo in Gestisci fatturazione, nella tua pagina Io.",
+        "fixPayment": "Il tuo piano aspetta un pagamento. Sistemalo in Gestisci fatturazione, nelle Impostazioni.",
         "trialUsed": "Questa prova gratuita è già stata usata.",
         "noPrice": "Il piano Insegnante non è in vendita in questo momento. Riprova più tardi.",
         "paying": "Un pagamento è già in arrivo. Aspetta un minuto.",
@@ -4088,7 +4094,7 @@
       },
       "thanks": {
         "wait": "⏳ Attivazione del tuo piano Insegnante…",
-        "slow": "Ci vuole più del solito. Il tuo piano comparirà nella tua pagina Io tra un minuto.",
+        "slow": "Ci vuole più del solito. Il tuo piano comparirà nelle Impostazioni tra un minuto.",
         "back": "Vai al mio piano Insegnante"
       },
       "card": {

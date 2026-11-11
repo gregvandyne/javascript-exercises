@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// One-off: the words for "My classes, simpler" (docs/decisions.md): All classes, My school on the Me page, the Teacher
-// plan card's seat and plan lines, and the unit / folder lines. Removes the keys of the sections My classes no longer
+// One-off: the words for "My classes, simpler" and "Settings page" (docs/decisions.md): All classes, My school on the Me
+// page, the Teacher plan card's seat and plan lines, the unit / folder lines, and the Settings page. Removes the keys of the sections My classes no longer
 // has. Run once: node scripts/i18n-add-simpler-classes.mjs (it is safe to run again).
 import fs from 'node:fs';
 
@@ -87,48 +87,70 @@ const W = {
     ar: 'تظهر هنا الفصول التي تدرّسها. تجد كل فصول {school} في «مدرستي».',
     he: 'כאן יופיעו הכיתות שאתם מלמדים. כל הכיתות של {school} נמצאות תחת "בית הספר שלי".',
   },
-  // The Teacher plan card moved from My classes to the Me page: these said where it was.
+  // The Teacher plan card moved from My classes to Settings (/me/settings): these said where it was.
   'plans.trial.errors.fixPayment': {
-    en: 'Your plan is waiting for a payment. Fix it in Manage billing on your Me page.',
-    es: 'Su plan está esperando un pago. Resuélvalo en Administrar facturación, en su página Yo.',
-    fr: 'Votre formule attend un paiement. Réglez-le dans Gérer la facturation, sur votre page Moi.',
-    de: 'Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ auf deiner Seite „Ich“.',
-    it: 'Il tuo piano aspetta un pagamento. Sistemalo in Gestisci fatturazione, nella tua pagina Io.',
-    pt: 'Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, na sua página Eu.',
-    nl: 'Je abonnement wacht op een betaling. Los het op via Facturering beheren op je pagina Ik.',
-    ru: 'Подписка ждёт оплаты. Решите это в разделе «Управление оплатой» на вашей странице «Я».',
-    ja: 'プランのお支払いが保留中です。「マイページ」の「お支払いの管理」で解決してください。',
-    'zh-Hant': '你的方案正在等待付款。請到「我的」頁面的「管理帳務」處理。',
-    ar: 'باقتك تنتظر دفعة. عالج ذلك من «إدارة الفوترة» في صفحة «أنا».',
-    he: 'התוכנית שלך מחכה לתשלום. אפשר לטפל בזה ב„ניהול חיובים” בעמוד „אני”.',
+    en: 'Your plan is waiting for a payment. Fix it in Manage billing in Settings.',
+    es: 'Su plan está esperando un pago. Resuélvalo en Administrar facturación, en Ajustes.',
+    fr: 'Votre formule attend un paiement. Réglez-le dans Gérer la facturation, dans Paramètres.',
+    de: 'Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ in den Einstellungen.',
+    it: 'Il tuo piano aspetta un pagamento. Sistemalo in Gestisci fatturazione, nelle Impostazioni.',
+    pt: 'Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, nas Configurações.',
+    nl: 'Je abonnement wacht op een betaling. Los het op via Facturering beheren in Instellingen.',
+    ru: 'Подписка ждёт оплаты. Решите это в разделе «Управление оплатой» в настройках.',
+    ja: 'プランのお支払いが保留中です。「設定」の「お支払いの管理」で解決してください。',
+    'zh-Hant': '你的方案正在等待付款。請到「設定」的「管理帳務」處理。',
+    ar: 'باقتك تنتظر دفعة. عالج ذلك من «إدارة الفوترة» في «الإعدادات».',
+    he: 'התוכנית שלך מחכה לתשלום. אפשר לטפל בזה ב„ניהול חיובים” בהגדרות.',
   },
   'plans.trial.thanks.slow': {
-    en: 'This is taking longer than usual. Your plan will show on your Me page in a minute.',
-    es: 'Esto tarda más de lo normal. Su plan aparecerá en su página Yo en un minuto.',
-    fr: 'Cela prend plus de temps que d’habitude. Votre formule apparaîtra sur votre page Moi d’ici une minute.',
-    de: 'Das dauert länger als sonst. Dein Plan erscheint in einer Minute auf deiner Seite „Ich“.',
-    it: 'Ci vuole più del solito. Il tuo piano comparirà nella tua pagina Io tra un minuto.',
-    pt: 'Está demorando mais que o normal. Seu plano vai aparecer na sua página Eu em um minuto.',
-    nl: 'Dit duurt langer dan normaal. Je abonnement verschijnt over een minuut op je pagina Ik.',
-    ru: 'Это занимает больше времени, чем обычно. Подписка появится на вашей странице «Я» через минуту.',
-    ja: 'いつもより時間がかかっています。1分ほどで「マイページ」にプランが表示されます。',
-    'zh-Hant': '這比平常久一點。你的方案一分鐘內會出現在「我的」頁面。',
-    ar: 'يستغرق هذا وقتًا أطول من المعتاد. ستظهر باقتك في صفحة «أنا» خلال دقيقة.',
-    he: 'זה לוקח יותר זמן מהרגיל. התוכנית תופיע בעמוד „אני” בעוד דקה.',
+    en: 'This is taking longer than usual. Your plan will show in Settings in a minute.',
+    es: 'Esto tarda más de lo normal. Su plan aparecerá en Ajustes en un minuto.',
+    fr: 'Cela prend plus de temps que d’habitude. Votre formule apparaîtra dans Paramètres d’ici une minute.',
+    de: 'Das dauert länger als sonst. Dein Plan erscheint in einer Minute in den Einstellungen.',
+    it: 'Ci vuole più del solito. Il tuo piano comparirà nelle Impostazioni tra un minuto.',
+    pt: 'Está demorando mais que o normal. Seu plano vai aparecer nas Configurações em um minuto.',
+    nl: 'Dit duurt langer dan normaal. Je abonnement verschijnt over een minuut in Instellingen.',
+    ru: 'Это занимает больше времени, чем обычно. Подписка появится в настройках через минуту.',
+    ja: 'いつもより時間がかかっています。1分ほどで「設定」にプランが表示されます。',
+    'zh-Hant': '這比平常久一點。你的方案一分鐘內會出現在「設定」。',
+    ar: 'يستغرق هذا وقتًا أطول من المعتاد. ستظهر باقتك في «الإعدادات» خلال دقيقة.',
+    he: 'זה לוקח יותר זמן מהרגיל. התוכנית תופיע בהגדרות בעוד דקה.',
   },
   'plans.trial.thanks.back': {
     en: 'Go to my Teacher plan', es: 'Ir a mi plan Docente', fr: 'Aller à ma formule Enseignant', de: 'Zu meinem Lehrkraft-Abo',
     it: 'Vai al mio piano Insegnante', pt: 'Ir para meu plano Professor', nl: 'Naar mijn Leerkracht-abonnement', ru: 'К моей подписке «Учительская»',
     ja: '自分の教員プランへ', 'zh-Hant': '前往我的教師方案', ar: 'انتقل إلى باقة المعلّم الخاصة بي', he: 'לתוכנית המורה שלי',
   },
+  'me.tiles.settings': {
+    en: 'Settings', es: 'Ajustes', fr: 'Paramètres', de: 'Einstellungen', it: 'Impostazioni', pt: 'Configurações',
+    nl: 'Instellingen', ru: 'Настройки', ja: '設定', 'zh-Hant': '設定', ar: 'الإعدادات', he: 'הגדרות',
+  },
+  'me.settings.title': {
+    en: 'Settings', es: 'Ajustes', fr: 'Paramètres', de: 'Einstellungen', it: 'Impostazioni', pt: 'Configurações',
+    nl: 'Instellingen', ru: 'Настройки', ja: '設定', 'zh-Hant': '設定', ar: 'الإعدادات', he: 'הגדרות',
+  },
+  'me.settings.sections': {
+    en: 'Settings sections', es: 'Secciones de ajustes', fr: 'Sections des paramètres', de: 'Bereiche der Einstellungen',
+    it: 'Sezioni delle impostazioni', pt: 'Seções das configurações', nl: 'Onderdelen van de instellingen', ru: 'Разделы настроек',
+    ja: '設定の項目', 'zh-Hant': '設定項目', ar: 'أقسام الإعدادات', he: 'חלקי ההגדרות',
+  },
+  'me.settings.billing': {
+    en: 'Plan and billing', es: 'Plan y pagos', fr: 'Abonnement et facturation', de: 'Abo und Abrechnung', it: 'Piano e fatturazione',
+    pt: 'Plano e cobrança', nl: 'Abonnement en facturering', ru: 'Подписка и оплата', ja: 'プランとお支払い', 'zh-Hant': '方案與帳務',
+    ar: 'الباقة والفوترة', he: 'תוכנית וחיובים',
+  },
 };
 const NOTES = {
+  'me.tiles.settings': 'Tile on the Me page that opens the Settings page (plan and billing, language, appearance, password, sign out). One short word if you can.',
+  'me.settings.title': 'Heading and browser-tab title of the Settings page (/me/settings). Same word as the Me page tile.',
+  'me.settings.sections': 'Screen-reader name of the small list of links at the top (phone) or side (laptop) of the Settings page that jump to its sections.',
+  'me.settings.billing': "Link in the Settings page's section list to the Teacher plan card (school staff only). Short: it sits beside Language, Appearance, Password and Sign out.",
   'teach.home.allClasses': 'Back link on a class page for a teacher with only one class (My classes opens that class directly): goes to the list of their classes, where "New class" is. Short.',
   'me.tiles.school': 'Tile on the Me page for a school admin: opens the school pages where they manage their school. Short, like "My classes" beside it.',
   'me.tiles.asks': 'Small line under the "My school" tile: how many teachers asked the admin for a Teacher plan. {count} = number of teachers.',
-  'plans.trial.card.schoolBilling': "Button on the Me page's Teacher plan card for a school admin whose plan is a seat from their school: opens the school's Billing tab.",
-  'plans.trial.card.seatNote': "Teacher plan card on the Me page, for a teacher whose plan is a seat their school pays for: they can't change it, their school's admins do. {school} = the school's name.",
-  'plans.trial.card.seePlans': 'Button on the Me page\'s Teacher plan card for a teacher without a plan: opens the plans page (prices are only there).',
+  'plans.trial.card.schoolBilling': "Button on the Settings page's Teacher plan card for a school admin whose plan is a seat from their school: opens the school's Billing tab.",
+  'plans.trial.card.seatNote': "Teacher plan card on the Settings page, for a teacher whose plan is a seat their school pays for: they can't change it, their school's admins do. {school} = the school's name.",
+  'plans.trial.card.seePlans': 'Button on the Settings page\'s Teacher plan card for a teacher without a plan: opens the plans page (prices are only there).',
   'lessons.class.unitWhy': "One line under the class page's buttons (New unit): what a unit is, and how it differs from a folder of the lesson library. Units are part of one class and students see them; folders are only the teacher's.",
   'lessons.folder.why': "One line under the lesson library's buttons (New folder): what a folder is, and how it differs from a class's unit. Folders are only the teacher's and reusable across classes; units belong to one class and set what students see.",
 };

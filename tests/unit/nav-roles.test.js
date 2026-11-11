@@ -284,7 +284,7 @@ test('"Make a game" for staff: on My classes and on Me (they have no Build tab);
 test('footer and notices: a grown-up\'s language and password links go to their Account page', async () => {
   const foot = s => (/<footer class="foot">[\s\S]*?<\/footer>/.exec(s) || [''])[0];
   assert.match(foot((await get(mum, '/play')).text), /href="\/family\/account#language"/);
-  assert.match(foot((await get(kid, '/')).text), /href="\/me#language"/);
+  assert.match(foot((await get(kid, '/')).text), /href="\/me\/settings#language"/);
   q.run('UPDATE users SET password_short=1 WHERE id=?', mum.id);
   assert.match((await get(mum, '/play')).text, /href="\/family\/account#password"/);
   q.run('UPDATE users SET password_short=0 WHERE id=?', mum.id);

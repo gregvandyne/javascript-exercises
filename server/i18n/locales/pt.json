@@ -247,7 +247,8 @@
       "requests": "{count, plural, one {# pedido de amizade} other {# pedidos de amizade}}",
       "unread": "{count, plural, one {# mensagem nova} other {# mensagens novas}}",
       "school": "Minha escola",
-      "asks": "{count, plural, one {# professor pediu um plano} other {# professores pediram um plano}}"
+      "asks": "{count, plural, one {# professor pediu um plano} other {# professores pediram um plano}}",
+      "settings": "Configurações"
     },
     "look": {
       "heading": "Escolha seu visual",
@@ -508,6 +509,11 @@
       "same": "Esse já é o seu nome de usuário.",
       "taken": "Esse nome de usuário já está em uso. Tente outro.",
       "tooSoon": "Você trocou seu nome de usuário há pouco. Poderá trocá-lo de novo {days} dias após a última troca."
+    },
+    "settings": {
+      "title": "Configurações",
+      "sections": "Seções das configurações",
+      "billing": "Plano e cobrança"
     }
   },
   "cards": {
@@ -4080,7 +4086,7 @@
         "adult": "Confirme que você é professor ou trabalha em uma escola, e que tem 18 anos ou mais.",
         "notTeacher": "O plano Professor precisa de uma conta de professor.",
         "entitled": "Você já tem o plano Professor.",
-        "fixPayment": "Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, na sua página Eu.",
+        "fixPayment": "Seu plano está esperando um pagamento. Resolva em Gerenciar cobrança, nas Configurações.",
         "trialUsed": "Este teste grátis já foi usado.",
         "noPrice": "O plano Professor não está à venda agora. Tente de novo mais tarde.",
         "paying": "Já tem um pagamento a caminho. Espere um minuto.",
@@ -4089,7 +4095,7 @@
       },
       "thanks": {
         "wait": "⏳ Ativando seu plano Professor…",
-        "slow": "Está demorando mais que o normal. Seu plano vai aparecer na sua página Eu em um minuto.",
+        "slow": "Está demorando mais que o normal. Seu plano vai aparecer nas Configurações em um minuto.",
         "back": "Ir para meu plano Professor"
       },
       "card": {

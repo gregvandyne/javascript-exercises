@@ -4351,16 +4351,16 @@ parts of "Play and Learn" part 2, "Teacher plan" and "Google Classroom sync: opt
   as before. While the teaching loop's card still shows, it comes along on that class's Lessons tab (same partial).
 - **Me page:** "My school" (🏫, `/school`: the school's overview, or a pick of schools) for school admins, beside My
   classes; its line says how many teachers asked for a plan (or the school's name). Teachers who don't run a school
-  have no school pages, so no tile. In the account section (after Your name): the **Teacher plan card**, moved from
-  /teach, and "Ask my admin" for a school a teacher works at without running it. The card: plan status (trial until,
+  have no school pages, so no tile. In **Settings** (`/me/settings`, see "Settings page" below): the **Teacher plan
+  card**, moved from /teach, and "Ask my admin" for a school a teacher works at without running it. The card: plan status (trial until,
   renews on, ends on, a grant), "{left} of {size} Builder messages left today", the trial-ending notice; a teacher who
   owns the plan gets **Add a card** (trialing) or **Manage billing**, both the existing `/api/trial/card` Stripe customer
-  portal (password first), now returning to `/me#teacher-plan`; a seat says "A seat from <school>", with **Manage
+  portal (password first), now returning to `/me/settings#teacher-plan`; a seat says "A seat from <school>", with **Manage
   school billing** (the school's Billing tab) for its admins and "The admins of <school> look after this plan" for
   teachers; no plan: one line and **See the plans** (`/plans`; prices only there). Who asked for a plan is on the
   Billing tab (with Dismiss), as before. `PLAN_PATH`, /trial, /trial/thanks, the portal's return and the trial emails
-  now point to `/me#teacher-plan`; `/teach?plan=…` redirects there, and app.js sends an old `/teach#teacher-plan` link
-  (emails already sent) on to the card. The Terms (info.terms.plans.li14) still say the messages show "on the
+  now point to `/me/settings#teacher-plan`; `/teach?plan=…` redirects there, and app.js sends an old `/teach#teacher-plan`
+  link (emails already sent) on to the card. The Terms (info.terms.plans.li14) still say the messages show "on the
   teacher's My classes page": a legal-text change left for the lawyer's pass.
 - **Units and folders:** one line under the class page's buttons ("Units group the lessons in this class, in the
   order students see them. Folders only sort your own lesson library.") and one under the lesson library's ("Folders
@@ -4375,4 +4375,27 @@ parts of "Play and Learn" part 2, "Teacher plan" and "Google Classroom sync: opt
   (docs/google-classroom.md section 2 says what teachers see if they aren't there yet).
 - Words in 13 languages (`scripts/i18n-add-simpler-classes.mjs`, which also removes the keys of the gone sections);
   no migration.
+
+## Settings page (11 Nov 2026)
+The owner asked for the account's settings to have a page of their own, off the Me page.
+- **`/me/settings`** (signed in; a ⚙️ "Settings" tile, the last on the Me page): in this order, the Teacher plan
+  and billing (school staff, while paid-plan pages are on: the card and "Ask my admin"), Language, Appearance,
+  Password (not for guests) and Sign out. A small section nav lists the sections that are there: sticky chips under
+  the top bar on a phone (scrolling sideways in their own row), a sticky side list from 760 px. Back link to Me.
+- **Moved, not changed:** the same panels, forms and APIs (`languagePanel`, `appearancePanel`, `passwordPanel`,
+  `signOutPanel`, the plan card); their ids stay (`#language`, `#appearance`, `#password`, `#signout`,
+  `#teacher-plan`). The language and theme GET forms now come back to /me/settings.
+- **Stays on the Me page:** the header (with Sign out in "Not you?" where it was), Make a game, the tiles, Pick your
+  look, the kids' character, the chat switch, the weekly class summary, Your name and username, Sign in with Google,
+  and the kids' "For grown-ups" card (`/me#grownups`).
+- **Old links:** the footer's language link, the short-password notice, /forgot for someone signed in, `PLAN_PATH`
+  (trial emails), /trial and /trial/thanks, the Stripe portal's return and /plans now point to
+  `/me/settings#…`; `/teach?plan=…` redirects to `/me/settings?plan=…#teacher-plan`. A link whose hash never reaches
+  the server (`/me#language`, `#appearance`, `#password`, `#signout`, `#teacher-plan`, and `/teach#teacher-plan` in a
+  trial email already sent) is forwarded by public/js/app.js from any page without that section.
+- **Grown-ups** keep their own settings page, /family/account (Your name, Language, Password, Sign out); their
+  `/me/settings` redirects there, as their `/me` goes to /family.
+- Words: `me.tiles.settings`, `me.settings.*` in 13 languages; two trial strings now say "Settings" where they said
+  "My classes". Tests: `tests/unit/me-settings.test.js`, the plan-card states in `teacher-plan.test.js` on
+  /me/settings.
 

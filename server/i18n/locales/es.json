@@ -246,7 +246,8 @@
       "requests": "{count, plural, one {# solicitud de amistad} other {# solicitudes de amistad}}",
       "unread": "{count, plural, one {# mensaje nuevo} other {# mensajes nuevos}}",
       "school": "Mi escuela",
-      "asks": "{count, plural, one {# docente pidió un plan} other {# docentes pidieron un plan}}"
+      "asks": "{count, plural, one {# docente pidió un plan} other {# docentes pidieron un plan}}",
+      "settings": "Ajustes"
     },
     "look": {
       "heading": "Elige tu estilo",
@@ -507,6 +508,11 @@
       "same": "Ese ya es tu nombre de usuario.",
       "taken": "Ese nombre de usuario ya está en uso. Prueba con otro.",
       "tooSoon": "Cambiaste tu nombre de usuario hace poco. Podrás cambiarlo de nuevo {days} días después del último cambio."
+    },
+    "settings": {
+      "title": "Ajustes",
+      "sections": "Secciones de ajustes",
+      "billing": "Plan y pagos"
     }
   },
   "cards": {
@@ -4078,7 +4084,7 @@
         "adult": "Confirme que es docente o personal de una escuela, y que tiene 18 años o más.",
         "notTeacher": "El plan Docente necesita una cuenta de docente.",
         "entitled": "Ya tiene el plan Docente.",
-        "fixPayment": "Su plan está esperando un pago. Resuélvalo en Administrar facturación, en su página Yo.",
+        "fixPayment": "Su plan está esperando un pago. Resuélvalo en Administrar facturación, en Ajustes.",
         "trialUsed": "Esta prueba gratis ya se usó.",
         "noPrice": "El plan Docente no está a la venta ahora mismo. Inténtelo más tarde.",
         "paying": "Ya hay un pago en camino. Espere un minuto.",
@@ -4087,7 +4093,7 @@
       },
       "thanks": {
         "wait": "⏳ Activando su plan Docente…",
-        "slow": "Esto tarda más de lo normal. Su plan aparecerá en su página Yo en un minuto.",
+        "slow": "Esto tarda más de lo normal. Su plan aparecerá en Ajustes en un minuto.",
         "back": "Ir a mi plan Docente"
       },
       "card": {

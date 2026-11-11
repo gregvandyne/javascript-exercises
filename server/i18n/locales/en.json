@@ -247,7 +247,8 @@
       "requests": "{count, plural, one {# friend request} other {# friend requests}}",
       "unread": "{count, plural, one {# new message} other {# new messages}}",
       "school": "My school",
-      "asks": "{count, plural, one {# teacher asked for a plan} other {# teachers asked for a plan}}"
+      "asks": "{count, plural, one {# teacher asked for a plan} other {# teachers asked for a plan}}",
+      "settings": "Settings"
     },
     "look": {
       "heading": "Pick your look",
@@ -508,6 +509,11 @@
       "same": "That's already your username.",
       "taken": "That username is taken. Try another one.",
       "tooSoon": "You changed your username recently. You can change it again {days} days after the last change."
+    },
+    "settings": {
+      "title": "Settings",
+      "sections": "Settings sections",
+      "billing": "Plan and billing"
     }
   },
   "cards": {
@@ -4107,7 +4113,7 @@
         "adult": "Please confirm you are a teacher or school staff member, 18 or older.",
         "notTeacher": "The Teacher plan needs a teacher account.",
         "entitled": "You already have the Teacher plan.",
-        "fixPayment": "Your plan is waiting for a payment. Fix it in Manage billing on your Me page.",
+        "fixPayment": "Your plan is waiting for a payment. Fix it in Manage billing in Settings.",
         "trialUsed": "This free trial has been used already.",
         "noPrice": "The Teacher plan isn't on sale right now. Please try again later.",
         "paying": "A payment is already on its way. Please wait a minute.",
@@ -4116,7 +4122,7 @@
       },
       "thanks": {
         "wait": "⏳ Starting your Teacher plan…",
-        "slow": "This is taking longer than usual. Your plan will show on your Me page in a minute.",
+        "slow": "This is taking longer than usual. Your plan will show in Settings in a minute.",
         "back": "Go to my Teacher plan"
       },
       "card": {
