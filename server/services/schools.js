@@ -340,16 +340,27 @@ export function newUsername() {
 export const newPassword = () => `${rnd(WORDS)}-${rnd(WORDS)}-${rnd(WORDS)}-${crypto.randomInt(10, 100)}`;
 
 /** Create a school account (owned by the school) and add it as a member. Returns the one-time password. */
-export function createSchoolAccount(by, schoolId, { rosterName, role = 'student', grade = '' }) {
+export function createSchoolAccount(by, schoolId, { rosterName, role = 'student', grade = '', username: wanted = '' }) {
   const s = getSchool(schoolId); if (!s) return fail('notFound');
   const rn = clip(rosterName, 60); if (!rn) return fail('rosterName');
   if (!ROLES.includes(role)) return fail('badRole');
-  const username = newUsername(), password = newPassword();
+  // A chosen username (the platform admin setting up a school's admin): staff only, the usual username rules.
+  if (wanted && role === 'student') return fail('badRole');
+  if (wanted && !/^[A-Za-z0-9_]{3,16}$/.test(wanted)) return fail('badUsername');
+  if (wanted && q.get('SELECT 1 FROM users WHERE username=? COLLATE NOCASE', wanted)) return fail('usernameTaken');
+  const username = wanted || newUsername(), password = newPassword();
   const u = createUser({ username, password, displayName: username });
   q.run('UPDATE users SET managed_school=? WHERE id=?', s.id, u.id);
   addMember(by, s.id, u.id, role, { rosterName: rn, grade });
   audit(by.id, 'school.account_create', s.id, { user: u.id, role });
   return ok({ user: getUser(u.id), username, password, rosterName: rn });
+}
+/** A staff member's own name at every school where they are staff (the Me page's "Your name"). -> how many changed */
+export function setOwnStaffName(userId, name) {
+  const n = clip(name, 60); if (!n) return 0;
+  const changed = q.run("UPDATE school_members SET roster_name=? WHERE user_id=? AND status='active' AND role!='student'", n, userId).changes;
+  if (changed) audit(userId, 'school.own_name', userId, { schools: changed });
+  return changed;
 }
 /** New password for a school account (personal accounts keep their own passwords). */
 export function resetSchoolPassword(by, schoolId, userId) {

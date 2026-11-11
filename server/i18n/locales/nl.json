@@ -123,6 +123,9 @@
     "text": {
       "notAllowed": "Die tekst mag niet op Oomba Academy.",
       "personal": "Zet geen telefoonnummers, e-mails, adressen of links op Oomba Academy."
+    },
+    "realName": {
+      "chars": "Gebruik 2 tot {max} letters: spaties, streepjes, apostroffen en punten mogen, cijfers niet."
     }
   },
   "auth": {
@@ -486,6 +489,15 @@
           "techvest": "Techvest"
         }
       }
+    },
+    "name": {
+      "heading": "Je naam",
+      "textStaff": "Hoe collega's en leerlingen je op school zien, bijvoorbeeld \"Juf Gherghinis\" of \"Roxana Gherghinis\".",
+      "textGrownup": "Hoe je gezin en het Oomba-team je zien.",
+      "label": "Je naam",
+      "save": "Opslaan",
+      "saved": "Naam opgeslagen.",
+      "username": "Je logt in met {username}. Dat blijft hetzelfde."
     }
   },
   "cards": {

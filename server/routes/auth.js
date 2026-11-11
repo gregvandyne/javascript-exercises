@@ -9,7 +9,8 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName } from '../services/schools.js';
+import { cleanRealName, REAL_NAME_MAX } from '../services/textfilter.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
@@ -339,6 +340,37 @@ router.get('/avatars/:id', (req, res) => {
   res.type('image/svg+xml').send(photos.emojiSvg(u));
 });
 
+// "Your name" (the Me page): a grown-up's own name, as colleagues, students or their family see it. Teachers, school
+// staff, the platform admin and grown-up (parent) accounts only: a kid's or a student's account never sets a real name
+// (their username is what others see; a student's name at school is the teacher's to set). Staff: it is also their
+// name at every school where they are staff. The username (what they sign in with) never changes.
+export const mayEditOwnName = u => !!u && !u.is_guest && !u.banned && (u.role === 'admin' || ['staff', 'grownup'].includes(auth.accountKind(u)));
+export const ownName = u => (isSchoolStaff(u) && staffName(u)) || u.display_name || u.username;
+export function namePanel(req) {
+  const t = req.t, u = req.user;
+  if (!mayEditOwnName(u)) return '';
+  const staff = isSchoolStaff(u);
+  return html`<section class="panel" id="your-name" aria-labelledby="yn-h"><h2 id="yn-h"><span aria-hidden="true">🪪</span> ${t('me.name.heading')}</h2>
+    <p class="muted">${staff ? t('me.name.textStaff') : t('me.name.textGrownup')}</p>
+    <form class="row" data-api="/api/me/name" data-reload data-toast="${t('me.name.saved')}" novalidate>
+      <label class="sr-only" for="yn-name">${t('me.name.label')}</label>
+      <input class="input grow" id="yn-name" name="name" maxlength="${REAL_NAME_MAX}" autocomplete="name" required value="${ownName(u)}" aria-describedby="yn-note">
+      <button class="btn btn-primary" type="submit">${t('me.name.save')}</button>
+      <span class="err" id="yn-name-err" aria-live="polite"></span>
+    </form>
+    <p class="small muted" id="yn-note">${tHtml(t, 'me.name.username', { username: html`<b dir="ltr">${u.username}</b>` })}</p></section>`;
+}
+router.post('/api/me/name', auth.requireAnyAccount, rateLimit('me-name', 20, 3600e3), (req, res) => {
+  const t = req.t, u = req.user;
+  if (!mayEditOwnName(u)) return res.status(404).json({ error: t('errors.api.notFound') });
+  const n = cleanRealName((req.body || {}).name, t);
+  if (!n.ok) return res.status(400).json({ error: n.error, field: 'name' });
+  q.run('UPDATE users SET display_name=? WHERE id=?', n.value, u.id);
+  const schools = isSchoolStaff(u) ? setOwnStaffName(u.id, n.value) : 0;
+  audit(u.id, 'user.own_name', u.id, { schools });
+  res.json({ ok: true });
+});
+
 router.post('/api/me', auth.requireUser, rateLimit('me', 30, 60e3), (req, res) => {
   const t = req.t;
   const { avatar: av, color, displayName, chatEnabled, lang } = req.body || {};
@@ -475,6 +507,6 @@ router.get('/me', auth.requireUser, (req, res) => {
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
   ${staff ? digestPanel(req) : ''}
-  <div class="mesettings">${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js', '/js/character.js'], ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/digest.css?v=${VERSION}">`) } : {}) });
 });

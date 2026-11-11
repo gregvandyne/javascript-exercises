@@ -166,3 +166,44 @@ test('email off: everything is set up, and the People tab offers the login card 
     assert.equal(SR.getRequest(r.id).status, 'done');
   } finally { config.emailEnabled = true; }
 });
+
+test('the optional username: used for the new school admin account and in the email; a taken or bad one makes nothing', async () => {
+  const schools = q.get('SELECT COUNT(*) n FROM schools').n;
+  for (const [u, why] of [['SetupTeachX', 'taken'], ['Roxana G', 'a space'], ['ab', 'too short']]) {
+    const r = await post('/api/admin/schools/setup', { name: 'Named School', account: 'new', newUsername: u, rosterName: 'Roxana Gherghinis', email: 'r@named.example' }, admin);
+    assert.equal(r.status, 400, why); assert.equal((await r.json()).field, 'newUsername', why);
+  }
+  assert.equal(q.get('SELECT COUNT(*) n FROM schools').n, schools, 'nothing made');
+  const ok = await post('/api/admin/schools/setup', { name: 'Named School', account: 'new', newUsername: 'RoxanaG', rosterName: 'Roxana Gherghinis', email: 'r@named.example', lang: 'en' }, admin);
+  assert.equal(ok.status, 200, await ok.clone().text());
+  const u = auth.getUserByName('RoxanaG');
+  assert.ok(u && u.managed_school);
+  assert.equal(S.membership(u.managed_school, u.id).role, 'admin');
+  assert.match(sent.at(-1).text, /RoxanaG/);
+  // Students never get a chosen username this way.
+  assert.equal(S.createSchoolAccount(admin, u.managed_school, { rosterName: 'Kid', role: 'student', username: 'KidPicked' }).code, 'badRole');
+});
+
+test('"Your name" on the Me page: grown-ups and staff set their own name; kids and students never do', async () => {
+  const s = q.get("SELECT * FROM schools WHERE name='Named School'");
+  const boss = auth.getUserByName('RoxanaG');
+  const me = await (await get('/me', boss)).text();
+  assert.match(me, /id="your-name"/); assert.match(me, /value="Roxana Gherghinis"/); assert.match(me, /RoxanaG/);
+  const r = await post('/api/me/name', { name: '  Ștefana   Gherghinis ' }, boss);
+  assert.equal(r.status, 200);
+  assert.equal(auth.getUser(boss.id).display_name, 'Ștefana Gherghinis');
+  assert.equal(S.membership(s.id, boss.id).roster_name, 'Ștefana Gherghinis', 'her name at the school too');
+  assert.equal(auth.getUser(boss.id).username, 'RoxanaG', 'the username never changes');
+  for (const bad of ['Roxana2', 'R', '<b>x</b>', 'Ms Bitch']) assert.equal((await post('/api/me/name', { name: bad }, boss)).status, 400, bad);
+  assert.equal((await post('/api/me/name', { name: 'Ana Lee' }, boss)).status, 200, 'a real name the joined-up check would misread');
+  // A grown-up (parent) account: yes. A kid's own account and a school's student: no panel, no API.
+  assert.match(await (await get('/family/account', parent)).text(), /id="your-name"/, 'a parent\'s settings live on their family account page');
+  assert.equal((await post('/api/me/name', { name: 'Pat Moss' }, parent)).status, 200);
+  const kidAcct = auth.createUser({ username: 'NameKid12', password: 'a-long-password-1' });
+  const student = S.createSchoolAccount(admin, s.id, { rosterName: 'Sam Student' }).user;
+  for (const k of [kidAcct, student]) {
+    assert.doesNotMatch(await (await get('/me', k)).text(), /id="your-name"/);
+    assert.equal((await post('/api/me/name', { name: 'Real Name' }, k)).status, 404);
+  }
+  assert.equal(auth.getUser(kidAcct.id).display_name, 'NameKid12');
+});

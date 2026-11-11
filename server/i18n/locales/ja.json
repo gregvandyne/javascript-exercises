@@ -122,6 +122,9 @@
     "text": {
       "notAllowed": "そのことばはOomba Academyではつかえません。",
       "personal": "電話番号、メールアドレス、住所、リンクはOomba Academyに書かないでください。"
+    },
+    "realName": {
+      "chars": "2〜{max} 文字の文字で入力してください。スペース、ハイフン、アポストロフィ、ピリオドは使えますが、数字は使えません。"
     }
   },
   "auth": {
@@ -485,6 +488,15 @@
           "techvest": "テックベスト"
         }
       }
+    },
+    "name": {
+      "heading": "あなたの名前",
+      "textStaff": "学校で同僚や児童・生徒に表示される名前です。例：「ゲルギニス先生」「Roxana Gherghinis」",
+      "textGrownup": "ご家族と Oomba チームに表示される名前です。",
+      "label": "あなたの名前",
+      "save": "保存",
+      "saved": "名前を保存しました。",
+      "username": "サインインには {username} を使います。これは変わりません。"
     }
   },
   "cards": {

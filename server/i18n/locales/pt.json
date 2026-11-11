@@ -123,6 +123,9 @@
     "text": {
       "notAllowed": "Esse texto não é permitido na Oomba Academy.",
       "personal": "Por favor, não coloque números de telefone, e-mails, endereços nem links na Oomba Academy."
+    },
+    "realName": {
+      "chars": "Use de 2 a {max} letras: espaços, hífens, apóstrofos e pontos podem, números não."
     }
   },
   "auth": {
@@ -486,6 +489,15 @@
           "techvest": "Colete tech"
         }
       }
+    },
+    "name": {
+      "heading": "Seu nome",
+      "textStaff": "Como colegas e alunos veem você na escola, por exemplo \"Profa. Gherghinis\" ou \"Roxana Gherghinis\".",
+      "textGrownup": "Como sua família e a equipe Oomba veem você.",
+      "label": "Seu nome",
+      "save": "Salvar",
+      "saved": "Nome salvo.",
+      "username": "Você entra com {username}. Isso não muda."
     }
   },
   "cards": {

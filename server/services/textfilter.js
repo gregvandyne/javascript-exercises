@@ -172,6 +172,17 @@ export function cleanName(s, t = tEn, { realNames = false } = {}) {
   if (/^[A-Z][a-z]{2,}_?[A-Z][a-z]{2,}\d*$/.test(v) && REALNAME.test(v)) return { ok: false, error: t('textfilter.name.realName') };
   return { ok: true, value: v };
 }
+/** A grown-up's own name as they want colleagues, students or their family to see it ("Ms Gherghinis", "Roxana
+ *  Gherghinis", "Ana-Maria O'Neil"): 2-40 characters, letters in any script with spaces, hyphens, apostrophes and
+ *  dots, no digits, nothing on the word lists. Never for a kid's account (their real names are never shown). */
+export const REAL_NAME_MAX = 40;
+export function cleanRealName(s, t = tEn) {
+  const v = String(s || '').normalize('NFC').replace(/\s+/g, ' ').trim();
+  if (v.length < 2 || v.length > REAL_NAME_MAX || !/^[\p{L}\p{M}](?:[\p{L}\p{M}' .\u2019-]*[\p{L}\p{M}.])?$/u.test(v)) return { ok: false, error: t('textfilter.realName.chars', { max: REAL_NAME_MAX }) };
+  // The plain word list, not the joined-up names check: that one reads "Ana Lee" as one word.
+  if (hasProfanity(v)) return { ok: false, error: t('textfilter.name.notAllowed') };
+  return { ok: true, value: v };
+}
 // Common first names; "FirstLast" style usernames that start with one look like a real full name.
 const REALNAME = /^(james|john|robert|michael|william|david|richard|joseph|thomas|charles|mary|patricia|jennifer|linda|elizabeth|barbara|susan|jessica|sarah|karen|emma|olivia|ava|sophia|isabella|mia|amelia|harper|evelyn|liam|noah|oliver|elijah|lucas|mason|logan|ethan|jacob|jack|aiden|jackson|leo|henry|grace|chloe|lily|ella|zoe|emily|hannah|sam|max|ben|tom|lucy|ruby|freya|alfie|charlie|george|harry|oscar|archie|daniel|matthew|anthony|mark|paul|steven|andrew|joshua|kevin|brian|ryan|jason|justin|nicole|ashley|amanda|megan|rachel|laura|anna|kate|katie|amy)_?[A-Z]/i;
 

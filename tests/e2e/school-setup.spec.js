@@ -29,6 +29,9 @@ test('a school request: Set up this school, one page, one button; the People tab
   await expect(p.locator('#su-name')).toHaveValue('Ana Rivera');
   await expect(p.locator('#su-email')).toHaveValue('ana@fortech.example');
   await expect(p.locator('#su-user')).toBeHidden();
+  await expect(p.locator('#su-uname')).toBeVisible();
+  const uname = `Rox${Date.now().toString(36).slice(-6)}`;
+  await p.fill('#su-uname', uname);
   expect(await sideways(p)).toBeLessThanOrEqual(0);
   expect(await findTouching(p)).toEqual([]);
   await shot(p, 'setup-390');
@@ -43,6 +46,7 @@ test('a school request: Set up this school, one page, one button; the People tab
   await expect(p.locator('#welcome-notsent a[href^="/cards/"]')).toBeVisible();
   await expect(p.locator('#staff')).toBeVisible();
   await expect(p.locator('main')).toContainText('Ana Rivera');
+  await expect(p.locator('main')).toContainText(`@${uname}`);
   expect(await sideways(p)).toBeLessThanOrEqual(0);
   await shot(p, 'people-390');
   // Back on the requests tab: closed, linked to the school, with "Welcome email" to send it again.
@@ -62,4 +66,29 @@ test('a school request: Set up this school, one page, one button; the People tab
   expect(await findTouching(dp)).toEqual([]);
   await shot(dp, 'setup-1280-existing');
   await d.close();
+});
+
+test('"Your name" on the Me page: a teacher changes the name colleagues and students see; the username stays', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage();
+  await login(p, 'DemoTeacher', 'demo-pass-123');
+  await p.goto('/me');
+  const box = p.locator('#your-name');
+  await expect(box).toBeVisible();
+  const before = await p.locator('#yn-name').inputValue();
+  await expect(box).toContainText('DemoTeacher');
+  try {
+    await p.fill('#yn-name', 'Roxana2');
+    await box.locator('button[type=submit]').click();
+    await expect(p.locator('#yn-name-err')).toContainText('digits');
+    await p.fill('#yn-name', 'Ștefana Gherghinis');
+    await Promise.all([p.waitForLoadState('load'), box.locator('button[type=submit]').click()]);
+    await expect(p.locator('#yn-name')).toHaveValue('Ștefana Gherghinis');
+    await expect(p.locator('h1')).toContainText('Ștefana Gherghinis');
+    expect(await sideways(p)).toBeLessThanOrEqual(0);
+    expect(await findTouching(p)).toEqual([]);
+    await shot(p, 'me-name-390');
+  } finally {
+    await p.request.post('/api/me/name', { data: { name: before } });
+  }
+  await ctx.close();
 });

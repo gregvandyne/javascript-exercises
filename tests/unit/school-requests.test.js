@@ -169,7 +169,7 @@ test('without JavaScript the form posts as a plain form and gets the page back',
   assert.match(start((await call(null, '/teachers?failed=1')).text), /needs fixing/);
 });
 
-test('/admin: a "School requests" tab with a count, done / declined / reopen, and "Create school" through Add a school', async () => {
+test('/admin: a "School requests" tab with a count, done / declined / reopen, and "Set up this school" (the setup page)', async () => {
   const boss = admin();
   await send(null, good({ school: 'Maple <script>alert(1)</script>' }));
   await send(null, good({ school: 'Cedar High', email: 'it@cedar.example.org', role: 'it' }));
@@ -186,7 +186,7 @@ test('/admin: a "School requests" tab with a count, done / declined / reopen, an
   assert.match(tab, /Maple &lt;script&gt;alert\(1\)&lt;\/script&gt;/, 'escaped');
   assert.doesNotMatch(tab, /<script>alert/);
   assert.match(tab, /href="mailto:it@cedar\.example\.org"/);
-  assert.match(tab, new RegExp(`href="/admin/schools\\?request=${cedar.id}">➕ Create school`));
+  assert.match(tab, new RegExp(`href="/admin/schools/setup\\?request=${cedar.id}">🏫 Set up this school`));
   // Decline Maple, reopen it, decline again.
   assert.equal((await as(boss)(`/api/admin/school-requests/${maple.id}/declined`, { method: 'POST', body: {} })).status, 200);
   assert.equal(SR.getRequest(maple.id).status, 'declined');
@@ -195,8 +195,9 @@ test('/admin: a "School requests" tab with a count, done / declined / reopen, an
   assert.equal(SR.getRequest(maple.id).status, 'open');
   assert.equal((await as(boss)(`/api/admin/school-requests/${maple.id}/nonsense`, { method: 'POST', body: {} })).status, 404);
   assert.equal((await as(boss)(`/api/admin/school-requests/${maple.id}/done`, { method: 'POST', body: {} })).status, 200);
-  // Create school for Cedar: the form is filled in, and adding the school closes the request with it.
-  const form = (await as(boss)(`/admin/schools?request=${cedar.id}`)).text;
+  // Set up Cedar: the setup page is filled in from the request (tests/unit/school-welcome.test.js covers the rest);
+  // a plain Add school with the request still closes it with the school.
+  const form = (await as(boss)(`/admin/schools/setup?request=${cedar.id}`)).text;
   assert.match(form, new RegExp(`<input type="hidden" name="request" value="${cedar.id}">`));
   assert.match(form, /name="name"[^>]*value="Cedar High"/);
   const made = await as(boss)('/api/admin/schools', { method: 'POST', body: { name: 'Cedar High', request: cedar.id } });

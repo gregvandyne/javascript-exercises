@@ -122,6 +122,9 @@
     "text": {
       "notAllowed": "Oomba Academy 上不能使用這段文字。",
       "personal": "請不要在 Oomba Academy 上寫電話號碼、電子郵件、地址和連結。"
+    },
+    "realName": {
+      "chars": "請使用 2 到 {max} 個字：可以有空格、連字號、撇號和句點，不可有數字。"
     }
   },
   "auth": {
@@ -485,6 +488,15 @@
           "techvest": "科技背心"
         }
       }
+    },
+    "name": {
+      "heading": "你的名字",
+      "textStaff": "同事和學生在學校看到的名字，例如「Gherghinis 老師」或「Roxana Gherghinis」。",
+      "textGrownup": "你的家人和 Oomba 團隊看到的名字。",
+      "label": "你的名字",
+      "save": "儲存",
+      "saved": "名字已儲存。",
+      "username": "你用 {username} 登入，這個不會改變。"
     }
   },
   "cards": {

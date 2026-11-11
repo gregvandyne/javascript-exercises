@@ -4253,3 +4253,11 @@ owner found it confusing after approving the first real request.
   "Mark done" before its school existed: the school is made then and linked to the request). "Close without setting up"
   replaces "Mark done" for a request handled some other way.
 - The audit log keeps ids and the outcome only; the address stays in `email_prefs` and `email_log`.
+- **Optional username** on the setup page for a new school account (3 to 16 letters, digits or _; checked against the
+  word lists and taken names before anything is made). It goes in the welcome email and can't be changed later.
+
+**"Your name" for grown-ups (11 Nov 2026).** Teachers, school staff, the platform admin and grown-up (parent) accounts
+can set their own name on the Me page (parents: their family account page): 2 to 40 letters in any script with spaces,
+hyphens, apostrophes and dots, no digits, nothing on the word lists (`cleanRealName`). It is their display name, and for
+staff also their name at every school where they are staff. The username never changes. Kids' and students' accounts
+never set a name: a kid's username is what others see, and a student's name at school is the teacher's to set.

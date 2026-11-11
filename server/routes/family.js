@@ -34,7 +34,7 @@ import { tHtml, saveUserLang } from '../i18n/index.js';
 import { saveUserTheme } from '../theme.js';
 import { PARENT_GUIDES } from '../learn.js';
 import { siteHost } from '../site.js';
-import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel } from './auth.js';
+import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel, namePanel } from './auth.js';
 import { LEGAL_UPDATED } from './info.js';
 import { madeSees } from '../views/family-made.js';
 import { deleteAccount, inSchoolOrClass } from '../services/account-delete.js';
@@ -78,7 +78,7 @@ const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billi
   // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
   // children said to each other. No friends' chat: /chat itself stays closed.
   /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
-const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
+const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme|name)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|family\/sparks|portal)$/,
   /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
@@ -471,7 +471,7 @@ router.get('/family/account', grownupOnly, (req, res) => {
   const t = req.t;
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const body = html`<div class="pagehead"><h1${en('family.account.heading')}>⚙️ ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
-  <div class="mesettings">${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t(navLabel(t, 'account')), active: 'account', body, back: '/family', backLabel: t('family.page.title') });
 });
 

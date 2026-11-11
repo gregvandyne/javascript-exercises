@@ -18,6 +18,7 @@ import { welcomeToken, WELCOME_DAYS } from './password-reset.js';
 import { siteBase, maskEmail, normEmail, sendingOn, addressOf } from '../services/email.js';
 import { tFor, LOCALES, CODES } from '../i18n/index.js';
 import { audit } from '../db.js';
+import { cleanName } from '../services/textfilter.js';
 import { teacherLessonsPanel, studentLessonsPanel, dueChip } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
@@ -180,6 +181,7 @@ router.get('/admin/schools/setup', requireAdmin, (req, res) => {
       </fieldset>
       ${admins.length ? html`<div class="field" data-when="current"><label for="su-admin">School admin</label><select class="input" id="su-admin" name="adminId">${admins.map(a => html`<option value="${a.id}">${a.roster_name || a.display_name} (@${a.username})</option>`)}</select></div>` : ''}
       <div class="field" data-when="existing"><label for="su-user">Their username</label><input class="input" id="su-user" name="username" maxlength="16" dir="ltr" autocomplete="off"><span class="err" id="su-user-err"></span></div>
+      <div class="field" data-when="new"><label for="su-uname">Username <span class="muted">(optional)</span></label><input class="input" id="su-uname" name="newUsername" maxlength="16" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. RoxanaG" aria-describedby="su-uname-hint"><span class="hint" id="su-uname-hint">What they sign in with, shown in the email. 3 to 16 letters, digits or _. It can't be changed later. Leave it empty for a made-up one.</span><span class="err" id="su-uname-err"></span></div>
       <div class="field" data-when="new existing"><label for="su-name">Their real name (as staff and students know them)</label><input class="input" id="su-name" name="rosterName" maxlength="60" value="${name}"><span class="err" id="su-name-err"></span></div>
       <div class="field"><label for="su-email">${school ? '2' : '3'}. Send the welcome to</label><input class="input" id="su-email" name="email" type="email" dir="ltr" maxlength="254" required value="${email}"><span class="err" id="su-email-err"></span></div>
       <div class="field"><label for="su-lang">Email language</label><select class="input" id="su-lang" name="lang">${setupLangs().map(l => html`<option value="${l.code}" ${l.code === lang ? raw('selected') : ''}>${l.name}</option>`)}</select></div>
@@ -215,6 +217,12 @@ router.post('/api/admin/schools/setup', requireAdmin, rateLimit('school-setup', 
     if (accountKind(u) === 'student' || (u.managed_school && x.schoolId && u.managed_school !== String(x.schoolId))) return fieldErr(res, 'username', 'That is another school\'s account.');
     user = u;
   }
+  const wanted = account === 'new' ? String(x.newUsername || '').trim() : '';
+  if (wanted) {
+    const n = cleanName(wanted, req.t, { realNames: true });
+    if (!n.ok) return fieldErr(res, 'newUsername', n.error);
+    if (getUserByName(wanted)) return fieldErr(res, 'newUsername', 'That username is taken. Try another one.');
+  }
   let school = x.schoolId ? S.getSchool(String(x.schoolId)) : null;
   if (x.schoolId && !school) return res.status(404).json({ error: 'That school is gone.' });
   if (account === 'current') {
@@ -230,8 +238,8 @@ router.post('/api/admin/schools/setup', requireAdmin, rateLimit('school-setup', 
   }
   let cardKey = null;
   if (account === 'new') {
-    const made = S.createSchoolAccount(req.user, school.id, { rosterName, role: 'admin' });
-    if (!made.ok) return err(req, res, made.code);
+    const made = S.createSchoolAccount(req.user, school.id, { rosterName, role: 'admin', username: wanted });
+    if (!made.ok) return made.code === 'usernameTaken' || made.code === 'badUsername' ? fieldErr(res, 'newUsername', 'That username is taken. Try another one.') : err(req, res, made.code);
     user = made.user;
     // Kept for a day in case the email can't go: the platform admin can print it and send it themselves.
     cardKey = keepCards(req.user, [card(made, 'admin')], { schoolId: school.id });
