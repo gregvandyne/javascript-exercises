@@ -190,6 +190,9 @@ export function teamText(m, t = tEn) {
   if (o.k === 'trialEnding') return `⏳ ${t('team.notice.trialEnding', { days: Number(o.days) || 0, href: String(o.href || '') })}`;
   if (o.k === 'trialEnded') return `📒 ${t('team.notice.trialEnded', { href: String(o.href || '') })}`;
   if (o.k === 'trialConverted') return `🎉 ${t('team.notice.trialConverted')}`;
+  // A school seat took over: the teacher's free trial was closed, or (a paid plan) they may cancel their own.
+  if (o.k === 'trialReplaced') return `🏫 ${t('team.notice.trialReplaced')}`;
+  if (o.k === 'seatCoversPaid') return `🏫 ${t('team.notice.seatCoversPaid', { href: String(o.href || '') })}`;
   if (o.k === 'sentBack') {
     const why = [REVIEW_REASONS.includes(o.reason) ? t(`review.reasons.${o.reason}`) : '', o.note || ''].filter(Boolean).join(' ');
     return `✏️ ${t('team.notice.sentBack', { title: o.title || '' })}${why ? ` ${why}` : ''}`;

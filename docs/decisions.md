@@ -3174,6 +3174,9 @@ read with `limit: 100` so every key fits in one page).
   subscription is first synced as trialing (the sync hook in services/teacher-plan.js), and checked before Checkout.
   Two Checkouts started at the same moment with the same email from two accounts could both trial (one open Checkout
   per owner prevents it for one account); accepted.
+- **Automatic trial (11 Nov 2026).** The sign-up's first class (and /trial's "Start my free trial") now start the same
+  trial through Stripe's API, with no Checkout page; a seat given to a teacher in their own trial closes it at no
+  charge, and a teacher who already pays is warned, never cancelled. See "Automatic trial at sign-up" below.
 - **Webhooks.** `customer.subscription.trial_will_end` is the 15th handled event (add it to the live endpoint). It sets
   `trial_notice_at` and sends one Team inbox message (services/team.js `notify`, kind `trialEnding`) with the link to
   add a card; My classes shows the notice (also from 7 days before the end). trialing → active (a card added, the first
@@ -4419,3 +4422,58 @@ account only through its school. Now the parent and teacher steps may also make 
   domain rules.
 - Privacy: see docs/legal-review.md "One sign-up" (owner decision, lawyer review pending). `LEGAL_UPDATED` is already
   2026-11-11 (today), so it did not move.
+
+## Automatic trial at sign-up (11 Nov 2026)
+
+The owner approved starting a teacher's own 14-day Teacher plan trial by itself during the one sign-up, with
+safeguards so a teacher never pays twice (their own plan and a school seat). Before, a teacher only got a trial by
+tapping "Start free trial" (Stripe Checkout); /signup teachers landed on the free plan.
+
+- **When.** The first class saved on the sign-up's "Add your classes" step (`POST /api/onboarding/classes`,
+  `TP.autoStartTrial`). Not for a school's seat trial (`?trial=1&seats=N`, which still goes to /trial and Checkout),
+  and only while paid-plan pages are on for the request. /trial's "Start my free trial" (`trial=1`, also the old
+  /api/trial/signup) uses the same server-side start; a paid start (`trial=0`) still uses Checkout with the card.
+- **How.** `TP.startTeacherTrial`: no Checkout page. The teacher's Stripe Customer is made or reused (their email if we
+  have one: typed, Google's, or the school step's; metadata owner_kind/owner_id/teacher_id, as Checkout's), then
+  `subscriptions.create` on the Teacher price with `trial_period_days` = `TEACHER_TRIAL_DAYS`,
+  `trial_settings.end_behavior.missing_payment_method: 'cancel'`, `payment_settings.save_default_payment_method:
+  'on_subscription'`, `billing_mode: flexible` and the Checkout path's subscription metadata (owner_kind, owner_id,
+  school_id, trial_key = the email's HMAC when there is one; plus `trial_start: 'direct'`). It is synced at once
+  (`B.syncSubscription`), so the plan, `teacher_trials`, the funnel's `teacher.trial` and the trial emails
+  (`nudges.onTrialStarted`) happen before the done screen; Stripe's own `customer.subscription.created` arrives later
+  and changes nothing. trial_will_end, a card added in the Portal, the end with or without a card: exactly as a
+  Checkout trial.
+- **The rules stay.** Billing on and open to the account (`C.mayBill`: with a test key, billing testers only), a teacher
+  (`TP.isTeacher`: never a kid, a guest, a grown-up or a school student), one trial ever per teacher, email HMAC and
+  school (a school whose seat trial was used blocks its teachers' automatic trial too), no unsettled plan, an open
+  Checkout closed first. **Idempotency:** one key per teacher (and email): `trial-teacher-<id>-<mode>-<email hash or
+  none>`, inside the per-teacher chain the Checkout start uses, so a double submit or a retry makes one subscription.
+  At most 10 automatic trials an hour from one address (`trial-auto:<ip>`).
+- **Stripe trouble never blocks the sign-up.** Errors are logged (`billing.trial.auto_skip` audited with the code); the
+  sign-up waits at most 8 s for Stripe; the done step then goes straight to My classes with nothing scary, and the card
+  and /trial offer the trial as before.
+- **What the teacher sees** (`views/trial-lines.js`, one call per page so the card can move): the done screen and the
+  Teacher plan card say "Your 14-day Teacher plan trial has started. No card needed." A password sign-up (no email)
+  gets an optional "Email for trial reminders" on the done screen (`POST /api/trial/email`, `TP.saveTrialEmail`): kept
+  like the trial Checkout's work email (on the Stripe Customer, and `email.rememberAddress` source 'checkout'), and its
+  HMAC added to the trial row. Without an email the in-app notices (My classes, Team inbox) still come.
+  **Accepted:** a password sign-up with no email can't be matched by email, so the one-trial-per-email rule only holds
+  once an email is known; the IP limit and "one per account" remain.
+- **Safeguard 1 (covered: no trial).** No automatic or /trial trial when the teacher already has the plan (their own,
+  a grant, a school seat: "Your school covers your Teacher plan"), or when a school they are staff of has a teacher seat
+  nobody holds (`TP.freeSeatSchool`): "Your school has Teacher plan seats: ask your school admin for one" on the done
+  screen, the card and /trial (which then offers only the paid start).
+- **Safeguard 2 (a seat ends a trial).** When a school admin gives a seat (`TP.giveSeat` → `seatTakesOver`) to a
+  teacher whose own plan is still trialing with no paid invoice, that subscription is cancelled at once through Stripe
+  (`subscriptions.cancel` with `prorate: false, invoice_now: false`, key `cancel-seat-<sub>`: nothing is charged).
+  The trial row is marked `replaced_by_school` / `replaced_at` (migration 0077) before the cancel (cleared again if
+  Stripe refuses). The sync hook then tells the teacher in the Team inbox ("Your school now covers your Teacher plan,
+  so your free trial was closed."), calls `nudges.onTrialReplaced` (the sequence stops: no "trial ended" email, no
+  thank-you) instead of onTrialEnded, and the trial is neither "converted" nor "ended" (/admin/billing counts it as
+  "Closed for a school seat"). It still counts as their one trial.
+- **Safeguard 3 (a paid plan and a seat: warn, never cancel).** A teacher who pays for their own plan (past its trial)
+  is shown on the Billing tab's seat list as "(already pays for their own Teacher plan)"; giving them a seat asks the
+  admin to confirm (and the API refuses without `confirm`). Once given, the teacher gets a Team inbox message and, on
+  their Teacher plan card, "Your school now covers you. You can cancel your own plan." above Manage billing (the
+  existing Customer Portal flow). Cancelling stays their choice; refunds are the owner's (D10).
+- **Honest about prices.** None of the new lines name an amount; prices stay on /plans and the pages that sell.

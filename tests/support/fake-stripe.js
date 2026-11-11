@@ -95,6 +95,8 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
     else if (!chargeOfInvoice.has(inv.id)) payment(inv);
     return inv;
   };
+  /** The next n POST /v1/subscriptions answer 500 (Stripe is down while a trial is started). */
+  fake.failSubscriptionCreates = 0;
   /** The next card payment for a seat change fails (the subscription keeps its quantity, with a pending_update). */
   fake.failNextPayment = (n = 1) => { fake.failPayments = (fake.failPayments || 0) + n; };
   /** A seat change (POST /v1/subscriptions/:id with items[0][quantity]), the way Stripe does it for our parameters:
@@ -376,7 +378,15 @@ export async function startFakeStripe({ port = 0, host = '127.0.0.1', apiVersion
       }
       if ((m = p.match(/^\/v1\/checkout\/sessions\/([\w]+)\/expire$/))) { const s = st.sessions.get(m[1]); if (!s) return missing(res, 'checkout.session', m[1]); if (s.status !== 'open') return err(res, 400, 'invalid_request_error', 'checkout_session_not_open', `This Checkout Session is ${s.status}`); s.status = 'expired'; return ok(res, s); }
       if (p === '/v1/billing_portal/sessions') { const ps = { id: rid('bps_'), object: 'billing_portal.session', customer: params.customer, livemode, return_url: params.return_url || null, configuration: params.configuration || null }; ps.url = `${fake.url}/portal/${ps.id}`; st.portals.set(ps.id, ps); return ok(res, ps); }
-      if (p === '/v1/subscriptions') { const s = fake.subscription({ description: params.description || null, customer: params.customer, lookupKey: [...st.prices.values()].find(x => x.id === params.items?.[0]?.price)?.lookup_key, collectionMethod: params.collection_method || 'charge_automatically', metadata: params.metadata || {}, quantity: Number(params.items?.[0]?.quantity) || 1, invoice: params.collection_method === 'send_invoice' ? 'open' : 'paid', dueDate: params.collection_method === 'send_invoice' ? Date.now() + 30 * DAY * 1000 : null }); return ok(res, s); }
+      if (p === '/v1/subscriptions') {
+        if (fake.failSubscriptionCreates > 0) { fake.failSubscriptionCreates--; return err(res, 500, 'api_error', null, 'fake failure'); }
+        // trial_period_days: a free trial made straight through the API (the Teacher plan's automatic trial): trialing,
+        // with the $0 first invoice, like Checkout's; trial_settings and payment_settings are kept as Stripe keeps them.
+        const s = fake.subscription({ description: params.description || null, customer: params.customer, lookupKey: [...st.prices.values()].find(x => x.id === params.items?.[0]?.price)?.lookup_key, collectionMethod: params.collection_method || 'charge_automatically', metadata: params.metadata || {}, quantity: Number(params.items?.[0]?.quantity) || 1, invoice: params.collection_method === 'send_invoice' ? 'open' : 'paid', dueDate: params.collection_method === 'send_invoice' ? Date.now() + 30 * DAY * 1000 : null, trialDays: Number(params.trial_period_days) || 0 });
+        if (params.trial_settings) s.trial_settings = params.trial_settings;
+        if (params.payment_settings) s.payment_settings = params.payment_settings;
+        return ok(res, s);
+      }
       if ((m = p.match(/^\/v1\/subscriptions\/([\w]+)$/))) {
         const s = st.subscriptions.get(m[1]); if (!s) return missing(res, 'subscription', m[1]);
         if ('cancel_at_period_end' in params) fake.update(s.id, { cancelAtPeriodEnd: params.cancel_at_period_end === 'true' });

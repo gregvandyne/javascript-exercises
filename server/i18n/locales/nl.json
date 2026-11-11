@@ -2970,11 +2970,14 @@
           "waiting": "(wacht op een vrije plaats)",
           "give": "Plaats geven",
           "take": "Terugnemen",
-          "full": "Alle plaatsen zijn gegeven. Voeg hierboven plaatsen toe om er meer te geven."
+          "full": "Alle plaatsen zijn gegeven. Voeg hierboven plaatsen toe om er meer te geven.",
+          "paid": "(betaalt al een eigen Leerkracht-abonnement)",
+          "paidConfirm": "Deze leerkracht betaalt al een eigen Leerkracht-abonnement. Toch een plaats geven? Daarna kan diegene het eigen abonnement opzeggen."
         },
         "seat": {
           "given": "Plaats gegeven.",
-          "taken": "Plaats teruggenomen."
+          "taken": "Plaats teruggenomen.",
+          "trialClosed": "Plaats gegeven. De gratis proefperiode is gesloten, zonder kosten."
         },
         "seatsDone": {
           "raised": "Klaar: {count, plural, one {# leerkracht} other {# leerkrachten}}.",
@@ -2989,7 +2992,8 @@
           "noSeat": "Die leerkracht heeft geen plaats.",
           "minSeats": "Typ een heel getal van 1 tot {max}.",
           "entitled": "Jullie school heeft al een abonnement. Wijzig in plaats daarvan het aantal leerkrachten.",
-          "trialUsed": "Jullie school heeft haar gratis proefperiode al gehad."
+          "trialUsed": "Jullie school heeft haar gratis proefperiode al gehad.",
+          "ownPaid": "Deze leerkracht betaalt al een eigen Leerkracht-abonnement. Bevestig eerst om een plaats te geven."
         }
       }
     },
@@ -4051,7 +4055,7 @@
       "start": {
         "h": "Start je gratis proefperiode van {days} dagen",
         "button": "Mijn gratis proefperiode starten",
-        "note": "Je bevestigt op de pagina van Stripe. Voor de proefperiode is geen kaart nodig."
+        "noteDirect": "Hij begint meteen. Voor de proefperiode is geen kaart nodig."
       },
       "signup": {
         "h": "Maak je leerkrachtaccount",
@@ -4081,7 +4085,8 @@
         "noPrice": "Het Leerkracht-abonnement is nu niet te koop. Probeer het later nog eens.",
         "paying": "Er is al een betaling onderweg. Wacht even een minuut.",
         "minSeats": "Typ een heel aantal leerkrachten van 1 tot {max}.",
-        "noCustomer": "Er is nog geen facturering om te beheren."
+        "noCustomer": "Er is nog geen facturering om te beheren.",
+        "askAdmin": "Je school heeft plaatsen in het Leerkracht-abonnement: vraag de schoolbeheerder om er een."
       },
       "thanks": {
         "wait": "⏳ Je Leerkracht-abonnement wordt gestart…",
@@ -4105,6 +4110,17 @@
         "getText": "Onbeperkt leerlingen en {daily} AI-bouwsels per dag voor je klassen.",
         "try": "{days} dagen gratis proberen"
       }
+    },
+    "auto": {
+      "started": "Je proefperiode van {days} dagen voor het Leerkracht-abonnement is begonnen. Geen kaart nodig.",
+      "covered": "Je school betaalt je Leerkracht-abonnement.",
+      "askAdmin": "Je school heeft plaatsen in het Leerkracht-abonnement: vraag de schoolbeheerder om er een.",
+      "emailLabel": "E-mail voor herinneringen over de proefperiode",
+      "emailHint": "Niet verplicht. We herinneren je hier voordat je proefperiode afloopt.",
+      "emailSave": "Mijn e-mail opslaan",
+      "emailSaved": "Opgeslagen. De herinneringen over je proefperiode gaan naar dit e-mailadres.",
+      "doneHeading": "Alles staat klaar",
+      "seatPaid": "Je school betaalt nu voor je. Je kunt je eigen abonnement opzeggen."
     }
   },
   "seo": {
@@ -7067,7 +7083,9 @@
       "sentBack": "‘{title}’ heeft een paar veranderingen nodig voordat iedereen het kan spelen.",
       "trialEnding": "De gratis proefperiode van je Leerkracht-abonnement eindigt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}}. Om het te houden, voeg je hier een kaart toe: {href} Zonder kaart stopt het abonnement gewoon en blijven je klassen.",
       "trialEnded": "De gratis proefperiode van je Leerkracht-abonnement is voorbij. Je klassen, leerlingen en hun spellen zijn er allemaal nog. Je kunt het abonnement hier weer nemen: {href}",
-      "trialConverted": "Bedankt! Je Leerkracht-abonnement staat een jaar aan."
+      "trialConverted": "Bedankt! Je Leerkracht-abonnement staat een jaar aan.",
+      "trialReplaced": "Je school betaalt nu je Leerkracht-abonnement, dus je gratis proefperiode is gesloten.",
+      "seatCoversPaid": "Je school betaalt nu je Leerkracht-abonnement. Je kunt je eigen abonnement opzeggen bij Facturering beheren: {href}"
     },
     "link": {
       "new": "{count, plural, one {# nieuw bericht van het Oomba-team} other {# nieuwe berichten van het Oomba-team}}",

@@ -587,12 +587,11 @@ test('i. the whole path: a teacher who signs up at /trial and finishes the check
   assert.equal(r.json.redirect, '/trial');
   let u = auth.getUserByName('PathTeach');
   q.run('UPDATE users SET billing_tester=1 WHERE id=?', u.id); u = auth.getUser(u.id);
+  assert.equal(E.addressOf(u.id), null, 'nothing is kept before the trial starts');
+  // "Start my free trial": the trial starts at once through Stripe's API (no Checkout page) and is synced.
   const start = await req(u, '/api/trial/start', { method: 'POST', body: { email: 'path.teach@school.example', trial: '1' } });
   assert.equal(start.status, 200, start.text);
-  assert.ok(start.json.redirect.startsWith(`${fake.url}/pay/cs_test_`), start.json.redirect);
-  assert.equal(E.addressOf(u.id), null, 'nothing is kept before the trial starts');
-  const paid = await fetch(start.json.redirect, { redirect: 'manual' });   // the (fake) Checkout: the trial starts, the webhook arrives
-  assert.equal(paid.status, 302, await paid.text());
+  assert.equal(start.json.redirect, '/teach?plan=welcome#teacher-plan');
   assert.deepEqual(E.addressOf(u.id), { email: 'path.teach@school.example', source: 'checkout' });
   await tick(); sent.length = 0;
   assert.deepEqual((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: 'PathTeach' } })).json, { ok: true, redirect: '/forgot?sent=1' });

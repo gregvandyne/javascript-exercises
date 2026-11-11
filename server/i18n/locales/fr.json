@@ -2969,11 +2969,14 @@
           "waiting": "(attend une place libre)",
           "give": "Attribuer une place",
           "take": "Reprendre",
-          "full": "Toutes les places sont attribuées. Ajoutez des places ci-dessus pour en attribuer d’autres."
+          "full": "Toutes les places sont attribuées. Ajoutez des places ci-dessus pour en attribuer d’autres.",
+          "paid": "(paie déjà sa propre formule Enseignant)",
+          "paidConfirm": "Cet enseignant paie déjà sa propre formule Enseignant. Lui attribuer une place quand même ? Il pourra ensuite résilier sa propre formule."
         },
         "seat": {
           "given": "Place attribuée.",
-          "taken": "Place reprise."
+          "taken": "Place reprise.",
+          "trialClosed": "Place attribuée. Son essai gratuit a été fermé, sans rien facturer."
         },
         "seatsDone": {
           "raised": "C’est fait : {count, plural, one {# enseignant} other {# enseignants}}.",
@@ -2988,7 +2991,8 @@
           "noSeat": "Cet enseignant n’a pas de place.",
           "minSeats": "Indiquez un nombre entier de 1 à {max}.",
           "entitled": "Votre école a déjà une formule. Changez plutôt le nombre d’enseignants.",
-          "trialUsed": "Votre école a déjà eu son essai gratuit."
+          "trialUsed": "Votre école a déjà eu son essai gratuit.",
+          "ownPaid": "Cet enseignant paie déjà sa propre formule Enseignant. Confirmez d’abord pour lui attribuer une place."
         }
       }
     },
@@ -4050,7 +4054,7 @@
       "start": {
         "h": "Commencez votre essai gratuit de {days} jours",
         "button": "Commencer mon essai gratuit",
-        "note": "Vous confirmez sur la page de Stripe. Aucune carte n’est demandée pour l’essai."
+        "noteDirect": "L’essai commence tout de suite. Aucune carte n’est demandée."
       },
       "signup": {
         "h": "Créez votre compte enseignant",
@@ -4080,7 +4084,8 @@
         "noPrice": "La formule Enseignant n’est pas en vente pour le moment. Réessayez plus tard.",
         "paying": "Un paiement est déjà en cours. Patientez une minute.",
         "minSeats": "Indiquez un nombre entier d’enseignants, de 1 à {max}.",
-        "noCustomer": "Il n’y a pas encore de facturation à gérer."
+        "noCustomer": "Il n’y a pas encore de facturation à gérer.",
+        "askAdmin": "Votre école a des places de formule Enseignant : demandez-en une à l’admin de l’école."
       },
       "thanks": {
         "wait": "⏳ Activation de votre formule Enseignant…",
@@ -4104,6 +4109,17 @@
         "getText": "Élèves illimités et {daily} créations IA par jour pour vos classes.",
         "try": "Essayer gratuitement pendant {days} jours"
       }
+    },
+    "auto": {
+      "started": "Votre essai de {days} jours de la formule Enseignant a commencé. Aucune carte n’est demandée.",
+      "covered": "Votre école prend en charge votre formule Enseignant.",
+      "askAdmin": "Votre école a des places de formule Enseignant : demandez-en une à l’admin de l’école.",
+      "emailLabel": "E-mail pour les rappels de l’essai",
+      "emailHint": "Facultatif. Nous vous prévenons ici avant la fin de l’essai.",
+      "emailSave": "Enregistrer mon e-mail",
+      "emailSaved": "Enregistré. Les rappels de l’essai iront à cet e-mail.",
+      "doneHeading": "Tout est prêt",
+      "seatPaid": "Votre école vous prend maintenant en charge. Vous pouvez résilier votre propre formule."
     }
   },
   "seo": {
@@ -7066,7 +7082,9 @@
       "sentBack": "« {title} » a besoin de quelques changements avant que tout le monde puisse y jouer.",
       "trialEnding": "L’essai gratuit de votre formule Enseignant se termine dans {days, plural, =0 {moins d’un jour} one {# jour} other {# jours}}. Pour la garder, ajoutez une carte ici : {href} Sans carte, la formule s’arrête simplement et vos classes restent.",
       "trialEnded": "L’essai gratuit de votre formule Enseignant est terminé. Vos classes, vos élèves et leurs jeux sont toujours là. Vous pouvez reprendre la formule ici : {href}",
-      "trialConverted": "Merci ! Votre formule Enseignant est active pour l’année."
+      "trialConverted": "Merci ! Votre formule Enseignant est active pour l’année.",
+      "trialReplaced": "Votre école prend maintenant en charge votre formule Enseignant : votre essai gratuit a donc été fermé.",
+      "seatCoversPaid": "Votre école prend maintenant en charge votre formule Enseignant. Vous pouvez résilier votre propre formule dans Gérer la facturation : {href}"
     },
     "link": {
       "new": "{count, plural, one {# nouveau message de l'équipe Oomba} other {# nouveaux messages de l'équipe Oomba}}",

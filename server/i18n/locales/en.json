@@ -2989,11 +2989,14 @@
           "waiting": "(waiting for a free seat)",
           "give": "Give a seat",
           "take": "Take back",
-          "full": "Every seat is given. Add seats above to give more."
+          "full": "Every seat is given. Add seats above to give more.",
+          "paid": "(already pays for their own Teacher plan)",
+          "paidConfirm": "This teacher already pays for their own Teacher plan. Give them a seat anyway? They can then cancel their own plan."
         },
         "seat": {
           "given": "Seat given.",
-          "taken": "Seat taken back."
+          "taken": "Seat taken back.",
+          "trialClosed": "Seat given. Their free trial was closed, with nothing charged."
         },
         "seatsDone": {
           "raised": "Done: {count, plural, one {# teacher} other {# teachers}}.",
@@ -3008,7 +3011,8 @@
           "noSeat": "That teacher has no seat.",
           "minSeats": "Type a whole number from 1 to {max}.",
           "entitled": "Your school already has a plan. Change the number of teachers instead.",
-          "trialUsed": "Your school has had its free trial."
+          "trialUsed": "Your school has had its free trial.",
+          "ownPaid": "This teacher already pays for their own Teacher plan. Confirm first to give them a seat."
         }
       }
     },
@@ -4079,7 +4083,7 @@
       "start": {
         "h": "Start your {days}-day free trial",
         "button": "Start my free trial",
-        "note": "You go to Stripe's page to confirm. No card is needed for the trial."
+        "noteDirect": "It starts right away. No card is needed for the trial."
       },
       "signup": {
         "h": "Create your teacher account",
@@ -4109,7 +4113,8 @@
         "noPrice": "The Teacher plan isn't on sale right now. Please try again later.",
         "paying": "A payment is already on its way. Please wait a minute.",
         "minSeats": "Type a whole number of teachers from 1 to {max}.",
-        "noCustomer": "There is no billing to manage yet."
+        "noCustomer": "There is no billing to manage yet.",
+        "askAdmin": "Your school has Teacher plan seats: ask your school admin for one."
       },
       "thanks": {
         "wait": "⏳ Starting your Teacher plan…",
@@ -4133,6 +4138,17 @@
         "getText": "Unlimited students and {daily} AI builds a day for your classes.",
         "try": "Try it free for {days} days"
       }
+    },
+    "auto": {
+      "started": "Your {days}-day Teacher plan trial has started. No card needed.",
+      "covered": "Your school covers your Teacher plan.",
+      "askAdmin": "Your school has Teacher plan seats: ask your school admin for one.",
+      "emailLabel": "Email for trial reminders",
+      "emailHint": "Optional. We remind you here before your trial ends.",
+      "emailSave": "Save my email",
+      "emailSaved": "Saved. Your trial reminders go to this email.",
+      "doneHeading": "You're all set",
+      "seatPaid": "Your school now covers you. You can cancel your own plan."
     }
   },
   "seo": {
@@ -7572,7 +7588,9 @@
       "sentBack": "“{title}” needs a few changes before everyone can play it.",
       "trialEnding": "Your Teacher plan's free trial ends in {days, plural, =0 {less than a day} one {# day} other {# days}}. To keep it, add a card here: {href} Without one, the plan simply stops and your classes stay.",
       "trialEnded": "Your Teacher plan's free trial has ended. Your classes, students and their games are all still here. You can get the plan again at {href}",
-      "trialConverted": "Thank you! Your Teacher plan is on for the year."
+      "trialConverted": "Thank you! Your Teacher plan is on for the year.",
+      "trialReplaced": "Your school now covers your Teacher plan, so your free trial was closed.",
+      "seatCoversPaid": "Your school now covers your Teacher plan. You can cancel your own plan in Manage billing: {href}"
     },
     "link": {
       "new": "{count, plural, one {# new message from the Oomba team} other {# new messages from the Oomba team}}",

@@ -8,9 +8,15 @@
 //   /signup/teacher              Sign up with Google, or a username and password (POST /api/onboarding/teacher)
 //   /signup/teacher/school       optional: create your school (you are its admin at once), join it (a school admin's
 //                                invite), or skip (your own classroom) (POST /api/onboarding/school)
-//   /signup/teacher/classes      required: one or more classes, each with a name and a grade (POST /api/onboarding/classes)
+//   /signup/teacher/classes      required: one or more classes, each with a name and a grade (POST /api/onboarding/classes).
+//                                The first class saved starts the teacher's own 14-day Teacher plan trial straight
+//                                through Stripe's API, no card (TP.autoStartTrial; docs/decisions.md "Automatic trial
+//                                at sign-up"), unless their school covers them or has a seat for them
 //   /signup/teacher/classroom    "Connect Google Classroom?" (the existing connect flow) or Skip, while Classroom is on
-//   /signup/teacher/done         on to the Teacher plan's trial (when the teacher came from /trial) or My classes
+//   /signup/teacher/done         one line about the Teacher plan ("Your 14-day Teacher plan trial has started", "Your
+//                                school covers your Teacher plan", "ask your school admin for a seat") and, with no
+//                                email on file, an optional "Email for trial reminders"; else straight on to My classes
+//                                (or the school's seat trial at /trial?seats=N)
 // A trial started at /trial (signed out) comes along as ?trial=1 (and ?seats=N for a school's seat trial).
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
@@ -29,6 +35,8 @@ import { siteHost } from '../site.js';
 import { googleNotice, signupToken } from './google.js';
 import { wantedNext, homeFor } from './auth.js';
 import { nextFor, chosenPlan, planName } from './family.js';
+import * as TP from '../services/teacher-plan.js';
+import { trialLineHtml } from '../views/trial-lines.js';
 
 export const router = Router();
 const b = req => req.body || {};
@@ -389,7 +397,7 @@ router.get('/signup/teacher/classes', (req, res) => {
 });
 /** { schoolId, name: [..], grade: [..] }: every row with something typed needs a name and a grade, and at least one
  *  class in all. The classes are made with the teacher as their teacher (services/schools.js createClass). */
-router.post('/api/onboarding/classes', rateLimit('class-new', 60, 3600e3), (req, res) => {
+router.post('/api/onboarding/classes', rateLimit('class-new', 60, 3600e3), async (req, res) => {
   const t = req.t, body = b(req), u = req.user;
   if (!teacherAccount(u) || !S.isSchoolStaff(u)) return res.status(404).json({ error: t('errors.api.notFound') });
   const tr = trialOf(body);
@@ -404,6 +412,9 @@ router.post('/api/onboarding/classes', rateLimit('class-new', 60, 3600e3), (req,
   if (rows.some(r => !GRADES.includes(r.grade))) return res.status(400).json({ error: t('onboard.classes.errors.grade'), field: 'grade' });
   const made = [];
   tx(() => { for (const r of rows) { const c = S.createClass(u, s.id, r); if (c.ok) made.push(c.class); } });
+  // The first class saved: the teacher's own free trial starts (not for a school's seat trial, ?seats=N, which /trial
+  // starts next). It never stops the sign-up: Stripe trouble is logged, and /trial or /plans offer it again.
+  if (made.length && !(tr && tr.seats) && F.familiesOn(req)) await TP.autoStartTrial(auth.getUser(u.id), { ip: ipOf(req) });
   res.json({ ok: true, toast: t('onboard.classes.made', { count: made.length }), redirect: `/signup/teacher/${GC.enabled() ? 'classroom' : 'done'}${carry(tr)}` });
 });
 
@@ -423,14 +434,33 @@ router.get('/signup/teacher/classroom', (req, res) => {
   screen(req, res, { title: t('onboard.classroom.heading'), back: `/signup/teacher/classes${carry(tr)}`, at: 4, total: 4, emoji: '🔗', heading: t('onboard.classroom.heading'), lead: t('onboard.classroom.lead'), body });
 });
 router.get('/signup/teacher/done', (req, res) => {
-  const u = teacherStep(req, res); if (!u) return;
+  const t = req.t, u = teacherStep(req, res); if (!u) return;
   const tr = trialOf(req.query);
   if (!S.isSchoolStaff(u)) return res.redirect(302, `/signup/teacher/school${carry(tr)}`);
   // The classes are required: a teacher who may make one and has none goes back to that step.
   if (S.classSchoolsFor(u).length && !S.classesOf(u.id, 'teacher').length) return res.redirect(302, `/signup/teacher/classes${carry(tr)}`);
-  if (tr && F.familiesOn(req)) return res.redirect(302, `/trial${tr.seats ? `?seats=${tr.seats}` : ''}`);
+  const plans = F.familiesOn(req);
+  if (tr && tr.seats && plans) return res.redirect(302, `/trial?seats=${tr.seats}`);
   // "{school} is ready ... we'll look over your school and email you a short guide": only when our team has its request.
-  res.redirect(302, S.adminSchools(u).some(s => SR.latestForSchool(s.id)) ? '/teach?welcome=school' : '/teach');
+  const next = S.adminSchools(u).some(s => SR.latestForSchool(s.id)) ? '/teach?welcome=school' : '/teach';
+  // One line about the Teacher plan: the trial started at the classes step, or the school covers them / has a seat.
+  const line = plans ? TP.trialLine(u.id) : null;
+  if (!line) return res.redirect(302, tr && plans ? '/trial' : next);
+  const own = line.state === 'started';
+  const withPlan = `${next}${next.includes('?') ? '&' : '?'}plan=started#teacher-plan`;
+  const go = own ? withPlan : next;
+  // No email yet (a password sign-up): an optional one for the trial reminders; the in-app notices come either way.
+  const ask = own && !(addressOf(u.id) || {}).email;
+  const body = html`${trialLineHtml(t, line)}
+    ${ask ? html`<form data-api="/api/trial/email" novalidate>
+        <div class="field"><label for="ob-temail">${t('plans.auto.emailLabel')}</label>
+          <input class="input" id="ob-temail" name="email" type="email" dir="ltr" maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="ob-temail-hint">
+          <span class="hint" id="ob-temail-hint">${t('plans.auto.emailHint')}</span>${errSpan('ob-temail')}</div>
+        ${formErr}
+        <button class="btn btn-primary btn-block" type="submit">${t('plans.auto.emailSave')}</button></form>
+      <p class="ob-skip"><a class="btn btn-block" href="${go}" id="ob-done-go">${t('onboard.classroom.skip')}</a></p>`
+      : html`<p><a class="btn btn-primary btn-block btn-big" href="${go}" id="ob-done-go">${t('plans.trial.thanks.back')}</a></p>`}`;
+  screen(req, res, { title: t('plans.auto.doneHeading'), emoji: '🎉', heading: t('plans.auto.doneHeading'), body });
 });
 
 export { GROWNUP_NEXT };
