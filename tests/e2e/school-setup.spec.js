@@ -75,7 +75,7 @@ test('"Your name" on the Me page: a teacher changes the name colleagues and stud
   const box = p.locator('#your-name');
   await expect(box).toBeVisible();
   const before = await p.locator('#yn-name').inputValue();
-  await expect(box).toContainText('DemoTeacher');
+  await expect(p.locator('#yu-name')).toHaveValue('DemoTeacher');
   try {
     await p.fill('#yn-name', 'Roxana2');
     await box.locator('button[type=submit]').click();
