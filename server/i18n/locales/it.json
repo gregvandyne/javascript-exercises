@@ -7575,6 +7575,7 @@
     }
   },
   "standards": {
+    "more": "+{count} altri",
     "fw": {
       "csta": "Informatica (CSTA)",
       "math": "Common Core Matematica",

@@ -7574,6 +7574,7 @@
     }
   },
   "standards": {
+    "more": "另外 {count} 個",
     "fw": {
       "csta": "電腦科學（CSTA）",
       "math": "Common Core 數學",

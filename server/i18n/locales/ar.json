@@ -7575,6 +7575,7 @@
     }
   },
   "standards": {
+    "more": "+{count} أخرى",
     "fw": {
       "csta": "علوم الحاسوب (CSTA)",
       "math": "Common Core للرياضيات",

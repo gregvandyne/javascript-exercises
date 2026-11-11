@@ -7982,6 +7982,7 @@
     }
   },
   "standards": {
+    "more": "+{count} more",
     "fw": {
       "csta": "Computer science (CSTA)",
       "math": "Common Core Math",
