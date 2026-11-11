@@ -7574,6 +7574,7 @@
     }
   },
   "standards": {
+    "more": "ещё {count}",
     "fw": {
       "csta": "Информатика (CSTA)",
       "math": "Common Core: математика",

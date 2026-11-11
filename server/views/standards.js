@@ -23,10 +23,14 @@ export function frameworkPicker(req, c, current) {
   return html`<nav class="chips std-fw noprint" aria-label="${t('standards.picker')}">${FW.IDS.map(id => html`<a class="chip${id === current ? ' on' : ''}" href="${href(id)}"${id === current ? html` aria-current="page"` : ''}>${fwName(t, id)}</a>`)}</nav>`;
 }
 
-/** A row of code chips ("3.OA.C.7"), statements as tooltips. */
-export function codeChips(t, framework, codes, { label = null } = {}) {
+/** A row of code chips ("3.OA.C.7"), statements as tooltips. fold: show only the first `fold` codes and put the rest
+ *  behind a "+N more" toggle (Learn's game cards, where a levelled game can list a dozen codes or more). */
+export function codeChips(t, framework, codes, { label = null, fold = 0 } = {}) {
   const fw = FW.CCSS[framework]; if (!fw || !codes.length) return '';
-  return html`<ul class="std-codes" aria-label="${label || fwName(t, framework)}">${codes.map(c => { const s = fw.byId(c); return html`<li><span class="std-code" lang="en" dir="ltr" title="${s ? s.statement : ''}">${c}</span></li>`; })}</ul>`;
+  const chip = c => { const s = fw.byId(c); return html`<li><span class="std-code" lang="en" dir="ltr" title="${s ? s.statement : ''}">${c}</span></li>`; };
+  const name = label || fwName(t, framework);
+  if (!fold || codes.length <= fold + 1) return html`<ul class="std-codes" aria-label="${name}">${codes.map(chip)}</ul>`;
+  return html`<details class="std-fold"><summary><ul class="std-codes" aria-label="${name}">${codes.slice(0, fold).map(chip)}<li><span class="std-more">${t('standards.more', { count: codes.length - fold })}</span></li></ul></summary><ul class="std-codes std-rest">${codes.slice(fold).map(chip)}</ul></details>`;
 }
 
 const groupBy = (rows, key) => { const m = new Map(); for (const r of rows) { const k = key(r); if (!m.has(k)) m.set(k, []); m.get(k).push(r); } return [...m]; };

@@ -7576,6 +7576,7 @@
     }
   },
   "standards": {
+    "more": "+{count} נוספים",
     "fw": {
       "csta": "מדעי המחשב (CSTA)",
       "math": "Common Core מתמטיקה",

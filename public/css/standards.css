@@ -33,6 +33,12 @@
 .std-codes>li{margin:0}
 .std-code{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card-2);font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .std-stepcodes{margin:var(--s2) 0}
+/* folded code rows (Learn's game cards): the first codes, then "+N more" opens the rest */
+.std-fold>summary{list-style:none;cursor:pointer}
+.std-fold>summary::-webkit-details-marker{display:none}
+.std-more{display:inline-block;padding:2px 8px;border-radius:999px;border:1px dashed var(--line);font-size:.8rem;font-weight:700;color:var(--link);white-space:nowrap}
+.std-fold[open] .std-more{display:none}
+.std-fold>summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:8px}
 @media (max-width:600px){
   .std-tag,.std-result{flex-direction:column;align-items:stretch}
   .std-tag form,.std-result form{align-self:flex-start}

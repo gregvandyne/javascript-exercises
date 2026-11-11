@@ -7574,6 +7574,7 @@
     }
   },
   "standards": {
+    "more": "他 {count} 件",
     "fw": {
       "csta": "コンピュータサイエンス（CSTA）",
       "math": "Common Core 算数・数学",

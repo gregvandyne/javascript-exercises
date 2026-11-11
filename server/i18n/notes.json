@@ -1,4 +1,5 @@
 {
+  "standards.more": "Toggle after the first few standards codes on a game card; {count} is how many more codes it opens.",
   "_about": "Translator notes: dotted key -> what the string is for, length limits, what the {placeholders} are. Keys not listed here are plain sentences for kids aged 6 to 12.",
   "layout.titleHome": "Browser tab title of the home page and the title search engines show for it, max ~60 chars. Lead with what the site is (fun learning games for kids). Keep \"Oomba Academy\" as is: the brand stays in Latin letters, untranslated.",
   "layout.titleWith": "Browser tab title of every other page. {title} is the page name, e.g. a game title. Keep \"Oomba Academy\" as is: the brand stays in Latin letters, untranslated.",
