@@ -11,6 +11,8 @@ test('change password on a phone: stay signed in here, other devices are signed 
   const { username, password } = await signup(phone);
   const laptop = await (await browser.newContext()).newPage();
   await login(laptop, username, password);
+  // Nothing open on the laptop meanwhile (an open page's background calls would use up the "signed out" notice).
+  await laptop.goto('about:blank');
 
   // An old /me#password link goes on to Settings (public/js/app.js).
   await phone.goto('/me#password');

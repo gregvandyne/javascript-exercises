@@ -204,16 +204,16 @@ test('invoice: the school asks, the owner clicks Create invoice subscription, th
 
 // ---------------------------------------------------------------- "Ask my admin" (navigation weeks 3–4)
 let askStates = null;   // the asked school's admin and teacher, for the layout check below
-test('"Ask my admin": a teacher asks on their Me page; the admin sees who asked on My school and the Billing tab (no prices), and dismisses it', async ({ browser }) => {
+test('"Ask my admin": a teacher asks in Settings; the admin sees who asked on My school and the Billing tab (no prices), and dismisses it', async ({ browser }) => {
   const a = await admin(browser);
   const head = await person(browser), teach = await person(browser);
   const { username: headName } = await signup(head, uniq('Head'), 'head-pass-123');
   const { username: teachName } = await signup(teach, uniq('Teach'), 'teach-pass-123');
   const school = await schoolWithAdmin(a, headName, { teacher: teachName });
   await makeTester(browser, headName);
-  // The teacher: Classroom · Learn · Play · Live · Plans · Me, and the panel in the Me page's account section.
+  // The teacher: Classroom · Learn · Play · Live · Plans · Me, and the panel in Settings (/me/settings).
   await teach.setViewportSize({ width: 360, height: 780 });
-  await teach.goto('/me');
+  await teach.goto('/me/settings');
   expect(await teach.locator('.tabbar .tab').evaluateAll(l => l.map(x => x.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/plans', '/me']);
   const panel = teach.locator('section.askplan');
   await expect(panel).toContainText("Your school doesn't have a School plan.");
@@ -259,7 +259,7 @@ test('the Billing tab and /admin/billing: nothing touches, no sideways scroll (3
     [await asked.page.context().storageState(), [`/school/${asked.slug}?tab=billing`]],
     [await boss.context().storageState(), [`/school/${DEMO_SLUG}?tab=billing`, `/school/${DEMO_SLUG}?tab=billing&checkout=cs_test_layoutcheck123`]],
     [await (await admin(browser)).context().storageState(), ['/admin/billing']],
-    ...(askStates ? [[askStates[0], ['/me']], [askStates[1], ['/me']]] : []),
+    ...(askStates ? [[askStates[0], ['/me']], [askStates[1], ['/me/settings']]] : []),
   ];
   const problems = [];
   for (const v of VIEWS) {
