@@ -51,12 +51,19 @@ export function mayReset(u) {
 }
 /** A link's token for an account, and the account a token is still good for (null: expired, changed, used, or not ours). */
 export const resetToken = u => auth.signToken({ k: KIND, u: u.id, f: fingerprint(u) }, RESET_MINUTES * 60);
-export function readResetToken(tok) {
+// "Choose your password" in the welcome a new school's admin gets (routes/schools.js setUpSchool): the same single-use
+// link, good for WELCOME_DAYS instead of minutes, so the first password is never written in an email.
+export const WELCOME_DAYS = 7;
+const WELCOME_KIND = 'pwwelcome';
+export const welcomeToken = u => auth.signToken({ k: WELCOME_KIND, u: u.id, f: fingerprint(u) }, WELCOME_DAYS * 86400);
+/** The account a link is still good for, or null. { welcome: true } when it is a welcome link. */
+export function readLink(tok) {
   const p = typeof tok === 'string' && tok.length <= 600 ? auth.readToken(tok) : null;
-  if (!p || p.k !== KIND || typeof p.u !== 'string') return null;
+  if (!p || (p.k !== KIND && p.k !== WELCOME_KIND) || typeof p.u !== 'string') return null;
   const u = auth.getUser(p.u);
-  return u && mayReset(u) && p.f === fingerprint(u) ? u : null;
+  return u && mayReset(u) && p.f === fingerprint(u) ? { u, welcome: p.k === WELCOME_KIND } : null;
 }
+export function readResetToken(tok) { const r = readLink(tok); return r ? r.u : null; }
 
 /** The email: plain words, one button, in the language of the page that asked. */
 export function resetEmail(t, { username, url }) {
@@ -135,14 +142,15 @@ router.post('/api/auth/forgot', async (req, res) => {
 
 router.get('/reset', (req, res) => {
   const t = req.t, tok = typeof req.query.t === 'string' ? req.query.t : '';
-  const u = readResetToken(tok);
-  const top = html`<div class="center" style="font-size:3rem" aria-hidden="true">🔑</div><h1 class="center">${t('auth.reset.newTitle')}</h1>`;
+  const link = readLink(tok), u = link && link.u, welcome = !!(link && link.welcome);
+  const title = welcome ? t('auth.reset.welcomeTitle') : t('auth.reset.newTitle');
+  const top = html`<div class="center" style="font-size:3rem" aria-hidden="true">${welcome ? '👋' : '🔑'}</div><h1 class="center">${title}</h1>`;
   if (!u) {
     return box(req, res, t('auth.reset.newTitle'), html`${top}<p class="notice warn" role="status" id="reset-bad">${t('auth.reset.bad', { minutes: RESET_MINUTES })}</p>
       <p class="center" style="margin-bottom:0"><a class="btn btn-primary btn-block" href="/forgot">${t('auth.reset.again')}</a></p>`, 400);
   }
   const min = auth.STAFF_PASSWORD_MIN;
-  box(req, res, t('auth.reset.newTitle'), html`${top}<p class="muted center">${tHtml(t, 'auth.reset.forAccount', { username: html`<b dir="ltr">${u.username}</b>` })}</p>
+  box(req, res, title, html`${top}<p class="muted center">${tHtml(t, welcome ? 'auth.reset.welcomeFor' : 'auth.reset.forAccount', { username: html`<b dir="ltr">${u.username}</b>` })}</p>
     <form data-api="/api/auth/reset" novalidate><input type="hidden" name="token" value="${tok}">
       <input type="text" name="username" value="${u.username}" autocomplete="username" hidden>
       <div class="field"><label for="rs-password">${t('auth.reset.newLabel')}</label>
@@ -159,7 +167,7 @@ router.post('/api/auth/reset', (req, res) => {
   const t = req.t, ip = ipOf(req), b = req.body || {};
   headers(res);
   if (!allow(`pw-reset:${ip}`, 20, 3600e3)) return res.status(429).json({ error: t('errors.api.slowDown') });
-  const u = readResetToken(b.token);
+  const link = readLink(b.token), u = link && link.u;
   if (!u) return res.status(400).json({ error: t('auth.reset.bad', { minutes: RESET_MINUTES }), code: 'badLink' });
   const pw = String(b.password ?? '');
   const pe = pw.length < auth.STAFF_PASSWORD_MIN ? t('auth.reset.newHint', { min: auth.STAFF_PASSWORD_MIN }) : auth.checkPassword(pw, u.username, t);
@@ -167,11 +175,14 @@ router.post('/api/auth/reset', (req, res) => {
   // The new hash retires this link and every other one; every session of the account ends (this browser's too).
   auth.setPassword(u.id, pw, { signOutEverywhere: true });
   clear(loginLockKey(u.username));
-  audit(u.id, 'user.password_reset', u.id, { ip, via: 'email' });
+  audit(u.id, 'user.password_reset', u.id, { ip, via: link.welcome ? 'welcome' : 'email' });
   // Tell the account's owner (not awaited; its own email_log row). No link in it: nothing to click in a "was this you?".
-  const m = resetDoneEmail(t, { username: u.username });
-  E.send({ userId: u.id, template: 'password_changed', category: 'transactional', subject: m.subject, html: m.html, text: m.text, idemKey: `pwdone-${u.id}-${uid(10)}` })
-    .catch(e => log('warn', 'password changed email failed', { user: u.id, error: String(e && e.message).slice(0, 120) }));
+  // Not after a welcome link: they are choosing their first password, not changing one.
+  if (!link.welcome) {
+    const m = resetDoneEmail(t, { username: u.username });
+    E.send({ userId: u.id, template: 'password_changed', category: 'transactional', subject: m.subject, html: m.html, text: m.text, idemKey: `pwdone-${u.id}-${uid(10)}` })
+      .catch(e => log('warn', 'password changed email failed', { user: u.id, error: String(e && e.message).slice(0, 120) }));
+  }
   if (req.user) auth.endSession(req, res);
-  res.json({ ok: true, redirect: '/login?reset=1' });
+  res.json({ ok: true, redirect: link.welcome ? `/login?welcome=1&u=${encodeURIComponent(u.username)}` : '/login?reset=1' });
 });

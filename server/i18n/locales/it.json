@@ -220,7 +220,10 @@
         "doneSubject": "La tua password di Oomba Academy è stata cambiata",
         "doneIntro": "La password dell'account {username} di Oomba Academy è appena stata cambiata con un link di reimpostazione inviato a questo indirizzo.",
         "doneNotYou": "Se non sei stato tu, scrivi subito a {email}."
-      }
+      },
+      "welcomeTitle": "Scegli la tua password",
+      "welcomeFor": "Benvenuto su Oomba Academy. Scegli una password per l'account {username}.",
+      "welcomeDone": "La password è impostata. Accedi subito."
     }
   },
   "me": {
@@ -8107,6 +8110,33 @@
       "namesHint": "Un nome per riga. Bastano i nomi di battesimo.",
       "go": "Crea la classe e le schede di accesso",
       "note": "Solo tu e il personale della tua scuola vedete i nomi che scrivi qui."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} è pronta su Oomba Academy",
+      "hi": "Ciao {name},",
+      "hiNoName": "Ciao,",
+      "intro": "Grazie per averci chiesto di configurare {school}. È pronta, e tu sei l'amministratore della scuola.",
+      "signInH": "Accedi",
+      "newAccount": "Abbiamo creato per te un account scolastico. Scegli la password con il pulsante qui sotto, poi accedi con il tuo nome utente.",
+      "setExpires": "Il link funziona una sola volta, per {days} giorni. Se scade, usa «Password dimenticata?» nella pagina di accesso.",
+      "ownAccount": "Accedi con il tuo solito account Oomba Academy. La tua scuola si trova nella pagina La mia classe.",
+      "usernameLabel": "Nome utente:",
+      "setButton": "Scegli la mia password",
+      "signInButton": "Accedi",
+      "firstH": "I tuoi primi 10 minuti",
+      "firstText": "La pagina della tua scuola ha una breve lista di passi. Seguila in ordine:",
+      "step1": "Aggiungi i tuoi insegnanti nella scheda Persone, con il loro nome reale. Ognuno riceve un account scolastico e una tessera di accesso da stampare o consegnare.",
+      "step2": "Crea le classi e assegna a ciascuna il suo insegnante.",
+      "step3": "Aggiungi gli studenti: incolla i nomi, uno per riga. Ognuno riceve una tessera di accesso da stampare.",
+      "step4": "Controlla le regole della scuola nella scheda Impostazioni. La chat tra studenti è disattivata, a meno che tu non la attivi.",
+      "teachersH": "Come iniziano i tuoi insegnanti",
+      "teachersText": "Gli insegnanti accedono e arrivano alla pagina La mia classe. Il primo successo più veloce è un gioco dal vivo: toccano «Conduci un gioco dal vivo», mostrano il codice alla lavagna e la classe entra da qualsiasi dispositivo. Possono anche trasformare una lezione che già insegnano in un quiz con «Trasforma una lezione in un gioco».",
+      "google": "Se la tua scuola usa Google Classroom, gli insegnanti possono collegarlo dalla pagina della classe per importare gli elenchi degli studenti e rimandare i voti.",
+      "help": "Domande? Rispondi pure a questa email. Ti risponde una persona vera, di solito entro un giorno di scuola.",
+      "bye": "Benvenuto a bordo,",
+      "signature": "Il team di Oomba Academy"
     }
   }
 }

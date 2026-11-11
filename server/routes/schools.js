@@ -13,6 +13,11 @@ import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.j
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
+import { sendSchoolWelcome, schoolWelcomeEmail } from '../services/school-welcome.js';
+import { welcomeToken, WELCOME_DAYS } from './password-reset.js';
+import { siteBase, maskEmail, normEmail, sendingOn, addressOf } from '../services/email.js';
+import { tFor, LOCALES, CODES } from '../i18n/index.js';
+import { audit } from '../db.js';
 import { teacherLessonsPanel, studentLessonsPanel, dueChip } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
@@ -101,6 +106,8 @@ const sameNamesError = (req, s, matches) => req.t('school.errors.sameName', { co
 
 // ================================================================ platform admin: Schools
 router.get('/admin/schools', requireAdmin, (req, res) => {
+  // An older "Create school" link from a request: the one setup page now does the school, its admin and the welcome.
+  if (req.query.request) return res.redirect(302, `/admin/schools/setup?request=${encodeURIComponent(String(req.query.request))}`);
   const list = S.listSchools(); const admins = S.schoolAdminNames();
   // ?request=<id>: "Create school" from a "Set up my school" request (/admin?tab=schoolreq). The name is filled in, and
   // adding the school marks the request done.
@@ -120,7 +127,7 @@ router.get('/admin/schools', requireAdmin, (req, res) => {
   </section>
   ${list.length ? html`<div class="panel tblwrap"><table class="tbl rtable"><thead><tr><th>School</th><th>School admin</th><th>Classes</th><th>Students</th><th>Added</th></tr></thead><tbody>
     ${list.map(s => html`<tr><td><a href="/school/${s.slug}"><b>${s.name}</b></a>${s.archived_at ? html` <span class="chip-s">archived</span>` : ''}</td>
-      <td data-label="School admin">${admins[s.id] || html`<a class="chip-s warn" href="/school/${s.slug}?tab=people">⚠️ None yet</a>`}</td>
+      <td data-label="School admin">${admins[s.id] || html`<a class="chip-s warn" href="/school/${s.slug}?tab=people">⚠️ None yet</a>`} <a class="btn btn-sm" href="/admin/schools/setup?school=${s.id}">✉️ ${admins[s.id] ? 'Welcome email' : 'Set up admin'}</a></td>
       <td data-label="Classes">${s.classes}</td><td data-label="Students">${s.students}</td><td data-label="Added">${new Date(s.created_at).toISOString().slice(0, 10)}</td></tr>`)}
   </tbody></table></div>` : emptyState({ emoji: '🏫', title: 'No schools yet', text: 'Add the first school above, then appoint its school admin on its People tab.' })}`;
   page(req, res, { title: 'Schools', active: S.isSchoolStaff(req.user) ? 'me' : 'schools', body, bodyClass: ADMIN_BODY, head: html`${CSS}${ADMIN_CSS}`, back: '/admin', backLabel: 'Admin' });
@@ -132,6 +139,121 @@ router.post('/api/admin/schools', requireAdmin, (req, res) => {
   if (b(req).request) SR.close(req.user, String(b(req).request), 'done', { schoolId: r.school.id });
   // The first job for a new school is appointing its school admin (the request's sender's name filled in).
   res.json({ ok: true, redirect: `/school/${r.school.slug}?tab=people&new=1${b(req).request ? `&from=${encodeURIComponent(String(b(req).request))}` : ''}` });
+});
+
+// ---- Set up a school from a request (docs/decisions.md "Setting up a school from a request")
+// One page does what used to be three steps (create the school, appoint its admin on the People tab, email them by
+// hand): the school (new, or one that exists), its admin (a new school account, their own Oomba account, or one of the
+// school's admins already), and the welcome email to the address on the request, in its language. A new school account
+// gets a link to choose its own password: no password is written in the email, and there is nothing to hand over.
+// Also used later from the Schools list ("Welcome email") to send it again.
+const setupLangs = () => LOCALES.filter(l => CODES.includes(l.code));
+function setupContext(q0) {
+  const r = q0.request ? SR.getRequest(String(q0.request)) : null;
+  const school = q0.school ? S.getSchool(String(q0.school)) : r && r.school_id ? S.getSchool(r.school_id) : null;
+  // The newest request linked to an existing school gives its email and language.
+  const req2 = r || (school ? SR.latestForSchool(school.id) : null);
+  return { r: req2, school };
+}
+router.get('/admin/schools/setup', requireAdmin, (req, res) => {
+  const { r, school } = setupContext(req.query);
+  if (req.query.request && !r) return notFound(req, res, 'That request is gone (requests are deleted a year after they close).');
+  const admins = school ? S.members(school.id, 'admin') : [];
+  const lang = r && CODES.includes(r.locale) ? r.locale : 'en';
+  const email = r ? r.email : '';
+  const name = r ? r.contact_name || '' : '';
+  const sending = sendingOn();
+  const opt = (v, label, on) => html`<label><input type="radio" name="account" value="${v}" ${on ? raw('checked') : ''}> ${label}</label>`;
+  const body = html`
+  <div class="pagehead"><h1>🏫 ${school ? `Welcome email: ${school.name}` : 'Set up a school'}</h1></div>
+  ${r ? html`<section class="panel"><p style="margin:0"><b>${r.school_name}</b></p><p class="small muted" style="margin:4px 0 0">${r.contact_name ? html`${r.contact_name} · ` : ''}<span dir="ltr">${r.email}</span> · ${r.country} · about ${r.students} students · sent ${new Date(r.created_at).toISOString().slice(0, 10)}${r.status !== 'open' ? html` · <span class="chip-s">${r.status}</span>` : ''}</p></section>` : ''}
+  ${sending ? '' : html`<p class="notice warn" id="setup-email-off">⚠️ Email sending is off (RESEND_API_KEY or EMAIL_ENABLED), so the welcome can't go out. Everything else still works, and you get a login card to send yourself.</p>`}
+  <section class="panel">
+    <form class="stack" data-api="/api/admin/schools/setup" novalidate id="setup-form">
+      ${r ? html`<input type="hidden" name="request" value="${r.id}">` : ''}
+      ${school ? html`<input type="hidden" name="schoolId" value="${school.id}"><p style="margin:0">School: <a href="/school/${school.slug}"><b>${school.name}</b></a></p>`
+        : html`<div class="field"><label for="su-school">1. School name</label><input class="input" id="su-school" name="name" maxlength="80" required value="${r ? r.school_name.slice(0, 80) : ''}"><span class="err" id="su-school-err"></span></div>`}
+      <fieldset class="field choice"><legend>${school ? '1' : '2'}. Their school admin account</legend>
+        ${admins.length ? opt('current', 'One of this school\'s admins (below)', true) : ''}
+        ${opt('new', 'Make a new school account for them (recommended: they choose its password from the email)', !admins.length)}
+        ${opt('existing', 'They already have an Oomba account (type its username)', false)}
+      </fieldset>
+      ${admins.length ? html`<div class="field" data-when="current"><label for="su-admin">School admin</label><select class="input" id="su-admin" name="adminId">${admins.map(a => html`<option value="${a.id}">${a.roster_name || a.display_name} (@${a.username})</option>`)}</select></div>` : ''}
+      <div class="field" data-when="existing"><label for="su-user">Their username</label><input class="input" id="su-user" name="username" maxlength="16" dir="ltr" autocomplete="off"><span class="err" id="su-user-err"></span></div>
+      <div class="field" data-when="new existing"><label for="su-name">Their real name (as staff and students know them)</label><input class="input" id="su-name" name="rosterName" maxlength="60" value="${name}"><span class="err" id="su-name-err"></span></div>
+      <div class="field"><label for="su-email">${school ? '2' : '3'}. Send the welcome to</label><input class="input" id="su-email" name="email" type="email" dir="ltr" maxlength="254" required value="${email}"><span class="err" id="su-email-err"></span></div>
+      <div class="field"><label for="su-lang">Email language</label><select class="input" id="su-lang" name="lang">${setupLangs().map(l => html`<option value="${l.code}" ${l.code === lang ? raw('selected') : ''}>${l.name}</option>`)}</select></div>
+      <p class="small muted">What happens: ${school ? '' : 'the school is made, '}their admin account is made or chosen, ${r && r.status === 'open' ? 'the request is marked done, ' : ''}and they get an email with how to sign in (a link to choose their password if the account is new), the school's setup checklist and how teachers start. Replies come to you. <a href="/admin/schools/setup/preview?in=${lang}" target="_blank" rel="noopener" id="su-preview">Preview the email</a></p>
+      <p class="err form-err" aria-live="polite"></p>
+      <button class="btn btn-primary" type="submit">${school ? '✉️ Send the welcome email' : '🏫 Set up and send the welcome'}</button>
+    </form>
+  </section>`;
+  page(req, res, { title: 'Set up a school', active: 'schools', body, bodyClass: ADMIN_BODY, head: html`${CSS}${ADMIN_CSS}`, back: '/admin?tab=schoolreq', backLabel: 'School requests', scripts: ['/js/admin-school-setup.js'] });
+});
+/** The email as it will look (sample names), in a language. */
+router.get('/admin/schools/setup/preview', requireAdmin, (req, res) => {
+  const t = tFor(CODES.includes(req.query.in) ? req.query.in : 'en');
+  const m = schoolWelcomeEmail(t, { name: 'Alex Rivera', school: 'Sample Elementary', username: 'SchoolAdmin42', setUrl: `${siteBase()}/reset?t=sample`, schoolUrl: `${siteBase()}/school/sample-elementary`, loginUrl: `${siteBase()}/login`, days: WELCOME_DAYS });
+  res.set({ 'Cache-Control': 'no-store', 'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'" });
+  res.type('html').send(m.html.replace('<body', `<body data-subject="${m.subject.replace(/"/g, '&quot;')}"`).replace(/(<body[^>]*>)/, `$1<p style="font:14px system-ui;color:#555;border-bottom:1px solid #ddd;padding-bottom:8px">Subject: <b>${m.subject.replace(/</g, '&lt;')}</b></p>`));
+});
+router.post('/api/admin/schools/setup', requireAdmin, rateLimit('school-setup', 60, 3600e3), async (req, res) => {
+  const x = b(req);
+  const r = x.request ? SR.getRequest(String(x.request)) : null;
+  if (x.request && !r) return res.status(404).json({ error: 'That request is gone.' });
+  const email = normEmail(x.email);
+  if (!email) return fieldErr(res, 'email', 'Type the email address the welcome goes to.');
+  const account = ['new', 'existing', 'current'].includes(x.account) ? x.account : 'new';
+  const rosterName = String(x.rosterName || '').trim();
+  if (account !== 'current' && !rosterName) return fieldErr(res, 'rosterName', 'Type their real name.');
+  let user = null;
+  // Check the admin's account before anything is made, so a typo never leaves a school with nobody in charge.
+  if (account === 'existing') {
+    const u = getUserByName(String(x.username || '').trim());
+    if (!u || u.is_guest || u.banned) return fieldErr(res, 'username', 'No account has that username.');
+    if (u.account_type === 'grownup') return fieldErr(res, 'username', 'That is a family (parent) account: family accounts never join a school. Make a new school account for them instead.');
+    if (accountKind(u) === 'student' || (u.managed_school && x.schoolId && u.managed_school !== String(x.schoolId))) return fieldErr(res, 'username', 'That is another school\'s account.');
+    user = u;
+  }
+  let school = x.schoolId ? S.getSchool(String(x.schoolId)) : null;
+  if (x.schoolId && !school) return res.status(404).json({ error: 'That school is gone.' });
+  if (account === 'current') {
+    if (!school) return res.status(400).json({ error: 'Choose a school first.' });
+    const m = S.membership(school.id, String(x.adminId || ''));
+    if (!m || m.role !== 'admin') return fieldErr(res, 'adminId', 'Choose one of the school\'s admins.');
+    user = getUserByName(S.members(school.id, 'admin').find(a => a.id === m.user_id).username);
+  }
+  if (!school) {
+    const made = S.createSchool(req.user, { name: x.name });
+    if (!made.ok) return fieldErr(res, 'name', req.t(`school.errors.${made.code}`));
+    school = made.school;
+  }
+  let cardKey = null;
+  if (account === 'new') {
+    const made = S.createSchoolAccount(req.user, school.id, { rosterName, role: 'admin' });
+    if (!made.ok) return err(req, res, made.code);
+    user = made.user;
+    // Kept for a day in case the email can't go: the platform admin can print it and send it themselves.
+    cardKey = keepCards(req.user, [card(made, 'admin')], { schoolId: school.id });
+  } else if (account === 'existing') {
+    const m = S.membership(school.id, user.id);
+    if (!m || m.role !== 'admin') { const added = S.addMember(req.user, school.id, user.id, 'admin', { rosterName }); if (!added.ok) return err(req, res, added.code); }
+  }
+  if (r) { if (r.status === 'open') SR.close(req.user, r.id, 'done', { schoolId: school.id }); else SR.linkSchool(r.id, school.id); }
+  // The link to choose a password: only for an account the school made (its first password nobody else should hold).
+  const fresh = S.getSchool(school.id), u = getUserByName(user.username);
+  const t = tFor(CODES.includes(x.lang) ? x.lang : r && CODES.includes(r.locale) ? r.locale : 'en');
+  const setUrl = u.managed_school === fresh.id ? `${siteBase()}/reset?t=${encodeURIComponent(welcomeToken(u))}` : null;
+  const name = rosterName || (S.membership(fresh.id, u.id) || {}).roster_name || '';
+  let sent;
+  try { sent = await sendSchoolWelcome(t, { user: u, email, name, school: fresh.name, setUrl, schoolUrl: `${siteBase()}/school/${fresh.slug}`, loginUrl: `${siteBase()}/login`, days: WELCOME_DAYS }); }
+  catch { sent = { status: 'failed', reason: 'error' }; }
+  // Ids and the outcome only: the address stays in email_prefs and email_log.
+  audit(req.user.id, 'school.welcome_email', fresh.id, { user: u.id, status: sent.status, account });
+  const qs = new URLSearchParams({ tab: 'people', welcome: sent.status === 'sent' ? 'sent' : 'notsent', to: maskEmail(email) });
+  if (sent.status !== 'sent' && sent.reason) qs.set('why', String(sent.reason).slice(0, 60));
+  if (sent.status !== 'sent' && cardKey) qs.set('card', cardKey);
+  res.json({ ok: true, redirect: `/school/${fresh.slug}?${qs}` });
 });
 
 // ================================================================ the school page (school admins)
@@ -317,6 +439,8 @@ function schoolPeople(req, s) {
   const table = (rows, second, empty, id) => rows.length ? html`<div class="panel tblwrap"><table class="tbl rtable people" id="${id}"><thead><tr><th>${t('school.people.name')}</th><th>${second}</th><th>${t('school.class.classes')}</th><th><span class="sr-only">${t('school.actions')}</span></th></tr></thead><tbody>${rows.map(p => personRow(req, s, p, req.user, classes, ginfo, live))}</tbody></table></div>` : html`<p class="muted">${empty}</p>`;
   return html`
   ${req.query.new && !staff.some(p => p.role === 'admin') ? html`<p class="notice good">👋 ${t('school.people.newSchool')}</p>` : ''}
+  ${S.isPlatformAdmin(req.user) && req.query.welcome === 'sent' ? html`<p class="notice good" role="status" id="welcome-sent">✅ Set up. The welcome email went to <span dir="ltr">${String(req.query.to || '')}</span>: how to sign in, the checklist below and how teachers start. Their replies come to you.</p>` : ''}
+  ${S.isPlatformAdmin(req.user) && req.query.welcome === 'notsent' ? html`<p class="notice warn" role="status" id="welcome-notsent">⚠️ Set up, but the welcome email was not sent${req.query.why ? html` (<code>${String(req.query.why)}</code>)` : ''}. ${req.query.card ? html`<a class="btn btn-sm" href="/cards/${String(req.query.card)}">🖨️ Their login card</a> to send yourself, or ` : ''}<a class="btn btn-sm" href="/admin/schools/setup?school=${s.id}">✉️ try the email again</a></p>` : ''}
   ${jumpNav(t, [['staff', `🍎 ${t('school.people.staff')}`, staff.length], ['students', `👩‍🎓 ${t('school.people.students')}`, students.length]])}
   <div class="sec-row" id="staff"><h2 class="sec-h">🍎 ${t('school.people.staff')} <span class="count">${staff.length}</span></h2>
     <details class="libdrop adddrop" id="add-staff" ${staff.length ? '' : raw('open')}><summary class="btn btn-sm">➕ ${t('school.people.addStaff')}</summary><div>

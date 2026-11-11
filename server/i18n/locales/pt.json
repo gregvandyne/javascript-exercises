@@ -220,7 +220,10 @@
         "doneSubject": "Sua senha da Oomba Academy foi alterada",
         "doneIntro": "A senha da conta {username} da Oomba Academy acabou de ser alterada com um link de redefinição enviado para este endereço.",
         "doneNotYou": "Se não foi você, escreva para {email} imediatamente."
-      }
+      },
+      "welcomeTitle": "Escolha sua senha",
+      "welcomeFor": "Boas-vindas à Oomba Academy. Escolha uma senha para a conta {username}.",
+      "welcomeDone": "Sua senha está definida. Entre com ela agora."
     }
   },
   "me": {
@@ -8108,6 +8111,33 @@
       "namesHint": "Um nome por linha. Basta o primeiro nome.",
       "go": "Criar a turma e os cartões de acesso",
       "note": "Só você e o pessoal da sua escola veem os nomes que escreve aqui."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} está pronta na Oomba Academy",
+      "hi": "Olá, {name},",
+      "hiNoName": "Olá,",
+      "intro": "Obrigado por nos pedir para configurar {school}. Está pronta, e você é o administrador da escola.",
+      "signInH": "Entrar",
+      "newAccount": "Criamos uma conta escolar para você. Escolha sua senha com o botão abaixo e depois entre com seu nome de usuário.",
+      "setExpires": "O link funciona uma única vez, por {days} dias. Se expirar, use \"Esqueceu a senha?\" na página de entrada.",
+      "ownAccount": "Entre com sua conta habitual da Oomba Academy. Sua escola aparece na sua página Minha sala.",
+      "usernameLabel": "Nome de usuário:",
+      "setButton": "Escolher minha senha",
+      "signInButton": "Entrar",
+      "firstH": "Seus primeiros 10 minutos",
+      "firstText": "A página da sua escola tem uma lista curta de passos. Siga em ordem:",
+      "step1": "Adicione seus professores na aba Pessoas, com o nome real. Cada um recebe uma conta escolar e um cartão de acesso para imprimir ou entregar.",
+      "step2": "Crie suas turmas e defina o professor de cada uma.",
+      "step3": "Adicione seus alunos: cole os nomes, um por linha. Cada um recebe um cartão de acesso para imprimir.",
+      "step4": "Confira as regras da sua escola na aba Configurações. O chat entre alunos fica desligado, a menos que você o ligue.",
+      "teachersH": "Como seus professores começam",
+      "teachersText": "Os professores entram e chegam à página Minha sala. A primeira vitória mais rápida é um jogo ao vivo: tocar em \"Conduzir um jogo ao vivo\", colocar o código no quadro, e a turma entra de qualquer aparelho. Eles também podem transformar uma aula que já dão em um questionário com \"Transformar uma aula em jogo\".",
+      "google": "Se sua escola usa o Google Classroom, os professores podem conectá-lo na página da turma para trazer as listas de alunos e devolver as notas.",
+      "help": "Dúvidas? É só responder a este e-mail. Uma pessoa de verdade responde, normalmente em até um dia letivo.",
+      "bye": "Boas-vindas!",
+      "signature": "Equipe Oomba Academy"
     }
   }
 }

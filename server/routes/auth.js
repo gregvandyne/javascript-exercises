@@ -138,6 +138,7 @@ function authPage(req, res, mode) {
       ${top}
       ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
       ${!isSignup && req.query.reset === '1' ? html`<p class="notice good" role="status" id="reset-done">${t('auth.reset.done')}</p>` : ''}
+      ${!isSignup && req.query.welcome === '1' ? html`<p class="notice good" role="status" id="welcome-done">${t('auth.reset.welcomeDone')}</p>` : ''}
       ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
       ${isSignup ? '' : googleNotice(req)}
       ${isSignup ? '' : loginGoogle(req, next)}
@@ -145,7 +146,7 @@ function authPage(req, res, mode) {
       <form data-api="/api/auth/${isSignup ? 'signup' : 'login'}" ${isSignup ? raw(`data-next="${next.replace(/"/g, '&quot;')}"`) : ''} novalidate>
         ${!isSignup && wantedNext(req.query.next) ? html`<input type="hidden" name="next" value="${next}">` : ''}
         <div class="field"><label for="username">${isSignup ? t('auth.page.nameLabelSignup') : t('auth.page.nameLabelLogin')}</label>
-          <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" placeholder="${isSignup ? t('auth.page.namePlaceholder') : ''}">
+          <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" placeholder="${isSignup ? t('auth.page.namePlaceholder') : ''}"${!isSignup && req.query.welcome === '1' && /^[A-Za-z0-9_]{3,16}$/.test(String(req.query.u || '')) ? html` value="${String(req.query.u)}"` : ''}>
           ${isSignup ? html`<span class="hint">${t('auth.page.nameHint')}</span>` : ''}
           <span class="err" id="username-err" aria-live="polite"></span></div>
         <div class="field"><label for="password">${t('auth.page.passwordLabel')}</label>

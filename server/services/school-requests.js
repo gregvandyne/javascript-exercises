@@ -3,7 +3,8 @@
 // school up from the "School requests" queue on /admin (docs/decisions.md "Doors for grown-ups").
 //
 // This is the one place the site asks for an email, and only from an adult on the teacher page: never from a kid
-// account (routes/teachers.js refuses them). The site sends no email: the admin replies by hand. A request is deleted
+// account (routes/teachers.js refuses them). "Set up this school" (routes/schools.js /admin/schools/setup) emails the new
+// school admin a welcome at this address (services/school-welcome.js); a decline is answered by hand. A request is deleted
 // KEEP_MS after it was closed (or made, if nobody ever closed it). Nothing a request says is shown anywhere but /admin.
 import { q, uid, now, audit } from '../db.js';
 import { register } from './jobs.js';
@@ -81,6 +82,12 @@ export function close(by, id, status, { schoolId = null } = {}) {
   audit(by.id, `school_request.${status}`, r.id, schoolId ? { school: schoolId } : '');
   if (status === 'done') for (const fn of doneHooks) { try { fn(r); } catch { /* a welcome never blocks it */ } }
   return true;
+}
+/** The newest request a school was set up from (its email and language for a later welcome email), or null. */
+export const latestForSchool = schoolId => q.get('SELECT * FROM school_requests WHERE school_id=? ORDER BY created_at DESC LIMIT 1', schoolId) || null;
+/** Links a request already marked done to the school set up for it later (it was closed with "Mark done" first). */
+export function linkSchool(id, schoolId) {
+  return q.run("UPDATE school_requests SET school_id=? WHERE id=? AND status='done'", schoolId, id).changes > 0;
 }
 /** Opens a closed request again (a mis-click). */
 export function reopen(by, id) {

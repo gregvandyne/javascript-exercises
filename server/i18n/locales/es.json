@@ -219,7 +219,10 @@
         "doneSubject": "Tu contraseña de Oomba Academy ha cambiado",
         "doneIntro": "La contraseña de la cuenta {username} de Oomba Academy se acaba de cambiar con un enlace de restablecimiento enviado a esta dirección.",
         "doneNotYou": "Si no fuiste tú, escribe a {email} cuanto antes."
-      }
+      },
+      "welcomeTitle": "Elige tu contraseña",
+      "welcomeFor": "Te damos la bienvenida a Oomba Academy. Elige una contraseña para la cuenta {username}.",
+      "welcomeDone": "Tu contraseña está lista. Inicia sesión con ella ahora."
     }
   },
   "me": {
@@ -8106,6 +8109,33 @@
       "namesHint": "Un nombre en cada línea. Basta con el nombre de pila.",
       "go": "Crear la clase y las tarjetas de acceso",
       "note": "Solo tú y el personal de tu escuela ven los nombres que escribes aquí."
+    }
+  },
+  "schoolWelcome": {
+    "email": {
+      "subject": "{school} ya está lista en Oomba Academy",
+      "hi": "Hola, {name}:",
+      "hiNoName": "Hola:",
+      "intro": "Gracias por pedirnos que configuráramos {school}. Ya está lista y tú eres su administrador escolar.",
+      "signInH": "Iniciar sesión",
+      "newAccount": "Te hemos creado una cuenta escolar. Elige tu contraseña con el botón de abajo y luego inicia sesión con tu nombre de usuario.",
+      "setExpires": "El enlace funciona una sola vez, durante {days} días. Si caduca, usa «¿Olvidaste tu contraseña?» en la página de inicio de sesión.",
+      "ownAccount": "Inicia sesión con tu cuenta habitual de Oomba Academy. Tu colegio aparece en tu página Mi aula.",
+      "usernameLabel": "Nombre de usuario:",
+      "setButton": "Elegir mi contraseña",
+      "signInButton": "Iniciar sesión",
+      "firstH": "Tus primeros 10 minutos",
+      "firstText": "La página de tu colegio tiene una lista corta de pasos. Síguela en orden:",
+      "step1": "Añade a tus docentes en la pestaña Personas, con su nombre real. Cada uno recibe una cuenta escolar y una tarjeta de acceso para imprimir o entregar.",
+      "step2": "Crea tus clases y asigna a cada una su docente.",
+      "step3": "Añade a tus alumnos: pega sus nombres, uno por línea. Cada uno recibe una tarjeta de acceso para imprimir.",
+      "step4": "Revisa las normas de tu colegio en la pestaña Configuración. El chat entre alumnos está desactivado salvo que lo actives.",
+      "teachersH": "Cómo empiezan tus docentes",
+      "teachersText": "Los docentes inician sesión y llegan a su página Mi aula. El primer éxito más rápido es un juego en vivo: tocan «Dirigir un juego en vivo», ponen el código en la pizarra y la clase se une desde cualquier dispositivo. También pueden convertir una lección que ya enseñan en un cuestionario con «Convertir una lección en un juego».",
+      "google": "Si tu colegio usa Google Classroom, los docentes pueden conectarlo desde la página de su clase para traer sus listas de alumnos y devolver las calificaciones.",
+      "help": "¿Preguntas? Responde a este correo. Te contesta una persona real, normalmente en un día lectivo.",
+      "bye": "¡Bienvenido!",
+      "signature": "El equipo de Oomba Academy"
     }
   }
 }

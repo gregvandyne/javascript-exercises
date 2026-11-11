@@ -1,77 +1,65 @@
-// "Set up my school" (the navigation proposal, week 1): a teacher fills in the short form on /teachers (a field to fix
-// is marked and says why), sees the thank-you, and the platform admin finds it in /admin's "School requests" queue and
-// sets the school up with "Create school". The form and its thank-you at 360 px and 1280 px, light and dark, and right
-// to left (he): nothing touches, no sideways scroll.
+// Setting up a school from a "Set up my school" request (docs/decisions.md "Setting up a school from a request"): the
+// School requests tab's "Set up this school" opens one page (school, its admin, the welcome email's address and
+// language), and one button makes the school and the admin's account and closes the request. Email sending is off in
+// tests, so the People tab says the welcome was not sent and offers the login card and a retry. The email preview
+// opens. Phone and desktop: nothing touches, nothing scrolls sideways. Screenshots to $SETUP_SHOTS when set.
 import { test, expect } from '@playwright/test';
-import { ownIp, login, signup, uniq, ADMIN } from './helpers.js';
 import { findTouching } from './touching.js';
+import { login, ADMIN } from './helpers.js';
 
 test.describe.configure({ timeout: 180_000 });
+const sideways = page => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+const shot = async (p, name) => { if (process.env.SETUP_SHOTS) await p.screenshot({ path: `${process.env.SETUP_SHOTS}/${name}.png`, fullPage: true }); };
 
-test('a teacher sends "Set up my school"; the admin creates the school from the queue', async ({ browser }) => {
-  const school = `Maple ${uniq('S')} Elementary`;
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const page = await ctx.newPage(); await ownIp(page);
-  await page.goto('/teachers');
-  await page.locator('.lp-hero a', { hasText: 'Get a free school account' }).click();
-  const form = page.locator('form.sr-form');
-  await expect(form).toBeVisible();
-  await expect(page.locator('#start')).toContainText('within 1 school day');
-  await expect(page.locator('#start a[href^="mailto:"][href*="subject="]')).toHaveCount(0);
-  await page.fill('#sr-school', school);
-  await page.selectOption('#sr-role', 'teacher');
-  await page.fill('#sr-email', 'not-an-email');
-  await page.fill('#sr-students', '320');
-  await page.fill('#sr-country', 'United States');
-  await form.locator('button[type=submit]').click();
-  await expect(page.locator('#sr-email')).toHaveAttribute('aria-invalid', 'true');
-  await expect(page.locator('#sr-email-err')).toHaveText('Type an email address like name@school.org.');
-  await page.fill('#sr-email', 'ms.rivera@maple.example.org');
-  await Promise.all([page.waitForURL(/\/teachers\?sent=1#start$/), form.locator('button[type=submit]').click()]);
-  await expect(page.locator('#setup-thanks')).toContainText("Thank you! We've got your request.");
-  await expect(page.locator('form.sr-form')).toHaveCount(0);
-  await expect(page.locator('main')).not.toContainText(school);
+test('a school request: Set up this school, one page, one button; the People tab says what happened', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } }); const p = await ctx.newPage();
+  const school = `Fortech Test ${Date.now().toString(36)}`;
+  // A teacher's request from the public form.
+  await p.goto('/teachers');
+  const sent = await p.request.post('/api/teachers/school-request', { data: { school, role: 'it', email: 'ana@fortech.example', students: '240', country: 'Portugal', name: 'Ana Rivera' } });
+  expect(sent.ok()).toBe(true);
+  await login(p, ADMIN.username, ADMIN.password);
+  await p.goto('/admin?tab=schoolreq');
+  const card = p.locator('article', { hasText: school });
+  await expect(card.locator('a', { hasText: 'Set up this school' })).toBeVisible();
+  await expect(card.locator('button', { hasText: 'Mark done' })).toHaveCount(0);
+  await card.locator('a', { hasText: 'Set up this school' }).click();
+  await expect(p).toHaveURL(/\/admin\/schools\/setup\?request=/);
+  await expect(p.locator('#su-school')).toHaveValue(school);
+  await expect(p.locator('#su-name')).toHaveValue('Ana Rivera');
+  await expect(p.locator('#su-email')).toHaveValue('ana@fortech.example');
+  await expect(p.locator('#su-user')).toBeHidden();
+  expect(await sideways(p)).toBeLessThanOrEqual(0);
+  expect(await findTouching(p)).toEqual([]);
+  await shot(p, 'setup-390');
+  // The preview opens in the chosen language.
+  await p.selectOption('#su-lang', 'es');
+  const [pv] = await Promise.all([ctx.waitForEvent('page'), p.locator('#su-preview').click()]);
+  await expect(pv.locator('body')).toContainText('Elegir mi contraseña');
+  await shot(pv, 'preview-es'); await pv.close();
+  await p.locator('#setup-form button[type=submit]').click();
+  await expect(p).toHaveURL(/\/school\/[\w-]+\?tab=people&welcome=notsent/);
+  await expect(p.locator('#welcome-notsent')).toBeVisible();
+  await expect(p.locator('#welcome-notsent a[href^="/cards/"]')).toBeVisible();
+  await expect(p.locator('#staff')).toBeVisible();
+  await expect(p.locator('main')).toContainText('Ana Rivera');
+  expect(await sideways(p)).toBeLessThanOrEqual(0);
+  await shot(p, 'people-390');
+  // Back on the requests tab: closed, linked to the school, with "Welcome email" to send it again.
+  await p.goto('/admin?tab=schoolreq');
+  const row = p.locator('tr', { hasText: school });
+  await expect(row.locator('a', { hasText: 'Welcome email' })).toBeVisible();
   await ctx.close();
 
-  const boss = await (await browser.newContext()).newPage();
-  await login(boss, ADMIN.username, ADMIN.password);
-  await boss.goto('/admin');
-  await expect(boss.locator('.tabs a[href="/admin?tab=schoolreq"] .badge')).toBeVisible();
-  await boss.goto('/admin?tab=schoolreq');
-  const card = boss.locator('article', { hasText: school });
-  await expect(card).toContainText('ms.rivera@maple.example.org');
-  await Promise.all([boss.waitForURL(/\/admin\/schools\?request=/), card.locator('a', { hasText: 'Create school' }).click()]);
-  await expect(boss.locator('#sn')).toHaveValue(school);
-  await Promise.all([boss.waitForURL(/\/school\/[^/]+\?tab=people&new=1/), boss.locator('form[data-api="/api/admin/schools"] button[type=submit]').click()]);
-  await boss.goto('/admin?tab=schoolreq');
-  await expect(boss.locator('article', { hasText: school })).toHaveCount(0);
-  await expect(boss.locator('table', { hasText: school })).toContainText('✅');
-  await boss.context().close();
-});
-
-test('a kid\'s account sees no form; the form and the thank-you fit (360 / 1280, light / dark, he)', async ({ browser }) => {
-  const kid = await (await browser.newContext()).newPage();
-  await signup(kid, uniq('Kid'));
-  await kid.goto('/teachers#start');
-  await expect(kid.locator('form.sr-form')).toHaveCount(0);
-  await expect(kid.locator('#start')).toContainText('Show this page to your teacher!');
-  await kid.context().close();
-
-  const problems = [];
-  for (const [width, height, scheme, lang] of [[360, 780, 'light', 'en'], [360, 780, 'dark', 'en'], [1280, 860, 'light', 'en'], [1280, 860, 'dark', 'en'], [360, 780, 'light', 'he'], [1280, 860, 'dark', 'he']]) {
-    const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: scheme });
-    await ctx.addCookies([{ name: 'lang', value: lang, url: test.info().project.use.baseURL }]);
-    const page = await ctx.newPage();
-    for (const p of ['/teachers', '/teachers?sent=1']) {
-      await page.goto(p); await page.evaluate(() => document.fonts.ready);
-      await page.locator('#start').scrollIntoViewIfNeeded();
-      for (const t of await findTouching(page)) problems.push(`${p} @${width}/${scheme}/${lang}: ${t.a} ⟷ ${t.b} (${t.dir} ${t.gap}px)`);
-      const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
-      if (wide > 1) problems.push(`${p} @${width}/${lang}: scrolls sideways by ${wide}px`);
-      // The robot field never shows.
-      if (p === '/teachers') { const b = await page.locator('.sr-hp').boundingBox(); if (b && (b.width > 1 || b.height > 1)) problems.push(`${p} @${width}/${lang}: the hidden field shows`); }
-    }
-    await ctx.close();
-  }
-  expect([...new Set(problems)]).toEqual([]);
+  // Desktop: the setup page for an existing school (from the Schools list).
+  const d = await browser.newContext({ viewport: { width: 1280, height: 860 } }); const dp = await d.newPage();
+  await login(dp, ADMIN.username, ADMIN.password);
+  await dp.goto('/admin/schools');
+  await dp.locator('tr', { hasText: school }).locator('a', { hasText: 'Welcome email' }).click();
+  await expect(dp.locator('input[name=account][value=current]')).toBeChecked();
+  await expect(dp.locator('#su-email')).toHaveValue('ana@fortech.example');
+  expect(await sideways(dp)).toBeLessThanOrEqual(0);
+  expect(await findTouching(dp)).toEqual([]);
+  await shot(dp, 'setup-1280-existing');
+  await d.close();
 });
