@@ -1,0 +1,53 @@
+/* The sign-up's screens (server/views/onboarding.js, server/routes/onboarding.js): one question per screen, a back
+   link and progress dots on top, big tap targets. Phone first: nothing wider than the screen at 320px. */
+.ob .panel{padding:var(--s4) var(--s4) var(--s5);min-width:0}
+.authbox.ob-wide{max-width:560px}
+@media (min-width:480px){.ob .panel{padding:var(--s5) var(--s5) 28px}}
+.ob-top{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:44px;margin:0 0 var(--s2)}
+.ob-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 var(--s3);margin-inline-start:calc(-1 * var(--s3));border-radius:999px;font-weight:800;color:var(--text)}
+.ob-back:hover{background:var(--hover);text-decoration:none}
+.ob-progress{display:flex;align-items:center;gap:var(--s2);margin:0;color:var(--muted);font-size:.85rem;font-weight:700;white-space:nowrap}
+.ob-dots{display:inline-flex;align-items:center;gap:6px}
+.ob-dot{display:block;width:10px;height:10px;border-radius:5px;background:var(--line)}
+.ob-dot.done{background:var(--accent-press)}
+.ob-dot.now{width:26px;background:var(--accent-press)}
+.ob-emoji{text-align:center;font-size:3rem;line-height:1.1;margin-top:var(--s1)}
+.ob-h{margin:var(--s2) 0;font-size:clamp(1.45rem,6.2vw,1.9rem);line-height:1.2;overflow-wrap:anywhere}
+.ob-lead{margin:0 0 var(--s4)}
+.ob-doors{margin:var(--s4) 0}
+.ob .ob-choice{min-height:80px}
+.ob .ob-choice .door-h{font-size:1.15rem}
+.ob-foot{margin:var(--s4) 0 0}
+.ob-guest{margin:var(--s2) 0 0}
+.ob .btn-link{box-shadow:none;background:none;color:var(--text-2);text-decoration:underline;font-weight:700}
+.ob .btn-link:hover{background:var(--hover)}
+/* "I'm 18 or older": one box for both ways in (Google and the password), at the top. */
+.ob-adult{padding:var(--s3);border-radius:var(--r-sm);background:var(--card-2);margin-bottom:var(--s3)}
+.ob-adult .checkline{min-height:44px;align-items:center}
+.ob .gbtn{border:0;cursor:pointer;min-height:52px;max-width:none;border-radius:26px;font-size:16px;line-height:1.2;padding:0 var(--s4);text-align:center}
+.ob .gbtn>span{display:inline-flex;align-items:center}
+.ob-google{margin-top:var(--s2)}
+.ob-google .gsign-hint{max-width:34em}
+/* Kid: the family code, under the class code. */
+.ob-alt{margin-top:var(--s5);padding-top:var(--s4);border-top:2px solid var(--line)}
+.ob-alt h2{font-size:1.15rem;margin:0 0 var(--s2)}
+.ob-skip{margin:var(--s4) 0 0}
+/* Teacher: join a school. */
+.ob-username{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s2)}
+.ob-username .bigcode{letter-spacing:.04em;font-size:clamp(1.2rem,5.5vw,1.6rem);overflow-wrap:anywhere;max-width:100%}
+.ob-invites{display:grid;gap:var(--s3);margin:0 0 var(--s4);padding:0;list-style:none}
+.ob-invite{padding:var(--s3);border:2px solid var(--line);border-radius:var(--r-sm)}
+.ob-invite p{margin:0 0 var(--s2)}
+/* Teacher: the classes, one card per class (name and grade side by side once there is room). */
+.ob-classes{display:grid;gap:var(--s3);margin-bottom:var(--s3)}
+.ob-class{border:2px solid var(--line);border-radius:var(--r-sm);padding:var(--s3);margin:0;display:grid;gap:0 var(--s3);min-width:0}
+.ob-class .field{margin-bottom:var(--s2);min-width:0}
+.ob-remove{justify-self:end}
+@media (min-width:480px){.ob-class{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}.ob-remove{grid-column:1/-1}}
+.ob-have{margin-bottom:var(--s4)}
+.ob-have-list{display:grid;gap:var(--s2);margin:0 0 var(--s4)}
+.ob-have-list li{padding:var(--s2) var(--s3);border-radius:var(--r-sm);background:var(--card-2);font-weight:700;overflow-wrap:anywhere}
+.ob-more-h{font-size:1.1rem;margin:var(--s4) 0 var(--s2)}
+.ob-gc-list{margin:0 0 var(--s4)}
+.ob-gc{margin:0 auto}
+.ob .btn-big{white-space:normal;line-height:1.2;padding:12px 20px;text-align:center;max-width:100%}

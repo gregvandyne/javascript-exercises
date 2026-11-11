@@ -63,6 +63,22 @@ export function createRequest(body, { by = null, locale = '', schoolId = null } 
   return { ok: true, id };
 }
 
+/** A school a teacher made on the sign-up's school step (routes/onboarding.js) with a work email: a request already
+ *  linked to it, so the platform admin looks it over ("Looks good" sends the welcome guide to that email). Only the
+ *  school's name, the teacher's name and the email are known (role 'teacher', no student count or country).
+ *  -> { ok: true, id } | { ok: false, field: 'email' } | { ok: false, code: 'full' } */
+export function createForSchool({ school, name = '', email }, { by, locale = '', schoolId }) {
+  const e = text(email, LIMITS.email).toLowerCase();
+  if (e.length > LIMITS.email || !looksLikeEmail(e)) return { ok: false, field: 'email' };
+  if (openCount() >= MAX_OPEN) return { ok: false, code: 'full' };
+  const id = uid(12);
+  q.run(`INSERT INTO school_requests(id, school_name, role, email, students, country, locale, user_id, status, created_at, contact_name, school_id)
+    VALUES (?,?,'teacher',?,0,'',?,?,'open',?,?,?)`, id, text(school, LIMITS.school).slice(0, LIMITS.school), e, String(locale || '').slice(0, 12), by ? by.id : null, now(), text(name, LIMITS.name).slice(0, LIMITS.name), schoolId);
+  funnel.bump('teacher.request');
+  adminAlert('school_request', { ref: id, summary: 'teacher' });
+  return { ok: true, id };
+}
+
 export const getRequest = id => (id ? q.get('SELECT * FROM school_requests WHERE id=?', String(id)) : null) || null;
 export const openCount = () => q.get("SELECT COUNT(*) n FROM school_requests WHERE status='open'").n;
 /** The admin's queue: every open request (oldest first, so the longest wait is on top) and the latest closed ones. */

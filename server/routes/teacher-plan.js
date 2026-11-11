@@ -1,8 +1,8 @@
 // The Teacher plan's pages (rules in server/services/teacher-plan.js; docs/decisions.md "Teacher plan").
 //
 //   GET  /trial               the entry point the marketing site links to (also /trial?seats=N for a school):
-//                               signed out (or a guest)        -> the teacher sign-up (account + their classroom), then
-//                                                                 on to start the trial
+//                               signed out (or a guest)        -> the sign-up's teacher steps (/signup/teacher?trial=1:
+//                                                                 account, school, classes, Classroom), then back here
 //                               a teacher with no plan          -> "Start my free trial" (work email) -> Stripe Checkout
 //                                                                 with the trial and no card; a teacher whose trial is
 //                                                                 used gets "Get the Teacher plan" (card) instead
@@ -32,6 +32,7 @@ import * as SB from '../services/school-billing.js';
 import * as TP from '../services/teacher-plan.js';
 import { rateLimit, allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { stepUp, passwordField, stripeTrouble } from './family.js';
+import { addressOf } from '../services/email.js';
 
 export const router = Router();
 const on = req => F.familiesOn(req);
@@ -66,6 +67,8 @@ router.get('/trial', async (req, res) => {
   res.set('Cache-Control', 'no-store');
   const who = trialViewer(u);
   const seats = seatsQuery(req.query.seats);
+  // Signed out: the one sign-up (routes/onboarding.js), which comes back here once the teacher's steps are done.
+  if (who === 'out') return res.redirect(302, `/signup/teacher?trial=1${seats ? `&seats=${seats}` : ''}`);
   const price = await TP.teacherPrice();
   const v = trialVars(f, price);
   const features = items([el(t, 'span', 'plans.trial.li1'), el(t, 'span', 'plans.trial.li2', v), el(t, 'span', 'plans.trial.li3'), el(t, 'span', 'plans.trial.li4')]);
@@ -77,7 +80,6 @@ router.get('/trial', async (req, res) => {
     return show(html`<section class="panel" role="status"><h1>🍎 ${el(t, 'span', 'plans.trial.forTeachers.h')}</h1>${el(t, 'p', 'plans.trial.forTeachers.p')}
       <p style="margin-bottom:0"><a class="btn btn-primary" href="/plans">${t('plans.trial.forTeachers.link')}</a></p></section>`);
   }
-  if (who === 'out') return show(html`${head}<section class="panel">${features}</section>${signupForm(req, seats)}`);
 
   // A teacher (or school admin).
   const cancelled = req.query.cancelled ? el(t, 'p', 'plans.trial.cancelled', {}, ' class="notice" role="status"') : '';
@@ -99,8 +101,10 @@ router.get('/trial', async (req, res) => {
   if (plan.entitled) return res.redirect(302, '/teach?plan=on#teacher-plan');
   if (C.unsettledPlanOf('teacher', u.id)) return res.redirect(302, '/teach#teacher-plan');
   const used = TP.trialUsed({ userId: u.id });
+  // The address we already know for this account (Google's, or the school step's), filled in to save typing.
+  const known = (addressOf(u.id) || {}).email || '';
   const email = html`<div class="field"><label for="tr-email">${t('plans.trial.email')}</label>
-      <input class="input" id="tr-email" name="email" type="email" dir="ltr" required maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="tr-email-hint">
+      <input class="input" id="tr-email" name="email" type="email" dir="ltr" required maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="tr-email-hint" value="${known}">
       ${el(t, 'span', 'plans.trial.emailHint', {}, ' class="hint" id="tr-email-hint"')}<span class="err" id="tr-email-err" aria-live="polite"></span></div>`;
   const off = !C.mayBill(u) || !price ? raw(' disabled') : '';
   const form = used
@@ -114,36 +118,9 @@ router.get('/trial', async (req, res) => {
   show(html`${head}${cancelled}${notOpen}<section class="panel">${features}</section>${form}<p class="small">${tHtml(t, 'plans.fine.legal')}</p>`);
 });
 
-/** The teacher sign-up (signed out or a guest): an account for a teacher, their classroom (a school of their own where
- *  they are the school admin, so they can make classes at once), then on to the trial. */
-function signupForm(req, seats) {
-  const t = req.t;
-  const lab = (id, key) => el(t, 'label', key, {}, ` for="${id}"`);
-  const errs = id => raw(`<span class="err" id="${id}-err" aria-live="polite"></span>`);
-  const next = `/trial${seats ? `?seats=${seats}` : ''}`;
-  return html`<section class="panel" aria-labelledby="su-h"><h2 id="su-h">${el(t, 'span', 'plans.trial.signup.h')}</h2>
-    ${el(t, 'p', 'plans.trial.signup.lead', { login: `/login?next=${encodeURIComponent(next)}` })}
-    <form data-api="/api/trial/signup" novalidate>
-      ${seats ? html`<input type="hidden" name="seats" value="${seats}">` : ''}
-      <input type="hidden" name="tz" data-browser-tz>
-      <div class="field">${lab('su-name', 'plans.trial.signup.name')}<input class="input" id="su-name" name="name" required maxlength="60" autocomplete="name" aria-describedby="su-name-hint">
-        ${el(t, 'span', 'plans.trial.signup.nameHint', {}, ' class="hint" id="su-name-hint"')}${errs('su-name')}</div>
-      <div class="field">${lab('su-school', 'plans.trial.signup.school')}<input class="input" id="su-school" name="school" required maxlength="80" autocomplete="organization">${errs('su-school')}</div>
-      <div class="field">${lab('su-email', 'plans.trial.email')}<input class="input" id="su-email" name="email" type="email" dir="ltr" required maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="su-email-hint">
-        ${el(t, 'span', 'plans.trial.emailHint', {}, ' class="hint" id="su-email-hint"')}${errs('su-email')}</div>
-      <div class="field">${lab('su-username', 'plans.trial.signup.username')}<input class="input" id="su-username" name="username" required minlength="3" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="su-username-hint">
-        ${el(t, 'span', 'plans.trial.signup.usernameHint', {}, ' class="hint" id="su-username-hint"')}${errs('su-username')}</div>
-      <div class="field">${lab('su-password', 'plans.trial.signup.password')}<input class="input" id="su-password" name="password" type="password" required minlength="${auth.STAFF_PASSWORD_MIN}" maxlength="72" autocomplete="new-password" dir="ltr" aria-describedby="su-password-hint">
-        ${el(t, 'span', 'plans.trial.signup.passwordHint', { min: auth.STAFF_PASSWORD_MIN }, ' class="hint" id="su-password-hint"')}${errs('su-password')}</div>
-      <div class="field"><label class="checkline"><input type="checkbox" id="su-adult" name="adult" value="1" required> ${el(t, 'span', 'plans.trial.signup.adult')}</label>${errs('su-adult')}</div>
-      ${err}
-      <button class="btn btn-primary btn-big" type="submit">${t('plans.trial.signup.submit')}</button>
-      ${el(t, 'p', 'plans.trial.signup.privacy', { privacy: '/privacy?for=grownups' }, ' class="small muted" style="margin-bottom:0"')}
-    </form></section>`;
-}
-
 const clip = (v, n) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
-/** The teacher sign-up: { name, school, email, username, password, adult, seats? }. Makes a kid-type account (teachers'
+/** The old /trial sign-up form's API (the page now leads into the one sign-up, routes/onboarding.js; this still answers a
+ *  page left open from before): { name, school, email, username, password, adult, seats? }. Makes a kid-type account (teachers'
  *  accounts are ordinary accounts that are school staff), their own school with them as its school admin (a funnel
  *  "school set up"), signs them in, and goes on to /trial (which starts the Checkout from their email). */
 router.post('/api/trial/signup', rateLimit('trial-signup', 30, 3600e3), async (req, res) => {

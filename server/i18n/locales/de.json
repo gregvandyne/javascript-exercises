@@ -163,17 +163,6 @@
       "signInLink": "Anmelden",
       "newHere": "Neu hier?",
       "signupLink": "Kostenloses Konto erstellen",
-      "grownupLogin": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Eltern melden sich hier an</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>",
-      "grownupLoginSoon": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Oomba Academy für Eltern</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>",
-      "grownupSignup": "Erwachsene oder Lehrkraft? <a href=\"{grownup}\">Eltern starten hier</a> · <a href=\"{teachers}\">Lehrkräfte starten hier</a>",
-      "whoHeading": "Für wen ist das Konto?",
-      "whoGrownup": "Für mich (Erwachsene/r)",
-      "whoGrownupSub": "Ein eigenes Konto, verbunden mit dem Konto deines Kindes",
-      "whoKid": "Ein Kind (ich oder mein Kind)",
-      "whoKidSub": "Ein ausgedachter Name und ein Passwort, keine E-Mail. Kinder allein und Eltern fangen beide hier an.",
-      "whoTeacher": "Ich bin Lehrkraft",
-      "whoTeacherSub": "Richte deine Schule und deine Klassen ein",
-      "whoBack": "Für wen ist das Konto? Neu auswählen",
       "soonHeading": "Erwachsenenkonten gibt es bald",
       "soonText": "Bald kannst du ein eigenes Konto erstellen, verbunden mit dem Konto deines Kindes. Bis dahin kann dein Kind kostenlos mit einem ausgedachten Namen und einem Passwort starten (keine E-Mail), und die Elternseite erklärt, wie Oomba Academy funktioniert und Kinder schützt.",
       "soonParents": "Oomba Academy für Eltern",
@@ -1014,12 +1003,13 @@
         "s1": "Was wir speichern",
         "li1": "den Namen, den Sie bei der Registrierung eingeben (das kann ein Vorname oder Spitzname sein; Kinder sehen ihn nie, sie sehen nur „dein Erwachsener“);",
         "li2": "Ihr Passwort, unkenntlich gemacht gespeichert (wir können es nicht lesen);",
+        "li8": "wenn Sie sich mit Google registrieren oder anmelden: die Kennung und die E-Mail-Adresse Ihres Google-Kontos, für die Anmeldung und für E-Mails zum Konto, etwa zum Zurücksetzen des Passworts oder zur Testphase (nie das Google-Foto);",
         "li3": "dass Sie „Ich bin Elternteil oder erziehungsberechtigt und mindestens 18 Jahre alt“ angehakt haben (wir prüfen das nicht);",
         "li4": "Ihre Anmeldesitzungen, einschließlich des Namens Ihres Browsers (User-Agent), und wann Sie Ihr Passwort zuletzt für einen Abrechnungsschritt erneut eingegeben haben;",
         "li5": "welche Kinder Sie verbunden haben, wann, und ob eine Verbindung ausstehend, verbunden oder beendet ist;",
         "li6": "Ihr Abo: die Kunden- und Abonummern von Stripe, Abotyp, monatlich oder jährlich, Status, Plätze, Daten und Beträge;",
         "li7": "ein Protokoll wichtiger Aktionen (zum Beispiel „Abo begonnen“, „Kind verbunden“, „Erstattung“). Diese Einträge enthalten nie Kartendaten oder E-Mail-Adressen.",
-        "p1": "<b>Wonach wir nicht fragen:</b> Ihre E-Mail-Adresse, Telefonnummer, Wohnadresse oder Ihr Alter. (Stripe fragt beim Bezahlen nach einigen davon: siehe „Zahlungen“ unten.)",
+        "p1": "<b>Wonach wir nicht fragen:</b> Ihre Telefonnummer, Wohnadresse oder Ihr Alter, und keine E-Mail-Adresse, außer Sie registrieren sich oder melden sich mit Google an. (Stripe fragt beim Bezahlen nach einigen davon: siehe „Zahlungen“ unten.)",
         "p2": "Mit einem Erwachsenenkonto kann man Spiele bauen. Sie durchlaufen dieselben Sicherheitsprüfungen wie jedes Spiel, und ein für alle freigegebenes Spiel zeigt den Anzeigenamen der erwachsenen Person und „Von Erwachsenen gebaut“. Ein Erwachsenenkonto kann sich nur mit anderen Erwachsenenkonten verbinden; es kann nicht chatten, keine Kinder als Freunde hinzufügen und kein öffentliches Profil haben, und es erscheint nicht in der Suche. Wir zeigen nie öffentlich, welche Kinder mit einer erwachsenen Person verknüpft sind, und auch nicht ihre Namen."
       },
       "linking": {
@@ -1061,6 +1051,7 @@
       "schoolSetup": {
         "h": "Anfragen zur Einrichtung von Schulen",
         "li1": "<b>Was wir speichern, wenn eine Lehrkraft oder Schulleitung uns bittet, eine Schule einzurichten</b> (das Formular auf unserer Seite für Lehrkräfte): den Namen der Schule, ihre Funktion, ihre dienstliche E-Mail-Adresse, die ungefähre Zahl der Schüler, das Land, die Sprache der Seite und wann die Anfrage gesendet wurde. Wenn sie in einem Erwachsenen- oder Schulpersonalkonto angemeldet war, speichern wir auch, von welchem Konto die Anfrage kam. Ein Gastkonto wird nie mit einer Anfrage gespeichert. Wurde das Lehrkräftekonto mit dem Formular angelegt, speichern wir die dienstliche E-Mail auch bei diesem Konto.",
+        "li5": "<b>Wenn eine Lehrkraft bei der Registrierung ihre Schule anlegt</b> und eine dienstliche E-Mail-Adresse angibt, speichern wir den Namen der Schule, ihren Namen, diese E-Mail-Adresse, die Sprache der Seite, den Zeitpunkt und ihr Konto, für dieselben Zwecke und so lange wie eine Anfrage. Die E-Mail-Adresse wird auch bei ihrem Konto gespeichert.",
         "li2": "<b>Wofür wir sie nutzen:</b> um die Schule einzurichten, auf die Anfrage zu antworten, die Willkommensanleitung der Schule zu schicken und einen Link zum Zurücksetzen des Passworts zu senden, wenn die Inhaberin oder der Inhaber des Kontos darum bittet. Wir verschicken keine Newsletter und geben die Daten weder an Stripe noch an andere weiter.",
         "li3": "<b>Wer sie sieht:</b> nur unser Team.",
         "li4": "<b>Wie lange:</b> Sie werden <b>1 Jahr</b> nach Abschluss der Anfrage gelöscht (oder 1 Jahr nach dem Senden, falls die Anfrage nie abgeschlossen wird)."
@@ -3349,12 +3340,13 @@
   "google": {
     "button": {
       "signIn": "Über Google anmelden",
-      "hint": "Für Google-Konten der Schule, zum Beispiel auf einem Chromebook."
+      "hint": "Für Google-Konten der Schule und für Eltern und Lehrkräfte, die sich mit Google registriert haben."
     },
     "login": {
       "orName": "oder mit deinem Oomba-Academy-Namen",
       "joinLink": "Du hast einen Klassencode? {link}",
-      "joinLinkText": "Tritt deiner Klasse bei"
+      "joinLinkText": "Tritt deiner Klasse bei",
+      "unknownAdult": "Elternteil oder Lehrkraft? <a href=\"{href}\">Erstelle dein Konto</a> und wähle „Mit Google registrieren“."
     },
     "errors": {
       "expired": "Das hat ein bisschen zu lange gedauert. Bitte versuch es noch mal.",
@@ -3389,7 +3381,8 @@
       "schoolAccount": "Um die Anmeldung mit Google für dieses Konto kümmert sich deine Lehrkraft.",
       "needCard": "Du meldest dich nur mit Google an. Bitte den Schuladmin um eine Anmeldekarte, bevor du Google trennst.",
       "noPasswordStaff": "Du meldest dich mit Google an, deshalb gibt es kein Passwort zum Ändern. Falls du mal eins brauchst, kann dir der Schuladmin eine Anmeldekarte geben.",
-      "noPasswordStudent": "Du meldest dich mit Google an. Falls du mal eine Anmeldekarte brauchst, frag deine Lehrkraft."
+      "noPasswordStudent": "Du meldest dich mit Google an. Falls du mal eine Anmeldekarte brauchst, frag deine Lehrkraft.",
+      "noPasswordOwn": "Du meldest dich mit Google an, daher gibt es kein Passwort zu ändern."
     },
     "join": {
       "title": "Tritt deiner Klasse bei",
@@ -3523,7 +3516,8 @@
         "p1": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und nutzen das Konto nie, um sonst etwas von Google abzurufen.",
         "p1c": "Solange das Google-Konto verbunden ist, speichern wir seine ID, seine E-Mail-Adresse und die Domain der Schule, um es bei der Anmeldung zu erkennen. Wir speichern nie das Google-Profilbild, zeigen den Google-Namen eines Schülers nie auf der Spieleseite an und rufen sonst nichts aus einem Google-Konto ab, außer eine Lehrkraft verbindet Google Classroom.",
         "classroom": "Wenn eine Lehrkraft Google Classroom verbindet, lesen wir nur die Namen der Kurse, die sie unterrichtet, und für den Kurs, den sie verknüpft, die Google-Konto-ID und den Namen jedes Schülers, um sie der passenden Klasse in Oomba Academy hinzuzufügen. Wir senden an Google nur, was die Lehrkraft anfordert: eine Aufgabe (den Titel der Lektion, einen Link dazu und das Abgabedatum) und die Punktzahl jedes Schülers in der Lektion (von 100). Wir senden nie Antworten, Feedback, Spiele oder Zeichnungen von Schülern. Die Verbindung der Lehrkraft wird verschlüsselt gespeichert, bis sie die Verbindung trennt oder ihr Konto löscht; beim Trennen wird sie auch bei Google widerrufen.",
-        "limitedUse": "Die Nutzung und Weitergabe von Informationen, die Oomba Academy von Google-APIs erhält, entspricht der Google API Services User Data Policy, einschließlich der Limited-Use-Anforderungen (Anforderungen zur eingeschränkten Nutzung). Wir verkaufen diese Informationen nie, nutzen sie nie für Werbung und nie zum Trainieren von KI-Modellen, und unser Team sieht sie sich nur an, wenn es für Support, Sicherheit oder aus rechtlichen Gründen nötig ist."
+        "limitedUse": "Die Nutzung und Weitergabe von Informationen, die Oomba Academy von Google-APIs erhält, entspricht der Google API Services User Data Policy, einschließlich der Limited-Use-Anforderungen (Anforderungen zur eingeschränkten Nutzung). Wir verkaufen diese Informationen nie, nutzen sie nie für Werbung und nie zum Trainieren von KI-Modellen, und unser Team sieht sie sich nur an, wenn es für Support, Sicherheit oder aus rechtlichen Gründen nötig ist.",
+        "adults": "Eltern und Lehrkräfte können sich auch mit Google registrieren, mit einem privaten oder schulischen Google-Konto. Wir speichern die Kennung und die E-Mail-Adresse dieses Kontos, solange es verbunden ist, für die Anmeldung und für E-Mails zum Konto, etwa zum Zurücksetzen des Passworts oder zur Testphase. Eine E-Mail-Adresse verbindet nie von selbst zwei Konten. Kinder registrieren sich nie mit Google."
       }
     }
   },
@@ -4322,7 +4316,9 @@
       "submitSignup": "Konto und Schule anlegen",
       "submitStaff": "Senden",
       "privacySignup": "Wir nutzen deine E-Mail, um dir die Willkommensanleitung zu schicken, ein vergessenes Passwort zurückzusetzen und dir zu antworten. Siehe unsere <a href=\"{privacy}\">Datenschutzerklärung</a>.",
-      "emailHintSignup": "Deine Schul-E-Mail. Dorthin schicken wir die Willkommensanleitung, und wir nutzen sie, falls du dein Passwort vergisst."
+      "emailHintSignup": "Deine Schul-E-Mail. Dorthin schicken wir die Willkommensanleitung, und wir nutzen sie, falls du dein Passwort vergisst.",
+      "signupLead": "Erstelle dein Lehrkräftekonto, lege dann deine Schule an oder tritt ihr bei und füge deine Klassen hinzu. Das dauert etwa zwei Minuten und ist kostenlos.",
+      "signupCta": "Mein Lehrkräftekonto erstellen"
     },
     "live": {
       "h": "Live-Spiele in der Klasse",
@@ -8168,6 +8164,109 @@
       "bye": "Herzlich willkommen,",
       "signature": "Dein Oomba-Academy-Team",
       "changeLater": "Deinen Benutzernamen und deinen Namen kannst du später auf deiner Ich-Seite ändern."
+    }
+  },
+  "onboard": {
+    "step": "Schritt {n} von {total}",
+    "back": "Zurück",
+    "who": {
+      "heading": "Wer meldet sich an?",
+      "kid": "Ich bin ein Kind",
+      "kidSub": "Ein lustiger Name und ein Passwort. Keine E-Mail.",
+      "parent": "Ich bin ein Elternteil",
+      "parentSub": "Erstelle dein Konto und füge dann deine Kinder hinzu.",
+      "teacher": "Ich bin Lehrkraft",
+      "teacherSub": "Richte deine Schule und deine Klassen ein."
+    },
+    "google": "Mit Google registrieren",
+    "googleNote": "Wir speichern deine Google-E-Mail für die Anmeldung und für E-Mails zum Konto.",
+    "create": "Mein Konto erstellen",
+    "parent": {
+      "heading": "Erstelle dein Elternkonto",
+      "lead": "Für Eltern und Erziehungsberechtigte. Danach kannst du deine Kinder hinzufügen."
+    },
+    "teacher": {
+      "heading": "Erstelle dein Lehrkräftekonto",
+      "lead": "Danach richtest du deine Schule ein und fügst deine Klassen hinzu."
+    },
+    "kid": {
+      "codeHeading": "Hast du einen Klassencode?",
+      "codeLead": "Wenn deine Lehrkraft dir einen Klassencode gegeben hat, tippe ihn hier ein, um deiner Klasse beizutreten.",
+      "codeLabel": "Klassencode",
+      "join": "Meiner Klasse beitreten",
+      "familyHeading": "Soll dein Erwachsener auch zu Oomba?",
+      "familyText": "Hol dir einen Familiencode und gib ihn deinem Elternteil. Er tippt ihn auf seiner Familienseite ein, dann sagst du Ja.",
+      "familyButton": "Meinen Familiencode holen",
+      "skip": "Erst mal überspringen"
+    },
+    "school": {
+      "heading": "Deine Schule",
+      "lead": "Lege deine Schule bei Oomba Academy an, tritt ihr bei oder überspringe das erst mal.",
+      "create": "Meine Schule anlegen",
+      "createSub": "Du wirst Schuladmin. Lehrkräfte kannst du später einladen.",
+      "join": "Meiner Schule beitreten",
+      "joinSub": "Meine Schule nutzt Oomba Academy schon.",
+      "own": "Erst mal überspringen",
+      "ownSub": "Starte mit deinem eigenen Klassenzimmer. Einer Schule kannst du später beitreten.",
+      "createHeading": "Lege deine Schule an",
+      "createLead": "Du wirst Schuladmin und kannst sofort loslegen.",
+      "schoolName": "Name der Schule",
+      "yourName": "Dein Name, wie deine Schüler ihn sehen",
+      "yourNameHint": "Zum Beispiel Frau Rivera.",
+      "email": "Dienstliche E-Mail (freiwillig)",
+      "emailHint": "Dorthin schicken wir den Willkommensleitfaden deiner Schule, und wir nutzen sie, wenn du dein Passwort vergisst.",
+      "createSubmit": "Meine Schule anlegen",
+      "privacy": "Was wir speichern und warum: <a href=\"{privacy}\">unsere Datenschutzerklärung</a>.",
+      "ownHeading": "Dein eigenes Klassenzimmer",
+      "ownLead": "Deine Klassen sind in deinem eigenen Klassenzimmer. Kommt deine Schule später dazu, kann ihr Admin dich einladen.",
+      "ownSubmit": "Weiter",
+      "ownName": "Klassenzimmer von {name}"
+    },
+    "join": {
+      "heading": "Tritt deiner Schule bei",
+      "how": "Bitte den Oomba-Academy-Admin deiner Schule, dich hinzuzufügen. Nenne ihm deinen Benutzernamen:",
+      "copy": "Kopieren",
+      "where": "Er fügt dich auf der Schulseite im Tab „Personen“ hinzu. Komm dann hierher zurück und prüfe erneut.",
+      "google": "Wenn sich deine Schule mit Google anmeldet, kann dein Admin stattdessen deine Schul-E-Mail einladen.",
+      "check": "Erneut prüfen",
+      "own": "Erst mal mit meinem eigenen Klassenzimmer starten"
+    },
+    "classes": {
+      "heading": "Füge deine Klassen hinzu",
+      "lead": "Füge mindestens eine Klasse hinzu. Weitere kannst du später anlegen.",
+      "rowLabel": "Klasse {n}",
+      "name": "Name der Klasse",
+      "namePh": "zum Beispiel 4b oder Raum 12",
+      "grade": "Klassenstufe",
+      "gradePick": "Klassenstufe wählen",
+      "gradeK": "Vorschule",
+      "gradeN": "Klasse {n}",
+      "add": "Noch eine Klasse",
+      "remove": "Entfernen",
+      "submit": "Speichern und weiter",
+      "submitMore": "Diese Klassen hinzufügen",
+      "have": "Deine Klassen",
+      "more": "Weitere Klassen hinzufügen",
+      "continue": "Weiter",
+      "school": "Schule",
+      "noCreate": "An {school} legt der Schuladmin die Klassen an. Bitte ihn, dich zu deinen hinzuzufügen.",
+      "made": "{count, plural, one {# Klasse hinzugefügt} other {# Klassen hinzugefügt}}",
+      "errors": {
+        "none": "Füge mindestens eine Klasse hinzu.",
+        "grade": "Wähle für jede Klasse eine Klassenstufe.",
+        "tooMany": "Hier gehen bis zu {max} Klassen. Weitere kannst du später anlegen."
+      }
+    },
+    "classroom": {
+      "heading": "Google Classroom verbinden?",
+      "lead": "Das geht auch später in jeder Klasse.",
+      "li1": "Übernimm deine Klassenlisten aus Google Classroom.",
+      "li2": "Stelle Lektionen als Aufgaben in Classroom ein.",
+      "li3": "Schicke Punkte zurück an Classroom.",
+      "connect": "Google Classroom verbinden",
+      "connected": "Google Classroom ist verbunden.",
+      "later": "Google Classroom kannst du später in jeder Klasse verbinden.",
+      "skip": "Erst mal überspringen"
     }
   }
 }

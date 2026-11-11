@@ -116,7 +116,9 @@ test('grown-up sign-up from a guest makes a new account (the guest stays a guest
   const r2 = await as(k)('/api/grown-ups/signup', { method: 'POST', body: { username: 'NotAllowedDad', password: 'twelve-chars-ok', confirm: 'twelve-chars-ok', adult: '1' } });
   assert.equal(r2.status, 409); assert.equal(auth.getUserByName('NotAllowedDad'), null);
   assert.equal(auth.getUser(k.id).account_type, 'kid', 'a kid account never becomes a grown-up');
-  const page = await as(k)('/grown-ups/signup');
+  // The old address leads to the sign-up's parent step, which asks the kid to sign out first.
+  assert.equal((await as(k)('/grown-ups/signup')).location, '/signup/parent');
+  const page = await as(k)('/signup/parent');
   assert.equal(page.status, 200); assert.match(page.text, /Sign out first/); assert.doesNotMatch(page.text, /api\/grown-ups\/signup/);
   // The kid sign-up never makes a grown-up, whatever it is sent.
   const r3 = await call(null, '/api/auth/signup', { method: 'POST', body: { username: 'SneakyParent', password: 'rainbow-77', accountType: 'grownup' } });
@@ -208,7 +210,7 @@ test('access matrix: family routes are 404 for kids, school students, teachers, 
     assert.equal(/id="grownups"/.test(me.text), who === 'kid', `${who}: the "For grown-ups" panel`);
   }
   // Signed out: the family pages ask for the grown-up sign-in; the APIs 404.
-  assert.match((await call(null, '/family')).location, /^\/grown-ups\/login\?next=%2Ffamily/);
+  assert.match((await call(null, '/family')).location, /^\/login\?next=%2Ffamily/);
   assert.equal((await call(null, '/api/family/link', { method: 'POST', body: { code: 'x' } })).status, 404);
   assert.equal((await call(null, '/api/me/family/code', { method: 'POST', body: {} })).status, 404);
   // A grown-up can't use the child's side either.
@@ -244,7 +246,7 @@ test('billing off: no family pages, no panel, no /parents link; grown-ups stay f
   assert.deepEqual(S.sharingOptions(g), ['private', 'friends', 'public'], 'off: no family sharing');
   config.stripeApiKey = 'rk_test_fake';
   const on = (await call(null, '/parents')).text;
-  assert.match(on, /<section class="panel" id="families"[\s\S]*href="\/grown-ups\/signup"[\s\S]*href="\/grown-ups\/login"/, 'on: /parents has the Family accounts section, with the sign-up and sign-in');
+  assert.match(on, /<section class="panel" id="families"[\s\S]*href="\/signup\/parent"[\s\S]*href="\/login\?next=%2Ffamily"/, 'on: /parents has the Family accounts section, with the sign-up and sign-in');
 });
 
 // ---------------------------------------------------------------- codes and the child's answer
@@ -565,17 +567,18 @@ test('the child\'s panel: a safety line next to the code; an English fallback is
   }
 });
 
-test('grown-up sign-up and sign-in in German: the translated sign-in name label and hint, no English left', async () => {
+test('grown-up sign-up in German: the translated sign-in name label and hint, no English left; the sign-in is /login', async () => {
   const de = i18n.tFor('de');
   assert.ok(de.own('family.signup.signInName') && de.own('family.signup.signInNameHint'), 'German has the sign-in name label and hint');
-  for (const path of ['/grown-ups/signup', '/grown-ups/login']) {
-    const r = await call('lang=de', path);
-    assert.equal(r.status, 200, path);
-    assert.match(r.text, /<label for="username">Ihr Anmeldename<\/label>/, path);
-    assert.doesNotMatch(r.text, /Your sign-in name|Your real name is fine|<label for="username">Kontoname</, `${path}: no English, not the old label`);
-  }
-  assert.ok((await call('lang=de', '/grown-ups/signup')).text.includes(`<span class="hint">${de('family.signup.signInNameHint')}</span>`), 'the German hint');
-  assert.match((await call(null, '/grown-ups/signup')).text, /<label for="username">Your sign-in name<\/label>/, 'English has the new label');
+  const r = await call('lang=de', '/signup/parent');
+  assert.equal(r.status, 200);
+  assert.match(r.text, /<label for="username">Ihr Anmeldename<\/label>/);
+  assert.doesNotMatch(r.text, /Your sign-in name|Your real name is fine|<label for="username">Kontoname</, 'no English, not the old label');
+  assert.ok(r.text.includes(`<span class="hint" id="username-hint">${de('family.signup.signInNameHint')}</span>`), 'the German hint');
+  assert.match((await call(null, '/signup/parent')).text, /<label for="username">Your sign-in name<\/label>/, 'English has the new label');
+  // The old grown-up sign-in leads to the one sign-in page, back to the family page afterwards.
+  assert.equal((await call('lang=de', '/grown-ups/login')).location, '/login?next=%2Ffamily');
+  assert.equal((await call(null, '/grown-ups/login?plan=family&interval=year')).location, '/login?next=%2Ffamily%3Fplan%3Dfamily%26interval%3Dyear');
 });
 
 test('/me: a kid\'s "For grown-ups" card comes first, above the tiles, and says the code lasts 24 hours', async () => {
@@ -638,15 +641,17 @@ test('before BILLING_PUBLIC: family pages only for a browser with the preview co
     assert.equal(r.status, 302); assert.equal(r.headers.get('location'), '/parents');
     const c = r.headers.getSetCookie().find(x => x.startsWith(`${F.PREVIEW_COOKIE}=`));
     assert.match(c, /HttpOnly/); const pc = c.split(';')[0];
-    assert.equal((await call(pc, '/grown-ups/signup')).status, 200);
-    assert.match((await call(pc, '/parents')).text, /id="families"[\s\S]*href="\/grown-ups\/signup"/);
+    assert.equal((await call(pc, '/grown-ups/signup')).status, 302);
+    assert.equal((await call(pc, '/signup/parent')).status, 200);
+    assert.match((await call(pc, '/parents')).text, /id="families"[\s\S]*href="\/signup\/parent"/);
     assert.equal((await call(`${cookieFor(child.id)}; ${pc}`, '/api/me/family/code', { method: 'POST', body: {} })).status, 200);
     // A cookie with another value counts for nothing; no token configured means no preview at all.
     assert.equal((await call(`${F.PREVIEW_COOKIE}=${'q'.repeat(32)}`, '/grown-ups/signup')).status, 404);
     config.billingPreviewToken = '';
     assert.equal((await call(pc, '/grown-ups/signup')).status, 404);
+    assert.match((await call(pc, '/signup/parent')).text, /Grown-up accounts are coming soon/, 'the parent step says so honestly');
     // Open to everyone.
     config.billingPublic = true;
-    assert.equal((await call('', '/grown-ups/signup')).status, 200);
+    assert.equal((await call('', '/grown-ups/signup')).status, 302);
   } finally { config.billingPublic = keep.pub; config.billingPreviewToken = keep.tok; }
 });

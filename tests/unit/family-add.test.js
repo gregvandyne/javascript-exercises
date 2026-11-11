@@ -189,7 +189,7 @@ test('the fence: grown-ups only; signed out -> grown-up sign-in; families off ->
   assert.equal(grownupMay('POST', '/family/add'), false);
   for (const u of [kid(), auth.createGuest()]) assert.equal((await as(u)('/family/add')).status, u.is_guest ? 302 : 404);
   const out = await call(null, '/family/add?from=signup');
-  assert.equal(out.status, 302); assert.equal(out.location, '/grown-ups/login?next=%2Ffamily%2Fadd%3Ffrom%3Dsignup');
+  assert.equal(out.status, 302); assert.equal(out.location, '/login?next=%2Ffamily%2Fadd%3Ffrom%3Dsignup');
   const g = grownup();
   config.stripeApiKey = '';
   assert.equal((await as(g)('/family/add')).status, 404);

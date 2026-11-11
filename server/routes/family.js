@@ -1,5 +1,6 @@
 // Grown-up accounts and family links (docs/decisions.md "Paid plans", chunk 3; rules in server/services/family.js).
-//   /grown-ups/signup|login the grown-up sign-up and sign-in (/grown-ups itself is a 301 to /parents#families)
+//   /grown-ups/signup|login  the old grown-up sign-up and sign-in: now /signup/parent and /login (redirects; /grown-ups
+//                           itself is a 301 to /parents#families)
 //   /family, /family/link   the grown-up's own pages
 //   /family/add             "Add your kids": the step after sign-up and after paying (make an account, or link one)
 //   /api/me/family/*        the child's side, from the "For grown-ups" panel on /me
@@ -14,13 +15,12 @@
 // the same families gate, the billing tester rule while the key is a test key, and the password typed again.
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
-import { page, notFound, parentsLabel, tabKey as navLabel } from '../views/layout.js';
+import { page, notFound, tabKey as navLabel } from '../views/layout.js';
 import { avatar, notYou } from '../views/components.js';
 import * as auth from '../auth.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import * as F from '../services/family.js';
-import { sendingOn as emailSendingOn } from '../services/email.js';
 import * as funnel from '../services/funnel.js';
 import * as S from '../services/stripe.js';
 import * as C from '../services/checkout.js';
@@ -35,6 +35,9 @@ import { saveUserTheme } from '../theme.js';
 import { PARENT_GUIDES } from '../learn.js';
 import { siteHost } from '../site.js';
 import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel, namePanel } from './auth.js';
+import { meGooglePanel, signupToken } from './google.js';
+import { googleEnabled } from '../oidc.js';
+import { progress, SIGNUP_CSS } from '../views/onboarding.js';
 import { LEGAL_UPDATED } from './info.js';
 import { madeSees } from '../views/family-made.js';
 import { deleteAccount, inSchoolOrClass } from '../services/account-delete.js';
@@ -65,7 +68,10 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status|billing\/sparks\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
-  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/trial$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup|forgot|reset)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
+  /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/trial$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup|forgot|reset)$/,
+  // The sign-up's steps (routes/onboarding.js send a signed-in grown-up on to /family) and Sign in with Google (the
+  // family account page connects a Google account).
+  /^\/signup\/(kid|parent|teacher)(\/[a-z]+)?$/, /^\/auth\/google\/(start|callback)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
   // Oomba Live: grown-ups host (and join) live games (routes/live.js).
   /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/,
   // Online matches: grown-ups play their own children (and other grown-ups) (routes/match.js).
@@ -78,7 +84,7 @@ const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billi
   // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
   // children said to each other. No friends' chat: /chat itself stays closed.
   /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
-const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme|name|username)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
+const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme|name|username)$/, /^\/api\/me\/google\/(connect|disconnect)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|family\/sparks|portal)$/,
   /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
@@ -102,7 +108,11 @@ export function grownupMay(method, path) {
 }
 export function grownupGuard(req, res, next) {
   if (!auth.isGrownup(req.user)) return next();
-  if ((req.method === 'GET' || req.method === 'HEAD') && req.path === '/me') return res.redirect(302, '/family');
+  if ((req.method === 'GET' || req.method === 'HEAD') && req.path === '/me') {
+    // Back from connecting Google (services/google.js lands on /me?google=…): the family account page has that panel.
+    const i = req.originalUrl.indexOf('?');
+    return res.redirect(302, req.query.google || req.query.gerr ? `/family/account${req.originalUrl.slice(i)}` : '/family');
+  }
   if (grownupMay(req.method, req.path)) return next();
   nope(req, res);
 }
@@ -136,7 +146,7 @@ const OPEN_WHEN_OFF = new Set(['/family', '/family/account', '/family/connection
 function grownupOnly(req, res, next) {
   if (!F.familiesOn(req) && !(auth.isGrownup(req.user) && req.method === 'GET' && OPEN_WHEN_OFF.has(req.path))) return nope(req, res);
   if (auth.isGrownup(req.user)) return next();
-  if (!isApi(req) && (!req.user || req.user.is_guest)) return res.redirect(`/grown-ups/login?next=${encodeURIComponent(req.originalUrl)}${req.sessionEnded ? '&signedout=1' : ''}`);
+  if (!isApi(req) && (!req.user || req.user.is_guest)) return res.redirect(`/login?next=${encodeURIComponent(req.originalUrl)}${req.sessionEnded ? '&signedout=1' : ''}`);
   nope(req, res);
 }
 /** The child's side: only own kid accounts (never guests, school accounts, staff or grown-ups). */
@@ -283,58 +293,20 @@ router.get('/grown-ups', (req, res) => {
   res.redirect(301, `/parents${i < 0 ? '' : req.originalUrl.slice(i)}#families`);
 });
 
-/** A grown-up sign-up or sign-in box. Someone signed in with a kid account is asked to sign out first. */
-function grownupAuthPage(req, res, mode) {
-  const t = req.t, u = req.user, isSignup = mode === 'signup';
-  const chosen = chosenPlan(req.query);
+// The grown-up sign-up is the sign-up's parent step now (/signup/parent, routes/onboarding.js), and the grown-up sign-in
+// is the one sign-in page (/login: a username and password, or Sign in with Google). The old addresses lead there,
+// keeping a plan picked on /plans and a ?next=.
+router.get('/grown-ups/signup', on, (req, res) => {
+  const i = req.originalUrl.indexOf('?');
+  res.redirect(302, `/signup/parent${i < 0 ? '' : req.originalUrl.slice(i)}`);
+});
+router.get('/grown-ups/login', on, (req, res) => {
+  const u = req.user, chosen = chosenPlan(req.query);
   if (auth.isGrownup(u)) return res.redirect(nextFor(u, wantedNext(req.query.next)) || `/family${choiceQuery(chosen)}`);
-  const wanted = chosen ? null : nextFor({ account_type: 'grownup' }, wantedNext(req.query.next));   // e.g. back to /plans
+  const wanted = chosen ? null : nextFor({ account_type: 'grownup' }, wantedNext(req.query.next));
   const next = wanted || `/family${choiceQuery(chosen)}`;
-  const nextQuery = chosen ? choiceQuery(chosen) : wanted ? `?next=${encodeURIComponent(wanted)}` : '';
-  const signedInKid = u && !u.is_guest;
-  // The plan picked on /plans, named above the form and kept through sign-up or sign-in (then paid for on /family).
-  const picked = chosen ? html`<p class="notice" role="status"><span aria-hidden="true">🧾</span> ${t('family.signup.chosen', { plan: planName(t, chosen.plan) })}</p>` : '';
-  const min = auth.STAFF_PASSWORD_MIN;
-  // "Your sign-in name" and its hint are new: until a language has them, its translated name label and hint stand in.
-  const nameKey = t.own('family.signup.signInName') || !t.own('family.signup.nameLabel') ? 'family.signup.signInName' : 'family.signup.nameLabel';
-  const nameHintKey = t.own('family.signup.signInNameHint') || !t.own('family.signup.nameHint') ? 'family.signup.signInNameHint' : 'family.signup.nameHint';
-  const form = isSignup ? html`<form data-api="/api/grown-ups/signup" novalidate>${chosen ? html`<input type="hidden" name="plan" value="${chosen.plan}"><input type="hidden" name="interval" value="${chosen.interval}">` : ''}${wanted ? html`<input type="hidden" name="next" value="${wanted}">` : ''}
-      <div class="field"><label for="username">${t(nameKey)}</label>
-        <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false">
-        <span class="hint">${t(nameHintKey)}</span><span class="err" id="username-err" aria-live="polite"></span></div>
-      <div class="field"><label for="password">${t('auth.page.passwordLabel')}</label>
-        <input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="new-password" required minlength="${min}" maxlength="72" aria-describedby="password-hint">
-        <span class="hint" id="password-hint">${t('family.signup.passwordHint', { min })}</span><span class="err" id="password-err" aria-live="polite"></span></div>
-      <div class="field"><label for="confirm">${t('family.signup.confirmLabel')}</label>
-        <input class="input" id="confirm" name="confirm" type="password" dir="ltr" autocomplete="new-password" required maxlength="72"><span class="err" id="confirm-err" aria-live="polite"></span></div>
-      <div class="field"><label class="checkline"><input type="checkbox" id="adult" name="adult" value="1" required> <span>${t('family.signup.adult')}</span></label><span class="err" id="adult-err" aria-live="polite"></span></div>
-      <p class="err form-err" aria-live="polite"></p>
-      <button class="btn btn-primary btn-block btn-big" type="submit">${t('family.signup.submit')}</button>
-    </form>
-    <p class="center small" style="margin-top:16px">${t('family.signup.haveAccount')} <a href="/grown-ups/login${nextQuery}">${t('family.landing.login')}</a></p>`
-    : html`<form data-api="/api/auth/login" novalidate><input type="hidden" name="next" value="${next}">
-      <div class="field"><label for="username">${t(nameKey)}</label>
-        <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required maxlength="16" autocapitalize="off" spellcheck="false"><span class="err" id="username-err" aria-live="polite"></span></div>
-      <div class="field"><label for="password">${t('auth.page.passwordLabel')}</label>
-        <input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="current-password" required><span class="err" id="password-err" aria-live="polite"></span></div>
-      <p class="err form-err" aria-live="polite"></p>
-      <button class="btn btn-primary btn-block btn-big" type="submit">${t('family.login.submit')}</button>
-    </form>
-    ${emailSendingOn() ? html`<p class="small" style="margin-top:12px" id="forgot-grownup">${tHtml(t, 'auth.reset.linkLine', { href: '/forgot' })}</p>` : ''}
-    ${config.contactEmail ? html`<p class="small muted" style="margin-top:12px">${tHtml(t, 'family.login.forgot', { email: html`<a href="mailto:${config.contactEmail}" dir="ltr">${config.contactEmail}</a>` })}</p>` : ''}
-    <p class="center small" style="margin-top:16px">${t('family.login.newHere')} <a href="/grown-ups/signup${nextQuery}">${t('family.landing.signup')}</a></p>`;
-  const body = html`<div class="authbox"><div class="panel">
-    <h1 class="center">${isSignup ? t('family.signup.heading') : t('family.login.heading')}</h1>
-    <p class="center muted">${isSignup ? t('family.signup.intro') : t('family.login.intro')}</p>
-    ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
-    ${signedInKid ? '' : picked}
-    ${signedInKid ? html`<div class="notice warn"><p style="margin-top:0">${tHtml(t, 'family.signup.signedIn', { name: html`<b><bdi>${u.display_name}</bdi></b>` })}</p>
-      <form data-api="/api/auth/logout"><input type="hidden" name="next" value="${req.path}"><button class="btn" type="submit">${t('me.signOut.button')}</button></form></div>` : form}
-  </div></div>`;
-  page(req, res, { title: isSignup ? t('family.signup.title') : t('family.login.title'), back: chosen ? '/plans' : '/parents#families', backLabel: chosen ? t('plans.title') : parentsLabel(t), body });
-}
-router.get('/grown-ups/signup', on, (req, res) => grownupAuthPage(req, res, 'signup'));
-router.get('/grown-ups/login', on, (req, res) => grownupAuthPage(req, res, 'login'));
+  res.redirect(302, `/login?next=${encodeURIComponent(next)}${req.query.signedout === '1' ? '&signedout=1' : ''}`);
+});
 
 // Grown-up sign-up: the same address limits as the kids' sign-up (routes/auth.js SIGNUP: the same buckets), a password
 // of at least 12 characters, and the "parent or guardian, 18 or older" box (a statement, not a check). Never from a
@@ -347,6 +319,15 @@ router.post('/api/grown-ups/signup', on, (req, res) => {
   if (count(`signup:${ip}`) >= SIGNUP.perHour) return res.status(429).json({ error: t('auth.api.tooManySignups') });
   if (req.user && !req.user.is_guest) return res.status(409).json({ error: t('family.signup.signOutFirst') });
   const { username, password, confirm, adult } = req.body || {};
+  // "Sign up with Google" (the sign-up's parent step): the box first, then on to Google, which makes the account
+  // (routes/google.js) and comes back to the same next step as below.
+  if ((req.body || {}).via === 'google') {
+    if (!googleEnabled()) return nope(req, res);
+    if (!(adult === true || adult === '1' || adult === 'on')) return res.status(400).json({ error: t('family.signup.needAdult'), field: 'adult' });
+    const chosenG = chosenPlan(req.body || {});
+    const after = chosenG ? `/family${choiceQuery(chosenG)}` : wantedNext((req.body || {}).next);
+    return res.json({ ok: true, redirect: `/auth/google/start?intent=signup&t=${encodeURIComponent(signupToken('grownup'))}${after ? `&next=${encodeURIComponent(after)}` : ''}` });
+  }
   const n = auth.cleanName(username, t, { realNames: true }); if (!n.ok) return res.status(400).json({ error: n.error, field: 'username' });
   const pw = String(password ?? '');
   const pe = auth.checkPassword(pw, n.value, t) || (pw.length < auth.STAFF_PASSWORD_MIN ? t('family.signup.short', { min: auth.STAFF_PASSWORD_MIN }) : null);
@@ -471,7 +452,7 @@ router.get('/family/account', grownupOnly, (req, res) => {
   const t = req.t;
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const body = html`<div class="pagehead"><h1${en('family.account.heading')}>⚙️ ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
-  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${passwordPanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t(navLabel(t, 'account')), active: 'account', body, back: '/family', backLabel: t('family.page.title') });
 });
 
@@ -902,6 +883,7 @@ router.get('/family/add', grownupOnly, (req, res) => {
   const leave = kids.length ? html`${justMade ? html`<a class="btn btn-primary" href="${doneHref}#made-switch"${en('family.switch.button')}>${t('family.switch.button', { name: justMade.display_name })}</a>` : ''}<a class="btn${justMade ? '' : ' btn-primary'}" href="${doneHref}"${en('family.add.done')}>${t('family.add.done')}</a>`
     : html`<a class="btn" href="/family"${en('family.add.later')}>${t('family.add.later')}</a>`;
   const body = html`<div class="authbox addkids"><div class="panel">
+    ${from === 'signup' ? html`<div class="ob-top"><span></span>${progress(req, 2, 2)}</div>` : ''}
     ${hello}
     ${ready}
     ${el('h1', 'family.add.heading')}
@@ -910,7 +892,7 @@ router.get('/family/add', grownupOnly, (req, res) => {
     ${adding}
     <div class="row addkids-leave">${leave}${kids.length ? '' : el('span', 'family.add.laterNote', ' class="small muted"')}</div>
   </div></div>`;
-  page(req, res, { title: t('family.add.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body, head: raw('<link rel="stylesheet" href="/css/community.css">') });
+  page(req, res, { title: t('family.add.title'), active: 'family', back: '/family', backLabel: t('family.page.title'), body, head: html`${raw('<link rel="stylesheet" href="/css/community.css">')}${from === 'signup' ? SIGNUP_CSS : ''}` });
 });
 
 // Typing a child's code: 10 wrong codes per 15 minutes per grown-up (and 60 per address), counted like sign-in

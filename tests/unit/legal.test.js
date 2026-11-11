@@ -209,3 +209,22 @@ test('the 24-hour link code: no language still says "1 hour"; the Privacy Policy
   assert.match(sec, /work email/); assert.match(sec, /<b>1 year<\/b> after we close the request/);
   assert.match(sec, /A guest's account is never kept with a request|A guest&#39;s account is never kept with a request/);
 });
+
+test('the Privacy Policy says grown-ups and teachers may sign up with Google, and that their Google email is kept (13 languages)', async () => {
+  const r = decode((await get('/privacy?for=grownups')).text);
+  assert.ok(r.includes(plain(en['info.privacy.grownups.li8'])), 'grown-up accounts: the Google id and email');
+  assert.match(r, /and no email unless you sign up or sign in with Google/);
+  assert.ok(plain(r).includes(plain(en['info.privacy.schoolSetup.li5'])), 'a school made while signing up');
+  assert.ok(r.indexOf('if you sign up or sign in with Google') > r.indexOf('your password, stored scrambled'), 'listed after the password');
+  // The Sign in with Google section (only while Google is on) says the same for parents and teachers.
+  const keep = { id: config.googleClientId, secret: config.googleClientSecret };
+  config.googleClientId = 'test-client.apps.googleusercontent.com'; config.googleClientSecret = 'fake-test-secret';
+  try {
+    for (const p of ['/privacy', '/parents']) assert.ok(decode((await get(p)).text).includes(en['google.setup.privacy.adults']), p);
+  } finally { config.googleClientId = keep.id; config.googleClientSecret = keep.secret; }
+  for (const code of i18n.CODES.filter(c => c !== 'en' && c !== 'en-GB')) {
+    const t = i18n.tFor(code);
+    for (const k of ['info.privacy.grownups.p1', 'info.privacy.grownups.li8', 'info.privacy.schoolSetup.li5', 'google.setup.privacy.adults']) assert.ok(t.own(k), `${code} ${k}`);
+    assert.match(t('info.privacy.grownups.p1'), /Google/, `${code}: the new wording, not the old "we don't ask for your email"`);
+  }
+});

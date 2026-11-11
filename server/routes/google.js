@@ -9,12 +9,17 @@ import { config } from '../config.js';
 import * as auth from '../auth.js';
 import { allow, count, ipOf, rateLimit, loginLockKey } from '../services/ratelimit.js';
 import { log } from '../services/log.js';
-import { tHtml } from '../i18n/index.js';
+import { tHtml, saveUserLang } from '../i18n/index.js';
 import { googleEnabled, newFlow, redirectUri, authorizationUrl, writeFlow, readFlow, clearFlow, useState, safeEqual,
   exchangeCode, verifyIdToken, errorCode, OidcError } from '../oidc.js';
 import * as G from '../services/google.js';
 import * as S from '../services/schools.js';
+import { ensureFamily, familiesOn } from '../services/family.js';
+import * as funnel from '../services/funnel.js';
+import { SIGNUP } from '../services/ratelimit.js';
+import { saveUserTheme } from '../theme.js';
 import { LOGIN, PASSWORD_CHANGE, homeFor, safeNext, wantedNext } from './auth.js';
+import { nextFor, ADD_AFTER } from './family.js';
 
 export const router = Router();
 const on = (req, res, next) => (googleEnabled() ? next() : next('router'));
@@ -31,21 +36,39 @@ const JOIN_ERRORS = ['badCode', 'otherSchoolAccount', 'staffUseTeach', 'adminNot
 const CODE_RE = /^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$/;
 
 // ================================================================ the flow
+/** "Sign up with Google" on the sign-up's parent and teacher steps (routes/onboarding.js): the page's API checked the
+ *  "18 or older" box first and handed over a signed 10-minute token naming the path. -> 'grownup' | 'teacher' | null */
+export const SIGNUP_AS = ['grownup', 'teacher'];
+export const signupToken = as => auth.signToken({ p: 'gsu', a: as }, 600);
+const signupAsOf = tk => { const v = auth.readToken(String(tk || '')); return v && v.p === 'gsu' && SIGNUP_AS.includes(v.a) ? v.a : null; };
+const signupPage = as => (as === 'grownup' ? '/signup/parent' : '/signup/teacher');
+/** Where an account just made with Google goes: a grown-up to the grown-up page they started from (a plan picked on
+ *  /plans goes to /family to pay first) or "Add your kids"; a teacher to the school step (with a trial carried along). */
+export function signupLanding(user, as, next) {
+  if (as === 'grownup') return nextFor(user, next) || ADD_AFTER.signup;
+  return next && /^\/signup\/teacher\/school(\?|$)/.test(next) ? next : '/signup/teacher/school';
+}
 router.get('/auth/google/start', on, (req, res) => {
   res.set('Cache-Control', 'no-store');
-  const intent = ['join', 'link'].includes(req.query.intent) ? req.query.intent : 'signin';
+  const intent = ['join', 'link', 'signup'].includes(req.query.intent) ? req.query.intent : 'signin';
   const next = safeNext(req.query.next);
   const code = S.normCode(req.query.code);
   if (!allow(`g-start:${ipOf(req)}`, 120, 900e3)) return res.redirect(303, intent === 'join' ? '/join?gerr=tooMany' : '/login?gerr=tooMany');
   if (intent === 'join' && !CODE_RE.test(code)) return res.redirect(303, '/join?bad=1');
-  let userId;
+  let userId, as;
+  if (intent === 'signup') {
+    // Only signed out (or a guest), and only with the token the sign-up page's API gave after the "18 or older" box.
+    if (req.user && !req.user.is_guest) return res.redirect(303, homeFor(req.user));
+    as = signupAsOf(req.query.t);
+    if (!as) return res.redirect(303, `${SIGNUP_AS.includes(req.query.as) ? signupPage(req.query.as) : '/signup'}?gerr=expired`);
+  }
   if (intent === 'link') {
     const tk = auth.readToken(String(req.query.t || ''));
     if (!req.user || !tk || tk.p !== 'glink' || tk.u !== req.user.id || tk.sh !== sha16(req.sessionId)) return res.redirect(303, '/me?gerr=expired#google');
     userId = req.user.id;
   }
   const f = newFlow(); const redirect = redirectUri(req);
-  writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: intent, nx: next, c: intent === 'join' ? code : undefined, u: userId });
+  writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: intent, nx: next, c: intent === 'join' ? code : undefined, u: userId, a: as });
   res.redirect(302, authorizationUrl({ ...f, redirect }));
 });
 
@@ -53,6 +76,10 @@ router.get('/auth/google/start', on, (req, res) => {
 function back(flow, gerr) {
   if (flow && flow.i === 'link') return `/me?gerr=${gerr}#google`;
   if (flow && flow.i === 'join') return `/join?code=${encodeURIComponent(flow.c || '')}&gerr=${gerr}`;
+  if (flow && flow.i === 'signup' && SIGNUP_AS.includes(flow.a)) {
+    const nx = wantedNext(flow.nx);
+    return `${signupPage(flow.a)}?gerr=${gerr}${nx ? `&next=${encodeURIComponent(nx)}` : ''}`;
+  }
   const nx = flow && wantedNext(flow.nx);
   return `/login?gerr=${gerr}${nx ? `&next=${encodeURIComponent(nx)}` : ''}`;
 }
@@ -80,15 +107,28 @@ router.get('/auth/google/callback', on, async (req, res) => {
     if (REFUSED.has(c)) allow(failKey, LOGIN.ipFails, LOGIN.window);
     return res.redirect(303, back(flow, c));
   }
-  const r = G.resolveSignIn({ claims, flow, currentUser: req.user, ip });
+  // A sign-up with Google may make an account only within the sign-up limits (routes/auth.js SIGNUP, the same buckets),
+  // and a grown-up's only while parents' accounts are open.
+  const signupAs = flow.i === 'signup' && count(`signup:${ip}`) < SIGNUP.perHour && (flow.a === 'teacher' || (flow.a === 'grownup' && familiesOn(req))) ? flow.a : null;
+  const r = G.resolveSignIn({ claims, flow, currentUser: req.user, ip, signupAs });
   if (!r.ok) { if (REFUSED.has(r.code)) allow(failKey, LOGIN.ipFails, LOGIN.window); return res.redirect(303, back(flow, r.code)); }
   if (flow.i === 'link') return res.redirect(303, r.landing);
 
   const user = r.user;
+  const made = r.via === 'signup';
+  if (made) {
+    allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
+    if (signupAs === 'grownup') { ensureFamily(user); funnel.bump('parent.signup'); }
+  }
   if (req.user) auth.endSession(req, res);
-  auth.startSession(res, user.id, req.headers['user-agent'], { method: 'google' });
+  auth.startSession(res, user.id, req.headers['user-agent'], { method: made ? 'signup' : 'google', teacherWay: made && signupAs === 'teacher' });
+  if (made && req.localeSource === 'cookie') saveUserLang(user, req.locale);
+  if (made && req.themeSource === 'cookie') saveUserTheme(user, req.theme);
   const was = auth.endedUser(req); auth.clearEnded(req, res);
-  const next = flow.i === 'signin' && (was === null || was === user.id) ? wantedNext(flow.nx) : null;
+  // A new account goes on to the sign-up's next step: the grown-up's own page they started from (?next, checked by
+  // homeLanding) or "Add your kids"; the teacher's school step (the flow's next carries a trial along).
+  const next = flow.i === 'signin' && (was === null || was === user.id) ? wantedNext(flow.nx)
+    : made ? signupLanding(user, signupAs, wantedNext(flow.nx)) : null;
   G.auditSignIn(user, r.via, claims.hd);
   res.redirect(303, next || r.landing || homeFor(user));
 });
@@ -96,7 +136,7 @@ router.get('/auth/google/callback', on, async (req, res) => {
 // ================================================================ Me page: connect / disconnect
 // The same limits as a password change (routes/auth.js; read per request because the two files import each other).
 const pwLimit = (req, res, next) => rateLimit('me-password', PASSWORD_CHANGE.tries, PASSWORD_CHANGE.window)(req, res, next);
-router.post('/api/me/google/connect', on, auth.requireAccount, pwLimit, (req, res) => {
+router.post('/api/me/google/connect', on, auth.requireAnyAccount, pwLimit, (req, res) => {
   const t = req.t, u = req.user;
   if (!G.canConnect(u).ok) return res.status(403).json({ error: t('google.errors.schoolOnly') });
   if (G.identityOf(u.id)) return res.status(400).json({ error: t('google.errors.alreadyLinked') });
@@ -110,7 +150,7 @@ router.post('/api/me/google/connect', on, auth.requireAccount, pwLimit, (req, re
   }
   res.json({ ok: true, redirect: `/auth/google/start?intent=link&t=${encodeURIComponent(auth.signToken({ p: 'glink', u: u.id, sh: sha16(req.sessionId) }, 300))}` });
 });
-router.post('/api/me/google/disconnect', on, auth.requireAccount, (req, res) => {
+router.post('/api/me/google/disconnect', on, auth.requireAnyAccount, (req, res) => {
   const t = req.t, u = req.user;
   if (auth.accountKind(u) === 'student') return res.status(403).json({ error: t('google.me.schoolAccount') });
   if (!u.password_hash) return res.status(400).json({ error: t('google.me.needCard') });
@@ -293,7 +333,9 @@ export function googleNotice(req) {
 export function loginGoogle(req, next) {
   if (!googleEnabled()) return '';
   const href = `/auth/google/start${next && next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`;
-  return html`<div class="gsign">${googleButton(req, href)}<p class="center small muted gsign-hint">${req.t('google.button.hint')}</p></div>
+  // A Google account we don't know: a parent or a teacher makes their account with it on the sign-up (never at sign-in).
+  const adult = req.query.gerr === 'unknown' ? html`<p class="center small gsign-adult" id="gsign-adult">${tHtml(req.t, 'google.login.unknownAdult', { href: '/signup' })}</p>` : '';
+  return html`<div class="gsign">${googleButton(req, href)}<p class="center small muted gsign-hint">${req.t('google.button.hint')}</p>${adult}</div>
     <div class="divider">${req.t('auth.page.or')}</div><p class="center small muted gsign-or">${req.t('google.login.orName')}</p>`;
 }
 export const loginJoinLink = req => (googleEnabled() ? html`<p class="center small">${tHtml(req.t, 'google.login.joinLink', { link: html`<a href="/join">${req.t('google.login.joinLinkText')}</a>` })}</p>` : '');
@@ -312,11 +354,11 @@ export function meGooglePanel(req) {
       <p><b>${t('google.me.connected', { email: ltr(ident.email) })}</b></p>
       ${u.password_hash ? html`<p class="small muted">${t('google.me.connectedHint')}</p>
         <form data-api="/api/me/google/disconnect" data-reload data-confirm="${t('google.me.disconnectConfirm')}"><button class="btn" type="submit">${t('google.me.disconnect')}</button></form>`
-      : html`<p class="small muted">${t('google.me.needCard')}</p>`}</section>`;
+      : html`<p class="small muted">${t(u.managed_school ? 'google.me.needCard' : 'google.me.noPasswordOwn')}</p>`}</section>`;
   }
   if (!G.canConnect(u).ok) return notice ? html`<section class="panel" id="google" aria-labelledby="g-h">${head}${notice}</section>` : '';
   return html`<section class="panel" id="google" aria-labelledby="g-h">${head}${notice}
-    <p class="muted">${kind === 'staff' ? t('google.me.textStaff') : t('google.me.textStudent')}</p>
+    <p class="muted">${kind === 'staff' || kind === 'grownup' ? t('google.me.textStaff') : t('google.me.textStudent')}</p>
     <form class="pwform" data-api="/api/me/google/connect" novalidate>
       <div class="field"><label for="g-current">${t('google.me.password')}</label>
         <input class="input" id="g-current" name="current" type="password" dir="ltr" autocomplete="current-password" required><span class="err" id="g-current-err" aria-live="polite"></span></div>
@@ -326,7 +368,9 @@ export function meGooglePanel(req) {
 /** The password panel's text for an account that only signs in with Google ('' otherwise). */
 export function noPasswordText(req) {
   if (!googleEnabled() || req.user.password_hash || !G.identityOf(req.user.id)) return '';
-  return auth.accountKind(req.user) === 'student' ? req.t('google.me.noPasswordStudent') : req.t('google.me.noPasswordStaff');
+  if (auth.accountKind(req.user) === 'student') return req.t('google.me.noPasswordStudent');
+  // An account of their own made with Google on the sign-up (a parent's, or a teacher's): no school admin to ask.
+  return req.t(req.user.managed_school ? 'google.me.noPasswordStaff' : 'google.me.noPasswordOwn');
 }
 
 function inviteLine(req, inv) {

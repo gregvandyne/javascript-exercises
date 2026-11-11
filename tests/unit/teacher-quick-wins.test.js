@@ -307,35 +307,39 @@ test('j. a teacher alone in the school they made lands on the Classroom home at 
 let trialN = 0;
 const trialName = () => `TrialTeach${++trialN}`;
 const signup = (over = {}) => req(null, '/api/trial/signup', { method: 'POST', body: { name: 'Ms Rivera', school: 'Rivera Room', email: 'rivera@school.example', username: trialName(), password: 'a-long-password-1', adult: '1', ...over } });
-test('k. the school\'s time zone comes from the browser at the trial sign-up, only when it is a zone the server knows', async () => {
-  const page = await req(null, '/trial');
+const sess = r => (r.headers.getSetCookie().find(c => c.startsWith('brb_session=')) || '').split(';')[0];
+const obSignup = (over = {}) => req(null, '/api/onboarding/teacher', { method: 'POST', body: { username: trialName(), password: 'a-long-password-1', confirm: over.password || 'a-long-password-1', adult: '1', ...over } });
+test('k. the school\'s time zone comes from the browser at the sign-up\'s school step, only when it is a zone the server knows', async () => {
+  const made = await obSignup();
+  assert.equal(made.status, 200, made.text);
+  const page = await req(null, '/signup/teacher/school?how=own', { cookie: sess(made) });
   assert.equal(page.status, 200);
   assert.match(page.text, /<input type="hidden" name="tz" data-browser-tz>/);
   assert.match(fs.readFileSync('public/js/app.js', 'utf8'), /Intl\.DateTimeFormat\(\)\.resolvedOptions\(\)\.timeZone;[^\n]*input\[data-browser-tz\]/);
-  const zoneAfter = async over => { const name = trialName(); const r = await signup({ username: name, ...over }); assert.equal(r.status, 200, r.text);
-    const u = auth.getUserByName(name); return S.zoneOf(S.getSchool(S.adminSchools(u)[0].id)); };
-  assert.equal(await zoneAfter({ tz: 'America/Chicago' }), 'America/Chicago');
+  const zoneAfter = async tz => { resetLimits(); const name = trialName(); const r = await obSignup({ username: name }); assert.equal(r.status, 200, r.text);
+    const s = await req(null, '/api/onboarding/school', { method: 'POST', cookie: sess(r), body: { how: 'own', name: 'Ms Rivera', tz } });
+    assert.equal(s.status, 200, s.text);
+    const u = auth.getUserByName(name);
+    return S.zoneOf(S.getSchool(S.adminSchools(u)[0].id)); };
+  assert.equal(await zoneAfter('America/Chicago'), 'America/Chicago');
+  for (const bad of [undefined, '', 'Mars/Olympus', 'America/Chicago\'; DROP TABLE schools', 42, { a: 1 }, 'x'.repeat(500)]) assert.equal(await zoneAfter(bad), null, String(bad));
+  // The old /trial sign-up's API still answers a page left open before the change, with the same zone rule.
   resetLimits();
-  for (const bad of [undefined, '', 'Mars/Olympus', 'America/Chicago\'; DROP TABLE schools', 42, { a: 1 }, 'x'.repeat(500)]) { resetLimits(); assert.equal(await zoneAfter({ tz: bad }), null, String(bad)); }
-  // With the zone, a lesson due today is not late until midnight there (it was midnight UTC).
+  const name = trialName(); assert.equal((await signup({ username: name, tz: 'America/Chicago' })).status, 200);
+  assert.equal(S.zoneOf(S.getSchool(S.adminSchools(auth.getUserByName(name))[0].id)), 'America/Chicago');
   assert.equal(S.isZone('America/Chicago'), true);
 });
-test('d. /trial on a phone: the big button wraps inside the screen, and the username rules are shown up front like the password\'s', async () => {
-  const page = await req(null, '/trial');
-  assert.match(page.text, /\.trial form \.btn-big\{width:100%;max-width:100%;white-space:normal;/);
-  // Room between the wrapped button (and its drop shadow) and the small print under it.
-  assert.match(page.text, /\.trial form \.btn-big\+\.small\{margin-top:16px\}/);
-  assert.match(page.text, /<button class="btn btn-primary btn-big" type="submit">[^<]+<\/button>\s*<p class="small muted"/);
-  // The small print says what the work email is used for (a password reset needs the kept address).
-  assert.match(page.text, /We use your work email for your plan \(it goes to Stripe\), for emails about your trial and to reset a lost password\. <a href="\/privacy\?for=grownups">Privacy Policy<\/a>/);
-  assert.doesNotMatch(page.text, /keep your work email/);
-  assert.match(page.text, /<input class="input" id="su-username" name="username" required minlength="3" maxlength="16"[^>]*aria-describedby="su-username-hint">\s*<span class="hint" id="su-username-hint">3 to 16 letters or numbers, no spaces\. You sign in with it\.<\/span>/);
-  assert.match(page.text, /<span class="hint" id="su-password-hint">At least 12 characters\.<\/span>/);
+test('d. the teacher sign-up on a phone: the big buttons wrap inside the screen, and the username rules are shown up front like the password\'s', async () => {
+  const page = await req(null, '/signup/teacher?trial=1');
+  assert.equal(page.status, 200);
+  assert.match(fs.readFileSync('public/css/signup.css', 'utf8'), /\.ob \.btn-big\{[^}]*white-space:normal/);
+  assert.match(page.text, /<input class="input" id="username" name="username"[^>]*aria-describedby="username-hint">\s*<span class="hint" id="username-hint">3 to 16 letters or numbers, no spaces\. You sign in with it\.<\/span>/);
+  assert.match(page.text, /<span class="hint" id="password-hint">At least 12 characters\.<\/span>/);
   // The hint tells the truth: what it allows is accepted, what it rules out is refused with the field's own message.
-  assert.equal((await signup({ username: 'ab' })).json.field, 'username');
-  resetLimits(); assert.equal((await signup({ username: 'has space' })).json.field, 'username');
-  resetLimits(); assert.equal((await signup({ username: 'a'.repeat(17) })).json.field, 'username');
-  resetLimits(); assert.equal((await signup({ username: 'Riv3ra_Room' })).status, 200);
+  resetLimits(); assert.equal((await obSignup({ username: 'ab' })).json.field, 'username');
+  resetLimits(); assert.equal((await obSignup({ username: 'has space' })).json.field, 'username');
+  resetLimits(); assert.equal((await obSignup({ username: 'a'.repeat(17) })).json.field, 'username');
+  resetLimits(); assert.equal((await obSignup({ username: 'Riv3ra_Room' })).status, 200);
 });
 
 // ---------------------------------------------------------------- l. roster names in the teacher-only live results
@@ -568,8 +572,9 @@ test('i. never for a kid or a student, and the answer is the same whether or not
   const esc = x => x.replace(/&/g, '&amp;').replace(/'/g, '&#39;');
   assert.ok(login.text.includes(esc(en('auth.page.forgotSchool'))) && login.text.includes(esc(en('auth.page.forgotOwn'))));
   assert.match((await req(null, '/forgot')).text, /Ask your teacher or a grown-up\. Kids&#39; accounts have no email\./);
-  // The grown-ups' sign-in page offers it too.
-  assert.match((await req(null, '/grown-ups/login')).text, /id="forgot-grownup">[\s\S]*?href="\/forgot"/);
+  // Grown-ups sign in on the same page (the old grown-up sign-in leads there), which offers it too.
+  assert.equal((await req(null, '/grown-ups/login')).headers.get('location'), '/login?next=%2Ffamily');
+  assert.match(login.text, /id="forgot-staff">[\s\S]*?href="\/forgot"/);
 });
 test('i. the whole path: a teacher who signs up at /trial and finishes the checkout can reset a lost password at the email they typed; one who never finished it has no address', async () => {
   Object.assign(config, EMAIL_ON);

@@ -99,7 +99,7 @@ test('a child gets a code, a grown-up signs up from /parents and links, the chil
   await expect(consent.locator('p')).toBeHidden();
   await consent.locator('summary').click();
   await expect(consent.locator('p')).toBeVisible();
-  await Promise.all([mum.waitForURL(/\/grown-ups\/signup$/), mum.locator('#families a[href="/grown-ups/signup"]').click()]);
+  await Promise.all([mum.waitForURL(/\/signup\/parent$/), mum.locator('#families a[href="/signup/parent"]').click()]);
   // The 12-character rule and the parent-or-guardian box.
   await mum.fill('#username', uniq('Mum')); await mum.fill('#password', 'too-short-1'); await mum.fill('#confirm', 'too-short-1'); await mum.check('#adult');
   await mum.click('button[type=submit]');
@@ -261,7 +261,7 @@ test('the new pages: nothing touches, no sideways scroll (360 / 1280, light / da
   await enterCode(mum, cb);
   const mumState = await mum.context().storageState(), askedState = await b.context().storageState(), linkedState = await a.context().storageState();
   const sets = [
-    [null, ['/grown-ups/signup', '/grown-ups/login', '/parents', '/parents#families']],
+    [null, ['/signup/parent', '/login?next=%2Ffamily', '/parents', '/parents#families']],
     [mumState, ['/family', '/family/link', '/family/account']],
     [askedState, ['/me#grownups']],
     [linkedState, ['/me#grownups']],

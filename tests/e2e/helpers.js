@@ -31,13 +31,27 @@ const randomIp = () => `10.${1 + Math.floor(Math.random() * 250)}.${Math.floor(M
 export async function ownIp(page) { await page.context().setExtraHTTPHeaders({ 'X-Forwarded-For': randomIp() }); }
 export async function signup(page, username = uniq('Kid'), password = 'secret123') {
   await ownIp(page);
-  await page.goto('/signup');
-  // "Start free" first asks "Who's this for?" (in the languages that have it): a kid's account is "My child".
-  const mine = page.locator('.whofor a.door-kid');
-  if (await mine.count()) await Promise.all([page.waitForURL(/\/signup\?for=kid/), mine.click()]);
+  // The sign-up's kid step (routes/onboarding.js), then "Skip for now" on the optional class-code step.
+  await page.goto('/signup/kid');
   await page.fill('#username', username); await page.fill('#password', password);
-  await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(u => u.pathname !== '/signup/kid'), page.click('button[type=submit]')]);
+  if (new URL(page.url()).pathname === '/signup/kid/code') await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('#ob-skip')]);
   return { username, password };
+}
+/** A teacher through the one sign-up (routes/onboarding.js): the account, "Create my school" (with a work email when
+ *  given), one class, and on until My classes (the Classroom step is skipped when it shows). -> { username, password } */
+export async function teacherSignup(page, { username = uniq('Tch').slice(0, 16), password = 'blue-otter-fortech-42', name = 'Ana Rivera', school = `${uniq('Oak')} Primary`, email = '' } = {}) {
+  await ownIp(page);
+  await page.goto('/signup/teacher');
+  await page.check('#adult'); await page.fill('#username', username); await page.fill('#password', password); await page.fill('#confirm', password);
+  await Promise.all([page.waitForURL(/\/signup\/teacher\/school/), page.click('button.btn-primary[type=submit]')]);
+  await Promise.all([page.waitForURL(/how=create/), page.click('a.ob-create')]);
+  await page.fill('#ob-school', school); await page.fill('#ob-name', name); if (email) await page.fill('#ob-email', email);
+  await Promise.all([page.waitForURL(/\/signup\/teacher\/classes/), page.click('button[type=submit]')]);
+  await page.fill('#ob-cn-0', '4B'); await page.selectOption('#ob-cg-0', '4');
+  await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup/teacher/classes')), page.click('form[data-api="/api/onboarding/classes"] button[type=submit]')]);
+  if (new URL(page.url()).pathname === '/signup/teacher/classroom') await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('#ob-skip')]);
+  return { username, password, school };
 }
 export async function login(page, username, password) {
   await ownIp(page);

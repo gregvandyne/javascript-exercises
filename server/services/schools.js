@@ -367,14 +367,31 @@ export function setOwnStaffName(userId, name) {
 export function createTeacherWithSchool({ name, school, username, password, tz = '' }) {
   return tx(() => {
     const u = createUser({ username, password, displayName: name });
-    const s = createSchool(u, { name: school });
+    const s = setUpOwnSchool(u, { name, school, tz });
     if (!s.ok) throw Object.assign(new Error('school'), { code: 'school' });
-    addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
-    // Lessons open and due days end at midnight in the teacher's own time zone from day one.
-    if (isZone(tz)) updateSchool(u, s.school.id, { settings: { timeZone: tz } });
-    return { user: getUser(u.id), school: getSchool(s.school.id) };
+    return { user: getUser(u.id), school: s.school };
   });
 }
+/** A teacher's own school for an account they already have (the sign-up's school step, routes/onboarding.js; and
+ *  createTeacherWithSchool): the school, with them as its school admin at once (their real name on the school's
+ *  People tab and as their display name), in the browser's time zone when it is a real one. No approval step: the
+ *  school works from the start. -> { ok, school } | { ok:false, code: 'schoolName' } */
+export function setUpOwnSchool(u, { name, school, tz = '' }) {
+  return tx(() => {
+    const s = createSchool(u, { name: school });
+    if (!s.ok) return s;
+    addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
+    q.run("UPDATE users SET display_name=?, signup_as='' WHERE id=?", clip(name, 60) || u.display_name, u.id);
+    // Lessons open and due days end at midnight in the teacher's own time zone from day one.
+    if (isZone(tz)) updateSchool(u, s.school.id, { settings: { timeZone: tz } });
+    return ok({ school: getSchool(s.school.id) });
+  });
+}
+/** An account made on the sign-up's teacher path that has no school yet (users.signup_as, migration 0074): it goes
+ *  back to the school step at sign-in. */
+export const teacherToBe = u => !!u && !u.is_guest && !u.banned && u.signup_as === 'teacher' && !u.managed_school && !isSchoolStaff(u);
+/** The schools where this person may make a class (the sign-up's class step), the one they run first. */
+export const classSchoolsFor = u => (u ? schoolsOf(u.id).filter(x => x.role !== 'student' && canCreateClass(u, x.id)).sort((a, b) => (a.role === 'admin' ? 0 : 1) - (b.role === 'admin' ? 0 : 1)) : []);
 /** New password for a school account (personal accounts keep their own passwords). */
 export function resetSchoolPassword(by, schoolId, userId) {
   const u = getUser(userId);
