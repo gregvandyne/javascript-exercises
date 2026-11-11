@@ -13,6 +13,7 @@ import { frameDocument, sendFrame, sendFrameText, frameOrigins, SANDBOX } from '
 import { signToken, readToken, requireUser, getUser, createGuest, startSession, isGrownup } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { q, uid, now, audit } from '../db.js';
+import { alert as adminAlert } from '../services/admin-alerts.js';
 import { config } from '../config.js';
 import { tEn, tFor, normalizeCode, localeInfo } from '../i18n/index.js';
 import { fileFor } from '../services/shots.js';
@@ -473,12 +474,14 @@ router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3
   const details = String((req.body || {}).details || '').slice(0, 300);
   if (q.get("SELECT 1 FROM reports WHERE game_id=? AND user_id=? AND status='open'", g.id, req.user.id)) return res.json({ ok: true, already: true, message: t('game.report.already') });
   q.run('INSERT INTO reports(id, game_id, user_id, reason, details, created_at) VALUES (?,?,?,?,?,?)', uid(), g.id, req.user.id, reason, details, now());
+  adminAlert('report', { ref: g.id, summary: `A game was reported (${reason})`, url: '/admin?tab=reports' });   // the reason word, never the details
   // Only trustworthy distinct reporters count toward auto-hiding (not guests, not the owner): a few throwaway guest
   // reports must not silently take a game down. Guest reports are still stored for admin review.
   const open = q.get("SELECT COUNT(DISTINCT r.user_id) n FROM reports r JOIN users u ON u.id=r.user_id WHERE r.game_id=? AND r.status='open' AND u.is_guest=0 AND r.user_id!=?", g.id, g.owner_id).n;
   if (open >= config.reportsToHide && !g.hidden_reason && g.owner_id !== req.user.id) {
     q.run("UPDATE games SET hidden_reason='reports', updated_at=? WHERE id=?", now(), g.id);
     audit(null, 'game.auto_hidden', g.id, { reports: open });
+    adminAlert('report', { ref: g.id, summary: 'A game was hidden after several reports', url: '/admin?tab=reports' });
   }
   res.json({ ok: true, message: t('game.report.thanks') });
 });

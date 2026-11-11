@@ -209,6 +209,8 @@ and shows the send log. Setting it up: `docs/emails-go-live.md`.
 | `EMAIL_FROM` | `Greg at Oomba Academy <greg@oomba.ai>` | The sender. Its domain must be verified in Resend. |
 | `EMAIL_REPLY_TO` | `Greg@oomba.ai` | Where replies go. |
 | `EMAIL_POSTAL_ADDRESS` | – (no default) | The postal address CAN-SPAM requires in a marketing email's footer (one line; line breaks become " · "). **While it is empty, trial emails are not sent at all**; start-up logs it once and /admin/emails and /admin/billing warn. Transactional emails don't need it. |
+| `ADMIN_ALERTS` | `1` | `0` stops the admin alert emails (`server/services/admin-alerts.js`: one summary every 10 minutes at most to the platform admins when something needs them). Nothing is queued or sent, the test button included. |
+| `ADMIN_ALERTS_TO` | – | Extra addresses for admin alerts (comma list, up to 10), besides each platform admin account's own (Google) address. Only the owner's addresses: alerts are for admins only. |
 
 **Screenshots (headless Chromium)**
 

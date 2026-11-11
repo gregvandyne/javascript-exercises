@@ -9,6 +9,7 @@
 import { q, uid, now, audit } from '../db.js';
 import { register } from './jobs.js';
 import * as funnel from './funnel.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 const DAY = 86400e3;
 /** How long a request is kept (the form's privacy line says "1 year"). */
@@ -58,6 +59,7 @@ export function createRequest(body, { by = null, locale = '', schoolId = null } 
   q.run(`INSERT INTO school_requests(id, school_name, role, email, students, country, locale, user_id, status, created_at, contact_name, school_id)
     VALUES (?,?,?,?,?,?,?,?,'open',?,?,?)`, id, r.school, r.role, r.email, r.students, r.country, String(locale || '').slice(0, 12), by ? by.id : null, now(), r.name, schoolId);
   funnel.bump('teacher.request');
+  adminAlert('school_request', { ref: id, summary: r.role });   // the role word only, never the school, name or email
   return { ok: true, id };
 }
 

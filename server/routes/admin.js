@@ -38,6 +38,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as email from '../services/email.js';
 import * as nudges from '../services/nudges.js';
 import * as digest from '../services/digest.js';
+import * as alerts from '../services/admin-alerts.js';
 import { renderDigest } from '../services/digest-email.js';
 
 export const router = Router();
@@ -950,6 +951,7 @@ router.get('/admin/emails', (req, res) => {
   <div class="kpis" style="margin-bottom:var(--s4)">
     ${tile('✅ Sent (30 days)', int(c.total.sent))}${tile('❌ Failed (30 days)', int(c.total.failed), '', c.total.failed ? 'bad' : '')}${tile('⏭️ Skipped (30 days)', int(c.total.skipped), 'no address, unsubscribed, not an adult')}
   </div>
+  ${alertsSection(s)}
   <section class="panel" id="e-switch"><h2>Trial email sequence</h2>
     <p>${on ? 'On: due emails go out (checked every 15 minutes).' : 'Switched off: nothing is sent. Due emails wait, and any that would then be more than their allowed lateness are skipped.'}</p>
     <form data-api="/api/admin/emails/nudges" data-reload data-toast="${on ? 'Trial emails switched off.' : 'Trial emails switched on.'}" ${on ? raw('data-confirm="Stop sending trial emails?"') : ''}><input type="hidden" name="on" value="${on ? '0' : '1'}"><button class="btn ${on ? '' : 'btn-primary'}" type="submit">${on ? 'Switch off' : 'Switch on'}</button></form>
@@ -980,6 +982,59 @@ router.get('/admin/emails', (req, res) => {
     <p class="small muted">Kept a year. Addresses are shortened here; bodies are never stored.</p>
   </section>`;
   page(req, res, { title: 'Emails', active: 'me', body, bodyClass: ADMIN_BODY, head: html`${raw('<link rel="stylesheet" href="/css/community.css"><link rel="stylesheet" href="/css/stats.css">')}${ADMIN_CSS}`, scripts: ['/js/admin.js'], back: '/admin', backLabel: 'Admin' });
+});
+// Admin alerts (services/admin-alerts.js; docs/decisions.md "Admin alerts by email"): one summary email every 10 minutes
+// at most to the platform admins when something needs them. Kinds, counts, public usernames and links only.
+const ALERT_STATUS = { sending: 'sending', retry: 'will retry', sent: 'sent', failed: 'failed', skipped: 'not sent' };
+const hm = t => new Date(t).toISOString().slice(11, 16);
+function alertsSection(s) {
+  const a = alerts.overview();
+  const state = a.killed ? 'Stopped by ADMIN_ALERTS=0 on the server: nothing is queued or sent, tests included.'
+    : !a.on ? 'Switched off: nothing is queued or sent. Things that happen while it is off are not sent later.'
+      : !s.sending ? 'Switched on, but sending is off (RESEND_API_KEY, EMAIL_ENABLED), so nothing is queued.'
+        : 'On: when something needs you, one email every 10 minutes at most sums it up (counts, public usernames, links). It never includes message text, real names or addresses.';
+  const next = a.nextAt ? `Next check about ${hm(a.nextAt)} UTC` : 'Next check within 10 minutes of the server starting';
+  const kindName = k => alerts.KINDS[k]?.label || k;
+  const src = r => (r.source === 'ADMIN_ALERTS_TO' ? 'ADMIN_ALERTS_TO' : r.source === 'google' ? "an admin's Google address" : "an admin's saved address");
+  return html`<section class="panel" id="e-alerts"><h2>Admin alerts</h2>
+    <p>${state}</p>
+    ${a.killed ? '' : html`<form data-api="/api/admin/emails/admin-alerts" data-reload data-toast="${a.on ? 'Admin alerts switched off.' : 'Admin alerts switched on.'}" ${a.on ? raw('data-confirm="Stop emailing you admin alerts?"') : ''}><input type="hidden" name="on" value="${a.on ? '0' : '1'}"><button class="btn ${a.on ? '' : 'btn-primary'}" type="submit">${a.on ? 'Switch off' : 'Switch on'}</button></form>`}
+    <h3>What to email you about</h3>
+    <ul class="alerts-kinds">${a.kinds.map(k => html`<li><span class="ak-l"><span class="chip-s ${k.on ? 'good' : 'warn'}">${k.on ? 'on' : 'off'}</span> ${k.label}</span>
+      <form data-api="/api/admin/emails/admin-alerts/kind" data-reload data-toast="${k.on ? 'Switched off.' : 'Switched on.'}"><input type="hidden" name="kind" value="${k.kind}"><input type="hidden" name="on" value="${k.on ? '0' : '1'}"><button class="btn btn-sm" type="submit" aria-label="${k.on ? 'Switch off' : 'Switch on'}: ${k.label}">${k.on ? 'Switch off' : 'Switch on'}</button></form></li>`)}</ul>
+    <h3>Who gets them</h3>
+    ${a.recipients.length ? html`<ul class="small" id="alerts-to" style="margin:0 0 8px">${a.recipients.map(r => html`<li><b dir="ltr">${email.maskEmail(r.email)}</b> <span class="muted">(${src(r)})</span></li>`)}</ul>`
+      : html`<p class="notice bad" role="alert" id="alerts-no-address"><b>No address is known.</b> Alerts wait (up to 2 days) and are not sent until a platform admin account has a Google sign-in, or ADMIN_ALERTS_TO is set on the server.</p>`}
+    <p class="small muted">Only platform admin accounts, plus the addresses in ADMIN_ALERTS_TO. ${next}${a.waiting ? html` · <b>${int(a.waiting)}</b> waiting` : ''}.</p>
+    <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><a class="btn btn-sm" href="/admin/emails/preview-alerts" target="_blank" rel="noopener">Preview</a><a class="btn btn-sm" href="/admin/emails/preview-alerts?format=text" target="_blank" rel="noopener">Text</a>
+      <form data-api="/api/admin/emails/admin-alerts/test" data-toast="Test alert sent."><button class="btn btn-sm" type="submit" ${!a.killed && s.sending && a.recipients.length ? '' : raw('disabled')}>Send a test alert</button></form></div>
+    <h3>Last emails</h3>
+    ${a.batches.length ? html`<div class="tblwrap"><table class="tbl small atable" id="alerts-log"><thead><tr><th>When</th><th>What</th><th>Status</th><th>Sent to</th></tr></thead><tbody>
+      ${a.batches.map(b => html`<tr><td data-label="When">${when(b.created_at)}</td><td data-label="What">${b.test ? 'Test alert' : Object.entries(b.kinds).map(([k, n]) => `${kindName(k)}: ${n}`).join(' · ') || `${int(b.items)} item${b.items === 1 ? '' : 's'}`}</td><td data-label="Status">${ALERT_STATUS[b.status] || b.status}${b.attempts > 1 ? ` (${b.attempts} tries)` : ''}${b.error && b.status !== 'sent' ? html` <span class="muted">${b.error}</span>` : ''}</td><td data-label="Sent to">${int(b.delivered)} of ${int(b.recipients)}</td></tr>`)}
+    </tbody></table></div>` : html`<p class="muted small">None sent yet.</p>`}
+  </section>`;
+}
+router.get('/admin/emails/preview-alerts', (req, res) => {
+  const m = alerts.renderEmail(alerts.sampleItems(), { test: true });
+  res.set('Cache-Control', 'no-store');
+  if (req.query.format === 'text') return res.type('text/plain; charset=utf-8').send(`Subject: ${m.subject}\n\n${m.text}`);
+  res.type('html').send(m.html);
+});
+router.post('/api/admin/emails/admin-alerts', (req, res) => {
+  const v = (req.body || {}).on;
+  res.json({ ok: true, on: alerts.setSwitch(req.user, v === true || v === '1') });
+});
+router.post('/api/admin/emails/admin-alerts/kind', (req, res) => {
+  const b = req.body || {};
+  const on = alerts.setKind(req.user, String(b.kind || ''), b.on === true || b.on === '1');
+  if (on === null) return res.status(404).json({ error: 'No such kind of alert.' });
+  res.json({ ok: true, on });
+});
+const ALERT_TEST_ERR = { killed: 'ADMIN_ALERTS=0 is set on the server.', off: 'Sending is off: set RESEND_API_KEY (and EMAIL_ENABLED not 0).', no_recipient: 'No address to send to: sign in with Google as an admin, or set ADMIN_ALERTS_TO.' };
+router.post('/api/admin/emails/admin-alerts/test', rateLimit('admin-email-test', 10, 10 * 60e3), async (req, res) => {
+  const r = await alerts.sendTest(req.user);
+  if (!r.ok) return res.status(ALERT_TEST_ERR[r.code] ? 409 : 502).json({ error: ALERT_TEST_ERR[r.code] || `Not sent (${r.code}).` });
+  res.json({ ok: true, toast: `Test alert sent to ${r.to.map(email.maskEmail).join(', ')}.` });
 });
 // The weekly class summary (services/digest.js; docs/decisions.md "Weekly class summary email").
 const DIGEST_REASON = { empty: 'nothing new in any class', no_address: 'no address', unsubscribed: 'turned off', not_adult: 'not an adult account' };

@@ -30,6 +30,7 @@ import * as C from './checkout.js';
 import { register } from './jobs.js';
 import { registerPaidBudget } from './ai-budget.js';
 import * as TP from './teacher-plan.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 const DAY = 86400e3;
 const YEAR = 365 * DAY;
@@ -324,6 +325,7 @@ export function requestInvoice(user, school, input = {}) {
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,'teacher')`, id, school.id, user.id, seats, clip(input.po, 60), contactName, contactEmail, JSON.stringify(address), tax, clip(input.note, 500), S.currentLivemode(), now());
   // Ids and numbers only: never the contact's name, email or the address.
   audit(user.id, 'billing.school.request', `school:${school.id}`, { request: id, seats, taxExemptClaimed: !!tax });
+  adminAlert('billing', { ref: id, summary: `A school asked to pay by invoice (${seats} seat${seats === 1 ? '' : 's'})` });
   return { ok: true, request: q.get('SELECT * FROM billing_requests WHERE id=?', id) };
 }
 /** The school admin withdraws their open request. */

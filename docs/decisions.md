@@ -4286,3 +4286,47 @@ account. Now the account comes first, like the Teacher plan and Quick game sign-
 - The Privacy Policy's school-request section now says the email is also kept with the teacher's account and used for
   the welcome guide and password resets (owner's decision, 2026-11-11; the lawyer's sign-off is pending in
   docs/legal-review.md).
+
+## Admin alerts by email (11 Nov 2026)
+
+The owner asked: "When I receive any app notification as an admin I want it sent to my email. For example, game
+approvals, new users, messages, etc."
+
+- **What counts** (everything the admin pages show as waiting for the admin, plus new accounts): a game sent for review
+  (`services/publish.js`, the review queue), a new account (its first sign-in, `auth.js` onFirstSignIn: a sign-up, a
+  guest who saves their account, a student's first sign-in; never a guest), a message to the Oomba team inbox
+  (`services/team.js` reply), a school set-up request (`services/school-requests.js` createRequest), a safety report
+  (a game: `routes/games.js`, and its auto-hide; a chat message: `services/chat.js`; a live game:
+  `services/classlive-results.js`; a family link: `services/family.js`) and a billing problem (a failed, overdue,
+  disputed or fraud-warned payment, a bank payment that failed at checkout, a second plan cancelled and refunded, a
+  subscription with an unknown customer: `services/billing.js`; a disputed Spark Pack: `services/sparks.js`; a school
+  asking to pay by invoice: `services/school-billing.js`). Six kinds: review, signup, message, school_request, report,
+  billing.
+- **Not alerted:** flagged Builder web searches (the filter already blocked them; the Web searches tab is a log),
+  trial started / converted / ended (no action needed; the trial emails cover the teacher), refunds (the admin makes
+  them in Stripe), a school's "ask for a plan" and a child's "ask my grown-up" (for school admins and grown-ups, not the
+  platform admin), welcome messages and announcements (the team's own sends).
+- **One email per run.** `alert(kind, { ref, summary, url })` adds a row (migration 0073) and never throws. A job every
+  10 minutes claims every waiting row into one batch and sends one email: per kind a count line ("5 new accounts:
+  3 students, 1 teacher, 1 grown-up"), up to 10 lines ("and 35 more"), each linking to its admin page (absolute, from
+  PUBLIC_URL). A burst of 500 sign-ups is one email with counts.
+- **Privacy (strict):** never a message's text, game content, real names, email addresses, IPs or any student
+  identifier beyond the public username. Accounts appear as "@username (student)"; game titles only for games sent for
+  review, clipped to 60 characters and escaped. Rows keep ids and fixed notes only (a report's reason word, 'update');
+  usernames and titles are read when the email is built, so a deleted account leaves nothing behind
+  ("an account that was since removed"). The rendered email is kept only while it may be retried. Rows and batches
+  are kept 90 days.
+- **Sending:** internal ops mail, category 'admin' in `services/email.js`: no postal address, no List-Unsubscribe, no
+  unsubscribe rules. Only to accounts with role 'admin' (email.js refuses anyone else, even with an explicit address):
+  each platform admin's known address, plus `ADMIN_ALERTS_TO` sent as an admin account. No address known: rows wait up
+  to 2 days, then are dropped (not sent late); /admin/emails says so in red.
+- **Restart-safe:** the batch is claimed before sending and its email stored; a batch left 'sending' by a stopped
+  server is sent again after 5 minutes with the same email and the same Idempotency-Key per recipient (within Resend's
+  24 hours), and no new batch starts while one is in flight. A failed batch is retried on the next runs, 3 tries in
+  all, then marked failed.
+- **Controls** (/admin/emails, "Admin alerts"): on/off for all (default on once sending is configured) and per kind
+  (settings `emails.admin_alerts` and `emails.admin_alerts.<kind>`; off means nothing is queued, and rows of a kind
+  switched off later are not sent), the recipients (masked), the next check, Preview / Text, "Send a test alert"
+  (made-up examples to every recipient; works while switched off) and the last 8 emails. `ADMIN_ALERTS=0` stops
+  everything, the test included.
+- **Language:** the email and its section are English only, like every admin page.

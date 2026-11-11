@@ -27,6 +27,7 @@ import { BRAND } from '../views/brand.js';
 import { tEn } from '../i18n/index.js';
 import { cleanBody as cleanLine, checkText, quickText, pausedUntil, RATE_MAX, RATE_WINDOW, QUICK_IDS, QUICK_EMOJI } from './chat.js';
 import { hasProfanity } from './textfilter.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 export const MAX_TEAM_LEN = 1000;          // an admin's message, a grown-up's reply
 export const TEAM_DAILY_REPLIES = 40;      // replies a person may send the team per day
@@ -167,6 +168,7 @@ export function reply(me, { kind = 'text', body = '' } = {}, t = tEn) {
     if (child) copyTo(guardiansOf(me), me, 'from', kind === 'quick' ? quickText(text) : text, null);
   });
   if (child) audit(me.id, 'team.reply.child', me.id, { message: id, text: (kind === 'quick' ? quickText(text) : text).slice(0, 500) });
+  adminAlert('message', { ref: me.id });   // who wrote, never the text (services/admin-alerts.js); never throws
   return { ok: true, id, message: q.get('SELECT * FROM chat_messages WHERE id=?', id) };
 }
 

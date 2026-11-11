@@ -18,6 +18,7 @@ import * as S from './schools.js';
 import * as progress from './progress.js';
 import { rankSeats } from './classlive-quiz.js';
 import { register } from './jobs.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 const DAY = 86400e3;
 export const KEEP = { classless: 90 * DAY, reports: 365 * DAY };
@@ -222,6 +223,7 @@ export function report(s, reason) {
   const items = s.items ? JSON.stringify(s.items.map(it => it.q)).slice(0, 20000) : '';
   q.run('INSERT INTO live_reports(id, host_id, game_id, version_id, set_id, reason, items, created_at) VALUES (?,?,?,?,?,?,?,?)',
     id, s.owner || s.host.userId, s.gameId, s.versionId, s.setId, REPORT_REASONS.includes(reason) ? reason : 'other', items, Date.now());
+  adminAlert('report', { ref: id, summary: `A live game was reported (${REPORT_REASONS.includes(reason) ? reason : 'other'})`, url: '/admin?tab=live' });
   return id;
 }
 export const openReports = (limit = 100) => q.all(`SELECT r.*, g.title game_title, g.slug game_slug, h.username host_name FROM live_reports r LEFT JOIN games g ON g.id=r.game_id

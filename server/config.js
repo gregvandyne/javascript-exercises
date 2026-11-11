@@ -183,7 +183,15 @@ export function parseEmail(env = process.env) {
   if (!addr.test(replyTo)) errors.push('EMAIL_REPLY_TO must be an email address');
   // One line in the footer: line breaks become " · ", and it is clipped (it is printed as text, never as HTML).
   const postalAddress = String(env.EMAIL_POSTAL_ADDRESS || '').replace(/\s*[\r\n]+\s*/g, ' · ').trim().slice(0, 200);
-  return { apiKey, from, replyTo, postalAddress, enabled: enabled.on, errors };
+  // Admin alerts (services/admin-alerts.js): ADMIN_ALERTS=0 stops them all; ADMIN_ALERTS_TO adds addresses (comma list)
+  // besides the platform admins' own. A bad entry is dropped and named by position only.
+  const alerts = parseFlag(env.ADMIN_ALERTS, 'ADMIN_ALERTS', true);
+  if (alerts.error) errors.push(alerts.error);
+  const alertsTo = [];
+  String(env.ADMIN_ALERTS_TO || '').split(',').map(x => x.trim()).filter(Boolean).forEach((x, i) => {
+    if (/^[^\s@<>()",;:\\]+@[^\s@<>()",;:\\]+\.[A-Za-z]{2,}$/.test(x) && x.length <= 254) { if (!alertsTo.some(y => y.toLowerCase() === x.toLowerCase())) alertsTo.push(x); } else errors.push(`ADMIN_ALERTS_TO entry ${i + 1} is not an email address`);
+  });
+  return { apiKey, from, replyTo, postalAddress, enabled: enabled.on, adminAlerts: alerts.on, adminAlertsTo: alertsTo.slice(0, 10), errors };
 }
 const email = parseEmail(process.env);
 
@@ -435,6 +443,10 @@ export const config = {
   emailFrom: email.from,
   emailReplyTo: email.replyTo,
   emailPostalAddress: email.postalAddress,
+  // Admin alerts (services/admin-alerts.js; docs/emails-go-live.md): one summary email every 10 minutes to the platform
+  // admins when something needs them. ADMIN_ALERTS=0 is the kill switch; ADMIN_ALERTS_TO adds explicit addresses.
+  adminAlerts: email.adminAlerts,
+  adminAlertsTo: email.adminAlertsTo,
   // The Teacher plan (server/services/teacher-plan.js; docs/decisions.md "Teacher plan"): Builder messages a UTC day
   // one teacher's classes share (the teacher and every student of their classes), the free trial's days, and the AI
   // cost (US dollars) one teacher with a plan adds to the paid AI pool's ceiling a month.

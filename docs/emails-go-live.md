@@ -33,6 +33,8 @@ once (`re_…`): Resend never shows it again.
 | `EMAIL_FROM` | optional; default `Greg at Oomba Academy <greg@oomba.ai>` (the domain must be the verified one) |
 | `EMAIL_REPLY_TO` | optional; default `Greg@oomba.ai` |
 | `EMAIL_ENABLED` | optional; `0` is the off switch for every email |
+| `ADMIN_ALERTS_TO` | optional; extra addresses for the admin alerts (comma list), besides your admin account's Google address. Only your own addresses: alerts go to platform admins only. |
+| `ADMIN_ALERTS` | optional; `0` stops the admin alerts (and their test button) |
 
 Save: Render redeploys.
 
@@ -44,6 +46,28 @@ Save: Render redeploys.
    Check it arrives (not in spam), on a phone too, in light and dark mode, and that **Unsubscribe** shows the page.
    In Gmail, "Show original" should say SPF, DKIM and DMARC **PASS**.
 3. The first real trial: its welcome appears in the log on `/admin/emails` within a minute.
+
+## Admin alerts (emails to you, the platform admin)
+
+When something needs you, you get one summary email every 10 minutes at most (docs/decisions.md "Admin alerts by
+email"): games waiting for review, new accounts (by type: students, kids, teachers, grown-ups), messages to the Oomba
+team inbox, school set-up requests, safety reports (games, chat messages, live games, family links) and billing
+problems (a failed or disputed payment, an overdue invoice, a fraud warning, a school asking to pay by invoice). Each
+line links to the admin page that handles it. A burst (500 sign-ups) is still one email, with counts.
+
+They hold no message text, no real names, no email addresses and no game content: account types, public usernames,
+the titles of games sent for review (clipped to 60 characters), counts and links. Open the admin page for the rest.
+
+They need only `RESEND_API_KEY` (not `EMAIL_POSTAL_ADDRESS`: they are internal mail, not marketing, and carry no
+unsubscribe link). They go to every platform admin account's known address (your Google sign-in's) plus
+`ADMIN_ALERTS_TO`, and never to anyone who is not a platform admin.
+
+On `/admin/emails`, **Admin alerts**: switch them all off or on, or one kind at a time; see who gets them (a red note
+when no address is known: sign in with Google as the admin, or set `ADMIN_ALERTS_TO`), when the next check is and the
+last few emails; **Preview** and **Text** show a made-up example; **Send a test alert** sends that example to every
+address now (it works while switched off, to check the address first). `ADMIN_ALERTS=0` on Render stops them all.
+
+Check: send a test alert, then on a second browser sign up a test account; within 10 minutes "1 new account" arrives.
 
 ## Turning it off
 

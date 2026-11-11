@@ -24,6 +24,7 @@ import * as funnel from './funnel.js';
 import { looksLikeLinkCode, LINK_CODE_ALPHABET } from './textfilter.js';
 import { allow, count, SIGNUP } from './ratelimit.js';
 import { tEn } from '../i18n/index.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 const DAY = 86400e3;
 export const CODE_TTL = 24 * 3600e3;
@@ -160,6 +161,7 @@ function report(childId, familyId, t, parentMade = false) {
   const id = uid(12);
   q.run('INSERT INTO link_reports(id, child_id, family_id, created_at, parent_made) VALUES (?,?,?,?,?)', id, childId, familyId, t, parentMade ? 1 : 0);
   audit(childId, 'family.link.report', familyId, { child: childId, report: id, ...(parentMade ? { parentMade: true } : {}) });
+  adminAlert('report', { ref: id, summary: 'A child reported a family link', url: '/admin?tab=links' });
 }
 /** The child's link to the family that made their account, or null: the very link createChildAccount wrote (made_link),
  *  unbroken since. That grown-up chose the password, so leaving them needs a new one (childLeaves). A later code link to

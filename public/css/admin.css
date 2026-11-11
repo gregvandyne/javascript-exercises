@@ -360,3 +360,10 @@ main.wrap>.tabs.adminnav{margin-inline:0;padding-inline:0}
   .adminpage .timeline li{grid-template-columns:1.6em minmax(0,1fr);row-gap:0}
   .adminpage .timeline .tl-w{grid-column:2;white-space:normal;font-size:.8125rem}
 }
+/* ---------- Emails: Admin alerts, one row per kind with its switch on the right (under the label on phones) ---------- */
+.alerts-kinds{list-style:none;padding:0;margin:0 0 var(--s3)}
+.alerts-kinds li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s1) var(--s3);padding:var(--s2) 0;border-bottom:1px solid var(--line)}
+.alerts-kinds li:last-child{border-bottom:0}
+.alerts-kinds .ak-l{flex:1 1 9em;min-width:0}
+.alerts-kinds form{margin:0}
+#e-alerts h3{margin:var(--s4) 0 var(--s2);font-size:1rem}

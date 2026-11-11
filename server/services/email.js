@@ -7,6 +7,9 @@
 //  - 'digest': the weekly class summary for teachers (services/digest.js). Its own off switch (digest_off_at, the
 //    "Stop these summaries" link and the Me page), separate from the nudges'; no postal address needed (it is about
 //    the teacher's own classes, not marketing), though the footer carries it when it is set.
+//  - 'admin': internal ops mail to the platform admins (services/admin-alerts.js: "a game is waiting for review").
+//    Not marketing: no postal address needed, no List-Unsubscribe header, no unsubscribe rules (the admin's switches
+//    on /admin/emails and ADMIN_ALERTS=0 stop it). Only ever to an account with role 'admin', even with an explicit `to`.
 // Every email goes only to a grown-up, teacher or staff account (never a kid's: kid accounts have no email anyway), at
 // the address we know for it: a Google sign-in's verified address, else the one the trial's checkout gave us. No
 // address: skipped and logged. Each send carries an Idempotency-Key (Resend keeps it 24 hours, so a retry or a restart
@@ -118,7 +121,8 @@ const retryable = (st, data) => st === 429 || st >= 500 || (st === 409 && data?.
 
 /**
  * Sends one email to an account.
- * { userId, template, category: 'nudge'|'transactional'|'digest'|'test', subject, html, text, idemKey, to? (test sends only) }
+ * { userId, template, category: 'nudge'|'transactional'|'digest'|'admin'|'test', subject, html, text, idemKey,
+ *   to? (test sends, and admin alerts to ADMIN_ALERTS_TO; the account must still be an admin's) }
  * -> { status: 'sent'|'skipped'|'failed'|'off', reason?, id? }
  * 'off' (sending is off, or a nudge or digest while EMAIL_POSTAL_ADDRESS is empty) leaves no log row: the caller may try again
  * later. Every other outcome leaves one.
@@ -127,7 +131,7 @@ export async function send({ userId, template, category, subject, html, text, id
   if (!sendingOn()) return { status: 'off', reason: config.resendApiKey ? 'disabled' : 'no_key' };
   // Everything but receipts and admin test sends (nudges, the weekly digest, any later kind) needs the postal address
   // (CAN-SPAM). The trial unsubscribe stops nudges; the weekly digest has its own switch (digest_off_at).
-  const marketing = category !== 'transactional' && category !== 'test';
+  const marketing = category !== 'transactional' && category !== 'test' && category !== 'admin';
   if (marketing && !config.emailPostalAddress) {
     warnOnce('postal', 'Trial and summary emails are not sent: EMAIL_POSTAL_ADDRESS is not set (CAN-SPAM needs a postal address in their footer).');
     return { status: 'off', reason: 'no_postal_address' };
@@ -135,6 +139,7 @@ export async function send({ userId, template, category, subject, html, text, id
   const base = { userId, template, category, idemKey };
   const u = getUser(userId);
   if (!adultRecipient(u)) { logRow({ ...base, status: 'skipped', error: 'not_adult' }); return { status: 'skipped', reason: 'not_adult' }; }
+  if (category === 'admin' && u.role !== 'admin') { logRow({ ...base, status: 'skipped', error: 'not_admin' }); return { status: 'skipped', reason: 'not_admin' }; }
   if (category === 'nudge' && nudgesOff(userId)) { logRow({ ...base, status: 'skipped', error: 'unsubscribed' }); return { status: 'skipped', reason: 'unsubscribed' }; }
   if (category === 'digest' && digestOff(userId)) { logRow({ ...base, status: 'skipped', error: 'unsubscribed' }); return { status: 'skipped', reason: 'unsubscribed' }; }
   const address = to ? normEmail(to) : addressOf(userId)?.email;
@@ -144,7 +149,7 @@ export async function send({ userId, template, category, subject, html, text, id
   const unsub = unsubscribeUrl(userId, category === 'digest' ? 'digest' : '');
   const body = {
     from: config.emailFrom, to: [address], reply_to: config.emailReplyTo, subject, html, text,
-    ...(category === 'transactional' ? {} : { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } }),
+    ...(category === 'transactional' || category === 'admin' ? {} : { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } }),
     tags: [{ name: 'template', value: String(template).replace(/[^A-Za-z0-9_-]/g, '_') }, { name: 'category', value: category }],
   };
   const key = idemKey || `${template}-${userId}-${uid(8)}`;

@@ -16,6 +16,7 @@ import { register } from './jobs.js';
 import * as S from './stripe.js';
 import { registerPaidBudget } from './ai-budget.js';
 import * as funnel from './funnel.js';
+import { alert as adminAlert } from './admin-alerts.js';
 
 const DAY = 86400e3;
 export const WEBHOOK_PATH = '/api/billing/webhook';
@@ -32,6 +33,11 @@ export const WEBHOOK_EVENTS = Object.freeze([
 ]);
 const HANDLED = new Set(WEBHOOK_EVENTS);
 // Audit entries for events (besides billing.subscription.<status> on a status change). Ids only, never card or email data.
+// Events the platform admin is emailed about (services/admin-alerts.js): payment problems and risk, never amounts or ids.
+const EVENT_ALERT = {
+  'invoice.payment_failed': 'A payment failed', 'invoice.overdue': 'An invoice is overdue', 'checkout.session.async_payment_failed': 'A bank payment at checkout failed',
+  'charge.dispute.created': 'A payment was disputed', 'radar.early_fraud_warning.created': 'Stripe sent an early fraud warning',
+};
 const EVENT_AUDIT = {
   'checkout.session.completed': 'billing.checkout.done', 'checkout.session.async_payment_failed': 'billing.checkout.failed',
   'invoice.paid': 'billing.invoice.paid', 'invoice.payment_failed': 'billing.invoice.failed', 'invoice.overdue': 'billing.invoice.overdue',
@@ -271,7 +277,7 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   const prev = q.get('SELECT * FROM billing_subscriptions WHERE stripe_subscription_id=?', sub.id);
   if (!owner && prev) owner = { owner_kind: prev.owner_kind, owner_id: prev.owner_id };
   if (!owner) {
-    if (event) { setEventResult(event, 'unlinked'); audit(null, 'billing.unlinked_event', sub.id, { event: event.id, type: event.type, customer: customerId }); }
+    if (event) { setEventResult(event, 'unlinked'); audit(null, 'billing.unlinked_event', sub.id, { event: event.id, type: event.type, customer: customerId }); adminAlert('billing', { ref: sub.id, summary: 'A Stripe subscription names a customer we do not know' }); }
     log('warn', 'billing: subscription with an unknown customer', { subscription: sub.id, event: event?.id });
     return { result: 'unlinked' };
   }
@@ -355,6 +361,9 @@ function applySubscription(sub, { event = null, session = null, openInvoices = [
   if (prev && prev.plan !== plan && prev.plan !== 'unknown' && plan !== 'unknown') audit(null, 'billing.plan.change', target, { subscription: sub.id, from: prev.plan, to: plan, event: event?.id || null });
   if (event && EVENT_AUDIT[event.type]) audit(null, EVENT_AUDIT[event.type], target, { subscription: sub.id, event: event.id, ...(risk?.cancelled ? { cancelled: true } : {}) });
   if (risk?.flag === 'duplicate' && prev?.flag !== 'duplicate') audit(null, 'billing.duplicate', target, { subscription: sub.id, kept: risk.kept || null, refunded: !!risk.refunded });
+  const planWord = plan && plan !== 'unknown' ? ` (${plan} plan${row.livemode ? '' : ', test mode'})` : '';
+  if (event && EVENT_ALERT[event.type]) adminAlert('billing', { ref: sub.id, summary: `${EVENT_ALERT[event.type]}${planWord}` });
+  if (risk?.flag === 'duplicate' && prev?.flag !== 'duplicate') adminAlert('billing', { ref: sub.id, summary: `A second plan for the same owner was cancelled and refunded${planWord}` });
   if (session) q.run('DELETE FROM billing_checkouts WHERE session_id=?', session.id);
   if (event) setEventResult(event, 'ok');
   const saved = q.get('SELECT * FROM billing_subscriptions WHERE stripe_subscription_id=?', sub.id);
