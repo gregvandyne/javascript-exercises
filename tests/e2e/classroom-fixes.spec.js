@@ -10,7 +10,7 @@
 // - Sign in: Show password, and a login card's password typed with spaces still works.
 // - /teachers asks for the sender's name; the thank-you comes first and lists what to do today.
 import { test, expect } from '@playwright/test';
-import { login, signup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN } from './helpers.js';
+import { login, signup, teacherSignup, uniq, ownIp, adminPage, schoolWithAdmin, ADMIN } from './helpers.js';
 
 const TEACHER = { username: 'DemoTeacher', password: 'demo-pass-123' };
 const STUDENT = { username: 'DemoStudent', password: 'demo-pass-123' };
@@ -241,16 +241,11 @@ test('sign in: Show password, and a login card password typed with spaces works;
   // the teacher's Me badge doesn't count Oomba's copy of the new student's welcome
   const before = await (await t.request.get('/me')).text();
   expect(before).not.toMatch(/Copy: we wrote to/);
-  // /teachers: "Your name", and the account first: the account and the school at once, then their Classroom
-  // (tests/e2e/school-signup.spec.js covers the form itself).
+  // The one sign-up: "Your name" on the school step, the account and the school, then their Classroom
+  // (tests/e2e/signup.spec.js and school-signup.spec.js cover the steps themselves).
   const v = await page$(browser, { viewport: { width: 390, height: 844 } });
-  await ownIp(v);
-  await v.goto('/teachers#start');
-  await v.fill('#sr-name', 'Ana Rivera'); await v.fill('#sr-school', `${uniq('Oak')} Primary`);
-  await v.selectOption('#sr-role', 'teacher'); await v.fill('#sr-email', 'ana@example.org');
-  await v.fill('#sr-students', '25'); await v.fill('#sr-country', 'United Kingdom');
-  await v.fill('#sr-username', uniq('AnaR').slice(0, 16)); await v.fill('#sr-password', 'blue-otter-fortech-42'); await v.check('#sr-adult');
-  await Promise.all([v.waitForURL(/\/teach\?welcome=school/), v.locator('.sr-form button[type=submit]').click()]);
+  await teacherSignup(v, { name: 'Ana Rivera', email: 'ana@example.org' });
+  await expect(v).toHaveURL(/\/teach\?welcome=school/);
   await expect(v.locator('#school-ready')).toContainText('Primary is ready');
   // the platform admin sees the name on the request
   const admin = await adminPage(browser);

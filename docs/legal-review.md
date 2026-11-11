@@ -17,6 +17,29 @@ server/routes/info.js; change it with every change to the text).
 - Owner steps that remain: Stripe Dashboard → Settings → Business → Public details, Terms of service URL
   `https://oomba.ai/terms`; then Render `TERMS_PUBLISHED=1`.
 
+### After the sign-off: grown-ups and teachers sign up with Google (2026-11-11, owner decision, lawyer review pending)
+
+- **Owner: yes, 2026-11-11 · Lawyer: not yet.** The one sign-up (docs/decisions.md "One sign-up") lets a parent or a
+  teacher make their own account with Google (a personal Gmail or a school account), after the "18 or older"
+  statement. Kids never sign up with Google; the kid sign-up asks for no email. The verified Google email is kept for
+  sign-in and account emails; matching stays by Google's account id, and an email never links two accounts.
+- `info.privacy.grownups.p1` now reads: "**What we don't ask for:** your phone number, home address or age, and no email
+  unless you sign up or sign in with Google. (Stripe asks for some of these when you pay: see Payments below.)"
+- New `info.privacy.grownups.li8` (after li2): "if you sign up or sign in with Google: your Google account's id and email
+  address, to sign you in and to send account emails, such as a password reset or trial emails (never the Google
+  photo);"
+- New `google.setup.privacy.adults` (the Sign in with Google section of /privacy and /parents, after p1/p1c): "Parents
+  and teachers can also sign up with Google, with a personal or a school Google account. We keep that account's id and
+  email address while it is connected, to sign them in and to send account emails, such as a password reset or trial
+  emails. An email never joins two accounts on its own. Children never sign up with Google."
+- New `info.privacy.schoolSetup.li5` (after li1): "**When a teacher creates their school while signing up** and types a
+  work email, we keep the school's name, their name, that email, the language of the page, when it was sent and their
+  account, for the same uses and for as long as a request. The email is also kept with their account."
+- All 13 languages. `LEGAL_UPDATED` is already 2026-11-11 (the date of this change), so it did not move.
+- For the lawyer: is the "18 or older" statement enough for an adult account made with a Google account (a school
+  Workspace account of a student could also tick it), and does keeping a teacher's or parent's Google email change
+  anything in the COPPA analysis of item 31 (the "no email" rule still holds for every child's account)?
+
 ### After the sign-off: the school set-up email on /privacy (2026-11-11, needs the lawyer's sign-off)
 
 - **Owner: yes, 2026-11-11 · Lawyer: not yet.** /teachers "Set up your school" now makes the teacher's account

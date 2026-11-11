@@ -84,7 +84,7 @@ const codeBlock = s => html`<code dir="ltr">${s}</code>`;
 export function setupLink(req) {
   // Until a language has "Set up your child — free", its already-translated "Make a grown-up account" stands in.
   const [href, key] = isGrownup(req.user) ? ['/family', 'family.landing.toFamily']
-    : !familiesOn(req) ? ['/signup?for=kid', 'parents.cta.start'] : ['/grown-ups/signup', req.t.own('parents.cta.setup') ? 'parents.cta.setup' : 'parents.cta.grownup'];
+    : !familiesOn(req) ? ['/signup/kid', 'parents.cta.start'] : ['/signup/parent', req.t.own('parents.cta.setup') ? 'parents.cta.setup' : 'parents.cta.grownup'];
   return { href, key, label: req.t(key) };
 }
 /** The end of /safety: "Set up your child". Signed out it opens the set-up (setupLink) at once; anyone signed in as a
@@ -108,7 +108,8 @@ export function googlePrivacy(req, level = 2, { fold = false } = {}) {
   // Limited Use statement Google's API Services User Data Policy asks for.
   const classroom = !!config.googleClassroom;
   const head = html`${raw(`<h${level}>`)}${req.t('google.setup.privacy.h')}${raw(`</h${level}>`)}`;
-  const body = html`<p>${req.t(classroom ? 'google.setup.privacy.p1c' : 'google.setup.privacy.p1')}</p>${classroom ? html`<p>${req.t('google.setup.privacy.classroom')}</p><p>${req.t('google.setup.privacy.limitedUse')}</p>` : ''}`;
+  // Parents and teachers may sign up with Google (docs/decisions.md "One sign-up"): what their account keeps.
+  const body = html`<p>${req.t(classroom ? 'google.setup.privacy.p1c' : 'google.setup.privacy.p1')}</p><p>${req.t('google.setup.privacy.adults')}</p>${classroom ? html`<p>${req.t('google.setup.privacy.classroom')}</p><p>${req.t('google.setup.privacy.limitedUse')}</p>` : ''}`;
   return html`<section class="panel" id="google">${fold ? folded(head, body) : html`${head}${body}`}</section>`;
 }
 // /parents itself is in routes/parents.js: a page for parents with these sections under "Safety and privacy, in detail".

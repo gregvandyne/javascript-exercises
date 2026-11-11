@@ -163,17 +163,6 @@
       "signInLink": "Inloggen",
       "newHere": "Nieuw hier?",
       "signupLink": "Maak een gratis account",
-      "grownupLogin": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders loggen hier in</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
-      "grownupLoginSoon": "Volwassene of leerkracht? <a href=\"{grownup}\">Oomba Academy voor ouders</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
-      "grownupSignup": "Volwassene of leerkracht? <a href=\"{grownup}\">Ouders beginnen hier</a> · <a href=\"{teachers}\">Leerkrachten beginnen hier</a>",
-      "whoHeading": "Voor wie is dit?",
-      "whoGrownup": "Ik (een volwassene)",
-      "whoGrownupSub": "Je eigen account, gekoppeld aan het account van je kind",
-      "whoKid": "Een kind (ik of mijn kind)",
-      "whoKidSub": "Een verzonnen naam en een wachtwoord, geen e-mail. Kinderen alleen en ouders beginnen allebei hier.",
-      "whoTeacher": "Ik ben leerkracht",
-      "whoTeacherSub": "Zet je school en je klassen op",
-      "whoBack": "Voor wie is dit? Kies opnieuw",
       "soonHeading": "Accounts voor volwassenen komen binnenkort",
       "soonText": "Binnenkort kun je je eigen account maken, gekoppeld aan het account van je kind. Tot die tijd kan je kind gratis beginnen met een verzonnen naam en een wachtwoord (geen e-mail), en op de pagina voor ouders lees je hoe Oomba Academy werkt en kinderen veilig houdt.",
       "soonParents": "Oomba Academy voor ouders",
@@ -1014,12 +1003,13 @@
         "s1": "Wat we bewaren",
         "li1": "de naam die je bij het aanmelden intypt (dat mag een voornaam of bijnaam zijn; kinderen zien die nooit: ze zien alleen \"een volwassene\");",
         "li2": "je wachtwoord, onleesbaar opgeslagen (wij kunnen het niet lezen);",
+        "li8": "als je je aanmeldt of inlogt met Google: de id en het e-mailadres van je Google-account, om je aan te melden en e-mails over je account te sturen, zoals een wachtwoordherstel of e-mails over de proefperiode (nooit de Google-foto);",
         "li3": "dat je \"Ik ben ouder of verzorger, en 18 jaar of ouder\" hebt aangevinkt (dat controleren we niet);",
         "li4": "je inlogsessies, waaronder de naam van je browser (user agent), en wanneer je voor het laatst je wachtwoord opnieuw hebt ingevuld voor een betaalstap;",
         "li5": "welke kinderen je hebt gekoppeld, wanneer, en of een koppeling in afwachting, actief of beëindigd is;",
         "li6": "je abonnement: de klant- en abonnementsnummers van Stripe, het soort abonnement, maandelijks of jaarlijks, de status, plaatsen, datums en bedragen;",
         "li7": "een overzicht van belangrijke acties (bijvoorbeeld \"abonnement gestart\", \"kind gekoppeld\", \"terugbetaling\"). Daarin staan nooit kaartgegevens of e-mailadressen.",
-        "p1": "<b>Waar we niet om vragen:</b> je e-mailadres, telefoonnummer, woonadres of leeftijd. (Stripe vraagt om een deel hiervan als je betaalt: zie Betalingen hieronder.)",
+        "p1": "<b>Waar we niet om vragen:</b> je telefoonnummer, woonadres of leeftijd, en geen e-mailadres, tenzij je je aanmeldt of inlogt met Google. (Stripe vraagt om een deel hiervan als je betaalt: zie Betalingen hieronder.)",
         "p2": "Met een ouderaccount kun je games bouwen. Die krijgen dezelfde veiligheidschecks als elke game, en een game die met iedereen gedeeld is, toont de weergavenaam van de volwassene en ‘Volwassen bouwer’. Een ouderaccount kan alleen contact maken met andere ouderaccounts; het kan niet chatten, geen kinderen als vriend toevoegen en geen openbaar profiel hebben, en het verschijnt niet in zoekresultaten. We laten nooit openbaar zien welke kinderen aan een volwassene gekoppeld zijn, of hun namen."
       },
       "linking": {
@@ -1061,6 +1051,7 @@
       "schoolSetup": {
         "h": "Aanvragen om een school op te zetten",
         "li1": "<b>Wat we bewaren als een leerkracht of schoolleider ons vraagt een school op te zetten</b> (het formulier op onze pagina voor leerkrachten): de naam van de school, hun functie, hun werk-e-mailadres, ongeveer hoeveel leerlingen, het land, de taal van de pagina en wanneer het is verstuurd. Als ze waren ingelogd met een ouderaccount of een account van schoolpersoneel, bewaren we ook welk account het heeft verstuurd. Het account van een gast wordt nooit bij een aanvraag bewaard. Als het leraarsaccount met het formulier is gemaakt, bewaren we het werk-e-mailadres ook bij dat account.",
+        "li5": "<b>Als een leerkracht bij het aanmelden de school aanmaakt</b> en een werk-e-mailadres invult, bewaren we de naam van de school, de naam van de leerkracht, dat e-mailadres, de taal van de pagina, wanneer het is verstuurd en het account, voor hetzelfde gebruik en even lang als een aanvraag. Het e-mailadres wordt ook bij het account bewaard.",
         "li2": "<b>Waarvoor we het gebruiken:</b> om de school in te richten, de aanvraag te beantwoorden, de welkomsthandleiding van de school te sturen en een link te sturen om het wachtwoord te herstellen als de eigenaar van het account daarom vraagt. We sturen geen nieuwsbrieven en delen het niet met Stripe of met iemand anders.",
         "li3": "<b>Wie het ziet:</b> alleen ons team.",
         "li4": "<b>Hoe lang:</b> verwijderd <b>1 jaar</b> nadat we de aanvraag hebben afgesloten (of 1 jaar nadat die is verstuurd, als hij nooit wordt afgesloten)."
@@ -3349,12 +3340,13 @@
   "google": {
     "button": {
       "signIn": "Inloggen met Google",
-      "hint": "Voor Google-accounts van school, zoals op een Chromebook."
+      "hint": "Voor Google-accounts van school, en voor ouders en leerkrachten die zich met Google hebben aangemeld."
     },
     "login": {
       "orName": "of gebruik je Oomba Academy-naam",
       "joinLink": "Heb je een klascode? {link}",
-      "joinLinkText": "Doe mee met je klas"
+      "joinLinkText": "Doe mee met je klas",
+      "unknownAdult": "Ouder of leerkracht? <a href=\"{href}\">Maak je account</a> en kies Aanmelden met Google."
     },
     "errors": {
       "expired": "Dat duurde iets te lang. Probeer het nog eens.",
@@ -3389,7 +3381,8 @@
       "schoolAccount": "Je leerkracht beheert inloggen met Google voor dit account.",
       "needCard": "Je logt alleen in met Google. Vraag je schoolbeheerder om een inlogkaart voordat je het ontkoppelt.",
       "noPasswordStaff": "Je logt in met Google, dus er is geen wachtwoord om te veranderen. Heb je er ooit een nodig? Dan kan je schoolbeheerder je een inlogkaart geven.",
-      "noPasswordStudent": "Je logt in met Google. Heb je ooit een inlogkaart nodig? Vraag het je leerkracht."
+      "noPasswordStudent": "Je logt in met Google. Heb je ooit een inlogkaart nodig? Vraag het je leerkracht.",
+      "noPasswordOwn": "Je meldt je aan met Google, dus er is geen wachtwoord om te wijzigen."
     },
     "join": {
       "title": "Doe mee met je klas",
@@ -3523,7 +3516,8 @@
         "p1": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en gebruiken het account nooit om iets anders bij Google te lezen.",
         "p1c": "Zolang het Google-account gekoppeld is, bewaren we de id, het e-mailadres en het schooldomein van het account, zodat we het herkennen bij het inloggen. We bewaren nooit de Google-foto, laten nooit de Google-naam van een leerling zien op de gamesite en lezen verder niets uit een Google-account, tenzij een leerkracht Google Classroom koppelt.",
         "classroom": "Als een leerkracht Google Classroom koppelt, lezen we alleen de namen van de klassen waaraan die lesgeeft en, voor de klas die gekoppeld wordt, de Google-account-id en naam van elke leerling, om ze toe te voegen aan de bijbehorende klas in Oomba Academy. We sturen Google alleen wat de leerkracht vraagt: een opdracht (de titel van de les, een link ernaartoe en de inleverdatum) en de score van elke leerling voor de les, op 100. We sturen nooit antwoorden, feedback, games of tekeningen van leerlingen. De koppeling van de leerkracht wordt versleuteld bewaard tot die de koppeling verbreekt of het account verwijdert; bij het verbreken wordt de toegang ook bij Google ingetrokken.",
-        "limitedUse": "Het gebruik en de overdracht door Oomba Academy van informatie die via Google-API's wordt ontvangen, voldoen aan het Google API Services User Data Policy (beleid voor gebruikersgegevens van Google API-services), inclusief de Limited Use-vereisten (vereisten voor beperkt gebruik). We verkopen deze informatie nooit, gebruiken ze nooit voor advertenties of om AI-modellen te trainen, en ons team bekijkt ze alleen als dat nodig is voor support, beveiliging of de wet."
+        "limitedUse": "Het gebruik en de overdracht door Oomba Academy van informatie die via Google-API's wordt ontvangen, voldoen aan het Google API Services User Data Policy (beleid voor gebruikersgegevens van Google API-services), inclusief de Limited Use-vereisten (vereisten voor beperkt gebruik). We verkopen deze informatie nooit, gebruiken ze nooit voor advertenties of om AI-modellen te trainen, en ons team bekijkt ze alleen als dat nodig is voor support, beveiliging of de wet.",
+        "adults": "Ouders en leerkrachten kunnen zich ook aanmelden met Google, met een persoonlijk of school-Google-account. We bewaren de id en het e-mailadres van dat account zolang het gekoppeld is, om hen aan te melden en e-mails over het account te sturen, zoals een wachtwoordherstel of e-mails over de proefperiode. Een e-mailadres koppelt nooit vanzelf twee accounts. Kinderen melden zich nooit aan met Google."
       }
     }
   },
@@ -4322,7 +4316,9 @@
       "submitSignup": "Mijn account en school maken",
       "submitStaff": "Versturen",
       "privacySignup": "We gebruiken je e-mail om je de welkomsthandleiding te sturen, een vergeten wachtwoord te herstellen en je te antwoorden. Zie ons <a href=\"{privacy}\">privacybeleid</a>.",
-      "emailHintSignup": "Je school-e-mailadres. Daar sturen we de welkomsthandleiding heen, en we gebruiken het als je je wachtwoord vergeet."
+      "emailHintSignup": "Je school-e-mailadres. Daar sturen we de welkomsthandleiding heen, en we gebruiken het als je je wachtwoord vergeet.",
+      "signupLead": "Maak je leerkrachtaccount, maak daarna je school aan of sluit je erbij aan en voeg je klassen toe. Het duurt ongeveer twee minuten en is gratis.",
+      "signupCta": "Mijn leerkrachtaccount maken"
     },
     "live": {
       "h": "Livespellen in de klas",
@@ -8169,6 +8165,109 @@
       "bye": "Welkom aan boord,",
       "signature": "Het Oomba Academy-team",
       "changeLater": "Je kunt je gebruikersnaam en je naam later wijzigen op je Ik-pagina."
+    }
+  },
+  "onboard": {
+    "step": "Stap {n} van {total}",
+    "back": "Terug",
+    "who": {
+      "heading": "Wie meldt zich aan?",
+      "kid": "Ik ben een kind",
+      "kidSub": "Een leuke naam en een wachtwoord. Geen e-mail.",
+      "parent": "Ik ben een ouder",
+      "parentSub": "Maak je account en voeg daarna je kinderen toe.",
+      "teacher": "Ik ben leerkracht",
+      "teacherSub": "Stel je school en je klassen in."
+    },
+    "google": "Aanmelden met Google",
+    "googleNote": "We bewaren je Google-e-mailadres om je aan te melden en voor e-mails over je account.",
+    "create": "Mijn account maken",
+    "parent": {
+      "heading": "Maak je ouderaccount",
+      "lead": "Voor ouders en voogden. Daarna kun je je kinderen toevoegen."
+    },
+    "teacher": {
+      "heading": "Maak je leerkrachtaccount",
+      "lead": "Daarna stel je je school in en voeg je je klassen toe."
+    },
+    "kid": {
+      "codeHeading": "Heb je een klascode?",
+      "codeLead": "Heeft je leerkracht je een klascode gegeven? Typ hem hier om bij je klas te komen.",
+      "codeLabel": "Klascode",
+      "join": "Naar mijn klas",
+      "familyHeading": "Wil je dat je ouder ook op Oomba komt?",
+      "familyText": "Vraag een gezinscode en geef die aan je ouder of voogd. Die typt hem op de gezinspagina, en dan zeg jij ja.",
+      "familyButton": "Mijn gezinscode krijgen",
+      "skip": "Nu overslaan"
+    },
+    "school": {
+      "heading": "Je school",
+      "lead": "Maak je school aan op Oomba Academy, sluit je erbij aan of sla dit nu over.",
+      "create": "Mijn school aanmaken",
+      "createSub": "Jij wordt de schoolbeheerder. Leerkrachten kun je later uitnodigen.",
+      "join": "Bij mijn school aansluiten",
+      "joinSub": "Mijn school gebruikt Oomba Academy al.",
+      "own": "Nu overslaan",
+      "ownSub": "Begin met je eigen klaslokaal. Bij een school aansluiten kan later.",
+      "createHeading": "Maak je school aan",
+      "createLead": "Jij wordt de schoolbeheerder en je kunt meteen beginnen.",
+      "schoolName": "Naam van de school",
+      "yourName": "Je naam, zoals je leerlingen hem zien",
+      "yourNameHint": "Bijvoorbeeld juf Rivera.",
+      "email": "Werk-e-mail (niet verplicht)",
+      "emailHint": "Daar sturen we de welkomstgids van je school naartoe, en we gebruiken het als je je wachtwoord vergeet.",
+      "createSubmit": "Mijn school aanmaken",
+      "privacy": "Wat we bewaren en waarom: <a href=\"{privacy}\">ons privacybeleid</a>.",
+      "ownHeading": "Je eigen klaslokaal",
+      "ownLead": "Je klassen staan in je eigen klaslokaal. Komt je school later, dan kan de beheerder je uitnodigen.",
+      "ownSubmit": "Doorgaan",
+      "ownName": "Klaslokaal van {name}"
+    },
+    "join": {
+      "heading": "Sluit je aan bij je school",
+      "how": "Vraag de Oomba Academy-beheerder van je school om je toe te voegen. Geef je gebruikersnaam door:",
+      "copy": "Kopiëren",
+      "where": "Die voegt je toe op de schoolpagina, op het tabblad Mensen. Kom daarna hier terug en kijk opnieuw.",
+      "google": "Meldt je school zich aan met Google, dan kan je beheerder in plaats daarvan je school-e-mail uitnodigen.",
+      "check": "Opnieuw kijken",
+      "own": "Voorlopig met mijn eigen klaslokaal beginnen"
+    },
+    "classes": {
+      "heading": "Voeg je klassen toe",
+      "lead": "Voeg minstens één klas toe. Meer kan later.",
+      "rowLabel": "Klas {n}",
+      "name": "Naam van de klas",
+      "namePh": "zoals groep 6B of lokaal 12",
+      "grade": "Leerjaar",
+      "gradePick": "Kies een leerjaar",
+      "gradeK": "Kleuters",
+      "gradeN": "Leerjaar {n}",
+      "add": "Nog een klas toevoegen",
+      "remove": "Verwijderen",
+      "submit": "Opslaan en doorgaan",
+      "submitMore": "Deze klassen toevoegen",
+      "have": "Je klassen",
+      "more": "Meer klassen toevoegen",
+      "continue": "Doorgaan",
+      "school": "School",
+      "noCreate": "Bij {school} maakt de schoolbeheerder de klassen. Vraag of je aan die van jou wordt toegevoegd.",
+      "made": "{count, plural, one {# klas toegevoegd} other {# klassen toegevoegd}}",
+      "errors": {
+        "none": "Voeg minstens één klas toe.",
+        "grade": "Kies voor elke klas een leerjaar.",
+        "tooMany": "Voeg hier maximaal {max} klassen toe. Meer kan later."
+      }
+    },
+    "classroom": {
+      "heading": "Google Classroom koppelen?",
+      "lead": "Dit kan later ook vanuit elke klas.",
+      "li1": "Haal je klassenlijsten uit Google Classroom.",
+      "li2": "Zet lessen als opdrachten in Classroom.",
+      "li3": "Stuur scores terug naar Classroom.",
+      "connect": "Google Classroom koppelen",
+      "connected": "Google Classroom is gekoppeld.",
+      "later": "Je kunt Google Classroom later vanuit elke klas koppelen.",
+      "skip": "Nu overslaan"
     }
   }
 }

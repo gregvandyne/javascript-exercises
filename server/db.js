@@ -927,6 +927,9 @@ export const MIGRATIONS = [
       kinds TEXT NOT NULL DEFAULT '{}', recipients TEXT NOT NULL DEFAULT '[]', delivered TEXT NOT NULL DEFAULT '[]',
       message TEXT, attempts INTEGER NOT NULL DEFAULT 0, claimed_at INTEGER, sent_at INTEGER, error TEXT, created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_admin_alert_batches_created ON admin_alert_batches(created_at);`],
+  // One sign-up (docs/decisions.md "One sign-up"): an account made on the teacher path before it has a school says so
+  // ('teacher'), so signing in again goes back to the school step instead of a kid's home. Cleared once they are staff.
+  ['0074_signup_as', "ALTER TABLE users ADD COLUMN signup_as TEXT NOT NULL DEFAULT '';"],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

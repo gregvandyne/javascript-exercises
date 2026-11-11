@@ -1,7 +1,7 @@
-// "Who's this for?" on Start free (the navigation proposal's Week 2, docs/decisions.md "Who's this for?"): signed out,
-// /signup first asks Me (a grown-up) · My child · I'm a teacher, as plain links through /signup/for/<who>, which counts
-// the choice (a daily total, people only) and redirects. It is skipped for a guest keeping their progress, for ?for=kid,
-// for a kid on their way to a page (?next=) and in a language that doesn't have the question yet. /login never asks.
+// "Who's signing up?" (docs/decisions.md "Who's this for?" and "One sign-up"): signed out, /signup first asks I'm a kid
+// · I'm a parent · I'm a teacher, as plain links through /signup/for/<who>, which counts the choice (a daily total,
+// people only) and redirects to that path's first step. It is skipped for a guest keeping their progress and for a kid on
+// their way to a page (?next=). /login never asks. The steps after it: tests/unit/onboarding.test.js.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -20,7 +20,6 @@ const auth = await import('../../server/auth.js');
 const F = await import('../../server/services/family.js');
 const funnel = await import('../../server/services/funnel.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
-const { withoutKeys } = await import('../support/i18n-gaps.js');
 
 seed({ quiet: true });
 let server, base;
@@ -38,55 +37,55 @@ async function call(u, path, { ua = CHROME, lang, method = 'GET', headers = {} }
   return { status: r.status, text: await r.text(), location: r.headers.get('location'), headers: r.headers };
 }
 const picks = step => (q.get('SELECT SUM(n) n FROM funnel_counts WHERE day=? AND step=?', today(), step) || {}).n || 0;
-const chooser = s => (/<div class="doors whofor"[\s\S]*?<\/div>/.exec(s) || [''])[0];
+const chooser = s => (/<div class="doors whofor ob-doors"[\s\S]*?<\/div>\s*<p class="center small ob-foot">/.exec(s) || [''])[0];
 const hrefs = s => [...s.matchAll(/href="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, '&'));
 const form = s => /data-api="\/api\/auth\/signup"/.test(s);
 let n = 0;
 const kid = () => auth.createUser({ username: `WhoKid${++n}`, password: 'rainbow-77' });
 const grownup = () => { const u = auth.createUser({ username: `WhoParent${++n}`, password: 'a-long-password-1', accountType: 'grownup' }); F.ensureFamily(u); return auth.getUser(u.id); };
 
-test('signed out, /signup asks "Who’s this for?" with three plain links, instead of the kid form', async () => {
+test('signed out, /signup asks "Who’s signing up?" with three plain links (kid, parent, teacher), instead of a form', async () => {
   const r = await call(null, '/signup');
   assert.equal(r.status, 200);
-  assert.match(r.text, /<h1 class="center" id="who-h">Who’s this for\?<\/h1>/);
+  assert.match(r.text, /<h1 class="center ob-h" id="ob-h">Who’s signing up\?<\/h1>/);
   const c = chooser(r.text);
-  assert.deepEqual(hrefs(c), ['/signup/for/grownup', '/signup/for/kid', '/signup/for/teacher']);
-  assert.match(c, /role="group" aria-labelledby="who-h"/);
-  assert.match(c, /👪.*?Me \(a grown-up\)<\/span><span class="door-s">Your own account, linked to your child’s account</);
-  // a kid on their own reads this door as theirs too ("A kid (me or my child)"), not only "My child"
-  assert.match(c, /🧒.*?A kid \(me or my child\)<\/span><span class="door-s">A made-up name and a password, no email\. Kids on their own and parents both start here\./);
-  assert.match(c, /🍎.*?I’m a teacher<\/span><span class="door-s">Set up your school and your classes/);
+  assert.deepEqual(hrefs(c), ['/signup/for/kid', '/signup/for/grownup', '/signup/for/teacher']);
+  assert.match(c, /role="group" aria-labelledby="ob-h"/);
+  assert.match(c, /🧒.*?I’m a kid<\/span><span class="door-s">A fun name and a password\. No email\.</);
+  assert.match(c, /👪.*?I’m a parent<\/span><span class="door-s">Make your account, then add your kids\.</);
+  assert.match(c, /🍎.*?I’m a teacher<\/span><span class="door-s">Set up your school and your classes\.</);
   assert.ok(!form(r.text), 'the kid form waits one tap away');
-  assert.doesNotMatch(r.text, /grownup-line/, 'the chooser replaces the "Grown-up or teacher?" line (no duplicate)');
+  assert.doesNotMatch(r.text, /grownup-line/);
   assert.match(r.text, /data-guest-play="\/"/, 'playing as a guest is still there');
-  assert.match(r.text, /href="\/login\?next=%2F">Sign in<\/a>/);
+  assert.match(r.text, /href="\/login">Sign in<\/a>/);
   assert.doesNotMatch(r.text, /\$\d|€\d|£\d|Basic|Family plan/, 'no prices or plan names: kids see this page too');
-  // A grown-up's ?next= (Plans, the parent page) still asks, and "Me (a grown-up)" and "My child" carry it on.
+  // A grown-up's ?next= (Plans, the parent page) still asks, and the kid's and the parent's doors carry it on.
   const p = await call(null, '/signup?next=%2Fplans');
-  assert.deepEqual(hrefs(chooser(p.text)), ['/signup/for/grownup?next=%2Fplans', '/signup/for/kid?next=%2Fplans', '/signup/for/teacher']);
+  assert.deepEqual(hrefs(chooser(p.text)), ['/signup/for/kid?next=%2Fplans', '/signup/for/grownup?next=%2Fplans', '/signup/for/teacher']);
   assert.ok(chooser((await call(null, '/signup?next=%2Fes%2Fparents')).text));
 });
 
-test('each choice is counted once (people only) and leads on: grown-up sign-up, kid form, the school form', async () => {
+test('each choice is counted once (people only) and leads to that path’s first step', async () => {
   const before = Object.fromEntries(['who.grownup', 'who.kid', 'who.teacher'].map(s => [s, picks(s)]));
   const g = await call(null, '/signup/for/grownup');
-  assert.equal(g.status, 302); assert.equal(g.location, '/grown-ups/signup');
+  assert.equal(g.status, 302); assert.equal(g.location, '/signup/parent');
   assert.match(g.headers.get('x-robots-tag'), /noindex/); assert.equal(g.headers.get('cache-control'), 'no-store');
-  assert.equal((await call(null, '/signup/for/kid')).location, '/signup?for=kid');
-  assert.equal((await call(null, '/signup/for/kid?next=%2Fplans')).location, '/signup?for=kid&next=%2Fplans');
-  assert.equal((await call(null, '/signup/for/kid?next=%2F%2Fevil.example')).location, '/signup?for=kid', 'an unsafe next is dropped');
-  assert.equal((await call(null, '/signup/for/teacher')).location, '/teachers#start');
-  assert.equal(picks('who.grownup'), before['who.grownup'] + 1);
+  assert.equal((await call(null, '/signup/for/parent')).location, '/signup/parent', '"parent" is the same choice');
+  assert.equal((await call(null, '/signup/for/kid')).location, '/signup/kid');
+  assert.equal((await call(null, '/signup/for/kid?next=%2Fplans')).location, '/signup/kid?next=%2Fplans');
+  assert.equal((await call(null, '/signup/for/kid?next=%2F%2Fevil.example')).location, '/signup/kid', 'an unsafe next is dropped');
+  assert.equal((await call(null, '/signup/for/teacher')).location, '/signup/teacher');
+  assert.equal(picks('who.grownup'), before['who.grownup'] + 2);
   assert.equal(picks('who.kid'), before['who.kid'] + 3);
   assert.equal(picks('who.teacher'), before['who.teacher'] + 1);
   // Robots, link previews and scripts aren't counted; an unknown choice goes back to the question, uncounted.
   for (const ua of ['Googlebot/2.1 (+http://www.google.com/bot.html)', 'Mozilla/5.0 (compatible; bingbot/2.0)', 'node', 'curl/8.0', '']) {
-    assert.equal((await call(null, '/signup/for/teacher', { ua })).location, '/teachers#start');
+    assert.equal((await call(null, '/signup/for/teacher', { ua })).location, '/signup/teacher');
   }
   assert.equal(picks('who.teacher'), before['who.teacher'] + 1);
   // HEAD (link checkers, scanners) and prefetches lead on the same but count nothing.
   for (const opts of [{ method: 'HEAD' }, { headers: { 'sec-purpose': 'prefetch;prerender' } }, { headers: { purpose: 'prefetch' } }]) {
-    assert.equal((await call(null, '/signup/for/teacher', opts)).location, '/teachers#start');
+    assert.equal((await call(null, '/signup/for/teacher', opts)).location, '/signup/teacher');
   }
   assert.equal(picks('who.teacher'), before['who.teacher'] + 1, 'HEAD and prefetch are not choices');
   assert.match((await call(null, '/robots.txt')).text, /^Disallow: \/signup\/for\/$/m, 'the counting redirects are kept from crawlers');
@@ -98,62 +97,68 @@ test('each choice is counted once (people only) and leads on: grown-up sign-up, 
   assert.ok(w.steps.every(s => s.rate === null));
 });
 
-test('"My child" opens the kid form, unchanged, with a way back instead of the grown-up line', async () => {
-  const r = await call(null, '/signup?for=kid');
-  assert.ok(form(r.text)); assert.equal(chooser(r.text), '');
+test('"I’m a kid" opens the kid form (a fun name and a password, nothing else), step 1 of 2, with a way back', async () => {
+  const r = await call(null, '/signup/kid');
+  assert.ok(form(r.text));
   assert.match(r.text, /Pick a fun name/);
-  assert.match(r.text, /<p class="center small whoback"><a href="\/signup">Who’s this for\? Pick again<\/a><\/p>/);
-  assert.doesNotMatch(r.text, /grownup-line/);
-  assert.match((await call(null, '/signup?for=kid&next=%2Fplans')).text, /class="center small whoback"><a href="\/signup\?next=%2Fplans">/);
+  assert.match(r.text, /data-next="\/signup\/kid\/code"/, 'then the optional class code');
+  assert.match(r.text, /<span class="ob-count">Step 1 of 2<\/span>/);
+  assert.match(r.text, /<a class="ob-back" href="\/signup">/);
+  assert.doesNotMatch(r.text, /name="email"|type="email"|gbtn|auth\/google/, 'no email and no Google for kids');
+  assert.match((await call(null, '/signup/kid?next=%2Fplans')).text, /<a class="ob-back" href="\/signup\?next=%2Fplans">/);
+  // The old addresses.
+  assert.equal((await call(null, '/signup?for=kid')).location, '/signup/kid');
+  assert.equal((await call(null, '/signup?for=kid&next=%2Fbuild')).location, '/signup/kid?next=%2Fbuild');
+  assert.equal((await call(null, '/signup?for=teacher')).location, '/signup/teacher');
 });
 
-test('skipped: a guest keeping their progress, a kid on their way to a page; /login never asks', async () => {
+test('skipped: a guest keeping their progress and a kid on their way to a page go straight to the kid’s step; /login never asks', async () => {
   const guest = auth.createGuest();
-  const up = await call(guest, '/signup');
-  assert.ok(form(up.text)); assert.equal(chooser(up.text), ''); assert.match(up.text, /Keep your progress/);
-  assert.doesNotMatch(up.text, /grownup-line|whoback/);
-  assert.ok(form((await call(guest, '/signup?for=grownup')).text), 'a guest is a kid already playing: no grown-up page');
+  assert.equal((await call(guest, '/signup')).location, '/signup/kid');
+  const up = await call(guest, '/signup/kid');
+  assert.ok(form(up.text)); assert.match(up.text, /Keep your progress/); assert.doesNotMatch(up.text, /ob-back/);
   for (const next of ['/build', '/join?code=ABC123', '/play/sum-racer', '/friends', '/me', '/studio/x']) {
-    const r = await call(null, `/signup?next=${encodeURIComponent(next)}`);
-    assert.ok(form(r.text), next); assert.equal(chooser(r.text), '', next);
-    assert.match(r.text, /grownup-line/, `${next}: a grown-up who got here still has the "Grown-up or teacher?" line`);
+    assert.equal((await call(null, `/signup?next=${encodeURIComponent(next)}`)).location, `/signup/kid?next=${encodeURIComponent(next)}`, next);
   }
+  // Joining a class with its code skips the code step: the class page is next.
+  assert.match((await call(null, `/signup/kid?next=${encodeURIComponent('/join?code=ABC123')}`)).text, /data-next="\/join\?code=ABC123"/);
   // The Builder's sign-in wall goes straight to the kid form.
   const b = await call(null, '/build'); assert.equal(b.location, '/signup?next=%2Fbuild');
   const li = await call(null, '/login');
-  assert.equal(chooser(li.text), ''); assert.match(li.text, /grownup-line/); assert.match(li.text, /data-api="\/api\/auth\/login"/);
+  assert.equal(chooser(li.text), ''); assert.match(li.text, /data-api="\/api\/auth\/login"/);
   // Signed in: no question, home as before.
   assert.equal((await call(kid(), '/signup')).location, '/');
   assert.equal((await call(grownup(), '/signup')).location, '/family');
 });
 
-test('before parents’ accounts open: "Me (a grown-up)" says so honestly and links the parent page and the kid form', async () => {
+test('before parents’ accounts open: "I’m a parent" says so honestly and links the parent page and the kid’s step', async () => {
   config.stripeApiKey = '';
   const g = await call(null, '/signup/for/grownup');
-  assert.equal(g.location, '/signup?for=grownup');
+  assert.equal(g.location, '/signup/parent');
   const r = await call(null, g.location);
   assert.equal(r.status, 200);
-  assert.match(r.text, /<h1 class="center">Grown-up accounts are coming soon<\/h1>/);
-  assert.deepEqual(hrefs((/<div class="soon-btns">[\s\S]*?<\/div>/.exec(r.text) || [''])[0]), ['/parents', '/signup?for=kid']);
-  assert.match(r.text, /href="\/signup">Who’s this for\? Pick again/);
-  assert.ok(!form(r.text)); assert.doesNotMatch(r.text, /grown-ups\/signup/);
-  // While they are open, the same address goes to the grown-up sign-up.
+  assert.match(r.text, /<h1 class="center ob-h" id="ob-h">Grown-up accounts are coming soon<\/h1>/);
+  assert.deepEqual(hrefs((/<div class="soon-btns">[\s\S]*?<\/div>/.exec(r.text) || [''])[0]), ['/parents', '/signup/kid']);
+  assert.match(r.text, /<a class="ob-back" href="\/signup">/);
+  assert.ok(!form(r.text)); assert.doesNotMatch(r.text, /api\/grown-ups\/signup/);
+  assert.equal((await call(null, '/signup?for=grownup')).location, '/signup/parent');
+  // While they are open, the same address is the parent's sign-up.
   config.stripeApiKey = 'rk_test_fake';
-  assert.equal((await call(null, '/signup?for=grownup')).location, '/grown-ups/signup');
+  assert.match((await call(null, '/signup/parent')).text, /data-api="\/api\/grown-ups\/signup"/);
 });
 
-test('a grown-up who started on a grown-up page (?next=/plans) goes back there after "Me (a grown-up)" and signing up', async () => {
+test('a grown-up who started on a grown-up page (?next=/plans) goes back there after "I’m a parent" and signing up', async () => {
   const g = await call(null, '/signup/for/grownup?next=%2Fplans');
-  assert.equal(g.location, '/grown-ups/signup?next=%2Fplans');
-  assert.equal((await call(null, '/signup/for/grownup?next=%2F%2Fevil.example')).location, '/grown-ups/signup', 'an unsafe next is dropped');
+  assert.equal(g.location, '/signup/parent?next=%2Fplans');
+  assert.equal((await call(null, '/signup/for/grownup?next=%2F%2Fevil.example')).location, '/signup/parent', 'an unsafe next is dropped');
   const page = (await call(null, g.location)).text;
   assert.match(page, /<input type="hidden" name="next" value="\/plans">/);
-  assert.match(page, /href="\/grown-ups\/login\?next=%2Fplans"/, 'Sign in instead keeps it too');
+  assert.match(page, /href="\/login\?next=%2Fplans"/, 'Sign in instead keeps it too');
   // A page a grown-up account can't open (a kid page) is not kept; the Builder is one they can.
-  assert.doesNotMatch((await call(null, '/grown-ups/signup?next=%2Fchat')).text, /name="next"/);
-  assert.match((await call(null, '/grown-ups/signup?next=%2Fbuild')).text, /<input type="hidden" name="next" value="\/build">/);
+  assert.doesNotMatch((await call(null, '/signup/parent?next=%2Fchat')).text, /name="next"/);
+  assert.match((await call(null, '/signup/parent?next=%2Fbuild')).text, /<input type="hidden" name="next" value="\/build">/);
   // A plan picked on /plans wins over next=.
-  assert.doesNotMatch((await call(null, '/grown-ups/signup?plan=family&next=%2Fplans')).text, /name="next"/);
+  assert.doesNotMatch((await call(null, '/signup/parent?plan=family&next=%2Fplans')).text, /name="next"/);
   const post = async body => {
     const r = await fetch(`${base}/api/grown-ups/signup`, { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': CHROME }, body: JSON.stringify(body) });
     return r.json();
@@ -166,35 +171,17 @@ test('a grown-up who started on a grown-up page (?next=/plans) goes back there a
   assert.equal((await post({ ...base1, username: `WhoNext${++n}`, next: '/plans', plan: 'family', interval: 'year' })).redirect, '/family?plan=family&interval=year');
 });
 
-test('a translated /signup asks in its own language; the coming-soon page and the way back are translated too', async () => {
+test('a translated /signup asks in its own language; the coming-soon page and every step are translated too', async () => {
   const r = await call(null, '/signup', { lang: 'de' });
   assert.equal(form(r.text), false, 'the question first');
   const c = chooser(r.text);
-  assert.match(r.text, /<h1 class="center" id="who-h">Für wen ist das Konto\?<\/h1>/);
-  assert.match(c, /Für mich \(Erwachsene\/r\)/); assert.match(c, /Ein Kind \(ich oder mein Kind\)/); assert.match(c, /Ich bin Lehrkraft/);
-  const box = h => h.slice(h.indexOf('<div class="authbox">'));   // the page itself (the language picker names English in English)
-  assert.doesNotMatch(r.text, /Who’s this for/); assert.doesNotMatch(box(r.text), /lang="en"/, 'nothing marked English on the German page');
+  assert.match(r.text, /<h1 class="center ob-h" id="ob-h">Wer meldet sich an\?<\/h1>/);
+  assert.match(c, /Ich bin ein Kind/); assert.match(c, /Ich bin ein Elternteil/); assert.match(c, /Ich bin Lehrkraft/);
+  const box = h => h.slice(h.indexOf('<div class="authbox ob">'));   // the page itself (the language picker names English in English)
+  assert.doesNotMatch(r.text, /Who’s signing up/); assert.doesNotMatch(box(r.text), /lang="en"/, 'nothing marked English on the German page');
+  for (const p of ['/signup/kid', '/signup/teacher', '/signup/parent']) assert.doesNotMatch(box((await call(null, p, { lang: 'de' })).text), /lang="en"|Step \d|Back</, p);
   config.stripeApiKey = '';
-  const s = await call(null, '/signup?for=grownup', { lang: 'de' });
-  assert.match(s.text, /<h1 class="center">Erwachsenenkonten gibt es bald<\/h1>/);
+  const s = await call(null, '/signup/parent', { lang: 'de' });
+  assert.match(s.text, /<h1 class="center ob-h" id="ob-h">Erwachsenenkonten gibt es bald<\/h1>/);
   assert.doesNotMatch(box(s.text), /lang="en"|coming soon/);
-  const k = await call(null, '/signup?for=kid', { lang: 'de' });
-  assert.ok(form(k.text));
-  assert.match(k.text, /class="center small whoback"><a href="\/signup">Für wen ist das Konto\? Neu auswählen<\/a>/);
-  assert.doesNotMatch(k.text, /Pick again/);
-});
-
-test('a language without the question yet keeps today’s page; the coming-soon text is marked English', async () => {
-  const who = ['auth.page.whoHeading', 'auth.page.whoGrownup', 'auth.page.whoGrownupSub', 'auth.page.whoKid', 'auth.page.whoKidSub', 'auth.page.whoTeacher', 'auth.page.whoTeacherSub', 'auth.page.whoBack'];
-  const soon = ['auth.page.soonHeading', 'auth.page.soonText', 'auth.page.soonParents', 'auth.page.soonKid'];
-  await withoutKeys('de', [...who, ...soon], async () => {
-    const r = await call(null, '/signup', { lang: 'de' });
-    assert.ok(form(r.text)); assert.equal(chooser(r.text), '');
-    assert.doesNotMatch(r.text, /Who’s this for/);
-    config.stripeApiKey = '';
-    const s = await call(null, '/signup?for=grownup', { lang: 'de' });
-    assert.match(s.text, /<h1 class="center" lang="en" dir="ltr">Grown-up accounts are coming soon/);
-    const k = await call(null, '/signup?for=kid', { lang: 'de' });
-    assert.doesNotMatch(k.text, /Pick again/, 'no English back link on a German page');
-  });
 });

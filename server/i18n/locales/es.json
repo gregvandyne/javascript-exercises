@@ -162,17 +162,6 @@
       "signInLink": "Entra",
       "newHere": "¿Es tu primera vez?",
       "signupLink": "Crea una cuenta gratis",
-      "grownupLogin": "¿Es adulto o docente? <a href=\"{grownup}\">Familias: entren aquí</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>",
-      "grownupLoginSoon": "¿Es adulto o docente? <a href=\"{grownup}\">Oomba Academy para familias</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>",
-      "grownupSignup": "¿Es adulto o docente? <a href=\"{grownup}\">Familias: empiecen aquí</a> · <a href=\"{teachers}\">Docentes: empiecen aquí</a>",
-      "whoHeading": "¿Para quién es?",
-      "whoGrownup": "Para mí (un adulto)",
-      "whoGrownupSub": "Su propia cuenta, vinculada con la cuenta de su hijo o hija",
-      "whoKid": "Un niño (yo o mi hijo)",
-      "whoKidSub": "Un nombre inventado y una contraseña, sin correo. Los niños solos y los padres empiezan aquí.",
-      "whoTeacher": "Soy docente",
-      "whoTeacherSub": "Configure su escuela y sus clases",
-      "whoBack": "¿Para quién es? Elegir de nuevo",
       "soonHeading": "Las cuentas de adulto llegarán pronto",
       "soonText": "Pronto podrá crear su propia cuenta, vinculada con la cuenta de su hijo o hija. Mientras tanto, su hijo o hija puede empezar gratis con un nombre inventado y una contraseña (sin correo), y la página para familias explica cómo funciona Oomba Academy y cómo protege a los niños.",
       "soonParents": "Oomba Academy para familias",
@@ -1013,12 +1002,13 @@
         "s1": "Qué guardamos",
         "li1": "el nombre que escribe al registrarse (puede ser un nombre de pila o un apodo; los niños nunca lo ven: solo ven “un adulto”);",
         "li2": "su contraseña, guardada de forma ilegible (no podemos leerla);",
+        "li8": "si se registra o inicia sesión con Google: el identificador y el correo de su cuenta de Google, para iniciar sesión y enviarle correos de la cuenta, como un cambio de contraseña o los correos de la prueba (nunca la foto de Google);",
         "li3": "que marcó “Soy madre, padre o tutor, y tengo 18 años o más” (no lo comprobamos);",
         "li4": "sus sesiones iniciadas, incluido el nombre de su navegador (user agent), y la última vez que volvió a escribir su contraseña en un paso de facturación;",
         "li5": "qué niños vinculó, cuándo, y si un vínculo está pendiente, activo o terminado;",
         "li6": "su plan: los números de cliente y de suscripción de Stripe, el tipo de plan, mensual o anual, el estado, las plazas, las fechas y los importes;",
         "li7": "un registro de las acciones importantes (por ejemplo, “plan iniciado”, “niño vinculado”, “reembolso”). Estos registros nunca contienen datos de tarjetas ni direcciones de correo electrónico.",
-        "p1": "<b>Qué no pedimos:</b> su correo, número de teléfono, domicilio ni edad. (Stripe pide algunos de estos datos cuando paga: vea Pagos más abajo).",
+        "p1": "<b>Qué no pedimos:</b> su número de teléfono, domicilio ni edad, y ningún correo salvo que se registre o inicie sesión con Google. (Stripe pide algunos de estos datos cuando paga: vea Pagos más abajo).",
         "p2": "Una cuenta de adulto puede crear juegos. Pasan por las mismas revisiones de seguridad que cualquier juego, y un juego compartido con todos muestra el nombre visible del adulto y «Creador adulto». Una cuenta de adulto solo puede conectarse con otras cuentas de adulto; no puede chatear, agregar niños como amigos ni tener un perfil público, y no aparece en las búsquedas. Nunca mostramos públicamente qué niños están vinculados a un adulto, ni sus nombres."
       },
       "linking": {
@@ -1060,6 +1050,7 @@
       "schoolSetup": {
         "h": "Solicitudes para dar de alta una escuela",
         "li1": "<b>Qué guardamos cuando un docente o un directivo nos pide dar de alta una escuela</b> (el formulario de nuestra página para docentes): el nombre de la escuela, su cargo, su correo de trabajo, más o menos cuántos estudiantes hay, el país, el idioma de la página y cuándo se envió. Si había iniciado sesión con una cuenta de adulto o de personal escolar, también guardamos qué cuenta la envió. Nunca se guarda la cuenta de un invitado con una solicitud. Si crearon su cuenta de docente con el formulario, también guardamos el correo de trabajo con esa cuenta.",
+        "li5": "<b>Cuando un docente crea su escuela al registrarse</b> y escribe un correo del trabajo, guardamos el nombre de la escuela, su nombre, ese correo, el idioma de la página, cuándo se envió y su cuenta, para los mismos usos y durante el mismo tiempo que una solicitud. El correo también se guarda con su cuenta.",
         "li2": "<b>Para qué lo usamos:</b> para dar de alta la escuela, responder a la solicitud, enviar la guía de bienvenida de la escuela y enviar un enlace para restablecer la contraseña si quien es titular de la cuenta lo pide. No enviamos boletines, y no lo compartimos con Stripe ni con nadie más.",
         "li3": "<b>Quién lo ve:</b> solo nuestro equipo.",
         "li4": "<b>Por cuánto tiempo:</b> se borra <b>1 año</b> después de que cerramos la solicitud (o 1 año después de que se envió, si nunca se cierra)."
@@ -3348,12 +3339,13 @@
   "google": {
     "button": {
       "signIn": "Iniciar sesión con Google",
-      "hint": "Para cuentas de Google de la escuela, como en un Chromebook."
+      "hint": "Para cuentas de Google de la escuela, y para madres, padres y docentes que se registraron con Google."
     },
     "login": {
       "orName": "o usa tu nombre de Oomba Academy",
       "joinLink": "¿Tienes un código de clase? {link}",
-      "joinLinkText": "Únete a tu clase"
+      "joinLinkText": "Únete a tu clase",
+      "unknownAdult": "¿Madre, padre o docente? <a href=\"{href}\">Crea tu cuenta</a> y elige Registrarse con Google."
     },
     "errors": {
       "expired": "Eso tardó un poquito de más. Vuelve a intentarlo, por favor.",
@@ -3388,7 +3380,8 @@
       "schoolAccount": "Tu profe se encarga de entrar con Google en esta cuenta.",
       "needCard": "Usted solo entra con Google. Antes de desconectarlo, pida una tarjeta de acceso al admin de su escuela.",
       "noPasswordStaff": "Usted entra con Google, así que no hay contraseña que cambiar. Si alguna vez necesita una, el admin de su escuela puede darle una tarjeta de acceso.",
-      "noPasswordStudent": "Entras con Google. Si alguna vez necesitas una tarjeta de acceso, pídesela a tu profe."
+      "noPasswordStudent": "Entras con Google. Si alguna vez necesitas una tarjeta de acceso, pídesela a tu profe.",
+      "noPasswordOwn": "Inicias sesión con Google, así que no hay contraseña que cambiar."
     },
     "join": {
       "title": "Únete a tu clase",
@@ -3522,7 +3515,8 @@
         "p1": "Mientras la cuenta de Google está conectada, guardamos su ID, su dirección de correo y el dominio de la escuela, para reconocerla al iniciar sesión. Nunca guardamos la foto de Google, nunca mostramos el nombre de Google de un estudiante en el sitio de juegos y nunca usamos la cuenta para leer nada más de Google.",
         "p1c": "Mientras la cuenta de Google está conectada, guardamos su ID, su dirección de correo y el dominio de la escuela, para reconocerla al iniciar sesión. Nunca guardamos la foto de Google, nunca mostramos el nombre de Google de un estudiante en el sitio de juegos y no leemos nada más de una cuenta de Google, salvo que un docente conecte Google Classroom.",
         "classroom": "Cuando un docente conecta Google Classroom, leemos solo los nombres de las clases que imparte y, de la clase que vincula, el ID de la cuenta de Google y el nombre de cada estudiante, para añadirlos a la clase correspondiente de Oomba Academy. Solo enviamos a Google lo que el docente pide: una tarea (el título de la lección, un enlace a ella y su fecha de entrega) y la puntuación de cada estudiante en la lección, sobre 100. Nunca enviamos las respuestas, los comentarios, los juegos ni los dibujos de los estudiantes. La conexión del docente se guarda cifrada hasta que la desconecte o elimine su cuenta; al desconectarla, también se revoca en Google.",
-        "limitedUse": "El uso y la transferencia que hace Oomba Academy de la información recibida de las API de Google cumplen la Google API Services User Data Policy (Política de Datos de Usuario de los Servicios de API de Google), incluidos los requisitos de Limited Use (uso limitado). Nunca vendemos esta información, nunca la usamos para publicidad ni para entrenar modelos de IA, y nuestro equipo solo la consulta cuando es necesario por motivos de soporte, seguridad o legales."
+        "limitedUse": "El uso y la transferencia que hace Oomba Academy de la información recibida de las API de Google cumplen la Google API Services User Data Policy (Política de Datos de Usuario de los Servicios de API de Google), incluidos los requisitos de Limited Use (uso limitado). Nunca vendemos esta información, nunca la usamos para publicidad ni para entrenar modelos de IA, y nuestro equipo solo la consulta cuando es necesario por motivos de soporte, seguridad o legales.",
+        "adults": "Las madres, los padres y los docentes también pueden registrarse con Google, con una cuenta de Google personal o de la escuela. Guardamos el identificador y el correo de esa cuenta mientras esté conectada, para iniciar su sesión y enviarles correos de la cuenta, como un cambio de contraseña o los correos de la prueba. Un correo nunca une dos cuentas por sí solo. Los niños nunca se registran con Google."
       }
     }
   },
@@ -4321,7 +4315,9 @@
       "submitSignup": "Crear mi cuenta y mi colegio",
       "submitStaff": "Enviar",
       "privacySignup": "Usamos tu correo para enviarte la guía de bienvenida, restablecer una contraseña olvidada y responderte. Consulta nuestra <a href=\"{privacy}\">Política de privacidad</a>.",
-      "emailHintSignup": "Tu correo del colegio. Te enviamos allí la guía de bienvenida y lo usamos si olvidas tu contraseña."
+      "emailHintSignup": "Tu correo del colegio. Te enviamos allí la guía de bienvenida y lo usamos si olvidas tu contraseña.",
+      "signupLead": "Crea tu cuenta de docente, luego crea o únete a tu escuela y añade tus clases. Tarda unos dos minutos y es gratis.",
+      "signupCta": "Crear mi cuenta de docente"
     },
     "live": {
       "h": "Juegos en vivo en clase",
@@ -8168,6 +8164,109 @@
       "bye": "¡Bienvenido!",
       "signature": "El equipo de Oomba Academy",
       "changeLater": "Puedes cambiar tu nombre de usuario y tu nombre más adelante en tu página Yo."
+    }
+  },
+  "onboard": {
+    "step": "Paso {n} de {total}",
+    "back": "Atrás",
+    "who": {
+      "heading": "¿Quién se registra?",
+      "kid": "Soy niño o niña",
+      "kidSub": "Un nombre divertido y una contraseña. Sin correo.",
+      "parent": "Soy madre o padre",
+      "parentSub": "Crea tu cuenta y luego añade a tus hijos.",
+      "teacher": "Soy docente",
+      "teacherSub": "Configura tu escuela y tus clases."
+    },
+    "google": "Registrarse con Google",
+    "googleNote": "Guardamos tu correo de Google para iniciar sesión y para los correos de la cuenta.",
+    "create": "Crear mi cuenta",
+    "parent": {
+      "heading": "Crea tu cuenta de madre o padre",
+      "lead": "Para madres, padres y tutores. Después podrás añadir a tus hijos."
+    },
+    "teacher": {
+      "heading": "Crea tu cuenta de docente",
+      "lead": "Después configuras tu escuela y añades tus clases."
+    },
+    "kid": {
+      "codeHeading": "¿Tienes un código de clase?",
+      "codeLead": "Si tu docente te dio un código de clase, escríbelo aquí para unirte a tu clase.",
+      "codeLabel": "Código de clase",
+      "join": "Unirme a mi clase",
+      "familyHeading": "¿Quieres que tu adulto también esté en Oomba?",
+      "familyText": "Consigue un código familiar y dáselo a tu madre, padre o tutor. Lo escriben en su página familiar y luego tú dices que sí.",
+      "familyButton": "Conseguir mi código familiar",
+      "skip": "Saltar por ahora"
+    },
+    "school": {
+      "heading": "Tu escuela",
+      "lead": "Crea tu escuela en Oomba Academy, únete a ella o salta este paso por ahora.",
+      "create": "Crear mi escuela",
+      "createSub": "Pasas a ser su administrador. Puedes invitar a docentes más adelante.",
+      "join": "Unirme a mi escuela",
+      "joinSub": "Mi escuela ya usa Oomba Academy.",
+      "own": "Saltar por ahora",
+      "ownSub": "Empieza con tu propia aula. Puedes unirte a una escuela más adelante.",
+      "createHeading": "Crea tu escuela",
+      "createLead": "Pasas a ser su administrador y puedes usarla enseguida.",
+      "schoolName": "Nombre de la escuela",
+      "yourName": "Tu nombre, tal como lo ven tus estudiantes",
+      "yourNameHint": "Por ejemplo: Sra. Rivera.",
+      "email": "Correo del trabajo (opcional)",
+      "emailHint": "Allí enviamos la guía de bienvenida de tu escuela, y lo usamos si olvidas tu contraseña.",
+      "createSubmit": "Crear mi escuela",
+      "privacy": "Qué guardamos y por qué: <a href=\"{privacy}\">nuestra política de privacidad</a>.",
+      "ownHeading": "Tu propia aula",
+      "ownLead": "Tus clases quedan en tu propia aula. Si tu escuela se une más adelante, su administrador puede invitarte.",
+      "ownSubmit": "Continuar",
+      "ownName": "Aula de {name}"
+    },
+    "join": {
+      "heading": "Únete a tu escuela",
+      "how": "Pide al administrador de Oomba Academy de tu escuela que te añada. Dale tu nombre de usuario:",
+      "copy": "Copiar",
+      "where": "Te añade en la página de la escuela, en la pestaña Personas. Luego vuelve aquí y comprueba de nuevo.",
+      "google": "Si tu escuela inicia sesión con Google, tu administrador puede invitar tu correo de la escuela.",
+      "check": "Comprobar de nuevo",
+      "own": "Empezar con mi propia aula por ahora"
+    },
+    "classes": {
+      "heading": "Añade tus clases",
+      "lead": "Añade al menos una clase. Puedes añadir más después.",
+      "rowLabel": "Clase {n}",
+      "name": "Nombre de la clase",
+      "namePh": "como 4.º B o Aula 12",
+      "grade": "Grado",
+      "gradePick": "Elige un grado",
+      "gradeK": "Kínder",
+      "gradeN": "Grado {n}",
+      "add": "Añadir otra clase",
+      "remove": "Quitar",
+      "submit": "Guardar y continuar",
+      "submitMore": "Añadir estas clases",
+      "have": "Tus clases",
+      "more": "Añadir más clases",
+      "continue": "Continuar",
+      "school": "Escuela",
+      "noCreate": "En {school}, las clases las crea el administrador de la escuela. Pídele que te añada a las tuyas.",
+      "made": "{count, plural, one {# clase añadida} other {# clases añadidas}}",
+      "errors": {
+        "none": "Añade al menos una clase.",
+        "grade": "Elige un grado para cada clase.",
+        "tooMany": "Añade hasta {max} clases aquí. Puedes añadir más después."
+      }
+    },
+    "classroom": {
+      "heading": "¿Conectar Google Classroom?",
+      "lead": "También puedes hacerlo más tarde desde cualquier clase.",
+      "li1": "Trae tus listas de clase desde Google Classroom.",
+      "li2": "Publica lecciones en Classroom como tareas.",
+      "li3": "Envía las puntuaciones de vuelta a Classroom.",
+      "connect": "Conectar Google Classroom",
+      "connected": "Google Classroom está conectado.",
+      "later": "Puedes conectar Google Classroom más tarde desde cualquier clase.",
+      "skip": "Saltar por ahora"
     }
   }
 }

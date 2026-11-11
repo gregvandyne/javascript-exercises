@@ -109,7 +109,8 @@ test('guest upgrade to an account keeps saves', async ({ page }) => {
   await expect(page.getByText('Everything you saved comes with you')).toBeVisible();
   const name = uniq('Up');
   await page.fill('#username', name); await page.fill('#password', 'secret123');
-  await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(/\/signup\/kid\/code$/), page.click('button[type=submit]')]);
+  await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('#ob-skip')]);
   await page.goto('/me'); await expect(page.getByRole('heading', { name })).toBeVisible();
   await page.goto('/play/shark-plank');
   const f2 = await gameFrame(page);

@@ -63,7 +63,7 @@ test('the fence: kids, students, teachers, school admins and the platform admin 
   for (const u of [null, auth.createGuest()]) {
     const out = await get(u, '/family/account');
     assert.equal(out.status, 302);
-    assert.equal(out.location, '/grown-ups/login?next=%2Ffamily%2Faccount');
+    assert.equal(out.location, '/login?next=%2Ffamily%2Faccount');
   }
   assert.equal(grownupMay('GET', '/family/account'), true, 'GROWNUP_GET has it');
   assert.equal(grownupMay('GET', '/family/accounts'), false);

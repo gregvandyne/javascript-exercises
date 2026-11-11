@@ -769,7 +769,8 @@ A review of the three batches together found these; each got the smallest correc
   Oomba account only through its school: a teacher's invite (bound to a school email, no link or token, 30 days), or
   the class code when the teacher turned on "join with Google". Both need the school's Google Workspace domains, and
   the token's `hd` and email domain must both be in them, so a personal Gmail with the same address never claims an
-  invite. Anyone else is turned away kindly; no own account is made from Google (keeps the "no email" promise).
+  invite. Anyone else is turned away kindly at sign-in. (Since 11 Nov 2026 a parent or a teacher may also make their own
+  account with Google on the sign-up, after "18 or older"; kids never: see "One sign-up".)
 - **A Google domain belongs to one school.** Saving a domain another live school lists is refused ("contact us").
   Otherwise another school could invite, and so claim, this school's students first. If two schools somehow share a
   domain (set before this rule), the oldest invite's school decides a first sign-in and only its invites apply; a
@@ -4330,3 +4331,91 @@ approvals, new users, messages, etc."
   (made-up examples to every recipient; works while switched off) and the last 8 emails. `ADMIN_ALERTS=0` stops
   everything, the test included.
 - **Language:** the email and its section are English only, like every admin page.
+
+## One sign-up (11 Nov 2026)
+
+The owner signed up as a teacher on a phone and called it "horrendous": the kid form, the grown-up form, the /trial form
+and the /teachers "Set up your school" form were four different sign-ups. His spec: sign-up first asks whether you are
+a kid, a parent or a teacher; a kid gets a username and a password, then an optional class or family code; a parent or
+teacher signs up with Google or a username and password; parents then add their kids; teachers then optionally create
+or join their school, must add at least one class, and are asked whether to connect Google Classroom. A teacher who
+creates the school is its admin. Sign-in stays one page: a username and password, or Sign in with Google.
+
+**The flow** (server/routes/onboarding.js, views/onboarding.js, public/css/signup.css, public/js/signup.js). One
+question per screen, a back link, progress dots ("Step 2 of 4"), big tap targets, no prices (prices stay on /plans and
+/trial). Each choice on /signup goes through /signup/for/<who> as before, so the "who" funnel tally keeps counting
+(`parent` is the same choice as `grownup`).
+- **Kid** (`/signup/kid`, 2 steps): a fun name and a password, `POST /api/auth/signup` unchanged (the same rules and
+  limits; no email, no age, no Google button), then `/signup/kid/code`: "Got a class code?" (the existing class-code
+  join, `POST /api/classes/join`) and, while families are on and the kid has no grown-up yet, "Want your grown-up on
+  Oomba too?" with **Get my family code** (the existing Me › For grown-ups code, `POST /api/me/family/code`), then Skip.
+  **Kept stricter on purpose:** the family link still goes one way only. The kid gets a code and hands it to the
+  grown-up, who types it on their family page, and the kid then says yes on their own page. There is no grown-up-made
+  code for a kid to type: that would be a new way for an adult to start a link to a child and needs its own safety
+  review. A kid on their way to a page (`?next=`, e.g. the Builder) or a guest keeping their progress goes straight to
+  the kid step; a kid joining a class from `/join?code=` skips the code step.
+- **Parent** (`/signup/parent`, 2 steps): "I am a parent or guardian, 18 or older" first (one box for both ways in),
+  **Sign up with Google**, or a username, a password of 12 or more and the password again (`POST /api/grown-ups/signup`,
+  unchanged). Then "Add your kids" (`/family/add?from=signup`, the existing step: make an account if
+  PARENT_MADE_CHILDREN is on, or link an existing one by its code), which shows "Step 2 of 2". A plan picked on /plans
+  and a grown-up page in `?next=` come along as before. While parents' accounts are off the step is the honest
+  "coming soon" page.
+- **Teacher** (`/signup/teacher`, 3 steps, 4 with Google Classroom): "I am a teacher or school staff member, and 18 or
+  older", **Sign up with Google**, or a username and a staff-length password (`POST /api/onboarding/teacher`; the same
+  rules as the old teacher sign-ups, `auth.checkStaffPassword`). The account is an ordinary own account marked
+  `users.signup_as = 'teacher'` (migration **0074_signup_as**) until it is staff: signing in again (`homeFor`) and
+  /signup take it back to the school step, and only such an account (or staff already) may use the school step, so a
+  kid's own account never makes itself a school admin there. Then:
+  - **Your school** (`/signup/teacher/school`): *Create my school* (school name, "Your name, as your students see it",
+    an optional work email): `schools.setUpOwnSchool` makes the school with them as its **school admin at once** (the
+    same code as `createTeacherWithSchool`), in the browser's time zone. There is no approval step for a new school:
+    it is usable straight away, as with /trial and the /teachers form before. With a work email, a school request
+    linked to the school is stored (`school-requests.createForSchool`: name, school, email; no student count or
+    country), so the platform admin sees "Signed up and already using it" and "Looks good" sends the welcome guide,
+    and "{school} is ready ... we'll email you a short guide" on My classes only shows when that request exists.
+    *Join my school*: there is no school code, so it is the existing staff invite: the step shows their username
+    (with Copy) to give their school's admin, who adds it on the People tab; "Check again" lists the invite and
+    Accept (`POST /api/onboarding/invite/:sid`, `schools.answerInvite`) makes them staff. A school that signs in with
+    Google can also invite their school email (the existing Google staff invite). *Skip for now*: their own classroom,
+    a school of their own named "{name}'s classroom" (translated), with them as its admin.
+  - **Add your classes** (`/signup/teacher/classes`, required): one card per class, a name and a grade
+    (Kindergarten, Grade 1 to 8), "Add another class" (up to 10 here), `POST /api/onboarding/classes`
+    (`schools.createClass`, the teacher teaches each). A school whose admin makes the classes says so and lets them on.
+  - **Connect Google Classroom?** (`/signup/teacher/classroom`, only while Classroom is on): the existing
+    `POST /api/google-classroom/connect` for their first class, or Skip.
+  - **Done**: My classes, or `/trial` when the teacher came from it.
+- **/trial**: signed out (or a guest) it redirects to `/signup/teacher?trial=1` (and `&seats=N`); the steps carry it and
+  the last one goes back to /trial, where a teacher starts the trial exactly as before ("Start my free trial" with the
+  work email, filled in when we already have one). Its own sign-up form is gone; `POST /api/trial/signup` still answers
+  (a page left open from before), with its old rules.
+- **/teachers "Set up your school"**, signed out: "Create my teacher account" (via /signup/for/teacher) instead of its
+  form. Signed-in grown-ups, staff and the platform admin keep the request form. `POST /api/teachers/school-request`
+  still accepts the old signed-out sign-up (a page left open), with its old rules.
+- **Old addresses**: `/signup?for=kid|grownup|teacher` → the step; `/grown-ups/signup` → `/signup/parent` (keeping
+  `?plan`, `?next`); `/grown-ups/login` → `/login?next=/family…`; a grown-up page that needs sign-in goes to `/login`.
+  The site's own links point at the new addresses.
+- **Sign-in** (`/login`) is one page for everyone: Sign in with Google (when on), or the username and password; the
+  "Grown-up or teacher?" line and the guest button are gone, "Forgot your password?" folds away (a `<details>` with the
+  same help). A Google account we don't know yet is still refused at sign-in (nothing is made there, no "18 or older"
+  was said); the page then says "Parent or teacher? Make your account and choose Sign up with Google."
+
+**Sign in with Google for grown-ups and teachers (owner's policy change).** Before, a new Google account got an Oomba
+account only through its school. Now the parent and teacher steps may also make one:
+- The step's API checks the "18 or older" box, then hands over a signed 10-minute token (`p: 'gsu'`) naming the path;
+  `/auth/google/start?intent=signup` refuses to start without it. Kids never get here: the kid step has no Google
+  button and no token is ever made for a kid.
+- `services/google.js` `newOwnAccount`: a grown-up account (and its family), or an ordinary own account marked as a
+  teacher-to-be. A generated username (e.g. SunnyOtter42, changeable later), no password, the Google id (`sub`) and its
+  **verified email** kept in `google_identities` (sign-in, password resets, the trial and account emails;
+  `email.addressOf` reads it). The Google name and photo are never kept. The same sign-up limits per address as every
+  sign-up; a grown-up's only while families are on.
+- **School flows are unchanged and come first:** a Google account already known signs in; a waiting invite (a
+  student's, a staff member's or "connect this account") or a Google Classroom roster still makes or connects the
+  school account; only otherwise does a sign-up make an own account.
+- **Matching stays by `sub`; an email never links two accounts on its own.** A username-and-password grown-up who later
+  signs in with Google is turned away like any unknown Google account and connects it from their family account page
+  (the existing Me-page "Connect Google" flow, now also shown on /family/account and open to grown-ups: their password
+  first, then Google). `canConnect` lets a grown-up connect any Google account; school accounts and students keep their
+  domain rules.
+- Privacy: see docs/legal-review.md "One sign-up" (owner decision, lawyer review pending). `LEGAL_UPDATED` is already
+  2026-11-11 (today), so it did not move.

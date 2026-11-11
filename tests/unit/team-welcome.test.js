@@ -117,7 +117,7 @@ test('a grown-up who later has a school set up gets both welcomes: the parents\'
 test('the teacher sign-up way: "I\'m a teacher" or "Set up my school" marks this browser; a kid-type sign-up then waits for the kids\' welcome and gets the teachers\' one when made staff, never the kids\'', async () => {
   // "I'm a teacher" signed out: the cookie.
   const door = await call(null, '/signup/for/teacher');
-  assert.equal(door.status, 302); assert.equal(door.location, '/teachers#start');
+  assert.equal(door.status, 302); assert.equal(door.location, '/signup/teacher');
   const tc = teacherCookie(door.setCookies); assert.ok(tc, 'the teacher way is remembered');
   // "Set up my school" sent signed out: the same.
   const form = await call(null, '/api/teachers/school-request', { method: 'POST', body: { school: 'Lake School', role: 'leader', email: 'head@lake.org', students: 300, country: 'Ireland' } });

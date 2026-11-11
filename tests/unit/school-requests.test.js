@@ -46,24 +46,25 @@ const good = (over = {}) => ({ school: 'Maple Street Elementary', role: 'teacher
 const send = (u, body, opts = {}) => as(u)('/api/teachers/school-request', { method: 'POST', body, ...opts });
 const start = s => (/<section class="panel lp-start"[\s\S]*?<\/section>/.exec(s) || [''])[0];
 
-test('/teachers: the "Set up my school" form replaces the email link; it says 1 school day; no prices', async () => {
+test('/teachers: signed out (or a guest), "Set up your school" leads into the one sign-up; adults signed in get the request form; no prices', async () => {
   const r = await call(null, '/teachers');
   assert.equal(r.status, 200);
   const s = start(r.text);
-  // Signed out: account first (the account and the school at once, then their Classroom; tests/unit/school-signup.test.js).
-  assert.match(s, /<form class="sr-form" data-api="\/api\/teachers\/school-request" data-next="\/teach\?welcome=school" method="post"/);
-  for (const name of ['name', 'school', 'role', 'email', 'students', 'country', 'username', 'password', 'adult']) assert.match(s, new RegExp(`name="${name}"[^>]*required|<select[^>]*name="${name}" required`), name);
-  assert.match(s, /<input type="hidden" name="signup" value="1">/);
-  assert.match(s, /type="email"/); assert.match(s, /type="number"/);
-  assert.match(s, /within 1 school day/);
+  // Signed out: the sign-up's teacher steps (tests/unit/onboarding.test.js), no form of its own.
+  assert.match(s, /href="\/signup\/for\/teacher" id="setup-signup"/);
+  assert.doesNotMatch(s, /<form/);
   assert.doesNotMatch(s, /mailto:[^"]*\?subject=/, 'no "Email us" button any more');
   assert.match(s, /Questions first\? Write to <a href="mailto:/, 'the address stays as a small line');
   assert.doesNotMatch(r.text, /\$\d/, 'no amounts on the teacher page');
-  // A guest (one game played), a grown-up account, school staff and the platform admin get the form too.
+  assert.match(start((await as(auth.createGuest())('/teachers')).text), /id="setup-signup"/, 'a guest (one game played) is signed out too');
+  // A grown-up account, school staff and the platform admin get the request form ("within 1 school day").
   const staff = auth.createUser({ username: `SrTeach${++n}`, password: 'rainbow-77' });
   const sch = SC.createSchool(admin(), { name: `Sr School ${n}` }).school;
   q.run("INSERT INTO school_members(school_id, user_id, role, status, joined_at) VALUES (?,?,'teacher','active',?)", sch.id, staff.id, Date.now());
-  for (const u of [auth.createGuest(), grownup(), staff, admin()]) assert.match(start((await as(u)('/teachers')).text), /class="sr-form"/, u.username);
+  for (const u of [grownup(), staff, admin()]) assert.match(start((await as(u)('/teachers')).text), /class="sr-form"/, u.username);
+  const g = start((await as(grownup())('/teachers')).text);
+  for (const name of ['school', 'role', 'email', 'students', 'country']) assert.match(g, new RegExp(`name="${name}"[^>]*required|<select[^>]*name="${name}" required`), name);
+  assert.match(g, /type="email"/); assert.match(g, /type="number"/); assert.match(g, /within 1 school day/);
 });
 
 test('a kid\'s own or school account never gets the form (no email asked of a child), and its POST is refused', async () => {
@@ -263,5 +264,5 @@ test('"Send this to my admin": a printable page with the price and total, never 
   // With billing off, the teacher page doesn't link plans; the form still works.
   const t = await call(null, '/teachers');
   assert.doesNotMatch(t.text, /href="\/plans/);
-  assert.match(t.text, /class="sr-form"/);
+  assert.match(t.text, /id="setup-signup"/);
 });

@@ -86,7 +86,7 @@ test('a kid with an account keeps their tab bar (Friends, Me) and no grown-up do
 test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game" at the top; before plans are public, the child sign-up', async () => {
   const on = await call(null, '/parents');
   const hero = /<section class="lp-hero[ "][\s\S]*?<\/section>/.exec(on.text)[0];
-  assert.match(hero, /<a class="btn btn-primary btn-big" href="\/grown-ups\/signup">Set up your child — free<\/a>/);
+  assert.match(hero, /<a class="btn btn-primary btn-big" href="\/signup\/parent">Set up your child — free<\/a>/);
   assert.match(hero, /href="\/play\/[a-z0-9-]+" rel="nofollow">▶ /);
   assert.match(hero, /href="\/teachers"/, 'the teacher link sits right under the buttons');
   assert.ok(hero.indexOf('lp-cta') < hero.indexOf('lp-badges'), 'buttons before the badges, so they show on a phone');
@@ -96,35 +96,33 @@ test('/parents: "Set up your child — free" (grown-up sign-up) and "Try a game"
   assert.match((await as(g)('/parents')).text, /<a class="btn btn-primary btn-big" href="\/family">/, 'a signed-in grown-up goes to their family');
   config.stripeApiKey = '';
   const off = await call(null, '/parents');
-  assert.match(off.text, /<a class="btn btn-primary btn-big" href="\/signup\?for=kid">Let your child start free<\/a>/);
+  assert.match(off.text, /<a class="btn btn-primary btn-big" href="\/signup\/kid">Let your child start free<\/a>/);
   assert.doesNotMatch(off.text, /href="\/grown-ups/);
 });
 
 test('/safety ends with "Set up your child": the set-up signed out, the parent page for a kid or a guest', async () => {
   const r = await call(null, '/safety');
-  assert.match(r.text, /href="\/grown-ups\/signup"[^>]*>Set up your child<\/a><\/p><\/div>/);
+  assert.match(r.text, /href="\/signup\/parent"[^>]*>Set up your child<\/a><\/p><\/div>/);
   for (const u of [kid(), auth.createGuest()]) {
     const k = await as(u)('/safety');
     assert.match(k.text, /href="\/parents"[^>]*>Set up your child<\/a>/); assert.doesNotMatch(k.text, /href="\/(grown-ups|family)/);
   }
   assert.match((await as(grownup())('/safety')).text, /href="\/family"[^>]*>/);
   config.stripeApiKey = '';
-  assert.match((await call(null, '/safety')).text, /href="\/signup\?for=kid"[^>]*>Set up your child<\/a>/);
+  assert.match((await call(null, '/safety')).text, /href="\/signup\/kid"[^>]*>Set up your child<\/a>/);
 });
 
-test('/login and /signup: "Grown-up or teacher?" leads to the grown-up sign-in or sign-up and to /teachers', async () => {
+test('/login is one sign-in for kids, parents and teachers; /signup asks who is signing up (no "Grown-up or teacher?" line)', async () => {
   const li = await call(null, '/login');
-  assert.match(li.text, /Grown-up or teacher\? <a href="\/grown-ups\/login">Parents sign in here<\/a> · <a href="\/teachers">Teachers start here<\/a>/);
-  // Plain /signup asks "Who's this for?" instead (tests/unit/who-for.test.js); a kid on their way to a page keeps the line.
-  const su = await call(null, '/signup?next=%2Fbuild');
-  assert.match(su.text, /<a href="\/grown-ups\/signup">Parents start here<\/a>/);
+  assert.match(li.text, /data-api="\/api\/auth\/login"/);
+  assert.doesNotMatch(li.text, /grownup-line|Parents sign in here/, 'parents and teachers sign in on the same form');
+  assert.match(li.text, /New here\? <a href="\/signup">Make a free account<\/a>/);
+  // A kid on their way to a page goes straight to the kid's step; plain /signup asks (tests/unit/who-for.test.js).
+  assert.equal((await call(null, '/signup?next=%2Fbuild')).location, '/signup/kid?next=%2Fbuild');
   assert.doesNotMatch((await call(null, '/signup')).text, /grownup-line/);
-  // A guest keeping their progress isn't sent elsewhere.
-  assert.doesNotMatch((await as(auth.createGuest())('/signup')).text, /grownup-line/);
+  assert.equal((await as(auth.createGuest())('/signup')).location, '/signup/kid', 'a guest keeping their progress');
   config.stripeApiKey = '';
-  const soon = (await call(null, '/login')).text;
-  assert.match(soon, /<a href="\/parents">Oomba Academy for parents<\/a>/, 'before plans are public: the parent page, not a sign-in promise');
-  assert.doesNotMatch(soon, /Parents sign in here/);
+  assert.doesNotMatch((await call(null, '/login')).text, /Parents sign in here/);
 });
 
 test('/build is the Builder for a grown-up too (docs/decisions.md "Grown-ups can build"); for anyone else it is unchanged', async () => {
@@ -169,7 +167,7 @@ test('"Using this in class?" on subject, age and game pages for signed-out visit
 });
 
 test('grown-ups sign up with a real name, "Your sign-in name", and get a plain person picture; kid name rules are unchanged', async () => {
-  const page = await call(null, '/grown-ups/signup');
+  const page = await call(null, '/signup/parent');
   assert.match(page.text, /<label for="username">Your sign-in name<\/label>/);
   assert.equal(TF.cleanName('SarahJones').ok, false, 'a kid still may not use a real-looking name');
   assert.equal(TF.cleanName('SarahJones', undefined, { realNames: true }).ok, true);
