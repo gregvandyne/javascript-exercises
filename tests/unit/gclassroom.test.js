@@ -21,7 +21,7 @@ process.env.GOOGLE_OIDC_BASE = fake.url;
 process.env.GOOGLE_CLASSROOM = '1';
 process.env.GOOGLE_TOKEN_KEY = KEY;
 process.env.CLASSROOM_API_BASE = room.url;
-const { config, parseTokenKey } = await import('../../server/config.js');
+const { config, parseTokenKey, parseClassroomScopes } = await import('../../server/config.js');
 const { createApp } = await import('../../server/app.js');
 const { createUser, startSession, getUser } = await import('../../server/auth.js');
 const { q } = await import('../../server/db.js');
@@ -38,7 +38,8 @@ const { gcLiveAnnounce } = await import('../../server/routes/gclassroom.js');
 let server, base;
 test.before(async () => { server = createApp().listen(0, '127.0.0.1'); await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
 test.after(async () => { server.close(); await fake.close(); await room.close(); });
-const ON = { googleClientId: 'test-client.apps.googleusercontent.com', googleClientSecret: 'fake-test-secret', googleClassroom: true, googleTokenKey: parseTokenKey(KEY).key, classroomApiBase: room.url };
+// Most tests walk the two-step flow (GOOGLE_CLASSROOM_SCOPES=read); the one-consent flow (full, the default) has its own tests.
+const ON = { googleClientId: 'test-client.apps.googleusercontent.com', googleClientSecret: 'fake-test-secret', googleClassroom: true, googleTokenKey: parseTokenKey(KEY).key, classroomApiBase: room.url, googleClassroomScopes: 'read' };
 test.beforeEach(() => { RL._reset(); Object.assign(config, ON); GC._forget(); });
 
 const cookieOf = (res, name) => (res.headers.getSetCookie().find(c => c.startsWith(name + '=')) || '').split(';')[0];
@@ -79,7 +80,7 @@ async function connect(cookie, classId, { email = `t${crypto.createHash('sha256'
   const flow = cookieOf(start, 'brb_gflow'); const to = new URL(loc(start));
   assert.equal(to.searchParams.get('access_type'), 'offline');
   assert.equal(to.searchParams.get('include_granted_scopes'), 'true');
-  assert.deepEqual(to.searchParams.get('scope').split(' ').sort(), ['openid', 'email', ...(write ? SCOPES : REQUIRED_SCOPES)].sort(), 'only the Classroom scopes we need');
+  assert.deepEqual(to.searchParams.get('scope').split(' ').sort(), ['openid', 'email', ...(write || config.googleClassroomScopes !== 'read' ? SCOPES : REQUIRED_SCOPES)].sort(), 'only the Classroom scopes we need');
   if (dropScope || noRefresh) fake.next({ dropScope, noRefresh });
   to.searchParams.set('fake_auto', '1'); to.searchParams.set('fake_email', email); if (sub) to.searchParams.set('fake_sub', sub);
   if (cancel) to.searchParams.set('fake_error', 'access_denied');
@@ -581,6 +582,70 @@ test('the upgrade: "Allow" asks for the optional scopes; unticked ones stay off;
   GC._forget();
   assert.equal((await post(`/api/classes/${c.id}/google-classroom/roster`, {}, tc)).status, 400);
   assert.equal(GC.connectionState(teacher.id), 'reconnect');
+});
+
+// ---------------------------------------------------------------- one consent (GOOGLE_CLASSROOM_SCOPES)
+test('GOOGLE_CLASSROOM_SCOPES: full by default, read or full only', () => {
+  assert.equal(parseClassroomScopes('').value, 'full');
+  assert.equal(parseClassroomScopes(' READ ').value, 'read');
+  assert.equal(parseClassroomScopes('full').value, 'full');
+  assert.match(parseClassroomScopes('all').error, /GOOGLE_CLASSROOM_SCOPES must be full or read/);
+});
+
+test('full: Connect asks for all six scopes in one consent; all granted, no separate Allow step', async () => {
+  config.googleClassroomScopes = 'full';
+  const { c, teacher, tc } = school();
+  // Before connecting: the page says Connect allows posting too, and nothing "comes later".
+  let pg = await pageOf(c, tc);
+  assert.match(pg, /post lessons there, with a link back here and the due date/);
+  assert.match(pg, /send each student&#39;s lesson completion grade|send each student's lesson completion grade/);
+  assert.doesNotMatch(pg, /comes later, only if you allow it/);
+  // The helper checks that Connect (no write=1) asked for the 2 read + 4 write scopes, with include_granted_scopes.
+  const r = await connect(tc, c.id, { write: false });
+  assert.equal(loc(r), `/class/${c.id}/google-classroom?gc=connected#gc-connect`);
+  assert.deepEqual(GC.grantedScopes(teacher.id).sort(), [...SCOPES].sort());
+  assert.deepEqual(GC.missingOptional(teacher.id), []);
+  const id = course([]);
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc)).status, 200);
+  pg = await pageOf(c, tc, '?gc=connected');
+  assert.match(pg, /Google Classroom is connected/);
+  assert.doesNotMatch(pg, /name="write" value="1"/, 'no Allow step');
+  assert.doesNotMatch(pg, /Allow Oomba Academy to post to Classroom/);
+  assert.doesNotMatch(pg, /Some of these are off/);
+  assert.match(pg, /Post to Google Classroom/); assert.match(pg, /Share as material/); assert.match(pg, /google-classroom\/announce"/);
+});
+
+test('full: boxes unticked on Google\'s screen bring back "Allow" as the fallback, which asks again', async () => {
+  config.googleClassroomScopes = 'full';
+  const { c, teacher, tc } = school();
+  const r = await connect(tc, c.id, { write: false, dropScope: [OPTIONAL_SCOPES.coursework, OPTIONAL_SCOPES.announce] });
+  assert.equal(loc(r), `/class/${c.id}/google-classroom?gc=connected#gc-connect`, 'connected: the read scopes were granted');
+  assert.deepEqual(GC.missingOptional(teacher.id).sort(), ['announce', 'coursework']);
+  const id = course([]);
+  assert.equal((await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc)).status, 200);
+  let pg = await pageOf(c, tc);
+  assert.match(pg, /Some of these are off because their boxes weren(&#39;|')t checked/);
+  assert.match(pg, /name="write" value="1"/);
+  assert.match(pg, /Share as material/, 'what was granted works');
+  assert.doesNotMatch(pg, /google-classroom\/post"/, 'what was unticked stays hidden');
+  // The fallback: Allow asks for the write scopes again.
+  assert.equal(loc(await connect(tc, c.id, { write: true })), `/class/${c.id}/google-classroom?gc=allowed#gc-connect`);
+  assert.deepEqual(GC.missingOptional(teacher.id), []);
+  pg = await pageOf(c, tc);
+  assert.doesNotMatch(pg, /name="write" value="1"/);
+});
+
+test('read: Connect asks for the two read scopes only and Allow is the second step (as before)', async () => {
+  config.googleClassroomScopes = 'read';
+  const { c, teacher, tc } = school();
+  let pg = await pageOf(c, tc);
+  assert.match(pg, /comes later, only if you allow it/);
+  assert.doesNotMatch(pg, /post lessons there, with a link back here/);
+  assert.equal(loc(await connect(tc, c.id, { write: false })), `/class/${c.id}/google-classroom?gc=connected#gc-connect`);
+  assert.deepEqual(GC.grantedScopes(teacher.id).sort(), [...REQUIRED_SCOPES].sort());
+  pg = await pageOf(c, tc);
+  assert.match(pg, /name="write" value="1"/);
+  assert.match(pg, /Right now Oomba Academy can only read your classes/);
 });
 
 // ---------------------------------------------------------------- automatic grades

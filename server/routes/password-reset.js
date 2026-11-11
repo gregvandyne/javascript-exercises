@@ -98,7 +98,7 @@ const contactLine = (t, key) => html`<p class="small muted">${tHtml(t, key, { em
 
 router.get('/forgot', (req, res) => {
   const t = req.t;
-  if (req.user && !req.user.is_guest) return res.redirect(302, auth.isGrownup(req.user) ? '/family/account#password' : '/me#password');
+  if (req.user && !req.user.is_guest) return res.redirect(302, auth.isGrownup(req.user) ? '/family/account#password' : '/me/settings#password');
   const top = html`<div class="center" style="font-size:3rem" aria-hidden="true">🔑</div><h1 class="center">${t('auth.reset.title')}</h1>`;
   const kids = html`<p class="small"><span aria-hidden="true">🙂</span> ${t('auth.reset.kids')}</p>`;
   const back = html`<p class="center" style="margin:16px 0 0"><a class="btn btn-block" href="/login">${t('auth.reset.backToSignIn')}</a></p>`;

@@ -156,6 +156,7 @@ router.get('/teach/lessons', requireUser, (req, res) => {
           <div class="formacts"><button class="btn btn-primary" type="submit">✨ ${t('lessons.ai.make')}</button><p class="small muted">${t('lessons.ai.note')}</p></div>
         </form></details>
     </div>
+    <p class="small muted folder-why" id="folder-why">📁 ${t('lessons.folder.why')}</p>
     <nav class="chips readymade" aria-label="${t('lessons.library.readyMade')}"><span class="ajump-l">${t('lessons.library.readyMade')}</span><a class="chip" href="/teach/cs-quest?school=${school.id}">💻 ${t('cs.program.title')}</a><a class="chip" href="/teach/cyber-defenders">🦉 ${t('teach.cd.title')}</a><a class="chip" href="/teachers/number-quest">🔢 ${t('lessons.library.numberQuest')}</a></nav>
     ${sub.length ? html`<ul class="plain folderlist">${sub.map((f, i) => html`<li class="panel folderrow">
       <a class="fr-name" href="${q(`&folder=${f.id}`)}"><span>📁 ${f.name}</span><span class="small muted fr-count">${t('cs.unit.lessonsN', { count: lessonsUnder(f.id) })}</span></a>
@@ -513,6 +514,7 @@ export function teacherLessonsPanel(req, c) {
         ${libOk && count ? html`<a class="btn" href="${lib}&class=${c.id}&open=new">➕ ${t('lessons.library.newLesson')}</a><a class="btn" href="${lib}&class=${c.id}&open=ai">✨ ${t('lessons.ai.button')}</a>` : ''}
         ${mine.length && !avail.length && !back.length ? html`<p class="small muted allin">${t('lessons.class.allIn')}</p>` : ''}
       </div>
+      <p class="small muted unit-why" id="unit-why">🗂️ ${t('lessons.class.unitWhy')}</p>
       ${colleagues && libOk ? html`<p class="small muted">💡 ${tHtml(t, 'lessons.class.sharedHint', { tab: html`<a href="${lib}&tab=shared">${t('lessons.library.shared')}</a>` })}</p>` : ''}
     </div>
     ${plan.map((g, gi) => (g.unit || g.lessons.length) ? html`<div class="unit">

@@ -543,7 +543,7 @@ test('grown-up pages only show what a grown-up can use: the Builder, but no prof
   // Kids still get them all.
   const kp = await as(kid())(`/g/${gm.slug}`);
   assert.match(kp.text, /href="\/u\//); assert.match(kp.text, /id="likebtn"/); assert.match(kp.text, /id="rate"/);
-  assert.match((await as(kid())('/')).text, /href="\/me#language"/);
+  assert.match((await as(kid())('/')).text, /href="\/me\/settings#language"/);
 });
 
 test('the child\'s panel: a safety line next to the code; an English fallback is marked as English', async () => {

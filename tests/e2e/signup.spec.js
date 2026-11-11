@@ -107,7 +107,7 @@ test('a teacher: account, create the school (its admin), two classes, "Connect G
   // The class code, for the kid below; the school, for the second teacher.
   const r = await page.request.get('/api/me'); const me = (await r.json()).user;
   expect(me.username).toBe(firstTeacher);
-  const teach = await (await page.request.get('/teach')).text();
+  const teach = await (await page.request.get('/teach?all=1')).text();
   const classId = (/href="\/class\/([^"/?#]+)/.exec(teach) || [])[1];
   await page.goto(`/class/${classId}?tab=students`);
   classCode = ((await page.locator('.jc-code').first().textContent()) || '').trim();
@@ -141,7 +141,8 @@ test('another teacher joins the school: the step shows their username; the admin
   await Promise.all([page.waitForURL(/\/signup\/teacher\/classes$/), page.click('.ob-invite button[type=submit]')]);
   await page.fill('#ob-cn-0', '5C'); await page.selectOption('#ob-cg-0', '5');
   await Promise.all([page.waitForURL(/\/signup\/teacher\/classroom$/), page.click('form[data-api="/api/onboarding/classes"] button[type=submit]')]);
-  await Promise.all([page.waitForURL(/\/teach$/), page.click('#ob-skip')]);
+  // Their Classroom; with their one class, My classes opens it directly.
+  await Promise.all([page.waitForURL(/\/(teach|class\/[^/?#]+)$/), page.click('#ob-skip')]);
   await page.context().close();
 });
 

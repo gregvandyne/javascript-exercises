@@ -83,24 +83,24 @@ test('the menu and the Me page form work with JavaScript turned off', async ({ b
   await expect(html(page)).toHaveAttribute('data-theme', 'dark');
   expect(await bodyBg(page)).toBe(DARK_BG);
   await expect(menu(page).locator('summary')).toHaveAttribute('aria-label', 'Theme: Dark');
-  // Signed in (through the API, since the sign-in form needs JavaScript): the Me page's radio form saves with Save.
+  // Signed in (through the API, since the sign-in form needs JavaScript): Settings' radio form saves with Save.
   const { username } = await signup(await (await browser.newContext()).newPage());
   const res = await page.request.post('/api/auth/login', { data: { username, password: 'secret123' } });
   expect(res.ok()).toBe(true);
-  await page.goto('/me');
+  await page.goto('/me/settings');
   await expect(page.locator('#themeform input[value="dark"]')).toBeChecked();
   await page.locator('#themeform label', { hasText: 'Light' }).click();
-  await Promise.all([page.waitForURL(u => u.pathname === '/me' && !u.search.includes('theme')), page.locator('#themeform [type=submit]').click()]);
+  await Promise.all([page.waitForURL(u => u.pathname === '/me/settings' && !u.search.includes('theme')), page.locator('#themeform [type=submit]').click()]);
   expect(new URL(page.url()).hash).toBe('#appearance');
   await expect(html(page)).toHaveAttribute('data-theme', 'light');
   await expect(page.locator('#themeform input[value="light"]')).toBeChecked();
   await ctx.close();
 });
 
-test('a choice on the Me page applies at once and follows the account to another device', async ({ page, browser }) => {
+test('a choice in Settings applies at once and follows the account to another device', async ({ page, browser }) => {
   const { username, password } = await signup(page);
   await page.emulateMedia({ colorScheme: 'light' });
-  await page.goto('/me');
+  await page.goto('/me/settings');
   await expect(page.locator('#themeform [type=submit]'), 'with JavaScript the pick applies at once, so no Save button').toBeHidden();
   const saved = page.waitForResponse(r => r.url().endsWith('/api/me/theme') && r.ok());
   await page.locator('#themeform label', { hasText: 'Dark' }).click();

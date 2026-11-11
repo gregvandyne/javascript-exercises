@@ -83,8 +83,8 @@ test('the language menu works with the keyboard and on a phone', async ({ page }
 
 test('a signed-in player\'s choice is saved to the account and follows them to another device', async ({ page, browser }) => {
   const { username, password } = await signup(page);
-  await page.goto('/me');
-  await Promise.all([page.waitForURL(u => u.pathname === '/me' && !u.search.includes('lang')), page.selectOption('#lang-select', 'fr')]);
+  await page.goto('/me/settings');
+  await Promise.all([page.waitForURL(u => u.pathname === '/me/settings' && !u.search.includes('lang')), page.selectOption('#lang-select', 'fr')]);
   await expect(html(page)).toHaveAttribute('lang', 'fr');
   await expect(page.locator('#lang-select')).toHaveValue('fr');
   // a fresh browser with no lang cookie and an English Accept-Language

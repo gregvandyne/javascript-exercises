@@ -150,8 +150,8 @@ test('HTTP: a signed-in player\'s saved language is used, and choosing one saves
     assert.equal(q.get('SELECT lang FROM users WHERE id=?', u.id).lang, 'ar', 'saved on the account');
     assert.equal(await htmlTag(await s.get('/', { Cookie: session, 'Accept-Language': 'de' })), '<html lang="ar" dir="rtl">', 'saved choice beats the header on another device');
     assert.equal(await htmlTag(await s.get('/', { Cookie: `${session}; lang=fr` })), '<html lang="fr" dir="ltr">', 'the cookie beats the saved choice');
-    const me = await (await s.get('/me', { Cookie: session })).text();
-    assert.match(me, /<select class="input langselect" id="lang-select" name="lang">/, 'the Me page has the same choice');
+    const me = await (await s.get('/me/settings', { Cookie: session })).text();
+    assert.match(me, /<select class="input langselect" id="lang-select" name="lang">/, 'Settings has the same choice');
   } finally { await s.close(); }
 });
 

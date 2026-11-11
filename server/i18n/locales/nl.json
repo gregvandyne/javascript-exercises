@@ -234,7 +234,10 @@
       "ready": "{count, plural, one {# game klaar} other {# games klaar}}",
       "invites": "{count, plural, one {# uitnodiging om te beantwoorden} other {# uitnodigingen om te beantwoorden}}",
       "requests": "{count, plural, one {# vriendschapsverzoek} other {# vriendschapsverzoeken}}",
-      "unread": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}"
+      "unread": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}",
+      "school": "Mijn school",
+      "asks": "{count, plural, one {# leerkracht vroeg om een abonnement} other {# leerkrachten vroegen om een abonnement}}",
+      "settings": "Instellingen"
     },
     "look": {
       "heading": "Kies je look",
@@ -495,6 +498,11 @@
       "same": "Dat is al je gebruikersnaam.",
       "taken": "Die gebruikersnaam is al bezet. Probeer een andere.",
       "tooSoon": "Je hebt je gebruikersnaam pas gewijzigd. Je kunt hem weer wijzigen {days} dagen na de laatste wijziging."
+    },
+    "settings": {
+      "title": "Instellingen",
+      "sections": "Onderdelen van de instellingen",
+      "billing": "Abonnement en facturering"
     }
   },
   "cards": {
@@ -556,8 +564,7 @@
       "favorites": "Mijn favorieten",
       "keep": "Verder spelen",
       "two": "Met z’n tweeën",
-      "fromLearn": "Uit Leren: de leukste",
-      "openLearn": "Leren openen"
+      "fromLearn": "Uit Leren: de leukste"
     },
     "hero": {
       "label": "Uitgelichte game",
@@ -2555,17 +2562,11 @@
       "none": "Nog geen klassen",
       "noneText": "Maak hieronder je eerste klas aan. Je krijgt een code om met je leerlingen te delen.",
       "noneAsk": "Vraag je schoolbeheerder om je aan een klas toe te voegen.",
-      "manage": "{school} beheren",
       "noneAdmin": "Je geeft nog geen les aan een klas",
-      "noneAdminText": "Klassen waar je les aan geeft, verschijnen hier. Alle klassen van {school} vind je hierboven onder {school} beheren.",
+      "noneAdminText": "Klassen waar je les aan geeft, verschijnen hier. Alle klassen van {school} vind je onder Mijn school.",
       "makeGame": "Maak een game",
       "plan": {
-        "heading": "Schoolabonnement · {school}",
-        "none": "Geen schoolabonnement · leerlingen gebruiken de gratis berichten aan de Bouwer",
-        "setUp": "Schoolabonnement instellen",
-        "on": "Schoolabonnement actief",
-        "billing": "Facturatie",
-        "settling": "Je abonnement wordt ingesteld…"
+        "heading": "Schoolabonnement · {school}"
       },
       "tools": "Hulpmiddelen voor de les",
       "hostLive": "Een live spel leiden"
@@ -3078,7 +3079,8 @@
       "newPlaceholder": "Nieuwe map, bijv. Breuken",
       "delete": "Map verwijderen",
       "deleteConfirm": "De map {name} verwijderen? De lessen en mappen erin gaan één niveau omhoog.",
-      "hint": "Mappen zijn alleen voor jou. Leerlingen zien ze nooit."
+      "hint": "Mappen zijn alleen voor jou. Leerlingen zien ze nooit.",
+      "why": "Mappen ordenen je eigen lessenbibliotheek, en hun lessen kunnen naar elke klas. Thema's, op de pagina van een klas, bepalen de volgorde die leerlingen zien."
     },
     "lesson": {
       "title": "Titel van de les",
@@ -3192,7 +3194,8 @@
       "dueToday": "Vandaag inleveren",
       "late": "Te laat",
       "removedGroup": "Uit deze klas gehaald",
-      "readyMade": "Een kant-en-klare les gebruiken"
+      "readyMade": "Een kant-en-klare les gebruiken",
+      "unitWhy": "Thema's groeperen de lessen van deze klas, in de volgorde waarin leerlingen ze zien. Mappen ordenen alleen je eigen lessenbibliotheek."
     },
     "view": {
       "teacherPreview": "Leerlingweergave. Knoppen die werk opslaan, staan voor jou uit.",
@@ -4076,7 +4079,7 @@
         "adult": "Bevestig dat je leerkracht bent of op een school werkt, en 18 jaar of ouder bent.",
         "notTeacher": "Voor het Leerkracht-abonnement heb je een leerkrachtaccount nodig.",
         "entitled": "Je hebt het Leerkracht-abonnement al.",
-        "fixPayment": "Je abonnement wacht op een betaling. Los het op via Facturering beheren op Mijn klassen.",
+        "fixPayment": "Je abonnement wacht op een betaling. Los het op via Facturering beheren in Instellingen.",
         "trialUsed": "Deze gratis proefperiode is al gebruikt.",
         "noPrice": "Het Leerkracht-abonnement is nu niet te koop. Probeer het later nog eens.",
         "paying": "Er is al een betaling onderweg. Wacht even een minuut.",
@@ -4085,8 +4088,8 @@
       },
       "thanks": {
         "wait": "⏳ Je Leerkracht-abonnement wordt gestart…",
-        "slow": "Dit duurt langer dan normaal. Je abonnement verschijnt over een minuut op Mijn klassen.",
-        "back": "Naar Mijn klassen"
+        "slow": "Dit duurt langer dan normaal. Je abonnement verschijnt over een minuut in Instellingen.",
+        "back": "Naar mijn Leerkracht-abonnement"
       },
       "card": {
         "heading": "Leerkracht-abonnement",
@@ -4103,7 +4106,9 @@
         "fix": "Je Leerkracht-abonnement wacht op een betaling. Werk je kaart bij via Facturering beheren.",
         "tryText": "Onbeperkt leerlingen en {daily} AI-bouwsels per dag voor je klassen. {days} dagen gratis, zonder kaart.",
         "getText": "Onbeperkt leerlingen en {daily} AI-bouwsels per dag voor je klassen.",
-        "try": "{days} dagen gratis proberen"
+        "schoolBilling": "Facturering van de school beheren",
+        "seatNote": "De beheerders van {school} regelen dit abonnement.",
+        "seePlans": "Bekijk de prijzen"
       }
     }
   },
@@ -7346,14 +7351,10 @@
       "waitingN": "{count, plural, one {# antwoord wacht} other {# antwoorden wachten}}",
       "caughtUp": "Alles bijgewerkt",
       "openClass": "Klas openen",
-      "courses": "Lesgeven met een cursus",
-      "live": "Livespellen voor de hele klas",
-      "breaks": "Beweegpauzes",
-      "breaksText": "Korte, leuke spellen uit Spelen, gekozen voor een pauze van 5 minuten op het grote scherm.",
-      "allGames": "Alles bekijken wat leerlingen kunnen spelen",
       "openLive": "Live spel openen",
       "make": "Van een les een spel maken",
-      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding."
+      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
+      "allClasses": "Alle klassen"
     },
     "loop": {
       "kicker": "Zo past Oomba in je week",
@@ -8117,10 +8118,6 @@
       "go": "Open de kamer",
       "more": "Meer spellen en instellingen",
       "recent": "Je laatste spellen"
-    },
-    "card": {
-      "button": "Snel spel",
-      "change": "Wijzig"
     },
     "results": {
       "h": "Dit was een spel met gasten.",

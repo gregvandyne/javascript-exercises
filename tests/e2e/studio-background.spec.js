@@ -139,7 +139,7 @@ test('BG-4 sign out mid-build, sign in later: the game is ready, said once on th
   test.setTimeout(120_000);
   const { id, username, password } = await newGame(page);
   await startBuild(page);
-  await page.goto('/me');
+  await page.goto('/me/settings');
   await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/me')), page.locator('#signout button[type=submit]').first().click()]);
   // Signed out: the build goes on. Wait until it is done (asked as the admin, who may look at any game).
   const adminCtx = await browser.newContext(); const admin = await adminCtx.newPage();

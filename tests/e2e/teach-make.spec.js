@@ -27,7 +27,7 @@ const sideways = page => page.evaluate(() => document.documentElement.scrollWidt
 test('a teacher pastes a lesson, checks the questions, saves, and assigns the quiz to a class; a student never can', async ({ browser }) => {
   const teacher = await stateOf(browser, TEACHER);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: teacher }); const t = await ctx.newPage();
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await t.locator('#teach-make').click();
   await expect(t).toHaveURL(/\/teach\/make$/);
   await expect(t.locator('h1')).toContainText('Turn your lesson into a game');

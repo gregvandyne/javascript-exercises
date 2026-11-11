@@ -60,14 +60,16 @@ async function endOpen(t) {
   await expect.poll(async () => (await (await t.request.get('/api/live/mine')).json()).sid || null).toBe(null);
 }
 
-test('a teacher lands on the Classroom: hello, class cards with what needs attention, courses, live games, brain breaks', async ({ browser }) => {
+test('a teacher lands on the Classroom (their one class opens directly): hello, class cards with what needs attention, nothing below them', async ({ browser }) => {
   const teacher = await stateOf(browser, TEACHER);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: teacher }); const t = await ctx.newPage();
   // A room another spec left open would show "Open live game" on every card (one room at a time): end it first.
   await endOpen(t);
   await t.goto('/');
-  expect(new URL(t.url()).pathname).toBe('/teach');
+  // With one class, the Classroom tab opens that class; with more, the list. Either way Classroom is the current tab.
+  expect(new URL(t.url()).pathname).toMatch(/^\/(teach|class\/[^/]+)$/);
   await expect(t.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
+  await t.goto('/teach?all=1');
   await expect(t.locator('h1')).toContainText('Hello, ');
   await expect(t.locator('.th-sum')).toContainText(/\d+ class/);
   // The demo class's card: what needs attention (answers to read and/or the next lesson due, or All caught up) and buttons.
@@ -79,18 +81,13 @@ test('a teacher lands on the Classroom: hello, class cards with what needs atten
   await expect(card.locator(`a[href^="/teach/lessons?school="][href$="class=${cls}"]`)).toContainText('Assign a lesson');
   await expect(card.locator(`a.cc-live[href="/live?class=${cls}"]`)).toBeVisible();
   await expect(t.locator('#nc-n')).toHaveCount(1);   // New class is still here
-  // Ready-made ways to teach.
-  for (const [slug, href] of [['cs-quest', '/teach/cs-quest'], ['cyber-defenders', '/teach/cyber-defenders'], ['number-quest', '/teachers/number-quest']]) await expect(t.locator(`#teach-course-${slug}`)).toHaveAttribute('href', href);
-  await expect(t.locator('#teach-live a[href="/live?mode=quest-race"]')).toContainText('Quest Race');
-  await expect(t.locator('#teach-live a[href="/live?mode=tug"]')).toContainText('Tug of Math');
-  expect(await t.locator('#brain-breaks a').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/play/swish-flick', '/play/beat-lanes', '/play/would-you-rather', '/play/brick-drop', '/play/remis-quiet-meadow']);
-  await expect(t.locator('#teach-all-games')).toHaveAttribute('href', '/play');
-  // The tools row: Lesson library, Turn a lesson into a game (for those who may host) and Make a game; CS Quest and Cyber Defenders under
-  // Teach with a course (checked above). New class is a tile in the class grid.
+  // Nothing below the classes (courses, live games and brain breaks are on Learn), and no Quick game on the cards.
+  for (const gone of ['#teach-courses', '#teach-live', '#brain-breaks', '#teach-all-games', 'form.cc-quick', '.schoolcard', '#teacher-plan']) await expect(t.locator(gone)).toHaveCount(0);
+  // The tools row: Lesson library, Turn a lesson into a game (for those who may host) and Make a game. New class is a
+  // tile in the class grid.
   expect(await t.locator('.teachtools a').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach/lessons', '/teach/make', '/build']);
   await expect(t.locator('#my-classes .th-classes .th-newclass summary')).toBeVisible();
-  // Phones: the live modes are one sideways row (the page does not scroll sideways).
-  expect(await t.evaluate(() => { const r = document.querySelector('#teach-live .th-tiles'); return [r.scrollWidth > r.clientWidth, document.documentElement.scrollWidth - innerWidth]; })).toEqual([true, 0]);
+  expect(await t.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
   // A live room open for the class shows on its card (the host's own link to the room).
   await endOpen(t);
   await t.goto(`/live?class=${cls}`);
@@ -98,12 +95,12 @@ test('a teacher lands on the Classroom: hello, class cards with what needs atten
   await t.locator('#lv-new button[type=submit]').click();
   await t.waitForURL(/\/live\/host\//);
   const sid = new URL(t.url()).pathname.split('/').pop();
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await expect(t.locator(`#my-classes .classcard a.chip-s[href="/live/host/${sid}"]`)).toContainText('Live game now');
   await endOpen(t);
   await ctx.close();
-  expect(await layoutProblems(browser, teacher, ['/teach'])).toEqual([]);
-  expect(await layoutProblems(browser, teacher, ['/teach'], 'he')).toEqual([]);
+  expect(await layoutProblems(browser, teacher, ['/teach?all=1'])).toEqual([]);
+  expect(await layoutProblems(browser, teacher, ['/teach?all=1'], 'he')).toEqual([]);
 });
 
 test('a student lands on Class: To do with progress and Continue, games from the class, the live banner while a room is open', async ({ browser }) => {

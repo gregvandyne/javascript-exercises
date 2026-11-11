@@ -59,7 +59,7 @@ test.beforeAll(() => { fs.mkdirSync(SHOTS, { recursive: true }); });
 test('a teacher opens this week\'s summary from the Classroom: counts per class, names only on the site, the email without names', async ({ browser }) => {
   const teacher = await stateOf(browser, TEACHER);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: teacher }); const t = await ctx.newPage();
-  await t.goto('/teach');
+  await t.goto('/teach?all=1');
   await Promise.all([t.waitForURL('**/teach/summary'), t.locator('#teach-summary').click()]);
   await expect(t.locator('h1')).toContainText("This week's summary");
   await expect(t.locator('#dg-sched')).toContainText(/goes out every Monday at 7:00 AM|don't have an email address|is off/);

@@ -126,7 +126,7 @@ router.get('/plans', on, async (req, res) => {
   const tv = { days: config.teacherTrialDays, daily: f.int(config.teacherDailyMessages) };
   const teacherPrice = all && all.teacher ? all.teacher.year.unitAmount : null;
   const teacherOn = who === 'staff' && !!u && TP.teacherPlan(u.id).entitled;
-  const teacherBtn = teacherOn ? html`<a class="btn btn-block" href="/teach#teacher-plan">${T('plans.teacher.manage')}</a>`
+  const teacherBtn = teacherOn ? html`<a class="btn btn-block" href="/me/settings#teacher-plan">${T('plans.teacher.manage')}</a>`
     : html`<a class="btn btn-block ${who === 'out' || who === 'staff' ? 'btn-primary' : ''}" href="/trial">${T('plans.teacher.start')}</a>`;
   const items = list => html`<ul class="plan-list">${list.map(s => html`<li><span class="tick" aria-hidden="true">✓</span><span>${s}</span></li>`)}</ul>`;
   const card = ({ id, name, tagline, price, list, button, current, recommended = false }) => html`<section class="plan-card${recommended ? ' recommended' : ''}${current ? ' current' : ''}" id="plan-${id}" aria-labelledby="plan-${id}-h">

@@ -641,7 +641,7 @@ test('i. while email sending is off: no form and no promise, the contact address
   assert.doesNotMatch(login.text, /id="forgot-staff"/); assert.ok(login.text.includes(en('auth.page.forgotSchool').replace(/'/g, '&#39;')), 'the existing contact route stays');
   assert.doesNotMatch((await req(null, '/grown-ups/login')).text, /id="forgot-grownup"/);
   // Signed in, /forgot is the account's own password page.
-  assert.equal((await req(ana, '/forgot')).location, '/me#password');
+  assert.equal((await req(ana, '/forgot')).location, '/me/settings#password');
 });
 test('i. the words of the reset are in all 13 languages, with their placeholders', () => {
   const keys = Object.keys(JSON.parse(fs.readFileSync('scripts/quick-wins-strings/words.json', 'utf8')).en);

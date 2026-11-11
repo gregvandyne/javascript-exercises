@@ -33,7 +33,7 @@ test.beforeAll(async ({ browser }) => {
   const tCard = await cards(admin);
   teacher = await (await browser.newContext()).newPage();
   await login(teacher, tCard.username, tCard.password);
-  await teacher.goto('/teach');
+  await teacher.goto('/teach?all=1');
   const drop = teacher.locator('details.libdrop');
   if (!(await drop.evaluate(d => d.open))) await drop.locator('summary').click();
   await teacher.fill('#nc-n', '4B');

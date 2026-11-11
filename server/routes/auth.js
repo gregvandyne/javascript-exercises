@@ -9,7 +9,7 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName, teacherToBe } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName, teacherToBe, adminSchools } from '../services/schools.js';
 import { cleanRealName, REAL_NAME_MAX, cleanName } from '../services/textfilter.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
@@ -404,6 +404,39 @@ export function signOutPanel(req) {
   </section>`;
 }
 
+/** The account section's plan for school staff: their Teacher plan (status, today's messages, billing) and, at a school
+ *  they teach in but don't run, "Ask my admin" for one; and who asked a school's admin for a plan (My school's line).
+ *  routes/teacher-plan.js sets both (importing the billing pages from
+ *  here would load them before services/billing.js is ready); '' until then and while paid-plan pages are off. */
+let planPanels = () => '', openAsksOf = () => [];
+export const setMePlanPanels = (panels, asks) => { planPanels = panels; openAsksOf = asks; };
+// /me/settings: the account's settings, moved off the Me page (docs/decisions.md "Settings page"): the Teacher plan and
+// billing (staff, while paid-plan pages are on), Language, Appearance, Password and Sign out, in that order, with a small
+// section nav (sticky chips on a phone, a side list on a laptop). Every form and API is the one the Me page had.
+// Grown-ups keep their own settings page (/family/account). Old links to /me#language, #appearance, #password,
+// #signout and #teacher-plan are sent here by public/js/app.js.
+export const SETTINGS_PATH = '/me/settings';
+router.get(SETTINGS_PATH, auth.requireUser, (req, res) => {
+  const t = req.t, u = req.user;
+  if (auth.isGrownup(u)) return res.redirect(302, '/family/account');
+  const staff = !u.is_guest && isSchoolStaff(u);
+  const plan = staff ? String(planPanels(req) || '') : '';
+  const sections = [
+    plan && ['billing', '🍎', t('me.settings.billing'), raw(plan)],
+    ['language-sec', '🌐', t('me.language.heading'), languagePanel(req)],
+    ['appearance-sec', '🎨', t('me.theme.heading'), appearancePanel(req)],
+    !u.is_guest && ['password-sec', '🔑', t('me.password.heading'), passwordPanel(req)],
+    ['signout-sec', '👋', t('me.signOut.heading'), signOutPanel(req)],
+  ].filter(x => x && String(x[3] || ''));
+  const body = html`<div class="pagehead"><h1>⚙️ ${t('me.settings.title')}</h1></div>
+  <div class="setpage">
+    <nav class="setnav" aria-label="${t('me.settings.sections')}"><ul class="plain">${sections.map(([id, e, label]) => html`<li><a class="setlink" href="#${id}"><span aria-hidden="true">${e}</span> ${label}</a></li>`)}</ul></nav>
+    <div class="setmain">${sections.map(([id, , , panel]) => html`<div class="setsec" id="${id}">${panel}</div>`)}</div>
+  </div>`;
+  res.set('Cache-Control', 'private, no-store');
+  page(req, res, { title: t('me.settings.title'), active: 'me', body, back: '/me', backLabel: t('nav.me') });
+});
+
 router.get('/me', auth.requireUser, (req, res) => {
   const t = req.t;
   const u = req.user;
@@ -413,10 +446,16 @@ router.get('/me', auth.requireUser, (req, res) => {
   const gamesSub = [nb && t('me.tiles.building', { count: nb }), nr && t('me.tiles.ready', { count: nr })].filter(Boolean).join(' · ');
   const nb_ = u.is_guest ? {} : navBadges(u), invites = u.is_guest ? 0 : invitesFor(u.id).length;
   const noFriends = !u.is_guest && noFriendsAccount(u);
+  const runs = u.is_guest ? [] : adminSchools(u);
+  const asks = runs.reduce((n, x) => n + openAsksOf(x.id).length, 0);
+  const myschool = runs.length ? ['🏫', t('me.tiles.school'), '/school', asks ? t('me.tiles.asks', { count: asks }) : runs.length === 1 ? runs[0].name : ''] : null;
   const tiles = [
     !u.is_guest && ['👤', t('me.tiles.profile'), `/u/${u.username}`],
     ['❤️', t('me.tiles.favorites'), '/favorites'],
-    !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : ['🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
+    !u.is_guest && (isPlatformAdmin(u) && !isSchoolStaff(u) ? ['🏫', t('nav.schools'), '/admin/schools'] : [isSchoolStaff(u) ? '🍎' : '🏫', t('me.tiles.classes'), isSchoolStaff(u) ? '/teach' : '/classes', invites ? t('me.tiles.invites', { count: invites }) : '']),
+    // My school: where a school's admins manage it (/school: its overview, or a pick of their schools). Teachers who
+    // don't run a school have no school pages.
+    myschool,
     ['🛠️', t('me.tiles.games'), '/build', gamesSub],
     // Staff (teachers, school admins, the platform admin) have no friends and no friends' chat: their one inbox is the
     // Oomba team's messages.
@@ -425,6 +464,8 @@ router.get('/me', auth.requireUser, (req, res) => {
     noFriends ? ['📬', t('team.name'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : '']
       : ['💬', t('me.tiles.chat'), '/chat', nb_.unread ? t('me.tiles.unread', { count: nb_.unread }) : ''],
     u.role === 'admin' && ['🛡️', t('me.tiles.admin'), '/admin'],
+    // Settings (/me/settings): plan and billing, language, appearance, password and sign out.
+    ['⚙️', t('me.tiles.settings'), '/me/settings'],
   ].filter(Boolean);
   // A kid's "For grown-ups" card (the link code) comes first: the Builder's daily-limit card sends kids here to show a
   // grown-up the code. Empty for everyone else (guests, school accounts, staff) and while family pages are off.
@@ -456,12 +497,11 @@ router.get('/me', auth.requireUser, (req, res) => {
     </template>
   </section>
   ${staff ? '' : characterPanel(req)}
-  <div class="mesettings">${languagePanel(req)}${appearancePanel(req)}</div>
   ${!u.is_guest && !noFriends ? html`<section class="panel"><h2>${t('me.chat.heading')}</h2>
     <p class="muted">${t('me.chat.text')}</p>
     <label class="row" style="font-weight:700"><input type="checkbox" id="chat-toggle" ${u.chat_enabled ? raw('checked') : ''} style="width:24px;height:24px"> ${t('me.chat.toggle')}</label>
   </section>` : ''}
   ${staff ? digestPanel(req) : ''}
-  <div class="mesettings">${namePanel(req)}${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${meGooglePanel(req)}</div>`;
   page(req, res, { title: t('me.title'), active: 'me', body, scripts: ['/js/me.js', '/js/character.js'], ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/digest.css?v=${VERSION}">`) } : {}) });
 });

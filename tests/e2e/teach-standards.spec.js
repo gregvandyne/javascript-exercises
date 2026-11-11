@@ -28,7 +28,7 @@ async function stateOf(browser, who) {
 }
 /** The demo class and its first lesson, as the teacher sees them. */
 async function demo(page) {
-  await page.goto('/teach');
+  await page.goto('/teach?all=1');
   const href = await page.locator('#my-classes .classcard', { hasText: 'Demo Class' }).locator('a.cc-link').getAttribute('href');
   const cls = href.match(/\/class\/([^/?#]+)/)[1];
   // An assigned lesson: the class page links each one to its editor (?from=<class>).

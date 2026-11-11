@@ -233,7 +233,10 @@
       "ready": "{count, plural, one {# juego listo} other {# juegos listos}}",
       "invites": "{count, plural, one {# invitación por responder} other {# invitaciones por responder}}",
       "requests": "{count, plural, one {# solicitud de amistad} other {# solicitudes de amistad}}",
-      "unread": "{count, plural, one {# mensaje nuevo} other {# mensajes nuevos}}"
+      "unread": "{count, plural, one {# mensaje nuevo} other {# mensajes nuevos}}",
+      "school": "Mi escuela",
+      "asks": "{count, plural, one {# docente pidió un plan} other {# docentes pidieron un plan}}",
+      "settings": "Ajustes"
     },
     "look": {
       "heading": "Elige tu estilo",
@@ -494,6 +497,11 @@
       "same": "Ese ya es tu nombre de usuario.",
       "taken": "Ese nombre de usuario ya está en uso. Prueba con otro.",
       "tooSoon": "Cambiaste tu nombre de usuario hace poco. Podrás cambiarlo de nuevo {days} días después del último cambio."
+    },
+    "settings": {
+      "title": "Ajustes",
+      "sections": "Secciones de ajustes",
+      "billing": "Plan y pagos"
     }
   },
   "cards": {
@@ -555,8 +563,7 @@
       "favorites": "Mis favoritos",
       "keep": "Sigue jugando",
       "two": "Dos jugadores",
-      "fromLearn": "De Aprender: los más divertidos",
-      "openLearn": "Abrir Aprender"
+      "fromLearn": "De Aprender: los más divertidos"
     },
     "hero": {
       "label": "Juego destacado",
@@ -2554,17 +2561,11 @@
       "none": "Todavía no hay clases",
       "noneText": "Cree su primera clase abajo. Recibirá un código para compartir con sus estudiantes.",
       "noneAsk": "Pida al admin de su escuela que le asigne una clase.",
-      "manage": "Gestionar {school}",
       "noneAdmin": "Todavía no da ninguna clase",
-      "noneAdminText": "Aquí aparecen las clases que usted da. Todas las clases de {school} están en Gestionar {school}, más arriba.",
+      "noneAdminText": "Aquí aparecen las clases que usted da. Todas las clases de {school} están en Mi escuela.",
       "makeGame": "Crear un juego",
       "plan": {
-        "heading": "Plan escolar · {school}",
-        "none": "Sin plan escolar · los estudiantes usan los mensajes gratis para el Constructor",
-        "setUp": "Activar el plan escolar",
-        "on": "Plan escolar activo",
-        "billing": "Pagos",
-        "settling": "Estamos activando su plan…"
+        "heading": "Plan escolar · {school}"
       },
       "tools": "Herramientas para enseñar",
       "hostLive": "Dirigir un juego en vivo"
@@ -3077,7 +3078,8 @@
       "newPlaceholder": "Nueva carpeta, p. ej., Fracciones",
       "delete": "Eliminar carpeta",
       "deleteConfirm": "¿Eliminar la carpeta {name}? Las lecciones y carpetas que contiene suben un nivel.",
-      "hint": "Las carpetas son solo para usted. Los estudiantes nunca las ven."
+      "hint": "Las carpetas son solo para usted. Los estudiantes nunca las ven.",
+      "why": "Las carpetas ordenan su propia biblioteca de lecciones, y sus lecciones pueden ir a cualquier clase. Las unidades, en la página de una clase, fijan el orden que ven los estudiantes."
     },
     "lesson": {
       "title": "Título de la lección",
@@ -3191,7 +3193,8 @@
       "dueToday": "Para hoy",
       "late": "Con retraso",
       "removedGroup": "Quitadas de esta clase",
-      "readyMade": "Usar una lección lista"
+      "readyMade": "Usar una lección lista",
+      "unitWhy": "Las unidades agrupan las lecciones de esta clase, en el orden en que las ven los estudiantes. Las carpetas solo ordenan su propia biblioteca de lecciones."
     },
     "view": {
       "teacherPreview": "Vista del estudiante. Los botones que guardan el trabajo están desactivados para usted.",
@@ -4075,7 +4078,7 @@
         "adult": "Confirme que es docente o personal de una escuela, y que tiene 18 años o más.",
         "notTeacher": "El plan Docente necesita una cuenta de docente.",
         "entitled": "Ya tiene el plan Docente.",
-        "fixPayment": "Su plan está esperando un pago. Resuélvalo en Administrar facturación, en Mis clases.",
+        "fixPayment": "Su plan está esperando un pago. Resuélvalo en Administrar facturación, en Ajustes.",
         "trialUsed": "Esta prueba gratis ya se usó.",
         "noPrice": "El plan Docente no está a la venta ahora mismo. Inténtelo más tarde.",
         "paying": "Ya hay un pago en camino. Espere un minuto.",
@@ -4084,8 +4087,8 @@
       },
       "thanks": {
         "wait": "⏳ Activando su plan Docente…",
-        "slow": "Esto tarda más de lo normal. Su plan aparecerá en Mis clases en un minuto.",
-        "back": "Ir a Mis clases"
+        "slow": "Esto tarda más de lo normal. Su plan aparecerá en Ajustes en un minuto.",
+        "back": "Ir a mi plan Docente"
       },
       "card": {
         "heading": "Plan Docente",
@@ -4102,7 +4105,9 @@
         "fix": "Su plan Docente está esperando un pago. Actualice su tarjeta en Administrar facturación.",
         "tryText": "Estudiantes ilimitados y {daily} creaciones con IA al día para sus clases. Gratis durante {days} días, sin tarjeta.",
         "getText": "Estudiantes ilimitados y {daily} creaciones con IA al día para sus clases.",
-        "try": "Pruébelo gratis durante {days} días"
+        "schoolBilling": "Administrar los pagos de la escuela",
+        "seatNote": "Los administradores de {school} gestionan este plan.",
+        "seePlans": "Ver los planes"
       }
     }
   },
@@ -7345,14 +7350,10 @@
       "waitingN": "{count, plural, one {# respuesta pendiente} other {# respuestas pendientes}}",
       "caughtUp": "Todo al día",
       "openClass": "Abrir la clase",
-      "courses": "Enseña con un curso",
-      "live": "Juegos en vivo para toda la clase",
-      "breaks": "Pausas activas",
-      "breaksText": "Juegos cortos y divertidos de Jugar, elegidos para una pausa de 5 minutos en la pantalla grande.",
-      "allGames": "Ver todo lo que pueden jugar los alumnos",
       "openLive": "Abrir el juego en vivo",
       "make": "Convertir una lección en un juego",
-      "schoolReady": "{school} ya está listo y tú eres su administrador. Crea tu primera clase abajo y luego añade a tus alumnos. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo."
+      "schoolReady": "{school} ya está listo y tú eres su administrador. Crea tu primera clase abajo y luego añade a tus alumnos. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo.",
+      "allClasses": "Todas las clases"
     },
     "loop": {
       "kicker": "Cómo encaja Oomba en tu semana",
@@ -8116,10 +8117,6 @@
       "go": "Abrir la sala",
       "more": "Más juegos y ajustes",
       "recent": "Tus últimos juegos"
-    },
-    "card": {
-      "button": "Juego rápido",
-      "change": "Cambiar"
     },
     "results": {
       "h": "Este fue un juego con invitados.",

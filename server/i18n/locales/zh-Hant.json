@@ -233,7 +233,10 @@
       "ready": "{count, plural, other {# 個遊戲做好了}}",
       "invites": "{count, plural, other {# 個邀請待回覆}}",
       "requests": "{count, plural, other {# 個好友邀請}}",
-      "unread": "{count, plural, other {# 則新訊息}}"
+      "unread": "{count, plural, other {# 則新訊息}}",
+      "school": "我的學校",
+      "asks": "{count, plural, other {# 位老師申請了方案}}",
+      "settings": "設定"
     },
     "look": {
       "heading": "選擇你的造型",
@@ -494,6 +497,11 @@
       "same": "這已經是你的使用者名稱。",
       "taken": "這個使用者名稱已被使用，請換一個。",
       "tooSoon": "你最近才變更過使用者名稱。距離上次變更 {days} 天後才能再變更。"
+    },
+    "settings": {
+      "title": "設定",
+      "sections": "設定項目",
+      "billing": "方案與帳務"
     }
   },
   "cards": {
@@ -555,8 +563,7 @@
       "favorites": "我的最愛",
       "keep": "繼續玩",
       "two": "雙人",
-      "fromLearn": "來自學習：最好玩的",
-      "openLearn": "打開學習"
+      "fromLearn": "來自學習：最好玩的"
     },
     "hero": {
       "label": "精選遊戲",
@@ -2554,17 +2561,11 @@
       "none": "還沒有班級",
       "noneText": "在下方建立你的第一個班級。你會取得一組代碼，可以分享給學生。",
       "noneAsk": "請校務管理員將你加入班級。",
-      "manage": "管理 {school}",
       "noneAdmin": "你還沒有任教的班級",
-      "noneAdminText": "你任教的班級會顯示在這裡。{school} 的所有班級都在上方的「管理 {school}」中。",
+      "noneAdminText": "你任教的班級會顯示在這裡。{school} 的所有班級都在「我的學校」中。",
       "makeGame": "製作遊戲",
       "plan": {
-        "heading": "學校方案 · {school}",
-        "none": "沒有學校方案 · 學生使用免費的小幫手訊息",
-        "setUp": "設定學校方案",
-        "on": "學校方案已啟用",
-        "billing": "付款",
-        "settling": "正在設定你的方案…"
+        "heading": "學校方案 · {school}"
       },
       "tools": "教學工具",
       "hostLive": "主持即時遊戲"
@@ -3077,7 +3078,8 @@
       "newPlaceholder": "新增資料夾，例如：分數",
       "delete": "刪除資料夾",
       "deleteConfirm": "要刪除資料夾 {name} 嗎？裡面的課程和資料夾會移到上一層。",
-      "hint": "資料夾只有你看得到，學生永遠看不到。"
+      "hint": "資料夾只有你看得到，學生永遠看不到。",
+      "why": "資料夾整理你自己的課程庫，裡面的課程可以用在任何班級。單元在班級頁面建立，決定學生看到的順序。"
     },
     "lesson": {
       "title": "課程名稱",
@@ -3191,7 +3193,8 @@
       "dueToday": "今天截止",
       "late": "逾期",
       "removedGroup": "已從這個班級移除",
-      "readyMade": "使用現成的課程"
+      "readyMade": "使用現成的課程",
+      "unitWhy": "單元將這個班級的課程依學生看到的順序分組。資料夾只用來整理你自己的課程庫。"
     },
     "view": {
       "teacherPreview": "這是學生畫面。儲存作品的按鈕已為你停用。",
@@ -4075,7 +4078,7 @@
         "adult": "請確認你是老師或學校教職員，而且已滿 18 歲。",
         "notTeacher": "教師方案需要教師帳號。",
         "entitled": "你已經有教師方案了。",
-        "fixPayment": "你的方案正在等待付款。請到「我的班級」的「管理帳務」處理。",
+        "fixPayment": "你的方案正在等待付款。請到「設定」的「管理帳務」處理。",
         "trialUsed": "這個免費試用已經用過了。",
         "noPrice": "教師方案目前沒有販售。請稍後再試。",
         "paying": "已經有一筆付款正在處理中。請等一分鐘。",
@@ -4084,8 +4087,8 @@
       },
       "thanks": {
         "wait": "⏳ 正在啟用你的教師方案…",
-        "slow": "這比平常久一點。你的方案一分鐘內會出現在「我的班級」。",
-        "back": "前往「我的班級」"
+        "slow": "這比平常久一點。你的方案一分鐘內會出現在「設定」。",
+        "back": "前往我的教師方案"
       },
       "card": {
         "heading": "教師方案",
@@ -4102,7 +4105,9 @@
         "fix": "你的教師方案正在等待付款。請在「管理帳務」更新信用卡。",
         "tryText": "學生人數不限，你的班級每天 {daily} 次 AI 製作遊戲。免費 {days} 天，不需要信用卡。",
         "getText": "學生人數不限，你的班級每天 {daily} 次 AI 製作遊戲。",
-        "try": "免費試用 {days} 天"
+        "schoolBilling": "管理學校帳務",
+        "seatNote": "這個方案由 {school} 的管理員管理。",
+        "seePlans": "查看方案"
       }
     }
   },
@@ -7345,14 +7350,10 @@
       "waitingN": "{count, plural, other {# 個回答待看}}",
       "caughtUp": "都處理好了",
       "openClass": "開啟班級",
-      "courses": "用課程來教",
-      "live": "全班一起玩的即時遊戲",
-      "breaks": "課間小休息",
-      "breaksText": "從「玩」挑出的有趣小遊戲，適合在大螢幕上休息 5 分鐘。",
-      "allGames": "看看學生能玩的所有遊戲",
       "openLive": "進入即時遊戲",
       "make": "把一堂課變成遊戲",
-      "schoolReady": "{school} 已準備就緒，你是學校的管理員。請在下方建立第一個班級，再加入學生。我們會在一個上課日內查看你的學校，並寄給你一份簡短指南。"
+      "schoolReady": "{school} 已準備就緒，你是學校的管理員。請在下方建立第一個班級，再加入學生。我們會在一個上課日內查看你的學校，並寄給你一份簡短指南。",
+      "allClasses": "所有班級"
     },
     "loop": {
       "kicker": "Oomba 如何融入你的每一週",
@@ -8116,10 +8117,6 @@
       "go": "開啟房間",
       "more": "更多遊戲和設定",
       "recent": "你最近的遊戲"
-    },
-    "card": {
-      "button": "快速遊戲",
-      "change": "更改"
     },
     "results": {
       "h": "這是一場訪客遊戲。",
