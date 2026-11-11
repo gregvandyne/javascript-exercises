@@ -358,7 +358,7 @@ export function namePanel(req) {
       <button class="btn btn-primary" type="submit">${t('me.name.save')}</button>
       <span class="err" id="yn-name-err" aria-live="polite"></span>
     </form>
-    <h3 id="yu-h">${t('me.username.heading')}</h3>
+    <h3 id="yu-h" style="margin:22px 0 4px">${t('me.username.heading')}</h3>
     <p class="small muted" id="yu-note">${t('me.username.note', { days: auth.USERNAME_EVERY_DAYS, hold: auth.USERNAME_HOLD_DAYS })}</p>
     <form class="row" data-api="/api/me/username" data-reload data-toast="${t('me.username.saved')}" novalidate>
       <label class="sr-only" for="yu-name">${t('me.username.heading')}</label>
