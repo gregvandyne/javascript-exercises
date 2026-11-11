@@ -141,7 +141,8 @@ test('another teacher joins the school: the step shows their username; the admin
   await Promise.all([page.waitForURL(/\/signup\/teacher\/classes$/), page.click('.ob-invite button[type=submit]')]);
   await page.fill('#ob-cn-0', '5C'); await page.selectOption('#ob-cg-0', '5');
   await Promise.all([page.waitForURL(/\/signup\/teacher\/classroom$/), page.click('form[data-api="/api/onboarding/classes"] button[type=submit]')]);
-  await Promise.all([page.waitForURL(/\/teach$/), page.click('#ob-skip')]);
+  // Their Classroom; with their one class, My classes opens it directly.
+  await Promise.all([page.waitForURL(/\/(teach|class\/[^/?#]+)$/), page.click('#ob-skip')]);
   await page.context().close();
 });
 
