@@ -69,7 +69,7 @@ test('a switch: the grown-up\'s session row is gone and its cookie replaced; a f
   assert.deepEqual(JSON.parse(audits('family.switch', child.id).at(-1).details), { from: g.id, to: child.id });
   // The old grown-up cookie does nothing now.
   const old = await call(gc, '/family');
-  assert.equal(old.status, 302); assert.match(old.location, /^\/grown-ups\/login/);
+  assert.equal(old.status, 302); assert.match(old.location, /^\/login\?next=%2Ffamily/);
   // The child's side: the normal kid shell (Play · Learn · Build · Friends · Plans · Me), no switch-back anywhere.
   const home = await call(r.cookie, '/');
   assert.equal(home.status, 200);
@@ -99,7 +99,11 @@ test('the way back is a real grown-up sign-in: it ends the child\'s session firs
   assert.equal(q.get('SELECT 1 FROM sessions WHERE id=?', childSid), undefined, 'the child\'s session ended before the grown-up\'s started');
   const s = q.get('SELECT * FROM sessions WHERE id=?', sessionIdOf(back.cookie));
   assert.equal(s.user_id, g.id); assert.equal(s.reauth_at, null, 'the step-up starts again on the grown-up\'s own fresh session');
-  // The grown-up sign-in page asks a signed-in child to sign out first (no shortcut back).
-  const page = await call(cookieFor(child.id), '/grown-ups/login');
-  assert.match(page.text, /data-api="\/api\/auth\/logout"/);
+  // The grown-up sign-in is the one sign-in page now: on its way to the family page it asks a signed-in child to sign
+  // out first (no shortcut back).
+  const c = cookieFor(child.id);
+  assert.equal((await call(c, '/grown-ups/login')).location, '/login?next=%2Ffamily');
+  const page = await call(c, '/login?next=%2Ffamily');
+  assert.equal(page.status, 200); assert.match(page.text, /data-api="\/api\/auth\/logout"/, 'sign the child out first');
+  assert.doesNotMatch(page.text, /data-api="\/api\/auth\/login"/);
 });

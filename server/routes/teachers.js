@@ -115,51 +115,42 @@ function setupBlock(req, { sent = false, failed = false } = {}) {
   const lab = (id, key) => el(t, 'label', key, {}, ` for="${id}"`);
   const errs = id => raw(`<span class="err" id="${id}-err" aria-live="polite"></span>`);
   const u = req.user;
-  // Account first (docs/decisions.md "Account first: set up your school"): signed out, the form makes the teacher's
-  // account and their school at once; a teacher who already runs a school tells us about it. A grown-up (parent)
-  // account, or the platform admin, still sends a plain request (family accounts never join a school).
-  const signup = signedOut(u);
-  const mine = !signup && isSchoolStaff(u) ? schoolsOf(u.id).filter(x => x.role !== 'student' && canManageSchool(u, x.id)) : [];
+  // Signed out: the one sign-up (routes/onboarding.js; docs/decisions.md "One sign-up"): the teacher's account, then
+  // create or join their school, then their classes. A teacher who already runs a school tells us about it here. A
+  // grown-up (parent) account, or the platform admin, still sends a plain request (family accounts never join a school).
+  if (signedOut(u)) {
+    return html`${failed ? el(t, 'p', 'teachers.setup.errors.again', {}, ' class="err"') : ''}${el(t, 'p', 'teachers.setup.signupLead')}
+      <p class="row"><a class="btn btn-primary btn-big" href="/signup/for/teacher" id="setup-signup" rel="nofollow">${t('teachers.setup.signupCta')}</a></p>
+      <p class="small">${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(`${back}#start`)}">${t('auth.page.signInLink')}</a></p>`;
+  }
+  const mine = isSchoolStaff(u) ? schoolsOf(u.id).filter(x => x.role !== 'student' && canManageSchool(u, x.id)) : [];
   const staffForm = mine.length > 0;
   const knownEmail = staffForm ? ((addressOf(u.id) || {}).email || '') : '';
-  return html`${el(t, 'p', signup ? 'teachers.setup.leadSignup' : staffForm ? 'teachers.setup.leadStaff' : 'teachers.setup.lead')}
-    <form class="sr-form" data-api="/api/teachers/school-request" data-next="${signup ? '/teach?welcome=school' : `${back}?sent=1#start`}" method="post" action="/api/teachers/school-request" novalidate>
+  return html`${el(t, 'p', staffForm ? 'teachers.setup.leadStaff' : 'teachers.setup.lead')}
+    <form class="sr-form" data-api="/api/teachers/school-request" data-next="${back}?sent=1#start" method="post" action="/api/teachers/school-request" novalidate>
       <input type="hidden" name="back" value="${back}">
-      ${signup ? html`<input type="hidden" name="tz" data-browser-tz><input type="hidden" name="signup" value="1">` : ''}
       <div class="sr-grid">
         ${staffForm ? html`<div class="field">${lab('sr-school-id', 'teachers.setup.yourSchool')}
           <select class="input" id="sr-school-id" name="schoolId">${mine.map(x => html`<option value="${x.id}">${x.name}</option>`)}</select>${errs('sr-school-id')}</div>`
-        : html`<div class="field">${lab('sr-name', signup ? 'plans.trial.signup.name' : 'teachers.setup.name')}
-          <input class="input" id="sr-name" name="name" maxlength="${SR.LIMITS.name}" autocomplete="name"${signup ? raw(' required') : ''}>${errs('sr-name')}</div>
+        : html`<div class="field">${lab('sr-name', 'teachers.setup.name')}
+          <input class="input" id="sr-name" name="name" maxlength="${SR.LIMITS.name}" autocomplete="name">${errs('sr-name')}</div>
         <div class="field">${lab('sr-school', 'teachers.setup.school')}
           <input class="input" id="sr-school" name="school" required minlength="2" maxlength="${SR.LIMITS.school}" autocomplete="organization">${errs('sr-school')}</div>`}
         <div class="field">${lab('sr-role', 'teachers.setup.role')}
           <select class="input" id="sr-role" name="role" required><option value="">${t('teachers.setup.rolePick')}</option>${SR.ROLES.map(r => html`<option value="${r}">${t(`teachers.setup.roles.${r}`)}</option>`)}</select>${errs('sr-role')}</div>
         <div class="field">${lab('sr-email', 'teachers.setup.email')}
           <input class="input" id="sr-email" name="email" type="email" dir="ltr" required maxlength="${SR.LIMITS.email}" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="sr-email-hint" value="${knownEmail}">
-          ${el(t, 'span', signup || staffForm ? 'teachers.setup.emailHintSignup' : 'teachers.setup.emailHint', {}, ' class="hint" id="sr-email-hint"')}${errs('sr-email')}</div>
+          ${el(t, 'span', staffForm ? 'teachers.setup.emailHintSignup' : 'teachers.setup.emailHint', {}, ' class="hint" id="sr-email-hint"')}${errs('sr-email')}</div>
         <div class="field">${lab('sr-students', 'teachers.setup.students')}
           <input class="input" id="sr-students" name="students" type="number" inputmode="numeric" required min="1" max="${SR.LIMITS.studentsMax}" step="1">${errs('sr-students')}</div>
         <div class="field">${lab('sr-country', 'teachers.setup.country')}
           <input class="input" id="sr-country" name="country" required minlength="2" maxlength="${SR.LIMITS.country}" autocomplete="country-name">${errs('sr-country')}</div>
       </div>
-      ${signup ? html`<fieldset class="sr-account"><legend>${t('teachers.setup.accountH')}</legend>
-        <p class="small muted">${tHtml(t, 'teachers.setup.accountLead', { login: `/login?next=${encodeURIComponent(back + '#start')}` })}</p>
-        <div class="sr-grid">
-        <div class="field">${lab('sr-username', 'plans.trial.signup.username')}
-          <input class="input" id="sr-username" name="username" required minlength="3" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" dir="ltr" aria-describedby="sr-username-hint">
-          ${el(t, 'span', 'plans.trial.signup.usernameHint', {}, ' class="hint" id="sr-username-hint"')}${errs('sr-username')}</div>
-        <div class="field">${lab('sr-password', 'plans.trial.signup.password')}
-          <input class="input" id="sr-password" name="password" type="password" required minlength="${STAFF_PASSWORD_MIN}" maxlength="72" autocomplete="new-password" dir="ltr" aria-describedby="sr-password-hint">
-          ${el(t, 'span', 'plans.trial.signup.passwordHint', { min: STAFF_PASSWORD_MIN }, ' class="hint" id="sr-password-hint"')}${errs('sr-password')}</div>
-        </div>
-        <div class="field"><label class="checkline"><input type="checkbox" id="sr-adult" name="adult" value="1" required> ${el(t, 'span', 'plans.trial.signup.adult')}</label>${errs('sr-adult')}</div>
-      </fieldset>` : ''}
       <div class="sr-hp" aria-hidden="true"><label for="sr-website">Website</label><input id="sr-website" name="website" tabindex="-1" autocomplete="off"></div>
       ${failed ? el(t, 'p', 'teachers.setup.errors.again', {}, ' class="err"') : ''}
       <p class="err form-err" aria-live="polite"></p>
-      <button class="btn btn-primary btn-big" type="submit">${t(signup ? 'teachers.setup.submitSignup' : staffForm ? 'teachers.setup.submitStaff' : 'teachers.setup.submit')}</button>
-      ${el(t, 'p', signup || staffForm ? 'teachers.setup.privacySignup' : 'teachers.setup.privacy', { privacy: '/privacy?for=grownups#schoolSetup' }, ' class="small muted"')}
+      <button class="btn btn-primary btn-big" type="submit">${t(staffForm ? 'teachers.setup.submitStaff' : 'teachers.setup.submit')}</button>
+      ${el(t, 'p', staffForm ? 'teachers.setup.privacySignup' : 'teachers.setup.privacy', { privacy: '/privacy?for=grownups#schoolSetup' }, ' class="small muted"')}
     </form>`;
 }
 
@@ -582,7 +573,7 @@ router.get('/learn', (req, res) => {
     const l = liveGameOf(g);
     const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>`
       : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
-    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c))}<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
+    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.

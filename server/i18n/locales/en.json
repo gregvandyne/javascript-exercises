@@ -163,17 +163,6 @@
       "signInLink": "Sign in",
       "newHere": "New here?",
       "signupLink": "Make a free account",
-      "grownupLogin": "Grown-up or teacher? <a href=\"{grownup}\">Parents sign in here</a> · <a href=\"{teachers}\">Teachers start here</a>",
-      "grownupLoginSoon": "Grown-up or teacher? <a href=\"{grownup}\">Oomba Academy for parents</a> · <a href=\"{teachers}\">Teachers start here</a>",
-      "grownupSignup": "Grown-up or teacher? <a href=\"{grownup}\">Parents start here</a> · <a href=\"{teachers}\">Teachers start here</a>",
-      "whoHeading": "Who’s this for?",
-      "whoGrownup": "Me (a grown-up)",
-      "whoGrownupSub": "Your own account, linked to your child’s account",
-      "whoKid": "A kid (me or my child)",
-      "whoKidSub": "A made-up name and a password, no email. Kids on their own and parents both start here.",
-      "whoTeacher": "I’m a teacher",
-      "whoTeacherSub": "Set up your school and your classes",
-      "whoBack": "Who’s this for? Pick again",
       "soonHeading": "Grown-up accounts are coming soon",
       "soonText": "Soon you’ll be able to make your own account, linked to your child’s account. Until then, your child can start free with a made-up name and a password (no email), and the parents’ page explains how Oomba Academy works and keeps children safe.",
       "soonParents": "Oomba Academy for parents",
@@ -1021,12 +1010,13 @@
         "s1": "What we keep",
         "li1": "the name you type when you sign up (it can be a first name or nickname; children never see it: they see only \"your grown-up\");",
         "li2": "your password, stored scrambled (we can't read it);",
+        "li8": "if you sign up or sign in with Google: your Google account's id and email address, to sign you in and to send account emails, such as a password reset or trial emails (never the Google photo);",
         "li3": "that you ticked \"I am a parent or guardian, 18 or older\" (we don't check this);",
         "li4": "your sign-in sessions, including your browser's name (user agent), and when you last re-entered your password for a billing step;",
         "li5": "which children you linked, when, and whether a link is pending, linked or ended;",
         "li6": "your plan: Stripe's customer and subscription numbers, plan type, monthly or yearly, status, seats, dates and amounts;",
         "li7": "a record of important actions (for example \"plan started\", \"child linked\", \"refund\"). These records never contain card details or email addresses.",
-        "p1": "<b>What we don't ask for:</b> your email, phone number, home address or age. (Stripe asks for some of these when you pay: see Payments below.)",
+        "p1": "<b>What we don't ask for:</b> your phone number, home address or age, and no email unless you sign up or sign in with Google. (Stripe asks for some of these when you pay: see Payments below.)",
         "p2": "A grown-up account can build games. They go through the same safety checks as every game, and a game shared with everyone shows the grown-up’s display name and “Grown-up builder”. A grown-up account can connect with other grown-up accounts only; it can’t chat, add kids as friends or have a public profile, and doesn’t appear in search. We never show publicly which children are linked to a grown-up, or their names."
       },
       "linking": {
@@ -1068,6 +1058,7 @@
       "schoolSetup": {
         "h": "School set-up requests",
         "li1": "<b>What we keep when a teacher or school leader asks us to set up a school</b> (the form on our teachers page): the school's name, their role, their work email, about how many students, the country, the language of the page and when it was sent. If they were signed in to a grown-up or school staff account, we also keep which account sent it. A guest's account is never kept with a request. If they made their teacher account with the form, we also keep the work email with that account.",
+        "li5": "<b>When a teacher creates their school while signing up</b> and types a work email, we keep the school's name, their name, that email, the language of the page, when it was sent and their account, for the same uses and for as long as a request. The email is also kept with their account.",
         "li2": "<b>What we use it for:</b> to set up the school, to reply to the request, to send the school's welcome guide, and to send a password-reset link if the account's owner asks for one. We don't send newsletters, and we don't share it with Stripe or anyone else.",
         "li3": "<b>Who sees it:</b> only our team.",
         "li4": "<b>How long:</b> deleted <b>1 year</b> after we close the request (or 1 year after it was sent, if it is never closed)."
@@ -3380,12 +3371,13 @@
   "google": {
     "button": {
       "signIn": "Sign in with Google",
-      "hint": "For school Google accounts, like on a Chromebook."
+      "hint": "For school Google accounts, and for parents and teachers who signed up with Google."
     },
     "login": {
       "orName": "or use your Oomba Academy name",
       "joinLink": "Got a class code? {link}",
-      "joinLinkText": "Join your class"
+      "joinLinkText": "Join your class",
+      "unknownAdult": "Parent or teacher? <a href=\"{href}\">Make your account</a> and choose Sign up with Google."
     },
     "errors": {
       "expired": "That took a little too long. Please try again.",
@@ -3420,7 +3412,8 @@
       "schoolAccount": "Your teacher looks after Google sign-in for this account.",
       "needCard": "You sign in only with Google. Ask your school admin for a login card before you disconnect it.",
       "noPasswordStaff": "You sign in with Google, so there's no password to change. If you ever need one, your school admin can give you a login card.",
-      "noPasswordStudent": "You sign in with Google. If you ever need a login card, ask your teacher."
+      "noPasswordStudent": "You sign in with Google. If you ever need a login card, ask your teacher.",
+      "noPasswordOwn": "You sign in with Google, so there’s no password to change."
     },
     "join": {
       "title": "Join your class",
@@ -3554,7 +3547,8 @@
         "p1": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and never use the account to read anything else from Google.",
         "p1c": "We keep the Google account's id, email address and school domain while it is connected, to recognise it at sign-in. We never store the Google photo, never show a student's Google name on the game site, and read nothing else from a Google account unless a teacher connects Google Classroom.",
         "classroom": "When a teacher connects Google Classroom, we read only the names of the classes they teach and, for the class they link, each student's Google account id and name, to add them to the matching Oomba Academy class. We send Google only what the teacher asks for: an assignment (the lesson's title, a link to it and its due date) and each student's lesson score out of 100. We never send students' answers, feedback, games or drawings. The teacher's connection is stored encrypted until they disconnect or delete their account; disconnecting also revokes it at Google.",
-        "limitedUse": "Oomba Academy's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements. We never sell this information, use it for advertising, or use it to train AI models, and our team looks at it only when needed for support, security or the law."
+        "limitedUse": "Oomba Academy's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements. We never sell this information, use it for advertising, or use it to train AI models, and our team looks at it only when needed for support, security or the law.",
+        "adults": "Parents and teachers can also sign up with Google, with a personal or a school Google account. We keep that account's id and email address while it is connected, to sign them in and to send account emails, such as a password reset or trial emails. An email never joins two accounts on its own. Children never sign up with Google."
       }
     }
   },
@@ -4355,7 +4349,9 @@
       "submitSignup": "Create my account and school",
       "submitStaff": "Send",
       "privacySignup": "We use your email to send your welcome guide, to reset a forgotten password and to answer you. See our <a href=\"{privacy}\">Privacy Policy</a>.",
-      "emailHintSignup": "Your school email. We send your welcome guide there, and use it if you forget your password."
+      "emailHintSignup": "Your school email. We send your welcome guide there, and use it if you forget your password.",
+      "signupLead": "Make your teacher account, then create or join your school and add your classes. It takes about two minutes, and it’s free.",
+      "signupCta": "Create my teacher account"
     },
     "live": {
       "h": "Live class games",
@@ -7983,6 +7979,7 @@
     }
   },
   "standards": {
+    "more": "+{count} more",
     "fw": {
       "csta": "Computer science (CSTA)",
       "math": "Common Core Math",
@@ -8572,6 +8569,109 @@
       "bye": "Welcome aboard,",
       "signature": "The Oomba Academy team",
       "changeLater": "You can change your username and your name later on your Me page."
+    }
+  },
+  "onboard": {
+    "step": "Step {n} of {total}",
+    "back": "Back",
+    "who": {
+      "heading": "Who’s signing up?",
+      "kid": "I’m a kid",
+      "kidSub": "A fun name and a password. No email.",
+      "parent": "I’m a parent",
+      "parentSub": "Make your account, then add your kids.",
+      "teacher": "I’m a teacher",
+      "teacherSub": "Set up your school and your classes."
+    },
+    "google": "Sign up with Google",
+    "googleNote": "We keep your Google email to sign you in and for account emails.",
+    "create": "Create my account",
+    "parent": {
+      "heading": "Make your parent account",
+      "lead": "For parents and guardians. Next, you can add your kids."
+    },
+    "teacher": {
+      "heading": "Make your teacher account",
+      "lead": "Next, you set up your school and add your classes."
+    },
+    "kid": {
+      "codeHeading": "Got a class code?",
+      "codeLead": "If your teacher gave you a class code, type it here to join your class.",
+      "codeLabel": "Class code",
+      "join": "Join my class",
+      "familyHeading": "Want your grown-up on Oomba too?",
+      "familyText": "Get a family code and give it to your parent or guardian. They type it on their family page, then you say yes.",
+      "familyButton": "Get my family code",
+      "skip": "Skip for now"
+    },
+    "school": {
+      "heading": "Your school",
+      "lead": "Create your school on Oomba Academy, join it, or skip this for now.",
+      "create": "Create my school",
+      "createSub": "You become its school admin. You can invite teachers later.",
+      "join": "Join my school",
+      "joinSub": "My school already uses Oomba Academy.",
+      "own": "Skip for now",
+      "ownSub": "Start with your own classroom. You can join a school later.",
+      "createHeading": "Create your school",
+      "createLead": "You become its school admin, and you can use it straight away.",
+      "schoolName": "School name",
+      "yourName": "Your name, as your students see it",
+      "yourNameHint": "For example Ms. Rivera.",
+      "email": "Work email (optional)",
+      "emailHint": "We send your school’s welcome guide there, and use it if you forget your password.",
+      "createSubmit": "Create my school",
+      "privacy": "What we keep and why: <a href=\"{privacy}\">our privacy policy</a>.",
+      "ownHeading": "Your own classroom",
+      "ownLead": "Your classes live in your own classroom. If your school joins later, its admin can invite you.",
+      "ownSubmit": "Continue",
+      "ownName": "{name}’s classroom"
+    },
+    "join": {
+      "heading": "Join your school",
+      "how": "Ask your school’s Oomba Academy admin to add you. Give them your username:",
+      "copy": "Copy",
+      "where": "They add you on their school page, on the People tab. Then come back here and check again.",
+      "google": "If your school signs in with Google, your admin can invite your school email instead.",
+      "check": "Check again",
+      "own": "Start with my own classroom for now"
+    },
+    "classes": {
+      "heading": "Add your classes",
+      "lead": "Add at least one class. You can add more later.",
+      "rowLabel": "Class {n}",
+      "name": "Class name",
+      "namePh": "like 4B or Room 12",
+      "grade": "Grade",
+      "gradePick": "Pick a grade",
+      "gradeK": "Kindergarten",
+      "gradeN": "Grade {n}",
+      "add": "Add another class",
+      "remove": "Remove",
+      "submit": "Save and continue",
+      "submitMore": "Add these classes",
+      "have": "Your classes",
+      "more": "Add more classes",
+      "continue": "Continue",
+      "school": "School",
+      "noCreate": "At {school}, your school admin makes the classes. Ask them to add you to yours.",
+      "made": "{count, plural, one {# class added} other {# classes added}}",
+      "errors": {
+        "none": "Add at least one class.",
+        "grade": "Pick a grade for each class.",
+        "tooMany": "Add up to {max} classes here. You can add more later."
+      }
+    },
+    "classroom": {
+      "heading": "Connect Google Classroom?",
+      "lead": "You can also do this later from any class.",
+      "li1": "Bring in your class lists from Google Classroom.",
+      "li2": "Post lessons to Classroom as assignments.",
+      "li3": "Send scores back to Classroom.",
+      "connect": "Connect Google Classroom",
+      "connected": "Google Classroom is connected.",
+      "later": "You can connect Google Classroom later from any class.",
+      "skip": "Skip for now"
     }
   }
 }

@@ -182,10 +182,10 @@ test('the new and changed pages: nothing touches, no sideways scroll (360 / 1280
       const wide = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
       if (wide > 1) problems.push(`${p} @${width}/${lang}: scrolls sideways by ${wide}px`);
     }
-    // Signed out (no guest) /login and /signup show "Grown-up or teacher?".
+    // Signed out (no guest), /login is one sign-in for everyone, with the way to the sign-up's "Who's signing up?".
     await ctx.clearCookies();
     await page.goto('/login');
-    await expect(page.locator('.grownup-line a[href="/teachers"]')).toBeVisible();
+    await expect(page.locator('main a[href="/signup"]')).toBeVisible();
     await ctx.close();
   }
   // The landing pages in the languages with the longest button labels: no sideways scroll at 360px.

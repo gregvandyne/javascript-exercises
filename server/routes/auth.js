@@ -9,7 +9,7 @@ import { q, audit } from '../db.js';
 import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
-import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName, adminSchools } from '../services/schools.js';
+import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName, teacherToBe, adminSchools } from '../services/schools.js';
 import { cleanRealName, REAL_NAME_MAX, cleanName } from '../services/textfilter.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
@@ -20,7 +20,6 @@ import { publicHost } from '../site.js';
 import { loginGoogle, googleNotice, loginJoinLink, meGooglePanel, noPasswordText } from './google.js';
 import { meFamilyPanel, nextFor } from './family.js';
 import { digestPanel } from './digest.js';
-import { familiesOn } from '../services/family.js';
 import * as funnel from '../services/funnel.js';
 import * as courses from '../services/courses.js';
 import { countable } from '../services/traffic.js';
@@ -42,134 +41,73 @@ export function homeFor(u) {
   if (isSchoolStaff(u)) { const slug = soloSchoolAdmin(u) ? null : schoolToSetUp(u); return slug ? `/school/${slug}` : landingFor(u); }
   if (isPlatformAdmin(u)) return '/admin';
   if (u.managed_school) return '/classes';
+  // Signed up on the teacher's step and has no school yet: back to the school step (routes/onboarding.js).
+  if (teacherToBe(u)) return '/signup/teacher/school';
   return landingFor(u) || '/';
 }
 
-/** "Grown-up or teacher?" under the kid form's heading: parents to the grown-up sign-in or sign-up (while paid-plan
- *  pages are on; the parent page before that), teachers to /teachers. Not for a guest keeping their progress. */
-function grownupLine(req, isSignup) {
-  // Before parents' accounts open (familiesOn off) the parents' link goes to the parent page, so the sign-in line
-  // doesn't promise a sign-in page: it says "Oomba Academy for parents" instead.
-  const on = familiesOn(req);
-  const t = req.t; const key = isSignup ? 'auth.page.grownupSignup' : on ? 'auth.page.grownupLogin' : 'auth.page.grownupLoginSoon';
-  const grownup = on ? (isSignup ? '/grown-ups/signup' : '/grown-ups/login') : '/parents';
-  if (!t.own(key)) return '';   // until this language has the line
-  return html`<p class="center small grownup-line">${tHtml(t, key, { grownup, teachers: '/teachers' })}</p>`;
-}
-// ---------------------------------------------------------------------------------------------------- who's this for?
-// "Start free" (/signup) first asks who the account is for (docs/decisions.md "Who's this for?"): a grown-up (their own
-// sign-up, or a "coming soon" note while parents' accounts are off), a child (the kid form, unchanged) or a teacher (the
-// "Set up my school" form on /teachers). Plain links, so it works without JavaScript; each choice goes through
-// /signup/for/<who>, which counts it and redirects. Sign in (/login) never asks: kids sign in every day.
-const WHO_KEYS = ['auth.page.whoHeading', 'auth.page.whoGrownup', 'auth.page.whoGrownupSub', 'auth.page.whoKid', 'auth.page.whoKidSub', 'auth.page.whoTeacher', 'auth.page.whoTeacherSub'];
-// A ?next= on a grown-up or teacher page (Plans, the parent and teacher pages, the guides) still asks; any other page
-// (the Builder, joining a class, a game, Friends, Me) is a kid on their way somewhere, so the kid form opens at once.
-const GROWNUP_NEXT = /^\/([a-z]{2}(-[A-Za-z]{2,4})?\/)?(plans|parents|teachers|grown-ups|family|safety|privacy|terms|refunds|learn)(\/|\?|#|$)/;
-/** Does /signup ask "Who's this for?" Not for a guest keeping their progress (a kid already playing), not once the
- *  address says ?for=kid, not on a kid's way to a page (?next=), and not until this language has the question. */
-export function asksWho(req) {
-  const u = req.user, t = req.t;
-  if (u || req.query.for === 'kid') return false;
-  const next = wantedNext(req.query.next);
-  if (next && !GROWNUP_NEXT.test(next)) return false;
-  return WHO_KEYS.every(k => t.own(k));
-}
-/** Choice -> funnel step (services/funnel.js "who"). */
-const WHO = new Map([['grownup', 'who.grownup'], ['kid', 'who.kid'], ['teacher', 'who.teacher']]);
-/** Where a choice leads. A ?next= comes along to the grown-up sign-up (a parent who started on /plans goes back there;
- *  routes/family.js checks it with nextFor) and to the kid form. */
+// ---------------------------------------------------------------------------------------------------- sign-up
+// The sign-up is one flow (routes/onboarding.js; docs/decisions.md "One sign-up"): /signup asks who is signing up (a
+// kid, a parent or a teacher), each choice goes through /signup/for/<who>, which counts it and redirects to that path's
+// first step. Sign in (/login) never asks: kids sign in every day.
+/** Choice -> funnel step (services/funnel.js "who"). 'parent' is the same choice as 'grownup'. */
+const WHO = new Map([['grownup', 'who.grownup'], ['parent', 'who.grownup'], ['kid', 'who.kid'], ['teacher', 'who.teacher']]);
+/** Where a choice leads. A ?next= comes along to the kid's and the parent's steps (a parent who started on /plans goes
+ *  back there; routes/family.js checks it with nextFor). */
 export function whoTarget(req, who) {
   const next = wantedNext(req.query.next);
-  const q = next ? `next=${encodeURIComponent(next)}` : '';
-  if (who === 'grownup') return familiesOn(req) ? `/grown-ups/signup${q ? `?${q}` : ''}` : '/signup?for=grownup';
-  if (who === 'teacher') return '/teachers#start';
-  return `/signup?for=kid${q ? `&${q}` : ''}`;
+  const q = next ? `?next=${encodeURIComponent(next)}` : '';
+  if (who === 'grownup' || who === 'parent') return `/signup/parent${q}`;
+  if (who === 'teacher') return '/signup/teacher';
+  return `/signup/kid${q}`;
 }
-/** The three choices (the home page's door style, one under the other). */
-function whoChooser(req, next) {
-  const t = req.t; const n = wantedNext(next) ? `?next=${encodeURIComponent(next)}` : '';
-  const door = (who, emoji, key) => html`<a class="door door-${who}" href="/signup/for/${who}${who === 'teacher' ? '' : n}" rel="nofollow"><span class="door-e" aria-hidden="true">${emoji}</span><span class="door-t"><span class="door-h">${t(key)}</span><span class="door-s">${t(`${key}Sub`)}</span></span><span class="door-go flip" aria-hidden="true">›</span></a>`;
-  return html`<div class="doors whofor" role="group" aria-labelledby="who-h">
-    ${door('grownup', '👪', 'auth.page.whoGrownup')}
-    ${door('kid', '🧒', 'auth.page.whoKid')}
-    ${door('teacher', '🍎', 'auth.page.whoTeacher')}
-  </div>`;
-}
-/** "Me (a grown-up)" while parents' accounts are off: an honest "coming soon", the parent page, and the child's account.
- *  Text this language doesn't have yet is marked as English. */
-function grownupSoon(req, res) {
-  const t = req.t; const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const body = html`<div class="authbox"><div class="panel">
-    <div class="center" style="font-size:3rem" aria-hidden="true">👪</div>
-    <h1 class="center"${fb('auth.page.soonHeading')}>${t('auth.page.soonHeading')}</h1>
-    <p${fb('auth.page.soonText')}>${t('auth.page.soonText')}</p>
-    <div class="soon-btns"><a class="btn btn-primary btn-block" href="/parents"${fb('auth.page.soonParents')}>${t('auth.page.soonParents')}</a>
-    <a class="btn btn-block" href="/signup?for=kid"${fb('auth.page.soonKid')}>${t('auth.page.soonKid')}</a></div>
-    <p class="center small whoback"><a href="/signup"${fb('auth.page.whoBack')}>${t('auth.page.whoBack')}</a></p>
-  </div></div>`;
-  page(req, res, { title: t('auth.page.titleSignup'), active: 'me', body });
-}
-function authPage(req, res, mode) {
+/** The sign-in page: Sign in with Google (when it is on here), or a username and password; "Forgot your password?"
+ *  folds its help away; a link to the sign-up. */
+function loginPage(req, res) {
   const t = req.t;
   const next = safeNext(req.query.next);
   const u = req.user;
-  const isSignup = mode === 'signup';
-  const upgrading = isSignup && u && u.is_guest;
-  if (u && !u.is_guest) return res.redirect(nextFor(u, wantedNext(req.query.next)) || homeFor(u));
-  if (isSignup && !u && req.query.for === 'grownup') return familiesOn(req) ? res.redirect(302, whoTarget(req, 'grownup')) : grownupSoon(req, res);
-  // "Who's this for?" instead of the form; the kid form after "My child" gets a way back instead of the grown-up line.
-  const ask = isSignup && asksWho(req);
-  const pickedKid = isSignup && !u && req.query.for === 'kid' && t.own('auth.page.whoBack');
-  const top = upgrading ? '' : pickedKid ? html`<p class="center small whoback"><a href="/signup${wantedNext(req.query.next) ? `?next=${encodeURIComponent(next)}` : ''}">${t('auth.page.whoBack')}</a></p>` : grownupLine(req, isSignup);
-  if (ask) {
-    const body = html`<div class="authbox"><div class="panel">
-      <div class="center" style="font-size:3rem" aria-hidden="true">🎉</div>
-      <h1 class="center" id="who-h">${t('auth.page.whoHeading')}</h1>
-      ${whoChooser(req, next)}
-      <div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>
-      <p class="center small" style="margin-top:16px">${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a></p>
-    </div></div>`;
-    return page(req, res, { title: t('auth.page.titleSignup'), active: 'me', body });
+  // A child's sign-in on a shared device (e.g. after a grown-up's Switch) on its way to a family page: sign the child
+  // out first, then the grown-up signs in with their own password (no shortcut back).
+  if (u && !u.is_guest && !auth.isGrownup(u) && /^\/(family|grown-ups)(\/|\?|$)/.test(wantedNext(req.query.next) || '')) {
+    const so = html`<div class="authbox"><div class="panel"><h1 class="center">${t('auth.page.headingLogin')}</h1>
+      <div class="notice warn"><p style="margin-top:0">${tHtml(t, 'family.signup.signedIn', { name: html`<b><bdi>${u.display_name}</bdi></b>` })}</p>
+      <form data-api="/api/auth/logout"><input type="hidden" name="next" value="${req.originalUrl}"><button class="btn" type="submit">${t('me.signOut.button')}</button></form></div></div></div>`;
+    return page(req, res, { title: t('auth.page.titleLogin'), active: 'me', body: so });
   }
-  const body = html`<div class="authbox">
-    <div class="panel">
-      <div class="center" style="font-size:3rem" aria-hidden="true">${isSignup ? '🎉' : '👋'}</div>
-      <h1 class="center">${isSignup ? (upgrading ? t('auth.page.headingUpgrade') : t('auth.page.headingSignup')) : t('auth.page.headingLogin')}</h1>
-      <p class="center muted">${isSignup ? t('auth.page.introSignup') : t('auth.page.introLogin')}</p>
-      ${top}
-      ${!isSignup && (req.query.signedout === '1' || req.sessionEnded) ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
-      ${!isSignup && req.query.reset === '1' ? html`<p class="notice good" role="status" id="reset-done">${t('auth.reset.done')}</p>` : ''}
-      ${!isSignup && req.query.welcome === '1' ? html`<p class="notice good" role="status" id="welcome-done">${t('auth.reset.welcomeDone')}</p>` : ''}
-      ${!isSignup && req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
-      ${isSignup ? '' : googleNotice(req)}
-      ${isSignup ? '' : loginGoogle(req, next)}
-      ${upgrading ? html`<p class="notice good">${tHtml(t, 'auth.page.upgradeNotice', { name: u.display_name })}</p>` : ''}
-      <form data-api="/api/auth/${isSignup ? 'signup' : 'login'}" ${isSignup ? raw(`data-next="${next.replace(/"/g, '&quot;')}"`) : ''} novalidate>
-        ${!isSignup && wantedNext(req.query.next) ? html`<input type="hidden" name="next" value="${next}">` : ''}
-        <div class="field"><label for="username">${isSignup ? t('auth.page.nameLabelSignup') : t('auth.page.nameLabelLogin')}</label>
-          <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false" placeholder="${isSignup ? t('auth.page.namePlaceholder') : ''}"${!isSignup && req.query.welcome === '1' && /^[A-Za-z0-9_]{3,16}$/.test(String(req.query.u || '')) ? html` value="${String(req.query.u)}"` : ''}>
-          ${isSignup ? html`<span class="hint">${t('auth.page.nameHint')}</span>` : ''}
+  if (u && !u.is_guest) return res.redirect(nextFor(u, wantedNext(req.query.next)) || homeFor(u));
+  const body = html`<div class="authbox"><div class="panel">
+      <div class="center" style="font-size:3rem" aria-hidden="true">👋</div>
+      <h1 class="center">${t('auth.page.headingLogin')}</h1>
+      ${req.query.signedout === '1' || req.sessionEnded ? html`<p class="notice warn" role="status">${t('auth.page.signedOut')}</p>` : ''}
+      ${req.query.reset === '1' ? html`<p class="notice good" role="status" id="reset-done">${t('auth.reset.done')}</p>` : ''}
+      ${req.query.welcome === '1' ? html`<p class="notice good" role="status" id="welcome-done">${t('auth.reset.welcomeDone')}</p>` : ''}
+      ${req.query.moved === '1' && publicHost() ? html`<p class="notice" role="status">${t('auth.page.moved', { site: publicHost() })}</p>` : ''}
+      ${googleNotice(req)}
+      ${loginGoogle(req, next)}
+      <form data-api="/api/auth/login" novalidate>
+        ${wantedNext(req.query.next) ? html`<input type="hidden" name="next" value="${next}">` : ''}
+        <div class="field"><label for="username">${t('auth.page.nameLabelLogin')}</label>
+          <input class="input" id="username" name="username" dir="ltr" autocomplete="username" required minlength="3" maxlength="16" autocapitalize="off" spellcheck="false"${req.query.welcome === '1' && /^[A-Za-z0-9_]{3,16}$/.test(String(req.query.u || '')) ? html` value="${String(req.query.u)}"` : ''}>
           <span class="err" id="username-err" aria-live="polite"></span></div>
         <div class="field"><label for="password">${t('auth.page.passwordLabel')}</label>
-          <span class="pw-row"><input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="${isSignup ? 'new-password' : 'current-password'}" required minlength="6">
+          <span class="pw-row"><input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="current-password" required minlength="6">
           <button class="btn pw-toggle" type="button" data-pw-toggle="password" aria-controls="password" aria-pressed="false" data-show="${t('auth.page.showPassword')}" data-hide="${t('auth.page.hidePassword')}">👁️ <span>${t('auth.page.showPassword')}</span></button></span>
-          ${isSignup ? html`<span class="hint">${t('auth.page.passwordHint')}</span>` : html`<span class="hint">${t('auth.page.cardHint')}</span>`}
+          <span class="hint">${t('auth.page.cardHint')}</span>
           <span class="err" id="password-err" aria-live="polite"></span></div>
         <p class="err form-err" aria-live="polite"></p>
-        <button class="btn btn-primary btn-block btn-big" type="submit">${isSignup ? t('auth.page.submitSignup') : t('auth.page.submitLogin')}</button>
+        <button class="btn btn-primary btn-block btn-big" type="submit">${t('auth.page.submitLogin')}</button>
       </form>
-      ${isSignup ? '' : html`<div class="forgot small" id="forgot"><h2 class="forgot-h">${t('auth.page.forgotHeading')}</h2>
+      <details class="forgot small" id="forgot"${req.query.forgot === '1' ? raw(' open') : ''}><summary class="forgot-h">${t('auth.page.forgotHeading')}</summary>
         <p><span aria-hidden="true">🏫</span> ${t('auth.page.forgotSchool')} ${t('auth.page.forgotSchoolAdmin', { email: contactEmail() })}</p>
         ${resetByEmailOn() ? html`<p id="forgot-staff"><span aria-hidden="true">🍎</span> ${tHtml(t, 'auth.reset.linkLine', { href: '/forgot' })}</p>` : ''}
-        <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></div>`}
-      ${!u ? html`<div class="divider">${t('auth.page.or')}</div><button class="btn btn-block" type="button" data-guest-play="${next}">${t('auth.page.playAsGuest')}</button>` : ''}
-      <p class="center small" style="margin-top:16px">${isSignup ? html`${t('auth.page.haveAccount')} <a href="/login?next=${encodeURIComponent(next)}">${t('auth.page.signInLink')}</a>` : html`${t('auth.page.newHere')} <a href="/signup?next=${encodeURIComponent(next)}">${t('auth.page.signupLink')}</a>`}</p>
-      ${isSignup ? '' : loginJoinLink(req)}
+        <p><span aria-hidden="true">🙂</span> ${t('auth.page.forgotOwn')}</p></details>
+      <p class="center small" style="margin-top:16px">${t('auth.page.newHere')} <a href="/signup${wantedNext(req.query.next) ? `?next=${encodeURIComponent(next)}` : ''}">${t('auth.page.signupLink')}</a></p>
+      ${loginJoinLink(req)}
     </div></div>`;
-  page(req, res, { title: isSignup ? t('auth.page.titleSignup') : t('auth.page.titleLogin'), active: 'me', body });
+  page(req, res, { title: t('auth.page.titleLogin'), active: 'me', body });
 }
-router.get('/login', (req, res) => authPage(req, res, 'login'));
-router.get('/signup', (req, res) => authPage(req, res, 'signup'));
+router.get('/login', loginPage);
 // A "Who's this for?" choice: counted (people's browsers only: no robots, link previews or scripts; one daily total per
 // choice, nothing about who chose; a GET only, never HEAD or a prefetch), then on to where it leads. /signup/for/ is
 // disallowed in robots.txt (/signup itself stays crawlable, so its noindex is seen) and this answers noindex.

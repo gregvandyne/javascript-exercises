@@ -73,7 +73,7 @@ test('parent pages: structured data in the browser, the calls to action, and the
   await page.goto('/parents');
   // Once at the top, and again after the questions at the end.
   await expect(page.getByRole('link', { name: 'Let your child start free' })).toHaveCount(2);
-  for (const l of await page.getByRole('link', { name: 'Let your child start free' }).all()) await expect(l).toHaveAttribute('href', '/signup?for=kid');
+  for (const l of await page.getByRole('link', { name: 'Let your child start free' }).all()) await expect(l).toHaveAttribute('href', '/signup/kid');
   await page.locator('a.lp-hub[href="/learn/games-for-8-and-9-year-olds"]').click();
   await expect(page).toHaveURL(/\/learn\/games-for-8-and-9-year-olds$/);
   await expect(page.locator('h1')).toContainText('Learning games for 8 and 9 year olds');

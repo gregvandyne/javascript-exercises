@@ -254,18 +254,16 @@ test('one free trial per teacher, per email and per school, ever (per Stripe mod
 
 // ---------------------------------------------------------------- /trial
 test('/trial routing: signed out → teacher sign-up; a teacher → start; trialing or paid → Settings; kid and grown-up → for teachers', async () => {
-  // Signed out: the sign-up form for a teacher account (and the plan, no card).
+  // Signed out: the one sign-up's teacher steps, which come back here (?trial=1, and ?seats=N for a school's trial).
   let r = await call(null, '/trial');
-  assert.equal(r.status, 200);
-  let t = decode(r.text);
-  assert.match(t, /Try the Teacher plan free for 14 days/);
-  assert.match(t, /Create your teacher account/);
-  assert.match(t, /data-api="\/api\/trial\/signup"/);
-  assert.match(t, /\$119\.00 a year per teacher\. No per-student charge\./);
-  assert.match(t, /noindex/);
+  assert.equal(r.status, 302); assert.equal(r.location, '/signup/teacher?trial=1');
+  assert.equal((await call(null, '/trial?seats=4')).location, '/signup/teacher?trial=1&seats=4');
+  let t = decode((await call(null, '/signup/teacher?trial=1')).text);
+  assert.match(t, /Make your teacher account/); assert.match(t, /<input type="hidden" name="trial" value="1">/);
+  assert.doesNotMatch(t, /\$\d/, 'no prices on the sign-up (prices are on /plans and /trial)');
   // A guest is signed out too.
   const guest = auth.createGuest();
-  assert.match(decode((await call(signIn(guest), '/trial')).text), /Create your teacher account/);
+  assert.equal((await call(signIn(guest), '/trial')).location, '/signup/teacher?trial=1');
   // A teacher with no plan: the start form with the work email; ?cancelled=1 says nothing started.
   const x = school();
   t = decode((await call(x.who, '/trial?cancelled=1')).text);

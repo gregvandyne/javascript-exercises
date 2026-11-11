@@ -37,12 +37,14 @@ const admin = () => auth.createUser({ username: `SuBoss${++n}`, password: 'rainb
 const form = (over = {}) => ({ signup: '1', name: 'Roxana Gherghinis', school: 'Fortech Academy', role: 'it', email: 'roxana@fortech.example', students: '240', country: 'Romania',
   username: `RoxanaT${++n}`, password: 'blue-otter-fortech-42', adult: '1', tz: 'Europe/Bucharest', ...over });
 
-test('signed out: the form asks for the school and the account, and says it starts at once', async () => {
+test('signed out: "Set up your school" leads into the one sign-up (no form of its own any more)', async () => {
   const r = await call(null, '/teachers');
   assert.equal(r.status, 200);
-  assert.match(r.text, /Make your teacher account and your school in one step/);
-  assert.match(r.text, /name="username"[^>]*required/); assert.match(r.text, /name="password"[^>]*type="password"|type="password"[^>]*name="password"/);
-  assert.match(r.text, /Create my account and school/);
+  const start = (/<section class="panel lp-start" id="start"[\s\S]*?<\/section>/.exec(r.text) || [''])[0];
+  assert.match(start, /Make your teacher account, then create or join your school and add your classes/);
+  assert.match(start, /<a class="btn btn-primary btn-big" href="\/signup\/for\/teacher" id="setup-signup" rel="nofollow">Create my teacher account<\/a>/);
+  assert.doesNotMatch(start, /name="username"|name="password"|data-api="\/api\/teachers\/school-request"/);
+  // The old form's API still answers a post (a page left open before the change), with the same rules.
 });
 
 test('one sign-up: the account, its school (they run it), the email kept, the request linked, signed in', async () => {

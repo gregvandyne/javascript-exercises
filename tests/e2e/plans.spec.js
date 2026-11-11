@@ -77,7 +77,7 @@ async function buyFromPlans(browser, plan = 'family', interval = 'year') {
   await expect(mum.locator('#soon')).toContainText("Basic and Family plans can't be bought yet.");
   await expect(mum.locator(`#plan-${plan} .plan-soon`)).toHaveText('Coming soon');
   await expect(mum.locator('main a', { hasText: /Choose (Basic|Family)/ })).toHaveCount(0);
-  await Promise.all([mum.waitForURL(/\/grown-ups\/signup$/), mum.locator('#soon a', { hasText: 'Make a grown-up account' }).click()]);
+  await Promise.all([mum.waitForURL(/\/signup\/parent$/), mum.locator('#soon a', { hasText: 'Make a grown-up account' }).click()]);
   const mumName = uniq('Mum');
   await mum.fill('#username', mumName); await mum.fill('#password', PW); await mum.fill('#confirm', PW); await mum.check('#adult');
   await Promise.all([mum.waitForURL(/\/family\/add\?from=signup$/), mum.click('button[type=submit]')]);
@@ -181,7 +181,7 @@ test('a kid on /plans: the Plans link in the menu, every plan to look at, and a 
   // No sales nudging for kids: no "Recommended" badge.
   await expect(kid.locator('.plan-badge')).toHaveCount(0);
   await expect(kid.locator('main')).not.toContainText('Recommended');
-  await expect(kid.locator('main a[href^="/grown-ups"], main a[href^="/family"]')).toHaveCount(0);
+  await expect(kid.locator('main a[href^="/grown-ups"], main a[href^="/signup/parent"], main a[href^="/family"]')).toHaveCount(0);
   await Promise.all([kid.waitForURL(/ask=family/), kid.locator('#plan-family a', { hasText: 'How to get it' }).click()]);
   const ask = kid.locator('#ask');
   await expect(ask).toContainText('A grown-up buys plans');
@@ -212,7 +212,7 @@ test('the pages: nothing touches, no sideways scroll (360 / 1280, light / dark, 
   const kid = await person(browser); await signup(kid, uniq('Kid'));
   const teacher = await person(browser); await login(teacher, 'DemoTeacher', 'demo-pass-123').catch(() => {});
   const sets = [
-    ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/plans/schools?students=10', '/plans/schools/print?students=140', '/grown-ups', '/grown-ups/signup?plan=family&interval=year', '/grown-ups/login?plan=basic&interval=month']],
+    ['out', null, ['/plans', '/plans?interval=year', '/plans/schools', '/plans/schools?students=10', '/plans/schools/print?students=140', '/grown-ups', '/signup/parent?plan=family&interval=year', '/login?next=%2Ffamily%3Fplan%3Dbasic%26interval%3Dmonth']],
     ['kid', await kid.context().storageState(), ['/', '/plans?ask=basic']],
     ['grownup', await fresh.context().storageState(), ['/plans', '/family', '/family?plan=basic&interval=month']],
     ['basic', await paid.mum.context().storageState(), ['/plans', '/family/add?from=checkout']],

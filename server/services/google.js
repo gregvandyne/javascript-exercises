@@ -1,7 +1,8 @@
 // Sign in with Google: who may use it, which Oomba account a Google account belongs to, and teachers' invites by
 // school Google email. Matching is by Google's account id (sub) only; an email never links an account on its own: only
-// a teacher's invite (bound to a school email in the school's own Google domains) binds a new Google account.
-// See docs/decisions.md "Sign in with Google".
+// a teacher's invite (bound to a school email in the school's own Google domains) binds a new Google account, and a
+// grown-up or a teacher who signs up with Google on /signup gets a new account of their own (never a kid: the kid path
+// has no Google button). See docs/decisions.md "Sign in with Google" and "One sign-up".
 import { q, uid, now, tx, audit } from '../db.js';
 import { createUser, getUser, accountKind } from '../auth.js';
 import * as S from './schools.js';
@@ -69,6 +70,9 @@ export function canConnect(u) {
   if (!u || u.is_guest || u.banned) return fail('schoolOnly');
   const kind = accountKind(u);
   if (kind === 'student') return fail('schoolOnly'); // school-account students: their teacher connects it
+  // A grown-up (parent) account may sign in with any Google account of theirs (docs/decisions.md "One sign-up"):
+  // connected from their family account page, never matched by email.
+  if (kind === 'grownup') return ok({ domains: null });
   if (kind === 'staff') {
     if (!u.managed_school) return ok({ domains: null });
     const d = schoolDomains(S.getSchool(u.managed_school));
@@ -364,15 +368,27 @@ const firstTeacher = classId => (q.get("SELECT user_id FROM class_members WHERE 
  * currentUser: who is signed in now (link only). -> { ok:true, user, via, landing? } or { ok:false, code }.
  * Codes are message keys under google.errors (plus 'paused', 'tooManyJoins').
  */
-export function resolveSignIn({ claims, flow = {}, currentUser = null, ip = '' }) {
-  try { return tx(() => decide({ claims, flow, currentUser, ip })); }
+export function resolveSignIn({ claims, flow = {}, currentUser = null, ip = '', signupAs = null }) {
+  try { return tx(() => decide({ claims, flow, currentUser, ip, signupAs })); }
   catch (e) {
     // Two callbacks at once for the same new Google account (a double click): the second finds it known now.
-    if (/UNIQUE constraint failed: google_identities/.test(e.message)) return tx(() => decide({ claims, flow, currentUser, ip }));
+    if (/UNIQUE constraint failed: google_identities/.test(e.message)) return tx(() => decide({ claims, flow, currentUser, ip, signupAs }));
     throw e;
   }
 }
-function decide({ claims, flow, currentUser, ip }) {
+/** The sign-up's "Sign up with Google" (routes/google.js, intent 'signup'): a new account of their own for a grown-up
+ *  ('grownup', a parent's account) or a teacher ('teacher': an ordinary account that becomes staff at the school step).
+ *  A generated username, no password, the Google id and verified email kept (google_identities: sign-in, password
+ *  resets, the trial and account emails). The Google name and photo are never kept. */
+export function newOwnAccount(claims, as) {
+  const username = S.newUsername();
+  const u = createUser({ username, displayName: username, accountType: as === 'grownup' ? 'grownup' : 'kid' });
+  if (as === 'teacher') q.run("UPDATE users SET signup_as='teacher' WHERE id=?", u.id);
+  insertIdentity(u.id, claims, u.id);
+  audit(u.id, 'user.signup', u.id, { via: 'google', ...(as === 'grownup' ? { grownup: true } : { teacher: true }) });
+  return getUser(u.id);
+}
+function decide({ claims, flow, currentUser, ip, signupAs }) {
   const intent = flow.i || 'signin';
   const ident = identityBySub(claims.sub);
 
@@ -439,6 +455,11 @@ function decide({ claims, flow, currentUser, ip }) {
       S.addToClass({ id: user.id }, found.c.id, user.id, 'student');
       audit(user.id, 'class.google_join', found.c.id, { user: user.id, created: true });
       return ok({ user, via: 'class_code', created: true, landing: `/class/${found.c.id}` });
+    } else if (intent === 'signup') {
+      // signupAs: what the route allows now ('grownup' only while parents' accounts are open, and nothing past the
+      // sign-up limits); the flow's own choice must match it.
+      if (!signupAs || signupAs !== flow.a) return fail('tooMany');
+      return ok({ user: newOwnAccount(claims, signupAs), via: 'signup', created: true, landing: null });
     } else return fail('unknown');
     const joined = [...applyInvites(user, claims, list.filter(i => !i.user_id || i.user_id === user.id)), ...(pending.length ? [] : applyClassroomPending(user, claims))];
     if (joined.length) landing = landing || `/class/${joined[0]}`;

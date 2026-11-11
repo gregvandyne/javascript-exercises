@@ -155,7 +155,9 @@ test('the way back from a child\'s session: the grown-up sign-in asks to sign th
   const { row } = await makeChild(page);
   await switchTo(page, row);
   await page.goto('/grown-ups/login');
-  await Promise.all([page.waitForURL(/\/grown-ups\/login/), page.locator('form[data-api="/api/auth/logout"] button').click()]);
+  await expect(page).toHaveURL(/\/login\?next=%2Ffamily$/);
+  await page.locator('form[data-api="/api/auth/logout"] button').click();
+  await expect(page.locator('#username')).toBeVisible();
   await page.fill('#username', mumName); await page.fill('#password', PW);
   await Promise.all([page.waitForURL(/\/family$/), page.click('button[type=submit]')]);
 });

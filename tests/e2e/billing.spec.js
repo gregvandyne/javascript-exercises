@@ -204,7 +204,7 @@ function grownupWords(code) {
 }
 const PRICE = /\$\s?\d|\d\s?\$|US\$|USD|€|7[.,]99|69[.,]00/;
 function check(problems, where, text, html, words) {
-  if (/href="\/(grown-ups|family)(\/|"|\?)/.test(html)) problems.push(`${where}: links to a grown-up page`);
+  if (/href="\/(grown-ups|family|signup\/parent)(\/|"|\?)/.test(html)) problems.push(`${where}: links to a grown-up page`);
   if (PRICE.test(text)) problems.push(`${where}: a price (${text.match(PRICE)[0]})`);
   for (const w of words) if (text.includes(w)) { problems.push(`${where}: grown-up words "${w.slice(0, 40)}"`); break; }
 }

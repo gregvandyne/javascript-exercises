@@ -53,7 +53,7 @@ test('the fence: kids, students, teachers, school admins, the platform admin and
     if (!u.is_guest) for (const p of MADE_GET) assert.equal((await as(u)(p)).status, 404, `${u.username} ${p}`);
   }
   const out = await call(null, '/family/children/new');
-  assert.equal(out.status, 302); assert.equal(out.location, '/grown-ups/login?next=%2Ffamily%2Fchildren%2Fnew');
+  assert.equal(out.status, 302); assert.equal(out.location, '/login?next=%2Ffamily%2Fchildren%2Fnew');
   for (const p of MADE_POST) assert.equal((await post(null, p, body())).status, 404, p);
   // POST only (a GET to an API is not there), and same-origin only.
   const g = grownup();

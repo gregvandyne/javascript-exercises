@@ -137,12 +137,12 @@ test('no prices, no kids’ names or games, no promises the site doesn’t keep:
       assert.doesNotMatch(h, /\b(parents|learn)\.[a-z][\w.]*\.(h|p\d|li\d|q\d|a\d|title)\b/, `${label} ${p}: a raw locale key`);
       const links = pub && on;
       assert.equal(/href="\/plans"/.test(h), links && p !== '/learn/math-games' && !p.startsWith('/learn/games-for') && !p.startsWith('/parents/'), `${label} ${p}: /plans link`);
-      if (!links) assert.doesNotMatch(h, /href="\/grown-ups/, `${label} ${p}: no grown-up account link`);
+      if (!links) assert.doesNotMatch(h, /href="\/grown-ups|href="\/signup\/parent/, `${label} ${p}: no grown-up account link`);
     }
   }
   paid(true, true);
   const par = (await get('/parents')).text;
-  assert.match(par, /<a class="btn btn-primary btn-big" href="\/grown-ups\/signup">Set up your child — free<\/a>/);
+  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\/parent">Set up your child — free<\/a>/);
   assert.match(par, /<a class="btn btn-primary" href="\/plans">See plans and prices<\/a>/, 'the families section, as before');
   assert.ok(text(par).includes('A linked grown-up account sees only your child’s name'));
 });
@@ -168,7 +168,7 @@ test('/parents keeps every privacy and safety section, saying the same as /priva
 
 test('calls to action and links: start free, try a game, teachers; menu, footer, home, subject and game pages', async () => {
   const par = (await get('/parents')).text;
-  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\?for=kid">Let your child start free<\/a>/);
+  assert.match(par, /<a class="btn btn-primary btn-big" href="\/signup\/kid">Let your child start free<\/a>/);
   assert.match(par, /href="\/play\/sum-racer" rel="nofollow">▶ Try a game now, no sign-up/);
   assert.match(par, /href="\/teachers">Oomba Academy for teachers<\/a>/);
   for (const p of [...AGE_PAGES, ...GUIDES, '/learn/make-a-game', '/learn/math-games']) assert.ok(par.includes(`href="${p}"`), `/parents links ${p}`);
@@ -247,7 +247,7 @@ test('the AI guide lists every rule and everything the AI sees; titles fit; repo
   for (const p of ['/parents', ...GUIDES]) {
     const m = main((await get(p)).text);
     assert.ok(m.lastIndexOf('Seen enough? Try a game with your child now.') > m.indexOf('id="faq"'), `${p}: a call to action after the questions`);
-    assert.ok(m.lastIndexOf('href="/signup?for=kid"') > m.indexOf('id="faq"'), `${p}: start free after the questions`);
+    assert.ok(m.lastIndexOf('href="/signup/kid"') > m.indexOf('id="faq"'), `${p}: start free after the questions`);
   }
   // Screen-time guide: photos are named, honestly.
   assert.match(text(main((await get('/parents/safety-and-screen-time')).text)), /Photos are optional/);
@@ -324,7 +324,7 @@ test('one parent page: promise and buttons, safety, How it works, Plans, Family 
   // Family accounts: what /grown-ups said (how linking works, the questions folded), with its sign-up and sign-in.
   const fam = /<section class="panel" id="families"[\s\S]*?<\/section>/.exec(on)[0];
   assert.match(fam, /<ol class="lp-steps"><li>Make a grown-up account: a name and a password of at least 12 characters\. No email needed\.<\/li>/);
-  assert.match(fam, /href="\/grown-ups\/signup">Make a grown-up account<\/a><a class="btn" href="\/grown-ups\/login">Sign in<\/a>/);
+  assert.match(fam, /href="\/signup\/parent">Make a grown-up account<\/a><a class="btn" href="\/login\?next=%2Ffamily">Sign in<\/a>/);
   assert.equal((fam.match(/<details class="lp-q">/g) || []).length, 5);
   assert.match(fam, /Is linking or paying a form of parental consent\?<\/summary><p>No\./);
   assert.match(fam, /<span data-utc-midnight hidden>/); assert.match((await get('/parents')).text, /src="\/js\/family\.js/);
@@ -340,18 +340,16 @@ test('one parent page: promise and buttons, safety, How it works, Plans, Family 
   assert.match(/<section class="panel" id="families"[\s\S]*?<\/section>/.exec((await get('/parents', { cookie: c })).text)[0], /<a class="btn btn-primary" href="\/family">Go to your family page<\/a>/);
 });
 
-test('/grown-ups is a 301 to /parents#families, keeping the query; its sign-up and sign-in stay', async () => {
+test('/grown-ups is a 301 to /parents#families, keeping the query; its sign-up and sign-in lead to the one sign-up and sign-in', async () => {
   for (const [on, pub] of [[false, false], [true, true]]) {
     paid(on, pub);
     const r = await get('/grown-ups');
     assert.equal(r.status, 301); assert.equal(r.headers.get('location'), '/parents#families');
     assert.equal((await get('/grown-ups?utm_source=mail&x=1')).headers.get('location'), '/parents?utm_source=mail&x=1#families');
   }
-  for (const p of ['/grown-ups/signup', '/grown-ups/login']) {
-    const r = await get(p);
-    assert.equal(r.status, 200, p);
-    assert.match(r.text, /href="\/parents#families"/, `${p}: back to the parent page`);
-  }
+  assert.equal((await get('/grown-ups/signup')).headers.get('location'), '/signup/parent');
+  assert.equal((await get('/grown-ups/login')).headers.get('location'), '/login?next=%2Ffamily');
+  assert.equal((await get('/signup/parent')).status, 200);
   // Not in the sitemap; /parents is.
   const xml = (await get('/sitemap.xml')).text;
   assert.ok(!xml.includes('/grown-ups'));

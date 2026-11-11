@@ -97,7 +97,7 @@ function familiesSection(req) {
     ? html`<p${fb(t, 'family.landing.faq.reset.a')}>${t('family.landing.faq.reset.a')} <span data-utc-midnight hidden>${tHtml(t, 'family.landing.faq.reset.local', { time: html`<time data-time></time>` })}</span></p>`
     : el(t, 'p', `family.landing.faq.${k}.a`)}</details>`;
   const actions = isGrownup(u) ? html`<a class="btn btn-primary" href="/family"${fb(t, 'family.landing.toFamily')}>${t('family.landing.toFamily')}</a>`
-    : html`<a class="btn btn-primary" href="/grown-ups/signup"${fb(t, 'family.landing.signup')}>${t('family.landing.signup')}</a><a class="btn" href="/grown-ups/login"${fb(t, 'family.landing.login')}>${t('family.landing.login')}</a>`;
+    : html`<a class="btn btn-primary" href="/signup/parent"${fb(t, 'family.landing.signup')}>${t('family.landing.signup')}</a><a class="btn" href="/login?next=%2Ffamily"${fb(t, 'family.landing.login')}>${t('family.landing.login')}</a>`;
   return html`<section class="panel" id="families" aria-labelledby="families-h">
     ${el(t, 'h2', 'info.parents.families.h', {}, ' id="families-h"')}
     ${el(t, 'p', 'info.parents.families.p1')}

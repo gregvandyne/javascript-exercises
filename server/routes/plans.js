@@ -112,7 +112,7 @@ router.get('/plans', on, async (req, res) => {
     const q2 = `plan=${plan}&interval=${interval}`;
     // Not on sale to this visitor (or no price): no bright button that ends in "price coming soon" after signing up.
     if (buyer && mine !== plan && (notOnSale || !(prices && prices[plan]))) return html`<p class="plan-soon muted center">${T('plans.soon')}</p>`;
-    if (who === 'out') return html`<a class="btn btn-primary btn-block" href="/grown-ups/signup?${q2}">${label}</a>`;
+    if (who === 'out') return html`<a class="btn btn-primary btn-block" href="/signup/parent?${q2}">${label}</a>`;
     if (who === 'grownup') {
       if (mine === plan) return html`<a class="btn btn-block" href="/family#plan">${T('plans.manage')}</a>`;
       if (granted) return html`<p class="small muted plan-soon">${TH('plans.grantSwitch', { email: html`<a href="mailto:${email}" dir="ltr">${email}</a>` })}</p>`;
@@ -167,7 +167,7 @@ router.get('/plans', on, async (req, res) => {
       <p>${T('plans.staff.text')}</p><p style="margin-bottom:0"><a class="btn" href="#plan-teacher">${T('plans.staff.toSchool')}</a></p></section>`) : '';
   // Not on sale to this visitor: said at the top, before any card (a signed-out visitor may still make a grown-up account).
   const soonPanel = notOnSale ? html`<section class="panel plan-ask" id="soon" role="status"><p${who === 'out' ? '' : raw(' style="margin-bottom:0"')}><span aria-hidden="true">⏳</span> ${T('plans.notOnSale')}</p>
-    ${who === 'out' ? html`<p style="margin-bottom:0">${T('plans.notOnSaleOut')} <a href="/grown-ups/signup">${T('family.landing.signup')}</a></p>` : ''}</section>` : '';
+    ${who === 'out' ? html`<p style="margin-bottom:0">${T('plans.notOnSaleOut')} <a href="/signup/parent">${T('family.landing.signup')}</a></p>` : ''}</section>` : '';
   const seg = html`<nav class="seg plan-seg" aria-label="${t('plans.interval.label')}">${['month', 'year'].map(iv => html`<a href="/plans?interval=${iv}" ${iv === interval ? raw('aria-current="page"') : ''}>${T(iv === 'year' ? 'plans.interval.year' : 'plans.interval.month')}</a>`)}</nav>`;
   const body = html`<div class="plans">
     <div class="plans-head"><h1>${T('plans.heading')}</h1><p class="lead">${T('plans.intro')}</p>${seg}</div>

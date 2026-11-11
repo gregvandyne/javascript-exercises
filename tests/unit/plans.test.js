@@ -158,7 +158,7 @@ test('five cards like a pricing page: Free, Basic, Family (recommended), Teacher
   // Signed out with a test key (not on sale to a visitor): said at the top, before the cards; no bright Choose buttons
   // that end in "price coming soon" after signing up; a plain way to make a grown-up account.
   assert.ok(m.indexOf('id="soon"') > 0 && m.indexOf('id="soon"') < m.indexOf('id="plan-free"'), 'the notice comes before the cards');
-  assert.match(m, /Basic and Family plans can't be bought yet\.[\s\S]*You can make a grown-up account now and add your children\. <a href="\/grown-ups\/signup">Make a grown-up account<\/a>/);
+  assert.match(m, /Basic and Family plans can't be bought yet\.[\s\S]*You can make a grown-up account now and add your children\. <a href="\/signup\/parent">Make a grown-up account<\/a>/);
   assert.match(m, /id="plan-basic"[\s\S]*<p class="plan-soon muted center">Coming soon<\/p>[\s\S]*id="plan-family"[\s\S]*<p class="plan-soon muted center">Coming soon<\/p>/);
   assert.doesNotMatch(m, /Choose Basic|Choose Family|signup\?plan=/);
   assert.match(m, /href="\/signup">Start free</);
@@ -167,15 +167,15 @@ test('five cards like a pricing page: Free, Basic, Family (recommended), Teacher
   config.stripeApiKey = 'rk_live_fake';
   m = main(decode((await call(null, '/plans')).text));
   assert.doesNotMatch(m, /id="soon"|can't be bought yet|Coming soon/);
-  assert.match(m, /href="\/grown-ups\/signup\?plan=basic&interval=month">Choose Basic</);
-  assert.match(m, /href="\/grown-ups\/signup\?plan=family&interval=month">Choose Family</);
+  assert.match(m, /href="\/signup\/parent\?plan=basic&interval=month">Choose Basic</);
+  assert.match(m, /href="\/signup\/parent\?plan=family&interval=month">Choose Family</);
   // Yearly.
   r = decode((await call(null, '/plans?interval=year')).text);
   assert.match(r, /<a href="\/plans\?interval=year" aria-current="page">Yearly<\/a>/);
   assert.match(r, /\$45\.00<\/span> <span class="per">a year/);
   assert.match(r, /\$69\.00<\/span> <span class="per">a year/);
   assert.match(r, /That's \$3\.75 a month, paid once a year\./);
-  assert.match(r, /href="\/grown-ups\/signup\?plan=family&interval=year"/);
+  assert.match(r, /href="\/signup\/parent\?plan=family&interval=year"/);
   config.stripeApiKey = defaults.stripeApiKey;
 });
 
@@ -250,14 +250,16 @@ test('School: a school admin goes to their Billing tab; everyone else to the "fo
 
 // ---------------------------------------------------------------- pay first, link kids after
 test('signed out → pick a plan → grown-up sign-up keeps it → /family asks for it (password, then Checkout) → add a child', async () => {
-  const su = await call(null, '/grown-ups/signup?plan=family&interval=year');
+  // The old address keeps the plan on its way to the sign-up's parent step.
+  assert.equal((await call(null, '/grown-ups/signup?plan=family&interval=year')).location, '/signup/parent?plan=family&interval=year');
+  const su = await call(null, '/signup/parent?plan=family&interval=year');
   su.text = decode(su.text);
   assert.match(su.text, /You picked the Family plan\./);
   assert.match(su.text, /<input type="hidden" name="plan" value="family"><input type="hidden" name="interval" value="year">/);
-  assert.match(su.text, /href="\/grown-ups\/login\?plan=family&interval=year"/);
-  const li = await call(null, '/grown-ups/login?plan=basic&interval=month');
+  assert.match(su.text, /href="\/login\?next=%2Ffamily%3Fplan%3Dfamily%26interval%3Dyear"/);
+  const li = await call(null, '/login?next=%2Ffamily%3Fplan%3Dbasic%26interval%3Dmonth');
   assert.match(li.text, /<input type="hidden" name="next" value="\/family\?plan=basic&amp;interval=month">/);
-  assert.match((await call(null, '/grown-ups/signup?plan=nope')).text, /<form data-api="\/api\/grown-ups\/signup" novalidate>\s*<div/, 'an unknown plan is ignored');
+  assert.match((await call(null, '/signup/parent?plan=nope')).text, /<form data-api="\/api\/grown-ups\/signup" novalidate>\s*<div class="field ob-adult">/, 'an unknown plan is ignored');
   // A fixed name (the database is new for each run): a random one can trip the name filters.
   const name = 'PlansParent';
   const r = await call(null, '/api/grown-ups/signup', { method: 'POST', body: { username: name, password: PW, confirm: PW, adult: '1', plan: 'family', interval: 'year' } });
