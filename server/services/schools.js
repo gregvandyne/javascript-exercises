@@ -347,7 +347,7 @@ export function createSchoolAccount(by, schoolId, { rosterName, role = 'student'
   // A chosen username (the platform admin setting up a school's admin): staff only, the usual username rules.
   if (wanted && role === 'student') return fail('badRole');
   if (wanted && !/^[A-Za-z0-9_]{3,16}$/.test(wanted)) return fail('badUsername');
-  if (wanted && q.get('SELECT 1 FROM users WHERE username=? COLLATE NOCASE', wanted)) return fail('usernameTaken');
+  if (wanted && (q.get('SELECT 1 FROM users WHERE username=? COLLATE NOCASE', wanted) || q.get('SELECT 1 FROM reserved_names WHERE name=? AND until>?', wanted, now()))) return fail('usernameTaken');
   const username = wanted || newUsername(), password = newPassword();
   const u = createUser({ username, password, displayName: username });
   q.run('UPDATE users SET managed_school=? WHERE id=?', s.id, u.id);

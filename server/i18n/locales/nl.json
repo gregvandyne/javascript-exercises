@@ -496,8 +496,16 @@
       "textGrownup": "Hoe je gezin en het Oomba-team je zien.",
       "label": "Je naam",
       "save": "Opslaan",
-      "saved": "Naam opgeslagen.",
-      "username": "Je logt in met {username}. Dat blijft hetzelfde."
+      "saved": "Naam opgeslagen."
+    },
+    "username": {
+      "heading": "Gebruikersnaam",
+      "note": "Waarmee je inlogt: 3 tot 16 letters, cijfers of _. Je kunt hem eens per {days} dagen wijzigen; je oude blijft {hold} dagen voor jou gereserveerd.",
+      "save": "Gebruikersnaam wijzigen",
+      "saved": "Gebruikersnaam gewijzigd. Log voortaan in met de nieuwe.",
+      "same": "Dat is al je gebruikersnaam.",
+      "taken": "Die gebruikersnaam is al bezet. Probeer een andere.",
+      "tooSoon": "Je hebt je gebruikersnaam pas gewijzigd. Je kunt hem weer wijzigen {days} dagen na de laatste wijziging."
     }
   },
   "cards": {
@@ -8148,7 +8156,8 @@
       "google": "Gebruikt je school Google Classroom? Dan kunnen leraren het koppelen vanaf de pagina van hun klas om hun klassenlijsten op te halen en cijfers terug te sturen.",
       "help": "Vragen? Beantwoord gewoon deze e-mail. Een echt mens antwoordt, meestal binnen één schooldag.",
       "bye": "Welkom aan boord,",
-      "signature": "Het Oomba Academy-team"
+      "signature": "Het Oomba Academy-team",
+      "changeLater": "Je kunt je gebruikersnaam en je naam later wijzigen op je Ik-pagina."
     }
   }
 }

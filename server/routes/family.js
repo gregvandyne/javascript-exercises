@@ -78,7 +78,7 @@ const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billi
   // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
   // children said to each other. No friends' chat: /chat itself stays closed.
   /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
-const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme|name)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
+const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme|name|username)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|family\/sparks|portal)$/,
   /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school

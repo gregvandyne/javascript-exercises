@@ -10,7 +10,7 @@ import * as photos from '../services/photos.js';
 import { CharacterError, saveCharacter, clearCharacter } from '../services/character.js';
 import { characterPanel } from '../views/character.js';
 import { isSchoolStaff, isPlatformAdmin, schoolToSetUp, soloSchoolAdmin, invitesFor, staffName, noFriendsAccount, setOwnStaffName } from '../services/schools.js';
-import { cleanRealName, REAL_NAME_MAX } from '../services/textfilter.js';
+import { cleanRealName, REAL_NAME_MAX, cleanName } from '../services/textfilter.js';
 import { navBadges } from '../services/badges.js';
 import { rateLimit, allow, count, ipOf, loginLockKey, GUESTS_PER_IP_HOUR, SIGNUP } from '../services/ratelimit.js';
 import { availableLocales, normalizeCode, tHtml, setLangCookie, saveUserLang } from '../i18n/index.js';
@@ -358,8 +358,25 @@ export function namePanel(req) {
       <button class="btn btn-primary" type="submit">${t('me.name.save')}</button>
       <span class="err" id="yn-name-err" aria-live="polite"></span>
     </form>
-    <p class="small muted" id="yn-note">${tHtml(t, 'me.name.username', { username: html`<b dir="ltr">${u.username}</b>` })}</p></section>`;
+    <h3 id="yu-h">${t('me.username.heading')}</h3>
+    <p class="small muted" id="yu-note">${t('me.username.note', { days: auth.USERNAME_EVERY_DAYS, hold: auth.USERNAME_HOLD_DAYS })}</p>
+    <form class="row" data-api="/api/me/username" data-reload data-toast="${t('me.username.saved')}" novalidate>
+      <label class="sr-only" for="yu-name">${t('me.username.heading')}</label>
+      <input class="input grow" id="yu-name" name="username" maxlength="16" dir="ltr" autocomplete="username" autocapitalize="off" spellcheck="false" required value="${u.username}" aria-describedby="yu-note">
+      <button class="btn" type="submit">${t('me.username.save')}</button>
+      <span class="err" id="yu-name-err" aria-live="polite"></span>
+    </form></section>`;
 }
+router.post('/api/me/username', auth.requireAnyAccount, rateLimit('me-username', 10, 3600e3), (req, res) => {
+  const t = req.t, u = req.user;
+  if (!mayEditOwnName(u)) return res.status(404).json({ error: t('errors.api.notFound') });
+  const r = auth.changeUsername(u, (req.body || {}).username, { cleanName, t });
+  if (!r.ok) {
+    const error = r.error || t(`me.username.${r.code}`, { days: auth.USERNAME_EVERY_DAYS });
+    return res.status(400).json({ error, field: 'username', code: r.code });
+  }
+  res.json({ ok: true, username: r.username });
+});
 router.post('/api/me/name', auth.requireAnyAccount, rateLimit('me-name', 20, 3600e3), (req, res) => {
   const t = req.t, u = req.user;
   if (!mayEditOwnName(u)) return res.status(404).json({ error: t('errors.api.notFound') });

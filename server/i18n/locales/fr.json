@@ -495,8 +495,16 @@
       "textGrownup": "Comment votre famille et l'équipe Oomba vous voient.",
       "label": "Votre nom",
       "save": "Enregistrer",
-      "saved": "Nom enregistré.",
-      "username": "Vous vous connectez avec {username}. Cela ne change pas."
+      "saved": "Nom enregistré."
+    },
+    "username": {
+      "heading": "Nom d'utilisateur",
+      "note": "Ce qui vous sert à vous connecter : 3 à 16 lettres, chiffres ou _. Vous pouvez le changer une fois tous les {days} jours ; l'ancien reste réservé pour vous pendant {hold} jours.",
+      "save": "Changer de nom d'utilisateur",
+      "saved": "Nom d'utilisateur changé. Connectez-vous désormais avec le nouveau.",
+      "same": "C'est déjà votre nom d'utilisateur.",
+      "taken": "Ce nom d'utilisateur est déjà pris. Essayez-en un autre.",
+      "tooSoon": "Vous avez changé votre nom d'utilisateur récemment. Vous pourrez le changer à nouveau {days} jours après le dernier changement."
     }
   },
   "cards": {
@@ -8147,7 +8155,8 @@
       "google": "Si votre école utilise Google Classroom, les enseignants peuvent le connecter depuis la page de leur classe pour importer leurs listes d'élèves et renvoyer les notes.",
       "help": "Des questions ? Répondez simplement à cet e-mail. Une vraie personne vous répond, en général sous un jour d'école.",
       "bye": "Bienvenue !",
-      "signature": "L'équipe Oomba Academy"
+      "signature": "L'équipe Oomba Academy",
+      "changeLater": "Vous pourrez changer votre nom d'utilisateur et votre nom plus tard, sur votre page Moi."
     }
   }
 }

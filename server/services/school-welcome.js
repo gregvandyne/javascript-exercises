@@ -44,6 +44,7 @@ export function schoolWelcomeEmail(t, { name, school, username, setUrl = null, s
 <h2 style="${H}">${esc(t(k('signInH'), v))}</h2>
 <p style="${P}">${esc(signIn[0])}</p>
 <p style="${P}"><span style="color:#4b5563">${esc(t(k('usernameLabel'), v))}</span> <b dir="ltr">${esc(username)}</b></p>
+<p style="${P};color:#4b5563">${esc(t(k('changeLater'), v))}</p>
 <p style="${P}"><a href="${esc(buttonUrl)}" style="${BTN}">${esc(button)}</a></p>
 ${signIn[1] ? `<p style="${P};color:#4b5563">${esc(signIn[1])}</p>` : ''}
 <h2 style="${H}">${esc(t(k('firstH'), v))}</h2>
@@ -54,7 +55,7 @@ ${teach.map(s => `<p style="${P}">${esc(s)}</p>`).join('\n')}
 <p style="${P}">${esc(help)}</p>
 <p style="${P}">${esc(bye)}<br>${esc(t(k('signature'), v))}</p>
 </body></html>`;
-  const text = [hi, '', intro, '', `## ${t(k('signInH'), v)}`, signIn[0], `${t(k('usernameLabel'), v)} ${username}`, `${button}: ${buttonUrl}`,
+  const text = [hi, '', intro, '', `## ${t(k('signInH'), v)}`, signIn[0], `${t(k('usernameLabel'), v)} ${username}`, t(k('changeLater'), v), `${button}: ${buttonUrl}`,
     ...(signIn[1] ? [signIn[1]] : []), '', `## ${t(k('firstH'), v)}`, `${t(k('firstText'), v)} ${schoolUrl}`,
     ...steps.map((s, i) => `${i + 1}. ${s}`), '', `## ${t(k('teachersH'), v)}`, ...teach, '', help, '', bye, t(k('signature'), v), ''].join('\n');
   return { subject: t(k('subject'), v), html, text };

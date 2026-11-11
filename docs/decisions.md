@@ -4254,10 +4254,14 @@ owner found it confusing after approving the first real request.
   replaces "Mark done" for a request handled some other way.
 - The audit log keeps ids and the outcome only; the address stays in `email_prefs` and `email_log`.
 - **Optional username** on the setup page for a new school account (3 to 16 letters, digits or _; checked against the
-  word lists and taken names before anything is made). It goes in the welcome email and can't be changed later.
+  word lists and taken names before anything is made). It goes in the welcome email, with a line saying the username
+  and name can be changed later on the Me page.
 
 **"Your name" for grown-ups (11 Nov 2026).** Teachers, school staff, the platform admin and grown-up (parent) accounts
 can set their own name on the Me page (parents: their family account page): 2 to 40 letters in any script with spaces,
 hyphens, apostrophes and dots, no digits, nothing on the word lists (`cleanRealName`). It is their display name, and for
 staff also their name at every school where they are staff. The username never changes. Kids' and students' accounts
 never set a name: a kid's username is what others see, and a student's name at school is the teacher's to set.
+The same grown-ups can also change their **username** there (`auth.changeUsername`): the usual username rules, once
+every 7 days, and the old username is held from everyone else for 30 days (`reserved_names`), so nobody can take it to
+pose as them. Kids' and students' usernames never change this way (their login cards and their teachers rely on them).

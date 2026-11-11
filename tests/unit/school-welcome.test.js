@@ -207,3 +207,36 @@ test('"Your name" on the Me page: grown-ups and staff set their own name; kids a
   }
   assert.equal(auth.getUser(kidAcct.id).display_name, 'NameKid12');
 });
+
+test('a grown-up changes their own username: once a week, the old one held from others, kids and students never', async () => {
+  const boss = auth.getUserByName('RoxanaG');
+  const me = await (await get('/me', boss)).text();
+  assert.match(me, /id="yu-name"[^>]*value="RoxanaG"/);
+  for (const [bad, code] of [['SetupTeachX', 'taken'], ['Roxana G', 'chars'], ['RoxanaG', 'same']]) {
+    const r = await post('/api/me/username', { username: bad }, boss);
+    assert.equal(r.status, 400, bad); assert.equal((await r.json()).code, code, bad);
+  }
+  const ok = await post('/api/me/username', { username: 'MsGherghinis' }, boss);
+  assert.equal(ok.status, 200, await ok.clone().text());
+  assert.equal(auth.getUser(boss.id).username, 'MsGherghinis');
+  assert.equal(auth.getUserByName('RoxanaG'), null);
+  auth.setPassword(boss.id, 'green-heron-pass-77');
+  assert.equal((await post('/api/auth/login', { username: 'MsGherghinis', password: 'green-heron-pass-77' })).status, 200, 'signs in with the new name');
+  assert.notEqual((await post('/api/auth/login', { username: 'RoxanaG', password: 'green-heron-pass-77' })).status, 200, 'not the old one');
+  // Held: nobody else can take the old one; the owner can't change again within the week.
+  const someone = auth.createUser({ username: 'SomeAdult1', password: 'a-long-password-1', displayName: 'Sam', accountType: 'grownup' });
+  const steal = await post('/api/me/username', { username: 'RoxanaG' }, someone);
+  assert.equal((await steal.json()).code, 'taken');
+  assert.equal((await post('/api/me/username', { username: 'RoxanaG2' }, auth.getUser(boss.id))).status, 400);
+  assert.equal((await (await post('/api/me/username', { username: 'RoxanaG2' }, auth.getUser(boss.id))).json()).code, 'tooSoon');
+  // A parent: yes (their family account page). A kid or a student: no box, 404.
+  assert.match(await (await get('/family/account', someone)).text(), /id="yu-name"/);
+  assert.equal((await post('/api/me/username', { username: 'SamMoss' }, someone)).status, 200);
+  const kidAcct = auth.createUser({ username: 'UnameKid12', password: 'a-long-password-1' });
+  assert.doesNotMatch(await (await get('/me', kidAcct)).text(), /id="yu-name"/);
+  assert.equal((await post('/api/me/username', { username: 'NewKidName' }, kidAcct)).status, 404);
+  assert.equal(auth.getUser(kidAcct.id).username, 'UnameKid12');
+  // The welcome email says both can be changed later.
+  const m = W.schoolWelcomeEmail(tFor('en'), { name: 'A B', school: 'S', username: 'U1', setUrl: null, schoolUrl: 'https://x/s', loginUrl: 'https://x/login' });
+  assert.match(m.text, /change your username and your name later on your Me page/);
+});

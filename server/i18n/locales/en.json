@@ -496,8 +496,16 @@
       "textGrownup": "How your family and the Oomba team see you.",
       "label": "Your name",
       "save": "Save",
-      "saved": "Name saved.",
-      "username": "You sign in with {username}. That stays the same."
+      "saved": "Name saved."
+    },
+    "username": {
+      "heading": "Username",
+      "note": "What you sign in with: 3 to 16 letters, digits or _. You can change it once every {days} days; your old one is kept from others for {hold} days.",
+      "save": "Change username",
+      "saved": "Username changed. Sign in with the new one from now on.",
+      "same": "That's already your username.",
+      "taken": "That username is taken. Try another one.",
+      "tooSoon": "You changed your username recently. You can change it again {days} days after the last change."
     }
   },
   "cards": {
@@ -8555,7 +8563,8 @@
       "google": "If your school uses Google Classroom, teachers can connect it from their class page to bring in their rosters and send grades back.",
       "help": "Questions? Just reply to this email. A real person answers, usually within one school day.",
       "bye": "Welcome aboard,",
-      "signature": "The Oomba Academy team"
+      "signature": "The Oomba Academy team",
+      "changeLater": "You can change your username and your name later on your Me page."
     }
   }
 }

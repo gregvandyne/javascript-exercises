@@ -93,6 +93,33 @@ export const isOfficialOldName = name => OFFICIAL_OLD_NAMES.some(o => o.toLowerC
  *  redirects: a reserved name's /u/ page is the normal 404, so it tells nobody the name was a recently deleted account. */
 export const isRetiredName = name => isOfficialOldName(name)
   || !!q.get('SELECT 1 FROM reserved_names WHERE name=? AND until>?', String(name || ''), now());
+// ---- A grown-up's own new username (routes/auth.js "Your name"; docs/decisions.md "Your name for grown-ups").
+// Who may is decided by the route (staff, the platform admin, grown-up accounts). Once every USERNAME_EVERY_DAYS; the old
+// name is kept from everyone else for USERNAME_HOLD_DAYS (reserved_names), so nobody can take it to pose as them.
+export const USERNAME_EVERY_DAYS = 7;
+export const USERNAME_HOLD_DAYS = 30;
+/** -> { ok: true, username } | { ok: false, code: 'same'|'chars'|'taken'|'tooSoon', error? (from the name rules) } */
+export function changeUsername(u, wanted, { cleanName, t } = {}) {
+  const v = String(wanted || '').trim();
+  if (!u || u.is_guest) return { ok: false, code: 'chars' };
+  if (v === u.username) return { ok: false, code: 'same' };
+  const n = cleanName(v, t, { realNames: true });
+  if (!n.ok) return { ok: false, code: 'chars', error: n.error };
+  // Only the letter case changing (RoxanaG -> roxanag) is their own name, not a taken one.
+  const other = q.get('SELECT id FROM users WHERE username=? COLLATE NOCASE', v);
+  if ((other && other.id !== u.id) || isRetiredName(v)) {
+    const ownHeld = q.get('SELECT 1 FROM audit_log WHERE action=? AND target=? AND details LIKE ?', 'user.username_change', u.id, `%"from":${JSON.stringify(v)}%`);
+    if (other || !ownHeld) return { ok: false, code: 'taken' };
+  }
+  const last = q.get('SELECT MAX(created_at) at FROM audit_log WHERE action=? AND target=?', 'user.username_change', u.id);
+  if (last && last.at && now() - last.at < USERNAME_EVERY_DAYS * 86400e3) return { ok: false, code: 'tooSoon' };
+  const old = u.username;
+  q.run('UPDATE users SET username=?, display_name=CASE WHEN display_name=? THEN ? ELSE display_name END WHERE id=?', v, old, v, u.id);
+  if (old.toLowerCase() !== v.toLowerCase()) q.run('INSERT INTO reserved_names(name, until) VALUES (?,?) ON CONFLICT(name) DO UPDATE SET until=excluded.until', old, now() + USERNAME_HOLD_DAYS * 86400e3);
+  q.run('DELETE FROM reserved_names WHERE name=?', v);
+  q.run('INSERT INTO audit_log(id, actor_id, action, target, details, created_at) VALUES (?,?,?,?,?,?)', uid(), u.id, 'user.username_change', u.id, JSON.stringify({ from: old, to: v }), now());
+  return { ok: true, username: v };
+}
 export function verifyPassword(user, password) {
   const ok = bcrypt.compareSync(String(password || '').slice(0, 72), (user && user.password_hash) || DUMMY_HASH);
   return !!(user && user.password_hash && ok);

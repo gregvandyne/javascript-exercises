@@ -9,7 +9,7 @@ import { html, raw } from '../views/html.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, makeGameBtn, jumpNav, nameFilter } from '../views/components.js';
 import { ADMIN_BODY, ADMIN_CSS } from '../views/admin-ui.js';
-import { requireUser, requireAdmin, getUserByName, accountKind } from '../auth.js';
+import { requireUser, requireAdmin, getUserByName, accountKind, isRetiredName } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as SR from '../services/school-requests.js';
@@ -181,7 +181,7 @@ router.get('/admin/schools/setup', requireAdmin, (req, res) => {
       </fieldset>
       ${admins.length ? html`<div class="field" data-when="current"><label for="su-admin">School admin</label><select class="input" id="su-admin" name="adminId">${admins.map(a => html`<option value="${a.id}">${a.roster_name || a.display_name} (@${a.username})</option>`)}</select></div>` : ''}
       <div class="field" data-when="existing"><label for="su-user">Their username</label><input class="input" id="su-user" name="username" maxlength="16" dir="ltr" autocomplete="off"><span class="err" id="su-user-err"></span></div>
-      <div class="field" data-when="new"><label for="su-uname">Username <span class="muted">(optional)</span></label><input class="input" id="su-uname" name="newUsername" maxlength="16" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. RoxanaG" aria-describedby="su-uname-hint"><span class="hint" id="su-uname-hint">What they sign in with, shown in the email. 3 to 16 letters, digits or _. It can't be changed later. Leave it empty for a made-up one.</span><span class="err" id="su-uname-err"></span></div>
+      <div class="field" data-when="new"><label for="su-uname">Username <span class="muted">(optional)</span></label><input class="input" id="su-uname" name="newUsername" maxlength="16" dir="ltr" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. RoxanaG" aria-describedby="su-uname-hint"><span class="hint" id="su-uname-hint">What they sign in with, shown in the email. 3 to 16 letters, digits or _. They can change it later on their Me page. Leave it empty for a made-up one.</span><span class="err" id="su-uname-err"></span></div>
       <div class="field" data-when="new existing"><label for="su-name">Their real name (as staff and students know them)</label><input class="input" id="su-name" name="rosterName" maxlength="60" value="${name}"><span class="err" id="su-name-err"></span></div>
       <div class="field"><label for="su-email">${school ? '2' : '3'}. Send the welcome to</label><input class="input" id="su-email" name="email" type="email" dir="ltr" maxlength="254" required value="${email}"><span class="err" id="su-email-err"></span></div>
       <div class="field"><label for="su-lang">Email language</label><select class="input" id="su-lang" name="lang">${setupLangs().map(l => html`<option value="${l.code}" ${l.code === lang ? raw('selected') : ''}>${l.name}</option>`)}</select></div>
@@ -221,7 +221,7 @@ router.post('/api/admin/schools/setup', requireAdmin, rateLimit('school-setup', 
   if (wanted) {
     const n = cleanName(wanted, req.t, { realNames: true });
     if (!n.ok) return fieldErr(res, 'newUsername', n.error);
-    if (getUserByName(wanted)) return fieldErr(res, 'newUsername', 'That username is taken. Try another one.');
+    if (getUserByName(wanted) || isRetiredName(wanted)) return fieldErr(res, 'newUsername', 'That username is taken. Try another one.');
   }
   let school = x.schoolId ? S.getSchool(String(x.schoolId)) : null;
   if (x.schoolId && !school) return res.status(404).json({ error: 'That school is gone.' });
