@@ -930,6 +930,12 @@ export const MIGRATIONS = [
   // One sign-up (docs/decisions.md "One sign-up"): an account made on the teacher path before it has a school says so
   // ('teacher'), so signing in again goes back to the school step instead of a kid's home. Cleared once they are staff.
   ['0074_signup_as', "ALTER TABLE users ADD COLUMN signup_as TEXT NOT NULL DEFAULT '';"],
+  // The automatic trial at sign-up (docs/decisions.md "Automatic trial at sign-up"): a teacher's own free trial closed
+  // because a school admin gave them a seat. replaced_by_school: that school; replaced_at: when. Such a trial is neither
+  // "converted" nor "ended" (no trial-ended email, its own count on /admin/billing). 0075 and 0076 are taken elsewhere.
+  ['0077_trial_replaced', `
+    ALTER TABLE teacher_trials ADD COLUMN replaced_by_school TEXT;
+    ALTER TABLE teacher_trials ADD COLUMN replaced_at INTEGER;`],
 ];
 
 const CODE_LETTERS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

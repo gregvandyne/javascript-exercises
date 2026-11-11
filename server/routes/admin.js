@@ -776,7 +776,7 @@ function teacherSection(lm) {
   return html`<section class="panel" id="teachers"><h2>Teacher plans</h2>
     <div class="kpis" style="margin-bottom:var(--s3)">
       ${tile('🍎 Trialing', int(count('trialing')))}${tile('✅ Active', int(count('active') + count('past_due')))}${tile('🚫 Canceled', int(count('canceled')))}
-      ${tile('🧪 Trials started', int(st.total), rate === null ? '' : `${rate}% of ended trials converted`)}${tile('🔁 Converted', int(st.converted))}${tile('⌛ Ended without a card', int(st.ended))}
+      ${tile('🧪 Trials started', int(st.total), rate === null ? '' : `${rate}% of ended trials converted`)}${tile('🔁 Converted', int(st.converted))}${tile('⌛ Ended without a card', int(st.ended))}${tile('🏫 Closed for a school seat', int(st.replaced))}
     </div>
     ${rows.length ? html`<div class="tblwrap"><table class="tbl small atable wide"><thead><tr><th>Owner</th><th>Seats</th><th>Status</th><th>Trial ends</th><th>Period end</th><th>Stripe</th></tr></thead><tbody>
       ${rows.map(r => html`<tr><td>${ownerCell(r)}</td><td data-label="Seats">${r.owner_kind === 'school' ? `${r.quantity} teacher seat${r.quantity === 1 ? '' : 's'}` : 'own plan'}</td>

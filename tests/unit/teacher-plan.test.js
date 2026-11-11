@@ -79,14 +79,15 @@ async function pay(url) {
   assert.equal(r.status, 302, await r.text());
   return r.headers.get('location');
 }
-/** A teacher who started the free trial through /trial and Stripe's (fake) Checkout. */
+/** A teacher who started the free trial at /trial ("Start my free trial": straight through Stripe's API, no Checkout
+ *  page; docs/decisions.md "Automatic trial at sign-up"). */
 async function trialTeacher(opts = {}) {
   const x = school(opts);
   const r = await call(x.who, '/api/trial/start', { method: 'POST', body: { email: opts.email || `t${++n}@school.example`, trial: '1' } });
   assert.equal(r.status, 200, r.text);
-  const back = await pay(r.json.redirect);
+  assert.equal(r.json.redirect, '/me/settings?plan=welcome#teacher-plan');
   const sub = TP.teacherPlan(x.teacher.id).subscription;
-  return { ...x, back, subId: sub && sub.stripe_subscription_id };
+  return { ...x, subId: sub && sub.stripe_subscription_id };
 }
 /** One Builder message charged like agent.js does. -> the charge or false */
 function build(user) {
@@ -105,9 +106,11 @@ test('the teacher trial\'s Checkout: the Teacher price by lookup key, quantity 1
   // A work email is required.
   let r = await call(x.who, '/api/trial/start', { method: 'POST', body: { email: 'nope', trial: '1' } });
   assert.equal(r.status, 400); assert.equal(r.json.field, 'email');
-  r = await call(x.who, '/api/trial/start', { method: 'POST', body: { email: 'Ms.Teach@School.example', trial: '1' } });
-  assert.equal(r.status, 200, r.text);
-  assert.match(r.json.redirect, new RegExp(`^${fake.url}/pay/cs_test_`));
+  // The trial with Checkout (TP.startTeacherCheckout with trial: /trial now starts it through the API, see
+  // tests/unit/auto-trial.test.js; a school's seat trial still goes through Checkout with these parameters).
+  let co = await TP.startTeacherCheckout({ user: x.teacher, email: 'Ms.Teach@School.example', base, trial: true });
+  assert.equal(co.ok, true, JSON.stringify(co));
+  assert.match(co.url, new RegExp(`^${fake.url}/pay/cs_test_`));
   const p = lastPost('/v1/checkout/sessions').params;
   assert.equal(p.mode, 'subscription');
   assert.deepEqual(p.line_items, [{ price: 'price_fake_teacher_yearly', quantity: '1' }]);
@@ -132,7 +135,8 @@ test('the teacher trial\'s Checkout: the Teacher price by lookup key, quantity 1
   assert.equal(B.ownerOfCustomer(p.customer).owner_kind, 'teacher');
   // With Stripe Tax the address is asked for.
   config.stripeTax = true;
-  await call(x.who, '/api/trial/start', { method: 'POST', body: { email: 'ms.teach@school.example', trial: '1' } });
+  co = await TP.startTeacherCheckout({ user: x.teacher, email: 'ms.teach@school.example', base, trial: true });
+  assert.equal(co.ok, true);
   assert.equal(lastPost('/v1/checkout/sessions').params.billing_address_collection, 'required');
   assert.deepEqual(lastPost('/v1/checkout/sessions').params.automatic_tax, { enabled: 'true' });
   // Paid without a trial: the password first, then a Checkout with no trial and the card asked for.
@@ -155,7 +159,6 @@ test('the teacher trial\'s Checkout: the Teacher price by lookup key, quantity 1
 test('trial lifecycle: trialing (full plan) → trial_will_end notice → a card turns it active; without one it is canceled and nothing is lost', async () => {
   const before = q.get("SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step='teacher.trial'").n;
   const x = await trialTeacher();
-  assert.match(x.back, /\/trial\/thanks\?checkout=cs_test_/);
   const plan = TP.teacherPlan(x.teacher.id);
   assert.equal(plan.entitled, true); assert.equal(plan.via, 'own'); assert.equal(plan.trialing, true);
   const row = plan.subscription;
@@ -163,10 +166,7 @@ test('trial lifecycle: trialing (full plan) → trial_will_end notice → a card
   assert.ok(Math.abs(row.trial_end - (Date.now() + 14 * DAY)) < 60e3);
   assert.equal(q.get("SELECT COALESCE(SUM(n),0) n FROM funnel_counts WHERE step='teacher.trial'").n, before + 1);
   assert.equal(audits('billing.trial.start', `teacher:${x.teacher.id}`).length, 1);
-  // The return page: confirms and goes to the Teacher plan card in Settings with a welcome.
-  const sid = new URL(x.back).searchParams.get('checkout');
-  const th = await call(x.who, `/trial/thanks?checkout=${sid}`);
-  assert.equal(th.status, 302); assert.equal(th.location, '/me/settings?plan=welcome#teacher-plan');
+  // Straight to the Teacher plan card in Settings with a welcome (no Checkout page).
   const teach = decode((await call(x.who, '/me/settings?plan=welcome')).text);
   assert.match(teach, /id="teacher-plan"/); assert.match(teach, /Your Teacher plan is on/); assert.match(teach, /Free trial until/);
   assert.match(teach, /5 of 5 Builder messages left today for you and your classes/);
@@ -324,7 +324,7 @@ test('the teacher sign-up: an account, their own classroom (they can make a clas
   assert.equal((await call(who, '/api/friends')).status, 403);
   assert.doesNotMatch((await call(who, '/friends')).text, /id="mycode"/);
   assert.match(decode((await call(who, '/trial')).text), /isn't open yet/);
-  // As a billing tester, the sign-up goes straight to Stripe's Checkout with the trial.
+  // As a billing tester, the sign-up starts the trial at once (through the API; a school's seat trial goes to /trial).
   q.run('UPDATE users SET billing_tester=1 WHERE id=?', u.id);
   // (a second account: the sign-up starts Checkout only for the account it makes)
   config.stripeApiKey = 'rk_test_fake';
@@ -336,9 +336,9 @@ test('the teacher sign-up: an account, their own classroom (they can make a clas
 
 test('Checkout\'s return page starts the trial even when the webhook is slow (it confirms from the session)', async () => {
   const x = school();
-  const r = await call(x.who, '/api/trial/start', { method: 'POST', body: { email: 'slow@school.example', trial: '1' } });
+  const co = await TP.startTeacherCheckout({ user: x.teacher, email: 'slow@school.example', base, trial: true });
   fake.webhookUrl = `${base}/nowhere-yet`;   // Stripe's webhooks don't arrive (yet)
-  const back = await pay(r.json.redirect);
+  const back = await pay(co.url);
   fake.webhookUrl = base + B.WEBHOOK_PATH;
   assert.equal(TP.teacherPlan(x.teacher.id).entitled, false, 'nothing synced yet');
   const sid = new URL(back).searchParams.get('checkout');
@@ -466,7 +466,7 @@ test('a student in several paid teachers\' classes builds from the first class t
   const c2 = SC.createClass(auth.getUser(t2.id), x.s.id, { name: 'Class B' }).class;
   SC.addToClass(x.admin, c2.id, stu.id, 'student');
   const r = await call(signIn(auth.getUser(t2.id)), '/api/trial/start', { method: 'POST', body: { email: 't2@school.example', trial: '1' } });
-  await pay(r.json.redirect);
+  assert.equal(r.status, 200, r.text);
   assert.equal(TP.teachersOfStudent(stu.id)[0], x.teacher.id);
   assert.equal(build(stu).source, `teacher:${x.teacher.id}`, 'the first class they joined');
   assert.equal(build(stu).source, `teacher:${t2.id}`, 'then the next paid one with messages left');

@@ -2970,11 +2970,14 @@
           "waiting": "(esperando un lugar libre)",
           "give": "Asignar un lugar",
           "take": "Retirar",
-          "full": "Todos los lugares están asignados. Agregue lugares arriba para asignar más."
+          "full": "Todos los lugares están asignados. Agregue lugares arriba para asignar más.",
+          "paid": "(ya paga su propio plan Docente)",
+          "paidConfirm": "Este docente ya paga su propio plan Docente. ¿Asignarle un lugar de todos modos? Después puede cancelar su propio plan."
         },
         "seat": {
           "given": "Lugar asignado.",
-          "taken": "Lugar retirado."
+          "taken": "Lugar retirado.",
+          "trialClosed": "Lugar asignado. Su prueba gratis se cerró, sin ningún cobro."
         },
         "seatsDone": {
           "raised": "Listo: {count, plural, one {# docente} other {# docentes}}.",
@@ -2989,7 +2992,8 @@
           "noSeat": "Ese docente no tiene lugar.",
           "minSeats": "Escriba un número entero de 1 a {max}.",
           "entitled": "Su escuela ya tiene un plan. Cambie el número de docentes en su lugar.",
-          "trialUsed": "Su escuela ya tuvo su prueba gratis."
+          "trialUsed": "Su escuela ya tuvo su prueba gratis.",
+          "ownPaid": "Este docente ya paga su propio plan Docente. Confirme primero para asignarle un lugar."
         }
       }
     },
@@ -4053,7 +4057,7 @@
       "start": {
         "h": "Empiece su prueba gratis de {days} días",
         "button": "Empezar mi prueba gratis",
-        "note": "Confirma en la página de Stripe. No hace falta tarjeta para la prueba."
+        "noteDirect": "Empieza enseguida. No hace falta tarjeta para la prueba."
       },
       "signup": {
         "h": "Cree su cuenta de docente",
@@ -4083,7 +4087,8 @@
         "noPrice": "El plan Docente no está a la venta ahora mismo. Inténtelo más tarde.",
         "paying": "Ya hay un pago en camino. Espere un minuto.",
         "minSeats": "Escriba un número entero de docentes de 1 a {max}.",
-        "noCustomer": "Todavía no hay facturación que administrar."
+        "noCustomer": "Todavía no hay facturación que administrar.",
+        "askAdmin": "Su escuela tiene lugares del plan Docente: pida uno al admin de la escuela."
       },
       "thanks": {
         "wait": "⏳ Activando su plan Docente…",
@@ -4109,6 +4114,17 @@
         "seatNote": "Los administradores de {school} gestionan este plan.",
         "seePlans": "Ver los planes"
       }
+    },
+    "auto": {
+      "started": "Su prueba de {days} días del plan Docente ha comenzado. No hace falta tarjeta.",
+      "covered": "Su escuela cubre su plan Docente.",
+      "askAdmin": "Su escuela tiene lugares del plan Docente: pida uno al admin de la escuela.",
+      "emailLabel": "Correo para los recordatorios de la prueba",
+      "emailHint": "Opcional. Le avisamos aquí antes de que termine la prueba.",
+      "emailSave": "Guardar mi correo",
+      "emailSaved": "Guardado. Los recordatorios de la prueba irán a este correo.",
+      "doneHeading": "Todo listo",
+      "seatPaid": "Ahora su escuela lo cubre. Puede cancelar su propio plan."
     }
   },
   "seo": {
@@ -7071,7 +7087,9 @@
       "sentBack": "«{title}» necesita algunos cambios antes de que todo el mundo pueda jugarlo.",
       "trialEnding": "La prueba gratis de su plan Docente termina en {days, plural, =0 {menos de un día} one {# día} other {# días}}. Para conservarlo, agregue una tarjeta aquí: {href} Sin ella, el plan simplemente se detiene y sus clases se quedan.",
       "trialEnded": "La prueba gratis de su plan Docente terminó. Sus clases, sus estudiantes y sus juegos siguen aquí. Puede obtener el plan de nuevo aquí: {href}",
-      "trialConverted": "¡Gracias! Su plan Docente está activo durante el año."
+      "trialConverted": "¡Gracias! Su plan Docente está activo durante el año.",
+      "trialReplaced": "Ahora su escuela cubre su plan Docente, así que su prueba gratis se cerró.",
+      "seatCoversPaid": "Ahora su escuela cubre su plan Docente. Puede cancelar su propio plan en Administrar facturación: {href}"
     },
     "link": {
       "new": "{count, plural, one {# mensaje nuevo del equipo Oomba} other {# mensajes nuevos del equipo Oomba}}",

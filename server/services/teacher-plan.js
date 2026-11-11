@@ -14,6 +14,14 @@
 //          (charged_to 'teacher:<id>', paid by the paid AI pool, so the site-wide caps still apply). A student in
 //          several paid teachers' classes builds from the first paid one with messages left, in the order they joined
 //          the classes (the Builder doesn't know which class a build is "for"). Spark Packs stay family-only.
+//   Automatic trial (docs/decisions.md "Automatic trial at sign-up"): the sign-up's "Add your classes" step (and /trial's
+//          "Start my free trial") start the same trial straight through the API, with no Checkout page
+//          (startTeacherTrial: a subscription with trial_period_days, missing_payment_method 'cancel', the Checkout
+//          path's metadata, one Idempotency-Key per teacher). Never while the teacher is covered (their own plan, a grant,
+//          a school seat) or while a school of theirs has a teacher seat nobody holds ("ask your school admin").
+//          A seat given to a teacher whose own trial has no paid invoice yet closes that trial at once, at no charge
+//          (seatTakesOver; teacher_trials.replaced_at: no trial-ended email, not "converted"); a teacher who already pays
+//          keeps their plan, and is told they can cancel it.
 //   Notices: customer.subscription.trial_will_end (Stripe sends it 3 days before the end; Stripe's own reminder email
 //          is a Dashboard setting) puts a notice on the teacher's My classes and a Team inbox message with the link to
 //          add a card. A trial that ends without a card, and one that turns into a paid plan, are told the same way.
@@ -28,6 +36,8 @@ import * as funnel from './funnel.js';
 import { sign } from '../auth.js';
 import { notify } from './team.js';
 import * as nudges from './nudges.js';
+import { addressOf, rememberAddress } from './email.js';
+import { allow } from './ratelimit.js';
 
 const DAY = 86400e3;
 /** The trial notice shows on My classes this many days before the trial ends (and from trial_will_end on). */
@@ -72,14 +82,37 @@ export function hasSeat(schoolId, userId, t = now()) {
   const i = st.assigned.findIndex(a => a.user_id === userId);
   return i >= 0 && i < st.seats;
 }
-/** A school admin gives a seat to a teacher or school admin of the school. -> { ok } | { ok: false, code } */
-export function assignSeat(by, schoolId, userId) {
+/** The school whose seat covers this teacher now ({ id, name, slug }), or null. */
+export function seatSchool(userId, t = now()) {
+  for (const s of q.all(`SELECT s.id, s.name, s.slug FROM teacher_seats ts JOIN schools s ON s.id=ts.school_id AND s.archived_at IS NULL
+    WHERE ts.user_id=? ORDER BY ts.assigned_at`, userId)) if (hasSeat(s.id, userId, t)) return s;
+  return null;
+}
+/** A school this teacher is staff of whose teacher-seat plan has a seat nobody holds ({ id, name, slug }), or null:
+ *  their admin can give them one, so no personal trial starts. */
+export function freeSeatSchool(userId, t = now()) {
+  for (const s of q.all(`SELECT s.id, s.name, s.slug FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active'
+    AND m.role IN ('teacher','admin') AND s.archived_at IS NULL ORDER BY m.joined_at`, userId)) {
+    const st = seatState(s.id, t);
+    if (st.teacherSeats && st.assigned.length < st.seats) return s;
+  }
+  return null;
+}
+/** Does this teacher pay for their own Teacher plan (a subscription past its trial, not a grant)? */
+export function ownPaid(userId, t = now()) {
+  const own = B.ownerPlan('teacher', userId, t);
+  return own.entitled && own.via === 'subscription' && own.subscription.status !== 'trialing';
+}
+/** A school admin gives a seat to a teacher or school admin of the school. A teacher who pays for their own plan gets
+ *  one only with confirm (the Billing tab asks first). -> { ok } | { ok: false, code } */
+export function assignSeat(by, schoolId, userId, { confirm = false } = {}) {
   const m = q.get("SELECT role FROM school_members WHERE school_id=? AND user_id=? AND status='active'", schoolId, String(userId || ''));
   if (!m || m.role === 'student') return fail('notStaff');
   const st = seatState(schoolId);
   if (!st.teacherSeats) return fail('noSeats');
   if (st.assigned.some(a => a.user_id === userId)) return { ok: true, did: 'already' };
   if (st.assigned.length >= st.seats) return fail('full');
+  if (!confirm && ownPaid(userId)) return fail('ownPaid');
   q.run('INSERT OR REPLACE INTO teacher_seats(school_id, user_id, assigned_by, assigned_at) VALUES (?,?,?,?)', schoolId, userId, by.id, now());
   audit(by.id, 'billing.seat.give', `school:${schoolId}`, { user: userId });
   return { ok: true, did: 'given' };
@@ -89,15 +122,18 @@ export function unassignSeat(by, schoolId, userId) {
   audit(by.id, 'billing.seat.take', `school:${schoolId}`, { user: userId });
   return { ok: true, did: 'taken' };
 }
-/** The school's staff with their seat state, for the Billing tab: [{ user_id, name, role, seat, own }] (own: they have
- *  their own Teacher plan). */
+/** The school's staff with their seat state, for the Billing tab: [{ user_id, name, role, seat, own, paid }] (own: they
+ *  have their own Teacher plan; paid: and they pay for it, past its trial). */
 export function staffSeats(schoolId) {
   const st = seatState(schoolId);
   const seated = new Set(st.assigned.slice(0, st.seats).map(a => a.user_id));
   const given = new Set(st.assigned.map(a => a.user_id));
   return q.all(`SELECT m.user_id, m.role, COALESCE(NULLIF(m.roster_name,''), u.display_name) AS name FROM school_members m JOIN users u ON u.id=m.user_id
     WHERE m.school_id=? AND m.status='active' AND m.role IN ('teacher','admin') ORDER BY CASE m.role WHEN 'admin' THEN 0 ELSE 1 END, name COLLATE NOCASE`, schoolId)
-    .map(r => ({ ...r, seat: seated.has(r.user_id), given: given.has(r.user_id), own: B.ownerPlan('teacher', r.user_id).entitled }));
+    .map(r => {
+      const own = B.ownerPlan('teacher', r.user_id);
+      return { ...r, seat: seated.has(r.user_id), given: given.has(r.user_id), own: own.entitled, paid: own.entitled && own.via === 'subscription' && own.subscription.status !== 'trialing' };
+    });
 }
 
 // ---------------------------------------------------------------- a teacher's plan
@@ -114,9 +150,8 @@ export function teacherPlan(userId, t = now()) {
     const sub = own.subscription;
     return { entitled: true, via: own.via === 'grant' ? 'grant' : 'own', trialing: sub?.status === 'trialing', trialEnd: sub?.trial_end ?? null, subscription: sub, grant: own.grant, school: null };
   }
-  for (const s of q.all(`SELECT s.id, s.name, s.slug FROM teacher_seats ts JOIN schools s ON s.id=ts.school_id AND s.archived_at IS NULL
-    WHERE ts.user_id=? ORDER BY ts.assigned_at`, userId)) {
-    if (!hasSeat(s.id, userId, t)) continue;
+  const s = seatSchool(userId, t);
+  if (s) {
     const sp = B.ownerPlan('school', s.id, t);
     return { entitled: true, via: 'seat', trialing: sp.subscription?.status === 'trialing', trialEnd: sp.subscription?.trial_end ?? null, subscription: sp.subscription, school: s };
   }
@@ -187,13 +222,15 @@ export function trialUsed({ userId = null, email = null, schoolId = null } = {})
   return !!q.get(`SELECT 1 FROM teacher_trials WHERE livemode=? AND ((? IS NOT NULL AND user_id=?) OR (? IS NOT NULL AND email_hash=?)
     OR (? IS NOT NULL AND owner_kind='school' AND school_id=?))`, S.currentLivemode(), userId, userId, h, h, schoolId, schoolId);
 }
-/** Free trials started, for /admin/billing: { trialing, converted, ended, total }. */
+/** Free trials started, for /admin/billing: { trialing, converted, ended, replaced, total } (replaced: closed because a
+ *  school seat took over; neither converted nor ended). */
 export function trialStats() {
   const lm = S.currentLivemode();
   const rows = q.all(`SELECT tt.*, bs.status FROM teacher_trials tt LEFT JOIN billing_subscriptions bs ON bs.stripe_subscription_id=tt.stripe_subscription_id WHERE tt.livemode=?`, lm);
-  const out = { total: rows.length, trialing: 0, converted: 0, ended: 0 };
+  const out = { total: rows.length, trialing: 0, converted: 0, ended: 0, replaced: 0 };
   for (const r of rows) {
-    if (r.status === 'trialing') out.trialing++;
+    if (r.replaced_at && r.status !== 'trialing') out.replaced++;
+    else if (r.status === 'trialing') out.trialing++;
     else if (r.status === 'active' || r.status === 'past_due') out.converted++;
     else out.ended++;
   }
@@ -281,6 +318,176 @@ export function startTeacherCheckout({ user, email, base, trial = true }) {
   });
 }
 
+// ---------------------------------------------------------------- the trial started straight through the API
+/** The schools this account is active staff of. */
+const staffSchools = userId => q.all(`SELECT s.id FROM school_members m JOIN schools s ON s.id=m.school_id WHERE m.user_id=? AND m.status='active'
+  AND m.role IN ('teacher','admin') AND s.archived_at IS NULL`, userId);
+/** The subscription parameters of a teacher's own trial made through the API (no Checkout page): the same trial and the
+ *  same metadata as the Checkout path (startTeacherCheckout), so the webhooks and the trial emails treat it alike. */
+export function directTrialParams({ customer, priceId, userId, schoolId = null, mail = '' }) {
+  return {
+    customer,
+    items: [{ price: priceId, quantity: 1 }],
+    trial_period_days: config.teacherTrialDays,
+    trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
+    // A card added later (the Customer Portal) becomes the subscription's default, so the first year is charged to it.
+    payment_settings: { save_default_payment_method: 'on_subscription' },
+    metadata: { owner_kind: 'teacher', owner_id: userId, ...(schoolId ? { school_id: schoolId } : {}), ...(mail ? { trial_key: emailHash(mail) } : {}), trial_start: 'direct' },
+    billing_mode: { type: 'flexible' },
+  };
+}
+/**
+ * Starts a teacher's own free trial through Stripe's API, with no Checkout page and no card (the sign-up's "Add your
+ * classes" step, and /trial's "Start my free trial"). The rules are the Checkout trial's: billing on and open to this
+ * account (C.mayBill), a teacher (never a kid, a guest, a grown-up or a school student), not covered already (their own
+ * plan, a grant or a school seat), no unassigned seat at one of their schools (their admin can give them one), one trial
+ * ever per teacher, email and school. email: their work email, if typed; else the one we know (Google's, the school
+ * step's); none is fine (the in-app notices still come). One Idempotency-Key per teacher (and email), so a double submit
+ * or a retry never makes two subscriptions; the subscription is synced at once (its webhooks come too and change nothing).
+ * -> { ok: true, subscription } | { ok: false, code: 'off'|'notTeacher'|'notOpen'|'entitled'|'askAdmin'|'fixPayment'|'trialUsed'|'noPrice'|'paying' }
+ */
+export function startTeacherTrial({ user, email = '', via = 'signup' } = {}) {
+  const id = user && user.id;
+  return B.serialize(`checkout-start:teacher:${id}`, async () => {
+    if (!S.billingOn()) return fail('off');
+    if (!isTeacher(user)) return fail('notTeacher');
+    if (!C.mayBill(user)) return fail('notOpen');
+    if (teacherPlan(id).entitled) return fail('entitled');
+    if (freeSeatSchool(id)) return fail('askAdmin');
+    if (C.unsettledPlanOf('teacher', id)) return fail('fixPayment');
+    const mail = cleanEmail(email) || cleanEmail(addressOf(id)?.email);
+    if (trialUsed({ userId: id, email: mail || null }) || staffSchools(id).some(s => trialUsed({ schoolId: s.id }))) return fail('trialUsed');
+    const price = await teacherPrice();
+    if (!price) return fail('noPrice');
+    // A Checkout left open (a paid start begun earlier) is closed first, so it can't become a second plan.
+    if (await C.endOpenSession(id, 'teacher') === 'paid') return fail('paying');
+    const mode = S.currentLivemode();
+    const tag = mail ? emailHash(mail).slice(0, 16) : 'none';
+    let customer = B.customerOf('teacher', id);
+    if (customer) { if (mail) await S.updateCustomer(customer, { email: mail }, `customer-teacher-email-${id}-${tag}`); }
+    else {
+      const c = await S.createCustomer({ ...(mail ? { email: mail } : {}), metadata: { owner_kind: 'teacher', owner_id: id, teacher_id: id } }, `customer-teacher-direct-${id}-${mode}-${tag}`);
+      B.linkCustomer(c.id, 'teacher', id, mode);
+      customer = B.customerOf('teacher', id) || c.id;
+    }
+    const params = directTrialParams({ customer, priceId: price.id, userId: id, schoolId: homeSchool(id)?.id || null, mail });
+    const sub = await S.createSubscription(params, `trial-teacher-${id}-${mode}-${tag}`);
+    audit(id, 'billing.trial.direct', `teacher:${id}`, { subscription: sub.id, via, email: !!mail });
+    // Recorded now (the trial, its emails, the plan on My classes), not only when the webhook arrives.
+    try { await B.syncSubscription(sub.id); } catch (e) { log('warn', 'billing: a direct trial was not synced yet (the webhook will)', e instanceof S.StripeCallError ? { subscription: sub.id, ...e.fields } : { subscription: sub.id, error: e.message }); }
+    return { ok: true, subscription: sub.id };
+  });
+}
+/** At most this many automatic trials an hour from one address (a sign-up farm), and the sign-up waits at most this long. */
+export const AUTO_TRIALS_PER_IP_HOUR = 10;
+export const AUTO_WAIT_MS = 8000;
+/**
+ * The sign-up's automatic trial (routes/onboarding.js, once the first class is saved). Never throws and never holds the
+ * sign-up up for long: a Stripe failure is logged and the sign-up goes on (the teacher can start the trial from /plans or
+ * /trial later). -> startTeacherTrial's answer, or { ok: false, code: 'off'|'slowDown'|'slow'|'stripe' }
+ */
+export async function autoStartTrial(user, { ip = '' } = {}) {
+  try {
+    if (!S.billingOn() || !isTeacher(user) || !C.mayBill(user)) return fail('off');
+    if (ip && !allow(`trial-auto:${ip}`, AUTO_TRIALS_PER_IP_HOUR, 3600e3)) return fail('slowDown');
+    const run = startTeacherTrial({ user, via: 'signup' }).catch(e => {
+      log('warn', 'billing: the automatic trial did not start', e instanceof S.StripeCallError ? { user: user.id, ...e.fields } : { user: user.id, error: e.message });
+      return fail('stripe');
+    });
+    let timer;
+    const late = new Promise(r => { timer = setTimeout(() => r(fail('slow')), AUTO_WAIT_MS); timer.unref?.(); });
+    const r = await Promise.race([run, late]).finally(() => clearTimeout(timer));
+    if (!r.ok) audit(user.id, 'billing.trial.auto_skip', `teacher:${user.id}`, { code: r.code });
+    return r;
+  } catch (e) {
+    log('warn', 'billing: the automatic trial did not start', { error: e.message });
+    return fail('stripe');
+  }
+}
+/**
+ * What the sign-up's last step and My classes say about the Teacher plan, in one line: { state: 'started', trialEnd }
+ * (their own trial is on), { state: 'covered', school } (a school seat covers them), { state: 'askAdmin', school } (a
+ * school of theirs has a seat nobody holds), or null.
+ */
+export function trialLine(userId) {
+  if (!userId || !S.billingOn()) return null;
+  const seat = seatSchool(userId);
+  if (seat) return { state: 'covered', school: seat };
+  const plan = teacherPlan(userId);
+  if (plan.entitled && plan.via === 'own' && plan.trialing) return { state: 'started', trialEnd: plan.trialEnd };
+  if (plan.entitled) return null;
+  const free = freeSeatSchool(userId);
+  return free ? { state: 'askAdmin', school: free } : null;
+}
+/**
+ * The email typed on the sign-up's last step for the trial reminders, kept the way the trial Checkout keeps its work
+ * email: on the teacher's Stripe Customer (Stripe's reminder and receipts) and for our own trial emails
+ * (email.rememberAddress, source 'checkout'); its HMAC joins the trial's row (one trial per email).
+ * -> { ok } | { ok: false, code: 'email'|'noTrial' }
+ */
+export async function saveTrialEmail(user, email) {
+  const mail = cleanEmail(email);
+  if (!mail) return fail('email', 'email');
+  const id = user && user.id;
+  const plan = teacherPlan(id);
+  if (!(plan.entitled && plan.via === 'own')) return fail('noTrial');
+  rememberAddress(id, mail, 'checkout');
+  q.run('UPDATE teacher_trials SET email_hash=? WHERE user_id=? AND livemode=? AND email_hash IS NULL', emailHash(mail), id, S.currentLivemode());
+  const customer = B.customerOf('teacher', id);
+  if (customer) {
+    try { await S.updateCustomer(customer, { email: mail }, `customer-teacher-email-${id}-${emailHash(mail).slice(0, 16)}`); }
+    catch (e) { log('warn', 'billing: the trial email was not put on the Stripe customer', e instanceof S.StripeCallError ? e.fields : { error: e.message }); }
+  }
+  audit(id, 'billing.trial.email', `teacher:${id}`, {});
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------- a seat meets the teacher's own plan
+/**
+ * After a school admin gives a seat (giveSeat): the teacher's own plan meets the seat.
+ *   Their own trial with no paid invoice yet: closed now through Stripe (cancel at once with no proration and no
+ *   invoice, so nothing is charged) and remembered as replaced by the seat (teacher_trials.replaced_at: no trial-ended
+ *   email, not "converted"); the sync hook tells them "Your school now covers your Teacher plan, so your free trial was
+ *   closed." The seat covers them from now on.
+ *   Their own paid plan: left alone; they are told they can cancel it (Team inbox, and the Teacher plan card).
+ * -> { did: 'none'|'trialClosed'|'paidTold'|'closeFailed' }
+ */
+export async function seatTakesOver(by, schoolId, userId) {
+  if (!S.billingOn() || !hasSeat(schoolId, userId)) return { did: 'none' };
+  const own = B.ownerPlan('teacher', userId);
+  if (!own.entitled || own.via !== 'subscription') return { did: 'none' };
+  const sub = own.subscription, subId = sub.stripe_subscription_id;
+  const school = q.get('SELECT id, name, slug FROM schools WHERE id=?', schoolId);
+  if (sub.status !== 'trialing' || (sub.latest_amount_paid || 0) > 0) {
+    try { notify(userId, { k: 'seatCoversPaid', school: school?.name || '', href: `${site()}${PLAN_PATH}` }); } catch { /* a notice never blocks a seat */ }
+    audit(by?.id || null, 'billing.seat.own_paid', `teacher:${userId}`, { school: schoolId, subscription: subId });
+    return { did: 'paidTold' };
+  }
+  return B.serialize(`checkout-start:teacher:${userId}`, async () => {
+    if (!q.run('UPDATE teacher_trials SET replaced_by_school=?, replaced_at=? WHERE stripe_subscription_id=?', schoolId, now(), subId).changes) {
+      q.run(`INSERT OR IGNORE INTO teacher_trials(id, owner_kind, owner_id, user_id, school_id, email_hash, stripe_subscription_id, livemode, created_at, replaced_by_school, replaced_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)`, uid(12), 'teacher', userId, userId, homeSchool(userId)?.id || null, null, subId, sub.livemode, now(), schoolId, now());
+    }
+    try { await S.cancelSubscriptionNow(subId, 'seat'); } catch (e) {
+      q.run('UPDATE teacher_trials SET replaced_by_school=NULL, replaced_at=NULL WHERE stripe_subscription_id=?', subId);
+      log('warn', 'billing: a trial replaced by a seat was not cancelled', e instanceof S.StripeCallError ? { subscription: subId, ...e.fields } : { subscription: subId, error: e.message });
+      return { did: 'closeFailed' };
+    }
+    audit(by?.id || null, 'billing.trial.replaced', `teacher:${userId}`, { school: schoolId, subscription: subId });
+    try { await B.syncSubscription(subId); } catch (e) { log('warn', 'billing: a cancelled trial was not synced yet (the webhook will)', { subscription: subId, error: e.message }); }
+    return { did: 'trialClosed' };
+  });
+}
+/** A school admin gives a seat (assignSeat), then the seat meets the teacher's own plan (seatTakesOver).
+ *  -> assignSeat's answer, with after: seatTakesOver's did */
+export async function giveSeat(by, schoolId, userId, opts = {}) {
+  const r = assignSeat(by, schoolId, userId, opts);
+  if (!r.ok || r.did !== 'given') return r;
+  let after = { did: 'none' };
+  try { after = await seatTakesOver(by, schoolId, userId); } catch (e) { log('warn', 'billing: what a given seat means for an own plan failed', { error: e.message }); }
+  return { ...r, after: after.did };
+}
+
 // ---------------------------------------------------------------- what a synced row means (billing.js sync hook)
 /** Who hears about a plan: the teacher (a teacher's own plan) or the school's admins (teacher seats). */
 function listeners(row) {
@@ -318,9 +525,18 @@ B.registerSyncHook(({ row, prev, event, owner, sub }) => {
   // sync's subscription (its customer is expanded), e.g. at trial_will_end, before "Your trial ends in 3 days" is due.
   if (owner.owner_kind === 'teacher' && row.status === 'trialing' && hasCard(sub)) nudges.onTrialConverted(owner.owner_id);
   if (prev && prev.status === 'trialing' && row.status === 'canceled') {
-    if (owner.owner_kind === 'teacher') nudges.onTrialEnded(owner.owner_id);
-    tell(row, { k: 'trialEnded', href: `${site()}/trial` });
-    audit(null, 'billing.trial.ended', target, { subscription: row.stripe_subscription_id });
+    // Closed because a school seat took over (seatTakesOver): no "your trial ended", not converted.
+    const replaced = owner.owner_kind === 'teacher' ? q.get(`SELECT s.name FROM teacher_trials tt LEFT JOIN schools s ON s.id=tt.replaced_by_school
+      WHERE tt.stripe_subscription_id=? AND tt.replaced_at IS NOT NULL`, row.stripe_subscription_id) : null;
+    if (replaced) {
+      nudges.onTrialReplaced(owner.owner_id);
+      tell(row, { k: 'trialReplaced', school: replaced.name || '' });
+      audit(null, 'billing.trial.ended', target, { subscription: row.stripe_subscription_id, replaced: true });
+    } else {
+      if (owner.owner_kind === 'teacher') nudges.onTrialEnded(owner.owner_id);
+      tell(row, { k: 'trialEnded', href: `${site()}/trial` });
+      audit(null, 'billing.trial.ended', target, { subscription: row.stripe_subscription_id });
+    }
   }
   if (prev && prev.status === 'trialing' && row.status === 'active') {
     if (owner.owner_kind === 'teacher') nudges.onTrialConverted(owner.owner_id);

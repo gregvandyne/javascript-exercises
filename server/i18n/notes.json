@@ -1466,5 +1466,22 @@
   "info.privacy.grownups.li8": "One item of the list \"What we keep\" for grown-up accounts on the Privacy Policy. Starts in lower case and ends with \";\" like the other items. Legal text: translate exactly, add nothing.",
   "info.privacy.schoolSetup.li5": "Privacy Policy, school set-up section. Legal text: translate exactly, add nothing.",
   "google.setup.privacy.adults": "Privacy Policy and parent page, Sign in with Google section. Legal text: translate exactly, add nothing.",
-  "teachers.setup.signupCta": "Button on the teacher page that opens the teacher sign-up."
+  "teachers.setup.signupCta": "Button on the teacher page that opens the teacher sign-up.",
+  "plans.auto.started": "One line on the teacher sign-up's last screen and on My classes, once the teacher's own free trial has started by itself (no Checkout page). {days} is the trial's length in days (14). No price here.",
+  "plans.auto.covered": "One line on the teacher sign-up's last screen: a school admin gave this teacher a Teacher plan seat, so no personal trial starts.",
+  "plans.auto.askAdmin": "One line on the teacher sign-up's last screen, the Teacher plan card and /trial: the teacher's school has a Teacher plan seat nobody holds, so instead of a personal trial they ask their school admin to give it to them.",
+  "plans.auto.emailLabel": "Label of an optional email field on the teacher sign-up's last screen (password sign-ups only), for the trial's reminder emails.",
+  "plans.auto.emailHint": "Hint under that optional email field.",
+  "plans.auto.emailSave": "Button that saves that email, max ~24 chars.",
+  "plans.auto.emailSaved": "Short pop-up after the email is saved.",
+  "plans.auto.doneHeading": "Heading of the teacher sign-up's last screen, max ~30 chars.",
+  "plans.auto.seatPaid": "Notice on the teacher's Teacher plan card: they pay for their own plan, and now their school gave them a seat too, so they may cancel their own (the Manage billing button under it opens Stripe's billing page).",
+  "plans.trial.start.noteDirect": "Small line under \"Start my free trial\" on /trial: the trial starts at once, with no payment page and no card.",
+  "plans.trial.errors.askAdmin": "Error when a teacher tries to start a personal trial while their school has a free Teacher plan seat for them.",
+  "team.notice.trialReplaced": "Message from the Oomba team in the teacher's inbox: a school admin gave them a seat, so their personal free trial was closed (nothing was charged).",
+  "team.notice.seatCoversPaid": "Message from the Oomba team in the teacher's inbox: their school gave them a seat while they pay for their own plan. \"Manage billing\" is the button name on their Teacher plan card; {href} is the link to it.",
+  "school.billing.tp.seats.paid": "Small note next to a teacher's name in the school's seat list, before a seat is given: they pay for their own Teacher plan.",
+  "school.billing.tp.seats.paidConfirm": "Confirmation question the school admin sees before giving a seat to a teacher who pays for their own Teacher plan.",
+  "school.billing.tp.errors.ownPaid": "Error when a seat is given to such a teacher without the confirmation.",
+  "school.billing.tp.seat.trialClosed": "Short pop-up for the school admin: the seat was given and the teacher's own free trial was closed at no charge."
 }

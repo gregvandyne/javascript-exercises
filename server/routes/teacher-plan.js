@@ -3,16 +3,19 @@
 //   GET  /trial               the entry point the marketing site links to (also /trial?seats=N for a school):
 //                               signed out (or a guest)        -> the sign-up's teacher steps (/signup/teacher?trial=1:
 //                                                                 account, school, classes, Classroom), then back here
-//                               a teacher with no plan          -> "Start my free trial" (work email) -> Stripe Checkout
-//                                                                 with the trial and no card; a teacher whose trial is
-//                                                                 used gets "Get the Teacher plan" (card) instead
+//                               a teacher with no plan          -> "Start my free trial" (work email): the trial starts
+//                                                                 at once through Stripe's API (TP.startTeacherTrial, no
+//                                                                 Checkout page, no card); a teacher whose trial is used,
+//                                                                 or whose school has a free seat for them, gets "Get the
+//                                                                 Teacher plan" (Checkout with a card) instead
 //                               a school admin with ?seats=N    -> the school's free trial of N teacher seats
 //                               a teacher with a plan / trial   -> the Me page (/me/settings?plan=on#teacher-plan)
 //                               a kid or a grown-up account     -> a friendly page: it's for teachers; plans for
 //                                                                 families are on /plans
 //   GET  /trial/thanks        Checkout's success page: confirms the session itself (like the Spark Pack return page),
 //                             so the trial starts even when the webhook is slow, then My classes with a welcome.
-//   POST /api/trial/signup    the sign-up form; POST /api/trial/start  the trial (or paid) Checkout;
+//   POST /api/trial/signup    the sign-up form; POST /api/trial/start  the trial (straight through the API) or the paid
+//                             Checkout; POST /api/trial/email  the sign-up's optional "Email for trial reminders";
 //   GET  /api/trial/status    the return page's poll; POST /api/trial/card  Manage billing (add a card) for a teacher.
 //   POST /api/billing/school/:id/seat-give, /seat-take   a school admin gives or takes back a teacher seat.
 // Everything is off (a 404, or /teachers for /trial) while paid-plan pages are off for the request (familiesOn).
@@ -33,6 +36,7 @@ import * as TP from '../services/teacher-plan.js';
 import { rateLimit, allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { stepUp, passwordField, stripeTrouble } from './family.js';
 import { addressOf } from '../services/email.js';
+import { trialLineHtml, seatPaidNotice } from '../views/trial-lines.js';
 import { setMePlanPanels } from './auth.js';
 import { askPanel } from './school-billing.js';
 import * as PA from '../services/plan-asks.js';
@@ -104,20 +108,22 @@ router.get('/trial', async (req, res) => {
   if (plan.entitled) return res.redirect(302, '/me/settings?plan=on#teacher-plan');
   if (C.unsettledPlanOf('teacher', u.id)) return res.redirect(302, '/me/settings#teacher-plan');
   const used = TP.trialUsed({ userId: u.id });
+  // A school of theirs has a Teacher plan seat nobody holds: their admin can give them one, so no personal trial.
+  const ask = TP.freeSeatSchool(u.id);
   // The address we already know for this account (Google's, or the school step's), filled in to save typing.
   const known = (addressOf(u.id) || {}).email || '';
   const email = html`<div class="field"><label for="tr-email">${t('plans.trial.email')}</label>
       <input class="input" id="tr-email" name="email" type="email" dir="ltr" required maxlength="254" autocomplete="email" autocapitalize="off" spellcheck="false" aria-describedby="tr-email-hint" value="${known}">
       ${el(t, 'span', 'plans.trial.emailHint', {}, ' class="hint" id="tr-email-hint"')}<span class="err" id="tr-email-err" aria-live="polite"></span></div>`;
   const off = !C.mayBill(u) || !price ? raw(' disabled') : '';
-  const form = used
-    ? html`<section class="panel" aria-labelledby="tu-h"><h2 id="tu-h">${el(t, 'span', 'plans.trial.used.h')}</h2>${el(t, 'p', 'plans.trial.used.p', v)}
+  const form = used || ask
+    ? html`${ask ? trialLineHtml(t, { state: 'askAdmin', school: ask }) : ''}<section class="panel" aria-labelledby="tu-h">${used ? html`<h2 id="tu-h">${el(t, 'span', 'plans.trial.used.h')}</h2>${el(t, 'p', 'plans.trial.used.p', v)}` : html`<h2 id="tu-h">${t('plans.trial.subscribe')}</h2>`}
         <form data-api="/api/trial/start" novalidate><input type="hidden" name="trial" value="0">${email}${passwordField(req, 'tr-pw')}${err}
         <button class="btn btn-primary btn-big" type="submit"${off}>${t('plans.trial.subscribe')}</button></form></section>`
     : html`<section class="panel" aria-labelledby="ts-h"><h2 id="ts-h">${el(t, 'span', 'plans.trial.start.h', v)}</h2>
         <form data-api="/api/trial/start" novalidate><input type="hidden" name="trial" value="1">${email}${err}
         <button class="btn btn-primary btn-big" type="submit"${off}>${t('plans.trial.start.button')}</button>
-        ${el(t, 'p', 'plans.trial.start.note', v, ' class="small muted" style="margin-bottom:0"')}</form></section>`;
+        ${el(t, 'p', 'plans.trial.start.noteDirect', v, ' class="small muted" style="margin-bottom:0"')}</form></section>`;
   show(html`${head}${cancelled}${notOpen}<section class="panel">${features}</section>${form}<p class="small">${tHtml(t, 'plans.fine.legal')}</p>`);
 });
 
@@ -161,19 +167,21 @@ router.post('/api/trial/signup', rateLimit('trial-signup', 30, 3600e3), async (r
   auth.startSession(res, u.id, req.headers['user-agent'], { method: 'signup', teacherWay: true });
   allow(`signup:${ip}`, SIGNUP.perHour, 3600e3);
   // A school's seat trial (?seats=N) goes back to /trial to confirm it. A teacher's own trial starts at once from the
-  // email they typed: it goes to Stripe (the Customer), and here only as an HMAC until Stripe reports the trial started
-  // (then services/nudges.js keeps it for the trial emails and a password reset: email.rememberAddress).
+  // email they typed, straight through Stripe's API (no Checkout page): the email goes to Stripe (the Customer), and here
+  // only as an HMAC until the trial's sync (then services/nudges.js keeps it for the trial emails and a password reset:
+  // email.rememberAddress).
   const seats = seatsQuery(b.seats);
   if (!seats && C.mayBill(u)) {
     try {
-      const r = await TP.startTeacherCheckout({ user: auth.getUser(u.id), email, base: C.baseUrl(req), trial: true });
-      if (r.ok) return res.json({ ok: true, redirect: r.url });
+      const r = await TP.startTeacherTrial({ user: auth.getUser(u.id), email, via: 'trial-signup' });
+      if (r.ok) return res.json({ ok: true, redirect: '/me/settings?plan=welcome#teacher-plan' });
     } catch { /* Stripe unreachable: /trial offers the button again */ }
   }
   res.json({ ok: true, redirect: `/trial${seats ? `?seats=${seats}` : ''}` });
 });
 
-/** Starts a Checkout: a teacher's own plan ({ email, trial: '1'|'0' }) or a school's seat trial ({ school, seats }). */
+/** Starts a teacher's own plan ({ email, trial: '1'|'0' }: the trial straight through Stripe's API, the paid start with
+ *  Checkout) or a school's seat trial ({ school, seats }, Checkout). */
 router.post('/api/trial/start', rateLimit('trial-start', 20, 600e3), async (req, res, next) => {
   if (!on(req) || !TP.isTeacher(req.user)) return nope(req, res);
   if (!C.mayBill(req.user)) return res.status(403).json({ error: req.t('plans.trial.notOpen') });
@@ -183,7 +191,7 @@ router.post('/api/trial/start', rateLimit('trial-start', 20, 600e3), async (req,
   next();
 }, async (req, res) => {
   const t = req.t, b = req.body || {}, u = req.user;
-  const fail = r => res.status(r.field ? 400 : 409).json({ error: t(`plans.trial.errors.${r.code}`, { max: TP.MAX_TEACHER_SEATS }), ...(r.field ? { field: r.field } : {}) });
+  const fail = r => res.status(r.field ? 400 : 409).json({ error: t(r.code === 'off' || r.code === 'notOpen' ? 'plans.trial.notOpen' : `plans.trial.errors.${r.code}`, { max: TP.MAX_TEACHER_SEATS }), ...(r.field ? { field: r.field } : {}) });
   try {
     if (b.school) {
       const s = SC.getSchool(String(b.school));
@@ -191,7 +199,12 @@ router.post('/api/trial/start', rateLimit('trial-start', 20, 600e3), async (req,
       const r = await SB.startSchoolCheckout({ school: s, user: u, seats: SB.seatsFrom(b.seats), base: C.baseUrl(req), trial: true });
       return r.ok ? res.json({ ok: true, redirect: r.url }) : fail(r);
     }
-    const r = await TP.startTeacherCheckout({ user: u, email: b.email, base: C.baseUrl(req), trial: b.trial !== '0' });
+    if (b.trial !== '0') {
+      if (!TP.cleanEmail(b.email)) return fail({ code: 'email', field: 'email' });
+      const r = await TP.startTeacherTrial({ user: u, email: b.email, via: 'trial' });
+      return r.ok ? res.json({ ok: true, redirect: '/me/settings?plan=welcome#teacher-plan' }) : fail(r);
+    }
+    const r = await TP.startTeacherCheckout({ user: u, email: b.email, base: C.baseUrl(req), trial: false });
     return r.ok ? res.json({ ok: true, redirect: r.url }) : fail(r);
   } catch (e) { stripeTrouble(req, res, e); }
 });
@@ -227,6 +240,17 @@ router.get('/trial/thanks', async (req, res) => {
   page(req, res, { title: t('plans.trial.title'), active: 'plans', body, head: CSS, scripts: ['/js/family.js'], seo: { index: false, path: '/trial/thanks' } });
 });
 
+/** The sign-up's optional "Email for trial reminders" ({ email }): kept the way the trial Checkout keeps a work email
+ *  (TP.saveTrialEmail). Only for a teacher in their own trial. */
+router.post('/api/trial/email', rateLimit('trial-email', 10, 3600e3), async (req, res) => {
+  if (!on(req) || !TP.isTeacher(req.user)) return nope(req, res);
+  const t = req.t;
+  const r = await TP.saveTrialEmail(req.user, (req.body || {}).email);
+  if (r.code === 'email') return res.status(400).json({ error: t('plans.trial.errors.email'), field: 'email' });
+  if (!r.ok) return nope(req, res);
+  res.json({ ok: true, toast: t('plans.auto.emailSaved'), redirect: '/teach' });
+});
+
 /** Manage billing for a teacher's own plan (add a card during the trial, cancel, receipts): Stripe's Customer Portal. */
 router.post('/api/trial/card', rateLimit('billing-portal', 20, 600e3), (req, res, next) => {
   if (!on(req) || !TP.isTeacher(req.user)) return nope(req, res);
@@ -246,11 +270,15 @@ const seatGate = (req, res, next) => {
   if (!s || s.archived_at || !req.user || req.user.is_guest || !on(req) || !SC.canManageSchool(req.user, s.id) || auth.isGrownup(req.user)) return nope(req, res);
   req.school = s; next();
 };
-for (const [verb, fn] of [['give', TP.assignSeat], ['take', TP.unassignSeat]]) {
-  router.post(`/api/billing/school/:id/seat-${verb}`, seatGate, rateLimit('billing-seat', 120, 3600e3), (req, res) => {
-    const r = fn(req.user, req.school.id, String((req.body || {}).user || ''));
+// Giving a seat: a teacher who pays for their own plan needs { confirm: '1' } (the list asks first); a teacher in their
+// own free trial has it closed at no charge (TP.giveSeat -> seatTakesOver).
+const seatToast = r => (r.after === 'trialClosed' ? 'trialClosed' : r.did === 'already' ? 'given' : r.did);
+for (const [verb, fn] of [['give', (by, sid, uid, b) => TP.giveSeat(by, sid, uid, { confirm: b.confirm === '1' || b.confirm === true })], ['take', TP.unassignSeat]]) {
+  router.post(`/api/billing/school/:id/seat-${verb}`, seatGate, rateLimit('billing-seat', 120, 3600e3), async (req, res) => {
+    const b = req.body || {};
+    const r = await fn(req.user, req.school.id, String(b.user || ''), b);
     if (!r.ok) return res.status(409).json({ error: req.t(`school.billing.tp.errors.${r.code}`) });
-    res.json({ ok: true, toast: req.t(`school.billing.tp.seat.${r.did === 'already' ? 'given' : r.did}`) });
+    res.json({ ok: true, toast: req.t(`school.billing.tp.seat.${seatToast(r)}`) });
   });
 }
 
@@ -267,6 +295,7 @@ export function teacherPlanCard(req) {
   const parts = [];
   if (plan.entitled) {
     if (req.query.plan === 'welcome') parts.push(el(t, 'p', 'plans.trial.welcome', v, ' class="notice good" role="status"'));
+    else if (req.query.plan === 'started') parts.push(trialLineHtml(t, TP.trialLine(u.id)));
     else if (req.query.plan === 'on') parts.push(el(t, 'p', 'plans.trial.already', {}, ' class="notice" role="status"'));
     const sub = plan.subscription;
     let state;
@@ -283,9 +312,11 @@ export function teacherPlanCard(req) {
       : el(t, 'p', 'plans.trial.card.seatNote', { school: plan.school.name }, ' class="small muted" id="tp-seat-note"'));
     const notice = plan.via === 'own' ? TP.trialNotice(plan) : null;
     if (notice) parts.push(el(t, 'p', 'plans.trial.card.ending', { count: notice.days }, ' class="notice warn" role="status"'));
+    const covered = seatPaidNotice(t, u.id, plan);
+    if (covered) parts.push(covered);
     if (plan.via === 'own' && B.customerOf('teacher', u.id) && C.mayBill(u)) {
       parts.push(html`<form data-api="/api/trial/card" class="planform">${passwordField(req, 'tp-pw')}${err}
-        <button class="btn ${notice || plan.trialing ? 'btn-primary' : ''}" type="submit">${t(plan.trialing ? 'plans.trial.card.addCard' : 'plans.trial.card.manage')}</button></form>`);
+        <button class="btn ${notice || plan.trialing || covered ? 'btn-primary' : ''}" type="submit">${t(plan.trialing ? 'plans.trial.card.addCard' : 'plans.trial.card.manage')}</button></form>`);
     }
   } else {
     const unsettled = C.unsettledPlanOf('teacher', u.id);
@@ -293,6 +324,8 @@ export function teacherPlanCard(req) {
     else if (unsettled) {
       parts.push(el(t, 'p', 'plans.trial.card.fix', {}, ' class="notice warn"'));
       if (C.mayBill(u)) parts.push(html`<form data-api="/api/trial/card" class="planform">${passwordField(req, 'tp-pw')}${err}<button class="btn btn-primary" type="submit">${t('plans.trial.card.manage')}</button></form>`);
+    } else if (TP.freeSeatSchool(u.id)) {
+      parts.push(trialLineHtml(t, { state: 'askAdmin' }));
     } else {
       // No plan: one line and the plans (prices stay on /plans).
       const used = TP.trialUsed({ userId: u.id });

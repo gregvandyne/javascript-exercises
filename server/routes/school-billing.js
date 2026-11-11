@@ -230,9 +230,9 @@ async function teacherSeatsTab(req, s, v) {
     const given = v.seats.assigned.length;
     seatList = html`<section class="panel" aria-labelledby="seat-h" id="seat-list"><h3 id="seat-h">${t('school.billing.tp.seats.h')}</h3>
       ${E('p', 'school.billing.tp.seats.text', { used: f.int(Math.min(given, seatsPaid)), seats: f.int(seatsPaid) }, ' class="small"')}
-      <ul class="plain archlist">${staff.map(m => html`<li><span><bdi>${m.name}</bdi>${m.own ? html` <span class="small muted">${t('school.billing.tp.seats.own')}</span>` : ''}${m.given && !m.seat ? html` <span class="small muted">${t('school.billing.tp.seats.waiting')}</span>` : ''}</span>
+      <ul class="plain archlist">${staff.map(m => html`<li><span><bdi>${m.name}</bdi>${m.paid && !m.given ? html` <span class="small seat-paid">${t('school.billing.tp.seats.paid')}</span>` : m.own ? html` <span class="small muted">${t('school.billing.tp.seats.own')}</span>` : ''}${m.given && !m.seat ? html` <span class="small muted">${t('school.billing.tp.seats.waiting')}</span>` : ''}</span>
         ${m.given ? html`<form data-api="${api}/seat-take" data-reload><input type="hidden" name="user" value="${m.user_id}"><button class="btn btn-sm" type="submit">${t('school.billing.tp.seats.take')}</button></form>`
-          : html`<form data-api="${api}/seat-give" data-reload><input type="hidden" name="user" value="${m.user_id}"><button class="btn btn-sm btn-primary" type="submit"${given >= seatsPaid ? raw(' disabled') : ''}>${t('school.billing.tp.seats.give')}</button></form>`}</li>`)}</ul>
+          : html`<form data-api="${api}/seat-give" data-reload${m.paid ? html` data-confirm="${t('school.billing.tp.seats.paidConfirm')}"` : ''}><input type="hidden" name="user" value="${m.user_id}">${m.paid ? raw('<input type="hidden" name="confirm" value="1">') : ''}<button class="btn btn-sm btn-primary" type="submit"${given >= seatsPaid ? raw(' disabled') : ''}>${t('school.billing.tp.seats.give')}</button></form>`}</li>`)}</ul>
       ${given >= seatsPaid && staff.some(m => !m.given) ? html`<p class="small muted" style="margin-bottom:0">${t('school.billing.tp.seats.full')}</p>` : ''}</section>`;
   }
 

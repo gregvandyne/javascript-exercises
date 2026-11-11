@@ -2971,11 +2971,14 @@
           "waiting": "(wartet auf einen freien Platz)",
           "give": "Platz vergeben",
           "take": "Zurücknehmen",
-          "full": "Alle Plätze sind vergeben. Fügt oben Plätze hinzu, um mehr zu vergeben."
+          "full": "Alle Plätze sind vergeben. Fügt oben Plätze hinzu, um mehr zu vergeben.",
+          "paid": "(zahlt schon einen eigenen Lehrkraft-Plan)",
+          "paidConfirm": "Diese Lehrkraft zahlt schon einen eigenen Lehrkraft-Plan. Trotzdem einen Platz vergeben? Sie kann ihren eigenen Plan danach kündigen."
         },
         "seat": {
           "given": "Platz vergeben.",
-          "taken": "Platz zurückgenommen."
+          "taken": "Platz zurückgenommen.",
+          "trialClosed": "Platz vergeben. Ihr kostenloser Test wurde beendet, ohne dass etwas berechnet wurde."
         },
         "seatsDone": {
           "raised": "Erledigt: {count, plural, one {# Lehrkraft} other {# Lehrkräfte}}.",
@@ -2990,7 +2993,8 @@
           "noSeat": "Diese Lehrkraft hat keinen Platz.",
           "minSeats": "Gib eine ganze Zahl von 1 bis {max} ein.",
           "entitled": "Eure Schule hat schon einen Plan. Ändert stattdessen die Anzahl der Lehrkräfte.",
-          "trialUsed": "Eure Schule hatte ihren kostenlosen Test schon."
+          "trialUsed": "Eure Schule hatte ihren kostenlosen Test schon.",
+          "ownPaid": "Diese Lehrkraft zahlt schon einen eigenen Lehrkraft-Plan. Bestätige zuerst, um ihr einen Platz zu geben."
         }
       }
     },
@@ -4054,7 +4058,7 @@
       "start": {
         "h": "Starte deinen {days}-tägigen kostenlosen Test",
         "button": "Kostenlosen Test starten",
-        "note": "Zum Bestätigen geht es auf die Seite von Stripe. Für den Test ist keine Karte nötig."
+        "noteDirect": "Er startet sofort. Für den Test ist keine Karte nötig."
       },
       "signup": {
         "h": "Erstelle dein Lehrkraft-Konto",
@@ -4084,7 +4088,8 @@
         "noPrice": "Der Lehrkraft-Plan ist gerade nicht erhältlich. Bitte versuche es später noch einmal.",
         "paying": "Eine Zahlung ist schon unterwegs. Bitte warte eine Minute.",
         "minSeats": "Gib eine ganze Zahl an Lehrkräften von 1 bis {max} ein.",
-        "noCustomer": "Es gibt noch keine Abrechnung zu verwalten."
+        "noCustomer": "Es gibt noch keine Abrechnung zu verwalten.",
+        "askAdmin": "Deine Schule hat Plätze im Lehrkraft-Plan: Bitte den Schuladmin um einen."
       },
       "thanks": {
         "wait": "⏳ Dein Lehrkraft-Plan wird gestartet …",
@@ -4110,6 +4115,17 @@
         "seatNote": "Die Admins von {school} verwalten dieses Abo.",
         "seePlans": "Abos ansehen"
       }
+    },
+    "auto": {
+      "started": "Dein {days}-tägiger Test des Lehrkraft-Plans hat begonnen. Keine Karte nötig.",
+      "covered": "Deine Schule übernimmt deinen Lehrkraft-Plan.",
+      "askAdmin": "Deine Schule hat Plätze im Lehrkraft-Plan: Bitte den Schuladmin um einen.",
+      "emailLabel": "E-Mail für Erinnerungen zum Test",
+      "emailHint": "Freiwillig. Wir erinnern dich hier, bevor dein Test endet.",
+      "emailSave": "Meine E-Mail speichern",
+      "emailSaved": "Gespeichert. Die Erinnerungen zum Test gehen an diese E-Mail.",
+      "doneHeading": "Alles bereit",
+      "seatPaid": "Deine Schule übernimmt dich jetzt. Du kannst deinen eigenen Plan kündigen."
     }
   },
   "seo": {
@@ -7072,7 +7088,9 @@
       "sentBack": "„{title}“ braucht noch ein paar Änderungen, bevor alle es spielen können.",
       "trialEnding": "Der kostenlose Test deines Lehrkraft-Plans endet in {days, plural, =0 {weniger als einem Tag} one {# Tag} other {# Tagen}}. Um ihn zu behalten, füge hier eine Karte hinzu: {href} Ohne Karte endet der Plan einfach, und deine Klassen bleiben.",
       "trialEnded": "Der kostenlose Test deines Lehrkraft-Plans ist vorbei. Deine Klassen, Schülerinnen und Schüler und ihre Spiele sind alle noch da. Den Plan kannst du hier wieder holen: {href}",
-      "trialConverted": "Danke! Dein Lehrkraft-Plan ist für ein Jahr aktiv."
+      "trialConverted": "Danke! Dein Lehrkraft-Plan ist für ein Jahr aktiv.",
+      "trialReplaced": "Deine Schule übernimmt jetzt deinen Lehrkraft-Plan, deshalb wurde dein kostenloser Test beendet.",
+      "seatCoversPaid": "Deine Schule übernimmt jetzt deinen Lehrkraft-Plan. Deinen eigenen Plan kannst du unter „Abrechnung verwalten“ kündigen: {href}"
     },
     "link": {
       "new": "{count, plural, one {# neue Nachricht vom Oomba-Team} other {# neue Nachrichten vom Oomba-Team}}",

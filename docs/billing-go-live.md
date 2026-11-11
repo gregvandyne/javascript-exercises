@@ -78,6 +78,14 @@ Do these in the Stripe Dashboard with **Test mode switched off**. They mirror wh
    turn on **"Send a reminder email 7 days before a free trial ends"** (Stripe sends it to the teacher's work email;
    the site also shows its own notice and a Team inbox message when Stripe sends `customer.subscription.trial_will_end`,
    3 days before). Also set a link to your Terms there (Stripe asks for it before it sends trial reminders).
+5b. **Automatic trials (sign-up).** Since 11 Nov 2026 a teacher's trial is made straight through the API at sign-up
+   (and from /trial), with no Checkout page (docs/decisions.md "Automatic trial at sign-up"). Nothing new to switch on,
+   but check: the restricted key has **Subscriptions: write** (it already needs it) and **Customers: write**; the
+   Customer Portal allows **adding a payment method** (that is where these trials get their card); and, if
+   `STRIPE_TAX=1`, these trials start with no address and no `automatic_tax` (Checkout asked for the address before):
+   have the Portal collect the billing address, and turn on automatic tax for the subscription when its card is added
+   (Dashboard, or ask for that change in the code) before relying on tax being collected at conversion. A trial closed
+   because a school gave the teacher a seat shows in Stripe as cancelled at once with no invoice.
 6. **Customer emails.** Settings → Customer emails: turn on "Successful payments" and "Refunds" (receipts; the site
    sends no email). Set the support email to greg@oomba.ai.
 7. **Card retries.** Settings → Billing → Subscriptions and emails: make retries end within 7 days (the grace period,

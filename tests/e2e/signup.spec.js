@@ -2,6 +2,8 @@
 // families on (the fake Stripe on E2E_PORT + 32), Sign in with Google (the run's fake Google on E2E_PORT + 1) and Google
 // Classroom on (app on E2E_PORT + 31):
 //   - a teacher creates their school (its admin at once), adds two classes, sees "Connect Google Classroom?" and skips;
+//   - a teacher (a billing tester) whose first class starts the 14-day Teacher plan trial: the done screen's line and its
+//     optional email for the trial reminders, then the plan on the Teacher plan card (Settings);
 //   - another teacher joins that school (an invite from its admin, accepted on the step), then adds a class;
 //   - a kid signs up with a name and a password, then joins the first teacher's class with its code;
 //   - a parent signs up with a password, another with Google; both land on "Add your kids";
@@ -116,6 +118,42 @@ test('a teacher: account, create the school (its admin), two classes, "Connect G
   const people = await (await page.request.get(`${new URL(page.url()).pathname}?tab=people`)).text();
   schoolId = (/data-api="\/api\/schools\/([^/"]+)\/staff"/.exec(people) || [])[1] || '';
   expect(schoolId).not.toBe('');
+  await page.context().close();
+});
+
+test('a teacher\'s first class starts their 14-day Teacher plan trial (no card): the done screen says so, offers an email for the reminders, and the Teacher plan card shows the plan', async ({ browser }) => {
+  // Billing is on with a test key here, where only billing testers may start a trial (D14): the admin marks this teacher
+  // as one once they are staff (after the school step; docs/decisions.md "Automatic trial at sign-up").
+  const page = await person(browser);
+  const name = uniq('Trl').slice(0, 16);
+  await page.goto('/signup/teacher');
+  await page.check('#adult');
+  await page.fill('#username', name); await page.fill('#password', PW); await page.fill('#confirm', PW);
+  await Promise.all([page.waitForURL(/\/signup\/teacher\/school$/), page.click('button.btn-primary[type=submit]')]);
+  await Promise.all([page.waitForURL(/how=own/), page.click('a.ob-own')]);
+  await page.fill('#ob-name', 'Ms Trial');
+  await Promise.all([page.waitForURL(/\/signup\/teacher\/classes$/), page.click('button[type=submit]')]);
+  const admin = await person(browser, { viewport: DESKTOP });
+  await admin.goto('/login'); await admin.fill('#username', ADMIN.username); await admin.fill('#password', ADMIN.password);
+  await Promise.all([admin.waitForURL(u => !u.pathname.startsWith('/login')), admin.click('button[type=submit]')]);
+  await admin.goto(`/admin?tab=users&username=${name}`);
+  await Promise.all([admin.waitForResponse(r => r.url().includes('/billing-tester') && r.ok()), admin.locator('[data-act="tester"]').click()]);
+  await admin.context().close();
+  await page.fill('#ob-cn-0', '3A'); await page.selectOption('#ob-cg-0', '3');
+  await Promise.all([page.waitForURL(/\/signup\/teacher\/classroom$/), page.click('form[data-api="/api/onboarding/classes"] button[type=submit]')]);
+  await Promise.all([page.waitForURL(/\/signup\/teacher\/done$/), page.click('#ob-skip')]);
+  await expect(page.locator('h1')).toHaveText("You're all set");
+  await expect(page.locator('#trial-line')).toHaveText('Your 14-day Teacher plan trial has started. No card needed.');
+  await expect(page.locator('main')).not.toContainText('$');
+  // A password sign-up has no email: an optional one for the trial reminders.
+  await expect(page.locator('label[for="ob-temail"]')).toHaveText('Email for trial reminders');
+  await check(page, '15-teacher-trial-done');
+  await page.fill('#ob-temail', 'ms.trial@school.example');
+  await Promise.all([page.waitForURL(u => !u.pathname.startsWith('/signup')), page.click('form[data-api="/api/trial/email"] button[type=submit]')]);
+  // The Teacher plan card (Settings) shows the trial.
+  await page.goto('/me/settings?plan=started#teacher-plan');
+  await expect(page.locator('#teacher-plan #trial-line')).toHaveText('Your 14-day Teacher plan trial has started. No card needed.');
+  await expect(page.locator('#teacher-plan')).toContainText('Free trial until');
   await page.context().close();
 });
 

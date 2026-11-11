@@ -2971,11 +2971,14 @@
           "waiting": "(in attesa di un posto libero)",
           "give": "Assegna un posto",
           "take": "Togli",
-          "full": "Tutti i posti sono assegnati. Aggiungi posti qui sopra per assegnarne altri."
+          "full": "Tutti i posti sono assegnati. Aggiungi posti qui sopra per assegnarne altri.",
+          "paid": "(paga già un suo piano Insegnante)",
+          "paidConfirm": "Questo insegnante paga già un suo piano Insegnante. Assegnargli comunque un posto? Poi potrà disdire il suo piano."
         },
         "seat": {
           "given": "Posto assegnato.",
-          "taken": "Posto tolto."
+          "taken": "Posto tolto.",
+          "trialClosed": "Posto assegnato. La sua prova gratuita è stata chiusa, senza alcun addebito."
         },
         "seatsDone": {
           "raised": "Fatto: {count, plural, one {# insegnante} other {# insegnanti}}.",
@@ -2990,7 +2993,8 @@
           "noSeat": "Questo insegnante non ha un posto.",
           "minSeats": "Scrivi un numero intero da 1 a {max}.",
           "entitled": "La vostra scuola ha già un piano. Cambiate invece il numero di insegnanti.",
-          "trialUsed": "La vostra scuola ha già usato la sua prova gratuita."
+          "trialUsed": "La vostra scuola ha già usato la sua prova gratuita.",
+          "ownPaid": "Questo insegnante paga già un suo piano Insegnante. Conferma prima di assegnargli un posto."
         }
       }
     },
@@ -4054,7 +4058,7 @@
       "start": {
         "h": "Inizia la tua prova gratuita di {days} giorni",
         "button": "Inizia la mia prova gratuita",
-        "note": "Confermi sulla pagina di Stripe. Per la prova non serve una carta."
+        "noteDirect": "Inizia subito. Per la prova non serve una carta."
       },
       "signup": {
         "h": "Crea il tuo account insegnante",
@@ -4084,7 +4088,8 @@
         "noPrice": "Il piano Insegnante non è in vendita in questo momento. Riprova più tardi.",
         "paying": "Un pagamento è già in arrivo. Aspetta un minuto.",
         "minSeats": "Scrivi un numero intero di insegnanti da 1 a {max}.",
-        "noCustomer": "Non c'è ancora una fatturazione da gestire."
+        "noCustomer": "Non c'è ancora una fatturazione da gestire.",
+        "askAdmin": "La tua scuola ha posti del piano Insegnante: chiedine uno all'admin della scuola."
       },
       "thanks": {
         "wait": "⏳ Attivazione del tuo piano Insegnante…",
@@ -4110,6 +4115,17 @@
         "seatNote": "Gli amministratori di {school} gestiscono questo piano.",
         "seePlans": "Vedi i piani"
       }
+    },
+    "auto": {
+      "started": "La tua prova di {days} giorni del piano Insegnante è iniziata. Non serve una carta.",
+      "covered": "La tua scuola copre il tuo piano Insegnante.",
+      "askAdmin": "La tua scuola ha posti del piano Insegnante: chiedine uno all'admin della scuola.",
+      "emailLabel": "Email per i promemoria della prova",
+      "emailHint": "Facoltativa. Ti avvisiamo qui prima che la prova finisca.",
+      "emailSave": "Salva la mia email",
+      "emailSaved": "Salvata. I promemoria della prova arriveranno a questa email.",
+      "doneHeading": "È tutto pronto",
+      "seatPaid": "Ora ti copre la tua scuola. Puoi disdire il tuo piano."
     }
   },
   "seo": {
@@ -7072,7 +7088,9 @@
       "sentBack": "«{title}» ha bisogno di qualche modifica prima che tutti possano giocarci.",
       "trialEnding": "La prova gratuita del tuo piano Insegnante finisce tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}}. Per tenerlo, aggiungi una carta qui: {href} Senza, il piano si ferma semplicemente e le tue classi restano.",
       "trialEnded": "La prova gratuita del tuo piano Insegnante è finita. Le tue classi, i tuoi studenti e i loro giochi sono ancora tutti qui. Puoi riprendere il piano qui: {href}",
-      "trialConverted": "Grazie! Il tuo piano Insegnante è attivo per l'anno."
+      "trialConverted": "Grazie! Il tuo piano Insegnante è attivo per l'anno.",
+      "trialReplaced": "Ora la tua scuola copre il tuo piano Insegnante, quindi la tua prova gratuita è stata chiusa.",
+      "seatCoversPaid": "Ora la tua scuola copre il tuo piano Insegnante. Puoi disdire il tuo piano in Gestisci fatturazione: {href}"
     },
     "link": {
       "new": "{count, plural, one {# nuovo messaggio dal team Oomba} other {# nuovi messaggi dal team Oomba}}",

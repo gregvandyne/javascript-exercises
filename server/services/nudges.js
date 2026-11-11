@@ -3,6 +3,8 @@
 //   onTrialStarted({ userId, trialEnd, trialStart?, email? })  a trial began (email: the checkout's, if we have one)
 //   onTrialConverted(userId)                                   it will be paid (a card was added, or it became active)
 //   onTrialEnded(userId)                                       it ended without converting
+//   onTrialReplaced(userId)                                    it was closed because a school seat covers them now
+//                                                              (no "trial ended" email, not converted)
 // Each is idempotent (Stripe redelivers webhooks) and never throws into the caller.
 //
 // The sequence, from the trial's start (one row per email in trial_nudges, with due_at and latest_at):
@@ -103,6 +105,17 @@ export const onTrialEnded = safe('ended', (userId) => {
   q.run("UPDATE trial_nudges SET status='canceled', reason='trial_ended' WHERE user_id=? AND status IN ('pending','failed')", userId);
   addRow(userId, 'ended', now(), ENDED_LATE);
   kick();
+  return { ok: true };
+});
+
+/** The trial was closed because a school admin gave the teacher a seat (services/teacher-plan.js seatTakesOver): the
+ *  rest of the sequence stops, with no "Your trial has ended" and no thank-you (it isn't converted). */
+export const onTrialReplaced = safe('replaced', (userId) => {
+  const t = trialOf(userId);
+  if (!t) return { ok: false, reason: 'no_trial' };
+  if (t.state === 'replaced') return { ok: true, reason: 'already' };
+  q.run("UPDATE trial_emails SET state='replaced', ended_at=? WHERE user_id=?", now(), userId);
+  q.run("UPDATE trial_nudges SET status='canceled', reason='seat' WHERE user_id=? AND status IN ('pending','failed')", userId);
   return { ok: true };
 });
 

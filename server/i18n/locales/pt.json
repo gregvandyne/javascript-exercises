@@ -2972,11 +2972,14 @@
           "waiting": "(esperando uma vaga livre)",
           "give": "Dar uma vaga",
           "take": "Retirar",
-          "full": "Todas as vagas foram dadas. Adicione vagas acima para dar mais."
+          "full": "Todas as vagas foram dadas. Adicione vagas acima para dar mais.",
+          "paid": "(já paga o próprio plano Professor)",
+          "paidConfirm": "Este professor já paga o próprio plano Professor. Dar uma vaga mesmo assim? Depois ele pode cancelar o próprio plano."
         },
         "seat": {
           "given": "Vaga dada.",
-          "taken": "Vaga retirada."
+          "taken": "Vaga retirada.",
+          "trialClosed": "Vaga dada. O teste grátis foi encerrado, sem nenhuma cobrança."
         },
         "seatsDone": {
           "raised": "Pronto: {count, plural, one {# professor} other {# professores}}.",
@@ -2991,7 +2994,8 @@
           "noSeat": "Esse professor não tem vaga.",
           "minSeats": "Digite um número inteiro de 1 a {max}.",
           "entitled": "Sua escola já tem um plano. Mude o número de professores em vez disso.",
-          "trialUsed": "Sua escola já teve o teste grátis."
+          "trialUsed": "Sua escola já teve o teste grátis.",
+          "ownPaid": "Este professor já paga o próprio plano Professor. Confirme antes de dar uma vaga."
         }
       }
     },
@@ -4055,7 +4059,7 @@
       "start": {
         "h": "Comece seu teste grátis de {days} dias",
         "button": "Começar meu teste grátis",
-        "note": "Você confirma na página da Stripe. O teste não precisa de cartão."
+        "noteDirect": "Começa na hora. O teste não precisa de cartão."
       },
       "signup": {
         "h": "Crie sua conta de professor",
@@ -4085,7 +4089,8 @@
         "noPrice": "O plano Professor não está à venda agora. Tente de novo mais tarde.",
         "paying": "Já tem um pagamento a caminho. Espere um minuto.",
         "minSeats": "Digite um número inteiro de professores de 1 a {max}.",
-        "noCustomer": "Ainda não há cobrança para gerenciar."
+        "noCustomer": "Ainda não há cobrança para gerenciar.",
+        "askAdmin": "Sua escola tem vagas do plano Professor: peça uma ao admin da escola."
       },
       "thanks": {
         "wait": "⏳ Ativando seu plano Professor…",
@@ -4111,6 +4116,17 @@
         "seatNote": "Os administradores de {school} cuidam deste plano.",
         "seePlans": "Ver os planos"
       }
+    },
+    "auto": {
+      "started": "Seu teste de {days} dias do plano Professor começou. Não precisa de cartão.",
+      "covered": "Sua escola cobre seu plano Professor.",
+      "askAdmin": "Sua escola tem vagas do plano Professor: peça uma ao admin da escola.",
+      "emailLabel": "E-mail para lembretes do teste",
+      "emailHint": "Opcional. Avisamos você aqui antes de o teste terminar.",
+      "emailSave": "Salvar meu e-mail",
+      "emailSaved": "Salvo. Os lembretes do teste vão para este e-mail.",
+      "doneHeading": "Tudo pronto",
+      "seatPaid": "Agora sua escola cobre você. Você pode cancelar seu próprio plano."
     }
   },
   "seo": {
@@ -7073,7 +7089,9 @@
       "sentBack": "“{title}” precisa de algumas mudanças antes que todo mundo possa jogar.",
       "trialEnding": "O teste grátis do seu plano Professor termina em {days, plural, =0 {menos de um dia} one {# dia} other {# dias}}. Para manter o plano, adicione um cartão aqui: {href} Sem cartão, o plano simplesmente para e suas turmas continuam.",
       "trialEnded": "O teste grátis do seu plano Professor terminou. Suas turmas, seus alunos e os jogos deles continuam aqui. Você pode assinar o plano de novo aqui: {href}",
-      "trialConverted": "Obrigado! Seu plano Professor está ativo por um ano."
+      "trialConverted": "Obrigado! Seu plano Professor está ativo por um ano.",
+      "trialReplaced": "Agora sua escola cobre seu plano Professor, então seu teste grátis foi encerrado.",
+      "seatCoversPaid": "Agora sua escola cobre seu plano Professor. Você pode cancelar seu próprio plano em Gerenciar cobrança: {href}"
     },
     "link": {
       "new": "{count, plural, one {# mensagem nova da equipe Oomba} other {# mensagens novas da equipe Oomba}}",

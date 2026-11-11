@@ -48,8 +48,8 @@ async function trialTeacher() {
   const r = await fetch(`${base}/api/trial/start`, { method: 'POST', headers: { cookie: signIn(auth.getUser(t.id)), 'content-type': 'application/json' }, body: JSON.stringify({ email, trial: '1' }), redirect: 'manual' });
   const body = await r.text();
   assert.equal(r.status, 200, body);
-  const go = await fetch(JSON.parse(body).redirect, { redirect: 'manual' });
-  assert.equal(go.status, 302);
+  // "Start my free trial" starts it through Stripe's API (no Checkout page) and syncs it at once.
+  assert.equal(JSON.parse(body).redirect, '/me/settings?plan=welcome#teacher-plan');
   const sub = TP.teacherPlan(t.id).subscription;
   return { teacher: auth.getUser(t.id), email, subId: sub.stripe_subscription_id };
 }
