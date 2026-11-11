@@ -7572,6 +7572,7 @@
     }
   },
   "standards": {
+    "more": "+{count} mais",
     "fw": {
       "csta": "Computação (CSTA)",
       "math": "Common Core Matemática",

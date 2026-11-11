@@ -573,7 +573,7 @@ router.get('/learn', (req, res) => {
     const l = liveGameOf(g);
     const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">📡 ${t('learn.tab.host')}</a>`
       : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">📌 ${t('learn.tab.assign')}</a>`;
-    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c))}<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
+    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}<a class="lcard-try" href="/play/${l ? l.solo : g.slug}">▶ ${t('learn.tab.try')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.

@@ -7570,6 +7570,7 @@
     }
   },
   "standards": {
+    "more": "+{count} más",
     "fw": {
       "csta": "Informática (CSTA)",
       "math": "Common Core Matemáticas",
