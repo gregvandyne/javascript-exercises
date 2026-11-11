@@ -1060,8 +1060,8 @@
       },
       "schoolSetup": {
         "h": "Pedidos de configuração de escola",
-        "li1": "<b>O que guardamos quando um professor ou diretor pede para configurarmos uma escola</b> (o formulário da nossa página para professores): o nome da escola, a função da pessoa, o e-mail de trabalho, o número aproximado de alunos, o país, o idioma da página e quando o pedido foi enviado. Se a pessoa tiver entrado em uma conta de adulto ou da equipe da escola, também guardamos qual conta enviou o pedido. A conta de um convidado nunca é guardada com um pedido.",
-        "li2": "<b>Para que usamos:</b> só para configurar a escola e responder ao pedido. Não enviamos newsletters e não compartilhamos esses dados com a Stripe nem com mais ninguém.",
+        "li1": "<b>O que guardamos quando um professor ou diretor pede para configurarmos uma escola</b> (o formulário da nossa página para professores): o nome da escola, a função da pessoa, o e-mail de trabalho, o número aproximado de alunos, o país, o idioma da página e quando o pedido foi enviado. Se a pessoa tiver entrado em uma conta de adulto ou da equipe da escola, também guardamos qual conta enviou o pedido. A conta de um convidado nunca é guardada com um pedido. Se a pessoa criou a conta de professor pelo formulário, também guardamos o e-mail de trabalho com essa conta.",
+        "li2": "<b>Para que usamos:</b> para configurar a escola, responder à solicitação, enviar o guia de boas-vindas da escola e enviar um link de redefinição de senha se o titular da conta pedir. Não enviamos newsletters e não compartilhamos com a Stripe nem com mais ninguém.",
         "li3": "<b>Quem vê:</b> só a nossa equipe.",
         "li4": "<b>Por quanto tempo:</b> apagamos <b>1 ano</b> depois de encerrarmos o pedido (ou 1 ano depois do envio, se ele nunca for encerrado)."
       },

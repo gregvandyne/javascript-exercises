@@ -1060,8 +1060,8 @@
       },
       "schoolSetup": {
         "h": "Aanvragen om een school op te zetten",
-        "li1": "<b>Wat we bewaren als een leerkracht of schoolleider ons vraagt een school op te zetten</b> (het formulier op onze pagina voor leerkrachten): de naam van de school, hun functie, hun werk-e-mailadres, ongeveer hoeveel leerlingen, het land, de taal van de pagina en wanneer het is verstuurd. Als ze waren ingelogd met een ouderaccount of een account van schoolpersoneel, bewaren we ook welk account het heeft verstuurd. Het account van een gast wordt nooit bij een aanvraag bewaard.",
-        "li2": "<b>Waarvoor we het gebruiken:</b> alleen om de school op te zetten en de aanvraag te beantwoorden. We sturen geen nieuwsbrieven en we delen het niet met Stripe of met iemand anders.",
+        "li1": "<b>Wat we bewaren als een leerkracht of schoolleider ons vraagt een school op te zetten</b> (het formulier op onze pagina voor leerkrachten): de naam van de school, hun functie, hun werk-e-mailadres, ongeveer hoeveel leerlingen, het land, de taal van de pagina en wanneer het is verstuurd. Als ze waren ingelogd met een ouderaccount of een account van schoolpersoneel, bewaren we ook welk account het heeft verstuurd. Het account van een gast wordt nooit bij een aanvraag bewaard. Als het leraarsaccount met het formulier is gemaakt, bewaren we het werk-e-mailadres ook bij dat account.",
+        "li2": "<b>Waarvoor we het gebruiken:</b> om de school in te richten, de aanvraag te beantwoorden, de welkomsthandleiding van de school te sturen en een link te sturen om het wachtwoord te herstellen als de eigenaar van het account daarom vraagt. We sturen geen nieuwsbrieven en delen het niet met Stripe of met iemand anders.",
         "li3": "<b>Wie het ziet:</b> alleen ons team.",
         "li4": "<b>Hoe lang:</b> verwijderd <b>1 jaar</b> nadat we de aanvraag hebben afgesloten (of 1 jaar nadat die is verstuurd, als hij nooit wordt afgesloten)."
       },

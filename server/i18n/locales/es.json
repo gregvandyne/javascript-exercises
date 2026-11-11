@@ -1059,8 +1059,8 @@
       },
       "schoolSetup": {
         "h": "Solicitudes para dar de alta una escuela",
-        "li1": "<b>Qué guardamos cuando un docente o un directivo nos pide dar de alta una escuela</b> (el formulario de nuestra página para docentes): el nombre de la escuela, su cargo, su correo de trabajo, más o menos cuántos estudiantes hay, el país, el idioma de la página y cuándo se envió. Si había iniciado sesión con una cuenta de adulto o de personal escolar, también guardamos qué cuenta la envió. Nunca se guarda la cuenta de un invitado con una solicitud.",
-        "li2": "<b>Para qué lo usamos:</b> solo para dar de alta la escuela y responder a la solicitud. No enviamos boletines, y no lo compartimos con Stripe ni con nadie más.",
+        "li1": "<b>Qué guardamos cuando un docente o un directivo nos pide dar de alta una escuela</b> (el formulario de nuestra página para docentes): el nombre de la escuela, su cargo, su correo de trabajo, más o menos cuántos estudiantes hay, el país, el idioma de la página y cuándo se envió. Si había iniciado sesión con una cuenta de adulto o de personal escolar, también guardamos qué cuenta la envió. Nunca se guarda la cuenta de un invitado con una solicitud. Si crearon su cuenta de docente con el formulario, también guardamos el correo de trabajo con esa cuenta.",
+        "li2": "<b>Para qué lo usamos:</b> para dar de alta la escuela, responder a la solicitud, enviar la guía de bienvenida de la escuela y enviar un enlace para restablecer la contraseña si quien es titular de la cuenta lo pide. No enviamos boletines, y no lo compartimos con Stripe ni con nadie más.",
         "li3": "<b>Quién lo ve:</b> solo nuestro equipo.",
         "li4": "<b>Por cuánto tiempo:</b> se borra <b>1 año</b> después de que cerramos la solicitud (o 1 año después de que se envió, si nunca se cierra)."
       },

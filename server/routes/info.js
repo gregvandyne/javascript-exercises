@@ -17,7 +17,7 @@ export const router = Router();
 const indexed = (path, key) => ({ index: true, path, langs: langsWithKey(key) });
 
 /** The legal pages' "Last updated" date (a calendar day, UTC). Change it with every change to their text. */
-export const LEGAL_UPDATED = '2026-11-09';
+export const LEGAL_UPDATED = '2026-11-11';
 /** Where the legal pages send people: CONTACT_EMAIL, else the owner's address. */
 const legalEmail = () => config.contactEmail || 'greg@oomba.ai';
 // The speech-to-text company named in the privacy text (STT_PROVIDER): a company name, never translated.
