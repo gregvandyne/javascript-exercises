@@ -78,10 +78,10 @@ test('"Your name" on the Me page: a teacher changes the name colleagues and stud
   await expect(p.locator('#yu-name')).toHaveValue('DemoTeacher');
   try {
     await p.fill('#yn-name', 'Roxana2');
-    await box.locator('button[type=submit]').click();
+    await p.locator('form[data-api="/api/me/name"] button[type=submit]').click();
     await expect(p.locator('#yn-name-err')).toContainText('digits');
     await p.fill('#yn-name', 'Ștefana Gherghinis');
-    await Promise.all([p.waitForLoadState('load'), box.locator('button[type=submit]').click()]);
+    await Promise.all([p.waitForLoadState('load'), p.locator('form[data-api="/api/me/name"] button[type=submit]').click()]);
     await expect(p.locator('#yn-name')).toHaveValue('Ștefana Gherghinis');
     await expect(p.locator('h1')).toContainText('Ștefana Gherghinis');
     expect(await sideways(p)).toBeLessThanOrEqual(0);
