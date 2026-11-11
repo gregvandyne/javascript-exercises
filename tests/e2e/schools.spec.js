@@ -24,7 +24,7 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
 
   const tctx = await browser.newContext(); const teacher = await tctx.newPage();
   await login(teacher, tUser, tPass);
-  await teacher.goto('/teach');
+  await teacher.goto('/teach?all=1');
   await teacher.fill('#nc-n', '4B Math'); await teacher.fill('#nc-g', '4');
   await Promise.all([teacher.waitForURL(/\/class\//), teacher.click('form[data-api="/api/classes"] button[type=submit]')]);
   const classUrl = teacher.url();
@@ -64,7 +64,7 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   // The teacher's menu (docs/decisions.md "Play and Learn"): Classroom · Learn · Play · Live · Me; no School tab for a
   // plain teacher, no Friends or Build tab, and "Make a game" on My classes instead.
   await teacher.setViewportSize({ width: 360, height: 760 });
-  await teacher.goto('/teach');
+  await teacher.goto('/teach?all=1');
   expect(await teacher.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/learn', '/play', '/live', '/me']);
   await expect(teacher.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
   await expect(teacher.locator('main a[href="/build"]')).toContainText('Make a game');
@@ -94,7 +94,7 @@ test('a school admin\'s School tab opens their school (People); the School tab i
   await Promise.all([head.waitForURL(/\/build$/), head.locator('.pagehead a[href="/build"]').click()]);
   // Desktop: School · Classroom · Learn · Play · Live, and the avatar button is Me.
   await head.setViewportSize({ width: 1280, height: 800 });
-  await head.goto('/teach');
+  await head.goto('/teach?all=1');
   expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/school', '/teach', '/learn', '/play', '/live']);
   await expect(head.locator('.topbar .me-btn')).toHaveAttribute('href', '/me');
   await hctx.close(); await admin.context().close();

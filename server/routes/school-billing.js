@@ -13,8 +13,8 @@
 //   /api/billing/school/:id/status          the return page's poll after Checkout
 //   /api/schools/:id/ask-plan               "Ask my admin": a teacher (staff, not admin) asks for a School plan
 //   /api/schools/:id/ask-plan/:aid/close    a school admin dismisses one ask
-// Also the plan card at the top of a school admin's My classes (teachPlanCard) and a teacher's "Ask my admin" panel
-// (askPanel), both drawn on /teach (routes/schools.js).
+// Also a teacher's "Ask my admin" panel (askPanel), drawn on the Me page (routes/auth.js); who asked is listed on the
+// Billing tab and counted on the admin's My school tile.
 import { Router } from 'express';
 import { html, raw, esc } from '../views/html.js';
 import { isGrownup } from '../auth.js';
@@ -145,24 +145,7 @@ function asksList(req, s, asks) {
     <ul class="plain archlist">${asks.map(a => html`<li><span><bdi>${a.name}</bdi> <span class="small muted">${f.date(a.created_at)}</span></span>
       <form data-api="/api/schools/${s.id}/ask-plan/${a.id}/close" data-reload><button class="btn btn-sm" type="submit"${en('school.asks.dismiss')}>${t('school.asks.dismiss')}</button></form></li>`)}</ul></div>`;
 }
-/** A school's plan on a school admin's My classes: only while the Billing tab is there and selling to them (the same
- *  rule as the tab: families on, and a live key or a billing tester). No amounts or prices here: those stay on /plans,
- *  /plans/schools and the Billing tab. Plus the teachers who asked for a plan. */
-export function teachPlanCard(req, s) {
-  const t = req.t, u = req.user;
-  if (!billingTabOn(req, s) || !C.mayBill(u)) return '';
-  const plan = B.ownerPlan('school', s.id);
-  const tab = `/school/${encodeURIComponent(s.slug)}?tab=billing`;
-  const go = key => html`<a href="${tab}">${t(key)} <span class="flip" aria-hidden="true">→</span></a>`;
-  let state;
-  if (plan.entitled) state = html`<span class="planchip paid">${t('school.teach.plan.on')}</span> ${go('school.teach.plan.billing')}`;
-  else if ((C.unsettledPlanOf('school', s.id) || {}).payment_pending) state = html`<span aria-hidden="true">⏳</span> ${t('school.teach.plan.settling')}`;
-  else state = html`${t('school.teach.plan.none')} · <b>${go('school.teach.plan.setUp')}</b>`;
-  const out = html`<section class="panel teachplan" aria-labelledby="tp-${s.id}"><h2 id="tp-${s.id}">${t('school.teach.plan.heading', { school: s.name })}</h2>
-    <p>${state}</p>${asksList(req, s, PA.openAsks(s.id))}</section>`;
-  return t.own('school.teach.plan.heading') ? out : html`<div lang="en" dir="ltr" style="display:contents">${out}</div>`;
-}
-/** "Ask my admin" on a teacher's My classes, for a school where they are staff but not admin: while families are on,
+/** "Ask my admin" on a teacher's Me page (the account section, beside the Teacher plan), for a school where they are staff but not admin: while families are on,
  *  the school isn't archived and has an admin. No prices or plan details. */
 export function askPanel(req, s) {
   const t = req.t, f = req.fmt, u = req.user;

@@ -107,8 +107,8 @@ test('staff and the platform admin need 12 characters; own accounts 6', async ()
   }
   const own = auth.createUser({ username: 'ShortOk', password: 'blue-otter-42' });
   assert.equal((await change(cookieFor(own.id), 'blue-otter-42', 'tulip9')).status, 200, '6 characters for an own account');
-  // the Me page says which rule applies
-  const page = async u => (await (await get('/me', cookieFor(u.id))).text());
+  // Settings (/me/settings) says which rule applies
+  const page = async u => (await (await get('/me/settings', cookieFor(u.id))).text());
   assert.match(await page(ownTeacher), /At least 12 characters, because staff accounts/);
   assert.match(await page(own), /At least 6 characters/);
 });
@@ -121,7 +121,7 @@ test('staff who sign in with a short password are asked for a longer one until t
   assert.equal(auth.getUser(shorty.id).password_short, 1);
   for (const path of ['/me', '/teach', '/play', '/learn']) {
     const h = await (await get(path, c)).text();
-    assert.match(h, /Your password is shorter than 12 characters\. Staff accounts can see children's work, so please <a href="\/me#password">choose a longer one<\/a>\./, path);
+    assert.match(h, /Your password is shorter than 12 characters\. Staff accounts can see children's work, so please <a href="\/me\/settings#password">choose a longer one<\/a>\./, path);
   }
   // a long enough password, or an own account: no notice
   const longer = auth.createUser({ username: 'LongStaff', password: 'tulip-rocket-42' });
@@ -142,11 +142,11 @@ test('school students are told their teacher looks after the password; guests se
   const r = await change(c, kidCard.password, 'my-own-pass-11');
   assert.equal(r.status, 403); assert.equal((await r.json()).error, 'Your teacher looks after your password — ask them if you forget it.');
   assert.ok(auth.verifyPassword(auth.getUser(kid.id), kidCard.password), 'unchanged');
-  const html = await (await get('/me', c)).text();
+  const html = await (await get('/me/settings', c)).text();
   assert.match(html, /Your teacher looks after your password/); assert.doesNotMatch(html, /data-api="\/api\/me\/password"/);
   const g = auth.createGuest(); const gc = cookieFor(g.id);
   assert.equal((await change(gc, 'x', 'green-panda-77')).status, 403);
-  const gh = await (await get('/me', gc)).text();
+  const gh = await (await get('/me/settings', gc)).text();
   assert.doesNotMatch(gh, /id="password"/); assert.doesNotMatch(gh, /logout-everywhere/);
 });
 

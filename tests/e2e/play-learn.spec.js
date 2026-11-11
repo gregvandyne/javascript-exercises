@@ -83,7 +83,8 @@ test('the tab bars: each role\'s first tab, five tabs, Play and Learn shared; \'
   expect(st.url).toBe('/classes'); expect(off(st.tabs)).toEqual(['/classes', '/play', '/learn', '/build', '/me']); expect(st.cur).toEqual(['/classes']);
   const teacher = await stateFor(browser, 'DemoTeacher');
   const te = await tabs(teacher, '/');
-  expect(te.url).toBe('/teach'); expect(off(te.tabs)).toEqual(['/teach', '/learn', '/play', '/live', '/me']); expect(te.cur).toEqual(['/teach']);
+  // '/' is the Classroom tab; DemoTeacher has one class, which it opens directly.
+  expect(te.url).toMatch(/^\/(teach|class\/[^/]+)$/); expect(off(te.tabs)).toEqual(['/teach', '/learn', '/play', '/live', '/me']); expect(te.cur).toEqual(['/teach']);
   const tl = await tabs(teacher, '/learn'); expect(tl.cur).toEqual(['/learn']);
   const tp = await tabs(teacher, '/play'); expect(tp.cur).toEqual(['/play']);
 });

@@ -591,7 +591,7 @@ test('i. the whole path: a teacher who signs up at /trial and finishes the check
   // "Start my free trial": the trial starts at once through Stripe's API (no Checkout page) and is synced.
   const start = await req(u, '/api/trial/start', { method: 'POST', body: { email: 'path.teach@school.example', trial: '1' } });
   assert.equal(start.status, 200, start.text);
-  assert.equal(start.json.redirect, '/teach?plan=welcome#teacher-plan');
+  assert.equal(start.json.redirect, '/me/settings?plan=welcome#teacher-plan');
   assert.deepEqual(E.addressOf(u.id), { email: 'path.teach@school.example', source: 'checkout' });
   await tick(); sent.length = 0;
   assert.deepEqual((await req(null, '/api/auth/forgot', { method: 'POST', body: { username: 'PathTeach' } })).json, { ok: true, redirect: '/forgot?sent=1' });
@@ -640,7 +640,7 @@ test('i. while email sending is off: no form and no promise, the contact address
   assert.doesNotMatch(login.text, /id="forgot-staff"/); assert.ok(login.text.includes(en('auth.page.forgotSchool').replace(/'/g, '&#39;')), 'the existing contact route stays');
   assert.doesNotMatch((await req(null, '/grown-ups/login')).text, /id="forgot-grownup"/);
   // Signed in, /forgot is the account's own password page.
-  assert.equal((await req(ana, '/forgot')).location, '/me#password');
+  assert.equal((await req(ana, '/forgot')).location, '/me/settings#password');
 });
 test('i. the words of the reset are in all 13 languages, with their placeholders', () => {
   const keys = Object.keys(JSON.parse(fs.readFileSync('scripts/quick-wins-strings/words.json', 'utf8')).en);

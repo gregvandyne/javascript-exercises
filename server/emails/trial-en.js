@@ -76,7 +76,7 @@ export default {
         { p: 'Your free trial ends on **{trialEndDate}**.' },
         { p: "To keep everything (your classes, the games you've made, your students' progress) add a card and stay on the Teacher plan. It's one yearly price for unlimited students, with no per-student fees." },
         { p: "If your school would rather pay by invoice or purchase order, just reply and I'll set it up." },
-        { cta: { label: 'Keep my classes →', path: '/teach#teacher-plan' } },
+        { cta: { label: 'Keep my classes →', path: '/me/settings#teacher-plan' } },
         { p: "Not the right fit? No problem. Nothing is charged, and I'd love to hear what was missing (just hit reply)." },
       ],
     },

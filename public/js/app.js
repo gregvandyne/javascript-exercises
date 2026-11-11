@@ -18,6 +18,11 @@ export function tappedJustNow(key = 'brb-retry-at', gap = 60e3) {
   if (ua) return ua.isActive;
   try { const last = +sessionStorage.getItem(key) || 0; if (Date.now() - last < gap) return false; sessionStorage.setItem(key, String(Date.now())); return true; } catch { return false; }
 }
+// Settings moved to /me/settings (the Teacher plan card from My classes, then Language, Appearance, Password and Sign out
+// from the Me page): an old link (/me#language, /teach#teacher-plan in a trial email sent before...) lands on a page
+// without that section, so it goes on to it.
+const MOVED = ['teacher-plan', 'language', 'appearance', 'password', 'signout'];
+if (FIRST && MOVED.includes(location.hash.slice(1)) && location.pathname !== '/me/settings' && !document.getElementById(location.hash.slice(1)) && !location.pathname.startsWith('/family')) location.replace(`/me/settings${location.hash}`);
 export function pageData(id = 'page-data') { const el = document.getElementById(id); if (!el) return {}; try { return JSON.parse(el.textContent); } catch { return {}; } }
 
 /** fetch JSON with same-origin credentials. Throws Error(message) with .status on failure, and .signedOut when the

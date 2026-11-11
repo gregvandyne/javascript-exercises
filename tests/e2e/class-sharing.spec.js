@@ -19,7 +19,7 @@ async function cards(page) {
   return out;
 }
 async function newClass(teacher, name) {
-  await teacher.goto('/teach');
+  await teacher.goto('/teach?all=1');
   const drop = teacher.locator('details.libdrop');
   if (!(await drop.evaluate(d => d.open))) await drop.locator('summary').click();   // open only while there are no classes yet
   await teacher.fill('#nc-n', name);

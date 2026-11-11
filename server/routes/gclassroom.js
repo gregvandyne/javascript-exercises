@@ -5,9 +5,11 @@
 // it is off (services/gclassroom.js enabled()), and the pieces other pages show render ''. Teacher tools only: every
 // route checks the class (S.canManageClass) and that the person is school staff. See docs/google-classroom.md.
 //
-// Connect asks Google for the two read scopes only; "Allow Oomba Academy to post to Classroom" asks again for the optional
-// write scopes (services/gclassroom-client.js). Each write feature shows only once its scope was granted: until then
-// its controls are a short note with that button.
+// Connect asks Google for everything Oomba can use in one consent (the two read scopes and the four write scopes) while
+// GOOGLE_CLASSROOM_SCOPES is 'full' (the default), or for the read scopes only while it is 'read'. "Allow Oomba Academy
+// to post to Classroom" asks again for the optional write scopes (services/gclassroom-client.js): with 'read' it is the
+// second step, with 'full' only the way back for a teacher who unticked some boxes on Google's screen. Each write
+// feature shows only once its scope was granted: until then its controls are a short note with that button.
 import { Router } from 'express';
 import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
@@ -73,7 +75,10 @@ const pagePath = classId => `/class/${classId}/google-classroom`;
 const postOpts = req => ({ origin: origin(req), description: req.t('gclassroom.post.description'), topicName: req.t('gclassroom.topic.default') });
 
 // ================================================================ connect / disconnect
-// write=1: "Allow Oomba Academy to post to Classroom" (the optional scopes too); otherwise Connect (the read scopes).
+/** Connect asks for the write scopes too (GOOGLE_CLASSROOM_SCOPES=full, the default). */
+export const connectAsksAll = () => config.googleClassroomScopes !== 'read';
+// write=1: "Allow Oomba Academy to post to Classroom" (the optional scopes too); otherwise Connect (the read scopes, and
+// the write ones too with GOOGLE_CLASSROOM_SCOPES=full).
 router.post('/api/google-classroom/connect', on, auth.requireAccount, (req, res) => {
   const u = req.user;
   if (!GC.mayConnect(u)) return res.status(403).json({ error: errText(req.t, 'staffOnly'), code: 'staffOnly' });
@@ -82,7 +87,9 @@ router.post('/api/google-classroom/connect', on, auth.requireAccount, (req, res)
   const c = S.getClass(String(b(req).back || ''));
   const back = c && S.canManageClass(u, c) ? c.id : '';
   const write = b(req).write === '1' || b(req).write === true ? 1 : 0;
-  const tk = auth.signToken({ p: 'gcl', u: u.id, sh: sha16(req.sessionId), b: back, w: write }, 300);
+  // a: a Connect that asks for the write scopes too (not the "Allow" step).
+  const all = !write && connectAsksAll() ? 1 : 0;
+  const tk = auth.signToken({ p: 'gcl', u: u.id, sh: sha16(req.sessionId), b: back, w: write, a: all }, 300);
   res.json({ ok: true, redirect: `/auth/google/classroom/start?t=${encodeURIComponent(tk)}` });
 });
 router.get('/auth/google/classroom/start', on, auth.requireAccount, (req, res) => {
@@ -93,7 +100,7 @@ router.get('/auth/google/classroom/start', on, auth.requireAccount, (req, res) =
   writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: 'classroom', u: req.user.id, b: tk.b || '', w: tk.w ? 1 : 0 });
   const url = new URL(endpoints().authorize);
   const ident = G.identityOf(req.user.id);
-  const scopes = ['openid', 'email', ...REQUIRED_SCOPES, ...(tk.w ? Object.values(OPTIONAL_SCOPES) : [])];
+  const scopes = ['openid', 'email', ...REQUIRED_SCOPES, ...(tk.w || tk.a ? Object.values(OPTIONAL_SCOPES) : [])];
   const p = { client_id: config.googleClientId, redirect_uri: redirect, response_type: 'code', scope: scopes.join(' '),
     state: f.state, nonce: f.nonce, code_challenge: f.challenge, code_challenge_method: 'S256',
     // Incremental authorization: Google adds these scopes to what the person already granted; offline + consent so a
@@ -121,6 +128,8 @@ router.get('/auth/google/classroom/callback', on, async (req, res) => {
     const claims = await verifyIdToken(tok.idToken, { nonce: flow.n });
     const r = GC.saveConnection(req.user, { sub: claims.sub, email: claims.email, scopes: tok.scopes, refreshToken: tok.refreshToken });
     if (!r.ok) return res.redirect(303, backTo(flow, `gcerr=${r.code}`));
+    // The "Allow" step (write=1 from the page) says what it added. A Connect that asked for everything just says
+    // connected: any box left unticked shows on the page as "Some of these are off", with the Allow button.
     if (flow.w) return res.redirect(303, backTo(flow, GC.missingOptional(req.user.id).length === Object.keys(OPTIONAL_SCOPES).length ? 'gcerr=noneAllowed' : 'gc=allowed'));
     return res.redirect(303, backTo(flow, 'gc=connected'));
   } catch (e) {
@@ -271,8 +280,9 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
       // This class's automatic grades go with this connection: say they're paused until it is connected again.
       : state === 'reconnect' && lk && lk.auto_grades && lk.auto_by === u.id ? html`<p class="notice warn">⏸️ ${t('gclassroom.auto.paused.reconnect')}</p>${connectForm(t('gclassroom.auto.reconnect'))}`
       : state === 'reconnect' ? html`<p class="notice warn">${t('gclassroom.errors.reconnect')}</p>${connectForm(t('gclassroom.connect.reconnect'))}`
-      : html`<p class="muted">${t('gclassroom.connect.text')}</p><ul class="gc-what small">${['courses', 'roster'].map(k => html`<li>${t(`gclassroom.connect.what.${k}`)}</li>`)}</ul>
-          <p class="small muted">${t('gclassroom.connect.later')}</p>${connectForm(t('gclassroom.connect.button'))}
+      // One consent for everything (GOOGLE_CLASSROOM_SCOPES=full): the list says all Connect allows. With 'read', posting comes later.
+      : html`<p class="muted">${t('gclassroom.connect.text')}</p><ul class="gc-what small">${(connectAsksAll() ? ['courses', 'roster', 'post', 'grades'] : ['courses', 'roster']).map(k => html`<li>${t(`gclassroom.connect.what.${k}`)}</li>`)}</ul>
+          ${connectAsksAll() ? '' : html`<p class="small muted">${t('gclassroom.connect.later')}</p>`}${connectForm(t('gclassroom.connect.button'))}
           <p class="small muted">${t('gclassroom.connect.privacy')}</p>`}</section>`;
 
   // 2. The linked course.

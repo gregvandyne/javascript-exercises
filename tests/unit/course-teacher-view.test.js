@@ -82,10 +82,10 @@ test('the gradebook page shows both course panels for the class\u2019s own teach
   assert.ok(r.text.includes('In progress'), 'Mia\u2019s in-progress status is labelled');
 });
 
-test('the Teach area has Cyber Defenders: /teach links it and the page renders the program (teacher-1)', async () => {
-  const teach = await get('/teach', ana);
-  assert.equal(teach.status, 200);
-  assert.ok(teach.text.includes('href="/teach/cyber-defenders"'), 'the Teach header carries the Cyber Defenders button');
+test('the Teach area has Cyber Defenders: Learn and the lesson library link it and the page renders the program (teacher-1)', async () => {
+  // My classes no longer lists courses ("My classes, simpler"): the lesson library's ready-made chips and Learn's course cards do (classroom-homes.test.js).
+  const lib = await get('/teach/lessons', ana);
+  assert.ok(lib.text.includes('href="/teach/cyber-defenders"'), 'the lesson library\'s ready-made chips');
   const r = await get('/teach/cyber-defenders', ana);
   assert.equal(r.status, 200);
   assert.ok(r.text.includes('Cyber Defenders'));

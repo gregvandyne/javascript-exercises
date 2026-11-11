@@ -16,7 +16,7 @@ test('teacher builds and assigns a lesson; a student works through it', async ({
 
   const tctx = await browser.newContext(); const t = await tctx.newPage();
   await login(t, tcard.user, tcard.pass);
-  await t.goto('/teach'); await t.fill('#nc-n', 'Space Class');
+  await t.goto('/teach?all=1'); await t.fill('#nc-n', 'Space Class');
   await Promise.all([t.waitForURL(/\/class\//), t.click('form[data-api="/api/classes"] button[type=submit]')]);
   const classUrl = t.url().replace(/\?.*$/, ''); // a new class opens on its Students tab; the Lessons tab is the class's own page
   await t.fill('#as-n', 'Sam Student');

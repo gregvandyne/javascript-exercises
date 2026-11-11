@@ -18,7 +18,7 @@ test.beforeAll(async ({ browser }) => {
   // The demo teacher's own class with long names, two units and a lesson (the demo class stays as other specs expect it).
   const tctx = await browser.newContext(); const t = await tctx.newPage();
   await login(t, 'DemoTeacher', DEMO);
-  const school = (await (await t.request.get('/teach')).text()).match(/name="schoolId" value="([^"]+)"/)[1];
+  const school = (await (await t.request.get('/teach?all=1')).text()).match(/name="schoolId" value="([^"]+)"/)[1];
   const made = await t.request.post('/api/classes', { data: { schoolId: school, name: uniq('Tidy '), grade: '4' } });
   cls = (await made.json()).redirect.match(/\/class\/([^?]+)/)[1];
   const suffix = uniq('').toLowerCase();
@@ -125,7 +125,7 @@ test('gradebook names wrap between words, never inside one; one lesson\'s progre
 
 test('school and teacher pages on phones: no sideways scroll, nothing touches, no hidden columns, 44 px targets', async ({ browser }) => {
   const T = [`/teach`, `/class/${cls}`, `/class/${cls}/progress`, lessonProgress, `/class/${cls}/standards`, `/class/${cls}?tab=games`, `/class/${cls}?tab=students`, `/class/${cls}?tab=settings`, '/teach/lessons', `/live?class=${cls}`];
-  const H = [`/school/${SLUG}?tab=classes`, `/school/${SLUG}?tab=people`, `/school/${SLUG}?tab=settings`, '/teach'];
+  const H = [`/school/${SLUG}?tab=classes`, `/school/${SLUG}?tab=people`, `/school/${SLUG}?tab=settings`, '/teach?all=1'];
   const problems = [];
   for (const v of PHONES) for (const [st, paths] of [[teacher, T], [head, H]]) {
     const ctx = await browser.newContext({ viewport: { width: v.width, height: v.height }, colorScheme: v.scheme, storageState: st }); const page = await ctx.newPage();

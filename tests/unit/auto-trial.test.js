@@ -145,16 +145,16 @@ test('the done screen says the trial started (no card), offers an optional email
   assert.match(page, /<label for="ob-temail">Email for trial reminders<\/label>/);
   assert.match(page, /data-api="\/api\/trial\/email"/);
   assert.doesNotMatch(page, /\$\d/, 'no prices outside /plans');
-  assert.match(page, /href="\/teach\?plan=started#teacher-plan" id="ob-done-go">Skip for now/);
-  // My classes says the same line.
-  const teach = decode((await call(x.who, '/teach?plan=started')).text);
+  assert.match(page, /href="\/teach" id="ob-done-go">Skip for now/);
+  // The Teacher plan card (Settings) says the same line after ?plan=started, and shows the trial.
+  const teach = decode((await call(x.who, '/me/settings?plan=started')).text);
   assert.match(teach, /Your 14-day Teacher plan trial has started\. No card needed\./);
   assert.match(teach, /Free trial until/);
   // The email: a bad one is refused; a good one is kept the way the trial Checkout keeps it.
   assert.equal((await call(x.who, '/api/trial/email', { method: 'POST', body: { email: 'nope' } })).json.field, 'email');
   const r = await call(x.who, '/api/trial/email', { method: 'POST', body: { email: 'Ms.Auto@School.example' } });
   assert.equal(r.status, 200, r.text);
-  assert.equal(r.json.redirect, '/teach?plan=started#teacher-plan');
+  assert.equal(r.json.redirect, '/teach');
   assert.deepEqual(E.addressOf(x.user.id), { email: 'ms.auto@school.example', source: 'checkout' });
   const cus = fake.st.customers.get(B.customerOf('teacher', x.user.id));
   assert.equal(cus.email, 'ms.auto@school.example', 'on the Stripe Customer (Stripe\'s reminder and receipts)');
@@ -248,7 +248,7 @@ test('no automatic trial: billing off, not open to the account, a kid, a guest, 
   assert.equal(B.customerOf('teacher', farm.teacher.id), null);
 });
 
-test('a free seat nobody holds: no personal trial; "ask your school admin for one" on the done screen, My classes and /trial', async () => {
+test('a free seat nobody holds: no personal trial; "ask your school admin for one" on the done screen, the Teacher plan card and /trial', async () => {
   // A teacher who joins a school with teacher seats (an admin's invite on the sign-up's school step).
   const x = school({ seats: 3 });
   const name = `AJoin${200 + ++n}`;
@@ -264,9 +264,9 @@ test('a free seat nobody holds: no personal trial; "ask your school admin for on
   const done = decode((await call(who, '/signup/teacher/done')).text);
   assert.match(done, /data-trial-line="askAdmin">Your school has Teacher plan seats: ask your school admin for one\./);
   assert.doesNotMatch(done, /ob-temail/);
-  assert.match(done, /href="\/teach" id="ob-done-go">Go to My classes/);
-  assert.match(decode((await call(who, '/teach')).text), /Your school has Teacher plan seats: ask your school admin for one\./);
-  assert.doesNotMatch(decode((await call(who, '/teach')).text), /href="\/trial">Try it free/);
+  assert.match(done, /href="\/teach" id="ob-done-go">Continue/);
+  assert.match(decode((await call(who, '/me/settings')).text), /Your school has Teacher plan seats: ask your school admin for one\./);
+  assert.doesNotMatch(decode((await call(who, '/me/settings')).text), /href="\/trial">Try it free/);
   // /trial: the same note, and only the paid start; "Start my free trial" is refused with it.
   const trial = decode((await call(who, '/trial')).text);
   assert.match(trial, /ask your school admin for one/); assert.match(trial, /name="trial" value="0"/); assert.doesNotMatch(trial, /name="trial" value="1"/);
@@ -323,7 +323,7 @@ test('a seat given to a teacher in their own trial: the trial is closed at once 
   assert.equal(q.get("SELECT COUNT(*) n FROM email_log WHERE user_id=? AND template='trial_ended'", x.teacher.id).n, 0);
   // The trial counts as used (one ever), and My classes shows the seat.
   assert.equal(TP.trialUsed({ userId: x.teacher.id }), true);
-  assert.match(decode((await call(x.who, '/teach')).text), new RegExp(`A seat from ${x.s.name}`));
+  assert.match(decode((await call(x.who, '/me/settings')).text), new RegExp(`A seat from ${x.s.name}`));
   // Stripe trouble while closing it: the seat is still given, the trial left as it was (nothing marked).
   const y = school();
   assert.equal((await call(y.who, '/api/trial/start', { method: 'POST', body: { email: 'seat.two@school.example', trial: '1' } })).status, 200);
@@ -357,8 +357,8 @@ test('a seat for a teacher who pays for their own plan: never cancelled; the adm
   assert.equal(fake.st.subscriptions.get(subId).status, 'active');
   assert.equal(TP.hasSeat(x.s.id, x.teacher.id), true);
   // The teacher: a Team inbox message and the notice on their Teacher plan card, with Manage billing (the Portal).
-  assert.match(inbox(x.teacher.id).at(-1), /Your school now covers your Teacher plan\. You can cancel your own plan in Manage billing: https?:\/\/[^ ]+\/teach#teacher-plan/);
-  const teach = decode((await call(x.who, '/teach')).text);
+  assert.match(inbox(x.teacher.id).at(-1), /Your school now covers your Teacher plan\. You can cancel your own plan in Manage billing: https?:\/\/[^ ]+\/me\/settings#teacher-plan/);
+  const teach = decode((await call(x.who, '/me/settings')).text);
   assert.match(teach, /id="seat-paid">Your school now covers you\. You can cancel your own plan\./);
   assert.match(teach, /id="seat-paid"[\s\S]*data-api="\/api\/trial\/card"[\s\S]*btn btn-primary" type="submit">Manage billing/);
   const portal = await call(x.who, '/api/trial/card', { method: 'POST', body: { password: PW } });
@@ -366,7 +366,7 @@ test('a seat for a teacher who pays for their own plan: never cancelled; the adm
   // Their own plan, cancelled at the period end in the Portal: the notice goes.
   fake.update(subId, { cancelAtPeriodEnd: true });
   await fake.emit('customer.subscription.updated', subId);
-  assert.doesNotMatch(decode((await call(x.who, '/teach')).text), /id="seat-paid"/);
+  assert.doesNotMatch(decode((await call(x.who, '/me/settings')).text), /id="seat-paid"/);
 });
 
 // ---------------------------------------------------------------- /trial and Stripe trouble
@@ -378,7 +378,7 @@ test('/trial (?trial=1) starts the same trial on the server, no Checkout; a paid
   assert.equal(TP.teacherPlan(x.user.id).trialing, true);
   const done = await call(x.who, '/signup/teacher/done?trial=1');
   assert.equal(done.status, 200); assert.match(decode(done.text), /trial has started/);
-  assert.equal((await call(x.who, '/trial')).location, '/teach?plan=on#teacher-plan');
+  assert.equal((await call(x.who, '/trial')).location, '/me/settings?plan=on#teacher-plan');
   // A school's seat trial (?seats=N): no personal trial; on to /trial?seats=N as before.
   const s = await signUp({ trial: { seats: 4 } });
   await addClass(s);
@@ -390,11 +390,11 @@ test('/trial (?trial=1) starts the same trial on the server, no Checkout; a paid
   assert.match(page, /It starts right away\. No card is needed for the trial\./); assert.doesNotMatch(page, /Stripe's page/);
   const sessions = posts('/v1/checkout/sessions').length;
   const r = await call(y.who, '/api/trial/start', { method: 'POST', body: { email: 'direct@school.example', trial: '1' } });
-  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/teach?plan=welcome#teacher-plan');
+  assert.equal(r.status, 200, r.text); assert.equal(r.json.redirect, '/me/settings?plan=welcome#teacher-plan');
   assert.equal(posts('/v1/checkout/sessions').length, sessions);
   assert.equal(posts('/v1/subscriptions').at(-1).params.metadata.trial_key, TP.emailHash('direct@school.example'));
   assert.equal(fake.st.customers.get(B.customerOf('teacher', y.teacher.id)).email, 'direct@school.example');
-  assert.match(decode((await call(y.who, '/teach?plan=welcome')).text), /Your Teacher plan is on/);
+  assert.match(decode((await call(y.who, '/me/settings?plan=welcome')).text), /Your Teacher plan is on/);
   // A paid start (trial=0): Checkout, with the card and no trial.
   const z = school();
   const paid = await call(z.who, '/api/trial/start', { method: 'POST', body: { email: 'paid@school.example', trial: '0', password: PW } });
@@ -411,11 +411,11 @@ test('Stripe trouble: the sign-up still completes, says nothing scary, and the t
   assert.equal(r.json.redirect, '/signup/teacher/done');
   assert.equal(TP.teacherPlan(x.user.id).entitled, false);
   assert.equal(q.get("SELECT COUNT(*) n FROM audit_log WHERE action='billing.trial.auto_skip' AND target=?", `teacher:${x.user.id}`).n, 1);
-  // The done step goes on to My classes, with no error; My classes offers the trial.
+  // The done step goes on to My classes, with no error; the Teacher plan card shows no plan, nothing scary.
   const done = await call(x.who, '/signup/teacher/done');
   assert.equal(done.status, 302); assert.equal(done.location, '/teach');
-  const teach = decode((await call(x.who, '/teach')).text);
-  assert.match(teach, /href="\/trial">Try it free for 14 days</); assert.doesNotMatch(teach, /class="notice warn[^>]*>[^<]*(Stripe|trial)/i);
+  const teach = decode((await call(x.who, '/me/settings')).text);
+  assert.match(teach, /id="tp-plans" href="\/plans"/); assert.doesNotMatch(teach, /class="notice warn[^>]*>[^<]*(Stripe|trial)/i);
   // Later, from /trial: it starts (the same key at Stripe is free again: the failed call made nothing).
   const later = await call(x.who, '/api/trial/start', { method: 'POST', body: { email: 'later@school.example', trial: '1' } });
   assert.equal(later.status, 200, later.text);

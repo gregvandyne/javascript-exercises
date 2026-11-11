@@ -167,8 +167,8 @@ test('the account\'s choice applies on a new device, and the device\'s cookie be
     assert.match((await head(await s.get('/', { Cookie: cookie }))).html, /data-theme="dark"/, 'no cookie on this device: the saved choice');
     assert.match((await head(await s.get('/', { Cookie: `${cookie}; theme=light` }))).html, /data-theme="light"/);
     assert.doesNotMatch((await head(await s.get('/', { Cookie: `${cookie}; theme=system` }))).html, /data-theme/);
-    const me = await (await s.get('/me', { Cookie: cookie })).text();
-    assert.match(me, /<form action="\/me#appearance" method="get" id="themeform">/, 'the Me page offers the choice as a plain form');
+    const me = await (await s.get('/me/settings', { Cookie: cookie })).text();
+    assert.match(me, /<form action="\/me\/settings#appearance" method="get" id="themeform">/, 'Settings offers the choice as a plain form');
     assert.match(me, /<input type="radio" name="theme" value="dark" checked>/);
   } finally { await s.close(); }
 });

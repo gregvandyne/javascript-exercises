@@ -65,7 +65,7 @@ test('rubrics: make, attach, score, gradebook and the student\'s own result', as
   await expect(t.locator('.rb-grid')).toContainText('Every rule is clear and fair');
 
   // ---- a lesson with a written question scored by the rubric, and the whole lesson too
-  const teach = await (await t.request.get('/teach')).text();
+  const teach = await (await t.request.get('/teach?all=1')).text();
   const classId = teach.match(/\/class\/([A-Za-z0-9]+)/)[1];
   await t.goto('/teach/lessons');
   await t.fill('#nl-t', 'Rubric e2e lesson');

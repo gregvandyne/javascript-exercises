@@ -49,7 +49,7 @@ async function trialTeacher() {
   const body = await r.text();
   assert.equal(r.status, 200, body);
   // "Start my free trial" starts it through Stripe's API (no Checkout page) and syncs it at once.
-  assert.equal(JSON.parse(body).redirect, '/teach?plan=welcome#teacher-plan');
+  assert.equal(JSON.parse(body).redirect, '/me/settings?plan=welcome#teacher-plan');
   const sub = TP.teacherPlan(t.id).subscription;
   return { teacher: auth.getUser(t.id), email, subId: sub.stripe_subscription_id };
 }

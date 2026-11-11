@@ -234,7 +234,10 @@
       "ready": "{count, plural, one {# Spiel fertig} other {# Spiele fertig}}",
       "invites": "{count, plural, one {# Einladung offen} other {# Einladungen offen}}",
       "requests": "{count, plural, one {# Freundschaftsanfrage} other {# Freundschaftsanfragen}}",
-      "unread": "{count, plural, one {# neue Nachricht} other {# neue Nachrichten}}"
+      "unread": "{count, plural, one {# neue Nachricht} other {# neue Nachrichten}}",
+      "school": "Meine Schule",
+      "asks": "{count, plural, one {# Lehrkraft hat nach einem Abo gefragt} other {# Lehrkräfte haben nach einem Abo gefragt}}",
+      "settings": "Einstellungen"
     },
     "look": {
       "heading": "Such dir deinen Look aus",
@@ -495,6 +498,11 @@
       "same": "Das ist schon dein Benutzername.",
       "taken": "Dieser Benutzername ist vergeben. Versuch einen anderen.",
       "tooSoon": "Du hast deinen Benutzernamen gerade erst geändert. Ändern kannst du ihn wieder {days} Tage nach der letzten Änderung."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "sections": "Bereiche der Einstellungen",
+      "billing": "Abo und Abrechnung"
     }
   },
   "cards": {
@@ -556,8 +564,7 @@
       "favorites": "Meine Favoriten",
       "keep": "Weiterspielen",
       "two": "Zu zweit",
-      "fromLearn": "Aus Lernen: die lustigsten",
-      "openLearn": "Lernen öffnen"
+      "fromLearn": "Aus Lernen: die lustigsten"
     },
     "hero": {
       "label": "Empfohlenes Spiel",
@@ -2555,17 +2562,11 @@
       "none": "Noch keine Klassen",
       "noneText": "Legen Sie unten Ihre erste Klasse an. Sie erhalten einen Code, den Sie mit Ihren Schülern teilen.",
       "noneAsk": "Bitten Sie einen Schuladmin, Sie einer Klasse hinzuzufügen.",
-      "manage": "{school} verwalten",
       "noneAdmin": "Sie unterrichten noch keine Klasse",
-      "noneAdminText": "Klassen, die Sie unterrichten, erscheinen hier. Alle Klassen von {school} finden Sie oben unter „{school} verwalten“.",
+      "noneAdminText": "Klassen, die Sie unterrichten, erscheinen hier. Alle Klassen von {school} finden Sie unter „Meine Schule“.",
       "makeGame": "Spiel bauen",
       "plan": {
-        "heading": "Schulabo · {school}",
-        "none": "Kein Schulabo · Schüler nutzen die kostenlosen Nachrichten an den Baumeister",
-        "setUp": "Schulabo einrichten",
-        "on": "Schulabo aktiv",
-        "billing": "Abrechnung",
-        "settling": "Ihr Abo wird eingerichtet…"
+        "heading": "Schulabo · {school}"
       },
       "tools": "Werkzeuge für den Unterricht",
       "hostLive": "Live-Spiel leiten"
@@ -3082,7 +3083,8 @@
       "newPlaceholder": "Neuer Ordner, z. B. Brüche",
       "delete": "Ordner löschen",
       "deleteConfirm": "Den Ordner {name} löschen? Die Lektionen und Ordner darin rücken eine Ebene nach oben.",
-      "hint": "Ordner sind nur für Sie. Schüler sehen sie nie."
+      "hint": "Ordner sind nur für Sie. Schüler sehen sie nie.",
+      "why": "Ordner sortieren Ihre eigene Lektionsbibliothek, und ihre Lektionen können in jede Klasse. Einheiten auf der Seite einer Klasse legen die Reihenfolge fest, die die Schüler sehen."
     },
     "lesson": {
       "title": "Titel der Lektion",
@@ -3196,7 +3198,8 @@
       "dueToday": "Heute fällig",
       "late": "Überfällig",
       "removedGroup": "Aus dieser Klasse entfernt",
-      "readyMade": "Eine fertige Stunde nehmen"
+      "readyMade": "Eine fertige Stunde nehmen",
+      "unitWhy": "Einheiten gruppieren die Lektionen dieser Klasse, in der Reihenfolge, in der die Schüler sie sehen. Ordner sortieren nur Ihre eigene Lektionsbibliothek."
     },
     "view": {
       "teacherPreview": "Schüleransicht. Schaltflächen, die Arbeiten speichern, sind für Sie ausgeschaltet.",
@@ -4080,7 +4083,7 @@
         "adult": "Bitte bestätige, dass du Lehrkraft oder Schulpersonal und mindestens 18 Jahre alt bist.",
         "notTeacher": "Für den Lehrkraft-Plan brauchst du ein Lehrkraft-Konto.",
         "entitled": "Du hast den Lehrkraft-Plan schon.",
-        "fixPayment": "Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ auf „Meine Klassen“.",
+        "fixPayment": "Dein Plan wartet auf eine Zahlung. Kläre das unter „Abrechnung verwalten“ in den Einstellungen.",
         "trialUsed": "Dieser kostenlose Test wurde schon genutzt.",
         "noPrice": "Der Lehrkraft-Plan ist gerade nicht erhältlich. Bitte versuche es später noch einmal.",
         "paying": "Eine Zahlung ist schon unterwegs. Bitte warte eine Minute.",
@@ -4090,8 +4093,8 @@
       },
       "thanks": {
         "wait": "⏳ Dein Lehrkraft-Plan wird gestartet …",
-        "slow": "Das dauert länger als sonst. Dein Plan erscheint in einer Minute auf „Meine Klassen“.",
-        "back": "Zu „Meine Klassen“"
+        "slow": "Das dauert länger als sonst. Dein Plan erscheint in einer Minute in den Einstellungen.",
+        "back": "Zu meinem Lehrkraft-Abo"
       },
       "card": {
         "heading": "Lehrkraft-Plan",
@@ -4108,7 +4111,9 @@
         "fix": "Dein Lehrkraft-Plan wartet auf eine Zahlung. Aktualisiere deine Karte unter „Abrechnung verwalten“.",
         "tryText": "Unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für deine Klassen. {days} Tage kostenlos, ohne Karte.",
         "getText": "Unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für deine Klassen.",
-        "try": "{days} Tage kostenlos testen"
+        "schoolBilling": "Abrechnung der Schule verwalten",
+        "seatNote": "Die Admins von {school} verwalten dieses Abo.",
+        "seePlans": "Abos ansehen"
       }
     },
     "auto": {
@@ -7364,14 +7369,10 @@
       "waitingN": "{count, plural, one {# Antwort wartet} other {# Antworten warten}}",
       "caughtUp": "Alles erledigt",
       "openClass": "Klasse öffnen",
-      "courses": "Mit einem Kurs unterrichten",
-      "live": "Live-Spiele für die ganze Klasse",
-      "breaks": "Bewegungspausen",
-      "breaksText": "Kurze, lustige Spiele aus „Spielen“, ausgesucht für eine 5-Minuten-Pause auf dem großen Bildschirm.",
-      "allGames": "Alles ansehen, was Schüler spielen können",
       "openLive": "Live-Spiel öffnen",
       "make": "Aus einer Stunde ein Spiel machen",
-      "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail."
+      "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
+      "allClasses": "Alle Klassen"
     },
     "loop": {
       "kicker": "So passt Oomba in deine Woche",
@@ -8135,10 +8136,6 @@
       "go": "Raum öffnen",
       "more": "Mehr Spiele und Einstellungen",
       "recent": "Deine letzten Spiele"
-    },
-    "card": {
-      "button": "Schnelles Spiel",
-      "change": "Ändern"
     },
     "results": {
       "h": "Das war ein Spiel mit Gästen.",

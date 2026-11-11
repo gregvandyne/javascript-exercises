@@ -22,18 +22,12 @@ import { cleanName } from '../services/textfilter.js';
 import { teacherLessonsPanel, studentLessonsPanel, dueChip } from './lessons.js';
 import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
-import { COURSES } from '../services/course-catalog.js';
-import { STAFF_COURSE_PAGE } from '../views/courses.js';
-import { LIVE_GAMES } from '../live/live-games.js';
-import { BRAIN_BREAKS, SHELF_INFO, shelfGrades } from '../learn.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
-import { billingTabOn, schoolBillingTab, teachPlanCard, askPanel } from './school-billing.js';
-import { teacherPlanCard } from './teacher-plan.js';
+import { billingTabOn, schoolBillingTab } from './school-billing.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 import { gcRosterHint } from './gclassroom.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { quickPick, pickLine } from './quick-live.js';
 import { liveOn, openForClass, hostSession } from '../services/classlive-sessions.js';
 import * as TL from '../services/teach-loop.js';
 import { teacherLoop } from '../views/teacher-loop.js';
@@ -76,11 +70,19 @@ function zoneGroups() {
 /** "14:05, Fri" in a zone, for the settings hint. */
 const timeThere = (tz, intl) => { try { return new Intl.DateTimeFormat(intl, { timeZone: tz, hour: '2-digit', minute: '2-digit', weekday: 'short' }).format(new Date()); } catch { return ''; } };
 
-/** Where a class page's back link goes: My classes for its teachers, the school page for school admins who don't teach it. */
+/** The teacher's one class (a teacher of exactly one class that isn't archived), or null: /teach opens it directly. */
+export function onlyClass(u) {
+  const mine = u ? S.classesOf(u.id, 'teacher') : [];
+  return mine.length === 1 ? mine[0] : null;
+}
+/** The list of the teacher's classes: /teach, or /teach?all=1 for a teacher of one class (whose /teach opens it). */
+export const classesHref = u => (onlyClass(u) ? '/teach?all=1' : '/teach');
+/** Where a class page's back link goes: My classes for its teachers (with one class: the list, "All classes"), the
+ *  school page for school admins who don't teach it. */
 export function classBack(req, c) {
   const t = req.t;
   if (!S.teaches(req.user, c.id) && S.canManageSchool(req.user, c.school_id)) { const s = S.getSchool(c.school_id); return { back: `/school/${s.slug}`, backLabel: s.name }; }
-  return { back: '/teach', backLabel: t('school.teach.title') };
+  return onlyClass(req.user) ? { back: '/teach?all=1', backLabel: t('teach.home.allClasses') } : { back: '/teach', backLabel: t('school.teach.title') };
 }
 
 // One-time login cards (new and reset passwords are shown once, then forgotten). In memory, 30 minutes, creator only.
@@ -626,22 +628,17 @@ router.post('/api/schools/:id/members/:uid/not-staff', requireUser, (req, res) =
 export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
 
 // ================================================================ teachers: the Classroom tab (/teach)
-// docs/decisions.md "Play and Learn": a teacher's (and a school admin's) first tab. Hello and what needs doing, then each
-// class as a card with what needs attention (requests, answers to read, the next lesson due, a live room that is open)
-// and its buttons, then ready-made ways to teach: courses, live games for the whole class and short brain breaks from
-// Play. Everything the page had before stays (the tools row: Lesson library and Make a game, with CS Quest and Cyber Defenders
-// now under "Teach with a course"; school cards, invites, plan asks, New class as a tile beside the classes, archived).
+// docs/decisions.md "Play and Learn" and "My classes, simpler": a teacher's (and a school admin's) first tab. Hello and
+// what needs doing, the tools row, the teaching loop's card while it shows, then each class as a card with what needs
+// attention (requests, answers to read, the next lesson due, a live room that is open) and its buttons, New class as a
+// tile beside them, and the archived list. Nothing else: the school (My school) and the Teacher plan are on the Me page;
+// courses, live games and brain breaks are on the Learn tab. A teacher with exactly one class goes straight to it.
 const DAY_MS = 864e5;
-/** An official game anyone may open, in the page's language (for the Classroom home's tiles). */
-const officialGame = slug => { const g = games.getGameBySlug(slug); return g && g.source === 'seed' && games.canView(null, g) ? games.localizeGame(g) : null; };
 /** The soonest open lesson due in the next 7 days (not late yet), or null. */
 function nextDue(classId, t = Date.now()) {
   return L.classLessons(classId).filter(cl => cl.due_at && L.isOpen(cl, t) && ['today', 'upcoming'].includes(L.dueState(cl, t)) && cl.due_at - t < 7 * DAY_MS)
     .sort((a, z) => a.due_at - z.due_at)[0] || null;
 }
-/** One tile (course, live game, brain break): picture or emoji, name, a short line. */
-const tile = (href, art, name, meta, id = '') => html`<li><a class="panel th-tile" href="${href}"${id ? raw(` id="${id}"`) : ''}><span class="th-art" aria-hidden="true">${art}</span><span class="th-t"><b>${name}</b>${meta ? html`<span class="small muted">${meta}</span>` : ''}</span></a></li>`;
-const tileArt = g => (g.source === 'seed' && g.slug ? raw(`<img src="/covers/${g.slug}.jpg" alt="" loading="lazy" decoding="async" width="56" height="56">`) : g.icon || '🎮');
 function classroomHome(req) {
   const t = req.t, u = req.user;
   const schools = S.schoolsOf(u.id).filter(x => x.role !== 'student');
@@ -649,7 +646,7 @@ function classroomHome(req) {
   const toRead = P.toReadByClass(mine.map(c => c.id));
   const answers = Object.values(toRead).reduce((n, x) => n + x, 0);
   const canCreate = schools.filter(x => S.canCreateClass(u, x.id));
-  const admins = schools.filter(x => S.canManageSchool(u, x.id));
+  const admins = schools.filter(x => S.canManageSchool(u, x.id));   // for the empty state
   const hostLive = liveOn() && liveCanHost(u);
   const wantNew = req.query.new === 'class';   // from "Make your first class": the New class form open and focused
   // Their own name (staff see real names; this is their own page).
@@ -673,22 +670,12 @@ function classroomHome(req) {
       : open ? '' : ownRoom ? html`<a class="btn btn-sm cc-live cc-live-other" href="/live/host/${ownRoom.id}">📡 ${t('teach.home.openLive')}</a>`
         : html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>`;
     const elsewhere = hostLive && !open && ownRoom ? html`<p class="small muted cc-quick cc-elsewhere" data-room="${ownRoom.id}">${t('quickLive.quick.hasOpen', { title: ownRoom.title })}</p>` : '';
-    // One tap: the last quick game again for this class (routes/quick-live.js); "Change" opens the chooser.
-    const quick = hostLive && !open && !ownRoom ? html`<form class="cc-quick" data-api="/api/live/quick"><input type="hidden" name="classId" value="${c.id}"><input type="hidden" name="last" value="1">
-        <button class="btn btn-sm btn-hot" type="submit" data-quick="${c.id}">⚡ ${t('quickLive.card.button')}</button>
-        <span class="small cc-quick-what"><span class="muted">${pickLine(req, quickPick(u, c))}</span> <a class="cc-quick-change" href="/live/quick?class=${c.id}">${t('quickLive.card.change')}</a></span>
-        <span class="err form-err" aria-live="polite"></span></form>` : '';
     return html`<div class="panel classcard th-class">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: c.students })].filter(Boolean).join(' · ')}</span>
       <span class="cc-meta th-chips">${chips.length ? chips : html`<span class="chip-s ok">✅ ${t('teach.home.caughtUp')}</span>`}</span>
-      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span>${quick}${elsewhere}</div>`;
+      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/teach/lessons?school=${c.school_id}&amp;class=${c.id}">📚 ${t('lessons.class.assign')}</a>${liveBtn}</span>${elsewhere}</div>`;
   };
-  // Ready-made: the three courses (their staff pages assign units), the live modes (host on the big screen), brain breaks.
-  const courseTiles = COURSES.map(c => tile(STAFF_COURSE_PAGE[c.slug] || c.teacherPath, c.emoji, t(`${c.key}.title`), t(`${c.key}.sub`), `teach-course-${c.slug}`));
-  const liveTiles = hostLive ? Object.entries(LIVE_GAMES).map(([slug, l]) => { const g = officialGame(slug); const i = SHELF_INFO[slug], gr = shelfGrades(slug);
-    return g ? tile(`/live?mode=${l.mode}`, tileArt(g), g.title, i ? t('learn.tab.meta', { subject: t(`learn.tab.subjects.${i.subject}`), grades: t('learn.grades', gr) }) : '') : ''; }).filter(Boolean) : [];
-  const breakTiles = BRAIN_BREAKS.map(officialGame).filter(Boolean).map(g => tile(`/play/${g.slug}`, tileArt(g), g.title, ''));
   // The teaching loop (docs/decisions.md "The teaching loop"): the card until each step is done once (or it is hidden),
   // then a small "How Oomba fits your week" link under the tools row.
   const loop = TL.loopState(u), showLoop = TL.showCard(loop);
@@ -698,33 +685,32 @@ function classroomHome(req) {
     ${mine.length ? html`<a class="btn" href="/teach/summary" id="teach-summary">📬 ${t('digest.page.link')}</a>` : ''}${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
   <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/teach/lessons">📚 ${t('lessons.library.title')}</a>${hostLive ? html`<a class="btn" href="/teach/make" id="teach-make">✨ ${t('teach.home.make')}</a>` : ''}${makeGameBtn(t)}</nav>
   ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>`}
-  ${admins.map(x => html`<section class="panel schoolcard"><a class="sc-link" href="/school/${x.slug}"><b>🏫 ${t('school.teach.manage', { school: x.name })}</b>
-      <span class="small muted">${t('school.stats.classes', { count: S.classesOfSchool(x.id).length })} · ${t('school.class.studentsN', { count: S.members(x.id, 'student').length })}</span></a>
-    ${teachPlanCard(req, x)}</section>`)}
   ${req.query.welcome === 'school' && admins[0] ? html`<p class="notice good" role="status" id="school-ready">🏫 ${t('teach.home.schoolReady', { school: admins[0].name })}</p>` : ''}
   ${staffInvitesPanel(req)}
-  ${teacherPlanCard(req)}
-  ${schools.map(x => askPanel(req, x))}
   <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>
   ${mine.length ? html`<div class="classgrid th-classes">${mine.map(card)}${canCreate.length ? html`<div class="th-newclass">${newClassForm(t, { schools: canCreate, me: u, focus: wantNew })}</div>` : ''}</div>`
-    : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: admins.length ? t('school.teach.noneAdminText', { school: admins[0].name }) : canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk') })}
+    : emptyState({ emoji: '🍎', title: admins.length ? t('school.teach.noneAdmin') : t('school.teach.none'), text: admins.length ? t('school.teach.noneAdminText', { school: admins[0].name }) : canCreate.length ? t('school.teach.noneText') : t('school.teach.noneAsk'),
+      ...(admins.length ? { action: { href: `/school/${admins[0].slug}`, label: `🏫 ${t('me.tiles.school')}` } } : {}) })}
   ${canCreate.length && !mine.length ? newClassForm(t, { schools: canCreate, me: u, open: !admins.length, focus: wantNew }) : ''}
   ${old.length ? html`<details class="panel archived"><summary>🗄️ ${t('school.class.archived', { count: old.length })}</summary>
     <ul class="plain archlist">${old.map(c => html`<li><a href="/class/${c.id}"><b>${c.name}</b></a> <span class="small muted">${c.school_name}</span>
       <form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></li>`)}</ul></details>` : ''}
   </section>
-  <section class="th-sec" id="teach-courses" aria-labelledby="teach-courses-h"><h2 id="teach-courses-h">🎓 ${t('teach.home.courses')}</h2>
-    <ul class="plain th-tiles">${courseTiles}</ul></section>
-  ${liveTiles.length ? html`<section class="th-sec" id="teach-live" aria-labelledby="teach-live-h"><h2 id="teach-live-h">📡 ${t('teach.home.live')}</h2>
-    <p class="small muted">${t('learn.tab.liveStaff')}</p><ul class="plain th-tiles th-grid2" tabindex="0" aria-labelledby="teach-live-h">${liveTiles}</ul></section>` : ''}
-  ${breakTiles.length ? html`<section class="th-sec" id="brain-breaks" aria-labelledby="brain-breaks-h"><h2 id="brain-breaks-h">⏱️ ${t('teach.home.breaks')}</h2>
-    <p class="small muted">${t('teach.home.breaksText')}</p><ul class="plain th-tiles th-breaks th-grid2" tabindex="0" aria-labelledby="brain-breaks-h">${breakTiles}</ul></section>` : ''}
-  <p class="th-more row"><a class="btn" href="/play" id="teach-all-games">🎮 ${t('teach.home.allGames')}</a><a class="btn" href="/learn">📚 ${t('home.rails.openLearn')}</a></p>`;
+`;
 }
 router.get('/teach', requireUser, (req, res) => {
   const t = req.t; const u = req.user;
   // The platform admin who isn't staff of a school works from Schools, not from an empty teacher page.
   if (!S.isSchoolStaff(u)) return S.isPlatformAdmin(u) ? res.redirect('/admin/schools') : notFound(req, res, t('school.errors.notTeacher'));
+  // The Teacher plan card moved to the Me page: old links (?plan=welcome after Checkout, ?plan=on from /trial) follow it.
+  if (['welcome', 'on'].includes(req.query.plan)) return res.redirect(302, `/me/settings?plan=${req.query.plan}#teacher-plan`);
+  // One class: My classes is that class. Not when the list is asked for (All classes, New class), with a welcome notice,
+  // or with a staff invite to answer (those are said on the list).
+  const one = onlyClass(u);
+  if (one && req.query.all === undefined && req.query.new === undefined && req.query.welcome === undefined && !S.invitesFor(u.id).length) {
+    res.set('Cache-Control', 'private, no-store');
+    return res.redirect(302, `/class/${one.id}`);
+  }
   page(req, res, { title: t('nav.classroom'), active: 'classes', body: classroomHome(req), head: html`${CSS}${LOOP_CSS}` });
 });
 router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (req, res) => {
@@ -959,9 +945,13 @@ function teacherClass(req, res, c) {
     <form data-api="/api/classes/${c.id}/delete" data-confirm="${t('school.class.deleteConfirm', { name: c.name })}"><button class="btn btn-danger" type="submit">${t('school.class.delete')}</button></form>` : ''}
   </section>` : ''}`;
 
-  const body = html`${classHeader(req, c, tab)}
+  // A teacher of one class lands here from My classes (/teach opens their one class): the teaching loop's card, while it
+  // shows, comes with them, on the Lessons tab.
+  const loopHere = tab === 'lessons' && (onlyClass(req.user) || {}).id === c.id && TL.showCard(TL.loopState(req.user));
+  const loopCard = loopHere ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(req.user), state: TL.loopState(req.user), live: liveOn() && liveCanHost(req.user) }) : '';
+  const body = html`${classHeader(req, c, tab)}${loopCard}
   ${tab === 'students' ? studentsTab : tab === 'settings' ? settingsTab : tab === 'games' ? classGamesTab(req, c, people) : teacherLessonsPanel(req, c)}`;
-  page(req, res, { title: c.name, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], ...classBack(req, c) });
+  page(req, res, { title: c.name, active: 'classes', body, head: loopHere ? html`${CSS}${LOOP_CSS}` : CSS, scripts: ['/js/schools.js'], ...classBack(req, c) });
 }
 function studentClass(req, res, c) {
   const t = req.t; const s = S.getSchool(c.school_id);

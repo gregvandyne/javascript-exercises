@@ -9,7 +9,7 @@
 //                                                                 or whose school has a free seat for them, gets "Get the
 //                                                                 Teacher plan" (Checkout with a card) instead
 //                               a school admin with ?seats=N    -> the school's free trial of N teacher seats
-//                               a teacher with a plan / trial   -> My classes (/teach?plan=on#teacher-plan)
+//                               a teacher with a plan / trial   -> the Me page (/me/settings?plan=on#teacher-plan)
 //                               a kid or a grown-up account     -> a friendly page: it's for teachers; plans for
 //                                                                 families are on /plans
 //   GET  /trial/thanks        Checkout's success page: confirms the session itself (like the Spark Pack return page),
@@ -37,6 +37,9 @@ import { rateLimit, allow, count, ipOf, SIGNUP } from '../services/ratelimit.js'
 import { stepUp, passwordField, stripeTrouble } from './family.js';
 import { addressOf } from '../services/email.js';
 import { trialLineHtml, seatPaidNotice } from '../views/trial-lines.js';
+import { setMePlanPanels } from './auth.js';
+import { askPanel } from './school-billing.js';
+import * as PA from '../services/plan-asks.js';
 
 export const router = Router();
 const on = req => F.familiesOn(req);
@@ -102,8 +105,8 @@ router.get('/trial', async (req, res) => {
           <button class="btn btn-primary btn-big" type="submit"${!C.mayBill(u) || !price ? raw(' disabled') : ''}>${t('plans.trial.school.start')}</button></form>`}</section>`);
   }
   const plan = TP.teacherPlan(u.id);
-  if (plan.entitled) return res.redirect(302, '/teach?plan=on#teacher-plan');
-  if (C.unsettledPlanOf('teacher', u.id)) return res.redirect(302, '/teach#teacher-plan');
+  if (plan.entitled) return res.redirect(302, '/me/settings?plan=on#teacher-plan');
+  if (C.unsettledPlanOf('teacher', u.id)) return res.redirect(302, '/me/settings#teacher-plan');
   const used = TP.trialUsed({ userId: u.id });
   // A school of theirs has a Teacher plan seat nobody holds: their admin can give them one, so no personal trial.
   const ask = TP.freeSeatSchool(u.id);
@@ -171,7 +174,7 @@ router.post('/api/trial/signup', rateLimit('trial-signup', 30, 3600e3), async (r
   if (!seats && C.mayBill(u)) {
     try {
       const r = await TP.startTeacherTrial({ user: auth.getUser(u.id), email, via: 'trial-signup' });
-      if (r.ok) return res.json({ ok: true, redirect: '/teach?plan=welcome#teacher-plan' });
+      if (r.ok) return res.json({ ok: true, redirect: '/me/settings?plan=welcome#teacher-plan' });
     } catch { /* Stripe unreachable: /trial offers the button again */ }
   }
   res.json({ ok: true, redirect: `/trial${seats ? `?seats=${seats}` : ''}` });
@@ -199,7 +202,7 @@ router.post('/api/trial/start', rateLimit('trial-start', 20, 600e3), async (req,
     if (b.trial !== '0') {
       if (!TP.cleanEmail(b.email)) return fail({ code: 'email', field: 'email' });
       const r = await TP.startTeacherTrial({ user: u, email: b.email, via: 'trial' });
-      return r.ok ? res.json({ ok: true, redirect: '/teach?plan=welcome#teacher-plan' }) : fail(r);
+      return r.ok ? res.json({ ok: true, redirect: '/me/settings?plan=welcome#teacher-plan' }) : fail(r);
     }
     const r = await TP.startTeacherCheckout({ user: u, email: b.email, base: C.baseUrl(req), trial: false });
     return r.ok ? res.json({ ok: true, redirect: r.url }) : fail(r);
@@ -222,7 +225,7 @@ router.get('/trial/thanks', async (req, res) => {
   if (!TP.isTeacher(u)) return res.redirect(302, '/trial');
   res.set('Cache-Control', 'no-store');
   const state = await C.checkoutReturnFor('teacher', u.id, id);
-  if (state === 'active') return res.redirect(302, '/teach?plan=welcome#teacher-plan');
+  if (state === 'active') return res.redirect(302, '/me/settings?plan=welcome#teacher-plan');
   if (state === 'not_yours') {
     // A school's seat trial started from /trial?seats=N.
     for (const s of adminSchools(u)) {
@@ -230,10 +233,10 @@ router.get('/trial/thanks', async (req, res) => {
     }
   }
   const body = html`<div class="trial"><section class="panel" aria-labelledby="th-h"><h1 id="th-h">🍎 ${el(t, 'span', 'plans.trial.title')}</h1>
-    <div class="notice" role="status" data-checkout-wait="${id}" data-status-url="/api/trial/status" data-back="/teach?plan=welcome#teacher-plan">
+    <div class="notice" role="status" data-checkout-wait="${id}" data-status-url="/api/trial/status" data-back="/me/settings?plan=welcome#teacher-plan">
       ${el(t, 'p', 'plans.trial.thanks.wait', {}, ' style="margin:0"')}
       <div data-slow hidden>${el(t, 'p', 'plans.trial.thanks.slow', {}, ' class="small" style="margin:.5em 0 0"')}
-        <p class="small" style="margin:.5em 0 0"><a href="/teach#teacher-plan">${t('plans.trial.thanks.back')}</a></p></div></div></section></div>`;
+        <p class="small" style="margin:.5em 0 0"><a href="/me/settings#teacher-plan">${t('plans.trial.thanks.back')}</a></p></div></div></section></div>`;
   page(req, res, { title: t('plans.trial.title'), active: 'plans', body, head: CSS, scripts: ['/js/family.js'], seo: { index: false, path: '/trial/thanks' } });
 });
 
@@ -245,7 +248,7 @@ router.post('/api/trial/email', rateLimit('trial-email', 10, 3600e3), async (req
   const r = await TP.saveTrialEmail(req.user, (req.body || {}).email);
   if (r.code === 'email') return res.status(400).json({ error: t('plans.trial.errors.email'), field: 'email' });
   if (!r.ok) return nope(req, res);
-  res.json({ ok: true, toast: t('plans.auto.emailSaved'), redirect: '/teach?plan=started#teacher-plan' });
+  res.json({ ok: true, toast: t('plans.auto.emailSaved'), redirect: '/teach' });
 });
 
 /** Manage billing for a teacher's own plan (add a card during the trial, cancel, receipts): Stripe's Customer Portal. */
@@ -255,7 +258,7 @@ router.post('/api/trial/card', rateLimit('billing-portal', 20, 600e3), (req, res
   next();
 }, stepUp, async (req, res) => {
   try {
-    const r = await C.startPortalFor({ kind: 'teacher', id: req.user.id, user: req.user, returnUrl: `${C.baseUrl(req)}/teach#teacher-plan` });
+    const r = await C.startPortalFor({ kind: 'teacher', id: req.user.id, user: req.user, returnUrl: `${C.baseUrl(req)}/me/settings#teacher-plan` });
     if (!r.ok) return res.status(409).json({ error: req.t('plans.trial.errors.noCustomer') });
     res.json({ ok: true, redirect: r.url });
   } catch (e) { stripeTrouble(req, res, e); }
@@ -279,10 +282,11 @@ for (const [verb, fn] of [['give', (by, sid, uid, b) => TP.giveSeat(by, sid, uid
   });
 }
 
-// ---------------------------------------------------------------- My classes' Teacher plan card
-/** The Teacher plan on a teacher's My classes (/teach): the plan and its trial, today's shared messages, the trial
- *  notice with "Add a card", Manage billing; a welcome after Checkout; for a teacher without one, "Try it free".
- *  Only while paid-plan pages are on for this request. */
+// ---------------------------------------------------------------- the Me page's Teacher plan card
+/** The Teacher plan on a teacher's Me page (/me/settings#teacher-plan, the account section): the plan and its trial, today's
+ *  shared messages, the trial notice with "Add a card", Manage billing (the Stripe customer portal); a seat from a
+ *  school says so, with "Manage school billing" for the school's admins; a welcome after Checkout; for a teacher
+ *  without one, a line and the plans. Only while paid-plan pages are on for this request. No prices. */
 export function teacherPlanCard(req) {
   const t = req.t, f = req.fmt, u = req.user;
   if (!on(req) || !TP.isTeacher(u)) return '';
@@ -302,6 +306,10 @@ export function teacherPlanCard(req) {
     parts.push(html`<p><span class="planchip paid">${t('plans.teacher.name')}</span> ${plan.via === 'seat' ? el(t, 'span', 'plans.trial.card.seat', { school: plan.school.name }) : state || ''}</p>`);
     const pool = TP.poolOf(u.id);
     parts.push(el(t, 'p', 'plans.trial.card.pool', { left: f.int(pool.left), size: f.int(pool.size) }, ' class="small"'));
+    // A seat: the school pays. Its admins manage it on the Billing tab; a teacher is told who does.
+    if (plan.via === 'seat') parts.push(SC.canManageSchool(u, plan.school.id) && C.mayBill(u)
+      ? html`<p><a class="btn" id="tp-school-billing" href="/school/${encodeURIComponent(plan.school.slug)}?tab=billing">${el(t, 'span', 'plans.trial.card.schoolBilling')}</a></p>`
+      : el(t, 'p', 'plans.trial.card.seatNote', { school: plan.school.name }, ' class="small muted" id="tp-seat-note"'));
     const notice = plan.via === 'own' ? TP.trialNotice(plan) : null;
     if (notice) parts.push(el(t, 'p', 'plans.trial.card.ending', { count: notice.days }, ' class="notice warn" role="status"'));
     const covered = seatPaidNotice(t, u.id, plan);
@@ -319,10 +327,15 @@ export function teacherPlanCard(req) {
     } else if (TP.freeSeatSchool(u.id)) {
       parts.push(trialLineHtml(t, { state: 'askAdmin' }));
     } else {
+      // No plan: one line and the plans (prices stay on /plans).
       const used = TP.trialUsed({ userId: u.id });
       parts.push(el(t, 'p', used ? 'plans.trial.card.getText' : 'plans.trial.card.tryText', v));
-      parts.push(html`<p style="margin-bottom:0"><a class="btn btn-primary" href="/trial">${t(used ? 'plans.trial.subscribe' : 'plans.trial.card.try', v)}</a></p>`);
+      parts.push(html`<p style="margin-bottom:0"><a class="btn btn-primary" id="tp-plans" href="/plans">${el(t, 'span', 'plans.trial.card.seePlans')}</a></p>`);
     }
   }
   return html`<section class="panel teacherplan" id="teacher-plan" aria-labelledby="tpl-h"><h2 id="tpl-h">🍎 ${el(t, 'span', 'plans.trial.card.heading')}</h2>${parts}</section>`;
 }
+
+// The Me page's account section (routes/auth.js): this card, and "Ask my admin" at a school a teacher works at but
+// doesn't run.
+setMePlanPanels(req => html`${teacherPlanCard(req)}${SC.schoolsOf(req.user.id).filter(x => x.role !== 'student').map(x => askPanel(req, x))}`, PA.openAsks);

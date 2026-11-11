@@ -447,8 +447,7 @@ router.get('/signup/teacher/done', (req, res) => {
   const line = plans ? TP.trialLine(u.id) : null;
   if (!line) return res.redirect(302, tr && plans ? '/trial' : next);
   const own = line.state === 'started';
-  const withPlan = `${next}${next.includes('?') ? '&' : '?'}plan=started#teacher-plan`;
-  const go = own ? withPlan : next;
+  const go = next;
   // No email yet (a password sign-up): an optional one for the trial reminders; the in-app notices come either way.
   const ask = own && !(addressOf(u.id) || {}).email;
   const body = html`${trialLineHtml(t, line)}
@@ -459,7 +458,7 @@ router.get('/signup/teacher/done', (req, res) => {
         ${formErr}
         <button class="btn btn-primary btn-block" type="submit">${t('plans.auto.emailSave')}</button></form>
       <p class="ob-skip"><a class="btn btn-block" href="${go}" id="ob-done-go">${t('onboard.classroom.skip')}</a></p>`
-      : html`<p><a class="btn btn-primary btn-block btn-big" href="${go}" id="ob-done-go">${t('plans.trial.thanks.back')}</a></p>`}`;
+      : html`<p><a class="btn btn-primary btn-block btn-big" href="${go}" id="ob-done-go">${t('onboard.classes.continue')}</a></p>`}`;
   screen(req, res, { title: t('plans.auto.doneHeading'), emoji: '🎉', heading: t('plans.auto.doneHeading'), body });
 });
 
