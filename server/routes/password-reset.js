@@ -26,6 +26,7 @@ import * as auth from '../auth.js';
 import { audit, uid } from '../db.js';
 import { tHtml } from '../i18n/index.js';
 import * as E from '../services/email.js';
+import * as F from '../services/email-frame.js';
 import { allow, clear, ipOf, loginLockKey } from '../services/ratelimit.js';
 import { log } from '../services/log.js';
 import { contactEmail } from './teachers.js';
@@ -69,12 +70,8 @@ export function readResetToken(tok) { const r = readLink(tok); return r ? r.u : 
 export function resetEmail(t, { username, url }) {
   const v = { username, minutes: RESET_MINUTES };
   const lines = [t('auth.reset.email.intro', v), t('auth.reset.email.expires', v), t('auth.reset.email.ignore', v)];
-  const P = 'margin:0 0 16px;font-size:16px;line-height:1.55;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
-  const body = `<!doctype html><html lang="${esc(t.locale || 'en')}" dir="${t.dir || 'ltr'}"><body style="margin:0;padding:24px;background:#ffffff">
-<p style="${P}">${esc(lines[0])}</p>
-<p style="${P}"><a href="${esc(url)}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#141414;color:#ffffff;font-weight:700;text-decoration:none">${esc(t('auth.reset.email.button'))}</a></p>
-<p style="${P}">${esc(lines[1])}</p><p style="${P};color:#4b5563">${esc(lines[2])}</p>
-<p style="${P};color:#4b5563">Oomba Academy</p></body></html>`;
+  const body = F.frame({ lang: t.locale || 'en', dir: t.dir || 'ltr', subject: t('auth.reset.email.subject'), base: E.siteBase(),
+    body: [F.p(esc(lines[0])), F.button(url, t('auth.reset.email.button')), F.p(esc(lines[1])), F.p(esc(lines[2]), { muted: true, small: true, last: true })].join('\n') });
   const text = `${lines[0]}\n\n${url}\n\n${lines[1]}\n\n${lines[2]}\n\nOomba Academy\n`;
   return { subject: t('auth.reset.email.subject'), html: body, text };
 }
@@ -82,10 +79,8 @@ export function resetEmail(t, { username, url }) {
 /** "Your password was changed": sent to the account's address after a reset, so its owner hears of one they did not make. */
 export function resetDoneEmail(t, { username }) {
   const lines = [t('auth.reset.email.doneIntro', { username }), t('auth.reset.email.doneNotYou', { email: contactEmail() })];
-  const P = 'margin:0 0 16px;font-size:16px;line-height:1.55;color:#1f2937;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif';
-  const body = `<!doctype html><html lang="${esc(t.locale || 'en')}" dir="${t.dir || 'ltr'}"><body style="margin:0;padding:24px;background:#ffffff">
-<p style="${P}">${esc(lines[0])}</p><p style="${P}">${esc(lines[1])}</p>
-<p style="${P};color:#4b5563">Oomba Academy</p></body></html>`;
+  const body = F.frame({ lang: t.locale || 'en', dir: t.dir || 'ltr', subject: t('auth.reset.email.doneSubject'), base: E.siteBase(),
+    body: [F.p(esc(lines[0])), F.p(esc(lines[1]), { last: true })].join('\n') });
   return { subject: t('auth.reset.email.doneSubject'), html: body, text: `${lines[0]}\n\n${lines[1]}\n\nOomba Academy\n` };
 }
 

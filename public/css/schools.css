@@ -1043,7 +1043,17 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .unit-why,.folder-why{margin:var(--s3) 0 0;max-width:72ch}
 /* The class header's Connections chip and menu (views/integrations.js): top right, on the school-name line. One
    chip for every connected app; each app is an icon (plus its short name when it is the only one) and a status dot. */
-.classtop{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);flex-wrap:wrap;min-width:0}
+/* The class header's right side: the chip and "Host a live game" on one line, centred on each other. On a phone the
+   chip sits top right (on the school-name line) and the button takes the full width under the title. */
+.classhead .classacts{align-items:center;flex-wrap:nowrap}
+@media (min-width:640px){.classhead .classacts .cx-chip{min-height:44px;padding-inline:14px}}
+@media (max-width:639px){
+  .classhead{position:relative}
+  .classhead .classschool{display:block;padding-inline-end:150px;min-height:36px;line-height:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .classhead .classacts{display:contents}
+  .classhead .cx-menu{position:absolute;top:0;inset-inline-end:0}
+  .classhead .classacts>.btn{flex:1 1 100%}
+}
 .cx-menu{position:relative}
 .cx-chip{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:4px 12px;border-radius:999px;font-size:.8125rem;font-weight:700;cursor:pointer;white-space:nowrap;list-style:none;background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
 .cx-chip::-webkit-details-marker{display:none}

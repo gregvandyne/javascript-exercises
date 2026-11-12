@@ -495,7 +495,10 @@ test('i. a teacher with an email on file resets a lost password by a signed, sin
   assert.equal(sent.length, 2);
   assert.deepEqual(sent[1].to, ['lost@school.example']); assert.equal(sent[1].subject, 'Your Oomba Academy password was changed');
   assert.match(sent[1].text, /^The password of the Oomba Academy account LostTeach was just changed with a reset link sent to this address\.\n\nIf that was not you, write to \S+@\S+ right away\.\n\nOomba Academy\n$/);
-  assert.doesNotMatch(sent[1].text + sent[1].html, /https?:\/\/|reset\?t=|a-brand-new-password-9/, 'no link and never the password');
+  // No link to click (the only web address is the logo image's) and never the password.
+  assert.doesNotMatch(sent[1].text, /https?:\/\//, 'no link in the text part');
+  assert.doesNotMatch(sent[1].html.replace(/<img [^>]*>/g, ''), /https?:\/\/|href=/, 'no link in the HTML part');
+  assert.doesNotMatch(sent[1].text + sent[1].html, /reset\?t=|a-brand-new-password-9/, 'never the reset link or the password');
   assert.equal(sent[1].headers, undefined); assert.ok(sent[1].tags.some(x => x.name === 'category' && x.value === 'transactional'));
   const doneLog = q.get("SELECT * FROM email_log WHERE user_id=? AND template='password_changed'", t1.id);
   assert.equal(doneLog.status, 'sent'); assert.equal(doneLog.category, 'transactional');
