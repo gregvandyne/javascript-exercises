@@ -143,6 +143,7 @@ test('parent with Google: the box is checked first; a personal Gmail makes a gro
   // Their family account page has the Google panel (no password to change, nothing to disconnect).
   const acct = (await get('/family/account', li.session)).body2;
   assert.match(acct, /id="google"/); assert.match(acct, /Connected to ⁦?maria\.parent@gmail\.com/);
+  assert.doesNotMatch(acct, /id="password"/, 'no Password section: a Google-only account has no password to change');
   assert.match(acct, /You sign in with Google, so there’s no password to change\./);
   // A plan picked on /plans comes along through Google too.
   const p = await post('/api/grown-ups/signup', { via: 'google', adult: '1', plan: 'family', interval: 'year' });
@@ -285,6 +286,9 @@ test('teacher with Google: an own (teacher-to-be) account with the verified emai
   assert.equal(q.get('SELECT email FROM google_identities WHERE user_id=?', u.id).email, 'ms.teach@gmail.com');
   // The email is offered on the create step.
   assert.match((await get('/signup/teacher/school?how=create&trial=1', r.session)).body2, /value="ms\.teach@gmail\.com"/);
+  // Settings has no Password section for a Google-only account; a password account keeps it.
+  const set = (await get('/me/settings', r.session)).body2;
+  assert.match(set, /href="#language-sec"/); assert.doesNotMatch(set, /password-sec|id="password"/);
   // The school Google flows are unchanged: a staff invite on the school's Workspace domain wins over a sign-up.
   const admin = auth.createUser({ username: uname('GAdm'), password: 'admin-pass-12345' });
   const s = S.createSchool(admin, { name: `G School ${n}` }).school; S.addMember(admin, s.id, admin.id, 'admin', { rosterName: 'Ms G' });

@@ -35,7 +35,7 @@ import { saveUserTheme } from '../theme.js';
 import { PARENT_GUIDES } from '../learn.js';
 import { siteHost } from '../site.js';
 import { SIGNUP, LOGIN, wantedNext, passwordPanel, signOutPanel, languagePanel, namePanel } from './auth.js';
-import { meGooglePanel, signupToken } from './google.js';
+import { meGooglePanel, signupToken, noPasswordText } from './google.js';
 import { googleEnabled } from '../oidc.js';
 import { progress, SIGNUP_CSS } from '../views/onboarding.js';
 import { LEGAL_UPDATED } from './info.js';
@@ -452,7 +452,7 @@ router.get('/family/account', grownupOnly, (req, res) => {
   const t = req.t;
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const body = html`<div class="pagehead"><h1${en('family.account.heading')}>⚙️ ${t('family.account.heading')}</h1>${notYou(req, { plain: true })}</div>
-  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
+  <div class="mesettings">${namePanel(req)}${languagePanel(req)}${noPasswordText(req) ? '' : passwordPanel(req)}${meGooglePanel(req)}${signOutPanel(req)}</div>`;
   page(req, res, { title: t(navLabel(t, 'account')), active: 'account', body, back: '/family', backLabel: t('family.page.title') });
 });
 

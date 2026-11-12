@@ -425,7 +425,8 @@ router.get(SETTINGS_PATH, auth.requireUser, (req, res) => {
     plan && ['billing', '🍎', t('me.settings.billing'), raw(plan)],
     ['language-sec', '🌐', t('me.language.heading'), languagePanel(req)],
     ['appearance-sec', '🎨', t('me.theme.heading'), appearancePanel(req)],
-    !u.is_guest && ['password-sec', '🔑', t('me.password.heading'), passwordPanel(req)],
+    // No Password section for an account that signs in only with Google (it has no Oomba password to change).
+    !u.is_guest && !noPasswordText(req) && ['password-sec', '🔑', t('me.password.heading'), passwordPanel(req)],
     ['signout-sec', '👋', t('me.signOut.heading'), signOutPanel(req)],
   ].filter(x => x && String(x[3] || ''));
   const body = html`<div class="pagehead"><h1>⚙️ ${t('me.settings.title')}</h1></div>
