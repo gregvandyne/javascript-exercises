@@ -361,9 +361,9 @@ if (FIRST) for (const nav of $$('nav.tabs')) {
   else if (a.right > n.right) nav.scrollLeft += a.right - n.right + pad;
 }
 
-// The class header's Google Classroom menu (details.gc-chipmenu): a tap outside it or Escape closes it.
-on(document, 'click', e => { for (const d of document.querySelectorAll('details.gc-chipmenu[open]')) if (!d.contains(e.target)) d.open = false; });
+// The class header's Connections menu (details.cx-menu): a tap outside it or Escape closes it.
+on(document, 'click', e => { for (const d of document.querySelectorAll('details.cx-menu[open]')) if (!d.contains(e.target)) d.open = false; });
 on(document, 'keydown', e => {
   if (e.key !== 'Escape') return;
-  for (const d of document.querySelectorAll('details.gc-chipmenu[open]')) { d.open = false; d.querySelector('summary').focus(); }
+  for (const d of document.querySelectorAll('details.cx-menu[open]')) { d.open = false; d.querySelector('summary').focus(); }
 });

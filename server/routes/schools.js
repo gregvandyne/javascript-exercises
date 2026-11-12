@@ -26,7 +26,8 @@ import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
 import { billingTabOn, schoolBillingTab } from './school-billing.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
-import { gcRosterHint, gcHeaderChip } from './gclassroom.js';
+import { gcRosterHint } from './gclassroom.js';
+import { connectionsChip } from '../views/integrations.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn, openForClass, hostSession } from '../services/classlive-sessions.js';
 import * as TL from '../services/teach-loop.js';
@@ -798,7 +799,7 @@ export function classHeader(req, c, active) {
   const icon = { lessons: '📚', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
   return html`
-  <div class="pagehead"><div><div class="classtop"><span class="small muted">${s.name}</span>${gcHeaderChip(req, c)}</div><h1>${c.name}</h1>
+  <div class="pagehead"><div><div class="classtop"><span class="small muted">${s.name}</span>${connectionsChip(req, c)}</div><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}</p></div>
     ${!c.archived_at && liveOn() && liveCanHost(req.user) ? html`<div class="row"><a class="btn btn-primary" href="/live?class=${c.id}">📡 ${t('live.entry.host')}</a></div>` : ''}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>🗄️ ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}

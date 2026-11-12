@@ -7938,12 +7938,12 @@
       "fromLive": "Объявить в Classroom"
     },
     "chip": {
-      "connect": "Подключить Google Classroom",
-      "connected": "Classroom подключён",
-      "reconnect": "Подключить Classroom снова",
       "notLinked": "Пока не связан с курсом в Classroom.",
       "link": "Связать с курсом Classroom",
-      "manage": "Настройки Classroom"
+      "manage": "Настройки Classroom",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "Свяжите этот класс, добавьте учеников и публикуйте уроки и оценки."
     }
   },
   "digest": {
@@ -8291,5 +8291,13 @@
       "later": "Google Класс можно подключить позже из любого класса.",
       "skip": "Пропустить пока"
     }
+  },
+  "integrations": {
+    "title": "Подключения",
+    "on": "Подключено",
+    "off": "Не подключено",
+    "warn": "Подключить снова",
+    "connect": "Подключить",
+    "reconnect": "Подключить снова"
   }
 }

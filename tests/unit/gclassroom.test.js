@@ -1087,18 +1087,27 @@ test('announcements: everyday words that are also first names (May, Will, Art) p
   assert.equal(GC.nameIn('Thanks, Ortiz', c.id), '', 'a last name alone is not checked');
 });
 
-test('class header chip: Connect when not connected, a menu with the account, Classroom page and Disconnect once connected', async () => {
-  const { c, tc } = school();
+test('class header Connections chip: Classroom row with Connect, then account, Settings and Disconnect; room for more apps', async () => {
+  const { c, tc, kc } = school();
   const before = await (await get(`/class/${c.id}`, tc)).text();
-  assert.match(before, /class="gc-chipform" data-api="\/api\/google-classroom\/connect"/);
-  assert.match(before, /Connect Google Classroom/);
+  assert.match(before, /class="cx-menu"/);
+  assert.match(before, /aria-label="Connections. Google Classroom: Not connected"/);
+  assert.match(before, /<span class="cx-name">Classroom<\/span>/, 'one app: its short name shows');
+  assert.match(before, /id="cx-gclassroom"[\s\S]*data-api="\/api\/google-classroom\/connect"[\s\S]*>Connect<\/button>/);
+  assert.doesNotMatch(await (await get(`/class/${c.id}`, kc)).text(), /cx-menu/, 'students never see it');
   await connect(tc, c.id);
   const after = await (await get(`/class/${c.id}`, tc)).text();
-  assert.doesNotMatch(after, /gc-chipform/);
-  assert.match(after, /class="gc-chipmenu"/); assert.match(after, /Classroom connected/);
+  assert.match(after, /Google Classroom: Connected/); assert.match(after, /cx-pill-on/);
   assert.match(after, /Not linked to a Classroom class yet/);
   assert.match(after, new RegExp(`href="/class/${c.id}/google-classroom"`));
   assert.match(after, /data-api="\/api\/google-classroom\/disconnect"/);
   const id = course([]); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
   assert.match(await (await get(`/class/${c.id}?tab=students`, tc)).text(), /Classroom settings/);
+  // A second app (Canvas, say) joins the same chip: icons and dots only, one row each in the menu.
+  const { registerIntegration } = await import('../../server/views/integrations.js');
+  registerIntegration({ id: 'test-lms', icon: '🖌️', available: () => true, status: () => ({ state: 'off', name: 'Test LMS', short: 'LMS', body: '' }) });
+  const two = await (await get(`/class/${c.id}`, tc)).text();
+  assert.match(two, /Google Classroom: Connected, Test LMS: Not connected/);
+  assert.doesNotMatch(two, /cx-name/, 'two apps: icons and dots only');
+  assert.match(two, /id="cx-test-lms"/);
 });

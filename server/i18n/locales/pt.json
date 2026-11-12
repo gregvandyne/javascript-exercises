@@ -7940,12 +7940,12 @@
       "fromLive": "Avisar no Classroom"
     },
     "chip": {
-      "connect": "Conectar o Google Classroom",
-      "connected": "Classroom conectado",
-      "reconnect": "Conectar o Classroom de novo",
       "notLinked": "Ainda não está vinculada a uma turma do Classroom.",
       "link": "Vincular uma turma do Classroom",
-      "manage": "Configurações do Classroom"
+      "manage": "Configurações do Classroom",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "Vincule esta turma, traga seus alunos e publique aulas e notas."
     }
   },
   "digest": {
@@ -8293,5 +8293,13 @@
       "later": "Você pode conectar o Google Sala de Aula depois, em qualquer turma.",
       "skip": "Pular por enquanto"
     }
+  },
+  "integrations": {
+    "title": "Conexões",
+    "on": "Conectado",
+    "off": "Não conectado",
+    "warn": "Conectar de novo",
+    "connect": "Conectar",
+    "reconnect": "Conectar de novo"
   }
 }

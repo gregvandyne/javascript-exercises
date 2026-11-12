@@ -7939,12 +7939,12 @@
       "fromLive": "Annuncia in Classroom"
     },
     "chip": {
-      "connect": "Collega Google Classroom",
-      "connected": "Classroom collegato",
-      "reconnect": "Ricollega Classroom",
       "notLinked": "Non ancora collegata a un corso di Classroom.",
       "link": "Collega un corso di Classroom",
-      "manage": "Impostazioni di Classroom"
+      "manage": "Impostazioni di Classroom",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "Collega questa classe, importa i suoi studenti e pubblica lezioni e voti."
     }
   },
   "digest": {
@@ -8292,5 +8292,13 @@
       "later": "Puoi collegare Google Classroom più tardi da qualsiasi classe.",
       "skip": "Salta per ora"
     }
+  },
+  "integrations": {
+    "title": "Connessioni",
+    "on": "Collegato",
+    "off": "Non collegato",
+    "warn": "Da ricollegare",
+    "connect": "Collega",
+    "reconnect": "Ricollega"
   }
 }
