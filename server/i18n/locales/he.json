@@ -7940,12 +7940,12 @@
       "fromLive": "הודעה ב-Classroom‏"
     },
     "chip": {
-      "connect": "חיבור Google Classroom",
-      "connected": "Classroom מחובר",
-      "reconnect": "חיבור Classroom מחדש",
       "notLinked": "עדיין לא מקושר לכיתה ב-Classroom.",
       "link": "קישור כיתה ב-Classroom",
-      "manage": "הגדרות Classroom"
+      "manage": "הגדרות Classroom",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "קשרו את הכיתה, הביאו את התלמידים ופרסמו שיעורים וציונים."
     }
   },
   "digest": {
@@ -8293,5 +8293,13 @@
       "later": "אפשר לחבר את Google Classroom אחר כך מכל כיתה.",
       "skip": "דילוג בינתיים"
     }
+  },
+  "integrations": {
+    "title": "חיבורים",
+    "on": "מחובר",
+    "off": "לא מחובר",
+    "warn": "צריך לחבר מחדש",
+    "connect": "חיבור",
+    "reconnect": "חיבור מחדש"
   }
 }

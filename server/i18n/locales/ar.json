@@ -7939,12 +7939,12 @@
       "fromLive": "الإعلان في Classroom‏"
     },
     "chip": {
-      "connect": "ربط Google Classroom",
-      "connected": "تم ربط Classroom",
-      "reconnect": "ربط Classroom مرة أخرى",
       "notLinked": "لم يتم ربطه بصف في Classroom بعد.",
       "link": "ربط صف في Classroom",
-      "manage": "إعدادات Classroom"
+      "manage": "إعدادات Classroom",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "اربط هذا الصف، وأضف طلابه، وانشر الدروس والدرجات."
     }
   },
   "digest": {
@@ -8292,5 +8292,13 @@
       "later": "يمكنك ربط Google Classroom لاحقًا من أي صف.",
       "skip": "تخطَّ الآن"
     }
+  },
+  "integrations": {
+    "title": "الاتصالات",
+    "on": "متصل",
+    "off": "غير متصل",
+    "warn": "يلزم الربط مرة أخرى",
+    "connect": "ربط",
+    "reconnect": "ربط مرة أخرى"
   }
 }

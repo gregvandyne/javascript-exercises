@@ -7939,12 +7939,12 @@
       "fromLive": "Aankondigen in Classroom"
     },
     "chip": {
-      "connect": "Google Classroom koppelen",
-      "connected": "Classroom gekoppeld",
-      "reconnect": "Classroom opnieuw koppelen",
       "notLinked": "Nog niet gekoppeld aan een Classroom-klas.",
       "link": "Classroom-klas koppelen",
-      "manage": "Classroom-instellingen"
+      "manage": "Classroom-instellingen",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "Koppel deze klas, haal de leerlingen binnen en plaats lessen en cijfers."
     }
   },
   "digest": {
@@ -8292,5 +8292,13 @@
       "later": "Je kunt Google Classroom later vanuit elke klas koppelen.",
       "skip": "Nu overslaan"
     }
+  },
+  "integrations": {
+    "title": "Koppelingen",
+    "on": "Gekoppeld",
+    "off": "Niet gekoppeld",
+    "warn": "Opnieuw koppelen",
+    "connect": "Koppelen",
+    "reconnect": "Opnieuw koppelen"
   }
 }

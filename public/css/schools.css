@@ -1041,20 +1041,31 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 }
 /* What a unit is (class page) and what a folder is (lesson library): one line under the buttons. */
 .unit-why,.folder-why{margin:var(--s3) 0 0;max-width:72ch}
-/* The class header's Google Classroom chip (routes/gclassroom.js gcHeaderChip): top right, on the school-name line. */
+/* The class header's Connections chip and menu (views/integrations.js): top right, on the school-name line. One
+   chip for every connected app; each app is an icon (plus its short name when it is the only one) and a status dot. */
 .classtop{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);flex-wrap:wrap;min-width:0}
-.gc-chipform{margin:0}
-.gc-chip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:4px 12px;border:0;border-radius:999px;font:inherit;font-size:.8125rem;font-weight:700;cursor:pointer;white-space:nowrap;list-style:none;background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
-.gc-chip::-webkit-details-marker{display:none}
-.gc-chip:hover{box-shadow:inset 0 0 0 1px var(--muted)}
-.gc-chip:focus-visible{outline:2px solid var(--focus,currentColor);outline-offset:2px}
-.gc-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
-.gc-chip-on .gc-dot{background:var(--ok)}
-.gc-chip-on::after{content:"▾";font-size:.75em;opacity:.7}
-.gc-chip-warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
-.gc-chip-warn .gc-dot{background:currentColor}
-.gc-chipmenu{position:relative}
-.gc-pop{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;width:min(300px,calc(100vw - 32px));display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);padding:var(--s3);border-radius:var(--r-sm);background:var(--card);box-shadow:0 0 0 1px var(--line),0 8px 24px rgba(0,0,0,.25)}
-.gc-pop p{margin:0;overflow-wrap:anywhere}
-.gc-pop form{margin:0}
-.gc-pop .btn-sm{min-height:40px}
+.cx-menu{position:relative}
+.cx-chip{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:4px 12px;border-radius:999px;font-size:.8125rem;font-weight:700;cursor:pointer;white-space:nowrap;list-style:none;background:var(--card-2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
+.cx-chip::-webkit-details-marker{display:none}
+.cx-chip::after{content:"▾";font-size:.75em;opacity:.7}
+.cx-chip:hover{box-shadow:inset 0 0 0 1px var(--muted)}
+.cx-chip:focus-visible{outline:2px solid var(--focus,currentColor);outline-offset:2px}
+.cx-item{display:inline-flex;align-items:center;gap:6px}
+.cx-dot{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1.5px var(--muted)}
+.cx-on .cx-dot{background:var(--ok);box-shadow:none}
+.cx-warn .cx-dot{background:var(--warn-ink);box-shadow:none}
+.cx-pop{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:20;width:min(320px,calc(100vw - 32px));padding:var(--s3);border-radius:var(--r-sm);background:var(--card);box-shadow:0 0 0 1px var(--line),0 8px 24px rgba(0,0,0,.25)}
+.cx-title{margin:0 0 var(--s2);font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cx-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cx-row{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);padding-block:var(--s3);border-top:1px solid var(--line)}
+.cx-row:first-child{border-top:0;padding-top:0}
+.cx-row:last-child{padding-bottom:0}
+.cx-row p{margin:0;overflow-wrap:anywhere}
+.cx-row form{margin:0}
+.cx-rowhead{display:flex;align-items:center;gap:8px;width:100%}
+.cx-rowhead b{flex:1;min-width:0}
+.cx-pill{padding:1px 8px;border-radius:999px;font-size:.75rem;font-weight:700;white-space:nowrap;background:var(--card-2);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.cx-pill-on{background:var(--ok-bg);color:var(--ok);box-shadow:none}
+.cx-pill-warn{background:var(--warn-bg);color:var(--warn-ink);box-shadow:none}
+.cx-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.cx-row .btn-sm{min-height:40px}

@@ -7938,12 +7938,12 @@
       "fromLive": "Classroom でお知らせ"
     },
     "chip": {
-      "connect": "Google Classroom に接続",
-      "connected": "Classroom に接続済み",
-      "reconnect": "Classroom に再接続",
       "notLinked": "まだ Classroom のクラスにリンクされていません。",
       "link": "Classroom のクラスをリンク",
-      "manage": "Classroom の設定"
+      "manage": "Classroom の設定",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "このクラスをリンクし、生徒を取り込み、レッスンと成績を投稿できます。"
     }
   },
   "digest": {
@@ -8291,5 +8291,13 @@
       "later": "Google Classroom とは、あとからどのクラスからでも連携できます。",
       "skip": "今はスキップ"
     }
+  },
+  "integrations": {
+    "title": "連携",
+    "on": "接続済み",
+    "off": "未接続",
+    "warn": "再接続が必要",
+    "connect": "接続",
+    "reconnect": "再接続"
   }
 }

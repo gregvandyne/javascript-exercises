@@ -7938,12 +7938,12 @@
       "fromLive": "在 Classroom 公告"
     },
     "chip": {
-      "connect": "連結 Google Classroom",
-      "connected": "已連結 Classroom",
-      "reconnect": "重新連結 Classroom",
       "notLinked": "尚未連結到 Classroom 課程。",
       "link": "連結 Classroom 課程",
-      "manage": "Classroom 設定"
+      "manage": "Classroom 設定",
+      "name": "Google Classroom",
+      "short": "Classroom",
+      "what": "連結這個班級、匯入學生，並發布課程與成績。"
     }
   },
   "digest": {
@@ -8291,5 +8291,13 @@
       "later": "之後可以在任何班級連結 Google Classroom。",
       "skip": "先跳過"
     }
+  },
+  "integrations": {
+    "title": "連結",
+    "on": "已連結",
+    "off": "未連結",
+    "warn": "需要重新連結",
+    "connect": "連結",
+    "reconnect": "重新連結"
   }
 }
