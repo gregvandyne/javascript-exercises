@@ -32,6 +32,9 @@ export const GAMES = Object.freeze({
   // First Folds (halves, fourths, thirds of shapes), First Cuts (unit fractions, the number line), Re-Slice (equivalent
   // shares, comparing with unlike denominators), Recipe Math (adding slices as sums of unit fractions).
   'fraction-factory': { 'ccss-math': ['2.G.A.3', '3.NF.A.1', '3.NF.A.2', '3.NF.A.3', '4.NF.A.1', '4.NF.A.2', '4.NF.B.3'] },
+  // Garden Count (kindergarten): counting out to 20, comparing two groups and two numerals to 10, and 11-19 as ten
+  // ones and some more ones (its three chapters, GARDEN_CHAPTERS below).
+  'garden-count': { 'ccss-math': ['K.CC.A.1', 'K.CC.B.4', 'K.CC.B.5', 'K.CC.C.6', 'K.CC.C.7', 'K.NBT.A.1'] },
   // The 220 Dolch sight words, Pre-primer to Grade 3: high-frequency and irregularly spelled words read by sight.
   'word-trail': { 'ccss-ela': ['RF.K.3c', 'RF.1.3g', 'RF.2.3f', 'RF.3.3d'] },
   // Guessing a word letter by letter as it is read aloud: naming letters and their sounds.
@@ -45,8 +48,12 @@ export const gameCodes = (slug, framework) => [...(((GAMES[slug] || {})[framewor
 export const FRACTION_CHAPTERS = Object.freeze({
   folds: ['2.G.A.3'], 'first-cuts': ['3.NF.A.1', '3.NF.A.2'], 're-slice': ['3.NF.A.3', '4.NF.A.1', '4.NF.A.2'], recipe: ['4.NF.B.3'],
 });
+/** Garden Count's chapters (seed-games/garden-count.html GardenCount.CHAPTERS), for a step locked to one. */
+export const GARDEN_CHAPTERS = Object.freeze({
+  count: ['K.CC.A.1', 'K.CC.B.4', 'K.CC.B.5'], compare: ['K.CC.C.6', 'K.CC.C.7'], teens: ['K.NBT.A.1'],
+});
 /** Games whose codes span several grades or tracks: a step of one is credited only with what it is known to play. */
-export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail']);
+export const LEVELLED = Object.freeze(['tug-of-math', 'sum-racer', 'fraction-factory', 'word-trail', 'garden-count']);
 /** A code's grade: "3.OA.C.7" -> "3", "RF.K.3c" -> "K". */
 const codeGrade = c => { const m = /^(K|\d)\./.exec(c) || /^[A-Z]+\.(K|\d)\./.exec(c); return m ? m[1] : ''; };
 const optionsOf = o => { try { return new URLSearchParams(typeof o === 'string' ? o : ''); } catch { return new URLSearchParams(); } };
@@ -56,6 +63,7 @@ function lockedCodes(slug, framework, options) {
   if (p.get('lock') !== '1' || framework !== 'ccss-math') return null;
   if (slug === 'sum-racer') { const n = /^\d{1,2}$/.test(p.get('level') || '') ? +p.get('level') : 0; return SUM_RACER_TRACKS[n] ? [...SUM_RACER_TRACKS[n]] : null; }
   if (slug === 'fraction-factory') { const ch = p.get('chapter') || ''; return Object.hasOwn(FRACTION_CHAPTERS, ch) ? [...FRACTION_CHAPTERS[ch]] : null; }
+  if (slug === 'garden-count') { const ch = p.get('chapter') || ''; return Object.hasOwn(GARDEN_CHAPTERS, ch) ? [...GARDEN_CHAPTERS[ch]] : null; }
   return null;
 }
 /** The codes a lesson's game step practises (counted as practice when a student finishes it). A game played at one
