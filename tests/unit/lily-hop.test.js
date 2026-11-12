@@ -69,7 +69,7 @@ test('the file: the scanner passes it, nothing leaves the site, and its import m
   assert.match(HTML, /W\.water\(\{/);
   assert.equal((HTML.match(/BRB\.gameOver\(/g) || []).length, 1, 'one completion call site, at the end of a chapter');
   assert.match(HTML, /BRB\.gameOver\(\{ won: true \}\)/);
-  assert.doesNotMatch(HTML, /timer|lives|game over|you lose|try again/i.source ? /\b(lives left|you lose|out of time|countdown)\b/i : /$^/, 'no timer, no lives, no losing');
+  assert.doesNotMatch(HTML, /\b(lives left|you lose|out of time|countdown|game over!)\b/i, 'no timer, no lives, no losing');
 });
 
 test('rounds: six a chapter, in the unit’s number ranges, every answer right, the first lap always the same', () => {
@@ -125,7 +125,7 @@ test('rounds: six a chapter, in the unit’s number ranges, every answer right, 
     for (const n of [1, 2, 4, 5, 6]) assert.equal(LH.round('twenty', n, lap).turn, undefined);
   }
   assert.deepEqual([...seen.join].sort((a, b) => a - b), [2, 3, 4, 5, 6, 7, 8, 9, 10], 'putting together reaches every total from 2 to 10');
-  assert.ok(seen.left.has(1) && Math.max(...seen.left) >= 7, 'taking away leaves from 1 to 7 or more');
+  assert.deepEqual([Math.min(...seen.left), Math.max(...seen.left)], [2, 8], 'taking away leaves from 2 to 8');
   assert.deepEqual([...seen.wholes].sort((a, b) => a - b), [4, 5, 6, 7, 8, 9], 'every number from 4 to 9 is split');
   assert.deepEqual([...seen.ten].sort((a, b) => a - b), [1, 2, 3, 4, 5, 6, 7, 8, 9], 'every number from 1 to 9 meets its partner to ten');
   assert.ok(Math.min(...seen.sums) >= 11 && Math.max(...seen.sums) <= 20 && Math.min(...seen.diffs) >= 4 && Math.max(...seen.diffs) <= 17, 'adding lands in the teens; taking away lands on both sides of ten');
@@ -336,9 +336,8 @@ test('no parameters: a picture menu of the three chapters; a tap on a pad in the
   let high = 0; for (let i = 0; i < 40 && (await state()).round === 1; i++) { const h = await heroX(); high = Math.max(high, h[1]); await g.p.waitForTimeout(50); }
   assert.ok(high > 0.4, `the helper hops (it rose ${high.toFixed(2)} above its pad)`);
   await until(() => window.__lh.state().round === 2);
-  assert.ok(start[0] !== (await heroX())[0] || true);
+  assert.equal(start[1], 0, 'it stood on its pad before the tap');
   assert.equal((await g.msgs('brb:gameover')).length, 0);
-  // Leaving and coming back: the menu marks nothing finished yet, and a frog chapter opens from it.
   assert.deepEqual(g.errors, []); assert.deepEqual(g.outside, []);
   await g.ctx.close();
 });

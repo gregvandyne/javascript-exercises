@@ -744,7 +744,9 @@ window.__lh = window.__brbTest = {
   fast: on => { S.fast = on !== false; },
   hero: id => chooseHero(id || HEROES[0]),
   act: (name, arg) => (name === 'answer' ? answer(arg) : undefined),
-  /** Where a pad's number is on the screen (CSS pixels), for a test that taps the pond itself. */
+  /** The helper's place: [x, how far above its pad, z]. */
+  heroAt: () => (S.hero ? [+S.hero.position.x.toFixed(2), +(S.hero.position.y - TOP).toFixed(2), +S.hero.position.z.toFixed(2)] : null),
+  /** Where a pad is on the screen (CSS pixels), for a test that taps the pond itself. */
   spot: v => { const p = S.pads[v]; if (!p) return null; const q = p.position.clone().setY(0.3).project(g.camera), r = g.renderer.domElement.getBoundingClientRect(); return [(q.x + 1) / 2 * r.width + r.left, (1 - q.y) / 2 * r.height + r.top]; },
 };
 
